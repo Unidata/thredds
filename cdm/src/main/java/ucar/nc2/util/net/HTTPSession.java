@@ -37,6 +37,8 @@ import net.jcip.annotations.NotThreadSafe;
 import org.apache.http.*;
 import org.apache.http.auth.Credentials;
 import org.apache.http.client.CredentialsProvider;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpRequestBase;
 import org.apache.http.client.params.AllClientPNames;
 import org.apache.http.conn.scheme.Scheme;
 import org.apache.http.cookie.Cookie;
@@ -44,8 +46,7 @@ import org.apache.http.impl.client.AbstractHttpClient;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.impl.conn.PoolingClientConnectionManager;
 import org.apache.http.params.SyncBasicHttpParams;
-import org.apache.http.protocol.ExecutionContext;
-import org.apache.http.protocol.HttpContext;
+import org.apache.http.protocol.*;
 import org.apache.http.entity.StringEntity;
 
 import javax.net.ssl.SSLException;
@@ -113,7 +114,7 @@ public class HTTPSession
     static final String SO_TIMEOUT = AllClientPNames.SO_TIMEOUT;
     static final String CONN_TIMEOUT = AllClientPNames.CONNECTION_TIMEOUT;
     static final String USER_AGENT = AllClientPNames.USER_AGENT;
-    static final String PROXY =  AllClientPNames.DEFAULT_PROXY;
+    static final String PROXY = AllClientPNames.DEFAULT_PROXY;
 
     // from: http://en.wikipedia.org/wiki/List_of_HTTP_header_fields
     static final public String HEADER_USERAGENT = "User-Agent";
@@ -133,7 +134,9 @@ public class HTTPSession
     // Type Declarations
 
     // Provide an alias for HttpParams
-    static class Settings extends SyncBasicHttpParams  {}
+    static class Settings extends SyncBasicHttpParams
+    {
+    }
 
     static class Proxy
     {
@@ -170,8 +173,8 @@ public class HTTPSession
         {
         }
 
-	public boolean
-	retryRequest(IOException exception,
+        public boolean
+        retryRequest(IOException exception,
                      int executionCount,
                      HttpContext context)
         {
@@ -234,10 +237,10 @@ public class HTTPSession
         connmgr = new PoolingClientConnectionManager();
         connmgr.getSchemeRegistry().register(
             new Scheme("https", 8443,
-                new EasySSLProtocolSocketFactory()));
+                new CustomSSLProtocolSocketFactory()));
         connmgr.getSchemeRegistry().register(
             new Scheme("https", 443,
-                new EasySSLProtocolSocketFactory()));
+                new CustomSSLProtocolSocketFactory()));
         globalsettings = new Settings();
         setDefaults(globalsettings);
         setGlobalUserAgent(DFALTUSERAGENT);
@@ -275,7 +278,7 @@ public class HTTPSession
 
     static public String getGlobalUserAgent()
     {
-        return (String)globalsettings.getParameter(USER_AGENT);
+        return (String) globalsettings.getParameter(USER_AGENT);
     }
 
     static synchronized public void setGlobalThreadCount(int nthreads)
@@ -490,10 +493,10 @@ public class HTTPSession
     putUrlAsString(String content, String url) throws HTTPException
     {
         HTTPMethod m = HTTPFactory.Put(url);
-	try {
+        try {
             m.setRequestContent(new StringEntity(content, "application/text", "UTF-8"));
-	} catch (UnsupportedEncodingException uee) {
-	    throw new HTTPException(uee);
+        } catch (UnsupportedEncodingException uee) {
+            throw new HTTPException(uee);
         }
         int status = m.execute();
         m.close();
@@ -586,13 +589,13 @@ public class HTTPSession
     //////////////////////////////////////////////////
     // Instance variables
 
-    AbstractHttpClient sessionClient = null;
-    List<ucar.nc2.util.net.HTTPMethod> methodList = new Vector<HTTPMethod>();
-    HttpContext context = null;
-    String identifier = "Session";
-    String legalurl = null;
-    boolean closed = false;
-    Settings localsettings = new Settings();
+    protected AbstractHttpClient sessionClient = null;
+    protected List<ucar.nc2.util.net.HTTPMethod> methodList = new Vector<HTTPMethod>();
+    protected HttpContext context = null; // same instance must be used for all methods
+    protected String identifier = "Session";
+    protected String legalurl = null;
+    protected boolean closed = false;
+    protected Settings localsettings = new Settings();
 
     //////////////////////////////////////////////////
     // Constructor(s)
@@ -615,7 +618,7 @@ public class HTTPSession
         try {
             new URL(url);
         } catch (MalformedURLException mue) {
-            throw new HTTPException("Malformed URL: "+url,mue);
+            throw new HTTPException("Malformed URL: " + url, mue);
         }
         this.legalurl = url;
         try {
@@ -624,6 +627,7 @@ public class HTTPSession
         } catch (Exception e) {
             throw new HTTPException("url=" + url, e);
         }
+        this.context = new BasicHttpContext();// do we need to modify?
     }
 
     //////////////////////////////////////////////////
@@ -658,6 +662,21 @@ public class HTTPSession
     public void setMaxRedirects(int n)
     {
         localsettings.setParameter(MAX_REDIRECTS, n);
+    }
+
+    // make package specific
+
+    HttpContext
+    getContext()
+    {
+        return this.context;
+    }
+
+
+    HttpClient
+    getClient()
+    {
+        return this.sessionClient;
     }
 
     //////////////////////////////////////////////////
@@ -785,6 +804,21 @@ public class HTTPSession
         return methodList.size();
     }
 
+    // This provides support for HTTPMethod.setAuthentication method
+    synchronized protected void
+    setAuthentication(CredentialsProvider cp)
+    {
+        sessionClient.setCredentialsProvider(cp);
+    }
+
+    // do an actual execution
+    protected HttpResponse
+    execute(HttpRequestBase request)
+        throws IOException
+    {
+        return sessionClient.execute(request, this.context);
+    }
+
     //////////////////////////////////////////////////
     // Debug interface
 
@@ -829,6 +863,7 @@ public class HTTPSession
                 sessionClient.addRequestInterceptor(interceptor);
         }
     }
+
     public void debugInterceptResponse(HttpResponseInterceptor interceptor)
     {
         if(sessionClient != null) {

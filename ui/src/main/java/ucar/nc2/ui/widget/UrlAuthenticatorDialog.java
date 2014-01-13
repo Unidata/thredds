@@ -61,8 +61,6 @@ public class UrlAuthenticatorDialog extends Authenticator implements Credentials
   private Field.Password passwF;
   private boolean debug = false;
 
-  private AuthScope anyscope = new  AuthScope(AuthScope.ANY);
-
   /** constructor
      @param parent JFrame
    */

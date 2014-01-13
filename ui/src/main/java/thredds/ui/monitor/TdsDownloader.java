@@ -66,7 +66,6 @@ public class TdsDownloader {
     this.config = config;
     this.type = type;
 
-    HTTPSession.setGlobalUserAgent("TdsMonitor");
     session = HTTPFactory.newSession(config.getServerPrefix());
 
     localDir = LogLocalManager.getDirectory(config.server, type.toString());
@@ -83,9 +82,13 @@ public class TdsDownloader {
     String urls = config.getServerPrefix() + "/thredds/admin/log/"+type+"/";
     ta.append(String.format("Download URL = %s%n", urls));
 
-    final String contents;
+    String contents = null;
     try {
-      contents = HttpClientManager.getContentAsString(session, urls);
+        HTTPMethod method = HTTPFactory.Get(session, urls);
+        int statusCode = method.execute();
+        if (statusCode == 200)
+          contents = method.getResponseAsString();
+
       if ((contents == null) || (contents.length() == 0)) {
         ta.append(String.format("Failed to get logs at URL = %s%n%n", urls));
         return;
@@ -99,13 +102,14 @@ public class TdsDownloader {
     }
 
     // update text area in background  http://technobuz.com/2009/05/update-jtextarea-dynamically/
+    final String list = contents;
     SwingWorker worker = new SwingWorker<String, Void>() {
 
       @Override
       protected String doInBackground() throws Exception {
         try {
           ta.append(String.format("Local log files stored in = %s%n%n", localDir));
-          String[] lines = contents.split("\n");
+          String[] lines = list.split("\n");
           for (String line : lines) {
             new RemoteLog(line.trim());
             if (cancel.isCancel()) {
@@ -136,7 +140,7 @@ public class TdsDownloader {
     long size;
     File localFile;
 
-    RemoteLog(String line) throws HTTPException {
+    RemoteLog(String line) throws IOException {
       String[] tokes = line.split(" ");
       name = tokes[0];
       size = Long.parseLong(tokes[1]);
@@ -155,13 +159,13 @@ public class TdsDownloader {
 
     }
 
-    void read() throws HTTPException {
+    void read() throws IOException {
       String urls = config.getServerPrefix() + "/thredds/admin/log/"+type+"/" + name;
       ta.append(String.format(" reading %s to %s%n", urls, localFile.getPath()));
       HttpClientManager.copyUrlContentsToFile(session, urls, localFile);
     }
 
-    void append() throws HTTPException {
+    void append() throws IOException {
       String urls = config.getServerPrefix() + "/thredds/admin/log/"+type+"/" + name;
       long start = localFile.length();
       long want = size - start;

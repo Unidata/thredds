@@ -53,14 +53,19 @@ import java.io.Serializable;
  * etc.)
  * <p/>
  * HTTPAuthProvider implements the CredentialsProvider interface.
+ *
+ * With httpclient 4.2, credentials caching is pushed to the
+ * credentials provider. So caching is provided here.
+ * However, we need a finer grain of caching than provided
+ * by AuthScope, so we use the full url.
  */
 
 public class HTTPAuthProvider implements Serializable, CredentialsProvider
 {
     static final int MAX_RETRIES = 3;
 
-//////////////////////////////////////////////////
-// Predefined keys (Used local to the package)
+    //////////////////////////////////////////////////
+    // Predefined keys (Used local to the package)
 
     static final String PRINCIPAL = "ucar.nc2.principal";
     static final String URI = "ucar.nc2.url";
@@ -79,15 +84,15 @@ public class HTTPAuthProvider implements Serializable, CredentialsProvider
 
     static private org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(HTTPAuthProvider.class);
 
-//////////////////////////////////////////////////
-// Instance variables
+    //////////////////////////////////////////////////
+    // Instance variables
 
-    String url = null;
-    HTTPMethod method = null;
-    int retryCount;
+    protected String url = null;
+    protected HTTPMethod method = null;
+    protected int retryCount;
 
-//////////////////////////////////////////////////
-// Constructor(s)
+    //////////////////////////////////////////////////
+    // Constructor(s)
 
     public HTTPAuthProvider(String url, HTTPMethod method)
     {
@@ -102,6 +107,7 @@ public class HTTPAuthProvider implements Serializable, CredentialsProvider
     public Credentials
     getCredentials(AuthScope scope)//AuthScheme authscheme,String host,int port,boolean isproxy)
     {
+        // Is this still true in httpclient 4.2.x?
         // There appears to be a bug in HttpMethodDirector such that
         // as long as bad credentials are provided, it will keep on
         // calling the credentials provider.  We fix by checking for
@@ -113,9 +119,15 @@ public class HTTPAuthProvider implements Serializable, CredentialsProvider
         //}
         //retryCount--;
 
+	// See if the credentials have been cached.
+        Credentials credentials = HTTPAuthStore.getCredentials(this.url);
+	if(credentials != null)
+	    return credentials;
+
+	// Not cached.
+
         // Figure out what scheme is being used
         HTTPAuthScheme scheme;
-        Credentials credentials = null;
 
         scheme = HTTPAuthScheme.schemeForName(scope.getScheme());
 
@@ -152,6 +164,9 @@ public class HTTPAuthProvider implements Serializable, CredentialsProvider
             return null;
         }
 
+	// Insert into the credentials cache
+	HTTPAuthStore.setCredentials(url,credentials);
+
         return credentials;
     }
 
@@ -163,8 +178,8 @@ public class HTTPAuthProvider implements Serializable, CredentialsProvider
     {
     }
 
-///////////////////////////////////////////////////
-// toString
+    ///////////////////////////////////////////////////
+    // toString
 
     public String
     toString()
@@ -172,8 +187,8 @@ public class HTTPAuthProvider implements Serializable, CredentialsProvider
         return "HTTPAuthProvider(" + url + ")";
     }
 
-///////////////////////////////////////////////////
-// (De-)Serialization support
+    ///////////////////////////////////////////////////
+    // (De-)Serialization support
 
     private void writeObject(java.io.ObjectOutputStream ostream)
         throws IOException

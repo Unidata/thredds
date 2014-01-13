@@ -32,6 +32,7 @@
  */
 package ucar.nc2.dataset;
 
+import org.apache.http.Header;
 import ucar.ma2.Array;
 import ucar.nc2.stream.CdmRemote;
 import ucar.nc2.util.CancelTaskImpl;
@@ -57,7 +58,6 @@ import java.lang.reflect.*;
 import java.net.*;
 import java.util.*;
 
-import org.apache.http.Header;
 import thredds.catalog.ServiceType;
 import ucar.nc2.util.net.HTTPFactory;
 import ucar.unidata.util.StringUtil2;

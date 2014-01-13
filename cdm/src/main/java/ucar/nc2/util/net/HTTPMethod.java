@@ -170,7 +170,6 @@ public class HTTPMethod
     protected boolean localsession = false;
     protected String legalurl = null;
     protected List<Header> headers = new ArrayList<Header>();
-    protected HttpContext context = null;
     protected HttpEntity content = null;
     protected HTTPSession.Methods methodclass = null;
     protected HTTPMethodStream methodstream = null; // wrapper for strm
@@ -282,9 +281,9 @@ public class HTTPMethod
         if (!localsession && !sessionCompatible(this.legalurl))
             throw new HTTPException("HTTPMethod: session incompatible url: " + this.legalurl);
 
-        if (request != null)
-            request.releaseConnection();
-        request = createRequest();
+        if (this.request != null)
+            this.request.releaseConnection();
+        this.request = createRequest();
 
         try {
             // Add any defined headers
@@ -295,9 +294,9 @@ public class HTTPMethod
             }
 
             // Apply settings
-            configure(request);
-            setcontent(request);
-            setAuthentication(session, this);
+            configure(this.request);
+            setcontent(this.request);
+            setAuthentication();
 
             //todo: Change the retry handler
             //httpclient.setHttpRequestRetryHandler(myRetryHandler);
@@ -311,7 +310,7 @@ public class HTTPMethod
             //hc = new HostConfiguration(hc);
             //hc.setHost(hack.getHost(), hack.getPort(), handler);
 
-            this.response = session.sessionClient.execute(request);
+            this.response = session.execute(request);
             int code = response.getStatusLine().getStatusCode();
             return code;
 
@@ -675,18 +674,19 @@ public class HTTPMethod
      * occurs in HTTPAuthProvider
      */
 
-    static synchronized private void
-    setAuthentication(HTTPSession session, HTTPMethod method)
+    synchronized protected void
+    setAuthentication()
     {
         String url = session.getURL();
         if (url == null) url = HTTPAuthStore.ANY_URL;
 
         // Provide a credentials (provider) to enact the process
-        CredentialsProvider cp = new HTTPAuthProvider(url, method);
-        // Since we not know where this will get called, do everywhere
-        if (session != null && session.sessionClient != null) {
-            session.sessionClient.setCredentialsProvider(cp);
-        }
+        CredentialsProvider cp = new HTTPAuthProvider(url, this);
+
+	// New in httpclient 4.2; will need to change in 4.3
+	this.session.setAuthentication(cp);
+
+	// Do we still need this?
         //HttpParams hcp = session.sessionClient.getConnectionManager().getParams();
         //hcp.setParameter(CredentialsProvider.PROVIDER, cp);
 
