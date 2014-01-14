@@ -96,8 +96,6 @@ public class BeanTableSorted extends BeanTable {
     // here because a new TableColumnModel was created above.
     TableAligner aligner = new TableAligner(jtable, SwingConstants.LEADING);
     jtable.getColumnModel().addColumnModelListener(aligner);
-
-    restoreState();
   }
 
   protected int modelIndex(int viewIndex) {

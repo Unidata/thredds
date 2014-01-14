@@ -162,7 +162,7 @@ public class HidableTableColumnModel extends DefaultTableColumnModel implements 
      * @param onlyVisible if set all invisible columns will be missing from the enumeration.
      * @return an <code>Enumeration</code> of the columns in the model
      */
-    public Enumeration getColumns(boolean onlyVisible) {
+    public Enumeration<TableColumn> getColumns(boolean onlyVisible) {
         Vector columns = (onlyVisible ? tableColumns : allTableColumns);
 
         return columns.elements();

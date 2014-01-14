@@ -186,20 +186,34 @@ class Bean {
       }
     }
 
-    private Object getArgument( Class c, String value) {
-      if (c == String.class) return value;
-      else if (c == int.class) return Integer.valueOf(value);
-      else if (c == double.class) return Double.valueOf(value);
-      else if (c == boolean.class) return Boolean.valueOf(value);
-      else if (c == float.class) return Float.valueOf(value);
-      else if (c == short.class) return Short.valueOf(value);
-      else if (c == long.class) return Long.valueOf(value);
-      else if (c == byte.class) return Byte.valueOf(value);
-      else if (c == Date.class) {
+    private Object getArgument(Class c, String value) {
+      if (c == String.class) {
+        return value;
+      } else if (c == int.class) {
+        return Integer.valueOf(value);
+      } else if (c == double.class) {
+        return Double.valueOf(value);
+      } else if (c == boolean.class) {
+        if (value == null) {
+          // Boolean.valueOf(null) actually returns "false", which we don't want.
+          return null;
+        } else {
+          return Boolean.valueOf(value);
+        }
+      } else if (c == float.class) {
+        return Float.valueOf(value);
+      } else if (c == short.class) {
+        return Short.valueOf(value);
+      } else if (c == long.class) {
+        return Long.valueOf(value);
+      } else if (c == byte.class) {
+        return Byte.valueOf(value);
+      } else if (c == Date.class) {
         long time = Long.parseLong(value);
         return new Date(time);
+      } else {
+        return null;
       }
-      else return null;
     }
 
   }

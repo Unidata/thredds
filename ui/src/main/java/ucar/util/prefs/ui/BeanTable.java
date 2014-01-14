@@ -33,6 +33,8 @@
 
 package ucar.util.prefs.ui;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import ucar.nc2.ui.table.HidableTableColumnModel;
 import ucar.nc2.ui.table.TableAligner;
 import ucar.nc2.ui.table.TableAppearanceAction;
@@ -82,6 +84,8 @@ import java.util.List;
  */
 
 public class BeanTable extends JPanel {
+  private static final Logger logger = LoggerFactory.getLogger(BeanTable.class);
+
   protected Class beanClass;
   protected Object innerbean;
   protected PreferencesExt store;
@@ -483,18 +487,20 @@ public class BeanTable extends JPanel {
       e.printStackTrace();
     }
 
-    // save column widths and order
-    ArrayList<PropertyCol> pcols = new ArrayList<PropertyCol>();
-    TableColumnModel tcm = jtable.getColumnModel();
-    for (int i = 0; i < tcm.getColumnCount(); i++) {
-      TableColumn tc = tcm.getColumn(i);
-      PropertyCol pcol = new PropertyCol();
-      pcol.setName(model.getColumnName(tc.getModelIndex()));
-      pcol.setWidth(tc.getWidth());
-      pcol.setWidth(tc.getWidth());
-      pcols.add(pcol);
+    List<PropertyCol> propCols = new ArrayList<PropertyCol>();
+    HidableTableColumnModel tableColumnModel = (HidableTableColumnModel) jtable.getColumnModel();
+    Enumeration<TableColumn> columns = tableColumnModel.getColumns(false);
+
+    while (columns.hasMoreElements()) {
+      PropertyCol propCol = new PropertyCol();
+      TableColumn column = columns.nextElement();
+      propCol.setName(column.getIdentifier().toString());
+      propCol.setWidth(column.getWidth());
+      propCol.setVisible(tableColumnModel.isColumnVisible(column));
+      propCols.add(propCol);
     }
-    store.putBeanCollection("propertyCol", pcols);
+
+    store.putBeanCollection("propertyCol", propCols);
   }
 
     /**
@@ -523,31 +529,39 @@ public class BeanTable extends JPanel {
     }
 
     ArrayList propColObjs = (ArrayList) store.getBean("propertyCol", new ArrayList());
-    TableColumnModel tableColumnModel = jtable.getColumnModel();
+    HidableTableColumnModel tableColumnModel = (HidableTableColumnModel) jtable.getColumnModel();
     int newViewIndex = 0;
 
     for (Object propColObj : propColObjs) {
       PropertyCol propCol = (PropertyCol) propColObj;
-      int currentViewIndex = tableColumnModel.getColumnIndex(propCol.getName());
+      try {
+        int currentViewIndex = tableColumnModel.getColumnIndex(propCol.getName());  // May throw IAE.
 
-      if (currentViewIndex >= 0) {  // There is a column in the table with the same name as propCol.
-        TableColumn tableColumn = tableColumnModel.getColumn(currentViewIndex);
-        tableColumn.setPreferredWidth(propCol.getWidth());
+        TableColumn column = tableColumnModel.getColumn(currentViewIndex);
+        column.setPreferredWidth(propCol.getWidth());
 
         tableColumnModel.moveColumn(currentViewIndex, newViewIndex);
-        assert tableColumnModel.getColumn(newViewIndex) == tableColumn : "tableColumn wasn't successfully moved.";
-        ++newViewIndex;
+        assert tableColumnModel.getColumn(newViewIndex) == column : "tableColumn wasn't successfully moved.";
+
+        // We must do this last, since moveColumn() only works on visible columns.
+        tableColumnModel.setColumnVisible(column, propCol.isVisible());
+        if (propCol.isVisible()) {
+          ++newViewIndex;  // Don't increment for hidden columns.
+        }
+      } catch (IllegalArgumentException e) {
+        logger.debug(String.format(
+                "Column named \"%s\" was present in the preferences file but not the dataset.", propCol.getName()), e);
       }
     }
   }
 
   /**
-   * Should be private. This is to store the width for each table column.
+   * Should be private. This is to store the width and visibility for each table column.
    */
   static public class PropertyCol {
     private String name;
     private int width;
-    private boolean shown = true;
+    private boolean visible = true;
 
     public PropertyCol() {
     }
@@ -568,12 +582,12 @@ public class BeanTable extends JPanel {
       this.width = width;
     }
 
-    public boolean isShown() {
-      return shown;
+    public boolean isVisible() {
+      return visible;
     }
 
-    public void setShown(boolean shown) {
-      this.shown = shown;
+    public void setVisible(boolean visible) {
+      this.visible = visible;
     }
   }
 
