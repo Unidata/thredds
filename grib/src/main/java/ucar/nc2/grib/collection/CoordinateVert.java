@@ -54,6 +54,11 @@ public class CoordinateVert implements Coordinate {
   }
 
   @Override
+  public int getIndex(Object val) {
+    return levelSorted.indexOf(val);
+  }
+
+  @Override
   public Object getValue(int idx) {
     return levelSorted.get(idx);
   }

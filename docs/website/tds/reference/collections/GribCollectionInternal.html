@@ -915,7 +915,10 @@ message Variable {
   </tr>
 </table>
 <p></p>
-<p>&nbsp;</p>
+<p>01/10/2013</p>
+<p>FileCollection is always a PC, with individual files being GC; all the files is a directory. could genralize to span directories. spec=path/[filter], partition=file</p>
+<p>DirectoryCollection is a GC; all the files in a single directory. spec=directory:path[/filter]</p>
+<p>DirectoryPartition is a PC, with DirectoryCollections at its leaves. may be nested (i hope). but when do we know if we are at the leaves? partition=directory</p>
 <p></p>
 </body>
 </html>

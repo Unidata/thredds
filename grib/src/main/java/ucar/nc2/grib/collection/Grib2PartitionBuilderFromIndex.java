@@ -82,7 +82,11 @@ public class Grib2PartitionBuilderFromIndex extends Grib2CollectionBuilderFromIn
     GribCollection.GroupHcs group = super.readGroup(p);
 
     // extensions
-    group.run2part = p.getExtension(PartitionCollectionProto.run2Part);
+    List<Integer> list = p.getExtension(PartitionCollectionProto.run2Part);
+    group.run2part = new int[list.size()];
+    int count = 0;
+    for (int partno : list)
+      group.run2part[count++] = partno;
 
     return group;
   }

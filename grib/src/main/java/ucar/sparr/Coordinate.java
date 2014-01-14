@@ -19,6 +19,7 @@ public interface Coordinate {
 
   List<? extends Object> getValues();
   Object getValue(int idx);
+  int getIndex(Object val);
 
   int getSize();
 

@@ -53,6 +53,11 @@ public class CoordinateTimeIntv implements Coordinate {
     return timeIntervals.get(idx);
   }
 
+  @Override
+  public int getIndex(Object val) {
+    return timeIntervals.indexOf(val);
+  }
+
   public int getSize() {
     return timeIntervals.size();
   }

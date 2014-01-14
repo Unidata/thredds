@@ -574,7 +574,7 @@ public class GribCollection implements FileCacheable, AutoCloseable {
     private Map<Integer, GribCollection.VariableIndex> varMap;
 
     // partitions only
-    public List<Integer> run2part;   // runtimeCoord.length; which partition to use for runtime i
+    public int[] run2part;   // runtimeCoord.length; which partition to use for runtime i
 
     GroupHcs() {
       this.variList = new ArrayList<>();

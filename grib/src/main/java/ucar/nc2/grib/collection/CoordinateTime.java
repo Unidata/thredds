@@ -52,6 +52,11 @@ public class CoordinateTime implements Coordinate {
   }
 
   @Override
+  public int getIndex(Object val) {
+    return offsetSorted.indexOf(val);
+  }
+
+  @Override
   public Object getValue(int idx) {
     return offsetSorted.get(idx);
   }

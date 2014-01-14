@@ -110,13 +110,13 @@ public class PartitionCollection extends GribCollection {
     }
 
     public int getPartition2D(int runtimeIdx) {
-      return group.run2part.get(runtimeIdx);
+      return group.run2part[runtimeIdx];
     }
 
     public int getPartition1D(int timeIdx) {
       int runtimeIdx = time2runtime[timeIdx];
       if (runtimeIdx == 0) return -1;  // 0 = missing
-      return group.run2part.get(runtimeIdx-1);
+      return group.run2part[runtimeIdx-1];
     }
 
     /**
@@ -327,6 +327,12 @@ public class PartitionCollection extends GribCollection {
     Partition partition = new Partition(dcm);
     partitionMap.put(dcm.getCollectionName(), new Partition(dcm));
     partitions.add(partition);
+  }
+
+
+  public void sortPartitions() {
+    Collections.sort(partitions);
+    partitions = Collections.unmodifiableList(partitions);
   }
 
   public Partition getPartitionByName(String name) {

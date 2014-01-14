@@ -65,6 +65,11 @@ public class TestCoordinate implements Coordinate {
   }
 
   @Override
+  public int getIndex(Object val) {
+    return vals.indexOf(val);
+  }
+
+  @Override
   public int getSize() {
     return vals.size();
   }

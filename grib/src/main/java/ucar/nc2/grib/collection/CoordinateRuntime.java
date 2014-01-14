@@ -74,6 +74,11 @@ public class CoordinateRuntime implements Coordinate {
   }
 
   @Override
+  public int getIndex(Object val) {
+    return runtimeSorted.indexOf(val);
+  }
+
+  @Override
   public Object getValue(int idx) {
     return runtimeSorted.get(idx);
   }
