@@ -588,7 +588,8 @@ de-referencing the catalogRefs, and simplifying:
 <hr width="100%"/>
 <h3>Notes</h3>
 <h4>GribCollections</h4>
-<p>TwoD: Reference time and forecast time. This allows all grib records to be accessed by the user.</p>
+<p>TwoD: Reference time and forecast time. This allows all grib records to be accessed by the user. no filtering.</p>
+<p>Best: should it be caclulated? optionally? isnt needed in file partition, since only one reference time in the collection.</p>
 <p>gdsHash</p>
 <h4>PartitionCollection</h4>
 <p>partition=&quot;file&quot;. All records with the same reference time are in a single file. Each file is made into a GribCollection. All the files in a directory are made into a PartitionCollection.</p>

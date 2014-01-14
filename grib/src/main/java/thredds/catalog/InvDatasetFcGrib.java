@@ -36,6 +36,8 @@ import net.jcip.annotations.ThreadSafe;
 import thredds.featurecollection.FeatureCollectionConfig;
 import thredds.featurecollection.FeatureCollectionType;
 import thredds.inventory.*;
+import thredds.inventory.partition.DirectoryCollection;
+import thredds.inventory.partition.DirectoryPartition;
 import thredds.inventory.partition.FilePartition;
 import thredds.inventory.partition.TimePartitionCollectionManager;
 import ucar.nc2.constants.FeatureType;
@@ -120,6 +122,10 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
 
     if (isFilePartition) {
       this.datasetCollection = new FilePartition(config.name, Paths.get(topDirectory), logger);
+    } else if (isDirectoryPartition) {
+      this.datasetCollection = new DirectoryCollection(config.name, topDirectory, logger);
+
+      this.datasetCollection = new DirectoryPartition(config.name, Paths.get(topDirectory), logger);
     } else if (isOtherPartition) {   // LOOK ??
       this.datasetCollection = TimePartitionCollectionManager.factory(config, topDirectory, new GribCdmIndex2(), errlog, logger);
     } else {
