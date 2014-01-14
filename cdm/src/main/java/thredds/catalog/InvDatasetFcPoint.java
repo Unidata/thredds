@@ -3,7 +3,6 @@ package thredds.catalog;
 import org.slf4j.Logger;
 import thredds.featurecollection.FeatureCollectionConfig;
 import thredds.featurecollection.FeatureCollectionType;
-import thredds.inventory.CollectionManager;
 import thredds.inventory.CollectionUpdateType;
 import ucar.nc2.Attribute;
 import ucar.nc2.ft.FeatureDataset;
@@ -47,6 +46,7 @@ public class InvDatasetFcPoint extends InvDatasetFeatureCollection {
 
   InvDatasetFcPoint(InvDatasetImpl parent, String name, String path, FeatureCollectionType fcType, FeatureCollectionConfig config) {
     super(parent, name, path, fcType, config);
+    makeCollection();
 
     Formatter errlog = new Formatter();
     try {

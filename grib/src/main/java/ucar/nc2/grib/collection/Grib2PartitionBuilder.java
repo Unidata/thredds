@@ -6,7 +6,6 @@ import thredds.inventory.CollectionUpdateType;
 import thredds.inventory.MCollection;
 import thredds.inventory.partition.PartitionManager;
 import ucar.ma2.Section;
-import ucar.nc2.grib.TimeCoord;
 import ucar.sparr.*;
 import ucar.nc2.constants.CDM;
 import ucar.nc2.stream.NcStream;
@@ -475,20 +474,16 @@ public class Grib2PartitionBuilder extends Grib2CollectionBuilder {
     return ds2D;
   }
 
-  private boolean makeDatasetBest(PartitionCollection.Dataset ds2D, Formatter f) throws IOException {
-    PartitionCollection.Dataset dsa = result.makeDataset(GribCollectionProto.Dataset.Type.Best);
+  private boolean makeDatasetBest(GribCollection.Dataset ds2D, Formatter f) throws IOException {
+    GribCollection.Dataset dsa = result.makeDataset(GribCollectionProto.Dataset.Type.Best);
 
-    List<PartitionCollection.Partition> partitions = result.getPartitions();
-    int npart = partitions.size();
+    int npart = result.getPartitions().size();
     boolean ok = true;
 
      // do each group
     for (GribCollection.GroupHcs group2D : ds2D.groups) {
       GribCollection.GroupHcs groupB = dsa.addGroupCopy(group2D);  // make copy of group, add to dataset
       groupB.run2part = group2D.run2part;                          // use same run -> partition map
-
-      String gname = groupB.getId();
-      String gdesc = groupB.getDescription();
 
       // runtime offsets
       CoordinateRuntime rtc = null;
@@ -540,92 +535,6 @@ public class Grib2PartitionBuilder extends Grib2CollectionBuilder {
     } // loop over groups
 
     return ok;
-  }
-
-  // make the union of all the offsets from base date
-  private CoordinateTime convertBestTimeCoordinate(List<Double> runOffsets, CoordinateTime timeCoord) {
-    Set<Integer> values = new HashSet<>();
-    for (double runOffset : runOffsets) {
-      for (Integer val : timeCoord.getOffsetSorted())
-        values.add((int) (runOffset + val)); // LOOK possible roundoff
-    }
-
-    List<Integer> offsetSorted = new ArrayList<>(values.size());
-    for (Object val : values) offsetSorted.add( (Integer) val);
-    Collections.sort(offsetSorted);
-    return new CoordinateTime(offsetSorted, timeCoord.getCode());
-  }
-
-  // make the union of all the offsets from base date
-  private CoordinateTimeIntv convertBestTimeCoordinateIntv(List<Double> runOffsets, CoordinateTimeIntv timeCoord) {
-    Set<TimeCoord.Tinv> values = new HashSet<>();
-    for (double runOffset : runOffsets) {
-      for (TimeCoord.Tinv val : timeCoord.getTimeIntervals())
-        values.add( val.offset(runOffset)); // LOOK possible roundoff
-    }
-
-    List<TimeCoord.Tinv> offsetSorted = new ArrayList<>(values.size());
-    for (Object val : values) offsetSorted.add( (TimeCoord.Tinv) val);
-    Collections.sort(offsetSorted);
-    return new CoordinateTimeIntv(offsetSorted, timeCoord.getCode());
-  }
-
-  /**
-   * calculate which partition to use, based on missing
-   * @param runOffsets for each runtime, the offset from base time
-   * @param timeCoord  original time coordinate offset from 2D dataset
-   * @param coordBest  best time coordinate, from convertBestTimeCoordinate
-   * @param twot       variable missing array
-   * @return           for each time in coordBest, which runtime to use
-   */
-  private int[] makeTime2RuntimeMap(List<Double> runOffsets, CoordinateTime timeCoord, CoordinateTime coordBest, CoordinateTwoTimer twot) {
-    int[] result = new int[ coordBest.getSize()];
-
-    Map<Integer, Integer> map = new HashMap<>();  // lookup coord val to index
-    int count = 0;
-    for (Integer val : coordBest.getOffsetSorted()) map.put(val, count++);
-
-    int runIdx = 0;
-    for (double runOffset : runOffsets) {
-      int timeIdx = 0;
-      for (Integer val : timeCoord.getOffsetSorted()) {
-        if (twot.getCount(runIdx, timeIdx) > 0) { // skip missing
-          Integer bestVal = (int) (runOffset + val);
-          Integer bestValIdx = map.get(bestVal);
-          if (bestValIdx == null) throw new IllegalStateException();
-          result[bestValIdx] = runIdx+1; // use this partition; later ones override; 1-based so 0 = missing
-        }
-
-        timeIdx++;
-      }
-      runIdx++;
-    }
-    return result;
-  }
-
-  private int[] makeTime2RuntimeMap(List<Double> runOffsets, CoordinateTimeIntv timeCoord, CoordinateTimeIntv coordBest, CoordinateTwoTimer twot) {
-    int[] result = new int[ coordBest.getSize()];
-
-    Map<TimeCoord.Tinv, Integer> map = new HashMap<>();  // lookup coord val to index
-    int count = 0;
-    for (TimeCoord.Tinv val : coordBest.getTimeIntervals()) map.put(val, count++);
-
-    int runIdx = 0;
-    for (double runOffset : runOffsets) {
-      int timeIdx = 0;
-      for (TimeCoord.Tinv val : timeCoord.getTimeIntervals()) {
-        if (twot.getCount(runIdx, timeIdx) > 0) { // skip missing;
-          TimeCoord.Tinv bestVal = val.offset(runOffset);
-          Integer bestValIdx = map.get(bestVal);
-          if (bestValIdx == null) throw new IllegalStateException();
-          result[bestValIdx] = runIdx+1; // use this partition; later ones override; one based so 0 = missing
-        }
-
-        timeIdx++;
-      }
-      runIdx++;
-    }
-    return result;
   }
 
   //////////////////////////////////////////////////////////

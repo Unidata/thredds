@@ -690,6 +690,11 @@ public class GribCollection implements FileCacheable, AutoCloseable {
     return new VariableIndex(g, -1, discipline, rawPds, pds, cdmHash, index, recordsPos, recordsLen);
   }
 
+  public GribCollection.VariableIndex makeVariableIndex(GroupHcs g, VariableIndex other) {
+
+    return new VariableIndex(g, other);
+  }
+
   public class VariableIndex implements Comparable<VariableIndex> {
     public final GroupHcs group;     // belongs to this group
     public final int tableVersion;   // grib1 : can vary by variable

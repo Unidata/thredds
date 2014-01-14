@@ -115,7 +115,7 @@ public class DirectoryBuilder {
         partitionStatus = isPartition ? PartitionStatus.isPartition : PartitionStatus.isGribCollection;
 
       } else { // no index file
-        // temporary - just to scan 100 fikes in the directory
+        // temporary - just to scan 100 files in the directory
         DirectoryCollection dc = new DirectoryCollection(partitionName, dir, null);
         partitionStatus = dc.isLeafDirectory() ? PartitionStatus.isGribCollection : PartitionStatus.isPartition;
       }

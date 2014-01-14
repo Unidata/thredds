@@ -4,7 +4,6 @@ import net.jcip.annotations.ThreadSafe;
 import org.slf4j.Logger;
 import thredds.featurecollection.FeatureCollectionConfig;
 import thredds.featurecollection.FeatureCollectionType;
-import thredds.inventory.CollectionManager;
 import thredds.inventory.CollectionUpdateType;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.dataset.NetcdfDataset;
@@ -55,6 +54,7 @@ public class InvDatasetFcFmrc extends InvDatasetFeatureCollection {
 
   InvDatasetFcFmrc(InvDatasetImpl parent, String name, String path, FeatureCollectionType fcType, FeatureCollectionConfig config) {
     super(parent, name, path, fcType, config);
+    makeCollection();
     tmi.setDataType( FeatureType.GRID); // override FMRC
 
     Formatter errlog = new Formatter();

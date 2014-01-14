@@ -4,7 +4,6 @@ import thredds.featurecollection.FeatureCollectionConfig;
 import thredds.filesystem.MFileOS7;
 import thredds.inventory.partition.DirectoryCollection;
 import ucar.nc2.time.CalendarDate;
-import ucar.nc2.units.TimeDuration;
 import ucar.unidata.util.StringUtil2;
 
 import java.io.IOException;
@@ -75,6 +74,11 @@ public abstract class CollectionAbstract implements MCollection {
   @Override
   public String getCollectionName() {
     return collectionName;
+  }
+
+  @Override
+  public String getIndexFilename() {
+    return getRoot() + "/" + collectionName + NCX_SUFFIX;
   }
 
   @Override

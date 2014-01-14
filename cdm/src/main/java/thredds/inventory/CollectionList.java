@@ -43,7 +43,7 @@ public class CollectionList extends CollectionAbstract {
 
     Collections.sort(mfiles);
     this.lastModified = lastModified;
-
+    this.root = System.getProperty("user.dir");
   }
 
   protected CollectionList(String collectionName, Logger logger) {

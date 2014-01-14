@@ -72,6 +72,7 @@ public class CollectionManagerCatalog extends CollectionManagerAbstract implemen
     }
 
     this.catalogUrl = collectionSpec;
+    this.root = System.getProperty("user.dir");
   }
 
   @Override

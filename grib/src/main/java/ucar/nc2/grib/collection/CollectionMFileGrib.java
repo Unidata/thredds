@@ -22,11 +22,11 @@ public class CollectionMFileGrib extends CollectionAbstract {
 
   public CollectionMFileGrib(String collectionName, String collectionSpec, Formatter errlog) {
     super(collectionName, null);
-    sp = new CollectionSpecParser(collectionSpec, errlog);
+    this.sp = new CollectionSpecParser(collectionSpec, errlog);
     List<MFileFilter> filters = new ArrayList<MFileFilter>(2);
     if (null != sp.getFilter())
       filters.add(new WildcardMatchOnName(sp.getFilter()));
-    dateExtractor = (sp.getDateFormatMark() == null) ? new DateExtractorNone() : new DateExtractorFromName(sp.getDateFormatMark(), true);
+    this.dateExtractor = (sp.getDateFormatMark() == null) ? new DateExtractorNone() : new DateExtractorFromName(sp.getDateFormatMark(), true);
   }
 
   @Override

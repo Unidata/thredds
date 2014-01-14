@@ -49,14 +49,13 @@ import java.nio.file.attribute.BasicFileAttributes;
 import java.util.*;
 
 /**
- * Manage MFiles from just one directory.
+ * Manage MFiles from one directory.
  * Use getFileIterator() for best performance on large directories
  *
  * @author caron
  * @since 11/16/13
  */
 public class DirectoryCollection extends CollectionAbstract {
-  static public final String NCX_SUFFIX = ".ncx2";
 
   /**
    * Create standard name = topCollectionName + last directory
@@ -95,10 +94,7 @@ public class DirectoryCollection extends CollectionAbstract {
   }
 
   public DirectoryCollection(String topCollectionName, String topDirS, org.slf4j.Logger logger) {
-    super(topCollectionName, logger);
-    this.topCollection = cleanName(topCollectionName);
-    this.topDir = Paths.get(topDirS);
-    this.collectionName = makeCollectionName(collectionName, topDir);
+    this(topCollectionName, Paths.get(topDirS), logger);
   }
 
   public Path getIndexPath() {
@@ -119,6 +115,11 @@ public class DirectoryCollection extends CollectionAbstract {
   @Override
   public String getRoot() {
     return topDir.toString();
+  }
+
+  @Override
+  public String getIndexFilename() {
+    return getIndexPath().toString();
   }
 
   @Override

@@ -36,10 +36,6 @@ import net.jcip.annotations.ThreadSafe;
 import thredds.featurecollection.FeatureCollectionConfig;
 import thredds.featurecollection.FeatureCollectionType;
 import thredds.inventory.*;
-import thredds.inventory.partition.DirectoryCollection;
-import thredds.inventory.partition.DirectoryPartition;
-import thredds.inventory.partition.FilePartition;
-import thredds.inventory.partition.TimePartitionCollectionManager;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dt.grid.GridDataset;
@@ -55,7 +51,6 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.nio.file.Paths;
 import java.util.*;
 
 /**
@@ -120,16 +115,12 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
 
     Formatter errlog = new Formatter();
 
-    if (isFilePartition) {
-      this.datasetCollection = new FilePartition(config.name, Paths.get(topDirectory), logger);
-    } else if (isDirectoryPartition) {
-      this.datasetCollection = new DirectoryCollection(config.name, topDirectory, logger);
-
-      this.datasetCollection = new DirectoryPartition(config.name, Paths.get(topDirectory), logger);
-    } else if (isOtherPartition) {   // LOOK ??
-      this.datasetCollection = TimePartitionCollectionManager.factory(config, topDirectory, new GribCdmIndex2(), errlog, logger);
-    } else {
-      this.datasetCollection = new MFileCollectionManager(config, errlog, logger);
+    try {
+      this.datasetCollection = GribCdmIndex2.makeCollection(config, errlog);
+      topDirectory = datasetCollection.getRoot();
+    } catch (IOException e) {
+      logger.error("makeCollection failed="+errlog, e);
+      throw new RuntimeException("Failed to create InvDatasetFcGrib", e);
     }
 
     if (datasetCollection instanceof CollectionManager)

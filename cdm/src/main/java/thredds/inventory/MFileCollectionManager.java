@@ -91,7 +91,7 @@ public class MFileCollectionManager extends CollectionManagerAbstract {
   // these are final
   private final List<CollectionConfig> scanList = new ArrayList<CollectionConfig>(); // an MCollection is a collection of managed files
   private final long olderThanInMsecs;
-  protected String rootDir;
+  //protected String rootDir;
   protected FeatureCollectionConfig config;
 
   // this can change = keep under lock
@@ -104,7 +104,7 @@ public class MFileCollectionManager extends CollectionManagerAbstract {
     CollectionSpecParser sp = new CollectionSpecParser(collectionSpec, errlog);
     this.recheck = null;
     this.protoChoice = FeatureCollectionConfig.ProtoChoice.Penultimate; // default
-    this.rootDir = sp.getRootDir();
+    this.root = sp.getRootDir();
 
     List<MFileFilter> filters = new ArrayList<MFileFilter>(2);
     if (null != sp.getFilter())
@@ -121,7 +121,7 @@ public class MFileCollectionManager extends CollectionManagerAbstract {
     this.config = config;
 
     CollectionSpecParser sp = new CollectionSpecParser(config.spec, errlog);
-    this.rootDir = sp.getRootDir();
+    this.root = sp.getRootDir();
 
     List<MFileFilter> filters = new ArrayList<MFileFilter>(3);
     if (null != sp.getFilter())
@@ -178,7 +178,6 @@ public class MFileCollectionManager extends CollectionManagerAbstract {
     this.recheck = null;
     this.olderThanInMsecs = -1;
     this.protoChoice = FeatureCollectionConfig.ProtoChoice.Penultimate; // default
-    this.rootDir = null;
   }
 
   ////////////////////////////////////////////////////////////////////////////////
@@ -186,7 +185,7 @@ public class MFileCollectionManager extends CollectionManagerAbstract {
   public MFileCollectionManager(String name, String spec, Formatter errlog, org.slf4j.Logger logger) {
     super(name, logger);
     CollectionSpecParser sp = new CollectionSpecParser(spec, errlog);
-    this.rootDir = sp.getRootDir();
+    this.root = sp.getRootDir();
 
     List<MFileFilter> filters = new ArrayList<MFileFilter>(3);
     if (null != sp.getFilter())
@@ -205,7 +204,7 @@ public class MFileCollectionManager extends CollectionManagerAbstract {
     this.startCollection = startPartition;
     this.scanList.add(mc);
 
-    this.rootDir = mc.getDirectoryName();
+    this.root = mc.getDirectoryName();
     this.recheck = null;
     this.protoChoice = FeatureCollectionConfig.ProtoChoice.Penultimate; // default
     this.olderThanInMsecs = -1;
@@ -225,7 +224,6 @@ public class MFileCollectionManager extends CollectionManagerAbstract {
     this.recheck = makeRecheck(recheckS);
     this.olderThanInMsecs = -1;
     this.protoChoice = FeatureCollectionConfig.ProtoChoice.Penultimate;
-    this.rootDir = null;
   }
 
   /**
@@ -278,11 +276,6 @@ public class MFileCollectionManager extends CollectionManagerAbstract {
   }
 
   ////////////////////////////////////////////////////////////////////
-
-  @Override
-  public String getRoot() {
-    return rootDir;
-  }
 
   public long getOlderThanFilterInMSecs() {
     return olderThanInMsecs;

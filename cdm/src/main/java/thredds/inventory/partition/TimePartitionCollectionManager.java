@@ -136,7 +136,7 @@ public class TimePartitionCollectionManager extends MFileCollectionManager imple
 
   // a partition of a collection, based on time intervals
   private class TimePartitionCollection extends CollectionAbstract {
-    final String root;
+    //final String root;
     final CalendarDate startPartition, endPartition;
 
     List<MFile> files;
@@ -173,11 +173,6 @@ public class TimePartitionCollectionManager extends MFileCollectionManager imple
     @Override
     public boolean isPartition() {
       return true;
-    }
-
-    @Override
-    public String getRoot() {
-      return root;
     }
 
     @Override

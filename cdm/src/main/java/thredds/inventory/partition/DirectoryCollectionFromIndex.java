@@ -32,6 +32,11 @@ class DirectoryCollectionFromIndex extends CollectionAbstract {
   }
 
   @Override
+  public String getRoot() {
+    return builder.getDir().toString();
+  }
+
+  @Override
   public void close() {
   }
 

@@ -175,7 +175,7 @@ public abstract class InvDatasetFeatureCollection extends InvCatalogRef implemen
   protected final String path;
   protected final FeatureCollectionType fcType;
   protected final FeatureCollectionConfig config;
-  protected final String topDirectory;
+  protected String topDirectory;
   protected MCollection datasetCollection; // defines the collection of datasets in this feature collection, actually final
 
   @GuardedBy("lock")
@@ -188,26 +188,29 @@ public abstract class InvDatasetFeatureCollection extends InvCatalogRef implemen
     super(parent, name, buildCatalogServiceHref(path));
     this.path = path;
     this.fcType = fcType;
+    this.config = config;
 
     this.getLocalMetadataInheritable().setDataType(fcType.getFeatureType());
-
-    this.config = config;
 
     String collectionName = CollectionAbstract.cleanName(config.name != null ? config.name : name);
     config.name = collectionName;
     this.logger = loggerFactory.getLogger("fc." + collectionName); // seperate log file for each feature collection (!!)
 
+    this.logger.info("FeatureCollection added = {}", getConfig());
+  }
+
+  protected void makeCollection() {
+
     Formatter errlog = new Formatter();
     if (config.spec.startsWith(MFileCollectionManager.CATALOG)) { // LOOK CHANGE THIS
-      datasetCollection = new CollectionManagerCatalog(collectionName, config.spec, null, errlog);
+      datasetCollection = new CollectionManagerCatalog(config.name, config.spec, null, errlog);
     } else {
       datasetCollection = new MFileCollectionManager(config, errlog, this.logger);
     }
     topDirectory = datasetCollection.getRoot();
-
-    this.logger.info("FeatureCollection added = {}", getConfig());
     String errs = errlog.toString();
     if (errs.length() > 0) logger.warn("MFileCollectionManager parse error = {} ", errs);
+
   }
 
   // stuff that shouldnt be done in a constructor - eg dont let 'this' escape

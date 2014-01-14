@@ -294,7 +294,7 @@ public class Tdm {
         boolean changed = false;
 
         if (config.timePartition == null) {
-          changed = false; // GribCdmIndex2.rewriteIndexesFilesAndCollection(config, config.tdmConfig.updateType, config.tdmConfig.updateType, logger);
+          changed = GribCdmIndex2.updateGribCollection(config, config.tdmConfig.updateType, logger);
 
         } else {
           if (config.timePartition.equalsIgnoreCase("file"))
