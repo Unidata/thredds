@@ -135,7 +135,7 @@ public class AbstractNcssController {
 	// Exception handlers
 	@ExceptionHandler(Throwable.class)
 	public ResponseEntity<String> handle(Throwable ex) {
-    ex.printStackTrace();
+    // ex.printStackTrace();
 		HttpHeaders responseHeaders = new HttpHeaders();
 		responseHeaders.setContentType(MediaType.TEXT_PLAIN);
 		return new ResponseEntity<String>("Throwable exception handled : " + ex.getMessage(), responseHeaders, HttpStatus.INTERNAL_SERVER_ERROR);

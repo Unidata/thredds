@@ -97,8 +97,8 @@
           <keyword>buoy</keyword>
           <keyword>surface observations</keyword>
       </metadata>
-
-      <collection spec="Q:/cdmUnitTest/agg/pointFeatureCollection/netCDFbuoydata/.*\.nc$" />
+                                                                                 ......_..._yyyyMMdd
+      <collection spec="Q:/cdmUnitTest/agg/pointFeatureCollection/netCDFbuoydata/......_..._#yyyyMMdd#.*\.nc$" />
       <update startup="true" rescan="0 0/15 * * * ? *" trigger="allow"/>
       <protoDataset choice="Penultimate" />
       <pointConfig datasetTypes="cdmrFeature Files"/>

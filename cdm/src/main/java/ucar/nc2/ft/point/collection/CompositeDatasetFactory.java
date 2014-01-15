@@ -38,13 +38,11 @@ import ucar.nc2.ft.*;
 import ucar.nc2.ft.point.PointDatasetImpl;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.time.CalendarDateRange;
-import ucar.nc2.NetcdfFile;
 import ucar.nc2.VariableSimpleIF;
 import ucar.unidata.geoloc.LatLonRect;
 
 import java.io.IOException;
 import java.io.FileNotFoundException;
-import java.util.ArrayList;
 import java.util.Formatter;
 import java.util.List;
 
@@ -108,6 +106,7 @@ public class CompositeDatasetFactory {
 
       this.pfc = pfc;
       this.datasets = datasets;
+      this.dateRange = datasets.getDateRange();
 
       if (datasets.getDateRange() != null)
          setDateRange(datasets.getDateRange());

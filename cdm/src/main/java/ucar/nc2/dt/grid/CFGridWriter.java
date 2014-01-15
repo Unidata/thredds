@@ -547,7 +547,7 @@ public class CFGridWriter {
 		latVar.setDimensions(dims);
 		latVar.addAttribute(new Attribute(CDM.UNITS, CDM.LAT_UNITS));
 		latVar.addAttribute(new Attribute(CDM.LONG_NAME, "latitude coordinate"));
-		latVar.addAttribute(new Attribute("standard_name", "latitude"));
+		latVar.addAttribute(new Attribute(CF.STANDARD_NAME, "latitude"));
 		latVar.addAttribute(new Attribute(_Coordinate.AxisType, AxisType.Lat.toString()));
 
 		Variable lonVar = new Variable(ncfile, null, null, "lon");
@@ -555,7 +555,7 @@ public class CFGridWriter {
 		lonVar.setDimensions(dims);
 		lonVar.addAttribute(new Attribute(CDM.UNITS, CDM.LON_UNITS));
 		lonVar.addAttribute(new Attribute(CDM.LONG_NAME, "longitude coordinate"));
-		lonVar.addAttribute(new Attribute("standard_name", "longitude"));
+		lonVar.addAttribute(new Attribute(CF.STANDARD_NAME, "longitude"));
 		lonVar.addAttribute(new Attribute(_Coordinate.AxisType, AxisType.Lon.toString()));
 
 		int nx = xData.length;

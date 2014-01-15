@@ -34,6 +34,7 @@ package ucar.nc2.ft.point.remote;
 
 import ucar.nc2.ft.*;
 import ucar.nc2.ft.point.PointDatasetImpl;
+import ucar.nc2.stream.CdmrFeatureDataset;
 import ucar.nc2.time.CalendarDateRange;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.VariableSimpleIF;
@@ -57,6 +58,7 @@ public class PointDatasetRemote extends PointDatasetImpl {
     super(wantFeatureType);
     setBoundingBox(bb);
     setDateRange(dr);
+    setLocationURI(CdmrFeatureDataset.SCHEME + uri);
 
     dataVariables = new ArrayList<VariableSimpleIF>( vars);
 
