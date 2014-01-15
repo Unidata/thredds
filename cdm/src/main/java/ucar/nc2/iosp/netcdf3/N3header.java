@@ -1037,8 +1037,9 @@ public class N3header {
     DataType have = getDataType(type);
     DataType want = att.getDataType();
     if (want == DataType.STRING) want = DataType.CHAR;
-    if (want != have)
-      throw new IllegalArgumentException("Update Attribute must have same type or original = " + have);
+    if (want != have) {
+        throw new IllegalArgumentException("Update Attribute must have same type or original = " + have + " att = " + att);
+    }
 
     if (type == 2) {  // String
       String s = att.getStringValue();
