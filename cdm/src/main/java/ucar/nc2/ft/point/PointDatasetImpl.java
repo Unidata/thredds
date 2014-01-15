@@ -34,9 +34,7 @@ package ucar.nc2.ft.point;
 
 import ucar.nc2.ft.*;
 import ucar.nc2.dataset.NetcdfDataset;
-import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time.CalendarDateRange;
-import ucar.nc2.units.DateRange;
 import ucar.nc2.constants.FeatureType;
 import ucar.unidata.geoloc.LatLonRect;
 
@@ -105,7 +103,7 @@ public class PointDatasetImpl extends FeatureDatasetImpl implements FeatureDatas
   }
 
   @Override
-  public void calcBounds() throws java.io.IOException {
+  public void calcBounds() throws java.io.IOException {  // LOOK this sucks
     if ((boundingBox != null) && (dateRange != null)) return;
 
     LatLonRect bb = null;
@@ -127,17 +125,21 @@ public class PointDatasetImpl extends FeatureDatasetImpl implements FeatureDatas
       }  else if (fc instanceof StationTimeSeriesFeatureCollection) {
 
         StationTimeSeriesFeatureCollection sc = (StationTimeSeriesFeatureCollection) fc;
-        if (bb == null)
-           bb = sc.getBoundingBox();
-         else
-           bb.extend(sc.getBoundingBox());
+        if (this.boundingBox == null) {
+          if (bb == null)
+            bb = sc.getBoundingBox();
+          else
+            bb.extend(sc.getBoundingBox());
+        }
 
-        PointFeatureCollection pfc = sc.flatten(null, (CalendarDateRange) null);
-        pfc.calcBounds();
-        if (dates == null)
-          dates = pfc.getCalendarDateRange();
-        else
-          dates.extend(pfc.getCalendarDateRange());
+        if (dateRange == null) {
+          PointFeatureCollection pfc = sc.flatten(null, (CalendarDateRange) null);
+          pfc.calcBounds();
+          if (dates == null)
+            dates = pfc.getCalendarDateRange();
+          else
+            dates.extend(pfc.getCalendarDateRange());
+        }
       }
 
     }
