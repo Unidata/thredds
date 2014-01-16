@@ -63,7 +63,7 @@ public class InvDatasetFcPoint extends InvDatasetFeatureCollection {
   }
 
   @Override
-  protected void finishConstruction() {
+  public void finishConstruction() {
     super.finishConstruction();
 
     finish();

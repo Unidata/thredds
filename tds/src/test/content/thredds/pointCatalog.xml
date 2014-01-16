@@ -56,12 +56,15 @@
         </documentation>
         <keyword>metar</keyword>
         <keyword>surface observations</keyword>
+        <geospatialCoverage>
+          <name vocabulary="Thredds">global</name>
+        </geospatialCoverage>
       </metadata>
 
       <property name="raw" value="report"/>
       <property name="resolution" value="20 min"/>
 
-      <collection spec="${cdmUnitTest}/ft/station/ldm-metar/Surface_METAR_#yyyyMMdd_HHmm#.nc$"/>
+      <collection spec="Q:/cdmUnitTest/ft/station/ldm-metar/Surface_METAR_#yyyyMMdd_HHmm#.nc$"/>
       <update startup="true"/>
       <protoDataset choice="Penultimate"/>
       <pointConfig datasetTypes="cdmrFeature Files"/>
@@ -97,7 +100,6 @@
           <keyword>buoy</keyword>
           <keyword>surface observations</keyword>
       </metadata>
-                                                                                 ......_..._yyyyMMdd
       <collection spec="Q:/cdmUnitTest/agg/pointFeatureCollection/netCDFbuoydata/......_..._#yyyyMMdd#.*\.nc$" />
       <update startup="true" rescan="0 0/15 * * * ? *" trigger="allow"/>
       <protoDataset choice="Penultimate" />
