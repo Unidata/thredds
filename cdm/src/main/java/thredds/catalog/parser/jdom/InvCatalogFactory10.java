@@ -432,7 +432,6 @@ public class InvCatalogFactory10 implements InvCatalogConvertIF, MetadataConvert
       }
       // regular dataset elements
       readDatasetInfo( catalog, ds, dsElem, base);
-      ds.finishConstruction(); // now that we have all metadata read in
       return ds;
 
     } catch (Exception e) {

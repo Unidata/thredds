@@ -66,12 +66,10 @@ public class InvDatasetFcPoint extends InvDatasetFeatureCollection {
   public void finishConstruction() {
     super.finishConstruction();
 
-    finish();
-
     ThreddsMetadata tmi = getLocalMetadataInheritable();
 
     // pull out ACDD metadata from feature collection and put into the catalog
-    MetadataExtractorAcdd acdd = new MetadataExtractorAcdd(Attribute.makeMap(fd.getGlobalAttributes()), this, tmi);
+    MetadataExtractorAcdd acdd = new MetadataExtractorAcdd( Attribute.makeMap(fd.getGlobalAttributes()), this, tmi);
     acdd.extract();
     finish();
 

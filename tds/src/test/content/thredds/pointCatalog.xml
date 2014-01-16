@@ -40,6 +40,9 @@
         <name vocabulary="DIF">UCAR/UNIDATA</name>
         <contact url="http://www.unidata.ucar.edu/" email="support@unidata.ucar.edu"/>
       </publisher>
+      <geospatialCoverage>
+        <name vocabulary="Thredds">global</name>
+      </geospatialCoverage>
     </metadata>
 
     <featureCollection name="Metar Station Data" harvest="true" featureType="Station" path="testStationFeatureCollection">
@@ -56,15 +59,12 @@
         </documentation>
         <keyword>metar</keyword>
         <keyword>surface observations</keyword>
-        <geospatialCoverage>
-          <name vocabulary="Thredds">global</name>
-        </geospatialCoverage>
       </metadata>
 
       <property name="raw" value="report"/>
       <property name="resolution" value="20 min"/>
 
-      <collection spec="Q:/cdmUnitTest/ft/station/ldm-metar/Surface_METAR_#yyyyMMdd_HHmm#.nc$"/>
+      <collection spec="${cdmUnitTest}/ft/station/ldm-metar/Surface_METAR_#yyyyMMdd_HHmm#.nc$"/>
       <update startup="true"/>
       <protoDataset choice="Penultimate"/>
       <pointConfig datasetTypes="cdmrFeature Files"/>
@@ -100,7 +100,7 @@
           <keyword>buoy</keyword>
           <keyword>surface observations</keyword>
       </metadata>
-      <collection spec="Q:/cdmUnitTest/agg/pointFeatureCollection/netCDFbuoydata/......_..._#yyyyMMdd#.*\.nc$" />
+      <collection spec="${cdmUnitTest}/agg/pointFeatureCollection/netCDFbuoydata/......_..._#yyyyMMdd#.*\.nc$" />
       <update startup="true" rescan="0 0/15 * * * ? *" trigger="allow"/>
       <protoDataset choice="Penultimate" />
       <pointConfig datasetTypes="cdmrFeature Files"/>

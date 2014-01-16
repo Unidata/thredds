@@ -35,7 +35,7 @@ public class MetadataExtractorAcdd {
   public void extract() {
     extractTimeCoverage();
 
-    if (tmi.getGeospatialCoverage() == null) { // thredds metadata takes precedence
+    if (ds.getGeospatialCoverage() == null) { // thredds metadata takes precedence
       tmi.setGeospatialCoverage( extractGeospatialCoverage());
     }
 
@@ -47,14 +47,14 @@ public class MetadataExtractorAcdd {
       addKeywords(keywordList, keywords_vocabulary);
     }
 
-    if (tmi.getAuthority() == null) {  // thredds metadata takes precedence
+    if (ds.getAuthority() == null) {  // thredds metadata takes precedence
       att = ncfile.get(ACDD.naming_authority);
       if (att != null) {
         tmi.setAuthority(att.getStringValue());
       }
     }
 
-    if (tmi.getDataType() == null) { // thredds metadata takes precedence
+    if (ds.getDataType() == null) { // thredds metadata takes precedence
       att = ncfile.get(ACDD.cdm_data_type);
       if (att != null && att.isString()) {
         String val = att.getStringValue();
@@ -187,7 +187,7 @@ public class MetadataExtractorAcdd {
     Attribute att = ncfile.get(docType);
     if (att != null) {
       String docValue = att.getStringValue();
-      String dsValue = tmi.getDocumentation(docType);    // metadata/documentation[@type="docType"]
+      String dsValue = ds.getDocumentation(docType);    // metadata/documentation[@type="docType"]
       if (dsValue == null || !dsValue.equals(docValue))
         tmi.addDocumentation(new InvDocumentation(null, null, null, docType, docValue));
     }
@@ -197,7 +197,7 @@ public class MetadataExtractorAcdd {
     Attribute att = ncfile.get(attName);
     if (att != null) {
       String docValue = att.getStringValue();
-      String dsValue = tmi.getDocumentation(docType);        // metadata/documentation[@type="docType"]
+      String dsValue = ds.getDocumentation(docType);        // metadata/documentation[@type="docType"]
       if (dsValue == null || !dsValue.equals(docValue))
         tmi.addDocumentation(new InvDocumentation(null, null, null, docType, docValue));
     }

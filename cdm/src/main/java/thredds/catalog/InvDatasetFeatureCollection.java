@@ -218,6 +218,7 @@ public abstract class InvDatasetFeatureCollection extends InvCatalogRef implemen
 
   // call this first time a request comes in
   protected void firstInit() {
+    finishConstruction(); // now that we have all metadata read in
     this.orgService = getServiceDefault();
     if (this.orgService == null) throw new IllegalStateException("No default service for InvDatasetFeatureCollection "+name);
     this.virtualService = makeVirtualService(this.orgService);
