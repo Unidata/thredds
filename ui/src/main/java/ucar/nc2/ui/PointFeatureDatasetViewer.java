@@ -825,6 +825,7 @@ public class PointFeatureDatasetViewer extends JPanel {
     public TrajectoryFeatureBean(TrajectoryFeature pfc) {
       this.pfc = pfc;
       try {
+        pfc.resetIteration();
         if (pfc.hasNext()) {
           pf = pfc.next();
         }
@@ -960,6 +961,7 @@ public class PointFeatureDatasetViewer extends JPanel {
       this.pfc = pfc;
       try {
         pfc.calcBounds();
+        pfc.resetIteration();
         if (pfc.hasNext())
           pf = pfc.next();
       } catch (IOException ioe) {

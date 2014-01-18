@@ -95,13 +95,14 @@ public class RadarStationController extends AbstractController {
   }
 
   @RequestMapping(value = {"**/stations.xml"}, method = RequestMethod.GET)
-  protected ModelAndView stationRequestXml(HttpServletRequest request, HttpServletResponse res) throws RadarServerException, IOException, NoSuchRequestHandlingMethodException {
+  protected ModelAndView stationRequestXml(HttpServletRequest request, HttpServletResponse res) throws IOException {
+ //         throws RadarServerException, IOException, NoSuchRequestHandlingMethodException {
     if (!enabled) {
       res.sendError(HttpServletResponse.SC_NOT_FOUND, "No radar server");
       return null;
     }
 
-    try {
+    //try {
       // Gather diagnostics for logging request.
       // setup
       String path = TdsPathUtils.extractPath(request, getControllerPath());
@@ -114,7 +115,8 @@ public class RadarStationController extends AbstractController {
       try {
         radarType = RadarDatasetRepository.RadarType.valueOf(type);
       } catch (Exception e) {
-        throw new RadarServerException("Invalid dataset url reference "+path+" type = "+type);
+        res.sendError(HttpServletResponse.SC_BAD_REQUEST, "Bad radar type="+type);
+        return null;
       }
       // path = path.substring(type.length()+1);
 
@@ -122,7 +124,7 @@ public class RadarStationController extends AbstractController {
       Map<String, Object> model = new HashMap<String, Object>();
       stationsXML(radarType, path, model);
 
-      if (model == null || model.size() == 0) {
+      if (model.size() == 0) {
         ModelAndView mav = new ModelAndView(CREATE_VIEW);
         mav.addObject(MODEL_KEY, MSG_CODE);
         return mav;
@@ -130,20 +132,20 @@ public class RadarStationController extends AbstractController {
         return new ModelAndView("stationXml", model);
       }
 
-    } catch (RadarServerException e) {
+    /*} catch (RadarServerException e) {
       throw e; // pass it onto Spring exceptionResolver
 
     } catch (Throwable e) {
       log.error("handleRequestInternal(): Problem handling request.", e);
       throw new RadarServerException("handleRequestInternal(): Problem handling request.", e);
-    }
+    }  */
   }
 
   /*
    * Create an ArrayList of station entries in model for radarType and path
    */
-  private void stationsXML(RadarDatasetRepository.RadarType radarType, String path, Map<String, Object> model)
-          throws Exception {
+  private void stationsXML(RadarDatasetRepository.RadarType radarType, String path, Map<String, Object> model) {
+//          throws Exception {
     // stations in this dataset, set by path
     String[] stations = stationsDS(radarType, radarDatasetRepository.dataRoots.get(path));
     if (path.contains("level3") && stations[0].length() == 4) {
@@ -156,7 +158,7 @@ public class RadarStationController extends AbstractController {
   /*
    * Find the stations for this dataset in path directory
    */
-  private String[] stationsDS(RadarDatasetRepository.RadarType radarType, String path) throws Exception {
+  private String[] stationsDS(RadarDatasetRepository.RadarType radarType, String path) { // throws Exception {
 
     String[] stations = null;
     // Scan directory looking for actual stations
@@ -218,8 +220,8 @@ public class RadarStationController extends AbstractController {
    *
    * @param stations
    */
-  private void makeStationDocument(String[] stations, RadarDatasetRepository.RadarType radarType, Map<String, Object> model)
-          throws Exception {
+  private void makeStationDocument(String[] stations, RadarDatasetRepository.RadarType radarType, Map<String, Object> model) {
+//          throws Exception {
     /*
     <station id="KTYX" state="NY" country="US">
       <name>MONTAGUE/Fort_Drum</name>

@@ -69,7 +69,7 @@ public class AbstractNcssController {
  		List<ObjectError> errors = validationResult.getAllErrors();
  		response.setStatus(status);
  		// String responseStr="Validation errors: ";
- 		StringBuffer responseStr = new StringBuffer();
+ 		StringBuilder responseStr = new StringBuilder();
  		responseStr.append("Validation errors: ");
  		for (ObjectError err : errors) {
  			responseStr.append(err.getDefaultMessage());
@@ -102,7 +102,9 @@ public class AbstractNcssController {
 
  	}
 
+  ////////////////////////////////////////////////////////
 	// Exception handlers
+
 	@ExceptionHandler(FileNotFoundException.class)
 	public ResponseEntity<String> handle(FileNotFoundException ncsse) {
 		HttpHeaders responseHeaders = new HttpHeaders();
@@ -112,7 +114,6 @@ public class AbstractNcssController {
 				HttpStatus.NOT_FOUND);
 	}
 
-	// Exception handlers
 	@ExceptionHandler(NcssException.class)
 	public ResponseEntity<String> handle(NcssException ncsse) {
 		HttpHeaders responseHeaders = new HttpHeaders();
@@ -122,7 +123,6 @@ public class AbstractNcssController {
 				HttpStatus.BAD_REQUEST);
 	}
 
-	// Exception handlers
 	@ExceptionHandler(UnsupportedOperationException.class)
 	public ResponseEntity<String> handle(UnsupportedOperationException ex) {
 		HttpHeaders responseHeaders = new HttpHeaders();
@@ -132,21 +132,21 @@ public class AbstractNcssController {
 				HttpStatus.BAD_REQUEST);
 	}	
 	
-	// Exception handlers
 	@ExceptionHandler(Throwable.class)
 	public ResponseEntity<String> handle(Throwable ex) {
   //  ex.printStackTrace();
     log.error("AbstractNcssController", ex);
 		HttpHeaders responseHeaders = new HttpHeaders();
 		responseHeaders.setContentType(MediaType.TEXT_PLAIN);
-		return new ResponseEntity<String>("Throwable exception handled : " + ex.getMessage(), responseHeaders, HttpStatus.INTERNAL_SERVER_ERROR);
+		return new ResponseEntity<String>("Throwable exception handled : " + ex.getMessage(), responseHeaders,
+            HttpStatus.INTERNAL_SERVER_ERROR);
 	}
 
-	public static final String getNCSSServletPath() {
+	public static String getNCSSServletPath() {
 		return servletPath;
 	}
 
-	public static final String getServletCachePath() {
+	public static String getServletCachePath() {
 		return servletCachePath;
 	}
 

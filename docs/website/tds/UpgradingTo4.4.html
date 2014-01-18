@@ -6,7 +6,7 @@
   <link rel="stylesheet" href="tds.css" type="text/css">
 </head>
 <body>
-<h1><img alt="Unidata" src="images/unidataLogo.png" align="middle" height="75" width="75"> Upgrading To TDS 4.4 (Alpha)</h1>
+<h1><img alt="Unidata" src="images/unidataLogo.png" align="middle" height="75" width="75"> Upgrading To TDS 4.4 (Beta)</h1>
 
 <hr>
 <h3>New Requirements</h3>
@@ -54,33 +54,56 @@ export JAVA_OPTS
   <p> Should  be changed in version 4.4 to:</p>
 <pre> http://thredds.ucar.edu/thredds/ncss/grib/NCEP/GFS/Global_0p5deg/best/dataset.html</pre>
   <p> Note the only difference is the removal of &quot;/grid&quot;</p>
-  <p>&nbsp;</p>
 </blockquote>
 <h3>New Features</h3>
 <ul>
-  <li>NcML has been updated to implement full extended model.<br>
+  <li>TDS
+    <ul>
+      <li>Point Feature Collections (point, stations) now handled by Netcdf Subset Service.</li>
+      <li>Automatic Metadata Extraction from the dataset into the thredds catalogs, on point collections only but will extend to other collections. </li>
+    </ul>
   </li>
-  <li>Automatic Metadata Extraction from the dataset into the thredds catalogs, on point collections only but will extend to other collections. </li>
-  <li>Point Feature Collections (point, stations) now handled by Netcdf Subset Service.</li>
-  <li>GRIB1:  indexing minimum version is 11, so  grib1 ncx files will be recreated. This fixes a problem where the vertical coordinates were not sorted correctly.</li>
-  <li>Improved HDF-EOS processing.</li>
-  <li>NcML logicalReduce allows you to remove length 1 dimensions [<a href="https://bugtracking.unidata.ucar.edu/browse/TDS-267">TDS-267</a>].</li>
-  <li>NcML handles multichar separators.</li>
-  <li>CF 1.6 DSG: bug in handling station profiles, multidimensional representation [<a href="ftp://ftp.unidata.ucar.edu/pub/thredds/4.4/current/thredds.war">TDS-513</a>]</li>
+  <li>NcML
+    <ul>
+      <li> updated to implement full extended model.</li>
+      <li> logicalReduce allows you to remove length 1 dimensions [<a href="https://bugtracking.unidata.ucar.edu/browse/TDS-267">TDS-267</a>].</li>
+      <li>NcML handles multichar separators.<br>
+      </li>
+    </ul>
+  </li>
+  <li>IOSPs
+    <ul>
+      <li>GRIB1:  indexing minimum version is 11, so  grib1 ncx files will be recreated. This fixes a problem where the vertical coordinates were not sorted correctly.</li>
+      <li>Improved HDF-EOS processing.</li>
+      <li>CF 1.6 DSG: bug in handling station profiles, multidimensional representation [<a href="ftp://ftp.unidata.ucar.edu/pub/thredds/4.4/current/thredds.war">TDS-513</a>]</li>
+      <li>MSGnavigation scan mode bug</li>
+    </ul>
+  </li>
+  <li>ToolsUI 
+    <ul>
+      <li>using new Swing Look and Feel</li>
+      <li>table columns can be set by user (upper right button on header line)</li>
+      <li>File Chooser improvements</li>
+    </ul>
+  </li>
+</ul>
+Other Changes
+<ul>
+  <li>Automatic generation of test catalogs on clean install no longer supported. You must create a catalog and threddsConfig.xml and place in <strong>content/thredds</strong> directory.</li>
 </ul>
 <h3>Internal changes</h3>
 <ul>
+  <li><strong>HttpClient</strong> library upgraded to 4.2, previously was 3.</li>
   <li>We are now using <strong>log4j2</strong>. The configuration file is in <strong>{tomcat}/webapps/thredds//WEB-INF/classes/log4j2.xml</strong>. See <a href="http://logging.apache.org/log4j/2.x/">http://logging.apache.org/log4j/2.x/</a></li>
-  <li> Most services have been converted to <a href="http://docs.spring.io/spring/docs/3.0.x/reference/mvc.html">annotated Spring controllers</a>. Documentation on adding your own service (coming soon).</li>
+  <li> Most services have been converted to <a href="http://docs.spring.io/spring/docs/3.0.x/reference/mvc.html">annotated Spring controllers</a>. Documentation on adding your own service is coming soon.</li>
   <li>    Unit testing framework now complete; 2000+ unit tests.</li>
-  <li>Automatic generation of test catalogs on clean install no longer supported. You must create a catalog and threddsConfig.xml and place in <strong>content/thredds</strong> directory.</li>
 </ul>
 <p>&nbsp;</p>
 <hr>
 
 <address>
   <img src="thread.png" alt="TDS" height="108" width="110">This document is maintained by Unidata and was
-  last updated Nov 2013. Send comments to <a href="mailto:support-thredds@unidata.ucar.edu">THREDDS
+  last updated Jan 2014. Send comments to <a href="mailto:support-thredds@unidata.ucar.edu">THREDDS
   support</a>.
 </address>
 

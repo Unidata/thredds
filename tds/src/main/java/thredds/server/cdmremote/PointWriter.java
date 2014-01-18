@@ -201,6 +201,7 @@ public class PointWriter {
 
   private void scan(PointFeatureCollection collection, DateRange range, Predicate p, Action a, Limit limit) throws IOException {
 
+    collection.resetIteration();
     while (collection.hasNext()) {
       PointFeature pf = collection.next();
 

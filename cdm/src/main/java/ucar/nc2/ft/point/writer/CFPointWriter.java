@@ -62,6 +62,7 @@ public class CFPointWriter {
     WriterCFPointCollection writer = new WriterCFPointCollection(version, fileOut, fdpoint.getGlobalAttributes());
 
     int count = 0;
+    pfc.resetIteration();
     while (pfc.hasNext()) {
       PointFeature pf = pfc.next();
       if (count == 0) {
