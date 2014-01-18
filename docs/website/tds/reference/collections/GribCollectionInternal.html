@@ -915,10 +915,24 @@ message Variable {
   </tr>
 </table>
 <p></p>
-<p>01/10/2013</p>
+<p>01/10/2014</p>
 <p>FileCollection is always a PC, with individual files being GC; all the files is a directory. could genralize to span directories. spec=path/[filter], partition=file</p>
 <p>DirectoryCollection is a GC; all the files in a single directory. spec=directory:path[/filter]</p>
 <p>DirectoryPartition is a PC, with DirectoryCollections at its leaves. may be nested (i hope). but when do we know if we are at the leaves? partition=directory</p>
+<p>01/14/14</p>
+<p>partition=file, directory</p>
+<p>otherwise, use </p>
+<p>&nbsp;</p>
+<p>While we think that generally the 4.3 GRIB reading is correct, we have been unsatisfied with the way that reference time was handled there; this affects files (or collections of files) that have more than one reference time, with the same valid time. A coming version of the netcdf-java library (4.5) has another refactor in which these datasets expose both reference time and valid time. This allows users to see all of the data in the file. This version will be out as alpha in the next few weeks.</p>
+<p>&nbsp;</p>
+<p>&lt;update startup=&quot;true&quot; rewrite=&quot;never&quot; trigger=&quot;allow /&gt;</p>
+<p>&lt;tdm startup=&quot;test&quot; rewrite=&quot;nocheck&quot; scan=&quot;&quot; trigger=&quot;allow /&gt;</p>
+<p>if tdm is defined, default is:</p>
+<p>&lt;update startup=&quot;true&quot; rewrite=&quot;never&quot; trigger=&quot;allow /&gt;</p>
+<p>&nbsp;</p>
+<p>so, tds no longer supports scan, or recheckAfter.</p>
+<p>force a rewite on startup with </p>
+<p>&lt;tdm startup=&quot;always&quot; rewrite=&quot;nocheck&quot; scan=&quot;&quot; trigger=&quot;allow /&gt;</p>
 <p></p>
 </body>
 </html>

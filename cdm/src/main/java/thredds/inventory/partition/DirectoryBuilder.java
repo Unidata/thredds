@@ -134,16 +134,15 @@ public class DirectoryBuilder {
    *   <li>(or) scan the directory for children partitions</li>
    * </ol>
    *
-   * @param indexReader  this reads the index, and calls AddChild.addchild() fro each child
+   * @param indexReader  this reads the index, and calls AddChild.addchild() for each child
    * @return children, may be empty but not null
    * @throws IOException
    */
   public List<DirectoryBuilder> constructChildren(IndexReader indexReader) throws IOException {
     if (childrenConstructed) return children;
 
-    childrenConstructed = true;
-
     if (index != null) {
+      childrenConstructed = true;  // otherwise we are good
       if (!indexReader.readChildren(index, new AddChild())) {
         partitionStatus =  PartitionStatus.isGribCollection;
         return children;  // no children - we are at the GribCollection leaves
@@ -206,6 +205,7 @@ public class DirectoryBuilder {
       e.printStackTrace();
     }
     if (debug) System.out.printf("%d%n", count);
+    childrenConstructed = true;
   }
 
   //////////////////////////////////////////////////////////////////////////////////////

@@ -1,7 +1,6 @@
 package ucar.nc2.grib.collection;
 
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import thredds.featurecollection.FeatureCollectionConfig;
 import thredds.filesystem.MFileOS;
 import thredds.inventory.*;
@@ -10,7 +9,6 @@ import ucar.nc2.grib.*;
 import ucar.nc2.grib.grib1.Grib1Index;
 import ucar.nc2.grib.grib2.Grib2Index;
 import ucar.nc2.stream.NcStream;
-import ucar.nc2.util.CloseableIterator;
 import ucar.unidata.io.RandomAccessFile;
 
 import java.io.File;
@@ -29,8 +27,6 @@ import java.util.List;
  * @since 12/5/13
  */
 public class GribCdmIndex2 implements IndexReader {
-  static private final Logger logger = LoggerFactory.getLogger(GribCdmIndex2.class);
-
   static public enum GribCollectionType {GRIB1, GRIB2, Partition1, Partition2, none}
 
   /**
@@ -95,7 +91,7 @@ public class GribCdmIndex2 implements IndexReader {
   // used by InvDatasetFcGrib
 
   static public MCollection makeCollection(FeatureCollectionConfig config,
-                                           Formatter errlog) throws IOException {
+                                           Formatter errlog, Logger logger) throws IOException {
 
     boolean isGribCollection = (config.timePartition == null);
     boolean isDirectoryPartition = "directory".equalsIgnoreCase(config.timePartition);
@@ -108,7 +104,7 @@ public class GribCdmIndex2 implements IndexReader {
       return new FilePartition(config.name, Paths.get(rootDir), logger);
 
     } else if (isDirectoryPartition) {
-      return new DirectoryPartition(config, Paths.get(rootDir), new GribCdmIndex2(), logger);
+      return new DirectoryPartition(config, Paths.get(rootDir), new GribCdmIndex2(logger), logger);
 
     } else if (isGribCollection) {
       return new MFileCollectionManager(config, errlog, logger);
@@ -184,7 +180,7 @@ public class GribCdmIndex2 implements IndexReader {
     DirectoryCollection dc = new DirectoryCollection(config.name, dirPath, logger);
     boolean isLeaf = dc.isLeafDirectory();
     if (isLeaf) {
-      return updateLeafDirectoryCollection(config, forceCollection, forceChildren, dirPath);
+      return updateLeafDirectoryCollection(config, forceCollection, forceChildren, logger, dirPath);
     }
 
     // otherwise its a partition
@@ -209,24 +205,22 @@ public class GribCdmIndex2 implements IndexReader {
     if (Files.exists(idxFile)) {
       if (forceCollection == CollectionUpdateType.nocheck) return false;  // use if index exists
 
-      // otherwise read it to find if its a GC or PC
-      GribCollectionType type = GribCollectionType.none;
+      // otherwise read it to verify its a  PC
       try (RandomAccessFile raf = new RandomAccessFile(idxFile.toString(), "r")) {
-        type = getType(raf);
-        System.out.printf("type=%s%n", type);
+        GribCollectionType type = getType(raf);
         assert type == GribCollectionType.Partition2;
       }
     }
 
-    // index does not yet exist
+    // index does not yet exist, or we want to test if it changed
     // must scan it
-    for (MCollection part : dpart.makePartitions()) {
+    for (MCollection part : dpart.makePartitions(forceCollection)) {
       if (part.isPartition()) {
         updateDirectoryCollectionRecurse((DirectoryPartition) part, config, forceCollection, forceChildren, logger);
 
       } else {
         Path partPath = Paths.get(part.getRoot());
-        updateLeafDirectoryCollection(config, forceCollection, forceChildren, partPath);
+        updateLeafDirectoryCollection(config, forceCollection, forceChildren, logger, partPath);
       }
     }   // loop over partitions
 
@@ -242,9 +236,8 @@ public class GribCdmIndex2 implements IndexReader {
    * @throws IOException
    */
   static private boolean updateLeafDirectoryCollection(final FeatureCollectionConfig config,
-                                                       CollectionUpdateType forceCollection,
-                                                       final CollectionUpdateType forceChildren,
-                                                       Path dirPath) throws IOException {
+                                                       CollectionUpdateType forceCollection, final CollectionUpdateType forceChildren,
+                                                       Logger logger, Path dirPath) throws IOException {
     /* final Formatter errlog = new Formatter();
 
     if (forceChildren != CollectionUpdateType.never) {
@@ -489,6 +482,11 @@ public class GribCdmIndex2 implements IndexReader {
   private byte[] magic;
   private int version;
   private GribCollectionProto.GribCollection gribCollectionIndex;
+  private final Logger logger;
+
+  public GribCdmIndex2(Logger logger) {
+    this.logger = logger;
+  }
 
   /// IndexReader interface
   @Override

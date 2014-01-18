@@ -116,7 +116,7 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
     Formatter errlog = new Formatter();
 
     try {
-      this.datasetCollection = GribCdmIndex2.makeCollection(config, errlog);
+      this.datasetCollection = GribCdmIndex2.makeCollection(config, errlog, logger);
       topDirectory = datasetCollection.getRoot();
     } catch (IOException e) {
       logger.error("makeCollection failed="+errlog, e);
