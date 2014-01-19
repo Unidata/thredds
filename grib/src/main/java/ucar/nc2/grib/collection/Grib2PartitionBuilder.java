@@ -128,68 +128,71 @@ public class Grib2PartitionBuilder extends Grib2CollectionBuilder {
     long start = System.currentTimeMillis();
     if (errlog == null) errlog = new Formatter(); // info will be discarded
 
-    // create partitions
-    for (MCollection dcm : partitionManager.makePartitions()) {
-      result.addPartition(dcm);
-    }
+    try {
+      // create partitions
+      for (MCollection dcm : partitionManager.makePartitions()) {
+        result.addPartition(dcm);
+      }
 
-    List<PartitionCollection.Partition> bad = new ArrayList<>();
-    for (PartitionCollection.Partition tpp : result.getPartitions()) {
-      try {
-        tpp.gc = tpp.makeGribCollection(forceChildren);  // here we read in all collections at once. can we avoid this?
-        if (trace) logger.debug(" Open partition {}", tpp.getDcm().getCollectionName());
-      } catch (Throwable t) {
-        logger.error(" Failed to open partition " + tpp.getName(), t);
-        bad.add(tpp);
+      List<PartitionCollection.Partition> bad = new ArrayList<>();
+      for (PartitionCollection.Partition tpp : result.getPartitions()) {
+        try {
+          tpp.gc = tpp.makeGribCollection(forceChildren);  // here we read in all collections at once. can we avoid this?
+          if (trace) logger.debug(" Open partition {}", tpp.getDcm().getCollectionName());
+
+        } catch (Throwable t) {
+          logger.error(" Failed to open partition " + tpp.getName(), t);
+          bad.add(tpp);
+        }
+      }
+
+      // remove ones that failed
+      for (PartitionCollection.Partition tpp : bad)
+        result.removePartition(tpp);
+      result.sortPartitions(); // after this cannot change
+
+      // choose the "canonical" partition, aka prototype
+      int n = result.getPartitions().size();
+      if (n == 0) {
+        errlog.format("ERR Nothing in this partition = %s%n", result.getName());
+        logger.error(" Nothing in this partition = {}", result.getName());
+        return false;
+      }
+      int idx = partitionManager.getProtoIndex(n);
+      PartitionCollection.Partition canon = result.getPartitions().get(idx);
+      errlog.format(" INFO Using canonical partition %s%n", canon.getDcm().getCollectionName());
+      logger.info("     Using canonical partition {}", canon.getDcm().getCollectionName());
+
+      // copy info from canon gribCollection to result partitionCollection
+      result.copyInfo(canon.gc);
+
+      // check consistency across vert and ens coords
+      // create partitioned variables
+      // partition index is used - do not resort partitions
+      PartitionCollection.Dataset ds2D = makeDataset2D(canon, errlog);
+      if (ds2D == null) {
+        errlog.format(" ERR makeDataset2D failed, index not written on %s%n", result.getName());
+        logger.error(" makeDataset2D failed, index not written on {} errors = \n{}", result.getName(), errlog.toString());
+        return false;
+      }
+
+      // this finishes the 2D stuff
+      result.makeHorizCS();
+
+      if (!makeDatasetBest(ds2D, errlog)) {
+        errlog.format(" ERR makeDatasetAnalysis failed, index not written on %s%n", result.getName());
+        logger.error(" makeDatasetAnalysis failed, index not written on {} errors = \n{}", result.getName(), errlog.toString());
+      }
+
+      // ready to write the index file
+      writeIndex(result, errlog);
+
+    } finally {
+      // close open gc's
+      for (PartitionCollection.Partition tpp : result.getPartitions()) {
+        tpp.gc.close();
       }
     }
-
-    // remove ones that failed
-    for (PartitionCollection.Partition tpp : bad)
-      result.removePartition(tpp);
-    result.sortPartitions(); // after this cannot change
-
-    // choose the "canonical" partition, aka prototype
-    int n = result.getPartitions().size();
-    if (n == 0) {
-      errlog.format("ERR Nothing in this partition = %s%n", result.getName());
-      logger.error(" Nothing in this partition = {}", result.getName());
-      return false;
-    }
-    int idx = partitionManager.getProtoIndex(n);
-    PartitionCollection.Partition canon = result.getPartitions().get(idx);
-    errlog.format(" INFO Using canonical partition %s%n", canon.getDcm().getCollectionName());
-    logger.info("     Using canonical partition {}", canon.getDcm().getCollectionName());
-
-    // copy info from canon gribCollection to result partitionCollection
-    result.copyInfo(canon.gc);
-
-    // check consistency across vert and ens coords
-    // create partitioned variables
-    // partition index is used - do not resort partitions
-    PartitionCollection.Dataset ds2D = makeDataset2D(canon, errlog);
-    if (ds2D == null) {
-      errlog.format(" ERR makeDataset2D failed, index not written on %s%n", result.getName());
-      logger.error(" makeDataset2D failed, index not written on {} errors = \n{}", result.getName(), errlog.toString());
-      return false;
-    }
-
-    // this finishes the 2D stuff
-    result.makeHorizCS();
-
-    if (!makeDatasetBest(ds2D, errlog)) {
-      errlog.format(" ERR makeDatasetAnalysis failed, index not written on %s%n", result.getName());
-      logger.error(" makeDatasetAnalysis failed, index not written on {} errors = \n{}", result.getName(), errlog.toString());
-    }
-
-    // ready to write the index file
-    writeIndex(result, errlog);
-
-    // close open gc's
-    for (PartitionCollection.Partition tpp : result.getPartitions()) {
-      tpp.gc.close();
-    }
-    canon.gc.close();
 
     long took = System.currentTimeMillis() - start;
     errlog.format(" INFO CreatePartitionedIndex took %d msecs%n", took);
@@ -261,46 +264,18 @@ public class Grib2PartitionBuilder extends Grib2CollectionBuilder {
     boolean ok = true;
 
      // do each group
-    //GribCollection canonGc = canon.gc;
-    //GribCollection.Dataset canonDs = canonGc.getDataset2D();
     for (GroupPartitions gp : groupPartitions) {
       GribCollection.GroupHcs resultGroup = gp.resultGroup;
       gp.makeVariablePartitions();
 
       String gname = resultGroup.getId();
       String gdesc = resultGroup.getDescription();
-      if (trace) f.format(" Check Group %s%n", gname);
-
-      /* hash proto variables for quick lookup
-      Map<Integer, PartitionCollection.VariableIndexPartitioned> resultVarMap = new HashMap<>(2 * canonGroup2.variList.size());
-      for (GribCollection.VariableIndex vi : canonGroup2.variList) {
-        // convert each VariableIndex in canon to VariableIndexPartitioned in result
-        PartitionCollection.VariableIndexPartitioned vip = result.makeVariableIndexPartitioned(resultGroup, vi, npart);
-        if (resultVarMap.containsKey(vi.cdmHash)) {
-          f.format(" ERR Duplicate variable hash %s%n", vi.toStringShort());
-          logger.error("Duplicate variable hash " + vi.toStringShort());
-        }
-        resultVarMap.put(vi.cdmHash, vip);
-      } */
 
       // make a single runtime coordinate
       CoordinateBuilder runtimeAllBuilder = new CoordinateRuntime.Builder();
 
       // for each partition
       for (int partno = 0; partno < npart; partno++) {
-        //PartitionCollection.Partition tpp = partitions.get(partno);
-        //if (trace) f.format(" Check Partition %s%n", tpp.getName());
-
-        // get group corresponding to canonGroup
-       //GribCollection gc = gp.componentGroups[partno];
-        //GribCollection.Dataset ds = gc.getDataset2D();
-        //int groupIdx = ds.findGroupIdxById(canonGroup2.getId());
-        //if (groupIdx < 0) {
-        //  f.format(" INFO canonical group %s in not partition %s%n", gname, tpp.getName());
-        //  continue;
-       // }
-        //GribCollection.GroupHcs group = ds.getGroup(groupIdx);
-
         GribCollection.GroupHcs group = gp.componentGroups[partno];
         if (group == null) {  // missing group in this partition
           f.format(" INFO canonical group %s not in partition %s%n", gname, partitions.get(partno).getName());
@@ -314,12 +289,13 @@ public class Grib2PartitionBuilder extends Grib2CollectionBuilder {
             runtimeAllBuilder.addAll(coord);
         }
 
-        // for each variable in otherPartition group
+        // for each variable in this group/Partition, put reference to it in the VariableIndexPartitioned
         for (int varIdx = 0; varIdx < group.variList.size(); varIdx++) {
-          GribCollection.VariableIndex viFromOtherPartition = group.variList.get(varIdx);
-          if (trace) f.format(" Check %s%n", viFromOtherPartition.toStringShort());
+          GribCollection.VariableIndex vi = group.variList.get(varIdx);
+          if (trace) f.format(" Check %s%n", vi.toStringShort());
           int flag = 0;
-          PartitionCollection.VariableIndexPartitioned vip = (PartitionCollection.VariableIndexPartitioned) resultGroup.findVariableByHash(viFromOtherPartition.cdmHash);
+          PartitionCollection.VariableIndexPartitioned vip = (PartitionCollection.VariableIndexPartitioned) resultGroup.findVariableByHash(vi.cdmHash);
+          vip.addPartition(partno, groupIdx, varIdx, flag, vi);
 
           /* PartitionCollection.VariableIndexPartitioned viResult = resultVarMap.get(viFromOtherPartition.cdmHash); // match with proto variable hash
           if (viResult == null) {
@@ -361,14 +337,17 @@ public class Grib2PartitionBuilder extends Grib2CollectionBuilder {
             flag |= PartitionCollection.ENS_COORDS_DIFFER;
           }  */
 
-          vip.addPartition(partno, groupIdx, varIdx, flag, viFromOtherPartition);
         } // loop over variable
       } // loop over partition
 
       // each VariableIndexPartitioned now has its list of  PartitionForVariable
 
+      // we have a complete set of runtimes
       Coordinate runtimeCoord = runtimeAllBuilder.finish();
-      resultGroup.run2part = new int[runtimeCoord.getSize()]; // for each run, which partition ??
+      resultGroup.coords.add(runtimeCoord);
+
+      // for each run, which partition ??
+      resultGroup.run2part = new int[runtimeCoord.getSize()];
       for (int partno = 0; partno < npart; partno++) {
         GribCollection.GroupHcs group = gp.componentGroups[partno];
         if (group == null) continue;
@@ -376,28 +355,22 @@ public class Grib2PartitionBuilder extends Grib2CollectionBuilder {
           if (coord.getType() == Coordinate.Type.runtime) {
             for (Object val : coord.getValues()) {
               int idx = runtimeCoord.getIndex(val);
-              resultGroup.run2part[idx] = partno; // note that later partitions will override earlier if they have the same runtime
+              resultGroup.run2part[idx] = partno;     // note that later partitions will override earlier if they have the same runtime
             }
           }
         }
       }
 
-      //for (int i = 0; i < runtimeCoord.getSize(); i++)
-      //  resultGroup.run2part.add(i); // assuming one run per partition LOOK
-      resultGroup.coords.add(runtimeCoord);
-
       // overall set of unique coordinates
       boolean isDense = (config != null) && "dense".equals(config.getParameter("CoordSys"));
       CoordinateSharer sharify = new CoordinateSharer(!isDense);
 
-      // for each variable, create union of coordinates
+      // for each variable, create union of coordinates across the partitions
       for (GribCollection.VariableIndex viResult : resultGroup.variList) {
-
         // loop over partitions, make union coordinate, time filter intervals
         CoordinateUnionizer unionizer = new CoordinateUnionizer(viResult.getVarid(), intvMap);
-        for (PartitionCollection.Partition tpp : partitions) {
-          GribCollection.Dataset ds = tpp.gc.getDataset2D();
-          GribCollection.GroupHcs group = ds.findGroupById(resultGroup.getId());
+        for (int partno = 0; partno < npart; partno++) {
+          GribCollection.GroupHcs group = gp.componentGroups[partno];
           if (group == null) continue; // tolerate missing groups
           GribCollection.VariableIndex vi = group.findVariableByHash(viResult.cdmHash);
           if (vi == null) continue; // tolerate missing variables
@@ -408,30 +381,42 @@ public class Grib2PartitionBuilder extends Grib2CollectionBuilder {
         sharify.addCoords(viResult.coords);
       }
 
+      // create a list of common coordinates, put them into the group, and now variables just reference those by index
       sharify.finish();
       resultGroup.coords = sharify.getUnionCoords();
-
       // redo the variables against the shared coordinates
       for (GribCollection.VariableIndex viResult : resultGroup.variList) {
         viResult.coordIndex = sharify.reindex(viResult.coords);
       }
 
-      // figure out missing
+      // figure out missing data for each variable in the twoD time array
       for (GribCollection.VariableIndex viResult : resultGroup.variList) {
         Coordinate cr = viResult.getCoordinate(Coordinate.Type.runtime);
         Coordinate ct = viResult.getCoordinate(Coordinate.Type.time);
         if (ct == null) ct = viResult.getCoordinate(Coordinate.Type.timeIntv);
 
+        if (cr == null) {
+          logger.error("Missing runtime coordinate vi="+viResult.toStringShort());
+          continue;
+        }
+        if (ct == null) {
+          logger.error("Missing time coordinate vi="+viResult.toStringShort());
+          continue;
+        }
+
         CoordinateTwoTimer twot = new CoordinateTwoTimer(cr.getSize(), ct.getSize());
         Map<Object, Integer> ctMap = new HashMap<>(2*ct.getSize());  // time coord val -> index in ct
         for (int i=0; i<ct.getSize(); i++) ctMap.put(ct.getValue(i), i);
 
-        // loop over runs
+        // loop over runtimes
         int runIdx = 0;
         for (int partno : resultGroup.run2part) {
-          PartitionCollection.Partition tpp = partitions.get(partno); // which partition for this run ??
-          GribCollection.Dataset ds = tpp.gc.getDataset2D();
-          GribCollection.GroupHcs group = ds.findGroupById(resultGroup.getId());
+          //PartitionCollection.Partition tpp = partitions.get(partno);
+          //GribCollection.Dataset ds = tpp.gc.getDataset2D();
+          //GribCollection.GroupHcs group = ds.findGroupById(resultGroup.getId());
+
+          // get the partition/group/variable for this run
+          GribCollection.GroupHcs group = gp.componentGroups[partno];
           if (group == null) continue; // tolerate missing groups
           GribCollection.VariableIndex vi = group.findVariableByHash(viResult.cdmHash);
           if (vi == null) continue; // tolerate missing variables
@@ -439,18 +424,19 @@ public class Grib2PartitionBuilder extends Grib2CollectionBuilder {
           Coordinate ctP = vi.getCoordinate(Coordinate.Type.time);
           if (ctP == null) ctP = vi.getCoordinate(Coordinate.Type.timeIntv);
 
+          // we need the sparse array for this component vi
           vi.readRecords();
           SparseArray<GribCollection.Record> sa = vi.getSparseArray();
           Section s = new Section(sa.getShape());
           Section.Iterator iter = s.getIterator(sa.getShape());
 
-          // run through all the inventory in this partition
+          // run through all the inventory in this component vi
           int[] index = new int[sa.getRank()];
           while (iter.hasNext()) {
             int linearIndex = iter.next(index);
             if (sa.getContent(linearIndex) == null) continue;
 
-            // convert value in partition to index in result
+            // convert value in component vi to index in result
             int timeIdxP = index[1];
             Object val = ctP.getValue(timeIdxP);
             Integer timeIdxR = ctMap.get(val);
@@ -513,7 +499,7 @@ public class Grib2PartitionBuilder extends Grib2CollectionBuilder {
         int timeIdx = vip.getCoordinateIndex(Coordinate.Type.time);
         if (timeIdx >= 0) {
           CoordinateTime time2d = (CoordinateTime) group2D.coords.get(timeIdx);
-          CoordinateTime timeBest = (CoordinateTime) groupB.coords.get(timeIdx);
+          CoordinateTime timeBest = (CoordinateTime) groupB.coords.get(timeIdx); // LOOK do we know these have same index ??
           vip.time2runtime = makeTime2RuntimeMap(runOffset, time2d, timeBest, ((PartitionCollection.VariableIndexPartitioned) vi2d).twot);
 
         } else {

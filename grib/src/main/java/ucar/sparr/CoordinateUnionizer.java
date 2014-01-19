@@ -98,10 +98,16 @@ public class CoordinateUnionizer {
   public List<Coordinate> finish() {
     if (runtimeBuilder != null)
       unionCoords.add(runtimeBuilder.finish());
+    else
+      System.out.println("HEY missing runtime");
+
     if (timeBuilder != null)
       unionCoords.add(timeBuilder.finish());
-    if (timeIntvBuilder != null)
+    else if (timeIntvBuilder != null)
       unionCoords.add(timeIntvBuilder.finish());
+    else
+      System.out.println("HEY missing time");
+
     if (vertBuilder != null)
       unionCoords.add(vertBuilder.finish());
 

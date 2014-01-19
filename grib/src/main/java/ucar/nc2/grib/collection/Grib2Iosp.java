@@ -1088,13 +1088,13 @@ public class Grib2Iosp extends GribIosp {
     if (hasRuntime) {  // 2d
 
       Range runtimeRange = section.getRange(0);   // for the moment, assume always partitioned on runtime
-      Section otherSection = section.subSection(1, sectionLen - 2); // all but x, y
+      Section otherSection = section.subSection(1, sectionLen - 2); // all but x, y; so this is time, vert, ens
 
       // collect all the records from this partition that need to be read
       int resultPos = 0;
       for (int runtimeIdx = runtimeRange.first(); runtimeIdx <= runtimeRange.last(); runtimeIdx += runtimeRange.stride()) {
         int partno = vindexP.getPartition2D(runtimeIdx);
-        GribCollection.VariableIndex vindex = vindexP.getVindex(partno); // the variable in this partition
+        GribCollection.VariableIndex vindex = vindexP.getVindex(partno); // the component variable in this partition
 
         int[] otherShape = new int[sectionLen-3];
         System.arraycopy(vindex.sa.getShape(), 1, otherShape, 0, sectionLen-3);
@@ -1103,6 +1103,8 @@ public class Grib2Iosp extends GribIosp {
          // collect all the records that need to be read
         while (iter.hasNext()) {
           int sourceIndex = iter.next(null);
+          //LOOK this is wrong, sourceIndex is from full variable. what is the index into the component variable ??
+
           dataReader.addRecord(partno, vindex, sourceIndex, resultPos++);
         }
       }
@@ -1253,7 +1255,7 @@ public class Grib2Iosp extends GribIosp {
 
     private class DataRecord implements Comparable<DataRecord> {
       int partno; // partition index
-      GribCollection.VariableIndex vindex; // the vindex of the partition
+      GribCollection.VariableIndex vindex; // the vindex of the partition partno
       int resultIndex; // where does this record go in the result array?
       int fileno;
       long drsPos;
