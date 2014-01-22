@@ -240,9 +240,6 @@
       </metadata>
       <filter>
         <include wildcard="Level3*.nids" atomic="true" collection="false"/>
-        <!-- Include date subdirectories (i.e., dir names of the form "yyyymmdd". -->
-        <include regExp="[0-9]{8}" atomic="false" collection="true" />
-        <!-- Exclude other stuff -->
         <exclude wildcard=".*" atomic="false" collection="true"/>
       </filter>
       <addID/>

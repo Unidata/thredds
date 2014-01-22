@@ -9,7 +9,7 @@
   <dataset name="Realtime data from IDD">
     <catalogRef xlink:href="idd/modelsNcep.xml" xlink:title="NCEP Model Data" name="" />
     <catalogRef xlink:href="idd/modelsFnmoc.xml" xlink:title="FNMOC Model Data" name="" />
-    <catalogRef xlink:href="http://lead.unidata.ucar.edu/thredds/catalog.xml" xlink:title=" NOAA GSD Model Data" name="" />
+    <catalogRef xlink:href="http://lead.unidata.ucar.edu/thredds/catalog.xml" xlink:title="NOAA GSD Model Data" name="" />
     <catalogRef xlink:href="idd/modelsOther.xml" xlink:title="Other Model Data" name="" />
     <catalogRef xlink:href="idd/radars.xml" xlink:title="Radar Data" name="" />
     <catalogRef xlink:href="idd/obsData.xml" xlink:title="Station Data" name="" />
