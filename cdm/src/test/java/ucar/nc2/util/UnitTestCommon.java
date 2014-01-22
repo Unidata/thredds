@@ -119,7 +119,9 @@ public class UnitTestCommon extends TestCase
 
         synchronized public Header[] getHeaders(String key)
         {
-            Header[] hdrs = this.request.getHeaders(key);
+            Header[] hdrs = null;
+            if(this.request != null)
+                hdrs = this.request.getHeaders(key);
             if(hdrs == null) hdrs = new Header[0];
             return hdrs;
         }
@@ -151,12 +153,15 @@ public class UnitTestCommon extends TestCase
 
         synchronized public Header[] getHeaders(String key)
         {
-            Header[] hdrs = this.response.getHeaders(key);
+            Header[] hdrs = null;
+            if(this.response != null)
+                hdrs = this.response.getHeaders(key);
             if(hdrs == null) hdrs = new Header[0];
             return hdrs;
         }
 
     }
+
 
     //////////////////////////////////////////////////
 
@@ -223,6 +228,23 @@ public class UnitTestCommon extends TestCase
     public void testFakerooni()
     {
         assert true;
+    }
+
+
+    static public byte[]
+    readbinaryfile(InputStream stream)
+        throws IOException
+    {
+        // Extract the stream into a bytebuffer
+        ByteArrayOutputStream bytes = new ByteArrayOutputStream();
+        byte[] tmp = new byte[1 << 16];
+        for(;;) {
+            int cnt;
+            cnt = stream.read(tmp);
+            if(cnt <= 0) break;
+            bytes.write(tmp, 0, cnt);
+        }
+        return bytes.toByteArray();
     }
 }
 

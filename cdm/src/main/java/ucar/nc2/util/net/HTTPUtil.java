@@ -33,90 +33,49 @@
 
 package ucar.nc2.util.net;
 
-import org.apache.http.auth.*;
-import org.apache.http.client.CredentialsProvider;
+import org.apache.http.*;
+import org.apache.http.protocol.HttpContext;
 
 import java.io.IOException;
-import java.io.Serializable;
-import java.security.Principal;
 
-
-/**
-Provide a non-interactive CredentialsProvider to hold
-an arbitrary credentials object provided by the user.
-This is used in the case when the credentials (not the provider)
-are fixed. (see e.g. HTTPSession.setGlobalCredentials).
-*/
-
-public class HTTPCredsProvider implements CredentialsProvider, Credentials, Serializable
+abstract public class HTTPUtil
 {
-    Credentials creds = null;
 
-    public HTTPCredsProvider(Credentials creds)
+    //////////////////////////////////////////////////
+    // Header dump interceptors
+
+    static public class RequestHeaderDump implements HttpRequestInterceptor
     {
-        this.creds = creds;
-    }
-
-    // Credentials Provider Interface
-    public Credentials
-    getCredentials(AuthScope scope)
-    {
-        return creds;
-    }
-
-    public void
-    setCredentials(AuthScope authscope, Credentials credentials)
-    {
-
-    }
-
-    public void
-    clear()
-    {
-
-    }
-
-    // Credentials Interface
-    public Principal
-    getUserPrincipal()
-    {
-        return null;
-    }
-
-    public String
-    getPassword()
-    {
-        return null;
-    }
-
-    // Serializable Interface
-    private void writeObject(java.io.ObjectOutputStream oos)
-        throws IOException
-    {
-        boolean isser = (this.creds instanceof Serializable);
-        oos.writeObject(isser);
-        if(isser)
-            oos.writeObject(this.creds);
-        else {
-            oos.writeObject(this.creds.getClass());
-        }
-    }
-
-    private void readObject(java.io.ObjectInputStream ois)
-        throws IOException, ClassNotFoundException
-    {
-        // serializing the credentials is a bit tricky
-        // since it might not support the serializable interface.
-        boolean isser = (Boolean) ois.readObject();
-        Object o = ois.readObject();
-        if(isser)
-            this.creds = (Credentials) o;
-        else {
-            try {
-                this.creds = (Credentials) ((Class) o).newInstance();
-            } catch (Exception e) {
-                throw new ClassNotFoundException("HTTPCredsProvider: Cannot create Credentials instance", e);
+        @Override
+        synchronized public void
+        process(HttpRequest request, HttpContext context)
+            throws HttpException, IOException
+        {
+            Header[] hdrs = request.getAllHeaders();
+            if(hdrs == null) hdrs = new Header[0];
+            System.err.println("Request Headers:");
+            for(Header h: hdrs) {
+                System.err.println(h.toString());
             }
+            System.err.flush();
         }
     }
+
+    static public class ResponseHeaderDump implements HttpResponseInterceptor
+    {
+        @Override
+        synchronized public void
+        process(HttpResponse response, HttpContext context)
+            throws HttpException, IOException
+        {
+            Header[] hdrs = response.getAllHeaders();
+            if(hdrs == null) hdrs = new Header[0];
+            System.err.println("Response Headers:");
+            for(Header h: hdrs) {
+                System.err.println(h.toString());
+            }
+            System.err.flush();
+        }
+    }
+
 }

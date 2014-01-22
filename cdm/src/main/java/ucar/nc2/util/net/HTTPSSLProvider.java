@@ -81,9 +81,9 @@ public class HTTPSSLProvider implements CredentialsProvider, Credentials, Serial
     // Credentials Provider Interface is abused
 
     public Credentials
-    getCredentials(AuthScope scope) //AuthScheme authscheme,String host,int port,boolean isproxy)
+    getCredentials(AuthScope scope)
     {
-	    return (Credentials) this;
+	return (Credentials) this;
     }
 
     public void

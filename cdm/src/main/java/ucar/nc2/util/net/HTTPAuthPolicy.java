@@ -35,50 +35,40 @@ package ucar.nc2.util.net;
 
 import org.apache.http.client.params.AuthPolicy;
 
+import java.util.HashSet;
+import java.util.Set;
+
 /**
- * HTTPAuthScheme defines an enum about the currently supported schemes.
+ * HTTPAuthPolicy defines the set of currently supported schemes.
+ *
+ * @see AuthPolicy
  */
 
-public enum HTTPAuthScheme
+
+abstract public class HTTPAuthPolicy /* mimics AuthPolicy (AuthPolicy is final for some reason) */
 {
-    BASIC("BASIC"),
-    DIGEST("DIGEST"),
-    SSL("SSL"),
-    NTLM("NTLM"),
-    ANY("ANY");
+    public static final String BASIC = AuthPolicy.BASIC;
+    public static final String DIGEST = AuthPolicy.DIGEST;
+    public static final String NTLM = AuthPolicy.NTLM;
+    public static final String SSL = "SSL";
+    public static final String ANY = null;
+
+    protected static Set<String> legal;
+
+    static {
+        legal = new HashSet<String>();
+        legal.add(BASIC);
+        legal.add(DIGEST);
+        legal.add(NTLM);
+        legal.add(SSL);
+    }
 
     // Define parameter names
-    static public final String PROVIDER  = "HTTP.provider";
+    static public final String PROVIDER = "HTTP.provider";
 
-    // Define the associated standard name
-    private final String name;
-
-    HTTPAuthScheme(String name)
+    static public boolean validate(String scheme)
     {
-        this.name = name;
-    }
-
-    public String getSchemeName()   { return name; }
- 
-    static public HTTPAuthScheme schemeForName(String name)
-    {
-	if(name != null) {
-  	    for(HTTPAuthScheme s: HTTPAuthScheme.values()) {
-  	        if(name.equalsIgnoreCase(s.name())) return s;
-	    }
-	}
-	return null;
-    }
-
-    static public HTTPAuthScheme fromAuthScope(String scheme)
-    {
-	if(scheme == null) return null;
-	if(scheme.equals(AuthPolicy.BASIC))
-	    return BASIC;
-	if(scheme.equals(AuthPolicy.DIGEST))
-	    return DIGEST;
-	if(scheme.equals(AuthPolicy.NTLM))
-	    return NTLM;
-	return null;
+        if(scheme == null) return false;
+        return legal.contains(scheme);
     }
 }

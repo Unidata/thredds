@@ -35,11 +35,13 @@ package ucar.nc2.util.net;
 
 import net.jcip.annotations.NotThreadSafe;
 import org.apache.http.*;
+import org.apache.http.auth.AuthScope;
 import org.apache.http.auth.Credentials;
 import org.apache.http.client.CredentialsProvider;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpRequestBase;
 import org.apache.http.client.params.AllClientPNames;
+import org.apache.http.client.protocol.*;
 import org.apache.http.conn.scheme.Scheme;
 import org.apache.http.cookie.Cookie;
 import org.apache.http.impl.client.AbstractHttpClient;
@@ -55,6 +57,9 @@ import java.io.InterruptedIOException;
 import java.io.UnsupportedEncodingException;
 import java.net.*;
 import java.util.*;
+
+import static org.apache.http.auth.AuthScope.*;
+import static ucar.nc2.util.net.HTTPAuthScope.*;
 
 /**
  * A session is encapsulated in an instance of the class
@@ -115,14 +120,16 @@ public class HTTPSession
     static final String CONN_TIMEOUT = AllClientPNames.CONNECTION_TIMEOUT;
     static final String USER_AGENT = AllClientPNames.USER_AGENT;
     static final String PROXY = AllClientPNames.DEFAULT_PROXY;
+    static final String COMPRESSION = "COMPRESSION";
 
     // from: http://en.wikipedia.org/wiki/List_of_HTTP_header_fields
     static final public String HEADER_USERAGENT = "User-Agent";
+    static final public String ACCEPT_ENCODING = "Accept-Encoding";
 
-    static final public HTTPAuthScheme BASIC = HTTPAuthScheme.BASIC;
-    static final public HTTPAuthScheme DIGEST = HTTPAuthScheme.DIGEST;
-    static final public HTTPAuthScheme NTLM = HTTPAuthScheme.NTLM;
-    static final public HTTPAuthScheme SSL = HTTPAuthScheme.SSL;
+    static final public String BASIC = HTTPAuthPolicy.BASIC;
+    static final public String DIGEST = HTTPAuthPolicy.DIGEST;
+    static final public String NTLM = HTTPAuthPolicy.NTLM;
+    static final public String SSL = HTTPAuthPolicy.SSL;
 
     static final int DFALTTHREADCOUNT = 50;
     static final int DFALTREDIRECTS = 25;
@@ -249,6 +256,7 @@ public class HTTPSession
         setGlobalSoTimeout(DFALTSOTIMEOUT);
         getGlobalProxyD(); // get info from -D if possible
         setGlobalKeyStore();
+        setGlobalCompression();
     }
 
     //////////////////////////////////////////////////////////////////////////
@@ -328,17 +336,25 @@ public class HTTPSession
         globalsettings.setParameter(PROXY, proxy);
     }
 
+    // Misc.
+
+    static synchronized public void
+    setGlobalCompression()
+    {
+        globalsettings.setParameter(COMPRESSION, "gzip,deflate");
+    }
+
     // Authorization
 
-    static synchronized private void
-    defineCredentialsProvider(HTTPAuthScheme scheme, String url, CredentialsProvider provider)
+    static synchronized protected void
+    defineCredentialsProvider(String principal, AuthScope scope, CredentialsProvider provider, HTTPAuthStore store)
     {
         // Add/remove entry to AuthStore
         try {
             if(provider == null) {//remove
-                HTTPAuthStore.remove(new HTTPAuthStore.Entry(scheme, url, provider));
+                store.remove(new HTTPAuthStore.Entry(principal, scope, provider));
             } else { // add
-                HTTPAuthStore.insert(new HTTPAuthStore.Entry(scheme, url, provider));
+                store.insert(new HTTPAuthStore.Entry(principal, scope, provider));
             }
         } catch (HTTPException he) {
             log.error("HTTPSession.setCredentialsProvider failed");
@@ -346,49 +362,24 @@ public class HTTPSession
     }
 
     static public void
-    setAnyCredentialsProvider(HTTPAuthScheme scheme, String url, CredentialsProvider provider)
+    setGlobalCredentialsProvider(AuthScope scope, CredentialsProvider provider)
     {
-        defineCredentialsProvider(scheme, url, provider);
-    }
-
-    static public void
-    setGlobalCredentialsProvider(HTTPAuthScheme scheme, CredentialsProvider provider)
-    {
-        setAnyCredentialsProvider(scheme, HTTPAuthStore.ANY_URL, provider);
+        defineCredentialsProvider(ANY_PRINCIPAL, scope, provider, HTTPAuthStore.DEFAULTS);
     }
 
     static public void
     setGlobalCredentialsProvider(CredentialsProvider provider)
     {
-        setGlobalCredentialsProvider(HTTPAuthStore.DEFAULT_SCHEME, provider);
-    }
-
-    // Assumes that user info exists in the url and we can
-    // use it to build a simple UsernamePasswordCredentials as our provider.
-    static public void
-    setGlobalCredentialsProvider(String url)
-    {
-        // Try to extract user info
-        String userinfo = getUserinfo(url);
-        if(userinfo != null) {
-            int index = userinfo.indexOf(':');
-            String user = userinfo.substring(index);
-            String pwd = userinfo.substring(index + 1, userinfo.length());
-            if(user != null && pwd != null) {
-                // Create a non-interactive user+pwd handler
-                HTTPBasicProvider bp = new HTTPBasicProvider(user, pwd);
-                setGlobalCredentialsProvider(HTTPAuthScheme.BASIC, bp);
-            }
-        }
+        defineCredentialsProvider(ANY_PRINCIPAL, HTTPAuthScope.ANY, provider, HTTPAuthStore.DEFAULTS);
     }
 
     // It is convenient to be able to directly set the Credentials
     // (not the provider) when those credentials are fixed.
     static public void
-    setGlobalCredentials(HTTPAuthScheme scheme, Credentials creds)
+    setGlobalCredentials(AuthScope scope, Credentials creds)
     {
         CredentialsProvider provider = new HTTPCredsProvider(creds);
-        defineCredentialsProvider(scheme, HTTPAuthStore.ANY_URL, provider);
+        setGlobalCredentialsProvider(scope, provider);
     }
 
     static public int
@@ -406,17 +397,6 @@ public class HTTPSession
 
     //////////////////////////////////////////////////
     // Static Utility functions
-
-    static String
-    getUserinfo(String surl)
-    {
-        try {
-            URL url = new URL(surl);
-            return url.getUserInfo();
-        } catch (MalformedURLException mue) {
-            return null;
-        }
-    }
 
     static public String getCanonicalURL(String legalurl)
     {
@@ -550,7 +530,9 @@ public class HTTPSession
         if(keypath != null || trustpath != null) { // define conditionally
             HTTPSSLProvider sslprovider = new HTTPSSLProvider(keypath, keypassword,
                 trustpath, trustpassword);
-            setAnyCredentialsProvider(HTTPAuthScheme.SSL, HTTPAuthStore.ANY_URL, sslprovider);
+            setGlobalCredentialsProvider(
+                new AuthScope(ANY_HOST, ANY_PORT, ANY_REALM, HTTPAuthPolicy.SSL),
+	        sslprovider);
         }
     }
 
@@ -591,19 +573,15 @@ public class HTTPSession
 
     protected AbstractHttpClient sessionClient = null;
     protected List<ucar.nc2.util.net.HTTPMethod> methodList = new Vector<HTTPMethod>();
-    protected HttpContext context = null; // same instance must be used for all methods
     protected String identifier = "Session";
     protected String legalurl = null;
     protected boolean closed = false;
+    protected HttpContext execcontext = null; // same instance must be used for all methods
     protected Settings localsettings = new Settings();
+    protected HTTPAuthStore authlocal = new HTTPAuthStore();
 
     //////////////////////////////////////////////////
     // Constructor(s)
-
-    public HTTPSession(String legalurl) throws ucar.nc2.util.net.HTTPException
-    {
-        construct(legalurl);
-    }
 
     public HTTPSession()
         throws HTTPException
@@ -611,8 +589,7 @@ public class HTTPSession
         this(null);
     }
 
-    protected void
-    construct(String url)
+    public HTTPSession(String url)
         throws HTTPException
     {
         try {
@@ -624,10 +601,11 @@ public class HTTPSession
         try {
             sessionClient = new DefaultHttpClient(connmgr);
             if(TESTING) HTTPSession.track(this);
+            setInterceptors(this);
         } catch (Exception e) {
             throw new HTTPException("url=" + url, e);
         }
-        this.context = new BasicHttpContext();// do we need to modify?
+        this.execcontext = new BasicHttpContext();// do we need to modify?
     }
 
     //////////////////////////////////////////////////
@@ -664,12 +642,18 @@ public class HTTPSession
         localsettings.setParameter(MAX_REDIRECTS, n);
     }
 
+    public void setCompression()
+    {
+        localsettings.setParameter(COMPRESSION, "gzip,deflate");
+    }
+
+
     // make package specific
 
     HttpContext
     getContext()
     {
-        return this.context;
+        return this.execcontext;
     }
 
 
@@ -677,6 +661,18 @@ public class HTTPSession
     getClient()
     {
         return this.sessionClient;
+    }
+
+    HTTPAuthStore
+    getAuthStore()
+    {
+        return this.authlocal;
+    }
+
+    HttpContext
+    getExecutionContext()
+    {
+        return this.execcontext;
     }
 
     //////////////////////////////////////////////////
@@ -720,8 +716,10 @@ public class HTTPSession
     {
         sessionClient.getCredentialsProvider().clear();
         sessionClient.getCookieStore().clear();
+        execcontext = new BasicHttpContext();
+        localsettings.clear();
+        authlocal.clear();
     }
-
 
     //////////////////////////////////////////////////
     // Possibly authenticating proxy
@@ -752,25 +750,41 @@ public class HTTPSession
     // per-session versions of the global accessors
 
     public void
-    setCredentialsProvider(HTTPAuthScheme scheme, CredentialsProvider provider)
+    setCredentialsProvider(AuthScope scope, CredentialsProvider provider)
     {
-        defineCredentialsProvider(scheme, legalurl, provider);
+        defineCredentialsProvider(ANY_PRINCIPAL, scope, provider, this.authlocal);
     }
 
     public void
     setCredentialsProvider(CredentialsProvider provider)
     {
-        setCredentialsProvider(HTTPAuthStore.DEFAULT_SCHEME, provider);
+        setCredentialsProvider(HTTPAuthScope.ANY, provider);
+    }
+
+    public void
+    setCredentialsProvider(String scheme, CredentialsProvider provider)
+    {
+        AuthScope scope = new AuthScope(ANY_HOST,ANY_PORT,ANY_REALM,scheme);
+        setCredentialsProvider(scope, provider);
+    }
+
+    public void
+    setCredentials(String scheme, Credentials creds)
+    {
+        CredentialsProvider provider = new HTTPCredsProvider(creds);
+        setCredentialsProvider(scheme, provider);
     }
 
     // Assumes that user info exists in the url and we can
     // use it to build a simple UsernamePasswordCredentials as our provider.
     // Also assume this is a compatible url to the Session url
     public void
-    setCredentialsProvider(String url)
+    setCredentialsProvider(String surl)
+        throws HTTPException
     {
         // Try to extract user info
-        String userinfo = getUserinfo(url);
+        URI uri = HTTPAuthScope.decompose(surl);
+        String userinfo = uri.getUserInfo();
         if(userinfo != null) {
             int index = userinfo.indexOf(':');
             String user = userinfo.substring(index);
@@ -778,16 +792,9 @@ public class HTTPSession
             if(user != null && pwd != null) {
                 // Create a non-interactive user+pwd handler
                 CredentialsProvider bp = new HTTPBasicProvider(user, pwd);
-                setCredentialsProvider(HTTPAuthScheme.BASIC, bp);
+                setCredentialsProvider(HTTPAuthPolicy.BASIC, bp);
             }
         }
-    }
-
-    public void
-    setCredentials(HTTPAuthScheme scheme, Credentials creds)
-    {
-        CredentialsProvider provider = new HTTPCredsProvider(creds);
-        defineCredentialsProvider(scheme, legalurl, provider);
     }
 
     //////////////////////////////////////////////////
@@ -806,9 +813,11 @@ public class HTTPSession
 
     // This provides support for HTTPMethod.setAuthentication method
     synchronized protected void
-    setAuthentication(CredentialsProvider cp)
+    setAuthentication(HTTPCredentialsCache hap)
     {
-        sessionClient.setCredentialsProvider(cp);
+        this.sessionClient.setCredentialsProvider(hap);
+        if(false)
+            this.execcontext.setAttribute(ClientContext.CREDS_PROVIDER, hap);
     }
 
     // do an actual execution
@@ -816,7 +825,15 @@ public class HTTPSession
     execute(HttpRequestBase request)
         throws IOException
     {
-        return sessionClient.execute(request, this.context);
+        if(false)
+            return sessionClient.execute(request, this.execcontext);
+        else
+            return sessionClient.execute(request);
+    }
+
+    /*package*/ void invalidate(AuthScope scope)
+    {
+        HTTPCredentialsCache.invalidate(scope);
     }
 
     //////////////////////////////////////////////////
@@ -829,10 +846,10 @@ public class HTTPSession
     // test within a single jvm.
     static List<HTTPSession> sessionList = null; // List of all HTTPSession instances
     // only used when testing flag is set
-    static public boolean TESTING = false; // set to true during testing, should be false otherwise
+    static public boolean TESTING = true; // set to true during testing, should be false otherwise
 
 
-    static private synchronized void kill()
+    static protected synchronized void kill()
     {
         if(sessionList != null) {
             for(HTTPSession session : sessionList) {
@@ -847,7 +864,7 @@ public class HTTPSession
     }
 
     // If we are testing, then track the sessions for kill
-    static private synchronized void track(HTTPSession session)
+    static protected synchronized void track(HTTPSession session)
     {
         if(sessionList == null)
             sessionList = new ArrayList<HTTPSession>();
@@ -855,23 +872,53 @@ public class HTTPSession
     }
 
 
-    public void debugInterceptRequest(HttpRequestInterceptor interceptor)
+    static protected HttpRequestInterceptor globaldebugrequest = null;
+    static protected HttpResponseInterceptor globaldebugresponse = null;
+
+    protected HttpRequestInterceptor localdebugrequest = null;
+    protected HttpResponseInterceptor localdebugresponse = null;
+
+    synchronized static public void
+    setInterceptors(HTTPSession session)
     {
-        if(sessionClient != null) {
-            sessionClient.clearRequestInterceptors();
-            if(interceptor != null)
-                sessionClient.addRequestInterceptor(interceptor);
+        HttpRequestInterceptor ireq = session.localdebugrequest;
+        if(ireq == null)
+            ireq = globaldebugrequest;
+        if(ireq != null) {
+            if(session != null) {
+                AbstractHttpClient client = (AbstractHttpClient) session.getClient();
+                client.addRequestInterceptor(ireq);
+            }
         }
+        HttpResponseInterceptor hi = session.localdebugresponse;
+        if(hi == null)
+            hi = globaldebugresponse;
+        if(hi != null) {
+            if(session != null) {
+                AbstractHttpClient client = (AbstractHttpClient) session.getClient();
+                client.addResponseInterceptor(hi);
+            }
+        }
+
     }
 
-    public void debugInterceptResponse(HttpResponseInterceptor interceptor)
+    static public void debugGlobal(HttpRequestInterceptor ireq,
+                                   HttpResponseInterceptor iresp)
     {
-        if(sessionClient != null) {
-            sessionClient.clearResponseInterceptors();
-            if(interceptor != null)
-                sessionClient.addResponseInterceptor(interceptor);
-        }
+        globaldebugrequest = ireq;
+        globaldebugresponse = iresp;
     }
 
+    public void debugSession(HttpRequestInterceptor ireq,
+                             HttpResponseInterceptor iresp)
+    {
+        localdebugrequest = ireq;
+        localdebugresponse = iresp;
+    }
+
+    static public void debugHeaders()
+    {
+        debugGlobal(new HTTPUtil.RequestHeaderDump(), new HTTPUtil.ResponseHeaderDump());
+    }
 
 }

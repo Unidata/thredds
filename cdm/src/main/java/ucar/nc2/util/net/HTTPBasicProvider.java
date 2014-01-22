@@ -46,7 +46,9 @@ import java.security.Principal;
 // a username + password that might have been taken from e.g.
 // the user info part of a URL.
 
-public class HTTPBasicProvider implements CredentialsProvider, Credentials, Serializable
+public class HTTPBasicProvider implements CredentialsProvider,
+                                          Credentials,
+                                          Serializable
 {
     String username = null;
     String password = null;
@@ -59,22 +61,19 @@ public class HTTPBasicProvider implements CredentialsProvider, Credentials, Seri
 
     // Credentials Provider Interface
     public Credentials
-    getCredentials(AuthScope scope) //AuthScheme authscheme, String host, int port, boolean isproxy)
+    getCredentials(AuthScope scope)
     {
-	    UsernamePasswordCredentials creds = new UsernamePasswordCredentials(username, password);
-	    return creds;
+        UsernamePasswordCredentials creds = new UsernamePasswordCredentials(username, password);
+	return creds;
     }
 
-    public void
-    setCredentials(AuthScope authscope, Credentials credentials)
+    public void setCredentials(AuthScope authscope, Credentials credentials)
     {
-
     }
 
     public void
     clear()
     {
-
     }
 
     // Credentials Interface
