@@ -35,7 +35,7 @@ package ucar.nc2.ui;
 
 import ucar.nc2.ui.widget.IndependentWindow;
 import ucar.util.prefs.PreferencesExt;
-import ucar.util.prefs.ui.BeanTableSorted;
+import ucar.util.prefs.ui.BeanTable;
 import ucar.unidata.io.RandomAccessFile;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.iosp.hdf4.H4iosp;
@@ -59,7 +59,7 @@ import java.util.*;
 public class Hdf4Table extends JPanel {
   private PreferencesExt prefs;
 
-  private ucar.util.prefs.ui.BeanTableSorted tagTable; //, messTable, attTable;
+  private ucar.util.prefs.ui.BeanTable tagTable; //, messTable, attTable;
   private JSplitPane split;
 
   private TextHistoryPane dumpTA, infoTA;
@@ -68,7 +68,7 @@ public class Hdf4Table extends JPanel {
   public Hdf4Table(PreferencesExt prefs) {
     this.prefs = prefs;
 
-    tagTable = new BeanTableSorted(TagBean.class, (PreferencesExt) prefs.node("Hdf4Object"), false);
+    tagTable = new BeanTable(TagBean.class, (PreferencesExt) prefs.node("Hdf4Object"), false);
     tagTable.addListSelectionListener(new ListSelectionListener() {
       public void valueChanged(ListSelectionEvent e) {
         TagBean bean = (TagBean) tagTable.getSelectedBean();
@@ -79,7 +79,7 @@ public class Hdf4Table extends JPanel {
       }
     });
 
-    /* messTable = new BeanTableSorted(MessageBean.class, (PreferencesExt) prefs.node("MessBean"), false);
+    /* messTable = new BeanTable(MessageBean.class, (PreferencesExt) prefs.node("MessBean"), false);
     messTable.addListSelectionListener(new ListSelectionListener() {
       public void valueChanged(ListSelectionEvent e) {
         MessageBean mb = (MessageBean) messTable.getSelectedBean();
@@ -107,7 +107,7 @@ public class Hdf4Table extends JPanel {
       }
     });
 
-    attTable = new BeanTableSorted(AttributeBean.class, (PreferencesExt) prefs.node("AttBean"), false);
+    attTable = new BeanTable(AttributeBean.class, (PreferencesExt) prefs.node("AttBean"), false);
     attTable.addListSelectionListener(new ListSelectionListener() {
       public void valueChanged(ListSelectionEvent e) {
         AttributeBean mb = (AttributeBean) attTable.getSelectedBean();

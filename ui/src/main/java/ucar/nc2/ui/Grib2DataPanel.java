@@ -34,35 +34,27 @@ package ucar.nc2.ui;
 
 //import org.apache.commons.compress.compressors.bzip2.BZip2CompressorOutputStream;
 //import org.apache.commons.compress.compressors.xz.XZCompressorOutputStream;
-import thredds.inventory.MFileCollectionManager;
 import thredds.inventory.MFile;
+import thredds.inventory.MFileCollectionManager;
 import ucar.ma2.DataType;
 import ucar.nc2.grib.*;
-import ucar.nc2.grib.grib2.Grib2CollectionBuilder;
-import ucar.nc2.grib.grib2.Grib2Rectilyser;
 import ucar.nc2.grib.grib2.*;
 import ucar.nc2.grib.grib2.table.Grib2Customizer;
 import ucar.nc2.grib.grib2.table.NcepLocalTables;
 import ucar.nc2.grib.grib2.table.WmoTemplateTable;
 import ucar.nc2.time.CalendarDate;
-import ucar.nc2.ui.widget.FileManager;
 import ucar.nc2.ui.widget.*;
 import ucar.nc2.ui.widget.PopupMenu;
 import ucar.nc2.util.IO;
 import ucar.nc2.util.Misc;
 import ucar.nc2.wmo.CommonCodeTable;
-
 import ucar.unidata.geoloc.LatLonPoint;
 import ucar.util.prefs.PreferencesExt;
-import ucar.util.prefs.ui.BeanTableSorted;
+import ucar.util.prefs.ui.BeanTable;
 
 import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
-
-import ucar.nc2.ui.widget.IndependentWindow;
-import ucar.nc2.ui.widget.BAMutil;
-
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.io.*;
@@ -84,7 +76,7 @@ public class Grib2DataPanel extends JPanel {
 
   private PreferencesExt prefs;
 
-  private BeanTableSorted param2BeanTable, record2BeanTable;
+  private BeanTable param2BeanTable, record2BeanTable;
   private JSplitPane split, split2;
 
   private TextHistoryPane infoPopup, infoPopup2, drsInfo;
@@ -97,7 +89,8 @@ public class Grib2DataPanel extends JPanel {
     PopupMenu varPopup;
 
     ////////////////
-    param2BeanTable = new BeanTableSorted(Grib2ParameterBean.class, (PreferencesExt) prefs.node("Param2Bean"), false, "UniquePDSVariables", "from Grib2Input.getRecords()");
+    param2BeanTable = new BeanTable(Grib2ParameterBean.class, (PreferencesExt) prefs.node("Param2Bean"), false,
+            "UniquePDSVariables", "from Grib2Input.getRecords()", null);
     param2BeanTable.addListSelectionListener(new ListSelectionListener() {
       public void valueChanged(ListSelectionEvent e) {
         Grib2ParameterBean pb = (Grib2ParameterBean) param2BeanTable.getSelectedBean();
@@ -120,7 +113,8 @@ public class Grib2DataPanel extends JPanel {
       }
     });
 
-    record2BeanTable = new BeanTableSorted(Grib2RecordBean.class, (PreferencesExt) prefs.node("Record2Bean"), false, "DataRepresentation", "from Grib2Input.getRecords()");
+    record2BeanTable = new BeanTable(Grib2RecordBean.class, (PreferencesExt) prefs.node("Record2Bean"), false,
+            "DataRepresentation", "from Grib2Input.getRecords()", null);
     record2BeanTable.addListSelectionListener(new ListSelectionListener() {
       public void valueChanged(ListSelectionEvent e) {
         Grib2RecordBean pb = (Grib2RecordBean) record2BeanTable.getSelectedBean();
@@ -259,7 +253,7 @@ public class Grib2DataPanel extends JPanel {
       }
     });
 
-    //gds2Table = new BeanTableSorted(Gds2Bean.class, (PreferencesExt) prefs.node("Gds2Bean"), false, "Grib2GridDefinitionSection", "unique from Grib2Records");
+    //gds2Table = new BeanTable(Gds2Bean.class, (PreferencesExt) prefs.node("Gds2Bean"), false, "Grib2GridDefinitionSection", "unique from Grib2Records");
     //varPopup = new PopupMenu(gds2Table.getJTable(), "Options");
 
     /////////////////////////////////////////

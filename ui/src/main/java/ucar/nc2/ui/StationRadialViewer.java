@@ -37,7 +37,7 @@ package ucar.nc2.ui;
 import ucar.nc2.ui.widget.IndependentDialog;
 import ucar.nc2.ui.widget.TextHistoryPane;
 import ucar.util.prefs.PreferencesExt;
-import ucar.util.prefs.ui.BeanTableSorted;
+import ucar.util.prefs.ui.BeanTable;
 import ucar.nc2.dt.RadialDatasetSweep;
 import ucar.nc2.ui.point.StationRegionDateChooser;
 
@@ -68,7 +68,7 @@ public class StationRadialViewer extends JPanel {
   private ucar.nc2.ft.radial.StationRadialDataset sds;
 
   private StationRegionDateChooser chooser;
-  private BeanTableSorted stnTable;
+  private BeanTable stnTable;
   private RadialDatasetTable rdTable;
   private JSplitPane splitH = null, splitV = null;
   private IndependentDialog infoWindow;
@@ -93,7 +93,7 @@ public class StationRadialViewer extends JPanel {
     });
 
     // station table
-    stnTable = new BeanTableSorted(StationBean.class, (PreferencesExt) prefs.node("StationBeans"), false);
+    stnTable = new BeanTable(StationBean.class, (PreferencesExt) prefs.node("StationBeans"), false);
     stnTable.addListSelectionListener(new ListSelectionListener() {
       public void valueChanged(ListSelectionEvent e) {
         StationBean sb = (StationBean) stnTable.getSelectedBean();

@@ -32,29 +32,28 @@
  */
 package thredds.ui.catalog.tools;
 
-import ucar.util.prefs.PreferencesExt;
-import ucar.util.prefs.ui.*;
-import ucar.nc2.constants.FeatureType;
-import ucar.nc2.ui.widget.*;
-
-import javax.swing.*;
-import javax.swing.event.ListSelectionListener;
-import javax.swing.event.ListSelectionEvent;
-import java.awt.*;
-import java.awt.event.ActionListener;
-import java.awt.event.ActionEvent;
-import java.util.ArrayList;
-import java.net.URI;
-import java.net.URL;
-import java.net.MalformedURLException;
-import java.io.IOException;
-import java.io.InputStream;
-
+import thredds.catalog.*;
+import thredds.catalog.dl.ADNWriter;
+import thredds.catalog.dl.DIFWriter;
 import thredds.ui.catalog.CatalogChooser;
 import thredds.ui.catalog.CatalogTreeView;
-import thredds.catalog.*;
-import thredds.catalog.dl.DIFWriter;
-import thredds.catalog.dl.ADNWriter;
+import ucar.nc2.constants.FeatureType;
+import ucar.nc2.ui.widget.*;
+import ucar.util.prefs.PreferencesExt;
+import ucar.util.prefs.ui.BeanTable;
+
+import javax.swing.*;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URL;
+import java.util.ArrayList;
 
 /**
  * Experimental widget for crawling catalogs and checking for complete metadata.
@@ -72,7 +71,7 @@ public class DLCrawler extends JPanel {
   // ui
   private CatalogChooser catalogChooser;
   private CatalogTreeView tree;
-  private BeanTableSorted dsTable, daTable;
+  private BeanTable dsTable, daTable;
   private JTabbedPane tabbedPane;
   private JSplitPane splitV;
   private IndependentWindow sourceWindow = null, statusWindow = null;
@@ -154,7 +153,7 @@ public class DLCrawler extends JPanel {
     });
 
     // dataset bean table
-    dsTable = new BeanTableSorted(DatasetBean.class, (PreferencesExt) prefs.node("dsBeans"), false);
+    dsTable = new BeanTable(DatasetBean.class, (PreferencesExt) prefs.node("dsBeans"), false);
     dsTable.addListSelectionListener( new ListSelectionListener() {
       public void valueChanged(ListSelectionEvent e) {
         DatasetBean bean = (DatasetBean) dsTable.getSelectedBean();
@@ -164,7 +163,7 @@ public class DLCrawler extends JPanel {
     });
 
     // access bean table
-    daTable = new BeanTableSorted(AccessBean.class, (PreferencesExt) prefs.node("daBeans"), false);
+    daTable = new BeanTable(AccessBean.class, (PreferencesExt) prefs.node("daBeans"), false);
     daTable.addListSelectionListener( new ListSelectionListener() {
       public void valueChanged(ListSelectionEvent e) {
         AccessBean bean = (AccessBean) daTable.getSelectedBean();

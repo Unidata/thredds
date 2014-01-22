@@ -1,5 +1,7 @@
 package ucar.nc2.ui.table;
 
+import org.apache.commons.lang3.RandomStringUtils;
+
 import javax.swing.*;
 import javax.swing.table.*;
 import java.awt.*;
@@ -33,6 +35,7 @@ public abstract class TableDemo {
                 TableModel model = createTableModel(numRows, numCols);
                 TableColumnModel tcm = new HidableTableColumnModel(model);
                 JTable table = new JTable(model, tcm);
+                table.setAutoCreateRowSorter(true);
 
                 // Set the preferred column widths so that they're big enough to display all data without truncation.
                 ColumnWidthsResizer resizer = new ColumnWidthsResizer(table);
@@ -180,22 +183,13 @@ public abstract class TableDemo {
 
     private static Object[] genColumnData(TableModel model) {
         Object[] data = new Object[model.getRowCount()];
-        int cellValLen = (model.getColumnCount() + 1) * 6;
-        String cellVal = genString(cellValLen);
+        int cellValLen = (model.getColumnCount() + 1) * 5;
 
         for (int row = 0; row < model.getRowCount(); ++row) {
-            data[row] = cellVal;
+            data[row] = RandomStringUtils.randomAlphabetic(cellValLen);
         }
 
         return data;
-    }
-
-    private static String genString(int len) {
-        StringBuilder builder = new StringBuilder();
-        for (int i = 0; i < len; ++i) {
-            builder.append((char)('a' + i));
-        }
-        return builder.toString();
     }
 
     private TableDemo() { }

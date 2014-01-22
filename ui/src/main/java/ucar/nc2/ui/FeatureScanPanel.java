@@ -34,7 +34,7 @@ package ucar.nc2.ui;
 
 import ucar.nc2.ui.widget.PopupMenu;
 import ucar.util.prefs.PreferencesExt;
-import ucar.util.prefs.ui.BeanTableSorted;
+import ucar.util.prefs.ui.BeanTable;
 import ucar.nc2.ft.scan.FeatureScan;
 
 import javax.swing.*;
@@ -58,7 +58,7 @@ import java.util.List;
 public class FeatureScanPanel extends JPanel {
   private PreferencesExt prefs;
 
-  private BeanTableSorted ftTable;
+  private BeanTable ftTable;
   private JSplitPane split;
   private TextHistoryPane infoTA, dumpTA;
   private IndependentWindow infoWindow;
@@ -66,7 +66,7 @@ public class FeatureScanPanel extends JPanel {
   public FeatureScanPanel(PreferencesExt prefs) {
     this.prefs = prefs;
 
-    ftTable = new BeanTableSorted(FeatureScan.Bean.class, (PreferencesExt) prefs.node("FeatureDatasetBeans"), false);
+    ftTable = new BeanTable(FeatureScan.Bean.class, (PreferencesExt) prefs.node("FeatureDatasetBeans"), false);
     ftTable.addListSelectionListener(new ListSelectionListener() {
       public void valueChanged(ListSelectionEvent e) {
         FeatureScan.Bean ftb = (FeatureScan.Bean) ftTable.getSelectedBean();

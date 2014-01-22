@@ -5,7 +5,7 @@ import ucar.nc2.ui.widget.BAMutil;
 import ucar.nc2.ui.widget.IndependentWindow;
 import ucar.nc2.ui.widget.TextHistoryPane;
 import ucar.util.prefs.PreferencesExt;
-import ucar.util.prefs.ui.BeanTableSorted;
+import ucar.util.prefs.ui.BeanTable;
 
 import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;
@@ -25,7 +25,7 @@ import java.util.List;
 public class GribRenamePanel extends JPanel {
 
   private PreferencesExt prefs;
-  private BeanTableSorted varTable, mapTable;
+  private BeanTable varTable, mapTable;
   private JSplitPane split, split2;
   private TextHistoryPane infoTA;
   private IndependentWindow infoWindow;
@@ -35,7 +35,7 @@ public class GribRenamePanel extends JPanel {
   public GribRenamePanel(final PreferencesExt prefs, JPanel buttPanel) {
     this.prefs = prefs;
 
-    varTable = new BeanTableSorted(GribVariableRenamer.VariableRenamerBean.class, (PreferencesExt) prefs.node("VariableBean"), false);
+    varTable = new BeanTable(GribVariableRenamer.VariableRenamerBean.class, (PreferencesExt) prefs.node("VariableBean"), false);
     /* varTable.addListSelectionListener(new ListSelectionListener() {
       public void valueChanged(ListSelectionEvent e) {
         VariableBean csb = (VariableBean) varTable.getSelectedBean();
@@ -43,7 +43,7 @@ public class GribRenamePanel extends JPanel {
       }
     }); */
 
-    mapTable = new BeanTableSorted(MapBean.class, (PreferencesExt) prefs.node("MapBean"), false);
+    mapTable = new BeanTable(MapBean.class, (PreferencesExt) prefs.node("MapBean"), false);
     mapTable.addListSelectionListener(new ListSelectionListener() {
       public void valueChanged(ListSelectionEvent e) {
         MapBean bean = (MapBean) mapTable.getSelectedBean();

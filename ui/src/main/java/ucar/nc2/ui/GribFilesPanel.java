@@ -48,7 +48,7 @@ import ucar.unidata.io.KMPMatch;
 import ucar.unidata.io.RandomAccessFile;
 import ucar.unidata.util.StringUtil2;
 import ucar.util.prefs.PreferencesExt;
-import ucar.util.prefs.ui.BeanTableSorted;
+import ucar.util.prefs.ui.BeanTable;
 
 import javax.swing.*;
 import java.awt.*;
@@ -68,7 +68,7 @@ import java.util.List;
 public class GribFilesPanel extends JPanel {
   private PreferencesExt prefs;
 
-  private BeanTableSorted grib1Table, grib2Table, collectionTable;
+  private BeanTable grib1Table, grib2Table, collectionTable;
   private JSplitPane split, split2;
 
   private TextHistoryPane infoPopup;
@@ -80,7 +80,7 @@ public class GribFilesPanel extends JPanel {
     PopupMenu varPopup;
 
     ////////////////
-    collectionTable = new BeanTableSorted(CollectionBean.class, (PreferencesExt) prefs.node("CollectionBean"), true);
+    collectionTable = new BeanTable(CollectionBean.class, (PreferencesExt) prefs.node("CollectionBean"), true);
     /* collectionTable.addListSelectionListener(new ListSelectionListener() {
       public void valueChanged(ListSelectionEvent e) {
         CollectionBean pb = (CollectionBean) collectionTable.getSelectedBean();
@@ -116,7 +116,7 @@ public class GribFilesPanel extends JPanel {
       }
     }); */
 
-    grib1Table = new BeanTableSorted(Grib1Bean.class, (PreferencesExt) prefs.node("Grib1Bean"), false);
+    grib1Table = new BeanTable(Grib1Bean.class, (PreferencesExt) prefs.node("Grib1Bean"), false);
     varPopup = new PopupMenu(grib1Table.getJTable(), "Options");
     varPopup.addAction("Open in Grib-Raw", new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
@@ -126,7 +126,7 @@ public class GribFilesPanel extends JPanel {
       }
     });
 
-    grib2Table = new BeanTableSorted(Grib2Bean.class, (PreferencesExt) prefs.node("Grib2Bean"), false);
+    grib2Table = new BeanTable(Grib2Bean.class, (PreferencesExt) prefs.node("Grib2Bean"), false);
     varPopup = new PopupMenu(grib2Table.getJTable(), "Options");
 
     varPopup.addAction("Show complete GridRecord", new AbstractAction() {

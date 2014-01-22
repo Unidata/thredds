@@ -74,7 +74,7 @@ public class GeoGridTable extends JPanel {
   private PreferencesExt prefs;
   private GridDataset gridDataset;
 
-  private BeanTableSorted varTable, csTable = null, axisTable = null;
+  private BeanTable varTable, csTable = null, axisTable = null;
   private JSplitPane split = null, split2 = null;
   private TextHistoryPane infoTA;
   private IndependentWindow infoWindow;
@@ -83,7 +83,7 @@ public class GeoGridTable extends JPanel {
   public GeoGridTable(PreferencesExt prefs, boolean showCS) {
     this.prefs = prefs;
 
-    varTable = new BeanTableSorted(GeoGridBean.class, (PreferencesExt) prefs.node("GeogridBeans"), false);
+    varTable = new BeanTable(GeoGridBean.class, (PreferencesExt) prefs.node("GeogridBeans"), false);
     JTable jtable = varTable.getJTable();
 
     PopupMenu csPopup = new ucar.nc2.ui.widget.PopupMenu(jtable, "Options");
@@ -150,8 +150,8 @@ public class GeoGridTable extends JPanel {
     // optionally show coordinate systems and axis
     Component comp = varTable;
     if (showCS) {
-      csTable = new BeanTableSorted(GeoCoordinateSystemBean.class, (PreferencesExt) prefs.node("GeoCoordinateSystemBean"), false);
-      axisTable = new BeanTableSorted(GeoAxisBean.class, (PreferencesExt) prefs.node("GeoCoordinateAxisBean"), false);
+      csTable = new BeanTable(GeoCoordinateSystemBean.class, (PreferencesExt) prefs.node("GeoCoordinateSystemBean"), false);
+      axisTable = new BeanTable(GeoAxisBean.class, (PreferencesExt) prefs.node("GeoCoordinateAxisBean"), false);
 
       split = new JSplitPane(JSplitPane.VERTICAL_SPLIT, false, varTable, csTable);
       split.setDividerLocation(prefs.getInt("splitPos", 500));

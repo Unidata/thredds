@@ -47,7 +47,7 @@ import ucar.nc2.ui.widget.*;
 import ucar.nc2.ui.widget.ProgressMonitor;
 import ucar.nc2.util.CompareNetcdf2;
 import ucar.util.prefs.PreferencesExt;
-import ucar.util.prefs.ui.BeanTableSorted;
+import ucar.util.prefs.ui.BeanTable;
 import ucar.util.prefs.ui.Debug;
 
 import javax.swing.*;
@@ -77,8 +77,8 @@ public class DatasetWriter extends JPanel {
   private NetcdfFile ds;
 
   private List<NestedTable> nestedTableList = new ArrayList<NestedTable>();
-  private BeanTableSorted attTable;
-  private BeanTableSorted dimTable;
+  private BeanTable attTable;
+  private BeanTable dimTable;
 
   private JPanel tablePanel;
   private JSplitPane mainSplit;
@@ -97,7 +97,7 @@ public class DatasetWriter extends JPanel {
     this.fileChooser = fileChooser;
 
     // create the variable table(s)
-    dimTable = new BeanTableSorted(DimensionBean.class, (PreferencesExt) prefs.node("DimensionBeanTable"), false, "Dimensions", null, new DimensionBean());
+    dimTable = new BeanTable(DimensionBean.class, (PreferencesExt) prefs.node("DimensionBeanTable"), false, "Dimensions", null, new DimensionBean());
 
     tablePanel = new JPanel( new BorderLayout());
     setNestedTable(0, null);
@@ -360,7 +360,7 @@ public class DatasetWriter extends JPanel {
     if (ds == null) return;
     if (attTable == null) {
       // global attributes
-      attTable = new BeanTableSorted(AttributeBean.class, (PreferencesExt) prefs.node("AttributeBeans"), false);
+      attTable = new BeanTable(AttributeBean.class, (PreferencesExt) prefs.node("AttributeBeans"), false);
       ucar.nc2.ui.widget.PopupMenu varPopup = new ucar.nc2.ui.widget.PopupMenu(attTable.getJTable(), "Options");
       varPopup.addAction("Show Attribute", new AbstractAction() {
         public void actionPerformed(ActionEvent e) {
@@ -426,7 +426,7 @@ public class DatasetWriter extends JPanel {
     treeWindow.show();
   } */
 
-  private void showDeclaration(BeanTableSorted from, boolean isNcml) {
+  private void showDeclaration(BeanTable from, boolean isNcml) {
     Variable v = getCurrentVariable(from);
     if (v == null) return;
     infoTA.clear();
@@ -454,7 +454,7 @@ public class DatasetWriter extends JPanel {
     infoWindow.show();
   }
 
-  private void dataTable(BeanTableSorted from) {
+  private void dataTable(BeanTable from) {
     VariableBean vb = (VariableBean) from.getSelectedBean();
     if (vb == null) return;
     Variable v = vb.vs;
@@ -471,7 +471,7 @@ public class DatasetWriter extends JPanel {
     dataWindow.show();
   }
 
-  private Variable getCurrentVariable(BeanTableSorted from) {
+  private Variable getCurrentVariable(BeanTable from) {
     VariableBean vb = (VariableBean) from.getSelectedBean();
     if (vb == null) return null;
     return vb.vs;
@@ -532,7 +532,7 @@ public class DatasetWriter extends JPanel {
      int level;
      PreferencesExt myPrefs;
 
-     BeanTableSorted table; // always the left component
+     BeanTable table; // always the left component
      JSplitPane split = null; // right component (if exists) is the nested dataset.
      int splitPos = 100;
      boolean isShowing = false;
@@ -541,7 +541,7 @@ public class DatasetWriter extends JPanel {
        this.level = level;
        myPrefs = (PreferencesExt) prefs.node("NestedTable"+level);
 
-       table = new BeanTableSorted(VariableBean.class, myPrefs, false, "Variables", null, new VariableBean());
+       table = new BeanTable(VariableBean.class, myPrefs, false, "Variables", null, new VariableBean());
 
        JTable jtable = table.getJTable();
        ucar.nc2.ui.widget.PopupMenu csPopup = new ucar.nc2.ui.widget.PopupMenu(jtable, "Options");

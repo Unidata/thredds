@@ -33,34 +33,31 @@
 
 package thredds.ui.monitor;
 
-import ucar.nc2.ui.widget.*;
-import ucar.nc2.ui.widget.PopupMenu;
-import ucar.util.prefs.PreferencesExt;
-import ucar.util.prefs.ui.BeanTableSorted;
-
-import javax.swing.*;
-import javax.swing.event.ListSelectionListener;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ChangeListener;
-import javax.swing.event.ChangeEvent;
-
-import ucar.nc2.ui.widget.TextHistoryPane;
-import ucar.nc2.ui.widget.BAMutil;
+import net.sf.ehcache.Cache;
+import net.sf.ehcache.Element;
 import thredds.logs.LogReader;
 import thredds.logs.ServletLogParser;
+import ucar.nc2.ui.widget.BAMutil;
+import ucar.nc2.ui.widget.IndependentWindow;
+import ucar.nc2.ui.widget.PopupMenu;
+import ucar.nc2.ui.widget.TextHistoryPane;
+import ucar.util.prefs.PreferencesExt;
+import ucar.util.prefs.ui.BeanTable;
 
+import javax.swing.*;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.io.File;
+import java.io.IOException;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.List;
-import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.io.IOException;
-import java.io.File;
-import java.net.InetAddress;
-import java.net.UnknownHostException;
-
-import net.sf.ehcache.Cache;
-import net.sf.ehcache.Element;
 
 /**
  * Class Description.
@@ -72,7 +69,7 @@ public class ServletLogTable extends JPanel {
   private PreferencesExt prefs;
   private Cache dnsCache;
 
-  private ucar.util.prefs.ui.BeanTableSorted logTable, uptimeTable, mergeTable, undoneTable, miscTable;
+  private ucar.util.prefs.ui.BeanTable logTable, uptimeTable, mergeTable, undoneTable, miscTable;
   private ArrayList<ServletLogParser.ServletLog> completeLogs;
   private boolean calcMerge = true;
   private ArrayList<Merge> completeMerge;
@@ -93,7 +90,7 @@ public class ServletLogTable extends JPanel {
     this.prefs = prefs;
     this.dnsCache = dnsCache;
 
-    logTable = new BeanTableSorted(ServletLogParser.ServletLog.class, (PreferencesExt) prefs.node("Logs"), false);
+    logTable = new BeanTable(ServletLogParser.ServletLog.class, (PreferencesExt) prefs.node("Logs"), false);
     logTable.addListSelectionListener(new ListSelectionListener() {
       public void valueChanged(ListSelectionEvent e) {
         LogReader.Log log = (LogReader.Log) logTable.getSelectedBean();
@@ -117,7 +114,7 @@ public class ServletLogTable extends JPanel {
       }
     });
 
-    uptimeTable = new BeanTableSorted(Uptime.class, (PreferencesExt) prefs.node("UptimeTable"), false);
+    uptimeTable = new BeanTable(Uptime.class, (PreferencesExt) prefs.node("UptimeTable"), false);
     uptimeTable.addListSelectionListener(new ListSelectionListener() {
       public void valueChanged(ListSelectionEvent e) {
         Uptime uptime = (Uptime) uptimeTable.getSelectedBean();
@@ -126,7 +123,7 @@ public class ServletLogTable extends JPanel {
       }
     });
 
-    mergeTable = new BeanTableSorted(Merge.class, (PreferencesExt) prefs.node("MergeTable"), false);
+    mergeTable = new BeanTable(Merge.class, (PreferencesExt) prefs.node("MergeTable"), false);
     mergeTable.addListSelectionListener(new ListSelectionListener() {
       public void valueChanged(ListSelectionEvent e) {
         Merge m = (Merge) mergeTable.getSelectedBean();
@@ -159,7 +156,7 @@ public class ServletLogTable extends JPanel {
       }
     });
 
-    undoneTable = new BeanTableSorted(Merge.class, (PreferencesExt) prefs.node("UndoneTable"), false);
+    undoneTable = new BeanTable(Merge.class, (PreferencesExt) prefs.node("UndoneTable"), false);
     undoneTable.addListSelectionListener(new ListSelectionListener() {
       public void valueChanged(ListSelectionEvent e) {
         Merge m = (Merge) undoneTable.getSelectedBean();
@@ -169,7 +166,7 @@ public class ServletLogTable extends JPanel {
       }
     });
 
-    miscTable = new BeanTableSorted(ServletLogParser.ServletLog.class, (PreferencesExt) prefs.node("Logs"), false);
+    miscTable = new BeanTable(ServletLogParser.ServletLog.class, (PreferencesExt) prefs.node("Logs"), false);
     miscTable.addListSelectionListener(new ListSelectionListener() {
       public void valueChanged(ListSelectionEvent e) {
         LogReader.Log log = (LogReader.Log) miscTable.getSelectedBean();

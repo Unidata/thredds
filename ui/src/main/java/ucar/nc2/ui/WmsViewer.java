@@ -40,7 +40,7 @@ import ucar.nc2.ui.widget.BAMutil;
 import ucar.nc2.ui.widget.SuperComboBox;
 import ucar.unidata.util.StringUtil2;
 import ucar.util.prefs.PreferencesExt;
-import ucar.util.prefs.ui.BeanTableSorted;
+import ucar.util.prefs.ui.BeanTable;
 import ucar.nc2.util.IO;
 
 import javax.swing.*;
@@ -75,7 +75,7 @@ public class WmsViewer extends JPanel {
 
   private JPanel imagePanel;
   private SuperComboBox crsChooser, formatChooser, styleChooser, timeChooser, levelChooser;
-  private BeanTableSorted ftTable;
+  private BeanTable ftTable;
 
   private JSplitPane split;
   private StringBuilder info = new StringBuilder();
@@ -130,7 +130,7 @@ public class WmsViewer extends JPanel {
 
     imagePanel = new JPanel();
 
-    ftTable = new BeanTableSorted(LayerBean.class, (PreferencesExt) prefs.node("LayerBeans"), false);
+    ftTable = new BeanTable(LayerBean.class, (PreferencesExt) prefs.node("LayerBeans"), false);
     ftTable.addListSelectionListener(new ListSelectionListener() {
       public void valueChanged(ListSelectionEvent e) {
         LayerBean ftb = (LayerBean) ftTable.getSelectedBean();

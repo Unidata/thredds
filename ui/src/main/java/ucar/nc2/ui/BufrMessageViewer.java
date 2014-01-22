@@ -43,7 +43,7 @@ import ucar.nc2.ui.widget.PopupMenu;
 import ucar.nc2.util.CancelTask;
 //import ucar.util.GoogleDiff;
 import ucar.util.prefs.PreferencesExt;
-import ucar.util.prefs.ui.BeanTableSorted;
+import ucar.util.prefs.ui.BeanTable;
 import ucar.unidata.io.RandomAccessFile;
 import ucar.nc2.iosp.bufr.*;
 import ucar.nc2.iosp.bufr.writer.Bufr2Xml;
@@ -80,7 +80,7 @@ public class BufrMessageViewer extends JPanel {
 
   private PreferencesExt prefs;
 
-  private BeanTableSorted messageTable, obsTable, ddsTable;
+  private BeanTable messageTable, obsTable, ddsTable;
   private JSplitPane split, split2;
 
   private TextHistoryPane infoTA, infoTA2;
@@ -197,7 +197,7 @@ public class BufrMessageViewer extends JPanel {
 
     ///////////////////////////////////////
 
-    messageTable = new BeanTableSorted(MessageBean.class, (PreferencesExt) prefs.node("GridRecordBean"), false);
+    messageTable = new BeanTable(MessageBean.class, (PreferencesExt) prefs.node("GridRecordBean"), false);
     messageTable.addListSelectionListener(new ListSelectionListener() {
       public void valueChanged(ListSelectionEvent e) {
         ddsTable.setBeans(new ArrayList());
@@ -217,14 +217,14 @@ public class BufrMessageViewer extends JPanel {
       }
     });
 
-    obsTable = new BeanTableSorted(ObsBean.class, (PreferencesExt) prefs.node("ObsBean"), false);
+    obsTable = new BeanTable(ObsBean.class, (PreferencesExt) prefs.node("ObsBean"), false);
     obsTable.addListSelectionListener(new ListSelectionListener() {
       public void valueChanged(ListSelectionEvent e) {
         ObsBean csb = (ObsBean) obsTable.getSelectedBean();
       }
     });
 
-    ddsTable = new BeanTableSorted(DdsBean.class, (PreferencesExt) prefs.node("DdsBean"), false);
+    ddsTable = new BeanTable(DdsBean.class, (PreferencesExt) prefs.node("DdsBean"), false);
     ddsTable.addListSelectionListener(new ListSelectionListener() {
       public void valueChanged(ListSelectionEvent e) {
         DdsBean csb = (DdsBean) ddsTable.getSelectedBean();

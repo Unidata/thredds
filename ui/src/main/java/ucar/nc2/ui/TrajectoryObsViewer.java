@@ -63,7 +63,7 @@ public class TrajectoryObsViewer extends JPanel {
   private PreferencesExt prefs;
 
   private TrajectoryRegionDateChooser chooser;
-  private BeanTableSorted trajTable;
+  private BeanTable trajTable;
   private StructureTable obsTable;
   private JSplitPane splitV, splitH;
   private IndependentWindow infoWindow;
@@ -82,7 +82,7 @@ public class TrajectoryObsViewer extends JPanel {
     });
 
     // table of trajectories
-    trajTable = new BeanTableSorted(TrajBean.class, (PreferencesExt) prefs.node("TrajBeans"), false);
+    trajTable = new BeanTable(TrajBean.class, (PreferencesExt) prefs.node("TrajBeans"), false);
     trajTable.addListSelectionListener(new ListSelectionListener() {
       public void valueChanged(ListSelectionEvent e) {
         TrajBean sb = (TrajBean) trajTable.getSelectedBean();

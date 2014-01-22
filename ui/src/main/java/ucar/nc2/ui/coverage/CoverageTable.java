@@ -12,7 +12,7 @@ import ucar.nc2.ui.widget.*;
 import ucar.nc2.ui.widget.PopupMenu;
 import ucar.unidata.geoloc.ProjectionImpl;
 import ucar.util.prefs.PreferencesExt;
-import ucar.util.prefs.ui.BeanTableSorted;
+import ucar.util.prefs.ui.BeanTable;
 
 import javax.swing.*;
 //import java.awt.*;
@@ -35,7 +35,7 @@ public class CoverageTable extends JPanel {
   private PreferencesExt prefs;
   private CoverageDataset gridDataset;
 
-  private BeanTableSorted varTable, csTable = null, axisTable = null;
+  private BeanTable varTable, csTable = null, axisTable = null;
   private JSplitPane split = null, split2 = null;
   private TextHistoryPane infoTA;
   private IndependentWindow infoWindow;
@@ -44,7 +44,7 @@ public class CoverageTable extends JPanel {
   public CoverageTable(PreferencesExt prefs) {
     this.prefs = prefs;
 
-    varTable = new BeanTableSorted(CoverageBean.class, (PreferencesExt) prefs.node("GeogridBeans"), false);
+    varTable = new BeanTable(CoverageBean.class, (PreferencesExt) prefs.node("GeogridBeans"), false);
     JTable jtable = varTable.getJTable();
 
     PopupMenu csPopup = new ucar.nc2.ui.widget.PopupMenu(jtable, "Options");
@@ -105,8 +105,8 @@ public class CoverageTable extends JPanel {
     infoWindow.setBounds((Rectangle) prefs.getBean("InfoWindowBounds", new Rectangle(300, 300, 500, 300)));
 
     // optionally show coordinate systems and axis
-    csTable = new BeanTableSorted(CoverageCSBean.class, (PreferencesExt) prefs.node("GeoCoordinateSystemBean"), false);
-    axisTable = new BeanTableSorted(AxisBean.class, (PreferencesExt) prefs.node("GeoCoordinateAxisBean"), false);
+    csTable = new BeanTable(CoverageCSBean.class, (PreferencesExt) prefs.node("GeoCoordinateSystemBean"), false);
+    axisTable = new BeanTable(AxisBean.class, (PreferencesExt) prefs.node("GeoCoordinateAxisBean"), false);
 
     split = new JSplitPane(JSplitPane.VERTICAL_SPLIT, false, varTable, csTable);
     split.setDividerLocation(prefs.getInt("splitPos", 500));

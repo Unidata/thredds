@@ -74,7 +74,7 @@ public class PointObsViewer extends JPanel {
   private PointObsDataset pds;
 
   private StationRegionDateChooser chooser;
-  private BeanTableSorted stnTable;
+  private BeanTable stnTable;
   private JSplitPane splitH = null;
   private IndependentDialog infoWindow;
   private DateFormatter df = new DateFormatter();
@@ -154,7 +154,7 @@ public class PointObsViewer extends JPanel {
     chooser.addToolbarAction(getAllAction);
 
     // station table
-    stnTable = new BeanTableSorted(PointObsBean.class, (PreferencesExt) prefs.node("PointBeans"), false);
+    stnTable = new BeanTable(PointObsBean.class, (PreferencesExt) prefs.node("PointBeans"), false);
     stnTable.addListSelectionListener(new ListSelectionListener() {
       public void valueChanged(ListSelectionEvent e) {
         PointObsBean sb = (PointObsBean) stnTable.getSelectedBean();

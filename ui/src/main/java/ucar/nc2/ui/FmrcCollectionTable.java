@@ -37,7 +37,7 @@ import ucar.nc2.ui.widget.*;
 import ucar.nc2.ui.widget.PopupMenu;
 import ucar.unidata.util.StringUtil2;
 import ucar.util.prefs.PreferencesExt;
-import ucar.util.prefs.ui.BeanTableSorted;
+import ucar.util.prefs.ui.BeanTable;
 
 import javax.swing.*;
 import javax.swing.event.ListSelectionListener;
@@ -60,7 +60,7 @@ import java.io.IOException;
 public class FmrcCollectionTable extends JPanel {
   private PreferencesExt prefs;
 
-  private BeanTableSorted collectionNameTable, dataTable;
+  private BeanTable collectionNameTable, dataTable;
   private JSplitPane split;
 
   private TextHistoryPane infoTA;
@@ -69,7 +69,7 @@ public class FmrcCollectionTable extends JPanel {
   public FmrcCollectionTable(PreferencesExt prefs) {
     this.prefs = prefs;
 
-    collectionNameTable = new BeanTableSorted(CollectionBean.class, (PreferencesExt) prefs.node("DatasetBean"), false);
+    collectionNameTable = new BeanTable(CollectionBean.class, (PreferencesExt) prefs.node("DatasetBean"), false);
     collectionNameTable.addListSelectionListener(new ListSelectionListener() {
       public void valueChanged(ListSelectionEvent e) {
         CollectionBean bean = (CollectionBean) collectionNameTable.getSelectedBean();
@@ -98,7 +98,7 @@ public class FmrcCollectionTable extends JPanel {
       }
     });
 
-    dataTable = new BeanTableSorted(DataBean.class, (PreferencesExt) prefs.node("DataBean"), false);
+    dataTable = new BeanTable(DataBean.class, (PreferencesExt) prefs.node("DataBean"), false);
     dataTable.addListSelectionListener(new ListSelectionListener() {
       public void valueChanged(ListSelectionEvent e) {
         DataBean bean = (DataBean) dataTable.getSelectedBean();
