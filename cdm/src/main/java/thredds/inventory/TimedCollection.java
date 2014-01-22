@@ -133,6 +133,7 @@ public class TimedCollection {
   }
 
   public CalendarDateRange getDateRange() {
+    if (dateRange == null) update();
     return dateRange;
   }
 

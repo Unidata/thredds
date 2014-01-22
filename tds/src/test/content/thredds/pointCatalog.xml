@@ -40,6 +40,9 @@
         <name vocabulary="DIF">UCAR/UNIDATA</name>
         <contact url="http://www.unidata.ucar.edu/" email="support@unidata.ucar.edu"/>
       </publisher>
+      <geospatialCoverage>
+        <name vocabulary="Thredds">global</name>
+      </geospatialCoverage>
     </metadata>
 
     <featureCollection name="Metar Station Data" harvest="true" featureType="Station" path="testStationFeatureCollection">
@@ -97,8 +100,7 @@
           <keyword>buoy</keyword>
           <keyword>surface observations</keyword>
       </metadata>
-
-      <collection spec="Q:/cdmUnitTest/agg/pointFeatureCollection/netCDFbuoydata/.*\.nc$" />
+      <collection spec="${cdmUnitTest}/agg/pointFeatureCollection/netCDFbuoydata/......_..._#yyyyMMdd#.*\.nc$" />
       <update startup="true" rescan="0 0/15 * * * ? *" trigger="allow"/>
       <protoDataset choice="Penultimate" />
       <pointConfig datasetTypes="cdmrFeature Files"/>

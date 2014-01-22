@@ -35,10 +35,17 @@
 
 package thredds.server;
 
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.ExceptionHandler;
+import thredds.server.ncss.exception.NcssException;
 import thredds.servlet.ServletUtil;
 import thredds.util.TdsPathUtils;
 
 import javax.servlet.http.HttpServletRequest;
+import java.io.FileNotFoundException;
 
 /**
  * For Annotated Spring Controllers, going through the root servlet
@@ -69,5 +76,36 @@ public abstract class AbstractController {
   public String getAbsolutePath(HttpServletRequest req) {
      return ServletUtil.getRequestServer(req) + req.getContextPath() + req.getServletPath();
   }
+
+  @ExceptionHandler(FileNotFoundException.class)
+ 	public ResponseEntity<String> handle(FileNotFoundException ncsse) {
+ 		HttpHeaders responseHeaders = new HttpHeaders();
+ 		responseHeaders.setContentType(MediaType.TEXT_PLAIN);
+ 		return new ResponseEntity<String>(
+ 				"FileNotFoundException exception handled : " + ncsse.getMessage(), responseHeaders,
+ 				HttpStatus.NOT_FOUND);
+ 	}
+
+ 	@ExceptionHandler(UnsupportedOperationException.class)
+ 	public ResponseEntity<String> handle(UnsupportedOperationException ex) {
+ 		HttpHeaders responseHeaders = new HttpHeaders();
+ 		responseHeaders.setContentType(MediaType.TEXT_PLAIN);
+ 		return new ResponseEntity<String>(
+ 				"UnsupportedOperationException exception handled : " + ex.getMessage(), responseHeaders,
+ 				HttpStatus.BAD_REQUEST);
+ 	}
+
+  @ExceptionHandler(Throwable.class)
+ 	public ResponseEntity<String> handle(Throwable ex) {
+   //  ex.printStackTrace();
+
+    org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(getClass());
+    logger.error("uncaught exception", ex);
+
+ 		HttpHeaders responseHeaders = new HttpHeaders();
+ 		responseHeaders.setContentType(MediaType.TEXT_PLAIN);
+ 		return new ResponseEntity<String>("Throwable exception handled : " + ex.getMessage(), responseHeaders,
+             HttpStatus.INTERNAL_SERVER_ERROR);
+ 	}
 
 }

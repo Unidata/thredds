@@ -197,7 +197,7 @@ public enum CollectionUpdater {
     if (pconfig.change != null) {
       org.quartz.JobDataMap pmap = new org.quartz.JobDataMap();
       pmap.put(DCM_NAME, manager);
-      map.put(LOGGER, org.slf4j.LoggerFactory.getLogger("fc."+manager.getCollectionName()));
+      map.put(LOGGER, logger);
       JobDetail protoJob = JobBuilder.newJob(ChangeProtoJob.class)
               .withIdentity(jobName, "UpdateProto")
               .usingJobData(pmap)

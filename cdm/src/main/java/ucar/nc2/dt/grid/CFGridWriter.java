@@ -480,23 +480,23 @@ public class CFGridWriter {
 		writer.flush();
 		
 		//should we add them if they are not present??
-		if(writer.findGlobalAttribute(ACDD.LAT_MIN)!=null){
-			Attribute from = writer.findGlobalAttribute(ACDD.LAT_MIN);
+        Attribute from = writer.findGlobalAttribute(ACDD.LAT_MIN);
+        if(from !=null){
 			updateAttribute(writer, from, ACDD.LAT_MIN, llRect.getLatMin());
-		}	
-		
-		if(writer.findGlobalAttribute(ACDD.LAT_MAX)!=null){
-			Attribute from = writer.findGlobalAttribute("@"+ACDD.LAT_MAX);
-			updateAttribute(writer, from, ACDD.LAT_MAX, llRect.getLatMax());
-		}	
+		}
 
-		if(writer.findGlobalAttribute(ACDD.LON_MIN)!=null){
-			Attribute from = writer.findGlobalAttribute("@"+ACDD.LON_MIN);
+        from = writer.findGlobalAttribute(ACDD.LAT_MAX);
+        if(from !=null){
+			updateAttribute(writer, from, ACDD.LAT_MAX, llRect.getLatMax());
+		}
+
+        from = writer.findGlobalAttribute(ACDD.LON_MIN);
+        if(from !=null){
 			updateAttribute(writer, from, ACDD.LON_MIN, llRect.getLonMin());
 		}
-		
-		if(writer.findGlobalAttribute(ACDD.LON_MAX)!=null){
-			Attribute from = writer.findGlobalAttribute(ACDD.LON_MAX);
+
+        from = writer.findGlobalAttribute(ACDD.LON_MAX);
+        if(from !=null){
 			updateAttribute(writer, from, ACDD.LON_MAX, llRect.getLonMax());
 		}	
 	}
@@ -547,7 +547,7 @@ public class CFGridWriter {
 		latVar.setDimensions(dims);
 		latVar.addAttribute(new Attribute(CDM.UNITS, CDM.LAT_UNITS));
 		latVar.addAttribute(new Attribute(CDM.LONG_NAME, "latitude coordinate"));
-		latVar.addAttribute(new Attribute("standard_name", "latitude"));
+		latVar.addAttribute(new Attribute(CF.STANDARD_NAME, "latitude"));
 		latVar.addAttribute(new Attribute(_Coordinate.AxisType, AxisType.Lat.toString()));
 
 		Variable lonVar = new Variable(ncfile, null, null, "lon");
@@ -555,7 +555,7 @@ public class CFGridWriter {
 		lonVar.setDimensions(dims);
 		lonVar.addAttribute(new Attribute(CDM.UNITS, CDM.LON_UNITS));
 		lonVar.addAttribute(new Attribute(CDM.LONG_NAME, "longitude coordinate"));
-		lonVar.addAttribute(new Attribute("standard_name", "longitude"));
+		lonVar.addAttribute(new Attribute(CF.STANDARD_NAME, "longitude"));
 		lonVar.addAttribute(new Attribute(_Coordinate.AxisType, AxisType.Lon.toString()));
 
 		int nx = xData.length;

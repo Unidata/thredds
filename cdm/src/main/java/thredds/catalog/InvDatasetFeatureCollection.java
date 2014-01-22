@@ -128,10 +128,6 @@ public abstract class InvDatasetFeatureCollection extends InvCatalogRef implemen
       result =  new InvDatasetFcPoint(parent, name, path, fcType, config);
     }
 
-    if (result != null) {
-      result.finishConstruction(); // stuff that shouldnt be done in a constructor
-    }
-
     return result;
   }
 
@@ -211,7 +207,7 @@ public abstract class InvDatasetFeatureCollection extends InvCatalogRef implemen
 
   // stuff that shouldnt be done in a constructor - eg dont let 'this' escape
   // LOOK maybe not best design to start tasks from here
-  protected void finishConstruction() {
+  public void finishConstruction() {
     dcm.addEventListener(this); // now wired for events
     CollectionUpdater.INSTANCE.scheduleTasks(config, dcm, logger); // see if any background tasks are needed
   }
@@ -222,6 +218,7 @@ public abstract class InvDatasetFeatureCollection extends InvCatalogRef implemen
 
   // call this first time a request comes in
   protected void firstInit() {
+    finishConstruction(); // now that we have all metadata read in
     this.orgService = getServiceDefault();
     if (this.orgService == null) throw new IllegalStateException("No default service for InvDatasetFeatureCollection "+name);
     this.virtualService = makeVirtualService(this.orgService);

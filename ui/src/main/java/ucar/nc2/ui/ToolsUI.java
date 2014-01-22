@@ -106,7 +106,8 @@ import java.util.List;
  *
  * @author caron
  */
-public class ToolsUI extends JPanel {
+public class
+    ToolsUI extends JPanel {
   static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(ToolsUI.class);
 
   static private final String WorldDetailMap = "/resources/nj22/ui/maps/Countries.zip";
@@ -5987,6 +5988,8 @@ public class ToolsUI extends JPanel {
         String arg = args[i];
         System.out.println(" " + arg);
       }
+
+        HTTPSession.debugHeaders();
     }
 
     //////////////////////////////////////////////////////////////////////////

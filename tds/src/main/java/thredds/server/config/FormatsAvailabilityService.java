@@ -34,7 +34,6 @@ public final class FormatsAvailabilityService {
 
 	static void setFormatAvailability(SupportedFormat format, boolean available){
 		
-		formatsAvailability.put(format, available); 
-
+		formatsAvailability.put(format, available);
 	}	
 }

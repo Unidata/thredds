@@ -33,18 +33,11 @@
 package ucar.nc2.util.net;
 
 import org.apache.http.*;
-import org.apache.http.protocol.HttpContext;
 import org.junit.Test;
-
-import static junit.framework.TestCase.*;
 
 import ucar.nc2.util.UnitTestCommon;
 import org.apache.http.client.CredentialsProvider;
 import org.apache.http.message.AbstractHttpMessage;
-
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 
 import static ucar.nc2.util.net.HTTPSession.*;
 
@@ -84,11 +77,12 @@ public class TestHTTPSession extends UnitTestCommon
         System.out.println("*** Testing: User Agent");
         System.out.println("*** URL: " + TESTURL1);
         System.out.println("Test: HTTPSession.setGlobalUserAgent(" + GLOBALAGENT + ")");
-        HTTPSession.setGlobalUserAgent(GLOBALAGENT);
-        HTTPSession session = HTTPFactory.newSession(TESTURL1);
 
         UnitTestCommon.InterceptRequest interceptor = new UnitTestCommon.InterceptRequest();
-        session.debugInterceptRequest(interceptor);
+        HTTPSession.debugGlobal(interceptor,null);
+
+        HTTPSession.setGlobalUserAgent(GLOBALAGENT);
+        HTTPSession session = HTTPFactory.newSession(TESTURL1);
 
         HTTPMethod method = HTTPFactory.Get(session);
         method.execute();
@@ -132,7 +126,7 @@ public class TestHTTPSession extends UnitTestCommon
         session.setConnectionTimeout(37777);
         session.setMaxRedirects(111);
         CredentialsProvider bp = new HTTPBasicProvider("anyuser", "password");
-        session.setCredentialsProvider(HTTPAuthScheme.BASIC, bp);
+        session.setCredentialsProvider(HTTPAuthPolicy.BASIC, bp);
         //session.setAuthorizationPreemptive(true); not implemented
 
         HTTPMethod method = HTTPFactory.Get(session);

@@ -140,6 +140,10 @@ public class ColumnWidthsResizer implements TableModelListener, TableColumnModel
 
     public static int getCellWidth(JTable table, int rowViewIndex, int colViewIndex) {
         TableCellRenderer cellRenderer = table.getCellRenderer(rowViewIndex, colViewIndex);
+        int nrows = table.getRowCount();
+        int ncols = table.getColumnCount();
+        if (rowViewIndex >= nrows || colViewIndex >= ncols)
+          System.out.println("HEY ColumnWidthsResizer");
         Object value = table.getValueAt(rowViewIndex, colViewIndex);
 
         Component cellRendererComp =

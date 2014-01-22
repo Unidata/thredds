@@ -195,6 +195,7 @@ public class PointWriter extends AbstractWriter {
 
   private void scan(PointFeatureCollection collection, CalendarDateRange range, Predicate p, Action a, Limit limit) throws IOException {
 
+    collection.resetIteration();
     while (collection.hasNext()) {
       PointFeature pf = collection.next();
 
@@ -553,9 +554,11 @@ public class PointWriter extends AbstractWriter {
       if (!isStream) {
         httpHeaders.set("Content-Location", pathInfo);
         httpHeaders.set("Content-Disposition", "attachment; filename=\"" + NcssRequestUtils.nameFromPathInfo(pathInfo) + ".csv\"");
+        httpHeaders.add(ContentType.HEADER, ContentType.csv.getContentHeader());
+      } else {
+        httpHeaders.add(ContentType.HEADER, ContentType.text.getContentHeader());
       }
 
-      httpHeaders.set(ContentType.HEADER, wantFormat.getResponseContentType());
       return httpHeaders;
     }
 
