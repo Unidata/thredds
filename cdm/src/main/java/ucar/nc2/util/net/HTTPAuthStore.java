@@ -83,7 +83,7 @@ class HTTPAuthStore implements Serializable
     //////////////////////////////////////////////////
     // Class variables
 
-    static public boolean TESTING = true;
+    static public boolean TESTING = false;
 
     //////////////////////////////////////////////////
     // Type Decls

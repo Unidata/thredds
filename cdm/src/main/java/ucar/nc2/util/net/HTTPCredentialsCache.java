@@ -82,7 +82,7 @@ public class HTTPCredentialsCache implements CredentialsProvider
 
     //////////////////////////////////////////////////
 
-    static boolean TESTING = true;
+    static boolean TESTING = false;
 
     //////////////////////////////////////////////////
     // Instance variables

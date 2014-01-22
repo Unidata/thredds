@@ -846,7 +846,7 @@ public class HTTPSession
     // test within a single jvm.
     static List<HTTPSession> sessionList = null; // List of all HTTPSession instances
     // only used when testing flag is set
-    static public boolean TESTING = true; // set to true during testing, should be false otherwise
+    static public boolean TESTING = false; // set to true during testing, should be false otherwise
 
 
     static protected synchronized void kill()
