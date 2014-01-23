@@ -61,7 +61,7 @@ public class CoordinateTime2D implements Coordinate {
   private final int nruns;
   private final int ntimes;
 
-  private String name;
+  private String name = "time";
   private CalendarPeriod timeUnit;
   private String periodName;
 
@@ -184,7 +184,24 @@ public class CoordinateTime2D implements Coordinate {
       this.periodName = timeUnit.getField().toString();
   }
 
-    ///////////////////////////////////////////////////////
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) return true;
+    if (o == null || getClass() != o.getClass()) return false;
+
+    CoordinateTime2D that = (CoordinateTime2D) o;
+
+    if (!vals.equals(that.vals)) return false;
+
+    return true;
+  }
+
+  @Override
+  public int hashCode() {
+    return vals.hashCode();
+  }
+
+  ///////////////////////////////////////////////////////
 
   public static class Time2D implements Comparable<Time2D> {
     CalendarDate run;
@@ -195,9 +212,6 @@ public class CoordinateTime2D implements Coordinate {
       this.run = run;
       this.time = time;
       this.tinv = tinv;
-
-      if (run == null)
-        System.out.println("HEY");
     }
 
     @Override
@@ -220,6 +234,12 @@ public class CoordinateTime2D implements Coordinate {
       result = 31 * result + (time != null ? time.hashCode() : 0);
       result = 31 * result + (tinv != null ? tinv.hashCode() : 0);
       return result;
+    }
+
+    @Override
+    public String toString() {
+      if (time != null) return time.toString();
+      else return tinv.toString();
     }
 
     @Override
