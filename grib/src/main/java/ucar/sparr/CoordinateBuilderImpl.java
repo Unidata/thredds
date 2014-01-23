@@ -19,11 +19,13 @@ public abstract class CoordinateBuilderImpl<T> implements CoordinateBuilder<T> {
     valSet.add(val);
   }
 
+  @Override
   public void addAll(Coordinate coord) {
    for (Object val : coord.getValues())
       valSet.add(val);
   }
 
+  @Override
   public void addAll(List<Object> coords) {
    for (Object val : coords)
       valSet.add(val);

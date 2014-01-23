@@ -63,21 +63,25 @@ public class SparseArray<T> {
     track[where] = content.size();  // 1-based so that 0 = missing, so content at where = content.get(track[where]-1)
   }
 
-  public T fetch(int[] index) {
-    int where = calcIndex(index);
-    if (track[where] == 0) return null; // missing
-    int idx = track[where-1];
-    return content.get(idx);
-  }
-
   public int calcIndex(int... index) {
-    if (index.length != size.length)
-      System.out.println("HEY");
     assert index.length == size.length;
     int result = 0;
     for (int ii = 0; ii < index.length; ii++)
       result += index[ii] * stride[ii];
     return result;
+  }
+
+  public T getContent(int idx) {
+    if (idx > track.length)
+      System.out.println("HEY");
+    int contentIdx = track[idx]-1;
+    if (contentIdx < 0) return null; // missing
+    return content.get(contentIdx);
+  }
+
+  public T getContent(int[] index) {
+    int where = calcIndex(index);
+    return getContent(where);
   }
 
   public int[] getShape() {
@@ -110,16 +114,6 @@ public class SparseArray<T> {
 
   public List<T> getContent() {
     return content;
-  }
-
-  public T getContent(int idx) {
-    if (idx >= track.length)
-      System.out.println("HEY");
-    int contentIdx = track[idx]-1;
-    if (contentIdx<0) return null; // missing
-    if (contentIdx >= content.size())
-      System.out.println("HEY");
-    return content.get(contentIdx);
   }
 
   public void setContent(List<T> content) {

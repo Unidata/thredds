@@ -97,6 +97,7 @@ public class Grib2Rectilyser {
   List<MFile> files = null; // temp debug
   public void make(FeatureCollectionConfig.GribConfig config, List<MFile> files, Counter counter, Formatter info) throws IOException {
     this.files = files;
+    boolean isDense = (config != null) && "dense".equals(config.getParameter("CoordSys"));
 
     // assign each record to unique variable using cdmVariableHash()
     Map<Integer, VariableBag> vbHash = new HashMap<>(100);
@@ -118,12 +119,18 @@ public class Grib2Rectilyser {
       int unit = cust.convertTimeUnit(pdsFirst.getTimeUnit());
       vb.timeUnit = Grib2Utils.getCalendarPeriod(unit);
       vb.coordND = new CoordinateND<>();
-      vb.coordND.addBuilder(new CoordinateRuntime.Builder());
 
-      if (vb.first.getPDS().isTimeInterval())
-        vb.coordND.addBuilder(new CoordinateTimeIntv.Builder(cust, vb.timeUnit, unit));
-      else
-        vb.coordND.addBuilder(new CoordinateTime.Builder(pdsFirst.getTimeUnit()));
+      boolean isTimeInterval = vb.first.getPDS().isTimeInterval();
+      if (isDense) { // time is runtime X time coord
+        vb.coordND.addBuilder(new CoordinateRuntime.Builder());
+        if (isTimeInterval)
+          vb.coordND.addBuilder(new CoordinateTimeIntv.Builder(cust, vb.timeUnit, unit));
+        else
+          vb.coordND.addBuilder(new CoordinateTime.Builder(pdsFirst.getTimeUnit()));
+
+      } else {  // time is kept as 2D coordinate, separate list of times for each runtime
+        vb.coordND.addBuilder(new CoordinateTime2D.Builder(isTimeInterval, cust, vb.timeUnit, unit));
+      }
 
       VertCoord.VertUnit vertUnit = Grib2Utils.getLevelUnit(pdsFirst.getLevelType1());
       if (vertUnit.isVerticalCoordinate())
@@ -137,8 +144,7 @@ public class Grib2Rectilyser {
     }
 
     // make shared coordinates
-    boolean isDense = (config != null) && "dense".equals(config.getParameter("CoordSys"));
-    CoordinateSharer sharify = new CoordinateSharer(!isDense);
+    CoordinateSharer sharify = new CoordinateSharer(isDense);
     for (VariableBag vb : gribvars) {
       sharify.addCoords(vb.coordND.getCoordinates());
     }

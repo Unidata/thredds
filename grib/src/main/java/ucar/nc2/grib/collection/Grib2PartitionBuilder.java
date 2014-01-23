@@ -353,6 +353,7 @@ public class Grib2PartitionBuilder extends Grib2CollectionBuilder {
         if (group == null) continue;
         for (Coordinate coord : group.coords) {
           if (coord.getType() == Coordinate.Type.runtime) {
+            CoordinateRuntime runCoord = (CoordinateRuntime) coord;
             for (Object val : coord.getValues()) {
               int idx = runtimeCoord.getIndex(val);
               resultGroup.run2part[idx] = partno;     // note that later partitions will override earlier if they have the same runtime
@@ -448,7 +449,8 @@ public class Grib2PartitionBuilder extends Grib2CollectionBuilder {
           runIdx++;
         }
 
-        ((PartitionCollection.VariableIndexPartitioned)viResult).twot = twot;
+        viResult.twot = twot;
+        viResult.isTwod = true;
 
         /* Formatter ff = new Formatter(System.out);
         ff.format("Variable %s%n", viResult.toStringShort());
@@ -509,13 +511,16 @@ public class Grib2PartitionBuilder extends Grib2CollectionBuilder {
           vip.time2runtime = makeTime2RuntimeMap(runOffset, time2d, timeBest, ((PartitionCollection.VariableIndexPartitioned) vi2d).twot);
         }
 
-        // remove runtime coordinate from list
+        // do not remove runtime coordinate, just set isTwoD
+        vip.isTwod = false;
+
+        /* remove runtime coordinate from list
         List<Integer> result = new ArrayList<>();
         for (Integer idx : vip.coordIndex) {
           Coordinate c = groupB.coords.get(idx);
           if (c.getType() != Coordinate.Type.runtime) result.add(idx);
         }
-        vip.coordIndex = result;
+        vip.coordIndex = result; */
       }
 
     } // loop over groups

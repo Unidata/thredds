@@ -3,7 +3,7 @@ package ucar.sparr;
 import java.util.List;
 
 /**
- * Build Coordinates heirarchically, keeping records at the leaves
+ * Builds Coordinates
  * Finds distinct values
  *
  * @author caron

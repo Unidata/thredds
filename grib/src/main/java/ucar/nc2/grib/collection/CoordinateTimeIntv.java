@@ -188,7 +188,6 @@ public class CoordinateTimeIntv implements Coordinate {
       this.code = code;
     }
 
-
     @Override
     public Object extract(Grib2Record gr) {
       CalendarDate refDate =  gr.getReferenceDate();

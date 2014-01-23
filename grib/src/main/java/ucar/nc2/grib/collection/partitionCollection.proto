@@ -9,7 +9,6 @@ message PartitionVariable {
   required uint32 varno = 2;
   required uint32 flag = 3;
   required uint32 partno = 4;
-  required uint32 offset = 5;
 
   // optionally keep stats
   optional float density = 7;

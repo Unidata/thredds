@@ -120,6 +120,55 @@ public class PartitionCollection extends GribCollection {
     }
 
     /**
+     * translate index in VariableIndexPartitioned to corresponding index in one of its component VariableIndex
+     * by matching coordinate values
+     *
+     * @param wholeIndex  indexes in VariableIndexPartitioned
+     * @param vindex      component 2D VariableIndex
+     * @return corresponding index in VariableIndex, or null if missing
+     */
+    int[] translateIndex1D(int[] wholeIndex, GribCollection.VariableIndex vindex) {
+      int[] result = new int[wholeIndex.length+1];
+
+      // figure out the runtime
+      int timeIdx = wholeIndex[0];
+      int runtimeIdxWhole = time2runtime[timeIdx];
+      int runtimeIdxPart = matchCoordinate(getCoordinate(0), runtimeIdxWhole, vindex.getCoordinate(0));
+      if (runtimeIdxPart < 0) return null;
+      result[0] = runtimeIdxPart;
+
+      // figure out the time and any other dimensions
+      int countDim = 0;
+      for (int idx : wholeIndex) {
+        int resultIdx = matchCoordinate(getCoordinate(countDim), idx, vindex.getCoordinate(countDim+1));
+        if (resultIdx < 0) return null;
+        result[countDim+1] = resultIdx;
+        countDim++;
+      }
+
+      return result;
+    }
+
+    int[] translateIndex2D(int[] wholeIndex, GribCollection.VariableIndex vindex) {
+
+      int[] result = new int[wholeIndex.length];
+      int countDim = 0;
+      for (int idx : wholeIndex) {
+        int resultIdx = matchCoordinate(getCoordinate(countDim), idx, vindex.getCoordinate(countDim));
+        if (resultIdx < 0) return null;
+        result[countDim] = resultIdx;
+        countDim++;
+      }
+
+      return result;
+    }
+
+    int matchCoordinate(Coordinate whole, int wholeIdx, Coordinate part) {
+      Object val = whole.getValue(wholeIdx);
+      if (val == null) return -1;
+      return part.getIndex(val);
+    }
+    /**
      * Get VariableIndex for this partition
      *
      * @param partno partition number

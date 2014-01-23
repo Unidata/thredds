@@ -36,18 +36,21 @@ message Variable {
 
    repeated uint32 invCount = 15;      // for Coordinate TwoTimer, only 2D vars
    repeated uint32 time2runtime = 16;  // time index to runtime index, only 1D vars
+
    repeated Parameter params = 20;    // not used yet
 
    extensions 100 to 199;
  }
 
 message Coord {
-  required int32 type = 1;   // Coordinate.Type.oridinal
+  required int32 type = 1;   // Coordinate.Type.ordinal
   required int32 code = 2;   // time unit; level type
   optional string unit = 3;
   repeated float values = 4;
   repeated float bound = 5; // only used if interval, then = (value, bound)
-  repeated int64 msecs = 6; // calendar date
+  repeated int64 msecs = 6; // calendar date : runtime, time2D
+
+  repeated Coord times = 7; // time2D only
 }
 
 message MFile {

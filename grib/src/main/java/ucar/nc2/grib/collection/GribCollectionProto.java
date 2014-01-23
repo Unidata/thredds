@@ -4385,7 +4385,7 @@ public final class GribCollectionProto {
      * <code>required int32 type = 1;</code>
      *
      * <pre>
-     * Coordinate.Type.oridinal
+     * Coordinate.Type.ordinal
      * </pre>
      */
     boolean hasType();
@@ -4393,7 +4393,7 @@ public final class GribCollectionProto {
      * <code>required int32 type = 1;</code>
      *
      * <pre>
-     * Coordinate.Type.oridinal
+     * Coordinate.Type.ordinal
      * </pre>
      */
     int getType();
@@ -4476,7 +4476,7 @@ public final class GribCollectionProto {
      * <code>repeated int64 msecs = 6;</code>
      *
      * <pre>
-     * calendar date
+     * calendar date : runtime, time2D
      * </pre>
      */
     java.util.List<java.lang.Long> getMsecsList();
@@ -4484,7 +4484,7 @@ public final class GribCollectionProto {
      * <code>repeated int64 msecs = 6;</code>
      *
      * <pre>
-     * calendar date
+     * calendar date : runtime, time2D
      * </pre>
      */
     int getMsecsCount();
@@ -4492,10 +4492,55 @@ public final class GribCollectionProto {
      * <code>repeated int64 msecs = 6;</code>
      *
      * <pre>
-     * calendar date
+     * calendar date : runtime, time2D
      * </pre>
      */
     long getMsecs(int index);
+
+    // repeated .Coord times = 7;
+    /**
+     * <code>repeated .Coord times = 7;</code>
+     *
+     * <pre>
+     * time2D only
+     * </pre>
+     */
+    java.util.List<ucar.nc2.grib.collection.GribCollectionProto.Coord> 
+        getTimesList();
+    /**
+     * <code>repeated .Coord times = 7;</code>
+     *
+     * <pre>
+     * time2D only
+     * </pre>
+     */
+    ucar.nc2.grib.collection.GribCollectionProto.Coord getTimes(int index);
+    /**
+     * <code>repeated .Coord times = 7;</code>
+     *
+     * <pre>
+     * time2D only
+     * </pre>
+     */
+    int getTimesCount();
+    /**
+     * <code>repeated .Coord times = 7;</code>
+     *
+     * <pre>
+     * time2D only
+     * </pre>
+     */
+    java.util.List<? extends ucar.nc2.grib.collection.GribCollectionProto.CoordOrBuilder> 
+        getTimesOrBuilderList();
+    /**
+     * <code>repeated .Coord times = 7;</code>
+     *
+     * <pre>
+     * time2D only
+     * </pre>
+     */
+    ucar.nc2.grib.collection.GribCollectionProto.CoordOrBuilder getTimesOrBuilder(
+        int index);
   }
   /**
    * Protobuf type {@code Coord}
@@ -4626,6 +4671,14 @@ public final class GribCollectionProto {
               input.popLimit(limit);
               break;
             }
+            case 58: {
+              if (!((mutable_bitField0_ & 0x00000040) == 0x00000040)) {
+                times_ = new java.util.ArrayList<ucar.nc2.grib.collection.GribCollectionProto.Coord>();
+                mutable_bitField0_ |= 0x00000040;
+              }
+              times_.add(input.readMessage(ucar.nc2.grib.collection.GribCollectionProto.Coord.PARSER, extensionRegistry));
+              break;
+            }
           }
         }
       } catch (com.google.protobuf.InvalidProtocolBufferException e) {
@@ -4642,6 +4695,9 @@ public final class GribCollectionProto {
         }
         if (((mutable_bitField0_ & 0x00000020) == 0x00000020)) {
           msecs_ = java.util.Collections.unmodifiableList(msecs_);
+        }
+        if (((mutable_bitField0_ & 0x00000040) == 0x00000040)) {
+          times_ = java.util.Collections.unmodifiableList(times_);
         }
         this.unknownFields = unknownFields.build();
         makeExtensionsImmutable();
@@ -4682,7 +4738,7 @@ public final class GribCollectionProto {
      * <code>required int32 type = 1;</code>
      *
      * <pre>
-     * Coordinate.Type.oridinal
+     * Coordinate.Type.ordinal
      * </pre>
      */
     public boolean hasType() {
@@ -4692,7 +4748,7 @@ public final class GribCollectionProto {
      * <code>required int32 type = 1;</code>
      *
      * <pre>
-     * Coordinate.Type.oridinal
+     * Coordinate.Type.ordinal
      * </pre>
      */
     public int getType() {
@@ -4831,7 +4887,7 @@ public final class GribCollectionProto {
      * <code>repeated int64 msecs = 6;</code>
      *
      * <pre>
-     * calendar date
+     * calendar date : runtime, time2D
      * </pre>
      */
     public java.util.List<java.lang.Long>
@@ -4842,7 +4898,7 @@ public final class GribCollectionProto {
      * <code>repeated int64 msecs = 6;</code>
      *
      * <pre>
-     * calendar date
+     * calendar date : runtime, time2D
      * </pre>
      */
     public int getMsecsCount() {
@@ -4852,11 +4908,67 @@ public final class GribCollectionProto {
      * <code>repeated int64 msecs = 6;</code>
      *
      * <pre>
-     * calendar date
+     * calendar date : runtime, time2D
      * </pre>
      */
     public long getMsecs(int index) {
       return msecs_.get(index);
+    }
+
+    // repeated .Coord times = 7;
+    public static final int TIMES_FIELD_NUMBER = 7;
+    private java.util.List<ucar.nc2.grib.collection.GribCollectionProto.Coord> times_;
+    /**
+     * <code>repeated .Coord times = 7;</code>
+     *
+     * <pre>
+     * time2D only
+     * </pre>
+     */
+    public java.util.List<ucar.nc2.grib.collection.GribCollectionProto.Coord> getTimesList() {
+      return times_;
+    }
+    /**
+     * <code>repeated .Coord times = 7;</code>
+     *
+     * <pre>
+     * time2D only
+     * </pre>
+     */
+    public java.util.List<? extends ucar.nc2.grib.collection.GribCollectionProto.CoordOrBuilder> 
+        getTimesOrBuilderList() {
+      return times_;
+    }
+    /**
+     * <code>repeated .Coord times = 7;</code>
+     *
+     * <pre>
+     * time2D only
+     * </pre>
+     */
+    public int getTimesCount() {
+      return times_.size();
+    }
+    /**
+     * <code>repeated .Coord times = 7;</code>
+     *
+     * <pre>
+     * time2D only
+     * </pre>
+     */
+    public ucar.nc2.grib.collection.GribCollectionProto.Coord getTimes(int index) {
+      return times_.get(index);
+    }
+    /**
+     * <code>repeated .Coord times = 7;</code>
+     *
+     * <pre>
+     * time2D only
+     * </pre>
+     */
+    public ucar.nc2.grib.collection.GribCollectionProto.CoordOrBuilder getTimesOrBuilder(
+        int index) {
+      return times_.get(index);
     }
 
     private void initFields() {
@@ -4866,6 +4978,7 @@ public final class GribCollectionProto {
       values_ = java.util.Collections.emptyList();
       bound_ = java.util.Collections.emptyList();
       msecs_ = java.util.Collections.emptyList();
+      times_ = java.util.Collections.emptyList();
     }
     private byte memoizedIsInitialized = -1;
     public final boolean isInitialized() {
@@ -4879,6 +4992,12 @@ public final class GribCollectionProto {
       if (!hasCode()) {
         memoizedIsInitialized = 0;
         return false;
+      }
+      for (int i = 0; i < getTimesCount(); i++) {
+        if (!getTimes(i).isInitialized()) {
+          memoizedIsInitialized = 0;
+          return false;
+        }
       }
       memoizedIsInitialized = 1;
       return true;
@@ -4904,6 +5023,9 @@ public final class GribCollectionProto {
       }
       for (int i = 0; i < msecs_.size(); i++) {
         output.writeInt64(6, msecs_.get(i));
+      }
+      for (int i = 0; i < times_.size(); i++) {
+        output.writeMessage(7, times_.get(i));
       }
       getUnknownFields().writeTo(output);
     }
@@ -4946,6 +5068,10 @@ public final class GribCollectionProto {
         }
         size += dataSize;
         size += 1 * getMsecsList().size();
+      }
+      for (int i = 0; i < times_.size(); i++) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeMessageSize(7, times_.get(i));
       }
       size += getUnknownFields().getSerializedSize();
       memoizedSerializedSize = size;
@@ -5055,6 +5181,7 @@ public final class GribCollectionProto {
       }
       private void maybeForceBuilderInitialization() {
         if (com.google.protobuf.GeneratedMessage.alwaysUseFieldBuilders) {
+          getTimesFieldBuilder();
         }
       }
       private static Builder create() {
@@ -5075,6 +5202,12 @@ public final class GribCollectionProto {
         bitField0_ = (bitField0_ & ~0x00000010);
         msecs_ = java.util.Collections.emptyList();
         bitField0_ = (bitField0_ & ~0x00000020);
+        if (timesBuilder_ == null) {
+          times_ = java.util.Collections.emptyList();
+          bitField0_ = (bitField0_ & ~0x00000040);
+        } else {
+          timesBuilder_.clear();
+        }
         return this;
       }
 
@@ -5130,6 +5263,15 @@ public final class GribCollectionProto {
           bitField0_ = (bitField0_ & ~0x00000020);
         }
         result.msecs_ = msecs_;
+        if (timesBuilder_ == null) {
+          if (((bitField0_ & 0x00000040) == 0x00000040)) {
+            times_ = java.util.Collections.unmodifiableList(times_);
+            bitField0_ = (bitField0_ & ~0x00000040);
+          }
+          result.times_ = times_;
+        } else {
+          result.times_ = timesBuilder_.build();
+        }
         result.bitField0_ = to_bitField0_;
         onBuilt();
         return result;
@@ -5187,6 +5329,32 @@ public final class GribCollectionProto {
           }
           onChanged();
         }
+        if (timesBuilder_ == null) {
+          if (!other.times_.isEmpty()) {
+            if (times_.isEmpty()) {
+              times_ = other.times_;
+              bitField0_ = (bitField0_ & ~0x00000040);
+            } else {
+              ensureTimesIsMutable();
+              times_.addAll(other.times_);
+            }
+            onChanged();
+          }
+        } else {
+          if (!other.times_.isEmpty()) {
+            if (timesBuilder_.isEmpty()) {
+              timesBuilder_.dispose();
+              timesBuilder_ = null;
+              times_ = other.times_;
+              bitField0_ = (bitField0_ & ~0x00000040);
+              timesBuilder_ = 
+                com.google.protobuf.GeneratedMessage.alwaysUseFieldBuilders ?
+                   getTimesFieldBuilder() : null;
+            } else {
+              timesBuilder_.addAllMessages(other.times_);
+            }
+          }
+        }
         this.mergeUnknownFields(other.getUnknownFields());
         return this;
       }
@@ -5199,6 +5367,12 @@ public final class GribCollectionProto {
         if (!hasCode()) {
           
           return false;
+        }
+        for (int i = 0; i < getTimesCount(); i++) {
+          if (!getTimes(i).isInitialized()) {
+            
+            return false;
+          }
         }
         return true;
       }
@@ -5228,7 +5402,7 @@ public final class GribCollectionProto {
        * <code>required int32 type = 1;</code>
        *
        * <pre>
-       * Coordinate.Type.oridinal
+       * Coordinate.Type.ordinal
        * </pre>
        */
       public boolean hasType() {
@@ -5238,7 +5412,7 @@ public final class GribCollectionProto {
        * <code>required int32 type = 1;</code>
        *
        * <pre>
-       * Coordinate.Type.oridinal
+       * Coordinate.Type.ordinal
        * </pre>
        */
       public int getType() {
@@ -5248,7 +5422,7 @@ public final class GribCollectionProto {
        * <code>required int32 type = 1;</code>
        *
        * <pre>
-       * Coordinate.Type.oridinal
+       * Coordinate.Type.ordinal
        * </pre>
        */
       public Builder setType(int value) {
@@ -5261,7 +5435,7 @@ public final class GribCollectionProto {
        * <code>required int32 type = 1;</code>
        *
        * <pre>
-       * Coordinate.Type.oridinal
+       * Coordinate.Type.ordinal
        * </pre>
        */
       public Builder clearType() {
@@ -5566,7 +5740,7 @@ public final class GribCollectionProto {
        * <code>repeated int64 msecs = 6;</code>
        *
        * <pre>
-       * calendar date
+       * calendar date : runtime, time2D
        * </pre>
        */
       public java.util.List<java.lang.Long>
@@ -5577,7 +5751,7 @@ public final class GribCollectionProto {
        * <code>repeated int64 msecs = 6;</code>
        *
        * <pre>
-       * calendar date
+       * calendar date : runtime, time2D
        * </pre>
        */
       public int getMsecsCount() {
@@ -5587,7 +5761,7 @@ public final class GribCollectionProto {
        * <code>repeated int64 msecs = 6;</code>
        *
        * <pre>
-       * calendar date
+       * calendar date : runtime, time2D
        * </pre>
        */
       public long getMsecs(int index) {
@@ -5597,7 +5771,7 @@ public final class GribCollectionProto {
        * <code>repeated int64 msecs = 6;</code>
        *
        * <pre>
-       * calendar date
+       * calendar date : runtime, time2D
        * </pre>
        */
       public Builder setMsecs(
@@ -5611,7 +5785,7 @@ public final class GribCollectionProto {
        * <code>repeated int64 msecs = 6;</code>
        *
        * <pre>
-       * calendar date
+       * calendar date : runtime, time2D
        * </pre>
        */
       public Builder addMsecs(long value) {
@@ -5624,7 +5798,7 @@ public final class GribCollectionProto {
        * <code>repeated int64 msecs = 6;</code>
        *
        * <pre>
-       * calendar date
+       * calendar date : runtime, time2D
        * </pre>
        */
       public Builder addAllMsecs(
@@ -5638,7 +5812,7 @@ public final class GribCollectionProto {
        * <code>repeated int64 msecs = 6;</code>
        *
        * <pre>
-       * calendar date
+       * calendar date : runtime, time2D
        * </pre>
        */
       public Builder clearMsecs() {
@@ -5646,6 +5820,318 @@ public final class GribCollectionProto {
         bitField0_ = (bitField0_ & ~0x00000020);
         onChanged();
         return this;
+      }
+
+      // repeated .Coord times = 7;
+      private java.util.List<ucar.nc2.grib.collection.GribCollectionProto.Coord> times_ =
+        java.util.Collections.emptyList();
+      private void ensureTimesIsMutable() {
+        if (!((bitField0_ & 0x00000040) == 0x00000040)) {
+          times_ = new java.util.ArrayList<ucar.nc2.grib.collection.GribCollectionProto.Coord>(times_);
+          bitField0_ |= 0x00000040;
+         }
+      }
+
+      private com.google.protobuf.RepeatedFieldBuilder<
+          ucar.nc2.grib.collection.GribCollectionProto.Coord, ucar.nc2.grib.collection.GribCollectionProto.Coord.Builder, ucar.nc2.grib.collection.GribCollectionProto.CoordOrBuilder> timesBuilder_;
+
+      /**
+       * <code>repeated .Coord times = 7;</code>
+       *
+       * <pre>
+       * time2D only
+       * </pre>
+       */
+      public java.util.List<ucar.nc2.grib.collection.GribCollectionProto.Coord> getTimesList() {
+        if (timesBuilder_ == null) {
+          return java.util.Collections.unmodifiableList(times_);
+        } else {
+          return timesBuilder_.getMessageList();
+        }
+      }
+      /**
+       * <code>repeated .Coord times = 7;</code>
+       *
+       * <pre>
+       * time2D only
+       * </pre>
+       */
+      public int getTimesCount() {
+        if (timesBuilder_ == null) {
+          return times_.size();
+        } else {
+          return timesBuilder_.getCount();
+        }
+      }
+      /**
+       * <code>repeated .Coord times = 7;</code>
+       *
+       * <pre>
+       * time2D only
+       * </pre>
+       */
+      public ucar.nc2.grib.collection.GribCollectionProto.Coord getTimes(int index) {
+        if (timesBuilder_ == null) {
+          return times_.get(index);
+        } else {
+          return timesBuilder_.getMessage(index);
+        }
+      }
+      /**
+       * <code>repeated .Coord times = 7;</code>
+       *
+       * <pre>
+       * time2D only
+       * </pre>
+       */
+      public Builder setTimes(
+          int index, ucar.nc2.grib.collection.GribCollectionProto.Coord value) {
+        if (timesBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          ensureTimesIsMutable();
+          times_.set(index, value);
+          onChanged();
+        } else {
+          timesBuilder_.setMessage(index, value);
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .Coord times = 7;</code>
+       *
+       * <pre>
+       * time2D only
+       * </pre>
+       */
+      public Builder setTimes(
+          int index, ucar.nc2.grib.collection.GribCollectionProto.Coord.Builder builderForValue) {
+        if (timesBuilder_ == null) {
+          ensureTimesIsMutable();
+          times_.set(index, builderForValue.build());
+          onChanged();
+        } else {
+          timesBuilder_.setMessage(index, builderForValue.build());
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .Coord times = 7;</code>
+       *
+       * <pre>
+       * time2D only
+       * </pre>
+       */
+      public Builder addTimes(ucar.nc2.grib.collection.GribCollectionProto.Coord value) {
+        if (timesBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          ensureTimesIsMutable();
+          times_.add(value);
+          onChanged();
+        } else {
+          timesBuilder_.addMessage(value);
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .Coord times = 7;</code>
+       *
+       * <pre>
+       * time2D only
+       * </pre>
+       */
+      public Builder addTimes(
+          int index, ucar.nc2.grib.collection.GribCollectionProto.Coord value) {
+        if (timesBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          ensureTimesIsMutable();
+          times_.add(index, value);
+          onChanged();
+        } else {
+          timesBuilder_.addMessage(index, value);
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .Coord times = 7;</code>
+       *
+       * <pre>
+       * time2D only
+       * </pre>
+       */
+      public Builder addTimes(
+          ucar.nc2.grib.collection.GribCollectionProto.Coord.Builder builderForValue) {
+        if (timesBuilder_ == null) {
+          ensureTimesIsMutable();
+          times_.add(builderForValue.build());
+          onChanged();
+        } else {
+          timesBuilder_.addMessage(builderForValue.build());
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .Coord times = 7;</code>
+       *
+       * <pre>
+       * time2D only
+       * </pre>
+       */
+      public Builder addTimes(
+          int index, ucar.nc2.grib.collection.GribCollectionProto.Coord.Builder builderForValue) {
+        if (timesBuilder_ == null) {
+          ensureTimesIsMutable();
+          times_.add(index, builderForValue.build());
+          onChanged();
+        } else {
+          timesBuilder_.addMessage(index, builderForValue.build());
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .Coord times = 7;</code>
+       *
+       * <pre>
+       * time2D only
+       * </pre>
+       */
+      public Builder addAllTimes(
+          java.lang.Iterable<? extends ucar.nc2.grib.collection.GribCollectionProto.Coord> values) {
+        if (timesBuilder_ == null) {
+          ensureTimesIsMutable();
+          super.addAll(values, times_);
+          onChanged();
+        } else {
+          timesBuilder_.addAllMessages(values);
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .Coord times = 7;</code>
+       *
+       * <pre>
+       * time2D only
+       * </pre>
+       */
+      public Builder clearTimes() {
+        if (timesBuilder_ == null) {
+          times_ = java.util.Collections.emptyList();
+          bitField0_ = (bitField0_ & ~0x00000040);
+          onChanged();
+        } else {
+          timesBuilder_.clear();
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .Coord times = 7;</code>
+       *
+       * <pre>
+       * time2D only
+       * </pre>
+       */
+      public Builder removeTimes(int index) {
+        if (timesBuilder_ == null) {
+          ensureTimesIsMutable();
+          times_.remove(index);
+          onChanged();
+        } else {
+          timesBuilder_.remove(index);
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .Coord times = 7;</code>
+       *
+       * <pre>
+       * time2D only
+       * </pre>
+       */
+      public ucar.nc2.grib.collection.GribCollectionProto.Coord.Builder getTimesBuilder(
+          int index) {
+        return getTimesFieldBuilder().getBuilder(index);
+      }
+      /**
+       * <code>repeated .Coord times = 7;</code>
+       *
+       * <pre>
+       * time2D only
+       * </pre>
+       */
+      public ucar.nc2.grib.collection.GribCollectionProto.CoordOrBuilder getTimesOrBuilder(
+          int index) {
+        if (timesBuilder_ == null) {
+          return times_.get(index);  } else {
+          return timesBuilder_.getMessageOrBuilder(index);
+        }
+      }
+      /**
+       * <code>repeated .Coord times = 7;</code>
+       *
+       * <pre>
+       * time2D only
+       * </pre>
+       */
+      public java.util.List<? extends ucar.nc2.grib.collection.GribCollectionProto.CoordOrBuilder> 
+           getTimesOrBuilderList() {
+        if (timesBuilder_ != null) {
+          return timesBuilder_.getMessageOrBuilderList();
+        } else {
+          return java.util.Collections.unmodifiableList(times_);
+        }
+      }
+      /**
+       * <code>repeated .Coord times = 7;</code>
+       *
+       * <pre>
+       * time2D only
+       * </pre>
+       */
+      public ucar.nc2.grib.collection.GribCollectionProto.Coord.Builder addTimesBuilder() {
+        return getTimesFieldBuilder().addBuilder(
+            ucar.nc2.grib.collection.GribCollectionProto.Coord.getDefaultInstance());
+      }
+      /**
+       * <code>repeated .Coord times = 7;</code>
+       *
+       * <pre>
+       * time2D only
+       * </pre>
+       */
+      public ucar.nc2.grib.collection.GribCollectionProto.Coord.Builder addTimesBuilder(
+          int index) {
+        return getTimesFieldBuilder().addBuilder(
+            index, ucar.nc2.grib.collection.GribCollectionProto.Coord.getDefaultInstance());
+      }
+      /**
+       * <code>repeated .Coord times = 7;</code>
+       *
+       * <pre>
+       * time2D only
+       * </pre>
+       */
+      public java.util.List<ucar.nc2.grib.collection.GribCollectionProto.Coord.Builder> 
+           getTimesBuilderList() {
+        return getTimesFieldBuilder().getBuilderList();
+      }
+      private com.google.protobuf.RepeatedFieldBuilder<
+          ucar.nc2.grib.collection.GribCollectionProto.Coord, ucar.nc2.grib.collection.GribCollectionProto.Coord.Builder, ucar.nc2.grib.collection.GribCollectionProto.CoordOrBuilder> 
+          getTimesFieldBuilder() {
+        if (timesBuilder_ == null) {
+          timesBuilder_ = new com.google.protobuf.RepeatedFieldBuilder<
+              ucar.nc2.grib.collection.GribCollectionProto.Coord, ucar.nc2.grib.collection.GribCollectionProto.Coord.Builder, ucar.nc2.grib.collection.GribCollectionProto.CoordOrBuilder>(
+                  times_,
+                  ((bitField0_ & 0x00000040) == 0x00000040),
+                  getParentForChildren(),
+                  isClean());
+          times_ = null;
+        }
+        return timesBuilder_;
       }
 
       // @@protoc_insertion_point(builder_scope:Coord)
@@ -14131,28 +14617,28 @@ public final class GribCollectionProto {
       "nsity\030\007 \001(\002\022\r\n\005ndups\030\010 \001(\r\022\020\n\010nrecords\030\t" +
       " \001(\r\022\017\n\007missing\030\n \001(\r\022\020\n\010invCount\030\017 \003(\r\022",
       "\024\n\014time2runtime\030\020 \003(\r\022\032\n\006params\030\024 \003(\0132\n." +
-      "Parameter*\005\010d\020\310\001\"_\n\005Coord\022\014\n\004type\030\001 \002(\005\022" +
+      "Parameter*\005\010d\020\310\001\"v\n\005Coord\022\014\n\004type\030\001 \002(\005\022" +
       "\014\n\004code\030\002 \002(\005\022\014\n\004unit\030\003 \001(\t\022\016\n\006values\030\004 " +
-      "\003(\002\022\r\n\005bound\030\005 \003(\002\022\r\n\005msecs\030\006 \003(\003\"/\n\005MFi" +
-      "le\022\020\n\010filename\030\001 \002(\t\022\024\n\014lastModified\030\002 \002" +
-      "(\004\"6\n\tParameter\022\014\n\004name\030\001 \002(\t\022\014\n\004data\030\002 " +
-      "\003(\001\022\r\n\005sdata\030\003 \001(\t\"<\n\003Gds\022\013\n\003gds\030\001 \001(\014\022\022" +
-      "\n\007gdsHash\030\002 \001(\021:\0010\022\024\n\014nameOverride\030\003 \001(\t" +
-      "\"\202\001\n\005Group\022\020\n\010gdsIndex\030\001 \002(\r\022\034\n\tvariable" +
-      "s\030\002 \003(\0132\t.Variable\022\026\n\006coords\030\003 \003(\0132\006.Coo",
-      "rd\022\016\n\006fileno\030\004 \003(\005\022\032\n\006params\030\024 \003(\0132\n.Par" +
-      "ameter*\005\010d\020\310\001\"h\n\007Dataset\022\033\n\004type\030\001 \002(\0162\r" +
-      ".Dataset.Type\022\026\n\006groups\030\002 \003(\0132\006.Group\"(\n" +
-      "\004Type\022\010\n\004TwoD\020\000\022\010\n\004Best\020\001\022\014\n\010Analysis\020\002\"" +
-      "\236\002\n\016GribCollection\022\014\n\004name\030\001 \002(\t\022\016\n\006topD" +
-      "ir\030\002 \002(\t\022\026\n\006mfiles\030\003 \003(\0132\006.MFile\022\031\n\007data" +
-      "set\030\004 \003(\0132\010.Dataset\022\021\n\003gds\030\005 \003(\0132\004.Gds\022\016" +
-      "\n\006center\030\006 \002(\005\022\021\n\tsubcenter\030\007 \002(\005\022\016\n\006mas" +
-      "ter\030\010 \002(\005\022\r\n\005local\030\t \002(\005\022\026\n\016genProcessTy" +
-      "pe\030\n \001(\005\022\024\n\014genProcessId\030\013 \001(\005\022\025\n\rbackPr",
-      "ocessId\030\014 \001(\005\022\032\n\006params\030\024 \003(\0132\n.Paramete" +
-      "r*\005\010d\020\310\001B/\n\030ucar.nc2.grib.collectionB\023Gr" +
-      "ibCollectionProto"
+      "\003(\002\022\r\n\005bound\030\005 \003(\002\022\r\n\005msecs\030\006 \003(\003\022\025\n\005tim" +
+      "es\030\007 \003(\0132\006.Coord\"/\n\005MFile\022\020\n\010filename\030\001 " +
+      "\002(\t\022\024\n\014lastModified\030\002 \002(\004\"6\n\tParameter\022\014" +
+      "\n\004name\030\001 \002(\t\022\014\n\004data\030\002 \003(\001\022\r\n\005sdata\030\003 \001(" +
+      "\t\"<\n\003Gds\022\013\n\003gds\030\001 \001(\014\022\022\n\007gdsHash\030\002 \001(\021:\001" +
+      "0\022\024\n\014nameOverride\030\003 \001(\t\"\202\001\n\005Group\022\020\n\010gds" +
+      "Index\030\001 \002(\r\022\034\n\tvariables\030\002 \003(\0132\t.Variabl",
+      "e\022\026\n\006coords\030\003 \003(\0132\006.Coord\022\016\n\006fileno\030\004 \003(" +
+      "\005\022\032\n\006params\030\024 \003(\0132\n.Parameter*\005\010d\020\310\001\"h\n\007" +
+      "Dataset\022\033\n\004type\030\001 \002(\0162\r.Dataset.Type\022\026\n\006" +
+      "groups\030\002 \003(\0132\006.Group\"(\n\004Type\022\010\n\004TwoD\020\000\022\010" +
+      "\n\004Best\020\001\022\014\n\010Analysis\020\002\"\236\002\n\016GribCollectio" +
+      "n\022\014\n\004name\030\001 \002(\t\022\016\n\006topDir\030\002 \002(\t\022\026\n\006mfile" +
+      "s\030\003 \003(\0132\006.MFile\022\031\n\007dataset\030\004 \003(\0132\010.Datas" +
+      "et\022\021\n\003gds\030\005 \003(\0132\004.Gds\022\016\n\006center\030\006 \002(\005\022\021\n" +
+      "\tsubcenter\030\007 \002(\005\022\016\n\006master\030\010 \002(\005\022\r\n\005loca" +
+      "l\030\t \002(\005\022\026\n\016genProcessType\030\n \001(\005\022\024\n\014genPr",
+      "ocessId\030\013 \001(\005\022\025\n\rbackProcessId\030\014 \001(\005\022\032\n\006" +
+      "params\030\024 \003(\0132\n.Parameter*\005\010d\020\310\001B/\n\030ucar." +
+      "nc2.grib.collectionB\023GribCollectionProto"
     };
     com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
       new com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner() {
@@ -14182,7 +14668,7 @@ public final class GribCollectionProto {
           internal_static_Coord_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
               internal_static_Coord_descriptor,
-              new java.lang.String[] { "Type", "Code", "Unit", "Values", "Bound", "Msecs", });
+              new java.lang.String[] { "Type", "Code", "Unit", "Values", "Bound", "Msecs", "Times", });
           internal_static_MFile_descriptor =
             getDescriptor().getMessageTypes().get(4);
           internal_static_MFile_fieldAccessorTable = new

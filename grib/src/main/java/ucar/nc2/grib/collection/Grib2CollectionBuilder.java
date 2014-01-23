@@ -478,12 +478,12 @@ public class Grib2CollectionBuilder extends GribCollectionBuilder {
   }
 
   /**
-   * calculate which partition to use, based on missing
+   * calculate which runtime to use, based on missing
    * @param runOffsets for each runtime, the offset from base time
    * @param timeCoord  original time coordinate offset from 2D dataset
    * @param coordBest  best time coordinate, from convertBestTimeCoordinate
    * @param twot       variable missing array
-   * @return           for each time in coordBest, which runtime to use
+   * @return           for each time in coordBest, which runtime to use, as 1-based index into runtime runOffsets (0 = missing)
    */
   protected int[] makeTime2RuntimeMap(List<Double> runOffsets, CoordinateTime timeCoord, CoordinateTime coordBest, CoordinateTwoTimer twot) {
     int[] result = new int[ coordBest.getSize()];
@@ -811,6 +811,9 @@ public class Grib2CollectionBuilder extends GribCollectionBuilder {
         case vert:
           b.addCoords(writeCoordProto((CoordinateVert) coord));
           break;
+        case time2D:
+          b.addCoords(writeCoordProto((CoordinateTime2D) coord));
+          break;
       }
     }
 
@@ -854,6 +857,9 @@ public class Grib2CollectionBuilder extends GribCollectionBuilder {
 
     b.setRecordsPos(vb.pos);
     b.setRecordsLen(vb.length);
+
+    if (vb.coordIndex == null)
+      System.out.println("HEY");
 
     for (int idx : vb.coordIndex)
       b.addCoordIdx(idx);
@@ -952,5 +958,27 @@ public class Grib2CollectionBuilder extends GribCollectionBuilder {
     }
     return b.build();
   }
+
+  protected GribCollectionProto.Coord writeCoordProto(CoordinateTime2D coord) throws IOException {
+    GribCollectionProto.Coord.Builder b = GribCollectionProto.Coord.newBuilder();
+    b.setType(coord.getType().ordinal());
+    b.setCode(coord.getCode());
+    if (coord.getUnit() != null) b.setUnit(coord.getUnit());
+    CoordinateRuntime runtime = coord.getRuntimeCoordinate();
+    for (CalendarDate cd : runtime.getRuntimesSorted()) {
+      b.addMsecs(cd.getMillis());
+    }
+
+    for (Coordinate time : coord.getTimes()) {
+      if (time.getType() == Coordinate.Type.time)
+        b.addTimes(writeCoordProto((CoordinateTime)time));
+      else
+        b.addTimes(writeCoordProto((CoordinateTimeIntv)time));
+    }
+
+    return b.build();
+  }
+
+
 
 }

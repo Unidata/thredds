@@ -709,7 +709,8 @@ public class GribCollection implements FileCacheable, AutoCloseable {
 
     //public int partTimeCoordIdx; // partition time coordinate index
     public CoordinateTwoTimer twot;  // twoD
-    public int[] time2runtime;       // oneD
+    public int[] time2runtime;       // oneD only: for each timeIndex, which runtime coordinate does it use? 1-based so 0 = missing
+    public boolean isTwod;
 
     // derived from pds
     public int category, parameter, levelType, intvType, ensDerivedType, probType;
@@ -782,6 +783,8 @@ public class GribCollection implements FileCacheable, AutoCloseable {
       this.genProcessType = other.genProcessType;
 
       this.time2runtime = other.time2runtime;
+      this.twot = other.twot;   // LOOK why did i delete this before ??
+      this.isTwod = other.isTwod;
     }
 
     public List<Coordinate> getCoordinates() {
@@ -796,6 +799,11 @@ public class GribCollection implements FileCacheable, AutoCloseable {
         if (group.coords.get(idx).getType() == want)
           return group.coords.get(idx);
       return null;
+    }
+
+    public Coordinate getCoordinate(int index) {
+      int grpIndex = coordIndex.get(index);
+      return group.coords.get(grpIndex);
     }
 
     public int getCoordinateIndex(Coordinate.Type want) {

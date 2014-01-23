@@ -58,6 +58,8 @@ public class CoordinateTime implements Coordinate {
 
   @Override
   public Object getValue(int idx) {
+    if (idx < 0 || idx >= offsetSorted.size())
+      return null;
     return offsetSorted.get(idx);
   }
 

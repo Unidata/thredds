@@ -9,6 +9,7 @@ import java.util.*;
  * Create shared coordinates across variables in the same group,
  * to form the set of group coordinates.
  * Use object.equals() to find unique coordinates.
+ * NOT USED
  *
  * @author caron
  * @since 12/10/13

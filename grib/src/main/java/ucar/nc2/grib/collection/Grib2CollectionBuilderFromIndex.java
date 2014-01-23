@@ -274,6 +274,14 @@ message Group {
           //tci.setRefDate(firstRef);
           break;
 
+        case time2D:
+          CoordinateTime2D t2d = (CoordinateTime2D) coord;
+          if (timeCoord > 0) t2d.setName("time" + timeCoord);
+          timeCoord++;
+          t2d.setTimeUnit(Grib2Utils.getCalendarPeriod(tables.convertTimeUnit(t2d.getCode())));
+          //tci.setRefDate(firstRef);
+          break;
+
         case vert:
           vertCoords.add((CoordinateVert) coord);
           break;
@@ -352,6 +360,17 @@ message Coord {
           levels.add(new VertCoord.Level(val1, val2, isLayer));
         }
         return new CoordinateVert(levels, code);
+
+      case time2D:
+        dates = new ArrayList<>(pc.getMsecsCount());
+        for (Long msec : pc.getMsecsList())
+          dates.add(CalendarDate.of(msec));
+        CoordinateRuntime runtime = new CoordinateRuntime(dates);
+
+        List<Coordinate> times = new ArrayList<>(pc.getTimesCount());
+        for (GribCollectionProto.Coord coordp : pc.getTimesList())
+          times.add( readCoord(coordp));
+        return new CoordinateTime2D(null, runtime, times, code);
     }
     throw new IllegalStateException("Unknown Coordinate type = " + type);
   }
@@ -414,6 +433,7 @@ message Variable {
     if (invCountList.size() > 0) {
       result.twot = new CoordinateTwoTimer(invCountList);
       result.twot.setSize(runtime.getSize(), time.getSize());
+      result.isTwod = true;
     }
 
     // 1d only
@@ -422,6 +442,7 @@ message Variable {
       result.time2runtime = new int[time2runList.size()];
       int count = 0;
       for (int idx : time2runList) result.time2runtime[count++] = idx;
+      result.isTwod = false;
     }
 
     return readVariableExtensions(group, pv, result);

@@ -349,6 +349,8 @@ public class TimeCoord {
 
     @Override
     public boolean equals(Object o) {
+      if (!(o instanceof Tinv))
+        System.out.println("HEY");
       Tinv tinv = (Tinv) o;
       if (b1 != tinv.b1) return false;
       if (b2 != tinv.b2) return false;

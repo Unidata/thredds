@@ -1,6 +1,7 @@
 package ucar.sparr;
 
 import ucar.nc2.grib.collection.CoordinateRuntime;
+import ucar.nc2.grib.collection.CoordinateTime2D;
 import ucar.nc2.grib.grib2.Grib2Record;
 
 import java.util.*;
@@ -17,6 +18,10 @@ public class CoordinateSharer {
   static private final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(CoordinateSharer.class);
   boolean runtimeUnion;
 
+  /**
+   *
+   * @param runtimeUnion if true, make union of runtimes ("dense"), otherwise keep seperate runtimes if distinct
+   */
   public CoordinateSharer(boolean runtimeUnion) {
     this.runtimeUnion = runtimeUnion;
   }
@@ -29,6 +34,7 @@ public class CoordinateSharer {
   Set<Coordinate> timeBuilders = new HashSet<>();
   Set<Coordinate> timeIntvBuilders = new HashSet<>();
   Set<Coordinate> vertBuilders = new HashSet<>();
+  Set<Coordinate> time2DBuilders = new HashSet<>();
   Map<Coordinate, Integer> coordMap;
 
   public void addCoords(List<Coordinate> coords) {
@@ -47,6 +53,11 @@ public class CoordinateSharer {
         case vert:
           vertBuilders.add(coord);
           break;
+        case time2D:
+          CoordinateTime2D time2D = (CoordinateTime2D) coord;
+          time2DBuilders.add(coord);
+          if (runtimeUnion) runtimeAllBuilder.addAll(time2D.getRuntimeCoordinate()); // ?? never ??
+          break;
       }
     }
   }
@@ -60,6 +71,7 @@ public class CoordinateSharer {
     for (Coordinate coord : timeBuilders) unionCoords.add(coord);
     for (Coordinate coord : timeIntvBuilders) unionCoords.add(coord);
     for (Coordinate coord : vertBuilders) unionCoords.add(coord);
+    for (Coordinate coord : time2DBuilders) unionCoords.add(coord);
 
     coordMap = new HashMap<>();
     for (int i = 0; i < this.unionCoords.size(); i++) {

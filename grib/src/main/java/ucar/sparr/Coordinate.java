@@ -6,22 +6,24 @@ import java.util.Formatter;
 import java.util.List;
 
 /**
- * Describe
+ * Abstract coordinate
  *
  * @author caron
  * @since 11/24/13
  */
 public interface Coordinate {
-  public enum Type {runtime, time, timeIntv, vert}
+  /**
+   * Enumerated list of coordinate types
+   */
+  public enum Type {runtime, time, timeIntv, vert, time2D}
 
   void showInfo(Formatter info, Indent indent);
   void showCoords(Formatter info);
 
-  List<? extends Object> getValues();
-  Object getValue(int idx);
-  int getIndex(Object val);
-
-  int getSize();
+  List<? extends Object> getValues(); // get sorted list of values
+  Object getValue(int idx);  // get the ith value
+  int getIndex(Object val);  // LOOK assumes the values are unique
+  int getSize();             // how many values ??
 
   int getCode();
   Type getType();
