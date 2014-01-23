@@ -56,7 +56,8 @@ public class CoordinateSharer {
         case time2D:
           CoordinateTime2D time2D = (CoordinateTime2D) coord;
           time2DBuilders.add(coord);
-          if (runtimeUnion) runtimeAllBuilder.addAll(time2D.getRuntimeCoordinate()); // ?? never ??
+          //if (runtimeUnion) runtimeAllBuilder.addAll(time2D.getRuntimeCoordinate()); // ?? never ??
+          //else runtimeBuilders.add(time2D.getRuntimeCoordinate());
           break;
       }
     }
@@ -67,11 +68,11 @@ public class CoordinateSharer {
       runtimeAll = runtimeAllBuilder.finish();
       unionCoords.add(runtimeAll);
     }
-    for (Coordinate coord : runtimeBuilders) unionCoords.add(coord); // will be empty if not used
+    for (Coordinate coord : runtimeBuilders) unionCoords.add(coord);
+    for (Coordinate coord : time2DBuilders) unionCoords.add(coord);
     for (Coordinate coord : timeBuilders) unionCoords.add(coord);
     for (Coordinate coord : timeIntvBuilders) unionCoords.add(coord);
     for (Coordinate coord : vertBuilders) unionCoords.add(coord);
-    for (Coordinate coord : time2DBuilders) unionCoords.add(coord);
 
     coordMap = new HashMap<>();
     for (int i = 0; i < this.unionCoords.size(); i++) {
@@ -84,59 +85,65 @@ public class CoordinateSharer {
     return unionCoords;
   }
 
-    // find indexes into unionCoords of a variable's  coordinates, this is what is stored in ncx2
-   public List<Integer> reindex(List<Coordinate> coords) {
+  // find indexes into unionCoords of a variable's coordinates
+  public List<Integer> reindex2shared(List<Coordinate> prev) {
     List<Integer> result = new ArrayList<>();
-    for (Coordinate coord : coords) {
+
+    for (Coordinate coord : prev) {
+      /* if (coord.getType() == Coordinate.Type.time2D) {
+        CoordinateTime2D time2D = (CoordinateTime2D) coord;
+        Integer idx = coordMap.get(time2D.getRuntimeCoordinate()); // index into unionCoords
+        if (idx == null) logger.error("CoordinateSharer can find runtime coordinate {}", time2D);
+        else result.add(idx);
+      } */
+
       Integer idx = coordMap.get(coord); // index into unionCoords
-      if (idx == null && runtimeUnion) {
-        if (coord.getType() == Coordinate.Type.runtime)
-          idx = 0;
+      if (idx == null) {
+        if (coord.getType() == Coordinate.Type.runtime && runtimeUnion)  // LOOK not sure this is possible anymore
+          result.add(0); // has to be 0
         else
           logger.error("CoordinateSharer can find coordinate {}", coord);
+
+      } else {
+        result.add(idx);
       }
-      result.add(idx);
     }
     return result;
   }
 
   /**
-   * If using runtimeUnion, you must reindex the sparse array
+   * If using runtimeUnion, or time2D, you must reindex the sparse array
    * @param prev  previous CoordinateND
-   * @param index new index into shared coordinates; may be null
    * @return new CoordinateND containing shared coordinates and sparseArray for the new coordinates
-   *   or the prev CoordinateND if not needed.
+   *   or the prev CoordinateND if reindexing not needed.
    */
-  public CoordinateND<Grib2Record> reindex(CoordinateND<Grib2Record> prev, List<Integer> index) {
-    if (index == null)
-      index = new ArrayList<>();
+  public CoordinateND<Grib2Record> reindex(CoordinateND<Grib2Record> prev) {
 
-    List<Coordinate> sharedCoords = new ArrayList<>();
     boolean needReindex = false;
+    for (Coordinate coord : prev.getCoordinates()) {
+      if (runtimeUnion && coord.getType() == Coordinate.Type.runtime) {
+        if (!coord.equals(runtimeAll))
+          needReindex = true;
+      }
+     }
 
-    // redo the variables against the shared coordinates (LOOK this is just possibly runtime
+    if (!needReindex) return prev;
+
+    List<Coordinate> completeCoords = new ArrayList<>();
     for (Coordinate coord : prev.getCoordinates()) {
       if (runtimeUnion && coord.getType() == Coordinate.Type.runtime) {
         if (!coord.equals(runtimeAll)) {
-          needReindex = true;
-          index.add(coordMap.get(runtimeAll)); // index into unionCoords
-          sharedCoords.add(runtimeAll);
+          completeCoords.add(runtimeAll);
           continue;
         }
       }
-      index.add(coordMap.get(coord)); // index into rect.coords
-      sharedCoords.add(coord);
+
+      completeCoords.add(coord);
     }
 
-    CoordinateND<Grib2Record> result;
-    if (needReindex) {
-      result = new CoordinateND<>(sharedCoords);
-      result.reindex(prev);
-      return result;
-
-    } else {
-      return new CoordinateND<>(sharedCoords, prev.getSparseArray());
-    }
+    CoordinateND<Grib2Record> result = new CoordinateND<>(completeCoords);
+    result.reindex(prev);
+    return result;
   }
 
 }

@@ -5,6 +5,7 @@ import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time.CalendarDateRange;
 import ucar.nc2.time.CalendarDateUnit;
 import ucar.sparr.Coordinate;
+import ucar.sparr.CoordinateBuilder;
 import ucar.sparr.CoordinateBuilderImpl;
 import ucar.nc2.grib.grib2.Grib2Pds;
 import ucar.nc2.grib.grib2.Grib2Record;
@@ -154,6 +155,11 @@ public class CoordinateTime implements Coordinate {
   }
 
   ////////////////////////////////////////////
+
+  /* @Override
+  public CoordinateBuilder makeBuilder() {
+    return new Builder(code);
+  } */
 
   static public class Builder extends CoordinateBuilderImpl<Grib2Record>  {
     int code;  // pdsFirst.getTimeUnit()

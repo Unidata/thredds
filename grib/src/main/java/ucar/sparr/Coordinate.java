@@ -29,4 +29,6 @@ public interface Coordinate {
   Type getType();
   String getName();
   String getUnit();
+
+ // CoordinateBuilder makeBuilder();
 }

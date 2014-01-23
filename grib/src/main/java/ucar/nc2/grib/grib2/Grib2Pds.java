@@ -267,8 +267,8 @@ public abstract class Grib2Pds {
 
 
   public void show(Formatter f) {
-    f.format("Grib2Pds{ id=%d-%d template=%d, forecastTime= %d timeUnit=%s }", getParameterCategory(), getParameterNumber(),
-            template, getForecastTime(), getTimeUnit());
+    f.format("Grib2Pds{ id=%d-%d template=%d, forecastTime= %d timeUnit=%s vertLevel=%f}", getParameterCategory(), getParameterNumber(),
+            template, getForecastTime(), getTimeUnit(), getLevelValue1());
   }
 
   /**

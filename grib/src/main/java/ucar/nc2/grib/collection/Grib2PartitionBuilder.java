@@ -387,7 +387,7 @@ public class Grib2PartitionBuilder extends Grib2CollectionBuilder {
       resultGroup.coords = sharify.getUnionCoords();
       // redo the variables against the shared coordinates
       for (GribCollection.VariableIndex viResult : resultGroup.variList) {
-        viResult.coordIndex = sharify.reindex(viResult.coords);
+        viResult.coordIndex = sharify.reindex2shared(viResult.coords);
       }
 
       // figure out missing data for each variable in the twoD time array

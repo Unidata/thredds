@@ -1,6 +1,7 @@
 package ucar.sparr;
 
 import ucar.ma2.Section;
+import ucar.nc2.grib.collection.CoordinateTime2D;
 import ucar.nc2.util.Indent;
 
 import java.util.*;
@@ -15,7 +16,7 @@ public class CoordinateND<T> {
 
   private List<CoordinateBuilder<T>> builders;
   private List<Coordinate> coordinates; // result is orthogonal coordinates
-  private SparseArray<T> sa;  // indexes refer to coordinates
+  private SparseArray<T> sa;            // indexes refer to coordinates
 
   public CoordinateND() {
     builders = new ArrayList<>();
@@ -32,8 +33,12 @@ public class CoordinateND<T> {
 
   public void finish(List<T> records, Formatter info) {
     coordinates = new ArrayList<>();
-    for (CoordinateBuilder builder : builders)
-      coordinates.add(builder.finish());
+    for (CoordinateBuilder builder : builders) {
+      Coordinate coord = builder.finish();
+     // if (coord.getType() == Coordinate.Type.time2D)
+     //   coordinates.add(((CoordinateTime2D) coord).getRuntimeCoordinate());
+      coordinates.add(coord);
+    }
 
     buildSparseArray(records, info);
   }
@@ -47,8 +52,9 @@ public class CoordinateND<T> {
     int[] index = new int[coordinates.size()];
     for (T gr : records) {
       int count = 0;
-      for (CoordinateBuilder<T> builder : builders)
+      for (CoordinateBuilder<T> builder : builders) {
         index[count++] = builder.getIndex(gr);
+      }
 
       sa.add(gr, info, index);
     }
@@ -105,11 +111,12 @@ public class CoordinateND<T> {
 
   /**
    * Reindex the sparse array, based on the new Coordinates.
+   * Do this by running all the Records through the Coordinates, assigning each to a possible new spot in the sparse array.
    * @param prev must have same list of Coordinates, with possibly additional values.
    */
   public void reindex(CoordinateND<T> prev) {
 
-    sa.setContent( prev.getSparseArray().getContent());   // content is the same
+    sa.setContent( prev.getSparseArray().getContent());   // content (list of records) is the same
 
     // for each coordinate, calculate the map of oldIndex -> newIndex
     List<Coordinate> prevCoords = prev.getCoordinates();

@@ -42,6 +42,7 @@ import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time.CalendarPeriod;
 import ucar.nc2.util.Indent;
 import ucar.sparr.Coordinate;
+import ucar.sparr.CoordinateBuilder;
 import ucar.sparr.CoordinateBuilderImpl;
 
 import java.util.*;
@@ -53,22 +54,28 @@ import java.util.*;
  * @since 1/22/14
  */
 public class CoordinateTime2D implements Coordinate {
-  private final List<Time2D> vals;
+  //private final Grib2Customizer cust;
+  private final int code;                  // pdsFirst.getTimeUnit()
+  private CalendarPeriod timeUnit;
   private final CoordinateRuntime runtime;
   private final List<Coordinate> times;
-  private final int code;
+
+  private final List<Time2D> vals;
   private final boolean isTimeInterval;
   private final int nruns;
   private final int ntimes;
 
   private String name = "time";
-  private CalendarPeriod timeUnit;
   private String periodName;
 
-  CoordinateTime2D(List<Time2D> vals, CoordinateRuntime runtime, List<Coordinate> times, int code) {
+  // public CoordinateTime2D(Grib2Customizer cust, CalendarPeriod timeUnit, int code, List<Time2D> vals, CoordinateRuntime runtime, List<Coordinate> times) {
+  public CoordinateTime2D(int code, List<Time2D> vals, CoordinateRuntime runtime, List<Coordinate> times) {
+    //this.cust = cust;
+    //this.timeUnit = timeUnit;
+    this.code = code;
+
     this.runtime = runtime;
     this.times = times;   // LOOK probably need to make offsets from the same start date
-    this.code = code;
     this.isTimeInterval = times.get(0) instanceof CoordinateTimeIntv;
 
     int nmax = 0;
@@ -253,6 +260,13 @@ public class CoordinateTime2D implements Coordinate {
     }
   }
 
+  /////////////////////////////////////////////////////////////////////
+
+  /* @Override
+  public CoordinateBuilder makeBuilder() {
+    return new Builder(isTimeInterval, cust, timeUnit, code);
+  } */
+
   public static class Builder extends CoordinateBuilderImpl<Grib2Record> {
     private final boolean isTimeInterval;
     private final Grib2Customizer cust;
@@ -309,7 +323,7 @@ public class CoordinateTime2D implements Coordinate {
       for (Object val : values) vals.add( (Time2D) val);
       Collections.sort(vals);
 
-      return new CoordinateTime2D(vals, runCoord, times, code);
+      return new CoordinateTime2D(code, vals, runCoord, times);
     }
 
   }

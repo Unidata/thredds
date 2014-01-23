@@ -310,7 +310,7 @@ public class Grib2CollectionBuilder extends GribCollectionBuilder {
     Map<Integer, Group> gdsMap = new HashMap<>();
     Map<String, Boolean> pdsConvert = null;
 
-    logger.debug("GribCollection {}: makeAggregatedGroups", gc.getName());
+    logger.debug("Grib2CollectionBuilder {}: makeGroups", gc.getName());
     int fileno = 0;
     Counter statsAll = new Counter(); // debugging
 
@@ -474,7 +474,7 @@ public class Grib2CollectionBuilder extends GribCollectionBuilder {
     List<TimeCoord.Tinv> offsetSorted = new ArrayList<>(values.size());
     for (Object val : values) offsetSorted.add( (TimeCoord.Tinv) val);
     Collections.sort(offsetSorted);
-    return new CoordinateTimeIntv(offsetSorted, timeCoord.getCode());
+    return new CoordinateTimeIntv(timeCoord.getCode(), offsetSorted);
   }
 
   /**

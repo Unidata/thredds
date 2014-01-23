@@ -1,6 +1,7 @@
 package ucar.nc2.grib.collection;
 
 import ucar.sparr.Coordinate;
+import ucar.sparr.CoordinateBuilder;
 import ucar.sparr.CoordinateBuilderImpl;
 import ucar.nc2.grib.GribNumbers;
 import ucar.nc2.grib.VertCoord;
@@ -33,7 +34,7 @@ public class CoordinateVert implements Coordinate {
   private final VertCoord.VertUnit vunit;
   private final boolean isLayer;
 
-  public CoordinateVert(List<VertCoord.Level> levelSorted, int code) {
+  public CoordinateVert(int code, List<VertCoord.Level> levelSorted) {
     this.levelSorted = Collections.unmodifiableList(levelSorted);
     this.code = code;
     this.vunit = Grib2Utils.getLevelUnit(code);
@@ -134,6 +135,10 @@ public class CoordinateVert implements Coordinate {
 
   //////////////////////////////////////////////////////////////
 
+  /* public CoordinateBuilder makeBuilder() {
+    return new Builder(code);
+  } */
+
   static public class Builder extends CoordinateBuilderImpl<Grib2Record> {
     int code;
 
@@ -151,7 +156,7 @@ public class CoordinateVert implements Coordinate {
       List<VertCoord.Level> levelSorted = new ArrayList<>(values.size());
       for (Object val : values) levelSorted.add( (VertCoord.Level) val);
       Collections.sort(levelSorted);
-      return new CoordinateVert(levelSorted, code);
+      return new CoordinateVert(code, levelSorted);
     }
   }
 

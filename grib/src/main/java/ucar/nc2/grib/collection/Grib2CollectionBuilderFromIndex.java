@@ -248,14 +248,17 @@ message Group {
       readVariable(group, p.getVariables(i));
 
     // assign names, units to coordinates
-    CalendarDate firstRef = null;
+    //CalendarDate firstRef = null;
+    int reftimeCoord = 0;
     int timeCoord = 0;
     List<CoordinateVert> vertCoords = new ArrayList<>();
     for (Coordinate coord : group.coords) {
       Coordinate.Type type = coord.getType();
       switch (type) {
         case runtime:
-          firstRef = ((CoordinateRuntime) coord).getFirstDate();
+          CoordinateRuntime reftime = (CoordinateRuntime) coord;
+          if (reftimeCoord > 0) reftime.setName("reftime" + reftimeCoord);
+          reftimeCoord++;
           break;
 
         case time:
@@ -349,7 +352,7 @@ message Coord {
           int val2 = (int) pc.getBound(i);
           tinvs.add(new TimeCoord.Tinv(val1, val2));
         }
-        return new CoordinateTimeIntv(tinvs, code);
+        return new CoordinateTimeIntv(code, tinvs);
 
       case vert:
         boolean isLayer = pc.getValuesCount() == pc.getBoundCount();
@@ -359,7 +362,7 @@ message Coord {
           double val2 = isLayer ? pc.getBound(i) : GribNumbers.UNDEFINEDD;
           levels.add(new VertCoord.Level(val1, val2, isLayer));
         }
-        return new CoordinateVert(levels, code);
+        return new CoordinateVert(code, levels);
 
       case time2D:
         dates = new ArrayList<>(pc.getMsecsCount());
@@ -370,7 +373,7 @@ message Coord {
         List<Coordinate> times = new ArrayList<>(pc.getTimesCount());
         for (GribCollectionProto.Coord coordp : pc.getTimesList())
           times.add( readCoord(coordp));
-        return new CoordinateTime2D(null, runtime, times, code);
+        return new CoordinateTime2D(code, null, runtime, times);
     }
     throw new IllegalStateException("Unknown Coordinate type = " + type);
   }

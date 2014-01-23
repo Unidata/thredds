@@ -129,6 +129,7 @@ public class Grib2Rectilyser {
           vb.coordND.addBuilder(new CoordinateTime.Builder(pdsFirst.getTimeUnit()));
 
       } else {  // time is kept as 2D coordinate, separate list of times for each runtime
+        vb.coordND.addBuilder(new CoordinateRuntime.Builder());
         vb.coordND.addBuilder(new CoordinateTime2D.Builder(isTimeInterval, cust, vb.timeUnit, unit));
       }
 
@@ -140,10 +141,11 @@ public class Grib2Rectilyser {
       for (Grib2Record gr : vb.atomList)
         vb.coordND.addRecord(gr);
 
+      // done, build coordinates and sparse array indicating which records to use
       vb.coordND.finish(vb.atomList, info);
     }
 
-    // make shared coordinates
+    // make shared coordinates across variables
     CoordinateSharer sharify = new CoordinateSharer(isDense);
     for (VariableBag vb : gribvars) {
       sharify.addCoords(vb.coordND.getCoordinates());
@@ -157,8 +159,8 @@ public class Grib2Rectilyser {
 
     // redo the variables against the shared coordinates
     for (VariableBag vb : gribvars) {
-      vb.coordIndex = new ArrayList<>();
-      vb.coordND = sharify.reindex(vb.coordND, vb.coordIndex);
+      vb.coordND = sharify.reindex(vb.coordND);
+      vb.coordIndex = sharify.reindex2shared(vb.coordND.getCoordinates());
       tot_used += vb.coordND.getSparseArray().countNotMissing();
       tot_dups += vb.coordND.getSparseArray().getNduplicates();
       total += vb.coordND.getSparseArray().getTotalSize();

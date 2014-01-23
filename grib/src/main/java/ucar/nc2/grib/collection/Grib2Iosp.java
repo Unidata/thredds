@@ -68,7 +68,7 @@ import java.util.Formatter;
  */
 public class Grib2Iosp extends GribIosp {
   static private final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(Grib2Iosp.class);
-  static private final boolean debugTime = false, debugRead = false, debugName = false;
+  static private final boolean debugTime = false, debugRead = true, debugName = false;
   static private boolean useGenType = false; // LOOK dummy for now
   
   static public String makeVariableName(Grib2Customizer tables, GribCollection gribCollection, GribCollection.VariableIndex vindex) {
@@ -532,8 +532,8 @@ public class Grib2Iosp extends GribIosp {
 
       for (Coordinate coord : vindex.getCoordinates()) {
         dims.format("%s ", coord.getName());
-        if (coord.getType() == Coordinate.Type.time || coord.getType() == Coordinate.Type.timeIntv) // for 2D times
-          coords.format("%s ", coord.getName());
+        // if (coord.getType() == Coordinate.Type.time || coord.getType() == Coordinate.Type.timeIntv) // for 2D times
+        coords.format("%s ", coord.getName());
       }
       dims.format("%s", horizDims);
 
@@ -657,7 +657,7 @@ public class Grib2Iosp extends GribIosp {
 
   private void makeTime2D(NetcdfFile ncfile, Group g, CoordinateTime2D time2D) {
      CoordinateRuntime runtime = time2D.getRuntimeCoordinate();
-     makeRuntimeCoordinate(ncfile, g, runtime);
+     //makeRuntimeCoordinate(ncfile, g, runtime);
 
      int nruns = runtime.getSize();
      int ntimes = time2D.getNtimes();
@@ -665,7 +665,7 @@ public class Grib2Iosp extends GribIosp {
      String dims = runtime.getName()+" "+tcName;
      ncfile.addDimension(g, new Dimension(tcName, ntimes));
      Variable v = ncfile.addVariable(g, new Variable(ncfile, g, null, tcName, DataType.DOUBLE, dims));
-     String units = runtime.getUnit()+ " since " + runtime.getFirstDate();
+     String units = runtime.getUnit(); // + " since " + runtime.getFirstDate();
      v.addAttribute(new Attribute(CDM.UNITS, units));
      v.addAttribute(new Attribute(CF.STANDARD_NAME, "time"));
 

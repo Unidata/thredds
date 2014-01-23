@@ -3,6 +3,7 @@ package ucar.nc2.grib.collection;
 import ucar.nc2.time.CalendarDateRange;
 import ucar.nc2.time.CalendarDateUnit;
 import ucar.sparr.Coordinate;
+import ucar.sparr.CoordinateBuilder;
 import ucar.sparr.CoordinateBuilderImpl;
 import ucar.nc2.grib.TimeCoord;
 import ucar.nc2.grib.grib2.Grib2Pds;
@@ -25,16 +26,21 @@ import java.util.List;
  * @since 11/28/13
  */
 public class CoordinateTimeIntv implements Coordinate {
-  private final int code;                               // pdsFirst.getTimeUnit()
+  //private final Grib2Customizer cust;
+  private final int code;                  // pdsFirst.getTimeUnit()
+  private CalendarPeriod timeUnit;
+
   private final List<TimeCoord.Tinv> timeIntervals;
   private String name = "time";
-  private CalendarPeriod timeUnit;
   //private CalendarDate refDate;
   private String periodName;
 
-  public CoordinateTimeIntv(List<TimeCoord.Tinv> timeIntervals, int code) {
-    this.timeIntervals = Collections.unmodifiableList(timeIntervals);
+  //public CoordinateTimeIntv(Grib2Customizer cust, CalendarPeriod timeUnit, int code, List<TimeCoord.Tinv> timeIntervals) {
+  public CoordinateTimeIntv(int code, List<TimeCoord.Tinv> timeIntervals) {
+    //this.cust = cust;
+    //this.timeUnit = timeUnit;
     this.code = code;
+    this.timeIntervals = Collections.unmodifiableList(timeIntervals);
   }
 
   public List<TimeCoord.Tinv> getTimeIntervals() {
@@ -177,6 +183,12 @@ public class CoordinateTimeIntv implements Coordinate {
   }
 
   ///////////////////////////////////////////////////////////
+
+ /* @Override
+  public CoordinateBuilder makeBuilder() {
+    return new Builder(cust, timeUnit, code);
+  }  */
+
   static public class Builder extends CoordinateBuilderImpl<Grib2Record> {
     private final Grib2Customizer cust;
     private final int code;                  // pdsFirst.getTimeUnit()
@@ -212,7 +224,7 @@ public class CoordinateTimeIntv implements Coordinate {
       for (Object val : values) offsetSorted.add( (TimeCoord.Tinv) val);
       Collections.sort(offsetSorted);
 
-      return new CoordinateTimeIntv( offsetSorted, code);
+      return new CoordinateTimeIntv(code, offsetSorted);
     }
   }
 

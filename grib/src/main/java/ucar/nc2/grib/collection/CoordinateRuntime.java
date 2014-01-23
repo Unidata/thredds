@@ -2,6 +2,7 @@ package ucar.nc2.grib.collection;
 
 import net.jcip.annotations.Immutable;
 import ucar.sparr.Coordinate;
+import ucar.sparr.CoordinateBuilder;
 import ucar.sparr.CoordinateBuilderImpl;
 import ucar.nc2.grib.grib2.Grib2Record;
 import ucar.nc2.time.CalendarDate;
@@ -19,6 +20,7 @@ import java.util.*;
 public class CoordinateRuntime implements Coordinate {
   final List<CalendarDate> runtimeSorted;
   final CalendarDate firstDate;
+  String name = "reftime";
 
   public CoordinateRuntime(List<CalendarDate> runtimeSorted) {
     this.runtimeSorted = Collections.unmodifiableList(runtimeSorted);
@@ -53,7 +55,11 @@ public class CoordinateRuntime implements Coordinate {
 
   @Override
   public String getName() {
-    return "reftime";
+    return name;
+  }
+
+  public void setName(String name) {
+    this.name = name;
   }
 
   public int getCode() {
@@ -125,6 +131,11 @@ public class CoordinateRuntime implements Coordinate {
   public int hashCode() {
     return runtimeSorted.hashCode();
   }
+
+  /* @Override
+  public CoordinateBuilder makeBuilder() {
+    return new Builder();
+  } */
 
   ///////////////////////////////////////////////////////
 

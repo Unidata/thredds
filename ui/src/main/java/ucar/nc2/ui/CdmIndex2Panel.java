@@ -4,6 +4,7 @@ import thredds.featurecollection.FeatureCollectionConfig;
 import thredds.inventory.MFile;
 import ucar.nc2.NCdumpW;
 import ucar.nc2.grib.collection.*;
+import ucar.nc2.util.Indent;
 import ucar.sparr.Coordinate;
 import ucar.nc2.time.CalendarDateFormatter;
 import ucar.nc2.ui.widget.BAMutil;
@@ -555,6 +556,11 @@ public class CdmIndex2Panel extends JPanel {
     }
 
     private void showSparseArray(Formatter f) {
+
+      Indent indent = new Indent(2);
+      for (Coordinate coord : v.getCoordinates())
+        coord.showInfo(f, indent);
+      f.format("%n");
 
       if (v instanceof PartitionCollection.VariableIndexPartitioned) {
         PartitionCollection.VariableIndexPartitioned vip = (PartitionCollection.VariableIndexPartitioned) v;
