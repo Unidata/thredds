@@ -343,7 +343,7 @@ message Coord {
         List<Integer> offs = new ArrayList<>(pc.getValuesCount());
         for (float val : pc.getValuesList())
           offs.add((int) val);
-        return new CoordinateTime(offs, code);
+        return new CoordinateTime(code, offs);
 
       case timeIntv:
         List<TimeCoord.Tinv> tinvs = new ArrayList<>(pc.getValuesCount());
@@ -430,6 +430,9 @@ message Variable {
     Coordinate runtime = result.getCoordinate(Coordinate.Type.runtime);
     Coordinate time = result.getCoordinate(Coordinate.Type.time);
     if (time == null) time = result.getCoordinate(Coordinate.Type.timeIntv);
+    if (time == null) time = result.getCoordinate(Coordinate.Type.time2D);
+    if (runtime == null || time == null)
+      System.out.println("HEY");
 
     // 2d only
     List<Integer> invCountList = pv.getInvCountList();

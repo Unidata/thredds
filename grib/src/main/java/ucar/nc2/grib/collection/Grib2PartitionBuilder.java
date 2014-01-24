@@ -179,10 +179,10 @@ public class Grib2PartitionBuilder extends Grib2CollectionBuilder {
       // this finishes the 2D stuff
       result.makeHorizCS();
 
-      if (!makeDatasetBest(ds2D, errlog)) {
+      /* if (!makeDatasetBest(ds2D, errlog)) {
         errlog.format(" ERR makeDatasetAnalysis failed, index not written on %s%n", result.getName());
         logger.error(" makeDatasetAnalysis failed, index not written on {} errors = \n{}", result.getName(), errlog.toString());
-      }
+      } */
 
       // ready to write the index file
       writeIndex(result, errlog);
@@ -261,8 +261,6 @@ public class Grib2PartitionBuilder extends Grib2CollectionBuilder {
     int npart = partitions.size();
     List<GroupPartitions> groupPartitions = makeGroupPartitions(ds2D, npart);
 
-    boolean ok = true;
-
      // do each group
     for (GroupPartitions gp : groupPartitions) {
       GribCollection.GroupHcs resultGroup = gp.resultGroup;
@@ -296,47 +294,6 @@ public class Grib2PartitionBuilder extends Grib2CollectionBuilder {
           int flag = 0;
           PartitionCollection.VariableIndexPartitioned vip = (PartitionCollection.VariableIndexPartitioned) resultGroup.findVariableByHash(vi.cdmHash);
           vip.addPartition(partno, groupIdx, varIdx, flag, vi);
-
-          /* PartitionCollection.VariableIndexPartitioned viResult = resultVarMap.get(viFromOtherPartition.cdmHash); // match with proto variable hash
-          if (viResult == null) {
-            f.format(" WARN Cant find %s from %s / %s in proto %s - add%n", viFromOtherPartition.toStringShort(), tpp.getName(), gdesc, canon.getName());
-
-            //////////////// add it to the canonGroup
-            viResult = result.makeVariableIndexPartitioned(resultGroup, viFromOtherPartition, npart);
-            resultVarMap.put(viFromOtherPartition.cdmHash, viResult);
-          } */
-
-          /* compare vert coordinates
-          VertCoord vc1 = viCanon.getVertCoord();
-          VertCoord vc2 = viFromOtherPartition.getVertCoord();
-          if ((vc1 == null) != (vc2 == null)) {
-            vc1 = viCanon.getVertCoord();   // debug
-            vc2 = viFromOtherPartition.getVertCoord();
-            f.format(" ERR Vert coordinates existence on group %s (%s) on %s in %s (exist %s) doesnt match %s (exist %s)%n",
-                    gname, gdesc, viFromOtherPartition.toStringShort(),
-                    tpp.getName(), (vc2 == null), canon.getName(), (vc1 == null));
-            ok = false; // LOOK could remove vi ?
-
-          } else if ((vc1 != null) && !vc1.equalsData(vc2)) {
-            f.format(" WARN Vert coordinates values on %s in %s dont match%n", viFromOtherPartition.toStringShort(), tpp.getName());
-            f.format("    canon vc = %s%n", vc1);
-            f.format("    this vc = %s%n", vc2);
-            flag |= PartitionCollection.VERT_COORDS_DIFFER;
-          }
-
-          //compare ens coordinates
-          EnsCoord ec1 = viCanon.getEnsCoord();
-          EnsCoord ec2 = viFromOtherPartition.getEnsCoord();
-          if ((ec1 == null) != (ec2 == null)) {
-            f.format(" ERR Ensemble coordinates existence on %s in %s doesnt match%n", viFromOtherPartition.toStringShort(), tpp.getName());
-            ok = false; // LOOK could remove vi ?
-          } else if ((ec1 != null) && !ec1.equalsData(ec2)) {
-            f.format(" WARN Ensemble coordinates values on %s in %s dont match%n", viFromOtherPartition.toStringShort(), tpp.getName());
-            f.format("    canon ec = %s%n", ec1);
-            f.format("    this ec = %s%n", ec2);
-            flag |= PartitionCollection.ENS_COORDS_DIFFER;
-          }  */
-
         } // loop over variable
       } // loop over partition
 
@@ -353,7 +310,7 @@ public class Grib2PartitionBuilder extends Grib2CollectionBuilder {
         if (group == null) continue;
         for (Coordinate coord : group.coords) {
           if (coord.getType() == Coordinate.Type.runtime) {
-            CoordinateRuntime runCoord = (CoordinateRuntime) coord;
+            // CoordinateRuntime runCoord = (CoordinateRuntime) coord;
             for (Object val : coord.getValues()) {
               int idx = runtimeCoord.getIndex(val);
               resultGroup.run2part[idx] = partno;     // note that later partitions will override earlier if they have the same runtime
@@ -364,7 +321,7 @@ public class Grib2PartitionBuilder extends Grib2CollectionBuilder {
 
       // overall set of unique coordinates
       boolean isDense = (config != null) && "dense".equals(config.getParameter("CoordSys"));
-      CoordinateSharer sharify = new CoordinateSharer(!isDense);
+      CoordinateSharer sharify = new CoordinateSharer(isDense);
 
       // for each variable, create union of coordinates across the partitions
       for (GribCollection.VariableIndex viResult : resultGroup.variList) {
@@ -395,6 +352,7 @@ public class Grib2PartitionBuilder extends Grib2CollectionBuilder {
         Coordinate cr = viResult.getCoordinate(Coordinate.Type.runtime);
         Coordinate ct = viResult.getCoordinate(Coordinate.Type.time);
         if (ct == null) ct = viResult.getCoordinate(Coordinate.Type.timeIntv);
+        if (ct == null) ct = viResult.getCoordinate(Coordinate.Type.time2D);
 
         if (cr == null) {
           logger.error("Missing runtime coordinate vi="+viResult.toStringShort());
@@ -424,6 +382,7 @@ public class Grib2PartitionBuilder extends Grib2CollectionBuilder {
 
           Coordinate ctP = vi.getCoordinate(Coordinate.Type.time);
           if (ctP == null) ctP = vi.getCoordinate(Coordinate.Type.timeIntv);
+          if (ctP == null) ctP = vi.getCoordinate(Coordinate.Type.time2D);
 
           // we need the sparse array for this component vi
           vi.readRecords();
@@ -679,6 +638,9 @@ public class Grib2PartitionBuilder extends Grib2CollectionBuilder {
           break;
         case timeIntv:
           b.addCoords(writeCoordProto((CoordinateTimeIntv) coord));
+          break;
+        case time2D:
+          b.addCoords(writeCoordProto((CoordinateTime2D) coord));
           break;
         case vert:
           b.addCoords(writeCoordProto((CoordinateVert) coord));

@@ -460,7 +460,7 @@ public class Grib2CollectionBuilder extends GribCollectionBuilder {
     List<Integer> offsetSorted = new ArrayList<>(values.size());
     for (Object val : values) offsetSorted.add( (Integer) val);
     Collections.sort(offsetSorted);
-    return new CoordinateTime(offsetSorted, timeCoord.getCode());
+    return new CoordinateTime(timeCoord.getCode(), offsetSorted);
   }
 
   // make the union of all the offsets from base date

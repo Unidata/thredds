@@ -21,17 +21,12 @@ import java.util.*;
  * @since 11/24/13
  */
 @Immutable
-public class CoordinateTime implements Coordinate {
+public class CoordinateTime extends CoordinateTimeAbstract implements Coordinate {
   private final List<Integer> offsetSorted;
-  private final int code;                    // pdsFirst.getTimeUnit()
-  private String name = "time";
-  private CalendarPeriod timeUnit;
-  //private CalendarDate refDate;
-  private String periodName;
 
-  public CoordinateTime(List<Integer> offsetSorted, int code) {
+  public CoordinateTime(int code, List<Integer> offsetSorted) {
+    super(code);
     this.offsetSorted = Collections.unmodifiableList(offsetSorted);
-    this.code = code;
   }
 
   static public Integer extractOffset(Grib2Record gr) {
@@ -73,10 +68,6 @@ public class CoordinateTime implements Coordinate {
     return Type.time;
   }
 
-  public CalendarPeriod getPeriod() {
-    return timeUnit;
-  }
-
   public List<CalendarDate> makeCalendarDates(ucar.nc2.time.Calendar cal, CalendarDate refDate) {
     CalendarDateUnit cdu = CalendarDateUnit.withCalendar(cal, periodName+" since "+ refDate.toString());
     List<CalendarDate> result = new ArrayList<>(getSize());
@@ -90,33 +81,6 @@ public class CoordinateTime implements Coordinate {
     CalendarDate start = cdu.makeCalendarDate(offsetSorted.get(0));
     CalendarDate end = cdu.makeCalendarDate(offsetSorted.get(getSize()-1));
     return CalendarDateRange.of(start, end);
-  }
-
-  public void setTimeUnit(CalendarPeriod timeUnit) {
-    this.timeUnit = timeUnit;
-    CalendarPeriod.Field cf = timeUnit.getField();
-    if (cf == CalendarPeriod.Field.Month || cf == CalendarPeriod.Field.Year)
-      this.periodName = "calendar "+ cf.toString();
-    else
-      this.periodName = timeUnit.getField().toString();
-  }
-
-  @Override
-  public String getUnit() {
-    return periodName;
-  }
-
-  @Override
-  public String getName() {
-    return name;
-  }
-
-  public void setName(String name) {
-    this.name = name;
-  }
-
-  public int getCode() {
-    return code;
   }
 
   @Override
@@ -178,7 +142,7 @@ public class CoordinateTime implements Coordinate {
       List<Integer> offsetSorted = new ArrayList<>(values.size());
       for (Object val : values) offsetSorted.add( (Integer) val);
       Collections.sort(offsetSorted);
-      return new CoordinateTime(offsetSorted, code);
+      return new CoordinateTime(code, offsetSorted);
     }
   }
 

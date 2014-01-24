@@ -25,6 +25,10 @@ public abstract class CoordinateBuilderImpl<T> implements CoordinateBuilder<T> {
       valSet.add(val);
   }
 
+  public void add(Object val) {
+    valSet.add(val);
+  }
+
   @Override
   public void addAll(List<Object> coords) {
    for (Object val : coords)

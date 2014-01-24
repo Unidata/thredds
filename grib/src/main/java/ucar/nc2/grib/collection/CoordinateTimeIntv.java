@@ -3,7 +3,6 @@ package ucar.nc2.grib.collection;
 import ucar.nc2.time.CalendarDateRange;
 import ucar.nc2.time.CalendarDateUnit;
 import ucar.sparr.Coordinate;
-import ucar.sparr.CoordinateBuilder;
 import ucar.sparr.CoordinateBuilderImpl;
 import ucar.nc2.grib.TimeCoord;
 import ucar.nc2.grib.grib2.Grib2Pds;
@@ -25,21 +24,12 @@ import java.util.List;
  * @author John
  * @since 11/28/13
  */
-public class CoordinateTimeIntv implements Coordinate {
-  //private final Grib2Customizer cust;
-  private final int code;                  // pdsFirst.getTimeUnit()
-  private CalendarPeriod timeUnit;
-
+public class CoordinateTimeIntv extends CoordinateTimeAbstract implements Coordinate {
   private final List<TimeCoord.Tinv> timeIntervals;
-  private String name = "time";
-  //private CalendarDate refDate;
-  private String periodName;
 
   //public CoordinateTimeIntv(Grib2Customizer cust, CalendarPeriod timeUnit, int code, List<TimeCoord.Tinv> timeIntervals) {
   public CoordinateTimeIntv(int code, List<TimeCoord.Tinv> timeIntervals) {
-    //this.cust = cust;
-    //this.timeUnit = timeUnit;
-    this.code = code;
+    super(code);
     this.timeIntervals = Collections.unmodifiableList(timeIntervals);
   }
 
@@ -67,47 +57,14 @@ public class CoordinateTimeIntv implements Coordinate {
   public int getSize() {
     return timeIntervals.size();
   }
-
-  @Override
-  public int getCode() {
-    return code;
-  }
-
   @Override
   public Type getType() {
     return Type.timeIntv;
   }
 
-  public CalendarPeriod getPeriod() {
-    return timeUnit;
-  }
-
-  @Override
-  public String getUnit() {
-    return periodName;
-  }
-
-  @Override
-  public String getName() {
-    return name;
-  }
-
-  public void setName(String name) {
-    this.name = name;
-  }
-
   /* public void setRefDate(CalendarDate refDate) {
     this.refDate = refDate;
   } */
-
-  public void setTimeUnit(CalendarPeriod timeUnit) {
-    this.timeUnit = timeUnit;
-    CalendarPeriod.Field cf = timeUnit.getField();
-    if (cf == CalendarPeriod.Field.Month || cf == CalendarPeriod.Field.Year)
-      this.periodName = "calendar "+ cf.toString();
-    else
-      this.periodName = timeUnit.getField().toString();
-  }
 
   public String getTimeIntervalName() {
 
@@ -127,10 +84,6 @@ public class CoordinateTimeIntv implements Coordinate {
       return "Mixed_intervals";
     }
   }
-
-  public double getTimeUnitScale() {
-     return timeUnit.getValue();
-   }
 
   public List<CalendarDate> makeCalendarDates(ucar.nc2.time.Calendar cal, CalendarDate refDate) {
     CalendarDateUnit cdu = CalendarDateUnit.withCalendar(cal, periodName+" since "+ refDate.toString());

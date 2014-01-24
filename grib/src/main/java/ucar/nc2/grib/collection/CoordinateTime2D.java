@@ -42,7 +42,6 @@ import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time.CalendarPeriod;
 import ucar.nc2.util.Indent;
 import ucar.sparr.Coordinate;
-import ucar.sparr.CoordinateBuilder;
 import ucar.sparr.CoordinateBuilderImpl;
 
 import java.util.*;
@@ -53,10 +52,7 @@ import java.util.*;
  * @author caron
  * @since 1/22/14
  */
-public class CoordinateTime2D implements Coordinate {
-  //private final Grib2Customizer cust;
-  private final int code;                  // pdsFirst.getTimeUnit()
-  private CalendarPeriod timeUnit;
+public class CoordinateTime2D extends CoordinateTimeAbstract  implements Coordinate {
   private final CoordinateRuntime runtime;
   private final List<Coordinate> times;
 
@@ -65,14 +61,9 @@ public class CoordinateTime2D implements Coordinate {
   private final int nruns;
   private final int ntimes;
 
-  private String name = "time";
-  private String periodName;
-
   // public CoordinateTime2D(Grib2Customizer cust, CalendarPeriod timeUnit, int code, List<Time2D> vals, CoordinateRuntime runtime, List<Coordinate> times) {
   public CoordinateTime2D(int code, List<Time2D> vals, CoordinateRuntime runtime, List<Coordinate> times) {
-    //this.cust = cust;
-    //this.timeUnit = timeUnit;
-    this.code = code;
+    super(code);
 
     this.runtime = runtime;
     this.times = times;   // LOOK probably need to make offsets from the same start date
@@ -151,44 +142,8 @@ public class CoordinateTime2D implements Coordinate {
   }
 
   @Override
-  public int getCode() {
-    return code;
-  }
-
-  @Override
   public Type getType() {
     return Type.time2D;
-  }
-
-  @Override
-  public String getName() {
-    return name;
-  }
-
-  public CalendarPeriod getPeriod() {
-    return timeUnit;
-  }
-
-  @Override
-  public String getUnit() {
-    return periodName;
-  }
-
-  public void setName(String name) {
-    this.name = name;
-  }
-
-  /* public void setRefDate(CalendarDate refDate) {
-    this.refDate = refDate;
-  } */
-
-  public void setTimeUnit(CalendarPeriod timeUnit) {
-    this.timeUnit = timeUnit;
-    CalendarPeriod.Field cf = timeUnit.getField();
-    if (cf == CalendarPeriod.Field.Month || cf == CalendarPeriod.Field.Year)
-      this.periodName = "calendar "+ cf.toString();
-    else
-      this.periodName = timeUnit.getField().toString();
   }
 
   @Override
@@ -324,6 +279,21 @@ public class CoordinateTime2D implements Coordinate {
       Collections.sort(vals);
 
       return new CoordinateTime2D(code, vals, runCoord, times);
+    }
+
+    @Override
+    public void addAll(Coordinate coord) {
+     super.addAll(coord);
+     for (Object val : coord.getValues()) {
+       Time2D val2D = (Time2D) val;
+       runBuilder.add( val2D.run);
+       CoordinateBuilderImpl<Grib2Record> timeBuilder = timeBuilders.get(val2D.run);
+       if (timeBuilder == null) {
+         timeBuilder = isTimeInterval ? new CoordinateTimeIntv.Builder(cust, timeUnit, code) : new CoordinateTime.Builder(code);
+         timeBuilders.put(val2D.run, timeBuilder);
+       }
+       timeBuilder.add(isTimeInterval ? val2D.tinv : val2D.time);
+     }
     }
 
   }

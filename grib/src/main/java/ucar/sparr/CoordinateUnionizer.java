@@ -29,6 +29,7 @@ public class CoordinateUnionizer {
   CoordinateBuilder timeBuilder;
   CoordinateBuilder timeIntvBuilder;
   CoordinateBuilder vertBuilder;
+  CoordinateBuilder time2DBuilder;
 
   public void addCoords(List<Coordinate> coords) {
     for (Coordinate coord : coords) {
@@ -42,12 +43,18 @@ public class CoordinateUnionizer {
           timeBuilder.addAll(coord);
           break;
         case timeIntv:
-          if (timeIntvBuilder == null) timeIntvBuilder = new CoordinateTimeIntv.Builder(null, null, coord.getCode());
+          CoordinateTimeIntv timeIntv = (CoordinateTimeIntv) coord;
+          if (timeIntvBuilder == null) timeIntvBuilder = new CoordinateTimeIntv.Builder(null, timeIntv.getTimeUnit(), coord.getCode());
           timeIntvBuilder.addAll(intervalFilter((CoordinateTimeIntv)coord));
           break;
         case vert:
           if (vertBuilder == null) vertBuilder = new CoordinateVert.Builder(coord.getCode());
           vertBuilder.addAll(coord);
+          break;
+        case time2D:
+          CoordinateTime2D time2D = (CoordinateTime2D) coord;
+          if (time2DBuilder == null) time2DBuilder = new CoordinateTime2D.Builder(time2D.isTimeInterval(), null, time2D.getTimeUnit(), coord.getCode());
+          time2DBuilder.addAll(coord);
           break;
       }
     }
@@ -105,6 +112,8 @@ public class CoordinateUnionizer {
       unionCoords.add(timeBuilder.finish());
     else if (timeIntvBuilder != null)
       unionCoords.add(timeIntvBuilder.finish());
+    else if (time2DBuilder != null)
+      unionCoords.add(time2DBuilder.finish());
     else
       System.out.println("HEY missing time");
 
@@ -119,13 +128,13 @@ public class CoordinateUnionizer {
    * Reindex with shared coordinates and return new CoordinateND
    * @param prev  previous
    * @return new CoordinateND containing shared coordinates and sparseArray for the new coordinates
-   */
+   *
   public void addIndex(CoordinateND<GribCollection.Record> prev) {
     result.reindex(prev);
   }
 
   public CoordinateND<GribCollection.Record> getCoordinateND() {
     return result;
-  }
+  } */
 
 }
