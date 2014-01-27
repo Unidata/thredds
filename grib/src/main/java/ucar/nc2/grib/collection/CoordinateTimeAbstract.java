@@ -47,13 +47,19 @@ import ucar.sparr.Coordinate;
 public abstract class CoordinateTimeAbstract implements Coordinate {
 
   protected final int code;                  // pdsFirst.getTimeUnit()
-  protected CalendarPeriod timeUnit;
+  protected final CalendarPeriod timeUnit;
 
-  protected String name;
+  protected String name = "time";
   protected String periodName;
 
-  CoordinateTimeAbstract(int code) {
+  CoordinateTimeAbstract(int code, CalendarPeriod timeUnit) {
     this.code = code;
+    this.timeUnit = timeUnit;
+    CalendarPeriod.Field cf = timeUnit.getField();
+    if (cf == CalendarPeriod.Field.Month || cf == CalendarPeriod.Field.Year)
+      this.periodName = "calendar "+ cf.toString();
+    else
+      this.periodName = timeUnit.getField().toString();
   }
 
   @Override
@@ -83,15 +89,6 @@ public abstract class CoordinateTimeAbstract implements Coordinate {
     this.refDate = refDate;
   } */
 
-  public void setTimeUnit(CalendarPeriod timeUnit) {
-    this.timeUnit = timeUnit;
-    CalendarPeriod.Field cf = timeUnit.getField();
-    if (cf == CalendarPeriod.Field.Month || cf == CalendarPeriod.Field.Year)
-      this.periodName = "calendar "+ cf.toString();
-    else
-      this.periodName = timeUnit.getField().toString();
-  }
-
   public double getTimeUnitScale() {
      return timeUnit.getValue();
    }
@@ -99,4 +96,5 @@ public abstract class CoordinateTimeAbstract implements Coordinate {
   public CalendarPeriod getTimeUnit() {
     return timeUnit;
   }
+
 }

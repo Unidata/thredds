@@ -28,9 +28,16 @@ public class CoordinateTimeIntv extends CoordinateTimeAbstract implements Coordi
   private final List<TimeCoord.Tinv> timeIntervals;
 
   //public CoordinateTimeIntv(Grib2Customizer cust, CalendarPeriod timeUnit, int code, List<TimeCoord.Tinv> timeIntervals) {
-  public CoordinateTimeIntv(int code, List<TimeCoord.Tinv> timeIntervals) {
-    super(code);
+  public CoordinateTimeIntv(int code, CalendarPeriod timeUnit, List<TimeCoord.Tinv> timeIntervals) {
+    super(code, timeUnit);
     this.timeIntervals = Collections.unmodifiableList(timeIntervals);
+  }
+
+  CoordinateTimeIntv(CoordinateTimeIntv org, int offset) {
+    super(org.getCode(), org.getTimeUnit());
+    List<TimeCoord.Tinv> vals = new ArrayList<>(org.getSize());
+    for (TimeCoord.Tinv orgVal : org.getTimeIntervals()) vals.add(new TimeCoord.Tinv(orgVal.getBounds1()+offset, orgVal.getBounds2()+offset));
+    this.timeIntervals = Collections.unmodifiableList(vals);
   }
 
   public List<TimeCoord.Tinv> getTimeIntervals() {
@@ -177,7 +184,7 @@ public class CoordinateTimeIntv extends CoordinateTimeAbstract implements Coordi
       for (Object val : values) offsetSorted.add( (TimeCoord.Tinv) val);
       Collections.sort(offsetSorted);
 
-      return new CoordinateTimeIntv(code, offsetSorted);
+      return new CoordinateTimeIntv(code, timeUnit, offsetSorted);
     }
   }
 

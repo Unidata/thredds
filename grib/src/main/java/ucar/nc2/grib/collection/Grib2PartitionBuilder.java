@@ -320,7 +320,7 @@ public class Grib2PartitionBuilder extends Grib2CollectionBuilder {
       }
 
       // overall set of unique coordinates
-      boolean isDense = (config != null) && "dense".equals(config.getParameter("CoordSys"));
+      boolean isDense = (config != null) && "dense".equals(config.getParameter("CoordSys"));  // LOOK for now, assume non-dense
       CoordinateSharer sharify = new CoordinateSharer(isDense);
 
       // for each variable, create union of coordinates across the partitions
@@ -347,73 +347,131 @@ public class Grib2PartitionBuilder extends Grib2CollectionBuilder {
         viResult.coordIndex = sharify.reindex2shared(viResult.coords);
       }
 
-      // figure out missing data for each variable in the twoD time array
-      for (GribCollection.VariableIndex viResult : resultGroup.variList) {
-        Coordinate cr = viResult.getCoordinate(Coordinate.Type.runtime);
-        Coordinate ct = viResult.getCoordinate(Coordinate.Type.time);
-        if (ct == null) ct = viResult.getCoordinate(Coordinate.Type.timeIntv);
-        if (ct == null) ct = viResult.getCoordinate(Coordinate.Type.time2D);
+      if (isDense) {
+        // figure out missing data for each variable in the twoD time array
+        for (GribCollection.VariableIndex viResult : resultGroup.variList) {
+          Coordinate cr = viResult.getCoordinate(Coordinate.Type.runtime);
+          Coordinate ct = viResult.getCoordinate(Coordinate.Type.time);
+          if (ct == null) ct = viResult.getCoordinate(Coordinate.Type.timeIntv);
+          if (ct == null) ct = viResult.getCoordinate(Coordinate.Type.time2D);
 
-        if (cr == null) {
-          logger.error("Missing runtime coordinate vi="+viResult.toStringShort());
-          continue;
-        }
-        if (ct == null) {
-          logger.error("Missing time coordinate vi="+viResult.toStringShort());
-          continue;
-        }
-
-        CoordinateTwoTimer twot = new CoordinateTwoTimer(cr.getSize(), ct.getSize());
-        Map<Object, Integer> ctMap = new HashMap<>(2*ct.getSize());  // time coord val -> index in ct
-        for (int i=0; i<ct.getSize(); i++) ctMap.put(ct.getValue(i), i);
-
-        // loop over runtimes
-        int runIdx = 0;
-        for (int partno : resultGroup.run2part) {
-          //PartitionCollection.Partition tpp = partitions.get(partno);
-          //GribCollection.Dataset ds = tpp.gc.getDataset2D();
-          //GribCollection.GroupHcs group = ds.findGroupById(resultGroup.getId());
-
-          // get the partition/group/variable for this run
-          GribCollection.GroupHcs group = gp.componentGroups[partno];
-          if (group == null) continue; // tolerate missing groups
-          GribCollection.VariableIndex vi = group.findVariableByHash(viResult.cdmHash);
-          if (vi == null) continue; // tolerate missing variables
-
-          Coordinate ctP = vi.getCoordinate(Coordinate.Type.time);
-          if (ctP == null) ctP = vi.getCoordinate(Coordinate.Type.timeIntv);
-          if (ctP == null) ctP = vi.getCoordinate(Coordinate.Type.time2D);
-
-          // we need the sparse array for this component vi
-          vi.readRecords();
-          SparseArray<GribCollection.Record> sa = vi.getSparseArray();
-          Section s = new Section(sa.getShape());
-          Section.Iterator iter = s.getIterator(sa.getShape());
-
-          // run through all the inventory in this component vi
-          int[] index = new int[sa.getRank()];
-          while (iter.hasNext()) {
-            int linearIndex = iter.next(index);
-            if (sa.getContent(linearIndex) == null) continue;
-
-            // convert value in component vi to index in result
-            int timeIdxP = index[1];
-            Object val = ctP.getValue(timeIdxP);
-            Integer timeIdxR = ctMap.get(val);
-            if (timeIdxR != null) {
-              twot.add(runIdx, timeIdxR);
-            }
+          if (cr == null) {
+            logger.error("Missing runtime coordinate vi="+viResult.toStringShort());
+            continue;
+          }
+          if (ct == null) {
+            logger.error("Missing time coordinate vi="+viResult.toStringShort());
+            continue;
           }
 
-          runIdx++;
+          CoordinateTwoTimer twot = new CoordinateTwoTimer(cr.getSize(), ct.getSize());
+          Map<Object, Integer> ctMap = new HashMap<>(2*ct.getSize());  // time coord val -> index in ct
+          for (int i=0; i<ct.getSize(); i++) ctMap.put(ct.getValue(i), i);
+
+          // loop over runtimes
+          int runIdx = 0;
+          for (int partno : resultGroup.run2part) {
+            //PartitionCollection.Partition tpp = partitions.get(partno);
+            //GribCollection.Dataset ds = tpp.gc.getDataset2D();
+            //GribCollection.GroupHcs group = ds.findGroupById(resultGroup.getId());
+
+            // get the partition/group/variable for this run
+            GribCollection.GroupHcs group = gp.componentGroups[partno];
+            if (group == null) continue; // tolerate missing groups
+            GribCollection.VariableIndex vi = group.findVariableByHash(viResult.cdmHash);
+            if (vi == null) continue; // tolerate missing variables
+
+            Coordinate ctP = vi.getCoordinate(Coordinate.Type.time);
+            if (ctP == null) ctP = vi.getCoordinate(Coordinate.Type.timeIntv);
+            if (ctP == null) ctP = vi.getCoordinate(Coordinate.Type.time2D);
+
+            // we need the sparse array for this component vi
+            vi.readRecords();
+            SparseArray<GribCollection.Record> sa = vi.getSparseArray();
+            Section s = new Section(sa.getShape());
+            Section.Iterator iter = s.getIterator(sa.getShape());
+
+            // run through all the inventory in this component vi
+            int[] index = new int[sa.getRank()];
+            while (iter.hasNext()) {
+              int linearIndex = iter.next(index);
+              if (sa.getContent(linearIndex) == null) continue;
+
+              // convert value in component vi to index in result
+              int timeIdxP = index[1];
+              Object val = ctP.getValue(timeIdxP);
+              Integer timeIdxR = ctMap.get(val);
+              if (timeIdxR != null) {
+                twot.add(runIdx, timeIdxR);
+              }
+            }
+
+            runIdx++;
+          }
+
+          viResult.twot = twot;
+          viResult.isTwod = true;
+
+          /* Formatter ff = new Formatter(System.out);
+          ff.format("Variable %s%n", viResult.toStringShort());
+          twot.showMissing(ff); */
         }
 
-        viResult.twot = twot;
-        viResult.isTwod = true;
+      } else {
+         // figure out missing data for each variable with time2D coordinate
+        for (GribCollection.VariableIndex viResult : resultGroup.variList) {
+          Coordinate cr = viResult.getCoordinate(Coordinate.Type.runtime);
+          CoordinateTime2D ct2d = (CoordinateTime2D) viResult.getCoordinate(Coordinate.Type.time2D);
 
-        /* Formatter ff = new Formatter(System.out);
-        ff.format("Variable %s%n", viResult.toStringShort());
-        twot.showMissing(ff); */
+          if (cr == null) {
+            logger.error("Missing runtime coordinate vi="+viResult.toStringShort());
+            continue;
+          }
+          if (ct2d == null) {
+            logger.error("Missing time2D coordinate vi="+viResult.toStringShort());
+            continue;
+          }
+
+          CoordinateTwoTimer twot = new CoordinateTwoTimer(cr.getSize(), ct2d.getNtimes());
+          //Map<Object, Integer> ctMap = new HashMap<>(2*ct.getSize());  // time coord val -> index in ct
+          //for (int i=0; i<ct.getSize(); i++) ctMap.put(ct.getValue(i), i);
+
+          // loop over runtimes
+          int runIdx = 0;
+          for (int partno : resultGroup.run2part) {  // LOOK if partition has multiple runtimes, wont they get called twice?
+            //PartitionCollection.Partition tpp = partitions.get(partno);
+            //GribCollection.Dataset ds = tpp.gc.getDataset2D();
+            //GribCollection.GroupHcs group = ds.findGroupById(resultGroup.getId());
+
+            // get the partition/group/variable for this run
+            GribCollection.GroupHcs group = gp.componentGroups[partno];
+            if (group == null) continue; // tolerate missing groups
+            GribCollection.VariableIndex vi = group.findVariableByHash(viResult.cdmHash);
+            if (vi == null) continue; // tolerate missing variables
+
+            //CoordinateTime2D ctP = (CoordinateTime2D) vi.getCoordinate(Coordinate.Type.time2D);
+
+            // we need the sparse array for this component vi
+            vi.readRecords();
+            SparseArray<GribCollection.Record> sa = vi.getSparseArray();
+            Section s = new Section(sa.getShape());
+            Section.Iterator iter = s.getIterator(sa.getShape());
+
+            // run through all the inventory in this component vi
+            int[] index = new int[sa.getRank()];
+            while (iter.hasNext()) {
+              int linearIndex = iter.next(index);
+              if (sa.getContent(linearIndex) == null) continue;
+              int timeIdx = index[1];
+              twot.add(runIdx, timeIdx);
+            }
+
+            runIdx++;
+          }
+
+          viResult.twot = twot;
+          viResult.isTwod = true;
+        }
       }
 
     } // loop over groups

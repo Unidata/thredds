@@ -117,6 +117,8 @@ public class Grib2Rectilyser {
     for (VariableBag vb : gribvars) {
       Grib2Pds pdsFirst = vb.first.getPDS();
       int unit = cust.convertTimeUnit(pdsFirst.getTimeUnit());
+      CalendarPeriod timeUnit = Grib2Utils.getCalendarPeriod(unit);
+
       vb.timeUnit = Grib2Utils.getCalendarPeriod(unit);
       vb.coordND = new CoordinateND<>();
 
@@ -126,7 +128,7 @@ public class Grib2Rectilyser {
         if (isTimeInterval)
           vb.coordND.addBuilder(new CoordinateTimeIntv.Builder(cust, vb.timeUnit, unit));
         else
-          vb.coordND.addBuilder(new CoordinateTime.Builder(pdsFirst.getTimeUnit()));
+          vb.coordND.addBuilder(new CoordinateTime.Builder(pdsFirst.getTimeUnit(), timeUnit));
 
       } else {  // time is kept as 2D coordinate, separate list of times for each runtime
         vb.coordND.addBuilder(new CoordinateRuntime.Builder());

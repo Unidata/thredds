@@ -5,7 +5,6 @@ import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time.CalendarDateRange;
 import ucar.nc2.time.CalendarDateUnit;
 import ucar.sparr.Coordinate;
-import ucar.sparr.CoordinateBuilder;
 import ucar.sparr.CoordinateBuilderImpl;
 import ucar.nc2.grib.grib2.Grib2Pds;
 import ucar.nc2.grib.grib2.Grib2Record;
@@ -24,9 +23,16 @@ import java.util.*;
 public class CoordinateTime extends CoordinateTimeAbstract implements Coordinate {
   private final List<Integer> offsetSorted;
 
-  public CoordinateTime(int code, List<Integer> offsetSorted) {
-    super(code);
+  public CoordinateTime(int code, CalendarPeriod timeUnit, List<Integer> offsetSorted) {
+    super(code, timeUnit);
     this.offsetSorted = Collections.unmodifiableList(offsetSorted);
+  }
+
+  CoordinateTime(CoordinateTime org, int offset) {
+    super(org.getCode(), org.getTimeUnit());
+    List<Integer> vals = new ArrayList<>(org.getSize());
+    for (int orgVal : org.getOffsetSorted()) vals.add(orgVal+offset);
+    this.offsetSorted = Collections.unmodifiableList(vals);
   }
 
   static public Integer extractOffset(Grib2Record gr) {
@@ -127,9 +133,11 @@ public class CoordinateTime extends CoordinateTimeAbstract implements Coordinate
 
   static public class Builder extends CoordinateBuilderImpl<Grib2Record>  {
     int code;  // pdsFirst.getTimeUnit()
+    CalendarPeriod timeUnit;
 
-    public Builder(int code) {
+    public Builder(int code, CalendarPeriod timeUnit) {
       this.code = code;
+      this.timeUnit = timeUnit;
     }
 
     @Override
@@ -142,7 +150,7 @@ public class CoordinateTime extends CoordinateTimeAbstract implements Coordinate
       List<Integer> offsetSorted = new ArrayList<>(values.size());
       for (Object val : values) offsetSorted.add( (Integer) val);
       Collections.sort(offsetSorted);
-      return new CoordinateTime(code, offsetSorted);
+      return new CoordinateTime(code, timeUnit, offsetSorted);
     }
   }
 

@@ -2,7 +2,6 @@ package ucar.nc2.grib.collection;
 
 import net.jcip.annotations.Immutable;
 import ucar.sparr.Coordinate;
-import ucar.sparr.CoordinateBuilder;
 import ucar.sparr.CoordinateBuilderImpl;
 import ucar.nc2.grib.grib2.Grib2Record;
 import ucar.nc2.time.CalendarDate;
@@ -72,6 +71,10 @@ public class CoordinateRuntime implements Coordinate {
 
   public CalendarDate getLastDate() {
     return runtimeSorted.get(getSize()-1);
+  }
+
+  public CalendarDate getDate(int idx) {
+    return runtimeSorted.get(idx);
   }
 
   @Override

@@ -3,7 +3,8 @@ package ucar.sparr;
 import java.util.*;
 
 /**
- * Builds a Coordinate
+ * Builds one Coordinate of one Variable,
+ * by keeping the Set of Values found in the records.
  *
  * @author caron
  * @since 11/27/13

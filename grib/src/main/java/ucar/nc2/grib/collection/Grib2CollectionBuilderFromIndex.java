@@ -3,6 +3,7 @@ package ucar.nc2.grib.collection;
 import com.google.protobuf.ExtensionRegistry;
 import thredds.featurecollection.FeatureCollectionConfig;
 import thredds.inventory.*;
+import ucar.nc2.time.CalendarPeriod;
 import ucar.sparr.Coordinate;
 import ucar.nc2.grib.*;
 import ucar.nc2.grib.grib2.*;
@@ -265,7 +266,7 @@ message Group {
           CoordinateTime tc = (CoordinateTime) coord;
           if (timeCoord > 0) tc.setName("time" + timeCoord);
           timeCoord++;
-          tc.setTimeUnit(Grib2Utils.getCalendarPeriod(tables.convertTimeUnit(tc.getCode())));
+          //tc.setTimeUnit(Grib2Utils.getCalendarPeriod(tables.convertTimeUnit(tc.getCode())));
           //tc.setRefDate(firstRef);
           break;
 
@@ -273,7 +274,7 @@ message Group {
           CoordinateTimeIntv tci = (CoordinateTimeIntv) coord;
           if (timeCoord > 0) tci.setName("time" + timeCoord);
           timeCoord++;
-          tci.setTimeUnit(Grib2Utils.getCalendarPeriod(tables.convertTimeUnit(tci.getCode())));
+          //tci.setTimeUnit(Grib2Utils.getCalendarPeriod(tables.convertTimeUnit(tci.getCode())));
           //tci.setRefDate(firstRef);
           break;
 
@@ -281,7 +282,7 @@ message Group {
           CoordinateTime2D t2d = (CoordinateTime2D) coord;
           if (timeCoord > 0) t2d.setName("time" + timeCoord);
           timeCoord++;
-          t2d.setTimeUnit(Grib2Utils.getCalendarPeriod(tables.convertTimeUnit(t2d.getCode())));
+          //t2d.setTimeUnit(Grib2Utils.getCalendarPeriod(tables.convertTimeUnit(t2d.getCode())));
           //tci.setRefDate(firstRef);
           break;
 
@@ -343,7 +344,8 @@ message Coord {
         List<Integer> offs = new ArrayList<>(pc.getValuesCount());
         for (float val : pc.getValuesList())
           offs.add((int) val);
-        return new CoordinateTime(code, offs);
+        CalendarPeriod timeUnit = CalendarPeriod.of(unit);
+        return new CoordinateTime(code, timeUnit, offs);
 
       case timeIntv:
         List<TimeCoord.Tinv> tinvs = new ArrayList<>(pc.getValuesCount());
@@ -352,7 +354,8 @@ message Coord {
           int val2 = (int) pc.getBound(i);
           tinvs.add(new TimeCoord.Tinv(val1, val2));
         }
-        return new CoordinateTimeIntv(code, tinvs);
+        timeUnit = CalendarPeriod.of(unit);
+        return new CoordinateTimeIntv(code, timeUnit, tinvs);
 
       case vert:
         boolean isLayer = pc.getValuesCount() == pc.getBoundCount();
@@ -373,7 +376,8 @@ message Coord {
         List<Coordinate> times = new ArrayList<>(pc.getTimesCount());
         for (GribCollectionProto.Coord coordp : pc.getTimesList())
           times.add( readCoord(coordp));
-        return new CoordinateTime2D(code, null, runtime, times);
+        timeUnit = CalendarPeriod.of(unit);
+        return new CoordinateTime2D(code, timeUnit, runtime, times);
     }
     throw new IllegalStateException("Unknown Coordinate type = " + type);
   }
@@ -430,7 +434,14 @@ message Variable {
     Coordinate runtime = result.getCoordinate(Coordinate.Type.runtime);
     Coordinate time = result.getCoordinate(Coordinate.Type.time);
     if (time == null) time = result.getCoordinate(Coordinate.Type.timeIntv);
-    if (time == null) time = result.getCoordinate(Coordinate.Type.time2D);
+    int ntimes;
+    if (time == null) {
+      time = result.getCoordinate(Coordinate.Type.time2D);
+      ntimes = ((CoordinateTime2D)time).getNtimes();
+    } else {
+      ntimes = time.getSize();
+    }
+
     if (runtime == null || time == null)
       System.out.println("HEY");
 
@@ -438,7 +449,7 @@ message Variable {
     List<Integer> invCountList = pv.getInvCountList();
     if (invCountList.size() > 0) {
       result.twot = new CoordinateTwoTimer(invCountList);
-      result.twot.setSize(runtime.getSize(), time.getSize());
+      result.twot.setSize(runtime.getSize(), ntimes);
       result.isTwod = true;
     }
 

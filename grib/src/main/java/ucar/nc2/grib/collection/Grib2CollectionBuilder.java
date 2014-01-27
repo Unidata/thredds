@@ -460,7 +460,7 @@ public class Grib2CollectionBuilder extends GribCollectionBuilder {
     List<Integer> offsetSorted = new ArrayList<>(values.size());
     for (Object val : values) offsetSorted.add( (Integer) val);
     Collections.sort(offsetSorted);
-    return new CoordinateTime(timeCoord.getCode(), offsetSorted);
+    return new CoordinateTime(timeCoord.getCode(), timeCoord.getTimeUnit(), offsetSorted);
   }
 
   // make the union of all the offsets from base date
@@ -474,7 +474,7 @@ public class Grib2CollectionBuilder extends GribCollectionBuilder {
     List<TimeCoord.Tinv> offsetSorted = new ArrayList<>(values.size());
     for (Object val : values) offsetSorted.add( (TimeCoord.Tinv) val);
     Collections.sort(offsetSorted);
-    return new CoordinateTimeIntv(timeCoord.getCode(), offsetSorted);
+    return new CoordinateTimeIntv(timeCoord.getCode(), timeCoord.getTimeUnit(), offsetSorted);
   }
 
   /**
@@ -913,7 +913,7 @@ public class Grib2CollectionBuilder extends GribCollectionBuilder {
     GribCollectionProto.Coord.Builder b = GribCollectionProto.Coord.newBuilder();
     b.setType(coord.getType().ordinal());
     b.setCode(coord.getCode());
-    if (coord.getUnit() != null) b.setUnit(coord.getUnit());
+    b.setUnit(coord.getTimeUnit().toString());
     for (Integer offset : coord.getOffsetSorted()) {
       b.addValues(offset);
     }
@@ -924,7 +924,7 @@ public class Grib2CollectionBuilder extends GribCollectionBuilder {
     GribCollectionProto.Coord.Builder b = GribCollectionProto.Coord.newBuilder();
     b.setType(coord.getType().ordinal());
     b.setCode(coord.getCode());
-    if (coord.getUnit() != null) b.setUnit(coord.getUnit());
+    b.setUnit(coord.getTimeUnit().toString());
 
     // LOOK old way - do we need ?
     /*     float scale = (float) tc.getTimeUnitScale(); // deal with, eg, "6 hours" by multiplying values by 6
@@ -963,7 +963,7 @@ public class Grib2CollectionBuilder extends GribCollectionBuilder {
     GribCollectionProto.Coord.Builder b = GribCollectionProto.Coord.newBuilder();
     b.setType(coord.getType().ordinal());
     b.setCode(coord.getCode());
-    if (coord.getUnit() != null) b.setUnit(coord.getUnit());
+    b.setUnit(coord.getTimeUnit().toString());
     CoordinateRuntime runtime = coord.getRuntimeCoordinate();
     for (CalendarDate cd : runtime.getRuntimesSorted()) {
       b.addMsecs(cd.getMillis());
