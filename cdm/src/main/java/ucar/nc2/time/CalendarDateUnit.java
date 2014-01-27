@@ -84,7 +84,7 @@ There’s an alternative proposition, in which the new units of calendar_month a
   private CalendarDateUnit(Calendar calt, String dateUnitString) {
 
     dateUnitString = dateUnitString.trim();
-    dateUnitString = dateUnitString.replaceAll("\\s+", " ");
+    // dateUnitString = dateUnitString.replaceAll("\\s+", " ");  LOOK think about should we allow this ??
     dateUnitString = dateUnitString.toLowerCase();
 
     isCalendarField =  dateUnitString.startsWith(byCalendarString);
