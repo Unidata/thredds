@@ -41,7 +41,7 @@ import thredds.inventory.MFile;
  * @author caron
  * @since Jun 26, 2009
  */
-public  class RegExpMatchOnName implements MFileFilter {
+public class RegExpMatchOnName implements MFileFilter {
     private String regExpString;
     private java.util.regex.Pattern pattern;
 

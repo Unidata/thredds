@@ -140,7 +140,7 @@ public class DirectoryCollection extends CollectionAbstract {
 
   @Override
   public CloseableIterator<MFile> getFileIterator() throws IOException {
-    return new MFileIterator(topDir, new MyFilter());
+    return new MyFileIterator(topDir);
   }
 
   @Override
@@ -148,33 +148,34 @@ public class DirectoryCollection extends CollectionAbstract {
   }
 
   // returns everything in the current directory
-  private class MFileIterator implements CloseableIterator<MFile> {
+  private class MyFileIterator implements CloseableIterator<MFile> {
     DirectoryStream<Path> dirStream;
     Iterator<Path> dirStreamIterator;
+    MFile nextMFile;
     int count = 0;
 
-    MFileIterator(Path dir, DirectoryStream.Filter<Path> filter) throws IOException {
+    MyFileIterator(Path dir) throws IOException {
       if (debug) System.out.printf(" DirectoryCollection.MFileIterator %s ", topDir);
-      if (filter != null)
-        dirStream = Files.newDirectoryStream(dir, filter);
-      else
-        dirStream = Files.newDirectoryStream(dir);
-
+      dirStream = Files.newDirectoryStream(dir, new MyFilter());
       dirStreamIterator = dirStream.iterator();
     }
 
     public boolean hasNext() {
-      if (debug && count % 100 == 0) System.out.printf("%d ", count);
-      count++;
-      return dirStreamIterator.hasNext();
+      while (true) {
+        if (debug && count % 100 == 0) System.out.printf("%d ", count);
+        count++;
+        if (!dirStreamIterator.hasNext()) return false;
+        try {
+          nextMFile = new MFileOS7(dirStreamIterator.next());
+       } catch (IOException e) {
+         throw new RuntimeException(e);
+       }
+       if (filter == null || filter.accept(nextMFile)) return true;
+      }
     }
 
     public MFile next() {
-      try {
-        return new MFileOS7(dirStreamIterator.next());
-      } catch (IOException e) {
-        throw new RuntimeException(e);
-      }
+      return nextMFile;
     }
 
     public void remove() {
@@ -193,6 +194,7 @@ public class DirectoryCollection extends CollectionAbstract {
 
   private class MyFilter implements DirectoryStream.Filter<Path> {
     public boolean accept(Path entry) throws IOException {
+      if (sfilter != null && !sfilter.accept(entry)) return false;
       String last = entry.getName(entry.getNameCount()-1).toString();
       return !last.endsWith(".gbx9") && !last.endsWith(".gbx8") && !last.endsWith(".ncx") && !last.endsWith(".ncx2") &&  // LOOK GRIB specific
               !last.endsWith(".xml");

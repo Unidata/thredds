@@ -150,7 +150,7 @@ public class CoordinateTime2D extends CoordinateTimeAbstract implements Coordina
 
   @Override
   public void showInfo(Formatter info, Indent indent) {
-    info.format("%s nruns=%d ntimes=%d total=%d", name, nruns, ntimes, vals.size());
+    info.format("%s nruns=%d ntimes=%d total=%d%n", name, nruns, ntimes, vals.size());
     runtime.showInfo(info, indent);
     for (Coordinate time : times)
       time.showInfo(info, indent);

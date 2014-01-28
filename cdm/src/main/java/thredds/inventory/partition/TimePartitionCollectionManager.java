@@ -182,7 +182,7 @@ public class TimePartitionCollectionManager extends MFileCollectionManager imple
 
     @Override
     public CloseableIterator<MFile> getFileIterator() throws IOException {
-      return new MFileIterator(files.iterator());
+      return new MFileIterator(files.iterator(), filter);
     }
 
     @Override

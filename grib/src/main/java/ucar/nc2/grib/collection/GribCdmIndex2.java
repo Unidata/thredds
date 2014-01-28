@@ -4,6 +4,7 @@ import org.slf4j.Logger;
 import thredds.featurecollection.FeatureCollectionConfig;
 import thredds.filesystem.MFileOS;
 import thredds.inventory.*;
+import thredds.inventory.filter.StreamFilter;
 import thredds.inventory.partition.*;
 import ucar.nc2.grib.*;
 import ucar.nc2.grib.grib1.Grib1Index;
@@ -13,6 +14,7 @@ import ucar.unidata.io.RandomAccessFile;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -309,6 +311,9 @@ public class GribCdmIndex2 implements IndexReader {
 
     FilePartition partition = new FilePartition(config.name, rootPath, logger);
     partition.putAuxInfo(FeatureCollectionConfig.AUX_GRIB_CONFIG, config.gribConfig);
+    if (specp.getFilter() != null) {
+      partition.setStreamFilter(new StreamFilter(specp.getFilter()));
+    }
 
     // redo the child collection here; could also do inside Grib2PartitionBuilder, not sure if advantage
     if (forceChildren != CollectionUpdateType.never) {

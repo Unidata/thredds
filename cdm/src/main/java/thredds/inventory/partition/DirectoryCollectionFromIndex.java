@@ -28,7 +28,7 @@ class DirectoryCollectionFromIndex extends CollectionAbstract {
 
   @Override
   public CloseableIterator<MFile> getFileIterator() throws IOException {
-    return new MFileIterator( getFilesSorted().iterator());
+    return new MFileIterator( getFilesSorted().iterator(), filter);
   }
 
   @Override

@@ -13,20 +13,32 @@ import java.util.Iterator;
  */
 public class MFileIterator implements CloseableIterator<MFile> {
   private Iterator<MFile> iter;
+  private MFileFilter filter;
+  private MFile nextMfile;
 
-  public MFileIterator(Iterator<MFile> iter) {
+  /**
+   * Constructor
+   * @param iter   iterator over MFiles
+   * @param filter optional filter, may be null
+   */
+  public MFileIterator(Iterator<MFile> iter, MFileFilter filter) {
     this.iter = iter;
+    this.filter = filter;
   }
 
   public void close() throws IOException {
   }
 
   public boolean hasNext() {
-    return iter.hasNext();
+    while (true) {
+      if (!iter.hasNext()) return false;
+      nextMfile = iter.next();
+      if (filter == null || filter.accept(nextMfile)) return true;
+    }
   }
 
   public MFile next() {
-    return iter.next();
+    return nextMfile;
   }
 
   public void remove() {

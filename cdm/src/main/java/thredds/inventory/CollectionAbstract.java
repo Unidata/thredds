@@ -7,6 +7,8 @@ import ucar.nc2.time.CalendarDate;
 import ucar.unidata.util.StringUtil2;
 
 import java.io.IOException;
+import java.nio.file.DirectoryStream;
+import java.nio.file.Path;
 import java.util.*;
 
 /**
@@ -56,6 +58,8 @@ public abstract class CollectionAbstract implements MCollection {
   protected DateExtractor dateExtractor;
   protected CalendarDate startCollection;
   protected long lastModified;
+  protected MFileFilter filter;
+  protected DirectoryStream.Filter<Path> sfilter;
 
   protected CollectionAbstract( String collectionName, org.slf4j.Logger logger) {
     this.collectionName = cleanName(collectionName);
@@ -79,6 +83,14 @@ public abstract class CollectionAbstract implements MCollection {
   @Override
   public String getIndexFilename() {
     return getRoot() + "/" + collectionName + NCX_SUFFIX;
+  }
+
+  public void setMFileFilter(MFileFilter filter) {
+    this.filter = filter;
+  }
+
+  public void setStreamFilter(DirectoryStream.Filter<Path> filter) {
+    this.sfilter = filter;
   }
 
   @Override

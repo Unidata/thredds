@@ -87,7 +87,7 @@ public abstract class CollectionManagerAbstract extends CollectionAbstract imple
   // fake default implementation
   @Override
   public CloseableIterator<MFile> getFileIterator() throws IOException {
-    return new MFileIterator( getFilesSorted().iterator());
+    return new MFileIterator( getFilesSorted().iterator(), filter);
   }
 
   @Override
