@@ -957,12 +957,15 @@ public class GribCollection implements FileCacheable, AutoCloseable {
 
     public void calcTotalSize() {
       this.totalSize = 1;
-      for (int idx : this.coordIndex)
-        this.totalSize *= this.group.coords.get(idx).getSize();
+      for (int idx : this.coordIndex) {
+        Coordinate coord = this.group.coords.get(idx);
+        if (coord instanceof CoordinateTime2D)
+          this.totalSize *= ((CoordinateTime2D)coord).getNtimes();
+        else
+          this.totalSize *= coord.getSize();
+      }
       this.density = ((float) this.nrecords) / this.totalSize;
     }
-
-
   }
 
   public static class Record {
@@ -974,6 +977,16 @@ public class GribCollection implements FileCacheable, AutoCloseable {
       this.fileno = fileno;
       this.pos = pos;
       this.bmsPos = bmsPos;
+    }
+
+    @Override
+    public String toString() {
+      final StringBuilder sb = new StringBuilder("GribCollection.Record{");
+      sb.append("fileno=").append(fileno);
+      sb.append(", pos=").append(pos);
+      sb.append(", bmsPos=").append(bmsPos);
+      sb.append('}');
+      return sb.toString();
     }
   }
 

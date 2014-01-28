@@ -503,7 +503,7 @@ public class Grib2Iosp extends GribIosp {
           makeVerticalCoordinate(ncfile, g, (CoordinateVert) coord);
           break;
         case time2D:
-          makeTime2D(ncfile, g, (CoordinateTime2D) coord);
+          makeTime2D(ncfile, g, (CoordinateTime2D) coord, is2Dtime);
           break;
       }
     }
@@ -531,8 +531,8 @@ public class Grib2Iosp extends GribIosp {
       Formatter coords = new Formatter();
 
       for (Coordinate coord : vindex.getCoordinates()) {
+        if (!is2Dtime && coord.getType() == Coordinate.Type.runtime) continue; // skip reference time
         dims.format("%s ", coord.getName());
-        // if (coord.getType() == Coordinate.Type.time || coord.getType() == Coordinate.Type.timeIntv) // for 2D times
         coords.format("%s ", coord.getName());
       }
       dims.format("%s", horizDims);
@@ -655,19 +655,20 @@ public class Grib2Iosp extends GribIosp {
     v.setCachedData(Array.factory(DataType.DOUBLE, new int[]{n}, data));
   }
 
-  private void makeTime2D(NetcdfFile ncfile, Group g, CoordinateTime2D time2D) {
+  private void makeTime2D(NetcdfFile ncfile, Group g, CoordinateTime2D time2D, boolean is2Dtime) {
      CoordinateRuntime runtime = time2D.getRuntimeCoordinate();
      //makeRuntimeCoordinate(ncfile, g, runtime);
 
      int nruns = runtime.getSize();
      int ntimes = time2D.getNtimes();
      String tcName = time2D.getName();
-     String dims = runtime.getName()+" "+tcName;
+     String dims = is2Dtime ? runtime.getName()+" "+tcName : tcName;
      ncfile.addDimension(g, new Dimension(tcName, ntimes));
      Variable v = ncfile.addVariable(g, new Variable(ncfile, g, null, tcName, DataType.DOUBLE, dims));
      String units = runtime.getUnit(); // + " since " + runtime.getFirstDate();
      v.addAttribute(new Attribute(CDM.UNITS, units));
      v.addAttribute(new Attribute(CF.STANDARD_NAME, "time"));
+     v.addAttribute(new Attribute(CDM.LONG_NAME, is2Dtime ? "forecast times (2D)" : "forecast times (best)"));
 
      double[] data = new double[nruns * ntimes];
      for (int i=0; i<nruns * ntimes; i++) data[i] = Double.NaN;
@@ -1040,7 +1041,7 @@ public class Grib2Iosp extends GribIosp {
         if (dr.drsPos == GribCollection.MISSING_RECORD) continue;
 
         if (debugRead) { // for validation
-          show(Grib2RecordScanner.findRecordByDrspos(rafData, dr.drsPos), dr.drsPos);
+          show(rafData, Grib2RecordScanner.findRecordByDrspos(rafData, dr.drsPos), dr.drsPos);
         }
 
         GdsHorizCoordSys hcs = vindex.group.getGdsHorizCoordSys();
@@ -1145,10 +1146,10 @@ public class Grib2Iosp extends GribIosp {
     }
   }
 
-  private void show(Grib2Record gr, long pos) {
+  private void show(RandomAccessFile rafData, Grib2Record gr, long pos) {
     if (gr != null) {
        Formatter f = new Formatter();
-       f.format("File=%s%n", raf.getLocation());
+       f.format("File=%s%n", rafData.getLocation());
        f.format("  Parameter=%s%n", cust.getVariableName(gr));
        f.format("  ReferenceDate=%s%n", gr.getReferenceDate());
        f.format("  ForecastDate=%s%n", cust.getForecastDate(gr));
@@ -1352,7 +1353,7 @@ public class Grib2Iosp extends GribIosp {
         if (dr.drsPos == GribCollection.MISSING_RECORD) continue;
 
         if (debugRead) { // for validation
-          show( Grib2RecordScanner.findRecordByDrspos(rafData, dr.drsPos), dr.drsPos);
+          show( rafData, Grib2RecordScanner.findRecordByDrspos(rafData, dr.drsPos), dr.drsPos);
         }
 
         GdsHorizCoordSys hcs = dr.vindex.group.getGdsHorizCoordSys();

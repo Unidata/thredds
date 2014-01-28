@@ -12,11 +12,9 @@ import ucar.nc2.grib.grib2.table.Grib2Customizer;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time.CalendarPeriod;
 import ucar.nc2.util.Indent;
+import ucar.sparr.CoordinateTwoTimer;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Formatter;
-import java.util.List;
+import java.util.*;
 
 /**
  * Time coordinates that are intervals.
@@ -139,6 +137,47 @@ public class CoordinateTimeIntv extends CoordinateTimeAbstract implements Coordi
   public int hashCode() {
     int result = code;
     result = 31 * result + timeIntervals.hashCode();
+    return result;
+  }
+
+  ////////////////////////////////////////
+
+    // make the union of all the offsets from base date
+  public CoordinateTimeIntv createBestTimeCoordinate(List<Double> runOffsets) {
+    Set<TimeCoord.Tinv> values = new HashSet<>();
+    for (double runOffset : runOffsets) {
+      for (TimeCoord.Tinv val : getTimeIntervals())
+        values.add( val.offset(runOffset)); // LOOK possible roundoff
+    }
+
+    List<TimeCoord.Tinv> offsetSorted = new ArrayList<>(values.size());
+    for (Object val : values) offsetSorted.add( (TimeCoord.Tinv) val);
+    Collections.sort(offsetSorted);
+    return new CoordinateTimeIntv(getCode(), getTimeUnit(), offsetSorted);
+  }
+
+  protected int[] makeTime2RuntimeMap(List<Double> runOffsets, CoordinateTimeIntv coordBest, CoordinateTwoTimer twot) {
+    int[] result = new int[ coordBest.getSize()];
+
+    Map<TimeCoord.Tinv, Integer> map = new HashMap<>();  // lookup coord val to index
+    int count = 0;
+    for (TimeCoord.Tinv val : coordBest.getTimeIntervals()) map.put(val, count++);
+
+    int runIdx = 0;
+    for (double runOffset : runOffsets) {
+      int timeIdx = 0;
+      for (TimeCoord.Tinv val : getTimeIntervals()) {
+        if (twot.getCount(runIdx, timeIdx) > 0) { // skip missing;
+          TimeCoord.Tinv bestVal = val.offset(runOffset);
+          Integer bestValIdx = map.get(bestVal);
+          if (bestValIdx == null) throw new IllegalStateException();
+          result[bestValIdx] = runIdx+1; // use this partition; later ones override; one based so 0 = missing
+        }
+
+        timeIdx++;
+      }
+      runIdx++;
+    }
     return result;
   }
 

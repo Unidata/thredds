@@ -38,6 +38,8 @@ package ucar.nc2.grib.collection;
 import ucar.nc2.time.CalendarPeriod;
 import ucar.sparr.Coordinate;
 
+import java.util.List;
+
 /**
  * Describe
  *
@@ -96,5 +98,8 @@ public abstract class CoordinateTimeAbstract implements Coordinate {
   public CalendarPeriod getTimeUnit() {
     return timeUnit;
   }
+
+  ////////////////////////////////////////
+  public abstract CoordinateTimeAbstract createBestTimeCoordinate(List<Double> runOffsets);
 
 }

@@ -10,6 +10,7 @@ import ucar.nc2.grib.grib2.Grib2Pds;
 import ucar.nc2.grib.grib2.Grib2Record;
 import ucar.nc2.time.CalendarPeriod;
 import ucar.nc2.util.Indent;
+import ucar.sparr.CoordinateTwoTimer;
 
 import java.util.*;
 
@@ -121,6 +122,53 @@ public class CoordinateTime extends CoordinateTimeAbstract implements Coordinate
   public int hashCode() {
     int result = offsetSorted.hashCode();
     result = 31 * result + code;
+    return result;
+  }
+
+  ////////////////////////////////////////////////
+
+  public CoordinateTime createBestTimeCoordinate(List<Double> runOffsets) {
+    Set<Integer> values = new HashSet<>();
+    for (double runOffset : runOffsets) {
+      for (Integer val : getOffsetSorted())
+        values.add((int) (runOffset + val)); // LOOK possible roundoff
+    }
+
+    List<Integer> offsetSorted = new ArrayList<>(values.size());
+    for (Object val : values) offsetSorted.add( (Integer) val);
+    Collections.sort(offsetSorted);
+    return new CoordinateTime(getCode(), getTimeUnit(), offsetSorted);
+  }
+
+  /**
+   * calculate which runtime to use, based on missing
+   * @param runOffsets for each runtime, the offset from base time
+   * @param coordBest  best time coordinate, from convertBestTimeCoordinate
+   * @param twot       variable missing array
+   * @return           for each time in coordBest, which runtime to use, as 1-based index into runtime runOffsets (0 = missing)
+   */
+  protected int[] makeTime2RuntimeMap(List<Double> runOffsets, CoordinateTime coordBest, CoordinateTwoTimer twot) {
+    int[] result = new int[ coordBest.getSize()];
+
+    Map<Integer, Integer> map = new HashMap<>();  // lookup coord val to index
+    int count = 0;
+    for (Integer val : coordBest.getOffsetSorted()) map.put(val, count++);
+
+    int runIdx = 0;
+    for (double runOffset : runOffsets) {
+      int timeIdx = 0;
+      for (Integer val : getOffsetSorted()) {
+        if (twot.getCount(runIdx, timeIdx) > 0) { // skip missing
+          Integer bestVal = (int) (runOffset + val);
+          Integer bestValIdx = map.get(bestVal);
+          if (bestValIdx == null) throw new IllegalStateException();
+          result[bestValIdx] = runIdx+1; // use this partition; later ones override; 1-based so 0 = missing
+        }
+
+        timeIdx++;
+      }
+      runIdx++;
+    }
     return result;
   }
 

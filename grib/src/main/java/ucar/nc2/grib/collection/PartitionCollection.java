@@ -132,15 +132,26 @@ public class PartitionCollection extends GribCollection {
 
       // figure out the runtime
       int timeIdx = wholeIndex[0];
-      int runtimeIdxWhole = time2runtime[timeIdx];
+      int runtimeIdxWhole = time2runtime[timeIdx]-1;  // 1-based
       int runtimeIdxPart = matchCoordinate(getCoordinate(0), runtimeIdxWhole, vindex.getCoordinate(0));
       if (runtimeIdxPart < 0) return null;
       result[0] = runtimeIdxPart;
 
       // figure out the time and any other dimensions
       int countDim = 0;
-      for (int idx : wholeIndex) {
-        int resultIdx = matchCoordinate(getCoordinate(countDim), idx, vindex.getCoordinate(countDim+1));
+      while (countDim < wholeIndex.length) {
+        int idx = wholeIndex[countDim];
+        Coordinate viCoord = vindex.getCoordinate(countDim+1);
+        Coordinate vipCoord = getCoordinate(countDim+1);
+        int resultIdx;
+        if (viCoord.getType() == Coordinate.Type.time2D) {
+          CoordinateTime2D coord2D = (CoordinateTime2D) viCoord;
+          CoordinateTime2D coord2Dp = (CoordinateTime2D) getCoordinate(1);
+          int offset = coord2Dp.getOffset(runtimeIdxWhole);
+          resultIdx = coord2D.matchCoordinate(runtimeIdxPart, vipCoord.getValue(idx), offset);
+        } else {
+          resultIdx = matchCoordinate(vipCoord, idx, viCoord);
+        }
         if (resultIdx < 0) return null;
         result[countDim+1] = resultIdx;
         countDim++;

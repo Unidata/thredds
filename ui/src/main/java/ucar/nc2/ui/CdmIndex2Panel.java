@@ -580,15 +580,15 @@ public class CdmIndex2Panel extends JPanel {
           e.printStackTrace();
           return;
         }
-        if (v.sa != null)
+        if (v.sa != null) {
           v.sa.showInfo(f, null);
+          f.format("%n");
+          v.sa.showContent(f);
+        }
       }
     }
 
-     /* private void showRecordsInCollection(Formatter f) {
-       TimeCoord tcoord = v.getTimeCoord();
-       VertCoord vcoord = v.getVertCoord();
-       EnsCoord ecoord = v.getEnsCoord();
+    /* private void showRecords(Formatter f) {
 
        try {
          GribCollection.Record[] records = v.getRecords();

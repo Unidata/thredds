@@ -5,6 +5,7 @@ import ucar.nc2.grib.collection.CoordinateRuntime;
 import ucar.nc2.grib.collection.CoordinateTime;
 import ucar.nc2.grib.collection.CoordinateVert;
 import ucar.nc2.time.CalendarDate;
+import ucar.nc2.time.CalendarPeriod;
 import ucar.nc2.util.Indent;
 
 import java.util.ArrayList;
@@ -27,6 +28,7 @@ public class TestCoordinate implements Coordinate {
   }
 
   static public Coordinate factory(int nvals, Coordinate.Type type) {
+    CalendarPeriod period = CalendarPeriod.of("1 hour");
     switch (type) {
       case runtime:
         List<CalendarDate> cd = new ArrayList<>(nvals);
@@ -35,11 +37,11 @@ public class TestCoordinate implements Coordinate {
       case time:
         List<Integer> vals = new ArrayList<>(nvals);
         for (int i=0; i<nvals; i++) vals.add(i);
-        return new CoordinateTime(vals, 0);
+        return new CoordinateTime(0, period, vals);
       case vert:
         List<VertCoord.Level> vert = new ArrayList<>(nvals);
          for (int i=0; i<nvals; i++) vert.add(new VertCoord.Level((double) (i+1), (double) (i+2), true));
-        return new CoordinateVert(vert, 0);
+        return new CoordinateVert(0, vert);
      }
     return null;
   }

@@ -190,5 +190,14 @@ public class SparseArray<T> {
 
   }
 
+  public void showContent(Formatter f) {
+    int count = 0;
+    f.format("Content%n");
+    for (T record : content)
+      f.format(" %d %s %n", count++, record);
+  }
+
+
+
 
 }
