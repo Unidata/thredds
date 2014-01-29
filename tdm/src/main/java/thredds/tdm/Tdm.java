@@ -297,10 +297,10 @@ public class Tdm {
           changed = GribCdmIndex2.updateGribCollection(config, config.tdmConfig.updateType, logger);
 
         } else {
-          if (config.timePartition.equalsIgnoreCase("file"))
+          /* if (config.timePartition.equalsIgnoreCase("file"))
             changed = GribCdmIndex2.updateFilePartition(config, config.tdmConfig.updateType, config.tdmConfig.updateType, logger);
 
-          else if (config.timePartition.equalsIgnoreCase("directory"))
+          else if (config.timePartition.equalsIgnoreCase("directory")) */
             changed = GribCdmIndex2.updateDirectoryCollection(config, config.tdmConfig.updateType, config.tdmConfig.updateType, logger);
         }
 
