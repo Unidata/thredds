@@ -164,3 +164,9 @@ Notes for grib-1 tables (global)
  - ftp://ftp.wmo.int/Documents/MediaPublic/Publications/CodesManual_WMO_no_306/WMO306_Vol_I.2_2010_en.pdf
  - put in standard XML form, from old embedded strings.
  - all info is now in this table, which must be maintained by hand.
+
+01/28/2014 added grib1 tables for ECMWF
+ - Tables are generated from the localConcept files from GRIB-API (software from ECMWF)
+ - Use the main method in /ucar/nc2/grib/grib1/tables/EcmwfLocalConcepts to generate table files
+ - see /src/main/sources/ecmwfGribApi/README.txt for more details
+ - Removed all ECMWF tables (2.98.*) from the ecmwf and ncl directories, as these are now coming from GRIB-API

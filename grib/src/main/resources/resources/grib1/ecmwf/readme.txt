@@ -41,3 +41,6 @@
     "GRIBEX has been replaced by GRIB API. GRIBEX is not available for download and is not maintained nor supported any longer."
   2. missing params in Q:/support/CarlosMoraga/ECMWF_GNERA_d0001.20121001
   3. send email to marcos, stephan to try to get canonical ecmwf tables.
+
+01/29/2014
+  - Removed 2.98* tables, as these are now coming from GRIB-API
