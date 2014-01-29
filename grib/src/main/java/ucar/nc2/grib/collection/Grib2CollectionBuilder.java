@@ -826,6 +826,7 @@ public class Grib2CollectionBuilder extends GribCollectionBuilder {
     b.setType(coord.getType().ordinal());
     b.setCode(coord.getCode());
     b.setUnit(coord.getTimeUnit().toString());
+    b.addMsecs(coord.getRefDate().getMillis());
     for (Integer offset : coord.getOffsetSorted()) {
       b.addValues(offset);
     }
@@ -837,6 +838,7 @@ public class Grib2CollectionBuilder extends GribCollectionBuilder {
     b.setType(coord.getType().ordinal());
     b.setCode(coord.getCode());
     b.setUnit(coord.getTimeUnit().toString());
+    b.addMsecs(coord.getRefDate().getMillis());
 
     // LOOK old way - do we need ?
     /*     float scale = (float) tc.getTimeUnitScale(); // deal with, eg, "6 hours" by multiplying values by 6

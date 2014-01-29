@@ -65,7 +65,7 @@ public class CoordinateTime2D extends CoordinateTimeAbstract implements Coordina
 
   // when reading
   public CoordinateTime2D(int code, CalendarPeriod timeUnit, CoordinateRuntime runtime, List<Coordinate> times) {
-    super(code, timeUnit);
+    super(code, timeUnit, runtime.getFirstDate());
 
     this.runtime = runtime;
     this.times = times;
@@ -93,7 +93,7 @@ public class CoordinateTime2D extends CoordinateTimeAbstract implements Coordina
 
   // when constructing
   public CoordinateTime2D(int code, CalendarPeriod timeUnit, List<Time2D> vals, CoordinateRuntime runtime, List<Coordinate> orgTimes) {
-    super(code, timeUnit);
+    super(code, timeUnit, runtime.getFirstDate());
 
     this.runtime = runtime;
     this.isTimeInterval = orgTimes.get(0) instanceof CoordinateTimeIntv;
@@ -120,13 +120,13 @@ public class CoordinateTime2D extends CoordinateTimeAbstract implements Coordina
   }
 
   private void makeOffsets(List<Coordinate> orgTimes) {
-   CalendarDate firstDate = runtime.getFirstDate();
-   offset = new int[orgTimes.size()];
-   for (int idx=0; idx<orgTimes.size(); idx++) {
-     CoordinateTimeAbstract coordTime = (CoordinateTimeAbstract) orgTimes.get(idx);
-     CalendarPeriod period = coordTime.getPeriod(); // LOOK are we assuming all have same period ??
-     offset[idx] = period.getOffset(firstDate, runtime.getDate(idx)); // LOOK possible loss of precision
-   }
+    CalendarDate firstDate = runtime.getFirstDate();
+    offset = new int[orgTimes.size()];
+    for (int idx=0; idx<orgTimes.size(); idx++) {
+      CoordinateTimeAbstract coordTime = (CoordinateTimeAbstract) orgTimes.get(idx);
+      CalendarPeriod period = coordTime.getPeriod(); // LOOK are we assuming all have same period ??
+      offset[idx] = period.getOffset(firstDate, runtime.getDate(idx)); // LOOK possible loss of precision
+    }
   }
 
   public CoordinateRuntime getRuntimeCoordinate() {
@@ -208,8 +208,17 @@ public class CoordinateTime2D extends CoordinateTimeAbstract implements Coordina
 
   ////////////////////////////////////////////////
 
-  public int matchCoordinate(int runIdx, Object value, int offset) {
-    Coordinate time =  times.get(runIdx);
+  public int matchCoordinate(int runIdx, Object value, CalendarDate refDateOfValue) {
+    CoordinateTimeAbstract time =  (CoordinateTimeAbstract) times.get(runIdx);
+    CalendarDate timeRef = time.getRefDate();
+    int offset;
+    if (timeRef.equals(refDateOfValue))
+      offset = 0;
+    else {
+      CalendarPeriod period = time.getPeriod();
+      offset = period.getOffset(timeRef, refDateOfValue); // LOOK possible loss of precision
+    }
+
     Object valueWithOffset;
     if (isTimeInterval) {
       TimeCoord.Tinv tinv = (TimeCoord.Tinv) value;
@@ -233,7 +242,7 @@ public class CoordinateTime2D extends CoordinateTimeAbstract implements Coordina
       List<TimeCoord.Tinv> offsetSorted = new ArrayList<>(values.size());
       for (Object val : values) offsetSorted.add( (TimeCoord.Tinv) val);
       Collections.sort(offsetSorted);
-      return new CoordinateTimeIntv(getCode(), getTimeUnit(), offsetSorted);
+      return new CoordinateTimeIntv(getCode(), getTimeUnit(), getRefDate(), offsetSorted);
 
     } else {
       Set<Integer> values = new HashSet<>();
@@ -246,7 +255,7 @@ public class CoordinateTime2D extends CoordinateTimeAbstract implements Coordina
       List<Integer> offsetSorted = new ArrayList<>(values.size());
       for (Object val : values) offsetSorted.add( (Integer) val);
       Collections.sort(offsetSorted);
-      return new CoordinateTime(getCode(), getTimeUnit(), offsetSorted);
+      return new CoordinateTime(getCode(), getTimeUnit(), getRefDate(), offsetSorted);
     }
   }
 
@@ -402,7 +411,7 @@ public class CoordinateTime2D extends CoordinateTimeAbstract implements Coordina
       CalendarDate run = (CalendarDate) runBuilder.extract(gr);
       CoordinateBuilderImpl<Grib2Record> timeBuilder = timeBuilders.get(run);
       if (timeBuilder == null) {
-        timeBuilder = isTimeInterval ? new CoordinateTimeIntv.Builder(cust, timeUnit, code) : new CoordinateTime.Builder(code, timeUnit);
+        timeBuilder = isTimeInterval ? new CoordinateTimeIntv.Builder(cust, code, timeUnit, run) : new CoordinateTime.Builder(code, timeUnit, run);
         timeBuilders.put(run, timeBuilder);
       }
       Object time = timeBuilder.extract(gr);
@@ -437,7 +446,7 @@ public class CoordinateTime2D extends CoordinateTimeAbstract implements Coordina
        runBuilder.add( val2D.run);
        CoordinateBuilderImpl<Grib2Record> timeBuilder = timeBuilders.get(val2D.run);
        if (timeBuilder == null) {
-         timeBuilder = isTimeInterval ? new CoordinateTimeIntv.Builder(cust, timeUnit, code) : new CoordinateTime.Builder(code, timeUnit);
+         timeBuilder = isTimeInterval ? new CoordinateTimeIntv.Builder(cust, code, timeUnit, val2D.run) : new CoordinateTime.Builder(code, timeUnit, val2D.run);
          timeBuilders.put(val2D.run, timeBuilder);
        }
        timeBuilder.add(isTimeInterval ? val2D.tinv : val2D.time);

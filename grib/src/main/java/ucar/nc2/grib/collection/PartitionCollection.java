@@ -123,7 +123,7 @@ public class PartitionCollection extends GribCollection {
      * translate index in VariableIndexPartitioned to corresponding index in one of its component VariableIndex
      * by matching coordinate values
      *
-     * @param wholeIndex  indexes in VariableIndexPartitioned
+     * @param wholeIndex  index in VariableIndexPartitioned
      * @param vindex      component 2D VariableIndex
      * @return corresponding index in VariableIndex, or null if missing
      */
@@ -142,13 +142,12 @@ public class PartitionCollection extends GribCollection {
       while (countDim < wholeIndex.length) {
         int idx = wholeIndex[countDim];
         Coordinate viCoord = vindex.getCoordinate(countDim+1);
-        Coordinate vipCoord = getCoordinate(countDim+1);
+        Coordinate vipCoord = getCoordinate(countDim + 1);
         int resultIdx;
         if (viCoord.getType() == Coordinate.Type.time2D) {
-          CoordinateTime2D coord2D = (CoordinateTime2D) viCoord;
-          CoordinateTime2D coord2Dp = (CoordinateTime2D) getCoordinate(1);
-          int offset = coord2Dp.getOffset(runtimeIdxWhole);
-          resultIdx = coord2D.matchCoordinate(runtimeIdxPart, vipCoord.getValue(idx), offset);
+          CoordinateTime2D coord2D = (CoordinateTime2D) viCoord; // of the component
+          CoordinateTimeAbstract vipCoordTime = (CoordinateTimeAbstract) vipCoord; // best time coord of partition
+          resultIdx = coord2D.matchCoordinate(runtimeIdxPart, vipCoord.getValue(idx), vipCoordTime.getRefDate());
         } else {
           resultIdx = matchCoordinate(vipCoord, idx, viCoord);
         }

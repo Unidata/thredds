@@ -26,13 +26,13 @@ public class CoordinateTimeIntv extends CoordinateTimeAbstract implements Coordi
   private final List<TimeCoord.Tinv> timeIntervals;
 
   //public CoordinateTimeIntv(Grib2Customizer cust, CalendarPeriod timeUnit, int code, List<TimeCoord.Tinv> timeIntervals) {
-  public CoordinateTimeIntv(int code, CalendarPeriod timeUnit, List<TimeCoord.Tinv> timeIntervals) {
-    super(code, timeUnit);
+  public CoordinateTimeIntv(int code, CalendarPeriod timeUnit, CalendarDate refDate, List<TimeCoord.Tinv> timeIntervals) {
+    super(code, timeUnit, refDate);
     this.timeIntervals = Collections.unmodifiableList(timeIntervals);
   }
 
   CoordinateTimeIntv(CoordinateTimeIntv org, int offset) {
-    super(org.getCode(), org.getTimeUnit());
+    super(org.getCode(), org.getTimeUnit(), org.getRefDate());
     List<TimeCoord.Tinv> vals = new ArrayList<>(org.getSize());
     for (TimeCoord.Tinv orgVal : org.getTimeIntervals()) vals.add(new TimeCoord.Tinv(orgVal.getBounds1()+offset, orgVal.getBounds2()+offset));
     this.timeIntervals = Collections.unmodifiableList(vals);
@@ -115,7 +115,7 @@ public class CoordinateTimeIntv extends CoordinateTimeAbstract implements Coordi
 
   @Override
   public void showCoords(Formatter info) {
-    info.format("Time Interval offsets: (%s) %n", getUnit());
+    info.format("Time Interval offsets: (%s) ref=%s%n", getUnit(), getRefDate());
     for (TimeCoord.Tinv cd : timeIntervals)
       info.format("   (%3d - %3d)  %d%n", cd.getBounds1(), cd.getBounds2(), cd.getBounds2() - cd.getBounds1());
   }
@@ -153,7 +153,7 @@ public class CoordinateTimeIntv extends CoordinateTimeAbstract implements Coordi
     List<TimeCoord.Tinv> offsetSorted = new ArrayList<>(values.size());
     for (Object val : values) offsetSorted.add( (TimeCoord.Tinv) val);
     Collections.sort(offsetSorted);
-    return new CoordinateTimeIntv(getCode(), getTimeUnit(), offsetSorted);
+    return new CoordinateTimeIntv(getCode(), getTimeUnit(), refDate, offsetSorted);
   }
 
   protected int[] makeTime2RuntimeMap(List<Double> runOffsets, CoordinateTimeIntv coordBest, CoordinateTwoTimer twot) {
@@ -192,16 +192,22 @@ public class CoordinateTimeIntv extends CoordinateTimeAbstract implements Coordi
     private final Grib2Customizer cust;
     private final int code;                  // pdsFirst.getTimeUnit()
     private final CalendarPeriod timeUnit;
+    private final CalendarDate refDate;
 
-    public Builder(Grib2Customizer cust, CalendarPeriod timeUnit, int code) {
+    public Builder(Grib2Customizer cust, int code, CalendarPeriod timeUnit, CalendarDate refDate) {
       this.cust = cust;
-      this.timeUnit = timeUnit;
       this.code = code;
+      this.timeUnit = timeUnit;
+      this.refDate = refDate;
     }
 
     @Override
     public Object extract(Grib2Record gr) {
-      CalendarDate refDate =  gr.getReferenceDate();
+      CalendarDate refDate2 =  gr.getReferenceDate();
+      if (!refDate.equals(refDate2)) {
+        System.out.printf("ReferenceDate %s != %s%n", refDate2, refDate);
+       // LOOK ??
+      }
 
       CalendarPeriod timeUnitUse = timeUnit;
       Grib2Pds pds = gr.getPDS();
@@ -213,7 +219,7 @@ public class CoordinateTimeIntv extends CoordinateTimeAbstract implements Coordi
       }
 
       TimeCoord.TinvDate tinvd = cust.getForecastTimeInterval(gr);
-      TimeCoord.Tinv tinv = tinvd.convertReferenceDate(refDate, timeUnitUse);
+      TimeCoord.Tinv tinv = tinvd.convertReferenceDate(refDate2, timeUnitUse);
       return tinv;
     }
 
@@ -223,7 +229,7 @@ public class CoordinateTimeIntv extends CoordinateTimeAbstract implements Coordi
       for (Object val : values) offsetSorted.add( (TimeCoord.Tinv) val);
       Collections.sort(offsetSorted);
 
-      return new CoordinateTimeIntv(code, timeUnit, offsetSorted);
+      return new CoordinateTimeIntv(code, timeUnit, refDate, offsetSorted);
     }
   }
 

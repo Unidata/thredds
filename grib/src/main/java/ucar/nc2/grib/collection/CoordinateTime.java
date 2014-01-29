@@ -24,13 +24,13 @@ import java.util.*;
 public class CoordinateTime extends CoordinateTimeAbstract implements Coordinate {
   private final List<Integer> offsetSorted;
 
-  public CoordinateTime(int code, CalendarPeriod timeUnit, List<Integer> offsetSorted) {
-    super(code, timeUnit);
+  public CoordinateTime(int code, CalendarPeriod timeUnit, CalendarDate refDate, List<Integer> offsetSorted) {
+    super(code, timeUnit, refDate);
     this.offsetSorted = Collections.unmodifiableList(offsetSorted);
   }
 
   CoordinateTime(CoordinateTime org, int offset) {
-    super(org.getCode(), org.getTimeUnit());
+    super(org.getCode(), org.getTimeUnit(), org.getRefDate());
     List<Integer> vals = new ArrayList<>(org.getSize());
     for (int orgVal : org.getOffsetSorted()) vals.add(orgVal+offset);
     this.offsetSorted = Collections.unmodifiableList(vals);
@@ -100,7 +100,7 @@ public class CoordinateTime extends CoordinateTimeAbstract implements Coordinate
 
   @Override
   public void showCoords(Formatter info) {
-    info.format("Time offsets: (%s) %n", getUnit());
+    info.format("Time offsets: (%s) ref=%s %n", getUnit(), getRefDate());
      for (Integer cd : offsetSorted)
        info.format("   %3d%n", cd);
   }
@@ -137,7 +137,7 @@ public class CoordinateTime extends CoordinateTimeAbstract implements Coordinate
     List<Integer> offsetSorted = new ArrayList<>(values.size());
     for (Object val : values) offsetSorted.add( (Integer) val);
     Collections.sort(offsetSorted);
-    return new CoordinateTime(getCode(), getTimeUnit(), offsetSorted);
+    return new CoordinateTime(getCode(), getTimeUnit(), getRefDate(), offsetSorted);
   }
 
   /**
@@ -182,10 +182,12 @@ public class CoordinateTime extends CoordinateTimeAbstract implements Coordinate
   static public class Builder extends CoordinateBuilderImpl<Grib2Record>  {
     int code;  // pdsFirst.getTimeUnit()
     CalendarPeriod timeUnit;
+    CalendarDate refDate;
 
-    public Builder(int code, CalendarPeriod timeUnit) {
+    public Builder(int code, CalendarPeriod timeUnit, CalendarDate refDate) {
       this.code = code;
       this.timeUnit = timeUnit;
+      this.refDate = refDate;
     }
 
     @Override
@@ -198,7 +200,7 @@ public class CoordinateTime extends CoordinateTimeAbstract implements Coordinate
       List<Integer> offsetSorted = new ArrayList<>(values.size());
       for (Object val : values) offsetSorted.add( (Integer) val);
       Collections.sort(offsetSorted);
-      return new CoordinateTime(code, timeUnit, offsetSorted);
+      return new CoordinateTime(code, timeUnit, refDate, offsetSorted);
     }
   }
 

@@ -35,6 +35,7 @@
 
 package ucar.nc2.grib.collection;
 
+import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time.CalendarPeriod;
 import ucar.sparr.Coordinate;
 
@@ -50,13 +51,16 @@ public abstract class CoordinateTimeAbstract implements Coordinate {
 
   protected final int code;                  // pdsFirst.getTimeUnit()
   protected final CalendarPeriod timeUnit;
+  protected CalendarDate refDate;            // null if dense
 
   protected String name = "time";
   protected String periodName;
 
-  CoordinateTimeAbstract(int code, CalendarPeriod timeUnit) {
+  CoordinateTimeAbstract(int code, CalendarPeriod timeUnit, CalendarDate refDate) {
     this.code = code;
     this.timeUnit = timeUnit;
+    this.refDate = refDate;
+
     CalendarPeriod.Field cf = timeUnit.getField();
     if (cf == CalendarPeriod.Field.Month || cf == CalendarPeriod.Field.Year)
       this.periodName = "calendar "+ cf.toString();
@@ -87,9 +91,13 @@ public abstract class CoordinateTimeAbstract implements Coordinate {
     this.name = name;
   }
 
-  /* public void setRefDate(CalendarDate refDate) {
+  public CalendarDate getRefDate() {
+    return refDate;
+  }
+
+  public void setRefDate(CalendarDate refDate) {
     this.refDate = refDate;
-  } */
+  }
 
   public double getTimeUnitScale() {
      return timeUnit.getValue();

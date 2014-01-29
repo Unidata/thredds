@@ -87,7 +87,6 @@ public class Grib2PartitionBuilderFromIndex extends Grib2CollectionBuilderFromIn
     int count = 0;
     for (int partno : list)
       group.run2part[count++] = partno;
-
     return group;
   }
 

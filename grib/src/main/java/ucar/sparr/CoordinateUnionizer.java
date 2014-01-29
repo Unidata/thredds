@@ -42,12 +42,12 @@ public class CoordinateUnionizer {
           break;
         case time:
           CoordinateTime time = (CoordinateTime) coord;
-          if (timeBuilder == null) timeBuilder = new CoordinateTime.Builder(coord.getCode(), time.getTimeUnit());
+          if (timeBuilder == null) timeBuilder = new CoordinateTime.Builder(coord.getCode(), time.getTimeUnit(), time.getRefDate());
           timeBuilder.addAll(coord);
           break;
         case timeIntv:
           CoordinateTimeIntv timeIntv = (CoordinateTimeIntv) coord;
-          if (timeIntvBuilder == null) timeIntvBuilder = new CoordinateTimeIntv.Builder(null, timeIntv.getTimeUnit(), coord.getCode());
+          if (timeIntvBuilder == null) timeIntvBuilder = new CoordinateTimeIntv.Builder(null, coord.getCode(), timeIntv.getTimeUnit(), timeIntv.getRefDate());
           timeIntvBuilder.addAll(intervalFilter((CoordinateTimeIntv)coord));
           break;
         case vert:

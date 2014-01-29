@@ -345,7 +345,8 @@ message Coord {
         for (float val : pc.getValuesList())
           offs.add((int) val);
         CalendarPeriod timeUnit = CalendarPeriod.of(unit);
-        return new CoordinateTime(code, timeUnit, offs);
+        CalendarDate refDate = CalendarDate.of(pc.getMsecs(0));
+        return new CoordinateTime(code, timeUnit, refDate, offs);
 
       case timeIntv:
         List<TimeCoord.Tinv> tinvs = new ArrayList<>(pc.getValuesCount());
@@ -355,7 +356,8 @@ message Coord {
           tinvs.add(new TimeCoord.Tinv(val1, val2));
         }
         timeUnit = CalendarPeriod.of(unit);
-        return new CoordinateTimeIntv(code, timeUnit, tinvs);
+        refDate = CalendarDate.of(pc.getMsecs(0));
+        return new CoordinateTimeIntv(code, timeUnit, refDate, tinvs);
 
       case vert:
         boolean isLayer = pc.getValuesCount() == pc.getBoundCount();

@@ -5,6 +5,7 @@ import thredds.featurecollection.FeatureCollectionConfig;
 import thredds.inventory.MCollection;
 import thredds.inventory.MFile;
 import ucar.nc2.time.CalendarDate;
+import ucar.nc2.time.CalendarPeriod;
 import ucar.sparr.Coordinate;
 import ucar.sparr.CoordinateTwoTimer;
 import ucar.sparr.SparseArray;
@@ -141,7 +142,6 @@ public class GribCollection implements FileCacheable, AutoCloseable {
   } */
 
   /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
 
 
   ////////////////////////////////////////////////////////////////
@@ -359,12 +359,12 @@ public class GribCollection implements FileCacheable, AutoCloseable {
 
   // stuff for InvDatasetFcGrib
   public ucar.nc2.dataset.NetcdfDataset getNetcdfDataset(String datasetName, String groupName, String filename,
-       FeatureCollectionConfig.GribConfig gribConfig, Formatter errlog, org.slf4j.Logger logger) throws IOException {
+                                                         FeatureCollectionConfig.GribConfig gribConfig, Formatter errlog, org.slf4j.Logger logger) throws IOException {
     return null;
   }
 
   public ucar.nc2.dt.grid.GridDataset getGridDataset(String datasetName, String groupName, String filename,
-            FeatureCollectionConfig.GribConfig gribConfig, Formatter errlog, org.slf4j.Logger logger) throws IOException {
+                                                     FeatureCollectionConfig.GribConfig gribConfig, Formatter errlog, org.slf4j.Logger logger) throws IOException {
     return null;
   }
 
@@ -445,55 +445,55 @@ public class GribCollection implements FileCacheable, AutoCloseable {
     final GribCollectionProto.Dataset.Type type;
     List<GroupHcs> groups;  // must be kept in order; unmodifiableList
 
-     public Dataset(GribCollectionProto.Dataset.Type type) {
-       this.type = type;
-       groups = new ArrayList<>();
-     }
+    public Dataset(GribCollectionProto.Dataset.Type type) {
+      this.type = type;
+      groups = new ArrayList<>();
+    }
 
-     Dataset(Dataset from) {
-       this.type = from.type;
-       groups = new ArrayList<>(from.groups.size());
-     }
+    Dataset(Dataset from) {
+      this.type = from.type;
+      groups = new ArrayList<>(from.groups.size());
+    }
 
-     public GroupHcs addGroupCopy(GroupHcs from) {
-       GroupHcs g = new GroupHcs(from);
-       groups.add(g);
-       return g;
-     }
+    public GroupHcs addGroupCopy(GroupHcs from) {
+      GroupHcs g = new GroupHcs(from);
+      groups.add(g);
+      return g;
+    }
 
-     public List<GroupHcs> getGroups() {
-       return groups;
-     }
+    public List<GroupHcs> getGroups() {
+      return groups;
+    }
 
-     public GribCollectionProto.Dataset.Type getType() {
-       return type;
-     }
+    public GribCollectionProto.Dataset.Type getType() {
+      return type;
+    }
 
     public boolean isTwoD() {
       return type == GribCollectionProto.Dataset.Type.TwoD;
     }
 
-     public GroupHcs getGroup(int index) {
-       return groups.get(index);
-     }
+    public GroupHcs getGroup(int index) {
+      return groups.get(index);
+    }
 
-     public GroupHcs findGroupById(String id) {
-       for (GroupHcs g : getGroups()) {
-         if (g.getId().equals(id))
-           return g;
-       }
-       return null;
-     }
+    public GroupHcs findGroupById(String id) {
+      for (GroupHcs g : getGroups()) {
+        if (g.getId().equals(id))
+          return g;
+      }
+      return null;
+    }
 
-     public int findGroupIdxById(String id) {
-       for (int i = 0; i < groups.size(); i++) {
-         GroupHcs g = groups.get(i);
-         if (g.getId().equals(id)) return i;
-       }
-       return -1;
-     }
+    public int findGroupIdxById(String id) {
+      for (int i = 0; i < groups.size(); i++) {
+        GroupHcs g = groups.get(i);
+        if (g.getId().equals(id)) return i;
+      }
+      return -1;
+    }
 
-   }
+  }
 
   @Immutable
   public class HorizCoordSys {
@@ -575,6 +575,7 @@ public class GribCollection implements FileCacheable, AutoCloseable {
 
     // partitions only
     public int[] run2part;   // runtimeCoord.length; which partition to use for runtime i
+    public int[] offsets;   // runtimeCoord.length; offset of each runtime from firstDate
 
     GroupHcs() {
       this.variList = new ArrayList<>();
@@ -582,7 +583,7 @@ public class GribCollection implements FileCacheable, AutoCloseable {
     }
 
     // copy constructor for PartitionBuilder
-    GroupHcs( GroupHcs from) {
+    GroupHcs(GroupHcs from) {
       this.horizCoordSys = from.horizCoordSys;     // reference
       this.variList = new ArrayList<>(from.variList.size());
       this.coords = new ArrayList<>(from.coords.size());
@@ -598,8 +599,8 @@ public class GribCollection implements FileCacheable, AutoCloseable {
     }
 
     public GribCollection getGribCollection() {
-       return GribCollection.this;
-     }
+      return GribCollection.this;
+    }
 
     // unique name for Group
     public String getId() {
@@ -652,6 +653,7 @@ public class GribCollection implements FileCacheable, AutoCloseable {
     }
 
     private CalendarDateRange dateRange = null;
+
     public CalendarDateRange getCalendarDateRange() {
       if (dateRange == null) {
         CalendarDate start = null;
@@ -685,7 +687,7 @@ public class GribCollection implements FileCacheable, AutoCloseable {
   }
 
   public GribCollection.VariableIndex makeVariableIndex(GroupHcs g, int cdmHash, int discipline,
-              byte[] rawPds, Grib2Pds pds, List<Integer> index, long recordsPos, int recordsLen) {
+                                                        byte[] rawPds, Grib2Pds pds, List<Integer> index, long recordsPos, int recordsLen) {
 
     return new VariableIndex(g, -1, discipline, rawPds, pds, cdmHash, index, recordsPos, recordsLen);
   }
@@ -821,7 +823,9 @@ public class GribCollection implements FileCacheable, AutoCloseable {
       return intvName;
     }
 
-    public SparseArray getSparseArray() { return sa; }
+    public SparseArray getSparseArray() {
+      return sa;
+    }
 
     /////////////////////////////
     public String id() {
@@ -874,7 +878,7 @@ public class GribCollection implements FileCacheable, AutoCloseable {
       sb.append(", group=").append(group.getId());
       //sb.append(", partTimeCoordIdx=").append(partTimeCoordIdx);
       sb.append("}\n");
-      if (time2runtime == null ) sb.append("time2runtime is null");
+      if (time2runtime == null) sb.append("time2runtime is null");
       else {
         sb.append("time2runtime=");
         for (int idx : time2runtime) sb.append(idx).append(",");
@@ -960,7 +964,7 @@ public class GribCollection implements FileCacheable, AutoCloseable {
       for (int idx : this.coordIndex) {
         Coordinate coord = this.group.coords.get(idx);
         if (coord instanceof CoordinateTime2D)
-          this.totalSize *= ((CoordinateTime2D)coord).getNtimes();
+          this.totalSize *= ((CoordinateTime2D) coord).getNtimes();
         else
           this.totalSize *= coord.getSize();
       }

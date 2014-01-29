@@ -1164,7 +1164,7 @@ public class Grib2Iosp extends GribIosp {
   //////////////////////////////////////////////////////////////////////////////////////////////
 
   private Array readDataFromPartition(Variable v, Section section, WritableByteChannel channel) throws IOException, InvalidRangeException {
-    PartitionCollection.VariableIndexPartitioned vindexP = (PartitionCollection.VariableIndexPartitioned) v.getSPobject(); // the variable in the tp collection
+    PartitionCollection.VariableIndexPartitioned vindexP = (PartitionCollection.VariableIndexPartitioned) v.getSPobject(); // the variable in the partition collection
 
     boolean hasRuntime = vindexP.isTwod;
 
