@@ -126,7 +126,8 @@ edited 11/26/2013
     - Clear "Checkout/merge to local branch (optional)" value
     - Save
 
-4. Git
+4. Git  (ONLY IF THIS IS STABLE RELEASE)
+  - if any commits have been made on master, that are not on this branch, you will first gave to merge them
   - checkout new release tag, eg "v{release}" created by Jenkins/Maven build (NOT target-{release})
       git fetch origin
       git tag                   // see list of tags
