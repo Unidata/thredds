@@ -167,10 +167,9 @@ edited 11/26/2013
   - cd {github/thredds}
   1. make supporting libraries
       gradle clean build -x test
-  2. release ncIdv.jar to conan:/pub/netcdf-java/v{version}/
+  2. SKIP release ncIdv.jar to conan:/pub/netcdf-java/v{version}/
       gradle -p ncIdv releaseCdm
   3. release webstart to conan:/content/software/netcdf-java/v{version}/webstart
-     // release ToolsUI.jar to conan:/pub/netcdf-java/v{version}/
       gradle -p ui releaseWebstart
   4. SKIP release toolsUI to conan:/pub/netcdf-java/v{version}/
       gradle -p ui releaseCdm
