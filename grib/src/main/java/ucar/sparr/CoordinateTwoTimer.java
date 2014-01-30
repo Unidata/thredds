@@ -19,6 +19,10 @@ public class CoordinateTwoTimer {
     count = new int[nruns*ntimes];
   }
 
+  public void setAll() {
+    for (int idx =0; idx<count.length; idx++) count[idx] = 1;
+  }
+
   public void add(int runIdx, int timeIdx) {
     int idx = runIdx * ntimes + timeIdx;
     if (idx >= count.length)
@@ -27,9 +31,10 @@ public class CoordinateTwoTimer {
   }
 
   public void showMissing(Formatter f) {
+    int idx = 0;
     for (int row=0; row<nruns; row++) {
       for (int col=0; col<ntimes; col++) {
-        int n = count[row*ntimes+col];
+        int n = count[idx++];
         if (n == 0)
           f.format("-");
         else if (n<10)

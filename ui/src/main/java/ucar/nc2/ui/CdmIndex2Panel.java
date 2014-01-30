@@ -11,6 +11,7 @@ import ucar.nc2.ui.widget.BAMutil;
 import ucar.nc2.ui.widget.IndependentWindow;
 import ucar.nc2.ui.widget.PopupMenu;
 import ucar.nc2.ui.widget.TextHistoryPane;
+import ucar.sparr.SparseArray;
 import ucar.unidata.io.RandomAccessFile;
 import ucar.util.prefs.PreferencesExt;
 import ucar.util.prefs.ui.BeanTableSorted;
@@ -580,10 +581,11 @@ public class CdmIndex2Panel extends JPanel {
           e.printStackTrace();
           return;
         }
-        if (v.sa != null) {
-          v.sa.showInfo(f, null);
+        if (v.getSparseArray() != null) {
+          SparseArray<GribCollection.Record> sa = v.getSparseArray();
+          sa.showInfo(f, null);
           f.format("%n");
-          v.sa.showContent(f);
+          sa.showContent(f);
         }
       }
     }

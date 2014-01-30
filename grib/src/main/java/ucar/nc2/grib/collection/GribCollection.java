@@ -703,16 +703,16 @@ public class GribCollection implements FileCacheable, AutoCloseable {
     public final int discipline;     // grib2
     public final byte[] rawPds;      // grib1 or grib2
     public final int cdmHash;
-    public final long recordsPos;     // where the records array is stored in the index. 0 means no records
+    public final long recordsPos;    // where the records array is stored in the index. 0 means no records
     public final int recordsLen;
 
-    public SparseArray<Record> sa;    // lazy read
-    public List<Integer> coordIndex;   // indexes into group.coords
+    public List<Integer> coordIndex;  // indexes into group.coords
 
-    //public int partTimeCoordIdx; // partition time coordinate index
-    public CoordinateTwoTimer twot;  // twoD
-    public int[] time2runtime;       // oneD only: for each timeIndex, which runtime coordinate does it use? 1-based so 0 = missing
+    private SparseArray<Record> sa;   // lazy read for GC and PGC only
+
     public boolean isTwod;
+    public CoordinateTwoTimer twot;  // twoD only
+    public int[] time2runtime;       // oneD only: for each timeIndex, which runtime coordinate does it use? 1-based so 0 = missing
 
     // derived from pds
     public int category, parameter, levelType, intvType, ensDerivedType, probType;
@@ -727,7 +727,6 @@ public class GribCollection implements FileCacheable, AutoCloseable {
 
     // temporary storage while building - do not use
     List<Coordinate> coords;
-    //CoordinateND<Record> coordND;
 
     public VariableIndex(GroupHcs g, int tableVersion, int discipline, byte[] rawPds, Grib2Pds pds,
                          int cdmHash, List<Integer> index, long recordsPos, int recordsLen) {
@@ -823,7 +822,7 @@ public class GribCollection implements FileCacheable, AutoCloseable {
       return intvName;
     }
 
-    public SparseArray getSparseArray() {
+    public SparseArray<Record> getSparseArray() {
       return sa;
     }
 

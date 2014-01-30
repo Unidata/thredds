@@ -37,7 +37,7 @@ public class TestCoordinate implements Coordinate {
       case time:
         List<Integer> vals = new ArrayList<>(nvals);
         for (int i=0; i<nvals; i++) vals.add(i);
-        return new CoordinateTime(0, period, vals);
+        return new CoordinateTime(0, period, null, vals);
       case vert:
         List<VertCoord.Level> vert = new ArrayList<>(nvals);
          for (int i=0; i<nvals; i++) vert.add(new VertCoord.Level((double) (i+1), (double) (i+2), true));

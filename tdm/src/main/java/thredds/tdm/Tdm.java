@@ -316,11 +316,11 @@ public class Tdm {
           String path = "thredds/admin/collection/trigger?trigger=nocheck&collection=" + name;
           sendTriggers(path, errlog);
         }
-        errlog.format("**** TimePartitionBuilder.factory complete %s%n", name);
+        errlog.format("**** Tdm.IndexTask complete %s%n", name);
         logger.debug("\n------------------------\n{}\n------------------------\n", errlog.toString());
 
       } catch (Throwable e) {
-        logger.error("TimePartitionBuilder.factory " + name, e);
+        logger.error("Tdm.IndexTask " + name, e);
 
       } finally {
         // tell liz that task is done

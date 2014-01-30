@@ -208,7 +208,6 @@ public class GribCdmIndex2 implements IndexReader {
                                                      CollectionUpdateType forceChildren,
                                                      Logger logger) throws IOException {
 
-     // LOOK need to use the config.spec file filter
     if (debug) System.out.printf("GribCdmIndex2.updateDirectoryCollectionRecurse %s%n", dpart.getRoot());
 
     if (forceCollection == CollectionUpdateType.never) return false;  // dont do nothin

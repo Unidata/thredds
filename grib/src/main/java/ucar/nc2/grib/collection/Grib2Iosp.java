@@ -996,7 +996,7 @@ public class Grib2Iosp extends GribIosp {
     DataReader dataReader = new DataReader(vindex);
 
     int[] otherShape = new int[sectionLen-2];
-    System.arraycopy(vindex.sa.getShape(), 0, otherShape, 0, sectionLen-2);
+    System.arraycopy(vindex.getSparseArray().getShape(), 0, otherShape, 0, sectionLen-2);
     Section.Iterator iter = otherSection.getIterator(otherShape);
 
      // collect all the records that need to be read
@@ -1021,7 +1021,7 @@ public class Grib2Iosp extends GribIosp {
     }
 
     void addRecord(int sourceIndex, int resultIndex) {
-      GribCollection.Record record = vindex.sa.getContent(sourceIndex);
+      GribCollection.Record record = vindex.getSparseArray().getContent(sourceIndex);
       if (record != null)
         records.add(new DataRecord(resultIndex, record.fileno, record.pos, record.bmsPos));
     }
@@ -1331,7 +1331,7 @@ public class Grib2Iosp extends GribIosp {
     }
 
     void addRecord(int partno, GribCollection.VariableIndex vindex, int[] sourceIndex, int resultIndex) {
-      GribCollection.Record record = vindex.sa.getContent(sourceIndex);
+      GribCollection.Record record = vindex.getSparseArray().getContent(sourceIndex);
       if (record != null)
         records.add(new DataRecordPartitioned(partno, vindex, resultIndex, record.fileno, record.pos, record.bmsPos));
     }
