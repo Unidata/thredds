@@ -407,6 +407,10 @@ public class CdmIndex2Panel extends JPanel {
       return group.getGdsHash();
     }
 
+    public boolean isTwoD() {
+      return group.isTwod;
+    }
+
     public String getType() {
       return type;
     }

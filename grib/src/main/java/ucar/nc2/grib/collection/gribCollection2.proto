@@ -75,6 +75,7 @@ message Group {
   repeated Variable variables = 2;    // list of variables
   repeated Coord coords = 3;          // list of coordinates
   repeated int32 fileno = 4;          // the component files that are in this group, index into gc.mfiles
+  required bool isTwod = 5;           // has 2 time dimensions
 
   repeated Parameter params = 20;      // not used yet
   extensions 100 to 199;

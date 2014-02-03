@@ -34,6 +34,7 @@ message Partition {
 
 extend GribCollection {
   repeated Partition partitions = 100;
+  required bool isPartitionOfPartitions = 101;
 }
 
 //  cd c:/dev/github/thredds/grib/src/main/java

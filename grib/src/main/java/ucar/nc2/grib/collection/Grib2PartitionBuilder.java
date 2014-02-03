@@ -63,7 +63,7 @@ public class Grib2PartitionBuilder extends Grib2CollectionBuilder {
 
   private final PartitionManager partitionManager; // defines the partition
   private Grib2Partition result;  // build this object
-  private boolean isPartitionOfPartitions;
+  //private boolean isPartitionOfPartitions;
 
   protected Grib2PartitionBuilder(String name, File directory, PartitionManager tpc, org.slf4j.Logger logger) {
     super(tpc, logger);
@@ -167,7 +167,7 @@ public class Grib2PartitionBuilder extends Grib2CollectionBuilder {
 
       // copy info from canon gribCollection to result partitionCollection
       result.copyInfo(canon.gc);
-      isPartitionOfPartitions = (canon.gc instanceof Grib2Partition);
+      result.isPartitionOfPartitions = (canon.gc instanceof Grib2Partition);
 
       // check consistency across vert and ens coords
       // create partitioned variables
@@ -182,10 +182,7 @@ public class Grib2PartitionBuilder extends Grib2CollectionBuilder {
       // this finishes the 2D stuff
       result.makeHorizCS();
 
-      if (!makeDatasetBest(ds2D, errlog)) {
-        errlog.format(" ERR makeDatasetAnalysis failed, index not written on %s%n", result.getName());
-        logger.error(" makeDatasetAnalysis failed, index not written on {} errors = \n{}", result.getName(), errlog.toString());
-      }
+      makeDatasetBest(ds2D, errlog);
 
       // ready to write the index file
       writeIndex(result, errlog);
@@ -215,7 +212,7 @@ public class Grib2PartitionBuilder extends Grib2CollectionBuilder {
       this.componentGroupIndex = new int[npart];
     }
 
-    void makeVariablePartitions() {
+    void makeVariableIndexPartitioned() {
       // find unique variables across all partitions
       Map<Integer, GribCollection.VariableIndex> varMap = new HashMap<>(2 * resultGroup.variList.size());
       for (GribCollection.GroupHcs group : componentGroups) {
@@ -267,7 +264,7 @@ public class Grib2PartitionBuilder extends Grib2CollectionBuilder {
      // do each group
     for (GroupPartitions gp : groupPartitions) {
       GribCollection.GroupHcs resultGroup = gp.resultGroup;
-      gp.makeVariablePartitions();
+      gp.makeVariableIndexPartitioned();
 
       String gname = resultGroup.getId();
       String gdesc = resultGroup.getDescription();
@@ -290,7 +287,7 @@ public class Grib2PartitionBuilder extends Grib2CollectionBuilder {
             runtimeAllBuilder.addAll(coord);
         }
 
-        // for each variable in this group/Partition, put reference to it in the VariableIndexPartitioned
+        // for each variable in this Partition, add reference to it in the vip
         for (int varIdx = 0; varIdx < group.variList.size(); varIdx++) {
           GribCollection.VariableIndex vi = group.variList.get(varIdx);
           if (trace) f.format(" Check %s%n", vi.toStringShort());
@@ -300,7 +297,7 @@ public class Grib2PartitionBuilder extends Grib2CollectionBuilder {
         } // loop over variable
       } // loop over partition
 
-      // each VariableIndexPartitioned now has its list of  PartitionForVariable
+      // each VariableIndexPartitioned now has its list of PartitionForVariable
 
       // we have a complete set of runtimes
       Coordinate runtimeCoord = runtimeAllBuilder.finish();
@@ -345,13 +342,24 @@ public class Grib2PartitionBuilder extends Grib2CollectionBuilder {
       // create a list of common coordinates, put them into the group, and now variables just reference those by index
       sharify.finish();
       resultGroup.coords = sharify.getUnionCoords();
+      /* if (!result.isPartitionOfPartitions) { // add offsets to time2D
+        for (Coordinate coord : resultGroup.coords) {
+          if (coord.getType() == Coordinate.Type.time2D) {
+            CoordinateTime2D twod = (CoordinateTime2D) coord;
+            twod.addOffsets();
+          }
+        }
+      } */
 
       for (GribCollection.VariableIndex viResult : resultGroup.variList) {
         // redo the variables against the shared coordinates
         viResult.coordIndex = sharify.reindex2shared(viResult.coords);
 
         // figure out missing data for each variable in the twoD time array
-        makeMissing(isDense, gp, resultGroup, viResult);
+        if (result.isPartitionOfPartitions) {
+          viResult.twot = null;
+        } else
+          makeMissing(isDense, gp, resultGroup, viResult);
       }
 
     } // loop over groups
@@ -376,11 +384,6 @@ public class Grib2PartitionBuilder extends Grib2CollectionBuilder {
     int ntimes = (ct instanceof CoordinateTime2D) ? ((CoordinateTime2D)ct).getNtimes() : ct.getSize();
     CoordinateTwoTimer twot = new CoordinateTwoTimer(cr.getSize(), ntimes);
     viResult.twot = twot;
-    viResult.isTwod = true;
-    if (isPartitionOfPartitions) {
-      twot.setAll();
-      return;
-    }
 
     if (isDense) {
       Map<Object, Integer> ctMap = new HashMap<>(2*ct.getSize());  // time coord val -> index in ct
@@ -452,21 +455,19 @@ public class Grib2PartitionBuilder extends Grib2CollectionBuilder {
 
         runIdx++;
       }
-
     }
-
   }
 
-  private boolean makeDatasetBest(GribCollection.Dataset ds2D, Formatter f) throws IOException {
+  private void makeDatasetBest(GribCollection.Dataset ds2D, Formatter f) throws IOException {
     GribCollection.Dataset dsa = result.makeDataset(GribCollectionProto.Dataset.Type.Best);
 
     int npart = result.getPartitions().size();
-    boolean ok = true;
 
      // do each group
     for (GribCollection.GroupHcs group2D : ds2D.groups) {
       GribCollection.GroupHcs groupB = dsa.addGroupCopy(group2D);  // make copy of group, add to dataset
       groupB.run2part = group2D.run2part;                          // use same run -> partition map
+      groupB.isTwod = false;
 
       // runtime offsets
       CoordinateRuntime rtc = null;
@@ -493,11 +494,9 @@ public class Grib2PartitionBuilder extends Grib2CollectionBuilder {
         // copy vi and add to groupB
         PartitionCollection.VariableIndexPartitioned vip = result.makeVariableIndexPartitioned(groupB, vi2d, npart);
         // do not remove runtime coordinate, just set isTwoD
-        vip.isTwod = false;
         vip.twot = null;
-        int timeIdx;
 
-        timeIdx = vi2d.getCoordinateIndex(Coordinate.Type.time2D);
+        int timeIdx = vi2d.getCoordinateIndex(Coordinate.Type.time2D);
         if (timeIdx >= 0) {
           CoordinateTime2D time2d = (CoordinateTime2D) group2D.coords.get(timeIdx);
           CoordinateTimeAbstract timeBest = (CoordinateTimeAbstract) groupB.coords.get(timeIdx);
@@ -522,9 +521,31 @@ public class Grib2PartitionBuilder extends Grib2CollectionBuilder {
         }
       }
 
-    } // loop over groups
+      /* best needs a map of time to partitions
+      if (result.isPartitionOfPartitions) {
+        for (GribCollection.VariableIndex vibest : groupB.variList) {
+          PartitionCollection.VariableIndexPartitioned vip = (PartitionCollection.VariableIndexPartitioned) vibest;
+          CoordinateTime vipTime = (CoordinateTime) vip.getCoordinate(Coordinate.Type.time);
 
-    return ok;
+          for (int partno = 0; partno < npart; partno++) {
+            GribCollection.GroupHcs group = gp.componentGroups[partno];
+            if (group == null) continue; // tolerate missing groups
+            GribCollection.VariableIndex vi = group.findVariableByHash(vip.cdmHash);
+            if (vi == null) continue; // tolerate missing variables
+
+            int timeIdx = vi.getCoordinateIndex(Coordinate.Type.time);
+            if (timeIdx >= 0) {
+              CoordinateTime time2d = (CoordinateTime) group2D.coords.get(timeIdx);
+              CoordinateTime timeBest = (CoordinateTime) groupB.coords.get(timeIdx); // LOOK do we know these have same index ??
+              vip.time2runtime = time2d.makeTime2RuntimeMap(runOffset, timeBest, ((PartitionCollection.VariableIndexPartitioned) vi2d).twot);
+              continue;
+            }
+          }
+
+        }
+      } */
+
+    } // loop over groups
   }
 
   //////////////////////////////////////////////////////////
@@ -613,10 +634,12 @@ public class Grib2PartitionBuilder extends Grib2CollectionBuilder {
       for (GribCollection.Dataset ds : pc.datasets)
         indexBuilder.addDataset(writeDatasetProto(pc, ds));
 
+      // extensions
       List<PartitionCollectionProto.Partition> partProtoList = new ArrayList<>();
       for (PartitionCollection.Partition part : pc.partitions)
         partProtoList.add(writePartitionProto(part));
       indexBuilder.setExtension(PartitionCollectionProto.partitions, partProtoList);
+      indexBuilder.setExtension(PartitionCollectionProto.isPartitionOfPartitions, pc.isPartitionOfPartitions);
 
       GribCollectionProto.GribCollection index = indexBuilder.build();
       byte[] b = index.toByteArray();
@@ -663,6 +686,7 @@ public class Grib2PartitionBuilder extends Grib2CollectionBuilder {
     GribCollectionProto.Group.Builder b = GribCollectionProto.Group.newBuilder();
 
     b.setGdsIndex(pc.findHorizCS(g.horizCoordSys));
+    b.setIsTwod(g.isTwod);
 
     for (GribCollection.VariableIndex vb : g.variList) {
       b.addVariables(writeVariableProto((PartitionCollection.VariableIndexPartitioned) vb));

@@ -167,7 +167,7 @@ public class CoordinateTimeIntv extends CoordinateTimeAbstract implements Coordi
     for (double runOffset : runOffsets) {
       int timeIdx = 0;
       for (TimeCoord.Tinv val : getTimeIntervals()) {
-        if (twot.getCount(runIdx, timeIdx) > 0) { // skip missing;
+        if (twot == null || twot.getCount(runIdx, timeIdx) > 0) { // skip missing;
           TimeCoord.Tinv bestVal = val.offset(runOffset);
           Integer bestValIdx = map.get(bestVal);
           if (bestValIdx == null) throw new IllegalStateException();

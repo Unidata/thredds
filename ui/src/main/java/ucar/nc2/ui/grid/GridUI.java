@@ -143,14 +143,14 @@ public class GridUI extends JPanel {
       choosers = new ArrayList();
       fieldChooser = new SuperComboBox(root, "field", true, null);
       choosers.add( new Chooser("field", fieldChooser, true));
-      levelChooser = new SuperComboBox(root, "level", false, null);
-      choosers.add( new Chooser("level", levelChooser, false));
+      runtimeChooser = new SuperComboBox(root, "runtime", false, null);
+      choosers.add( new Chooser("runtime", runtimeChooser, false));
       timeChooser = new SuperComboBox(root, "time", false, null);
       choosers.add( new Chooser("time", timeChooser, false));
       ensembleChooser = new SuperComboBox(root, "ensemble", false, null);
       choosers.add( new Chooser("ensemble", ensembleChooser, false));
-      runtimeChooser = new SuperComboBox(root, "runtime", false, null);
-      choosers.add( new Chooser("runtime", runtimeChooser, false));
+      levelChooser = new SuperComboBox(root, "level", false, null);
+      choosers.add( new Chooser("level", levelChooser, false));
 
       makeActionsDataset();
       makeActionsToolbars();

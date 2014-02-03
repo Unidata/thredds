@@ -379,7 +379,7 @@ message Coord {
         for (GribCollectionProto.Coord coordp : pc.getTimesList())
           times.add( readCoord(coordp));
         timeUnit = CalendarPeriod.of(unit);
-        return new CoordinateTime2D(code, timeUnit, runtime, times);
+        return new CoordinateTime2D(code, timeUnit, null, runtime, times);
     }
     throw new IllegalStateException("Unknown Coordinate type = " + type);
   }
@@ -444,15 +444,11 @@ message Variable {
       ntimes = time.getSize();
     }
 
-    if (runtime == null || time == null)
-      System.out.println("HEY");
-
     // 2d only
     List<Integer> invCountList = pv.getInvCountList();
     if (invCountList.size() > 0) {
       result.twot = new CoordinateTwoTimer(invCountList);
       result.twot.setSize(runtime.getSize(), ntimes);
-      result.isTwod = true;
     }
 
     // 1d only
@@ -461,7 +457,6 @@ message Variable {
       result.time2runtime = new int[time2runList.size()];
       int count = 0;
       for (int idx : time2runList) result.time2runtime[count++] = idx;
-      result.isTwod = false;
     }
 
     return readVariableExtensions(group, pv, result);

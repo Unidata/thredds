@@ -10,6 +10,7 @@ public final class PartitionCollectionProto {
     registry.add(ucar.nc2.grib.collection.PartitionCollectionProto.partition);
     registry.add(ucar.nc2.grib.collection.PartitionCollectionProto.run2Part);
     registry.add(ucar.nc2.grib.collection.PartitionCollectionProto.partitions);
+    registry.add(ucar.nc2.grib.collection.PartitionCollectionProto.isPartitionOfPartitions);
   }
   public interface PartitionVariableOrBuilder
       extends com.google.protobuf.MessageOrBuilder {
@@ -2111,6 +2112,17 @@ public final class PartitionCollectionProto {
           .newFileScopedGeneratedExtension(
         ucar.nc2.grib.collection.PartitionCollectionProto.Partition.class,
         ucar.nc2.grib.collection.PartitionCollectionProto.Partition.getDefaultInstance());
+  public static final int ISPARTITIONOFPARTITIONS_FIELD_NUMBER = 101;
+  /**
+   * <code>extend .GribCollection { ... }</code>
+   */
+  public static final
+    com.google.protobuf.GeneratedMessage.GeneratedExtension<
+      ucar.nc2.grib.collection.GribCollectionProto.GribCollection,
+      java.lang.Boolean> isPartitionOfPartitions = com.google.protobuf.GeneratedMessage
+          .newFileScopedGeneratedExtension(
+        java.lang.Boolean.class,
+        null);
   private static com.google.protobuf.Descriptors.Descriptor
     internal_static_PartitionVariable_descriptor;
   private static
@@ -2141,8 +2153,10 @@ public final class PartitionCollectionProto {
       "astModified\030\004 \001(\004:0\n\tpartition\022\t.Variabl" +
       "e\030d \003(\0132\022.PartitionVariable:\030\n\010run2part\022",
       "\006.Group\030d \003(\r:/\n\npartitions\022\017.GribCollec" +
-      "tion\030d \003(\0132\n.PartitionB4\n\030ucar.nc2.grib." +
-      "collectionB\030PartitionCollectionProto"
+      "tion\030d \003(\0132\n.Partition:0\n\027isPartitionOfP" +
+      "artitions\022\017.GribCollection\030e \002(\010B4\n\030ucar" +
+      ".nc2.grib.collectionB\030PartitionCollectio" +
+      "nProto"
     };
     com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
       new com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner() {
@@ -2164,6 +2178,7 @@ public final class PartitionCollectionProto {
           partition.internalInit(descriptor.getExtensions().get(0));
           run2Part.internalInit(descriptor.getExtensions().get(1));
           partitions.internalInit(descriptor.getExtensions().get(2));
+          isPartitionOfPartitions.internalInit(descriptor.getExtensions().get(3));
           return null;
         }
       };

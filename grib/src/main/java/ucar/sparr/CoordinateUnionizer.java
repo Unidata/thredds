@@ -163,7 +163,7 @@ public class CoordinateUnionizer {
       CoordinateTime2D coordT2D = (CoordinateTime2D) coord;
 
       CoordinateRuntime runtime = coordT2D.getRuntimeCoordinate();
-      runtimes.addAll(runtime.getRuntimesSorted());
+      runtimes.addAll(runtime.getRuntimesSorted());  // LOOK what if they overlap ?
       times.addAll( coordT2D.getTimes());
     }
 

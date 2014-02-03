@@ -5,7 +5,6 @@ import thredds.featurecollection.FeatureCollectionConfig;
 import thredds.inventory.MCollection;
 import thredds.inventory.MFile;
 import ucar.nc2.time.CalendarDate;
-import ucar.nc2.time.CalendarPeriod;
 import ucar.sparr.Coordinate;
 import ucar.sparr.CoordinateTwoTimer;
 import ucar.sparr.SparseArray;
@@ -572,6 +571,7 @@ public class GribCollection implements FileCacheable, AutoCloseable {
     public List<Coordinate> coords;
     public int[] filenose;
     private Map<Integer, GribCollection.VariableIndex> varMap;
+    public boolean isTwod = true;
 
     // partitions only
     public int[] run2part;   // runtimeCoord.length; which partition to use for runtime i
@@ -587,6 +587,7 @@ public class GribCollection implements FileCacheable, AutoCloseable {
       this.horizCoordSys = from.horizCoordSys;     // reference
       this.variList = new ArrayList<>(from.variList.size());
       this.coords = new ArrayList<>(from.coords.size());
+      this.isTwod = from.isTwod;
     }
 
     public void setHorizCoordSystem(GdsHorizCoordSys hcs, byte[] rawGds, int gdsHash, String nameOverride) {
@@ -710,8 +711,7 @@ public class GribCollection implements FileCacheable, AutoCloseable {
 
     private SparseArray<Record> sa;   // lazy read for GC and PGC only
 
-    public boolean isTwod;
-    public CoordinateTwoTimer twot;  // twoD only
+    public CoordinateTwoTimer twot;  // twoD only, not for PofP
     public int[] time2runtime;       // oneD only: for each timeIndex, which runtime coordinate does it use? 1-based so 0 = missing
 
     // derived from pds
@@ -785,7 +785,6 @@ public class GribCollection implements FileCacheable, AutoCloseable {
 
       this.time2runtime = other.time2runtime;
       this.twot = other.twot;   // LOOK why did i delete this before ??
-      this.isTwod = other.isTwod;
     }
 
     public List<Coordinate> getCoordinates() {

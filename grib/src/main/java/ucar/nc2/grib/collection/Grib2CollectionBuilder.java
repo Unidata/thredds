@@ -703,12 +703,12 @@ public class Grib2CollectionBuilder extends GribCollectionBuilder {
     GribCollectionProto.Group.Builder b = GribCollectionProto.Group.newBuilder();
 
     b.setGdsIndex(groupIndex); // index into gds list
+    b.setIsTwod(true);         // LOOK
 
     for (Grib2Rectilyser.VariableBag vbag : g.rect.getGribvars()) {
       b.addVariables(writeVariableProto(vbag));
     }
 
-    int count = 0;
     for (Coordinate coord : g.rect.getCoordinates()) {
       switch (coord.getType()) {
         case runtime:

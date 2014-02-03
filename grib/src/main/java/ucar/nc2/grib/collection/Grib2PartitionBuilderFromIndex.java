@@ -63,6 +63,7 @@ public class Grib2PartitionBuilderFromIndex extends Grib2CollectionBuilderFromIn
    */
   @Override
   protected boolean readExtensions(GribCollectionProto.GribCollection proto) {
+    pc.isPartitionOfPartitions = proto.getExtension(PartitionCollectionProto.isPartitionOfPartitions);
 
     List<ucar.nc2.grib.collection.PartitionCollectionProto.Partition> partList = proto.getExtension(PartitionCollectionProto.partitions);
     for (ucar.nc2.grib.collection.PartitionCollectionProto.Partition partProto : partList)
@@ -80,6 +81,7 @@ public class Grib2PartitionBuilderFromIndex extends Grib2CollectionBuilderFromIn
   protected GribCollection.GroupHcs readGroup(GribCollectionProto.Group p) {
 
     GribCollection.GroupHcs group = super.readGroup(p);
+    group.isTwod = p.getIsTwod();
 
     // extensions
     List<Integer> list = p.getExtension(PartitionCollectionProto.run2Part);

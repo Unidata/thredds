@@ -158,7 +158,7 @@ public class CoordinateTime extends CoordinateTimeAbstract implements Coordinate
     for (double runOffset : runOffsets) {
       int timeIdx = 0;
       for (Integer val : getOffsetSorted()) {
-        if (twot.getCount(runIdx, timeIdx) > 0) { // skip missing
+        if (twot == null || twot.getCount(runIdx, timeIdx) > 0) { // skip missing
           Integer bestVal = (int) (runOffset + val);
           Integer bestValIdx = map.get(bestVal);
           if (bestValIdx == null) throw new IllegalStateException();

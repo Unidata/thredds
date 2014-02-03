@@ -681,7 +681,7 @@ public class Grib2Iosp extends GribIosp {
          CoordinateTime coordTime = (CoordinateTime) time;
          int timeIdx = 0;
          for (int val : coordTime.getOffsetSorted()) {
-           data[runIdx*ntimes + timeIdx] = val;
+           data[runIdx*ntimes + timeIdx] = val + time2D.getOffset(runIdx);
            timeIdx++;
          }
          runIdx++;
@@ -695,7 +695,7 @@ public class Grib2Iosp extends GribIosp {
          CoordinateTimeIntv coordTime = (CoordinateTimeIntv) time;
          int timeIdx = 0;
          for (TimeCoord.Tinv tinv : coordTime.getTimeIntervals()) {
-           data[runIdx*ntimes + timeIdx] = tinv.getBounds2(); // use upper bounds for coord value
+           data[runIdx*ntimes + timeIdx] = tinv.getBounds2() + time2D.getOffset(runIdx); // use upper bounds for coord value
            timeIdx++;
          }
          runIdx++;
@@ -721,8 +721,8 @@ public class Grib2Iosp extends GribIosp {
          CoordinateTimeIntv coordTime = (CoordinateTimeIntv) time;
          int timeIdx = 0;
          for (TimeCoord.Tinv tinv : coordTime.getTimeIntervals()) {
-           data[runIdx*ntimes + timeIdx] = tinv.getBounds1();
-           data[runIdx*ntimes + timeIdx+1] = tinv.getBounds2();
+           data[runIdx*ntimes + timeIdx] = tinv.getBounds1() + time2D.getOffset(runIdx);
+           data[runIdx*ntimes + timeIdx+1] = tinv.getBounds2() + time2D.getOffset(runIdx);
            timeIdx++;
          }
          runIdx++;
@@ -1166,7 +1166,7 @@ public class Grib2Iosp extends GribIosp {
   private Array readDataFromPartition(Variable v, Section section, WritableByteChannel channel) throws IOException, InvalidRangeException {
     PartitionCollection.VariableIndexPartitioned vindexP = (PartitionCollection.VariableIndexPartitioned) v.getSPobject(); // the variable in the partition collection
 
-    boolean hasRuntime = vindexP.isTwod;
+    //boolean hasRuntime = vindexP.isTwod;
 
     int sectionLen = section.getRank();
     Range yRange = section.getRange(sectionLen-2);  // last 2
@@ -1181,7 +1181,7 @@ public class Grib2Iosp extends GribIosp {
     while (iterWanted.hasNext()) {
       iterWanted.next(indexWanted);   // returns the vindexP index in indexWanted aaray
 
-      // find the partition
+      /* find the partition
       int firstIndex = indexWanted[0];
       int partno = hasRuntime ? vindexP.getPartition2D(firstIndex) : vindexP.getPartition1D(firstIndex);
       if (partno < 0) continue; // missing
@@ -1190,8 +1190,17 @@ public class Grib2Iosp extends GribIosp {
 
       // translate to coordinates in vindex
       int[] sourceIndex =  hasRuntime ? vindexP.translateIndex2D(indexWanted, vindex) : vindexP.translateIndex1D(indexWanted, vindex);
-      if (sourceIndex == null) continue; // missing
-      dataReader.addRecord(partno, vindex, sourceIndex, resultPos++);
+      if (sourceIndex == null) continue; // missing */
+
+      PartitionCollection.DataRecord record = vindexP.getDataRecord(indexWanted);
+      if (record == null) {
+        vindexP.getDataRecord(indexWanted); // debug
+        resultPos++;
+        continue;
+      }
+      record.resultIndex = resultPos;
+      dataReader.addRecord(record);
+      resultPos++;
     }
 
  /*
@@ -1255,100 +1264,25 @@ public class Grib2Iosp extends GribIosp {
     return dataReceiver.getArray();
   }
 
-  /* private Array readDataFromPartition(Variable v2, Section section) throws IOException, InvalidRangeException {
-    PartitionCollection.VariableIndexPartitioned vindexP = (PartitionCollection.VariableIndexPartitioned) v2.getSPobject(); // the variable in the tp collection
-
-    // canonical order: time, ens, z, y, x
-    int rangeIdx = 0;
-    Range timeRange = (section.getRank() > 2) ? section.getRange(rangeIdx++) : new Range(0, 0);
-    Range ensRange = (vindexP.ensIdx >= 0) ? section.getRange(rangeIdx++) : new Range(0, 0);
-    Range levRange = (vindexP.vertIdx >= 0) ? section.getRange(rangeIdx++) : new Range(0, 0);
-    Range yRange = section.getRange(rangeIdx++);
-    Range xRange = section.getRange(rangeIdx);
-
-    DataReceiver dataReceiver = new DataReceiver(section, yRange, xRange);
-    DataReaderPartitioned dataReader = new DataReaderPartitioned();
-
-    TimeCoordUnion timeCoordP = (TimeCoordUnion) vindexP.getTimeCoord();
-
-    // collect all the records from this partition that need to be read
-    for (int timeIdx = timeRange.first(); timeIdx <= timeRange.last(); timeIdx += timeRange.stride()) {
-
-      TimeCoordUnion.Val val = timeCoordP.getVal(timeIdx);
-      int partno = val.getPartition();
-      GribCollection.VariableIndex vindex = vindexP.getVindex(partno); // the variable in this partition
-
-      for (int ensIdx = ensRange.first(); ensIdx <= ensRange.last(); ensIdx += ensRange.stride()) {
-        for (int levelIdx = levRange.first(); levelIdx <= levRange.last(); levelIdx += levRange.stride()) {
-
-          // where does this record go in the result ??
-          int resultIndex = GribCollection.calcIndex(timeRange.index(timeIdx), ensRange.index(ensIdx), levRange.index(levelIdx),
-                  ensRange.length(), levRange.length());
-
-          // where does this record come from ??
-          int recordIndex = -1;
-
-          int flag = vindexP.flag[partno]; // see if theres a mismatch with vert or ens coordinates
-          if (flag == 0) { // no problem
-            recordIndex = GribCollection.calcIndex(val.getIndex(), ensIdx, levelIdx, vindex.nens, vindex.nverts);
-          } else {  // problem - must match coordinates
-            recordIndex = GribCollection.calcIndex(val.getIndex(), ensIdx, levelIdx, flag, vindex.getEnsCoord(), vindex.getVertCoord(),
-                    vindexP.getEnsCoord(), vindexP.getVertCoord());
-          }
-
-          if (recordIndex >= 0)  {
-            if (recordIndex < vindex.records.length)  {
-              GribCollection.Record record = vindex.records[recordIndex];
-              dataReader.addRecord(vindex, partno, record.fileno, record.pos, record.bmsPos, resultIndex);  // add this record to be read
-
-            } else {
-              Formatter f = new Formatter();
-              f.format("recordIndex=%d size=%d%n", recordIndex,  vindex.records.length);
-              if (flag == 0) f.format("time=%d, ens=%d, level=%d, nens=%d, nverts=%d", val.getIndex(), ensIdx, levelIdx, vindex.nens, vindex.nverts);
-              else  f.format("time=%d, ens=%d, level=%d, flag=%d, nens=%s, vert=%s ensp=%s, vertp=%s", val.getIndex(), ensIdx, levelIdx, flag,
-                      vindex.getEnsCoord(), vindex.getVertCoord(), vindexP.getEnsCoord(), vindexP.getVertCoord());
-
-              logger.error("recordIndex out of bounds: "+f.toString());
-            }
-          }
-        }
-      }
-    }
-
-    // sort by file and position, then read
-    dataReader.read(dataReceiver);
-
-    // close partitions as needed
-    vindexP.cleanup();
-
-    return dataReceiver.getArray();
-  } */
-
   private class DataReaderPartitioned {
-    List<DataRecordPartitioned> records = new ArrayList<>();
+    List<PartitionCollection.DataRecord> records = new ArrayList<>();
 
-    private DataReaderPartitioned() {
-    }
-
-    void addRecord(int partno, GribCollection.VariableIndex vindex, int[] sourceIndex, int resultIndex) {
-      GribCollection.Record record = vindex.getSparseArray().getContent(sourceIndex);
-      if (record != null)
-        records.add(new DataRecordPartitioned(partno, vindex, resultIndex, record.fileno, record.pos, record.bmsPos));
+    void addRecord(PartitionCollection.DataRecord dr) {
+      if (dr != null) records.add(dr);
     }
 
     void read(DataReceiverIF dataReceiver) throws IOException {
       Collections.sort(records);
 
-      int currPartno = -1;
-      int currFile = -1;
+      PartitionCollection.DataRecord lastRecord = null;
       RandomAccessFile rafData = null;
-      for (DataRecordPartitioned dr : records) {
-        if (dr.partno != currPartno || dr.fileno != currFile) {
+
+      for (PartitionCollection.DataRecord dr : records) {
+        if ((rafData == null) || !dr.usesSameFile(lastRecord)) {
           if (rafData != null) rafData.close();
-          rafData = gribPartition.getRaf(dr.partno, dr.fileno);
-          currFile = dr.fileno;
-          currPartno = dr.partno;
+          rafData = dr.usePartition.getRaf(dr.partno, dr.fileno);
         }
+        lastRecord = dr;
 
         if (dr.drsPos == GribCollection.MISSING_RECORD) continue;
 
@@ -1356,39 +1290,13 @@ public class Grib2Iosp extends GribIosp {
           show( rafData, Grib2RecordScanner.findRecordByDrspos(rafData, dr.drsPos), dr.drsPos);
         }
 
-        GdsHorizCoordSys hcs = dr.vindex.group.getGdsHorizCoordSys();
+        //GdsHorizCoordSys hcs = dr.vindex.group.getGdsHorizCoordSys();
+        GdsHorizCoordSys hcs = dr.hcs;
         float[] data = Grib2Record.readData(rafData, dr.drsPos, dr.bmsPos, hcs.gdsNumberPoints, hcs.scanMode,
                 hcs.nxRaw, hcs.nyRaw, hcs.nptsInLine);
         dataReceiver.addData(data, dr.resultIndex, hcs.nx);
       }
       if (rafData != null) rafData.close();
-    }
-
-    private class DataRecordPartitioned implements Comparable<DataRecordPartitioned> {
-      int partno; // partition index
-      GribCollection.VariableIndex vindex; // the vindex of the partition partno
-      int resultIndex; // where does this record go in the result array?
-      int fileno;
-      long drsPos;
-      long bmsPos;  // if non zero, use alernate bms
-
-      DataRecordPartitioned(int partno, GribCollection.VariableIndex vindex, int resultIndex, int fileno, long drsPos, long bmsPos) {
-        this.partno = partno;
-        this.vindex = vindex;
-        this.resultIndex = resultIndex;
-        this.fileno = fileno;
-        this.drsPos = (drsPos == 0) ? GribCollection.MISSING_RECORD : drsPos; // 0 also means missing in Grib2
-        this.bmsPos = bmsPos;
-      }
-
-      @Override
-      public int compareTo(DataRecordPartitioned o) {
-        int r = Misc.compare(partno, o.partno);
-        if (r != 0) return r;
-        r = Misc.compare(fileno, o.fileno);
-        if (r != 0) return r;
-        return Misc.compare(drsPos, o.drsPos);
-      }
     }
   }
 
