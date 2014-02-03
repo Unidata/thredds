@@ -206,6 +206,14 @@ public class GribCollection implements FileCacheable, AutoCloseable {
     return null;
   }
 
+  public VariableIndex getVariable2DByHash(HorizCoordSys hcs, int cdmHash) {
+    GribCollection.Dataset ds2d = getDataset2D();
+    for (GroupHcs groupHcs : ds2d.getGroups())
+      if (groupHcs.horizCoordSys == hcs)
+        return groupHcs.findVariableByHash(cdmHash);
+    return null;
+  }
+
   public GribCollection.Dataset findDataset(String name) {
     for (GribCollection.Dataset ds : datasets)
       if (ds.type.toString().equals(name)) return ds;

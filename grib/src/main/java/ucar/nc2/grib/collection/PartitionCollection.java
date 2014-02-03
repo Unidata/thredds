@@ -66,14 +66,14 @@ public class PartitionCollection extends GribCollection {
 
   //////////////////////////////////////////////////////////////////////
 
-  class PartitionForVariable {
+  class PartitionForVariable2D {
     int partno, groupno, varno, flag;
     public int ndups, nrecords, missing;
     public float density;
   }
 
   public class VariableIndexPartitioned extends GribCollection.VariableIndex {
-    public List<PartitionForVariable> partList; // must not change order
+    public List<PartitionForVariable2D> partList; // must not change order
 
     VariableIndexPartitioned(GroupHcs g, VariableIndex other, int nparts) {
       super(g, other);
@@ -83,7 +83,7 @@ public class PartitionCollection extends GribCollection {
     public void addPartition(int partno, int groupno, int varno, int flag, int ndups, int nrecords,
                              int missing, float density) {
 
-      PartitionForVariable partVar = new PartitionForVariable();
+      PartitionForVariable2D partVar = new PartitionForVariable2D();
       partVar.partno = partno;
       partVar.groupno = groupno;
       partVar.varno = varno;
@@ -107,7 +107,7 @@ public class PartitionCollection extends GribCollection {
       addPartition(partno, groupno, varno, flag, vi.ndups, vi.nrecords, vi.missing, vi.density);
     }
 
-    public void addPartition(PartitionForVariable pv) {
+    public void addPartition(PartitionForVariable2D pv) {
       addPartition(pv.partno, pv.groupno, pv.varno, pv.flag, pv.ndups, pv.nrecords, pv.missing, pv.density);
     }
 
@@ -116,22 +116,22 @@ public class PartitionCollection extends GribCollection {
       Formatter sb = new Formatter();
       sb.format("VariableIndexPartitioned%n");
       sb.format(" partno=");
-      for (PartitionForVariable partVar : partList)
+      for (PartitionForVariable2D partVar : partList)
         sb.format("%d,", partVar.partno);
       sb.format("%n groupno=");
-      for (PartitionForVariable partVar : partList)
+      for (PartitionForVariable2D partVar : partList)
         sb.format("%d,", partVar.groupno);
       sb.format("%n varno=");
-      for (PartitionForVariable partVar : partList)
+      for (PartitionForVariable2D partVar : partList)
         sb.format("%d,", partVar.varno);
       sb.format("%n flags=");
-      for (PartitionForVariable partVar : partList)
+      for (PartitionForVariable2D partVar : partList)
         sb.format("%d,", partVar.flag);
       sb.format("%n");
       int count = 0;
       sb.format("  %s %4s %3s %3s %6s%n", "part", "N", "dups", "Miss", "density");
       int totalN = 0, totalDups = 0, totalMiss = 0;
-      for (PartitionForVariable partVar : partList) {
+      for (PartitionForVariable2D partVar : partList) {
         sb.format("   %2d: %4d %3d %3d %6.2f%n", count++, partVar.nrecords, partVar.ndups, partVar.missing, partVar.density);
         totalN += partVar.nrecords;
         totalDups += partVar.ndups;
@@ -194,8 +194,8 @@ public class PartitionCollection extends GribCollection {
         int[] indexWantedP = translateIndex2D(indexWanted, compVindex2Dp);
         return compVindex2Dp.getDataRecord(indexWantedP);
       } else {
-        return null;
-      }
+        int[] indexWantedP = translateIndex1D(indexWanted, compVindex2Dp);
+        return compVindex2Dp.getDataRecord(indexWantedP);      }
     }
 
 
@@ -219,13 +219,21 @@ public class PartitionCollection extends GribCollection {
     private GribCollection.VariableIndex getVindex2D(int partno) throws IOException {
       // at this point, we need to instantiate the Partition and the vindex.records
 
-      PartitionForVariable partVar = null;
-      for (PartitionForVariable pvar : partList)  // LOOK linear search
-        if (pvar.partno == partno) partVar = pvar;
+      VariableIndexPartitioned vip =  isPartitionOfPartitions ?
+        (PartitionCollection.VariableIndexPartitioned) getVariable2DByHash(group.horizCoordSys, cdmHash) :
+        this;
+
+      PartitionForVariable2D partVar = null;
+      for (PartitionForVariable2D pvar : vip.partList)  { // LOOK linear search
+        if (pvar.partno == partno) {
+          partVar = pvar;
+          break;
+        }
+      }
       if (partVar == null) return null;
 
       Partition p = getPartitions().get(partno);
-      try (GribCollection gc = p.getGribCollection()) { // ensure that its read in
+      try (GribCollection gc = p.getGribCollection()) { // ensure that its read in  try-with
         Dataset ds = gc.getDataset2D(); // always references the twoD dataset
         // the group and variable index may vary across partitions
         GribCollection.GroupHcs g = ds.groups.get(partVar.groupno);
@@ -242,7 +250,7 @@ public class PartitionCollection extends GribCollection {
      *
      * @param wholeIndex index in VariableIndexPartitioned
      * @param compVindex2D     component 2D VariableIndex
-     * @return corresponding index in VariableIndex, or null if missing
+     * @return corresponding index in compVindex2D, or null if missing
      */
     private int[] translateIndex1D(int[] wholeIndex, GribCollection.VariableIndex compVindex2D) {
       int[] result = new int[wholeIndex.length + 1];
@@ -533,7 +541,7 @@ public class PartitionCollection extends GribCollection {
 
     if (from instanceof VariableIndexPartitioned && !isPartitionOfPartitions) {
       VariableIndexPartitioned fromp = (VariableIndexPartitioned) from;
-      for (PartitionForVariable pv : fromp.partList)
+      for (PartitionForVariable2D pv : fromp.partList)
         vip.addPartition(pv);
     }
     return vip;

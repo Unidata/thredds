@@ -785,7 +785,7 @@ public class Grib2PartitionBuilder extends Grib2CollectionBuilder {
 
         // extensions
     List<PartitionCollectionProto.PartitionVariable> pvarList = new ArrayList<>();
-    for (PartitionCollection.PartitionForVariable pvar : vp.partList)
+    for (PartitionCollection.PartitionForVariable2D pvar : vp.partList)
       pvarList.add(writePartitionVariableProto(pvar));
     b.setExtension(PartitionCollectionProto.partition, pvarList);
 
@@ -806,7 +806,7 @@ public class Grib2PartitionBuilder extends Grib2CollectionBuilder {
     optional uint32 missing = 10;
   }
    */
-  private PartitionCollectionProto.PartitionVariable writePartitionVariableProto(PartitionCollection.PartitionForVariable pvar) throws IOException {
+  private PartitionCollectionProto.PartitionVariable writePartitionVariableProto(PartitionCollection.PartitionForVariable2D pvar) throws IOException {
     PartitionCollectionProto.PartitionVariable.Builder pb = PartitionCollectionProto.PartitionVariable.newBuilder();
     pb.setPartno(pvar.partno);
     pb.setGroupno(pvar.groupno);
