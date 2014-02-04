@@ -130,7 +130,9 @@ public final class NcssRequestUtils implements ApplicationContextAware {
       wantDates.add(gdsDates.get(best_index));
     } else {
       for (CalendarDate date : gdsDates) {
-        if (date.isBefore(start) || date.isAfter(end))
+        boolean tooEarly = date.isBefore(start);
+        boolean tooLate =  date.isAfter(end);
+        if (tooEarly || tooLate)
           continue;
         wantDates.add(date);
       }

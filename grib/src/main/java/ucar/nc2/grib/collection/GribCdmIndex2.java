@@ -236,7 +236,10 @@ public class GribCdmIndex2 implements IndexReader {
     }   // loop over partitions
 
     // do this partition; we just did children so never update them
-    return Grib2PartitionBuilder.recreateIfNeeded(dpart, forceCollection, CollectionUpdateType.never, null, logger);
+    boolean result = Grib2PartitionBuilder.recreateIfNeeded(dpart, forceCollection, CollectionUpdateType.never, null, logger);
+
+    if (debug) System.out.printf("GribCdmIndex2.updateDirectoryCollectionRecurse complete (%s) on %s%n", result, dpart.getRoot());
+    return result;
   }
 
   /**
@@ -306,7 +309,7 @@ public class GribCdmIndex2 implements IndexReader {
         });
       }
     }  */
-    if (debug) System.out.printf("GribCdmIndex2.updateLeafDirectoryCollection %s%n", dirPath);
+    if (debug) System.out.printf(" GribCdmIndex2.updateLeafDirectoryCollection %s%n", dirPath);
 
     if (forceCollection == CollectionUpdateType.never) return false;  // dont do nothin
 
@@ -325,7 +328,10 @@ public class GribCdmIndex2 implements IndexReader {
     }
 
     // redo collection index
-    return Grib2CollectionBuilder.recreateIfNeeded(partition, forceCollection, null, logger);
+    boolean result = Grib2CollectionBuilder.recreateIfNeeded(partition, forceCollection, null, logger);
+    if (debug) System.out.printf(" GribCdmIndex2.updateLeafDirectoryCollection complete (%s) on %s%n", result, dirPath);
+
+    return result;
   }
 
   /**

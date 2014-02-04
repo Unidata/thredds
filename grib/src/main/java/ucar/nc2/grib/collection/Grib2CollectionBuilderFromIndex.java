@@ -253,6 +253,8 @@ message Group {
     int reftimeCoord = 0;
     int timeCoord = 0;
     List<CoordinateVert> vertCoords = new ArrayList<>();
+    List<CoordinateTime2D> time2DCoords = new ArrayList<>();
+    Map<CoordinateRuntime, CoordinateRuntime> runtimes = new HashMap<>();
     for (Coordinate coord : group.coords) {
       Coordinate.Type type = coord.getType();
       switch (type) {
@@ -260,30 +262,26 @@ message Group {
           CoordinateRuntime reftime = (CoordinateRuntime) coord;
           if (reftimeCoord > 0) reftime.setName("reftime" + reftimeCoord);
           reftimeCoord++;
+          runtimes.put(reftime, reftime);
           break;
 
         case time:
           CoordinateTime tc = (CoordinateTime) coord;
           if (timeCoord > 0) tc.setName("time" + timeCoord);
           timeCoord++;
-          //tc.setTimeUnit(Grib2Utils.getCalendarPeriod(tables.convertTimeUnit(tc.getCode())));
-          //tc.setRefDate(firstRef);
           break;
 
         case timeIntv:
           CoordinateTimeIntv tci = (CoordinateTimeIntv) coord;
           if (timeCoord > 0) tci.setName("time" + timeCoord);
           timeCoord++;
-          //tci.setTimeUnit(Grib2Utils.getCalendarPeriod(tables.convertTimeUnit(tci.getCode())));
-          //tci.setRefDate(firstRef);
           break;
 
         case time2D:
           CoordinateTime2D t2d = (CoordinateTime2D) coord;
           if (timeCoord > 0) t2d.setName("time" + timeCoord);
           timeCoord++;
-          //t2d.setTimeUnit(Grib2Utils.getCalendarPeriod(tables.convertTimeUnit(t2d.getCode())));
-          //tci.setRefDate(firstRef);
+          time2DCoords.add(t2d);
           break;
 
         case vert:
@@ -292,6 +290,7 @@ message Group {
       }
     }
     assignVertNames(vertCoords);
+    assignRuntimeNames(runtimes, time2DCoords);
 
     return group;
   }
@@ -315,8 +314,20 @@ message Group {
 
       vc.setName(shortName);
     }
+  }
+
+  public void assignRuntimeNames(Map<CoordinateRuntime, CoordinateRuntime> runtimes, List<CoordinateTime2D> time2DCoords) {
+
+    // assign same name to internal time2D runtime as matched the external runtime
+    for (CoordinateTime2D t2d : time2DCoords) {
+      CoordinateRuntime runtime2D = t2d.getRuntimeCoordinate();
+      CoordinateRuntime runtime = runtimes.get(runtime2D);
+      runtime2D.setName(runtime.getName());
+    }
 
   }
+
+
 
   /*
 message Coord {

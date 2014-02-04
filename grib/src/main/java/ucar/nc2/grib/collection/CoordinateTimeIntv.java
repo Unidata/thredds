@@ -204,9 +204,8 @@ public class CoordinateTimeIntv extends CoordinateTimeAbstract implements Coordi
     @Override
     public Object extract(Grib2Record gr) {
       CalendarDate refDate2 =  gr.getReferenceDate();
-      if (!refDate.equals(refDate2)) {
+      if (refDate != null && !refDate.equals(refDate2)) {
         System.out.printf("ReferenceDate %s != %s%n", refDate2, refDate);
-       // LOOK ??
       }
 
       CalendarPeriod timeUnitUse = timeUnit;
