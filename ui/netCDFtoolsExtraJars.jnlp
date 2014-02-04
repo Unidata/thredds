@@ -22,12 +22,16 @@
     <jar href="bufr.jar"/>
     <jar href="bzip2.jar"/>
     <jar href="cdm.jar"/>
+    <jar href="clcommon.jar"/>
     <jar href="commons-codec.jar"/>
-    <jar href="commons-httpclient.jar"/>
+    <jar href="commons-lang3.jar"/>
     <jar href="commons-logging.jar"/>
     <jar href="ehcache.jar"/>
     <jar href="forms.jar"/>
     <jar href="grib.jar"/>
+    <jar href="httpclient.jar"/>
+    <jar href="httpcore.jar"/>
+    <jar href="httpmime.jar"/>
     <jar href="imgscalr-lib.jar"/>
     <jar href="jcip-annotations.jar"/>
     <jar href="jcl-over-slf4j.jar"/>

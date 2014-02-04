@@ -1,5 +1,5 @@
 apply plugin: 'shadow'
-import org.gradle.api.plugins.shadow.transformers.AppendingTransformer
+import com.github.jengelman.gradle.plugins.shadow.transformers.AppendingTransformer
 
 dependencies {
   compile project(':cdm')

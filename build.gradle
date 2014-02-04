@@ -5,12 +5,14 @@ subprojects {
   version = '4.4.2'
 
   repositories {
+
     maven {
         url "C:/Users/caron/.m2/repository"
     }
     maven {
         url "https://artifacts.unidata.ucar.edu/content/groups/unidata/"
     }
+
     mavenCentral()
   }
 
@@ -25,13 +27,10 @@ subprojects {
 
   buildscript {
       repositories {
-          maven {
-              name 'Gradle Shadow'
-              url 'http://dl.bintray.com/content/johnrengelman/gradle-plugins'
-          }
+          jcenter()
       }
       dependencies {
-          classpath 'org.gradle.plugins:shadow:0.7.4'
+          classpath 'com.github.jengelman.gradle.plugins:shadow:0.8'
       }
   }
 
