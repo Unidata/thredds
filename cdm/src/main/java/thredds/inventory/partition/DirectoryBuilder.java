@@ -1,6 +1,7 @@
 package thredds.inventory.partition;
 
 import thredds.featurecollection.FeatureCollectionConfig;
+import thredds.inventory.CollectionUpdateType;
 import thredds.inventory.MCollection;
 import thredds.inventory.MFile;
 import ucar.nc2.util.Indent;
@@ -138,10 +139,10 @@ public class DirectoryBuilder {
    * @return children, may be empty but not null
    * @throws IOException
    */
-  public List<DirectoryBuilder> constructChildren(IndexReader indexReader) throws IOException {
+  public List<DirectoryBuilder> constructChildren(IndexReader indexReader, CollectionUpdateType forceCollection) throws IOException {
     if (childrenConstructed) return children;
 
-    if (index != null) {
+    if (index != null && forceCollection != CollectionUpdateType.always) { // always means you must scan anew
       childrenConstructed = true;  // otherwise we are good
       if (!indexReader.readChildren(index, new AddChild())) {
         partitionStatus =  PartitionStatus.isGribCollection;

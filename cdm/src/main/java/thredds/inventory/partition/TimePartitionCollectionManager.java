@@ -80,7 +80,10 @@ public class TimePartitionCollectionManager extends MFileCollectionManager imple
     this.type = Type.timePeriod;
   }
 
-  public Iterable<MCollection> makePartitions() throws IOException {
+
+  public Iterable<MCollection> makePartitions(CollectionUpdateType forceCollection) throws IOException {
+    if (forceCollection == null) forceCollection = CollectionUpdateType.test;
+
     List<DatedMFile> files = new ArrayList<DatedMFile>();
     for (MFile mfile : getFilesSorted()) {
       CalendarDate cdate = dateExtractor.getCalendarDate(mfile);

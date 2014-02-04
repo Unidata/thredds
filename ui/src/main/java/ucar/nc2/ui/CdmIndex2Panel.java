@@ -4,6 +4,8 @@ import thredds.featurecollection.FeatureCollectionConfig;
 import thredds.inventory.MFile;
 import ucar.nc2.NCdumpW;
 import ucar.nc2.grib.collection.*;
+import ucar.nc2.time.CalendarDate;
+import ucar.nc2.time.CalendarPeriod;
 import ucar.nc2.util.Indent;
 import ucar.sparr.Coordinate;
 import ucar.nc2.time.CalendarDateFormatter;
@@ -573,8 +575,24 @@ public class CdmIndex2Panel extends JPanel {
           vip.twot.showMissing(f);
 
         if (vip.time2runtime != null) {
-          f.format("time2runtime: ");
-          for (int idx : vip.time2runtime) f.format("%2d", idx);
+          Coordinate run = v.getCoordinate(Coordinate.Type.runtime);
+          Coordinate tcoord = v.getCoordinate(Coordinate.Type.time);
+          if (tcoord == null) tcoord = v.getCoordinate(Coordinate.Type.timeIntv);
+          CoordinateTimeAbstract time = (CoordinateTimeAbstract) tcoord;
+          CalendarDate ref = time.getRefDate();
+          CalendarPeriod.Field unit = time.getTimeUnit().getField();
+          f.format("time2runtime: %n");
+          int count = 0;
+          for (int idx : vip.time2runtime) {
+            Object val = time.getValue(count);
+            f.format(" %2d: %s -> %2d (%s)", count, val, idx-1, run.getValue(idx-1));
+            if (val instanceof Integer) {
+              int valI = (Integer) val;
+              f.format(" == %s ", ref.add((double) valI, unit));
+            }
+            f.format(" %n");
+            count++;
+          }
           f.format("%n");
         }
 

@@ -90,7 +90,7 @@ public class Grib2PartitionBuilder extends Grib2CollectionBuilder {
       if (forcePartition == CollectionUpdateType.never) throw new IOException("failed to read " + idx.getPath());
 
       logger.info("{}: createIndex {}", gc.getName(), idx.getPath());
-      if (createPartitionedIndex(forceChildren, errlog)) {  // write index
+      if (createPartitionedIndex(forcePartition, forceChildren, errlog)) {  // write index
         return readIndex(idx.getPath()); // read back in index
       }
     }
@@ -98,7 +98,7 @@ public class Grib2PartitionBuilder extends Grib2CollectionBuilder {
   }
 
   private boolean needsUpdate(long collectionLastModified) throws IOException {
-    for (MCollection dcm : partitionManager.makePartitions()) {
+    for (MCollection dcm : partitionManager.makePartitions(CollectionUpdateType.test)) {
       File idxFile = ucar.nc2.grib.collection.GribCollection.getIndexFile(dcm);
       if (!idxFile.exists())
         return true;
@@ -125,13 +125,13 @@ public class Grib2PartitionBuilder extends Grib2CollectionBuilder {
   ///////////////////////////////////////////////////
   // create the index
 
-  private boolean createPartitionedIndex(CollectionUpdateType forceChildren, Formatter errlog) throws IOException {
+  private boolean createPartitionedIndex(CollectionUpdateType forcePartition, CollectionUpdateType forceChildren, Formatter errlog) throws IOException {
     long start = System.currentTimeMillis();
     if (errlog == null) errlog = new Formatter(); // info will be discarded
 
     try {
       // create partitions
-      for (MCollection dcm : partitionManager.makePartitions()) {
+      for (MCollection dcm : partitionManager.makePartitions(forcePartition)) {
         result.addPartition(dcm);
       }
 

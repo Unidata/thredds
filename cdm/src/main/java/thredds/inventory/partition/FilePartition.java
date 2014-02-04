@@ -25,7 +25,8 @@ public class FilePartition extends DirectoryCollection implements PartitionManag
   }
 
   @Override
-  public Iterable<MCollection> makePartitions() throws IOException {
+  public Iterable<MCollection> makePartitions(CollectionUpdateType forceCollection) throws IOException {
+    if (forceCollection == null) forceCollection = CollectionUpdateType.test;
 
     List<MCollection> result = new ArrayList<>(100);
     try (CloseableIterator<MFile> iter = getFileIterator()) {

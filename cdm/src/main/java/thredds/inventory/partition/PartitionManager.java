@@ -1,5 +1,6 @@
 package thredds.inventory.partition;
 
+import thredds.inventory.CollectionUpdateType;
 import thredds.inventory.MCollection;
 
 import java.io.IOException;
@@ -12,6 +13,6 @@ import java.io.IOException;
  */
 public interface PartitionManager extends MCollection {
 
-  public Iterable<MCollection> makePartitions() throws IOException;
+  public Iterable<MCollection> makePartitions(CollectionUpdateType forceCollection) throws IOException;
 
 }

@@ -269,7 +269,7 @@ public class DirectoryPartitionViewer extends JPanel {
            final DirectoryPartition dpart = new DirectoryPartition(config, node.dir, indexReader, logger);
 
            final Grib2TimePartition tp = new Grib2TimePartition(dpart.getCollectionName(), node.dir.toFile(), config.gribConfig, logger);
-           for (MCollection dcm : dpart.makePartitions()) {
+           for (MCollection dcm : dpart.makePartitions(null)) {
              tp.addPartition(dcm);
            }
 
@@ -368,7 +368,7 @@ public class DirectoryPartitionViewer extends JPanel {
     List<NodeInfo> getChildren() {
       List<NodeInfo> result = new ArrayList<>(100);
       try {
-        for (DirectoryBuilder child : part.constructChildren(new GribCdmIndex())) {
+        for (DirectoryBuilder child : part.constructChildren(new GribCdmIndex(), CollectionUpdateType.test)) {
           result.add(new NodeInfo(child));
         }
 

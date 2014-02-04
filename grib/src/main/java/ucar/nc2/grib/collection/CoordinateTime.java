@@ -29,12 +29,12 @@ public class CoordinateTime extends CoordinateTimeAbstract implements Coordinate
     this.offsetSorted = Collections.unmodifiableList(offsetSorted);
   }
 
-  CoordinateTime(CoordinateTime org, int offset) {
+  /* CoordinateTime(CoordinateTime org, int offset) {
     super(org.getCode(), org.getTimeUnit(), org.getRefDate());
     List<Integer> vals = new ArrayList<>(org.getSize());
     for (int orgVal : org.getOffsetSorted()) vals.add(orgVal+offset);
     this.offsetSorted = Collections.unmodifiableList(vals);
-  }
+  } */
 
   static public Integer extractOffset(Grib2Record gr) {
     Grib2Pds pds = gr.getPDS();
@@ -75,13 +75,13 @@ public class CoordinateTime extends CoordinateTimeAbstract implements Coordinate
     return Type.time;
   }
 
-  public List<CalendarDate> makeCalendarDates(ucar.nc2.time.Calendar cal, CalendarDate refDate) {
+  /* public List<CalendarDate> makeCalendarDates(ucar.nc2.time.Calendar cal, CalendarDate refDate) {
     CalendarDateUnit cdu = CalendarDateUnit.withCalendar(cal, periodName+" since "+ refDate.toString());
     List<CalendarDate> result = new ArrayList<>(getSize());
     for (int val : getOffsetSorted())
       result.add(cdu.makeCalendarDate(val));
     return result;
-  }
+  } */
 
   public CalendarDateRange makeCalendarDateRange(ucar.nc2.time.Calendar cal, CalendarDate refDate) {
     CalendarDateUnit cdu = CalendarDateUnit.withCalendar(cal, periodName + " since " + refDate.toString());

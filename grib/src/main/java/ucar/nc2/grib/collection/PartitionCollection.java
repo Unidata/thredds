@@ -190,7 +190,7 @@ public class PartitionCollection extends GribCollection {
      */
     private DataRecord getDataRecordPofP(int[] indexWanted, VariableIndexPartitioned compVindex2Dp) throws IOException {
       if (group.isTwod) {
-        // corresponding index into vipp2d
+        // corresponding index into compVindex2Dp
         int[] indexWantedP = translateIndex2D(indexWanted, compVindex2Dp);
         return compVindex2Dp.getDataRecord(indexWantedP);
       } else {
@@ -259,24 +259,27 @@ public class PartitionCollection extends GribCollection {
       int timeIdx = wholeIndex[0];
       int runtimeIdxWhole = time2runtime[timeIdx] - 1;  // 1-based
       int runtimeIdxPart = matchCoordinate(getCoordinate(0), runtimeIdxWhole, compVindex2D.getCoordinate(0));
-      if (runtimeIdxPart < 0) return null;
+      if (runtimeIdxPart < 0)
+        return null;
       result[0] = runtimeIdxPart;
 
       // figure out the time and any other dimensions
       int countDim = 0;
       while (countDim < wholeIndex.length) {
         int idx = wholeIndex[countDim];
-        Coordinate viCoord = compVindex2D.getCoordinate(countDim + 1);
-        Coordinate vipCoord = getCoordinate(countDim + 1);
+        Coordinate compCoord = compVindex2D.getCoordinate(countDim + 1);
+        Coordinate wholeCoord1D = getCoordinate(countDim + 1);
         int resultIdx;
-        if (viCoord.getType() == Coordinate.Type.time2D) {
-          CoordinateTime2D coord2D = (CoordinateTime2D) viCoord; // of the component
-          //CoordinateTimeAbstract vipCoordTime = (CoordinateTimeAbstract) vipCoord; // best time coord of partition
-          resultIdx = coord2D.matchTimeCoordinate(runtimeIdxPart, vipCoord.getValue(idx)); // , vipCoordTime.getRefDate());
+        if (compCoord.getType() == Coordinate.Type.time2D) {
+          CoordinateTime2D compCoord2D = (CoordinateTime2D) compCoord; // of the component
+          CoordinateTimeAbstract wholeCoord1Dtime = (CoordinateTimeAbstract) wholeCoord1D;
+          Object wholeVal = wholeCoord1D.getValue(idx);
+          resultIdx = compCoord2D.matchTimeCoordinate(runtimeIdxPart, wholeVal, wholeCoord1Dtime.getRefDate());
         } else {
-          resultIdx = matchCoordinate(vipCoord, idx, viCoord);
+          resultIdx = matchCoordinate(wholeCoord1D, idx, compCoord);
         }
-        if (resultIdx < 0) return null;
+        if (resultIdx < 0)
+          return null;
         result[countDim + 1] = resultIdx;
         countDim++;
       }
@@ -284,16 +287,22 @@ public class PartitionCollection extends GribCollection {
       return result;
     }
 
+    /**
+     * Given the index in the whole (indexWhole), translate to index in component (compVindex2D) by matching the coordinate values
+     * @param wholeIndex    index in the whole
+     * @param compVindex2D  want index in here
+     * @return  index into  compVindex2D
+     */
     private int[] translateIndex2D(int[] wholeIndex, GribCollection.VariableIndex compVindex2D) {
       int[] result = new int[wholeIndex.length];
       int countDim = 0;
 
       // special case for 2D time
-      CoordinateTime2D vindex2D = (CoordinateTime2D) compVindex2D.getCoordinate(Coordinate.Type.time2D);
-      if (vindex2D != null) {
-        CoordinateTime2D vip2D = (CoordinateTime2D) getCoordinate(Coordinate.Type.time2D);
-        CoordinateTime2D.Time2D want = vip2D.getOrgValue(wholeIndex[0], wholeIndex[1]);
-        vindex2D.getIndex(want, result); // sets the first 2 indices - run and time
+      CoordinateTime2D compTime2D = (CoordinateTime2D) compVindex2D.getCoordinate(Coordinate.Type.time2D);
+      if (compTime2D != null) {
+        CoordinateTime2D time2D = (CoordinateTime2D) getCoordinate(Coordinate.Type.time2D);
+        CoordinateTime2D.Time2D want = time2D.getOrgValue(wholeIndex[0], wholeIndex[1]);
+        compTime2D.getIndex(want, result); // sets the first 2 indices - run and time
         countDim = 2;
       }
 

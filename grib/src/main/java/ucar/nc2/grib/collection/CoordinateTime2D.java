@@ -126,7 +126,7 @@ public class CoordinateTime2D extends CoordinateTimeAbstract implements Coordina
 
   } */
 
-  public void addOffsets() {
+ /*  public void addOffsets() {
     if (offsetsAdded)
       System.out.println("HEY CoordinateTime2D offsets already added");
     List<Coordinate> timesWithOffsets = new ArrayList<>(times.size());
@@ -140,7 +140,7 @@ public class CoordinateTime2D extends CoordinateTimeAbstract implements Coordina
     }
     this.times = timesWithOffsets;
     this.offsetsAdded = true;
-  }
+  } */
 
   private void makeOffsets(List<Coordinate> orgTimes) {
     CalendarDate firstDate = runtime.getFirstDate();
@@ -237,14 +237,22 @@ public class CoordinateTime2D extends CoordinateTimeAbstract implements Coordina
     CalendarDate runDate = runtime.getDate(runIdx);
     if (isTimeInterval) {
       TimeCoord.Tinv valIntv = (TimeCoord.Tinv) time.getValue(timeIdx);
-      if (valIntv == null)
-        System.out.println("HEY");
-      return new Time2D(runDate, null, valIntv); // valIntv.offset(-getOffset(runIdx)));
+      return new Time2D(runDate, null, valIntv.offset(-getOffset(runIdx)));
     } else {
       Integer val = (Integer) time.getValue(timeIdx);
-      if (val == null)
-        System.out.println("HEY");
-      return new Time2D(runDate, val, null); //  - getOffset(runIdx), null);
+      return new Time2D(runDate, val - getOffset(runIdx), null);
+    }
+  }
+
+  // translate a time value in the Best coordinate to the correct offset, eg in the partition coordinate
+  public Object getPartValue(int runIdx, Object bestVal) {
+    Coordinate time = times.get(runIdx);
+    if (isTimeInterval) {
+      TimeCoord.Tinv valIntv = (TimeCoord.Tinv) bestVal;
+      return valIntv.offset(-getOffset(runIdx));
+    } else {
+      Integer val = (Integer) bestVal;
+      return val - getOffset(runIdx);
     }
   }
 
@@ -264,21 +272,12 @@ public class CoordinateTime2D extends CoordinateTimeAbstract implements Coordina
   /**
    * Find the index matching a runtime and time coordinate
    * @param runIdx  which run
-   * @param value time coordinate (org offset)
-   * @return
+   * @param value time coordinate
+   * @param refDateOfValue reference time of time coordinate
+   * @return index in the time coordinate of the value
    */
-  public int matchTimeCoordinate(int runIdx, Object value) { // }, CalendarDate refDateOfValue) {
-    CoordinateTimeAbstract time =  (CoordinateTimeAbstract) times.get(runIdx);
-    return time.getIndex(value);
-
-    /* CalendarDate timeRef = time.getRefDate();
-    int offset;
-    if (timeRef.equals(refDateOfValue))
-      offset = 0;
-    else {
-      CalendarPeriod period = time.getPeriod();
-      offset = period.getOffset(timeRef, refDateOfValue); // LOOK possible loss of precision
-    }
+  public int matchTimeCoordinate(int runIdx, Object value, CalendarDate refDateOfValue) {
+    int offset = timeUnit.getOffset(refDate, refDateOfValue);
 
     Object valueWithOffset;
     if (isTimeInterval) {
@@ -288,7 +287,11 @@ public class CoordinateTime2D extends CoordinateTimeAbstract implements Coordina
       Integer val = (Integer) value;
       valueWithOffset = val + offset;
     }
-    return time.getIndex(valueWithOffset); */
+    CoordinateTimeAbstract time =  (CoordinateTimeAbstract) times.get(runIdx);
+    int result =  time.getIndex(valueWithOffset);
+    if (result < 0)
+      System.out.println("HEY");
+    return result;
   }
 
   public CoordinateTimeAbstract createBestTimeCoordinate(List<Double> runOffsets) {
@@ -347,7 +350,7 @@ public class CoordinateTime2D extends CoordinateTimeAbstract implements Coordina
       for (TimeCoord.Tinv bestVal : timeIntv.getTimeIntervals()) {
         // if twot == null, then we are doing a PofP
         if (twot == null || twot.getCount(runIdx, timeIdx) > 0) { // skip missing;
-          Integer bestValIdx = map.get(bestVal);
+          Integer bestValIdx = map.get(bestVal.offset(getOffset(runIdx)));
           if (bestValIdx == null) throw new IllegalStateException();
           result[bestValIdx] = runIdx+1; // use this partition; later ones override; one based so 0 = missing
         }
@@ -373,7 +376,7 @@ public class CoordinateTime2D extends CoordinateTimeAbstract implements Coordina
       int timeIdx = 0;
       for (Integer bestVal : timeCoord.getOffsetSorted()) {
         if (twot == null || twot.getCount(runIdx, timeIdx) > 0) { // skip missing;
-          Integer bestValIdx = map.get(bestVal);
+          Integer bestValIdx = map.get(bestVal + getOffset(runIdx));
           if (bestValIdx == null) throw new IllegalStateException();
           result[bestValIdx] = runIdx+1; // use this partition; later ones override; one based so 0 = missing
         }
