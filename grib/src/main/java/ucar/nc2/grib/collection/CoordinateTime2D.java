@@ -237,10 +237,10 @@ public class CoordinateTime2D extends CoordinateTimeAbstract implements Coordina
     CalendarDate runDate = runtime.getDate(runIdx);
     if (isTimeInterval) {
       TimeCoord.Tinv valIntv = (TimeCoord.Tinv) time.getValue(timeIdx);
-      return new Time2D(runDate, null, valIntv.offset(-getOffset(runIdx)));
+      return new Time2D(runDate, null, valIntv); // valIntv.offset(-getOffset(runIdx)));
     } else {
       Integer val = (Integer) time.getValue(timeIdx);
-      return new Time2D(runDate, val - getOffset(runIdx), null);
+      return new Time2D(runDate, val, null); //  - getOffset(runIdx), null);
     }
   }
 
@@ -277,7 +277,8 @@ public class CoordinateTime2D extends CoordinateTimeAbstract implements Coordina
    * @return index in the time coordinate of the value
    */
   public int matchTimeCoordinate(int runIdx, Object value, CalendarDate refDateOfValue) {
-    int offset = timeUnit.getOffset(refDate, refDateOfValue);
+    CoordinateTimeAbstract time =  (CoordinateTimeAbstract) times.get(runIdx);
+    int offset = timeUnit.getOffset(time.getRefDate(), refDateOfValue);
 
     Object valueWithOffset;
     if (isTimeInterval) {
@@ -287,7 +288,6 @@ public class CoordinateTime2D extends CoordinateTimeAbstract implements Coordina
       Integer val = (Integer) value;
       valueWithOffset = val + offset;
     }
-    CoordinateTimeAbstract time =  (CoordinateTimeAbstract) times.get(runIdx);
     int result =  time.getIndex(valueWithOffset);
     if (result < 0)
       System.out.println("HEY");

@@ -74,10 +74,11 @@ public class SparseArray<T> {
   }
 
   public T getContent(int idx) {
-    if (idx > track.length)
+    if (idx > track.length || idx < 0)
       System.out.println("HEY");
     int contentIdx = track[idx]-1;
-    if (contentIdx < 0) return null; // missing
+    if (contentIdx < 0)
+      return null; // missing
     return content.get(contentIdx);
   }
 
