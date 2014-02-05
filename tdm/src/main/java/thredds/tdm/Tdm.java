@@ -68,6 +68,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
 import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
@@ -91,6 +92,9 @@ public class Tdm {
   private java.util.concurrent.ExecutorService executor;
   private Resource catalog;
   private boolean showOnly = false; // if true, just show dirs and exit
+
+  private String loglevel;
+  private boolean forceOnStartup = false; // if true, just show dirs and exit
 
   LoggerFactory loggerFactory;
 
@@ -121,7 +125,15 @@ public class Tdm {
   }
 
   public void setNThreads(int n) {
-    // TODO
+    executor = Executors.newFixedThreadPool(n);
+  }
+
+  public void setForceOnStartup(boolean forceOnStartup) {
+    this.forceOnStartup = forceOnStartup;
+  }
+
+  public void setLoglevel(String loglevel) {
+    this.loglevel = loglevel;
   }
 
   // spring beaned
@@ -173,6 +185,7 @@ public class Tdm {
     long maxFileSize = reader.getBytes("FeatureCollection.RollingFileAppender.MaxFileSize", 1000 * 1000);
     int maxBackupIndex = reader.getInt("FeatureCollection.RollingFileAppender.MaxBackups", 10);
     String level = reader.get("FeatureCollection.RollingFileAppender.Level", "INFO");
+    if (this.loglevel != null) level = this.loglevel;
     loggerFactory = new LoggerFactorySpecial(maxFileSize, maxBackupIndex, level);
 
     /* 4.3.15: grib index file placement, using DiskCache2  */
@@ -215,6 +228,9 @@ public class Tdm {
        /* CollectionManager dcm = fc.getDatasetCollectionManager(); // LOOK this will fail
        if (config != null && config.gribConfig != null && config.gribConfig.gdsHash != null)
          dcm.putAuxInfo("gdsHash", config.gribConfig.gdsHash); // sneak in extra config info  */
+
+       if (forceOnStartup) // on startup, force rewrite of indexes
+         config.tdmConfig.startupType = CollectionUpdateType.always;
 
        Logger logger = loggerFactory.getLogger("fc." + config.name); // seperate log file for each feature collection (!!)
        CollectionUpdater.INSTANCE.scheduleTasks(config, new Listener(config, logger), logger); // now wired for events
@@ -265,7 +281,7 @@ public class Tdm {
     @Override
     public void sendEvent(CollectionUpdateType event) {
       if (!inUse.compareAndSet(false, true)) return; // if already working, skip another execution
-      executor.execute(new IndexTask(config, this, logger));
+      executor.execute(new IndexTask(config, this, event, logger));
     }
   }
 
@@ -275,14 +291,15 @@ public class Tdm {
   private class IndexTask implements Runnable {
     String name;
     FeatureCollectionConfig config;
-    //MCollection dcm;
+    CollectionUpdateType updateType;
     Listener liz;
     org.slf4j.Logger logger;
 
-    private IndexTask(FeatureCollectionConfig config, Listener liz, org.slf4j.Logger logger) {
+    private IndexTask(FeatureCollectionConfig config, Listener liz, CollectionUpdateType updateType, org.slf4j.Logger logger) {
       this.name = config.name;
       this.config = config;
       this.liz = liz;
+      this.updateType = updateType;
       this.logger = logger;
     }
 
@@ -294,14 +311,14 @@ public class Tdm {
         boolean changed = false;
 
         if (config.timePartition == null) {
-          changed = GribCdmIndex2.updateGribCollection(config, config.tdmConfig.updateType, logger);
+          changed = GribCdmIndex2.updateGribCollection(config, updateType, logger);
 
         } else {
           /* if (config.timePartition.equalsIgnoreCase("file"))
             changed = GribCdmIndex2.updateFilePartition(config, config.tdmConfig.updateType, config.tdmConfig.updateType, logger);
 
           else if (config.timePartition.equalsIgnoreCase("directory")) */
-            changed = GribCdmIndex2.updateDirectoryCollection(config, config.tdmConfig.updateType, config.tdmConfig.updateType, logger);
+            changed = GribCdmIndex2.updateDirectoryCollection(config, updateType, updateType, logger);
         }
 
         // delete any files first
@@ -309,8 +326,8 @@ public class Tdm {
         //  doManage(config.tdmConfig.deleteAfter);
         //}
 
-        if (changed)
-          System.out.printf("%s %s changed%n", CalendarDate.present(), config.name);
+        logger.debug("{} {} changed {}", CalendarDate.present(), config.name, changed);
+        if (changed) System.out.printf("%s %s changed%n", CalendarDate.present(), config.name);
 
         if (changed && config.tdmConfig.triggerOk && sendTriggers) { // send a trigger if enabled
           String path = "thredds/admin/collection/trigger?trigger=nocheck&collection=" + name;
@@ -439,11 +456,10 @@ public class Tdm {
     HTTPSession.setGlobalUserAgent("TDM v4.5");
     // GribCollection.getDiskCache2().setNeverUseCache(true);
     String logLevel = "INFO";
-    //String contentDir;
 
     for (int i = 0; i < args.length; i++) {
       if (args[i].equalsIgnoreCase("-help")) {
-        System.out.printf("usage: <Java> <Java_OPTS> -Dtds.content.root.path=<contentDir> [-catalog <cat>] [-tds <tdsServer>] [-cred <user:passwd>] [-showOnly] [-log level]%n");
+        System.out.printf("usage: <Java> <Java_OPTS> -Dtds.content.root.path=<contentDir> [-catalog <cat>] [-tds <tdsServer>] [-cred <user:passwd>] [-showOnly]  [-forceOnStartup]%n");
         System.out.printf("example: /opt/jdk/bin/java -d64 -Xmx8g -server -jar tdm-4.3.jar -Dtds.content.root.path=/my/content -cred user:passwd%n");
         System.exit(0);
       }
@@ -489,7 +505,13 @@ public class Tdm {
 
       else if (args[i].equalsIgnoreCase("-log")) {
         logLevel = args[i + 1];
+        driver.setLoglevel(logLevel);
       }
+
+      else if (args[i].equalsIgnoreCase("-forceOnStartup")) {
+        driver.setForceOnStartup(true);
+      }
+
     }
 
     CollectionUpdater.INSTANCE.setTdm(true);

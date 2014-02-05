@@ -45,12 +45,22 @@
       <appender-ref ref="fileLogger"/>
     </logger>
 
-    <logger name="ucar.nc2.grib.grib1.builder.Grib1CollectionBuilder" level="debug" additivity="false">
+    <logger name="ucar.nc2.grib.collection" level="debug" additivity="false">
       <!-- appender-ref ref="consoleLogger"/ -->
       <appender-ref ref="fileLogger"/>
     </logger>
 
-    <logger name="ucar.nc2.grib.collection" level="debug" additivity="false">
+    <logger name="ucar.nc2.grib" level="info" additivity="false">
+      <!-- appender-ref ref="consoleLogger"/ -->
+      <appender-ref ref="fileLogger"/>
+    </logger>
+
+    <logger name="ucar.nc2.util.net" level="info" additivity="false">
+      <!-- appender-ref ref="consoleLogger"/ -->
+      <appender-ref ref="fileLogger"/>
+    </logger>
+
+    <logger name="org.quartz" level="info" additivity="false">
       <!-- appender-ref ref="consoleLogger"/ -->
       <appender-ref ref="fileLogger"/>
     </logger>
@@ -79,8 +89,11 @@
     <logger name="org.apache.commons.httpclient" level="error" additivity="false">
       <appender-ref ref="fileLogger"/>
     </logger>
+    <logger name="httpclient" level="error" additivity="false">
+      <appender-ref ref="fileLogger"/>
+    </logger>
 
-    <root level="info" additivity="false">
+    <root level="debug" additivity="false">
       <!-- appender-ref ref="consoleLogger"/ -->
       <appender-ref ref="fileLogger"/>
     </root>

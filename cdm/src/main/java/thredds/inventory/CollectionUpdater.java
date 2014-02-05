@@ -147,7 +147,7 @@ public enum CollectionUpdater {
     // Job to update the collection
     org.quartz.JobDataMap map = new org.quartz.JobDataMap();
     map.put(DCM_NAME, manager);
-    map.put(UpdateType, updateConfig.updateType);
+    //map.put(UpdateType, updateConfig.updateType);
     if (logger != null) map.put(LOGGER, logger);
     JobDetail updateJob = JobBuilder.newJob(UpdateCollectionJob.class)
             .withIdentity(jobName, "UpdateCollection")
@@ -167,26 +167,32 @@ public enum CollectionUpdater {
     }
 
     // startup always runs
+    map = new org.quartz.JobDataMap();
+    map.put(UpdateType, updateConfig.startupType);
     Date runTime = new Date(new Date().getTime() + startupWait); // wait startupWait before trigger
     SimpleTrigger startupTrigger = (SimpleTrigger) TriggerBuilder.newTrigger()
             .withIdentity(jobName, "startup")
             .startAt(runTime)
             .forJob(updateJob)
+            .usingJobData(map)
             .build();
 
     try {
-       scheduler.scheduleJob(startupTrigger);
-      if (logger != null)logger.info("Schedule startup scan force={} for '{}' at {}", updateConfig.updateType.toString(), config.name, runTime);
+      scheduler.scheduleJob(startupTrigger);
+      if (logger != null)logger.info("Schedule startup scan force={} for '{}' at {}", updateConfig.startupType.toString(), config.name, runTime);
     } catch (SchedulerException e) {
       if (logger != null)logger.error("cronExecutor failed to schedule startup Job for " + config, e);
       return;
     }
 
     if (updateConfig.rescan != null) {
+        map = new org.quartz.JobDataMap();
+        map.put(UpdateType, updateConfig.updateType);
         CronTrigger rescanTrigger = TriggerBuilder.newTrigger()
                 .withIdentity(jobName, "rescan")
                 .withSchedule(CronScheduleBuilder.cronSchedule(updateConfig.rescan))
                 .forJob(updateJob)
+                .usingJobData(map)
                 .build();
 
       try {
@@ -264,11 +270,12 @@ public enum CollectionUpdater {
     public void execute(JobExecutionContext context) throws JobExecutionException {
       CollectionUpdateListener manager = (CollectionUpdateListener) context.getJobDetail().getJobDataMap().get(DCM_NAME);
       org.slf4j.Logger loggerfc = (org.slf4j.Logger) context.getJobDetail().getJobDataMap().get(LOGGER);
-      CollectionUpdateType type= (CollectionUpdateType) context.getJobDetail().getJobDataMap().get(UpdateType);
+      CollectionUpdateType type= (CollectionUpdateType) context.getTrigger().getJobDataMap().get(UpdateType);
       String groupName = context.getTrigger().getKey().getGroup();
 
       try {
         manager.sendEvent(type);
+        startupLogger.debug("CollectionUpdate {} on {}", type, manager.getCollectionName());
 
       } catch (Throwable e) {
         if (loggerfc != null) loggerfc.error("UpdateCollectionJob.execute "+groupName+" failed collection=" + manager.getCollectionName(), e);

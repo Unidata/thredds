@@ -277,22 +277,6 @@ public class Grib2CollectionBuilder extends GribCollectionBuilder {
     List<MFile> files = new ArrayList<>();
     List<Group> groups = makeGroups(files, errlog);
 
-    /* PartitionCollection.Dataset ds2D = makeDataset2D(canon, errlog);
-    if (ds2D == null) {
-      if (errlog != null) errlog.format(" ERR makeDataset2D failed, index not written on %s%n", gc.getName());
-      logger.error(" makeDataset2D failed, index not written on {} errors = \n{}", gc.getName(), errlog.toString());
-      return false;
-    }
-
-    // this finishes the 2D stuff
-    gc.makeHorizCS();
-
-    if (!makeDatasetBest(ds2D, errlog)) {
-      if (errlog != null) errlog.format(" ERR makeDatasetAnalysis failed, index not written on %s%n", gc.getName());
-      logger.error(" makeDatasetAnalysis failed, index not written on {} errors = \n{}", gc.getName(), errlog.toString());
-    } */
-
-
     List<MFile> allFiles = Collections.unmodifiableList(files);
     writeIndex(indexFile, groups, allFiles);
 
@@ -384,68 +368,6 @@ public class Grib2CollectionBuilder extends GribCollectionBuilder {
 
     return groups;
   }
-
-  /* private boolean makeDatasetBest(GribCollection.Dataset ds2D, Formatter errlog) throws IOException {
-    GribCollection.Dataset dsa = gc.makeDataset(GribCollectionProto.Dataset.Type.Best);
-
-    //int npart = result.getPartitions().size();
-    boolean ok = true;
-
-     // do each group
-    for (GribCollection.GroupHcs group2D : ds2D.groups) {
-      GribCollection.GroupHcs groupB = dsa.addGroupCopy(group2D);  // make copy of group, add to dataset
-      groupB.run2part = group2D.run2part;                          // use same run -> partition map
-
-      // runtime offsets
-      CoordinateRuntime rtc = null;
-      for (Coordinate coord : group2D.coords)
-       if (coord.getType() == Coordinate.Type.runtime)
-         rtc = (CoordinateRuntime) coord;
-      assert rtc != null;
-      List<Double> runOffset = rtc.getRuntimesUdunits();
-
-      // transfer coordinates, order is preserved, so variable index ok
-      for (Coordinate coord : group2D.coords) {
-        if (coord instanceof CoordinateTimeAbstract) {
-          Coordinate best = ((CoordinateTimeAbstract)coord).createBestTimeCoordinate(runOffset);
-          groupB.coords.add(best);
-
-        } else {
-          groupB.coords.add(coord);
-        }
-      }
-
-      // transfer variables
-      for (GribCollection.VariableIndex vi2d : group2D.variList) {
-        // copy vi and add to groupB
-        GribCollection.VariableIndex vib = gc.makeVariableIndex(groupB, vi2d);
-        int timeIdx = vib.getCoordinateIndex(Coordinate.Type.time);
-        if (timeIdx >= 0) {
-          CoordinateTime time2d = (CoordinateTime) group2D.coords.get(timeIdx);
-          CoordinateTime timeBest = (CoordinateTime) groupB.coords.get(timeIdx);
-          vib.time2runtime = makeTime2RuntimeMap(runOffset, time2d, timeBest, ((PartitionCollection.VariableIndexPartitioned) vi2d).twot);
-
-        } else {
-          timeIdx = vib.getCoordinateIndex(Coordinate.Type.timeIntv);
-          CoordinateTimeIntv time2d = (CoordinateTimeIntv) group2D.coords.get(timeIdx);
-          CoordinateTimeIntv timeBest = (CoordinateTimeIntv) groupB.coords.get(timeIdx);
-          vib.time2runtime = makeTime2RuntimeMap(runOffset, time2d, timeBest, ((PartitionCollection.VariableIndexPartitioned) vi2d).twot);
-        }
-
-        // LOOK at PCBuilder
-        // remove runtime coordinate from list
-        List<Integer> result = new ArrayList<>();
-        for (Integer idx : vib.coordIndex) {
-          Coordinate c = groupB.coords.get(idx);
-          if (c.getType() != Coordinate.Type.runtime) result.add(idx);
-        }
-        vib.coordIndex = result;
-      }
-
-    } // loop over groups
-
-    return ok;
-  }  */
 
   ///////////////////////////////////////////////////
   // heres where the actual writing is
@@ -769,9 +691,6 @@ public class Grib2CollectionBuilder extends GribCollectionBuilder {
 
     b.setRecordsPos(vb.pos);
     b.setRecordsLen(vb.length);
-
-    if (vb.coordIndex == null)
-      System.out.println("HEY");
 
     for (int idx : vb.coordIndex)
       b.addCoordIdx(idx);

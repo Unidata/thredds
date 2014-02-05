@@ -19,6 +19,7 @@ import java.util.Map;
  * specific to this name.
  * used by InvDatasetFeatureCollection to create a log for each feature collection.
  * This duplicates thredds.util.LoggerFactorySpecial in tds module
+ * all wrong see http://logging.apache.org/log4j/2.x/manual/extending.html
  *
  * @author caron
  * @since 3/27/13
@@ -185,12 +186,6 @@ public class LoggerFactorySpecial implements LoggerFactory {
       log4j.addAppender(app);
       log4j.setLevel(level);
       log4j.setAdditive(false); // otherwise, it also gets sent to root logger (threddsServlet.log)
-
-
-      /* org.apache.logging.log4j.core.Logger log4j = (org.apache.logging.log4j.core.Logger) LogManager.getLogger(name);
-      log4j.addAppender(app);
-      log4j.setLevel(level);
-      log4j.setAdditive(false); // otherwise, it also gets sent to root logger (threddsServlet.log)   */
 
       startupLog.info("LoggerFactorySpecial add logger= {} file= {}", name, fileName);
 

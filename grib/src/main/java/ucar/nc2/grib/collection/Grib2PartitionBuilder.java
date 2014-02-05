@@ -521,30 +521,6 @@ public class Grib2PartitionBuilder extends Grib2CollectionBuilder {
         }
       }
 
-      /* best needs a map of time to partitions
-      if (result.isPartitionOfPartitions) {
-        for (GribCollection.VariableIndex vibest : groupB.variList) {
-          PartitionCollection.VariableIndexPartitioned vip = (PartitionCollection.VariableIndexPartitioned) vibest;
-          CoordinateTime vipTime = (CoordinateTime) vip.getCoordinate(Coordinate.Type.time);
-
-          for (int partno = 0; partno < npart; partno++) {
-            GribCollection.GroupHcs group = gp.componentGroups[partno];
-            if (group == null) continue; // tolerate missing groups
-            GribCollection.VariableIndex vi = group.findVariableByHash(vip.cdmHash);
-            if (vi == null) continue; // tolerate missing variables
-
-            int timeIdx = vi.getCoordinateIndex(Coordinate.Type.time);
-            if (timeIdx >= 0) {
-              CoordinateTime time2d = (CoordinateTime) group2D.coords.get(timeIdx);
-              CoordinateTime timeBest = (CoordinateTime) groupB.coords.get(timeIdx); // LOOK do we know these have same index ??
-              vip.time2runtime = time2d.makeTime2RuntimeMap(runOffset, timeBest, ((PartitionCollection.VariableIndexPartitioned) vi2d).twot);
-              continue;
-            }
-          }
-
-        }
-      } */
-
     } // loop over groups
   }
 

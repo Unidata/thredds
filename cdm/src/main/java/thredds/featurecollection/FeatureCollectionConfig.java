@@ -161,6 +161,10 @@ public class FeatureCollectionConfig {
       // if tdm is not working, default tds is to update on startup
       updateConfig.updateType = CollectionUpdateType.test;
     }
+
+    // startupType allows override on tdm command line
+    updateConfig.startupType = updateConfig.updateType;
+    tdmConfig.startupType = tdmConfig.updateType;
   }
 
   // <update startup="nocheck" rescan="cron expr" trigger="allow" append="true"/>
@@ -169,6 +173,7 @@ public class FeatureCollectionConfig {
     public String rescan;
     public boolean triggerOk = true;
     public boolean userDefined = false;
+    public CollectionUpdateType startupType = CollectionUpdateType.never;
     public CollectionUpdateType updateType = CollectionUpdateType.never;
     public String deleteAfter = null; // not implemented yet
 
