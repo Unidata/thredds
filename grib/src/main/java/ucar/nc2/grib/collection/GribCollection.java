@@ -302,6 +302,13 @@ public class GribCollection implements FileCacheable, AutoCloseable {
     return getDiskCache2().getFile(f.getPath()); // diskCache manages where the index file lives
   }
 
+  static public File getIndexFile(String collectionName, File directory, CalendarDate runtime) {
+    String nameNoBlanks = StringUtil2.replace(collectionName, ' ', "_");
+    String nameWithCalendar = nameNoBlanks+"-"+runtime.toString();
+    File f = new File(directory, nameWithCalendar + NCX_IDX2);
+    return getDiskCache2().getFile(f.getPath()); // diskCache manages where the index file lives
+  }
+
   public File makeNewIndexFile(org.slf4j.Logger logger) {
     if (indexFile != null && indexFile.exists()) {
       if (!indexFile.delete())

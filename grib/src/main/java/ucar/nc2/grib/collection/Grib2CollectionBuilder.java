@@ -184,6 +184,16 @@ public class Grib2CollectionBuilder extends GribCollectionBuilder {
     this.gc = new Grib2Collection(this.name, this.directory, config);
   }
 
+  public Grib2CollectionBuilder(String name, MCollection dcm, org.slf4j.Logger logger) {
+    super(dcm, false, logger);
+    this.name = dcm.getCollectionName();
+    this.directory = new File(dcm.getRoot());
+
+    FeatureCollectionConfig.GribConfig config = (FeatureCollectionConfig.GribConfig) dcm.getAuxInfo(FeatureCollectionConfig.AUX_GRIB_CONFIG);
+    this.gc = new Grib2Collection(this.name, this.directory, config);
+  }
+
+
     // for ui debugging
   public Grib2Customizer getCustomizer() {
     return tables;
@@ -252,17 +262,25 @@ public class Grib2CollectionBuilder extends GribCollectionBuilder {
   ///////////////////////////////////////////////////////////////////////////////////
   // writing
 
-  public class Group {
+  public static class Group {
     public Grib2SectionGridDefinition gdss;
     public int gdsHash; // may have been modified
+    public CalendarDate runtime;
+
     public Grib2Rectilyser rect;
     public List<Grib2Record> records = new ArrayList<>();
     public String nameOverride;
     public Set<Integer> fileSet; // this is so we can show just the component files that are in this group
 
-    private Group(Grib2SectionGridDefinition gdss, int gdsHash) {
+    Group(Grib2SectionGridDefinition gdss, int gdsHash) {
       this.gdss = gdss;
       this.gdsHash = gdsHash;
+    }
+
+    Group(Grib2SectionGridDefinition gdss, int gdsHash, CalendarDate runtime) {
+      this.gdss = gdss;
+      this.gdsHash = gdsHash;
+      this.runtime = runtime;
     }
   }
 
@@ -381,7 +399,7 @@ public class Grib2CollectionBuilder extends GribCollectionBuilder {
    GribCollectionIndex (sizeIndex bytes)
    */
 
-  private boolean writeIndex(File indexFile, List<Group> groups, List<MFile> files) throws IOException {
+  public boolean writeIndex(File indexFile, List<Group> groups, List<MFile> files) throws IOException {
     Grib2Record first = null; // take global metadata from here
     boolean deleteOnClose = false;
 
