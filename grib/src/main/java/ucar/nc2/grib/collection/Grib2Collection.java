@@ -50,8 +50,8 @@ import java.util.Formatter;
  */
 public class Grib2Collection extends GribCollection {
 
-  public Grib2Collection(String name, File directory, FeatureCollectionConfig.GribConfig dcm) {
-    super(name, directory, dcm, false);
+  public Grib2Collection(String name, File directory, String indexFilename, FeatureCollectionConfig.GribConfig config) {
+    super(name, directory, indexFilename, config, false);
   }
 
   @Override
@@ -62,7 +62,7 @@ public class Grib2Collection extends GribCollection {
     if (want == null) return null;
 
     if (filename == null) {  // LOOK thread-safety : sharing this, raf
-      Grib2Iosp iosp = new Grib2Iosp(want, ds.isTwoD());
+      Grib2Iosp iosp = new Grib2Iosp(want, ds.getType());
       NetcdfFile ncfile = new GcNetcdfFile(iosp, null, getIndexFile().getPath(), null);
       return new NetcdfDataset(ncfile);
 
@@ -86,7 +86,7 @@ public class Grib2Collection extends GribCollection {
     if (want == null) return null;
 
     if (filename == null) { // LOOK thread-safety : sharing this, raf
-      Grib2Iosp iosp = new Grib2Iosp(want, ds.isTwoD());
+      Grib2Iosp iosp = new Grib2Iosp(want, ds.getType());
       NetcdfFile ncfile = new GcNetcdfFile(iosp, null, getIndexFile().getPath()+"#"+groupName, null);
       NetcdfDataset ncd = new NetcdfDataset(ncfile);
       return new ucar.nc2.dt.grid.GridDataset(ncd); // LOOK - replace with custom GridDataset??

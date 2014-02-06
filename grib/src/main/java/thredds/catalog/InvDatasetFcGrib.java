@@ -279,7 +279,7 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
 
     boolean isSingleGroup = true;
     for (GribCollection.Dataset ds : gc.getDatasets()) {
-      if (ds.getType() == GribCollectionProto.Dataset.Type.TwoD) {
+      if (ds.getType() == GribCollection.Type.TwoD) {
         List<GribCollection.GroupHcs> groups = new ArrayList<>(ds.getGroups());
         tmi.setGeospatialCoverage(extractGeospatial(groups)); // set extent from twoD dataset for all
         isSingleGroup = ds.getGroups().size() == 1;
@@ -299,7 +299,7 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
         }
       }
 
-      if (ds.getType() == GribCollectionProto.Dataset.Type.Best) {
+      if (ds.getType() == GribCollection.Type.Best) {
 
         if (gribConfig.hasDatasetType(FeatureCollectionConfig.GribDatasetType.Best)) {
           List<GribCollection.GroupHcs> groups = new ArrayList<>(ds.getGroups());

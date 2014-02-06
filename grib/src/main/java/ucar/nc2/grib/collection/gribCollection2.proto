@@ -83,9 +83,10 @@ message Group {
 
 message Dataset {
   enum Type {
-    TwoD = 0;
-    Best = 1;
-    Analysis = 2;
+    GC = 0;
+    TwoD = 1;
+    Best = 2;
+    Analysis = 3;
   }
 
   required Type type = 1;

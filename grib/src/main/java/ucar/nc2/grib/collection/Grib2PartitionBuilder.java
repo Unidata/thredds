@@ -63,7 +63,6 @@ public class Grib2PartitionBuilder extends Grib2CollectionBuilder {
 
   private final PartitionManager partitionManager; // defines the partition
   private Grib2Partition result;  // build this object
-  //private boolean isPartitionOfPartitions;
 
   protected Grib2PartitionBuilder(String name, File directory, PartitionManager tpc, org.slf4j.Logger logger) {
     super(tpc, logger);
@@ -73,7 +72,7 @@ public class Grib2PartitionBuilder extends Grib2CollectionBuilder {
     FeatureCollectionConfig.GribConfig config = null;
     if (tpc != null)
       config = (FeatureCollectionConfig.GribConfig) tpc.getAuxInfo(FeatureCollectionConfig.AUX_GRIB_CONFIG);
-    this.result = new Grib2Partition(name, directory, config, logger);
+    this.result = new Grib2Partition(name, directory, dcm.getIndexFilename(), config, logger);
     this.gc = result;
     this.partitionManager = tpc;
   }
@@ -99,7 +98,7 @@ public class Grib2PartitionBuilder extends Grib2CollectionBuilder {
 
   private boolean needsUpdate(long collectionLastModified) throws IOException {
     for (MCollection dcm : partitionManager.makePartitions(CollectionUpdateType.test)) {
-      File idxFile = ucar.nc2.grib.collection.GribCollection.getIndexFile(dcm);
+      File idxFile = GribCollection.getIndexFile(dcm.getIndexFilename());
       if (!idxFile.exists())
         return true;
       if (collectionLastModified < idxFile.lastModified())
@@ -234,7 +233,7 @@ public class Grib2PartitionBuilder extends Grib2CollectionBuilder {
     int countPartition = 0;
     for (PartitionCollection.Partition tpp : result.getPartitions()) {
       GribCollection gc = tpp.gc;
-      GribCollection.Dataset ds2dp = gc.getDataset2D();
+      GribCollection.Dataset ds2dp = gc.getDatasetCanonical(); // the twoD or GC dataset
 
       int groupIdx = 0;
       for (GribCollection.GroupHcs g : ds2dp.groups) { // for each group in the partition
@@ -255,7 +254,7 @@ public class Grib2PartitionBuilder extends Grib2CollectionBuilder {
     FeatureCollectionConfig.GribConfig config = (FeatureCollectionConfig.GribConfig) dcm.getAuxInfo(FeatureCollectionConfig.AUX_GRIB_CONFIG);
     FeatureCollectionConfig.GribIntvFilter intvMap = (config != null) ? config.intvFilter : null;
 
-    PartitionCollection.Dataset ds2D = result.makeDataset(GribCollectionProto.Dataset.Type.TwoD);
+    PartitionCollection.Dataset ds2D = result.makeDataset(GribCollection.Type.TwoD);
 
     List<PartitionCollection.Partition> partitions = result.getPartitions();
     int npart = partitions.size();
@@ -459,7 +458,7 @@ public class Grib2PartitionBuilder extends Grib2CollectionBuilder {
   }
 
   private void makeDatasetBest(GribCollection.Dataset ds2D, Formatter f) throws IOException {
-    GribCollection.Dataset dsa = result.makeDataset(GribCollectionProto.Dataset.Type.Best);
+    GribCollection.Dataset dsa = result.makeDataset(GribCollection.Type.Best);
 
     int npart = result.getPartitions().size();
 
@@ -636,7 +635,8 @@ public class Grib2PartitionBuilder extends Grib2CollectionBuilder {
   private GribCollectionProto.Dataset writeDatasetProto(PartitionCollection pc, PartitionCollection.Dataset ds) throws IOException {
     GribCollectionProto.Dataset.Builder b = GribCollectionProto.Dataset.newBuilder();
 
-    b.setType(ds.type);
+    GribCollectionProto.Dataset.Type type = GribCollectionProto.Dataset.Type.valueOf(ds.getType().toString());
+    b.setType(type);
 
     for (GribCollection.GroupHcs group : ds.groups)
       b.addGroups(writeGroupProto(pc, group));

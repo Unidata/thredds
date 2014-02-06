@@ -24,10 +24,6 @@ import java.util.*;
  * @since 12/7/13
  */
 public class PartitionCollection extends GribCollection {
-  //static public final byte VERT_COORDS_DIFFER = 1;
-  //static public final byte ENS_COORDS_DIFFER = 2;
-
-  //////////////////////////////////////////////////////////
   // object cache for index files - these are opened only as GribCollection
   private static FileCache partitionCache;
 
@@ -52,17 +48,6 @@ public class PartitionCollection extends GribCollection {
       // return ucar.nc2.grib.collection.GribCollection.readFromIndex(p.isGrib1(), p.getName(), new File(p.getDirectory()), raf, p.getConfig(), p.getLogger());
     }
   };
-
-  /* static public boolean update(boolean isGrib1, PartitionManager tpc, org.slf4j.Logger logger) throws IOException {
-    //if (isGrib1) return Grib1TimePartitionBuilder.update(tpc, logger);
-    return Grib2PartitionBuilder.update(tpc, logger);
-  }
-
-  // called by InvDatasetFcGrib
-  static public PartitionCollection factory(boolean isGrib1, PartitionManager tpc, CollectionUpdateType force, org.slf4j.Logger logger) throws IOException {
-    //if (isGrib1) return Grib1TimePartitionBuilder.factory(tpc, force, logger);
-    return Grib2PartitionBuilder.factory(tpc, force, force, null, logger);
-  }   */
 
   //////////////////////////////////////////////////////////////////////
 
@@ -233,8 +218,8 @@ public class PartitionCollection extends GribCollection {
       if (partVar == null) return null;
 
       Partition p = getPartitions().get(partno);
-      try (GribCollection gc = p.getGribCollection()) { // ensure that its read in  try-with
-        Dataset ds = gc.getDataset2D(); // always references the twoD dataset
+      try (GribCollection gc = p.getGribCollection()) { // ensure that its read in try-with
+        Dataset ds = gc.getDatasetCanonical(); // always references the twoD or GC dataset
         // the group and variable index may vary across partitions
         GribCollection.GroupHcs g = ds.groups.get(partVar.groupno);
         GribCollection.VariableIndex vindex = g.variList.get(partVar.varno);
@@ -477,14 +462,28 @@ public class PartitionCollection extends GribCollection {
 
   protected final org.slf4j.Logger logger;
   protected List<Partition> partitions;
-  // protected Map<String, Partition> partitionMap = new TreeMap<>(); // LOOK not used ??
   protected boolean isPartitionOfPartitions;
 
-  protected PartitionCollection(String name, File directory, FeatureCollectionConfig.GribConfig config, boolean isGrib1, org.slf4j.Logger logger) {
-    super(name, directory, config, isGrib1);
+  protected PartitionCollection(String name, File directory, String indexFilename, FeatureCollectionConfig.GribConfig config, boolean isGrib1, org.slf4j.Logger logger) {
+    super(name, directory, indexFilename, config, isGrib1);
     this.logger = logger;
     this.partitions = new ArrayList<>();
     this.datasets = new ArrayList<>();
+  }
+
+  public VariableIndex getVariable2DByHash(HorizCoordSys hcs, int cdmHash) {
+    GribCollection.Dataset ds2d = getDataset2D();
+    if (ds2d == null) return null;
+    for (GroupHcs groupHcs : ds2d.getGroups())
+      if (groupHcs.horizCoordSys == hcs)
+        return groupHcs.findVariableByHash(cdmHash);
+    return null;
+  }
+
+  private GribCollection.Dataset getDataset2D() {
+    for (GribCollection.Dataset ds : datasets)
+      if (ds.isTwoD()) return ds;
+    return null;
   }
 
   /**
@@ -500,14 +499,12 @@ public class PartitionCollection extends GribCollection {
 
   public Partition addPartition(String name, String filename, long lastModified, String directory) {
     Partition partition = new Partition(name, filename, lastModified, directory);
-    //partitionMap.put(name, partition);
     partitions.add(partition);
     return partition;
   }
 
   public void addPartition(MCollection dcm) {
     Partition partition = new Partition(dcm);
-    //partitionMap.put(dcm.getCollectionName(), new Partition(dcm));
     partitions.add(partition);
   }
 
@@ -516,23 +513,6 @@ public class PartitionCollection extends GribCollection {
     Collections.sort(partitions);
     partitions = Collections.unmodifiableList(partitions);
   }
-
-  /* public Partition getPartitionByName(String name) {
-    return partitionMap.get(name);
-  }
-
-  public Partition getPartitionLast() {
-    //int last = (this.gribConfig.filesSortIncreasing) ? partitions.size() - 1 : 0;
-    //return partitions.get(last);
-    return partitions.get(partitions.size() - 1);
-  } */
-
-  /* public void cleanup() throws IOException {
-    if (partitions == null) return;
-    for (TimePartition.Partition p : partitions)
-      if (p.gribCollection != null)
-        p.gribCollection.close();
-  } */
 
   ///////////////////////////////////////////////////////////////////////////////////////////////////
 

@@ -285,9 +285,6 @@ public class Tdm {
     }
   }
 
-  // Task causes a new index to be written - we know collection has changed, dont test again
-  // run these through the executor so we can control how many we can do at once.
-  // thread pool set in spring config file
   private class IndexTask implements Runnable {
     String name;
     FeatureCollectionConfig config;
@@ -308,16 +305,16 @@ public class Tdm {
       try {
         Formatter errlog = new Formatter();
 
-        boolean changed = false;
+        boolean changed;
 
         if (config.timePartition == null) {
           changed = GribCdmIndex2.updateGribCollection(config, updateType, logger);
 
         } else {
-          /* if (config.timePartition.equalsIgnoreCase("file"))
-            changed = GribCdmIndex2.updateFilePartition(config, config.tdmConfig.updateType, config.tdmConfig.updateType, logger);
+          if (config.timePartition.equalsIgnoreCase("seperate"))
+            changed = GribCdmIndex2.makeSeperateGC(config, config.tdmConfig.updateType, logger);
 
-          else if (config.timePartition.equalsIgnoreCase("directory")) */
+          else
             changed = GribCdmIndex2.updateDirectoryCollection(config, updateType, updateType, logger);
         }
 

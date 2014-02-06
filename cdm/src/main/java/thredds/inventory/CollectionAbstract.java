@@ -20,6 +20,8 @@ import java.util.*;
 public abstract class CollectionAbstract implements MCollection {
   static private org.slf4j.Logger defaultLog = org.slf4j.LoggerFactory.getLogger("featureCollectionScan");
 
+  static public final String NCX_SUFFIX = ".ncx2";
+
   static public final String CATALOG = "catalog:";
   static public final String DIR = "directory:";
   static public final String FILE = "file:";

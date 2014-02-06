@@ -161,7 +161,7 @@ public class Grib2CollectionBuilder extends GribCollectionBuilder {
 
     try {
       if (config != null) dcm.putAuxInfo(FeatureCollectionConfig.AUX_GRIB_CONFIG, config);
-      this.gc = new Grib2Collection(this.name, this.directory, config);
+      this.gc = new Grib2Collection(this.name, this.directory, dcm.getIndexFilename(), config);
 
     } catch (Exception e) {
       logger.error("Failed to index single file", e);
@@ -181,7 +181,7 @@ public class Grib2CollectionBuilder extends GribCollectionBuilder {
     this.directory = new File(dcm.getRoot());
 
     FeatureCollectionConfig.GribConfig config = (FeatureCollectionConfig.GribConfig) dcm.getAuxInfo(FeatureCollectionConfig.AUX_GRIB_CONFIG);
-    this.gc = new Grib2Collection(this.name, this.directory, config);
+    this.gc = new Grib2Collection(this.name, this.directory, dcm.getIndexFilename(), config);
   }
 
   public Grib2CollectionBuilder(String name, MCollection dcm, org.slf4j.Logger logger) {
@@ -190,7 +190,7 @@ public class Grib2CollectionBuilder extends GribCollectionBuilder {
     this.directory = new File(dcm.getRoot());
 
     FeatureCollectionConfig.GribConfig config = (FeatureCollectionConfig.GribConfig) dcm.getAuxInfo(FeatureCollectionConfig.AUX_GRIB_CONFIG);
-    this.gc = new Grib2Collection(this.name, this.directory, config);
+    this.gc = new Grib2Collection(this.name, this.directory, dcm.getIndexFilename(), config);
   }
 
 
@@ -212,7 +212,7 @@ public class Grib2CollectionBuilder extends GribCollectionBuilder {
         throw new IOException("failed to read " + idx.getPath());
 
       // write out index
-      idx = gc.makeNewIndexFile(logger); // make sure we have a writeable index
+      idx = makeNewIndexFile(logger); // make sure we have a writeable index
       logger.info("Grib2CollectionBuilder on {}: createIndex {}", gc.getName(), idx.getPath());
       if (errlog != null) errlog.format("%s: create Index at %s%n", gc.getName(), idx.getPath());
       createIndex(idx, errlog);
@@ -240,6 +240,16 @@ public class Grib2CollectionBuilder extends GribCollectionBuilder {
       }
     }
     return false;
+  }
+
+
+  private File makeNewIndexFile(org.slf4j.Logger logger) {
+    File indexFile = gc.getIndexFile();
+    if (indexFile != null && indexFile.exists()) {
+      if (!indexFile.delete())
+        logger.warn("Failed to delete {}", indexFile.getPath());
+    }
+    return indexFile;
   }
 
   ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -506,8 +516,8 @@ public class Grib2CollectionBuilder extends GribCollectionBuilder {
       for (Group g : groups)
         indexBuilder.addGds(writeGdsProto(g.gdsHash, g.gdss.getRawBytes(), g.nameOverride));
 
-      // twoD
-      indexBuilder.addDataset(writeDatasetProto(GribCollectionProto.Dataset.Type.TwoD, groups));
+      // the GC dataset
+      indexBuilder.addDataset(writeDatasetProto(GribCollectionProto.Dataset.Type.GC, groups));
 
       // what about just storing first ??
       Grib2SectionIdentification ids = first.getId();
@@ -603,19 +613,7 @@ public class Grib2CollectionBuilder extends GribCollectionBuilder {
   message Dataset {
     required Type type = 1;
     repeated Group groups = 2;
-  }
    */
-  /*private GribCollectionProto.Dataset writeDatasetProto(GribCollection.Dataset ds) throws IOException {
-    GribCollectionProto.Dataset.Builder b = GribCollectionProto.Dataset.newBuilder();
-
-    b.setType(ds.type);
-
-    for (GribCollection.GroupHcs group : ds.groups)
-      b.addGroups(writeGroupProto(group));
-
-    return b.build();
-  } */
-
   private GribCollectionProto.Dataset writeDatasetProto(GribCollectionProto.Dataset.Type type, List<Group> groups) throws IOException {
     GribCollectionProto.Dataset.Builder b = GribCollectionProto.Dataset.newBuilder();
 
@@ -698,7 +696,6 @@ public class Grib2CollectionBuilder extends GribCollectionBuilder {
 
      extensions 100 to 199;
    }
-
    */
   private GribCollectionProto.Variable writeVariableProto(Grib2Rectilyser.VariableBag vb) throws IOException {
     GribCollectionProto.Variable.Builder b = GribCollectionProto.Variable.newBuilder();

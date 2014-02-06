@@ -1,14 +1,14 @@
 package ucar.nc2.grib.collection;
 
 import thredds.featurecollection.FeatureCollectionConfig;
-import thredds.inventory.CollectionSingleFile;
 import thredds.inventory.CollectionUpdateType;
 import thredds.inventory.MCollection;
 import thredds.inventory.MFile;
+import thredds.inventory.partition.PartitionManager;
+import thredds.inventory.partition.PartitionManagerFromIndexList;
 import ucar.nc2.grib.GribIndex;
 import ucar.nc2.grib.grib2.Grib2Index;
 import ucar.nc2.grib.grib2.Grib2Record;
-import ucar.nc2.grib.grib2.Grib2SectionGridDefinition;
 import ucar.nc2.grib.grib2.Grib2SectionIdentification;
 import ucar.nc2.grib.grib2.table.Grib2Customizer;
 import ucar.nc2.time.CalendarDate;
@@ -26,21 +26,27 @@ import java.util.*;
  * @since 2/5/14
  */
 public class SingleRuntimeBuilder {
+  private MCollection dcm;
+  private org.slf4j.Logger logger;
 
-  protected GribCollection gc;      // make this object
-  protected Grib2Customizer tables; // only gets created in makeAggGroups
+  private GribCollection gc;      // make this object
+  private Grib2Customizer tables; // only gets created in makeAggGroups
   protected String name;            // collection name
   protected File directory;         // top directory
 
-  MCollection dcm;
-  org.slf4j.Logger logger;
 
-  private SingleRuntimeBuilder(MCollection dcm, org.slf4j.Logger logger) {
+  public SingleRuntimeBuilder(MCollection dcm, org.slf4j.Logger logger) {
     this.dcm = dcm;
     this.logger = logger;
+
+    this.name = dcm.getCollectionName();
+    this.directory = new File(dcm.getRoot());
+
+    FeatureCollectionConfig.GribConfig config = (FeatureCollectionConfig.GribConfig) dcm.getAuxInfo(FeatureCollectionConfig.AUX_GRIB_CONFIG);
+    this.gc = new Grib2Collection(this.name, this.directory, dcm.getIndexFilename(), config);
   }
 
-  private boolean createIndex(Formatter errlog) throws IOException {
+  public boolean createIndex(Formatter errlog) throws IOException {
     if (dcm == null) {
       logger.error("Grib2CollectionBuilder " + gc.getName() + " : cannot create new index ");
       throw new IllegalStateException();
@@ -64,20 +70,29 @@ public class SingleRuntimeBuilder {
     }
 
     // write each rungroup separately
+    boolean multipleGroups = runGroups.values().size() > 1;
+    List<File> partitions = new ArrayList<>();
     Grib2CollectionBuilder builder = new Grib2CollectionBuilder("test", dcm, logger);
     for (List<Grib2CollectionBuilder.Group> runGroup : runGroups.values()) {
       Grib2CollectionBuilder.Group g = runGroup.get(0);
-      File indexFileForRuntime = GribCollection.getIndexFile(gc.getName(), directory, g.runtime);
+      File indexFileForRuntime = multipleGroups ? GribCollection.getIndexFile(gc.getName(), directory, g.runtime) :
+              GribCollection.getIndexFile(gc.getName(), directory);
+      partitions.add(indexFileForRuntime);
 
       builder.writeIndex(indexFileForRuntime, runGroup, allFiles);
+      logger.info("SingleRuntimeBuilder write {}", indexFileForRuntime.getPath());
     }
+    boolean ok = true;
 
-    //List<MFile> allFiles = Collections.unmodifiableList(files);
-    //writeIndex(indexFile, groups, allFiles);
+    // if theres more than one runtime, create a partition for the group
+    if (multipleGroups) {
+      PartitionManager part = new PartitionManagerFromIndexList(dcm.getCollectionName(), dcm.getRoot(), partitions, logger);
+      ok = Grib2PartitionBuilder.recreateIfNeeded(part, CollectionUpdateType.always, CollectionUpdateType.always, errlog, logger);
+    }
 
     long took = System.currentTimeMillis() - start;
     logger.debug("That took {} msecs", took);
-    return true;
+    return ok;
   }
 
 

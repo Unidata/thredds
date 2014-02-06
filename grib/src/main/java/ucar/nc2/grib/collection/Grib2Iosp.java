@@ -265,11 +265,11 @@ public class Grib2Iosp extends GribIosp {
 
   //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-  private PartitionCollection gribPartition;
+  // private PartitionCollection gribPartition;
   private GribCollection gribCollection;
   private Grib2Customizer cust;
   private GribCollection.GroupHcs gHcs;
-  private boolean isTwoD;
+  private GribCollection.Type gtype; // only used if gHcs was set
   private boolean isPartitioned;
   private boolean owned; // if Iosp is owned by GribCollection; affects close()
 
@@ -298,10 +298,10 @@ public class Grib2Iosp extends GribIosp {
   public Grib2Iosp() {
   }
 
-  public Grib2Iosp(GribCollection.GroupHcs gHcs, boolean isTwoD) {
+  public Grib2Iosp(GribCollection.GroupHcs gHcs, GribCollection.Type gtype) {
     this.gHcs = gHcs;
     this.owned = true;
-    this.isTwoD = isTwoD;
+    this.gtype = gtype;
   }
 
   // LOOK more likely we will set an individual dataset
@@ -318,11 +318,11 @@ public class Grib2Iosp extends GribIosp {
       this.gribCollection = gHcs.getGribCollection();
       if (this.gribCollection instanceof Grib2Partition) {
         isPartitioned = true;
-        gribPartition = (Grib2Partition) gribCollection;
+        //gribPartition = (Grib2Partition) gribCollection;
       }
       // cust needs to be set before addGroup
       cust = Grib2Customizer.factory(gribCollection.getCenter(), gribCollection.getSubcenter(), gribCollection.getMaster(), gribCollection.getLocal());
-      addGroup(ncfile, ncfile.getRootGroup(), gHcs, isTwoD, false);
+      addGroup(ncfile, ncfile.getRootGroup(), gHcs, gtype, false);
 
     } else if (gribCollection == null) { // may have been set in the constructor
       // check if its a plain ole GRIB2 data file
@@ -343,7 +343,7 @@ public class Grib2Iosp extends GribIosp {
 
       if (this.gribCollection instanceof Grib2Partition) {
         isPartitioned = true;
-        gribPartition = (Grib2Partition) gribCollection;
+        //gribPartition = (Grib2Partition) gribCollection;
       }
       cust = Grib2Customizer.factory(gribCollection.getCenter(), gribCollection.getSubcenter(), gribCollection.getMaster(), gribCollection.getLocal());
 
@@ -355,7 +355,7 @@ public class Grib2Iosp extends GribIosp {
         Collections.sort(groups);
         boolean useGroups = groups.size() > 1;
         for (GribCollection.GroupHcs g : groups)
-          addGroup(ncfile, datasetGroup, g, ds.isTwoD(), useGroups);
+          addGroup(ncfile, datasetGroup, g, ds.getType(), useGroups);
       }
 
   /*           Group g = new Group(ncfile, null, ds.getType());
@@ -411,7 +411,7 @@ public class Grib2Iosp extends GribIosp {
         ncfile.addAttribute(null, new Attribute(p));
   }
 
-  private void addGroup(NetcdfFile ncfile, Group parent, GribCollection.GroupHcs gHcs, boolean is2D, boolean useGroups) {
+  private void addGroup(NetcdfFile ncfile, Group parent, GribCollection.GroupHcs gHcs, GribCollection.Type gctype, boolean useGroups) {
 
     Group g;
     if (useGroups) {
@@ -427,10 +427,10 @@ public class Grib2Iosp extends GribIosp {
       g = parent;
     }
 
-    makeGroup(ncfile, g, gHcs, is2D);
+    makeGroup(ncfile, g, gHcs, gctype);
   }
 
-  private void makeGroup(NetcdfFile ncfile, Group g, GribCollection.GroupHcs gHcs, boolean is2Dtime) {
+  private void makeGroup(NetcdfFile ncfile, Group g, GribCollection.GroupHcs gHcs, GribCollection.Type gctype) {
     GdsHorizCoordSys hcs = gHcs.getGdsHorizCoordSys();
     String grid_mapping = hcs.getName()+"_Projection";
 
@@ -483,10 +483,11 @@ public class Grib2Iosp extends GribIosp {
       cv.setCachedData(Array.makeArray(DataType.FLOAT, hcs.ny, hcs.starty, hcs.dy));
     }
 
+    boolean is2Dtime = (gctype == GribCollection.Type.TwoD);
     CoordinateRuntime runtime = null;
     for (Coordinate coord : gHcs.coords) {
-      Coordinate.Type type = coord.getType();
-      switch (type) {
+      Coordinate.Type ctype = coord.getType();
+      switch (ctype) {
         case runtime:
           runtime = (CoordinateRuntime) coord;
           makeRuntimeCoordinate(ncfile, g, (CoordinateRuntime) coord);
@@ -727,7 +728,8 @@ public class Grib2Iosp extends GribIosp {
          }
          runIdx++;
        }
-       bounds.setCachedData(Array.factory(DataType.DOUBLE, new int[]{nruns, ntimes, 2}, data));
+       int[] shape = is2Dtime ? new int[]{nruns, ntimes, 2} : new int[]{ntimes, 2};
+       bounds.setCachedData(Array.factory(DataType.DOUBLE, shape, data));
      }
    }
 

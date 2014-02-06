@@ -1,6 +1,7 @@
 package thredds.inventory.partition;
 
 import thredds.featurecollection.FeatureCollectionConfig;
+import thredds.inventory.CollectionAbstract;
 import thredds.inventory.CollectionUpdateType;
 import thredds.inventory.MCollection;
 import thredds.inventory.MFile;
@@ -92,7 +93,7 @@ public class DirectoryBuilder {
    * @throws IOException
    */
   public boolean findIndex() throws IOException {
-    Path indexPath = Paths.get(dir.toString(), partitionName + DirectoryCollection.NCX_SUFFIX);
+    Path indexPath = Paths.get(dir.toString(), partitionName + CollectionAbstract.NCX_SUFFIX);
     if (Files.exists(indexPath)) {
       this.index = indexPath;
       BasicFileAttributes attr = Files.readAttributes(indexPath, BasicFileAttributes.class);

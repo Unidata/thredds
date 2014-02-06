@@ -37,7 +37,7 @@ public class Grib2CollectionBuilderFromIndex extends GribCollectionBuilder {
   // read in the index, index raf already open
   static public GribCollection readFromIndex(String idxFilename, File directory, RandomAccessFile raf, FeatureCollectionConfig.GribConfig config, org.slf4j.Logger logger) throws IOException {
 
-    Grib2CollectionBuilderFromIndex builder = new Grib2CollectionBuilderFromIndex(idxFilename, directory, config, logger);
+    Grib2CollectionBuilderFromIndex builder = new Grib2CollectionBuilderFromIndex(idxFilename, directory, idxFilename, config, logger);
     if (!builder.readIndex(raf))
       throw new IOException("Reading index failed"); // or return null ??
 
@@ -54,9 +54,9 @@ public class Grib2CollectionBuilderFromIndex extends GribCollectionBuilder {
   protected GribCollection gc;
   protected Grib2Customizer tables; // only gets created in makeAggGroups
 
-  protected Grib2CollectionBuilderFromIndex(String name, File directory, FeatureCollectionConfig.GribConfig config, org.slf4j.Logger logger) {
+  protected Grib2CollectionBuilderFromIndex(String name, File directory, String indexFilename, FeatureCollectionConfig.GribConfig config, org.slf4j.Logger logger) {
     super(null, false, logger);
-    this.gc = new Grib2Collection(name, directory, config);
+    this.gc = new Grib2Collection(name, directory, indexFilename, config);
   }
 
   ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -149,7 +149,7 @@ public class Grib2CollectionBuilderFromIndex extends GribCollectionBuilder {
         //return false;
       }
       if (gc.getDirectory() == null)
-        gc.setDirectory(protoDir);
+        gc.setDirectory(protoDir);  // LOOK when is this needd?
 
       int n = proto.getMfilesCount();
       List<MFile> files = new ArrayList<>(n);
@@ -208,8 +208,8 @@ public class Grib2CollectionBuilderFromIndex extends GribCollectionBuilder {
   }
    */
   private PartitionCollection.Dataset readDataset(GribCollectionProto.Dataset p) {
-
-    GribCollection.Dataset ds = gc.makeDataset(p.getType());
+    GribCollection.Type type = GribCollection.Type.valueOf(p.getType().toString());
+    GribCollection.Dataset ds = gc.makeDataset( type);
 
     ds.groups = new ArrayList<>(p.getGroupsCount());
     for (int i = 0; i < p.getGroupsCount(); i++)

@@ -13,7 +13,6 @@ import java.util.List;
  * @since 11/11/13
  */
 public interface MCollection extends AutoCloseable {
-  static public final String NCX_SUFFIX = ".ncx2";
 
   /**
    * Is this a partition or MFile Collection

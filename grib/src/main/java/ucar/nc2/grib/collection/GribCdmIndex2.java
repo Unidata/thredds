@@ -161,6 +161,26 @@ public class GribCdmIndex2 implements IndexReader {
   ////////////////////////////////////////////////////////////////////////////////////////////////
   // used by Tdm
 
+  static public boolean makeSeperateGC(FeatureCollectionConfig config,
+                                               CollectionUpdateType forceCollection,
+                                               Logger logger) throws IOException {
+
+    final Formatter errlog = new Formatter();
+    CollectionSpecParser specp = new CollectionSpecParser(config.spec, errlog);
+    Path dirPath = Paths.get(specp.getRootDir());
+
+    DirectoryCollection dcm = new DirectoryCollection(config.name, dirPath, logger);
+    dcm.putAuxInfo(FeatureCollectionConfig.AUX_GRIB_CONFIG, config.gribConfig);
+    if (specp.getFilter() != null) {
+      dcm.setStreamFilter(new StreamFilter(specp.getFilter()));
+    }
+
+    SingleRuntimeBuilder builder = new SingleRuntimeBuilder(dcm, logger);
+    boolean status = builder.createIndex(errlog);
+    return status;
+  }
+
+
   /**
    * Update all the collection indices for all the directories in a directory partition recursively
    *

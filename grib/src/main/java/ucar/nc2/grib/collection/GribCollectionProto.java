@@ -10709,40 +10709,49 @@ public final class GribCollectionProto {
     public enum Type
         implements com.google.protobuf.ProtocolMessageEnum {
       /**
-       * <code>TwoD = 0;</code>
+       * <code>GC = 0;</code>
        */
-      TwoD(0, 0),
+      GC(0, 0),
       /**
-       * <code>Best = 1;</code>
+       * <code>TwoD = 1;</code>
        */
-      Best(1, 1),
+      TwoD(1, 1),
       /**
-       * <code>Analysis = 2;</code>
+       * <code>Best = 2;</code>
        */
-      Analysis(2, 2),
+      Best(2, 2),
+      /**
+       * <code>Analysis = 3;</code>
+       */
+      Analysis(3, 3),
       ;
 
       /**
-       * <code>TwoD = 0;</code>
+       * <code>GC = 0;</code>
        */
-      public static final int TwoD_VALUE = 0;
+      public static final int GC_VALUE = 0;
       /**
-       * <code>Best = 1;</code>
+       * <code>TwoD = 1;</code>
        */
-      public static final int Best_VALUE = 1;
+      public static final int TwoD_VALUE = 1;
       /**
-       * <code>Analysis = 2;</code>
+       * <code>Best = 2;</code>
        */
-      public static final int Analysis_VALUE = 2;
+      public static final int Best_VALUE = 2;
+      /**
+       * <code>Analysis = 3;</code>
+       */
+      public static final int Analysis_VALUE = 3;
 
 
       public final int getNumber() { return value; }
 
       public static Type valueOf(int value) {
         switch (value) {
-          case 0: return TwoD;
-          case 1: return Best;
-          case 2: return Analysis;
+          case 0: return GC;
+          case 1: return TwoD;
+          case 2: return Best;
+          case 3: return Analysis;
           default: return null;
         }
       }
@@ -10848,7 +10857,7 @@ public final class GribCollectionProto {
     }
 
     private void initFields() {
-      type_ = ucar.nc2.grib.collection.GribCollectionProto.Dataset.Type.TwoD;
+      type_ = ucar.nc2.grib.collection.GribCollectionProto.Dataset.Type.GC;
       groups_ = java.util.Collections.emptyList();
     }
     private byte memoizedIsInitialized = -1;
@@ -11013,7 +11022,7 @@ public final class GribCollectionProto {
 
       public Builder clear() {
         super.clear();
-        type_ = ucar.nc2.grib.collection.GribCollectionProto.Dataset.Type.TwoD;
+        type_ = ucar.nc2.grib.collection.GribCollectionProto.Dataset.Type.GC;
         bitField0_ = (bitField0_ & ~0x00000001);
         if (groupsBuilder_ == null) {
           groups_ = java.util.Collections.emptyList();
@@ -11145,7 +11154,7 @@ public final class GribCollectionProto {
       private int bitField0_;
 
       // required .Dataset.Type type = 1;
-      private ucar.nc2.grib.collection.GribCollectionProto.Dataset.Type type_ = ucar.nc2.grib.collection.GribCollectionProto.Dataset.Type.TwoD;
+      private ucar.nc2.grib.collection.GribCollectionProto.Dataset.Type type_ = ucar.nc2.grib.collection.GribCollectionProto.Dataset.Type.GC;
       /**
        * <code>required .Dataset.Type type = 1;</code>
        */
@@ -11175,7 +11184,7 @@ public final class GribCollectionProto {
        */
       public Builder clearType() {
         bitField0_ = (bitField0_ & ~0x00000001);
-        type_ = ucar.nc2.grib.collection.GribCollectionProto.Dataset.Type.TwoD;
+        type_ = ucar.nc2.grib.collection.GribCollectionProto.Dataset.Type.GC;
         onChanged();
         return this;
       }
@@ -14749,18 +14758,18 @@ public final class GribCollectionProto {
       "Index\030\001 \002(\r\022\034\n\tvariables\030\002 \003(\0132\t.Variabl",
       "e\022\026\n\006coords\030\003 \003(\0132\006.Coord\022\016\n\006fileno\030\004 \003(" +
       "\005\022\016\n\006isTwod\030\005 \002(\010\022\032\n\006params\030\024 \003(\0132\n.Para" +
-      "meter*\005\010d\020\310\001\"h\n\007Dataset\022\033\n\004type\030\001 \002(\0162\r." +
-      "Dataset.Type\022\026\n\006groups\030\002 \003(\0132\006.Group\"(\n\004" +
-      "Type\022\010\n\004TwoD\020\000\022\010\n\004Best\020\001\022\014\n\010Analysis\020\002\"\236" +
-      "\002\n\016GribCollection\022\014\n\004name\030\001 \002(\t\022\016\n\006topDi" +
-      "r\030\002 \002(\t\022\026\n\006mfiles\030\003 \003(\0132\006.MFile\022\031\n\007datas" +
-      "et\030\004 \003(\0132\010.Dataset\022\021\n\003gds\030\005 \003(\0132\004.Gds\022\016\n" +
-      "\006center\030\006 \002(\005\022\021\n\tsubcenter\030\007 \002(\005\022\016\n\006mast" +
-      "er\030\010 \002(\005\022\r\n\005local\030\t \002(\005\022\026\n\016genProcessTyp",
-      "e\030\n \001(\005\022\024\n\014genProcessId\030\013 \001(\005\022\025\n\rbackPro" +
-      "cessId\030\014 \001(\005\022\032\n\006params\030\024 \003(\0132\n.Parameter" +
-      "*\005\010d\020\310\001B/\n\030ucar.nc2.grib.collectionB\023Gri" +
-      "bCollectionProto"
+      "meter*\005\010d\020\310\001\"p\n\007Dataset\022\033\n\004type\030\001 \002(\0162\r." +
+      "Dataset.Type\022\026\n\006groups\030\002 \003(\0132\006.Group\"0\n\004" +
+      "Type\022\006\n\002GC\020\000\022\010\n\004TwoD\020\001\022\010\n\004Best\020\002\022\014\n\010Anal" +
+      "ysis\020\003\"\236\002\n\016GribCollection\022\014\n\004name\030\001 \002(\t\022" +
+      "\016\n\006topDir\030\002 \002(\t\022\026\n\006mfiles\030\003 \003(\0132\006.MFile\022" +
+      "\031\n\007dataset\030\004 \003(\0132\010.Dataset\022\021\n\003gds\030\005 \003(\0132" +
+      "\004.Gds\022\016\n\006center\030\006 \002(\005\022\021\n\tsubcenter\030\007 \002(\005" +
+      "\022\016\n\006master\030\010 \002(\005\022\r\n\005local\030\t \002(\005\022\026\n\016genPr",
+      "ocessType\030\n \001(\005\022\024\n\014genProcessId\030\013 \001(\005\022\025\n" +
+      "\rbackProcessId\030\014 \001(\005\022\032\n\006params\030\024 \003(\0132\n.P" +
+      "arameter*\005\010d\020\310\001B/\n\030ucar.nc2.grib.collect" +
+      "ionB\023GribCollectionProto"
     };
     com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
       new com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner() {
