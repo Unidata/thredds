@@ -201,7 +201,7 @@ public class GribCdmIndex2 implements IndexReader {
 
     if (specp.wantSubdirs()) {
       // its a partition
-      DirectoryPartition dpart = new DirectoryPartition(config, rootPath, new GribCdmIndex(), logger);
+      DirectoryPartition dpart = new DirectoryPartition(config, rootPath, new GribCdmIndex2(logger), logger);
       dpart.putAuxInfo(FeatureCollectionConfig.AUX_GRIB_CONFIG, config.gribConfig);
       return updateDirectoryCollectionRecurse(dpart, config, forceCollection, forceChildren, logger);
     }

@@ -33,7 +33,6 @@
 package ucar.nc2.grib.grib2;
 
 import com.google.protobuf.ByteString;
-import thredds.inventory.CollectionManager;
 import thredds.inventory.CollectionUpdateType;
 import ucar.nc2.constants.CDM;
 import ucar.nc2.grib.GribCollection;
