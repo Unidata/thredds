@@ -157,7 +157,8 @@ public class Grib1Record {
   }
 
   /**
-   * Read data array by first reading in GribRecord
+   * Read data array by first reading in GribRecord.
+   * All sections are read in, so scanMode is from the datafile, not the index.
    *
    * @param raf  from this RandomAccessFile
    * @param startPos message starts here

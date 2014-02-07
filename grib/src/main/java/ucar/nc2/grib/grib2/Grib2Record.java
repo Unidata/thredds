@@ -29,6 +29,7 @@ public class Grib2Record {
   private final byte[] header; // anything in between the records - eg idd header
   private int file; // for multiple files in same dataset
   private boolean bmsReplaced;
+  private int scanMode;
 
   public int repeat; // debug = see Grib2Report.doDrsSummary
 
@@ -53,7 +54,8 @@ public class Grib2Record {
                      Grib2SectionDataRepresentation drs,
                      Grib2SectionBitMap bms,
                      Grib2SectionData dataSection,
-                     boolean bmsReplaced) {
+                     boolean bmsReplaced,
+                     int scanMode) {
 
     this.header = header;
     this.is = is;
@@ -65,6 +67,12 @@ public class Grib2Record {
     this.bms = bms;
     this.dataSection = dataSection;
     this.bmsReplaced = bmsReplaced;
+
+    // stored in index file after 4.5 2/6/2014, otherwise equals Grib2Indec.ScanModeMissing, so get it from the GDS, which may have wrong one
+    this.scanMode = scanMode;
+    if (scanMode == Grib2Index.ScanModeMissing) {
+      this.scanMode = gdss.getGDS().getScanMode();
+    }
   }
 
   // copy constructor
@@ -80,6 +88,7 @@ public class Grib2Record {
     this.dataSection = from.dataSection;
     this.repeat = from.repeat;
     this.bmsReplaced = from.bmsReplaced;
+    this.scanMode = from.scanMode;
   }
 
   public byte[] getHeader() {
@@ -140,6 +149,10 @@ public class Grib2Record {
         throw new RuntimeException(e);
       }
     return pds2;
+  }
+
+  public int getScanMode() {
+    return scanMode;
   }
 
   public void show(Formatter f) {
@@ -204,7 +217,7 @@ public class Grib2Record {
     Grib2Gds gds = gdss.getGDS();
 
     Grib2DataReader reader = new Grib2DataReader(drs.getDataTemplate(), gdss.getNumberPoints(), drs.getDataPoints(),
-            gds.scanMode, gds.getNxRaw(), dataSection.getStartingPosition(), dataSection.getMsgLength());
+            getScanMode(), gds.getNxRaw(), dataSection.getStartingPosition(), dataSection.getMsgLength());
 
     byte[] bitmap = bms.getBitmap(raf);
     Grib2Drs gdrs = drs.getDrs(raf);
@@ -222,7 +235,7 @@ public class Grib2Record {
     Grib2Gds gds = gdss.getGDS();
 
     Grib2DataReader reader = new Grib2DataReader(drs.getDataTemplate(), gdss.getNumberPoints(), drs.getDataPoints(),
-            gds.scanMode, gds.getNxRaw(), dataSection.getStartingPosition(), dataSection.getMsgLength());
+            getScanMode(), gds.getNxRaw(), dataSection.getStartingPosition(), dataSection.getMsgLength());
 
     byte[] bitmap = bms.getBitmap(raf);
     Grib2Drs gdrs = drs.getDrs(raf);
@@ -249,7 +262,7 @@ public class Grib2Record {
 
     Grib2Gds gds = gdss.getGDS();
     Grib2DataReader reader = new Grib2DataReader(drs.getDataTemplate(), gdss.getNumberPoints(), drs.getDataPoints(),
-            gds.scanMode, gds.getNxRaw(), dataSection.getStartingPosition(), dataSection.getMsgLength());
+            getScanMode(), gds.getNxRaw(), dataSection.getStartingPosition(), dataSection.getMsgLength());
 
     byte[] bitmap = bms.getBitmap(raf);
     Grib2Drs gdrs = drs.getDrs(raf);

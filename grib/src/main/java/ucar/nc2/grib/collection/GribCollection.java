@@ -874,7 +874,7 @@ public class GribCollection implements FileCacheable, AutoCloseable {
         List<Record> records = new ArrayList<>(n);
         for (int i = 0; i < n; i++) {
           GribCollectionProto.Record pr = proto.getRecords(i);
-          records.add(new Record(pr.getFileno(), pr.getPos(), pr.getBmsPos()));
+          records.add(new Record(pr.getFileno(), pr.getPos(), pr.getBmsPos(), pr.getScanMode()));
         }
 
         this.sa = new SparseArray<>(size, track, records);
@@ -909,14 +909,16 @@ public class GribCollection implements FileCacheable, AutoCloseable {
   }
 
   public static class Record {
-    public int fileno; // which file
-    public long pos;   // offset on file where data starts
-    public long bmsPos;   // if non-zero, offset where bms starts
+    public final int fileno;    // which file
+    public final long pos;      // offset on file where data starts
+    public final long bmsPos;   // if non-zero, offset where bms starts
+    public final int scanMode;  // from gds
 
-    public Record(int fileno, long pos, long bmsPos) {
+    public Record(int fileno, long pos, long bmsPos, int scanMode) {
       this.fileno = fileno;
       this.pos = pos;
       this.bmsPos = bmsPos;
+      this.scanMode = scanMode;
     }
 
     @Override

@@ -84,8 +84,9 @@ public class SingleRuntimeBuilder {
     }
     boolean ok = true;
 
-    // if theres more than one runtime, create a partition for the group
+    // if theres more than one runtime, create a partition collection to collect all the runtimes together
     if (multipleGroups) {
+      Collections.sort(partitions);
       PartitionManager part = new PartitionManagerFromIndexList(dcm.getCollectionName(), dcm.getRoot(), partitions, logger);
       ok = Grib2PartitionBuilder.recreateIfNeeded(part, CollectionUpdateType.always, CollectionUpdateType.always, errlog, logger);
     }

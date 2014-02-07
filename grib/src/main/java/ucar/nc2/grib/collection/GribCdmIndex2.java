@@ -145,7 +145,7 @@ public class GribCdmIndex2 implements IndexReader {
 
     FeatureCollectionConfig.GribConfig config = (FeatureCollectionConfig.GribConfig) dcm.getAuxInfo(FeatureCollectionConfig.AUX_GRIB_CONFIG);
 
-    if (force == CollectionUpdateType.never) {
+    if (force == CollectionUpdateType.never || dcm instanceof CollectionSingleIndexFile) { // LOOK isIndexFile() ?
       // then just open the existing index file
       return openCdmIndex(dcm.getIndexFilename(), config, logger);
     }

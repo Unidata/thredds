@@ -44,7 +44,7 @@ public class Grib2ReportPanel extends ReportPanel {
   static private final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(Grib2ReportPanel.class);
 
   public static enum Report {
-    checkTables, localUseSection, uniqueGds, duplicatePds, drsSummary, gdsTemplate, pdsSummary, idProblems, timeCoord,
+    checkTables, localUseSection, uniqueGds, duplicatePds, drsSummary, gdsSummary, pdsSummary, idProblems, timeCoord,
     rename, renameCheck, copyCompress
   }
 
@@ -88,8 +88,8 @@ public class Grib2ReportPanel extends ReportPanel {
         case drsSummary:
           doDrsSummary(f, dcm, useIndex, eachFile, extra);
           break;
-        case gdsTemplate:
-          doGdsTemplate(f, dcm, useIndex);
+        case gdsSummary:
+          doGdsSummary(f, dcm, useIndex);
           break;
         case pdsSummary:
           doPdsSummary(f, dcm, useIndex);
@@ -844,32 +844,42 @@ public class Grib2ReportPanel extends ReportPanel {
 
   ///////////////////////////////////////////////
 
-  private void doGdsTemplate(Formatter f, MCollection dcm, boolean useIndex) throws IOException {
+  private void doGdsSummary(Formatter f, MCollection dcm, boolean useIndex) throws IOException {
     f.format("Show Unique GDS Templates%n");
+    Counter templateSet = new Counter("template");
+    Counter scanCodeSet = new Counter("scanMode");
+    CounterS scanCodeDiff = new CounterS("scanModeDifference");
 
-    Map<Integer, Integer> drsSet = new HashMap<Integer, Integer>();
     for (MFile mfile : dcm.getFilesSorted()) {
       f.format(" %s%n", mfile.getPath());
-      doGdsTemplate(f, mfile, drsSet);
+      doGdsSummary(f, mfile, templateSet, scanCodeSet, scanCodeDiff);
     }
 
-    for (int template : drsSet.keySet()) {
-      int count = drsSet.get(template);
-      f.format("%nGDS template = %d count = %d%n", template, count);
-    }
+    templateSet.show(f);
+    scanCodeSet.show(f);
+    scanCodeDiff.show(f);
   }
 
-  private void doGdsTemplate(Formatter f, MFile mf, Map<Integer, Integer> gdsSet) throws IOException {
+  private void doGdsSummary(Formatter f, MFile mf, Counter templateSet, Counter scanCodeSet, CounterS scanCodeDiff) throws IOException {
     Grib2Index index = createIndex(mf, f);
     if (index == null) return;
 
-    for (Grib2SectionGridDefinition gds : index.getGds()) {
-      int template = gds.getGDSTemplateNumber();
-      Integer count = gdsSet.get(template);
-      if (count == null)
-        gdsSet.put(template, 1);
-      else
-        gdsSet.put(template, count + 1);
+    Map<Integer, Grib2SectionGridDefinition> gdssMap = new HashMap<>();
+    for (Grib2SectionGridDefinition gdss : index.getGds()) {
+      gdssMap.put(gdss.hashCode(), gdss);
+    }
+
+    for (ucar.nc2.grib.grib2.Grib2Record gr : index.getRecords()) {
+      Grib2SectionGridDefinition gdss = gr.getGDSsection();
+
+      templateSet.count(gdss.getGDSTemplateNumber());
+      scanCodeSet.count(gr.getScanMode());
+
+      Grib2SectionGridDefinition gdssIndex = gdssMap.get(gdss.hashCode());
+      ucar.nc2.grib.grib2.Grib2Gds gdsIndex = gdssIndex.getGDS();
+      if (gdsIndex.getScanMode() != gr.getScanMode()) {
+        scanCodeDiff.count(mf.getName());
+      }
     }
   }
 

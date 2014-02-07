@@ -143,7 +143,7 @@ public class Grib2RecordScanner {
       if (pos+34 < ending) { // give it 30 bytes of slop
         if (debugRepeat) System.out.printf(" REPEAT AT %d != %d%n", pos+4, ending);
         repeatPos = pos;
-        repeatRecord = new Grib2Record(header, is, ids, lus, gds, pds, drs, bms, dataSection, false); // this assumes immutable sections
+        repeatRecord = new Grib2Record(header, is, ids, lus, gds, pds, drs, bms, dataSection, false, Grib2Index.ScanModeMissing); // this assumes immutable sections
         // track bms in case its a repeat
         if (bms.getBitMapIndicator() == 0)
           repeatBms = bms;
@@ -162,7 +162,7 @@ public class Grib2RecordScanner {
       }
       lastPos = raf.getFilePointer();
 
-      return new Grib2Record(header, is, ids, lus, gds, pds, drs, bms, dataSection, false);
+      return new Grib2Record(header, is, ids, lus, gds, pds, drs, bms, dataSection, false, Grib2Index.ScanModeMissing);
 
     } catch (Throwable t) {
       long pos = (is == null) ? -1 : is.getStartPos();

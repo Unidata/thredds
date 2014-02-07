@@ -140,7 +140,7 @@ public class Grib2CollectionBuilderFromIndex extends GribCollectionBuilder {
       this.tables = Grib2Customizer.factory(gc.center, gc.subcenter, gc.master, gc.local);
 
       if (!gc.name.equals(proto.getName())) {
-        logger.info("Grib2CollectionBuilderFromIndex {}: has different name= {} than index= {} ", raf.getLocation(), gc.getName(), proto.getName());
+        logger.info("Grib2CollectionBuilderFromIndex raf {}: has different name= '{}' than stored in ncx= '{}' ", raf.getLocation(), gc.getName(), proto.getName());
       }
       File dir = gc.getDirectory();
       File protoDir = new File(proto.getTopDir());

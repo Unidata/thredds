@@ -5,6 +5,7 @@ message Record {
   required uint32 fileno = 1;  // index into GribCollectionIndex.files
   required uint64 pos = 2;     // offset in Grib file of the start of drs (grib2) or entire message (grib1)
   optional uint64 bmsPos = 3 [default = 0]; // use alternate bms
+  optional uint32 scanMode = 4 [default = 9999];  // scanMode from each record's gds added 2/6/2014
 }
 
 // dont need SparseArray unless someone wants to read from the variable

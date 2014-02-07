@@ -86,6 +86,8 @@ public class Grib2Index extends GribIndex {
   static private org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(Grib2Index.class);
 
   public static final String MAGIC_START = "Grib2Index";
+  public static final int ScanModeMissing = 9999;
+
   private static final boolean debug = false;
   private static final int version = 6;
 
@@ -191,7 +193,9 @@ public class Grib2Index extends GribIndex {
     Grib2SectionData data = new Grib2SectionData(p.getDataPos(), p.getDataLen());
     boolean bmsReplaced = p.getBmsReplaced();
 
-    return new Grib2Record(p.getHeader().toByteArray(), is, ids, lus, gds, pds, drs, bms, data, bmsReplaced);
+    int scanMode = p.getScanMode();
+
+    return new Grib2Record(p.getHeader().toByteArray(), is, ids, lus, gds, pds, drs, bms, data, bmsReplaced, scanMode);
   }
 
   private Grib2SectionIdentification readIdMessage(Grib2IndexProto.GribIdSection p) {
@@ -224,8 +228,8 @@ public class Grib2Index extends GribIndex {
       NcStream.writeVInt(fout, version);
 
       Map<Long, Integer> gdsMap = new HashMap<Long, Integer>();
-      gdsList = new ArrayList<Grib2SectionGridDefinition>();
-      records = new ArrayList<Grib2Record>(200);
+      gdsList = new ArrayList<>();
+      records = new ArrayList<>(200);
 
       Grib2IndexProto.Grib2Index.Builder rootBuilder = Grib2IndexProto.Grib2Index.newBuilder();
       rootBuilder.setFilename(filename);
@@ -241,15 +245,15 @@ public class Grib2Index extends GribIndex {
         if (r == null) break; // done
         records.add(r);
 
-        Grib2SectionGridDefinition gds = r.getGDSsection();
-        Integer index = gdsMap.get(gds.calcCRC());
+        Grib2SectionGridDefinition gdss = r.getGDSsection();
+        Integer index = gdsMap.get(gdss.calcCRC());
         if (index == null) {
-          gdsList.add(gds);
+          gdsList.add(gdss);
           index = gdsList.size()-1;
-          gdsMap.put(gds.calcCRC(), index);
-          rootBuilder.addGdsList(makeGdsProto(gds));
+          gdsMap.put(gdss.calcCRC(), index);
+          rootBuilder.addGdsList(makeGdsProto(gdss));
         }
-        rootBuilder.addRecords(makeRecordProto(r, index));
+        rootBuilder.addRecords(makeRecordProto(r, index, gdss.getGDS().scanMode));
       }
 
       Grib2IndexProto.Grib2Index index = rootBuilder.build();
@@ -276,7 +280,7 @@ public class Grib2Index extends GribIndex {
     }
   }
 
-  private Grib2IndexProto.Grib2Record makeRecordProto(Grib2Record r, int gdsIndex) throws IOException {
+  private Grib2IndexProto.Grib2Record makeRecordProto(Grib2Record r, int gdsIndex, int scanMode) throws IOException {
     Grib2IndexProto.Grib2Record.Builder b = Grib2IndexProto.Grib2Record.newBuilder();
 
     b.setHeader(ByteString.copyFrom(r.getHeader()));
@@ -310,6 +314,8 @@ public class Grib2Index extends GribIndex {
     Grib2SectionData ds = r.getDataSection();
     b.setDataPos(ds.getStartingPosition());
     b.setDataLen(ds.getMsgLength());
+
+    b.setScanMode(scanMode);
 
     return b.build();
   }

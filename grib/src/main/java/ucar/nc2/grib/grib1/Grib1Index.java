@@ -33,7 +33,6 @@
 package ucar.nc2.grib.grib1;
 
 import com.google.protobuf.ByteString;
-import thredds.inventory.CollectionManager;
 import thredds.inventory.CollectionUpdateType;
 import ucar.nc2.constants.CDM;
 import ucar.nc2.grib.GribCollection;
@@ -147,14 +146,14 @@ public class Grib1Index extends GribIndex {
       String fname = proto.getFilename();
       if (debug) System.out.printf("%s for %s%n", fname, filename);
 
-      gdsList = new ArrayList<Grib1SectionGridDefinition>(proto.getGdsListCount());
+      gdsList = new ArrayList<>(proto.getGdsListCount());
       for (Grib1IndexProto.Grib1GdsSection pgds : proto.getGdsListList()) {
         Grib1SectionGridDefinition gds = readGds(pgds);
         gdsList.add(gds);
       }
       if (debug) System.out.printf(" read %d gds%n", gdsList.size());
 
-      records = new ArrayList<Grib1Record>(proto.getRecordsCount());
+      records = new ArrayList<>(proto.getRecordsCount());
       for (Grib1IndexProto.Grib1Record precord : proto.getRecordsList()) {
         records.add(readRecord(precord));
       }
@@ -206,8 +205,8 @@ public class Grib1Index extends GribIndex {
       NcStream.writeVInt(fout, version);
 
       Map<Long, Integer> gdsMap = new HashMap<Long, Integer>();
-      gdsList = new ArrayList<Grib1SectionGridDefinition>();
-      records = new ArrayList<Grib1Record>(200);
+      gdsList = new ArrayList<>();
+      records = new ArrayList<>(200);
 
       Grib1IndexProto.Grib1Index.Builder rootBuilder = Grib1IndexProto.Grib1Index.newBuilder();
       rootBuilder.setFilename(filename);
@@ -223,15 +222,15 @@ public class Grib1Index extends GribIndex {
         if (r == null) break; // done
         records.add(r);
 
-        Grib1SectionGridDefinition gds = r.getGDSsection();
-        Integer index = gdsMap.get(gds.calcCRC());
-        if (gds.getPredefinedGridDefinition() >= 0) // skip predefined gds - they dont have raw bytes
+        Grib1SectionGridDefinition gdss = r.getGDSsection();
+        Integer index = gdsMap.get(gdss.calcCRC());
+        if (gdss.getPredefinedGridDefinition() >= 0) // skip predefined gds - they dont have raw bytes
           index = 0;
         else if (index == null) {
-          gdsList.add(gds);
+          gdsList.add(gdss);
           index = gdsList.size() - 1;
-          gdsMap.put(gds.calcCRC(), index);
-          rootBuilder.addGdsList(makeGdsProto(gds));
+          gdsMap.put(gdss.calcCRC(), index);
+          rootBuilder.addGdsList(makeGdsProto(gdss));
         }
         rootBuilder.addRecords(makeRecordProto(r, index));
       }

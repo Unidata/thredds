@@ -581,6 +581,7 @@ public class Grib2CollectionBuilder extends GribCollectionBuilder {
         Grib2SectionBitMap bms = gr.getBitmapSection();
         br.setBmsPos(bms.getStartingPosition());
       }
+      br.setScanMode(gr.getScanMode()); // added 2/6/2014
       b.addRecords(br);
     }
     return b.build();

@@ -69,7 +69,6 @@ value R, the binary scale factor E and the decimal scale factor D by means of th
 
 
 
-  static private final boolean staticMissingValueInUse = true;
   static private final float staticMissingValue = Float.NaN;
 
   ///////////////////////////////////// Grib1BinaryDataSection
@@ -80,11 +79,6 @@ value R, the binary scale factor E and the decimal scale factor D by means of th
   private final long startPos;
 
   /**
-   *
-   * @param decimalScale
-   * @param scanMode
-   * @param nx
-   * @param ny
    * @param startPos starting offset of the binary data section
    */
   public Grib1DataReader(int decimalScale, int scanMode, int nx, int ny, long startPos) {
@@ -190,93 +184,22 @@ value R, the binary scale factor E and the decimal scale factor D by means of th
     // Mode  0 +x, -y, adjacent x, adjacent rows same dir
     // Mode  64 +x, +y, adjacent x, adjacent rows same dir
     if ((scanMode == 0) || (scanMode == 64)) {
-      return;
+      // NOOP
+
+
+    } else if ((scanMode == 128) || (scanMode == 192)) {
       // Mode  128 -x, -y, adjacent x, adjacent rows same dir
       // Mode  192 -x, +y, adjacent x, adjacent rows same dir
       // change -x to +x ie east to west -> west to east
-    } else if ((scanMode == 128) || (scanMode == 192)) {
-      float tmp;
       int mid = Xlength / 2;
       for (int index = 0; index < data.length; index += Xlength) {
         for (int idx = 0; idx < mid; idx++) {
-          tmp = data[index + idx];
+          float tmp = data[index + idx];
           data[index + idx] = data[index + Xlength - idx - 1];
           data[index + Xlength - idx - 1] = tmp;
         }
       }
-      return;
     }
   }
 
 }
-
-
-////////////////////
-// old stuff
-
-    /*
-   * Reads the Grib data
-   *
-   * @param gdsOffset PDS offset into file.
-   * @param dataOffset GDS offset into file.
-   * @return float[]
-   * @throws java.io.IOException
-   *
-  public final float[] getData(long gdsOffset, long dataOffset, int decimalScale, boolean bmsExists) throws IOException {
-
-    //long start = System.currentTimeMillis();
-    Grib1GridDefinitionSection gds = null;
-    Grib1GDSVariables gdsv = null;
-    boolean isThin = false;
-    try {
-      // check for thin grids
-      if ( gdsOffset != -1 ) {
-        raf.seek(gdsOffset);
-        gds = new Grib1GridDefinitionSection(raf);
-        gdsv = gds.getGdsVars();
-        int PVorPL = gdsv.getPVorPL();
-        int NV = gdsv.getNV();
-        isThin = false;
-        if (PVorPL != 255 && (NV == 0 || NV == 255) ) {
-          isThin = true;
-        }
-      }
-    } catch (NoValidGribException nvge) {
-      log.debug("gds exception was caught");
-    }
-    // seek data start
-    raf.seek(dataOffset);
-
-    // Need section 3 and 4 to read/interpet the data
-    Grib1BitMapSection bms = null;
-    if (bmsExists) {
-      // read Bit Mapped Section 3
-      bms = new Grib1BitMapSection(raf);
-    }
-
-      // read Binary Data Section 4
-
-//      Grib1BinaryDataSection bds =
-//          new Grib1BinaryDataSection(raf, decimalScale, bms, gdsv.getScanMode(), gdsv.getNx(), gdsv.getNy() );
-//      if (isThin && expandGrib1ThinGrids) {
-//        QuasiRegular qr = new QuasiRegular(bds.getValues(), gdsv.getParallels(), gdsv.getNx(), gdsv.getNy() );
-//        return qr.getData();
-//      } else {
-//        return bds.getValues();
-//      }
-
-      if ( !isThin ) {  // 99% path
-        Grib1SectionBinaryData bds = new Grib1SectionBinaryData(raf, decimalScale, bms, gdsv.getScanMode(), gdsv.getNx(), gdsv.getNy() );
-        return bds.getValues();
-      }
-      // Process thin grids
-      Grib1SectionBinaryData bds =
-          new Grib1SectionBinaryData(raf, decimalScale, bms, gdsv.getScanMode(), -1, gdsv.getNy() );
-      if (expandGrib1ThinGrids) {
-        QuasiRegular qr = new QuasiRegular(bds.getValues(), gdsv.getParallels(), gdsv.getNx(), gdsv.getNy() );
-        return qr.getData();
-      } else { // return unexpanded values, does not work in CDM stack code
-        return bds.getValues();
-      }
-
-  }  */

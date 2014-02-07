@@ -22,7 +22,7 @@ public final class Grib1IndexProto {
     com.google.protobuf.ByteString getGds();
   }
   /**
-   * Protobuf type {@code grib1Index.Grib1GdsSection}
+   * Protobuf type {@code Grib1GdsSection}
    */
   public static final class Grib1GdsSection extends
       com.google.protobuf.GeneratedMessage
@@ -91,12 +91,12 @@ public final class Grib1IndexProto {
     }
     public static final com.google.protobuf.Descriptors.Descriptor
         getDescriptor() {
-      return ucar.nc2.grib.grib1.Grib1IndexProto.internal_static_grib1Index_Grib1GdsSection_descriptor;
+      return ucar.nc2.grib.grib1.Grib1IndexProto.internal_static_Grib1GdsSection_descriptor;
     }
 
     protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
         internalGetFieldAccessorTable() {
-      return ucar.nc2.grib.grib1.Grib1IndexProto.internal_static_grib1Index_Grib1GdsSection_fieldAccessorTable
+      return ucar.nc2.grib.grib1.Grib1IndexProto.internal_static_Grib1GdsSection_fieldAccessorTable
           .ensureFieldAccessorsInitialized(
               ucar.nc2.grib.grib1.Grib1IndexProto.Grib1GdsSection.class, ucar.nc2.grib.grib1.Grib1IndexProto.Grib1GdsSection.Builder.class);
     }
@@ -247,19 +247,19 @@ public final class Grib1IndexProto {
       return builder;
     }
     /**
-     * Protobuf type {@code grib1Index.Grib1GdsSection}
+     * Protobuf type {@code Grib1GdsSection}
      */
     public static final class Builder extends
         com.google.protobuf.GeneratedMessage.Builder<Builder>
        implements ucar.nc2.grib.grib1.Grib1IndexProto.Grib1GdsSectionOrBuilder {
       public static final com.google.protobuf.Descriptors.Descriptor
           getDescriptor() {
-        return ucar.nc2.grib.grib1.Grib1IndexProto.internal_static_grib1Index_Grib1GdsSection_descriptor;
+        return ucar.nc2.grib.grib1.Grib1IndexProto.internal_static_Grib1GdsSection_descriptor;
       }
 
       protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
           internalGetFieldAccessorTable() {
-        return ucar.nc2.grib.grib1.Grib1IndexProto.internal_static_grib1Index_Grib1GdsSection_fieldAccessorTable
+        return ucar.nc2.grib.grib1.Grib1IndexProto.internal_static_Grib1GdsSection_fieldAccessorTable
             .ensureFieldAccessorsInitialized(
                 ucar.nc2.grib.grib1.Grib1IndexProto.Grib1GdsSection.class, ucar.nc2.grib.grib1.Grib1IndexProto.Grib1GdsSection.Builder.class);
       }
@@ -295,7 +295,7 @@ public final class Grib1IndexProto {
 
       public com.google.protobuf.Descriptors.Descriptor
           getDescriptorForType() {
-        return ucar.nc2.grib.grib1.Grib1IndexProto.internal_static_grib1Index_Grib1GdsSection_descriptor;
+        return ucar.nc2.grib.grib1.Grib1IndexProto.internal_static_Grib1GdsSection_descriptor;
       }
 
       public ucar.nc2.grib.grib1.Grib1IndexProto.Grib1GdsSection getDefaultInstanceForType() {
@@ -404,7 +404,7 @@ public final class Grib1IndexProto {
         return this;
       }
 
-      // @@protoc_insertion_point(builder_scope:grib1Index.Grib1GdsSection)
+      // @@protoc_insertion_point(builder_scope:Grib1GdsSection)
     }
 
     static {
@@ -412,7 +412,7 @@ public final class Grib1IndexProto {
       defaultInstance.initFields();
     }
 
-    // @@protoc_insertion_point(class_scope:grib1Index.Grib1GdsSection)
+    // @@protoc_insertion_point(class_scope:Grib1GdsSection)
   }
 
   public interface Grib1RecordOrBuilder
@@ -515,7 +515,7 @@ public final class Grib1IndexProto {
     int getDataLen();
   }
   /**
-   * Protobuf type {@code grib1Index.Grib1Record}
+   * Protobuf type {@code Grib1Record}
    */
   public static final class Grib1Record extends
       com.google.protobuf.GeneratedMessage
@@ -619,12 +619,12 @@ public final class Grib1IndexProto {
     }
     public static final com.google.protobuf.Descriptors.Descriptor
         getDescriptor() {
-      return ucar.nc2.grib.grib1.Grib1IndexProto.internal_static_grib1Index_Grib1Record_descriptor;
+      return ucar.nc2.grib.grib1.Grib1IndexProto.internal_static_Grib1Record_descriptor;
     }
 
     protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
         internalGetFieldAccessorTable() {
-      return ucar.nc2.grib.grib1.Grib1IndexProto.internal_static_grib1Index_Grib1Record_fieldAccessorTable
+      return ucar.nc2.grib.grib1.Grib1IndexProto.internal_static_Grib1Record_fieldAccessorTable
           .ensureFieldAccessorsInitialized(
               ucar.nc2.grib.grib1.Grib1IndexProto.Grib1Record.class, ucar.nc2.grib.grib1.Grib1IndexProto.Grib1Record.Builder.class);
     }
@@ -979,19 +979,19 @@ public final class Grib1IndexProto {
       return builder;
     }
     /**
-     * Protobuf type {@code grib1Index.Grib1Record}
+     * Protobuf type {@code Grib1Record}
      */
     public static final class Builder extends
         com.google.protobuf.GeneratedMessage.Builder<Builder>
        implements ucar.nc2.grib.grib1.Grib1IndexProto.Grib1RecordOrBuilder {
       public static final com.google.protobuf.Descriptors.Descriptor
           getDescriptor() {
-        return ucar.nc2.grib.grib1.Grib1IndexProto.internal_static_grib1Index_Grib1Record_descriptor;
+        return ucar.nc2.grib.grib1.Grib1IndexProto.internal_static_Grib1Record_descriptor;
       }
 
       protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
           internalGetFieldAccessorTable() {
-        return ucar.nc2.grib.grib1.Grib1IndexProto.internal_static_grib1Index_Grib1Record_fieldAccessorTable
+        return ucar.nc2.grib.grib1.Grib1IndexProto.internal_static_Grib1Record_fieldAccessorTable
             .ensureFieldAccessorsInitialized(
                 ucar.nc2.grib.grib1.Grib1IndexProto.Grib1Record.class, ucar.nc2.grib.grib1.Grib1IndexProto.Grib1Record.Builder.class);
       }
@@ -1041,7 +1041,7 @@ public final class Grib1IndexProto {
 
       public com.google.protobuf.Descriptors.Descriptor
           getDescriptorForType() {
-        return ucar.nc2.grib.grib1.Grib1IndexProto.internal_static_grib1Index_Grib1Record_descriptor;
+        return ucar.nc2.grib.grib1.Grib1IndexProto.internal_static_Grib1Record_descriptor;
       }
 
       public ucar.nc2.grib.grib1.Grib1IndexProto.Grib1Record getDefaultInstanceForType() {
@@ -1485,7 +1485,7 @@ public final class Grib1IndexProto {
         return this;
       }
 
-      // @@protoc_insertion_point(builder_scope:grib1Index.Grib1Record)
+      // @@protoc_insertion_point(builder_scope:Grib1Record)
     }
 
     static {
@@ -1493,7 +1493,7 @@ public final class Grib1IndexProto {
       defaultInstance.initFields();
     }
 
-    // @@protoc_insertion_point(class_scope:grib1Index.Grib1Record)
+    // @@protoc_insertion_point(class_scope:Grib1Record)
   }
 
   public interface Grib1IndexOrBuilder
@@ -1514,9 +1514,9 @@ public final class Grib1IndexProto {
     com.google.protobuf.ByteString
         getFilenameBytes();
 
-    // repeated .grib1Index.Grib1GdsSection gdsList = 2;
+    // repeated .Grib1GdsSection gdsList = 2;
     /**
-     * <code>repeated .grib1Index.Grib1GdsSection gdsList = 2;</code>
+     * <code>repeated .Grib1GdsSection gdsList = 2;</code>
      *
      * <pre>
      * GDS factored out
@@ -1525,7 +1525,7 @@ public final class Grib1IndexProto {
     java.util.List<ucar.nc2.grib.grib1.Grib1IndexProto.Grib1GdsSection> 
         getGdsListList();
     /**
-     * <code>repeated .grib1Index.Grib1GdsSection gdsList = 2;</code>
+     * <code>repeated .Grib1GdsSection gdsList = 2;</code>
      *
      * <pre>
      * GDS factored out
@@ -1533,7 +1533,7 @@ public final class Grib1IndexProto {
      */
     ucar.nc2.grib.grib1.Grib1IndexProto.Grib1GdsSection getGdsList(int index);
     /**
-     * <code>repeated .grib1Index.Grib1GdsSection gdsList = 2;</code>
+     * <code>repeated .Grib1GdsSection gdsList = 2;</code>
      *
      * <pre>
      * GDS factored out
@@ -1541,7 +1541,7 @@ public final class Grib1IndexProto {
      */
     int getGdsListCount();
     /**
-     * <code>repeated .grib1Index.Grib1GdsSection gdsList = 2;</code>
+     * <code>repeated .Grib1GdsSection gdsList = 2;</code>
      *
      * <pre>
      * GDS factored out
@@ -1550,7 +1550,7 @@ public final class Grib1IndexProto {
     java.util.List<? extends ucar.nc2.grib.grib1.Grib1IndexProto.Grib1GdsSectionOrBuilder> 
         getGdsListOrBuilderList();
     /**
-     * <code>repeated .grib1Index.Grib1GdsSection gdsList = 2;</code>
+     * <code>repeated .Grib1GdsSection gdsList = 2;</code>
      *
      * <pre>
      * GDS factored out
@@ -1559,33 +1559,33 @@ public final class Grib1IndexProto {
     ucar.nc2.grib.grib1.Grib1IndexProto.Grib1GdsSectionOrBuilder getGdsListOrBuilder(
         int index);
 
-    // repeated .grib1Index.Grib1Record records = 3;
+    // repeated .Grib1Record records = 3;
     /**
-     * <code>repeated .grib1Index.Grib1Record records = 3;</code>
+     * <code>repeated .Grib1Record records = 3;</code>
      */
     java.util.List<ucar.nc2.grib.grib1.Grib1IndexProto.Grib1Record> 
         getRecordsList();
     /**
-     * <code>repeated .grib1Index.Grib1Record records = 3;</code>
+     * <code>repeated .Grib1Record records = 3;</code>
      */
     ucar.nc2.grib.grib1.Grib1IndexProto.Grib1Record getRecords(int index);
     /**
-     * <code>repeated .grib1Index.Grib1Record records = 3;</code>
+     * <code>repeated .Grib1Record records = 3;</code>
      */
     int getRecordsCount();
     /**
-     * <code>repeated .grib1Index.Grib1Record records = 3;</code>
+     * <code>repeated .Grib1Record records = 3;</code>
      */
     java.util.List<? extends ucar.nc2.grib.grib1.Grib1IndexProto.Grib1RecordOrBuilder> 
         getRecordsOrBuilderList();
     /**
-     * <code>repeated .grib1Index.Grib1Record records = 3;</code>
+     * <code>repeated .Grib1Record records = 3;</code>
      */
     ucar.nc2.grib.grib1.Grib1IndexProto.Grib1RecordOrBuilder getRecordsOrBuilder(
         int index);
   }
   /**
-   * Protobuf type {@code grib1Index.Grib1Index}
+   * Protobuf type {@code Grib1Index}
    */
   public static final class Grib1Index extends
       com.google.protobuf.GeneratedMessage
@@ -1676,12 +1676,12 @@ public final class Grib1IndexProto {
     }
     public static final com.google.protobuf.Descriptors.Descriptor
         getDescriptor() {
-      return ucar.nc2.grib.grib1.Grib1IndexProto.internal_static_grib1Index_Grib1Index_descriptor;
+      return ucar.nc2.grib.grib1.Grib1IndexProto.internal_static_Grib1Index_descriptor;
     }
 
     protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
         internalGetFieldAccessorTable() {
-      return ucar.nc2.grib.grib1.Grib1IndexProto.internal_static_grib1Index_Grib1Index_fieldAccessorTable
+      return ucar.nc2.grib.grib1.Grib1IndexProto.internal_static_Grib1Index_fieldAccessorTable
           .ensureFieldAccessorsInitialized(
               ucar.nc2.grib.grib1.Grib1IndexProto.Grib1Index.class, ucar.nc2.grib.grib1.Grib1IndexProto.Grib1Index.Builder.class);
     }
@@ -1745,11 +1745,11 @@ public final class Grib1IndexProto {
       }
     }
 
-    // repeated .grib1Index.Grib1GdsSection gdsList = 2;
+    // repeated .Grib1GdsSection gdsList = 2;
     public static final int GDSLIST_FIELD_NUMBER = 2;
     private java.util.List<ucar.nc2.grib.grib1.Grib1IndexProto.Grib1GdsSection> gdsList_;
     /**
-     * <code>repeated .grib1Index.Grib1GdsSection gdsList = 2;</code>
+     * <code>repeated .Grib1GdsSection gdsList = 2;</code>
      *
      * <pre>
      * GDS factored out
@@ -1759,7 +1759,7 @@ public final class Grib1IndexProto {
       return gdsList_;
     }
     /**
-     * <code>repeated .grib1Index.Grib1GdsSection gdsList = 2;</code>
+     * <code>repeated .Grib1GdsSection gdsList = 2;</code>
      *
      * <pre>
      * GDS factored out
@@ -1770,7 +1770,7 @@ public final class Grib1IndexProto {
       return gdsList_;
     }
     /**
-     * <code>repeated .grib1Index.Grib1GdsSection gdsList = 2;</code>
+     * <code>repeated .Grib1GdsSection gdsList = 2;</code>
      *
      * <pre>
      * GDS factored out
@@ -1780,7 +1780,7 @@ public final class Grib1IndexProto {
       return gdsList_.size();
     }
     /**
-     * <code>repeated .grib1Index.Grib1GdsSection gdsList = 2;</code>
+     * <code>repeated .Grib1GdsSection gdsList = 2;</code>
      *
      * <pre>
      * GDS factored out
@@ -1790,7 +1790,7 @@ public final class Grib1IndexProto {
       return gdsList_.get(index);
     }
     /**
-     * <code>repeated .grib1Index.Grib1GdsSection gdsList = 2;</code>
+     * <code>repeated .Grib1GdsSection gdsList = 2;</code>
      *
      * <pre>
      * GDS factored out
@@ -1801,36 +1801,36 @@ public final class Grib1IndexProto {
       return gdsList_.get(index);
     }
 
-    // repeated .grib1Index.Grib1Record records = 3;
+    // repeated .Grib1Record records = 3;
     public static final int RECORDS_FIELD_NUMBER = 3;
     private java.util.List<ucar.nc2.grib.grib1.Grib1IndexProto.Grib1Record> records_;
     /**
-     * <code>repeated .grib1Index.Grib1Record records = 3;</code>
+     * <code>repeated .Grib1Record records = 3;</code>
      */
     public java.util.List<ucar.nc2.grib.grib1.Grib1IndexProto.Grib1Record> getRecordsList() {
       return records_;
     }
     /**
-     * <code>repeated .grib1Index.Grib1Record records = 3;</code>
+     * <code>repeated .Grib1Record records = 3;</code>
      */
     public java.util.List<? extends ucar.nc2.grib.grib1.Grib1IndexProto.Grib1RecordOrBuilder> 
         getRecordsOrBuilderList() {
       return records_;
     }
     /**
-     * <code>repeated .grib1Index.Grib1Record records = 3;</code>
+     * <code>repeated .Grib1Record records = 3;</code>
      */
     public int getRecordsCount() {
       return records_.size();
     }
     /**
-     * <code>repeated .grib1Index.Grib1Record records = 3;</code>
+     * <code>repeated .Grib1Record records = 3;</code>
      */
     public ucar.nc2.grib.grib1.Grib1IndexProto.Grib1Record getRecords(int index) {
       return records_.get(index);
     }
     /**
-     * <code>repeated .grib1Index.Grib1Record records = 3;</code>
+     * <code>repeated .Grib1Record records = 3;</code>
      */
     public ucar.nc2.grib.grib1.Grib1IndexProto.Grib1RecordOrBuilder getRecordsOrBuilder(
         int index) {
@@ -1979,19 +1979,19 @@ public final class Grib1IndexProto {
       return builder;
     }
     /**
-     * Protobuf type {@code grib1Index.Grib1Index}
+     * Protobuf type {@code Grib1Index}
      */
     public static final class Builder extends
         com.google.protobuf.GeneratedMessage.Builder<Builder>
        implements ucar.nc2.grib.grib1.Grib1IndexProto.Grib1IndexOrBuilder {
       public static final com.google.protobuf.Descriptors.Descriptor
           getDescriptor() {
-        return ucar.nc2.grib.grib1.Grib1IndexProto.internal_static_grib1Index_Grib1Index_descriptor;
+        return ucar.nc2.grib.grib1.Grib1IndexProto.internal_static_Grib1Index_descriptor;
       }
 
       protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
           internalGetFieldAccessorTable() {
-        return ucar.nc2.grib.grib1.Grib1IndexProto.internal_static_grib1Index_Grib1Index_fieldAccessorTable
+        return ucar.nc2.grib.grib1.Grib1IndexProto.internal_static_Grib1Index_fieldAccessorTable
             .ensureFieldAccessorsInitialized(
                 ucar.nc2.grib.grib1.Grib1IndexProto.Grib1Index.class, ucar.nc2.grib.grib1.Grib1IndexProto.Grib1Index.Builder.class);
       }
@@ -2041,7 +2041,7 @@ public final class Grib1IndexProto {
 
       public com.google.protobuf.Descriptors.Descriptor
           getDescriptorForType() {
-        return ucar.nc2.grib.grib1.Grib1IndexProto.internal_static_grib1Index_Grib1Index_descriptor;
+        return ucar.nc2.grib.grib1.Grib1IndexProto.internal_static_Grib1Index_descriptor;
       }
 
       public ucar.nc2.grib.grib1.Grib1IndexProto.Grib1Index getDefaultInstanceForType() {
@@ -2272,7 +2272,7 @@ public final class Grib1IndexProto {
         return this;
       }
 
-      // repeated .grib1Index.Grib1GdsSection gdsList = 2;
+      // repeated .Grib1GdsSection gdsList = 2;
       private java.util.List<ucar.nc2.grib.grib1.Grib1IndexProto.Grib1GdsSection> gdsList_ =
         java.util.Collections.emptyList();
       private void ensureGdsListIsMutable() {
@@ -2286,7 +2286,7 @@ public final class Grib1IndexProto {
           ucar.nc2.grib.grib1.Grib1IndexProto.Grib1GdsSection, ucar.nc2.grib.grib1.Grib1IndexProto.Grib1GdsSection.Builder, ucar.nc2.grib.grib1.Grib1IndexProto.Grib1GdsSectionOrBuilder> gdsListBuilder_;
 
       /**
-       * <code>repeated .grib1Index.Grib1GdsSection gdsList = 2;</code>
+       * <code>repeated .Grib1GdsSection gdsList = 2;</code>
        *
        * <pre>
        * GDS factored out
@@ -2300,7 +2300,7 @@ public final class Grib1IndexProto {
         }
       }
       /**
-       * <code>repeated .grib1Index.Grib1GdsSection gdsList = 2;</code>
+       * <code>repeated .Grib1GdsSection gdsList = 2;</code>
        *
        * <pre>
        * GDS factored out
@@ -2314,7 +2314,7 @@ public final class Grib1IndexProto {
         }
       }
       /**
-       * <code>repeated .grib1Index.Grib1GdsSection gdsList = 2;</code>
+       * <code>repeated .Grib1GdsSection gdsList = 2;</code>
        *
        * <pre>
        * GDS factored out
@@ -2328,7 +2328,7 @@ public final class Grib1IndexProto {
         }
       }
       /**
-       * <code>repeated .grib1Index.Grib1GdsSection gdsList = 2;</code>
+       * <code>repeated .Grib1GdsSection gdsList = 2;</code>
        *
        * <pre>
        * GDS factored out
@@ -2349,7 +2349,7 @@ public final class Grib1IndexProto {
         return this;
       }
       /**
-       * <code>repeated .grib1Index.Grib1GdsSection gdsList = 2;</code>
+       * <code>repeated .Grib1GdsSection gdsList = 2;</code>
        *
        * <pre>
        * GDS factored out
@@ -2367,7 +2367,7 @@ public final class Grib1IndexProto {
         return this;
       }
       /**
-       * <code>repeated .grib1Index.Grib1GdsSection gdsList = 2;</code>
+       * <code>repeated .Grib1GdsSection gdsList = 2;</code>
        *
        * <pre>
        * GDS factored out
@@ -2387,7 +2387,7 @@ public final class Grib1IndexProto {
         return this;
       }
       /**
-       * <code>repeated .grib1Index.Grib1GdsSection gdsList = 2;</code>
+       * <code>repeated .Grib1GdsSection gdsList = 2;</code>
        *
        * <pre>
        * GDS factored out
@@ -2408,7 +2408,7 @@ public final class Grib1IndexProto {
         return this;
       }
       /**
-       * <code>repeated .grib1Index.Grib1GdsSection gdsList = 2;</code>
+       * <code>repeated .Grib1GdsSection gdsList = 2;</code>
        *
        * <pre>
        * GDS factored out
@@ -2426,7 +2426,7 @@ public final class Grib1IndexProto {
         return this;
       }
       /**
-       * <code>repeated .grib1Index.Grib1GdsSection gdsList = 2;</code>
+       * <code>repeated .Grib1GdsSection gdsList = 2;</code>
        *
        * <pre>
        * GDS factored out
@@ -2444,7 +2444,7 @@ public final class Grib1IndexProto {
         return this;
       }
       /**
-       * <code>repeated .grib1Index.Grib1GdsSection gdsList = 2;</code>
+       * <code>repeated .Grib1GdsSection gdsList = 2;</code>
        *
        * <pre>
        * GDS factored out
@@ -2462,7 +2462,7 @@ public final class Grib1IndexProto {
         return this;
       }
       /**
-       * <code>repeated .grib1Index.Grib1GdsSection gdsList = 2;</code>
+       * <code>repeated .Grib1GdsSection gdsList = 2;</code>
        *
        * <pre>
        * GDS factored out
@@ -2479,7 +2479,7 @@ public final class Grib1IndexProto {
         return this;
       }
       /**
-       * <code>repeated .grib1Index.Grib1GdsSection gdsList = 2;</code>
+       * <code>repeated .Grib1GdsSection gdsList = 2;</code>
        *
        * <pre>
        * GDS factored out
@@ -2496,7 +2496,7 @@ public final class Grib1IndexProto {
         return this;
       }
       /**
-       * <code>repeated .grib1Index.Grib1GdsSection gdsList = 2;</code>
+       * <code>repeated .Grib1GdsSection gdsList = 2;</code>
        *
        * <pre>
        * GDS factored out
@@ -2507,7 +2507,7 @@ public final class Grib1IndexProto {
         return getGdsListFieldBuilder().getBuilder(index);
       }
       /**
-       * <code>repeated .grib1Index.Grib1GdsSection gdsList = 2;</code>
+       * <code>repeated .Grib1GdsSection gdsList = 2;</code>
        *
        * <pre>
        * GDS factored out
@@ -2521,7 +2521,7 @@ public final class Grib1IndexProto {
         }
       }
       /**
-       * <code>repeated .grib1Index.Grib1GdsSection gdsList = 2;</code>
+       * <code>repeated .Grib1GdsSection gdsList = 2;</code>
        *
        * <pre>
        * GDS factored out
@@ -2536,7 +2536,7 @@ public final class Grib1IndexProto {
         }
       }
       /**
-       * <code>repeated .grib1Index.Grib1GdsSection gdsList = 2;</code>
+       * <code>repeated .Grib1GdsSection gdsList = 2;</code>
        *
        * <pre>
        * GDS factored out
@@ -2547,7 +2547,7 @@ public final class Grib1IndexProto {
             ucar.nc2.grib.grib1.Grib1IndexProto.Grib1GdsSection.getDefaultInstance());
       }
       /**
-       * <code>repeated .grib1Index.Grib1GdsSection gdsList = 2;</code>
+       * <code>repeated .Grib1GdsSection gdsList = 2;</code>
        *
        * <pre>
        * GDS factored out
@@ -2559,7 +2559,7 @@ public final class Grib1IndexProto {
             index, ucar.nc2.grib.grib1.Grib1IndexProto.Grib1GdsSection.getDefaultInstance());
       }
       /**
-       * <code>repeated .grib1Index.Grib1GdsSection gdsList = 2;</code>
+       * <code>repeated .Grib1GdsSection gdsList = 2;</code>
        *
        * <pre>
        * GDS factored out
@@ -2584,7 +2584,7 @@ public final class Grib1IndexProto {
         return gdsListBuilder_;
       }
 
-      // repeated .grib1Index.Grib1Record records = 3;
+      // repeated .Grib1Record records = 3;
       private java.util.List<ucar.nc2.grib.grib1.Grib1IndexProto.Grib1Record> records_ =
         java.util.Collections.emptyList();
       private void ensureRecordsIsMutable() {
@@ -2598,7 +2598,7 @@ public final class Grib1IndexProto {
           ucar.nc2.grib.grib1.Grib1IndexProto.Grib1Record, ucar.nc2.grib.grib1.Grib1IndexProto.Grib1Record.Builder, ucar.nc2.grib.grib1.Grib1IndexProto.Grib1RecordOrBuilder> recordsBuilder_;
 
       /**
-       * <code>repeated .grib1Index.Grib1Record records = 3;</code>
+       * <code>repeated .Grib1Record records = 3;</code>
        */
       public java.util.List<ucar.nc2.grib.grib1.Grib1IndexProto.Grib1Record> getRecordsList() {
         if (recordsBuilder_ == null) {
@@ -2608,7 +2608,7 @@ public final class Grib1IndexProto {
         }
       }
       /**
-       * <code>repeated .grib1Index.Grib1Record records = 3;</code>
+       * <code>repeated .Grib1Record records = 3;</code>
        */
       public int getRecordsCount() {
         if (recordsBuilder_ == null) {
@@ -2618,7 +2618,7 @@ public final class Grib1IndexProto {
         }
       }
       /**
-       * <code>repeated .grib1Index.Grib1Record records = 3;</code>
+       * <code>repeated .Grib1Record records = 3;</code>
        */
       public ucar.nc2.grib.grib1.Grib1IndexProto.Grib1Record getRecords(int index) {
         if (recordsBuilder_ == null) {
@@ -2628,7 +2628,7 @@ public final class Grib1IndexProto {
         }
       }
       /**
-       * <code>repeated .grib1Index.Grib1Record records = 3;</code>
+       * <code>repeated .Grib1Record records = 3;</code>
        */
       public Builder setRecords(
           int index, ucar.nc2.grib.grib1.Grib1IndexProto.Grib1Record value) {
@@ -2645,7 +2645,7 @@ public final class Grib1IndexProto {
         return this;
       }
       /**
-       * <code>repeated .grib1Index.Grib1Record records = 3;</code>
+       * <code>repeated .Grib1Record records = 3;</code>
        */
       public Builder setRecords(
           int index, ucar.nc2.grib.grib1.Grib1IndexProto.Grib1Record.Builder builderForValue) {
@@ -2659,7 +2659,7 @@ public final class Grib1IndexProto {
         return this;
       }
       /**
-       * <code>repeated .grib1Index.Grib1Record records = 3;</code>
+       * <code>repeated .Grib1Record records = 3;</code>
        */
       public Builder addRecords(ucar.nc2.grib.grib1.Grib1IndexProto.Grib1Record value) {
         if (recordsBuilder_ == null) {
@@ -2675,7 +2675,7 @@ public final class Grib1IndexProto {
         return this;
       }
       /**
-       * <code>repeated .grib1Index.Grib1Record records = 3;</code>
+       * <code>repeated .Grib1Record records = 3;</code>
        */
       public Builder addRecords(
           int index, ucar.nc2.grib.grib1.Grib1IndexProto.Grib1Record value) {
@@ -2692,7 +2692,7 @@ public final class Grib1IndexProto {
         return this;
       }
       /**
-       * <code>repeated .grib1Index.Grib1Record records = 3;</code>
+       * <code>repeated .Grib1Record records = 3;</code>
        */
       public Builder addRecords(
           ucar.nc2.grib.grib1.Grib1IndexProto.Grib1Record.Builder builderForValue) {
@@ -2706,7 +2706,7 @@ public final class Grib1IndexProto {
         return this;
       }
       /**
-       * <code>repeated .grib1Index.Grib1Record records = 3;</code>
+       * <code>repeated .Grib1Record records = 3;</code>
        */
       public Builder addRecords(
           int index, ucar.nc2.grib.grib1.Grib1IndexProto.Grib1Record.Builder builderForValue) {
@@ -2720,7 +2720,7 @@ public final class Grib1IndexProto {
         return this;
       }
       /**
-       * <code>repeated .grib1Index.Grib1Record records = 3;</code>
+       * <code>repeated .Grib1Record records = 3;</code>
        */
       public Builder addAllRecords(
           java.lang.Iterable<? extends ucar.nc2.grib.grib1.Grib1IndexProto.Grib1Record> values) {
@@ -2734,7 +2734,7 @@ public final class Grib1IndexProto {
         return this;
       }
       /**
-       * <code>repeated .grib1Index.Grib1Record records = 3;</code>
+       * <code>repeated .Grib1Record records = 3;</code>
        */
       public Builder clearRecords() {
         if (recordsBuilder_ == null) {
@@ -2747,7 +2747,7 @@ public final class Grib1IndexProto {
         return this;
       }
       /**
-       * <code>repeated .grib1Index.Grib1Record records = 3;</code>
+       * <code>repeated .Grib1Record records = 3;</code>
        */
       public Builder removeRecords(int index) {
         if (recordsBuilder_ == null) {
@@ -2760,14 +2760,14 @@ public final class Grib1IndexProto {
         return this;
       }
       /**
-       * <code>repeated .grib1Index.Grib1Record records = 3;</code>
+       * <code>repeated .Grib1Record records = 3;</code>
        */
       public ucar.nc2.grib.grib1.Grib1IndexProto.Grib1Record.Builder getRecordsBuilder(
           int index) {
         return getRecordsFieldBuilder().getBuilder(index);
       }
       /**
-       * <code>repeated .grib1Index.Grib1Record records = 3;</code>
+       * <code>repeated .Grib1Record records = 3;</code>
        */
       public ucar.nc2.grib.grib1.Grib1IndexProto.Grib1RecordOrBuilder getRecordsOrBuilder(
           int index) {
@@ -2777,7 +2777,7 @@ public final class Grib1IndexProto {
         }
       }
       /**
-       * <code>repeated .grib1Index.Grib1Record records = 3;</code>
+       * <code>repeated .Grib1Record records = 3;</code>
        */
       public java.util.List<? extends ucar.nc2.grib.grib1.Grib1IndexProto.Grib1RecordOrBuilder> 
            getRecordsOrBuilderList() {
@@ -2788,14 +2788,14 @@ public final class Grib1IndexProto {
         }
       }
       /**
-       * <code>repeated .grib1Index.Grib1Record records = 3;</code>
+       * <code>repeated .Grib1Record records = 3;</code>
        */
       public ucar.nc2.grib.grib1.Grib1IndexProto.Grib1Record.Builder addRecordsBuilder() {
         return getRecordsFieldBuilder().addBuilder(
             ucar.nc2.grib.grib1.Grib1IndexProto.Grib1Record.getDefaultInstance());
       }
       /**
-       * <code>repeated .grib1Index.Grib1Record records = 3;</code>
+       * <code>repeated .Grib1Record records = 3;</code>
        */
       public ucar.nc2.grib.grib1.Grib1IndexProto.Grib1Record.Builder addRecordsBuilder(
           int index) {
@@ -2803,7 +2803,7 @@ public final class Grib1IndexProto {
             index, ucar.nc2.grib.grib1.Grib1IndexProto.Grib1Record.getDefaultInstance());
       }
       /**
-       * <code>repeated .grib1Index.Grib1Record records = 3;</code>
+       * <code>repeated .Grib1Record records = 3;</code>
        */
       public java.util.List<ucar.nc2.grib.grib1.Grib1IndexProto.Grib1Record.Builder> 
            getRecordsBuilderList() {
@@ -2824,7 +2824,7 @@ public final class Grib1IndexProto {
         return recordsBuilder_;
       }
 
-      // @@protoc_insertion_point(builder_scope:grib1Index.Grib1Index)
+      // @@protoc_insertion_point(builder_scope:Grib1Index)
     }
 
     static {
@@ -2832,24 +2832,24 @@ public final class Grib1IndexProto {
       defaultInstance.initFields();
     }
 
-    // @@protoc_insertion_point(class_scope:grib1Index.Grib1Index)
+    // @@protoc_insertion_point(class_scope:Grib1Index)
   }
 
   private static com.google.protobuf.Descriptors.Descriptor
-    internal_static_grib1Index_Grib1GdsSection_descriptor;
+    internal_static_Grib1GdsSection_descriptor;
   private static
     com.google.protobuf.GeneratedMessage.FieldAccessorTable
-      internal_static_grib1Index_Grib1GdsSection_fieldAccessorTable;
+      internal_static_Grib1GdsSection_fieldAccessorTable;
   private static com.google.protobuf.Descriptors.Descriptor
-    internal_static_grib1Index_Grib1Record_descriptor;
+    internal_static_Grib1Record_descriptor;
   private static
     com.google.protobuf.GeneratedMessage.FieldAccessorTable
-      internal_static_grib1Index_Grib1Record_fieldAccessorTable;
+      internal_static_Grib1Record_fieldAccessorTable;
   private static com.google.protobuf.Descriptors.Descriptor
-    internal_static_grib1Index_Grib1Index_descriptor;
+    internal_static_Grib1Index_descriptor;
   private static
     com.google.protobuf.GeneratedMessage.FieldAccessorTable
-      internal_static_grib1Index_Grib1Index_fieldAccessorTable;
+      internal_static_Grib1Index_fieldAccessorTable;
 
   public static com.google.protobuf.Descriptors.FileDescriptor
       getDescriptor() {
@@ -2859,40 +2859,39 @@ public final class Grib1IndexProto {
       descriptor;
   static {
     java.lang.String[] descriptorData = {
-      "\n$ucar/nc2/grib/grib1/grib1Index.proto\022\n" +
-      "grib1Index\"\036\n\017Grib1GdsSection\022\013\n\003gds\030\002 \002" +
-      "(\014\"\241\001\n\013Grib1Record\022\016\n\006header\030\001 \002(\014\022\030\n\020gr" +
-      "ibMessageStart\030\017 \001(\004\022\031\n\021gribMessageLengt" +
-      "h\030\002 \002(\004\022\016\n\006gdsIdx\030\006 \002(\r\022\013\n\003pds\030\007 \002(\014\022\016\n\006" +
-      "bmsPos\030\013 \001(\004\022\017\n\007dataPos\030\r \002(\004\022\017\n\007dataLen" +
-      "\030\016 \002(\r\"v\n\nGrib1Index\022\020\n\010filename\030\001 \002(\t\022," +
-      "\n\007gdsList\030\002 \003(\0132\033.grib1Index.Grib1GdsSec" +
-      "tion\022(\n\007records\030\003 \003(\0132\027.grib1Index.Grib1" +
-      "RecordB&\n\023ucar.nc2.grib.grib1B\017Grib1Inde",
-      "xProto"
+      "\n$ucar/nc2/grib/grib1/grib1Index.proto\"\036" +
+      "\n\017Grib1GdsSection\022\013\n\003gds\030\002 \002(\014\"\241\001\n\013Grib1" +
+      "Record\022\016\n\006header\030\001 \002(\014\022\030\n\020gribMessageSta" +
+      "rt\030\017 \001(\004\022\031\n\021gribMessageLength\030\002 \002(\004\022\016\n\006g" +
+      "dsIdx\030\006 \002(\r\022\013\n\003pds\030\007 \002(\014\022\016\n\006bmsPos\030\013 \001(\004" +
+      "\022\017\n\007dataPos\030\r \002(\004\022\017\n\007dataLen\030\016 \002(\r\"`\n\nGr" +
+      "ib1Index\022\020\n\010filename\030\001 \002(\t\022!\n\007gdsList\030\002 " +
+      "\003(\0132\020.Grib1GdsSection\022\035\n\007records\030\003 \003(\0132\014" +
+      ".Grib1RecordB&\n\023ucar.nc2.grib.grib1B\017Gri" +
+      "b1IndexProto"
     };
     com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
       new com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner() {
         public com.google.protobuf.ExtensionRegistry assignDescriptors(
             com.google.protobuf.Descriptors.FileDescriptor root) {
           descriptor = root;
-          internal_static_grib1Index_Grib1GdsSection_descriptor =
+          internal_static_Grib1GdsSection_descriptor =
             getDescriptor().getMessageTypes().get(0);
-          internal_static_grib1Index_Grib1GdsSection_fieldAccessorTable = new
+          internal_static_Grib1GdsSection_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
-              internal_static_grib1Index_Grib1GdsSection_descriptor,
+              internal_static_Grib1GdsSection_descriptor,
               new java.lang.String[] { "Gds", });
-          internal_static_grib1Index_Grib1Record_descriptor =
+          internal_static_Grib1Record_descriptor =
             getDescriptor().getMessageTypes().get(1);
-          internal_static_grib1Index_Grib1Record_fieldAccessorTable = new
+          internal_static_Grib1Record_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
-              internal_static_grib1Index_Grib1Record_descriptor,
+              internal_static_Grib1Record_descriptor,
               new java.lang.String[] { "Header", "GribMessageStart", "GribMessageLength", "GdsIdx", "Pds", "BmsPos", "DataPos", "DataLen", });
-          internal_static_grib1Index_Grib1Index_descriptor =
+          internal_static_Grib1Index_descriptor =
             getDescriptor().getMessageTypes().get(2);
-          internal_static_grib1Index_Grib1Index_fieldAccessorTable = new
+          internal_static_Grib1Index_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
-              internal_static_grib1Index_Grib1Index_descriptor,
+              internal_static_Grib1Index_descriptor,
               new java.lang.String[] { "Filename", "GdsList", "Records", });
           return null;
         }

@@ -163,7 +163,7 @@ public class PartitionCollection extends GribCollection {
       int[] sourceIndex = group.isTwod ? translateIndex2D(indexWanted, compVindex2D) : translateIndex1D(indexWanted, compVindex2D);
       GribCollection.Record record = compVindex2D.getSparseArray().getContent(sourceIndex);
 
-      return new DataRecord(PartitionCollection.this, partno, compVindex2D.group.getGdsHorizCoordSys(), record.fileno, record.pos, record.bmsPos);
+      return new DataRecord(PartitionCollection.this, partno, compVindex2D.group.getGdsHorizCoordSys(), record.fileno, record.pos, record.bmsPos, record.scanMode);
     }
 
     /**
@@ -325,15 +325,17 @@ public class PartitionCollection extends GribCollection {
     int fileno;
     long drsPos;
     long bmsPos;  // if non zero, use alternate bms
+    int scanMode;
     int resultIndex; // where does this record go in the result array? not calculated here
 
-    DataRecord(PartitionCollection usePartition, int partno, GdsHorizCoordSys hcs, int fileno, long drsPos, long bmsPos) {
+    DataRecord(PartitionCollection usePartition, int partno, GdsHorizCoordSys hcs, int fileno, long drsPos, long bmsPos, int scanMode) {
       this.usePartition = usePartition;
       this.partno = partno;
       this.hcs = hcs;
       this.fileno = fileno;
       this.drsPos = (drsPos == 0) ? GribCollection.MISSING_RECORD : drsPos; // 0 also means missing in Grib2
       this.bmsPos = bmsPos;
+      this.scanMode = scanMode;
     }
 
     @Override

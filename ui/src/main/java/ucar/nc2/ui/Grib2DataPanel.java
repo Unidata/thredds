@@ -1458,7 +1458,7 @@ public class Grib2DataPanel extends JPanel {
     }
 
     public String getScanMode() {
-      return Long.toBinaryString(gds.scanMode);
+      return Long.toBinaryString(gds.getScanMode());
     }
 
     @Override

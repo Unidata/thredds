@@ -34,6 +34,7 @@ package ucar.nc2.grib.collection;
 
 import thredds.catalog.DataFormatType;
 import thredds.inventory.CollectionUpdateType;
+import ucar.nc2.grib.grib2.Grib2Index;
 import ucar.nc2.time.CalendarPeriod;
 import ucar.sparr.Coordinate;
 import ucar.ma2.*;
@@ -991,22 +992,40 @@ public class Grib2Iosp extends GribIosp {
     vindex.readRecords();
 
     int sectionLen = section.getRank();
-    Section otherSection = section.subSection(0, sectionLen-2); // all but x, y
     Range yRange = section.getRange(sectionLen-2);
     Range xRange = section.getRange(sectionLen-1);
 
-    DataReader dataReader = new DataReader(vindex);
-
-    int[] otherShape = new int[sectionLen-2];
-    System.arraycopy(vindex.getSparseArray().getShape(), 0, otherShape, 0, sectionLen-2);
-    Section.Iterator iter = otherSection.getIterator(otherShape);
+    //int[] otherShape = new int[sectionLen-2];
+    //System.arraycopy(vindex.getSparseArray().getShape(), 0, otherShape, 0, sectionLen-2);  // LOOK WRONG
+    Section sectionWanted = section.subSection(0, sectionLen-2); // all but x, y
+    Section.Iterator iterWanted = sectionWanted.getIterator(v.getShape());
+    int[] indexWanted = new int[sectionLen-2];                              // place to put the iterator result
 
      // collect all the records that need to be read
+    DataReader dataReader = new DataReader(vindex);
     int count = 0;
-    while (iter.hasNext()) {
-      int sourceIndex = iter.next(null);
+    while (iterWanted.hasNext()) {
+      int sourceIndex = iterWanted.next(indexWanted);
       dataReader.addRecord(sourceIndex, count++);
     }
+
+    /*
+    DataReaderPartitioned dataReader = new DataReaderPartitioned();
+    int resultPos = 0;
+    while (iterWanted.hasNext()) {
+      iterWanted.next(indexWanted);   // returns the vindexP index in indexWanted aaray
+
+      PartitionCollection.DataRecord record = vindexP.getDataRecord(indexWanted);
+      if (record == null) {
+        vindexP.getDataRecord(indexWanted); // debug
+        resultPos++;
+        continue;
+      }
+      record.resultIndex = resultPos;
+      dataReader.addRecord(record);
+      resultPos++;
+    }
+    */
 
     // sort by file and position, then read
     DataReceiverIF dataReceiver = channel == null ? new DataReceiver(section, yRange, xRange) : new ChannelReceiver(channel, yRange, xRange);
@@ -1025,7 +1044,7 @@ public class Grib2Iosp extends GribIosp {
     void addRecord(int sourceIndex, int resultIndex) {
       GribCollection.Record record = vindex.getSparseArray().getContent(sourceIndex);
       if (record != null)
-        records.add(new DataRecord(resultIndex, record.fileno, record.pos, record.bmsPos));
+        records.add(new DataRecord(resultIndex, record.fileno, record.pos, record.bmsPos, record.scanMode));
     }
 
     void read(DataReceiverIF dataReceiver) throws IOException {
@@ -1047,7 +1066,8 @@ public class Grib2Iosp extends GribIosp {
         }
 
         GdsHorizCoordSys hcs = vindex.group.getGdsHorizCoordSys();
-        float[] data = Grib2Record.readData(rafData, dr.drsPos, dr.bmsPos, hcs.gdsNumberPoints, hcs.scanMode,
+        int scanMode = (dr.scanMode == Grib2Index.ScanModeMissing) ? hcs.scanMode : dr.scanMode;
+        float[] data = Grib2Record.readData(rafData, dr.drsPos, dr.bmsPos, hcs.gdsNumberPoints, scanMode,
                 hcs.nxRaw, hcs.nyRaw, hcs.nptsInLine);
         dataReceiver.addData(data, dr.resultIndex, hcs.nx);
       }
@@ -1055,17 +1075,18 @@ public class Grib2Iosp extends GribIosp {
     }
 
     private class DataRecord implements Comparable<DataRecord> {
-      //int[] index;
       int resultIndex; // index in the ens / time / vert array
       int fileno;
       long drsPos;
       long bmsPos;
+      int scanMode;
 
-      DataRecord(int resultIndex, int fileno, long drsPos, long bmsPos) {
+      DataRecord(int resultIndex, int fileno, long drsPos, long bmsPos, int scanMode) {
         this.resultIndex = resultIndex;
         this.fileno = fileno;
         this.drsPos = drsPos;
         this.bmsPos = bmsPos;
+        this.scanMode = scanMode;
       }
 
       @Override
@@ -1171,9 +1192,9 @@ public class Grib2Iosp extends GribIosp {
     //boolean hasRuntime = vindexP.isTwod;
 
     int sectionLen = section.getRank();
-    Range yRange = section.getRange(sectionLen-2);  // last 2
+    Range yRange = section.getRange(sectionLen - 2);  // last 2
     Range xRange = section.getRange(sectionLen-1);
-    Section sectionWanted = section.subSection(0, sectionLen-2); // all but x, y
+    Section sectionWanted = section.subSection(0, sectionLen - 2); // all but x, y
     Section.Iterator iterWanted = sectionWanted.getIterator(v.getShape());  // iterator over wanted indices in vindexP
     int[] indexWanted = new int[sectionLen-2];                              // place to put the iterator result
 
@@ -1182,17 +1203,6 @@ public class Grib2Iosp extends GribIosp {
     int resultPos = 0;
     while (iterWanted.hasNext()) {
       iterWanted.next(indexWanted);   // returns the vindexP index in indexWanted aaray
-
-      /* find the partition
-      int firstIndex = indexWanted[0];
-      int partno = hasRuntime ? vindexP.getPartition2D(firstIndex) : vindexP.getPartition1D(firstIndex);
-      if (partno < 0) continue; // missing
-      GribCollection.VariableIndex vindex = vindexP.getVindex(partno); // the component variable in this partition
-      if (vindex == null) continue; // missing
-
-      // translate to coordinates in vindex
-      int[] sourceIndex =  hasRuntime ? vindexP.translateIndex2D(indexWanted, vindex) : vindexP.translateIndex1D(indexWanted, vindex);
-      if (sourceIndex == null) continue; // missing */
 
       PartitionCollection.DataRecord record = vindexP.getDataRecord(indexWanted);
       if (record == null) {
@@ -1294,7 +1304,8 @@ public class Grib2Iosp extends GribIosp {
 
         //GdsHorizCoordSys hcs = dr.vindex.group.getGdsHorizCoordSys();
         GdsHorizCoordSys hcs = dr.hcs;
-        float[] data = Grib2Record.readData(rafData, dr.drsPos, dr.bmsPos, hcs.gdsNumberPoints, hcs.scanMode,
+        int scanMode = (dr.scanMode == Grib2Index.ScanModeMissing) ? hcs.scanMode : dr.scanMode;
+        float[] data = Grib2Record.readData(rafData, dr.drsPos, dr.bmsPos, hcs.gdsNumberPoints, scanMode,
                 hcs.nxRaw, hcs.nyRaw, hcs.nptsInLine);
         dataReceiver.addData(data, dr.resultIndex, hcs.nx);
       }

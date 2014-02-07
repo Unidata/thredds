@@ -751,7 +751,7 @@ public class GempakGridReader extends GempakFileReader {
 
     // LOOK - not dealing with repeated records
 
-    return new Grib2Record(null, is, ids, lus, gds, pds, drs, bms, dataSection, false);
+    return new Grib2Record(null, is, ids, lus, gds, pds, drs, bms, dataSection, false, Grib2Index.ScanModeMissing);
   }
 
   /**

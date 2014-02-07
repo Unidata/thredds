@@ -50,6 +50,8 @@ message Grib2Record {
   // data section
   required uint64 dataPos = 13;
   required uint32 dataLen = 14;
+
+  optional uint32 scanMode = 17  [default = 9999];  // scanMode from gds added in version 4.5
 }
 
 

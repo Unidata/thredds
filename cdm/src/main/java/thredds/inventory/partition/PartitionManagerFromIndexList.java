@@ -47,7 +47,8 @@ public class PartitionManagerFromIndexList extends CollectionAbstract implements
       File nextFile = iter.next();
 
       try {
-        return new CollectionSingleFile( new MFileOS7(nextFile.getPath()), logger);
+        return new CollectionSingleIndexFile( new MFileOS7(nextFile.getPath()), logger);
+
       } catch (IOException e) {
         logger.error("PartitionManagerFromList failed on "+nextFile.getPath(), e);
         throw new RuntimeException(e);

@@ -103,7 +103,7 @@ public abstract class Grib2Gds {
 
   public int template;
   public float earthRadius, majorAxis, minorAxis; // in meters
-  public int scanMode;
+  protected int scanMode;
   public int earthShape;
 
   private int nx, ny;         // raw
@@ -160,6 +160,9 @@ public abstract class Grib2Gds {
     return data;
   }
 
+  public int getScanMode() {
+    return scanMode;
+  }
 
   public boolean isLatLon() {
     return false;
