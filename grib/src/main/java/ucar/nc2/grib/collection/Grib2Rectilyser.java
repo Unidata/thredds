@@ -52,7 +52,7 @@ import java.util.*;
  * @since 11/26/2013
  */
 public class Grib2Rectilyser {
-  static private final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(Grib2CollectionBuilder.class);
+  static private final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(Grib2Rectilyser.class);
 
   private final Grib2Customizer cust;
   private final int gdsHash;

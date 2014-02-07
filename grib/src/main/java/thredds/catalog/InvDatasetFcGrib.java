@@ -42,7 +42,6 @@ import ucar.nc2.dt.grid.GridDataset;
 import ucar.nc2.dt.grid.GridCoordSys;
 import ucar.nc2.ft.FeatureDataset;
 import ucar.nc2.grib.GdsHorizCoordSys;
-import ucar.nc2.grib.GribIndex;
 import ucar.nc2.grib.collection.*;
 import ucar.nc2.time.CalendarDateRange;
 import ucar.unidata.geoloc.LatLonRect;
@@ -76,13 +75,11 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
 
   /////////////////////////////////////////////////////////////////////////////
   protected class StateGrib extends State {
-    // PartitionCollection timePartition;
     GribCollection gribCollection;
 
     protected StateGrib(StateGrib from) {
       super(from);
       if (from != null) {
-        //this.timePartition = from.timePartition;
         this.gribCollection = from.gribCollection;
       }
     }
@@ -96,39 +93,20 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
   //////////////////////////////////////////////////////////////////////////////
 
   private final FeatureCollectionConfig.GribConfig gribConfig;
-  //private final AtomicBoolean needsUpdate = new AtomicBoolean(); // not used
-  //private final AtomicBoolean needsProto = new AtomicBoolean();  // not used
   private final boolean isGrib1;
-  private final boolean isGribCollection;
   private final boolean isFilePartition;
   private final boolean isDirectoryPartition;
-  private final boolean isOtherPartition;
 
   public InvDatasetFcGrib(InvDatasetImpl parent, String name, String path, FeatureCollectionType fcType, FeatureCollectionConfig config) {
     super(parent, name, path, fcType, config);
     this.gribConfig = config.gribConfig;
     this.isGrib1 = config.type == FeatureCollectionType.GRIB1;
-    this.isGribCollection = (config.timePartition == null);
     this.isFilePartition = (config.timePartition != null) && config.timePartition.equalsIgnoreCase("file");
     this.isDirectoryPartition = (config.timePartition != null) && config.timePartition.equalsIgnoreCase("directory");
-    this.isOtherPartition = (config.timePartition != null) && !isFilePartition && !isDirectoryPartition;
 
     Formatter errlog = new Formatter();
-
-    try {
-      this.datasetCollection = GribCdmIndex2.makeCollection(config, errlog, logger);
-      topDirectory = datasetCollection.getRoot();
-    } catch (IOException e) {
-      logger.error("makeCollection failed="+errlog, e);
-      throw new RuntimeException("Failed to create InvDatasetFcGrib", e);
-    }
-
-    if (datasetCollection instanceof CollectionManager)
-      ((CollectionManager)datasetCollection).setChangeChecker(GribIndex.getChangeChecker());
-
-    // sneak in extra config info
-    if (config.gribConfig != null)
-      datasetCollection.putAuxInfo(FeatureCollectionConfig.AUX_GRIB_CONFIG, config.gribConfig);
+    CollectionSpecParser sp = new CollectionSpecParser(config.spec, errlog);
+    topDirectory = sp.getRootDir();
 
     String errs = errlog.toString();
     if (errs.length() > 0) logger.warn("{}: CollectionManager parse error = {} ", name, errs);
@@ -156,99 +134,13 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
     // not sure proto is used in GribFc
   }
 
-  /* @Override
-  public void update(CollectionUpdateType force) {  // this may be called from a background thread
-    // deal with the first call
-    boolean firstTime;
-    synchronized (lock) {
-      firstTime = first;
-    }
-    if (firstTime) {
-      try {
-        checkState(); // this will initialize, no update needed
-      } catch (IOException e) {
-        logger.error("Fail to create/update collection on first time", e);
-      }
-      return;
-    }
-
-    /* if (force == CollectionUpdateType.nocheck) {
-      // we need to update the dcm without triggering an index rewrite
-      try {
-        dcm.scan(false);
-      } catch (IOException e) {
-        logger.error("Error on scan " + dcm, e);
-      }
-    }
-
-    // do the update in a local object
-    StateGrib localState = new StateGrib((StateGrib) state);
-    try {
-      updateCollection(localState, force);
-    } catch (Throwable e) {
-      logger.error("Fail to create/update collection", e);
-      return;
-    }
-    makeDatasetTop(localState);
-    localState.lastInvChange = System.currentTimeMillis();
-
-    // switch to live
-    synchronized (lock) {
-      needsUpdate.set(false);
-      needsProto.set(false);
-      state = localState;
-    }
-
-  }
-
-  @Override
-  protected StateGrib checkState() throws IOException { // this is called from the request thread
-    synchronized (lock) {
-      if (first) {
-        firstInit();
-        if (datasetCollection instanceof CollectionManager)
-          ((CollectionManager)datasetCollection).scanIfNeeded();
-        first = false;
-        //always fall through to updateCollection
-
-      } else {
-        if (datasetCollection instanceof CollectionManager) {
-          boolean changed =  ((CollectionManager)datasetCollection).scanIfNeeded();
-          if (!changed) // return is not needed
-            return (StateGrib) state;
-        } else {
-          return (StateGrib) state;
-        }
-      }
-
-      // if this is the TDS, and its using the TDM, then you are not allowed to update
-      // if there is no update config, assume static, and try to skip checking for changes. got that?
-      // major crapola
-      // boolean tdsUsingTdm = !CollectionUpdater.INSTANCE.isTdm() && config.tdmConfig != null;
-      //CollectionUpdateType ff = (tdsUsingTdm || datasetCollection.isStatic()) ? CollectionUpdateType.nocheck : CollectionUpdateType.test;
-      CollectionUpdateType ff = CollectionUpdateType.nocheck;
-
-      // update local copy of state, then switch all at once
-      StateGrib localState = new StateGrib((StateGrib) state);
-      updateCollection(localState, ff);
-
-      makeDatasetTop(localState);
-      localState.lastInvChange = System.currentTimeMillis();
-      needsUpdate.set(false);
-      needsProto.set(false);
-
-      state = localState;
-      return localState;
-    }
-  } */
-
   @Override
   protected void updateCollection(State state, CollectionUpdateType force) {
     try {
       StateGrib localState = (StateGrib) state;
       GribCollection previous = localState.gribCollection;
 
-      localState.gribCollection = GribCdmIndex2.makeGribCollectionFromMCollection(isGrib1, this.datasetCollection, force, null, logger);
+      localState.gribCollection = GribCdmIndex2.makeGribCollection(isGrib1, this.config, force, logger);
       logger.debug("{}: GribCollection object was recreated", getName());
       if (previous != null) previous.close(); // LOOK may be another thread using - other thread will fail
 
@@ -921,56 +813,5 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
     }
 
   }
-  ///////////////////////////
-
-  /* private ThreddsMetadata.Variables extractThreddsVariables(GribCollection gribCollection, GribCollection.GroupHcs group) {
-    ThreddsMetadata.Variables vars = new ThreddsMetadata.Variables(format.toString());
-    for (GribCollection.VariableIndex vindex : group.varIndex)
-      vars.addVariable(extractThreddsVariables(gribCollection, vindex));
-    vars.sort();
-    return vars;
-  }
-
-  // we need to cache this by variable to reduce duplication
-  private Map<Integer, ThreddsMetadata.Variable> map = null;
-  private Grib1Customizer cust1 = null;
-  private Grib2Customizer cust2 = null;
-
-  private ThreddsMetadata.Variable extractThreddsVariables(GribCollection gc, GribCollection.VariableIndex vindex) {
-    if (map == null) map = new HashMap<Integer, ThreddsMetadata.Variable>(100);
-
-    ThreddsMetadata.Variable tv = map.get(vindex.cdmHash);
-    if (tv != null) return tv;
-    tv = new ThreddsMetadata.Variable();
-
-    if (gc.isGrib1()) {
-      if (cust1 == null) cust1 = Grib1Customizer.factory(gc.getCenter(), gc.getSubcenter(), gc.getLocal(), null);
-      tv.setName(cust1.makeVariableName(gc, vindex));
-      tv.setDescription(Grib1Iosp.makeVariableLongName(cust1, gc, vindex));
-      tv.setUnits(Grib1Iosp.makeVariableUnits(cust1, gc, vindex));
-      tv.setVocabularyId("1-" + vindex.discipline + "-" + vindex.category + "-" + vindex.parameter);
-
-      map.put(vindex.cdmHash, tv);
-      return tv;
-
-    } else {
-      if (cust2 == null)
-        cust2 = Grib2Customizer.factory(gc.getCenter(), gc.getSubcenter(), gc.getMaster(), gc.getLocal());
-
-      tv.setName(Grib2Iosp.makeVariableName(cust2, gc, vindex));
-      tv.setDescription(Grib2Iosp.makeVariableLongName(cust2, vindex));
-      tv.setUnits(Grib2Iosp.makeVariableUnits(cust2, vindex));
-      tv.setVocabularyId("2-" + vindex.discipline + "-" + vindex.category + "-" + vindex.parameter);
-
-      String paramDisc = cust2.getTableValue("0.0", vindex.discipline);
-      if (paramDisc == null) paramDisc = "Unknown";
-      String paramCategory = cust2.getCategory(vindex.discipline, vindex.category);
-      if (paramCategory == null) paramCategory = "Unknown";
-      String paramName = cust2.getVariableName(vindex.discipline, vindex.category, vindex.parameter);
-      tv.setVocabularyName(paramDisc + " / " + paramCategory + " / " + paramName);
-      map.put(vindex.cdmHash, tv);
-      return tv;
-    }
-  }  */
 
 }

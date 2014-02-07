@@ -44,7 +44,7 @@ public class PartitionCollection extends GribCollection {
     public FileCacheable open(String location, int buffer_size, CancelTask cancelTask, Object iospMessage) throws IOException {
       RandomAccessFile raf = new RandomAccessFile(location, "r");
       Partition p = (Partition) iospMessage;
-      return GribCdmIndex2.makeGribCollectionFromIndexFile(raf, p.getConfig(), CollectionUpdateType.never, null, p.getLogger());
+      return GribCdmIndex2.makeGribCollectionFromRaf(false, raf, p.getConfig(), CollectionUpdateType.never, p.getLogger());
       // return ucar.nc2.grib.collection.GribCollection.readFromIndex(p.isGrib1(), p.getName(), new File(p.getDirectory()), raf, p.getConfig(), p.getLogger());
     }
   };

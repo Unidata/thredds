@@ -21,7 +21,6 @@ public class GribCollectionBuilder {
   protected final org.slf4j.Logger logger;
 
   protected GribCollectionBuilder(MCollection dcm, boolean isSingleFile, org.slf4j.Logger logger) {
-    // assert dcm != null;
     this.dcm = dcm;
     this.isSingleFile = isSingleFile;
     this.logger = logger;

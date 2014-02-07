@@ -317,35 +317,20 @@ public class Grib2Iosp extends GribIosp {
 
     if (gHcs != null) { // just use the one group that was set in the constructor
       this.gribCollection = gHcs.getGribCollection();
-      if (this.gribCollection instanceof Grib2Partition) {
+      if (this.gribCollection instanceof Grib2Partition)
         isPartitioned = true;
-        //gribPartition = (Grib2Partition) gribCollection;
-      }
-      // cust needs to be set before addGroup
       cust = Grib2Customizer.factory(gribCollection.getCenter(), gribCollection.getSubcenter(), gribCollection.getMaster(), gribCollection.getLocal());
+
       addGroup(ncfile, ncfile.getRootGroup(), gHcs, gtype, false);
 
     } else if (gribCollection == null) { // may have been set in the constructor
-      // check if its a plain ole GRIB2 data file
-      boolean isGribFile = (raf != null) && Grib2RecordScanner.isValidFile(raf);
-      if (isGribFile) {
-        this.gribCollection = GribCdmIndex2.makeGribCollectionFromDataFile(false, raf, gribConfig, CollectionUpdateType.test, null, logger);
-        // close the data file, the ncx2 raf file is managed by gribCollection
-        raf.close();
-        this.raf = null;
 
-      } else {  // check its an ncx2 file
-        this.gribCollection = GribCdmIndex2.makeGribCollectionFromIndexFile(raf, gribConfig, CollectionUpdateType.test, null, logger);
-      }
-
-      if (gribCollection == null) {
+      this.gribCollection = GribCdmIndex2.makeGribCollectionFromRaf(false, raf, gribConfig, CollectionUpdateType.test, logger);
+      if (gribCollection == null)
         throw new IllegalStateException("Not a GRIB2 data file or ncx2 file");
-      }
 
-      if (this.gribCollection instanceof Grib2Partition) {
+      if (this.gribCollection instanceof Grib2Partition)
         isPartitioned = true;
-        //gribPartition = (Grib2Partition) gribCollection;
-      }
       cust = Grib2Customizer.factory(gribCollection.getCenter(), gribCollection.getSubcenter(), gribCollection.getMaster(), gribCollection.getLocal());
 
       for (GribCollection.Dataset ds : gribCollection.getDatasets()) {
@@ -358,32 +343,6 @@ public class Grib2Iosp extends GribIosp {
         for (GribCollection.GroupHcs g : groups)
           addGroup(ncfile, datasetGroup, g, ds.getType(), useGroups);
       }
-
-  /*           Group g = new Group(ncfile, null, ds.getType());
-            ncfile.addGroup(null, g);
-
-            List<GribCollection.GroupHcs> groups = new ArrayList<>(ds.getGroups());
-            boolean useGroups = groups.size() > 1;
-
-            for (GribCollection.GroupHcs gh : groups) {
-              Group gn;
-              if (useGroups) {
-                gn = new Group(ncfile, g, gh.getId());
-                g.addGroup(gn);
-              } else
-                gn = g;
-
-              makeGroup(ncfile, gn, gh, ds.getType().equals("TwoD"));
-            }
-          }
-
-      } else {
-        List<GribCollection.GroupHcs> groups = new ArrayList<>(gribCollection.getGroups());
-        Collections.sort(groups);
-        boolean useGroups = groups.size() > 1;
-        for (GribCollection.GroupHcs g : groups)
-          addGroup(ncfile, g, useGroups);
-      }  */
     }
 
     String val = CommonCodeTable.getCenterName(gribCollection.getCenter(), 2);
@@ -992,7 +951,7 @@ public class Grib2Iosp extends GribIosp {
     vindex.readRecords();
 
     int sectionLen = section.getRank();
-    Range yRange = section.getRange(sectionLen-2);
+    Range yRange = section.getRange(sectionLen - 2);
     Range xRange = section.getRange(sectionLen-1);
 
     //int[] otherShape = new int[sectionLen-2];

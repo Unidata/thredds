@@ -305,23 +305,7 @@ public class Tdm {
       try {
         Formatter errlog = new Formatter();
 
-        boolean changed;
-
-        if (config.timePartition == null) {
-          changed = GribCdmIndex2.updateGribCollection(config, updateType, logger);
-
-        } else {
-          if (config.timePartition.equalsIgnoreCase("seperate"))
-            changed = GribCdmIndex2.makeSeperateGC(config, config.tdmConfig.updateType, logger);
-
-          else
-            changed = GribCdmIndex2.updateDirectoryCollection(config, updateType, updateType, logger);
-        }
-
-        // delete any files first
-        //if (config.tdmConfig.deleteAfter != null) {
-        //  doManage(config.tdmConfig.deleteAfter);
-        //}
+        boolean changed = GribCdmIndex2.updateGribCollection(config, updateType, logger);
 
         logger.debug("{} {} changed {}", CalendarDate.present(), config.name, changed);
         if (changed) System.out.printf("%s %s changed%n", CalendarDate.present(), config.name);
@@ -342,9 +326,6 @@ public class Tdm {
           logger.warn("Listener InUse should have been set");
       }
 
-      /* System.out.printf("OpenFiles:%n");
-      for (String s : RandomAccessFile.getOpenFiles())
-        System.out.printf("%s%n", s);*/
     }
 
     private void sendTriggers(String path, Formatter f) {
