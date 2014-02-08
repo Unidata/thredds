@@ -5,7 +5,7 @@ import thredds.inventory.*;
 import ucar.sparr.Coordinate;
 import ucar.ma2.DataType;
 import ucar.nc2.grib.*;
-import ucar.nc2.grib.collection.Grib2CollectionBuilder;
+import ucar.nc2.grib.collection.Grib2CollectionWriter;
 import ucar.nc2.grib.collection.Grib2Rectilyser;
 import ucar.nc2.grib.grib2.*;
 import ucar.nc2.grib.collection.*;
@@ -422,11 +422,11 @@ public class Grib2RectilyzePanel extends JPanel {
     FeatureCollectionConfig.GribConfig config = gribCollectionConfigDialog.getGribConfig();
     dcm.putAuxInfo(FeatureCollectionConfig.AUX_GRIB_CONFIG, config);
 
-    Grib2CollectionBuilder builder = Grib2CollectionBuilder.debugOnly(dcm, logger);
-    List<Grib2CollectionBuilder.Group> groups = builder.makeGroups(fileList, info);
+    Grib2CollectionWriter builder = Grib2CollectionWriter.debugOnly(dcm, logger);
+    List<Grib2CollectionWriter.Group> groups = builder.makeGroups(fileList, info);
     this.cust = builder.getCustomizer();
 
-    for (Grib2CollectionBuilder.Group group : groups) {
+    for (Grib2CollectionWriter.Group group : groups) {
       Grib2Rectilyser rect = group.rect;
       // rect.showInfo(info, cust);
       for (Grib2Rectilyser.VariableBag vb : rect.getGribvars()) {
@@ -479,7 +479,7 @@ public class Grib2RectilyzePanel extends JPanel {
   public boolean writeIndex(Formatter f) throws IOException {
     if (dcm == null) return false;
 
-    ucar.nc2.grib.collection.Grib2CollectionBuilder.makeIndex(dcm, f, logger);
+    Grib2CollectionWriter.makeIndex(dcm, f, logger);
     return true;
   }
 

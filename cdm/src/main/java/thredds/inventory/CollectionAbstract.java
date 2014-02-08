@@ -202,5 +202,18 @@ public abstract class CollectionAbstract implements MCollection {
       logger.error("Failed to extract date from file {} with Extractor {}", mfile.getPath(), dateExtractor);
     return result;
   }
+
+
+  /////////////////////////////////////////////////////////////////////////
+
+  public class MyGribFilter implements DirectoryStream.Filter<Path> {
+    public boolean accept(Path entry) throws IOException {
+      if (sfilter != null && !sfilter.accept(entry)) return false;
+      String last = entry.getName(entry.getNameCount()-1).toString();
+      return !last.endsWith(".gbx9") && !last.endsWith(".gbx8") && !last.endsWith(".ncx") && !last.endsWith(".ncx2") &&  // LOOK GRIB specific
+              !last.endsWith(".xml");
+    }
+  }
+
 }
 

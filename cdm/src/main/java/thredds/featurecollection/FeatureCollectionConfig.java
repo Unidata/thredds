@@ -65,6 +65,10 @@ public class FeatureCollectionConfig {
     TwoD, Best, Hour0, Files, LatestFile
   }
 
+  static public enum PartitionType {
+    none, directory, file
+  }
+
   public static void setRegularizeDefault(boolean t) {
     regularizeDefault = t;
   }
@@ -79,7 +83,8 @@ public class FeatureCollectionConfig {
   //////////////////////////////////////////////
 
   public FeatureCollectionType type;
-  public String name, path, spec, dateFormatMark, olderThan, timePartition;
+  public PartitionType ptype = PartitionType.none;
+  public String name, path, spec, dateFormatMark, olderThan;
   public UpdateConfig tdmConfig;
   public UpdateConfig updateConfig = new UpdateConfig();
   public ProtoConfig protoConfig = new ProtoConfig();
@@ -102,7 +107,10 @@ public class FeatureCollectionConfig {
     this.dateFormatMark = dateFormatMark;
     this.olderThan = olderThan;
     if (recheckAfter != null) this.updateConfig.recheckAfter = recheckAfter;
-    this.timePartition = timePartition;    // "directory", "file", or time period
+    if (null != timePartition) {
+      if (timePartition.equalsIgnoreCase("directory")) ptype = PartitionType.directory;
+      if (timePartition.equalsIgnoreCase("file")) ptype = PartitionType.file;
+    }
     this.useIndexOnly = useIndexOnlyS != null && useIndexOnlyS.equalsIgnoreCase("true");
     this.innerNcml = innerNcml;
   }
@@ -121,10 +129,7 @@ public class FeatureCollectionConfig {
       f.format("  dateFormatMark ='%s'%n", dateFormatMark);
     if (olderThan != null)
       f.format("  olderThan =%s%n", olderThan);
-    if (timePartition != null)
-      f.format("  timePartition =%s%n", timePartition);
-    else
-      f.format("  NOT timePartition%n");
+    f.format("  timePartition =%s%n", ptype);
     if (updateConfig != null)
       f.format("  updateConfig =%s%n", updateConfig);
     if (tdmConfig != null)

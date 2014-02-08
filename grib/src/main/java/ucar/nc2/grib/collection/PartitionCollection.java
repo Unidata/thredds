@@ -44,8 +44,8 @@ public class PartitionCollection extends GribCollection {
     public FileCacheable open(String location, int buffer_size, CancelTask cancelTask, Object iospMessage) throws IOException {
       RandomAccessFile raf = new RandomAccessFile(location, "r");
       Partition p = (Partition) iospMessage;
-      return GribCdmIndex2.makeGribCollectionFromRaf(false, raf, p.getConfig(), CollectionUpdateType.never, p.getLogger());
-      // return ucar.nc2.grib.collection.GribCollection.readFromIndex(p.isGrib1(), p.getName(), new File(p.getDirectory()), raf, p.getConfig(), p.getLogger());
+      return GribCdmIndex2.openGribCollectionFromIndexFile(raf, p.getConfig(), p.getLogger());
+      //return GribCdmIndex2.makeGribCollectionFromRaf(false, raf, p.getConfig(), CollectionUpdateType.never, p.getLogger());
     }
   };
 
@@ -370,7 +370,7 @@ public class PartitionCollection extends GribCollection {
     private String indexFilename;
     private long lastModified;
 
-    // temporary storage while building - do not use
+    // temporary storage while building - do not use - must call getGribCollection()()
     GribCollection gc;
 
     // constructor from ncx
@@ -454,7 +454,7 @@ public class PartitionCollection extends GribCollection {
     }
 
     public GribCollection makeGribCollection(CollectionUpdateType force) throws IOException {
-      GribCollection result = GribCdmIndex2.makeGribCollectionFromMCollection(isGrib1, dcm, force, null, logger); // LOOK caller must close
+      GribCollection result = GribCdmIndex2.openGribCollectionFromMCollection(isGrib1, dcm, force, null, logger); // LOOK caller must close
       indexFilename = result.getIndexFile().getPath();
       return result;
     }

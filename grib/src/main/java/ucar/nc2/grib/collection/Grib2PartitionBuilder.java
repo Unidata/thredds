@@ -22,7 +22,7 @@ import java.util.*;
  * @author John
  * @since 12/7/13
  */
-public class Grib2PartitionBuilder extends Grib2CollectionBuilder {
+public class Grib2PartitionBuilder extends Grib2CollectionWriter {
   public static final String MAGIC_START = "Grib2Partition2Index";  // was Grib2Partition0Index
   static private final boolean trace = false;
 

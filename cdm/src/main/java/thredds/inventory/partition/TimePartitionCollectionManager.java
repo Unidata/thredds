@@ -57,10 +57,10 @@ public class TimePartitionCollectionManager extends MFileCollectionManager imple
   static protected enum Type {setfromExistingIndices, directory, timePeriod}
 
   static public PartitionManager factory(FeatureCollectionConfig config, String topDir, IndexReader indexReader, Formatter errlog, org.slf4j.Logger logger) {
-    if (config.timePartition == null)
+    if (config.ptype == FeatureCollectionConfig.PartitionType.none)
       throw new IllegalArgumentException("Must specify time partition in config = " + config.name);
 
-    if (config.timePartition.equalsIgnoreCase("directory")) {
+    if (config.ptype == FeatureCollectionConfig.PartitionType.directory) {
       Path topPath = Paths.get(topDir);
       return new DirectoryPartition(config, topPath, indexReader, logger);
 
@@ -97,7 +97,7 @@ public class TimePartitionCollectionManager extends MFileCollectionManager imple
     TimePartitionCollection curr = null;
     for (DatedMFile dmf : files) {
       if ((curr == null) || (!curr.endPartition.isAfter(dmf.cdate))) {
-        CalendarPeriod period = CalendarPeriod.of(config.timePartition);
+        CalendarPeriod period = null; // CalendarPeriod.of(config.timePartition);   LOOK DISABLED !!
         CalendarDate start = dmf.cdate.truncate(period.getField()); // start on a boundary
         CalendarDate end = start.add( period);
         String name = collectionName + "-"+ cdf.toString(dmf.cdate);   // LOOK

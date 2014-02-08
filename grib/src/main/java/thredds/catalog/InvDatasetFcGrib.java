@@ -101,8 +101,8 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
     super(parent, name, path, fcType, config);
     this.gribConfig = config.gribConfig;
     this.isGrib1 = config.type == FeatureCollectionType.GRIB1;
-    this.isFilePartition = (config.timePartition != null) && config.timePartition.equalsIgnoreCase("file");
-    this.isDirectoryPartition = (config.timePartition != null) && config.timePartition.equalsIgnoreCase("directory");
+    this.isFilePartition = (config.ptype == FeatureCollectionConfig.PartitionType.file);
+    this.isDirectoryPartition = (config.ptype == FeatureCollectionConfig.PartitionType.directory);
 
     Formatter errlog = new Formatter();
     CollectionSpecParser sp = new CollectionSpecParser(config.spec, errlog);
@@ -140,7 +140,7 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
       StateGrib localState = (StateGrib) state;
       GribCollection previous = localState.gribCollection;
 
-      localState.gribCollection = GribCdmIndex2.makeGribCollection(isGrib1, this.config, force, logger);
+      localState.gribCollection = GribCdmIndex2.openGribCollection(isGrib1, this.config, force, logger);
       logger.debug("{}: GribCollection object was recreated", getName());
       if (previous != null) previous.close(); // LOOK may be another thread using - other thread will fail
 

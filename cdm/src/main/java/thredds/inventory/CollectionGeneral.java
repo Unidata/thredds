@@ -33,93 +33,39 @@
  *
  */
 
-package thredds.inventory.partition;
+package thredds.inventory;
 
+import org.slf4j.Logger;
 import thredds.filesystem.MFileOS7;
-import thredds.inventory.CollectionAbstract;
-import thredds.inventory.MFile;
 import ucar.nc2.util.CloseableIterator;
 
 import java.io.IOException;
 import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.nio.file.attribute.BasicFileAttributes;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.List;
 
 /**
- * Manage MFiles from one directory.
- * Use getFileIterator() for best performance on large directories
+ * Describe
  *
  * @author caron
- * @since 11/16/13
+ * @since 2/7/14
  */
-public class DirectoryCollection extends CollectionAbstract {
+public class CollectionGeneral extends CollectionAbstract {
+  private Path rootPath;
 
-  /**
-   * Create standard name = topCollectionName + last directory
-   * @param topCollectionName from config, name of the collection
-   * @param dir directory for this
-   * @return  standard collection name, to name the index file
-   */
-  public static String makeCollectionName(String topCollectionName, Path dir) {
-    int last = dir.getNameCount()-1;
-    Path lastDir = dir.getName(last);
-    String lastDirName = lastDir.toString();
-    return topCollectionName +"-" + lastDirName;
-  }
-
-  /**
-   * Create standard name = topCollectionName + last directory
-   * @param topCollectionName from config, name of the collection
-   * @param dir directory for this
-   * @return  standard collection name, to name the index file
-   */
-  public static Path makeCollectionIndexPath(String topCollectionName, Path dir) {
-    String collectionName = makeCollectionName(topCollectionName, dir);
-    return Paths.get(dir.toString(), collectionName + NCX_SUFFIX);
-  }
-
-  ///////////////////////////////////////////////////////////////////////////////////
-
-  final String topCollection;
-  final Path topDir;
-
-  public DirectoryCollection(String topCollectionName, Path topDir, org.slf4j.Logger logger) {
-    super(topCollectionName, logger);
-    this.topCollection = cleanName(topCollectionName);
-    this.topDir = topDir;
-    this.collectionName = makeCollectionName(collectionName, topDir);
-  }
-
-  public DirectoryCollection(String topCollectionName, String topDirS, org.slf4j.Logger logger) {
-    this(topCollectionName, Paths.get(topDirS), logger);
-  }
-
-  public Path getIndexPath() {
-    return DirectoryCollection.makeCollectionIndexPath(topCollection, topDir);
-  }
-
-  public boolean isLeafDirectory() throws IOException {
-    int countDir=0, countFile=0, count =0;
-    try (CloseableIterator<MFile> iter = getFileIterator()) {
-      while (iter.hasNext() && count++ < 100) {
-        MFile file = iter.next();
-        if (file.isDirectory()) countDir++; else countFile++;
-      }
-    }
-    return countFile > countDir;
+  public CollectionGeneral(String collectionName, Path rootPath, Logger logger) {
+    super(collectionName, logger);
+    this.rootPath = rootPath;
   }
 
   @Override
-  public String getRoot() {
-    return topDir.toString();
-  }
+  public void close() {
 
-  @Override
-  public String getIndexFilename() {
-    return getIndexPath().toString();
   }
 
   @Override
@@ -140,36 +86,28 @@ public class DirectoryCollection extends CollectionAbstract {
 
   @Override
   public CloseableIterator<MFile> getFileIterator() throws IOException {
-    return new MyFileIterator(topDir);
+    return new MyFileIterator(rootPath);
   }
 
-  @Override
-  public void close() {
-  }
-
-  // returns everything in the current directory
+  // returns everything in the current directory, TODO: recurse into subdirectories
   private class MyFileIterator implements CloseableIterator<MFile> {
     DirectoryStream<Path> dirStream;
     Iterator<Path> dirStreamIterator;
     MFile nextMFile;
-    int count = 0;
 
     MyFileIterator(Path dir) throws IOException {
-      if (debug) System.out.printf(" DirectoryCollection.MFileIterator %s ", topDir);
       dirStream = Files.newDirectoryStream(dir, new MyGribFilter());
       dirStreamIterator = dirStream.iterator();
     }
 
     public boolean hasNext() {
       while (true) {
-        if (debug && count % 100 == 0) System.out.printf("%d ", count);
-        count++;
         if (!dirStreamIterator.hasNext()) return false;
 
         try {
           Path nextPath = dirStreamIterator.next();
           BasicFileAttributes attr =  Files.readAttributes(nextPath, BasicFileAttributes.class);
-          if (attr.isDirectory()) continue;
+          if (attr.isDirectory()) continue;  // LOOK fix this
           nextMFile = new MFileOS7(nextPath, attr);
 
        } catch (IOException e) {
@@ -178,6 +116,7 @@ public class DirectoryCollection extends CollectionAbstract {
        if (filter == null || filter.accept(nextMFile)) return true;
       }
     }
+
 
     public MFile next() {
       return nextMFile;
@@ -190,30 +129,7 @@ public class DirectoryCollection extends CollectionAbstract {
     // better alternative is for caller to send in callback (Visitor pattern)
     // then we could use the try-with-resource
     public void close() throws IOException {
-      if (debug) System.out.printf("%n");
       dirStream.close();
     }
   }
-
-  ////////////////////////////////////////////////////////////////////////////////////////////
-  private static final boolean debug = true;
-  // this idiom keeps the iterator from escaping, so that we can use try-with-resource, and ensure it closes. like++
-  public void iterateOverMFileCollection(Visitor visit) throws IOException {
-    if (debug) System.out.printf("DirectoryCollection.iterateOverMFileCollection %s ", topDir);
-    int count = 0;
-    try (DirectoryStream<Path> ds = Files.newDirectoryStream(topDir, new MyGribFilter())) {
-      for (Path p : ds) {
-        BasicFileAttributes attr = Files.readAttributes(p, BasicFileAttributes.class);
-        if (!attr.isDirectory())
-          visit.consume(new MFileOS7(p));
-        if (debug) System.out.printf("%d ", count++);
-      }
-    }
-    if (debug) System.out.printf("%d%n ", count);
-  }
-
-  public interface Visitor {
-     public void consume(MFile mfile);
-  }
-
 }

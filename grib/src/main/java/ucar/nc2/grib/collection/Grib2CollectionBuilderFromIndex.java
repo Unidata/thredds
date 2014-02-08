@@ -63,7 +63,7 @@ public class Grib2CollectionBuilderFromIndex extends GribCollectionBuilder {
   // reading
 
   protected String getMagicStart() {
-    return Grib2CollectionBuilder.MAGIC_START;
+    return Grib2CollectionWriter.MAGIC_START;
   }
 
   protected boolean readIndex(RandomAccessFile raf) {
@@ -82,9 +82,9 @@ public class Grib2CollectionBuilderFromIndex extends GribCollectionBuilder {
       }
 
       gc.version = raf.readInt();
-      boolean versionOk = isSingleFile ? gc.version >= Grib2CollectionBuilder.minVersionSingle : gc.version >= Grib2CollectionBuilder.version;
+      boolean versionOk = isSingleFile ? gc.version >= Grib2CollectionWriter.minVersionSingle : gc.version >= Grib2CollectionWriter.version;
       if (!versionOk) {
-        logger.warn("Grib2CollectionBuilderFromIndex {}: index found version={}, want version= {} on file {}", gc.getName(), gc.version, Grib2CollectionBuilder.version, raf.getLocation());
+        logger.warn("Grib2CollectionBuilderFromIndex {}: index found version={}, want version= {} on file {}", gc.getName(), gc.version, Grib2CollectionWriter.version, raf.getLocation());
         return false;
       }
 
