@@ -1,7 +1,6 @@
 package ucar.sparr;
 
-import ucar.nc2.grib.collection.CoordinateRuntime;
-import ucar.nc2.grib.collection.CoordinateTime2D;
+import ucar.nc2.grib.collection.*;
 import ucar.nc2.grib.grib2.Grib2Record;
 
 import java.util.*;
@@ -38,11 +37,13 @@ public class CoordinateSharer {
   Map<Coordinate, Integer> coordMap;
 
   public void addCoords(List<Coordinate> coords) {
+    Coordinate runtime = null;
     for (Coordinate coord : coords) {
       switch (coord.getType()) {
         case runtime:
-          if (runtimeUnion) runtimeAllBuilder.addAll(coord); // always union
+          if (runtimeUnion) runtimeAllBuilder.addAll(coord); // make union of all coords
           else runtimeBuilders.add(coord);                   // unique coordinates
+          runtime = coord;
           break;
         case time:
           timeBuilders.add(coord);
@@ -57,7 +58,11 @@ public class CoordinateSharer {
           CoordinateTime2D time2D = (CoordinateTime2D) coord;
           time2DBuilders.add(coord);
           //if (runtimeUnion) runtimeAllBuilder.addAll(time2D.getRuntimeCoordinate()); // ?? never ??
-          //else runtimeBuilders.add(time2D.getRuntimeCoordinate());
+          //runtimeBuilders.add(time2D.getRuntimeCoordinate());
+          // debug
+          CoordinateRuntime runtimeFrom2D = time2D.getRuntimeCoordinate();
+          if (!runtimeFrom2D.equals(runtime))
+            System.out.println("HEY");
           break;
       }
     }
@@ -108,6 +113,29 @@ public class CoordinateSharer {
         result.add(idx);
       }
     }
+
+    // debug
+    Coordinate runtime = null;
+    for (Integer idx : result) {
+      Coordinate coord = unionCoords.get(idx);
+      switch (coord.getType()) {
+        case runtime:
+          runtime = coord;
+          break;
+        case time2D:
+          CoordinateTime2D time2D = (CoordinateTime2D) coord;
+          CoordinateRuntime runtimeFrom2D = time2D.getRuntimeCoordinate();
+          if (!runtimeFrom2D.equals(runtime)) {
+            System.out.println("HEY");
+            reindex2shared(prev);
+          }
+          break;
+      }
+    }
+
+
+
+
     return result;
   }
 

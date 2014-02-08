@@ -34,11 +34,13 @@ public class CoordinateUnionizer {
   Time2DUnionBuilder time2DBuilder;
 
   public void addCoords(List<Coordinate> coords) {
+    Coordinate runtime = null;
     for (Coordinate coord : coords) {
       switch (coord.getType()) {
         case runtime:
           if (runtimeBuilder == null) runtimeBuilder = new CoordinateRuntime.Builder();
           runtimeBuilder.addAll(coord);
+          runtime = coord;
           break;
         case time:
           CoordinateTime time = (CoordinateTime) coord;
@@ -58,6 +60,11 @@ public class CoordinateUnionizer {
           CoordinateTime2D time2D = (CoordinateTime2D) coord;
           if (time2DBuilder == null) time2DBuilder = new Time2DUnionBuilder(time2D.isTimeInterval(), time2D.getTimeUnit(), coord.getCode());
           time2DBuilder.addAll(time2D);
+
+          // debug
+          CoordinateRuntime runtimeFrom2D = time2D.getRuntimeCoordinate();
+          if (!runtimeFrom2D.equals(runtime))
+            System.out.println("HEY");
           break;
       }
     }
@@ -144,27 +151,22 @@ public class CoordinateUnionizer {
     boolean isTimeInterval;
     CalendarPeriod timeUnit;
     int code;
-
-    CoordinateRuntime.Builder runBuilder;
-    List<CalendarDate> runtimes = new ArrayList<>();
-    List<Coordinate> times = new ArrayList<>();
+    SortedMap<CalendarDate, CoordinateTimeAbstract> timeMap = new TreeMap<>();
 
     public Time2DUnionBuilder(boolean isTimeInterval, CalendarPeriod timeUnit, int code) {
       this.isTimeInterval = isTimeInterval;
       this.timeUnit = timeUnit;
       this.code = code;
-
-      runBuilder = new CoordinateRuntime.Builder();
     }
 
     @Override
     public void addAll(Coordinate coord) {
       super.addAll(coord);
       CoordinateTime2D coordT2D = (CoordinateTime2D) coord;
-
-      CoordinateRuntime runtime = coordT2D.getRuntimeCoordinate();
-      runtimes.addAll(runtime.getRuntimesSorted());  // LOOK what if they overlap ?
-      times.addAll( coordT2D.getTimes());
+      for (Coordinate tcoord : coordT2D.getTimes()) {             // possible duplicate runtimes from different partitions
+        CoordinateTimeAbstract times = (CoordinateTimeAbstract) tcoord;
+        timeMap.put(times.getRefDate(), times);                   // later partitions will override
+      }
     }
 
     @Override
@@ -174,13 +176,19 @@ public class CoordinateUnionizer {
 
     @Override
     public Coordinate makeCoordinate(List<Object> values) {
-      CoordinateRuntime runCoord = new CoordinateRuntime(runtimes);
+
+      List<CalendarDate> runtimes = new ArrayList<>();
+      List<Coordinate> times = new ArrayList<>();
+      for( CalendarDate cd : timeMap.keySet()) {
+        runtimes.add(cd);
+        times.add(timeMap.get(cd));
+      }
 
       List<CoordinateTime2D.Time2D> vals = new ArrayList<>(values.size());
       for (Object val : values) vals.add( (CoordinateTime2D.Time2D) val);
       Collections.sort(vals);
 
-      return new CoordinateTime2D(code, timeUnit, vals, runCoord, times);
+      return new CoordinateTime2D(code, timeUnit, vals, new CoordinateRuntime(runtimes), times);
     }
 
   }

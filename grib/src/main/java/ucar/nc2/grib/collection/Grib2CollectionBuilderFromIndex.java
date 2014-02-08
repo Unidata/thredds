@@ -290,7 +290,7 @@ message Group {
       }
     }
     assignVertNames(vertCoords);
-    assignRuntimeNames(runtimes, time2DCoords);
+    assignRuntimeNames(runtimes, time2DCoords, group.getId()+"-"+(group.isTwod?"TwoD":"Best"));
 
     return group;
   }
@@ -316,13 +316,16 @@ message Group {
     }
   }
 
-  public void assignRuntimeNames(Map<CoordinateRuntime, CoordinateRuntime> runtimes, List<CoordinateTime2D> time2DCoords) {
+  public void assignRuntimeNames(Map<CoordinateRuntime, CoordinateRuntime> runtimes, List<CoordinateTime2D> time2DCoords, String groupId) {
 
     // assign same name to internal time2D runtime as matched the external runtime
     for (CoordinateTime2D t2d : time2DCoords) {
       CoordinateRuntime runtime2D = t2d.getRuntimeCoordinate();
       CoordinateRuntime runtime = runtimes.get(runtime2D);
-      runtime2D.setName(runtime.getName());
+      if (runtime == null)
+        System.out.printf("HEY assignRuntimeNames failed on %s group %s%n", t2d.getName(), groupId);
+      else
+        runtime2D.setName(runtime.getName());
     }
 
   }

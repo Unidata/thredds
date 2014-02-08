@@ -110,7 +110,7 @@ public class CoordinateRuntime implements Coordinate {
 
   @Override
   public void showCoords(Formatter info) {
-    info.format("Run Times: (%s)%n", getUnit());
+    info.format("Run Times: %s (%s)%n", getName(), getUnit());
     List<Double> udunits = getRuntimesUdunits();
     int count = 0;
     for (CalendarDate cd : runtimeSorted) {

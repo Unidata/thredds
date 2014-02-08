@@ -289,7 +289,6 @@ public class Grib2PartitionBuilder extends Grib2CollectionWriter {
         // for each variable in this Partition, add reference to it in the vip
         for (int varIdx = 0; varIdx < group.variList.size(); varIdx++) {
           GribCollection.VariableIndex vi = group.variList.get(varIdx);
-          if (trace) f.format(" Check %s%n", vi.toStringShort());
           int flag = 0;
           PartitionCollection.VariableIndexPartitioned vip = (PartitionCollection.VariableIndexPartitioned) resultGroup.findVariableByHash(vi.cdmHash);
           vip.addPartition(partno, groupIdx, varIdx, flag, vi);
@@ -300,7 +299,7 @@ public class Grib2PartitionBuilder extends Grib2CollectionWriter {
 
       // we have a complete set of runtimes
       Coordinate runtimeCoord = runtimeAllBuilder.finish();
-      resultGroup.coords.add(runtimeCoord);
+      resultGroup.coords.add(runtimeCoord);  // lLOOK this doesnt do anything because we set the coords to sharify.getUnionCoords();
 
       // for each run, which partition ??
       resultGroup.run2part = new int[runtimeCoord.getSize()];
@@ -324,7 +323,7 @@ public class Grib2PartitionBuilder extends Grib2CollectionWriter {
 
       // for each variable, create union of coordinates across the partitions
       for (GribCollection.VariableIndex viResult : resultGroup.variList) {
-        // loop over partitions, make union coordinate, time filter intervals
+        // loop over partitions, make union coordinate; also time filter the intervals
         CoordinateUnionizer unionizer = new CoordinateUnionizer(viResult.getVarid(), intvMap);
         for (int partno = 0; partno < npart; partno++) {
           GribCollection.GroupHcs group = gp.componentGroups[partno];
@@ -341,14 +340,30 @@ public class Grib2PartitionBuilder extends Grib2CollectionWriter {
       // create a list of common coordinates, put them into the group, and now variables just reference those by index
       sharify.finish();
       resultGroup.coords = sharify.getUnionCoords();
-      /* if (!result.isPartitionOfPartitions) { // add offsets to time2D
-        for (Coordinate coord : resultGroup.coords) {
-          if (coord.getType() == Coordinate.Type.time2D) {
-            CoordinateTime2D twod = (CoordinateTime2D) coord;
-            twod.addOffsets();
-          }
+
+      // debug
+      List<CoordinateTime2D> time2DCoords = new ArrayList<>();
+      Map<CoordinateRuntime, CoordinateRuntime> runtimes = new HashMap<>();
+      for (Coordinate coord : resultGroup.coords) {
+        Coordinate.Type type = coord.getType();
+        switch (type) {
+          case runtime:
+            CoordinateRuntime reftime = (CoordinateRuntime) coord;
+            runtimes.put(reftime, reftime);
+            break;
+
+          case time2D:
+            CoordinateTime2D t2d = (CoordinateTime2D) coord;
+            time2DCoords.add(t2d);
+            break;
         }
-      } */
+      }
+      for (CoordinateTime2D t2d : time2DCoords) {
+        CoordinateRuntime runtime2D = t2d.getRuntimeCoordinate();
+        CoordinateRuntime runtime = runtimes.get(runtime2D);
+        if (runtime == null)
+          System.out.printf("HEY assignRuntimeNames failed on %s group %s%n", t2d.getName(), resultGroup.getId());
+      }
 
       for (GribCollection.VariableIndex viResult : resultGroup.variList) {
         // redo the variables against the shared coordinates

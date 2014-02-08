@@ -210,12 +210,14 @@ public class CdmIndex2Panel extends JPanel {
 
   public void showInfo(Formatter f) {
     if (gc == null) return;
-    f.format("Class %s%n", gc.getClass().getName());
+    f.format("magic=%s%n", magic);
+    gc.showIndex(f);
+    f.format("%n");
     List<GroupBean> groups = groupTable.getBeans();
     for (GroupBean bean : groups) {
       f.format("%-50s %-50s %d%n", bean.getGroupId(), bean.getDescription(), bean.getGdsHash());
       if (bean.group.run2part != null) {
-        f.format("run2Part: ");
+        f.format("  run2Part: ");
         for (int part : bean.group.run2part) f.format("%d, ", part);
         f.format("%n");
       }
@@ -223,12 +225,6 @@ public class CdmIndex2Panel extends JPanel {
 
     f.format("%n");
     showFiles(f);
-  }
-
-  public void showDetailInfo(Formatter f) {
-    if (gc == null) return;
-    f.format("magic=%s%n", magic);
-    gc.showIndex(f);
   }
 
   private void compareFiles(Formatter f) throws IOException {
@@ -409,10 +405,6 @@ public class CdmIndex2Panel extends JPanel {
       return group.getGdsHash();
     }
 
-    public boolean isTwoD() {
-      return group.isTwod;
-    }
-
     public String getType() {
       return type;
     }
@@ -476,8 +468,15 @@ public class CdmIndex2Panel extends JPanel {
       return f.toString();
     }
 
-    public int getSize() {
-      return coord.getSize();
+    public String getSize() {
+      if (coord instanceof CoordinateTime2D) {
+        CoordinateTime2D c2d = (CoordinateTime2D) coord;
+        Formatter f = new Formatter();
+        f.format("%d X %d (%d)", c2d.getRuntimeCoordinate().getSize(), c2d.getNtimes(), coord.getSize());
+        return f.toString();
+      } else {
+        return Integer.toString(coord.getSize());
+      }
     }
 
     public int getCode() {
