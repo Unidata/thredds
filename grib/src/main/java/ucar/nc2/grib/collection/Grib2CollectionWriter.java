@@ -66,63 +66,6 @@ public class Grib2CollectionWriter  extends GribCollectionBuilder {
   protected static final int version = 1;
   private static final boolean showFiles = false;
 
-  /* called by tdm
-  static public boolean update(MCollection dcm, Formatter errlog, org.slf4j.Logger logger) throws IOException {
-    Grib2CollectionBuilder builder = new Grib2CollectionBuilder(dcm, logger);
-    if (!builder.needsUpdate()) return false;
-    builder.readOrCreateIndex(CollectionUpdateType.always, errlog);
-    builder.gc.close();
-    return true;
-  }
-
-  // from a single file, read in the index, create if it doesnt exist
-  static public GribCollection readOrCreateIndexFromSingleFile(MFile file, CollectionUpdateType force,
-                                                               FeatureCollectionConfig.GribConfig config, Formatter errlog, org.slf4j.Logger logger) throws IOException {
-    Grib2CollectionBuilder builder = new Grib2CollectionBuilder(file, config, logger);
-    builder.readOrCreateIndex(force, errlog);
-    return builder.gc;
-  } */
-
-  /**
-   * From a CollectionManagerRO, read in the index, create if it doesnt exist or is out of date
-   *
-   * @param dcm    the CollectionManager, assumed up-to-date
-   * @param force  force read the index
-   * @param logger log here
-   * @return GribCollection
-   * @throws IOException on IO error
-   */
-  static public GribCollection factory(MCollection dcm, CollectionUpdateType force, Formatter errlog,
-                                       org.slf4j.Logger logger) throws IOException {
-    Grib2CollectionWriter builder = new Grib2CollectionWriter(dcm, logger);
-    builder.readOrCreateIndex(force, errlog);
-    return builder.gc;
-  }
-
-    // recreate if partition doesnt exist or is out of date (depends on force). return true if it was recreated
-  static public boolean recreateIfNeeded(MCollection dcm, CollectionUpdateType force,
-                                         Formatter errlog, org.slf4j.Logger logger) throws IOException {
-    Grib2CollectionWriter builder = new Grib2CollectionWriter(dcm, logger);
-    boolean recreated = builder.readOrCreateIndex(force, errlog);
-    builder.gc.close();
-    return recreated;
-  }
-
-
-  /* read in the index, index raf already open
-  static public GribCollection createFromIndex(String name, File directory, RandomAccessFile raf, FeatureCollectionConfig.GribConfig config, org.slf4j.Logger logger) throws IOException {
-    Grib2CollectionBuilder builder = new Grib2CollectionBuilder(name, directory, config, logger);
-    if (builder.readIndex(raf))
-      return builder.gc;
-    throw new IOException("Reading index failed");
-  } */
-
-  /* this writes the index always
-  static public boolean writeIndexFile(File indexFile, CollectionManagerRO dcm, org.slf4j.Logger logger) throws IOException {
-    Grib2CollectionBuilder builder = new Grib2CollectionBuilder(dcm, logger);
-    return builder.createIndex(indexFile);
-  } */
-
   /// for ToolsUI
   static public boolean makeIndex(MCollection dcm, Formatter errlog, org.slf4j.Logger logger) throws IOException {
     Grib2CollectionWriter builder = new Grib2CollectionWriter(dcm, logger);

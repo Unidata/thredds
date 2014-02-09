@@ -2,7 +2,6 @@ package ucar.nc2.ui;
 
 import thredds.featurecollection.FeatureCollectionConfig;
 import thredds.inventory.MFile;
-import ucar.nc2.NCdumpW;
 import ucar.nc2.grib.collection.*;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time.CalendarPeriod;
@@ -99,14 +98,26 @@ public class CdmIndex2Panel extends JPanel {
     });
 
     varPopup = new PopupMenu(groupTable.getJTable(), "Options");
-    varPopup.addAction("Show Files Used", new AbstractAction() {
+    varPopup.addAction("Show Group Info", new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
         GroupBean bean = (GroupBean) groupTable.getSelectedBean();
         if (bean != null && bean.group != null) {
-          showFileTable(gc, bean.group);
+          Formatter f = new Formatter();
+          bean.group.show(f);
+          infoTA.setText(f.toString());
+          infoTA.gotoTop();
+          infoWindow.show();
         }
       }
     });
+    varPopup.addAction("Show Files Used", new AbstractAction() {
+       public void actionPerformed(ActionEvent e) {
+         GroupBean bean = (GroupBean) groupTable.getSelectedBean();
+         if (bean != null && bean.group != null) {
+           showFileTable(gc, bean.group);
+         }
+       }
+     });
 
     varTable = new BeanTableSorted(VarBean.class, (PreferencesExt) prefs.node("Grib2Bean"), false, "Variables in group", "GribCollection.VariableIndex", null);
 
@@ -210,9 +221,9 @@ public class CdmIndex2Panel extends JPanel {
 
   public void showInfo(Formatter f) {
     if (gc == null) return;
-    f.format("magic=%s%n", magic);
     gc.showIndex(f);
     f.format("%n");
+
     List<GroupBean> groups = groupTable.getBeans();
     for (GroupBean bean : groups) {
       f.format("%-50s %-50s %d%n", bean.getGroupId(), bean.getDescription(), bean.getGdsHash());
@@ -224,7 +235,7 @@ public class CdmIndex2Panel extends JPanel {
     }
 
     f.format("%n");
-    showFiles(f);
+    // showFiles(f);
   }
 
   private void compareFiles(Formatter f) throws IOException {
@@ -293,16 +304,14 @@ public class CdmIndex2Panel extends JPanel {
   GribCollection gc;
   List<MFile> gcFiles;
   FeatureCollectionConfig.GribConfig config = null;
-  String magic;
 
   public void setIndexFile(Path indexFile, FeatureCollectionConfig.GribConfig config) throws IOException {
     if (gc != null) gc.close();
-    magic = null;
 
     this.config = config;
     gc = GribCdmIndex2.openCdmIndex(indexFile.toString(), config, logger);
     if (gc == null)
-      throw new IOException("Not a grib collection index file =" + magic);
+      throw new IOException("Not a grib collection index file");
 
     List<GroupBean> groups = new ArrayList<GroupBean>();
 
@@ -376,6 +385,7 @@ public class CdmIndex2Panel extends JPanel {
     GribCollection.GroupHcs group;
     String type;
     float density, avgDensity;
+    int nrecords = 0;
 
     public GroupBean() {
     }
@@ -385,7 +395,6 @@ public class CdmIndex2Panel extends JPanel {
       this.type = type;
 
       int total = 0;
-      int nrecords = 0;
       avgDensity = 0;
       for (GribCollection.VariableIndex vi : group.variList) {
         vi.calcTotalSize();
@@ -403,6 +412,10 @@ public class CdmIndex2Panel extends JPanel {
 
     public int getGdsHash() {
       return group.getGdsHash();
+    }
+
+    public int getNrecords() {
+      return nrecords;
     }
 
     public String getType() {
@@ -432,13 +445,6 @@ public class CdmIndex2Panel extends JPanel {
 
    public String getDescription() {
       return group.getDescription();
-    }
-
-    void showFilesUsed(Formatter f) {
-      List<MFile> files = group.getFiles();
-      for (MFile file : files) {
-        f.format(" %s%n", file.getName());
-      }
     }
 
   }

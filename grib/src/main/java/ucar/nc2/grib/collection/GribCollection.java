@@ -528,6 +528,19 @@ public class GribCollection implements FileCacheable, AutoCloseable {
       this.isTwod = from.isTwod;
     }
 
+    public void show(Formatter f) {
+      f.format("Group %s isTwoD=%s%n", horizCoordSys.getId(), isTwod);
+      f.format(" nfiles %d%n", filenose == null ? 0 : filenose.length);
+      f.format(" run2part ");
+      if (run2part == null) f.format(" null");
+      else for (int idx : run2part) f.format(" %d,", idx);
+      f.format("%n");
+      f.format(" offsets ");
+      if (offsets == null) f.format(" null");
+      else for (int idx : offsets) f.format(" %d,", idx);
+      f.format("%n");
+    }
+
     public void setHorizCoordSystem(GdsHorizCoordSys hcs, byte[] rawGds, int gdsHash, String nameOverride) {
       horizCoordSys = new HorizCoordSys(hcs, rawGds, gdsHash, nameOverride);
     }
@@ -933,8 +946,18 @@ public class GribCollection implements FileCacheable, AutoCloseable {
   }
 
   public void showIndex(Formatter f) {
-    f.format("%s%n%n", toString());
     f.format("Class (%s)%n", getClass().getName());
+    f.format("%s%n%n", toString());
+
+    for (Dataset ds : datasets) {
+      f.format("Dataset %s%n", ds.getType());
+      for (GroupHcs g : ds.groups) {
+        f.format("Group %s%n", g.horizCoordSys.getId());
+        for (VariableIndex v : g.variList) {
+          f.format("  %s%n", v.toStringShort());
+        }
+      }
+    }
     if (files == null) {
       f.format("Files empty%n");
     } else {
@@ -944,22 +967,17 @@ public class GribCollection implements FileCacheable, AutoCloseable {
       f.format("%n");
     }
 
-    for (Dataset ds : datasets) {
-      for (GroupHcs g : ds.groups) {
-        for (VariableIndex v : g.variList) {
-          f.format("  %s%n", v.toStringComplete());
-        }
-      }
-    }
   }
 
   @Override
   public String toString() {
-    final StringBuilder sb = new StringBuilder();
-    sb.append("GribCollection");
-    sb.append("{\n name='").append(name).append('\'');
+    final StringBuilder sb = new StringBuilder("GribCollection{");
+    sb.append("\nname='").append(name).append('\'');
     sb.append("\n directory=").append(directory);
+    sb.append("\n indexFilename='").append(indexFilename).append('\'');
+    sb.append("\n gribConfig=").append(gribConfig);
     sb.append("\n isGrib1=").append(isGrib1);
+    sb.append("\n version=").append(version);
     sb.append("\n center=").append(center);
     sb.append("\n subcenter=").append(subcenter);
     sb.append("\n master=").append(master);
@@ -967,9 +985,7 @@ public class GribCollection implements FileCacheable, AutoCloseable {
     sb.append("\n genProcessType=").append(genProcessType);
     sb.append("\n genProcessId=").append(genProcessId);
     sb.append("\n backProcessId=").append(backProcessId);
-    sb.append("\n indexFile=").append(indexFile);
-    sb.append("\n version=").append(version);
-    sb.append('}');
+    sb.append("\n}");
     return sb.toString();
   }
 

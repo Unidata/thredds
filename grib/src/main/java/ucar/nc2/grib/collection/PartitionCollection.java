@@ -561,13 +561,15 @@ public class PartitionCollection extends GribCollection {
   }
 
   public void showIndex(Formatter f) {
+    super.showIndex(f);
+
     List<Partition> plist = getPartitions();
     f.format("Partitions (%d)%n", plist.size());
     for (Partition p : plist)
       f.format("  %s%n", p);
     f.format("%n");
 
-    for (Dataset ds : datasets) {
+    /* for (Dataset ds : datasets) {
       f.format("%nDataset = %s%n", ds.type);
 
       for (GroupHcs g : ds.getGroups()) {
@@ -583,9 +585,8 @@ public class PartitionCollection extends GribCollection {
           f.format(" %d: %s%n", i, tc);
         }
       }
-    }
+    } */
 
-    super.showIndex(f);
   }
 
   //////////////////////////////////////////////////////////////////////////////////////////////////

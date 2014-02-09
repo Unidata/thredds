@@ -88,14 +88,17 @@ public class Grib2CollectionBuilderFromIndex extends GribCollectionBuilder {
         return false;
       }
 
+      // these are the variable records
       long skip = raf.readLong();
       raf.skipBytes(skip);
+      System.out.printf("Grib2CollectionBuilderFromIndex %s (%s) records len = %d%n", raf.getLocation(), getMagicStart(), skip);
 
       int size = NcStream.readVInt(raf);
       if ((size < 0) || (size > 100 * 1000 * 1000)) {
         logger.warn("Grib2CollectionBuilderFromIndex {}: invalid index size", gc.getName());
         return false;
       }
+      System.out.printf("Grib2CollectionBuilderFromIndex proto len = %d%n", size);
 
       byte[] m = new byte[size];
       raf.readFully(m);
@@ -151,13 +154,16 @@ public class Grib2CollectionBuilderFromIndex extends GribCollectionBuilder {
       if (gc.getDirectory() == null)
         gc.setDirectory(protoDir);  // LOOK when is this needd?
 
+      int fsize = 0;
       int n = proto.getMfilesCount();
       List<MFile> files = new ArrayList<>(n);
       for (int i = 0; i < n; i++) {
         ucar.nc2.grib.collection.GribCollectionProto.MFile mf = proto.getMfiles(i);
         files.add(new GribCollectionBuilder.GcMFile(dir, mf.getFilename(), mf.getLastModified()));
+        fsize += mf.getFilename().length();
       }
       gc.setFiles(files);
+      System.out.printf("Grib2CollectionBuilderFromIndex files len = %d%n", fsize);
 
       gc.horizCS = new ArrayList<>(proto.getGdsCount());
       for (int i = 0; i < proto.getGdsCount(); i++)
