@@ -15,7 +15,7 @@ import ucar.nc2.grib.grib2.table.Grib2Customizer;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.util.CloseableIterator;
 import ucar.sparr.Counter;
-import ucar.unidata.io.RandomAccessFile;
+import ucar.unidata.util.StringUtil2;
 
 import java.io.File;
 import java.io.IOException;
@@ -36,11 +36,12 @@ public class Grib2CollectionBuilder {
   protected String name;            // collection name
   protected File directory;         // top directory
 
-  public Grib2CollectionBuilder(MCollection dcm, org.slf4j.Logger logger) {
+  // LOOK prob name could be dcm.getCollectionName()
+  public Grib2CollectionBuilder(String name, MCollection dcm, org.slf4j.Logger logger) {
     this.dcm = dcm;
     this.logger = logger;
 
-    this.name = dcm.getCollectionName();
+    this.name = StringUtil2.replace(name, ' ', "_");
     this.directory = new File(dcm.getRoot());
   }
 
@@ -70,7 +71,6 @@ public class Grib2CollectionBuilder {
     return false;
   }
 
-
   public boolean createIndex(Formatter errlog) throws IOException {
     if (dcm == null) {
       logger.error("Grib2CollectionBuilder " + name + " : cannot create new index ");
@@ -97,13 +97,15 @@ public class Grib2CollectionBuilder {
     // write each rungroup separately
     boolean multipleGroups = runGroups.values().size() > 1;
     List<File> partitions = new ArrayList<>();
-    Grib2CollectionWriter writer = new Grib2CollectionWriter("test", dcm, logger);
+    Grib2CollectionWriter writer = new Grib2CollectionWriter(dcm, logger);
     for (List<Grib2CollectionWriter.Group> runGroup : runGroups.values()) {
       Grib2CollectionWriter.Group g = runGroup.get(0);
+      // if multiple groups, we will write a partition. otherwise, we need to use the standard name (without runtime) so we know the filename from the collection
+      String gcname = multipleGroups ? GribCollection.makeName(this.name, g.runtime) : this.name;
       File indexFileForRuntime = multipleGroups ? GribCollection.getIndexFile(name, directory, g.runtime) : GribCollection.getIndexFile(name, directory);
       partitions.add(indexFileForRuntime);
 
-      writer.writeIndex(indexFileForRuntime, runGroup, allFiles);
+      writer.writeIndex(gcname, indexFileForRuntime, runGroup, allFiles);
       logger.info("Grib2CollectionBuilder write {}", indexFileForRuntime.getPath());
     }
 
@@ -126,7 +128,7 @@ public class Grib2CollectionBuilder {
   // divide into groups based on GDS hash
   // each group has an arraylist of all records that belong to it.
   // for each group, run rectlizer to derive the coordinates and variables
-  private List<Grib2CollectionWriter.Group> makeGroups(List<MFile> allFiles, Formatter errlog) throws IOException {
+  public List<Grib2CollectionWriter.Group> makeGroups(List<MFile> allFiles, Formatter errlog) throws IOException {
     Map<GroupAndRuntime, Grib2CollectionWriter.Group> gdsMap = new HashMap<>();
     Map<String, Boolean> pdsConvert = null;
 

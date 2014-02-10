@@ -422,9 +422,9 @@ public class Grib2RectilyzePanel extends JPanel {
     FeatureCollectionConfig.GribConfig config = gribCollectionConfigDialog.getGribConfig();
     dcm.putAuxInfo(FeatureCollectionConfig.AUX_GRIB_CONFIG, config);
 
-    Grib2CollectionWriter builder = Grib2CollectionWriter.debugOnly(dcm, logger);
+    Grib2CollectionBuilder builder = GribCdmIndex2.debugOnly(dcm, logger);
     List<Grib2CollectionWriter.Group> groups = builder.makeGroups(fileList, info);
-    this.cust = builder.getCustomizer();
+    // this.cust = builder.getCustomizer();  LOOK
 
     for (Grib2CollectionWriter.Group group : groups) {
       Grib2Rectilyser rect = group.rect;
@@ -478,9 +478,7 @@ public class Grib2RectilyzePanel extends JPanel {
 
   public boolean writeIndex(Formatter f) throws IOException {
     if (dcm == null) return false;
-
-    Grib2CollectionWriter.makeIndex(dcm, f, logger);
-    return true;
+    return GribCdmIndex2.makeIndex(dcm, f, logger);
   }
 
   public void checkProblems(Formatter f) {

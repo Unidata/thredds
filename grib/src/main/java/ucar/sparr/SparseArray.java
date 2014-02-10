@@ -127,7 +127,7 @@ public class SparseArray<T> {
     return ndups;
   }
 
-  public int countNotMissing() {
+  public int countNotMissing() { // LOOK could use content.size()
      int result=0;
      for (int idx : track)
        if (idx > 0) result++;

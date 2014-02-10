@@ -26,15 +26,6 @@ public class Grib2PartitionBuilder extends Grib2CollectionWriter {
   public static final String MAGIC_START = "Grib2Partition2Index";  // was Grib2Partition0Index
   static private final boolean trace = false;
 
-  /* called by tdm: update partition, test children partitions
-  static public boolean update(PartitionManager tpc, org.slf4j.Logger logger) throws IOException {
-    Grib2PartitionBuilder builder = new Grib2PartitionBuilder(tpc.getCollectionName(), new File(tpc.getRoot()), tpc, logger);
-    if (!builder.needsUpdate()) return false;
-    builder.readOrCreateIndex(CollectionUpdateType.always, CollectionUpdateType.test, null);
-    builder.gc.close();
-    return true;
-  }  */
-
   // read in the index, create if it doesnt exist or is out of date (depends on force)
   static public Grib2Partition factory(PartitionManager tpc, CollectionUpdateType forcePartition, CollectionUpdateType forceChildren,
                                        Formatter errlog, org.slf4j.Logger logger) throws IOException {
@@ -63,6 +54,8 @@ public class Grib2PartitionBuilder extends Grib2CollectionWriter {
 
   private final PartitionManager partitionManager; // defines the partition
   private Grib2Partition result;  // build this object
+  private String name;            // collection name
+  private File directory;         // top directory
 
   protected Grib2PartitionBuilder(String name, File directory, PartitionManager tpc, org.slf4j.Logger logger) {
     super(tpc, logger);
@@ -72,14 +65,13 @@ public class Grib2PartitionBuilder extends Grib2CollectionWriter {
     FeatureCollectionConfig.GribConfig config = null;
     if (tpc != null)
       config = (FeatureCollectionConfig.GribConfig) tpc.getAuxInfo(FeatureCollectionConfig.AUX_GRIB_CONFIG);
-    this.result = new Grib2Partition(name, directory, dcm.getIndexFilename(), config, logger);
-    this.gc = result;
+    this.result = new Grib2Partition(name, directory, config, logger);
     this.partitionManager = tpc;
   }
 
   // return true if the partition was recreated
   private boolean readOrCreateIndex(CollectionUpdateType forcePartition, CollectionUpdateType forceChildren, Formatter errlog) throws IOException {
-    File idx = gc.getIndexFile();
+    File idx = result.getIndexFile();
 
     // force new index or test for new index needed
     boolean force = ((forcePartition == CollectionUpdateType.always) || (forcePartition == CollectionUpdateType.test && needsUpdate(idx.lastModified())));
@@ -88,10 +80,8 @@ public class Grib2PartitionBuilder extends Grib2CollectionWriter {
     if (force || !idx.exists() || !readIndex(idx.getPath())) {
       if (forcePartition == CollectionUpdateType.never) throw new IOException("failed to read " + idx.getPath());
 
-      logger.info("{}: createIndex {}", gc.getName(), idx.getPath());
-      if (createPartitionedIndex(forcePartition, forceChildren, errlog)) {  // write index
-        return readIndex(idx.getPath()); // read back in index
-      }
+      logger.info("{}: createIndex {}", name, idx.getPath());
+      return createPartitionedIndex(forcePartition, forceChildren, errlog);
     }
     return false;
   }
@@ -113,8 +103,7 @@ public class Grib2PartitionBuilder extends Grib2CollectionWriter {
 
   private boolean readIndex(RandomAccessFile indexRaf) throws IOException {
     try {
-      this.result = (Grib2Partition) Grib2PartitionBuilderFromIndex.createTimePartitionFromIndex(this.name, this.directory, indexRaf, gc.getGribConfig(), logger);
-      this.gc = result;
+      this.result = (Grib2Partition) Grib2PartitionBuilderFromIndex.createTimePartitionFromIndex(this.name, this.directory, indexRaf, result.getGribConfig(), logger);
       return true;
     } catch (IOException ioe) {
       return false;

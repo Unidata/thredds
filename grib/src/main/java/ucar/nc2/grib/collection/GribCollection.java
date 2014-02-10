@@ -92,16 +92,28 @@ public class GribCollection implements FileCacheable, AutoCloseable {
 
   private static  CalendarDateFormatter cf = new CalendarDateFormatter("yyyyMMdd-HHmmss", new CalendarTimeZone("UTC"));
   static public File getIndexFile(String collectionName, File directory, CalendarDate runtime) {
-    String nameNoBlanks = StringUtil2.replace(collectionName, ' ', "_");
-    String nameWithCalendar = nameNoBlanks+"-"+cf.toString(runtime);
-    File f = new File(directory, nameWithCalendar + CollectionAbstract.NCX_SUFFIX);
+    File f = new File(directory, makeName(collectionName, runtime)  + CollectionAbstract.NCX_SUFFIX);
     return getIndexFile(f.getPath());
+  }
+
+  static public String makeName(String collectionName, CalendarDate runtime) {
+    String nameNoBlanks = StringUtil2.replace(collectionName, ' ', "_");
+    return nameNoBlanks+"-"+cf.toString(runtime);
+  }
+
+  static public String makeNameFromIndexFilename(String idxPathname) {
+    idxPathname = StringUtil2.replace(idxPathname, '\\', "/");
+    int pos = idxPathname.lastIndexOf('/');
+    String idxFilename = (pos < 0) ? idxPathname : idxPathname.substring(pos+1);
+    assert idxFilename.endsWith(CollectionAbstract.NCX_SUFFIX);
+    String result =  idxFilename.substring(0, idxFilename.length() - CollectionAbstract.NCX_SUFFIX.length());
+    return result;
   }
 
   ////////////////////////////////////////////////////////////////
   protected final String name; // collection name; index filename must be directory/name.ncx2
   protected /* final */ File directory;
-  protected final String indexFilename; // collection name; index filename must be directory/name.ncx2
+  // protected final String indexFilename;
   protected final FeatureCollectionConfig.GribConfig gribConfig;
   protected final boolean isGrib1;
 
@@ -121,10 +133,9 @@ public class GribCollection implements FileCacheable, AutoCloseable {
   protected RandomAccessFile indexRaf; // this is the raf of the index (ncx) file
   protected File indexFile;
 
-  protected GribCollection(String name, File directory, String indexFilename, FeatureCollectionConfig.GribConfig config, boolean isGrib1) {
+  protected GribCollection(String name, File directory, FeatureCollectionConfig.GribConfig config, boolean isGrib1) {
     this.name = name;
     this.directory = directory;
-    this.indexFilename = indexFilename;
     this.gribConfig = config;
     this.isGrib1 = isGrib1;
   }
@@ -210,7 +221,7 @@ public class GribCollection implements FileCacheable, AutoCloseable {
 
   public MFile findMFileByName(String filename) {
     if (fileMap == null) {
-      fileMap = new HashMap<String, MFile>(files.size() * 2);
+      fileMap = new HashMap<>(files.size() * 2);
       for (MFile file : files)
         fileMap.put(file.getName(), file);
     }
@@ -242,8 +253,10 @@ public class GribCollection implements FileCacheable, AutoCloseable {
    * @return index File; may not exist; may be in disk cache
    */
   public File getIndexFile() {
-    if (indexFile == null)
-      indexFile = getIndexFile(indexFilename);
+    if (indexFile == null) {
+      File idxFile = new File(directory, name+ CollectionAbstract.NCX_SUFFIX);
+      indexFile = getIndexFile(idxFile.getPath());
+    }
     return indexFile;
   }
 
@@ -974,7 +987,6 @@ public class GribCollection implements FileCacheable, AutoCloseable {
     final StringBuilder sb = new StringBuilder("GribCollection{");
     sb.append("\nname='").append(name).append('\'');
     sb.append("\n directory=").append(directory);
-    sb.append("\n indexFilename='").append(indexFilename).append('\'');
     sb.append("\n gribConfig=").append(gribConfig);
     sb.append("\n isGrib1=").append(isGrib1);
     sb.append("\n version=").append(version);

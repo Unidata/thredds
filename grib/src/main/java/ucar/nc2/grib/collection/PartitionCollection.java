@@ -225,7 +225,7 @@ public class PartitionCollection extends GribCollection {
         GribCollection.VariableIndex vindex = g.variList.get(partVar.varno);
         vindex.readRecords();
         return vindex;
-      }  // LOOK ok to close ?? or is this defensive ??
+      }  // LOOK opening the file here, and then again to read the data. partition cache helps  i guess but we could do better i think.
     }
 
 
@@ -466,8 +466,8 @@ public class PartitionCollection extends GribCollection {
   protected List<Partition> partitions;
   protected boolean isPartitionOfPartitions;
 
-  protected PartitionCollection(String name, File directory, String indexFilename, FeatureCollectionConfig.GribConfig config, boolean isGrib1, org.slf4j.Logger logger) {
-    super(name, directory, indexFilename, config, isGrib1);
+  protected PartitionCollection(String name, File directory, FeatureCollectionConfig.GribConfig config, boolean isGrib1, org.slf4j.Logger logger) {
+    super(name, directory, config, isGrib1);
     this.logger = logger;
     this.partitions = new ArrayList<>();
     this.datasets = new ArrayList<>();

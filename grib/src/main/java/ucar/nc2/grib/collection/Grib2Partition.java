@@ -16,8 +16,8 @@ import java.util.Formatter;
  */
 public class Grib2Partition extends PartitionCollection implements AutoCloseable {
 
-  public Grib2Partition(String name, File directory, String indexFilename, FeatureCollectionConfig.GribConfig config, org.slf4j.Logger logger) {
-    super(name, directory, indexFilename, config, false, logger);
+  public Grib2Partition(String name, File directory, FeatureCollectionConfig.GribConfig config, org.slf4j.Logger logger) {
+    super(name, directory, config, false, logger);
   }
 
   // LOOK - needs time partition collection iosp or something

@@ -17,7 +17,7 @@ import java.util.List;
 public class Grib2PartitionBuilderFromIndex extends Grib2CollectionBuilderFromIndex {
 
     // read in the index, open raf and leave open in the GribCollection
-  static public GribCollection createTimePartitionFromIndex(String name, File directory, FeatureCollectionConfig.GribConfig config, org.slf4j.Logger logger) throws IOException {
+  static public PartitionCollection createTimePartitionFromIndex(String name, File directory, FeatureCollectionConfig.GribConfig config, org.slf4j.Logger logger) throws IOException {
     File idxFile = ucar.nc2.grib.collection.GribCollection.getIndexFile(name, directory);
     RandomAccessFile raf = new RandomAccessFile(idxFile.getPath(), "r");
     return createTimePartitionFromIndex(name, directory, raf, config, logger);
@@ -26,22 +26,22 @@ public class Grib2PartitionBuilderFromIndex extends Grib2CollectionBuilderFromIn
   // read in the index, index raf already open
   static public PartitionCollection createTimePartitionFromIndex(String name, File directory, RandomAccessFile raf,
            FeatureCollectionConfig.GribConfig config, org.slf4j.Logger logger) throws IOException {
-    Grib2PartitionBuilderFromIndex builder = new Grib2PartitionBuilderFromIndex(name, directory, raf.getLocation(), config, logger);
-    if (builder.readIndex(raf)) {
+
+    Grib2PartitionBuilderFromIndex builder = new Grib2PartitionBuilderFromIndex(name, directory, config, logger);
+    if (builder.readIndex(raf))
       return builder.pc;
-    }
+
     throw new IOException("Reading index failed");
   }
-
 
   //////////////////////////////////////////////////////////////////////////////////
 
   //private final PartitionManager tpc; // defines the partition
   private PartitionCollection pc;  // build this object
 
-  private Grib2PartitionBuilderFromIndex(String name, File directory, String indexFilename, FeatureCollectionConfig.GribConfig config, org.slf4j.Logger logger) {
-    super(null, directory, indexFilename, config, logger);
-    this.pc = new Grib2Partition(name, directory, indexFilename, config, logger);
+  private Grib2PartitionBuilderFromIndex(String name, File directory, FeatureCollectionConfig.GribConfig config, org.slf4j.Logger logger) {
+    super(null, directory, config, logger);
+    this.pc = new Grib2Partition(name, directory, config, logger);
     this.gc = pc;
   }
 
