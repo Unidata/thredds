@@ -104,7 +104,7 @@ public class Grib2CollectionBuilder {
       partitions.add(indexFileForRuntime);
 
       writer.writeIndex(indexFileForRuntime, runGroup, allFiles);
-      logger.info("SingleRuntimeBuilder write {}", indexFileForRuntime.getPath());
+      logger.info("Grib2CollectionBuilder write {}", indexFileForRuntime.getPath());
     }
 
     boolean ok = true;

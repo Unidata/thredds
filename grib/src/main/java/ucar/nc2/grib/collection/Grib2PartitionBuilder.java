@@ -161,7 +161,6 @@ public class Grib2PartitionBuilder extends Grib2CollectionWriter {
       }
       int idx = partitionManager.getProtoIndex(n);
       PartitionCollection.Partition canon = result.getPartitions().get(idx);
-      errlog.format(" INFO Using canonical partition %s%n", canon.getDcm().getCollectionName());
       logger.debug("     Using canonical partition {}", canon.getDcm().getCollectionName());
 
       // copy info from canon gribCollection to result partitionCollection
