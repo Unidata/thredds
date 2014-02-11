@@ -471,6 +471,7 @@ public class Grib2RectilyzePanel extends JPanel {
   }
 
   private void merge(Set<Object> set, Coordinate coord) {
+    if (coord.getValues() == null) return;
     for (Object val : coord.getValues())
       set.add(val);
   }
@@ -825,6 +826,7 @@ public class Grib2RectilyzePanel extends JPanel {
     }
 
     public String getValues() {
+      if (coord.getValues() == null) return "";
       Formatter f = new Formatter();
       for (Object val : coord.getValues()) f.format("%s,", val);
       return f.toString();

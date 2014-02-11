@@ -469,6 +469,7 @@ public class CdmIndex2Panel extends JPanel {
     }
 
     public String getValues() {
+      if (coord.getValues() == null) return "";
       Formatter f = new Formatter();
       for (Object val : coord.getValues()) f.format("%s,", val);
       return f.toString();

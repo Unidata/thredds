@@ -161,7 +161,8 @@ public class CoordinateUnionizer {
 
     @Override
     public void addAll(Coordinate coord) {
-      super.addAll(coord);
+      if (coord.getValues() != null)
+        super.addAll(coord);
       CoordinateTime2D coordT2D = (CoordinateTime2D) coord;
       for (Coordinate tcoord : coordT2D.getTimes()) {             // possible duplicate runtimes from different partitions
         CoordinateTimeAbstract times = (CoordinateTimeAbstract) tcoord;

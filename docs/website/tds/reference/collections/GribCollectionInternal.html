@@ -933,6 +933,26 @@ message Variable {
 <p>so, tds no longer supports scan, or recheckAfter.</p>
 <p>force a rewite on startup with </p>
 <p>&lt;tdm startup=&quot;always&quot; rewrite=&quot;nocheck&quot; scan=&quot;&quot; trigger=&quot;allow /&gt;</p>
+<p>&nbsp;</p>
+<p>02/10/2014</p>
+<p>index = gcname + &quot;.ncx&quot;</p>
+<p><strong>partition = none</strong></p>
+<ul>
+  <li>make a CollectionManager for the collectionSpec set of files.</li>
+  <li>if multiple runtimes, make seperate GC for each one, make a PC that puts them together. GC name= collectionName + runtime, PC = collectionName.</li>
+  <li>if single runtime, GC = collectionName</li>
+</ul>
+<p>A partition divides the files into a tree of collections</p>
+<p><strong>partition = directory</strong></p>
+<ul>
+  <li>use the directory tree as the partition</li>
+  <li>gcname =  collectionName + directory</li>
+</ul>
+<p><strong>partition = file</strong></p>
+<ul>
+  <li>use the directory tree and the individual files as the partition</li>
+  <li>gcname = collectionName = filename</li>
+</ul>
 <p></p>
 </body>
 </html>

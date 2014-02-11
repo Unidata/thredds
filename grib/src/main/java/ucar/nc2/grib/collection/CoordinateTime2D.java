@@ -57,9 +57,8 @@ public class CoordinateTime2D extends CoordinateTimeAbstract implements Coordina
   private final CoordinateRuntime runtime;
   private List<Coordinate> times; // store these with the original offsets
   private int[] offset;
-  private boolean offsetsAdded;
 
-  private final List<Time2D> vals;
+  private final List<Time2D> vals; // only needed for GC, otherwise null
   private final boolean isTimeInterval;
   private final int nruns;
   private final int ntimes;
@@ -80,7 +79,7 @@ public class CoordinateTime2D extends CoordinateTimeAbstract implements Coordina
     nruns = runtime.getSize();
     makeOffsets(times);
 
-    if (vals == null) {
+    /* if (vals == null) {
       // LOOK do we need this ? save room without
       vals = new ArrayList<>();
       int runIdx = 0;
@@ -93,54 +92,9 @@ public class CoordinateTime2D extends CoordinateTimeAbstract implements Coordina
         }
         runIdx++;
       }
-    }
+    } */
     this.vals = vals;
   }
-
-  /* when constructing : must adjust the times by the offset
-  public CoordinateTime2D(int code, CalendarPeriod timeUnit, List<Time2D> vals,
-                          CoordinateRuntime runtime, List<Coordinate> orgTimes) {
-    super(code, timeUnit, runtime.getFirstDate());
-
-    this.runtime = runtime;
-    this.isTimeInterval = orgTimes.get(0) instanceof CoordinateTimeIntv;
-    this.vals = vals;
-
-    int nmax = 0;
-    for (Coordinate time : orgTimes)
-      nmax = Math.max(nmax, time.getSize());
-    ntimes = nmax;
-    nruns = runtime.getSize();
-
-    // need to make offsets from the same start date
-    makeOffsets(orgTimes);
-    this.times = new ArrayList<>(orgTimes.size());
-    int runIdx = 0;
-    for (Coordinate orgTime : orgTimes) {
-      if (isTimeInterval)
-        this.times.add( new CoordinateTimeIntv((CoordinateTimeIntv)orgTime, offset[runIdx]));
-      else
-        this.times.add( new CoordinateTime((CoordinateTime)orgTime, offset[runIdx]));
-      runIdx++;
-    }
-
-  } */
-
- /*  public void addOffsets() {
-    if (offsetsAdded)
-      System.out.println("HEY CoordinateTime2D offsets already added");
-    List<Coordinate> timesWithOffsets = new ArrayList<>(times.size());
-    int runIdx = 0;
-    for (Coordinate orgTime : times) {
-      if (isTimeInterval)
-        timesWithOffsets.add( new CoordinateTimeIntv((CoordinateTimeIntv)orgTime, offset[runIdx]));
-      else
-        timesWithOffsets.add( new CoordinateTime((CoordinateTime)orgTime, offset[runIdx]));
-      runIdx++;
-    }
-    this.times = timesWithOffsets;
-    this.offsetsAdded = true;
-  } */
 
   private void makeOffsets(List<Coordinate> orgTimes) {
     CalendarDate firstDate = runtime.getFirstDate();
@@ -174,7 +128,7 @@ public class CoordinateTime2D extends CoordinateTimeAbstract implements Coordina
 
   @Override
   public void showInfo(Formatter info, Indent indent) {
-    info.format("%s nruns=%d ntimes=%d total=%d%n", name, nruns, ntimes, vals.size());
+    info.format("%s nruns=%d ntimes=%d total=%d%n", name, nruns, ntimes, getSize());
     runtime.showInfo(info, indent);
     for (Coordinate time : times)
       time.showInfo(info, indent);
@@ -199,12 +153,12 @@ public class CoordinateTime2D extends CoordinateTimeAbstract implements Coordina
 
   @Override
   public int getIndex(Object val) {
-    return vals.indexOf(val);
+    return (vals == null) ? null : vals.indexOf(val);
   }
 
   @Override
   public int getSize() {
-    return vals.size();
+    return (vals == null) ? 0 : vals.size();
   }
 
   @Override
@@ -219,14 +173,14 @@ public class CoordinateTime2D extends CoordinateTimeAbstract implements Coordina
 
     CoordinateTime2D that = (CoordinateTime2D) o;
 
-    if (!vals.equals(that.vals)) return false;
+    if (!times.equals(that.times)) return false;
 
     return true;
   }
 
   @Override
   public int hashCode() {
-    return vals.hashCode();
+    return times.hashCode();
   }
 
   ////////////////////////////////////////////////
