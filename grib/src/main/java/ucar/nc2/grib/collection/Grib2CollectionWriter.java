@@ -129,6 +129,7 @@ public class Grib2CollectionWriter extends GribCollectionBuilder {
       long countBytes = 0;
       int countRecords = 0;
 
+      Set<Integer> allFileSet = new HashSet<>();
       for (Group g : groups) {
         g.fileSet = new HashSet<Integer>();
         for (Grib2Rectilyser.VariableBag vb : g.rect.getGribvars()) {
@@ -141,6 +142,7 @@ public class Grib2CollectionWriter extends GribCollectionBuilder {
           countBytes += b.length;
           countRecords += vb.coordND.getSparseArray().countNotMissing();
         }
+        for (int index : g.fileSet) allFileSet.add(index);
       }
 
       if (logger.isDebugEnabled()) {
@@ -204,11 +206,12 @@ public class Grib2CollectionWriter extends GribCollectionBuilder {
 
       // directory and mfile list
       File directory = new File(dcm.getRoot());
-      List<GribCollectionBuilder.GcMFile> gcmfiles = GribCollectionBuilder.makeFiles(directory, files);
+      List<GribCollectionBuilder.GcMFile> gcmfiles = GribCollectionBuilder.makeFiles(directory, files, allFileSet);
       for (GribCollectionBuilder.GcMFile gcmfile : gcmfiles) {
         GribCollectionProto.MFile.Builder b = GribCollectionProto.MFile.newBuilder();
         b.setFilename(gcmfile.getName());
         b.setLastModified(gcmfile.getLastModified());
+        b.setIndex(gcmfile.index);
         indexBuilder.addMfiles(b.build());
       }
 

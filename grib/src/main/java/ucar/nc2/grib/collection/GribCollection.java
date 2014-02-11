@@ -124,8 +124,8 @@ public class GribCollection implements FileCacheable, AutoCloseable {
   public int center, subcenter, master, local;  // GRIB 1 uses "local" for table version
   public int genProcessType, genProcessId, backProcessId;
   public List<Parameter> params;  // not used
-  private List<MFile> files;  // must be kept in order
-  private Map<String, MFile> fileMap;
+  private Map<Integer, MFile> fileMap;
+  private Map<String, MFile> filenameMap;
   protected List<Dataset> datasets;
   protected List<HorizCoordSys> horizCS; // one for each gds
 
@@ -155,8 +155,8 @@ public class GribCollection implements FileCacheable, AutoCloseable {
     return name;
   }
 
-  public List<MFile> getFiles() {
-    return files;
+  public Collection<MFile> getFiles() {
+    return fileMap.values();
   }
 
   public FeatureCollectionConfig.GribConfig getGribConfig() {
@@ -165,7 +165,7 @@ public class GribCollection implements FileCacheable, AutoCloseable {
 
   public List<String> getFilenames() {
     List<String> result = new ArrayList<>();
-    for (MFile file : files)
+    for (MFile file : fileMap.values())
       result.add(file.getPath());
     Collections.sort(result);
     return result;
@@ -220,17 +220,16 @@ public class GribCollection implements FileCacheable, AutoCloseable {
   }
 
   public MFile findMFileByName(String filename) {
-    if (fileMap == null) {
-      fileMap = new HashMap<>(files.size() * 2);
-      for (MFile file : files)
-        fileMap.put(file.getName(), file);
+    if (filenameMap == null) {
+      filenameMap = new HashMap<>(fileMap.size() * 2);
+      for (MFile file : fileMap.values())
+        filenameMap.put(file.getName(), file);
     }
-    return fileMap.get(filename);
+    return filenameMap.get(filename);
   }
 
-  public void setFiles(List<MFile> files) {
-    this.files = Collections.unmodifiableList(files);
-    this.fileMap = null;
+  public void setFileMap(Map<Integer, MFile> fileMap) {
+    this.fileMap = fileMap;
   }
 
   /**
@@ -323,13 +322,13 @@ public class GribCollection implements FileCacheable, AutoCloseable {
 
   public RandomAccessFile getDataRaf(int fileno) throws IOException {
     // absolute location
-    MFile mfile = files.get(fileno);
+    MFile mfile = fileMap.get(fileno);
     String filename = mfile.getPath();
     File dataFile = new File(directory, filename);
 
-    // check reletive location - eg may be /upc/share instead of Q:
+    // check reletive location - eg may be /upc/share instead of Q:  LOOK WTF ?
     if (!dataFile.exists()) {
-      if (files.size() == 1) {
+      if (fileMap.size() == 1) {
         dataFile = new File(directory, name); // single file case
       } else {
         dataFile = new File(directory, dataFile.getName()); // must be in same directory as the ncx file
@@ -594,7 +593,7 @@ public class GribCollection implements FileCacheable, AutoCloseable {
       List<MFile> result = new ArrayList<>();
       if (filenose == null) return result;
       for (int fileno : filenose)
-        result.add(files.get(fileno));
+        result.add(fileMap.get(fileno));
       Collections.sort(result);
       return result;
     }
@@ -603,7 +602,7 @@ public class GribCollection implements FileCacheable, AutoCloseable {
       List<String> result = new ArrayList<>();
       if (filenose == null) return result;
       for (int fileno : filenose)
-        result.add(files.get(fileno).getPath());
+        result.add(fileMap.get(fileno).getPath());
       Collections.sort(result);
       return result;
     }
@@ -971,12 +970,13 @@ public class GribCollection implements FileCacheable, AutoCloseable {
         }
       }
     }
-    if (files == null) {
+    if (fileMap == null) {
       f.format("Files empty%n");
     } else {
-      f.format("Files (%d)%n", files.size());
-      for (MFile file : files)
-        f.format("  %s%n", file);
+      f.format("Files (%d)%n", fileMap.size());
+      for (int index : fileMap.keySet())  {
+        f.format("  %d: %s%n", index, fileMap.get(index));
+      }
       f.format("%n");
     }
 

@@ -588,10 +588,12 @@ public class Grib2PartitionBuilder extends Grib2CollectionWriter {
       indexBuilder.setTopDir(pc.getDirectory().getPath()); // LOOK
 
       // mfiles are the partition indexes
+      int count = 0;
       for (PartitionCollection.Partition part : pc.partitions) {
         GribCollectionProto.MFile.Builder b = GribCollectionProto.MFile.newBuilder();
         b.setFilename(part.getIndexFilename());
         b.setLastModified(part.getLastModified());
+        b.setIndex(count++);
         indexBuilder.addMfiles(b.build());
       }
 

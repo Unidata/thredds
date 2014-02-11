@@ -302,7 +302,7 @@ public class CdmIndex2Panel extends JPanel {
 
   ///////////////////////////////////////////////
   GribCollection gc;
-  List<MFile> gcFiles;
+  Collection<MFile> gcFiles;
   FeatureCollectionConfig.GribConfig config = null;
 
   public void setIndexFile(Path indexFile, FeatureCollectionConfig.GribConfig config) throws IOException {
@@ -339,7 +339,7 @@ public class CdmIndex2Panel extends JPanel {
     coordTable.setBeans(coords);
   }
 
-  private void showFiles(Formatter f) {
+  /* private void showFiles(Formatter f) {
     if (gc == null) return;
     if (gc.getFiles() != null) {
       List<MFile> fs = new ArrayList<>(gc.getFiles());
@@ -369,13 +369,11 @@ public class CdmIndex2Panel extends JPanel {
     }
 
     f.format("============%n%s%n", gc);
-
-
-  }
+  }  */
 
   private void showFileTable(GribCollection gc, GribCollection.GroupHcs group) {
     File dir = gc.getDirectory();
-    List<MFile> files = (group == null) ? gc.getFiles() : group.getFiles();
+    Collection<MFile> files = (group == null) ? gc.getFiles() : group.getFiles();
     fileTable.setFiles(dir, files);
   }
 

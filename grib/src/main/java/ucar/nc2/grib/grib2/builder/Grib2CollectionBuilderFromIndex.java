@@ -132,7 +132,7 @@ public class Grib2CollectionBuilderFromIndex extends GribCollectionBuilder {
           } else {
             List<MFile> files = new ArrayList<MFile>(proto.getFilesCount());
             for (int i = 0; i < n; i++)
-              files.add(new GribCollectionBuilder.GcMFile(dir, proto.getFiles(i), -1));
+              files.add(new GribCollectionBuilder.GcMFile(dir, proto.getFiles(i), -1, -1));
             gc.setFiles(files);
             //if (dcm != null) dcm.setFiles(files); // LOOK !!
           }

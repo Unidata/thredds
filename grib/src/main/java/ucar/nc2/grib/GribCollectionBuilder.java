@@ -7,6 +7,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
 
 /**
  * superclass for GribCollectionBuilder GRIB1 and GRIB2
@@ -26,17 +27,18 @@ public class GribCollectionBuilder {
     this.logger = logger;
   }
 
-  public static List<GribCollectionBuilder.GcMFile> makeFiles(File directory, List<MFile> files) {
+  public static List<GribCollectionBuilder.GcMFile> makeFiles(File directory, List<MFile> files, Set<Integer> allFileSet) {
     List<GribCollectionBuilder.GcMFile> result = new ArrayList<>(files.size());
     String dirPath = StringUtil2.replace(directory.getPath(), '\\', "/");
 
-    for (MFile file : files) {
+    for (int index : allFileSet) {
+      MFile file = files.get(index);
       String reletiveName;
       if (file.getPath().startsWith(dirPath))
         reletiveName = file.getPath().substring(dirPath.length());
       else
         reletiveName = file.getPath();
-      result.add( new GcMFile(directory, reletiveName, file.getLastModified()));
+      result.add( new GcMFile(directory, reletiveName, file.getLastModified(), index));
     }
     return result;
   }
@@ -45,17 +47,21 @@ public class GribCollectionBuilder {
     public final File directory;
     public final String name;
     public final long lastModified;
+    public final int index;
 
-    public GcMFile(File directory, String name, long lastModified) {
+    public GcMFile(File directory, String name, long lastModified, int index) {
       this.directory = directory;
       this.name = name;
       this.lastModified = lastModified;
+      this.index = index;
     }
 
+    // not used
     public GcMFile(File directory, GribCollectionProto.MFile gcmfile) {
       this.directory = directory;
       this.name = gcmfile.getFilename();
       this.lastModified = gcmfile.getLastModified();
+      this.index = -1;
     }
 
     public GribCollectionProto.MFile makeProto() {

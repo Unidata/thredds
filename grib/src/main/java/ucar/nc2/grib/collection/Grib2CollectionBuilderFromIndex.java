@@ -156,13 +156,13 @@ public class Grib2CollectionBuilderFromIndex extends GribCollectionBuilder {
 
       int fsize = 0;
       int n = proto.getMfilesCount();
-      List<MFile> files = new ArrayList<>(n);
+      Map<Integer, MFile> fileMap = new HashMap<>(2*n);
       for (int i = 0; i < n; i++) {
         ucar.nc2.grib.collection.GribCollectionProto.MFile mf = proto.getMfiles(i);
-        files.add(new GribCollectionBuilder.GcMFile(dir, mf.getFilename(), mf.getLastModified()));
+        fileMap.put(mf.getIndex(), new GribCollectionBuilder.GcMFile(dir, mf.getFilename(), mf.getLastModified(), mf.getIndex()));
         fsize += mf.getFilename().length();
       }
-      gc.setFiles(files);
+      gc.setFileMap(fileMap);
       System.out.printf("Grib2CollectionBuilderFromIndex files len = %d%n", fsize);
 
       gc.horizCS = new ArrayList<>(proto.getGdsCount());

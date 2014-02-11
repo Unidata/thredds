@@ -424,7 +424,7 @@ public class Grib2CollectionBuilder extends GribCollectionBuilder {
 
       // directory and mfile list
       indexBuilder.setDirName(gc.getDirectory().getPath());
-      List<GribCollectionBuilder.GcMFile> gcmfiles = GribCollectionBuilder.makeFiles(gc.getDirectory(), files);
+      List<GribCollectionBuilder.GcMFile> gcmfiles = GribCollectionBuilder.makeFiles(gc.getDirectory(), files, null);
       for (GribCollectionBuilder.GcMFile gcmfile : gcmfiles) {
         indexBuilder.addMfiles(gcmfile.makeProto());
       }

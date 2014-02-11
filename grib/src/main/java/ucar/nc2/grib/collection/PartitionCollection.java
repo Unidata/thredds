@@ -189,9 +189,9 @@ public class PartitionCollection extends GribCollection {
     }
 
     private int getPartition1D(int timeIdx) {
-      int runtimeIdx = time2runtime[timeIdx];    // LOOK maybe want time2Part ?
+      int runtimeIdx = time2runtime[timeIdx];
       if (runtimeIdx == 0) return -1;  // 0 = missing
-      return group.run2part[runtimeIdx - 1];
+      return group.run2part[runtimeIdx - 1];     // LOOK LOOK wrong - may vary by variable !
     }
 
     /**

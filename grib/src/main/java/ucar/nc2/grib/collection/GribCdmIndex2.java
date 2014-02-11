@@ -604,7 +604,7 @@ public class GribCdmIndex2 implements IndexReader {
           int n = gribCollectionIndex.getMfilesCount();
           for (int i = 0; i < n; i++) {
             GribCollectionProto.MFile mfilep = gribCollectionIndex.getMfiles(i);
-            result.add(new GribCollectionBuilder.GcMFile(protoDir, mfilep.getFilename(), mfilep.getLastModified()));
+            result.add(new GribCollectionBuilder.GcMFile(protoDir, mfilep.getFilename(), mfilep.getLastModified(), mfilep.getIndex()));
           }
         }
         return true;

@@ -57,6 +57,7 @@ message Coord {
 message MFile {
   required string filename = 1;   // reletive to topDir
   required uint64 lastModified = 2;
+  required uint32 index = 3;         // the records use this number
 }
 
 message Parameter {

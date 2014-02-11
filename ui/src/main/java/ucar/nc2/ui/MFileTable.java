@@ -52,9 +52,7 @@ import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.Formatter;
+import java.util.*;
 import java.util.List;
 
 /**
@@ -131,7 +129,7 @@ public class MFileTable extends JPanel {
     if (fileWindow != null) prefs.putBeanObject("FileWindowBounds", fileWindow.getBounds());
   }
 
-  public void setFiles(File dir, List<MFile> files) {
+  public void setFiles(File dir, Collection<MFile> files) {
     if (files == null) return;
 
     int count = 0;

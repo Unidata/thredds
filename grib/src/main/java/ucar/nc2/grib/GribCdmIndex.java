@@ -361,7 +361,7 @@ public class GribCdmIndex implements IndexReader {
           if (version < 12) {
             int n = gribCollectionIndex.getFilesCount();
             for (int i = 0; i < n; i++)
-              result.add(new GribCollectionBuilder.GcMFile(protoDir, gribCollectionIndex.getFiles(i), -1));
+              result.add(new GribCollectionBuilder.GcMFile(protoDir, gribCollectionIndex.getFiles(i), -1, -1));
 
           } else {  // version >= 12 has MFile
             int n = gribCollectionIndex.getMfilesCount();
