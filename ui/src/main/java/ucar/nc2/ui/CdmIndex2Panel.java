@@ -3,11 +3,8 @@ package ucar.nc2.ui;
 import thredds.featurecollection.FeatureCollectionConfig;
 import thredds.inventory.MFile;
 import ucar.nc2.grib.collection.*;
-import ucar.nc2.time.CalendarDate;
-import ucar.nc2.time.CalendarPeriod;
 import ucar.nc2.util.Indent;
 import ucar.sparr.Coordinate;
-import ucar.nc2.time.CalendarDateFormatter;
 import ucar.nc2.ui.widget.BAMutil;
 import ucar.nc2.ui.widget.IndependentWindow;
 import ucar.nc2.ui.widget.PopupMenu;
@@ -227,11 +224,7 @@ public class CdmIndex2Panel extends JPanel {
     List<GroupBean> groups = groupTable.getBeans();
     for (GroupBean bean : groups) {
       f.format("%-50s %-50s %d%n", bean.getGroupId(), bean.getDescription(), bean.getGdsHash());
-      if (bean.group.run2part != null) {
-        f.format("  run2Part: ");
-        for (int part : bean.group.run2part) f.format("%d, ", part);
-        f.format("%n");
-      }
+      bean.group.show(f);
     }
 
     f.format("%n");
@@ -313,10 +306,10 @@ public class CdmIndex2Panel extends JPanel {
     if (gc == null)
       throw new IOException("Not a grib collection index file");
 
-    List<GroupBean> groups = new ArrayList<GroupBean>();
+    List<GroupBean> groups = new ArrayList<>();
 
     for (PartitionCollection.Dataset ds : gc.getDatasets())
-      for (GribCollection.GroupHcs g : ds.getGroups())
+      for (GribCollection.GroupGC g : ds.getGroups())
         groups.add(new GroupBean(g, ds.getType().toString()));
 
     groupTable.setBeans(groups);
@@ -326,15 +319,15 @@ public class CdmIndex2Panel extends JPanel {
     coordTable.clearBeans();
   }
 
-  private void setGroup(GribCollection.GroupHcs group) {
+  private void setGroup(GribCollection.GroupGC group) {
     List<VarBean> vars = new ArrayList<>();
-    for (GribCollection.VariableIndex v : group.variList)
+    for (GribCollection.VariableIndex v : group.getVariables())
       vars.add(new VarBean(v, group));
     varTable.setBeans(vars);
 
     int count = 0;
     List<CoordBean> coords = new ArrayList<>();
-    for (Coordinate vc : group.coords)
+    for (Coordinate vc : group.getCoordinates())
       coords.add(new CoordBean(vc, count++));
     coordTable.setBeans(coords);
   }
@@ -371,7 +364,7 @@ public class CdmIndex2Panel extends JPanel {
     f.format("============%n%s%n", gc);
   }  */
 
-  private void showFileTable(GribCollection gc, GribCollection.GroupHcs group) {
+  private void showFileTable(GribCollection gc, GribCollection.GroupGC group) {
     File dir = gc.getDirectory();
     Collection<MFile> files = (group == null) ? gc.getFiles() : group.getFiles();
     fileTable.setFiles(dir, files);
@@ -380,7 +373,7 @@ public class CdmIndex2Panel extends JPanel {
   ////////////////////////////////////////////////////////////////////////////
 
   public class GroupBean {
-    GribCollection.GroupHcs group;
+    GribCollection.GroupGC group;
     String type;
     float density, avgDensity;
     int nrecords = 0;
@@ -388,19 +381,21 @@ public class CdmIndex2Panel extends JPanel {
     public GroupBean() {
     }
 
-    public GroupBean(GribCollection.GroupHcs g, String type) {
+    public GroupBean(GribCollection.GroupGC g, String type) {
       this.group = g;
       this.type = type;
 
+      int nvars = 0;
       int total = 0;
       avgDensity = 0;
-      for (GribCollection.VariableIndex vi : group.variList) {
+      for (GribCollection.VariableIndex vi : group.getVariables()) {
         vi.calcTotalSize();
         total += vi.totalSize;
         nrecords += vi.nrecords;
         avgDensity += vi.density;
+        nvars++;
       }
-      avgDensity /= group.variList.size();
+      avgDensity /= nvars;
       density = (total == 0) ? 0 : ((float) nrecords) / total;
     }
 
@@ -421,16 +416,15 @@ public class CdmIndex2Panel extends JPanel {
     }
 
     public int getNFiles() {
-      if (group.filenose == null) return 0;
-      return group.filenose.length;
+      return group.getNFiles();
     }
 
     public int getNCoords() {
-      return group.coords.size();
+      return group.getNCoords();
     }
 
     public int getNVariables() {
-      return group.variList.size();
+      return group.getNVariables();
     }
 
     public float getAvgDensity() {
@@ -514,12 +508,12 @@ public class CdmIndex2Panel extends JPanel {
 
   public class VarBean {
     GribCollection.VariableIndex v;
-    GribCollection.GroupHcs group;
+    GribCollection.GroupGC group;
 
     public VarBean() {
     }
 
-    public VarBean(GribCollection.VariableIndex v, GribCollection.GroupHcs group) {
+    public VarBean(GribCollection.VariableIndex v, GribCollection.GroupGC group) {
       this.v = v;
       this.group = group;
     }
@@ -542,7 +536,7 @@ public class CdmIndex2Panel extends JPanel {
 
     public String getIndexes() {
       Formatter f = new Formatter();
-      for (int idx : v.coordIndex) f.format("%d,", idx);
+      for (int idx : v.getCoordinateIndex()) f.format("%d,", idx);
       return f.toString();
     }
 
@@ -568,37 +562,17 @@ public class CdmIndex2Panel extends JPanel {
 
     private void showSparseArray(Formatter f) {
 
+      int count = 0;
       Indent indent = new Indent(2);
-      for (Coordinate coord : v.getCoordinates())
+      for (Coordinate coord : v.getCoordinates()) {
+        f.format("%d: ", count++);
         coord.showInfo(f, indent);
+      }
       f.format("%n");
 
       if (v instanceof PartitionCollection.VariableIndexPartitioned) {
         PartitionCollection.VariableIndexPartitioned vip = (PartitionCollection.VariableIndexPartitioned) v;
-        if (vip.twot != null)
-          vip.twot.showMissing(f);
-
-        if (vip.time2runtime != null) {
-          Coordinate run = v.getCoordinate(Coordinate.Type.runtime);
-          Coordinate tcoord = v.getCoordinate(Coordinate.Type.time);
-          if (tcoord == null) tcoord = v.getCoordinate(Coordinate.Type.timeIntv);
-          CoordinateTimeAbstract time = (CoordinateTimeAbstract) tcoord;
-          CalendarDate ref = time.getRefDate();
-          CalendarPeriod.Field unit = time.getTimeUnit().getField();
-          f.format("time2runtime: %n");
-          int count = 0;
-          for (int idx : vip.time2runtime) {
-            Object val = time.getValue(count);
-            f.format(" %2d: %s -> %2d (%s)", count, val, idx-1, run.getValue(idx-1));
-            if (val instanceof Integer) {
-              int valI = (Integer) val;
-              f.format(" == %s ", ref.add((double) valI, unit));
-            }
-            f.format(" %n");
-            count++;
-          }
-          f.format("%n");
-        }
+        vip.show(f);
 
       } else {
         try {

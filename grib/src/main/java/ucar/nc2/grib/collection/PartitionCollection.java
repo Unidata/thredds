@@ -5,6 +5,7 @@ import thredds.inventory.CollectionUpdateType;
 import thredds.inventory.MCollection;
 import ucar.nc2.grib.GdsHorizCoordSys;
 import ucar.nc2.time.CalendarDate;
+import ucar.nc2.time.CalendarPeriod;
 import ucar.nc2.util.CancelTask;
 import ucar.nc2.util.Misc;
 import ucar.nc2.util.cache.FileCache;
@@ -58,9 +59,9 @@ public class PartitionCollection extends GribCollection {
   }
 
   public class VariableIndexPartitioned extends GribCollection.VariableIndex {
-    public List<PartitionForVariable2D> partList; // must not change order
+    private List<PartitionForVariable2D> partList; // must not change order - really ??
 
-    VariableIndexPartitioned(GroupHcs g, VariableIndex other, int nparts) {
+    VariableIndexPartitioned(GroupGC g, VariableIndex other, int nparts) {
       super(g, other);
       partList = new ArrayList<>(nparts);
     }
@@ -96,6 +97,14 @@ public class PartitionCollection extends GribCollection {
       addPartition(pv.partno, pv.groupno, pv.varno, pv.flag, pv.ndups, pv.nrecords, pv.missing, pv.density);
     }
 
+    public Iterable<PartitionForVariable2D> getPartitionsForVariable() {
+      return partList;
+    }
+
+    public PartitionForVariable2D getPartitionsForVariable(int idx) {
+      return partList.get(idx);
+    }
+
     @Override
     public String toStringComplete() {
       Formatter sb = new Formatter();
@@ -128,6 +137,35 @@ public class PartitionCollection extends GribCollection {
 
       sb.format(super.toStringComplete());
       return sb.toString();
+    }
+
+
+    public void show(Formatter f) {
+      if (twot != null)
+        twot.showMissing(f);
+
+      if (time2runtime != null) {
+        Coordinate run = getCoordinate(Coordinate.Type.runtime);
+        Coordinate tcoord = getCoordinate(Coordinate.Type.time);
+        if (tcoord == null) tcoord = getCoordinate(Coordinate.Type.timeIntv);
+        CoordinateTimeAbstract time = (CoordinateTimeAbstract) tcoord;
+        CalendarDate ref = time.getRefDate();
+        CalendarPeriod.Field unit = time.getTimeUnit().getField();
+
+        f.format("time2runtime: %n");
+        int count = 0;
+        for (int idx : time2runtime) {
+          Object val = time.getValue(count);
+          f.format(" %2d: %s -> %2d (%s)", count, val, idx-1, run.getValue(idx-1));
+          if (val instanceof Integer) {
+            int valI = (Integer) val;
+            f.format(" == %s ", ref.add((double) valI, unit));
+          }
+          f.format(" %n");
+          count++;
+        }
+        f.format("%n");
+      }
     }
 
     // doesnt work because not threadsafe
@@ -217,11 +255,11 @@ public class PartitionCollection extends GribCollection {
       }
       if (partVar == null) return null;
 
-      Partition p = getPartitions().get(partno);
+      Partition p = getPartition(partno);
       try (GribCollection gc = p.getGribCollection()) { // ensure that its read in try-with
         Dataset ds = gc.getDatasetCanonical(); // always references the twoD or GC dataset
         // the group and variable index may vary across partitions
-        GribCollection.GroupHcs g = ds.groups.get(partVar.groupno);
+        GroupGC g = ds.groups.get(partVar.groupno);
         GribCollection.VariableIndex vindex = g.variList.get(partVar.varno);
         vindex.readRecords();
         return vindex;
@@ -476,7 +514,7 @@ public class PartitionCollection extends GribCollection {
   public VariableIndex getVariable2DByHash(HorizCoordSys hcs, int cdmHash) {
     GribCollection.Dataset ds2d = getDataset2D();
     if (ds2d == null) return null;
-    for (GroupHcs groupHcs : ds2d.getGroups())
+    for (GroupGC groupHcs : ds2d.getGroups())
       if (groupHcs.horizCoordSys == hcs)
         return groupHcs.findVariableByHash(cdmHash);
     return null;
@@ -493,9 +531,8 @@ public class PartitionCollection extends GribCollection {
    */
   @Override
   public List<String> getFilenames() {
-    List<Partition> parts = getPartitions();
-    List<String> result = new ArrayList<String>(parts.size());
-    for (Partition p : parts) result.add(p.indexFilename);
+    List<String> result = new ArrayList<>();
+    for (Partition p : getPartitions()) result.add(p.indexFilename);
     return result;
   }
 
@@ -528,7 +565,7 @@ public class PartitionCollection extends GribCollection {
    * @param nparts size of partition list
    * @return a new VariableIndexPartitioned
    */
-  public VariableIndexPartitioned makeVariableIndexPartitioned(GribCollection.GroupHcs group,
+  public VariableIndexPartitioned makeVariableIndexPartitioned(GroupGC group,
                                                                GribCollection.VariableIndex from, int nparts) {
     VariableIndexPartitioned vip = new VariableIndexPartitioned(group, from, nparts);
     group.addVariable(vip);
@@ -541,11 +578,19 @@ public class PartitionCollection extends GribCollection {
     return vip;
   }
 
-  public List<Partition> getPartitions() {
+  public Iterable<Partition> getPartitions() {
     return partitions;
   }
 
-  public List<Partition> getPartitionsSorted() {
+  public Partition getPartition(int idx) {
+    return partitions.get(idx);
+  }
+
+  public int getPartitionSize() {
+     return partitions.size();
+   }
+
+   public List<Partition> getPartitionsSorted() {
     List<Partition> c = new ArrayList<>(partitions);
     Collections.sort(c);
     if (this.gribConfig != null && !this.gribConfig.filesSortIncreasing) {
@@ -563,9 +608,8 @@ public class PartitionCollection extends GribCollection {
   public void showIndex(Formatter f) {
     super.showIndex(f);
 
-    List<Partition> plist = getPartitions();
-    f.format("Partitions (%d)%n", plist.size());
-    for (Partition p : plist)
+    f.format("Partitions%n");
+    for (Partition p :  getPartitions())
       f.format("  %s%n", p);
     f.format("%n");
 
@@ -593,7 +637,7 @@ public class PartitionCollection extends GribCollection {
   // stuff for Iosp
 
   public RandomAccessFile getRaf(int partno, int fileno) throws IOException {
-    Partition part = getPartitions().get(partno);
+    Partition part = getPartition(partno);
     GribCollection gc = part.getGribCollection();
     RandomAccessFile raf = gc.getDataRaf(fileno);
     gc.close(); // LOOK ??

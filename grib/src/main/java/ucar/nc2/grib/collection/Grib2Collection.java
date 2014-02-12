@@ -58,12 +58,12 @@ public class Grib2Collection extends GribCollection {
   public ucar.nc2.dataset.NetcdfDataset getNetcdfDataset(String datasetName, String groupName, String filename, FeatureCollectionConfig.GribConfig gribConfig,
                                                          Formatter errlog, org.slf4j.Logger logger) throws IOException {
     Dataset ds = findDataset(datasetName);
-    GroupHcs want = ds.findGroupById(groupName);
+    GroupGC want = ds.findGroupById(groupName);
     if (want == null) return null;
 
     if (filename == null) {  // LOOK thread-safety : sharing this, raf
       Grib2Iosp iosp = new Grib2Iosp(want, ds.getType());
-      NetcdfFile ncfile = new GcNetcdfFile(iosp, null, getIndexFile().getPath(), null);
+      NetcdfFile ncfile = new NetcdfFileGC(iosp, null, getIndexFile().getPath(), null);
       return new NetcdfDataset(ncfile);
 
     } else {
@@ -71,7 +71,7 @@ public class Grib2Collection extends GribCollection {
       if (wantFile != null) {
         GribCollection gc = GribCdmIndex2.openGribCollectionFromDataFile(wantFile, CollectionUpdateType.nocheck, gribConfig, errlog, logger);  // LOOK thread-safety : creating ncx
         Grib2Iosp iosp = new Grib2Iosp(gc);
-        NetcdfFile ncfile = new GcNetcdfFile(iosp, null, getIndexFile().getPath(), null);
+        NetcdfFile ncfile = new NetcdfFileGC(iosp, null, getIndexFile().getPath(), null);
         return new NetcdfDataset(ncfile);
       }
       return null;
@@ -82,12 +82,12 @@ public class Grib2Collection extends GribCollection {
   public ucar.nc2.dt.grid.GridDataset getGridDataset(String datasetName, String groupName, String filename, FeatureCollectionConfig.GribConfig gribConfig,
                                                      Formatter errlog, org.slf4j.Logger logger) throws IOException {
     Dataset ds = findDataset(datasetName);
-    GroupHcs want = ds.findGroupById(groupName);
+    GroupGC want = ds.findGroupById(groupName);
     if (want == null) return null;
 
     if (filename == null) { // LOOK thread-safety : sharing this, raf
       Grib2Iosp iosp = new Grib2Iosp(want, ds.getType());
-      NetcdfFile ncfile = new GcNetcdfFile(iosp, null, getIndexFile().getPath()+"#"+groupName, null);
+      NetcdfFile ncfile = new NetcdfFileGC(iosp, null, getIndexFile().getPath()+"#"+groupName, null);
       NetcdfDataset ncd = new NetcdfDataset(ncfile);
       return new ucar.nc2.dt.grid.GridDataset(ncd); // LOOK - replace with custom GridDataset??
 
@@ -97,7 +97,7 @@ public class Grib2Collection extends GribCollection {
         GribCollection gc = GribCdmIndex2.openGribCollectionFromDataFile(wantFile, CollectionUpdateType.nocheck, gribConfig, errlog, logger);  // LOOK thread-safety : creating ncx
 
         Grib2Iosp iosp = new Grib2Iosp(gc);
-        NetcdfFile ncfile = new GcNetcdfFile(iosp, null, getIndexFile().getPath(), null);
+        NetcdfFile ncfile = new NetcdfFileGC(iosp, null, getIndexFile().getPath(), null);
         NetcdfDataset ncd = new NetcdfDataset(ncfile);
         return new ucar.nc2.dt.grid.GridDataset(ncd); // LOOK - replace with custom GridDataset??
       }

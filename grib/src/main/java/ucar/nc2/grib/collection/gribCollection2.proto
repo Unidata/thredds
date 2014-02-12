@@ -2,7 +2,7 @@ option java_package = "ucar.nc2.grib.collection";
 option java_outer_classname = "GribCollectionProto";
 
 message Record {
-  required uint32 fileno = 1;  // index into GribCollectionIndex.files
+  required uint32 fileno = 1;  // which GRIB file ? key into GC.fileMap
   required uint64 pos = 2;     // offset in Grib file of the start of drs (grib2) or entire message (grib1)
   optional uint64 bmsPos = 3 [default = 0]; // use alternate bms
   optional uint32 scanMode = 4 [default = 9999];  // scanMode from each record's gds added 2/6/2014
@@ -76,7 +76,7 @@ message Group {
   required uint32 gdsIndex = 1;       // index into GribCollection.gds array
   repeated Variable variables = 2;    // list of variables
   repeated Coord coords = 3;          // list of coordinates
-  repeated int32 fileno = 4;          // the component files that are in this group, index into gc.mfiles
+  repeated int32 fileno = 4;          // the component files that are in this group, key into gc.mfiles
   required bool isTwod = 5;           // has 2 time dimensions
 
   repeated Parameter params = 20;      // not used yet

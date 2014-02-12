@@ -169,12 +169,12 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
     tmi.addVariableMapLink(makeMetadataLink(tpath, VARIABLES));
     tmi.setServiceName(virtualService.getName());
 
-    boolean isSingleGroup = true;
     for (GribCollection.Dataset ds : gc.getDatasets()) {
+      boolean isSingleGroup = ds.getGroupsSize() == 1;
+
       if (ds.getType() == GribCollection.Type.TwoD) {
-        List<GribCollection.GroupHcs> groups = new ArrayList<>(ds.getGroups());
+        Iterable<GribCollection.GroupGC> groups = ds.getGroups();
         tmi.setGeospatialCoverage(extractGeospatial(groups)); // set extent from twoD dataset for all
-        isSingleGroup = ds.getGroups().size() == 1;
 
         if (gribConfig.hasDatasetType(FeatureCollectionConfig.GribDatasetType.TwoD)) {
           InvDatasetImpl twoD = new InvDatasetImpl(this, getDatasetNameTwoD());
@@ -186,15 +186,15 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
           twoD.tmi.setTimeCoverage(extractCalendarDateRange(groups));
           top.addDataset(twoD);
 
-          Collections.sort(groups);
-          makeDatasetsFromGroups(twoD, groups);
+          // Collections.sort(groups);
+          makeDatasetsFromGroups(twoD, groups, isSingleGroup);
         }
       }
 
       if (ds.getType() == GribCollection.Type.Best) {
 
         if (gribConfig.hasDatasetType(FeatureCollectionConfig.GribDatasetType.Best)) {
-          List<GribCollection.GroupHcs> groups = new ArrayList<>(ds.getGroups());
+          Iterable<GribCollection.GroupGC> groups = ds.getGroups();
           InvDatasetImpl best = new InvDatasetImpl(this, getDatasetNameBest());
           String path = getPath() + "/" + BEST_DATASET;
           best.setUrlPath(path);
@@ -203,8 +203,8 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
           best.tmi.setTimeCoverage(extractCalendarDateRange(groups));
           top.addDataset(best);
 
-          Collections.sort(groups);
-          makeDatasetsFromGroups(best, groups);
+          // Collections.sort(groups);
+          makeDatasetsFromGroups(best, groups, isSingleGroup);
         }
       }
 
@@ -223,7 +223,7 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
     if (isFilePartition) {
       PartitionCollection pc =  (PartitionCollection) localState.gribCollection;
       for (PartitionCollection.Partition partition : pc.getPartitionsSorted()) {
-        InvDatasetImpl partDs = makeDatasetsFromPartition(this, partition, isSingleGroup);
+        InvDatasetImpl partDs = makeDatasetsFromPartition(this, partition, true);
         top.addDataset(partDs);
       }
 
@@ -249,11 +249,11 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
     localState.top = top;
   }
 
-  private void makeDatasetsFromGroups(InvDatasetImpl parent, List<GribCollection.GroupHcs> groups) {
-    Collections.sort(groups);
-    boolean isSingleGroup = (groups.size() == 1);
+  private void makeDatasetsFromGroups(InvDatasetImpl parent, Iterable<GribCollection.GroupGC> groups,  boolean isSingleGroup) {
+    // Collections.sort(groups);
+    // boolean isSingleGroup = (groups.size() == 1);
 
-    for (GribCollection.GroupHcs group : groups) {
+    for (GribCollection.GroupGC group : groups) {
       InvDatasetImpl ds = isSingleGroup ? parent : new InvDatasetImpl(this, group.getDescription());
 
       String groupId = isSingleGroup ? null : group.getId();
@@ -621,9 +621,9 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
 
   ///////////////////////////////////////////////////////////////////////////
 
-  private ThreddsMetadata.GeospatialCoverage extractGeospatial(List<GribCollection.GroupHcs> groups) {
+  private ThreddsMetadata.GeospatialCoverage extractGeospatial(Iterable<GribCollection.GroupGC> groups) {
     ThreddsMetadata.GeospatialCoverage gcAll = null;
-    for (GribCollection.GroupHcs group : groups) {
+    for (GribCollection.GroupGC group : groups) {
       ThreddsMetadata.GeospatialCoverage gc = extractGeospatial(group);
       if (gcAll == null) gcAll = gc;
       else gcAll.extend(gc);
@@ -632,7 +632,7 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
   }
 
 
-  private ThreddsMetadata.GeospatialCoverage extractGeospatial(GribCollection.GroupHcs group) {
+  private ThreddsMetadata.GeospatialCoverage extractGeospatial(GribCollection.GroupGC group) {
     GdsHorizCoordSys gdsCoordSys = group.getGdsHorizCoordSys();
     LatLonRect llbb = GridCoordSys.getLatLonBoundingBox(gdsCoordSys.proj, gdsCoordSys.getStartX(), gdsCoordSys.getStartY(),
             gdsCoordSys.getEndX(), gdsCoordSys.getEndY());
@@ -649,9 +649,9 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
     return gc;
   }
 
-  private CalendarDateRange extractCalendarDateRange(List<GribCollection.GroupHcs> groups) {
+  private CalendarDateRange extractCalendarDateRange(Iterable<GribCollection.GroupGC> groups) {
     CalendarDateRange gcAll = null;
-    for (GribCollection.GroupHcs group : groups) {
+    for (GribCollection.GroupGC group : groups) {
       CalendarDateRange gc = group.getCalendarDateRange();
       if (gcAll == null) gcAll = gc;
       else gcAll.extend(gc);
@@ -745,7 +745,7 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
     GribCollection.Dataset ds = localState.gribCollection.findDataset(paths[0]);
 
     if (paths.length == 1) {                               // case 1
-      GribCollection.GroupHcs g = ds.getGroup(0);
+      GribCollection.GroupGC g = ds.getGroup(0);
       return new DatasetParse(null, paths[0], g.getId());
     }
 

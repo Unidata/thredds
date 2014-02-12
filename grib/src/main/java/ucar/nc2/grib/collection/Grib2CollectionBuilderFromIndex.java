@@ -187,7 +187,7 @@ public class Grib2CollectionBuilderFromIndex extends GribCollectionBuilder {
     return true;
   }
 
-  protected GribCollection.VariableIndex readVariableExtensions(GribCollection.GroupHcs group, GribCollectionProto.Variable pv, GribCollection.VariableIndex vi) {
+  protected GribCollection.VariableIndex readVariableExtensions(GribCollection.GroupGC group, GribCollectionProto.Variable pv, GribCollection.VariableIndex vi) {
     group.addVariable(vi);
     return vi;
   }
@@ -217,10 +217,10 @@ public class Grib2CollectionBuilderFromIndex extends GribCollectionBuilder {
     GribCollection.Type type = GribCollection.Type.valueOf(p.getType().toString());
     GribCollection.Dataset ds = gc.makeDataset( type);
 
-    ds.groups = new ArrayList<>(p.getGroupsCount());
+    List<GribCollection.GroupGC> groups = new ArrayList<>(p.getGroupsCount());
     for (int i = 0; i < p.getGroupsCount(); i++)
-      ds.groups.add( readGroup( p.getGroups(i)));
-    ds.groups = Collections.unmodifiableList(ds.groups);
+      groups.add( readGroup( p.getGroups(i)));
+    ds.groups = Collections.unmodifiableList(groups);
 
     return ds;
   }
@@ -236,8 +236,8 @@ message Group {
   extensions 100 to 199;
 }
  */
-  protected GribCollection.GroupHcs readGroup(GribCollectionProto.Group p) {
-    GribCollection.GroupHcs group = gc.makeGroup();
+  protected GribCollection.GroupGC readGroup(GribCollectionProto.Group p) {
+    GribCollection.GroupGC group = gc.makeGroup();
 
     int gdsIndex = p.getGdsIndex();
     group.horizCoordSys = gc.getHorizCS(gdsIndex);
@@ -428,7 +428,7 @@ message Variable {
    extensions 100 to 199;
  }
  */
-  protected GribCollection.VariableIndex readVariable(GribCollection.GroupHcs group, GribCollectionProto.Variable pv) {
+  protected GribCollection.VariableIndex readVariable(GribCollection.GroupGC group, GribCollectionProto.Variable pv) {
     int discipline = pv.getDiscipline();
 
     byte[] rawPds = pv.getPds().toByteArray();

@@ -78,9 +78,9 @@ public class Grib2PartitionBuilderFromIndex extends Grib2CollectionBuilderFromIn
     repeated Parameter gparams = 102;      // not used yet
   }
    */
-  protected GribCollection.GroupHcs readGroup(GribCollectionProto.Group p) {
+  protected GribCollection.GroupGC readGroup(GribCollectionProto.Group p) {
 
-    GribCollection.GroupHcs group = super.readGroup(p);
+    GribCollection.GroupGC group = super.readGroup(p);
     group.isTwod = p.getIsTwod();
 
     // extensions
@@ -99,7 +99,7 @@ public class Grib2PartitionBuilderFromIndex extends Grib2CollectionBuilderFromIn
   }
    */
   @Override
-  protected GribCollection.VariableIndex readVariableExtensions(GribCollection.GroupHcs group, GribCollectionProto.Variable proto, GribCollection.VariableIndex vi) {
+  protected GribCollection.VariableIndex readVariableExtensions(GribCollection.GroupGC group, GribCollectionProto.Variable proto, GribCollection.VariableIndex vi) {
     List<PartitionCollectionProto.PartitionVariable> pvList = proto.getExtension(PartitionCollectionProto.partition);
 
     PartitionCollection.VariableIndexPartitioned vip = pc.makeVariableIndexPartitioned(group, vi, pvList.size());

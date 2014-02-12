@@ -269,7 +269,7 @@ public class Grib2Iosp extends GribIosp {
   // private PartitionCollection gribPartition;
   private GribCollection gribCollection;
   private Grib2Customizer cust;
-  private GribCollection.GroupHcs gHcs;
+  private GribCollection.GroupGC gHcs;
   private GribCollection.Type gtype; // only used if gHcs was set
   private boolean isPartitioned;
   private boolean owned; // if Iosp is owned by GribCollection; affects close()
@@ -299,7 +299,7 @@ public class Grib2Iosp extends GribIosp {
   public Grib2Iosp() {
   }
 
-  public Grib2Iosp(GribCollection.GroupHcs gHcs, GribCollection.Type gtype) {
+  public Grib2Iosp(GribCollection.GroupGC gHcs, GribCollection.Type gtype) {
     this.gHcs = gHcs;
     this.owned = true;
     this.gtype = gtype;
@@ -337,10 +337,10 @@ public class Grib2Iosp extends GribIosp {
         Group datasetGroup = new Group(ncfile, null, ds.getType().toString());
         ncfile.addGroup(null, datasetGroup);
 
-        List<GribCollection.GroupHcs> groups = new ArrayList<>(ds.getGroups());
-        Collections.sort(groups);
-        boolean useGroups = groups.size() > 1;
-        for (GribCollection.GroupHcs g : groups)
+        Iterable<GribCollection.GroupGC> groups = ds.getGroups();
+        // Collections.sort(groups);
+        boolean useGroups = ds.getGroupsSize() > 1;
+        for (GribCollection.GroupGC g : groups)
           addGroup(ncfile, datasetGroup, g, ds.getType(), useGroups);
       }
     }
@@ -371,7 +371,7 @@ public class Grib2Iosp extends GribIosp {
         ncfile.addAttribute(null, new Attribute(p));
   }
 
-  private void addGroup(NetcdfFile ncfile, Group parent, GribCollection.GroupHcs gHcs, GribCollection.Type gctype, boolean useGroups) {
+  private void addGroup(NetcdfFile ncfile, Group parent, GribCollection.GroupGC gHcs, GribCollection.Type gctype, boolean useGroups) {
 
     Group g;
     if (useGroups) {
@@ -390,7 +390,7 @@ public class Grib2Iosp extends GribIosp {
     makeGroup(ncfile, g, gHcs, gctype);
   }
 
-  private void makeGroup(NetcdfFile ncfile, Group g, GribCollection.GroupHcs gHcs, GribCollection.Type gctype) {
+  private void makeGroup(NetcdfFile ncfile, Group g, GribCollection.GroupGC gHcs, GribCollection.Type gctype) {
     GdsHorizCoordSys hcs = gHcs.getGdsHorizCoordSys();
     String grid_mapping = hcs.getName()+"_Projection";
 
