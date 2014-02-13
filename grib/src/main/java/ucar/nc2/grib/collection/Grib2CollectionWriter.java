@@ -34,7 +34,6 @@ package ucar.nc2.grib.collection;
 
 import com.google.protobuf.ByteString;
 import thredds.inventory.*;
-import thredds.inventory.partition.PartitionManager;
 import ucar.sparr.Coordinate;
 import ucar.sparr.SparseArray;
 import ucar.nc2.constants.CDM;
@@ -94,6 +93,12 @@ public class Grib2CollectionWriter extends GribCollectionBuilder {
       this.gdsHash = gdsHash;
       this.runtime = runtime;
     }
+
+    CoordinateRuntime makeCoordinateRuntime() {
+      List<CalendarDate> runtimes = new ArrayList(1);
+      runtimes.add(runtime);
+      return new CoordinateRuntime(runtimes);
+    }
   }
 
   ///////////////////////////////////////////////////
@@ -108,7 +113,7 @@ public class Grib2CollectionWriter extends GribCollectionBuilder {
    GribCollectionIndex (sizeIndex bytes)
    */
 
-  public boolean writeIndex(String name, File indexFile, List<Group> groups, List<MFile> files) throws IOException {
+  public boolean writeIndex(String name, File indexFile, CoordinateRuntime masterRuntime, List<Group> groups, List<MFile> files) throws IOException {
     Grib2Record first = null; // take global metadata from here
     boolean deleteOnClose = false;
 
@@ -214,6 +219,8 @@ public class Grib2CollectionWriter extends GribCollectionBuilder {
         b.setIndex(gcmfile.index);
         indexBuilder.addMfiles(b.build());
       }
+
+      indexBuilder.setMasterRuntime(writeCoordProto(masterRuntime));
 
        //gds
       for (Group g : groups)

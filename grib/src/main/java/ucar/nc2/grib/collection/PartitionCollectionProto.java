@@ -8,9 +8,9 @@ public final class PartitionCollectionProto {
   public static void registerAllExtensions(
       com.google.protobuf.ExtensionRegistry registry) {
     registry.add(ucar.nc2.grib.collection.PartitionCollectionProto.partition);
-    registry.add(ucar.nc2.grib.collection.PartitionCollectionProto.run2Part);
     registry.add(ucar.nc2.grib.collection.PartitionCollectionProto.partitions);
     registry.add(ucar.nc2.grib.collection.PartitionCollectionProto.isPartitionOfPartitions);
+    registry.add(ucar.nc2.grib.collection.PartitionCollectionProto.run2Part);
   }
   public interface PartitionVariableOrBuilder
       extends com.google.protobuf.MessageOrBuilder {
@@ -2090,17 +2090,6 @@ public final class PartitionCollectionProto {
           .newFileScopedGeneratedExtension(
         ucar.nc2.grib.collection.PartitionCollectionProto.PartitionVariable.class,
         ucar.nc2.grib.collection.PartitionCollectionProto.PartitionVariable.getDefaultInstance());
-  public static final int RUN2PART_FIELD_NUMBER = 100;
-  /**
-   * <code>extend .Group { ... }</code>
-   */
-  public static final
-    com.google.protobuf.GeneratedMessage.GeneratedExtension<
-      ucar.nc2.grib.collection.GribCollectionProto.Group,
-      java.util.List<java.lang.Integer>> run2Part = com.google.protobuf.GeneratedMessage
-          .newFileScopedGeneratedExtension(
-        java.lang.Integer.class,
-        null);
   public static final int PARTITIONS_FIELD_NUMBER = 100;
   /**
    * <code>extend .GribCollection { ... }</code>
@@ -2122,6 +2111,17 @@ public final class PartitionCollectionProto {
       java.lang.Boolean> isPartitionOfPartitions = com.google.protobuf.GeneratedMessage
           .newFileScopedGeneratedExtension(
         java.lang.Boolean.class,
+        null);
+  public static final int RUN2PART_FIELD_NUMBER = 102;
+  /**
+   * <code>extend .GribCollection { ... }</code>
+   */
+  public static final
+    com.google.protobuf.GeneratedMessage.GeneratedExtension<
+      ucar.nc2.grib.collection.GribCollectionProto.GribCollection,
+      java.util.List<java.lang.Integer>> run2Part = com.google.protobuf.GeneratedMessage
+          .newFileScopedGeneratedExtension(
+        java.lang.Integer.class,
         null);
   private static com.google.protobuf.Descriptors.Descriptor
     internal_static_PartitionVariable_descriptor;
@@ -2151,12 +2151,12 @@ public final class PartitionCollectionProto {
       "ssing\030\n \001(\r\"T\n\tPartition\022\014\n\004name\030\001 \002(\t\022\020" +
       "\n\010filename\030\002 \002(\t\022\021\n\tdirectory\030\003 \002(\t\022\024\n\014l" +
       "astModified\030\004 \001(\004:0\n\tpartition\022\t.Variabl" +
-      "e\030d \003(\0132\022.PartitionVariable:\030\n\010run2part\022",
-      "\006.Group\030d \003(\r:/\n\npartitions\022\017.GribCollec" +
-      "tion\030d \003(\0132\n.Partition:0\n\027isPartitionOfP" +
-      "artitions\022\017.GribCollection\030e \002(\010B4\n\030ucar" +
-      ".nc2.grib.collectionB\030PartitionCollectio" +
-      "nProto"
+      "e\030d \003(\0132\022.PartitionVariable:/\n\npartition",
+      "s\022\017.GribCollection\030d \003(\0132\n.Partition:0\n\027" +
+      "isPartitionOfPartitions\022\017.GribCollection" +
+      "\030e \002(\010:!\n\010run2part\022\017.GribCollection\030f \003(" +
+      "\rB4\n\030ucar.nc2.grib.collectionB\030Partition" +
+      "CollectionProto"
     };
     com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
       new com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner() {
@@ -2176,9 +2176,9 @@ public final class PartitionCollectionProto {
               internal_static_Partition_descriptor,
               new java.lang.String[] { "Name", "Filename", "Directory", "LastModified", });
           partition.internalInit(descriptor.getExtensions().get(0));
-          run2Part.internalInit(descriptor.getExtensions().get(1));
-          partitions.internalInit(descriptor.getExtensions().get(2));
-          isPartitionOfPartitions.internalInit(descriptor.getExtensions().get(3));
+          partitions.internalInit(descriptor.getExtensions().get(1));
+          isPartitionOfPartitions.internalInit(descriptor.getExtensions().get(2));
+          run2Part.internalInit(descriptor.getExtensions().get(3));
           return null;
         }
       };

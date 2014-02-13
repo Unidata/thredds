@@ -329,19 +329,24 @@ public class Grib2Iosp extends GribIosp {
       if (gribCollection == null)
         throw new IllegalStateException("Not a GRIB2 data file or ncx2 file");
 
-      if (this.gribCollection instanceof Grib2Partition)
-        isPartitioned = true;
+      isPartitioned = (this.gribCollection instanceof Grib2Partition);
       cust = Grib2Customizer.factory(gribCollection.getCenter(), gribCollection.getSubcenter(), gribCollection.getMaster(), gribCollection.getLocal());
 
+      boolean useDatasetGroup = gribCollection.getDatasets().size() > 1;
       for (GribCollection.Dataset ds : gribCollection.getDatasets()) {
-        Group datasetGroup = new Group(ncfile, null, ds.getType().toString());
-        ncfile.addGroup(null, datasetGroup);
+        Group topGroup;
+        if (useDatasetGroup) {
+          topGroup = new Group(ncfile, null, ds.getType().toString());
+          ncfile.addGroup(null, topGroup);
+        } else {
+          topGroup = ncfile.getRootGroup();
+        }
 
         Iterable<GribCollection.GroupGC> groups = ds.getGroups();
         // Collections.sort(groups);
         boolean useGroups = ds.getGroupsSize() > 1;
         for (GribCollection.GroupGC g : groups)
-          addGroup(ncfile, datasetGroup, g, ds.getType(), useGroups);
+          addGroup(ncfile, topGroup, g, ds.getType(), useGroups);
       }
     }
 

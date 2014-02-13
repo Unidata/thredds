@@ -183,13 +183,21 @@ public class PartitionCollection extends GribCollection {
      * @throws IOException
      */
     DataRecord getDataRecord(int[] indexWanted) throws IOException {
-      // find the partition
+
+      // find the runtime index
       int firstIndex = indexWanted[0];
-      int partno = group.isTwod ? getPartition2D(firstIndex) : getPartition1D(firstIndex);
+      int runIdx = group.isTwod ? firstIndex : time2runtime[firstIndex] - 1;
+      if (runIdx < 0) return null; // LOOK why is this possible?
+
+       // find the partition by matching run coordinate with master runtime
+      CoordinateRuntime runtime = (CoordinateRuntime) getCoordinate(Coordinate.Type.runtime);
+      Object val = runtime.getValue(runIdx);
+      int masterIdx = masterRuntime.getIndex(val);
+      int partno = run2part[masterIdx];
       if (partno < 0) return null; // missing
 
       // find the vi in that partition
-      GribCollection.VariableIndex compVindex2D = getVindex2D(partno); // the 2D component variable in this partition
+      GribCollection.VariableIndex compVindex2D = getVindex2D(partno); // the 2D component variable in the partno partition
       if (compVindex2D == null) return null; // missing
 
       if (isPartitionOfPartitions) {
@@ -222,15 +230,15 @@ public class PartitionCollection extends GribCollection {
     }
 
 
-    private int getPartition2D(int runtimeIdx) {
+    /* private int getPartition2D(int runtimeIdx) {
       return group.run2part[runtimeIdx];
     }
 
     private int getPartition1D(int timeIdx) {
       int runtimeIdx = time2runtime[timeIdx];
       if (runtimeIdx == 0) return -1;  // 0 = missing
-      return group.run2part[runtimeIdx - 1];     // LOOK LOOK wrong - may vary by variable !
-    }
+      return group.run2part[runtimeIdx - 1];
+    } */
 
     /**
      * Get VariableIndex (2D) for this partition
@@ -492,7 +500,7 @@ public class PartitionCollection extends GribCollection {
     }
 
     public GribCollection makeGribCollection(CollectionUpdateType force) throws IOException {
-      GribCollection result = GribCdmIndex2.openGribCollectionFromMCollection(isGrib1, dcm, force, null, logger); // LOOK caller must close
+      GribCollection result = GribCdmIndex2.openGribCollectionFromMCollection(isGrib1, dcm, force, null, logger); // caller must close
       indexFilename = result.getIndexFile().getPath();
       return result;
     }
@@ -503,6 +511,8 @@ public class PartitionCollection extends GribCollection {
   protected final org.slf4j.Logger logger;
   protected List<Partition> partitions;
   protected boolean isPartitionOfPartitions;
+
+  int[] run2part;   // masterRuntime.length; which partition to use for masterRuntime i
 
   protected PartitionCollection(String name, File directory, FeatureCollectionConfig.GribConfig config, boolean isGrib1, org.slf4j.Logger logger) {
     super(name, directory, config, isGrib1);
@@ -611,6 +621,11 @@ public class PartitionCollection extends GribCollection {
     f.format("Partitions%n");
     for (Partition p :  getPartitions())
       f.format("  %s%n", p);
+    f.format("%n");
+
+    f.format(" run2part ");
+    if (run2part == null) f.format(" null");
+    else for (int idx : run2part) f.format(" %d,", idx);
     f.format("%n");
 
     /* for (Dataset ds : datasets) {

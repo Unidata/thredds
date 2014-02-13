@@ -110,6 +110,7 @@ public class Grib2CollectionBuilderFromIndex extends GribCollectionBuilder {
         repeated MFile mfiles = 3;        // list of grib MFiles
         repeated Dataset dataset = 4;
         repeated Gds gds = 5;             // unique Gds, shared amongst datasets
+        required Coord masterRuntime = 21;  // list of runtimes in this GC
 
         required int32 center = 6;      // these 4 fields are to get a GribTable object
         required int32 subcenter = 7;
@@ -164,6 +165,8 @@ public class Grib2CollectionBuilderFromIndex extends GribCollectionBuilder {
       }
       gc.setFileMap(fileMap);
       System.out.printf("Grib2CollectionBuilderFromIndex files len = %d%n", fsize);
+
+      gc.masterRuntime = (CoordinateRuntime) readCoord(proto.getMasterRuntime());
 
       gc.horizCS = new ArrayList<>(proto.getGdsCount());
       for (int i = 0; i < proto.getGdsCount(); i++)
@@ -241,6 +244,7 @@ message Group {
 
     int gdsIndex = p.getGdsIndex();
     group.horizCoordSys = gc.getHorizCS(gdsIndex);
+    group.isTwod = p.getIsTwod();
 
     // read coords before variables
     group.coords = new ArrayList<>();

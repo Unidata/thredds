@@ -55,41 +55,26 @@ public class Grib2PartitionBuilderFromIndex extends Grib2CollectionBuilderFromIn
 
   /*
   extend GribCollection {
-    repeated Gds gds = 100;
-    repeated Dataset dataset = 101;
-    repeated Partition partitions = 102;
-    repeated Parameter pparams = 103;      // not used yet
+    repeated Partition partitions = 100;
+    required bool isPartitionOfPartitions = 101;
+    repeated uint32 run2part = 102;       // masterRuntime index to partition index
   }
    */
   @Override
   protected boolean readExtensions(GribCollectionProto.GribCollection proto) {
     pc.isPartitionOfPartitions = proto.getExtension(PartitionCollectionProto.isPartitionOfPartitions);
 
+    List<Integer> list = proto.getExtension(PartitionCollectionProto.run2Part);
+    pc.run2part = new int[list.size()];
+    int count = 0;
+    for (int partno : list)
+      pc.run2part[count++] = partno;
+
     List<ucar.nc2.grib.collection.PartitionCollectionProto.Partition> partList = proto.getExtension(PartitionCollectionProto.partitions);
     for (ucar.nc2.grib.collection.PartitionCollectionProto.Partition partProto : partList)
       makePartition(partProto);
 
     return partList.size() > 0;
-  }
-
-  /*
-  extend Group {
-    repeated uint32 run2part = 101;       // partitions only: run index to partition index map
-    repeated Parameter gparams = 102;      // not used yet
-  }
-   */
-  protected GribCollection.GroupGC readGroup(GribCollectionProto.Group p) {
-
-    GribCollection.GroupGC group = super.readGroup(p);
-    group.isTwod = p.getIsTwod();
-
-    // extensions
-    List<Integer> list = p.getExtension(PartitionCollectionProto.run2Part);
-    group.run2part = new int[list.size()];
-    int count = 0;
-    for (int partno : list)
-      group.run2part[count++] = partno;
-    return group;
   }
 
   /*

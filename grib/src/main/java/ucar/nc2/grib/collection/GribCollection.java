@@ -124,6 +124,7 @@ public class GribCollection implements FileCacheable, AutoCloseable {
   private Map<Integer, MFile> fileMap;    // all the files used in the GC; key in index in original collection, GC has subset of them
   protected List<Dataset> datasets;
   protected List<HorizCoordSys> horizCS; // one for each unique GDS
+  protected CoordinateRuntime masterRuntime;
 
   // not stored
   private Map<String, MFile> filenameMap;
@@ -195,6 +196,10 @@ public class GribCollection implements FileCacheable, AutoCloseable {
 
   public HorizCoordSys getHorizCS(int index) {
     return horizCS.get(index);
+  }
+
+  public CoordinateRuntime getMasterRuntime() {
+    return masterRuntime;
   }
 
   protected void makeHorizCS() {
@@ -322,16 +327,16 @@ public class GribCollection implements FileCacheable, AutoCloseable {
     // absolute location
     MFile mfile = fileMap.get(fileno);
     String filename = mfile.getPath();
-    File dataFile = new File(directory, filename);
+    File dataFile = new File(filename);
 
-    // check reletive location - eg may be /upc/share instead of Q:  LOOK WTF ?
+    /* check reletive location - eg may be /upc/share instead of Q:  LOOK WTF ?
     if (!dataFile.exists()) {
       if (fileMap.size() == 1) {
         dataFile = new File(directory, name); // single file case
       } else {
         dataFile = new File(directory, dataFile.getName()); // must be in same directory as the ncx file
       }
-    }
+    } */
 
 
     // data file not here
@@ -516,11 +521,6 @@ public class GribCollection implements FileCacheable, AutoCloseable {
     Map<Integer, GribCollection.VariableIndex> varMap;
     boolean isTwod = true;
 
-    // partitions only
-    int[] run2part;   // runtimeCoord.length; which partition to use for runtime i
-                      // LOOK the run index must be in the master runtime, but its not currently, its just the variables runtime
-                      // LOOK the real problem is thaat this must be variable specific
-
     GroupGC() {
       this.variList = new ArrayList<>();
       this.coords = new ArrayList<>();
@@ -654,14 +654,6 @@ public class GribCollection implements FileCacheable, AutoCloseable {
     public void show(Formatter f) {
        f.format("Group %s isTwoD=%s%n", horizCoordSys.getId(), isTwod);
        f.format(" nfiles %d%n", filenose == null ? 0 : filenose.length);
-       f.format(" run2part ");
-       if (run2part == null) f.format(" null");
-       else for (int idx : run2part) f.format(" %d,", idx);
-       f.format("%n");
-       /*f.format(" offsets ");
-       if (offsets == null) f.format(" null");
-       else for (int idx : offsets) f.format(" %d,", idx);
-       f.format("%n"); */
      }
   }
 
@@ -692,7 +684,7 @@ public class GribCollection implements FileCacheable, AutoCloseable {
     // partition only
     CoordinateTwoTimer twot;  // twoD only
     int[] time2runtime;       // oneD only: for each timeIndex, which runtime coordinate does it use? 1-based so 0 = missing
-                              // LOOK currently index is in the variables runtime coordinate, should be the master tuntime
+
     // derived from pds
     public final int category, parameter, levelType, intvType, ensDerivedType, probType;
     public String intvName;
@@ -982,6 +974,11 @@ public class GribCollection implements FileCacheable, AutoCloseable {
   public void showIndex(Formatter f) {
     f.format("Class (%s)%n", getClass().getName());
     f.format("%s%n%n", toString());
+
+
+    f.format(" master runtime coordinate ");
+    masterRuntime.showCoords(f);
+    f.format("%n");
 
     for (Dataset ds : datasets) {
       f.format("Dataset %s%n", ds.getType());

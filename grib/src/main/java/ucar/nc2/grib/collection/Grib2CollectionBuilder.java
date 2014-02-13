@@ -98,14 +98,14 @@ public class Grib2CollectionBuilder {
     boolean multipleGroups = runGroups.values().size() > 1;
     List<File> partitions = new ArrayList<>();
     Grib2CollectionWriter writer = new Grib2CollectionWriter(dcm, logger);
-    for (List<Grib2CollectionWriter.Group> runGroup : runGroups.values()) {
-      Grib2CollectionWriter.Group g = runGroup.get(0);
+    for (List<Grib2CollectionWriter.Group> runGroupList : runGroups.values()) {
+      Grib2CollectionWriter.Group g = runGroupList.get(0);
       // if multiple groups, we will write a partition. otherwise, we need to use the standard name (without runtime) so we know the filename from the collection
       String gcname = multipleGroups ? GribCollection.makeName(this.name, g.runtime) : this.name;
       File indexFileForRuntime = multipleGroups ? GribCollection.getIndexFile(name, directory, g.runtime) : GribCollection.getIndexFile(name, directory);
       partitions.add(indexFileForRuntime);
 
-      writer.writeIndex(gcname, indexFileForRuntime, runGroup, allFiles);
+      writer.writeIndex(gcname, indexFileForRuntime, g.makeCoordinateRuntime(), runGroupList, allFiles);
       logger.info("Grib2CollectionBuilder write {}", indexFileForRuntime.getPath());
     }
 

@@ -16,7 +16,7 @@ public final class GribCollectionProto {
      * <code>required uint32 fileno = 1;</code>
      *
      * <pre>
-     * index into GribCollectionIndex.files
+     * which GRIB file ? key into GC.fileMap
      * </pre>
      */
     boolean hasFileno();
@@ -24,7 +24,7 @@ public final class GribCollectionProto {
      * <code>required uint32 fileno = 1;</code>
      *
      * <pre>
-     * index into GribCollectionIndex.files
+     * which GRIB file ? key into GC.fileMap
      * </pre>
      */
     int getFileno();
@@ -201,7 +201,7 @@ public final class GribCollectionProto {
      * <code>required uint32 fileno = 1;</code>
      *
      * <pre>
-     * index into GribCollectionIndex.files
+     * which GRIB file ? key into GC.fileMap
      * </pre>
      */
     public boolean hasFileno() {
@@ -211,7 +211,7 @@ public final class GribCollectionProto {
      * <code>required uint32 fileno = 1;</code>
      *
      * <pre>
-     * index into GribCollectionIndex.files
+     * which GRIB file ? key into GC.fileMap
      * </pre>
      */
     public int getFileno() {
@@ -590,7 +590,7 @@ public final class GribCollectionProto {
        * <code>required uint32 fileno = 1;</code>
        *
        * <pre>
-       * index into GribCollectionIndex.files
+       * which GRIB file ? key into GC.fileMap
        * </pre>
        */
       public boolean hasFileno() {
@@ -600,7 +600,7 @@ public final class GribCollectionProto {
        * <code>required uint32 fileno = 1;</code>
        *
        * <pre>
-       * index into GribCollectionIndex.files
+       * which GRIB file ? key into GC.fileMap
        * </pre>
        */
       public int getFileno() {
@@ -610,7 +610,7 @@ public final class GribCollectionProto {
        * <code>required uint32 fileno = 1;</code>
        *
        * <pre>
-       * index into GribCollectionIndex.files
+       * which GRIB file ? key into GC.fileMap
        * </pre>
        */
       public Builder setFileno(int value) {
@@ -623,7 +623,7 @@ public final class GribCollectionProto {
        * <code>required uint32 fileno = 1;</code>
        *
        * <pre>
-       * index into GribCollectionIndex.files
+       * which GRIB file ? key into GC.fileMap
        * </pre>
        */
       public Builder clearFileno() {
@@ -8665,7 +8665,7 @@ public final class GribCollectionProto {
      * <code>repeated int32 fileno = 4;</code>
      *
      * <pre>
-     * the component files that are in this group, index into gc.mfiles
+     * the component files that are in this group, key into gc.mfiles
      * </pre>
      */
     java.util.List<java.lang.Integer> getFilenoList();
@@ -8673,7 +8673,7 @@ public final class GribCollectionProto {
      * <code>repeated int32 fileno = 4;</code>
      *
      * <pre>
-     * the component files that are in this group, index into gc.mfiles
+     * the component files that are in this group, key into gc.mfiles
      * </pre>
      */
     int getFilenoCount();
@@ -8681,7 +8681,7 @@ public final class GribCollectionProto {
      * <code>repeated int32 fileno = 4;</code>
      *
      * <pre>
-     * the component files that are in this group, index into gc.mfiles
+     * the component files that are in this group, key into gc.mfiles
      * </pre>
      */
     int getFileno(int index);
@@ -9050,7 +9050,7 @@ public final class GribCollectionProto {
      * <code>repeated int32 fileno = 4;</code>
      *
      * <pre>
-     * the component files that are in this group, index into gc.mfiles
+     * the component files that are in this group, key into gc.mfiles
      * </pre>
      */
     public java.util.List<java.lang.Integer>
@@ -9061,7 +9061,7 @@ public final class GribCollectionProto {
      * <code>repeated int32 fileno = 4;</code>
      *
      * <pre>
-     * the component files that are in this group, index into gc.mfiles
+     * the component files that are in this group, key into gc.mfiles
      * </pre>
      */
     public int getFilenoCount() {
@@ -9071,7 +9071,7 @@ public final class GribCollectionProto {
      * <code>repeated int32 fileno = 4;</code>
      *
      * <pre>
-     * the component files that are in this group, index into gc.mfiles
+     * the component files that are in this group, key into gc.mfiles
      * </pre>
      */
     public int getFileno(int index) {
@@ -10333,7 +10333,7 @@ public final class GribCollectionProto {
        * <code>repeated int32 fileno = 4;</code>
        *
        * <pre>
-       * the component files that are in this group, index into gc.mfiles
+       * the component files that are in this group, key into gc.mfiles
        * </pre>
        */
       public java.util.List<java.lang.Integer>
@@ -10344,7 +10344,7 @@ public final class GribCollectionProto {
        * <code>repeated int32 fileno = 4;</code>
        *
        * <pre>
-       * the component files that are in this group, index into gc.mfiles
+       * the component files that are in this group, key into gc.mfiles
        * </pre>
        */
       public int getFilenoCount() {
@@ -10354,7 +10354,7 @@ public final class GribCollectionProto {
        * <code>repeated int32 fileno = 4;</code>
        *
        * <pre>
-       * the component files that are in this group, index into gc.mfiles
+       * the component files that are in this group, key into gc.mfiles
        * </pre>
        */
       public int getFileno(int index) {
@@ -10364,7 +10364,7 @@ public final class GribCollectionProto {
        * <code>repeated int32 fileno = 4;</code>
        *
        * <pre>
-       * the component files that are in this group, index into gc.mfiles
+       * the component files that are in this group, key into gc.mfiles
        * </pre>
        */
       public Builder setFileno(
@@ -10378,7 +10378,7 @@ public final class GribCollectionProto {
        * <code>repeated int32 fileno = 4;</code>
        *
        * <pre>
-       * the component files that are in this group, index into gc.mfiles
+       * the component files that are in this group, key into gc.mfiles
        * </pre>
        */
       public Builder addFileno(int value) {
@@ -10391,7 +10391,7 @@ public final class GribCollectionProto {
        * <code>repeated int32 fileno = 4;</code>
        *
        * <pre>
-       * the component files that are in this group, index into gc.mfiles
+       * the component files that are in this group, key into gc.mfiles
        * </pre>
        */
       public Builder addAllFileno(
@@ -10405,7 +10405,7 @@ public final class GribCollectionProto {
        * <code>repeated int32 fileno = 4;</code>
        *
        * <pre>
-       * the component files that are in this group, index into gc.mfiles
+       * the component files that are in this group, key into gc.mfiles
        * </pre>
        */
       public Builder clearFileno() {
@@ -11847,6 +11847,32 @@ public final class GribCollectionProto {
     ucar.nc2.grib.collection.GribCollectionProto.GdsOrBuilder getGdsOrBuilder(
         int index);
 
+    // required .Coord masterRuntime = 21;
+    /**
+     * <code>required .Coord masterRuntime = 21;</code>
+     *
+     * <pre>
+     * list of runtimes in this GC
+     * </pre>
+     */
+    boolean hasMasterRuntime();
+    /**
+     * <code>required .Coord masterRuntime = 21;</code>
+     *
+     * <pre>
+     * list of runtimes in this GC
+     * </pre>
+     */
+    ucar.nc2.grib.collection.GribCollectionProto.Coord getMasterRuntime();
+    /**
+     * <code>required .Coord masterRuntime = 21;</code>
+     *
+     * <pre>
+     * list of runtimes in this GC
+     * </pre>
+     */
+    ucar.nc2.grib.collection.GribCollectionProto.CoordOrBuilder getMasterRuntimeOrBuilder();
+
     // required int32 center = 6;
     /**
      * <code>required int32 center = 6;</code>
@@ -12064,46 +12090,59 @@ public final class GribCollectionProto {
               break;
             }
             case 48: {
-              bitField0_ |= 0x00000004;
+              bitField0_ |= 0x00000008;
               center_ = input.readInt32();
               break;
             }
             case 56: {
-              bitField0_ |= 0x00000008;
+              bitField0_ |= 0x00000010;
               subcenter_ = input.readInt32();
               break;
             }
             case 64: {
-              bitField0_ |= 0x00000010;
+              bitField0_ |= 0x00000020;
               master_ = input.readInt32();
               break;
             }
             case 72: {
-              bitField0_ |= 0x00000020;
+              bitField0_ |= 0x00000040;
               local_ = input.readInt32();
               break;
             }
             case 80: {
-              bitField0_ |= 0x00000040;
+              bitField0_ |= 0x00000080;
               genProcessType_ = input.readInt32();
               break;
             }
             case 88: {
-              bitField0_ |= 0x00000080;
+              bitField0_ |= 0x00000100;
               genProcessId_ = input.readInt32();
               break;
             }
             case 96: {
-              bitField0_ |= 0x00000100;
+              bitField0_ |= 0x00000200;
               backProcessId_ = input.readInt32();
               break;
             }
             case 162: {
-              if (!((mutable_bitField0_ & 0x00001000) == 0x00001000)) {
+              if (!((mutable_bitField0_ & 0x00002000) == 0x00002000)) {
                 params_ = new java.util.ArrayList<ucar.nc2.grib.collection.GribCollectionProto.Parameter>();
-                mutable_bitField0_ |= 0x00001000;
+                mutable_bitField0_ |= 0x00002000;
               }
               params_.add(input.readMessage(ucar.nc2.grib.collection.GribCollectionProto.Parameter.PARSER, extensionRegistry));
+              break;
+            }
+            case 170: {
+              ucar.nc2.grib.collection.GribCollectionProto.Coord.Builder subBuilder = null;
+              if (((bitField0_ & 0x00000004) == 0x00000004)) {
+                subBuilder = masterRuntime_.toBuilder();
+              }
+              masterRuntime_ = input.readMessage(ucar.nc2.grib.collection.GribCollectionProto.Coord.PARSER, extensionRegistry);
+              if (subBuilder != null) {
+                subBuilder.mergeFrom(masterRuntime_);
+                masterRuntime_ = subBuilder.buildPartial();
+              }
+              bitField0_ |= 0x00000004;
               break;
             }
           }
@@ -12123,7 +12162,7 @@ public final class GribCollectionProto {
         if (((mutable_bitField0_ & 0x00000010) == 0x00000010)) {
           gds_ = java.util.Collections.unmodifiableList(gds_);
         }
-        if (((mutable_bitField0_ & 0x00001000) == 0x00001000)) {
+        if (((mutable_bitField0_ & 0x00002000) == 0x00002000)) {
           params_ = java.util.Collections.unmodifiableList(params_);
         }
         this.unknownFields = unknownFields.build();
@@ -12416,6 +12455,40 @@ public final class GribCollectionProto {
       return gds_.get(index);
     }
 
+    // required .Coord masterRuntime = 21;
+    public static final int MASTERRUNTIME_FIELD_NUMBER = 21;
+    private ucar.nc2.grib.collection.GribCollectionProto.Coord masterRuntime_;
+    /**
+     * <code>required .Coord masterRuntime = 21;</code>
+     *
+     * <pre>
+     * list of runtimes in this GC
+     * </pre>
+     */
+    public boolean hasMasterRuntime() {
+      return ((bitField0_ & 0x00000004) == 0x00000004);
+    }
+    /**
+     * <code>required .Coord masterRuntime = 21;</code>
+     *
+     * <pre>
+     * list of runtimes in this GC
+     * </pre>
+     */
+    public ucar.nc2.grib.collection.GribCollectionProto.Coord getMasterRuntime() {
+      return masterRuntime_;
+    }
+    /**
+     * <code>required .Coord masterRuntime = 21;</code>
+     *
+     * <pre>
+     * list of runtimes in this GC
+     * </pre>
+     */
+    public ucar.nc2.grib.collection.GribCollectionProto.CoordOrBuilder getMasterRuntimeOrBuilder() {
+      return masterRuntime_;
+    }
+
     // required int32 center = 6;
     public static final int CENTER_FIELD_NUMBER = 6;
     private int center_;
@@ -12427,7 +12500,7 @@ public final class GribCollectionProto {
      * </pre>
      */
     public boolean hasCenter() {
-      return ((bitField0_ & 0x00000004) == 0x00000004);
+      return ((bitField0_ & 0x00000008) == 0x00000008);
     }
     /**
      * <code>required int32 center = 6;</code>
@@ -12447,7 +12520,7 @@ public final class GribCollectionProto {
      * <code>required int32 subcenter = 7;</code>
      */
     public boolean hasSubcenter() {
-      return ((bitField0_ & 0x00000008) == 0x00000008);
+      return ((bitField0_ & 0x00000010) == 0x00000010);
     }
     /**
      * <code>required int32 subcenter = 7;</code>
@@ -12463,7 +12536,7 @@ public final class GribCollectionProto {
      * <code>required int32 master = 8;</code>
      */
     public boolean hasMaster() {
-      return ((bitField0_ & 0x00000010) == 0x00000010);
+      return ((bitField0_ & 0x00000020) == 0x00000020);
     }
     /**
      * <code>required int32 master = 8;</code>
@@ -12483,7 +12556,7 @@ public final class GribCollectionProto {
      * </pre>
      */
     public boolean hasLocal() {
-      return ((bitField0_ & 0x00000020) == 0x00000020);
+      return ((bitField0_ & 0x00000040) == 0x00000040);
     }
     /**
      * <code>required int32 local = 9;</code>
@@ -12503,7 +12576,7 @@ public final class GribCollectionProto {
      * <code>optional int32 genProcessType = 10;</code>
      */
     public boolean hasGenProcessType() {
-      return ((bitField0_ & 0x00000040) == 0x00000040);
+      return ((bitField0_ & 0x00000080) == 0x00000080);
     }
     /**
      * <code>optional int32 genProcessType = 10;</code>
@@ -12519,7 +12592,7 @@ public final class GribCollectionProto {
      * <code>optional int32 genProcessId = 11;</code>
      */
     public boolean hasGenProcessId() {
-      return ((bitField0_ & 0x00000080) == 0x00000080);
+      return ((bitField0_ & 0x00000100) == 0x00000100);
     }
     /**
      * <code>optional int32 genProcessId = 11;</code>
@@ -12535,7 +12608,7 @@ public final class GribCollectionProto {
      * <code>optional int32 backProcessId = 12;</code>
      */
     public boolean hasBackProcessId() {
-      return ((bitField0_ & 0x00000100) == 0x00000100);
+      return ((bitField0_ & 0x00000200) == 0x00000200);
     }
     /**
      * <code>optional int32 backProcessId = 12;</code>
@@ -12606,6 +12679,7 @@ public final class GribCollectionProto {
       mfiles_ = java.util.Collections.emptyList();
       dataset_ = java.util.Collections.emptyList();
       gds_ = java.util.Collections.emptyList();
+      masterRuntime_ = ucar.nc2.grib.collection.GribCollectionProto.Coord.getDefaultInstance();
       center_ = 0;
       subcenter_ = 0;
       master_ = 0;
@@ -12625,6 +12699,10 @@ public final class GribCollectionProto {
         return false;
       }
       if (!hasTopDir()) {
+        memoizedIsInitialized = 0;
+        return false;
+      }
+      if (!hasMasterRuntime()) {
         memoizedIsInitialized = 0;
         return false;
       }
@@ -12655,6 +12733,10 @@ public final class GribCollectionProto {
           memoizedIsInitialized = 0;
           return false;
         }
+      }
+      if (!getMasterRuntime().isInitialized()) {
+        memoizedIsInitialized = 0;
+        return false;
       }
       for (int i = 0; i < getParamsCount(); i++) {
         if (!getParams(i).isInitialized()) {
@@ -12691,29 +12773,32 @@ public final class GribCollectionProto {
       for (int i = 0; i < gds_.size(); i++) {
         output.writeMessage(5, gds_.get(i));
       }
-      if (((bitField0_ & 0x00000004) == 0x00000004)) {
+      if (((bitField0_ & 0x00000008) == 0x00000008)) {
         output.writeInt32(6, center_);
       }
-      if (((bitField0_ & 0x00000008) == 0x00000008)) {
+      if (((bitField0_ & 0x00000010) == 0x00000010)) {
         output.writeInt32(7, subcenter_);
       }
-      if (((bitField0_ & 0x00000010) == 0x00000010)) {
+      if (((bitField0_ & 0x00000020) == 0x00000020)) {
         output.writeInt32(8, master_);
       }
-      if (((bitField0_ & 0x00000020) == 0x00000020)) {
+      if (((bitField0_ & 0x00000040) == 0x00000040)) {
         output.writeInt32(9, local_);
       }
-      if (((bitField0_ & 0x00000040) == 0x00000040)) {
+      if (((bitField0_ & 0x00000080) == 0x00000080)) {
         output.writeInt32(10, genProcessType_);
       }
-      if (((bitField0_ & 0x00000080) == 0x00000080)) {
+      if (((bitField0_ & 0x00000100) == 0x00000100)) {
         output.writeInt32(11, genProcessId_);
       }
-      if (((bitField0_ & 0x00000100) == 0x00000100)) {
+      if (((bitField0_ & 0x00000200) == 0x00000200)) {
         output.writeInt32(12, backProcessId_);
       }
       for (int i = 0; i < params_.size(); i++) {
         output.writeMessage(20, params_.get(i));
+      }
+      if (((bitField0_ & 0x00000004) == 0x00000004)) {
+        output.writeMessage(21, masterRuntime_);
       }
       extensionWriter.writeUntil(200, output);
       getUnknownFields().writeTo(output);
@@ -12745,37 +12830,41 @@ public final class GribCollectionProto {
         size += com.google.protobuf.CodedOutputStream
           .computeMessageSize(5, gds_.get(i));
       }
-      if (((bitField0_ & 0x00000004) == 0x00000004)) {
+      if (((bitField0_ & 0x00000008) == 0x00000008)) {
         size += com.google.protobuf.CodedOutputStream
           .computeInt32Size(6, center_);
       }
-      if (((bitField0_ & 0x00000008) == 0x00000008)) {
+      if (((bitField0_ & 0x00000010) == 0x00000010)) {
         size += com.google.protobuf.CodedOutputStream
           .computeInt32Size(7, subcenter_);
       }
-      if (((bitField0_ & 0x00000010) == 0x00000010)) {
+      if (((bitField0_ & 0x00000020) == 0x00000020)) {
         size += com.google.protobuf.CodedOutputStream
           .computeInt32Size(8, master_);
       }
-      if (((bitField0_ & 0x00000020) == 0x00000020)) {
+      if (((bitField0_ & 0x00000040) == 0x00000040)) {
         size += com.google.protobuf.CodedOutputStream
           .computeInt32Size(9, local_);
       }
-      if (((bitField0_ & 0x00000040) == 0x00000040)) {
+      if (((bitField0_ & 0x00000080) == 0x00000080)) {
         size += com.google.protobuf.CodedOutputStream
           .computeInt32Size(10, genProcessType_);
       }
-      if (((bitField0_ & 0x00000080) == 0x00000080)) {
+      if (((bitField0_ & 0x00000100) == 0x00000100)) {
         size += com.google.protobuf.CodedOutputStream
           .computeInt32Size(11, genProcessId_);
       }
-      if (((bitField0_ & 0x00000100) == 0x00000100)) {
+      if (((bitField0_ & 0x00000200) == 0x00000200)) {
         size += com.google.protobuf.CodedOutputStream
           .computeInt32Size(12, backProcessId_);
       }
       for (int i = 0; i < params_.size(); i++) {
         size += com.google.protobuf.CodedOutputStream
           .computeMessageSize(20, params_.get(i));
+      }
+      if (((bitField0_ & 0x00000004) == 0x00000004)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeMessageSize(21, masterRuntime_);
       }
       size += extensionsSerializedSize();
       size += getUnknownFields().getSerializedSize();
@@ -12889,6 +12978,7 @@ public final class GribCollectionProto {
           getMfilesFieldBuilder();
           getDatasetFieldBuilder();
           getGdsFieldBuilder();
+          getMasterRuntimeFieldBuilder();
           getParamsFieldBuilder();
         }
       }
@@ -12920,23 +13010,29 @@ public final class GribCollectionProto {
         } else {
           gdsBuilder_.clear();
         }
-        center_ = 0;
+        if (masterRuntimeBuilder_ == null) {
+          masterRuntime_ = ucar.nc2.grib.collection.GribCollectionProto.Coord.getDefaultInstance();
+        } else {
+          masterRuntimeBuilder_.clear();
+        }
         bitField0_ = (bitField0_ & ~0x00000020);
-        subcenter_ = 0;
+        center_ = 0;
         bitField0_ = (bitField0_ & ~0x00000040);
-        master_ = 0;
+        subcenter_ = 0;
         bitField0_ = (bitField0_ & ~0x00000080);
-        local_ = 0;
+        master_ = 0;
         bitField0_ = (bitField0_ & ~0x00000100);
-        genProcessType_ = 0;
+        local_ = 0;
         bitField0_ = (bitField0_ & ~0x00000200);
-        genProcessId_ = 0;
+        genProcessType_ = 0;
         bitField0_ = (bitField0_ & ~0x00000400);
-        backProcessId_ = 0;
+        genProcessId_ = 0;
         bitField0_ = (bitField0_ & ~0x00000800);
+        backProcessId_ = 0;
+        bitField0_ = (bitField0_ & ~0x00001000);
         if (paramsBuilder_ == null) {
           params_ = java.util.Collections.emptyList();
-          bitField0_ = (bitField0_ & ~0x00001000);
+          bitField0_ = (bitField0_ & ~0x00002000);
         } else {
           paramsBuilder_.clear();
         }
@@ -13006,35 +13102,43 @@ public final class GribCollectionProto {
         if (((from_bitField0_ & 0x00000020) == 0x00000020)) {
           to_bitField0_ |= 0x00000004;
         }
-        result.center_ = center_;
+        if (masterRuntimeBuilder_ == null) {
+          result.masterRuntime_ = masterRuntime_;
+        } else {
+          result.masterRuntime_ = masterRuntimeBuilder_.build();
+        }
         if (((from_bitField0_ & 0x00000040) == 0x00000040)) {
           to_bitField0_ |= 0x00000008;
         }
-        result.subcenter_ = subcenter_;
+        result.center_ = center_;
         if (((from_bitField0_ & 0x00000080) == 0x00000080)) {
           to_bitField0_ |= 0x00000010;
         }
-        result.master_ = master_;
+        result.subcenter_ = subcenter_;
         if (((from_bitField0_ & 0x00000100) == 0x00000100)) {
           to_bitField0_ |= 0x00000020;
         }
-        result.local_ = local_;
+        result.master_ = master_;
         if (((from_bitField0_ & 0x00000200) == 0x00000200)) {
           to_bitField0_ |= 0x00000040;
         }
-        result.genProcessType_ = genProcessType_;
+        result.local_ = local_;
         if (((from_bitField0_ & 0x00000400) == 0x00000400)) {
           to_bitField0_ |= 0x00000080;
         }
-        result.genProcessId_ = genProcessId_;
+        result.genProcessType_ = genProcessType_;
         if (((from_bitField0_ & 0x00000800) == 0x00000800)) {
           to_bitField0_ |= 0x00000100;
         }
+        result.genProcessId_ = genProcessId_;
+        if (((from_bitField0_ & 0x00001000) == 0x00001000)) {
+          to_bitField0_ |= 0x00000200;
+        }
         result.backProcessId_ = backProcessId_;
         if (paramsBuilder_ == null) {
-          if (((bitField0_ & 0x00001000) == 0x00001000)) {
+          if (((bitField0_ & 0x00002000) == 0x00002000)) {
             params_ = java.util.Collections.unmodifiableList(params_);
-            bitField0_ = (bitField0_ & ~0x00001000);
+            bitField0_ = (bitField0_ & ~0x00002000);
           }
           result.params_ = params_;
         } else {
@@ -13144,6 +13248,9 @@ public final class GribCollectionProto {
             }
           }
         }
+        if (other.hasMasterRuntime()) {
+          mergeMasterRuntime(other.getMasterRuntime());
+        }
         if (other.hasCenter()) {
           setCenter(other.getCenter());
         }
@@ -13169,7 +13276,7 @@ public final class GribCollectionProto {
           if (!other.params_.isEmpty()) {
             if (params_.isEmpty()) {
               params_ = other.params_;
-              bitField0_ = (bitField0_ & ~0x00001000);
+              bitField0_ = (bitField0_ & ~0x00002000);
             } else {
               ensureParamsIsMutable();
               params_.addAll(other.params_);
@@ -13182,7 +13289,7 @@ public final class GribCollectionProto {
               paramsBuilder_.dispose();
               paramsBuilder_ = null;
               params_ = other.params_;
-              bitField0_ = (bitField0_ & ~0x00001000);
+              bitField0_ = (bitField0_ & ~0x00002000);
               paramsBuilder_ = 
                 com.google.protobuf.GeneratedMessage.alwaysUseFieldBuilders ?
                    getParamsFieldBuilder() : null;
@@ -13202,6 +13309,10 @@ public final class GribCollectionProto {
           return false;
         }
         if (!hasTopDir()) {
+          
+          return false;
+        }
+        if (!hasMasterRuntime()) {
           
           return false;
         }
@@ -13232,6 +13343,10 @@ public final class GribCollectionProto {
             
             return false;
           }
+        }
+        if (!getMasterRuntime().isInitialized()) {
+          
+          return false;
         }
         for (int i = 0; i < getParamsCount(); i++) {
           if (!getParams(i).isInitialized()) {
@@ -14325,6 +14440,159 @@ public final class GribCollectionProto {
         return gdsBuilder_;
       }
 
+      // required .Coord masterRuntime = 21;
+      private ucar.nc2.grib.collection.GribCollectionProto.Coord masterRuntime_ = ucar.nc2.grib.collection.GribCollectionProto.Coord.getDefaultInstance();
+      private com.google.protobuf.SingleFieldBuilder<
+          ucar.nc2.grib.collection.GribCollectionProto.Coord, ucar.nc2.grib.collection.GribCollectionProto.Coord.Builder, ucar.nc2.grib.collection.GribCollectionProto.CoordOrBuilder> masterRuntimeBuilder_;
+      /**
+       * <code>required .Coord masterRuntime = 21;</code>
+       *
+       * <pre>
+       * list of runtimes in this GC
+       * </pre>
+       */
+      public boolean hasMasterRuntime() {
+        return ((bitField0_ & 0x00000020) == 0x00000020);
+      }
+      /**
+       * <code>required .Coord masterRuntime = 21;</code>
+       *
+       * <pre>
+       * list of runtimes in this GC
+       * </pre>
+       */
+      public ucar.nc2.grib.collection.GribCollectionProto.Coord getMasterRuntime() {
+        if (masterRuntimeBuilder_ == null) {
+          return masterRuntime_;
+        } else {
+          return masterRuntimeBuilder_.getMessage();
+        }
+      }
+      /**
+       * <code>required .Coord masterRuntime = 21;</code>
+       *
+       * <pre>
+       * list of runtimes in this GC
+       * </pre>
+       */
+      public Builder setMasterRuntime(ucar.nc2.grib.collection.GribCollectionProto.Coord value) {
+        if (masterRuntimeBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          masterRuntime_ = value;
+          onChanged();
+        } else {
+          masterRuntimeBuilder_.setMessage(value);
+        }
+        bitField0_ |= 0x00000020;
+        return this;
+      }
+      /**
+       * <code>required .Coord masterRuntime = 21;</code>
+       *
+       * <pre>
+       * list of runtimes in this GC
+       * </pre>
+       */
+      public Builder setMasterRuntime(
+          ucar.nc2.grib.collection.GribCollectionProto.Coord.Builder builderForValue) {
+        if (masterRuntimeBuilder_ == null) {
+          masterRuntime_ = builderForValue.build();
+          onChanged();
+        } else {
+          masterRuntimeBuilder_.setMessage(builderForValue.build());
+        }
+        bitField0_ |= 0x00000020;
+        return this;
+      }
+      /**
+       * <code>required .Coord masterRuntime = 21;</code>
+       *
+       * <pre>
+       * list of runtimes in this GC
+       * </pre>
+       */
+      public Builder mergeMasterRuntime(ucar.nc2.grib.collection.GribCollectionProto.Coord value) {
+        if (masterRuntimeBuilder_ == null) {
+          if (((bitField0_ & 0x00000020) == 0x00000020) &&
+              masterRuntime_ != ucar.nc2.grib.collection.GribCollectionProto.Coord.getDefaultInstance()) {
+            masterRuntime_ =
+              ucar.nc2.grib.collection.GribCollectionProto.Coord.newBuilder(masterRuntime_).mergeFrom(value).buildPartial();
+          } else {
+            masterRuntime_ = value;
+          }
+          onChanged();
+        } else {
+          masterRuntimeBuilder_.mergeFrom(value);
+        }
+        bitField0_ |= 0x00000020;
+        return this;
+      }
+      /**
+       * <code>required .Coord masterRuntime = 21;</code>
+       *
+       * <pre>
+       * list of runtimes in this GC
+       * </pre>
+       */
+      public Builder clearMasterRuntime() {
+        if (masterRuntimeBuilder_ == null) {
+          masterRuntime_ = ucar.nc2.grib.collection.GribCollectionProto.Coord.getDefaultInstance();
+          onChanged();
+        } else {
+          masterRuntimeBuilder_.clear();
+        }
+        bitField0_ = (bitField0_ & ~0x00000020);
+        return this;
+      }
+      /**
+       * <code>required .Coord masterRuntime = 21;</code>
+       *
+       * <pre>
+       * list of runtimes in this GC
+       * </pre>
+       */
+      public ucar.nc2.grib.collection.GribCollectionProto.Coord.Builder getMasterRuntimeBuilder() {
+        bitField0_ |= 0x00000020;
+        onChanged();
+        return getMasterRuntimeFieldBuilder().getBuilder();
+      }
+      /**
+       * <code>required .Coord masterRuntime = 21;</code>
+       *
+       * <pre>
+       * list of runtimes in this GC
+       * </pre>
+       */
+      public ucar.nc2.grib.collection.GribCollectionProto.CoordOrBuilder getMasterRuntimeOrBuilder() {
+        if (masterRuntimeBuilder_ != null) {
+          return masterRuntimeBuilder_.getMessageOrBuilder();
+        } else {
+          return masterRuntime_;
+        }
+      }
+      /**
+       * <code>required .Coord masterRuntime = 21;</code>
+       *
+       * <pre>
+       * list of runtimes in this GC
+       * </pre>
+       */
+      private com.google.protobuf.SingleFieldBuilder<
+          ucar.nc2.grib.collection.GribCollectionProto.Coord, ucar.nc2.grib.collection.GribCollectionProto.Coord.Builder, ucar.nc2.grib.collection.GribCollectionProto.CoordOrBuilder> 
+          getMasterRuntimeFieldBuilder() {
+        if (masterRuntimeBuilder_ == null) {
+          masterRuntimeBuilder_ = new com.google.protobuf.SingleFieldBuilder<
+              ucar.nc2.grib.collection.GribCollectionProto.Coord, ucar.nc2.grib.collection.GribCollectionProto.Coord.Builder, ucar.nc2.grib.collection.GribCollectionProto.CoordOrBuilder>(
+                  masterRuntime_,
+                  getParentForChildren(),
+                  isClean());
+          masterRuntime_ = null;
+        }
+        return masterRuntimeBuilder_;
+      }
+
       // required int32 center = 6;
       private int center_ ;
       /**
@@ -14335,7 +14603,7 @@ public final class GribCollectionProto {
        * </pre>
        */
       public boolean hasCenter() {
-        return ((bitField0_ & 0x00000020) == 0x00000020);
+        return ((bitField0_ & 0x00000040) == 0x00000040);
       }
       /**
        * <code>required int32 center = 6;</code>
@@ -14355,7 +14623,7 @@ public final class GribCollectionProto {
        * </pre>
        */
       public Builder setCenter(int value) {
-        bitField0_ |= 0x00000020;
+        bitField0_ |= 0x00000040;
         center_ = value;
         onChanged();
         return this;
@@ -14368,7 +14636,7 @@ public final class GribCollectionProto {
        * </pre>
        */
       public Builder clearCenter() {
-        bitField0_ = (bitField0_ & ~0x00000020);
+        bitField0_ = (bitField0_ & ~0x00000040);
         center_ = 0;
         onChanged();
         return this;
@@ -14380,7 +14648,7 @@ public final class GribCollectionProto {
        * <code>required int32 subcenter = 7;</code>
        */
       public boolean hasSubcenter() {
-        return ((bitField0_ & 0x00000040) == 0x00000040);
+        return ((bitField0_ & 0x00000080) == 0x00000080);
       }
       /**
        * <code>required int32 subcenter = 7;</code>
@@ -14392,7 +14660,7 @@ public final class GribCollectionProto {
        * <code>required int32 subcenter = 7;</code>
        */
       public Builder setSubcenter(int value) {
-        bitField0_ |= 0x00000040;
+        bitField0_ |= 0x00000080;
         subcenter_ = value;
         onChanged();
         return this;
@@ -14401,7 +14669,7 @@ public final class GribCollectionProto {
        * <code>required int32 subcenter = 7;</code>
        */
       public Builder clearSubcenter() {
-        bitField0_ = (bitField0_ & ~0x00000040);
+        bitField0_ = (bitField0_ & ~0x00000080);
         subcenter_ = 0;
         onChanged();
         return this;
@@ -14413,7 +14681,7 @@ public final class GribCollectionProto {
        * <code>required int32 master = 8;</code>
        */
       public boolean hasMaster() {
-        return ((bitField0_ & 0x00000080) == 0x00000080);
+        return ((bitField0_ & 0x00000100) == 0x00000100);
       }
       /**
        * <code>required int32 master = 8;</code>
@@ -14425,7 +14693,7 @@ public final class GribCollectionProto {
        * <code>required int32 master = 8;</code>
        */
       public Builder setMaster(int value) {
-        bitField0_ |= 0x00000080;
+        bitField0_ |= 0x00000100;
         master_ = value;
         onChanged();
         return this;
@@ -14434,7 +14702,7 @@ public final class GribCollectionProto {
        * <code>required int32 master = 8;</code>
        */
       public Builder clearMaster() {
-        bitField0_ = (bitField0_ & ~0x00000080);
+        bitField0_ = (bitField0_ & ~0x00000100);
         master_ = 0;
         onChanged();
         return this;
@@ -14450,7 +14718,7 @@ public final class GribCollectionProto {
        * </pre>
        */
       public boolean hasLocal() {
-        return ((bitField0_ & 0x00000100) == 0x00000100);
+        return ((bitField0_ & 0x00000200) == 0x00000200);
       }
       /**
        * <code>required int32 local = 9;</code>
@@ -14470,7 +14738,7 @@ public final class GribCollectionProto {
        * </pre>
        */
       public Builder setLocal(int value) {
-        bitField0_ |= 0x00000100;
+        bitField0_ |= 0x00000200;
         local_ = value;
         onChanged();
         return this;
@@ -14483,7 +14751,7 @@ public final class GribCollectionProto {
        * </pre>
        */
       public Builder clearLocal() {
-        bitField0_ = (bitField0_ & ~0x00000100);
+        bitField0_ = (bitField0_ & ~0x00000200);
         local_ = 0;
         onChanged();
         return this;
@@ -14495,7 +14763,7 @@ public final class GribCollectionProto {
        * <code>optional int32 genProcessType = 10;</code>
        */
       public boolean hasGenProcessType() {
-        return ((bitField0_ & 0x00000200) == 0x00000200);
+        return ((bitField0_ & 0x00000400) == 0x00000400);
       }
       /**
        * <code>optional int32 genProcessType = 10;</code>
@@ -14507,7 +14775,7 @@ public final class GribCollectionProto {
        * <code>optional int32 genProcessType = 10;</code>
        */
       public Builder setGenProcessType(int value) {
-        bitField0_ |= 0x00000200;
+        bitField0_ |= 0x00000400;
         genProcessType_ = value;
         onChanged();
         return this;
@@ -14516,7 +14784,7 @@ public final class GribCollectionProto {
        * <code>optional int32 genProcessType = 10;</code>
        */
       public Builder clearGenProcessType() {
-        bitField0_ = (bitField0_ & ~0x00000200);
+        bitField0_ = (bitField0_ & ~0x00000400);
         genProcessType_ = 0;
         onChanged();
         return this;
@@ -14528,7 +14796,7 @@ public final class GribCollectionProto {
        * <code>optional int32 genProcessId = 11;</code>
        */
       public boolean hasGenProcessId() {
-        return ((bitField0_ & 0x00000400) == 0x00000400);
+        return ((bitField0_ & 0x00000800) == 0x00000800);
       }
       /**
        * <code>optional int32 genProcessId = 11;</code>
@@ -14540,7 +14808,7 @@ public final class GribCollectionProto {
        * <code>optional int32 genProcessId = 11;</code>
        */
       public Builder setGenProcessId(int value) {
-        bitField0_ |= 0x00000400;
+        bitField0_ |= 0x00000800;
         genProcessId_ = value;
         onChanged();
         return this;
@@ -14549,7 +14817,7 @@ public final class GribCollectionProto {
        * <code>optional int32 genProcessId = 11;</code>
        */
       public Builder clearGenProcessId() {
-        bitField0_ = (bitField0_ & ~0x00000400);
+        bitField0_ = (bitField0_ & ~0x00000800);
         genProcessId_ = 0;
         onChanged();
         return this;
@@ -14561,7 +14829,7 @@ public final class GribCollectionProto {
        * <code>optional int32 backProcessId = 12;</code>
        */
       public boolean hasBackProcessId() {
-        return ((bitField0_ & 0x00000800) == 0x00000800);
+        return ((bitField0_ & 0x00001000) == 0x00001000);
       }
       /**
        * <code>optional int32 backProcessId = 12;</code>
@@ -14573,7 +14841,7 @@ public final class GribCollectionProto {
        * <code>optional int32 backProcessId = 12;</code>
        */
       public Builder setBackProcessId(int value) {
-        bitField0_ |= 0x00000800;
+        bitField0_ |= 0x00001000;
         backProcessId_ = value;
         onChanged();
         return this;
@@ -14582,7 +14850,7 @@ public final class GribCollectionProto {
        * <code>optional int32 backProcessId = 12;</code>
        */
       public Builder clearBackProcessId() {
-        bitField0_ = (bitField0_ & ~0x00000800);
+        bitField0_ = (bitField0_ & ~0x00001000);
         backProcessId_ = 0;
         onChanged();
         return this;
@@ -14592,9 +14860,9 @@ public final class GribCollectionProto {
       private java.util.List<ucar.nc2.grib.collection.GribCollectionProto.Parameter> params_ =
         java.util.Collections.emptyList();
       private void ensureParamsIsMutable() {
-        if (!((bitField0_ & 0x00001000) == 0x00001000)) {
+        if (!((bitField0_ & 0x00002000) == 0x00002000)) {
           params_ = new java.util.ArrayList<ucar.nc2.grib.collection.GribCollectionProto.Parameter>(params_);
-          bitField0_ |= 0x00001000;
+          bitField0_ |= 0x00002000;
          }
       }
 
@@ -14787,7 +15055,7 @@ public final class GribCollectionProto {
       public Builder clearParams() {
         if (paramsBuilder_ == null) {
           params_ = java.util.Collections.emptyList();
-          bitField0_ = (bitField0_ & ~0x00001000);
+          bitField0_ = (bitField0_ & ~0x00002000);
           onChanged();
         } else {
           paramsBuilder_.clear();
@@ -14892,7 +15160,7 @@ public final class GribCollectionProto {
           paramsBuilder_ = new com.google.protobuf.RepeatedFieldBuilder<
               ucar.nc2.grib.collection.GribCollectionProto.Parameter, ucar.nc2.grib.collection.GribCollectionProto.Parameter.Builder, ucar.nc2.grib.collection.GribCollectionProto.ParameterOrBuilder>(
                   params_,
-                  ((bitField0_ & 0x00001000) == 0x00001000),
+                  ((bitField0_ & 0x00002000) == 0x00002000),
                   getParentForChildren(),
                   isClean());
           params_ = null;
@@ -14996,15 +15264,16 @@ public final class GribCollectionProto {
       "eter*\005\010d\020\310\001\"p\n\007Dataset\022\033\n\004type\030\001 \002(\0162\r.D" +
       "ataset.Type\022\026\n\006groups\030\002 \003(\0132\006.Group\"0\n\004T" +
       "ype\022\006\n\002GC\020\000\022\010\n\004TwoD\020\001\022\010\n\004Best\020\002\022\014\n\010Analy" +
-      "sis\020\003\"\236\002\n\016GribCollection\022\014\n\004name\030\001 \002(\t\022\016" +
+      "sis\020\003\"\275\002\n\016GribCollection\022\014\n\004name\030\001 \002(\t\022\016" +
       "\n\006topDir\030\002 \002(\t\022\026\n\006mfiles\030\003 \003(\0132\006.MFile\022\031" +
       "\n\007dataset\030\004 \003(\0132\010.Dataset\022\021\n\003gds\030\005 \003(\0132\004" +
-      ".Gds\022\016\n\006center\030\006 \002(\005\022\021\n\tsubcenter\030\007 \002(\005\022",
-      "\016\n\006master\030\010 \002(\005\022\r\n\005local\030\t \002(\005\022\026\n\016genPro" +
-      "cessType\030\n \001(\005\022\024\n\014genProcessId\030\013 \001(\005\022\025\n\r" +
-      "backProcessId\030\014 \001(\005\022\032\n\006params\030\024 \003(\0132\n.Pa" +
-      "rameter*\005\010d\020\310\001B/\n\030ucar.nc2.grib.collecti" +
-      "onB\023GribCollectionProto"
+      ".Gds\022\035\n\rmasterRuntime\030\025 \002(\0132\006.Coord\022\016\n\006c",
+      "enter\030\006 \002(\005\022\021\n\tsubcenter\030\007 \002(\005\022\016\n\006master" +
+      "\030\010 \002(\005\022\r\n\005local\030\t \002(\005\022\026\n\016genProcessType\030" +
+      "\n \001(\005\022\024\n\014genProcessId\030\013 \001(\005\022\025\n\rbackProce" +
+      "ssId\030\014 \001(\005\022\032\n\006params\030\024 \003(\0132\n.Parameter*\005" +
+      "\010d\020\310\001B/\n\030ucar.nc2.grib.collectionB\023GribC" +
+      "ollectionProto"
     };
     com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
       new com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner() {
@@ -15070,7 +15339,7 @@ public final class GribCollectionProto {
           internal_static_GribCollection_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
               internal_static_GribCollection_descriptor,
-              new java.lang.String[] { "Name", "TopDir", "Mfiles", "Dataset", "Gds", "Center", "Subcenter", "Master", "Local", "GenProcessType", "GenProcessId", "BackProcessId", "Params", });
+              new java.lang.String[] { "Name", "TopDir", "Mfiles", "Dataset", "Gds", "MasterRuntime", "Center", "Subcenter", "Master", "Local", "GenProcessType", "GenProcessId", "BackProcessId", "Params", });
           return null;
         }
       };
