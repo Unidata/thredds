@@ -32,16 +32,8 @@
 package ucar.nc2.util.net;
 
 import junit.framework.TestCase;
-import org.apache.commons.httpclient.UsernamePasswordCredentials;
-import org.apache.commons.httpclient.auth.CredentialsProvider;
-import org.apache.commons.httpclient.auth.CredentialsNotAvailableException;
-import org.apache.commons.httpclient.auth.AuthScheme;
-import org.apache.commons.httpclient.Credentials;
-
-import org.junit.Test;
-import ucar.nc2.util.net.HTTPException;
-import ucar.nc2.util.net.HTTPMethod;
-import ucar.nc2.util.net.HTTPSession;
+import org.apache.http.auth.*;
+import org.apache.http.client.CredentialsProvider;
 
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
@@ -57,14 +49,16 @@ public class NoTestAuth2 extends TestCase
     static private Data[] cases = new Data[] {
       new Data("http://thredds-test.ucar.edu:8080/thredds/dodsC/restrict/testdata/testData.nc.html",
                new CredentialsProvider() {
-                   public Credentials getCredentials(AuthScheme sch, String h, int p, boolean pr)
-                           throws CredentialsNotAvailableException {
+                   public Credentials getCredentials(AuthScope scope) //AuthScheme sch, String h, int p, boolean pr)
+                   {
                      UsernamePasswordCredentials creds
                        = new UsernamePasswordCredentials("tiggeUser","tigge");
-                     System.out.printf("getCredentials called: creds=|%s| host=%s port=%d isproxy=%b authscheme=%s%n",
-                                  creds.toString(),h,p,pr,sch);
+                     System.out.printf("getCredentials called: creds=|%s| host=%s port=%d%n",
+                                  creds.toString(),scope.getHost(),scope.getPort());
                      return creds;
                    }
+                   public void setCredentials(AuthScope scope, Credentials creds) {}
+                   public void clear() {}
                }),
       new Data("https://thredds-test.ucar.edu:8443/dts/b31.dds",null),
     };
@@ -74,7 +68,7 @@ public class NoTestAuth2 extends TestCase
   {
     boolean pass = true;
     for(Data data: cases) {
-        HTTPSession session = new HTTPSession(data.url);
+        HTTPSession session = HTTPFactory.newSession(data.url);
         if(data.provider != null)
             session.setCredentialsProvider(data.provider);
         session.setUserAgent("tdmRunner");
@@ -82,7 +76,7 @@ public class NoTestAuth2 extends TestCase
         HTTPMethod m = null;
         try {
           System.out.printf("url %s%n", data.url);
-          m = HTTPMethod.Get(session);
+          m = HTTPFactory.Get(session);
           int status = m.execute();
           String s = m.getResponseAsString();
           System.out.printf("Trigger response = %d == %s%n", status, s);

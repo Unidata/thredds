@@ -33,29 +33,34 @@
  */
 package thredds.ui.catalog.tools;
 
+import thredds.catalog.*;
 import thredds.ui.datatype.prefs.DateField;
 import thredds.ui.datatype.prefs.DurationField;
-import ucar.nc2.time.CalendarDateRange;
-import ucar.util.prefs.ui.*;
-import ucar.nc2.thredds.MetadataExtractor;
 import ucar.nc2.constants.FeatureType;
+import ucar.nc2.thredds.MetadataExtractor;
+import ucar.nc2.time.CalendarDateRange;
+import ucar.nc2.ui.widget.BAMutil;
+import ucar.nc2.ui.widget.IndependentWindow;
+import ucar.nc2.ui.widget.RangeDateSelector;
+import ucar.nc2.ui.widget.UrlAuthenticatorDialog;
 import ucar.nc2.units.DateRange;
 import ucar.nc2.units.DateType;
-import thredds.catalog.*;
-import ucar.nc2.ui.widget.*;
+import ucar.util.prefs.ui.Field;
+import ucar.util.prefs.ui.PersistentBean;
+import ucar.util.prefs.ui.PrefPanel;
 
 import javax.swing.*;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Arrays;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.ActionEvent;
-import java.awt.*;
-import java.io.IOException;
-import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * GUI Editor for  Thredds catalogs.
@@ -119,7 +124,7 @@ public class DatasetEditor extends JPanel {
   //////////////////////////////////////////////////////
 
   private Field gc_type, tc_type;
-  private Field.BeanTable variablesFld, creatorsFld, publishersFld, projectsFld, keywordsFld, datesFld, contributorsFld, docsFld;
+  private Field.BeanTableField variablesFld, creatorsFld, publishersFld, projectsFld, keywordsFld, datesFld, contributorsFld, docsFld;
   private ArrayList tables = new ArrayList();
 
   private RangeDateSelector dateRangeSelector;
@@ -245,43 +250,37 @@ pp.addComponent(geoPanel, 0, row++, "left, center"); */
     tabPane.addTab( "Variables", makeVariablesPanel());
     tables.add( variablesFld);
 
-    creatorsFld = new Field.BeanTable(CREATORS, "Creators", null, ThreddsMetadata.Source.class,
-        null, null);
+    creatorsFld = new Field.BeanTableField(CREATORS, "Creators", null, ThreddsMetadata.Source.class, null, null);
     tabPane.addTab( "Creators", creatorsFld.getEditComponent());
     tables.add( creatorsFld);
 
-    publishersFld = new Field.BeanTable(PUBLISHERS, "Publishers", null, ThreddsMetadata.Source.class,
-        null, null);
+    publishersFld = new Field.BeanTableField(PUBLISHERS, "Publishers", null, ThreddsMetadata.Source.class, null, null);
     tabPane.addTab( "Publishers", publishersFld.getEditComponent());
     tables.add( publishersFld);
 
-    projectsFld = new Field.BeanTable(PROJECTS, "Projects", null, ThreddsMetadata.Vocab.class,
-        null, null);
+    projectsFld = new Field.BeanTableField(PROJECTS, "Projects", null, ThreddsMetadata.Vocab.class, null, null);
     tabPane.addTab( "Projects", projectsFld.getEditComponent());
     tables.add( projectsFld);
 
-    keywordsFld = new Field.BeanTable(KEYWORDS, "Keywords", null, ThreddsMetadata.Vocab.class,
-        null, null);
+    keywordsFld = new Field.BeanTableField(KEYWORDS, "Keywords", null, ThreddsMetadata.Vocab.class, null, null);
     tabPane.addTab( "Keywords", keywordsFld.getEditComponent());
     tables.add( keywordsFld);
 
-    datesFld = new Field.BeanTable(DATES, "Dates", null, DateType.class,
-        null, null);
+    datesFld = new Field.BeanTableField(DATES, "Dates", null, DateType.class, null, null);
     tabPane.addTab( "Dates", datesFld.getEditComponent());
     tables.add( datesFld);
 
-    contributorsFld = new Field.BeanTable(CONTRIBUTORS, "Contributors", null, ThreddsMetadata.Contributor.class,
-        null, null);
+    contributorsFld = new Field.BeanTableField(
+            CONTRIBUTORS, "Contributors", null, ThreddsMetadata.Contributor.class, null, null);
     tabPane.addTab( "Contributors", contributorsFld.getEditComponent());
     tables.add( contributorsFld);
 
-    docsFld = new Field.BeanTable(DOCUMENTATION, "Documentation", null, InvDocumentation.class,
-        null, null);
+    docsFld = new Field.BeanTableField(DOCUMENTATION, "Documentation", null, InvDocumentation.class, null, null);
     tabPane.addTab( "Documentation", docsFld.getEditComponent());
     tables.add( docsFld);
 
     for (int i = 0; i < tables.size(); i++)
-      addPopups( (Field.BeanTable) tables.get(i));
+      addPopups( (Field.BeanTableField) tables.get(i));
 
     metadataPP.finish(false);
 
@@ -333,7 +332,7 @@ pp.addComponent(geoPanel, 0, row++, "left, center"); */
   }
 
   private JPanel makeVariablesPanel() {
-    variablesFld = new Field.BeanTable(VARIABLES, "Variables", null, ThreddsMetadata.Variable.class, null, null);
+    variablesFld = new Field.BeanTableField(VARIABLES, "Variables", null, ThreddsMetadata.Variable.class, null, null);
 
     extractVButton = makeButton("Extract Variables");
     extractVButton.addActionListener( new ActionListener() {
@@ -507,33 +506,33 @@ pp.addComponent(geoPanel, 0, row++, "left, center"); */
     setMode( metadataPP.getField(RangeDateSelector.TIME_RESOLUTION),  mode);
   }
 
-  private void setVariables(Field.BeanTable beanTable) {
+  private void setVariables(Field.BeanTableField beanTableField) {
     List variableLists = dataset.getLocalMetadata().getVariables();
     if ((variableLists != null) && (variableLists.size() > 0)) {
      ThreddsMetadata.Variables vars = (ThreddsMetadata.Variables) variableLists.get(0);
-     beanTable.setValue( vars.getVariableList());
-     setMode(beanTable, 0);
+     beanTableField.setValue(vars.getVariableList());
+     setMode(beanTableField, 0);
      return;
     }
 
     variableLists = dataset.getLocalMetadataInheritable().getVariables();
     if ((variableLists != null) && (variableLists.size() > 0)) {
      ThreddsMetadata.Variables vars = (ThreddsMetadata.Variables) variableLists.get(0);
-     beanTable.setValue( vars.getVariableList());
-     setMode(beanTable, 1);
+     beanTableField.setValue(vars.getVariableList());
+     setMode(beanTableField, 1);
      return;
     }
 
     variableLists = dataset.getVariables();
     if ((variableLists != null) && (variableLists.size() > 0)) {
       ThreddsMetadata.Variables vars = (ThreddsMetadata.Variables) variableLists.get(0);
-      beanTable.setValue( vars.getVariableList());
-      setMode(beanTable, (vars == null || vars.getVariableList().size() == 0) ? 1 : 2);
+      beanTableField.setValue(vars.getVariableList());
+      setMode(beanTableField, (vars == null || vars.getVariableList().size() == 0) ? 1 : 2);
       return;
     }
 
     // clear out the table
-    beanTable.setValue( new ArrayList());
+    beanTableField.setValue(new ArrayList());
   }
 
   private void setEditValue(String name, PersistentBean bean, int mode) {
@@ -576,20 +575,20 @@ pp.addComponent(geoPanel, 0, row++, "left, center"); */
     }
   }
 
-  private void setBeanList(Field.BeanTable beanTable, String name, PersistentBean bean) {
+  private void setBeanList(Field.BeanTableField beanTableField, String name, PersistentBean bean) {
     List value = (List) bean.getObject( "localMetadata."+name); // local, non inheritable
     if ((value != null) && (value.size() > 0)) {
-      beanTable.setValue( value);
-      setMode(beanTable, 0);
+      beanTableField.setValue(value);
+      setMode(beanTableField, 0);
     } else {
       value = (List) bean.getObject( "localMetadataInheritable."+name); // local, inheritable
       if ((value != null) && (value.size() > 0)) {
-        beanTable.setValue( value);
-        setMode(beanTable, 1);
+        beanTableField.setValue(value);
+        setMode(beanTableField, 1);
       } else {
         value = (List) bean.getObject( name); // inherited
-        beanTable.setValue( value);
-        setMode(beanTable, (value == null || value.size() == 0) ? 1 : 2);
+        beanTableField.setValue(value);
+        setMode(beanTableField, (value == null || value.size() == 0) ? 1 : 2);
       }
     }
   }
@@ -744,10 +743,10 @@ pp.addComponent(geoPanel, 0, row++, "left, center"); */
       bean.putObject( "localMetadata."+name, newValue);
   }
 
-  private void storeBeanList(Field.BeanTable beanTable, String name, PersistentBean bean) {
+  private void storeBeanList(Field.BeanTableField beanTableField, String name, PersistentBean bean) {
     if (bean == null) return;
 
-    List newValue = (List) beanTable.getValue();
+    List newValue = (List) beanTableField.getValue();
 
     // if it matches whats already stored (inherited or not), dont need to store it
     List oldValue = (List) bean.getObject( name);
@@ -755,7 +754,7 @@ pp.addComponent(geoPanel, 0, row++, "left, center"); */
       return;
 
     // otherwise store it
-    if (isInheritable(beanTable))
+    if (isInheritable(beanTableField))
       bean.putObject( "localMetadataInheritable."+name, newValue);
     else
       bean.putObject( "localMetadata."+name, newValue);

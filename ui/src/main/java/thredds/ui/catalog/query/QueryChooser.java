@@ -33,28 +33,35 @@
 package thredds.ui.catalog.query;
 
 import thredds.catalog.*;
+import thredds.catalog.query.Choice;
 import thredds.catalog.query.*;
-
 import thredds.ui.catalog.CatalogChooser;
-import ucar.nc2.ui.widget.*;
-import ucar.unidata.geoloc.*;
+import ucar.nc2.ui.point.StationRegionDateChooser;
+import ucar.nc2.ui.widget.RangeDateSelector;
+import ucar.nc2.ui.widget.RangeSelector;
+import ucar.nc2.units.DateRange;
+import ucar.nc2.util.IO;
+import ucar.unidata.geoloc.LatLonPoint;
+import ucar.unidata.geoloc.LatLonPointImpl;
+import ucar.unidata.geoloc.LatLonRect;
 import ucar.unidata.geoloc.Station;
 import ucar.unidata.util.Format;
 import ucar.util.prefs.PreferencesExt;
 import ucar.util.prefs.ui.ComboBox;
 import ucar.util.prefs.ui.Debug;
-import ucar.nc2.ui.point.StationRegionDateChooser;
-import ucar.nc2.units.DateRange;
-import ucar.nc2.util.IO;
 
-import java.awt.BorderLayout;
-import java.awt.Container;
-import java.awt.Component;
-import java.awt.event.*;
-import java.beans.*;
-import java.util.*;
 import javax.swing.*;
-import javax.swing.event.*;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Choose datasets from a Dataset Query Capabilities (DQC) XML document.
@@ -98,8 +105,6 @@ public class QueryChooser extends JPanel {
   // layout
   private ArrayList mapSelectors, smallSelectors, bigSelectors;
 
-  // event management
-  private EventListenerList listenerList = new EventListenerList();
 //  private boolean eventsOK = true;
 
   // state
@@ -584,34 +589,13 @@ public class QueryChooser extends JPanel {
   }
 
   /**
-   * Add a PropertyChangeEvent Listener. Throws a PropertyChangeEvent:
+   * Fires a PropertyChangeEvent:
    * <ul>
    * <li>  propertyName = "Dataset", getNewValue() = an InvDataset chosen.
    * </ul>
    */
-  public void addPropertyChangeListener(PropertyChangeListener l) {
-    listenerList.add(PropertyChangeListener.class, l);
-  }
-
-  /**
-   * Remove a PropertyChangeEvent Listener.
-   */
-  public void removePropertyChangeListener(PropertyChangeListener l) {
-    listenerList.remove(PropertyChangeListener.class, l);
-  }
-
-/*  private void firePropertyChangeEvent(String name, Object newValue) {
-    firePropertyChangeEvent (new PropertyChangeEvent(this, name, null, newValue));
-  } */
-
   private void firePropertyChangeEvent(PropertyChangeEvent event) {
-    Object[] listeners = listenerList.getListenerList();
-    // Process the listeners last to first
-    for (int i = listeners.length - 2; i >= 0; i -= 2) {
-      if (listeners[i] == PropertyChangeListener.class) {
-        ((PropertyChangeListener) listeners[i + 1]).propertyChange(event);
-      }
-    }
+    firePropertyChange(event.getPropertyName(), event.getOldValue(), event.getNewValue());
   }
 
 

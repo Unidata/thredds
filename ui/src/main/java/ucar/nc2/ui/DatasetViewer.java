@@ -33,35 +33,36 @@
 
 package ucar.nc2.ui;
 
+import ucar.ma2.Array;
 import ucar.nc2.*;
-
 import ucar.nc2.dataset.NetcdfDataset;
-import ucar.nc2.write.Nc4ChunkingStrategyImpl;
 import ucar.nc2.stream.NcStreamWriter;
 import ucar.nc2.ui.dialog.CompareDialog;
 import ucar.nc2.ui.dialog.NetcdfOutputChooser;
 import ucar.nc2.ui.widget.*;
 import ucar.nc2.ui.widget.PopupMenu;
 import ucar.nc2.util.CompareNetcdf2;
+import ucar.nc2.write.Nc4ChunkingStrategyImpl;
 import ucar.util.prefs.PreferencesExt;
-import ucar.util.prefs.ui.*;
-import ucar.ma2.Array;
-
-import java.awt.*;
-import java.awt.event.*;
-import java.beans.PropertyChangeListener;
-import java.beans.PropertyChangeEvent;
-import java.util.*;
-import java.io.*;
-import java.util.List;
+import ucar.util.prefs.ui.BeanTable;
+import ucar.util.prefs.ui.Debug;
 
 import javax.swing.*;
-import javax.swing.event.ListSelectionListener;
 import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
+import java.io.*;
+import java.util.ArrayList;
+import java.util.Formatter;
+import java.util.List;
 
 /**
  * A Swing widget to view the content of a netcdf dataset.
- * It uses a DatasetTree widget and nested BeanTableSorted widget, by
+ * It uses a DatasetTree widget and nested BeanTable widget, by
  *  wrapping the Variables in a VariableBean.
  * A pop-up menu allows to view a Structure in a StructureTable.
  *
@@ -76,7 +77,7 @@ public class DatasetViewer extends JPanel {
   private NetcdfFile ds;
 
   private List<NestedTable> nestedTableList = new ArrayList<NestedTable>();
-  private BeanTableSorted attTable;
+  private BeanTable attTable;
 
   private JPanel tablePanel;
   private JSplitPane mainSplit;
@@ -103,7 +104,9 @@ public class DatasetViewer extends JPanel {
     datasetTree = new DatasetTreeView();
     datasetTree.addPropertyChangeListener(new PropertyChangeListener() {
       public void propertyChange(PropertyChangeEvent e) {
-        setSelected((Variable) e.getNewValue());
+        if (e.getPropertyName().equals("Selection")) {
+          setSelected((Variable) e.getNewValue());
+        }
       }
     });
 
@@ -278,7 +281,7 @@ public class DatasetViewer extends JPanel {
     if (ds == null) return;
     if (attTable == null) {
       // global attributes
-      attTable = new BeanTableSorted(AttributeBean.class, (PreferencesExt) prefs.node("AttributeBeans"), false);
+      attTable = new BeanTable(AttributeBean.class, (PreferencesExt) prefs.node("AttributeBeans"), false);
       PopupMenu varPopup = new ucar.nc2.ui.widget.PopupMenu(attTable.getJTable(), "Options");
       varPopup.addAction("Show Attribute", new AbstractAction() {
         public void actionPerformed(ActionEvent e) {
@@ -365,7 +368,7 @@ public class DatasetViewer extends JPanel {
     int level;
     PreferencesExt myPrefs;
 
-    BeanTableSorted table; // always the left component
+    BeanTable table; // always the left component
     JSplitPane split = null; // right component (if exists) is the nested dataset.
     int splitPos = 100;
     boolean isShowing = false;
@@ -374,7 +377,7 @@ public class DatasetViewer extends JPanel {
       this.level = level;
       myPrefs = (PreferencesExt) prefs.node("NestedTable"+level);
 
-      table = new BeanTableSorted(VariableBean.class, myPrefs, false);
+      table = new BeanTable(VariableBean.class, myPrefs, false);
 
       JTable jtable = table.getJTable();
       PopupMenu csPopup = new PopupMenu(jtable, "Options");
@@ -488,7 +491,7 @@ public class DatasetViewer extends JPanel {
     treeWindow.show();
   } */
 
-  private void showDeclaration(BeanTableSorted from, boolean isNcml) {
+  private void showDeclaration(BeanTable from, boolean isNcml) {
     Variable v = getCurrentVariable(from);
     if (v == null) return;
     infoTA.clear();
@@ -516,7 +519,7 @@ public class DatasetViewer extends JPanel {
     infoWindow.show();
   }
 
-  private void dumpData(BeanTableSorted from) {
+  private void dumpData(BeanTable from) {
     Variable v = getCurrentVariable(from);
     if (v == null) return;
 
@@ -536,7 +539,7 @@ public class DatasetViewer extends JPanel {
     dumpWindow.show();
   }
 
-  /* private void showMissingData(BeanTableSorted from) {
+  /* private void showMissingData(BeanTable from) {
     VariableBean vb = (VariableBean) from.getSelectedBean();
     if (vb == null) return;
     Variable v = vb.vs;
@@ -636,7 +639,7 @@ public class DatasetViewer extends JPanel {
     infoWindow.showIfNotIconified();
   } */
 
-  private void dataTable(BeanTableSorted from) {
+  private void dataTable(BeanTable from) {
     VariableBean vb = (VariableBean) from.getSelectedBean();
     if (vb == null) return;
     Variable v = vb.vs;
@@ -653,7 +656,7 @@ public class DatasetViewer extends JPanel {
     dataWindow.show();
   }
 
-  private Variable getCurrentVariable(BeanTableSorted from) {
+  private Variable getCurrentVariable(BeanTable from) {
     VariableBean vb = (VariableBean) from.getSelectedBean();
     if (vb == null) return null;
     return vb.vs;

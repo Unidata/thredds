@@ -12,7 +12,7 @@ import ucar.nc2.ui.widget.PopupMenu;
 import ucar.nc2.ui.widget.TextHistoryPane;
 import ucar.nc2.util.IO;
 import ucar.util.prefs.PreferencesExt;
-import ucar.util.prefs.ui.BeanTableSorted;
+import ucar.util.prefs.ui.BeanTable;
 
 import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;
@@ -34,7 +34,7 @@ import java.util.List;
 public class CdmrFeaturePanel extends JPanel {
   private PreferencesExt prefs;
 
-  private BeanTableSorted messTable;
+  private BeanTable messTable;
   private JSplitPane split, split2;
 
   private TextHistoryPane infoTA, infoPopup2, infoPopup3;
@@ -47,7 +47,7 @@ public class CdmrFeaturePanel extends JPanel {
 
     PopupMenu varPopup;
 
-    messTable = new BeanTableSorted(MessBean.class, (PreferencesExt) prefs.node("CdmMessage"), false);
+    messTable = new BeanTable(MessBean.class, (PreferencesExt) prefs.node("CdmMessage"), false);
     messTable.addListSelectionListener(new ListSelectionListener() {
       public void valueChanged(ListSelectionEvent e) {
         MessBean bean = (MessBean) messTable.getSelectedBean();

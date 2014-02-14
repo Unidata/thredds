@@ -39,7 +39,7 @@ import ucar.nc2.iosp.bufr.Descriptor;
 import ucar.nc2.ui.widget.*;
 import ucar.nc2.ui.widget.PopupMenu;
 import ucar.util.prefs.PreferencesExt;
-import ucar.util.prefs.ui.BeanTableSorted;
+import ucar.util.prefs.ui.BeanTable;
 
 import javax.swing.*;
 import javax.swing.table.TableColumn;
@@ -61,7 +61,7 @@ public class BufrCdmIndexPanel extends JPanel {
 
   private PreferencesExt prefs;
 
-  private BeanTableSorted stationTable, fldTable;
+  private BeanTable stationTable, fldTable;
   private JSplitPane split, split2, split3;
 
   private TextHistoryPane infoPopup, detailTA;
@@ -122,8 +122,8 @@ public class BufrCdmIndexPanel extends JPanel {
     PopupMenu varPopup;
 
     ////////////////
-    stationTable = new BeanTableSorted(StationBean.class, (PreferencesExt) prefs.node("StationBean"), false, "stations", "BufrCdmIndexProto.Station", null);
-    fldTable = new BeanTableSorted(FieldBean.class, (PreferencesExt) prefs.node("FldBean"), false, "Fields", "BufrCdmIndexProto.Field", new FieldBean());
+    stationTable = new BeanTable(StationBean.class, (PreferencesExt) prefs.node("StationBean"), false, "stations", "BufrCdmIndexProto.Station", null);
+    fldTable = new BeanTable(FieldBean.class, (PreferencesExt) prefs.node("FldBean"), false, "Fields", "BufrCdmIndexProto.Field", new FieldBean());
 
     JTable table = fldTable.getJTable();
     JComboBox comboBox = new JComboBox(BufrCdmIndexProto.FldType.values());

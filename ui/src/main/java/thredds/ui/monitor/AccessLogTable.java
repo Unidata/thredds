@@ -33,40 +33,37 @@
 
 package thredds.ui.monitor;
 
+import net.sf.ehcache.Cache;
+import net.sf.ehcache.Element;
+import org.jfree.data.time.Minute;
+import org.jfree.data.time.TimeSeries;
+import thredds.logs.AccessLogParser;
 import thredds.logs.LogCategorizer;
+import thredds.logs.LogReader;
+import ucar.nc2.ui.widget.BAMutil;
+import ucar.nc2.ui.widget.IndependentWindow;
 import ucar.nc2.ui.widget.PopupMenu;
+import ucar.nc2.ui.widget.TextHistoryPane;
 import ucar.nc2.units.TimeDuration;
 import ucar.util.prefs.PreferencesExt;
-import ucar.util.prefs.ui.BeanTableSorted;
+import ucar.util.prefs.ui.BeanTable;
 
 import javax.swing.*;
-import javax.swing.event.ListSelectionListener;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ChangeListener;
 import javax.swing.event.ChangeEvent;
-
-import ucar.nc2.ui.widget.TextHistoryPane;
-import ucar.nc2.ui.widget.IndependentWindow;
-import ucar.nc2.ui.widget.BAMutil;
-import thredds.logs.AccessLogParser;
-import thredds.logs.LogReader;
-
-import java.util.*;
-import java.util.List;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ExecutorService;
+import javax.swing.event.ChangeListener;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
-import java.text.SimpleDateFormat;
 import java.text.ParseException;
-
-import net.sf.ehcache.Cache;
-import net.sf.ehcache.Element;
-import org.jfree.data.time.TimeSeries;
-import org.jfree.data.time.Minute;
+import java.text.SimpleDateFormat;
+import java.util.*;
+import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 /**
  * Access Logs in TdsMonitor.
@@ -78,7 +75,7 @@ public class AccessLogTable extends JPanel {
   private PreferencesExt prefs;
   private Cache dnsCache;
 
-  private ucar.util.prefs.ui.BeanTableSorted logTable, userTable, datarootTable, serviceTable, clientTable;
+  private ucar.util.prefs.ui.BeanTable logTable, userTable, datarootTable, serviceTable, clientTable;
   private JPanel timeSeriesPanel;
 
   private ArrayList<LogReader.Log> completeLogs;
@@ -103,7 +100,7 @@ public class AccessLogTable extends JPanel {
     this.dnsCache = dnsCache;
     PopupMenu varPopup;
 
-    logTable = new BeanTableSorted(LogReader.Log.class, (PreferencesExt) prefs.node("Logs"), false);
+    logTable = new BeanTable(LogReader.Log.class, (PreferencesExt) prefs.node("Logs"), false);
     logTable.addListSelectionListener(new ListSelectionListener() {
       public void valueChanged(ListSelectionEvent e) {
         LogReader.Log log = (LogReader.Log) logTable.getSelectedBean();
@@ -152,7 +149,7 @@ public class AccessLogTable extends JPanel {
       }
     });
 
-    userTable = new BeanTableSorted(User.class, (PreferencesExt) prefs.node("LogUser"), false);
+    userTable = new BeanTable(User.class, (PreferencesExt) prefs.node("LogUser"), false);
     userTable.addListSelectionListener(new ListSelectionListener() {
       public void valueChanged(ListSelectionEvent e) {
         User accum = (User) userTable.getSelectedBean();
@@ -170,7 +167,7 @@ public class AccessLogTable extends JPanel {
       }
     });
 
-    datarootTable = new BeanTableSorted(Dataroot.class, (PreferencesExt) prefs.node("DataRoot"), false);
+    datarootTable = new BeanTable(Dataroot.class, (PreferencesExt) prefs.node("DataRoot"), false);
     datarootTable.addListSelectionListener(new ListSelectionListener() {
       public void valueChanged(ListSelectionEvent e) {
         Dataroot accum = (Dataroot) datarootTable.getSelectedBean();
@@ -187,7 +184,7 @@ public class AccessLogTable extends JPanel {
       }
     });
 
-    serviceTable = new BeanTableSorted(Service.class, (PreferencesExt) prefs.node("Service"), false);
+    serviceTable = new BeanTable(Service.class, (PreferencesExt) prefs.node("Service"), false);
     serviceTable.addListSelectionListener(new ListSelectionListener() {
       public void valueChanged(ListSelectionEvent e) {
         Service accum = (Service) serviceTable.getSelectedBean();
@@ -204,7 +201,7 @@ public class AccessLogTable extends JPanel {
       }
     });
 
-    clientTable = new BeanTableSorted(Service.class, (PreferencesExt) prefs.node("Service"), false);
+    clientTable = new BeanTable(Service.class, (PreferencesExt) prefs.node("Service"), false);
     clientTable.addListSelectionListener(new ListSelectionListener() {
       public void valueChanged(ListSelectionEvent e) {
         Client accum = (Client) clientTable.getSelectedBean();

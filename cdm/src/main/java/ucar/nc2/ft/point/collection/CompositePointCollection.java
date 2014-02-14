@@ -102,7 +102,7 @@ public class CompositePointCollection extends PointCollectionImpl implements Upd
     if ((dateRange == null) && (boundingBox == null))
       return this;
     else if (dateRange == null)
-      return new PointCollectionSubset(this, boundingBox, dateRange);
+      return new PointCollectionSubset(this, boundingBox, null);
     else {
       CompositePointCollection dateSubset = new CompositePointCollection(name, pointCollections.subset(dateRange));
       return new PointCollectionSubset(dateSubset, boundingBox, dateRange);

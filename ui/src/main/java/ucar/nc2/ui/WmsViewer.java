@@ -33,15 +33,14 @@
 
 package ucar.nc2.ui;
 
-import ucar.nc2.util.net.HTTPMethod;
-import ucar.nc2.util.net.HTTPSession;
+import ucar.nc2.util.net.*;
 import ucar.nc2.ui.event.ActionValueEvent;
 import ucar.nc2.ui.event.ActionValueListener;
 import ucar.nc2.ui.widget.BAMutil;
 import ucar.nc2.ui.widget.SuperComboBox;
 import ucar.unidata.util.StringUtil2;
 import ucar.util.prefs.PreferencesExt;
-import ucar.util.prefs.ui.BeanTableSorted;
+import ucar.util.prefs.ui.BeanTable;
 import ucar.nc2.util.IO;
 
 import javax.swing.*;
@@ -61,7 +60,7 @@ import java.util.zip.ZipEntry;
 import org.jdom2.input.SAXBuilder;
 import org.jdom2.Element;
 import org.jdom2.Namespace;
-import org.apache.commons.httpclient.Header;
+import org.apache.http.Header;
 
 /**
  * View WMS datasets
@@ -76,7 +75,7 @@ public class WmsViewer extends JPanel {
 
   private JPanel imagePanel;
   private SuperComboBox crsChooser, formatChooser, styleChooser, timeChooser, levelChooser;
-  private BeanTableSorted ftTable;
+  private BeanTable ftTable;
 
   private JSplitPane split;
   private StringBuilder info = new StringBuilder();
@@ -131,7 +130,7 @@ public class WmsViewer extends JPanel {
 
     imagePanel = new JPanel();
 
-    ftTable = new BeanTableSorted(LayerBean.class, (PreferencesExt) prefs.node("LayerBeans"), false);
+    ftTable = new BeanTable(LayerBean.class, (PreferencesExt) prefs.node("LayerBeans"), false);
     ftTable.addListSelectionListener(new ListSelectionListener() {
       public void valueChanged(ListSelectionEvent e) {
         LayerBean ftb = (LayerBean) ftTable.getSelectedBean();
@@ -203,8 +202,8 @@ public class WmsViewer extends JPanel {
     HTTPSession session = null;
     HTTPMethod method = null;
     try {
-      session = new HTTPSession(url);
-      method = HTTPMethod.Get(session);
+      session = HTTPFactory.newSession(url);
+      method = HTTPFactory.Get(session);
       int statusCode = method.execute();
 
       info.append(" Status = " + method.getStatusCode() + " " + method.getStatusText() + "\n");
@@ -286,8 +285,8 @@ public class WmsViewer extends JPanel {
     HTTPSession session = null;
     HTTPMethod method = null;
     try {
-      session = new HTTPSession(url);
-      method = HTTPMethod.Get(session);
+      session = HTTPFactory.newSession(url);
+      method = HTTPFactory.Get(session);
       int statusCode = method.execute();
 
       info.append(" Status = " + method.getStatusCode() + " " + method.getStatusText() + "\n");

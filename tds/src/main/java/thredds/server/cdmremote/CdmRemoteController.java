@@ -109,7 +109,7 @@ public class CdmRemoteController extends AbstractController implements LastModif
   @RequestMapping("**")
   public void handleRequest(HttpServletRequest req, HttpServletResponse res,
                        @Valid CdmRemoteQueryBean qb,
-                       BindingResult validationResult) throws IOException, NcssException, ParseException, InvalidRangeException {
+                       BindingResult validationResult) throws IOException { //}, NcssException, ParseException, InvalidRangeException {
 
     if (!allow) {
       res.sendError(HttpServletResponse.SC_FORBIDDEN, "Service not supported");

@@ -36,32 +36,32 @@ import thredds.inventory.CollectionManager;
 import thredds.inventory.MCollection;
 import thredds.inventory.MFile;
 import ucar.nc2.dt.GridDataset;
+import ucar.nc2.ft.fmrc.*;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time.CalendarDateFormatter;
 import ucar.nc2.ui.dialog.Fmrc2Dialog;
-import ucar.nc2.ui.widget.*;
+import ucar.nc2.ui.widget.BAMutil;
+import ucar.nc2.ui.widget.IndependentWindow;
 import ucar.nc2.ui.widget.PopupMenu;
-import ucar.util.prefs.PreferencesExt;
-import ucar.util.prefs.ui.BeanTableSorted;
-import ucar.nc2.ft.fmrc.*;
+import ucar.nc2.ui.widget.TextHistoryPane;
 import ucar.nc2.units.DateFormatter;
+import ucar.util.prefs.PreferencesExt;
+import ucar.util.prefs.ui.BeanTable;
 
 import javax.swing.*;
-import javax.swing.event.ListSelectionListener;
 import javax.swing.event.ListSelectionEvent;
-
-import ucar.nc2.ui.widget.TextHistoryPane;
-import ucar.nc2.ui.widget.BAMutil;
-
+import javax.swing.event.ListSelectionListener;
+import java.awt.*;
+import java.awt.event.ActionEvent;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.ByteArrayOutputStream;
-import java.io.PrintStream;
-import java.util.*;
-import java.util.List;
-import java.awt.event.ActionEvent;
-import java.awt.*;
 import java.io.IOException;
+import java.io.PrintStream;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.Formatter;
+import java.util.List;
 
 /**
  * ucar.nc2.ft.fmrc Fmrc refactor.
@@ -72,7 +72,7 @@ import java.io.IOException;
 public class Fmrc2Panel extends JPanel {
   private PreferencesExt prefs;
 
-  private BeanTableSorted fmrTable, invTable, coordTable, gridTable;
+  private BeanTable fmrTable, invTable, coordTable, gridTable;
   private JSplitPane split, split2, splitV;
 
   private TextHistoryPane infoTA;
@@ -94,7 +94,8 @@ public class Fmrc2Panel extends JPanel {
   public Fmrc2Panel(PreferencesExt prefs) {
     this.prefs = prefs;
 
-    fmrTable = new BeanTableSorted(FmrBean.class, (PreferencesExt) prefs.node("DatasetBean"), false, "FmrInv", fmrBeanDesc);
+    fmrTable = new BeanTable(
+            FmrBean.class, (PreferencesExt) prefs.node("DatasetBean"), false, "FmrInv", fmrBeanDesc, null);
     fmrTable.addListSelectionListener(new ListSelectionListener() {
       public void valueChanged(ListSelectionEvent e) {
         FmrBean fmrBean = (FmrBean) fmrTable.getSelectedBean();
@@ -102,7 +103,8 @@ public class Fmrc2Panel extends JPanel {
       }
     });
 
-    invTable = new BeanTableSorted(InvBean.class, (PreferencesExt) prefs.node("DataBean"), false, "GridDatasetInv", dataBeanDesc);
+    invTable = new BeanTable(
+            InvBean.class, (PreferencesExt) prefs.node("DataBean"), false, "GridDatasetInv", dataBeanDesc, null);
     invTable.addListSelectionListener(new ListSelectionListener() {
       public void valueChanged(ListSelectionEvent e) {
         InvBean invBean = (InvBean) invTable.getSelectedBean();
@@ -111,7 +113,8 @@ public class Fmrc2Panel extends JPanel {
       }
     });
 
-    coordTable = new BeanTableSorted(CoordBean.class, (PreferencesExt) prefs.node("CoordBean"), false, "Time,Vert coords", coordBeanDesc);
+    coordTable = new BeanTable(
+            CoordBean.class, (PreferencesExt) prefs.node("CoordBean"), false, "Time,Vert coords", coordBeanDesc, null);
     coordTable.addListSelectionListener(new ListSelectionListener() {
       public void valueChanged(ListSelectionEvent e) {
         CoordBean coordBean = (CoordBean) coordTable.getSelectedBean();
@@ -119,7 +122,8 @@ public class Fmrc2Panel extends JPanel {
     });
     coordTable.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
 
-    gridTable = new BeanTableSorted(GridBean.class, (PreferencesExt) prefs.node("GridBean"), false, "UberGrids", gridBeanDesc);
+    gridTable = new BeanTable(
+            GridBean.class, (PreferencesExt) prefs.node("GridBean"), false, "UberGrids", gridBeanDesc, null);
     gridTable.addListSelectionListener(new ListSelectionListener() {
       public void valueChanged(ListSelectionEvent e) {
         GridBean gridBean = (GridBean) gridTable.getSelectedBean();

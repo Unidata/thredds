@@ -213,5 +213,4 @@ public class Grib2Utils {
     if (pos > 0) result = result.substring(pos);
     return result;
   }
-
 }

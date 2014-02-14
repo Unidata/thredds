@@ -51,7 +51,7 @@ import ucar.unidata.geoloc.ProjectionImpl;
 import ucar.unidata.io.RandomAccessFile;
 import ucar.unidata.util.Parameter;
 import ucar.util.prefs.PreferencesExt;
-import ucar.util.prefs.ui.BeanTableSorted;
+import ucar.util.prefs.ui.BeanTable;
 
 import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;
@@ -74,7 +74,7 @@ public class Grib1CollectionPanel extends JPanel {
 
   private PreferencesExt prefs;
 
-  private BeanTableSorted gds1Table, param1BeanTable, record1BeanTable;
+  private BeanTable gds1Table, param1BeanTable, record1BeanTable;
   private JSplitPane split, split2;
 
   private TextHistoryPane infoPopup, infoPopup2, infoPopup3;
@@ -100,7 +100,8 @@ public class Grib1CollectionPanel extends JPanel {
 
     PopupMenu varPopup;
 
-    param1BeanTable = new BeanTableSorted(ParameterBean.class, (PreferencesExt) prefs.node("Param1Bean"), false, "Grib1PDSVariables", "from Grib1Input.getRecords()");
+    param1BeanTable = new BeanTable(ParameterBean.class, (PreferencesExt) prefs.node("Param1Bean"), false,
+            "Grib1PDSVariables", "from Grib1Input.getRecords()", null);
     param1BeanTable.addListSelectionListener(new ListSelectionListener() {
       public void valueChanged(ListSelectionEvent e) {
         ParameterBean pb = (ParameterBean) param1BeanTable.getSelectedBean();
@@ -135,7 +136,8 @@ public class Grib1CollectionPanel extends JPanel {
       }
     });
 
-    record1BeanTable = new BeanTableSorted(RecordBean.class, (PreferencesExt) prefs.node("Record1Bean"), false, "Grib1Record", "from Grib1Input.getRecords()");
+    record1BeanTable = new BeanTable(RecordBean.class, (PreferencesExt) prefs.node("Record1Bean"), false,
+            "Grib1Record", "from Grib1Input.getRecords()", null);
     varPopup = new PopupMenu(record1BeanTable.getJTable(), "Options");
 
     varPopup.addAction("Show raw PDS bytes", new AbstractAction() {
@@ -207,7 +209,8 @@ public class Grib1CollectionPanel extends JPanel {
       }
     });
 
-    gds1Table = new BeanTableSorted(Gds1Bean.class, (PreferencesExt) prefs.node("Gds1Bean"), false, "Grib1GridDefinitionSection", "unique from Grib1Records");
+    gds1Table = new BeanTable(Gds1Bean.class, (PreferencesExt) prefs.node("Gds1Bean"), false,
+            "Grib1GridDefinitionSection", "unique from Grib1Records", null);
 
     varPopup = new PopupMenu(gds1Table.getJTable(), "Options");
     varPopup.addAction("Show raw GDS", new AbstractAction() {

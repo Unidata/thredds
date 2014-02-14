@@ -86,8 +86,8 @@ public class TestHTTPMethod extends UnitTestCommon
         System.out.println("*** URL: " + url);
 
         System.out.println("*** Testing: HTTPMethod.getResponseBodyAsStream");
-        session = new HTTPSession(url);
-        method = HTTPMethod.Get(session);
+        session = HTTPFactory.newSession(url);
+        method = HTTPFactory.Get(session);
         method.execute();
         InputStream stream = method.getResponseBodyAsStream();
         // Read the whole thing
@@ -116,8 +116,8 @@ public class TestHTTPMethod extends UnitTestCommon
         System.out.println("*** URL: " + url);
 
         System.out.println("*** Testing: HTTPMethod.getResponseBodyAsStream partial read");
-        session = new HTTPSession(url);
-        method = HTTPMethod.Get(session);
+        session = HTTPFactory.newSession(url);
+        method = HTTPFactory.Get(session);
         method.execute();
         InputStream stream = method.getResponseBodyAsStream();
         byte[] buffer = new byte[EXPECTED];

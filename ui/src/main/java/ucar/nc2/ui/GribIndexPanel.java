@@ -13,7 +13,7 @@ import ucar.nc2.ui.widget.PopupMenu;
 import ucar.nc2.ui.widget.TextHistoryPane;
 import ucar.unidata.io.RandomAccessFile;
 import ucar.util.prefs.PreferencesExt;
-import ucar.util.prefs.ui.BeanTableSorted;
+import ucar.util.prefs.ui.BeanTable;
 
 import javax.swing.*;
 import java.awt.*;
@@ -30,7 +30,7 @@ import java.util.*;
 public class GribIndexPanel extends JPanel {
   private PreferencesExt prefs;
 
-  private BeanTableSorted recordTable;
+  private BeanTable recordTable;
   private JSplitPane split, split2, split3;
 
   private TextHistoryPane infoPopup, detailTA;
@@ -68,7 +68,7 @@ public class GribIndexPanel extends JPanel {
 
     PopupMenu popup;
 
-    recordTable = new BeanTableSorted(RecordBean.class, (PreferencesExt) prefs.node("Grib2RecordBean"), false);
+    recordTable = new BeanTable(RecordBean.class, (PreferencesExt) prefs.node("Grib2RecordBean"), false);
 
     popup = new PopupMenu(recordTable.getJTable(), "Options");
     popup.addAction("Show Record", new AbstractAction() {

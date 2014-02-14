@@ -32,27 +32,26 @@
  */
 package thredds.ui.catalog.tools;
 
+import thredds.catalog.*;
+import thredds.catalog.crawl.CatalogExtractor;
 import thredds.ui.catalog.CatalogTreeView;
+import ucar.nc2.ui.widget.*;
 import ucar.nc2.ui.widget.PopupMenu;
+import ucar.nc2.util.IO;
 import ucar.nc2.util.net.HttpClientManager;
 import ucar.unidata.util.StringUtil2;
 import ucar.util.prefs.PreferencesExt;
-import ucar.util.prefs.ui.*;
+import ucar.util.prefs.ui.ComboBox;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
-import java.io.IOException;
+import java.awt.event.ActionListener;
 import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.io.PrintStream;
 import java.net.URI;
 import java.net.URISyntaxException;
-
-import thredds.catalog.*;
-import thredds.catalog.crawl.CatalogExtractor;
-import ucar.nc2.util.IO;
-import ucar.nc2.ui.widget.*;
 
 /**
  * Experimental widget for creating Thredds Data server configuration Catalogs.
@@ -393,7 +392,7 @@ public class TDServerConfigurator extends JPanel {
   //////////////////////////////////////////////////////////////////////////////
 
     /* dataset bean table
-    dsTable = new BeanTableSorted(DatasetBean.class, (PreferencesExt) prefs.node("dsBeans"), false);
+    dsTable = new BeanTable(DatasetBean.class, (PreferencesExt) prefs.node("dsBeans"), false);
     dsTable.addListSelectionListener( new ListSelectionListener() {
       public void valueChanged(ListSelectionEvent e) {
         DatasetBean bean = (DatasetBean) dsTable.getSelectedBean();
@@ -403,7 +402,7 @@ public class TDServerConfigurator extends JPanel {
     });
 
     // access bean table
-    daTable = new BeanTableSorted(AccessBean.class, (PreferencesExt) prefs.node("dsBeans"), false);
+    daTable = new BeanTable(AccessBean.class, (PreferencesExt) prefs.node("dsBeans"), false);
 
     /// put tables in tabbed pane
     tabbedPane = new JTabbedPane(JTabbedPane.TOP);

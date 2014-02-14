@@ -127,4 +127,76 @@ public class GribUtils {
     StringUtil2.remove(sb, ";,=[]()");
     return sb.toString();
   }
+
+  /*
+  scanMode
+  Grib1
+  Flag/Code table 8 – Scanning mode
+  Bit No. Value Meaning
+  1 0 Points scan in +i direction
+    1 Points scan in –i direction
+  2 0 Points scan in –j direction
+    1 Points scan in +j direction
+  3 0 Adjacent points in i direction are consecutive
+    1 Adjacent points in j direction are consecutive
+  Notes:
+  (1) i direction: west to east along a parallel, or left to right along an X-axis.
+  (2) j direction: south to north along a meridian, or bottom to top along a Y-axis.
+
+  Grin2
+    Flag table 3.4 – Scanning mode
+       Bit No. Value Meaning
+ 128    1 0 Points of first row or column scan in the +i (+x) direction
+          1 Points of first row or column scan in the –i (–x) direction
+ 64     2 0 Points of first row or column scan in the –j (–y) direction
+          1 Points of first row or column scan in the +j (+y) direction
+ 32     3 0 Adjacent points in i (x) direction are consecutive
+          1 Adjacent points in j (y) direction is consecutive
+ 16     4 0 All rows scan in the same direction
+          1 Adjacent rows scans in the opposite direction
+        5–8 Reserved
+        Notes:
+        (1) i direction: west to east along a parallel or left to right along an x-axis.
+        (2) j direction: south to north along a meridian, or bottom to top along a y-axis.
+        (3) If bit number 4 is set, the first row scan is as defined by previous flags.
+   */
+
+  /**
+    * X Points scan in +/- direction. Grib 1 or 2.
+    * Positive means west to east along a parallel, or left to right along an X-axis..
+    * @param scanMode scanMode byte
+    * @return true: x points scan in positive direction, false: x points scan in negetive direction
+    */
+  static public boolean scanModeXisPositive(int scanMode) {
+    return (scanMode & GribNumbers.bitmask[0]) == 0;
+  }
+
+  /**
+    * Y Points scan in +/- direction. Grib 1 or 2.
+   * Positive means south to north along a meridian, or bottom to top along a Y-axis.
+    * @param scanMode scanMode byte
+    * @return true: y points scan in positive direction, false: y points scan in negetive direction
+    */
+  static public boolean scanModeYisPositive(int scanMode) {
+    return (scanMode & GribNumbers.bitmask[1]) != 0;
+  }
+
+  /**
+   * Adjacent points in x or y direction are consecutive. Grib 1 or 2.
+   * @param scanMode scanMode byte
+   * @return true: x points are consecutive (row) false: y points are consecutive (col)
+   */
+  static public boolean scanModeXisConsecutive(int scanMode) {
+    return (scanMode & GribNumbers.bitmask[2]) == 0;
+  }
+
+  /**
+   * All rows scan in the same/opposite direction. Grib 2 only.
+   * @param scanMode scanMode byte
+   * @return  true: All rows scan in the same direction, false: Adjacent rows scans in the opposite direction, the first row scan is as defined by previous flags
+   */
+  static public boolean scanModeSameDirection(int scanMode) {
+    return (scanMode & GribNumbers.bitmask[3]) == 0;
+  }
+
 }

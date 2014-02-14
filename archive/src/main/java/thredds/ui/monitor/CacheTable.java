@@ -35,7 +35,7 @@ package thredds.ui.monitor;
 
 import ucar.nc2.ui.widget.PopupMenu;
 import ucar.util.prefs.PreferencesExt;
-import ucar.util.prefs.ui.BeanTableSorted;
+import ucar.util.prefs.ui.BeanTable;
 
 import javax.swing.*;
 import javax.swing.event.ListSelectionListener;
@@ -68,7 +68,7 @@ import net.sf.ehcache.Element;
  */
 public class CacheTable extends JPanel {
   private PreferencesExt prefs;
-  private ucar.util.prefs.ui.BeanTableSorted cacheTable, elemTable, cfileTable;
+  private ucar.util.prefs.ui.BeanTable cacheTable, elemTable, cfileTable;
 
   private CacheManager ehcache;
 
@@ -81,7 +81,7 @@ public class CacheTable extends JPanel {
   public CacheTable(PreferencesExt prefs, JPanel buttPanel) {
     this.prefs = prefs;
 
-    cacheTable = new BeanTableSorted(CacheBean.class, (PreferencesExt) prefs.node("Cache"), false);
+    cacheTable = new BeanTable(CacheBean.class, (PreferencesExt) prefs.node("Cache"), false);
     cacheTable.addListSelectionListener(new ListSelectionListener() {
       public void valueChanged(ListSelectionEvent e) {
         CacheBean bean = (CacheBean) cacheTable.getSelectedBean();
@@ -112,7 +112,7 @@ public class CacheTable extends JPanel {
       }
     });
 
-    elemTable = new BeanTableSorted(ElemBean.class, (PreferencesExt) prefs.node("Elem"), false);
+    elemTable = new BeanTable(ElemBean.class, (PreferencesExt) prefs.node("Elem"), false);
     elemTable.addListSelectionListener(new ListSelectionListener() {
       public void valueChanged(ListSelectionEvent e) {
         ElemBean bean = (ElemBean) elemTable.getSelectedBean();
@@ -136,7 +136,7 @@ public class CacheTable extends JPanel {
       }
     }); */
 
-    cfileTable = new BeanTableSorted(CacheFileBean.class, (PreferencesExt) prefs.node("CacheFileBean"), false);
+    cfileTable = new BeanTable(CacheFileBean.class, (PreferencesExt) prefs.node("CacheFileBean"), false);
     cfileTable.addListSelectionListener(new ListSelectionListener() {
       public void valueChanged(ListSelectionEvent e) {
         CacheFileBean bean = (CacheFileBean) cfileTable.getSelectedBean();

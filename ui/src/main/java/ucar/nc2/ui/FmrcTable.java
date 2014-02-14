@@ -35,7 +35,7 @@ package ucar.nc2.ui;
 
 import ucar.nc2.ui.widget.PopupMenu;
 import ucar.util.prefs.PreferencesExt;
-import ucar.util.prefs.ui.BeanTableSorted;
+import ucar.util.prefs.ui.BeanTable;
 import ucar.nc2.dataset.NetcdfDataset;
 
 import javax.swing.*;
@@ -59,7 +59,7 @@ import java.io.*;
 public class FmrcTable extends JPanel {
   private PreferencesExt prefs;
 
-  private BeanTableSorted messageTable;
+  private BeanTable messageTable;
   private JSplitPane split;
 
   private TextHistoryPane infoTA;
@@ -70,7 +70,7 @@ public class FmrcTable extends JPanel {
   public FmrcTable(PreferencesExt prefs) {
     this.prefs = prefs;
 
-    messageTable = new BeanTableSorted(DatasetBean.class, (PreferencesExt) prefs.node("DatasetBean"), false);
+    messageTable = new BeanTable(DatasetBean.class, (PreferencesExt) prefs.node("DatasetBean"), false);
     messageTable.addListSelectionListener(new ListSelectionListener() {
       public void valueChanged(ListSelectionEvent e) {
         DatasetBean dsb = (DatasetBean) messageTable.getSelectedBean();

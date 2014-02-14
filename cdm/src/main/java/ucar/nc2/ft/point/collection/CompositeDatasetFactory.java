@@ -106,6 +106,7 @@ public class CompositeDatasetFactory {
 
       this.pfc = pfc;
       this.datasets = datasets;
+      this.dateRange = datasets.getDateRange();
 
       if (datasets.getDateRange() != null)
          setDateRange(datasets.getDateRange());

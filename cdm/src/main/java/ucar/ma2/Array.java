@@ -390,19 +390,19 @@ public abstract class Array {
   protected final int rank;
   protected boolean unsigned;
   private IndexIterator ii; // local iterator
-  private DataType sort;
+  private DataType datatype;
 
   // for subclasses only
   protected Array(int[] shape) {
     rank = shape.length;
     indexCalc = Index.factory(shape);
-    this.sort = computesort();
+    this.datatype = computesort();
   }
 
   protected Array(Index index) {
     rank = index.getRank();
     indexCalc = index;
-    this.sort = computesort();
+    this.datatype = computesort();
   }
 
   /**
@@ -438,7 +438,16 @@ public abstract class Array {
     return null;
   }
 
-  /**
+    /**
+     * Return the computed datatype for this array
+     * @return
+     */
+    public DataType getDataType()
+   {
+       return this.datatype;
+   }
+
+    /**
    * Get an Index object used for indexed access of this Array.
    *
    * @return an Index for this Array

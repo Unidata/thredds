@@ -66,7 +66,7 @@ second
 
   @Test
   public void problem() {
-    testCalendarOnly(null, "sec since 1970-1-1 00:00:00Z");
+    testCalendarOnly(null, "days since 2008-01-01 0:00:00 00:00");
   }
 
   // UNIT since [-]Y[Y[Y[Y]]]-MM-DD[(T| )hh[:mm[:ss[.sss*]]][ [+|-]hh[[:]mm]]]

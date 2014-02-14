@@ -70,7 +70,7 @@ public class CoordSysTable extends JPanel {
   private PreferencesExt prefs;
   private NetcdfDataset ds;
 
-  private BeanTableSorted varTable, csTable, axisTable;
+  private BeanTable varTable, csTable, axisTable;
   private JSplitPane split, split2;
   private TextHistoryPane infoTA;
   private IndependentWindow infoWindow, attWindow;
@@ -89,7 +89,7 @@ public class CoordSysTable extends JPanel {
       BAMutil.addActionToContainer(buttPanel, attAction);
     }
 
-    varTable = new BeanTableSorted(VariableBean.class, (PreferencesExt) prefs.node("VariableBeans"), false);
+    varTable = new BeanTable(VariableBean.class, (PreferencesExt) prefs.node("VariableBeans"), false);
     varTable.addListSelectionListener(new ListSelectionListener() {
       public void valueChanged(ListSelectionEvent e) {
         VariableBean vb = (VariableBean) varTable.getSelectedBean();
@@ -98,7 +98,7 @@ public class CoordSysTable extends JPanel {
       }
     });
 
-    csTable = new BeanTableSorted(CoordinateSystemBean.class, (PreferencesExt) prefs.node("CoordinateSystemBean"), false);
+    csTable = new BeanTable(CoordinateSystemBean.class, (PreferencesExt) prefs.node("CoordinateSystemBean"), false);
     csTable.addListSelectionListener(new ListSelectionListener() {
       public void valueChanged(ListSelectionEvent e) {
         CoordinateSystemBean csb = (CoordinateSystemBean) csTable.getSelectedBean();
@@ -106,7 +106,7 @@ public class CoordSysTable extends JPanel {
       }
     });
 
-    axisTable = new BeanTableSorted(AxisBean.class, (PreferencesExt) prefs.node("CoordinateAxisBean"), false);
+    axisTable = new BeanTable(AxisBean.class, (PreferencesExt) prefs.node("CoordinateAxisBean"), false);
 
     ucar.nc2.ui.widget.PopupMenu varPopup = new PopupMenu(varTable.getJTable(), "Options");
     varPopup.addAction("Show Declaration", new AbstractAction() {
@@ -230,13 +230,12 @@ public class CoordSysTable extends JPanel {
     add(split2, BorderLayout.CENTER);
   }
 
-  private BeanTableSorted attTable;
-
+  private BeanTable attTable;
   public void showAtts() {
     if (ds == null) return;
     if (attTable == null) {
       // global attributes
-      attTable = new BeanTableSorted(AttributeBean.class, (PreferencesExt) prefs.node("AttributeBeans"), false);
+      attTable = new BeanTable(AttributeBean.class, (PreferencesExt) prefs.node("AttributeBeans"), false);
       PopupMenu varPopup = new ucar.nc2.ui.widget.PopupMenu(attTable.getJTable(), "Options");
       varPopup.addAction("Show Attribute", new AbstractAction() {
         public void actionPerformed(ActionEvent e) {
@@ -248,8 +247,8 @@ public class CoordSysTable extends JPanel {
           }
         }
       });
-      attWindow = new IndependentWindow("Global Attributes", BAMutil.getImage("netcdfUI"), attTable);
-      attWindow.setBounds((Rectangle) prefs.getBean("AttWindowBounds", new Rectangle(300, 100, 500, 800)));
+      attWindow = new IndependentWindow("Global Attributes", BAMutil.getImage( "netcdfUI"), attTable);
+      attWindow.setBounds( (Rectangle) prefs.getBean("AttWindowBounds", new Rectangle( 300, 100, 500, 800)));
     }
 
     List<AttributeBean> attlist = new ArrayList<AttributeBean>();

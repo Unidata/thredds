@@ -35,24 +35,23 @@ package ucar.nc2.util.net;
 
 import java.io.*;
 import java.net.MalformedURLException;
+import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.nio.charset.Charset;
 import java.util.*;
 
-import com.sun.org.apache.xerces.internal.util.*;
 import net.jcip.annotations.NotThreadSafe;
-import org.apache.commons.httpclient.*;
-import org.apache.commons.httpclient.URI;
-import org.apache.commons.httpclient.methods.*;
-import org.apache.commons.httpclient.methods.multipart.MultipartRequestEntity;
-import org.apache.commons.httpclient.methods.multipart.Part;
-import org.apache.commons.httpclient.params.HttpConnectionManagerParams;
-import org.apache.commons.httpclient.params.HttpMethodParams;
-import org.apache.commons.httpclient.auth.*;
-
-import org.apache.commons.httpclient.protocol.Protocol;
+import org.apache.http.*;
+import org.apache.http.auth.AuthScope;
+import org.apache.http.client.methods.*;
+import org.apache.http.message.BasicHeader;
+import org.apache.http.message.BasicHttpResponse;
+import org.apache.http.params.HttpParams;
+import org.apache.http.util.EntityUtils;
 import ucar.nc2.util.EscapeStrings;
 
+import static ucar.nc2.util.net.HTTPSession.*;
 
 /**
  * HTTPMethod is the encapsulation of specific
@@ -60,9 +59,9 @@ import ucar.nc2.util.EscapeStrings;
  * The general processing sequence is as follows.
  * <ol>
  * <li> Create an HTTPMethod object using one of the
- * factory methods (e.g. HTTPMethod.Get()).
+ * methods of HTTPFactory (e.g. HTTPFactory.Get()).
  * <p/>
- * <li> Set parameters and headers.
+ * <li> Set parameters and headers of the returned HTTPMethod instance.
  * <p/>
  * <li> Invoke the execute() method to actually make
  * the request.
@@ -128,7 +127,7 @@ import ucar.nc2.util.EscapeStrings;
  * To support this use case, HTTPMethod supports what amounts
  * to a one-shot use. The steps are as follows:
  * <ol>
- * <li> HTTPMethod method = HTTPMethod.Get(<url string>); note
+ * <li> HTTPMethod method = HTTPFactory.Get(<url string>); note
  * that this implicitly creates a session internal to the
  * method instance.
  * <p/>
@@ -160,183 +159,19 @@ import ucar.nc2.util.EscapeStrings;
 @NotThreadSafe
 public class HTTPMethod
 {
-    //////////////////////////////////////////////////////////////////////////
-    // Static factory methods
-
-    static public HTTPMethod Get(HTTPSession session) throws HTTPException
-    {
-        return new HTTPMethod(HTTPSession.Methods.Get, session, null);
-    }
-
-    static public HTTPMethod Head(HTTPSession session) throws HTTPException
-    {
-        return new HTTPMethod(HTTPSession.Methods.Head, session, null);
-    }
-
-    static public HTTPMethod Put(HTTPSession session) throws HTTPException
-    {
-        return new HTTPMethod(HTTPSession.Methods.Put, session, null);
-    }
-
-    static public HTTPMethod Post(HTTPSession session) throws HTTPException
-    {
-        return new HTTPMethod(HTTPSession.Methods.Post, session, null);
-    }
-
-    static public HTTPMethod Options(HTTPSession session) throws HTTPException
-    {
-        return new HTTPMethod(HTTPSession.Methods.Options, session, null);
-    }
-
-    static public HTTPMethod Get(HTTPSession session, String legalurl) throws HTTPException
-    {
-        return new HTTPMethod(HTTPSession.Methods.Get, session, legalurl);
-    }
-
-    static public HTTPMethod Head(HTTPSession session, String legalurl) throws HTTPException
-    {
-        return new HTTPMethod(HTTPSession.Methods.Head, session, legalurl);
-    }
-
-    static public HTTPMethod Put(HTTPSession session, String legalurl) throws HTTPException
-    {
-        return new HTTPMethod(HTTPSession.Methods.Put, session, legalurl);
-    }
-
-    static public HTTPMethod Post(HTTPSession session, String legalurl) throws HTTPException
-    {
-        return new HTTPMethod(HTTPSession.Methods.Post, session, legalurl);
-    }
-
-    static public HTTPMethod Options(HTTPSession session, String legalurl) throws HTTPException
-    {
-        return new HTTPMethod(HTTPSession.Methods.Options, session, legalurl);
-    }
-
-    static public HTTPMethod Get(String legalurl) throws HTTPException
-    {
-        return new HTTPMethod(HTTPSession.Methods.Get, legalurl);
-    }
-
-    static public HTTPMethod Head(String legalurl) throws HTTPException
-    {
-        return new HTTPMethod(HTTPSession.Methods.Head, legalurl);
-    }
-
-    static public HTTPMethod Put(String legalurl) throws HTTPException
-    {
-        return new HTTPMethod(HTTPSession.Methods.Put, legalurl);
-    }
-
-    static public HTTPMethod Post(String legalurl) throws HTTPException
-    {
-        return new HTTPMethod(HTTPSession.Methods.Post, legalurl);
-    }
-
-    static public HTTPMethod Options(String legalurl) throws HTTPException
-    {
-        return new HTTPMethod(HTTPSession.Methods.Options, legalurl);
-    }
-
-    static public HTTPMethod Get() throws HTTPException
-    {
-        return new HTTPMethod(HTTPSession.Methods.Get);
-    }
-
-    static public HTTPMethod Head() throws HTTPException
-    {
-        return new HTTPMethod(HTTPSession.Methods.Head);
-    }
-
-    static public HTTPMethod Put() throws HTTPException
-    {
-        return new HTTPMethod(HTTPSession.Methods.Put);
-    }
-
-    static public HTTPMethod Post() throws HTTPException
-    {
-        return new HTTPMethod(HTTPSession.Methods.Post);
-    }
-
-    static public HTTPMethod Options() throws HTTPException
-    {
-        return new HTTPMethod(HTTPSession.Methods.Options);
-    }
-
-    //////////////////////////////////////////////////////////////////////////
-    // Constants
-
-    //////////////////////////////////////////////////
-    // Type declarations
-
-    // Define a Retry Handler that supports specifiable retries
-    // and is optionally verbose.
-    static public class RetryHandler
-        extends org.apache.commons.httpclient.DefaultHttpMethodRetryHandler
-    {
-        static final int DFALTRETRIES = 5;
-        static int retries = DFALTRETRIES;
-        static boolean verbose = false;
-
-        public RetryHandler()
-        {
-            super(retries, false);
-        }
-
-        public boolean retryMethod(final org.apache.commons.httpclient.HttpMethod method,
-                                   final IOException exception,
-                                   int executionCount)
-        {
-            if(verbose) {
-                HTTPSession.log.debug(String.format("Retry: count=%d exception=%s\n", executionCount, exception.toString()));
-            }
-            return super.retryMethod(method, exception, executionCount);
-        }
-		
-	static public int getRetries() {return RetryHandler.retries;}
-	static public void setRetries(int retries)
-        {
-	    if(retries > 0)
-		RetryHandler.retries = retries;
-	}
-	static public boolean getVerbose() {return RetryHandler.verbose;}
-	static public void setVerbose(boolean tf) {RetryHandler.verbose = tf;}
-    }
-
-    //////////////////////////////////////////////////////////////////////////
-    // Static variables
-
-    static HashMap<String, Object> globalparams = new HashMap<String, Object>();
-
-    //////////////////////////////////////////////////
-    // Static API
-
-    static public synchronized void
-    setGlobalParameter(String name, Object value)
-    {
-        globalparams.put(name, value);
-    }
-
-    static public int getRetryCount() {return RetryHandler.getRetries();}
-    static public void setRetryCount(int count)
-	{RetryHandler.setRetries(count);}
-
     //////////////////////////////////////////////////
     // Instance fields
 
-    HTTPSession session = null;
-    boolean localsession = false;
-    HttpMethodBase method = null; // Current method
-    String legalurl = null;
-    List<Header> headers = new ArrayList<Header>();
-    HashMap<String, Object> params = new HashMap<String, Object>();
-    HttpState context = null;
-    RequestEntity content = null;
-    HTTPSession.Methods methodclass = null;
-    Part[] multiparts = null;
-    HTTPMethodStream methodstream = null; // wrapper for strm
-    boolean closed = false;
-
+    protected HTTPSession session = null;
+    protected boolean localsession = false;
+    protected String legalurl = null;
+    protected List<Header> headers = new ArrayList<Header>();
+    protected HttpEntity content = null;
+    protected HTTPSession.Methods methodclass = null;
+    protected HTTPMethodStream methodstream = null; // wrapper for strm
+    protected boolean closed = false;
+    protected HttpRequestBase request = null;
+    protected HttpResponse response = null;
 
     //////////////////////////////////////////////////
     // Constructor(s)
@@ -356,16 +191,22 @@ public class HTTPMethod
     public HTTPMethod(HTTPSession.Methods m, HTTPSession session, String url)
         throws HTTPException
     {
+        if(url == null && session != null)
+            url = session.getURL();
+        try {
+            new URL(url);
+        } catch (MalformedURLException mue) {
+            throw new HTTPException("Malformed URL: " + url, mue);
+        }
+
         if(session == null) {
-            session = new HTTPSession();
+            session = HTTPFactory.newSession(url);
             localsession = true;
         }
+
         this.session = session;
 
-        if(url == null)
-            url = session.getURL();
-        if(url != null)
-            url = HTTPSession.removeprincipal(url);
+        url = HTTPSession.removeprincipal(url);
 
         this.legalurl = url;
         this.session.addMethod(this);
@@ -373,54 +214,49 @@ public class HTTPMethod
         this.methodclass = m;
     }
 
-    HttpMethodBase
-    create()
+    protected HttpRequestBase
+    createRequest()
+        throws HTTPException
     {
-        HttpMethodBase method = null;
+        HttpRequestBase method = null;
         // Unfortunately, the apache httpclient 3 code has a restrictive
         // notion of a legal url, so we need to encode it before use
         String urlencoded = EscapeStrings.escapeURL(this.legalurl);
+        if(urlencoded == null)
+            throw new HTTPException("Malformed url: " + this.legalurl);
 
         switch (this.methodclass) {
         case Put:
-            method = new PutMethod(urlencoded);
+            method = new HttpPut(urlencoded);
             break;
         case Post:
-            method = new PostMethod(urlencoded);
+            method = new HttpPost(urlencoded);
             break;
         case Get:
-            method = new GetMethod(urlencoded);
+            method = new HttpGet(urlencoded);
             break;
         case Head:
-            method = new HeadMethod(urlencoded);
+            method = new HttpHead(urlencoded);
             break;
         case Options:
-            method = new OptionsMethod(urlencoded);
+            method = new HttpOptions(urlencoded);
             break;
         default:
             break;
         }
-        // Force some actions
-        if(method != null) {
-            method.setFollowRedirects(true);
-            method.setDoAuthentication(true);
-        }
         return method;
     }
 
-    void setcontent()
+    protected void setcontent(HttpRequestBase request)
     {
         switch (this.methodclass) {
         case Put:
             if(this.content != null)
-                ((PutMethod) method).setRequestEntity(this.content);
+                ((HttpPut) request).setEntity(this.content);
             break;
         case Post:
-            if(multiparts != null && multiparts.length > 0) {
-                MultipartRequestEntity mre = new MultipartRequestEntity(multiparts, method.getParams());
-                ((PostMethod) method).setRequestEntity(mre);
-            } else if(this.content != null)
-                ((PostMethod) method).setRequestEntity(this.content);
+            if(this.content != null)
+                ((HttpPost) request).setEntity(this.content);
             break;
         case Head:
         case Get:
@@ -429,13 +265,6 @@ public class HTTPMethod
             break;
         }
         this.content = null; // do not reuse
-        this.multiparts = null;
-    }
-
-    public int execute(String url) throws HTTPException
-    {
-        this.legalurl = url;
-        return execute();
     }
 
     public int execute()
@@ -448,57 +277,97 @@ public class HTTPMethod
         if(!localsession && !sessionCompatible(this.legalurl))
             throw new HTTPException("HTTPMethod: session incompatible url: " + this.legalurl);
 
-        if(this.method != null)
-            this.method.releaseConnection();
-        this.method = create();
+        if(this.request != null)
+            this.request.releaseConnection();
+        this.request = createRequest();
 
         try {
+            // Add any defined headers
             if(headers.size() > 0) {
                 for(Header h : headers) {
-                    method.addRequestHeader(h);
-                }
-            }
-            if(globalparams != null) {
-                HttpMethodParams hmp = method.getParams();
-                for(String key : globalparams.keySet()) {
-                    hmp.setParameter(key, globalparams.get(key));
-                }
-            }
-            if(params != null) {
-                HttpMethodParams hmp = method.getParams();
-                for(String key : params.keySet()) {
-                    hmp.setParameter(key, params.get(key));
+                    request.addHeader(h);
                 }
             }
 
-            // Change the retry handler
-            method.getParams().setParameter(HttpMethodParams.RETRY_HANDLER, new RetryHandler());
+            // Apply settings
+            configure(this.request);
+            setcontent(this.request);
+            AuthScope scope = setAuthentication();
 
-            setcontent();
+            //todo: Change the retry handler
+            //httpclient.setHttpRequestRetryHandler(myRetryHandler);
+            //request.getParams().setParameter(HttpMethodParams.RETRY_HANDLER, new RetryHandler());
 
-            setAuthentication(session, this);
+            //todo: get the protocol and port
+            //URL hack = new URL(this.legalurl);
+            //Protocol handler = session.getProtocol(hack.getProtocol(),
+            //    hack.getPort());
+            //HostConfiguration hc = session.sessionClient.getHostConfiguration();
+            //hc = new HostConfiguration(hc);
+            //hc.setHost(hack.getHost(), hack.getPort(), handler);
 
-            // WARNING; DANGER WILL ROBINSION
-            // httpclient3 only allows one registered https protocol, so
-            // we built our own protocol registry to also take port into account
-            // (see HTTPSession.registerProtocol())
+            this.response = session.execute(request);
+            int code = response.getStatusLine().getStatusCode();
 
-            // get the protocol and port
-            URL hack = new URL(this.legalurl);
-            Protocol handler = session.getProtocol(hack.getProtocol(),
-                hack.getPort());
+            // On authorization error, clear entries from the credentials cache
+            if(code == HttpStatus.SC_UNAUTHORIZED
+                || code == HttpStatus.SC_PROXY_AUTHENTICATION_REQUIRED) {
+                this.session.invalidate(scope);
+            }
 
-            HostConfiguration hc = session.sessionClient.getHostConfiguration();
-            hc = new HostConfiguration(hc);
-            hc.setHost(hack.getHost(), hack.getPort(), handler);
-            session.sessionClient.executeMethod(hc, method);
-            int code = getStatusCode();
             return code;
+
         } catch (Exception ie) {
             throw new HTTPException(ie);
         }
     }
 
+    protected void
+    configure(HttpRequestBase request)
+        throws HTTPException
+    {
+        // merge global and local settings.
+        Settings merge = new Settings();
+        Settings s = session.getGlobalSettings();
+        for(String key : s.getNames()) {
+            merge.setParameter(key, s.getParameter(key));
+        }
+        s = session.getSettings();
+        for(String key : s.getNames()) {
+            merge.setParameter(key, s.getParameter(key));
+        }
+        for(String key : merge.getNames()) {
+            Object value = merge.getParameter(key);
+            HttpParams hmp = request.getParams();
+
+            if(key.equals(ALLOW_CIRCULAR_REDIRECTS)) {
+                hmp.setParameter(ALLOW_CIRCULAR_REDIRECTS, (Boolean) value);
+            } else if(key.equals(HANDLE_REDIRECTS)) {
+                hmp.setParameter(HANDLE_REDIRECTS, (Boolean) value);
+            } else if(key.equals(HANDLE_AUTHENTICATION)) {
+                hmp.setParameter(HANDLE_AUTHENTICATION, (Boolean) value);
+            } else if(key.equals(MAX_REDIRECTS)) {
+                hmp.setParameter(MAX_REDIRECTS, (Integer) value);
+            } else if(key.equals(SO_TIMEOUT)) {
+                hmp.setParameter(SO_TIMEOUT, (Integer) value);
+            } else if(key.equals(CONN_TIMEOUT)) {
+                hmp.setParameter(CONN_TIMEOUT, (Integer) value);
+                // NOTE: Following modifying request, not builder
+            } else if(key.equals(USER_AGENT)) {
+                request.setHeader(HEADER_USERAGENT, value.toString());
+            } else if(key.equals(COMPRESSION)) {
+                request.setHeader(ACCEPT_ENCODING, value.toString());
+            } else if(key.equals(PROXY)) {
+                Proxy proxy = (Proxy) value;
+                if(session.sessionClient != null && proxy != null && proxy.host != null) {
+                    HttpHost httpproxy = new HttpHost(proxy.host, proxy.port);
+                    session.sessionClient.getParams().setParameter(PROXY, httpproxy);
+                }
+            } else {
+                throw new HTTPException("Unexpected setting name: " + key);
+            }
+        }
+    }
 
     /**
      * Calling close will force the method to close, and will
@@ -518,60 +387,46 @@ public class HTTPMethod
             ;
             methodstream = null;
         }
-        if(this.method != null) {
-            this.method.releaseConnection();
-            this.method = null;
+        if(this.request != null) {
+            this.request.releaseConnection();
+            this.request = null;
         }
         session.removeMethod(this);
         if(localsession && session != null) {
             session.close();
-	        session = null;
-	    }
+            session = null;
+        }
     }
 
     //////////////////////////////////////////////////
     // Accessors
 
-    public void setContext(HttpState cxt)
-    {
-        session.setContext(cxt);
-    }
-
-    public HttpState getContext()
-    {
-        return session.getContext();
-    }
-
     public int getStatusCode()
     {
-        return method == null ? 0 : method.getStatusCode();
+        return response == null ? 0 : response.getStatusLine().getStatusCode();
     }
 
     public String getStatusLine()
     {
-        return method == null ? null : method.getStatusLine().toString();
+        return response == null ? null : response.getStatusLine().toString();
     }
 
     public String getRequestLine()
     {
-        //fix: return (method == null ? null : method.getRequestLine().toString());
-        return "getrequestline not implemented";
+        //fix: return (method == null ? null : request.getRequestLine().toString());
+        throw new UnsupportedOperationException("getrequestline not implemented");
     }
 
     public String getPath()
     {
-        try {
-            return (method == null ? null : method.getURI().toString());
-        } catch (URIException e) {
-            return null;
-        }
+        return (request == null ? null : request.getURI().toString());
     }
 
     public boolean canHoldContent()
     {
-        if(method == null)
+        if(request == null)
             return false;
-        return !(method instanceof HeadMethod);
+        return !(request instanceof HttpHead);
     }
 
     public InputStream getResponseBodyAsStream()
@@ -584,12 +439,12 @@ public class HTTPMethod
         if(closed)
             throw new IllegalStateException("HTTPMethod: method is closed");
         if(this.methodstream != null) { // duplicate: caller's problem
-            HTTPSession.log.warn("HTTPMethod.getResponseBodyAsStream: Getting method stream multiple times");
+            HTTPSession.log.warn("HTTPRequest.getResponseBodyAsStream: Getting method stream multiple times");
         } else { // first time
             HTTPMethodStream stream = null;
             try {
-                if(method == null) return null;
-                stream = new HTTPMethodStream(method.getResponseBodyAsStream(), this);
+                if(response == null) return null;
+                stream = new HTTPMethodStream(response.getEntity().getContent(), this);
             } catch (Exception e) {
                 stream = null;
             }
@@ -598,37 +453,40 @@ public class HTTPMethod
         return this.methodstream;
     }
 
+    public byte[] getResponseAsBytes(int maxbytes)
+    {
+        byte[] contents = getResponseAsBytes();
+        if(contents.length > maxbytes) {
+            byte[] result = new byte[maxbytes];
+            System.arraycopy(contents, 0, result, 0, maxbytes);
+            contents = result;
+        }
+        return contents;
+    }
+
     public byte[] getResponseAsBytes()
     {
         if(closed)
-            throw new IllegalStateException("HTTPMethod: method is closed") ;
+            throw new IllegalStateException("HTTPMethod: method is closed");
         byte[] content = null;
-        try {
-            content = method.getResponseBody();
-        } catch (Exception e) {/*ignore*/}
-        return content;
-    }
-
-    public byte[] getResponseAsBytes(int maxsize)
-    {
-        byte[] content = getResponseAsBytes();
-        if(content != null && content.length > maxsize) {
-            byte[] limited = new byte[maxsize];
-            System.arraycopy(content, 0, limited, 0, maxsize);
-            content = limited;
-        }
+        if(response != null)
+            try {
+                content = EntityUtils.toByteArray(response.getEntity());
+            } catch (Exception e) {/*ignore*/}
         return content;
     }
 
     public String getResponseAsString(String charset)
     {
         if(closed)
-            throw new IllegalStateException("HTTPMethod: method is closed") ;
-        /*charset argument currently unused ?*/
+            throw new IllegalStateException("HTTPMethod: method is closed");
         String content = null;
-        try {
-            content = method.getResponseBodyAsString();
-        } catch (Exception e) {/*ignore*/}
+        if(response != null)
+            try {
+                Charset cset = Charset.forName(charset);
+                content = EntityUtils.toString(response.getEntity(), cset);
+            } catch (Exception e) {/*ignore*/}
+        close();//getting the response will disallow later stream
         return content;
     }
 
@@ -650,7 +508,7 @@ public class HTTPMethod
 
     public void setRequestHeader(String name, String value) throws HTTPException
     {
-        setRequestHeader(new Header(name, value));
+        setRequestHeader(new BasicHeader(name, value));
     }
 
     public void setRequestHeader(Header h) throws HTTPException
@@ -664,10 +522,10 @@ public class HTTPMethod
 
     public Header getRequestHeader(String name)
     {
-        if(this.method == null)
+        if(this.request == null)
             return null;
         try {
-            return (this.method.getRequestHeader(name));
+            return (this.request.getFirstHeader(name));
         } catch (Exception e) {
             return null;
         }
@@ -675,10 +533,10 @@ public class HTTPMethod
 
     public Header[] getRequestHeaders()
     {
-        if(this.method == null)
+        if(this.request == null)
             return null;
         try {
-            Header[] hs = this.method.getRequestHeaders();
+            Header[] hs = this.request.getAllHeaders();
             return hs;
         } catch (Exception e) {
             return null;
@@ -688,22 +546,7 @@ public class HTTPMethod
     public Header getResponseHeader(String name)
     {
         try {
-            return this.method.getResponseHeader(name);
-        } catch (Exception e) {
-            return null;
-        }
-    }
-
-    public Header getResponseHeaderdmh(String name)
-    {
-        try {
-
-            Header[] headers = getResponseHeaders();
-            for(Header h : headers) {
-                if(h.getName().equals(name))
-                    return h;
-            }
-            return null;
+            return this.response.getFirstHeader(name);
         } catch (Exception e) {
             return null;
         }
@@ -712,65 +555,26 @@ public class HTTPMethod
     public Header[] getResponseHeaders()
     {
         try {
-            Header[] hs = this.method.getResponseHeaders();
+            Header[] hs = this.response.getAllHeaders();
             return hs;
         } catch (Exception e) {
             return null;
         }
     }
 
-    public Header[] getResponseFooters()
+    public void setRequestContent(HttpEntity content)
     {
-        try {
-            Header[] hs = this.method.getResponseFooters();
-            return hs;
-        } catch (Exception e) {
-            return null;
-        }
+        this.content = content;
     }
 
-    public void setRequestParameter(String name, Object value)
-    {
-        params.put(name, value);
-    }
-
-    public Object getMethodParameter(String key)
-    {
-        if(this.method == null)
-            return null;
-        return this.method.getParams().getParameter(key);
-    }
-
-    public HttpMethodParams getMethodParameters()
-    {
-        if(this.method == null)
-            return null;
-        return this.method.getParams();
-    }
-
-    public Object getResponseParameter(String name)
-    {
-        if(this.method == null)
-            return null;
-        return this.method.getParams().getParameter(name);
-    }
-
-
-    public void setRequestContentAsString(String content) throws HTTPException
-    {
-        try {
-            this.content = new StringRequestEntity(content, "application/text", "UTF-8");
-        } catch (UnsupportedEncodingException ue) {
-        }
-    }
-
-    public void setMultipartRequest(Part[] parts) throws HTTPException
-    {
-        multiparts = new Part[parts.length];
-        for(int i = 0;i < parts.length;i++) {
-            multiparts[i] = parts[i];
-        }
-    }
+    //todo:
+    // public void setMultipartRequest(Part[] parts) throws HTTPException
+    //{
+    //    multiparts = new Part[parts.length];
+    //    for(int i = 0;i < parts.length;i++) {
+    //        multiparts[i] = parts[i];
+    //    }
+    //}
 
     public String getCharSet()
     {
@@ -779,59 +583,45 @@ public class HTTPMethod
 
     public String getName()
     {
-        return this.method == null ? null : this.method.getName();
+        return request == null ? null : request.getMethod();
     }
 
     public String getURL()
     {
-        return this.method == null ? null : this.method.getPath().toString();
+        return request == null ? null : request.getURI().toString();
     }
 
-    public String getEffectiveVersion()
+    public String getProtocolVersion()
     {
         String ver = null;
-        if(this.method != null) {
-            ver = this.method.getEffectiveVersion().toString();
+        if(request != null) {
+            ver = request.getProtocolVersion().toString();
         }
         return ver;
     }
 
-
-    public String getProtocolVersion()
-    {
-        return getEffectiveVersion();
-    }
-
     public String getSoTimeout()
     {
-        return this.method == null ? null : "" + this.method.getParams().getSoTimeout();
+        return request == null ? null : "" + request.getParams().getParameter(SO_TIMEOUT);
     }
-
-    public String getVirtualHost()
-    {
-        return this.method == null ? null : this.method.getParams().getVirtualHost();
-    }
-
-/*public HeaderIterator headerIterator() {
-    return new BasicHeaderIterator(getResponseHeaders(), null);
-}*/
 
     public String getStatusText()
     {
         return getStatusLine();
     }
 
-    public static Enumeration getAllowedMethods()
+    public static Set<String> getAllowedMethods()
     {
-        Enumeration e = new OptionsMethod().getAllowedMethods();
-        return e;
+        HttpResponse rs = new BasicHttpResponse(new ProtocolVersion("http", 1, 1), 0, "");
+        Set<String> set = new HttpOptions().getAllowedMethods(rs);
+        return set;
     }
 
     // Convenience methods to minimize changes elsewhere
 
     public void setFollowRedirects(boolean tf)
     {
-        return; //ignore ; always done
+        //ignore ; always done
     }
 
     public String getResponseCharSet()
@@ -852,15 +642,9 @@ public class HTTPMethod
         return this.localsession;
     }
 
-    public HttpMethodBase
-    getMethod()
-    {
-        return this.method;
-    }
-
     public boolean hasStreamOpen()
     {
-        return this.methodstream != null;
+        return methodstream != null;
     }
 
     public boolean isClosed()
@@ -878,13 +662,13 @@ public class HTTPMethod
      *
      * @return
      */
-    boolean sessionCompatible(String other)
+    protected boolean sessionCompatible(String other)
     {
         // Remove any trailing constraint
         String sessionurl = HTTPSession.getCanonicalURL(this.session.getURL());
         if(sessionurl == null) return true; // always compatible
         other = HTTPSession.getCanonicalURL(other);
-        return HTTPAuthStore.compatibleURL(sessionurl, other);
+        return compatibleURL(sessionurl, other);
     }
 
     /**
@@ -892,25 +676,133 @@ public class HTTPMethod
      * We do not know, necessarily,
      * which scheme(s) will be
      * encountered, so most testing
-     * occurs in HTTPAuthCreds.
+     * occurs in HTTPAuthProvider
+     *
+     * @return an authprovider encapsulting the request
      */
 
-    static synchronized private void
-    setAuthentication(HTTPSession session, HTTPMethod method)
+    synchronized protected AuthScope
+    setAuthentication()
+        throws HTTPException
     {
-        String url = session.getURL();
-        if(url == null) url = HTTPAuthStore.ANY_URL;
+        String surl = session.getURL();
+        // Creat a authscope from the url
+        AuthScope scope;
+        String[] principalp = new String[1];
+        if(surl == null)
+            scope = HTTPAuthScope.ANY;
+        else
+            scope = HTTPAuthScope.urlToScope(HTTPAuthPolicy.BASIC, surl, principalp);
 
         // Provide a credentials (provider) to enact the process
-        CredentialsProvider cp = new HTTPAuthProvider(url, method);
+        HTTPCredentialsCache hap = new HTTPCredentialsCache(this.session.getAuthStore(),
+            scope, principalp[0]);
 
-        // Since we not know where this will get called, do everywhere
-        session.sessionClient.getParams().setParameter(CredentialsProvider.PROVIDER, cp);
+        // New in httpclient 4.2; will need to change in 4.3
+        this.session.setAuthentication(hap);
 
-        // Pass down info to the socket factory
-        HttpConnectionManagerParams hcp = session.sessionClient.getHttpConnectionManager().getParams();
-        hcp.setParameter(CredentialsProvider.PROVIDER, cp);
+        return scope;
+    }
 
+    /**
+     * Define URI compatibility.
+     */
+    static protected boolean compatibleURL(String u1, String u2)
+    {
+        if(u1 == u2) return true;
+        if(u1 == null) return false;
+        if(u2 == null) return false;
+
+        if(u1.equals(u2)
+            || u1.startsWith(u2)
+            || u2.startsWith(u1)) return true;
+
+        // Check piece by piece
+        URI uu1;
+        URI uu2;
+        try {
+            uu1 = new URI(u1);
+        } catch (URISyntaxException use) {
+            return false;
+        }
+        try {
+            uu2 = new URI(u2);
+        } catch (URISyntaxException use) {
+            return false;
+        }
+
+        // For the following we want this truth table
+        // s1    s2    t/f
+        // ---------------
+        //  null  null  match
+        //  null !null  !match
+        // !null  null  !match
+        // !null !null  match = s1.equals(s2)
+        // The if statement condition is the negation of match, namely:
+        // if((s1 != null || s2 != null)
+        //    && s1 != null && s2 != null && !s1.equals(s2))
+        //    return false; // => !match
+
+        // protocols comparison
+        String s1 = uu1.getScheme();
+        String s2 = uu2.getScheme();
+        if((s1 != null || s2 != null)
+            && s1 != null && s2 != null && !s1.equals(s2))
+            return false;
+
+        // Match user info; differs from table above
+        // because we allow added user info to match null
+        //  null  null  match
+        //  null !null  match <-- different
+        // !null  null  !match
+        // !null !null  match = s1.equals(s2)
+        s1 = uu1.getUserInfo();
+        s2 = uu2.getUserInfo();
+        if(s1 != null
+            && (s2 == null || !s1.equals(s2)))
+            return false;
+
+        // hosts must be same
+        s1 = uu1.getHost();
+        s2 = uu2.getHost();
+        if((s1 != null || s2 != null)
+            && s1 != null && s2 != null && !s1.equals(s2))
+            return false;
+
+        // ports must be the same
+        if(uu1.getPort() != uu2.getPort())
+            return false;
+
+        // paths must have prefix relationship
+        // and missing is a prefix of anything
+        // s1    s2    t/f
+        // ---------------
+        //  null  null  match
+        //  null !null  !match
+        // !null  null  !match
+        // !null !null  match = (s1.startsWith(s2)||s2.startsWith(s1))
+        s1 = uu1.getRawPath();
+        s2 = uu2.getRawPath();
+        if((s1 != null || s2 != null)
+            && s1 != null && s2 != null && !(s1.startsWith(s2) || s2.startsWith(s1)))
+            return false;
+
+        return true;
+    }
+
+    //////////////////////////////////////////////////
+    // debug interface
+
+    public HttpMessage debugRequest()
+    {
+        return this.request;
+    }
+
+    public HttpResponse debugResponse()
+    {
+        return this.response;
     }
 
 }
+
+

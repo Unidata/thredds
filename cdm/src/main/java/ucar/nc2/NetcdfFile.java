@@ -748,7 +748,7 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable {
     return openInMemory(uri.toString(), contents);
   }
 
-  private static NetcdfFile open(ucar.unidata.io.RandomAccessFile raf, String location, ucar.nc2.util.CancelTask cancelTask,
+  public static NetcdfFile open(ucar.unidata.io.RandomAccessFile raf, String location, ucar.nc2.util.CancelTask cancelTask,
                                  Object iospMessage) throws IOException {
 
     IOServiceProvider spi = null;

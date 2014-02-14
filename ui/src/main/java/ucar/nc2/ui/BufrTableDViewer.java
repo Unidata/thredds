@@ -35,7 +35,7 @@ import ucar.nc2.ui.widget.*;
 import ucar.nc2.ui.widget.PopupMenu;
 import ucar.nc2.util.Misc;
 import ucar.util.prefs.PreferencesExt;
-import ucar.util.prefs.ui.BeanTableSorted;
+import ucar.util.prefs.ui.BeanTable;
 import ucar.nc2.iosp.bufr.*;
 import ucar.nc2.iosp.bufr.tables.BufrTables;
 import ucar.nc2.iosp.bufr.tables.TableD;
@@ -67,7 +67,7 @@ import java.io.*;
 public class BufrTableDViewer extends JPanel {
   private PreferencesExt prefs;
 
-  private BeanTableSorted ddsTable, variantTable;
+  private BeanTable ddsTable, variantTable;
   private JSplitPane split, split2;
 
   private TextHistoryPane compareTA, infoTA2;
@@ -80,7 +80,7 @@ public class BufrTableDViewer extends JPanel {
   public BufrTableDViewer(final PreferencesExt prefs, JPanel buttPanel) {
     this.prefs = prefs;
 
-    ddsTable = new BeanTableSorted(DdsBean.class, (PreferencesExt) prefs.node("DdsBean"), false);
+    ddsTable = new BeanTable(DdsBean.class, (PreferencesExt) prefs.node("DdsBean"), false);
     ddsTable.addListSelectionListener(new ListSelectionListener() {
       public void valueChanged(ListSelectionEvent e) {
         DdsBean csb = (DdsBean) ddsTable.getSelectedBean();
@@ -88,7 +88,7 @@ public class BufrTableDViewer extends JPanel {
       }
     });
 
-    variantTable = new BeanTableSorted(DdsBean.class, (PreferencesExt) prefs.node("VariantBean"), false);
+    variantTable = new BeanTable(DdsBean.class, (PreferencesExt) prefs.node("VariantBean"), false);
     variantTable.addListSelectionListener(new ListSelectionListener() {
       public void valueChanged(ListSelectionEvent e) {
         DdsBean csb = (DdsBean) variantTable.getSelectedBean();

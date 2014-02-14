@@ -34,26 +34,27 @@
 package ucar.nc2.ui;
 
 import ucar.nc2.Attribute;
-import ucar.nc2.ui.widget.PopupMenu;
-import ucar.util.prefs.PreferencesExt;
-import ucar.util.prefs.ui.BeanTableSorted;
-import ucar.unidata.io.RandomAccessFile;
 import ucar.nc2.NetcdfFile;
-import ucar.nc2.iosp.hdf5.H5iosp;
 import ucar.nc2.iosp.hdf5.H5header;
+import ucar.nc2.iosp.hdf5.H5iosp;
+import ucar.nc2.ui.widget.BAMutil;
+import ucar.nc2.ui.widget.IndependentWindow;
+import ucar.nc2.ui.widget.PopupMenu;
+import ucar.nc2.ui.widget.TextHistoryPane;
+import ucar.unidata.io.RandomAccessFile;
+import ucar.util.prefs.PreferencesExt;
+import ucar.util.prefs.ui.BeanTable;
 
 import javax.swing.*;
-import javax.swing.event.ListSelectionListener;
 import javax.swing.event.ListSelectionEvent;
-
-import ucar.nc2.ui.widget.TextHistoryPane;
-import ucar.nc2.ui.widget.IndependentWindow;
-import ucar.nc2.ui.widget.BAMutil;
-
+import javax.swing.event.ListSelectionListener;
 import java.awt.*;
 import java.awt.event.ActionEvent;
-import java.io.*;
-import java.util.*;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.PrintStream;
+import java.util.ArrayList;
+import java.util.Formatter;
 import java.util.List;
 
 /**
@@ -64,7 +65,7 @@ import java.util.List;
 public class Hdf5ObjectTable extends JPanel {
   private PreferencesExt prefs;
 
-  private ucar.util.prefs.ui.BeanTableSorted objectTable, messTable, attTable;
+  private ucar.util.prefs.ui.BeanTable objectTable, messTable, attTable;
   private JSplitPane splitH, split, split2;
 
   private TextHistoryPane dumpTA, infoTA;
@@ -74,7 +75,8 @@ public class Hdf5ObjectTable extends JPanel {
     this.prefs = prefs;
     PopupMenu varPopup;
 
-    objectTable = new BeanTableSorted(ObjectBean.class, (PreferencesExt) prefs.node("Hdf5Object"), false, "H5header.DataObject", "Level 2A data object header");
+    objectTable = new BeanTable(ObjectBean.class, (PreferencesExt) prefs.node("Hdf5Object"), false,
+            "H5header.DataObject", "Level 2A data object header", null);
     objectTable.addListSelectionListener(new ListSelectionListener() {
       public void valueChanged(ListSelectionEvent e) {
         messTable.setBeans(new ArrayList());
@@ -113,7 +115,8 @@ public class Hdf5ObjectTable extends JPanel {
     });
 
 
-    messTable = new BeanTableSorted(MessageBean.class, (PreferencesExt) prefs.node("MessBean"), false, "H5header.HeaderMessage", "Level 2A1 and 2A2 (part of Data Object)");
+    messTable = new BeanTable(MessageBean.class, (PreferencesExt) prefs.node("MessBean"), false,
+            "H5header.HeaderMessage", "Level 2A1 and 2A2 (part of Data Object)", null);
     messTable.addListSelectionListener(new ListSelectionListener() {
       public void valueChanged(ListSelectionEvent e) {
         MessageBean mb = (MessageBean) messTable.getSelectedBean();
@@ -137,7 +140,8 @@ public class Hdf5ObjectTable extends JPanel {
       }
     });
 
-    attTable = new BeanTableSorted(AttributeBean.class, (PreferencesExt) prefs.node("AttBean"), false, "H5header.HeaderAttribute", "Message Type 12/0xC : define an Atribute");
+    attTable = new BeanTable(AttributeBean.class, (PreferencesExt) prefs.node("AttBean"), false,
+            "H5header.HeaderAttribute", "Message Type 12/0xC : define an Atribute", null);
     attTable.addListSelectionListener(new ListSelectionListener() {
       public void valueChanged(ListSelectionEvent e) {
         AttributeBean mb = (AttributeBean) attTable.getSelectedBean();

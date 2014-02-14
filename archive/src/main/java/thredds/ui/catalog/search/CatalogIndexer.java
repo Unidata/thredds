@@ -40,7 +40,7 @@ import thredds.ui.catalog.CatalogChooser;
 import thredds.ui.catalog.CatalogTreeView;
 import ucar.nc2.ui.widget.*;
 import ucar.util.prefs.PreferencesExt;
-import ucar.util.prefs.ui.BeanTableSorted;
+import ucar.util.prefs.ui.BeanTable;
 
 import java.util.*;
 
@@ -65,7 +65,7 @@ public class CatalogIndexer extends JPanel {
   // ui
   private CatalogChooser catalogChooser;
   private CatalogTreeView tree;
-  private BeanTableSorted dsTable;
+  private BeanTable dsTable;
   private JSplitPane splitV;
   private ArrayList tables = new ArrayList();
   private IndependentWindow indexWindow = null;
@@ -117,7 +117,7 @@ public class CatalogIndexer extends JPanel {
     });
 
     // dataset bean table
-    dsTable = new BeanTableSorted(DatasetBean.class, (PreferencesExt) prefs.node("dsBeans"), false);
+    dsTable = new BeanTable(DatasetBean.class, (PreferencesExt) prefs.node("dsBeans"), false);
     dsTable.addListSelectionListener( new ListSelectionListener() {
       public void valueChanged(ListSelectionEvent e) {
         DatasetBean bean = (DatasetBean) dsTable.getSelectedBean();

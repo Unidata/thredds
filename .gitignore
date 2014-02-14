@@ -39,7 +39,10 @@ opendap/src/test/data/test.*.*
 # OS generated files 
 .DS_Store*
 ehthumbs.db
-Icon?
+# On Windows (and Mac?), it appears that the "Icon" line is followed by two blank lines.
+# DO NOT DELETE THEM. They are actually carraige returns ('\r'), and are part of the pattern.
+# See https://github.com/github/gitignore/pull/183
+Icon
 Thumbs.db
 *.swp
 *.*~

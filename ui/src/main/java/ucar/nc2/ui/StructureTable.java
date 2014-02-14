@@ -34,30 +34,34 @@
 package ucar.nc2.ui;
 
 import ucar.ma2.*;
-import ucar.nc2.*;
+import ucar.nc2.NCdumpW;
+import ucar.nc2.Structure;
+import ucar.nc2.Variable;
+import ucar.nc2.dt.PointObsDatatype;
+import ucar.nc2.dt.TrajectoryObsDatatype;
 import ucar.nc2.ft.PointFeature;
+import ucar.nc2.ui.table.ColumnWidthsResizer;
+import ucar.nc2.ui.table.HidableTableColumnModel;
+import ucar.nc2.ui.table.TableAligner;
+import ucar.nc2.ui.table.TableAppearanceAction;
 import ucar.nc2.ui.widget.*;
 import ucar.nc2.ui.widget.PopupMenu;
 import ucar.nc2.util.HashMapLRU;
-import ucar.nc2.dt.TrajectoryObsDatatype;
-import ucar.nc2.dt.PointObsDatatype;
+import ucar.nc2.util.Indent;
+import ucar.util.prefs.PreferencesExt;
 
+import javax.swing.*;
+import javax.swing.event.EventListenerList;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
+import javax.swing.table.AbstractTableModel;
+import javax.swing.table.DefaultTableCellRenderer;
+import javax.swing.table.TableColumnModel;
+import javax.swing.table.TableModel;
+import java.awt.*;
 import java.io.*;
 import java.util.*;
 import java.util.List;
-
-import java.awt.*;
-import java.awt.event.MouseEvent;
-
-import javax.swing.*;
-import javax.swing.event.ListSelectionListener;
-import javax.swing.event.EventListenerList;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.table.*;
-
-import ucar.nc2.util.Indent;
-import ucar.util.prefs.PreferencesExt;
-import ucar.util.prefs.ui.TableSorter;
 
 /**
  * This puts the data values of a 1D Structure or Sequence into a JTable.
@@ -210,7 +214,26 @@ public class StructureTable extends JPanel {
   }
 
   private void initTable(StructureTableModel m) {
-    jtable = setModel(m);
+    TableColumnModel tcm = new HidableTableColumnModel(m);
+    jtable = new JTable(m, tcm);
+    jtable.setAutoCreateRowSorter(true);
+
+    // Fixes this bug: http://stackoverflow.com/questions/6601994/jtable-boolean-cell-type-background
+    ((JComponent) jtable.getDefaultRenderer(Boolean.class)).setOpaque(true);
+
+    // Set the preferred column widths so that they're big enough to display all data without truncation.
+    ColumnWidthsResizer resizer = new ColumnWidthsResizer(jtable);
+    jtable.getModel().addTableModelListener(resizer);
+    jtable.getColumnModel().addColumnModelListener(resizer);
+
+    // Left-align every cell, including header cells.
+    TableAligner aligner = new TableAligner(jtable, SwingConstants.LEADING);
+    jtable.getColumnModel().addColumnModelListener(aligner);
+
+    // Don't resize the columns to fit the available space. We do this because there may be a LOT of columns, and
+    // auto-resize would cause them to be squished together to the point of uselessness. For an example, see
+    // Q:/cdmUnitTest/ft/stationProfile/noaa-cap/XmadisXdataXLDADXprofilerXnetCDFX20100501_0200
+    jtable.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
 
     ListSelectionModel rowSM = jtable.getSelectionModel();
     rowSM.addListSelectionListener(new ListSelectionListener() {
@@ -226,8 +249,6 @@ public class StructureTable extends JPanel {
       jtable.getColumnModel().getColumn(0).setCellRenderer(new DateRenderer());
       jtable.getColumnModel().getColumn(1).setCellRenderer(new DateRenderer());
     }
-    // jtable.setDefaultRenderer(Date.class, new DateRenderer()); // LOOK this doesnt work!
-    jtable.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
 
     // reset popup
     popup = null;
@@ -254,16 +275,21 @@ public class StructureTable extends JPanel {
       addActionToPopupMenu("Data Table for " + s.getShortName(), new SubtableAbstractAction(s));
     }
 
-    //JScrollPane sp =  new JScrollPane(jtable, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
     removeAll();
-    add(new JScrollPane(jtable), BorderLayout.CENTER);
+
+    // Create a button that will popup a menu containing options to configure the appearance of the table.
+    JButton cornerButton = new JButton(new TableAppearanceAction(jtable));
+    cornerButton.setHideActionText(true);
+    cornerButton.setContentAreaFilled(false);
+
+    // Install the button in the upper-right corner of the table's scroll pane.
+    JScrollPane scrollPane = new JScrollPane(jtable);
+    scrollPane.setCorner(JScrollPane.UPPER_RIGHT_CORNER, cornerButton);
+    scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
+
+    add(scrollPane, BorderLayout.CENTER);
 
     revalidate();
-
-    /* see "How to use Tables"
-    sortedModel = new TableSorter(gr);
-    jtable.setModel( sortedModel);
-    sortedModel.setTableHeader(jtable.getTableHeader()); */
   }
 
   // display subtables
@@ -365,12 +391,12 @@ public class StructureTable extends JPanel {
   }
 
   private StructureData getSelectedStructureData() {
-    int viewIdx = jtable.getSelectedRow();
-    if (viewIdx < 0) return null;
-    // int modelIdx = viewIdx; // sortedModel.modelIndex( viewIdx); LOOK sort
-    int modelIdx = sortedModel.modelIndex( viewIdx);
+    int viewRowIdx = jtable.getSelectedRow();
+    if (viewRowIdx < 0) return null;
+    int modelRowIndex = jtable.convertRowIndexToModel(viewRowIdx);
+
     try {
-      return dataModel.getStructureData(modelIdx);
+      return dataModel.getStructureData(modelRowIndex);
     } catch (InvalidRangeException e) {
       e.printStackTrace();
     } catch (IOException e) {
@@ -381,11 +407,12 @@ public class StructureTable extends JPanel {
   }
 
   public Object getSelectedRow() {
-    int viewIdx = jtable.getSelectedRow();
-    if (viewIdx < 0) return null;
-    int modelIdx = viewIdx; // sortedModel.modelIndex( viewIdx); LOOK sort
+    int viewRowIdx = jtable.getSelectedRow();
+    if (viewRowIdx < 0) return null;
+    int modelRowIndex = jtable.convertRowIndexToModel(viewRowIdx);
+
     try {
-      return dataModel.getRow(modelIdx);
+      return dataModel.getRow(modelRowIndex);
     } catch (InvalidRangeException e) {
       JOptionPane.showMessageDialog(this, "ERROR: " + e.getMessage());
       e.printStackTrace();
@@ -878,59 +905,6 @@ public class StructureTable extends JPanel {
     }
   } */
 
-  /* private class SortedHeaderRenderer implements TableCellRenderer {
-   private int modelIdx;
-   private JPanel compPanel;
-   private JLabel headerLabel;
-   private boolean hasSortIndicator = false;
-   private boolean reverse = false;
-
-   SortedHeaderRenderer(int modelIdx, String header, String tooltip) {
-     this.modelIdx = modelIdx;
-
-     // java.beans.PropertyDescriptor pd = model.getProperty(modelIdx);
-     //headerLabel = new JLabel(pd.getDisplayName());
-
-     headerLabel = new JLabel(header);
-     compPanel = new JPanel(new BorderLayout());
-     compPanel.setBorder(new BevelBorder(BevelBorder.RAISED));
-     compPanel.add( headerLabel, BorderLayout.CENTER);
-
-     if (null != tooltip)
-       compPanel.setToolTipText(tooltip);
-     ToolTipManager.sharedInstance().registerComponent(compPanel);
-   }
-
-   public Component getTableCellRendererComponent(JTable table, Object value,
-       boolean isSelected, boolean hasFocus, int row, int column) {
-     // System.out.println("getTableCellRendererComponent= "+headerLabel.getText());
-     return compPanel;
-   }
-
-   void setSortCol( int sortCol, boolean reverse) {
-     //System.out.println("setSortCol on "+modelCol+" "+sortCol+" "+reverse);
-
-     if (sortCol == modelIdx) {
-
-       if (!hasSortIndicator)
-         compPanel.add(reverse? upLabel : downLabel, BorderLayout.EAST);
-       else if (reverse != this.reverse) {
-         compPanel.remove(1);
-         compPanel.add(reverse? upLabel : downLabel, BorderLayout.EAST);
-       }
-
-       this.reverse = reverse;
-       hasSortIndicator = true;
-
-       //System.out.println("setSortCol SET on "+modelCol+" "+sortCol+" "+reverse);
-     } else if (hasSortIndicator) {
-       compPanel.remove(1);
-       hasSortIndicator = false;
-       //System.out.println("setSortCol SET off "+modelCol+" "+sortCol+" "+reverse);
-     }
-   }
- } */
-
   /**
    * Renderer for Date type
    */
@@ -963,55 +937,4 @@ public class StructureTable extends JPanel {
       }
     }
   }
-
-  private ucar.util.prefs.ui.TableSorter sortedModel;
-
-  private JTable setModel(TableModel m) {
-    sortedModel = new TableSorter(m);
-    MyJTable jtable = new MyJTable(sortedModel);
-    sortedModel.setTableHeader(jtable.getTableHeader());
-    return jtable;
-  }
-
-  protected int modelIndex(int viewIndex) {
-    return sortedModel.modelIndex(viewIndex);
-  }
-
-  protected int viewIndex(int rowIndex) {
-    return sortedModel.viewIndex(rowIndex);
-  }
-
-  //Implement table header tool tips.
-
-  static private class MyJTable extends JTable {
-
-    MyJTable(TableModel m) {
-      super(m);
-    }
-
-    protected JTableHeader createDefaultTableHeader() {
-      return new MyJTableHeader(columnModel, getModel());
-    }
-
-    class MyJTableHeader extends javax.swing.table.JTableHeader {
-      TableModel tm;
-
-      MyJTableHeader(TableColumnModel tcm, TableModel tm) {
-        super(tcm);
-        this.tm = tm;
-      }
-
-      public String getToolTipText(MouseEvent e) {
-        java.awt.Point p = e.getPoint();
-        int index = columnModel.getColumnIndexAtX(p.x);
-        int realIndex = columnModel.getColumn(index).getModelIndex();
-        if (realIndex >= 0)
-          return tm.getColumnName(realIndex);
-        else
-          return null;
-      }
-    }
-
-  }
-
 }

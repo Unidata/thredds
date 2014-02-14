@@ -33,21 +33,24 @@
 
 package ucar.util.prefs.ui;
 
-import java.util.List;
-import java.util.prefs.Preferences;
-
-import com.jgoodies.forms.layout.*;
-import com.jgoodies.forms.layout.FormLayout;
 import com.jgoodies.forms.builder.PanelBuilder;
+import com.jgoodies.forms.layout.CellConstraints;
+import com.jgoodies.forms.layout.FormLayout;
 import ucar.util.prefs.PersistenceManager;
 import ucar.util.prefs.PreferencesExt;
 
-import java.awt.*;
-import java.awt.event.*;
-import java.beans.*;
-import java.util.*;
 import javax.swing.*;
 import javax.swing.event.EventListenerList;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
+import java.util.*;
+import java.util.List;
+import java.util.prefs.Preferences;
 
 /**
  *  Create a User Preferences Panel or Dialog.
@@ -304,9 +307,10 @@ public class PrefPanel extends JPanel {
   }
 
 
-  public Field.BeanTable addBeanTableField(String fldName, String label, java.util.ArrayList beans, Class beanClass,
-               int col, int row, String constraint) {
-    Field.BeanTable fld = new Field.BeanTable(fldName, label, beans, beanClass, (PreferencesExt) prefs, storeData);
+  public Field.BeanTableField addBeanTableField(String fldName, String label, java.util.ArrayList beans,
+                                                Class beanClass, int col, int row, String constraint) {
+    Field.BeanTableField fld = new Field.BeanTableField(
+            fldName, label, beans, beanClass, (PreferencesExt) prefs, storeData);
     addField( fld, col, row, constraint);
     return fld;
   }

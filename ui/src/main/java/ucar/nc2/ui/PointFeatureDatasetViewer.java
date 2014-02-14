@@ -51,7 +51,7 @@ import ucar.unidata.geoloc.LatLonPointImpl;
 import ucar.unidata.geoloc.LatLonRect;
 import ucar.unidata.geoloc.Station;
 import ucar.util.prefs.PreferencesExt;
-import ucar.util.prefs.ui.BeanTableSorted;
+import ucar.util.prefs.ui.BeanTable;
 
 import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;
@@ -82,7 +82,7 @@ public class PointFeatureDatasetViewer extends JPanel {
   private FeatureCollection selectedCollection;
   private FeatureType selectedType;
 
-  private BeanTableSorted fcTable, profileTable, stnTable, stnProfileTable;
+  private BeanTable fcTable, profileTable, stnTable, stnProfileTable;
   private JPanel changingPane = new JPanel(new BorderLayout());
   private StationRegionDateChooser stationMap;
   private StructureTable obsTable;
@@ -194,7 +194,7 @@ public class PointFeatureDatasetViewer extends JPanel {
 
 
     // feature collection table
-    fcTable = new BeanTableSorted(FeatureCollectionBean.class, (PreferencesExt) prefs.node("FeatureCollectionBean"), false);
+    fcTable = new BeanTable(FeatureCollectionBean.class, (PreferencesExt) prefs.node("FeatureCollectionBean"), false);
     fcTable.addListSelectionListener(new ListSelectionListener() {
       public void valueChanged(ListSelectionEvent e) {
         FeatureCollectionBean fcb = (FeatureCollectionBean) fcTable.getSelectedBean();
@@ -208,7 +208,7 @@ public class PointFeatureDatasetViewer extends JPanel {
     });
 
     // profile table
-    profileTable = new BeanTableSorted(ProfileFeatureBean.class, (PreferencesExt) prefs.node("ProfileFeatureBean"), false);
+    profileTable = new BeanTable(ProfileFeatureBean.class, (PreferencesExt) prefs.node("ProfileFeatureBean"), false);
     profileTable.addListSelectionListener(new ListSelectionListener() {
       public void valueChanged(ListSelectionEvent e) {
         ProfileFeatureBean sb = (ProfileFeatureBean) profileTable.getSelectedBean();
@@ -222,7 +222,7 @@ public class PointFeatureDatasetViewer extends JPanel {
     });
 
     // station table
-    stnTable = new BeanTableSorted(StationBean.class, (PreferencesExt) prefs.node("StationBeans"), false);
+    stnTable = new BeanTable(StationBean.class, (PreferencesExt) prefs.node("StationBeans"), false);
     stnTable.addListSelectionListener(new ListSelectionListener() {
       public void valueChanged(ListSelectionEvent e) {
         StationBean sb = (StationBean) stnTable.getSelectedBean();
@@ -237,7 +237,7 @@ public class PointFeatureDatasetViewer extends JPanel {
     });
 
     // station profile table
-    stnProfileTable = new BeanTableSorted(StnProfileFeatureBean.class, (PreferencesExt) prefs.node("StnProfileFeatureBean"), false);
+    stnProfileTable = new BeanTable(StnProfileFeatureBean.class, (PreferencesExt) prefs.node("StnProfileFeatureBean"), false);
     stnProfileTable.addListSelectionListener(new ListSelectionListener() {
       public void valueChanged(ListSelectionEvent e) {
         StnProfileFeatureBean sb = (StnProfileFeatureBean) stnProfileTable.getSelectedBean();
@@ -825,6 +825,7 @@ public class PointFeatureDatasetViewer extends JPanel {
     public TrajectoryFeatureBean(TrajectoryFeature pfc) {
       this.pfc = pfc;
       try {
+        pfc.resetIteration();
         if (pfc.hasNext()) {
           pf = pfc.next();
         }
@@ -960,6 +961,7 @@ public class PointFeatureDatasetViewer extends JPanel {
       this.pfc = pfc;
       try {
         pfc.calcBounds();
+        pfc.resetIteration();
         if (pfc.hasNext())
           pf = pfc.next();
       } catch (IOException ioe) {

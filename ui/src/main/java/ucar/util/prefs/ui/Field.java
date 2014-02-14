@@ -33,18 +33,25 @@
 
 package ucar.util.prefs.ui;
 
-import java.util.prefs.*;
-
 import ucar.util.prefs.PersistenceManager;
 import ucar.util.prefs.PreferencesExt;
 
-import java.awt.event.*;
-import java.beans.*;
-import java.text.*;
-import java.util.*;
-
 import javax.swing.*;
-import javax.swing.text.*;
+import javax.swing.text.JTextComponent;
+import javax.swing.text.NumberFormatter;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
+import java.text.DecimalFormat;
+import java.text.Format;
+import java.text.NumberFormat;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.prefs.PreferenceChangeEvent;
+import java.util.prefs.PreferenceChangeListener;
 
 /**
  *  Data input fields, with an optional backing store.
@@ -1280,12 +1287,12 @@ public abstract class Field {
 
   /////////////////////////////////////////////////////////////////////////////////////////
   /**
-   * This uses a BeanTableSorted to display a list of beans.
+   * This uses a BeanTable to display a list of beans.
    * <p>
    * The actual stored object type is an ArrayList of Objects.
    */
-  static public class BeanTable extends Field {
-    protected BeanTableSorted table;
+  static public class BeanTableField extends Field {
+    protected BeanTable table;
 
     /** Constructor.
      *  @param fldName name of the field, must be unique within the store.
@@ -1295,10 +1302,10 @@ public abstract class Field {
      *  @param storeData store/fetch data from here, may be null.
      *  @see PrefPanel#addTextComboField
      */
-    public BeanTable(String fldName, String label, java.util.ArrayList defBeans, Class beanClass,
+    public BeanTableField(String fldName, String label, java.util.ArrayList defBeans, Class beanClass,
                      PreferencesExt prefs, PersistenceManager storeData) {
       super( fldName, label, storeData);
-      table = new BeanTableSorted(beanClass, prefs, true);
+      table = new BeanTable(beanClass, prefs, true);
       if (storeData != null)
         setEditValue( getStoreValue( defBeans));
 

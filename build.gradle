@@ -25,13 +25,10 @@ subprojects {
 
   buildscript {
       repositories {
-          maven {
-              name 'Gradle Shadow'
-              url 'http://dl.bintray.com/content/johnrengelman/gradle-plugins'
-          }
+          jcenter()
       }
       dependencies {
-          classpath 'org.gradle.plugins:shadow:0.7.4'
+          classpath 'com.github.jengelman.gradle.plugins:shadow:0.8'
       }
   }
 

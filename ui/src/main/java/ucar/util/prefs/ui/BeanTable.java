@@ -33,12 +33,16 @@
 
 package ucar.util.prefs.ui;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import ucar.nc2.ui.table.HidableTableColumnModel;
+import ucar.nc2.ui.table.TableAligner;
+import ucar.nc2.ui.table.TableAppearanceAction;
 import ucar.nc2.ui.widget.MultilineTooltip;
 import ucar.util.prefs.PreferencesExt;
 import ucar.util.prefs.XMLStore;
 
 import javax.swing.*;
-import javax.swing.border.BevelBorder;
 import javax.swing.event.EventListenerList;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
@@ -80,6 +84,8 @@ import java.util.List;
  */
 
 public class BeanTable extends JPanel {
+  private static final Logger logger = LoggerFactory.getLogger(BeanTable.class);
+
   protected Class beanClass;
   protected Object innerbean;
   protected PreferencesExt store;
@@ -99,6 +105,8 @@ public class BeanTable extends JPanel {
   public BeanTable(Class bc, PreferencesExt pstore, String header, String tooltip, BeanInfo info) {
     this.beanClass = bc;
     this.store = pstore;
+
+    beans = (store != null) ? (ArrayList<Object>) store.getBean("beanList", new ArrayList()) : new ArrayList<Object>();
     model = new TableBeanModelInfo(info);
     init(header, tooltip);
   }
@@ -167,30 +175,42 @@ public class BeanTable extends JPanel {
 
   private JLabel headerLabel = null;
   private void init(String header, String tooltip) {
-    jtable = new JTable(model);
+    TableColumnModel tcm = new HidableTableColumnModel(model);
+    jtable = new JTable(model, tcm);
+    jtable.setAutoCreateRowSorter(true);
+
     //jtable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION); default = multiple
-    jtable.setAutoResizeMode(JTable.AUTO_RESIZE_NEXT_COLUMN);
     jtable.setDefaultRenderer(java.util.Date.class, new DateRenderer());
 
     ToolTipManager.sharedInstance().registerComponent(jtable);
 
     restoreState();
 
-    //  set the header renderers
-    TableColumnModel tcm = jtable.getColumnModel();
-    for (int i = 0; i < jtable.getColumnCount(); i++) {
-      TableColumn tc = tcm.getColumn(i);
-      int model_idx = tc.getModelIndex();
-      tc.setHeaderRenderer(new HeaderRenderer(model_idx));
-    }
-
     // editor/renderers
     jtable.setDefaultEditor(String.class, new DefaultCellEditor(new JTextField()));
     jtable.setDefaultEditor(Boolean.class, new DefaultCellEditor(new JCheckBox()));
 
+
+    // Fixes this bug: http://stackoverflow.com/questions/6601994/jtable-boolean-cell-type-background
+    ((JComponent) jtable.getDefaultRenderer(Boolean.class)).setOpaque(true);
+
+    // Left-align every cell, including header cells.
+    TableAligner aligner = new TableAligner(jtable, SwingConstants.LEADING);
+    jtable.getColumnModel().addColumnModelListener(aligner);
+
+    // Create a button that will popup a menu containing options to configure the appearance of the table.
+    JButton cornerButton = new JButton(new TableAppearanceAction(jtable));
+    cornerButton.setHideActionText(true);
+    cornerButton.setContentAreaFilled(false);
+
+    // Install the button in the upper-right corner of the table's scroll pane.
+    scrollPane = new JScrollPane(jtable);
+    scrollPane.setCorner(JScrollPane.UPPER_RIGHT_CORNER, cornerButton);
+    scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
+
+
     // UI
     setLayout(new BorderLayout());
-    scrollPane = new JScrollPane(jtable);
     add(scrollPane, BorderLayout.CENTER);
 
     if (header != null) {
@@ -262,25 +282,15 @@ public class BeanTable extends JPanel {
       ((javax.swing.event.ListSelectionListener) listeners[i + 1]).valueChanged(event);
   }
 
-  // so it can be ovverriden in BeanTableSorted
-  protected int modelIndex(int viewIndex) {
-    return viewIndex;
-  }
-
-  protected int viewIndex(int rowIndex) {
-    return rowIndex;
-  }
-
   /**
    * Get the currently selected bean, or null if none selected.
    *
    * @return the currently selected bean, or null if none selected
    */
   public Object getSelectedBean() {
-    int r = jtable.getSelectedRow();
-    if ((r < 0) || (r >= beans.size())) return null;
-    r = modelIndex(r);
-    return (r < 0) || (r >= beans.size()) ? null : beans.get(r);
+    int viewRowIndex = jtable.getSelectedRow();
+    int modelRowIndex = jtable.convertRowIndexToModel(viewRowIndex);
+    return (modelRowIndex < 0) || (modelRowIndex >= beans.size()) ? null : beans.get(modelRowIndex);
   }
 
   /**
@@ -291,11 +301,11 @@ public class BeanTable extends JPanel {
    */
   public List getSelectedBeans() {
     ArrayList<Object> list = new ArrayList<Object>();
-    int[] r = jtable.getSelectedRows();
-    for (int aR : r) {
-      int mr = modelIndex(aR);
-      list.add(beans.get(mr));
-      if (debugSelected) System.out.println(" bean selected= " + mr + " " + beans.get(mr));
+    int[] viewRowIndices = jtable.getSelectedRows();
+    for (int viewRowIndex : viewRowIndices) {
+      int modelRowIndex = jtable.convertRowIndexToModel(viewRowIndex);
+      list.add(beans.get(modelRowIndex));
+      if (debugSelected) System.out.println(" bean selected= " + modelRowIndex + " " + beans.get(modelRowIndex));
     }
     return list;
   }
@@ -309,12 +319,13 @@ public class BeanTable extends JPanel {
    */
   public ArrayList<Object> getSelectedCells() {
     ArrayList<Object> list = new ArrayList<Object>();
-    int[] r = jtable.getSelectedRows();
-    int[] c = jtable.getSelectedColumns();
-    for (int i = 0; i < r.length; i++)
-      for (int j = 0; i < c.length; j++) {
-        int mr = modelIndex(r[i]);
-        list.add(model.getValueAt(mr, c[j]));
+    int[] viewRowIndices = jtable.getSelectedRows();
+    int[] viewColumnIndices = jtable.getSelectedColumns();
+    for (int i = 0; i < viewRowIndices.length; i++)
+      for (int j = 0; i < viewColumnIndices.length; j++) {
+        int modelRowIndex = jtable.convertRowIndexToModel(viewRowIndices[i]);
+        int modelColumnIndex = jtable.convertColumnIndexToModel(viewColumnIndices[j]);
+        list.add(model.getValueAt(modelRowIndex, modelColumnIndex));
       }
 
     return list;
@@ -325,21 +336,19 @@ public class BeanTable extends JPanel {
    * Use this for multiple row selection, when columnSelection is on
    */
   public void clearSelectedCells() {
-    int[] r = jtable.getSelectedRows();
-    int[] c = jtable.getSelectedColumns();
+    int[] viewRowIndices = jtable.getSelectedRows();
+    int[] viewColumnIndices = jtable.getSelectedColumns();
     TableColumnModel tcm = jtable.getColumnModel();
 
-    for (int aC : c) {
-      TableColumn tc = tcm.getColumn(aC);
-      int colModelIdx = tc.getModelIndex();
+    for (int viewColumnIndex : viewColumnIndices) {
+      TableColumn tc = tcm.getColumn(viewColumnIndex);
+      int modelColumnIndex = tc.getModelIndex();
 
-      Class colClass = jtable.getColumnClass(aC);
-      //System.out.println("colClass "+colClass.getName());
+      Class colClass = jtable.getColumnClass(viewColumnIndex);
       Object zeroValue = model.zeroValue(colClass);
-      for (int aR : r) {
-        int mr = modelIndex(aR);
-        //System.out.println("clear "+r[i]+" "+colModelIdx+" "+zeroValue);
-        model.setValueAt(zeroValue, mr, colModelIdx);
+      for (int viewRowIndex : viewRowIndices) {
+        int modelRowIndex = jtable.convertRowIndexToModel(viewRowIndex);
+        model.setValueAt(zeroValue, modelRowIndex, modelColumnIndex);
       }
     }
   }
@@ -397,11 +406,12 @@ public class BeanTable extends JPanel {
    */
   public void setSelectedBean(Object bean) {
     if (bean == null) return;
-    int row = beans.indexOf(bean);
-    int vr = viewIndex(row);
-    if (row >= 0)
-      jtable.getSelectionModel().setSelectionInterval(vr, vr);
-    makeRowVisible(row);
+    int modelRowIndex = beans.indexOf(bean);
+    int viewRowIndex = jtable.convertRowIndexToView(modelRowIndex);
+
+    if (viewRowIndex >= 0)
+      jtable.getSelectionModel().setSelectionInterval(viewRowIndex, viewRowIndex);
+    makeRowVisible(viewRowIndex);
   }
 
   public void clearSelection() {
@@ -417,17 +427,17 @@ public class BeanTable extends JPanel {
   public void setSelectedBeans(List want) {
     jtable.getSelectionModel().clearSelection();
     for (Object bean : want) {
-      int row = beans.indexOf(bean);
-      if (row >= 0) {
-        int vr = viewIndex(row);
-        jtable.getSelectionModel().addSelectionInterval(vr, vr);
+      int modelRowIndex = beans.indexOf(bean);
+      int viewRowIndex = jtable.convertRowIndexToView(modelRowIndex);
+
+      if (viewRowIndex >= 0) {
+        jtable.getSelectionModel().addSelectionInterval(viewRowIndex, viewRowIndex);
       }
     }
   }
 
-  private void makeRowVisible(int modelRow) {
-    int row = viewIndex(modelRow);
-    Rectangle visibleRect = jtable.getCellRect(row, 0, true);
+  private void makeRowVisible(int viewRowIndex) {
+    Rectangle visibleRect = jtable.getCellRect(viewRowIndex, 0, true);
     if (debugSelected) System.out.println("----ensureRowIsVisible = " + visibleRect);
     if (visibleRect != null) {
       visibleRect.x = scrollPane.getViewport().getViewPosition().x;
@@ -465,18 +475,20 @@ public class BeanTable extends JPanel {
       e.printStackTrace();
     }
 
-    // save column widths and order
-    ArrayList<PropertyCol> pcols = new ArrayList<PropertyCol>();
-    TableColumnModel tcm = jtable.getColumnModel();
-    for (int i = 0; i < tcm.getColumnCount(); i++) {
-      TableColumn tc = tcm.getColumn(i);
-      PropertyCol pcol = new PropertyCol();
-      pcol.setName(model.getColumnName(tc.getModelIndex()));
-      pcol.setWidth(tc.getWidth());
-      pcol.setWidth(tc.getWidth());
-      pcols.add(pcol);
+    List<PropertyCol> propCols = new ArrayList<PropertyCol>();
+    HidableTableColumnModel tableColumnModel = (HidableTableColumnModel) jtable.getColumnModel();
+    Enumeration<TableColumn> columns = tableColumnModel.getColumns(false);
+
+    while (columns.hasMoreElements()) {
+      PropertyCol propCol = new PropertyCol();
+      TableColumn column = columns.nextElement();
+      propCol.setName(column.getIdentifier().toString());
+      propCol.setWidth(column.getWidth());
+      propCol.setVisible(tableColumnModel.isColumnVisible(column));
+      propCols.add(propCol);
     }
-    store.putBeanCollection("propertyCol", pcols);
+
+    store.putBeanCollection("propertyCol", propCols);
   }
 
     /**
@@ -492,61 +504,48 @@ public class BeanTable extends JPanel {
         }
     }
 
-  //public void repaint() {
-  //   jtable.repaint();
-  //}
-
   /**
    * Restore state from PreferencesExt
    */
   protected void restoreState() {
-    if (store == null)
+    if (store == null) {
       return;
-
-    // restore column widths and order
-    // tricky if cols have been added or deleted
-
-    // process in the stored order
-    ArrayList pcols = (ArrayList) store.getBean("propertyCol", new ArrayList());
-    TableColumnModel tcm = jtable.getColumnModel();
-    int count = 0;
-    for (Object pcol1 : pcols) {
-      PropertyCol pcol = (PropertyCol) pcol1;
-
-      int idx = model.getPropertyIndex(pcol.getName());
-      if (idx >= 0) {  // still exists
-        if (debugStore) System.out.println(count + "  has " + pcol.getName());
-        TableColumn tc = tcm.getColumn(count++);
-        tc.setModelIndex(idx);
-        tc.setPreferredWidth(pcol.getWidth());
-        tc.setHeaderValue(pcol.getName());
-        tc.setIdentifier(pcol.getName());
-
-      } else { //  property was deleted
-        if (debugStore) System.out.println(count + "  col deleted " + pcol.getName());
-      }
     }
 
-    // see if there are any new properties that have been added
-    if (model.getColumnCount() > count) {
-      for (int col = 0; col < model.getColumnCount(); col++) {
-        if (!model.wasUsed(col)) {
-          TableColumn tc = tcm.getColumn(count++);
-          tc.setModelIndex(col);
-          tc.setHeaderValue(model.getColumnName(col));
-          tc.setIdentifier(model.getColumnName(col));
-          if (debugStore) System.out.println(count + "  added " + model.getColumnName(col));
+    ArrayList propColObjs = (ArrayList) store.getBean("propertyCol", new ArrayList());
+    HidableTableColumnModel tableColumnModel = (HidableTableColumnModel) jtable.getColumnModel();
+    int newViewIndex = 0;
+
+    for (Object propColObj : propColObjs) {
+      PropertyCol propCol = (PropertyCol) propColObj;
+      try {
+        int currentViewIndex = tableColumnModel.getColumnIndex(propCol.getName());  // May throw IAE.
+
+        TableColumn column = tableColumnModel.getColumn(currentViewIndex);
+        column.setPreferredWidth(propCol.getWidth());
+
+        tableColumnModel.moveColumn(currentViewIndex, newViewIndex);
+        assert tableColumnModel.getColumn(newViewIndex) == column : "tableColumn wasn't successfully moved.";
+
+        // We must do this last, since moveColumn() only works on visible columns.
+        tableColumnModel.setColumnVisible(column, propCol.isVisible());
+        if (propCol.isVisible()) {
+          ++newViewIndex;  // Don't increment for hidden columns.
         }
+      } catch (IllegalArgumentException e) {
+        logger.debug(String.format(
+                "Column named \"%s\" was present in the preferences file but not the dataset.", propCol.getName()), e);
       }
     }
   }
 
   /**
-   * Should be private. This is to store the width for each table column.
+   * Should be private. This is to store the width and visibility for each table column.
    */
   static public class PropertyCol {
     private String name;
     private int width;
+    private boolean visible = true;
 
     public PropertyCol() {
     }
@@ -565,6 +564,14 @@ public class BeanTable extends JPanel {
 
     public void setWidth(int width) {
       this.width = width;
+    }
+
+    public boolean isVisible() {
+      return visible;
+    }
+
+    public void setVisible(boolean visible) {
+      this.visible = visible;
     }
   }
 
@@ -604,7 +611,6 @@ public class BeanTable extends JPanel {
    */
   protected class TableBeanModel extends AbstractTableModel {
     protected List<PropertyDescriptor> properties = new ArrayList<PropertyDescriptor>();
-    protected boolean[] used;
 
     protected TableBeanModel() {
 
@@ -700,8 +706,6 @@ public class BeanTable extends JPanel {
           System.out.println("  " + displayName + " " + name + " " + type.getName() + " " + rm + " " + wm + " " + pd.isPreferred());
         }
       }
-
-      used = new boolean[properties.size()];
     }
 
     public void setProperty(String propertyName, String displayName, String toolTipText) {
@@ -755,7 +759,7 @@ public class BeanTable extends JPanel {
       return value;
     }
 
-    // for BeanTableSorted
+    // for BeanTable
     public Object getValueAt(Object bean, int col) {
       Object value = "N/A";
       try {
@@ -772,18 +776,7 @@ public class BeanTable extends JPanel {
 
     public Class getColumnClass(int col) {
       Class c = wrapPrimitives(properties.get(col).getPropertyType());
-      //System.out.println( " "+col+" colClass = "+c);
-      //checkColumnRenderer( col);
       return c;
-    }
-
-    private void checkColumnRenderer(int col) {
-      TableColumnModel colModel = jtable.getColumnModel();
-      TableColumn tabCol = colModel.getColumn(col);
-      TableCellEditor editor = tabCol.getCellEditor();
-      TableCellRenderer render = tabCol.getCellRenderer();
-      System.out.println(col + "  editor = " + ((editor == null) ? "null" : editor.getClass().getName()));
-      System.out.println(col + "  render = " + ((render == null) ? "null" : render.getClass().getName()));
     }
 
     public boolean isCellEditable(int row, int col) {
@@ -832,19 +825,6 @@ public class BeanTable extends JPanel {
       else return null;
     }
 
-
-    // return model index with this property name, return -1 if not exists
-    protected int getPropertyIndex(String wantName) {
-      for (int i = 0; i < properties.size(); i++) {
-        String name = properties.get(i).getName();
-        if (name.equals(wantName)) {
-          used[i] = true;
-          return i;
-        }
-      }
-      return -1;
-    }
-
     // return PropertyDescriptor with this property name, return null if not exists
     protected PropertyDescriptor getProperty(String wantName) {
       for (PropertyDescriptor property : properties) {
@@ -857,10 +837,6 @@ public class BeanTable extends JPanel {
     // return PropertyDescriptor
     protected PropertyDescriptor getProperty(int idx) {
       return properties.get(idx);
-    }
-
-    protected boolean wasUsed(int col) {
-      return used[col];
     }
 
     private ArrayList<String> editP = null;
@@ -900,40 +876,7 @@ public class BeanTable extends JPanel {
           properties.add(pd);
         }
       }
-      used = new boolean[properties.size()];
     }
-  }
-
-
-  protected class HeaderRenderer implements TableCellRenderer {
-    protected int modelIdx;
-    protected JPanel compPanel;
-    protected JLabel headerLabel;
-
-    protected HeaderRenderer(int modelIdx) {
-      this.modelIdx = modelIdx;
-
-      java.beans.PropertyDescriptor pd = model.getProperty(modelIdx);
-      headerLabel = new JLabel(pd.getDisplayName());
-
-      compPanel = new JPanel(new BorderLayout());
-      compPanel.setBorder(new BevelBorder(BevelBorder.RAISED));
-      compPanel.add(headerLabel, BorderLayout.CENTER);
-
-      compPanel.setToolTipText(pd.getShortDescription());
-      ToolTipManager.sharedInstance().registerComponent(compPanel);
-
-      // store the label for calls to BeanTable.setProperty()
-      pd.setValue("Header", headerLabel);
-      pd.setValue("ToolTipComp", compPanel);
-    }
-
-    public Component getTableCellRendererComponent(JTable table, Object value,
-                                                   boolean isSelected, boolean hasFocus, int row, int column) {
-      //System.out.println("BeanTable.getTableCellRendererComponent "+compPanel.getToolTipText());
-      return compPanel;
-    }
-
   }
 
 

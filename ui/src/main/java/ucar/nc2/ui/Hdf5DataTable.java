@@ -44,7 +44,7 @@ import ucar.nc2.ui.widget.PopupMenu;
 import ucar.nc2.ui.widget.TextHistoryPane;
 import ucar.unidata.io.RandomAccessFile;
 import ucar.util.prefs.PreferencesExt;
-import ucar.util.prefs.ui.BeanTableSorted;
+import ucar.util.prefs.ui.BeanTable;
 
 import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;
@@ -67,7 +67,7 @@ import java.util.Formatter;
 public class Hdf5DataTable extends JPanel {
   private PreferencesExt prefs;
 
-  private ucar.util.prefs.ui.BeanTableSorted objectTable;
+  private ucar.util.prefs.ui.BeanTable objectTable;
   private JSplitPane splitH, split, split2;
 
   private TextHistoryPane infoTA;
@@ -76,7 +76,8 @@ public class Hdf5DataTable extends JPanel {
     this.prefs = prefs;
     PopupMenu varPopup;
 
-    objectTable = new BeanTableSorted(VarBean.class, (PreferencesExt) prefs.node("Hdf5Object"), false, "H5header.DataObject", "Level 2A data object header");
+    objectTable = new BeanTable(VarBean.class, (PreferencesExt) prefs.node("Hdf5Object"), false,
+            "H5header.DataObject", "Level 2A data object header", null);
     objectTable.addListSelectionListener(new ListSelectionListener() {
       public void valueChanged(ListSelectionEvent e) {
         VarBean vb = (VarBean) objectTable.getSelectedBean();

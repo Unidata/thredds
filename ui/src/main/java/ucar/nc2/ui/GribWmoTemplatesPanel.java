@@ -6,7 +6,7 @@ import ucar.nc2.ui.widget.FileManager;
 import ucar.nc2.ui.widget.IndependentWindow;
 import ucar.nc2.ui.widget.TextHistoryPane;
 import ucar.util.prefs.PreferencesExt;
-import ucar.util.prefs.ui.BeanTableSorted;
+import ucar.util.prefs.ui.BeanTable;
 
 import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;
@@ -25,7 +25,7 @@ import java.util.List;
 public class GribWmoTemplatesPanel extends JPanel {
   private PreferencesExt prefs;
 
-  private BeanTableSorted codeTable, entryTable;
+  private BeanTable codeTable, entryTable;
   private JSplitPane split, split2;
 
   private TextHistoryPane compareTA;
@@ -36,7 +36,7 @@ public class GribWmoTemplatesPanel extends JPanel {
   public GribWmoTemplatesPanel(final PreferencesExt prefs, JPanel buttPanel) {
     this.prefs = prefs;
 
-    codeTable = new BeanTableSorted(CodeBean.class, (PreferencesExt) prefs.node("CodeTableBean"), false);
+    codeTable = new BeanTable(CodeBean.class, (PreferencesExt) prefs.node("CodeTableBean"), false);
     codeTable.addListSelectionListener(new ListSelectionListener() {
       public void valueChanged(ListSelectionEvent e) {
         CodeBean csb = (CodeBean) codeTable.getSelectedBean();
@@ -44,7 +44,7 @@ public class GribWmoTemplatesPanel extends JPanel {
       }
     });
 
-    entryTable = new BeanTableSorted(EntryBean.class, (PreferencesExt) prefs.node("EntryBean"), false);
+    entryTable = new BeanTable(EntryBean.class, (PreferencesExt) prefs.node("EntryBean"), false);
     entryTable.addListSelectionListener(new ListSelectionListener() {
       public void valueChanged(ListSelectionEvent e) {
         EntryBean csb = (EntryBean) entryTable.getSelectedBean();
@@ -202,4 +202,3 @@ public class GribWmoTemplatesPanel extends JPanel {
 
   }
 }
-  

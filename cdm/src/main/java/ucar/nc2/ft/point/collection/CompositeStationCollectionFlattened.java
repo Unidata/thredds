@@ -37,7 +37,6 @@ import ucar.nc2.ft.point.PointIteratorAbstract;
 import ucar.nc2.ft.*;
 import ucar.nc2.VariableSimpleIF;
 import ucar.nc2.time.CalendarDateRange;
-import ucar.nc2.units.DateRange;
 import ucar.nc2.constants.FeatureType;
 import ucar.unidata.geoloc.LatLonRect;
 
@@ -125,7 +124,9 @@ public class CompositeStationCollectionFlattened extends PointCollectionImpl {
       else
         pc = stnCollection.flatten(bbSubset, dateRange);
 
-      return pc.getPointFeatureIterator(bufferSize);
+      PointFeatureIterator result = pc.getPointFeatureIterator(bufferSize);
+      if (calcBounds) result.setCalculateBounds(pc);  // LOOK barf
+      return result;
     }
 
     public boolean hasNext() throws IOException {

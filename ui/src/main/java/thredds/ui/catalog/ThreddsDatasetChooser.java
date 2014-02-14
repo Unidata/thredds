@@ -35,20 +35,22 @@ package thredds.ui.catalog;
 
 import thredds.catalog.*;
 import thredds.ui.catalog.query.QueryChooser;
-//import thredds.catalog.ui.tools.CatalogSearcher;
 import ucar.util.prefs.PreferencesExt;
 import ucar.util.prefs.XMLStore;
 
+import javax.swing.*;
 import java.awt.*;
-import java.awt.event.*;
-import java.beans.PropertyChangeListener;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.beans.PropertyChangeEvent;
-import java.io.*;
-import java.util.*;
+import java.beans.PropertyChangeListener;
+import java.io.IOException;
+import java.util.Formatter;
 import java.util.List;
 
-import javax.swing.*;
-import javax.swing.event.EventListenerList;
+//import thredds.catalog.ui.tools.CatalogSearcher;
 
 /**
  * A Swing widget for THREDDS clients that combines a CatalogChooser, and optionally a QueryChooser
@@ -94,8 +96,6 @@ import javax.swing.event.EventListenerList;
 
 public class ThreddsDatasetChooser extends JPanel {
   private final static String FRAME_SIZE = "FrameSize";
-
-  private EventListenerList listenerList = new EventListenerList();
 
   private CatalogChooser catalogChooser;
   private QueryChooser queryChooser;
@@ -231,6 +231,15 @@ public class ThreddsDatasetChooser extends JPanel {
     if (queryChooser != null) queryChooser.save();
   }
 
+  /**
+   * Fires a PropertyChangeEvent:
+   * <ul>
+   * <li>  propertyName = "Dataset" or "File", getNewValue() = InvDataset chosen.
+   * <li>  propertyName = "Datasets", getNewValue() = InvDataset[] chosen. This can only happen if
+   * you have set doResolve = true, and the resolved dataset is a list of datasets.
+   * <li>  propertyName = "InvAccess" getNewValue() = InvAccess chosen.
+   * </ul>
+   */
   private void firePropertyChangeEvent(PropertyChangeEvent event) {
     // System.out.println("firePropertyChangeEvent "+((InvDatasetImpl)ds).dump());
     if (pipeOut)
@@ -238,33 +247,7 @@ public class ThreddsDatasetChooser extends JPanel {
     if (messageOut)
       messageEvent( event);
 
-    // Process the listeners last to first
-    Object[] listeners = listenerList.getListenerList();
-    for (int i = listeners.length-2; i>=0; i-=2) {
-      if (listeners[i] == PropertyChangeListener.class) {
-        ((PropertyChangeListener)listeners[i+1]).propertyChange(event);
-      }
-    }
-  }
-
-  /**
-   * Add a PropertyChangeEvent Listener. Throws a PropertyChangeEvent:
-   * <ul>
-   * <li>  propertyName = "Dataset" or "File", getNewValue() = InvDataset chosen.
-   * <li>  propertyName = "Datasets", getNewValue() = InvDataset[] chosen. This can only happen if
-   *  you have set doResolve = true, and the resolved dataset is a list of datasets.
-   * <li>  propertyName = "InvAccess" getNewValue() = InvAccess chosen.
-   * </ul>
-   */
-  public void addPropertyChangeListener( PropertyChangeListener l) {
-    listenerList.add(PropertyChangeListener.class, l);
-  }
-
-  /**
-   * Remove a PropertyChangeEvent Listener.
-   */
-  public void removePropertyChangeListener( PropertyChangeListener l) {
-    listenerList.remove(PropertyChangeListener.class, l);
+    firePropertyChange(event.getPropertyName(), event.getOldValue(), event.getNewValue());
   }
 
   private void messageEvent( java.beans.PropertyChangeEvent e) {

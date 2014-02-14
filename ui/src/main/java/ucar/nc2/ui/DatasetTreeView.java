@@ -33,21 +33,21 @@
 
 package ucar.nc2.ui;
 
+import ucar.nc2.Dimension;
 import ucar.nc2.*;
 import ucar.nc2.ui.widget.BAMutil;
 import ucar.nc2.ui.widget.MultilineTooltip;
 
-import java.awt.BorderLayout;
-import java.awt.Component;
-import java.awt.event.*;
-import java.beans.PropertyChangeListener;
-import java.beans.PropertyChangeEvent;
-import java.util.*;
-import java.util.Enumeration;
-
 import javax.swing.*;
-import javax.swing.event.EventListenerList;
 import javax.swing.tree.*;
+import java.awt.*;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.beans.PropertyChangeEvent;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Enumeration;
+import java.util.List;
 
 /**
  * A Tree View of the groups and variables inside a NetcdfFile.
@@ -57,8 +57,6 @@ import javax.swing.tree.*;
  */
 
 public class DatasetTreeView extends JPanel {
-  private EventListenerList listenerList = new EventListenerList();
-
   // ui
   private JTree tree;
   private DatasetTreeModel model;
@@ -104,33 +102,8 @@ public class DatasetTreeView extends JPanel {
     add(new JScrollPane(tree), BorderLayout.CENTER);
   }
 
-
-  /**
-   * Add a PropertyChangeEvent Listener. Throws a PropertyChangeEvent:
-   * <ul>
-   * <li>  when a node is selected:
-   *     propertyName = "Selection", getNewValue() = Variable chosen.
-   * </ul>
-   */
-  public void addPropertyChangeListener( PropertyChangeListener l) {
-    listenerList.add(PropertyChangeListener.class, l);
-  }
-
-  /**
-   * Remove a PropertyChangeEvent Listener.
-   */
-  public void removePropertyChangeListener( PropertyChangeListener l) {
-    listenerList.remove(PropertyChangeListener.class, l);
-  }
-
   private void firePropertyChangeEvent(PropertyChangeEvent event) {
-    // Process the listeners last to first
-    Object[] listeners = listenerList.getListenerList();
-    for (int i = listeners.length-2; i>=0; i-=2) {
-      if (listeners[i] == PropertyChangeListener.class) {
-        ((PropertyChangeListener)listeners[i+1]).propertyChange(event);
-      }
-    }
+    firePropertyChange(event.getPropertyName(), event.getOldValue(), event.getNewValue());
   }
 
   public void setFile( NetcdfFile ds) {

@@ -72,7 +72,7 @@ public class StationObsViewer extends JPanel {
   private StationObsDataset sds;
 
   private StationRegionDateChooser chooser;
-  private BeanTableSorted stnTable;
+  private BeanTable stnTable;
   private StructureTable obsTable;
   private JSplitPane splitH = null, splitV = null;
   private IndependentDialog infoWindow;
@@ -163,7 +163,7 @@ public class StationObsViewer extends JPanel {
     chooser.addToolbarAction( getallAction);
 
     // station table
-    stnTable = new BeanTableSorted(StationBean.class, (PreferencesExt) prefs.node("StationBeans"), false);
+    stnTable = new BeanTable(StationBean.class, (PreferencesExt) prefs.node("StationBeans"), false);
     stnTable.addListSelectionListener(new ListSelectionListener() {
       public void valueChanged(ListSelectionEvent e) {
         StationBean sb = (StationBean) stnTable.getSelectedBean();

@@ -943,8 +943,11 @@ public class DTSServlet extends AbstractServlet
 
     // Finish up sending the compressed stuff, but don't
     // close the stream (who knows what the Servlet may expect!)
-    if(rs.getAcceptsCompressed() && allowDeflate)
-	((DeflaterOutputStream) bOut).finish();
+    if(rs.getAcceptsCompressed() && allowDeflate) {
+        bOut.flush();
+        dOut.finish();
+	    // was ((DeflaterOutputStream) bOut).finish();  causes casting error
+    }
 
     //? if(dOut != null) dOut.finish();
     //? bOut.flush();

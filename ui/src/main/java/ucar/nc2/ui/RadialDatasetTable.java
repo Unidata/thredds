@@ -67,7 +67,7 @@ public class RadialDatasetTable extends JPanel {
   private RadialDatasetSweep radialDataset;
   private DateUnit dateUnit;
 
-  private BeanTableSorted varTable, sweepTable = null;
+  private BeanTable varTable, sweepTable = null;
   private JSplitPane split = null;
   private TextHistoryPane infoTA;
   private IndependentWindow infoWindow;
@@ -75,7 +75,7 @@ public class RadialDatasetTable extends JPanel {
   public RadialDatasetTable(PreferencesExt prefs) {
     this.prefs = prefs;
 
-    varTable = new BeanTableSorted(VariableBean.class, (PreferencesExt) prefs.node("VariableBeans"), false);
+    varTable = new BeanTable(VariableBean.class, (PreferencesExt) prefs.node("VariableBeans"), false);
     varTable.addListSelectionListener(new ListSelectionListener() {
       public void valueChanged(ListSelectionEvent e) {
         VariableBean vb = (VariableBean) varTable.getSelectedBean();
@@ -113,7 +113,7 @@ public class RadialDatasetTable extends JPanel {
     infoWindow = new IndependentWindow("Variable Information", BAMutil.getImage( "netcdfUI"), infoTA);
     infoWindow.setBounds( (Rectangle) prefs.getBean("InfoWindowBounds", new Rectangle( 300, 300, 500, 300)));
 
-    sweepTable = new BeanTableSorted(SweepBean.class, (PreferencesExt) prefs.node("SweepBean"), false);
+    sweepTable = new BeanTable(SweepBean.class, (PreferencesExt) prefs.node("SweepBean"), false);
 
     ucar.nc2.ui.widget.PopupMenu sweepPopup = new PopupMenu(sweepTable.getJTable(), "Options");
     sweepPopup.addAction("Show Image", new AbstractAction() {

@@ -895,9 +895,11 @@ public class StationWriter extends AbstractWriter {
       if (!isStream) {
         httpHeaders.set("Content-Location", pathInfo);
         httpHeaders.set("Content-Disposition", "attachment; filename=\"" + NcssRequestUtils.nameFromPathInfo(pathInfo) + ".csv\"");
+        httpHeaders.add(ContentType.HEADER, ContentType.csv.getContentHeader());
+      } else {
+        httpHeaders.add(ContentType.HEADER, ContentType.text.getContentHeader());
       }
 
-      httpHeaders.add(ContentType.HEADER, ContentType.csv.getContentHeader());
       return httpHeaders;
     }
 

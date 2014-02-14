@@ -24,7 +24,6 @@
   <dataset name="Test With Viewer" ID="testDataset2" serviceName="odap" urlPath="localContent/2004050412_eta_211.nc" dataType="Grid">
     <property name="viewer" value="http://www.unidata.ucar.edu/staff/caron/,MyViewer"/>
     <property name="viewer2" value="http://www.unidata.ucar.edu/,MyOtherViewer"/>
-
   </dataset>
   <dataset name="Test latlon crossing seam" ID="testCrossingSeam" serviceName="all" urlPath="localContent/GFS_Global_onedeg_20120515_1200.grib2.nc"
            dataType="Grid"/>
@@ -36,6 +35,7 @@
   <dataset name="Test Single Station Dataset" ID="testSingleStationDataset" serviceName="all"
            urlPath="cdmUnitTest/ncss/point_features/metar/Surface_METAR_20130826_0000.nc" dataType="Station"/>
   <dataset name="Test sst" ID="TESTsst" serviceName="all" urlPath="cdmUnitTest/conventions/coards/sst.mnmean.nc" dataType="Grid"/>
+  <dataset name="Test SatelliteNcss" ID="SatelliteNcss" serviceName="all" urlPath="localContent/SUPER-NATIONAL_1km_CTP_20140105_2300.gini" dataType="Grid"/>
 
   <dataset name="Test Hyrax" ID="Hyrax2TDS" serviceName="all" urlPath="Hyrax2TDS/AIRS.2002.08.01.L3.RetStd_H031.v4.0.21.0.G06104133732.hdf" dataType="Grid">
     <ncml:netcdf xmlns:ncml="http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2"

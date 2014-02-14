@@ -34,22 +34,22 @@
 package thredds.ui.catalog;
 
 import thredds.catalog.*;
-
-import java.awt.*;
-import java.awt.event.*;
-import java.beans.PropertyChangeListener;
-import java.beans.PropertyChangeEvent;
-import java.util.*;
+import ucar.nc2.constants.FeatureType;
+import ucar.nc2.ui.widget.BAMutil;
+import ucar.nc2.ui.widget.PopupMenu;
 
 import javax.swing.*;
-import javax.swing.event.EventListenerList;
-import javax.swing.event.TreeWillExpandListener;
 import javax.swing.event.TreeExpansionEvent;
+import javax.swing.event.TreeWillExpandListener;
 import javax.swing.tree.*;
-
-import ucar.nc2.ui.widget.*;
-import ucar.nc2.constants.FeatureType;
-import ucar.nc2.ui.widget.PopupMenu;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.beans.PropertyChangeEvent;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Enumeration;
 
 /**
  * A Swing widget for THREDDS clients to display catalogs in a JTree, and allows
@@ -87,7 +87,6 @@ public class CatalogTreeView extends JPanel implements CatalogSetCallback {
   private boolean validate = true;
   private InvCatalogImpl catalog;
 
-  private EventListenerList listenerList = new EventListenerList();
   private boolean eventsOK = true;
 
     // state
@@ -205,42 +204,25 @@ public class CatalogTreeView extends JPanel implements CatalogSetCallback {
     this.openDatasetScans = openDatasetScans;
   }
 
-  /**
-   * Add a PropertyChangeEvent Listener. Throws a PropertyChangeEvent:
-   * <ul><li>  when a new catalog is read and displayed:
-   *     propertyName = "Catalog", getNewValue() = catalog URL string
-   * <li>  when a node is selected:
-   *     propertyName = "Selection", getNewValue() = InvDataset chosen.
-   * <li>  when a node is double-clicked:
-   *     propertyName = "Dataset", getNewValue() = InvDataset chosen.
-   * <li>  when a TreeNode is added:
-   *     propertyName = "TreeNode", getNewValue() = InvDataset added.
-   * </ul>
-   */
-  public void addPropertyChangeListener( PropertyChangeListener l) {
-    listenerList.add(PropertyChangeListener.class, l);
-  }
-
-  /**
-   * Remove a PropertyChangeEvent Listener.
-   */
-  public void removePropertyChangeListener( PropertyChangeListener l) {
-    listenerList.remove(PropertyChangeListener.class, l);
-  }
-
   private void firePropertyChangeEvent(InvDataset ds) {
     PropertyChangeEvent event = new PropertyChangeEvent(this, "Dataset", null, ds);
     firePropertyChangeEvent( event);
   }
 
+  /**
+   * Fires a PropertyChangeEvent:
+   * <ul><li>  when a new catalog is read and displayed:
+   * propertyName = "Catalog", getNewValue() = catalog URL string
+   * <li>  when a node is selected:
+   * propertyName = "Selection", getNewValue() = InvDataset chosen.
+   * <li>  when a node is double-clicked:
+   * propertyName = "Dataset", getNewValue() = InvDataset chosen.
+   * <li>  when a TreeNode is added:
+   * propertyName = "TreeNode", getNewValue() = InvDataset added.
+   * </ul>
+   */
   private void firePropertyChangeEvent(PropertyChangeEvent event) {
-    // Process the listeners last to first
-    Object[] listeners = listenerList.getListenerList();
-    for (int i = listeners.length-2; i>=0; i-=2) {
-      if (listeners[i] == PropertyChangeListener.class) {
-        ((PropertyChangeListener)listeners[i+1]).propertyChange(event);
-      }
-    }
+    firePropertyChange(event.getPropertyName(), event.getOldValue(), event.getNewValue());
   }
 
   /** Whether to detect that the dataset is a DQC, and popup a QueryChooser widget.

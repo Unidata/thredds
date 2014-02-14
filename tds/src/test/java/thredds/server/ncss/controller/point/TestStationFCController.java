@@ -102,7 +102,7 @@ public class TestStationFCController {
 				.param("var", "air_temperature,dew_point_temperature,precipitation_amount_24,precipitation_amount_hourly,visibility_in_air");
 
 		this.mockMvc.perform( rb ).andExpect(MockMvcResultMatchers.status().isOk())
-			.andExpect(MockMvcResultMatchers.content().contentType(ContentType.csv.getContentHeader()));
+			.andExpect(MockMvcResultMatchers.content().contentType(ContentType.text.getContentHeader())); // changed to text so it would display in browser
 	}
 
 	@Test

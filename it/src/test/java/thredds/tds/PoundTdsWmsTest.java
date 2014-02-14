@@ -1,9 +1,6 @@
 package thredds.tds;
 
-import org.apache.commons.httpclient.HttpClient;
-import org.apache.commons.httpclient.MultiThreadedHttpConnectionManager;
-import org.apache.commons.httpclient.params.HttpConnectionManagerParams;
-import ucar.nc2.util.net.HttpClientManager;
+import org.apache.http.client.HttpClient;
 import org.junit.Test;
 import ucar.nc2.util.IO;
 

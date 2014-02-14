@@ -34,29 +34,35 @@
 package thredds.ui.catalog.tools;
 
 import thredds.catalog.*;
+import thredds.catalog.dl.ADNWriter;
+import thredds.catalog.dl.DIFWriter;
 import thredds.ui.catalog.CatalogChooser;
 import thredds.ui.catalog.CatalogTreeView;
 import thredds.ui.datatype.prefs.DateField;
 import thredds.ui.datatype.prefs.DurationField;
 import ucar.nc2.constants.FeatureType;
-import ucar.nc2.ui.widget.IndependentWindow;
-import ucar.nc2.ui.widget.TextGetPutPane;
-import ucar.nc2.ui.widget.TextHistoryPane;
-import ucar.nc2.units.DateType;
-import thredds.catalog.dl.*;
-
-import ucar.util.prefs.PreferencesExt;
-import ucar.util.prefs.ui.*;
 import ucar.nc2.ui.widget.*;
+import ucar.nc2.units.DateType;
+import ucar.util.prefs.PreferencesExt;
+import ucar.util.prefs.ui.BeanTable;
+import ucar.util.prefs.ui.Field;
+import ucar.util.prefs.ui.PersistentBean;
+import ucar.util.prefs.ui.PrefPanel;
 
-import java.io.*;
-import java.net.*;
-import java.util.*;
-
-import java.awt.*;
-import java.awt.event.*;
 import javax.swing.*;
-import javax.swing.event.*;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Iterator;
 
 /**
  * Experimental widget for extracting and modifying catalogs. Do not use yet.
@@ -74,7 +80,7 @@ public class CatalogEnhancer extends JPanel {
   // ui
   private CatalogChooser catalogChooser;
   private CatalogTreeView tree;
-  private BeanTableSorted dsTable, daTable;
+  private BeanTable dsTable, daTable;
   private JTabbedPane tabbedPane;
   private PrefPanel.Dialog datasetEditorDialog;
   private JSplitPane splitV;
@@ -160,7 +166,7 @@ public class CatalogEnhancer extends JPanel {
     });
 
     // dataset bean table
-    dsTable = new BeanTableSorted(DatasetBean.class, (PreferencesExt) prefs.node("dsBeans"), false);
+    dsTable = new BeanTable(DatasetBean.class, (PreferencesExt) prefs.node("dsBeans"), false);
     dsTable.addListSelectionListener( new ListSelectionListener() {
       public void valueChanged(ListSelectionEvent e) {
         DatasetBean bean = (DatasetBean) dsTable.getSelectedBean();
@@ -170,7 +176,7 @@ public class CatalogEnhancer extends JPanel {
     });
 
     // access bean table
-    daTable = new BeanTableSorted(AccessBean.class, (PreferencesExt) prefs.node("dsBeans"), false);
+    daTable = new BeanTable(AccessBean.class, (PreferencesExt) prefs.node("dsBeans"), false);
 
     /// put tables in tabbed pane
     tabbedPane = new JTabbedPane(JTabbedPane.TOP);
@@ -401,33 +407,33 @@ public class CatalogEnhancer extends JPanel {
 
     tables = new ArrayList(); // LOOK
 
-    Field.BeanTable creators = new Field.BeanTable("localMetadata.creators", "Creators", null, ThreddsMetadata.Source.class,
-        (PreferencesExt) prefs.node("creators"), persBean);
+    Field.BeanTableField creators = new Field.BeanTableField("localMetadata.creators", "Creators", null,
+            ThreddsMetadata.Source.class, (PreferencesExt) prefs.node("creators"), persBean);
     tabPane.addTab( "Creators", creators.getEditComponent());
     tables.add( creators.getEditComponent());
 
-    Field.BeanTable publishers = new Field.BeanTable("localMetadata.publishers", "Publishers", null, ThreddsMetadata.Source.class,
-        (PreferencesExt) prefs.node("publishers"), persBean);
+    Field.BeanTableField publishers = new Field.BeanTableField("localMetadata.publishers", "Publishers", null,
+            ThreddsMetadata.Source.class, (PreferencesExt) prefs.node("publishers"), persBean);
     tabPane.addTab( "Publishers", publishers.getEditComponent());
     tables.add( publishers.getEditComponent());
 
-    Field.BeanTable projects = new Field.BeanTable("localMetadata.projects", "Projects", null, ThreddsMetadata.Vocab.class,
-        (PreferencesExt) prefs.node("projects") , persBean);
+    Field.BeanTableField projects = new Field.BeanTableField("localMetadata.projects", "Projects", null,
+            ThreddsMetadata.Vocab.class, (PreferencesExt) prefs.node("projects") , persBean);
     tabPane.addTab( "Projects", projects.getEditComponent());
     tables.add( projects.getEditComponent());
 
-    Field.BeanTable keywords = new Field.BeanTable("localMetadata.keywords", "Keywords", null, ThreddsMetadata.Vocab.class,
-        (PreferencesExt) prefs.node("keywords"), persBean);
+    Field.BeanTableField keywords = new Field.BeanTableField("localMetadata.keywords", "Keywords", null,
+            ThreddsMetadata.Vocab.class, (PreferencesExt) prefs.node("keywords"), persBean);
     tabPane.addTab( "Keywords", keywords.getEditComponent());
     tables.add( keywords.getEditComponent());
 
-    Field.BeanTable dates = new Field.BeanTable("localMetadata.dates", "Dates", null, DateType.class,
-        (PreferencesExt) prefs.node("dates"), persBean);
+    Field.BeanTableField dates = new Field.BeanTableField("localMetadata.dates", "Dates", null,
+            DateType.class, (PreferencesExt) prefs.node("dates"), persBean);
     tabPane.addTab( "Dates", dates.getEditComponent());
     tables.add( dates.getEditComponent());
 
-    Field.BeanTable contributors = new Field.BeanTable("localMetadata.contributors", "Contributors", null, ThreddsMetadata.Contributor.class,
-        (PreferencesExt) prefs.node("contributors"), persBean);
+    Field.BeanTableField contributors = new Field.BeanTableField("localMetadata.contributors", "Contributors", null,
+            ThreddsMetadata.Contributor.class, (PreferencesExt) prefs.node("contributors"), persBean);
     tabPane.addTab( "Contributors", contributors.getEditComponent());
     tables.add( contributors.getEditComponent());
 

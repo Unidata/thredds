@@ -33,28 +33,31 @@
 
 package ucar.nc2.ui;
 
-import ucar.nc2.ui.widget.PopupMenu;
-import ucar.util.prefs.PreferencesExt;
-import ucar.util.prefs.ui.BeanTableSorted;
-import ucar.nc2.dataset.NetcdfDataset;
-import ucar.nc2.*;
-import ucar.nc2.util.CompareNetcdf2;
-import ucar.nc2.ncml.Aggregation;
 import ucar.ma2.Array;
+import ucar.nc2.NCdumpW;
+import ucar.nc2.NetcdfFile;
+import ucar.nc2.Variable;
+import ucar.nc2.dataset.NetcdfDataset;
+import ucar.nc2.ncml.Aggregation;
+import ucar.nc2.ui.widget.BAMutil;
+import ucar.nc2.ui.widget.IndependentWindow;
+import ucar.nc2.ui.widget.PopupMenu;
+import ucar.nc2.ui.widget.TextHistoryPane;
+import ucar.nc2.util.CompareNetcdf2;
+import ucar.util.prefs.PreferencesExt;
+import ucar.util.prefs.ui.BeanTable;
 
 import javax.swing.*;
-import javax.swing.event.ListSelectionListener;
 import javax.swing.event.ListSelectionEvent;
-
-import ucar.nc2.ui.widget.TextHistoryPane;
-import ucar.nc2.ui.widget.IndependentWindow;
-import ucar.nc2.ui.widget.BAMutil;
-
+import javax.swing.event.ListSelectionListener;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.*;
-import java.io.*;
-import java.util.*;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.PrintStream;
+import java.util.ArrayList;
+import java.util.Formatter;
 
 /**
  * ToolsUI/NcML/Aggregation
@@ -65,7 +68,7 @@ import java.util.*;
 public class AggTable extends JPanel {
   private PreferencesExt prefs;
 
-  private BeanTableSorted datasetTable;
+  private BeanTable datasetTable;
   private JSplitPane split;
 
   private TextHistoryPane infoTA, aggTA;
@@ -79,7 +82,7 @@ public class AggTable extends JPanel {
   public AggTable(PreferencesExt prefs, JPanel buttPanel) {
     this.prefs = prefs;
 
-    datasetTable = new BeanTableSorted(DatasetBean.class, (PreferencesExt) prefs.node("DatasetBean"), false);
+    datasetTable = new BeanTable(DatasetBean.class, (PreferencesExt) prefs.node("DatasetBean"), false);
     datasetTable.addListSelectionListener(new ListSelectionListener() {
       public void valueChanged(ListSelectionEvent e) {
         DatasetBean mb = (DatasetBean) datasetTable.getSelectedBean();

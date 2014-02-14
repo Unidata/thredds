@@ -40,7 +40,7 @@ import ucar.nc2.ui.widget.PopupMenu;
 import ucar.nc2.ui.widget.TextHistoryPane;
 import ucar.unidata.io.RandomAccessFile;
 import ucar.util.prefs.PreferencesExt;
-import ucar.util.prefs.ui.BeanTableSorted;
+import ucar.util.prefs.ui.BeanTable;
 
 import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;
@@ -59,7 +59,7 @@ import java.util.*;
 public class NcStreamPanel extends JPanel {
   private PreferencesExt prefs;
 
-  private BeanTableSorted messTable;
+  private BeanTable messTable;
   private JSplitPane split, split2;
 
   private TextHistoryPane infoTA, infoPopup2, infoPopup3;
@@ -74,7 +74,7 @@ public class NcStreamPanel extends JPanel {
 
     PopupMenu varPopup;
 
-    messTable = new BeanTableSorted(MessBean.class, (PreferencesExt) prefs.node("NcStreamPanel"), false);
+    messTable = new BeanTable(MessBean.class, (PreferencesExt) prefs.node("NcStreamPanel"), false);
     messTable.addListSelectionListener(new ListSelectionListener() {
       public void valueChanged(ListSelectionEvent e) {
         MessBean bean = (MessBean) messTable.getSelectedBean();

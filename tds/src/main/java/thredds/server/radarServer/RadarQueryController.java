@@ -43,8 +43,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.ModelAndView;
-import org.springframework.web.servlet.mvc.AbstractController;
-import org.springframework.web.servlet.mvc.multiaction.NoSuchRequestHandlingMethodException;
+import thredds.server.AbstractController;
 import thredds.server.ncss.QueryParams;
 import thredds.util.TdsPathUtils;
 import ucar.nc2.units.DateRange;
@@ -86,8 +85,13 @@ public class RadarQueryController extends AbstractController {
    */
   private static final String MSG_CODE = "message.bad.query";
 
+  @Override
   protected String getControllerPath() { return "/radarServer/";}
 
+  @Override
+  protected String[] getEndings() {
+    return new String[0];
+  }
 
   /*
    * why calculate over and over again  1970-01-01T00:00:00
@@ -114,23 +118,24 @@ public class RadarQueryController extends AbstractController {
    * @param request  HttpServletRequest
    * @param response HttpServletResponse
    * @return ModelAndView
-   * @throws Exception
+   * @throws IOException caught by superclass
    */
 
   @RequestMapping(value = {"**"}, method = RequestMethod.GET)
-  protected ModelAndView handleRequestInternal(HttpServletRequest request, HttpServletResponse response) throws Exception {
+  protected ModelAndView handleRequestInternal(HttpServletRequest request, HttpServletResponse response) throws IOException {
     if (!RadarStationController.enabled) {
       response.sendError(HttpServletResponse.SC_NOT_FOUND, "No radar server");
       return null;
     }
 
-    try {
+    //try {
       // Gather diagnostics for logging request.
       // catch rogue invalid request here
       if (request.getQueryString() == null) {
-        log.debug("Invalid dataset url reference " + request.getPathInfo());
-        throw new RadarServerException("Invalid dataset url reference " + request.getPathInfo());
+        response.sendError(HttpServletResponse.SC_BAD_REQUEST, "No query string");
+        return null;
       }
+
       // Query results in model
       Map<String, Object> model = new HashMap<String, Object>();
       radarQuery(request, response, model);
@@ -141,17 +146,15 @@ public class RadarQueryController extends AbstractController {
       } else {
         return new ModelAndView("queryXml", model);
       }
-    } catch (RadarServerException e) {
-      throw e; // pass it onto Spring exceptionResolver
-    } catch (Throwable e) {
+
+    /* } catch (Throwable e) {
       log.error("handleRequestInternal(): Problem handling request.", e);
       throw new RadarServerException("handleRequestInternal(): Problem handling request.", e);
-    }
+    } */
   }
 
   // get/check/process query  
-  public void radarQuery(HttpServletRequest req, HttpServletResponse res, Map<String, Object> model)
-          throws ServletException, IOException, RadarServerException {
+  public void radarQuery(HttpServletRequest req, HttpServletResponse res, Map<String, Object> model)  throws IOException { //}, RadarServerException {
 
 //      long  startms = System.currentTimeMillis();
 //      long  endms;
@@ -161,12 +164,14 @@ public class RadarQueryController extends AbstractController {
     if (pathInfo == null) pathInfo = "";
     if (pathInfo.startsWith("/"))
       pathInfo = pathInfo.substring(1);
+    String rt = pathInfo.substring(0, pathInfo.indexOf('/', 1));
+
     try {
-      String rt = pathInfo.substring(0, pathInfo.indexOf('/', 1));
       radarType = RadarDatasetRepository.RadarType.valueOf(rt);
     } catch (Exception e) {
-      log.info("Invalid dataset url reference " + pathInfo);
-      throw new RadarServerException("Invalid dataset url reference " + pathInfo, e);
+      res.sendError(HttpServletResponse.SC_BAD_REQUEST, "bad radarType="+rt);
+      return;
+
     }
     Boolean level2 = pathInfo.contains("level2");
 
@@ -182,8 +187,8 @@ public class RadarQueryController extends AbstractController {
 //      startms = System.currentTimeMillis();
     // check Query Params
     if (!checkQueryParms(radarType, qp, level2)) {
-      log.error("checkQueryParms Failed " + qp.errs.toString() + req.getQueryString());
-      throw new RadarServerException(qp.errs.toString());//+ req.getQueryString() );
+      res.sendError(HttpServletResponse.SC_BAD_REQUEST, "bad query="+qp.errs.toString());
+      return;
     }
 //      endms = System.currentTimeMillis();
 //      System.out.println( "after checkQueryParms "+ (endms - startms));
@@ -194,8 +199,8 @@ public class RadarQueryController extends AbstractController {
 
     // creates first part of catalog
     if (!createHeader(radarType, qp, pathInfo, model)) {
-      log.error("Write Header Failed " + qp.errs.toString() + req.getQueryString());
-      throw new RadarServerException(qp.errs.toString()); // req.getQueryString() );
+      res.sendError(HttpServletResponse.SC_BAD_REQUEST, "bad query="+qp.errs.toString());
+      return;
     }
 //      endms = System.currentTimeMillis();
 //      System.out.println( "after writeHeader "+ (endms - startms));
@@ -236,8 +241,8 @@ public class RadarQueryController extends AbstractController {
   } // end radarNexradQuery
 
   // check that parms have valid stations, vars and times
-  private Boolean checkQueryParms(RadarDatasetRepository.RadarType radarType, QueryParams qp, Boolean level2)
-          throws IOException {
+  private Boolean checkQueryParms(RadarDatasetRepository.RadarType radarType, QueryParams qp, Boolean level2) {
+  //        throws IOException {
     if (qp.hasBB) {
       if (radarType.equals(RadarDatasetRepository.RadarType.nexrad))
         qp.stns = RadarServerUtil.getStationNames(qp.getBB(), radarDatasetRepository.nexradList);
@@ -340,9 +345,8 @@ public class RadarQueryController extends AbstractController {
   }
 
   // create catalog Header
-  private Boolean createHeader(RadarDatasetRepository.RadarType radarType, QueryParams qp,
-                               String pathInfo, Map<String, Object> model)
-          throws IOException {
+  private Boolean createHeader(RadarDatasetRepository.RadarType radarType, QueryParams qp, String pathInfo, Map<String, Object> model) {
+ //         throws IOException {
 
     Boolean level2 = pathInfo.contains("level2");
     int level = (level2) ? 2 : 3;
@@ -431,15 +435,14 @@ public class RadarQueryController extends AbstractController {
           <date type="start of ob">2010-01-21T00:00:00</date>
         </dataset>
   */
-  private Boolean processQuery(String dataset, QueryParams qp,
-                               String var, List<DatasetEntry> entries) throws RadarServerException {
+  private Boolean processQuery(String dataset, QueryParams qp, String var, List<DatasetEntry> entries) { // throws RadarServerException {
 
     Boolean getAllTimes = true;
     String yyyymmddStart = null;
     String yyyymmddEnd = null;
     String dateStart = null;
     String dateEnd = null;
-    try {
+    //try {
       if (!qp.time_start.equals(epicDateType)) {
         getAllTimes = false;
         yyyymmddStart = qp.time_start.toDateString();
@@ -542,10 +545,11 @@ public class RadarQueryController extends AbstractController {
         }
       }
       return true;
-    } catch (Throwable e) {
+
+    /* } catch (Throwable e) {
       log.error("Invalid dataset =" + dataset + " or var =" + var, e);
       throw new RadarServerException("Invalid dataset =" + dataset + " or var =" + var, e);
-    }
+    }  */
   }
 
   /*
