@@ -50,6 +50,7 @@ public class Grib2CollectionBuilderFromIndex extends GribCollectionBuilder {
   }
 
   ////////////////////////////////////////////////////////////////
+  static private final boolean debug = false;
 
   protected GribCollection gc;
   protected Grib2Customizer tables; // only gets created in makeAggGroups
@@ -91,14 +92,14 @@ public class Grib2CollectionBuilderFromIndex extends GribCollectionBuilder {
       // these are the variable records
       long skip = raf.readLong();
       raf.skipBytes(skip);
-      System.out.printf("Grib2CollectionBuilderFromIndex %s (%s) records len = %d%n", raf.getLocation(), getMagicStart(), skip);
+      if (debug) System.out.printf("Grib2CollectionBuilderFromIndex %s (%s) records len = %d%n", raf.getLocation(), getMagicStart(), skip);
 
       int size = NcStream.readVInt(raf);
       if ((size < 0) || (size > 100 * 1000 * 1000)) {
         logger.warn("Grib2CollectionBuilderFromIndex {}: invalid index size", gc.getName());
         return false;
       }
-      System.out.printf("Grib2CollectionBuilderFromIndex proto len = %d%n", size);
+      if (debug) System.out.printf("Grib2CollectionBuilderFromIndex proto len = %d%n", size);
 
       byte[] m = new byte[size];
       raf.readFully(m);
@@ -164,7 +165,7 @@ public class Grib2CollectionBuilderFromIndex extends GribCollectionBuilder {
         fsize += mf.getFilename().length();
       }
       gc.setFileMap(fileMap);
-      System.out.printf("Grib2CollectionBuilderFromIndex files len = %d%n", fsize);
+      if (debug) System.out.printf("Grib2CollectionBuilderFromIndex files len = %d%n", fsize);
 
       gc.masterRuntime = (CoordinateRuntime) readCoord(proto.getMasterRuntime());
 
