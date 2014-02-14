@@ -15,10 +15,11 @@ import java.util.List;
 public interface MCollection extends AutoCloseable {
 
   /**
-   * Is this a partition or MFile Collection
-   * @return if partition
+   * A leaf is a single file or mfile collection. (note that this may or may not be a partition)
+   * A non-leaf is a directory with other directories under it
+   * @return if leaf collection
    */
-  public boolean isPartition();
+  public boolean isLeaf();
 
   /**
    * The name of the collection

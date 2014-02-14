@@ -20,7 +20,6 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Formatter;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * Utilities for creating GRIB ncx2 files, both collections and partitions
@@ -163,7 +162,7 @@ public class GribCdmIndex2 implements IndexReader {
      }
 
      // otherwise got to check
-     if (dcm.isPartition()) {
+     if (dcm.isLeaf()) {
        boolean changed =  Grib2PartitionBuilder.recreateIfNeeded( (PartitionManager) dcm, updateType, updateType, errlog, logger);
        return Grib2PartitionBuilderFromIndex.createTimePartitionFromIndex(dcm.getCollectionName(), new File(dcm.getRoot()), gribConfig, logger);
 
@@ -252,26 +251,31 @@ public class GribCdmIndex2 implements IndexReader {
 
     if (forceCollection == CollectionUpdateType.never) return false;  // dont do nothin
 
-    Path idxFile = dpart.getIndexPath();
-    if (Files.exists(idxFile)) {
-      if (forceCollection == CollectionUpdateType.nocheck) return false;  // use if index exists
+    // if (forceCollection != CollectionUpdateType.always) {
+      Path idxFile = dpart.getIndexPath();
+      if (Files.exists(idxFile)) {
+        if (forceCollection == CollectionUpdateType.nocheck) return false;  // use if index exists
 
-      // otherwise read it to verify its a  PC
-      try (RandomAccessFile raf = new RandomAccessFile(idxFile.toString(), "r")) {
-        GribCollectionType type = getType(raf);
-        assert type == GribCollectionType.Partition2;
+        // otherwise read it to verify its a PC
+        try (RandomAccessFile raf = new RandomAccessFile(idxFile.toString(), "r")) {
+          GribCollectionType type = getType(raf);
+          assert type == GribCollectionType.Partition2;
+        }
       }
-    }
+    // }
 
     // index does not yet exist, or we want to test if it changed
     // must scan it
     for (MCollection part : dpart.makePartitions(forceCollection)) {
-      if (part.isPartition()) {
-        updateDirectoryCollectionRecurse((DirectoryPartition) part, config, forceCollection, logger);
-
-      } else {
+      if (part.isLeaf()) {
         Path partPath = Paths.get(part.getRoot());
         updateLeafCollection(config, forceCollection, logger, partPath);
+
+      } else {
+        if (!(part instanceof DirectoryPartition))
+          System.out.println("HEY");
+        updateDirectoryCollectionRecurse((DirectoryPartition) part, config, forceCollection, logger);
+
       }
     }   // loop over partitions
 
@@ -296,7 +300,7 @@ public class GribCdmIndex2 implements IndexReader {
     if (config.ptype == FeatureCollectionConfig.PartitionType.file) {
       return updateFilePartition(config, forceCollection, logger, dirPath);
 
-  } else {
+    } else {
       return updateLeafDirectoryCollection(config, forceCollection, logger, dirPath);
     }
 
@@ -320,6 +324,7 @@ public class GribCdmIndex2 implements IndexReader {
     CollectionSpecParser specp = new CollectionSpecParser(config.spec, errlog);
 
     DirectoryCollection dcm = new DirectoryCollection(config.name, dirPath, logger);
+    dcm.setLeaf(true);
     dcm.putAuxInfo(FeatureCollectionConfig.AUX_GRIB_CONFIG, config.gribConfig);
     if (specp.getFilter() != null)
       dcm.setStreamFilter(new StreamFilter(specp.getFilter()));

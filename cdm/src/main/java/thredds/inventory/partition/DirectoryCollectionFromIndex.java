@@ -24,6 +24,7 @@ class DirectoryCollectionFromIndex extends CollectionAbstract {
     setRoot(builder.getDir().toString());
     this.builder = builder;
     this.indexReader = indexReader;
+    setLeaf(true);
   }
 
   @Override
@@ -39,12 +40,6 @@ class DirectoryCollectionFromIndex extends CollectionAbstract {
   @Override
   public void close() {
   }
-
-  @Override
-  public boolean isPartition() {
-    return false;
-  }
-
 
   @Override
   public Iterable<MFile> getFilesSorted() throws IOException {

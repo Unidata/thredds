@@ -33,18 +33,23 @@ public class DirectoryBuilder {
     DirectoryBuilder builder = new DirectoryBuilder(config.name, topDir.toString());
 
     DirectoryPartition dpart = new DirectoryPartition(config, topDir, indexReader, logger);
-    if (builder.isPartition(indexReader))  // its a partition
+    if (!builder.isLeaf(indexReader))  { // its a partition
+      dpart.setLeaf(false);
       return dpart;
+    }
 
     // its a collection
     boolean hasIndex = builder.findIndex();
-    if (hasIndex)
+    if (hasIndex) {
       return dpart.makeChildCollection(builder);
-    else
-      return new DirectoryCollection(config.name, topDir, logger); // no index file
+    } else {
+      DirectoryCollection result =  new DirectoryCollection(config.name, topDir, logger); // no index file
+      result.setLeaf(true);
+      return result;
+    }
   }
 
-  static private enum PartitionStatus {unknown, isPartition ,isGribCollection}
+  static private enum PartitionStatus {unknown, isDirectoryPartition, isLeaf}
 
   //////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -110,20 +115,20 @@ public class DirectoryBuilder {
    * @return true if partition, false if file collection
    * @throws IOException on IO error
    */
-  public boolean isPartition(IndexReader indexReader) throws IOException {
+  public boolean isLeaf(IndexReader indexReader) throws IOException {
     if (partitionStatus == PartitionStatus.unknown) {
-      if (index != null) {
+      /* if (index != null) {
         boolean isPartition = indexReader.isPartition(index);
-        partitionStatus = isPartition ? PartitionStatus.isPartition : PartitionStatus.isGribCollection;
+        partitionStatus = isPartition ? PartitionStatus.isPartition : PartitionStatus.isLeaf;
 
-      } else { // no index file
+      } else { // no index file  */
         // temporary - just to scan 100 files in the directory
         DirectoryCollection dc = new DirectoryCollection(partitionName, dir, null);
-        partitionStatus = dc.isLeafDirectory() ? PartitionStatus.isGribCollection : PartitionStatus.isPartition;
-      }
+        partitionStatus = dc.isLeafDirectory() ? PartitionStatus.isLeaf : PartitionStatus.isDirectoryPartition;
+      // }
     }
 
-    return partitionStatus == PartitionStatus.isPartition;
+    return partitionStatus == PartitionStatus.isLeaf;
   }
 
   /**
@@ -146,7 +151,7 @@ public class DirectoryBuilder {
     if (index != null && forceCollection != CollectionUpdateType.always) { // always means you must scan anew
       childrenConstructed = true;  // otherwise we are good
       if (!indexReader.readChildren(index, new AddChild())) {
-        partitionStatus =  PartitionStatus.isGribCollection;
+        partitionStatus =  PartitionStatus.isLeaf;
         return children;  // no children - we are at the GribCollection leaves
       }
 
@@ -155,7 +160,7 @@ public class DirectoryBuilder {
     }
 
     //once we have found children, we know that this is a time partition
-    partitionStatus = (children.size() > 0) ?  PartitionStatus.isPartition : PartitionStatus.isGribCollection;
+    partitionStatus = (children.size() > 0) ?  PartitionStatus.isDirectoryPartition : PartitionStatus.isLeaf;
 
     return children;
   }

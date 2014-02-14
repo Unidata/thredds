@@ -56,7 +56,6 @@ import ucar.nc2.util.DiskCache2;
 import ucar.nc2.util.cache.FileCache;
 import ucar.nc2.util.cache.FileCacheable;
 import ucar.nc2.util.cache.FileFactory;
-import ucar.unidata.geoloc.LatLonPoint;
 import ucar.unidata.io.RandomAccessFile;
 import ucar.unidata.util.Parameter;
 import ucar.unidata.util.StringUtil2;
@@ -230,7 +229,7 @@ public abstract class GribCollection implements FileCacheable, AutoCloseable {
    */
   static public GribCollection factory(boolean isGrib1, MCollection dcm, CollectionUpdateType force, org.slf4j.Logger logger) throws IOException {
     if (isGrib1) {
-      if (dcm.isPartition())
+      if (dcm.isLeaf())
         if (force == CollectionUpdateType.never) {  // LOOK not actually needed, as Grib2TimePartitionBuilder.factory will eventually call  Grib2TimePartitionBuilderFromIndex
           FeatureCollectionConfig.GribConfig config = (FeatureCollectionConfig.GribConfig) dcm.getAuxInfo(FeatureCollectionConfig.AUX_GRIB_CONFIG);
           return Grib1TimePartitionBuilderFromIndex.createTimePartitionFromIndex(dcm.getCollectionName(), new File(dcm.getRoot()), config, logger);
@@ -247,7 +246,7 @@ public abstract class GribCollection implements FileCacheable, AutoCloseable {
     }
 
     // grib2
-    if (dcm.isPartition()) {
+    if (dcm.isLeaf()) {
       if (force == CollectionUpdateType.never) {  // LOOK not actually needed, as Grib2TimePartitionBuilder.factory will eventually call  Grib2TimePartitionBuilderFromIndex
         FeatureCollectionConfig.GribConfig config = (FeatureCollectionConfig.GribConfig) dcm.getAuxInfo(FeatureCollectionConfig.AUX_GRIB_CONFIG);
         return Grib2TimePartitionBuilderFromIndex.createTimePartitionFromIndex(dcm.getCollectionName(), new File(dcm.getRoot()), config, logger);
