@@ -12,7 +12,7 @@ import ucar.nc2.grib.grib2.Grib2TimePartition;
 import ucar.nc2.ui.widget.*;
 import ucar.nc2.ui.widget.PopupMenu;
 import ucar.util.prefs.PreferencesExt;
-import ucar.util.prefs.ui.BeanTableSorted;
+import ucar.util.prefs.ui.BeanTable;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
@@ -803,7 +803,7 @@ public class DirectoryPartitionViewer extends JPanel {
   private class PartitionsTable extends JPanel {
     private PreferencesExt prefs;
 
-    private BeanTableSorted groupsTable, groupTable, varTable;
+    private BeanTable groupsTable, groupTable, varTable;
     private JSplitPane split;
 
     public PartitionsTable(PreferencesExt prefs) {
@@ -812,7 +812,7 @@ public class DirectoryPartitionViewer extends JPanel {
       PopupMenu varPopup;
 
       ////////////////
-      groupsTable = new BeanTableSorted(GroupsBean.class, (PreferencesExt) prefs.node("GroupsBean"), false, "Groups", "GribCollection.GroupHcs", null);
+      groupsTable = new BeanTable(GroupsBean.class, (PreferencesExt) prefs.node("GroupsBean"), false, "Groups", "GribCollection.GroupHcs", null);
       groupsTable.addListSelectionListener(new ListSelectionListener() {
         public void valueChanged(ListSelectionEvent e) {
           GroupsBean bean = (GroupsBean) groupsTable.getSelectedBean();
@@ -821,7 +821,7 @@ public class DirectoryPartitionViewer extends JPanel {
         }
       });
 
-      groupTable = new BeanTableSorted(GroupBean.class, (PreferencesExt) prefs.node("GroupBean"), false, "Partitions for this Group", "GribCollection.GroupHcs", null);
+      groupTable = new BeanTable(GroupBean.class, (PreferencesExt) prefs.node("GroupBean"), false, "Partitions for this Group", "GribCollection.GroupHcs", null);
       groupTable.addListSelectionListener(new ListSelectionListener() {
         public void valueChanged(ListSelectionEvent e) {
           GroupBean bean = (GroupBean) groupTable.getSelectedBean();
@@ -853,7 +853,7 @@ public class DirectoryPartitionViewer extends JPanel {
         }
       });
 
-      varTable = new BeanTableSorted(VarBean.class, (PreferencesExt) prefs.node("Grib2Bean"), false, "Variables in group", "GribCollection.VariableIndex", null);
+      varTable = new BeanTable(VarBean.class, (PreferencesExt) prefs.node("Grib2Bean"), false, "Variables in group", "GribCollection.VariableIndex", null);
 
       varPopup = new PopupMenu(varTable.getJTable(), "Options");
       varPopup.addAction("Show Variable", new AbstractAction() {

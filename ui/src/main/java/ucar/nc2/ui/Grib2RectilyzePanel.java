@@ -18,7 +18,7 @@ import ucar.nc2.ui.widget.PopupMenu;
 import ucar.nc2.util.Misc;
 import ucar.unidata.geoloc.LatLonPoint;
 import ucar.util.prefs.PreferencesExt;
-import ucar.util.prefs.ui.BeanTableSorted;
+import ucar.util.prefs.ui.BeanTable;
 
 import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;
@@ -45,7 +45,7 @@ public class Grib2RectilyzePanel extends JPanel {
 
   private final PreferencesExt prefs;
 
-  private BeanTableSorted param2BeanTable, record2BeanTable, coordTable, allCoordTable;
+  private BeanTable param2BeanTable, record2BeanTable, coordTable, allCoordTable;
   private JSplitPane split, split2, split3;
 
   private TextHistoryPane infoPopup, infoPopup2, infoPopup3;
@@ -59,7 +59,8 @@ public class Grib2RectilyzePanel extends JPanel {
     PopupMenu varPopup;
 
     ////////////////
-    param2BeanTable = new BeanTableSorted(VariableBagBean.class, (PreferencesExt) prefs.node("Param2Bean"), false, "Grib2PDSVariables", "from Grib2Input.getRecords()");
+    param2BeanTable = new BeanTable(VariableBagBean.class, (PreferencesExt) prefs.node("Param2Bean"), false,
+            "Grib2PDSVariables", "from Grib2Input.getRecords()", null);
     param2BeanTable.addListSelectionListener(new ListSelectionListener() {
       public void valueChanged(ListSelectionEvent e) {
         VariableBagBean bean = (VariableBagBean) param2BeanTable.getSelectedBean();
@@ -131,7 +132,8 @@ public class Grib2RectilyzePanel extends JPanel {
    });
 
     Class useClass = Grib2RecordBean.class;
-    record2BeanTable = new BeanTableSorted(useClass, (PreferencesExt) prefs.node(useClass.getName()), false, "Grib2Record", "from VariableBag.atomList");
+    record2BeanTable = new BeanTable(useClass, (PreferencesExt) prefs.node(useClass.getName()), false,
+            "Grib2Record", "from VariableBag.atomList", null);
     varPopup = new PopupMenu(record2BeanTable.getJTable(), "Options");
 
     varPopup.addAction("Compare GridRecord", new AbstractAction() {
@@ -182,7 +184,8 @@ public class Grib2RectilyzePanel extends JPanel {
       }
     });
 
-    coordTable = new BeanTableSorted(CoordBean.class, (PreferencesExt) prefs.node("CoordBean"), false, "Variable Coordinates", "From VariableBag.CoordND");
+    coordTable = new BeanTable(CoordBean.class, (PreferencesExt) prefs.node("CoordBean"), false,
+            "Variable Coordinates", "From VariableBag.CoordND", null);
     varPopup = new PopupMenu(coordTable.getJTable(), "Options");
 
      varPopup.addAction("Show Coords", new AbstractAction() {
@@ -197,7 +200,8 @@ public class Grib2RectilyzePanel extends JPanel {
       }
     });
 
-    allCoordTable = new BeanTableSorted(CoordBean.class, (PreferencesExt) prefs.node("CoordBean"), false, "Group Coordinates", "From Group");
+    allCoordTable = new BeanTable(CoordBean.class, (PreferencesExt) prefs.node("CoordBean"), false,
+            "Group Coordinates", "From Group", null);;
     varPopup = new PopupMenu(allCoordTable.getJTable(), "Options");
 
      varPopup.addAction("Show Coords", new AbstractAction() {
@@ -262,7 +266,7 @@ public class Grib2RectilyzePanel extends JPanel {
     BeanInfo info = new PdsBeanInfo(pds);
 
     String prefsName = pds.getClass().getName();
-    record2BeanTable = new BeanTableSorted(Grib2RecordBean.class, (PreferencesExt) prefs.node(prefsName), prefsName, "from Grib2Input.getRecords()", info);
+    record2BeanTable = new BeanTable(Grib2RecordBean.class, (PreferencesExt) prefs.node(prefsName), prefsName, "from Grib2Input.getRecords()", info);
     PopupMenu varPopup = new PopupMenu(record2BeanTable.getJTable(), "Options");
 
     varPopup.addAction("Compare GridRecord", new AbstractAction() {

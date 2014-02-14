@@ -41,7 +41,7 @@ import ucar.nc2.ui.widget.BAMutil;
 import ucar.nc2.ui.widget.IndependentWindow;
 import ucar.nc2.ui.widget.PopupMenu;
 import ucar.util.prefs.PreferencesExt;
-import ucar.util.prefs.ui.BeanTableSorted;
+import ucar.util.prefs.ui.BeanTable;
 
 import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;
@@ -65,7 +65,7 @@ public class MFileTable extends JPanel {
   private PreferencesExt prefs;
   private final boolean isPopup;
 
-  private BeanTableSorted fileTable;
+  private BeanTable fileTable;
   private IndependentWindow fileWindow;
 
   private List<String> gribCollectionFiles = new ArrayList<>();
@@ -77,7 +77,7 @@ public class MFileTable extends JPanel {
 
     PopupMenu varPopup;
 
-    fileTable = new BeanTableSorted(FileBean.class, (PreferencesExt) prefs.node("FileBean"), false, "Files", "Files", null);
+    fileTable = new BeanTable(FileBean.class, (PreferencesExt) prefs.node("FileBean"), false, "Files", "Files", null);
     varPopup = new PopupMenu(fileTable.getJTable(), "Options");
     varPopup.addAction("Open this file in Grib2Collection", new AbstractAction() {
       public void actionPerformed(ActionEvent e) {

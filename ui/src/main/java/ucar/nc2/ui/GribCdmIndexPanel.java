@@ -43,7 +43,7 @@ import ucar.nc2.ui.widget.PopupMenu;
 import ucar.nc2.ui.widget.TextHistoryPane;
 import ucar.unidata.io.RandomAccessFile;
 import ucar.util.prefs.PreferencesExt;
-import ucar.util.prefs.ui.BeanTableSorted;
+import ucar.util.prefs.ui.BeanTable;
 
 import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;
@@ -71,7 +71,7 @@ public class GribCdmIndexPanel extends JPanel {
 
   private PreferencesExt prefs;
 
-  private BeanTableSorted groupTable, varTable, vertCoordTable, timeCoordTable;
+  private BeanTable groupTable, varTable, vertCoordTable, timeCoordTable;
   private JSplitPane split, split2, split3;
 
   private TextHistoryPane infoTA;
@@ -116,7 +116,7 @@ public class GribCdmIndexPanel extends JPanel {
     PopupMenu varPopup;
 
     ////////////////
-    groupTable = new BeanTableSorted(GroupBean.class, (PreferencesExt) prefs.node("GroupBean"), false, "GDS group", "GribCollection.GroupHcs", null);
+    groupTable = new BeanTable(GroupBean.class, (PreferencesExt) prefs.node("GroupBean"), false, "GDS group", "GribCollection.GroupHcs", null);
     groupTable.addListSelectionListener(new ListSelectionListener() {
       public void valueChanged(ListSelectionEvent e) {
         GroupBean bean = (GroupBean) groupTable.getSelectedBean();
@@ -135,7 +135,7 @@ public class GribCdmIndexPanel extends JPanel {
       }
     });
 
-    varTable = new BeanTableSorted(VarBean.class, (PreferencesExt) prefs.node("Grib2Bean"), false, "Variables in group", "GribCollection.VariableIndex", null);
+    varTable = new BeanTable(VarBean.class, (PreferencesExt) prefs.node("Grib2Bean"), false, "Variables in group", "GribCollection.VariableIndex", null);
     
     varPopup = new PopupMenu(varTable.getJTable(), "Options");
     varPopup.addAction("Show Variable(s)", new AbstractAction() {
@@ -170,7 +170,7 @@ public class GribCdmIndexPanel extends JPanel {
       }
     });
 
-    vertCoordTable = new BeanTableSorted(CoordBean.class, (PreferencesExt) prefs.node("CoordBean"), false, "Vertical Coordinates", "VertCoord", null);
+    vertCoordTable = new BeanTable(CoordBean.class, (PreferencesExt) prefs.node("CoordBean"), false, "Vertical Coordinates", "VertCoord", null);
     varPopup = new PopupMenu(vertCoordTable.getJTable(), "Options");
 
     varPopup.addAction("Show", new AbstractAction() {
@@ -184,7 +184,7 @@ public class GribCdmIndexPanel extends JPanel {
       }
     });
 
-    timeCoordTable = new BeanTableSorted(TimeCoordBean.class, (PreferencesExt) prefs.node("TimeCoordBean"), false, "Time Coordinates", "TimeCoord", null);
+    timeCoordTable = new BeanTable(TimeCoordBean.class, (PreferencesExt) prefs.node("TimeCoordBean"), false, "Time Coordinates", "TimeCoord", null);
     varPopup = new PopupMenu(timeCoordTable.getJTable(), "Options");
 
     varPopup.addAction("Show Coord", new AbstractAction() {

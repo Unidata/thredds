@@ -51,7 +51,7 @@ import ucar.nc2.wmo.CommonCodeTable;
 
 import ucar.unidata.geoloc.LatLonPoint;
 import ucar.util.prefs.PreferencesExt;
-import ucar.util.prefs.ui.BeanTableSorted;
+import ucar.util.prefs.ui.BeanTable;
 
 import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;
@@ -83,7 +83,7 @@ public class Grib2CollectionPanel extends JPanel {
 
   private final PreferencesExt prefs;
 
-  private BeanTableSorted param2BeanTable, record2BeanTable, gds2Table;
+  private BeanTable param2BeanTable, record2BeanTable, gds2Table;
   private JSplitPane split, split2;
 
   private TextHistoryPane infoPopup, infoPopup2, infoPopup3;
@@ -108,7 +108,8 @@ public class Grib2CollectionPanel extends JPanel {
     buttPanel.add(xmlButt);
 
     ////////////////
-    param2BeanTable = new BeanTableSorted(Grib2ParameterBean.class, (PreferencesExt) prefs.node("Param2Bean"), false, "Grib2PDSVariables", "from Grib2Input.getRecords()");
+    param2BeanTable = new BeanTable(Grib2ParameterBean.class, (PreferencesExt) prefs.node("Param2Bean"), false,
+            "Grib2PDSVariables", "from Grib2Input.getRecords()", null);
     param2BeanTable.addListSelectionListener(new ListSelectionListener() {
       public void valueChanged(ListSelectionEvent e) {
         Grib2ParameterBean pb = (Grib2ParameterBean) param2BeanTable.getSelectedBean();
@@ -157,9 +158,11 @@ public class Grib2CollectionPanel extends JPanel {
     }); */
 
     Class useClass = Grib2RecordBean.class;
-    record2BeanTable = new BeanTableSorted(useClass, (PreferencesExt) prefs.node(useClass.getName()), false, useClass.getName(), "from Grib2Input.getRecords()");
+    record2BeanTable = new BeanTable(useClass, (PreferencesExt) prefs.node(useClass.getName()), false,
+            useClass.getName(), "from Grib2Input.getRecords()", null);
 
-    gds2Table = new BeanTableSorted(Gds2Bean.class, (PreferencesExt) prefs.node("Gds2Bean"), false, "Grib2GridDefinitionSection", "unique from Grib2Records");
+    gds2Table = new BeanTable(Gds2Bean.class, (PreferencesExt) prefs.node("Gds2Bean"), false,
+            "Grib2GridDefinitionSection", "unique from Grib2Records", null);
     varPopup = new PopupMenu(gds2Table.getJTable(), "Options");
 
     varPopup.addAction("Show GDS", new AbstractAction() {
@@ -289,7 +292,7 @@ public class Grib2CollectionPanel extends JPanel {
     BeanInfo info = new PdsBeanInfo(pds);
 
     String prefsName = pds.getClass().getName();
-    record2BeanTable = new BeanTableSorted(Grib2RecordBean.class, (PreferencesExt) prefs.node(prefsName), prefsName, "from Grib2Input.getRecords()", info);
+    record2BeanTable = new BeanTable(Grib2RecordBean.class, (PreferencesExt) prefs.node(prefsName), prefsName, "from Grib2Input.getRecords()", info);
     PopupMenu varPopup = new PopupMenu(record2BeanTable.getJTable(), "Options");
 
     varPopup.addAction("Compare GridRecord", new AbstractAction() {

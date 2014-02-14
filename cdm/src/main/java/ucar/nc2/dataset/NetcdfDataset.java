@@ -55,7 +55,6 @@ import ucar.nc2.thredds.ThreddsDataFactory;
 
 import java.io.*;
 import java.lang.reflect.*;
-import java.net.*;
 import java.util.*;
 
 import thredds.catalog.ServiceType;

@@ -12,7 +12,7 @@ import ucar.nc2.ui.widget.TextHistoryPane;
 import ucar.sparr.SparseArray;
 import ucar.unidata.io.RandomAccessFile;
 import ucar.util.prefs.PreferencesExt;
-import ucar.util.prefs.ui.BeanTableSorted;
+import ucar.util.prefs.ui.BeanTable;
 
 import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;
@@ -40,7 +40,7 @@ public class CdmIndex2Panel extends JPanel {
 
   private PreferencesExt prefs;
 
-  private BeanTableSorted groupTable, varTable, coordTable;
+  private BeanTable groupTable, varTable, coordTable;
   private JSplitPane split, split2, split3;
 
   private TextHistoryPane infoTA;
@@ -85,7 +85,7 @@ public class CdmIndex2Panel extends JPanel {
     PopupMenu varPopup;
 
     ////////////////
-    groupTable = new BeanTableSorted(GroupBean.class, (PreferencesExt) prefs.node("GroupBean"), false, "GDS group", "GribCollection.GroupHcs", null);
+    groupTable = new BeanTable(GroupBean.class, (PreferencesExt) prefs.node("GroupBean"), false, "GDS group", "GribCollection.GroupHcs", null);
     groupTable.addListSelectionListener(new ListSelectionListener() {
       public void valueChanged(ListSelectionEvent e) {
         GroupBean bean = (GroupBean) groupTable.getSelectedBean();
@@ -116,7 +116,7 @@ public class CdmIndex2Panel extends JPanel {
        }
      });
 
-    varTable = new BeanTableSorted(VarBean.class, (PreferencesExt) prefs.node("Grib2Bean"), false, "Variables in group", "GribCollection.VariableIndex", null);
+    varTable = new BeanTable(VarBean.class, (PreferencesExt) prefs.node("Grib2Bean"), false, "Variables in group", "GribCollection.VariableIndex", null);
 
     varPopup = new PopupMenu(varTable.getJTable(), "Options");
     varPopup.addAction("Show Variable(s)", new AbstractAction() {
@@ -155,7 +155,7 @@ public class CdmIndex2Panel extends JPanel {
      });
 
 
-    coordTable = new BeanTableSorted(CoordBean.class, (PreferencesExt) prefs.node("CoordBean"), false, "Coordinates in group", "Coordinates", null);
+    coordTable = new BeanTable(CoordBean.class, (PreferencesExt) prefs.node("CoordBean"), false, "Coordinates in group", "Coordinates", null);
     varPopup = new PopupMenu(coordTable.getJTable(), "Options");
 
     varPopup.addAction("Show", new AbstractAction() {
