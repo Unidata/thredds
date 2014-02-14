@@ -84,14 +84,14 @@ public class TimedCollection {
   }
 
   public void update() throws IOException {
-    datasets = new ArrayList<TimedCollection.Dataset>();
+    datasets = new ArrayList<>();
     for (MFile f :  manager.getFilesSorted())
       datasets.add(new Dataset(f));
 
     if (manager.hasDateExtractor()) {
 
       if (datasets.size() == 1) {
-        Dataset ds = (Dataset) datasets.get(0);
+        Dataset ds = datasets.get(0);
         if (ds.start != null)
           dateRange = CalendarDateRange.of(ds.start, ds.start); // LOOK ??
 
@@ -135,6 +135,11 @@ public class TimedCollection {
   }
 
   public CalendarDateRange getDateRange() {
+    if (dateRange == null) try {
+      update();
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
     return dateRange;
   }
 

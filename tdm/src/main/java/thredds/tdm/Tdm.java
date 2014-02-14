@@ -35,11 +35,8 @@
 
 package thredds.tdm;
 
-import org.apache.commons.httpclient.Credentials;
-import org.apache.commons.httpclient.UsernamePasswordCredentials;
-import org.apache.commons.httpclient.auth.AuthScheme;
-import org.apache.commons.httpclient.auth.CredentialsNotAvailableException;
-import org.apache.commons.httpclient.auth.CredentialsProvider;
+import org.apache.http.auth.*;
+import org.apache.http.client.CredentialsProvider;
 import org.slf4j.Logger;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.FileSystemXmlApplicationContext;
@@ -55,6 +52,7 @@ import ucar.nc2.time.CalendarDate;
 import ucar.nc2.util.DiskCache2;
 import ucar.nc2.util.log.LoggerFactory;
 import ucar.nc2.util.net.HTTPException;
+import ucar.nc2.util.net.HTTPFactory;
 import ucar.nc2.util.net.HTTPMethod;
 import ucar.nc2.util.net.HTTPSession;
 
@@ -155,11 +153,16 @@ public class Tdm {
     for (String name : serverNames) {
       HTTPSession session = new HTTPSession(name);
       session.setCredentialsProvider(new CredentialsProvider() {
-        public Credentials getCredentials(AuthScheme authScheme, String s, int i, boolean b) throws CredentialsNotAvailableException {
-          return new UsernamePasswordCredentials(user, pass);
-        }
-      });
-      session.setUserAgent("tdmRunner");
+         public Credentials getCredentials(AuthScope scope) //AuthScheme authScheme, String s, int i, boolean b) throws CredentialsNotAvailableException {
+         {
+           //System.out.printf("getCredentials called %s %s%n", user, pass);
+           return new UsernamePasswordCredentials(user, pass);
+         }
+         public void setCredentials(AuthScope scope, Credentials creds) {}
+         public void clear() {}
+       });
+
+      session.setUserAgent("TDM");
       servers.add(new Server(name, session));
     }
   }
@@ -334,7 +337,7 @@ public class Tdm {
         logger.info("send trigger to {}", url);
         HTTPMethod m = null;
         try {
-          m = HTTPMethod.Get(server.session, url);
+          m = HTTPFactory.Get(server.session, url);
           int status = m.execute();
           String statuss = m.getResponseAsString();
           f.format(" trigger %s status = %d (%s)%n", url, status, statuss);
