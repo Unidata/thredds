@@ -497,6 +497,10 @@ public class PartitionCollection extends GribCollection {
       this.name = dcm.getCollectionName();
       this.directory = dcm.getRoot();
       this.lastModified = dcm.getLastModified();
+
+      FeatureCollectionConfig config = (FeatureCollectionConfig) dcm.getAuxInfo(FeatureCollectionConfig.AUX_CONFIG);
+      if (config == null)
+        System.out.println("HEY");
     }
 
     public GribCollection makeGribCollection(CollectionUpdateType force) throws IOException {

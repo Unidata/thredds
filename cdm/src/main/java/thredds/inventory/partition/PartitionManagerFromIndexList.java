@@ -1,5 +1,6 @@
 package thredds.inventory.partition;
 
+import thredds.featurecollection.FeatureCollectionConfig;
 import thredds.filesystem.MFileOS7;
 import thredds.inventory.*;
 import ucar.nc2.util.CloseableIterator;
@@ -18,10 +19,13 @@ import java.util.List;
  */
 public class PartitionManagerFromIndexList extends CollectionAbstract implements PartitionManager {
   private List<File> partIndexFiles;
+  private final FeatureCollectionConfig config;
 
-  public PartitionManagerFromIndexList(String collectionName, String root, List<File> partFiles, org.slf4j.Logger logger) {
-    super(collectionName, logger);
-    this.root = root;
+  public PartitionManagerFromIndexList(MCollection dcm, List<File> partFiles, org.slf4j.Logger logger) {
+    super(dcm.getCollectionName(), logger);
+    this.config = (FeatureCollectionConfig) dcm.getAuxInfo(FeatureCollectionConfig.AUX_CONFIG);
+
+    this.root = dcm.getRoot();
     this.partIndexFiles = partFiles;
   }
 
@@ -47,7 +51,9 @@ public class PartitionManagerFromIndexList extends CollectionAbstract implements
       File nextFile = iter.next();
 
       try {
-        return new CollectionSingleIndexFile( new MFileOS7(nextFile.getPath()), logger);
+        MCollection result = new CollectionSingleIndexFile( new MFileOS7(nextFile.getPath()), logger);
+        result.putAuxInfo(FeatureCollectionConfig.AUX_CONFIG, config);
+        return result;
 
       } catch (IOException e) {
         logger.error("PartitionManagerFromList failed on "+nextFile.getPath(), e);

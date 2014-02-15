@@ -114,7 +114,8 @@ public class Grib2CollectionBuilder {
     // if theres more than one runtime, create a partition collection to collect all the runtimes together
     if (multipleGroups) {
       Collections.sort(partitions);
-      PartitionManager part = new PartitionManagerFromIndexList(dcm.getCollectionName(), dcm.getRoot(), partitions, logger);
+      PartitionManager part = new PartitionManagerFromIndexList(dcm, partitions, logger);
+      part.putAuxInfo(FeatureCollectionConfig.AUX_CONFIG, dcm.getAuxInfo(FeatureCollectionConfig.AUX_CONFIG));
       ok = Grib2PartitionBuilder.recreateIfNeeded(part, CollectionUpdateType.always, CollectionUpdateType.always, errlog, logger);
     }
 
