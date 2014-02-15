@@ -16,14 +16,14 @@ import java.util.Formatter;
  */
 public class Grib2Partition extends PartitionCollection implements AutoCloseable {
 
-  public Grib2Partition(String name, File directory, FeatureCollectionConfig.GribConfig config, org.slf4j.Logger logger) {
+  public Grib2Partition(String name, File directory, FeatureCollectionConfig config, org.slf4j.Logger logger) {
     super(name, directory, config, false, logger);
   }
 
   // LOOK - needs time partition collection iosp or something
   @Override
   public ucar.nc2.dataset.NetcdfDataset getNetcdfDataset(String datasetName, String groupName, String filename,
-          FeatureCollectionConfig.GribConfig gribConfig, Formatter errlog, org.slf4j.Logger logger) throws IOException {
+          FeatureCollectionConfig config, Formatter errlog, org.slf4j.Logger logger) throws IOException {
     Dataset ds = findDataset(datasetName);
     if (ds == null) return null;
     GroupGC want = ds.findGroupById(groupName);
@@ -36,7 +36,7 @@ public class Grib2Partition extends PartitionCollection implements AutoCloseable
 
   @Override
   public ucar.nc2.dt.grid.GridDataset getGridDataset(String datasetName, String groupName, String filename,
-          FeatureCollectionConfig.GribConfig gribConfig, Formatter errlog, org.slf4j.Logger logger) throws IOException {
+          FeatureCollectionConfig config, Formatter errlog, org.slf4j.Logger logger) throws IOException {
     Dataset ds = findDataset(datasetName);
     if (ds == null) return null;
     GroupGC want = ds.findGroupById(groupName);

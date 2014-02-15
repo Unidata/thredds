@@ -130,16 +130,15 @@ public class Grib2CollectionBuilder {
   // for each group, run rectlizer to derive the coordinates and variables
   public List<Grib2CollectionWriter.Group> makeGroups(List<MFile> allFiles, Formatter errlog) throws IOException {
     Map<GroupAndRuntime, Grib2CollectionWriter.Group> gdsMap = new HashMap<>();
-    Map<String, Boolean> pdsConvert = null;
 
     logger.debug("Grib2CollectionBuilder {}: makeGroups", name);
     int fileno = 0;
     Counter statsAll = new Counter(); // debugging
 
     logger.debug(" dcm={}", dcm);
-    FeatureCollectionConfig.GribConfig config = (FeatureCollectionConfig.GribConfig) dcm.getAuxInfo(FeatureCollectionConfig.AUX_GRIB_CONFIG);
-    Map<Integer, Integer> gdsConvert = (config != null) ? config.gdsHash : null;
-    if (config != null) pdsConvert = config.pdsHash;
+    FeatureCollectionConfig config = (FeatureCollectionConfig) dcm.getAuxInfo(FeatureCollectionConfig.AUX_CONFIG);
+    Map<Integer, Integer> gdsConvert = config.gribConfig.gdsHash;
+    Map<String, Boolean> pdsConvert = config.gribConfig.pdsHash;
 
     // place each record into its group
     int totalRecords = 0;
@@ -148,7 +147,7 @@ public class Grib2CollectionBuilder {
         MFile mfile = iter.next();
         Grib2Index index;
         try {                  // LOOK here is where gbx9 files get recreated; do not make collection index
-          index = (Grib2Index) GribIndex.readOrCreateIndexFromSingleFile(false, false, mfile, config, CollectionUpdateType.test, logger);
+          index = (Grib2Index) GribIndex.readOrCreateIndexFromSingleFile(false, false, mfile, config.gribConfig, CollectionUpdateType.test, logger);
           allFiles.add(mfile);  // add on success
 
         } catch (IOException ioe) {
@@ -162,7 +161,7 @@ public class Grib2CollectionBuilder {
           if (this.tables == null) {
             Grib2SectionIdentification ids = gr.getId(); // so all records must use the same table (!)
             this.tables = Grib2Customizer.factory(ids.getCenter_id(), ids.getSubcenter_id(), ids.getMaster_table_version(), ids.getLocal_table_version());
-            if (config != null) tables.setTimeUnitConverter(config.getTimeUnitConverter());
+            if (config != null) tables.setTimeUnitConverter(config.gribConfig.getTimeUnitConverter());
           }
 
           gr.setFile(fileno); // each record tracks which file it belongs to
@@ -189,12 +188,12 @@ public class Grib2CollectionBuilder {
     for (Grib2CollectionWriter.Group g : groups) {
       Counter stats = new Counter(); // debugging
       g.rect = new Grib2Rectilyser(tables, g.records, g.gdsHash, pdsConvert);
-      g.rect.make(config, Collections.unmodifiableList(allFiles), stats, errlog);
+      g.rect.make(config.gribConfig, Collections.unmodifiableList(allFiles), stats, errlog);
       statsAll.add(stats);
 
       // look for group name overrides
-      if (config != null && config.gdsNamer != null)
-        g.nameOverride = config.gdsNamer.get(g.gdsHash);
+      if (config.gribConfig.gdsNamer != null)
+        g.nameOverride = config.gribConfig.gdsNamer.get(g.gdsHash);
     }
 
     // debugging and validation

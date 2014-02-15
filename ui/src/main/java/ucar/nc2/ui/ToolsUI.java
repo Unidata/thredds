@@ -144,7 +144,7 @@ public class
   private FmrcCollectionPanel fmrcCollectionPanel;
   private GeoGridPanel gridPanel;
   private GeotiffPanel geotiffPanel;
-  private GribCdmIndexPanel gribCdmIndexPanel;
+  // private GribCdmIndexPanel gribCdmIndexPanel;
   private GribCodePanel gribCodePanel;
   private GribFilesPanel gribFilesPanel;
   private GribIndexPanel gribIdxPanel;
@@ -439,9 +439,9 @@ public class
       bufrCdmIndexPanel = new BufrCdmIndexPanel((PreferencesExt) mainPrefs.node("bufrCdmIdx"));
       c = bufrCdmIndexPanel;
 
-    } else if (title.equals("CdmIndex")) {
+    /* } else if (title.equals("CdmIndex")) {
       gribCdmIndexPanel = new GribCdmIndexPanel((PreferencesExt) mainPrefs.node("cdmIdx"));
-      c = gribCdmIndexPanel;
+      c = gribCdmIndexPanel; */
 
     } else if (title.equals("CdmIndex2")) {
       cdmIndex2Panel = new CdmIndex2Panel((PreferencesExt) mainPrefs.node("cdmIdx2"));
@@ -942,11 +942,11 @@ public class
     if (bufrCodePanel != null) bufrCodePanel.save();
     if (coordSysPanel != null) coordSysPanel.save();
     if (coveragePanel != null) coveragePanel.save();
+    if (cdmIndex2Panel != null) cdmIndex2Panel.save();
     if (cdmremotePanel != null) cdmremotePanel.save();
     if (dirPartPanel != null) dirPartPanel.save();
     if (bufrCdmIndexPanel != null) bufrCdmIndexPanel.save();
-    if (cdmIndex2Panel != null) cdmIndex2Panel.save();
-    if (gribCdmIndexPanel != null) gribCdmIndexPanel.save();
+    //if (gribCdmIndexPanel != null) gribCdmIndexPanel.save();
     if (fmrcCollectionPanel != null) fmrcCollectionPanel.save();
     if (fcPanel != null) fcPanel.save();
     if (ftPanel != null) ftPanel.save();
@@ -2894,6 +2894,7 @@ public class
 
   }
 
+  /*
   /////////////////////////////////////////////////////////////////////
   private class GribCdmIndexPanel extends OpPanel {
     ucar.nc2.ui.GribCdmIndexPanel gribTable;
@@ -2945,7 +2946,7 @@ public class
       super.save();
     }
 
-  }
+  } */
 
     /////////////////////////////////////////////////////////////////////
   private class CdmIndex2Panel extends OpPanel {

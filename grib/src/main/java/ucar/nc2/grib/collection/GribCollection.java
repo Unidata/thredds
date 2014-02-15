@@ -3,7 +3,9 @@ package ucar.nc2.grib.collection;
 import net.jcip.annotations.Immutable;
 import thredds.featurecollection.FeatureCollectionConfig;
 import thredds.inventory.CollectionAbstract;
+import thredds.inventory.CollectionSpecParser;
 import thredds.inventory.MFile;
+import thredds.inventory.partition.DirectoryCollection;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time.CalendarDateFormatter;
 import ucar.nc2.time.CalendarTimeZone;
@@ -28,6 +30,7 @@ import ucar.unidata.util.StringUtil2;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.nio.file.Paths;
 import java.util.*;
 
 /**
@@ -80,6 +83,49 @@ public class GribCollection implements FileCacheable, AutoCloseable {
     return diskCache;
   }
 
+  ///////////////////////////////////////////////////////////////////
+
+   /*
+  index = gcname + ".ncx"
+  A partition divides the files into a tree of collections
+
+  partition = none
+
+    if multiple runtimes: make seperate GC for each one, make a PC that puts them together. GC name= collectionName + runtime, PC = collectionName.
+    if single runtime:   GC name = collectionName
+    in both cases, the index for the collection = collectionName
+
+  partition = directory
+
+    use the directory tree as the partition
+    gcname = collectionName + directory
+
+  partition = file
+
+    use the directory tree and the individual files as the partition
+    gcname = collectionName = filename
+
+   */
+  static public File getIndexFile(FeatureCollectionConfig config) {
+    Formatter errlog = new Formatter();
+    CollectionSpecParser specp = new CollectionSpecParser(config.spec, errlog);
+
+    String name = StringUtil2.replace(config.name, '\\', "/");
+
+    String cname = null;
+    switch (config.ptype) {
+      case file:
+      case directory:
+        cname = DirectoryCollection.makeCollectionName(name, Paths.get(specp.getRootDir()));
+        break;
+      case none:
+        cname = name;
+    }
+
+    File f = getIndexFile(cname, new File(specp.getRootDir()));
+    return getIndexFile(f.getPath());
+  }
+
   static public File getIndexFile(String path) {
     return getDiskCache2().getFile(path); // diskCache manages where the index file lives
   }
@@ -113,7 +159,7 @@ public class GribCollection implements FileCacheable, AutoCloseable {
   ////////////////////////////////////////////////////////////////
   protected final String name; // collection name; index filename must be directory/name.ncx2
   protected /* final */ File directory;
-  protected final FeatureCollectionConfig.GribConfig gribConfig;
+  protected final FeatureCollectionConfig config;
   protected final boolean isGrib1;
 
   // set by the builder
@@ -132,10 +178,10 @@ public class GribCollection implements FileCacheable, AutoCloseable {
   protected File indexFile;
   protected FileCache objCache = null;  // optional object cache - used in the TDS
 
-  protected GribCollection(String name, File directory, FeatureCollectionConfig.GribConfig config, boolean isGrib1) {
+  protected GribCollection(String name, File directory, FeatureCollectionConfig config, boolean isGrib1) {
     this.name = name;
     this.directory = directory;
-    this.gribConfig = config;
+    this.config = config;
     this.isGrib1 = isGrib1;
   }
 
@@ -158,8 +204,8 @@ public class GribCollection implements FileCacheable, AutoCloseable {
     return fileMap.values();
   }
 
-  public FeatureCollectionConfig.GribConfig getGribConfig() {
-    return gribConfig;
+  public FeatureCollectionConfig getConfig() {
+    return config;
   }
 
   public List<String> getFilenames() {
@@ -256,8 +302,7 @@ public class GribCollection implements FileCacheable, AutoCloseable {
    */
   public File getIndexFile() {
     if (indexFile == null) {
-      File idxFile = new File(directory, name+ CollectionAbstract.NCX_SUFFIX);
-      indexFile = getIndexFile(idxFile.getPath());
+      indexFile = getIndexFile(config);
     }
     return indexFile;
   }
@@ -311,12 +356,12 @@ public class GribCollection implements FileCacheable, AutoCloseable {
 
   // stuff for InvDatasetFcGrib
   public ucar.nc2.dataset.NetcdfDataset getNetcdfDataset(String datasetName, String groupName, String filename,
-                                                         FeatureCollectionConfig.GribConfig gribConfig, Formatter errlog, org.slf4j.Logger logger) throws IOException {
+                                                         FeatureCollectionConfig gribConfig, Formatter errlog, org.slf4j.Logger logger) throws IOException {
     return null;
   }
 
   public ucar.nc2.dt.grid.GridDataset getGridDataset(String datasetName, String groupName, String filename,
-                                                     FeatureCollectionConfig.GribConfig gribConfig, Formatter errlog, org.slf4j.Logger logger) throws IOException {
+                                                     FeatureCollectionConfig gribConfig, Formatter errlog, org.slf4j.Logger logger) throws IOException {
     return null;
   }
 
@@ -504,8 +549,8 @@ public class GribCollection implements FileCacheable, AutoCloseable {
     private String makeDescription() {
       // check for user defined group names
       String result = null;
-      if (gribConfig != null && gribConfig.gdsNamer != null)
-        result = gribConfig.gdsNamer.get(gdsHash);
+      if (config.gribConfig.gdsNamer != null)
+        result = config.gribConfig.gdsNamer.get(gdsHash);
       if (result != null) return result;
 
       return hcs.makeDescription(); // default desc
@@ -1006,7 +1051,7 @@ public class GribCollection implements FileCacheable, AutoCloseable {
     final StringBuilder sb = new StringBuilder("GribCollection{");
     sb.append("\nname='").append(name).append('\'');
     sb.append("\n directory=").append(directory);
-    sb.append("\n gribConfig=").append(gribConfig);
+    sb.append("\n config=").append(config);
     sb.append("\n isGrib1=").append(isGrib1);
     sb.append("\n version=").append(version);
     sb.append("\n center=").append(center);

@@ -327,7 +327,7 @@ public final class DataRootHandler implements InitializingBean {
       return;
     }
     staticCatalogNames.add(path);
-    System.out.printf("catalog %s -> %s%n", path, f.getAbsolutePath());
+    if (logCatalogInit.isDebugEnabled()) logCatalogInit.debug("catalog {} -> {}%n", path, f.getAbsolutePath());
 
     // read it
     InvCatalogFactory factory = this.getCatalogFactory(true); // always validate the config catalogs
@@ -434,7 +434,9 @@ public final class DataRootHandler implements InitializingBean {
         logCatalogInit.error(ERROR + "   invalid catalog -- " + sbuff.toString());
         return null;
       }
-      // logCatalogInit.info("   valid catalog -- " + sbuff.toString());
+      String warn = sbuff.toString();
+      if (warn.length() > 0)
+        logCatalogInit.debug(warn);
 
     } catch (Throwable t) {
       String msg = (cat == null) ? "null catalog" : cat.getLog();

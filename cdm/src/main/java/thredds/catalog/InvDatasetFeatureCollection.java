@@ -177,6 +177,7 @@ public abstract class InvDatasetFeatureCollection extends InvCatalogRef implemen
   protected final FeatureCollectionConfig config;
   protected String topDirectory;
   protected MCollection datasetCollection; // defines the collection of datasets in this feature collection, actually final
+  protected String collectionName;
 
   @GuardedBy("lock")
   protected State state;
@@ -192,7 +193,7 @@ public abstract class InvDatasetFeatureCollection extends InvCatalogRef implemen
 
     this.getLocalMetadataInheritable().setDataType(fcType.getFeatureType());
 
-    String collectionName = CollectionAbstract.cleanName(config.name != null ? config.name : name);
+    this.collectionName = CollectionAbstract.cleanName(config.name != null ? config.name : name);
     config.name = collectionName;
     this.logger = loggerFactory.getLogger("fc." + collectionName); // seperate log file for each feature collection (!!)
 
@@ -210,7 +211,6 @@ public abstract class InvDatasetFeatureCollection extends InvCatalogRef implemen
     topDirectory = datasetCollection.getRoot();
     String errs = errlog.toString();
     if (errs.length() > 0) logger.warn("MFileCollectionManager parse error = {} ", errs);
-
   }
 
   // stuff that shouldnt be done in a constructor - eg dont let 'this' escape
@@ -221,7 +221,7 @@ public abstract class InvDatasetFeatureCollection extends InvCatalogRef implemen
   }
 
   public String getCollectionName() {
-    return datasetCollection.getCollectionName();
+    return collectionName;
   }
 
   @Override
@@ -247,6 +247,19 @@ public abstract class InvDatasetFeatureCollection extends InvCatalogRef implemen
   abstract protected void updateCollection(State localState, CollectionUpdateType force);
 
   abstract protected void makeDatasetTop(State localState);
+
+  // this allows us to put warnings into the catalogInit.log
+  @Override
+  boolean check(StringBuilder out, boolean show) {
+    boolean isValid = true;
+
+    if (getServiceDefault() == null) {
+      out.append("**Warning: Dataset (").append(getFullName()).append("): has no default service\n");
+      isValid = false;
+    }
+
+    return isValid && super.check(out, show);
+  }
 
   ////////////////////////////////////////////////////////////////////////////////////////////
 

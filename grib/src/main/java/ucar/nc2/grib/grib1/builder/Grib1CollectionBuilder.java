@@ -117,7 +117,7 @@ public class Grib1CollectionBuilder extends GribCollectionBuilder {
     this.directory = new File(dcm.getRoot());
 
     try {
-      if (config != null) dcm.putAuxInfo(FeatureCollectionConfig.AUX_GRIB_CONFIG, config);
+      if (config != null) dcm.putAuxInfo(FeatureCollectionConfig.AUX_CONFIG, config);
       this.gc = new Grib1Collection(file.getName(), new File(dcm.getRoot()), config);
 
     } catch (Exception e) {
@@ -133,7 +133,7 @@ public class Grib1CollectionBuilder extends GribCollectionBuilder {
     this.name = dcm.getCollectionName();
     this.directory = new File(dcm.getRoot());
 
-    FeatureCollectionConfig.GribConfig config = (FeatureCollectionConfig.GribConfig) dcm.getAuxInfo(FeatureCollectionConfig.AUX_GRIB_CONFIG);
+    FeatureCollectionConfig.GribConfig config = (FeatureCollectionConfig.GribConfig) dcm.getAuxInfo(FeatureCollectionConfig.AUX_CONFIG);
     this.gc = new Grib1Collection(dcm.getCollectionName(), new File(dcm.getRoot()), config);
   }
 
@@ -187,7 +187,7 @@ public class Grib1CollectionBuilder extends GribCollectionBuilder {
   }
 
   private boolean readIndex(RandomAccessFile indexRaf) throws IOException {
-    FeatureCollectionConfig.GribConfig config = (FeatureCollectionConfig.GribConfig) dcm.getAuxInfo(FeatureCollectionConfig.AUX_GRIB_CONFIG);
+    FeatureCollectionConfig.GribConfig config = (FeatureCollectionConfig.GribConfig) dcm.getAuxInfo(FeatureCollectionConfig.AUX_CONFIG);
     try {
       gc = Grib1CollectionBuilderFromIndex.createFromIndex(this.name, this.directory, indexRaf, config, logger);
       return true;
@@ -248,7 +248,7 @@ public class Grib1CollectionBuilder extends GribCollectionBuilder {
     int fileno = 0;
     logger.debug(" dcm= {}%n", dcm);
 
-    FeatureCollectionConfig.GribConfig config = (FeatureCollectionConfig.GribConfig) dcm.getAuxInfo(FeatureCollectionConfig.AUX_GRIB_CONFIG);
+    FeatureCollectionConfig.GribConfig config = (FeatureCollectionConfig.GribConfig) dcm.getAuxInfo(FeatureCollectionConfig.AUX_CONFIG);
     if (config != null) gdsConvert = config.gdsHash;
     if (config != null) pdsConvert = config.pdsHash;
     FeatureCollectionConfig.GribIntvFilter intvMap = (config != null) ?  config.intvFilter : null;

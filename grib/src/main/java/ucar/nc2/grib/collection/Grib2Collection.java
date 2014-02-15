@@ -50,12 +50,12 @@ import java.util.Formatter;
  */
 public class Grib2Collection extends GribCollection {
 
-  public Grib2Collection(String name, File directory, FeatureCollectionConfig.GribConfig config) {
+  public Grib2Collection(String name, File directory, FeatureCollectionConfig config) {
     super(name, directory, config, false);
   }
 
   @Override
-  public ucar.nc2.dataset.NetcdfDataset getNetcdfDataset(String datasetName, String groupName, String filename, FeatureCollectionConfig.GribConfig gribConfig,
+  public ucar.nc2.dataset.NetcdfDataset getNetcdfDataset(String datasetName, String groupName, String filename, FeatureCollectionConfig gribConfig,
                                                          Formatter errlog, org.slf4j.Logger logger) throws IOException {
     Dataset ds = findDataset(datasetName);
     GroupGC want = ds.findGroupById(groupName);
@@ -79,7 +79,7 @@ public class Grib2Collection extends GribCollection {
   }
 
   @Override
-  public ucar.nc2.dt.grid.GridDataset getGridDataset(String datasetName, String groupName, String filename, FeatureCollectionConfig.GribConfig gribConfig,
+  public ucar.nc2.dt.grid.GridDataset getGridDataset(String datasetName, String groupName, String filename, FeatureCollectionConfig gribConfig,
                                                      Formatter errlog, org.slf4j.Logger logger) throws IOException {
     Dataset ds = findDataset(datasetName);
     GroupGC want = ds.findGroupById(groupName);

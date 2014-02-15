@@ -20,10 +20,11 @@ public class GribCollectionConfig extends JDialog {
     initComponents();
   }
 
-  public FeatureCollectionConfig.GribConfig getGribConfig() {
-    FeatureCollectionConfig.GribConfig config = new FeatureCollectionConfig.GribConfig();
+  public FeatureCollectionConfig getConfig() {
+    FeatureCollectionConfig config = new FeatureCollectionConfig();
+    FeatureCollectionConfig.GribConfig gconfig = config.gribConfig;
     if (excludeZero.isSelected())
-      config.setExcludeZero(true);
+      gconfig.setExcludeZero(true);
     TableModel tm = intvLenTable.getModel();
     for (int row = 0; row < tm.getRowCount(); row++) {
       Object len = tm.getValueAt(row, 0);
@@ -31,7 +32,7 @@ public class GribCollectionConfig extends JDialog {
       if (len != null && id != null) {
         int intvLen = (Integer) len;
         String ids = (String) id;
-        config.setIntervalLength(intvLen, ids);
+        gconfig.setIntervalLength(intvLen, ids);
       }
     }
     return config;

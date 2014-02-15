@@ -132,13 +132,13 @@ public class Grib1Iosp extends GribIosp {
   @Override
   public void open(RandomAccessFile raf, NetcdfFile ncfile, CancelTask cancelTask) throws IOException {
     super.open(raf, ncfile, cancelTask);
-    Grib1ParamTables tables = (gribConfig.paramTable != null) ? Grib1ParamTables.factory(gribConfig.paramTable) :
-            Grib1ParamTables.factory(gribConfig.paramTablePath, gribConfig.lookupTablePath); // so an iosp message must be received before the open()
+    Grib1ParamTables tables = (config.gribConfig.paramTable != null) ? Grib1ParamTables.factory(config.gribConfig.paramTable) :
+            Grib1ParamTables.factory(config.gribConfig.paramTablePath, config.gribConfig.lookupTablePath); // so an iosp message must be received before the open()
 
     // create the gbx9 index file if not already there
     boolean isGrib = (raf != null) && Grib1RecordScanner.isValidFile(raf);
     if (isGrib) {
-      this.gribCollection = GribCollection.makeGribCollectionFromSingleFile(true, raf, gribConfig, CollectionUpdateType.test, logger);
+      this.gribCollection = GribCollection.makeGribCollectionFromSingleFile(true, raf, config.gribConfig, CollectionUpdateType.test, logger);
       cust = Grib1Customizer.factory(gribCollection.getCenter(), gribCollection.getSubcenter(), gribCollection.getLocal(), tables);
     }
 
@@ -181,7 +181,7 @@ public class Grib1Iosp extends GribIosp {
         timePartition = Grib1TimePartitionBuilderFromIndex.createTimePartitionFromIndex(name, null, raf, null, logger);
         gribCollection = timePartition;
       } else {
-        gribCollection = Grib1CollectionBuilderFromIndex.createFromIndex(name, null, raf, gribConfig, logger);
+        gribCollection = Grib1CollectionBuilderFromIndex.createFromIndex(name, null, raf, config.gribConfig, logger);
       }
       cust = Grib1Customizer.factory(gribCollection.getCenter(), gribCollection.getSubcenter(), gribCollection.getLocal(), tables);
 

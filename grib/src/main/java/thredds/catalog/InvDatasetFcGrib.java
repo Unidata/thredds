@@ -92,14 +92,14 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
 
   //////////////////////////////////////////////////////////////////////////////
 
-  private final FeatureCollectionConfig.GribConfig gribConfig;
+  private final FeatureCollectionConfig config;
   private final boolean isGrib1;
   private final boolean isFilePartition;
   private final boolean isDirectoryPartition;
 
   public InvDatasetFcGrib(InvDatasetImpl parent, String name, String path, FeatureCollectionType fcType, FeatureCollectionConfig config) {
     super(parent, name, path, fcType, config);
-    this.gribConfig = config.gribConfig;
+    this.config = config;
     this.isGrib1 = config.type == FeatureCollectionType.GRIB1;
     this.isFilePartition = (config.ptype == FeatureCollectionConfig.PartitionType.file);
     this.isDirectoryPartition = (config.ptype == FeatureCollectionConfig.PartitionType.directory);
@@ -176,7 +176,7 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
         Iterable<GribCollection.GroupGC> groups = ds.getGroups();
         tmi.setGeospatialCoverage(extractGeospatial(groups)); // set extent from twoD dataset for all
 
-        if (gribConfig.hasDatasetType(FeatureCollectionConfig.GribDatasetType.TwoD)) {
+        if (config.gribConfig.hasDatasetType(FeatureCollectionConfig.GribDatasetType.TwoD)) {
           InvDatasetImpl twoD = new InvDatasetImpl(this, getDatasetNameTwoD());
           String path = getPath() + "/" + TWOD_DATASET;
           twoD.setUrlPath(path);
@@ -193,7 +193,7 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
 
       if (ds.getType() == GribCollection.Type.Best) {
 
-        if (gribConfig.hasDatasetType(FeatureCollectionConfig.GribDatasetType.Best)) {
+        if (config.gribConfig.hasDatasetType(FeatureCollectionConfig.GribDatasetType.Best)) {
           Iterable<GribCollection.GroupGC> groups = ds.getGroups();
           InvDatasetImpl best = new InvDatasetImpl(this, getDatasetNameBest());
           String path = getPath() + "/" + BEST_DATASET;
@@ -210,7 +210,7 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
 
     }
 
-    if (gribConfig.hasDatasetType(FeatureCollectionConfig.GribDatasetType.LatestFile)) {
+    if (config.gribConfig.hasDatasetType(FeatureCollectionConfig.GribDatasetType.LatestFile)) {
       InvDatasetImpl ds = new InvDatasetImpl(this, getLatestFileName());
       ds.setUrlPath(FILES + "/" + LATEST_DATASET_CATALOG);
       // ds.setID(getPath() + "/" + FILES + "/" + LATEST_DATASET_CATALOG);
@@ -428,7 +428,7 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
     InvCatalogImpl parentCatalog = (InvCatalogImpl) getParentCatalog();
     InvCatalogImpl mainCatalog = new InvCatalogImpl(getName(), parentCatalog.getVersion(), catURI);
 
-    if (gribConfig.hasDatasetType(FeatureCollectionConfig.GribDatasetType.LatestFile))
+    if (config.gribConfig.hasDatasetType(FeatureCollectionConfig.GribDatasetType.LatestFile))
       mainCatalog.addService(InvService.latest);
     mainCatalog.addDataset(((StateGrib) localState).top);
     mainCatalog.addService(virtualService);
@@ -683,18 +683,18 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
 
     if (dp.filename != null) {  // case 7
       File want = new File(topDirectory, dp.filename);
-      NetcdfDataset ncd = NetcdfDataset.acquireDataset(null, want.getPath(), null, -1, null, gribConfig.getIospMessage());
+      NetcdfDataset ncd = NetcdfDataset.acquireDataset(null, want.getPath(), null, -1, null, config.gribConfig.getIospMessage());
       return new ucar.nc2.dt.grid.GridDataset(ncd);
     }
 
     if (dp.partition != null) {   // specific time partition
       GribCollection gc =  dp.partition.getGribCollection();
-      GridDataset gd = gc.getGridDataset(dp.dataset, dp.group, dp.filename, gribConfig, null, logger);
+      GridDataset gd = gc.getGridDataset(dp.dataset, dp.group, dp.filename, config, null, logger);
       gc.close(); // LOOK WTF ??
       return gd;
     }
 
-    return localState.gribCollection.getGridDataset(dp.dataset, dp.group, dp.filename, gribConfig, null, logger);
+    return localState.gribCollection.getGridDataset(dp.dataset, dp.group, dp.filename, config, null, logger);
   }
 
   @Override
@@ -706,17 +706,17 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
 
     if (dp.filename != null) {  // case 7
       File want = new File(topDirectory, dp.filename);
-      return NetcdfDataset.acquireDataset(null, want.getPath(), null, -1, null, gribConfig.getIospMessage());
+      return NetcdfDataset.acquireDataset(null, want.getPath(), null, -1, null, config.gribConfig.getIospMessage());
     }
 
     if (dp.partition != null)  { // specific time partition
       GribCollection gc =  dp.partition.getGribCollection();
-      NetcdfDataset gd = gc.getNetcdfDataset(dp.dataset, dp.group, dp.filename, gribConfig, null, logger);
+      NetcdfDataset gd = gc.getNetcdfDataset(dp.dataset, dp.group, dp.filename, config, null, logger);
       gc.close();
       return gd;
     }
 
-    return localState.gribCollection.getNetcdfDataset(dp.dataset, dp.group, dp.filename, gribConfig, null, logger);
+    return localState.gribCollection.getNetcdfDataset(dp.dataset, dp.group, dp.filename, config, null, logger);
   }
 
   /* possible forms of path:

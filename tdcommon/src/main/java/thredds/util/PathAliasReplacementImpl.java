@@ -46,7 +46,7 @@ import java.util.Map;
  * @since 4.0
  */
 public class PathAliasReplacementImpl implements PathAliasReplacement {
-  private static boolean debug = true;
+  private static boolean debug = false;
 
   public static List<PathAliasReplacement> makePathAliasReplacements(Map<String, String> aliases) {
     List<PathAliasReplacement> result = new ArrayList<PathAliasReplacement>();

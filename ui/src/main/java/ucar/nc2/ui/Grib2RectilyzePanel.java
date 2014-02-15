@@ -423,8 +423,8 @@ public class Grib2RectilyzePanel extends JPanel {
     fileList = new ArrayList<>();
     info = new Formatter();
     dcm = makeCollection(spec, info);
-    FeatureCollectionConfig.GribConfig config = gribCollectionConfigDialog.getGribConfig();
-    dcm.putAuxInfo(FeatureCollectionConfig.AUX_GRIB_CONFIG, config);
+    FeatureCollectionConfig config = gribCollectionConfigDialog.getConfig();
+    dcm.putAuxInfo(FeatureCollectionConfig.AUX_CONFIG, config);
 
     Grib2CollectionBuilder builder = GribCdmIndex2.debugOnly(dcm, logger);
     List<Grib2CollectionWriter.Group> groups = builder.makeGroups(fileList, info);

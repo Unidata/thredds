@@ -50,18 +50,18 @@ public abstract class GribIosp extends AbstractIOServiceProvider {
   private static final boolean debug = false;
 
   // store custom tables in here
-  protected FeatureCollectionConfig.GribConfig gribConfig = new FeatureCollectionConfig.GribConfig();
+  protected FeatureCollectionConfig config = new FeatureCollectionConfig();
 
   public void setParamTable(Element paramTable) {
-    gribConfig.paramTable = paramTable;
+    config.gribConfig.paramTable = paramTable;
   }
 
   public void setLookupTablePath(String lookupTablePath) {
-    gribConfig.lookupTablePath = lookupTablePath;
+    config.gribConfig.lookupTablePath = lookupTablePath;
   }
 
   public void setParamTablePath(String paramTablePath) {
-    gribConfig.paramTablePath = paramTablePath;
+    config.gribConfig.paramTablePath = paramTablePath;
   }
 
   @Override
@@ -71,12 +71,12 @@ public abstract class GribIosp extends AbstractIOServiceProvider {
       if (s.startsWith("gribParameterTableLookup")) {
         int pos = s.indexOf("=");
         if (pos > 0)
-          gribConfig.lookupTablePath = s.substring(pos+1).trim();
+          config.gribConfig.lookupTablePath = s.substring(pos+1).trim();
 
       } else if (s.startsWith("gribParameterTable")) {
         int pos = s.indexOf("=");
         if (pos > 0)
-          gribConfig.paramTablePath = s.substring(pos+1).trim();
+          config.gribConfig.paramTablePath = s.substring(pos+1).trim();
       }
 
       if (debug) System.out.printf("GRIB got IOSP message=%s%n", special);
@@ -85,7 +85,7 @@ public abstract class GribIosp extends AbstractIOServiceProvider {
 
     if (special instanceof org.jdom2.Element) {  // the root element will be <iospParam>
       Element root = (org.jdom2.Element) special;
-      gribConfig.configFromXml(root, NcMLReader.ncNS);
+      config.gribConfig.configFromXml(root, NcMLReader.ncNS);
       return null;
     }
 

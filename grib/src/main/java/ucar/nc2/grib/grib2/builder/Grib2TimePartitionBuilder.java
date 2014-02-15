@@ -116,7 +116,7 @@ public class Grib2TimePartitionBuilder extends Grib2CollectionBuilder {
     this.directory = directory;
 
     FeatureCollectionConfig.GribConfig config = null;
-    if (tpc != null) config = (FeatureCollectionConfig.GribConfig) tpc.getAuxInfo(FeatureCollectionConfig.AUX_GRIB_CONFIG);
+    if (tpc != null) config = (FeatureCollectionConfig.GribConfig) tpc.getAuxInfo(FeatureCollectionConfig.AUX_CONFIG);
     this.tp = new Grib2TimePartition(name, directory, config, logger);
     this.gc = tp;
     this.tpc = tpc;

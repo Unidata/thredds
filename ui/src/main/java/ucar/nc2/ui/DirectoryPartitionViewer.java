@@ -8,6 +8,7 @@ import thredds.inventory.*;
 import thredds.inventory.partition.DirectoryPartition;
 import thredds.inventory.partition.DirectoryBuilder;
 import ucar.nc2.grib.*;
+import ucar.nc2.grib.collection.GribCdmIndex2;
 import ucar.nc2.grib.grib2.Grib2TimePartition;
 import ucar.nc2.ui.widget.*;
 import ucar.nc2.ui.widget.PopupMenu;
@@ -52,7 +53,7 @@ public class DirectoryPartitionViewer extends JPanel {
 
   private FeatureCollectionConfig config;
   private String collectionName = "ncdc1year";
-  private GribCdmIndexPanel cdmIndexTables;
+  private CdmIndex2Panel cdmIndexTables;
   private PartitionsTable partitionsTable;
 
   private JPanel tablePanel;
@@ -69,7 +70,7 @@ public class DirectoryPartitionViewer extends JPanel {
     partitionTreeBrowser = new PartitionTreeBrowser();
     partitionsTable = new PartitionsTable((PreferencesExt) prefs.node("partTable"));
 
-    cdmIndexTables = new GribCdmIndexPanel((PreferencesExt) prefs.node("cdmIdx"), null);
+    cdmIndexTables = new CdmIndex2Panel((PreferencesExt) prefs.node("cdmIdx"), null);
     cdmIndexTables.addPropertyChangeListener(new PropertyChangeListener() {
       public void propertyChange(PropertyChangeEvent evt) {
         firePropertyChange(evt.getPropertyName(), evt.getOldValue(), evt.getNewValue());
@@ -161,7 +162,7 @@ public class DirectoryPartitionViewer extends JPanel {
     if (current == partitionsTable) {
       partitionsTable.showGroupDiffs(f);
     } else if (current == cdmIndexTables) {
-      cdmIndexTables.showDetailInfo(f);
+      cdmIndexTables.showInfo(f);
     } else {
       return;
     }
@@ -205,7 +206,7 @@ public class DirectoryPartitionViewer extends JPanel {
   private void moveCdmIndexFile(NodeInfo indexFile) throws IOException {
     GribCollection gc = null;
     try {
-      boolean ok = GribCdmIndex.moveCdmIndex(indexFile.dir.toString(), logger);
+      boolean ok = GribCdmIndex2.moveCdmIndex(indexFile.dir.toString(), logger);
       Formatter f = new Formatter();
       f.format("moved success=%s", ok);
       infoTA.setText(f.toString());
@@ -265,7 +266,7 @@ public class DirectoryPartitionViewer extends JPanel {
 
          Formatter out = new Formatter();
          try {
-           GribCdmIndex indexReader = new GribCdmIndex();
+           GribCdmIndex2 indexReader = new GribCdmIndex2(logger);
            final DirectoryPartition dpart = new DirectoryPartition(config, node.dir, indexReader, logger);
 
            final Grib2TimePartition tp = new Grib2TimePartition(dpart.getCollectionName(), node.dir.toFile(), config.gribConfig, logger);
@@ -311,9 +312,8 @@ public class DirectoryPartitionViewer extends JPanel {
 
   private void cmdShowIndex(NodeInfo node) {
     try {
-      FeatureCollectionConfig.GribConfig gconfig = (config == null) ? null : config.gribConfig ;
       // this opens the index file and constructs a GribCollection
-      cdmIndexTables.setIndexFile(node.part.getIndex(), gconfig);
+      cdmIndexTables.setIndexFile(node.part.getIndex(), config);
       swap(cdmIndexTables);
 
     } catch (Throwable t) {
@@ -326,7 +326,7 @@ public class DirectoryPartitionViewer extends JPanel {
     Formatter out = new Formatter();
     out.format("makeTimePartitionIndex %s%n%n", node);
     try {
-      boolean ok = GribCdmIndex.makeIndex(config, out, node.dir);
+      boolean ok = GribCdmIndex2.makeIndex(config, out, node.dir);
       out.format("makeTimePartitionIndex success %s%n%n", ok);
       infoTA.setText(out.toString());
       infoTA.gotoTop();
@@ -368,7 +368,7 @@ public class DirectoryPartitionViewer extends JPanel {
     List<NodeInfo> getChildren() {
       List<NodeInfo> result = new ArrayList<>(100);
       try {
-        for (DirectoryBuilder child : part.constructChildren(new GribCdmIndex(), CollectionUpdateType.test)) {
+        for (DirectoryBuilder child : part.constructChildren(new GribCdmIndex2(logger), CollectionUpdateType.test)) {
           result.add(new NodeInfo(child));
         }
 

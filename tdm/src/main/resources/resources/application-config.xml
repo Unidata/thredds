@@ -18,27 +18,15 @@
     <constructor-arg type="java.util.concurrent.BlockingQueue" ref="completionQ"/>
   </bean>
 
-    <bean id="testDriver" class="thredds.tdm.TdmRunner">
-      <property name="executor" ref="executor"/>
-      <property name="catalog" value="classpath:/resources/indexNomads.xml"/>
-      <property name="serverNames">
-        <list>
-          <value>http://motherlode.ucar.edu:8080/</value>
-          <value>http://motherlode.ucar.edu:8081/</value>
-          <value>http://motherlode.ucar.edu:9080/</value>
-        </list>
-      </property>
-    </bean>
-
-    <bean id="testDriver2" class="thredds.tdm.Tdm">
-      <property name="executor" ref="executor"/>
-      <property name="catalog" value="classpath:/resources/indexNomads.xml"/>
-      <property name="serverNames">
-        <list>
-          <value>http://motherlode.ucar.edu:9080/</value>
-        </list>
-      </property>
-    </bean>
+  <bean id="testDriver2" class="thredds.tdm.Tdm">
+    <property name="executor" ref="executor"/>
+    <property name="catalog" value="classpath:/resources/indexNomads.xml"/>
+    <property name="serverNames">
+      <list>
+        <value>http://localhost:8080/</value>
+      </list>
+    </property>
+  </bean>
 
   <!-- bean id="diskCache" class="ucar.nc2.util.DiskCache2"  destroy-method="exit">
     <constructor-arg value="cache/grib/"/>
@@ -47,8 +35,8 @@
     <constructor-arg value="60"/>
   </bean -->
 
-   <util:map id="dataRootLocationAliasExpanders" map-class="java.util.HashMap">
-     <entry key="cdmUnitTest" value="Q:/cdmUnitTest"/>
-   </util:map>
+  <util:map id="dataRootLocationAliasExpanders" map-class="java.util.HashMap">
+    <entry key="cdmUnitTest" value="Q:/cdmUnitTest"/>
+  </util:map>
 
 </beans>

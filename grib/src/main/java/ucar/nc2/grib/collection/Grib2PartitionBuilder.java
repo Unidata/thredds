@@ -62,9 +62,9 @@ public class Grib2PartitionBuilder extends Grib2CollectionWriter {
     this.name = name;
     this.directory = directory;
 
-    FeatureCollectionConfig.GribConfig config = null;
+    FeatureCollectionConfig config = null;
     if (tpc != null)
-      config = (FeatureCollectionConfig.GribConfig) tpc.getAuxInfo(FeatureCollectionConfig.AUX_GRIB_CONFIG);
+      config = (FeatureCollectionConfig) tpc.getAuxInfo(FeatureCollectionConfig.AUX_CONFIG);
     this.result = new Grib2Partition(name, directory, config, logger);
     this.partitionManager = tpc;
   }
@@ -103,7 +103,7 @@ public class Grib2PartitionBuilder extends Grib2CollectionWriter {
 
   private boolean readIndex(RandomAccessFile indexRaf) throws IOException {
     try {
-      this.result = (Grib2Partition) Grib2PartitionBuilderFromIndex.createTimePartitionFromIndex(this.name, this.directory, indexRaf, result.getGribConfig(), logger);
+      this.result = (Grib2Partition) Grib2PartitionBuilderFromIndex.createTimePartitionFromIndex(this.name, this.directory, indexRaf, result.getConfig(), logger);
       return true;
     } catch (IOException ioe) {
       return false;
@@ -239,8 +239,8 @@ public class Grib2PartitionBuilder extends Grib2CollectionWriter {
   }
 
   private PartitionCollection.Dataset makeDataset2D(Formatter f) throws IOException {
-    FeatureCollectionConfig.GribConfig config = (FeatureCollectionConfig.GribConfig) dcm.getAuxInfo(FeatureCollectionConfig.AUX_GRIB_CONFIG);
-    FeatureCollectionConfig.GribIntvFilter intvMap = (config != null) ? config.intvFilter : null;
+    FeatureCollectionConfig config = (FeatureCollectionConfig) dcm.getAuxInfo(FeatureCollectionConfig.AUX_CONFIG);
+    FeatureCollectionConfig.GribIntvFilter intvMap = (config != null) ? config.gribConfig.intvFilter : null;
 
     PartitionCollection.Dataset ds2D = result.makeDataset(GribCollection.Type.TwoD);
 
@@ -298,7 +298,7 @@ public class Grib2PartitionBuilder extends Grib2CollectionWriter {
       // each VariableIndexPartitioned now has its list of PartitionForVariable
 
       // overall set of unique coordinates
-      boolean isDense = (config != null) && "dense".equals(config.getParameter("CoordSys"));  // LOOK for now, assume non-dense
+      boolean isDense = (config != null) && "dense".equals(config.gribConfig.getParameter("CoordSys"));  // LOOK for now, assume non-dense
       CoordinateSharer sharify = new CoordinateSharer(isDense);
 
       // for each variable, create union of coordinates across the partitions

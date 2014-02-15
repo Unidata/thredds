@@ -325,7 +325,7 @@ public class Grib2Iosp extends GribIosp {
 
     } else if (gribCollection == null) { // may have been set in the constructor
 
-      this.gribCollection = GribCdmIndex2.makeGribCollectionFromRaf(false, raf, gribConfig, CollectionUpdateType.test, logger);
+      this.gribCollection = GribCdmIndex2.makeGribCollectionFromRaf(false, raf, config, CollectionUpdateType.test, logger);
       if (gribCollection == null)
         throw new IllegalStateException("Not a GRIB2 data file or ncx2 file");
 

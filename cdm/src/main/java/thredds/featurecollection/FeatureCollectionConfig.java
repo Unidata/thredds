@@ -47,7 +47,8 @@ import java.util.*;
  */
 public class FeatureCollectionConfig {
   // keys for storing AuxInfo objects
-  static public final String AUX_GRIB_CONFIG = "gribConfig";
+  // static public final String AUX_GRIB_CONFIG = "gribConfig";
+  static public final String AUX_CONFIG = "fcConfig";
 
   static public enum ProtoChoice {
     First, Random, Latest, Penultimate, Run

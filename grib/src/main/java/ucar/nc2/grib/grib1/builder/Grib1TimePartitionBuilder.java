@@ -109,7 +109,7 @@ public class Grib1TimePartitionBuilder extends Grib1CollectionBuilder {
 
   private Grib1TimePartitionBuilder(String name, File directory, PartitionManager tpc, org.slf4j.Logger logger) {
     super(tpc, false, logger);
-    FeatureCollectionConfig.GribConfig config = (tpc == null) ? null :  (FeatureCollectionConfig.GribConfig) tpc.getAuxInfo(FeatureCollectionConfig.AUX_GRIB_CONFIG);
+    FeatureCollectionConfig.GribConfig config = (tpc == null) ? null :  (FeatureCollectionConfig.GribConfig) tpc.getAuxInfo(FeatureCollectionConfig.AUX_CONFIG);
     this.tp = new Grib1TimePartition(name, directory, config, logger);
     this.gc = tp;
     this.tpc = tpc;

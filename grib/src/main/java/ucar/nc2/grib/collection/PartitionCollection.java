@@ -447,8 +447,8 @@ public class PartitionCollection extends GribCollection {
       return isGrib1;         // in GribCollection
     }
 
-    public FeatureCollectionConfig.GribConfig getConfig() {
-      return gribConfig;   // in GribCollection
+    public FeatureCollectionConfig getConfig() {
+      return config;   // in GribCollection
     }
 
     public org.slf4j.Logger getLogger() {
@@ -514,7 +514,7 @@ public class PartitionCollection extends GribCollection {
 
   int[] run2part;   // masterRuntime.length; which partition to use for masterRuntime i
 
-  protected PartitionCollection(String name, File directory, FeatureCollectionConfig.GribConfig config, boolean isGrib1, org.slf4j.Logger logger) {
+  protected PartitionCollection(String name, File directory, FeatureCollectionConfig config, boolean isGrib1, org.slf4j.Logger logger) {
     super(name, directory, config, isGrib1);
     this.logger = logger;
     this.partitions = new ArrayList<>();
@@ -603,7 +603,7 @@ public class PartitionCollection extends GribCollection {
    public List<Partition> getPartitionsSorted() {
     List<Partition> c = new ArrayList<>(partitions);
     Collections.sort(c);
-    if (this.gribConfig != null && !this.gribConfig.filesSortIncreasing) {
+    if (!this.config.gribConfig.filesSortIncreasing) {
       Collections.reverse(c);
     }
     return c;

@@ -36,7 +36,7 @@ import java.util.List;
  * @since 12/5/13
  */
 public class CdmIndex2Panel extends JPanel {
-  static private final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(GribCdmIndexPanel.class);
+  static private final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(CdmIndex2Panel.class);
 
   private PreferencesExt prefs;
 
@@ -296,9 +296,9 @@ public class CdmIndex2Panel extends JPanel {
   ///////////////////////////////////////////////
   GribCollection gc;
   Collection<MFile> gcFiles;
-  FeatureCollectionConfig.GribConfig config = null;
+  FeatureCollectionConfig config = null;
 
-  public void setIndexFile(Path indexFile, FeatureCollectionConfig.GribConfig config) throws IOException {
+  public void setIndexFile(Path indexFile, FeatureCollectionConfig config) throws IOException {
     if (gc != null) gc.close();
 
     this.config = config;

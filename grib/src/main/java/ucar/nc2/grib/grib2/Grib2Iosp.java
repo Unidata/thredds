@@ -313,7 +313,7 @@ public class Grib2Iosp extends GribIosp {
 
     boolean isGribFile = (raf != null) && Grib2RecordScanner.isValidFile(raf);
     if (isGribFile) {
-      this.gribCollection = GribCollection.makeGribCollectionFromSingleFile(false, raf, gribConfig, CollectionUpdateType.test, logger);
+      this.gribCollection = GribCollection.makeGribCollectionFromSingleFile(false, raf, config.gribConfig, CollectionUpdateType.test, logger);
       cust = Grib2Customizer.factory(gribCollection.getCenter(), gribCollection.getSubcenter(), gribCollection.getMaster(), gribCollection.getLocal());
     }
 
@@ -356,7 +356,7 @@ public class Grib2Iosp extends GribIosp {
         timePartition = Grib2TimePartitionBuilderFromIndex.createTimePartitionFromIndex(name, null, raf, null, logger);
         gribCollection = timePartition;
       } else {
-        gribCollection = Grib2CollectionBuilderFromIndex.createFromIndex(name, null, raf, gribConfig, logger);
+        gribCollection = Grib2CollectionBuilderFromIndex.createFromIndex(name, null, raf, config.gribConfig, logger);
       }
 
       cust = Grib2Customizer.factory(gribCollection.getCenter(), gribCollection.getSubcenter(), gribCollection.getMaster(), gribCollection.getLocal());

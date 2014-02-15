@@ -28,14 +28,14 @@ import java.util.*;
 public class Grib2CollectionBuilderFromIndex extends GribCollectionBuilder {
 
   // read in the index, open raf and leave open in the GribCollection
-  static public GribCollection readFromIndex(String idxFilename, File directory, FeatureCollectionConfig.GribConfig config, org.slf4j.Logger logger) throws IOException {
+  static public GribCollection readFromIndex(String idxFilename, File directory, FeatureCollectionConfig config, org.slf4j.Logger logger) throws IOException {
     File idxFile = GribCollection.getIndexFile(idxFilename, directory);
     RandomAccessFile raf = new RandomAccessFile(idxFile.getPath(), "r");
     return readFromIndex(idxFilename, directory, raf, config, logger);
   }
 
   // read in the index, index raf already open
-  static public GribCollection readFromIndex(String idxFilename, File directory, RandomAccessFile raf, FeatureCollectionConfig.GribConfig config, org.slf4j.Logger logger) throws IOException {
+  static public GribCollection readFromIndex(String idxFilename, File directory, RandomAccessFile raf, FeatureCollectionConfig config, org.slf4j.Logger logger) throws IOException {
 
     Grib2CollectionBuilderFromIndex builder = new Grib2CollectionBuilderFromIndex(idxFilename, directory, config, logger);
     if (!builder.readIndex(raf))
@@ -55,7 +55,7 @@ public class Grib2CollectionBuilderFromIndex extends GribCollectionBuilder {
   protected GribCollection gc;
   protected Grib2Customizer tables; // only gets created in makeAggGroups
 
-  protected Grib2CollectionBuilderFromIndex(String name, File directory, FeatureCollectionConfig.GribConfig config, org.slf4j.Logger logger) {
+  protected Grib2CollectionBuilderFromIndex(String name, File directory, FeatureCollectionConfig config, org.slf4j.Logger logger) {
     super(null, false, logger);
     this.gc = new Grib2Collection(name, directory, config);
   }

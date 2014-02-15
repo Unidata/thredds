@@ -145,7 +145,7 @@ public class MFileCollectionManager extends CollectionManagerAbstract {
       setStatic(true);
 
     if (this.auxInfo == null) this.auxInfo = new HashMap<>(10);
-    this.auxInfo.put(FeatureCollectionConfig.AUX_GRIB_CONFIG, config.gribConfig);
+    this.auxInfo.put(FeatureCollectionConfig.AUX_CONFIG, config);
   }
 
 
