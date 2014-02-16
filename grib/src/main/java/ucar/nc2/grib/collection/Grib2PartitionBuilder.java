@@ -119,8 +119,9 @@ public class Grib2PartitionBuilder extends Grib2CollectionWriter {
 
     try {
       // create partitions
-      for (MCollection dcm : partitionManager.makePartitions(forcePartition)) {
-        result.addPartition(dcm);
+      for (MCollection dcmp : partitionManager.makePartitions(forcePartition)) {
+        dcmp.putAuxInfo(FeatureCollectionConfig.AUX_CONFIG, this.dcm.getAuxInfo(FeatureCollectionConfig.AUX_CONFIG));
+        result.addPartition(dcmp);
       }
 
       List<PartitionCollection.Partition> bad = new ArrayList<>();

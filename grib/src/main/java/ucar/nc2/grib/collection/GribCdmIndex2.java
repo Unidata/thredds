@@ -233,7 +233,7 @@ public class GribCdmIndex2 implements IndexReader {
     }
 
     long took = System.currentTimeMillis() - start;
-    logger.info("updateGribCollection {} took {} msecs", config.name, took);
+    logger.info("updateGribCollection {} changed {} took {} msecs", config.name, changed, took);
     return changed;
   }
 
@@ -262,15 +262,13 @@ public class GribCdmIndex2 implements IndexReader {
     // index does not yet exist, or we want to test if it changed
     // must scan it
     for (MCollection part : dpart.makePartitions(forceCollection)) {
+      part.putAuxInfo(FeatureCollectionConfig.AUX_CONFIG, config);
       if (part.isLeaf()) {
         Path partPath = Paths.get(part.getRoot());
         updateLeafCollection(config, forceCollection, logger, partPath);
 
       } else {
-        if (!(part instanceof DirectoryPartition))
-          System.out.println("HEY");
         updateDirectoryCollectionRecurse((DirectoryPartition) part, config, forceCollection, logger);
-
       }
     }   // loop over partitions
 

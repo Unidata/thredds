@@ -184,7 +184,7 @@ public class GribCollection implements FileCacheable, AutoCloseable {
     this.config = config;
     this.isGrib1 = isGrib1;
     if (config == null)
-      System.out.println("HEY");
+      System.out.println("HEY GribCollection");
   }
 
   // for making partition collection

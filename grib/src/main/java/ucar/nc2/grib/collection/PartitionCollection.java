@@ -500,7 +500,7 @@ public class PartitionCollection extends GribCollection {
 
       FeatureCollectionConfig config = (FeatureCollectionConfig) dcm.getAuxInfo(FeatureCollectionConfig.AUX_CONFIG);
       if (config == null)
-        System.out.println("HEY");
+        System.out.println("HEY Partition");
     }
 
     public GribCollection makeGribCollection(CollectionUpdateType force) throws IOException {

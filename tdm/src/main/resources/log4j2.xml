@@ -40,12 +40,12 @@
 
   <loggers>
 
-    <logger name="thredds.tdm" level="debug" additivity="false">
+    <logger name="thredds.tdm" level="info" additivity="false">
       <!-- appender-ref ref="consoleLogger"/ -->
       <appender-ref ref="fileLogger"/>
     </logger>
 
-    <logger name="ucar.nc2.grib.collection" level="debug" additivity="false">
+    <logger name="ucar.nc2.grib.collection" level="info" additivity="false">
       <!-- appender-ref ref="consoleLogger"/ -->
       <appender-ref ref="fileLogger"/>
     </logger>
@@ -65,12 +65,12 @@
       <appender-ref ref="fileLogger"/>
     </logger>
 
-    <logger name="thredds.inventory" level="debug" additivity="false">
+    <logger name="thredds.inventory" level="info" additivity="false">
       <!-- appender-ref ref="consoleLogger"/ -->
       <appender-ref ref="fileLogger"/>
     </logger>
 
-    <logger name="thredds.inventory.CollectionUpdater" level="debug" additivity="false">
+    <logger name="thredds.inventory.CollectionUpdater" level="info" additivity="false">
       <!-- appender-ref ref="consoleLogger"/ -->
       <appender-ref ref="fileLogger"/>
     </logger>
@@ -85,15 +85,11 @@
       <appender-ref ref="fileLogger"/>
     </logger>
 
-    <!-- shut the f*** up -->
-    <logger name="org.apache.commons.httpclient" level="error" additivity="false">
-      <appender-ref ref="fileLogger"/>
-    </logger>
-    <logger name="httpclient" level="error" additivity="false">
+    <logger name="httpclient" level="warn" additivity="false">
       <appender-ref ref="fileLogger"/>
     </logger>
 
-    <root level="debug" additivity="false">
+    <root level="info" additivity="false">
       <!-- appender-ref ref="consoleLogger"/ -->
       <appender-ref ref="fileLogger"/>
     </root>

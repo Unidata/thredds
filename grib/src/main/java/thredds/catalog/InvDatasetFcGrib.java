@@ -220,30 +220,14 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
       this.addService(InvService.latest);
     }
 
-    if (isFilePartition) {
+    if (localState.gribCollection instanceof PartitionCollection) {
       PartitionCollection pc =  (PartitionCollection) localState.gribCollection;
       for (PartitionCollection.Partition partition : pc.getPartitionsSorted()) {
-        InvDatasetImpl partDs = makeDatasetsFromPartition(this, partition, true);
+        InvDatasetImpl partDs = makeDatasetFromPartition(this, partition, true);
         top.addDataset(partDs);
       }
 
     }
-
-    /* if (gribConfig.hasDatasetType(FeatureCollectionConfig.GribDatasetType.LatestFile)) {
-      InvDatasetImpl ds2 = new InvDatasetImpl(this, getLatestFileName());
-      ds2.setUrlPath(FILES+"/"+LATEST_DATASET_CATALOG);
-      ds2.setID(FILES+"/"+LATEST_DATASET_CATALOG);
-      ds2.setServiceName(LATEST_SERVICE);
-      ds2.finish();
-      top.addDataset(ds2);
-    }
-
-    PartitionCollection pc =  (PartitionCollection) localState.gribCollection;
-    for (PartitionCollection.Partition dc : pc.getPartitionsSorted()) {
-      String dname = dc.getName();
-      InvCatalogRef ds = new InvCatalogRef(this, dname, getCatalogHref(dname));
-      top.addDataset(ds);
-    }  */
 
     top.finish();
     localState.top = top;
@@ -297,7 +281,7 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
 
   }
 
-  private InvDatasetImpl makeDatasetsFromPartition(InvDatasetImpl parent, PartitionCollection.Partition partition, boolean isSingleGroup) {
+  private InvDatasetImpl makeDatasetFromPartition(InvDatasetImpl parent, PartitionCollection.Partition partition, boolean isSingleGroup) {
     InvDatasetImpl result;
     String dname = partition.getName();
 
