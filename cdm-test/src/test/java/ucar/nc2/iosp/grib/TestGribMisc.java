@@ -36,7 +36,6 @@ import org.junit.Test;
 import ucar.ma2.Array;
 import ucar.nc2.*;
 import ucar.nc2.grib.GribIosp;
-import ucar.nc2.grib.grib2.Grib2Iosp;
 import ucar.nc2.util.Misc;
 import ucar.unidata.test.util.TestDir;
 

@@ -32,13 +32,11 @@
 
 package ucar.nc2.grib.grib1;
 
-import thredds.inventory.CollectionManager;
 import thredds.featurecollection.FeatureCollectionConfig;
 import thredds.inventory.CollectionUpdateType;
 import thredds.inventory.MFile;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.dataset.NetcdfDataset;
-import ucar.nc2.grib.GribCollection;
 import ucar.nc2.grib.grib1.builder.Grib1CollectionBuilder;
 
 import java.io.File;

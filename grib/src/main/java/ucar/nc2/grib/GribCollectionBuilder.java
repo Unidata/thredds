@@ -56,21 +56,6 @@ public class GribCollectionBuilder {
       this.index = index;
     }
 
-    // not used
-    public GcMFile(File directory, GribCollectionProto.MFile gcmfile) {
-      this.directory = directory;
-      this.name = gcmfile.getFilename();
-      this.lastModified = gcmfile.getLastModified();
-      this.index = -1;
-    }
-
-    public GribCollectionProto.MFile makeProto() {
-      GribCollectionProto.MFile.Builder b = GribCollectionProto.MFile.newBuilder();
-      b.setFilename(name);
-      b.setLastModified(lastModified);
-      return b.build();
-    }
-
     @Override
     public long getLastModified() {
       return lastModified;

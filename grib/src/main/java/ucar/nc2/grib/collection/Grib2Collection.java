@@ -105,43 +105,4 @@ public class Grib2Collection extends GribCollection {
     }
   }
 
-    ///////////////////////////////////////////////////////////////////////////////
-
-  /* static public void make(String name, String spec, org.slf4j.Logger logger) throws IOException {
-    long start = System.currentTimeMillis();
-    Formatter f = new Formatter();
-    CollectionManager dcm = new MFileCollectionManager(name, spec, f, null);
-    File idxFile = new File( dcm.getRoot(), name);
-    boolean ok = Grib2CollectionBuilder.writeIndexFile(idxFile, dcm, logger);
-    System.out.printf("GribCollectionBuilder.writeIndexFile ok = %s%n", ok);
-
-    long took = System.currentTimeMillis() - start;
-    System.out.printf("%s%n", f);
-    System.out.printf("That took %d msecs%n", took);
-  }
-
-  public static void main(String[] args) throws IOException {
-    org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(Grib2Collection.class);
-    for (int i=0; i<args.length; i++) {
-      String arg = args[i];
-      if (arg.equalsIgnoreCase("-help")) {
-        System.out.printf("usage: ucar.nc2.grib.GribCollection [-make name collSpec] [-read filename]%n");
-        break;
-      }
-      if (arg.equalsIgnoreCase("-make")) {
-        make(args[i+1], args[i+2], logger);
-        break;
-
-      } else if (arg.equalsIgnoreCase("-read")) {
-        File f = new File(args[i+1]);
-        RandomAccessFile raf = new RandomAccessFile(f.getPath(), "r");
-        GribCollection gc = Grib2CollectionBuilderFromIndex.createFromIndex(f.getName(), f.getParentFile(), raf, null, logger);
-        gc.showIndex(new Formatter(System.out));
-        break;
-      }
-    }
-    // "G:/nomads/timeseries/200808/.*grb2$"
-    // readIndex2("G:/nomads/timeseries/200808/GaussLatLon-576X1152.ncx");
-  }  */
-
 }

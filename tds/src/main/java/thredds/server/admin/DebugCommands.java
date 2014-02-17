@@ -36,8 +36,6 @@ package thredds.server.admin;
 import thredds.servlet.Debug;
 import thredds.servlet.ServletUtil;
 import ucar.nc2.dataset.NetcdfDataset;
-import ucar.nc2.grib.GribCollection;
-import ucar.nc2.grib.TimePartition;
 
 import java.util.*;
 import java.io.PrintStream;

@@ -50,6 +50,9 @@ public interface GribTables {
 
   String getLevelNameShort(int code);
 
+  String getSubCenterName(int center, int subcenter);
+
+
   /* Parameter getParameter(int discipline, int category, int parameter);
 
   String getIntervalNameShort(int intvType);

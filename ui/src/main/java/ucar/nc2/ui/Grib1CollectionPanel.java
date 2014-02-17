@@ -34,7 +34,6 @@ package ucar.nc2.ui;
 
 import thredds.inventory.*;
 import ucar.nc2.grib.GdsHorizCoordSys;
-import ucar.nc2.grib.GribCollection;
 import ucar.nc2.grib.GribStatType;
 import ucar.nc2.grib.GribUtils;
 import ucar.nc2.grib.grib1.*;

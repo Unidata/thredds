@@ -39,8 +39,6 @@ import ucar.nc2.Variable;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dt.GridDatatype;
 import ucar.nc2.dt.grid.GridDataset;
-import ucar.nc2.grib.grib1.Grib1Iosp;
-import ucar.nc2.grib.grib2.Grib2Iosp;
 import ucar.unidata.test.util.TestDir;
 
 import static junit.framework.Assert.assertEquals;

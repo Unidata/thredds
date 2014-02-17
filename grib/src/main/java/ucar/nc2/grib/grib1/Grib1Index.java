@@ -35,7 +35,6 @@ package ucar.nc2.grib.grib1;
 import com.google.protobuf.ByteString;
 import thredds.inventory.CollectionUpdateType;
 import ucar.nc2.constants.CDM;
-import ucar.nc2.grib.GribCollection;
 import ucar.nc2.grib.GribIndex;
 import ucar.nc2.stream.NcStream;
 import ucar.unidata.io.RandomAccessFile;

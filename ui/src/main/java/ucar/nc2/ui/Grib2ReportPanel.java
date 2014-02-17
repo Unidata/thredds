@@ -16,7 +16,6 @@ import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dt.GridCoordSystem;
 import ucar.nc2.dt.GridDatatype;
 import ucar.nc2.dt.grid.GridDataset;
-import ucar.nc2.grib.GribCollection;
 import ucar.nc2.grib.GribIosp;
 import ucar.nc2.grib.GribStatType;
 import ucar.nc2.grib.GribVariableRenamer;

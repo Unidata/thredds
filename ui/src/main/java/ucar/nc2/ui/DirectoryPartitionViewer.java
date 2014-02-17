@@ -9,7 +9,6 @@ import thredds.inventory.partition.DirectoryPartition;
 import thredds.inventory.partition.DirectoryBuilder;
 import ucar.nc2.grib.*;
 import ucar.nc2.grib.collection.GribCdmIndex2;
-import ucar.nc2.grib.grib2.Grib2TimePartition;
 import ucar.nc2.ui.widget.*;
 import ucar.nc2.ui.widget.PopupMenu;
 import ucar.util.prefs.PreferencesExt;

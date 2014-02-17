@@ -55,7 +55,6 @@ import ucar.nc2.ft.FeatureDatasetPoint;
 import ucar.nc2.ft.grid.CoverageDataset;
 import ucar.nc2.ft.point.PointDatasetImpl;
 import ucar.nc2.geotiff.GeoTiff;
-import ucar.nc2.grib.GribCollection;
 import ucar.nc2.grib.grib1.tables.Grib1ParamTables;
 import ucar.nc2.grib.grib2.table.WmoCodeTable;
 import ucar.nc2.grib.grib2.table.WmoTemplateTable;

@@ -35,7 +35,6 @@ package ucar.nc2.grib.grib1;
 import thredds.featurecollection.FeatureCollectionConfig;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.dataset.NetcdfDataset;
-import ucar.nc2.grib.TimePartition;
 
 import java.io.File;
 import java.io.IOException;

@@ -422,7 +422,7 @@ public class Grib1TablesViewer extends JPanel {
     }
 
     public String getSubCenter() {
-      return Grib1Customizer.getSubCenterName(table.getCenter_id(), table.getSubcenter_id());
+      return Grib1Customizer.getSubCenterNameStatic(table.getCenter_id(), table.getSubcenter_id());
     }
 
     public int getSubcenter_id() {

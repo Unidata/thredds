@@ -335,7 +335,7 @@ public class GribFilesPanel extends JPanel {
     }
 
     public String getSubCenterName() {
-      return Grib1Customizer.getSubCenterName(getCenter(), getSubCenter());
+      return Grib1Customizer.getSubCenterNameStatic(getCenter(), getSubCenter());
     }
 
     public int getTimeUnit() {

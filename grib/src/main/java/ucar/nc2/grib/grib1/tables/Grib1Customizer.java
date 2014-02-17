@@ -76,7 +76,7 @@ public class Grib1Customizer implements GribTables {
     else return new Grib1Customizer(center, tables);
   }
 
-  static public String getSubCenterName(int center, int subcenter) {
+  static public String getSubCenterNameStatic(int center, int subcenter) {
     Grib1Customizer cust = Grib1Customizer.factory(center, subcenter, 0, null);
     return cust.getSubCenterName( subcenter);
   }
@@ -103,6 +103,10 @@ public class Grib1Customizer implements GribTables {
   }
 
   public String getSubCenterName(int subcenter) {
+    return CommonCodeTable.getSubCenterName(center, subcenter);
+  }
+
+  public String getSubCenterName(int center, int subcenter) {
     return CommonCodeTable.getSubCenterName(center, subcenter);
   }
 

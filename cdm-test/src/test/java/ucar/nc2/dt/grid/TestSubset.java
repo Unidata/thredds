@@ -41,7 +41,6 @@ import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dt.GridCoordSystem;
 import ucar.nc2.dt.GridDatatype;
 import ucar.nc2.NCdump;
-import ucar.nc2.grib.grib2.Grib2Iosp;
 import ucar.nc2.thredds.ThreddsDataFactory;
 import ucar.nc2.util.CompareNetcdf2;
 import ucar.nc2.util.Misc;
@@ -50,7 +49,6 @@ import ucar.unidata.geoloc.projection.LatLonProjection;
 import ucar.unidata.geoloc.vertical.VerticalTransform;
 
 import ucar.nc2.constants.FeatureType;
-import ucar.unidata.test.util.CompareNetcdf;
 import ucar.unidata.test.util.TestDir;
 
 import java.io.PrintWriter;
