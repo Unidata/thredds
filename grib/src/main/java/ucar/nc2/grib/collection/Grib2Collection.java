@@ -50,8 +50,8 @@ import java.util.Formatter;
  */
 public class Grib2Collection extends GribCollection {
 
-  public Grib2Collection(String name, File directory, FeatureCollectionConfig config) {
-    super(name, directory, config, false);
+  public Grib2Collection(String name, File directory, String indexFilename, FeatureCollectionConfig config) {
+    super(name, directory, indexFilename, config, false);
   }
 
   @Override

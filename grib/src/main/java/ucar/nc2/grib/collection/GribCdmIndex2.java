@@ -164,12 +164,13 @@ public class GribCdmIndex2 implements IndexReader {
      // otherwise got to check
      if (dcm.isLeaf()) {
        boolean changed =  Grib2PartitionBuilder.recreateIfNeeded( (PartitionManager) dcm, updateType, updateType, errlog, logger);
-       return Grib2PartitionBuilderFromIndex.createTimePartitionFromIndex(dcm.getCollectionName(), new File(dcm.getRoot()), config, logger);
+       return Grib2PartitionBuilderFromIndex.createTimePartitionFromIndex(dcm.getCollectionName(), new File(dcm.getRoot()), dcm.getIndexFilename(),
+               config, logger);
 
      } else {
        Grib2CollectionBuilder builder = new Grib2CollectionBuilder(dcm.getCollectionName(), dcm, logger);
        boolean changed = builder.updateNeeded(updateType) && builder.createIndex(errlog);
-       return openCdmIndex(builder.getIndexFile().getPath(), config, logger);
+       return openCdmIndex(dcm.getIndexFilename(), config, logger);
      }
    }
 
@@ -182,7 +183,7 @@ public class GribCdmIndex2 implements IndexReader {
     // update if needed
     updateGribCollection(config, updateType, logger);
 
-    File idxFile = GribCollection.getIndexFile(config);
+    File idxFile = GribCollection.getIndexFileFromConfig(config);
     return openCdmIndex(idxFile.getPath(), config, logger);
   }
 
@@ -567,7 +568,7 @@ public class GribCdmIndex2 implements IndexReader {
     MCollection dcm = new CollectionSingleFile(mfile, logger);
     Grib2CollectionBuilder builder = new Grib2CollectionBuilder(dcm.getCollectionName(), dcm, logger);
     boolean changed = (builder.updateNeeded(updateType) && builder.createIndex(errlog));
-    return openCdmIndex(builder.getIndexFile().getPath(), config, logger);
+    return openCdmIndex(dcm.getIndexFilename(), config, logger);
   }
 
   /**

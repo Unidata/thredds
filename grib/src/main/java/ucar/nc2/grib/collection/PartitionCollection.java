@@ -413,7 +413,7 @@ public class PartitionCollection extends GribCollection {
   // wrapper around a GribCollection
   public class Partition implements Comparable<Partition> {
     private final String name, directory;
-    private String indexFilename;
+    private final String indexFilename;
     private long lastModified;
 
     // temporary storage while building - do not use - must call getGribCollection()()
@@ -497,6 +497,7 @@ public class PartitionCollection extends GribCollection {
       this.name = dcm.getCollectionName();
       this.directory = dcm.getRoot();
       this.lastModified = dcm.getLastModified();
+      this.indexFilename = dcm.getIndexFilename();
 
       FeatureCollectionConfig config = (FeatureCollectionConfig) dcm.getAuxInfo(FeatureCollectionConfig.AUX_CONFIG);
       if (config == null)
@@ -504,9 +505,7 @@ public class PartitionCollection extends GribCollection {
     }
 
     public GribCollection makeGribCollection(CollectionUpdateType force) throws IOException {
-      GribCollection result = GribCdmIndex2.openGribCollectionFromMCollection(isGrib1, dcm, force, null, logger); // caller must close
-      indexFilename = result.getIndexFile().getPath();
-      return result;
+      return GribCdmIndex2.openGribCollectionFromMCollection(isGrib1, dcm, force, null, logger); // caller must close
     }
   }
 
@@ -518,8 +517,8 @@ public class PartitionCollection extends GribCollection {
 
   int[] run2part;   // masterRuntime.length; which partition to use for masterRuntime i
 
-  protected PartitionCollection(String name, File directory, FeatureCollectionConfig config, boolean isGrib1, org.slf4j.Logger logger) {
-    super(name, directory, config, isGrib1);
+  protected PartitionCollection(String name, File directory, String indexFilename, FeatureCollectionConfig config, boolean isGrib1, org.slf4j.Logger logger) {
+    super(name, directory, indexFilename, config, isGrib1);
     this.logger = logger;
     this.partitions = new ArrayList<>();
     this.datasets = new ArrayList<>();
@@ -677,18 +676,6 @@ public class PartitionCollection extends GribCollection {
       }
     }
     close();
-  }
-
-  ////////////////////////////////////////////////////
-  // stuff for debugging
-
-  public void setPartitionIndexReletive() {
-    File dir = new File(getLocation()); // use main index location
-    for (Partition p : getPartitions()) {
-      File old = new File(p.indexFilename);
-      File n = new File(dir.getParent(), old.getName());
-      p.indexFilename = n.getPath(); // set partition index filenames reletive to it
-    }
   }
 
 }

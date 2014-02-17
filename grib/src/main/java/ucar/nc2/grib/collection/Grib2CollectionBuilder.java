@@ -45,15 +45,15 @@ public class Grib2CollectionBuilder {
     this.directory = new File(dcm.getRoot());
   }
 
-  public File getIndexFile() {
-    return GribCollection.getIndexFile(name, directory);
-  }
+  //public File getIndexFile() {
+  //  return GribCollection.getIndexFile(name, directory);
+  //}
 
   public boolean updateNeeded(CollectionUpdateType ff) throws IOException {
     if (ff == CollectionUpdateType.never) return false;
     if (ff == CollectionUpdateType.always) return true;
 
-    File idx = GribCollection.getIndexFile(name, directory);
+    File idx = GribCollection.getIndexFileInCache(dcm.getIndexFilename());
     if (!idx.exists()) return true;
 
     if (ff == CollectionUpdateType.nocheck) return false;

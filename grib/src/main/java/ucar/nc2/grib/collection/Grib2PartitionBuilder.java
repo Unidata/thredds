@@ -65,13 +65,13 @@ public class Grib2PartitionBuilder extends Grib2CollectionWriter {
     FeatureCollectionConfig config = null;
     if (tpc != null)
       config = (FeatureCollectionConfig) tpc.getAuxInfo(FeatureCollectionConfig.AUX_CONFIG);
-    this.result = new Grib2Partition(name, directory, config, logger);
+    this.result = new Grib2Partition(name, directory, tpc.getIndexFilename(), config, logger);
     this.partitionManager = tpc;
   }
 
   // return true if the partition was recreated
   private boolean readOrCreateIndex(CollectionUpdateType forcePartition, CollectionUpdateType forceChildren, Formatter errlog) throws IOException {
-    File idx = result.getIndexFile();
+    File idx = new File(partitionManager.getIndexFilename());
 
     // force new index or test for new index needed
     boolean force = ((forcePartition == CollectionUpdateType.always) || (forcePartition == CollectionUpdateType.test && needsUpdate(idx.lastModified())));
@@ -88,7 +88,7 @@ public class Grib2PartitionBuilder extends Grib2CollectionWriter {
 
   private boolean needsUpdate(long collectionLastModified) throws IOException {
     for (MCollection dcm : partitionManager.makePartitions(CollectionUpdateType.test)) {
-      File idxFile = GribCollection.getIndexFile(dcm.getIndexFilename());
+      File idxFile = GribCollection.getIndexFileInCache(dcm.getIndexFilename());
       if (!idxFile.exists())
         return true;
       if (collectionLastModified < idxFile.lastModified())
@@ -534,13 +534,13 @@ public class Grib2PartitionBuilder extends Grib2CollectionWriter {
   GribCollectionIndex (sizeIndex bytes)
   */
   private boolean writeIndex(PartitionCollection pc, Formatter f) throws IOException {
-    File file = pc.getIndexFile();
-    if (file.exists()) {
-      if (!file.delete())
-        logger.error("gc2tp cant delete " + file.getPath());
+    File idxFile = new File(partitionManager.getIndexFilename());
+    if (idxFile.exists()) {
+      if (!idxFile.delete())
+        logger.error("gc2tp cant delete " + idxFile.getPath());
     }
 
-    try (RandomAccessFile raf = new RandomAccessFile(file.getPath(), "rw")) {
+    try (RandomAccessFile raf = new RandomAccessFile(idxFile.getPath(), "rw")) {
       raf.order(RandomAccessFile.BIG_ENDIAN);
 
       //// header message

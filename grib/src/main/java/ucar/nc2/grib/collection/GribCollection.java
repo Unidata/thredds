@@ -106,7 +106,7 @@ public class GribCollection implements FileCacheable, AutoCloseable {
     gcname = collectionName = filename
 
    */
-  static public File getIndexFile(FeatureCollectionConfig config) {
+  static public File getIndexFileFromConfig(FeatureCollectionConfig config) {
     Formatter errlog = new Formatter();
     CollectionSpecParser specp = new CollectionSpecParser(config.spec, errlog);
 
@@ -123,24 +123,29 @@ public class GribCollection implements FileCacheable, AutoCloseable {
     }
 
     File f = getIndexFile(cname, new File(specp.getRootDir()));
-    return getIndexFile(f.getPath());
+    return getIndexFileInCache(f.getPath());
   }
 
-  static public File getIndexFile(String path) {
-    return getDiskCache2().getFile(path); // diskCache manages where the index file lives
-  }
-
-  static public File getIndexFile(String collectionName, File directory) {
+  static File getIndexFile(String collectionName, File directory) {
     String nameNoBlanks = StringUtil2.replace(collectionName, ' ', "_");
     File f = new File(directory, nameNoBlanks + CollectionAbstract.NCX_SUFFIX);
-    return getIndexFile(f.getPath());
+    return getIndexFileInCache(f.getPath());
   }
 
   private static  CalendarDateFormatter cf = new CalendarDateFormatter("yyyyMMdd-HHmmss", new CalendarTimeZone("UTC"));
   static public File getIndexFile(String collectionName, File directory, CalendarDate runtime) {
     File f = new File(directory, makeName(collectionName, runtime)  + CollectionAbstract.NCX_SUFFIX);
-    return getIndexFile(f.getPath());
+    return getIndexFileInCache(f.getPath());
   }
+
+  /**
+   * Get index file, may be in cache directory, may not exist
+   * @param path full path of index file
+   * @return File, possibly in cache
+   */
+  static public File getIndexFileInCache(String path) {
+    return getDiskCache2().getFile(path); // diskCache manages where the index file lives
+  }  
 
   static public String makeName(String collectionName, CalendarDate runtime) {
     String nameNoBlanks = StringUtil2.replace(collectionName, ' ', "_");
@@ -161,6 +166,7 @@ public class GribCollection implements FileCacheable, AutoCloseable {
   protected /* final */ File directory;
   protected final FeatureCollectionConfig config;
   protected final boolean isGrib1;
+  protected String indexFilename;
 
   // set by the builder
   public int version; // the ncx version
@@ -175,14 +181,14 @@ public class GribCollection implements FileCacheable, AutoCloseable {
   // not stored
   private Map<String, MFile> filenameMap;
   protected RandomAccessFile indexRaf; // this is the raf of the index (ncx) file, synchronize any access to it
-  protected File indexFile;
   protected FileCache objCache = null;  // optional object cache - used in the TDS
 
-  protected GribCollection(String name, File directory, FeatureCollectionConfig config, boolean isGrib1) {
+  protected GribCollection(String name, File directory, String indexFilename, FeatureCollectionConfig config, boolean isGrib1) {
     this.name = name;
     this.directory = directory;
     this.config = config;
     this.isGrib1 = isGrib1;
+    this.indexFilename = indexFilename;
     if (config == null)
       System.out.println("HEY GribCollection");
   }
@@ -291,22 +297,17 @@ public class GribCollection implements FileCacheable, AutoCloseable {
   void setIndexRaf(RandomAccessFile indexRaf) {
     this.indexRaf = indexRaf;
     if (indexRaf != null) {
-      if (indexFile == null) {
-        indexFile = new File(indexRaf.getLocation());
-      }
+      indexFilename = indexRaf.getLocation();
     }
   }
 
   /**
-   * get index file
+   * get index filename
    *
-   * @return index File; may not exist; may be in disk cache
+   * @return index filename; may not exist; may be in disk cache
    */
   public File getIndexFile() {
-    if (indexFile == null) {
-      indexFile = getIndexFile(config);
-    }
-    return indexFile;
+    return getIndexFileInCache(indexFilename);
   }
 
   public List<Parameter> getParams() {
@@ -419,12 +420,13 @@ public class GribCollection implements FileCacheable, AutoCloseable {
   @Override
   public String getLocation() {
     if (indexRaf != null) return indexRaf.getLocation();
-    return getIndexFile().getPath();
+    return indexFilename;
   }
 
   @Override
   public long getLastModified() {
-    if (indexFile != null) {
+    File indexFile = new File(indexFilename);
+    if (indexFile.exists()) {
       return indexFile.lastModified();
     }
     return 0;
