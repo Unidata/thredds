@@ -1025,7 +1025,7 @@ public class GribCollection implements FileCacheable, AutoCloseable {
     f.format("%s%n%n", toString());
 
 
-    f.format(" master runtime coordinate ");
+    f.format(" master runtime coordinate%n");
     masterRuntime.showCoords(f);
     f.format("%n");
 

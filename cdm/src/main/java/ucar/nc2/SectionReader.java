@@ -60,6 +60,11 @@ class SectionReader implements ProxyReader {
     try {
       return orgClient._read( orgSection);
     } catch (InvalidRangeException e) {
+      try {
+        orgClient._read( orgSection); // debug
+      } catch (InvalidRangeException e1) {
+        e1.printStackTrace();
+      }
       throw new RuntimeException(e);
     }
   }

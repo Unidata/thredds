@@ -207,6 +207,7 @@ public class PartitionCollection extends GribCollection {
 
       // translate to coordinates in vindex
       int[] sourceIndex = group.isTwod ? translateIndex2D(indexWanted, compVindex2D) : translateIndex1D(indexWanted, compVindex2D);
+      if (sourceIndex == null) return null; // missing
       GribCollection.Record record = compVindex2D.getSparseArray().getContent(sourceIndex);
 
       return new DataRecord(PartitionCollection.this, partno, compVindex2D.group.getGdsHorizCoordSys(), record.fileno, record.pos, record.bmsPos, record.scanMode);
@@ -336,6 +337,7 @@ public class PartitionCollection extends GribCollection {
       if (compTime2D != null) {
         CoordinateTime2D time2D = (CoordinateTime2D) getCoordinate(Coordinate.Type.time2D);
         CoordinateTime2D.Time2D want = time2D.getOrgValue(wholeIndex[0], wholeIndex[1]);
+        if (want == null) return null;
         compTime2D.getIndex(want, result); // sets the first 2 indices - run and time
         countDim = 2;
       }
@@ -626,28 +628,16 @@ public class PartitionCollection extends GribCollection {
       f.format("  %s%n", p);
     f.format("%n");
 
-    f.format(" run2part ");
-    if (run2part == null) f.format(" null");
-    else for (int idx : run2part) f.format(" %d,", idx);
-    f.format("%n");
-
-    /* for (Dataset ds : datasets) {
-      f.format("%nDataset = %s%n", ds.type);
-
-      for (GroupHcs g : ds.getGroups()) {
-        f.format("Hcs = %s%n", g.horizCoordSys.getHcs());
-
-        f.format("%nVarIndex (%d)%n", g.variList.size());
-        for (VariableIndex v : g.variList)
-          f.format("  %s%n", v.toStringComplete());
-
-        f.format("%nCoords (%d)%n", g.coords.size());
-        for (int i = 0; i < g.coords.size(); i++) {
-          Coordinate tc = g.coords.get(i);
-          f.format(" %d: %s%n", i, tc);
-        }
+    if (run2part == null) f.format("run2part null%n");
+    else {
+      f.format(" master runtime -> partition %n");
+      int count = 0;
+      for (CalendarDate cd : masterRuntime.getRuntimesSorted()) {
+        f.format(" %d:  %s -> part %3d %s%n", count, cd, run2part[count],  getPartition(count).getIndexFilename());
+        count++;
       }
-    } */
+      f.format("%n");
+    }
 
   }
 

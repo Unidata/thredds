@@ -139,19 +139,21 @@ public class FeatureCollectionConfig {
       f.format("  protoConfig =%s%n", protoConfig);
     f.format("  hasInnerNcml =%s%n", innerNcml != null);
 
-    switch (type) {
-      case GRIB1:
-      case GRIB2:
-        f.format("  gribConfig =%s%n", gribConfig);
-        break;
-      case FMRC:
-        f.format("  fmrcConfig =%s%n", fmrcConfig);
-        break;
-      case Point:
-      case Station:
-      case Station_Profile:
-        f.format("  pointConfig =%s%n", pointConfig);
-        break;
+    if (type != null) {
+      switch (type) {
+        case GRIB1:
+        case GRIB2:
+          f.format("  gribConfig =%s%n", gribConfig);
+          break;
+        case FMRC:
+          f.format("  fmrcConfig =%s%n", fmrcConfig);
+          break;
+        case Point:
+        case Station:
+        case Station_Profile:
+          f.format("  pointConfig =%s%n", pointConfig);
+          break;
+      }
     }
 
     return f.toString();

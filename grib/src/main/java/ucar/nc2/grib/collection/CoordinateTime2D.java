@@ -187,16 +187,18 @@ public class CoordinateTime2D extends CoordinateTimeAbstract implements Coordina
 
   ////////////////////////////////////////////////
 
-    /* get the original value by subtracting the offset */
+    /* get the original value at the given indices */
   public Time2D getOrgValue(int runIdx, int timeIdx) {
     Coordinate time = times.get(runIdx);
     CalendarDate runDate = runtime.getDate(runIdx);
     if (isTimeInterval) {
       TimeCoord.Tinv valIntv = (TimeCoord.Tinv) time.getValue(timeIdx);
-      return new Time2D(runDate, null, valIntv); // valIntv.offset(-getOffset(runIdx)));
+      if (valIntv == null) return null;
+      return new Time2D(runDate, null, valIntv);
     } else {
       Integer val = (Integer) time.getValue(timeIdx);
-      return new Time2D(runDate, val, null); //  - getOffset(runIdx), null);
+      if (val == null) return null;
+      return new Time2D(runDate, val, null);
     }
   }
 

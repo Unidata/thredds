@@ -2977,7 +2977,7 @@ public class
 
       ByteArrayOutputStream bos = new ByteArrayOutputStream(10000);
       try {
-        indexPanel.setIndexFile(Paths.get(command), null);
+        indexPanel.setIndexFile(Paths.get(command), new FeatureCollectionConfig());
 
       } catch (FileNotFoundException ioe) {
         JOptionPane.showMessageDialog(null, "GribCdmIndexPanel cant open " + command + "\n" + ioe.getMessage());

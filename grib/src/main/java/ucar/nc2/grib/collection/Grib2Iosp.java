@@ -652,7 +652,8 @@ public class Grib2Iosp extends GribIosp {
          }
          runIdx++;
        }
-       v.setCachedData(Array.factory(DataType.DOUBLE, new int[]{nruns, ntimes}, data));
+       int[] shape = is2Dtime ?  new int[]{nruns, ntimes} :  new int[]{ntimes};
+       v.setCachedData(Array.factory(DataType.DOUBLE, shape, data));
 
      } else {
 
@@ -666,7 +667,8 @@ public class Grib2Iosp extends GribIosp {
          }
          runIdx++;
        }
-       v.setCachedData(Array.factory(DataType.DOUBLE, new int[]{nruns, ntimes}, data));
+       int[] shape = is2Dtime ?  new int[]{nruns, ntimes} :  new int[]{ntimes};
+       v.setCachedData(Array.factory(DataType.DOUBLE, shape, data));
 
        // bounds
        String intvName = cust.getIntervalName(time2D.getCode());
@@ -693,8 +695,8 @@ public class Grib2Iosp extends GribIosp {
          }
          runIdx++;
        }
-       int[] shape = is2Dtime ? new int[]{nruns, ntimes, 2} : new int[]{ntimes, 2};
-       bounds.setCachedData(Array.factory(DataType.DOUBLE, shape, data));
+       int[] shapeb = is2Dtime ? new int[]{nruns, ntimes, 2} : new int[]{ntimes, 2};
+       bounds.setCachedData(Array.factory(DataType.DOUBLE, shapeb, data));
      }
    }
 
