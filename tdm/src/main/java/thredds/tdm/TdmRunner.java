@@ -56,7 +56,7 @@ import ucar.nc2.time.CalendarPeriod;
 import ucar.nc2.units.TimeDuration;
 import ucar.nc2.util.DiskCache2;
 import ucar.nc2.util.log.LoggerFactory;
-import ucar.nc2.util.net.*;
+import ucar.httpclient.*;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;

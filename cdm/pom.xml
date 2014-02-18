@@ -35,6 +35,10 @@
       <groupId>edu.ucar</groupId>
       <artifactId>udunits</artifactId>
     </dependency>
+    <dependency>
+      <groupId>edu.ucar</groupId>
+      <artifactId>httpclient</artifactId>
+    </dependency>
 
     <!-- HTTP client -->
     <dependency>

@@ -31,44 +31,51 @@
  * WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-package ucar.nc2.util.net;
+package ucar.httpclient;
 
-import org.apache.http.client.params.AuthPolicy;
+import org.apache.http.*;
+import org.apache.http.protocol.HttpContext;
 
-import java.util.HashSet;
-import java.util.Set;
+import java.io.IOException;
 
-/**
- * HTTPAuthPolicy defines the set of currently supported schemes.
- *
- * @see AuthPolicy
- */
-
-
-abstract public class HTTPAuthPolicy /* mimics AuthPolicy (AuthPolicy is final for some reason) */
+abstract public class HTTPUtil
 {
-    public static final String BASIC = AuthPolicy.BASIC;
-    public static final String DIGEST = AuthPolicy.DIGEST;
-    public static final String NTLM = AuthPolicy.NTLM;
-    public static final String SSL = "SSL";
-    public static final String ANY = null;
 
-    protected static Set<String> legal;
+    //////////////////////////////////////////////////
+    // Header dump interceptors
 
-    static {
-        legal = new HashSet<String>();
-        legal.add(BASIC);
-        legal.add(DIGEST);
-        legal.add(NTLM);
-        legal.add(SSL);
-    }
-
-    // Define parameter names
-    static public final String PROVIDER = "HTTP.provider";
-
-    static public boolean validate(String scheme)
+    static public class RequestHeaderDump implements HttpRequestInterceptor
     {
-        if(scheme == null) return false;
-        return legal.contains(scheme);
+        @Override
+        synchronized public void
+        process(HttpRequest request, HttpContext context)
+            throws HttpException, IOException
+        {
+            Header[] hdrs = request.getAllHeaders();
+            if(hdrs == null) hdrs = new Header[0];
+            System.err.println("Request Headers:");
+            for(Header h: hdrs) {
+                System.err.println(h.toString());
+            }
+            System.err.flush();
+        }
     }
+
+    static public class ResponseHeaderDump implements HttpResponseInterceptor
+    {
+        @Override
+        synchronized public void
+        process(HttpResponse response, HttpContext context)
+            throws HttpException, IOException
+        {
+            Header[] hdrs = response.getAllHeaders();
+            if(hdrs == null) hdrs = new Header[0];
+            System.err.println("Response Headers:");
+            for(Header h: hdrs) {
+                System.err.println(h.toString());
+            }
+            System.err.flush();
+        }
+    }
+
 }

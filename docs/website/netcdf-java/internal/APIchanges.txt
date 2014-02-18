@@ -147,10 +147,10 @@ API Extensive API changes. Most, but not completely backwards-compatible.
     * thredds.datatype to ucar.nc2.units
 
     * thredds.util to ucar.nc2.util
-    * thredds.util.net to ucar.nc2.util.net
-    * ucar.nc2.dataset.HttpClientManager to ucar.nc2.util.net
+    * thredds.util.net to ucar.httpclient
+    * ucar.nc2.dataset.HttpClientManager to ucar.httpclient
     * remove opendap.dap.DConnect2, ucar.unidata.io.http.HTTPRandomAccessFile from HttpClientManager: must be done seperately
-    * ucar.nc2.util.NetworkUtils to ucar.nc2.util.net.URLnaming
+    * ucar.nc2.util.NetworkUtils to ucar.httpclient.URLnaming
 
     * thredds.util.net.URLExtractor to ui module
     * thredds.util.ListenerManager to ui module

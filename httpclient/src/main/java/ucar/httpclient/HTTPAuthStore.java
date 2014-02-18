@@ -31,7 +31,7 @@
  * WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-package ucar.nc2.util.net;
+package ucar.httpclient;
 
 import java.util.*;
 import java.io.*;
@@ -43,7 +43,7 @@ import javax.crypto.*;
 import javax.crypto.spec.*;
 
 import static org.apache.http.auth.AuthScope.*;
-import static ucar.nc2.util.net.HTTPAuthScope.*;
+import static ucar.httpclient.HTTPAuthScope.*;
 
 
 /**
@@ -64,7 +64,7 @@ import static ucar.nc2.util.net.HTTPAuthScope.*;
  * <p/>
  */
 
-class HTTPAuthStore implements Serializable
+public class HTTPAuthStore implements Serializable
 {
     //////////////////////////////////////////////////////////////////////////
 

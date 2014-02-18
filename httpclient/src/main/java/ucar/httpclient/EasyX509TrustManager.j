@@ -17,9 +17,9 @@
  * under the License.
  */
 
-package ucar.nc2.util.net;
+package ucar.httpclient;
 
-import ucar.nc2.util.net.HTTPSession;
+import ucar.httpclient.HTTPSession;
 import ucar.nc2.util.rc.RC;
 
 import javax.net.ssl.*;

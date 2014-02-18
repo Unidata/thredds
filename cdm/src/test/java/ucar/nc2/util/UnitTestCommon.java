@@ -37,28 +37,23 @@ import junit.framework.TestCase;
 import org.apache.http.*;
 import org.apache.http.protocol.HttpContext;
 import org.junit.Test;
-import ucar.nc2.NetcdfFile;
 import ucar.unidata.test.Diff;
 
 import java.io.*;
 
 public class UnitTestCommon extends TestCase
 {
-    static public boolean debug = false;
+    static boolean DEBUG = false;
 
-    static public org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(UnitTestCommon.class);
+    /**
+     * Temporary data directory (for writing temporary data).
+     */
+    static public String TEMPROOT = "target/test/tmp/"; // relative to module root
 
     // Look for these to verify we have found the thredds root
-    static final String[] SUBROOTS = new String[]{"cdm", "tds", "opendap"};
+    static final String[] SUBROOTS = new String[]{"httpclient", "cdm", "tds", "opendap"};
 
     static public final String threddsRoot = locateThreddsRoot();
-
-    static {
-        System.setProperty("org.apache.commons.logging.Log", "org.apache.commons.logging.impl.SimpleLog");
-        System.setProperty(
-                "org.apache.commons.logging.simplelog.log.org.apache.http",
-                "debug");
-    }
 
     // Walk around the directory structure to locate
     // the path to a given directory.

@@ -31,51 +31,64 @@
  * WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-package ucar.nc2.util.net;
+package ucar.httpclient;
 
-import org.apache.http.*;
-import org.apache.http.protocol.HttpContext;
+import org.apache.http.Header;
+import org.apache.http.HttpRequest;
+import org.apache.http.auth.*;
 
-import java.io.IOException;
-
-abstract public class HTTPUtil
+public class HTTPSSLScheme implements AuthScheme
 {
 
-    //////////////////////////////////////////////////
-    // Header dump interceptors
+static public final HTTPSSLScheme Default  = new HTTPSSLScheme();
 
-    static public class RequestHeaderDump implements HttpRequestInterceptor
-    {
-        @Override
-        synchronized public void
-        process(HttpRequest request, HttpContext context)
-            throws HttpException, IOException
-        {
-            Header[] hdrs = request.getAllHeaders();
-            if(hdrs == null) hdrs = new Header[0];
-            System.err.println("Request Headers:");
-            for(Header h: hdrs) {
-                System.err.println(h.toString());
-            }
-            System.err.flush();
-        }
-    }
+public
+HTTPSSLScheme()
+{
+}
 
-    static public class ResponseHeaderDump implements HttpResponseInterceptor
-    {
-        @Override
-        synchronized public void
-        process(HttpResponse response, HttpContext context)
-            throws HttpException, IOException
-        {
-            Header[] hdrs = response.getAllHeaders();
-            if(hdrs == null) hdrs = new Header[0];
-            System.err.println("Response Headers:");
-            for(Header h: hdrs) {
-                System.err.println(h.toString());
-            }
-            System.err.flush();
-        }
-    }
+public String
+getSchemeName()
+{
+    return "SSL";
+}
+
+public void
+processChallenge(Header header)
+    throws MalformedChallengeException
+{
+}
+    
+public String
+getParameter(String key)
+{
+    return null;
+}
+    
+public String
+getRealm()
+{
+    return AuthScope.ANY_REALM;
+}
+    
+public boolean
+isConnectionBased()
+{
+    return false;
+}
+    
+public boolean
+isComplete()
+{
+    return true;
+}
+
+@Deprecated
+public Header
+authenticate(Credentials credentials, HttpRequest request)
+    throws AuthenticationException
+{
+    return null;
+}
 
 }

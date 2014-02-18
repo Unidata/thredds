@@ -37,7 +37,7 @@ import ucar.ma2.Array;
 import ucar.nc2.stream.CdmRemote;
 import ucar.nc2.util.CancelTaskImpl;
 import ucar.nc2.util.EscapeStrings;
-import ucar.nc2.util.net.HTTPMethod;
+import ucar.httpclient.HTTPMethod;
 import ucar.ma2.*;
 import ucar.nc2.*;
 import ucar.nc2.constants.AxisType;
@@ -55,11 +55,10 @@ import ucar.nc2.thredds.ThreddsDataFactory;
 
 import java.io.*;
 import java.lang.reflect.*;
-import java.net.*;
 import java.util.*;
 
 import thredds.catalog.ServiceType;
-import ucar.nc2.util.net.HTTPFactory;
+import ucar.httpclient.HTTPFactory;
 import ucar.unidata.util.StringUtil2;
 import ucar.unidata.util.Urlencoded;
 
@@ -125,6 +124,11 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
      * Define the legal Windows drive letters
      */
     static final String DRIVE_LETTERS = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
+
+    /**
+     * Define the opuls path
+     */
+    static final String OPULS_PATH = "opuls.cdm";
 
     /**
    * Possible enhancements for a NetcdfDataset
@@ -1080,7 +1084,7 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
     Class dap4class = null;
     NetcdfFile file = null;
     try {
-        dap4class = NetcdfDataset.class.getClassLoader().loadClass("opuls.client.DapNetcdfFile");
+        dap4class = NetcdfDataset.class.getClassLoader().loadClass(OPULS_PATH+".DapNetcdfFile");
         constructormethod = dap4class.getConstructor(String.class, ucar.nc2.util.CancelTask.class);
         file = (NetcdfFile) constructormethod.newInstance(location, cancelTask);
         return file;
@@ -1089,22 +1093,22 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
       log.error(msg);
       throw new IOException(msg);
     } catch (NoSuchMethodException e) {
-        String msg = "DapNetcdfFileFactory constructor not found";
+        String msg = "DapNetcdfFile constructor not found";
         log.error(msg);
         throw new IOException(msg);} catch (InstantiationException e) {
       String msg = "DapNetcdfFileFactory constructor cannot be invoked";
       log.error(msg);
       throw new IOException(msg);
     } catch (IllegalAccessException iace) {
-      String msg = "DapNetcdfFileFactory constructor cannot be invoked";
+      String msg = "DapNetcdfFile constructor cannot be invoked";
       log.error(msg);
       throw new IOException(msg, iace);
     } catch (IllegalArgumentException iare) {
-      String msg = "DapNetcdfFileFactory constructor: illegal argument";
+      String msg = "DapNetcdfFile constructor: illegal argument";
       log.error(msg);
       throw new IOException(msg, iare);
     } catch (InvocationTargetException ite) {
-      String msg = "DapNetcdfFileFactory constructor failed: "
+      String msg = "DapNetcdfFile constructor failed: "
               + ite.getCause().getMessage();
       log.error(msg);
       throw new IOException(msg, ite);

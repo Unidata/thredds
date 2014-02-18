@@ -40,9 +40,9 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import ucar.nc2.util.IO;
-import ucar.nc2.util.net.HTTPFactory;
-import ucar.nc2.util.net.HTTPMethod;
-import ucar.nc2.util.net.HTTPSession;
+import ucar.httpclient.HTTPFactory;
+import ucar.httpclient.HTTPMethod;
+import ucar.httpclient.HTTPSession;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;

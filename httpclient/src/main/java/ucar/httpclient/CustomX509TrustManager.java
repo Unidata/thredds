@@ -17,10 +17,9 @@
  * under the License.
  */
 
-package ucar.nc2.util.net;
+package ucar.httpclient;
 
-import ucar.nc2.util.net.HTTPSession;
-import ucar.nc2.util.rc.RC;
+import ucar.httpclient.HTTPSession;
 
 import javax.net.ssl.*;
 import java.security.*;
@@ -35,8 +34,18 @@ import java.security.cert.X509Certificate;
 public class CustomX509TrustManager implements X509TrustManager
 {
 
+    //////////////////////////////////////////////////
+
     static public org.slf4j.Logger logger = HTTPSession.log;
  
+    static protected boolean verifyserver = false;
+    static protected boolean allowselfsigned = false;
+
+    static public void setVerifyServer(boolean tf) {verifyserver=tf;}
+    static public void setAllowSelfSigned(boolean tf) {allowselfsigned=tf;}
+
+    //////////////////////////////////////////////////
+
     private X509TrustManager standardTrustManager = null;
  
     /**
@@ -78,15 +87,15 @@ public class CustomX509TrustManager implements X509TrustManager
         }
 
 	// The certificate checking rules are as follows:
-	// 1. If !RC.getVerifyServer()
+	// 1. If !verifyserver
 	//    then just return (indicating success)
-	// 2. If certificates.length > 1 || !RC.getAllowSelfSigned() then 
+	// 2. If certificates.length > 1 || !allowselfsignedthen 
 	//    call standardTrustManager.checkServerTrusted() to
 	//    see if this is a valid certificate chain.
 	// 3. Otherwise, see if this looks like a self signed certificate.
 
-	if(RC.getVerifyServer()) {
-            if(RC.getAllowSelfSigned() && certificates != null && certificates.length == 1) {
+	if(verifyserver) {
+            if(allowselfsigned && certificates != null && certificates.length == 1) {
 		        X509Certificate certificate = certificates[0];
                 certificate.checkValidity(); // check that current date is within the certficates valid dates
                 // See if this looks like a self-signed cert

@@ -31,77 +31,44 @@
  * WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-package ucar.nc2.util.net;
+package ucar.httpclient;
 
-import org.apache.http.auth.*;
-import org.apache.http.client.CredentialsProvider;
+import org.apache.http.client.params.AuthPolicy;
 
-import java.io.IOException;
-import java.io.Serializable;
-import java.security.Principal;
+import java.util.HashSet;
+import java.util.Set;
+
+/**
+ * HTTPAuthPolicy defines the set of currently supported schemes.
+ *
+ * @see AuthPolicy
+ */
 
 
-//////////////////////////////////////////////////
-// Provide a non-interactive CredentialsProvider to hold
-// a username + password that might have been taken from e.g.
-// the user info part of a URL.
-
-public class HTTPBasicProvider implements CredentialsProvider,
-                                          Credentials,
-                                          Serializable
+abstract public class HTTPAuthPolicy /* mimics AuthPolicy (AuthPolicy is final for some reason) */
 {
-    String username = null;
-    String password = null;
+    public static final String BASIC = AuthPolicy.BASIC;
+    public static final String DIGEST = AuthPolicy.DIGEST;
+    public static final String NTLM = AuthPolicy.NTLM;
+    public static final String SSL = "SSL";
+    public static final String ANY = null;
 
-    public HTTPBasicProvider(String username, String password)
-    {
-	this.username = username;
-	this.password = password;
+    protected static Set<String> legal;
+
+    static {
+        legal = new HashSet<String>();
+        legal.add(BASIC);
+        legal.add(DIGEST);
+        legal.add(NTLM);
+        legal.add(SSL);
     }
 
-    // Credentials Provider Interface
-    public Credentials
-    getCredentials(AuthScope scope)
-    {
-        UsernamePasswordCredentials creds = new UsernamePasswordCredentials(username, password);
-	return creds;
-    }
+    // Define parameter names
+    static public final String PROVIDER = "HTTP.provider";
 
-    public void setCredentials(AuthScope authscope, Credentials credentials)
+    static public boolean validate(String scheme)
     {
-    }
-
-    public void
-    clear()
-    {
-    }
-
-    // Credentials Interface
-    public Principal
-    getUserPrincipal()
-    {
-        return null;
-    }
-
-    public String
-    getPassword()
-    {
-        return null;
-    }
-
-
-    // Serializable Interface
-    private void writeObject(java.io.ObjectOutputStream oos)
-	throws IOException
-    {
-	oos.writeObject(this.username);
-	oos.writeObject(this.password);
-    }
-
-    private void readObject(java.io.ObjectInputStream ois)
-	throws IOException, ClassNotFoundException
-    {
-	this.username = (String) ois.readObject();
-	this.password = (String) ois.readObject();
+        if(scheme == null) return false;
+        return legal.contains(scheme);
     }
 }

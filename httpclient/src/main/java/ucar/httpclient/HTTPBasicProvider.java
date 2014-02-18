@@ -31,7 +31,7 @@
  * WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-package ucar.nc2.util.net;
+package ucar.httpclient;
 
 import org.apache.http.auth.*;
 import org.apache.http.client.CredentialsProvider;
@@ -40,62 +40,40 @@ import java.io.IOException;
 import java.io.Serializable;
 import java.security.Principal;
 
-/**
- * Provide an HTTP SSL CredentialsProvider
- * The getCredentials method is used in a
- * non-standard way
- */
 
-public class HTTPSSLProvider implements CredentialsProvider, Credentials, Serializable
+//////////////////////////////////////////////////
+// Provide a non-interactive CredentialsProvider to hold
+// a username + password that might have been taken from e.g.
+// the user info part of a URL.
+
+public class HTTPBasicProvider implements CredentialsProvider,
+                                          Credentials,
+                                          Serializable
 {
-    String keystore = null;
-    String keypass = null;
-    String truststore = null;
-    String trustpass = null;
+    String username = null;
+    String password = null;
 
-    public HTTPSSLProvider()
+    public HTTPBasicProvider(String username, String password)
     {
-        this(null,"",null,"");
+	this.username = username;
+	this.password = password;
     }
 
-    public HTTPSSLProvider(String keystore,String keypass,
-                           String truststore,String trustpass)
-    {
-	this.keystore = keystore;
-	this.keypass = keypass;
-	this.truststore = truststore;
-	this.trustpass = trustpass;
-    }     
-
-    public HTTPSSLProvider(String keystore, String keypass)
-    {
-	this(keystore,keypass,null,null);
-    }     
-
-    // Provide accessors
-    public String getKeystore() {return keystore;}
-    public String getKeypassword() {return keypass;}
-    public String getTruststore() {return truststore;}
-    public String getTrustpassword() {return trustpass;}
-
-    // Credentials Provider Interface is abused
-
+    // Credentials Provider Interface
     public Credentials
     getCredentials(AuthScope scope)
     {
-	return (Credentials) this;
+        UsernamePasswordCredentials creds = new UsernamePasswordCredentials(username, password);
+	return creds;
     }
 
-    public void
-    setCredentials(AuthScope scope, Credentials creds)
+    public void setCredentials(AuthScope authscope, Credentials credentials)
     {
-
     }
 
     public void
     clear()
     {
-
     }
 
     // Credentials Interface
@@ -108,29 +86,22 @@ public class HTTPSSLProvider implements CredentialsProvider, Credentials, Serial
     public String
     getPassword()
     {
-       return null;
+        return null;
     }
 
 
     // Serializable Interface
     private void writeObject(java.io.ObjectOutputStream oos)
-        throws IOException
+	throws IOException
     {
-        oos.writeObject(this.keystore);
-        oos.writeObject(this.keypass);
-        oos.writeObject(this.truststore);
-        oos.writeObject(this.trustpass);
+	oos.writeObject(this.username);
+	oos.writeObject(this.password);
     }
 
     private void readObject(java.io.ObjectInputStream ois)
-            throws IOException, ClassNotFoundException
+	throws IOException, ClassNotFoundException
     {
-        this.keystore = (String)ois.readObject();
-        this.keypass = (String)ois.readObject();
-        this.truststore = (String)ois.readObject();
-        this.trustpass = (String)ois.readObject();
+	this.username = (String) ois.readObject();
+	this.password = (String) ois.readObject();
     }
-
-
-
 }

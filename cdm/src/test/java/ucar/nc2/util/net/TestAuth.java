@@ -33,10 +33,12 @@
 
 package ucar.nc2.util.net;
 
+import ucar.httpclient.*;
+
 import org.apache.http.auth.*;
 import org.apache.http.client.CredentialsProvider;
 import org.junit.Test;
-import ucar.nc2.TestLocal;
+import ucar.nc2.util.EscapeStrings;
 import ucar.nc2.util.UnitTestCommon;
 
 import java.io.*;
@@ -47,6 +49,7 @@ public class TestAuth extends UnitTestCommon
 {
     static final String BADPASSWORD = "bad";
 
+    static protected final String MODULE = "httpclient";
 
     // Add a temporary control for remote versus localhost
     static boolean remote = false;
@@ -55,7 +58,7 @@ public class TestAuth extends UnitTestCommon
 
     // Assuming we have thredds root, then the needed keystores
     // are located in this directory
-    static final String KEYDIR = "/cdm/src/test/resources";
+    static final String KEYDIR = "/httpclient/src/test/resources";
 
     static final String CLIENTKEY = "clientkey.jks";
     static final String CLIENTPWD = "changeit";
@@ -63,6 +66,8 @@ public class TestAuth extends UnitTestCommon
     // Mnemonics for xfail
     static final boolean MUSTFAIL = true;
     static final boolean MUSTPASS = false;
+
+    static String temppath = null;
 
     static {
         //todo: Register the 8843 protocol to test client side keys
@@ -73,6 +78,9 @@ public class TestAuth extends UnitTestCommon
         HTTPSession.TESTING = true;
         HTTPCredentialsCache.TESTING = true;
         HTTPAuthStore.TESTING = true;
+        // Make sure temp file exist
+        temppath = threddsRoot + "/" + MODULE + "/" + TEMPROOT;
+        new File(temppath).mkdirs();
     }
 
     //////////////////////////////////////////////////
@@ -227,7 +235,7 @@ public class TestAuth extends UnitTestCommon
 
             // try to read in the content
             byte[] contents = readbinaryfile(method.getResponseAsStream());
-            assertTrue("no content",contents.length > 0);
+            assertTrue("no content", contents.length > 0);
 
             if(pass) {
                 // Test global credentials provider
@@ -309,9 +317,9 @@ public class TestAuth extends UnitTestCommon
             // Look at the invalidation list
             List<HTTPCredentialsCache.Triple> removed = HTTPCredentialsCache.getTestList();
             if(removed.size() == 1) {
-               HTTPCredentialsCache.Triple triple = removed.get(0);
-               pass = (triple.scope.getScheme().equals(HTTPAuthPolicy.BASIC.toUpperCase())
-                       && triple.creds instanceof UsernamePasswordCredentials);
+                HTTPCredentialsCache.Triple triple = removed.get(0);
+                pass = (triple.scope.getScheme().equals(HTTPAuthPolicy.BASIC.toUpperCase())
+                    && triple.creds instanceof UsernamePasswordCredentials);
             } else
                 pass = false;
 
@@ -360,7 +368,7 @@ public class TestAuth extends UnitTestCommon
 
             CredentialsProvider provider = new HTTPSSLProvider(keystore, CLIENTPWD);
             AuthScope scope
-                = HTTPAuthScope.urlToScope(url, HTTPAuthPolicy.SSL,null);
+                = HTTPAuthScope.urlToScope(url, HTTPAuthPolicy.SSL, null);
             HTTPSession.setGlobalCredentialsProvider(scope, provider);
 
             HTTPSession session = HTTPFactory.newSession(url);
@@ -399,13 +407,13 @@ public class TestAuth extends UnitTestCommon
         // Add some entries to an HTTPAuthStore
         HTTPAuthStore store = new HTTPAuthStore();
 
-        scope =  HTTPAuthScope.urlToScope(
+        scope = HTTPAuthScope.urlToScope(
             "http://ceda.ac.uk/dap/neodc/casix/seawifs_plankton/data/monthly/PSC_monthly_1998.nc.dds",
             HTTPAuthPolicy.BASIC, null);
         store.insert(HTTPAuthScope.ANY_PRINCIPAL, scope, credp1);
 
         scope = HTTPAuthScope.urlToScope("http://ceda.ac.uk",
-            HTTPAuthPolicy.SSL,null);
+            HTTPAuthPolicy.SSL, null);
         store.insert(HTTPAuthScope.ANY_PRINCIPAL, scope, credp2);
 
         scope = HTTPAuthScope.urlToScope("http://ceda.ac.uk",
@@ -413,7 +421,7 @@ public class TestAuth extends UnitTestCommon
         store.insert(HTTPAuthScope.ANY_PRINCIPAL, scope, credp3);
 
         // Remove any old file
-        File target1 = new File(TestLocal.temporaryDataDir + "serial1");
+        File target1 = new File(temppath + "/serial1");
         target1.delete();
 
         // serialize out

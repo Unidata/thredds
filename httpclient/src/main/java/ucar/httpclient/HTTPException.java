@@ -1,5 +1,6 @@
 /*
- * Copyright (c) 1998 - 2012. University Corporation for Atmospheric Research/Unidata
+ * Copyright 1998-2009 University Corporation for Atmospheric Research/Unidata
+ *
  * Portions of this software were developed by the Unidata Program at the
  * University Corporation for Atmospheric Research.
  *
@@ -30,62 +31,32 @@
  * WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-package ucar.nc2.util.net;
+package ucar.httpclient;
 
-import ucar.httpclient.*;
+import java.io.IOException;
 
-import org.junit.Test;
-import ucar.nc2.util.EscapeStrings;
-import ucar.nc2.util.UnitTestCommon;
+/**
+ * Created by IntelliJ IDEA.
+ * User: dmh
+ * Date: May 20, 2010
+ * Time: 12:04:39 PM
+ * To change this template use File | Settings | File Templates.
+ */
+public class HTTPException extends IOException {
 
-import static junit.framework.Assert.assertTrue;
-
-public class TestMisc extends UnitTestCommon
-{
-
-  static {HTTPSession.TESTING = true;}
-
-  //////////////////////////////////////////////////
-
-  // Define the test sets
-
-  int passcount = 0;
-  int xfailcount = 0;
-  int failcount = 0;
-  boolean verbose = true;
-  boolean pass = false;
-
-  String datadir = null;
-  String threddsroot = null;
-
-  public TestMisc() {
-    setTitle("HTTP Session tests");
-  }
-
-  static final String[] esinputs = {
-          "http://localhost:8081/dts/test.01",
-          "http://localhost:8081///xx/",
-          "http://localhost:8081/<>^/`/",
-  };
-  static final String[] esoutputs = {
-          "http://localhost:8081/dts/test.01",
-          "http://localhost:8081///xx/",
-          "http://localhost:8081/%3c%3e%5e/%60/",
-  };
-
-  @Test
-  public void
-  testEscapeStrings() throws Exception {
-    pass = true;
-    assert (esinputs.length == esoutputs.length);
-    for (int i = 0; i < esinputs.length && pass; i++) {
-      String result = EscapeStrings.escapeURL(esinputs[i]);
-        System.err.printf("input= |%s|\n",esinputs[i]);
-        System.err.printf("result=|%s|\n",result);
-        System.err.printf("output=|%s|\n",esoutputs[i]);
-      if (!result.equals(esoutputs[i])) pass = false;
-      System.out.printf("input=%s output=%s pass=%s\n", esinputs[i], result, pass);
+    public HTTPException() {
+        super();
     }
-    assertTrue("TestMisc.testEscapeStrings", pass);
-  }
+
+    public HTTPException(java.lang.String message) {
+        super(message);
+    }
+
+    public HTTPException(java.lang.String message, java.lang.Throwable cause) {
+        super(message, cause);
+    }
+
+    public HTTPException(java.lang.Throwable cause) {
+        super(cause);
+    }
 }

@@ -31,7 +31,7 @@
  * WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-package ucar.nc2.util.net;
+package ucar.httpclient;
 
 import org.apache.http.auth.*;
 import org.apache.http.client.CredentialsProvider;
@@ -82,7 +82,7 @@ public class HTTPCredentialsCache implements CredentialsProvider
 
     //////////////////////////////////////////////////
 
-    static boolean TESTING = false;
+    static public boolean TESTING = false;
 
     //////////////////////////////////////////////////
     // Instance variables
@@ -201,11 +201,11 @@ public class HTTPCredentialsCache implements CredentialsProvider
 
     static public class Triple
     {
-        String principal;
-        AuthScope scope;
-        Credentials creds;
+        public String principal;
+        public AuthScope scope;
+        public Credentials creds;
 
-        Triple(String principal, AuthScope scope, Credentials creds)
+        public Triple(String principal, AuthScope scope, Credentials creds)
         {
             this.principal = principal;
             this.scope = scope;

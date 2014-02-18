@@ -55,7 +55,7 @@ import org.apache.http.cookie.Cookie;
 import ucar.nc2.util.EscapeStrings;
 import org.apache.http.*;
 import org.apache.http.auth.*;
-import ucar.nc2.util.net.*;
+import ucar.httpclient.*;
 
 /**
  * Rewritten 1/15/07 jcaron to use HttpCLient library instead of jdk UrlConnection class.
@@ -258,7 +258,7 @@ private void openConnection(String urlString, Command command) throws IOExceptio
     int statusCode = method.execute();
 
     // debug
-    // if (debugHeaders) ucar.nc2.util.net.HttpClientManager.showHttpRequestInfo(f, method);
+    // if (debugHeaders) ucar.httpclient.HttpClientManager.showHttpRequestInfo(f, method);
 
     if (statusCode == HttpStatus.SC_NOT_FOUND) {
       throw new DAP2Exception(DAP2Exception.NO_SUCH_FILE, method.getStatusText()+": "+urlString);
