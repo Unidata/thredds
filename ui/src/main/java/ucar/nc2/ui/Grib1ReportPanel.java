@@ -42,7 +42,7 @@ import ucar.nc2.NetcdfFile;
 import ucar.nc2.dataset.CoordinateAxis1D;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dt.GridCoordSystem;
-import ucar.nc2.grib.GribIosp;
+import ucar.nc2.grib.collection.GribIosp;
 import ucar.nc2.grib.GribVariableRenamer;
 import ucar.nc2.grib.grib1.*;
 import ucar.nc2.Attribute;

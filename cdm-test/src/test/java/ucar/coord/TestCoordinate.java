@@ -1,9 +1,6 @@
-package ucar.sparr;
+package ucar.coord;
 
 import ucar.nc2.grib.VertCoord;
-import ucar.nc2.grib.collection.CoordinateRuntime;
-import ucar.nc2.grib.collection.CoordinateTime;
-import ucar.nc2.grib.collection.CoordinateVert;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time.CalendarPeriod;
 import ucar.nc2.util.Indent;

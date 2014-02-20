@@ -33,11 +33,10 @@
  *
  */
 
-package ucar.nc2.grib.collection;
+package ucar.coord;
 
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time.CalendarPeriod;
-import ucar.sparr.Coordinate;
 
 import java.util.List;
 
@@ -49,7 +48,7 @@ import java.util.List;
  */
 public abstract class CoordinateTimeAbstract implements Coordinate {
 
-  protected final int code;                  // pdsFirst.getTimeUnit()
+  protected final int code;                  // pdsFirst.getTimeUnit() : unit of time range (see Code table 4.4), eg hour, day, month
   protected final CalendarPeriod timeUnit;
   protected CalendarDate refDate;            // null if dense
 

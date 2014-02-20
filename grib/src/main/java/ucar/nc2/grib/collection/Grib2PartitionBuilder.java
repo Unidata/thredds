@@ -6,7 +6,7 @@ import thredds.inventory.CollectionUpdateType;
 import thredds.inventory.MCollection;
 import thredds.inventory.partition.PartitionManager;
 import ucar.ma2.Section;
-import ucar.sparr.*;
+import ucar.coord.*;
 import ucar.nc2.constants.CDM;
 import ucar.nc2.stream.NcStream;
 import ucar.unidata.io.RandomAccessFile;

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998 - 2011. University Corporation for Atmospheric Research/Unidata
+ * Copyright (c) 1998 - 2014. University Corporation for Atmospheric Research/Unidata
  * Portions of this software were developed by the Unidata Program at the
  * University Corporation for Atmospheric Research.
  *
@@ -33,10 +33,9 @@
 package ucar.nc2.grib.collection;
 
 import thredds.catalog.DataFormatType;
-import ucar.sparr.Coordinate;
+import ucar.nc2.grib.grib2.Grib2Index;
 import ucar.ma2.*;
 import ucar.nc2.*;
-import ucar.nc2.constants.*;
 import ucar.nc2.grib.*;
 import ucar.nc2.grib.grib2.Grib2Record;
 import ucar.nc2.grib.grib2.Grib2RecordScanner;
@@ -400,19 +399,6 @@ public class Grib2Iosp extends GribIosp {
         v.addAttribute(new Attribute("Grib2_Level_Type", vindex.levelType));
     }
 
-    if (vindex.intvType >= 0) {
-      GribStatType statType = cust.getStatType(vindex.intvType);   // LOOK find the time coordinate
-      if (statType != null) {
-        v.addAttribute(new Attribute("Grib2_Statistical_Interval_Type", statType.toString()));
-        CF.CellMethods cm = GribStatType.getCFCellMethod(statType);
-        Coordinate timeCoord = vindex.getCoordinate(Coordinate.Type.timeIntv);
-        if (cm != null && timeCoord != null)
-          v.addAttribute(new Attribute("cell_methods", timeCoord.getName() + ": " + cm.toString()));
-      } else {
-        v.addAttribute(new Attribute("Grib2_Statistical_Interval_Type", vindex.intvType));
-      }
-    }
-
     if (vindex.ensDerivedType >= 0)
       v.addAttribute(new Attribute("Grib2_Ensemble_Derived_Type", vindex.ensDerivedType));
     else if (vindex.probabilityName != null && vindex.probabilityName.length() > 0) {
@@ -444,6 +430,15 @@ public class Grib2Iosp extends GribIosp {
       gr.getPDS().show(f);
       System.out.printf("%nGrib2Record.readData at drsPos %d = %s%n", pos, f.toString());
     }
+  }
+
+  @Override
+  protected float[] readData(RandomAccessFile rafData, GribIosp.DataRecord dr) throws IOException {
+
+        GdsHorizCoordSys hcs = dr.hcs;
+        int scanMode = (dr.scanMode == Grib2Index.ScanModeMissing) ? hcs.scanMode : dr.scanMode;
+        return Grib2Record.readData(rafData, dr.drsPos, dr.bmsPos, hcs.gdsNumberPoints, scanMode,
+                hcs.nxRaw, hcs.nyRaw, hcs.nptsInLine);
   }
 
 }

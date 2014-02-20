@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998 - 2011. University Corporation for Atmospheric Research/Unidata
+ * Copyright (c) 1998 - 2014. University Corporation for Atmospheric Research/Unidata
  * Portions of this software were developed by the Unidata Program at the
  * University Corporation for Atmospheric Research.
  *
@@ -35,16 +35,14 @@ package ucar.nc2.grib.collection;
 import org.jdom2.Element;
 import thredds.featurecollection.FeatureCollectionConfig;
 import thredds.inventory.CollectionUpdateType;
-import ucar.nc2.grib.grib2.Grib2Index;
+import ucar.coord.*;
 import ucar.nc2.iosp.AbstractIOServiceProvider;
 import ucar.nc2.ncml.NcMLReader;
 import ucar.nc2.time.CalendarPeriod;
-import ucar.sparr.Coordinate;
 import ucar.ma2.*;
 import ucar.nc2.*;
 import ucar.nc2.constants.*;
 import ucar.nc2.grib.*;
-import ucar.nc2.grib.grib2.Grib2Record;
 import ucar.nc2.grib.grib2.Grib2Utils;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.util.CancelTask;
@@ -130,17 +128,22 @@ public abstract class GribIosp extends AbstractIOServiceProvider {
     this.logger = logger;
   }
 
-  protected abstract String getIntervalName(int id);
-  protected abstract ucar.nc2.grib.GribTables createCustomizer();
-  protected abstract void addGlobalAttributes(NetcdfFile ncfile);
+  protected abstract ucar.nc2.grib.GribTables createCustomizer() throws IOException;
   protected abstract String makeVariableName(GribCollection.VariableIndex vindex);
   protected abstract String makeVariableNameFromRecord(GribCollection.VariableIndex vindex);
   protected abstract String makeVariableLongName(GribCollection.VariableIndex vindex);
   protected abstract String makeVariableUnits(GribCollection.VariableIndex vindex);
+
+  protected abstract String getIntervalName(int id);
   protected abstract String getVerticalCoordDesc(int vc_code);
   protected abstract GribTables.Parameter getParameter(GribCollection.VariableIndex vindex);
+
+  protected abstract void addGlobalAttributes(NetcdfFile ncfile);
   protected abstract void addVariableAttributes(Variable v, GribCollection.VariableIndex vindex);
   protected abstract void show(RandomAccessFile rafData, long pos) throws IOException;
+
+  protected abstract float[] readData(RandomAccessFile rafData, DataRecord dr) throws IOException;
+
 
 
   @Override
@@ -226,7 +229,7 @@ public abstract class GribIosp extends AbstractIOServiceProvider {
     String horizDims;
 
     // CurvilinearOrthogonal - lat and lon fields must be present in the file
-    boolean isLatLon2D = Grib2Utils.isLatLon2D(hcs.template, gribCollection.getCenter());
+    boolean isLatLon2D = Grib2Utils.isLatLon2D(hcs.template, gribCollection.getCenter());  // LOOK does this work for GRIB1 ??
     if (isLatLon2D) {
       horizDims = "lat lon";  // LOOK: orthogonal curvilinear
 
@@ -242,7 +245,7 @@ public abstract class GribIosp extends AbstractIOServiceProvider {
       Variable cv = ncfile.addVariable(g, new Variable(ncfile, g, null, "lat", DataType.FLOAT, "lat"));
       cv.addAttribute(new Attribute(CDM.UNITS, CDM.LAT_UNITS));
       if (hcs.gaussLats != null)
-        cv.setCachedData(hcs.gaussLats); //  LOOK do we need to make a copy?
+        cv.setCachedData(hcs.gaussLats);
       else
         cv.setCachedData(Array.makeArray(DataType.FLOAT, hcs.ny, hcs.starty, hcs.dy));
 
@@ -363,6 +366,19 @@ public abstract class GribIosp extends AbstractIOServiceProvider {
       String intvName = vindex.getTimeIntvName();
       if ( intvName != null && intvName.length() != 0)
         v.addAttribute(new Attribute(CDM.TIME_INTERVAL, intvName));
+
+      if (vindex.intvType >= 0) {
+        GribStatType statType = gribTable.getStatType(vindex.intvType);   // LOOK find the time coordinate
+        if (statType != null) {
+          v.addAttribute(new Attribute("Grib_Statistical_Interval_Type", statType.toString()));
+          CF.CellMethods cm = GribStatType.getCFCellMethod(statType);
+          Coordinate timeCoord = vindex.getCoordinate(Coordinate.Type.timeIntv);
+          if (cm != null && timeCoord != null)
+            v.addAttribute(new Attribute(CF.CELL_METHODS, timeCoord.getName() + ": " + cm.toString()));
+        } else {
+          v.addAttribute(new Attribute("Grib_Statistical_Interval_Type", vindex.intvType));
+        }
+      }
 
       addVariableAttributes(v, vindex);
 
@@ -776,7 +792,32 @@ public abstract class GribIosp extends AbstractIOServiceProvider {
     return dataReceiver.getArray();
   }
 
-  private class DataReader {
+  static class DataRecord implements Comparable<DataRecord> {
+    int resultIndex; // index in the ens / time / vert array
+    int fileno;
+    long drsPos;
+    long bmsPos;  // if non zero, use alternate bms
+    int scanMode;
+    GdsHorizCoordSys hcs;
+
+    DataRecord(int resultIndex, int fileno, long drsPos, long bmsPos, int scanMode, GdsHorizCoordSys hcs) {
+      this.resultIndex = resultIndex;
+      this.fileno = fileno;
+      this.drsPos = (drsPos == 0) ? GribCollection.MISSING_RECORD : drsPos; // 0 also means missing in Grib2
+      this.bmsPos = bmsPos;
+      this.scanMode = scanMode;
+      this.hcs = hcs;
+    }
+
+    @Override
+    public int compareTo(DataRecord o) {
+      int r = Misc.compare(fileno, o.fileno);
+      if (r != 0) return r;
+      return Misc.compare(drsPos, o.drsPos);
+    }
+  }
+
+  protected class DataReader {
     GribCollection.VariableIndex vindex;
     List<DataRecord> records = new ArrayList<>();
 
@@ -787,7 +828,7 @@ public abstract class GribIosp extends AbstractIOServiceProvider {
     void addRecord(int sourceIndex, int resultIndex) {
       GribCollection.Record record = vindex.getSparseArray().getContent(sourceIndex);
       if (record != null)
-        records.add(new DataRecord(resultIndex, record.fileno, record.pos, record.bmsPos, record.scanMode));
+        records.add(new DataRecord(resultIndex, record.fileno, record.pos, record.bmsPos, record.scanMode, vindex.group.getGdsHorizCoordSys()));
     }
 
     void read(DataReceiverIF dataReceiver) throws IOException {
@@ -808,36 +849,14 @@ public abstract class GribIosp extends AbstractIOServiceProvider {
           show(rafData, dr.drsPos);
         }
 
+        float[] data = readData(rafData, dr);
         GdsHorizCoordSys hcs = vindex.group.getGdsHorizCoordSys();
-        int scanMode = (dr.scanMode == Grib2Index.ScanModeMissing) ? hcs.scanMode : dr.scanMode;
+        /* int scanMode = (dr.scanMode == Grib2Index.ScanModeMissing) ? hcs.scanMode : dr.scanMode;
         float[] data = Grib2Record.readData(rafData, dr.drsPos, dr.bmsPos, hcs.gdsNumberPoints, scanMode,
-                hcs.nxRaw, hcs.nyRaw, hcs.nptsInLine);
+                hcs.nxRaw, hcs.nyRaw, hcs.nptsInLine); */
         dataReceiver.addData(data, dr.resultIndex, hcs.nx);
       }
       if (rafData != null) rafData.close();
-    }
-
-    private class DataRecord implements Comparable<DataRecord> {
-      int resultIndex; // index in the ens / time / vert array
-      int fileno;
-      long drsPos;
-      long bmsPos;
-      int scanMode;
-
-      DataRecord(int resultIndex, int fileno, long drsPos, long bmsPos, int scanMode) {
-        this.resultIndex = resultIndex;
-        this.fileno = fileno;
-        this.drsPos = drsPos;
-        this.bmsPos = bmsPos;
-        this.scanMode = scanMode;
-      }
-
-      @Override
-      public int compareTo(DataRecord o) {
-        int r = Misc.compare(fileno, o.fileno);
-        if (r != 0) return r;
-        return Misc.compare(drsPos, o.drsPos);
-      }
     }
   }
 
@@ -1030,15 +1049,16 @@ public abstract class GribIosp extends AbstractIOServiceProvider {
           show( rafData, dr.drsPos);
         }
 
-        //GdsHorizCoordSys hcs = dr.vindex.group.getGdsHorizCoordSys();
+        float[] data = readData(rafData, dr);
         GdsHorizCoordSys hcs = dr.hcs;
-        int scanMode = (dr.scanMode == Grib2Index.ScanModeMissing) ? hcs.scanMode : dr.scanMode;
+        /* int scanMode = (dr.scanMode == Grib2Index.ScanModeMissing) ? hcs.scanMode : dr.scanMode;
         float[] data = Grib2Record.readData(rafData, dr.drsPos, dr.bmsPos, hcs.gdsNumberPoints, scanMode,
-                hcs.nxRaw, hcs.nyRaw, hcs.nptsInLine);
+                hcs.nxRaw, hcs.nyRaw, hcs.nptsInLine); */
         dataReceiver.addData(data, dr.resultIndex, hcs.nx);
       }
       if (rafData != null) rafData.close();
     }
   }
+
 
 }

@@ -33,6 +33,7 @@
 package ucar.nc2.grib.grib1;
 
 import net.jcip.annotations.Immutable;
+import ucar.nc2.grib.GribTables;
 import ucar.nc2.grib.GribUtils;
 import ucar.nc2.grib.grib1.tables.Grib1ParamTable;
 import ucar.unidata.util.StringUtil2;
@@ -44,7 +45,7 @@ import ucar.unidata.util.StringUtil2;
  * @since 9/8/11
  */
 @Immutable
-public class Grib1Parameter {
+public class Grib1Parameter implements GribTables.Parameter {
 
   private final Grib1ParamTable table;  // which table did this come from ?
   private final int number;
@@ -75,10 +76,22 @@ public class Grib1Parameter {
     return table;
   }
 
+  @Override
+  public int getDiscipline() {
+    return 0;
+  }
+
+  @Override
+  public int getCategory() {
+    return 0;
+  }
+
+  @Override
   public int getNumber() {
     return number;
   }
 
+  @Override
   public String getName() {
     return name;
   }
@@ -92,8 +105,14 @@ public class Grib1Parameter {
    *
    * @return description
    */
+   @Override
   public final String getDescription() {
     return description;
+  }
+
+  @Override
+  public String getId() {
+    return table.getCenter_id() + "." + table.getSubcenter_id() + "." + number;
   }
 
   /**
@@ -101,8 +120,14 @@ public class Grib1Parameter {
    *
    * @return unit
    */
+  @Override
   public final String getUnit() {
     return unit;
+  }
+
+  @Override
+  public String getAbbrev() {
+    return null;
   }
 
   public String getCFname() {

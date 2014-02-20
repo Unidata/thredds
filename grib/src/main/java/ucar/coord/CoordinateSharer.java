@@ -1,7 +1,4 @@
-package ucar.sparr;
-
-import ucar.nc2.grib.collection.*;
-import ucar.nc2.grib.grib2.Grib2Record;
+package ucar.coord;
 
 import java.util.*;
 
@@ -13,7 +10,7 @@ import java.util.*;
  * @author John
  * @since 1/4/14
  */
-public class CoordinateSharer {
+public class CoordinateSharer<T> {
   static private final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(CoordinateSharer.class);
   boolean runtimeUnion;
 
@@ -145,7 +142,7 @@ public class CoordinateSharer {
    * @return new CoordinateND containing shared coordinates and sparseArray for the new coordinates
    *   or the prev CoordinateND if reindexing not needed.
    */
-  public CoordinateND<Grib2Record> reindex(CoordinateND<Grib2Record> prev) {
+  public CoordinateND<T> reindex(CoordinateND<T> prev) {
 
     boolean needReindex = false;
     for (Coordinate coord : prev.getCoordinates()) {
@@ -169,7 +166,7 @@ public class CoordinateSharer {
       completeCoords.add(coord);
     }
 
-    CoordinateND<Grib2Record> result = new CoordinateND<>(completeCoords);
+    CoordinateND<T> result = new CoordinateND<>(completeCoords);
     result.reindex(prev);
     return result;
   }

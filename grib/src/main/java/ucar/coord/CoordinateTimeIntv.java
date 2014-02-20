@@ -1,9 +1,7 @@
-package ucar.nc2.grib.collection;
+package ucar.coord;
 
 import ucar.nc2.time.CalendarDateRange;
 import ucar.nc2.time.CalendarDateUnit;
-import ucar.sparr.Coordinate;
-import ucar.sparr.CoordinateBuilderImpl;
 import ucar.nc2.grib.TimeCoord;
 import ucar.nc2.grib.grib2.Grib2Pds;
 import ucar.nc2.grib.grib2.Grib2Record;
@@ -12,7 +10,6 @@ import ucar.nc2.grib.grib2.table.Grib2Customizer;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time.CalendarPeriod;
 import ucar.nc2.util.Indent;
-import ucar.sparr.CoordinateTwoTimer;
 
 import java.util.*;
 
@@ -25,7 +22,6 @@ import java.util.*;
 public class CoordinateTimeIntv extends CoordinateTimeAbstract implements Coordinate {
   private final List<TimeCoord.Tinv> timeIntervals;
 
-  //public CoordinateTimeIntv(Grib2Customizer cust, CalendarPeriod timeUnit, int code, List<TimeCoord.Tinv> timeIntervals) {
   public CoordinateTimeIntv(int code, CalendarPeriod timeUnit, CalendarDate refDate, List<TimeCoord.Tinv> timeIntervals) {
     super(code, timeUnit, refDate);
     this.timeIntervals = Collections.unmodifiableList(timeIntervals);
@@ -49,8 +45,6 @@ public class CoordinateTimeIntv extends CoordinateTimeAbstract implements Coordi
 
   @Override
   public Object getValue(int idx) {
-    if (idx >= timeIntervals.size())
-      System.out.println("HEY");
     return timeIntervals.get(idx);
   }
 
@@ -156,7 +150,7 @@ public class CoordinateTimeIntv extends CoordinateTimeAbstract implements Coordi
     return new CoordinateTimeIntv(getCode(), getTimeUnit(), refDate, offsetSorted);
   }
 
-  protected int[] makeTime2RuntimeMap(List<Double> runOffsets, CoordinateTimeIntv coordBest, CoordinateTwoTimer twot) {
+  public int[] makeTime2RuntimeMap(List<Double> runOffsets, CoordinateTimeIntv coordBest, CoordinateTwoTimer twot) {
     int[] result = new int[ coordBest.getSize()];
 
     Map<TimeCoord.Tinv, Integer> map = new HashMap<>();  // lookup coord val to index

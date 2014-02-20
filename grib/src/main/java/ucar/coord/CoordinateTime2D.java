@@ -33,7 +33,7 @@
  *
  */
 
-package ucar.nc2.grib.collection;
+package ucar.coord;
 
 import ucar.nc2.grib.TimeCoord;
 import ucar.nc2.grib.grib2.Grib2Record;
@@ -41,9 +41,6 @@ import ucar.nc2.grib.grib2.table.Grib2Customizer;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time.CalendarPeriod;
 import ucar.nc2.util.Indent;
-import ucar.sparr.Coordinate;
-import ucar.sparr.CoordinateBuilderImpl;
-import ucar.sparr.CoordinateTwoTimer;
 
 import java.util.*;
 

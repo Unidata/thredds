@@ -1,16 +1,13 @@
-package ucar.nc2.grib.collection;
+package ucar.coord;
 
 import net.jcip.annotations.Immutable;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time.CalendarDateRange;
 import ucar.nc2.time.CalendarDateUnit;
-import ucar.sparr.Coordinate;
-import ucar.sparr.CoordinateBuilderImpl;
 import ucar.nc2.grib.grib2.Grib2Pds;
 import ucar.nc2.grib.grib2.Grib2Record;
 import ucar.nc2.time.CalendarPeriod;
 import ucar.nc2.util.Indent;
-import ucar.sparr.CoordinateTwoTimer;
 
 import java.util.*;
 
@@ -36,14 +33,14 @@ public class CoordinateTime extends CoordinateTimeAbstract implements Coordinate
     this.offsetSorted = Collections.unmodifiableList(vals);
   } */
 
-  static public Integer extractOffset(Grib2Record gr) {
+  /* static public Integer extractOffset(Grib2Record gr) {
     Grib2Pds pds = gr.getPDS();
     return pds.getForecastTime();
   }
 
   public Integer extract(Grib2Record gr) {
     return extractOffset(gr);
-  }
+  } */
 
   public List<Integer> getOffsetSorted() {
     return offsetSorted;
@@ -147,7 +144,7 @@ public class CoordinateTime extends CoordinateTimeAbstract implements Coordinate
    * @param twot       variable missing array
    * @return           for each time in coordBest, which runtime to use, as 1-based index into runtime runOffsets (0 = missing)
    */
-  protected int[] makeTime2RuntimeMap(List<Double> runOffsets, CoordinateTime coordBest, CoordinateTwoTimer twot) {
+  public int[] makeTime2RuntimeMap(List<Double> runOffsets, CoordinateTime coordBest, CoordinateTwoTimer twot) {
     int[] result = new int[ coordBest.getSize()];
 
     Map<Integer, Integer> map = new HashMap<>();  // lookup coord val to index
@@ -192,7 +189,8 @@ public class CoordinateTime extends CoordinateTimeAbstract implements Coordinate
 
     @Override
     public Object extract(Grib2Record gr) {
-      return extractOffset(gr);
+      Grib2Pds pds = gr.getPDS();
+      return pds.getForecastTime();
     }
 
     @Override

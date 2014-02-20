@@ -3,6 +3,9 @@ package ucar.nc2.grib.collection;
 import thredds.featurecollection.FeatureCollectionConfig;
 import thredds.inventory.CollectionUpdateType;
 import thredds.inventory.MCollection;
+import ucar.coord.CoordinateRuntime;
+import ucar.coord.CoordinateTime2D;
+import ucar.coord.CoordinateTimeAbstract;
 import ucar.nc2.grib.GdsHorizCoordSys;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time.CalendarPeriod;
@@ -11,7 +14,7 @@ import ucar.nc2.util.Misc;
 import ucar.nc2.util.cache.FileCache;
 import ucar.nc2.util.cache.FileCacheable;
 import ucar.nc2.util.cache.FileFactory;
-import ucar.sparr.Coordinate;
+import ucar.coord.Coordinate;
 import ucar.unidata.io.RandomAccessFile;
 
 import java.io.File;
@@ -364,31 +367,22 @@ public class PartitionCollection extends GribCollection {
 
   }
 
-  class DataRecord implements Comparable<DataRecord> {
+  class DataRecord extends GribIosp.DataRecord {
     PartitionCollection usePartition;
     int partno; // partition index in usePartition
-    GdsHorizCoordSys hcs;
-    int fileno;
-    long drsPos;
-    long bmsPos;  // if non zero, use alternate bms
-    int scanMode;
-    int resultIndex; // where does this record go in the result array? not calculated here
 
     DataRecord(PartitionCollection usePartition, int partno, GdsHorizCoordSys hcs, int fileno, long drsPos, long bmsPos, int scanMode) {
+      super(-1, fileno, drsPos, bmsPos, scanMode, hcs);
       this.usePartition = usePartition;
       this.partno = partno;
-      this.hcs = hcs;
-      this.fileno = fileno;
-      this.drsPos = (drsPos == 0) ? GribCollection.MISSING_RECORD : drsPos; // 0 also means missing in Grib2
-      this.bmsPos = bmsPos;
-      this.scanMode = scanMode;
     }
 
     @Override
-    public int compareTo(DataRecord o) {
-      int rp = usePartition.getName().compareTo(o.usePartition.getName());
+    public int compareTo(GribIosp.DataRecord o) {
+      DataRecord op = (DataRecord) o;
+      int rp = usePartition.getName().compareTo(op.usePartition.getName());
       if (rp != 0) return rp;
-      int r = Misc.compare(partno, o.partno);
+      int r = Misc.compare(partno, op.partno);
       if (r != 0) return r;
       r = Misc.compare(fileno, o.fileno);
       if (r != 0) return r;

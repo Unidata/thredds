@@ -3,14 +3,13 @@ package ucar.nc2.grib.collection;
 import com.google.protobuf.ExtensionRegistry;
 import thredds.featurecollection.FeatureCollectionConfig;
 import thredds.inventory.*;
+import ucar.coord.*;
 import ucar.nc2.time.CalendarPeriod;
-import ucar.sparr.Coordinate;
 import ucar.nc2.grib.*;
 import ucar.nc2.grib.grib2.*;
 import ucar.nc2.grib.grib2.table.Grib2Customizer;
 import ucar.nc2.stream.NcStream;
 import ucar.nc2.time.CalendarDate;
-import ucar.sparr.CoordinateTwoTimer;
 import ucar.unidata.io.RandomAccessFile;
 
 import java.io.File;
@@ -25,7 +24,7 @@ import java.util.*;
  * @author caron
  * @since 11/9/13
  */
-public class Grib2CollectionBuilderFromIndex extends GribCollectionBuilder {
+public class Grib2CollectionBuilderFromIndex {
 
   /* read in the index, open raf and leave open in the GribCollection
   static public GribCollection readFromIndex(String idxFilename, File directory, FeatureCollectionConfig config, org.slf4j.Logger logger) throws IOException {
@@ -52,11 +51,13 @@ public class Grib2CollectionBuilderFromIndex extends GribCollectionBuilder {
   ////////////////////////////////////////////////////////////////
   static private final boolean debug = false;
 
-  protected GribCollection gc;
-  protected Grib2Customizer tables; // only gets created in makeAggGroups
+  protected final GribCollection gc;
+  protected final org.slf4j.Logger logger;
+
+  protected Grib2Customizer tables; // gets created in readIndex, after center etc is read in
 
   protected Grib2CollectionBuilderFromIndex(String name, File directory, String indexFilename, FeatureCollectionConfig config, org.slf4j.Logger logger) {
-    super(null, false, logger);
+    this.logger = logger;
     this.gc = new Grib2Collection(name, directory, indexFilename, config);
   }
 
@@ -83,7 +84,7 @@ public class Grib2CollectionBuilderFromIndex extends GribCollectionBuilder {
       }
 
       gc.version = raf.readInt();
-      boolean versionOk = isSingleFile ? gc.version >= Grib2CollectionWriter.minVersionSingle : gc.version >= Grib2CollectionWriter.version;
+      boolean versionOk = gc.version >= Grib2CollectionWriter.version;
       if (!versionOk) {
         logger.warn("Grib2CollectionBuilderFromIndex {}: index found version={}, want version= {} on file {}", gc.getName(), gc.version, Grib2CollectionWriter.version, raf.getLocation());
         return false;
@@ -161,7 +162,7 @@ public class Grib2CollectionBuilderFromIndex extends GribCollectionBuilder {
       Map<Integer, MFile> fileMap = new HashMap<>(2*n);
       for (int i = 0; i < n; i++) {
         ucar.nc2.grib.collection.GribCollectionProto.MFile mf = proto.getMfiles(i);
-        fileMap.put(mf.getIndex(), new GribCollectionBuilder.GcMFile(dir, mf.getFilename(), mf.getLastModified(), mf.getIndex()));
+        fileMap.put(mf.getIndex(), new GcMFile(dir, mf.getFilename(), mf.getLastModified(), mf.getIndex()));
         fsize += mf.getFilename().length();
       }
       gc.setFileMap(fileMap);

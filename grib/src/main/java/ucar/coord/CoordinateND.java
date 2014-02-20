@@ -1,7 +1,6 @@
-package ucar.sparr;
+package ucar.coord;
 
 import ucar.ma2.Section;
-import ucar.nc2.grib.collection.CoordinateTime2D;
 import ucar.nc2.util.Indent;
 
 import java.util.*;

@@ -34,7 +34,7 @@ package ucar.nc2.grib.collection;
 
 import thredds.featurecollection.FeatureCollectionConfig;
 import thredds.inventory.MFile;
-import ucar.sparr.*;
+import ucar.coord.*;
 import ucar.nc2.grib.*;
 import ucar.nc2.grib.grib2.*;
 import ucar.nc2.grib.grib2.table.Grib2Customizer;

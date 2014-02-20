@@ -13,6 +13,7 @@ import java.util.*;
 
 /**
  * Static collection, always excludes indexes
+ * Not used.
  *
  * @author caron
  * @since 12/3/13

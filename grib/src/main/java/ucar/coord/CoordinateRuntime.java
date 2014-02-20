@@ -1,8 +1,6 @@
-package ucar.nc2.grib.collection;
+package ucar.coord;
 
 import net.jcip.annotations.Immutable;
-import ucar.sparr.Coordinate;
-import ucar.sparr.CoordinateBuilderImpl;
 import ucar.nc2.grib.grib2.Grib2Record;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.util.Indent;
@@ -92,13 +90,13 @@ public class CoordinateRuntime implements Coordinate {
     return runtimeSorted.get(idx);
   }
 
-  static public CalendarDate extractRunDate(Grib2Record gr) {
+ /* static public CalendarDate extractRunDate(Grib2Record gr) {
     return gr.getReferenceDate();
   }
 
   public CalendarDate extract(Grib2Record gr) {
     return extractRunDate(gr);
-  }
+  } */
 
   @Override
   public void showInfo(Formatter info, Indent indent) {
@@ -146,7 +144,7 @@ public class CoordinateRuntime implements Coordinate {
 
     @Override
     public Object extract(Grib2Record gr) {
-      return extractRunDate(gr);
+      return gr.getReferenceDate();
     }
 
     @Override

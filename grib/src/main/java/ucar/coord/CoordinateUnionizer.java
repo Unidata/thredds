@@ -1,9 +1,9 @@
-package ucar.sparr;
+package ucar.coord;
 
 import thredds.featurecollection.FeatureCollectionConfig;
 import ucar.nc2.grib.TimeCoord;
 import ucar.nc2.grib.collection.*;
-import ucar.nc2.grib.grib2.Grib2Record;
+//import ucar.nc2.grib.grib2.Grib2Record;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time.CalendarPeriod;
 
@@ -15,7 +15,7 @@ import java.util.*;
  * @author John
  * @since 12/10/13
  */
-public class CoordinateUnionizer {
+public class CoordinateUnionizer<T> {
   FeatureCollectionConfig.GribIntvFilter intvFilter;
   int varId;
 
@@ -147,7 +147,7 @@ public class CoordinateUnionizer {
     return result;
   } */
 
-  private class Time2DUnionBuilder extends CoordinateBuilderImpl<Grib2Record> {
+  private class Time2DUnionBuilder extends CoordinateBuilderImpl<T> {
     boolean isTimeInterval;
     CalendarPeriod timeUnit;
     int code;
@@ -171,7 +171,7 @@ public class CoordinateUnionizer {
     }
 
     @Override
-    public Object extract(Grib2Record gr) {
+    public Object extract(T gr) {
       throw new RuntimeException();
     }
 

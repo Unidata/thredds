@@ -7,6 +7,7 @@ import org.jdom2.output.Format;
 import org.jdom2.Document;
 import org.jdom2.Element;
 
+import thredds.featurecollection.FeatureCollectionConfig;
 import thredds.inventory.*;
 import thredds.inventory.MCollection;
 import ucar.nc2.Attribute;
@@ -16,10 +17,11 @@ import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dt.GridCoordSystem;
 import ucar.nc2.dt.GridDatatype;
 import ucar.nc2.dt.grid.GridDataset;
-import ucar.nc2.grib.GribIosp;
+import ucar.nc2.grib.collection.GribCdmIndex2;
+import ucar.nc2.grib.collection.GribCollection;
+import ucar.nc2.grib.collection.GribIosp;
 import ucar.nc2.grib.GribStatType;
 import ucar.nc2.grib.GribVariableRenamer;
-import ucar.nc2.grib.grib2.builder.Grib2CollectionBuilder;
 import ucar.nc2.grib.grib2.*;
 import ucar.nc2.grib.grib2.Grib2Pds;
 import ucar.nc2.grib.grib2.table.Grib2Customizer;
@@ -526,12 +528,14 @@ public class Grib2ReportPanel extends ReportPanel {
     Grib2Index index = createIndex(ff, fm);
     if (index == null) return;
 
-    GribCollection gc = Grib2CollectionBuilder.readOrCreateIndexFromSingleFile(ff, CollectionUpdateType.nocheck, null, logger);
+    Formatter errlog = new Formatter();
+    GribCollection gc = GribCdmIndex2.openGribCollectionFromDataFile(ff, CollectionUpdateType.nocheck,
+            new FeatureCollectionConfig(), errlog, logger);
     gc.close();
 
     GridDataset ncfile = null;
     try {
-      ncfile = GridDataset.open(path + GribCollection.NCX_IDX);
+      ncfile = GridDataset.open(path + CollectionAbstract.NCX_SUFFIX);
       for (GridDatatype dt : ncfile.getGrids()) {
         String currName = dt.getName();
         total++;

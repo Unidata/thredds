@@ -1,4 +1,4 @@
-package ucar.sparr;
+package ucar.coord;
 
 import org.junit.Test;
 import ucar.nc2.util.Misc;

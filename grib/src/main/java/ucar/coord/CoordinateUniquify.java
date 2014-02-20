@@ -1,7 +1,6 @@
-package ucar.sparr;
+package ucar.coord;
 
-import ucar.nc2.grib.collection.CoordinateRuntime;
-import ucar.nc2.grib.grib2.Grib2Record;
+//import ucar.nc2.grib.grib2.Grib2Record;
 
 import java.util.*;
 
@@ -14,7 +13,7 @@ import java.util.*;
  * @author caron
  * @since 12/10/13
  */
-public class CoordinateUniquify {
+public class CoordinateUniquify<T> {
 
    List<Coordinate> unionCoords = new ArrayList<>();
    Coordinate runtimeAll;
@@ -79,7 +78,7 @@ public class CoordinateUniquify {
     * @param index new index into shared coordinates; may be null
     * @return new CoordinateND containing shared coordinates and sparseArray for the new coordinates
     */
-   public CoordinateND<Grib2Record> reindex(CoordinateND<Grib2Record> prev, List<Integer> index) {
+   public CoordinateND<T> reindex(CoordinateND<T> prev, List<Integer> index) {
      if (index == null)
        index = new ArrayList<>();
 
@@ -100,7 +99,7 @@ public class CoordinateUniquify {
        sharedCoords.add(coord);
      }
 
-     CoordinateND<Grib2Record> result;
+     CoordinateND<T> result;
      if (needReindex) {
        result = new CoordinateND<>(sharedCoords);
        result.reindex(prev);

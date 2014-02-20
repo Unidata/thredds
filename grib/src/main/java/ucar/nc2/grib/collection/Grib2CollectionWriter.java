@@ -34,12 +34,10 @@ package ucar.nc2.grib.collection;
 
 import com.google.protobuf.ByteString;
 import thredds.inventory.*;
-import ucar.sparr.Coordinate;
-import ucar.sparr.SparseArray;
+import ucar.coord.*;
 import ucar.nc2.constants.CDM;
 import ucar.nc2.grib.*;
 import ucar.nc2.grib.grib2.*;
-import ucar.nc2.grib.grib2.table.Grib2Customizer;
 import ucar.nc2.stream.NcStream;
 import ucar.nc2.time.CalendarDate;
 import ucar.unidata.io.RandomAccessFile;
@@ -54,23 +52,17 @@ import java.util.*;
  * @author caron
  * @since 4/6/11
  */
-public class Grib2CollectionWriter extends GribCollectionBuilder {
+public class Grib2CollectionWriter {
   public static final String MAGIC_START = "Grib2Collectio2Index";  // was Grib2CollectionIndex
-  protected static final int minVersionSingle = 1;
+  // protected static final int minVersionSingle = 1;
   protected static final int version = 1;
 
-  protected Grib2Customizer tables; // only gets created in makeAggGroups
-
-
-  // for Grib2PartitionBuilder
- // protected Grib2CollectionWriter(PartitionManager tpc, org.slf4j.Logger logger) {
- //   super(tpc, false, logger);
- // }
+  protected final MCollection dcm; // may be null, when read in from index
+  protected final org.slf4j.Logger logger;
 
   protected Grib2CollectionWriter(MCollection dcm, org.slf4j.Logger logger) {
-    super(dcm, false, logger);
-    // this.name = dcm.getCollectionName();
-    //this.directory = new File(dcm.getRoot());
+    this.dcm = dcm;
+    this.logger = logger;
   }
 
   public static class Group {
@@ -78,7 +70,8 @@ public class Grib2CollectionWriter extends GribCollectionBuilder {
     public int gdsHash; // may have been modified
     public CalendarDate runtime;
 
-    public Grib2Rectilyser rect;
+    public List<Grib2CollectionBuilder.VariableBag> gribVars;
+    public List<Coordinate> coords;
     public List<Grib2Record> records = new ArrayList<>();
     public String nameOverride;
     public Set<Integer> fileSet; // this is so we can show just the component files that are in this group
@@ -136,8 +129,8 @@ public class Grib2CollectionWriter extends GribCollectionBuilder {
 
       Set<Integer> allFileSet = new HashSet<>();
       for (Group g : groups) {
-        g.fileSet = new HashSet<Integer>();
-        for (Grib2Rectilyser.VariableBag vb : g.rect.getGribvars()) {
+        g.fileSet = new HashSet<>();
+        for (Grib2CollectionBuilder.VariableBag vb : g.gribVars) {
           if (first == null) first = vb.first;
           GribCollectionProto.SparseArray vr = writeSparseArray(vb, g.fileSet);
           byte[] b = vr.toByteArray();
@@ -211,8 +204,8 @@ public class Grib2CollectionWriter extends GribCollectionBuilder {
 
       // directory and mfile list
       File directory = new File(dcm.getRoot());
-      List<GribCollectionBuilder.GcMFile> gcmfiles = GribCollectionBuilder.makeFiles(directory, files, allFileSet);
-      for (GribCollectionBuilder.GcMFile gcmfile : gcmfiles) {
+      List<GcMFile> gcmfiles = GcMFile.makeFiles(directory, files, allFileSet);
+      for (GcMFile gcmfile : gcmfiles) {
         GribCollectionProto.MFile.Builder b = GribCollectionProto.MFile.newBuilder();
         b.setFilename(gcmfile.getName());
         b.setLastModified(gcmfile.getLastModified());
@@ -271,7 +264,7 @@ public class Grib2CollectionWriter extends GribCollectionBuilder {
     repeated Record records = 4;  // List<Record>
   }
    */
-  private GribCollectionProto.SparseArray writeSparseArray(Grib2Rectilyser.VariableBag vb, Set<Integer> fileSet) throws IOException {
+  private GribCollectionProto.SparseArray writeSparseArray(Grib2CollectionBuilder.VariableBag vb, Set<Integer> fileSet) throws IOException {
     GribCollectionProto.SparseArray.Builder b = GribCollectionProto.SparseArray.newBuilder();
     b.setCdmHash(vb.cdmHash);
     SparseArray<Grib2Record> sa = vb.coordND.getSparseArray();
@@ -354,11 +347,11 @@ public class Grib2CollectionWriter extends GribCollectionBuilder {
     b.setGdsIndex(groupIndex); // index into gds list
     b.setIsTwod(true);         // LOOK
 
-    for (Grib2Rectilyser.VariableBag vbag : g.rect.getGribvars()) {
+    for (Grib2CollectionBuilder.VariableBag vbag : g.gribVars) {
       b.addVariables(writeVariableProto(vbag));
     }
 
-    for (Coordinate coord : g.rect.getCoordinates()) {
+    for (Coordinate coord : g.coords) {
       switch (coord.getType()) {
         case runtime:
           b.addCoords(writeCoordProto((CoordinateRuntime) coord));
@@ -408,7 +401,7 @@ public class Grib2CollectionWriter extends GribCollectionBuilder {
      extensions 100 to 199;
    }
    */
-  private GribCollectionProto.Variable writeVariableProto(Grib2Rectilyser.VariableBag vb) throws IOException {
+  private GribCollectionProto.Variable writeVariableProto(Grib2CollectionBuilder.VariableBag vb) throws IOException {
     GribCollectionProto.Variable.Builder b = GribCollectionProto.Variable.newBuilder();
 
     b.setDiscipline(vb.first.getDiscipline());

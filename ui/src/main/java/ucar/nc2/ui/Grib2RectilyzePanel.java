@@ -2,7 +2,7 @@ package ucar.nc2.ui;
 
 import thredds.featurecollection.FeatureCollectionConfig;
 import thredds.inventory.*;
-import ucar.sparr.Coordinate;
+import ucar.coord.*;
 import ucar.ma2.DataType;
 import ucar.nc2.grib.*;
 import ucar.nc2.grib.collection.Grib2CollectionWriter;
@@ -431,9 +431,8 @@ public class Grib2RectilyzePanel extends JPanel {
     // this.cust = builder.getCustomizer();  LOOK
 
     for (Grib2CollectionWriter.Group group : groups) {
-      Grib2Rectilyser rect = group.rect;
       // rect.showInfo(info, cust);
-      for (Grib2Rectilyser.VariableBag vb : rect.getGribvars()) {
+      for (Grib2Rectilyser.VariableBag vb : group.gribVars) {
         bags.add( new VariableBagBean(rect, vb));
       }
     }

@@ -1,8 +1,5 @@
-package ucar.nc2.grib.collection;
+package ucar.coord;
 
-import ucar.sparr.Coordinate;
-import ucar.sparr.CoordinateBuilder;
-import ucar.sparr.CoordinateBuilderImpl;
 import ucar.nc2.grib.GribNumbers;
 import ucar.nc2.grib.VertCoord;
 import ucar.nc2.grib.grib2.Grib2Pds;
@@ -20,14 +17,6 @@ import java.util.*;
  */
 public class CoordinateVert implements Coordinate {
 
-  static public VertCoord.Level extractLevel(Grib2Record gr) {
-    Grib2Pds pds = gr.getPDS();
-    boolean hasLevel2 = pds.getLevelType2() != GribNumbers.MISSING;
-    double level2val =  hasLevel2 ?  pds.getLevelValue2() :  GribNumbers.UNDEFINEDD;
-    boolean isLayer = Grib2Utils.isLayer(pds);
-    return new VertCoord.Level(pds.getLevelValue1(), level2val, isLayer);
-  }
-
   private final List<VertCoord.Level> levelSorted;
   private final int code;
   private String name;
@@ -37,13 +26,13 @@ public class CoordinateVert implements Coordinate {
   public CoordinateVert(int code, List<VertCoord.Level> levelSorted) {
     this.levelSorted = Collections.unmodifiableList(levelSorted);
     this.code = code;
-    this.vunit = Grib2Utils.getLevelUnit(code);
+    this.vunit = Grib2Utils.getLevelUnit(code);  // LOOK GRIB1
     this.isLayer = levelSorted.get(0).isLayer();
   }
 
-  public Object extract(Grib2Record gr) {
+  /* public Object extract(Grib2Record gr) {
     return extractLevel(gr);
-  }
+  } */
 
   public List<VertCoord.Level> getLevelSorted() {
     return levelSorted;
@@ -148,7 +137,11 @@ public class CoordinateVert implements Coordinate {
 
     @Override
     public Object extract(Grib2Record gr) {
-      return extractLevel(gr);
+      Grib2Pds pds = gr.getPDS();
+      boolean hasLevel2 = pds.getLevelType2() != GribNumbers.MISSING;
+      double level2val =  hasLevel2 ?  pds.getLevelValue2() :  GribNumbers.UNDEFINEDD;
+      boolean isLayer = Grib2Utils.isLayer(pds);
+      return new VertCoord.Level(pds.getLevelValue1(), level2val, isLayer);
     }
 
     @Override
