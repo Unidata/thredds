@@ -91,7 +91,7 @@ public abstract class InvDatasetFeatureCollection extends InvCatalogRef implemen
     catalogServletName = catServletName;
   }
 
-  static private String buildCatalogServiceHref(String path) {
+  static protected String buildCatalogServiceHref(String path) {
     return context + (catalogServletName == null ? "" : catalogServletName) + "/" + path + "/catalog.xml";
   }
 

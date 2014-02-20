@@ -79,8 +79,8 @@ public class Grib2Collection extends GribCollection {
   }
 
   @Override
-  public ucar.nc2.dt.grid.GridDataset getGridDataset(String datasetName, String groupName, String filename, FeatureCollectionConfig gribConfig,
-                                                     Formatter errlog, org.slf4j.Logger logger) throws IOException {
+  public ucar.nc2.dt.grid.GridDataset getGridDataset(String datasetName, String groupName, String filename,
+               FeatureCollectionConfig gribConfig, Formatter errlog, org.slf4j.Logger logger) throws IOException {
     Dataset ds = findDataset(datasetName);
     GroupGC want = ds.findGroupById(groupName);
     if (want == null) return null;

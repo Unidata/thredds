@@ -601,6 +601,12 @@ public class PartitionCollection extends GribCollection {
     return partitions.get(idx);
   }
 
+  public Partition getPartitionByName(String name) {
+    for (Partition p : partitions)
+      if (p.name.equalsIgnoreCase(name)) return p;
+    return null;
+  }
+
   public int getPartitionSize() {
      return partitions.size();
    }

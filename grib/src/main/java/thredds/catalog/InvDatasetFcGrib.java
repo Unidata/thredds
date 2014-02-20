@@ -72,6 +72,7 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
   static private final String COLLECTION = "collection";
   static private final String BEST_DATASET = "Best";
   static private final String TWOD_DATASET = "TwoD";
+  static private final String PARTITION = "partition";
 
   /////////////////////////////////////////////////////////////////////////////
   protected class StateGrib extends State {
@@ -285,14 +286,15 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
     InvDatasetImpl result;
     String dname = partition.getName();
 
-    if (isSingleGroup) {
+    /* if (isSingleGroup) {
       result = new InvDatasetImpl(parent, dname);
 
     } else {
       result = new InvCatalogRef(parent, dname, getCatalogHref(dname));
-    }
+    } */
 
-    String dpath =  getPath() + "/files/" + dname;
+    String dpath =  getPath() + "/"+PARTITION+"/" + dname;
+    result = new InvCatalogRef(parent, dname, buildCatalogServiceHref(dpath));
     result.setID(dpath);
     result.setUrlPath(dpath);
     result.setServiceName(orgService.getName());
@@ -711,11 +713,11 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
      regular, multiple group:
       2. dataset/groupName
 
-   time partition, single group:
-      4. dataset/partitionName                ??
+     partition, single group:
+      4. dataset/PARTITION/partitionName
 
-   time partition, multiple groups:
-      5. dataset/partitionName/groupName
+     partition, multiple groups:
+      5. dataset/PARTITION/partitionName/groupName
 
    all:
       7. FILES/filename
@@ -727,14 +729,34 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
     if (paths.length < 1) return null;
 
     GribCollection.Dataset ds = localState.gribCollection.findDataset(paths[0]);
+    boolean isSingleGroup = ds.getGroupsSize() == 1;
 
-    if (paths.length == 1) {                               // case 1
-      GribCollection.GroupGC g = ds.getGroup(0);
-      return new DatasetParse(null, paths[0], g.getId());
+    if (ds != null) {
+      if (paths.length == 1) {                               // case 1
+        if (!isSingleGroup) return null;
+        GribCollection.GroupGC g = ds.getGroup(0);
+        return new DatasetParse(null, paths[0], g.getId());
+      }
+
+      if (paths.length == 2) {                              // case 2
+        String groupName = paths[1];
+        GribCollection.GroupGC g = ds.findGroupById(groupName);
+        if (g != null)
+          return new DatasetParse(null, paths[0], groupName);
+        else
+          return null;
+      }
     }
 
-    if (paths.length >= 2  && paths[0].equals(FILES))
-        return new DatasetParse(matchPath.substring(paths[0].length()));  // case 7
+    if (paths[0].equals(PARTITION)) {
+      if (paths.length < 2) return null;
+      if (!(localState.gribCollection instanceof PartitionCollection)) return null;
+      PartitionCollection pc = (PartitionCollection) localState.gribCollection;
+      PartitionCollection.Partition tpp = pc.getPartitionByName(paths[1]);
+      if (tpp == null) return null;
+      return new DatasetParse(tpp);
+    }
+
 
     /* if (isGribCollection || isFilePartition) {
       boolean isBest = paths[0].equals(BEST_DATASET) || paths[0].equals(COLLECTION);
@@ -794,6 +816,10 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
     private DatasetParse(String filename) {
       this.filename = filename;
       //this.isFile = true;
+    }
+
+    private DatasetParse(PartitionCollection.Partition tpp) {
+      this.partition = tpp;
     }
 
   }
