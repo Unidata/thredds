@@ -36,8 +36,8 @@ package opendap.test;
 import junit.framework.TestCase;
 import org.apache.http.HttpRequest;
 import ucar.nc2.util.EscapeStrings;
-import ucar.nc2.util.net.HTTPFactory;
-import ucar.nc2.util.net.HTTPMethod;
+import ucar.httpclient.HTTPFactory;
+import ucar.httpclient.HTTPMethod;
 
 public class TestEncode extends TestCase {
   final String TITLE = "URL Encode Tests";

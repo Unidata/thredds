@@ -31,7 +31,7 @@
  * WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-package ucar.nc2.util.net;
+package ucar.httpclient;
 
 import java.io.*;
 import java.net.MalformedURLException;
@@ -45,7 +45,6 @@ import org.apache.http.client.methods.*;
 import org.apache.http.client.params.AllClientPNames;
 import org.apache.http.params.HttpParams;
 import org.apache.http.protocol.HttpContext;
-import ucar.nc2.util.EscapeStrings;
 
 /**
  * HTTPFactory creates method instance.

@@ -1,4 +1,4 @@
-package ucar.nc2.util.net;
+package ucar.httpclient;
 
 import org.apache.http.conn.scheme.PlainSocketFactory;
 import org.apache.http.params.HttpParams;

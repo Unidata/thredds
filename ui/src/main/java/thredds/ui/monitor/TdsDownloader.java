@@ -33,8 +33,9 @@
 
 package thredds.ui.monitor;
 
-import ucar.nc2.util.net.*;
+import ucar.httpclient.*;
 import ucar.nc2.util.CancelTask;
+import ucar.nc2.util.net.HttpClientManager;
 
 import java.io.*;
 import javax.swing.*;

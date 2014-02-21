@@ -31,7 +31,7 @@
  * WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-package ucar.nc2.util.net;
+package ucar.httpclient;
 
 import net.jcip.annotations.NotThreadSafe;
 import org.apache.http.*;
@@ -59,7 +59,7 @@ import java.net.*;
 import java.util.*;
 
 import static org.apache.http.auth.AuthScope.*;
-import static ucar.nc2.util.net.HTTPAuthScope.*;
+import static ucar.httpclient.HTTPAuthScope.*;
 
 /**
  * A session is encapsulated in an instance of the class
@@ -112,15 +112,15 @@ public class HTTPSession
     // From class AllClientPNames
     // Use aliases because in httpclietn 4.3, AllClientPNames is deprecated
 
-    static final String ALLOW_CIRCULAR_REDIRECTS = AllClientPNames.ALLOW_CIRCULAR_REDIRECTS;
-    static final String HANDLE_REDIRECTS = AllClientPNames.HANDLE_REDIRECTS;
-    static final String HANDLE_AUTHENTICATION = AllClientPNames.HANDLE_AUTHENTICATION;
-    static final String MAX_REDIRECTS = AllClientPNames.MAX_REDIRECTS;
-    static final String SO_TIMEOUT = AllClientPNames.SO_TIMEOUT;
-    static final String CONN_TIMEOUT = AllClientPNames.CONNECTION_TIMEOUT;
-    static final String USER_AGENT = AllClientPNames.USER_AGENT;
-    static final String PROXY = AllClientPNames.DEFAULT_PROXY;
-    static final String COMPRESSION = "COMPRESSION";
+    static public final String ALLOW_CIRCULAR_REDIRECTS = AllClientPNames.ALLOW_CIRCULAR_REDIRECTS;
+    static public final String HANDLE_REDIRECTS = AllClientPNames.HANDLE_REDIRECTS;
+    static public final String HANDLE_AUTHENTICATION = AllClientPNames.HANDLE_AUTHENTICATION;
+    static public final String MAX_REDIRECTS = AllClientPNames.MAX_REDIRECTS;
+    static public final String SO_TIMEOUT = AllClientPNames.SO_TIMEOUT;
+    static public final String CONN_TIMEOUT = AllClientPNames.CONNECTION_TIMEOUT;
+    static public final String USER_AGENT = AllClientPNames.USER_AGENT;
+    static public final String PROXY = AllClientPNames.DEFAULT_PROXY;
+    static public final String COMPRESSION = "COMPRESSION";
 
     // from: http://en.wikipedia.org/wiki/List_of_HTTP_header_fields
     static final public String HEADER_USERAGENT = "User-Agent";
@@ -572,7 +572,7 @@ public class HTTPSession
     // Instance variables
 
     protected AbstractHttpClient sessionClient = null;
-    protected List<ucar.nc2.util.net.HTTPMethod> methodList = new Vector<HTTPMethod>();
+    protected List<ucar.httpclient.HTTPMethod> methodList = new Vector<HTTPMethod>();
     protected String identifier = "Session";
     protected String legalurl = null;
     protected boolean closed = false;

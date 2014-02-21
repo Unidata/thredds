@@ -33,7 +33,7 @@
 
 package ucar.nc2.ui;
 
-import ucar.nc2.util.net.*;
+import ucar.httpclient.*;
 import ucar.nc2.ui.event.ActionValueEvent;
 import ucar.nc2.ui.event.ActionValueListener;
 import ucar.nc2.ui.widget.BAMutil;

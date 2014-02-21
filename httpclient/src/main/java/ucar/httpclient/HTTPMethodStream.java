@@ -31,7 +31,7 @@
  * WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-package ucar.nc2.util.net;
+package ucar.httpclient;
 
 import java.io.IOException;
 import java.io.FilterInputStream;
@@ -57,7 +57,7 @@ import java.io.InputStream;
  */
 
 
-class HTTPMethodStream extends FilterInputStream
+public class HTTPMethodStream extends FilterInputStream
 {
     //////////////////////////////////////////////////////////////////////////
     static public org.slf4j.Logger log = HTTPSession.log;

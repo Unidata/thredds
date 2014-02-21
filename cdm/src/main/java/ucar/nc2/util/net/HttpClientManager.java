@@ -43,6 +43,7 @@ import java.util.zip.GZIPInputStream;
 import org.apache.http.client.CredentialsProvider;
 import ucar.nc2.util.IO;
 import ucar.unidata.util.Urlencoded;
+import ucar.httpclient.*;
 
 /**
  * Convenience routines that wrap HTTPSession.

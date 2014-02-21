@@ -41,7 +41,7 @@ import java.net.*;
 
 public class URLStreamHandlerFactory implements java.net.URLStreamHandlerFactory {
 
-  static public org.slf4j.Logger log = HTTPSession.log;
+  static public org.slf4j.Logger log = ucar.httpclient.HTTPSession.log;
 
   //////////////////////////////////////////////////////////////////////////
   static private java.util.HashMap hash = new java.util.HashMap();

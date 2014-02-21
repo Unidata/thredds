@@ -32,14 +32,16 @@
 
 package ucar.nc2.util.net;
 
+import ucar.httpclient.*;
+
 import org.apache.http.*;
 import org.junit.Test;
 
-import ucar.nc2.util.UnitTestCommon;
 import org.apache.http.client.CredentialsProvider;
 import org.apache.http.message.AbstractHttpMessage;
+import ucar.nc2.util.UnitTestCommon;
 
-import static ucar.nc2.util.net.HTTPSession.*;
+import static ucar.httpclient.HTTPSession.*;
 
 public class TestHTTPSession extends UnitTestCommon
 {
@@ -134,7 +136,7 @@ public class TestHTTPSession extends UnitTestCommon
 
         // Use special interface to access the request
         AbstractHttpMessage dbgreq = (AbstractHttpMessage) method.debugRequest();
-        boolean b = dbgreq.getParams().getBooleanParameter(ALLOW_CIRCULAR_REDIRECTS, true);
+        boolean b = dbgreq.getParams().getBooleanParameter(HTTPSession.ALLOW_CIRCULAR_REDIRECTS, true);
         System.out.println("Test: Circular Redirects");
         assertTrue("*** Fail: Circular Redirects", b);
         System.out.println("*** Pass: Circular Redirects");

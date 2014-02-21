@@ -49,7 +49,7 @@ import java.util.*;
 import thredds.catalog.crawl.CatalogCrawler;
 import thredds.catalog.*;
 import ucar.nc2.util.CompareNetcdf2;
-import ucar.nc2.util.net.HTTPSession;
+import ucar.httpclient.HTTPSession;
 
 /**
  * Run through the named catalogs, open a random dataset from each collection

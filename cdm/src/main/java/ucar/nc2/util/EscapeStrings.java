@@ -41,7 +41,7 @@
 package ucar.nc2.util;
 
 import ucar.nc2.constants.CDM;
-import ucar.nc2.util.net.HTTPSession;
+import ucar.httpclient.HTTPSession;
 
 import java.net.*;
 import java.util.ArrayList;
@@ -62,6 +62,7 @@ public class EscapeStrings
                 = org.slf4j.LoggerFactory.getLogger(HTTPSession.class);
     //////////////////////////////////////////////////////////////////////////
 
+/*
     // Sets of ascii characters
     static final String alpha = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
     static final String numeric = "0123456789";
@@ -112,6 +113,7 @@ public class EscapeStrings
                                                    + "./"; // for groups and structure names
     static private final String _allowableInDAP = alphaNumeric + _namAllowedInDAP;
 
+
     // This is set of legal characters that can appear unescaped in an OGC query.
     // See OGC Web Services Common 2.0.0 section 11.3
     static private final String _namAllowedInOGC = "-_.!~*'()";
@@ -131,6 +133,33 @@ public class EscapeStrings
     // The complete set of legal opendap identifier characters
     public static String opendap_identifier_characters
 	 	         = alphaNumeric + opendap_identifier_special_characters;
+*/
+
+    static protected final String alpha = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
+    static protected final String numeric = "0123456789";
+    static protected final String alphaNumeric = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+    static protected final String httpclient_urllegal   = "!#$&'()*+,-./:;=?@_~";
+    static protected final String httpclient_querylegal = "!#$&'()*+,-./:;=?@_~%";
+    static protected final String httpclient_urlillegal   = " \"<>[\\]^`{|}%";
+    static protected final String httpclient_queryillegal = " \"<>[\\]^`{|}";
+    static protected final String nonAlphaNumeric = " !\"#$%&'()*+,-./:;<=>?@[]\\^_`|{}~";
+    static protected final String queryReserved = " \"<>[\\]^`{|}";
+    static protected final String urlReserved = " \"<>[\\]^`{|}%";
+    static protected final String urlDisallowed = " \"<>[\\]^`{|}%";
+    static protected final String urlAllowed = "!#$&'()*+,-./:;=?@_~";
+    static protected final String _allowableInUrl = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!#$&'()*+,-./:;=?@_~";
+    static protected final String queryIdentDisallowed = " \"\\^`|<>[]{}";
+    static protected final String queryIdentAllowed = "!#$%&'()*+,-./:;=?@_~";
+    static protected final String _allowableInUrlQuery = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!#$%&'()*+,-./:;=?@_~";
+    static protected final String dapSpecAllowed = "_!~*'-\"";
+    static protected final String _namAllowedInDAP = "_!~*'-\"./";
+    static protected final String _allowableInDAP = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789_!~*'-\"./";
+    static protected final String _namAllowedInOGC = "-_.!~*'()";
+    static protected final String _disallowedInOGC = " \"#$%&+,/:;<=>?@[]\\^`|{}";
+    static protected final String _allowableInOGC = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_.!~*'()";
+    static protected final String opendap_identifier_special_characters = "_!~*'-\"./";
+    static protected final String opendap_identifier_characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789_!~*'-\"./";
+    static protected final char _URIEscape = '%';
 
     /*
      * s1 union s2
@@ -311,6 +340,7 @@ public class EscapeStrings
      */
      static private final Pattern p
             = Pattern.compile("([\\w]+)://([.\\w]+(:[\\d]+)?)([/][^?#])?([?][^#]*)?([#].*)?");
+
      public static String escapeURL(String url)
      {
         String protocol = null;

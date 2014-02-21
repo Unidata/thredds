@@ -31,7 +31,7 @@
  * WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-package ucar.nc2.util.net;
+package ucar.httpclient;
 
 import java.io.*;
 import java.net.MalformedURLException;
@@ -40,6 +40,8 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.charset.Charset;
 import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import net.jcip.annotations.NotThreadSafe;
 import org.apache.http.*;
@@ -49,9 +51,8 @@ import org.apache.http.message.BasicHeader;
 import org.apache.http.message.BasicHttpResponse;
 import org.apache.http.params.HttpParams;
 import org.apache.http.util.EntityUtils;
-import ucar.nc2.util.EscapeStrings;
 
-import static ucar.nc2.util.net.HTTPSession.*;
+import static ucar.httpclient.HTTPSession.*;
 
 /**
  * HTTPMethod is the encapsulation of specific
@@ -221,7 +222,7 @@ public class HTTPMethod
         HttpRequestBase method = null;
         // Unfortunately, the apache httpclient 3 code has a restrictive
         // notion of a legal url, so we need to encode it before use
-        String urlencoded = EscapeStrings.escapeURL(this.legalurl);
+        String urlencoded = Escape.escapeURL(this.legalurl);
         if(urlencoded == null)
             throw new HTTPException("Malformed url: " + this.legalurl);
 
@@ -804,5 +805,3 @@ public class HTTPMethod
     }
 
 }
-
-

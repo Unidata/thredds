@@ -83,7 +83,7 @@ import ucar.nc2.util.DebugFlags;
 import ucar.nc2.util.DiskCache2;
 import ucar.nc2.util.IO;
 import ucar.nc2.util.cache.FileCache;
-import ucar.nc2.util.net.HTTPSession;
+import ucar.httpclient.HTTPSession;
 import ucar.nc2.util.xml.RuntimeConfigParser;
 import ucar.util.prefs.PreferencesExt;
 import ucar.util.prefs.XMLStore;

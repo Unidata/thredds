@@ -32,11 +32,10 @@
 
 package ucar.nc2.util.net;
 
+import ucar.httpclient.*;
+
 import org.junit.Test;
 import ucar.nc2.util.UnitTestCommon;
-import ucar.nc2.util.net.HTTPSession;
-import ucar.nc2.util.net.HTTPMethod;
-import ucar.nc2.util.net.HTTPMethodStream;
 
 import java.io.*;
 import java.nio.charset.Charset;

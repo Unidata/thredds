@@ -126,7 +126,7 @@ Changes in version 4.3:
   split visad dependent code into a seperate module, build visadCdm.jar
   hdf-eos : check if dimension already exists
   common module is rearranged.
-  EscapeStrings class moved to ucar.nc2.util.net
+  EscapeStrings class moved to ucar.httpclient
   Projections are no longer cloneable, plus they are immutable so setters are removed
   clean up and systematize projection - conform to CF as much as possible
   use CF constants

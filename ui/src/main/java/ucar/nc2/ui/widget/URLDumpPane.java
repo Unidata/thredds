@@ -34,7 +34,7 @@
 package ucar.nc2.ui.widget;
 
 import org.apache.http.entity.StringEntity;
-import ucar.nc2.util.net.*;
+import ucar.httpclient.*;
 import org.apache.http.Header;
 import ucar.nc2.util.IO;
 import ucar.unidata.util.Urlencoded;

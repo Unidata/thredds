@@ -49,7 +49,7 @@
  * under the License.
  */
 
-package ucar.nc2.util.net;
+package ucar.httpclient;
 
 import org.apache.http.conn.ConnectTimeoutException;
 import org.apache.http.conn.scheme.*;
@@ -62,8 +62,9 @@ import java.net.*;
 import java.security.*;
 import java.io.IOException;
 
-public class CustomSSLProtocolSocketFactory implements SchemeLayeredSocketFactory
+public class EasySSLProtocolSocketFactory implements SchemeLayeredSocketFactory
 {
+
     private SSLContext sslcontext = null;
 
     private SSLContext createSSLContext(HttpParams params)
@@ -97,7 +98,7 @@ public class CustomSSLProtocolSocketFactory implements SchemeLayeredSocketFactor
         throws Exception
     {
         SSLContext context = SSLContext.getInstance("TLS");
-        context.init(null, new TrustManager[]{new CustomX509TrustManager(null)}, null);
+        context.init(null, new TrustManager[]{new EasyX509TrustManager(null)}, null);
         return context;
     }
 
@@ -111,10 +112,10 @@ public class CustomSSLProtocolSocketFactory implements SchemeLayeredSocketFactor
         String trustpassword = null;
         HTTPSSLProvider provider = null;
         if(params == null) return null;
-        Object o = params.getParameter(HTTPAuthPolicy.PROVIDER);
+        Object o = params.getParameter(HTTPAuthScheme.PROVIDER);
         if(o == null) return null;
         if(!(o instanceof HTTPSSLProvider))
-            throw new HTTPException("CustomSSLProtocolSocketFactory: provide is not SSL provider");
+            throw new HTTPException("EasySSLProtocolSocketFactory: provide is not SSL provider");
         provider = (HTTPSSLProvider)o;
         keypath = provider.getKeystore();
         keypassword = provider.getKeypassword();
@@ -135,10 +136,10 @@ public class CustomSSLProtocolSocketFactory implements SchemeLayeredSocketFactor
             //todo: TrustManagerFactory trfactory = TrustManagerFactory.getInstance("SunX509");
             //trfactory.init(truststore, trustpassword.toCharArray());
             //trustmanagers = trfactory.getTrustManagers();
-            trustmanagers = new TrustManager[]{new CustomX509TrustManager(truststore)};
+            trustmanagers = new TrustManager[]{new EasyX509TrustManager(truststore)};
         }
         if(trustmanagers == null)
-            trustmanagers = new TrustManager[]{new CustomX509TrustManager(null)};
+            trustmanagers = new TrustManager[]{new EasyX509TrustManager(null)};
 
         SSLContext sslcontext = SSLContext.getInstance("TSL");
         sslcontext.init(keymanagers, trustmanagers, null);
@@ -179,12 +180,12 @@ public class CustomSSLProtocolSocketFactory implements SchemeLayeredSocketFactor
     public boolean equals(Object obj)
     {
         return ((obj != null) && obj.getClass().equals(
-            CustomSSLProtocolSocketFactory.class));
+            EasySSLProtocolSocketFactory.class));
     }
 
     public int hashCode()
     {
-        return CustomSSLProtocolSocketFactory.class.hashCode();
+        return EasySSLProtocolSocketFactory.class.hashCode();
     }
 
     //SchemeLayeredSocketFactory API
@@ -217,21 +218,14 @@ public class CustomSSLProtocolSocketFactory implements SchemeLayeredSocketFactor
     {
         int connTimeout = HttpConnectionParams.getConnectionTimeout(params);
         int soTimeout = HttpConnectionParams.getSoTimeout(params);
-
-        SSLSocket sslsocket = (SSLSocket) ((sock != null) ? sock : createSocket(params));
-
-	if (localAddress != null) {
-	    sslsocket.setReuseAddress(HttpConnectionParams.getSoReuseaddr(params));
-	    sslsocket.bind(localAddress);
+        SSLSocket sslsock = (SSLSocket) ((sock != null) ? sock : createSocket(params));
+        if(localAddress != null) {
+            // we need to bind explicitly
+            sslsock.bind(localAddress);
         }
-
-        try {
-            sslsocket.setSoTimeout(soTimeout);
-            sslsocket.connect(remoteAddress, connTimeout );
-        } catch (SocketTimeoutException ex) {
-            throw new ConnectTimeoutException("Connect to " + remoteAddress + " timed out");
-        }
-        return sslsocket;
+        sslsock.connect(remoteAddress, connTimeout);
+        sslsock.setSoTimeout(soTimeout);
+        return sslsock;
     }
 
 }

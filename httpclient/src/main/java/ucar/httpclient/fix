@@ -1,0 +1,5 @@
+F=`cd ckp1;ls -1|tr '\\r\\n' '  '`
+for f in $F ; do
+  rm -f $f
+  sed -e 's|ucar[.]nc2[.]util[.]net|ucar.httpclient|g' <ckp1/$f >./$f
+done
