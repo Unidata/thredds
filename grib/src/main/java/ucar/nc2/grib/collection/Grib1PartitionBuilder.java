@@ -41,21 +41,21 @@ import thredds.inventory.partition.PartitionManager;
 import java.io.File;
 
 /**
- * Builds Grib2 PartitionCollections (version 2)
+ * Builds Grib1 PartitionCollections (version 2)
  *
- * @author John
- * @since 12/7/13
+ * @author caron
+ * @since 2/21/14
  */
-public class Grib2PartitionBuilder extends GribPartitionBuilder {
-  public static final String MAGIC_START = "Grib2Partition2Index";  // was Grib2Partition0Index
+public class Grib1PartitionBuilder extends GribPartitionBuilder {
+  public static final String MAGIC_START = "Grib1Partition2Index";  // was Grib1Partition0Index
 
-  public Grib2PartitionBuilder(String name, File directory, PartitionManager tpc, org.slf4j.Logger logger) {
+  public Grib1PartitionBuilder(String name, File directory, PartitionManager tpc, org.slf4j.Logger logger) {
     super(name, directory, tpc, logger);
 
     FeatureCollectionConfig config = null;
     if (tpc != null)
       config = (FeatureCollectionConfig) tpc.getAuxInfo(FeatureCollectionConfig.AUX_CONFIG);
-    this.result = new Grib2Partition(name, directory, tpc.getIndexFilename(), config, logger);
+    this.result = new Grib1Partition(name, directory, tpc.getIndexFilename(), config, logger);
   }
 
   //////////////////////////////////////////////////////////
@@ -64,5 +64,4 @@ public class Grib2PartitionBuilder extends GribPartitionBuilder {
   public String getMagicStart() {
     return MAGIC_START;
   }
-
 }

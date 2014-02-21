@@ -41,7 +41,6 @@ import thredds.inventory.MCollection;
 import thredds.inventory.MFile;
 import ucar.coord.*;
 import ucar.nc2.grib.GribIndex;
-import ucar.nc2.grib.VertCoord;
 import ucar.nc2.grib.grib1.*;
 import ucar.nc2.grib.grib1.tables.Grib1Customizer;
 import ucar.nc2.grib.grib2.Grib2Utils;
@@ -71,7 +70,7 @@ public class Grib1CollectionBuilder extends GribCollectionBuilder {
 
   // LOOK prob name could be dcm.getCollectionName()
   public Grib1CollectionBuilder(String name, MCollection dcm, org.slf4j.Logger logger) {
-    super(name, dcm, logger);
+    super(true, name, dcm, logger);
 
     FeatureCollectionConfig config = (FeatureCollectionConfig) dcm.getAuxInfo(FeatureCollectionConfig.AUX_CONFIG);
     Map<String, Boolean> pdsConfig = config.gribConfig.pdsHash;
@@ -236,7 +235,6 @@ public class Grib1CollectionBuilder extends GribCollectionBuilder {
     }
   }
 
-
   private class Grib1Rectilyser {
 
     private final int gdsHash;
@@ -343,6 +341,10 @@ public class Grib1CollectionBuilder extends GribCollectionBuilder {
     }
   }
 
+  private int cdmVariableHash(Grib1Record gr, int gdsHash) {
+    return cdmVariableHash(cust, gr, gdsHash, useTableVersion, intvMerge);
+  }
+
 
   /**
    * A hash code to group records into a CDM variable
@@ -352,7 +354,7 @@ public class Grib1CollectionBuilder extends GribCollectionBuilder {
    * @param gdsHash can override the gdsHash
    * @return this records hash code, to group like records into a variable
    */
-  private int cdmVariableHash(Grib1Record gr, int gdsHash) {
+  public static int cdmVariableHash(Grib1Customizer cust, Grib1Record gr, int gdsHash, boolean useTableVersion, boolean intvMerge) {
     int result = 17;
 
     Grib1SectionGridDefinition gdss = gr.getGDSsection();

@@ -69,7 +69,7 @@ public class Grib2CollectionBuilder extends GribCollectionBuilder {
 
   // LOOK prob name could be dcm.getCollectionName()
   public Grib2CollectionBuilder(String name, MCollection dcm, org.slf4j.Logger logger) {
-    super(name, dcm, logger);
+    super(false, name, dcm, logger);
 
     FeatureCollectionConfig config = (FeatureCollectionConfig) dcm.getAuxInfo(FeatureCollectionConfig.AUX_CONFIG);
     Map<String, Boolean> pdsConfig = config.gribConfig.pdsHash;
@@ -302,6 +302,9 @@ public class Grib2CollectionBuilder extends GribCollectionBuilder {
     }
   }
 
+  private int cdmVariableHash(Grib2Record gr, int gdsHash) {
+    return cdmVariableHash(cust, gr, gdsHash, intvMerge, useGenType);
+  }
 
   /**
    * A hash code to group records into a CDM variable
@@ -312,7 +315,7 @@ public class Grib2CollectionBuilder extends GribCollectionBuilder {
    * @param gdsHash can override the gdsHash
    * @return this record's hash code, identical hash means belongs to the same variable
    */
-  public int cdmVariableHash(Grib2Record gr, int gdsHash) {
+  public static int cdmVariableHash(Grib2Customizer cust, Grib2Record gr, int gdsHash, boolean intvMerge, boolean useGenType) {
     Grib2SectionGridDefinition gdss = gr.getGDSsection();
     Grib2Pds pds2 = gr.getPDS();
 

@@ -58,7 +58,6 @@ import java.util.List;
 
 /**
  * Utilities for creating GRIB ncx2 files, both collections and partitions
- * GRIB2 only at the moment
  *
  * @author John
  * @since 12/5/13
@@ -91,7 +90,7 @@ public class GribCdmIndex2 implements IndexReader {
       case Grib2PartitionBuilder.MAGIC_START:
         return GribCollectionType.Partition2;
 
-      case Grib1TimePartitionBuilder.MAGIC_START:
+      case Grib1PartitionBuilder.MAGIC_START:
         return GribCollectionType.Partition1;
 
     }
@@ -190,42 +189,63 @@ public class GribCdmIndex2 implements IndexReader {
     * @return GribCollection
     * @throws IOException on io error
     */
-   static public GribCollection openGribCollectionFromMCollection(boolean isGrib1, MCollection dcm, CollectionUpdateType updateType,
-                                                                  Formatter errlog, org.slf4j.Logger logger) throws IOException {
+  static public GribCollection openGribCollectionFromMCollection(boolean isGrib1, MCollection dcm, CollectionUpdateType updateType,
+                                                                 Formatter errlog, org.slf4j.Logger logger) throws IOException {
 
-     FeatureCollectionConfig config = (FeatureCollectionConfig) dcm.getAuxInfo(FeatureCollectionConfig.AUX_CONFIG);
+    FeatureCollectionConfig config = (FeatureCollectionConfig) dcm.getAuxInfo(FeatureCollectionConfig.AUX_CONFIG);
 
-     if (updateType == CollectionUpdateType.never || dcm instanceof CollectionSingleIndexFile) { // would isIndexFile() be better ?
-       // then just open the existing index file
-       return openCdmIndex(dcm.getIndexFilename(), config, logger);
-     }
+    if (updateType == CollectionUpdateType.never || dcm instanceof CollectionSingleIndexFile) { // would isIndexFile() be better ?
+      return openCdmIndex(dcm.getIndexFilename(), config, logger);  // then just open the existing index file
+    }
 
-     // otherwise got to check
-     if (isGrib1) {
-       if (dcm.isLeaf()) {
-         boolean changed =  Grib1PartitionBuilder.recreateIfNeeded( (PartitionManager) dcm, updateType, updateType, errlog, logger);
-         return Grib1PartitionBuilderFromIndex.createTimePartitionFromIndex(dcm.getCollectionName(), new File(dcm.getRoot()), dcm.getIndexFilename(),
-                 config, logger);
+    // update if needed
+    boolean changed = updateGribCollectionFromMCollection(isGrib1, dcm, updateType, errlog, logger);
 
-       } else {
-         Grib1CollectionBuilder builder = new Grib1CollectionBuilder(dcm.getCollectionName(), dcm, logger);
-         boolean changed = builder.updateNeeded(updateType) && builder.createIndex(errlog);
-         return openCdmIndex(dcm.getIndexFilename(), config, logger);
-       }
+    // now open the index
+    return openCdmIndex(dcm.getIndexFilename(), config, logger);
+  }
 
-     } else {
-       if (dcm.isLeaf()) {
-         boolean changed =  Grib2PartitionBuilder.recreateIfNeeded( (PartitionManager) dcm, updateType, updateType, errlog, logger);
-         return Grib2PartitionBuilderFromIndex.createTimePartitionFromIndex(dcm.getCollectionName(), new File(dcm.getRoot()), dcm.getIndexFilename(),
-                 config, logger);
 
-       } else {
-         Grib2CollectionBuilder builder = new Grib2CollectionBuilder(dcm.getCollectionName(), dcm, logger);
-         boolean changed = builder.updateNeeded(updateType) && builder.createIndex(errlog);
-         return openCdmIndex(dcm.getIndexFilename(), config, logger);
-       }
-     }
-   }
+  static public boolean updateGribCollectionFromMCollection(boolean isGrib1, MCollection dcm, CollectionUpdateType updateType,
+                                                                 Formatter errlog, org.slf4j.Logger logger) throws IOException {
+
+    FeatureCollectionConfig config = (FeatureCollectionConfig) dcm.getAuxInfo(FeatureCollectionConfig.AUX_CONFIG);
+
+    if (updateType == CollectionUpdateType.never || dcm instanceof CollectionSingleIndexFile) { // would isIndexFile() be better ?
+      // then just open the existing index file
+      return false;
+    }
+
+    boolean changed;
+    // otherwise got to check
+    if (isGrib1) {
+      if (dcm.isLeaf()) {
+        Grib1PartitionBuilder builder = new Grib1PartitionBuilder(dcm.getCollectionName(), new File(dcm.getRoot()), (PartitionManager) dcm, logger);
+        changed = builder.updateNeeded(updateType) && builder.createPartitionedIndex(updateType, updateType, errlog);
+
+      } else {
+        Grib1CollectionBuilder builder = new Grib1CollectionBuilder(dcm.getCollectionName(), dcm, logger);
+        changed = builder.updateNeeded(updateType) && builder.createIndex(errlog);
+      }
+
+    } else {
+      if (dcm.isLeaf()) { // LOOK why does isLeaf() imply partition ??
+        Grib2PartitionBuilder builder = new Grib2PartitionBuilder(dcm.getCollectionName(), new File(dcm.getRoot()), (PartitionManager) dcm, logger);
+        changed = builder.updateNeeded(updateType) && builder.createPartitionedIndex(updateType, updateType, errlog);
+
+       // boolean changed =  Grib2PartitionBuilder.recreateIfNeeded( (PartitionManager) dcm, updateType, updateType, errlog, logger);
+        //return Grib2PartitionBuilderFromIndex.createTimePartitionFromIndex(dcm.getCollectionName(), new File(dcm.getRoot()), dcm.getIndexFilename(), config, logger);
+
+      } else {
+        Grib2CollectionBuilder builder = new Grib2CollectionBuilder(dcm.getCollectionName(), dcm, logger);
+        changed = builder.updateNeeded(updateType) && builder.createIndex(errlog);
+      }
+    }
+    if (errlog != null) errlog.format("GribCollection %s was recreated %s%n", dcm.getCollectionName(), changed);
+
+    // now open the index
+    return changed;
+  }
 
 
   ///////////
@@ -327,10 +347,13 @@ public class GribCdmIndex2 implements IndexReader {
     }   // loop over partitions
 
     // do this partition; we just did children so never update them
-    boolean result = Grib2PartitionBuilder.recreateIfNeeded(dpart, forceCollection, CollectionUpdateType.never, null, logger);
+    Formatter errlog = new Formatter();
+    Grib2PartitionBuilder builder = new Grib2PartitionBuilder(dpart.getCollectionName(), new File(dpart.getRoot()), dpart, logger);
+    boolean changed = builder.updateNeeded(forceCollection) && builder.createPartitionedIndex(forceCollection, CollectionUpdateType.never, errlog);
+    //boolean result = Grib2PartitionBuilder.recreateIfNeeded(dpart, forceCollection, CollectionUpdateType.never, null, logger);
 
-    if (debug) System.out.printf("GribCdmIndex2.updateDirectoryCollectionRecurse complete (%s) on %s%n", result, dpart.getRoot());
-    return result;
+    if (debug) System.out.printf("GribCdmIndex2.updateDirectoryCollectionRecurse complete (%s) on %s errlog=%s%n", changed, dpart.getRoot(), errlog);
+    return changed;
   }
 
   /**
@@ -430,8 +453,10 @@ public class GribCdmIndex2 implements IndexReader {
       });
     }
 
-    // redo partition index if needed, will  detect if childrenhave changed
-    boolean recreated = Grib2PartitionBuilder.recreateIfNeeded(partition, updateType, CollectionUpdateType.never, errlog, logger);
+    // redo partition index if needed, will detect if children have changed
+    Grib2PartitionBuilder builder = new Grib2PartitionBuilder(partition.getCollectionName(), new File(partition.getRoot()), partition, logger);
+    boolean recreated = builder.updateNeeded(updateType) && builder.createPartitionedIndex(updateType, CollectionUpdateType.never, errlog);
+    // boolean recreated = Grib2PartitionBuilder.recreateIfNeeded(partition, updateType, CollectionUpdateType.never, errlog, logger);
 
     long took = System.currentTimeMillis() - start;
     String collectionName = partition.getCollectionName();
@@ -711,7 +736,7 @@ public class GribCdmIndex2 implements IndexReader {
           int n = gribCollectionIndex.getMfilesCount();
           for (int i = 0; i < n; i++) {
             GribCollectionProto.MFile mfilep = gribCollectionIndex.getMfiles(i);
-            result.add(new GribCollectionBuilder.GcMFile(protoDir, mfilep.getFilename(), mfilep.getLastModified(), mfilep.getIndex()));
+            result.add(new GcMFile(protoDir, mfilep.getFilename(), mfilep.getLastModified(), mfilep.getIndex()));
           }
         }
         return true;

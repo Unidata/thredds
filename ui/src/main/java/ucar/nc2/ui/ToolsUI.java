@@ -55,6 +55,7 @@ import ucar.nc2.ft.FeatureDatasetPoint;
 import ucar.nc2.ft.grid.CoverageDataset;
 import ucar.nc2.ft.point.PointDatasetImpl;
 import ucar.nc2.geotiff.GeoTiff;
+import ucar.nc2.grib.collection.GribCollection;
 import ucar.nc2.grib.grib1.tables.Grib1ParamTables;
 import ucar.nc2.grib.grib2.table.WmoCodeTable;
 import ucar.nc2.grib.grib2.table.WmoTemplateTable;
@@ -153,7 +154,7 @@ public class
   private Grib1ReportPanel grib1ReportPanel;
   private Grib1TablePanel grib1TablePanel;
   private Grib2CollectionPanel grib2CollectionPanel;
-  private Grib2RectilyzePanel grib2RectilyzePanel;
+  // private Grib2RectilyzePanel grib2RectilyzePanel;
   private Grib2TablePanel grib2TablePanel;
   private Grib2ReportPanel grib2ReportPanel;
   private Grib2DataPanel grib2DataPanel;
@@ -426,9 +427,9 @@ public class
       grib2CollectionPanel = new Grib2CollectionPanel((PreferencesExt) mainPrefs.node("gribNew"));
       c = grib2CollectionPanel;
 
-    } else if (title.equals("GRIB2rectilyze")) {
+    /* } else if (title.equals("GRIB2rectilyze")) {
       grib2RectilyzePanel = new Grib2RectilyzePanel((PreferencesExt) mainPrefs.node("GRIB2rectilyze"));
-      c = grib2RectilyzePanel;
+      c = grib2RectilyzePanel; */
 
     } else if (title.equals("GRIB2data")) {
       grib2DataPanel = new Grib2DataPanel((PreferencesExt) mainPrefs.node("grib2Data"));
@@ -953,7 +954,7 @@ public class
     if (geotiffPanel != null) geotiffPanel.save();
     if (gribFilesPanel != null) gribFilesPanel.save();
     if (grib2CollectionPanel != null) grib2CollectionPanel.save();
-    if (grib2RectilyzePanel != null) grib2RectilyzePanel.save();
+    // if (grib2RectilyzePanel != null) grib2RectilyzePanel.save();
     if (grib2DataPanel != null) grib2DataPanel.save();
     if (gribCodePanel != null) gribCodePanel.save();
     if (gribIdxPanel != null) gribIdxPanel.save();
@@ -2547,7 +2548,7 @@ public class
       });
       buttPanel.add(gdsButton);
 
-      AbstractButton aggButton = BAMutil.makeButtcon("V3", "Run Rectilyser", false);
+      /* AbstractButton aggButton = BAMutil.makeButtcon("V3", "Run Rectilyser", false);
       aggButton.addActionListener(new ActionListener() {
         public void actionPerformed(ActionEvent e) {
           Formatter f = new Formatter();
@@ -2577,7 +2578,7 @@ public class
           detailWindow.show();
         }
       });
-      buttPanel.add(agg2Button);
+      buttPanel.add(agg2Button);  */
 
       /* AbstractButton collateButton = BAMutil.makeButtcon("V3", "Run GribCollection", false);
       collateButton.addActionListener(new ActionListener() {
@@ -2650,8 +2651,7 @@ public class
 
   /////////////////////////////////////////////////////////////////////
   /////////////////////////////////////////////////////////////////////
-  // GRIB2 new
-  private class Grib2RectilyzePanel extends OpPanel {
+  /* private class Grib2RectilyzePanel extends OpPanel {
     ucar.nc2.ui.Grib2RectilyzePanel gribTable;
 
     void closeOpenFiles() throws IOException {
@@ -2761,9 +2761,9 @@ public class
       super.save();
     }
 
-  }
-    /////////////////////////////////////////////////////////////////////
-  // GRIB2 new
+  }  */
+
+  /////////////////////////////////////////////////////////////////////
   private class Grib2DataPanel extends OpPanel {
     ucar.nc2.ui.Grib2DataPanel gribTable;
 
@@ -2796,7 +2796,7 @@ public class
       });
       buttPanel.add(infoButton);
 
-      AbstractButton writeButton = BAMutil.makeButtcon("netcdf", "Write index", false);
+      /* AbstractButton writeButton = BAMutil.makeButtcon("netcdf", "Write index", false);
       writeButton.addActionListener(new ActionListener() {
         public void actionPerformed(ActionEvent e) {
           Formatter f = new Formatter();
@@ -2810,7 +2810,7 @@ public class
           detailWindow.show();
         }
       });
-      buttPanel.add(writeButton);
+      buttPanel.add(writeButton); */
     }
 
     void setCollection(String collection) {

@@ -7,8 +7,11 @@ import thredds.featurecollection.FeatureCollectionConfig;
 import thredds.inventory.*;
 import thredds.inventory.partition.DirectoryPartition;
 import thredds.inventory.partition.DirectoryBuilder;
+import ucar.coord.Coordinate;
 import ucar.nc2.grib.*;
 import ucar.nc2.grib.collection.GribCdmIndex2;
+import ucar.nc2.grib.collection.GribCollection;
+import ucar.nc2.grib.collection.PartitionCollection;
 import ucar.nc2.ui.widget.*;
 import ucar.nc2.ui.widget.PopupMenu;
 import ucar.util.prefs.PreferencesExt;
@@ -267,15 +270,16 @@ public class DirectoryPartitionViewer extends JPanel {
          try {
            GribCdmIndex2 indexReader = new GribCdmIndex2(logger);
            final DirectoryPartition dpart = new DirectoryPartition(config, node.dir, indexReader, logger);
-
-           final Grib2TimePartition tp = new Grib2TimePartition(dpart.getCollectionName(), node.dir.toFile(), config.gribConfig, logger);
+           dpart.putAuxInfo(FeatureCollectionConfig.AUX_CONFIG, config);
+           Formatter errlog = new Formatter();
+           final PartitionCollection tp = (PartitionCollection) GribCdmIndex2.openGribCollectionFromMCollection(false, dpart, CollectionUpdateType.never, errlog, logger);
            for (MCollection dcmp : dpart.makePartitions(null)) {
              dcmp.putAuxInfo(FeatureCollectionConfig.AUX_CONFIG, config);
              tp.addPartition(dcmp);
            }
 
            final List<GribCollection> gclist = new ArrayList<>();
-           for (TimePartition.Partition tpp : tp.getPartitions()) {
+           for (PartitionCollection.Partition tpp : tp.getPartitions()) {
              try {
                GribCollection gc = tpp.makeGribCollection(CollectionUpdateType.nocheck);    // use index if it exists
                gclist.add(gc);
@@ -821,7 +825,7 @@ public class DirectoryPartitionViewer extends JPanel {
         }
       });
 
-      groupTable = new BeanTable(GroupBean.class, (PreferencesExt) prefs.node("GroupBean"), false, "Partitions for this Group", "GribCollection.GroupHcs", null);
+      groupTable = new BeanTable(GroupBean.class, (PreferencesExt) prefs.node("GroupBean"), false, "Partitions for this Group", "GribCollection.GroupGC", null);
       groupTable.addListSelectionListener(new ListSelectionListener() {
         public void valueChanged(ListSelectionEvent e) {
           GroupBean bean = (GroupBean) groupTable.getSelectedBean();
@@ -893,9 +897,9 @@ public class DirectoryPartitionViewer extends JPanel {
       groupTable.setBeans(groups.beans);
     }
 
-    private void setGroup(GribCollection.GroupHcs group) {
+    private void setGroup(GribCollection.GroupGC group) {
       List<VarBean> vars = new ArrayList<>();
-      for (GribCollection.VariableIndex v : group.varIndex)
+      for (GribCollection.VariableIndex v : group.getVariables())
         vars.add(new VarBean(v, group));
       varTable.setBeans(vars);
     }
@@ -904,8 +908,8 @@ public class DirectoryPartitionViewer extends JPanel {
    //   fileTable.setFiles(dir, files);
    // }
 
-    private void showFiles(GribCollection gc, GribCollection.GroupHcs group) {
-      List<MFile> files = (group == null) ? gc.getFiles() : group.getFiles();
+    private void showFiles(GribCollection gc, GribCollection.GroupGC group) {
+      Collection<MFile> files = (group == null) ? gc.getFiles() : group.getFiles();
       File dir = (gc == null) ? null : gc.getDirectory();
       fileTable.setFiles(dir, files);
     }
@@ -977,24 +981,26 @@ public class DirectoryPartitionViewer extends JPanel {
       if (pos > 0) partitionName = partitionName.substring(0, pos);
       partitionsAll.add(partitionName);
 
-      for (GribCollection.GroupHcs g : gc.getGroups()) {
-        GroupsBean bean = groupsBeans.get(g.getId());
-        if (bean == null) {
-          bean = new GroupsBean(g);
-          groupsBeans.put(g.getId(), bean);
+      for (GribCollection.Dataset ds : gc.getDatasets()) {
+        for (GribCollection.GroupGC g : ds.getGroups()) {
+          GroupsBean bean = groupsBeans.get(g.getId());
+          if (bean == null) {
+            bean = new GroupsBean(g);
+            groupsBeans.put(g.getId(), bean);
+          }
+          bean.addGroup(g, ds.getType().toString(), partitionName);
         }
-        bean.addGroup(g, partitionName);
       }
       groupsTable.setBeans(new ArrayList<>(groupsBeans.values()));
     }
 
     void showVariableDifferences(GroupBean bean1, GroupBean bean2, Formatter f) {
       f.format("Compare %s to %s%n", bean1.getPartition(), bean2.getPartition());
-      for (GribCollection.VariableIndex var1 : bean1.group.varIndex) {
+      for (GribCollection.VariableIndex var1 : bean1.group.getVariables()) {
         if (bean2.group.findVariableByHash(var1.cdmHash) == null)
           f.format("Var1 %s missing in partition 2%n", var1.id());
       }
-      for (GribCollection.VariableIndex var2 : bean2.group.varIndex) {
+      for (GribCollection.VariableIndex var2 : bean2.group.getVariables()) {
         if (bean1.group.findVariableByHash(var2.cdmHash) == null)
           f.format("Var2 %s missing in partition 1%n", var2.id());
       }
@@ -1023,27 +1029,46 @@ public class DirectoryPartitionViewer extends JPanel {
   }
 
   public class GroupsBean {
-    GribCollection.GroupHcs group;
+    GribCollection.GroupGC group;
     List<GroupBean> beans = new ArrayList<>(50);
-    RangeTracker nvars, nfiles, ntimes, nverts;
+    RangeTracker nvars, nfiles, ncoords, ntimes;
 
-    public GroupsBean(GribCollection.GroupHcs g) {
+    public GroupsBean(GribCollection.GroupGC g) {
       this.group = g;
-      nvars = new RangeTracker(g.varIndex.size());
-      nfiles = new RangeTracker(g.filenose.length);
-      ntimes = new RangeTracker(g.timeCoords.size());
-      nverts = new RangeTracker(g.vertCoords.size());
+      nvars = new RangeTracker(count(g.getVariables().iterator()));
+      nfiles = new RangeTracker(g.getNFiles());
+      ncoords = new RangeTracker(count(g.getCoordinates().iterator()));
+      ntimes = new RangeTracker(countTimes(g.getCoordinates().iterator()));
     }
 
     public GroupsBean() {
     }
 
-    public void addGroup(GribCollection.GroupHcs g, String partitionName) {
-      beans.add(new GroupBean(g, partitionName));
-      nvars.add(g.varIndex.size());
-      nfiles.add(g.filenose.length);
-      ntimes.add(g.timeCoords.size());
-      nverts.add(g.vertCoords.size());
+    private int count(Iterator iter) {
+      int count = 0;
+      while (iter.hasNext()) {
+        iter.next();
+        count++;
+      }
+      return count;
+    }
+
+    private int countTimes(Iterator<Coordinate> iter) {
+      int count = 0;
+      while (iter.hasNext()) {
+        Coordinate c = iter.next();
+        if (c.getType() == Coordinate.Type.time || c.getType() == Coordinate.Type.timeIntv || c.getType() == Coordinate.Type.time2D)
+          count++;
+      }
+      return count;
+    }
+
+    public void addGroup(GribCollection.GroupGC g, String dataset, String partitionName) {
+      beans.add(new GroupBean(g, dataset, partitionName));
+      nvars.add(count(g.getVariables().iterator()));
+      nfiles.add(g.getNFiles());
+      ncoords.add(count(g.getCoordinates().iterator()));
+      ntimes.add(countTimes(g.getCoordinates().iterator()));
     }
 
     public int getNPartitions() {
@@ -1055,7 +1080,7 @@ public class DirectoryPartitionViewer extends JPanel {
     }
 
     public int getGdsHash() {
-      return group.gdsHash;
+      return group.getGdsHash();
     }
 
     public String getNVars() {
@@ -1066,12 +1091,12 @@ public class DirectoryPartitionViewer extends JPanel {
       return nfiles.toString();
     }
 
-    public String getNTimes() {
-      return ntimes.toString();
+    public String getNCoords() {
+      return ncoords.toString();
     }
 
-    public String getNVerts() {
-      return nverts.toString();
+    public String getNTimes() {
+      return ntimes.toString();
     }
 
   }
@@ -1079,11 +1104,13 @@ public class DirectoryPartitionViewer extends JPanel {
 
   public class GroupBean {
     String partitionName;
-    GribCollection.GroupHcs group;
+    String datasetName;
+    GribCollection.GroupGC group;
 
-    public GroupBean(GribCollection.GroupHcs g, String partitionName) {
+    public GroupBean(GribCollection.GroupGC g, String datasetName, String partitionName) {
       this.group = g;
       this.partitionName = partitionName;
+      this.datasetName = datasetName;
     }
 
     public GroupBean() {
@@ -1094,14 +1121,14 @@ public class DirectoryPartitionViewer extends JPanel {
     }
 
     public int getGdsHash() {
-      return group.gdsHash;
+      return group.getGdsHash();
     }
 
     public int getNFiles() {
-      return group.filenose.length;
+      return group.getNFiles();
     }
 
-    public int getNTimes() {
+    /* public int getNTimes() {
       return group.timeCoords.size();
     }
 
@@ -1111,11 +1138,15 @@ public class DirectoryPartitionViewer extends JPanel {
 
     public int getNVars() {
       return group.varIndex.size();
-    }
+    } */
 
 
     public String getPartition() {
       return partitionName;
+    }
+
+    public String getDataset() {
+      return datasetName;
     }
 
     void showFilesUsed(Formatter f) {
@@ -1131,34 +1162,29 @@ public class DirectoryPartitionViewer extends JPanel {
 
   public class VarBean {
     GribCollection.VariableIndex v;
-    GribCollection.GroupHcs group;
+    GribCollection.GroupGC group;
 
     public VarBean() {
     }
 
-    public VarBean(GribCollection.VariableIndex v, GribCollection.GroupHcs group) {
+    public VarBean(GribCollection.VariableIndex v, GribCollection.GroupGC group) {
       this.v = v;
       this.group = group;
     }
 
-    public int getTimeCoord() {
-      return v.timeIdx;
-    }
-
-    public boolean getTimeIntv() {
-      return (v.getTimeCoord() == null) ? false : v.getTimeCoord().isInterval();
-    }
-
-    public boolean getVertLayer() {
-      return (v.getVertCoord() == null) ? false : v.getVertCoord().isLayer();
+    public String getTimeCoord() {
+      if (0 <= v.getCoordinateIdx(Coordinate.Type.time)) return Coordinate.Type.time.toString();
+      if (0 <= v.getCoordinateIdx(Coordinate.Type.timeIntv)) return Coordinate.Type.timeIntv.toString();
+      if (0 <= v.getCoordinateIdx(Coordinate.Type.time2D)) return Coordinate.Type.time2D.toString();
+      return "ERR";
     }
 
     public int getVertCoord() {
-      return v.vertIdx;
+      return v.getCoordinateIdx(Coordinate.Type.vert);
     }
 
     public int getEnsCoord() {
-      return v.ensIdx;
+      return v.getCoordinateIdx(Coordinate.Type.ens);
     }
 
     public int getLevelType() {

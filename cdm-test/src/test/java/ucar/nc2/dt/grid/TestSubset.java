@@ -41,6 +41,7 @@ import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dt.GridCoordSystem;
 import ucar.nc2.dt.GridDatatype;
 import ucar.nc2.NCdump;
+import ucar.nc2.grib.collection.GribIosp;
 import ucar.nc2.thredds.ThreddsDataFactory;
 import ucar.nc2.util.CompareNetcdf2;
 import ucar.nc2.util.Misc;
@@ -98,7 +99,7 @@ public class TestSubset {
   public void testGrib() throws Exception {
     GridDataset dataset = GridDataset.open(TestDir.cdmUnitTestDir + "formats/grib1/AVN.wmo");
 
-    GeoGrid grid = dataset.findGridDatatypeByAttribute(Grib2Iosp.VARIABLE_ID_ATTNAME, "VAR_7-0-2-11_L100"); // "Temperature_isobaric");
+    GeoGrid grid = dataset.findGridDatatypeByAttribute(GribIosp.VARIABLE_ID_ATTNAME, "VAR_7-0-2-11_L100"); // "Temperature_isobaric");
     assert null != grid : dataset.getLocation();
     GridCoordSystem gcs = grid.getCoordinateSystem();
     assert null != gcs;
@@ -159,7 +160,7 @@ public class TestSubset {
     String filename = TestDir.cdmUnitTestDir + "transforms/Eumetsat.VerticalPerspective.grb";
     GridDataset dataset = GridDataset.open(filename);
     System.out.printf("open %s%n", filename);
-    GeoGrid grid = dataset.findGridDatatypeByAttribute(Grib2Iosp.VARIABLE_ID_ATTNAME, "VAR_3-0-8"); // "Pixel_scene_type");
+    GeoGrid grid = dataset.findGridDatatypeByAttribute(GribIosp.VARIABLE_ID_ATTNAME, "VAR_3-0-8"); // "Pixel_scene_type");
     assert null != grid : dataset.getLocation();
     GridCoordSystem gcs = grid.getCoordinateSystem();
     assert null != gcs;
@@ -401,7 +402,7 @@ public class TestSubset {
   @Test
   public void testLatLonSubset2() throws Exception {
     GridDataset dataset = GridDataset.open(TestDir.cdmUnitTestDir + "tds/ncep/GFS_Global_onedeg_20100913_0000.grib2");
-    GeoGrid grid = dataset.findGridDatatypeByAttribute(Grib2Iosp.VARIABLE_ID_ATTNAME, "VAR_0-3-0_L1"); // "Pressure_Surface");
+    GeoGrid grid = dataset.findGridDatatypeByAttribute(GribIosp.VARIABLE_ID_ATTNAME, "VAR_0-3-0_L1"); // "Pressure_Surface");
     assert null != grid : dataset.getLocation();
     GridCoordSystem gcs = grid.getCoordinateSystem();
     assert null != gcs;
@@ -592,7 +593,7 @@ public class TestSubset {
   public void testBBSubsetVP() throws Exception {
     String filename = TestDir.cdmUnitTestDir + "transforms/Eumetsat.VerticalPerspective.grb";
     GridDataset dataset = GridDataset.open(filename);
-    GeoGrid grid = dataset.findGridDatatypeByAttribute(Grib2Iosp.VARIABLE_ID_ATTNAME, "VAR_3-0-8"); // "Pixel_scene_type");
+    GeoGrid grid = dataset.findGridDatatypeByAttribute(GribIosp.VARIABLE_ID_ATTNAME, "VAR_3-0-8"); // "Pixel_scene_type");
     assert null != grid : dataset.getLocation();
     GridCoordSystem gcs = grid.getCoordinateSystem();
     assert null != gcs;

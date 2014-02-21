@@ -890,6 +890,13 @@ public class GribCollection implements FileCacheable, AutoCloseable {
       return null;
     }
 
+    public int getCoordinateIdx(Coordinate.Type want) {
+      for (int idx : coordIndex)
+        if (group.coords.get(idx).getType() == want)
+          return idx;
+      return -1;
+    }
+
     public Coordinate getCoordinate(int index) {
       int grpIndex = coordIndex.get(index);
       return group.coords.get(grpIndex);

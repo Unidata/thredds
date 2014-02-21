@@ -36,10 +36,10 @@ import thredds.inventory.*;
 import ucar.nc2.grib.GdsHorizCoordSys;
 import ucar.nc2.grib.GribStatType;
 import ucar.nc2.grib.GribUtils;
+import ucar.nc2.grib.collection.Grib1CollectionBuilder;
+import ucar.nc2.grib.collection.Grib1Iosp;
 import ucar.nc2.grib.grib1.*;
 import ucar.nc2.grib.grib1.Grib1Parameter;
-import ucar.nc2.grib.grib1.builder.Grib1CollectionBuilder;
-import ucar.nc2.grib.grib1.builder.Grib1Rectilyser;
 import ucar.nc2.grib.grib1.tables.Grib1Customizer;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.ui.widget.*;
@@ -80,7 +80,7 @@ public class Grib1CollectionPanel extends JPanel {
   private IndependentWindow infoWindow, infoWindow2, infoWindow3;
   private FileManager fileChooser;
   private Grib1Customizer cust = null;
-  private Grib1Rectilyser rect = null;
+  //private Grib1Rectilyser rect = null;
 
   public Grib1CollectionPanel(JPanel buttPanel, PreferencesExt prefs) {
     this.prefs = prefs;
@@ -363,6 +363,8 @@ public class Grib1CollectionPanel extends JPanel {
   }
 
   public boolean writeIndex(Formatter f) throws IOException {
+    return false;
+    /*
     MCollection dcm = scanCollection(spec, f);
 
     if (fileChooser == null)
@@ -372,15 +374,15 @@ public class Grib1CollectionPanel extends JPanel {
     int pos = name.lastIndexOf('/');
     if (pos < 0) pos = name.lastIndexOf('\\');
     if (pos > 0) name = name.substring(pos + 1);
-    File def = new File(dcm.getRoot(), name + GribCollection.NCX_IDX);
+    File def = new File(dcm.getRoot(), name + CollectionAbstract.NCX_SUFFIX);
     String filename = fileChooser.chooseFilename(def);
     if (filename == null) return false;
-    if (!filename.endsWith(GribCollection.NCX_IDX))
-      filename += GribCollection.NCX_IDX;
+    if (!filename.endsWith(CollectionAbstract.NCX_SUFFIX))
+      filename += CollectionAbstract.NCX_SUFFIX;
     File idxFile = new File(filename);
 
-    Grib1CollectionBuilder.writeIndexFile(idxFile, (CollectionManager) dcm, logger);
-    return true;
+    GribCdmIndex2.updateGribCollection(true, idxFile, (CollectionManager) dcm, logger);
+    return true;  */
   }
 
   ///////////////////////////////////////////////////////////////////////////////////////////
@@ -567,10 +569,9 @@ public class Grib1CollectionPanel extends JPanel {
 
       if (cust == null) { // first record
         cust = Grib1Customizer.factory(gr, null);
-        rect = new Grib1Rectilyser(cust, null, 0, null); // just needed for cdmVariableHash
       }
 
-      int id = rect.cdmVariableHash(gr, 0);
+      int id = Grib1CollectionBuilder.cdmVariableHash(cust, gr, 0, false, false);
       ParameterBean bean = pdsSet.get(id);
       if (bean == null) {
         bean = new ParameterBean(gr);
@@ -734,7 +735,7 @@ public class Grib1CollectionPanel extends JPanel {
 
     public String getName() {
       if (param == null) return null;
-      return cust.makeVariableName(pds);
+      return Grib1Iosp.makeVariableName(cust, pds);
     }
 
     /* public String getOldName() {

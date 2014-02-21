@@ -59,7 +59,7 @@ import java.util.*;
  */
 public abstract class GribCollectionBuilderFromIndex {
 
-  protected final GribCollection gc;
+  protected GribCollection gc;
   protected final org.slf4j.Logger logger;
   protected boolean debug = false;
   protected GribTables tables;

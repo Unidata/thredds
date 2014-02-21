@@ -39,8 +39,7 @@ import thredds.inventory.MCollection;
 import thredds.inventory.MFile;
 import ucar.ma2.DataType;
 import ucar.nc2.grib.*;
-import ucar.nc2.grib.grib2.builder.Grib2CollectionBuilder;
-import ucar.nc2.grib.grib2.builder.Grib2Rectilyser;
+import ucar.nc2.grib.collection.Grib2CollectionBuilder;
 import ucar.nc2.grib.grib2.*;
 import ucar.nc2.grib.grib2.table.Grib2Customizer;
 import ucar.nc2.grib.grib2.table.NcepLocalTables;
@@ -304,7 +303,7 @@ public class Grib2DataPanel extends JPanel {
   private MCollection dcm;
   private List<MFile> fileList;
   private Grib2Customizer cust;
-  private Grib2Rectilyser rect2;
+  // private Grib2Rectilyser rect2;
 
   /* public void setCollection(String filename) throws IOException {
     if (filename.endsWith(GribCollection.IDX_EXT)) {
@@ -349,7 +348,6 @@ public class Grib2DataPanel extends JPanel {
   public void setCollection(String spec) throws IOException {
     this.spec = spec;
     this.cust = null;
-    this.rect2 = null;
 
     Formatter f = new Formatter();
     this.dcm = scanCollection(spec, f);
@@ -392,12 +390,7 @@ public class Grib2DataPanel extends JPanel {
     for (Grib2Record gr : index.getRecords()) {
       gr.setFile(fileno);
 
-      if (rect2 == null) {
-        cust = Grib2Customizer.factory(gr);
-        rect2 = new Grib2Rectilyser(cust, null, 0, null);
-      }
-
-      int id = rect2.cdmVariableHash(gr, 0);
+      int id = Grib2CollectionBuilder.cdmVariableHash(cust, gr, 0, false, false);
       Grib2ParameterBean bean = pdsSet.get(id);
       if (bean == null) {
         bean = new Grib2ParameterBean(gr);
@@ -423,48 +416,7 @@ public class Grib2DataPanel extends JPanel {
     }
   }
 
-  public void runAggregator(Formatter f) throws IOException {
-    List<Grib2Record> records = new ArrayList<Grib2Record>();
-    List<String> filenames = new ArrayList<String>();
-
-    int fileno = 0;
-    for (MFile mfile : dcm.getFilesSorted()) {
-      f.format("%3d: %s%n", fileno, mfile.getPath());
-      filenames.add(mfile.getPath());
-
-      Grib2Index index = new Grib2Index();
-      if (!index.readIndex(mfile.getPath(), mfile.getLastModified())) {
-        index.makeIndex(mfile.getPath(), null);
-      }
-
-      for (Grib2Record gr : index.getRecords()) {
-        gr.setFile(fileno);
-        records.add(gr);
-      }
-      fileno++;
-    }
-
-    Grib2Rectilyser.Counter stats = new Grib2Rectilyser.Counter();
-    Grib2Rectilyser agg = new Grib2Rectilyser(cust, records, 0, null);
-    agg.make(stats, null, f);
-    agg.dump(f, cust);
-    stats.recordsTotal = records.size();
-  }
-
-  /* public void runCollate(Formatter f) throws IOException {
-    DatasetCollectionManager dcm = getCollection(spec, f);
-    GribCollection gc = GribCollectionBuilder.factory(dcm);
-    ArrayList<String> filenames = new ArrayList<String>();
-    List<GribCollection.Group> groups = gc.makeAggregatedGroups(filenames, f);
-
-    for (GribCollection.Group g : groups) {
-      f.format("====================================================%n");
-      f.format("Group %s%n", g.name);
-      g.rect.dump(f, cust);
-    }
-  } */
-
-  public boolean writeIndex(Formatter f) throws IOException {
+  /* public boolean writeIndex(Formatter f) throws IOException {
     MCollection dcm = scanCollection(spec, f);
 
     if (fileChooser == null)
@@ -482,7 +434,7 @@ public class Grib2DataPanel extends JPanel {
 
     Grib2CollectionBuilder.makeIndex(dcm, new Formatter(), logger);
     return true;
-  }
+  }     */
 
   public void showCollection(Formatter f) {
     if (dcm == null) {

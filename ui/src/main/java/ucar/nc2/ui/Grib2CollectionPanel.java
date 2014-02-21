@@ -36,8 +36,7 @@ import thredds.inventory.*;
 import thredds.inventory.MCollection;
 import ucar.ma2.DataType;
 import ucar.nc2.grib.*;
-import ucar.nc2.grib.grib2.builder.Grib2CollectionBuilder;
-import ucar.nc2.grib.grib2.builder.Grib2Rectilyser;
+import ucar.nc2.grib.collection.Grib2CollectionBuilder;
 import ucar.nc2.grib.grib2.*;
 import ucar.nc2.grib.grib2.table.Grib2Customizer;
 import ucar.nc2.grib.grib2.table.NcepLocalTables;
@@ -423,7 +422,7 @@ public class Grib2CollectionPanel extends JPanel {
   private MCollection dcm;
   private List<MFile> fileList;
   private Grib2Customizer cust;
-  private Grib2Rectilyser rect2;
+  // private Grib2Rectilyser rect2;
 
   public void generateGdsXml(Formatter f) {
     f.format("<gribConfig>%n");
@@ -450,7 +449,6 @@ public class Grib2CollectionPanel extends JPanel {
   public void setCollection(String spec) throws IOException {
     this.spec = spec;
     this.cust = null;
-    this.rect2 = null;
 
     Formatter f = new Formatter();
     this.dcm = getCollection(spec, f);
@@ -498,15 +496,14 @@ public class Grib2CollectionPanel extends JPanel {
     for (Grib2Record gr : index.getRecords()) {
       gr.setFile(fileno);
 
-      if (rect2 == null) {
+      if (cust == null)
         cust = Grib2Customizer.factory(gr);
-        rect2 = new Grib2Rectilyser(cust, null, 0, null);
-      }
 
-      int id = rect2.cdmVariableHash(gr, 0);
+      int id = Grib2CollectionBuilder.cdmVariableHash(cust, gr, 0, false, false);
+
       Grib2ParameterBean bean = pdsSet.get(id);
       if (bean == null) {
-        bean = new Grib2ParameterBean(gr);
+        bean = new Grib2ParameterBean(gr, id);
         pdsSet.put(id, bean);
         params.add(bean);
       }
@@ -529,7 +526,7 @@ public class Grib2CollectionPanel extends JPanel {
     }
   }
 
-  public void runAggregator(Formatter f) throws IOException {
+  /* public void runAggregator(Formatter f) throws IOException {
     List<Grib2Record> records = new ArrayList<Grib2Record>();
     List<String> filenames = new ArrayList<String>();
 
@@ -582,7 +579,7 @@ public class Grib2CollectionPanel extends JPanel {
     agg.make(stats, null, f);
     agg.dump(f, cust);
     stats.recordsTotal = records.size();
-  }
+  }   */
 
   /* public void runCollate(Formatter f) throws IOException {
     DatasetCollectionManager dcm = getCollection(spec, f);
@@ -598,7 +595,9 @@ public class Grib2CollectionPanel extends JPanel {
   } */
 
   public boolean writeIndex(Formatter f) throws IOException {
-    MCollection dcm = getCollection(spec, f);
+    return false;
+
+    /* MCollection dcm = getCollection(spec, f);
 
     if (fileChooser == null)
       fileChooser = new FileManager(null, null, null, (PreferencesExt) prefs.node("FileManager"));
@@ -614,7 +613,7 @@ public class Grib2CollectionPanel extends JPanel {
     File idxFile = new File(filename);
 
     Grib2CollectionBuilder.makeIndex(dcm, new Formatter(), logger);
-    return true;
+    return true;  */
   }
 
   public void showCollection(Formatter f) {
@@ -1105,15 +1104,16 @@ public class Grib2CollectionPanel extends JPanel {
     Grib2Pds pds;
     List<Grib2RecordBean> records;
     int discipline;
-    //long gdsKey;
+    int cdmHash;
 
     // no-arg constructor
 
     public Grib2ParameterBean() {
     }
 
-    public Grib2ParameterBean(Grib2Record r) throws IOException {
+    public Grib2ParameterBean(Grib2Record r, int cdmHash) throws IOException {
       this.gr = r;
+      this.cdmHash = cdmHash;
 
       // long refTime = r.getId().getReferenceDate().getMillis();
       pds = r.getPDSsection().getPDS();
@@ -1181,7 +1181,7 @@ public class Grib2CollectionPanel extends JPanel {
     }
 
    public long getCdmHash() {
-     return rect2.cdmVariableHash(gr, 0);
+     return cdmHash;
     }
 
     public long getIntvHash() {

@@ -15,7 +15,7 @@ public interface Coordinate {
   /**
    * Enumerated list of coordinate types
    */
-  public enum Type {runtime, time, timeIntv, vert, time2D}
+  public enum Type {runtime, time, timeIntv, vert, time2D, ens}
 
   void showInfo(Formatter info, Indent indent);
   void showCoords(Formatter info);

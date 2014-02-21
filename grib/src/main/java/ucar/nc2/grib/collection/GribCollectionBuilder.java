@@ -53,15 +53,16 @@ import java.io.IOException;
 import java.util.*;
 
 /**
- * Describe
+ * Superclass to builds indexes for collections of Grib files.
  *
  * @author caron
  * @since 2/19/14
  */
 public abstract class GribCollectionBuilder {
 
-  protected MCollection dcm;
-  protected org.slf4j.Logger logger;
+  protected final MCollection dcm;
+  protected final org.slf4j.Logger logger;
+  protected final boolean isGrib1;
 
   protected String name;            // collection name
   protected File directory;         // top directory
@@ -70,9 +71,10 @@ public abstract class GribCollectionBuilder {
   protected abstract boolean writeIndex(String name, File indexFile, CoordinateRuntime masterRuntime, List<? extends Group> groups, List<MFile> files) throws IOException;
 
   // LOOK prob name could be dcm.getCollectionName()
-  public GribCollectionBuilder(String name, MCollection dcm, org.slf4j.Logger logger) {
+  public GribCollectionBuilder(boolean isGrib1, String name, MCollection dcm, org.slf4j.Logger logger) {
     this.dcm = dcm;
     this.logger = logger;
+    this.isGrib1 = isGrib1;
 
     this.name = StringUtil2.replace(name, ' ', "_");
     this.directory = new File(dcm.getRoot());
@@ -144,7 +146,7 @@ public abstract class GribCollectionBuilder {
       Collections.sort(partitions); // ??
       PartitionManager part = new PartitionManagerFromIndexList(dcm, partitions, logger);
       part.putAuxInfo(FeatureCollectionConfig.AUX_CONFIG, dcm.getAuxInfo(FeatureCollectionConfig.AUX_CONFIG));
-      ok = Grib2PartitionBuilder.recreateIfNeeded(part, CollectionUpdateType.always, CollectionUpdateType.always, errlog, logger);
+      ok = GribCdmIndex2.updateGribCollectionFromMCollection(isGrib1, part, CollectionUpdateType.always, errlog, logger);
     }
 
     long took = System.currentTimeMillis() - start;
