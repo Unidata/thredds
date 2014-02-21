@@ -36,9 +36,8 @@ import thredds.inventory.CollectionManager;
 import thredds.featurecollection.FeatureCollectionConfig;
 import thredds.inventory.CollectionUpdateType;
 import thredds.inventory.MFile;
-import ucar.nc2.grib.grib1.builder.Grib1CollectionBuilder;
+import ucar.nc2.grib.collection.GribCollection;
 import ucar.nc2.grib.grib1.Grib1Index;
-import ucar.nc2.grib.grib2.builder.Grib2CollectionBuilder;
 import ucar.nc2.grib.grib2.Grib2Index;
 import ucar.unidata.io.RandomAccessFile;
 
@@ -61,7 +60,7 @@ public abstract class GribIndex {
 
   private static final CollectionManager.ChangeChecker gribCC = new CollectionManager.ChangeChecker() {
     public boolean hasChangedSince(MFile file, long when) {
-      File idxFile = GribCollection.getIndexFile(file.getPath() + GBX9_IDX);
+      File idxFile = GribCollection.getIndexFileInCache(file.getPath() + GBX9_IDX);
       if (!idxFile.exists()) return true;
       long idxLastModified =  idxFile.lastModified();
       if (idxLastModified < file.getLastModified()) return true;
@@ -69,7 +68,7 @@ public abstract class GribIndex {
       return false;
     }
     public boolean hasntChangedSince(MFile file, long when) {
-      File idxFile = GribCollection.getIndexFile(file.getPath() + GBX9_IDX);
+      File idxFile = GribCollection.getIndexFileInCache(file.getPath() + GBX9_IDX);
       if (!idxFile.exists()) return true;
       if (idxFile.lastModified() < file.getLastModified()) return true;
       if (0 < when && idxFile.lastModified() < when) return true;
@@ -107,13 +106,13 @@ public abstract class GribIndex {
 
     if (!createCollectionIndex) return index;
 
-     // heres where the ncx file date is checked against the data file
+     /* heres where the ncx file date is checked against the data file
     GribCollection gc;
     if (isGrib1)
       gc = Grib1CollectionBuilder.readOrCreateIndexFromSingleFile(mfile, force, config, logger);
     else
       gc = Grib2CollectionBuilder.readOrCreateIndexFromSingleFile(mfile, force, config, logger);
-    gc.close(); // dont need this right now
+    gc.close(); // dont need this right now */
 
     return index;
   }

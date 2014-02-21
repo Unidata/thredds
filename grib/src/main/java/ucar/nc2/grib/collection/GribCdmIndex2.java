@@ -1,3 +1,38 @@
+/*
+ *
+ *  * Copyright 1998-2014 University Corporation for Atmospheric Research/Unidata
+ *  *
+ *  *  Portions of this software were developed by the Unidata Program at the
+ *  *  University Corporation for Atmospheric Research.
+ *  *
+ *  *  Access and use of this software shall impose the following obligations
+ *  *  and understandings on the user. The user is granted the right, without
+ *  *  any fee or cost, to use, copy, modify, alter, enhance and distribute
+ *  *  this software, and any derivative works thereof, and its supporting
+ *  *  documentation for any purpose whatsoever, provided that this entire
+ *  *  notice appears in all copies of the software, derivative works and
+ *  *  supporting documentation.  Further, UCAR requests that the user credit
+ *  *  UCAR/Unidata in any publications that result from the use of this
+ *  *  software or in any product that includes this software. The names UCAR
+ *  *  and/or Unidata, however, may not be used in any advertising or publicity
+ *  *  to endorse or promote any products or commercial entity unless specific
+ *  *  written permission is obtained from UCAR/Unidata. The user also
+ *  *  understands that UCAR/Unidata is not obligated to provide the user with
+ *  *  any support, consulting, training or assistance of any kind with regard
+ *  *  to the use, operation and performance of this software nor to provide
+ *  *  the user with any updates, revisions, new versions or "bug fixes."
+ *  *
+ *  *  THIS SOFTWARE IS PROVIDED BY UCAR/UNIDATA "AS IS" AND ANY EXPRESS OR
+ *  *  IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ *  *  WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ *  *  DISCLAIMED. IN NO EVENT SHALL UCAR/UNIDATA BE LIABLE FOR ANY SPECIAL,
+ *  *  INDIRECT OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING
+ *  *  FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT,
+ *  *  NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
+ *  *  WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
+ *
+ */
+
 package ucar.nc2.grib.collection;
 
 import org.slf4j.Logger;
@@ -23,7 +58,6 @@ import java.util.List;
 
 /**
  * Utilities for creating GRIB ncx2 files, both collections and partitions
- * GRIB2 only at the moment
  *
  * @author John
  * @since 12/5/13
@@ -50,14 +84,14 @@ public class GribCdmIndex2 implements IndexReader {
       case Grib2CollectionWriter.MAGIC_START:
         return GribCollectionType.GRIB2;
 
-      //case Grib1CollectionBuilder.MAGIC_START:
-      //  return GribCollectionType.GRIB1;
+      case Grib1CollectionWriter.MAGIC_START:
+        return GribCollectionType.GRIB1;
 
       case Grib2PartitionBuilder.MAGIC_START:
         return GribCollectionType.Partition2;
 
-      //case Grib1TimePartitionBuilder.MAGIC_START:
-      //  return GribCollectionType.Partition1;
+      case Grib1PartitionBuilder.MAGIC_START:
+        return GribCollectionType.Partition1;
 
     }
     return GribCollectionType.none;
@@ -78,6 +112,10 @@ public class GribCdmIndex2 implements IndexReader {
           return Grib2CollectionBuilderFromIndex.readFromIndex(name, f.getParentFile(), raf, config, logger);
         case Partition2:
           return Grib2PartitionBuilderFromIndex.createTimePartitionFromIndex(name, f.getParentFile(), raf, config, logger);
+        case GRIB1:
+          return Grib1CollectionBuilderFromIndex.readFromIndex(name, f.getParentFile(), raf, config, logger);
+        case Partition1:
+          return Grib1PartitionBuilderFromIndex.createTimePartitionFromIndex(name, f.getParentFile(), raf, config, logger);
       }
 
       return null;
@@ -151,28 +189,63 @@ public class GribCdmIndex2 implements IndexReader {
     * @return GribCollection
     * @throws IOException on io error
     */
-   static public GribCollection openGribCollectionFromMCollection(boolean isGrib1, MCollection dcm, CollectionUpdateType updateType,
-                                                                  Formatter errlog, org.slf4j.Logger logger) throws IOException {
+  static public GribCollection openGribCollectionFromMCollection(boolean isGrib1, MCollection dcm, CollectionUpdateType updateType,
+                                                                 Formatter errlog, org.slf4j.Logger logger) throws IOException {
 
-     FeatureCollectionConfig config = (FeatureCollectionConfig) dcm.getAuxInfo(FeatureCollectionConfig.AUX_CONFIG);
+    FeatureCollectionConfig config = (FeatureCollectionConfig) dcm.getAuxInfo(FeatureCollectionConfig.AUX_CONFIG);
 
-     if (updateType == CollectionUpdateType.never || dcm instanceof CollectionSingleIndexFile) { // would isIndexFile() be better ?
-       // then just open the existing index file
-       return openCdmIndex(dcm.getIndexFilename(), config, logger);
-     }
+    if (updateType == CollectionUpdateType.never || dcm instanceof CollectionSingleIndexFile) { // would isIndexFile() be better ?
+      return openCdmIndex(dcm.getIndexFilename(), config, logger);  // then just open the existing index file
+    }
 
-     // otherwise got to check
-     if (dcm.isLeaf()) {
-       boolean changed =  Grib2PartitionBuilder.recreateIfNeeded( (PartitionManager) dcm, updateType, updateType, errlog, logger);
-       return Grib2PartitionBuilderFromIndex.createTimePartitionFromIndex(dcm.getCollectionName(), new File(dcm.getRoot()), dcm.getIndexFilename(),
-               config, logger);
+    // update if needed
+    boolean changed = updateGribCollectionFromMCollection(isGrib1, dcm, updateType, errlog, logger);
 
-     } else {
-       Grib2CollectionBuilder builder = new Grib2CollectionBuilder(dcm.getCollectionName(), dcm, logger);
-       boolean changed = builder.updateNeeded(updateType) && builder.createIndex(errlog);
-       return openCdmIndex(dcm.getIndexFilename(), config, logger);
-     }
-   }
+    // now open the index
+    return openCdmIndex(dcm.getIndexFilename(), config, logger);
+  }
+
+
+  static public boolean updateGribCollectionFromMCollection(boolean isGrib1, MCollection dcm, CollectionUpdateType updateType,
+                                                                 Formatter errlog, org.slf4j.Logger logger) throws IOException {
+
+    FeatureCollectionConfig config = (FeatureCollectionConfig) dcm.getAuxInfo(FeatureCollectionConfig.AUX_CONFIG);
+
+    if (updateType == CollectionUpdateType.never || dcm instanceof CollectionSingleIndexFile) { // would isIndexFile() be better ?
+      // then just open the existing index file
+      return false;
+    }
+
+    boolean changed;
+    // otherwise got to check
+    if (isGrib1) {
+      if (dcm.isLeaf()) {
+        Grib1PartitionBuilder builder = new Grib1PartitionBuilder(dcm.getCollectionName(), new File(dcm.getRoot()), (PartitionManager) dcm, logger);
+        changed = builder.updateNeeded(updateType) && builder.createPartitionedIndex(updateType, updateType, errlog);
+
+      } else {
+        Grib1CollectionBuilder builder = new Grib1CollectionBuilder(dcm.getCollectionName(), dcm, logger);
+        changed = builder.updateNeeded(updateType) && builder.createIndex(errlog);
+      }
+
+    } else {
+      if (dcm.isLeaf()) { // LOOK why does isLeaf() imply partition ??
+        Grib2PartitionBuilder builder = new Grib2PartitionBuilder(dcm.getCollectionName(), new File(dcm.getRoot()), (PartitionManager) dcm, logger);
+        changed = builder.updateNeeded(updateType) && builder.createPartitionedIndex(updateType, updateType, errlog);
+
+       // boolean changed =  Grib2PartitionBuilder.recreateIfNeeded( (PartitionManager) dcm, updateType, updateType, errlog, logger);
+        //return Grib2PartitionBuilderFromIndex.createTimePartitionFromIndex(dcm.getCollectionName(), new File(dcm.getRoot()), dcm.getIndexFilename(), config, logger);
+
+      } else {
+        Grib2CollectionBuilder builder = new Grib2CollectionBuilder(dcm.getCollectionName(), dcm, logger);
+        changed = builder.updateNeeded(updateType) && builder.createIndex(errlog);
+      }
+    }
+    if (errlog != null) errlog.format("GribCollection %s was recreated %s%n", dcm.getCollectionName(), changed);
+
+    // now open the index
+    return changed;
+  }
 
 
   ///////////
@@ -274,10 +347,13 @@ public class GribCdmIndex2 implements IndexReader {
     }   // loop over partitions
 
     // do this partition; we just did children so never update them
-    boolean result = Grib2PartitionBuilder.recreateIfNeeded(dpart, forceCollection, CollectionUpdateType.never, null, logger);
+    Formatter errlog = new Formatter();
+    Grib2PartitionBuilder builder = new Grib2PartitionBuilder(dpart.getCollectionName(), new File(dpart.getRoot()), dpart, logger);
+    boolean changed = builder.updateNeeded(forceCollection) && builder.createPartitionedIndex(forceCollection, CollectionUpdateType.never, errlog);
+    //boolean result = Grib2PartitionBuilder.recreateIfNeeded(dpart, forceCollection, CollectionUpdateType.never, null, logger);
 
-    if (debug) System.out.printf("GribCdmIndex2.updateDirectoryCollectionRecurse complete (%s) on %s%n", result, dpart.getRoot());
-    return result;
+    if (debug) System.out.printf("GribCdmIndex2.updateDirectoryCollectionRecurse complete (%s) on %s errlog=%s%n", changed, dpart.getRoot(), errlog);
+    return changed;
   }
 
   /**
@@ -377,8 +453,10 @@ public class GribCdmIndex2 implements IndexReader {
       });
     }
 
-    // redo partition index if needed, will  detect if childrenhave changed
-    boolean recreated = Grib2PartitionBuilder.recreateIfNeeded(partition, updateType, CollectionUpdateType.never, errlog, logger);
+    // redo partition index if needed, will detect if children have changed
+    Grib2PartitionBuilder builder = new Grib2PartitionBuilder(partition.getCollectionName(), new File(partition.getRoot()), partition, logger);
+    boolean recreated = builder.updateNeeded(updateType) && builder.createPartitionedIndex(updateType, CollectionUpdateType.never, errlog);
+    // boolean recreated = Grib2PartitionBuilder.recreateIfNeeded(partition, updateType, CollectionUpdateType.never, errlog, logger);
 
     long took = System.currentTimeMillis() - start;
     String collectionName = partition.getCollectionName();
@@ -658,7 +736,7 @@ public class GribCdmIndex2 implements IndexReader {
           int n = gribCollectionIndex.getMfilesCount();
           for (int i = 0; i < n; i++) {
             GribCollectionProto.MFile mfilep = gribCollectionIndex.getMfiles(i);
-            result.add(new GribCollectionBuilder.GcMFile(protoDir, mfilep.getFilename(), mfilep.getLastModified(), mfilep.getIndex()));
+            result.add(new GcMFile(protoDir, mfilep.getFilename(), mfilep.getLastModified(), mfilep.getIndex()));
           }
         }
         return true;

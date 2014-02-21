@@ -44,7 +44,7 @@ import ucar.ma2.IndexIterator;
 import ucar.nc2.Dimension;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.Variable;
-import ucar.nc2.grib.GribIosp;
+import ucar.nc2.grib.collection.GribIosp;
 import ucar.unidata.test.util.TestDir;
 
 import java.io.IOException;

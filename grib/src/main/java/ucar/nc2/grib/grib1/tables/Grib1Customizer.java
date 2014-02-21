@@ -76,7 +76,7 @@ public class Grib1Customizer implements GribTables {
     else return new Grib1Customizer(center, tables);
   }
 
-  static public String getSubCenterName(int center, int subcenter) {
+  static public String getSubCenterNameStatic(int center, int subcenter) {
     Grib1Customizer cust = Grib1Customizer.factory(center, subcenter, 0, null);
     return cust.getSubCenterName( subcenter);
   }
@@ -106,179 +106,9 @@ public class Grib1Customizer implements GribTables {
     return CommonCodeTable.getSubCenterName(center, subcenter);
   }
 
-  ///////////////////////////////////////////////////
-  // create variable names
-
-  /*
-   http://www.ncl.ucar.edu/Document/Manuals/Ref_Manual/NclFormatSupport.shtml#GRIB
-   The following section gives the algorithm NCL uses to assign names to GRIB1 variables.
-
-   GRIB1 data variable name encoding:
-
-     if entry matching parameter table version and parameter number is found (either in built-in or user-supplied table)
-       and entry contains a short name for the parameter:
-         if recognized as probability product:
-           <probability_parameter_short_name>_<subject_variable_short_name> (ex: PROB_A_PCP)
-         else:
-           <parameter_short_name> (ex: TMP)
-     else:
-        VAR_<parameter_number> (ex: VAR_179)
-
-     if pre-defined grid:
-        _<pre-defined_grid_number> (ex: TMP_6)
-     else if grid defined in GDS (Grid Description Section):
-        _GDS<grid_type_number> (ex: TMP_GDS4)
-
-     _<level_type_abbreviation> (ex: TMP_GDS4_ISBL)
-
-     if not statistically processed variable and not duplicate name the name is complete at this point.
-
-     if statistically-processed variable with constant specified statistical processing duration:
-           _<statistical_processing_type_abbreviation><statistical_processing_duration><duration_units> (ex: ACPCP_44_SFC_acc6h)
-     else if statistically-processed variable with no specified processing duration
-        _<statistical_processing_type_abbreviation> (ex: A_PCP_192_SFC_acc)
-
-     if variable name is duplicate of existing variable name (this should not normally occur):
-        _n (where n begins with 1 for first duplicate) (ex: TMP_GDS4_ISBL_1)
-
- Notes:
-   * Probability products are properly recognized in version 4.3.0 or later.
-   * NCL uses the generic construction VAR_<parameter_number> in two situations:
-     - The entry in the applicable published table contains no short name suitable for use as a component of an NCL variable name.
-       Users should expect that later revisions to the table may result in the parameter receiving a short name, causing the name to change.
-     - There is no recognized entry for the parameter number. In this case, NCL outputs a warning message. The parameter index
-       could be unrecognized for several reasons:
-         > No parameter table has been supplied for the originating center and the index is greater than 127. (The default GRIB parameter table
-           properly applies only to indexes less than 128.)
-         > The index is not present in the applicable parameter table, perhaps because the table is out of date or is otherwise incorrect.
-         > The GRIB file has been generated incorrectly, perhaps specifying a wrong parameter table or a non-existent index.
-
-   * Pre-defined grids are enumerated in Table B of the NCEP GRIB1 documentation.
-   * GDS Grids types are listed in Table 6 of the NCEP GRIB1 documentation.
-   * Level type abbreviations are taken from Table 3 of the NCEP GRIB1 documentation.
-   * The abbreviations corresponding to the supported statistical processing methods are:
-       ave - average
-       acc - accumulation
-       dif - difference
-   * Note that the duration period and units abbreviation were added in NCL version 4.2.0.a028 in order to handle GRIB files with
-     more than one time duration for otherwise identical variables. This is an unavoidable incompatibility for GRIB file variable
-     names relative to earlier versions.
-
-   Variable name is:
-
-    VAR_%d-%d-%d-%d[_L%d][_layer][_I%s_S%d]
-
-    where:
-     %d-%d-%d-%d = center-subcenter-tableVersion-paramNo
-     L%d = level type  (octet 10 of PDS)
-     _layer = added if its a vertical layer
-     S%d = stat type (octet 21 of PDS)
-  */
-
-  public String makeVariableName(GribCollection gribCollection, GribCollection.VariableIndex vindex) {
-    return makeVariableNameFromTables(gribCollection.getCenter(), gribCollection.getSubcenter(), vindex.tableVersion, vindex.parameter,
-            vindex.levelType, vindex.isLayer, vindex.intvType, vindex.intvName);
-  }
-
-  public String makeVariableName(Grib1SectionProductDefinition pds) {
-    return makeVariableNameFromTables(pds.getCenter(), pds.getSubCenter(), pds.getTableVersion(), pds.getParameterNumber(),
-             pds.getLevelType(), isLayer(pds.getLevelType()), pds.getTimeRangeIndicator(), null);
-  }
-
-  public String makeVariableNameFromRecord(GribCollection gribCollection, GribCollection.VariableIndex vindex) {
-    return makeVariableNameFromRecord(gribCollection.getCenter(), gribCollection.getSubcenter(), vindex.tableVersion, vindex.parameter,
-            vindex.levelType, vindex.isLayer, vindex.intvType, vindex.intvName);
-  }
-
-  private String makeVariableNameFromRecord(int center, int subcenter, int tableVersion, int paramNo,
-                                 int levelType, boolean isLayer, int intvType, String intvName) {
-    Formatter f = new Formatter();
-
-    f.format("VAR_%d-%d-%d-%d", center, subcenter, tableVersion, paramNo);
-
-    if (levelType != GribNumbers.UNDEFINED) { // satellite data doesnt have a level
-      f.format("_L%d", levelType); // code table 4.5
-      if (isLayer) f.format("_layer");
-    }
-
-    if (intvType >= 0) {
-      if (intvName != null) {
-        if (intvName.equals("Mixed_intervals"))
-          f.format("_Imixed");
-        else
-          f.format("_I%s", intvName);
-      }
-      f.format("_S%s", intvType);
-    }
-
-    return f.toString();
-  }
-
-  private String makeVariableNameFromTables(int center, int subcenter, int version, int paramNo,
-                                 int levelType, boolean isLayer, int intvType, String intvName) {
-    Formatter f = new Formatter();
-
-    Grib1Parameter param = getParameter(center, subcenter, version, paramNo); // code table 2
-    if (param == null) {
-      f.format("VAR%d-%d-%d-%d", center, subcenter, version, paramNo);
-    } else {
-      if (param.useName())
-        f.format("%s", param.getName());
-      else
-        f.format("%s", GribUtils.makeNameFromDescription(param.getDescription()));
-    }
-
-    if (levelType != GribNumbers.UNDEFINED) { // satellite data doesnt have a level
-      f.format("_%s", getLevelNameShort(levelType)); // code table 3
-      if (isLayer) f.format("_layer");
-    }
-
-    if (intvType >= 0) {
-      GribStatType stat = Grib1WmoTimeType.getStatType(intvType);
-      if (stat != null) {
-        if (intvName != null) f.format("_%s", intvName);
-        f.format("_%s", stat.name());
-      } else {
-        if (intvName != null) f.format("_%s", intvName);
-        f.format("_%d", intvType);
-      }
-    }
-
-    return f.toString();
-  }
-
-  public String makeVariableLongName(int center, int subcenter, int version, int paramNo,
-                                     int levelType, int intvType, String intvName, boolean isLayer, String probabilityName) {
-    Formatter f = new Formatter();
-
-    boolean isProb = (probabilityName != null && probabilityName.length() > 0);
-    if (isProb)
-      f.format("Probability ");
-
-    Grib1Parameter param = getParameter(center, subcenter, version, paramNo);
-    if (param == null)
-      f.format("Unknown Parameter %d-%d-%d-%d", center, subcenter, version, paramNo);
-    else
-      f.format("%s", param.getDescription());
-
-    if (intvType >= 0) {
-      GribStatType stat = Grib1WmoTimeType.getStatType(intvType);
-      if (stat != null) f.format(" (%s %s)", intvName, stat.name());
-      else if (intvName != null && intvName.length() > 0) f.format(" (%s)", intvName);
-    }
-
-    if (levelType != GribNumbers.UNDEFINED) { // satellite data doesnt have a level
-      f.format(" @ %s", getLevelDescription(levelType));
-      if (isLayer) f.format(" layer");
-    }
-
-    return f.toString();
-  }
-
-  public String makeVariableUnits(int center, int subcenter, int version, int paramNo) {
-    Grib1Parameter param = getParameter(center, subcenter, version, paramNo);
-    String val = (param == null) ? "" : param.getUnit();
-    return (val == null) ? "" : val;
+  @Override
+  public String getSubCenterName(int center, int subcenter) {
+    return CommonCodeTable.getSubCenterName(center, subcenter);
   }
 
   ///////////////////////////////////////////////////
@@ -293,6 +123,7 @@ public class Grib1Customizer implements GribTables {
     return Grib1WmoTimeType.getTimeTypeName(timeRangeIndicator);
   }
 
+  @Override
   public GribStatType getStatType(int timeRangeIndicator) {
     return Grib1WmoTimeType.getStatType(timeRangeIndicator);
   }
@@ -308,7 +139,7 @@ public class Grib1Customizer implements GribTables {
     return makeVertUnit(code);
   }
 
-  public boolean is3D(int levelType) {
+  public boolean isVerticalCoordinate(int levelType) {
     return getLevelUnits(levelType) != null;
   }
 

@@ -2,14 +2,15 @@ package ucar.nc2.ui;
 
 import thredds.featurecollection.FeatureCollectionConfig;
 import thredds.inventory.MFile;
+import ucar.coord.CoordinateTime2D;
 import ucar.nc2.grib.collection.*;
 import ucar.nc2.util.Indent;
-import ucar.sparr.Coordinate;
+import ucar.coord.Coordinate;
 import ucar.nc2.ui.widget.BAMutil;
 import ucar.nc2.ui.widget.IndependentWindow;
 import ucar.nc2.ui.widget.PopupMenu;
 import ucar.nc2.ui.widget.TextHistoryPane;
-import ucar.sparr.SparseArray;
+import ucar.coord.SparseArray;
 import ucar.unidata.io.RandomAccessFile;
 import ucar.util.prefs.PreferencesExt;
 import ucar.util.prefs.ui.BeanTable;

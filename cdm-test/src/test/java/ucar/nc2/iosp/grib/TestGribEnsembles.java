@@ -39,8 +39,7 @@ import ucar.nc2.Variable;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dt.GridDatatype;
 import ucar.nc2.dt.grid.GridDataset;
-import ucar.nc2.grib.grib1.Grib1Iosp;
-import ucar.nc2.grib.grib2.Grib2Iosp;
+import ucar.nc2.grib.collection.GribIosp;
 import ucar.unidata.test.util.TestDir;
 
 import static junit.framework.Assert.assertEquals;
@@ -61,7 +60,7 @@ public class TestGribEnsembles {
 
     String variableName = "VAR_10-3-192_L1";
 
-    GridDatatype gridDatatype = gridDataset.findGridDatatypeByAttribute(Grib2Iosp.VARIABLE_ID_ATTNAME, variableName);
+    GridDatatype gridDatatype = gridDataset.findGridDatatypeByAttribute(GribIosp.VARIABLE_ID_ATTNAME, variableName);
     assertNotNull(gridDatatype);
 
     Dimension rtDimension = gridDatatype.getRunTimeDimension();

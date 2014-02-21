@@ -32,11 +32,6 @@
 
 package ucar.nc2.grib;
 
-import ucar.nc2.constants.CF;
-import ucar.nc2.grib.grib1.Grib1Record;
-import ucar.nc2.grib.grib2.Grib2Record;
-import ucar.nc2.time.CalendarDate;
-
 /**
  * Abstraction of GribTable for Grib Collections.
  * Still figuring out what the minimal need is
@@ -49,6 +44,11 @@ public interface GribTables {
   //public static final double MISSINGD = -9999.0;
 
   String getLevelNameShort(int code);
+
+  String getSubCenterName(int center, int subcenter);
+
+  GribStatType getStatType(int intvType);
+
 
   /* Parameter getParameter(int discipline, int category, int parameter);
 

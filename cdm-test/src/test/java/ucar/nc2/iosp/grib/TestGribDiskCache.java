@@ -34,7 +34,7 @@ package ucar.nc2.iosp.grib;
 
 import org.junit.Test;
 import ucar.nc2.NetcdfFile;
-import ucar.nc2.grib.GribCollection;
+import ucar.nc2.grib.collection.GribCollection;
 import ucar.nc2.util.DiskCache2;
 import ucar.unidata.test.util.TestDir;
 

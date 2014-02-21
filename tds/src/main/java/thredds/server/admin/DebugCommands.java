@@ -36,14 +36,14 @@ package thredds.server.admin;
 import thredds.servlet.Debug;
 import thredds.servlet.ServletUtil;
 import ucar.nc2.dataset.NetcdfDataset;
-import ucar.nc2.grib.GribCollection;
-import ucar.nc2.grib.TimePartition;
 
 import java.util.*;
 import java.io.PrintStream;
 
 import javax.servlet.http.HttpServletRequest;
 
+import ucar.nc2.grib.collection.GribCollection;
+import ucar.nc2.grib.collection.PartitionCollection;
 import ucar.nc2.util.cache.FileCache;
 import ucar.unidata.io.RandomAccessFile;
 
@@ -93,7 +93,7 @@ public class DebugCommands {
           fc.showCache(f);
         }
 
-        fc = TimePartition.getPartitionCache();
+        fc = PartitionCollection.getPartitionCache();
         if (fc == null) f.format("\nTimePartitionCache : turned off\n");
         else {
           f.format("%n%n");
@@ -116,7 +116,7 @@ public class DebugCommands {
        public void doAction(DebugController.Event e) {
          NetcdfDataset.getNetcdfFileCache().clearCache(false);
          GribCollection.getDataRafCache().clearCache(false);
-         TimePartition.getDataRafCache().clearCache(false);
+         PartitionCollection.getDataRafCache().clearCache(false);
          ServletUtil.getFileCache().clearCache(false);
          e.pw.println("  ClearCache ok");
        }
@@ -157,7 +157,7 @@ public class DebugCommands {
 
     act = new DebugController.Action("disableTimePartitionCache", "Disable TimePartition Cache") {
        public void doAction(DebugController.Event e) {
-         TimePartition.disableNetcdfFileCache();
+         PartitionCollection.disableNetcdfFileCache();
          e.pw.println("  Disable TimePartition Cache ok");
        }
      };
@@ -165,7 +165,7 @@ public class DebugCommands {
 
     act = new DebugController.Action("forceGCCache", "Force clear TimePartition Cache") {
       public void doAction(DebugController.Event e) {
-        TimePartition.getPartitionCache().clearCache(true);
+        PartitionCollection.getPartitionCache().clearCache(true);
         e.pw.println("  TimePartition force clearCache done");
       }
     };
