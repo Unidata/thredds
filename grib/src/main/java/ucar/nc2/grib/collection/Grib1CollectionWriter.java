@@ -36,56 +36,54 @@
 package ucar.nc2.grib.collection;
 
 import com.google.protobuf.ByteString;
-import thredds.inventory.*;
+import thredds.inventory.MCollection;
+import thredds.inventory.MFile;
 import ucar.coord.*;
 import ucar.nc2.constants.CDM;
-import ucar.nc2.grib.*;
-import ucar.nc2.grib.grib2.*;
+import ucar.nc2.grib.grib1.*;
 import ucar.nc2.stream.NcStream;
 import ucar.nc2.time.CalendarDate;
 import ucar.unidata.io.RandomAccessFile;
 
-import java.io.*;
-import java.util.*;
+import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 /**
- * Build a GribCollection object for Grib-2 files. Manage grib collection index.
- * Covers GribCollectionProto, which serializes and deserializes.
+ * Grib1 specific ncx2 writer
  *
  * @author caron
- * @since 4/6/11
+ * @since 2/20/14
  */
-public class Grib2CollectionWriter extends GribCollectionWriter {
+public class Grib1CollectionWriter extends GribCollectionWriter {
 
-  public static final String MAGIC_START = "Grib2Collectio2Index";  // was Grib2CollectionIndex
-  // protected static final int minVersionSingle = 1;
+  public static final String MAGIC_START = "Grib1Collectio2Index";  // was Grib1CollectionIndex
   protected static final int version = 1;
 
   protected final MCollection dcm; // may be null, when read in from index
   protected final org.slf4j.Logger logger;
 
-  protected Grib2CollectionWriter(MCollection dcm, org.slf4j.Logger logger) {
+  protected Grib1CollectionWriter(MCollection dcm, org.slf4j.Logger logger) {
     this.dcm = dcm;
     this.logger = logger;
   }
 
-  public static class Group implements GribCollectionBuilder.Group {
-    public Grib2SectionGridDefinition gdss;
-    public int gdsHash; // may have been modified
-    public CalendarDate runtime;
+  static class Group implements GribCollectionBuilder.Group {
+    final Grib1SectionGridDefinition gdss;
+    final int gdsHash; // may have been modified
+    final CalendarDate runtime;
 
-    public List<Grib2CollectionBuilder.VariableBag> gribVars;
+    public List<Grib1CollectionBuilder.VariableBag> gribVars;
     public List<Coordinate> coords;
-    public List<Grib2Record> records = new ArrayList<>();
+
+    public List<Grib1Record> records = new ArrayList<Grib1Record>();
     public String nameOverride;
     public Set<Integer> fileSet; // this is so we can show just the component files that are in this group
 
-    Group(Grib2SectionGridDefinition gdss, int gdsHash) {
-      this.gdss = gdss;
-      this.gdsHash = gdsHash;
-    }
-
-    Group(Grib2SectionGridDefinition gdss, int gdsHash, CalendarDate runtime) {
+    Group(Grib1SectionGridDefinition gdss, int gdsHash, CalendarDate runtime) {
       this.gdss = gdss;
       this.gdsHash = gdsHash;
       this.runtime = runtime;
@@ -104,32 +102,30 @@ public class Grib2CollectionWriter extends GribCollectionWriter {
     }
   }
 
-  ///////////////////////////////////////////////////
-  // heres where the actual writing is
-
-  /*
+    /*
    MAGIC_START
    version
    sizeRecords
-   SparseArray's (sizeRecords bytes)
+   VariableRecords (sizeRecords bytes)
    sizeIndex
    GribCollectionIndex (sizeIndex bytes)
    */
 
-  public boolean writeIndex(String name, File indexFile, CoordinateRuntime masterRuntime, List<Group> groups, List<MFile> files) throws IOException {
-    Grib2Record first = null; // take global metadata from here
+  //private void createIndex(File indexFile, List<Group> groups, ArrayList<MFile> files) throws IOException {
+  boolean writeIndex(String name, File indexFile, CoordinateRuntime masterRuntime, List<Group> groups, List<MFile> files) throws IOException {
+    Grib1Record first = null; // take global metadata from here
     boolean deleteOnClose = false;
 
     if (indexFile.exists()) {
-      if (!indexFile.delete()) {
-        logger.error("gc2 cant delete index file {}", indexFile.getPath());
-      }
+      if (!indexFile.delete())
+        logger.warn(" gc1 cant delete index file {}", indexFile.getPath());
     }
     logger.debug(" createIndex for {}", indexFile.getPath());
 
-    try (RandomAccessFile raf = new RandomAccessFile(indexFile.getPath(), "rw")) {
+    RandomAccessFile raf = new RandomAccessFile(indexFile.getPath(), "rw");
+    raf.order(RandomAccessFile.BIG_ENDIAN);
+    try {
       //// header message
-      raf.order(RandomAccessFile.BIG_ENDIAN);
       raf.write(MAGIC_START.getBytes(CDM.utf8Charset));
       raf.writeInt(version);
       long lenPos = raf.getFilePointer();
@@ -140,7 +136,7 @@ public class Grib2CollectionWriter extends GribCollectionWriter {
       Set<Integer> allFileSet = new HashSet<>();
       for (Group g : groups) {
         g.fileSet = new HashSet<>();
-        for (Grib2CollectionBuilder.VariableBag vb : g.gribVars) {
+        for (Grib1CollectionBuilder.VariableBag vb : g.gribVars) {
           if (first == null) first = vb.first;
           GribCollectionProto.SparseArray vr = writeSparseArray(vb, g.fileSet);
           byte[] b = vr.toByteArray();
@@ -152,11 +148,9 @@ public class Grib2CollectionWriter extends GribCollectionWriter {
         }
         for (int index : g.fileSet) allFileSet.add(index);
       }
-
-      if (logger.isDebugEnabled()) {
-        long bytesPerRecord = countBytes / ((countRecords == 0) ? 1 : countRecords);
-        logger.debug("  write RecordMaps: bytes = {} record = {} bytesPerRecord={}", countBytes, countRecords, bytesPerRecord);
-      }
+      long bytesPerRecord = countBytes / ((countRecords == 0) ? 1 : countRecords);
+      if (logger.isDebugEnabled())
+        logger.debug("  write RecordMaps: bytes = {} records = {} bytesPerRecord={}", countBytes, countRecords, bytesPerRecord);
 
       if (first == null) {
         deleteOnClose = true;
@@ -169,45 +163,6 @@ public class Grib2CollectionWriter extends GribCollectionWriter {
       raf.writeLong(countBytes);
       raf.seek(pos); // back to the output.
 
-      /*
-      message GribCollection {
-        required string name = 1;         // must be unique - index filename is name.ncx
-        required string topDir = 2;       // filenames are reletive to this
-        repeated MFile mfiles = 3;        // list of grib MFiles
-        repeated Dataset dataset = 4;
-        repeated Gds gds = 5;             // unique Gds, shared amongst datasets
-
-        required int32 center = 6;      // these 4 fields are to get a GribTable object
-        required int32 subcenter = 7;
-        required int32 master = 8;
-        required int32 local = 9;       // grib1 table Version
-
-        optional int32 genProcessType = 10;
-        optional int32 genProcessId = 11;
-        optional int32 backProcessId = 12;
-
-        repeated Parameter params = 20;      // not used yet
-
-        extensions 100 to 199;
-      }
-      message GribCollection {
-        required string name = 1;       // must be unique - index filename is name.ncx
-        required string topDir = 2;   // filenames are reletive to this
-        repeated MFile mfiles = 3;    // list of grib MFiles
-        repeated Group groups = 4;      // separate group for each GDS
-
-        required int32 center = 6;      // these 4 fields are to get a GribTable object
-        required int32 subcenter = 7;
-        required int32 master = 8;
-        required int32 local = 9;       // grib1 table Version
-
-        optional int32 genProcessType = 10;   // why ??
-        optional int32 genProcessId = 11;
-        optional int32 backProcessId = 12;
-
-        extensions 100 to 199;
-      }
-       */
       GribCollectionProto.GribCollection.Builder indexBuilder = GribCollectionProto.GribCollection.newBuilder();
       indexBuilder.setName(name);
       indexBuilder.setTopDir(dcm.getRoot());
@@ -225,43 +180,45 @@ public class Grib2CollectionWriter extends GribCollectionWriter {
 
       indexBuilder.setMasterRuntime(writeCoordProto(masterRuntime));
 
-       //gds
-      for (Object go : groups) {
-        Group g = (Group) go;
+        //gds
+      for (Group g : groups)
         indexBuilder.addGds(writeGdsProto(g.gdsHash, g.gdss.getRawBytes(), g.nameOverride));
-      }
 
       // the GC dataset
-      indexBuilder.addDataset(writeDatasetProto(GribCollectionProto.Dataset.Type.GC, groups));
+      indexBuilder.addDataset( writeDatasetProto(GribCollectionProto.Dataset.Type.GC, groups));
+
+      /* int count = 0;
+      for (DatasetCollectionManager dcm : collections) {
+        indexBuilder.addParams(makeParamProto(new Parameter("spec" + count, dcm.())));
+        count++;
+      } */
 
       // what about just storing first ??
-      Grib2SectionIdentification ids = first.getId();
-      indexBuilder.setCenter(ids.getCenter_id());
-      indexBuilder.setSubcenter(ids.getSubcenter_id());
-      indexBuilder.setMaster(ids.getMaster_table_version());
-      indexBuilder.setLocal(ids.getLocal_table_version());
-
-      Grib2Pds pds = first.getPDS();
-      indexBuilder.setGenProcessType(pds.getGenProcessType());
-      indexBuilder.setGenProcessId(pds.getGenProcessId());
-      indexBuilder.setBackProcessId(pds.getBackProcessId());
+      Grib1SectionProductDefinition pds = first.getPDSsection();
+      indexBuilder.setCenter(pds.getCenter());
+      indexBuilder.setSubcenter(pds.getSubCenter());
+      indexBuilder.setLocal(pds.getTableVersion());
+      indexBuilder.setMaster(0);
+      indexBuilder.setGenProcessId(pds.getGenProcess());
 
       GribCollectionProto.GribCollection index = indexBuilder.build();
       byte[] b = index.toByteArray();
       NcStream.writeVInt(raf, b.length); // message size
       raf.write(b);  // message  - all in one gulp
       logger.debug("  write GribCollectionIndex= {} bytes", b.length);
+      return true;
 
     } finally {
+      logger.debug("  file size =  %d bytes", raf.length());
+      raf.close();
+
       // remove it on failure
       if (deleteOnClose && !indexFile.delete())
-        logger.error(" gc2 cant deleteOnClose index file {}", indexFile.getPath());
+        logger.error(" gc1 cant deleteOnClose index file {}", indexFile.getPath());
     }
-
-    return true;
   }
 
-  /*
+    /*
   message Record {
     required uint32 fileno = 1;  // index into GribCollectionIndex.files
     required uint64 pos = 2;     // offset in Grib file of the start of drs (grib2) or entire message (grib1)
@@ -276,33 +233,30 @@ public class Grib2CollectionWriter extends GribCollectionWriter {
     repeated Record records = 4;  // List<Record>
   }
    */
-  private GribCollectionProto.SparseArray writeSparseArray(Grib2CollectionBuilder.VariableBag vb, Set<Integer> fileSet) throws IOException {
+  private GribCollectionProto.SparseArray writeSparseArray(Grib1CollectionBuilder.VariableBag vb, Set<Integer> fileSet) throws IOException {
     GribCollectionProto.SparseArray.Builder b = GribCollectionProto.SparseArray.newBuilder();
     b.setCdmHash(vb.cdmHash);
-    SparseArray<Grib2Record> sa = vb.coordND.getSparseArray();
+    SparseArray<Grib1Record> sa = vb.coordND.getSparseArray();
     for (int size : sa.getShape())
       b.addSize(size);
     for (int track : sa.getTrack())
       b.addTrack(track);
 
-    for (Grib2Record gr : sa.getContent()) {
+    for (Grib1Record gr : sa.getContent()) {
       GribCollectionProto.Record.Builder br = GribCollectionProto.Record.newBuilder();
 
       br.setFileno(gr.getFile());
       fileSet.add(gr.getFile());
-      Grib2SectionDataRepresentation drs = gr.getDataRepresentationSection();
-      br.setPos(drs.getStartingPosition());
-      if (gr.isBmsReplaced()) {
-        Grib2SectionBitMap bms = gr.getBitmapSection();
-        br.setBmsPos(bms.getStartingPosition());
-      }
-      br.setScanMode(gr.getScanMode()); // added 2/6/2014
+      Grib1SectionIndicator is = gr.getIs();
+      br.setPos(is.getStartPos()); // start of entire message
+
+      // br.setScanMode(gr.getScanMode()); // added 2/6/2014  LOOK
       b.addRecords(br);
     }
     return b.build();
   }
 
-    /*
+      /*
   message Dataset {
     required Type type = 1;
     repeated Group groups = 2;
@@ -319,7 +273,7 @@ public class Grib2CollectionWriter extends GribCollectionWriter {
     return b.build();
   }
 
-  /*
+    /*
   message Group {
     required uint32 gdsIndex = 1;       // index into GribCollection.gds array
     repeated Variable variables = 2;    // list of variables
@@ -336,7 +290,7 @@ public class Grib2CollectionWriter extends GribCollectionWriter {
     b.setGdsIndex(groupIndex); // index into gds list
     b.setIsTwod(true);         // LOOK
 
-    for (Grib2CollectionBuilder.VariableBag vbag : g.gribVars) {
+    for (Grib1CollectionBuilder.VariableBag vbag : g.gribVars) {
       b.addVariables(writeVariableProto(vbag));
     }
 
@@ -391,10 +345,10 @@ public class Grib2CollectionWriter extends GribCollectionWriter {
      extensions 100 to 199;
    }
    */
-  private GribCollectionProto.Variable writeVariableProto(Grib2CollectionBuilder.VariableBag vb) throws IOException {
+  private GribCollectionProto.Variable writeVariableProto(Grib1CollectionBuilder.VariableBag vb) throws IOException {
     GribCollectionProto.Variable.Builder b = GribCollectionProto.Variable.newBuilder();
 
-    b.setDiscipline(vb.first.getDiscipline());
+    b.setDiscipline(0);
     b.setPds(ByteString.copyFrom(vb.first.getPDSsection().getRawBytes()));
     b.setCdmHash(vb.cdmHash);
 
@@ -412,19 +366,6 @@ public class Grib2CollectionWriter extends GribCollectionWriter {
       b.setNrecords(sa.countNotMissing());
       b.setMissing(sa.countMissing());
     }
-
-    // LOOK
-    /* if (vp.twot != null) { // only for 2D
-      List<Integer> invCountList = new ArrayList<>(vp.twot.getCount().length);
-      for (int count : vp.twot.getCount()) invCountList.add(count);
-      b.setExtension(PartitionCollectionProto.invCount, invCountList);
-    }
-
-    if (vp.time2runtime != null) { // only for 1D
-      List<Integer> list = new ArrayList<>(vp.time2runtime.length);
-      for (int idx : vp.time2runtime) list.add(idx);
-      b.setExtension(PartitionCollectionProto.time2Runtime, list);
-    } */
 
     return b.build();
   }

@@ -2,6 +2,10 @@ package ucar.coord;
 
 import ucar.nc2.grib.GribNumbers;
 import ucar.nc2.grib.VertCoord;
+import ucar.nc2.grib.grib1.Grib1ParamLevel;
+import ucar.nc2.grib.grib1.Grib1Record;
+import ucar.nc2.grib.grib1.Grib1SectionProductDefinition;
+import ucar.nc2.grib.grib1.tables.Grib1Customizer;
 import ucar.nc2.grib.grib2.Grib2Pds;
 import ucar.nc2.grib.grib2.Grib2Record;
 import ucar.nc2.grib.grib2.Grib2Utils;
@@ -128,10 +132,10 @@ public class CoordinateVert implements Coordinate {
     return new Builder(code);
   } */
 
-  static public class Builder extends CoordinateBuilderImpl<Grib2Record> {
+  static public class Builder2 extends CoordinateBuilderImpl<Grib2Record> {
     int code;
 
-    public Builder(int code) {
+    public Builder2(int code) {
       this.code = code;
     }
 
@@ -142,6 +146,33 @@ public class CoordinateVert implements Coordinate {
       double level2val =  hasLevel2 ?  pds.getLevelValue2() :  GribNumbers.UNDEFINEDD;
       boolean isLayer = Grib2Utils.isLayer(pds);
       return new VertCoord.Level(pds.getLevelValue1(), level2val, isLayer);
+    }
+
+    @Override
+    public Coordinate makeCoordinate(List<Object> values) {
+      List<VertCoord.Level> levelSorted = new ArrayList<>(values.size());
+      for (Object val : values) levelSorted.add( (VertCoord.Level) val);
+      Collections.sort(levelSorted);
+      return new CoordinateVert(code, levelSorted);
+    }
+  }
+
+  static public class Builder1 extends CoordinateBuilderImpl<Grib1Record> {
+    int code;
+    Grib1Customizer cust;
+
+    public Builder1(Grib1Customizer cust, int code) {
+      this.cust = cust;
+      this.code = code;
+    }
+
+    @Override
+    public Object extract(Grib1Record gr) {
+      Grib1SectionProductDefinition pds = gr.getPDSsection();
+      boolean isLayer = cust.isLayer(pds.getLevelType());
+      Grib1ParamLevel plevel = cust.getParamLevel(pds);
+      double level2val =  isLayer ?  plevel.getValue2() :  GribNumbers.UNDEFINEDD;
+      return new VertCoord.Level(plevel.getValue1(), level2val, isLayer);
     }
 
     @Override

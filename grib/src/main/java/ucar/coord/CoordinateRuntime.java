@@ -1,6 +1,7 @@
 package ucar.coord;
 
 import net.jcip.annotations.Immutable;
+import ucar.nc2.grib.grib1.Grib1Record;
 import ucar.nc2.grib.grib2.Grib2Record;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.util.Indent;
@@ -140,10 +141,26 @@ public class CoordinateRuntime implements Coordinate {
 
   ///////////////////////////////////////////////////////
 
-  public static class Builder extends CoordinateBuilderImpl<Grib2Record> {
+  public static class Builder2 extends CoordinateBuilderImpl<Grib2Record> {
 
     @Override
     public Object extract(Grib2Record gr) {
+      return gr.getReferenceDate();
+    }
+
+    @Override
+    public Coordinate makeCoordinate(List<Object> values) {
+      List<CalendarDate> runtimeSorted = new ArrayList<>(values.size());
+      for (Object val : values) runtimeSorted.add((CalendarDate) val);
+      Collections.sort(runtimeSorted);
+      return new CoordinateRuntime(runtimeSorted);
+    }
+  }
+
+  public static class Builder1 extends CoordinateBuilderImpl<Grib1Record> {
+
+    @Override
+    public Object extract(Grib1Record gr) {
       return gr.getReferenceDate();
     }
 

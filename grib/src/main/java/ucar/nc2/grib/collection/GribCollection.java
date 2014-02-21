@@ -1,3 +1,38 @@
+/*
+ *
+ *  * Copyright 1998-2014 University Corporation for Atmospheric Research/Unidata
+ *  *
+ *  *  Portions of this software were developed by the Unidata Program at the
+ *  *  University Corporation for Atmospheric Research.
+ *  *
+ *  *  Access and use of this software shall impose the following obligations
+ *  *  and understandings on the user. The user is granted the right, without
+ *  *  any fee or cost, to use, copy, modify, alter, enhance and distribute
+ *  *  this software, and any derivative works thereof, and its supporting
+ *  *  documentation for any purpose whatsoever, provided that this entire
+ *  *  notice appears in all copies of the software, derivative works and
+ *  *  supporting documentation.  Further, UCAR requests that the user credit
+ *  *  UCAR/Unidata in any publications that result from the use of this
+ *  *  software or in any product that includes this software. The names UCAR
+ *  *  and/or Unidata, however, may not be used in any advertising or publicity
+ *  *  to endorse or promote any products or commercial entity unless specific
+ *  *  written permission is obtained from UCAR/Unidata. The user also
+ *  *  understands that UCAR/Unidata is not obligated to provide the user with
+ *  *  any support, consulting, training or assistance of any kind with regard
+ *  *  to the use, operation and performance of this software nor to provide
+ *  *  the user with any updates, revisions, new versions or "bug fixes."
+ *  *
+ *  *  THIS SOFTWARE IS PROVIDED BY UCAR/UNIDATA "AS IS" AND ANY EXPRESS OR
+ *  *  IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ *  *  WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ *  *  DISCLAIMED. IN NO EVENT SHALL UCAR/UNIDATA BE LIABLE FOR ANY SPECIAL,
+ *  *  INDIRECT OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING
+ *  *  FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT,
+ *  *  NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
+ *  *  WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
+ *
+ */
+
 package ucar.nc2.grib.collection;
 
 import net.jcip.annotations.Immutable;
@@ -7,6 +42,10 @@ import thredds.inventory.CollectionSpecParser;
 import thredds.inventory.MFile;
 import thredds.inventory.partition.DirectoryCollection;
 import ucar.coord.*;
+import ucar.nc2.grib.grib1.Grib1ParamTime;
+import ucar.nc2.grib.grib1.Grib1SectionProductDefinition;
+import ucar.nc2.grib.grib1.tables.Grib1Customizer;
+import ucar.nc2.grib.grib2.Grib2SectionProductDefinition;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time.CalendarDateFormatter;
 import ucar.nc2.time.CalendarTimeZone;
@@ -704,14 +743,12 @@ public class GribCollection implements FileCacheable, AutoCloseable {
      }
   }
 
-  public GribCollection.VariableIndex makeVariableIndex(GroupGC g, int cdmHash, int discipline,
-                                                        byte[] rawPds, Grib2Pds pds, List<Integer> index, long recordsPos, int recordsLen) {
-
-    return new VariableIndex(g, -1, discipline, rawPds, pds, cdmHash, index, recordsPos, recordsLen);
+  public GribCollection.VariableIndex makeVariableIndex(GroupGC g, int cdmHash, int discipline, GribTables customizer,
+           byte[] rawPds, List<Integer> index, long recordsPos, int recordsLen) {
+    return new VariableIndex(g, -1, discipline, customizer, rawPds, cdmHash, index, recordsPos, recordsLen);
   }
 
   public GribCollection.VariableIndex makeVariableIndex(GroupGC g, VariableIndex other) {
-
     return new VariableIndex(g, other);
   }
 
@@ -746,7 +783,7 @@ public class GribCollection implements FileCacheable, AutoCloseable {
     // temporary storage while building - do not use
     List<Coordinate> coords;
 
-    public VariableIndex(GroupGC g, int tableVersion, int discipline, byte[] rawPds, Grib2Pds pds,
+    private VariableIndex(GroupGC g, int tableVersion, int discipline, GribTables customizer, byte[] rawPds,
                          int cdmHash, List<Integer> index, long recordsPos, int recordsLen) {
       this.group = g;
       this.tableVersion = tableVersion;
@@ -757,30 +794,62 @@ public class GribCollection implements FileCacheable, AutoCloseable {
       this.recordsPos = recordsPos;
       this.recordsLen = recordsLen;
 
-      // quantities that are stored in the pds
-      this.category = pds.getParameterCategory();
-      this.parameter = pds.getParameterNumber();
-      this.levelType = pds.getLevelType1();
-      this.intvType = pds.getStatisticalProcessType();
-      this.isLayer = Grib2Utils.isLayer(pds);
+      if (isGrib1) {
+        Grib1Customizer cust = (Grib1Customizer) customizer;
+        Grib1SectionProductDefinition pds = new Grib1SectionProductDefinition(rawPds);
 
-      if (pds.isEnsembleDerived()) {
-        Grib2Pds.PdsEnsembleDerived pdsDerived = (Grib2Pds.PdsEnsembleDerived) pds;
-        ensDerivedType = pdsDerived.getDerivedForecastType(); // derived type (table 4.7)
-      }  else {
+        // quantities that are stored in the pds
+        this.category = 0;
+        this.parameter = pds.getParameterNumber();
+        this.levelType = pds.getLevelType();
+        Grib1ParamTime ptime = pds.getParamTime(cust);
+        if (ptime.isInterval()) {
+          this.intvType = pds.getTimeRangeIndicator();
+        } else {
+          this.intvType = -1;
+        }
+        this.isLayer = cust.isLayer(pds.getLevelType());
+
         this.ensDerivedType = -1;
-      }
-
-      if (pds.isProbability()) {
-        Grib2Pds.PdsProbability pdsProb = (Grib2Pds.PdsProbability) pds;
-        probabilityName = pdsProb.getProbabilityName();
-        probType = pdsProb.getProbabilityType();
-      } else {
         this.probType = -1;
         this.probabilityName = null;
-      }
 
-      this.genProcessType = pds.getGenProcessType();
+        this.genProcessType = pds.getGenProcess(); // LOOK process vs process type ??
+
+      } else {
+        Grib2SectionProductDefinition pdss = new Grib2SectionProductDefinition(rawPds);
+         Grib2Pds pds = null;
+         try {
+           pds = pdss.getPDS();
+         } catch (IOException e) {
+           throw new RuntimeException(e);
+         }
+
+        // quantities that are stored in the pds
+        this.category = pds.getParameterCategory();
+        this.parameter = pds.getParameterNumber();
+        this.levelType = pds.getLevelType1();
+        this.intvType = pds.getStatisticalProcessType();
+        this.isLayer = Grib2Utils.isLayer(pds);
+
+        if (pds.isEnsembleDerived()) {
+          Grib2Pds.PdsEnsembleDerived pdsDerived = (Grib2Pds.PdsEnsembleDerived) pds;
+          ensDerivedType = pdsDerived.getDerivedForecastType(); // derived type (table 4.7)
+        }  else {
+          this.ensDerivedType = -1;
+        }
+
+        if (pds.isProbability()) {
+          Grib2Pds.PdsProbability pdsProb = (Grib2Pds.PdsProbability) pds;
+          probabilityName = pdsProb.getProbabilityName();
+          probType = pdsProb.getProbabilityType();
+        } else {
+          this.probType = -1;
+          this.probabilityName = null;
+        }
+
+        this.genProcessType = pds.getGenProcessType();
+      }
     }
 
     protected VariableIndex(GroupGC g, VariableIndex other) {

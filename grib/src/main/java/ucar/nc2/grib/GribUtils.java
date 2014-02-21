@@ -55,7 +55,7 @@ public class GribUtils {
    * @return equivalent CalendarPeriod
    */
   static public CalendarPeriod getCalendarPeriod(int timeUnit) {
-    // LOOK - some way to intern these ? put is hash table
+    // LOOK - some way to intern these ? put in hash table  ?
     switch (timeUnit) { // code table 4.4
       case 0:
         return CalendarPeriod.of(1, CalendarPeriod.Field.Minute);

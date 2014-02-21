@@ -36,6 +36,8 @@
 package ucar.coord;
 
 import ucar.nc2.grib.TimeCoord;
+import ucar.nc2.grib.grib1.Grib1Record;
+import ucar.nc2.grib.grib1.tables.Grib1Customizer;
 import ucar.nc2.grib.grib2.Grib2Record;
 import ucar.nc2.grib.grib2.table.Grib2Customizer;
 import ucar.nc2.time.CalendarDate;
@@ -396,27 +398,22 @@ public class CoordinateTime2D extends CoordinateTimeAbstract implements Coordina
 
   /////////////////////////////////////////////////////////////////////
 
-  /* @Override
-  public CoordinateBuilder makeBuilder() {
-    return new Builder(isTimeInterval, cust, timeUnit, code);
-  } */
-
-  public static class Builder extends CoordinateBuilderImpl<Grib2Record> {
+  public static class Builder2 extends CoordinateBuilderImpl<Grib2Record> {
     private final boolean isTimeInterval;
     private final Grib2Customizer cust;
     private final int code;                  // pdsFirst.getTimeUnit()
     private final CalendarPeriod timeUnit;
 
-    private final CoordinateRuntime.Builder runBuilder;
+    private final CoordinateRuntime.Builder2 runBuilder;
     private final Map<Object, CoordinateBuilderImpl<Grib2Record>> timeBuilders;
 
-    public Builder(boolean isTimeInterval, Grib2Customizer cust, CalendarPeriod timeUnit, int code) {
+    public Builder2(boolean isTimeInterval, Grib2Customizer cust, CalendarPeriod timeUnit, int code) {
       this.isTimeInterval = isTimeInterval;
       this.cust = cust;
       this.timeUnit = timeUnit;
       this.code = code;
 
-      runBuilder = new CoordinateRuntime.Builder();
+      runBuilder = new CoordinateRuntime.Builder2();
       timeBuilders = new HashMap<>();
     }
 
@@ -433,7 +430,7 @@ public class CoordinateTime2D extends CoordinateTimeAbstract implements Coordina
       CalendarDate run = (CalendarDate) runBuilder.extract(gr);
       CoordinateBuilderImpl<Grib2Record> timeBuilder = timeBuilders.get(run);
       if (timeBuilder == null) {
-        timeBuilder = isTimeInterval ? new CoordinateTimeIntv.Builder(cust, code, timeUnit, run) : new CoordinateTime.Builder(code, timeUnit, run);
+        timeBuilder = isTimeInterval ? new CoordinateTimeIntv.Builder2(cust, code, timeUnit, run) : new CoordinateTime.Builder2(code, timeUnit, run);
         timeBuilders.put(run, timeBuilder);
       }
       Object time = timeBuilder.extract(gr);
@@ -468,7 +465,83 @@ public class CoordinateTime2D extends CoordinateTimeAbstract implements Coordina
        runBuilder.add( val2D.run);
        CoordinateBuilderImpl<Grib2Record> timeBuilder = timeBuilders.get(val2D.run);
        if (timeBuilder == null) {
-         timeBuilder = isTimeInterval ? new CoordinateTimeIntv.Builder(cust, code, timeUnit, val2D.run) : new CoordinateTime.Builder(code, timeUnit, val2D.run);
+         timeBuilder = isTimeInterval ? new CoordinateTimeIntv.Builder2(cust, code, timeUnit, val2D.run) : new CoordinateTime.Builder2(code, timeUnit, val2D.run);
+         timeBuilders.put(val2D.run, timeBuilder);
+       }
+       timeBuilder.add(isTimeInterval ? val2D.tinv : val2D.time);
+     }
+    }
+
+  }
+
+  public static class Builder1 extends CoordinateBuilderImpl<Grib1Record> {
+    private final boolean isTimeInterval;
+    private final Grib1Customizer cust;
+    private final int code;                  // pdsFirst.getTimeUnit()
+    private final CalendarPeriod timeUnit;
+
+    private final CoordinateRuntime.Builder1 runBuilder;
+    private final Map<Object, CoordinateBuilderImpl<Grib1Record>> timeBuilders;
+
+    public Builder1(boolean isTimeInterval, Grib1Customizer cust, CalendarPeriod timeUnit, int code) {
+      this.isTimeInterval = isTimeInterval;
+      this.cust = cust;
+      this.timeUnit = timeUnit;
+      this.code = code;
+
+      runBuilder = new CoordinateRuntime.Builder1();
+      timeBuilders = new HashMap<>();
+    }
+
+    public void addRecord(Grib1Record gr) {
+      super.addRecord(gr);
+      runBuilder.addRecord(gr);
+      Time2D val = (Time2D) extract(gr);
+      CoordinateBuilderImpl<Grib1Record> timeBuilder = timeBuilders.get(val.run);
+      timeBuilder.addRecord(gr);
+    }
+
+    @Override
+    public Object extract(Grib1Record gr) {
+      CalendarDate run = (CalendarDate) runBuilder.extract(gr);
+      CoordinateBuilderImpl<Grib1Record> timeBuilder = timeBuilders.get(run);
+      if (timeBuilder == null) {
+        timeBuilder = isTimeInterval ? new CoordinateTimeIntv.Builder1(cust, code, timeUnit, run) : new CoordinateTime.Builder1(code, timeUnit, run);
+        timeBuilders.put(run, timeBuilder);
+      }
+      Object time = timeBuilder.extract(gr);
+      if (time instanceof Integer)
+        return new Time2D(run, (Integer) time, null);
+      else
+        return new Time2D(run, null, (TimeCoord.Tinv) time);
+    }
+
+    @Override
+    public Coordinate makeCoordinate(List<Object> values) {
+      CoordinateRuntime runCoord = (CoordinateRuntime) runBuilder.finish();
+
+      List<Coordinate> times = new ArrayList<>();
+      for (CalendarDate runtimeDate : runCoord.getRuntimesSorted()) {
+        CoordinateBuilderImpl<Grib1Record> timeBuilder = timeBuilders.get(runtimeDate);
+        times.add(timeBuilder.finish());
+      }
+
+      List<Time2D> vals = new ArrayList<>(values.size());
+      for (Object val : values) vals.add( (Time2D) val);
+      Collections.sort(vals);
+
+      return new CoordinateTime2D(code, timeUnit, vals, runCoord, times);
+    }
+
+    @Override
+    public void addAll(Coordinate coord) {
+     super.addAll(coord);
+     for (Object val : coord.getValues()) {
+       Time2D val2D = (Time2D) val;
+       runBuilder.add( val2D.run);
+       CoordinateBuilderImpl<Grib1Record> timeBuilder = timeBuilders.get(val2D.run);
+       if (timeBuilder == null) {
+         timeBuilder = isTimeInterval ? new CoordinateTimeIntv.Builder1(cust, code, timeUnit, val2D.run) : new CoordinateTime.Builder1(code, timeUnit, val2D.run);
          timeBuilders.put(val2D.run, timeBuilder);
        }
        timeBuilder.add(isTimeInterval ? val2D.tinv : val2D.time);

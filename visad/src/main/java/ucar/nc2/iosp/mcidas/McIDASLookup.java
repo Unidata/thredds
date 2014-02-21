@@ -236,7 +236,7 @@ public final class McIDASLookup implements GridTableLookup {
    */
   public final boolean isVerticalCoordinate(GridRecord gr) {
     if (cust != null) {
-      return cust.is3D( gr.getLevelType1());
+      return cust.isVerticalCoordinate(gr.getLevelType1());
     }
 
     int type = gr.getLevelType1();

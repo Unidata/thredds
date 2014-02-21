@@ -139,7 +139,7 @@ public class Grib1Customizer implements GribTables {
     return makeVertUnit(code);
   }
 
-  public boolean is3D(int levelType) {
+  public boolean isVerticalCoordinate(int levelType) {
     return getLevelUnits(levelType) != null;
   }
 

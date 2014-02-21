@@ -6,7 +6,6 @@ import ucar.coord.*;
 import ucar.ma2.DataType;
 import ucar.nc2.grib.*;
 import ucar.nc2.grib.collection.Grib2CollectionWriter;
-import ucar.nc2.grib.collection.Grib2Rectilyser;
 import ucar.nc2.grib.grib2.*;
 import ucar.nc2.grib.collection.*;
 import ucar.nc2.grib.grib2.table.Grib2Customizer;

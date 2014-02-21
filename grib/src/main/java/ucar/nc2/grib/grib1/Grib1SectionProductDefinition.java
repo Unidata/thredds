@@ -194,7 +194,7 @@ public final class Grib1SectionProductDefinition {
   }
 
   /**
-   * Time unit (octet 18) - code table 4.
+   * Time unit (octet 18) - code table 4. Same as GRIB2 Table 4.4
    *
    * @return time unit
    */

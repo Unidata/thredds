@@ -42,7 +42,9 @@ import thredds.inventory.MCollection;
 import thredds.inventory.MFile;
 import thredds.inventory.partition.PartitionManager;
 import thredds.inventory.partition.PartitionManagerFromIndexList;
+import ucar.coord.CoordinateRuntime;
 import ucar.nc2.grib.GribIndex;
+import ucar.nc2.time.CalendarDate;
 import ucar.nc2.util.CloseableIterator;
 import ucar.unidata.util.StringUtil2;
 
@@ -63,6 +65,9 @@ public abstract class GribCollectionBuilder {
 
   protected String name;            // collection name
   protected File directory;         // top directory
+
+  protected abstract List<? extends Group> makeGroups(List<MFile> allFiles, Formatter errlog) throws IOException;
+  protected abstract boolean writeIndex(String name, File indexFile, CoordinateRuntime masterRuntime, List<? extends Group> groups, List<MFile> files) throws IOException;
 
   // LOOK prob name could be dcm.getCollectionName()
   public GribCollectionBuilder(String name, MCollection dcm, org.slf4j.Logger logger) {
@@ -104,16 +109,16 @@ public abstract class GribCollectionBuilder {
     long start = System.currentTimeMillis();
 
     List<MFile> files = new ArrayList<>();
-    List<Grib2CollectionWriter.Group> groups = makeGroups(files, errlog);
+    List<? extends Group> groups = makeGroups(files, errlog);
     List<MFile> allFiles = Collections.unmodifiableList(files);
 
     // gather into collections with a single runtime
-    Map<Long, List<Grib2CollectionWriter.Group>> runGroups = new HashMap<>();
-    for (Grib2CollectionWriter.Group g : groups) {
-      List<Grib2CollectionWriter.Group> runGroup = runGroups.get(g.runtime.getMillis());
+    Map<Long, List<Group>> runGroups = new HashMap<>();
+    for (Group g : groups) {
+      List<Group> runGroup = runGroups.get(g.getRuntime().getMillis());
       if (runGroup == null) {
         runGroup = new ArrayList<>();
-        runGroups.put(g.runtime.getMillis(), runGroup);
+        runGroups.put(g.getRuntime().getMillis(), runGroup);
       }
       runGroup.add(g);
     }
@@ -121,23 +126,22 @@ public abstract class GribCollectionBuilder {
     // write each rungroup separately
     boolean multipleGroups = runGroups.values().size() > 1;
     List<File> partitions = new ArrayList<>();
-    Grib2CollectionWriter writer = new Grib2CollectionWriter(dcm, logger);
-    for (List<Grib2CollectionWriter.Group> runGroupList : runGroups.values()) {
-      Grib2CollectionWriter.Group g = runGroupList.get(0);
+    for (List<Group> runGroupList : runGroups.values()) {
+      Group g = runGroupList.get(0);
       // if multiple groups, we will write a partition. otherwise, we need to use the standard name (without runtime) so we know the filename from the collection
-      String gcname = multipleGroups ? GribCollection.makeName(this.name, g.runtime) : this.name;
-      File indexFileForRuntime = multipleGroups ? GribCollection.getIndexFile(name, directory, g.runtime) : GribCollection.getIndexFile(name, directory);
+      String gcname = multipleGroups ? GribCollection.makeName(this.name, g.getRuntime()) : this.name;
+      File indexFileForRuntime = multipleGroups ? GribCollection.getIndexFile(name, directory, g.getRuntime()) : GribCollection.getIndexFile(name, directory);
       partitions.add(indexFileForRuntime);
 
-      writer.writeIndex(gcname, indexFileForRuntime, g.makeCoordinateRuntime(), runGroupList, allFiles);
-      logger.info("Grib2CollectionBuilder write {}", indexFileForRuntime.getPath());
+      boolean ok = writeIndex(gcname, indexFileForRuntime, g.getCoordinateRuntime(), runGroupList, allFiles);
+      logger.info("Grib2CollectionBuilder write {} ok={}", indexFileForRuntime.getPath(), ok);
     }
 
     boolean ok = true;
 
     // if theres more than one runtime, create a partition collection to collect all the runtimes together
     if (multipleGroups) {
-      Collections.sort(partitions);
+      Collections.sort(partitions); // ??
       PartitionManager part = new PartitionManagerFromIndexList(dcm, partitions, logger);
       part.putAuxInfo(FeatureCollectionConfig.AUX_CONFIG, dcm.getAuxInfo(FeatureCollectionConfig.AUX_CONFIG));
       ok = Grib2PartitionBuilder.recreateIfNeeded(part, CollectionUpdateType.always, CollectionUpdateType.always, errlog, logger);
@@ -148,7 +152,10 @@ public abstract class GribCollectionBuilder {
     return ok;
   }
 
-  protected abstract List<Grib2CollectionWriter.Group> makeGroups(List<MFile> allFiles, Formatter errlog) throws IOException;
+  public interface Group {
+    CalendarDate getRuntime();
+    CoordinateRuntime getCoordinateRuntime();
+  }
 
   protected class GroupAndRuntime {
     int gdsHash;

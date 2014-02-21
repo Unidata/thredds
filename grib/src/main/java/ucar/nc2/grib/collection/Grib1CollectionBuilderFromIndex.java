@@ -37,32 +37,32 @@ package ucar.nc2.grib.collection;
 
 import thredds.featurecollection.FeatureCollectionConfig;
 import ucar.nc2.grib.GribTables;
-import ucar.nc2.grib.grib2.*;
-import ucar.nc2.grib.grib2.table.Grib2Customizer;
+import ucar.nc2.grib.grib1.Grib1Gds;
+import ucar.nc2.grib.grib1.Grib1SectionGridDefinition;
+import ucar.nc2.grib.grib1.tables.Grib1Customizer;
+import ucar.nc2.grib.grib1.tables.Grib1ParamTables;
 import ucar.unidata.io.RandomAccessFile;
 
 import java.io.File;
 import java.io.IOException;
 
 /**
- * Build a GribCollection object for Grib-2 files. Only from ncx files.
- * No updating, no nuthin.
- * Data file is not opened.
+ * Grib1 specific reading ncx2 Index file
  *
  * @author caron
- * @since 11/9/13
+ * @since 2/20/14
  */
-public class Grib2CollectionBuilderFromIndex extends GribCollectionBuilderFromIndex {
+public class Grib1CollectionBuilderFromIndex extends GribCollectionBuilderFromIndex {
 
   // read in the index, index raf already open
   static public GribCollection readFromIndex(String name, File directory, RandomAccessFile raf, FeatureCollectionConfig config, org.slf4j.Logger logger) throws IOException {
 
-    Grib2CollectionBuilderFromIndex builder = new Grib2CollectionBuilderFromIndex(name, directory, raf.getLocation(), config, logger);
+    Grib1CollectionBuilderFromIndex builder = new Grib1CollectionBuilderFromIndex(name, directory, raf.getLocation(), config, logger);
     if (!builder.readIndex(raf))
       throw new IOException("Reading index failed"); // or return null ??
 
     if (builder.gc.getFiles().size() == 0) {
-      logger.warn("Grib2CollectionBuilderFromIndex {}: has no files, force recreate ", builder.gc.getName());
+      logger.warn("Grib1CollectionBuilderFromIndex {}: has no files, force recreate ", builder.gc.getName());
       return null;
     }
 
@@ -71,38 +71,47 @@ public class Grib2CollectionBuilderFromIndex extends GribCollectionBuilderFromIn
 
   ////////////////////////////////////////////////////////////////
 
-  protected Grib2Customizer cust; // gets created in readIndex, after center etc is read in
+  protected FeatureCollectionConfig config;
+  protected Grib1Customizer cust; // gets created in readIndex, after center etc is read in
 
-  protected Grib2CollectionBuilderFromIndex(String name, File directory, String indexFilename, FeatureCollectionConfig config, org.slf4j.Logger logger) {
-    super(new Grib2Collection(name, directory, indexFilename, config), logger);
+  protected Grib1CollectionBuilderFromIndex(String name, File directory, String indexFilename, FeatureCollectionConfig config, org.slf4j.Logger logger) {
+    super(new Grib1Collection(name, directory, indexFilename, config), logger);
+    this.config = config;
   }
 
   ////////////////////////////////////////////////////////////////////////////////////////////////////
   // reading
 
   protected String getMagicStart() {
-    return Grib2CollectionWriter.MAGIC_START;
+    return Grib1CollectionWriter.MAGIC_START;
   }
 
-  protected GribTables makeCustomizer() {
-    this.cust = Grib2Customizer.factory(gc.center, gc.subcenter, gc.master, gc.local);
-    return this.cust;
+  protected GribTables makeCustomizer()  throws IOException {
+    Grib1ParamTables ptables = (config.gribConfig.paramTable != null) ? Grib1ParamTables.factory(config.gribConfig.paramTable) :
+            Grib1ParamTables.factory(config.gribConfig.paramTablePath, config.gribConfig.lookupTablePath); // so an iosp message must be received before the open()
+    this.cust = Grib1Customizer.factory(gc.center, gc.subcenter, gc.version, ptables);
+    return cust;
   }
 
   protected String getLevelNameShort(int levelCode) {
     return cust.getLevelNameShort(levelCode);
   }
 
-
   @Override
   protected void readGds(GribCollectionProto.Gds p) {
     byte[] rawGds = p.getGds().toByteArray();
-    Grib2SectionGridDefinition gdss = new Grib2SectionGridDefinition(rawGds);
-    Grib2Gds gds = gdss.getGDS();
+    Grib1SectionGridDefinition gdss = new Grib1SectionGridDefinition(rawGds);
+
+    Grib1Gds gds;
+    if (gdss.getPredefinedGridDefinition() >= 0) {
+      gds = ucar.nc2.grib.grib1.Grib1GdsPredefined.factory(gc.center, gdss.getPredefinedGridDefinition());
+    } else {
+      gds = gdss.getGDS();
+    }
+
     int gdsHash = (p.getGdsHash() != 0) ? p.getGdsHash() : gds.hashCode();
     String nameOverride = p.hasNameOverride() ? p.getNameOverride() : null;
     gc.addHorizCoordSystem(gds.makeHorizCoordSys(), rawGds, gdsHash, nameOverride);
   }
 
 }
-

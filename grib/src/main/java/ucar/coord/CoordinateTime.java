@@ -1,6 +1,8 @@
 package ucar.coord;
 
 import net.jcip.annotations.Immutable;
+import ucar.nc2.grib.grib1.Grib1Record;
+import ucar.nc2.grib.grib1.Grib1SectionProductDefinition;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time.CalendarDateRange;
 import ucar.nc2.time.CalendarDateUnit;
@@ -176,12 +178,12 @@ public class CoordinateTime extends CoordinateTimeAbstract implements Coordinate
     return new Builder(code);
   } */
 
-  static public class Builder extends CoordinateBuilderImpl<Grib2Record>  {
+  static public class Builder2 extends CoordinateBuilderImpl<Grib2Record>  {
     int code;  // pdsFirst.getTimeUnit()
     CalendarPeriod timeUnit;
     CalendarDate refDate;
 
-    public Builder(int code, CalendarPeriod timeUnit, CalendarDate refDate) {
+    public Builder2(int code, CalendarPeriod timeUnit, CalendarDate refDate) {
       this.code = code;
       this.timeUnit = timeUnit;
       this.refDate = refDate;
@@ -201,5 +203,33 @@ public class CoordinateTime extends CoordinateTimeAbstract implements Coordinate
       return new CoordinateTime(code, timeUnit, refDate, offsetSorted);
     }
   }
+
+  static public class Builder1 extends CoordinateBuilderImpl<Grib1Record>  {
+    int code;  // pdsFirst.getTimeUnit()
+    CalendarPeriod timeUnit;
+    CalendarDate refDate;
+
+    public Builder1(int code, CalendarPeriod timeUnit, CalendarDate refDate) {
+      this.code = code;
+      this.timeUnit = timeUnit;
+      this.refDate = refDate;
+    }
+
+    @Override
+    public Object extract(Grib1Record gr) {
+      Grib1SectionProductDefinition pds = gr.getPDSsection();
+      return pds.getTimeValue1();
+    }
+
+    @Override
+    public Coordinate makeCoordinate(List<Object> values) {
+      List<Integer> offsetSorted = new ArrayList<>(values.size());
+      for (Object val : values) offsetSorted.add( (Integer) val);
+      Collections.sort(offsetSorted);
+      return new CoordinateTime(code, timeUnit, refDate, offsetSorted);
+    }
+  }
+
+
 
 }

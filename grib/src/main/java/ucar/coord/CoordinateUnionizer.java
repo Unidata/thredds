@@ -38,22 +38,22 @@ public class CoordinateUnionizer<T> {
     for (Coordinate coord : coords) {
       switch (coord.getType()) {
         case runtime:
-          if (runtimeBuilder == null) runtimeBuilder = new CoordinateRuntime.Builder();
+          if (runtimeBuilder == null) runtimeBuilder = new CoordinateRuntime.Builder2();
           runtimeBuilder.addAll(coord);
           runtime = coord;
           break;
         case time:
           CoordinateTime time = (CoordinateTime) coord;
-          if (timeBuilder == null) timeBuilder = new CoordinateTime.Builder(coord.getCode(), time.getTimeUnit(), time.getRefDate());
+          if (timeBuilder == null) timeBuilder = new CoordinateTime.Builder2(coord.getCode(), time.getTimeUnit(), time.getRefDate());
           timeBuilder.addAll(coord);
           break;
         case timeIntv:
           CoordinateTimeIntv timeIntv = (CoordinateTimeIntv) coord;
-          if (timeIntvBuilder == null) timeIntvBuilder = new CoordinateTimeIntv.Builder(null, coord.getCode(), timeIntv.getTimeUnit(), timeIntv.getRefDate());
+          if (timeIntvBuilder == null) timeIntvBuilder = new CoordinateTimeIntv.Builder2(null, coord.getCode(), timeIntv.getTimeUnit(), timeIntv.getRefDate());
           timeIntvBuilder.addAll(intervalFilter((CoordinateTimeIntv)coord));
           break;
         case vert:
-          if (vertBuilder == null) vertBuilder = new CoordinateVert.Builder(coord.getCode());
+          if (vertBuilder == null) vertBuilder = new CoordinateVert.Builder2(coord.getCode());
           vertBuilder.addAll(coord);
           break;
         case time2D:

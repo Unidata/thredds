@@ -1,5 +1,9 @@
 package ucar.coord;
 
+import ucar.nc2.grib.grib1.Grib1ParamTime;
+import ucar.nc2.grib.grib1.Grib1Record;
+import ucar.nc2.grib.grib1.Grib1SectionProductDefinition;
+import ucar.nc2.grib.grib1.tables.Grib1Customizer;
 import ucar.nc2.time.CalendarDateRange;
 import ucar.nc2.time.CalendarDateUnit;
 import ucar.nc2.grib.TimeCoord;
@@ -177,18 +181,13 @@ public class CoordinateTimeIntv extends CoordinateTimeAbstract implements Coordi
 
   ///////////////////////////////////////////////////////////
 
- /* @Override
-  public CoordinateBuilder makeBuilder() {
-    return new Builder(cust, timeUnit, code);
-  }  */
-
-  static public class Builder extends CoordinateBuilderImpl<Grib2Record> {
+  static public class Builder2 extends CoordinateBuilderImpl<Grib2Record> {
     private final Grib2Customizer cust;
     private final int code;                  // pdsFirst.getTimeUnit()
     private final CalendarPeriod timeUnit;
     private final CalendarDate refDate;
 
-    public Builder(Grib2Customizer cust, int code, CalendarPeriod timeUnit, CalendarDate refDate) {
+    public Builder2(Grib2Customizer cust, int code, CalendarPeriod timeUnit, CalendarDate refDate) {
       this.cust = cust;
       this.code = code;
       this.timeUnit = timeUnit;
@@ -197,11 +196,6 @@ public class CoordinateTimeIntv extends CoordinateTimeAbstract implements Coordi
 
     @Override
     public Object extract(Grib2Record gr) {
-      CalendarDate refDate2 =  gr.getReferenceDate();
-      if (refDate != null && !refDate.equals(refDate2)) {
-        System.out.printf("ReferenceDate %s != %s%n", refDate2, refDate);
-      }
-
       CalendarPeriod timeUnitUse = timeUnit;
       Grib2Pds pds = gr.getPDS();
       int tu2 = pds.getTimeUnit();
@@ -212,7 +206,47 @@ public class CoordinateTimeIntv extends CoordinateTimeAbstract implements Coordi
       }
 
       TimeCoord.TinvDate tinvd = cust.getForecastTimeInterval(gr);
-      TimeCoord.Tinv tinv = tinvd.convertReferenceDate(refDate2, timeUnitUse);
+      TimeCoord.Tinv tinv = tinvd.convertReferenceDate(refDate, timeUnitUse);
+      return tinv;
+    }
+
+    @Override
+    public Coordinate makeCoordinate(List<Object> values) {
+      List<TimeCoord.Tinv> offsetSorted = new ArrayList<>(values.size());
+      for (Object val : values) offsetSorted.add( (TimeCoord.Tinv) val);
+      Collections.sort(offsetSorted);
+
+      return new CoordinateTimeIntv(code, timeUnit, refDate, offsetSorted);
+    }
+  }
+
+  static public class Builder1 extends CoordinateBuilderImpl<Grib1Record> {
+    private final Grib1Customizer cust;
+    private final int code;                  // pdsFirst.getTimeUnit()
+    private final CalendarPeriod timeUnit;
+    private final CalendarDate refDate;
+
+    public Builder1(Grib1Customizer cust, int code, CalendarPeriod timeUnit, CalendarDate refDate) {
+      this.cust = cust;
+      this.code = code;
+      this.timeUnit = timeUnit;
+      this.refDate = refDate;
+    }
+
+    @Override
+    public Object extract(Grib1Record gr) {
+      CalendarPeriod timeUnitUse = timeUnit;
+      Grib1SectionProductDefinition pds = gr.getPDSsection();
+      int tu2 = pds.getTimeUnit();
+      if (tu2 != code) {
+        System.out.printf("Time unit diff %d != %d%n", tu2, code);
+        int unit = cust.convertTimeUnit(tu2);
+        timeUnitUse = Grib2Utils.getCalendarPeriod(unit);
+      }
+
+      Grib1ParamTime ptime = pds.getParamTime(cust);
+      int[] intv = ptime.getInterval();
+      TimeCoord.Tinv tinv = new TimeCoord.Tinv(intv[0], intv[1]);
       return tinv;
     }
 

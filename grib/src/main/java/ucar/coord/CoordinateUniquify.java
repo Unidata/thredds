@@ -18,7 +18,7 @@ public class CoordinateUniquify<T> {
    List<Coordinate> unionCoords = new ArrayList<>();
    Coordinate runtimeAll;
 
-   CoordinateBuilder runtimeAllBuilder = new CoordinateRuntime.Builder();
+   CoordinateBuilder runtimeAllBuilder = new CoordinateRuntime.Builder2();
    Set<Coordinate> timeBuilders = new HashSet<>();
    Set<Coordinate> timeIntvBuilders = new HashSet<>();
    Set<Coordinate> vertBuilders = new HashSet<>();
