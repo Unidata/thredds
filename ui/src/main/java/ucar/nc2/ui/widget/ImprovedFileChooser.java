@@ -17,9 +17,7 @@ import javax.swing.MenuElement;
 import javax.swing.SwingConstants;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
-import javax.swing.event.TableModelListener;
 import javax.swing.filechooser.FileSystemView;
-import javax.swing.table.AbstractTableModel;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.HeadlessException;
@@ -81,36 +79,8 @@ public class ImprovedFileChooser extends JFileChooser {
 
         // Set the preferred column widths so that they're big enough to display all data without truncation.
         ColumnWidthsResizer resizer = new ColumnWidthsResizer(detailsTable);
+        detailsTable.getModel().addTableModelListener(resizer);
         detailsTable.getColumnModel().addColumnModelListener(resizer);
-
-        /*
-         * ColumnWidthsResizer requires that the internal Swing TableModelListeners that update the JTable view
-         * are notified BEFORE it is notified. Unfortunately, the order in which listeners are notified is
-         * undefined (see https://weblogs.java.net/blog/alexfromsun/archive/2011/06/15/swing-better-world-listeners).
-         *
-         * There are no good solutions to this problem, but the 2 least-bad are:
-         *
-         * a) Remove the existing listeners from detailsTableModel and pass them as an argument to ColumnWidthsResizer.
-         *    Then, in ColumnWidthsResizer.tableChanged(), notify those listeners FIRST before CWR does its thing.
-         *    In this way, we can control the order in which listeners are notified.
-         *
-         *    The problem with this approach is that it doesn't account for TableModelListeners that are subsequently
-         *    added to detailsTableModel. Furthermore, it may break client code that adds a listener and then needs
-         *    to access and/or remove it later.
-         *
-         * b) Develop against a specific implementation's listener notification order. OpenJDK's
-         *    AbstractTableModel.fireTableChanged() method notifies listeners in First-In-Last-Notified order
-         *    (see http://goo.gl/oGu7H4). Therefore, by adding ColumnWidthsResizer as the first listener, we can ensure
-         *    that it is notified last.
-         *
-         *    The drawback of this approach is obvious: it may only work on one JDK implementation, and even that
-         *    implementation's behavior may change. However, OpenJDK is by *FAR* the most widely-used JDK (as of Java 7,
-         *    it is the reference implementation). Furthermore, its implementation of such a simple method is
-         *    unlikely to change; indeed, it's been the same for at least five years (see http://goo.gl/Gyjp98).
-         *
-         * We have selected the second approach for ImprovedFileChooser.
-         */
-        addAsFirstTableModelListener((AbstractTableModel) detailsTable.getModel(), resizer);
 
         // Left-align every cell, including header cells.
         TableAligner aligner = new TableAligner(detailsTable, SwingConstants.LEADING);
@@ -162,22 +132,6 @@ public class ImprovedFileChooser extends JFileChooser {
 
         for (MenuElement subMenuElem : menuElem.getSubElements()) {
             getAllMenuItems(subMenuElem, menuItems);
-        }
-    }
-
-    private static void addAsFirstTableModelListener(AbstractTableModel tableModel, TableModelListener listener) {
-        // Remove existing listeners.
-        TableModelListener[] existingListeners = tableModel.getTableModelListeners();
-        for (TableModelListener swingInternalListener : existingListeners) {
-            tableModel.removeTableModelListener(swingInternalListener);
-        }
-
-        // tableModel now has zero listeners. We can add the specified listener as its first.
-        tableModel.addTableModelListener(listener);
-
-        // Re-add the existing listeners.
-        for (TableModelListener swingInternalListener : existingListeners) {
-            tableModel.addTableModelListener(swingInternalListener);
         }
     }
 
