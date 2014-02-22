@@ -396,7 +396,6 @@ public class GribCdmIndex implements IndexReader {
   static private boolean updateLeafDirectoryCollection(boolean isGrib1, FeatureCollectionConfig config,
                                                        CollectionUpdateType forceCollection,
                                                        Logger logger, Path dirPath) throws IOException {
-    if (debug) System.out.printf(" GribCdmIndex2.updateLeafDirectoryCollection %s%n", dirPath);
 
     if (forceCollection == CollectionUpdateType.never) return false;  // dont do nothin
 
@@ -411,7 +410,10 @@ public class GribCdmIndex implements IndexReader {
 
     Path idxFile = dcm.getIndexPath();
     if (Files.exists(idxFile)) {
-      if (forceCollection == CollectionUpdateType.nocheck) return false;  // use if index exists
+      if (forceCollection == CollectionUpdateType.nocheck) { // use if index exists
+        if (debug) System.out.printf(" GribCdmIndex2.updateLeafDirectoryCollection %s use existing index%n", dirPath);
+        return false;
+      }
     }
 
     boolean changed;
@@ -423,7 +425,7 @@ public class GribCdmIndex implements IndexReader {
       changed = builder.updateNeeded(forceCollection) && builder.createIndex(errlog);
     }
 
-    if (debug) System.out.printf(" GribCdmIndex2.updateLeafDirectoryCollection complete (%s) on %s%n", changed, dirPath);
+    if (debug) System.out.printf(" GribCdmIndex2.updateLeafDirectoryCollection was updated= %s on %s%n", changed, dirPath);
     return changed;
   }
 

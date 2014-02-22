@@ -247,9 +247,12 @@ public enum CollectionUpdater {
 
   // Called by TDS collectionController when trigger is received externally
   public void triggerUpdate(String collectionName, CollectionUpdateType triggerType) {
+    JobDataMap map = new org.quartz.JobDataMap();
+    map.put(UpdateType, triggerType);
     Trigger trigger = TriggerBuilder.newTrigger()
             .withIdentity(collectionName+"-trigger", triggerType.toString()) // dorky
             .forJob(collectionName, "UpdateCollection") // ??
+            .usingJobData(map)
             .startNow()
             .build();
 
