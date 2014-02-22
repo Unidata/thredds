@@ -70,6 +70,7 @@ import java.util.Formatter;
  */
 public abstract class GribIosp extends AbstractIOServiceProvider {
   static public final String VARIABLE_ID_ATTNAME = "Grib_Variable_Id";
+  static public final String GRIB_VALID_TIME = "GRIB forecast or observation time";
   static private final boolean debugTime = false, debugRead = true, debugName = false;
 
   private static final boolean debug = false;
@@ -140,8 +141,6 @@ public abstract class GribIosp extends AbstractIOServiceProvider {
   protected abstract String makeVariableLongName(GribCollection.VariableIndex vindex);
   protected abstract String makeVariableUnits(GribCollection.VariableIndex vindex);
 
-  //protected abstract String getTimeRangeName(int code);
-  //protected abstract String getStatisticType(int code);
   protected abstract String getVerticalCoordDesc(int vc_code);
   protected abstract GribTables.Parameter getParameter(GribCollection.VariableIndex vindex);
 
@@ -369,10 +368,6 @@ public abstract class GribIosp extends AbstractIOServiceProvider {
       }
       v.addAttribute(new Attribute(CF.COORDINATES, coords.toString()));
 
-      String intvName = vindex.getTimeIntvName();
-      if ( intvName != null && intvName.length() != 0)
-        v.addAttribute(new Attribute(CDM.TIME_INTERVAL, intvName));
-
       if (vindex.intvType >= 0) {
         GribStatType statType = gribTable.getStatType(vindex.intvType);   // LOOK find the time coordinate
         if (statType != null) {
@@ -399,11 +394,13 @@ public abstract class GribIosp extends AbstractIOServiceProvider {
 
     Variable v = ncfile.addVariable(g, new Variable(ncfile, g, null, tcName, DataType.DOUBLE, tcName));
     v.addAttribute(new Attribute(CDM.UNITS, rtc.getUnit()));
-    v.addAttribute(new Attribute(CF.STANDARD_NAME, "forecast_reference_time"));
+    v.addAttribute(new Attribute(CF.STANDARD_NAME, CF.TIME_REFERENCE));
+    v.addAttribute(new Attribute(CDM.LONG_NAME, "GRIB reference time"));
 
     String vsName = tcName + "_ISO";
     Variable vs = ncfile.addVariable(g, new Variable(ncfile, g, null, vsName, DataType.STRING, tcName));
     vs.addAttribute(new Attribute(CDM.UNITS, "ISO8601"));
+    v.addAttribute(new Attribute(CDM.LONG_NAME, "GRIB reference time"));
 
     // coordinate values
     String[] dataS = new String[n];
@@ -435,8 +432,7 @@ public abstract class GribIosp extends AbstractIOServiceProvider {
      String units = runtime.getUnit(); // + " since " + runtime.getFirstDate();
      v.addAttribute(new Attribute(CDM.UNITS, units));
      v.addAttribute(new Attribute(CF.STANDARD_NAME, CF.TIME));
-     //v.addAttribute(new Attribute(CDM.LONG_NAME, getIntervalName(time2D.getCode())));
-     v.addAttribute(new Attribute(CDM.LONG_NAME, is2Dtime ? "forecast times (2D)" : "forecast times"));
+     v.addAttribute(new Attribute(CDM.LONG_NAME, GRIB_VALID_TIME));
 
      double[] data = new double[nruns * ntimes];
      for (int i=0; i<nruns * ntimes; i++) data[i] = Double.NaN;
@@ -511,8 +507,8 @@ public abstract class GribIosp extends AbstractIOServiceProvider {
     Variable v = ncfile.addVariable(g, new Variable(ncfile, g, null, tcName, DataType.DOUBLE, dims));
     String units = tc.getUnit()+ " since " + runtime.getFirstDate();
     v.addAttribute(new Attribute(CDM.UNITS, units));
-    v.addAttribute(new Attribute(CF.STANDARD_NAME, "time"));
-    //v.addAttribute(new Attribute(CDM.LONG_NAME, getIntervalName(tc.getCode())));
+    v.addAttribute(new Attribute(CF.STANDARD_NAME, CF.TIME));
+    v.addAttribute(new Attribute(CDM.LONG_NAME, GRIB_VALID_TIME));
 
     double[] data = new double[nruns * ntimes];
     int count = 0;
@@ -572,8 +568,8 @@ public abstract class GribIosp extends AbstractIOServiceProvider {
     Variable v = ncfile.addVariable(g, new Variable(ncfile, g, null, tcName, DataType.DOUBLE, dims));
     String units = coordTime.getUnit()+ " since " + runtime.getFirstDate();
     v.addAttribute(new Attribute(CDM.UNITS, units));
-    v.addAttribute(new Attribute(CF.STANDARD_NAME, "time"));
-    //v.addAttribute(new Attribute(CDM.LONG_NAME, getIntervalName(coordTime.getCode())));
+    v.addAttribute(new Attribute(CF.STANDARD_NAME, CF.TIME));
+    v.addAttribute(new Attribute(CDM.LONG_NAME, GRIB_VALID_TIME));
 
     double[] data = new double[ntimes];
     int count = 0;
@@ -592,8 +588,8 @@ public abstract class GribIosp extends AbstractIOServiceProvider {
     Variable v = ncfile.addVariable(g, new Variable(ncfile, g, null, tcName, DataType.DOUBLE, dims));
     String units = coordTime.getUnit()+ " since " + runtime.getFirstDate();
     v.addAttribute(new Attribute(CDM.UNITS, units));
-    v.addAttribute(new Attribute(CF.STANDARD_NAME, "time"));
-   // v.addAttribute(new Attribute(CDM.LONG_NAME, getIntervalName(coordTime.getCode())));
+    v.addAttribute(new Attribute(CF.STANDARD_NAME, CF.TIME));
+    v.addAttribute(new Attribute(CDM.LONG_NAME, GRIB_VALID_TIME));
 
     double[] data = new double[ntimes];
     int count = 0;

@@ -36,6 +36,7 @@
 package ucar.nc2.grib.collection;
 
 import thredds.catalog.DataFormatType;
+import ucar.nc2.constants.CDM;
 import ucar.nc2.grib.grib1.*;
 import ucar.nc2.grib.grib1.tables.Grib1Customizer;
 import ucar.nc2.grib.grib1.tables.Grib1ParamTables;
@@ -148,7 +149,7 @@ public class Grib1Iosp extends GribIosp {
                                  int levelType, boolean isLayer, int intvType, String intvName) {
     Formatter f = new Formatter();
 
-    f.format("VAR_%d-%d-%d-%d", center, subcenter, tableVersion, paramNo);
+    f.format("VAR_%d-%d-%d-%d", center, subcenter, tableVersion, paramNo);  // "VAR_7-15--1-20_L1";
 
     if (levelType != GribNumbers.UNDEFINED) { // satellite data doesnt have a level
       f.format("_L%d", levelType); // code table 4.5
@@ -346,6 +347,11 @@ public class Grib1Iosp extends GribIosp {
     String ldesc = cust.getLevelDescription(vindex.levelType);
     if (ldesc != null)
       v.addAttribute(new Attribute("Grib1_Level_Desc", ldesc));
+
+
+    String timeTypeName = cust.getTimeTypeName(vindex.intvType);
+    if ( timeTypeName != null && timeTypeName.length() != 0)
+      v.addAttribute(new Attribute(CDM.TIME_INTERVAL, timeTypeName));
 
     if (vindex.ensDerivedType >= 0)
       v.addAttribute(new Attribute("Grib1_Ensemble_Derived_Type", vindex.ensDerivedType));

@@ -745,7 +745,7 @@ public class GribCollection implements FileCacheable, AutoCloseable {
 
   public GribCollection.VariableIndex makeVariableIndex(GroupGC g, int cdmHash, int discipline, GribTables customizer,
            byte[] rawPds, List<Integer> index, long recordsPos, int recordsLen) {
-    return new VariableIndex(g, -1, discipline, customizer, rawPds, cdmHash, index, recordsPos, recordsLen);
+    return new VariableIndex(g, discipline, customizer, rawPds, cdmHash, index, recordsPos, recordsLen);
   }
 
   public GribCollection.VariableIndex makeVariableIndex(GroupGC g, VariableIndex other) {
@@ -754,8 +754,8 @@ public class GribCollection implements FileCacheable, AutoCloseable {
 
   public class VariableIndex implements Comparable<VariableIndex> {
     public final GroupGC group;     // belongs to this group
-    public final int tableVersion;   // grib1 : can vary by variable
-    public final int discipline;     // grib2
+    public final int tableVersion;   // grib1 only : can vary by variable
+    public final int discipline;     // grib2 only
     public final byte[] rawPds;      // grib1 or grib2
     public final int cdmHash;
     public final long recordsPos;    // where the records array is stored in the index. 0 means no records
@@ -771,7 +771,7 @@ public class GribCollection implements FileCacheable, AutoCloseable {
 
     // derived from pds
     public final int category, parameter, levelType, intvType, ensDerivedType, probType;
-    public String intvName;
+    public String intvName;  // eg "mixed intervals, 3 Hour, etc"
     public final String probabilityName;
     public final boolean isLayer;
     public final int genProcessType;
@@ -783,10 +783,9 @@ public class GribCollection implements FileCacheable, AutoCloseable {
     // temporary storage while building - do not use
     List<Coordinate> coords;
 
-    private VariableIndex(GroupGC g, int tableVersion, int discipline, GribTables customizer, byte[] rawPds,
+    private VariableIndex(GroupGC g, int discipline, GribTables customizer, byte[] rawPds,
                          int cdmHash, List<Integer> index, long recordsPos, int recordsLen) {
       this.group = g;
-      this.tableVersion = tableVersion;
       this.discipline = discipline;
       this.rawPds = rawPds;
       this.cdmHash = cdmHash;
@@ -800,6 +799,7 @@ public class GribCollection implements FileCacheable, AutoCloseable {
 
         // quantities that are stored in the pds
         this.category = 0;
+        this.tableVersion = pds.getTableVersion();
         this.parameter = pds.getParameterNumber();
         this.levelType = pds.getLevelType();
         Grib1ParamTime ptime = pds.getParamTime(cust);
@@ -824,6 +824,7 @@ public class GribCollection implements FileCacheable, AutoCloseable {
          } catch (IOException e) {
            throw new RuntimeException(e);
          }
+        this.tableVersion = -1;
 
         // quantities that are stored in the pds
         this.category = pds.getParameterCategory();
