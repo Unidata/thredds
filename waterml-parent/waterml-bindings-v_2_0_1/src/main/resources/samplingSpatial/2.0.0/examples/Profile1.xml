@@ -1,0 +1,83 @@
+<?xml version="1.0"?>
+<sams:SF_SpatialSamplingFeature
+	gml:id="pr1"
+	xmlns:sams="http://www.opengis.net/samplingSpatial/2.0"
+	xmlns:sam="http://www.opengis.net/sampling/2.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:xlink="http://www.w3.org/1999/xlink"
+	xmlns:gmd="http://www.isotc211.org/2005/gmd"
+	xmlns:gml="http://www.opengis.net/gml/3.2"
+	xsi:schemaLocation="http://www.opengis.net/samplingSpatial/2.0 http://schemas.opengis.net/samplingSpatial/2.0/spatialSamplingFeature.xsd">
+	<gml:description>Geology traverse</gml:description>
+	<gml:name
+		codeSpace="http://my.geology.example.org/projects/2007">pr1</gml:name>
+	<gml:boundedBy>
+		<gml:Envelope
+			srsName="urn:ogc:def:crs:EPSG:6.8:4283">
+			<gml:lowerCorner>-30.711 134.196</gml:lowerCorner>
+			<gml:upperCorner>-30.702 134.205</gml:upperCorner>
+		</gml:Envelope>
+	</gml:boundedBy>
+	<sam:type
+		xlink:href="http://www.opengis.net/def/samplingFeatureType/OGC-OM/2.0/SF_SamplingCurve"/>
+	<sam:sampledFeature
+		xlink:href="http://my.geology.example.org/unit/g345"/>
+	<sam:lineage>
+		<gmd:LI_Lineage>
+			<gmd:statement>
+				<CharacterString
+					xmlns="http://www.isotc211.org/2005/gco"> elevation and position obtained using
+					http://my.geology.example.org/procedures/survey/position/GPS4 </CharacterString>
+			</gmd:statement>
+		</gmd:LI_Lineage>
+	</sam:lineage>
+	<sams:positionalAccuracy>
+		<gmd:DQ_AbsoluteExternalPositionalAccuracy>
+			<gmd:nameOfMeasure>
+				<CharacterString
+					xmlns="http://www.isotc211.org/2005/gco">horizontal accuracy</CharacterString>
+			</gmd:nameOfMeasure>
+			<gmd:result>
+				<gmd:DQ_QuantitativeResult>
+					<gmd:valueUnit
+						xlink:href="urn:ogc:def:UCUM::m"/>
+					<gmd:value>
+						<Record
+							xmlns="http://www.isotc211.org/2005/gco">3.</Record>
+					</gmd:value>
+				</gmd:DQ_QuantitativeResult>
+			</gmd:result>
+		</gmd:DQ_AbsoluteExternalPositionalAccuracy>
+	</sams:positionalAccuracy>
+	<sams:positionalAccuracy>
+		<gmd:DQ_AbsoluteExternalPositionalAccuracy>
+			<gmd:nameOfMeasure>
+				<CharacterString
+					xmlns="http://www.isotc211.org/2005/gco">elevation accuracy</CharacterString>
+			</gmd:nameOfMeasure>
+			<gmd:result>
+				<gmd:DQ_QuantitativeResult>
+					<gmd:valueUnit
+						xlink:href="urn:ogc:def:UCUM::m"/>
+					<gmd:value>
+						<Record
+							xmlns="http://www.isotc211.org/2005/gco">10.</Record>
+					</gmd:value>
+				</gmd:DQ_QuantitativeResult>
+			</gmd:result>
+		</gmd:DQ_AbsoluteExternalPositionalAccuracy>
+	</sams:positionalAccuracy>
+	<sams:shape>
+		<gml:LineString
+			gml:id="pr1_ls1"
+			srsName="urn:ogc:def:crs:EPSG:6.8:4347">
+			<gml:pos>-30.711 134.205 321.</gml:pos>
+			<gml:pos>-30.710 134.204 315.</gml:pos>
+			<gml:pos>-30.709 134.203 303.</gml:pos>
+			<gml:pos>-30.708 134.201 296.</gml:pos>
+			<gml:pos>-30.706 134.196 272.</gml:pos>
+			<gml:pos>-30.703 134.197 271.</gml:pos>
+			<gml:pos>-30.702 134.199 280.</gml:pos>
+		</gml:LineString>
+	</sams:shape>
+</sams:SF_SpatialSamplingFeature>

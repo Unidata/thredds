@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!-- Validated by XMLSpy -->
+<gml:MultiPoint xmlns:gml="http://www.opengis.net/gml/3.2" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.opengis.net/gml/3.2 http://schemas.opengis.net/gml/3.2.1/gml.xsd" gml:id="multiPoint1">
+	<gml:pointMember>
+		<gml:Point gml:id="point1">
+			<gml:pos>0 0 </gml:pos>
+		</gml:Point>
+	</gml:pointMember>
+	<gml:pointMember>
+		<gml:Point gml:id="point2">
+			<gml:pos>1 0</gml:pos>
+		</gml:Point>
+	</gml:pointMember>
+	<gml:pointMembers>
+		<gml:Point gml:id="point3">
+			<gml:pos>1 1</gml:pos>
+		</gml:Point>
+		<gml:Point gml:id="point4">
+			<gml:pos>0 1</gml:pos>
+		</gml:Point>
+	</gml:pointMembers>
+</gml:MultiPoint>

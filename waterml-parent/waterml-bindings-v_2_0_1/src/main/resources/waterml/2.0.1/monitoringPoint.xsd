@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema xmlns="http://www.w3.org/2001/XMLSchema" xmlns:gml="http://www.opengis.net/gml/3.2"
+    xmlns:wml2="http://www.opengis.net/waterml/2.0" xmlns:gco="http://www.isotc211.org/2005/gco"
+    xmlns:gmd="http://www.isotc211.org/2005/gmd"
+    xmlns:sams="http://www.opengis.net/samplingSpatial/2.0"
+    targetNamespace="http://www.opengis.net/waterml/2.0" elementFormDefault="qualified"
+    attributeFormDefault="unqualified" version="2.0.1">
+    <annotation>
+        <documentation>Defines OGC WaterML2.0 monitoring point feature types. Based on OMXML sampling features.
+            
+            OGC WaterML 2.0 is an OGC Standard.
+            Copyright (c) 2012 Open Geospatial Consortium.
+            To obtain additional rights of use, visit http://www.opengeospatial.org/legal/ .
+        </documentation>
+    </annotation>
+    <import namespace="http://www.opengis.net/gml/3.2" schemaLocation="../../gml/3.2.1/gml.xsd"/>
+    <import namespace="http://www.isotc211.org/2005/gmd" schemaLocation="../../iso/19139/20070417/gmd/gmd.xsd"/>
+    <import namespace="http://www.isotc211.org/2005/gco" schemaLocation="../../iso/19139/20070417/gco/gco.xsd"/>
+    <import namespace="http://www.opengis.net/samplingSpatial/2.0" schemaLocation="../../samplingSpatial/2.0.0/spatialSamplingFeature.xsd"/>
+    <include schemaLocation="waterml2.xsd"/>
+    <element name="MonitoringPoint" substitutionGroup="sams:SF_SpatialSamplingFeature"
+        type="wml2:MonitoringPointType">
+        <annotation>
+            <documentation>A (point) location where water flow or properties are reported, such as a stream gauge, rainfall gauge, or water quality monitoring site.</documentation>
+        </annotation>
+    </element>
+    <complexType name="MonitoringPointType">
+        <complexContent>
+            <extension base="sams:SF_SpatialSamplingFeatureType">
+                <sequence>
+                  
+                    <element maxOccurs="unbounded" minOccurs="0" name="relatedParty"
+                        type="gmd:CI_ResponsibleParty_PropertyType">
+                      <annotation>
+                        <documentation>Describes parties – individuals or organisations – that are related to the monitoring point. Multiple related parties may be described using the role code list (from ISO 19115). The most common relationships are likely to be: owner, originator, pointOfContact, principalInvestigator and distributor.</documentation>
+                      </annotation>
+                    </element>
+                  
+                    <element maxOccurs="unbounded" minOccurs="0" name="monitoringType"
+                        type="gml:ReferenceType">
+                        <annotation>
+                            <documentation>A characterisation of the type of station. E.g. meteorological, surface water, groundwater, water quality etc.</documentation>
+                        </annotation>
+                    </element>
+                  
+                    <element maxOccurs="unbounded" minOccurs="0" name="descriptionReference"
+                        type="gml:ReferenceType">
+                        <annotation>
+                            <documentation>Provide extra description about a monitoring point. This could be a link to an HTML page describing the location, photos of a monitoring point, history records etc.</documentation>
+                        </annotation>
+                    </element>
+                  
+                    <element maxOccurs="unbounded" minOccurs="0" name="verticalDatum"
+                    type="gml:VerticalDatumPropertyType">
+                      <annotation>
+                        <documentation>Specifies the elevation that is used as the zero point, or datum, for vertical measurements (e.g stage/level).  
+                          The gml:VerticalDatumPropertyType type allows specification of the local gauge zero as a height above a reference datum. E.g. local gauge zero is 23m above the AHD using the anchorDefinition. 
+                        </documentation>
+                      </annotation>
+                    </element>
+                  
+                    <element maxOccurs="1" minOccurs="0" name="timeZone"
+                      type="wml2:TimeZonePropertyType">
+                      <annotation>
+                        <documentation>Specifies the time zone that the sampling point is located in. The zone offset must be specified (e.g. +10:00 GMT), with an optional zone abbreviation (e.g. AEST)</documentation>
+                      </annotation>
+                    </element>
+                    
+                    <element maxOccurs="1" minOccurs="0" name="daylightSavingTimeZone"
+                      type="wml2:TimeZonePropertyType"/>
+                </sequence>
+            </extension>
+        </complexContent>
+    </complexType>
+  
+    <complexType name="MonitoringPointPropertyType">
+        <sequence minOccurs="0">
+            <element ref="wml2:MonitoringPoint"/>
+        </sequence>
+        <attributeGroup ref="gml:AssociationAttributeGroup"/>
+        <attributeGroup ref="gml:OwnershipAttributeGroup"/>
+    </complexType>
+  
+    <element name="TimeZone" substitutionGroup="gml:AbstractObject" type="wml2:TimeZoneType"/>
+    <complexType name="TimeZoneType">
+        <sequence>
+            <element name="zoneOffset" type="string"/>
+            <element maxOccurs="1" minOccurs="0" name="zoneAbbreviation" type="string"/>
+        </sequence>
+    </complexType>
+  
+    <complexType name="TimeZonePropertyType">
+        <sequence>
+            <element ref="wml2:TimeZone"/>
+        </sequence>
+        <attributeGroup ref="gml:OwnershipAttributeGroup"/>
+    </complexType>
+</schema>

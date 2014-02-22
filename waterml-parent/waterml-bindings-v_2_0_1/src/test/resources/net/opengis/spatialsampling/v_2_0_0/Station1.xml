@@ -1,0 +1,21 @@
+<?xml version="1.0"?>
+<sams:SF_SpatialSamplingFeature
+	gml:id="st1"
+	xmlns:sf="http://www.opengis.net/sampling/2.0"
+	xmlns:sams="http://www.opengis.net/samplingSpatial/2.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:xlink="http://www.w3.org/1999/xlink"
+	xmlns:gml="http://www.opengis.net/gml/3.2"
+	xsi:schemaLocation="http://www.opengis.net/samplingSpatial/2.0 http://schemas.opengis.net/samplingSpatial/2.0/spatialSamplingFeature.xsd">
+	<sf:type
+		xlink:href="http://www.opengis.net/def/samplingFeatureType/OGC-OM/2.0/SF_SamplingPoint"/>
+	<sf:sampledFeature
+		xlink:href="http://my.hydrology.example.org/storages/aquifer/abc345"/>
+	<sams:shape>
+		<gml:Point
+			gml:id="st1p">
+			<gml:pos
+				srsName="urn:ogc:def:crs:EPSG:6.8:4283">-30.702 134.199</gml:pos>
+		</gml:Point>
+	</sams:shape>
+</sams:SF_SpatialSamplingFeature>

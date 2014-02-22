@@ -1,0 +1,15 @@
+<jaxb:bindings
+        xmlns:jaxb="http://java.sun.com/xml/ns/jaxb"
+        xmlns:xs="http://www.w3.org/2001/XMLSchema"
+        xmlns:xjc="http://java.sun.com/xml/ns/jaxb/xjc"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://java.sun.com/xml/ns/jaxb http://java.sun.com/xml/ns/jaxb/bindingschema_2_0.xsd"
+        jaxb:extensionBindingPrefixes="xjc"
+        version="2.1">
+
+    <jaxb:globalBindings
+            fixedAttributeAsConstantProperty="true"
+            typesafeEnumBase="xs:string">
+        <xjc:simple/>
+    </jaxb:globalBindings>
+</jaxb:bindings>

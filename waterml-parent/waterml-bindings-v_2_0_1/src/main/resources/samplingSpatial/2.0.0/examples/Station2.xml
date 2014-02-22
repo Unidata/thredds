@@ -1,0 +1,46 @@
+<?xml version="1.0"?>
+<sams:SF_SpatialSamplingFeature
+	gml:id="st2"
+	xmlns:sf="http://www.opengis.net/sampling/2.0"
+	xmlns:sams="http://www.opengis.net/samplingSpatial/2.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:xlink="http://www.w3.org/1999/xlink"
+	xmlns:gml="http://www.opengis.net/gml/3.2"
+	xsi:schemaLocation="http://www.opengis.net/samplingSpatial/2.0 http://schemas.opengis.net/samplingSpatial/2.0/spatialSamplingFeature.xsd">
+	<gml:description>Hydrology sampling station</gml:description>
+	<gml:name
+		codeSpace="http://my.hydrology.example.org/catchments/Potamos">st2</gml:name>
+	<sf:type
+		xlink:href="http://www.opengis.net/def/samplingFeatureType/OGC-OM/2.0/SF_SamplingPoint"/>
+	<sf:sampledFeature
+		xlink:href="http://my.hydrology.example.org/catchments/Potamos"/>
+	<sf:lineage>
+		<LI_Lineage
+			xmlns="http://www.isotc211.org/2005/gmd">
+			<statement>
+				<CharacterString
+					xmlns="http://www.isotc211.org/2005/gco">Survey procedure
+					http://my.hydrology.example.org/procedures/survey/g682fgh</CharacterString>
+			</statement>
+		</LI_Lineage>
+	</sf:lineage>
+	<sf:relatedObservation
+		xlink:href="http://my.hydrology.example.org/chemistry/2007/rtg78n"/>
+	<sf:relatedObservation
+		xlink:href="http://my.hydrology.example.org/chemistry/2007/rtg108q"/>
+	<sf:relatedSamplingFeature>
+		<sf:SamplingFeatureComplex>
+			<sf:role
+				xlink:href="http://www.example.org/complex/member"/>
+			<sf:relatedSamplingFeature
+				xlink:href="http://my.example.org/wfs?request=getFeature;featureid=coll32"/>
+		</sf:SamplingFeatureComplex>
+	</sf:relatedSamplingFeature>
+	<sams:shape>
+		<gml:Point
+			gml:id="st2p">
+			<gml:pos
+				srsName="urn:ogc:def:crs:EPSG:6.8:4283">-30.711 134.205</gml:pos>
+		</gml:Point>
+	</sams:shape>
+</sams:SF_SpatialSamplingFeature>

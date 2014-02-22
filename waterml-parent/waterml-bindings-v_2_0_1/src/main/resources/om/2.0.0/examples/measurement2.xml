@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<om:OM_Observation
+	gml:id="obsTest1"
+	xmlns:om="http://www.opengis.net/om/2.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:xlink="http://www.w3.org/1999/xlink"
+	xmlns:gml="http://www.opengis.net/gml/3.2"
+	xsi:schemaLocation="http://www.opengis.net/om/2.0 http://schemas.opengis.net/om/2.0/observation.xsd">
+	<gml:description>Observation test instance: fruit mass</gml:description>
+	<gml:name>Observation test 1</gml:name>
+	<om:type xlink:href="http://www.opengis.net/def/observationType/OGC-OM/2.0/OM_Measurement"/>
+	<om:phenomenonTime>
+		<gml:TimeInstant
+			gml:id="ot1t">
+			<gml:timePosition>2005-01-11T16:22:25.00</gml:timePosition>
+		</gml:TimeInstant>
+	</om:phenomenonTime>
+	<om:resultTime xlink:href="#ot1t"/>
+	<om:procedure xsi:nil="true" nilReason="unknown"/>
+	<om:parameter>
+		<om:NamedValue>
+			<om:name xlink:href="http://sweet.jpl.nasa.gov/2.0/physThermo.owl#Temperature"/>
+			<om:value xsi:type="gml:MeasureType" uom="Cel">22.3</om:value>
+		</om:NamedValue>
+	</om:parameter>
+	<om:observedProperty
+		xlink:href="http://sweet.jpl.nasa.gov/2.0/phys.owl#Mass"/>
+	<om:featureOfInterest 
+		xlink:href="http://wfs.example.org?request=getFeature&amp;featureid=fruit37f "/>
+	<om:result 
+		xsi:type="gml:MeasureType"
+		uom="kg">0.28</om:result>
+</om:OM_Observation>

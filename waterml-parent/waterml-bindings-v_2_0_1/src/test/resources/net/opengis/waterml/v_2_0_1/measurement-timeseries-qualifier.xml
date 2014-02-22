@@ -1,0 +1,176 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wml2:Collection xmlns:wml2="http://www.opengis.net/waterml/2.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xmlns:gml="http://www.opengis.net/gml/3.2" xmlns:om="http://www.opengis.net/om/2.0" xmlns:sa="http://www.opengis.net/sampling/2.0"
+  xmlns:swe="http://www.opengis.net/swe/2.0" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:sf="http://www.opengis.net/sampling/2.0"
+  xmlns:sams="http://www.opengis.net/samplingSpatial/2.0" xsi:schemaLocation="http://www.opengis.net/waterml/2.0 
+  http://schemas.opengis.net/waterml/2.0/waterml2.xsd"
+  gml:id="observation_example_use_case">
+
+  <gml:description>This is an example WaterML2.0 encoding of the minimum daily discharge for each month for a site (Nile River at Deddington in
+    Tasmania, Australia). This is actual data. Auth: Pete Taylor, 25th October 2011, CSIRO. </gml:description>
+  <wml2:metadata>
+    <wml2:DocumentMetadata gml:id="doc_md">
+      <wml2:generationDate>2011-10-25T15:39:00+10:00</wml2:generationDate>
+      <wml2:version xlink:href="http://www.opengis.net/waterml/2.0"/>
+      <wml2:generationSystem>Handcrafted</wml2:generationSystem>
+    </wml2:DocumentMetadata>
+  </wml2:metadata>
+  <wml2:localDictionary>
+    <gml:Dictionary gml:id="qualifier_dict">
+      <gml:identifier codeSpace=""></gml:identifier>
+      <gml:dictionaryEntry>
+        <gml:Definition gml:id="qualifier_v_offset">
+          <gml:identifier codeSpace="http://hiscentral.cuahsi.org/wml/">offsetValue</gml:identifier>
+          <gml:name>Vertical offset</gml:name>
+          <gml:remarks>Describes the vertical offset from the sampling point</gml:remarks>
+        </gml:Definition>
+      </gml:dictionaryEntry>
+    </gml:Dictionary>
+  </wml2:localDictionary>
+  
+  <wml2:samplingFeatureMember>
+    <wml2:MonitoringPoint gml:id="monitoring_point_llewellyn_continuous">
+      <gml:description>Nile river at Deddington, South Esk catchment, Tasmania</gml:description>
+      <gml:name codeSpace="http://www.csiro.au/">Deddington</gml:name>
+      <sf:sampledFeature xlink:href="http://csiro.au/features/rivers/south_esk/deddington"/>
+      <sams:shape>
+        <gml:Point gml:id="location_deddington">
+          <gml:pos srsName="urn:ogc:def:crs:EPSG::4326">-41.814935 147.568517 </gml:pos>
+        </gml:Point>
+      </sams:shape>
+      <wml2:verticalDatum xlink:href="urn:ogc:def:crs:EPSG::5711" xlink:title="Australian height datum"/>
+      <wml2:timeZone>
+        <wml2:TimeZone>
+          <wml2:zoneOffset>+11:00</wml2:zoneOffset>
+          <wml2:zoneAbbreviation>AEDT</wml2:zoneAbbreviation>
+        </wml2:TimeZone>
+      </wml2:timeZone>
+    </wml2:MonitoringPoint>
+  </wml2:samplingFeatureMember>
+
+  <wml2:observationMember>
+    <om:OM_Observation gml:id="series_1">
+      <om:phenomenonTime>
+        <gml:TimePeriod gml:id="period_of_rec">
+          <!-- Note that the period of record is the start of October, but the actual first point
+            is the end of October as the data describes the min value for a previous period -->
+          <gml:beginPosition>2010-10-01T00:00:00</gml:beginPosition>
+          <gml:endPosition>2011-10-31T00:00:00</gml:endPosition>
+        </gml:TimePeriod>
+      </om:phenomenonTime>
+      <om:resultTime/>
+      <om:procedure>
+        <wml2:ObservationProcess gml:id="long_term_average">
+          <wml2:processType xlink:href="http://www.opengis.net/def/waterml/2.0/processType/Algorithm"/>
+          <wml2:aggregationDuration>P1D</wml2:aggregationDuration>
+          <wml2:processReference xlink:href="http://kisters.de/tsm_agent/min_daily_mean_monthly"/>
+        </wml2:ObservationProcess>
+      </om:procedure>
+      <om:observedProperty xlink:href="http://sweet.jpl.nasa.gov/2.2/phenHydro.owl#StreamDischarge"/>
+      <om:featureOfInterest xlink:href="#monitoring_point_llewellyn_continuous"/>
+      <om:result>
+        <wml2:MeasurementTimeseries gml:id="timeseries_1">
+          <wml2:metadata>
+            <wml2:MeasurementTimeseriesMetadata>
+              <wml2:temporalExtent xlink:href="#period_of_rec"/>
+              <wml2:baseTime>2010-11-01T00:00:00</wml2:baseTime>
+              <wml2:spacing>P1M</wml2:spacing>
+              <!-- Anchor point to indicate where the previous minimum is calculated to -->
+              <wml2:startAnchorPoint>2010-10-01T00:00:00</wml2:startAnchorPoint>
+            </wml2:MeasurementTimeseriesMetadata>
+          </wml2:metadata>
+          <wml2:defaultPointMetadata>
+            <wml2:DefaultTVPMeasurementMetadata>
+              <wml2:uom code="cumecs"/>
+              <wml2:interpolationType xlink:href="http://www.opengis.net/def/waterml/2.0/interpolationType/MaxPrec"
+              xlink:title="Minimum in preceeding interval"/>
+              <wml2:aggregationDuration>P1D</wml2:aggregationDuration>
+            </wml2:DefaultTVPMeasurementMetadata>
+          </wml2:defaultPointMetadata>
+          <!-- November but data describes October -->
+          <wml2:point>
+            <wml2:MeasurementTVP>
+              <wml2:value>0.72</wml2:value>
+              <wml2:metadata>
+                <wml2:TVPMeasurementMetadata>
+                  <wml2:qualifier>
+                    <swe:Quantity definition="#qualifier_v_offset">
+                      <swe:uom code="m"/>
+                      <swe:value>3.0</swe:value>
+                    </swe:Quantity>
+                  </wml2:qualifier>
+                </wml2:TVPMeasurementMetadata>
+              </wml2:metadata>
+            </wml2:MeasurementTVP>
+          </wml2:point>
+          <wml2:point>
+            <wml2:MeasurementTVP>
+              <wml2:value>0.588</wml2:value>
+            </wml2:MeasurementTVP>
+          </wml2:point>
+          <wml2:point>
+            <wml2:MeasurementTVP>
+              <wml2:value>0.506</wml2:value>
+            </wml2:MeasurementTVP>
+          </wml2:point>
+          <wml2:point>
+            <wml2:MeasurementTVP>
+              <wml2:value>0.298</wml2:value>
+            </wml2:MeasurementTVP>
+          </wml2:point>
+          <wml2:point>
+            <wml2:MeasurementTVP>
+              <wml2:value>0.209</wml2:value>
+            </wml2:MeasurementTVP>
+          </wml2:point>
+          <wml2:point>
+            <wml2:MeasurementTVP>
+              <wml2:value xsi:nil="true"/>
+            </wml2:MeasurementTVP>
+          </wml2:point>
+          <wml2:point>
+            <wml2:MeasurementTVP>
+              <wml2:value>0.529</wml2:value>
+            </wml2:MeasurementTVP>
+          </wml2:point>
+          <wml2:point>
+            <wml2:MeasurementTVP>
+              <wml2:value>0.524</wml2:value>
+            </wml2:MeasurementTVP>
+          </wml2:point>
+          <wml2:point>
+            <wml2:MeasurementTVP>
+              <wml2:value>0.791</wml2:value>
+            </wml2:MeasurementTVP>
+          </wml2:point>
+          <wml2:point>
+            <wml2:MeasurementTVP>
+              <wml2:value>1.102</wml2:value>
+            </wml2:MeasurementTVP>
+          </wml2:point>
+          <wml2:point>
+            <wml2:MeasurementTVP>
+              <wml2:value>2.901</wml2:value>
+            </wml2:MeasurementTVP>
+          </wml2:point>
+          <wml2:point>
+            <wml2:MeasurementTVP>
+              <wml2:value>0.827</wml2:value>
+            </wml2:MeasurementTVP>
+          </wml2:point>
+          <wml2:point>
+            <wml2:MeasurementTVP>
+              <wml2:value>0.625</wml2:value>
+              <wml2:metadata>
+                <wml2:TVPMeasurementMetadata>
+                  <wml2:comment>Only partial for this month - 5 days remain</wml2:comment>
+                  <wml2:qualifier xlink:href="http://youragency.example.com/yourvocabularies/qualifier/partial_statistic" xlink:title="partial statistic"/>     </wml2:TVPMeasurementMetadata>
+              </wml2:metadata>
+            </wml2:MeasurementTVP>
+          </wml2:point>
+        </wml2:MeasurementTimeseries>
+      </om:result>
+    </om:OM_Observation>
+  </wml2:observationMember>
+
+</wml2:Collection>

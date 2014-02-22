@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<om:OM_Observation
+	gml:id="SAO1"
+	xmlns:om="http://www.opengis.net/om/2.0"
+	xmlns:swe="http://www.opengis.net/swe/2.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:xlink="http://www.w3.org/1999/xlink"
+	xmlns:gml="http://www.opengis.net/gml/3.2"
+	xsi:schemaLocation="http://www.opengis.net/om/2.0 http://schemas.opengis.net/om/2.0/observation.xsd
+	                    http://www.opengis.net/swe/2.0 http://schemas.opengis.net/sweCommon/2.0/swe.xsd">
+	<!-- -->
+	<gml:description>A single CTD profile (with sampling time given by the observation phenomenonTime)</gml:description>
+	<gml:name>CTD Profile</gml:name>
+	<om:type xlink:href="http://www.opengis.net/def/observationType/OGC-OM/2.0/OM_ComplexObservation"/>
+	<!-- -->
+	<om:phenomenonTime>
+		<gml:TimeInstant gml:id="ot1t">
+			<gml:timePosition>2005-01-11T17:22:25Z</gml:timePosition>
+		</gml:TimeInstant>
+	</om:phenomenonTime>
+	<om:resultTime xlink:href="#ot1t"/>
+	<!-- -->
+	<om:procedure xlink:href="http://www.example.org/register/process/ctd3"/>
+	<om:observedProperty xlink:href="http://sweet.jpl.nasa.gov/2.0/atmo.owl#Weather"/>
+	<om:featureOfInterest xlink:href="http://www.example.org/register/platform/mooring3"/>
+	<!-- -->
+	<om:result xsi:type="swe:DataArrayPropertyType">
+		<swe:DataArray>
+			<swe:elementCount>
+				<swe:Count>
+					<swe:value>5</swe:value>
+				</swe:Count>
+			</swe:elementCount>
+			<swe:elementType name="point">
+				<swe:DataRecord>
+					<swe:field name="depth">
+						<swe:Quantity definition="http://mmisw.org/ont/cf/parameter/depth">
+							<swe:label>Sampling Point Vertical Location</swe:label>
+							<swe:uom code="m"/>
+						</swe:Quantity>
+					</swe:field>
+					<swe:field name="temperature">
+						<swe:Quantity definition="http://mmisw.org/ont/cf/parameter/sea_water_temperature">
+							<swe:label>Temperature</swe:label>
+							<swe:uom code="Cel"/>
+						</swe:Quantity>
+					</swe:field>
+					<swe:field name="salinity">
+					  <swe:Quantity definition="http://mmisw.org/ont/cf/parameter/sea_water_salinity">
+							<swe:label>Salinity</swe:label>
+							<swe:uom code="[ppth]"/>
+						</swe:Quantity>
+					</swe:field>
+				</swe:DataRecord>
+			</swe:elementType>
+			<swe:encoding>
+				<swe:TextEncoding blockSeparator="&#13;&#10;" tokenSeparator=","/>
+			</swe:encoding>
+			<swe:values>
+				00,12,45
+				10,13,20
+				20,14,30
+				30,13,35
+				40,13,40
+			</swe:values>
+		</swe:DataArray>
+	</om:result>
+</om:OM_Observation>

@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema
+	xmlns="http://www.w3.org/2001/XMLSchema"
+	xmlns:om="http://www.opengis.net/om/2.0"
+	xmlns:ex="http://www.example.net/xmlns"
+	xmlns:gml="http://www.opengis.net/gml/3.2"
+	targetNamespace="http://www.example.net/xmlns"
+	elementFormDefault="qualified"
+	attributeFormDefault="unqualified"
+	version="2.0.0">
+	<annotation>
+		<documentation> specializingObsevationExample.xsd 
+			
+			This example shows how to generate a
+			specialized observation type for XML Schema validation 
+			
+			Observations and Measurements - XML Implementation is an OGC Standard.
+			
+			Copyright (c) [2010] Open Geospatial Consortium, Inc. All Rights Reserved.
+			To obtain additional rights of use, visit http://www.opengeospatial.org/legal/. 
+		</documentation>
+	</annotation>
+	<!-- ====================================================================== -->
+	<!-- bring in other schemas -->
+	<import namespace="http://www.opengis.net/gml/3.2" schemaLocation="../../gml/3.2.1/gml.xsd"/>
+	<import namespace="http://www.opengis.net/om/2.0" schemaLocation="observation.xsd"/>
+	<!-- ====================================================================== -->
+	<!-- ===== Some Observation result ====== -->
+	<!-- ====================================================================== -->
+	<element
+		name="result"
+		type="ex:SomeType"
+		substitutionGroup="om:result"/>
+	<simpleType
+		name="SomeType">
+		<annotation>
+			<documentation>Replace with your favorite type definition</documentation>
+		</annotation>
+		<restriction
+			base="string"/>
+	</simpleType>
+	<!-- ====================================================================== -->
+	<!-- ===== Some Observation ====== -->
+	<!-- ====================================================================== -->
+	<complexType
+		name="Some_ObservationType">
+		<annotation>
+			<documentation> Observation whose result is expressed as a 'SomeType' </documentation>
+		</annotation>
+		<complexContent>
+			<restriction
+				base="om:OM_ObservationType">
+				<sequence>
+					<group
+						ref="gml:StandardObjectProperties"/>
+					<element
+						ref="gml:boundedBy"
+						minOccurs="0"/>
+					<group
+						ref="om:OM_CommonProperties"/>
+					<element
+						ref="ex:result"/>
+				</sequence>
+			</restriction>
+		</complexContent>
+	</complexType>
+	<!-- ......................... -->
+	<element
+		name="Some_Observation"
+		type="ex:Some_ObservationType"
+		substitutionGroup="om:OM_Observation">
+		<annotation>
+			<documentation> Observation whose result is expressed as a 'SomeType' </documentation>
+		</annotation>
+	</element>
+	<!-- ...................... -->
+	<complexType
+		name="OX_MeasurementPropertyType">
+		<sequence
+			minOccurs="0">
+			<element
+				ref="ex:Some_Observation"/>
+		</sequence>
+		<attributeGroup
+			ref="gml:AssociationAttributeGroup"/>
+	</complexType>
+	<!-- ====================================================================== -->
+</schema>
