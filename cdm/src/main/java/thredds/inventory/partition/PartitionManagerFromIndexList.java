@@ -12,7 +12,8 @@ import java.util.Iterator;
 import java.util.List;
 
 /**
- * Description
+ * A PartitionManager from a list of index files.
+ * Used in GribCollectionBuilder with multiple runtimes.
  *
  * @author John
  * @since 2/5/14                   `
@@ -67,9 +68,10 @@ public class PartitionManagerFromIndexList extends CollectionAbstract implements
   }
 
   @Override
-  public void close() {
+  public void close() { }
 
-  }
+  @Override
+  public boolean isLeaf() { return false; }
 
   @Override
   public Iterable<MFile> getFilesSorted() throws IOException {

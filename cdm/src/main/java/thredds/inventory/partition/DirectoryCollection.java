@@ -144,8 +144,7 @@ public class DirectoryCollection extends CollectionAbstract {
   }
 
   @Override
-  public void close() {
-  }
+  public void close() { }
 
   // returns everything in the current directory
   private class MyFileIterator implements CloseableIterator<MFile> {

@@ -46,15 +46,15 @@ import thredds.featurecollection.FeatureCollectionConfig;
 import thredds.featurecollection.FeatureCollectionType;
 import thredds.inventory.*;
 import thredds.util.*;
-import ucar.nc2.grib.collection.GribCdmIndex2;
+import ucar.nc2.grib.collection.GribCdmIndex;
 import ucar.nc2.grib.collection.GribCollection;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.util.DiskCache2;
 import ucar.nc2.util.log.LoggerFactory;
-import ucar.nc2.util.net.HTTPException;
-import ucar.nc2.util.net.HTTPFactory;
-import ucar.nc2.util.net.HTTPMethod;
-import ucar.nc2.util.net.HTTPSession;
+import ucar.httpclient.HTTPException;
+import ucar.httpclient.HTTPFactory;
+import ucar.httpclient.HTTPMethod;
+import ucar.httpclient.HTTPSession;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -226,7 +226,7 @@ public class Tdm {
      }
 
      for (FeatureCollectionConfig config : fcList) {
-       if (config.type != FeatureCollectionType.GRIB2) continue;
+       if (config.type != FeatureCollectionType.GRIB1 && config.type != FeatureCollectionType.GRIB2) continue;
        System.out.printf("FeatureCollection %s scheduled %n", config.name);
        /* CollectionManager dcm = fc.getDatasetCollectionManager(); // LOOK this will fail
        if (config != null && config.gribConfig != null && config.gribConfig.gdsHash != null)
@@ -308,7 +308,7 @@ public class Tdm {
       try {
         Formatter errlog = new Formatter();
 
-        boolean changed = GribCdmIndex2.updateGribCollection(config, updateType, logger);
+        boolean changed = GribCdmIndex.updateGribCollection(config, updateType, logger);
 
         logger.debug("{} {} changed {}", CalendarDate.present(), config.name, changed);
         if (changed) System.out.printf("%s %s changed%n", CalendarDate.present(), config.name);

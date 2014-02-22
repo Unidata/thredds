@@ -303,7 +303,7 @@ public class CdmIndex2Panel extends JPanel {
     if (gc != null) gc.close();
 
     this.config = config;
-    gc = GribCdmIndex2.openCdmIndex(indexFile.toString(), config, logger);
+    gc = GribCdmIndex.openCdmIndex(indexFile.toString(), config, logger);
     if (gc == null)
       throw new IOException("Not a grib collection index file");
 

@@ -19,12 +19,11 @@ class DirectoryCollectionFromIndex extends CollectionAbstract {
   final IndexReader indexReader;
 
   DirectoryCollectionFromIndex(DirectoryBuilder builder, DateExtractor dateExtractor, IndexReader indexReader, org.slf4j.Logger logger) {
-    super(builder.getPartitionName(), logger );
+    super(builder.getPartitionName(), logger);
     setDateExtractor(dateExtractor);
     setRoot(builder.getDir().toString());
     this.builder = builder;
     this.indexReader = indexReader;
-    setLeaf(true);
   }
 
   @Override
@@ -38,8 +37,7 @@ class DirectoryCollectionFromIndex extends CollectionAbstract {
   }
 
   @Override
-  public void close() {
-  }
+  public void close() { }
 
   @Override
   public Iterable<MFile> getFilesSorted() throws IOException {

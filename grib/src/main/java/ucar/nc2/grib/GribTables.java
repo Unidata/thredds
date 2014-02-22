@@ -49,6 +49,7 @@ public interface GribTables {
 
   GribStatType getStatType(int intvType);
 
+  VertCoord.VertUnit getVertUnit(int code);
 
   /* Parameter getParameter(int discipline, int category, int parameter);
 

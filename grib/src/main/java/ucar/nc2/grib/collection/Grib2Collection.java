@@ -72,7 +72,7 @@ public class Grib2Collection extends GribCollection {
     } else {
       MFile wantFile = findMFileByName(filename);
       if (wantFile != null) {
-        GribCollection gc = GribCdmIndex2.openGribCollectionFromDataFile(wantFile, CollectionUpdateType.nocheck, gribConfig, errlog, logger);  // LOOK thread-safety : creating ncx
+        GribCollection gc = GribCdmIndex.openGribCollectionFromDataFile(false, wantFile, CollectionUpdateType.nocheck, gribConfig, errlog, logger);  // LOOK thread-safety : creating ncx
         Grib2Iosp iosp = new Grib2Iosp(gc);
         NetcdfFile ncfile = new NetcdfFileGC(iosp, null, getIndexFile().getPath(), null);
         return new NetcdfDataset(ncfile);
@@ -97,7 +97,7 @@ public class Grib2Collection extends GribCollection {
     } else {
       MFile wantFile = findMFileByName(filename);
       if (wantFile != null) {
-        GribCollection gc = GribCdmIndex2.openGribCollectionFromDataFile(wantFile, CollectionUpdateType.nocheck, gribConfig, errlog, logger);  // LOOK thread-safety : creating ncx
+        GribCollection gc = GribCdmIndex.openGribCollectionFromDataFile(false, wantFile, CollectionUpdateType.nocheck, gribConfig, errlog, logger);  // LOOK thread-safety : creating ncx
 
         Grib2Iosp iosp = new Grib2Iosp(gc);
         NetcdfFile ncfile = new NetcdfFileGC(iosp, null, getIndexFile().getPath(), null);

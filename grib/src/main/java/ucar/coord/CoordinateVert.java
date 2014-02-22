@@ -22,21 +22,17 @@ import java.util.*;
 public class CoordinateVert implements Coordinate {
 
   private final List<VertCoord.Level> levelSorted;
-  private final int code;
+  private final int code; // Grib1 - code table 3; Grib2 - Code table 4.5
   private String name;
   private final VertCoord.VertUnit vunit;
   private final boolean isLayer;
 
-  public CoordinateVert(int code, List<VertCoord.Level> levelSorted) {
+  public CoordinateVert(int code, VertCoord.VertUnit vunit, List<VertCoord.Level> levelSorted) {
     this.levelSorted = Collections.unmodifiableList(levelSorted);
     this.code = code;
-    this.vunit = Grib2Utils.getLevelUnit(code);  // LOOK GRIB1
+    this.vunit = vunit;
     this.isLayer = levelSorted.get(0).isLayer();
   }
-
-  /* public Object extract(Grib2Record gr) {
-    return extractLevel(gr);
-  } */
 
   public List<VertCoord.Level> getLevelSorted() {
     return levelSorted;
@@ -68,6 +64,10 @@ public class CoordinateVert implements Coordinate {
   @Override
   public String getUnit() {
     return vunit.getUnits();
+  }
+
+  public VertCoord.VertUnit getVertUnit() {
+    return vunit;
   }
 
   public boolean isLayer() {
@@ -153,7 +153,7 @@ public class CoordinateVert implements Coordinate {
       List<VertCoord.Level> levelSorted = new ArrayList<>(values.size());
       for (Object val : values) levelSorted.add( (VertCoord.Level) val);
       Collections.sort(levelSorted);
-      return new CoordinateVert(code, levelSorted);
+      return new CoordinateVert(code, Grib2Utils.getLevelUnit(code), levelSorted);
     }
   }
 
@@ -180,7 +180,7 @@ public class CoordinateVert implements Coordinate {
       List<VertCoord.Level> levelSorted = new ArrayList<>(values.size());
       for (Object val : values) levelSorted.add( (VertCoord.Level) val);
       Collections.sort(levelSorted);
-      return new CoordinateVert(code, levelSorted);
+      return new CoordinateVert(code, cust.getVertUnit(code), levelSorted);
     }
   }
 

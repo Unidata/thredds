@@ -1170,7 +1170,7 @@ public class Grib2CollectionPanel extends JPanel {
         int count = 0;
         for (Grib2Pds.TimeInterval ti : pdsi.getTimeIntervals()) {
           if (count++ > 0) f.format(", ");
-          f.format("%d %s", ti.statProcessType, cust.getIntervalNameShort(ti.statProcessType));
+          f.format("%d %s", ti.statProcessType, cust.getStatisticNameShort(ti.statProcessType));
         }
         return f.toString();
       } else return "";
@@ -1469,7 +1469,7 @@ public class Grib2CollectionPanel extends JPanel {
         Grib2Pds.PdsInterval pdsi = (Grib2Pds.PdsInterval) pds;
         Grib2Pds.TimeInterval[] ti = pdsi.getTimeIntervals();
         int statType = ti[0].statProcessType;
-        intvName = cust.getIntervalNameShort(statType);
+        intvName = cust.getStatisticNameShort(statType);
       }
 
       f.format("  Time Unit=%s ;Stat=%s%n", Grib2Utils.getCalendarPeriod( pds.getTimeUnit()), intvName);

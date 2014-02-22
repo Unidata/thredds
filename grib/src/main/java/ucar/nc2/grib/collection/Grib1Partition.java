@@ -52,7 +52,7 @@ import java.util.Formatter;
 public class Grib1Partition extends PartitionCollection implements AutoCloseable {
 
   public Grib1Partition(String name, File directory, String indexFilename, FeatureCollectionConfig config, org.slf4j.Logger logger) {
-    super(name, directory, indexFilename, config, false, logger);
+    super(name, directory, indexFilename, config, true, logger);
   }
 
   // LOOK - needs time partition collection iosp or something

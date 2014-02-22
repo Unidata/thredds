@@ -142,7 +142,7 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
       StateGrib localState = (StateGrib) state;
       GribCollection previous = localState.gribCollection;
 
-      localState.gribCollection = GribCdmIndex2.openGribCollection(isGrib1, this.config, force, logger);
+      localState.gribCollection = GribCdmIndex.openGribCollection(this.config, force, logger);
       logger.debug("{}: GribCollection object was recreated", getName());
       if (previous != null) previous.close(); // LOOK may be another thread using - other thread will fail
 

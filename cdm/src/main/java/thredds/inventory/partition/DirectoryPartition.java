@@ -33,7 +33,6 @@ public class DirectoryPartition extends CollectionAbstract implements PartitionM
 
     this.topCollection = config.name;
     this.collectionName = DirectoryCollection.makeCollectionName(topCollection, topDir);
-    // setLeaf(true);  dont know yet
   }
 
   public String getTopCollectionName() {

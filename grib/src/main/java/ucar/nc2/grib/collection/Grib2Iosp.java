@@ -87,7 +87,7 @@ public class Grib2Iosp extends GribIosp {
     }
 
     if (vindex.intvType >= 0) {
-      String statName = tables.getIntervalNameShort(vindex.intvType);
+      String statName = tables.getStatisticNameShort(vindex.intvType);
       if (statName != null) f.format("_%s", statName);
     }
 
@@ -121,13 +121,13 @@ public class Grib2Iosp extends GribIosp {
       f.format("%s", gp.getName());
 
     if (vindex.intvType >= 0 && vindex.intvName != null && !vindex.intvName.isEmpty()) {
-      String intvName = cust.getIntervalNameShort(vindex.intvType);
-      if (intvName == null || intvName.equalsIgnoreCase("Missing")) intvName = cust.getIntervalNameShort(vindex.intvType);
+      String intvName = cust.getStatisticNameShort(vindex.intvType);
+      if (intvName == null || intvName.equalsIgnoreCase("Missing")) intvName = cust.getStatisticNameShort(vindex.intvType);
       if (intvName == null) f.format(" (%s)", vindex.intvName);
       else f.format(" (%s %s)", vindex.intvName, intvName);
 
     } else if (vindex.intvType >= 0) {
-      String intvName = cust.getIntervalNameShort(vindex.intvType);
+      String intvName = cust.getStatisticNameShort(vindex.intvType);
       f.format(" (%s)", intvName);
     }
 
@@ -260,14 +260,14 @@ public class Grib2Iosp extends GribIosp {
 
     String vintvName = vindex.getTimeIntvName();
     if (vindex.intvType >= 0 && vintvName != null && !vintvName.isEmpty()) {
-      String intvName = cust.getIntervalNameShort(vindex.intvType);
+      String intvName = cust.getStatisticNameShort(vindex.intvType);
       if (intvName == null || intvName.equalsIgnoreCase("Missing"))
-        intvName = cust.getIntervalNameShort(vindex.intvType);
+        intvName = cust.getStatisticNameShort(vindex.intvType);
       if (intvName == null) f.format(" (%s)", vintvName);
       else f.format(" (%s %s)", vintvName, intvName);
 
     } else if (vindex.intvType >= 0) {
-      String intvName = cust.getIntervalNameShort(vindex.intvType);
+      String intvName = cust.getStatisticNameShort(vindex.intvType);
       f.format(" (%s)", intvName);
     }
 
@@ -309,9 +309,9 @@ public class Grib2Iosp extends GribIosp {
   // accept grib2 or ncx2 files
   @Override
   public boolean isValidFile(RandomAccessFile raf) throws IOException {
-    GribCdmIndex2.GribCollectionType type = GribCdmIndex2.getType(raf);
-    if (type == GribCdmIndex2.GribCollectionType.GRIB2) return true;
-    if (type == GribCdmIndex2.GribCollectionType.Partition2) return true;
+    GribCdmIndex.GribCollectionType type = GribCdmIndex.getType(raf);
+    if (type == GribCdmIndex.GribCollectionType.GRIB2) return true;
+    if (type == GribCdmIndex.GribCollectionType.Partition2) return true;
 
     // check for GRIB2 data file
     return Grib2RecordScanner.isValidFile(raf);
@@ -329,11 +329,11 @@ public class Grib2Iosp extends GribIosp {
 
   // public no-arg constructor for reflection
   public Grib2Iosp() {
-    super(logger);
+    super(false, logger);
   }
 
   public Grib2Iosp(GribCollection.GroupGC gHcs, GribCollection.Type gtype) {
-    super(logger);
+    super(false, logger);
     this.gHcs = gHcs;
     this.owned = true;
     this.gtype = gtype;
@@ -341,14 +341,13 @@ public class Grib2Iosp extends GribIosp {
 
   // LOOK more likely we will set an individual dataset
   public Grib2Iosp(GribCollection gc) {
-    super(logger);
+    super(false, logger);
     this.gribCollection = gc;
     this.owned = true;
   }
 
-  @Override
   protected String getIntervalName(int id) {
-    return cust.getIntervalName(id);
+    return cust.getStatisticName(id);
   }
 
   @Override
@@ -437,11 +436,10 @@ public class Grib2Iosp extends GribIosp {
 
   @Override
   protected float[] readData(RandomAccessFile rafData, GribIosp.DataRecord dr) throws IOException {
-
-        GdsHorizCoordSys hcs = dr.hcs;
-        int scanMode = (dr.scanMode == Grib2Index.ScanModeMissing) ? hcs.scanMode : dr.scanMode;
-        return Grib2Record.readData(rafData, dr.drsPos, dr.bmsPos, hcs.gdsNumberPoints, scanMode,
-                hcs.nxRaw, hcs.nyRaw, hcs.nptsInLine);
+    GdsHorizCoordSys hcs = dr.hcs;
+    int scanMode = (dr.scanMode == Grib2Index.ScanModeMissing) ? hcs.scanMode : dr.scanMode;
+    return Grib2Record.readData(rafData, dr.dataPos, dr.bmsPos, hcs.gdsNumberPoints, scanMode,
+            hcs.nxRaw, hcs.nyRaw, hcs.nptsInLine);
   }
 
 }

@@ -43,7 +43,7 @@ public class DirectoryBuilder {
     if (hasIndex) {
       return dpart.makeChildCollection(builder);
     } else {
-      DirectoryCollection result =  new DirectoryCollection(config.name, topDir, logger); // no index file
+      DirectoryCollection result = new DirectoryCollection(config.name, topDir, logger); // no index file
       result.setLeaf(true);
       return result;
     }

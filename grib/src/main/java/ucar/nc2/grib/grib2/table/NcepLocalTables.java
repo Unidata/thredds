@@ -393,8 +393,8 @@ public class NcepLocalTables extends Grib2Customizer {
   //////////////////////////////////////////////////////////////
 
   @Override
-  public String getIntervalNameShort(int id) {
-    if (id < 192) return super.getIntervalNameShort(id);
+  public String getStatisticNameShort(int id) {
+    if (id < 192) return super.getStatisticNameShort(id);
     switch (id) {
       case 192:
         return "ClimatologicalMeanValue";
@@ -437,7 +437,7 @@ public class NcepLocalTables extends Grib2Customizer {
       case 255:
         return "Interval";
       default:
-        return super.getIntervalNameShort(id);
+        return super.getStatisticNameShort(id);
     }
   }
 
@@ -472,8 +472,8 @@ public class NcepLocalTables extends Grib2Customizer {
   private static Map<Integer, String> statName;  // shared by all instances
 
   @Override
-  public String getIntervalName(int id) {
-    if (id < 192) return super.getIntervalName(id);
+  public String getStatisticName(int id) {
+    if (id < 192) return super.getStatisticName(id);
     if (statName == null) statName = initTable410();
     if (statName == null) return null;
     return statName.get(id);

@@ -119,15 +119,18 @@ public abstract class GribIosp extends AbstractIOServiceProvider {
 
   /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+  protected final boolean isGrib1;
+  protected final org.slf4j.Logger logger;
+
   protected GribCollection gribCollection;
   protected GribCollection.GroupGC gHcs;
   protected GribCollection.Type gtype; // only used if gHcs was set
   protected boolean isPartitioned;
   protected boolean owned; // if Iosp is owned by GribCollection; affects close()
-  protected org.slf4j.Logger logger;
   protected ucar.nc2.grib.GribTables gribTable;
 
-  public GribIosp(org.slf4j.Logger logger) {
+  public GribIosp(boolean isGrib1, org.slf4j.Logger logger) {
+    this.isGrib1 = isGrib1;
     this.logger = logger;
   }
 
@@ -137,7 +140,8 @@ public abstract class GribIosp extends AbstractIOServiceProvider {
   protected abstract String makeVariableLongName(GribCollection.VariableIndex vindex);
   protected abstract String makeVariableUnits(GribCollection.VariableIndex vindex);
 
-  protected abstract String getIntervalName(int id);
+  //protected abstract String getTimeRangeName(int code);
+  //protected abstract String getStatisticType(int code);
   protected abstract String getVerticalCoordDesc(int vc_code);
   protected abstract GribTables.Parameter getParameter(GribCollection.VariableIndex vindex);
 
@@ -146,8 +150,6 @@ public abstract class GribIosp extends AbstractIOServiceProvider {
   protected abstract void show(RandomAccessFile rafData, long pos) throws IOException;
 
   protected abstract float[] readData(RandomAccessFile rafData, DataRecord dr) throws IOException;
-
-
 
   @Override
   public void open(RandomAccessFile raf, NetcdfFile ncfile, CancelTask cancelTask) throws IOException {
@@ -163,7 +165,7 @@ public abstract class GribIosp extends AbstractIOServiceProvider {
 
     } else if (gribCollection == null) { // may have been set in the constructor
 
-      this.gribCollection = GribCdmIndex2.makeGribCollectionFromRaf(false, raf, config, CollectionUpdateType.test, logger);
+      this.gribCollection = GribCdmIndex.makeGribCollectionFromRaf(false, raf, config, CollectionUpdateType.test, logger);
       if (gribCollection == null)
         throw new IllegalStateException("Not a GRIB data file or ncx2 file");
 
@@ -231,16 +233,17 @@ public abstract class GribIosp extends AbstractIOServiceProvider {
 
     String horizDims;
 
-    // CurvilinearOrthogonal - lat and lon fields must be present in the file
-    boolean isLatLon2D = Grib2Utils.isLatLon2D(hcs.template, gribCollection.getCenter());  // LOOK does this work for GRIB1 ??
-    if (isLatLon2D) {
+    boolean isLatLon2D = !isGrib1 && Grib2Utils.isLatLon2D(hcs.template, gribCollection.getCenter());
+    boolean isLatLon = isGrib1 ? hcs.isLatLon() : Grib2Utils.isLatLon(hcs.template, gribCollection.getCenter());
+
+    if (isLatLon2D) { // CurvilinearOrthogonal - lat and lon fields must be present in the file
       horizDims = "lat lon";  // LOOK: orthogonal curvilinear
 
       // LOOK - assume same number of points for all grids
       ncfile.addDimension(g, new Dimension("lon", hcs.nx));
       ncfile.addDimension(g, new Dimension("lat", hcs.ny));
 
-    } else if (Grib2Utils.isLatLon(hcs.template, gribCollection.getCenter())) {
+    } else if (isLatLon) {
       horizDims = "lat lon";
       ncfile.addDimension(g, new Dimension("lon", hcs.nx));
       ncfile.addDimension(g, new Dimension("lat", hcs.ny));
@@ -431,8 +434,9 @@ public abstract class GribIosp extends AbstractIOServiceProvider {
      Variable v = ncfile.addVariable(g, new Variable(ncfile, g, null, tcName, DataType.DOUBLE, dims));
      String units = runtime.getUnit(); // + " since " + runtime.getFirstDate();
      v.addAttribute(new Attribute(CDM.UNITS, units));
-     v.addAttribute(new Attribute(CF.STANDARD_NAME, "time"));
-     v.addAttribute(new Attribute(CDM.LONG_NAME, is2Dtime ? "forecast times (2D)" : "forecast times (best)"));
+     v.addAttribute(new Attribute(CF.STANDARD_NAME, CF.TIME));
+     //v.addAttribute(new Attribute(CDM.LONG_NAME, getIntervalName(time2D.getCode())));
+     v.addAttribute(new Attribute(CDM.LONG_NAME, is2Dtime ? "forecast times (2D)" : "forecast times"));
 
      double[] data = new double[nruns * ntimes];
      for (int i=0; i<nruns * ntimes; i++) data[i] = Double.NaN;
@@ -469,9 +473,9 @@ public abstract class GribIosp extends AbstractIOServiceProvider {
        v.setCachedData(Array.factory(DataType.DOUBLE, shape, data));
 
        // bounds
-       String intvName = getIntervalName(time2D.getCode());
+       /*String intvName = getIntervalName(time2D.get());
        if (intvName != null)
-         v.addAttribute(new Attribute(CDM.LONG_NAME, intvName));
+         v.addAttribute(new Attribute(CDM.LONG_NAME, intvName)); */
        String bounds_name = tcName + "_bounds";
 
        Variable bounds = ncfile.addVariable(g, new Variable(ncfile, g, null, bounds_name, DataType.DOUBLE, dims + " 2"));
@@ -508,6 +512,7 @@ public abstract class GribIosp extends AbstractIOServiceProvider {
     String units = tc.getUnit()+ " since " + runtime.getFirstDate();
     v.addAttribute(new Attribute(CDM.UNITS, units));
     v.addAttribute(new Attribute(CF.STANDARD_NAME, "time"));
+    //v.addAttribute(new Attribute(CDM.LONG_NAME, getIntervalName(tc.getCode())));
 
     double[] data = new double[nruns * ntimes];
     int count = 0;
@@ -536,9 +541,9 @@ public abstract class GribIosp extends AbstractIOServiceProvider {
       v.setCachedData(Array.factory(DataType.DOUBLE, new int[]{nruns, ntimes}, data));
 
       // bounds
-      String intvName = getIntervalName(tc.getCode());
+      /* String intvName = getIntervalName(tc.getCode());
       if (intvName != null)
-        v.addAttribute(new Attribute(CDM.LONG_NAME, intvName));
+        v.addAttribute(new Attribute(CDM.LONG_NAME, intvName));  */
       String bounds_name = tcName + "_bounds";
 
       Variable bounds = ncfile.addVariable(g, new Variable(ncfile, g, null, bounds_name, DataType.DOUBLE, dims + " 2"));
@@ -568,6 +573,7 @@ public abstract class GribIosp extends AbstractIOServiceProvider {
     String units = coordTime.getUnit()+ " since " + runtime.getFirstDate();
     v.addAttribute(new Attribute(CDM.UNITS, units));
     v.addAttribute(new Attribute(CF.STANDARD_NAME, "time"));
+    //v.addAttribute(new Attribute(CDM.LONG_NAME, getIntervalName(coordTime.getCode())));
 
     double[] data = new double[ntimes];
     int count = 0;
@@ -587,6 +593,7 @@ public abstract class GribIosp extends AbstractIOServiceProvider {
     String units = coordTime.getUnit()+ " since " + runtime.getFirstDate();
     v.addAttribute(new Attribute(CDM.UNITS, units));
     v.addAttribute(new Attribute(CF.STANDARD_NAME, "time"));
+   // v.addAttribute(new Attribute(CDM.LONG_NAME, getIntervalName(coordTime.getCode())));
 
     double[] data = new double[ntimes];
     int count = 0;
@@ -599,9 +606,9 @@ public abstract class GribIosp extends AbstractIOServiceProvider {
     v.setCachedData(Array.factory(DataType.DOUBLE, new int[]{ntimes}, data));
 
     // bounds
-    String intvName = getIntervalName(coordTime.getCode());
+    /* String intvName = getIntervalName(coordTime.getCode());
     if (intvName != null)
-      v.addAttribute(new Attribute(CDM.LONG_NAME, intvName));
+      v.addAttribute(new Attribute(CDM.LONG_NAME, intvName));*/
     String bounds_name = tcName + "_bounds";
 
     Variable bounds = ncfile.addVariable(g, new Variable(ncfile, g, null, bounds_name, DataType.DOUBLE, dims + " 2"));
@@ -630,8 +637,8 @@ public abstract class GribIosp extends AbstractIOServiceProvider {
         v.addAttribute(new Attribute(CF.POSITIVE, vc.isPositiveUp() ? CF.POSITIVE_UP : CF.POSITIVE_DOWN));
       }
 
-      v.addAttribute(new Attribute("Grib2_level_type", vc.getCode()));
-      VertCoord.VertUnit vu = Grib2Utils.getLevelUnit(vc.getCode());
+      v.addAttribute(new Attribute("Grib_level_type", vc.getCode()));
+      VertCoord.VertUnit vu = vc.getVertUnit();
       if (vu != null) {
         if (vu.getDatum() != null)
           v.addAttribute(new Attribute("datum", vu.getDatum()));
@@ -646,7 +653,9 @@ public abstract class GribIosp extends AbstractIOServiceProvider {
 
         Variable bounds = ncfile.addVariable(g, new Variable(ncfile, g, null, vcName + "_bounds", DataType.FLOAT, vcName + " 2"));
         v.addAttribute(new Attribute(CF.BOUNDS, vcName + "_bounds"));
-        bounds.addAttribute(new Attribute(CDM.UNITS, vc.getUnit()));
+        String vcUnit = vc.getUnit();
+        if (vcUnit != null)
+          bounds.addAttribute(new Attribute(CDM.UNITS, vcUnit));
         bounds.addAttribute(new Attribute(CDM.LONG_NAME, "bounds for " + vcName));
 
         data = new float[2 * n];
@@ -800,15 +809,15 @@ public abstract class GribIosp extends AbstractIOServiceProvider {
   static class DataRecord implements Comparable<DataRecord> {
     int resultIndex; // index in the ens / time / vert array
     int fileno;
-    long drsPos;
+    long dataPos;  // grib1 - start of GRIB record; grib2 - start of drs (data record)
     long bmsPos;  // if non zero, use alternate bms
     int scanMode;
     GdsHorizCoordSys hcs;
 
-    DataRecord(int resultIndex, int fileno, long drsPos, long bmsPos, int scanMode, GdsHorizCoordSys hcs) {
+    DataRecord(int resultIndex, int fileno, long dataPos, long bmsPos, int scanMode, GdsHorizCoordSys hcs) {
       this.resultIndex = resultIndex;
       this.fileno = fileno;
-      this.drsPos = (drsPos == 0) ? GribCollection.MISSING_RECORD : drsPos; // 0 also means missing in Grib2
+      this.dataPos = (dataPos == 0) ? GribCollection.MISSING_RECORD : dataPos; // 0 also means missing in Grib2
       this.bmsPos = bmsPos;
       this.scanMode = scanMode;
       this.hcs = hcs;
@@ -818,7 +827,7 @@ public abstract class GribIosp extends AbstractIOServiceProvider {
     public int compareTo(DataRecord o) {
       int r = Misc.compare(fileno, o.fileno);
       if (r != 0) return r;
-      return Misc.compare(drsPos, o.drsPos);
+      return Misc.compare(dataPos, o.dataPos);
     }
   }
 
@@ -848,17 +857,14 @@ public abstract class GribIosp extends AbstractIOServiceProvider {
           currFile = dr.fileno;
         }
 
-        if (dr.drsPos == GribCollection.MISSING_RECORD) continue;
+        if (dr.dataPos == GribCollection.MISSING_RECORD) continue;
 
         if (debugRead) { // for validation
-          show(rafData, dr.drsPos);
+          show(rafData, dr.dataPos);
         }
 
         float[] data = readData(rafData, dr);
         GdsHorizCoordSys hcs = vindex.group.getGdsHorizCoordSys();
-        /* int scanMode = (dr.scanMode == Grib2Index.ScanModeMissing) ? hcs.scanMode : dr.scanMode;
-        float[] data = Grib2Record.readData(rafData, dr.drsPos, dr.bmsPos, hcs.gdsNumberPoints, scanMode,
-                hcs.nxRaw, hcs.nyRaw, hcs.nptsInLine); */
         dataReceiver.addData(data, dr.resultIndex, hcs.nx);
       }
       if (rafData != null) rafData.close();
@@ -967,58 +973,7 @@ public abstract class GribIosp extends AbstractIOServiceProvider {
       resultPos++;
     }
 
- /*
-     if (hasRuntime) {  // 2d
-
-      Range runtimeRange = section.getRange(0);   // for the moment, assume always partitioned on runtime
-      Section otherSection = section.subSection(1, sectionLen - 2); // all but x, y; so this is time, vert, ens
-
-      // collect all the records from this partition that need to be read
-      int resultPos = 0;
-      for (int runtimeIdx = runtimeRange.first(); runtimeIdx <= runtimeRange.last(); runtimeIdx += runtimeRange.stride()) {
-        int partno = vindexP.getPartition2D(runtimeIdx);
-        GribCollection.VariableIndex vindex = vindexP.getVindex(partno); // the component variable in this partition
-
-        int[] otherShape = new int[sectionLen-3];
-        System.arraycopy(vindex.sa.getShape(), 1, otherShape, 0, sectionLen-3);
-        Section.Iterator iter = otherSection.getIterator(otherShape);
-
-         // collect all the records that need to be read
-        while (iter.hasNext()) {
-          int sourceIndex = iter.next(null);
-          //LOOK this is wrong, sourceIndex is from full variable. what is the index into the component variable ??
-
-          dataReader.addRecord(partno, vindex, sourceIndex, resultPos++);
-        }
-      }
-
-    } else { // 1
-      Range timeRange = section.getRange(0);
-      Section otherSection = section.subSection(1, sectionLen-2); // all but x, y
-
-      // collect all the records from this partition that need to be read
-      int resultPos = 0;
-      for (int timeIdx = timeRange.first(); timeIdx <= timeRange.last(); timeIdx += timeRange.stride()) {
-        int partno = vindexP.getPartition1D(timeIdx);
-        if (partno < 0) continue; // missing
-        GribCollection.VariableIndex vindex = vindexP.getVindex(partno); // the variable in this partition
-
-        int[] otherShape = new int[sectionLen-3];
-        System.arraycopy(vindex.sa.getShape(), 1, otherShape, 0, sectionLen-3);
-        Section.Iterator iter = otherSection.getIterator(otherShape);
-
-         // collect all the records that need to be read
-        while (iter.hasNext()) {
-          int sourceIndex = iter.next(null);
-          dataReader.addRecord(partno, vindex, sourceIndex, resultPos++);
-        }
-      }
-
-    }
-  */
-
     // sort by file and position, then read
-        // sort by file and position, then read
     DataReceiverIF dataReceiver = channel == null ? new DataReceiver(section, yRange, xRange) : new ChannelReceiver(channel, yRange, xRange);
     dataReader.read(dataReceiver);
 
@@ -1048,17 +1003,14 @@ public abstract class GribIosp extends AbstractIOServiceProvider {
         }
         lastRecord = dr;
 
-        if (dr.drsPos == GribCollection.MISSING_RECORD) continue;
+        if (dr.dataPos == GribCollection.MISSING_RECORD) continue;
 
         if (debugRead) { // for validation
-          show( rafData, dr.drsPos);
+          show( rafData, dr.dataPos);
         }
 
         float[] data = readData(rafData, dr);
         GdsHorizCoordSys hcs = dr.hcs;
-        /* int scanMode = (dr.scanMode == Grib2Index.ScanModeMissing) ? hcs.scanMode : dr.scanMode;
-        float[] data = Grib2Record.readData(rafData, dr.drsPos, dr.bmsPos, hcs.gdsNumberPoints, scanMode,
-                hcs.nxRaw, hcs.nyRaw, hcs.nptsInLine); */
         dataReceiver.addData(data, dr.resultIndex, hcs.nx);
       }
       if (rafData != null) rafData.close();

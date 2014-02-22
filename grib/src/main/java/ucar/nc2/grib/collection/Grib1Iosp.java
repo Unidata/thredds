@@ -42,7 +42,6 @@ import ucar.nc2.grib.grib1.tables.Grib1ParamTables;
 import ucar.nc2.grib.grib1.tables.Grib1WmoTimeType;
 import ucar.nc2.*;
 import ucar.nc2.grib.*;
-import ucar.nc2.grib.grib2.Grib2Record;
 import ucar.unidata.io.RandomAccessFile;
 
 import java.io.IOException;
@@ -57,8 +56,6 @@ import java.util.Formatter;
  */
 public class Grib1Iosp extends GribIosp {
   static private final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(Grib2Iosp.class);
-  static private final boolean debugTime = false, debugRead = true, debugName = false;
-  static private boolean useGenType = false; // LOOK dummy for now
 
   ///////////////////////////////////////////////////
   // create variable names
@@ -265,9 +262,9 @@ public class Grib1Iosp extends GribIosp {
 
   @Override
   public boolean isValidFile(RandomAccessFile raf) throws IOException {
-    GribCdmIndex2.GribCollectionType type = GribCdmIndex2.getType(raf);
-    if (type == GribCdmIndex2.GribCollectionType.GRIB1) return true;
-    if (type == GribCdmIndex2.GribCollectionType.Partition1) return true;
+    GribCdmIndex.GribCollectionType type = GribCdmIndex.getType(raf);
+    if (type == GribCdmIndex.GribCollectionType.GRIB1) return true;
+    if (type == GribCdmIndex.GribCollectionType.Partition1) return true;
 
     // check for GRIB2 data file
     return Grib1RecordScanner.isValidFile(raf);
@@ -285,26 +282,24 @@ public class Grib1Iosp extends GribIosp {
 
   // public no-arg constructor for reflection
   public Grib1Iosp() {
-    super(logger);
+    super(true, logger);
   }
 
   public Grib1Iosp(GribCollection.GroupGC gHcs, GribCollection.Type gtype) {
-    super(logger);
+    super(true, logger);
     this.gHcs = gHcs;
     this.owned = true;
     this.gtype = gtype;
   }
 
-  // LOOK more likely we will set an individual dataset
   public Grib1Iosp(GribCollection gc) {
-    super(logger);
+    super(true, logger);
     this.gribCollection = gc;
     this.owned = true;
   }
 
-  @Override
-  protected String getIntervalName(int id) {
-    return null; // cust.getIntervalName(id);    LOOK
+  protected String getIntervalName(int code) {
+    return cust.getTimeTypeName(code);
   }
 
   @Override
@@ -382,7 +377,7 @@ public class Grib1Iosp extends GribIosp {
 
   @Override
   protected float[] readData(RandomAccessFile rafData, DataRecord dr) throws IOException {
-    return new float[0];
+    return Grib1Record.readData(rafData, dr.dataPos);
   }
 
 }

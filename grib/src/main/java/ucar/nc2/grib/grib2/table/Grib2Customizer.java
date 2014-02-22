@@ -34,10 +34,7 @@ package ucar.nc2.grib.grib2.table;
 
 import net.jcip.annotations.Immutable;
 import thredds.featurecollection.TimeUnitConverter;
-import ucar.nc2.grib.GribNumbers;
-import ucar.nc2.grib.GribStatType;
-import ucar.nc2.grib.GribTables;
-import ucar.nc2.grib.TimeCoord;
+import ucar.nc2.grib.*;
 import ucar.nc2.grib.grib2.*;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time.CalendarPeriod;
@@ -440,17 +437,22 @@ Code Table Code table 4.7 - Derived forecast (4.7)
      }
   }
 
-  public String getIntervalName(int id) {
+  public String getStatisticName(int id) {
     return getTableValue("4.10", id); // WMO
   }
 
-  public String getIntervalNameShort(int id) {
+  public String getStatisticNameShort(int id) {
     GribStatType stat = GribStatType.getStatTypeFromGrib2(id);
     return (stat == null) ?"UnknownStatType-" + id : stat.toString();
   }
 
   public GribStatType getStatType(int grib2StatCode) {
     return GribStatType.getStatTypeFromGrib2(grib2StatCode);
+  }
+
+  @Override
+  public VertCoord.VertUnit getVertUnit(int code) {
+    return Grib2Utils.getLevelUnit(code);
   }
 
   /////////////////////////////////////////////

@@ -8,8 +8,7 @@ import thredds.inventory.*;
 import thredds.inventory.partition.DirectoryPartition;
 import thredds.inventory.partition.DirectoryBuilder;
 import ucar.coord.Coordinate;
-import ucar.nc2.grib.*;
-import ucar.nc2.grib.collection.GribCdmIndex2;
+import ucar.nc2.grib.collection.GribCdmIndex;
 import ucar.nc2.grib.collection.GribCollection;
 import ucar.nc2.grib.collection.PartitionCollection;
 import ucar.nc2.ui.widget.*;
@@ -208,7 +207,7 @@ public class DirectoryPartitionViewer extends JPanel {
   private void moveCdmIndexFile(NodeInfo indexFile) throws IOException {
     GribCollection gc = null;
     try {
-      boolean ok = GribCdmIndex2.moveCdmIndex(indexFile.dir.toString(), logger);
+      boolean ok = GribCdmIndex.moveCdmIndex(indexFile.dir.toString(), logger);
       Formatter f = new Formatter();
       f.format("moved success=%s", ok);
       infoTA.setText(f.toString());
@@ -268,11 +267,11 @@ public class DirectoryPartitionViewer extends JPanel {
 
          Formatter out = new Formatter();
          try {
-           GribCdmIndex2 indexReader = new GribCdmIndex2(logger);
+           GribCdmIndex indexReader = new GribCdmIndex(logger);
            final DirectoryPartition dpart = new DirectoryPartition(config, node.dir, indexReader, logger);
            dpart.putAuxInfo(FeatureCollectionConfig.AUX_CONFIG, config);
            Formatter errlog = new Formatter();
-           final PartitionCollection tp = (PartitionCollection) GribCdmIndex2.openGribCollectionFromMCollection(false, dpart, CollectionUpdateType.never, errlog, logger);
+           final PartitionCollection tp = (PartitionCollection) GribCdmIndex.openGribCollectionFromMCollection(false, dpart, CollectionUpdateType.never, errlog, logger);
            for (MCollection dcmp : dpart.makePartitions(null)) {
              dcmp.putAuxInfo(FeatureCollectionConfig.AUX_CONFIG, config);
              tp.addPartition(dcmp);
@@ -330,7 +329,7 @@ public class DirectoryPartitionViewer extends JPanel {
     Formatter out = new Formatter();
     out.format("makeTimePartitionIndex %s%n%n", node);
     try {
-      boolean ok = GribCdmIndex2.makeIndex(config, out, node.dir);
+      boolean ok = GribCdmIndex.makeIndex(config, out, node.dir);
       out.format("makeTimePartitionIndex success %s%n%n", ok);
       infoTA.setText(out.toString());
       infoTA.gotoTop();
@@ -372,7 +371,7 @@ public class DirectoryPartitionViewer extends JPanel {
     List<NodeInfo> getChildren() {
       List<NodeInfo> result = new ArrayList<>(100);
       try {
-        for (DirectoryBuilder child : part.constructChildren(new GribCdmIndex2(logger), CollectionUpdateType.test)) {
+        for (DirectoryBuilder child : part.constructChildren(new GribCdmIndex(logger), CollectionUpdateType.test)) {
           result.add(new NodeInfo(child));
         }
 

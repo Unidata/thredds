@@ -61,8 +61,6 @@ public class CollectionList extends CollectionAbstract {
   }
 
   @Override
-  public void close() {
-    // noop
-  }
+  public void close() {  }
 
 }

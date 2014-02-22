@@ -17,7 +17,7 @@ import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dt.GridCoordSystem;
 import ucar.nc2.dt.GridDatatype;
 import ucar.nc2.dt.grid.GridDataset;
-import ucar.nc2.grib.collection.GribCdmIndex2;
+import ucar.nc2.grib.collection.GribCdmIndex;
 import ucar.nc2.grib.collection.GribCollection;
 import ucar.nc2.grib.collection.GribIosp;
 import ucar.nc2.grib.GribStatType;
@@ -529,7 +529,7 @@ public class Grib2ReportPanel extends ReportPanel {
     if (index == null) return;
 
     Formatter errlog = new Formatter();
-    GribCollection gc = GribCdmIndex2.openGribCollectionFromDataFile(ff, CollectionUpdateType.nocheck,
+    GribCollection gc = GribCdmIndex.openGribCollectionFromDataFile(false, ff, CollectionUpdateType.nocheck,
             new FeatureCollectionConfig(), errlog, logger);
     gc.close();
 

@@ -64,9 +64,7 @@ public class CollectionGeneral extends CollectionAbstract {
   }
 
   @Override
-  public void close() {
-
-  }
+  public void close() { }
 
   @Override
   public Iterable<MFile> getFilesSorted() throws IOException {

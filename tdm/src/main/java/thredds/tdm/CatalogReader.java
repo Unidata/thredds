@@ -34,7 +34,6 @@ package thredds.tdm;
 
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
-import org.springframework.util.StringUtils;
 import thredds.catalog.*;
 import thredds.util.PathAliasReplacement;
 import ucar.nc2.time.CalendarDate;

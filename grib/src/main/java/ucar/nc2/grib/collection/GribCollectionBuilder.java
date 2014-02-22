@@ -104,7 +104,7 @@ public abstract class GribCollectionBuilder {
 
   public boolean createIndex(Formatter errlog) throws IOException {
     if (dcm == null) {
-      logger.error("Grib2CollectionBuilder " + name + " : cannot create new index ");
+      logger.error("GribCollectionBuilder " + name + " : cannot create new index ");
       throw new IllegalStateException();
     }
 
@@ -136,7 +136,7 @@ public abstract class GribCollectionBuilder {
       partitions.add(indexFileForRuntime);
 
       boolean ok = writeIndex(gcname, indexFileForRuntime, g.getCoordinateRuntime(), runGroupList, allFiles);
-      logger.info("Grib2CollectionBuilder write {} ok={}", indexFileForRuntime.getPath(), ok);
+      logger.info("GribCollectionBuilder write {} ok={}", indexFileForRuntime.getPath(), ok);
     }
 
     boolean ok = true;
@@ -146,7 +146,7 @@ public abstract class GribCollectionBuilder {
       Collections.sort(partitions); // ??
       PartitionManager part = new PartitionManagerFromIndexList(dcm, partitions, logger);
       part.putAuxInfo(FeatureCollectionConfig.AUX_CONFIG, dcm.getAuxInfo(FeatureCollectionConfig.AUX_CONFIG));
-      ok = GribCdmIndex2.updateGribCollectionFromMCollection(isGrib1, part, CollectionUpdateType.always, errlog, logger);
+      ok = GribCdmIndex.updateGribCollectionFromMCollection(isGrib1, part, CollectionUpdateType.always, errlog, logger);
     }
 
     long took = System.currentTimeMillis() - start;

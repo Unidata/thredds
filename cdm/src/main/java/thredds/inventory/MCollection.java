@@ -15,8 +15,9 @@ import java.util.List;
 public interface MCollection extends AutoCloseable {
 
   /**
-   * A leaf is a single file or mfile collection. (note that this may or may not be a partition)
-   * A non-leaf is a directory with other directories under it
+   * Consider MCollections as a tree. At the leaves are a single mfile or mfile collection.
+   * A leaf MCollection will be a GC if it has a single runtime, or a Partition otherwise.
+   * A non-leaf is a directory with other directories under it. It will either be a Partition or PofP (Partition of Partition).
    * @return if leaf collection
    */
   public boolean isLeaf();

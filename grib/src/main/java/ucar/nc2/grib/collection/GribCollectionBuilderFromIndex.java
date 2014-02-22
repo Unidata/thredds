@@ -391,7 +391,7 @@ message Coord {
           double val2 = isLayer ? pc.getBound(i) : GribNumbers.UNDEFINEDD;
           levels.add(new VertCoord.Level(val1, val2, isLayer));
         }
-        return new CoordinateVert(code, levels);
+        return new CoordinateVert(code, tables.getVertUnit(code), levels);
 
       case time2D:
         dates = new ArrayList<>(pc.getMsecsCount());

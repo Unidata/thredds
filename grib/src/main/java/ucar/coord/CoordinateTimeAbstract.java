@@ -48,7 +48,7 @@ import java.util.List;
  */
 public abstract class CoordinateTimeAbstract implements Coordinate {
 
-  protected final int code;                  // pdsFirst.getTimeUnit() : unit of time range (see Code table 4.4), eg hour, day, month
+  protected final int code;                  // unit of time (Grib1 table 4, Grib2 table 4.4), eg hour, day, month
   protected final CalendarPeriod timeUnit;
   protected CalendarDate refDate;            // null if dense
 

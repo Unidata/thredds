@@ -55,7 +55,6 @@ public abstract class CollectionAbstract implements MCollection {
   protected FeatureCollectionConfig.ProtoChoice protoChoice = FeatureCollectionConfig.ProtoChoice.Penultimate;  // default
 
   protected Map<String, Object> auxInfo; // lazy init
-  protected boolean isLeaf;
 
   protected DateExtractor dateExtractor;
   protected CalendarDate startCollection;
@@ -69,13 +68,9 @@ public abstract class CollectionAbstract implements MCollection {
   }
 
   @Override
-  public boolean isLeaf() {
-    return isLeaf;
-  }
-
-  public void setLeaf(boolean isLeaf) {
-    this.isLeaf = isLeaf;
-  }
+  public boolean isLeaf() { return isLeaf; }
+  public void setLeaf(boolean isLeaf) { this.isLeaf = isLeaf; }
+  private boolean isLeaf = true;
 
   @Override
   public String getCollectionName() {

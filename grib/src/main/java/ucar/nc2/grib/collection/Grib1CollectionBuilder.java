@@ -72,6 +72,9 @@ public class Grib1CollectionBuilder extends GribCollectionBuilder {
   public Grib1CollectionBuilder(String name, MCollection dcm, org.slf4j.Logger logger) {
     super(true, name, dcm, logger);
 
+    if (dcm == null)
+      System.out.println("HEY");
+
     FeatureCollectionConfig config = (FeatureCollectionConfig) dcm.getAuxInfo(FeatureCollectionConfig.AUX_CONFIG);
     Map<String, Boolean> pdsConfig = config.gribConfig.pdsHash;
     intvMerge = assignValue(pdsConfig, "intvMerge", true);
@@ -107,12 +110,14 @@ public class Grib1CollectionBuilder extends GribCollectionBuilder {
 
     // place each record into its group
     int totalRecords = 0;
+    if (null == dcm.getFileIterator())
+      System.out.println("HEY");
     try (CloseableIterator<MFile> iter = dcm.getFileIterator()) { // not sorted
       while (iter.hasNext()) {
         MFile mfile = iter.next();
         Grib1Index index;
         try {                  // LOOK here is where gbx9 files get recreated; do not make collection index
-          index = (Grib1Index) GribIndex.readOrCreateIndexFromSingleFile(false, false, mfile, config.gribConfig, CollectionUpdateType.test, logger);
+          index = (Grib1Index) GribIndex.readOrCreateIndexFromSingleFile(true, false, mfile, config.gribConfig, CollectionUpdateType.test, logger);
           allFiles.add(mfile);  // add on success
 
         } catch (IOException ioe) {

@@ -101,6 +101,9 @@ public interface CF {
   public static final String STRAIGHT_VERTICAL_LONGITUDE_FROM_POLE = "straight_vertical_longitude_from_pole";
 
   // standard_names
+  public static final String TIME = "time";
+  public static final String TIME_FORECAST = "time";
+
   public static final String PROJECTION_X_COORDINATE = "projection_x_coordinate";
   public static final String PROJECTION_Y_COORDINATE = "projection_y_coordinate";
 

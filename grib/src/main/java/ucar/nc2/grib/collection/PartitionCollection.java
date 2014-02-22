@@ -83,7 +83,7 @@ public class PartitionCollection extends GribCollection {
     public FileCacheable open(String location, int buffer_size, CancelTask cancelTask, Object iospMessage) throws IOException {
       RandomAccessFile raf = new RandomAccessFile(location, "r");
       Partition p = (Partition) iospMessage;
-      return GribCdmIndex2.openGribCollectionFromIndexFile(raf, p.getConfig(), p.getLogger());
+      return GribCdmIndex.openGribCollectionFromIndexFile(raf, p.getConfig(), p.getLogger());
       //return GribCdmIndex2.makeGribCollectionFromRaf(false, raf, p.getConfig(), CollectionUpdateType.never, p.getLogger());
     }
   };
@@ -423,7 +423,7 @@ public class PartitionCollection extends GribCollection {
       if (r != 0) return r;
       r = Misc.compare(fileno, o.fileno);
       if (r != 0) return r;
-      return Misc.compare(drsPos, o.drsPos);
+      return Misc.compare(dataPos, o.dataPos);
     }
 
     public boolean usesSameFile(DataRecord o) {
@@ -536,7 +536,7 @@ public class PartitionCollection extends GribCollection {
     }
 
     public GribCollection makeGribCollection(CollectionUpdateType force) throws IOException {
-      return GribCdmIndex2.openGribCollectionFromMCollection(isGrib1, dcm, force, null, logger); // caller must close
+      return GribCdmIndex.openGribCollectionFromMCollection(isGrib1, dcm, force, null, logger); // caller must close
     }
   }
 
