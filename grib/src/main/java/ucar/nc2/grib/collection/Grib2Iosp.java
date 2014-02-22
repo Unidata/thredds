@@ -246,49 +246,7 @@ public class Grib2Iosp extends GribIosp {
 
   @Override
   protected String makeVariableUnits(GribCollection.VariableIndex vindex) {
-    Formatter f = new Formatter();
-
-    boolean isProb = (vindex.probabilityName != null && vindex.probabilityName.length() > 0);
-    if (isProb)
-      f.format("Probability ");
-
-    GribTables.Parameter gp = cust.getParameter(vindex.discipline, vindex.category, vindex.parameter);
-    if (gp == null)
-      f.format("Unknown Parameter %d-%d-%d", vindex.discipline, vindex.category, vindex.parameter);
-    else
-      f.format("%s", gp.getName());
-
-    String vintvName = vindex.getTimeIntvName();
-    if (vindex.intvType >= 0 && vintvName != null && !vintvName.isEmpty()) {
-      String intvName = cust.getStatisticNameShort(vindex.intvType);
-      if (intvName == null || intvName.equalsIgnoreCase("Missing"))
-        intvName = cust.getStatisticNameShort(vindex.intvType);
-      if (intvName == null) f.format(" (%s)", vintvName);
-      else f.format(" (%s %s)", vintvName, intvName);
-
-    } else if (vindex.intvType >= 0) {
-      String intvName = cust.getStatisticNameShort(vindex.intvType);
-      f.format(" (%s)", intvName);
-    }
-
-    if (vindex.ensDerivedType >= 0)
-      f.format(" (%s)", cust.getTableValue("4.7", vindex.ensDerivedType));
-
-    else if (isProb)
-      f.format(" %s %s", vindex.probabilityName, getVindexUnits(cust, vindex)); // add data units here
-
-    if (!useGenType && (vindex.genProcessType == 6 || vindex.genProcessType == 7)) {
-      f.format(" error");
-    } else if (useGenType && vindex.genProcessType >= 0) {
-      f.format(" %s", cust.getGeneratingProcessTypeName(vindex.genProcessType));
-    }
-
-    if (vindex.levelType != GribNumbers.UNDEFINED) { // satellite data doesnt have a level
-      f.format(" @ %s", cust.getTableValue("4.5", vindex.levelType));
-      if (vindex.isLayer) f.format(" layer");
-    }
-
-    return f.toString();
+    return makeVariableUnits(cust, vindex);
   }
 
   static public String makeVariableUnits(Grib2Customizer tables, GribCollection.VariableIndex vindex) {

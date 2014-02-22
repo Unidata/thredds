@@ -87,7 +87,7 @@ public class FeatureCollectionConfig {
   public PartitionType ptype = PartitionType.none;
   public String name, path, spec, dateFormatMark, olderThan;
   public UpdateConfig tdmConfig;
-  public UpdateConfig updateConfig = new UpdateConfig();
+  public UpdateConfig updateConfig;
   public ProtoConfig protoConfig = new ProtoConfig();
   public FmrcConfig fmrcConfig = new FmrcConfig();
   public PointConfig pointConfig = new PointConfig();
@@ -161,7 +161,11 @@ public class FeatureCollectionConfig {
 
   // finished reading - do anything needed
   public void finish() {
-    if (tdmConfig.updateType != CollectionUpdateType.never) {
+    // if tdm element was not specified, default is test
+    if (!tdmConfig.userDefined) tdmConfig.updateType = CollectionUpdateType.test;
+
+    // if tdm was specified, turn off tds updating
+    if (tdmConfig.userDefined && tdmConfig.updateType != CollectionUpdateType.never) {
       // if tdm is working, tds is not allowed to update
       updateConfig.updateType = CollectionUpdateType.never;
 

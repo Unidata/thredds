@@ -9,6 +9,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import thredds.featurecollection.FeatureCollectionConfig;
 import thredds.featurecollection.FeatureCollectionType;
+import thredds.inventory.CollectionUpdateType;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -170,7 +171,9 @@ public class FeatureCollectionReader {
   }
 
   static private FeatureCollectionConfig.UpdateConfig readUpdateElement(Element updateElem) {
-    if (updateElem == null) return new FeatureCollectionConfig.UpdateConfig(); // default
+    if (updateElem == null) {
+      return new FeatureCollectionConfig.UpdateConfig(); // default
+    }
 
     String startup = updateElem.getAttributeValue("startup");
     String rewrite = updateElem.getAttributeValue("rewrite");
