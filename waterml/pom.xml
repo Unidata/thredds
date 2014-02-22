@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <artifactId>thredds-parent</artifactId>
+        <groupId>edu.ucar</groupId>
+        <version>4.4.3-SNAPSHOT</version>
+    </parent>
+
+    <artifactId>waterml</artifactId>
+    <packaging>jar</packaging>
+
+    <name>WaterML 2.0 NetCDF</name>
+    <description>Converts WaterML 2.0 timeseries to CDM DSGs and vice-versa.</description>
+    <url>http://www.unidata.ucar.edu/software/netcdf-java/</url>
+
+    <dependencies>
+        <dependency>
+            <groupId>org.jvnet.ogc</groupId>
+            <artifactId>waterml-v_2_0_1-schema</artifactId>
+            <version>1.1.0</version>
+        </dependency>
+        <dependency>
+            <groupId>edu.ucar</groupId>
+            <artifactId>cdm</artifactId>
+        </dependency>
+    </dependencies>
+</project>

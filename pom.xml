@@ -866,6 +866,8 @@
     <module>netcdf4</module>
     <module>clcommon</module>
     <module>httpclient</module>
+
+    <module>waterml</module>
   </modules>
 
   <properties>
