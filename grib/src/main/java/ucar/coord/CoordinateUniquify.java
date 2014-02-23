@@ -22,6 +22,7 @@ public class CoordinateUniquify<T> {
    Set<Coordinate> timeBuilders = new HashSet<>();
    Set<Coordinate> timeIntvBuilders = new HashSet<>();
    Set<Coordinate> vertBuilders = new HashSet<>();
+   Set<Coordinate> ensBuilders = new HashSet<>();
    Map<Coordinate, Integer> coordMap;
 
    public void addCoords(List<Coordinate> coords) {
@@ -39,6 +40,9 @@ public class CoordinateUniquify<T> {
          case vert:
            vertBuilders.add(coord);
            break;
+         case ens:
+           ensBuilders.add(coord);
+           break;
        }
      }
    }
@@ -49,6 +53,7 @@ public class CoordinateUniquify<T> {
      for (Coordinate coord : timeBuilders) unionCoords.add(coord);
      for (Coordinate coord : timeIntvBuilders) unionCoords.add(coord);
      for (Coordinate coord : vertBuilders) unionCoords.add(coord);
+     for (Coordinate coord : ensBuilders) unionCoords.add(coord);
 
      coordMap = new HashMap<>();
      for (int i = 0; i < this.unionCoords.size(); i++) {

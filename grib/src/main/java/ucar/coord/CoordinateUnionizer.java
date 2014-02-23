@@ -31,6 +31,7 @@ public class CoordinateUnionizer<T> {
   CoordinateBuilder timeBuilder;
   CoordinateBuilder timeIntvBuilder;
   CoordinateBuilder vertBuilder;
+  CoordinateBuilder ensBuilder;
   Time2DUnionBuilder time2DBuilder;
 
   public void addCoords(List<Coordinate> coords) {
@@ -52,10 +53,6 @@ public class CoordinateUnionizer<T> {
           if (timeIntvBuilder == null) timeIntvBuilder = new CoordinateTimeIntv.Builder2(null, coord.getCode(), timeIntv.getTimeUnit(), timeIntv.getRefDate());
           timeIntvBuilder.addAll(intervalFilter((CoordinateTimeIntv)coord));
           break;
-        case vert:
-          if (vertBuilder == null) vertBuilder = new CoordinateVert.Builder2(coord.getCode());
-          vertBuilder.addAll(coord);
-          break;
         case time2D:
           CoordinateTime2D time2D = (CoordinateTime2D) coord;
           if (time2DBuilder == null) time2DBuilder = new Time2DUnionBuilder(time2D.isTimeInterval(), time2D.getTimeUnit(), coord.getCode());
@@ -65,6 +62,14 @@ public class CoordinateUnionizer<T> {
           CoordinateRuntime runtimeFrom2D = time2D.getRuntimeCoordinate();
           if (!runtimeFrom2D.equals(runtime))
             System.out.println("HEY");
+          break;
+        case vert:
+          if (vertBuilder == null) vertBuilder = new CoordinateVert.Builder2(coord.getCode());
+          vertBuilder.addAll(coord);
+          break;
+        case ens:
+          if (ensBuilder == null) ensBuilder = new CoordinateEns.Builder2(coord.getCode());
+          ensBuilder.addAll(coord);
           break;
       }
     }
@@ -129,6 +134,8 @@ public class CoordinateUnionizer<T> {
 
     if (vertBuilder != null)
       unionCoords.add(vertBuilder.finish());
+    if (ensBuilder != null)
+       unionCoords.add(ensBuilder.finish());
 
     result = new CoordinateND<>(unionCoords);
     return unionCoords;

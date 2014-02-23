@@ -38,10 +38,7 @@ package ucar.nc2.grib.collection;
 import com.google.protobuf.ExtensionRegistry;
 import thredds.inventory.MFile;
 import ucar.coord.*;
-import ucar.nc2.grib.GribNumbers;
-import ucar.nc2.grib.GribTables;
-import ucar.nc2.grib.TimeCoord;
-import ucar.nc2.grib.VertCoord;
+import ucar.nc2.grib.*;
 import ucar.nc2.stream.NcStream;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time.CalendarPeriod;
@@ -264,6 +261,7 @@ message Group {
     //CalendarDate firstRef = null;
     int reftimeCoord = 0;
     int timeCoord = 0;
+    int ensCoord = 0;
     List<CoordinateVert> vertCoords = new ArrayList<>();
     List<CoordinateTime2D> time2DCoords = new ArrayList<>();
     Map<CoordinateRuntime, CoordinateRuntime> runtimes = new HashMap<>();
@@ -298,6 +296,12 @@ message Group {
 
         case vert:
           vertCoords.add((CoordinateVert) coord);
+          break;
+
+        case ens:
+          CoordinateEns ce = (CoordinateEns) coord;
+          if (ensCoord > 0) ce.setName("ens" + ensCoord);
+          ensCoord++;
           break;
       }
     }
@@ -383,16 +387,6 @@ message Coord {
         refDate = CalendarDate.of(pc.getMsecs(0));
         return new CoordinateTimeIntv(code, timeUnit, refDate, tinvs);
 
-      case vert:
-        boolean isLayer = pc.getValuesCount() == pc.getBoundCount();
-        List<VertCoord.Level> levels = new ArrayList<>(pc.getValuesCount());
-        for (int i = 0; i < pc.getValuesCount(); i++) {
-          double val1 = pc.getValues(i);
-          double val2 = isLayer ? pc.getBound(i) : GribNumbers.UNDEFINEDD;
-          levels.add(new VertCoord.Level(val1, val2, isLayer));
-        }
-        return new CoordinateVert(code, tables.getVertUnit(code), levels);
-
       case time2D:
         dates = new ArrayList<>(pc.getMsecsCount());
         for (Long msec : pc.getMsecsList())
@@ -404,6 +398,27 @@ message Coord {
           times.add(readCoord(coordp));
         timeUnit = CalendarPeriod.of(unit);
         return new CoordinateTime2D(code, timeUnit, null, runtime, times);
+
+      case vert:
+        boolean isLayer = pc.getValuesCount() == pc.getBoundCount();
+        List<VertCoord.Level> levels = new ArrayList<>(pc.getValuesCount());
+        for (int i = 0; i < pc.getValuesCount(); i++) {
+          double val1 = pc.getValues(i);
+          double val2 = isLayer ? pc.getBound(i) : GribNumbers.UNDEFINEDD;
+          levels.add(new VertCoord.Level(val1, val2, isLayer));
+        }
+        return new CoordinateVert(code, tables.getVertUnit(code), levels);
+
+      case ens:
+        List<EnsCoord.Coord> ecoords = new ArrayList<>(pc.getValuesCount());
+        for (int i = 0; i < pc.getValuesCount(); i++) {
+          double val1 = pc.getValues(i);
+          double val2 = pc.getBound(i);
+          ecoords.add(new EnsCoord.Coord((int)val1, (int)val2));
+        }
+        return new CoordinateEns(code, ecoords);
+
+
     }
     throw new IllegalStateException("Unknown Coordinate type = " + type);
   }

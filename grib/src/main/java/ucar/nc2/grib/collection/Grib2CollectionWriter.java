@@ -351,11 +351,14 @@ public class Grib2CollectionWriter extends GribCollectionWriter {
         case timeIntv:
           b.addCoords(writeCoordProto((CoordinateTimeIntv) coord));
           break;
+        case time2D:
+          b.addCoords(writeCoordProto((CoordinateTime2D) coord));
+          break;
         case vert:
           b.addCoords(writeCoordProto((CoordinateVert) coord));
           break;
-        case time2D:
-          b.addCoords(writeCoordProto((CoordinateTime2D) coord));
+        case ens:
+          b.addCoords(writeCoordProto((CoordinateEns) coord));
           break;
       }
     }

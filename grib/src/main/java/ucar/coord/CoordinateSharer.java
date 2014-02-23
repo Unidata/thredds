@@ -30,6 +30,7 @@ public class CoordinateSharer<T> {
   Set<Coordinate> timeBuilders = new HashSet<>();
   Set<Coordinate> timeIntvBuilders = new HashSet<>();
   Set<Coordinate> vertBuilders = new HashSet<>();
+  Set<Coordinate> ensBuilders = new HashSet<>();
   Set<Coordinate> time2DBuilders = new HashSet<>();
   Map<Coordinate, Integer> coordMap;
 
@@ -48,9 +49,6 @@ public class CoordinateSharer<T> {
         case timeIntv:
           timeIntvBuilders.add(coord);
           break;
-        case vert:
-          vertBuilders.add(coord);
-          break;
         case time2D:
           CoordinateTime2D time2D = (CoordinateTime2D) coord;
           time2DBuilders.add(coord);
@@ -60,6 +58,12 @@ public class CoordinateSharer<T> {
           CoordinateRuntime runtimeFrom2D = time2D.getRuntimeCoordinate();
           if (!runtimeFrom2D.equals(runtime))
             System.out.println("HEY");
+          break;
+        case vert:
+          vertBuilders.add(coord);
+          break;
+        case ens:
+          ensBuilders.add(coord);
           break;
       }
     }
@@ -75,6 +79,7 @@ public class CoordinateSharer<T> {
     for (Coordinate coord : timeBuilders) unionCoords.add(coord);
     for (Coordinate coord : timeIntvBuilders) unionCoords.add(coord);
     for (Coordinate coord : vertBuilders) unionCoords.add(coord);
+    for (Coordinate coord : ensBuilders) unionCoords.add(coord);
 
     coordMap = new HashMap<>();
     for (int i = 0; i < this.unionCoords.size(); i++) {

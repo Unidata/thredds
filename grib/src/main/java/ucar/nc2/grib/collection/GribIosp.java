@@ -300,6 +300,9 @@ public abstract class GribIosp extends AbstractIOServiceProvider {
         case vert:
           makeVerticalCoordinate(ncfile, g, (CoordinateVert) coord);
           break;
+        case ens:
+          makeEnsembleCoordinate(ncfile, g, (CoordinateEns) coord);
+          break;
         case time2D:
           makeTime2D(ncfile, g, (CoordinateTime2D) coord, is2Dtime);
           break;
@@ -669,6 +672,22 @@ public abstract class GribIosp extends AbstractIOServiceProvider {
           data[count++] = (float) val.getValue1();
         v.setCachedData(Array.factory(DataType.FLOAT, new int[]{n}, data));
       }
+  }
+
+  private void makeEnsembleCoordinate(NetcdfFile ncfile, Group g, CoordinateEns ec) {
+    int n = ec.getSize();
+    String ecName = ec.getName().toLowerCase();
+    ncfile.addDimension(g, new Dimension(ecName, n));
+
+    Variable v = new Variable(ncfile, g, null, ecName, DataType.INT, ecName);
+    ncfile.addVariable(g, v);
+    v.addAttribute(new Attribute(_Coordinate.AxisType, AxisType.Ensemble.toString()));
+
+    int[] data = new int[n];
+    int count = 0;
+    for (EnsCoord.Coord ecc : ec.getEnsSorted())
+      data[count++] = ecc.getEnsMember();
+    v.setCachedData(Array.factory(DataType.INT, new int[]{n}, data));
   }
 
 

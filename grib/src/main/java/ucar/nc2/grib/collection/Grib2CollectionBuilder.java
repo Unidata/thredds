@@ -247,6 +247,11 @@ public class Grib2CollectionBuilder extends GribCollectionBuilder {
           vb.coordND.addBuilder(new CoordinateTime2D.Builder2(isTimeInterval, cust, vb.timeUnit, unit));
         }
 
+        if (vb.first.getPDS().isEnsemble()) {
+          vb.coordND.addBuilder(new CoordinateEns.Builder2(0));
+        }
+
+
         VertCoord.VertUnit vertUnit = Grib2Utils.getLevelUnit(pdsFirst.getLevelType1());
         if (vertUnit.isVerticalCoordinate())
           vb.coordND.addBuilder(new CoordinateVert.Builder2(pdsFirst.getLevelType1()));

@@ -37,6 +37,7 @@ package ucar.nc2.grib.collection;
 
 import com.google.protobuf.ByteString;
 import ucar.coord.*;
+import ucar.nc2.grib.EnsCoord;
 import ucar.nc2.grib.TimeCoord;
 import ucar.nc2.grib.VertCoord;
 import ucar.nc2.time.CalendarDate;
@@ -131,8 +132,6 @@ public class GribCollectionWriter {
     b.setType(coord.getType().ordinal());
     b.setCode(coord.getCode());
 
-    //VertCoord.VertUnit vertUnit = Grib2Utils.getLevelUnit(coord.getCode());
-
     if (coord.getUnit() != null) b.setUnit(coord.getUnit());
     for (VertCoord.Level level : coord.getLevelSorted()) {
       if (coord.isLayer()) {
@@ -141,6 +140,19 @@ public class GribCollectionWriter {
       } else {
         b.addValues((float) level.getValue1());
       }
+    }
+    return b.build();
+  }
+
+  protected GribCollectionProto.Coord writeCoordProto(CoordinateEns coord) throws IOException {
+    GribCollectionProto.Coord.Builder b = GribCollectionProto.Coord.newBuilder();
+    b.setType(coord.getType().ordinal());
+    b.setCode(coord.getCode());
+
+    if (coord.getUnit() != null) b.setUnit(coord.getUnit());
+    for (EnsCoord.Coord level : coord.getEnsSorted()) {
+      b.addValues((float) level.getCode());       // lame
+      b.addBound((float) level.getEnsMember());
     }
     return b.build();
   }

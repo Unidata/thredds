@@ -682,6 +682,9 @@ public abstract class GribPartitionBuilder  {
         case vert:
           b.addCoords(writer.writeCoordProto((CoordinateVert) coord));
           break;
+        case ens:
+          b.addCoords(writer.writeCoordProto((CoordinateEns) coord));
+          break;
       }
     }
 
