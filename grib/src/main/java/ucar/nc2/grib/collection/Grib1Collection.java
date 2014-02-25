@@ -58,14 +58,10 @@ public class Grib1Collection extends GribCollection {
   }
 
   @Override
-  public ucar.nc2.dataset.NetcdfDataset getNetcdfDataset(String datasetName, String groupName, String filename, FeatureCollectionConfig gribConfig,
+  public ucar.nc2.dataset.NetcdfDataset getNetcdfDataset(Dataset ds, GroupGC group, String filename, FeatureCollectionConfig gribConfig,
                                                          Formatter errlog, org.slf4j.Logger logger) throws IOException {
-    Dataset ds = findDataset(datasetName);
-    GroupGC want = ds.findGroupById(groupName);
-    if (want == null) return null;
-
     if (filename == null) {  // LOOK thread-safety : sharing this, raf
-      Grib1Iosp iosp = new Grib1Iosp(want, ds.getType());
+      Grib1Iosp iosp = new Grib1Iosp(group, ds.getType());
       NetcdfFile ncfile = new NetcdfFileGC(iosp, null, getIndexFile().getPath(), null);
       return new NetcdfDataset(ncfile);
 
@@ -82,15 +78,11 @@ public class Grib1Collection extends GribCollection {
   }
 
   @Override
-  public ucar.nc2.dt.grid.GridDataset getGridDataset(String datasetName, String groupName, String filename, FeatureCollectionConfig gribConfig,
+  public ucar.nc2.dt.grid.GridDataset getGridDataset(Dataset ds, GroupGC group, String filename, FeatureCollectionConfig gribConfig,
                                                      Formatter errlog, org.slf4j.Logger logger) throws IOException {
-    Dataset ds = findDataset(datasetName);
-    GroupGC want = ds.findGroupById(groupName);
-    if (want == null) return null;
-
     if (filename == null) { // LOOK thread-safety : sharing this, raf
-      Grib1Iosp iosp = new Grib1Iosp(want, ds.getType());
-      NetcdfFile ncfile = new NetcdfFileGC(iosp, null, getIndexFile().getPath()+"#"+groupName, null);
+      Grib1Iosp iosp = new Grib1Iosp(group, ds.getType());
+      NetcdfFile ncfile = new NetcdfFileGC(iosp, null, getIndexFile().getPath()+"#"+group.getId(), null);
       NetcdfDataset ncd = new NetcdfDataset(ncfile);
       return new ucar.nc2.dt.grid.GridDataset(ncd); // LOOK - replace with custom GridDataset??
 

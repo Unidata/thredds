@@ -80,7 +80,7 @@ import java.util.*;
  * @author John
  * @since 12/1/13
  */
-public class GribCollection implements FileCacheable, AutoCloseable {
+public abstract class GribCollection implements FileCacheable, AutoCloseable {
   public static final long MISSING_RECORD = -1;
 
   public enum Type {GC, TwoD, Best, Analysis} // must match with GribCollectionProto.Dataset.Type
@@ -395,15 +395,10 @@ public class GribCollection implements FileCacheable, AutoCloseable {
   /////////////////////////////////////////////
 
   // stuff for InvDatasetFcGrib
-  public ucar.nc2.dataset.NetcdfDataset getNetcdfDataset(String datasetName, String groupName, String filename,
-                                                         FeatureCollectionConfig gribConfig, Formatter errlog, org.slf4j.Logger logger) throws IOException {
-    return null;
-  }
-
-  public ucar.nc2.dt.grid.GridDataset getGridDataset(String datasetName, String groupName, String filename,
-                                                     FeatureCollectionConfig gribConfig, Formatter errlog, org.slf4j.Logger logger) throws IOException {
-    return null;
-  }
+  public abstract ucar.nc2.dataset.NetcdfDataset getNetcdfDataset(Dataset ds, GroupGC group, String filename,
+                                                         FeatureCollectionConfig gribConfig, Formatter errlog, org.slf4j.Logger logger) throws IOException;
+  public abstract ucar.nc2.dt.grid.GridDataset getGridDataset(Dataset ds, GroupGC group, String filename,
+                                                     FeatureCollectionConfig gribConfig, Formatter errlog, org.slf4j.Logger logger) throws IOException;
 
   //////////////////////////////////////////////////////////////////////////////////////////////////
   // stuff for Iosp

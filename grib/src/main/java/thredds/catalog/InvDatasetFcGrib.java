@@ -719,12 +719,12 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
 
     if (dp.partition != null) {   // specific time partition
       GribCollection gc =  dp.partition.getGribCollection();
-      GridDataset gd = gc.getGridDataset(dp.dataset, dp.group, dp.filename, config, null, logger);
+      GridDataset gd = gc.getGridDataset(dp.ds, dp.group, dp.filename, config, null, logger);
       gc.close(); // LOOK WTF ??
       return gd;
     }
 
-    return localState.gribCollection.getGridDataset(dp.dataset, dp.group, dp.filename, config, null, logger);
+    return localState.gribCollection.getGridDataset(dp.ds, dp.group, dp.filename, config, null, logger);
   }
 
   @Override
@@ -741,12 +741,12 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
 
     if (dp.partition != null)  { // specific time partition
       GribCollection gc =  dp.partition.getGribCollection();
-      NetcdfDataset gd = gc.getNetcdfDataset(dp.dataset, dp.group, dp.filename, config, null, logger);
+      NetcdfDataset gd = gc.getNetcdfDataset(dp.ds, dp.group, dp.filename, config, null, logger);
       gc.close();
       return gd;
     }
 
-    return localState.gribCollection.getNetcdfDataset(dp.dataset, dp.group, dp.filename, config, null, logger);
+    return localState.gribCollection.getNetcdfDataset(dp.ds, dp.group, dp.filename, config, null, logger);
   }
 
   /* possible forms of path:
@@ -757,48 +757,67 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
      regular, multiple group:
       2. dataset/groupName
 
-     //////////////////////////////
      partition, single group:
-      4. dataset/PARTITION/partitionName
+      3. partitionName/dataset
+      3. partitionName/../partitionName/dataset
 
-     partition, multiple groups:
-      5. dataset/PARTITION/partitionName/groupName
+     partition, multiple group:
+      4. partitionName/dataset/groupName
+      4. partitionName/../partitionName/dataset/groupName
 
-   all:
-      7. FILES/filename
-      8. allow COLLECTION as alias for BEST
   */
-  private DatasetParse parse(String matchPath, StateGrib localState) {
+  private DatasetParse parse(String matchPath, StateGrib localState) throws IOException {
     if ((matchPath == null) || (matchPath.length() == 0)) return null;
     String[] paths = matchPath.split("/");
     if (paths.length < 1) return null;
 
     GribCollection.Dataset ds = localState.gribCollection.findDataset(paths[0]);
-
     if (ds != null) {
       boolean isSingleGroup = ds.getGroupsSize() == 1;
       if (paths.length == 1) {                               // case 1
         if (!isSingleGroup) return null;
         GribCollection.GroupGC g = ds.getGroup(0);
-        return new DatasetParse(null, paths[0], g.getId());
+        return new DatasetParse(null, localState.gribCollection, ds, g);
       }
 
       if (paths.length == 2) {                              // case 2
         String groupName = paths[1];
         GribCollection.GroupGC g = ds.findGroupById(groupName);
         if (g != null)
-          return new DatasetParse(null, paths[0], groupName);
+          return new DatasetParse(null, localState.gribCollection, ds, g);
         else
           return null;
       }
     }
 
-    if (localState.gribCollection instanceof PartitionCollection) {
-      PartitionCollection pc = (PartitionCollection) localState.gribCollection;
-      PartitionCollection.Partition tpp = pc.getPartitionByName(paths[0]);
-      if (tpp == null) return null;
-      return new DatasetParse(tpp);
+    if (paths.length < 2) return null;
+    if (!(localState.gribCollection instanceof PartitionCollection)) return null;
+
+    PartitionCollection pc = (PartitionCollection) localState.gribCollection;
+    return drill(pc, paths, 0);
+  }
+
+  private DatasetParse drill(PartitionCollection pc, String[] paths, int idx) throws IOException {
+    if (paths.length <= idx+1) return null;
+    PartitionCollection.Partition pcp = pc.getPartitionByName(paths[idx]);
+    if (pcp == null) return null;
+
+    try (GribCollection gc =  pcp.getGribCollection()) {
+      if (gc instanceof PartitionCollection) {
+        PartitionCollection pcNested = (PartitionCollection) gc;
+        PartitionCollection.Partition pcpNested = pcNested.getPartitionByName(paths[idx]);
+        if (pcpNested != null)  // recurse
+          return drill(pcNested, paths, idx+1);
+      }
+
+      String datasetName = paths[idx+1];
+      GribCollection.Dataset ds = gc.findDataset(datasetName);
+      if (ds == null) return null;
+      GribCollection.GroupGC g = (paths.length <= idx+2) ? ds.getGroup(0) : ds.findGroupById(paths[idx+2]);
+      if (g == null) return null;
+      return new DatasetParse(pcp, gc, ds, g);
     }
+}
 
 
     /* if (isGribCollection || isFilePartition) {
@@ -839,31 +858,31 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
       }
     }  */
 
-    return null;
-  }
+
 
   private class DatasetParse {
-    PartitionCollection.Partition partition; // missing for collection level
-    String dataset;
-    String group;
-    String filename; // only for isFile
-    //FeatureCollectionConfig.GribDatasetType dtype;
-    //boolean isFile;
+    final PartitionCollection.Partition partition; // missing for collection level
+    final GribCollection gc;
+    final GribCollection.Dataset ds;
+    final GribCollection.GroupGC group;
+    final String filename; // only for isFile
 
-    private DatasetParse(PartitionCollection.Partition tpp, String dataset, String group) {
+    private DatasetParse(PartitionCollection.Partition tpp, GribCollection gc, GribCollection.Dataset ds, GribCollection.GroupGC group) {
       this.partition = tpp;
-      this.dataset = dataset;
+      this.gc = gc;
+      this.ds = ds;
       this.group = group;
+      this.filename = null;
     }
 
     private DatasetParse(String filename) {
+      this.partition = null;
+      this.gc = null;
+      this.ds = null;
+      this.group = null;
       this.filename = filename;
-      //this.isFile = true;
     }
 
-    private DatasetParse(PartitionCollection.Partition tpp) {
-      this.partition = tpp;
-    }
 
   }
 

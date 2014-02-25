@@ -62,7 +62,7 @@ import java.util.*;
  * @author John
  * @since 12/7/13
  */
-public class PartitionCollection extends GribCollection {
+public abstract class PartitionCollection extends GribCollection {
   // object cache for index files - these are opened only as GribCollection
   private static FileCache partitionCache;
 

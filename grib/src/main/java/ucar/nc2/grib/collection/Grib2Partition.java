@@ -57,27 +57,19 @@ public class Grib2Partition extends PartitionCollection implements AutoCloseable
 
   // LOOK - needs time partition collection iosp or something
   @Override
-  public ucar.nc2.dataset.NetcdfDataset getNetcdfDataset(String datasetName, String groupName, String filename,
+  public ucar.nc2.dataset.NetcdfDataset getNetcdfDataset(Dataset ds, GroupGC group, String filename,
           FeatureCollectionConfig config, Formatter errlog, org.slf4j.Logger logger) throws IOException {
-    Dataset ds = findDataset(datasetName);
-    if (ds == null) return null;
-    GroupGC want = ds.findGroupById(groupName);
-    if (want == null) return null;
 
-    ucar.nc2.grib.collection.Grib2Iosp iosp = new ucar.nc2.grib.collection.Grib2Iosp(want, ds.getType());
+    ucar.nc2.grib.collection.Grib2Iosp iosp = new ucar.nc2.grib.collection.Grib2Iosp(group, ds.getType());
     NetcdfFile ncfile = new NetcdfFileGC(iosp, null, getIndexFile().getPath(), null);
     return new NetcdfDataset(ncfile);
   }
 
   @Override
-  public ucar.nc2.dt.grid.GridDataset getGridDataset(String datasetName, String groupName, String filename,
+  public ucar.nc2.dt.grid.GridDataset getGridDataset(Dataset ds, GroupGC group, String filename,
           FeatureCollectionConfig config, Formatter errlog, org.slf4j.Logger logger) throws IOException {
-    Dataset ds = findDataset(datasetName);
-    if (ds == null) return null;
-    GroupGC want = ds.findGroupById(groupName);
-    if (want == null) return null;
 
-    ucar.nc2.grib.collection.Grib2Iosp iosp = new ucar.nc2.grib.collection.Grib2Iosp(want, ds.getType());
+    ucar.nc2.grib.collection.Grib2Iosp iosp = new ucar.nc2.grib.collection.Grib2Iosp(group, ds.getType());
     NetcdfFile ncfile = new NetcdfFileGC(iosp, null, getIndexFile().getPath(), null);
     NetcdfDataset ncd = new NetcdfDataset(ncfile);
     return new ucar.nc2.dt.grid.GridDataset(ncd); // LOOK - replace with custom GridDataset??
