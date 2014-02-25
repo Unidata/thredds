@@ -26,8 +26,10 @@ import java.util.List;
  * @since 6/27/12
  */
 public class DataBTree {
-  private java.io.PrintStream debugOut = System.out;
-  private boolean debugDataBtree, debugDataChunk;
+  private static final boolean debugDataBtree = false;
+  private static final boolean debugDataChunk = false;
+  private static final boolean debugChunkOrder = false;
+  private static java.io.PrintStream debugOut = System.out;
   private MemTracker memTracker;
 
   private H5header h5;
@@ -62,6 +64,20 @@ public class DataBTree {
 
   // used by H5tiledLayout
   LayoutTiled.DataChunkIterator getDataChunkIteratorNoFilter(Section want, int nChunkDim) throws IOException {
+    /*
+    if (if (debugChunkOrder) ) {
+    DataChunkIteratorNoFilter iter = new DataChunkIteratorNoFilter(null, nChunkDim);
+    int count = 0;
+    int last = -1;
+    while (iter.hasNext()) {
+      LayoutTiled.DataChunk chunk = iter.next();
+      System.out.printf("%d : %d%n", count++, tiling.order(chunk.offset));
+      if (tiling.order(chunk.offset) <= last)
+        System.out.println("HEY");
+      last = tiling.order(chunk.offset);
+    }
+    }*/
+
     return new DataChunkIteratorNoFilter(want, nChunkDim);
   }
 
@@ -97,6 +113,8 @@ public class DataBTree {
         offset = new int[nChunkDim];
         System.arraycopy(dc.offset, 0, offset, 0, nChunkDim);
       }
+      if (debugChunkOrder) System.out.printf("LayoutTiled.DataChunk next order %d%n", tiling.order(dc.offset));
+
       return new LayoutTiled.DataChunk(offset, dc.filePos);
     }
   }
@@ -202,28 +220,29 @@ public class DataBTree {
       }
     }
 
-    void first() {
-
-    }
-
     // this finds the first entry we dont want to skip.
     // entry i goes from [offset(i),offset(i+1))
     // we want to skip any entries we dont need, namely those where want >= offset(i+1)
     // so keep skipping until want < offset(i+1)
     void first(int[] wantOrigin) throws IOException {
+      if (debugChunkOrder && wantOrigin != null) System.out.printf("Level %d: Tile want %d%n", level, tiling.order(wantOrigin));
       if (level == 0) {
         currentEntry = 0;
-        /* note nentries-1 - assume dont skip the last one
+        // note nentries-1 - assume dont skip the last one
        for (currentEntry = 0; currentEntry < nentries-1; currentEntry++) {
-         DataChunk entry = myEntries.get(currentEntry + 1);
-         if ((wantOrigin == null) || tiling.compare(wantOrigin, entry.offset) < 0) break;   // LOOK ??
-       } */
+         DataChunk entry = myEntries.get(currentEntry + 1); // look at the next one
+         if (debugChunkOrder) System.out.printf(" Entry=%d: Tile ending order= %d%n", currentEntry, tiling.order(entry.offset));
+         if ((wantOrigin == null) || tiling.compare(wantOrigin, entry.offset) < 0) break;
+       }
+        if (debugChunkOrder) System.out.printf("Level %d use entry= %d%n", level, currentEntry);
 
       } else {
         currentNode = null;
         for (currentEntry = 0; currentEntry < nentries; currentEntry++) {
+          if (debugChunkOrder) System.out.printf(" Entry=%d: Tile order %d-%d%n", currentEntry, tiling.order(offset[currentEntry]), tiling.order(offset[currentEntry + 1]));
           if ((wantOrigin == null) || tiling.compare(wantOrigin, offset[currentEntry + 1]) < 0) {
             currentNode = new Node(childPointer[currentEntry], this.address);
+            if (debugChunkOrder) System.out.printf("Level %d use entry= %d%n", level, currentEntry);
             currentNode.first(wantOrigin);
             break;
           }

@@ -15,7 +15,7 @@
   collection of GRIB records in one or more files. You cannot access these files remotely, eg through an OPeNDAP server, they must be local. A THREDDS Data
   Server (TDS) can make GRIB datasets remotely accessible, eg through OPeNDAP. </p>
 
-<p>The CDM can only read GRIB files, it cannot write them. It can, however, rewrite GRIB into netCDF using CF Conventions. As of version 4.3.12, it can only
+<p>The CDM can only read GRIB files, it cannot write them. It can, however, rewrite GRIB into netCDF using CF Conventions. Before  version 4.3.13, it can only
   write netCDF-3 format files, which are typically 4-40 times larger than GRIB. As of 4.3.13, the CDM can <a href="../netcdf4Clibrary.html">write to
     netCDF-4</a> format, with file sizes comparable to GRIB, typically within a factor of two.</p>
 
@@ -244,12 +244,38 @@ where:
   <li>Exclude intervals that have (0,0) bounds.</li>
   <li>Only include the 3 hour intervals for parameters 0-1-8 and 0-1-10, defining the parameter using <em>discipline-category-number </em>(GRIB-2) or <em>center-subcenter-version-param</em>
     (GRIB-1).
-  </li>
+</li>
 </ol>
+<hr />
+<h2>Lower level interface to GRIB files<a name="GRIBlowAPI" id="GRIBlowAPI"></a></h2>
+<p>To access  lower level GRIB1 reading, you can use the classes in ucar.nc2.grib.grib1:</p>
+<pre> RandomAccessFile raf = new RandomAccessFile(filepath, &quot;r&quot;);<br /> Grib1RecordScanner reader = new Grib1RecordScanner(raf);
+ while (reader.hasNext()) {
+   ucar.nc2.grib.grib1.Grib1Record gr1 = reader.next();
+   // do good stuff
+ }
+ raf.close();</pre>
+<p>or similarly for GRIB2, use the classes in ucar.nc2.grib.grib2:</p>
+<pre>RandomAccessFile raf = new RandomAccessFile(filepath, &quot;r&quot;);
+Grib2RecordScanner scan = new Grib2RecordScanner(raf);
+ while (scan.hasNext()) {
+   ucar.nc2.grib.grib2.Grib2Record gr2 = scan.next();
+   // do stuff
+ }
+raf.close();</pre>
+<p><br />
+Note that these are not supported public APIs, and are subject to change. But the low level stuff is pretty stable.</p>
+<p>The details vary a bit between GRIB1 and GRIB2. To read the data from a GRIB1 record:</p>
+<pre>
+float[] data = gr1.readData(raf);</pre>
+<p>To read the data from a GRIB2 record:</p>
+<pre>
+Grib2SectionDataRepresentation drs = gr2.getDataRepresentationSection();
+float[] data = gr2.readData(raf, drs.getStartingPosition());</pre>
 <hr width="100%"/>
 <address>
   <img src="../../nc.gif" alt="" width="64" height="64"/> This document is maintained by <a href="mailto:caron@unidata.ucar.edu">John Caron</a> and was last
-  updated Nov 2013
+  updated Feb 2014
 </address>
 </body>
 </html>

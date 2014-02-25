@@ -32,11 +32,12 @@
  */
 package ucar.nc2.iosp.hdf5;
 
-import junit.framework.*;
+import org.junit.Test;
 import ucar.ma2.*;
 import ucar.nc2.*;
 import ucar.nc2.dt.GridDatatype;
 import ucar.nc2.dt.grid.GridDataset;
+import ucar.nc2.iosp.netcdf3.N3iosp;
 import ucar.nc2.util.Misc;
 import ucar.unidata.test.util.TestDir;
 
@@ -48,12 +49,59 @@ import java.util.List;
  * Test nc2 read JUnit framework.
  */
 
-public class TestN4 extends TestCase {
+public class TestN4 {
   public static String testDir = TestDir.cdmUnitTestDir + "formats/netcdf4/";
-  public TestN4(String name) {
-    super(name);
+
+
+
+  @Test
+  public void testGodivaFindsDataHole() throws IOException, InvalidRangeException {
+    // this pattern of reads from godiva is finding a data hole - missing data where therre shouldnt be any
+    Section[] sections = {
+      new Section("14:14,0:0,13:170,0:20"),
+      new Section("14:14,0:0,170:194,21:167"),
+      new Section("14:14,0:0,170:194,168:294"),
+      new Section("14:14,0:0,13:170,21:167"),
+      new Section("14:14,0:0,170:194,0:20"),
+      new Section("14:14,0:0,0:0,0:0"),
+      new Section("14:14,0:0,13:170,168:294"),
+      new Section("14:14,0:0,0:0,0:0"),
+      new Section("14:14,0:0,0:0,0:0"),
+      new Section("14:14,0:0,0:12,0:20"),
+      new Section("14:14,0:0,0:12,21:167"),
+      new Section("14:14,0:0,0:12,168:294"),
+    };
+
+    // Global Heap 1t 13059 runs out with no heap id = 0
+    String filename = testDir+"hiig_forec_20140208.nc";
+    NetcdfFile ncfile = NetcdfFile.open(filename);
+    Variable v = ncfile.findVariable("temp");
+    for (Section sect : sections) {
+      Array data =  v.read(sect);
+      if (0 < countMissing(data)) {
+        Array data2 =  v.read(sect);
+        countMissing(data2);
+        assert false;
+      }
+    }
+    System.out.printf("**** testGodivaFindsDataHole read ok on %s%n", ncfile.getLocation());
+    ncfile.close();
   }
 
+  private int countMissing(Array data) {
+    int count = 0;
+    while (data.hasNext()) {
+       float val = data.nextFloat();
+       if (val == N3iosp.NC_FILL_FLOAT) {
+         count++;
+       }
+     }
+     System.out.printf(" missing= %d/%d%n", count, data.getSize());
+    return count;
+  }
+
+
+  @Test
   public void testMultiDimscale() throws IOException {
     // Global Heap 1t 13059 runs out with no heap id = 0
     String filename = testDir+"multiDimscale.nc4";
@@ -66,6 +114,7 @@ public class TestN4 extends TestCase {
     ncfile.close();
   }
 
+  @Test
   public void testGlobalHeapOverun() throws IOException {
     // Global Heap 1t 13059 runs out with no heap id = 0
     String filename = testDir+"globalHeapOverrun.nc4";
@@ -92,6 +141,7 @@ public class TestN4 extends TestCase {
     gridDataset.close();
   }
 
+  @Test
   public void testOpen() throws IOException {
     //H5header.setDebugFlags(new ucar.nc2.util.DebugFlagsImpl("H5header/header"));
     String filename = testDir+"tst/tst_enums.nc";
@@ -104,6 +154,7 @@ public class TestN4 extends TestCase {
     ncfile.close();
   }
 
+  @Test
   public void testReadAll() throws IOException {
     TestDir.readAllDir(testDir+"nc4", null);
     TestDir.readAllDir(testDir+"nc4-classic", null);
@@ -133,6 +184,7 @@ public class TestN4 extends TestCase {
     H5header.setDebugFlags( new ucar.nc2.util.DebugFlagsImpl());
   }
 
+  @Test
   public void testVlenStrings() throws IOException {
     //H5header.setDebugFlags(new ucar.nc2.util.DebugFlagsImpl("H5header/header"));
     String filename = testDir+"tst/tst_strings.nc";
@@ -144,6 +196,7 @@ public class TestN4 extends TestCase {
     ncfile.close();
   }
 
+  @Test
   public void testVlen() throws IOException, InvalidRangeException {
     //H5header.setDebugFlags(new ucar.nc2.util.DebugFlagsImpl("H5header/header"));
     //String filename = "C:/data/work/bruno/fpsc_d1wave_24-11.nc";
@@ -210,6 +263,7 @@ public class TestN4 extends TestCase {
       } x;
   }
    */
+  @Test
   public void testNestedStructure() throws java.io.IOException, InvalidRangeException {
     String filename = testDir+"testNestedStructure.nc";
     NetcdfFile ncfile = NetcdfFile.open(filename);
@@ -243,6 +297,7 @@ public class TestN4 extends TestCase {
     ncfile.close();
   }
 
+  @Test
   public void testStrings() throws IOException {
     //H5header.setDebugFlags(new ucar.nc2.util.DebugFlagsImpl("H5header/header"));
     String filename = testDir+"files/nc_test_netcdf4.nc4";
@@ -258,7 +313,7 @@ public class TestN4 extends TestCase {
   }
 
   public static void main(String args[]) throws IOException {
-    new TestN4("").problem();
+    new TestN4().problem();
   }
 
 }

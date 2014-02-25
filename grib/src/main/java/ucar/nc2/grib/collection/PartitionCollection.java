@@ -687,10 +687,10 @@ public abstract class PartitionCollection extends GribCollection {
     return raf;
   }
 
-  public void close() throws java.io.IOException {
-    assert (objCache == null);
+  /* public void close() throws java.io.IOException {
+    assert (objCache == null); LOOK WHY ??
     super.close();
-  }
+  }  */
 
   // no longer will be used
   public void delete() throws java.io.IOException {

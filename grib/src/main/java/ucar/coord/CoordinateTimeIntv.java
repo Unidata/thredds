@@ -10,7 +10,6 @@ import ucar.nc2.time.CalendarDateUnit;
 import ucar.nc2.grib.TimeCoord;
 import ucar.nc2.grib.grib2.Grib2Pds;
 import ucar.nc2.grib.grib2.Grib2Record;
-import ucar.nc2.grib.grib2.Grib2Utils;
 import ucar.nc2.grib.grib2.table.Grib2Customizer;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time.CalendarPeriod;
@@ -228,22 +227,6 @@ public class CoordinateTimeIntv extends CoordinateTimeAbstract implements Coordi
       this.refDate = refDate;
     }
 
-    public TimeCoord.Tinv extractOld(Grib1Record gr) {
-      CalendarPeriod timeUnitUse = timeUnit;
-      Grib1SectionProductDefinition pds = gr.getPDSsection();
-      int tu2 = pds.getTimeUnit();
-      if (tu2 != code) {
-        System.out.printf("Grib1 TimeIntv unit diff %d != %d%n", tu2, code);
-        int unit = cust.convertTimeUnit(tu2);
-        timeUnitUse = Grib2Utils.getCalendarPeriod(unit);  // LOOK NOT USED !!
-      }
-
-      Grib1ParamTime ptime = pds.getParamTime(cust);
-      int[] intv = ptime.getInterval();
-      TimeCoord.Tinv tinv = new TimeCoord.Tinv(intv[0], intv[1]);
-      return tinv;
-    }
-
     @Override
     public Object extract(Grib1Record gr) {
 
@@ -257,10 +240,6 @@ public class CoordinateTimeIntv extends CoordinateTimeAbstract implements Coordi
         CalendarPeriod unitInRecord = GribUtils.getCalendarPeriod(tuInRecord);
         tinv = tinv.convertReferenceDate(gr.getReferenceDate(), unitInRecord, refDate, timeUnit);
       }
-
-      TimeCoord.Tinv tinvOld = extractOld(gr);
-      if (!tinvOld.equals(tinv))
-        System.out.println("HEY");
 
       return tinv;
     }

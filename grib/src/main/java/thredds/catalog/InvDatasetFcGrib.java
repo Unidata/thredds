@@ -45,6 +45,7 @@ import ucar.nc2.grib.GdsHorizCoordSys;
 import ucar.nc2.grib.collection.*;
 import ucar.nc2.time.CalendarDateRange;
 import ucar.unidata.geoloc.LatLonRect;
+import ucar.unidata.util.StringUtil2;
 
 import java.io.File;
 import java.io.IOException;
@@ -346,6 +347,7 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
      Possible catref paths:
       0. path/catalog.xml                       // top catalog
       1. path/partitionName/catalog.xml
+      2. path/partitionName/../partitionName/catalog.xml
 
       ////
       1. path/files/catalog.xml
@@ -356,6 +358,23 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
       4. path/BEST/catalog.xml
       5. path/partitionName/catalog.xml
    */
+
+    /* possible forms of dataset path:
+
+    regular, single group:
+      1. dataset (BEST, TWOD, GC)
+
+     regular, multiple group:
+      2. dataset/groupName
+
+     partition, single group:
+      3. partitionName/dataset
+      3. partitionName/../partitionName/dataset
+
+     partition, multiple group:
+      4. partitionName/dataset/groupName
+      4. partitionName/../partitionName/dataset/groupName
+  */
   @Override
   public InvCatalogImpl makeCatalog(String match, String reqPath, URI catURI) {
     StateGrib localState = (StateGrib) checkState();
@@ -371,14 +390,45 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
       // case 1
       if (localState.gribCollection instanceof PartitionCollection) {
         String[] paths = match.split("/");
-        String pname = paths[0];
         PartitionCollection pc = (PartitionCollection) localState.gribCollection;
-        PartitionCollection.Partition tpp = pc.getPartitionByName(pname);
-        if (tpp == null) return null;
-        return makeCatalogFromCollection(catURI, tpp.getName(), tpp.getGribCollection());
+        return drillPartitionCatalog(pc, paths, 0, catURI);
       }
 
-    /*  if (isGribCollection || isFilePartition) {
+    } catch (Exception e) {
+      logger.error("Error making catalog for " + path, e);
+    }
+
+    return null;
+  }
+  private InvCatalogImpl drillPartitionCatalog(PartitionCollection pc, String[] paths, int idx, URI catURI) throws IOException {
+    if (paths.length < idx+1) return null;
+    PartitionCollection.Partition pcp = pc.getPartitionByName(paths[idx]);
+    if (pcp == null) return null;
+
+    try (GribCollection gc =  pcp.getGribCollection()) {
+      if (paths.length > idx+1 && gc instanceof PartitionCollection) {
+        PartitionCollection pcNested = (PartitionCollection) gc;
+        PartitionCollection.Partition pcpNested = pcNested.getPartitionByName(paths[idx+1]);
+        if (pcpNested != null)  // recurse
+          return drillPartitionCatalog(pcNested, paths, idx+1, catURI);
+      }
+
+      // build the parent name
+      int i = 0;
+      StringBuilder parentName = new StringBuilder();
+      for (String s : paths) {
+        if (i++ > 0) parentName.append("/");
+        parentName.append(s);
+      }
+      return makeCatalogFromCollection(catURI, parentName.toString(), gc);
+
+    } catch (URISyntaxException e) {
+      e.printStackTrace();
+      return null;
+    }
+  }
+
+      /*  if (isGribCollection || isFilePartition) {
         String[] path = match.split("/");
         GribCollection.GroupHcs group;
         if ((path.length == 1) && (path[0].equals(FILES))) { // single group case
@@ -434,13 +484,6 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
           return result;
         }
       }   */
-
-    } catch (Exception e) {
-      logger.error("Error making catalog for " + path, e);
-    }
-
-    return null;
-  }
 
   @Override
   protected InvCatalogImpl makeCatalogTop(URI catURI, State localState) throws IOException, URISyntaxException {
@@ -749,7 +792,7 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
     return localState.gribCollection.getNetcdfDataset(dp.ds, dp.group, dp.filename, config, null, logger);
   }
 
-  /* possible forms of path:
+  /* possible forms of dataset path:
 
     regular, single group:
       1. dataset (BEST, TWOD, GC)
@@ -764,7 +807,6 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
      partition, multiple group:
       4. partitionName/dataset/groupName
       4. partitionName/../partitionName/dataset/groupName
-
   */
   private DatasetParse parse(String matchPath, StateGrib localState) throws IOException {
     if ((matchPath == null) || (matchPath.length() == 0)) return null;
@@ -805,7 +847,7 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
     try (GribCollection gc =  pcp.getGribCollection()) {
       if (gc instanceof PartitionCollection) {
         PartitionCollection pcNested = (PartitionCollection) gc;
-        PartitionCollection.Partition pcpNested = pcNested.getPartitionByName(paths[idx]);
+        PartitionCollection.Partition pcpNested = pcNested.getPartitionByName(paths[idx+1]);
         if (pcpNested != null)  // recurse
           return drill(pcNested, paths, idx+1);
       }
@@ -817,7 +859,7 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
       if (g == null) return null;
       return new DatasetParse(pcp, gc, ds, g);
     }
-}
+  }
 
 
     /* if (isGribCollection || isFilePartition) {

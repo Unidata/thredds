@@ -32,6 +32,8 @@
  */
 package ucar.nc2.iosp.hdf5;
 
+import java.util.Formatter;
+
 /**
  * A Tiling divides a multidimensional index into tiles.
  * Abstraction of HDF5 chunking.
@@ -48,31 +50,47 @@ public class Tiling {
 
   private final int rank;
   private final int[] shape;     // overall data shape - may be larger than actual variable shape
-  private final int[] tileSize;  // actual storage is in this shape
-  private final int[] stride;
+  private final int[] chunk;     // actual storage is in this shape
+  private final int[] stride;    // for computing time index
 
   /**
    * Create a Tiling
    * @param shape overall shape of the dataset's index space
-   * @param tileSize tile size. may be larger than the shape.
+   * @param chunk tile size. may be larger than the shape.
    */
-  public Tiling(int[] shape, int[] tileSize) {
-    assert shape.length <= tileSize.length; // convenient to allow tileSize to have (an) extra dimension at the end
+  public Tiling(int[] shape, int[] chunk) {
+    assert shape.length <= chunk.length; // convenient to allow tileSize to have (an) extra dimension at the end
                                             // to accomodate hdf5 storage, which has the element size
     this.rank = shape.length;
-    this.tileSize = tileSize;
+    this.chunk = chunk;
     this.shape = new int[rank];
     for (int i=0; i<rank; i++)
-      this.shape[i] = Math.max(shape[i], tileSize[i]);
-    int[] tile = tile(this.shape);
+      this.shape[i] = Math.max(shape[i], chunk[i]);
+    //int[] tile = tile(this.shape);
 
-    // LOOK this is wrong
+    int[] tileSize = new int[rank];
+    for (int i = 0; i < rank; i++) {
+      tileSize[i] = (this.shape[i] +chunk[i] - 1) / chunk[i];
+    }
+
     this.stride = new int[rank];
     int strider = 1;
     for (int k = rank-1; k >= 0; k--) {
       stride[k] = strider;
-      strider *= tile[k];
+      strider *= tileSize[k];
     }
+
+    /* debug
+    System.out.printf("--Data shape= %s%n", show(this.shape));
+    System.out.printf("  Data chunk= %s%n", show(this.chunk));
+    System.out.printf("       Tiles= %s%n", show(tileSize));
+    System.out.printf("      stride= %s%n", show(this.stride)); */
+  }
+
+  String show(int[] a) {
+    Formatter f = new Formatter();
+    for (int val : a) f.format("%3d,", val);
+    return f.toString();
   }
 
   /**
@@ -86,7 +104,7 @@ public class Tiling {
     int[] tile = new int[useRank];
     for (int i = 0; i < useRank; i++) {
       assert shape[i] >= pt[i];
-      tile[i] = pt[i] / tileSize[i];
+      tile[i] = pt[i] / chunk[i];        // seems wrong, rounding down ??
     }
     return tile;
   }

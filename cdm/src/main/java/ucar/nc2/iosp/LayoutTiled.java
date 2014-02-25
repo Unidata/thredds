@@ -61,7 +61,7 @@ public class LayoutTiled implements Layout {
   // track the overall iteration
   private long totalNelems, totalNelemsDone; // total number of elemens
 
-  private boolean debug = false, debugNext= false;
+  private static final boolean debug = false, debugNext= false;
 
   /**
    * Constructor.
@@ -125,6 +125,7 @@ public class LayoutTiled implements Layout {
 
           // make the dataSection for this chunk
           dataSection = new Section(dataChunk.offset, chunkSize);
+          if (debug) System.out.printf(" dataChunk: %s%n", dataSection);
           if (dataSection.intersects(want)) // does it intersect ?
             break;
         }

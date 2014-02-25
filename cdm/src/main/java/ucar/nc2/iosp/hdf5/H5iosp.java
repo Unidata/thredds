@@ -64,7 +64,7 @@ public class H5iosp extends AbstractIOServiceProvider {
   static boolean debugPos = false;
   static boolean debugHeap = false;
   static boolean debugFilter = false;
-  static boolean debugFilterDetails = false;
+  static boolean debugRead = false;
   static boolean debugString = false;
   static boolean debugFilterIndexer = false;
   static boolean debugChunkIndexer = false;
@@ -139,6 +139,7 @@ public class H5iosp extends AbstractIOServiceProvider {
 
   public Array readData(ucar.nc2.Variable v2, Section section) throws IOException, InvalidRangeException {
     H5header.Vinfo vinfo = (H5header.Vinfo) v2.getSPobject();
+    if (debugRead) System.out.printf("%s read %s%n", v2.getFullName(), section);
     return readData(v2, vinfo.dataPos, section);
   }
 
