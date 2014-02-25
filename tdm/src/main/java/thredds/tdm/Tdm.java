@@ -314,7 +314,7 @@ public class Tdm {
         if (changed) System.out.printf("%s %s changed%n", CalendarDate.present(), config.name);
 
         if (changed && config.tdmConfig.triggerOk && sendTriggers) { // send a trigger if enabled
-          String path = "thredds/admin/collection/trigger?trigger=nocheck&collection=" + name;
+          String path = "thredds/admin/collection/trigger?trigger=never&collection=" + name;
           sendTriggers(path, errlog);
         }
         errlog.format("**** Tdm.IndexTask complete %s%n", name);

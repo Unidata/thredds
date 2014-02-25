@@ -107,7 +107,7 @@
 
     </dataset>
 
-    <!-- dataset name="Global Ensemble Forecasting System (GEFS)">
+    <dataset name="Global Ensemble Forecasting System (GEFS)">
 
       <metadata inherited="true">
         <documentation type="summary">NCEP Global Ensemble Forecasting System (GEFS)
@@ -151,7 +151,7 @@
         <tdm rewrite="test" rescan="0 0/15 * * * ? *" trigger="allow"/>
       </featureCollection>
 
-    </dataset -->
+    </dataset>
 
     <dataset name="Global Forecast System (GFS)">
 
@@ -397,7 +397,7 @@
 
         <collection spec="/data/ldm/pub/native/grid/NCEP/NAM/Alaska_45km/conduit/.*grib2$"
                     dateFormatMark="#NAM_Alaska_45km_conduit_#yyyyMMdd_HHmm"
-                    timePartition="1 day"
+                    timePartition="file"
                     olderThan="5 min"/>
         <update startup="nocheck" trigger="allow"/>
         <tdm rewrite="test" rescan="0 6,21,36,51 * * * ? *" trigger="allow"/>
@@ -593,6 +593,70 @@
 
     </dataset>
 
+    <dataset name="National Digital Forecast Database (NDFD)">
+      <metadata inherited="true">
+        <documentation type="summary">National Digital Forecast Database (NDFD): US National Weather Service gridded
+          forecasts of sensible weather elements.
+        </documentation>
+        <documentation xlink:href="http://www.weather.gov/ndfd/" xlink:title="NWS/NDFD Website"/>
+        <documentation xlink:href="http://www.nws.noaa.gov/ndfd/definitions.htm"
+                       xlink:title="NDFD parameter descriptions"/>
+      </metadata>
+
+      <featureCollection name="NDFD-CONUS_5km" featureType="GRIB2" harvest="true" path="grib/NCEP/NDFD/CONUS_5km">
+        <metadata inherited="true">
+          <documentation type="summary">
+            CONUS, 1073 by 689 points, resolution 5 km. Results from 12Z and 18Z run. Forecasts every 6 hours from 90 to
+            180 hours.
+          </documentation>
+        </metadata>
+
+        <collection spec="/data/ldm/pub/native/grid/NCEP/NDFD/CONUS_5km/.*grib2$"
+                    dateFormatMark="#NDFD_CONUS_5km_#yyyyMMdd_HHmm"
+                    timePartition="file"
+                    olderThan="5 min"/>
+        <update startup="nocheck" trigger="allow"/>
+        <tdm startup="true" rescan="0 0/15 * * * ? *" trigger="allow"/>
+      </featureCollection>
+
+      <featureCollection name="NDFD-CONUS_5km_conduit" featureType="GRIB2" harvest="true"
+                         path="grib/NCEP/NDFD/CONUS_5km_conduit">
+        <metadata inherited="true">
+          <documentation type="summary">
+            CONUS, 1073 by 689 points, resolution 5 km. Models are run hourly. Forecasts every 3 hours from 2 to 74
+            hours and
+            every 6 hours from 74 to 170.
+          </documentation>
+        </metadata>
+
+        <collection spec="/data/ldm/pub/native/grid/NCEP/NDFD/conduit/CONUS_5km/.*grib2$"
+                    dateFormatMark="#NDFD_CONUS_5km_conduit_#yyyyMMdd_HHmm"
+                    timePartition="file"
+                    olderThan="5 min"/>
+        <update startup="nocheck" trigger="allow"/>
+        <tdm startup="true" rescan="0 0/15 * * * ? *" trigger="allow"/>
+        <gribConfig>
+          <gdsHash from="-2121584860" to="28944332"/>
+        </gribConfig>
+      </featureCollection>
+
+      <featureCollection name="NDFD-CONUS-Fireweather" featureType="GRIB2" harvest="true"
+                         path="grib/NCEP/NDFD/CONUS/Fireweather">
+        <metadata inherited="true">
+          <documentation type="summary">??
+          </documentation>
+        </metadata>
+
+        <collection spec="/data/ldm/pub/native/grid/NCEP/NDFD/Fireweather/CONUS/.*grib2$"
+                    dateFormatMark="#NDFD_Fireweather_CONUS_#yyyyMMdd_HHmm"
+                    timePartition="file"
+                    olderThan="5 min"/>
+        <update startup="nocheck" trigger="allow"/>
+        <tdm startup="true" rescan="0 0/15 * * * ? *" trigger="allow"/>
+      </featureCollection>
+
+    </dataset>
+
     <dataset name="Real Time Mesoscale Analysis (RTMA)">
       <metadata inherited="true">
         <documentation type="summary">
@@ -720,7 +784,7 @@
       </featureCollection>
     </dataset>
 
-    <!-- dataset name="Short Range Ensemble Forecasting (SREF)">
+    <dataset name="Short Range Ensemble Forecasting (SREF)">
       <metadata inherited="true">
         <documentation type="summary">NCEP Short Range Ensemble Forecast (SREF)</documentation>
         <documentation xlink:href="http://w1.spc.woc.noaa.gov/exper/sref/" xlink:title="NCEP/SREF Website"/>
@@ -771,7 +835,7 @@
                     olderThan="5 min"/>
         <update startup="nocheck" trigger="allow"/>
         <tdm rewrite="test" rescan="0 2,17,32,47 * * * ? *" trigger="allow"/>
-      </featureCollection -->
+      </featureCollection>
 
       <!-- apparently SREF members are incorectly encoded - dont have the ensemble info in them
       <featureCollection name="SREF-CONUS_40km_biasCorrected_Ensemble-members" featureType="GRIB" harvest="true"
@@ -790,7 +854,7 @@
         <tdm rewrite="test" rescan="0 0/15 * * * ? *" trigger="allow"/>
       </featureCollection -->
 
-      <!-- featureCollection name="SREF-Alaska_45km-ensprod" featureType="GRIB2" harvest="true"
+      <featureCollection name="SREF-Alaska_45km-ensprod" featureType="GRIB2" harvest="true"
                          path="grib/NCEP/SREF/Alaska_45km/ensprod">
         <metadata inherited="true">
           <documentation type="summary">
@@ -832,7 +896,7 @@
         </gribConfig>
       </featureCollection>
 
-    </dataset -->
+    </dataset>
 
     <dataset name="Wave Watch III (WW3)">
       <metadata inherited="true">

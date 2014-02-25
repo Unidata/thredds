@@ -2,6 +2,7 @@ package ucar.nc2.ui;
 
 import thredds.featurecollection.FeatureCollectionConfig;
 import thredds.inventory.MFile;
+import ucar.coord.CoordinateRuntime;
 import ucar.coord.CoordinateTime2D;
 import ucar.nc2.grib.collection.*;
 import ucar.nc2.util.Indent;
@@ -172,6 +173,24 @@ public class CdmIndex2Panel extends JPanel {
       }
     });
 
+    varPopup.addAction("Compare", new AbstractAction() {
+       public void actionPerformed(ActionEvent e) {
+         List beans = coordTable.getSelectedBeans();
+         if (beans.size() == 2) {
+           Formatter f = new Formatter();
+           CoordBean bean1 = (CoordBean) beans.get(0);
+           CoordBean bean2 = (CoordBean) beans.get(1);
+           if (bean1.coord.getType() == Coordinate.Type.time2D && bean2.coord.getType() == Coordinate.Type.time2D)
+             compareCoords2D(f, (CoordinateTime2D) bean1.coord, (CoordinateTime2D) bean2.coord);
+           else
+             compareCoords(f, bean1.coord, bean2.coord);
+           infoTA.setText(f.toString());
+           infoTA.gotoTop();
+           infoWindow.show();
+         }
+       }
+     });
+
     // file popup window
     fileTable = new MFileTable((PreferencesExt) prefs.node("MFileTable"), true);
     fileTable.addPropertyChangeListener(new PropertyChangeListener() {
@@ -231,6 +250,39 @@ public class CdmIndex2Panel extends JPanel {
     f.format("%n");
     // showFiles(f);
   }
+
+  private void compareCoords(Formatter f, Coordinate coord1, Coordinate coord2) {
+    List<? extends Object> vals1 = coord1.getValues();
+    List<? extends Object> vals2 = coord2.getValues();
+    f.format("Coordinate %s%n", coord1.getName());
+    for (Object val1 : vals1) {
+      boolean missing = (!vals2.contains(val1));
+      f.format(" %s %s%n", val1, (missing ? "MISSING IN 2" : ""));
+    }
+    f.format("%nCoordinate %s%n", coord2.getName());
+    for (Object val2 : vals2) {
+      boolean missing = (!vals1.contains(val2));
+      f.format(" %s %s%n", val2, (missing ? "MISSING IN 1" : ""));
+    }
+  }
+
+  private void compareCoords2D(Formatter f, CoordinateTime2D coord1, CoordinateTime2D coord2) {
+    CoordinateRuntime runtimes1 = coord1.getRuntimeCoordinate();
+    CoordinateRuntime runtimes2 = coord2.getRuntimeCoordinate();
+    List<Coordinate> times1 = coord1.getTimes();
+    List<Coordinate> times2 = coord2.getTimes();
+    int min = Math.min(times1.size(), times2.size());
+    if (times1.size() != times2.size()) {
+      f.format("Coordinate 1 has %d runtimes, Coordinate 2 has %d runtimes, %n", times1.size(), times2.size());     }
+
+    for (int idx=0; idx<min; idx++) {
+      f.format("Run %d %n", idx);
+      if (runtimes1.getValue(idx) != runtimes2.getValue(idx))
+        f.format("Runtime 1 %s != %s runtime 2%n", runtimes1.getValue(idx), runtimes2.getValue(idx));
+      compareCoords(f, times1.get(idx), times2.get(idx));
+    }
+  }
+
 
   private void compareFiles(Formatter f) throws IOException {
     if (gc == null) return;
@@ -453,7 +505,14 @@ public class CdmIndex2Panel extends JPanel {
     }
 
     public String getType() {
-      return coord.getType().toString();
+      if (coord instanceof CoordinateTime2D) {
+        CoordinateTime2D c2d = (CoordinateTime2D) coord;
+        Formatter f = new Formatter();
+        f.format("%s %s", coord.getType(), (c2d.isTimeInterval() ? "intv" : "offset"));
+        return f.toString();
+      } else {
+        return coord.getType().toString();
+      }
     }
 
     public CoordBean(Coordinate coord, int idx) {

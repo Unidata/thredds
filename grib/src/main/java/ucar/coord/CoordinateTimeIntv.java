@@ -1,5 +1,6 @@
 package ucar.coord;
 
+import ucar.nc2.grib.GribUtils;
 import ucar.nc2.grib.grib1.Grib1ParamTime;
 import ucar.nc2.grib.grib1.Grib1Record;
 import ucar.nc2.grib.grib1.Grib1SectionProductDefinition;
@@ -60,32 +61,23 @@ public class CoordinateTimeIntv extends CoordinateTimeAbstract implements Coordi
   public int getSize() {
     return timeIntervals.size();
   }
+
   @Override
   public Type getType() {
     return Type.timeIntv;
   }
 
-  /* public void setRefDate(CalendarDate refDate) {
-    this.refDate = refDate;
-  } */
-
   public String getTimeIntervalName() {
-
     // are they the same length ?
     int firstValue = -1;
-    boolean same = true;
     for (TimeCoord.Tinv tinv : timeIntervals) {
       int value = (tinv.getBounds2() - tinv.getBounds1());
       if (firstValue < 0) firstValue = value;
-      else if (value != firstValue) same = false;
+      else if (value != firstValue) return MIXED_INTERVALS;
     }
 
-    if (same) {
-      firstValue = (int) (firstValue * getTimeUnitScale());
-      return firstValue + "_" + timeUnit.getField().toString();
-    } else {
-      return "Mixed_intervals";
-    }
+    firstValue = (int) (firstValue * getTimeUnitScale());
+    return firstValue + "_" + timeUnit.getField().toString();
   }
 
   public List<CalendarDate> makeCalendarDates(ucar.nc2.time.Calendar cal, CalendarDate refDate) {
@@ -196,17 +188,20 @@ public class CoordinateTimeIntv extends CoordinateTimeAbstract implements Coordi
 
     @Override
     public Object extract(Grib2Record gr) {
-      CalendarPeriod timeUnitUse = timeUnit;
+      TimeCoord.Tinv tinv;
+
       Grib2Pds pds = gr.getPDS();
-      int tu2 = pds.getTimeUnit();
-      if (tu2 != code) {
-        System.out.printf("Time unit diff %d != %d%n", tu2, code);
-        int unit = cust.convertTimeUnit(tu2);
-        timeUnitUse = Grib2Utils.getCalendarPeriod(unit);
+      int tuInRecord = pds.getTimeUnit();
+      if (tuInRecord == code) {
+        int[] intv = cust.getForecastTimeIntervalOffset(gr);
+        tinv = new TimeCoord.Tinv(intv[0], intv[1]);
+
+      } else {
+        // int unit = cust.convertTimeUnit(tu2);  // not used
+        TimeCoord.TinvDate tinvd = cust.getForecastTimeInterval(gr); // converts to calendar date
+        tinv = tinvd.convertReferenceDate(refDate, timeUnit);
       }
 
-      TimeCoord.TinvDate tinvd = cust.getForecastTimeInterval(gr);
-      TimeCoord.Tinv tinv = tinvd.convertReferenceDate(refDate, timeUnitUse);
       return tinv;
     }
 
@@ -233,20 +228,40 @@ public class CoordinateTimeIntv extends CoordinateTimeAbstract implements Coordi
       this.refDate = refDate;
     }
 
-    @Override
-    public Object extract(Grib1Record gr) {
+    public TimeCoord.Tinv extractOld(Grib1Record gr) {
       CalendarPeriod timeUnitUse = timeUnit;
       Grib1SectionProductDefinition pds = gr.getPDSsection();
       int tu2 = pds.getTimeUnit();
       if (tu2 != code) {
-        System.out.printf("Time unit diff %d != %d%n", tu2, code);
+        System.out.printf("Grib1 TimeIntv unit diff %d != %d%n", tu2, code);
         int unit = cust.convertTimeUnit(tu2);
-        timeUnitUse = Grib2Utils.getCalendarPeriod(unit);
+        timeUnitUse = Grib2Utils.getCalendarPeriod(unit);  // LOOK NOT USED !!
       }
 
       Grib1ParamTime ptime = pds.getParamTime(cust);
       int[] intv = ptime.getInterval();
       TimeCoord.Tinv tinv = new TimeCoord.Tinv(intv[0], intv[1]);
+      return tinv;
+    }
+
+    @Override
+    public Object extract(Grib1Record gr) {
+
+      Grib1SectionProductDefinition pds = gr.getPDSsection();
+      Grib1ParamTime ptime = pds.getParamTime(cust);
+      int tuInRecord = pds.getTimeUnit();
+      int[] intv = ptime.getInterval();
+      TimeCoord.Tinv  tinv = new TimeCoord.Tinv(intv[0], intv[1]);
+
+      if (tuInRecord != code) {
+        CalendarPeriod unitInRecord = GribUtils.getCalendarPeriod(tuInRecord);
+        tinv = tinv.convertReferenceDate(gr.getReferenceDate(), unitInRecord, refDate, timeUnit);
+      }
+
+      TimeCoord.Tinv tinvOld = extractOld(gr);
+      if (!tinvOld.equals(tinv))
+        System.out.println("HEY");
+
       return tinv;
     }
 

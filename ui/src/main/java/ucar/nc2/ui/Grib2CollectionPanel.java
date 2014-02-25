@@ -1413,6 +1413,8 @@ public class Grib2CollectionPanel extends JPanel {
     }
 
     public final String getForecastDate() {
+      if (cust == null)
+        System.out.println("HEY");
       return cust.getForecastDate(gr).toString();
     }
 

@@ -492,7 +492,7 @@ public abstract class GribIosp extends AbstractIOServiceProvider {
          for (TimeCoord.Tinv tinv : coordTime.getTimeIntervals()) {
            data[runIdx*ntimes + timeIdx] = tinv.getBounds1() + time2D.getOffset(runIdx);
            data[runIdx*ntimes + timeIdx+1] = tinv.getBounds2() + time2D.getOffset(runIdx);
-           timeIdx++;
+           timeIdx+=2;
          }
          runIdx++;
        }

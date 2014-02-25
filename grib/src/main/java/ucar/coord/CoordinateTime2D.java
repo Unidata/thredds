@@ -77,21 +77,6 @@ public class CoordinateTime2D extends CoordinateTimeAbstract implements Coordina
     ntimes = nmax;
     nruns = runtime.getSize();
     makeOffsets(times);
-
-    /* if (vals == null) {
-      // LOOK do we need this ? save room without
-      vals = new ArrayList<>();
-      int runIdx = 0;
-      List<CalendarDate> runs = runtime.getRuntimesSorted();
-      for (Coordinate time : this.times) {
-        CalendarDate run = runs.get(runIdx);
-        for (Object val : time.getValues()) {
-          if (isTimeInterval()) vals.add(new Time2D(run, null, (TimeCoord.Tinv) val));
-          else vals.add(new Time2D(run, (Integer) val, null));
-        }
-        runIdx++;
-      }
-    } */
     this.vals = vals;
   }
 
@@ -182,6 +167,22 @@ public class CoordinateTime2D extends CoordinateTimeAbstract implements Coordina
   @Override
   public int hashCode() {
     return times.hashCode();
+  }
+
+  public String getTimeIntervalName() {
+    if (!isTimeInterval) return null;
+
+    // are they the same length ?
+    String firstValue = null;
+    for (Coordinate timeCoord : times) {
+      CoordinateTimeIntv timeCoordi = (CoordinateTimeIntv) timeCoord;
+      String value = timeCoordi.getTimeIntervalName();
+      if (firstValue == null) firstValue = value;
+      else if (!value.equals(firstValue)) return MIXED_INTERVALS;
+      else if (value.equals(MIXED_INTERVALS)) return MIXED_INTERVALS;
+    }
+
+    return firstValue;
   }
 
   ////////////////////////////////////////////////

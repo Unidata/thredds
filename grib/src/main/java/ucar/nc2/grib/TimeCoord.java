@@ -349,8 +349,6 @@ public class TimeCoord {
 
     @Override
     public boolean equals(Object o) {
-      if (!(o instanceof Tinv))
-        System.out.println("HEY");
       Tinv tinv = (Tinv) o;
       if (b1 != tinv.b1) return false;
       if (b2 != tinv.b2) return false;
@@ -413,7 +411,7 @@ public class TimeCoord {
     }
 
     public Tinv convertReferenceDate(CalendarDate refDate, CalendarPeriod timeUnit) {
-      int startOffset = timeUnit.getOffset(refDate, start);
+      int startOffset = timeUnit.getOffset(refDate, start);   // LOOK wrong - not dealing with value
       int endOffset = timeUnit.getOffset(refDate, end);
       return new TimeCoord.Tinv(startOffset, endOffset);
     }

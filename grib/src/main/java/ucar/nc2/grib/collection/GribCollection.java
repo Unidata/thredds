@@ -917,8 +917,14 @@ public class GribCollection implements FileCacheable, AutoCloseable {
     public String getTimeIntvName() {
       if (intvName != null) return intvName;
       CoordinateTimeIntv timeiCoord = (CoordinateTimeIntv) getCoordinate(Coordinate.Type.timeIntv);
-      if (timeiCoord == null) return null;
-      intvName = timeiCoord.getTimeIntervalName();
+      if (timeiCoord != null) {
+        intvName = timeiCoord.getTimeIntervalName();
+        return intvName;
+      }
+
+      CoordinateTime2D time2DCoord = (CoordinateTime2D) getCoordinate(Coordinate.Type.time2D);
+      if (time2DCoord == null || !time2DCoord.isTimeInterval()) return null;
+      intvName = time2DCoord.getTimeIntervalName();
       return intvName;
     }
 

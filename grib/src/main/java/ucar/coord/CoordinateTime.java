@@ -1,8 +1,11 @@
 package ucar.coord;
 
 import net.jcip.annotations.Immutable;
+import ucar.nc2.grib.GribUtils;
+import ucar.nc2.grib.TimeCoord;
 import ucar.nc2.grib.grib1.Grib1Record;
 import ucar.nc2.grib.grib1.Grib1SectionProductDefinition;
+import ucar.nc2.grib.grib2.Grib2Utils;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time.CalendarDateRange;
 import ucar.nc2.time.CalendarDateUnit;
@@ -179,9 +182,9 @@ public class CoordinateTime extends CoordinateTimeAbstract implements Coordinate
   } */
 
   static public class Builder2 extends CoordinateBuilderImpl<Grib2Record>  {
-    int code;  // pdsFirst.getTimeUnit()
-    CalendarPeriod timeUnit;
-    CalendarDate refDate;
+    private final int code;  // pdsFirst.getTimeUnit()
+    private final CalendarPeriod timeUnit;
+    private final CalendarDate refDate;
 
     public Builder2(int code, CalendarPeriod timeUnit, CalendarDate refDate) {
       this.code = code;
@@ -192,7 +195,17 @@ public class CoordinateTime extends CoordinateTimeAbstract implements Coordinate
     @Override
     public Object extract(Grib2Record gr) {
       Grib2Pds pds = gr.getPDS();
-      return pds.getForecastTime();
+      int offset = pds.getForecastTime();
+      int tuInRecord = pds.getTimeUnit();
+      if (tuInRecord == code) {
+        return offset;
+
+      } else {
+        CalendarPeriod period = Grib2Utils.getCalendarPeriod(tuInRecord);
+        CalendarDate validDate = refDate.add(period.multiply(offset));
+        int newOffset = TimeCoord.getOffset(refDate, validDate, timeUnit); // offset in correct time unit
+        return newOffset;
+      }
     }
 
     @Override
@@ -218,7 +231,18 @@ public class CoordinateTime extends CoordinateTimeAbstract implements Coordinate
     @Override
     public Object extract(Grib1Record gr) {
       Grib1SectionProductDefinition pds = gr.getPDSsection();
-      return pds.getTimeValue1();
+      int offset = pds.getTimeValue1();
+      int tuInRecord = pds.getTimeUnit();
+      if (tuInRecord == code) {
+        return offset;
+
+      } else {
+        CalendarPeriod period = GribUtils.getCalendarPeriod(tuInRecord);
+        CalendarDate validDate = refDate.add( period.multiply(offset));
+        int newOffset = TimeCoord.getOffset(refDate, validDate, timeUnit);
+        return newOffset;
+      }
+
     }
 
     @Override
