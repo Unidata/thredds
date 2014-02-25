@@ -1,11 +1,11 @@
 package ucar.nc2.waterml;
 
 import org.xml.sax.SAXException;
-import ucar.ma2.ArrayStructureW;
+import ucar.ma2.Array;
 import ucar.ma2.StructureData;
+import ucar.ma2.StructureMembers;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.ft.*;
-import ucar.unidata.geoloc.Station;
 
 import javax.xml.XMLConstants;
 import javax.xml.bind.JAXBContext;
@@ -24,23 +24,27 @@ import java.net.URISyntaxException;
  */
 public class Foo {
     public static void main(String[] args) throws URISyntaxException, IOException, NoFactoryFoundException {
-        File pointFile = new File(Foo.class.getResource("stationMultidim.ncml").toURI());
+        File pointFile = new File(Foo.class.getResource("singleTimeSeries.ncml").toURI());
         FeatureDatasetPoint fdPoint = PointUtil.openPointDataset(FeatureType.STATION, pointFile.getAbsolutePath());
 
         for (FeatureCollection featCol : fdPoint.getPointFeatureCollectionList()) {
             StationTimeSeriesFeatureCollection stationCol = (StationTimeSeriesFeatureCollection) featCol;
-            for (Station station : stationCol.getStations()) {
-                StationTimeSeriesFeature stationFeature = stationCol.getStationFeature(station);
+            PointFeatureCollectionIterator pointFeatColIter = stationCol.getPointFeatureCollectionIterator(-1);
 
-                PointFeatureIterator pointFeatIter = stationFeature.getPointFeatureIterator(-1);
+            while (pointFeatColIter.hasNext()) {
+                StationTimeSeriesFeature stationFeat = (StationTimeSeriesFeature) pointFeatColIter.next();
+                PointFeatureIterator pointFeatIter = stationFeat.getPointFeatureIterator(-1);
+
                 while (pointFeatIter.hasNext()) {
                     PointFeature pointFeature = pointFeatIter.next();
                     StructureData data = pointFeature.getData();
 
-                    ArrayStructureW sArray = new ArrayStructureW(data.getStructureMembers(), new int[]{1});
-                    sArray.setStructureData(data, 0);
+                    for (StructureMembers.Member member : data.getMembers()) {
+                        Array memberData = data.getArray(member);
+                        System.out.printf("%s: %s    ", member.getName(), memberData);
+                    }
 
-                    System.out.println(sArray.getArray(0, data.getStructureMembers().getMember(0)));
+                    System.out.println();
                 }
             }
         }
