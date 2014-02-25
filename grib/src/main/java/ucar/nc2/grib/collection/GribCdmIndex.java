@@ -44,6 +44,7 @@ import thredds.inventory.filter.StreamFilter;
 import thredds.inventory.partition.*;
 import ucar.nc2.grib.*;
 import ucar.nc2.grib.grib1.Grib1Index;
+import ucar.nc2.grib.grib1.Grib1RecordScanner;
 import ucar.nc2.grib.grib2.Grib2Index;
 import ucar.nc2.grib.grib2.Grib2RecordScanner;
 import ucar.nc2.stream.NcStream;
@@ -600,14 +601,17 @@ public class GribCdmIndex implements IndexReader {
   ////////////////////////////////////////////////////////////////////////////////////
   // Used by IOSPs
 
-  public static GribCollection makeGribCollectionFromRaf(boolean isGrib1, RandomAccessFile raf,
+  public static GribCollection makeGribCollectionFromRaf(RandomAccessFile raf,
             FeatureCollectionConfig config, CollectionUpdateType updateType, org.slf4j.Logger logger) throws IOException {
 
     GribCollection result;
 
-      // check if its a plain ole GRIB2 data file
-    boolean isGribFile = (raf != null) && Grib2RecordScanner.isValidFile(raf);
-    if (isGribFile) {
+      // check if its a plain ole GRIB1/2 data file
+    boolean isGrib1 = false;
+    boolean isGrib2 = Grib2RecordScanner.isValidFile(raf);
+    if (!isGrib2) isGrib1 = Grib1RecordScanner.isValidFile(raf);
+
+    if (isGrib1 || isGrib2) {
 
       result = openGribCollectionFromDataFile(isGrib1, raf, config, updateType, null, logger);
       // close the data file, the ncx2 raf file is managed by gribCollection
