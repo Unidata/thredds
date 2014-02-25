@@ -64,14 +64,17 @@ public class Tiling {
     this.shape = new int[rank];
     for (int i=0; i<rank; i++)
       this.shape[i] = Math.max(shape[i], tileSize[i]);
-    int[] tile = tile(this.shape);
 
-    // LOOK this is wrong
+    int[] tiles = new int[rank];
+    for (int i = 0; i < rank; i++) {
+      tiles[i] = (this.shape[i] +tileSize[i] - 1) / tileSize[i];
+    }
+
     this.stride = new int[rank];
     int strider = 1;
     for (int k = rank-1; k >= 0; k--) {
       stride[k] = strider;
-      strider *= tile[k];
+      strider *= tiles[k];
     }
   }
 

@@ -96,7 +96,7 @@ public class Grib2Iosp extends GribIosp {
     }
 
     if (vindex.intvType >= 0) {
-      String statName = tables.getIntervalNameShort(vindex.intvType);
+      String statName = tables.getStatisticNameShort(vindex.intvType);
       if (statName != null) f.format("_%s", statName);
     }
 
@@ -214,13 +214,13 @@ public class Grib2Iosp extends GribIosp {
       f.format("%s", gp.getName());
 
     if (vindex.intvType >= 0 && vindex.intvName != null && !vindex.intvName.isEmpty()) {
-      String intvName = cust.getIntervalNameShort(vindex.intvType);
-      if (intvName == null || intvName.equalsIgnoreCase("Missing")) intvName = cust.getIntervalNameShort(vindex.intvType);
+      String intvName = cust.getStatisticNameShort(vindex.intvType);
+      if (intvName == null || intvName.equalsIgnoreCase("Missing")) intvName = cust.getStatisticNameShort(vindex.intvType);
       if (intvName == null) f.format(" (%s)", vindex.intvName);
       else f.format(" (%s %s)", vindex.intvName, intvName);
 
     } else if (vindex.intvType >= 0) {
-      String intvName = cust.getIntervalNameShort(vindex.intvType);
+      String intvName = cust.getStatisticNameShort(vindex.intvType);
       f.format(" (%s)", intvName);
     }
 
@@ -592,7 +592,7 @@ public class Grib2Iosp extends GribIosp {
     v.setCachedData(Array.factory(DataType.INT, new int[]{n}, data));
 
     if (tc.isInterval()) {
-      String intvName = cust.getIntervalName(tc.getCode());
+      String intvName = cust.getStatisticName(tc.getCode());
       if (intvName != null)
         v.addAttribute(new Attribute(CDM.LONG_NAME, intvName));
 

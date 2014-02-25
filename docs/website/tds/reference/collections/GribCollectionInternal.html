@@ -657,6 +657,38 @@ message Variable {
 <ul>
   <li>need to keep persistant Object cache.</li>
 </ul>
+<hr />
+<p>2/7/2014</p>
+<p>GC &lt;-- PC &lt;-- PP</p>
+<p>none = use all records in collection</p>
+<p>directory = partition on directories, if multiple levels, get PoP</p>
+<p>file = also partition on files</p>
+<p>A GC has a single runtime. A collection therefore may create multiple GCs and a PC to tie them together.</p>
+<p>Use cases</p>
+<ul>
+  <li>IDD: File Partition, each file is a single runtime, collection gets a PC.</li>
+  <li>CFSR: 4 runtimes per directory</li>
+  <li>NDFD: 48 per directory (hour, hour + 1 min)</li>
+</ul>
+<p>APIs</p>
+<ul>
+  <li>TDM: <strong>updateGribCollection(config)</strong>, index may or may not exist</li>
+  <li>TDS: <strong>makeGribCollection(config)</strong>, index may or may not exist</li>
+  <li>IOSP: <strong>makeGribCollectionFromRaf(raf)</strong>,  index may or may not exist</li>
+  <li>Partition.makeGC(): 
+    <ul>
+      <li>write: <strong>makeGribCollectionFromMCollection</strong>(MCollection)</li>
+      <li>read<strong>: makeGribCollectionFromIndexFile</strong><strong>(raf)</strong></li>
+    </ul>
+  </li>
+</ul>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
 <p></p>
 </body>
 </html>

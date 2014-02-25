@@ -1367,7 +1367,7 @@ public class Grib2DataPanel extends JPanel {
         Grib2Pds.PdsInterval pdsi = (Grib2Pds.PdsInterval) pds;
         Grib2Pds.TimeInterval[] ti = pdsi.getTimeIntervals();
         int statType = ti[0].statProcessType;
-        intvName = cust.getIntervalNameShort(statType);
+        intvName = cust.getStatisticNameShort(statType);
       }
 
       f.format("  Time Unit=%s ;Stat=%s%n", Grib2Utils.getCalendarPeriod( pds.getTimeUnit()), intvName);
