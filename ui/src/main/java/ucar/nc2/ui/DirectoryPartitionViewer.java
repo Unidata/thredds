@@ -1207,7 +1207,7 @@ public class DirectoryPartitionViewer extends JPanel {
     }
 
     public String getIntvName() {
-      return v.intvName;
+      return v.getTimeIntvName();
     }
 
     public String getProbName() {

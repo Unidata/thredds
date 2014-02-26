@@ -316,7 +316,7 @@ message Group {
 
     // assign name
     for (CoordinateVert vc : vertCoords) {
-      String shortName = getLevelNameShort(vc.getCode());
+      String shortName = getLevelNameShort(vc.getCode()).toLowerCase();
       if (vc.isLayer()) shortName = shortName + "_layer";
 
       Integer countName = map.get(shortName);

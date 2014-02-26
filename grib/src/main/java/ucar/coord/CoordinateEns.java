@@ -189,10 +189,7 @@ public class CoordinateEns implements Coordinate {
     @Override
     public Object extract(Grib1Record gr) {
       Grib1SectionProductDefinition pds = gr.getPDSsection();
-      boolean isLayer = cust.isLayer(pds.getLevelType());
-      Grib1ParamLevel plevel = cust.getParamLevel(pds);
-      double level2val =  isLayer ?  plevel.getValue2() :  GribNumbers.UNDEFINEDD;
-      return new VertCoord.Level(plevel.getValue1(), level2val, isLayer);
+      return new EnsCoord.Coord(pds.getPerturbationType(), pds.getPerturbationNumber());
     }
 
     @Override

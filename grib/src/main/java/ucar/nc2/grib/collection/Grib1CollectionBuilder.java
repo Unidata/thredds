@@ -72,9 +72,6 @@ public class Grib1CollectionBuilder extends GribCollectionBuilder {
   public Grib1CollectionBuilder(String name, MCollection dcm, org.slf4j.Logger logger) {
     super(true, name, dcm, logger);
 
-    if (dcm == null)
-      System.out.println("HEY");
-
     FeatureCollectionConfig config = (FeatureCollectionConfig) dcm.getAuxInfo(FeatureCollectionConfig.AUX_CONFIG);
     Map<String, Boolean> pdsConfig = config.gribConfig.pdsHash;
     intvMerge = assignValue(pdsConfig, "intvMerge", true);
@@ -110,8 +107,6 @@ public class Grib1CollectionBuilder extends GribCollectionBuilder {
 
     // place each record into its group
     int totalRecords = 0;
-    if (null == dcm.getFileIterator())
-      System.out.println("HEY");
     try (CloseableIterator<MFile> iter = dcm.getFileIterator()) { // not sorted
       while (iter.hasNext()) {
         MFile mfile = iter.next();
@@ -291,6 +286,9 @@ public class Grib1CollectionBuilder extends GribCollectionBuilder {
           vb.coordND.addBuilder(new CoordinateRuntime.Builder1());
           vb.coordND.addBuilder(new CoordinateTime2D.Builder1(isTimeInterval, cust, vb.timeUnit, unit));
         }
+
+        if (vb.first.getPDSsection().isEnsemble())
+          vb.coordND.addBuilder(new CoordinateEns.Builder1(cust, 0));
 
         if (cust.isVerticalCoordinate(pdss.getLevelType()))
           vb.coordND.addBuilder(new CoordinateVert.Builder1(cust, pdss.getLevelType()));

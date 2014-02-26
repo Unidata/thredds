@@ -33,6 +33,7 @@
 package ucar.nc2.grib;
 
 import net.jcip.annotations.Immutable;
+import ucar.coord.CoordinateTimeAbstract;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time.CalendarDateRange;
 import ucar.nc2.time.CalendarDateUnit;
@@ -228,7 +229,7 @@ public class TimeCoord {
       firstValue = (int) (firstValue * getTimeUnitScale());
       return firstValue + "_" + timeUnit.getField().toString();
     } else {
-      return "Mixed_intervals";
+      return CoordinateTimeAbstract.MIXED_INTERVALS;
     }
   }
 

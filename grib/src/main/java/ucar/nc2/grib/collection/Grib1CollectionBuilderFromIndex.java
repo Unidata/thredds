@@ -99,19 +99,21 @@ public class Grib1CollectionBuilderFromIndex extends GribCollectionBuilderFromIn
 
   @Override
   protected void readGds(GribCollectionProto.Gds p) {
-    byte[] rawGds = p.getGds().toByteArray();
-    Grib1SectionGridDefinition gdss = new Grib1SectionGridDefinition(rawGds);
-
+    byte[] rawGds = null;
     Grib1Gds gds;
-    if (gdss.getPredefinedGridDefinition() >= 0) {
-      gds = ucar.nc2.grib.grib1.Grib1GdsPredefined.factory(gc.center, gdss.getPredefinedGridDefinition());
+    int predefined = -1;
+    if (p.hasPredefinedGridDefinition()) {
+      predefined = p.getPredefinedGridDefinition();
+      gds = ucar.nc2.grib.grib1.Grib1GdsPredefined.factory(gc.center, predefined);
     } else {
+      rawGds = p.getGds().toByteArray();
+      Grib1SectionGridDefinition gdss = new Grib1SectionGridDefinition(rawGds);
       gds = gdss.getGDS();
     }
 
     int gdsHash = (p.getGdsHash() != 0) ? p.getGdsHash() : gds.hashCode();
     String nameOverride = p.hasNameOverride() ? p.getNameOverride() : null;
-    gc.addHorizCoordSystem(gds.makeHorizCoordSys(), rawGds, gdsHash, nameOverride);
+    gc.addHorizCoordSystem(gds.makeHorizCoordSys(), rawGds, gdsHash, nameOverride, predefined);
   }
 
 }

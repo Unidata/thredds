@@ -100,15 +100,16 @@ public class GribCdmIndex implements IndexReader {
   }
 
     // open GribCollection from an existing index file. caller must close; return null on failure
-  static public GribCollection openCdmIndex(String indexFile, FeatureCollectionConfig config, Logger logger) {
+  static public GribCollection openCdmIndex(String indexFilename, FeatureCollectionConfig config, Logger logger) {
 
-    File f = new File(indexFile);
-    String name = GribCollection.makeNameFromIndexFilename(indexFile);
+    File indexFileInCache = GribCollection.getIndexFileInCache(indexFilename);
+    File f = new File(indexFilename);
+    String name = GribCollection.makeNameFromIndexFilename(indexFilename);
     RandomAccessFile raf = null;
     GribCollection result = null;
 
     try {
-      raf = new RandomAccessFile(indexFile, "r");
+      raf = new RandomAccessFile(indexFileInCache.getPath(), "r");
       GribCollectionType type = getType(raf);
 
       switch (type) {
@@ -127,7 +128,7 @@ public class GribCdmIndex implements IndexReader {
       }
 
     } catch (Throwable t) {
-      logger.warn("GribCdmIndex.openCdmIndex failed on "+indexFile, t);
+      logger.warn("GribCdmIndex.openCdmIndex failed on "+indexFileInCache.getPath(), t);
     }
 
     // clean up on failure
@@ -691,7 +692,7 @@ public class GribCdmIndex implements IndexReader {
     }
 
     // the index file should now exist, open it
-    GribCollection result = openCdmIndex(dcm.getIndexFilename(), config, logger);
+    GribCollection result = openCdmIndex( dcm.getIndexFilename(), config, logger);
     if (result != null) return result;
 
     // if open fails, force recreate the index

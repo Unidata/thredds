@@ -81,8 +81,8 @@ public class TestReadAndCountDods extends TestCase {
     TestReadandCount.doOne(base,"catalog/grib/NCEP/NAM/CONUS_80km/files/latest.xml", 41, 11, 13, 8);
 
     TestReadandCount.doOne(base,"catalog/grib/NCEP/RAP/CONUS_13km/files/latest.xml", 53, 12, 14, 9);
-    TestReadandCount.doOne(base,"catalog/grib/NCEP/RAP/CONUS_20km/files/latest.xml", 74, 15, 17, 11);
-    TestReadandCount.doOne(base,"catalog/grib/NCEP/RAP/CONUS_40km/files/latest.xml", 74, 15, 17, 11);
+    TestReadandCount.doOne(base,"catalog/grib/NCEP/RAP/CONUS_20km/files/latest.xml", 89, 18, 20, 14);
+    TestReadandCount.doOne(base,"catalog/grib/NCEP/RAP/CONUS_40km/files/latest.xml", 89, 18, 20, 14);
   }
 
   public void utestProblem() throws Exception {

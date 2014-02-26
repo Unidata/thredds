@@ -463,7 +463,7 @@ public class RandomAccessFile implements DataInput, DataOutput, FileCacheable, A
    * @throws IOException if an I/O error occurrs.
    */
   public long length() throws IOException {
-    long fileLength = file.length();
+    long fileLength = (file == null) ? -1L : file.length(); // GRIB has closed the data raf
     if (fileLength < dataEnd) {
       return dataEnd;
     } else {

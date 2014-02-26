@@ -1041,7 +1041,7 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable {
 
   public Variable findVariableByAttribute(Group g, String attName, String attValue) {
     if (g == null) g = getRootGroup();
-    for (Variable v : variables) {
+    for (Variable v : g.getVariables()) {
       for (Attribute att : v.getAttributes())
         if (attName.equals(att.getShortName()) && attValue.equals(att.getStringValue()))
           return v;

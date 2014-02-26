@@ -38,6 +38,7 @@ package ucar.nc2.iosp.grib;
  */
 
 import org.junit.Test;
+import ucar.nc2.Group;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.Variable;
 import ucar.nc2.Dimension;
@@ -56,12 +57,13 @@ public class TestGribMiscCoordinates {
     String filename = TestDir.cdmUnitTestDir + "formats/grib1/ECMWF.hybrid.grib1";
     System.out.println("\n\nReading File " + filename);
     NetcdfFile ncfile = NetcdfFile.open(filename);
+    Group best = ncfile.findGroup("Best");
 
-    Variable hybrid = ncfile.findVariable("hybrid");
+    Variable hybrid = ncfile.findVariable(best, "hybrid");
     assert (hybrid.getNameAndDimensions().equals("hybrid(hybrid=91)"));
-    Variable hybrida = ncfile.findVariable("hybrida");
+    Variable hybrida = ncfile.findVariable(best, "hybrida");
     assert (hybrida.getNameAndDimensions().equals("hybrida(hybrid=91)"));
-    Variable hybridb = ncfile.findVariable("hybridb");
+    Variable hybridb = ncfile.findVariable(best, "hybridb");
     assert (hybridb.getNameAndDimensions().equals("hybridb(hybrid=91)"));
 
     int idx = hybrid.findDimensionIndex("hybrid");
@@ -76,7 +78,8 @@ public class TestGribMiscCoordinates {
     String filename = TestDir.cdmUnitTestDir + "formats/grib1/07010418_arw_d01.GrbF01500";
     System.out.println("\n\nReading File " + filename);
     NetcdfFile ncfile = NetcdfFile.open(filename);
-    Variable hybrid = ncfile.findVariable("hybrid");
+    Group best = ncfile.findGroup("Best");
+    Variable hybrid = ncfile.findVariable(best, "hybrid1");
     assert hybrid != null;
     assert (hybrid.getDimensions().size() == 1);
     Dimension d = hybrid.getDimension(0);
@@ -92,8 +95,9 @@ public class TestGribMiscCoordinates {
     System.out.println("\n\nReading File " + filename);
 
     NetcdfFile ncfile = NetcdfFile.open(filename);
+    Group best = ncfile.findGroup("Best");
 
-    Variable lat = ncfile.findVariable("lat");
+    Variable lat = ncfile.findVariable(best, "lat");
     assert lat.getSize() == 48;
     ncfile.close();
   }

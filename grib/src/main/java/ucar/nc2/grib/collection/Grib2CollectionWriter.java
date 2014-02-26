@@ -127,7 +127,7 @@ public class Grib2CollectionWriter extends GribCollectionWriter {
     }
     logger.debug(" createIndex for {}", indexFile.getPath());
 
-    try (RandomAccessFile raf = new RandomAccessFile(indexFile.getPath(), "rw")) {
+    try (RandomAccessFile raf = new RandomAccessFile(indexFile.getPath(), "rw")) {  // LOOK do we want to write to temp ??
       //// header message
       raf.order(RandomAccessFile.BIG_ENDIAN);
       raf.write(MAGIC_START.getBytes(CDM.utf8Charset));
@@ -228,7 +228,7 @@ public class Grib2CollectionWriter extends GribCollectionWriter {
        //gds
       for (Object go : groups) {
         Group g = (Group) go;
-        indexBuilder.addGds(writeGdsProto(g.gdsHash, g.gdss.getRawBytes(), g.nameOverride));
+        indexBuilder.addGds(writeGdsProto(g.gdsHash, g.gdss.getRawBytes(), g.nameOverride, -1));
       }
 
       // the GC dataset

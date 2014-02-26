@@ -36,6 +36,7 @@
 package ucar.nc2.grib.collection;
 
 import thredds.catalog.DataFormatType;
+import ucar.coord.CoordinateTimeAbstract;
 import ucar.nc2.constants.CDM;
 import ucar.nc2.grib.grib1.*;
 import ucar.nc2.grib.grib1.tables.Grib1Customizer;
@@ -136,13 +137,13 @@ public class Grib1Iosp extends GribIosp {
   @Override
   public String makeVariableName(GribCollection.VariableIndex vindex) {
     return makeVariableNameFromTables(gribCollection.getCenter(), gribCollection.getSubcenter(), vindex.tableVersion, vindex.parameter,
-            vindex.levelType, vindex.isLayer, vindex.intvType, vindex.intvName);
+            vindex.levelType, vindex.isLayer, vindex.intvType, vindex.getTimeIntvName());
   }
 
   @Override
   public String makeVariableNameFromRecord(GribCollection.VariableIndex vindex) {
     return makeVariableNameFromRecord(gribCollection.getCenter(), gribCollection.getSubcenter(), vindex.tableVersion, vindex.parameter,
-            vindex.levelType, vindex.isLayer, vindex.intvType, vindex.intvName);
+            vindex.levelType, vindex.isLayer, vindex.intvType, vindex.getTimeIntvName());
   }
 
   private String makeVariableNameFromRecord(int center, int subcenter, int tableVersion, int paramNo,
@@ -158,7 +159,7 @@ public class Grib1Iosp extends GribIosp {
 
     if (intvType >= 0) {
       if (intvName != null) {
-        if (intvName.equals("Mixed_intervals"))
+        if (intvName.equals(CoordinateTimeAbstract.MIXED_INTERVALS))
           f.format("_Imixed");
         else
           f.format("_I%s", intvName);
@@ -214,7 +215,7 @@ public class Grib1Iosp extends GribIosp {
   @Override
   protected String makeVariableLongName(GribCollection.VariableIndex vindex) {
     return makeVariableLongName(gribCollection.getCenter(), gribCollection.getSubcenter(), vindex.tableVersion, vindex.parameter,
-                vindex.levelType, vindex.intvType, vindex.intvName, vindex.isLayer, vindex.probabilityName);
+                vindex.levelType, vindex.intvType, vindex.getTimeIntvName(), vindex.isLayer, vindex.probabilityName);
   }
 
 

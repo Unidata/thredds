@@ -203,7 +203,7 @@ public abstract class GribCollection implements FileCacheable, AutoCloseable {
   protected /* final */ File directory;
   protected final FeatureCollectionConfig config;
   protected final boolean isGrib1;
-  protected String indexFilename;
+  protected String indexFilename;  // not in the cache - so can derive name, directory <--> indexFilename
 
   // set by the builder
   public int version; // the ncx version
@@ -309,8 +309,8 @@ public abstract class GribCollection implements FileCacheable, AutoCloseable {
     return horizCS.indexOf(hcs);
   }
 
-  public void addHorizCoordSystem(GdsHorizCoordSys hcs, byte[] rawGds, int gdsHash, String nameOverride) {
-    horizCS.add(new HorizCoordSys(hcs, rawGds, gdsHash, nameOverride));
+  public void addHorizCoordSystem(GdsHorizCoordSys hcs, byte[] rawGds, int gdsHash, String nameOverride, int predefinedGridDefinition) {
+    horizCS.add(new HorizCoordSys(hcs, rawGds, gdsHash, nameOverride, predefinedGridDefinition));
   }
 
   public MFile findMFileByName(String filename) {
@@ -334,7 +334,7 @@ public abstract class GribCollection implements FileCacheable, AutoCloseable {
   void setIndexRaf(RandomAccessFile indexRaf) {
     this.indexRaf = indexRaf;
     if (indexRaf != null) {
-      indexFilename = indexRaf.getLocation();
+      indexFilename = indexRaf.getLocation(); // LOOK may be in cache ??
     }
   }
 
@@ -452,12 +452,12 @@ public abstract class GribCollection implements FileCacheable, AutoCloseable {
   @Override
   public String getLocation() {
     if (indexRaf != null) return indexRaf.getLocation();
-    return indexFilename;
+    return getIndexFile().getPath();
   }
 
   @Override
   public long getLastModified() {
-    File indexFile = new File(indexFilename);
+    File indexFile = getIndexFile();
     if (indexFile.exists()) {
       return indexFile.lastModified();
     }
@@ -530,12 +530,15 @@ public abstract class GribCollection implements FileCacheable, AutoCloseable {
     private final int gdsHash;
     private final String id, description;
     private final String nameOverride;
+    private final int predefinedGridDefinition;
 
-    public HorizCoordSys(GdsHorizCoordSys hcs, byte[] rawGds, int gdsHash, String nameOverride) {
+    public HorizCoordSys(GdsHorizCoordSys hcs, byte[] rawGds, int gdsHash, String nameOverride, int predefinedGridDefinition) {
       this.hcs = hcs;
       this.rawGds = rawGds;
       this.gdsHash = gdsHash;
       this.nameOverride = nameOverride;
+      this.predefinedGridDefinition = predefinedGridDefinition;
+
       this.id = makeId();
       this.description = makeDescription();
     }
@@ -564,6 +567,10 @@ public abstract class GribCollection implements FileCacheable, AutoCloseable {
 
     public String getNameOverride() {
       return nameOverride;
+    }
+
+    public int getPredefinedGridDefinition() {
+      return predefinedGridDefinition;
     }
 
     private String makeId() {
@@ -615,8 +622,8 @@ public abstract class GribCollection implements FileCacheable, AutoCloseable {
       this.isTwod = from.isTwod;
     }
 
-    public void setHorizCoordSystem(GdsHorizCoordSys hcs, byte[] rawGds, int gdsHash, String nameOverride) {
-      horizCoordSys = new HorizCoordSys(hcs, rawGds, gdsHash, nameOverride);
+    public void setHorizCoordSystem(GdsHorizCoordSys hcs, byte[] rawGds, int gdsHash, String nameOverride, int predefinedGridDefinition) {
+      horizCoordSys = new HorizCoordSys(hcs, rawGds, gdsHash, nameOverride, predefinedGridDefinition);
     }
 
     public VariableIndex addVariable(VariableIndex vi) {
@@ -766,7 +773,7 @@ public abstract class GribCollection implements FileCacheable, AutoCloseable {
 
     // derived from pds
     public final int category, parameter, levelType, intvType, ensDerivedType, probType;
-    public String intvName;  // eg "mixed intervals, 3 Hour, etc"
+    private String intvName;  // eg "mixed intervals, 3 Hour, etc"
     public final String probabilityName;
     public final boolean isLayer;
     public final int genProcessType;

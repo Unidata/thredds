@@ -70,13 +70,14 @@ public class TestGribEnsembles {
     Dimension yDimension = gridDatatype.getYDimension();
     Dimension zDimension = gridDatatype.getZDimension();
 
-    assertNotNull(rtDimension);
+    assertNull(rtDimension);
     assertNotNull(ensDimension);
     assertNotNull(timeDimension);
     assertNotNull(xDimension);
     assertNotNull(yDimension);
     assertNull(zDimension);
 
+    // test ordering
     int rtIndex = gridDatatype.getRunTimeDimensionIndex();
     int ensIndex = gridDatatype.getEnsembleDimensionIndex();
     int timeIndex = gridDatatype.getTimeDimensionIndex();
@@ -93,7 +94,7 @@ public class TestGribEnsembles {
 
     Dimension ensDim = gridDatatype.getDimension(ensIndex); //ensIndex = 0
     assertEquals(1, ensDim.getLength());
-    assertEquals("ens0", ensDim.getShortName());
+    assertEquals("ens", ensDim.getShortName());
 
     Variable variable = gridDatatype.getVariable().getOriginalVariable();
     ensDim = variable.getDimension(ensIndex); //ensIndex = 0

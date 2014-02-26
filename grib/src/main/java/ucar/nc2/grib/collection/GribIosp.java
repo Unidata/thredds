@@ -333,8 +333,9 @@ public abstract class GribIosp extends AbstractIOServiceProvider {
 
       for (Coordinate coord : vindex.getCoordinates()) {
         if (!is2Dtime && coord.getType() == Coordinate.Type.runtime) continue; // skip reference time
-        dims.format("%s ", coord.getName());
-        coords.format("%s ", coord.getName());
+        String coordName = (coord.getType() == Coordinate.Type.vert) ? coord.getName().toLowerCase() : coord.getName();
+        dims.format("%s ", coordName);
+        coords.format("%s ", coordName);
       }
       dims.format("%s", horizDims);
 
@@ -625,53 +626,56 @@ public abstract class GribIosp extends AbstractIOServiceProvider {
   }
 
   private void makeVerticalCoordinate(NetcdfFile ncfile, Group g, CoordinateVert vc) {
-      int n = vc.getSize();
-      String vcName = vc.getName().toLowerCase();
-      ncfile.addDimension(g, new Dimension(vcName, n));
-      Variable v = ncfile.addVariable(g, new Variable(ncfile, g, null, vcName, DataType.FLOAT, vcName));
-      if (vc.getUnit() != null) {
-        v.addAttribute(new Attribute(CDM.UNITS, vc.getUnit()));
-        String desc = getVerticalCoordDesc(vc.getCode());
-        if (desc != null) v.addAttribute(new Attribute(CDM.LONG_NAME, desc));
-        v.addAttribute(new Attribute(CF.POSITIVE, vc.isPositiveUp() ? CF.POSITIVE_UP : CF.POSITIVE_DOWN));
+    int n = vc.getSize();
+    String vcName = vc.getName().toLowerCase();
+    if (vcName.startsWith("DEGY"))
+      System.out.println("HEY");
+
+    ncfile.addDimension(g, new Dimension(vcName, n));
+    Variable v = ncfile.addVariable(g, new Variable(ncfile, g, null, vcName, DataType.FLOAT, vcName));
+    if (vc.getUnit() != null) {
+      v.addAttribute(new Attribute(CDM.UNITS, vc.getUnit()));
+      String desc = getVerticalCoordDesc(vc.getCode());
+      if (desc != null) v.addAttribute(new Attribute(CDM.LONG_NAME, desc));
+      v.addAttribute(new Attribute(CF.POSITIVE, vc.isPositiveUp() ? CF.POSITIVE_UP : CF.POSITIVE_DOWN));
+    }
+
+    v.addAttribute(new Attribute("Grib_level_type", vc.getCode()));
+    VertCoord.VertUnit vu = vc.getVertUnit();
+    if (vu != null) {
+      if (vu.getDatum() != null)
+        v.addAttribute(new Attribute("datum", vu.getDatum()));
+    }
+
+    if (vc.isLayer()) {
+      float[] data = new float[n];
+      int count = 0;
+      for (VertCoord.Level val : vc.getLevelSorted())
+        data[count++] = (float) (val.getValue1() + val.getValue2()) / 2;
+      v.setCachedData(Array.factory(DataType.FLOAT, new int[]{n}, data));
+
+      Variable bounds = ncfile.addVariable(g, new Variable(ncfile, g, null, vcName + "_bounds", DataType.FLOAT, vcName + " 2"));
+      v.addAttribute(new Attribute(CF.BOUNDS, vcName + "_bounds"));
+      String vcUnit = vc.getUnit();
+      if (vcUnit != null)
+        bounds.addAttribute(new Attribute(CDM.UNITS, vcUnit));
+      bounds.addAttribute(new Attribute(CDM.LONG_NAME, "bounds for " + vcName));
+
+      data = new float[2 * n];
+      count = 0;
+      for (VertCoord.Level level : vc.getLevelSorted()) {
+        data[count++] = (float) level.getValue1();
+        data[count++] = (float) level.getValue2();
       }
+      bounds.setCachedData(Array.factory(DataType.FLOAT, new int[]{n, 2}, data));
 
-      v.addAttribute(new Attribute("Grib_level_type", vc.getCode()));
-      VertCoord.VertUnit vu = vc.getVertUnit();
-      if (vu != null) {
-        if (vu.getDatum() != null)
-          v.addAttribute(new Attribute("datum", vu.getDatum()));
-      }
-
-      if (vc.isLayer()) {
-        float[] data = new float[n];
-        int count = 0;
-        for (VertCoord.Level val : vc.getLevelSorted())
-          data[count++] = (float) (val.getValue1() + val.getValue2()) / 2;
-        v.setCachedData(Array.factory(DataType.FLOAT, new int[]{n}, data));
-
-        Variable bounds = ncfile.addVariable(g, new Variable(ncfile, g, null, vcName + "_bounds", DataType.FLOAT, vcName + " 2"));
-        v.addAttribute(new Attribute(CF.BOUNDS, vcName + "_bounds"));
-        String vcUnit = vc.getUnit();
-        if (vcUnit != null)
-          bounds.addAttribute(new Attribute(CDM.UNITS, vcUnit));
-        bounds.addAttribute(new Attribute(CDM.LONG_NAME, "bounds for " + vcName));
-
-        data = new float[2 * n];
-        count = 0;
-        for (VertCoord.Level level : vc.getLevelSorted()) {
-          data[count++] = (float) level.getValue1();
-          data[count++] = (float) level.getValue2();
-        }
-        bounds.setCachedData(Array.factory(DataType.FLOAT, new int[]{n, 2}, data));
-
-      } else {
-        float[] data = new float[n];
-        int count = 0;
-        for (VertCoord.Level val : vc.getLevelSorted())
-          data[count++] = (float) val.getValue1();
-        v.setCachedData(Array.factory(DataType.FLOAT, new int[]{n}, data));
-      }
+    } else {
+      float[] data = new float[n];
+      int count = 0;
+      for (VertCoord.Level val : vc.getLevelSorted())
+        data[count++] = (float) val.getValue1();
+      v.setCachedData(Array.factory(DataType.FLOAT, new int[]{n}, data));
+    }
   }
 
   private void makeEnsembleCoordinate(NetcdfFile ncfile, Group g, CoordinateEns ec) {

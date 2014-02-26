@@ -101,7 +101,7 @@ public class Grib2CollectionBuilderFromIndex extends GribCollectionBuilderFromIn
     Grib2Gds gds = gdss.getGDS();
     int gdsHash = (p.getGdsHash() != 0) ? p.getGdsHash() : gds.hashCode();
     String nameOverride = p.hasNameOverride() ? p.getNameOverride() : null;
-    gc.addHorizCoordSystem(gds.makeHorizCoordSys(), rawGds, gdsHash, nameOverride);
+    gc.addHorizCoordSystem(gds.makeHorizCoordSys(), rawGds, gdsHash, nameOverride, -1);
   }
 
 }

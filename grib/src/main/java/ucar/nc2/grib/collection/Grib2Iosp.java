@@ -36,6 +36,7 @@
 package ucar.nc2.grib.collection;
 
 import thredds.catalog.DataFormatType;
+import ucar.coord.CoordinateTimeAbstract;
 import ucar.nc2.grib.grib2.Grib2Index;
 import ucar.ma2.*;
 import ucar.nc2.*;
@@ -120,11 +121,11 @@ public class Grib2Iosp extends GribIosp {
     else
       f.format("%s", gp.getName());
 
-    if (vindex.intvType >= 0 && vindex.intvName != null && !vindex.intvName.isEmpty()) {
+    if (vindex.intvType >= 0 && vindex.getTimeIntvName() != null && !vindex.getTimeIntvName().isEmpty()) {
       String intvName = cust.getStatisticNameShort(vindex.intvType);
       if (intvName == null || intvName.equalsIgnoreCase("Missing")) intvName = cust.getStatisticNameShort(vindex.intvType);
-      if (intvName == null) f.format(" (%s)", vindex.intvName);
-      else f.format(" (%s %s)", vindex.intvName, intvName);
+      if (intvName == null) f.format(" (%s)", vindex.getTimeIntvName());
+      else f.format(" (%s %s)", vindex.getTimeIntvName(), intvName);
 
     } else if (vindex.intvType >= 0) {
       String intvName = cust.getStatisticNameShort(vindex.intvType);
@@ -213,7 +214,7 @@ public class Grib2Iosp extends GribIosp {
 
     String intvName = vindex.getTimeIntvName();
     if (intvName != null && !intvName.isEmpty()) {
-      if (intvName.equals("Mixed_intervals"))
+      if (intvName.equals(CoordinateTimeAbstract.MIXED_INTERVALS))
         f.format("_Imixed");
       else
         f.format("_I%s", intvName);

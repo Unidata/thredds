@@ -149,7 +149,7 @@ public class NcepLocalParams {
       Class c = WmoCodeTable.class;
       is = c.getResourceAsStream(resource);
       if (is == null) {
-        log.warn("Cant read resource "+resource);
+        log.info("Cant read resource "+resource);
         return false;
       }
       SAXBuilder builder = new SAXBuilder();

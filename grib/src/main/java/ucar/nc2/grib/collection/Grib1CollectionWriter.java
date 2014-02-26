@@ -182,7 +182,7 @@ public class Grib1CollectionWriter extends GribCollectionWriter {
 
         //gds
       for (Group g : groups)
-        indexBuilder.addGds(writeGdsProto(g.gdsHash, g.gdss.getRawBytes(), g.nameOverride));
+        indexBuilder.addGds(writeGdsProto(g.gdsHash, g.gdss.getRawBytes(), g.nameOverride, g.gdss.getPredefinedGridDefinition()));
 
       // the GC dataset
       indexBuilder.addDataset( writeDatasetProto(GribCollectionProto.Dataset.Type.GC, groups));

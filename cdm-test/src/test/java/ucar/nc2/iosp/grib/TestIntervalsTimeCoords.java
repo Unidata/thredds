@@ -42,6 +42,7 @@ import org.junit.Test;
 import ucar.ma2.Array;
 import ucar.ma2.IndexIterator;
 import ucar.nc2.Dimension;
+import ucar.nc2.Group;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.Variable;
 import ucar.nc2.grib.collection.GribIosp;
@@ -73,14 +74,14 @@ import java.util.HashMap;
 public class TestIntervalsTimeCoords {
 
   static String[] testdata = {
-      TestDir.cdmUnitTestDir +"tds/ncep/GFS_Puerto_Rico_191km_20100515_0000.grib1", "VAR_7-0-2-61_L1_I12_Hour_S4", "bounds0",
-      TestDir.cdmUnitTestDir +"tds/ncep/GFS_CONUS_80km_20100513_0600.grib1", "VAR_7-0-2-61_L1_Imixed_S4", "bounds1",
+      TestDir.cdmUnitTestDir +"tds/ncep/GFS_Puerto_Rico_191km_20100515_0000.grib1", "VAR_7-0-2-61_L1_I12_Hour_S4", "bounds0", // Total_precipitation_surface_12_Hour_Accumulation
+      TestDir.cdmUnitTestDir +"tds/ncep/GFS_CONUS_80km_20100513_0600.grib1", "VAR_7-0-2-61_L1_Imixed_S4", "bounds1",          // Total_precipitation_surface_Mixed_Intervals_Accumulation
       TestDir.cdmUnitTestDir +"tds/ncep/NAM_CONUS_80km_20100508_1200.grib1", "VAR_7-0-2-61_L1_Imixed_S4", "bounds2",
       TestDir.cdmUnitTestDir +"formats/grib1/QPE.20101005.009.157", "VAR_9-157-2-61_L1_Imixed_S4", "boundsQPE",
       TestDir.cdmUnitTestDir +"formats/grib1/QPE.20101005.009.157", "VAR_9-157-128-237_L1_I1_Hour_S4", "boundsQPE2",
-      TestDir.cdmUnitTestDir +"tds/ncep/SREF_Alaska_45km_ensprod_20120213_1500.grib2",  "VAR_0-1-8_L1_Imixed_S1_Prob_above_0p25", "bounds3",
+      TestDir.cdmUnitTestDir +"tds/ncep/SREF_Alaska_45km_ensprod_20120213_1500.grib2",  "VAR_0-1-15_L1_I12_Hour_S1_Prob_above_406p4", "bounds7", // Large-scale_snow_surface_12_Hour_Accumulation_probability_above_406p4
       TestDir.cdmUnitTestDir +"tds/ncep/RUC2_CONUS_20km_pressure_20100509_1300.grib2", "VAR_0-1-10_L1_Imixed_S1", "bounds4",
-      TestDir.cdmUnitTestDir +"tds/ncep/GFS_Global_2p5deg_20100602_1200.grib2",  "VAR_0-1-8_L1_I12_Hour_S1", "bounds5",
+      TestDir.cdmUnitTestDir +"tds/ncep/GFS_Global_2p5deg_20100602_1200.grib2",  "VAR_0-1-8_L1_I12_Hour_S1", "bounds5",  // Total_precipitation_surface_12_Hour_Accumulation
       // TestDir.testdataDir +"grid/grib/grib2/CFSR/pgbhnl.gdas.U_GRD.10mbar.grb2", "U-component_of_wind", "bounds6"
   };
 
@@ -305,71 +306,71 @@ public class TestIntervalsTimeCoords {
 
   static int[][] bounds4 = {
           {0, 0},
-           {0, 1},
-           {0, 2},
-           {0, 3},
-           {0, 4},
-           {0, 5},
-           {0, 6},
-           {0, 7},
-           {0, 8},
-           {0, 9},
-           {0, 10},
-           {0, 11},
-           {0, 12},
-           {0, 13},
-           {0, 14},
-           {0, 15},
-           {0, 16},
-           {0, 17},
-           {0, 18},
-           {1, 2},
-           {2, 3},
-           {3, 4},
-           {3, 5},
-           {3, 6},
-           {4, 5},
-           {5, 6},
-           {6, 7},
-           {6, 8},
-           {6, 9},
-           {7, 8},
-           {8, 9},
-           {9, 10},
-           {9, 11},
-           {9, 12},
-           {10, 11},
-           {11, 12},
-           {12, 13},
-           {12, 14},
-           {12, 15},
-           {13, 14},
-           {14, 15},
-           {15, 16},
-           {15, 17},
-           {15, 18},
-           {16, 17},
-           {17, 18}
+         {0, 1},
+         {0, 2},
+         {1, 2},
+         {0, 3},
+         {2, 3},
+         {0, 4},
+         {3, 4},
+         {0, 5},
+         {3, 5},
+         {4, 5},
+         {0, 6},
+         {3, 6},
+         {5, 6},
+         {0, 7},
+         {6, 7},
+         {0, 8},
+         {6, 8},
+         {7, 8},
+         {0, 9},
+         {6, 9},
+         {8, 9},
+         {0, 10},
+         {9, 10},
+         {0, 11},
+         {9, 11},
+         {10, 11},
+         {0, 12},
+         {9, 12},
+         {11, 12},
+         {0, 13},
+         {12, 13},
+         {0, 14},
+         {12, 14},
+         {13, 14},
+         {0, 15},
+         {12, 15},
+         {14, 15},
+         {0, 16},
+         {15, 16},
+         {0, 17},
+         {15, 17},
+         {16, 17},
+         {0, 18},
+         {15, 18},
+         {17, 18}
   };
 
   static int[][] bounds5 = {
-          {0, 12},
-           {12, 24},
-           {24, 36},
-           {36, 48},
-           {48, 60},
-           {60, 72},
-           {72, 84},
-           {84, 96},
-           {96, 108},
-           {108, 120},
-           {120, 132},
-           {132, 144},
-           {144, 156},
-           {156, 168},
-           {168, 180},
-           {180, 192},
-           {192, 204}
+          {180, 192},
+         {192, 204},
+         {204, 216},
+         {216, 228},
+         {228, 240},
+         {240, 252},
+         {252, 264},
+         {264, 276},
+         {276, 288},
+         {288, 300},
+         {300, 312},
+         {312, 324},
+         {324, 336},
+         {336, 348},
+         {348, 360},
+         {360, 372},
+         {372, 384}
   };
 
   static int[][] bounds6 = {
@@ -428,6 +429,35 @@ public class TestIntervalsTimeCoords {
     {0, 268080}, {0, 268824}, {0, 269544}
   };
 
+  static int[][] bounds7 = {
+    {0, 12},
+    {3, 15},
+    {6, 18},
+    {9, 21},
+    {12, 24},
+    {15, 27},
+    {18, 30},
+    {21, 33},
+    {24, 36},
+    {27, 39},
+    {30, 42},
+    {33, 45},
+    {36, 48},
+    {39, 51},
+    {42, 54},
+    {45, 57},
+    {48, 60},
+    {51, 63},
+    {54, 66},
+    {57, 69},
+    {60, 72},
+    {63, 75},
+    {66, 78},
+    {69, 81},
+    {72, 84},
+    {75, 87}
+  };
+
   static HashMap<String, int[][]> timeBounds = new HashMap <String, int[][]>()
   {
     {
@@ -438,6 +468,7 @@ public class TestIntervalsTimeCoords {
       put( "bounds4", bounds4 );
       put( "bounds5", bounds5 );
       put( "bounds6", bounds6 );
+      put( "bounds7", bounds7 );
       put( "boundsQPE", boundsQPE );
       put( "boundsQPE2", boundsQPE2 );
     }
@@ -451,16 +482,20 @@ public class TestIntervalsTimeCoords {
     for( int i = 0; i < testdata.length; i += 3) {
       String grib = testdata[ i ];
       String parameter = testdata[ i +1];
-      int[][]tb = timeBounds.get( testdata[ i +2] );
+      String boundsName = testdata[ i +2];
+      int[][]tb = timeBounds.get( boundsName );
 
       System.out.printf("Open %s (%s)%n", grib, parameter);
       try {
         NetcdfFile ncf = NetcdfFile.open( grib );
-        Variable var = ncf.findVariableByAttribute(null, GribIosp.VARIABLE_ID_ATTNAME, parameter );
-        assert var != null;
+        Group best = ncf.findGroup("Best"); // use best group if it exists, may be null
+        Variable var = ncf.findVariableByAttribute(best, GribIosp.VARIABLE_ID_ATTNAME, parameter );
+        assert var != null : parameter;
         Dimension dim = var.getDimension( 0 );
         String bounds = dim.getShortName() +"_bounds";
-        Variable interval = ncf.findVariable( bounds );
+        Variable interval = ncf.findVariable( best, bounds );
+        assert interval != null : bounds;
+
         Array data = interval.read();
         IndexIterator iter = data.getIndexIterator();
         int idx = 0;
@@ -468,7 +503,7 @@ public class TestIntervalsTimeCoords {
           int start = iter.getIntNext();
           int end = iter.getIntNext();
           if( start != tb[idx][0] || end != tb[idx][1]) {
-            System.out.printf( "bounds for file %s, parameter %s failed%n", grib, parameter);
+            System.out.printf( "bounds %s for file %s, parameter %s failed against %s%n", interval.getFullName(), grib, var.getFullName(), boundsName);
             System.out.printf( "interval %d - %d  known %d - %d%n",
               start, end, tb[idx][0],  tb[idx][1] );
           }  

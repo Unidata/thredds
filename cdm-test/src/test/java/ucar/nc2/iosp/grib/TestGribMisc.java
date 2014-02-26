@@ -70,9 +70,10 @@ public class TestGribMisc {
 
     // this one has a forecast and error = must be seperate variables
     filename = TestDir.cdmUnitTestDir + "formats/grib2/RTMA_CONUS_2p5km_20111225_0000.grib2";
+    System.out.printf("%s%n", filename);
     ncfile = NetcdfFile.open(filename, null);
-    assert ncfile.findVariableByAttribute(null, GribIosp.VARIABLE_ID_ATTNAME, "VAR_0-3-0_L1") != null; // "Pressure_Surface") != null : ncfile.getLocation();
-    assert ncfile.findVariableByAttribute(null, GribIosp.VARIABLE_ID_ATTNAME, "VAR_0-3-0_error_L1") != null; // "Pressure_error_Surface") != null;
+    assert ncfile.findVariableByAttribute(null, GribIosp.VARIABLE_ID_ATTNAME, "VAR_0-3-0_L1") != null; // Pressure_Surface
+    assert ncfile.findVariableByAttribute(null, GribIosp.VARIABLE_ID_ATTNAME, "VAR_0-0-0_error_L103") != null; // Temperature_error_height_above_ground
     ncfile.close();
   }
 
@@ -87,7 +88,7 @@ public class TestGribMisc {
 
     Array data = v.read();
     int[] shape = data.getShape();
-    assert shape.length == 5;
+    assert shape.length == 4;
     assert shape[shape.length-2] == 1024;
     assert shape[shape.length-1] == 2048;
     ncfile.close();
