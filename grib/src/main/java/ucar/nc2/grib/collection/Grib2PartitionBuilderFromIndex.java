@@ -58,7 +58,7 @@ public class Grib2PartitionBuilderFromIndex extends Grib2CollectionBuilderFromIn
     return createTimePartitionFromIndex(name, directory, raf, config, logger);
   }
 
-  // read in the index, index raf already open
+  // read in the index, index raf already open; return null on failure
   static public PartitionCollection createTimePartitionFromIndex(String name, File directory, RandomAccessFile raf,
            FeatureCollectionConfig config, org.slf4j.Logger logger) throws IOException {
 
@@ -66,7 +66,7 @@ public class Grib2PartitionBuilderFromIndex extends Grib2CollectionBuilderFromIn
     if (builder.readIndex(raf))
       return builder.pc;
 
-    throw new IOException("Reading index failed");
+    return null;
   }
 
   //////////////////////////////////////////////////////////////////////////////////

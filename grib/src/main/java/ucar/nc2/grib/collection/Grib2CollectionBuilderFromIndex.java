@@ -54,12 +54,12 @@ import java.io.IOException;
  */
 public class Grib2CollectionBuilderFromIndex extends GribCollectionBuilderFromIndex {
 
-  // read in the index, index raf already open
+  // read in the index, index raf already open; return null on failure
   static public GribCollection readFromIndex(String name, File directory, RandomAccessFile raf, FeatureCollectionConfig config, org.slf4j.Logger logger) throws IOException {
 
     Grib2CollectionBuilderFromIndex builder = new Grib2CollectionBuilderFromIndex(name, directory, raf.getLocation(), config, logger);
     if (!builder.readIndex(raf))
-      throw new IOException("Reading index failed"); // or return null ??
+      return null;
 
     if (builder.gc.getFiles().size() == 0) {
       logger.warn("Grib2CollectionBuilderFromIndex {}: has no files, force recreate ", builder.gc.getName());

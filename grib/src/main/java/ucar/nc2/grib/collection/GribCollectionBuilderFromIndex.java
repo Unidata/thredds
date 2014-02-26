@@ -85,7 +85,7 @@ public abstract class GribCollectionBuilderFromIndex {
       if (!NcStream.readAndTest(raf, getMagicStart().getBytes())) {
         raf.seek(0);
         NcStream.readAndTest(raf, getMagicStart().getBytes()); // debug
-        logger.error("GribCollectionBuilderFromIndex {}: invalid index magic", gc.getName());
+        logger.warn("GribCollectionBuilderFromIndex {}: invalid index magic", gc.getName());
         return false;
       }
 
@@ -188,8 +188,8 @@ public abstract class GribCollectionBuilderFromIndex {
       return readExtensions(proto);
 
     } catch (Throwable t) {
-      logger.error("Error reading index " + raf.getLocation(), t);
-      t.printStackTrace();
+      logger.warn("Error reading index " + raf.getLocation(), t);
+      if (debug) t.printStackTrace();
       return false;
     }
   }

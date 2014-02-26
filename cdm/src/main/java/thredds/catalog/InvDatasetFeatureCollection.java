@@ -451,11 +451,11 @@ public abstract class InvDatasetFeatureCollection extends InvCatalogRef implemen
       result.addService(InvService.latest);
     }
 
-    //COPY FILENAMES TO MODIFIABLE LIST, SORT, AND PASS
+    //sort copy of files
     List<String> sortedFilenames = new ArrayList<String>(filenames);
+    Collections.sort(sortedFilenames, String.CASE_INSENSITIVE_ORDER);
 
     // if not increasing (i.e. we WANT newest file listed first), reverse sort
-    Collections.sort(sortedFilenames, String.CASE_INSENSITIVE_ORDER);
     if (this.config.gribConfig != null && !this.config.gribConfig.filesSortIncreasing) {
       Collections.reverse(sortedFilenames);
     }

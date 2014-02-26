@@ -128,8 +128,7 @@ public class CoordinateSharer<T> {
           CoordinateTime2D time2D = (CoordinateTime2D) coord;
           CoordinateRuntime runtimeFrom2D = time2D.getRuntimeCoordinate();
           if (!runtimeFrom2D.equals(runtime)) {
-            System.out.println("HEY");
-            reindex2shared(prev);
+            System.out.printf("HEY CoordinateSharer.reindex2shared: runtimeFrom2D != runtime");
           }
           break;
       }

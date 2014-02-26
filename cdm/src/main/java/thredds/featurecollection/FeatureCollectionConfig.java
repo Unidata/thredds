@@ -361,7 +361,7 @@ public class FeatureCollectionConfig {
   }
 
   static private Set<GribDatasetType> defaultGribDatasetTypes =
-          Collections.unmodifiableSet(EnumSet.of(GribDatasetType.TwoD, GribDatasetType.Best, GribDatasetType.Files, GribDatasetType.LatestFile));
+          Collections.unmodifiableSet(EnumSet.of(GribDatasetType.TwoD, GribDatasetType.Best));
 
   static public class GribConfig {
     public Set<GribDatasetType> datasets = defaultGribDatasetTypes;
@@ -371,7 +371,7 @@ public class FeatureCollectionConfig {
     public String lookupTablePath, paramTablePath;         // user defined tables
     public String latestNamer, bestNamer;
     public Element paramTable;
-    public Boolean filesSortIncreasing = false;
+    public Boolean filesSortIncreasing = true;
     public GribIntvFilter intvFilter;
 
     private TimeUnitConverterHash tuc;

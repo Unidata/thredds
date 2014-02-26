@@ -69,6 +69,8 @@ public class Grib1Collection extends GribCollection {
       MFile wantFile = findMFileByName(filename);
       if (wantFile != null) {
         GribCollection gc = GribCdmIndex.openGribCollectionFromDataFile(true, wantFile, CollectionUpdateType.nocheck, gribConfig, errlog, logger);  // LOOK thread-safety : creating ncx
+        if (gc == null) return null;
+
         Grib1Iosp iosp = new Grib1Iosp(gc);
         NetcdfFile ncfile = new NetcdfFileGC(iosp, null, getIndexFile().getPath(), null);
         return new NetcdfDataset(ncfile);
@@ -90,6 +92,7 @@ public class Grib1Collection extends GribCollection {
       MFile wantFile = findMFileByName(filename);
       if (wantFile != null) {
         GribCollection gc = GribCdmIndex.openGribCollectionFromDataFile(true, wantFile, CollectionUpdateType.nocheck, gribConfig, errlog, logger);  // LOOK thread-safety : creating ncx
+        if (gc == null) return null;
 
         Grib1Iosp iosp = new Grib1Iosp(gc);
         NetcdfFile ncfile = new NetcdfFileGC(iosp, null, getIndexFile().getPath(), null);

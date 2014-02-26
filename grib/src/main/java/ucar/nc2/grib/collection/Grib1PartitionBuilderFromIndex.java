@@ -50,14 +50,14 @@ import java.util.List;
  */
 public class Grib1PartitionBuilderFromIndex extends Grib1CollectionBuilderFromIndex {
 
-    // read in the index, open raf and leave open in the GribCollection
+    /* read in the index, open raf and leave open in the GribCollection
   static public PartitionCollection createTimePartitionFromIndex(String name, File directory, String indexFilename, FeatureCollectionConfig config, org.slf4j.Logger logger) throws IOException {
     File idxFile = ucar.nc2.grib.collection.GribCollection.getIndexFileInCache(indexFilename);
     RandomAccessFile raf = new RandomAccessFile(idxFile.getPath(), "r");
     return createTimePartitionFromIndex(name, directory, raf, config, logger);
-  }
+  } */
 
-  // read in the index, index raf already open
+  // read in the index, index raf already open; return null on failure
   static public PartitionCollection createTimePartitionFromIndex(String name, File directory, RandomAccessFile raf,
            FeatureCollectionConfig config, org.slf4j.Logger logger) throws IOException {
 
@@ -65,7 +65,7 @@ public class Grib1PartitionBuilderFromIndex extends Grib1CollectionBuilderFromIn
     if (builder.readIndex(raf))
       return builder.pc;
 
-    throw new IOException("Reading index failed");
+    return null;
   }
 
   //////////////////////////////////////////////////////////////////////////////////
