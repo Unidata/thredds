@@ -1,4 +1,4 @@
-package ucar.nc2.waterml;
+package ucar.nc2.ogc;
 
 /**
  * Created by cwardgar on 2014/02/21.

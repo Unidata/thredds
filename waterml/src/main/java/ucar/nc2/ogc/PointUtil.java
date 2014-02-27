@@ -1,4 +1,4 @@
-package ucar.nc2.waterml;
+package ucar.nc2.ogc;
 
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.ft.*;
