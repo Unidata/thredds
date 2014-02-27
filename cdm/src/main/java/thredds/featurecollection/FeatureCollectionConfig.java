@@ -164,12 +164,15 @@ public class FeatureCollectionConfig {
     // if tdm element was not specified, default is test
     if (!tdmConfig.userDefined) tdmConfig.updateType = CollectionUpdateType.test;
 
-    // if tdm was specified, turn off tds updating
+    /* if tdm was specified, turn off tds updating
     if (tdmConfig.userDefined && tdmConfig.updateType != CollectionUpdateType.never) {
       // if tdm is working, tds is not allowed to update
       updateConfig.updateType = CollectionUpdateType.never;
 
-    } else if (!updateConfig.userDefined) {
+    } else */
+
+    // if update element was not specified, default is test
+    if (!updateConfig.userDefined) {
       // if tdm is not working, default tds is to update on startup
       updateConfig.updateType = CollectionUpdateType.test;
     }

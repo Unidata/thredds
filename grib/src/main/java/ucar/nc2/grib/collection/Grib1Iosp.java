@@ -365,7 +365,7 @@ public class Grib1Iosp extends GribIosp {
     rafData.seek(dataPos);
     Grib1Record gr = new Grib1Record(rafData);
     Formatter f = new Formatter();
-    f.format("File=%s%n", raf.getLocation());
+    f.format("File=%s%n", rafData.getLocation());
     Grib1SectionProductDefinition pds = gr.getPDSsection();
     Grib1Parameter param = cust.getParameter(pds.getCenter(), pds.getSubCenter(), pds.getTableVersion(), pds.getParameterNumber());
     f.format("  Parameter=%s%n", param);

@@ -28,8 +28,9 @@ public class OpendapServletTest {
 	private MockServletConfig servletConfig;
 	
 	private OpendapServlet opendapServlet;
-	private String path =  "/thredds/dodsC/gribCollection/GFS_CONUS_80km/files/GFS_CONUS_80km_20120229_1200.grib1.ascii";
-	
+	private String path =  "/gribCollection/GFS_CONUS_80km/GFS_CONUS_80km_20120229_1200.grib1/GC";
+  private String uri =  "/thredds/dodsC" + path;
+
 	@Before
 	public void setUp() throws Exception {
 		opendapServlet =new OpendapServlet();
@@ -40,12 +41,12 @@ public class OpendapServletTest {
 	@Test
 	public void asciiDataRequestTest() throws UnsupportedEncodingException{
 		
-		String mockURI = "/thredds/dodsC/gribCollection/GFS_CONUS_80km/files/GFS_CONUS_80km_20120229_1200.grib1.ascii";
+		String mockURI = uri + ".ascii";
 		String mockQueryString ="Temperature_height_above_ground[0:1:0][0:1:0][41][31]";
 		MockHttpServletRequest request = new MockHttpServletRequest("GET", mockURI);		
 		request.setContextPath("/thredds");
 		request.setQueryString(mockQueryString);
-		request.setPathInfo("/gribCollection/GFS_CONUS_80km/files/GFS_CONUS_80km_20120229_1200.grib1.ascii");
+		request.setPathInfo( path + ".ascii");
 		MockHttpServletResponse response = new MockHttpServletResponse();
 		opendapServlet.doGet(request, response);
     assertEquals(200, response.getStatus());
@@ -58,12 +59,12 @@ public class OpendapServletTest {
 	@Test
 	public void dodsDataRequestTest() throws IOException{
 		
-    String mockURI = "/thredds/dodsC/gribCollection/GFS_CONUS_80km/files/GFS_CONUS_80km_20120229_1200.grib1.dods";
+    String mockURI = uri + ".dods";
     String mockQueryString ="Temperature_height_above_ground[0:1:0][0:1:0][41][31]";
 		MockHttpServletRequest request = new MockHttpServletRequest("GET", mockURI);
 		request.setContextPath("/thredds");
 		request.setQueryString(mockQueryString);
-		request.setPathInfo("/gribCollection/GFS_CONUS_80km/files/GFS_CONUS_80km_20120229_1200.grib1.dods");
+		request.setPathInfo(path + ".dods");
 		MockHttpServletResponse response = new MockHttpServletResponse();
 		opendapServlet.doGet(request, response);
     assertEquals(200, response.getStatus());

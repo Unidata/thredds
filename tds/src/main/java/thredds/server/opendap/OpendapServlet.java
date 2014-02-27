@@ -284,7 +284,7 @@ public class OpendapServlet extends AbstractServlet {
       // everything else
     } catch (Throwable t) {
       log.error("path= " + path, t);
-      //t.printStackTrace();
+      // t.printStackTrace();
       sendErrorResponse(response, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, t.getMessage());
     }
 

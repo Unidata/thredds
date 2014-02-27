@@ -71,10 +71,11 @@ import java.util.*;
 @ThreadSafe
 public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
   static private final String COLLECTION = "collection";
-  static private final String GC_DATASET = "GC";
-  static private final String BEST_DATASET = "Best";
-  static private final String TWOD_DATASET = "TwoD";
   static private final String PARTITION = "partition";
+
+  static private final String GC_DATASET = GribCollection.Type.GC.toString();
+  static private final String BEST_DATASET = GribCollection.Type.Best.toString();
+  static private final String TWOD_DATASET = GribCollection.Type.TwoD.toString();
 
   /////////////////////////////////////////////////////////////////////////////
   protected class StateGrib extends State {

@@ -78,7 +78,7 @@ public class GridRequestsExceptionTest {
             .andExpect(content().string(containsString("No variables requested")))
             .andReturn();
 
-    //System.out.printf("content= %s%n", result.getResponse().getContentAsString());
+    System.out.printf("content= %s%n", result.getResponse().getContentAsString());
  	}
 	
   @Test
@@ -89,7 +89,7 @@ public class GridRequestsExceptionTest {
             .andExpect(content().string(containsString("No variables requested")))
             .andReturn();
 
-    //System.out.printf("content= %s%n", result.getResponse().getContentAsString());
+    System.out.printf("content= %s%n", result.getResponse().getContentAsString());
  	}
 
   @Test
@@ -107,7 +107,7 @@ public class GridRequestsExceptionTest {
   @Test
  	public void testTimeDoesNotIntersect() throws Exception{
     MvcResult result = this.mockMvc.perform(get(path).servletPath(path)
-            .param("var", "Pressure_surface")
+            .param("var", "Pressure_reduced_to_MSL")
             .param("time", "2012-04-18T15:00:00Z"))
             // .param("time_window", "PT1H"))
             .andExpect(status().is(400))

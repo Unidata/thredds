@@ -277,14 +277,12 @@ public abstract class InvDatasetFeatureCollection extends InvCatalogRef implemen
 
   /**
    * A request has come in, check that the state is up-to-date and initialized.
+   * this is called from the request thread.
    *
    * @return the State, updated if needed
    * @throws java.io.IOException on read error
    */
-  //abstract protected State checkState() throws IOException;
-
-  // suppose all we do here is check if we have inititialized ?
-  protected State checkState() { // this is called from the request thread
+  protected State checkState() {
 
     synchronized (lock) {
       if (first) {
@@ -304,12 +302,13 @@ public abstract class InvDatasetFeatureCollection extends InvCatalogRef implemen
    *
    * @param force test : update index if anything changed or nocheck - use index if it exists
    */
-  //abstract public void update(CollectionManager.Force force);
   protected void update(CollectionUpdateType force) {  // this may be called from a background thread
+
     synchronized (lock) {
       if (first) {
-        firstInit();
-        first = false;
+        state = checkState();
+        state.lastInvChange = System.currentTimeMillis();
+        return;
       }
     }
 

@@ -156,7 +156,7 @@ public abstract class GribCollection implements FileCacheable, AutoCloseable {
         cname = DirectoryCollection.makeCollectionName(name, Paths.get(specp.getRootDir()));
         break;
       case none:
-        cname = name;
+        cname = !specp.wantSubdirs() ? name : DirectoryCollection.makeCollectionName(name, Paths.get(specp.getRootDir()));  // LOOK ??
     }
 
     File f = getIndexFile(cname, new File(specp.getRootDir()));
@@ -267,7 +267,7 @@ public abstract class GribCollection implements FileCacheable, AutoCloseable {
 
   public GribCollection.Dataset findDataset(String name) {
     for (GribCollection.Dataset ds : datasets)
-      if (ds.type.toString().equals(name)) return ds;
+      if (ds.type.toString().equalsIgnoreCase(name)) return ds;
     return null;
   }
 

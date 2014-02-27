@@ -71,7 +71,7 @@ import java.util.Formatter;
 public abstract class GribIosp extends AbstractIOServiceProvider {
   static public final String VARIABLE_ID_ATTNAME = "Grib_Variable_Id";
   static public final String GRIB_VALID_TIME = "GRIB forecast or observation time";
-  static private final boolean debugTime = false, debugRead = true, debugName = false;
+  static private final boolean debugTime = false, debugRead = false, debugName = false;
 
   private static final boolean debug = false;
 

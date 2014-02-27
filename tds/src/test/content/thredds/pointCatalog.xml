@@ -84,13 +84,13 @@
       <pointConfig datasetTypes="cdmrFeature Files"/>
     </featureCollection>
 
-    <!-- this point to nonexistent directory -->
+    <!-- this point to nonexistent directory
     <featureCollection name="Upper Air Point Data" harvest="true" featureType="Point" path="testUpperAirFeatureCollection">
        <collection spec="${cdmUnitTest}/ft/point/ldm/upper/Upperair_#yyyyMMdd_HHmm#.nc$"/>
        <update startup="true"/>
        <protoDataset choice="Penultimate"/>
        <pointConfig datasetTypes="cdmrFeature Files"/>
-     </featureCollection>
+     </featureCollection>        -->
 
   </dataset>
 
