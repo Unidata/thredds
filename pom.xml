@@ -13,7 +13,7 @@
   <groupId>edu.ucar</groupId>
   <artifactId>thredds-parent</artifactId>
   <packaging>pom</packaging>
-  <version>4.4.2-SNAPSHOT</version>
+  <version>4.4.3-SNAPSHOT</version>
   <name>Parent THREDDS and CDM modules</name>
   <description>
     The Unidata THREDDS project includes the netCDF-Java library (aka CDM) and
@@ -246,6 +246,11 @@
       <dependency>
         <groupId>${project.groupId}</groupId>
         <artifactId>netcdf4</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>${project.groupId}</groupId>
+        <artifactId>httpclient</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>
@@ -590,7 +595,6 @@
         <version>${javax.servlet.jstl.version}</version>
         <scope>runtime</scope>
       </dependency>
-
       <dependency>
         <groupId>json-taglib</groupId>
         <artifactId>json-taglib</artifactId>
@@ -861,6 +865,7 @@
     <module>it</module>
     <module>netcdf4</module>
     <module>clcommon</module>
+    <module>httpclient</module>
   </modules>
 
   <properties>
@@ -907,7 +912,7 @@
     <log4j.version>2.0-beta9</log4j.version>
     <net.jcip.version>1.0</net.jcip.version>
     <net.sf.ehcache.version>2.6.2</net.sf.ehcache.version>
-    <org.apache.tomcat.version>7.0.27</org.apache.tomcat.version>
+    <org.apache.tomcat.version>7.0.50</org.apache.tomcat.version>
     <org.hibernate.version>4.3.1.Final</org.hibernate.version>
     <org.jsoup.version>1.7.2</org.jsoup.version>
     <org.jdom2.version>2.0.4</org.jdom2.version>
@@ -934,7 +939,7 @@
 
     <cargo-plugin.version>1.4.5</cargo-plugin.version>
     <apache.download>http://mirrors.ibiblio.org/apache/</apache.download>
-    <tomcat7.version>7.0.47</tomcat7.version>
+    <tomcat7.version>7.0.52</tomcat7.version>
 
   </properties>
 

@@ -57,3 +57,5 @@ NCL GRIB1 table notes
 
 11/21/2011 remove ncep 128-141 from table, use screen scrape
 
+01/29/2014
+  - Removed all ECMWF tables, as these are now coming from GRIB-API

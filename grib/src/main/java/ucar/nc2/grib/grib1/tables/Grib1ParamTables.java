@@ -72,6 +72,7 @@ public class Grib1ParamTables {
   static {
     try {
       standardLookup = new Lookup();
+      standardLookup.readLookupTable("resources/grib1/ecmwfGribApi/lookupTables.txt");
       standardLookup.readLookupTable("resources/grib1/lookupTables.txt");
       standardLookup.readLookupTable("resources/grib1/ecmwf/lookupTables.txt");
       standardLookup.readLookupTable("resources/grib1/ncl/lookupTables.txt");

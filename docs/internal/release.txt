@@ -126,7 +126,8 @@ edited 11/26/2013
     - Clear "Checkout/merge to local branch (optional)" value
     - Save
 
-4. Git
+4. Git  (ONLY IF THIS IS STABLE RELEASE)
+  - if any commits have been made on master, that are not on this branch, you will first have to merge them
   - checkout new release tag, eg "v{release}" created by Jenkins/Maven build (NOT target-{release})
       git fetch origin
       git tag                   // see list of tags
@@ -167,10 +168,9 @@ edited 11/26/2013
   - cd {github/thredds}
   1. make supporting libraries
       gradle clean build -x test
-  2. release ncIdv.jar to conan:/pub/netcdf-java/v{version}/
+  2. SKIP release ncIdv.jar to conan:/pub/netcdf-java/v{version}/
       gradle -p ncIdv releaseCdm
   3. release webstart to conan:/content/software/netcdf-java/v{version}/webstart
-     // release ToolsUI.jar to conan:/pub/netcdf-java/v{version}/
       gradle -p ui releaseWebstart
   4. SKIP release toolsUI to conan:/pub/netcdf-java/v{version}/
       gradle -p ui releaseCdm

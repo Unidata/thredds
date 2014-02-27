@@ -758,7 +758,7 @@ class Nidsheader{
           pcode_12n13n14( pkcode20Doff, pkcode20Dlen, hoff, pcode20Number, isZ, "mesocyclone", 20);
       }
     } else {
-      log.warn ( "GetNexrDirs:: no product symbology block found (no image data) " +raf.getLocation());
+      log.debug ( "GetNexrDirs:: no product symbology block found (no image data) " +raf.getLocation());
 
     }
 

@@ -168,12 +168,13 @@ public class StringUtil2 {
    * @return filtered string.
    */
   static public String filter7bits(String s) {
-    byte[] b = s.getBytes(CDM.utf8Charset);
-    byte[] bo = new byte[b.length];
+    if (s == null) return null;
+    char[] bo = new char[s.length()];
     int count = 0;
     for (int i = 0; i < s.length(); i++) {
-      if ((b[i] < 128) && (b[i] > 31) || ((b[i] == '\n') || (b[i] == '\t'))) {
-        bo[count++] = b[i];
+      char c = s.charAt(i);
+      if ((c < 128) && (c > 31) || ((c == '\n') || (c == '\t'))) {
+        bo[count++] = c;
       }
     }
 

@@ -56,7 +56,7 @@ import ucar.nc2.time.CalendarPeriod;
 import ucar.nc2.units.TimeDuration;
 import ucar.nc2.util.DiskCache2;
 import ucar.nc2.util.log.LoggerFactory;
-import ucar.nc2.util.net.*;
+import ucar.httpclient.*;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -432,7 +432,7 @@ public class TdmRunner {
         dcm.putAuxInfo("gdsHash", fcConfig.gribConfig.gdsHash); // sneak in extra config info
 
       dcm.addEventListener(new Listener(fc, dcm)); // now wired for events
-      dcm.removeEventListener(fc); // not needed
+      // dcm.removeEventListener(fc); // not needed
       // CollectionUpdater.INSTANCE.scheduleTasks( CollectionUpdater.FROM.tdm, fc.getConfig(), dcm); // already done in finish() method
     }
 

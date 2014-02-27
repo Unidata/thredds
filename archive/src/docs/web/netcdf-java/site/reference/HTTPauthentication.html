@@ -16,7 +16,7 @@ dl {margin: 10px 5px 5px 15px;)
 <h1>HTTP Processing</h1>
 <p>The Netcdf-Java library uses the Apache <a href="http://hc.apache.org/httpclient-3.x/index.html">HttpClient 3.1 library</a> for almost all HTTP processing (a small number of utilities use the java.net package).
 HttpClient is used to access OPeNDAP datasets, for WCS, WMS, and CdmRemote access, and to <a href="HTTPservice.html">open remote files served over HTTP</a>.
-The Netcdf-Java library provides <strong>ucar.nc2.util.net.HttpClientManager</strong> to manage HttpClient settings.
+The Netcdf-Java library provides <strong>ucar.httpclient.HttpClientManager</strong> to manage HttpClient settings.
 Future versions of the Netcdf-Java library will use <a href="http://hc.apache.org/">HttpComponents</a>, which is commonly called the httpclient-4 library.
 It is the successor to HttpClient library 3.
 The HttpClientManager API will be kept as backwards compatible as possible.
@@ -171,7 +171,7 @@ but only for servers on the machine "hostx.org"
 <h3>Initializing</h3>
 <p>
 The Netcdf-Java class
-<strong>ucar.nc2.util.net.HttpClientManager</strong> is a
+<strong>ucar.httpclient.HttpClientManager</strong> is a
 static class that provides a wrapping around HTTPSession to
 provide a number of useful methods that simplify various
 common operations.

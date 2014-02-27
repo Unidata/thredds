@@ -6,9 +6,21 @@ import ucar.nc2.ui.table.ColumnWidthsResizer;
 import ucar.nc2.ui.table.TableAligner;
 import ucar.nc2.ui.util.SwingUtils;
 
-import javax.swing.*;
+import javax.swing.AbstractButton;
+import javax.swing.JComponent;
+import javax.swing.JDialog;
+import javax.swing.JFileChooser;
+import javax.swing.JMenuItem;
+import javax.swing.JPopupMenu;
+import javax.swing.JTable;
+import javax.swing.MenuElement;
+import javax.swing.SwingConstants;
+import javax.swing.UIManager;
+import javax.swing.UnsupportedLookAndFeelException;
 import javax.swing.filechooser.FileSystemView;
-import java.awt.*;
+import java.awt.Component;
+import java.awt.Dimension;
+import java.awt.HeadlessException;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.File;
@@ -24,8 +36,6 @@ import java.util.List;
  *   <li> The "Details" view is displayed by default.
  *   <li> The table in that view has been tweaked to intelligently resize columns' widths based on their contents.
  *   <li> All text in those cells is left-aligned.
- *   <li> {@link #setConfirmOverwrite} can be called to show a confirmation dialog when attempting to overwrite
- *        existing files.
  * </ul>
  *
  * @author cwardgar
@@ -125,7 +135,6 @@ public class ImprovedFileChooser extends JFileChooser {
         }
     }
 
-
     private static class NewColumnModelListener implements PropertyChangeListener {
         private final JTable table;
         private final int alignment;
@@ -155,5 +164,21 @@ public class ImprovedFileChooser extends JFileChooser {
     @Override protected JDialog createDialog(Component parent) throws HeadlessException {
         this.dialog = super.createDialog(parent);  // Grab our own local reference to the dialog.
         return this.dialog;
+    }
+
+
+    public static void main(String[] args) throws ClassNotFoundException, UnsupportedLookAndFeelException,
+            InstantiationException, IllegalAccessException {
+        // Switch to Nimbus Look and Feel, if it's available.
+        for (UIManager.LookAndFeelInfo info : UIManager.getInstalledLookAndFeels()) {
+            if ("Nimbus".equals(info.getName())) {
+                UIManager.setLookAndFeel(info.getClassName());
+                break;
+            }
+        }
+
+        ImprovedFileChooser fileChooser = new ImprovedFileChooser();
+        fileChooser.setPreferredSize(new Dimension(1000, 750));
+        fileChooser.showDialog(null, "Choose");
     }
 }

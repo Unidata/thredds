@@ -33,7 +33,7 @@
 
 package thredds.ui.catalog;
 
-import ucar.nc2.util.net.*;
+import ucar.httpclient.*;
 import thredds.catalog.*;
 import ucar.nc2.ui.widget.*;
 

@@ -31,6 +31,8 @@
  */
 package ucar.nc2.util.net;
 
+import ucar.httpclient.*;
+
 import junit.framework.TestCase;
 import org.apache.http.auth.*;
 import org.apache.http.client.CredentialsProvider;

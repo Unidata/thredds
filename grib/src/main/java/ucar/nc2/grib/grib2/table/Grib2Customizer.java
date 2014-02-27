@@ -440,11 +440,11 @@ Code Table Code table 4.7 - Derived forecast (4.7)
      }
   }
 
-  public String getIntervalName(int id) {
+  public String getStatisticName(int id) {
     return getTableValue("4.10", id); // WMO
   }
 
-  public String getIntervalNameShort(int id) {
+  public String getStatisticNameShort(int id) {
     GribStatType stat = GribStatType.getStatTypeFromGrib2(id);
     return (stat == null) ?"UnknownStatType-" + id : stat.toString();
   }

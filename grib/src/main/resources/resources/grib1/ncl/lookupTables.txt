@@ -8,32 +8,6 @@
    78:     0:   205: dwd_205_gtb.h
    78:     0:   206: dwd_206_gtb.h
    78:     0:   207: dwd_207_gtb.h
-   98:     0:   128: ecmwf_128_gtb.h
-   98:     0:   129: ecmwf_129_gtb.h
-   98:     0:   130: ecmwf_130_gtb.h
-   98:     0:   131: ecmwf_131_gtb.h
-   98:     0:   132: ecmwf_132_gtb.h
-   98:     0:   133: ecmwf_133_gtb.h
-   98:     0:   140: ecmwf_140_gtb.h
-   98:     0:   150: ecmwf_150_gtb.h
-   98:     0:   151: ecmwf_151_gtb.h
-   98:     0:   160: ecmwf_160_gtb.h
-   98:     0:   162: ecmwf_162_gtb.h
-   98:     0:   170: ecmwf_170_gtb.h
-   98:     0:   171: ecmwf_171_gtb.h
-   98:     0:   172: ecmwf_172_gtb.h
-   98:     0:   173: ecmwf_173_gtb.h
-   98:     0:   174: ecmwf_174_gtb.h
-   98:     0:   175: ecmwf_175_gtb.h
-   98:     0:   180: ecmwf_180_gtb.h
-   98:     0:   190: ecmwf_190_gtb.h
-   98:     0:   200: ecmwf_200_gtb.h
-   98:     0:   201: ecmwf_201_gtb.h
-   98:     0:   210: ecmwf_210_gtb.h
-   98:     0:   211: ecmwf_211_gtb.h
-   98:     0:   228: ecmwf_228_gtb.h
-   98:     0:   230: ecmwf_230_gtb.h
-   98:     0:   234: ecmwf_234_gtb.h
    58:     0:     0: fnmoc_gtb.h
    59:     0:     0: fsl0_gtb.h
    59:     1:     0: fsl1_gtb.h

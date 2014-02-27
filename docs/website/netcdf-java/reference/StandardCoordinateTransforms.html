@@ -269,9 +269,9 @@
 </blockquote>
 <h3><a name="UTM"></a> UTM (Universal Transverse Mercator)</h3>
 <blockquote>
-  <pre>   char UTM_Projection;<br>     :<strong>grid_mapping_name</strong> = &quot;universal_transverse_mercator&quot;;<br>     :<strong>utm_zone_number</strong> = 22; <br>     :<em><strong>semi_major_axis</strong></em> = 6378.137;<br>     :<em><strong>inverse_flattening</strong></em> = 298.257;<br>     :<em><strong>_CoordinateTransformType</strong></em> = &quot;Projection&quot;;
+  <pre>   char UTM_Projection;<br>     :<strong>grid_mapping_name</strong> = &quot;universal_transverse_mercator&quot;;<br>     :<strong>utm_zone_number</strong> = 22; <br>     :<em><strong>semi_major_axis</strong></em> = 6378137;<br>     :<em><strong>inverse_flattening</strong></em> = 298.257;<br>     :<em><strong>_CoordinateTransformType</strong></em> = &quot;Projection&quot;;
      :<em><strong>_CoordinateAxisTypes</strong></em> = &quot;GeoX GeoY&quot;;</pre>
-  <p>This is not a standard CF projection. UTM uses an ellipsoidal earth. Code contributed from the GeoTransform package by Dan Toms, SRI International.</p>
+  <p>This is not a standard CF projection. UTM uses an ellipsoidal earth. Code contributed from the GeoTransform package by Dan Toms, SRI International. Note that <em><strong>semi_major_axis</strong></em> is in meters.</p>
 </blockquote>
 <h3>vertical_perspective</h3>
 <blockquote>
