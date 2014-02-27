@@ -25,7 +25,7 @@ public class TestGridCoords {
     assert null != grid;
     GridCoordSystem gcs = grid.getCoordinateSystem();
     assert null != gcs;
-    assert grid.getRank() == 4;
+    assert grid.getRank() == 3;
 
     System.out.printf("%s%n", gcs);
 

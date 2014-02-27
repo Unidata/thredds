@@ -66,6 +66,7 @@ public class InvDatasetFcPoint extends InvDatasetFeatureCollection {
   @Override
   public void finishConstruction() {
     super.finishConstruction();
+    finish();
 
     ThreddsMetadata tmi = getLocalMetadataInheritable();
 

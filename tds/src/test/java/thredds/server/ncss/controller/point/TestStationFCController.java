@@ -65,129 +65,129 @@ import static org.junit.Assert.assertTrue;
  */
 @RunWith(SpringJUnit4ClassRunner.class)
 @WebAppConfiguration
-@ContextConfiguration(locations = { "/WEB-INF/applicationContext-tdsConfig.xml" }, loader = MockTdsContextLoader.class)
+@ContextConfiguration(locations = {"/WEB-INF/applicationContext-tdsConfig.xml"}, loader = MockTdsContextLoader.class)
 public class TestStationFCController {
 
-	@Autowired
-	private WebApplicationContext wac;
+  @Autowired
+  private WebApplicationContext wac;
 
-	private String dataset =  "/ncss/testStationFeatureCollection/Metar_Station_Data_fc.cdmr";
-	private MockMvc mockMvc;
+  private String dataset = "/ncss/testStationFeatureCollection/Metar_Station_Data_fc.cdmr";
+  private MockMvc mockMvc;
 
-	@Before
-	public void setup(){
-		this.mockMvc = MockMvcBuilders.webAppContextSetup(wac).build();
-	}
-
-	@Test
-	public void getClosestStationData() throws Exception{
-		RequestBuilder rb = MockMvcRequestBuilders.get(dataset).servletPath(dataset)
-				.param("longitude", "-105.203").param("latitude", "40.019")
-				.param("accept", "netcdf4")
-            .param("time_start","2006-03-028T00:00:00Z")
-            .param("time_end","2006-03-29T00:00:00Z")
-				.param("var", "air_temperature,dew_point_temperature,precipitation_amount_24,precipitation_amount_hourly,visibility_in_air");
-
-		this.mockMvc.perform( rb ).andExpect(MockMvcResultMatchers.status().isOk())
-			.andExpect(MockMvcResultMatchers.content().contentType( SupportedFormat.NETCDF4.getResponseContentType() ));
-	}
-
-	@Test
-	public void getStationListData() throws Exception{
-		RequestBuilder rb = MockMvcRequestBuilders.get(dataset).servletPath(dataset)
-				.param("accept", "csv")
-        .param("time","2006-03-29T00:00:00Z")
-				.param("subset", "stns")
-				.param("stns", "BJC,LEST")
-				.param("var", "air_temperature,dew_point_temperature,precipitation_amount_24,precipitation_amount_hourly,visibility_in_air");
-
-		this.mockMvc.perform( rb ).andExpect(MockMvcResultMatchers.status().isOk())
-			.andExpect(MockMvcResultMatchers.content().contentType(ContentType.text.getContentHeader())); // changed to text so it would display in browser
-	}
-
-	@Test
-	public void getDataForTimeRange() throws Exception{
-		RequestBuilder rb = MockMvcRequestBuilders.get(dataset).servletPath(dataset)
-				.param("accept", "netcdf")
-        .param("time_start","2006-03-02T00:00:00Z")
-        .param("time_end","2006-03-28T00:00:00Z")
-				.param("subset", "stns")
-				.param("stns", "BJC,DEN")
-				.param("var", "air_temperature,dew_point_temperature,precipitation_amount_24,precipitation_amount_hourly,visibility_in_air");
-
-		this.mockMvc.perform( rb ).andExpect(MockMvcResultMatchers.status().isOk())
-		.andExpect(MockMvcResultMatchers.content().contentType( ContentType.netcdf.getContentHeader() )) ;
-	}
-
-	@Test
-  public void testInvalidDateRangeOnStationDataset() throws Exception{
- 		RequestBuilder rb = MockMvcRequestBuilders.get(dataset).servletPath(dataset)
- 				.param("accept", "netcdf")
- 				.param("var", "air_temperature", "dew_point_temperature")
- 				.param("subset", "bb")
- 				.param("north", "43.0")
- 				.param("south", "38.0")
- 				.param("west", "-107.0")
- 				.param("east", "-103.0")
- 				.param("time_start","2013-08-25T06:00:00Z")
- 				.param("time_end","2013-08-26T06:00:00Z");
-
-    org.springframework.test.web.servlet.MvcResult result = this.mockMvc.perform( rb ).andExpect(MockMvcResultMatchers.status().is(400))
-            .andReturn();
-		System.out.printf("%s%n", result.getResponse().getContentAsString());
- 	}
+  @Before
+  public void setup() {
+    this.mockMvc = MockMvcBuilders.webAppContextSetup(wac).build();
+  }
 
   @Test
-  public void getSubsetOnStationDataset() throws Exception{
- 		RequestBuilder rb = MockMvcRequestBuilders.get(dataset).servletPath(dataset)
- 				.param("accept", "netcdf")
- 				.param("var", "air_temperature", "dew_point_temperature")
- 				.param("subset", "bb")
- 				.param("north", "43.0")
- 				.param("south", "38.0")
- 				.param("west", "-107.0")
- 				.param("east", "-103.0")
- 				.param("time_start","2006-03-25T00:00:00Z")
- 				.param("time_end","2006-03-28T00:00:00Z");
+  public void getClosestStationData() throws Exception {
+    RequestBuilder rb = MockMvcRequestBuilders.get(dataset).servletPath(dataset)
+            .param("longitude", "-105.203").param("latitude", "40.019")
+            .param("accept", "netcdf4")
+            .param("time_start", "2006-03-028T00:00:00Z")
+            .param("time_end", "2006-03-29T00:00:00Z")
+            .param("var", "air_temperature,dew_point_temperature,precipitation_amount_24,precipitation_amount_hourly,visibility_in_air");
 
- 		this.mockMvc.perform( rb ).andExpect(MockMvcResultMatchers.status().isOk())
- 			.andExpect(MockMvcResultMatchers.content().contentType( ContentType.netcdf.getContentHeader() ));
- 	}
+    this.mockMvc.perform(rb).andExpect(MockMvcResultMatchers.status().isOk())
+            .andExpect(MockMvcResultMatchers.content().contentType(SupportedFormat.NETCDF4.getResponseContentType()));
+  }
 
-	@Test
-	public void getAllStnsOnStationDataset() throws Exception{
-		RequestBuilder rb = MockMvcRequestBuilders.get(dataset).servletPath(dataset)
-				.param("accept", "netcdf")
-				.param("subset", "stns")
-				.param("stns", "all")
-				.param("var", "air_temperature", "dew_point_temperature")
-        .param("time_start","2006-03-25T00:00:00Z")
-        .param("time_end","2006-03-26T00:00:00Z");
+  @Test
+  public void getStationListData() throws Exception {
+    RequestBuilder rb = MockMvcRequestBuilders.get(dataset).servletPath(dataset)
+            .param("accept", "csv")
+            .param("time", "2006-03-29T00:00:00Z")
+            .param("subset", "stns")
+            .param("stns", "BJC,LEST")
+            .param("var", "air_temperature,dew_point_temperature,precipitation_amount_24,precipitation_amount_hourly,visibility_in_air");
+
+    this.mockMvc.perform(rb).andExpect(MockMvcResultMatchers.status().isOk())
+            .andExpect(MockMvcResultMatchers.content().contentType(ContentType.text.getContentHeader())); // changed to text so it would display in browser
+  }
+
+  @Test
+  public void getDataForTimeRange() throws Exception {
+    RequestBuilder rb = MockMvcRequestBuilders.get(dataset).servletPath(dataset)
+            .param("accept", "netcdf")
+            .param("time_start", "2006-03-02T00:00:00Z")
+            .param("time_end", "2006-03-28T00:00:00Z")
+            .param("subset", "stns")
+            .param("stns", "BJC,DEN")
+            .param("var", "air_temperature,dew_point_temperature,precipitation_amount_24,precipitation_amount_hourly,visibility_in_air");
+
+    this.mockMvc.perform(rb).andExpect(MockMvcResultMatchers.status().isOk())
+            .andExpect(MockMvcResultMatchers.content().contentType(ContentType.netcdf.getContentHeader()));
+  }
+
+  @Test
+  public void testInvalidDateRangeOnStationDataset() throws Exception {
+    RequestBuilder rb = MockMvcRequestBuilders.get(dataset).servletPath(dataset)
+            .param("accept", "netcdf")
+            .param("var", "air_temperature", "dew_point_temperature")
+            .param("subset", "bb")
+            .param("north", "43.0")
+            .param("south", "38.0")
+            .param("west", "-107.0")
+            .param("east", "-103.0")
+            .param("time_start", "2013-08-25T06:00:00Z")
+            .param("time_end", "2013-08-26T06:00:00Z");
+
+    org.springframework.test.web.servlet.MvcResult result = this.mockMvc.perform(rb).andExpect(MockMvcResultMatchers.status().is(400))
+            .andReturn();
+    System.out.printf("%s%n", result.getResponse().getContentAsString());
+  }
+
+  @Test
+  public void getSubsetOnStationDataset() throws Exception {
+    RequestBuilder rb = MockMvcRequestBuilders.get(dataset).servletPath(dataset)
+            .param("accept", "netcdf")
+            .param("var", "air_temperature", "dew_point_temperature")
+            .param("subset", "bb")
+            .param("north", "43.0")
+            .param("south", "38.0")
+            .param("west", "-107.0")
+            .param("east", "-103.0")
+            .param("time_start", "2006-03-25T00:00:00Z")
+            .param("time_end", "2006-03-28T00:00:00Z");
+
+    this.mockMvc.perform(rb).andExpect(MockMvcResultMatchers.status().isOk())
+            .andExpect(MockMvcResultMatchers.content().contentType(ContentType.netcdf.getContentHeader()));
+  }
+
+  @Test
+  public void getAllStnsOnStationDataset() throws Exception {
+    RequestBuilder rb = MockMvcRequestBuilders.get(dataset).servletPath(dataset)
+            .param("accept", "netcdf")
+            .param("subset", "stns")
+            .param("stns", "all")
+            .param("var", "air_temperature", "dew_point_temperature")
+            .param("time_start", "2006-03-25T00:00:00Z")
+            .param("time_end", "2006-03-26T00:00:00Z");
 
 
-		this.mockMvc.perform( rb ).andExpect(MockMvcResultMatchers.status().isOk())
-			.andExpect(MockMvcResultMatchers.content().contentType( ContentType.netcdf.getContentHeader() ));
+    this.mockMvc.perform(rb).andExpect(MockMvcResultMatchers.status().isOk())
+            .andExpect(MockMvcResultMatchers.content().contentType(ContentType.netcdf.getContentHeader()));
 
-	}
+  }
 
-	@Test
-	public void stationNotFoundStationDataset() throws Exception{
-		RequestBuilder rb = MockMvcRequestBuilders.get(dataset).servletPath(dataset)
-				.param("accept", "netcdf")
-				.param("subset", "stns")
-				.param("stns", "mock_station")
-				.param("var", "air_temperature", "dew_point_temperature")
-            .param("time_start","2006-03-25T00:00:00Z")
-            .param("time_end","2006-04-28T00:00:00Z");
+  @Test
+  public void stationNotFoundStationDataset() throws Exception {
+    RequestBuilder rb = MockMvcRequestBuilders.get(dataset).servletPath(dataset)
+            .param("accept", "netcdf")
+            .param("subset", "stns")
+            .param("stns", "mock_station")
+            .param("var", "air_temperature", "dew_point_temperature")
+            .param("time_start", "2006-03-25T00:00:00Z")
+            .param("time_end", "2006-04-28T00:00:00Z");
 
-		this.mockMvc.perform( rb ).andExpect(new ResultMatcher(){
-			public void match(MvcResult result) throws Exception{
-				//result.getResponse().getContentAsByteArray()
-				Exception ex =  result.getResolvedException();
-				assertTrue( ex instanceof FeaturesNotFoundException);
-			}
-		} );
-	}
+    this.mockMvc.perform(rb).andExpect(new ResultMatcher() {
+      public void match(MvcResult result) throws Exception {
+        //result.getResponse().getContentAsByteArray()
+        Exception ex = result.getResolvedException();
+        assertTrue(ex instanceof FeaturesNotFoundException);
+      }
+    });
+  }
 
 }
 

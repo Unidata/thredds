@@ -566,6 +566,8 @@ public abstract class InvDataset {
    * @return contents of documentation of specified type
    */
   public String getDocumentation(String type) {
+    if (getDocumentation() == null)
+      return null;
     for (InvDocumentation doc : getDocumentation()) {
       String dtype = doc.getType();
       if ((dtype != null) && dtype.equalsIgnoreCase(type)) return doc.getInlineContent();

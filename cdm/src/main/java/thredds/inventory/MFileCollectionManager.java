@@ -513,7 +513,7 @@ public class MFileCollectionManager extends CollectionManagerAbstract {
     int count = 0;
     for (CollectionConfig mc : scanList) {
       long start = System.currentTimeMillis();
-      System.out.printf("MFileCollectionManager reallyScan %s %s%n", mc.getDirectoryName(), CalendarDate.present());
+      // System.out.printf("MFileCollectionManager reallyScan %s %s%n", mc.getDirectoryName(), CalendarDate.present());
 
       // lOOK: are there any circumstances where we dont need to recheck against OS, ie always use cached values?
       Iterator<MFile> iter = (mc.wantSubdirs()) ? controller.getInventoryAll(mc, true) : controller.getInventoryTop(mc, true);  /// NCDC wants subdir /global/nomads/nexus/gfsanl/**/gfsanl_3_.*\.grb$
@@ -531,7 +531,7 @@ public class MFileCollectionManager extends CollectionManagerAbstract {
 
 
       long took = (System.currentTimeMillis() - start) / 1000;
-      System.out.printf("MFileCollectionManager reallyScan %s took %d secs%n", collectionName, took);
+      // System.out.printf("MFileCollectionManager reallyScan %s took %d secs%n", collectionName, took);
       if (logger.isDebugEnabled()) {
         long took2 = (System.currentTimeMillis() - start) / 1000;
         logger.debug("{} : was scanned nfiles= {} took={} secs", collectionName, count, took2);
