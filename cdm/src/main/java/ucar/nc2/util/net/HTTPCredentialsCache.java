@@ -127,11 +127,12 @@ public class HTTPCredentialsCache implements CredentialsProvider
             System.err.flush();
         }
 
+/* Remove because of redirects
         // Verify that the scope argument "subsumes"
         // this.authscope
         if(!HTTPAuthScope.subsumes(scope, this.authscope))
             throw new IllegalStateException("HTTPCredentialsCache: scope :: authscope mismatch");
-
+*/
         // See if the credentials have been cached.
         Credentials credentials = checkCache(principal, authscope);
         if(credentials != null) {
