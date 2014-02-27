@@ -40,8 +40,6 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.charset.Charset;
 import java.util.*;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import net.jcip.annotations.NotThreadSafe;
 import org.apache.http.*;
@@ -696,7 +694,9 @@ public class HTTPMethod
             scope = HTTPAuthScope.urlToScope(HTTPAuthPolicy.BASIC, surl, principalp);
 
         // Provide a credentials (provider) to enact the process
-        HTTPCredentialsCache hap = new HTTPCredentialsCache(this.session.getAuthStore(),
+	// We use the a caching instance so we can intercept getCredentials
+        // requests to check the cache.
+        HTTPCachingProvider hap = new HTTPCachingProvider(this.session.getAuthStore(),
             scope, principalp[0]);
 
         // New in httpclient 4.2; will need to change in 4.3

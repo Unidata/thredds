@@ -378,7 +378,7 @@ public class HTTPSession
     static public void
     setGlobalCredentials(AuthScope scope, Credentials creds)
     {
-        CredentialsProvider provider = new HTTPCredsProvider(creds);
+        CredentialsProvider provider = new HTTPConstantProvider(creds);
         setGlobalCredentialsProvider(scope, provider);
     }
 
@@ -771,7 +771,7 @@ public class HTTPSession
     public void
     setCredentials(String scheme, Credentials creds)
     {
-        CredentialsProvider provider = new HTTPCredsProvider(creds);
+        CredentialsProvider provider = new HTTPConstantProvider(creds);
         setCredentialsProvider(scheme, provider);
     }
 
@@ -813,7 +813,7 @@ public class HTTPSession
 
     // This provides support for HTTPMethod.setAuthentication method
     synchronized protected void
-    setAuthentication(HTTPCredentialsCache hap)
+    setAuthentication(HTTPCachingProvider hap)
     {
         this.sessionClient.setCredentialsProvider(hap);
         if(false)
@@ -833,7 +833,7 @@ public class HTTPSession
 
     /*package*/ void invalidate(AuthScope scope)
     {
-        HTTPCredentialsCache.invalidate(scope);
+        HTTPCachingProvider.invalidate(scope);
     }
 
     //////////////////////////////////////////////////
