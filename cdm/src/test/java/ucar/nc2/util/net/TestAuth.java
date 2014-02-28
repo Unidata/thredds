@@ -216,7 +216,7 @@ public class TestAuth extends UnitTestCommon
 
     static AuthDataBasic[] redirecttests = {
         new AuthDataBasic("http://motherlode.ucar.edu:8080/thredds/admin/debug",
-            "dmr", "dmhTDSdmh"),
+            "xxxx", "xxxx"),
     };
 
     @Test
@@ -345,9 +345,9 @@ public class TestAuth extends UnitTestCommon
         }
     }
 
-    @Test
+
     public void
-    testRedirect() throws Exception
+    XtestRedirect() throws Exception  // not used except for special testing
     {
         System.err.println("*** Testing: Http Basic Password Authorization with redirect");
 
@@ -379,7 +379,7 @@ public class TestAuth extends UnitTestCommon
                 break;
             default:
                 System.err.println("Redirect: Unexpected status = " + status);
-                pass = true; //for now
+                pass = false;
                 break;
             }
             if(pass) {
@@ -400,7 +400,7 @@ public class TestAuth extends UnitTestCommon
                     break;
                 default:
                     System.err.println("Redirect: Unexpected status = " + status);
-                    pass = true; //for now
+                    pass = false;
                     break;
                 }
             }
