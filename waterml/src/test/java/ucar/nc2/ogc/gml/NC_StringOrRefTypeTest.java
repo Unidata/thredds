@@ -21,15 +21,15 @@ import java.net.URISyntaxException;
  * Created by cwardgar on 2014/02/26.
  */
 public class NC_StringOrRefTypeTest {
-    @Test public void init()
+    @Test public void createSamplingFeatureTypeDescription()
             throws URISyntaxException, IOException, NoFactoryFoundException, JAXBException, SAXException {
         File pointFile = new File(getClass().getResource("/ucar/nc2/ogc/singleTimeSeries.ncml").toURI());
         FeatureDatasetPoint fdPoint = PointUtil.openPointDataset(FeatureType.STATION, pointFile.getAbsolutePath());
         try {
-            StationTimeSeriesFeature stationFeat = TestUtil.getSingleStationFeatureFromDataset(fdPoint);
+            StationTimeSeriesFeature stationFeat = PointUtil.getSingleStationFeatureFromDataset(fdPoint);
 
-            StringOrRefType stringOrRefType = new NC_StringOrRefType(stationFeat);
-            Object jaxbElement = new net.opengis.gml.v_3_2_1.ObjectFactory().createDescription(stringOrRefType);
+            StringOrRefType description = NC_StringOrRefType.createSamplingFeatureTypeDescription(stationFeat);
+            Object jaxbElement = new net.opengis.gml.v_3_2_1.ObjectFactory().createDescription(description);
 
             Marshaller marshaller = TestUtil.createMarshaller(ObjectFactory.class);
             marshaller.marshal(jaxbElement, System.out);

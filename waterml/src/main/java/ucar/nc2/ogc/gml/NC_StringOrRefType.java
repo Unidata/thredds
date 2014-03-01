@@ -9,10 +9,17 @@ import ucar.nc2.ft.StationTimeSeriesFeature;
  *
  * Created by cwardgar on 2014/02/26.
  */
-public class NC_StringOrRefType extends StringOrRefType {
-    public NC_StringOrRefType(StationTimeSeriesFeature stationFeat) {
+public abstract class NC_StringOrRefType {
+    private final static net.opengis.gml.v_3_2_1.ObjectFactory gmlObjectFactory =
+            new net.opengis.gml.v_3_2_1.ObjectFactory();
+
+    public static StringOrRefType createSamplingFeatureTypeDescription(StationTimeSeriesFeature stationFeat) {
         // OGC 12-031r2 calls for station_name.long_name, but getDescription() is actually the data we'd want to
         // set here.
-        setValue(stationFeat.getDescription());
+        StringOrRefType description = gmlObjectFactory.createStringOrRefType();
+        description.setValue(stationFeat.getDescription());
+        return description;
     }
+
+    private NC_StringOrRefType() { }
 }

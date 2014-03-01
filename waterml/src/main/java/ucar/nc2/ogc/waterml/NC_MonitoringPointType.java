@@ -2,10 +2,12 @@ package ucar.nc2.ogc.waterml;
 
 import net.opengis.gml.v_3_2_1.CodeWithAuthorityType;
 import net.opengis.gml.v_3_2_1.StringOrRefType;
+import net.opengis.spatialsampling.v_2_0_0.Shape;
 import net.opengis.waterml.v_2_0_1.MonitoringPointType;
 import ucar.nc2.ft.StationTimeSeriesFeature;
 import ucar.nc2.ogc.gml.NC_CodeWithAuthorityType;
 import ucar.nc2.ogc.gml.NC_StringOrRefType;
+import ucar.nc2.ogc.spatialsampling.NC_Shape;
 
 /**
  * In OGC 12-031r2, used at:
@@ -14,20 +16,33 @@ import ucar.nc2.ogc.gml.NC_StringOrRefType;
  *
  * Created by cwardgar on 2014/02/26.
  */
-public class NC_MonitoringPointType extends MonitoringPointType {
-    public NC_MonitoringPointType(StationTimeSeriesFeature stationFeat) {
-        // om:OM_Observation/om:featureOfInterest/sam:SF_SamplingFeatureType/gml:id
-        String id = super.getClass().getSimpleName() + "." + "1";
-        setId(id);
+public abstract class NC_MonitoringPointType {
+    private final static net.opengis.waterml.v_2_0_1.ObjectFactory watermlObjectFactory =
+            new net.opengis.waterml.v_2_0_1.ObjectFactory();
 
-        // om:OM_Observation/om:featureOfInterest/sam:SF_SamplingFeatureType/gml:identifier
-        CodeWithAuthorityType identifier = new NC_CodeWithAuthorityType(stationFeat);
-        setIdentifier(identifier);
+    public static MonitoringPointType createMonitoringPointType(StationTimeSeriesFeature stationFeat) {
+        MonitoringPointType monitoringPointType = watermlObjectFactory.createMonitoringPointType();
 
-        // om:OM_Observation/om:featureOfInterest/sam:SF_SamplingFeatureType/gml:description
-        StringOrRefType description = new NC_StringOrRefType(stationFeat);
-        if (description.getValue() != null) {
-            setDescription(description);
+        // gml:id
+        String id = MonitoringPointType.class.getSimpleName() + "." + "1";
+        monitoringPointType.setId(id);
+
+        // gml:identifier
+        CodeWithAuthorityType identifier = NC_CodeWithAuthorityType.createSamplingFeatureTypeIdentifier(stationFeat);
+        monitoringPointType.setIdentifier(identifier);
+
+        // gml:description
+        StringOrRefType description = NC_StringOrRefType.createSamplingFeatureTypeDescription(stationFeat);
+        if (description.getValue() != null && !description.getValue().isEmpty()) {
+            monitoringPointType.setDescription(description);
         }
+
+        // sams:shape
+        Shape shape = NC_Shape.createSpatialSamplingFeatureShape(stationFeat);
+        monitoringPointType.setShape(shape);
+
+        return monitoringPointType;
     }
+
+    private NC_MonitoringPointType() { }
 }

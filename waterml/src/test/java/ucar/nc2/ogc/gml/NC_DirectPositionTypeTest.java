@@ -1,6 +1,6 @@
-package ucar.nc2.ogc.waterml;
+package ucar.nc2.ogc.gml;
 
-import net.opengis.waterml.v_2_0_1.MonitoringPointType;
+import net.opengis.gml.v_3_2_1.DirectPositionType;
 import net.opengis.waterml.v_2_0_1.ObjectFactory;
 import org.junit.Test;
 import org.xml.sax.SAXException;
@@ -18,18 +18,18 @@ import java.io.IOException;
 import java.net.URISyntaxException;
 
 /**
- * Created by cwardgar on 2014/02/26.
+ * Created by cwardgar on 2014/02/28.
  */
-public class NC_MonitoringPointTypeTest {
-    @Test public void createMonitoringPointType()
+public class NC_DirectPositionTypeTest {
+    @Test public void createShapePointPos()
             throws URISyntaxException, IOException, NoFactoryFoundException, JAXBException, SAXException {
         File pointFile = new File(getClass().getResource("/ucar/nc2/ogc/singleTimeSeries.ncml").toURI());
         FeatureDatasetPoint fdPoint = PointUtil.openPointDataset(FeatureType.STATION, pointFile.getAbsolutePath());
         try {
             StationTimeSeriesFeature stationFeat = PointUtil.getSingleStationFeatureFromDataset(fdPoint);
 
-            MonitoringPointType monitoringPointType = NC_MonitoringPointType.createMonitoringPointType(stationFeat);
-            Object jaxbElement = new ObjectFactory().createMonitoringPoint(monitoringPointType);
+            DirectPositionType pos = NC_DirectPositionType.createShapePointPos(stationFeat);
+            Object jaxbElement = new net.opengis.gml.v_3_2_1.ObjectFactory().createPos(pos);
 
             Marshaller marshaller = TestUtil.createMarshaller(ObjectFactory.class);
             marshaller.marshal(jaxbElement, System.out);

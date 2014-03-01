@@ -21,15 +21,16 @@ import java.net.URISyntaxException;
  * Created by cwardgar on 2014/02/26.
  */
 public class NC_CodeWithAuthorityTypeTest {
-    @Test public void init()
+    @Test public void createSamplingFeatureTypeIdentifier()
             throws URISyntaxException, IOException, NoFactoryFoundException, JAXBException, SAXException {
         File pointFile = new File(getClass().getResource("/ucar/nc2/ogc/singleTimeSeries.ncml").toURI());
         FeatureDatasetPoint fdPoint = PointUtil.openPointDataset(FeatureType.STATION, pointFile.getAbsolutePath());
         try {
-            StationTimeSeriesFeature stationFeat = TestUtil.getSingleStationFeatureFromDataset(fdPoint);
+            StationTimeSeriesFeature stationFeat = PointUtil.getSingleStationFeatureFromDataset(fdPoint);
 
-            CodeWithAuthorityType codeWithAuthorityType = new NC_CodeWithAuthorityType(stationFeat);
-            Object jaxbElement = new net.opengis.gml.v_3_2_1.ObjectFactory().createIdentifier(codeWithAuthorityType);
+            CodeWithAuthorityType identifier =
+                    NC_CodeWithAuthorityType.createSamplingFeatureTypeIdentifier(stationFeat);
+            Object jaxbElement = new net.opengis.gml.v_3_2_1.ObjectFactory().createIdentifier(identifier);
 
             Marshaller marshaller = TestUtil.createMarshaller(ObjectFactory.class);
             marshaller.marshal(jaxbElement, System.out);
