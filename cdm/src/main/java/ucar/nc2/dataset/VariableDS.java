@@ -165,20 +165,20 @@ public class VariableDS extends ucar.nc2.Variable implements VariableEnhanced, E
     this.orgVar = orgVar;
     this.orgDataType = orgVar.getDataType();
 
-    if (orgVar instanceof VariableDS) {
+    /* if (orgVar instanceof VariableDS) {
       VariableDS ncVarDS = (VariableDS) orgVar;
       this.enhanceProxy = ncVarDS.enhanceProxy;
       this.scaleMissingProxy = ncVarDS.scaleMissingProxy;
       this.enhanceMode = ncVarDS.enhanceMode;
 
-    } else {
+    } else { */
       this.enhanceProxy = new EnhancementsImpl( this);
       if (enhance) {
         enhance(NetcdfDataset.getDefaultEnhanceMode());
       } else {
         this.scaleMissingProxy = new EnhanceScaleMissingImpl();
       }
-    }
+    // }
   }
 
   /**

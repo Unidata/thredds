@@ -108,6 +108,20 @@ public class CompareNetcdf2 {
     long took = System.currentTimeMillis() - start;
     f.format(" Time to compare = %d msecs%n", took);
 
+        // coordinate systems
+    if (org instanceof NetcdfDataset && copy instanceof NetcdfDataset) {
+      NetcdfDataset orgds = (NetcdfDataset) org;
+      NetcdfDataset copyds = (NetcdfDataset) copy;
+
+      List matches = new ArrayList();
+      ok &= checkAll("Dataset CS:", orgds.getCoordinateSystems(), copyds.getCoordinateSystems(), matches);
+      for (int i = 0; i < matches.size(); i += 2) {
+        CoordinateSystem orgCs = (CoordinateSystem) matches.get(i);
+        CoordinateSystem copyCs = (CoordinateSystem) matches.get(i + 1);
+        ok &= compareCoordinateSystem(orgCs, copyCs, filter);
+      }
+    }
+
     return ok;
   }
 
@@ -117,7 +131,7 @@ public class CompareNetcdf2 {
     boolean ok = true;
 
     for (Variable orgV : org.getVariables()) {
-      if (orgV.isCoordinateVariable()) continue;
+      //if (orgV.isCoordinateVariable()) continue;
 
       Variable copyVar = copy.findVariable(orgV.getShortName());
       if (copyVar == null) {
@@ -130,7 +144,7 @@ public class CompareNetcdf2 {
 
     f.format("%n");
     for (Variable orgV : copy.getVariables()) {
-      if (orgV.isCoordinateVariable()) continue;
+      //if (orgV.isCoordinateVariable()) continue;
       Variable copyVar = org.findVariable(orgV.getShortName());
       if (copyVar == null) {
         f.format(" MISSING '%s' in 1st file%n", orgV.getFullName());
@@ -234,13 +248,6 @@ public class CompareNetcdf2 {
     // attributes
     ok &= checkAttributes(org, org.getAttributes(), copy.getAttributes(), filter);
 
-    // coord sys
-    if ((org instanceof VariableEnhanced) && (copy instanceof VariableEnhanced)) {
-      VariableEnhanced orge = (VariableEnhanced) org;
-      VariableEnhanced copye = (VariableEnhanced) copy;
-      ok &= checkAll(orge.getFullName(), orge.getCoordinateSystems(), copye.getCoordinateSystems(), null);
-    }
-
     // data !!
     if (compareData) {
       try {
@@ -273,12 +280,13 @@ public class CompareNetcdf2 {
       }
     }
 
-    if (org instanceof VariableDS && copy instanceof VariableDS) {
-      VariableDS orgds = (VariableDS) org;
-      VariableDS copyds = (VariableDS) copy;
+    // coordinate systems
+    if (org instanceof VariableEnhanced && copy instanceof VariableEnhanced) {
+      VariableEnhanced orgds = (VariableEnhanced) org;
+      VariableEnhanced copyds = (VariableEnhanced) copy;
 
       List matches = new ArrayList();
-      ok &= checkAll(orgds.getNameAndDimensions(), orgds.getCoordinateSystems(), copyds.getCoordinateSystems(), matches);
+      ok &= checkAll(orgds.getFullName(), orgds.getCoordinateSystems(), copyds.getCoordinateSystems(), matches);
       for (int i = 0; i < matches.size(); i += 2) {
         CoordinateSystem orgCs = (CoordinateSystem) matches.get(i);
         CoordinateSystem copyCs = (CoordinateSystem) matches.get(i + 1);
