@@ -55,6 +55,7 @@ import ucar.httpclient.HTTPException;
 import ucar.httpclient.HTTPFactory;
 import ucar.httpclient.HTTPMethod;
 import ucar.httpclient.HTTPSession;
+import ucar.unidata.io.RandomAccessFile;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -68,6 +69,8 @@ import java.util.*;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicBoolean;
+
+import static org.apache.http.auth.AuthScope.*;
 
 /**
  * Describe
@@ -152,8 +155,9 @@ public class Tdm {
     servers = new ArrayList<>(serverNames.length);
     for (String name : serverNames) {
       HTTPSession session = new HTTPSession(name);
+      // AuthScope scope = new AuthScope(ANY_HOST, -1, ANY_REALM, "Digest");
       session.setCredentialsProvider(new CredentialsProvider() {
-         public Credentials getCredentials(AuthScope scope) //AuthScheme authScheme, String s, int i, boolean b) throws CredentialsNotAvailableException {
+         public Credentials getCredentials(AuthScope scope)
          {
            //System.out.printf("getCredentials called %s %s%n", user, pass);
            return new UsernamePasswordCredentials(user, pass);
@@ -308,6 +312,7 @@ public class Tdm {
       try {
         Formatter errlog = new Formatter();
 
+        System.out.printf("updateGribCollection %s%n", config.name);
         boolean changed = GribCdmIndex.updateGribCollection(config, updateType, logger);
 
         logger.debug("{} {} changed {}", CalendarDate.present(), config.name, changed);
@@ -329,28 +334,41 @@ public class Tdm {
           logger.warn("Listener InUse should have been set");
       }
 
+      List<String> openFiles = RandomAccessFile.getOpenFiles();
+      if (openFiles.size() > 0) {
+        System.out.printf("Open Files%n");
+        for (String filename : RandomAccessFile.getOpenFiles()) {
+          System.out.printf("  %s%n", filename);
+        }
+        System.out.printf("End Open Files%n");
+      }
+
     }
 
     private void sendTriggers(String path, Formatter f) {
       for (Server server : servers) {
         String url = server.name + path;
-        logger.info("send trigger to {}", url);
         HTTPMethod m = null;
         try {
           m = HTTPFactory.Get(server.session, url);
           int status = m.execute();
           String statuss = m.getResponseAsString();
           f.format(" trigger %s status = %d (%s)%n", url, status, statuss);
+          if (status == 200)
+            logger.info("send trigger to {} status = {}", url, status);
+          else
+            logger.warn("FAIL send trigger to {} status = {}", url, status);
 
         } catch (HTTPException e) {
           Throwable cause = e.getCause();
           if (cause instanceof ConnectException) {
-            logger.info("server {} not running", server.name);
+            logger.warn("server {} not running", server.name);
           } else {
             ByteArrayOutputStream bos = new ByteArrayOutputStream(10000);
             e.printStackTrace(new PrintStream(bos));
             f.format("%s == %s", url, bos.toString());
             e.printStackTrace();
+            logger.error("FAIL send trigger to " + url + " failed", cause);
           }
 
         } finally {
@@ -432,16 +450,22 @@ public class Tdm {
     Map<String, String> aliases = (Map<String, String> ) springContext.getBean("dataRootLocationAliasExpanders");
     List<PathAliasReplacement> aliasExpanders = PathAliasReplacementImpl.makePathAliasReplacements(aliases);
     driver.setPathAliasReplacements( aliasExpanders);
+    CollectionUpdater.INSTANCE.setTdm(true);
 
-    //RandomAccessFile.setDebugLeaks(true);
+    String contentDir = System.getProperty("tds.content.root.path");
+    if (contentDir == null)  contentDir = "../content";
+    driver.setContentDir(contentDir);
+
+    RandomAccessFile.setDebugLeaks(true);
     HTTPSession.setGlobalUserAgent("TDM v4.5");
     // GribCollection.getDiskCache2().setNeverUseCache(true);
     String logLevel = "INFO";
 
+    // /opt/jdk/bin/java -d64 -Xmx3g -jar -Dtds.content.root.path=/opt/tds-dev/content tdm-4.5.jar -cred tdm:trigger -tds "http://thredds-dev.unidata.ucar.edu/"
     for (int i = 0; i < args.length; i++) {
       if (args[i].equalsIgnoreCase("-help")) {
-        System.out.printf("usage: <Java> <Java_OPTS> -Dtds.content.root.path=<contentDir> [-catalog <cat>] [-tds <tdsServer>] [-cred <user:passwd>] [-showOnly]  [-forceOnStartup]%n");
-        System.out.printf("example: /opt/jdk/bin/java -d64 -Xmx8g -server -jar tdm-4.3.jar -Dtds.content.root.path=/my/content -cred user:passwd%n");
+        System.out.printf("usage: <Java> <Java_OPTS> -Dtds.content.root.path=<contentDir> [-catalog <cat>] [-tds <tdsServer>] [-cred <user:passwd>] [-showOnly] [-forceOnStartup]%n");
+        System.out.printf("example: /opt/jdk/bin/java -Xmx3g -jar tdm-4.5.jar -Dtds.content.root.path=/my/content -tds http://thredds-dev.unidata.ucar.edu/%n");
         System.exit(0);
       }
 
@@ -464,10 +488,11 @@ public class Tdm {
         } else {
           String[] tdss = tds.split(","); // comma separated
           driver.setServerNames( tdss);
+          driver.sendTriggers = true;
         }
       }
-
-      else if (args[i].equalsIgnoreCase("-cred")) {  // LOOK could be user:password@server, and we parse the user:password
+                                                      // scheme://username:password@domain:port/path?query_string#fragment_id
+      else if (args[i].equalsIgnoreCase("-cred")) {  // LOOK could be http://user:password@server
         String cred = args[i + 1];
         String[] split = cred.split(":");
         driver.user = split[0];
@@ -492,14 +517,25 @@ public class Tdm {
       else if (args[i].equalsIgnoreCase("-forceOnStartup")) {
         driver.setForceOnStartup(true);
       }
-
     }
 
-    CollectionUpdater.INSTANCE.setTdm(true);
-
-    String contentDir = System.getProperty("tds.content.root.path");
-    if (contentDir == null)  contentDir = "../content";
-    driver.setContentDir(contentDir);
+    if (driver.pass == null && driver.sendTriggers) {
+      Scanner scanner = new Scanner( System.in );
+      String passw = null;
+      while (true) {
+        System.out.printf("%nEnter password for tds trigger: ");
+        passw = scanner.nextLine();
+        System.out.printf( "%nPassword = '%s' OK (Y/N)?", passw );
+        String ok = scanner.nextLine();
+        if (ok.equalsIgnoreCase("Y")) break;
+      }
+      if (passw != null) {
+        driver.pass = passw;
+        driver.user = "tdm";
+      } else {
+        driver.sendTriggers = false;
+      }
+    }
 
     if (driver.init()) {
       driver.start();
