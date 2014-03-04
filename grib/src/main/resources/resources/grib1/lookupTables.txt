@@ -3,6 +3,9 @@
   0:    -1:    -1:   dss/WMO_GRIB1.xml
   7:    -1:   128:   ncep/ncepGrib1-128.xml
   7:    -1:   129:   ncep/ncepGrib1-129.xml
+  7:     4:   130:   ncep/ncepGrib1-7-4-130.xml
+  7:    12:   130:   ncep/ncepGrib1-7-12-130.xml
+  7:   138:   130:   ncep/ncepGrib1-7-138-130.xml
   7:    -1:   130:   ncep/ncepGrib1-130.xml
   7:    -1:   131:   ncep/ncepGrib1-131.xml
   7:    -1:   133:   ncep/ncepGrib1-133.xml
