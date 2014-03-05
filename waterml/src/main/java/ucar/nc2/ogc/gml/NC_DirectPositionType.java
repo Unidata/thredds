@@ -16,9 +16,9 @@ public abstract class NC_DirectPositionType {
     public static DirectPositionType createShapePointPos(StationTimeSeriesFeature stationFeat) {
         DirectPositionType pos = gmlObjectFactory.createDirectPositionType();
 
-        pos.getValue().add(stationFeat.getLatitude());   // gml:pos[0]
-        pos.getValue().add(stationFeat.getLongitude());  // gml:pos[1]
-        pos.getValue().add(stationFeat.getAltitude());   // gml:pos[2]
+        pos.getValues().add(stationFeat.getLatitude());   // gml:pos[0]
+        pos.getValues().add(stationFeat.getLongitude());  // gml:pos[1]
+        pos.getValues().add(stationFeat.getAltitude());   // gml:pos[2]
 
         return pos;
     }

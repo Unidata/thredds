@@ -1,6 +1,5 @@
 package ucar.nc2.ogc.spatialsampling;
 
-import net.opengis.gml.v_3_2_1.AbstractGeometryType;
 import net.opengis.gml.v_3_2_1.PointType;
 import net.opengis.spatialsampling.v_2_0_0.Shape;
 import ucar.nc2.ft.StationTimeSeriesFeature;
@@ -24,7 +23,7 @@ public abstract class NC_Shape {
         Shape shape = spatialSamplingObjectFactory.createShape();
 
         PointType point = NC_PointType.createShapePoint(stationFeat);
-        JAXBElement<AbstractGeometryType> pointElem = gmlObjectFactory.createAbstractGeometry(point);
+        JAXBElement<PointType> pointElem = gmlObjectFactory.createPoint(point);
         shape.setAbstractGeometry(pointElem);
 
         return shape;
