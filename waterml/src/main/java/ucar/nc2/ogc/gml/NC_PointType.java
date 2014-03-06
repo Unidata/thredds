@@ -3,6 +3,7 @@ package ucar.nc2.ogc.gml;
 import net.opengis.gml.v_3_2_1.DirectPositionType;
 import net.opengis.gml.v_3_2_1.PointType;
 import ucar.nc2.ft.StationTimeSeriesFeature;
+import ucar.nc2.ogc.Factories;
 
 /**
  * In OGC 12-031r2, used at:
@@ -11,11 +12,8 @@ import ucar.nc2.ft.StationTimeSeriesFeature;
  * Created by cwardgar on 2014/02/28.
  */
 public abstract class NC_PointType {
-    private final static net.opengis.gml.v_3_2_1.ObjectFactory gmlObjectFactory =
-            new net.opengis.gml.v_3_2_1.ObjectFactory();
-
     public static PointType createShapePoint(StationTimeSeriesFeature stationFeat) {
-        PointType point = gmlObjectFactory.createPointType();
+        PointType point = Factories.GML.createPointType();
 
         // gml:id
         String id = PointType.class.getSimpleName() + "." + "1";

@@ -5,6 +5,7 @@ import net.opengis.gml.v_3_2_1.StringOrRefType;
 import net.opengis.spatialsampling.v_2_0_0.Shape;
 import net.opengis.waterml.v_2_0_1.MonitoringPointType;
 import ucar.nc2.ft.StationTimeSeriesFeature;
+import ucar.nc2.ogc.Factories;
 import ucar.nc2.ogc.gml.NC_CodeWithAuthorityType;
 import ucar.nc2.ogc.gml.NC_StringOrRefType;
 import ucar.nc2.ogc.spatialsampling.NC_Shape;
@@ -17,11 +18,8 @@ import ucar.nc2.ogc.spatialsampling.NC_Shape;
  * Created by cwardgar on 2014/02/26.
  */
 public abstract class NC_MonitoringPointType {
-    private final static net.opengis.waterml.v_2_0_1.ObjectFactory watermlObjectFactory =
-            new net.opengis.waterml.v_2_0_1.ObjectFactory();
-
     public static MonitoringPointType createMonitoringPointType(StationTimeSeriesFeature stationFeat) {
-        MonitoringPointType monitoringPointType = watermlObjectFactory.createMonitoringPointType();
+        MonitoringPointType monitoringPointType = Factories.WATERML.createMonitoringPointType();
 
         // gml:id
         String id = MonitoringPointType.class.getSimpleName() + "." + "1";
