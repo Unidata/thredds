@@ -19,3 +19,4 @@
  58:    42:     2:   local/af_2.tab
  58:    -1:    -1:   fnmoc/US058MMTA-ALPdoc.pntabs-prodname-masterParameterTableOrdered.GRIB1.Tbl2.xml
  60:   255:     2:   local/wrf_amps.wrf
+173:     4:   130:   ncep/ncepGrib1-173-4-130.xml
