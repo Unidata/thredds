@@ -211,7 +211,7 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
 
         if (config.gribConfig.hasDatasetType(FeatureCollectionConfig.GribDatasetType.Best)) {
           Iterable<GribCollection.GroupGC> groups = ds.getGroups();
-          InvDatasetImpl best = new InvDatasetImpl(this, getDatasetNameBest());
+          InvDatasetImpl best = new InvDatasetImpl(this, getDatasetNameBest(gc.getName()));
           String path = pathStart + "/" + BEST_DATASET;
           best.setUrlPath(path);
           best.tmi.addDocumentation("summary", "Single time dimension: for each forecast time, use GRIB record with smallest offset from reference time");
@@ -242,14 +242,14 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
     }
 
     if (gc instanceof PartitionCollection) {
-      if (config.gribConfig.hasDatasetType(FeatureCollectionConfig.GribDatasetType.LatestFile)) {  // LOOK not right
-        InvDatasetImpl ds = new InvDatasetImpl(this, getLatestFileName());
-        ds.setUrlPath(FILES + "/" + LATEST_DATASET_CATALOG);
+      if (config.gribConfig.hasDatasetType(FeatureCollectionConfig.GribDatasetType.LatestFile) && parentName == null) {  // latest for top only
+        InvDatasetImpl ds = new InvDatasetImpl(this, getDatasetNameLatest(gc.getName()));
+        ds.setUrlPath(LATEST_DATASET_CATALOG);
         // ds.setID(getPath() + "/" + FILES + "/" + LATEST_DATASET_CATALOG);
         ds.setServiceName(LATEST_SERVICE);
         ds.finish();
         result.addDataset(ds);
-        this.addService(InvService.latest);
+        //this.addService(InvService.latest);
       }
 
       PartitionCollection pc =  (PartitionCollection) gc;
@@ -600,57 +600,23 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
     return makeCatalogFiles(catURI, localState, filenames, addLatest);
   } */
 
-/*  @Override
+  @Override
   public InvCatalogImpl makeLatest(String matchPath, String reqPath, URI catURI) {
     StateGrib localState = (StateGrib) checkState();
-
-    GribCollection gc = localState.gribCollection;
-    List<GribCollection.GroupHcs> groups = new ArrayList<GribCollection.GroupHcs>(gc.getGroups());
-
-     //1. files
-     //2. domain1/files
-    String[] paths = matchPath.split("/");
-    if (paths.length < 1) return null;
-
     try {
-      if (isGribCollection || isFilePartition) {
-
-        if ((paths.length == 1) && paths[0].equals(FILES)) {
-          return makeLatestCatalog(gc, groups.get(0), catURI, localState);  // case 1
-        } if ((paths.length == 2) && paths[1].equals(FILES)) {
-          return makeLatestCatalog(gc, gc.findGroupById(paths[0]), catURI, localState); // case 2
-        }
-
-      } else {
-
-        PartitionCollection pc =  (PartitionCollection) localState.gribCollection;
-
-        if ((paths.length == 1) && paths[0].equals(FILES)) {
-          PartitionCollection.Partition p = pc.getPartitionLast();
-          GribCollection pgc = p.getGribCollection();
-          InvCatalogImpl cat = makeLatestCatalog(pgc, groups.get(0), catURI, localState);  // case 1
-          pgc.close();
-          return cat;
-
-         } if ((paths.length == 2) && paths[1].equals(FILES)) {
-           PartitionCollection.Partition p = pc.getPartitionByName(paths[0]);
-           GribCollection pgc = p.getGribCollection();
-           InvCatalogImpl cat =  makeLatestCatalog(pgc, groups.get(0), catURI, localState);  // case 3
-           pgc.close();
-           return cat;
-         }
-      }
-
-    } catch (Exception e) {
-      logger.error("Error making catalog for " + path, e);
+      return makeCatalogFromCollection(catURI, "dunno", localState.gribCollection);
+    } catch (IOException e) {
+      e.printStackTrace();
+    } catch (URISyntaxException e) {
+      e.printStackTrace();
     }
-
     return null;
-  }   */
+  }
 
-    // this catalog lists the individual files comprising a grib collection.
+  /*
+  // this catalog lists the individual files comprising a grib collection.
   // cant use InvDatasetScan because we might have multiple hcs
-/*  private InvCatalogImpl makeLatestCatalog(GribCollection gc, GribCollection.GroupHcs group, URI catURI, State localState) throws IOException {
+  private InvCatalogImpl makeLatestCatalog(GribCollection gc, GribCollection.GroupHcs group, URI catURI, State localState) throws IOException {
 
     InvCatalogImpl parent = (InvCatalogImpl) getParentCatalog();
     InvCatalogImpl result = new InvCatalogImpl(getFullName(), parent.getVersion(), catURI);
@@ -688,7 +654,7 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
 
     result.finish();
     return result;
-  } */
+  }     */
 
   ///////////////////////////////////////////////////////////////////////////
 
@@ -733,11 +699,19 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
 
   //////////////////////////////////////////////////////////////////////////////
 
-  protected String getDatasetNameBest() {
+  protected String getDatasetNameLatest(String gcName) {
+    if (config.gribConfig != null && config.gribConfig.latestNamer != null) {
+      return config.gribConfig.latestNamer;
+    } else {
+      return "Latest Reference Time Collection for "+gcName;
+    }
+  }
+
+  protected String getDatasetNameBest(String gcName) {
     if (config.gribConfig != null && config.gribConfig.bestNamer != null) {
       return config.gribConfig.bestNamer;
     } else {
-      return "Best "+name +" Time Series";
+      return "Best "+gcName +" Time Series";
     }
   }
 

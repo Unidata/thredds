@@ -57,10 +57,8 @@ import ucar.httpclient.HTTPMethod;
 import ucar.httpclient.HTTPSession;
 import ucar.unidata.io.RandomAccessFile;
 
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
-import java.io.PrintStream;
 import java.net.ConnectException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -80,6 +78,7 @@ import static org.apache.http.auth.AuthScope.*;
  */
 public class Tdm {
   private static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger( Tdm.class);
+  private static final boolean debug = true;
 
   private Path contentDir;
   private Path contentThreddsDir;
@@ -310,9 +309,7 @@ public class Tdm {
     @Override
     public void run() {
       try {
-        Formatter errlog = new Formatter();
-
-        System.out.printf("updateGribCollection %s%n", config.name);
+        if (debug) System.out.printf("---------------------%nIndexTask updateGribCollection %s%n", config.name);
         boolean changed = GribCdmIndex.updateGribCollection(config, updateType, logger);
 
         logger.debug("{} {} changed {}", CalendarDate.present(), config.name, changed);
@@ -320,11 +317,8 @@ public class Tdm {
 
         if (changed && config.tdmConfig.triggerOk && sendTriggers) { // send a trigger if enabled
           String path = "thredds/admin/collection/trigger?trigger=never&collection=" + name;
-          sendTriggers(path, errlog);
+          sendTriggers(path);
         }
-        errlog.format("**** Tdm.IndexTask complete %s%n", name);
-        logger.debug("\n------------------------\n{}\n------------------------\n", errlog.toString());
-
       } catch (Throwable e) {
         logger.error("Tdm.IndexTask " + name, e);
 
@@ -345,15 +339,13 @@ public class Tdm {
 
     }
 
-    private void sendTriggers(String path, Formatter f) {
+    private void sendTriggers(String path) {
       for (Server server : servers) {
         String url = server.name + path;
         HTTPMethod m = null;
         try {
           m = HTTPFactory.Get(server.session, url);
           int status = m.execute();
-          String statuss = m.getResponseAsString();
-          f.format(" trigger %s status = %d (%s)%n", url, status, statuss);
           if (status == 200)
             logger.info("send trigger to {} status = {}", url, status);
           else
@@ -364,9 +356,6 @@ public class Tdm {
           if (cause instanceof ConnectException) {
             logger.warn("server {} not running", server.name);
           } else {
-            ByteArrayOutputStream bos = new ByteArrayOutputStream(10000);
-            e.printStackTrace(new PrintStream(bos));
-            f.format("%s == %s", url, bos.toString());
             e.printStackTrace();
             logger.error("FAIL send trigger to " + url + " failed", cause);
           }

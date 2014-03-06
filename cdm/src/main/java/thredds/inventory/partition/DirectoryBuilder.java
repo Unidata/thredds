@@ -196,7 +196,7 @@ public class DirectoryBuilder {
    * Scan for subdirectories, make each into a DirectoryBuilder and add as a child
    */
   private void scanForChildren() {
-    if (debug) System.out.printf("DirectoryBuilder.scanForChildren %s ", dir);
+    if (debug) System.out.printf(" DirectoryBuilder.scanForChildren %s ", dir);
 
     int count = 0;
     try (DirectoryStream<Path> ds = Files.newDirectoryStream(dir)) {
@@ -211,7 +211,7 @@ public class DirectoryBuilder {
     } catch (IOException e) {
       e.printStackTrace();
     }
-    if (debug) System.out.printf("%d%n", count);
+    if (debug) System.out.printf("done=%d%n", count);
     childrenConstructed = true;
   }
 

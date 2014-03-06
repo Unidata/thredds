@@ -18,7 +18,6 @@ import java.util.Map;
  * A LoggerFactory that uses log4j to create and configure a special RollingFileAppender
  * specific to this name.
  * used by InvDatasetFeatureCollection to create a log for each feature collection.
- * This duplicates thredds.util.LoggerFactorySpecial in tds module
  * all wrong see http://logging.apache.org/log4j/2.x/manual/extending.html
  *
  * @author caron
