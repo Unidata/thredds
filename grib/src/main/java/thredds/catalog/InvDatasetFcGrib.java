@@ -157,21 +157,22 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
 
   private InvCatalogImpl makeCatalogFromCollection(URI catURI, String parentName, GribCollection gc) throws IOException, URISyntaxException {
     InvCatalogImpl parentCatalog = (InvCatalogImpl) getParentCatalog();
-    InvCatalogImpl mainCatalog = new InvCatalogImpl(getName(), parentCatalog.getVersion(), catURI);
+    InvCatalogImpl result = new InvCatalogImpl(gc.getName(), parentCatalog.getVersion(), catURI);  // LOOK is catURL right ??
 
     if (config.gribConfig.hasDatasetType(FeatureCollectionConfig.GribDatasetType.LatestFile))
-      mainCatalog.addService(InvService.latest);
-    mainCatalog.addDataset(makeDatasetFromCollection(parentName, gc));
-    mainCatalog.addService(virtualService);
-    mainCatalog.finish();
+      result.addService(InvService.latest);
+    result.addDataset(makeDatasetFromCollection(parentName, gc));
+    result.addService(virtualService);
+    result.finish();
 
-    return mainCatalog;
+    return result;
   }
 
   private InvDatasetImpl makeDatasetFromCollection( String parentName, GribCollection gc) {
     // StateGrib localState = (StateGrib) state;
 
     InvDatasetImpl result = new InvDatasetImpl(this);
+    result.setName(gc.getName());
     result.setParent(null);
     InvDatasetImpl parent = (InvDatasetImpl) this.getParent();
     if (parent != null)

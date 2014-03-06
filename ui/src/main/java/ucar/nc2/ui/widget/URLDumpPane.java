@@ -36,6 +36,7 @@ package ucar.nc2.ui.widget;
 import org.apache.http.entity.StringEntity;
 import ucar.httpclient.*;
 import org.apache.http.Header;
+import ucar.nc2.constants.CDM;
 import ucar.nc2.util.IO;
 import ucar.unidata.util.Urlencoded;
 import ucar.util.prefs.*;
@@ -317,7 +318,7 @@ public class URLDumpPane extends TextHistoryPane {
         appendLine("\nResponseBody---------------");
 
         String charset = m.getResponseCharSet();
-        if (charset == null) charset = "UTF-8";
+        if (charset == null) charset = CDM.UTF8;
         String contents = null;
 
         // check for deflate and gzip compression
@@ -365,7 +366,7 @@ public class URLDumpPane extends TextHistoryPane {
     appendLine(title);
     for (int i = 0; i < heads.length; i++) {
       Header head = heads[i];
-      append("  " + head.toString());
+      append("  " + head.toString() +"\n");
     }
   }
 

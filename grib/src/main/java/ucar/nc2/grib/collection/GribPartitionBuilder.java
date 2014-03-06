@@ -112,7 +112,8 @@ public abstract class GribPartitionBuilder  {
         result.addPartition(dcmp);
       }
 
-      List<PartitionCollection.Partition> bad = new ArrayList<>();
+      // LOOK CLOSE cant afford to read in all partitions at once !
+      /* List<PartitionCollection.Partition> bad = new ArrayList<>();
       for (PartitionCollection.Partition tpp : result.getPartitions()) {
         try {
           tpp.gc = tpp.makeGribCollection(forceChildren);  // here we read in all collections at once. can we avoid this?
@@ -125,7 +126,8 @@ public abstract class GribPartitionBuilder  {
 
       // remove ones that failed
       for (PartitionCollection.Partition tpp : bad)
-        result.removePartition(tpp);
+        result.removePartition(tpp);  */
+
       result.sortPartitions(); // after this cannot change
 
       // choose the "canonical" partition, aka prototype
@@ -140,14 +142,16 @@ public abstract class GribPartitionBuilder  {
       PartitionCollection.Partition canon = result.getPartition(idx);
       logger.debug("     Using canonical partition {}", canon.getDcm().getCollectionName());
 
-      // copy info from canon gribCollection to result partitionCollection
-      result.copyInfo(canon.gc);
-      result.isPartitionOfPartitions = (canon.gc instanceof PartitionCollection);
+      try (GribCollection gc = canon.makeGribCollection(forceChildren)) {
+        // copy info from canon gribCollection to result partitionCollection
+        result.copyInfo(gc);
+        result.isPartitionOfPartitions = (gc instanceof PartitionCollection);
+      }
 
       // check consistency across vert and ens coords
       // create partitioned variables
       // partition index is used - do not resort partitions
-      PartitionCollection.Dataset ds2D = makeDataset2D(errlog);
+      PartitionCollection.Dataset ds2D = makeDataset2D(forceChildren, errlog);
       if (ds2D == null) {
         errlog.format(" ERR makeDataset2D failed, index not written on %s%n", result.getName());
         logger.error(" makeDataset2D failed, index not written on {} errors = \n{}", result.getName(), errlog.toString());
@@ -166,6 +170,7 @@ public abstract class GribPartitionBuilder  {
       // close open gc's
       for (PartitionCollection.Partition tpp : result.getPartitions()) {
         tpp.gc.close();
+        tpp.gc = null;
       }
     }
 
@@ -202,60 +207,56 @@ public abstract class GribPartitionBuilder  {
     }
   }
 
-  // a list of unique groups across all partitions
-  // as well as component groups for each group
-  private List<GroupPartitions> makeGroupPartitions(PartitionCollection.Dataset ds2D, int npart) throws IOException {
-    Map<Integer, GroupPartitions> groupMap = new HashMap<>(40);  // gdsHash, GroupPartition
-    int countPartition = 0;
-    for (PartitionCollection.Partition tpp : result.getPartitions()) {
-      GribCollection gc = tpp.gc;
-      GribCollection.Dataset ds2dp = gc.getDatasetCanonical(); // the twoD or GC dataset
-
-      int groupIdx = 0;
-      for (GribCollection.GroupGC g : ds2dp.groups) { // for each group in the partition
-        GroupPartitions gs = groupMap.get(g.getGdsHash());
-        if (gs == null) {
-          gs = new GroupPartitions(ds2D.addGroupCopy(g), npart);
-          groupMap.put(g.getGdsHash(), gs);
-        }
-        gs.componentGroups[countPartition] = g;
-        gs.componentGroupIndex[countPartition] = groupIdx++;
-      }
-      countPartition++;
-    }
-    return new ArrayList<>(groupMap.values());
-  }
-
-  private PartitionCollection.Dataset makeDataset2D(Formatter f) throws IOException {
+  private PartitionCollection.Dataset makeDataset2D(CollectionUpdateType forceChildren, Formatter f) throws IOException {
     FeatureCollectionConfig config = (FeatureCollectionConfig) partitionManager.getAuxInfo(FeatureCollectionConfig.AUX_CONFIG);
     FeatureCollectionConfig.GribIntvFilter intvMap = (config != null) ? config.gribConfig.intvFilter : null;
 
     PartitionCollection.Dataset ds2D = result.makeDataset(GribCollection.Type.TwoD);
 
+    // make a list of unique groups across all partitions as well as component groups for each group
     int npart = result.getPartitionSize();
-    List<GroupPartitions> groupPartitions = makeGroupPartitions(ds2D, npart);
-
-        // make a complete set of runtimes
+    Map<Integer, GroupPartitions> groupMap = new HashMap<>(40);  // gdsHash, GroupPartition
     CoordinateBuilder runtimeAllBuilder = new CoordinateRuntime.Builder2();
+    int countPartition = 0;
     for (PartitionCollection.Partition tpp : result.getPartitions()) {
-      GribCollection gc = tpp.gc;
-      CoordinateRuntime partRuntime = gc.getMasterRuntime();
-      runtimeAllBuilder.addAll(partRuntime);
-    }
+      try (GribCollection gc = tpp.makeGribCollection(forceChildren)) {
+      // LOOK CLOSE GribCollection gc = tpp.makeGribCollection(forceChildren); CLOSE
+        tpp.gc = gc;
+        CoordinateRuntime partRuntime = gc.getMasterRuntime();
+        runtimeAllBuilder.addAll(partRuntime);  // also make a complete set of runtimes
+
+        GribCollection.Dataset ds2dp = gc.getDatasetCanonical(); // the twoD or GC dataset
+
+        int groupIdx = 0;
+        for (GribCollection.GroupGC g : ds2dp.groups) { // for each group in the partition
+          GroupPartitions gs = groupMap.get(g.getGdsHash());
+          if (gs == null) {
+            gs = new GroupPartitions(ds2D.addGroupCopy(g), npart);
+            groupMap.put(g.getGdsHash(), gs);
+          }
+          gs.componentGroups[countPartition] = g;
+          gs.componentGroupIndex[countPartition] = groupIdx++;
+        }
+      } // close the gc
+      countPartition++;
+    } // loop over partition
+    List<GroupPartitions> groupPartitions = new ArrayList<>(groupMap.values());
     result.masterRuntime = (CoordinateRuntime) runtimeAllBuilder.finish();
 
     // for each run, which partition ??
     result.run2part = new int[result.masterRuntime.getSize()];
     int partIdx = 0;
     for (PartitionCollection.Partition tpp : result.getPartitions()) {
-      GribCollection gc = tpp.gc;
-      CoordinateRuntime partRuntime = gc.getMasterRuntime();
-      for (Object val : partRuntime.getValues()) {
-        int idx = result.masterRuntime.getIndex(val);
-        result.run2part[idx] = partIdx;     // note that later partitions will override earlier if they have the same runtime
-      }
+      try (GribCollection gc = tpp.makeGribCollection(forceChildren)) {
+        // LOOK CLOSE GribCollection gc = tpp.gc;
+        CoordinateRuntime partRuntime = gc.getMasterRuntime();
+        for (Object val : partRuntime.getValues()) {
+          int idx = result.masterRuntime.getIndex(val);
+          result.run2part[idx] = partIdx;     // note that later partitions will override earlier if they have the same runtime
+        }
+      } // close gc
       partIdx++;
-    }
+    } // loop over partition
 
      // do each group
     for (GroupPartitions gp : groupPartitions) {
@@ -367,7 +368,7 @@ public abstract class GribPartitionBuilder  {
     CoordinateTwoTimer twot = new CoordinateTwoTimer(cr.getSize(), ntimes);
     viResult.twot = twot;
 
-    if (isDense) {
+    if (isDense) {  // LOOK dense is currently not working
       Map<Object, Integer> ctMap = new HashMap<>(2*ct.getSize());  // time coord val -> index in ct
       for (int i=0; i<ct.getSize(); i++) ctMap.put(ct.getValue(i), i);
 

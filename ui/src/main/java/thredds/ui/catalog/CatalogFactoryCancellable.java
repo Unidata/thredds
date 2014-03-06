@@ -108,8 +108,7 @@ public class CatalogFactoryCancellable extends InvCatalogFactory {
 
     if (openTask.catalog.hasFatalError()) {
       String catalogName = openTask.catalog.getName();
-      javax.swing.JOptionPane.showMessageDialog(null, "Catalog Read Failed on " + catalogName +
-              "\n" + buff.toString());
+      javax.swing.JOptionPane.showMessageDialog(null, "Catalog Read Failed on " + catalogName + "\n" + buff.toString());
       callback.failed();
       return;
     }

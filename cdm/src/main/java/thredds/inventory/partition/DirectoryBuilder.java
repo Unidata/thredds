@@ -148,7 +148,7 @@ public class DirectoryBuilder {
   public List<DirectoryBuilder> constructChildren(IndexReader indexReader, CollectionUpdateType forceCollection) throws IOException {
     if (childrenConstructed) return children;
 
-    if (index != null && forceCollection != CollectionUpdateType.always) { // always means you must scan anew
+    if (index != null && forceCollection == CollectionUpdateType.nocheck) { // use index if it exists
       childrenConstructed = true;  // otherwise we are good
       if (!indexReader.readChildren(index, new AddChild())) {
         partitionStatus =  PartitionStatus.isLeaf;

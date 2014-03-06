@@ -46,7 +46,7 @@ public enum CollectionUpdater {
       scheduler = StdSchedulerFactory.getDefaultScheduler();
       scheduler.start();
       // scheduler.getListenerManager().addSchedulerListener(new MySchedListener());
-    } catch (SchedulerException e) {
+    } catch (Throwable e) {
       failed = true;
       throw new RuntimeException("quartz scheduler failed to initialize", e);
     }
@@ -55,79 +55,6 @@ public enum CollectionUpdater {
   public org.quartz.Scheduler getScheduler() {
     return scheduler;
   }
-
-  /* private class MySchedListener extends SchedulerListenerSupport {
-
-    @Override
-    public void jobScheduled(Trigger trigger) {
-      logger.debug("jobScheduled {}", trigger);
-    }
-
-    @Override
-    public void jobUnscheduled(TriggerKey triggerKey) {
-      logger.debug("jobUnscheduled {}", triggerKey);
-    }
-
-    @Override
-    public void triggerFinalized(Trigger trigger) {
-      logger.debug("triggerFinalized {}", trigger);
-    }
-
-    @Override
-    public void triggerPaused(TriggerKey triggerKey) {
-      logger.debug("triggerPaused {}", triggerKey);
-    }
-
-    @Override
-    public void triggersPaused(String s) {
-      logger.debug("triggersPaused {}", s);
-    }
-
-    @Override
-    public void triggerResumed(TriggerKey triggerKey) {
-      logger.debug("triggerResumed {}", triggerKey);
-    }
-
-    @Override
-    public void triggersResumed(String s) {
-      logger.debug("triggersResumed {}", s);
-    }
-
-    @Override
-    public void jobAdded(JobDetail jobDetail) {
-      logger.debug("jobAdded {}", jobDetail);
-    }
-
-    @Override
-    public void jobDeleted(JobKey jobKey) {
-      logger.debug("jobDeleted {}", jobKey);
-    }
-
-    @Override
-    public void jobPaused(JobKey jobKey) {
-      logger.debug("jobPaused {}", jobKey);
-    }
-
-    @Override
-    public void jobsPaused(String s) {
-      logger.debug("jobPaused {}", s);
-    }
-
-    @Override
-    public void jobResumed(JobKey jobKey) {
-      logger.debug("jobsResumed {}", jobKey);
-    }
-
-    @Override
-    public void jobsResumed(String s) {
-      logger.debug("jobsResumed {}", s);
-    }
-
-    @Override
-    public void schedulerError(String s, SchedulerException e) {
-      logger.debug("schedulerError {} {}", s, e);
-    }
-  }   */
 
   /**
    *
@@ -161,7 +88,7 @@ public enum CollectionUpdater {
       } else {
         if (logger != null) logger.warn("cronExecutor failed to add updateJob for " + updateJob.getKey() +". Another Job exists with that identification." );
       }
-    } catch (SchedulerException e) {
+    } catch (Throwable e) {
       if (logger != null)logger.error("cronExecutor failed to add updateJob for " + config, e);
       return;
     }
@@ -180,7 +107,7 @@ public enum CollectionUpdater {
     try {
       scheduler.scheduleJob(startupTrigger);
       if (logger != null)logger.info("Schedule startup scan force={} for '{}' at {}", updateConfig.startupType.toString(), config.name, runTime);
-    } catch (SchedulerException e) {
+    } catch (Throwable e) {
       if (logger != null)logger.error("cronExecutor failed to schedule startup Job for " + config, e);
       return;
     }
@@ -198,7 +125,7 @@ public enum CollectionUpdater {
       try {
     		scheduler.scheduleJob(rescanTrigger);
         if (logger != null)logger.info("Schedule recurring scan for '{}' cronExpr={}", config.name, updateConfig.rescan);
-      } catch (SchedulerException e) {
+      } catch (Throwable e) {
         if (logger != null)logger.error("cronExecutor failed to schedule cron Job", e);
         // e.printStackTrace();
       }
@@ -224,7 +151,7 @@ public enum CollectionUpdater {
         scheduler.scheduleJob(protoJob, protoTrigger);
         if (logger != null)logger.info("Schedule proto update for '{}' cronExpr={}", config.name, pconfig.change);
 
-      } catch (SchedulerException e) {
+      } catch (Throwable e) {
         if (logger != null)logger.error("cronExecutor failed to schedule RereadProtoJob", e);
         // e.printStackTrace();
       }
@@ -238,7 +165,7 @@ public enum CollectionUpdater {
       scheduler.shutdown(true);
       org.slf4j.Logger logServerStartup = org.slf4j.LoggerFactory.getLogger("serverStartup");
       logServerStartup.info("Scheduler shutdown");
-    } catch (SchedulerException e) {
+    } catch (Throwable e) {
       startupLogger.error("Scheduler failed to shutdown", e);
       scheduler = null;
       //e.printStackTrace();
@@ -259,7 +186,7 @@ public enum CollectionUpdater {
     try {
       // logger.debug("Trigger Update for {} type= {}", collectionName, triggerType);
       scheduler.scheduleJob(trigger);
-    } catch (SchedulerException e) {
+    } catch (Throwable e) {
       startupLogger.error("triggerUpdate failed", e);
       // e.printStackTrace();
     }

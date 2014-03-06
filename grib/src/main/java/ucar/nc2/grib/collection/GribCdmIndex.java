@@ -332,7 +332,7 @@ public class GribCdmIndex implements IndexReader {
                                                           CollectionUpdateType forceCollection,
                                                           Logger logger) throws IOException {
 
-    if (debug) System.out.printf("GribCdmIndex2.updateDirectoryCollectionRecurse %s%n", dpart.getRoot());
+    if (debug) System.out.printf("GribCdmIndex.updateDirectoryCollectionRecurse %s%n", dpart.getRoot());
 
     if (forceCollection == CollectionUpdateType.never) return false;  // dont do nothin
 
@@ -374,7 +374,7 @@ public class GribCdmIndex implements IndexReader {
       changed = builder.updateNeeded(forceCollection) && builder.createPartitionedIndex(forceCollection, CollectionUpdateType.never, errlog);
     }
 
-    if (debug) System.out.printf("GribCdmIndex2.updateDirectoryCollectionRecurse complete (%s) on %s errlog=%s%n", changed, dpart.getRoot(), errlog);
+    if (debug) System.out.printf("GribCdmIndex.updateDirectoryCollectionRecurse complete (%s) on %s errlog=%s%n", changed, dpart.getRoot(), errlog);
     return changed;
   }
 
@@ -423,7 +423,7 @@ public class GribCdmIndex implements IndexReader {
     Path idxFile = dcm.getIndexPath();
     if (Files.exists(idxFile)) {
       if (forceCollection == CollectionUpdateType.nocheck) { // use if index exists
-        if (debug) System.out.printf(" GribCdmIndex2.updateLeafDirectoryCollection %s use existing index%n", dirPath);
+        if (debug) System.out.printf(" GribCdmIndex.updateLeafDirectoryCollection %s use existing index%n", dirPath);
         return false;
       }
     }
@@ -437,7 +437,7 @@ public class GribCdmIndex implements IndexReader {
       changed = builder.updateNeeded(forceCollection) && builder.createIndex(errlog);
     }
 
-    if (debug) System.out.printf(" GribCdmIndex2.updateLeafDirectoryCollection was updated= %s on %s%n", changed, dirPath);
+    if (debug) System.out.printf(" GribCdmIndex.updateLeafDirectoryCollection was updated= %s on %s%n", changed, dirPath);
     return changed;
   }
 
@@ -750,7 +750,7 @@ public class GribCdmIndex implements IndexReader {
   /// IndexReader interface
   @Override
   public boolean readChildren(Path indexFile, AddChildCallback callback) throws IOException {
-    if (debug) System.out.printf("GribCdmIndex2.readChildren %s%n", indexFile);
+    if (debug) System.out.printf("GribCdmIndex.readChildren %s%n", indexFile);
     try (RandomAccessFile raf = new RandomAccessFile(indexFile.toString(), "r")) {
       GribCollectionType type = getType(raf);
       if (type == GribCollectionType.Partition1 || type == GribCollectionType.Partition2) {
@@ -770,7 +770,7 @@ public class GribCdmIndex implements IndexReader {
 
   @Override
   public boolean isPartition(Path indexFile) throws IOException {
-    if (debug) System.out.printf("GribCdmIndex2.isPartition %s%n", indexFile);
+    if (debug) System.out.printf("GribCdmIndex.isPartition %s%n", indexFile);
     try (RandomAccessFile raf = new RandomAccessFile(indexFile.toString(), "r")) {
       GribCollectionType type = getType(raf);
       return (type == GribCollectionType.Partition1) || (type == GribCollectionType.Partition2);
@@ -779,7 +779,7 @@ public class GribCdmIndex implements IndexReader {
 
   @Override
   public boolean readMFiles(Path indexFile, List<MFile> result) throws IOException {
-    if (debug) System.out.printf("GribCdmIndex2.readMFiles %s%n", indexFile);
+    if (debug) System.out.printf("GribCdmIndex.readMFiles %s%n", indexFile);
     try (RandomAccessFile raf = new RandomAccessFile(indexFile.toString(), "r")) {
       GribCollectionType type = getType(raf);
       if (type == GribCollectionType.GRIB1 || type == GribCollectionType.GRIB2) {
@@ -817,7 +817,7 @@ public class GribCdmIndex implements IndexReader {
 
       int size = NcStream.readVInt(indexRaf);
       if ((size < 0) || (size > 100 * 1000 * 1000)) {
-        logger.warn("Grib2Collection {}: invalid index size {}", indexRaf.getLocation(), size);
+        logger.warn("GribCdmIndex {}: invalid index size {}", indexRaf.getLocation(), size);
         return false;
       }
 

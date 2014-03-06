@@ -536,6 +536,7 @@ public abstract class PartitionCollection extends GribCollection {
     }
 
     public GribCollection makeGribCollection(CollectionUpdateType force) throws IOException {
+      if (gc != null) return gc;
       return GribCdmIndex.openGribCollectionFromMCollection(isGrib1, dcm, force, null, logger); // caller must close
     }
   }
@@ -668,7 +669,8 @@ public abstract class PartitionCollection extends GribCollection {
       f.format(" master runtime -> partition %n");
       int count = 0;
       for (CalendarDate cd : masterRuntime.getRuntimesSorted()) {
-        f.format(" %d:  %s -> part %3d %s%n", count, cd, run2part[count],  getPartition(count).getIndexFilename());
+        int part =  run2part[count];
+        f.format(" %d:  %s -> part %3d %s%n", count, cd, run2part[count],  getPartition(part).getIndexFilename());
         count++;
       }
       f.format("%n");

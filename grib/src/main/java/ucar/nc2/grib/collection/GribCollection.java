@@ -1010,10 +1010,17 @@ public abstract class GribCollection implements FileCacheable, AutoCloseable {
       if (recordsLen == 0) return;
       byte[] b = new byte[recordsLen];
 
-      // synchronize to protect the raf, and records[]
-      synchronized (indexRaf) {
-        indexRaf.seek(recordsPos);
-        indexRaf.readFully(b);
+      if (indexRaf != null) {
+        // synchronize to protect the raf, and records[]
+        synchronized (indexRaf) {
+          indexRaf.seek(recordsPos);
+          indexRaf.readFully(b);
+        }
+      } else {
+        try (RandomAccessFile raf = new RandomAccessFile(getIndexFile().getPath(), "r")) {  // try-with-close
+          raf.seek(recordsPos);
+          raf.readFully(b);
+        }
       }
 
       /*
