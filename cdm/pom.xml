@@ -1,219 +1,250 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-  <modelVersion>4.0.0</modelVersion>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	<modelVersion>4.0.0</modelVersion>
 
-  <parent>
-    <groupId>edu.ucar</groupId>
-    <artifactId>thredds-parent</artifactId>
-    <version>4.3.20</version>
-  </parent>
+	<parent>
+		<groupId>edu.ucar</groupId>
+		<artifactId>thredds-parent</artifactId>
+		<version>4.3.20</version>
+	</parent>
 
-  <!-- ===========================================================
-           Module Description
-       =========================================================== -->
-  <!-- groupId>edu.ucar</groupId-->
-  <artifactId>netcdf</artifactId>
-  <packaging>jar</packaging>
-  <name>NetCDF-Java Library</name>
-  <description>
+	<!-- =========================================================== Module 
+		Description =========================================================== -->
+	<!-- groupId>edu.ucar</groupId -->
+	<artifactId>netcdf</artifactId>
+	<packaging>jar</packaging>
+	<name>NetCDF-Java Library</name>
+	<description>
     The NetCDF-Java Library is a Java interface to NetCDF files,
     as well as to many other types of scientific data formats.
   </description>
-  <url>http://www.unidata.ucar.edu/software/netcdf-java/documentation.htm</url>
+	<url>http://www.unidata.ucar.edu/software/netcdf-java/documentation.htm</url>
 
-  <!-- ===========================================================
-           Dependencies
+	<!-- =========================================================== Dependencies 
+		Mandatory dependencies are listed first. Then everything else is declared 
+		with the "provided" scope, meaning that the user have to declare those dependencies 
+		himself in his own pom.xml file if we want to read some formats. =========================================================== -->
+	<dependencies>
+		<dependency>
+			<groupId>edu.ucar</groupId>
+			<artifactId>udunits</artifactId>
+		</dependency>
 
-           Mandatory dependencies are listed first. Then everything
-           else is declared with the "provided" scope, meaning that
-           the user have to declare those dependencies himself in
-           his own pom.xml file if we want to read some formats.
-       =========================================================== -->
-  <dependencies>
-    <dependency>
-      <groupId>edu.ucar</groupId>
-      <artifactId>udunits</artifactId>
-    </dependency>
+		<!-- HTTP client -->
+		<dependency>
+			<groupId>commons-httpclient</groupId>
+			<artifactId>commons-httpclient</artifactId>
+		</dependency>
 
-    <!-- HTTP client -->
-    <dependency>
-      <groupId>commons-httpclient</groupId>
-      <artifactId>commons-httpclient</artifactId>
-    </dependency>
+		<dependency>  <!-- replace commons-logging -->
+			<groupId>org.slf4j</groupId>
+			<artifactId>jcl-over-slf4j</artifactId>
+		</dependency>
 
-    <dependency>  <!-- replace commons-logging -->
-      <groupId>org.slf4j</groupId>
-      <artifactId>jcl-over-slf4j</artifactId>
-    </dependency>
+		<!-- calendar / datetime -->
+		<dependency>
+			<groupId>joda-time</groupId>
+			<artifactId>joda-time</artifactId>
+		</dependency>
 
-    <!-- calendar / datetime -->
-    <dependency>
-      <groupId>joda-time</groupId>
-      <artifactId>joda-time</artifactId>
-    </dependency>
+		<!-- logging -->
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-api</artifactId>
+		</dependency>
 
-    <!-- logging -->
-    <dependency>
-      <groupId>org.slf4j</groupId>
-      <artifactId>slf4j-api</artifactId>
-    </dependency>
+		<!-- Required for reading THREDDS, NcML, BUFR, HDF-EOS, NEXRAD2, OPeNDAP 
+			files. -->
+		<dependency>
+			<groupId>org.jdom</groupId>
+			<artifactId>jdom2</artifactId>
+		</dependency>
 
-    <!-- Required for reading THREDDS, NcML, BUFR, HDF-EOS, NEXRAD2, OPeNDAP files. -->
-    <dependency>
-      <groupId>org.jdom</groupId>
-      <artifactId>jdom2</artifactId>
-    </dependency>
+		<!-- concurrency annotations -->
+		<dependency>
+			<groupId>net.jcip</groupId>
+			<artifactId>jcip-annotations</artifactId>
+		</dependency>
 
-    <!-- concurrency annotations -->
-    <dependency>
-      <groupId>net.jcip</groupId>
-      <artifactId>jcip-annotations</artifactId>
-    </dependency>
+		<!-- jni -->
+		<dependency>
+			<groupId>com.sun.jna</groupId>
+			<artifactId>jna</artifactId>
+		</dependency>
 
-    <!-- jni -->
-    <dependency>
-     	<groupId>com.sun.jna</groupId>
-     	<artifactId>jna</artifactId>
-     </dependency>
+		<!-- Required for reading THREDDS files. -->
+		<dependency>
+			<groupId>org.quartz-scheduler</groupId>
+			<artifactId>quartz</artifactId>
+		</dependency>
 
-    <!-- Required for reading THREDDS files. -->
-    <dependency>
-      <groupId>org.quartz-scheduler</groupId>
-      <artifactId>quartz</artifactId>
-    </dependency>
+		<!-- Required for ncstream, cdmRemote. -->
+		<dependency>
+			<groupId>com.google.protobuf</groupId>
+			<artifactId>protobuf-java</artifactId>
+		</dependency>
 
-    <!-- Required for ncstream, cdmRemote. -->
-    <dependency>
-      <groupId>com.google.protobuf</groupId>
-      <artifactId>protobuf-java</artifactId>
-    </dependency>
+		<!-- Required for object caching. -->
+		<dependency>
+			<groupId>net.sf.ehcache</groupId>
+			<artifactId>ehcache-core</artifactId>
+		</dependency>
 
-    <!-- Required for object caching. -->
-    <dependency>
-      <groupId>net.sf.ehcache</groupId>
-      <artifactId>ehcache-core</artifactId>
-    </dependency>
+		<!-- Required for using aggregations. -->
+		<dependency>
+			<artifactId>je</artifactId>
+			<groupId>com.sleepycat</groupId>
+		</dependency>
 
-    <!-- Required for using aggregations. -->
-    <dependency>
-      <artifactId>je</artifactId>
-      <groupId>com.sleepycat</groupId>
-    </dependency>
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-jdk14</artifactId>
+			<scope>test</scope>
+		</dependency>
 
-    <dependency>
-      <groupId>org.slf4j</groupId>
-      <artifactId>slf4j-jdk14</artifactId>
-      <scope>test</scope>
-    </dependency>
-
-  </dependencies>
+	</dependencies>
 
 
-  <!-- ================================================================== -->
-  <!--     Repositories. This is where Maven looks for dependencies. The  -->
-  <!--     Maven repository is implicit and doesn't need to be specified. -->
-  <!-- ================================================================== -->
-  <repositories>
-    <!-- Needed for com.sleepycat.je -->
-    <repository>
-      <id>Oracle</id>
-      <name>Oracle Maven repository</name>
-      <url>http://download.oracle.com/maven</url>
-    </repository>
-    <!-- Temporary repository for edu.wisc.visad
-    <repository>
-      <id>geotoolkit</id>
-      <name>Geotoolkit binaries</name>
-      <url>http://maven.geotoolkit.org/</url>
-    </repository -->
-  </repositories>
+	<!-- ================================================================== -->
+	<!-- Repositories. This is where Maven looks for dependencies. The -->
+	<!-- Maven repository is implicit and doesn't need to be specified. -->
+	<!-- ================================================================== -->
+	<repositories>
+		<!-- Needed for com.sleepycat.je -->
+		<repository>
+			<id>Oracle</id>
+			<name>Oracle Maven repository</name>
+			<url>http://download.oracle.com/maven</url>
+		</repository>
+		<!-- Temporary repository for edu.wisc.visad <repository> <id>geotoolkit</id> 
+			<name>Geotoolkit binaries</name> <url>http://maven.geotoolkit.org/</url> 
+			</repository -->
+	</repositories>
 
-  <build>
-    <plugins>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-compiler-plugin</artifactId>
-        <configuration>
-          <excludes>
-            <!-- exclude>thredds/logs/**</exclude -->
-            <exclude>ucar/nc2/dataset/grid/**</exclude>
-            <!--exclude>ucar/nc2/jni/**</exclude -->
-            <exclude>ucar/nc2/util/reflect/**</exclude>
-          </excludes>
+	<build>
+		<plugins>
+			<!-- OSGi manifest information -->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-jar-plugin</artifactId>
+				<configuration>
+					<archive>
+						<manifestFile>target/classes/META-INF/MANIFEST.MF</manifestFile>
+						<manifest>
+							<addClasspath>true</addClasspath>
+						</manifest>
+					</archive>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.felix</groupId>
+				<artifactId>maven-bundle-plugin</artifactId>
+				<version>2.3.4</version>
+				<extensions>true</extensions>
+				<configuration>
+					<manifestLocation>target/classes/META-INF</manifestLocation>
+					<instructions>
+						<Bundle-Version>${project.version}</Bundle-Version>
+						<Bundle-SymbolicName>${pom.groupId}.${pom.artifactId}</Bundle-SymbolicName>
+						<Bundle-RequiredExecutionEnvironment>J2SE-1.5</Bundle-RequiredExecutionEnvironment>
+						<Import-Package>*;resolution:=optional</Import-Package>
+					</instructions>
+				</configuration>
+				<executions>
+					<execution>
+						<id>bundle-manifest</id>
+						<phase>process-classes</phase>
+						<goals>
+							<goal>manifest</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<configuration>
+					<excludes>
+						<!-- exclude>thredds/logs/**</exclude -->
+						<exclude>ucar/nc2/dataset/grid/**</exclude>
+						<!--exclude>ucar/nc2/jni/**</exclude -->
+						<exclude>ucar/nc2/util/reflect/**</exclude>
+					</excludes>
 
-        </configuration>
-      </plugin>
+				</configuration>
+			</plugin>
 
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-surefire-plugin</artifactId>
-        <configuration>
-          <skip>${skipTests}</skip>
-          <testFailureIgnore>true</testFailureIgnore>
-	  <argLine>-Dfile.encoding=UTF-8</argLine>
-        </configuration>
-      </plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-surefire-plugin</artifactId>
+				<configuration>
+					<skip>${skipTests}</skip>
+					<testFailureIgnore>true</testFailureIgnore>
+					<argLine>-Dfile.encoding=UTF-8</argLine>
+				</configuration>
+			</plugin>
 
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-jar-plugin</artifactId>
-        <configuration>
-          <skipIfEmpty>true</skipIfEmpty>
-        </configuration>
-        <executions>
-          <execution>
-            <id>jar-test-classes</id>
-            <phase>package</phase>
-            <goals>
-              <goal>test-jar</goal>
-            </goals>
-            <configuration>
-              <includes>
-                <include>ucar/unidata/test/**</include>
-                <include>ucar/nc2/util/**</include>    <!-- makes the nc2/util/memory/build.xml ant tasks redundant -->
-                <include>ucar/nc2/TestLocal.*</include>
-              </includes>
-            </configuration>
-          </execution>
-        </executions>
-      </plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-jar-plugin</artifactId>
+				<configuration>
+					<skipIfEmpty>true</skipIfEmpty>
+				</configuration>
+				<executions>
+					<execution>
+						<id>jar-test-classes</id>
+						<phase>package</phase>
+						<goals>
+							<goal>test-jar</goal>
+						</goals>
+						<configuration>
+							<includes>
+								<include>ucar/unidata/test/**</include>
+								<include>ucar/nc2/util/**</include>    <!-- makes the nc2/util/memory/build.xml ant tasks redundant -->
+								<include>ucar/nc2/TestLocal.*</include>
+							</includes>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
 
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-source-plugin</artifactId>
-        <version>2.1.1</version>
-        <executions>
-          <execution>
-            <id>bundle-sources</id>
-            <phase>package</phase>
-            <goals>
-              <!-- produce source artifact for main project sources -->
-              <goal>jar-no-fork</goal>
-            </goals>
-          </execution>
-        </executions>
-      </plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-source-plugin</artifactId>
+				<version>2.1.1</version>
+				<executions>
+					<execution>
+						<id>bundle-sources</id>
+						<phase>package</phase>
+						<goals>
+							<!-- produce source artifact for main project sources -->
+							<goal>jar-no-fork</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
 
-    </plugins>
+		</plugins>
 
-    <resources>
-      <resource>
-        <directory>src/main/resources</directory>
-        <includes>
-          <include>resources/nj22/**</include>
-          <include>resources/thredds/**</include>
-          <include>resources/wmo/**</include>
-        </includes>
-      </resource>
-    </resources>
+		<resources>
+			<resource>
+				<directory>src/main/resources</directory>
+				<includes>
+					<include>resources/nj22/**</include>
+					<include>resources/thredds/**</include>
+					<include>resources/wmo/**</include>
+				</includes>
+			</resource>
+		</resources>
 
-    <testResources>
-      <testResource>
-        <directory>src/test/resources</directory>
-      </testResource>
-    </testResources>
+		<testResources>
+			<testResource>
+				<directory>src/test/resources</directory>
+			</testResource>
+		</testResources>
 
-  </build>
+	</build>
 
 
 </project>
