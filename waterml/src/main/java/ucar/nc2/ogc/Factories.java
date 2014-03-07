@@ -10,6 +10,9 @@ public abstract class Factories {
     public static final net.opengis.om.v_2_0_0.ObjectFactory OM =
             new net.opengis.om.v_2_0_0.ObjectFactory();
 
+    public static final net.opengis.swe.v_2_0_0.ObjectFactory SWE
+            = new net.opengis.swe.v_2_0_0.ObjectFactory();
+
     public final static net.opengis.waterml.v_2_0_1.ObjectFactory WATERML =
             new net.opengis.waterml.v_2_0_1.ObjectFactory();
 

@@ -25,7 +25,7 @@ public class NC_CodeWithAuthorityTypeTest {
             StationTimeSeriesFeature stationFeat = PointUtil.getSingleStationFeatureFromDataset(fdPoint);
 
             CodeWithAuthorityType identifier =
-                    NC_CodeWithAuthorityType.createSamplingFeatureTypeIdentifier(stationFeat);
+                    NC_CodeWithAuthorityType.createIdentifier(stationFeat);
             JAXBElement<?> jaxbElement = Factories.GML.createIdentifier(identifier);
 
             Marshaller marshaller = TestUtil.createMarshaller(ObjectFactory.class);

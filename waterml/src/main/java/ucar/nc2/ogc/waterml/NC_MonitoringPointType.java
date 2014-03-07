@@ -26,7 +26,7 @@ public abstract class NC_MonitoringPointType {
         monitoringPointType.setId(id);
 
         // gml:identifier
-        CodeWithAuthorityType identifier = NC_CodeWithAuthorityType.createSamplingFeatureTypeIdentifier(stationFeat);
+        CodeWithAuthorityType identifier = NC_CodeWithAuthorityType.createIdentifier(stationFeat);
         monitoringPointType.setIdentifier(identifier);
 
         // gml:description

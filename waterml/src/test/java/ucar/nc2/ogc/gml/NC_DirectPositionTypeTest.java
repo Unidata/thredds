@@ -24,7 +24,7 @@ public class NC_DirectPositionTypeTest {
         try {
             StationTimeSeriesFeature stationFeat = PointUtil.getSingleStationFeatureFromDataset(fdPoint);
 
-            DirectPositionType pos = NC_DirectPositionType.createShapePointPos(stationFeat);
+            DirectPositionType pos = NC_DirectPositionType.createPos(stationFeat);
             JAXBElement<?> jaxbElement = Factories.GML.createPos(pos);
 
             Marshaller marshaller = TestUtil.createMarshaller(ObjectFactory.class);

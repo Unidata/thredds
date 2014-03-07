@@ -32,8 +32,10 @@ public abstract class NC_OMObservationType {
 
         // om:result
         MeasurementTimeseriesType measurementTimeseries =
-                NC_MeasurementTimeseriesType.createMeasurementTimeseries(stationFeat);
+                NC_MeasurementTimeseriesType.createMeasurementTimeseries(fdPoint, stationFeat);
         obsType.setResult(measurementTimeseries);
+
+
 
         return obsType;
     }

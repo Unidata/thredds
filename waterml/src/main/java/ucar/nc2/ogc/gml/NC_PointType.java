@@ -20,7 +20,7 @@ public abstract class NC_PointType {
         point.setId(id);
 
         // gml:pos
-        DirectPositionType pos = NC_DirectPositionType.createShapePointPos(stationFeat);
+        DirectPositionType pos = NC_DirectPositionType.createPos(stationFeat);
         point.setPos(pos);
 
         return point;

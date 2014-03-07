@@ -3,8 +3,9 @@
     <dimension name="station" length="1"/>
     <dimension name="time" length="5" isUnlimited="true"/>
 
-    <variable name="humidity" shape="station time" type="float">
-        <attribute name="standard_name" value="specific humidity"/>
+    <variable name="tmax" shape="station time" type="float">
+        <attribute name="standard_name" value="maximum temperature"/>
+        <attribute name="units" value="°C"/>
         <attribute name="coordinates" value="lat lon alt"/>
         <values start="1" increment="3"/>
     </variable>

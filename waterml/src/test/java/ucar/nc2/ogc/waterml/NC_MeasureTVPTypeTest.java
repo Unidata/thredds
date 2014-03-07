@@ -27,7 +27,7 @@ public class NC_MeasureTVPTypeTest {
             assert stationFeat.hasNext();
             PointFeature pointFeat = stationFeat.next();
 
-            MeasureTVPType measurementTVP = NC_MeasureTVPType.createMeasurementTVP(pointFeat);
+            MeasureTVPType measurementTVP = NC_MeasureTVPType.createMeasurementTVP(fdPoint, pointFeat);
             JAXBElement<?> jaxbElement = Factories.WATERML.createMeasurementTVP(measurementTVP);
 
             Marshaller marshaller = TestUtil.createMarshaller(ObjectFactory.class);

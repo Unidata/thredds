@@ -5,15 +5,14 @@ import ucar.nc2.ft.PointFeature;
 import ucar.nc2.ogc.Factories;
 
 /**
- * In OGC 12-031r2, used at:
- *     om:OM_Observation/om:result/wml2:MeasurementTimeseries/wml2:point/wml2:MeasurementTVP/wml2:time
- *
  * Created by cwardgar on 2014/03/05.
  */
 public abstract class NC_TimePosition {
+    // om:OM_Observation/om:result/wml2:MeasurementTimeseries/wml2:point/wml2:MeasurementTVP/wml2:time
     public static TimePosition createTime(PointFeature pointFeat) {
         TimePosition time = Factories.GML.createTimePosition();
 
+        // TEXT
         time.getValues().add(pointFeat.getNominalTimeAsCalendarDate().toString());
 
         return time;

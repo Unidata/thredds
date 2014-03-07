@@ -25,7 +25,7 @@ public class NC_MeasurementTimeseriesTypeTest {
             StationTimeSeriesFeature stationFeat = PointUtil.getSingleStationFeatureFromDataset(fdPoint);
 
             MeasurementTimeseriesType measurementTimeseries =
-                    NC_MeasurementTimeseriesType.createMeasurementTimeseries(stationFeat);
+                    NC_MeasurementTimeseriesType.createMeasurementTimeseries(fdPoint, stationFeat);
             JAXBElement<?> jaxbElement = Factories.WATERML.createMeasurementTimeseries(measurementTimeseries);
 
             Marshaller marshaller = TestUtil.createMarshaller(ObjectFactory.class);
