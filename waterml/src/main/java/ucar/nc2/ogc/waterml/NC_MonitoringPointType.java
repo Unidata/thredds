@@ -22,7 +22,7 @@ public abstract class NC_MonitoringPointType {
         MonitoringPointType monitoringPointType = Factories.WATERML.createMonitoringPointType();
 
         // gml:id
-        String id = MonitoringPointType.class.getSimpleName() + "." + "1";
+        String id = generateId();
         monitoringPointType.setId(id);
 
         // gml:identifier
@@ -40,6 +40,12 @@ public abstract class NC_MonitoringPointType {
         monitoringPointType.setShape(shape);
 
         return monitoringPointType;
+    }
+
+    private static int numIds = 0;
+
+    private static String generateId() {
+        return MonitoringPointType.class.getSimpleName() + "." + ++numIds;
     }
 
     private NC_MonitoringPointType() { }

@@ -23,7 +23,7 @@ public abstract class NC_MeasurementTimeseriesType {
         MeasurementTimeseriesType measurementTimeseries = Factories.WATERML.createMeasurementTimeseriesType();
 
         // gml:id
-        String id = MeasurementTimeseriesType.class.getSimpleName() + "." + "1";
+        String id = generateId();
         measurementTimeseries.setId(id);
 
         // wml2:defaultPointMetadata
@@ -53,6 +53,12 @@ public abstract class NC_MeasurementTimeseriesType {
         point.setMeasurementTVP(measurementTVP);
 
         return point;
+    }
+
+    private static int numIds = 0;
+
+    private static String generateId() {
+        return MeasurementTimeseriesType.class.getSimpleName() + "." + ++numIds;
     }
 
     private NC_MeasurementTimeseriesType() { }

@@ -16,7 +16,7 @@ public abstract class NC_PointType {
         PointType point = Factories.GML.createPointType();
 
         // gml:id
-        String id = PointType.class.getSimpleName() + "." + "1";
+        String id = generateId();
         point.setId(id);
 
         // gml:pos
@@ -24,6 +24,12 @@ public abstract class NC_PointType {
         point.setPos(pos);
 
         return point;
+    }
+
+    private static int numIds = 0;
+
+    private static String generateId() {
+        return PointType.class.getSimpleName() + "." + ++numIds;
     }
 
     private NC_PointType() { }

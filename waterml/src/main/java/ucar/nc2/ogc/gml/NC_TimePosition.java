@@ -2,6 +2,7 @@ package ucar.nc2.ogc.gml;
 
 import net.opengis.gml.v_3_2_1.TimePosition;
 import ucar.nc2.ft.PointFeature;
+import ucar.nc2.ft.StationTimeSeriesFeature;
 import ucar.nc2.ogc.Factories;
 
 /**
@@ -16,6 +17,30 @@ public abstract class NC_TimePosition {
         time.getValues().add(pointFeat.getNominalTimeAsCalendarDate().toString());
 
         return time;
+    }
+
+    // om:OM_Observation/om:phenomenonTime/gml:TimePeriod/gml:beginPosiition
+    public static TimePosition createBeginPosition(StationTimeSeriesFeature stationFeat) {
+        TimePosition beginPosition = Factories.GML.createTimePosition();
+
+        // TEXT
+        if (stationFeat.getCalendarDateRange() != null) {
+            beginPosition.getValues().add(stationFeat.getCalendarDateRange().getStart().toString());
+        }
+
+        return beginPosition;
+    }
+
+    // om:OM_Observation/om:phenomenonTime/gml:TimePeriod/gml:endPosiition
+    public static TimePosition createEndPosition(StationTimeSeriesFeature stationFeat) {
+        TimePosition endPosition = Factories.GML.createTimePosition();
+
+        // TEXT
+        if (stationFeat.getCalendarDateRange() != null) {
+            endPosition.getValues().add(stationFeat.getCalendarDateRange().getEnd().toString());
+        }
+
+        return endPosition;
     }
 
     private NC_TimePosition() { }
