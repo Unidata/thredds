@@ -45,7 +45,6 @@ import ucar.nc2.grib.GdsHorizCoordSys;
 import ucar.nc2.grib.collection.*;
 import ucar.nc2.time.CalendarDateRange;
 import ucar.unidata.geoloc.LatLonRect;
-import ucar.unidata.util.StringUtil2;
 
 import java.io.File;
 import java.io.IOException;
@@ -55,15 +54,20 @@ import java.util.*;
 
 /**
  * Implement FeatureCollection GRIB - a collection of Grib1 or Grib2 files that are served as Grids.
- * <p/>
- * Dataset naming
- * <ol>
- * <li>Single group in collection
- * <pre>
- *     $collectionName-collection
- *   </pre>
- * </li>
- * </ol>
+ *
+ * catalogs
+ *  path/catalog.xml                       // top catalog
+ *  path/partitionName/catalog.xml
+ *  path/partitionName/../partitionName/catalog.xml
+ *  path/latest.xml                       // latest (resolver)
+ *
+ * datasets
+ *  path/dataset (BEST, TWOD, GC)                // top collection, single group
+ *  path/dataset/groupName                       // top collection, multiple group
+ *  path/partitionName/dataset                   // partition, single group
+ *  path/partitionName/../partitionName/dataset
+ *  path/partitionName/dataset/groupName         // partition, multiple group
+ *  path/partitionName/../partitionName/dataset/groupName
  *
  * @author caron
  * @since 4/15/11
@@ -71,7 +75,6 @@ import java.util.*;
 @ThreadSafe
 public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
   static private final String COLLECTION = "collection";
-  static private final String PARTITION = "partition";
 
   static private final String GC_DATASET = GribCollection.Type.GC.toString();
   static private final String BEST_DATASET = GribCollection.Type.Best.toString();
@@ -80,11 +83,15 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
   /////////////////////////////////////////////////////////////////////////////
   protected class StateGrib extends State {
     GribCollection gribCollection;
+    GribCollection latest;
+    String latestPath;
 
     protected StateGrib(StateGrib from) {
       super(from);
       if (from != null) {
         this.gribCollection = from.gribCollection;
+        this.latest = from.latest;
+        this.latestPath = from.latestPath;
       }
     }
 
@@ -97,16 +104,10 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
   //////////////////////////////////////////////////////////////////////////////
 
   private final FeatureCollectionConfig config;
-  private final boolean isGrib1;
-  private final boolean isFilePartition;
-  private final boolean isDirectoryPartition;
 
   public InvDatasetFcGrib(InvDatasetImpl parent, String name, String path, FeatureCollectionType fcType, FeatureCollectionConfig config) {
     super(parent, name, path, fcType, config);
     this.config = config;
-    this.isGrib1 = config.type == FeatureCollectionType.GRIB1;
-    this.isFilePartition = (config.ptype == FeatureCollectionConfig.PartitionType.file);
-    this.isDirectoryPartition = (config.ptype == FeatureCollectionConfig.PartitionType.directory);
 
     Formatter errlog = new Formatter();
     CollectionSpecParser sp = new CollectionSpecParser(config.spec, errlog);
@@ -143,10 +144,12 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
     try {
       StateGrib localState = (StateGrib) state;
       GribCollection previous = localState.gribCollection;
+      GribCollection previousLatest = localState.latest;
 
       localState.gribCollection = GribCdmIndex.openGribCollection(this.config, force, logger);
       logger.debug("{}: GribCollection object was recreated", getName());
-      if (previous != null) previous.close(); // LOOK may be another thread using - other thread will fail
+      if (previous != null) previous.close();                 // LOOK may be another thread using - other thread will fail
+      if (previousLatest != previousLatest) previous.close();
 
     } catch (IOException ioe) {
       logger.error("GribFc updateCollection", ioe);
@@ -155,11 +158,11 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
 
   /////////////////////////////////////////////////////////////////////////
 
-  private InvCatalogImpl makeCatalogFromCollection(URI catURI, String parentName, GribCollection gc) throws IOException, URISyntaxException {
+  private InvCatalogImpl makeCatalogFromCollection(URI catURI, String parentName, GribCollection gc) throws IOException { // }, URISyntaxException {
     InvCatalogImpl parentCatalog = (InvCatalogImpl) getParentCatalog();
     InvCatalogImpl result = new InvCatalogImpl(gc.getName(), parentCatalog.getVersion(), catURI);  // LOOK is catURL right ??
 
-    if (config.gribConfig.hasDatasetType(FeatureCollectionConfig.GribDatasetType.LatestFile))
+    if (config.gribConfig.hasDatasetType(FeatureCollectionConfig.GribDatasetType.Latest))
       result.addService(InvService.latest);
     result.addDataset(makeDatasetFromCollection(parentName, gc));
     result.addService(virtualService);
@@ -242,7 +245,7 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
     }
 
     if (gc instanceof PartitionCollection) {
-      if (config.gribConfig.hasDatasetType(FeatureCollectionConfig.GribDatasetType.LatestFile) && parentName == null) {  // latest for top only
+      if (config.gribConfig.hasDatasetType(FeatureCollectionConfig.GribDatasetType.Latest) && parentName == null) {  // latest for top only
         InvDatasetImpl ds = new InvDatasetImpl(this, getDatasetNameLatest(gc.getName()));
         ds.setUrlPath(LATEST_DATASET_CATALOG);
         // ds.setID(getPath() + "/" + FILES + "/" + LATEST_DATASET_CATALOG);
@@ -424,9 +427,6 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
       }
       return makeCatalogFromCollection(catURI, parentName.toString(), gc);
 
-    } catch (URISyntaxException e) {
-      e.printStackTrace();
-      return null;
     }
   }
 
@@ -492,7 +492,7 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
     InvCatalogImpl parentCatalog = (InvCatalogImpl) getParentCatalog();
     InvCatalogImpl mainCatalog = new InvCatalogImpl(getName(), parentCatalog.getVersion(), catURI);
 
-    if (config.gribConfig.hasDatasetType(FeatureCollectionConfig.GribDatasetType.LatestFile))
+    if (config.gribConfig.hasDatasetType(FeatureCollectionConfig.GribDatasetType.Latest))
       mainCatalog.addService(InvService.latest);
     mainCatalog.addDataset(((StateGrib) localState).top);
     mainCatalog.addService(virtualService);
@@ -600,16 +600,38 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
     return makeCatalogFiles(catURI, localState, filenames, addLatest);
   } */
 
+  // path/latest.xml
   @Override
-  public InvCatalogImpl makeLatest(String matchPath, String reqPath, URI catURI) {
+  public InvCatalogImpl makeLatest(String matchPath, String reqPath, URI catURI) throws IOException {
     StateGrib localState = (StateGrib) checkState();
+    if (!(localState.gribCollection instanceof PartitionCollection)) return null;
+
+    PartitionCollection pc = (PartitionCollection) localState.gribCollection;
+    if (localState.latest == null) {
+      List<String> paths = new ArrayList<>();
+      GribCollection latest = pc.getLatestGribCollection(paths);
+      if (latest == null) return null;
+
+      // make pathname
+      Formatter f = new Formatter();
+      int count = 0;
+      for (String p : paths) {
+        if (count++ > 0) f.format("/");
+        f.format("%s",p);
+      }
+
+      synchronized (lock) {
+        localState.latest = latest;
+        localState.latestPath = f.toString();
+      }
+    }
+
     try {
-      return makeCatalogFromCollection(catURI, "dunno", localState.gribCollection);
+      return makeCatalogFromCollection(catURI, localState.latestPath, localState.latest);
     } catch (IOException e) {
       e.printStackTrace();
-    } catch (URISyntaxException e) {
-      e.printStackTrace();
     }
+
     return null;
   }
 
@@ -812,7 +834,7 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
     if (!(localState.gribCollection instanceof PartitionCollection)) return null;
 
     PartitionCollection pc = (PartitionCollection) localState.gribCollection;
-    return drill(pc, paths, 0);
+    return drill(pc, paths, 0);                              // case 3 and 4
   }
 
   private DatasetParse drill(PartitionCollection pc, String[] paths, int idx) throws IOException {
@@ -830,53 +852,12 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
 
       String datasetName = paths[idx+1];
       GribCollection.Dataset ds = gc.findDataset(datasetName);
-      if (ds == null) return null;
+      if (ds == null) return null;                         // case 3        // case 4
       GribCollection.GroupGC g = (paths.length <= idx+2) ? ds.getGroup(0) : ds.findGroupById(paths[idx+2]);
       if (g == null) return null;
       return new DatasetParse(pcp, gc, ds, g);
     }
   }
-
-
-    /* if (isGribCollection || isFilePartition) {
-      boolean isBest = paths[0].equals(BEST_DATASET) || paths[0].equals(COLLECTION);
-      String groupName = isBest ? localState.gribCollection.getGroup(0).getId() : paths[0];
-      return new DatasetParse(null, groupName); // case 1 and 2
-
-    } else { // is a time partition
-      PartitionCollection pc = (PartitionCollection) localState.gribCollection;
-
-      List<GribCollection.GroupHcs> groups = localState.gribCollection.getGroups();
-      boolean isSingleGroup = groups.size() == 1;
-
-      if (paths.length == 1) {
-        boolean isBest = paths[0].equals(BEST_DATASET) || paths[0].equals(COLLECTION);
-        if (isBest) {
-          String groupName = localState.gribCollection.getGroup(0).getId();
-          return new DatasetParse(null, groupName); // case 3
-        }
-      }
-
-      if (paths.length == 2) {
-        boolean isBest = paths[1].equals(BEST_DATASET) || paths[1].equals(COLLECTION);
-        if (isSingleGroup) {
-          PartitionCollection.Partition tpp = pc.getPartitionByName(paths[0]);
-          if (tpp != null)
-            return new DatasetParse(tpp, pc.getGroup(0).getId()); // case 4 :  overall collection for partition, one group
-        } else {
-          return new DatasetParse(null, paths[0]);  // case 5 : overall collection for group, multiple partitions
-        }
-      }
-
-      if (paths.length == 3) {
-         boolean isBest = paths[2].equals(BEST_DATASET) || paths[2].equals(COLLECTION);
-         PartitionCollection.Partition tpp = pc.getPartitionByName(paths[0]);
-         String groupName = paths[1];
-         return new DatasetParse(tpp, groupName); // case 6
-      }
-    }  */
-
-
 
   private class DatasetParse {
     final PartitionCollection.Partition partition; // missing for collection level
@@ -893,14 +874,13 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
       this.filename = null;
     }
 
-    private DatasetParse(String filename) {
+   /*  private DatasetParse(String filename) {
       this.partition = null;
       this.gc = null;
       this.ds = null;
       this.group = null;
       this.filename = filename;
-    }
-
+    }  */
 
   }
 

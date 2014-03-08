@@ -656,6 +656,23 @@ public abstract class PartitionCollection extends GribCollection {
     //  partitionMap.remove(p.getDcm().getCollectionName());
   }
 
+  public GribCollection getLatestGribCollection(List<String> paths) throws IOException {
+
+    Partition last = partitions.get(partitions.size()-1);
+    GribCollection gc = last.getGribCollection();
+    paths.add(gc.getName());
+
+    if (gc instanceof PartitionCollection) {
+      PartitionCollection pc = (PartitionCollection) gc;
+      GribCollection result = pc.getLatestGribCollection(paths);
+      gc.close();
+      return result;
+    } else {
+      return gc;
+    }
+
+  }
+
   public void showIndex(Formatter f) {
     super.showIndex(f);
 

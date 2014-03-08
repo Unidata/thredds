@@ -953,6 +953,93 @@ message Variable {
   <li>use the directory tree and the individual files as the partition</li>
   <li>gcname = collectionName = filename</li>
 </ul>
+<p>3/6/2014</p>
+<p> * catalogs<br />
+*  path/catalog.xml                       // top catalog<br />
+*  path/partitionName/catalog.xml<br />
+*  path/partitionName/../partitionName/catalog.xml<br />
+*  path/latest.xml                       // latest (resolver)<br />
+*<br />
+* datasets<br />
+*  path/dataset (BEST, TWOD, GC)                // top collection, single group<br />
+*  path/dataset/groupName                       // top collection, multiple group<br />
+*  path/partitionName/dataset                   // partition, single group<br />
+*  path/partitionName/../partitionName/dataset<br />
+*  path/partitionName/dataset/groupName         // partition, multiple group<br />
+*  path/partitionName/../partitionName/dataset/groupName</p>
+<table width="1567" border="1">
+  <tr>
+    <th width="200" scope="col">dataset</th>
+    <th width="378" scope="col">url</th>
+    <th width="73" scope="col">type</th>
+    <th width="627" scope="col">example</th>
+    <th width="255" scope="col">NetCDF Object</th>
+  </tr>
+  <tr>
+    <td>overall</td>
+    <td>server<em>://thredds/catalog</em>/path<em>/catalog.xml</em></td>
+    <td>catalog</td>
+    <td>http://localhost:8080/thredds/catalog/cfsr-hpr-ts45/catalog.html</td>
+    <td>&nbsp;</td>
+  </tr>
+  <tr>
+    <td>top collection, single group</td>
+    <td>cat?<em>dataset</em>=path/dataset (BEST, TWOD, GC)</td>
+    <td>dataset</td>
+    <td>cat?dataset=grib/NCEP/DGEX/CONUS_12km/TwoD</td>
+    <td>none</td>
+  </tr>
+  <tr>
+    <td>top collection, multiple group</td>
+    <td>cat?<em>dataset</em>=path/dataset/groupName</td>
+    <td>dataset</td>
+    <td>cat?dataset=cfsr-hpr-ts45/TwoD/LatLon_360X720-p25S-179p7W</td>
+    <td>&nbsp;</td>
+  </tr>
+  <tr>
+    <td>group best</td>
+    <td>bcat?<em>dataset</em>=path/group/<em>best </em></td>
+    <td>dataset</td>
+    <td>bcat?dataset=grib/NCDC/CFSR/FLX-GaussianT382/best</td>
+    <td>collectionName(group).ncx</td>
+  </tr>
+  <tr>
+    <td>latest collection</td>
+    <td>path<em>/<em>latest.xml</em></em></td>
+    <td>catalog</td>
+    <td>http://localhost:8080/thredds/catalog/cfsr-hpr-ts45/latest.html</td>
+    <td>&nbsp;</td>
+  </tr>
+  <tr>
+    <td>partition catalog</td>
+    <td>path/partitionName/../partitionName/catalog.xml</td>
+    <td>catalog</td>
+    <td>http://localhost:8080/thredds/catalog/cfsr-hpr-ts45/cfsr-hpr-ts45-1999/catalog.html</td>
+    <td>&nbsp;</td>
+  </tr>
+  <tr>
+    <td>best in partition, group</td>
+    <td>pcat?<em>dataset</em>=path/partitionName/group/<em>best</em></td>
+    <td>dataset</td>
+    <td>pcat?dataset=grib/NCDC/CFSR/200808/FLX-GaussianT382/best</td>
+    <td>partitionName(group).ncx</td>
+  </tr>
+  <tr>
+    <td>partition, group files catalog</td>
+    <td>path/partitionName/group<em>/files/catalog.xml</em></td>
+    <td>catalog</td>
+    <td>http://localhost:8080/thredds/catalog/grib/NCDC/CFSR/200808/FLX-GaussianT382/files/catalog.html</td>
+    <td>&nbsp;</td>
+  </tr>
+  <tr>
+    <td>individual files</td>
+    <td>pgfcat?<em>dataset</em>=path/<em>files</em>/filepath</td>
+    <td>dataset</td>
+    <td>pgfcat?dataset=grib/NCDC/CFSR/files/200808/dlwsfc.l.gdas.200808.grb2</td>
+    <td>file.ncx</td>
+  </tr>
+</table>
+<p>&nbsp;</p>
 <p></p>
 </body>
 </html>

@@ -63,7 +63,7 @@ public class FeatureCollectionConfig {
   }
 
   static public enum GribDatasetType {
-    TwoD, Best, Hour0, Files, LatestFile
+    TwoD, Best, Hour0, Files, Latest, LatestFile
   }
 
   static public enum PartitionType {
@@ -487,6 +487,7 @@ public class FeatureCollectionConfig {
       for (String type : types) {
         try {
           GribDatasetType fdt = GribDatasetType.valueOf(type);
+          if (fdt == GribDatasetType.LatestFile) fdt = GribDatasetType.Latest;
           datasets.add(fdt);
         } catch (Exception e) {
           log.warn("Dont recognize GribDatasetType {}", type);
