@@ -16,16 +16,12 @@
   gridded and point datasets whose time and spatial coordinates are recognized by the CDM software stack. This allows the TDS to automatically create logical
   datasets composed of collections of files, and to allow subsetting in coordinate space on them, eg through the WMS, WCS, and Netcdf Subsetting Service.</p>
 
-<p>The <strong>featureCollection</strong> element is new in TDS 4.2 and replaces the fmrcDataset element in earlier versions. TDS 4.2 allows <strong>featureType</strong>
-  = <em>FMRC, Point, </em>and<em> Station</em>. TDS 4.3 also allows <strong>featureType</strong> =<em> GRIB</em>, which is used for collections of GRIB files.
-  <em>Currently, one should <strong>only</strong> serve GRIB files with featureCollection=GRIB.</em></p>
-
-<p>The <strong>featureCollection</strong> element is a subtype of <strong>dataset</strong> element. It defines a<em> logical dataset</em> for the TDS. All of the elements
-  that can be used inside of a <strong>dataset</strong> element can be used inside of a <strong>featureCollection</strong> element.</p>
-
+<p>Feature Collections have been undergoing continual development and refinement in the recent version of the TDS, and as you upgrade there are (mostly) minor changes to configuration and usage. The <strong>featureCollection</strong> element was first introduced  TDS 4.2, replacing the <strong>fmrcDataset</strong> element in earlier versions. TDS 4.2 allowed featureType
+  = <em>FMRC, Point, </em>and<em> Station</em>. TDS 4.3 added featureType =<em> GRIB</em>, used for collections of GRIB files.
+  TDS 4.5 changed this usage to featureType =<em> </em>GRIB1 or GRIB2. <em><strong>Currently, one should only serve GRIB files with featureCollection=GRIB1 or GRIB2. One should not use FMRC, or NcML Aggregations on GRIB files.</strong></em></p>
 <p>A fair amount of the complexity of feature collections is managing the collection of files on the server, both in creating indexes for performance, and in
-  managing collections that change. For high-performance servers, its better to let a background process manage indexing, and the THREDDS Data Manager
-  (<a href="TDM.html">TDM</a>) is an experimental (alpha release) application for this purpose available in TDS 4.3.</p>
+  managing collections that change. For high-performance servers, it is necessary to let a background process manage indexing, and the THREDDS Data Manager
+  (<a href="TDM.html">TDM</a>) is now available for that purpose as of TDS 4.5.</p>
 
 <h3>Contents:</h3>
 <ul>
@@ -43,38 +39,63 @@
 </ul>
 <hr/>
 <h2><a name="example" id="example"></a>Example catalog elements</h2>
+<p>The <strong>featureCollection</strong> element is a subtype of <strong>dataset</strong> element. It defines a<em> logical dataset</em> for the TDS. All of the elements
+that can be used inside of a <strong>dataset</strong> element can be used inside of a <strong>featureCollection</strong> element.</p>
 
-<p>Simple case using defaults:</p>
-<pre>&lt;featureCollection name=&quot;NCEP-NAM-Polar_90km&quot; featureType=&quot;GRIB&quot; path=&quot;grib/NCEP/NAM/Polar_90km&quot;&gt;
-  &lt;collection spec=&quot;/data/ldm/pub/native/grid/NCEP/NAM/Polar_90km/NAM_Polar_90km_#yyyyMMdd_HHmm#.grib2$&quot;/&gt;
+<p>Example 1: Simple case using defaults:</p>
+<pre>1) &lt;featureCollection name=&quot;NCEP-NAM-Polar_90km&quot; featureType=&quot;GRIB2&quot; path=&quot;grib/NCEP/NAM/Polar_90km&quot;&gt;
+2)   &lt;collection spec=&quot;/data/ldm/pub/native/grid/NCEP/NAM/Polar_90km/NAM_Polar_90km_.*\.grib2$&quot;/&gt;
+   &lt;/featureCollection&gt;
+</pre>
+<ol>
+  <li>A GRIB2 Feature Collection dataset is defined, with the &quot;human readable&quot; name of  <em>NCEP-NAM-Polar_90km</em>. Its URL path(s) will look like <em>http://server/thredds/&lt;service&gt;/grib/NCEP/NAM/Polar_90km/...</em> The Dataset ID is automatically set to the path, so that its dataset page will be <em>http://server/thredds/catalog/grib/NCEP/NAM/Polar_90km/catalog.xml?dataset=grib/NCEP/NAM/Polar_90km</em>/...</li>
+  <li>Defines the files in the collection as any files in the directory <em>/data/ldm/pub/native/grid/NCEP/NAM/Polar_90km/</em> which match the  regular expression <em>&quot;NAM_Polar_90km_.*\.grib2$</em>&quot; . In this case, it means any filename starting with <em>&quot;NAM_Polar_90km_&quot;</em> and ending with &quot;<em>.grib2</em>&quot;. </li>
+</ol>
+<p>Example 2: More fully specify the options explicitly:</p>
+<pre>&lt;featureCollection name=&quot;NCEP-NAM-Alaska_11km&quot; featureType=&quot;GRIB2&quot; path=&quot;grib/NCEP/NAM/Alaska_11km&quot;&gt;
+  &lt;metadata inherited=&quot;true&quot;&gt;<br />1)  &lt;serviceName&gt;GribServices&lt;/serviceName&gt;
+2)  &lt;documentation type=&quot;summary&quot;&gt;NCEP GFS Model : AWIPS 230 (G) Grid. Global Lat/Lon grid&lt;/documentation&gt;<br />  &lt;/metadata&gt;
 
+3)&lt;collection spec=&quot;/data/ldm/pub/native/grid/NCEP/NAM/Alaska_11km/.*grib2$&quot;
+              name=&quot;NAM_Alaska_11km&quot;
+4)            dateFormatMark=&quot;#NAM_Alaska_11km_#yyyyMMdd_HHmm&quot;
+5)            timePartition=&quot;file&quot;
+6)            olderThan=&quot;5 min&quot;/&gt;  
+7)&lt;update startup=&quot;never&quot; trigger=&quot;allow&quot;/&gt;
+8)&lt;tdm rewrite=&quot;test&quot; rescan=&quot;0 0/15 * * * ? *&quot; trigger=&quot;allow&quot;/&gt;
+9)&lt;gribConfig datasetTypes=&quot;TwoD Best Latest&quot; /&gt;
 &lt;/featureCollection&gt;
 </pre>
-<p>Fully specify the options:</p>
-<pre>&lt;featureCollection name=&quot;NCEP-NAM-Alaska_11km&quot; featureType=&quot;GRIB&quot; harvest=&quot;true&quot; path=&quot;grib/NCEP/NAM/Alaska_11km&quot;&gt;
-  &lt;collection spec=&quot;/data/ldm/pub/native/grid/NCEP/NAM/Alaska_11km/.*grib2$&quot;<br/>            name=&quot;NAM_Alaska_11km&quot;<br/>            dateFormatMark=&quot;#NAM_Alaska_11km_#yyyyMMdd_HHmm&quot;<br/>            timePartition=&quot;day&quot;<br/>            olderThan=&quot;5 min&quot;/&gt;
-
-
-  &lt;update startup=&quot;true&quot; rescan=&quot;0 5 3 * * ? *&quot; trigger=&quot;allow&quot;/&gt;
-  &lt;protoDataset choice=&quot;Penultimate&quot; change=&quot;0 2 3 * * ? *&quot; /&gt;
-  &lt;fmrcConfig regularize=&quot;true&quot; datasetTypes=&quot;TwoD Best Files Runs ConstantForecasts ConstantOffsets&quot; /&gt;
-&lt;/featureCollection&gt;
-</pre>
-<p> With NcML elements:</p>
-<pre>&lt;featureCollection name=&quot;NCEP-NAM-Alaska_11km&quot; featureType=&quot;GRIB&quot; harvest=&quot;true&quot; path=&quot;grib/NCEP/NAM/Alaska_11km&quot;&gt;
+<ol>
+  <li>Arbitrary metatdata can be added to the catalog. Here, we indicate to use the service called &quot;GribServices&quot; (not shown, but likely a compound service that includes all the services you want to provide for GRIB Feature Collections).</li>
+  <li>A documention element of type &quot;<em>summary</em>&quot; is added to the catalog for this dataset.</li>
+  <li>The collection consists of all files ending with &quot;<em>grib2</em>&quot; in the directory &quot;<em>/data/ldm/pub/native/grid/NCEP/NAM/Alaska_11km/</em>&quot;.</li>
+  <li>A date will be extracted from the  filename, and the files will then be sorted by date. Important if the lexigraphic ordering is different that the date order.</li>
+  <li>Partitioning will happen at the file level.</li>
+  <li>Only include files whose lastModified date is more than 5 minutes old. This is to exclude files that are actively being created.</li>
+  <li>Instruct the  TDS to read, but never write indexes. </li>
+  <li>Instruct the TDM to examine all the files to detect if they have changed since the index was written. Rescan every 15 minutes.</li>
+  <li>(GRIB specific) Show the <em>TwoD</em> and <em>Best</em> datasets, as well as a link to the <em>latest</em> partition.</li>
+</ol>
+<p> Example 3: With NcML elements: LOOK change this to Point. NOT USED BY GRIB</p>
+<pre>&lt;featureCollection name=&quot;NCEP-NAM-Alaska_11km&quot; featureType=&quot;GRIB2&quot; harvest=&quot;true&quot; path=&quot;grib/NCEP/NAM/Alaska_11km&quot;&gt;
   &lt;collection spec=&quot;/data/ldm/pub/native/grid/NCEP/NAM/Alaska_11km/Alaska_11km_#yyyyMMdd_HHmm#.grib2$&quot; olderThan=&quot;5 min&quot;/&gt;
   &lt;update startup=&quot;true&quot; rescan=&quot;0 5 3 * * ? *&quot; /&gt;
-  &lt;protoDataset choice=&quot;Penultimate&quot; change=&quot;0 2 3 * * ? *&quot; &gt;
-    <strong>&lt;netcdf xmlns=&quot;http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2&quot;&gt;<br/> &lt;attribute name=&quot;History&quot; value=&quot;processed
-      by Rectilyser 6.23a&quot;/&gt;<br/>
-      &lt;/netcdf&gt;</strong>
-  &lt;/protoDataset&gt;
-  &lt;fmrcConfig regularize=&quot;true&quot; datasetTypes=&quot;TwoD Best Files Runs ConstantForecasts ConstantOffsets&quot; /&gt;
-
-  <strong>&lt;netcdf xmlns=&quot;http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2&quot;&gt;<br/> &lt;attribute name=&quot;Conventions&quot; value=&quot;CF-1.6&quot;/&gt;<br/>
-    &lt;/netcdf&gt;</strong>
-
+1)&lt;protoDataset choice=&quot;Penultimate&quot; change=&quot;0 2 3 * * ? *&quot; &gt;
+    &lt;netcdf xmlns=&quot;http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2&quot;&gt;
+      &lt;variable name=&quot;humidity&quot; /&gt;
+        &lt;attribute name=&quot;coordinates&quot; value=&quot;time1 height x y&quot;/&gt;
+      &lt;/variable&gt;
+    &lt;/netcdf&gt;
+  &lt;/protoDataset&gt;  
+  &lt;gribConfig datasetTypes=&quot;TwoD Best Latest&quot; /&gt;
+2)&lt;netcdf xmlns=&quot;http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2&quot;&gt;
+    &lt;attribute name=&quot;Conventions&quot; value=&quot;CF-1.6&quot;/&gt;
+  &lt;/netcdf&gt;
 &lt;/featureCollection&gt;</pre>
+<ol>
+  <li></li>
+</ol>
 <hr/>
 <h2><a id="elements"></a>Description of elements in TDS Configuration catalogs</h2>
 
@@ -82,7 +103,7 @@
 
 <p>A <strong>featureCollection</strong> is a kind of <strong>dataset</strong> element, and so can contain the same elements and attributes of that element.
   Following is the XML Schema definition, which shows only the elements and attributes that are particular to a featureCollection:</p>
-<pre>  &lt;xsd:element name=&quot;featureCollection&quot; substitutionGroup=&quot;dataset&quot;&gt;<br/>    &lt;xsd:complexType&gt;<br/>      &lt;xsd:complexContent&gt;<br/>        &lt;xsd:extension base=&quot;DatasetType&quot;&gt;<br/>          &lt;xsd:sequence&gt;<br/>            &lt;xsd:element type=&quot;collectionType&quot; name=&quot;collection&quot;/&gt;<br/>            &lt;xsd:element type=&quot;updateType&quot; name=&quot;update&quot; minOccurs=&quot;0&quot;/&gt;<br/>            &lt;xsd:element type=&quot;manageType&quot; name=&quot;manage&quot; minOccurs=&quot;0&quot;/&gt;<br/>            &lt;xsd:element type=&quot;protoDatasetType&quot; name=&quot;protoDataset&quot; minOccurs=&quot;0&quot;/&gt;
+<pre>  &lt;xsd:element name=&quot;featureCollection&quot; substitutionGroup=&quot;dataset&quot;&gt;<br/>    &lt;xsd:complexType&gt;<br/>      &lt;xsd:complexContent&gt;<br/>        &lt;xsd:extension base=&quot;DatasetType&quot;&gt;<br/>          &lt;xsd:sequence&gt;<br/>            &lt;xsd:element type=&quot;collectionType&quot; name=&quot;collection&quot;/&gt;<br/>            &lt;xsd:element type=&quot;updateType&quot; name=&quot;update&quot; minOccurs=&quot;0&quot;/&gt;<br/>            &lt;xsd:element type=&quot;updateType&quot; name=&quot;tdm&quot; minOccurs=&quot;0&quot;/&gt;<br />            &lt;xsd:element type=&quot;manageType&quot; name=&quot;manage&quot; minOccurs=&quot;0&quot;/&gt;<br/>            &lt;xsd:element type=&quot;protoDatasetType&quot; name=&quot;protoDataset&quot; minOccurs=&quot;0&quot;/&gt;
             &lt;xsd:element type=&quot;fmrcConfigType&quot; name=&quot;fmrcConfig&quot; minOccurs=&quot;0&quot;/&gt;<br/>            &lt;xsd:element type=&quot;pointConfigType&quot; name=&quot;pointConfig&quot; minOccurs=&quot;0&quot;/&gt;<br/>            &lt;xsd:element type=&quot;gribConfigType&quot; name=&quot;gribConfig&quot; minOccurs=&quot;0&quot;/&gt;<br/>            &lt;xsd:element ref=&quot;ncml:netcdf&quot; minOccurs=&quot;0&quot;/&gt;<br/>          &lt;/xsd:sequence&gt;<br/>          &lt;xsd:attribute name=&quot;featureType&quot; type=&quot;featureTypeChoice&quot; use=&quot;required&quot;/&gt;<br/>          &lt;xsd:attribute name=&quot;path&quot; type=&quot;xsd:string&quot; use=&quot;required&quot;/&gt;<br/>        &lt;/xsd:extension&gt;<br/>      &lt;/xsd:complexContent&gt;<br/>    &lt;/xsd:complexType&gt;<br/>  &lt;/xsd:element&gt;</pre>
 Here is an example
 <strong>featureCollection</strong> as you might put it into a TDS catalog: 
@@ -201,7 +222,7 @@ dateFormatMark=&quot;yyyyMMdd#<em>/Experiment</em>#&quot;</pre>
 <h3>protoDataset element</h3>
 
 <p>Provides control over the choice of the <strong><em>prototype dataset</em></strong> for the collection. The protype dataset is used to populate the metadata
-  for the feature collection.</p>
+  for the feature collection. (Not used by GRIB).</p>
 <pre>&lt;protoDataset <strong>choice</strong>=&quot;Penultimate&quot; <strong>change</strong>=&quot;<em>0 2 3 * * ? *</em>&quot;&gt;
   &lt;netcdf xmlns=&quot;http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2&quot;&gt;<br/>    &lt;attribute name=&quot;featureType&quot; value=&quot;timeSeries&quot;/&gt;<br/>
   &lt;/netcdf&gt;
@@ -427,7 +448,7 @@ The XML Schema definition for the update element:
 <p></p>
 <hr width="100%"/>
 <address>
-  <img src="../../thread.png" width="76" height="67"/> This document was last updated Sep 2013.
+  <img src="../../thread.png" width="76" height="67"/> This document was last updated March 2014
 </address>
 </body>
 </html>

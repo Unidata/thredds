@@ -364,7 +364,7 @@ public class FeatureCollectionConfig {
   }
 
   static private Set<GribDatasetType> defaultGribDatasetTypes =
-          Collections.unmodifiableSet(EnumSet.of(GribDatasetType.TwoD, GribDatasetType.Best));
+          Collections.unmodifiableSet(EnumSet.of(GribDatasetType.TwoD, GribDatasetType.Best, GribDatasetType.Latest));
 
   static public class GribConfig {
     public Set<GribDatasetType> datasets = defaultGribDatasetTypes;
