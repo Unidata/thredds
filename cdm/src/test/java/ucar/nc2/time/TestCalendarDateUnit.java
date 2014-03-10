@@ -101,7 +101,8 @@ second
 
   @Test
   public void testProblem()  {
-    testBase("seconds since 1968-05-23 00:00:00 UTC");
+    testCalendar(null, "seconds since 1968-05-23 00:00:00 UTC");
+    testCalendar(null, "seconds since 1970-01-01 00 UTC");
   }
 
   private void testCoord(String unit) {
