@@ -229,17 +229,16 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
 
       if (ds.getType() == GribCollection.Type.GC) {
 
-        Iterable<GribCollection.GroupGC> groups = ds.getGroups();
-        InvDatasetImpl gcds = new InvDatasetImpl(this, getDatasetNameGC());
+        //InvDatasetImpl gcds = new InvDatasetImpl(this, getDatasetNameGC());
         String path = pathStart + "/" + GC_DATASET;
-        gcds.setUrlPath(path);
-        gcds.tmi.addDocumentation("summary", "Single reference time Grib Collection");
-        gcds.tmi.addVariableMapLink(makeMetadataLink(path, VARIABLES));
-        gcds.tmi.setTimeCoverage(extractCalendarDateRange(groups));
-        result.addDataset(gcds);
+        result.setUrlPath(path);
 
-        // Collections.sort(groups);
-        makeDatasetsFromGroups(gcds, groups, isSingleGroup);
+        Iterable<GribCollection.GroupGC> groups = ds.getGroups();
+        result.tmi.addDocumentation("summary", "Single reference time Grib Collection");
+        result.tmi.addVariableMapLink(makeMetadataLink(path, VARIABLES));
+        result.tmi.setTimeCoverage(extractCalendarDateRange(groups));
+
+        makeDatasetsFromGroups(result, groups, isSingleGroup);
       }
 
     }

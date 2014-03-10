@@ -1813,10 +1813,12 @@ public class
       }
 
       try {
-        int pos = command.indexOf(' ');
+        /* int pos = command.indexOf(' ');
         if (pos < 0) return;
         String valString = command.substring(0, pos).trim();
-        String unitString = command.substring(pos+1).trim();
+        String unitString = command.substring(pos+1).trim();  */
+
+        String unitString = command;
         ta.appendLine("\nParse CalendarDateUnit: <" + unitString + ">\n");
 
         CalendarDateUnit cdu = CalendarDateUnit.of(null, unitString);
