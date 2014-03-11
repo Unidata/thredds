@@ -52,24 +52,24 @@ public final class ThreddsConfig {
   private static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger( "serverStartup" );
   private static ThreddsConfigReader reader;
 
-  private static List<String> catalogRoots;
-  private static List<String> contentRootList;
+  private static List<String> catalogRoots;   //catalogs not linked from main catalog
+  //private static List<String> contentRootList;
 
   public static void init( String filename) {
     reader = new ThreddsConfigReader(filename, log);
 
     catalogRoots = new ArrayList<String>();
-    contentRootList = new ArrayList<String>();
+    //contentRootList = new ArrayList<String>();
 
     for (String location : reader.getRootList("catalogRoot"))  {
       catalogRoots.add( location );
       log.info( "ThreddsConfig: adding catalogRoot = " + location);
     }
 
-    for (String location : reader.getElementList("contentRoots", "contentRoot"))  {
+    /* for (String location : reader.getElementList("contentRoots", "contentRoot"))  {
       contentRootList.add( location );
       log.info( "ThreddsConfig: adding contentRoot [" + location + "]." );
-    }
+    } */
 
     // viewer plug-in LOOK replace!!
     //for (String className : reader.getRootList("Viewer"))  {
@@ -86,9 +86,9 @@ public final class ThreddsConfig {
     return Collections.unmodifiableList( catalogRoots);
   }
 
-  public static List<String> getContentRootList() {
+  /* public static List<String> getContentRootList() {
     return Collections.unmodifiableList( contentRootList);
-  }
+  } */
 
   static public String get(String paramName, String defValue) {
     return reader.get(paramName, defValue);

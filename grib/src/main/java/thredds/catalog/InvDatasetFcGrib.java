@@ -36,6 +36,7 @@ import net.jcip.annotations.ThreadSafe;
 import thredds.featurecollection.FeatureCollectionConfig;
 import thredds.featurecollection.FeatureCollectionType;
 import thredds.inventory.*;
+import ucar.coord.CoordinateRuntime;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dt.grid.GridDataset;
@@ -43,6 +44,7 @@ import ucar.nc2.dt.grid.GridCoordSys;
 import ucar.nc2.ft.FeatureDataset;
 import ucar.nc2.grib.GdsHorizCoordSys;
 import ucar.nc2.grib.collection.*;
+import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time.CalendarDateRange;
 import ucar.unidata.geoloc.LatLonRect;
 
@@ -162,10 +164,10 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
     InvCatalogImpl parentCatalog = (InvCatalogImpl) getParentCatalog();
     InvCatalogImpl result = new InvCatalogImpl(gc.getName(), parentCatalog.getVersion(), catURI);  // LOOK is catURL right ??
 
-    if (config.gribConfig.hasDatasetType(FeatureCollectionConfig.GribDatasetType.Latest))
-      result.addService(InvService.latest);
-    result.addDataset(makeDatasetFromCollection(parentName, gc));
-    result.addService(virtualService);
+    InvDatasetImpl ds = makeDatasetFromCollection(parentName, gc);
+    result.addDataset(ds);
+    String serviceName = ds.getServiceName();
+    result.addService(serviceName == Virtual_Services ? virtualService : orgService);
     result.finish();
 
     return result;
@@ -228,13 +230,17 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
       }
 
       if (ds.getType() == GribCollection.Type.GC) {
+        tmi.setServiceName(orgService.getName());  // LOOK kludge - assume GC is the same as a file (!)
 
-        //InvDatasetImpl gcds = new InvDatasetImpl(this, getDatasetNameGC());
+        CoordinateRuntime runCoord = gc.getMasterRuntime();
+        assert runCoord.getSize() == 1;
+        CalendarDate runtime = runCoord.getFirstDate();
         String path = pathStart + "/" + GC_DATASET;
         result.setUrlPath(path);
 
         Iterable<GribCollection.GroupGC> groups = ds.getGroups();
         result.tmi.addDocumentation("summary", "Single reference time Grib Collection");
+        result.tmi.addDocumentation("Reference Time", runtime.toString());
         result.tmi.addVariableMapLink(makeMetadataLink(path, VARIABLES));
         result.tmi.setTimeCoverage(extractCalendarDateRange(groups));
 
@@ -740,8 +746,32 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
     return "Full Collection (Reference / Forecast Time) Dataset";
   }
 
-  protected String getDatasetNameGC() {
-    return "Grib Collection";
+  @Override
+  public File getFile(String matchPath) {
+    if (null == topDirectory) return null;
+
+    StateGrib localState = (StateGrib) checkState();
+
+    DatasetParse dp = null;
+    try {
+      dp = parse(matchPath, localState);
+      if (dp == null) return null;
+
+      GribCollection gc = null;
+      if (dp.partition != null) {   // specific time partition
+        gc =  dp.partition.getGribCollection();
+      } else {
+        gc = localState.gribCollection;
+      }
+
+      List<String> files = gc.getFilenames();
+      if (files.size() != 1) return null;
+      return new File(files.get(0));
+
+    } catch (IOException e) {
+      logger.error("Failed to get file="+matchPath, e);
+      return null;
+    }
   }
 
   @Override

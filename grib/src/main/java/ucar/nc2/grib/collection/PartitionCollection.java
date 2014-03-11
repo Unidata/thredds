@@ -659,9 +659,9 @@ public abstract class PartitionCollection extends GribCollection {
   public GribCollection getLatestGribCollection(List<String> paths) throws IOException {
 
     Partition last = partitions.get(partitions.size()-1);
-    GribCollection gc = last.getGribCollection();
-    paths.add(gc.getName());
+    paths.add(last.getName());
 
+    GribCollection gc = last.getGribCollection();
     if (gc instanceof PartitionCollection) {
       PartitionCollection pc = (PartitionCollection) gc;
       GribCollection result = pc.getLatestGribCollection(paths);

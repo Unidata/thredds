@@ -253,10 +253,11 @@ public abstract class InvDatasetFeatureCollection extends InvCatalogRef implemen
   boolean check(StringBuilder out, boolean show) {
     boolean isValid = true;
 
-    if (getServiceDefault() == null) {
+    // no longer need default service for FC 3/11/14
+    /* if (getServiceDefault() == null) {
       out.append("**Warning: Dataset (").append(getFullName()).append("): has no default service\n");
       isValid = false;
-    }
+    }  */
 
     return isValid && super.check(out, show);
   }
@@ -270,8 +271,10 @@ public abstract class InvDatasetFeatureCollection extends InvCatalogRef implemen
   // call this first time a request comes in
   protected void firstInit() {
     this.orgService = getServiceDefault();
-    if (this.orgService == null) throw new IllegalStateException("No default service for InvDatasetFeatureCollection " + name);
-    this.virtualService = makeVirtualService(this.orgService);
+    if (this.orgService == null) {
+      this.orgService = makeServiceDefault();
+    }
+    this.virtualService = makeServiceVirtual(this.orgService);
     this.cdmrService = makeCdmrFeatureService(); // WTF ??
   }
 
@@ -368,7 +371,23 @@ public abstract class InvDatasetFeatureCollection extends InvCatalogRef implemen
   }
 
   ///////////////////////////////////////////////////////////////////////////////////////////////////
-  protected InvService makeVirtualService(InvService org) {
+  protected InvService makeServiceDefault() {
+
+    // LOOK need (thredds.server.config.AllowableService)
+    InvService result = new InvService("Default", ServiceType.COMPOUND.toString(), null, null, null);
+    result.addService(InvService.opendap);
+    result.addService(InvService.fileServer);
+    result.addService(InvService.wms);
+    result.addService(InvService.wcs);
+    result.addService(InvService.ncss);
+    result.addService(InvService.cdmremote);
+    result.addService(InvService.ncml);
+    result.addService(InvService.uddc);
+    result.addService(InvService.iso);
+    return result;
+  }
+
+  protected InvService makeServiceVirtual(InvService org) {
     if (org.getServiceType() != ServiceType.COMPOUND) return org;
 
     InvService result = new InvService(Virtual_Services, ServiceType.COMPOUND.toString(), null, null, null);

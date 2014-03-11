@@ -110,6 +110,7 @@
   GRIB index caching
   <GribIndex>
     <alwaysUse>false</alwaysUse>
+    <neverUse>false</neverUse>
     <dir>/tomcat_home/content/thredds/cache/grib/</dir>
     <policy>oneDirectory</policy>
     <scour>0 hours</scour>

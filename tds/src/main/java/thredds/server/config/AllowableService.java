@@ -20,6 +20,7 @@ import thredds.servlet.ThreddsConfig;
  */
 public enum AllowableService {
 
+  // LOOK this assumes that ThreddsConfig has been initialized before this class is instantiated !
 	CDMREMOTE(InvService.wms, ThreddsConfig.getBoolean("CdmRemote.allow", true)),
   NCSS(InvService.ncss, ThreddsConfig.getBoolean("NetcdfSubsetService.allow", true)),
 	WMS(InvService.wms, ThreddsConfig.getBoolean("WMS.allow", false)),
@@ -59,7 +60,6 @@ public enum AllowableService {
 		List<InvService> services = catalog.getServices();
 		for (InvService s : services) {
 			disallowedServices.addAll(checkService(s));
-
 		}
 		return disallowedServices;
 	}
