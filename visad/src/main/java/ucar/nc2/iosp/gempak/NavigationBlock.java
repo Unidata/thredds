@@ -332,7 +332,7 @@ public class NavigationBlock extends GridDefRecord {
             double lllonv = vals[7];
             double urlatv = vals[8];
             double urlonv = vals[9];
-            if (urlonv < lllonv) {
+            if (urlonv <= lllonv) {
                 urlonv += 360.;
             }
             double dx = Math.abs((urlonv - lllonv) / (vals[4] - 1));
