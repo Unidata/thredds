@@ -125,6 +125,8 @@ public class GribCdmIndex implements IndexReader {
         case Partition1:
           result = Grib1PartitionBuilderFromIndex.createTimePartitionFromIndex(name, f.getParentFile(), raf, config, logger);
           break;
+        default:
+          logger.warn("GribCdmIndex.openCdmIndex failed on {} type={}", indexFileInCache.getPath(), type);
       }
 
     } catch (Throwable t) {

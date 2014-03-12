@@ -602,7 +602,7 @@ public abstract class InvDatasetFeatureCollection extends InvCatalogRef implemen
   }
 
   // called by DataRootHandler.getCrawlableDatasetAsFile()
-  // have to remove the extra "files" from the path
+  // may have to remove the extra "files" from the path
   // this says that a File URL has to be topDirectory + [FILES/ +] + match.remaining
   public File getFile(String remaining) {
     if (null == topDirectory) return null;

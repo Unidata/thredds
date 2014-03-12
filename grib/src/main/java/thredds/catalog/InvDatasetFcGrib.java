@@ -149,9 +149,11 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
       GribCollection previousLatest = localState.latest;
 
       localState.gribCollection = GribCdmIndex.openGribCollection(this.config, force, logger);
+      if (localState.gribCollection == null)
+        logger.error("Opening GribColelctions failed "+this.config);
       logger.debug("{}: GribCollection object was recreated", getName());
       if (previous != null) previous.close();                 // LOOK may be another thread using - other thread will fail
-      if (previousLatest != previousLatest) previous.close();
+      if (previousLatest != null) previousLatest.close();
 
     } catch (IOException ioe) {
       logger.error("GribFc updateCollection", ioe);
@@ -747,15 +749,15 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
   }
 
   @Override
-  public File getFile(String matchPath) {
+  public File getFile(String remaining) {
     if (null == topDirectory) return null;
 
     StateGrib localState = (StateGrib) checkState();
 
     DatasetParse dp = null;
     try {
-      dp = parse(matchPath, localState);
-      if (dp == null) return null;
+      dp = parse(remaining, localState);
+      if (dp == null) return super.getFile(remaining);
 
       GribCollection gc = null;
       if (dp.partition != null) {   // specific time partition
@@ -769,10 +771,11 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
       return new File(files.get(0));
 
     } catch (IOException e) {
-      logger.error("Failed to get file="+matchPath, e);
+      logger.error("Failed to get file="+ remaining, e);
       return null;
     }
   }
+
 
   @Override
   public ucar.nc2.dt.grid.GridDataset getGridDataset(String matchPath) throws IOException {
