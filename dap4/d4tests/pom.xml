@@ -1,0 +1,198 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<modelVersion>4.0.0</modelVersion>
+
+<parent>
+  <groupId>edu.ucar</groupId>
+  <artifactId>dap4</artifactId>
+  <version>4.5.0-SNAPSHOT</version>
+</parent>
+
+<artifactId>d4tests</artifactId>
+<packaging>jar</packaging>
+
+<dependencies>
+
+  <dependency>
+    <groupId>${project.groupid}</groupId>
+    <artifactId>d4core</artifactId>
+  </dependency>
+  <dependency>
+    <groupId>${project.groupid}</groupId>
+    <artifactId>d4cdmclient</artifactId>
+  </dependency>
+  <dependency>
+    <groupId>${project.groupid}</groupId>
+    <artifactId>d4shared</artifactId>
+  </dependency>
+  <dependency>
+    <groupId>${project.groupid}</groupId>
+    <artifactId>d4servletshared</artifactId>
+  </dependency>
+  <dependency>
+    <groupId>${project.groupid}</groupId>
+    <artifactId>d4ts</artifactId>
+  </dependency>
+
+  <!-- Thredds/CDM dependencies -->
+  <dependency>
+      <groupId>edu.ucar</groupId>
+      <artifactId>cdm</artifactId>
+  </dependency>
+  <dependency>
+      <groupId>edu.ucar</groupId>
+      <artifactId>netcdf4</artifactId>
+  </dependency>
+  <dependency>
+      <groupId>edu.ucar</groupId>
+      <artifactId>tdm</artifactId>
+  </dependency>
+
+  <!-- testing dependencies -->
+<!--
+  <dependency>
+    <groupId>junit</groupId>
+    <artifactId>junit</artifactId>
+    <version>4.8.1</version>
+    <scope>test</scope>
+  </dependency>
+-->
+
+  <dependency>
+    <groupId>org.springframework</groupId>
+    <artifactId>spring-webmvc</artifactId>
+  </dependency>
+  <dependency>
+      <groupId>org.springframework</groupId>
+      <artifactId>spring-test</artifactId>
+      <scope>test</scope>
+  </dependency>
+
+  <dependency>
+    <groupId>org.springframework</groupId>
+    <artifactId>spring-webmvc</artifactId>
+  </dependency>
+  <dependency>
+      <groupId>org.springframework</groupId>
+      <artifactId>spring-test</artifactId>
+      <scope>test</scope>
+  </dependency>
+
+  <!-- library dependencies -->
+  <dependency>
+    <groupId>javax.servlet</groupId>
+    <artifactId>javax.servlet-api</artifactId>
+    <scope>provided</scope>
+  </dependency>
+  <dependency>
+    <groupId>org.apache.httpcomponents</groupId>
+    <artifactId>httpcore</artifactId>
+  </dependency>
+  <dependency>
+    <groupId>org.apache.httpcomponents</groupId>
+    <artifactId>httpclient</artifactId>
+  </dependency>
+  <dependency>
+    <groupId>org.apache.httpcomponents</groupId>
+    <artifactId>httpmime</artifactId>
+  </dependency>
+  <dependency>
+    <groupId>org.apache.logging.log4j</groupId>
+    <artifactId>log4j-api</artifactId>
+  </dependency>
+  <dependency>
+    <groupId>org.apache.logging.log4j</groupId>
+    <artifactId>log4j-core</artifactId>
+  </dependency>
+  <dependency>
+    <groupId>org.apache.logging.log4j</groupId>
+    <artifactId>log4j-slf4j-impl</artifactId>
+    <scope>runtime</scope>
+  </dependency>
+  <dependency>
+    <groupId>org.slf4j</groupId>
+    <artifactId>jcl-over-slf4j</artifactId>
+    <scope>runtime</scope>
+  </dependency>
+  <dependency>
+    <groupId>org.slf4j</groupId>
+    <artifactId>slf4j-api</artifactId>
+  </dependency>
+  <dependency>
+    <groupId>org.slf4j</groupId>
+    <artifactId>slf4j-jdk14</artifactId>
+    <scope>runtime</scope>
+  </dependency>
+
+</dependencies>
+
+<build>
+  <plugins>
+
+    <plugin>
+      <groupId>org.apache.maven.plugins</groupId>
+      <artifactId>maven-surefire-plugin</artifactId>
+      <!--version>2.16</version-->
+       <configuration>
+         <skip>${skipTests}</skip>
+         <testFailureIgnore>true</testFailureIgnore>
+         <argLine>-Dfile.encoding=UTF-8</argLine>
+	 <encoding>UTF-8</encoding>                    
+         <includes>
+	    <include>src/test/java/dap4/test/TestAll.java</include>
+         </includes>
+       </configuration>
+       <executions>
+         <execution>
+           <id>unit-test</id>
+           <phase>test</phase>
+           <goals>
+             <goal>test</goal>
+           </goals>
+           <configuration>
+             <skip>false</skip>
+             <includes>
+  	       <include>src/test/java/dap4/test/TestAll.java</include>
+             </includes>   
+           </configuration>
+         </execution>
+       </executions>
+    </plugin>
+
+  </plugins>
+
+</build>
+
+</project>
+
+<!--
+    <plugin>
+      <groupId>org.apache.maven.plugins</groupId>
+      <artifactId>maven-compiler-plugin</artifactId>
+      <version>2.0.2</version>
+      <configuration>
+        <source>1.7</source>
+        <target>1.7</target>
+     </configuration>
+     <executions>
+       <execution>
+         <id>default-testCompile</id>
+	 <configuration>
+           <source>1.7</source>
+           <target>1.7</target>
+           <skip>false</skip>
+	   <additionalClasspathElements>
+	     <additionalClasspathElement>
+               ${basedir}/target/*.jar
+             </additionalClasspathElement>
+           </additionalClasspathElements>
+           <directory>${basedir}/src/test/java</directory>
+           <includes>
+             <include>**/*.*</include>
+           </includes> 
+         </configuration>
+       </execution>
+     </executions>
+   </plugin>
+-->
+

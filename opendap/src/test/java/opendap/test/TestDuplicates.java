@@ -43,7 +43,7 @@ import java.util.List;
 
 public class TestDuplicates extends UnitTestCommon
 {
-  static final String DFALTTESTSERVER = "thredds-test.ucar.edu";
+  static final String DFALTTESTSERVER = "remotetest.unidata.ucar.edu";
 
   public TestDuplicates() {
     setTitle("DAP duplicate names tests");

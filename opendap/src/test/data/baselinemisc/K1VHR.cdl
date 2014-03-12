@@ -1,4 +1,4 @@
-netcdf dods://thredds-test.ucar.edu/thredds/dodsC/testdods/K1VHR.nc {
+netcdf dods://remotetest.unidata.ucar.edu/thredds/dodsC/testdods/K1VHR.nc {
  dimensions:
    GeoX = 4;
    time = 1;

@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<parameterMap>
+    <title>NCEP Table Version 7-12-130</title>
+
+    <parameter code="1">
+        <shortName>PRES</shortName>
+        <description>Pressure</description>
+        <units>PA</units>
+    </parameter>
+    <parameter code="7">
+        <shortName>HGT</shortName>
+        <description>Geopotential height</description>
+        <units>gpm</units>
+    </parameter>
+    <parameter code="11">
+        <shortName>TMP</shortName>
+        <description>Temperature</description>
+        <units>Kelvin</units>
+    </parameter>
+    <parameter code="33">
+        <shortName>UGRD</shortName>
+        <description>u-component of wind</description>
+        <units>m/s</units>
+    </parameter>
+    <parameter code="34">
+        <shortName>VGRD</shortName>
+        <description>v-component of wind</description>
+        <units>m/s</units>
+    </parameter>
+    <parameter code="51">
+        <shortName>SPFH</shortName>
+        <description>Specific Humidity</description>
+        <units>kg/kg</units>
+    </parameter>
+    <parameter code="61">
+        <shortName>APCP</shortName>
+        <description>Total Precipitation</description>
+        <units>kg/m^2</units>
+    </parameter>
+    <parameter code="63">
+        <shortName>ACPCP</shortName>
+        <description>Convective Precipitation</description>
+        <units>kg/m^2</units>
+    </parameter>
+    <parameter code="153">
+        <shortName>CONVAPCP</shortName>
+        <description>Convective Precipitation</description>
+        <units>kg/m^2</units>
+    </parameter>
+    <parameter code="157">
+        <shortName>CAPE</shortName>
+        <description>Convective Available Potential Energy</description>
+        <units>J/kg</units>
+    </parameter>
+    <parameter code="179">
+        <shortName>ACOND</shortName>
+        <description>Aerodynamic Conductance</description>
+        <units>m/s</units>
+    </parameter>
+    <parameter code="204">
+        <shortName>DSWRF</shortName>
+        <description>Downward Shortwave Radiation Flux</description>
+        <units>W/m^2</units>
+    </parameter>
+    <parameter code="205">
+        <shortName>DLWRF</shortName>
+        <description>Downward Longwave Radiation Flux</description>
+        <units>W/m^2</units>
+    </parameter>
+    <parameter code="228">
+        <shortName>PEVAP</shortName>
+        <description>Potential Evaporation</description>
+        <units>kg/m^2</units>
+    </parameter>
+</parameterMap>

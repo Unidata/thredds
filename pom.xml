@@ -286,6 +286,17 @@
           </exclusion>
         </exclusions>
       </dependency>
+      <dependency>
+        <groupId>edu.ucar.dap4</groupId>
+        <artifactId>dap4</artifactId>
+        <version>${project.version}</version>
+        <exclusions>
+          <exclusion>
+            <groupId>javax.servlet</groupId>
+            <artifactId>servlet-api</artifactId>
+          </exclusion>
+        </exclusions>
+      </dependency>
 
       <!-- logging -->
       <dependency>
@@ -706,6 +717,13 @@
         <type>test-jar</type>
         <version>${project.version}</version>
       </dependency>
+      <dependency>
+        <groupId>${project.groupId}</groupId>
+        <artifactId>dap4tests</artifactId>
+        <scope>test</scope>
+        <type>test-jar</type>
+        <version>${project.version}</version>
+      </dependency>
 
     </dependencies>
   </dependencyManagement>
@@ -866,9 +884,12 @@
     <module>netcdf4</module>
     <module>clcommon</module>
     <module>httpclient</module>
+    <module>dap4</module>
   </modules>
 
   <properties>
+    <thredds.version>4.5.0-SNAPSHOT</thredds.version>
+
     <!-- default is to skip tests. use mvn test -DskipTests=false to override on command line -->
     <skipTests>true</skipTests>
 
@@ -939,7 +960,7 @@
 
     <cargo-plugin.version>1.4.5</cargo-plugin.version>
     <apache.download>http://mirrors.ibiblio.org/apache/</apache.download>
-    <tomcat7.version>7.0.52</tomcat7.version>
+    <tomcat7.version>7.0.50</tomcat7.version>
 
   </properties>
 

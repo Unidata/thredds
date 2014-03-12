@@ -71,118 +71,122 @@ import ucar.httpclient.*;
  *
  * @author jehamby
  */
-public class DConnect2 {
-
-static private boolean allowSessions = false;
-
-static final Charset UTF8 = Charset.forName("UTF-8");
-
-static public synchronized void setAllowSessions(boolean b) {
-  allowSessions = b;
-}
-
-
-private String urlString; // The current DODS URL without Constraint Expression
-private String filePath = null; // if url is file://
-private InputStream stream = null; //if reading from a stream
-
-/**
- * The projection portion of the current DODS CE (including leading "?").
- */
-private String projString;
-
-/**
- * The selection portion of the current DODS CE (including leading "&").
- */
-private String selString;
-
-/**
- * Whether to accept compressed documents.
- */
-private boolean acceptCompress;
-
-// various stuff that comes from the HTTP headers
-private String lastModified = null;
-private String lastExtended = null;
-private String lastModifiedInvalid = null;
-private boolean hasSession = true;
-
-private ServerVersion ver; // The OPeNDAP server version.
-
-private boolean debugHeaders = false, debugStream = false;
-
-
-public void setServerVersion(int major, int minor)
+public class DConnect2
 {
-    //LogStream.out.println("ServerVersion made with int,int: " + major + "," + minor);
 
-    ver = new ServerVersion(major, minor);
-    //LogStream.out.println("ServerVersion.getMajor(): " + ver.getMajor());
-    //LogStream.out.println("ServerVersion.getMinor(): " + ver.getMinor());
-}
+    static private boolean allowSessions = false;
 
-/**
- * Creates an instance bound to url which accepts compressed documents.
- *
- * @param urlString connect to this URL.
- * @throws FileNotFoundException thrown if <code>urlString</code> is not
- *                               a valid URL, or a filename which exists on the system.
- */
-public DConnect2(String urlString) throws FileNotFoundException {
-  this(urlString, true);
-}
+    static final Charset UTF8 = Charset.forName("UTF-8");
 
-/**
- * Creates an instance bound to url. If <code>acceptDeflate</code> is true
- * then HTTP Request headers will indicate to servers that this client can
- * accept compressed documents.
- *
- * @param urlString      Connect to this URL.
- * @param acceptCompress true if this client will accept compressed responses
- * @throws FileNotFoundException thrown if <code>urlString</code> is not
- *                               a valid URL, or a filename which exists on the system.
- */
-public DConnect2(String urlString, boolean acceptCompress) throws FileNotFoundException {
-  int ceIndex = urlString.indexOf('?');
-  if (ceIndex != -1) {
-    this.urlString = urlString.substring(0, ceIndex);
-    String expr = urlString.substring(ceIndex);
-    int selIndex = expr.indexOf('&');
-    if (selIndex != -1) {
-      this.projString = expr.substring(0, selIndex);
-      this.selString = expr.substring(selIndex);
-    } else {
-      this.projString = expr;
-      this.selString = "";
+    static public synchronized void setAllowSessions(boolean b)
+    {
+        allowSessions = b;
     }
-  } else {
-    this.urlString = urlString;
-    this.projString = this.selString = "";
-  }
-  this.acceptCompress = acceptCompress;
-  // Check out the URL to see if it is file://
-  try {
-    URL testURL = new URL(urlString);
-    if ("file".equals(testURL.getProtocol())) {
-      filePath = testURL.getPath();
-      // See if .dds and .dods files exist
-      File f = new File(filePath + ".dds");
-      if (!f.canRead()) {
-        throw new FileNotFoundException("file not readable: " + urlString + ".dds");
-      }
-      f = new File(filePath + ".dods");
-      if (!f.canRead()) {
-        throw new FileNotFoundException("file not readable: " + urlString + ".dods");
-      }
+
+
+    private String urlString; // The current DODS URL without Constraint Expression
+    private String filePath = null; // if url is file://
+    private InputStream stream = null; //if reading from a stream
+
+    /**
+     * The projection portion of the current DODS CE (including leading "?").
+     */
+    private String projString;
+
+    /**
+     * The selection portion of the current DODS CE (including leading "&").
+     */
+    private String selString;
+
+    /**
+     * Whether to accept compressed documents.
+     */
+    private boolean acceptCompress;
+
+    // various stuff that comes from the HTTP headers
+    private String lastModified = null;
+    private String lastExtended = null;
+    private String lastModifiedInvalid = null;
+    private boolean hasSession = true;
+
+    private ServerVersion ver; // The OPeNDAP server version.
+
+    private boolean debugHeaders = false, debugStream = false;
+
+
+    public void setServerVersion(int major, int minor)
+    {
+        //LogStream.out.println("ServerVersion made with int,int: " + major + "," + minor);
+
+        ver = new ServerVersion(major, minor);
+        //LogStream.out.println("ServerVersion.getMajor(): " + ver.getMajor());
+        //LogStream.out.println("ServerVersion.getMinor(): " + ver.getMinor());
     }
+
+    /**
+     * Creates an instance bound to url which accepts compressed documents.
+     *
+     * @param urlString connect to this URL.
+     * @throws FileNotFoundException thrown if <code>urlString</code> is not
+     *                               a valid URL, or a filename which exists on the system.
+     */
+    public DConnect2(String urlString) throws FileNotFoundException
+    {
+        this(urlString, true);
+    }
+
+    /**
+     * Creates an instance bound to url. If <code>acceptDeflate</code> is true
+     * then HTTP Request headers will indicate to servers that this client can
+     * accept compressed documents.
+     *
+     * @param urlString      Connect to this URL.
+     * @param acceptCompress true if this client will accept compressed responses
+     * @throws FileNotFoundException thrown if <code>urlString</code> is not
+     *                               a valid URL, or a filename which exists on the system.
+     */
+    public DConnect2(String urlString, boolean acceptCompress) throws FileNotFoundException
+    {
+        int ceIndex = urlString.indexOf('?');
+        if(ceIndex != -1) {
+            this.urlString = urlString.substring(0, ceIndex);
+            String expr = urlString.substring(ceIndex);
+            int selIndex = expr.indexOf('&');
+            if(selIndex != -1) {
+                this.projString = expr.substring(0, selIndex);
+                this.selString = expr.substring(selIndex);
+            } else {
+                this.projString = expr;
+                this.selString = "";
+            }
+        } else {
+            this.urlString = urlString;
+            this.projString = this.selString = "";
+        }
+        this.acceptCompress = acceptCompress;
+        // Check out the URL to see if it is file://
+        try {
+            URL testURL = new URL(urlString);
+            if("file".equals(testURL.getProtocol())) {
+                filePath = testURL.getPath();
+                // See if .dds and .dods files exist
+                File f = new File(filePath + ".dds");
+                if(!f.canRead()) {
+                    throw new FileNotFoundException("file not readable: " + urlString + ".dds");
+                }
+                f = new File(filePath + ".dods");
+                if(!f.canRead()) {
+                    throw new FileNotFoundException("file not readable: " + urlString + ".dods");
+                }
+            }
     /* Set the server version cause we won't get it from anywhere */
-    ver = new ServerVersion(ServerVersion.DAP2_PROTOCOL_VERSION, ServerVersion.XDAP);
-  } catch (DAP2Exception ex) {
-    throw new FileNotFoundException("Cannot set server version");
-  } catch (MalformedURLException e) {
-    throw new FileNotFoundException("Malformed URL: " + urlString);
-  }
-}
+            ver = new ServerVersion(ServerVersion.DAP2_PROTOCOL_VERSION, ServerVersion.XDAP);
+        } catch (DAP2Exception ex) {
+            throw new FileNotFoundException("Cannot set server version");
+        } catch (MalformedURLException e) {
+            throw new FileNotFoundException("Malformed URL: " + urlString);
+        }
+    }
 
 /*
  * Creates an instance bound to an Inputstream.
@@ -190,665 +194,706 @@ public DConnect2(String urlString, boolean acceptCompress) throws FileNotFoundEx
  * @throws IOException  thrown if <code>stream</code> read fails.
  */
 
-public DConnect2(InputStream stream) throws DAP2Exception {
-  this.stream = stream;
+    public DConnect2(InputStream stream) throws DAP2Exception
+    {
+        this.stream = stream;
   /* Set the server version cause we won't get it from anywhere */
-  ver = new ServerVersion(ServerVersion.DAP2_PROTOCOL_VERSION, ServerVersion.XDAP);
-}
+        ver = new ServerVersion(ServerVersion.DAP2_PROTOCOL_VERSION, ServerVersion.XDAP);
+    }
 
 /*
  * 
  * @return  if reading from file:// or stream
  */
 
-public boolean isLocal() {
-  return (stream != null || filePath != null);
-}
-
-/**
- * Returns the constraint expression supplied with the URL given to the
- * constructor. If no CE was given this returns an empty <code>String</code>.
- * <p/>
- * Note that the CE supplied to one of this object's constructors is
- * "sticky"; it will be used with every data request made with this object.
- * The CE passed to <code>getData</code>, however, is not sticky; it is used
- * only for that specific request. This method returns the sticky CE.
- *
- * @return the constraint expression associated with this connection.
- */
-public final String CE() {
-  return projString + selString;
-}
-
-/**
- * Returns the URL supplied to the constructor. If the URL contained a
- * constraint expression that is not returned.
- *
- * @return the URL of this connection.
- */
-public final String URL() {
-  return urlString;
-}
-
-/**
- * Open a connection to the DODS server.
- *
- * @param urlString the URL to open; assume already properly encoded
- * @param command   execute this command on the input stream
- * @throws IOException    if an IO exception occurred.
- * @throws DAP2Exception  if the DODS server returned an error.
- */
-private void openConnection(String urlString, Command command) throws IOException, DAP2Exception {
-  HTTPMethod method = null;
-  InputStream is = null;
-
-  HTTPSession _session = null;
-
-  try {
-    _session = HTTPFactory.newSession(urlString);
-    method = HTTPFactory.Get(_session);
-
-    if (acceptCompress)
-      method.setRequestHeader("Accept-Encoding", "deflate,gzip");
-
-    // enable sessions
-    if (allowSessions)
-      method.setRequestHeader("X-Accept-Session", "true");
-
-    int statusCode = method.execute();
-
-    // debug
-    // if (debugHeaders) ucar.httpclient.HttpClientManager.showHttpRequestInfo(f, method);
-
-    if (statusCode == HttpStatus.SC_NOT_FOUND) {
-      throw new DAP2Exception(DAP2Exception.NO_SUCH_FILE, method.getStatusText()+": "+urlString);
+    public boolean isLocal()
+    {
+        return (stream != null || filePath != null);
     }
 
-    if (statusCode == HttpStatus.SC_UNAUTHORIZED) {
-      throw new InvalidCredentialsException(method.getStatusText());
+    /**
+     * Returns the constraint expression supplied with the URL given to the
+     * constructor. If no CE was given this returns an empty <code>String</code>.
+     * <p/>
+     * Note that the CE supplied to one of this object's constructors is
+     * "sticky"; it will be used with every data request made with this object.
+     * The CE passed to <code>getData</code>, however, is not sticky; it is used
+     * only for that specific request. This method returns the sticky CE.
+     *
+     * @return the constraint expression associated with this connection.
+     */
+    public final String CE()
+    {
+        return projString + selString;
     }
 
-    if (statusCode != HttpStatus.SC_OK) {
-      throw new DAP2Exception("Method failed:" + method.getStatusText() + " on URL= " + urlString);
+    /**
+     * Returns the URL supplied to the constructor. If the URL contained a
+     * constraint expression that is not returned.
+     *
+     * @return the URL of this connection.
+     */
+    public final String URL()
+    {
+        return urlString;
     }
 
-    // Get the response body.
-    is = method.getResponseAsStream();
+    /**
+     * Open a connection to the DODS server.
+     *
+     * @param urlString the URL to open; assume already properly encoded
+     * @param command   execute this command on the input stream
+     * @throws IOException   if an IO exception occurred.
+     * @throws DAP2Exception if the DODS server returned an error.
+     */
+    private void openConnection(String urlString, Command command) throws IOException, DAP2Exception
+    {
+        HTTPMethod method = null;
+        InputStream is = null;
 
-    // check if its an error
-    Header header = method.getResponseHeader("Content-Description");
-    if (header != null && (header.getValue().equals("dods-error")
-        || header.getValue().equals("dods_error"))) {
-      // create server exception object
-      DAP2Exception ds = new DAP2Exception();
-      // parse the Error object from stream and throw it
-      ds.parse(is);
-      throw ds;
-    }
+        HTTPSession _session = null;
 
-    ver = new ServerVersion(method);
+        try {
+            _session = HTTPFactory.newSession(urlString);
+            method = HTTPFactory.Get(_session);
 
-    checkHeaders(method);
+            if(acceptCompress)
+                method.setRequestHeader("Accept-Encoding", "deflate,gzip");
 
-    // check for deflator
-    Header h = method.getResponseHeader("content-encoding");
-    String encoding = (h == null) ? null : h.getValue();
-    //if (encoding != null) LogStream.out.println("encoding= " + encoding);
+            // enable sessions
+            if(allowSessions)
+                method.setRequestHeader("X-Accept-Session", "true");
 
-    if (encoding != null && encoding.equals("deflate")) {
-      is = new BufferedInputStream(new InflaterInputStream(is), 1000);
+            int statusCode = method.execute();
 
-    } else if (encoding != null && encoding.equals("gzip")) {
-      is = new BufferedInputStream(new GZIPInputStream(is), 1000);
-    }
+            // debug
+            // if (debugHeaders) ucar.httpclient.HttpClientManager.showHttpRequestInfo(f, method);
 
-    command.process(is);
+            if(statusCode == HttpStatus.SC_NOT_FOUND) {
+                throw new DAP2Exception(DAP2Exception.NO_SUCH_FILE, method.getStatusText() + ": " + urlString);
+            }
 
-  } catch (Exception e) {
-    e.printStackTrace();
-    throw new DAP2Exception(e);
+            if(statusCode == HttpStatus.SC_UNAUTHORIZED) {
+                throw new InvalidCredentialsException(method.getStatusText());
+            }
 
-  } finally {
-    // Release the connection.
-    if (_session != null) _session.close();
-  }
-}
+            if(statusCode != HttpStatus.SC_OK) {
+                throw new DAP2Exception("Method failed:" + method.getStatusText() + " on URL= " + urlString);
+            }
 
+            // Get the response body.
+            is = method.getResponseAsStream();
 
-public void closeSession() {
-  try {
-    if (allowSessions && hasSession) {
-      openConnection(urlString + ".close", new Command() {
-        public void process(InputStream is) throws IOException {
-          String buffer = captureStream(is);
+            // check if its an error
+            Header header = method.getResponseHeader("Content-Description");
+            if(header != null && (header.getValue().equals("dods-error")
+                || header.getValue().equals("dods_error"))) {
+                // create server exception object
+                DAP2Exception ds = new DAP2Exception();
+                // parse the Error object from stream and throw it
+                ds.parse(is);
+                throw ds;
+            }
+
+            ver = new ServerVersion(method);
+
+            checkHeaders(method);
+
+            // check for deflator
+            Header h = method.getResponseHeader("content-encoding");
+            String encoding = (h == null) ? null : h.getValue();
+            //if (encoding != null) LogStream.out.println("encoding= " + encoding);
+
+            if(encoding != null && encoding.equals("deflate")) {
+                is = new BufferedInputStream(new InflaterInputStream(is), 1000);
+
+            } else if(encoding != null && encoding.equals("gzip")) {
+                is = new BufferedInputStream(new GZIPInputStream(is), 1000);
+            }
+
+            command.process(is);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new DAP2Exception(e);
+
+        } finally {
+            // Release the connection.
+            if(_session != null) _session.close();
         }
-      });
     }
-  } catch (Throwable t) {
-    // ignore
-  }
-}
 
-static public String captureStream(InputStream is)
-      throws IOException
-{
-  ByteArrayOutputStream text = new ByteArrayOutputStream();
-  int b;
-  while((b=is.read()) >= 0) {
-      text.write(b);
-  }
-  return new String(text.toByteArray(),UTF8);
-}
+
+    public void closeSession()
+    {
+        try {
+            if(allowSessions && hasSession) {
+                openConnection(urlString + ".close", new Command()
+                {
+                    public void process(InputStream is) throws IOException
+                    {
+                        String buffer = captureStream(is);
+                    }
+                });
+            }
+        } catch (Throwable t) {
+            // ignore
+        }
+    }
+
+    static public String captureStream(InputStream is)
+        throws IOException
+    {
+        ByteArrayOutputStream text = new ByteArrayOutputStream();
+        int b;
+        while((b = is.read()) >= 0) {
+            text.write(b);
+        }
+        return new String(text.toByteArray(), UTF8);
+    }
 
 // Extract the leading DDS from a DataDDS stream
 
-static final byte[] tag1 = "\nData:\n".getBytes(UTF8);
-static final byte[] tag2 = "\nData:\r\n".getBytes(UTF8);
+    static final byte[] tag1 = "\nData:\n".getBytes(UTF8);
+    static final byte[] tag2 = "\nData:\r\n".getBytes(UTF8);
 
-static public String captureDataDDS(InputStream is)
-      throws IOException
-{
-    byte[] text = new byte[4096];
-    int pos = 0;
-    int len = text.length;
-    int b;
-    boolean eof = true;
-    while((b=is.read()) >= 0) {
-        text = need(1,pos,len,text); len = text.length;
-        text[pos++] = (byte)b;
-        if(b == '\n') { // write until \nData:\n || \nData:\r\n
-           // look for datatags
-	   if(endswith(tag1,pos,text)) {
-	       pos -= tag1.length; // dont return tag
-               eof = false;
-               break;
-	   } else if(endswith(tag2,pos,text)) {
-	       pos -= tag2.length; // dont return tag
-               eof = false;
-               break;
-	   }
+    static public String captureDataDDS(InputStream is)
+        throws IOException
+    {
+        byte[] text = new byte[4096];
+        int pos = 0;
+        int len = text.length;
+        int b;
+        boolean eof = true;
+        while((b = is.read()) >= 0) {
+            text = need(1, pos, len, text);
+            len = text.length;
+            text[pos++] = (byte) b;
+            if(b == '\n') { // write until \nData:\n || \nData:\r\n
+                // look for datatags
+                if(endswith(tag1, pos, text)) {
+                    pos -= tag1.length; // dont return tag
+                    eof = false;
+                    break;
+                } else if(endswith(tag2, pos, text)) {
+                    pos -= tag2.length; // dont return tag
+                    eof = false;
+                    break;
+                }
+            }
+        }
+        if(eof)
+            throw new IOException("DatDDS has no 'Data:' marker");
+        return new String(text, 0, pos, UTF8);
+    }
+
+    static private boolean endswith(byte[] tag, int pos, byte[] text)
+    {
+        int i, j;
+        int taglen = tag.length;
+
+        if(pos < taglen) return false;
+
+        for(j = 0, i = pos - taglen;i < pos;i++, j++) {
+            if(text[i] != tag[j]) return false;
+        }
+        return true;
+    }
+
+    static private byte[] need(int n, int pos, int len, byte[] text)
+    {
+        if(len - pos >= n) return text;
+        int newlen = len * 2 + n;
+        while(newlen < n) newlen++;
+        byte[] newtext = new byte[newlen];
+        System.arraycopy(text, 0, newtext, 0, len);
+        return newtext;
+    }
+
+    /**
+     * Returns the <code>ServerVersion</code> of the last connection.
+     *
+     * @return the <code>ServerVersion</code> of the last connection.
+     */
+    public final ServerVersion getServerVersion()
+    {
+        return ver;
+    }
+
+    /**
+     * @return value of Last-Modified Header from last connection, may be null
+     */
+    public String getLastModifiedHeader()
+    {
+        return lastModified;
+    }
+
+    /**
+     * @return value of X-Last-Modified-Invalid Header from last connection, may be null
+     */
+    public String getLastModifiedInvalidHeader()
+    {
+        return lastModifiedInvalid;
+    }
+
+    /**
+     * @return value of Last-Extended Header from last connection, may be null
+     */
+    public String getLastExtendedHeader()
+    {
+        return lastExtended;
+    }
+
+    private void checkHeaders(HTTPMethod method)
+    {
+        if(debugHeaders) {
+            DAPNode.log.debug("\nOpenConnection Headers for " + method.getPath());
+            DAPNode.log.debug("Status Line: " + method.getStatusLine());
+        }
+
+        Header[] responseHeaders = method.getResponseHeaders();
+        for(int i1 = 0;i1 < responseHeaders.length;i1++) {
+            Header responseHeader = responseHeaders[i1];
+            if(debugHeaders) DAPNode.log.debug("  " + responseHeader);
+            String key = responseHeader.getName();
+            String value = responseHeader.getValue();
+
+            if(key.equals("Last-Modified")) {
+                lastModified = value;
+                if(debugHeaders)
+                    DAPNode.log.debug(" **found lastModified = " + lastModified);
+
+            } else if(key.equals("X-Last-Extended")) {
+                lastExtended = value;
+                if(debugHeaders)
+                    DAPNode.log.debug(" **found lastExtended = " + lastExtended);
+
+            } else if(key.equals("X-Last-Modified-Invalid")) {
+                lastModifiedInvalid = value;
+                if(debugHeaders)
+                    DAPNode.log.debug(" **found lastModifiedInvalid = " + lastModifiedInvalid);
+            }
+        }
+
+        if(debugHeaders)
+            DAPNode.log.debug("OpenConnection Headers for " + method.getPath());
+
+        List<Cookie> cookies = HTTPSession.getGlobalCookies();
+
+        if(cookies.size() > 0) {
+            if(debugHeaders) DAPNode.log.debug("Cookies= ");
+            for(Cookie cooky : cookies) {
+                if(debugHeaders) DAPNode.log.debug("  " + cooky);
+                if(cooky.getName().equalsIgnoreCase("jsessionid"))
+                    hasSession = true;
+            }
         }
     }
-    if(eof)
-        throw new IOException("DatDDS has no 'Data:' marker");
-    return new String(text,0,pos,UTF8);
-}
 
-static private boolean endswith(byte[] tag, int pos, byte[] text)
-{
-    int i,j;
-    int taglen = tag.length;
-
-    if(pos < taglen) return false;
-
-    for(j=0,i=pos-taglen;i<pos;i++,j++) {
-        if(text[i] != tag[j]) return false;
+    private interface Command
+    {
+        void process(InputStream is) throws DAP2Exception, IOException;
     }
-    return true;
-}
 
-static private byte[] need(int n, int pos, int len, byte[] text)
-{
-    if(len - pos >= n) return text;
-    int newlen = len*2 + n;
-    while(newlen < n) newlen++;
-    byte[] newtext = new byte[newlen];
-    System.arraycopy(text,0,newtext,0,len);        
-    return newtext;
-}
-
-/**
- * Returns the <code>ServerVersion</code> of the last connection.
- *
- * @return the <code>ServerVersion</code> of the last connection.
- */
-public final ServerVersion getServerVersion() {
-  return ver;
-}
-
-/**
- * @return value of Last-Modified Header from last connection, may be null
- */
-public String getLastModifiedHeader() {
-  return lastModified;
-}
-
-/**
- * @return value of X-Last-Modified-Invalid Header from last connection, may be null
- */
-public String getLastModifiedInvalidHeader() {
-  return lastModifiedInvalid;
-}
-
-/**
- * @return value of Last-Extended Header from last connection, may be null
- */
-public String getLastExtendedHeader() {
-  return lastExtended;
-}
-
-private void checkHeaders(HTTPMethod method) {
-  if (debugHeaders) {
-    DAPNode.log.debug("\nOpenConnection Headers for " + method.getPath());
-    DAPNode.log.debug("Status Line: " + method.getStatusLine());
-  }
-
-  Header[] responseHeaders = method.getResponseHeaders();
-  for (int i1 = 0; i1 < responseHeaders.length; i1++) {
-    Header responseHeader = responseHeaders[i1];
-    if (debugHeaders) DAPNode.log.debug("  " + responseHeader);
-    String key = responseHeader.getName();
-    String value = responseHeader.getValue();
-
-    if (key.equals("Last-Modified")) {
-      lastModified = value;
-      if (debugHeaders)
-        DAPNode.log.debug(" **found lastModified = " + lastModified);
-
-    } else if (key.equals("X-Last-Extended")) {
-      lastExtended = value;
-      if (debugHeaders)
-        DAPNode.log.debug(" **found lastExtended = " + lastExtended);
-
-    } else if (key.equals("X-Last-Modified-Invalid")) {
-      lastModifiedInvalid = value;
-      if (debugHeaders)
-        DAPNode.log.debug(" **found lastModifiedInvalid = " + lastModifiedInvalid);
-    }
-  }
-
-  if (debugHeaders)
-    DAPNode.log.debug("OpenConnection Headers for " + method.getPath());
-
-      List<Cookie> cookies = HTTPSession.getGlobalCookies();
-
-      if (cookies.size() > 0) {
-        if (debugHeaders) DAPNode.log.debug("Cookies= ");
-        for(Cookie cooky: cookies) {
-          if (debugHeaders) DAPNode.log.debug("  " + cooky);
-          if (cooky.getName().equalsIgnoreCase("jsessionid"))
-            hasSession = true;
+    /**
+     * Returns the DAS object from the dataset referenced by this object's URL.
+     * The DAS object is referred to by appending `.das' to the end of a DODS
+     * URL.
+     *
+     * @return the DAS associated with the referenced dataset.
+     * @throws MalformedURLException if the URL given to the
+     *                               constructor has an error
+     * @throws IOException           if an error connecting to the remote server
+     * @throws DASException          on an error constructing the DAS
+     * @throws DAP2Exception         if an error returned by the remote server
+     */
+    public DAS getDAS() throws IOException, DAP2Exception
+    {
+        DASCommand command = new DASCommand();
+        if(filePath != null) { // url was file:
+            File daspath = new File(filePath + ".das");
+            // See if the das file exists
+            if(daspath.canRead()) {
+                command.process(new FileInputStream(daspath));
+            }
+        } else if(stream != null) {
+            command.process(stream);
+        } else { // assume url is remote
+            try {
+                openConnection(urlString + ".das" + projString + selString, command);
+            } catch (DAP2Exception de) {
+                //if(de.getErrorCode() != DAP2Exception.NO_SUCH_FILE)
+                //throw de;  // rethrow
+            }
         }
-      }
-}
-
-private interface Command {
-  void process(InputStream is) throws DAP2Exception, IOException;
-}
-
-/**
- * Returns the DAS object from the dataset referenced by this object's URL.
- * The DAS object is referred to by appending `.das' to the end of a DODS
- * URL.
- *
- * @return the DAS associated with the referenced dataset.
- * @throws MalformedURLException if the URL given to the
- *                               constructor has an error
- * @throws IOException           if an error connecting to the remote server
- * @throws DASException          on an error constructing the DAS
- * @throws DAP2Exception         if an error returned by the remote server
- */
-public DAS getDAS() throws IOException, DAP2Exception {
-  DASCommand command = new DASCommand();
-  if (filePath != null) { // url was file:
-    File daspath = new File(filePath + ".das");
-    // See if the das file exists
-    if (daspath.canRead()) {
-      command.process(new FileInputStream(daspath));
+        return command.das;
     }
-  } else if (stream != null) {
-    command.process(stream);
-  } else { // assume url is remote
-    try {
-        openConnection(urlString + ".das" + projString + selString, command);
-    } catch (DAP2Exception de) {
-        //if(de.getErrorCode() != DAP2Exception.NO_SUCH_FILE)
-            //throw de;  // rethrow
+
+    private class DASCommand implements Command
+    {
+        DAS das = new DAS();
+
+        public void process(InputStream is) throws DAP2Exception, ParseException
+        {
+            das.parse(is);
+        }
     }
-  }
-  return command.das;
-}
 
-private class DASCommand implements Command {
-  DAS das = new DAS();
+    /**
+     * Returns the DDS object from the dataset referenced by this object's URL.
+     * The DDS object is referred to by appending `.dds' to the end of a OPeNDAP
+     * URL.
+     *
+     * @return the DDS associated with the referenced dataset.
+     * @throws MalformedURLException if the URL given to the constructor
+     *                               has an error
+     * @throws IOException           if an error connecting to the remote server
+     * @throws ParseException        if the DDS parser returned an error
+     * @throws DDSException          on an error constructing the DDS
+     * @throws DAP2Exception         if an error returned by the remote server
+     */
+    public DDS getDDS() throws IOException, ParseException, DAP2Exception
+    {
+        return getDDS("");
+    }
 
-  public void process(InputStream is) throws DAP2Exception, ParseException
-  {
-    das.parse(is);
-  }
-}
+    /**
+     * Returns the DDS object from the dataset referenced by this object's URL.
+     * The DDS object is referred to by appending `.dds' to the end of a OPeNDAP
+     * URL.
+     *
+     * @param CE The constraint expression to be applied to this request by the
+     *           server.  This is combined with any CE given in the constructor.
+     * @return the DDS associated with the referenced dataset.
+     * @throws MalformedURLException if the URL given to the constructor
+     *                               has an error
+     * @throws IOException           if an error connecting to the remote server
+     * @throws ParseException        if the DDS parser returned an error
+     * @throws DDSException          on an error constructing the DDS
+     * @throws DAP2Exception         if an error returned by the remote server
+     */
+    public DDS getDDS(String CE) throws IOException, ParseException, DAP2Exception
+    {
+        DDSCommand command = new DDSCommand();
+        command.setURL(CE == null || CE.length() == 0 ? urlString : urlString + "?" + CE);
+        if(filePath != null) {
+            command.process(new FileInputStream(filePath + ".dds"));
+        } else if(stream != null) {
+            command.process(stream);
+        } else { // must be a remote url
+            openConnection(urlString + ".dds" + (getCompleteCE(CE)), command);
+        }
+        return command.dds;
+    }
 
-/**
- * Returns the DDS object from the dataset referenced by this object's URL.
- * The DDS object is referred to by appending `.dds' to the end of a OPeNDAP
- * URL.
- *
- * @return the DDS associated with the referenced dataset.
- * @throws MalformedURLException if the URL given to the constructor
- *                               has an error
- * @throws IOException           if an error connecting to the remote server
- * @throws ParseException        if the DDS parser returned an error
- * @throws DDSException          on an error constructing the DDS
- * @throws DAP2Exception         if an error returned by the remote server
- */
-public DDS getDDS() throws IOException, ParseException, DAP2Exception {
-  return getDDS("");
-}
+    private class DDSCommand implements Command
+    {
+        DDS dds = new DDS();
+        String url = null;
 
-/**
- * Returns the DDS object from the dataset referenced by this object's URL.
- * The DDS object is referred to by appending `.dds' to the end of a OPeNDAP
- * URL.
- *
- * @param CE The constraint expression to be applied to this request by the
- *           server.  This is combined with any CE given in the constructor.
- * @return the DDS associated with the referenced dataset.
- * @throws MalformedURLException if the URL given to the constructor
- *                               has an error
- * @throws IOException           if an error connecting to the remote server
- * @throws ParseException        if the DDS parser returned an error
- * @throws DDSException          on an error constructing the DDS
- * @throws DAP2Exception         if an error returned by the remote server
- */
-public DDS getDDS(String CE) throws IOException, ParseException, DAP2Exception {
-  DDSCommand command = new DDSCommand();
-  command.setURL(CE == null || CE.length() == 0 ? urlString : urlString+"?"+CE);
-  if (filePath != null) {
-    command.process(new FileInputStream(filePath + ".dds"));
-  } else if (stream != null) {
-    command.process(stream);
-  } else { // must be a remote url
-    openConnection(urlString + ".dds" + (getCompleteCE(CE)), command);
-  }
-  return command.dds;
-}
+        public void setURL(String url)
+        {
+            this.url = url;
+            if(dds != null && url != null) dds.setURL(url);
+        }
 
-private class DDSCommand implements Command {
-  DDS dds = new DDS();
-  String url = null;
-  public void setURL(String url)
-  {
-      this.url = url;
-      if(dds != null && url != null) dds.setURL(url);
-  }
+        public void process(InputStream is) throws ParseException, DAP2Exception
+        {
+            dds.parse(is);
+        }
+    }
 
-  public void process(InputStream is) throws ParseException, DAP2Exception
-  {
-    dds.parse(is);
-  }
-}
+    /**
+     * Use some sense when assembling the CE. Since this DConnect
+     * object may have constructed using a CE, any new CE will
+     * have to be integrated into it for subsequent requests.
+     * Try to do this in a sensible manner!
+     *
+     * @param CE The new CE from the client.
+     * @return The complete CE (the one this object was built
+     *         with integrated with the clients)
+     */
+    private String getCompleteCE(String CE)
+    {
+        String localProjString = null;
+        String localSelString = null;
+        //remove any leading '?'
+        if(CE.startsWith("?")) CE = CE.substring(1);
+        int selIndex = CE.indexOf('&');
+        if(selIndex == 0) {
+            localProjString = "";
+        } else if(selIndex > 0) {
+            localSelString = CE.substring(selIndex);
+        } else {// selIndex < 0
+            localProjString = CE;
+            localSelString = "";
+        }
 
-/**
- * Use some sense when assembling the CE. Since this DConnect
- * object may have constructed using a CE, any new CE will
- * have to be integrated into it for subsequent requests.
- * Try to do this in a sensible manner!
- *
- * @param CE The new CE from the client.
- * @return The complete CE (the one this object was built
- *         with integrated with the clients)
- */
-private String getCompleteCE(String CE) {
-  String localProjString = null;
-  String localSelString = null;
-  //remove any leading '?'
-  if(CE.startsWith("?")) CE = CE.substring(1);
-  int selIndex = CE.indexOf('&');
-  if(selIndex == 0) {
-      localProjString = "";
-  } else if(selIndex > 0) {
-    localSelString = CE.substring(selIndex);
-  } else {// selIndex < 0
-      localProjString = CE;
-      localSelString = "";
-  }
+        String ce = projString;
 
-  String ce = projString;
+        if(!localProjString.equals("")) {
+            if(!ce.equals("") && localProjString.indexOf(',') != 0)
+                ce += ",";
+            ce += localProjString;
+        }
 
-  if (!localProjString.equals("")) {
-    if (!ce.equals("") && localProjString.indexOf(',') != 0)
-      ce += ",";
-    ce += localProjString;
-  }
+        if(!selString.equals("")) {
+            if(selString.indexOf('&') != 0)
+                ce += "&";
+            ce += selString;
+        }
 
-  if (!selString.equals("")) {
-    if (selString.indexOf('&') != 0)
-      ce += "&";
-    ce += selString;
-  }
+        if(!localSelString.equals("")) {
+            if(localSelString.indexOf('&') != 0)
+                ce += "&";
+            ce += localSelString;
+        }
 
-  if (!localSelString.equals("")) {
-    if (localSelString.indexOf('&') != 0)
-      ce += "&";
-    ce += localSelString;
-  }
+        if(ce.length() > 0) ce = "?" + ce;
 
-  if (ce.length() > 0) ce = "?" + ce;
+        if(false) {
+            DAPNode.log.debug("projString: '" + projString + "'");
+            DAPNode.log.debug("localProjString: '" + localProjString + "'");
+            DAPNode.log.debug("selString: '" + selString + "'");
+            DAPNode.log.debug("localSelString: '" + localSelString + "'");
+            DAPNode.log.debug("Complete CE: " + ce);
+        }
+        return ce;   // escaping will happen elsewhere
+    }
 
-  if (false) {
-    DAPNode.log.debug("projString: '" + projString + "'");
-    DAPNode.log.debug("localProjString: '" + localProjString + "'");
-    DAPNode.log.debug("selString: '" + selString + "'");
-    DAPNode.log.debug("localSelString: '" + localSelString + "'");
-    DAPNode.log.debug("Complete CE: " + ce);
-  }
-  return ce;   // escaping will happen elsewhere
-}
-
-/**
- * Returns the DDS object from the dataset referenced by this object's URL.
- * The DDS object is referred to by appending `.ddx' to the end of a OPeNDAP
- * URL. The server should send back a DDX (A DDS in XML format) which
- * will get parsed here (locally) and a new DDS instantiated using
- * the DDSXMLParser.
- *
- * @return the DDS associated with the referenced dataset.
- * @throws MalformedURLException if the URL given to the constructor
- *                               has an error
- * @throws IOException           if an error connecting to the remote server
- * @throws ParseException        if the DDS parser returned an error
- * @throws DDSException          on an error constructing the DDS
- * @throws DAP2Exception         if an error returned by the remote server
- * @opendap.ddx.experimental
- */
-public DDS getDDX() throws IOException, ParseException, DAP2Exception {
-  return (getDDX(""));
-}
+    /**
+     * Returns the DDS object from the dataset referenced by this object's URL.
+     * The DDS object is referred to by appending `.ddx' to the end of a OPeNDAP
+     * URL. The server should send back a DDX (A DDS in XML format) which
+     * will get parsed here (locally) and a new DDS instantiated using
+     * the DDSXMLParser.
+     *
+     * @return the DDS associated with the referenced dataset.
+     * @throws MalformedURLException if the URL given to the constructor
+     *                               has an error
+     * @throws IOException           if an error connecting to the remote server
+     * @throws ParseException        if the DDS parser returned an error
+     * @throws DDSException          on an error constructing the DDS
+     * @throws DAP2Exception         if an error returned by the remote server
+     * @opendap.ddx.experimental
+     */
+    public DDS getDDX() throws IOException, ParseException, DAP2Exception
+    {
+        return (getDDX(""));
+    }
 
 
-/**
- * Returns the DDS object from the dataset referenced by this object's URL.
- * The DDS object is referred to by appending `.ddx' to the end of a OPeNDAP
- * URL. The server should send back a DDX (A DDS in XML format) which
- * will get parsed here (locally) and a new DDS instantiated using
- * the DDSXMLParser.
- *
- * @param CE The constraint expression to be applied to this request by the
- *           server.  This is combined with any CE given in the constructor.
- * @return the DDS associated with the referenced dataset.
- * @throws MalformedURLException if the URL given to the constructor
- *                               has an error
- * @throws IOException           if an error connecting to the remote server
- * @throws ParseException        if the DDS parser returned an error
- * @throws DDSException          on an error constructing the DDS
- * @throws DAP2Exception         if an error returned by the remote server
- * @opendap.ddx.experimental
- */
-public DDS getDDX(String CE) throws IOException, ParseException, DDSException, DAP2Exception {
-  DDXCommand command = new DDXCommand();
-  openConnection(urlString + ".ddx" + (getCompleteCE(CE)), command);
-  return command.dds;
-}
+    /**
+     * Returns the DDS object from the dataset referenced by this object's URL.
+     * The DDS object is referred to by appending `.ddx' to the end of a OPeNDAP
+     * URL. The server should send back a DDX (A DDS in XML format) which
+     * will get parsed here (locally) and a new DDS instantiated using
+     * the DDSXMLParser.
+     *
+     * @param CE The constraint expression to be applied to this request by the
+     *           server.  This is combined with any CE given in the constructor.
+     * @return the DDS associated with the referenced dataset.
+     * @throws MalformedURLException if the URL given to the constructor
+     *                               has an error
+     * @throws IOException           if an error connecting to the remote server
+     * @throws ParseException        if the DDS parser returned an error
+     * @throws DDSException          on an error constructing the DDS
+     * @throws DAP2Exception         if an error returned by the remote server
+     * @opendap.ddx.experimental
+     */
+    public DDS getDDX(String CE) throws IOException, ParseException, DDSException, DAP2Exception
+    {
+        DDXCommand command = new DDXCommand();
+        openConnection(urlString + ".ddx" + (getCompleteCE(CE)), command);
+        return command.dds;
+    }
 
-private class DDXCommand implements Command {
-  DDS dds = new DDS();
+    private class DDXCommand implements Command
+    {
+        DDS dds = new DDS();
 
-  public void process(InputStream is) throws DAP2Exception, ParseException {
-    dds.parseXML(is, false);
-  }
-}
+        public void process(InputStream is) throws DAP2Exception, ParseException
+        {
+            dds.parseXML(is, false);
+        }
+    }
 
-/**
- * Returns the DataDDS object from the dataset referenced by this object's URL.
- * The DDS object is referred to by appending `.ddx' to the end of a OPeNDAP
- * URL. The server should send back a DDX (A DDS in XML format) which
- * will get parsed here (locally) and a new DDS instantiated using
- * the DDSXMLParser.
- *
- * @return the DataDDS associated with the referenced dataset.
- * @throws MalformedURLException if the URL given to the constructor
- *                               has an error
- * @throws IOException           if an error connecting to the remote server
- * @throws ParseException        if the DDS parser returned an error
- * @throws DDSException          on an error constructing the DDS
- * @throws DAP2Exception         if an error returned by the remote server
- * @opendap.ddx.experimental
- */
-public DataDDS getDataDDX() throws MalformedURLException, IOException,
-        ParseException, DDSException, DAP2Exception {
+    /**
+     * Returns the DataDDS object from the dataset referenced by this object's URL.
+     * The DDS object is referred to by appending `.ddx' to the end of a OPeNDAP
+     * URL. The server should send back a DDX (A DDS in XML format) which
+     * will get parsed here (locally) and a new DDS instantiated using
+     * the DDSXMLParser.
+     *
+     * @return the DataDDS associated with the referenced dataset.
+     * @throws MalformedURLException if the URL given to the constructor
+     *                               has an error
+     * @throws IOException           if an error connecting to the remote server
+     * @throws ParseException        if the DDS parser returned an error
+     * @throws DDSException          on an error constructing the DDS
+     * @throws DAP2Exception         if an error returned by the remote server
+     * @opendap.ddx.experimental
+     */
+    public DataDDS getDataDDX() throws MalformedURLException, IOException,
+        ParseException, DDSException, DAP2Exception
+    {
 
-  return getDataDDX("", new DefaultFactory());
-}
-
-
-/**
- * Returns the DataDDS object from the dataset referenced by this object's URL.
- * The DDS object is referred to by appending `.ddx' to the end of a OPeNDAP
- * URL. The server should send back a DDX (A DDS in XML format) which
- * will get parsed here (locally) and a new DDS instantiated using
- * the DDSXMLParser.
- *
- * @param CE The constraint expression to use for this request.
- * @return the DataDDS associated with the referenced dataset.
- * @throws MalformedURLException if the URL given to the constructor
- *                               has an error
- * @throws IOException           if an error connecting to the remote server
- * @throws ParseException        if the DDS parser returned an error
- * @throws DDSException          on an error constructing the DDS
- * @throws DAP2Exception         if an error returned by the remote server
- * @opendap.ddx.experimental
- */
-public DataDDS getDataDDX(String CE) throws MalformedURLException, IOException,
-        ParseException, DDSException, DAP2Exception {
-
-  return getDataDDX(CE, new DefaultFactory());
-}
-
-/**
- * Returns the DataDDS object from the dataset referenced by this object's URL.
- * The DDS object is referred to by appending `.ddx' to the end of a OPeNDAP
- * URL. The server should send back a DDX (A DDS in XML format) which
- * will get parsed here (locally) and a new DDS instantiated using
- * the DDSXMLParser.
- *
- * @param CE  The constraint expression to use for this request.
- * @param btf The <code>BaseTypeFactory</code> to build the member
- *            variables in the DDS with.
- * @return the DataDDS associated with the referenced dataset.
- * @throws MalformedURLException if the URL given to the constructor
- *                               has an error
- * @throws IOException           if an error connecting to the remote server
- * @throws ParseException        if the DDS parser returned an error
- * @throws DDSException          on an error constructing the DDS
- * @throws DAP2Exception         if an error returned by the remote server
- * @opendap.ddx.experimental
- * @see BaseTypeFactory
- */
-public DataDDS getDataDDX(String CE, BaseTypeFactory btf) throws MalformedURLException, IOException,
-        ParseException, DDSException, DAP2Exception {
-
-  DataDDXCommand command = new DataDDXCommand(btf);
-  openConnection(urlString + ".ddx" + (getCompleteCE(CE)), command);
-  return command.dds;
-}
-
-private class DataDDXCommand implements Command {
-  DataDDS dds;
-
-  DataDDXCommand(BaseTypeFactory btf) {
-    dds = new DataDDS(ver, btf);
-  }
-
-  public void process(InputStream is) throws DAP2Exception, ParseException {
-    dds.parseXML(is, false);
-  }
-}
+        return getDataDDX("", new DefaultFactory());
+    }
 
 
-/**
- * Returns the `Data object' from the dataset referenced by this object's
- * URL given the constraint expression CE. Note that the Data object is
- * really just a DDS object with data bound to the variables. The DDS will
- * probably contain fewer variables (and those might have different
- * types) than in the DDS returned by getDDS() because that method returns
- * the entire DDS (but without any data) while this method returns
- * only those variables listed in the projection part of the constraint
- * expression.
- * <p/>
- * Note that if CE is an empty String then the entire dataset will be
- * returned, unless a "sticky" CE has been specified in the constructor.
- *
- * @param CE       The constraint expression to be applied to this request by the
- *                 server.  This is combined with any CE given in the constructor.
- * @param statusUI the <code>StatusUI</code> object to use for GUI updates
- *                 and user cancellation notification (may be null).
- * @param btf      The <code>BaseTypeFactory</code> to build the member
- *                 variables in the DDS with.
- * @return The <code>DataDDS</code> object that results from applying the
- *         given CE, combined with this object's sticky CE, on the referenced
- *         dataset.
- * @throws MalformedURLException if the URL given to the constructor
- *                               has an error
- * @throws IOException           if any error connecting to the remote server
- * @throws ParseException        if the DDS parser returned an error
- * @throws DDSException          on an error constructing the DDS
- * @throws DAP2Exception         if any error returned by the remote server
- */
-public DataDDS getData(String CE, StatusUI statusUI, BaseTypeFactory btf) throws MalformedURLException, IOException,
-        ParseException, DDSException, DAP2Exception {
+    /**
+     * Returns the DataDDS object from the dataset referenced by this object's URL.
+     * The DDS object is referred to by appending `.ddx' to the end of a OPeNDAP
+     * URL. The server should send back a DDX (A DDS in XML format) which
+     * will get parsed here (locally) and a new DDS instantiated using
+     * the DDSXMLParser.
+     *
+     * @param CE The constraint expression to use for this request.
+     * @return the DataDDS associated with the referenced dataset.
+     * @throws MalformedURLException if the URL given to the constructor
+     *                               has an error
+     * @throws IOException           if an error connecting to the remote server
+     * @throws ParseException        if the DDS parser returned an error
+     * @throws DDSException          on an error constructing the DDS
+     * @throws DAP2Exception         if an error returned by the remote server
+     * @opendap.ddx.experimental
+     */
+    public DataDDS getDataDDX(String CE) throws MalformedURLException, IOException,
+        ParseException, DDSException, DAP2Exception
+    {
 
-  DataDDS dds = new DataDDS(ver, btf);
-  DataDDSCommand command = new DataDDSCommand(dds, statusUI);
-  command.setURL(urlString+"?"+CE);
-  if (filePath != null) { // url is file:
-    File dodspath = new File(filePath + ".dods");
-    // See if the dods file exists
-    if (dodspath.canRead()) {
+        return getDataDDX(CE, new DefaultFactory());
+    }
+
+    /**
+     * Returns the DataDDS object from the dataset referenced by this object's URL.
+     * The DDS object is referred to by appending `.ddx' to the end of a OPeNDAP
+     * URL. The server should send back a DDX (A DDS in XML format) which
+     * will get parsed here (locally) and a new DDS instantiated using
+     * the DDSXMLParser.
+     *
+     * @param CE  The constraint expression to use for this request.
+     * @param btf The <code>BaseTypeFactory</code> to build the member
+     *            variables in the DDS with.
+     * @return the DataDDS associated with the referenced dataset.
+     * @throws MalformedURLException if the URL given to the constructor
+     *                               has an error
+     * @throws IOException           if an error connecting to the remote server
+     * @throws ParseException        if the DDS parser returned an error
+     * @throws DDSException          on an error constructing the DDS
+     * @throws DAP2Exception         if an error returned by the remote server
+     * @opendap.ddx.experimental
+     * @see BaseTypeFactory
+     */
+    public DataDDS getDataDDX(String CE, BaseTypeFactory btf) throws MalformedURLException, IOException,
+        ParseException, DDSException, DAP2Exception
+    {
+
+        DataDDXCommand command = new DataDDXCommand(btf);
+        openConnection(urlString + ".ddx" + (getCompleteCE(CE)), command);
+        return command.dds;
+    }
+
+    private class DataDDXCommand implements Command
+    {
+        DataDDS dds;
+
+        DataDDXCommand(BaseTypeFactory btf)
+        {
+            dds = new DataDDS(ver, btf);
+        }
+
+        public void process(InputStream is) throws DAP2Exception, ParseException
+        {
+            dds.parseXML(is, false);
+        }
+    }
+
+
+    /**
+     * Returns the `Data object' from the dataset referenced by this object's
+     * URL given the constraint expression CE. Note that the Data object is
+     * really just a DDS object with data bound to the variables. The DDS will
+     * probably contain fewer variables (and those might have different
+     * types) than in the DDS returned by getDDS() because that method returns
+     * the entire DDS (but without any data) while this method returns
+     * only those variables listed in the projection part of the constraint
+     * expression.
+     * <p/>
+     * Note that if CE is an empty String then the entire dataset will be
+     * returned, unless a "sticky" CE has been specified in the constructor.
+     *
+     * @param CE       The constraint expression to be applied to this request by the
+     *                 server.  This is combined with any CE given in the constructor.
+     * @param statusUI the <code>StatusUI</code> object to use for GUI updates
+     *                 and user cancellation notification (may be null).
+     * @param btf      The <code>BaseTypeFactory</code> to build the member
+     *                 variables in the DDS with.
+     * @return The <code>DataDDS</code> object that results from applying the
+     *         given CE, combined with this object's sticky CE, on the referenced
+     *         dataset.
+     * @throws MalformedURLException if the URL given to the constructor
+     *                               has an error
+     * @throws IOException           if any error connecting to the remote server
+     * @throws ParseException        if the DDS parser returned an error
+     * @throws DDSException          on an error constructing the DDS
+     * @throws DAP2Exception         if any error returned by the remote server
+     */
+    public DataDDS getData(String CE, StatusUI statusUI, BaseTypeFactory btf) throws MalformedURLException, IOException,
+        ParseException, DDSException, DAP2Exception
+    {
+
+        DataDDS dds = new DataDDS(ver, btf);
+        DataDDSCommand command = new DataDDSCommand(dds, statusUI);
+        command.setURL(urlString + "?" + CE);
+        if(filePath != null) { // url is file:
+            File dodspath = new File(filePath + ".dods");
+            // See if the dods file exists
+            if(dodspath.canRead()) {
       /* WARNING: any constraints are ignored in reading the file */
-      command.process(new FileInputStream(dodspath));
+                command.process(new FileInputStream(dodspath));
+            }
+        } else if(stream != null) {
+            command.process(stream);
+        } else {
+            String urls = urlString + ".dods" + (getCompleteCE(CE));
+            openConnection(urls, command);
+        }
+        return command.dds;
     }
-  } else if (stream != null) {
-    command.process(stream);
-  } else {
-    String urls = urlString + ".dods" + (getCompleteCE(CE));
-    openConnection(urls, command);
-  }
-  return command.dds;
-}
 
-private class DataDDSCommand implements Command {
-  DataDDS dds = null;
-  StatusUI statusUI;
-  String url = null;
+    private class DataDDSCommand implements Command
+    {
+        DataDDS dds = null;
+        StatusUI statusUI;
+        String url = null;
 
-  DataDDSCommand(DataDDS dds, StatusUI statusUI) {
-    this.dds = dds;
-    this.statusUI = statusUI;
-  }
+        DataDDSCommand(DataDDS dds, StatusUI statusUI)
+        {
+            this.dds = dds;
+            this.statusUI = statusUI;
+        }
 
-  public void setURL(String url) {this.url = url;};
+        public void setURL(String url)
+        {
+            this.url = url;
+        }
 
-  public void process(InputStream is) throws ParseException, DAP2Exception, IOException
-  {
-    if(!dds.parse(is))
-        throw new DAP2Exception("DataDDS DDS parse failed");
-    dds.readData(is, statusUI);
-  }
-}
+        ;
 
-public DataDDS getData(String CE) throws IOException, ParseException, DAP2Exception {
-  return getData(CE, null, new DefaultFactory());
-}
+        public void process(InputStream is) throws ParseException, DAP2Exception, IOException
+        {
+            if(!dds.parse(is))
+                throw new DAP2Exception("DataDDS DDS parse failed");
+            dds.readData(is, statusUI);
+        }
+    }
+
+    public DataDDS getData(String CE) throws IOException, ParseException, DAP2Exception
+    {
+        return getData(CE, null, new DefaultFactory());
+    }
 
 /**
  * Returns the `Data object' from the dataset referenced by this object's
@@ -1081,38 +1126,39 @@ getBlobData(dds, statusUI);
 return dds;
 } */
 
-/**
- * Returns the `Data object' from the dataset referenced by this object's
- * URL given the constraint expression CE. Note that the Data object is
- * really just a DDS object with data bound to the variables. The DDS will
- * probably contain fewer variables (and those might have different
- * types) than in the DDS returned by getDDS() because that method returns
- * the entire DDS (but without any data) while this method returns
- * only those variables listed in the projection part of the constraint
- * expression.
- * <p/>
- * Note that if CE is an empty String then the entire dataset will be
- * returned, unless a "sticky" CE has been specified in the constructor.
- *
- * @param CE       The constraint expression to be applied to this request by the
- *                 server.  This is combined with any CE given in the constructor.
- * @param statusUI the <code>StatusUI</code> object to use for GUI updates
- *                 and user cancellation notification (may be null).
- * @return The <code>DataDDS</code> object that results from applying the
- *         given CE, combined with this object's sticky CE, on the referenced
- *         dataset.
- * @throws MalformedURLException if the URL given to the constructor
- *                               has an error
- * @throws IOException           if any error connecting to the remote server
- * @throws ParseException        if the DDS parser returned an error
- * @throws DDSException          on an error constructing the DDS
- * @throws DAP2Exception         if any error returned by the remote server
- */
-public DataDDS getData(String CE, StatusUI statusUI) throws MalformedURLException, IOException,
-        ParseException, DDSException, DAP2Exception {
+    /**
+     * Returns the `Data object' from the dataset referenced by this object's
+     * URL given the constraint expression CE. Note that the Data object is
+     * really just a DDS object with data bound to the variables. The DDS will
+     * probably contain fewer variables (and those might have different
+     * types) than in the DDS returned by getDDS() because that method returns
+     * the entire DDS (but without any data) while this method returns
+     * only those variables listed in the projection part of the constraint
+     * expression.
+     * <p/>
+     * Note that if CE is an empty String then the entire dataset will be
+     * returned, unless a "sticky" CE has been specified in the constructor.
+     *
+     * @param CE       The constraint expression to be applied to this request by the
+     *                 server.  This is combined with any CE given in the constructor.
+     * @param statusUI the <code>StatusUI</code> object to use for GUI updates
+     *                 and user cancellation notification (may be null).
+     * @return The <code>DataDDS</code> object that results from applying the
+     *         given CE, combined with this object's sticky CE, on the referenced
+     *         dataset.
+     * @throws MalformedURLException if the URL given to the constructor
+     *                               has an error
+     * @throws IOException           if any error connecting to the remote server
+     * @throws ParseException        if the DDS parser returned an error
+     * @throws DDSException          on an error constructing the DDS
+     * @throws DAP2Exception         if any error returned by the remote server
+     */
+    public DataDDS getData(String CE, StatusUI statusUI) throws MalformedURLException, IOException,
+        ParseException, DDSException, DAP2Exception
+    {
 
-  return getData(CE, statusUI, new DefaultFactory());
-}
+        return getData(CE, statusUI, new DefaultFactory());
+    }
 
 /**
  * Returns the `Data object' from the dataset referenced by this object's
@@ -1157,25 +1203,26 @@ return getDDXData(CE, statusUI, new DefaultFactory());
 } */
 
 
-/**
- * Return the data object with no local constraint expression.  Same as
- * <code>getData("", statusUI)</code>.
- *
- * @param statusUI the <code>StatusUI</code> object to use for GUI updates
- *                 and user cancellation notification (may be null).
- * @return The <code>DataDDS</code> object that results from applying
- *         this object's sticky CE, if any, on the referenced dataset.
- * @throws MalformedURLException if the URL given to the constructor
- *                               has an error
- * @throws IOException           if any error connecting to the remote server
- * @throws ParseException        if the DDS parser returned an error
- * @throws DDSException          on an error constructing the DDS
- * @throws DAP2Exception         if any error returned by the remote server
- */
-public final DataDDS getData(StatusUI statusUI) throws MalformedURLException, IOException,
-        ParseException, DDSException, DAP2Exception {
-  return getData("", statusUI, new DefaultFactory());
-}
+    /**
+     * Return the data object with no local constraint expression.  Same as
+     * <code>getData("", statusUI)</code>.
+     *
+     * @param statusUI the <code>StatusUI</code> object to use for GUI updates
+     *                 and user cancellation notification (may be null).
+     * @return The <code>DataDDS</code> object that results from applying
+     *         this object's sticky CE, if any, on the referenced dataset.
+     * @throws MalformedURLException if the URL given to the constructor
+     *                               has an error
+     * @throws IOException           if any error connecting to the remote server
+     * @throws ParseException        if the DDS parser returned an error
+     * @throws DDSException          on an error constructing the DDS
+     * @throws DAP2Exception         if any error returned by the remote server
+     */
+    public final DataDDS getData(StatusUI statusUI) throws MalformedURLException, IOException,
+        ParseException, DDSException, DAP2Exception
+    {
+        return getData("", statusUI, new DefaultFactory());
+    }
 
 /**
  * Returns the `Data object' from the dataset referenced by this object's
@@ -1217,10 +1264,11 @@ return getDDXData("", statusUI, new DefaultFactory());
 } */
 
 
-/**
- * @param args command line arguments
- */
-public static void main(String[] args) {
+    /**
+     * @param args command line arguments
+     */
+    public static void main(String[] args)
+    {
 /*
   DConnect2 dc;
 
@@ -1260,7 +1308,7 @@ public static void main(String[] args) {
       t.printStackTrace(LogStream.err);
     }     */
 
-  }
+    }
 
 }
 

@@ -36,12 +36,14 @@ import ucar.httpclient.*;
 import junit.framework.TestCase;
 import org.apache.http.auth.*;
 import org.apache.http.client.CredentialsProvider;
+import ucar.nc2.util.UnitTestCommon;
 
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
 
-public class NoTestAuth2 extends TestCase
+public class NoTestAuth2 extends UnitTestCommon
 {
+
   static class Data
   {
       String url;
@@ -49,7 +51,7 @@ public class NoTestAuth2 extends TestCase
       public Data(String u,CredentialsProvider p) {this.url=u; this.provider=p;}
   }
     static private Data[] cases = new Data[] {
-      new Data("http://thredds-test.ucar.edu:8080/thredds/dodsC/restrict/testdata/testData.nc.html",
+      new Data("http://"+UnitTestCommon.REMOTESERVER+"/thredds/dodsC/restrict/testdata/testData.nc.html",
                new CredentialsProvider() {
                    public Credentials getCredentials(AuthScope scope) //AuthScheme sch, String h, int p, boolean pr)
                    {
@@ -62,7 +64,7 @@ public class NoTestAuth2 extends TestCase
                    public void setCredentials(AuthScope scope, Credentials creds) {}
                    public void clear() {}
                }),
-      new Data("https://thredds-test.ucar.edu:8443/dts/b31.dds",null),
+      new Data("https://"+REMOTESERVER+"/dts/b31.dds",null),
     };
 
 

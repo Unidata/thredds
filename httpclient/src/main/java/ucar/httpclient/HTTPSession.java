@@ -33,7 +33,6 @@
 
 package ucar.httpclient;
 
-import net.jcip.annotations.NotThreadSafe;
 import org.apache.http.*;
 import org.apache.http.auth.AuthScope;
 import org.apache.http.auth.Credentials;
@@ -102,7 +101,6 @@ import static ucar.httpclient.HTTPAuthScope.*;
  * constructions must specify a url.
  */
 
-@NotThreadSafe
 public class HTTPSession
 {
     //////////////////////////////////////////////////
@@ -378,7 +376,7 @@ public class HTTPSession
     static public void
     setGlobalCredentials(AuthScope scope, Credentials creds)
     {
-        CredentialsProvider provider = new HTTPCredsProvider(creds);
+        CredentialsProvider provider = new HTTPConstantProvider(creds);
         setGlobalCredentialsProvider(scope, provider);
     }
 
@@ -532,7 +530,7 @@ public class HTTPSession
                 trustpath, trustpassword);
             setGlobalCredentialsProvider(
                 new AuthScope(ANY_HOST, ANY_PORT, ANY_REALM, HTTPAuthPolicy.SSL),
-	        sslprovider);
+                sslprovider);
         }
     }
 
@@ -573,10 +571,10 @@ public class HTTPSession
 
     protected AbstractHttpClient sessionClient = null;
     protected List<ucar.httpclient.HTTPMethod> methodList = new Vector<HTTPMethod>();
+    protected HttpContext execcontext = null; // same instance must be used for all methods
     protected String identifier = "Session";
     protected String legalurl = null;
     protected boolean closed = false;
-    protected HttpContext execcontext = null; // same instance must be used for all methods
     protected Settings localsettings = new Settings();
     protected HTTPAuthStore authlocal = new HTTPAuthStore();
 
@@ -610,6 +608,12 @@ public class HTTPSession
 
     //////////////////////////////////////////////////
     // Accessor(s)
+
+    public HTTPAuthStore
+    getAuthStore()
+    {
+        return this.authlocal;
+    }
 
     public Settings getSettings()
     {
@@ -661,12 +665,6 @@ public class HTTPSession
     getClient()
     {
         return this.sessionClient;
-    }
-
-    HTTPAuthStore
-    getAuthStore()
-    {
-        return this.authlocal;
     }
 
     HttpContext
@@ -764,14 +762,14 @@ public class HTTPSession
     public void
     setCredentialsProvider(String scheme, CredentialsProvider provider)
     {
-        AuthScope scope = new AuthScope(ANY_HOST,ANY_PORT,ANY_REALM,scheme);
+        AuthScope scope = new AuthScope(ANY_HOST, ANY_PORT, ANY_REALM, scheme);
         setCredentialsProvider(scope, provider);
     }
 
     public void
     setCredentials(String scheme, Credentials creds)
     {
-        CredentialsProvider provider = new HTTPCredsProvider(creds);
+        CredentialsProvider provider = new HTTPConstantProvider(creds);
         setCredentialsProvider(scheme, provider);
     }
 
@@ -813,7 +811,7 @@ public class HTTPSession
 
     // This provides support for HTTPMethod.setAuthentication method
     synchronized protected void
-    setAuthentication(HTTPCredentialsCache hap)
+    setAuthentication(HTTPCachingProvider hap)
     {
         this.sessionClient.setCredentialsProvider(hap);
         if(false)
@@ -825,15 +823,8 @@ public class HTTPSession
     execute(HttpRequestBase request)
         throws IOException
     {
-        if(false)
-            return sessionClient.execute(request, this.execcontext);
-        else
-            return sessionClient.execute(request);
-    }
-
-    /*package*/ void invalidate(AuthScope scope)
-    {
-        HTTPCredentialsCache.invalidate(scope);
+        HttpResponse response = sessionClient.execute(request, this.execcontext);
+        return response;
     }
 
     //////////////////////////////////////////////////
@@ -845,9 +836,9 @@ public class HTTPSession
     // all existing sessions because JUnit can run all
     // test within a single jvm.
     static List<HTTPSession> sessionList = null; // List of all HTTPSession instances
+
     // only used when testing flag is set
     static public boolean TESTING = false; // set to true during testing, should be false otherwise
-
 
     static protected synchronized void kill()
     {
@@ -899,7 +890,6 @@ public class HTTPSession
                 client.addResponseInterceptor(hi);
             }
         }
-
     }
 
     static public void debugGlobal(HttpRequestInterceptor ireq,

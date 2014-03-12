@@ -1,0 +1,37 @@
+#!/bin/sh
+
+OLDV=4.4.3
+NEWV=4.4.3
+
+ACTION="$1"
+case $ACTION in
+RESET) RESET=1 ;;
+NEW=*)
+  NEWV=`cut -d= -f2`
+  if test "x$NEWV" = x; then echo "Missing NEW value"; exit ; fi
+  ;;
+OLD=*)
+  OLDV=`cut -d= -f2`
+  if test "x$OLDV" = x; then echo "Missing OLD value"; exit ; fi
+  ;;
+*) ;;
+esac
+
+POMS="./cdmclient/pom.xml \
+./cdmshared/pom.xml \
+./core/pom.xml \
+./d4ts/pom.xml \
+./d4tswar/pom.xml \
+./dap4client/pom.xml \
+./dap4shared/pom.xml \
+./pom.xml \
+./servlet/pom.xml \
+./tests/pom.xml"
+
+for p in $POMS ; do
+  if test "x$RESET" = x1 ; then rm $p.bak; fi
+  if ! test -f $p.bak ; then cp $p $p.bak fi
+  rm -f $p
+  sed -e "s|${OLDV}|${NEWV}" <$p.bak >$p
+done
+exit
