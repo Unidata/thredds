@@ -943,7 +943,7 @@ public final class DataRootHandler implements InitializingBean {
    * given path maps. Null is returned if the dataset does not exist, the
    * matching InvDatasetScan or DataRoot filters out the requested
    * CrawlableDataset, the CrawlableDataset does not represent a File
-   * (i.e., it is not a CrawlableDatasetFile), or an I/O error occurs whil
+   * (i.e., it is not a CrawlableDatasetFile), or an I/O error occurs while
    * locating the requested dataset.
    *
    * @param path the request path.
