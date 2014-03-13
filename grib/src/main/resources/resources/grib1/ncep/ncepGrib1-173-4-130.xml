@@ -1,0 +1,191 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<parameterMap>
+    <title>NCEP Table Version 173-4-130</title>
+
+    <parameter code="1">
+        <shortName>PRES</shortName>
+        <description>Pressure</description>
+        <units>Pa</units>
+    </parameter>
+    <parameter code="11">
+        <shortName>TMP</shortName>
+        <description>Temperature</description>
+        <units>K</units>
+    </parameter>
+    <parameter code="32">
+        <shortName>WIND</shortName>
+        <description>Wind Speed</description>
+        <units>m/s</units>
+    </parameter>
+    <parameter code="51">
+        <shortName>SPFH</shortName>
+        <description>Specific Humidity</description>
+        <units>kg/kg</units>
+    </parameter>
+    <parameter code="57">
+        <shortName>EVP</shortName>
+        <description>Evaporation</description>
+        <units>kg/m^2/s</units>
+    </parameter>
+    <parameter code="59">
+        <shortName>PRATE</shortName>
+        <description>Precipitation Rate</description>
+        <units>kg/m^2/s</units>
+    </parameter>
+    <parameter code="65">
+        <shortName>WEASD</shortName>
+        <description>Water Equiv. of Accum. Snow Depth</description>
+        <units>kg/m^2</units>
+    </parameter>
+    <parameter code="66">
+        <shortName>SNOD</shortName>
+        <description>Snow Depth</description>
+        <units>m</units>
+    </parameter>
+    <parameter code="84">
+        <shortName>ALBDO</shortName>
+        <description>Albedo</description>
+        <units>unitless</units>
+    </parameter>
+    <parameter code="85">
+        <shortName>TSOIL</shortName>
+        <description>Soil Temperature</description>
+        <units>K</units>
+    </parameter>
+    <parameter code="86">
+        <shortName>SOILM</shortName>
+        <description>Soil Moisture Content</description>
+        <units>kg/m^2</units>
+    </parameter>
+    <parameter code="99">
+        <shortName>SNOM</shortName>
+        <description>Snow Melt</description>
+        <units>kg/m^2/s</units>
+    </parameter>
+    <parameter code="111">
+        <shortName>NSWRS</shortName>
+        <description>Net short-wave radiation flux</description>
+        <units>W/m^2</units>
+    </parameter>
+    <parameter code="112">
+        <shortName>NLWRS</shortName>
+        <description>Net long wave radiation flux</description>
+        <units>W/m^2</units>
+    </parameter>
+    <parameter code="121">
+        <shortName>LHTFL</shortName>
+        <description>Latent Heat Flux</description>
+        <units>W/m^2</units>
+    </parameter>
+    <parameter code="122">
+        <shortName>SHTFL</shortName>
+        <description>Sensible Heat Flux</description>
+        <units>W/m^2</units>
+    </parameter>
+    <parameter code="146">
+        <shortName>VEGT</shortName>
+        <description>Vegetation canopy temperature</description>
+        <units>K</units>
+    </parameter>
+    <parameter code="147">
+        <shortName>BARET</shortName>
+        <description>Bare soil surface skin temperature</description>
+        <units>K</units>
+    </parameter>
+    <parameter code="148">
+        <shortName>AVSFT</shortName>
+        <description>Average surface skin temperature</description>
+        <units>K</units>
+    </parameter>
+    <parameter code="149">
+        <shortName>RADT</shortName>
+        <description>Effective radiative skin temperature</description>
+        <units>K</units>
+    </parameter>
+    <parameter code="155">
+        <shortName>GFLUX</shortName>
+        <description>Ground Heat Flux</description>
+        <units>W/m^2</units>
+    </parameter>
+    <parameter code="161">
+        <shortName>ASNOW</shortName>
+        <description>Frozen precipitation (e.g. snowfall)</description>
+        <units>kg/m^2/s</units>
+    </parameter>
+    <parameter code="162">
+        <shortName>ARAIN</shortName>
+        <description>Liquid precipitation (rainfall)</description>
+        <units>kg/m^2/s</units>
+    </parameter>
+    <parameter code="165">
+        <shortName>SNOWT</shortName>
+        <description>Snow temperature, depth-avg</description>
+        <units>K</units>
+    </parameter>
+    <parameter code="173">
+        <shortName>RootMoist</shortName>
+        <description>Root zone soil moisture</description>
+        <units>kg/m^2</units>
+    </parameter>
+    <parameter code="179">
+        <shortName>ACOND</shortName>
+        <description>Aerodynamic conductance</description>
+        <units>m/s</units>
+    </parameter>
+    <parameter code="199">
+        <shortName>EVBS</shortName>
+        <description>Direct evaporation from bare soil</description>
+        <units>kg/m^2/s</units>
+    </parameter>
+    <parameter code="200">
+        <shortName>EVCW</shortName>
+        <description>Canopy water evaporation</description>
+        <units>kg/m^2/s</units>
+    </parameter>
+    <parameter code="204">
+        <shortName>DSWRF</shortName>
+        <description>Downward shortwave radiation flux</description>
+        <units>W/m^2</units>
+    </parameter>
+    <parameter code="205">
+        <shortName>DLWRF</shortName>
+        <description>Downward longwave radiation flux</description>
+        <units>W/m^2</units>
+    </parameter>
+    <parameter code="210">
+        <shortName>TRANS</shortName>
+        <description>Transpiration</description>
+        <units>kg/m^2/s</units>
+    </parameter>
+    <parameter code="223">
+        <shortName>CNWAT</shortName>
+        <description>Plant canopy surface water</description>
+        <units>kg/m^2</units>
+    </parameter>
+    <parameter code="224">
+        <shortName>SOTYP</shortName>
+        <description>Soil type</description>
+        <units>index</units>
+    </parameter>
+    <parameter code="225">
+        <shortName>VGTYP</shortName>
+        <description>Vegetation type</description>
+        <units>index</units>
+    </parameter>
+    <parameter code="228">
+        <shortName>PEVAP</shortName>
+        <description>Potential evaporation</description>
+        <units>kg/m^2/s</units>
+    </parameter>
+    <parameter code="234">
+        <shortName>BGRUN</shortName>
+        <description>Subsurface runoff (baseflow)</description>
+        <units>kg/m^2/s</units>
+    </parameter>
+    <parameter code="235">
+        <shortName>SSRUN</shortName>
+        <description>Surface runoff (non-infiltrating)</description>
+        <units>kg/m^2/s</units>
+    </parameter>
+
+</parameterMap>

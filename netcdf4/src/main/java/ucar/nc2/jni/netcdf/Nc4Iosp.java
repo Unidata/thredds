@@ -135,9 +135,11 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
    */
   static public void setLibraryAndPath(String jna_path, String libname) {
     // See if jna_path exists
-    File f = new File(jna_path);
-    if (!f.exists())
-      jna_path = null; // ignore it
+    if(jna_path != null) {
+        File f = new File(jna_path);
+        if (!f.exists())
+            jna_path = null; // ignore it
+    }
     if (jna_path == null || jna_path.length() == 0) {
       jna_path = System.getProperty(JNA_PATH);
       if (jna_path == null || jna_path.length() == 0)

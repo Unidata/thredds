@@ -547,6 +547,8 @@ public class ThreddsDataFactory {
     if (access == null)
       access = findAccessByServiceType(accessList, ServiceType.OPENDAP);
     if (access == null)
+       access = findAccessByServiceType(accessList, ServiceType.DAP4);
+    if (access == null)
       access = findAccessByServiceType(accessList, ServiceType.FILE); // should mean that it can be opened through netcdf API
     if (access == null)
       access = findAccessByServiceType(accessList, ServiceType.NETCDF); //  ServiceType.NETCDF is deprecated, use FILE

@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<modelVersion>4.0.0</modelVersion>
+  
+<parent>
+    <groupId>edu.ucar</groupId>
+    <artifactId>dap4</artifactId>
+    <version>4.5.0-SNAPSHOT</version>
+</parent>
+  
+<artifactId>d4servletshared</artifactId>
+<packaging>jar</packaging>
+
+<dependencies>
+    <!-- module dependencies -->
+    <dependency>
+      <groupId>${project.groupid}</groupId>
+      <artifactId>d4core</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>${project.groupid}</groupId>
+      <artifactId>d4shared</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>${project.groupid}</groupId>
+      <artifactId>d4cdmshared</artifactId>
+    </dependency>
+  
+    <!-- thredds/cdm dependencies -->
+
+    <dependency>
+      <groupId>edu.ucar</groupId>
+      <artifactId>netcdf4</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>edu.ucar</groupId>
+      <artifactId>cdm</artifactId>
+    </dependency>
+
+    <!-- library dependencies -->
+    <dependency>
+      <groupId>javax.servlet</groupId>
+      <artifactId>javax.servlet-api</artifactId>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>com.sun.jna</groupId>
+      <artifactId>jna</artifactId>
+    </dependency>
+</dependencies>
+  
+</project>
+  

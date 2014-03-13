@@ -45,6 +45,10 @@ public class UnitTestCommon extends TestCase
 {
     static boolean DEBUG = false;
 
+    // Hold the primary server names here so we do not
+    // have to search all over
+    static final public String REMOTESERVER = "remotetest.unidata.ucar.edu";
+
     /**
      * Temporary data directory (for writing temporary data).
      */
@@ -120,6 +124,14 @@ public class UnitTestCommon extends TestCase
             if(hdrs == null) hdrs = new Header[0];
             return hdrs;
         }
+        synchronized public Header[] getHeaders()
+        {
+            Header[] hdrs = null;
+            if(this.request != null)
+                hdrs = this.request.getAllHeaders();
+            if(hdrs == null) hdrs = new Header[0];
+            return hdrs;
+        }
 
     }
 
@@ -151,6 +163,14 @@ public class UnitTestCommon extends TestCase
             Header[] hdrs = null;
             if(this.response != null)
                 hdrs = this.response.getHeaders(key);
+            if(hdrs == null) hdrs = new Header[0];
+            return hdrs;
+        }
+        synchronized public Header[] getHeaders()
+        {
+            Header[] hdrs = null;
+            if(this.response != null)
+                hdrs = this.response.getAllHeaders();
             if(hdrs == null) hdrs = new Header[0];
             return hdrs;
         }
@@ -224,7 +244,6 @@ public class UnitTestCommon extends TestCase
     {
         assert true;
     }
-
 
     static public byte[]
     readbinaryfile(InputStream stream)

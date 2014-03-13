@@ -43,7 +43,6 @@ import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import net.jcip.annotations.NotThreadSafe;
 import org.apache.http.*;
 import org.apache.http.auth.AuthScope;
 import org.apache.http.client.methods.*;
@@ -157,7 +156,6 @@ import static ucar.httpclient.HTTPSession.*;
  * </ul>
  */
 
-@NotThreadSafe
 public class HTTPMethod
 {
     //////////////////////////////////////////////////
@@ -313,7 +311,7 @@ public class HTTPMethod
             // On authorization error, clear entries from the credentials cache
             if(code == HttpStatus.SC_UNAUTHORIZED
                 || code == HttpStatus.SC_PROXY_AUTHENTICATION_REQUIRED) {
-                this.session.invalidate(scope);
+                HTTPCachingProvider.invalidate(scope);
             }
 
             return code;
@@ -696,7 +694,9 @@ public class HTTPMethod
             scope = HTTPAuthScope.urlToScope(HTTPAuthPolicy.BASIC, surl, principalp);
 
         // Provide a credentials (provider) to enact the process
-        HTTPCredentialsCache hap = new HTTPCredentialsCache(this.session.getAuthStore(),
+        // We use the a caching instance so we can intercept getCredentials
+        // requests to check the cache.
+        HTTPCachingProvider hap = new HTTPCachingProvider(this.session.getAuthStore(),
             scope, principalp[0]);
 
         // New in httpclient 4.2; will need to change in 4.3

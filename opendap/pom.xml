@@ -135,7 +135,7 @@
         <configuration>
           <skip>${skipTests}</skip>
         	<!-- testFailureIgnore>true</testFailureIgnore-->
-        	<failIfNoTests>true</failIfNoTests>
+        	<!--failIfNoTests>true</failIfNoTests-->
           <includes>
             <include>opendap/test/Test*.java</include>
             <include>ucar/nc2/dods/Test*.java</include>

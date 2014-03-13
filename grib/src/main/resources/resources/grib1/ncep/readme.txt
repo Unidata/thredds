@@ -30,4 +30,18 @@
   - NcepHtmlScraper had bug in table3, where the description was incorrect. regenerate.
     why didnt we notice this, for NCEP special level handling.
 
+03/04/2014
+  - Tables provided by users at NASA (Hiroko Kato, David M. Mocko, Hualan Rui, Fan Fang, Beaudoing) who assure us that they are the only tables and that they have never changed.
+    See TDS-511 or e-support VNI-792787 for history.  Tables are located in /share/testdata/support/VNI-792787/DefinitiveTablesFromNASAPeople
+    7:4:130
+    7:12:130
+    7:138:130
+
+    Also provided were these links for additional README support:
+    -ftp://hydro1.sci.gsfc.nasa.gov/data/s4pa/NLDAS/README.NLDAS1.pdf
+    -ftp://hydro1.sci.gsfc.nasa.gov/data/s4pa/NLDAS/README.NLDAS2.pdf
+
+    Adding to the confusion is that the above provided documentation refers to "File A" data and "File B" data, with some notes
+    suggesting that these different data files use the "same" parameter tables with slightly different units/parameter descriptions/etc.
+
 

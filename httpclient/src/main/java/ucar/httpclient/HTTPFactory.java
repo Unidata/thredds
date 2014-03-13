@@ -39,7 +39,6 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.*;
 
-import net.jcip.annotations.NotThreadSafe;
 import org.apache.http.*;
 import org.apache.http.client.methods.*;
 import org.apache.http.client.params.AllClientPNames;

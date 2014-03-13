@@ -12,20 +12,23 @@ public class TestSources extends UnitTestCommon
 //////////////////////////////////////////////////
 // Remote test info
 
+  static final String REMOTESERVER = "remotetest.unidata.ucar.edu";
+  static final String THREDDSSERVER = "thredds-test.unidata.ucar.edu";
+
   static final String TESTSUFFIX = "src/test/data";
 
   static final String TESTDATA1DIR = "testdata1";
 
   /* Use this for experimenting with new URLS */
-  public static final String XURL1 = "http://thredds-test.ucar.edu/dts";
+  public static final String XURL1 = "http://"+REMOTESERVER+"/dts";
 
-  //"http://thredds-test.ucar.edu/thredds/dodsC/fmrc/NCEP/NAM/CONUS_12km/files";
+  //"http://testremote.unidata.ucar.edu/thredds/dodsC/fmrc/NCEP/NAM/CONUS_12km/files";
   static final String[] X1 = {
           "test.01;1;f64"
   };
 
   // These shorter tests are always run
-  static final String REMOTEURLS1 = "http://thredds-test.ucar.edu/dts";
+  static final String REMOTEURLS1 = "http://"+REMOTESERVER+"/dts";
   static final String[] REMOTETESTSS1 = {
           "test.01", "test.02", "test.04", "test.05", "test.06a", "test.07a", "test.07",
           "test.21", "test.22", "test.23",
@@ -46,7 +49,7 @@ public class TestSources extends UnitTestCommon
   };
 
   // Following tests are to check constraint handling
-  static final String REMOTEURLC1 = "http://thredds-test.ucar.edu/dts";
+  static final String REMOTEURLC1 = "http://"+REMOTESERVER+"/dts";
   static final String[] REMOTETESTSC1 = {
           "test.01;1;f64",
           "test.02;1;b[1:2:10]",
@@ -59,7 +62,7 @@ public class TestSources extends UnitTestCommon
   };
 
 
-  static final String REMOTEURLC2 = "http://thredds-test.ucar.edu/thredds/dodsC/fmrc/NCEP/NAM/CONUS_12km/files";
+  static final String REMOTEURLC2 = "http://"+THREDDSSERVER+"/thredds/dodsC/fmrc/NCEP/NAM/CONUS_12km/files";
   static final String[] REMOTEC2 = {
           "NAM_CONUS_12km_20100628_1200.grib2;01;Wind_speed[0][0][0][0]"
   };
