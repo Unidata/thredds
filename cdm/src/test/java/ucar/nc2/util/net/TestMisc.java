@@ -38,6 +38,8 @@ import org.junit.Test;
 import ucar.nc2.util.EscapeStrings;
 import ucar.nc2.util.UnitTestCommon;
 
+import java.net.URI;
+
 import static junit.framework.Assert.assertTrue;
 
 public class TestMisc extends UnitTestCommon
@@ -88,4 +90,37 @@ public class TestMisc extends UnitTestCommon
     }
     assertTrue("TestMisc.testEscapeStrings", pass);
   }
+
+
+  @Test
+  public void
+  testUTF8Stream()
+    throws Exception
+  {
+     pass = true;
+
+     String catalogName = "http://thredds.ucar.edu/thredds/catalog.xml";
+     URI catalogURI = new URI(catalogName);
+
+     HTTPSession client = null;
+     HTTPMethod m = null;
+     try {
+       client = HTTPFactory.newSession(catalogName);
+       m = HTTPFactory.Get(client);
+
+       int statusCode = m.execute();
+       System.out.printf("status = %d%n", statusCode);
+
+       try {
+           String content = m.getResponseAsString("ASC");
+           System.out.printf("cat = %s%n", content);
+       }  catch (Throwable t) {
+           t.printStackTrace();
+       }
+     } finally {
+       if (client != null) client.close();
+     }
+
+   }
 }
+

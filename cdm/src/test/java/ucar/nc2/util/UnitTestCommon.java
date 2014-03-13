@@ -245,7 +245,6 @@ public class UnitTestCommon extends TestCase
         assert true;
     }
 
-
     static public byte[]
     readbinaryfile(InputStream stream)
         throws IOException

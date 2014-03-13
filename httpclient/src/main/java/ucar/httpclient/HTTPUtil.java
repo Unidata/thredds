@@ -36,7 +36,7 @@ package ucar.httpclient;
 import org.apache.http.*;
 import org.apache.http.protocol.HttpContext;
 
-import java.io.IOException;
+import java.io.*;
 
 abstract public class HTTPUtil
 {
@@ -76,6 +76,22 @@ abstract public class HTTPUtil
             }
             System.err.flush();
         }
+    }
+
+    static public byte[]
+    readbinaryfile(InputStream stream)
+        throws IOException
+    {
+        // Extract the stream into a bytebuffer
+        ByteArrayOutputStream bytes = new ByteArrayOutputStream();
+        byte[] tmp = new byte[1 << 16];
+        for(;;) {
+            int cnt;
+            cnt = stream.read(tmp);
+            if(cnt <= 0) break;
+            bytes.write(tmp, 0, cnt);
+        }
+        return bytes.toByteArray();
     }
 
 }

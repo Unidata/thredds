@@ -38,6 +38,8 @@ import org.apache.http.auth.AuthScope;
 import org.apache.http.auth.Credentials;
 import org.apache.http.client.CredentialsProvider;
 import org.apache.http.client.HttpClient;
+import org.apache.http.client.entity.DeflateDecompressingEntity;
+import org.apache.http.client.entity.GzipDecompressingEntity;
 import org.apache.http.client.methods.HttpRequestBase;
 import org.apache.http.client.params.AllClientPNames;
 import org.apache.http.client.protocol.*;
@@ -224,6 +226,50 @@ public class HTTPSession
         }
     }
 
+
+    static class GZIPResponseInterceptor implements HttpResponseInterceptor
+    {
+        public void process(final HttpResponse response, final HttpContext context)
+            throws HttpException, IOException
+        {
+            HttpEntity entity = response.getEntity();
+            if(entity != null) {
+                Header ceheader = entity.getContentEncoding();
+                if(ceheader != null) {
+                    HeaderElement[] codecs = ceheader.getElements();
+                    for(HeaderElement h : codecs) {
+                        if(h.getName().equalsIgnoreCase("gzip")) {
+                            response.setEntity(new GzipDecompressingEntity(response.getEntity()));
+                            return;
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+
+    static class DeflateResponseInterceptor implements HttpResponseInterceptor
+    {
+        public void process(final HttpResponse response, final HttpContext context)
+            throws HttpException, IOException
+        {
+            HttpEntity entity = response.getEntity();
+            if(entity != null) {
+                Header ceheader = entity.getContentEncoding();
+                if(ceheader != null) {
+                    HeaderElement[] codecs = ceheader.getElements();
+                    for(HeaderElement h : codecs) {
+                        if(h.getName().equalsIgnoreCase("deflate")) {
+                            response.setEntity(new DeflateDecompressingEntity(response.getEntity()));
+                            return;
+                        }
+                    }
+                }
+            }
+        }
+    }
+
     ////////////////////////////////////////////////////////////////////////
     // Static variables
 
@@ -237,6 +283,8 @@ public class HTTPSession
     // instance for global and one for local.
 
     static Settings globalsettings;
+    static List<HttpRequestInterceptor> reqintercepts = new ArrayList<HttpRequestInterceptor>();
+    static List<HttpResponseInterceptor> rspintercepts = new ArrayList<HttpResponseInterceptor>();
 
     static {
         connmgr = new PoolingClientConnectionManager();
@@ -254,7 +302,6 @@ public class HTTPSession
         setGlobalSoTimeout(DFALTSOTIMEOUT);
         getGlobalProxyD(); // get info from -D if possible
         setGlobalKeyStore();
-        setGlobalCompression();
     }
 
     //////////////////////////////////////////////////////////////////////////
@@ -340,6 +387,10 @@ public class HTTPSession
     setGlobalCompression()
     {
         globalsettings.setParameter(COMPRESSION, "gzip,deflate");
+        HttpResponseInterceptor hrsi = new GZIPResponseInterceptor();
+        rspintercepts.add(hrsi);
+        hrsi = new DeflateResponseInterceptor();
+        rspintercepts.add(hrsi);
     }
 
     // Authorization
@@ -577,6 +628,8 @@ public class HTTPSession
     protected boolean closed = false;
     protected Settings localsettings = new Settings();
     protected HTTPAuthStore authlocal = new HTTPAuthStore();
+    // We currently only allow the use of global interceptors
+    protected List<Object> intercepts = new ArrayList<Object>(); // current set of interceptors;
 
     //////////////////////////////////////////////////
     // Constructor(s)
@@ -599,11 +652,41 @@ public class HTTPSession
         try {
             sessionClient = new DefaultHttpClient(connmgr);
             if(TESTING) HTTPSession.track(this);
-            setInterceptors(this);
+            setInterceptors();
         } catch (Exception e) {
             throw new HTTPException("url=" + url, e);
         }
         this.execcontext = new BasicHttpContext();// do we need to modify?
+    }
+
+    //////////////////////////////////////////////////
+    // Interceptors
+
+    synchronized void
+    setInterceptors()
+    {
+        for(HttpRequestInterceptor hrq : reqintercepts)
+            sessionClient.addRequestInterceptor(hrq);
+        for(HttpResponseInterceptor hrs : rspintercepts)
+            sessionClient.addResponseInterceptor(hrs);
+    }
+
+    synchronized void
+    clearInterceptors()
+    {
+        for(HttpRequestInterceptor hrq : reqintercepts)
+            clearInterceptor(hrq);
+        for(HttpResponseInterceptor hrs : rspintercepts)
+            clearInterceptor(hrs);
+    }
+
+    synchronized void
+    clearInterceptor(Object o)
+    {
+        if(o instanceof HttpResponseInterceptor)
+            sessionClient.removeResponseInterceptorByClass(((HttpResponseInterceptor) o).getClass());
+        if(o instanceof HttpRequestInterceptor)
+            sessionClient.removeRequestInterceptorByClass(((HttpRequestInterceptor) o).getClass());
     }
 
     //////////////////////////////////////////////////
@@ -645,12 +728,6 @@ public class HTTPSession
     {
         localsettings.setParameter(MAX_REDIRECTS, n);
     }
-
-    public void setCompression()
-    {
-        localsettings.setParameter(COMPRESSION, "gzip,deflate");
-    }
-
 
     // make package specific
 
@@ -823,6 +900,7 @@ public class HTTPSession
     execute(HttpRequestBase request)
         throws IOException
     {
+        // Check if cont
         HttpResponse response = sessionClient.execute(request, this.execcontext);
         return response;
     }
@@ -833,8 +911,8 @@ public class HTTPSession
     // Provide a way to kill everything at the end of a Test
 
     // When testing, we need to be able to clean up
-    // all existing sessions because JUnit can run all
-    // test within a single jvm.
+// all existing sessions because JUnit can run all
+// test within a single jvm.
     static List<HTTPSession> sessionList = null; // List of all HTTPSession instances
 
     // only used when testing flag is set
@@ -862,48 +940,11 @@ public class HTTPSession
         sessionList.add(session);
     }
 
-
-    static protected HttpRequestInterceptor globaldebugrequest = null;
-    static protected HttpResponseInterceptor globaldebugresponse = null;
-
-    protected HttpRequestInterceptor localdebugrequest = null;
-    protected HttpResponseInterceptor localdebugresponse = null;
-
-    synchronized static public void
-    setInterceptors(HTTPSession session)
-    {
-        HttpRequestInterceptor ireq = session.localdebugrequest;
-        if(ireq == null)
-            ireq = globaldebugrequest;
-        if(ireq != null) {
-            if(session != null) {
-                AbstractHttpClient client = (AbstractHttpClient) session.getClient();
-                client.addRequestInterceptor(ireq);
-            }
-        }
-        HttpResponseInterceptor hi = session.localdebugresponse;
-        if(hi == null)
-            hi = globaldebugresponse;
-        if(hi != null) {
-            if(session != null) {
-                AbstractHttpClient client = (AbstractHttpClient) session.getClient();
-                client.addResponseInterceptor(hi);
-            }
-        }
-    }
-
     static public void debugGlobal(HttpRequestInterceptor ireq,
                                    HttpResponseInterceptor iresp)
     {
-        globaldebugrequest = ireq;
-        globaldebugresponse = iresp;
-    }
-
-    public void debugSession(HttpRequestInterceptor ireq,
-                             HttpResponseInterceptor iresp)
-    {
-        localdebugrequest = ireq;
-        localdebugresponse = iresp;
+        reqintercepts.add(ireq);
+        rspintercepts.add(iresp);
     }
 
     static public void debugHeaders()
