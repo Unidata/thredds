@@ -11,7 +11,7 @@ import javax.xml.bind.JAXBElement;
  * Created by cwardgar on 2014/03/06.
  */
 public abstract class NC_TVPDefaultMetadataPropertyType {
-    // om:OM_Observation/om:result/wml2:MeasurementTimeseriesType/wml2:defaultPointMetadata
+    // wml2:Collection/wml2:observationMember/om:OM_Observation/om:result/wml2:MeasurementTimeseriesType/wml2:defaultPointMetadata
     public static TVPDefaultMetadataPropertyType createDefaultPointMetadata(VariableSimpleIF dataVar) {
         TVPDefaultMetadataPropertyType defaultPointMetadata = Factories.WATERML.createTVPDefaultMetadataPropertyType();
 

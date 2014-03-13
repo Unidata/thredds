@@ -15,7 +15,7 @@ import java.io.IOException;
  * Created by cwardgar on 2014/03/05.
  */
 public abstract class NC_MeasureTVPType {
-    // om:OM_Observation/om:result/wml2:MeasurementTimeseries/wml2:point/wml2:MeasurementTVP
+    // wml2:Collection/wml2:observationMember/om:OM_Observation/om:result/wml2:MeasurementTimeseries/wml2:point/wml2:MeasurementTVP
     public static MeasureTVPType createMeasurementTVP(FeatureDatasetPoint fdPoint, PointFeature pointFeat)
             throws IOException {
         MeasureTVPType measurementTVP = Factories.WATERML.createMeasureTVPType();

@@ -6,13 +6,11 @@ import ucar.nc2.ft.StationTimeSeriesFeature;
 import ucar.nc2.ogc.Factories;
 
 /**
- * In OGC 12-031r2, used at:
- *     om:OM_Observation/om:featureOfInterest/sams:SF_SpatialSamplingFeatureType/sams:shape/gml:Point
- *
  * Created by cwardgar on 2014/02/28.
  */
 public abstract class NC_PointType {
-    public static PointType createShapePoint(StationTimeSeriesFeature stationFeat) {
+    // wml2:Collection/wml2:observationMember/om:OM_Observation/om:featureOfInterest/sams:SF_SpatialSamplingFeatureType/sams:shape/gml:Point
+    public static PointType createPoint(StationTimeSeriesFeature stationFeat) {
         PointType point = Factories.GML.createPointType();
 
         // gml:id

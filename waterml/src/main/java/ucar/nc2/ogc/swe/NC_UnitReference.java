@@ -9,7 +9,7 @@ import ucar.nc2.ogc.Factories;
  * Created by cwardgar on 2014/03/06.
  */
 public class NC_UnitReference {
-    // om:OM_Observation/om:result/wml2:MeasurementTimeseriesType/wml2:defaultPointMetadata/wml2:DefaultTVPMetadata/wml2:uom
+    // wml2:Collection/wml2:observationMember/om:OM_Observation/om:result/wml2:MeasurementTimeseriesType/wml2:defaultPointMetadata/wml2:DefaultTVPMetadata/wml2:uom
     public static UnitReference createUom(VariableSimpleIF dataVar) {
         UnitReference uom = Factories.SWE.createUnitReference();
 

@@ -11,35 +11,32 @@ import ucar.nc2.ogc.gml.NC_StringOrRefType;
 import ucar.nc2.ogc.spatialsampling.NC_Shape;
 
 /**
- * In OGC 12-031r2, used at:
- *     om:OM_Observation/om:featureOfInterest/sam:SF_SamplingFeatureType
- *     om:OM_Observation/om:featureOfInterest/sams:SF_SpatialSamplingFeatureType
- *
  * Created by cwardgar on 2014/02/26.
  */
 public abstract class NC_MonitoringPointType {
-    public static MonitoringPointType createMonitoringPointType(StationTimeSeriesFeature stationFeat) {
-        MonitoringPointType monitoringPointType = Factories.WATERML.createMonitoringPointType();
+    // wml2:Collection/wml2:observationMember/om:OM_Observation/om:featureOfInterest/sam:SF_SamplingFeatureType
+    public static MonitoringPointType createSfSamplingFeatureType(StationTimeSeriesFeature stationFeat) {
+        MonitoringPointType sfSamplingFeatureType = Factories.WATERML.createMonitoringPointType();
 
         // gml:id
         String id = generateId();
-        monitoringPointType.setId(id);
+        sfSamplingFeatureType.setId(id);
 
         // gml:identifier
         CodeWithAuthorityType identifier = NC_CodeWithAuthorityType.createIdentifier(stationFeat);
-        monitoringPointType.setIdentifier(identifier);
+        sfSamplingFeatureType.setIdentifier(identifier);
 
         // gml:description
-        StringOrRefType description = NC_StringOrRefType.createSamplingFeatureTypeDescription(stationFeat);
+        StringOrRefType description = NC_StringOrRefType.createDescription(stationFeat);
         if (description.getValue() != null && !description.getValue().isEmpty()) {
-            monitoringPointType.setDescription(description);
+            sfSamplingFeatureType.setDescription(description);
         }
 
         // sams:shape
-        Shape shape = NC_Shape.createSpatialSamplingFeatureShape(stationFeat);
-        monitoringPointType.setShape(shape);
+        Shape shape = NC_Shape.createShape(stationFeat);
+        sfSamplingFeatureType.setShape(shape);
 
-        return monitoringPointType;
+        return sfSamplingFeatureType;
     }
 
     private static int numIds = 0;

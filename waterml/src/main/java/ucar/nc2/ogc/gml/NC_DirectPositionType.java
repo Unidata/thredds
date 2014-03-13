@@ -8,7 +8,7 @@ import ucar.nc2.ogc.Factories;
  * Created by cwardgar on 2014/02/28.
  */
 public abstract class NC_DirectPositionType {
-    // om:OM_Observation/om:featureOfInterest/sams:SF_SpatialSamplingFeatureType/sams:shape/gml:Point/gml:pos
+    // wml2:Collection/wml2:observationMember/om:OM_Observation/om:featureOfInterest/sams:SF_SpatialSamplingFeatureType/sams:shape/gml:Point/gml:pos
     public static DirectPositionType createPos(StationTimeSeriesFeature stationFeat) {
         DirectPositionType pos = Factories.GML.createDirectPositionType();
 

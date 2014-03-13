@@ -12,17 +12,17 @@ import javax.xml.bind.JAXBElement;
  * Created by cwardgar on 2014/02/26.
  */
 public abstract class NC_FeaturePropertyType {
-    // om:OM_Observation/om:featureOfInterest
+    // wml2:Collection/wml2:observationMember/om:OM_Observation/om:featureOfInterest
     public static FeaturePropertyType createFeatureOfInterest(StationTimeSeriesFeature stationFeat) {
-        FeaturePropertyType featOfInterest = Factories.GML.createFeaturePropertyType();
+        FeaturePropertyType featureOfInterest = Factories.GML.createFeaturePropertyType();
 
         // sam:SF_SamplingFeatureType
-        MonitoringPointType monitoringPointType = NC_MonitoringPointType.createMonitoringPointType(stationFeat);
+        MonitoringPointType sfSamplingFeatureType = NC_MonitoringPointType.createSfSamplingFeatureType(stationFeat);
         JAXBElement<MonitoringPointType> monitoringPointElem =
-                Factories.WATERML.createMonitoringPoint(monitoringPointType);
-        featOfInterest.setAbstractFeature(monitoringPointElem);
+                Factories.WATERML.createMonitoringPoint(sfSamplingFeatureType);
+        featureOfInterest.setAbstractFeature(monitoringPointElem);
 
-        return featOfInterest;
+        return featureOfInterest;
     }
 
     private NC_FeaturePropertyType() { }

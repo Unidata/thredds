@@ -17,7 +17,7 @@ import java.io.IOException;
  * Created by cwardgar on 2014/03/05.
  */
 public abstract class NC_MeasurementTimeseriesType {
-    // om:OM_Observation/om:result/wml2:MeasurementTimeseries
+    // wml2:Collection/wml2:observationMember/om:OM_Observation/om:result/wml2:MeasurementTimeseries
     public static MeasurementTimeseriesType createMeasurementTimeseries(
             FeatureDatasetPoint fdPoint, StationTimeSeriesFeature stationFeat) throws IOException {
         MeasurementTimeseriesType measurementTimeseries = Factories.WATERML.createMeasurementTimeseriesType();

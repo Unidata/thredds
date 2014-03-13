@@ -8,7 +8,7 @@ import ucar.nc2.ogc.Factories;
  * Created by cwardgar on 2014/02/26.
  */
 public abstract class NC_CodeWithAuthorityType {
-    // om:OM_Observation/om:featureOfInterest/sam:SF_SamplingFeatureType/gml:identifier
+    // wml2:Collection/wml2:observationMember/om:OM_Observation/om:featureOfInterest/sam:SF_SamplingFeatureType/gml:identifier
     public static CodeWithAuthorityType createIdentifier(StationTimeSeriesFeature stationFeat) {
         CodeWithAuthorityType identifier = Factories.GML.createCodeWithAuthorityType();
         identifier.setValue(stationFeat.getName());

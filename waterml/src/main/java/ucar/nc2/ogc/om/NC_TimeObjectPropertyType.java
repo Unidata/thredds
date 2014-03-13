@@ -12,7 +12,7 @@ import javax.xml.bind.JAXBElement;
  * Created by cwardgar on 3/6/14.
  */
 public abstract class NC_TimeObjectPropertyType {
-    // om:OM_Observation/om:phenomenonTime
+    // wml2:Collection/wml2:observationMember/om:OM_Observation/om:phenomenonTime
     public static TimeObjectPropertyType createPhenomenonTime(StationTimeSeriesFeature stationFeat) {
         TimeObjectPropertyType phenomenonTime = Factories.OM.createTimeObjectPropertyType();
 
