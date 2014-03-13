@@ -417,7 +417,7 @@ public abstract class GribIosp extends AbstractIOServiceProvider {
     // now convert to udunits
     double[] data = new double[n];
     count = 0;
-    for (double val : rtc.getRuntimesUdunits()) {
+    for (double val : rtc.getOffsetsInHours()) {
       data[count++] = val;
     }
     v.setCachedData(Array.factory(DataType.DOUBLE, new int[]{n}, data));

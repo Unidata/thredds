@@ -15,7 +15,7 @@ public class CoordinateSharer<T> {
   boolean runtimeUnion;
 
   /**
-   *
+   * Ctor
    * @param runtimeUnion if true, make union of runtimes ("dense"), otherwise keep seperate runtimes if distinct
    */
   public CoordinateSharer(boolean runtimeUnion) {

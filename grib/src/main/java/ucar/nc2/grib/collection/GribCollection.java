@@ -716,7 +716,7 @@ public abstract class GribCollection implements FileCacheable, AutoCloseable {
               break;
             case timeIntv:
               CoordinateTimeIntv timeIntv = (CoordinateTimeIntv) coord;
-              range = timeIntv.makeCalendarDateRange(null, lastRuntime);
+              range = timeIntv.makeCalendarDateRange(null);
               if (end.isBefore(range.getEnd())) end = range.getEnd();
               break;
           }

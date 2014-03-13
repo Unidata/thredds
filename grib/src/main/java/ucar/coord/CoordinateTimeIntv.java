@@ -31,13 +31,6 @@ public class CoordinateTimeIntv extends CoordinateTimeAbstract implements Coordi
     this.timeIntervals = Collections.unmodifiableList(timeIntervals);
   }
 
-  CoordinateTimeIntv(CoordinateTimeIntv org, int offset) {
-    super(org.getCode(), org.getTimeUnit(), org.getRefDate());
-    List<TimeCoord.Tinv> vals = new ArrayList<>(org.getSize());
-    for (TimeCoord.Tinv orgVal : org.getTimeIntervals()) vals.add(new TimeCoord.Tinv(orgVal.getBounds1()+offset, orgVal.getBounds2()+offset));
-    this.timeIntervals = Collections.unmodifiableList(vals);
-  }
-
   public List<TimeCoord.Tinv> getTimeIntervals() {
     return timeIntervals;
   }
@@ -54,7 +47,7 @@ public class CoordinateTimeIntv extends CoordinateTimeAbstract implements Coordi
 
   @Override
   public int getIndex(Object val) {
-    return timeIntervals.indexOf(val);
+    return Collections.binarySearch(timeIntervals, (TimeCoord.Tinv) val);
   }
 
   public int getSize() {
@@ -66,6 +59,10 @@ public class CoordinateTimeIntv extends CoordinateTimeAbstract implements Coordi
     return Type.timeIntv;
   }
 
+  /**
+   * Check if we all time intervals have the same length.
+   * @return time interval name or MIXED_INTERVALS
+   */
   public String getTimeIntervalName() {
     // are they the same length ?
     int firstValue = -1;
@@ -79,16 +76,13 @@ public class CoordinateTimeIntv extends CoordinateTimeAbstract implements Coordi
     return firstValue + "_" + timeUnit.getField().toString();
   }
 
-  public List<CalendarDate> makeCalendarDates(ucar.nc2.time.Calendar cal, CalendarDate refDate) {
-    CalendarDateUnit cdu = CalendarDateUnit.withCalendar(cal, periodName+" since "+ refDate.toString());
-    List<CalendarDate> result = new ArrayList<>(getSize());
-    for (TimeCoord.Tinv val : getTimeIntervals())
-      result.add(cdu.makeCalendarDate(val.getBounds2())); // use the upper bound - same as iosp uses for coord
-    return result;
-  }
-
-  public CalendarDateRange makeCalendarDateRange(ucar.nc2.time.Calendar cal, CalendarDate refDate) {
-    CalendarDateUnit cdu = CalendarDateUnit.withCalendar(cal, periodName + " since " + refDate.toString());
+  /**
+   * Make calendar date range, using the first and last ending bounds
+   * @param cal  optional calendar, may be null
+   * @return  calendar date range
+   */
+  public CalendarDateRange makeCalendarDateRange(ucar.nc2.time.Calendar cal) {
+    CalendarDateUnit cdu = CalendarDateUnit.of(cal, timeUnit.getField(), refDate);
     CalendarDate start = cdu.makeCalendarDate(timeIntervals.get(0).getBounds2());
     CalendarDate end = cdu.makeCalendarDate(timeIntervals.get(getSize()-1).getBounds2());
     return CalendarDateRange.of(start, end);

@@ -85,15 +85,17 @@ public abstract class GribCollectionBuilderFromIndex {
       if (!NcStream.readAndTest(raf, getMagicStart().getBytes())) {
         raf.seek(0);
         NcStream.readAndTest(raf, getMagicStart().getBytes()); // debug
-        logger.warn("GribCollectionBuilderFromIndex {}: invalid index magic", gc.getName());
-        return false;
+        logger.warn("GribCollectionBuilderFromIndex {}: invalid index raf={}", gc.getName(), raf.getLocation());
+        throw new IllegalStateException();   // temp debug
+        // return false;
       }
 
       gc.version = raf.readInt();
       boolean versionOk = gc.version >= Grib2CollectionWriter.version;
       if (!versionOk) {
         logger.warn("GribCollectionBuilderFromIndex {}: index found version={}, want version= {} on file {}", gc.getName(), gc.version, Grib2CollectionWriter.version, raf.getLocation());
-        return false;
+        throw new IllegalStateException();   // temp debug
+        // return false;
       }
 
       // these are the variable records
@@ -102,9 +104,10 @@ public abstract class GribCollectionBuilderFromIndex {
       if (debug) System.out.printf("GribCollectionBuilderFromIndex %s (%s) records len = %d%n", raf.getLocation(), getMagicStart(), skip);
 
       int size = NcStream.readVInt(raf);
-      if ((size < 0) || (size > 100 * 1000 * 1000)) {
-        logger.warn("GribCollectionBuilderFromIndex {}: invalid index size", gc.getName());
-        return false;
+      if ((size < 0) || (size > 200 * 1000 * 1000)) {
+        logger.warn("GribCollectionBuilderFromIndex {}: invalid index size", gc.getName(), raf.getLocation());
+        throw new IllegalStateException();   // temp debug
+        //return false;
       }
       if (debug) System.out.printf("GribCollectionBuilderFromIndex proto len = %d%n", size);
 

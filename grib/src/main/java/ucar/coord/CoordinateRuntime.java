@@ -29,7 +29,11 @@ public class CoordinateRuntime implements Coordinate {
     return runtimeSorted;
   }
 
-  public List<Double> getRuntimesUdunits() {
+  /**
+   * Get offsets from firstDate, in units of hours
+   * @return for each runtime, a list of hours from firstdate
+   */
+  public List<Double> getOffsetsInHours() {
     List<Double> result = new ArrayList<>(runtimeSorted.size());
     for (CalendarDate cd : runtimeSorted) {
       double msecs = (double) cd.getDifferenceInMsecs(firstDate);
@@ -60,9 +64,8 @@ public class CoordinateRuntime implements Coordinate {
     this.name = name;
   }
 
-  public int getCode() {
-    return 0;
-  }
+  @Override
+  public int getCode() { return 0; }
 
   public CalendarDate getFirstDate() {
     return firstDate;
@@ -83,21 +86,13 @@ public class CoordinateRuntime implements Coordinate {
 
   @Override
   public int getIndex(Object val) {
-    return runtimeSorted.indexOf(val);
+    return Collections.binarySearch(runtimeSorted, (CalendarDate) val);
   }
 
   @Override
   public Object getValue(int idx) {
     return runtimeSorted.get(idx);
   }
-
- /* static public CalendarDate extractRunDate(Grib2Record gr) {
-    return gr.getReferenceDate();
-  }
-
-  public CalendarDate extract(Grib2Record gr) {
-    return extractRunDate(gr);
-  } */
 
   @Override
   public void showInfo(Formatter info, Indent indent) {
@@ -110,7 +105,7 @@ public class CoordinateRuntime implements Coordinate {
   @Override
   public void showCoords(Formatter info) {
     info.format("Run Times: %s (%s)%n", getName(), getUnit());
-    List<Double> udunits = getRuntimesUdunits();
+    List<Double> udunits = getOffsetsInHours();
     int count = 0;
     for (CalendarDate cd : runtimeSorted) {
       info.format("   %s (%f)%n", cd, udunits.get(count++));
@@ -133,11 +128,6 @@ public class CoordinateRuntime implements Coordinate {
   public int hashCode() {
     return runtimeSorted.hashCode();
   }
-
-  /* @Override
-  public CoordinateBuilder makeBuilder() {
-    return new Builder();
-  } */
 
   ///////////////////////////////////////////////////////
 

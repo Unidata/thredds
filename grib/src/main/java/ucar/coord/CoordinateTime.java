@@ -17,7 +17,7 @@ import ucar.nc2.util.Indent;
 import java.util.*;
 
 /**
- * Time coordinates that are not intervals.
+ * Time coordinates that are offsets from the reference date (not intervals).
  *
  * @author caron
  * @since 11/24/13
@@ -31,22 +31,6 @@ public class CoordinateTime extends CoordinateTimeAbstract implements Coordinate
     this.offsetSorted = Collections.unmodifiableList(offsetSorted);
   }
 
-  /* CoordinateTime(CoordinateTime org, int offset) {
-    super(org.getCode(), org.getTimeUnit(), org.getRefDate());
-    List<Integer> vals = new ArrayList<>(org.getSize());
-    for (int orgVal : org.getOffsetSorted()) vals.add(orgVal+offset);
-    this.offsetSorted = Collections.unmodifiableList(vals);
-  } */
-
-  /* static public Integer extractOffset(Grib2Record gr) {
-    Grib2Pds pds = gr.getPDS();
-    return pds.getForecastTime();
-  }
-
-  public Integer extract(Grib2Record gr) {
-    return extractOffset(gr);
-  } */
-
   public List<Integer> getOffsetSorted() {
     return offsetSorted;
   }
@@ -58,7 +42,7 @@ public class CoordinateTime extends CoordinateTimeAbstract implements Coordinate
 
   @Override
   public int getIndex(Object val) {
-    return offsetSorted.indexOf(val);
+    return Collections.binarySearch(offsetSorted, (Integer) val);
   }
 
   @Override

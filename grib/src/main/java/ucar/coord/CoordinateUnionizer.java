@@ -11,6 +11,11 @@ import java.util.*;
 
 /**
  * Create the overall coordinate across the same variable in different partitions
+ * The CoordinateBuilders create unique sets of Coordinates.
+ * The CoordinateND result is then the cross-product of those Coordinates.
+ *
+ * So if theres a lot of missing records in that cross-product, we may have the variable wrong (?),
+ *  or our assumption that the ddata comprises a multdim array may be wrong
  *
  * @author John
  * @since 12/10/13
@@ -168,12 +173,12 @@ public class CoordinateUnionizer<T> {
 
     @Override
     public void addAll(Coordinate coord) {
-      if (coord.getValues() != null)
-        super.addAll(coord);
+      //if (coord.getValues() != null)  // probably never true
+      //  super.addAll(coord);
       CoordinateTime2D coordT2D = (CoordinateTime2D) coord;
       for (Coordinate tcoord : coordT2D.getTimes()) {             // possible duplicate runtimes from different partitions
         CoordinateTimeAbstract times = (CoordinateTimeAbstract) tcoord;
-        timeMap.put(times.getRefDate(), times);                   // later partitions will override
+        timeMap.put(times.getRefDate(), times);                   // later partitions will override LOOK could check how many times there are and choose larger
       }
     }
 
@@ -192,11 +197,11 @@ public class CoordinateUnionizer<T> {
         times.add(timeMap.get(cd));
       }
 
-      List<CoordinateTime2D.Time2D> vals = new ArrayList<>(values.size());
-      for (Object val : values) vals.add( (CoordinateTime2D.Time2D) val);
-      Collections.sort(vals);
+      //List<CoordinateTime2D.Time2D> vals = new ArrayList<>(values.size());
+      //for (Object val : values) vals.add( (CoordinateTime2D.Time2D) val);
+      //Collections.sort(vals);
 
-      return new CoordinateTime2D(code, timeUnit, vals, new CoordinateRuntime(runtimes), times);
+      return new CoordinateTime2D(code, timeUnit, null, new CoordinateRuntime(runtimes), times);
     }
 
   }

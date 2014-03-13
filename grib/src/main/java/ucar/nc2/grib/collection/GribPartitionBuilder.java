@@ -167,11 +167,11 @@ public abstract class GribPartitionBuilder  {
       writeIndex(result, errlog);
 
     } finally {
-      // close open gc's
+      /* LOOK close open gc's
       for (PartitionCollection.Partition tpp : result.getPartitions()) {
         tpp.gc.close();
         tpp.gc = null;
-      }
+      }  */
     }
 
     long took = System.currentTimeMillis() - start;
@@ -221,7 +221,7 @@ public abstract class GribPartitionBuilder  {
     for (PartitionCollection.Partition tpp : result.getPartitions()) {
       try (GribCollection gc = tpp.makeGribCollection(forceChildren)) {
       // LOOK CLOSE GribCollection gc = tpp.makeGribCollection(forceChildren); CLOSE
-        tpp.gc = gc;
+        // tpp.gc = gc;
         CoordinateRuntime partRuntime = gc.getMasterRuntime();
         runtimeAllBuilder.addAll(partRuntime);  // also make a complete set of runtimes
 
@@ -241,8 +241,8 @@ public abstract class GribPartitionBuilder  {
       countPartition++;
     } // loop over partition
     List<GroupPartitions> groupPartitions = new ArrayList<>(groupMap.values());
-    result.masterRuntime = (CoordinateRuntime) runtimeAllBuilder.finish();
-
+    result.masterRuntime = (CoordinateRuntime) runtimeAllBuilder.finish(); // LOOK assumes that runtime = partition remains after sort ??
+                                                                           // could work if partition sorted by runtime ??
     // for each run, which partition ??
     result.run2part = new int[result.masterRuntime.getSize()];
     int partIdx = 0;
@@ -287,7 +287,7 @@ public abstract class GribPartitionBuilder  {
       // each VariableIndexPartitioned now has its list of PartitionForVariable
 
       // overall set of unique coordinates
-      boolean isDense = (config != null) && "dense".equals(config.gribConfig.getParameter("CoordSys"));  // LOOK for now, assume non-dense
+      boolean isDense = false; // (config != null) && "dense".equals(config.gribConfig.getParameter("CoordSys"));  // for now, assume non-dense
       CoordinateSharer sharify = new CoordinateSharer(isDense);
 
       // for each variable, create union of coordinates across the partitions
@@ -457,7 +457,7 @@ public abstract class GribPartitionBuilder  {
        if (coord.getType() == Coordinate.Type.runtime)
          rtc = (CoordinateRuntime) coord;
       assert rtc != null;
-      List<Double> runOffset = rtc.getRuntimesUdunits();
+      List<Double> runOffset = rtc.getOffsetsInHours();
 
       // create the best time coordinates, for GroupB
       // order is preserved with Group2D

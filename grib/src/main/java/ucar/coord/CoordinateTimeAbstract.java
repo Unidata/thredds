@@ -41,7 +41,7 @@ import ucar.nc2.time.CalendarPeriod;
 import java.util.List;
 
 /**
- * Describe
+ * Abstract superclass for time coordinates ( time, timeIntv, time2D)
  *
  * @author caron
  * @since 1/23/14
@@ -50,11 +50,11 @@ public abstract class CoordinateTimeAbstract implements Coordinate {
   static public final String MIXED_INTERVALS = "Mixed_Intervals";
 
   protected final int code;                  // unit of time (Grib1 table 4, Grib2 table 4.4), eg hour, day, month
-  protected final CalendarPeriod timeUnit;
-  protected CalendarDate refDate;            // null if dense
+  protected final CalendarPeriod timeUnit;   // time duration, based on code
+  protected String periodName;               // used to create the udunit
+  protected CalendarDate refDate;            // null if dense (??)
 
   protected String name = "time";
-  protected String periodName;
 
   CoordinateTimeAbstract(int code, CalendarPeriod timeUnit, CalendarDate refDate) {
     this.code = code;
@@ -65,7 +65,7 @@ public abstract class CoordinateTimeAbstract implements Coordinate {
     if (cf == CalendarPeriod.Field.Month || cf == CalendarPeriod.Field.Year)
       this.periodName = "calendar "+ cf.toString();
     else
-      this.periodName = timeUnit.getField().toString();
+      this.periodName = cf.toString();
   }
 
   @Override
@@ -99,9 +99,7 @@ public abstract class CoordinateTimeAbstract implements Coordinate {
     this.refDate = refDate;
   }
 
-  public double getTimeUnitScale() {
-     return timeUnit.getValue();
-   }
+  public double getTimeUnitScale() { return timeUnit.getValue(); }
 
   public CalendarPeriod getTimeUnit() {
     return timeUnit;

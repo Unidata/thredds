@@ -54,17 +54,24 @@ import java.util.*;
  */
 public class CoordinateTime2D extends CoordinateTimeAbstract implements Coordinate {
   private final CoordinateRuntime runtime;
-  private List<Coordinate> times; // store these with the original offsets
-  private int[] offset;
+  private List<Coordinate> times; // time coordinates - original offsets
+  private int[] offset;  // the offset of each CoordinateTime from the base/first runtime
 
-  private final List<Time2D> vals; // only needed for GC, otherwise null
   private final boolean isTimeInterval;
   private final int nruns;
   private final int ntimes;
 
-  // when reading : times already have the offset
-  public CoordinateTime2D(int code, CalendarPeriod timeUnit, List<Time2D> vals,
-                          CoordinateRuntime runtime, List<Coordinate> times) {
+  private final List<Time2D> vals; // only needed when building the GC, otherwise null
+
+  /**
+   * Ctor
+   * @param code          pdsFirst.getTimeUnit()
+   * @param timeUnit      time duration, based on code
+   * @param vals          complete set of time coordinates, or null when reading from ncx2
+   * @param runtime       list of runtimes
+   * @param times         list of times, one for each runtime, offsets reletive to its runtime
+   */
+  public CoordinateTime2D(int code, CalendarPeriod timeUnit, List<Time2D> vals, CoordinateRuntime runtime, List<Coordinate> times) {
     super(code, timeUnit, runtime.getFirstDate());
 
     this.runtime = runtime;
@@ -80,6 +87,7 @@ public class CoordinateTime2D extends CoordinateTimeAbstract implements Coordina
     this.vals = vals;
   }
 
+  // make the offset array
   private void makeOffsets(List<Coordinate> orgTimes) {
     CalendarDate firstDate = runtime.getFirstDate();
     offset = new int[orgTimes.size()];
@@ -134,12 +142,12 @@ public class CoordinateTime2D extends CoordinateTimeAbstract implements Coordina
 
   @Override
   public Object getValue(int idx) {
-    return vals.get(idx);
+    return (vals == null) ? null : vals.get(idx);
   }
 
   @Override
   public int getIndex(Object val) {
-    return (vals == null) ? null : vals.indexOf(val);
+    return (vals == null) ? -1 : Collections.binarySearch(vals, (Time2D) val);
   }
 
   @Override
@@ -169,6 +177,11 @@ public class CoordinateTime2D extends CoordinateTimeAbstract implements Coordina
     return times.hashCode();
   }
 
+  /**
+   * Check if we all time intervals have the same length.
+   * Only if isTimeInterval.
+   * @return time interval name or MIXED_INTERVALS
+   */
   public String getTimeIntervalName() {
     if (!isTimeInterval) return null;
 
@@ -187,7 +200,24 @@ public class CoordinateTime2D extends CoordinateTimeAbstract implements Coordina
 
   ////////////////////////////////////////////////
 
-    /* get the original value at the given indices */
+  /* translate a time value in the Best coordinate to the correct offset, eg in the partition coordinate
+  public Object getPartValue(int runIdx, Object bestVal) {
+    Coordinate time = times.get(runIdx);
+    if (isTimeInterval) {
+      TimeCoord.Tinv valIntv = (TimeCoord.Tinv) bestVal;
+      return valIntv.offset(-getOffset(runIdx));
+    } else {
+      Integer val = (Integer) bestVal;
+      return val - getOffset(runIdx);
+    }
+  } */
+
+  /**
+   * Get the time coordinate at the given indices, into the 2D time coordinate array
+   * @param runIdx     run index
+   * @param timeIdx    time index
+   * @return time coordinate
+   */
   public Time2D getOrgValue(int runIdx, int timeIdx) {
     Coordinate time = times.get(runIdx);
     CalendarDate runDate = runtime.getDate(runIdx);
@@ -202,20 +232,12 @@ public class CoordinateTime2D extends CoordinateTimeAbstract implements Coordina
     }
   }
 
-  // translate a time value in the Best coordinate to the correct offset, eg in the partition coordinate
-  public Object getPartValue(int runIdx, Object bestVal) {
-    Coordinate time = times.get(runIdx);
-    if (isTimeInterval) {
-      TimeCoord.Tinv valIntv = (TimeCoord.Tinv) bestVal;
-      return valIntv.offset(-getOffset(runIdx));
-    } else {
-      Integer val = (Integer) bestVal;
-      return val - getOffset(runIdx);
-    }
-  }
-
-  // find the run and time indexes of want
-  // the inverse of getOrgValue
+  /**
+   * find the run and time indexes of want
+   * the inverse of getOrgValue
+   * @param want        find time coordinate that matches
+   * @param wholeIndex  return index here
+   */
   public void getIndex(Time2D want, int[] wholeIndex) {
     int runIndex = runtime.getIndex(want.run);
     Coordinate time = times.get(runIndex);
@@ -247,8 +269,6 @@ public class CoordinateTime2D extends CoordinateTimeAbstract implements Coordina
       valueWithOffset = val + offset;
     }
     int result =  time.getIndex(valueWithOffset);
-    if (result < 0)
-      System.out.println("HEY");
     return result;
   }
 
@@ -285,6 +305,15 @@ public class CoordinateTime2D extends CoordinateTimeAbstract implements Coordina
     }
   }
 
+  ///////////////////////////////////////////////////////////////////////////////////////
+
+  /**
+   * for each time Coordinate in CoordBest, which runtime coordinate does it use? 1-based so 0 = missing
+   *
+   * @param coordBest  the set of coordinates
+   * @param twot
+   * @return
+   */
   public int[] makeTime2RuntimeMap(CoordinateTimeAbstract coordBest, CoordinateTwoTimer twot) {
     if (isTimeInterval)
       return makeTime2RuntimeMap((CoordinateTimeIntv) coordBest, twot);
@@ -292,8 +321,7 @@ public class CoordinateTime2D extends CoordinateTimeAbstract implements Coordina
       return makeTime2RuntimeMap((CoordinateTime) coordBest, twot);
   }
 
-
-  protected int[] makeTime2RuntimeMap(CoordinateTimeIntv coordBest, CoordinateTwoTimer twot) {
+  private int[] makeTime2RuntimeMap(CoordinateTimeIntv coordBest, CoordinateTwoTimer twot) {
     int[] result = new int[ coordBest.getSize()];
 
     Map<TimeCoord.Tinv, Integer> map = new HashMap<>();  // lookup coord val to index
@@ -320,7 +348,7 @@ public class CoordinateTime2D extends CoordinateTimeAbstract implements Coordina
     return result;
   }
 
-  protected int[] makeTime2RuntimeMap(CoordinateTime coordBest, CoordinateTwoTimer twot) {
+  private int[] makeTime2RuntimeMap(CoordinateTime coordBest, CoordinateTwoTimer twot) {
     int[] result = new int[ coordBest.getSize()];
 
     Map<Integer, Integer> map = new HashMap<>();  // lookup coord val to index
@@ -346,6 +374,42 @@ public class CoordinateTime2D extends CoordinateTimeAbstract implements Coordina
     return result;
   }
 
+  ////////////////////////////////////////////////////////
+
+  /**
+   * Get a sorted list of the unique time coordinates
+   * @return List<Integer> or List<TimeCoord.Tinv>
+   */
+  public List<? extends Object> getOffsetsSorted() {
+    if (isTimeInterval)
+      return getIntervalsSorted();
+    else
+      return getIntegersSorted();
+  }
+
+  private List<Integer> getIntegersSorted() {
+    Set<Integer> set = new HashSet<>(100);
+    for (Coordinate coord : getTimes()) {
+      for (Object val : coord.getValues())
+        set.add((Integer) val);
+    }
+    List<Integer> result = new ArrayList<>();
+    for (Integer val : set) result.add(val);
+    Collections.sort(result);
+    return result;
+  }
+
+  private List<TimeCoord.Tinv> getIntervalsSorted() {
+    Set<TimeCoord.Tinv> set = new HashSet<>(100);
+    for (Coordinate coord : getTimes()) {
+      for (Object val : coord.getValues())
+        set.add((TimeCoord.Tinv) val);
+    }
+    List<TimeCoord.Tinv> result = new ArrayList<>();
+    for (TimeCoord.Tinv val : set) result.add(val);
+    Collections.sort(result);
+    return result;
+  }
 
   ///////////////////////////////////////////////////////
 
@@ -405,7 +469,7 @@ public class CoordinateTime2D extends CoordinateTimeAbstract implements Coordina
     private final boolean isTimeInterval;
     private final Grib2Customizer cust;
     private final int code;                  // pdsFirst.getTimeUnit()
-    private final CalendarPeriod timeUnit;
+    private final CalendarPeriod timeUnit;   // time duration, based on code
 
     private final CoordinateRuntime.Builder2 runBuilder;
     private final Map<Object, CoordinateBuilderImpl<Grib2Record>> timeBuilders;

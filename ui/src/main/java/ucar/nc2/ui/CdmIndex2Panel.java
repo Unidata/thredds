@@ -191,6 +191,24 @@ public class CdmIndex2Panel extends JPanel {
        }
      });
 
+    varPopup.addAction("Merge", new AbstractAction() {
+       public void actionPerformed(ActionEvent e) {
+         List beans = coordTable.getSelectedBeans();
+         if (beans.size() == 2) {
+           Formatter f = new Formatter();
+           CoordBean bean1 = (CoordBean) beans.get(0);
+           CoordBean bean2 = (CoordBean) beans.get(1);
+           if (bean1.coord.getType() == Coordinate.Type.time2D && bean2.coord.getType() == Coordinate.Type.time2D)
+             mergeCoords2D(f, (CoordinateTime2D) bean1.coord, (CoordinateTime2D) bean2.coord);
+           else
+             f.format("CoordinateTime2D only");
+           infoTA.setText(f.toString());
+           infoTA.gotoTop();
+           infoWindow.show();
+         }
+       }
+     });
+
     // file popup window
     fileTable = new MFileTable((PreferencesExt) prefs.node("MFileTable"), true);
     fileTable.addPropertyChangeListener(new PropertyChangeListener() {
@@ -277,12 +295,58 @@ public class CdmIndex2Panel extends JPanel {
 
     for (int idx=0; idx<min; idx++) {
       f.format("Run %d %n", idx);
-      if (runtimes1.getValue(idx) != runtimes2.getValue(idx))
+      if (!runtimes1.getValue(idx).equals(runtimes2.getValue(idx)))
         f.format("Runtime 1 %s != %s runtime 2%n", runtimes1.getValue(idx), runtimes2.getValue(idx));
       compareCoords(f, times1.get(idx), times2.get(idx));
     }
   }
 
+  private void mergeCoords2D(Formatter f, CoordinateTime2D coord1, CoordinateTime2D coord2) {
+    CoordinateRuntime runtimes1 = coord1.getRuntimeCoordinate();
+    CoordinateRuntime runtimes2 = coord2.getRuntimeCoordinate();
+    List<Coordinate> times1 = coord1.getTimes();
+    List<Coordinate> times2 = coord2.getTimes();
+    int min = Math.min(times1.size(), times2.size());
+    if (times1.size() != times2.size()) {
+      f.format("Coordinate 1 has %d runtimes, Coordinate 2 has %d runtimes, %n", times1.size(), times2.size());     }
+
+    for (int idx=0; idx<min; idx++) {
+      if (!runtimes1.getValue(idx).equals(runtimes2.getValue(idx)))
+        f.format("Runtime 1 %s != %s runtime 2%n", runtimes1.getValue(idx), runtimes2.getValue(idx));
+    }
+
+    Set<Object> set1 = makeCoordSet(times1);
+    List<? extends Object> list1 = coord1.getOffsetsSorted();
+    Set<Object> set2 = makeCoordSet(times2);
+    List<? extends Object> list2 = coord2.getOffsetsSorted();
+
+    f.format("%nCoordinate %s%n", coord1.getName());
+    for (Object val : list1) f.format(" %s,", val);
+    f.format("%n");
+    testMissing(f, list1, set2);
+
+    f.format("%nCoordinate %s%n", coord2.getName());
+    for (Object val : list2) f.format(" %s,", val);
+    f.format("%n");   testMissing(f, list2, set1);
+  }
+
+  private Set<Object> makeCoordSet(List<Coordinate> coords) {
+    Set<Object> result = new HashSet<>(100);
+    for (Coordinate coord : coords) {
+      for (Object val : coord.getValues())
+        result.add(val);
+    }
+    return result;
+  }
+
+  private void testMissing(Formatter f, List<? extends Object> test, Set<Object> against) {
+    int countMissing = 0;
+    for (Object val1 : test) {
+      if (!against.contains(val1))
+        f.format(" %d: %s MISSING%n", countMissing++, val1);
+    }
+    f.format("TOTAL MISSING %s%n", countMissing);
+  }
 
   private void compareFiles(Formatter f) throws IOException {
     if (gc == null) return;

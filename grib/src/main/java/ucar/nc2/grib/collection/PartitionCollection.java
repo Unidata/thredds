@@ -448,7 +448,7 @@ public abstract class PartitionCollection extends GribCollection {
     private long lastModified;
 
     // temporary storage while building - do not use - must call getGribCollection()()
-    GribCollection gc;
+    // GribCollection gc;
 
     // constructor from ncx
     public Partition(String name, String indexFilename, long lastModified, String directory) {
@@ -536,7 +536,7 @@ public abstract class PartitionCollection extends GribCollection {
     }
 
     public GribCollection makeGribCollection(CollectionUpdateType force) throws IOException {
-      if (gc != null) return gc;
+      // LOOK CLOSE if (gc != null) return gc;
       return GribCdmIndex.openGribCollectionFromMCollection(isGrib1, dcm, force, null, logger); // caller must close
     }
   }
