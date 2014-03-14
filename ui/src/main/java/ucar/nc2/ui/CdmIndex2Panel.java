@@ -573,7 +573,8 @@ public class CdmIndex2Panel extends JPanel {
       if (coord instanceof CoordinateTime2D) {
         CoordinateTime2D c2d = (CoordinateTime2D) coord;
         Formatter f = new Formatter();
-        f.format("%s %s", coord.getType(), (c2d.isTimeInterval() ? "intv" : "offset"));
+        f.format("%s %s", coord.getType(), (c2d.isTimeInterval() ? "intv" : "off"));
+        if (c2d.isOrthogonal()) f.format(" orth");
         return f.toString();
       } else {
         return coord.getType().toString();

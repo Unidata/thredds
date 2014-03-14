@@ -39,9 +39,9 @@ There’s an alternative proposition, in which the new units of calendar_month a
  * @author caron
  * @since 3/18/11
  */
-  @Immutable
-  public class CalendarDateUnit {
-    private static final String byCalendarString = "calendar ";
+@Immutable
+public class CalendarDateUnit {
+  private static final String byCalendarString = "calendar ";
   //                                                  1                     2             3    4             5
   public static final String udunitPatternString = "(\\w*)\\s*since\\s*"+CalendarDateFormatter.isodatePatternString;
   //                                                                     "([\\+\\-\\d]+)([ Tt]([\\.\\:\\d]*)([ \\+\\-]\\S*)?z?)?$"; // public for testing

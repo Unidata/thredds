@@ -169,6 +169,7 @@ public class CoordinateTime2D extends CoordinateTimeAbstract implements Coordina
 
   @Override
   public void showCoords(Formatter info) {
+    info.format("%s nruns=%d ntimes=%d isOrthogonal=%s%n", name, nruns, ntimes, isOrthogonal);
     runtime.showCoords(info);
     if (isOrthogonal)
       otime.showCoords(info);

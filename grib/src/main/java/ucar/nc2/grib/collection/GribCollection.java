@@ -765,7 +765,7 @@ public abstract class GribCollection implements FileCacheable, AutoCloseable {
 
     List<Integer> coordIndex;  // indexes into group.coords
 
-    private SparseArray<Record> sa;   // lazy read, for GC only
+    private SparseArray<Record> sa;   // for GC only; lazily read
 
     // partition only
     TwoDTimeInventory twot;  // twoD only
