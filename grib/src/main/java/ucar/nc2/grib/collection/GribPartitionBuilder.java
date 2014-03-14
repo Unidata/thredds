@@ -427,7 +427,7 @@ public abstract class GribPartitionBuilder  {
         Section s = new Section(sa.getShape());
         Section.Iterator iter = s.getIterator(sa.getShape());
 
-        // run through all the inventory in this component vi
+        // run through all the inventory in this component vi  LOOK WRONG for orthogonal
         int[] index = new int[sa.getRank()];
         while (iter.hasNext()) {
           int linearIndex = iter.next(index);

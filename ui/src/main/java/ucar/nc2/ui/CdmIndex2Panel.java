@@ -170,6 +170,19 @@ public class CdmIndex2Panel extends JPanel {
       }
     });
 
+    varPopup.addAction("ShowCompact", new AbstractAction() {
+      public void actionPerformed(ActionEvent e) {
+        CoordBean bean = (CoordBean) coordTable.getSelectedBean();
+        if (bean != null) {
+          Formatter f = new Formatter();
+          bean.coord.showInfo(f, new Indent(2));
+          infoTA.setText(f.toString());
+          infoTA.gotoTop();
+          infoWindow.show();
+        }
+      }
+    });
+
     varPopup.addAction("Compare", new AbstractAction() {
        public void actionPerformed(ActionEvent e) {
          List beans = coordTable.getSelectedBeans();
@@ -322,12 +335,13 @@ public class CdmIndex2Panel extends JPanel {
 
     f.format("%nCoordinate %s%n", coord1.getName());
     for (Object val : list1) f.format(" %s,", val);
-    f.format("%n");
+    f.format("(%d)%n", list1.size());
     testMissing(f, list1, set2);
 
     f.format("%nCoordinate %s%n", coord2.getName());
     for (Object val : list2) f.format(" %s,", val);
-    f.format("%n");   testMissing(f, list2, set1);
+    f.format("(%d)%n", list2.size());
+    testMissing(f, list2, set1);
   }
 
   private Set<Object> makeCoordSet(CoordinateTime2D time2D) {

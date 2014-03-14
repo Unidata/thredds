@@ -48,6 +48,7 @@ import ucar.nc2.grib.grib1.Grib1RecordScanner;
 import ucar.nc2.grib.grib2.Grib2Index;
 import ucar.nc2.grib.grib2.Grib2RecordScanner;
 import ucar.nc2.stream.NcStream;
+import ucar.nc2.util.log.LoggerFactory;
 import ucar.unidata.io.RandomAccessFile;
 
 import java.io.File;
@@ -832,6 +833,13 @@ public class GribCdmIndex implements IndexReader {
       logger.error("Error reading index " + indexRaf.getLocation(), t);
       return false;
     }
+  }
+
+  public static void main(String[] args) throws IOException {
+    org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger("test");
+    PartitionManager partition = new PartitionManagerFromIndexDirectory("NAM-Polar_90km", new FeatureCollectionConfig(), new File("B:/lead/NAM-Polar_90km/"),  logger);
+    Grib1PartitionBuilder builder = new Grib1PartitionBuilder("NAM_Polar_90km", new File(partition.getRoot()), partition, logger);
+    builder.createPartitionedIndex(CollectionUpdateType.nocheck, CollectionUpdateType.never, new Formatter());
   }
 
 }

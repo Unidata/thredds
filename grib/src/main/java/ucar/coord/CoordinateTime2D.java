@@ -160,6 +160,12 @@ public class CoordinateTime2D extends CoordinateTimeAbstract implements Coordina
     info.format("%s nruns=%d ntimes=%d isOrthogonal=%s%n", name, nruns, ntimes, isOrthogonal);
     runtime.showInfo(info, indent);
     indent.incr();
+
+    info.format("%nAll time values=");
+    List timeValues = getOffsetsSorted();
+    for (Object val : timeValues) info.format(" %s,", val);
+    info.format(" (n=%d)%n%n", timeValues.size());
+
     if (isOrthogonal)
       otime.showInfo(info, indent);
     else
@@ -171,6 +177,7 @@ public class CoordinateTime2D extends CoordinateTimeAbstract implements Coordina
   public void showCoords(Formatter info) {
     info.format("%s nruns=%d ntimes=%d isOrthogonal=%s%n", name, nruns, ntimes, isOrthogonal);
     runtime.showCoords(info);
+
     if (isOrthogonal)
       otime.showCoords(info);
     else
