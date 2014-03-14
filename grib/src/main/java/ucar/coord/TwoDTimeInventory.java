@@ -4,16 +4,16 @@ import java.util.Formatter;
 import java.util.List;
 
 /**
- * Description
+ * Keeps track of the inventory for the run x time
  *
  * @author John
  * @since 12/27/13
  */
-public class CoordinateTwoTimer {
+public class TwoDTimeInventory {
    private int nruns, ntimes;
    private int[] count;
 
-  public CoordinateTwoTimer(int nruns, int ntimes) {
+  public TwoDTimeInventory(int nruns, int ntimes) {
     this.nruns = nruns;
     this.ntimes = ntimes;
     count = new int[nruns*ntimes];
@@ -53,14 +53,12 @@ public class CoordinateTwoTimer {
 
   public int getCount(int runIdx, int timeIdx) {
     int idx = runIdx * ntimes + timeIdx;
-    if (idx < 0 || idx >= count.length)
-      System.out.println("HEY");
     return count[idx];
   }
 
   ////////////////////////
   // read back in
-  public CoordinateTwoTimer(List<Integer> count) {
+  public TwoDTimeInventory(List<Integer> count) {
     this.count = new int[count.size()];
     int idx = 0;
     for (int n : count) this.count[idx++] = n;

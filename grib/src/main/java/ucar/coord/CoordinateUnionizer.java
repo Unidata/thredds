@@ -173,12 +173,10 @@ public class CoordinateUnionizer<T> {
 
     @Override
     public void addAll(Coordinate coord) {
-      //if (coord.getValues() != null)  // probably never true
-      //  super.addAll(coord);
       CoordinateTime2D coordT2D = (CoordinateTime2D) coord;
-      for (Coordinate tcoord : coordT2D.getTimes()) {             // possible duplicate runtimes from different partitions
-        CoordinateTimeAbstract times = (CoordinateTimeAbstract) tcoord;
-        timeMap.put(times.getRefDate(), times);                   // later partitions will override LOOK could check how many times there are and choose larger
+      for (int runIdx=0; runIdx<coordT2D.getNruns(); runIdx++) {  // possible duplicate runtimes from different partitions
+        CoordinateTimeAbstract times = coordT2D.getTimeCoordinate(runIdx);
+        timeMap.put(coordT2D.getRefDate(runIdx), times);          // later partitions will override LOOK could check how many times there are and choose larger
       }
     }
 
@@ -197,13 +195,33 @@ public class CoordinateUnionizer<T> {
         times.add(timeMap.get(cd));
       }
 
-      //List<CoordinateTime2D.Time2D> vals = new ArrayList<>(values.size());
-      //for (Object val : values) vals.add( (CoordinateTime2D.Time2D) val);
-      //Collections.sort(vals);
-
-      return new CoordinateTime2D(code, timeUnit, null, new CoordinateRuntime(runtimes), times);
+      CoordinateTimeAbstract maxCoord = testOrthogonal();
+      if (maxCoord != null)
+        return new CoordinateTime2D(code, timeUnit, new CoordinateRuntime(runtimes), maxCoord);
+      else
+        return new CoordinateTime2D(code, timeUnit, null, new CoordinateRuntime(runtimes), times);
     }
 
-  }
+    CoordinateTimeAbstract testOrthogonal() {
+      CoordinateTimeAbstract maxCoord = null;
+      int max = 0;
+      Set<Object> result = new HashSet<>(100);
+      for (CoordinateTimeAbstract coord : timeMap.values()) {
+        if (max < coord.getSize()) {
+          maxCoord = coord;
+          max = coord.getSize();
+        }
+
+        for (Object val : coord.getValues())
+          result.add(val);
+      }
+
+      // is the set of all values the same as the component times?
+      // this means we can use the "orthogonal representation" of the time2D
+      int totalMax = result.size();
+      return totalMax == max ? maxCoord : null;
+    }
+
+  }  // Time2DUnionBuilder
 
 }

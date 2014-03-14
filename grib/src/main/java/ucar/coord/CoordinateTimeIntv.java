@@ -126,7 +126,7 @@ public class CoordinateTimeIntv extends CoordinateTimeAbstract implements Coordi
   ////////////////////////////////////////
 
     // make the union of all the offsets from base date
-  public CoordinateTimeIntv createBestTimeCoordinate(List<Double> runOffsets) {
+  public CoordinateTimeIntv makeBestTimeCoordinate(List<Double> runOffsets) {
     Set<TimeCoord.Tinv> values = new HashSet<>();
     for (double runOffset : runOffsets) {
       for (TimeCoord.Tinv val : getTimeIntervals())
@@ -139,7 +139,7 @@ public class CoordinateTimeIntv extends CoordinateTimeAbstract implements Coordi
     return new CoordinateTimeIntv(getCode(), getTimeUnit(), refDate, offsetSorted);
   }
 
-  public int[] makeTime2RuntimeMap(List<Double> runOffsets, CoordinateTimeIntv coordBest, CoordinateTwoTimer twot) {
+  public int[] makeTime2RuntimeMap(List<Double> runOffsets, CoordinateTimeIntv coordBest, TwoDTimeInventory twot) {
     int[] result = new int[ coordBest.getSize()];
 
     Map<TimeCoord.Tinv, Integer> map = new HashMap<>();  // lookup coord val to index

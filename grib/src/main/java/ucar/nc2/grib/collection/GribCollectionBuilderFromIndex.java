@@ -400,7 +400,11 @@ message Coord {
         for (GribCollectionProto.Coord coordp : pc.getTimesList())
           times.add(readCoord(coordp));
         timeUnit = CalendarPeriod.of(unit);
-        return new CoordinateTime2D(code, timeUnit, null, runtime, times);
+        boolean isOrthogonal = pc.hasIsOrthogonal() && pc.getIsOrthogonal();
+        if (isOrthogonal)
+          return new CoordinateTime2D(code, timeUnit, runtime, (CoordinateTimeAbstract) times.get(0));
+        else
+          return new CoordinateTime2D(code, timeUnit, null, runtime, times);
 
       case vert:
         boolean isLayer = pc.getValuesCount() == pc.getBoundCount();
@@ -457,7 +461,7 @@ message Coord {
     // 2d only
     List<Integer> invCountList = pv.getInvCountList();
     if (invCountList.size() > 0) {
-      result.twot = new CoordinateTwoTimer(invCountList);
+      result.twot = new TwoDTimeInventory(invCountList);
       result.twot.setSize(runtime.getSize(), ntimes);
     }
 

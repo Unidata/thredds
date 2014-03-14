@@ -113,7 +113,7 @@ public class CoordinateTime extends CoordinateTimeAbstract implements Coordinate
 
   ////////////////////////////////////////////////
 
-  public CoordinateTime createBestTimeCoordinate(List<Double> runOffsets) {
+  public CoordinateTime makeBestTimeCoordinate(List<Double> runOffsets) {
     Set<Integer> values = new HashSet<>();
     for (double runOffset : runOffsets) {
       for (Integer val : getOffsetSorted())
@@ -133,7 +133,7 @@ public class CoordinateTime extends CoordinateTimeAbstract implements Coordinate
    * @param twot       variable missing array
    * @return           for each time in coordBest, which runtime to use, as 1-based index into runtime runOffsets (0 = missing)
    */
-  public int[] makeTime2RuntimeMap(List<Double> runOffsets, CoordinateTime coordBest, CoordinateTwoTimer twot) {
+  public int[] makeTime2RuntimeMap(List<Double> runOffsets, CoordinateTime coordBest, TwoDTimeInventory twot) {
     int[] result = new int[ coordBest.getSize()];
 
     Map<Integer, Integer> map = new HashMap<>();  // lookup coord val to index

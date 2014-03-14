@@ -171,7 +171,10 @@ public class GribCollectionWriter {
       b.addMsecs(cd.getMillis());
     }
 
-    for (Coordinate time : coord.getTimes()) {
+    b.setIsOrthogonal(coord.isOrthogonal());
+    int ntimes = coord.isOrthogonal() ? 1 : coord.getNruns();
+    for (int runIdx=0; runIdx<ntimes; runIdx++) {
+      CoordinateTimeAbstract time = coord.getTimeCoordinate(runIdx);
       if (time.getType() == Coordinate.Type.time)
         b.addTimes(writeCoordProto((CoordinateTime)time));
       else

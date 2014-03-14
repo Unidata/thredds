@@ -365,7 +365,7 @@ public abstract class GribPartitionBuilder  {
     }
 
     int ntimes = (ct instanceof CoordinateTime2D) ? ((CoordinateTime2D)ct).getNtimes() : ct.getSize();
-    CoordinateTwoTimer twot = new CoordinateTwoTimer(cr.getSize(), ntimes);
+    TwoDTimeInventory twot = new TwoDTimeInventory(cr.getSize(), ntimes);
     viResult.twot = twot;
 
     if (isDense) {  // LOOK dense is currently not working
@@ -463,7 +463,7 @@ public abstract class GribPartitionBuilder  {
       // order is preserved with Group2D
       for (Coordinate coord : group2D.coords) {
         if (coord instanceof CoordinateTimeAbstract) {
-          Coordinate best = ((CoordinateTimeAbstract)coord).createBestTimeCoordinate(runOffset);
+          Coordinate best = ((CoordinateTimeAbstract)coord).makeBestTimeCoordinate(runOffset);
           groupB.coords.add(best);
 
         } else {

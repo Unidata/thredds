@@ -768,7 +768,7 @@ public abstract class GribCollection implements FileCacheable, AutoCloseable {
     private SparseArray<Record> sa;   // lazy read, for GC only
 
     // partition only
-    CoordinateTwoTimer twot;  // twoD only
+    TwoDTimeInventory twot;  // twoD only
     int[] time2runtime;       // oneD only: for each timeIndex, which runtime coordinate does it use? 1-based so 0 = missing
 
     // derived from pds

@@ -106,6 +106,6 @@ public abstract class CoordinateTimeAbstract implements Coordinate {
   }
 
   ////////////////////////////////////////
-  public abstract CoordinateTimeAbstract createBestTimeCoordinate(List<Double> runOffsets);
+  public abstract CoordinateTimeAbstract makeBestTimeCoordinate(List<Double> runOffsets);
 
 }

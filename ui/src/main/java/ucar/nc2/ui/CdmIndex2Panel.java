@@ -2,16 +2,13 @@ package ucar.nc2.ui;
 
 import thredds.featurecollection.FeatureCollectionConfig;
 import thredds.inventory.MFile;
-import ucar.coord.CoordinateRuntime;
-import ucar.coord.CoordinateTime2D;
+import ucar.coord.*;
 import ucar.nc2.grib.collection.*;
 import ucar.nc2.util.Indent;
-import ucar.coord.Coordinate;
 import ucar.nc2.ui.widget.BAMutil;
 import ucar.nc2.ui.widget.IndependentWindow;
 import ucar.nc2.ui.widget.PopupMenu;
 import ucar.nc2.ui.widget.TextHistoryPane;
-import ucar.coord.SparseArray;
 import ucar.unidata.io.RandomAccessFile;
 import ucar.util.prefs.PreferencesExt;
 import ucar.util.prefs.ui.BeanTable;
@@ -287,37 +284,40 @@ public class CdmIndex2Panel extends JPanel {
   private void compareCoords2D(Formatter f, CoordinateTime2D coord1, CoordinateTime2D coord2) {
     CoordinateRuntime runtimes1 = coord1.getRuntimeCoordinate();
     CoordinateRuntime runtimes2 = coord2.getRuntimeCoordinate();
-    List<Coordinate> times1 = coord1.getTimes();
-    List<Coordinate> times2 = coord2.getTimes();
-    int min = Math.min(times1.size(), times2.size());
-    if (times1.size() != times2.size()) {
-      f.format("Coordinate 1 has %d runtimes, Coordinate 2 has %d runtimes, %n", times1.size(), times2.size());     }
+    int n1 = coord1.getNruns();
+    int n2 = coord2.getNruns();
+    if (n1 != n2) {
+      f.format("Coordinate 1 has %d runtimes, Coordinate 2 has %d runtimes, %n", n1, n2);     }
 
+    int min = Math.min(n1, n2);
     for (int idx=0; idx<min; idx++) {
+      CoordinateTimeAbstract time1 = coord1.getTimeCoordinate(idx);
+      CoordinateTimeAbstract time2 = coord2.getTimeCoordinate(idx);
       f.format("Run %d %n", idx);
       if (!runtimes1.getValue(idx).equals(runtimes2.getValue(idx)))
         f.format("Runtime 1 %s != %s runtime 2%n", runtimes1.getValue(idx), runtimes2.getValue(idx));
-      compareCoords(f, times1.get(idx), times2.get(idx));
+      compareCoords(f, time1, time2);
     }
   }
 
   private void mergeCoords2D(Formatter f, CoordinateTime2D coord1, CoordinateTime2D coord2) {
     CoordinateRuntime runtimes1 = coord1.getRuntimeCoordinate();
     CoordinateRuntime runtimes2 = coord2.getRuntimeCoordinate();
-    List<Coordinate> times1 = coord1.getTimes();
-    List<Coordinate> times2 = coord2.getTimes();
-    int min = Math.min(times1.size(), times2.size());
-    if (times1.size() != times2.size()) {
-      f.format("Coordinate 1 has %d runtimes, Coordinate 2 has %d runtimes, %n", times1.size(), times2.size());     }
+    int n1 = coord1.getNruns();
+    int n2 = coord2.getNruns();
+    if (n1 != n2) {
+      f.format("Coordinate 1 has %d runtimes, Coordinate 2 has %d runtimes, %n", n1, n2);
+    }
 
-    for (int idx=0; idx<min; idx++) {
+    int min = Math.min(n1, n2);
+     for (int idx=0; idx<min; idx++) {
       if (!runtimes1.getValue(idx).equals(runtimes2.getValue(idx)))
         f.format("Runtime 1 %s != %s runtime 2%n", runtimes1.getValue(idx), runtimes2.getValue(idx));
     }
 
-    Set<Object> set1 = makeCoordSet(times1);
+    Set<Object> set1 = makeCoordSet(coord1);
     List<? extends Object> list1 = coord1.getOffsetsSorted();
-    Set<Object> set2 = makeCoordSet(times2);
+    Set<Object> set2 = makeCoordSet(coord2);
     List<? extends Object> list2 = coord2.getOffsetsSorted();
 
     f.format("%nCoordinate %s%n", coord1.getName());
@@ -330,9 +330,10 @@ public class CdmIndex2Panel extends JPanel {
     f.format("%n");   testMissing(f, list2, set1);
   }
 
-  private Set<Object> makeCoordSet(List<Coordinate> coords) {
+  private Set<Object> makeCoordSet(CoordinateTime2D time2D) {
     Set<Object> result = new HashSet<>(100);
-    for (Coordinate coord : coords) {
+    for (int runIdx=0; runIdx<time2D.getNruns(); runIdx++) {
+      Coordinate coord = time2D.getTimeCoordinate(runIdx);
       for (Object val : coord.getValues())
         result.add(val);
     }

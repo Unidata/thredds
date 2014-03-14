@@ -442,32 +442,27 @@ public abstract class GribIosp extends AbstractIOServiceProvider {
      for (int i=0; i<nruns * ntimes; i++) data[i] = Double.NaN;
 
      // coordinate values
-     List<Coordinate> times = time2D.getTimes();
      if (!time2D.isTimeInterval()) {
-       int runIdx = 0;
-       for (Coordinate time : times) {
-         CoordinateTime coordTime = (CoordinateTime) time;
+       for (int runIdx=0; runIdx<nruns; runIdx++) {
+         CoordinateTime coordTime = (CoordinateTime) time2D.getTimeCoordinate(runIdx);
          int timeIdx = 0;
          for (int val : coordTime.getOffsetSorted()) {
            data[runIdx*ntimes + timeIdx] = val + time2D.getOffset(runIdx);
            timeIdx++;
          }
-         runIdx++;
        }
        int[] shape = is2Dtime ?  new int[]{nruns, ntimes} :  new int[]{ntimes};
        v.setCachedData(Array.factory(DataType.DOUBLE, shape, data));
 
      } else {
 
-       int runIdx = 0;
-       for (Coordinate time : times) {
-         CoordinateTimeIntv coordTime = (CoordinateTimeIntv) time;
+       for (int runIdx=0; runIdx<nruns; runIdx++) {
+         CoordinateTimeIntv timeIntv = (CoordinateTimeIntv) time2D.getTimeCoordinate(runIdx);
          int timeIdx = 0;
-         for (TimeCoord.Tinv tinv : coordTime.getTimeIntervals()) {
+         for (TimeCoord.Tinv tinv : timeIntv.getTimeIntervals()) {
            data[runIdx*ntimes + timeIdx] = tinv.getBounds2() + time2D.getOffset(runIdx); // use upper bounds for coord value
            timeIdx++;
          }
-         runIdx++;
        }
        int[] shape = is2Dtime ?  new int[]{nruns, ntimes} :  new int[]{ntimes};
        v.setCachedData(Array.factory(DataType.DOUBLE, shape, data));
@@ -486,16 +481,14 @@ public abstract class GribIosp extends AbstractIOServiceProvider {
        data = new double[nruns * ntimes * 2];
        for (int i=0; i<nruns * ntimes * 2; i++) data[i] = Double.NaN;
 
-       runIdx = 0;
-       for (Coordinate time : times) {
-         CoordinateTimeIntv coordTime = (CoordinateTimeIntv) time;
+       for (int runIdx=0; runIdx<nruns; runIdx++) {
+         CoordinateTimeIntv timeIntv = (CoordinateTimeIntv) time2D.getTimeCoordinate(runIdx);
          int timeIdx = 0;
-         for (TimeCoord.Tinv tinv : coordTime.getTimeIntervals()) {
+         for (TimeCoord.Tinv tinv : timeIntv.getTimeIntervals()) {
            data[runIdx*ntimes + timeIdx] = tinv.getBounds1() + time2D.getOffset(runIdx);
            data[runIdx*ntimes + timeIdx+1] = tinv.getBounds2() + time2D.getOffset(runIdx);
            timeIdx+=2;
          }
-         runIdx++;
        }
        int[] shapeb = is2Dtime ? new int[]{nruns, ntimes, 2} : new int[]{ntimes, 2};
        bounds.setCachedData(Array.factory(DataType.DOUBLE, shapeb, data));
