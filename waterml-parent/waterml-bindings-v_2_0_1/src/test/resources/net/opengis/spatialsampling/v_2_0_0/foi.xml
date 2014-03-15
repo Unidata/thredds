@@ -1,0 +1,133 @@
+<?xml version="1.0"?>
+<sf:SF_SamplingFeatureCollection
+	gml:id="foi"
+	xmlns:sf="http://www.opengis.net/sampling/2.0"
+	xmlns:sams="http://www.opengis.net/samplingSpatial/2.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:xlink="http://www.w3.org/1999/xlink"
+	xmlns:gml="http://www.opengis.net/gml/3.2"
+	xsi:schemaLocation="http://www.opengis.net/samplingSpatial/2.0 http://schemas.opengis.net/samplingSpatial/2.0/spatialSamplingFeature.xsd">
+	<gml:description>This collection contains a sampling curve plus some associated stations</gml:description>
+	<gml:boundedBy>
+		<gml:Envelope
+			srsName="urn:ogc:def:crs:EPSG:6.3:62836405">
+			<gml:lowerCorner>-90 -180</gml:lowerCorner>
+			<gml:upperCorner>90 180</gml:upperCorner>
+		</gml:Envelope>
+	</gml:boundedBy>
+	<sf:member>
+		<sams:SF_SpatialSamplingFeature
+			gml:id="ot2s">
+			<gml:name>8903</gml:name>
+			<sf:type
+				xlink:href="http://www.opengis.net/def/samplingFeatureType/OGC-OM/2.0/SF_SamplingCurve"/>
+			<sf:sampledFeature
+				xlink:href="http://wfs.flakey.org?request=getFeature&amp;featureid=tract470"/>
+			<sf:relatedSamplingFeature>
+				<sf:SamplingFeatureComplex>
+					<sf:role
+						xlink:href="urn:example:station"/>
+					<sf:relatedSamplingFeature
+						xlink:href="#st1p"/>
+				</sf:SamplingFeatureComplex>
+			</sf:relatedSamplingFeature>
+			<sf:relatedSamplingFeature>
+				<sf:SamplingFeatureComplex>
+					<sf:role
+						xlink:href="urn:example:station"/>
+					<sf:relatedSamplingFeature
+						xlink:href="#st2p"/>
+				</sf:SamplingFeatureComplex>
+			</sf:relatedSamplingFeature>
+			<sf:relatedSamplingFeature>
+				<sf:SamplingFeatureComplex>
+					<sf:role
+						xlink:href="urn:example:station"/>
+					<sf:relatedSamplingFeature
+						xlink:href="#st3p"/>
+				</sf:SamplingFeatureComplex>
+			</sf:relatedSamplingFeature>
+			<sf:relatedSamplingFeature>
+				<sf:SamplingFeatureComplex>
+					<sf:role
+						xlink:href="urn:example:station"/>
+					<sf:relatedSamplingFeature
+						xlink:href="#st4p"/>
+				</sf:SamplingFeatureComplex>
+			</sf:relatedSamplingFeature>
+			<sams:shape>
+				<gml:LineString
+					gml:id="pr1_ls1"
+					srsName="urn:ogc:def:crs:EPSG:6.8:4347">
+					<gml:pos>-30.711 134.205 321.</gml:pos>
+					<gml:pos>-30.710 134.204 315.</gml:pos>
+					<gml:pos>-30.709 134.203 303.</gml:pos>
+					<gml:pos>-30.708 134.201 296.</gml:pos>
+					<gml:pos>-30.706 134.196 272.</gml:pos>
+					<gml:pos>-30.703 134.197 271.</gml:pos>
+					<gml:pos>-30.702 134.199 280.</gml:pos>
+				</gml:LineString>
+			</sams:shape>
+		</sams:SF_SpatialSamplingFeature>
+	</sf:member>
+	<sf:member>
+		<sams:SF_SpatialSamplingFeature
+			gml:id="st1">
+			<sf:type
+				xlink:href="http://www.opengis.net/def/samplingFeatureType/OGC-OM/2.0/SF_SamplingPoint"/>
+			<sf:sampledFeature
+				xlink:href="http://wfs.flakey.org?request=getFeature&amp;featureid=tract470"/>
+			<sams:shape>
+				<gml:Point
+					gml:id="st1p">
+					<gml:pos>-30.702 134.199</gml:pos>
+				</gml:Point>
+			</sams:shape>
+		</sams:SF_SpatialSamplingFeature>
+	</sf:member>
+	<sf:member>
+		<sams:SF_SpatialSamplingFeature
+			gml:id="st2">
+			<sf:type
+				xlink:href="http://www.opengis.net/def/samplingFeatureType/OGC-OM/2.0/SF_SamplingPoint"/>
+			<sf:sampledFeature
+				xlink:href="http://wfs.flakey.org?request=getFeature&amp;featureid=tract470"/>
+			<sams:shape>
+				<gml:Point
+					gml:id="st2p">
+					<gml:pos>-30.706 134.196 272.</gml:pos>
+				</gml:Point>
+			</sams:shape>
+		</sams:SF_SpatialSamplingFeature>
+	</sf:member>
+	<sf:member>
+		<sams:SF_SpatialSamplingFeature
+			gml:id="st3">
+			<sf:type
+				xlink:href="http://www.opengis.net/def/samplingFeatureType/OGC-OM/2.0/SF_SamplingPoint"/>
+			<sf:sampledFeature
+				xlink:href="http://wfs.flakey.org?request=getFeature&amp;featureid=tract470"/>
+			<sams:shape>
+				<gml:Point
+					gml:id="st3p">
+					<gml:pos>-30.709 134.203 303.</gml:pos>
+				</gml:Point>
+			</sams:shape>
+		</sams:SF_SpatialSamplingFeature>
+	</sf:member>
+	<sf:member>
+		<sams:SF_SpatialSamplingFeature
+			gml:id="st4">
+			<sf:type
+				xlink:href="http://www.opengis.net/def/samplingFeatureType/OGC-OM/2.0/SF_SamplingPoint"/>
+			<sf:sampledFeature
+				xlink:href="http://wfs.flakey.org?request=getFeature&amp;featureid=tract470"/>
+			<sams:shape>
+				<gml:Point
+					gml:id="st4p">
+					<gml:pos>-30.711 134.205 321.</gml:pos>
+				</gml:Point>
+			</sams:shape>
+		</sams:SF_SpatialSamplingFeature>
+	</sf:member>
+</sf:SF_SamplingFeatureCollection>

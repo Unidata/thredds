@@ -1,0 +1,26 @@
+<?xml version="1.0"?>
+<swe:CompositePhenomenon
+	xmlns:swe="http://www.opengis.net/swe/1.0.1"
+	xmlns:gml="http://www.opengis.net/gml"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:xlink="http://www.w3.org/1999/xlink"
+	xsi:schemaLocation="http://www.opengis.net/swe/1.0.1 http://schemas.opengis.net/sweCommon/1.0.1/swe.xsd"
+	gml:id="weather1"
+	dimension="6">
+	<gml:name
+		codeSpace="urn:ietf:rfc:2141">urn:example:weather1</gml:name>
+	<swe:base
+		xlink:href="urn:example:Weather"/>
+	<swe:component
+		xlink:href="urn:example:AirTemperature"/>
+	<swe:component
+		xlink:href="urn:example:WindSpeed"/>
+	<swe:component
+		xlink:href="urn:example:WindDirection"/>
+	<swe:component
+		xlink:href="http://sweet.jpl.nasa.gov/ontology/property.owl#AtmosphericPressure"/>
+	<swe:component
+		xlink:href="http://sweet.jpl.nasa.gov/ontology/property.owl#RelativeHumidity"/>
+	<swe:component
+		xlink:href="http://sweet.jpl.nasa.gov/ontology/property.owl#Visibility"/>
+</swe:CompositePhenomenon>

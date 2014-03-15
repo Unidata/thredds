@@ -1,0 +1,188 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema xmlns="http://www.w3.org/2001/XMLSchema" xmlns:gml="http://www.opengis.net/gml/3.2" 
+  xmlns:wml2="http://www.opengis.net/waterml/2.0" xmlns:om="http://www.opengis.net/om/2.0" 
+  xmlns:gmd="http://www.isotc211.org/2005/gmd"
+  xmlns:sams="http://www.opengis.net/samplingSpatial/2.0" xmlns:sam="http://www.opengis.net/sampling/2.0" 
+  targetNamespace="http://www.opengis.net/waterml/2.0" elementFormDefault="qualified" attributeFormDefault="unqualified" version="2.0.1">
+	
+	<annotation>
+		<documentation>An OGC WaterML2.0 generic collecton type that allows members of features, time series observations and related metadata.
+		
+		  OGC WaterML 2.0 is an OGC Standard.
+		  Copyright (c) 2012 Open Geospatial Consortium.
+		  To obtain additional rights of use, visit http://www.opengeospatial.org/legal/ .
+		</documentation>
+	</annotation>
+    <import namespace="http://www.opengis.net/gml/3.2" schemaLocation="../../gml/3.2.1/gml.xsd"/>
+	<import namespace="http://www.opengis.net/sampling/2.0" schemaLocation="../../sampling/2.0.0/samplingFeature.xsd"/>
+	<import namespace="http://www.opengis.net/samplingSpatial/2.0" schemaLocation="../../samplingSpatial/2.0.0/spatialSamplingFeature.xsd"/>
+    <import namespace="http://www.opengis.net/om/2.0" schemaLocation="../../om/2.0.0/observation.xsd"/>
+    <import namespace="http://www.isotc211.org/2005/gmd" schemaLocation="../../iso/19139/20070417/gmd/gmd.xsd"/>
+	<include schemaLocation="monitoringPoint.xsd"/>
+	<include schemaLocation="timeseriesObservationMetadata.xsd"/>
+  
+  <!-- ====================================================================== -->
+  <!-- ===== The base collection type ======= -->
+  <!-- ====================================================================== -->
+	<element name="Collection" type="wml2:CollectionType" substitutionGroup="gml:AbstractFeature">
+		<annotation>
+			<documentation>OGC WaterML2.0 defines a generic collection feature type, WaterCollection, to
+                allow the grouping of observations and/or sampling features with metadata to
+                describe the nature of the collection. Such collections are required in a number of
+                data exchange scenarios; whether the underlying transport technology is web
+                services, FTP or other technologies.</documentation>
+		</annotation>
+	</element>
+	<complexType name="CollectionType">
+		<complexContent>
+			<extension base="gml:AbstractFeatureType">
+				<sequence>
+					<element name="metadata" type="wml2:DocumentMetadataPropertyType"/>
+					<element name="temporalExtent" minOccurs="0" maxOccurs="1">
+						<annotation>
+							<documentation>Describes the temporal extent of the all the time series
+							  contained within the collection (if they exist).</documentation>
+						</annotation>
+						<complexType>
+							<sequence>
+								<element ref="gml:TimePeriod"/>
+							</sequence>
+						</complexType>
+					</element>
+				  
+				  <element name="sourceDefinition" minOccurs="0" maxOccurs="unbounded">
+				    <annotation>
+				      <documentation>Provides a context for identification of particular data elements through use of MD_DataIdentification. 
+				      These can be referenced from individual timeseries values. </documentation>
+				    </annotation>
+				    <complexType>
+				      <sequence>
+				        <element ref="gmd:MD_DataIdentification"/>
+				      </sequence>
+				    </complexType>
+				  </element>
+				  
+				  
+					<element name="parameter" minOccurs="0" maxOccurs="1">
+						<annotation>
+							<documentation>A soft typed parameter for extra metadata properties.</documentation>
+						</annotation>
+						<complexType>
+							<sequence>
+								<element ref="om:NamedValue"/>
+							</sequence>
+						</complexType>
+					</element>
+					
+					<element name="localDictionary" minOccurs="0" maxOccurs="unbounded">
+						<annotation>
+							<documentation>Contains inline defintions of observed phenomenon.</documentation>
+						</annotation>
+						<complexType>
+							<sequence>
+								<element ref="gml:Dictionary"/>
+							</sequence>
+						</complexType>
+					</element>
+					
+					<element name="samplingFeatureMember" type="wml2:SamplingFeatureMemberPropertyType" minOccurs="0" maxOccurs="unbounded">
+						<annotation>
+							<documentation>Contains sampling feature member items. This allows
+                                features of interest to be encoded at the header of a document and
+                                referenced later or collections of features to be encoded.
+                            </documentation>
+						</annotation>
+					</element>
+					<element name="observationMember" type="om:OM_ObservationPropertyType" minOccurs="0" maxOccurs="unbounded">
+						<annotation>
+							<documentation>Contains members of Timeseries Observations. The type
+                                shown here is only OM_Observation as the restrictions of this occur
+                                using schematron. </documentation>
+						</annotation>
+					</element>
+					<element name="communityExtension" type="anyType" minOccurs="0" maxOccurs="unbounded">
+					  <annotation>
+					    <documentation>Use this extention point for community-agreed extensions to the schema.</documentation>
+					  </annotation>
+					</element>
+				  <element name="internalExtension" type="anyType" minOccurs="0" maxOccurs="unbounded">
+				    <annotation>
+				      <documentation>Use this extention point for internal extensions that have not been defined for external use.</documentation>
+				    </annotation>
+				  </element>
+				</sequence>
+			</extension>
+		</complexContent>
+	</complexType>
+	<complexType name="CollectionPropertyType"> 
+		<sequence minOccurs="0">
+			<element ref="wml2:Collection"/>
+		</sequence>
+		<attributeGroup ref="gml:AssociationAttributeGroup"/>
+		<attributeGroup ref="gml:OwnershipAttributeGroup"/>
+	</complexType>
+  
+  <!-- ====================================================================== -->
+  <!-- ===== Metadata relating to the collection document ======= -->
+  <!-- ====================================================================== -->
+	<element name="DocumentMetadata" type="wml2:DocumentMetadataType" substitutionGroup="gml:AbstractGML">
+		<annotation>
+			<documentation>Metadata about the document</documentation>
+		</annotation>
+	</element>
+	<complexType name="DocumentMetadataType">
+		<annotation>
+			<documentation>Metadata relating to the document, when it was created, by what etc.
+            </documentation>
+		</annotation>
+		<complexContent>
+			<extension base="gml:AbstractGMLType">
+				<sequence>
+					<element name="generationDate" type="dateTime"/>
+					<element name="version" type="gml:ReferenceType" minOccurs="0" maxOccurs="1"/>
+					<element name="generationSystem" type="string" minOccurs="0" maxOccurs="1"/>
+				  <element name="profile" type="gml:ReferenceType" minOccurs="0" maxOccurs="unbounded">
+				    <annotation>
+				      <documentation>Used to specify the conformance classes that are in use within the collection document. The conformance classes are identified by the URL</documentation>
+				    </annotation>
+				  </element>
+				</sequence>
+			</extension>
+		</complexContent>
+	</complexType>
+	<complexType name="DocumentMetadataPropertyType">
+		<sequence minOccurs="0">
+			<element ref="wml2:DocumentMetadata"/>
+		</sequence>
+		<attributeGroup ref="gml:AssociationAttributeGroup"/>
+		<attributeGroup ref="gml:OwnershipAttributeGroup"/>
+	</complexType>
+  
+  <!-- ====================================================================== -->
+  <!-- ===== Features within collection ======= -->
+  <!-- ====================================================================== -->
+	<group name="SamplingFeatureMember">
+		<annotation>
+			<documentation>A choice of defining a single sampling feature, or a
+                grouping.</documentation>
+		</annotation>
+		<choice>
+			<element ref="sams:SF_SpatialSamplingFeature"/>
+			<element ref="sam:SF_SamplingFeatureCollection"/>
+		</choice>
+	</group>
+	<complexType name="SamplingFeatureMemberPropertyType">
+		<sequence minOccurs="0">
+			<group ref="wml2:SamplingFeatureMember"/>
+		</sequence>
+		<attributeGroup ref="gml:AssociationAttributeGroup"/>
+		<attribute name="unionSemantics" type="wml2:SamplingFeatureMemberUnionSemantics"/>
+		<attributeGroup ref="gml:OwnershipAttributeGroup"/>
+	</complexType>
+	<simpleType name="SamplingFeatureMemberUnionSemantics">
+		<restriction base="string">
+			<enumeration value="byFeature"/>
+			<enumeration value="byGroup"/>
+		</restriction>
+	</simpleType>
+</schema>

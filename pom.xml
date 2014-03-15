@@ -867,7 +867,7 @@
     <module>clcommon</module>
     <module>httpclient</module>
 
-    <module>waterml</module>
+    <module>waterml-parent</module>
   </modules>
 
   <properties>

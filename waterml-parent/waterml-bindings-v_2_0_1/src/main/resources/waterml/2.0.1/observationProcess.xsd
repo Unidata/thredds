@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema xmlns="http://www.w3.org/2001/XMLSchema" xmlns:gml="http://www.opengis.net/gml/3.2" xmlns:wml2="http://www.opengis.net/waterml/2.0"
+  xmlns:om="http://www.opengis.net/om/2.0" targetNamespace="http://www.opengis.net/waterml/2.0" elementFormDefault="qualified"
+  attributeFormDefault="unqualified" version="2.0.1">
+
+  <annotation>
+    <documentation>Specialized observation procedures for OGC WaterML2.0
+    
+    OGC WaterML 2.0 is an OGC Standard.
+    Copyright (c) 2012 Open Geospatial Consortium.
+    To obtain additional rights of use, visit http://www.opengeospatial.org/legal/ .
+    </documentation>
+  </annotation>
+  <import namespace="http://www.opengis.net/gml/3.2" schemaLocation="../../gml/3.2.1/gml.xsd"/>
+  <import namespace="http://www.opengis.net/om/2.0" schemaLocation="../../om/2.0.0/observation.xsd"/>
+  <include schemaLocation="waterml2.xsd"/>
+  <element name="ObservationProcess" substitutionGroup="gml:AbstractFeature" type="wml2:ObservationProcessType">
+    <annotation>
+      <documentation>A large number of direct in-situ hydrological observations are performed by a sensor or sensor system. Common types of sensors
+        include rain gauges, level gauges, quality sensors such as temperature, turbidity etc. Manual procedures may be also used to make measurements
+        at a particular sampling point. These may be ad-hoc visits to particular point that may be of interest, or continued visits to a well
+        identified sampling point. Procedures that generate derived or synthetic results also exist, such as those produced by algorithms or
+        simulations. Algorithms are commonly implemented in hydrological software to process data sets for reporting or other purposes. Examples
+        include: - Temporal interpolation or aggregation; - Spatial interpolation; - Quality assurance related tasks such as automatic spike removal
+        or gap filling; - Derivation of new observed phenomena such as calculation of volume from stage, discharge (flow) from stage
+        etc.</documentation>
+    </annotation>
+  </element>
+  <complexType name="ObservationProcessType">
+    <complexContent>
+      <extension base="gml:AbstractFeatureType">
+        <sequence>
+          <element name="processType" type="gml:ReferenceType">
+            <annotation>
+              <documentation>A defintion of the type of process used in the observation. This may be a Sensor, ManualMethod, Algorithm or Simulation
+                (including models).</documentation>
+            </annotation>
+          </element>
+          <element maxOccurs="1" minOccurs="0" name="originatingProcess" type="gml:ReferenceType">
+            <annotation>
+              <documentation>A reference to the original source of the data. For example, if this is a post-processed time series (and processType is
+                algorithm), this link would specify the original process that generated the data, e.g. the sensor. This allows the origin of the data
+                to be maintained regardless of the processing that has occured to it.</documentation>
+            </annotation>
+          </element>
+          <element maxOccurs="1" minOccurs="0" name="aggregationDuration" type="duration">
+            <annotation>
+              <documentation>If the process involves temporal aggregation of a result set, the time duration over which data has been aggregated should be expressed here. E.g. hourly, daily aggregates.</documentation>
+            </annotation>
+          </element>
+          <element maxOccurs="1" minOccurs="0" name="verticalDatum" type="gml:ReferenceType">
+            <annotation>
+              <documentation>Specifies the datum that is used as the zero point for level measurements. This can be process-specific as opposed the
+                gauge at the actual monitoring point.</documentation>
+            </annotation>
+          </element>
+          <element maxOccurs="unbounded" minOccurs="0" name="comment" type="string">
+            <annotation>
+              <documentation>Comments specific to the process from the operator or system performing the process.</documentation>
+            </annotation>
+          </element>
+          <element maxOccurs="1" minOccurs="0" name="processReference" type="gml:ReferenceType">
+            <annotation>
+              <documentation>Reference to an external process definition.</documentation>
+            </annotation>
+          </element>
+          <element maxOccurs="unbounded" minOccurs="0" name="input" type="gml:ReferenceType">
+            <annotation>
+              <documentation>A list of the inputs used in the process. This may be a list of references to the data sets used (e.g. model input
+                series) or a input array to an algorithm.</documentation>
+            </annotation>
+          </element>
+          <element maxOccurs="unbounded" minOccurs="0" name="parameter" type="om:NamedValuePropertyType">
+            <annotation>
+              <documentation>A defintion of the type of process used in the observation. This may be a Sensor, ManualMethod, Algorithm or Simulation
+                (including models).</documentation>
+            </annotation>
+          </element>
+        </sequence>
+      </extension>
+    </complexContent>
+  </complexType>
+  <complexType name="ObservationProcessPropertyType">
+    <sequence minOccurs="0">
+      <element ref="wml2:ObservationProcess"/>
+    </sequence>
+    <attributeGroup ref="gml:AssociationAttributeGroup"/>
+    <attributeGroup ref="gml:OwnershipAttributeGroup"/>
+  </complexType>
+</schema>

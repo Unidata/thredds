@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wml2:CategoricalTimeseries xmlns:wml2="http://www.opengis.net/waterml/2.0"
+  xmlns:gml="http://www.opengis.net/gml/3.2"
+  xmlns:xlink="http://www.w3.org/1999/xlink"
+  xmlns:swe="http://www.opengis.net/swe/2.0"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.opengis.net/waterml/2.0
+  http://schemas.opengis.net/waterml/2.0/waterml2.xsd" gml:id="ts_id33">
+  <gml:description>This is an example showing a categorical time series in waterml2.0. 
+    Describes a timeseries of manual weather observations. </gml:description>
+  <wml2:metadata>
+    <wml2:TimeseriesMetadata>
+      <wml2:temporalExtent>
+        <gml:TimePeriod gml:id="tp_1">
+          <gml:beginPosition>2011-11-16T00:00:00+11:00</gml:beginPosition>
+          <gml:endPosition>2011-11-18T00:00:00+11:00</gml:endPosition>
+        </gml:TimePeriod>
+      </wml2:temporalExtent>
+    </wml2:TimeseriesMetadata>
+  </wml2:metadata>
+  <wml2:point>
+    <wml2:CategoricalTVP>
+      <wml2:time>2011-11-16T00:00:00+11:00</wml2:time>
+      <wml2:value>
+        <swe:Category>
+          <swe:description>Fairly uniform precipitation composed exclusively of very small water droplets (less than 0.5 mm in diameter) 
+          very close to one another</swe:description>
+          
+          <swe:codeSpace xlink:href="http://www.bom.gov.au/info/wwords/" xlink:title="BoM weather words"/>
+          <swe:value>Drizzle</swe:value>
+        </swe:Category>
+      </wml2:value>
+    </wml2:CategoricalTVP>
+  </wml2:point>
+  <wml2:point>
+    <wml2:CategoricalTVP>
+      <wml2:time>2011-11-17T00:00:00+11:00</wml2:time>
+      <wml2:value>
+        <swe:Category>
+          <swe:description>Usually begin and end suddenly. Relatively short-lived, but may last half an hour. 
+            Fall from cumulus clouds, often separated by blue sky. Showers may fall in patches rather than across
+            the whole forecast area. Range in intensity from light to very heavy</swe:description>
+          <swe:codeSpace xlink:href="http://www.bom.gov.au/info/wwords/" xlink:title="BoM weather words"/>
+          <swe:value>Showers</swe:value>
+        </swe:Category>
+      </wml2:value>
+    </wml2:CategoricalTVP>
+  </wml2:point>
+  <wml2:point>
+    <wml2:CategoricalTVP>
+      <wml2:time>2011-11-18T00:00:00+11:00</wml2:time>
+      <wml2:value xsi:nil="true"></wml2:value>
+      <wml2:metadata>
+        <wml2:TVPMetadata>
+          <wml2:nilReason nilReason="missing"/>
+          <wml2:comment>No observation performed.</wml2:comment>
+        </wml2:TVPMetadata>
+      </wml2:metadata>
+    </wml2:CategoricalTVP>
+  </wml2:point>
+</wml2:CategoricalTimeseries>

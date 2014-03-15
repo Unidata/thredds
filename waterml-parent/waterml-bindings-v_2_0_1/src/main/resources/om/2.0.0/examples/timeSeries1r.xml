@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<om:OM_Observation
+	gml:id="timeSeries1"
+	xmlns:om="http://www.opengis.net/om/2.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:xlink="http://www.w3.org/1999/xlink"
+	xmlns:gml="http://www.opengis.net/gml/3.2"
+	xsi:schemaLocation="http://www.opengis.net/om/2.0 http://schemas.opengis.net/om/2.0/observation.xsd">
+	<gml:description>Observation test instance - time series</gml:description>
+	<gml:name>Time series 1</gml:name>
+	<om:type
+		xlink:href="http://www.opengis.net/def/observationType/OGC-OM/2.0/OM_DiscreteTimeSeriesObservation"/>
+	<om:phenomenonTime>
+		<gml:TimePeriod
+			gml:id="ts1t">
+			<gml:beginPosition>2005-06-17T09:00:00+08:00</gml:beginPosition>
+			<gml:endPosition>2005-06-21T09:00:00+08:00</gml:endPosition>
+		</gml:TimePeriod>
+	</om:phenomenonTime>
+	<om:resultTime>
+		<gml:TimeInstant
+			gml:id="etslt">
+			<gml:timePosition>2005-06-21T09:00:00+08:00</gml:timePosition>
+		</gml:TimeInstant>
+	</om:resultTime>
+	<om:procedure
+		xlink:href="urn:example:t_2a"/>
+	<om:parameter>
+		<om:NamedValue>
+			<om:name
+				xlink:href="http://sweet.jpl.nasa.gov/ontology/property.owl#Elevation"/>
+			<om:value
+				xsi:type="gml:MeasureType"
+				uom="m">3.45</om:value>
+		</om:NamedValue>
+	</om:parameter>
+	<om:observedProperty
+		xlink:href="http://sweet.jpl.nasa.gov/ontology/property.owl#Temperature"/>
+	<om:featureOfInterest
+		xlink:role="urn:ogc:def:featureType:OGC:Station"
+		xlink:href="http://my.example.org/feature?type=station%26name=st1"/>
+	<om:result
+		xlink:href="http://www.example.org/opendap/378.cdf"/>
+</om:OM_Observation>

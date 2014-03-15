@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<om:OM_Observation
+	gml:id="SAO1"
+	xmlns:om="http://www.opengis.net/om/2.0"
+	xmlns:swe="http://www.opengis.net/swe/2.0"
+	xmlns:gml="http://www.opengis.net/gml/3.2"
+	xmlns:gmlcov="http://www.opengis.net/gmlcov/1.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:xlink="http://www.w3.org/1999/xlink"
+	xsi:schemaLocation="http://www.opengis.net/om/2.0 http://schemas.opengis.net/om/2.0/observation.xsd
+	                    http://www.opengis.net/swe/2.0 http://schemas.opengis.net/sweCommon/2.0/swe.xsd
+	                    http://www.opengis.net/gmlcov/1.0 http://schemas.opengis.net/gmlcov/1.0/gmlcovAll.xsd">
+	<!-- -->
+	<gml:description>A rectified grid coverage (with sampling time given by the observation phenomenonTime)</gml:description>
+	<gml:name>Rectified Grid Coverage</gml:name>
+	<om:type xlink:href="http://www.opengis.net/def/observationType/OGC-OM/2.0/OM_ComplexObservation"/>
+	<!-- -->
+	<om:phenomenonTime>
+		<gml:TimeInstant gml:id="ot1t">
+			<gml:timePosition>2005-01-11T17:22:25Z</gml:timePosition>
+		</gml:TimeInstant>
+	</om:phenomenonTime>
+	<om:resultTime xlink:href="#ot1t"/>
+	<!-- -->
+	<om:procedure xlink:href="http://www.example.org/register/satellite/instrument/i3"/>
+	<om:observedProperty xlink:href="#rt0001_C0001"/>
+	<om:featureOfInterest xlink:href="http://www.example.org/register/satellite/instrument/swath/s3"/>
+	<!-- -->
+	<om:result>
+		<gmlcov:GridCoverage gml:id='C0001'>
+			<gml:boundedBy>
+				<gml:Envelope srsName="http://www.opengis.net/def/crs/EPSG/0/4326" axisLabels="Lat Long" uomLabels="deg deg" srsDimension="2">
+					<gml:lowerCorner>1 1</gml:lowerCorner>
+					<gml:upperCorner>3 10</gml:upperCorner>
+				</gml:Envelope>
+			</gml:boundedBy>
+			<gml:domainSet>
+				<gml:Grid gml:id="gr0001_C0001" dimension="2">
+					<gml:limits>
+						<gml:GridEnvelope>
+							<gml:low>200 250</gml:low>
+							<gml:high>202 259</gml:high>
+						</gml:GridEnvelope>
+					</gml:limits>
+					<gml:axisLabels>Lat Long</gml:axisLabels>
+				</gml:Grid>
+			</gml:domainSet>
+			<gml:rangeSet>
+				<gml:DataBlock>
+					<gml:rangeParameters/>
+					<gml:tupleList>
+						119,208,248 119,208,248 119,208,248 119,208,248 119,208,248 119,208,248 119,208,248 119,208,248 34,32,29 0,174,78 119,208,248 119,208,248 119,208,248 119,208,248 119,208,248 119,208,248 119,208,248 34,32,29 0,174,78 0,174,78 119,208,248 119,208,248 119,208,248 119,208,248 119,208,248 119,208,248 34,32,29 0,174,78 34,32,29 70,187,8 
+					</gml:tupleList>
+				</gml:DataBlock>
+			</gml:rangeSet>
+			<gmlcov:rangeType>
+				<swe:DataRecord>
+					<swe:field name="red">
+						<swe:Quantity definition="http://opengis.net/def/property/OGC/0/Radiance">
+							<swe:label>Red</swe:label>
+							<swe:description>Red Channel</swe:description>
+							<swe:nilValues>
+								<swe:NilValues>
+									<swe:nilValue reason="http://www.opengis.net/def/nil/OGC/0/BelowDetectionRange">0</swe:nilValue>
+									<swe:nilValue reason="http://www.opengis.net/def/nil/OGC/0/AboveDetectionRange">255</swe:nilValue>
+								</swe:NilValues>
+							</swe:nilValues>
+							<swe:uom code="W/cm2"/>
+							<swe:constraint>
+								<swe:AllowedValues>
+									<swe:interval>0 255</swe:interval>
+									<swe:significantFigures>3</swe:significantFigures>
+								</swe:AllowedValues>
+							</swe:constraint>
+						</swe:Quantity>
+					</swe:field>
+					<swe:field name="green">
+			 			<swe:Quantity definition="http://opengis.net/def/property/OGC/0/Radiance">
+			 				<swe:label>Green</swe:label>
+			 				<swe:description>Green Channel</swe:description>
+				 			<swe:nilValues xlink:href="#NIL_VALUES"/>
+				 			<swe:uom code="W/cm2"/>
+				 			<swe:constraint xlink:href="#VALUE_SPACE"/>
+			 			</swe:Quantity>
+		 			</swe:field>
+					<swe:field name="blue">
+						<swe:Quantity definition="http://opengis.net/def/property/OGC/0/Radiance">
+							<swe:label>Blue</swe:label>
+							<swe:description>Blue Channel</swe:description>
+							<swe:nilValues xlink:href="#NIL_VALUES"/>
+							<swe:uom code="W/cm2"/>
+							<swe:constraint xlink:href="#VALUE_SPACE"/>
+						</swe:Quantity>
+					</swe:field>	
+	   			</swe:DataRecord>
+			</gmlcov:rangeType>
+		</gmlcov:GridCoverage>
+	</om:result>
+</om:OM_Observation>

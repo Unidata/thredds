@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wml2:MonitoringPoint gml:id="xsd-monitoring-point.example" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xmlns:gml="http://www.opengis.net/gml/3.2" xmlns:om="http://www.opengis.net/om/2.0" xmlns:xlink="http://www.w3.org/1999/xlink"
+  xmlns:wml2="http://www.opengis.net/waterml/2.0" xmlns:gmd="http://www.isotc211.org/2005/gmd" xmlns:gco="http://www.isotc211.org/2005/gco"
+  xmlns:sam="http://www.opengis.net/sampling/2.0" xmlns:sams="http://www.opengis.net/samplingSpatial/2.0"
+  xsi:schemaLocation="http://www.opengis.net/waterml/2.0 http://schemas.opengis.net/waterml/2.0/waterml2.xsd">
+  <gml:description>Example monitoring point for XML http://www.opengis.net/spec/waterml/2.0/req/xsd-monitoring-point. Nile river at Deddington, South
+    Esk catchment, Tasmania</gml:description>
+  <gml:name codeSpace="http://www.csiro.au/">Deddington</gml:name>
+  <sam:sampledFeature xlink:href="http://csiro.au/features/rivers/nile" xlink:title="Nile river"/>
+
+  <sams:shape>
+    <gml:Point gml:id="location_deddington">
+      <gml:pos srsName="urn:ogc:def:crs:EPSG::4326">-41.814935 147.568517 </gml:pos>
+    </gml:Point>
+  </sams:shape>
+  <wml2:relatedParty>
+    <gmd:CI_ResponsibleParty>
+      <gmd:organisationName>
+        <gco:CharacterString>Department of Primary Industries, Parks, 
+          Water and Environment (DPIPWE)</gco:CharacterString>
+      </gmd:organisationName>
+      <gmd:role>
+        <gmd:CI_RoleCode codeList="http://asdd.ga.gov.au/asdd/profileinfo/gmxCodelists.xml#CI_RoleCode" 
+          codeListValue="CI_RoleCode_owner">Owner</gmd:CI_RoleCode>
+      </gmd:role>
+    </gmd:CI_ResponsibleParty>
+  </wml2:relatedParty>
+
+<wml2:verticalDatum>
+  <gml:VerticalDatum gml:id="local_vert_datum">
+    <gml:identifier codeSpace="http://my.org/monitoring_points">deddington_local_gauge</gml:identifier>
+    <gml:scope>not known</gml:scope>
+    <!-- The local datum is 102.3m above the Australian Height Datum (EPSG 5712) --> 
+    <gml:anchorDefinition  codeSpace="urn:ogc:def:crs:EPSG::5712">102.3</gml:anchorDefinition>
+  </gml:VerticalDatum>
+</wml2:verticalDatum>
+  
+  <wml2:timeZone>
+    <wml2:TimeZone>
+      <wml2:zoneOffset>+11:00</wml2:zoneOffset>
+      <wml2:zoneAbbreviation>AEDT</wml2:zoneAbbreviation>
+    </wml2:TimeZone>
+  </wml2:timeZone>
+  
+</wml2:MonitoringPoint>

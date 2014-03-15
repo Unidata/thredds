@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema xmlns="http://www.w3.org/2001/XMLSchema" xmlns:gml="http://www.opengis.net/gml/3.2" xmlns:wml2="http://www.opengis.net/waterml/2.0"
+  xmlns:om="http://www.opengis.net/om/2.0" targetNamespace="http://www.opengis.net/waterml/2.0" elementFormDefault="qualified"
+  attributeFormDefault="unqualified" version="2.0.1">
+  <annotation>
+    <documentation>OGC WaterML2.0 is designed as an extensible schema to allow encoding of data to be used in a variety of exchange scenarios. Example
+      areas of usage are: exchange of data for operational hydrological monitoring programs; supporting operation of infrastructure (e.g. dams, supply
+      systems); cross-border exchange of observational data; release of data for public dissemination; enhancing disaster management through data
+      exchange; and exchange in support of national reporting. The core aspect of the model is in the correct, precise description of time series.
+      Interpretation of time series relies on understanding the nature of the process that generated them. This standard provides the framework under
+      which time series can be exchanged with appropriate metadata to allow correct machine interpretation and thus correct use for further analysis.
+      Existing systems should be able to use this model as a conceptual bridge between existing schema or systems, allowing consistency of the data to
+      maintained.
+    
+    OGC WaterML 2.0 is an OGC Standard.
+    Copyright (c) 2012 Open Geospatial Consortium.
+    To obtain additional rights of use, visit http://www.opengeospatial.org/legal/ .
+    </documentation>
+  </annotation>
+  <import namespace="http://www.opengis.net/gml/3.2" schemaLocation="../../gml/3.2.1/gml.xsd"/>
+  <import namespace="http://www.opengis.net/om/2.0" schemaLocation="../../om/2.0.0/observation.xsd"/>
+
+  <!-- This eliminates an error: "SCD "x-schema::tns" didnt match any schema component",
+       that was being raised because gmx is (normally) an unused namespace in waterml.
+       See https://www.java.net/node/671272 -->
+  <import namespace="http://www.isotc211.org/2005/gmx" schemaLocation="../../iso/19139/20070417/gmx/gmx.xsd"/>
+
+  <include schemaLocation="monitoringPoint.xsd"/>
+  <include schemaLocation="collection.xsd"/>
+  <include schemaLocation="observationProcess.xsd"/>
+  <include schemaLocation="timeseriesObservationMetadata.xsd"/>
+  <include schemaLocation="timeseries.xsd"/>
+</schema>
