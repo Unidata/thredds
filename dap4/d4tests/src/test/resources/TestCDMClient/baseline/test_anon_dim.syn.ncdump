@@ -1,0 +1,11 @@
+netcdf test_anon_dim.syn {
+  variables:
+    int vu32(=6);
+      :_DAP4_Checksum_CRC32 = "0xc0511213";
+
+  // global attributes:
+  :_CoordSysBuilder = "ucar.nc2.dataset.conv.DefaultConvention";
+ data:
+vu32 =
+  {3505, 4123, 2430, 18, 4230, 26}
+}

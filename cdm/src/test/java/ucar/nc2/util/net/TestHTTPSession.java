@@ -41,6 +41,8 @@ import org.apache.http.client.CredentialsProvider;
 import org.apache.http.message.AbstractHttpMessage;
 import ucar.nc2.util.UnitTestCommon;
 
+import java.util.List;
+
 import static ucar.httpclient.HTTPSession.*;
 
 public class TestHTTPSession extends UnitTestCommon
@@ -48,7 +50,7 @@ public class TestHTTPSession extends UnitTestCommon
     //////////////////////////////////////////////////
     // Constants
 
-    static final String TESTURL1 = "http://"+REMOTESERVER+"/dts/test.01.dds";
+    static final String TESTURL1 = "http://" + REMOTESERVER + "/dts/test.01.dds";
 
     static final String GLOBALAGENT = "TestUserAgent123global";
     static final String SESSIONAGENT = "TestUserAgent123session";
@@ -81,7 +83,7 @@ public class TestHTTPSession extends UnitTestCommon
         System.out.println("Test: HTTPSession.setGlobalUserAgent(" + GLOBALAGENT + ")");
 
         UnitTestCommon.InterceptRequest interceptor = new UnitTestCommon.InterceptRequest();
-        HTTPSession.debugGlobal(interceptor,null);
+        HTTPSession.debugGlobal(interceptor, null);
 
         HTTPSession.setGlobalUserAgent(GLOBALAGENT);
         HTTPSession session = HTTPFactory.newSession(TESTURL1);
@@ -91,12 +93,12 @@ public class TestHTTPSession extends UnitTestCommon
 
         // Use special interface to access the request
         // Look for the user agent header
-        Header[] agents = interceptor.getHeaders(HTTPSession.HEADER_USERAGENT);
-        assertFalse("User-Agent Header not found", agents.length == 0);
-        assertFalse("Multiple User-Agent Headers", agents.length > 1);
+        List<Header> agents = interceptor.getHeaders(HTTPSession.HEADER_USERAGENT);
+        assertFalse("User-Agent Header not found", agents.size() == 0);
+        assertFalse("Multiple User-Agent Headers", agents.size() > 1);
         assertTrue(String.format("User-Agent mismatch: expected %s found:%s",
-            GLOBALAGENT, agents[0].getValue()),
-            GLOBALAGENT.equals(agents[0].getValue()));
+            GLOBALAGENT, agents.get(0).getValue()),
+            GLOBALAGENT.equals(agents.get(0).getValue()));
         System.out.println("*** Pass: set global agent");
 
         System.out.println("Test: HTTPSession.setUserAgent(" + SESSIONAGENT + ")");
@@ -106,11 +108,11 @@ public class TestHTTPSession extends UnitTestCommon
 
         // Use special interface to access the request
         agents = interceptor.getHeaders(HTTPSession.HEADER_USERAGENT);
-        assertFalse("User-Agent Header not found", agents.length == 0);
-        assertFalse("Multiple User-Agent Headers", agents.length > 1);
+        assertFalse("User-Agent Header not found", agents.size() == 0);
+        assertFalse("Multiple User-Agent Headers", agents.size() > 1);
         assertTrue(String.format("User-Agent mismatch: expected %s found:%s",
-        SESSIONAGENT, agents[0].getValue()),
-        SESSIONAGENT.equals(agents[0].getValue()));
+            SESSIONAGENT, agents.get(0).getValue()),
+            SESSIONAGENT.equals(agents.get(0).getValue()));
         System.out.println("*** Pass: set session agent");
         session.close();
     }

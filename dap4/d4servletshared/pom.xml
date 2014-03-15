@@ -5,9 +5,10 @@
 <modelVersion>4.0.0</modelVersion>
   
 <parent>
-    <groupId>edu.ucar</groupId>
-    <artifactId>dap4</artifactId>
-    <version>4.5.0-SNAPSHOT</version>
+  <groupId>edu.ucar</groupId>
+  <artifactId>thredds-parent</artifactId>
+  <version>4.5.0-SNAPSHOT</version>
+  <relativePath>../../pom.xml</relativePath>
 </parent>
   
 <artifactId>d4servletshared</artifactId>
@@ -16,26 +17,26 @@
 <dependencies>
     <!-- module dependencies -->
     <dependency>
-      <groupId>${project.groupid}</groupId>
+      <groupId>${project.groupId}</groupId>
       <artifactId>d4core</artifactId>
     </dependency>
     <dependency>
-      <groupId>${project.groupid}</groupId>
+      <groupId>${project.groupId}</groupId>
       <artifactId>d4shared</artifactId>
     </dependency>
     <dependency>
-      <groupId>${project.groupid}</groupId>
+      <groupId>${project.groupId}</groupId>
       <artifactId>d4cdmshared</artifactId>
     </dependency>
   
     <!-- thredds/cdm dependencies -->
 
     <dependency>
-      <groupId>edu.ucar</groupId>
+      <groupId>${project.groupId}</groupId>
       <artifactId>netcdf4</artifactId>
     </dependency>
     <dependency>
-      <groupId>edu.ucar</groupId>
+      <groupId>${project.groupId}</groupId>
       <artifactId>cdm</artifactId>
     </dependency>
 
@@ -46,7 +47,7 @@
       <scope>provided</scope>
     </dependency>
     <dependency>
-      <groupId>com.sun.jna</groupId>
+      <groupId>${jna.groupId}</groupId>
       <artifactId>jna</artifactId>
     </dependency>
 </dependencies>

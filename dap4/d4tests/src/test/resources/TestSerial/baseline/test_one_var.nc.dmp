@@ -1,0 +1,5 @@
+<Dataset>
+    <Int name="t"/>
+    <Attribute name="_CoordSysBuilder" type="String" value="ucar.nc2.dataset.conv.DefaultConvention"/>
+</Dataset>
+t = 17 ;

@@ -1,0 +1,9 @@
+netcdf test_one_var.nc {
+  variables:
+    int t;
+
+  // global attributes:
+  :_CoordSysBuilder = "ucar.nc2.dataset.conv.DefaultConvention";
+ data:
+t =17
+}

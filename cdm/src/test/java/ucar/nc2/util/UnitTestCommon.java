@@ -40,6 +40,8 @@ import org.junit.Test;
 import ucar.unidata.test.Diff;
 
 import java.io.*;
+import java.util.ArrayList;
+import java.util.List;
 
 public class UnitTestCommon extends TestCase
 {
@@ -94,58 +96,16 @@ public class UnitTestCommon extends TestCase
     }
 
     // Warning: state not saved across multiple execute() requests.
-    static public class InterceptRequest implements HttpRequestInterceptor
+    static abstract public class InterceptCommon
     {
-        HttpRequest request = null;
-        HttpContext context = null;
-
-        synchronized public void process(HttpRequest request, HttpContext context)
-                throws HttpException, IOException
-        {
-            this.request = request;
-            this.context = context;
-        }
-
-        synchronized public HttpRequest getRequest()
-        {
-            return this.request;
-        }
-
-        synchronized public HttpContext getContext()
-        {
-            return this.context;
-        }
-
-        synchronized public Header[] getHeaders(String key)
-        {
-            Header[] hdrs = null;
-            if(this.request != null)
-                hdrs = this.request.getHeaders(key);
-            if(hdrs == null) hdrs = new Header[0];
-            return hdrs;
-        }
-        synchronized public Header[] getHeaders()
-        {
-            Header[] hdrs = null;
-            if(this.request != null)
-                hdrs = this.request.getAllHeaders();
-            if(hdrs == null) hdrs = new Header[0];
-            return hdrs;
-        }
-
-    }
-
-    // Warning: state not saved across multiple execute() responses.
-    static public class InterceptResponse implements HttpResponseInterceptor
-    {
+        HttpContext  context = null;
+        List<Header> headers = new ArrayList<Header>();
+        HttpRequest  request = null;
         HttpResponse response = null;
-        HttpContext context = null;
 
-        synchronized public void process(HttpResponse response, HttpContext context)
-                throws HttpException, IOException
+        synchronized public HttpResponse getRequest()
         {
-            this.response = response;
-            this.context = context;
+            return this.response;
         }
 
         synchronized public HttpResponse getResponse()
@@ -158,25 +118,58 @@ public class UnitTestCommon extends TestCase
             return this.context;
         }
 
-        synchronized public Header[] getHeaders(String key)
+        synchronized public List<Header> getHeaders(String key)
         {
-            Header[] hdrs = null;
-            if(this.response != null)
-                hdrs = this.response.getHeaders(key);
-            if(hdrs == null) hdrs = new Header[0];
-            return hdrs;
+            List<Header> keyh = new ArrayList<Header>();
+            for(Header h: this.headers) {
+                if(h.getName().equalsIgnoreCase(key.trim()))
+                    keyh.add(h);
+            }
+            return keyh;
         }
-        synchronized public Header[] getHeaders()
+
+        synchronized public List<Header> getHeaders()
         {
-            Header[] hdrs = null;
-            if(this.response != null)
-                hdrs = this.response.getAllHeaders();
-            if(hdrs == null) hdrs = new Header[0];
-            return hdrs;
+            return this.headers;
         }
 
     }
 
+    static public class InterceptRequest extends InterceptCommon
+                                         implements HttpRequestInterceptor
+    {
+        HttpRequest request = null;
+
+        synchronized public void
+        process(HttpRequest request, HttpContext context)
+                throws HttpException, IOException
+        {
+            this.request = request;
+            this.context = context;
+            if(this.request != null) {
+                Header[] hdrs = this.request.getAllHeaders();
+                for(int i=0;i<hdrs.length;i++)
+                    headers.add(hdrs[i]);
+            }
+        }
+    }
+
+    static public class InterceptResponse extends InterceptCommon
+                                          implements HttpResponseInterceptor
+    {
+        synchronized public void
+        process(HttpResponse response, HttpContext context)
+                throws HttpException, IOException
+        {
+            this.response = response;
+            this.context = context;
+            if(this.request != null) {
+                Header[] hdrs = this.request.getAllHeaders();
+                for(int i=0;i<hdrs.length;i++)
+                    headers.add(hdrs[i]);
+            }
+        }
+    }
 
     //////////////////////////////////////////////////
 

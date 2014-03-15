@@ -310,9 +310,11 @@ public class HTTPSession
     /// Provide defaults for a settings map
     static void setDefaults(Settings props)
     {
+	if(false) {// turn off for now
+            props.setParameter(HANDLE_REDIRECTS, Boolean.TRUE);
+            props.setParameter(HANDLE_AUTHENTICATION, Boolean.TRUE);
+        }
         props.setParameter(ALLOW_CIRCULAR_REDIRECTS, Boolean.TRUE);
-        props.setParameter(HANDLE_REDIRECTS, Boolean.TRUE);
-        props.setParameter(HANDLE_AUTHENTICATION, Boolean.TRUE);
         props.setParameter(MAX_REDIRECTS, (Integer) DFALTREDIRECTS);
         props.setParameter(SO_TIMEOUT, (Integer) DFALTSOTIMEOUT);
         props.setParameter(CONN_TIMEOUT, (Integer) DFALTCONNTIMEOUT);

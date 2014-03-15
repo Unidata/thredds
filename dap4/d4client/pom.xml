@@ -17,13 +17,13 @@ will be needed to make this jar complete:
 
 <parent>
   <groupId>edu.ucar</groupId>
-  <artifactId>dap4</artifactId>
+  <artifactId>thredds-parent</artifactId>
   <version>4.5.0-SNAPSHOT</version>
+  <relativePath>../../pom.xml</relativePath>
 </parent>
 
 <!--groupId>groupId</groupId-->
 <artifactId>d4client</artifactId>
-
 <packaging>jar</packaging>
 
 <!-- ===========================================================
@@ -37,11 +37,11 @@ Dependencies: Mandatory dependencies are listed first. Then
 
 <dependencies>
     <dependency>
-      <groupId>${project.groupid}</groupId>
+      <groupId>${project.groupId}</groupId>
       <artifactId>d4core</artifactId>
     </dependency>
     <dependency>
-      <groupId>${project.groupid}</groupId>
+      <groupId>${project.groupId}</groupId>
       <artifactId>d4shared</artifactId>
     </dependency>
 
@@ -49,19 +49,19 @@ Dependencies: Mandatory dependencies are listed first. Then
     <dependency>
       <groupId>org.apache.httpcomponents</groupId>
       <artifactId>httpclient</artifactId>
-      <version>${httpcomponents.httpclient.version}</version>
+      <version>${org.apache.httpcomponents.httpclient.version}</version>
       <scope>provided</scope>
     </dependency>
       <dependency>
         <groupId>org.apache.httpcomponents</groupId>
         <artifactId>httpcore</artifactId>
-        <version>${httpcomponents.httpcore.version}</version>
+        <version>${org.apache.httpcomponents.httpcore.version}</version>
         <scope>provided</scope>
       </dependency>
       <dependency>
         <groupId>org.apache.httpcomponents</groupId>
         <artifactId>httpmime</artifactId>
-        <version>${httpcomponents.httpmime.version}</version>
+        <version>${org.apache.httpcomponents.httpmime.version}</version>
         <scope>provided</scope>
       </dependency>
 

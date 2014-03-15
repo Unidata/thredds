@@ -6,8 +6,9 @@
 
 <parent>
   <groupId>edu.ucar</groupId>
-  <artifactId>dap4</artifactId>
+  <artifactId>thredds-parent</artifactId>
   <version>4.5.0-SNAPSHOT</version>
+  <relativePath>../../pom.xml</relativePath>
 </parent>
 
 <artifactId>d4tswar</artifactId>
@@ -16,32 +17,30 @@
 <dependencies>
 
   <dependency>
-    <groupId>${project.groupid}</groupId>
+    <groupId>${project.groupId}</groupId>
     <artifactId>d4core</artifactId>
   </dependency>
   <dependency>
-    <groupId>${project.groupid}</groupId>
+    <groupId>${project.groupId}</groupId>
     <artifactId>d4servletshared</artifactId>
   </dependency>
   <dependency>
-    <groupId>${project.groupid}</groupId>
+    <groupId>${project.groupId}</groupId>
     <artifactId>d4shared</artifactId>
   </dependency>
   <dependency>
-    <groupId>${project.groupid}</groupId>
+    <groupId>${project.groupId}</groupId>
     <artifactId>d4ts</artifactId>
   </dependency>
 
   <!-- thredds dependencies -->
   <dependency>
-      <groupId>edu.ucar</groupId>
+      <groupId>${project.groupId}</groupId>
       <artifactId>cdm</artifactId>
-      <version>${thredds.version}</version>
   </dependency>
   <dependency>
-      <groupId>edu.ucar</groupId>
+      <groupId>${project.groupId}</groupId>
       <artifactId>netcdf4</artifactId>
-      <version>${thredds.version}</version>
   </dependency>
 
   <!-- library dependencies -->
@@ -73,7 +72,7 @@
           <webResources>
             <resource>
               <targetPath>WEB-INF</targetPath>
-              <directory>../tests/src/test/data/resources</directory>
+              <directory>../d4tests/src/test/data/resources</directory>
 	      <includes>
 		<include>favicon.ico</include>
 	      </includes>
@@ -87,7 +86,7 @@
             </resource>
             <resource>
               <targetPath>WEB-INF/resources</targetPath>
-              <directory>../tests/src/test/data/resources/testfiles</directory>
+              <directory>../d4tests/src/test/data/resources/testfiles</directory>
 	      <includes>
 		<include>*.syn</include>
 		<include>*.nc</include>
@@ -96,7 +95,7 @@
             </resource>
             <resource>
               <targetPath>WEB-INF/resources/dmr</targetPath>
-              <directory>../tests/src/test/data/resources/testfiles/dmr</directory>
+              <directory>../d4tests/src/test/data/resources/testfiles/dmr</directory>
 	      <includes>
 		<include>*.dmr</include>
 	      </includes>

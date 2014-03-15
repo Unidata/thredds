@@ -286,8 +286,8 @@
         </exclusions>
       </dependency>
       <dependency>
-        <groupId>edu.ucar.dap4</groupId>
-        <artifactId>dap4</artifactId>
+        <groupId>${project.groupId}</groupId>
+        <artifactId>d4servlet</artifactId>
         <version>${project.version}</version>
         <exclusions>
           <exclusion>
@@ -295,6 +295,56 @@
             <artifactId>servlet-api</artifactId>
           </exclusion>
         </exclusions>
+      </dependency>
+      <dependency>
+        <groupId>${project.groupId}</groupId>
+        <artifactId>d4core</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>${project.groupId}</groupId>
+        <artifactId>d4shared</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>${project.groupId}</groupId>
+        <artifactId>d4client</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>${project.groupId}</groupId>
+        <artifactId>d4cdmshared</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>${project.groupId}</groupId>
+        <artifactId>d4cdmclient</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>${project.groupId}</groupId>
+        <artifactId>d4servletshared</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>${project.groupId}</groupId>
+        <artifactId>d4servlet</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>${project.groupId}</groupId>
+        <artifactId>d4ts</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>${project.groupId}</groupId>
+        <artifactId>d4tests</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>${project.groupId}</groupId>
+        <artifactId>d4tswar</artifactId>
+        <version>${project.version}</version>
       </dependency>
 
       <!-- logging -->
@@ -473,9 +523,9 @@
         <version>${com.sleepycat.version}</version>
       </dependency>
       <dependency>
-      	<groupId>net.java.dev.jna</groupId>
+      	<groupId>${jna.groupId}</groupId>
       	<artifactId>jna</artifactId>
-      	<version>4.0.0</version>
+      	<version>${jna.version}</version>
       </dependency>
       <dependency>
         <groupId>joda-time</groupId>
@@ -883,7 +933,17 @@
     <module>netcdf4</module>
     <module>clcommon</module>
     <module>httpclient</module>
-    <module>dap4</module>
+    <module>dap4/d4core</module>
+    <module>dap4/d4shared</module>
+    <module>dap4/d4client</module>
+    <module>dap4/d4cdmshared</module>
+    <module>dap4/d4cdmclient</module>
+    <module>dap4/d4servletshared</module>
+    <module>dap4/d4servlet</module>
+    <module>dap4/d4ts</module>
+<!--
+    <module>dap4/d4tests</module>
+-->    <module>dap4/d4tswar</module>
   </modules>
 
   <properties>
@@ -944,6 +1004,8 @@
     <oro.version>2.0.8</oro.version>
     <taglibs.version>1.1.2</taglibs.version>
     <saxon.version>8.7</saxon.version>
+    <jna.groupId>net.java.dev.jna</jna.groupId>
+    <jna.version>4.0.0</jna.version>
 
     <!-- Plugins versions -->
     <maven-antrun-plugin.version>1.7</maven-antrun-plugin.version>

@@ -4,8 +4,9 @@
 
 <parent>
   <groupId>edu.ucar</groupId>
-  <artifactId>dap4</artifactId>
+  <artifactId>thredds-parent</artifactId>
   <version>4.5.0-SNAPSHOT</version>
+  <relativePath>../../pom.xml</relativePath>
 </parent>
 
 <artifactId>d4tests</artifactId>
@@ -14,49 +15,47 @@
 <dependencies>
 
   <dependency>
-    <groupId>${project.groupid}</groupId>
+    <groupId>${project.groupId}</groupId>
     <artifactId>d4core</artifactId>
   </dependency>
   <dependency>
-    <groupId>${project.groupid}</groupId>
+    <groupId>${project.groupId}</groupId>
     <artifactId>d4cdmclient</artifactId>
   </dependency>
   <dependency>
-    <groupId>${project.groupid}</groupId>
+    <groupId>${project.groupId}</groupId>
     <artifactId>d4shared</artifactId>
   </dependency>
   <dependency>
-    <groupId>${project.groupid}</groupId>
+    <groupId>${project.groupId}</groupId>
     <artifactId>d4servletshared</artifactId>
   </dependency>
   <dependency>
-    <groupId>${project.groupid}</groupId>
+    <groupId>${project.groupId}</groupId>
     <artifactId>d4ts</artifactId>
   </dependency>
 
   <!-- Thredds/CDM dependencies -->
   <dependency>
-      <groupId>edu.ucar</groupId>
+      <groupId>${project.groupId}</groupId>
       <artifactId>cdm</artifactId>
   </dependency>
   <dependency>
-      <groupId>edu.ucar</groupId>
+      <groupId>${project.groupId}</groupId>
       <artifactId>netcdf4</artifactId>
   </dependency>
   <dependency>
-      <groupId>edu.ucar</groupId>
-      <artifactId>tdm</artifactId>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>tdcommon</artifactId>
   </dependency>
 
   <!-- testing dependencies -->
-<!--
   <dependency>
     <groupId>junit</groupId>
     <artifactId>junit</artifactId>
     <version>4.8.1</version>
     <scope>test</scope>
   </dependency>
--->
 
   <dependency>
     <groupId>org.springframework</groupId>
@@ -127,19 +126,52 @@
 </dependencies>
 
 <build>
+  <testResources>
+    <testResource>
+      <directory>F:\git\thredds\dap4\d4tests\src\test\resources</directory>
+    </testResource>
+  </testResources>
+
   <plugins>
 
+      <plugin>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <version>2.16</version>
+        <executions>
+          <execution>
+            <id>default-test</id>
+            <phase>test</phase>
+            <goals>
+              <goal>test</goal>
+            </goals>
+            <configuration>
+              <skip>${skipTests}</skip>
+              <testFailureIgnore>true</testFailureIgnore>
+              <argLine>-Dfile.encoding=UTF-8</argLine>
+              <encoding>UTF-8</encoding>
+            </configuration>
+          </execution>
+        </executions>
+        <configuration>
+          <skip>${skipTests}</skip>
+          <testFailureIgnore>true</testFailureIgnore>
+          <argLine>-Dfile.encoding=UTF-8</argLine>
+          <encoding>UTF-8</encoding>
+        </configuration>
+      </plugin>
+
+<!--
     <plugin>
       <groupId>org.apache.maven.plugins</groupId>
       <artifactId>maven-surefire-plugin</artifactId>
-      <!--version>2.16</version-->
+      <version>2.16</version
        <configuration>
          <skip>${skipTests}</skip>
          <testFailureIgnore>true</testFailureIgnore>
          <argLine>-Dfile.encoding=UTF-8</argLine>
 	 <encoding>UTF-8</encoding>                    
          <includes>
-	    <include>src/test/java/dap4/test/TestAll.java</include>
+	    <include>src/test/java/dap4/test/**/*.java</include>
          </includes>
        </configuration>
        <executions>
@@ -158,6 +190,7 @@
          </execution>
        </executions>
     </plugin>
+-->
 
   </plugins>
 
@@ -180,7 +213,7 @@
 	 <configuration>
            <source>1.7</source>
            <target>1.7</target>
-           <skip>false</skip>
+           <skip>${skipTests}</skip>
 	   <additionalClasspathElements>
 	     <additionalClasspathElement>
                ${basedir}/target/*.jar

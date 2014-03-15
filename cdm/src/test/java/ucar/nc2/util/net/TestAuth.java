@@ -218,13 +218,13 @@ public class TestAuth extends UnitTestCommon
     }
 
     static AuthDataBasic[] basictests = {
-        new AuthDataBasic("http://" + REMOTESERVER + "/thredds/restricted/basicAuth",
-            "remoteUser", "remotePassword"),
+        new AuthDataBasic("http://" + REMOTESERVER + "/thredds/dodsC/restrict/testData.nc.dds",
+            "tiggUser", "tigge"),
     };
 
     static AuthDataBasic[] redirecttests = {
-        new AuthDataBasic("http://motherlode.ucar.edu:8080/thredds/admin/debug",
-            "xxxx", "xxxx"),
+        new AuthDataBasic("http://" + REMOTESERVER + "/thredds/dodsC/restrict/testData.nc.dds",
+            "tiggUser", "tigge"),
     };
 
     @Test
@@ -326,7 +326,7 @@ public class TestAuth extends UnitTestCommon
 
             System.err.printf("\tlocal provider: status code = %d\n", status);
 
-            assertTrue(status == 401);
+            assertTrue(status == 200);
 
             int count = provider.getCallCount();
             // Verify that getCredentials was called only once
@@ -384,7 +384,7 @@ public class TestAuth extends UnitTestCommon
     }
 
     public void
-    XtestRedirect() throws Exception  // not used except for special testing
+    testRedirect() throws Exception  // not used except for special testing
     {
         System.err.println("*** Testing: Http Basic Password Authorization with redirect");
         HTTPSession.debugHeaders();

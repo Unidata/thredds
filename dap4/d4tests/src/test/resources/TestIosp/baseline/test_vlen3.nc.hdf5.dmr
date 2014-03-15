@@ -1,0 +1,11 @@
+netcdf test_vlen3.nc {
+  variables:
+
+    Structure {
+      int f1(*);
+    } v1;
+
+
+  // global attributes:
+  :_CoordSysBuilder = "ucar.nc2.dataset.conv.DefaultConvention";
+}
