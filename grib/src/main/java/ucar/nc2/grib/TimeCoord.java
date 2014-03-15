@@ -62,11 +62,6 @@ public class TimeCoord {
     return (int) Math.round(msecs / timeUnit.getValueInMillisecs());
   }
 
-  public static int getCalendarOffset(CalendarDate refDate, CalendarDate cd, CalendarPeriod timeUnit) {
-    long msecs = cd.getDifferenceInMsecs(refDate);
-    return (int) Math.round(msecs / timeUnit.getValueInMillisecs());
-  }
-
   private CalendarDate runDate;
   private CalendarPeriod timeUnit;
   protected List<Integer> coords;

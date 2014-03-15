@@ -401,8 +401,11 @@ message Coord {
           times.add(readCoord(coordp));
         timeUnit = CalendarPeriod.of(unit);
         boolean isOrthogonal = pc.hasIsOrthogonal() && pc.getIsOrthogonal();
+        boolean isRegular = pc.hasIsRegular() && pc.getIsRegular();
         if (isOrthogonal)
           return new CoordinateTime2D(code, timeUnit, runtime, (CoordinateTimeAbstract) times.get(0));
+        else if (isRegular)
+          return new CoordinateTime2D(code, timeUnit, runtime, times);
         else
           return new CoordinateTime2D(code, timeUnit, null, runtime, times);
 

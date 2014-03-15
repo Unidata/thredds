@@ -56,8 +56,10 @@ public class CoordinateTime2D extends CoordinateTimeAbstract implements Coordina
   private final CoordinateRuntime runtime;
   private final List<Coordinate> times; // time coordinates - original offsets
   private final CoordinateTimeAbstract otime; // time coordinates - orthogonal
+  private final SortedMap<Integer,CoordinateTimeAbstract> regTimes; // time coordinates - regular by offset
   private int[] offset;  // the offset of each CoordinateTime from the base/first runtime
 
+  private final boolean isRegular;
   private final boolean isOrthogonal;
   private final boolean isTimeInterval;
   private final int nruns;
@@ -79,32 +81,71 @@ public class CoordinateTime2D extends CoordinateTimeAbstract implements Coordina
     this.runtime = runtime;
     this.times = times;
     this.otime = null;
+    this.regTimes = null;
+    this.isRegular = false;
     this.isOrthogonal = false;
     this.isTimeInterval = times.get(0) instanceof CoordinateTimeIntv;
 
     int nmax = 0;
     for (Coordinate time : times)
       nmax = Math.max(nmax, time.getSize());
-    ntimes = nmax;
-    nruns = runtime.getSize();
+    this.ntimes = nmax;
+    this.nruns = runtime.getSize();
     assert nruns == times.size();
 
     makeOffsets(times);
     this.vals = vals;
   }
 
+  // orthogonal - all times are the same
   public CoordinateTime2D(int code, CalendarPeriod timeUnit, CoordinateRuntime runtime, CoordinateTimeAbstract otime) {
     super(code, timeUnit, runtime.getFirstDate());
 
     this.runtime = runtime;
     this.times = null;
+
     this.otime = otime;
     this.isOrthogonal = true;
+    this.isRegular = false;
+    this.regTimes = null;
     this.isTimeInterval = otime instanceof CoordinateTimeIntv;
+    this.ntimes = otime.getSize();
 
-    ntimes = otime.getSize();
-    nruns = runtime.getSize();
-    makeOffsets(otime);
+    this.nruns = runtime.getSize();
+    makeOffsets(timeUnit);
+    this.vals = null;
+  }
+
+  // regular by offset hour
+  public CoordinateTime2D(int code, CalendarPeriod timeUnit, CoordinateRuntime runtime, List<Coordinate> regList) {
+    super(code, timeUnit, runtime.getFirstDate());
+
+    this.runtime = runtime;
+    this.nruns = runtime.getSize();
+
+    this.times = null;
+    this.otime = null;
+    this.isOrthogonal = false;
+    this.isRegular = true;
+    CoordinateTimeAbstract first = (CoordinateTimeAbstract) regList.get(0);
+    this.isTimeInterval = first instanceof CoordinateTimeIntv;
+
+    // regList may have different lengths
+    int nmax = 0;
+    for (Coordinate time : regList)
+      nmax = Math.max(nmax, time.getSize());
+    this.ntimes = nmax;
+
+    // make the offset map
+    this.regTimes = new TreeMap<>();
+    for (Coordinate coord : regList) {
+      CoordinateTimeAbstract time = (CoordinateTimeAbstract) coord;
+      CalendarDate ref = time.getRefDate();
+      int hour = ref.getHourOfDay();
+      this.regTimes.put(hour, time);
+    }
+
+    makeOffsets(timeUnit);
     this.vals = null;
   }
 
@@ -118,9 +159,8 @@ public class CoordinateTime2D extends CoordinateTimeAbstract implements Coordina
     }
   }
 
-  private void makeOffsets(CoordinateTimeAbstract otime) {
+  private void makeOffsets(CalendarPeriod period) {
     CalendarDate firstDate = runtime.getFirstDate();
-    CalendarPeriod period = otime.getPeriod();
     offset = new int[nruns];
     for (int idx=0; idx<nruns; idx++) {
       offset[idx] = period.getOffset(firstDate, runtime.getDate(idx)); // LOOK possible loss of precision
@@ -131,16 +171,16 @@ public class CoordinateTime2D extends CoordinateTimeAbstract implements Coordina
     return runtime;
   }
 
-  /* public List<Coordinate> getTimes() {
-    return times;
-  } */
-
   public boolean isTimeInterval() {
     return isTimeInterval;
   }
 
   public boolean isOrthogonal() {
     return isOrthogonal;
+  }
+
+  public boolean isRegular() {
+    return isRegular;
   }
 
   public int getNtimes() {
@@ -157,7 +197,7 @@ public class CoordinateTime2D extends CoordinateTimeAbstract implements Coordina
 
   @Override
   public void showInfo(Formatter info, Indent indent) {
-    info.format("%s nruns=%d ntimes=%d isOrthogonal=%s%n", name, nruns, ntimes, isOrthogonal);
+    info.format("%s nruns=%d ntimes=%d isOrthogonal=%s isRegular=%s%n", name, nruns, ntimes, isOrthogonal, isRegular);
     runtime.showInfo(info, indent);
     indent.incr();
 
@@ -168,20 +208,41 @@ public class CoordinateTime2D extends CoordinateTimeAbstract implements Coordina
 
     if (isOrthogonal)
       otime.showInfo(info, indent);
+
+    else if (isRegular)
+      for (int hour : regTimes.keySet()) {
+        CoordinateTimeAbstract timeCoord = regTimes.get(hour);
+        info.format( "%shour %d: ", indent, hour);
+        timeCoord.showInfo(info, new Indent(0));
+      }
+
     else
-      for (Coordinate time : times) time.showInfo(info, indent);
+      for (Coordinate time : times) {
+        info.format( "%s%s:", indent, ((CoordinateTimeAbstract)time).getRefDate());
+        time.showInfo(info, new Indent(0));
+      }
     indent.decr();
   }
 
   @Override
   public void showCoords(Formatter info) {
-    info.format("%s nruns=%d ntimes=%d isOrthogonal=%s%n", name, nruns, ntimes, isOrthogonal);
+    info.format("%s nruns=%d ntimes=%d isOrthogonal=%s isRegular=%s%n", name, nruns, ntimes, isOrthogonal, isRegular);
     runtime.showCoords(info);
 
     if (isOrthogonal)
       otime.showCoords(info);
+
+    else if (isRegular)
+      for (int hour : regTimes.keySet()) {
+        CoordinateTimeAbstract timeCoord = regTimes.get(hour);
+        info.format("hour %d: ", hour);
+        timeCoord.showInfo(info, new Indent(0));
+      }
+
     else
-      for (Coordinate time : times) time.showCoords(info);
+      for (Coordinate time : times) {
+        time.showCoords(info);
+      }
   }
 
   @Override
@@ -217,7 +278,10 @@ public class CoordinateTime2D extends CoordinateTimeAbstract implements Coordina
     CoordinateTime2D that = (CoordinateTime2D) o;
 
     if (isOrthogonal != that.isOrthogonal) return false;
+    if (isRegular != that.isRegular) return false;
+    if (isTimeInterval != that.isTimeInterval) return false;
     if (otime != null ? !otime.equals(that.otime) : that.otime != null) return false;
+    if (regTimes != null ? !regTimes.equals(that.regTimes) : that.regTimes != null) return false;
     if (!runtime.equals(that.runtime)) return false;
     if (times != null ? !times.equals(that.times) : that.times != null) return false;
 
@@ -229,7 +293,10 @@ public class CoordinateTime2D extends CoordinateTimeAbstract implements Coordina
     int result = runtime.hashCode();
     result = 31 * result + (times != null ? times.hashCode() : 0);
     result = 31 * result + (otime != null ? otime.hashCode() : 0);
+    result = 31 * result + (regTimes != null ? regTimes.hashCode() : 0);
+    result = 31 * result + (isRegular ? 1 : 0);
     result = 31 * result + (isOrthogonal ? 1 : 0);
+    result = 31 * result + (isTimeInterval ? 1 : 0);
     return result;
   }
 
@@ -244,6 +311,18 @@ public class CoordinateTime2D extends CoordinateTimeAbstract implements Coordina
     if (isOrthogonal)
       return ((CoordinateTimeIntv) otime).getTimeIntervalName();
 
+    if (isRegular) {
+      String firstValue = null;
+      for (CoordinateTimeAbstract timeCoord : regTimes.values()) {
+        CoordinateTimeIntv timeCoordi = (CoordinateTimeIntv) timeCoord;
+        String value = timeCoordi.getTimeIntervalName();
+        if (firstValue == null) firstValue = value;
+        else if (!value.equals(firstValue)) return MIXED_INTERVALS;
+        else if (value.equals(MIXED_INTERVALS)) return MIXED_INTERVALS;
+      }
+      return firstValue;
+    }
+
     // are they the same length ?
     String firstValue = null;
     for (Coordinate timeCoord : times) {
@@ -253,7 +332,6 @@ public class CoordinateTime2D extends CoordinateTimeAbstract implements Coordina
       else if (!value.equals(firstValue)) return MIXED_INTERVALS;
       else if (value.equals(MIXED_INTERVALS)) return MIXED_INTERVALS;
     }
-
     return firstValue;
   }
 
@@ -272,10 +350,13 @@ public class CoordinateTime2D extends CoordinateTimeAbstract implements Coordina
   } */
 
   public CoordinateTimeAbstract getTimeCoordinate(int runIdx) {
-    CoordinateTimeAbstract result = isOrthogonal ? otime : (CoordinateTimeAbstract) times.get(runIdx);
-    if (result == null)
-      System.out.println("HEY");
-    return result;
+    if (isOrthogonal) return otime;
+    if (isRegular) {
+      CalendarDate ref = getRefDate(runIdx);
+      int hour = ref.getHourOfDay();
+      return regTimes.get(hour);
+    }
+    return (CoordinateTimeAbstract) times.get(runIdx);
   }
 
   public CalendarDate getRefDate(int runIdx) {
@@ -439,6 +520,22 @@ public class CoordinateTime2D extends CoordinateTimeAbstract implements Coordina
   ////////////////////////////////////////////////////////
 
   /**
+   * public by accident - do not use
+   */
+  public List<? extends Coordinate> getTimesForSerialization() {
+    if (isOrthogonal) {
+      List<Coordinate> list = new ArrayList<>(1);
+      list.add(otime);
+      return list;
+    } else if (isRegular) {
+      return new ArrayList<>(regTimes.values());
+    } else {
+      return times;
+    }
+  }
+
+
+  /**
    * Get a sorted list of the unique time coordinates
    * @return List<Integer> or List<TimeCoord.Tinv>
    */
@@ -446,15 +543,16 @@ public class CoordinateTime2D extends CoordinateTimeAbstract implements Coordina
     if (isOrthogonal)
       return otime.getValues();
 
+    List<? extends Coordinate> coords = isRegular ? new ArrayList<>(regTimes.values()) : times;
     if (isTimeInterval)
-      return getIntervalsSorted();
+      return getIntervalsSorted(coords);
     else
-      return getIntegersSorted();
+      return getIntegersSorted(coords);
   }
 
-  private List<Integer> getIntegersSorted() {
+  private List<Integer> getIntegersSorted(List<? extends Coordinate> coords) {
     Set<Integer> set = new HashSet<>(100);
-    for (Coordinate coord : times) {
+    for (Coordinate coord : coords) {
       for (Object val : coord.getValues())
         set.add((Integer) val);
     }
@@ -464,9 +562,9 @@ public class CoordinateTime2D extends CoordinateTimeAbstract implements Coordina
     return result;
   }
 
-  private List<TimeCoord.Tinv> getIntervalsSorted() {
+  private List<TimeCoord.Tinv> getIntervalsSorted(List<? extends Coordinate> coords) {
     Set<TimeCoord.Tinv> set = new HashSet<>(100);
-    for (Coordinate coord : times) {
+    for (Coordinate coord : coords) {
       for (Object val : coord.getValues())
         set.add((TimeCoord.Tinv) val);
     }
