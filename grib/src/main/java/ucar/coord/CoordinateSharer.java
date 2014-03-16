@@ -117,6 +117,19 @@ public class CoordinateSharer<T> {
     }
 
     // debug
+    for (Coordinate coord : prev) {
+      switch (coord.getType()) {
+        case time2D:
+          CoordinateTime2D time2Dprev = (CoordinateTime2D) coord;
+          Integer idx = coordMap.get(coord); // index into unionCoords
+          CoordinateTime2D time2D = (CoordinateTime2D) unionCoords.get(idx);
+          int ntimePrev = time2Dprev.getNtimes();
+          int ntimes = time2D.getNtimes();
+          if (ntimes != ntimePrev)
+            System.out.printf("HEY CoordinateSharer.reindex2shared: ntimes != orgNtimes", ntimes, ntimePrev);
+      }
+    }
+
     Coordinate runtime = null;
     for (Integer idx : result) {
       Coordinate coord = unionCoords.get(idx);
@@ -127,9 +140,9 @@ public class CoordinateSharer<T> {
         case time2D:
           CoordinateTime2D time2D = (CoordinateTime2D) coord;
           CoordinateRuntime runtimeFrom2D = time2D.getRuntimeCoordinate();
-          if (!runtimeFrom2D.equals(runtime)) {
+          if (!runtimeFrom2D.equals(runtime))
             System.out.printf("HEY CoordinateSharer.reindex2shared: runtimeFrom2D != runtime");
-          }
+
           break;
       }
     }

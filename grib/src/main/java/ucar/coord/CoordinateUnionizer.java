@@ -188,6 +188,7 @@ public class CoordinateUnionizer<T> {
     @Override
     public Coordinate makeCoordinate(List<Object> values) {
 
+      // the set of unique runtimes
       List<CalendarDate> runtimes = new ArrayList<>();
       List<Coordinate> times = new ArrayList<>();
       for( CalendarDate cd : timeMap.keySet()) {
@@ -195,18 +196,50 @@ public class CoordinateUnionizer<T> {
         times.add(timeMap.get(cd));
       }
 
-      CoordinateTimeAbstract maxCoord = testOrthogonal();
+      CoordinateTimeAbstract maxCoord = testOrthogonal(timeMap.values());
       if (maxCoord != null)
         return new CoordinateTime2D(code, timeUnit, new CoordinateRuntime(runtimes), maxCoord);
-      else
-        return new CoordinateTime2D(code, timeUnit, null, new CoordinateRuntime(runtimes), times);
+
+      List<Coordinate> regCoords = testIsRegular();
+      if (regCoords != null)
+        return new CoordinateTime2D(code, timeUnit, new CoordinateRuntime(runtimes), regCoords);
+
+      return new CoordinateTime2D(code, timeUnit, null, new CoordinateRuntime(runtimes), times);
     }
 
-    CoordinateTimeAbstract testOrthogonal() {
+    // regular means that all the times for each offset from 0Z can be made into a single time coordinate (FMRC algo)
+    private List<Coordinate> testIsRegular() {
+
+      // group time coords by offset hour
+      Map<Integer, List<CoordinateTimeAbstract>> hourMap = new TreeMap<>();
+      for (CoordinateTimeAbstract coord : timeMap.values()) {
+        CalendarDate runDate = coord.getRefDate();
+        int hour = runDate.getHourOfDay();
+        List<CoordinateTimeAbstract> hg = hourMap.get(hour);
+        if (hg == null) {
+          hg = new ArrayList<>();
+          hourMap.put(hour, hg);
+        }
+        hg.add(coord);
+      }
+
+      // see if each offset hour is orthogonal
+      List<Coordinate> result = new ArrayList<>();
+      for (int hour : hourMap.keySet()) {
+        List<CoordinateTimeAbstract> hg = hourMap.get(hour);
+        Coordinate maxCoord = testOrthogonal(hg);
+        if (maxCoord == null) return null;
+        result.add(maxCoord);
+      }
+      return result;
+    }
+
+
+    private CoordinateTimeAbstract testOrthogonal(Collection<CoordinateTimeAbstract> times) {
       CoordinateTimeAbstract maxCoord = null;
       int max = 0;
       Set<Object> result = new HashSet<>(100);
-      for (CoordinateTimeAbstract coord : timeMap.values()) {
+      for (CoordinateTimeAbstract coord : times) {
         if (max < coord.getSize()) {
           maxCoord = coord;
           max = coord.getSize();
@@ -221,6 +254,7 @@ public class CoordinateUnionizer<T> {
       int totalMax = result.size();
       return totalMax == max ? maxCoord : null;
     }
+
 
   }  // Time2DUnionBuilder
 
