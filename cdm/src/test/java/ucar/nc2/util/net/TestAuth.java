@@ -231,8 +231,10 @@ public class TestAuth extends UnitTestCommon
     public void
     testBasic() throws Exception
     {
+        if(IGNORE) return;
+
         // System.out.println("*** Testing: Http Basic Password Authorization");
-        HTTPSession.debugHeaders();
+        HTTPSession.debugHeaders(true);
 
         for(AuthDataBasic data : basictests) {
             HTTPCachingProvider.clearCache();
@@ -271,8 +273,10 @@ public class TestAuth extends UnitTestCommon
     public void
     testBasicDirect() throws Exception
     {
+        if(IGNORE) return;
+
         System.err.println("*** Testing: Http Basic Password Authorization Using direct credentials");
-        HTTPSession.debugHeaders();
+        HTTPSession.debugHeaders(true);
 
         for(AuthDataBasic data : basictests) {
             Credentials cred = new UsernamePasswordCredentials(data.user, data.password);
@@ -310,6 +314,8 @@ public class TestAuth extends UnitTestCommon
     public void
     testCache() throws Exception
     {
+        if(IGNORE) return;
+
         System.err.println("*** Testing: Cache Invalidation");
         // Clear the cache and the global authstore
         HTTPAuthStore.DEFAULTS.clear();
@@ -367,7 +373,7 @@ public class TestAuth extends UnitTestCommon
         // Clear the cache and the global authstore
         HTTPAuthStore.DEFAULTS.clear();
         HTTPCachingProvider.clearCache();
-        HTTPSession.debugHeaders();
+        HTTPSession.debugHeaders(true);
 
         for(AuthDataBasic data : basictests) {
             Credentials cred = new UsernamePasswordCredentials(data.user, data.password);
@@ -386,8 +392,10 @@ public class TestAuth extends UnitTestCommon
     public void
     testRedirect() throws Exception  // not used except for special testing
     {
+        if(IGNORE) return;
+
         System.err.println("*** Testing: Http Basic Password Authorization with redirect");
-        HTTPSession.debugHeaders();
+        HTTPSession.debugHeaders(true);
 
         for(AuthDataBasic data : redirecttests) {
             Credentials cred = new UsernamePasswordCredentials(data.user, data.password);

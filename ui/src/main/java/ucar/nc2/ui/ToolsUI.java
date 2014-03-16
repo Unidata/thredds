@@ -6109,7 +6109,7 @@ public class
         System.out.println(" " + arg);
       }
 
-        HTTPSession.debugHeaders();
+        HTTPSession.debugHeaders(true);
     }
 
     //////////////////////////////////////////////////////////////////////////

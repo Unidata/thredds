@@ -310,7 +310,7 @@ public class HTTPSession
     /// Provide defaults for a settings map
     static void setDefaults(Settings props)
     {
-	if(false) {// turn off for now
+        if(false) {// turn off for now
             props.setParameter(HANDLE_REDIRECTS, Boolean.TRUE);
             props.setParameter(HANDLE_AUTHENTICATION, Boolean.TRUE);
         }
@@ -942,16 +942,54 @@ public class HTTPSession
         sessionList.add(session);
     }
 
-    static public void debugGlobal(HttpRequestInterceptor ireq,
-                                   HttpResponseInterceptor iresp)
+    static public void debugHeaders(boolean print)
     {
-        reqintercepts.add(ireq);
-        rspintercepts.add(iresp);
+        HTTPUtil.InterceptRequest rq = new HTTPUtil.InterceptRequest();
+        HTTPUtil.InterceptResponse rs = new HTTPUtil.InterceptResponse();
+        rq.setPrint(print);
+        rs.setPrint(print);
+        /* remove any previous */
+        for(int i=reqintercepts.size()-1;i>=0;i++) {
+            HttpRequestInterceptor hr = reqintercepts.get(i);
+            if(hr instanceof HTTPUtil.InterceptCommon)
+                reqintercepts.remove(i);
+        }
+        for(int i=rspintercepts.size()-1;i>=0;i++) {
+            HttpResponseInterceptor hr = rspintercepts.get(i);
+            if(hr instanceof HTTPUtil.InterceptCommon)
+                rspintercepts.remove(i);
+        }
+        reqintercepts.add(rq);
+        rspintercepts.add(rs);
     }
 
-    static public void debugHeaders()
+    public static void
+    debugReset()
     {
-        debugGlobal(new HTTPUtil.RequestHeaderDump(), new HTTPUtil.ResponseHeaderDump());
+        for(HttpRequestInterceptor hri : reqintercepts) {
+            if(hri instanceof HTTPUtil.InterceptCommon)
+                ((HTTPUtil.InterceptCommon) hri).clear();
+        }
+    }
+
+    public static HTTPUtil.InterceptRequest
+    debugRequestInterceptor()
+    {
+        for(HttpRequestInterceptor hri : reqintercepts) {
+            if(hri instanceof HTTPUtil.InterceptRequest)
+                return ((HTTPUtil.InterceptRequest) hri);
+        }
+        return null;
+    }
+
+    public static HTTPUtil.InterceptResponse
+    debugResponseInterceptor()
+    {
+        for(HttpResponseInterceptor hri : rspintercepts) {
+            if(hri instanceof HTTPUtil.InterceptResponse)
+                return ((HTTPUtil.InterceptResponse) hri);
+        }
+        return null;
     }
 
 }
