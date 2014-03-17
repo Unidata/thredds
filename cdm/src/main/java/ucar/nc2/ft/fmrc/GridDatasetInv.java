@@ -541,11 +541,11 @@ public class GridDatasetInv {
         double[] bound1 = tc.getBound1();
         double[] bound2 = tc.getBound2();
         for (int j = 0; j < bound1.length; j++)
-          sbuff.format("%f %f,", bound1[j], bound2[j]);
+          sbuff.format((Locale) null, "%f %f,", bound1[j], bound2[j]);
 
       } else {
         for (double offset : tc.getOffsetTimes())
-          sbuff.format("%f,", offset);
+          sbuff.format((Locale) null, "%f,", offset);
       }
       timeElement.addContent(sbuff.toString());
 
