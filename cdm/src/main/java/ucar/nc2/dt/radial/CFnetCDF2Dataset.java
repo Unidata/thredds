@@ -47,6 +47,7 @@ import ucar.nc2.dt.TypedDataset;
 import ucar.nc2.dt.TypedDatasetFactory;
 import ucar.nc2.dt.TypedDatasetFactoryIF;
 import ucar.nc2.time.CalendarDate;
+import ucar.nc2.time.CalendarDateUnit;
 import ucar.nc2.units.DateUnit;
 
 import ucar.unidata.geoloc.Earth;
@@ -364,6 +365,7 @@ public class CFnetCDF2Dataset extends RadialDatasetSweepAdapter implements Typed
         Variable t  = ds.findVariable("time");
         String   ut = t.getUnitsString();
         dateUnits = new DateUnit(ut);
+        calDateUnits = CalendarDateUnit.of(null, ut);
     }
 
     /**
@@ -378,7 +380,7 @@ public class CFnetCDF2Dataset extends RadialDatasetSweepAdapter implements Typed
         }
         else
         {
-            startDate = dateUnits.makeDate(time[0]);
+            startDate = calDateUnits.makeCalendarDate(time[0]).toDate();
         }
     }
 
@@ -394,7 +396,8 @@ public class CFnetCDF2Dataset extends RadialDatasetSweepAdapter implements Typed
         }
         else
         {
-            endDate = dateUnits.makeDate(time[time.length - 1]);
+            endDate = calDateUnits.makeCalendarDate(
+                    time[time.length - 1]).toDate();
         }
     }
 

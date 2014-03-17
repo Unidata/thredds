@@ -36,6 +36,7 @@ import ucar.nc2.dataset.*;
 import ucar.nc2.dt.*;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time.CalendarDateRange;
+import ucar.nc2.time.CalendarDateUnit;
 import ucar.nc2.units.DateRange;
 import ucar.nc2.Variable;
 import ucar.nc2.VariableSimpleIF;
@@ -60,6 +61,7 @@ public abstract class RadialDatasetSweepAdapter extends TypedDatasetImpl impleme
   protected ucar.unidata.geoloc.EarthLocation origin;
   protected HashMap csHash = new HashMap();
   protected ucar.nc2.units.DateUnit dateUnits;
+  protected ucar.nc2.time.CalendarDateUnit calDateUnits;
 
   public RadialDatasetSweepAdapter() {}
   
@@ -89,9 +91,9 @@ public abstract class RadialDatasetSweepAdapter extends TypedDatasetImpl impleme
     sbuff.append(" Data Format Name= "+getDataFormat()+"\n");
     sbuff.append(" Common Type = "+getCommonType()+"\n");
     sbuff.append(" Common Origin = "+getCommonOrigin()+"\n");
-    DateUnit dt = getTimeUnits();
+    CalendarDateUnit dt = getCalendarDateUnit();
     if (dt != null)
-      sbuff.append(" Date Unit = "+dt.getUnitsString()+"\n");
+      sbuff.append(" Date Unit = " + dt + "\n");
     sbuff.append(" isStationary = "+isStationary()+"\n");
     //sbuff.append(" isRadial = "+isRadial()+"\n");
     sbuff.append(" isVolume = "+isVolume()+"\n");
@@ -108,6 +110,10 @@ public abstract class RadialDatasetSweepAdapter extends TypedDatasetImpl impleme
   }
 
   public ucar.nc2.units.DateUnit getTimeUnits() { return dateUnits; }
+
+  public ucar.nc2.time.CalendarDateUnit getCalendarDateUnit() {
+      return calDateUnits;
+  }
 
   public ucar.unidata.geoloc.EarthLocation getEarthLocation() { return origin; }
 

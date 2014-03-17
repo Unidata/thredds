@@ -36,6 +36,7 @@ import ucar.nc2.dataset.*;
 import ucar.nc2.constants.*;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.dt.*;
+import ucar.nc2.time.CalendarDateUnit;
 import ucar.nc2.units.DateUnit;
 import ucar.nc2.units.SimpleUnit;
 import ucar.nc2.VariableSimpleIF;
@@ -175,6 +176,7 @@ public class Nids2Dataset extends RadialDatasetSweepAdapter implements TypedData
     } else {
       String units = axis.getUnitsString();
       dateUnits = new DateUnit(units);
+      calDateUnits = CalendarDateUnit.of(null, units);
     }
 
   }
