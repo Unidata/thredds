@@ -198,11 +198,11 @@ public class CoordinateUnionizer<T> {
 
       CoordinateTimeAbstract maxCoord = testOrthogonal(timeMap.values());
       if (maxCoord != null)
-        return new CoordinateTime2D(code, timeUnit, new CoordinateRuntime(runtimes), maxCoord);
+        return new CoordinateTime2D(code, timeUnit, new CoordinateRuntime(runtimes), maxCoord, times);
 
       List<Coordinate> regCoords = testIsRegular();
       if (regCoords != null)
-        return new CoordinateTime2D(code, timeUnit, new CoordinateRuntime(runtimes), regCoords);
+        return new CoordinateTime2D(code, timeUnit, new CoordinateRuntime(runtimes), regCoords, times);
 
       return new CoordinateTime2D(code, timeUnit, null, new CoordinateRuntime(runtimes), times);
     }

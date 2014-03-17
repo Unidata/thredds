@@ -98,11 +98,11 @@ public class CoordinateTime2D extends CoordinateTimeAbstract implements Coordina
   }
 
   // orthogonal - all times are the same
-  public CoordinateTime2D(int code, CalendarPeriod timeUnit, CoordinateRuntime runtime, CoordinateTimeAbstract otime) {
+  public CoordinateTime2D(int code, CalendarPeriod timeUnit, CoordinateRuntime runtime, CoordinateTimeAbstract otime, List<Coordinate> times) {
     super(code, timeUnit, runtime.getFirstDate());
 
     this.runtime = runtime;
-    this.times = null;
+    this.times = times;    // need these for makeBest
 
     this.otime = otime;
     this.isOrthogonal = true;
@@ -117,13 +117,13 @@ public class CoordinateTime2D extends CoordinateTimeAbstract implements Coordina
   }
 
   // regular by offset hour
-  public CoordinateTime2D(int code, CalendarPeriod timeUnit, CoordinateRuntime runtime, List<Coordinate> regList) {
+  public CoordinateTime2D(int code, CalendarPeriod timeUnit, CoordinateRuntime runtime, List<Coordinate> regList, List<Coordinate> times) {
     super(code, timeUnit, runtime.getFirstDate());
 
     this.runtime = runtime;
     this.nruns = runtime.getSize();
 
-    this.times = null;
+    this.times = times;  // need these for makeBest
     this.otime = null;
     this.isOrthogonal = false;
     this.isRegular = true;
@@ -429,7 +429,8 @@ public class CoordinateTime2D extends CoordinateTimeAbstract implements Coordina
     if (isTimeInterval) {
       Set<TimeCoord.Tinv> values = new HashSet<>();
       for (int runIdx=0; runIdx<nruns; runIdx++) {
-        CoordinateTimeIntv timeIntv = (CoordinateTimeIntv) getTimeCoordinate(runIdx);
+        CoordinateTimeIntv timeIntv = (times == null) ?  (CoordinateTimeIntv)  getTimeCoordinate(runIdx) :
+                (CoordinateTimeIntv) times.get(runIdx);  // use times array, passed into constructor, with original inventory, if possible
         for (TimeCoord.Tinv tinv : timeIntv.getTimeIntervals())
           values.add(tinv.offset(getOffset(runIdx)));
       }
@@ -442,7 +443,8 @@ public class CoordinateTime2D extends CoordinateTimeAbstract implements Coordina
     } else {
       Set<Integer> values = new HashSet<>();
       for (int runIdx=0; runIdx<nruns; runIdx++) {
-        CoordinateTime timeInt = (CoordinateTime) getTimeCoordinate(runIdx);
+        CoordinateTime timeInt = (times == null) ?  (CoordinateTime)  getTimeCoordinate(runIdx) :
+                (CoordinateTime) times.get(runIdx);  // use times array, passed into constructor, with original inventory, if possible
         for (Integer offset : timeInt.getOffsetSorted())
           values.add(offset+getOffset(runIdx));
       }
@@ -479,7 +481,8 @@ public class CoordinateTime2D extends CoordinateTimeAbstract implements Coordina
       map.put(val, count++);
 
     for (int runIdx=0; runIdx<nruns; runIdx++) {
-      CoordinateTimeIntv timeIntv = (CoordinateTimeIntv) getTimeCoordinate(runIdx);
+      CoordinateTimeIntv timeIntv = (times == null) ?  (CoordinateTimeIntv)  getTimeCoordinate(runIdx) :
+              (CoordinateTimeIntv) times.get(runIdx);  // use times array, passed into constructor, with original inventory, if possible
       int timeIdx = 0;
       for (TimeCoord.Tinv bestVal : timeIntv.getTimeIntervals()) {
         // if twot == null, then we are doing a PofP
@@ -503,9 +506,10 @@ public class CoordinateTime2D extends CoordinateTimeAbstract implements Coordina
       map.put(val, count++);
 
     for (int runIdx=0; runIdx<nruns; runIdx++) {
-      CoordinateTime timeCoord = (CoordinateTime) getTimeCoordinate(runIdx);
+      CoordinateTime timeInt = (times == null) ?  (CoordinateTime)  getTimeCoordinate(runIdx) :
+              (CoordinateTime) times.get(runIdx);  // use times array, passed into constructor, with original inventory, if possible
       int timeIdx = 0;
-      for (Integer bestVal : timeCoord.getOffsetSorted()) {
+      for (Integer bestVal : timeInt.getOffsetSorted()) {
         if (twot == null || twot.getCount(runIdx, timeIdx) > 0) { // skip missing;
           Integer bestValIdx = map.get(bestVal + getOffset(runIdx));
           if (bestValIdx == null) throw new IllegalStateException();

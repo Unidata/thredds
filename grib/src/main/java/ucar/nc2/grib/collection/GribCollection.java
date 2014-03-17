@@ -765,11 +765,11 @@ public abstract class GribCollection implements FileCacheable, AutoCloseable {
 
     List<Integer> coordIndex;  // indexes into group.coords
 
-    private SparseArray<Record> sa;   // for GC only; lazily read
+    private SparseArray<Record> sa;   // for GC only; lazily read; same array shape as variable, minus x and y
 
     // partition only
     TwoDTimeInventory twot;  // twoD only
-    int[] time2runtime;       // oneD only: for each timeIndex, which runtime coordinate does it use? 1-based so 0 = missing
+    int[] time2runtime;      // oneD only: for each timeIndex, which runtime coordinate does it use? 1-based so 0 = missing
 
     // derived from pds
     public final int category, parameter, levelType, intvType, ensDerivedType, probType;
@@ -884,6 +884,13 @@ public abstract class GribCollection implements FileCacheable, AutoCloseable {
       for (int idx : coordIndex)
         result.add(group.coords.get(idx));
       return result;
+    }
+
+    public CoordinateTimeAbstract getCoordinateTime() {
+      Coordinate ctP = getCoordinate(Coordinate.Type.time);
+      if (ctP == null) ctP = getCoordinate(Coordinate.Type.timeIntv);
+      if (ctP == null) ctP = getCoordinate(Coordinate.Type.time2D);
+      return  (CoordinateTimeAbstract) ctP;
     }
 
     public Coordinate getCoordinate(Coordinate.Type want) {

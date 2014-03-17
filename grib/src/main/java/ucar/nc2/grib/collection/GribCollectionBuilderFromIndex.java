@@ -403,9 +403,9 @@ message Coord {
         boolean isOrthogonal = pc.hasIsOrthogonal() && pc.getIsOrthogonal();
         boolean isRegular = pc.hasIsRegular() && pc.getIsRegular();
         if (isOrthogonal)
-          return new CoordinateTime2D(code, timeUnit, runtime, (CoordinateTimeAbstract) times.get(0));
+          return new CoordinateTime2D(code, timeUnit, runtime, (CoordinateTimeAbstract) times.get(0), null);
         else if (isRegular)
-          return new CoordinateTime2D(code, timeUnit, runtime, times);
+          return new CoordinateTime2D(code, timeUnit, runtime, times, null);
         else
           return new CoordinateTime2D(code, timeUnit, null, runtime, times);
 

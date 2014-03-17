@@ -4,14 +4,14 @@ import java.util.Formatter;
 import java.util.List;
 
 /**
- * Keeps track of the inventory for the run x time
+ * Keeps track of the inventory for the run x time 2D time
  *
  * @author John
  * @since 12/27/13
  */
 public class TwoDTimeInventory {
    private int nruns, ntimes;
-   private int[] count;
+   private int[] count;        // count number of recirds for each (run,time). more than one for vert, ens, etc.
 
   public TwoDTimeInventory(int nruns, int ntimes) {
     this.nruns = nruns;
@@ -57,7 +57,7 @@ public class TwoDTimeInventory {
   }
 
   ////////////////////////
-  // read back in
+  // read from ncx2
   public TwoDTimeInventory(List<Integer> count) {
     this.count = new int[count.size()];
     int idx = 0;

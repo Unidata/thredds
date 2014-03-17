@@ -193,6 +193,11 @@ public abstract class PartitionCollection extends GribCollection {
         f.format("time2runtime: %n");
         int count = 0;
         for (int idx : time2runtime) {
+          if (idx == 0) {
+            f.format(" %2d: MISSING%n", count);
+            count++;
+            continue;
+          }
           Object val = time.getValue(count);
           f.format(" %2d: %s -> %2d (%s)", count, val, idx-1, run.getValue(idx-1));
           if (val instanceof Integer) {

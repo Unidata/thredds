@@ -34,6 +34,8 @@ public class CoordinateSharer<T> {
   Set<Coordinate> time2DBuilders = new HashSet<>();
   Map<Coordinate, Integer> coordMap;
 
+  // pass each variable's list of coordinate in
+  // keep in Set, so it hold just the unique ones
   public void addCoords(List<Coordinate> coords) {
     Coordinate runtime = null;
     for (Coordinate coord : coords) {
@@ -57,7 +59,7 @@ public class CoordinateSharer<T> {
           // debug
           CoordinateRuntime runtimeFrom2D = time2D.getRuntimeCoordinate();
           if (!runtimeFrom2D.equals(runtime))
-            System.out.println("HEY");
+            System.out.println("CoordinateSharer runtimes differ");
           break;
         case vert:
           vertBuilders.add(coord);
@@ -81,6 +83,7 @@ public class CoordinateSharer<T> {
     for (Coordinate coord : vertBuilders) unionCoords.add(coord);
     for (Coordinate coord : ensBuilders) unionCoords.add(coord);
 
+    // fast lookup
     coordMap = new HashMap<>();
     for (int i = 0; i < this.unionCoords.size(); i++) {
       coordMap.put(this.unionCoords.get(i), i);
@@ -126,7 +129,7 @@ public class CoordinateSharer<T> {
           int ntimePrev = time2Dprev.getNtimes();
           int ntimes = time2D.getNtimes();
           if (ntimes != ntimePrev)
-            System.out.printf("HEY CoordinateSharer.reindex2shared: ntimes != orgNtimes", ntimes, ntimePrev);
+            System.out.printf("HEY CoordinateSharer.reindex2shared: ntimes %d != orgNtimes %d%n", ntimes, ntimePrev);
       }
     }
 
@@ -141,14 +144,11 @@ public class CoordinateSharer<T> {
           CoordinateTime2D time2D = (CoordinateTime2D) coord;
           CoordinateRuntime runtimeFrom2D = time2D.getRuntimeCoordinate();
           if (!runtimeFrom2D.equals(runtime))
-            System.out.printf("HEY CoordinateSharer.reindex2shared: runtimeFrom2D != runtime");
+            System.out.printf("HEY CoordinateSharer.reindex2shared: runtimeFrom2D %s != runtime %s%n", runtimeFrom2D, runtime);
 
           break;
       }
-    }
-
-
-
+    }  // end debug
 
     return result;
   }

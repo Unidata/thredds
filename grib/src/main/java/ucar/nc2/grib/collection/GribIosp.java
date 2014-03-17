@@ -62,7 +62,7 @@ import java.util.*;
 import java.util.Formatter;
 
 /**
- * Grib-2 Collection IOSP, ver2.
+ * Grib Collection IOSP, ver2.
  * Handles both collections and single GRIB files.
  *
  * @author caron
@@ -819,7 +819,7 @@ public abstract class GribIosp extends AbstractIOServiceProvider {
   }
 
   static class DataRecord implements Comparable<DataRecord> {
-    int resultIndex; // index in the ens / time / vert array
+    int resultIndex; // index into the result array
     int fileno;
     long dataPos;  // grib1 - start of GRIB record; grib2 - start of drs (data record)
     long bmsPos;  // if non zero, use alternate bms
