@@ -9,7 +9,6 @@ import ucar.nc2.ft.PointFeature;
 import ucar.nc2.ft.PointFeatureIterator;
 import ucar.nc2.ft.StationTimeSeriesFeature;
 import ucar.nc2.ogc.Factories;
-import ucar.nc2.ogc.FeatureDatasetUtil;
 
 import java.io.IOException;
 
@@ -19,7 +18,8 @@ import java.io.IOException;
 public abstract class NC_MeasurementTimeseriesType {
     // wml2:Collection/wml2:observationMember/om:OM_Observation/om:result/wml2:MeasurementTimeseries
     public static MeasurementTimeseriesType createMeasurementTimeseries(
-            FeatureDatasetPoint fdPoint, StationTimeSeriesFeature stationFeat) throws IOException {
+            FeatureDatasetPoint fdPoint, StationTimeSeriesFeature stationFeat, VariableSimpleIF dataVar)
+            throws IOException {
         MeasurementTimeseriesType measurementTimeseries = Factories.WATERML.createMeasurementTimeseriesType();
 
         // gml:id
@@ -27,7 +27,6 @@ public abstract class NC_MeasurementTimeseriesType {
         measurementTimeseries.setId(id);
 
         // wml2:defaultPointMetadata
-        VariableSimpleIF dataVar = FeatureDatasetUtil.getOnlyDataVariable(fdPoint);
         TVPDefaultMetadataPropertyType defaultPointMetadata =
                 NC_TVPDefaultMetadataPropertyType.createDefaultPointMetadata(dataVar);
         measurementTimeseries.getDefaultPointMetadatas().add(defaultPointMetadata);
@@ -36,7 +35,7 @@ public abstract class NC_MeasurementTimeseriesType {
         PointFeatureIterator pointFeatIter = stationFeat.getPointFeatureIterator(-1);
         while (pointFeatIter.hasNext()) {
             // wml2:point
-            MeasurementTimeseriesType.Point point = createPoint(fdPoint, pointFeatIter.next());
+            MeasurementTimeseriesType.Point point = createPoint(fdPoint, pointFeatIter.next(), dataVar);
             measurementTimeseries.getPoints().add(point);
         }
 
@@ -44,12 +43,13 @@ public abstract class NC_MeasurementTimeseriesType {
     }
 
     // om:OM_Observation/om:result/wml2:MeasurementTimeseries/wml2:point
-    public static MeasurementTimeseriesType.Point createPoint(FeatureDatasetPoint fdPoint, PointFeature pointFeat)
+    public static MeasurementTimeseriesType.Point createPoint(
+            FeatureDatasetPoint fdPoint, PointFeature pointFeat, VariableSimpleIF dataVar)
             throws IOException {
         MeasurementTimeseriesType.Point point = Factories.WATERML.createMeasurementTimeseriesTypePoint();
 
         // wml2:MeasurementTVP
-        MeasureTVPType measurementTVP = NC_MeasureTVPType.createMeasurementTVP(fdPoint, pointFeat);
+        MeasureTVPType measurementTVP = NC_MeasureTVPType.createMeasurementTVP(fdPoint, pointFeat, dataVar);
         point.setMeasurementTVP(measurementTVP);
 
         return point;

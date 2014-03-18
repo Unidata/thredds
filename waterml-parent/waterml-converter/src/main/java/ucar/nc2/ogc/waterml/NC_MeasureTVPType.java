@@ -3,6 +3,7 @@ package ucar.nc2.ogc.waterml;
 import net.opengis.gml.v_3_2_1.TimePosition;
 import net.opengis.waterml.v_2_0_1.MeasureTVPType;
 import net.opengis.waterml.v_2_0_1.Value;
+import ucar.nc2.VariableSimpleIF;
 import ucar.nc2.ft.FeatureDatasetPoint;
 import ucar.nc2.ft.PointFeature;
 import ucar.nc2.ogc.Factories;
@@ -16,7 +17,8 @@ import java.io.IOException;
  */
 public abstract class NC_MeasureTVPType {
     // wml2:Collection/wml2:observationMember/om:OM_Observation/om:result/wml2:MeasurementTimeseries/wml2:point/wml2:MeasurementTVP
-    public static MeasureTVPType createMeasurementTVP(FeatureDatasetPoint fdPoint, PointFeature pointFeat)
+    public static MeasureTVPType createMeasurementTVP(
+            FeatureDatasetPoint fdPoint, PointFeature pointFeat, VariableSimpleIF dataVar)
             throws IOException {
         MeasureTVPType measurementTVP = Factories.WATERML.createMeasureTVPType();
 
@@ -25,7 +27,7 @@ public abstract class NC_MeasureTVPType {
         measurementTVP.setTime(time);
 
         // wml2:value
-        Value value = NC_Value.createValue(fdPoint, pointFeat);
+        Value value = NC_Value.createValue(fdPoint, pointFeat, dataVar);
         JAXBElement<Value> valueElem = Factories.WATERML.createMeasureTVPTypeValue(value);
         measurementTVP.setValue(valueElem);
 

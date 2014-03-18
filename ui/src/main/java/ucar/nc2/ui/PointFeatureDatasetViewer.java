@@ -34,8 +34,27 @@
 package ucar.nc2.ui;
 
 import ucar.nc2.NetcdfFileWriter;
+import ucar.nc2.VariableSimpleIF;
 import ucar.nc2.constants.FeatureType;
-import ucar.nc2.ft.*;
+import ucar.nc2.ft.FeatureCollection;
+import ucar.nc2.ft.FeatureDatasetPoint;
+import ucar.nc2.ft.NestedPointFeatureCollection;
+import ucar.nc2.ft.NestedPointFeatureCollectionIterator;
+import ucar.nc2.ft.PointFeature;
+import ucar.nc2.ft.PointFeatureCollection;
+import ucar.nc2.ft.PointFeatureCollectionIterator;
+import ucar.nc2.ft.PointFeatureIterator;
+import ucar.nc2.ft.ProfileFeature;
+import ucar.nc2.ft.ProfileFeatureCollection;
+import ucar.nc2.ft.SectionFeature;
+import ucar.nc2.ft.SectionFeatureCollection;
+import ucar.nc2.ft.StationCollection;
+import ucar.nc2.ft.StationProfileFeature;
+import ucar.nc2.ft.StationProfileFeatureCollection;
+import ucar.nc2.ft.StationTimeSeriesFeature;
+import ucar.nc2.ft.StationTimeSeriesFeatureCollection;
+import ucar.nc2.ft.TrajectoryFeature;
+import ucar.nc2.ft.TrajectoryFeatureCollection;
 import ucar.nc2.ft.point.writer.CFPointWriter;
 import ucar.nc2.ogc.PointUtil;
 import ucar.nc2.time.CalendarDateRange;
@@ -55,10 +74,17 @@ import ucar.unidata.geoloc.Station;
 import ucar.util.prefs.PreferencesExt;
 import ucar.util.prefs.ui.BeanTable;
 
-import javax.swing.*;
+import javax.swing.AbstractAction;
+import javax.swing.Icon;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JSplitPane;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
-import java.awt.*;
+import java.awt.BorderLayout;
+import java.awt.Component;
+import java.awt.Frame;
+import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
@@ -195,9 +221,35 @@ public class PointFeatureDatasetViewer extends JPanel {
           return;
         }
 
+        List<VariableSimpleIF> dataVars = pfDataset.getDataVariables();
+        assert !dataVars.isEmpty() : "No data variables found in " + pfDataset.getLocation();
+        VariableSimpleIF dataVar = dataVars.get(0);
+
+        if (dataVars.size() > 1) {
+          Component parentComponent = PointFeatureDatasetViewer.this;
+          Object message = "Currenly, we can only write 1 data variable to a WaterML file.\nSelect which to include:";
+          String title = "Select data variable";
+          int messageType = JOptionPane.QUESTION_MESSAGE;
+          Icon icon = null;
+
+          Object[] selectionValues = new Object[dataVars.size()];
+          for (int i = 0; i < dataVars.size(); ++i) {
+            selectionValues[i] = dataVars.get(i).getShortName();
+          }
+          Object initialSelectionValue = selectionValues[0];
+
+          String dataVarName = (String) JOptionPane.showInputDialog(
+                  parentComponent, message, title, messageType, icon, selectionValues, initialSelectionValue);
+          if (dataVarName == null) {
+            return;
+          } else {
+            dataVar = pfDataset.getDataVariable(dataVarName);
+          }
+        }
+
         try {
           ByteArrayOutputStream outStream = new ByteArrayOutputStream(5000);
-          PointUtil.marshalPointDataset(pfDataset, outStream);
+          PointUtil.marshalPointDataset(pfDataset, dataVar, outStream);
 
           infoTA.setText(outStream.toString());
           infoTA.gotoTop();

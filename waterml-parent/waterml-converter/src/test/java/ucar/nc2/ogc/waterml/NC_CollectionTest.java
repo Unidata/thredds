@@ -16,7 +16,7 @@ public class NC_CollectionTest {
         File pointFile = new File(getClass().getResource("/ucar/nc2/ogc/multiStationSingleVar.ncml").toURI());
         FeatureDatasetPoint fdPoint = PointUtil.openPointDataset(FeatureType.STATION, pointFile.getAbsolutePath());
         try {
-            PointUtil.marshalPointDataset(fdPoint, new ByteArrayOutputStream());
+            PointUtil.marshalPointDataset(fdPoint, fdPoint.getDataVariable("tmax"), new ByteArrayOutputStream());
         } finally {
             fdPoint.close();
         }

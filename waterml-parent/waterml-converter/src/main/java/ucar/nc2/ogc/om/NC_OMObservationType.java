@@ -10,7 +10,6 @@ import ucar.nc2.VariableSimpleIF;
 import ucar.nc2.ft.FeatureDatasetPoint;
 import ucar.nc2.ft.StationTimeSeriesFeature;
 import ucar.nc2.ogc.Factories;
-import ucar.nc2.ogc.FeatureDatasetUtil;
 import ucar.nc2.ogc.gml.NC_FeaturePropertyType;
 import ucar.nc2.ogc.gml.NC_ReferenceType;
 import ucar.nc2.ogc.gml.NC_TimeInstantPropertyType;
@@ -24,7 +23,8 @@ import java.io.IOException;
 public abstract class NC_OMObservationType {
     // wml2:Collection/wml2:observationMember/om:OM_Observation
     public static OMObservationType createOmObservation(
-            FeatureDatasetPoint fdPoint, StationTimeSeriesFeature stationFeat) throws IOException {
+            FeatureDatasetPoint fdPoint, StationTimeSeriesFeature stationFeat, VariableSimpleIF dataVar)
+            throws IOException {
         OMObservationType omObservation = Factories.OM.createOMObservationType();
 
         // gml:id
@@ -32,7 +32,6 @@ public abstract class NC_OMObservationType {
         omObservation.setId(id);
 
         // om:observedProperty
-        VariableSimpleIF dataVar = FeatureDatasetUtil.getOnlyDataVariable(fdPoint);
         ReferenceType observedProperty = NC_ReferenceType.createObservedProperty(dataVar);
         omObservation.setObservedProperty(observedProperty);
 
@@ -42,7 +41,7 @@ public abstract class NC_OMObservationType {
 
         // om:result
         MeasurementTimeseriesType measurementTimeseries =
-                NC_MeasurementTimeseriesType.createMeasurementTimeseries(fdPoint, stationFeat);
+                NC_MeasurementTimeseriesType.createMeasurementTimeseries(fdPoint, stationFeat, dataVar);
         omObservation.setResult(measurementTimeseries);
 
         // om:phenomenonTime

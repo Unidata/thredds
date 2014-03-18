@@ -3,6 +3,7 @@ package ucar.nc2.ogc.waterml;
 import net.opengis.om.v_2_0_0.OMObservationPropertyType;
 import net.opengis.waterml.v_2_0_1.CollectionType;
 import net.opengis.waterml.v_2_0_1.DocumentMetadataPropertyType;
+import ucar.nc2.VariableSimpleIF;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.ft.FeatureCollection;
 import ucar.nc2.ft.FeatureDatasetPoint;
@@ -20,7 +21,8 @@ import java.util.List;
  */
 public abstract class NC_Collection {
     // wml2:Collection
-    public static CollectionType createCollection(FeatureDatasetPoint fdPoint) throws IOException {
+    public static CollectionType createCollection(FeatureDatasetPoint fdPoint, VariableSimpleIF dataVar)
+            throws IOException {
         CollectionType collection = Factories.WATERML.createCollectionType();
 
         // gml:id
@@ -36,7 +38,7 @@ public abstract class NC_Collection {
         while (stationFeatColl.hasNext()) {
             StationTimeSeriesFeature stationFeat = stationFeatColl.next();
             OMObservationPropertyType observationMember =
-                    NC_OMObservationPropertyType.createObservationMember(fdPoint, stationFeat);
+                    NC_OMObservationPropertyType.createObservationMember(fdPoint, stationFeat, dataVar);
             collection.getObservationMembers().add(observationMember);
         }
 
