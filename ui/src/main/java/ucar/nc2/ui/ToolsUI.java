@@ -6095,7 +6095,8 @@ public class
           break;
         }
       }
-    } catch (Exception e) {  // TODO: In Java 7, replace this with multi-catch of specific exceptions.
+    } catch (ClassNotFoundException | InstantiationException | IllegalAccessException |
+            UnsupportedLookAndFeelException e) {
       log.warn("Found Nimbus Look and Feel, but couldn't install it.", e);
     }
 

@@ -46,9 +46,7 @@ public abstract class MarshallingUtil {
                 // JAXB_SCHEMA_LOCATION key.
                 WATERML_MARSHALLER.setProperty(Marshaller.JAXB_SCHEMA_LOCATION, xmlSchema.location());
             }
-        } catch (JAXBException e) {  // TODO: In Java 7, replace with multi-catch.
-            throw new ExceptionInInitializerError(e);
-        } catch (SAXException e) {
+        } catch (JAXBException | SAXException e) {
             throw new ExceptionInInitializerError(e);
         }
     }

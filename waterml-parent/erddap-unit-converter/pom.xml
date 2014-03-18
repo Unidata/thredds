@@ -7,11 +7,11 @@
     <parent>
         <artifactId>waterml-parent</artifactId>
         <groupId>edu.ucar</groupId>
-        <version>4.4.3-SNAPSHOT</version>
+        <version>4.5.0-SNAPSHOT</version>
     </parent>
 
     <artifactId>erddap-unit-converter</artifactId>
-    <version>1.0.0-SNAPSHOT</version>
+    <version>1.0.0</version>
 
     <name>ERDDAP Unit Converter</name>
     <description>Converts UDUNITS-2 to UCUM and vice-versa.</description>

@@ -7,11 +7,10 @@
     <parent>
         <artifactId>waterml-parent</artifactId>
         <groupId>edu.ucar</groupId>
-        <version>4.4.3-SNAPSHOT</version>
+        <version>4.5.0-SNAPSHOT</version>
     </parent>
 
     <artifactId>waterml-converter</artifactId>
-    <version>4.4.3-SNAPSHOT</version>
 
     <name>WaterML to NetCDF Converter</name>
     <description>Converts WaterML 2.0 timeseries to CDM DSGs and vice-versa.</description>
@@ -21,12 +20,12 @@
         <dependency>
             <groupId>edu.ucar</groupId>
             <artifactId>waterml-bindings-v_2_0_1</artifactId>
-            <version>1.0.0-SNAPSHOT</version>
+            <version>1.0.0</version>
         </dependency>
         <dependency>
             <groupId>edu.ucar</groupId>
             <artifactId>erddap-unit-converter</artifactId>
-            <version>1.0.0-SNAPSHOT</version>
+            <version>1.0.0</version>
         </dependency>
         <dependency>
             <groupId>edu.ucar</groupId>

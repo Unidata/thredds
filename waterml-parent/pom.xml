@@ -7,7 +7,7 @@
     <parent>
         <artifactId>thredds-parent</artifactId>
         <groupId>edu.ucar</groupId>
-        <version>4.4.3-SNAPSHOT</version>
+        <version>4.5.0-SNAPSHOT</version>
     </parent>
 
     <artifactId>waterml-parent</artifactId>
@@ -23,7 +23,9 @@
     <description>Aggregates the WaterML to NetCDF sub-modules.</description>
     <url>http://www.unidata.ucar.edu/software/netcdf-java/</url>
 
+    <!--
     <properties>
         <skipTests>false</skipTests>
     </properties>
+    -->
 </project>

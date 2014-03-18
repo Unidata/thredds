@@ -21,11 +21,14 @@ public abstract class TableDemo {
             // Switch to Nimbus Look and Feel, if it's available.
             for (UIManager.LookAndFeelInfo info : UIManager.getInstalledLookAndFeels()) {
                 if ("Nimbus".equals(info.getName())) {
+
                     UIManager.setLookAndFeel(info.getClassName());
+
                     break;
                 }
             }
-        } catch (Exception e) {  // TODO: In Java 7, replace this with multi-catch of specific exceptions.
+        } catch (ClassNotFoundException | InstantiationException | IllegalAccessException |
+                UnsupportedLookAndFeelException e) {
             e.printStackTrace();
         }
 

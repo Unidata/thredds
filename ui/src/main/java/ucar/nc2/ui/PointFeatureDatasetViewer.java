@@ -36,25 +36,7 @@ package ucar.nc2.ui;
 import ucar.nc2.NetcdfFileWriter;
 import ucar.nc2.VariableSimpleIF;
 import ucar.nc2.constants.FeatureType;
-import ucar.nc2.ft.FeatureCollection;
-import ucar.nc2.ft.FeatureDatasetPoint;
-import ucar.nc2.ft.NestedPointFeatureCollection;
-import ucar.nc2.ft.NestedPointFeatureCollectionIterator;
-import ucar.nc2.ft.PointFeature;
-import ucar.nc2.ft.PointFeatureCollection;
-import ucar.nc2.ft.PointFeatureCollectionIterator;
-import ucar.nc2.ft.PointFeatureIterator;
-import ucar.nc2.ft.ProfileFeature;
-import ucar.nc2.ft.ProfileFeatureCollection;
-import ucar.nc2.ft.SectionFeature;
-import ucar.nc2.ft.SectionFeatureCollection;
-import ucar.nc2.ft.StationCollection;
-import ucar.nc2.ft.StationProfileFeature;
-import ucar.nc2.ft.StationProfileFeatureCollection;
-import ucar.nc2.ft.StationTimeSeriesFeature;
-import ucar.nc2.ft.StationTimeSeriesFeatureCollection;
-import ucar.nc2.ft.TrajectoryFeature;
-import ucar.nc2.ft.TrajectoryFeatureCollection;
+import ucar.nc2.ft.*;
 import ucar.nc2.ft.point.writer.CFPointWriter;
 import ucar.nc2.ogc.PointUtil;
 import ucar.nc2.time.CalendarDateRange;
@@ -74,17 +56,11 @@ import ucar.unidata.geoloc.Station;
 import ucar.util.prefs.PreferencesExt;
 import ucar.util.prefs.ui.BeanTable;
 
-import javax.swing.AbstractAction;
-import javax.swing.Icon;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JSplitPane;
+import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
-import java.awt.BorderLayout;
-import java.awt.Component;
-import java.awt.Frame;
-import java.awt.Rectangle;
+import javax.xml.bind.JAXBException;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
@@ -364,7 +340,7 @@ public class PointFeatureDatasetViewer extends JPanel {
         infoTA.setText(outStream.toString());
         infoTA.gotoTop();
         infoWindow.show();
-      } catch (Exception ex) {  // TODO: In Java 7, do multi-catch.
+      } catch (IOException | JAXBException ex) {
         ByteArrayOutputStream bos = new ByteArrayOutputStream(5000);
         ex.printStackTrace(new PrintStream(bos));
 

@@ -7,11 +7,11 @@
     <parent>
         <artifactId>waterml-parent</artifactId>
         <groupId>edu.ucar</groupId>
-        <version>4.4.3-SNAPSHOT</version>
+        <version>4.5.0-SNAPSHOT</version>
     </parent>
 
     <artifactId>waterml-bindings-v_2_0_1</artifactId>
-    <version>1.0.0-SNAPSHOT</version>
+    <version>1.0.0</version>
 
     <name>OGC WaterML 2.0.1 Bindings</name>
     <description>JAXB XML bindings for OGC WaterML 2.0.1</description>
