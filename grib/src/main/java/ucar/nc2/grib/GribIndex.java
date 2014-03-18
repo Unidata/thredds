@@ -60,7 +60,7 @@ public abstract class GribIndex {
 
   private static final CollectionManager.ChangeChecker gribCC = new CollectionManager.ChangeChecker() {
     public boolean hasChangedSince(MFile file, long when) {
-      File idxFile = GribCollection.getIndexFileInCache(file.getPath() + GBX9_IDX);
+      File idxFile = GribCollection.getFileInCache(file.getPath() + GBX9_IDX);
       if (!idxFile.exists()) return true;
       long idxLastModified =  idxFile.lastModified();
       if (idxLastModified < file.getLastModified()) return true;
@@ -68,7 +68,7 @@ public abstract class GribIndex {
       return false;
     }
     public boolean hasntChangedSince(MFile file, long when) {
-      File idxFile = GribCollection.getIndexFileInCache(file.getPath() + GBX9_IDX);
+      File idxFile = GribCollection.getFileInCache(file.getPath() + GBX9_IDX);
       if (!idxFile.exists()) return true;
       if (idxFile.lastModified() < file.getLastModified()) return true;
       if (0 < when && idxFile.lastModified() < when) return true;

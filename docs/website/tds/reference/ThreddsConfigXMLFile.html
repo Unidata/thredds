@@ -496,7 +496,7 @@ ln -s /data/thredds/content content</pre>
 <h3>GRIB Index writing<a name="GribIndexWriting" id="GribIndexWriting"></a></h3>
 
 <p><em>since version 4.3.15</em></p>
- <pre> &lt;GribIndex<strong></strong>&gt;<br>    &lt;<strong>alwaysUse</strong>&gt;false&lt;/alwaysUse&gt;<br>    &lt;<strong>neverUse</strong>&gt;false&lt;/<strong>neverUse</strong>&gt;<br>	  &lt;<strong>dir</strong>&gt;/tomcat_home/content/thredds/cache/grib/&lt;/dir&gt;<br>    &lt;<strong>policy</strong>&gt;oneDirectory&lt;/<strong>policy</strong>&gt;
+ <pre> &lt;GribIndex<strong></strong>&gt;<br>    &lt;<strong>alwaysUse</strong>&gt;false&lt;/alwaysUse&gt;<br>    &lt;<strong>neverUse</strong>&gt;false&lt;/<strong>neverUse</strong>&gt;<br>	  &lt;<strong>dir</strong>&gt;/tomcat_home/content/thredds/cache/grib/&lt;/dir&gt;<br>    &lt;<strong>policy</strong>&gt;nestedDirectory&lt;/<strong>policy</strong>&gt;
     &lt;<strong>scour</strong>&gt;0 hours&lt;/scour&gt;<br>    &lt;<strong>maxAge</strong>&gt;90 days&lt;/maxAge&gt;<br> &lt;/GribIndex&gt;</pre>
 <p>These elements control where Grib index files are written. </p>
 <ol>
@@ -511,7 +511,7 @@ ln -s /data/thredds/content content</pre>
       the file permissions of the Tomcat user. </p>
   </li>
   <li>
-    <p>The policy must be set to one of <em>oneDirectory</em> (default) or <em>nestedDirectory</em>. The <em>oneDirectory</em> will put all index files into the
+    <p>The policy must be set to one of <em>oneDirectory</em> or <em>nestedDirectory (default)</em>. The <em>oneDirectory</em> will put all index files into the
       same directory, while <em>nestedDirectory</em> will preserve the directory structure of the index files. Use <em>nestedDirectory</em> for large
       collections of grib files.</p>
   </li>

@@ -42,13 +42,9 @@ import thredds.filesystem.MFileOS;
 import thredds.inventory.*;
 import thredds.inventory.filter.StreamFilter;
 import thredds.inventory.partition.*;
-import ucar.nc2.grib.*;
-import ucar.nc2.grib.grib1.Grib1Index;
 import ucar.nc2.grib.grib1.Grib1RecordScanner;
-import ucar.nc2.grib.grib2.Grib2Index;
 import ucar.nc2.grib.grib2.Grib2RecordScanner;
 import ucar.nc2.stream.NcStream;
-import ucar.nc2.util.log.LoggerFactory;
 import ucar.unidata.io.RandomAccessFile;
 
 import java.io.File;
@@ -103,35 +99,35 @@ public class GribCdmIndex implements IndexReader {
     // open GribCollection from an existing index file. caller must close; return null on failure
   static public GribCollection openCdmIndex(String indexFilename, FeatureCollectionConfig config, Logger logger) {
 
-    File indexFileInCache = GribCollection.getIndexFileInCache(indexFilename);
-    File f = new File(indexFilename);
+    File indexFileInCache = GribCollection.getFileInCache(indexFilename);
+    String indexFilenameInCache = indexFileInCache.getPath();
     String name = GribCollection.makeNameFromIndexFilename(indexFilename);
     RandomAccessFile raf = null;
     GribCollection result = null;
 
     try {
-      raf = new RandomAccessFile(indexFileInCache.getPath(), "r");
+      raf = new RandomAccessFile(indexFilenameInCache, "r");
       GribCollectionType type = getType(raf);
 
       switch (type) {
         case GRIB2:
-          result = Grib2CollectionBuilderFromIndex.readFromIndex(name, f.getParentFile(), raf, config, logger);
+          result = Grib2CollectionBuilderFromIndex.readFromIndex(name, raf, config, logger);
           break;
         case Partition2:
-          result = Grib2PartitionBuilderFromIndex.createTimePartitionFromIndex(name, f.getParentFile(), raf, config, logger);
+          result = Grib2PartitionBuilderFromIndex.createTimePartitionFromIndex(name, raf, config, logger);
           break;
         case GRIB1:
-          result = Grib1CollectionBuilderFromIndex.readFromIndex(name, f.getParentFile(), raf, config, logger);
+          result = Grib1CollectionBuilderFromIndex.readFromIndex(name, raf, config, logger);
           break;
         case Partition1:
-          result = Grib1PartitionBuilderFromIndex.createTimePartitionFromIndex(name, f.getParentFile(), raf, config, logger);
+          result = Grib1PartitionBuilderFromIndex.createTimePartitionFromIndex(name, raf, config, logger);
           break;
         default:
-          logger.warn("GribCdmIndex.openCdmIndex failed on {} type={}", indexFileInCache.getPath(), type);
+          logger.warn("GribCdmIndex.openCdmIndex failed on {} type={}", indexFilenameInCache, type);
       }
 
     } catch (Throwable t) {
-      logger.warn("GribCdmIndex.openCdmIndex failed on "+indexFileInCache.getPath(), t);
+      logger.warn("GribCdmIndex.openCdmIndex failed on "+indexFilenameInCache, t);
     }
 
     // clean up on failure
@@ -269,7 +265,7 @@ public class GribCdmIndex implements IndexReader {
     // update if needed
     updateGribCollection(config, updateType, logger);
 
-    File idxFile = GribCollection.getIndexFileFromConfig(config);
+    File idxFile = GribCollection.makeTopIndexFileFromConfig(config);
     return openCdmIndex(idxFile.getPath(), config, logger);
   }
 
@@ -725,13 +721,13 @@ public class GribCdmIndex implements IndexReader {
 
     switch (type) {
       case Partition1 :
-         return Grib1PartitionBuilderFromIndex.createTimePartitionFromIndex(name, f.getParentFile(), indexRaf, config, logger);
+         return Grib1PartitionBuilderFromIndex.createTimePartitionFromIndex(name, indexRaf, config, logger);
       case GRIB1 :
-        return Grib1CollectionBuilderFromIndex.readFromIndex(name, f.getParentFile(), indexRaf, config, logger);
+        return Grib1CollectionBuilderFromIndex.readFromIndex(name, indexRaf, config, logger);
       case Partition2 :
-         return Grib2PartitionBuilderFromIndex.createTimePartitionFromIndex(name, f.getParentFile(), indexRaf, config, logger);
+         return Grib2PartitionBuilderFromIndex.createTimePartitionFromIndex(name, indexRaf, config, logger);
       case GRIB2 :
-        return Grib2CollectionBuilderFromIndex.readFromIndex(name, f.getParentFile(), indexRaf, config, logger);
+        return Grib2CollectionBuilderFromIndex.readFromIndex(name, indexRaf, config, logger);
     }
 
     return null;

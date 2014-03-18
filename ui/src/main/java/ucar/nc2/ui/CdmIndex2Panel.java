@@ -457,7 +457,7 @@ public class CdmIndex2Panel extends JPanel {
     List<String> canon = new ArrayList<String>(gc.getFilenames());
     Collections.sort(canon);
 
-    File idxFile = gc.getIndexFile();
+    File idxFile = new File(gc.getIndexFilepathInCache());
     File dir = idxFile.getParentFile();
     File[] files = dir.listFiles(new FilenameFilter() {
       public boolean accept(File dir, String name) {
@@ -468,7 +468,7 @@ public class CdmIndex2Panel extends JPanel {
     int total = 0;
     for (File file : files) {
       RandomAccessFile raf = new RandomAccessFile(file.getPath(), "r");
-      GribCollection cgc = Grib2CollectionBuilderFromIndex.readFromIndex(file.getName(), file.getParentFile(), raf, null, logger);
+      GribCollection cgc = Grib2CollectionBuilderFromIndex.readFromIndex(file.getName(), raf, null, logger);
       List<String> cfiles = new ArrayList<String>(cgc.getFilenames());
       Collections.sort(cfiles);
       f.format("Compare files in %s to canonical files in %s%n", file.getPath(), idxFile.getPath());

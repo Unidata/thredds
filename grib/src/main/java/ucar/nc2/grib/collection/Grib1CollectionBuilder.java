@@ -208,9 +208,9 @@ public class Grib1CollectionBuilder extends GribCollectionBuilder {
     Grib1CollectionWriter writer = new Grib1CollectionWriter(dcm, logger);
     List<Grib1CollectionWriter.Group> groups2 = new ArrayList<>();
     for (Object g : groups) groups2.add((Grib1CollectionWriter.Group) g);
-    return writer.writeIndex(name, indexFile, masterRuntime, groups2, files);
+    File indexFileInCache = GribCollection.getFileInCache(indexFile);
+    return writer.writeIndex(name, indexFileInCache, masterRuntime, groups2, files);
   }
-
 
   public class VariableBag implements Comparable<VariableBag> {
     Grib1Record first;

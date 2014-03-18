@@ -79,7 +79,7 @@ public abstract class GribPartitionBuilder  {
     if (ff == CollectionUpdateType.never) return false;
     if (ff == CollectionUpdateType.always) return true;
 
-    File idx = GribCollection.getIndexFileInCache(partitionManager.getIndexFilename());
+    File idx = GribCollection.getFileInCache(partitionManager.getIndexFilename());
     if (!idx.exists()) return true;
 
     if (ff == CollectionUpdateType.nocheck) return false;
@@ -89,7 +89,7 @@ public abstract class GribPartitionBuilder  {
 
   private boolean needsUpdate(long collectionLastModified) throws IOException {
     for (MCollection dcm : partitionManager.makePartitions(CollectionUpdateType.test)) {
-      File idxFile = GribCollection.getIndexFileInCache(dcm.getIndexFilename());
+      File idxFile = GribCollection.getFileInCache(dcm.getIndexFilename());
       if (!idxFile.exists())
         return true;
       if (collectionLastModified < idxFile.lastModified())
@@ -534,7 +534,7 @@ public abstract class GribPartitionBuilder  {
   GribCollectionIndex (sizeIndex bytes)
   */
   protected boolean writeIndex(PartitionCollection pc, Formatter f) throws IOException {
-    File idxFile = new File(partitionManager.getIndexFilename());
+    File idxFile = GribCollection.getFileInCache(partitionManager.getIndexFilename());
     if (idxFile.exists()) {
       if (!idxFile.delete())
         logger.error("gc2tp cant delete " + idxFile.getPath());

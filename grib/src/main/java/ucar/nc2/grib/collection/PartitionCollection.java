@@ -554,8 +554,8 @@ public abstract class PartitionCollection extends GribCollection {
 
   int[] run2part;   // masterRuntime.length; which partition to use for masterRuntime i
 
-  protected PartitionCollection(String name, File directory, String indexFilename, FeatureCollectionConfig config, boolean isGrib1, org.slf4j.Logger logger) {
-    super(name, directory, indexFilename, config, isGrib1);
+  protected PartitionCollection(String name, File directory, FeatureCollectionConfig config, boolean isGrib1, org.slf4j.Logger logger) {
+    super(name, directory, config, isGrib1);
     this.logger = logger;
     this.partitions = new ArrayList<>();
     this.datasets = new ArrayList<>();

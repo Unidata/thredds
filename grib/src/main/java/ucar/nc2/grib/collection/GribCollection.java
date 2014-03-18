@@ -81,6 +81,7 @@ import java.util.*;
  * @since 12/1/13
  */
 public abstract class GribCollection implements FileCacheable, AutoCloseable {
+  static private final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(GribCollection.class);
   public static final long MISSING_RECORD = -1;
 
   public enum Type {GC, TwoD, Best, Analysis} // must match with GribCollectionProto.Dataset.Type
@@ -122,28 +123,34 @@ public abstract class GribCollection implements FileCacheable, AutoCloseable {
 
   ///////////////////////////////////////////////////////////////////
 
-   /*
-  index = gcname + ".ncx"
-  A partition divides the files into a tree of collections
+  /*
+    index = gcname + ".ncx"
+    A partition divides the files into a tree of collections
 
-  partition = none
+    partition = none
 
-    if multiple runtimes: make seperate GC for each one, make a PC that puts them together. GC name= collectionName + runtime, PC = collectionName.
-    if single runtime:   GC name = collectionName
-    in both cases, the index for the collection = collectionName
+      if multiple runtimes: make seperate GC for each one, make a PC that puts them together. GC name= collectionName + runtime, PC = collectionName.
+      if single runtime:   GC name = collectionName
+      in both cases, the index for the collection = collectionName
 
-  partition = directory
+    partition = directory
 
-    use the directory tree as the partition
-    gcname = collectionName + directory
+      use the directory tree as the partition
+      gcname = collectionName + directory
 
-  partition = file
+    partition = file
 
-    use the directory tree and the individual files as the partition
-    gcname = collectionName = filename
+      use the directory tree and the individual files as the partition
+      gcname = collectionName = filename
 
    */
-  static public File getIndexFileFromConfig(FeatureCollectionConfig config) {
+
+  /**
+   * This is only used for the top level GribCollection.
+   * @param config
+   * @return
+   */
+  static public File makeTopIndexFileFromConfig(FeatureCollectionConfig config) {
     Formatter errlog = new Formatter();
     CollectionSpecParser specp = new CollectionSpecParser(config.spec, errlog);
 
@@ -159,30 +166,15 @@ public abstract class GribCollection implements FileCacheable, AutoCloseable {
         cname = !specp.wantSubdirs() ? name : DirectoryCollection.makeCollectionName(name, Paths.get(specp.getRootDir()));  // LOOK ??
     }
 
-    File f = getIndexFile(cname, new File(specp.getRootDir()));
-    return getIndexFileInCache(f.getPath());
+    return makeIndexFile(cname, new File(specp.getRootDir()));
   }
 
-  static File getIndexFile(String collectionName, File directory) {
+  static File makeIndexFile(String collectionName, File directory) {
     String nameNoBlanks = StringUtil2.replace(collectionName, ' ', "_");
-    File f = new File(directory, nameNoBlanks + CollectionAbstract.NCX_SUFFIX);
-    return getIndexFileInCache(f.getPath());
+    return new File(directory, nameNoBlanks + CollectionAbstract.NCX_SUFFIX);
   }
 
-  private static  CalendarDateFormatter cf = new CalendarDateFormatter("yyyyMMdd-HHmmss", new CalendarTimeZone("UTC"));
-  static public File getIndexFile(String collectionName, File directory, CalendarDate runtime) {
-    File f = new File(directory, makeName(collectionName, runtime)  + CollectionAbstract.NCX_SUFFIX);
-    return getIndexFileInCache(f.getPath());
-  }
-
-  /**
-   * Get index file, may be in cache directory, may not exist
-   * @param path full path of index file
-   * @return File, possibly in cache
-   */
-  static public File getIndexFileInCache(String path) {
-    return getDiskCache2().getFile(path); // diskCache manages where the index file lives
-  }  
+  private static CalendarDateFormatter cf = new CalendarDateFormatter("yyyyMMdd-HHmmss", new CalendarTimeZone("UTC"));
 
   static public String makeName(String collectionName, CalendarDate runtime) {
     String nameNoBlanks = StringUtil2.replace(collectionName, ' ', "_");
@@ -198,12 +190,25 @@ public abstract class GribCollection implements FileCacheable, AutoCloseable {
     return result;
   }
 
+  /**
+    * Get index file, may be in cache directory, may not exist
+    * @param path full path of index file
+    * @return File, possibly in cache
+    */
+  static public File getFileInCache(String path) {
+    return getDiskCache2().getFile(path); // diskCache manages where the index file lives
+  }
+
+  static public File getFileInCache(File f) {
+    return getDiskCache2().getFile(f.getPath());
+  }
+
   ////////////////////////////////////////////////////////////////
   protected final String name; // collection name; index filename must be directory/name.ncx2
   protected /* final */ File directory;
   protected final FeatureCollectionConfig config;
   protected final boolean isGrib1;
-  protected String indexFilename;  // not in the cache - so can derive name, directory <--> indexFilename
+  //protected String indexFilename;  // not in the cache - so can derive name, directory <--> indexFilename
 
   // set by the builder
   public int version; // the ncx version
@@ -220,14 +225,15 @@ public abstract class GribCollection implements FileCacheable, AutoCloseable {
   protected RandomAccessFile indexRaf; // this is the raf of the index (ncx) file, synchronize any access to it
   protected FileCache objCache = null;  // optional object cache - used in the TDS
 
-  protected GribCollection(String name, File directory, String indexFilename, FeatureCollectionConfig config, boolean isGrib1) {
+  protected GribCollection(String name, File directory, FeatureCollectionConfig config, boolean isGrib1) {
     this.name = name;
     this.directory = directory;
     this.config = config;
     this.isGrib1 = isGrib1;
-    this.indexFilename = indexFilename;
     if (config == null)
-      System.out.println("HEY GribCollection has empty config");
+      logger.error("HEY GribCollection {} has empty config%n", name);
+    if (name == null)
+      logger.error("HEY GribCollection has null name dir={}%n", directory);
   }
 
   // for making partition collection
@@ -334,8 +340,14 @@ public abstract class GribCollection implements FileCacheable, AutoCloseable {
   void setIndexRaf(RandomAccessFile indexRaf) {
     this.indexRaf = indexRaf;
     if (indexRaf != null) {
-      indexFilename = indexRaf.getLocation(); // LOOK may be in cache ??
+      setIndexFilename(indexRaf.getLocation());
     }
+  }
+
+  private void setIndexFilename(String indexFilename) {
+    if (indexFilename.startsWith("B:\\content") || indexFilename.startsWith("B:/content"))
+      System.out.printf("HEY %s%n", indexFilename);
+    // this.indexFilename = indexFilename;
   }
 
   /**
@@ -343,8 +355,9 @@ public abstract class GribCollection implements FileCacheable, AutoCloseable {
    *
    * @return index filename; may not exist; may be in disk cache
    */
-  public File getIndexFile() {
-    return getIndexFileInCache(indexFilename);
+  public String getIndexFilepathInCache() {
+    File indexFile = makeIndexFile(name, directory);
+    return getFileInCache(indexFile.getPath()).getPath();
   }
 
   public List<Parameter> getParams() {
@@ -387,6 +400,7 @@ public abstract class GribCollection implements FileCacheable, AutoCloseable {
     return directory;
   }
 
+  // set from GribCollectionBuilderFromIndex.redFromIndex()
   public void setDirectory(File directory) {
     this.directory = directory;
   }
@@ -452,14 +466,15 @@ public abstract class GribCollection implements FileCacheable, AutoCloseable {
   @Override
   public String getLocation() {
     if (indexRaf != null) return indexRaf.getLocation();
-    return getIndexFile().getPath();
+    return getIndexFilepathInCache();
   }
 
   @Override
   public long getLastModified() {
-    File indexFile = getIndexFile();
-    if (indexFile.exists()) {
-      return indexFile.lastModified();
+    File indexFile = makeIndexFile(name, directory);
+    File indexFileInPath = getFileInCache(indexFile.getPath());
+    if (indexFileInPath.exists()) {
+      return indexFileInPath.lastModified();
     }
     return 0;
   }
@@ -1024,7 +1039,8 @@ public abstract class GribCollection implements FileCacheable, AutoCloseable {
           indexRaf.readFully(b);
         }
       } else {
-        try (RandomAccessFile raf = new RandomAccessFile(getIndexFile().getPath(), "r")) {  // try-with-close
+        String idxPath = getIndexFilepathInCache();
+        try (RandomAccessFile raf = new RandomAccessFile(idxPath, "r")) {  // try-with-close
           raf.seek(recordsPos);
           raf.readFully(b);
         }

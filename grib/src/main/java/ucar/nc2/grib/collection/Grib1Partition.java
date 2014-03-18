@@ -51,8 +51,8 @@ import java.util.Formatter;
  */
 public class Grib1Partition extends PartitionCollection implements AutoCloseable {
 
-  public Grib1Partition(String name, File directory, String indexFilename, FeatureCollectionConfig config, org.slf4j.Logger logger) {
-    super(name, directory, indexFilename, config, true, logger);
+  public Grib1Partition(String name, File directory, FeatureCollectionConfig config, org.slf4j.Logger logger) {
+    super(name, directory, config, true, logger);
   }
 
   // LOOK - needs time partition collection iosp or something
@@ -61,7 +61,7 @@ public class Grib1Partition extends PartitionCollection implements AutoCloseable
           FeatureCollectionConfig config, Formatter errlog, org.slf4j.Logger logger) throws IOException {
 
     ucar.nc2.grib.collection.Grib1Iosp iosp = new ucar.nc2.grib.collection.Grib1Iosp(group, ds.getType());
-    NetcdfFile ncfile = new NetcdfFileGC(iosp, null, getIndexFile().getPath(), null);
+    NetcdfFile ncfile = new NetcdfFileGC(iosp, null, getIndexFilepathInCache(), null);
     return new NetcdfDataset(ncfile);
   }
 
@@ -70,7 +70,7 @@ public class Grib1Partition extends PartitionCollection implements AutoCloseable
           FeatureCollectionConfig config, Formatter errlog, org.slf4j.Logger logger) throws IOException {
 
     ucar.nc2.grib.collection.Grib1Iosp iosp = new ucar.nc2.grib.collection.Grib1Iosp(group, ds.getType());
-    NetcdfFile ncfile = new NetcdfFileGC(iosp, null, getIndexFile().getPath(), null);
+    NetcdfFile ncfile = new NetcdfFileGC(iosp, null, getIndexFilepathInCache(), null);
     NetcdfDataset ncd = new NetcdfDataset(ncfile);
     return new ucar.nc2.dt.grid.GridDataset(ncd); // LOOK - replace with custom GridDataset??
   }

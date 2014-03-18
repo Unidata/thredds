@@ -14,6 +14,7 @@ import java.util.List;
 /**
  * A PartitionManager from a list of index files.
  * Used in GribCollectionBuilder with multiple runtimes.
+ * Index Files are already in the cache.
  *
  * @author John
  * @since 2/5/14                   `

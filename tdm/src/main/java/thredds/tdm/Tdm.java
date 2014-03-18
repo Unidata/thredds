@@ -195,9 +195,9 @@ public class Tdm {
     loggerFactory = new LoggerFactorySpecial(maxFileSize, maxBackupIndex, level);
 
     /* 4.3.15: grib index file placement, using DiskCache2  */
-    String gribIndexDir = reader.get("GribIndex.dir", new File(contentThreddsDir.toString(), "thredds/cache/grib/").getPath());
+    String gribIndexDir = reader.get("GribIndex.dir", new File(contentThreddsDir.toString(), "cache/grib/").getPath());
     Boolean gribIndexAlwaysUse = reader.getBoolean("GribIndex.alwaysUse", false);
-    Boolean gribIndexNeverUse = reader.getBoolean("GribIndex.neverUse", true);
+    Boolean gribIndexNeverUse = reader.getBoolean("GribIndex.neverUse", false);
     String gribIndexPolicy = reader.get("GribIndex.policy", null);
     DiskCache2 gribCache = gribIndexNeverUse ? DiskCache2.getNoop() : new DiskCache2(gribIndexDir, false, -1, -1);
     gribCache.setPolicy(gribIndexPolicy);

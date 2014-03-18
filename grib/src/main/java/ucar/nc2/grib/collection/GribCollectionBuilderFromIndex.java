@@ -157,21 +157,17 @@ public abstract class GribCollectionBuilderFromIndex {
       if (!gc.name.equals(proto.getName())) {
         logger.info("GribCollectionBuilderFromIndex raf {}: has different name= '{}' than stored in ncx= '{}' ", raf.getLocation(), gc.getName(), proto.getName());
       }
-      File dir = gc.getDirectory();
+
+      // directory always taken from proto, since ncx2 file may be moved, or in cache, etc
       File protoDir = new File(proto.getTopDir());
-      if (dir != null && !dir.getCanonicalPath().equals(protoDir.getCanonicalPath())) {
-        logger.info("GribCollectionBuilderFromIndex {}: has different directory= {} than index= {} ", gc.getName(), dir.getCanonicalPath(), protoDir.getCanonicalPath());
-        //return false;
-      }
-      if (gc.getDirectory() == null)
-        gc.setDirectory(protoDir);  // LOOK when is this needd?
+      gc.setDirectory(protoDir);
 
       int fsize = 0;
       int n = proto.getMfilesCount();
       Map<Integer, MFile> fileMap = new HashMap<>(2 * n);
       for (int i = 0; i < n; i++) {
         ucar.nc2.grib.collection.GribCollectionProto.MFile mf = proto.getMfiles(i);
-        fileMap.put(mf.getIndex(), new GcMFile(dir, mf.getFilename(), mf.getLastModified(), mf.getIndex()));
+        fileMap.put(mf.getIndex(), new GcMFile(protoDir, mf.getFilename(), mf.getLastModified(), mf.getIndex()));
         fsize += mf.getFilename().length();
       }
       gc.setFileMap(fileMap);

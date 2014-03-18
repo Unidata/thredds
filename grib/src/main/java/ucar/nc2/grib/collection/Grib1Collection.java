@@ -53,8 +53,8 @@ import java.util.Formatter;
  */
 public class Grib1Collection extends GribCollection {
 
-  public Grib1Collection(String name, File directory, String indexFilename, FeatureCollectionConfig config) {
-    super(name, directory, indexFilename, config, true);
+  public Grib1Collection(String name, File directory, FeatureCollectionConfig config) {
+    super(name, directory, config, true);
   }
 
   @Override
@@ -62,7 +62,7 @@ public class Grib1Collection extends GribCollection {
                                                          Formatter errlog, org.slf4j.Logger logger) throws IOException {
     if (filename == null) {  // LOOK thread-safety : sharing this, raf
       Grib1Iosp iosp = new Grib1Iosp(group, ds.getType());
-      NetcdfFile ncfile = new NetcdfFileGC(iosp, null, getIndexFile().getPath(), null);
+      NetcdfFile ncfile = new NetcdfFileGC(iosp, null, getIndexFilepathInCache(), null);
       return new NetcdfDataset(ncfile);
 
     } else {
@@ -72,7 +72,7 @@ public class Grib1Collection extends GribCollection {
         if (gc == null) return null;
 
         Grib1Iosp iosp = new Grib1Iosp(gc);
-        NetcdfFile ncfile = new NetcdfFileGC(iosp, null, getIndexFile().getPath(), null);
+        NetcdfFile ncfile = new NetcdfFileGC(iosp, null, getIndexFilepathInCache(), null);
         return new NetcdfDataset(ncfile);
       }
       return null;
@@ -84,7 +84,7 @@ public class Grib1Collection extends GribCollection {
                                                      Formatter errlog, org.slf4j.Logger logger) throws IOException {
     if (filename == null) { // LOOK thread-safety : sharing this, raf
       Grib1Iosp iosp = new Grib1Iosp(group, ds.getType());
-      NetcdfFile ncfile = new NetcdfFileGC(iosp, null, getIndexFile().getPath()+"#"+group.getId(), null);
+      NetcdfFile ncfile = new NetcdfFileGC(iosp, null, getIndexFilepathInCache()+"#"+group.getId(), null);
       NetcdfDataset ncd = new NetcdfDataset(ncfile);
       return new ucar.nc2.dt.grid.GridDataset(ncd); // LOOK - replace with custom GridDataset??
 
@@ -95,7 +95,7 @@ public class Grib1Collection extends GribCollection {
         if (gc == null) return null;
 
         Grib1Iosp iosp = new Grib1Iosp(gc);
-        NetcdfFile ncfile = new NetcdfFileGC(iosp, null, getIndexFile().getPath(), null);
+        NetcdfFile ncfile = new NetcdfFileGC(iosp, null, getIndexFilepathInCache(), null);
         NetcdfDataset ncd = new NetcdfDataset(ncfile);
         return new ucar.nc2.dt.grid.GridDataset(ncd); // LOOK - replace with custom GridDataset??
       }
