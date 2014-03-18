@@ -10,11 +10,8 @@ public abstract class Factories {
     public static final net.opengis.om.v_2_0_0.ObjectFactory OM =
             new net.opengis.om.v_2_0_0.ObjectFactory();
 
-    public static final net.opengis.swe.v_2_0_0.ObjectFactory SWE
-            = new net.opengis.swe.v_2_0_0.ObjectFactory();
-
-    public static final net.opengis.sampling.v_2_0_0.ObjectFactory SAMPLING =
-            new net.opengis.sampling.v_2_0_0.ObjectFactory();
+    public static final net.opengis.swe.v_2_0_0.ObjectFactory SWE =
+            new net.opengis.swe.v_2_0_0.ObjectFactory();
 
     public static final net.opengis.spatialsampling.v_2_0_0.ObjectFactory SPATIALSAMPLING =
             new net.opengis.spatialsampling.v_2_0_0.ObjectFactory();

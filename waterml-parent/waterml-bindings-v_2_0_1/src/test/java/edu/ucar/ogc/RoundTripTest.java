@@ -2,7 +2,6 @@ package edu.ucar.ogc;
 
 import com.google.common.base.CharMatcher;
 import com.google.common.base.Splitter;
-import net.opengis.waterml_dr.v_2_0_1.ObjectFactory;
 import org.custommonkey.xmlunit.*;
 import org.reflections.Reflections;
 import org.reflections.scanners.ResourcesScanner;
@@ -11,21 +10,15 @@ import org.w3c.dom.Node;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
-import javax.xml.XMLConstants;
-import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
-import javax.xml.bind.annotation.XmlSchema;
-import javax.xml.bind.helpers.DefaultValidationEventHandler;
 import javax.xml.transform.OutputKeys;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
-import javax.xml.validation.Schema;
-import javax.xml.validation.SchemaFactory;
 import java.io.*;
 import java.net.URISyntaxException;
 import java.util.List;
@@ -40,31 +33,6 @@ public class RoundTripTest extends XMLTestCase {
 
     // xmlunit extends junit 3.8.2. Therefore, we cannot use the junit 4 @Test annotation.
     public void testRoundTrip() throws JAXBException, URISyntaxException, IOException, SAXException, TransformerException {
-        Package thePackage = ObjectFactory.class.getPackage();
-        JAXBContext jaxbContext = JAXBContext.newInstance(thePackage.getName());
-
-        SchemaFactory schemaFactory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
-        Schema schema = schemaFactory.newSchema(getClass().getResource(
-                // This will pull in every dependent schema that we'll need for validation, i.e. OM, GML, etc.
-                "/waterml/2.0.1/domain-range-informative/timeseries-domain-range.xsd"
-        ));
-
-        Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
-        unmarshaller.setEventHandler(new DefaultValidationEventHandler());
-        unmarshaller.setSchema(schema);
-
-        Marshaller marshaller = jaxbContext.createMarshaller();
-        marshaller.setEventHandler(new DefaultValidationEventHandler());
-        marshaller.setSchema(schema);
-        marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
-
-        XmlSchema xmlSchema = thePackage.getAnnotation(XmlSchema.class);
-        if (xmlSchema != null && xmlSchema.location() != null && !xmlSchema.location().equals(XmlSchema.NO_LOCATION)) {
-            // By default, JAXB seems to ignore XmlSchema.location(). We must manually associate its value with the
-            // JAXB_SCHEMA_LOCATION key.
-            marshaller.setProperty(Marshaller.JAXB_SCHEMA_LOCATION, xmlSchema.location());
-        }
-
         // This will find all resources in the "net.opengis" or "org.isotc211" packages that end with ".xml".
         Reflections reflections = new Reflections("net.opengis", "org.isotc211", new ResourcesScanner());
         Pattern pattern = Pattern.compile(".*\\.xml\\b");  // Matches all resources ending in ".xml"
@@ -78,7 +46,7 @@ public class RoundTripTest extends XMLTestCase {
 
             System.out.printf("Round-trip testing \"%s\"%n", testResource);
             File controlFile = new File(getClass().getResource(testResource).toURI());
-            doRoundTripTest(controlFile, unmarshaller, marshaller);
+            doRoundTripTest(controlFile, MarshallingUtil.WATERML_UNMARSHALLER, MarshallingUtil.WATERML_MARSHALLER);
         }
     }
 

@@ -22,4 +22,8 @@
     <name>WaterML Parent</name>
     <description>Aggregates the WaterML to NetCDF sub-modules.</description>
     <url>http://www.unidata.ucar.edu/software/netcdf-java/</url>
+
+    <properties>
+        <skipTests>false</skipTests>
+    </properties>
 </project>
