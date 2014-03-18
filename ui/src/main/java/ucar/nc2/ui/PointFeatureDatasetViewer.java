@@ -208,64 +208,7 @@ public class PointFeatureDatasetViewer extends JPanel {
     BAMutil.setActionProperties(getallAction, "GetAll", "get ALL data", false, 'A', -1);
     stationMap.addToolbarAction(getallAction);
 
-
-    AbstractAction waterMLConverterAction = new AbstractAction() {
-      {
-        putValue(NAME, "WaterML 2.0 Writer");
-        putValue(SMALL_ICON, Resource.getIcon(BAMutil.getResourcePath() + "drop_24.png", true));
-        putValue(SHORT_DESCRIPTION, "Write timeseries as an OGC WaterML v2.0 document.");
-      }
-
-      @Override public void actionPerformed(ActionEvent e) {
-        if (pfDataset == null) {
-          return;
-        }
-
-        List<VariableSimpleIF> dataVars = pfDataset.getDataVariables();
-        assert !dataVars.isEmpty() : "No data variables found in " + pfDataset.getLocation();
-        VariableSimpleIF dataVar = dataVars.get(0);
-
-        if (dataVars.size() > 1) {
-          Component parentComponent = PointFeatureDatasetViewer.this;
-          Object message = "Currenly, we can only write 1 data variable to a WaterML file.\nSelect which to include:";
-          String title = "Select data variable";
-          int messageType = JOptionPane.QUESTION_MESSAGE;
-          Icon icon = null;
-
-          Object[] selectionValues = new Object[dataVars.size()];
-          for (int i = 0; i < dataVars.size(); ++i) {
-            selectionValues[i] = dataVars.get(i).getShortName();
-          }
-          Object initialSelectionValue = selectionValues[0];
-
-          String dataVarName = (String) JOptionPane.showInputDialog(
-                  parentComponent, message, title, messageType, icon, selectionValues, initialSelectionValue);
-          if (dataVarName == null) {
-            return;
-          } else {
-            dataVar = pfDataset.getDataVariable(dataVarName);
-          }
-        }
-
-        try {
-          ByteArrayOutputStream outStream = new ByteArrayOutputStream(5000);
-          PointUtil.marshalPointDataset(pfDataset, dataVar, outStream);
-
-          infoTA.setText(outStream.toString());
-          infoTA.gotoTop();
-          infoWindow.show();
-        } catch (Exception ex) {  // TODO: In Java 7, do multi-catch.
-          ByteArrayOutputStream bos = new ByteArrayOutputStream(5000);
-          ex.printStackTrace(new PrintStream(bos));
-
-          infoTA.setText(bos.toString());
-          infoTA.gotoTop();
-          infoWindow.show();
-        }
-      }
-    };
-    stationMap.addToolbarAction(waterMLConverterAction);
-
+    stationMap.addToolbarAction(new WaterMLConverterAction());
 
     AbstractAction netcdfAction = new AbstractAction() {
        public void actionPerformed(ActionEvent e) {
@@ -362,6 +305,76 @@ public class PointFeatureDatasetViewer extends JPanel {
     setLayout(new BorderLayout());
     add(splitObs, BorderLayout.CENTER);
   }
+
+
+  // I'd like to offload this class into its own file, but it needs to read the pfDataset field, whose value may change
+  // during execution. I could still do it if I added the necessary event listener machinery, but meh.
+  private class WaterMLConverterAction extends AbstractAction {
+    private WaterMLConverterAction () {
+      putValue(NAME, "WaterML 2.0 Writer");
+      putValue(SMALL_ICON, Resource.getIcon(BAMutil.getResourcePath() + "drop_24.png", true));
+      putValue(SHORT_DESCRIPTION, "Write timeseries as an OGC WaterML v2.0 document.");
+    }
+
+    @Override public void actionPerformed(ActionEvent e) {
+      if (pfDataset == null) {
+        return;
+      }
+
+      if (!pfDataset.getFeatureType().equals(FeatureType.STATION)) {
+        Component parentComponent = PointFeatureDatasetViewer.this;
+        Object message = "Currently, only the STATION feature type is supported, not " + pfDataset.getFeatureType();
+        String title = "Invalid feature type";
+        int messageType = JOptionPane.ERROR_MESSAGE;
+
+        JOptionPane.showMessageDialog(parentComponent, message, title, messageType);
+        return;
+      }
+
+      List<VariableSimpleIF> dataVars = pfDataset.getDataVariables();
+      assert !dataVars.isEmpty() : "No data variables found in " + pfDataset.getLocation();
+      VariableSimpleIF dataVar = dataVars.get(0);
+
+      if (dataVars.size() > 1) {
+        Component parentComponent = PointFeatureDatasetViewer.this;
+        Object message = "Currenly, we can only write 1 data variable to a WaterML file.\nSelect which to include:";
+        String title = "Select data variable";
+        int messageType = JOptionPane.QUESTION_MESSAGE;
+        Icon icon = null;
+
+        Object[] selectionValues = new Object[dataVars.size()];
+        for (int i = 0; i < dataVars.size(); ++i) {
+          selectionValues[i] = dataVars.get(i).getShortName();
+        }
+        Object initialSelectionValue = selectionValues[0];
+
+        String dataVarName = (String) JOptionPane.showInputDialog(
+                parentComponent, message, title, messageType, icon, selectionValues, initialSelectionValue);
+        if (dataVarName == null) {
+          return;
+        } else {
+          dataVar = pfDataset.getDataVariable(dataVarName);
+        }
+      }
+
+      try {
+        ByteArrayOutputStream outStream = new ByteArrayOutputStream(5000);
+        PointUtil.marshalPointDataset(pfDataset, dataVar, outStream);
+
+        infoTA.setText(outStream.toString());
+        infoTA.gotoTop();
+        infoWindow.show();
+      } catch (Exception ex) {  // TODO: In Java 7, do multi-catch.
+        ByteArrayOutputStream bos = new ByteArrayOutputStream(5000);
+        ex.printStackTrace(new PrintStream(bos));
+
+        infoTA.setText(bos.toString());
+        infoTA.gotoTop();
+        infoWindow.show();
+      }
+    }
+  }
+
 
   public void save() {
     fcTable.saveState(false);

@@ -5,10 +5,7 @@ import net.opengis.waterml.v_2_0_1.CollectionType;
 import net.opengis.waterml.v_2_0_1.DocumentMetadataPropertyType;
 import ucar.nc2.VariableSimpleIF;
 import ucar.nc2.constants.FeatureType;
-import ucar.nc2.ft.FeatureCollection;
-import ucar.nc2.ft.FeatureDatasetPoint;
-import ucar.nc2.ft.StationTimeSeriesFeature;
-import ucar.nc2.ft.StationTimeSeriesFeatureCollection;
+import ucar.nc2.ft.*;
 import ucar.nc2.ogc.Factories;
 import ucar.nc2.ogc.om.NC_OMObservationPropertyType;
 
@@ -35,8 +32,11 @@ public abstract class NC_Collection {
 
         // wml2:observationMember[0..*]
         StationTimeSeriesFeatureCollection stationFeatColl = getStationFeatures(fdPoint);
-        while (stationFeatColl.hasNext()) {
-            StationTimeSeriesFeature stationFeat = stationFeatColl.next();
+        PointFeatureCollectionIterator stationFeatCollIter = stationFeatColl.getPointFeatureCollectionIterator(-1);
+
+        while (stationFeatCollIter.hasNext()) {
+            // wml2:observationMember
+            StationTimeSeriesFeature stationFeat = (StationTimeSeriesFeature) stationFeatCollIter.next();
             OMObservationPropertyType observationMember =
                     NC_OMObservationPropertyType.createObservationMember(fdPoint, stationFeat, dataVar);
             collection.getObservationMembers().add(observationMember);
