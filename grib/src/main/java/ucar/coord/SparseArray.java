@@ -13,7 +13,7 @@ public class SparseArray<T> {
   private int[] stride;  // for index calculation
   private int totalSize; // product of sizes
 
-  private int[] track; // index into content, size totalSize. LOOK use byte, short for memory ??
+  private int[] track; // index into content, size totalSize. LOOK use byte, short to save memory ??
   private List<T> content; // keep the things in an ArrayList.
 
   private int ndups = 0; // number of duplicates
@@ -197,8 +197,4 @@ public class SparseArray<T> {
     for (T record : content)
       f.format(" %d %s %n", count++, record);
   }
-
-
-
-
 }
