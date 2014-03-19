@@ -44,7 +44,7 @@ import java.util.List;
 
 public class TestMisc extends UnitTestCommon
 {
-  static final String DFALTTESTSERVER = "thredds-test.ucar.edu";
+  static final String DFALTTESTSERVER = "remotetest.unidata.ucar.edu";
   //static final String DFALTTESTSERVER = "localhost:8080";
 
   // Collect testcases locally

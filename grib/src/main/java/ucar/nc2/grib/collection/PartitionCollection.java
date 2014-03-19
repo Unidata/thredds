@@ -193,6 +193,11 @@ public abstract class PartitionCollection extends GribCollection {
         f.format("time2runtime: %n");
         int count = 0;
         for (int idx : time2runtime) {
+          if (idx == 0) {
+            f.format(" %2d: MISSING%n", count);
+            count++;
+            continue;
+          }
           Object val = time.getValue(count);
           f.format(" %2d: %s -> %2d (%s)", count, val, idx-1, run.getValue(idx-1));
           if (val instanceof Integer) {
@@ -448,7 +453,7 @@ public abstract class PartitionCollection extends GribCollection {
     private long lastModified;
 
     // temporary storage while building - do not use - must call getGribCollection()()
-    GribCollection gc;
+    // GribCollection gc;
 
     // constructor from ncx
     public Partition(String name, String indexFilename, long lastModified, String directory) {
@@ -536,7 +541,7 @@ public abstract class PartitionCollection extends GribCollection {
     }
 
     public GribCollection makeGribCollection(CollectionUpdateType force) throws IOException {
-      if (gc != null) return gc;
+      // LOOK CLOSE if (gc != null) return gc;
       return GribCdmIndex.openGribCollectionFromMCollection(isGrib1, dcm, force, null, logger); // caller must close
     }
   }
@@ -549,8 +554,8 @@ public abstract class PartitionCollection extends GribCollection {
 
   int[] run2part;   // masterRuntime.length; which partition to use for masterRuntime i
 
-  protected PartitionCollection(String name, File directory, String indexFilename, FeatureCollectionConfig config, boolean isGrib1, org.slf4j.Logger logger) {
-    super(name, directory, indexFilename, config, isGrib1);
+  protected PartitionCollection(String name, File directory, FeatureCollectionConfig config, boolean isGrib1, org.slf4j.Logger logger) {
+    super(name, directory, config, isGrib1);
     this.logger = logger;
     this.partitions = new ArrayList<>();
     this.datasets = new ArrayList<>();

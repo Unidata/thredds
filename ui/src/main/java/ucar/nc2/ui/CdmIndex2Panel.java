@@ -2,16 +2,15 @@ package ucar.nc2.ui;
 
 import thredds.featurecollection.FeatureCollectionConfig;
 import thredds.inventory.MFile;
-import ucar.coord.CoordinateRuntime;
-import ucar.coord.CoordinateTime2D;
+import ucar.coord.*;
+import ucar.nc2.ft.fmrc.FmrInv;
 import ucar.nc2.grib.collection.*;
+import ucar.nc2.time.CalendarDate;
 import ucar.nc2.util.Indent;
-import ucar.coord.Coordinate;
 import ucar.nc2.ui.widget.BAMutil;
 import ucar.nc2.ui.widget.IndependentWindow;
 import ucar.nc2.ui.widget.PopupMenu;
 import ucar.nc2.ui.widget.TextHistoryPane;
-import ucar.coord.SparseArray;
 import ucar.unidata.io.RandomAccessFile;
 import ucar.util.prefs.PreferencesExt;
 import ucar.util.prefs.ui.BeanTable;
@@ -173,6 +172,33 @@ public class CdmIndex2Panel extends JPanel {
       }
     });
 
+    varPopup.addAction("ShowCompact", new AbstractAction() {
+      public void actionPerformed(ActionEvent e) {
+        CoordBean bean = (CoordBean) coordTable.getSelectedBean();
+        if (bean != null) {
+          Formatter f = new Formatter();
+          bean.coord.showInfo(f, new Indent(2));
+          infoTA.setText(f.toString());
+          infoTA.gotoTop();
+          infoWindow.show();
+        }
+      }
+    });
+
+    varPopup.addAction("Test Time2D isRegular", new AbstractAction() {
+      public void actionPerformed(ActionEvent e) {
+        CoordBean bean = (CoordBean) coordTable.getSelectedBean();
+        if (bean != null) {
+          Formatter f = new Formatter();
+          testOrthogonal(f, bean.coord);
+          testRegular(f, bean.coord);
+          infoTA.setText(f.toString());
+          infoTA.gotoTop();
+          infoWindow.show();
+        }
+      }
+    });
+
     varPopup.addAction("Compare", new AbstractAction() {
        public void actionPerformed(ActionEvent e) {
          List beans = coordTable.getSelectedBeans();
@@ -184,6 +210,24 @@ public class CdmIndex2Panel extends JPanel {
              compareCoords2D(f, (CoordinateTime2D) bean1.coord, (CoordinateTime2D) bean2.coord);
            else
              compareCoords(f, bean1.coord, bean2.coord);
+           infoTA.setText(f.toString());
+           infoTA.gotoTop();
+           infoWindow.show();
+         }
+       }
+     });
+
+    varPopup.addAction("Try to Merge", new AbstractAction() {
+       public void actionPerformed(ActionEvent e) {
+         List beans = coordTable.getSelectedBeans();
+         if (beans.size() == 2) {
+           Formatter f = new Formatter();
+           CoordBean bean1 = (CoordBean) beans.get(0);
+           CoordBean bean2 = (CoordBean) beans.get(1);
+           if (bean1.coord.getType() == Coordinate.Type.time2D && bean2.coord.getType() == Coordinate.Type.time2D)
+             mergeCoords2D(f, (CoordinateTime2D) bean1.coord, (CoordinateTime2D) bean2.coord);
+           else
+             f.format("CoordinateTime2D only");
            infoTA.setText(f.toString());
            infoTA.gotoTop();
            infoWindow.show();
@@ -269,18 +313,142 @@ public class CdmIndex2Panel extends JPanel {
   private void compareCoords2D(Formatter f, CoordinateTime2D coord1, CoordinateTime2D coord2) {
     CoordinateRuntime runtimes1 = coord1.getRuntimeCoordinate();
     CoordinateRuntime runtimes2 = coord2.getRuntimeCoordinate();
-    List<Coordinate> times1 = coord1.getTimes();
-    List<Coordinate> times2 = coord2.getTimes();
-    int min = Math.min(times1.size(), times2.size());
-    if (times1.size() != times2.size()) {
-      f.format("Coordinate 1 has %d runtimes, Coordinate 2 has %d runtimes, %n", times1.size(), times2.size());     }
+    int n1 = coord1.getNruns();
+    int n2 = coord2.getNruns();
+    if (n1 != n2) {
+      f.format("Coordinate 1 has %d runtimes, Coordinate 2 has %d runtimes, %n", n1, n2);     }
 
+    int min = Math.min(n1, n2);
     for (int idx=0; idx<min; idx++) {
+      CoordinateTimeAbstract time1 = coord1.getTimeCoordinate(idx);
+      CoordinateTimeAbstract time2 = coord2.getTimeCoordinate(idx);
       f.format("Run %d %n", idx);
-      if (runtimes1.getValue(idx) != runtimes2.getValue(idx))
+      if (!runtimes1.getValue(idx).equals(runtimes2.getValue(idx)))
         f.format("Runtime 1 %s != %s runtime 2%n", runtimes1.getValue(idx), runtimes2.getValue(idx));
-      compareCoords(f, times1.get(idx), times2.get(idx));
+      compareCoords(f, time1, time2);
     }
+  }
+
+  private void mergeCoords2D(Formatter f, CoordinateTime2D coord1, CoordinateTime2D coord2) {
+    if (coord1.isTimeInterval() != coord2.isTimeInterval()) {
+      f.format("Coordinate 1 isTimeInterval %s != Coordinate 2 isTimeInterval %s %n", coord1.isTimeInterval(), coord2.isTimeInterval());
+      return;
+    }
+
+    CoordinateRuntime runtimes1 = coord1.getRuntimeCoordinate();
+    CoordinateRuntime runtimes2 = coord2.getRuntimeCoordinate();
+    int n1 = coord1.getNruns();
+    int n2 = coord2.getNruns();
+    if (n1 != n2) {
+      f.format("Coordinate 1 has %d runtimes, Coordinate 2 has %d runtimes, %n", n1, n2);
+    }
+
+    int min = Math.min(n1, n2);
+     for (int idx=0; idx<min; idx++) {
+      if (!runtimes1.getValue(idx).equals(runtimes2.getValue(idx)))
+        f.format("Runtime 1 %s != %s runtime 2%n", runtimes1.getValue(idx), runtimes2.getValue(idx));
+    }
+
+    Set<Object> set1 = makeCoordSet(coord1);
+    List<? extends Object> list1 = coord1.getOffsetsSorted();
+    Set<Object> set2 = makeCoordSet(coord2);
+    List<? extends Object> list2 = coord2.getOffsetsSorted();
+
+    f.format("%nCoordinate %s%n", coord1.getName());
+    for (Object val : list1) f.format(" %s,", val);
+    f.format(" n=(%d)%n", list1.size());
+    testMissing(f, list1, set2);
+
+    f.format("%nCoordinate %s%n", coord2.getName());
+    for (Object val : list2) f.format(" %s,", val);
+    f.format(" (n=%d)%n", list2.size());
+    testMissing(f, list2, set1);
+  }
+
+  private Set<Object> makeCoordSet(CoordinateTime2D time2D) {
+    Set<Object> result = new HashSet<>(100);
+    for (int runIdx=0; runIdx<time2D.getNruns(); runIdx++) {
+      Coordinate coord = time2D.getTimeCoordinate(runIdx);
+      for (Object val : coord.getValues())
+        result.add(val);
+    }
+    return result;
+  }
+
+  private void testMissing(Formatter f, List<? extends Object> test, Set<Object> against) {
+    int countMissing = 0;
+    for (Object val1 : test) {
+      if (!against.contains(val1))
+        f.format(" %d: %s MISSING%n", countMissing++, val1);
+    }
+    f.format("TOTAL MISSING %s%n", countMissing);
+  }
+
+  // orthogonal means that all the times can be made into a single time coordinate
+  private boolean testOrthogonal(Formatter f, Coordinate c) {
+    if (!(c instanceof CoordinateTime2D)) {
+      f.format("Must be CoordinateTime2D");
+      return false;
+    }
+    CoordinateTime2D time2D = (CoordinateTime2D) c;
+    List<CoordinateTimeAbstract> coords = new ArrayList<>();
+    for (int runIdx=0; runIdx<time2D.getNruns(); runIdx++) {
+      coords.add(time2D.getTimeCoordinate(runIdx));
+    }
+    return testOrthogonal(f, coords);
+  }
+
+  // regular means that all the times for each offset from 0Z can be made into a single time coordinate (FMRC algo)
+  private boolean testRegular(Formatter f, Coordinate c) {
+    if (!(c instanceof CoordinateTime2D)) {
+      f.format("Must be CoordinateTime2D");
+      return false;
+    }
+    f.format("Test isRegular by Offset Hour%n");
+    CoordinateTime2D time2D = (CoordinateTime2D) c;
+
+    // group time coords by offset hour
+    Map<Integer, List<CoordinateTimeAbstract>> hourMap = new HashMap<>();
+    for (int runIdx=0; runIdx<time2D.getNruns(); runIdx++) {
+      CoordinateTimeAbstract coord = time2D.getTimeCoordinate(runIdx);
+      CalendarDate runDate = coord.getRefDate();
+      int hour = runDate.getHourOfDay();
+      List<CoordinateTimeAbstract> hg = hourMap.get(hour);
+      if (hg == null) {
+        hg = new ArrayList<>();
+        hourMap.put(hour, hg);
+      }
+      hg.add(coord);
+    }
+
+    // see if each offset hour is orthogonal
+    boolean ok = true;
+    for (int hour : hourMap.keySet()) {
+      List<CoordinateTimeAbstract> hg = hourMap.get(hour);
+      f.format("Hour %d: ", hour);
+      for (CoordinateTimeAbstract coord : hg) f.format("%s,", coord.getRefDate());
+      f.format("%n");
+      ok &= testOrthogonal(f, hg);
+    }
+    f.format("%nAll orthogonal: %s%n", ok);
+    return ok;
+  }
+
+  private boolean testOrthogonal(Formatter f, List<CoordinateTimeAbstract> times) {
+    int max = 0;
+    Set<Object> allCoords = new HashSet<>(100);
+    for (CoordinateTimeAbstract coord : times) {
+      max = Math.max(max, coord.getSize());
+
+      for (Object val : coord.getValues())
+        allCoords.add(val);
+    }
+
+    // is the set of all values the same as the component times?
+    int totalMax = allCoords.size();
+    boolean isOrthogonal = (totalMax == max);
+    f.format("isOrthogonal %s : totalMax = %d max=%d %n%n", isOrthogonal, totalMax, max);
+    return isOrthogonal;
   }
 
 
@@ -289,7 +457,7 @@ public class CdmIndex2Panel extends JPanel {
     List<String> canon = new ArrayList<String>(gc.getFilenames());
     Collections.sort(canon);
 
-    File idxFile = gc.getIndexFile();
+    File idxFile = new File(gc.getIndexFilepathInCache());
     File dir = idxFile.getParentFile();
     File[] files = dir.listFiles(new FilenameFilter() {
       public boolean accept(File dir, String name) {
@@ -300,7 +468,7 @@ public class CdmIndex2Panel extends JPanel {
     int total = 0;
     for (File file : files) {
       RandomAccessFile raf = new RandomAccessFile(file.getPath(), "r");
-      GribCollection cgc = Grib2CollectionBuilderFromIndex.readFromIndex(file.getName(), file.getParentFile(), raf, null, logger);
+      GribCollection cgc = Grib2CollectionBuilderFromIndex.readFromIndex(file.getName(), raf, null, logger);
       List<String> cfiles = new ArrayList<String>(cgc.getFilenames());
       Collections.sort(cfiles);
       f.format("Compare files in %s to canonical files in %s%n", file.getPath(), idxFile.getPath());
@@ -508,7 +676,9 @@ public class CdmIndex2Panel extends JPanel {
       if (coord instanceof CoordinateTime2D) {
         CoordinateTime2D c2d = (CoordinateTime2D) coord;
         Formatter f = new Formatter();
-        f.format("%s %s", coord.getType(), (c2d.isTimeInterval() ? "intv" : "offset"));
+        f.format("%s %s", coord.getType(), (c2d.isTimeInterval() ? "intv" : "offs"));
+        if (c2d.isOrthogonal()) f.format(" ort");
+        if (c2d.isRegular()) f.format(" reg");
         return f.toString();
       } else {
         return coord.getType().toString();
@@ -551,7 +721,17 @@ public class CdmIndex2Panel extends JPanel {
     }
 
     public String getName() {
-      return coord.getName();
+      String intvName = null;
+      if (coord instanceof CoordinateTimeIntv) {
+        CoordinateTimeIntv timeiCoord = (CoordinateTimeIntv) coord;
+        intvName = timeiCoord.getTimeIntervalName();
+      }
+      if (coord instanceof CoordinateTime2D) {
+        CoordinateTime2D timeiCoord = (CoordinateTime2D) coord;
+        intvName = timeiCoord.getTimeIntervalName();
+      }
+
+      return (intvName == null) ? coord.getName() : coord.getName() + " (" + intvName+ ")";
     }
 
     @Override

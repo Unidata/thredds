@@ -85,15 +85,17 @@ public abstract class GribCollectionBuilderFromIndex {
       if (!NcStream.readAndTest(raf, getMagicStart().getBytes())) {
         raf.seek(0);
         NcStream.readAndTest(raf, getMagicStart().getBytes()); // debug
-        logger.warn("GribCollectionBuilderFromIndex {}: invalid index magic", gc.getName());
-        return false;
+        logger.warn("GribCollectionBuilderFromIndex {}: invalid index raf={}", gc.getName(), raf.getLocation());
+        throw new IllegalStateException();   // temp debug
+        // return false;
       }
 
       gc.version = raf.readInt();
       boolean versionOk = gc.version >= Grib2CollectionWriter.version;
       if (!versionOk) {
         logger.warn("GribCollectionBuilderFromIndex {}: index found version={}, want version= {} on file {}", gc.getName(), gc.version, Grib2CollectionWriter.version, raf.getLocation());
-        return false;
+        throw new IllegalStateException();   // temp debug
+        // return false;
       }
 
       // these are the variable records
@@ -102,9 +104,10 @@ public abstract class GribCollectionBuilderFromIndex {
       if (debug) System.out.printf("GribCollectionBuilderFromIndex %s (%s) records len = %d%n", raf.getLocation(), getMagicStart(), skip);
 
       int size = NcStream.readVInt(raf);
-      if ((size < 0) || (size > 100 * 1000 * 1000)) {
-        logger.warn("GribCollectionBuilderFromIndex {}: invalid index size", gc.getName());
-        return false;
+      if ((size < 0) || (size > 200 * 1000 * 1000)) {
+        logger.warn("GribCollectionBuilderFromIndex {}: invalid index size", gc.getName(), raf.getLocation());
+        throw new IllegalStateException();   // temp debug
+        //return false;
       }
       if (debug) System.out.printf("GribCollectionBuilderFromIndex proto len = %d%n", size);
 
@@ -154,21 +157,17 @@ public abstract class GribCollectionBuilderFromIndex {
       if (!gc.name.equals(proto.getName())) {
         logger.info("GribCollectionBuilderFromIndex raf {}: has different name= '{}' than stored in ncx= '{}' ", raf.getLocation(), gc.getName(), proto.getName());
       }
-      File dir = gc.getDirectory();
+
+      // directory always taken from proto, since ncx2 file may be moved, or in cache, etc
       File protoDir = new File(proto.getTopDir());
-      if (dir != null && !dir.getCanonicalPath().equals(protoDir.getCanonicalPath())) {
-        logger.info("GribCollectionBuilderFromIndex {}: has different directory= {} than index= {} ", gc.getName(), dir.getCanonicalPath(), protoDir.getCanonicalPath());
-        //return false;
-      }
-      if (gc.getDirectory() == null)
-        gc.setDirectory(protoDir);  // LOOK when is this needd?
+      gc.setDirectory(protoDir);
 
       int fsize = 0;
       int n = proto.getMfilesCount();
       Map<Integer, MFile> fileMap = new HashMap<>(2 * n);
       for (int i = 0; i < n; i++) {
         ucar.nc2.grib.collection.GribCollectionProto.MFile mf = proto.getMfiles(i);
-        fileMap.put(mf.getIndex(), new GcMFile(dir, mf.getFilename(), mf.getLastModified(), mf.getIndex()));
+        fileMap.put(mf.getIndex(), new GcMFile(protoDir, mf.getFilename(), mf.getLastModified(), mf.getIndex()));
         fsize += mf.getFilename().length();
       }
       gc.setFileMap(fileMap);
@@ -397,7 +396,14 @@ message Coord {
         for (GribCollectionProto.Coord coordp : pc.getTimesList())
           times.add(readCoord(coordp));
         timeUnit = CalendarPeriod.of(unit);
-        return new CoordinateTime2D(code, timeUnit, null, runtime, times);
+        boolean isOrthogonal = pc.hasIsOrthogonal() && pc.getIsOrthogonal();
+        boolean isRegular = pc.hasIsRegular() && pc.getIsRegular();
+        if (isOrthogonal)
+          return new CoordinateTime2D(code, timeUnit, runtime, (CoordinateTimeAbstract) times.get(0), null);
+        else if (isRegular)
+          return new CoordinateTime2D(code, timeUnit, runtime, times, null);
+        else
+          return new CoordinateTime2D(code, timeUnit, null, runtime, times);
 
       case vert:
         boolean isLayer = pc.getValuesCount() == pc.getBoundCount();
@@ -454,7 +460,7 @@ message Coord {
     // 2d only
     List<Integer> invCountList = pv.getInvCountList();
     if (invCountList.size() > 0) {
-      result.twot = new CoordinateTwoTimer(invCountList);
+      result.twot = new TwoDTimeInventory(invCountList);
       result.twot.setSize(runtime.getSize(), ntimes);
     }
 

@@ -49,6 +49,10 @@ import java.io.File;
  */
 public class TestDatasetURL extends TestCase {
 
+ 
+  static public final String REMOTESERVER = "remotetest.unidata.ucar.edu";
+
+
   public TestDatasetURL(String name) {
     super(name);
   }
@@ -95,7 +99,7 @@ public class TestDatasetURL extends TestCase {
   }
 
   public void testDods() throws URISyntaxException {
-    String uriString = "http://thredds-test.ucar.edu:8081/dts/test.53.dods?types[0:1:9]";
+    String uriString = "http://"+REMOTESERVER+"/dts/test.53.dods?types[0:1:9]";
     new URI(uriString);
   }
 

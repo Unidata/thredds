@@ -35,6 +35,7 @@ package ucar.nc2.dt.radial;
 import ucar.nc2.dt.*;
 import ucar.nc2.dataset.*;
 import ucar.nc2.constants.*;
+import ucar.nc2.time.CalendarDateUnit;
 import ucar.nc2.units.DateUnit;
 import ucar.nc2.units.SimpleUnit;
 import ucar.nc2.units.DateRange;
@@ -238,6 +239,7 @@ public class Netcdf2Dataset extends RadialDatasetSweepAdapter implements TypedDa
         if (axis.getAxisType() == AxisType.Time) {
           String units = axis.getUnitsString();
           dateUnits =  new DateUnit(units);
+          calDateUnits = CalendarDateUnit.of(null, units);
           return;
         }
       }

@@ -40,10 +40,16 @@ import org.junit.Test;
 import ucar.unidata.test.Diff;
 
 import java.io.*;
+import java.util.ArrayList;
+import java.util.List;
 
 public class UnitTestCommon extends TestCase
 {
     static boolean DEBUG = false;
+
+    // Hold the primary server names here so we do not
+    // have to search all over
+    static final public String REMOTESERVER = "remotetest.unidata.ucar.edu";
 
     /**
      * Temporary data directory (for writing temporary data).
@@ -87,74 +93,6 @@ public class UnitTestCommon extends TestCase
             path = path.substring(0, index);
         }
         return null;
-    }
-
-    // Warning: state not saved across multiple execute() requests.
-    static public class InterceptRequest implements HttpRequestInterceptor
-    {
-        HttpRequest request = null;
-        HttpContext context = null;
-
-        synchronized public void process(HttpRequest request, HttpContext context)
-                throws HttpException, IOException
-        {
-            this.request = request;
-            this.context = context;
-        }
-
-        synchronized public HttpRequest getRequest()
-        {
-            return this.request;
-        }
-
-        synchronized public HttpContext getContext()
-        {
-            return this.context;
-        }
-
-        synchronized public Header[] getHeaders(String key)
-        {
-            Header[] hdrs = null;
-            if(this.request != null)
-                hdrs = this.request.getHeaders(key);
-            if(hdrs == null) hdrs = new Header[0];
-            return hdrs;
-        }
-
-    }
-
-    // Warning: state not saved across multiple execute() responses.
-    static public class InterceptResponse implements HttpResponseInterceptor
-    {
-        HttpResponse response = null;
-        HttpContext context = null;
-
-        synchronized public void process(HttpResponse response, HttpContext context)
-                throws HttpException, IOException
-        {
-            this.response = response;
-            this.context = context;
-        }
-
-        synchronized public HttpResponse getResponse()
-        {
-            return this.response;
-        }
-
-        synchronized public HttpContext getContext()
-        {
-            return this.context;
-        }
-
-        synchronized public Header[] getHeaders(String key)
-        {
-            Header[] hdrs = null;
-            if(this.response != null)
-                hdrs = this.response.getHeaders(key);
-            if(hdrs == null) hdrs = new Header[0];
-            return hdrs;
-        }
-
     }
 
 
@@ -224,7 +162,6 @@ public class UnitTestCommon extends TestCase
     {
         assert true;
     }
-
 
     static public byte[]
     readbinaryfile(InputStream stream)

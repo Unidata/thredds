@@ -46,6 +46,8 @@ import ucar.nc2.dt.RadialDatasetSweep;
 import ucar.nc2.dt.TypedDataset;
 import ucar.nc2.dt.TypedDatasetFactory;
 import ucar.nc2.dt.TypedDatasetFactoryIF;
+import ucar.nc2.time.CalendarDate;
+import ucar.nc2.time.CalendarDateUnit;
 import ucar.nc2.units.DateUnit;
 
 import ucar.unidata.geoloc.Earth;
@@ -305,7 +307,7 @@ public class CFnetCDF2Dataset extends RadialDatasetSweepAdapter implements Typed
      * @return _more_
      */
     public String getRadarName() {
-        Attribute ga = ds.findGlobalAttribute("StationName");
+        Attribute ga = ds.findGlobalAttribute("instrument_name");
         if (ga != null) {
             return ga.getStringValue();
         } else {
@@ -350,7 +352,8 @@ public class CFnetCDF2Dataset extends RadialDatasetSweepAdapter implements Typed
      * @return _more_
      */
     public boolean isStationary() {
-        return true;
+        Variable lat = ds.findVariable("latitude");
+        return lat.getSize() == 1;
     }
 
     /**
@@ -362,20 +365,40 @@ public class CFnetCDF2Dataset extends RadialDatasetSweepAdapter implements Typed
         Variable t  = ds.findVariable("time");
         String   ut = t.getUnitsString();
         dateUnits = new DateUnit(ut);
+        calDateUnits = CalendarDateUnit.of(null, ut);
     }
 
     /**
      * _more_
      */
     protected void setStartDate() {
-        startDate = new Date((long) time[0]);
+        String datetime = ds.findAttValueIgnoreCase(null,
+                "time_coverage_start", null);
+        if (datetime != null)
+        {
+            startDate = CalendarDate.parseISOformat(null, datetime).toDate();
+        }
+        else
+        {
+            startDate = calDateUnits.makeCalendarDate(time[0]).toDate();
+        }
     }
 
     /**
      * _more_
      */
     protected void setEndDate() {
-        endDate = new Date((long) time[time.length - 1]);
+        String datetime = ds.findAttValueIgnoreCase(null,
+                "time_coverage_end", null);
+        if (datetime != null)
+        {
+            endDate = CalendarDate.parseISOformat(null, datetime).toDate();
+        }
+        else
+        {
+            endDate = calDateUnits.makeCalendarDate(
+                    time[time.length - 1]).toDate();
+        }
     }
 
     /**
@@ -1040,118 +1063,4 @@ public class CFnetCDF2Dataset extends RadialDatasetSweepAdapter implements Typed
         }  // LevelII2Sweep class
 
     }      // LevelII2Variable
-
-
-    /**
-     * _more_
-     *
-     * @param rv _more_
-     *
-     * @throws IOException _more_
-     */
-    private static void testRadialVariable(
-            RadialDatasetSweep.RadialVariable rv)
-            throws IOException {
-        int nsweep = rv.getNumSweeps();
-        //System.out.println("*** radar Sweep number is: \n" + nsweep);
-        Sweep sw;
-        float mele;
-        for (int i = 0; i < nsweep; i++) {
-            //ucar.unidata.util.Trace.call1("LevelII2Dataset:testRadialVariable getSweep " + i);
-            sw = rv.getSweep(i);
-            //mele = sw.getMeanElevation();
-            //ucar.unidata.util.Trace.call2("LevelII2Dataset:testRadialVariable getSweep " + i);
-            float me = sw.getMeanElevation();
-
-            System.out.println("*** radar Sweep mean elevation of sweep " + i
-                               + " is: " + me);
-            int     nrays = sw.getRadialNumber();
-            float[] az    = new float[nrays];
-            for (int j = 0; j < nrays; j++) {
-                float azi = sw.getAzimuth(j);
-                az[j] = azi;
-            }
-            float[] azz = sw.getAzimuth();
-            float[] dat = sw.readData();
-            // System.out.println("*** radar Sweep mean elevation of sweep " + i + " is: " + me);
-        }
-        sw = rv.getSweep(0);
-        //ucar.unidata.util.Trace.call1("LevelII2Dataset:testRadialVariable readData");
-        float[] data = rv.readAllData();
-        float[] ddd  = sw.readData();
-        float[] da   = sw.getAzimuth();
-        float[] de   = sw.getElevation();
-        //ucar.unidata.util.Trace.call2("LevelII2Dataset:testRadialVariable readData");
-        assert (null != ddd);
-        int     nrays = sw.getRadialNumber();
-        float[] az    = new float[nrays];
-        for (int i = 0; i < nrays; i++) {
-
-            int ngates = sw.getGateNumber();
-            assert (ngates > 0);
-            float[] d = sw.readData(i);
-            assert (null != d);
-            // float [] e = sw.readDataNew(i);
-            // assert(null != e);
-            float azi = sw.getAzimuth(i);
-            assert (azi > 0);
-            az[i] = azi;
-            float ele = sw.getElevation(i);
-            assert (ele > 0);
-            float la = (float) sw.getOrigin(i).getLatitude();
-            assert (la > 0);
-            float lo = (float) sw.getOrigin(i).getLongitude();
-            assert (lo > 0);
-            float al = (float) sw.getOrigin(i).getAltitude();
-            assert (al > 0);
-        }
-        assert (0 != nrays);
-    }
-
-
-    /**
-     * _more_
-     *
-     * @param args _more_
-     *
-     * @throws Exception _more_
-     * @throws IOException _more_
-     * @throws IllegalAccessException _more_
-     * @throws InstantiationException _more_
-     */
-    public static void main(String args[])
-            throws Exception, IOException, InstantiationException,
-                   IllegalAccessException {
-        // String fileIn = "/home/yuanho/Download/KCLX_20091019_2021";
-        String fileIn = "C:/Users/yuanho/Desktop/idvData/cfrad.20080604_002217_000_SPOL_v36_SUR.nc";
-           // "C:/Users/yuanho/Downloads/Level2_KCBW_20110307_2351.ar2v";
-
-        RadialDatasetSweep rds =
-            (RadialDatasetSweep) TypedDatasetFactory.open(FeatureType.RADIAL,
-                fileIn, null, new StringBuilder());
-        //ucar.unidata.util.Trace.call2("LevelII2Dataset:main dataset");
-        String st   = rds.getStartDate().toString();
-        String et   = rds.getEndDate().toString();
-        String id   = rds.getRadarID();
-        String name = rds.getRadarName();
-        if (rds.isStationary()) {
-            System.out.println("*** radar is stationary with name and id: "
-                               + name + " " + id);
-        }
-        List rvars = rds.getDataVariables();
-        RadialDatasetSweep.RadialVariable vDM =
-            (RadialDatasetSweep.RadialVariable) rds.getDataVariable(
-                "DBZ");
-        float[] adata = vDM.readAllData();
-        testRadialVariable(vDM);
-        for (int i = 0; i < rvars.size(); i++) {
-            RadialDatasetSweep.RadialVariable rv =
-                (RadialDatasetSweep.RadialVariable) rvars.get(i);
-            //   testRadialVariable(rv);
-
-            //  RadialCoordSys.makeRadialCoordSys( "desc", CoordinateSystem cs, VariableEnhanced v);
-            // ucar.nc2.dt.radial.RadialCoordSys rcsys = rv.getRadialCoordSys();
-        }
-
-    }
 }

@@ -66,12 +66,7 @@ public class DiskCache2 {
     NestedDirectory,
     NestedTruncate }
 
-  // deprecated
-  public static int CACHEPATH_POLICY_ONE_DIRECTORY = 0;
-  public static int CACHEPATH_POLICY_NESTED_DIRECTORY = 1;
-  public static int CACHEPATH_POLICY_NESTED_TRUNCATE = 2;
-
-  private CachePathPolicy cachePathPolicy = CachePathPolicy.OneDirectory;
+  private CachePathPolicy cachePathPolicy = CachePathPolicy.NestedDirectory;
   private boolean alwaysUseCache = false;
   private boolean neverUseCache = false;
   private String cachePathPolicyParam = null;

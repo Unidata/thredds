@@ -208,9 +208,9 @@ public class Grib1CollectionBuilder extends GribCollectionBuilder {
     Grib1CollectionWriter writer = new Grib1CollectionWriter(dcm, logger);
     List<Grib1CollectionWriter.Group> groups2 = new ArrayList<>();
     for (Object g : groups) groups2.add((Grib1CollectionWriter.Group) g);
-    return writer.writeIndex(name, indexFile, masterRuntime, groups2, files);
+    File indexFileInCache = GribCollection.getFileInCache(indexFile);
+    return writer.writeIndex(name, indexFileInCache, masterRuntime, groups2, files);
   }
-
 
   public class VariableBag implements Comparable<VariableBag> {
     Grib1Record first;
@@ -268,14 +268,13 @@ public class Grib1CollectionBuilder extends GribCollectionBuilder {
       for (VariableBag vb : gribvars) {
         Grib1SectionProductDefinition pdss = vb.first.getPDSsection();
         Grib1ParamTime ptime = pdss.getParamTime(cust);
-        int timeType = pdss.getTimeRangeIndicator();
 
         int unit = cust.convertTimeUnit(pdss.getTimeUnit());
         vb.timeUnit = Grib2Utils.getCalendarPeriod(unit); // ok for GRIB1
         vb.coordND = new CoordinateND<>();
 
         boolean isTimeInterval = ptime.isInterval();
-        if (isDense) { // time is runtime X time coord
+        if (isDense) { // time is runtime X time coord  LOOK isDense not implemented
           vb.coordND.addBuilder(new CoordinateRuntime.Builder1());
           if (isTimeInterval)
             vb.coordND.addBuilder(new CoordinateTimeIntv.Builder1(cust, unit, vb.timeUnit, null)); // LOOK null refdate not ok

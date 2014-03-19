@@ -108,11 +108,15 @@
   <!--
   Filter:
    - the request URL query string
-   - on all OPeNDAP requests.
+   - on all OPeNDAP and DAP4 requests.
   -->
   <filter-mapping>
     <filter-name>RequestQueryFilterAllowAngleBrackets</filter-name>
     <servlet-name>Opendap</servlet-name>
+  </filter-mapping>
+  <filter-mapping>
+    <filter-name>RequestQueryFilterAllowAngleBrackets</filter-name>
+    <servlet-name>Dap4</servlet-name>
   </filter-mapping>
 
   <!--
@@ -124,11 +128,15 @@
   </filter-mapping -->
   
   <!--
-  Filter opendap cookies
+  Filter opendap and dap4 cookies
   -->
   <filter-mapping>
     <filter-name>CookieFilter</filter-name>
     <servlet-name>Opendap</servlet-name>
+  </filter-mapping>
+  <filter-mapping>
+    <filter-name>CookieFilter</filter-name>
+    <servlet-name>Dap4</servlet-name>
   </filter-mapping>
 
   <!--
@@ -225,6 +233,13 @@
     <servlet-name>Opendap</servlet-name>
     <servlet-class>thredds.server.opendap.OpendapServlet</servlet-class>
     <load-on-startup>2</load-on-startup>
+  </servlet>
+  <!-- NetCDF/Dap4 server -->
+  <servlet>
+    <display-name>Dap4 Server</display-name>
+    <servlet-name>Dap4</servlet-name>
+    <servlet-class>dap4.dap4servlet.Dap4Servlet</servlet-class>
+    <load-on-startup>3</load-on-startup>
   </servlet>
 
   <!-- HTTP File server -->
@@ -366,6 +381,10 @@
   <servlet-mapping>
     <servlet-name>Opendap</servlet-name>
     <url-pattern>/dodsC/*</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+    <servlet-name>Dap4</servlet-name>
+    <url-pattern>/dap4/*</url-pattern>
   </servlet-mapping>
 
   <!-- servlet-mapping>

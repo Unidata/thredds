@@ -171,7 +171,9 @@ public class GribCollectionWriter {
       b.addMsecs(cd.getMillis());
     }
 
-    for (Coordinate time : coord.getTimes()) {
+    b.setIsOrthogonal(coord.isOrthogonal());
+    b.setIsRegular(coord.isRegular());
+    for (Coordinate time : coord.getTimesForSerialization()) {
       if (time.getType() == Coordinate.Type.time)
         b.addTimes(writeCoordProto((CoordinateTime)time));
       else

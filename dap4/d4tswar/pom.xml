@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<modelVersion>4.0.0</modelVersion>
+
+<parent>
+  <groupId>edu.ucar</groupId>
+  <artifactId>thredds-parent</artifactId>
+  <version>4.5.0-SNAPSHOT</version>
+  <relativePath>../../pom.xml</relativePath>
+</parent>
+
+<artifactId>d4tswar</artifactId>
+<packaging>war</packaging>
+
+<dependencies>
+
+  <dependency>
+    <groupId>${project.groupId}</groupId>
+    <artifactId>d4core</artifactId>
+  </dependency>
+  <dependency>
+    <groupId>${project.groupId}</groupId>
+    <artifactId>d4servletshared</artifactId>
+  </dependency>
+  <dependency>
+    <groupId>${project.groupId}</groupId>
+    <artifactId>d4shared</artifactId>
+  </dependency>
+  <dependency>
+    <groupId>${project.groupId}</groupId>
+    <artifactId>d4ts</artifactId>
+  </dependency>
+
+  <!-- thredds dependencies -->
+  <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>cdm</artifactId>
+  </dependency>
+  <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>netcdf4</artifactId>
+  </dependency>
+
+  <!-- library dependencies -->
+  <dependency>
+    <groupId>javax.servlet</groupId>
+    <artifactId>javax.servlet-api</artifactId>
+    <scope>provided</scope>
+  </dependency>
+  <dependency>
+      <groupId>org.apache.logging.log4j</groupId>
+      <artifactId>log4j-slf4j-impl</artifactId>
+      <scope>runtime</scope>
+  </dependency>
+  <dependency>
+      <groupId>org.apache.logging.log4j</groupId>
+      <artifactId>log4j-core</artifactId>
+      <scope>runtime</scope>
+    </dependency>
+</dependencies>
+
+<build>
+  <plugins>
+    <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-war-plugin</artifactId>
+        <configuration>
+	  <warName>d4ts</warName>
+          <webXml>src/main/webapp/WEB-INF/web.xml</webXml>        
+          <webResources>
+            <resource>
+              <targetPath>WEB-INF</targetPath>
+              <directory>../d4tests/src/test/data/resources</directory>
+	      <includes>
+		<include>favicon.ico</include>
+	      </includes>
+            </resource>
+            <resource>
+              <targetPath>WEB-INF</targetPath>
+              <directory>src/main/webapp/WEB-INF</directory>
+	      <includes>
+		<include>log4j.xml</include>
+	      </includes>
+            </resource>
+            <resource>
+              <targetPath>WEB-INF/resources</targetPath>
+              <directory>../d4tests/src/test/data/resources/testfiles</directory>
+	      <includes>
+		<include>*.syn</include>
+		<include>*.nc</include>
+		<include>*.hdf5</include>
+	      </includes>
+            </resource>
+            <resource>
+              <targetPath>WEB-INF/resources/dmr</targetPath>
+              <directory>../d4tests/src/test/data/resources/testfiles/dmr</directory>
+	      <includes>
+		<include>*.dmr</include>
+	      </includes>
+            </resource>
+           </webResources>
+        </configuration>
+      </plugin>
+  </plugins>
+</build>
+
+</project>
+<!--
+              <targetPath>WEB-INF</targetPath>
+
+        <attachClasses>true</attachClasses>
+        <archive>
+            <manifest>
+              <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
+            </manifest>
+            <manifestEntries>
+              <Built-On>${maven.build.timestamp}</Built-On>
+            </manifestEntries>
+          </archive>
+-->

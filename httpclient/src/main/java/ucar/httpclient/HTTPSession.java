@@ -33,12 +33,13 @@
 
 package ucar.httpclient;
 
-import net.jcip.annotations.NotThreadSafe;
 import org.apache.http.*;
 import org.apache.http.auth.AuthScope;
 import org.apache.http.auth.Credentials;
 import org.apache.http.client.CredentialsProvider;
 import org.apache.http.client.HttpClient;
+import org.apache.http.client.entity.DeflateDecompressingEntity;
+import org.apache.http.client.entity.GzipDecompressingEntity;
 import org.apache.http.client.methods.HttpRequestBase;
 import org.apache.http.client.params.AllClientPNames;
 import org.apache.http.client.protocol.*;
@@ -102,7 +103,6 @@ import static ucar.httpclient.HTTPAuthScope.*;
  * constructions must specify a url.
  */
 
-@NotThreadSafe
 public class HTTPSession
 {
     //////////////////////////////////////////////////
@@ -226,6 +226,50 @@ public class HTTPSession
         }
     }
 
+
+    static class GZIPResponseInterceptor implements HttpResponseInterceptor
+    {
+        public void process(final HttpResponse response, final HttpContext context)
+            throws HttpException, IOException
+        {
+            HttpEntity entity = response.getEntity();
+            if(entity != null) {
+                Header ceheader = entity.getContentEncoding();
+                if(ceheader != null) {
+                    HeaderElement[] codecs = ceheader.getElements();
+                    for(HeaderElement h : codecs) {
+                        if(h.getName().equalsIgnoreCase("gzip")) {
+                            response.setEntity(new GzipDecompressingEntity(response.getEntity()));
+                            return;
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+
+    static class DeflateResponseInterceptor implements HttpResponseInterceptor
+    {
+        public void process(final HttpResponse response, final HttpContext context)
+            throws HttpException, IOException
+        {
+            HttpEntity entity = response.getEntity();
+            if(entity != null) {
+                Header ceheader = entity.getContentEncoding();
+                if(ceheader != null) {
+                    HeaderElement[] codecs = ceheader.getElements();
+                    for(HeaderElement h : codecs) {
+                        if(h.getName().equalsIgnoreCase("deflate")) {
+                            response.setEntity(new DeflateDecompressingEntity(response.getEntity()));
+                            return;
+                        }
+                    }
+                }
+            }
+        }
+    }
+
     ////////////////////////////////////////////////////////////////////////
     // Static variables
 
@@ -239,6 +283,8 @@ public class HTTPSession
     // instance for global and one for local.
 
     static Settings globalsettings;
+    static List<HttpRequestInterceptor> reqintercepts = new ArrayList<HttpRequestInterceptor>();
+    static List<HttpResponseInterceptor> rspintercepts = new ArrayList<HttpResponseInterceptor>();
 
     static {
         connmgr = new PoolingClientConnectionManager();
@@ -256,7 +302,6 @@ public class HTTPSession
         setGlobalSoTimeout(DFALTSOTIMEOUT);
         getGlobalProxyD(); // get info from -D if possible
         setGlobalKeyStore();
-        setGlobalCompression();
     }
 
     //////////////////////////////////////////////////////////////////////////
@@ -265,9 +310,11 @@ public class HTTPSession
     /// Provide defaults for a settings map
     static void setDefaults(Settings props)
     {
+        if(false) {// turn off for now
+            props.setParameter(HANDLE_REDIRECTS, Boolean.TRUE);
+            props.setParameter(HANDLE_AUTHENTICATION, Boolean.TRUE);
+        }
         props.setParameter(ALLOW_CIRCULAR_REDIRECTS, Boolean.TRUE);
-        props.setParameter(HANDLE_REDIRECTS, Boolean.TRUE);
-        props.setParameter(HANDLE_AUTHENTICATION, Boolean.TRUE);
         props.setParameter(MAX_REDIRECTS, (Integer) DFALTREDIRECTS);
         props.setParameter(SO_TIMEOUT, (Integer) DFALTSOTIMEOUT);
         props.setParameter(CONN_TIMEOUT, (Integer) DFALTCONNTIMEOUT);
@@ -342,6 +389,10 @@ public class HTTPSession
     setGlobalCompression()
     {
         globalsettings.setParameter(COMPRESSION, "gzip,deflate");
+        HttpResponseInterceptor hrsi = new GZIPResponseInterceptor();
+        rspintercepts.add(hrsi);
+        hrsi = new DeflateResponseInterceptor();
+        rspintercepts.add(hrsi);
     }
 
     // Authorization
@@ -378,7 +429,7 @@ public class HTTPSession
     static public void
     setGlobalCredentials(AuthScope scope, Credentials creds)
     {
-        CredentialsProvider provider = new HTTPCredsProvider(creds);
+        CredentialsProvider provider = new HTTPConstantProvider(creds);
         setGlobalCredentialsProvider(scope, provider);
     }
 
@@ -532,7 +583,7 @@ public class HTTPSession
                 trustpath, trustpassword);
             setGlobalCredentialsProvider(
                 new AuthScope(ANY_HOST, ANY_PORT, ANY_REALM, HTTPAuthPolicy.SSL),
-	        sslprovider);
+                sslprovider);
         }
     }
 
@@ -573,12 +624,14 @@ public class HTTPSession
 
     protected AbstractHttpClient sessionClient = null;
     protected List<ucar.httpclient.HTTPMethod> methodList = new Vector<HTTPMethod>();
+    protected HttpContext execcontext = null; // same instance must be used for all methods
     protected String identifier = "Session";
     protected String legalurl = null;
     protected boolean closed = false;
-    protected HttpContext execcontext = null; // same instance must be used for all methods
     protected Settings localsettings = new Settings();
     protected HTTPAuthStore authlocal = new HTTPAuthStore();
+    // We currently only allow the use of global interceptors
+    protected List<Object> intercepts = new ArrayList<Object>(); // current set of interceptors;
 
     //////////////////////////////////////////////////
     // Constructor(s)
@@ -601,7 +654,7 @@ public class HTTPSession
         try {
             sessionClient = new DefaultHttpClient(connmgr);
             if(TESTING) HTTPSession.track(this);
-            setInterceptors(this);
+            setInterceptors();
         } catch (Exception e) {
             throw new HTTPException("url=" + url, e);
         }
@@ -609,7 +662,43 @@ public class HTTPSession
     }
 
     //////////////////////////////////////////////////
+    // Interceptors
+
+    synchronized void
+    setInterceptors()
+    {
+        for(HttpRequestInterceptor hrq : reqintercepts)
+            sessionClient.addRequestInterceptor(hrq);
+        for(HttpResponseInterceptor hrs : rspintercepts)
+            sessionClient.addResponseInterceptor(hrs);
+    }
+
+    synchronized void
+    clearInterceptors()
+    {
+        for(HttpRequestInterceptor hrq : reqintercepts)
+            clearInterceptor(hrq);
+        for(HttpResponseInterceptor hrs : rspintercepts)
+            clearInterceptor(hrs);
+    }
+
+    synchronized void
+    clearInterceptor(Object o)
+    {
+        if(o instanceof HttpResponseInterceptor)
+            sessionClient.removeResponseInterceptorByClass(((HttpResponseInterceptor) o).getClass());
+        if(o instanceof HttpRequestInterceptor)
+            sessionClient.removeRequestInterceptorByClass(((HttpRequestInterceptor) o).getClass());
+    }
+
+    //////////////////////////////////////////////////
     // Accessor(s)
+
+    public HTTPAuthStore
+    getAuthStore()
+    {
+        return this.authlocal;
+    }
 
     public Settings getSettings()
     {
@@ -642,12 +731,6 @@ public class HTTPSession
         localsettings.setParameter(MAX_REDIRECTS, n);
     }
 
-    public void setCompression()
-    {
-        localsettings.setParameter(COMPRESSION, "gzip,deflate");
-    }
-
-
     // make package specific
 
     HttpContext
@@ -661,12 +744,6 @@ public class HTTPSession
     getClient()
     {
         return this.sessionClient;
-    }
-
-    HTTPAuthStore
-    getAuthStore()
-    {
-        return this.authlocal;
     }
 
     HttpContext
@@ -764,14 +841,14 @@ public class HTTPSession
     public void
     setCredentialsProvider(String scheme, CredentialsProvider provider)
     {
-        AuthScope scope = new AuthScope(ANY_HOST,ANY_PORT,ANY_REALM,scheme);
+        AuthScope scope = new AuthScope(ANY_HOST, ANY_PORT, ANY_REALM, scheme);
         setCredentialsProvider(scope, provider);
     }
 
     public void
     setCredentials(String scheme, Credentials creds)
     {
-        CredentialsProvider provider = new HTTPCredsProvider(creds);
+        CredentialsProvider provider = new HTTPConstantProvider(creds);
         setCredentialsProvider(scheme, provider);
     }
 
@@ -813,7 +890,7 @@ public class HTTPSession
 
     // This provides support for HTTPMethod.setAuthentication method
     synchronized protected void
-    setAuthentication(HTTPCredentialsCache hap)
+    setAuthentication(HTTPCachingProvider hap)
     {
         this.sessionClient.setCredentialsProvider(hap);
         if(false)
@@ -825,15 +902,9 @@ public class HTTPSession
     execute(HttpRequestBase request)
         throws IOException
     {
-        if(false)
-            return sessionClient.execute(request, this.execcontext);
-        else
-            return sessionClient.execute(request);
-    }
-
-    /*package*/ void invalidate(AuthScope scope)
-    {
-        HTTPCredentialsCache.invalidate(scope);
+        // Check if cont
+        HttpResponse response = sessionClient.execute(request, this.execcontext);
+        return response;
     }
 
     //////////////////////////////////////////////////
@@ -842,12 +913,12 @@ public class HTTPSession
     // Provide a way to kill everything at the end of a Test
 
     // When testing, we need to be able to clean up
-    // all existing sessions because JUnit can run all
-    // test within a single jvm.
+// all existing sessions because JUnit can run all
+// test within a single jvm.
     static List<HTTPSession> sessionList = null; // List of all HTTPSession instances
+
     // only used when testing flag is set
     static public boolean TESTING = false; // set to true during testing, should be false otherwise
-
 
     static protected synchronized void kill()
     {
@@ -871,54 +942,54 @@ public class HTTPSession
         sessionList.add(session);
     }
 
-
-    static protected HttpRequestInterceptor globaldebugrequest = null;
-    static protected HttpResponseInterceptor globaldebugresponse = null;
-
-    protected HttpRequestInterceptor localdebugrequest = null;
-    protected HttpResponseInterceptor localdebugresponse = null;
-
-    synchronized static public void
-    setInterceptors(HTTPSession session)
+    static public void debugHeaders(boolean print)
     {
-        HttpRequestInterceptor ireq = session.localdebugrequest;
-        if(ireq == null)
-            ireq = globaldebugrequest;
-        if(ireq != null) {
-            if(session != null) {
-                AbstractHttpClient client = (AbstractHttpClient) session.getClient();
-                client.addRequestInterceptor(ireq);
-            }
+        HTTPUtil.InterceptRequest rq = new HTTPUtil.InterceptRequest();
+        HTTPUtil.InterceptResponse rs = new HTTPUtil.InterceptResponse();
+        rq.setPrint(print);
+        rs.setPrint(print);
+        /* remove any previous */
+        for(int i=reqintercepts.size()-1;i>=0;i++) {
+            HttpRequestInterceptor hr = reqintercepts.get(i);
+            if(hr instanceof HTTPUtil.InterceptCommon)
+                reqintercepts.remove(i);
         }
-        HttpResponseInterceptor hi = session.localdebugresponse;
-        if(hi == null)
-            hi = globaldebugresponse;
-        if(hi != null) {
-            if(session != null) {
-                AbstractHttpClient client = (AbstractHttpClient) session.getClient();
-                client.addResponseInterceptor(hi);
-            }
+        for(int i=rspintercepts.size()-1;i>=0;i++) {
+            HttpResponseInterceptor hr = rspintercepts.get(i);
+            if(hr instanceof HTTPUtil.InterceptCommon)
+                rspintercepts.remove(i);
         }
-
+        reqintercepts.add(rq);
+        rspintercepts.add(rs);
     }
 
-    static public void debugGlobal(HttpRequestInterceptor ireq,
-                                   HttpResponseInterceptor iresp)
+    public static void
+    debugReset()
     {
-        globaldebugrequest = ireq;
-        globaldebugresponse = iresp;
+        for(HttpRequestInterceptor hri : reqintercepts) {
+            if(hri instanceof HTTPUtil.InterceptCommon)
+                ((HTTPUtil.InterceptCommon) hri).clear();
+        }
     }
 
-    public void debugSession(HttpRequestInterceptor ireq,
-                             HttpResponseInterceptor iresp)
+    public static HTTPUtil.InterceptRequest
+    debugRequestInterceptor()
     {
-        localdebugrequest = ireq;
-        localdebugresponse = iresp;
+        for(HttpRequestInterceptor hri : reqintercepts) {
+            if(hri instanceof HTTPUtil.InterceptRequest)
+                return ((HTTPUtil.InterceptRequest) hri);
+        }
+        return null;
     }
 
-    static public void debugHeaders()
+    public static HTTPUtil.InterceptResponse
+    debugResponseInterceptor()
     {
-        debugGlobal(new HTTPUtil.RequestHeaderDump(), new HTTPUtil.ResponseHeaderDump());
+        for(HttpResponseInterceptor hri : rspintercepts) {
+            if(hri instanceof HTTPUtil.InterceptResponse)
+                return ((HTTPUtil.InterceptResponse) hri);
+        }
+        return null;
     }
 
 }

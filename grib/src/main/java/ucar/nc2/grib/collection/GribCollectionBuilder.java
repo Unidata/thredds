@@ -68,6 +68,7 @@ public abstract class GribCollectionBuilder {
   protected File directory;         // top directory
 
   protected abstract List<? extends Group> makeGroups(List<MFile> allFiles, Formatter errlog) throws IOException;
+  // indexFile not in cache
   protected abstract boolean writeIndex(String name, File indexFile, CoordinateRuntime masterRuntime, List<? extends Group> groups, List<MFile> files) throws IOException;
 
   // LOOK prob name could be dcm.getCollectionName()
@@ -84,7 +85,7 @@ public abstract class GribCollectionBuilder {
     if (ff == CollectionUpdateType.never) return false;
     if (ff == CollectionUpdateType.always) return true;
 
-    File idx = GribCollection.getIndexFileInCache(dcm.getIndexFilename());
+    File idx = GribCollection.getFileInCache(dcm.getIndexFilename());
     if (!idx.exists()) return true;
 
     if (ff == CollectionUpdateType.nocheck) return false;
@@ -126,13 +127,13 @@ public abstract class GribCollectionBuilder {
     }
 
     // write each rungroup separately
-    boolean multipleGroups = runGroups.values().size() > 1;
+    boolean multipleRuntimes = runGroups.values().size() > 1;
     List<File> partitions = new ArrayList<>();
     for (List<Group> runGroupList : runGroups.values()) {
       Group g = runGroupList.get(0);
       // if multiple groups, we will write a partition. otherwise, we need to use the standard name (without runtime) so we know the filename from the collection
-      String gcname = multipleGroups ? GribCollection.makeName(this.name, g.getRuntime()) : this.name;
-      File indexFileForRuntime = multipleGroups ? GribCollection.getIndexFile(name, directory, g.getRuntime()) : GribCollection.getIndexFile(name, directory);
+      String gcname = multipleRuntimes ? GribCollection.makeName(this.name, g.getRuntime()) : this.name;
+      File indexFileForRuntime = GribCollection.makeIndexFile(gcname, directory); // not in cache
       partitions.add(indexFileForRuntime);
 
       boolean ok = writeIndex(gcname, indexFileForRuntime, g.getCoordinateRuntime(), runGroupList, allFiles);
@@ -142,7 +143,7 @@ public abstract class GribCollectionBuilder {
     boolean ok = true;
 
     // if theres more than one runtime, create a partition collection to collect all the runtimes together
-    if (multipleGroups) {
+    if (multipleRuntimes) {
       Collections.sort(partitions); // ??
       PartitionManager part = new PartitionManagerFromIndexList(dcm, partitions, logger);
       part.putAuxInfo(FeatureCollectionConfig.AUX_CONFIG, dcm.getAuxInfo(FeatureCollectionConfig.AUX_CONFIG));

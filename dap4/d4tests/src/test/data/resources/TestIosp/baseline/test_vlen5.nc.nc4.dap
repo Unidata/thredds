@@ -1,0 +1,23 @@
+netcdf test_vlen5.nc {
+  dimensions:
+    d2 = 2;
+  variables:
+
+    Structure {
+      int v(*);
+    } v1(d2=2);
+
+
+  // global attributes:
+  :_CoordSysBuilder = "ucar.nc2.dataset.conv.DefaultConvention";
+ data:
+v1 =
+  {
+    v =
+      {1, 3, 5, 7}
+  } v1(0)
+  {
+    v =
+      {100, 200}
+  } v1(1)
+}

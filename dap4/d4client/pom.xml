@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<modelVersion>4.0.0</modelVersion>
+
+<!--
+This module exists to create a (mostly) stand-alone
+jar file for Java clients that want to access
+dap4 servers directly. The following jars
+will be needed to make this jar complete:
+* httpclient-4.2.X.jar
+* httpcore-4.2.X.jar
+* httpmime-4.2.X.jar
+* slf4 logging jar.
+-->
+
+<parent>
+  <groupId>edu.ucar</groupId>
+  <artifactId>thredds-parent</artifactId>
+  <version>4.5.0-SNAPSHOT</version>
+  <relativePath>../../pom.xml</relativePath>
+</parent>
+
+<!--groupId>groupId</groupId-->
+<artifactId>d4client</artifactId>
+<packaging>jar</packaging>
+
+<!-- ===========================================================
+Dependencies: Mandatory dependencies are listed first. Then
+              everything else is declared with the
+              "provided" scope, meaning that the user have
+              to declare those dependencies himself in his
+              own pom.xml file if we want to read some
+              formats.
+=========================================================== -->
+
+<dependencies>
+    <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>d4core</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>d4shared</artifactId>
+    </dependency>
+
+    <!-- Apache HttpClient -->
+    <dependency>
+      <groupId>org.apache.httpcomponents</groupId>
+      <artifactId>httpclient</artifactId>
+      <version>${org.apache.httpcomponents.httpclient.version}</version>
+      <scope>provided</scope>
+    </dependency>
+      <dependency>
+        <groupId>org.apache.httpcomponents</groupId>
+        <artifactId>httpcore</artifactId>
+        <version>${org.apache.httpcomponents.httpcore.version}</version>
+        <scope>provided</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.httpcomponents</groupId>
+        <artifactId>httpmime</artifactId>
+        <version>${org.apache.httpcomponents.httpmime.version}</version>
+        <scope>provided</scope>
+      </dependency>
+
+    <dependency>
+      <groupId>commons-cli</groupId>
+      <artifactId>commons-cli</artifactId>
+      <version>1.2</version>
+    </dependency>
+
+    <dependency>
+      <groupId>edu.ucar</groupId>
+      <artifactId>httpclient</artifactId>
+      <version>${thredds.version}</version>
+    </dependency>
+
+</dependencies>
+
+<build>
+  <plugins>
+    <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-shade-plugin</artifactId>
+        <version>2.2</version>
+        <executions>
+          <execution>
+            <phase>package</phase>
+            <goals>
+              <goal>shade</goal>
+            </goals>
+            <configuration>
+<finalName>dap4-${dap4.version}</finalName>
+              <artifactSet>
+                <excludes>
+                  <exclude>org.apache.httpclient:httpcore</exclude>
+                  <exclude>org.apache.httpclient:httpclient</exclude>
+                  <exclude>org.apache.httpclient:httpmime</exclude>
+                  <exclude>classworlds:classworlds</exclude>
+                  <exclude>junit:junit</exclude>
+                  <exclude>jmock:*</exclude>
+                  <exclude>*:xml-apis</exclude>
+                  <exclude>org.apache.maven:lib:tests</exclude>
+                  <exclude>log4j:log4j:jar:</exclude>
+                </excludes>
+              </artifactSet>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+
+</plugins>
+
+</build>
+</project>

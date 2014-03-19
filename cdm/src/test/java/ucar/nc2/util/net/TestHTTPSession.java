@@ -41,6 +41,8 @@ import org.apache.http.client.CredentialsProvider;
 import org.apache.http.message.AbstractHttpMessage;
 import ucar.nc2.util.UnitTestCommon;
 
+import java.util.List;
+
 import static ucar.httpclient.HTTPSession.*;
 
 public class TestHTTPSession extends UnitTestCommon
@@ -48,7 +50,7 @@ public class TestHTTPSession extends UnitTestCommon
     //////////////////////////////////////////////////
     // Constants
 
-    static final String TESTURL1 = "http://thredds-test.ucar.edu:8081/dts/test.01.dds";
+    static final String TESTURL1 = "http://" + REMOTESERVER + "/dts/test.01.dds";
 
     static final String GLOBALAGENT = "TestUserAgent123global";
     static final String SESSIONAGENT = "TestUserAgent123session";
@@ -80,8 +82,7 @@ public class TestHTTPSession extends UnitTestCommon
         System.out.println("*** URL: " + TESTURL1);
         System.out.println("Test: HTTPSession.setGlobalUserAgent(" + GLOBALAGENT + ")");
 
-        UnitTestCommon.InterceptRequest interceptor = new UnitTestCommon.InterceptRequest();
-        HTTPSession.debugGlobal(interceptor,null);
+        HTTPSession.debugHeaders(false);
 
         HTTPSession.setGlobalUserAgent(GLOBALAGENT);
         HTTPSession session = HTTPFactory.newSession(TESTURL1);
@@ -91,26 +92,27 @@ public class TestHTTPSession extends UnitTestCommon
 
         // Use special interface to access the request
         // Look for the user agent header
-        Header[] agents = interceptor.getHeaders(HTTPSession.HEADER_USERAGENT);
-        assertFalse("User-Agent Header not found", agents.length == 0);
-        assertFalse("Multiple User-Agent Headers", agents.length > 1);
+        List<Header> agents = HTTPSession.debugRequestInterceptor().getHeaders(HTTPSession.HEADER_USERAGENT);
+        assertFalse("User-Agent Header not found", agents.size() == 0);
+        assertFalse("Multiple User-Agent Headers", agents.size() > 1);
         assertTrue(String.format("User-Agent mismatch: expected %s found:%s",
-            GLOBALAGENT, agents[0].getValue()),
-            GLOBALAGENT.equals(agents[0].getValue()));
+            GLOBALAGENT, agents.get(0).getValue()),
+            GLOBALAGENT.equals(agents.get(0).getValue()));
         System.out.println("*** Pass: set global agent");
 
         System.out.println("Test: HTTPSession.setUserAgent(" + SESSIONAGENT + ")");
+        HTTPSession.debugReset();
         session.setUserAgent(SESSIONAGENT);
         method = HTTPFactory.Get(session);
         method.execute();
 
         // Use special interface to access the request
-        agents = interceptor.getHeaders(HTTPSession.HEADER_USERAGENT);
-        assertFalse("User-Agent Header not found", agents.length == 0);
-        assertFalse("Multiple User-Agent Headers", agents.length > 1);
+        agents = HTTPSession.debugRequestInterceptor().getHeaders(HTTPSession.HEADER_USERAGENT);
+        assertFalse("User-Agent Header not found", agents.size() == 0);
+        assertFalse("Multiple User-Agent Headers", agents.size() > 1);
         assertTrue(String.format("User-Agent mismatch: expected %s found:%s",
-        SESSIONAGENT, agents[0].getValue()),
-        SESSIONAGENT.equals(agents[0].getValue()));
+            SESSIONAGENT, agents.get(0).getValue()),
+            SESSIONAGENT.equals(agents.get(0).getValue()));
         System.out.println("*** Pass: set session agent");
         session.close();
     }
@@ -136,6 +138,14 @@ public class TestHTTPSession extends UnitTestCommon
 
         // Use special interface to access the request
         AbstractHttpMessage dbgreq = (AbstractHttpMessage) method.debugRequest();
+
+        /*  no longer used
+        System.out.println("Test: Redirects Handled");
+        b = dbgreq.getParams().getBooleanParameter(HANDLE_REDIRECTS, false);
+        assertTrue("*** Fail: Redirects Handled", b);
+        System.out.println("*** Pass: Redirects Handled");
+        */
+
         boolean b = dbgreq.getParams().getBooleanParameter(HTTPSession.ALLOW_CIRCULAR_REDIRECTS, true);
         System.out.println("Test: Circular Redirects");
         assertTrue("*** Fail: Circular Redirects", b);
@@ -156,15 +166,14 @@ public class TestHTTPSession extends UnitTestCommon
         assertTrue("*** Fail: Connection Timeout", n == 37777);
         System.out.println("*** Pass: SO Timeout");
 
+        /* no longer used
         System.out.println("Test: Authentication Handled");
         b = dbgreq.getParams().getBooleanParameter(HANDLE_AUTHENTICATION, false);
         assertTrue("*** Fail: Authentication Handled", b);
         System.out.println("*** Pass: Authentication Handled");
+         */
 
-        System.out.println("Test: Redirects Handled");
-        b = dbgreq.getParams().getBooleanParameter(HANDLE_REDIRECTS, false);
-        assertTrue("*** Fail: Redirects Handled", b);
-        System.out.println("*** Pass: Redirects Handled");
+
 
         session.close();
     }

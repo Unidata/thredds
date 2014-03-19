@@ -16,8 +16,8 @@ public interface MCollection extends AutoCloseable {
 
   /**
    * Consider MCollections as a tree. At the leaves are a single mfile or mfile collection.
-   * A leaf MCollection will be a GC if it has a single runtime, or a Partition otherwise.
-   * A non-leaf is a directory with other directories under it. It will either be a Partition or PofP (Partition of Partition).
+   * A leaf MCollection will be a GC if it has a single runtime, or a PofGC otherwise.
+   * A non-leaf is a directory with other directories under it. It will either be a PofGC (Partition of GC) or PofP (Partition of Partition).
    * @return if leaf collection
    */
   public boolean isLeaf();
@@ -75,6 +75,7 @@ public interface MCollection extends AutoCloseable {
    */
   public long getLastModified();
 
+  // not in cache
   public String getIndexFilename();
 
   //////////////////////////////////////////////////////////////////////////////////////

@@ -225,6 +225,7 @@
                   <exclude>lucene:lucene</exclude>
                   <exclude>org.springframework:*</exclude>
                   <exclude>org.bounce:*</exclude>
+                  <exclude>edu.ucar:d4tswar</exclude>
                 </excludes>
               </artifactSet>
 

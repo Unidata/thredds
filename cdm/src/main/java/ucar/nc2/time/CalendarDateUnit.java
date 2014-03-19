@@ -39,9 +39,9 @@ There’s an alternative proposition, in which the new units of calendar_month a
  * @author caron
  * @since 3/18/11
  */
-  @Immutable
-  public class CalendarDateUnit {
-    private static final String byCalendarString = "calendar ";
+@Immutable
+public class CalendarDateUnit {
+  private static final String byCalendarString = "calendar ";
   //                                                  1                     2             3    4             5
   public static final String udunitPatternString = "(\\w*)\\s*since\\s*"+CalendarDateFormatter.isodatePatternString;
   //                                                                     "([\\+\\-\\d]+)([ Tt]([\\.\\:\\d]*)([ \\+\\-]\\S*)?z?)?$"; // public for testing
@@ -56,8 +56,7 @@ There’s an alternative proposition, in which the new units of calendar_month a
    */
   static public CalendarDateUnit of(String calendarName, String udunitString) {
     Calendar calt = Calendar.get(calendarName);
-    if (calt == null)
-      calt = Calendar.getDefault();
+    if (calt == null) calt = Calendar.getDefault();
     return new CalendarDateUnit(calt, udunitString);
   }
 
@@ -69,9 +68,20 @@ There’s an alternative proposition, in which the new units of calendar_month a
    * @throws IllegalArgumentException if udunitString is not paresable
    */
   static public CalendarDateUnit withCalendar(Calendar calt, String udunitString) {
-    if (calt == null)
-      calt = Calendar.getDefault();
+    if (calt == null) calt = Calendar.getDefault();
     return new CalendarDateUnit(calt, udunitString);
+  }
+
+  /**
+   * Create a CalendarDateUnit from a calendar, a CalendarPeriod.Field, and a base date
+   * @param calt use this Calendar, or null for default calendar
+   * @param periodField a CalendarPeriod.Field like Hour or second
+   * @param baseDate "since baseDate"
+   * @return CalendarDateUnit
+   */
+  static public CalendarDateUnit of(Calendar calt, CalendarPeriod.Field periodField, CalendarDate baseDate) {
+    if (calt == null) calt = Calendar.getDefault();
+    return new CalendarDateUnit(calt, periodField, baseDate);
   }
 
   ////////////////////////////////////////////////////////////////////////////////////////
@@ -108,6 +118,22 @@ There’s an alternative proposition, in which the new units of calendar_month a
     // calendar might change !!
     calt = baseDate.getCalendar();
     this.cal = calt;
+  }
+
+  private CalendarDateUnit(Calendar calt, CalendarPeriod.Field periodField, CalendarDate baseDate) {
+    this.cal = calt;
+    this.periodField = periodField;
+    this.baseDate = baseDate;
+
+    String periodName;
+    if (periodField == CalendarPeriod.Field.Month || periodField == CalendarPeriod.Field.Year) {
+      periodName = "calendar "+ periodField.toString();
+      isCalendarField = true;
+    } else {
+      periodName = periodField.toString();
+      isCalendarField = false;
+    }
+    unitString = periodName + " since " + baseDate.toString();
   }
 
   /* private DateTime parseUdunitsTimeString(String dateUnitString, String dateString, String timeString, String zoneString) {

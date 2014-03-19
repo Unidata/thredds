@@ -52,14 +52,18 @@ public class Rewrite {
   NetcdfFile ncIn;
   NetcdfFileWriter ncOut;
   NetcdfFileWriter.Version version;
+  boolean isRadial = false;
 
-  Rewrite(NetcdfFile ncIn, NetcdfFileWriter ncOut) {
+  public Rewrite(NetcdfFile ncIn, NetcdfFileWriter ncOut) {
     this.ncIn = ncIn;
     this.ncOut = ncOut;
     this.version = ncOut.getVersion();
   }
 
-  void rewrite() throws IOException, InvalidRangeException {
+  public void rewrite() throws IOException, InvalidRangeException {
+    Attribute attr = ncIn.getRootGroup().findAttribute("featureType");
+    if(attr.getStringValue().contains("RADIAL"))
+        isRadial = true;
     createGroup(null, ncIn.getRootGroup());
 
     ncOut.create();
@@ -94,7 +98,7 @@ public class Rewrite {
       }
 
       Variable nv;
-      if (v.getRank() >= 3) {  // make first dimension last
+      if (!isRadial && v.getRank() >= 3) {  // make first dimension last
         StringBuilder sb = new StringBuilder();
         for (int i=1; i<dims.size(); i++)
           sb.append(dims.get(i).getShortName()).append(" ");
@@ -117,7 +121,7 @@ public class Rewrite {
   void transferData(Group oldGroup) throws IOException, InvalidRangeException {
 
     for (Variable v : oldGroup.getVariables()) {
-      if (v.getRank() >= 3) {
+      if (!isRadial && v.getRank() >= 3) {
         invertOneVar(v);
 
       } else {

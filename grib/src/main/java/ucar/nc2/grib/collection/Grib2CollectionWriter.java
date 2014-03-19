@@ -116,18 +116,18 @@ public class Grib2CollectionWriter extends GribCollectionWriter {
    GribCollectionIndex (sizeIndex bytes)
    */
 
-  public boolean writeIndex(String name, File indexFile, CoordinateRuntime masterRuntime, List<Group> groups, List<MFile> files) throws IOException {
+  public boolean writeIndex(String name, File indexFileInCache, CoordinateRuntime masterRuntime, List<Group> groups, List<MFile> files) throws IOException {
     Grib2Record first = null; // take global metadata from here
     boolean deleteOnClose = false;
 
-    if (indexFile.exists()) {
-      if (!indexFile.delete()) {
-        logger.error("gc2 cant delete index file {}", indexFile.getPath());
+    if (indexFileInCache.exists()) {
+      if (!indexFileInCache.delete()) {
+        logger.error("gc2 cant delete index file {}", indexFileInCache.getPath());
       }
     }
-    logger.debug(" createIndex for {}", indexFile.getPath());
+    logger.debug(" createIndex for {}", indexFileInCache.getPath());
 
-    try (RandomAccessFile raf = new RandomAccessFile(indexFile.getPath(), "rw")) {  // LOOK do we want to write to temp ??
+    try (RandomAccessFile raf = new RandomAccessFile(indexFileInCache.getPath(), "rw")) {  // LOOK do we want to write to temp ??
       //// header message
       raf.order(RandomAccessFile.BIG_ENDIAN);
       raf.write(MAGIC_START.getBytes(CDM.utf8Charset));
@@ -254,8 +254,8 @@ public class Grib2CollectionWriter extends GribCollectionWriter {
 
     } finally {
       // remove it on failure
-      if (deleteOnClose && !indexFile.delete())
-        logger.error(" gc2 cant deleteOnClose index file {}", indexFile.getPath());
+      if (deleteOnClose && !indexFileInCache.delete())
+        logger.error(" gc2 cant deleteOnClose index file {}", indexFileInCache.getPath());
     }
 
     return true;

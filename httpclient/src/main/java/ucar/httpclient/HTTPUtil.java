@@ -36,46 +36,146 @@ package ucar.httpclient;
 import org.apache.http.*;
 import org.apache.http.protocol.HttpContext;
 
-import java.io.IOException;
+import java.io.*;
+import java.util.ArrayList;
+import java.util.List;
 
 abstract public class HTTPUtil
 {
 
     //////////////////////////////////////////////////
-    // Header dump interceptors
+    // Interceptors
 
-    static public class RequestHeaderDump implements HttpRequestInterceptor
+    static abstract public class InterceptCommon
     {
-        @Override
-        synchronized public void
-        process(HttpRequest request, HttpContext context)
-            throws HttpException, IOException
+        protected HttpContext context = null;
+        protected List<Header> headers = new ArrayList<Header>();
+        protected HttpRequest request = null;
+        protected HttpResponse response = null;
+        protected boolean printheaders = false;
+
+        public void setPrint(boolean tf)
         {
-            Header[] hdrs = request.getAllHeaders();
-            if(hdrs == null) hdrs = new Header[0];
-            System.err.println("Request Headers:");
-            for(Header h: hdrs) {
-                System.err.println(h.toString());
+            this.printheaders = tf;
+        }
+
+        public void
+        clear()
+        {
+            context = null;
+            headers.clear();
+            request = null;
+            response = null;
+        }
+
+        synchronized public HttpResponse getRequest()
+        {
+            return this.response;
+        }
+
+        synchronized public HttpResponse getResponse()
+        {
+            return this.response;
+        }
+
+        synchronized public HttpContext getContext()
+        {
+            return this.context;
+        }
+
+        synchronized public List<Header> getHeaders(String key)
+        {
+            List<Header> keyh = new ArrayList<Header>();
+            for(Header h : this.headers) {
+                if(h.getName().equalsIgnoreCase(key.trim()))
+                    keyh.add(h);
+            }
+            return keyh;
+        }
+
+        synchronized public List<Header> getHeaders()
+        {
+            return this.headers;
+        }
+
+        public void
+        printHeaders()
+        {
+            if(this.request != null) {
+                Header[] hdrs = this.request.getAllHeaders();
+                if(hdrs == null) hdrs = new Header[0];
+                System.err.println("Request Headers:");
+                for(Header h : hdrs)
+                    System.err.println(h.toString());
+            }
+            if(this.response != null) {
+                Header[] hdrs = this.response.getAllHeaders();
+                if(hdrs == null) hdrs = new Header[0];
+                System.err.println("Response Headers:");
+                for(Header h : hdrs)
+                    System.err.println(h.toString());
             }
             System.err.flush();
         }
     }
 
-    static public class ResponseHeaderDump implements HttpResponseInterceptor
+    static public class InterceptResponse extends InterceptCommon
+        implements HttpResponseInterceptor
     {
-        @Override
         synchronized public void
         process(HttpResponse response, HttpContext context)
             throws HttpException, IOException
         {
-            Header[] hdrs = response.getAllHeaders();
-            if(hdrs == null) hdrs = new Header[0];
-            System.err.println("Response Headers:");
-            for(Header h: hdrs) {
-                System.err.println(h.toString());
+            this.response = response;
+            this.context = context;
+            if(this.printheaders)
+                printHeaders();
+            else if(this.response != null) {
+                Header[] hdrs = this.response.getAllHeaders();
+                for(int i = 0;i < hdrs.length;i++)
+                    headers.add(hdrs[i]);
             }
-            System.err.flush();
         }
+    }
+
+    static public class InterceptRequest extends InterceptCommon
+        implements HttpRequestInterceptor
+    {
+        HttpRequest request = null;
+
+        synchronized public void
+        process(HttpRequest request, HttpContext context)
+            throws HttpException, IOException
+        {
+            this.request = request;
+            this.context = context;
+            if(this.printheaders)
+                printHeaders();
+            else if(this.request != null) {
+                Header[] hdrs = this.request.getAllHeaders();
+                for(int i = 0;i < hdrs.length;i++)
+                    headers.add(hdrs[i]);
+            }
+        }
+    }
+
+    //////////////////////////////////////////////////
+    // Misc.
+
+    static public byte[]
+    readbinaryfile(InputStream stream)
+        throws IOException
+    {
+        // Extract the stream into a bytebuffer
+        ByteArrayOutputStream bytes = new ByteArrayOutputStream();
+        byte[] tmp = new byte[1 << 16];
+        for(;;) {
+            int cnt;
+            cnt = stream.read(tmp);
+            if(cnt <= 0) break;
+            bytes.write(tmp, 0, cnt);
+        }
+        return bytes.toByteArray();
     }
 
 }

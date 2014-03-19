@@ -22,13 +22,11 @@ public interface Coordinate {
 
   List<? extends Object> getValues(); // get sorted list of values
   Object getValue(int idx);  // get the ith value
-  int getIndex(Object val);  // LOOK assumes the values are unique
+  int getIndex(Object val);  // LOOK assumes the values are unique;
   int getSize();             // how many values ??
 
   int getCode();
   Type getType();
   String getName();
   String getUnit();
-
- // CoordinateBuilder makeBuilder();
 }

@@ -52,6 +52,8 @@ message Coord {
   repeated int64 msecs = 6; // calendar date : runtime, time2D
 
   repeated Coord times = 7; // time2D only
+  optional bool isOrthogonal = 8; // time2D only
+  optional bool isRegular = 9; // time2D only
 }
 
 message MFile {

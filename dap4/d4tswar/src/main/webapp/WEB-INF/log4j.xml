@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE log4j:configuration SYSTEM "log4j.dtd">
+<log4j:configuration xmlns:log4j='http://jakarta.apache.org/log4j/'>
+
+  <appender name="d4tslog" class="org.apache.log4j.RollingFileAppender">
+    <param name="File" value="webapps/d4ts/logs/d4ts.log"/>
+    <param name="MaxFileSize" value="10MB"/>
+    <param name="MaxBackupIndex" value="10"/>
+    <layout class="org.apache.log4j.PatternLayout">
+      <param name="ConversionPattern" value="%d{yyyy-MM-dd'T'HH:mm:ss.SSS Z} [%10r][%8X{ID}] %-5p - %c - %m%n"/>
+      <!--param name="ConversionPattern" value="%d{ISO8601} [%10r - %10X{ID}] %-5p - %c - %m%n"/-->
+    </layout>
+  </appender>
+
+  <!-- All normal logging messages go to threddsServlet.log -->
+  <logger name="thredds">
+    <level value="INFO"/>
+  </logger>
+
+  <logger name="ucar">
+    <level value="INFO"/>
+  </logger>
+
+  <logger name="org.springframework">
+    <level value="INFO"/>
+  </logger>
+
+  <root>
+    <level value="INFO"/>
+    <appender-ref ref="d4tslog"/>
+  </root>
+
+</log4j:configuration>

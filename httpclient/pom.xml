@@ -28,39 +28,46 @@
        =========================================================== -->
 
   <dependencies>
+<!--
     <dependency>
         <groupId>net.jcip</groupId>
         <artifactId>jcip-annotations</artifactId>
     </dependency>
+-->
     <!-- HTTP client -->
     <dependency>
       <groupId>org.apache.httpcomponents</groupId>
       <artifactId>httpclient</artifactId>
+      <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>org.apache.httpcomponents</groupId>
       <artifactId>httpcore</artifactId>
+      <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>org.apache.httpcomponents</groupId>
       <artifactId>httpmime</artifactId>
+      <scope>provided</scope>
     </dependency>
      
     <dependency>  <!-- replace commons-logging -->
       <groupId>org.slf4j</groupId>
       <artifactId>jcl-over-slf4j</artifactId>
+      <scope>provided</scope>
     </dependency>
 
     <!-- logging -->
     <dependency>
       <groupId>org.slf4j</groupId>
       <artifactId>slf4j-api</artifactId>
+      <scope>provided</scope>
     </dependency>
 
     <dependency>
       <groupId>org.slf4j</groupId>
       <artifactId>slf4j-jdk14</artifactId>
-      <scope>test</scope>
+      <scope>provided</scope>
     </dependency>
 
   </dependencies>

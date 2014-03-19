@@ -4654,6 +4654,42 @@ public final class GribCollectionProto {
      */
     ucar.nc2.grib.collection.GribCollectionProto.CoordOrBuilder getTimesOrBuilder(
         int index);
+
+    // optional bool isOrthogonal = 8;
+    /**
+     * <code>optional bool isOrthogonal = 8;</code>
+     *
+     * <pre>
+     * time2D only
+     * </pre>
+     */
+    boolean hasIsOrthogonal();
+    /**
+     * <code>optional bool isOrthogonal = 8;</code>
+     *
+     * <pre>
+     * time2D only
+     * </pre>
+     */
+    boolean getIsOrthogonal();
+
+    // optional bool isRegular = 9;
+    /**
+     * <code>optional bool isRegular = 9;</code>
+     *
+     * <pre>
+     * time2D only
+     * </pre>
+     */
+    boolean hasIsRegular();
+    /**
+     * <code>optional bool isRegular = 9;</code>
+     *
+     * <pre>
+     * time2D only
+     * </pre>
+     */
+    boolean getIsRegular();
   }
   /**
    * Protobuf type {@code Coord}
@@ -4790,6 +4826,16 @@ public final class GribCollectionProto {
                 mutable_bitField0_ |= 0x00000040;
               }
               times_.add(input.readMessage(ucar.nc2.grib.collection.GribCollectionProto.Coord.PARSER, extensionRegistry));
+              break;
+            }
+            case 64: {
+              bitField0_ |= 0x00000008;
+              isOrthogonal_ = input.readBool();
+              break;
+            }
+            case 72: {
+              bitField0_ |= 0x00000010;
+              isRegular_ = input.readBool();
               break;
             }
           }
@@ -5084,6 +5130,54 @@ public final class GribCollectionProto {
       return times_.get(index);
     }
 
+    // optional bool isOrthogonal = 8;
+    public static final int ISORTHOGONAL_FIELD_NUMBER = 8;
+    private boolean isOrthogonal_;
+    /**
+     * <code>optional bool isOrthogonal = 8;</code>
+     *
+     * <pre>
+     * time2D only
+     * </pre>
+     */
+    public boolean hasIsOrthogonal() {
+      return ((bitField0_ & 0x00000008) == 0x00000008);
+    }
+    /**
+     * <code>optional bool isOrthogonal = 8;</code>
+     *
+     * <pre>
+     * time2D only
+     * </pre>
+     */
+    public boolean getIsOrthogonal() {
+      return isOrthogonal_;
+    }
+
+    // optional bool isRegular = 9;
+    public static final int ISREGULAR_FIELD_NUMBER = 9;
+    private boolean isRegular_;
+    /**
+     * <code>optional bool isRegular = 9;</code>
+     *
+     * <pre>
+     * time2D only
+     * </pre>
+     */
+    public boolean hasIsRegular() {
+      return ((bitField0_ & 0x00000010) == 0x00000010);
+    }
+    /**
+     * <code>optional bool isRegular = 9;</code>
+     *
+     * <pre>
+     * time2D only
+     * </pre>
+     */
+    public boolean getIsRegular() {
+      return isRegular_;
+    }
+
     private void initFields() {
       type_ = 0;
       code_ = 0;
@@ -5092,6 +5186,8 @@ public final class GribCollectionProto {
       bound_ = java.util.Collections.emptyList();
       msecs_ = java.util.Collections.emptyList();
       times_ = java.util.Collections.emptyList();
+      isOrthogonal_ = false;
+      isRegular_ = false;
     }
     private byte memoizedIsInitialized = -1;
     public final boolean isInitialized() {
@@ -5140,6 +5236,12 @@ public final class GribCollectionProto {
       for (int i = 0; i < times_.size(); i++) {
         output.writeMessage(7, times_.get(i));
       }
+      if (((bitField0_ & 0x00000008) == 0x00000008)) {
+        output.writeBool(8, isOrthogonal_);
+      }
+      if (((bitField0_ & 0x00000010) == 0x00000010)) {
+        output.writeBool(9, isRegular_);
+      }
       getUnknownFields().writeTo(output);
     }
 
@@ -5185,6 +5287,14 @@ public final class GribCollectionProto {
       for (int i = 0; i < times_.size(); i++) {
         size += com.google.protobuf.CodedOutputStream
           .computeMessageSize(7, times_.get(i));
+      }
+      if (((bitField0_ & 0x00000008) == 0x00000008)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeBoolSize(8, isOrthogonal_);
+      }
+      if (((bitField0_ & 0x00000010) == 0x00000010)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeBoolSize(9, isRegular_);
       }
       size += getUnknownFields().getSerializedSize();
       memoizedSerializedSize = size;
@@ -5321,6 +5431,10 @@ public final class GribCollectionProto {
         } else {
           timesBuilder_.clear();
         }
+        isOrthogonal_ = false;
+        bitField0_ = (bitField0_ & ~0x00000080);
+        isRegular_ = false;
+        bitField0_ = (bitField0_ & ~0x00000100);
         return this;
       }
 
@@ -5385,6 +5499,14 @@ public final class GribCollectionProto {
         } else {
           result.times_ = timesBuilder_.build();
         }
+        if (((from_bitField0_ & 0x00000080) == 0x00000080)) {
+          to_bitField0_ |= 0x00000008;
+        }
+        result.isOrthogonal_ = isOrthogonal_;
+        if (((from_bitField0_ & 0x00000100) == 0x00000100)) {
+          to_bitField0_ |= 0x00000010;
+        }
+        result.isRegular_ = isRegular_;
         result.bitField0_ = to_bitField0_;
         onBuilt();
         return result;
@@ -5467,6 +5589,12 @@ public final class GribCollectionProto {
               timesBuilder_.addAllMessages(other.times_);
             }
           }
+        }
+        if (other.hasIsOrthogonal()) {
+          setIsOrthogonal(other.getIsOrthogonal());
+        }
+        if (other.hasIsRegular()) {
+          setIsRegular(other.getIsRegular());
         }
         this.mergeUnknownFields(other.getUnknownFields());
         return this;
@@ -6245,6 +6373,104 @@ public final class GribCollectionProto {
           times_ = null;
         }
         return timesBuilder_;
+      }
+
+      // optional bool isOrthogonal = 8;
+      private boolean isOrthogonal_ ;
+      /**
+       * <code>optional bool isOrthogonal = 8;</code>
+       *
+       * <pre>
+       * time2D only
+       * </pre>
+       */
+      public boolean hasIsOrthogonal() {
+        return ((bitField0_ & 0x00000080) == 0x00000080);
+      }
+      /**
+       * <code>optional bool isOrthogonal = 8;</code>
+       *
+       * <pre>
+       * time2D only
+       * </pre>
+       */
+      public boolean getIsOrthogonal() {
+        return isOrthogonal_;
+      }
+      /**
+       * <code>optional bool isOrthogonal = 8;</code>
+       *
+       * <pre>
+       * time2D only
+       * </pre>
+       */
+      public Builder setIsOrthogonal(boolean value) {
+        bitField0_ |= 0x00000080;
+        isOrthogonal_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>optional bool isOrthogonal = 8;</code>
+       *
+       * <pre>
+       * time2D only
+       * </pre>
+       */
+      public Builder clearIsOrthogonal() {
+        bitField0_ = (bitField0_ & ~0x00000080);
+        isOrthogonal_ = false;
+        onChanged();
+        return this;
+      }
+
+      // optional bool isRegular = 9;
+      private boolean isRegular_ ;
+      /**
+       * <code>optional bool isRegular = 9;</code>
+       *
+       * <pre>
+       * time2D only
+       * </pre>
+       */
+      public boolean hasIsRegular() {
+        return ((bitField0_ & 0x00000100) == 0x00000100);
+      }
+      /**
+       * <code>optional bool isRegular = 9;</code>
+       *
+       * <pre>
+       * time2D only
+       * </pre>
+       */
+      public boolean getIsRegular() {
+        return isRegular_;
+      }
+      /**
+       * <code>optional bool isRegular = 9;</code>
+       *
+       * <pre>
+       * time2D only
+       * </pre>
+       */
+      public Builder setIsRegular(boolean value) {
+        bitField0_ |= 0x00000100;
+        isRegular_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>optional bool isRegular = 9;</code>
+       *
+       * <pre>
+       * time2D only
+       * </pre>
+       */
+      public Builder clearIsRegular() {
+        bitField0_ = (bitField0_ & ~0x00000100);
+        isRegular_ = false;
+        onChanged();
+        return this;
       }
 
       // @@protoc_insertion_point(builder_scope:Coord)
@@ -15363,31 +15589,32 @@ public final class GribCollectionProto {
       "dups\030\010 \001(\r\022\020\n\010nrecords\030\t \001(\r\022\017\n\007missing\030",
       "\n \001(\r\022\020\n\010invCount\030\017 \003(\r\022\024\n\014time2runtime\030" +
       "\020 \003(\r\022\032\n\006params\030\024 \003(\0132\n.Parameter*\005\010d\020\310\001" +
-      "\"v\n\005Coord\022\014\n\004type\030\001 \002(\005\022\014\n\004code\030\002 \002(\005\022\014\n" +
-      "\004unit\030\003 \001(\t\022\016\n\006values\030\004 \003(\002\022\r\n\005bound\030\005 \003" +
-      "(\002\022\r\n\005msecs\030\006 \003(\003\022\025\n\005times\030\007 \003(\0132\006.Coord" +
-      "\">\n\005MFile\022\020\n\010filename\030\001 \002(\t\022\024\n\014lastModif" +
-      "ied\030\002 \002(\004\022\r\n\005index\030\003 \002(\r\"6\n\tParameter\022\014\n" +
-      "\004name\030\001 \002(\t\022\014\n\004data\030\002 \003(\001\022\r\n\005sdata\030\003 \001(\t" +
-      "\"^\n\003Gds\022\013\n\003gds\030\001 \001(\014\022\022\n\007gdsHash\030\002 \001(\021:\0010" +
-      "\022\024\n\014nameOverride\030\003 \001(\t\022 \n\030predefinedGrid",
-      "Definition\030\004 \001(\r\"\222\001\n\005Group\022\020\n\010gdsIndex\030\001" +
-      " \002(\r\022\034\n\tvariables\030\002 \003(\0132\t.Variable\022\026\n\006co" +
-      "ords\030\003 \003(\0132\006.Coord\022\016\n\006fileno\030\004 \003(\005\022\016\n\006is" +
-      "Twod\030\005 \002(\010\022\032\n\006params\030\024 \003(\0132\n.Parameter*\005" +
-      "\010d\020\310\001\"p\n\007Dataset\022\033\n\004type\030\001 \002(\0162\r.Dataset" +
-      ".Type\022\026\n\006groups\030\002 \003(\0132\006.Group\"0\n\004Type\022\006\n" +
-      "\002GC\020\000\022\010\n\004TwoD\020\001\022\010\n\004Best\020\002\022\014\n\010Analysis\020\003\"" +
-      "\275\002\n\016GribCollection\022\014\n\004name\030\001 \002(\t\022\016\n\006topD" +
-      "ir\030\002 \002(\t\022\026\n\006mfiles\030\003 \003(\0132\006.MFile\022\031\n\007data" +
-      "set\030\004 \003(\0132\010.Dataset\022\021\n\003gds\030\005 \003(\0132\004.Gds\022\035",
-      "\n\rmasterRuntime\030\025 \002(\0132\006.Coord\022\016\n\006center\030" +
-      "\006 \002(\005\022\021\n\tsubcenter\030\007 \002(\005\022\016\n\006master\030\010 \002(\005" +
-      "\022\r\n\005local\030\t \002(\005\022\026\n\016genProcessType\030\n \001(\005\022" +
-      "\024\n\014genProcessId\030\013 \001(\005\022\025\n\rbackProcessId\030\014" +
-      " \001(\005\022\032\n\006params\030\024 \003(\0132\n.Parameter*\005\010d\020\310\001B" +
-      "/\n\030ucar.nc2.grib.collectionB\023GribCollect" +
-      "ionProto"
+      "\"\237\001\n\005Coord\022\014\n\004type\030\001 \002(\005\022\014\n\004code\030\002 \002(\005\022\014" +
+      "\n\004unit\030\003 \001(\t\022\016\n\006values\030\004 \003(\002\022\r\n\005bound\030\005 " +
+      "\003(\002\022\r\n\005msecs\030\006 \003(\003\022\025\n\005times\030\007 \003(\0132\006.Coor" +
+      "d\022\024\n\014isOrthogonal\030\010 \001(\010\022\021\n\tisRegular\030\t \001" +
+      "(\010\">\n\005MFile\022\020\n\010filename\030\001 \002(\t\022\024\n\014lastMod" +
+      "ified\030\002 \002(\004\022\r\n\005index\030\003 \002(\r\"6\n\tParameter\022" +
+      "\014\n\004name\030\001 \002(\t\022\014\n\004data\030\002 \003(\001\022\r\n\005sdata\030\003 \001" +
+      "(\t\"^\n\003Gds\022\013\n\003gds\030\001 \001(\014\022\022\n\007gdsHash\030\002 \001(\021:",
+      "\0010\022\024\n\014nameOverride\030\003 \001(\t\022 \n\030predefinedGr" +
+      "idDefinition\030\004 \001(\r\"\222\001\n\005Group\022\020\n\010gdsIndex" +
+      "\030\001 \002(\r\022\034\n\tvariables\030\002 \003(\0132\t.Variable\022\026\n\006" +
+      "coords\030\003 \003(\0132\006.Coord\022\016\n\006fileno\030\004 \003(\005\022\016\n\006" +
+      "isTwod\030\005 \002(\010\022\032\n\006params\030\024 \003(\0132\n.Parameter" +
+      "*\005\010d\020\310\001\"p\n\007Dataset\022\033\n\004type\030\001 \002(\0162\r.Datas" +
+      "et.Type\022\026\n\006groups\030\002 \003(\0132\006.Group\"0\n\004Type\022" +
+      "\006\n\002GC\020\000\022\010\n\004TwoD\020\001\022\010\n\004Best\020\002\022\014\n\010Analysis\020" +
+      "\003\"\275\002\n\016GribCollection\022\014\n\004name\030\001 \002(\t\022\016\n\006to" +
+      "pDir\030\002 \002(\t\022\026\n\006mfiles\030\003 \003(\0132\006.MFile\022\031\n\007da",
+      "taset\030\004 \003(\0132\010.Dataset\022\021\n\003gds\030\005 \003(\0132\004.Gds" +
+      "\022\035\n\rmasterRuntime\030\025 \002(\0132\006.Coord\022\016\n\006cente" +
+      "r\030\006 \002(\005\022\021\n\tsubcenter\030\007 \002(\005\022\016\n\006master\030\010 \002" +
+      "(\005\022\r\n\005local\030\t \002(\005\022\026\n\016genProcessType\030\n \001(" +
+      "\005\022\024\n\014genProcessId\030\013 \001(\005\022\025\n\rbackProcessId" +
+      "\030\014 \001(\005\022\032\n\006params\030\024 \003(\0132\n.Parameter*\005\010d\020\310" +
+      "\001B/\n\030ucar.nc2.grib.collectionB\023GribColle" +
+      "ctionProto"
     };
     com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
       new com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner() {
@@ -15417,7 +15644,7 @@ public final class GribCollectionProto {
           internal_static_Coord_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
               internal_static_Coord_descriptor,
-              new java.lang.String[] { "Type", "Code", "Unit", "Values", "Bound", "Msecs", "Times", });
+              new java.lang.String[] { "Type", "Code", "Unit", "Values", "Bound", "Msecs", "Times", "IsOrthogonal", "IsRegular", });
           internal_static_MFile_descriptor =
             getDescriptor().getMessageTypes().get(4);
           internal_static_MFile_fieldAccessorTable = new

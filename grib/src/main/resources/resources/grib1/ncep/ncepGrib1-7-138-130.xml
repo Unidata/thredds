@@ -1,0 +1,161 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<parameterMap>
+    <title>NCEP Table Version 7-138-130</title>
+
+    <parameter code="57">
+        <shortName>EVP</shortName>
+        <description>Evaporation</description>
+        <units>kg/m^2</units>
+    </parameter>
+    <parameter code="65">
+        <shortName>WEASD</shortName>
+        <description>Water Equivalent of Accumulated Snow Depth</description>
+        <units>kg/m^2</units>
+    </parameter>
+    <parameter code="66">
+        <shortName>SNOD</shortName>
+        <description>Snow Depth</description>
+        <units>m</units>
+    </parameter>
+    <parameter code="84">
+        <shortName>ALBDO</shortName>
+        <description>Albedo</description>
+        <units>%</units>
+    </parameter>
+    <parameter code="85">
+        <shortName>TSOIL</shortName>
+        <description>Soil Temperature</description>
+        <units>K</units>
+    </parameter>
+    <parameter code="86">
+        <shortName>SOILM</shortName>
+        <description>Soil Moisture Content</description>
+        <units>kg/m^2</units>
+    </parameter>
+    <parameter code="87">
+        <shortName>VEG</shortName>
+        <description>Vegetation</description>
+        <units>Fraction</units>
+    </parameter>
+    <parameter code="99">
+        <shortName>SNOM</shortName>
+        <description>Snow melt</description>
+        <units>kg/m^2</units>
+    </parameter>
+    <parameter code="111">
+        <shortName>NSWRS</shortName>
+        <description>Net Shortwave Radiation Flux (surface)</description>
+        <units>W/m^2</units>
+    </parameter>
+    <parameter code="112">
+        <shortName>NLWRS</shortName>
+        <description>Net Longwave Radiation Flux (surface)</description>
+        <units>W/^2</units>
+    </parameter>
+    <parameter code="121">
+        <shortName>LHTFL</shortName>
+        <description>Latent Heat Flux</description>
+        <units>W/m^2</units>
+    </parameter>
+    <parameter code="122">
+        <shortName>SHTFL</shortName>
+        <description>Sensible Heat Flux</description>
+        <units>W/m^2</units>
+    </parameter>
+    <parameter code="148">
+        <shortName>AVSFT</shortName>
+        <description>Average Surface Skin Temperature</description>
+        <units>K</units>
+    </parameter>
+    <parameter code="155">
+        <shortName>GFLUX</shortName>
+        <description>Ground Heat Flux</description>
+        <units>W/m^2</units>
+    </parameter>
+    <parameter code="161">
+        <shortName>ASNOW</shortName>
+        <description>Frozen Precipitation (e.g. snowfall)</description>
+        <units>kg/m^2</units>
+    </parameter>
+    <parameter code="162">
+        <shortName>ARAIN</shortName>
+        <description>Liquid Precipitation (rainfall)</description>
+        <units>kg/m^2</units>
+    </parameter>
+    <parameter code="179">
+        <shortName>ACOND</shortName>
+        <description>Aerodynamic Conductance</description>
+        <units>m/s</units>
+    </parameter>
+    <parameter code="181">
+        <shortName>CCOND</shortName>
+        <description>Canopy Conductance</description>
+        <units>m/s</units>
+    </parameter>
+    <parameter code="182">
+        <shortName>LAI</shortName>
+        <description>Leaf Area Index (0-9)</description>
+        <units>unitless</units>
+    </parameter>
+    <parameter code="198">
+        <shortName>SBSNO</shortName>
+        <description>Sublimation (evaporation from snow)</description>
+        <units>W/m^2</units>
+    </parameter>
+    <parameter code="199">
+        <shortName>EVBS</shortName>
+        <description>Direct Evaporation From Bare Soil</description>
+        <units>W/m^2</units>
+    </parameter>
+    <parameter code="200">
+        <shortName>EVCW</shortName>
+        <description>Canopy Water Evaporation</description>
+        <units>W/m^2</units>
+    </parameter>
+    <parameter code="204">
+        <shortName>DSWRF</shortName>
+        <description>Downward Shortwave Radiation Flux</description>
+        <units>W/m^2</units>
+    </parameter>
+    <parameter code="205">
+        <shortName>DLWRF</shortName>
+        <description>Downward Longwave Radiation Flux</description>
+        <units>W/m^2</units>
+    </parameter>
+    <parameter code="207">
+        <shortName>MSTAV</shortName>
+        <description>Moisture Availability</description>
+        <units>%</units>
+    </parameter>
+    <parameter code="210">
+        <shortName>TRANS</shortName>
+        <description>Transpiration</description>
+        <units>W/m^2</units>
+    </parameter>
+    <parameter code="223">
+        <shortName>CNWAT</shortName>
+        <description>Plant Canopy Surface Water</description>
+        <units>kg/m^2</units>
+    </parameter>
+    <parameter code="229">
+        <shortName>SNOHF</shortName>
+        <description>Snow phase-change heat flux</description>
+        <units>W/m^2</units>
+    </parameter>
+    <parameter code="234">
+        <shortName>BGRUN</shortName>
+        <description>Subsurface Runoff (Baseflow)</description>
+        <units>kg/m^2</units>
+    </parameter>
+    <parameter code="235">
+        <shortName>SSRUN</shortName>
+        <description>Surface Runoff (non-infiltrating)</description>
+        <units>kg/m^2</units>
+    </parameter>
+    <parameter code="238">
+        <shortName>SNOWC</shortName>
+        <description>Snow Cover</description>
+        <units>fraction</units>
+    </parameter>
+
+</parameterMap>

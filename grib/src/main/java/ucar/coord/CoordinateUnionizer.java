@@ -11,6 +11,11 @@ import java.util.*;
 
 /**
  * Create the overall coordinate across the same variable in different partitions
+ * The CoordinateBuilders create unique sets of Coordinates.
+ * The CoordinateND result is then the cross-product of those Coordinates.
+ *
+ * So if theres a lot of missing records in that cross-product, we may have the variable wrong (?),
+ *  or our assumption that the ddata comprises a multdim array may be wrong
  *
  * @author John
  * @since 12/10/13
@@ -168,12 +173,10 @@ public class CoordinateUnionizer<T> {
 
     @Override
     public void addAll(Coordinate coord) {
-      if (coord.getValues() != null)
-        super.addAll(coord);
       CoordinateTime2D coordT2D = (CoordinateTime2D) coord;
-      for (Coordinate tcoord : coordT2D.getTimes()) {             // possible duplicate runtimes from different partitions
-        CoordinateTimeAbstract times = (CoordinateTimeAbstract) tcoord;
-        timeMap.put(times.getRefDate(), times);                   // later partitions will override
+      for (int runIdx=0; runIdx<coordT2D.getNruns(); runIdx++) {  // possible duplicate runtimes from different partitions
+        CoordinateTimeAbstract times = coordT2D.getTimeCoordinate(runIdx);
+        timeMap.put(coordT2D.getRefDate(runIdx), times);          // later partitions will override LOOK could check how many times there are and choose larger
       }
     }
 
@@ -185,6 +188,7 @@ public class CoordinateUnionizer<T> {
     @Override
     public Coordinate makeCoordinate(List<Object> values) {
 
+      // the set of unique runtimes
       List<CalendarDate> runtimes = new ArrayList<>();
       List<Coordinate> times = new ArrayList<>();
       for( CalendarDate cd : timeMap.keySet()) {
@@ -192,13 +196,66 @@ public class CoordinateUnionizer<T> {
         times.add(timeMap.get(cd));
       }
 
-      List<CoordinateTime2D.Time2D> vals = new ArrayList<>(values.size());
-      for (Object val : values) vals.add( (CoordinateTime2D.Time2D) val);
-      Collections.sort(vals);
+      CoordinateTimeAbstract maxCoord = testOrthogonal(timeMap.values());
+      if (maxCoord != null)
+        return new CoordinateTime2D(code, timeUnit, new CoordinateRuntime(runtimes), maxCoord, times);
 
-      return new CoordinateTime2D(code, timeUnit, vals, new CoordinateRuntime(runtimes), times);
+      List<Coordinate> regCoords = testIsRegular();
+      if (regCoords != null)
+        return new CoordinateTime2D(code, timeUnit, new CoordinateRuntime(runtimes), regCoords, times);
+
+      return new CoordinateTime2D(code, timeUnit, null, new CoordinateRuntime(runtimes), times);
     }
 
-  }
+    // regular means that all the times for each offset from 0Z can be made into a single time coordinate (FMRC algo)
+    private List<Coordinate> testIsRegular() {
+
+      // group time coords by offset hour
+      Map<Integer, List<CoordinateTimeAbstract>> hourMap = new TreeMap<>();
+      for (CoordinateTimeAbstract coord : timeMap.values()) {
+        CalendarDate runDate = coord.getRefDate();
+        int hour = runDate.getHourOfDay();
+        List<CoordinateTimeAbstract> hg = hourMap.get(hour);
+        if (hg == null) {
+          hg = new ArrayList<>();
+          hourMap.put(hour, hg);
+        }
+        hg.add(coord);
+      }
+
+      // see if each offset hour is orthogonal
+      List<Coordinate> result = new ArrayList<>();
+      for (int hour : hourMap.keySet()) {
+        List<CoordinateTimeAbstract> hg = hourMap.get(hour);
+        Coordinate maxCoord = testOrthogonal(hg);
+        if (maxCoord == null) return null;
+        result.add(maxCoord);
+      }
+      return result;
+    }
+
+
+    private CoordinateTimeAbstract testOrthogonal(Collection<CoordinateTimeAbstract> times) {
+      CoordinateTimeAbstract maxCoord = null;
+      int max = 0;
+      Set<Object> result = new HashSet<>(100);
+      for (CoordinateTimeAbstract coord : times) {
+        if (max < coord.getSize()) {
+          maxCoord = coord;
+          max = coord.getSize();
+        }
+
+        for (Object val : coord.getValues())
+          result.add(val);
+      }
+
+      // is the set of all values the same as the component times?
+      // this means we can use the "orthogonal representation" of the time2D
+      int totalMax = result.size();
+      return totalMax == max ? maxCoord : null;
+    }
+
+
+  }  // Time2DUnionBuilder
 
 }
