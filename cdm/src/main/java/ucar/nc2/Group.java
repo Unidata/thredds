@@ -49,7 +49,7 @@ import java.util.Collections;
  *
  * @author caron
  */
-public class Group extends CDMNode {
+public class Group extends CDMNode implements AttributeContainer {
 
   static List<Group> collectPath(Group g) {
     List<Group> list = new ArrayList<Group>();
@@ -264,10 +264,17 @@ public class Group extends CDMNode {
   /**
    * Get the set of attributes contained directly in this Group.
    *
-   * @return List of type Attribute; may be empty, not null.
+   * @return immutable List of type Attribute; may be empty, not null.
    */
   public java.util.List<Attribute> getAttributes() {
-    return attributes;
+    return immutable ? attributes : Collections.unmodifiableList(attributes);
+  }
+
+  /**
+   * Add all; replace old if has same name
+   */
+  public void addAll(Iterable<Attribute> atts) {
+    for (Attribute att : atts) addAttribute(att);
   }
 
   /**
@@ -485,16 +492,17 @@ public class Group extends CDMNode {
    *
    * @param att add this Attribute.
    */
-  public void addAttribute(Attribute att) {
+  public Attribute addAttribute(Attribute att) {
     if (immutable) throw new IllegalStateException("Cant modify");
     for (int i = 0; i < attributes.size(); i++) {
       Attribute a = attributes.get(i);
       if (att.getShortName().equals(a.getShortName())) {
         attributes.set(i, att); // replace
-        return;
+        return att;
       }
     }
     attributes.add(att);
+    return att;
   }
 
   /**
