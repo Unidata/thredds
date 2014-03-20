@@ -55,9 +55,9 @@ import java.io.IOException;
 public class Grib1CollectionBuilderFromIndex extends GribCollectionBuilderFromIndex {
 
   // read in the index, index raf already open; return null on failure
-  static public GribCollection readFromIndex(String name, RandomAccessFile raf, FeatureCollectionConfig config, org.slf4j.Logger logger) throws IOException {
+  static public GribCollection readFromIndex(String name, RandomAccessFile raf, FeatureCollectionConfig config, boolean dataOnly, org.slf4j.Logger logger) throws IOException {
 
-    Grib1CollectionBuilderFromIndex builder = new Grib1CollectionBuilderFromIndex(name, config, logger);
+    Grib1CollectionBuilderFromIndex builder = new Grib1CollectionBuilderFromIndex(name, config, dataOnly, logger);
     if (!builder.readIndex(raf))
       return null;
 
@@ -74,8 +74,8 @@ public class Grib1CollectionBuilderFromIndex extends GribCollectionBuilderFromIn
   protected FeatureCollectionConfig config;
   protected Grib1Customizer cust; // gets created in readIndex, after center etc is read in
 
-  protected Grib1CollectionBuilderFromIndex(String name, FeatureCollectionConfig config, org.slf4j.Logger logger) {
-    super( new Grib1Collection(name, null, config), logger);  // directory will be set in readFromIndex
+  protected Grib1CollectionBuilderFromIndex(String name, FeatureCollectionConfig config, boolean dataOnly, org.slf4j.Logger logger) {
+    super( new Grib1Collection(name, null, config), dataOnly, logger);  // directory will be set in readFromIndex
     this.config = config;
   }
 

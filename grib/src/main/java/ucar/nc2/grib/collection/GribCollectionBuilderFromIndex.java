@@ -56,19 +56,19 @@ import java.util.*;
  */
 public abstract class GribCollectionBuilderFromIndex {
 
+  protected final boolean dataOnly; // dont need the extra metadata like twot
   protected GribCollection gc;
   protected final org.slf4j.Logger logger;
   protected boolean debug = false;
   protected GribTables tables;
 
-  // protected abstract GribCollection.VariableIndex readVariable(GribCollection.GroupGC group, GribCollectionProto.Variable pv);
   protected abstract void readGds(GribCollectionProto.Gds p);
   protected abstract GribTables makeCustomizer() throws IOException;
   protected abstract String getLevelNameShort(int levelCode);
 
-
-  protected GribCollectionBuilderFromIndex(GribCollection gc, org.slf4j.Logger logger) {
+  protected GribCollectionBuilderFromIndex(GribCollection gc, boolean dataOnly, org.slf4j.Logger logger) {
     this.logger = logger;
+    this.dataOnly = dataOnly;
     this.gc = gc;
   }
 
@@ -445,7 +445,6 @@ message Coord {
     result.nrecords = pv.getNrecords();
     result.missing = pv.getMissing();
 
-    // LOOK  invCount, time2runtime
     Coordinate runtime = result.getCoordinate(Coordinate.Type.runtime);
     Coordinate time = result.getCoordinate(Coordinate.Type.time);
     if (time == null) time = result.getCoordinate(Coordinate.Type.timeIntv);
@@ -457,11 +456,13 @@ message Coord {
       ntimes = time.getSize();
     }
 
-    // 2d only
-    List<Integer> invCountList = pv.getInvCountList();
-    if (invCountList.size() > 0) {
-      result.twot = new TwoDTimeInventory(invCountList);
-      result.twot.setSize(runtime.getSize(), ntimes);
+    // 2d only  LOOK this is the big memory hog - but not needed except when building or for debug. can we make optional ??
+    if (!dataOnly) {
+      List<Integer> invCountList = pv.getInvCountList();
+      if (invCountList.size() > 0) {
+        result.twot = new TwoDTimeInventory(invCountList);
+        result.twot.setSize(runtime.getSize(), ntimes);
+      }
     }
 
     // 1d only

@@ -165,11 +165,12 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
   private InvCatalogImpl makeCatalogFromCollection(URI catURI, String parentName, GribCollection gc) throws IOException { // }, URISyntaxException {
     InvCatalogImpl parentCatalog = (InvCatalogImpl) getParentCatalog();
     InvCatalogImpl result = new InvCatalogImpl(gc.getName(), parentCatalog.getVersion(), catURI);  // LOOK is catURL right ??
+    result.addService(orgService);
+    result.addService(virtualService);
 
     InvDatasetImpl ds = makeDatasetFromCollection(parentName, gc);
     result.addDataset(ds);
-    String serviceName = ds.getServiceName();
-    result.addService(serviceName == Virtual_Services ? virtualService : orgService);
+    // String serviceName = ds.getServiceName(); LAME - cant do this way, needs serice already added -fix in cat2
     result.finish();
 
     return result;

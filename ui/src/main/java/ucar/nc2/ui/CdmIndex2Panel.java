@@ -468,7 +468,7 @@ public class CdmIndex2Panel extends JPanel {
     int total = 0;
     for (File file : files) {
       RandomAccessFile raf = new RandomAccessFile(file.getPath(), "r");
-      GribCollection cgc = Grib2CollectionBuilderFromIndex.readFromIndex(file.getName(), raf, null, logger);
+      GribCollection cgc = Grib2CollectionBuilderFromIndex.readFromIndex(file.getName(), raf, null, false, logger);
       List<String> cfiles = new ArrayList<String>(cgc.getFilenames());
       Collections.sort(cfiles);
       f.format("Compare files in %s to canonical files in %s%n", file.getPath(), idxFile.getPath());
@@ -523,7 +523,7 @@ public class CdmIndex2Panel extends JPanel {
     if (gc != null) gc.close();
 
     this.config = config;
-    gc = GribCdmIndex.openCdmIndex(indexFile.toString(), config, logger);
+    gc = GribCdmIndex.openCdmIndex(indexFile.toString(), config, false, logger);
     if (gc == null)
       throw new IOException("Not a grib collection index file");
 

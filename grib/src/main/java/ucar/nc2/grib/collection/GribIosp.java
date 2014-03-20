@@ -521,8 +521,8 @@ public abstract class GribIosp extends AbstractIOServiceProvider {
           CoordinateTimeIntv timeIntv = (CoordinateTimeIntv) time2D.getTimeCoordinate(runIdx);
           int timeIdx = 0;
           for (TimeCoord.Tinv tinv : timeIntv.getTimeIntervals()) {
-            data[runIdx * ntimes + timeIdx] = tinv.getBounds1() + time2D.getOffset(runIdx);
-            data[runIdx * ntimes + timeIdx + 1] = tinv.getBounds2() + time2D.getOffset(runIdx);
+            data[runIdx * ntimes * 2 + timeIdx] = tinv.getBounds1() + time2D.getOffset(runIdx);
+            data[runIdx * ntimes * 2 + timeIdx + 1] = tinv.getBounds2() + time2D.getOffset(runIdx);
             timeIdx += 2;
           }
         }
@@ -658,8 +658,6 @@ public abstract class GribIosp extends AbstractIOServiceProvider {
   private void makeVerticalCoordinate(NetcdfFile ncfile, Group g, CoordinateVert vc) {
     int n = vc.getSize();
     String vcName = vc.getName().toLowerCase();
-    if (vcName.startsWith("DEGY"))
-      System.out.println("HEY");
 
     ncfile.addDimension(g, new Dimension(vcName, n));
     Variable v = ncfile.addVariable(g, new Variable(ncfile, g, null, vcName, DataType.FLOAT, vcName));
