@@ -18,7 +18,7 @@
 
   <servlet>
     <servlet-name>d4ts</servlet-name>
-    <servlet-class>opuls.d4ts.D4TSServlet</servlet-class>
+    <servlet-class>dap4.d4ts.D4TSServlet</servlet-class>
     <load-on-startup>1</load-on-startup>
   </servlet>
 

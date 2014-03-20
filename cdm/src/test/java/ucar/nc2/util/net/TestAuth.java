@@ -161,7 +161,6 @@ public class TestAuth extends UnitTestCommon
     protected String datadir = null;
     protected String threddsroot = null;
 
-
     //////////////////////////////////////////////////
     // Constructor(s)
 
@@ -218,8 +217,8 @@ public class TestAuth extends UnitTestCommon
     }
 
     static AuthDataBasic[] basictests = {
-        new AuthDataBasic("http://" + REMOTESERVER + "/thredds/dodsC/restrict/testData.nc.dds",
-            "tiggUser", "tigge"),
+        new AuthDataBasic("http://" + REMOTESERVER + "/thredds/restricted/basicAuth",
+            "remoteUser", "remotePassword"),
     };
 
     static AuthDataBasic[] redirecttests = {
@@ -232,7 +231,6 @@ public class TestAuth extends UnitTestCommon
     testBasic() throws Exception
     {
         if(IGNORE) return;
-
         // System.out.println("*** Testing: Http Basic Password Authorization");
         HTTPSession.debugHeaders(true);
 
@@ -274,7 +272,6 @@ public class TestAuth extends UnitTestCommon
     testBasicDirect() throws Exception
     {
         if(IGNORE) return;
-
         System.err.println("*** Testing: Http Basic Password Authorization Using direct credentials");
         HTTPSession.debugHeaders(true);
 

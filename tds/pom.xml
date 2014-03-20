@@ -67,6 +67,21 @@
       <artifactId>visad</artifactId>
     </dependency>
 
+    <!-- DAP4 Dependencies (technically forward) -->
+    <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>d4core</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>d4shared</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>d4servletshared</artifactId>
+    </dependency>
+
+    <!-- Apache httpclient libraries -->
     <dependency>
       <groupId>org.apache.httpcomponents</groupId>
       <artifactId>httpclient</artifactId>

@@ -902,7 +902,6 @@ public class HTTPSession
     execute(HttpRequestBase request)
         throws IOException
     {
-        // Check if cont
         HttpResponse response = sessionClient.execute(request, this.execcontext);
         return response;
     }
@@ -913,8 +912,8 @@ public class HTTPSession
     // Provide a way to kill everything at the end of a Test
 
     // When testing, we need to be able to clean up
-// all existing sessions because JUnit can run all
-// test within a single jvm.
+    // all existing sessions because JUnit can run all
+    // test within a single jvm.
     static List<HTTPSession> sessionList = null; // List of all HTTPSession instances
 
     // only used when testing flag is set

@@ -1,9 +1,0 @@
-<Dataset>
-    <Dimension name="d2" size="2"/>
-    <Int name="t">
-        <Dim name="d2"/>
-    </Int>
-    <Attribute name="_CoordSysBuilder" type="String" value="ucar.nc2.dataset.conv.DefaultConvention"/>
-</Dataset>
-t(0) = 17 ;
-t(1) = 37 ;

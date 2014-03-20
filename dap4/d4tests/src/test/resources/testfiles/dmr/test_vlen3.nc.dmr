@@ -1,8 +1,0 @@
-    <Dimension name="d3" size="3"/>
-
-    <Structure name="v1">
-        <Int32 name="v">
-            <Dim size="*"/>
-        </Int32>
-    </Structure>
-</Dataset>

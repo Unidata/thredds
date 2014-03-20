@@ -1,4 +1,0 @@
-<Dataset>
-    <Dimension name="dim1" size="5"/>
-    <Attribute name="_CoordSysBuilder" type="String" value="ucar.nc2.dataset.conv.DefaultConvention"/>
-</Dataset>
