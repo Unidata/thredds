@@ -123,12 +123,12 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
     /**
      * Define the legal Windows drive letters
      */
-    static final String DRIVE_LETTERS = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
+    static public final String DRIVE_LETTERS = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
 
     /**
      * Define the opuls path
      */
-    static final String OPULS_PATH = "opuls.cdm";
+    static final String DAP4_PATH = "dap4.cdm";
 
     /**
    * Possible enhancements for a NetcdfDataset
@@ -1083,13 +1083,14 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
     Constructor constructormethod = null;
     Class dap4class = null;
     NetcdfFile file = null;
+    String target = DAP4_PATH +".DapNetcdfFile";
     try {
-        dap4class = NetcdfDataset.class.getClassLoader().loadClass(OPULS_PATH+".DapNetcdfFile");
+        dap4class = NetcdfDataset.class.getClassLoader().loadClass(target);
         constructormethod = dap4class.getConstructor(String.class, ucar.nc2.util.CancelTask.class);
         file = (NetcdfFile) constructormethod.newInstance(location, cancelTask);
         return file;
     } catch (ClassNotFoundException e) {
-      String msg = "DapNetcdfFile is not on class path or is incorrect version";
+      String msg = "DapNetcdfFile is not on class path or is incorrect version: "+target;
       log.error(msg);
       throw new IOException(msg);
     } catch (NoSuchMethodException e) {

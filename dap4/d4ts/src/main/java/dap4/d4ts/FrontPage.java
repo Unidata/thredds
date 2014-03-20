@@ -8,6 +8,7 @@ import dap4.servlet.DapLog;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -83,6 +84,7 @@ public class FrontPage
         }
 
         File[] candidates = dir.listFiles();
+	Arrays.sort(candidates);
         List<FileSource> activesources = new ArrayList<FileSource>();
         // Capture lists of files for each FileSource
         for(FileSource src : SOURCES) {

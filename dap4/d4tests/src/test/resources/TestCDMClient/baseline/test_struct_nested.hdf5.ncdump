@@ -1,5 +1,0 @@
-netcdf test_struct_nested.hdf5 {
-  // global attributes:
-  :_CoordSysBuilder = "ucar.nc2.dataset.conv.DefaultConvention";
- data:
-}

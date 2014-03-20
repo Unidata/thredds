@@ -6,13 +6,12 @@
 
 <parent>
   <groupId>edu.ucar</groupId>
-  <artifactId>thredds-parent</artifactId>
+  <artifactId>dap4</artifactId>
   <version>4.5.0-SNAPSHOT</version>
-  <relativePath>../../pom.xml</relativePath>
 </parent>
 
+<!--groupId>groupId</groupId-->
 <artifactId>d4cdmshared</artifactId>
-<packaging>jar</packaging>
 
 <!-- ===========================================================
 Dependencies: Mandatory dependencies are listed first. Then
@@ -25,14 +24,23 @@ Dependencies: Mandatory dependencies are listed first. Then
 
 <dependencies>
   <dependency>
-    <groupId>${project.groupId}</groupId>
+    <groupId>${project.groupid}</groupId>
     <artifactId>d4core</artifactId>
   </dependency>
   <dependency>
-    <groupId>${project.groupId}</groupId>
+    <groupId>${project.groupid}</groupId>
     <artifactId>d4shared</artifactId>
   </dependency>
 
+  <!-- Servlet -->
+<!--
+  <dependency>
+    <groupId>javax.servlet</groupId>
+    <artifactId>javax.servlet-api</artifactId>
+    <version>${javax.servlet.version}</version>
+    <scope>provided</scope>
+  </dependency>
+-->
 
   <!-- CDM -->
   <dependency>

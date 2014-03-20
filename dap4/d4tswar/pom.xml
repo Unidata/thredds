@@ -85,7 +85,7 @@
 	      </includes>
             </resource>
             <resource>
-              <targetPath>WEB-INF/resources</targetPath>
+              <targetPath>WEB-INF/resources/testfiles</targetPath>
               <directory>../d4tests/src/test/data/resources/testfiles</directory>
 	      <includes>
 		<include>*.syn</include>
@@ -94,7 +94,7 @@
 	      </includes>
             </resource>
             <resource>
-              <targetPath>WEB-INF/resources/dmr</targetPath>
+              <targetPath>WEB-INF/resources/testfiles/dmr</targetPath>
               <directory>../d4tests/src/test/data/resources/testfiles/dmr</directory>
 	      <includes>
 		<include>*.dmr</include>

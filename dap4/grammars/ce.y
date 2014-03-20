@@ -10,15 +10,15 @@ Comment out in case we are using an older version of bison
 %define api.push-pull pull
 */
 %define abstract
-%define package {opuls.ce.parser}
+%define package {dap4.ce.parser}
 %define parser_class_name {CEParserBody}
 %define throws {ParseException}
 %define lex_throws {ParseException}
 
 %code imports {
-import opuls.core.util.Slice;
-import opuls.core.dmr.parser.ParseException;
-import static opuls.ce.parser.CEAST.*;
+import dap4.core.util.Slice;
+import dap4.core.dmr.parser.ParseException;
+import static dap4.ce.parser.CEAST.*;
 }
 
 %code {

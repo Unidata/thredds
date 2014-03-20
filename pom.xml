@@ -941,9 +941,8 @@
     <module>dap4/d4servletshared</module>
     <module>dap4/d4servlet</module>
     <module>dap4/d4ts</module>
-<!--
+    <module>dap4/d4tswar</module>
     <module>dap4/d4tests</module>
--->    <module>dap4/d4tswar</module>
   </modules>
 
   <properties>
@@ -1022,7 +1021,7 @@
     <!-- http://stackoverflow.com/questions/11222982/tomcat-binary-distribution-zip-as-maven-artifact -->
     <cargo-plugin.version>1.4.5</cargo-plugin.version>
     <apache.download>http://mirrors.ibiblio.org/apache/</apache.download>
-    <tomcat7.version>7.0.52</tomcat7.version>
+    <tomcat7.version>7.0.50</tomcat7.version>
 
   </properties>
 
