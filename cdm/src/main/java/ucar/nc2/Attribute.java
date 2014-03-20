@@ -387,6 +387,7 @@ public class Attribute extends CDMNode {
    */
   public Attribute(String name, Attribute from) {
     super(name);
+    if (name == null) throw new IllegalArgumentException("Trying to set short anem to null on "+this);
     this.dataType = from.dataType;
     this.nelems = from.nelems;
     this.svalue = from.svalue;
@@ -401,6 +402,7 @@ public class Attribute extends CDMNode {
    */
   public Attribute(String name, String val) {
     super(name);
+    if (name == null) throw new IllegalArgumentException("Trying to set short anem to null on "+this);
     setStringValue(val);
   }
 
@@ -412,6 +414,8 @@ public class Attribute extends CDMNode {
    */
   public Attribute(String name, Number val) {
     super(name);
+    if (name == null) throw new IllegalArgumentException("Trying to set short anem to null on "+this);
+
     int[] shape = new int[1];
     shape[0] = 1;
     DataType dt = DataType.getType(val.getClass());
@@ -428,7 +432,7 @@ public class Attribute extends CDMNode {
    * @param values array of values.
    */
   public Attribute(String name, Array values) {
-    super(name);
+    this(name);
     setValues(values);
   }
 
@@ -439,7 +443,7 @@ public class Attribute extends CDMNode {
    * @param dataType type of Attribute.
    */
   public Attribute(String name, DataType dataType) {
-    super(name);
+    this(name);
     this.dataType = dataType == DataType.CHAR ? DataType.STRING : dataType;
     this.nelems = 0;
   }
@@ -451,7 +455,7 @@ public class Attribute extends CDMNode {
    * @param values list of values. must be String or Number, must all be the same type, and have at least 1 member
    */
   public Attribute(String name, List values) {
-    super(name);
+    this(name);
     int n = values.size();
     Object pa = null;
 
@@ -506,7 +510,7 @@ public class Attribute extends CDMNode {
    * @param param copy info from here.
    */
   public Attribute(ucar.unidata.util.Parameter param) {
-    super(param.getName());
+    this(param.getName());
 
     if (param.isString()) {
       setStringValue(param.getStringValue());
@@ -530,6 +534,7 @@ public class Attribute extends CDMNode {
    */
   protected Attribute(String name) {
     super(name);
+    if (name == null) throw new IllegalArgumentException("Trying to set short anem to null on "+this);
   }
 
   /**

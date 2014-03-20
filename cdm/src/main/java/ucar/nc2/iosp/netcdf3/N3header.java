@@ -170,7 +170,7 @@ public class N3header {
 
     // global attributes
     globalAttsPos = raf.getFilePointer();
-    readAtts(ncfile.getRootGroup().getAttributes(), fout);
+    readAtts(ncfile.getRootGroup(), fout);
 
     // variables
     int nvars = 0;
@@ -218,7 +218,7 @@ public class N3header {
 
       // variable attributes
       long varAttsPos = raf.getFilePointer();
-      readAtts(var.getAttributes(), fout);
+      readAtts(var, fout);
 
       // data type
       int type = raf.readInt();
@@ -419,7 +419,7 @@ public class N3header {
   }
 
 
-  private int readAtts(List<Attribute> atts, Formatter fout) throws IOException {
+  private int readAtts(AttributeContainer atts, Formatter fout) throws IOException {
     int natts = 0;
     int magic = raf.readInt();
     if (magic == 0) {
@@ -468,7 +468,7 @@ public class N3header {
         if (fout != null) fout.format(" end read val pos= %d\n", raf.getFilePointer());
       }
 
-      atts.add(att);
+      atts.addAttribute(att);
       if (fout != null) fout.format("  %s\n", att);
     }
 

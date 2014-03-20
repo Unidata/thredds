@@ -429,9 +429,8 @@ public class CFnetCDF2Dataset extends RadialDatasetSweepAdapter implements Typed
         int            rIdx  = var.findDimensionIndex("range");
 
         if ((tIdx == 0) && (rIdx == 1)) {
-            VariableSimpleIF v = new MyRadialVariableAdapter(vName,
-                                     var.getAttributes());
-            rsvar = makeRadialVariable(nds, v, var);
+            VariableSimpleIF v = new MyRadialVariableAdapter(vName, var.getAttributes());
+          rsvar = makeRadialVariable(nds, v, var);
         }
 
         if (rsvar != null) {

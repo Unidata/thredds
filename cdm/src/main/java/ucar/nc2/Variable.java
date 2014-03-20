@@ -58,7 +58,7 @@ import java.nio.channels.WritableByteChannel;
  * @see ucar.ma2.DataType
  */
 
-public class Variable extends CDMNode implements VariableIF, ProxyReader {
+public class Variable extends CDMNode implements VariableIF, ProxyReader, AttributeContainer {
 
   static public final int defaultSizeToCache = 4000; // bytes  cache any variable whose size() < defaultSizeToCache
   static public final int defaultCoordsSizeToCache = 40 * 1000; // bytes cache coordinate variable whose size() < defaultSizeToCache
@@ -336,7 +336,7 @@ public class Variable extends CDMNode implements VariableIF, ProxyReader {
    * @return List<Attribute>, not a copy, but may be immutable
    */
   public java.util.List<Attribute> getAttributes() {
-    return attributes;
+    return immutable ? attributes : Collections.unmodifiableList(attributes);
   }
 
   /**
@@ -1245,10 +1245,10 @@ public class Variable extends CDMNode implements VariableIF, ProxyReader {
    */
   public Variable(Variable from) {
     super(from.getShortName());
-    this.attributes = new ArrayList<Attribute>(from.attributes); // attributes are immutable
+    this.attributes = new ArrayList<>(from.attributes); // attributes are immutable
     this.cache = from.cache; // caller should do createNewCache() if dont want to share
     setDataType(from.getDataType());
-    this.dimensions = new ArrayList<Dimension>(from.dimensions); // dimensions are shared
+    this.dimensions = new ArrayList<>(from.dimensions); // dimensions are shared
     this.elementSize = from.getElementSize();
     this.enumTypedef = from.enumTypedef;
     setParentGroup(from.group);
@@ -1336,6 +1336,8 @@ public class Variable extends CDMNode implements VariableIF, ProxyReader {
    */
   public Attribute addAttribute(Attribute att) {
     if (immutable) throw new IllegalStateException("Cant modify");
+    if (att == null)
+      throw new IllegalArgumentException();
     for (int i = 0; i < attributes.size(); i++) {
       Attribute a = attributes.get(i);
       if (att.getShortName().equals(a.getShortName())) {
@@ -1345,6 +1347,13 @@ public class Variable extends CDMNode implements VariableIF, ProxyReader {
     }
     attributes.add(att);
     return att;
+  }
+
+  /**
+   * Add all; replace old if has same name
+   */
+  public void addAll(Iterable<Attribute> atts) {
+    for (Attribute att : atts) addAttribute(att);
   }
 
   /**

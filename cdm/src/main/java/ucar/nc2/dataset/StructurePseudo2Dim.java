@@ -95,11 +95,10 @@ public class StructurePseudo2Dim extends StructurePseudoDS {
       if (!inner.equals(orgV.getDimension(1)))
         throw new IllegalArgumentException("Variable "+orgV.getNameAndDimensions()+" must have 2nd dimension="+inner);
 
-      VariableDS memberV = new VariableDS(ncfile, group, this, orgV.getShortName(), orgV.getDataType(), null,
-          orgV.getUnitsString(), orgV.getDescription());
-       memberV.setDataType(orgV.getDataType());
+      VariableDS memberV = new VariableDS(ncfile, group, this, orgV.getShortName(), orgV.getDataType(), null, orgV.getUnitsString(), orgV.getDescription());
+      memberV.setDataType(orgV.getDataType());
       memberV.setSPobject(orgV.getSPobject()); // ??
-      memberV.getAttributes().addAll(orgV.getAttributes());
+      memberV.addAll(orgV.getAttributes());
 
       List<Dimension> dimList = new ArrayList<Dimension>(orgV.getDimensions());
       memberV.setDimensions( dimList.subList(2, dimList.size())); // remove first 2 dimensions
