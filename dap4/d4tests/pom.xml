@@ -4,8 +4,9 @@
 
 <parent>
   <groupId>edu.ucar</groupId>
-  <artifactId>dap4</artifactId>
+  <artifactId>thredds-parent</artifactId>
   <version>4.5.0-SNAPSHOT</version>
+  <relativePath>../../pom.xml</relativePath>
 </parent>
 
 <artifactId>d4tests</artifactId>
@@ -14,64 +15,49 @@
 <dependencies>
 
   <dependency>
-    <groupId>${project.groupid}</groupId>
+    <groupId>${project.groupId}</groupId>
     <artifactId>d4core</artifactId>
   </dependency>
   <dependency>
-    <groupId>${project.groupid}</groupId>
+    <groupId>${project.groupId}</groupId>
     <artifactId>d4cdmclient</artifactId>
   </dependency>
   <dependency>
-    <groupId>${project.groupid}</groupId>
+    <groupId>${project.groupId}</groupId>
     <artifactId>d4shared</artifactId>
   </dependency>
   <dependency>
-    <groupId>${project.groupid}</groupId>
+    <groupId>${project.groupId}</groupId>
     <artifactId>d4servletshared</artifactId>
   </dependency>
   <dependency>
-    <groupId>${project.groupid}</groupId>
+    <groupId>${project.groupId}</groupId>
     <artifactId>d4ts</artifactId>
   </dependency>
 
   <!-- Thredds/CDM dependencies -->
   <dependency>
-      <groupId>edu.ucar</groupId>
+      <groupId>${project.groupId}</groupId>
       <artifactId>cdm</artifactId>
   </dependency>
   <dependency>
-      <groupId>edu.ucar</groupId>
+      <groupId>${project.groupId}</groupId>
       <artifactId>netcdf4</artifactId>
   </dependency>
   <dependency>
-      <groupId>edu.ucar</groupId>
+      <groupId>${project.groupId}</groupId>
       <artifactId>tdm</artifactId>
+      <version>${project.version}</version>
   </dependency>
 
   <!-- testing dependencies -->
-<!--
   <dependency>
     <groupId>junit</groupId>
     <artifactId>junit</artifactId>
     <version>4.8.1</version>
     <scope>test</scope>
   </dependency>
--->
 
-  <dependency>
-    <groupId>org.springframework</groupId>
-    <artifactId>spring-webmvc</artifactId>
-  </dependency>
-  <dependency>
-      <groupId>org.springframework</groupId>
-      <artifactId>spring-test</artifactId>
-      <scope>test</scope>
-  </dependency>
-
-  <dependency>
-    <groupId>org.springframework</groupId>
-    <artifactId>spring-webmvc</artifactId>
-  </dependency>
   <dependency>
       <groupId>org.springframework</groupId>
       <artifactId>spring-test</artifactId>
@@ -130,6 +116,18 @@
   <plugins>
 
     <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <executions>
+          <execution>
+            <goals>
+              <goal>testCompile</goal>
+            </goals>
+          </execution>
+        </executions>
+    </plugin>
+
+    <plugin>
       <groupId>org.apache.maven.plugins</groupId>
       <artifactId>maven-surefire-plugin</artifactId>
       <!--version>2.16</version-->
@@ -138,9 +136,12 @@
          <testFailureIgnore>true</testFailureIgnore>
          <argLine>-Dfile.encoding=UTF-8</argLine>
 	 <encoding>UTF-8</encoding>                    
-         <includes>
-	    <include>src/test/java/dap4/test/TestAll.java</include>
-         </includes>
+         <excludes>
+	    <exclude>src/test/java/dap4/test/TestFrontPage.java</exclude>
+	    <exclude>src/test/java/dap4/test/TestHyrax.java</exclude>
+	    <exclude>src/test/java/dap4/test/TestSerial.java</exclude>
+	    <exclude>src/test/java/dap4/test/TestDap4All.java</exclude>
+         </excludes>
        </configuration>
        <executions>
          <execution>
@@ -151,9 +152,13 @@
            </goals>
            <configuration>
              <skip>false</skip>
-             <includes>
-  	       <include>src/test/java/dap4/test/TestAll.java</include>
-             </includes>   
+	         <excludes>
+		    <exclude>src/test/java/dap4/test/TestFrontPage.java</exclude>
+	
+		    <exclude>src/test/java/dap4/test/TestHyrax.java</exclude>
+		    <exclude>src/test/java/dap4/test/TestSerial.java</exclude>
+		    <exclude>src/test/java/dap4/test/TestDap4All.java</exclude>
+	         </excludes>
            </configuration>
          </execution>
        </executions>
@@ -164,35 +169,3 @@
 </build>
 
 </project>
-
-<!--
-    <plugin>
-      <groupId>org.apache.maven.plugins</groupId>
-      <artifactId>maven-compiler-plugin</artifactId>
-      <version>2.0.2</version>
-      <configuration>
-        <source>1.7</source>
-        <target>1.7</target>
-     </configuration>
-     <executions>
-       <execution>
-         <id>default-testCompile</id>
-	 <configuration>
-           <source>1.7</source>
-           <target>1.7</target>
-           <skip>false</skip>
-	   <additionalClasspathElements>
-	     <additionalClasspathElement>
-               ${basedir}/target/*.jar
-             </additionalClasspathElement>
-           </additionalClasspathElements>
-           <directory>${basedir}/src/test/java</directory>
-           <includes>
-             <include>**/*.*</include>
-           </includes> 
-         </configuration>
-       </execution>
-     </executions>
-   </plugin>
--->
-
