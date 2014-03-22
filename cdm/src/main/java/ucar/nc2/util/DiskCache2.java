@@ -237,7 +237,7 @@ public class DiskCache2 {
     }
 
     if (neverUseCache) {
-      throw new IllegalStateException("neverUseCache=true, but directory is not writeable ="+fileLocation);
+      throw new IllegalStateException("neverUseCache=true, but file does not exist and directory is not writeable ="+fileLocation);
     }
 
     File f = new File(makeCachePath(fileLocation));

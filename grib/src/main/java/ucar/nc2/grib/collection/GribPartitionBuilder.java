@@ -585,7 +585,7 @@ public abstract class GribPartitionBuilder  {
       int count = 0;
       for (PartitionCollection.Partition part : pc.partitions) {
         GribCollectionProto.MFile.Builder b = GribCollectionProto.MFile.newBuilder();
-        b.setFilename(part.getIndexFilename());
+        b.setFilename(part.getFilename());
         b.setLastModified(part.getLastModified());
         b.setIndex(count++);
         indexBuilder.addMfiles(b.build());
@@ -811,7 +811,7 @@ message Partition {
   private PartitionCollectionProto.Partition writePartitionProto(PartitionCollection.Partition p) throws IOException {
     PartitionCollectionProto.Partition.Builder b = PartitionCollectionProto.Partition.newBuilder();
 
-    b.setFilename(p.getIndexFilename());
+    b.setFilename(p.getFilename());
     b.setName(p.getName());
     b.setDirectory(p.getDirectory());
     b.setLastModified(p.getLastModified());

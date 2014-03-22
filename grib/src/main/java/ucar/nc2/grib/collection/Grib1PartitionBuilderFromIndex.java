@@ -138,7 +138,6 @@ message Partition {
    */
   private PartitionCollection.Partition makePartition(PartitionCollectionProto.Partition proto) {
 
-    return pc.addPartition(proto.getName(), proto.getFilename(),
-            proto.getLastModified(), proto.getDirectory());
+    return pc.addPartition(proto.getName(), proto.getFilename(), proto.getLastModified(), proto.getDirectory());
   }
 }

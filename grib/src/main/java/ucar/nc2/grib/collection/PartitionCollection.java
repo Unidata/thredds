@@ -51,6 +51,7 @@ import ucar.nc2.util.cache.FileCacheable;
 import ucar.nc2.util.cache.FileFactory;
 import ucar.coord.Coordinate;
 import ucar.unidata.io.RandomAccessFile;
+import ucar.unidata.util.StringUtil2;
 
 import java.io.File;
 import java.io.IOException;
@@ -452,26 +453,26 @@ public abstract class PartitionCollection extends GribCollection {
   // wrapper around a GribCollection
   public class Partition implements Comparable<Partition> {
     private final String name, directory;
-    private final String indexFilename;
+    private final String filename;
     private long lastModified;
 
     // temporary storage while building - do not use - must call getGribCollection()()
     // GribCollection gc;
 
     // constructor from ncx
-    public Partition(String name, String indexFilename, long lastModified, String directory) {
+    public Partition(String name, String filename, long lastModified, String directory) {
       this.name = name;
-      this.indexFilename = indexFilename; // grib collection ncx
-      this.directory = directory; // grib collection directory
+      this.filename = filename; // grib collection ncx
       this.lastModified = lastModified;
+      this.directory = directory;
     }
 
     public String getName() {
       return name;
     }
 
-    public String getIndexFilename() {
-      return indexFilename;
+    public String getFilename() {
+      return filename;
     }
 
     public String getDirectory() {
@@ -499,13 +500,19 @@ public abstract class PartitionCollection extends GribCollection {
       return dcm;            // in GribCollection
     }
 
+    public File getIndexFile() {
+      return new File(directory, filename);
+    }
+
     // acquire or construct GribCollection - caller must call gc.close() when done
     public GribCollection getGribCollection() throws IOException {
       GribCollection result;
+      String path = getIndexFile().getPath();
+
       if (partitionCache != null) {
-        result = (GribCollection) partitionCache.acquire(collectionFactory, indexFilename, indexFilename, -1, null, this);
+        result = (GribCollection) partitionCache.acquire(collectionFactory, path, path, -1, null, this);
       } else {
-        result = (GribCollection) collectionFactory.open(indexFilename, -1, null, this);
+        result = (GribCollection) collectionFactory.open(path, -1, null, this);
       }
       return result;
     }
@@ -521,7 +528,7 @@ public abstract class PartitionCollection extends GribCollection {
               "dcm=" + dcm +
               ", name='" + name + '\'' +
               ", directory='" + directory + '\'' +
-              ", indexFilename='" + indexFilename + '\'' +
+              ", filename='" + filename + '\'' +
               ", lastModified='" + CalendarDate.of(lastModified) + '\'' +
               '}';
     }
@@ -534,13 +541,19 @@ public abstract class PartitionCollection extends GribCollection {
     public Partition(MCollection dcm) {
       this.dcm = dcm;
       this.name = dcm.getCollectionName();
-      this.directory = dcm.getRoot();
       this.lastModified = dcm.getLastModified();
-      this.indexFilename = dcm.getIndexFilename();
+      this.directory = StringUtil2.replace(dcm.getRoot(), '\\', "/");
+
+      String indexFilename = StringUtil2.replace(dcm.getIndexFilename(), '\\', "/");
+      if (indexFilename.startsWith(directory)) {
+        indexFilename = indexFilename.substring(directory.length());
+        if (indexFilename.startsWith("/")) indexFilename = indexFilename.substring(1);
+      }
+      filename = indexFilename;
 
       FeatureCollectionConfig config = (FeatureCollectionConfig) dcm.getAuxInfo(FeatureCollectionConfig.AUX_CONFIG);
       if (config == null)
-        System.out.println("HEY Partition");
+        System.out.printf("HEY Partition missing a FeatureCollectionConfig %s%n", dcm);
     }
 
     public GribCollection makeGribCollection(CollectionUpdateType force) throws IOException {
@@ -585,7 +598,7 @@ public abstract class PartitionCollection extends GribCollection {
   @Override
   public List<String> getFilenames() {
     List<String> result = new ArrayList<>();
-    for (Partition p : getPartitions()) result.add(p.indexFilename);
+    for (Partition p : getPartitions()) result.add(p.getIndexFile().getPath());
     return result;
   }
 
@@ -694,8 +707,9 @@ public abstract class PartitionCollection extends GribCollection {
       f.format(" master runtime -> partition %n");
       int count = 0;
       for (CalendarDate cd : masterRuntime.getRuntimesSorted()) {
-        int part =  run2part[count];
-        f.format(" %d:  %s -> part %3d %s%n", count, cd, run2part[count],  getPartition(part).getIndexFilename());
+        int partno =  run2part[count];
+        Partition part = getPartition(partno);
+        f.format(" %d:  %s -> part %3d %s%n", count, cd, run2part[count],  part);
         count++;
       }
       f.format("%n");
@@ -719,7 +733,7 @@ public abstract class PartitionCollection extends GribCollection {
     super.close();
   }  */
 
-  // no longer will be used
+  /* no longer will be used
   public void delete() throws java.io.IOException {
     // remove any partitions from the cache
     if (partitionCache != null) {
@@ -728,6 +742,6 @@ public abstract class PartitionCollection extends GribCollection {
       }
     }
     close();
-  }
+  }  */
 
 }
