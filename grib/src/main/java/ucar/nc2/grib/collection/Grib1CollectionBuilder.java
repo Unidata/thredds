@@ -125,7 +125,7 @@ public class Grib1CollectionBuilder extends GribCollectionBuilder {
         for (Grib1Record gr : index.getRecords()) { // we are using entire Grib2Record - memory limitations
           if (this.cust == null) {
             cust = Grib1Customizer.factory(gr, null);
-            if (config != null) cust.setTimeUnitConverter(config.gribConfig.getTimeUnitConverter());
+            cust.setTimeUnitConverter(config.gribConfig.getTimeUnitConverter());
           }
           if (intvMap != null && filterOut(gr, intvMap)) {
             statsAll.filter++;

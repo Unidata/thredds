@@ -45,6 +45,7 @@ import thredds.inventory.partition.PartitionManagerFromIndexList;
 import ucar.coord.CoordinateRuntime;
 import ucar.nc2.grib.GribIndex;
 import ucar.nc2.time.CalendarDate;
+import ucar.nc2.time.CalendarPeriod;
 import ucar.nc2.util.CloseableIterator;
 import ucar.unidata.util.StringUtil2;
 
@@ -53,7 +54,7 @@ import java.io.IOException;
 import java.util.*;
 
 /**
- * Superclass to builds indexes for collections of Grib files.
+ * Superclass to build indexes for collections of Grib files.
  *
  * @author caron
  * @since 2/19/14
@@ -68,6 +69,7 @@ public abstract class GribCollectionBuilder {
   protected File directory;         // top directory
 
   protected abstract List<? extends Group> makeGroups(List<MFile> allFiles, Formatter errlog) throws IOException;
+
   // indexFile not in cache
   protected abstract boolean writeIndex(String name, File indexFile, CoordinateRuntime masterRuntime, List<? extends Group> groups, List<MFile> files) throws IOException;
 

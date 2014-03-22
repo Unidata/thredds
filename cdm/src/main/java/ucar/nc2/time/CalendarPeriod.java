@@ -102,19 +102,31 @@ public class CalendarPeriod {
 
   /**
    * Convert a udunit period string into a CalendarPeriod
-   * @param udunit period string
-   * @return CalendarPeriod  or null if illegal
+   * @param udunit period string : "[val] unit"
+   * @return CalendarPeriod or null if illegal
    */
   public static CalendarPeriod of(String udunit) {
+    int value;
+    String units;
+
     String[] split = StringUtil2.splitString(udunit);
-    if (split.length != 2) return null;
-    try {
-      int value = Integer.parseInt(split[0]);
-      CalendarPeriod.Field unit = CalendarPeriod.fromUnitString(split[1]);
-      return CalendarPeriod.of(value, unit);
-    } catch (Throwable t) {
+    if (split.length == 1) {
+      value = 1;
+      units =  split[0];
+
+    } else if (split.length == 2) {
+      try {
+        value = Integer.parseInt(split[0]);
+      } catch (Throwable t) {
+        return null;
+      }
+      units =  split[1];
+    } else
       return null;
-    }
+
+
+    CalendarPeriod.Field unit = CalendarPeriod.fromUnitString(units);
+    return CalendarPeriod.of(value, unit);
   }
 
   ////////////////////////
@@ -174,7 +186,6 @@ public class CalendarPeriod {
 
   /**
    * Get the duration in seconds                                               -+
-   *
    * @return the duration in seconds
    * @deprecated dont use because these are fixed length and thus approximate.
    */

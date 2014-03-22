@@ -200,7 +200,6 @@ public class Grib2CollectionBuilder extends GribCollectionBuilder {
   }
 
   private class Grib2Rectilyser {
-
     private final int gdsHash;
     private final List<Grib2Record> records;
     private List<VariableBag> gribvars;
@@ -212,7 +211,8 @@ public class Grib2CollectionBuilder extends GribCollectionBuilder {
     }
 
     public void make(FeatureCollectionConfig.GribConfig config, Counter counter, Formatter info) throws IOException {
-      boolean isDense = (config != null) && "dense".equals(config.getParameter("CoordSys"));
+      boolean isDense = "dense".equals(config.getParameter("CoordSys"));
+      CalendarPeriod userTimeUnit = config.getUserTimeUnit();
 
       // assign each record to unique variable using cdmVariableHash()
       Map<Integer, VariableBag> vbHash = new HashMap<>(100);
@@ -231,21 +231,21 @@ public class Grib2CollectionBuilder extends GribCollectionBuilder {
       // create coordinates for each variable
       for (VariableBag vb : gribvars) {
         Grib2Pds pdsFirst = vb.first.getPDS();
-        int unit = cust.convertTimeUnit(pdsFirst.getTimeUnit());
-        vb.timeUnit = Grib2Utils.getCalendarPeriod(unit);
+        int code = cust.convertTimeUnit(pdsFirst.getTimeUnit());
+        vb.timeUnit = userTimeUnit == null ? Grib2Utils.getCalendarPeriod(code) : userTimeUnit; // so can override the code
         vb.coordND = new CoordinateND<>();
 
         boolean isTimeInterval = vb.first.getPDS().isTimeInterval();
         if (isDense) { // time is runtime X time coord
           vb.coordND.addBuilder(new CoordinateRuntime.Builder2());
           if (isTimeInterval)
-            vb.coordND.addBuilder(new CoordinateTimeIntv.Builder2(cust, unit, vb.timeUnit, null)); // LOOK null refdate not ok
+            vb.coordND.addBuilder(new CoordinateTimeIntv.Builder2(cust, code, vb.timeUnit, null)); // LOOK null refdate not ok
           else
-            vb.coordND.addBuilder(new CoordinateTime.Builder2(pdsFirst.getTimeUnit(), vb.timeUnit, null)); // LOOK null refdate not ok
+            vb.coordND.addBuilder(new CoordinateTime.Builder2(code, vb.timeUnit, null)); // LOOK null refdate not ok
 
         } else {  // time is kept as 2D coordinate, separate list of times for each runtime
           vb.coordND.addBuilder(new CoordinateRuntime.Builder2());
-          vb.coordND.addBuilder(new CoordinateTime2D.Builder2(isTimeInterval, cust, vb.timeUnit, unit));
+          vb.coordND.addBuilder(new CoordinateTime2D.Builder2(isTimeInterval, cust, vb.timeUnit, code));
         }
 
         if (vb.first.getPDS().isEnsemble())

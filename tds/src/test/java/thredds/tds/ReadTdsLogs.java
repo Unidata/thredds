@@ -661,7 +661,7 @@ public class ReadTdsLogs {
   }
 
   static String serverLive = null; // "http://motherlode.ucar.edu:8080";
-  static String serverTest = "http://thredds-test.ucar.edu";
+  static String serverTest = "http://thredds-dev.ucar.edu";
 
   public static void main(String args[]) throws IOException {
     out = null; // new Formatter(new FileOutputStream("C:/TEMP/readTdsLogs.txt"));
@@ -672,7 +672,7 @@ public class ReadTdsLogs {
     long startElapsed = System.nanoTime();
 
     //String accessLogs = "C:\\Users\\edavis\\tdsMonitor\\motherlode.ucar.edu%3A8080\\access\\t   mp\\";
-    String accessLogs = "C:\\Users\\caron\\tdsMonitor\\motherlode.ucar.edu%3A8080\\access\\temp\\";
+    String accessLogs = "C:\\Users\\caron\\tdsMonitor\\thredds.ucar.edu\\access\\readLogs\\";
     //String accessLogs = "C:\\Users\\caron\\tdsMonitor\\motherlode.ucar.edu%3A8081\\access\\";
     //  String accessLogs = "Q:/cdmUnitTest/tds/logs";
 

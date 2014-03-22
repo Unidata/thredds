@@ -639,7 +639,7 @@ public class CoordinateTime2D extends CoordinateTimeAbstract implements Coordina
     private final CalendarPeriod timeUnit;   // time duration, based on code
 
     private final CoordinateRuntime.Builder2 runBuilder;
-    private final Map<Object, CoordinateBuilderImpl<Grib2Record>> timeBuilders;
+    private final Map<Object, CoordinateBuilderImpl<Grib2Record>> timeBuilders;  // one for each runtime
 
     public Builder2(boolean isTimeInterval, Grib2Customizer cust, CalendarPeriod timeUnit, int code) {
       this.isTimeInterval = isTimeInterval;

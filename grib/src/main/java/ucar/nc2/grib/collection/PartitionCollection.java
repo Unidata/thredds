@@ -269,7 +269,9 @@ public abstract class PartitionCollection extends GribCollection {
         return compVindex2Dp.getDataRecord(indexWantedP);
       } else {
         int[] indexWantedP = translateIndex1D(indexWanted, compVindex2Dp);
-        return compVindex2Dp.getDataRecord(indexWantedP);      }
+        if (indexWantedP == null) return null;
+        return compVindex2Dp.getDataRecord(indexWantedP);
+      }
     }
 
 
@@ -350,13 +352,15 @@ public abstract class PartitionCollection extends GribCollection {
           Object wholeVal = wholeCoord1D.getValue(idx);
           resultIdx = compCoord2D.matchTimeCoordinate(runtimeIdxPart, wholeVal, wholeCoord1Dtime.getRefDate());
           if (resultIdx < 0) {
-            resultIdx = compCoord2D.matchTimeCoordinate(runtimeIdxPart, wholeVal, wholeCoord1Dtime.getRefDate());
+            resultIdx = compCoord2D.matchTimeCoordinate(runtimeIdxPart, wholeVal, wholeCoord1Dtime.getRefDate()); // debug
           }
         } else {
           resultIdx = matchCoordinate(wholeCoord1D, idx, compCoord);
         }
-        if (resultIdx < 0)
+        if (resultIdx < 0) {
+          logger.info("Couldnt match coordinates for variable {}", compVindex2D);
           return null;
+        }
         result[countDim + 1] = resultIdx;
         countDim++;
       }

@@ -35,6 +35,7 @@ package thredds.featurecollection;
 import org.jdom2.Element;
 import org.jdom2.Namespace;
 import thredds.inventory.CollectionUpdateType;
+import ucar.nc2.time.CalendarPeriod;
 import ucar.unidata.util.StringUtil2;
 
 import java.util.*;
@@ -554,7 +555,18 @@ public class FeatureCollectionConfig {
       if (params == null) return null;
       return params.get(name);
     }
-  }
+
+
+    public CalendarPeriod getUserTimeUnit() {
+      CalendarPeriod result = null;
+      String timeUnitS = getParameter("timeUnit");
+      if (timeUnitS != null) {
+        result = CalendarPeriod.of(timeUnitS);  // eg "10 min" or "minute"
+      }
+      return result;
+    }
+
+  } // GribConfig
 
   static class GribIntvFilterParam {
     int id;
