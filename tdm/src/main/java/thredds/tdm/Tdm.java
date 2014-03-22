@@ -239,6 +239,7 @@ public class Tdm {
          config.tdmConfig.startupType = CollectionUpdateType.always;
 
        Logger logger = loggerFactory.getLogger("fc." + config.name); // seperate log file for each feature collection (!!)
+       logger.info("FeatureCollection config=" + config);
        CollectionUpdater.INSTANCE.scheduleTasks(config, new Listener(config, logger), logger); // now wired for events
      }
 
