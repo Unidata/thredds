@@ -46,6 +46,8 @@ import java.io.IOException;
  */
 @Immutable
 public class Grib2SectionBitMap {
+  static private org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(Grib2SectionBitMap.class);
+
   private final long startingPosition;
   private final int bitMapIndicator;
 
@@ -97,7 +99,7 @@ public class Grib2SectionBitMap {
 
     // LOOK: bitMapIndicator=254 == previously defined bitmap
     if (bitMapIndicator == 254)
-      System.out.println("HEY bitMapIndicator");
+      logger.debug("HEY bitMapIndicator=254 previously defined bitmap");
 
     if (bitMapIndicator != 0) {
       throw new UnsupportedOperationException("Grib2 Bit map section pre-defined (provided by center) = " + bitMapIndicator);

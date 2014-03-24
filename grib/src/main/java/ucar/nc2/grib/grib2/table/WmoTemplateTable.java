@@ -49,6 +49,8 @@ import java.util.*;
  */
 
 public class WmoTemplateTable implements Comparable<WmoTemplateTable> {
+  static private org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(WmoTemplateTable.class);
+
   public static final Version standard = Version.GRIB2_10_0_1;
 
   public enum Version {
@@ -249,7 +251,7 @@ public class WmoTemplateTable implements Comparable<WmoTemplateTable> {
           m1 = Integer.parseInt(slist2[0]);
           m2 = Integer.parseInt(slist2[1]);
         } else
-          System.out.println("HEY bad= %s%n" + name);
+          logger.warn("WmoTemplateTable bad= {}", name);
         break;
       }
     }
@@ -391,8 +393,6 @@ public class WmoTemplateTable implements Comparable<WmoTemplateTable> {
   } */
 
   private String convert(Grib2Customizer tables, String table, int value) {
-    if (table.equals("ProcessId"))
-      System.out.println("HEY");
     String result = tables.getTableValue(table, value);
     return (result != null) ? result : "Table " + table + " code " + value + " not found";
   }

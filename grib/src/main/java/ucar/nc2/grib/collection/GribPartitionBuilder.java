@@ -331,7 +331,7 @@ public abstract class GribPartitionBuilder  {
         CoordinateRuntime runtime2D = t2d.getRuntimeCoordinate();
         CoordinateRuntime runtime = runtimes.get(runtime2D);
         if (runtime == null)
-          System.out.printf("HEY assignRuntimeNames failed on %s group %s%n", t2d.getName(), resultGroup.getId());
+          logger.warn("HEY assignRuntimeNames failed on {} group {}", t2d.getName(), resultGroup.getId());
       } // end debug
 
 

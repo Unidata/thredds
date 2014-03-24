@@ -57,7 +57,7 @@ public class SparseArray<T> {
     content.add(thing);            // add the thing at end of list, idx = size-1
     int where = calcIndex(index);
     if (where < 0 || where >= track.length)
-      System.out.println("HEY");
+      System.out.println("HEY"); // set bkeakpoint
     if (track[where] > 0) {
       ndups++;  // LOOK here is where we need to decide how to handle duplicates
       if (info != null) info.format(" duplicate %s%n     with %s%n%n", thing, content.get(track[where]-1));
@@ -75,7 +75,7 @@ public class SparseArray<T> {
 
   public T getContent(int idx) {
     if (idx > track.length || idx < 0)
-      System.out.println("HEY");
+      System.out.println("HEY");  // set bkeakpoint
     int contentIdx = track[idx]-1;
     if (contentIdx < 0)
       return null; // missing

@@ -553,7 +553,7 @@ public abstract class PartitionCollection extends GribCollection {
 
       FeatureCollectionConfig config = (FeatureCollectionConfig) dcm.getAuxInfo(FeatureCollectionConfig.AUX_CONFIG);
       if (config == null)
-        System.out.printf("HEY Partition missing a FeatureCollectionConfig %s%n", dcm);
+        logger.warn("HEY Partition missing a FeatureCollectionConfig {}", dcm);
     }
 
     public GribCollection makeGribCollection(CollectionUpdateType force) throws IOException {

@@ -21,6 +21,8 @@ import java.util.*;
  * @since 12/10/13
  */
 public class CoordinateUnionizer<T> {
+  static private org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(CoordinateUnionizer.class);
+
   FeatureCollectionConfig.GribIntvFilter intvFilter;
   int varId;
 
@@ -66,7 +68,7 @@ public class CoordinateUnionizer<T> {
           // debug
           CoordinateRuntime runtimeFrom2D = time2D.getRuntimeCoordinate();
           if (!runtimeFrom2D.equals(runtime))
-            System.out.println("HEY");
+            logger.warn("HEY CoordinateUnionizer runtimes not equal");
           break;
         case vert:
           if (vertBuilder == null) vertBuilder = new CoordinateVert.Builder2(coord.getCode());
@@ -126,7 +128,7 @@ public class CoordinateUnionizer<T> {
     if (runtimeBuilder != null)
       unionCoords.add(runtimeBuilder.finish());
     else
-      System.out.println("HEY missing runtime");
+      logger.warn("HEY CoordinateUnionizer missing runtime");
 
     if (timeBuilder != null)
       unionCoords.add(timeBuilder.finish());
@@ -135,7 +137,7 @@ public class CoordinateUnionizer<T> {
     else if (time2DBuilder != null)
       unionCoords.add(time2DBuilder.finish());
     else
-      System.out.println("HEY missing time");
+      logger.warn("HEY CoordinateUnionizer missing time");
 
     if (vertBuilder != null)
       unionCoords.add(vertBuilder.finish());

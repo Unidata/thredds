@@ -26,7 +26,7 @@ public class TwoDTimeInventory {
   public void add(int runIdx, int timeIdx) {
     int idx = runIdx * ntimes + timeIdx;
     if (idx >= count.length)
-      System.out.println("HEY");
+      System.out.println("HEY"); // set breakpoint
     count[idx]++;
   }
 

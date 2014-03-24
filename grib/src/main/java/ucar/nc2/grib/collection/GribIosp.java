@@ -956,7 +956,7 @@ public abstract class GribIosp extends AbstractIOServiceProvider {
         for (int x = xRange.first(); x <= xRange.last(); x += xRange.stride()) {
           int dataIdx = y * nx + x;
           if (dataIdx >= data.length)
-            System.out.println("HEY");
+            System.out.println("HEY"); // set breakpoint
           dataArray.setFloat(start + count, data[dataIdx]);
           count++;
         }

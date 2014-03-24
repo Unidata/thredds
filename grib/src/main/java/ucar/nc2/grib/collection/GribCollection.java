@@ -345,8 +345,8 @@ public abstract class GribCollection implements FileCacheable, AutoCloseable {
   }
 
   private void setIndexFilename(String indexFilename) {
-    if (indexFilename.startsWith("B:\\content") || indexFilename.startsWith("B:/content"))
-      System.out.printf("HEY %s%n", indexFilename);
+    //if (indexFilename.startsWith("B:\\content") || indexFilename.startsWith("B:/content"))
+    //  System.out.printf("HEY %s%n", indexFilename);
     // this.indexFilename = indexFilename;
   }
 
