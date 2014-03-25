@@ -500,14 +500,20 @@ public abstract class PartitionCollection extends GribCollection {
       return dcm;            // in GribCollection
     }
 
-    public File getIndexFile() {
-      return new File(directory, filename);
+    public String getIndexFilenameInCache() {
+      File file = new File(directory, filename);
+      File existingFile = GribCollection.getExistingFileOrCache( file.getPath());
+      if (existingFile == null) {
+        GribCollection.getExistingFileOrCache( file.getPath());  // debug
+        return null;
+      }
+      return existingFile.getPath();
     }
 
     // acquire or construct GribCollection - caller must call gc.close() when done
     public GribCollection getGribCollection() throws IOException {
       GribCollection result;
-      String path = getIndexFile().getPath();
+      String path = getIndexFilenameInCache();
 
       if (partitionCache != null) {
         result = (GribCollection) partitionCache.acquire(collectionFactory, path, path, -1, null, this);
@@ -593,12 +599,12 @@ public abstract class PartitionCollection extends GribCollection {
   }
 
   /**
-   * Use partition names as the filenames
+   * Use partition names as the file names
    */
   @Override
   public List<String> getFilenames() {
     List<String> result = new ArrayList<>();
-    for (Partition p : getPartitions()) result.add(p.getIndexFile().getPath());
+    for (Partition p : getPartitions()) result.add(p.getIndexFilenameInCache());
     return result;
   }
 

@@ -454,7 +454,7 @@ public class CdmIndex2Panel extends JPanel {
 
   private void compareFiles(Formatter f) throws IOException {
     if (gc == null) return;
-    List<String> canon = new ArrayList<String>(gc.getFilenames());
+    List<String> canon = new ArrayList<>(gc.getFilenames());
     Collections.sort(canon);
 
     File idxFile = new File(gc.getIndexFilepathInCache());

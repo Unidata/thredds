@@ -4,6 +4,7 @@ import net.jcip.annotations.Immutable;
 import ucar.nc2.grib.grib1.Grib1Record;
 import ucar.nc2.grib.grib2.Grib2Record;
 import ucar.nc2.time.CalendarDate;
+import ucar.nc2.time.CalendarPeriod;
 import ucar.nc2.util.Indent;
 
 import java.util.*;
@@ -18,11 +19,24 @@ import java.util.*;
 public class CoordinateRuntime implements Coordinate {
   final List<CalendarDate> runtimeSorted;
   final CalendarDate firstDate;
+  CalendarPeriod timeUnit = CalendarPeriod.Hour;
   String name = "reftime";
+  String periodName;
 
-  public CoordinateRuntime(List<CalendarDate> runtimeSorted) {
+  public CoordinateRuntime(List<CalendarDate> runtimeSorted, CalendarPeriod timeUnit) {
     this.runtimeSorted = Collections.unmodifiableList(runtimeSorted);
     firstDate = runtimeSorted.get(0);
+    this.timeUnit = timeUnit == null ? CalendarPeriod.Hour : timeUnit;
+
+    CalendarPeriod.Field cf = this.timeUnit.getField();
+    if (cf == CalendarPeriod.Field.Month || cf == CalendarPeriod.Field.Year)
+      this.periodName = "calendar "+ cf.toString();
+    else
+      this.periodName = cf.toString();
+  }
+
+  public CalendarPeriod getTimeUnits() {
+    return timeUnit;
   }
 
   public List<CalendarDate> getRuntimesSorted() {
@@ -30,14 +44,14 @@ public class CoordinateRuntime implements Coordinate {
   }
 
   /**
-   * Get offsets from firstDate, in units of hours
-   * @return for each runtime, a list of hours from firstdate
+   * Get offsets from firstDate, in units of timeUnit
+   * @return for each runtime, a list of values from firstdate
    */
-  public List<Double> getOffsetsInHours() {
+  public List<Double> getOffsetsInTimeUnits() {
     List<Double> result = new ArrayList<>(runtimeSorted.size());
     for (CalendarDate cd : runtimeSorted) {
       double msecs = (double) cd.getDifferenceInMsecs(firstDate);
-      result.add(msecs / 60 / 60 / 1000);
+      result.add(msecs / timeUnit.getValueInMillisecs());
     }
     return result;
   }
@@ -52,7 +66,7 @@ public class CoordinateRuntime implements Coordinate {
 
   @Override
   public String getUnit() {
-    return "hours since "+firstDate.toString();
+    return periodName+" since "+firstDate.toString();
   }
 
   @Override
@@ -105,7 +119,7 @@ public class CoordinateRuntime implements Coordinate {
   @Override
   public void showCoords(Formatter info) {
     info.format("Run Times: %s (%s)%n", getName(), getUnit());
-    List<Double> udunits = getOffsetsInHours();
+    List<Double> udunits = getOffsetsInTimeUnits();
     int count = 0;
     for (CalendarDate cd : runtimeSorted) {
       info.format("   %s (%f)%n", cd, udunits.get(count++));
@@ -133,6 +147,12 @@ public class CoordinateRuntime implements Coordinate {
 
   public static class Builder2 extends CoordinateBuilderImpl<Grib2Record> {
 
+    CalendarPeriod timeUnit;
+
+    public Builder2(CalendarPeriod timeUnit) {
+      this.timeUnit = timeUnit;
+    }
+
     @Override
     public Object extract(Grib2Record gr) {
       return gr.getReferenceDate();
@@ -143,11 +163,16 @@ public class CoordinateRuntime implements Coordinate {
       List<CalendarDate> runtimeSorted = new ArrayList<>(values.size());
       for (Object val : values) runtimeSorted.add((CalendarDate) val);
       Collections.sort(runtimeSorted);
-      return new CoordinateRuntime(runtimeSorted);
+      return new CoordinateRuntime(runtimeSorted, timeUnit);
     }
   }
 
   public static class Builder1 extends CoordinateBuilderImpl<Grib1Record> {
+    CalendarPeriod timeUnit;
+
+    public Builder1(CalendarPeriod timeUnit) {
+      this.timeUnit = timeUnit;
+    }
 
     @Override
     public Object extract(Grib1Record gr) {
@@ -159,7 +184,7 @@ public class CoordinateRuntime implements Coordinate {
       List<CalendarDate> runtimeSorted = new ArrayList<>(values.size());
       for (Object val : values) runtimeSorted.add((CalendarDate) val);
       Collections.sort(runtimeSorted);
-      return new CoordinateRuntime(runtimeSorted);
+      return new CoordinateRuntime(runtimeSorted, timeUnit);
     }
   }
 

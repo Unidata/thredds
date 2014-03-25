@@ -216,7 +216,7 @@ public abstract class GribPartitionBuilder  {
     // make a list of unique groups across all partitions as well as component groups for each group
     int npart = result.getPartitionSize();
     Map<Integer, GroupPartitions> groupMap = new HashMap<>(40);  // gdsHash, GroupPartition
-    CoordinateBuilder runtimeAllBuilder = new CoordinateRuntime.Builder2();
+    CoordinateBuilder runtimeAllBuilder = new CoordinateRuntime.Builder2(null); // ok to use Builder2 for both grib1 and grib2 because not extracting
     int countPartition = 0;
     for (PartitionCollection.Partition tpp : result.getPartitions()) {
       try (GribCollection gc = tpp.makeGribCollection(forceChildren)) {
@@ -467,7 +467,7 @@ public abstract class GribPartitionBuilder  {
        if (coord.getType() == Coordinate.Type.runtime)
          rtc = (CoordinateRuntime) coord;
       assert rtc != null;
-      List<Double> runOffset = rtc.getOffsetsInHours();
+      List<Double> runOffset = rtc.getOffsetsInTimeUnits();
 
       // create the best time coordinates, for GroupB  LOOK: better, for PoP to join Best of components
       // order is preserved with Group2D

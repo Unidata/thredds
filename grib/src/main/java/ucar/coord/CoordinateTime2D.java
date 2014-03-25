@@ -647,7 +647,7 @@ public class CoordinateTime2D extends CoordinateTimeAbstract implements Coordina
       this.timeUnit = timeUnit;
       this.code = code;
 
-      runBuilder = new CoordinateRuntime.Builder2();
+      runBuilder = new CoordinateRuntime.Builder2(timeUnit);
       timeBuilders = new HashMap<>();
     }
 
@@ -723,7 +723,7 @@ public class CoordinateTime2D extends CoordinateTimeAbstract implements Coordina
       this.timeUnit = timeUnit;
       this.code = code;
 
-      runBuilder = new CoordinateRuntime.Builder1();
+      runBuilder = new CoordinateRuntime.Builder1(timeUnit);
       timeBuilders = new HashMap<>();
     }
 

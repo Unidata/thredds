@@ -46,7 +46,8 @@ public class CoordinateUnionizer<T> {
     for (Coordinate coord : coords) {
       switch (coord.getType()) {
         case runtime:
-          if (runtimeBuilder == null) runtimeBuilder = new CoordinateRuntime.Builder2();
+          CoordinateRuntime rtime = (CoordinateRuntime) coord;
+          if (runtimeBuilder == null) runtimeBuilder = new CoordinateRuntime.Builder2(rtime.getTimeUnits());
           runtimeBuilder.addAll(coord);
           runtime = coord;
           break;
@@ -200,13 +201,13 @@ public class CoordinateUnionizer<T> {
 
       CoordinateTimeAbstract maxCoord = testOrthogonal(timeMap.values());
       if (maxCoord != null)
-        return new CoordinateTime2D(code, timeUnit, new CoordinateRuntime(runtimes), maxCoord, times);
+        return new CoordinateTime2D(code, timeUnit, new CoordinateRuntime(runtimes, timeUnit), maxCoord, times);
 
       List<Coordinate> regCoords = testIsRegular();
       if (regCoords != null)
-        return new CoordinateTime2D(code, timeUnit, new CoordinateRuntime(runtimes), regCoords, times);
+        return new CoordinateTime2D(code, timeUnit, new CoordinateRuntime(runtimes, timeUnit), regCoords, times);
 
-      return new CoordinateTime2D(code, timeUnit, null, new CoordinateRuntime(runtimes), times);
+      return new CoordinateTime2D(code, timeUnit, null, new CoordinateRuntime(runtimes, timeUnit), times);
     }
 
     // regular means that all the times for each offset from 0Z can be made into a single time coordinate (FMRC algo)

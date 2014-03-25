@@ -25,7 +25,7 @@ public class CoordinateSharer<T> {
   List<Coordinate> unionCoords = new ArrayList<>();
   Coordinate runtimeAll;
 
-  CoordinateBuilder runtimeAllBuilder = new CoordinateRuntime.Builder2();
+  CoordinateBuilder runtimeAllBuilder = new CoordinateRuntime.Builder2(null);
   Set<Coordinate> runtimeBuilders = new HashSet<>();
   Set<Coordinate> timeBuilders = new HashSet<>();
   Set<Coordinate> timeIntvBuilders = new HashSet<>();

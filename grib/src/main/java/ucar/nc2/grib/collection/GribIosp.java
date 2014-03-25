@@ -424,7 +424,7 @@ public abstract class GribIosp extends AbstractIOServiceProvider {
     // now convert to udunits
     double[] data = new double[n];
     count = 0;
-    for (double val : rtc.getOffsetsInHours()) {
+    for (double val : rtc.getOffsetsInTimeUnits()) {
       data[count++] = val;
     }
     v.setCachedData(Array.factory(DataType.DOUBLE, new int[]{n}, data));
@@ -1020,6 +1020,7 @@ public abstract class GribIosp extends AbstractIOServiceProvider {
 
       PartitionCollection.DataRecord record = vindexP.getDataRecord(indexWanted);
       if (record == null) {
+        System.out.printf("readDataFromPartition Missing%n");
         vindexP.getDataRecord(indexWanted); // debug
         resultPos++;
         continue;

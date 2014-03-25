@@ -249,6 +249,7 @@ public class Grib1CollectionBuilder extends GribCollectionBuilder {
 
     public void make(FeatureCollectionConfig.GribConfig config, Counter counter, Formatter info) throws IOException {
       boolean isDense = (config != null) && "dense".equals(config.getParameter("CoordSys"));
+      CalendarPeriod userTimeUnit = config.getUserTimeUnit();
 
       // assign each record to unique variable using cdmVariableHash()
       Map<Integer, VariableBag> vbHash = new HashMap<>(100);
@@ -270,19 +271,19 @@ public class Grib1CollectionBuilder extends GribCollectionBuilder {
         Grib1ParamTime ptime = pdss.getParamTime(cust);
 
         int unit = cust.convertTimeUnit(pdss.getTimeUnit());
-        vb.timeUnit = Grib2Utils.getCalendarPeriod(unit); // ok for GRIB1
+        vb.timeUnit = userTimeUnit == null ? Grib2Utils.getCalendarPeriod(unit) : userTimeUnit; // so can override the code // ok for GRIB1
         vb.coordND = new CoordinateND<>();
 
         boolean isTimeInterval = ptime.isInterval();
         if (isDense) { // time is runtime X time coord  LOOK isDense not implemented
-          vb.coordND.addBuilder(new CoordinateRuntime.Builder1());
+          vb.coordND.addBuilder(new CoordinateRuntime.Builder1(vb.timeUnit));
           if (isTimeInterval)
             vb.coordND.addBuilder(new CoordinateTimeIntv.Builder1(cust, unit, vb.timeUnit, null)); // LOOK null refdate not ok
           else
             vb.coordND.addBuilder(new CoordinateTime.Builder1(pdss.getTimeUnit(), vb.timeUnit, null)); // LOOK null refdate not ok
 
         } else {  // time is kept as 2D coordinate, separate list of times for each runtime
-          vb.coordND.addBuilder(new CoordinateRuntime.Builder1());
+          vb.coordND.addBuilder(new CoordinateRuntime.Builder1(vb.timeUnit));
           vb.coordND.addBuilder(new CoordinateTime2D.Builder1(isTimeInterval, cust, vb.timeUnit, unit));
         }
 

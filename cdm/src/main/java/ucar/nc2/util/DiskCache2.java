@@ -258,6 +258,21 @@ public class DiskCache2 {
   }
 
   /**
+   * Looking for an existing file, in cache or no
+   * @param fileLocation the original name
+   * @return existing file if you can find it
+   */
+  public File getExistingFileOrCache(String fileLocation) {
+    File f = new File(fileLocation);
+    if (f.exists()) return f;
+
+    File fc = new File(makeCachePath(fileLocation));
+    if (fc.exists()) return fc;
+
+    return null;
+  }
+
+  /**
    * Create a new, uniquely named file in the root directory.
    * Mimics File.createTempFile()
    *

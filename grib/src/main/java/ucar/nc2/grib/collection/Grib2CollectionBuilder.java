@@ -237,14 +237,14 @@ public class Grib2CollectionBuilder extends GribCollectionBuilder {
 
         boolean isTimeInterval = vb.first.getPDS().isTimeInterval();
         if (isDense) { // time is runtime X time coord
-          vb.coordND.addBuilder(new CoordinateRuntime.Builder2());
+          vb.coordND.addBuilder(new CoordinateRuntime.Builder2(vb.timeUnit));
           if (isTimeInterval)
             vb.coordND.addBuilder(new CoordinateTimeIntv.Builder2(cust, code, vb.timeUnit, null)); // LOOK null refdate not ok
           else
             vb.coordND.addBuilder(new CoordinateTime.Builder2(code, vb.timeUnit, null)); // LOOK null refdate not ok
 
         } else {  // time is kept as 2D coordinate, separate list of times for each runtime
-          vb.coordND.addBuilder(new CoordinateRuntime.Builder2());
+          vb.coordND.addBuilder(new CoordinateRuntime.Builder2(vb.timeUnit));
           vb.coordND.addBuilder(new CoordinateTime2D.Builder2(isTimeInterval, cust, vb.timeUnit, code));
         }
 

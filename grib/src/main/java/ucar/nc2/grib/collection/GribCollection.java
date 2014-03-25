@@ -203,6 +203,10 @@ public abstract class GribCollection implements FileCacheable, AutoCloseable {
     return getDiskCache2().getFile(f.getPath());
   }
 
+  static public File getExistingFileOrCache(String path) {
+    return getDiskCache2().getExistingFileOrCache(path);
+  }
+
   ////////////////////////////////////////////////////////////////
   protected final String name; // collection name; index filename must be directory/name.ncx2
   protected /* final */ File directory;
@@ -259,6 +263,11 @@ public abstract class GribCollection implements FileCacheable, AutoCloseable {
     return config;
   }
 
+  /**
+   * The files that comprise the colelction.
+   * Actual paths, including the grib cache if used.
+   * @return list of filename.
+   */
   public List<String> getFilenames() {
     List<String> result = new ArrayList<>();
     for (MFile file : fileMap.values())
