@@ -66,6 +66,7 @@ public class Grib1CollectionBuilder extends GribCollectionBuilder {
   private final boolean useGenType;
   private final boolean useTableVersion;
 
+  private FeatureCollectionConfig.GribConfig gribConfig;
   private Grib1Customizer cust;
 
   // LOOK prob name could be dcm.getCollectionName()
@@ -73,6 +74,7 @@ public class Grib1CollectionBuilder extends GribCollectionBuilder {
     super(true, name, dcm, logger);
 
     FeatureCollectionConfig config = (FeatureCollectionConfig) dcm.getAuxInfo(FeatureCollectionConfig.AUX_CONFIG);
+    gribConfig = config.gribConfig;
     Map<String, Boolean> pdsConfig = config.gribConfig.pdsHash;
     intvMerge = assignValue(pdsConfig, "intvMerge", true);
     useGenType = assignValue(pdsConfig, "useGenType", false);
@@ -101,7 +103,7 @@ public class Grib1CollectionBuilder extends GribCollectionBuilder {
 
     logger.debug(" dcm={}", dcm);
     FeatureCollectionConfig config = (FeatureCollectionConfig) dcm.getAuxInfo(FeatureCollectionConfig.AUX_CONFIG);
-    Map<Integer, Integer> gdsConvert = config.gribConfig.gdsHash;
+    //Map<Integer, Integer> gdsConvert = config.gribConfig.gdsHash;
     Map<String, Boolean> pdsConvert = config.gribConfig.pdsHash;
     FeatureCollectionConfig.GribIntvFilter intvMap = (config != null) ?  config.gribConfig.intvFilter : null;
 
@@ -134,8 +136,8 @@ public class Grib1CollectionBuilder extends GribCollectionBuilder {
 
           gr.setFile(fileno); // each record tracks which file it belongs to
           int gdsHash = gr.getGDSsection().getGDS().hashCode();  // use GDS hash code to group records
-          if (gdsConvert != null && gdsConvert.get(gdsHash) != null) // allow external config to muck with gdsHash. Why? because of error in encoding
-            gdsHash = gdsConvert.get(gdsHash);                       // and we need exact hash matching
+          gdsHash = gribConfig.convertGdsHash(gdsHash);  // allow external config to muck with gdsHash. Why? because of error in encoding and we need exact hash matching
+          if (0 == gdsHash) continue; // skip this group
 
           CalendarDate runtime = gr.getReferenceDate();
           GroupAndRuntime gar = new GroupAndRuntime(gdsHash, runtime.getMillis());

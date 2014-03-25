@@ -10,7 +10,7 @@
 <h1>GRIB Collection Configuration</h1>
 <hr/>
 <p>There are a number of ways that the user can intervene in the processing of GRIB Collections, all of them controlled by <strong>&lt;gribConfig&gt;</strong> elements in the TDS configuration catalogs or in NcML. Its important to understand when these elements are applied and when index files need to be regenerated. As of version 4.5, there are two stages of processing. </p>
-<p>The first stage creates GribCollections, which are collections of GRIB records stored in one or more files. Grib Collections try to make all of the records in the collection available to the user by creating a dataset with two time dimensions, a reference time and a forecast time. At this stage, errors in encoding the GDS (horizontal coordinate system) can be fixed. Since distinct GDS will generate separate Groups in the CDM object model, fixing errors here will prevent spurious extra groups from being created. Also, one can control how the GRIB records are collected into Variables</p>
+<p>The first stage creates GribCollections, which are collections of GRIB records stored in one or more files. Grib Collections try to make all of the records in the collection available to the user by creating a dataset with two time dimensions, a reference time and a forecast time. At this stage, errors in encoding the GDS (horizontal coordinate system) can be fixed. Since distinct GDS will generate separate Groups in the CDM object model, fixing errors here will prevent spurious extra groups from being created. Also, one can control how the GRIB records are collected into Variables.</p>
 <h2>Configuration of the GribCollection</h2>
 <h3><strong><a name="gdsHash" id="gdsHash"></a>gdsHash</strong>: Fix errors in GDS encoding</h3>
 <blockquote>
@@ -29,14 +29,22 @@
       fix these problems through NcML or in the TDS gribConfig element.</p>
     <p>First, one must find the GDS hashcodes by using ToolsUI. In the IOSP/GRIB1(2)/GribCollection tab, enter the GRIB file name, which then shows the records
       in the file. Select the GDS (at the bottom) right click for the context menu and choose: compare GDS. This will show the differences in the GDS and the
-      corresponding hashcodes. If you confirm that they are, in fact, the same GDS, then you can fix this problem, for example:</p>
-    <pre>&lt;gribConfig&gt;
+      corresponding hashcodes. If you confirm that they are, in fact, the same GDS, then you can fix this problem, by merging the two groups, for example:</p>
+    <pre>
+ &lt;gribConfig&gt;
    &lt;gdsHash from=&quot;1450218978&quot; to=&quot;1450192070&quot;/&gt;
-&lt;/gribConfig&gt;</pre>
-    <p>This changes those variables using GDS hashcode =&quot;1450218978&quot; to use &quot;1450192070&quot;, which then eliminates the spurious group in the
-      resulting ncx file. Note that for this to work, you must first delete the ncx2 file so it will get recreated when the file is read. After that, you can
+ &lt;/gribConfig&gt;</pre>
+    <p>This changes those variables using GDS hashcode =&quot;1450218978&quot; to use &quot;1450192070&quot;, which essentially merges the two groups and eliminates the spurious group in the
+      resulting ncx file. Note that for this to work, you must first delete the ncx2 files so it will get recreated when the file is read. After that, you can
       open the ncx2 file directly or the NcML file. Also see <a href="../../../netcdf-java/reference/formats/GribFiles.html#gdsHash">CDM
         docs</a>. </p>
+    <p>Sometimes you want to remove spurious records altogether. To do so, set the gdsHash to 0:</p>
+    <pre>
+ &lt;gribConfig&gt;
+   &lt;gdsHash from=&quot;1450218978&quot; to=&quot;0&quot;/&gt;
+ &lt;/gribConfig&gt;</pre>
+    <p>will ignore any records with GDS hashcode 1450218978.</p>
+    <p>&nbsp;</p>
   </blockquote>
 </blockquote>
 <h3>pdsHash: Control how PDS are made into variables</h3>

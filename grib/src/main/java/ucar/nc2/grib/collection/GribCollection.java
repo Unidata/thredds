@@ -764,7 +764,7 @@ public abstract class GribCollection implements FileCacheable, AutoCloseable {
     }
 
     public void show(Formatter f) {
-       f.format("Group %s isTwoD=%s%n", horizCoordSys.getId(), isTwod);
+       f.format("Group %s (%d) isTwoD=%s%n", horizCoordSys.getId(), getGdsHash(), isTwod);
        f.format(" nfiles %d%n", filenose == null ? 0 : filenose.length);
      }
   }

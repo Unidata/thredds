@@ -369,7 +369,6 @@ public class FeatureCollectionConfig {
 
   static public class GribConfig {
     public Set<GribDatasetType> datasets = defaultGribDatasetTypes;
-    public Map<Integer, Integer> gdsHash;  // map one gds hash to another
     public Map<Integer, String> gdsNamer;  // hash, group name
     public Map<String, Boolean> pdsHash = new HashMap<>(); // featureName, yes/no
     public String lookupTablePath, paramTablePath;         // user defined tables
@@ -380,6 +379,7 @@ public class FeatureCollectionConfig {
 
     private TimeUnitConverterHash tuc;
     private boolean explicitDatasets = false;
+    private Map<Integer, Integer> gdsHash;  // map one gds hash to another
 
     public Map<String, String> params;
 
@@ -575,7 +575,6 @@ public class FeatureCollectionConfig {
       return params.get(name);
     }
 
-
     public CalendarPeriod getUserTimeUnit() {
       CalendarPeriod result = null;
       String timeUnitS = getParameter("timeUnit");
@@ -584,6 +583,14 @@ public class FeatureCollectionConfig {
       }
       return result;
     }
+
+    public int convertGdsHash(int hashcode) {
+      if (gdsHash == null) return hashcode;
+      Integer convertedValue = gdsHash.get(hashcode);
+      if (convertedValue == null) return hashcode;
+      return convertedValue;
+    }
+
 
   } // GribConfig
 

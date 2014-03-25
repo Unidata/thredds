@@ -14,40 +14,35 @@
 <p>The TDM creates indexes for featureCollections, in a seperate process than the TDS.</p>
 <ol>
   <li>For static datasets, let the TDM create the indexes, then start the TDS.</li>
-  <li>For dynamic datasets, the TDS should run continually, and will send messageg to the TDS when an index was recreated.</li>
-  <li>For each featureCollection, a log file is created in the TDM current working directory.</li>
+  <li>For dynamic datasets, the TDM should run continually, and will send messages to the TDS when a dataset changes.</li>
+  <li>For each featureCollection, a log file is created in the TDM  working directory.</li>
 </ol>
-<h2>Running</h2>
+<h2>Installing the TDM</h2>
+<p>The TDM can be run from anywhere, but by convention we create a  directory  <strong>{tomcat}/content/tdm</strong>, and run the TDM from there.</p>
 
 <p>Create a shell script to run the TDM, for example <strong>runTdm.sh</strong>:</p>
-<pre>&lt;JAVA&gt; &lt;JVM options&gt; -contentDir &lt;dir&gt; [-catalog &lt;cat&gt;] [-tds &lt;tdsServer&gt;] [-cred &lt;user:passwd&gt;] [-showOnly] [-log level]
-
-&quot;C:/Program Files/Java/jdk1.7.0_17/bin/java&quot; -Xmx2g -server -jar target/tdm-4.3.jar  -contentDir /opt/tds-live/content/thredds &amp;
-  -catalog /opt/tds-live/webapps/thredds/WEB-INF/altContent/idd/thredds/ &amp;
-  -tds http://thredds.ucar.edu/,http://thredds-test.ucar.edu/ </pre>
-<p>Notes:</p>
+<pre>&lt;JAVA&gt; &lt;JVM options&gt; -Dtds.content.root.path=&lt;content directory&gt; [-tds &lt;tdsServers&gt;] [-showOnly] [-log level]
+</pre>
+<p>for example:</p>
+<pre>
+/opt/jdk/bin/java -d64 -Xmx4g -jar tdm-4.5.jar -Dtds.content.root.path=/opt/tds-dev/content -tds &quot;http://thredds-dev.unidata.ucar.edu/&quot;<br /></pre>
+<p>where:</p>
 <ol>
   <li><strong>&lt;JAVA&gt;</strong> Large collections need a lot of memory, so use a 64-bit JVM</li>
   <li><strong>&lt;JVM options&gt;</strong>
     <ol>
-      <li><strong>-Xmx8g</strong> to give it 8 Gbytes memory (for example). More is better.</li>
-      <li><strong>-server </strong>to use the server JVM</li>
-      <li><strong>-jar target/tdm-4.3.jar</strong> : execute the TDM from the jar file</li>
+      <li><strong>-Xmx4g</strong> to give it 4 Gbytes of memory (for example). More is better.</li>
+      <li><strong>-server </strong>to use the server JVM </li>
+      <li><strong>-jar tdm-4.5.jar</strong> : execute the TDM from the jar file</li>
+      <li><strong>-Dtds.content.root.path=&lt;content directory&gt;</strong> this passes the content directory as a system property. The thredds configuration catalogs and  <strong>threddsConfig.xml</strong> are found in <strong>&lt;content directory&gt;/thredds</strong></li>
     </ol>
   </li>
-  <li><strong>-contentDir &lt;dir&gt;: </strong>(required): the TDS content directory where threddsConfig.xml is found. The catalog will be set to <strong>&lt;dir&gt;/catalog.xml </strong>unless
-    you set it differently
-  </li>
-  <li><strong>-catalog &lt;cat&gt;: </strong> (optional) the catalog to read to find the featureCollections elements that you want to index in the background.
-    It will follow catalog references, looking for &lt;featureCollection&gt; elements.
-  </li>
-  <li><strong>-tds &lt;tdsServer&gt;: </strong> (optional) list of TDS servers to notify. comma seperated, no blanks. specify &quot;none&quot; to turn off
-    notifications
-  </li>
-  <li><strong>-cred &lt;user:passwd&gt;</strong>: <strong> </strong> (optional) if you send notifications, the TDS will require a user name and password</li>
+  <li><strong>-tds &lt;tdsServers&gt;: </strong> (optional) list of TDS servers to notify. comma seperated, no blanks. </li>
   <li><strong>-showOnly</strong>: <strong> </strong> (optional) if this is present, just show the featureCollections that will be indexed and exit.</li>
   <li><strong>-log level</strong>: <strong> </strong> (optional) set the log4j logging level = <em>DEBUG, INFO </em>(default)<em>, WARN, ERROR</em></li>
 </ol>
+<p>Running the TDM:</p>
+<p>Upon startup, you will be prompted for the password for the </p>
 <h2>TDM configuration</h2>
 
 <p>More complicated configuration can be done in the Spring configuration inside the jar file <strong>/resources/application-config.xml</strong>:</p>
@@ -145,7 +140,7 @@ where:
 <hr width="100%"/>
 <address>
   <img src="../../thread.png" alt="" width="76" height="67"/> This document is maintained by <a href="mailto:caron@unidata.ucar.edu">John Caron</a>
-  and was last updated May 2013
+  and was last updated March 2014
 </address>
 </body>
 </html>
