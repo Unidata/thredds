@@ -11,17 +11,16 @@
 <hr/>
 <h2>Overview</h2>
 
-<p>The TDM creates indexes for featureCollections, in a seperate process than the TDS.</p>
+<p>The TDM creates indexes for featureCollections, in a seperate process than the TDS. It is configured using the same configuration catalogs as the TDS.</p>
 <ol>
   <li>For static datasets, let the TDM create the indexes, then start the TDS.</li>
   <li>For dynamic datasets, the TDM should run continually, and will send messages to the TDS when a dataset changes.</li>
-  <li>For each featureCollection, a log file is created in the TDM  working directory.</li>
 </ol>
 <h2>Installing the TDM</h2>
 <p>The TDM can be run from anywhere, but by convention we create a  directory  <strong>{tomcat}/content/tdm</strong>, and run the TDM from there.</p>
 
 <p>Create a shell script to run the TDM, for example <strong>runTdm.sh</strong>:</p>
-<pre>&lt;JAVA&gt; &lt;JVM options&gt; -Dtds.content.root.path=&lt;content directory&gt; [-tds &lt;tdsServers&gt;] [-showOnly] [-log level]
+<pre>&lt;JAVA&gt; &lt;JVM options&gt; -Dtds.content.root.path=&lt;content directory&gt; [-tds &lt;tdsServers&gt;] [-cred &lt;user:passwd&gt;] [-showOnly] [-log level]
 </pre>
 <p>for example:</p>
 <pre>
@@ -37,29 +36,102 @@
       <li><strong>-Dtds.content.root.path=&lt;content directory&gt;</strong> this passes the content directory as a system property. The thredds configuration catalogs and  <strong>threddsConfig.xml</strong> are found in <strong>&lt;content directory&gt;/thredds</strong></li>
     </ol>
   </li>
-  <li><strong>-tds &lt;tdsServers&gt;: </strong> (optional) list of TDS servers to notify. comma seperated, no blanks. </li>
+  <li><strong>-tds &lt;tdsServers&gt;: </strong> (optional) list of TDS servers to notify. comma seperated, no blanks.</li>
+  <li><strong>-cred &lt;user:passwd&gt;</strong>: (optional) if you send notifications, the TDS will authenticate using this user name and password. If you do not include this option, you will be prompted for the password on startup, and the user name will be &quot;tdm&quot;.</li>
   <li><strong>-showOnly</strong>: <strong> </strong> (optional) if this is present, just show the featureCollections that will be indexed and exit.</li>
   <li><strong>-log level</strong>: <strong> </strong> (optional) set the log4j logging level = <em>DEBUG, INFO </em>(default)<em>, WARN, ERROR</em></li>
 </ol>
-<p>Running the TDM:</p>
-<p>Upon startup, you will be prompted for the password for the </p>
-<h2>TDM configuration</h2>
+<h2>Running the TDM:</h2>
+<ol>
+  <li>Upon startup, if <strong>-tds</strong> was used, but <strong>-cred</strong> was not, you will be prompted for the password for sending triggers to the TDS, and the user name will be <strong>tdm</strong>.</li>
+  <li>For each featureCollection, a log file is created in the TDM  working directory, with name <strong>fc.&lt;collectionName&gt;.log</strong>. Monitor these logs to look for problems with the indexing.</li>
+</ol>
+<h2>Sending triggers to the TDS</h2>
+<blockquote>
+  <p>The TDM scans the files in the feature Collection, and when it detects that the collection has changed, rewrites the index files. If enabled, it will send a trigger message to the TDS, and the TDS will update that feature collection dataset. To enable this, you must configure the TDS with the tdsTrigger role, and add the user <strong>tdm</strong> with that role. Typically you do that by editing the <strong>${tomcat}/conf/tomcat-user.xml </strong>file, eg:</p>
+  <pre>&lt;?xml version='1.0' encoding='utf-8'?&gt;
+&lt;tomcat-users&gt;
+  &lt;role ... /&gt;
+  &lt;role rolename=&quot;tdsTrigger&quot;/&gt;
+  &lt;user ... /&gt;
+  &lt;user username=&quot;tdm&quot; password=&quot;secret&quot; roles=&quot;tdsTrigger&quot;/&gt;
+&lt;/tomcat-users&gt;</pre>
+  <p>Place trigger=&quot;allow&quot; in the <strong>update</strong> and <strong>tdm</strong> elements in your catalog:</p>
+  <pre><strong>&lt;update startup=&quot;nocheck&quot; trigger=&quot;allow&quot; /&gt;</strong>
+<strong>&lt;tdm rewrite=&quot;test&quot; rescan=&quot;0 0/15 * * * ? *&quot; trigger=&quot;allow&quot;/&gt;</strong>
+</pre>
+</blockquote>
+<hr width="100%"/>
+<h2>Catalog Configuration Examples</h2>
 
+<p>Example configuration in the TDS configuration catalogs. Point the TDM to the content directory using <strong>-Dtds.content.root.path=&lt;content directory&gt;</strong> on the TDM command
+  line.</p>
+
+<h3>Static dataset:</h3>
+<pre>&lt;featureCollection name=&quot;NOMADS CFSRR&quot; featureType=&quot;GRIB2&quot; harvest=&quot;true&quot; path=&quot;grib/NOMADS/cfsrr/timeseries&quot;&gt;<br/>  &lt;metadata inherited=&quot;true&quot;&gt;
+    &lt;dataType&gt;GRID&lt;/dataType&gt;
+    &lt;dataFormat&gt;GRIB-2&lt;/dataFormat&gt;
+  &lt;/metadata&gt;
+  &lt;collection name=&quot;NOMADS-cfsrr-timeseries&quot; spec=&quot;/san4/work/jcaron/cfsrr/**/.*grb2$&quot;<br/>                   dateFormatMark=&quot;#cfsrr/#yyyyMM&quot; timePartition=&quot;directory&quot;/&gt;<br/>  <strong>
+    &lt;tdm startup=&quot;always&quot;/&gt;</strong><br/>&lt;/featureCollection&gt;</pre>
+<ul>
+  <li><strong>startup=&quot;always&quot;</strong> tells the TDM to index this dataset upon TDM startup.</li>
+  <li>A log file will be written to <em>fc.NOMADS-cfsrr-timeseries.log</em> in the working directory.</li>
+  <li>The TDS will use the existing indexes, it does not monitor any changes in the dataset.</li>
+</ul>
+<h3>Dynamic dataset:</h3>
+<pre>&lt;featureCollection name=&quot;DGEX-Alaska_12km&quot; featureType=&quot;GRIB2&quot; harvest=&quot;true&quot; path=&quot;grib/NCEP/DGEX/Alaska_12km&quot;&gt;
+  &lt;metadata inherited=&quot;true&quot;&gt;      
+     &lt;dataType&gt;GRID&lt;/dataType&gt;
+     &lt;dataFormat&gt;GRIB-2&lt;/dataFormat&gt;
+  &lt;/metadata&gt;
+  &lt;collection name=&quot;DGEX-Alaska_12km&quot;
+   spec=&quot;/data/ldm/pub/native/grid/NCEP/DGEX/Alaska_12km/.*grib2$&quot;
+   dateFormatMark=&quot;#DGEX_Alaska_12km_#yyyyMMdd_HHmm&quot;
+   timePartition=&quot;file&quot;
+   olderThan=&quot;5 min&quot;/&gt;
+  <strong>&lt;tdm rewrite=&quot;true&quot; rescan=&quot;0 0/15 * * * ? *&quot; trigger=&quot;allow&quot;/&gt;</strong>
+  <strong>&lt;update startup=&quot;never&quot; trigger=&quot;allow&quot; /&gt;</strong>
+&lt;/featureCollection&gt;</pre>
+
+<ul>
+  <li><strong>&lt;tdm&gt; </strong>element for the TDM
+
+    <ul>
+      <li><strong>rewrite=&quot;test&quot;</strong> tells the TDM to test for dataset changes</li>
+      <li><strong>rescan=&quot;0 0/15 * * * ? *&quot; </strong>rescan directories every 15 minutes.</li>
+      <li><strong>trigger=&quot;allow&quot;</strong> enables the TDM to send a message to the TDS when the dataset index changes. When the TDS gets a
+        trigger, it rereads the index for that dataset.
+      </li>
+    </ul>
+  </li>
+  <li><strong>&lt;update&gt; </strong>element for the TDS
+    <ul>
+      <li><strong>startup=&quot;never&quot;</strong> tells the TDS to read in the featureCollection when starting up, without checking or scanning the files.
+      </li>
+      <li><strong> trigger=&quot;allow&quot;</strong> enables the TDS to recieve messages from the TDM as to when the dataset has changed</li>
+    </ul>
+  </li>
+</ul>
+<hr width="100%"/>
+<h2>TDM configuration (do not use)</h2>
 <p>More complicated configuration can be done in the Spring configuration inside the jar file <strong>/resources/application-config.xml</strong>:</p>
-<pre>&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
+<ul>
+  <li>
+    <pre>&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
  &lt;beans xmlns=&quot;http://www.springframework.org/schema/beans&quot;
    xmlns:xsi=&quot;http://www.w3.org/2001/XMLSchema-instance&quot;
    xmlns:util=&quot;http://www.springframework.org/schema/util&quot;
    xsi:schemaLocation=&quot;http://www.springframework.org/schema/beans	http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
    http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-3.0.xsd&quot;&gt;</pre>
-<pre> &lt;bean id=&quot;executor&quot; class=&quot;java.util.concurrent.Executors&quot; factory-method=&quot;newFixedThreadPool&quot;&gt;
+    <pre> &lt;bean id=&quot;executor&quot; class=&quot;java.util.concurrent.Executors&quot; factory-method=&quot;newFixedThreadPool&quot;&gt;
 <strong>1)</strong> &lt;constructor-arg type=&quot;int&quot; value=&quot;4&quot;/&gt;
  &lt;/bean&gt;</pre>
-<pre> &lt;bean id=&quot;completionService&quot; class=&quot;java.util.concurrent.ExecutorCompletionService&quot;&gt;
+    <pre> &lt;bean id=&quot;completionService&quot; class=&quot;java.util.concurrent.ExecutorCompletionService&quot;&gt;
    &lt;constructor-arg type=&quot;java.util.concurrent.Executor&quot; ref=&quot;executor&quot;/&gt;
    &lt;constructor-arg type=&quot;java.util.concurrent.BlockingQueue&quot; ref=&quot;completionQ&quot;/&gt;
  &lt;/bean&gt;</pre>
-<pre> &lt;bean id=&quot;testDriver&quot; class=&quot;thredds.tdm.TdmRunner&quot;&gt;
+    <pre> &lt;bean id=&quot;testDriver&quot; class=&quot;thredds.tdm.TdmRunner&quot;&gt;
    &lt;property name=&quot;executor&quot; ref=&quot;executor&quot;/&gt;
 <strong>2)</strong> &lt;property name=&quot;catalog&quot; value=&quot;classpath:/resources/indexNomads.xml&quot;/&gt;
    &lt;property name=&quot;serverNames&quot;&gt;
@@ -69,73 +141,16 @@
     &lt;/list&gt;
    &lt;/property&gt;
  &lt;/bean&gt;</pre>
-<pre>&lt;/beans&gt;</pre>
-where:
+    <pre>&lt;/beans&gt;</pre>
+  </li>
+</ul>
+<p> where:
+</p>
 <ol>
   <li>Number of concurrent threads in the TDM (default 4). More threads speeds the indexing up, the tradeoff is the memory needed.</li>
   <li>Default catalog to read in</li>
   <li>Default TDS servers to notify.</li>
 </ol>
-<h2>Catalog Configuration Examples</h2>
-
-<p>Example configuration in the TDS configuration catalogs. Point the TDM to the top TDS catalog using<strong> -catalog &lt;cat&gt;</strong> on the TDM command
-  line.</p>
-
-<h3>Static dataset:</h3>
-<pre>&lt;featureCollection name=&quot;NOMADS-cfsrr-timeseries&quot; featureType=&quot;GRIB&quot; harvest=&quot;true&quot; path=&quot;grib/NOMADS/cfsrr/timeseries&quot;&gt;<br/>  &lt;metadata inherited=&quot;true&quot;&gt;
-    &lt;dataType&gt;GRID&lt;/dataType&gt;
-    &lt;dataFormat&gt;GRIB-2&lt;/dataFormat&gt;
-  &lt;/metadata&gt;
-  &lt;collection name=&quot;NOMADS-cfsrr-timeseries&quot; spec=&quot;/san4/work/jcaron/cfsrr/**/.*grb2$&quot;<br/>                   dateFormatMark=&quot;#cfsrr/#yyyyMM&quot; timePartition=&quot;directory&quot;/&gt;<br/>  <strong>
-    &lt;tdm startup=&quot;true&quot;/&gt;</strong><br/>&lt;/featureCollection&gt;</pre>
-<ul>
-  <li><strong>startup=&quot;true&quot;</strong> tells the TDM to index this dataset upon TDM startup.</li>
-  <li>A log file will be written to <em>NOMADS-cfsrr-timeseries.log</em></li>
-  <li>The TDS will use the existing indexes, it does not monitor any changes in the dataset.</li>
-</ul>
-<h3>Dynamic dataset:</h3>
-<pre>&lt;featureCollection name=&quot;DGEX-Alaska_12km&quot; featureType=&quot;GRIB&quot; harvest=&quot;true&quot; path=&quot;grib/NCEP/DGEX/Alaska_12km&quot;&gt;
-  &lt;metadata inherited=&quot;true&quot;&gt;      
-     &lt;dataType&gt;GRID&lt;/dataType&gt;
-     &lt;dataFormat&gt;GRIB-2&lt;/dataFormat&gt;
-  &lt;/metadata&gt;
-  &lt;collection spec=&quot;/data/ldm/pub/native/grid/NCEP/DGEX/Alaska_12km/.*grib2$&quot;
-   dateFormatMark=&quot;#DGEX_Alaska_12km_#yyyyMMdd_HHmm&quot;
-   olderThan=&quot;5 min&quot;/&gt;
-  <strong>&lt;tdm startup=&quot;true&quot; rescan=&quot;0 0/15 * * * ? *&quot; trigger=&quot;allow&quot;/&gt;</strong>
-  <strong>&lt;update startup=&quot;nocheck&quot; trigger=&quot;allow&quot; /&gt;</strong>
-&lt;/featureCollection&gt;</pre>
-
-<ul>
-  <li><strong>&lt;tdm&gt; </strong>element for the TDM
-
-    <ul>
-      <li><strong>startup=&quot;true&quot;</strong> tells the TDM to index this dataset upon TDM startup.</li>
-      <li><strong>rescan=&quot;0 0/15 * * * ? *&quot; </strong>rescan directories every 15 minutes.</li>
-      <li><strong>trigger=&quot;allow&quot;</strong> enables the TDM to send a message to the TDS when the dataset index was recreated. When the TDS gets a
-        trigger, it rereads the index for that dataset.
-      </li>
-      <li>To enable triggers, TDS needs this in <strong>tomcat-users.xml:</strong>
-        <pre>&lt;role rolename=&quot;tdsTrigger&quot; description=&quot;can trigger feature collections, eg from tdm&quot;/&gt;
-&lt;user username=&quot;tdm&quot; password=&quot;...&quot; roles=&quot;tdsTrigger&quot;/&gt;<br/>
-      </pre>
-      </li>
-      <li>set username and password on tdm command line with <strong>-cred:username:password</strong>
-        (username must match
-        tomcat-users.xml)
-        <pre>/opt/jdk/bin/java -d64 -Xmx8g -server -jar tdm-4.3.jar -catalog &lt;cat&gt; <strong>-cred tdm:password<strong>
-        </strong></strong></pre>
-      </li>
-    </ul>
-  </li>
-  <li><strong>&lt;update&gt; </strong>element for the TDS
-    <ul>
-      <li><strong>startup=&quot;nocheck&quot;</strong> tells the TDS to read in the featureCollection when starting up, without checking or scanning the files.
-      </li>
-      <li><strong> trigger=&quot;allow&quot;</strong> enables the TDS to recieve messages from the TDM as to when the dataset has changed</li>
-    </ul>
-  </li>
-</ul>
 <p>&nbsp;</p>
 <hr width="100%"/>
 <address>

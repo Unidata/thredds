@@ -481,7 +481,7 @@ public class Tdm {
           driver.sendTriggers = true;
         }
       }
-                                                      // scheme://username:password@domain:port/path?query_string#fragment_id
+                                                     // scheme://username:password@domain:port/path?query_string#fragment_id
       else if (args[i].equalsIgnoreCase("-cred")) {  // LOOK could be http://user:password@server
         String cred = args[i + 1];
         String[] split = cred.split(":");
