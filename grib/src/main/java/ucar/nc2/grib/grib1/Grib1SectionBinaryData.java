@@ -90,7 +90,7 @@ public class Grib1SectionBinaryData {
     startingPosition = raf.getFilePointer();
 
     // octets 1-3 (Length of section)
-    length = GribNumbers.int3(raf);
+    length = GribNumbers.uint3(raf);
     //if (length < 0)
     //  throw new IllegalStateException("GRIB record has bad length, pos = " + startingPosition);
     raf.seek(startingPosition + length);
