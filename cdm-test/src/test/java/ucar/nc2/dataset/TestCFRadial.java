@@ -4,7 +4,7 @@ import java.io.IOException;
 import java.util.Formatter;
 
 import org.junit.Test;
-import junit.framework.Assert;
+import org.junit.Assert;
 import ucar.nc2.VariableSimpleIF;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.dt.RadialDatasetSweep;

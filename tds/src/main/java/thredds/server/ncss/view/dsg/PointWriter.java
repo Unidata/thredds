@@ -556,7 +556,7 @@ public class PointWriter extends AbstractWriter {
         httpHeaders.set("Content-Disposition", "attachment; filename=\"" + NcssRequestUtils.nameFromPathInfo(pathInfo) + ".csv\"");
         httpHeaders.add(ContentType.HEADER, ContentType.csv.getContentHeader());
       } else {
-        httpHeaders.add(ContentType.HEADER, ContentType.text.getContentHeader());
+        httpHeaders.add(ContentType.HEADER, ContentType.text.getContentHeader());   // problem is that browser wont display text/csv in line
       }
 
       return httpHeaders;
