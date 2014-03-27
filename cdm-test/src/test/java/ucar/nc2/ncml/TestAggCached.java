@@ -69,8 +69,8 @@ public class TestAggCached {
       NetcdfDataset nc2 = new NetcdfDataset(nc1);
       System.out.printf("---new NetcdfDataset(nc1) object == %d%n", nc2.hashCode());
       FeatureDataset fd2 = ucar.nc2.ft.FeatureDatasetFactoryManager.wrap(ucar.nc2.constants.FeatureType.STATION, nc2, null, new Formatter(System.out));
-      assert fd2 == null;
-      System.out.printf("---FeatureDataset failed%n");
+      assert fd2 !=  null;  // no longer fails
+      System.out.printf("---FeatureDataset not failed%n");
 
       Formatter out = new Formatter();
       boolean ok = CompareNetcdf2.compareFiles(nc1, nc2, out, false, false, false);
