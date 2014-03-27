@@ -50,7 +50,7 @@ import ucar.nc2.util.Misc;
 import ucar.unidata.test.util.TestDir;
 
 /**
- * Class Description.
+ * Test aggregation where timeUnitsChange='true'
  *
  * @author caron
  */

@@ -40,7 +40,7 @@ public class NcssIntegrationTest {
   @Context
   private Response response; // will be injected after every request
 
-  @HttpTest(method = Method.GET, path = "/ncss/gribCollection/GFS_CONUS_80km/files/GFS_CONUS_80km_20120227_0000.grib1?var=Temperature_isobaric&latitude=40&longitude=-102&vertCoord=225")
+  @HttpTest(method = Method.GET, path = "/ncss/gribCollection/GFS_CONUS_80km/GFS_CONUS_80km_20120227_0000.grib1/GC?var=Temperature_isobaric&latitude=40&longitude=-102&vertCoord=225")
   public void checkGoodRequest() throws JDOMException, IOException {
     assertOk(response);
     String xml = response.getBody(String.class);
@@ -53,7 +53,7 @@ public class NcssIntegrationTest {
     assertEquals(1, elements.size());
   }
 
-  @HttpTest(method = Method.GET, path = "/ncss/gribCollection/GFS_CONUS_80km/files/GFS_CONUS_80km_20120227_0000.grib1?var=Temperature_isobaric")
+  @HttpTest(method = Method.GET, path = "/ncss/gribCollection/GFS_CONUS_80km/GFS_CONUS_80km_20120227_0000.grib1/GC?var=Temperature_isobaric")
   public void getSomeBinaryDataRequest() throws IOException {
     assertOk(response);
     assertTrue(response.hasBody());
