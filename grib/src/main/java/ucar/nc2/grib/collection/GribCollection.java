@@ -432,14 +432,16 @@ public abstract class GribCollection implements FileCacheable, AutoCloseable {
     String filename = mfile.getPath();
     File dataFile = new File(filename);
 
-    /* check reletive location - eg may be /upc/share instead of Q:  LOOK WTF ?
-    if (!dataFile.exists()) {
+    // if data file does not exist, check reletive location - eg may be /upc/share instead of Q:
+    if (!dataFile.exists() && indexRaf != null) {
+      File index = new File(indexRaf.getLocation());
+      File parent = index.getParentFile();
       if (fileMap.size() == 1) {
-        dataFile = new File(directory, name); // single file case
+        dataFile = new File(parent, name); // single file case
       } else {
-        dataFile = new File(directory, dataFile.getName()); // must be in same directory as the ncx file
+        dataFile = new File(parent, dataFile.getName()); // must be in same directory as the ncx file
       }
-    } */
+    }
 
 
     // data file not here

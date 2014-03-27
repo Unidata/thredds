@@ -872,7 +872,7 @@ public abstract class GribIosp extends AbstractIOServiceProvider {
     DataRecord(int resultIndex, int fileno, long dataPos, long bmsPos, int scanMode, GdsHorizCoordSys hcs) {
       this.resultIndex = resultIndex;
       this.fileno = fileno;
-      this.dataPos = (dataPos == 0) ? GribCollection.MISSING_RECORD : dataPos; // 0 also means missing in Grib2
+      this.dataPos = dataPos; // (dataPos == 0) && !isGrib1 ? GribCollection.MISSING_RECORD : dataPos; // 0 also means missing in Grib2
       this.bmsPos = bmsPos;
       this.scanMode = scanMode;
       this.hcs = hcs;
