@@ -107,7 +107,7 @@ public class GridRequestsExceptionTest {
   @Test
  	public void testTimeDoesNotIntersect() throws Exception{
     MvcResult result = this.mockMvc.perform(get(path).servletPath(path)
-            .param("var", "Pressure_reduced_to_MSL")
+            .param("var", "Pressure_reduced_to_MSL_msl")
             .param("time", "2012-04-18T15:00:00Z"))
             // .param("time_window", "PT1H"))
             .andExpect(status().is(400))
