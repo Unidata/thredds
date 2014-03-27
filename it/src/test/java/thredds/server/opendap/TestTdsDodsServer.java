@@ -150,7 +150,7 @@ public class TestTdsDodsServer {
   }
 
   private void doOne(String urlString) throws IOException {
-    System.out.println("Open and read "+urlString);
+    System.out.printf("Open and read %s%n", urlString);
 
     NetcdfFile ncd = NetcdfDataset.openFile(urlString, null);
     assert ncd != null;
@@ -160,6 +160,7 @@ public class TestTdsDodsServer {
     int n = vlist.size();
     assert n > 0;
     Variable v = (Variable) vlist.get(n/2);
+    System.out.printf("Read all data from %s%n", v.getName());
     Array data = v.read();
     assert data.getSize() == v.getSize();
 

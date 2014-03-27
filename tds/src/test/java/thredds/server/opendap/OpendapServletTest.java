@@ -51,6 +51,22 @@ public class OpendapServletTest {
     System.out.printf("%s%n", strResponse);
   }
 
+  @Test
+  public void asciiDataRequestTest2() throws UnsupportedEncodingException {
+    String mockURI = "/thredds/dodsC/" + path + ".ascii";
+    String mockQueryString = "Temperature_height_above_ground[0:1:0][0:1:0][0:10:64][0:10:92]";
+    MockHttpServletRequest request = new MockHttpServletRequest("GET", mockURI);
+    request.setContextPath("/thredds");
+    request.setQueryString(mockQueryString);
+    request.setPathInfo(path + ".ascii");
+    MockHttpServletResponse response = new MockHttpServletResponse();
+    opendapServlet.doGet(request, response);
+    assertEquals(200, response.getStatus());
+
+    String strResponse = response.getContentAsString();
+    System.out.printf("%s%n", strResponse);
+  }
+
 
   @Test
   public void dodsDataRequestTest() throws IOException {

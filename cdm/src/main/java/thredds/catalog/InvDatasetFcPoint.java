@@ -60,6 +60,7 @@ public class InvDatasetFcPoint extends InvDatasetFeatureCollection {
         throw new RuntimeException("Failed to create InvDatasetFcPoint", e);
     }
 
+    state = new State(null);
     this.wantDatasets = config.pointConfig.datasets;
   }
 
