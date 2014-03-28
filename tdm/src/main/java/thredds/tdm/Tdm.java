@@ -322,6 +322,7 @@ public class Tdm {
         }
       } catch (Throwable e) {
         logger.error("Tdm.IndexTask " + name, e);
+        e.printStackTrace();
 
       } finally {
         // tell liz that task is done

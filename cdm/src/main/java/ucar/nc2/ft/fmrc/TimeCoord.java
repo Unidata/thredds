@@ -208,9 +208,9 @@ public class TimeCoord implements Comparable {
     Formatter out = new Formatter();
     out.format("%-10s %-26s offsets=", getName(), runDate);
     if (isInterval)
-      for (int i=0; i<bound1.length; i++) out.format("(%3.1f,%3.1f) ", bound1[i], bound2[i]);
+      for (int i=0; i<bound1.length; i++) out.format((Locale) null, "(%3.1f,%3.1f) ", bound1[i], bound2[i]);
     else
-      for (double val : offset) out.format("%3.1f, ", val);
+      for (double val : offset) out.format((Locale) null, "%3.1f, ", val);
     return out.toString();
   }
 
