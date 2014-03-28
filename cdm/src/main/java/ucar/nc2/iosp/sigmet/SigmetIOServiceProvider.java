@@ -115,8 +115,19 @@ public class SigmetIOServiceProvider extends AbstractIOServiceProvider {
   public boolean isValidFile(ucar.unidata.io.RandomAccessFile raf) {
     try {
       raf.order(RandomAccessFile.LITTLE_ENDIAN);
-      raf.seek(24);
-      return (raf.readShort() == (short) 15);
+      // The first struct in the file is the product_hdr, which will have the
+      // standard structure_header, followed by other embedded structures.
+      // Each of these structures also have a structure header. To validate
+      // the file we check for a product_hdr (by looking for type 27 in the
+      // structure_header), then a product_configuration structure (by looking
+      // for type 26 in its structure_header), then checking that that
+      // the product_configuration does indicate a type of RAW data (type 15)
+      raf.seek(0);
+      short[] data = new short[13];
+      raf.readShort(data, 0, 13);
+      return (data[0] == (short) 27 &&
+              data[6] == (short) 26 &&
+              data[12] ==(short) 15);
     } catch (IOException ioe) {
       System.out.println("In isValidFile(): " + ioe.toString());
       return false;
