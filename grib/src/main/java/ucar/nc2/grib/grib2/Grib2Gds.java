@@ -74,7 +74,10 @@ public abstract class Grib2Gds {
         result = new PolarStereographic(data);
         break;
       case 30:
-        result = new LambertConformal(data);
+        result = new LambertConformal(data, 30);
+        break;
+      case 31:
+        result = new AlbersEqualArea(data);
         break;
       case 40:
         result = new GaussLatLon(data);
@@ -856,10 +859,10 @@ Template 3.30 (Grid definition template 3.30 - Lambert conformal)
     public float la1, lo1, lov, lad, dX, dY, latin1, latin2, latSouthPole, lonSouthPole;
     public int flags, projCenterFlag;
 
-    private int hla1, hlo1, hlov, hlad, hdX, hdY, hlatin1, hlatin2; // hasheesh
+    protected int hla1, hlo1, hlov, hlad, hdX, hdY, hlatin1, hlatin2; // hasheesh
 
-    LambertConformal(byte[] data) {
-      super(data, 20);
+    LambertConformal(byte[] data, int template) {
+      super(data, template);
 
       // hashing codes - allow slop in last digit in these values
       hla1 = round(getOctet4(39));
@@ -939,6 +942,89 @@ Template 3.30 (Grid definition template 3.30 - Lambert conformal)
         proj = new ucar.unidata.geoloc.projection.LambertConformal(latin1, lov, latin1, latin2, 0.0, 0.0, earth.getEquatorRadius() * .001);
       } else {
         proj = new ucar.unidata.geoloc.projection.proj4.LambertConformalConicEllipse(
+                latin1, lov, latin1, latin2, 0.0, 0.0, earth);
+      }
+
+      LatLonPointImpl startLL = new LatLonPointImpl(la1, lo1);
+      ProjectionPointImpl start = (ProjectionPointImpl) proj.latLonToProj(startLL);
+      return new GdsHorizCoordSys(getNameShort(), template, getOctet4(7), scanMode, proj, start.getX(), dX, start.getY(), dY,
+              getNxRaw(), getNyRaw(), getNptsInLine());
+    }
+
+    public void testHorizCoordSys(Formatter f) {
+      GdsHorizCoordSys cs = makeHorizCoordSys();
+      f.format("%s testProjection %s%n", getClass().getName(), cs.proj.getClass().getName());
+
+      double endx = cs.startx + (getNx() - 1) * cs.dx;
+      double endy = cs.starty + (getNy() - 1) * cs.dy;
+      ProjectionPointImpl endPP = new ProjectionPointImpl(endx, endy);
+      f.format("   start at proj coord= %s%n", new ProjectionPointImpl(cs.startx, cs.starty));
+      f.format("     end at proj coord= %s%n", endPP);
+
+      LatLonPointImpl startLL = new LatLonPointImpl(la1, lo1);
+      LatLonPoint endLL = cs.proj.projToLatLon(endPP, new LatLonPointImpl());
+
+      f.format("  start at latlon= %s%n", startLL);
+      f.format("    end at latlon= %s%n", endLL);
+    }
+
+  }
+
+  /*
+    Template 3.31 (Grid definition template 3.31 - Albers equal area)
+         1-4 (4): GDS length
+         5-5 (1): Section
+         6-6 (1): Source of Grid Definition (see code table 3.0)
+        7-10 (4): Number of data points
+       11-11 (1): Number of octects for optional list of numbers
+       12-12 (1): Interpretation of list of numbers
+       13-14 (2): Grid Definition Template Number
+          15 (1): Shape of the Earth - (see Code table 3.2)
+          16 (1): Scale factor of radius of spherical Earth
+       17-20 (4): Scaled value of radius of spherical Earth
+          21 (1): Scale factor of major axis of oblate spheroid Earth
+       22-25 (4): Scaled value of major axis of oblate spheroid Earth
+          26 (1): Scale factor of minor axis of oblate spheroid Earth
+       27-30 (4): Scaled value of minor axis of oblate spheroid Earth
+       31-34 (4): Nx - number of points along the x-axis
+       35-38 (4): Ny - number of points along the y-axis
+       39-42 (4): La1 - latitude of first grid point
+       43-46 (4): Lo1 - longitude of first grid point
+          47 (1): Resolution and component flags - (see Flag table 3.3)
+       48-51 (4): LaD - latitude where Dx and Dy are specified
+       52-55 (4): LoV - longitude of meridian parallel to y-axis along which latitude increases as the y-coordinate increases
+       56-59 (4): Dx - x-direction grid length - (see Note 1)
+       60-63 (4): Dy - y-direction grid length - (see Note 1)
+          64 (1): Projection centre flag - (see Flag table 3.5)
+          65 (1): Scanning mode - (see Flag table 3.4)
+       66-69 (4): Latin 1 - first latitude from the pole at which the secant cone cuts the sphere
+       70-73 (4): Latin 2 - second latitude from the pole at which the secant cone cuts the sphere
+       74-77 (4): Latitude of the southern pole of projection
+       78-81 (4): Longitude of the southern pole of projection
+
+      Notes:
+      (1) Grid lengths are in units of 10–3 m, at the latitude specified by LaD.
+      (2) If Latin 1 = Latin 2, then the projection is on a tangent cone.
+      (3) The resolution flags (bits 3–4 of Flag table 3.3) are not applicable.
+      (4) LoV is the longitude value of the meridian which is parallel to the y-axis (or columns of the grid) along which latitude
+      increases as the y-coordinate increases (the orientation longitude may or may not appear on a particular grid).
+      (5) A scaled value of radius of spherical Earth, or major or minor axis of oblate spheroid Earth, is derived by applying the
+      appropriate scale factor to the value expressed in metres.
+   */
+  public static class AlbersEqualArea extends LambertConformal {
+
+    AlbersEqualArea(byte[] data) {
+      super(data, 31);
+    }
+
+    public GdsHorizCoordSys makeHorizCoordSys() {
+      ProjectionImpl proj = null;
+
+      Earth earth = getEarth();
+      if (earth.isSpherical()) {
+        proj = new ucar.unidata.geoloc.projection.AlbersEqualArea(latin1, lov, latin1, latin2, 0.0, 0.0, earth.getEquatorRadius() * .001);
+      } else {
+        proj = new ucar.unidata.geoloc.projection.proj4.AlbersEqualAreaEllipse(
                 latin1, lov, latin1, latin2, 0.0, 0.0, earth);
       }
 
