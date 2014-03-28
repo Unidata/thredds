@@ -722,17 +722,17 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
     if (svctype == null) // See if lead protocol tells us how to interpret
       svctype = decodeLeadProtocol(leadprotocol);
 
-    if (svctype == null) // Look at the path file extension
-      svctype = decodePathExtension(trueurl);
-
     if (svctype == null) {
-      //There are several possibilities at this point; all of which
-      // require further info to disambiguate
-      //  - we have file://<path> or file:<path>; without more help, we cannot
-      //    determine the service type
-      //  - we have a simple url: e.g. http://... ; contact the server
-      if (!leadprotocol.equals("file"))
-        svctype = disambiguateHttp(trueurl);
+        //There are several possibilities at this point; all of which
+        // require further info to disambiguate
+        //  - we have file://<path> or file:<path>; we need to see if
+        //    the extension can help, otherwise, start defaulting.
+        //  - we have a simple url: e.g. http://... ; contact the server
+        if(leadprotocol.equals("file")) {
+            svctype = decodePathExtension(trueurl); // look at the path extension
+        } else {
+          svctype = disambiguateHttp(trueurl);
+        }
     }
 
     if (svctype == ServiceType.OPENDAP)
