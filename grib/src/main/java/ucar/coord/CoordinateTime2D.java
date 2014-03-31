@@ -740,7 +740,7 @@ public class CoordinateTime2D extends CoordinateTimeAbstract implements Coordina
       CalendarDate run = (CalendarDate) runBuilder.extract(gr);
       CoordinateBuilderImpl<Grib1Record> timeBuilder = timeBuilders.get(run);
       if (timeBuilder == null) {
-        timeBuilder = isTimeInterval ? new CoordinateTimeIntv.Builder1(cust, code, timeUnit, run) : new CoordinateTime.Builder1(code, timeUnit, run);
+        timeBuilder = isTimeInterval ? new CoordinateTimeIntv.Builder1(cust, code, timeUnit, run) : new CoordinateTime.Builder1(cust, code, timeUnit, run);
         timeBuilders.put(run, timeBuilder);
       }
       Object time = timeBuilder.extract(gr);
@@ -775,7 +775,7 @@ public class CoordinateTime2D extends CoordinateTimeAbstract implements Coordina
        runBuilder.add( val2D.run);
        CoordinateBuilderImpl<Grib1Record> timeBuilder = timeBuilders.get(val2D.run);
        if (timeBuilder == null) {
-         timeBuilder = isTimeInterval ? new CoordinateTimeIntv.Builder1(cust, code, timeUnit, val2D.run) : new CoordinateTime.Builder1(code, timeUnit, val2D.run);
+         timeBuilder = isTimeInterval ? new CoordinateTimeIntv.Builder1(cust, code, timeUnit, val2D.run) : new CoordinateTime.Builder1(cust, code, timeUnit, val2D.run);
          timeBuilders.put(val2D.run, timeBuilder);
        }
        timeBuilder.add(isTimeInterval ? val2D.tinv : val2D.time);

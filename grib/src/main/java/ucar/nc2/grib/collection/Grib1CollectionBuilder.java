@@ -282,7 +282,7 @@ public class Grib1CollectionBuilder extends GribCollectionBuilder {
           if (isTimeInterval)
             vb.coordND.addBuilder(new CoordinateTimeIntv.Builder1(cust, unit, vb.timeUnit, null)); // LOOK null refdate not ok
           else
-            vb.coordND.addBuilder(new CoordinateTime.Builder1(pdss.getTimeUnit(), vb.timeUnit, null)); // LOOK null refdate not ok
+            vb.coordND.addBuilder(new CoordinateTime.Builder1(cust, pdss.getTimeUnit(), vb.timeUnit, null)); // LOOK null refdate not ok
 
         } else {  // time is kept as 2D coordinate, separate list of times for each runtime
           vb.coordND.addBuilder(new CoordinateRuntime.Builder1(vb.timeUnit));

@@ -3,8 +3,10 @@ package ucar.coord;
 import net.jcip.annotations.Immutable;
 import ucar.nc2.grib.GribUtils;
 import ucar.nc2.grib.TimeCoord;
+import ucar.nc2.grib.grib1.Grib1ParamTime;
 import ucar.nc2.grib.grib1.Grib1Record;
 import ucar.nc2.grib.grib1.Grib1SectionProductDefinition;
+import ucar.nc2.grib.grib1.tables.Grib1Customizer;
 import ucar.nc2.grib.grib2.Grib2Utils;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time.CalendarDateRange;
@@ -202,11 +204,13 @@ public class CoordinateTime extends CoordinateTimeAbstract implements Coordinate
   }
 
   static public class Builder1 extends CoordinateBuilderImpl<Grib1Record>  {
-    int code;  // pdsFirst.getTimeUnit()
-    CalendarPeriod timeUnit;
-    CalendarDate refDate;
+    final Grib1Customizer cust;
+    final int code;  // pdsFirst.getTimeUnit()
+    final CalendarPeriod timeUnit;
+    final CalendarDate refDate;
 
-    public Builder1(int code, CalendarPeriod timeUnit, CalendarDate refDate) {
+    public Builder1(Grib1Customizer cust, int code, CalendarPeriod timeUnit, CalendarDate refDate) {
+      this.cust = cust;
       this.code = code;
       this.timeUnit = timeUnit;
       this.refDate = refDate;
@@ -215,7 +219,9 @@ public class CoordinateTime extends CoordinateTimeAbstract implements Coordinate
     @Override
     public Object extract(Grib1Record gr) {
       Grib1SectionProductDefinition pds = gr.getPDSsection();
-      int offset = pds.getTimeValue1();
+      Grib1ParamTime ptime = pds.getParamTime(cust);
+
+      int offset = ptime.getForecastTime();
       int tuInRecord = pds.getTimeUnit();
       if (tuInRecord == code) {
         return offset;

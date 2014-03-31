@@ -692,6 +692,7 @@ public class Grib1CollectionPanel extends JPanel {
     String header;
     Grib1Parameter param;
     int gdsHash;
+    int cdmHash;
 
     // no-arg constructor
     public ParameterBean() {
@@ -700,9 +701,10 @@ public class Grib1CollectionPanel extends JPanel {
     public ParameterBean(Grib1Record r) {
       pds = r.getPDSsection();
       header = new String(r.getHeader());
-      records = new ArrayList<RecordBean>();
+      records = new ArrayList<>();
       param = cust.getParameter(pds.getCenter(), pds.getSubCenter(), pds.getTableVersion(), pds.getParameterNumber());
       gdsHash = r.getGDSsection().getGDS().hashCode();
+      cdmHash =  Grib1CollectionBuilder.cdmVariableHash(cust, r, gdsHash, true, true);
     }
 
     void addRecord(Grib1Record r) {
@@ -752,6 +754,10 @@ public class Grib1CollectionPanel extends JPanel {
 
     public int getGds() {
       return gdsHash;
+    }
+
+    public int getCdmHash() {
+      return cdmHash;
     }
 
     public int getGen() {
