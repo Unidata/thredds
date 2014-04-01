@@ -89,6 +89,8 @@ public class NcssParamsBean {
   //// station only
 	private List<String> stns;
 
+  /////////////////////////////////////////////////////
+
   public String getAccept() {
     return accept;
   }
@@ -311,7 +313,9 @@ public class NcssParamsBean {
   }
 
   public LatLonRect getBB(){
-		return new LatLonRect(new LatLonPointImpl(getSouth(), getWest()), new LatLonPointImpl(getNorth(), getEast()));
+    double width = getEast() - getWest();
+    double height = getNorth() - getSouth();
+		return new LatLonRect(new LatLonPointImpl(getSouth(), getWest()), height, width);
 	}
 
   private boolean hasValidTime;
