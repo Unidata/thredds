@@ -243,7 +243,7 @@ public class OpendapServlet extends AbstractServlet {
 
       // plain ol' 404
     } catch (FileNotFoundException e) {
-      e.printStackTrace();
+      //e.printStackTrace();
       sendErrorResponse(response, HttpServletResponse.SC_NOT_FOUND, e.getMessage());
 
       // DAP2Exception bad url
