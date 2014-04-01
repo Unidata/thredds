@@ -591,7 +591,6 @@ public class FeatureCollectionConfig {
       return convertedValue;
     }
 
-
   } // GribConfig
 
   static class GribIntvFilterParam {

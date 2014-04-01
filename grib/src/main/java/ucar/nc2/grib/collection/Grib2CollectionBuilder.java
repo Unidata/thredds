@@ -103,6 +103,7 @@ public class Grib2CollectionBuilder extends GribCollectionBuilder {
     FeatureCollectionConfig config = (FeatureCollectionConfig) dcm.getAuxInfo(FeatureCollectionConfig.AUX_CONFIG);
     //Map<Integer, Integer> gdsConvert = config.gribConfig.gdsHash;
     Map<String, Boolean> pdsConvert = config.gribConfig.pdsHash;
+    FeatureCollectionConfig.GribIntvFilter intvMap = (config != null) ?  config.gribConfig.intvFilter : null;
 
     // place each record into its group
     int totalRecords = 0;
@@ -126,6 +127,10 @@ public class Grib2CollectionBuilder extends GribCollectionBuilder {
             Grib2SectionIdentification ids = gr.getId(); // so all records must use the same table (!)
             this.cust = Grib2Customizer.factory(ids.getCenter_id(), ids.getSubcenter_id(), ids.getMaster_table_version(), ids.getLocal_table_version());
             if (config != null) cust.setTimeUnitConverter(config.gribConfig.getTimeUnitConverter());
+          }
+          if (intvMap != null && filterOut(gr, intvMap)) {
+            statsAll.filter++;
+            continue; // skip
           }
 
           gr.setFile(fileno); // each record tracks which file it belongs to
@@ -168,6 +173,42 @@ public class Grib2CollectionBuilder extends GribCollectionBuilder {
 
     return groups;
   }
+
+  // true means remove
+  private boolean filterOut(Grib2Record gr, FeatureCollectionConfig.GribIntvFilter intvFilter) {
+    int[] intv = cust.getForecastTimeIntervalOffset(gr);
+    if (intv == null) return false;
+    int haveLength = intv[1] - intv[0];
+
+    // HACK
+    if (haveLength == 0 && intvFilter.isZeroExcluded()) {  // discard 0,0
+      if ((intv[0] == 0) && (intv[1] == 0)) {
+        //f.format(" FILTER INTV [0, 0] %s%n", gr);
+        return true;
+      }
+      return false;
+
+    } else if (intvFilter.hasFilter()) {
+      int discipline = gr.getIs().getDiscipline();
+      Grib2Pds pds = gr.getPDS();
+      int category = pds.getParameterCategory();
+      int number = pds.getParameterNumber();
+      int id = (discipline << 16) + (category << 8) + number;
+
+      int prob = Integer.MIN_VALUE;
+      if (pds.isProbability()) {
+        Grib2Pds.PdsProbability pdsProb = (Grib2Pds.PdsProbability) pds;
+        prob = (int) (1000 * pdsProb.getProbabilityUpperLimit());
+      }
+
+      // true means use, false means discard
+      return !intvFilter.filterOk(id, haveLength, prob);
+    }
+    return false;
+  }
+
+
+
 
   @Override
   protected boolean writeIndex(String name, String indexFilepath, CoordinateRuntime masterRuntime, List<? extends GribCollectionBuilder.Group> groups, List<MFile> files) throws IOException {
