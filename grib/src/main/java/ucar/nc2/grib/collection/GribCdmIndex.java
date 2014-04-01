@@ -673,7 +673,7 @@ public class GribCdmIndex implements IndexReader {
 
   /////////////////////////////////////////////////////////////////////////////////////
   // manipulate the ncx without building a gc
-  private static final boolean debug = true;
+  private static final boolean debug = false;
   private byte[] magic;
   private int version;
   private GribCollectionProto.GribCollection gribCollectionIndex;

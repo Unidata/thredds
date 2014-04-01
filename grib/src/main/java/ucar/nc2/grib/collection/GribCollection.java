@@ -174,6 +174,11 @@ public abstract class GribCollection implements FileCacheable, AutoCloseable {
     return new File(directory, nameNoBlanks + CollectionAbstract.NCX_SUFFIX);
   }
 
+  static MFile makeIndexMFile(String collectionName, File directory) {
+    String nameNoBlanks = StringUtil2.replace(collectionName, ' ', "_");
+    return new GcMFile(directory, nameNoBlanks + CollectionAbstract.NCX_SUFFIX, -1, -1);
+  }
+
   private static CalendarDateFormatter cf = new CalendarDateFormatter("yyyyMMdd-HHmmss", new CalendarTimeZone("UTC"));
 
   static public String makeName(String collectionName, CalendarDate runtime) {
@@ -186,8 +191,7 @@ public abstract class GribCollection implements FileCacheable, AutoCloseable {
     int pos = idxPathname.lastIndexOf('/');
     String idxFilename = (pos < 0) ? idxPathname : idxPathname.substring(pos+1);
     assert idxFilename.endsWith(CollectionAbstract.NCX_SUFFIX);
-    String result =  idxFilename.substring(0, idxFilename.length() - CollectionAbstract.NCX_SUFFIX.length());
-    return result;
+    return idxFilename.substring(0, idxFilename.length() - CollectionAbstract.NCX_SUFFIX.length());
   }
 
   /**

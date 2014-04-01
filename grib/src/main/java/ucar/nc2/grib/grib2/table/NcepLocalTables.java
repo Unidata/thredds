@@ -284,8 +284,10 @@ public class NcepLocalTables extends Grib2Customizer {
       if (plocal == null) return pwmo;
 
       // allow local table to override all but name, units
-      plocal.name = pwmo.getName();
-      plocal.unit = pwmo.getUnit();
+      if (pwmo != null) {
+        plocal.name = pwmo.getName();
+        plocal.unit = pwmo.getUnit();
+      }
     }
 
     return plocal;

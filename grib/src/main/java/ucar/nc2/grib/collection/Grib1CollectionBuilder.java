@@ -206,11 +206,11 @@ public class Grib1CollectionBuilder extends GribCollectionBuilder {
   }
 
   @Override
-  protected boolean writeIndex(String name, File indexFile, CoordinateRuntime masterRuntime, List<? extends GribCollectionBuilder.Group> groups, List<MFile> files) throws IOException {
+  protected boolean writeIndex(String name, String indexFilepath, CoordinateRuntime masterRuntime, List<? extends GribCollectionBuilder.Group> groups, List<MFile> files) throws IOException {
     Grib1CollectionWriter writer = new Grib1CollectionWriter(dcm, logger);
     List<Grib1CollectionWriter.Group> groups2 = new ArrayList<>();
     for (Object g : groups) groups2.add((Grib1CollectionWriter.Group) g);
-    File indexFileInCache = GribCollection.getFileInCache(indexFile);
+    File indexFileInCache = GribCollection.getFileInCache(indexFilepath);
     return writer.writeIndex(name, indexFileInCache, masterRuntime, groups2, files);
   }
 

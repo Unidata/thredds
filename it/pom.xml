@@ -220,8 +220,8 @@
             <timeout>300000</timeout>
             <containerId>tomcat7x</containerId>
             <zipUrlInstaller>
-              <url>${apache.download}/tomcat/tomcat-7/v${tomcat7.version}/bin/apache-tomcat-${tomcat7.version}.tar.gz</url>
-              <!-- url>http://www.us.apache.org/dist/tomcat/tomcat-7/v${tomcat7.version}/bin/apache-tomcat-${tomcat7.version}.tar.gz</url -->
+               <url>${apache.download}/tomcat/tomcat-7/v${tomcat7.version}/bin/apache-tomcat-${tomcat7.version}.tar.gz</url>
+           <!-- http://mirrors.ibiblio.org/apache/tomcat/tomcat-7/v7.0.53/bin/apache-tomcat-7.0.53.tar.gz-->
               <downloadDir>${project.build.directory}/downloads</downloadDir>
               <extractDir>${project.build.directory}/extracts</extractDir>
             </zipUrlInstaller>
