@@ -683,8 +683,8 @@ public abstract class PartitionCollection extends GribCollection {
     //  partitionMap.remove(p.getDcm().getCollectionName());
   }
 
+  // return open GC
   public GribCollection getLatestGribCollection(List<String> paths) throws IOException {
-
     Partition last = partitions.get(partitions.size()-1);
     paths.add(last.getName());
 
@@ -728,10 +728,9 @@ public abstract class PartitionCollection extends GribCollection {
 
   public RandomAccessFile getRaf(int partno, int fileno) throws IOException {
     Partition part = getPartition(partno);
-    GribCollection gc = part.getGribCollection();
-    RandomAccessFile raf = gc.getDataRaf(fileno);
-    gc.close(); // LOOK ??
-    return raf;
+    try (GribCollection gc = part.getGribCollection()) {  // LOOK this closes the GC.ncx2
+      return gc.getDataRaf(fileno);
+    }
   }
 
   /* public void close() throws java.io.IOException {

@@ -31,12 +31,10 @@
  * WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-package ucar.nc2.thredds.server;
+package thredds.tds;
 
-import sun.net.www.http.HttpClient;
 import ucar.httpclient.*;
 import ucar.nc2.util.IO;
-import ucar.nc2.util.URLnaming;
 import ucar.nc2.util.EscapeStrings;
 
 import java.io.BufferedReader;
@@ -133,6 +131,8 @@ public class ReadTdsLogs {
       HTTPMethod method = null;
       try {
         String unescapedForm = EscapeStrings.unescapeURL(log.path); // make sure its unescaped
+        //if (!unescapedForm.equals(log.path))
+        //  System.out.printf("org=%s unescaped=%s%n", log.path, unescapedForm);
         String urlencoded = server + unescapedForm;
         // String urlencoded = server + URLnaming.escapeQuery(unescapedForm);
         httpClient = HTTPFactory.newSession(urlencoded);        // LOOK new session ??

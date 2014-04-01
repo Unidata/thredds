@@ -879,7 +879,7 @@ public class StringUtil2 {
     System.out.println(" StringUtil unescape <string>");
   }
 
-  public static void main3(String args[]) {
+  public static void main(String args[]) {
     if (args.length < 2) {
       showUsage();
       return;
@@ -899,7 +899,7 @@ public class StringUtil2 {
     }
   }
 
-  public static void main(String args[]) {
+  public static void main2(String args[]) {
     byte[] b = new byte[]{10};
     //String s = new String(b);
     String s = "\n";

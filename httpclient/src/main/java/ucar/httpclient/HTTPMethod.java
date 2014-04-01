@@ -221,7 +221,7 @@ public class HTTPMethod
         // Unfortunately, the apache httpclient 3 code has a restrictive
         // notion of a legal url, so we need to encode it before use
         String urlencoded = Escape.escapeURL(this.legalurl);
-        if(urlencoded == null)
+        if (urlencoded == null)
             throw new HTTPException("Malformed url: " + this.legalurl);
 
         switch (this.methodclass) {

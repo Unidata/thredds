@@ -39,7 +39,6 @@ import thredds.inventory.*;
 import ucar.coord.CoordinateRuntime;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.dataset.NetcdfDataset;
-import ucar.nc2.dt.grid.GridDataset;
 import ucar.nc2.dt.grid.GridCoordSys;
 import ucar.nc2.ft.FeatureDataset;
 import ucar.nc2.grib.GdsHorizCoordSys;
@@ -84,7 +83,7 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
 
   /////////////////////////////////////////////////////////////////////////////
   protected class StateGrib extends State {
-    GribCollection gribCollection;
+    GribCollection gribCollection;   // top level
     GribCollection latest;
     String latestPath;
 
@@ -148,6 +147,7 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
       GribCollection previous = localState.gribCollection;
       GribCollection previousLatest = localState.latest;
 
+      localState.latest = null; // will get updated next time its asked for
       localState.gribCollection = GribCdmIndex.openGribCollection(this.config, force, logger);
       if (localState.gribCollection == null)
         logger.error("InvDatasetFcGrib.updateCollection failed "+this.config);
@@ -162,13 +162,13 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
 
   /////////////////////////////////////////////////////////////////////////
 
-  private InvCatalogImpl makeCatalogFromCollection(URI catURI, String parentName, GribCollection gc) throws IOException { // }, URISyntaxException {
+  private InvCatalogImpl makeCatalogFromCollection(URI catURI, String parentName, GribCollection fromGc) throws IOException { // }, URISyntaxException {
     InvCatalogImpl parentCatalog = (InvCatalogImpl) getParentCatalog();
-    InvCatalogImpl result = new InvCatalogImpl(gc.getName(), parentCatalog.getVersion(), catURI);  // LOOK is catURL right ??
+    InvCatalogImpl result = new InvCatalogImpl(fromGc.getName(), parentCatalog.getVersion(), catURI);  // LOOK is catURL right ??
     result.addService(orgService);
     result.addService(virtualService);
 
-    InvDatasetImpl ds = makeDatasetFromCollection(parentName, gc);
+    InvDatasetImpl ds = makeDatasetFromCollection(parentName, fromGc);
     result.addDataset(ds);
     // String serviceName = ds.getServiceName(); LAME - cant do this way, needs serice already added -fix in cat2
     result.finish();
@@ -176,11 +176,11 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
     return result;
   }
 
-  private InvDatasetImpl makeDatasetFromCollection( String parentName, GribCollection gc) {
+  private InvDatasetImpl makeDatasetFromCollection( String parentName, GribCollection fromGc) {
     // StateGrib localState = (StateGrib) state;
 
     InvDatasetImpl result = new InvDatasetImpl(this);
-    result.setName(gc.getName());
+    result.setName(fromGc.getName());
     result.setParent(null);
     InvDatasetImpl parent = (InvDatasetImpl) this.getParent();
     if (parent != null)
@@ -193,7 +193,7 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
 
     String pathStart = parentName == null ? getPath() :  getPath() + "/"+parentName;
 
-    for (GribCollection.Dataset ds : gc.getDatasets()) {
+    for (GribCollection.Dataset ds : fromGc.getDatasets()) {
       boolean isSingleGroup = ds.getGroupsSize() == 1;
 
       if (ds.getType() == GribCollection.Type.TwoD) {
@@ -219,7 +219,7 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
 
         if (config.gribConfig.hasDatasetType(FeatureCollectionConfig.GribDatasetType.Best)) {
           Iterable<GribCollection.GroupGC> groups = ds.getGroups();
-          InvDatasetImpl best = new InvDatasetImpl(this, getDatasetNameBest(gc.getName()));
+          InvDatasetImpl best = new InvDatasetImpl(this, getDatasetNameBest(fromGc.getName()));
           String path = pathStart + "/" + BEST_DATASET;
           best.setUrlPath(path);
           best.tmi.addDocumentation("summary", "Single time dimension: for each forecast time, use GRIB record with smallest offset from reference time");
@@ -235,7 +235,7 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
       if (ds.getType() == GribCollection.Type.GC) {
         tmi.setServiceName(orgService.getName());  // LOOK kludge - assume GC is the same as a file (!)
 
-        CoordinateRuntime runCoord = gc.getMasterRuntime();
+        CoordinateRuntime runCoord = fromGc.getMasterRuntime();
         assert runCoord.getSize() == 1;
         CalendarDate runtime = runCoord.getFirstDate();
         String path = pathStart + "/" + GC_DATASET;
@@ -252,9 +252,9 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
 
     }
 
-    if (gc instanceof PartitionCollection) {
+    if (fromGc instanceof PartitionCollection) {
       if (config.gribConfig.hasDatasetType(FeatureCollectionConfig.GribDatasetType.Latest) && parentName == null) {  // latest for top only
-        InvDatasetImpl ds = new InvDatasetImpl(this, getDatasetNameLatest(gc.getName()));
+        InvDatasetImpl ds = new InvDatasetImpl(this, getDatasetNameLatest(fromGc.getName()));
         ds.setUrlPath(LATEST_DATASET_CATALOG);
         // ds.setID(getPath() + "/" + FILES + "/" + LATEST_DATASET_CATALOG);
         ds.setServiceName(LATEST_SERVICE);
@@ -263,7 +263,7 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
         //this.addService(InvService.latest);
       }
 
-      PartitionCollection pc =  (PartitionCollection) gc;
+      PartitionCollection pc =  (PartitionCollection) fromGc;
       for (PartitionCollection.Partition partition : pc.getPartitionsSorted()) {
         InvDatasetImpl partDs = makeDatasetFromPartition(this, parentName, partition, true);
         result.addDataset(partDs);
@@ -619,6 +619,7 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
       List<String> paths = new ArrayList<>();
       GribCollection latest = pc.getLatestGribCollection(paths);
       if (latest == null) return null;
+      latest.close(); // doesnt need to be open
 
       // make pathname
       Formatter f = new Formatter();
@@ -635,7 +636,7 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
     }
 
     try {
-      return makeCatalogFromCollection(catURI, localState.latestPath, localState.latest);
+      return makeCatalogFromCollection(catURI, localState.latestPath, localState.latest); // LOOK does gc need to be open ??  I think not.
     } catch (IOException e) {
       e.printStackTrace();
     }
@@ -761,15 +762,21 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
       if (dp == null) return super.getFile(remaining);
 
       GribCollection gc = null;
-      if (dp.partition != null) {   // specific time partition
-        gc =  dp.partition.getGribCollection();
-      } else {
-        gc = localState.gribCollection;
-      }
+      boolean isPartitionGc = false;
+      try {
+        if (dp.partition != null) {   // specific time partition
+          gc =  dp.partition.getGribCollection();
+          isPartitionGc = true;
+        } else {
+          gc = localState.gribCollection;
+        }
+        List<String> files = gc.getFilenames();
+        if (files.size() != 1) return null;
+        return new File(files.get(0));
 
-      List<String> files = gc.getFilenames();
-      if (files.size() != 1) return null;
-      return new File(files.get(0));
+      } finally {
+        if (isPartitionGc) gc.close(); // leave main gc open
+      }
 
     } catch (IOException e) {
       logger.error("Failed to get file="+ remaining, e);
@@ -792,10 +799,9 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
     }
 
     if (dp.partition != null) {   // specific time partition
-      GribCollection gc =  dp.partition.getGribCollection();
-      GridDataset gd = gc.getGridDataset(dp.ds, dp.group, dp.filename, config, null, logger);
-      gc.close(); // LOOK WTF ??
-      return gd;
+      try (GribCollection gc =  dp.partition.getGribCollection()) {
+        return gc.getGridDataset(dp.ds, dp.group, dp.filename, config, null, logger);
+      }
     }
 
     return localState.gribCollection.getGridDataset(dp.ds, dp.group, dp.filename, config, null, logger);
@@ -814,10 +820,9 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
     }
 
     if (dp.partition != null)  { // specific time partition
-      GribCollection gc =  dp.partition.getGribCollection();
-      NetcdfDataset gd = gc.getNetcdfDataset(dp.ds, dp.group, dp.filename, config, null, logger);
-      gc.close();
-      return gd;
+      try (GribCollection gc =  dp.partition.getGribCollection()) {
+        return gc.getNetcdfDataset(dp.ds, dp.group, dp.filename, config, null, logger);
+      }
     }
 
     return localState.gribCollection.getNetcdfDataset(dp.ds, dp.group, dp.filename, config, null, logger);

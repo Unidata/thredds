@@ -234,25 +234,43 @@ public class Grib1ReportPanel extends ReportPanel {
   /////////////////////////////////////////////////////////////////
 
   private void doScanIssues(Formatter f, MCollection dcm, boolean useIndex) throws IOException {
-    Counter predefined = new Counter("predefined");
-    Counter thin = new Counter("thin");
-    Counter timeUnit = new Counter("timeUnit");
-    Counter vertCoord = new Counter("vertCoord");
-    Counter vertCoordInGDS = new Counter("vertCoordInGDS");
+    Counter predefinedA = new Counter("predefined");
+    Counter thinA = new Counter("thin");
+    Counter timeUnitA = new Counter("timeUnit");
+    Counter vertCoordA = new Counter("vertCoord");
+    Counter vertCoordInGDSA = new Counter("vertCoordInGDS");
 
     for (MFile mfile : dcm.getFilesSorted()) {
+      Counter predefined = new Counter("predefined");
+      Counter thin = new Counter("thin");
+      Counter timeUnit = new Counter("timeUnit");
+      Counter vertCoord = new Counter("vertCoord");
+      Counter vertCoordInGDS = new Counter("vertCoordInGDS");
+
       String path = mfile.getPath();
       if (path.endsWith(".gbx8") || path.endsWith(".gbx9") || path.endsWith(".ncx")) continue;
       f.format(" %s%n", path);
       doScanIssues(f, mfile, useIndex, predefined, thin, timeUnit, vertCoord, vertCoordInGDS);
+
+      predefined.show(f);
+      thin.show(f);
+      timeUnit.show(f);
+      vertCoord.show(f);
+      vertCoordInGDS.show(f);
+
+      predefinedA.add(predefined);
+      thinA.add(thin);
+      timeUnitA.add(timeUnit);
+      vertCoordA.add(vertCoord);
+      vertCoordInGDSA.add(vertCoordInGDS);
     }
 
-    f.format("SCAN NEW%n");
-    predefined.show(f);
-    thin.show(f);
-    timeUnit.show(f);
-    vertCoord.show(f);
-    vertCoordInGDS.show(f);
+    f.format("SUMMARY ALL%n");
+    predefinedA.show(f);
+    thinA.show(f);
+    timeUnitA.show(f);
+    vertCoordA.show(f);
+    vertCoordInGDSA.show(f);
   }
 
   private void doScanIssues(Formatter fm, MFile ff, boolean useIndex, Counter predefined, Counter thin, Counter timeUnit,

@@ -456,7 +456,7 @@ public class Tdm {
     for (int i = 0; i < args.length; i++) {
       if (args[i].equalsIgnoreCase("-help")) {
         System.out.printf("usage: <Java> <Java_OPTS> -Dtds.content.root.path=<contentDir> [-catalog <cat>] [-tds <tdsServer>] [-cred <user:passwd>] [-showOnly] [-forceOnStartup]%n");
-        System.out.printf("example: /opt/jdk/bin/java -Xmx3g -jar tdm-4.5.jar -Dtds.content.root.path=/my/content -tds http://thredds-dev.unidata.ucar.edu/%n");
+        System.out.printf("example: /opt/jdk/bin/java -Xmx3g -Dtds.content.root.path=/my/content -jar tdm-4.5.jar -tds http://thredds-dev.unidata.ucar.edu/%n");
         System.exit(0);
       }
 

@@ -244,6 +244,7 @@ public abstract class InvDatasetFeatureCollection extends InvCatalogRef implemen
    */
   abstract protected void updateProto();
 
+  // localState is synched, may be directly changed
   abstract protected void updateCollection(State localState, CollectionUpdateType force);
 
   abstract protected void makeDatasetTop(State localState);

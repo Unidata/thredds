@@ -78,7 +78,7 @@ public class ReportPanel extends JPanel {
     ///////////////////////////////////////////////
 
   protected class Counter {
-    Map<Integer, Integer> set = new HashMap<Integer, Integer>();
+    Map<Integer, Integer> set = new HashMap<>();
     String name;
 
     Counter(String name) {
@@ -86,7 +86,7 @@ public class ReportPanel extends JPanel {
     }
 
     void reset() {
-      set = new HashMap<Integer, Integer>();
+      set = new HashMap<>();
     }
 
     void count(int value) {
@@ -95,6 +95,16 @@ public class ReportPanel extends JPanel {
         set.put(value, 1);
       else
         set.put(value, count + 1);
+    }
+
+    void add(Counter sub) {
+      for (int key : sub.set.keySet()) {
+        Integer value = sub.set.get(key);
+        Integer count = this.set.get(key);
+        if (count == null)
+          count = 0;
+        set.put(key, count + value);
+      }
     }
 
     void show(Formatter f) {
