@@ -1,5 +1,7 @@
 package thredds.inventory.partition;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import thredds.featurecollection.FeatureCollectionConfig;
 import thredds.inventory.*;
 import thredds.inventory.MCollection;
@@ -19,6 +21,7 @@ import java.util.*;
  * @since 11/9/13
  */
 public class DirectoryPartition extends CollectionAbstract implements PartitionManager {
+  static private final Logger logger = LoggerFactory.getLogger(DirectoryPartition.class);
 
   private final FeatureCollectionConfig config;
   private final Path topDir;
@@ -57,9 +60,13 @@ public class DirectoryPartition extends CollectionAbstract implements PartitionM
 
     List<MCollection> result = new ArrayList<>();
     for (DirectoryBuilder child : builder.getChildren()) {
-      MCollection dc = DirectoryBuilder.factory(config, child.getDir(), indexReader, logger);
-      result.add(dc);
-      lastModified = Math.max(lastModified, dc.getLastModified());
+      try {
+        MCollection dc = DirectoryBuilder.factory(config, child.getDir(), indexReader, logger);
+        result.add(dc);
+        lastModified = Math.max(lastModified, dc.getLastModified());
+      } catch (IOException ioe) {
+        logger.warn("DirectoryBuilder on "+child.getDir()+" failed: skipping", ioe);
+      }
     }
 
     return result;
@@ -80,7 +87,7 @@ public class DirectoryPartition extends CollectionAbstract implements PartitionM
     return topDir.toString();
   }
 
-  // empty mfiles
+  // empty mfile list
 
   @Override
   public Iterable<MFile> getFilesSorted() throws IOException {

@@ -60,9 +60,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-@Controller
-@RequestMapping("/radarServer")
-@DependsOn("DataRootHandler")
 public class RadarStationController extends AbstractController {
   private static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(RadarStationController.class);
 
@@ -70,10 +67,8 @@ public class RadarStationController extends AbstractController {
   private static final String MODEL_KEY = "message";  // The model key used to retrieve the message from the model.
   private static final String MSG_CODE = "message.create.station"; // The unique key for retrieving the text associated with this message.
 
-  @Autowired
   private RadarDatasetRepository radarDatasetRepository;
 
-  @Autowired
   private TdsContext tdsContext;
   public static boolean enabled;
 
@@ -94,7 +89,7 @@ public class RadarStationController extends AbstractController {
     enabled = radarDatasetRepository.init(tdsContext); // for some reason this is not working directly
   }
 
-  @RequestMapping(value = {"**/stations.xml"}, method = RequestMethod.GET)
+  //@RequestMapping(value = {"**/stations.xml"}, method = RequestMethod.GET)
   protected ModelAndView stationRequestXml(HttpServletRequest request, HttpServletResponse res) throws IOException {
  //         throws RadarServerException, IOException, NoSuchRequestHandlingMethodException {
     if (!enabled) {
