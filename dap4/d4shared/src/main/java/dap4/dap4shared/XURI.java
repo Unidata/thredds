@@ -78,9 +78,11 @@ public class XURI
             }
         }
         // compute the core URI
-        if(this.protocols.length <= 1) {
+        if(this.protocols.length == 0)
             this.coreuri = path;
-        } else {//(this.protocols > 1)
+        else if(this.protocols.length == 1)
+            this.coreuri = path;
+        else {//(this.protocols.length > 1
             int prefix = 0;
             for(int i = 0;i < this.protocols.length - 1;i++)
                 prefix += (this.protocols[i] + ":").length();
@@ -92,7 +94,10 @@ public class XURI
 
         // Extract the parts of the uri so they can
         // be modified and later reassembled
-        assert this.protocols[this.protocols.length - 1].equals(canonical(this.uri.getScheme()));
+        String lastproto = this.protocols[this.protocols.length-1];
+        if(!lastproto.equals(canonical(this.uri.getScheme())))
+            throw new URISyntaxException(this.uri.toString(),String.format("malformed url: %s :: %s",
+                    lastproto,this.uri.getScheme()));
         this.baseprotocol = this.protocols[this.protocols.length - 1];
         this.userinfo = canonical(this.uri.getRawUserInfo());
         this.host = canonical(this.uri.getRawAuthority()); // including port
