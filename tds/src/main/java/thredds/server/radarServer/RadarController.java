@@ -60,10 +60,7 @@ import ucar.unidata.geoloc.LatLonRect;
 import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.IOException;
+import java.io.*;
 
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -415,9 +412,28 @@ public class RadarController extends AbstractController {
       return null;
     }
 
-    //try {
     String path = TdsPathUtils.extractPath(request, getControllerPath());
     if (path == null) path = "";
+
+    // return main  catalog xml or html
+    if (path.equals("catalog.xml") || path.equals("dataset.xml")) {
+      InvCatalogFactory factory = InvCatalogFactory.getDefaultFactory(false); // no validation
+      String catAsString = factory.writeXML(radarDatasetRepository.defaultCat);
+      PrintWriter pw = response.getWriter();
+      pw.println(catAsString);
+      pw.flush();
+      return null;
+    }
+
+    if (path.equals("catalog.html") || path.equals("dataset.html")) {
+      try {
+        HtmlWriter.getInstance().writeCatalog(request, response, radarDatasetRepository.defaultCat, true); // show catalog as HTML
+      } catch (Exception e) {
+        log.error("Radar HtmlWriter failed ", e);
+        response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "radarServer HtmlWriter error " + path);
+      }
+      return null;
+    }
 
     // default is the complete radarCollection catalog
     InvCatalogImpl catalog = null;
@@ -452,13 +468,6 @@ public class RadarController extends AbstractController {
         return new ModelAndView("threddsInvCatXmlView", "catalog", catalog);
     }
 
-   /* } catch (RadarServerException e) {
-      throw e; // pass it onto Spring exceptionResolver
-
-    } catch (Throwable e) {
-      log.error("handleRequestInternal(): Problem handling request.", e);
-      throw new RadarServerException("handleRequestInternal(): Problem handling request.", e);
-    }  */
   }
 
   /*

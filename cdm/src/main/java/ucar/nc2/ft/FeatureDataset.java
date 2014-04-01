@@ -54,7 +54,7 @@ import java.util.*;
  * @author caron
  */
 
-public interface FeatureDataset extends FileCacheable {
+public interface FeatureDataset extends FileCacheable, AutoCloseable {
 
   /**
    * Contains collections of this FeatureType.

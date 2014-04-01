@@ -47,6 +47,8 @@ public class TestRadarServerUrls {
   public static Collection<Object[]> getTestParameters() {
     return Arrays.asList(new Object[][]{
             {"/radar/radarCollections.xml"},
+            {"/radarServer/catalog.xml"},
+            {"/radarServer/catalog.html"},
             {"/radarServer/radarCollections.xml"},
             {"/radarServer/nexrad/level3/IDD/catalog.xml"},
             {"/radarServer/nexrad/level3/IDD/dataset.xml"},
