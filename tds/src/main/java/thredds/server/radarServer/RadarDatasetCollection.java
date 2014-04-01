@@ -262,7 +262,7 @@ public class RadarDatasetCollection {
     for( String station : stations ) {
       ArrayList<String> days = yyyymmdd.get( station );
       if ( days == null )
-        days = new ArrayList<String>();
+        days = new ArrayList<>();
       days.add( rdc.yyyymmdd );
       yyyymmdd.put( station, days );
       sb.setLength( 0 );

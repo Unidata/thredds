@@ -297,8 +297,8 @@ public class Tdm {
   }
 
   private String makeTriggerUrl(String name) {
-    // return "thredds/admin/collection/trigger?trigger=never&collection=" + name;
-    return "thredds/admin/collection/trigger?nocheck&collection=" + name;  // LOOK changed to nocheck for triggering 4.3, temp kludge
+    return "thredds/admin/collection/trigger?trigger=never&collection=" + name;
+    // return "thredds/admin/collection/trigger?nocheck&collection=" + name;  // LOOK changed to nocheck for triggering 4.3, temp kludge
 
   }
 

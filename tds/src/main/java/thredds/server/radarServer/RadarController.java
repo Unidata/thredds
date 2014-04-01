@@ -50,6 +50,7 @@ import thredds.catalog.query.Station;
 import thredds.server.AbstractController;
 import thredds.server.config.TdsContext;
 import thredds.server.ncss.QueryParams;
+import thredds.servlet.DataRootHandler;
 import thredds.servlet.HtmlWriter;
 import thredds.util.TdsPathUtils;
 import ucar.nc2.time.CalendarDateRange;
@@ -417,6 +418,7 @@ public class RadarController extends AbstractController {
 
     // return main  catalog xml or html
     if (path.equals("catalog.xml") || path.equals("dataset.xml")) {
+      // InvCatalogFactory factory = DataRootHandler.getInstance().getCatalogFactory(false);
       InvCatalogFactory factory = InvCatalogFactory.getDefaultFactory(false); // no validation
       String catAsString = factory.writeXML(radarDatasetRepository.defaultCat);
       PrintWriter pw = response.getWriter();
@@ -491,6 +493,7 @@ public class RadarController extends AbstractController {
     // clone catalog
     ByteArrayOutputStream os = new ByteArrayOutputStream(10000);
     InvCatalogFactory factory = InvCatalogFactory.getDefaultFactory(false);
+    // InvCatalogFactory factory = DataRootHandler.getInstance().getCatalogFactory(false);
     factory.writeXML(catalog, os, true);
     tCat = factory.readXML(new ByteArrayInputStream(os.toByteArray()), null); // RadarDatasetRepository.catURI);
 
