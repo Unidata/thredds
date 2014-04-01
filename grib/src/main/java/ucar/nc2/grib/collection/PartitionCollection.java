@@ -455,6 +455,7 @@ public abstract class PartitionCollection extends GribCollection {
     private final String name, directory;
     private final String filename;
     private long lastModified;
+    private boolean isBad;
 
     // temporary storage while building - do not use - must call getGribCollection()()
     // GribCollection gc;
@@ -481,6 +482,14 @@ public abstract class PartitionCollection extends GribCollection {
 
     public long getLastModified() {
       return lastModified;
+    }
+
+    public boolean isBad() {
+      return isBad;
+    }
+
+    public void setBad(boolean isBad) {
+      this.isBad = isBad;
     }
 
     public boolean isGrib1() {
@@ -536,6 +545,7 @@ public abstract class PartitionCollection extends GribCollection {
               ", directory='" + directory + '\'' +
               ", filename='" + filename + '\'' +
               ", lastModified='" + CalendarDate.of(lastModified) + '\'' +
+              ", isBad=" + isBad +
               '}';
     }
 
@@ -604,7 +614,10 @@ public abstract class PartitionCollection extends GribCollection {
   @Override
   public List<String> getFilenames() {
     List<String> result = new ArrayList<>();
-    for (Partition p : getPartitions()) result.add(p.getIndexFilenameInCache());
+    for (Partition p : getPartitions()) {
+      if (p.isBad()) continue;
+      result.add(p.getIndexFilenameInCache());
+    }
     return result;
   }
 
@@ -679,8 +692,6 @@ public abstract class PartitionCollection extends GribCollection {
 
   public void removePartition(Partition p) {
     partitions.remove(p);
-    //if (null != p.getDcm())
-    //  partitionMap.remove(p.getDcm().getCollectionName());
   }
 
   // return open GC

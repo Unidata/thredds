@@ -78,7 +78,7 @@ import static org.apache.http.auth.AuthScope.*;
  */
 public class Tdm {
   private static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger( Tdm.class);
-  private static final boolean debug = true;
+  private static final boolean debug = false;
 
   private Path contentDir;
   private Path contentThreddsDir;
@@ -222,9 +222,13 @@ public class Tdm {
        }
        Collections.sort(result);
 
-       System.out.printf("Feature Collections:%n");
-       for (String dir : result)
-         System.out.printf(" %s%n", dir);
+       System.out.printf("Feature Collection names:%n");
+       for (String name : result)
+         System.out.printf(" %s%n", name);
+
+       System.out.printf("%nTriggers:%n");
+       for (String name : result)
+         System.out.printf(" %s%n", makeTriggerUrl(name));
        return;
      }
 
@@ -292,6 +296,12 @@ public class Tdm {
     }
   }
 
+  private String makeTriggerUrl(String name) {
+    // return "thredds/admin/collection/trigger?trigger=never&collection=" + name;
+    return "thredds/admin/collection/trigger?nocheck&collection=" + name;  // LOOK changed to nocheck for triggering 4.3, temp kludge
+
+  }
+
   private class IndexTask implements Runnable {
     String name;
     FeatureCollectionConfig config;
@@ -317,7 +327,8 @@ public class Tdm {
         if (changed) System.out.printf("%s %s changed%n", CalendarDate.present(), config.name);
 
         if (changed && config.tdmConfig.triggerOk && sendTriggers) { // send a trigger if enabled
-          String path = "thredds/admin/collection/trigger?trigger=never&collection=" + name;
+          String path = makeTriggerUrl(name);
+
           sendTriggers(path);
         }
       } catch (Throwable e) {
