@@ -218,27 +218,25 @@ public class HTTPMethod
         throws HTTPException
     {
         HttpRequestBase method = null;
-        // Unfortunately, the apache httpclient 3 code has a restrictive
-        // notion of a legal url, so we need to encode it before use
-        String urlencoded = Escape.escapeURL(this.legalurl);
-        if(urlencoded == null)
+
+        if(this.legalurl == null)
             throw new HTTPException("Malformed url: " + this.legalurl);
 
         switch (this.methodclass) {
         case Put:
-            method = new HttpPut(urlencoded);
+            method = new HttpPut(this.legalurl);
             break;
         case Post:
-            method = new HttpPost(urlencoded);
+            method = new HttpPost(this.legalurl);
             break;
         case Get:
-            method = new HttpGet(urlencoded);
+            method = new HttpGet(this.legalurl);
             break;
         case Head:
-            method = new HttpHead(urlencoded);
+            method = new HttpHead(this.legalurl);
             break;
         case Options:
-            method = new HttpOptions(urlencoded);
+            method = new HttpOptions(this.legalurl);
             break;
         default:
             break;

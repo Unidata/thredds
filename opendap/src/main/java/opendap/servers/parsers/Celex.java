@@ -38,6 +38,7 @@
 package opendap.servers.parsers;
 
 import opendap.dap.parsers.ParseException;
+import ucar.nc2.util.EscapeStrings;
 
 import static opendap.servers.parsers.CeParser.*;
 
@@ -48,9 +49,9 @@ class Celex implements Lexer, ExprParserConstants
 
     /* Define 1 and > 1st legal characters */
     static final String wordchars1 =
-            "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-+_/%\\";
+        "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-+_/%\\";
     static final String wordcharsn =
-            "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-+_/%\\ ";
+        "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-+_/%\\ ";
 
     /* Number characters */
     static final String numchars1 = "+-0123456789";
@@ -58,9 +59,9 @@ class Celex implements Lexer, ExprParserConstants
 
     /* Hack to separate numbers from identifiers */
     static final String wordornumberchars1 =
-            wordchars1 + ".";
+        wordchars1 + ".";
     static final String wordornumbercharsn =
-            wordcharsn + ".";
+        wordcharsn + ".";
 
     static String worddelims = "{}[]:;=,&";
 
@@ -128,9 +129,9 @@ class Celex implements Lexer, ExprParserConstants
     read() throws IOException
     {
         int c;
-        if (lookahead.length() == 0) {
+        if(lookahead.length() == 0) {
             c = stream.read();
-            if (c < 0) c = 0;
+            if(c < 0) c = 0;
             charno++;
         } else {
             c = lookahead.charAt(0);
@@ -143,7 +144,7 @@ class Celex implements Lexer, ExprParserConstants
 
     public int
     yylex()
-            throws ParseException
+        throws ParseException
     {
         int token;
         int c;
@@ -153,33 +154,33 @@ class Celex implements Lexer, ExprParserConstants
 
         try {
             token = -1;
-            while (token < 0) {
-                if ((c = read()) <= 0) break;
-                if (c == '\n') {
-                } else if (c <= ' ' || c == '\177') {
+            while(token < 0) {
+                if((c = read()) <= 0) break;
+                if(c == '\n') {
+                } else if(c <= ' ' || c == '\177') {
                     /* whitespace: ignore */
-                } else if (worddelims.indexOf(c) >= 0) {
+                } else if(worddelims.indexOf(c) >= 0) {
                     /* don't put in yytext to avoid memory leak */
                     token = c;
-                } else if (c == '"') {
+                } else if(c == '"') {
                     boolean more = true;
                     /* We have a string token; will be reported as SCAN_STRINGCONST */
-                    while (more && (c = read()) > 0) {
-                        if (c == '"')
+                    while(more && (c = read()) > 0) {
+                        if(c == '"')
                             more = false;
-                        else if (c == '\\') {
+                        else if(c == '\\') {
                             c = read();
-                            if (c < 0) more = false;
+                            if(c < 0) more = false;
                         }
-                        if (more) yytext.append((char) c);
+                        if(more) yytext.append((char) c);
                     }
                     token = SCAN_STRINGCONST;
-                } else if (false && numchars1.indexOf(c) >= 0) {
+                } else if(false && numchars1.indexOf(c) >= 0) {
                     // we might have a SCAN_NUMBERCONST
                     boolean isnumber = false;
                     yytext.append((char) c);
-                    while ((c = read()) > 0) {
-                        if (numcharsn.indexOf(c) < 0) {
+                    while((c = read()) > 0) {
+                        if(numcharsn.indexOf(c) < 0) {
                             pushback(c);
                             break;
                         }
@@ -194,32 +195,32 @@ class Celex implements Lexer, ExprParserConstants
                         isnumber = false;
                     }
                     //A number followed by an id char is assumed to just be a funny id
-                    if (isnumber) {
+                    if(isnumber) {
                         c = read();
-                        if (wordcharsn.indexOf(c) >= 0) { // this is apparently just a funny id
+                        if(wordcharsn.indexOf(c) >= 0) { // this is apparently just a funny id
                             token = SCAN_WORD;
                         } else {  // its really a number
                             token = SCAN_NUMBERCONST;
-                            if (c != '\0') pushback(c);
+                            if(c != '\0') pushback(c);
                         }
                     } else {// !isNumber
                         /* Now, if the funny word has a "." in it,
                            we have to back up to that dot */
                         int dotpoint = yytext.toString().indexOf('.');
-                        if (dotpoint >= 0) {
-                            for (int i = 0; i < dotpoint; i++) {
+                        if(dotpoint >= 0) {
+                            for(int i = 0;i < dotpoint;i++) {
                                 pushback(yytext.charAt(i));
                             }
                             yytext.setLength(dotpoint);
                         }
                         token = SCAN_WORD;
                     }
-                } else if (wordornumberchars1.indexOf(c) >= 0) {
+                } else if(wordornumberchars1.indexOf(c) >= 0) {
                     boolean isnumber = false;
                     /* we have a WORD or a number*/
                     yytext.append((char) c);
-                    while ((c = read()) > 0) {
-                        if (wordornumbercharsn.indexOf(c) < 0) {
+                    while((c = read()) > 0) {
+                        if(wordornumbercharsn.indexOf(c) < 0) {
                             pushback(c);
                             break;
                         }
@@ -233,7 +234,7 @@ class Celex implements Lexer, ExprParserConstants
                     } catch (NumberFormatException nfe) {
                         isnumber = false;
                     }
-                    if (isnumber)
+                    if(isnumber)
                         token = SCAN_NUMBERCONST;
                     else {
                         token = SCAN_WORD;
@@ -244,18 +245,18 @@ class Celex implements Lexer, ExprParserConstants
                            we are left with a single dot.
                          */
                         int dotpoint = yytext.toString().indexOf('.');
-                        if (dotpoint >= 0) {
+                        if(dotpoint >= 0) {
                             // pushback the whole of yytext (in reverse order)
-                            for (int i = yytext.length() -1 ; i >= 0; i--)
+                            for(int i = yytext.length() - 1;i >= 0;i--)
                                 pushback(yytext.charAt(i));
                             yytext.setLength(0);
                             if(dotpoint == 0) {// single character delimiter
                                 token = '.';
-                                yytext.append((char)(c=read()));
+                                yytext.append((char) (c = read()));
                             } else {
                                 // Recollect up to but not including the first dot.
-                                for(int i=0;i<dotpoint;i++)
-                                    yytext.append((char)(c=read()));
+                                for(int i = 0;i < dotpoint;i++)
+                                    yytext.append((char) (c = read()));
                             }
                         }
                     }
@@ -264,13 +265,17 @@ class Celex implements Lexer, ExprParserConstants
                     token = c;
                 }
             }
-            if (token < 0) {
+            if(token < 0) {
                 token = 0;
                 lval = null;
             } else {
-                lval = (yytext.length() == 0 ? (String) null : yytext.toString());
+                // We have to apply DAP2 %xx escaping if this is a SCAN_WORD
+                String text = yytext.toString();
+                if(token == SCAN_WORD)
+                    text = EscapeStrings.unescapeDAPIdentifier(text);
+                lval = (text.length() == 0 ? (String) null : text);
             }
-            if (parsestate.getDebugLevel() > 0) dumptoken(token, (String) lval);
+            if(parsestate.getDebugLevel() > 0) dumptoken(token, (String) lval);
             return token;       /* Return the type of the token.  */
 
         } catch (IOException ioe) {
@@ -280,7 +285,7 @@ class Celex implements Lexer, ExprParserConstants
 
     void
     dumptoken(int token, String lval)
-            throws ParseException
+        throws ParseException
     {
         switch (token) {
         case SCAN_STRINGCONST:
@@ -299,11 +304,11 @@ class Celex implements Lexer, ExprParserConstants
 
     static int
     tohex(int c)
-            throws ParseException
+        throws ParseException
     {
-        if (c >= 'a' && c <= 'f') return (c - 'a') + 0xa;
-        if (c >= 'A' && c <= 'F') return (c - 'A') + 0xa;
-        if (c >= '0' && c <= '9') return (c - '0');
+        if(c >= 'a' && c <= 'f') return (c - 'a') + 0xa;
+        if(c >= 'A' && c <= 'F') return (c - 'A') + 0xa;
+        if(c >= '0' && c <= '9') return (c - '0');
         return -1;
     }
 
@@ -337,10 +342,10 @@ class Celex implements Lexer, ExprParserConstants
     public void yyerror(String s)
     {
         Ceparse.log.error("yyerror: constraint parse error:" + s + "; char " + charno);
-        if (yytext.length() > 0)
+        if(yytext.length() > 0)
             Ceparse.log.error(" near |" + yytext + "|");
         // Add extra info
-        if (parsestate.getURL() != null) Ceparse.log.error("\turl=" + parsestate.getURL());
+        if(parsestate.getURL() != null) Ceparse.log.error("\turl=" + parsestate.getURL());
         Ceparse.log.error("\tconstraint=" + (constraint == null ? "none" : constraint));
     }
 
@@ -349,8 +354,8 @@ class Celex implements Lexer, ExprParserConstants
         StringBuilder nextline = new StringBuilder();
         int c;
         try {
-            while ((c = read()) != -1) {
-                if (c == '\n') break;
+            while((c = read()) != -1) {
+                if(c == '\n') break;
                 nextline.append((char) c);
             }
         } catch (IOException ioe) {
@@ -362,8 +367,8 @@ class Celex implements Lexer, ExprParserConstants
     void removetrailingblanks()
     {
         /* If the last characters were blank, then push them back */
-        if (yytext.charAt(yytext.length() - 1) == ' ') {
-            while (yytext.charAt(yytext.length() - 1) == ' ') {
+        if(yytext.charAt(yytext.length() - 1) == ' ') {
+            while(yytext.charAt(yytext.length() - 1) == ' ') {
                 yytext.setLength(yytext.length() - 1);
             }
             pushback(' ');
