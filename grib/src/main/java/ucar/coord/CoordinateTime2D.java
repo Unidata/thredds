@@ -41,6 +41,8 @@ import ucar.nc2.grib.grib1.tables.Grib1Customizer;
 import ucar.nc2.grib.grib2.Grib2Record;
 import ucar.nc2.grib.grib2.table.Grib2Customizer;
 import ucar.nc2.time.CalendarDate;
+import ucar.nc2.time.CalendarDateRange;
+import ucar.nc2.time.CalendarDateUnit;
 import ucar.nc2.time.CalendarPeriod;
 import ucar.nc2.util.Indent;
 
@@ -335,19 +337,19 @@ public class CoordinateTime2D extends CoordinateTimeAbstract implements Coordina
     return firstValue;
   }
 
-  ////////////////////////////////////////////////
+  @Override
+  public CalendarDateRange makeCalendarDateRange(ucar.nc2.time.Calendar cal) {
 
-  /* translate a time value in the Best coordinate to the correct offset, eg in the partition coordinate
-  public Object getPartValue(int runIdx, Object bestVal) {
-    Coordinate time = times.get(runIdx);
-    if (isTimeInterval) {
-      TimeCoord.Tinv valIntv = (TimeCoord.Tinv) bestVal;
-      return valIntv.offset(-getOffset(runIdx));
-    } else {
-      Integer val = (Integer) bestVal;
-      return val - getOffset(runIdx);
-    }
-  } */
+    CoordinateTimeAbstract firstCoord = getTimeCoordinate(0);
+    CoordinateTimeAbstract lastCoord = getTimeCoordinate(nruns-1);
+
+    CalendarDateRange firstRange = firstCoord.makeCalendarDateRange(cal);
+    CalendarDateRange lastRange = lastCoord.makeCalendarDateRange(cal);
+
+    return CalendarDateRange.of(firstRange.getStart(), lastRange.getEnd());
+  }
+
+  ////////////////////////////////////////////////
 
   public CoordinateTimeAbstract getTimeCoordinate(int runIdx) {
     if (isOrthogonal) return otime;

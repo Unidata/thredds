@@ -723,31 +723,19 @@ public abstract class GribCollection implements FileCacheable, AutoCloseable {
 
     public CalendarDateRange getCalendarDateRange() {
       if (dateRange == null) {
-        CalendarDate start = null;
-        CalendarDate lastRuntime = null;
-        CalendarDate end = null;
+        CalendarDateRange result = null;
         for (Coordinate coord : coords) {
-          Coordinate.Type type = coord.getType();
-          switch (type) {
-            case runtime:
-              CoordinateRuntime runtime = (CoordinateRuntime) coord;
-              start = runtime.getFirstDate();
-              lastRuntime = runtime.getLastDate();
-              end = lastRuntime;
-              break;
+          switch (coord.getType()) {
             case time:
-              CoordinateTime time = (CoordinateTime) coord;
-              CalendarDateRange range = time.makeCalendarDateRange(null, lastRuntime);
-              if (end.isBefore(range.getEnd())) end = range.getEnd();
-              break;
             case timeIntv:
-              CoordinateTimeIntv timeIntv = (CoordinateTimeIntv) coord;
-              range = timeIntv.makeCalendarDateRange(null);
-              if (end.isBefore(range.getEnd())) end = range.getEnd();
-              break;
+            case time2D:
+              CoordinateTimeAbstract time = (CoordinateTimeAbstract) coord;
+              CalendarDateRange range = time.makeCalendarDateRange(null);
+              if (result == null) result = range;
+              else result = result.extend(range);
           }
         }
-        dateRange = CalendarDateRange.of(start, end);
+        dateRange = result;
       }
       return dateRange;
     }
