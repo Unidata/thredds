@@ -36,6 +36,7 @@
 package ucar.coord;
 
 import ucar.nc2.time.CalendarDate;
+import ucar.nc2.time.CalendarDateRange;
 import ucar.nc2.time.CalendarPeriod;
 
 import java.util.List;
@@ -107,5 +108,8 @@ public abstract class CoordinateTimeAbstract implements Coordinate {
 
   ////////////////////////////////////////
   public abstract CoordinateTimeAbstract makeBestTimeCoordinate(List<Double> runOffsets);
+
+  public abstract CalendarDateRange makeCalendarDateRange(ucar.nc2.time.Calendar cal);
+
 
 }

@@ -3006,7 +3006,7 @@ public class
         JOptionPane.showMessageDialog(null, "GribCdmIndexPanel cant open " + command + "\n" + ioe.getMessage());
         err = true;
 
-      } catch (Exception e) {
+      } catch (Throwable e) {
         e.printStackTrace();
         e.printStackTrace(new PrintStream(bos));
         detailTA.setText(bos.toString());
