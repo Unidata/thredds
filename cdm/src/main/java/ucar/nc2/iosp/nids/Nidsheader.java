@@ -675,9 +675,13 @@ class Nidsheader{
                                  break;
                              default:
                                 log.error( "error reading pcode= " + pcode+" "+raf.getLocation());
-                                throw new IOException("error reading pcode, unable to handle the product with code " + pcode);
+                                throw new IOException("error reading pcode, " +
+                                        "unable to handle the packet with code "
+                                        + pcode);
                           }
                           poff = poff + len + 4;
+                          // Need to advance the file's position
+                          bos.position(bos.position() + len);
                       }
                       break;
 
