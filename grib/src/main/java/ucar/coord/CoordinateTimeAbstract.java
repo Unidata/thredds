@@ -48,7 +48,7 @@ import java.util.List;
  * @since 1/23/14
  */
 public abstract class CoordinateTimeAbstract implements Coordinate {
-  static public final String MIXED_INTERVALS = "Mixed_Intervals";
+  static public final String MIXED_INTERVALS = "Mixed_intervals";
 
   protected final int code;                  // unit of time (Grib1 table 4, Grib2 table 4.4), eg hour, day, month
   protected final CalendarPeriod timeUnit;   // time duration, based on code
