@@ -47,3 +47,7 @@ Thumbs.db
 *.swp
 *.*~
 ._*
+
+# Coverity files 
+cov-int
+thredds.tgz
