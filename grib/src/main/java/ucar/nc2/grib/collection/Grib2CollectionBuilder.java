@@ -152,6 +152,11 @@ public class Grib2CollectionBuilder extends GribCollectionBuilder {
       }
     }
 
+    if (totalRecords == 0) {
+      logger.warn("No records found in files. Check Grib1/Grib2 for collection {}. If wrong, delete gbx9.", name);
+      throw new IllegalStateException("No records found in dataset "+name);
+    }
+
     // rectilyze each group independently
     List<Grib2CollectionWriter.Group> groups = new ArrayList<>(gdsMap.values());
     for (Grib2CollectionWriter.Group g : groups) {

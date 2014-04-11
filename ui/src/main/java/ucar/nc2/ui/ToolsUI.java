@@ -5305,7 +5305,7 @@ public class
     DirectoryPartitionViewer table;
 
     DirectoryPartitionPanel(PreferencesExt dbPrefs) {
-      super(dbPrefs, "collection:", true, false);
+      super(dbPrefs, "collection:", false, false);
       table = new DirectoryPartitionViewer(prefs, buttPanel);
       add(table, BorderLayout.CENTER);
 
@@ -5317,7 +5317,6 @@ public class
         }
         }
       });
-
     }
 
     boolean process(Object o) {
@@ -5325,7 +5324,7 @@ public class
       if (command == null) return false;
 
       try {
-        table.setCollection(command);
+        //table.setCollectionFromConfig(command);
         return true;
 
       } catch (Exception ioe) {

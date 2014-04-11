@@ -38,13 +38,15 @@ package ucar.nc2.grib.collection;
 import thredds.featurecollection.FeatureCollectionConfig;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.dataset.NetcdfDataset;
+import ucar.nc2.grib.grib1.Grib1SectionProductDefinition;
+import ucar.nc2.grib.grib1.tables.Grib1Customizer;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.Formatter;
 
 /**
- * Describe
+ * PartitionCollection for Grib1.
  *
  * @author caron
  * @since 2/21/14
@@ -73,6 +75,13 @@ public class Grib1Partition extends PartitionCollection implements AutoCloseable
     NetcdfFile ncfile = new NetcdfFileGC(iosp, null, getIndexFilepathInCache(), null);
     NetcdfDataset ncd = new NetcdfDataset(ncfile);
     return new ucar.nc2.dt.grid.GridDataset(ncd); // LOOK - replace with custom GridDataset??
+  }
+
+  @Override
+  public String makeVariableName(VariableIndex vindex) {
+    Grib1Customizer cust1 = ((Grib1Customizer) cust);
+    Grib1SectionProductDefinition pdss = new Grib1SectionProductDefinition(vindex.rawPds);
+    return Grib1Iosp.makeVariableName(cust1, pdss);
   }
 
 }

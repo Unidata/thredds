@@ -64,13 +64,17 @@
    &lt;useGenType&gt;true&lt;/useGenType&gt;
  &lt;/pdsHash&gt;
 </pre>
-  <p><strong>useTableVersion</strong>: GRIB-1 only. Control whether table version is used is used in the CDM hashcode. Default is true.</p>
+  <p><strong>useTableVersion</strong>: GRIB-1 only. Control whether table version is used in the CDM hashcode. Default is true.</p>
   <pre> &lt;pdsHash&gt;
    &lt;<strong>useTableVersion</strong>&gt;false&lt;/<strong>useTableVersion</strong>&gt;
  &lt;/pdsHash&gt;</pre>
-  <p><strong>mergeIntv</strong>: Control whether time intervals are merged. Default is true. If false, seperate variables are created for each time interval length.</p>
+  <p><strong>intvMerge</strong>:  GRIB-1 and GRIB-2. Control whether time intervals are merged. If false, seperate variables are created for each time interval length.  Default is true.</p>
   <pre> &lt;pdsHash&gt;
-   &lt;<strong>mergeIntv</strong>&gt;false&lt;/mergeIntv&gt;
+   &lt;<strong>intvMerge</strong>&gt;false&lt;/intvMerge&gt;
+ &lt;/pdsHash&gt;</pre>
+  <p><strong>useCenter</strong>: GRIB-1 only. Control whether center/subcenter  is used in the CDM hashcode when the parameter number &gt; 127.  Default is true.</p>
+  <pre> &lt;pdsHash&gt;
+   &lt;<strong>useCenter</strong>&gt;false&lt;/<strong>useCenter</strong>&gt;
  &lt;/pdsHash&gt;</pre>
 </blockquote>
 <h3>timeUnitConvert: correct time unit encoding</h3>

@@ -154,6 +154,7 @@ public abstract class GribCollectionBuilderFromIndex {
       gc.backProcessId = proto.getBackProcessId();
       gc.local = proto.getLocal();
       this.tables = makeCustomizer();
+      gc.cust = this.tables;
 
       if (!gc.name.equals(proto.getName())) {
         logger.info("GribCollectionBuilderFromIndex raf {}: has different name= '{}' than stored in ncx= '{}' ", raf.getLocation(), gc.getName(), proto.getName());

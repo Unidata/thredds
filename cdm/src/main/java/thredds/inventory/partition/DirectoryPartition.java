@@ -21,7 +21,6 @@ import java.util.*;
  * @since 11/9/13
  */
 public class DirectoryPartition extends CollectionAbstract implements PartitionManager {
-  static private final Logger logger = LoggerFactory.getLogger(DirectoryPartition.class);
 
   private final FeatureCollectionConfig config;
   private final Path topDir;

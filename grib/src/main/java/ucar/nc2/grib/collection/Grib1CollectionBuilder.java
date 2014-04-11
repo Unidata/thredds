@@ -65,6 +65,7 @@ public class Grib1CollectionBuilder extends GribCollectionBuilder {
   private final boolean intvMerge;
   private final boolean useGenType;
   private final boolean useTableVersion;
+  private final boolean useCenter;
 
   private FeatureCollectionConfig.GribConfig gribConfig;
   private Grib1Customizer cust;
@@ -76,9 +77,10 @@ public class Grib1CollectionBuilder extends GribCollectionBuilder {
     FeatureCollectionConfig config = (FeatureCollectionConfig) dcm.getAuxInfo(FeatureCollectionConfig.AUX_CONFIG);
     gribConfig = config.gribConfig;
     Map<String, Boolean> pdsConfig = config.gribConfig.pdsHash;
-    intvMerge = assignValue(pdsConfig, "intvMerge", true);
-    useGenType = assignValue(pdsConfig, "useGenType", false);
     useTableVersion = assignValue(pdsConfig, "useTableVersion", true);
+    intvMerge = assignValue(pdsConfig, "intvMerge", true);
+    useCenter = assignValue(pdsConfig, "useCenter", true);
+    useGenType = assignValue(pdsConfig, "useGenType", false);
   }
 
   private boolean assignValue(Map<String, Boolean> pdsHash, String key, boolean value) {
@@ -347,7 +349,12 @@ public class Grib1CollectionBuilder extends GribCollectionBuilder {
   }
 
   private int cdmVariableHash(Grib1Record gr, int gdsHash) {
-    return cdmVariableHash(cust, gr, gdsHash, useTableVersion, intvMerge);
+    return cdmVariableHash(cust, gr, gdsHash, useTableVersion, intvMerge, useCenter);
+  }
+
+  // use defaults
+  public static int cdmVariableHash(Grib1Customizer cust, Grib1Record gr) {
+    return cdmVariableHash(cust, gr, 0, true, true, true);
   }
 
 
@@ -359,7 +366,7 @@ public class Grib1CollectionBuilder extends GribCollectionBuilder {
    * @param gdsHash can override the gdsHash
    * @return this records hash code, to group like records into a variable
    */
-  public static int cdmVariableHash(Grib1Customizer cust, Grib1Record gr, int gdsHash, boolean useTableVersion, boolean intvMerge) {
+  public static int cdmVariableHash(Grib1Customizer cust, Grib1Record gr, int gdsHash, boolean useTableVersion, boolean intvMerge, boolean useCenter) {
     int result = 17;
 
     Grib1SectionGridDefinition gdss = gr.getGDSsection();
@@ -384,7 +391,7 @@ public class Grib1CollectionBuilder extends GribCollectionBuilder {
 
     // LOOK maybe we should always add ??
     // if this uses any local tables, then we have to add the center id, and subcenter if present
-    if (pdss.getParameterNumber() > 127) {
+    if (useCenter && pdss.getParameterNumber() > 127) {
       result += result * 37 + pdss.getCenter();
       if (pdss.getSubCenter() > 0)
         result += result * 37 + pdss.getSubCenter();

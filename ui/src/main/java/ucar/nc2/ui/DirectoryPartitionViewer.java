@@ -65,6 +65,7 @@ public class DirectoryPartitionViewer extends JPanel {
 
   private TextHistoryPane infoTA;
   private IndependentWindow infoWindow;
+  private FileManager dirFileChooser;
 
   public DirectoryPartitionViewer(PreferencesExt prefs, JPanel buttPanel) {
     this.prefs = prefs;
@@ -79,6 +80,27 @@ public class DirectoryPartitionViewer extends JPanel {
     });
 
     if (buttPanel != null) {
+
+      // a file chooser that can choose a directory
+      dirFileChooser = new FileManager(null, null, null, (PreferencesExt) prefs.node("fileChooser"));
+      dirFileChooser.getFileChooser().setFileSelectionMode( JFileChooser.FILES_AND_DIRECTORIES);
+      AbstractAction dirFileAction = new AbstractAction() {
+        public void actionPerformed(ActionEvent e) {
+          String filename = dirFileChooser.chooseFilename();
+          if (filename == null) return;
+          File d = new File( filename);
+          if (d.isDirectory()) {
+            setDirectory(d);
+          } else if (d.getName().endsWith(".xml")) {
+            setCollectionFromConfig(d.getPath());
+          } else if (d.getName().endsWith(".ncx2")) {
+            setCollectionFromIndex(d.getPath());
+          }
+        }
+      };
+      BAMutil.setActionProperties(dirFileAction, "FileChooser", "choose file or directory...", false, 'L', -1);
+      BAMutil.addActionToContainer(buttPanel, dirFileAction);
+
       AbstractButton infoButton = BAMutil.makeButtcon("Information", "Show Info", false);
       infoButton.addActionListener(new ActionListener() {
         public void actionPerformed(ActionEvent e) {
@@ -176,13 +198,17 @@ public class DirectoryPartitionViewer extends JPanel {
 
   ////////////////////////////////////////////////
 
-  public void setCollection(String name) {
+  // top directory
+  private void setDirectory(File dir) {
+    if (dir.isDirectory()) {
+      partitionTreeBrowser.setRoot(dir.toPath());
+    }
+  }
+
+  // feature collection config
+  private void setCollectionFromConfig(String name) {
     Path f = Paths.get(name);
     if (!Files.exists(f)) return;
-    if (Files.isDirectory(f)) {
-      partitionTreeBrowser.setRoot(f);
-      return;
-    }
 
     org.jdom2.Document doc;
     try {
@@ -203,6 +229,25 @@ public class DirectoryPartitionViewer extends JPanel {
     CollectionSpecParser spec = new CollectionSpecParser(config.spec, errlog);
     partitionTreeBrowser.setRoot(Paths.get(spec.getRootDir()));
   }
+
+    // feature collection config
+  private void setCollectionFromIndex(String name) {
+    Path path = Paths.get(name);
+    GribCdmIndex reader = new GribCdmIndex(logger);
+    List<MFile> result = new ArrayList<>();
+
+    try {
+      boolean ok = reader.readMFiles(path, result);
+      for (MFile mfile : result)
+        System.out.printf("%s%n", mfile);
+
+    } catch (IOException e) {
+      e.printStackTrace();
+      logger.info("Error opening ncx2 file ", e);
+    }
+  }
+
+
 
   private void moveCdmIndexFile(NodeInfo indexFile) throws IOException {
     GribCollection gc = null;
@@ -447,21 +492,6 @@ public class DirectoryPartitionViewer extends JPanel {
           setFileDetails(currentNode);
         }
       };
-
-
-      /* show the file system roots.
-      File[] roots = fileSystemView.getRoots();
-      for (File fileSystemRoot : roots) {
-        DefaultMutableTreeNode node = new DefaultMutableTreeNode(fileSystemRoot);
-        root.add(node);
-        File[] files = fileSystemView.getFiles(fileSystemRoot, true);
-        for (File file : files) {
-          if (file.isDirectory()) {
-            node.add(new DefaultMutableTreeNode(file));
-          }
-        }
-
-      } */
 
       tree = new JTree(treeModel);
       tree.setRootVisible(true);

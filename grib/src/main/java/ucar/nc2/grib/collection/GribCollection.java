@@ -227,6 +227,7 @@ public abstract class GribCollection implements FileCacheable, AutoCloseable {
   protected List<Dataset> datasets;
   protected List<HorizCoordSys> horizCS; // one for each unique GDS
   protected CoordinateRuntime masterRuntime;
+  protected GribTables cust;
 
   // not stored
   private Map<String, MFile> filenameMap;
@@ -420,6 +421,9 @@ public abstract class GribCollection implements FileCacheable, AutoCloseable {
 
 
   /////////////////////////////////////////////
+
+  // LOOK could use this in iosp
+  public abstract String makeVariableName(VariableIndex vindex);
 
   // stuff for InvDatasetFcGrib
   public abstract ucar.nc2.dataset.NetcdfDataset getNetcdfDataset(Dataset ds, GroupGC group, String filename,

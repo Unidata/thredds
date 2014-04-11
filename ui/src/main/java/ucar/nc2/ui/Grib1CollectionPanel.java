@@ -571,7 +571,7 @@ public class Grib1CollectionPanel extends JPanel {
         cust = Grib1Customizer.factory(gr, null);
       }
 
-      int id = Grib1CollectionBuilder.cdmVariableHash(cust, gr, 0, false, false);
+      int id = Grib1CollectionBuilder.cdmVariableHash(cust, gr);
       ParameterBean bean = pdsSet.get(id);
       if (bean == null) {
         bean = new ParameterBean(gr);
@@ -704,7 +704,7 @@ public class Grib1CollectionPanel extends JPanel {
       records = new ArrayList<>();
       param = cust.getParameter(pds.getCenter(), pds.getSubCenter(), pds.getTableVersion(), pds.getParameterNumber());
       gdsHash = r.getGDSsection().getGDS().hashCode();
-      cdmHash =  Grib1CollectionBuilder.cdmVariableHash(cust, r, gdsHash, true, true);
+      cdmHash =  Grib1CollectionBuilder.cdmVariableHash(cust, r, gdsHash, true, true, true);
     }
 
     void addRecord(Grib1Record r) {

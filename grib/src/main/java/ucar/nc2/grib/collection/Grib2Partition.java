@@ -38,13 +38,14 @@ package ucar.nc2.grib.collection;
 import thredds.featurecollection.FeatureCollectionConfig;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.dataset.NetcdfDataset;
+import ucar.nc2.grib.grib2.table.Grib2Customizer;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.Formatter;
 
 /**
- * Description
+ * PartitionCollection for Grib2.
  *
  * @author John
  * @since 12/7/13
@@ -73,6 +74,12 @@ public class Grib2Partition extends PartitionCollection implements AutoCloseable
     NetcdfFile ncfile = new NetcdfFileGC(iosp, null, getIndexFilepathInCache(), null);
     NetcdfDataset ncd = new NetcdfDataset(ncfile);
     return new ucar.nc2.dt.grid.GridDataset(ncd); // LOOK - replace with custom GridDataset??
+  }
+
+
+  @Override
+  public String makeVariableName(VariableIndex vindex) {
+    return Grib2Iosp.makeVariableNameFromTable((Grib2Customizer) cust, this, vindex);
   }
 
 }

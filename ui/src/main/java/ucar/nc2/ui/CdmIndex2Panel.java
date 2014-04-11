@@ -5,6 +5,7 @@ import thredds.inventory.MFile;
 import ucar.coord.*;
 import ucar.nc2.ft.fmrc.FmrInv;
 import ucar.nc2.grib.collection.*;
+import ucar.nc2.grib.grib2.table.Grib2Customizer;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.util.Indent;
 import ucar.nc2.ui.widget.BAMutil;
@@ -749,13 +750,15 @@ public class CdmIndex2Panel extends JPanel {
   public class VarBean {
     GribCollection.VariableIndex v;
     GribCollection.GroupGC group;
+    String name;
 
     public VarBean() {
     }
 
-    public VarBean(GribCollection.VariableIndex v, GribCollection.GroupGC group) {
-      this.v = v;
+    public VarBean(GribCollection.VariableIndex vindex, GribCollection.GroupGC group) {
+      this.v = vindex;
       this.group = group;
+      this.name =  gc.makeVariableName(vindex);
     }
 
     public int getNRecords() {
@@ -794,6 +797,10 @@ public class CdmIndex2Panel extends JPanel {
 
     public String getVariableId() {
       return v.discipline + "-" + v.category + "-" + v.parameter;
+    }
+
+    public String getName() {
+      return name;
     }
 
     public void makeGribConfig(Formatter f) {
