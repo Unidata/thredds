@@ -289,12 +289,17 @@ public class GribCdmIndex implements IndexReader {
     // must scan it
     for (MCollection part : dpart.makePartitions(forceCollection)) {
       part.putAuxInfo(FeatureCollectionConfig.AUX_CONFIG, config);
-      if (part.isLeaf()) {
-        Path partPath = Paths.get(part.getRoot());
-        updateLeafCollection(isGrib1, config, forceCollection, logger, partPath);
+      try {
+        if (part.isLeaf()) {
+          Path partPath = Paths.get(part.getRoot());
+          updateLeafCollection(isGrib1, config, forceCollection, logger, partPath);
 
-      } else {
-        updateDirectoryCollectionRecurse(isGrib1, (DirectoryPartition) part, config, forceCollection, logger);
+        } else {
+          updateDirectoryCollectionRecurse(isGrib1, (DirectoryPartition) part, config, forceCollection, logger);
+        }
+      } catch (Throwable t) {
+        logger.warn("Error making partition "+part.getRoot(), t);
+        continue; // keep on truckin; can happen if directory is empty
       }
     }   // loop over partitions
 
