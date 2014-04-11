@@ -48,7 +48,7 @@ import ucar.nc2.grib.grib1.*;
 import ucar.nc2.Attribute;
 import ucar.nc2.dt.GridDatatype;
 import ucar.nc2.dt.grid.GridDataset;
-import ucar.nc2.grib.grib1.tables.Grib1ParamTable;
+import ucar.nc2.grib.grib1.tables.Grib1ParamTableReader;
 import ucar.nc2.grib.grib1.tables.Grib1ParamTables;
 import ucar.unidata.io.RandomAccessFile;
 import ucar.util.prefs.PreferencesExt;
@@ -151,7 +151,7 @@ public class Grib1ReportPanel extends ReportPanel {
       Attribute gatt = ncfile.findGlobalAttributeIgnoreCase("GRIB table");
       if (gatt != null) {
         String[] s = gatt.getStringValue().split("-");
-        Grib1ParamTable gtable = new Grib1ParamTables().getParameterTable(Integer.parseInt(s[0]), Integer.parseInt(s[1]), Integer.parseInt(s[2]));
+        Grib1ParamTableReader gtable = new Grib1ParamTables().getParameterTable(Integer.parseInt(s[0]), Integer.parseInt(s[1]), Integer.parseInt(s[2]));
         fm.format("  %s == %s%n", gatt, gtable.getPath());
       }
       for (GridDatatype dt : ncfile.getGrids()) {
@@ -215,7 +215,7 @@ public class Grib1ReportPanel extends ReportPanel {
         if (pds.getParameterNumber() > 127)
           local.count(key);
 
-        Grib1ParamTable table = new Grib1ParamTables().getParameterTable(pds.getCenter(), pds.getSubCenter(), pds.getTableVersion());
+        Grib1ParamTableReader table = new Grib1ParamTables().getParameterTable(pds.getCenter(), pds.getSubCenter(), pds.getTableVersion());
         if (table == null && useIndex) table = Grib1ParamTables.getDefaultTable();
         if (table == null || null == table.getParameter(pds.getParameterNumber()))
           missing.count(key);

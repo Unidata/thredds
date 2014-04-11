@@ -44,6 +44,7 @@ public class Util {
 
     name = StringUtil2.replace(name, '/', "-");
     StringBuilder sb = new StringBuilder(name);
+    StringUtil2.replace(sb, '+', "and");
     StringUtil2.remove(sb, ".;,=[]()/*\"");
     return StringUtil2.collapseWhitespace(sb.toString().trim());
   }

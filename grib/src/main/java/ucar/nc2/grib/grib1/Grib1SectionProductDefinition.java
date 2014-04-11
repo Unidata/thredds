@@ -39,7 +39,7 @@ import net.jcip.annotations.Immutable;
 import ucar.nc2.grib.GribNumbers;
 import ucar.nc2.grib.GribUtils;
 import ucar.nc2.grib.grib1.tables.Grib1Customizer;
-import ucar.nc2.grib.grib1.tables.Grib1ParamTable;
+import ucar.nc2.grib.grib1.tables.Grib1ParamTableReader;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.wmo.CommonCodeTable;
 import ucar.unidata.io.RandomAccessFile;
@@ -329,7 +329,7 @@ public final class Grib1SectionProductDefinition {
 
     Grib1Parameter parameter = cust.getParameter(getCenter(), getSubCenter(), getTableVersion(), getParameterNumber());
     if (parameter != null) {
-      Grib1ParamTable ptable = parameter.getTable();
+      Grib1ParamTableReader ptable = parameter.getTable();
       f.format("               Parameter Table : (%d-%d-%d) %s%n", getCenter(), getSubCenter(), getTableVersion(), (ptable == null) ? "MISSING" : ptable.getPath());
       f.format("                Parameter Name : (%d) %s%n", getParameterNumber(), parameter.getName());
       f.format("                Parameter Desc : %s%n", parameter.getDescription());
