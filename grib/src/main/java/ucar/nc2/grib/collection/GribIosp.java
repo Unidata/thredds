@@ -1020,7 +1020,7 @@ public abstract class GribIosp extends AbstractIOServiceProvider {
 
       PartitionCollection.DataRecord record = vindexP.getDataRecord(indexWanted);
       if (record == null) {
-        System.out.printf("readDataFromPartition Missing%n");
+        System.out.printf("readDataFromPartition Missing%n");  // LOOK
         vindexP.getDataRecord(indexWanted); // debug
         resultPos++;
         continue;

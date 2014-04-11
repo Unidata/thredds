@@ -60,7 +60,7 @@ import java.util.*;
  * @since 2/5/14
  */
 public class Grib2CollectionBuilder extends GribCollectionBuilder {
-  static private final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(Grib2CollectionBuilder.class);
+  // static private final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(Grib2CollectionBuilder.class);
 
   private final boolean intvMerge;
   private final boolean useGenType;
@@ -128,7 +128,7 @@ public class Grib2CollectionBuilder extends GribCollectionBuilder {
             this.cust = Grib2Customizer.factory(ids.getCenter_id(), ids.getSubcenter_id(), ids.getMaster_table_version(), ids.getLocal_table_version());
             if (config != null) cust.setTimeUnitConverter(config.gribConfig.getTimeUnitConverter());
           }
-          if (intvMap != null && filterOut(gr, intvMap)) {
+          if (filterOut(gr, intvMap)) {
             statsAll.filter++;
             continue; // skip
           }
@@ -181,6 +181,15 @@ public class Grib2CollectionBuilder extends GribCollectionBuilder {
 
   // true means remove
   private boolean filterOut(Grib2Record gr, FeatureCollectionConfig.GribIntvFilter intvFilter) {
+    // hack a whack - filter out records with unknown time units
+    int timeUnit = gr.getPDS().getTimeUnit();
+    if (Grib2Utils.getCalendarPeriod(timeUnit) == null) {
+      logger.info("Skip record with unknown time Unit= {}", timeUnit);
+      return true;
+    }
+
+    if (intvFilter == null) return false;
+
     int[] intv = cust.getForecastTimeIntervalOffset(gr);
     if (intv == null) return false;
     int haveLength = intv[1] - intv[0];
@@ -280,7 +289,7 @@ public class Grib2CollectionBuilder extends GribCollectionBuilder {
       for (VariableBag vb : gribvars) {
         Grib2Pds pdsFirst = vb.first.getPDS();
         int code = cust.convertTimeUnit(pdsFirst.getTimeUnit());
-        vb.timeUnit = userTimeUnit == null ? Grib2Utils.getCalendarPeriod(code) : userTimeUnit; // so can override the code
+        vb.timeUnit = userTimeUnit == null ? Grib2Utils.getCalendarPeriod(code) : userTimeUnit;   // so can override the code in config  "timeUnit"
         vb.coordND = new CoordinateND<>();
 
         boolean isTimeInterval = vb.first.getPDS().isTimeInterval();
@@ -355,7 +364,7 @@ public class Grib2CollectionBuilder extends GribCollectionBuilder {
   }
 
   private int cdmVariableHash(Grib2Record gr, int gdsHash) {
-    return cdmVariableHash(cust, gr, gdsHash, intvMerge, useGenType);
+    return cdmVariableHash(cust, gr, gdsHash, intvMerge, useGenType, logger);
   }
 
   /**
@@ -367,7 +376,7 @@ public class Grib2CollectionBuilder extends GribCollectionBuilder {
    * @param gdsHash can override the gdsHash
    * @return this record's hash code, identical hash means belongs to the same variable
    */
-  public static int cdmVariableHash(Grib2Customizer cust, Grib2Record gr, int gdsHash, boolean intvMerge, boolean useGenType) {
+  public static int cdmVariableHash(Grib2Customizer cust, Grib2Record gr, int gdsHash, boolean intvMerge, boolean useGenType, org.slf4j.Logger logger) {
     Grib2SectionGridDefinition gdss = gr.getGDSsection();
     Grib2Pds pds2 = gr.getPDS();
 
@@ -391,7 +400,7 @@ public class Grib2CollectionBuilder extends GribCollectionBuilder {
         try {
           size = cust.getForecastTimeIntervalSizeInHours(pds2); // LOOK using an Hour here, but will need to make this configurable
         } catch (Throwable t) {
-          logger.error("Failed on file = "+gr.getFile(), t);
+          if (logger != null) logger.error("Failed on file = "+gr.getFile(), t);
         }
         result += result * (int) (37 + (1000 * size)); // create new variable for each interval size - default not
       }

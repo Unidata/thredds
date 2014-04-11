@@ -191,11 +191,12 @@ public class Grib2Customizer implements ucar.nc2.grib.GribTables, TimeUnitConver
     Grib2Pds pds = gr.getPDS();
     if (pds.isTimeInterval()) {
       TimeCoord.TinvDate intv = getForecastTimeInterval(gr);
-      return intv.getEnd();
+      return intv == null ? null : intv.getEnd();
 
     } else {
       int val = pds.getForecastTime();
       CalendarPeriod period = Grib2Utils.getCalendarPeriod( convertTimeUnit(pds.getTimeUnit()));
+      if (period == null) return null;
       return gr.getReferenceDate().add( period.multiply(val));
     }
   }
@@ -254,6 +255,7 @@ public class Grib2Customizer implements ucar.nc2.grib.GribTables, TimeUnitConver
     }
 
     CalendarPeriod unitPeriod = Grib2Utils.getCalendarPeriod(convertTimeUnit(timeUnitOrg));
+    if (unitPeriod == null) return null;
     CalendarPeriod period = unitPeriod.multiply(range);
 
     // End of Interval as date
@@ -287,6 +289,7 @@ public class Grib2Customizer implements ucar.nc2.grib.GribTables, TimeUnitConver
 
     // now convert that range to units of the requested period.
     CalendarPeriod timeUnitPeriod = Grib2Utils.getCalendarPeriod(convertTimeUnit(timeUnitOrg));
+    if (timeUnitPeriod == null) return GribNumbers.UNDEFINEDD;
     if (timeUnitPeriod.equals(CalendarPeriod.Hour)) return range;
 
     double fac;

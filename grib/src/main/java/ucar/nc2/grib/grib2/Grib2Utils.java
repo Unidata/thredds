@@ -96,7 +96,8 @@ public class Grib2Utils {
       case 13:
         return CalendarPeriod.of(1, CalendarPeriod.Field.Second);
       default:
-        throw new UnsupportedOperationException("Unknown time unit = "+timeUnit);
+        return null;
+        // throw new UnsupportedOperationException("Unknown time unit = "+timeUnit); // LOOK cant look at record with exception here
     }
   }
 

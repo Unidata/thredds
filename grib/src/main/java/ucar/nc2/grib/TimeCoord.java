@@ -407,6 +407,7 @@ public class TimeCoord {
     }
 
     public Tinv convertReferenceDate(CalendarDate refDate, CalendarPeriod timeUnit) {
+      if (timeUnit == null) return null;
       int startOffset = timeUnit.getOffset(refDate, start);   // LOOK wrong - not dealing with value
       int endOffset = timeUnit.getOffset(refDate, end);
       return new TimeCoord.Tinv(startOffset, endOffset);

@@ -390,7 +390,7 @@ public class Grib2DataPanel extends JPanel {
     for (Grib2Record gr : index.getRecords()) {
       gr.setFile(fileno);
 
-      int id = Grib2CollectionBuilder.cdmVariableHash(cust, gr, 0, false, false);
+      int id = Grib2CollectionBuilder.cdmVariableHash(cust, gr, 0, false, false, logger);
       Grib2ParameterBean bean = pdsSet.get(id);
       if (bean == null) {
         bean = new Grib2ParameterBean(gr);

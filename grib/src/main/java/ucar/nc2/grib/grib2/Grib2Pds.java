@@ -1010,9 +1010,11 @@ public abstract class Grib2Pds {
 
     public void show(Formatter f) {
       super.show(f);
-      f.format("%n   Grib2Pds8: endInterval=%s%n", getIntervalTimeEnd());
-      for (TimeInterval ti : getTimeIntervals()) {
-        ti.show(f);
+      try {
+        f.format("%n   Grib2Pds8: endInterval=%s%n", getIntervalTimeEnd());
+        for (TimeInterval ti : getTimeIntervals()) ti.show(f);
+      } catch (Throwable t) {
+        f.format("%n   Grib2Pds8: endInterval error=%s%n", t.getMessage());
       }
     }
 
