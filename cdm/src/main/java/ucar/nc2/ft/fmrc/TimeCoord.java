@@ -32,12 +32,24 @@
 
 package ucar.nc2.ft.fmrc;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Date;
+import java.util.Formatter;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Locale;
+import java.util.Set;
+
+import ucar.nc2.Attribute;
+import ucar.nc2.constants.CF;
 import ucar.nc2.dataset.CoordinateAxis1DTime;
+import ucar.nc2.time.Calendar;
 import ucar.nc2.time.CalendarDate;
+import ucar.nc2.time.CalendarDateUnit;
 import ucar.nc2.units.DateUnit;
 import ucar.nc2.util.Misc;
-
-import java.util.*;
 
 /**
  * Represents a list of offset times shared among variables
@@ -80,8 +92,17 @@ public class TimeCoord implements Comparable {
     this.axisName = axis.getFullName();
 
     DateUnit unit = null;
+    Attribute atrCal = null;
+    Calendar cal = null;
+    
     try {
       unit = new DateUnit(axis.getUnitsString());
+      atrCal = axis.findAttribute(CF.CALENDAR );
+      if(atrCal != null)
+    	  cal = Calendar.get((String)atrCal.getValue(0) );
+      else
+    	  cal = Calendar.proleptic_gregorian; //Default???
+      
     } catch (Exception e) {
       throw new IllegalArgumentException("Not a unit of time " + axis.getUnitsString());
     }
@@ -101,11 +122,22 @@ public class TimeCoord implements Comparable {
     } else {
       offset = new double[n];
       for (int i = 0; i < axis.getSize(); i++) {
-        offset[i] = getValueInHours(unit, axis.getCoordValue(i));
+        offset[i] = getValueInHours(cal, unit, axis.getCoordValue(i));
       }
     }
   }
 
+  
+  double getValueInHours(Calendar cal, DateUnit unit, double value) {
+	    //CalendarDate d = unit.makeCalendarDate(value);
+	    //double secs =  unit.getTimeUnit().getValueInSeconds(value);	    	    	    
+	    //CalendarDate d = CalendarDate.of(cal, unit.getDateOrigin().getTime() + (long)(1000*secs));
+	    
+	    CalendarDateUnit dateUnit = CalendarDateUnit.withCalendar(cal, unit.getUnitsString() ); // this will throw exception on failure
+	    CalendarDate d = dateUnit.makeCalendarDate(value);
+	    return FmrcInv.getOffsetInHours(runDate, d);
+	  }  
+  
   double getValueInHours(DateUnit unit, double value) {
     CalendarDate d = unit.makeCalendarDate(value);
     return FmrcInv.getOffsetInHours(runDate, d);

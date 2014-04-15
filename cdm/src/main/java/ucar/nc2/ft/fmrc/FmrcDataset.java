@@ -944,6 +944,7 @@ class FmrcDataset {
     VariableDS timeVar = new VariableDS(result, group, null, dimName, dtype, dimName, null, null); // LOOK could just make a CoordinateAxis1D
     timeVar.addAttribute(new Attribute(CDM.LONG_NAME, "Forecast time for ForecastModelRunCollection"));
     timeVar.addAttribute(new ucar.nc2.Attribute("standard_name", "time"));
+    timeVar.addAttribute(new ucar.nc2.Attribute(CF.CALENDAR, base.getCalendar().name() ));
     timeVar.addAttribute(new ucar.nc2.Attribute(CDM.UNITS, "hours since " + base));
     timeVar.addAttribute(new ucar.nc2.Attribute(CDM.MISSING_VALUE, Double.NaN));
     timeVar.addAttribute(new ucar.nc2.Attribute(_Coordinate.AxisType, AxisType.Time.toString()));
@@ -971,6 +972,7 @@ class FmrcDataset {
     VariableDS timeVar = new VariableDS(result, group, null, dimName+"_run", dtype, dimName, null, null); // LOOK could just make a CoordinateAxis1D
     timeVar.addAttribute(new Attribute(CDM.LONG_NAME, "run times for coordinate = " + dimName));
     timeVar.addAttribute(new ucar.nc2.Attribute("standard_name", "forecast_reference_time"));
+    timeVar.addAttribute(new ucar.nc2.Attribute(CF.CALENDAR, base.getCalendar().name() ));
     timeVar.addAttribute(new ucar.nc2.Attribute(CDM.UNITS, "hours since " + base));
     timeVar.addAttribute(new ucar.nc2.Attribute(CDM.MISSING_VALUE, Double.NaN));
     timeVar.addAttribute(new ucar.nc2.Attribute(_Coordinate.AxisType, AxisType.RunTime.toString())); // if theres already a time coord, dont put in coordSys - too complicated
@@ -989,6 +991,7 @@ class FmrcDataset {
     VariableDS timeVar = new VariableDS(result, group, null, dimName+"_offset", dtype, dimName, null, null); // LOOK could just make a CoordinateAxis1D
     timeVar.addAttribute(new Attribute(CDM.LONG_NAME, "offset hour from start of run for coordinate = " + dimName));
     timeVar.addAttribute(new ucar.nc2.Attribute("standard_name", "forecast_period"));
+    timeVar.addAttribute(new ucar.nc2.Attribute(CF.CALENDAR, base.getCalendar().name() ));
     timeVar.addAttribute(new ucar.nc2.Attribute(CDM.UNITS, "hours since " + base));
     timeVar.addAttribute(new ucar.nc2.Attribute(CDM.MISSING_VALUE, Double.NaN));
 
