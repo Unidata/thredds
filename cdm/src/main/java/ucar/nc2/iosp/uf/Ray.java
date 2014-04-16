@@ -32,16 +32,15 @@
  */
 package ucar.nc2.iosp.uf;
 
-import ucar.unidata.io.RandomAccessFile;
-import ucar.ma2.Range;
-import ucar.ma2.IndexIterator;
-
-import java.nio.ByteBuffer;
-import java.util.Date;
-import java.util.Calendar;
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.io.IOException;
+import java.nio.ByteBuffer;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.HashMap;
+
+import ucar.ma2.IndexIterator;
+import ucar.ma2.Range;
+import ucar.unidata.io.RandomAccessFile;
 
 /**
  * Created by IntelliJ IDEA.
@@ -494,9 +493,9 @@ public class Ray {
     public static int bytesToShort(byte a, byte b, boolean swapBytes) {
         // again, high order bit is expressed left into 32-bit form
         if (swapBytes) {
-            return (a & 0xff) + ((int)b << 8);
+            return (a & 0xff) + (b << 8);
         } else {
-            return ((int)a << 8) + (b & 0xff);
+            return (a << 8) + (b & 0xff);
         }
     }
     public static int bytesToInt(byte [] bytes, boolean swapBytes) {

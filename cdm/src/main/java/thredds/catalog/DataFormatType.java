@@ -54,6 +54,7 @@ public final class DataFormatType {
     public final static DataFormatType HDF5 = new DataFormatType("HDF5");
     public final static DataFormatType NETCDF = new DataFormatType("netCDF");
     public final static DataFormatType NETCDF4 = new DataFormatType("netCDF-4");
+    public final static DataFormatType NETCDH = new DataFormatType("netCDH");
     public final static DataFormatType NEXRAD2 = new DataFormatType("NEXRAD-2");
     public final static DataFormatType NCML = new DataFormatType("NcML");
     public final static DataFormatType NIDS = new DataFormatType("NEXRAD-3");
@@ -77,7 +78,7 @@ public final class DataFormatType {
       this.name = s;
       members.add(this);
     }
-  
+
     private DataFormatType(String s, boolean fake)
     {
       this.name = s;
@@ -123,13 +124,16 @@ public final class DataFormatType {
     /**
      * Return the DataFormatType name.
      */
+    @Override
     public String toString() { return name; }
 
      /** Override Object.hashCode() to be consistent with this equals. */
-     public int hashCode() { return name.hashCode(); }
+     @Override
+    public int hashCode() { return name.hashCode(); }
 
      /** DataFormatType with same name are equal. */
-     public boolean equals(Object o) {
+     @Override
+    public boolean equals(Object o) {
        if (this == o) return true;
        if (!(o instanceof DataFormatType)) return false;
        return o.hashCode() == this.hashCode();

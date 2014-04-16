@@ -13,7 +13,7 @@
   <groupId>edu.ucar</groupId>
   <artifactId>thredds-parent</artifactId>
   <packaging>pom</packaging>
-  <version>4.3.17</version>
+  <version>4.3.17.1</version>
   <name>Parent THREDDS and CDM modules</name>
   <description>
     The Unidata THREDDS project includes the netCDF-Java library (aka CDM) and
@@ -185,6 +185,14 @@
     </profile>
   </profiles>
 
+    <distributionManagement>
+        <repository>
+            <id>AMS Artifactory</id>
+            <name>AMS Artifactory-releases</name>
+            <url>http://server:8081/artifactory/external</url>
+        </repository>
+    </distributionManagement>
+<!--
   <distributionManagement>
     <repository>
       <id>unidata-releases</id>
@@ -197,7 +205,7 @@
       <url>https://artifacts.unidata.ucar.edu/content/repositories/unidata-snapshots/</url>
     </snapshotRepository>
   </distributionManagement>
-
+-->
   <repositories>
     <repository>
       <id>unidata</id>
