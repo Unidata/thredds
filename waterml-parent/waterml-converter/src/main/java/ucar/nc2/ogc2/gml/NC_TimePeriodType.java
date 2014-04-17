@@ -1,9 +1,8 @@
-package ucar.nc2.ogc.gml;
+package ucar.nc2.ogc2.gml;
 
-import net.opengis.gml.v_3_2_1.TimePeriodType;
-import net.opengis.gml.v_3_2_1.TimePosition;
+import net.opengis.gml.x32.TimePeriodType;
+import net.opengis.gml.x32.TimePositionType;
 import ucar.nc2.ft.StationTimeSeriesFeature;
-import ucar.nc2.ogc.Factories;
 
 /**
  * Created by cwardgar on 3/6/14.
@@ -11,18 +10,18 @@ import ucar.nc2.ogc.Factories;
 public abstract class NC_TimePeriodType {
     // wml2:Collection/wml2:observationMember/om:OM_Observation/om:phenomenonTime/gml:TimePeriod
     public static TimePeriodType createTimePeriod(StationTimeSeriesFeature stationFeat) {
-        TimePeriodType timePeriod = Factories.GML.createTimePeriodType();
+        TimePeriodType timePeriod = TimePeriodType.Factory.newInstance();
 
         // gml:id
         String id = generateId();
         timePeriod.setId(id);
 
         // gml:beginPosition
-        TimePosition beginPosition = NC_TimePosition.createBeginPosition(stationFeat);
+        TimePositionType beginPosition = NC_TimePositionType.createBeginPosition(stationFeat);
         timePeriod.setBeginPosition(beginPosition);
 
         // gml:endPosition
-        TimePosition endPosition = NC_TimePosition.createEndPosition(stationFeat);
+        TimePositionType endPosition = NC_TimePositionType.createEndPosition(stationFeat);
         timePeriod.setEndPosition(endPosition);
 
         return timePeriod;
