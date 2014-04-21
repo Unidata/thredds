@@ -35,7 +35,7 @@ public abstract class NC_MeasurementTimeseriesType {
         PointFeatureIterator pointFeatIter = stationFeat.getPointFeatureIterator(-1);
         while (pointFeatIter.hasNext()) {
             // wml2:point
-            MeasurementTimeseriesType.Point point = createPoint(fdPoint, pointFeatIter.next(), dataVar);
+            MeasurementTimeseriesType.Point point = createPoint(pointFeatIter.next(), dataVar);
             measurementTimeseries.getPoints().add(point);
         }
 
@@ -43,13 +43,12 @@ public abstract class NC_MeasurementTimeseriesType {
     }
 
     // om:OM_Observation/om:result/wml2:MeasurementTimeseries/wml2:point
-    public static MeasurementTimeseriesType.Point createPoint(
-            FeatureDatasetPoint fdPoint, PointFeature pointFeat, VariableSimpleIF dataVar)
+    public static MeasurementTimeseriesType.Point createPoint(PointFeature pointFeat, VariableSimpleIF dataVar)
             throws IOException {
         MeasurementTimeseriesType.Point point = Factories.WATERML.createMeasurementTimeseriesTypePoint();
 
         // wml2:MeasurementTVP
-        MeasureTVPType measurementTVP = NC_MeasureTVPType.createMeasurementTVP(fdPoint, pointFeat, dataVar);
+        MeasureTVPType measurementTVP = NC_MeasureTVPType.createMeasurementTVP(pointFeat, dataVar);
         point.setMeasurementTVP(measurementTVP);
 
         return point;

@@ -1,12 +1,12 @@
 package ucar.nc2.ogc;
 
+import net.opengis.waterml.x20.CollectionDocument;
+import net.opengis.waterml.x20.CollectionType;
+import org.apache.xmlbeans.XmlOptions;
+import ucar.nc2.VariableSimpleIF;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.ft.FeatureDatasetPoint;
-import ucar.nc2.ft.PointFeatureCollectionIterator;
-import ucar.nc2.ft.StationTimeSeriesFeature;
-import ucar.nc2.ft.StationTimeSeriesFeatureCollection;
-import ucar.nc2.ogc.waterml.NC_Collection;
-import ucar.nc2.ogc2.gml.NC_TimePeriodType;
+import ucar.nc2.ogc2.waterml.NC_Collection;
 
 import java.io.File;
 import java.io.IOException;
@@ -20,14 +20,26 @@ public class Foo {
         File pointFile = new File("C:/Users/cwardgar/Desktop/multiStationSingleVar.ncml");
         FeatureDatasetPoint fdPoint = PointUtil.openPointDataset(FeatureType.STATION, pointFile.getAbsolutePath());
         try {
-            StationTimeSeriesFeatureCollection stationFeatColl = NC_Collection.getStationFeatures(fdPoint);
-            PointFeatureCollectionIterator stationFeatCollIter = stationFeatColl.getPointFeatureCollectionIterator(-1);
-            StationTimeSeriesFeature stationFeat = (StationTimeSeriesFeature) stationFeatCollIter.next();
-            stationFeat.calcBounds();
+            VariableSimpleIF dataVar = fdPoint.getDataVariable("tmax");
+            CollectionType collection = NC_Collection.createCollection(fdPoint, dataVar);
+            CollectionDocument collectionDoc = CollectionDocument.Factory.newInstance();
+            collectionDoc.setCollection(collection);
 
-            System.out.println(NC_TimePeriodType.createTimePeriod(stationFeat));
+            collectionDoc.save(System.out);
         } finally {
             fdPoint.close();
         }
+    }
+
+//    public void marshal(PrintWriter pw) throws Exception {
+//        XmlOptions options = makeOptions();
+//        pw.println("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
+//        document.save(pw, options);
+//    }
+
+    private static XmlOptions makeOptions() {
+        XmlOptions options = new XmlOptions();
+
+        return options;
     }
 }

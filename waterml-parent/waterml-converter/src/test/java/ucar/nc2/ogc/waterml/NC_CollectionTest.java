@@ -5,7 +5,6 @@ import ucar.nc2.constants.FeatureType;
 import ucar.nc2.ft.FeatureDatasetPoint;
 import ucar.nc2.ogc.PointUtil;
 
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 
 /**
@@ -16,7 +15,7 @@ public class NC_CollectionTest {
         File pointFile = new File(getClass().getResource("/ucar/nc2/ogc/multiStationSingleVar.ncml").toURI());
         FeatureDatasetPoint fdPoint = PointUtil.openPointDataset(FeatureType.STATION, pointFile.getAbsolutePath());
         try {
-            PointUtil.marshalPointDataset(fdPoint, fdPoint.getDataVariable("tmax"), new ByteArrayOutputStream());
+            PointUtil.marshalPointDataset(fdPoint, fdPoint.getDataVariable("tmax"), System.out);
         } finally {
             fdPoint.close();
         }
