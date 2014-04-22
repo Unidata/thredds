@@ -37,6 +37,12 @@
             <version>1.1.5</version>
         </dependency>
         <dependency>
+            <groupId>org.n52.sensorweb</groupId>
+            <artifactId>52n-oxf-xmlbeans</artifactId>
+            <version>1.12</version>
+        </dependency>
+
+        <dependency>
             <groupId>edu.ucar</groupId>
             <artifactId>waterml-bindings-v_2_0_1</artifactId>
             <version>1.0.0</version>

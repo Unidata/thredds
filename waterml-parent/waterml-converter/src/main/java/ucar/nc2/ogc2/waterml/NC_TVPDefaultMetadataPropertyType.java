@@ -16,6 +16,27 @@ public abstract class NC_TVPDefaultMetadataPropertyType {
         TVPMeasurementMetadataType defaultTVPMetadata = NC_TVPMeasurementMetadataType.createDefaultTVPMetadata(dataVar);
         defaultPointMetadata.setDefaultTVPMetadata(defaultTVPMetadata);
 
+//        TVPMeasurementMetadataDocument doc = TVPMeasurementMetadataDocument.Factory.newInstance();
+//        doc.setTVPMeasurementMetadata(defaultTVPMetadata);
+//        try {
+//            doc.save(System.out);
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
+//
+//        defaultPointMetadata.set(doc);
+
+
+
+//        // See https://wiki.52north.org/bin/view/Documentation/BestPracticeXmlBeansSubstitutionGroups
+//        XmlObject xo = XMLBeansTools.qualifySubstitutionGroup(defaultPointMetadata.getDefaultTVPMetadata(),
+//                DefaultTVPMeasurementMetadataDocument.type.getDocumentElementName(),
+//                TVPMeasurementMetadataType.type);
+//
+//        if (xo == null) {
+//            System.err.println("Disconnected object.");
+//        }
+
         return defaultPointMetadata;
     }
 
