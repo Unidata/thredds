@@ -1,8 +1,6 @@
 package ucar.nc2.ogc2.waterml;
 
-import net.opengis.waterml.x20.MeasureTVPType;
-import net.opengis.waterml.x20.MeasurementTimeseriesType;
-import net.opengis.waterml.x20.TVPDefaultMetadataPropertyType;
+import net.opengis.waterml.x20.*;
 import ucar.nc2.VariableSimpleIF;
 import ucar.nc2.ft.PointFeatureIterator;
 import ucar.nc2.ft.StationTimeSeriesFeature;
@@ -23,12 +21,29 @@ public abstract class NC_MeasurementTimeseriesType {
         String id = generateId();
         measurementTimeseries.setId(id);
 
+//        // wml2:defaultPointMetadata
+//        TVPDefaultMetadataPropertyType defaultPointMetadata =
+//                NC_TVPDefaultMetadataPropertyType.createDefaultPointMetadata(dataVar);
+//        TVPDefaultMetadataPropertyType[] defaultPointMetadataArray =
+//                new TVPDefaultMetadataPropertyType[] { defaultPointMetadata };
+//        measurementTimeseries.setDefaultPointMetadataArray(defaultPointMetadataArray);
+
+
+//        TVPDefaultMetadataPropertyType xbMetaComponent = measurementTimeseries.addNewDefaultPointMetadata();
+//
+//        DefaultTVPMeasurementMetadataDocument xbDefMeasureMetaComponent =
+//                DefaultTVPMeasurementMetadataDocument.Factory.newInstance();
+//        TVPMeasurementMetadataType defaultTVPMeasurementMetadata =
+//                xbDefMeasureMetaComponent.addNewDefaultTVPMeasurementMetadata();
+//        defaultTVPMeasurementMetadata.addNewInterpolationType().setHref(
+//                "http://www.opengis.net/def/timeseriesType/WaterML/2.0/continuous");
+//        defaultTVPMeasurementMetadata.addNewUom().setCode("Foozle");
+//
+//        xbMetaComponent.set(xbDefMeasureMetaComponent);
+
         // wml2:defaultPointMetadata
-        TVPDefaultMetadataPropertyType defaultPointMetadata =
-                NC_TVPDefaultMetadataPropertyType.createDefaultPointMetadata(dataVar);
-        TVPDefaultMetadataPropertyType[] defaultPointMetadataArray =
-                new TVPDefaultMetadataPropertyType[] { defaultPointMetadata };
-        measurementTimeseries.setDefaultPointMetadataArray(defaultPointMetadataArray);
+        NC_TVPDefaultMetadataPropertyType.initDefaultPointMetadata(
+                measurementTimeseries.addNewDefaultPointMetadata(), dataVar);
 
         // wml2:point[0..*]
         PointFeatureIterator pointFeatIter = stationFeat.getPointFeatureIterator(-1);

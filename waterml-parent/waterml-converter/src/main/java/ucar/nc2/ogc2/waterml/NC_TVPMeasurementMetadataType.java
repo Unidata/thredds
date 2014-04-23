@@ -10,12 +10,20 @@ import ucar.nc2.ogc2.swe.NC_UnitReference;
  */
 public abstract class NC_TVPMeasurementMetadataType {
     // wml2:Collection/wml2:observationMember/om:OM_Observation/om:result/wml2:MeasurementTimeseriesType/wml2:defaultPointMetadata/wml2:DefaultTVPMetadata
-    public static TVPMeasurementMetadataType createDefaultTVPMetadata(VariableSimpleIF dataVar) {
+    public static TVPMeasurementMetadataType createDefaultMeasurementTVPMetadata(VariableSimpleIF dataVar) {
         TVPMeasurementMetadataType defaultTVPMetadata = TVPMeasurementMetadataType.Factory.newInstance();
 
         // wml2:uom
         UnitReference uom = NC_UnitReference.createUom(dataVar);
         defaultTVPMetadata.setUom(uom);
+
+        return defaultTVPMetadata;
+    }
+
+    public static TVPMeasurementMetadataType initDefaultTVPMeasurementMetadata(
+            TVPMeasurementMetadataType defaultTVPMetadata, VariableSimpleIF dataVar) {
+        // wml2:uom
+        NC_UnitReference.initUom(defaultTVPMetadata.addNewUom(), dataVar);
 
         return defaultTVPMetadata;
     }

@@ -1,7 +1,10 @@
-package ucar.nc2.ogc;
+package ucar.nc2.ogc2;
 
+import net.opengis.gml.x32.*;
+import net.opengis.samplingSpatial.x20.ShapeType;
 import net.opengis.waterml.x20.CollectionDocument;
 import net.opengis.waterml.x20.CollectionType;
+import net.opengis.waterml.x20.MonitoringPointType;
 import org.apache.xmlbeans.XmlCursor;
 import org.apache.xmlbeans.XmlObject;
 import org.apache.xmlbeans.XmlOptions;
@@ -10,12 +13,16 @@ import org.n52.oxf.xmlbeans.parser.XMLHandlingException;
 import ucar.nc2.VariableSimpleIF;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.ft.FeatureDatasetPoint;
+import ucar.nc2.ft.StationTimeSeriesFeature;
+import ucar.nc2.ogc.NoFactoryFoundException;
+import ucar.nc2.ogc.PointUtil;
 import ucar.nc2.ogc2.waterml.NC_Collection;
 
 import javax.xml.namespace.QName;
 import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -33,10 +40,48 @@ public class Foo {
             CollectionDocument collectionDoc = CollectionDocument.Factory.newInstance();
             collectionDoc.setCollection(collection);
 
-            writeObject(collectionDoc, System.out, false);  // TODO: Turn on validation.
+            writeObject(collectionDoc, System.out, false);
+
+//            StationTimeSeriesFeatureCollection stationFeatCollection = NC_Collection.getStationFeatures(fdPoint);
+//            stationFeatCollection.resetIteration();
+//            StationTimeSeriesFeature stationFeat = stationFeatCollection.next();
+//            stationFeat.calcBounds();
+//
+//            // TODO: Turn on validation.
+//            FeaturePropertyType featureOfInterest = NC_FeaturePropertyType.createFeatureOfInterest(stationFeat);
+//            writeObject(featureOfInterest, System.out, false);  // TODO: Turn on validation.
+
+//            writeFOI(stationFeat);
         } finally {
             fdPoint.close();
         }
+    }
+
+    public static void writeFOI(StationTimeSeriesFeature stationFeat) throws IOException, XMLHandlingException {
+        FeaturePropertyDocument featurePropertyDocument = FeaturePropertyDocument.Factory.newInstance();
+
+        FeaturePropertyType featureOfInterest = featurePropertyDocument.addNewFeatureProperty();
+
+        // sam:SF_SamplingFeatureType
+        AbstractFeatureType abstractFeatureType = featureOfInterest.addNewAbstractFeature();
+        MonitoringPointType sfSamplingFeatureType = MonitoringPointType.Factory.newInstance();
+        abstractFeatureType.set(sfSamplingFeatureType);
+
+
+        // sams:shape
+        ShapeType shape = sfSamplingFeatureType.addNewShape();
+        PointType point = PointType.Factory.newInstance();
+        shape.set(point);
+
+        // gml:pos
+        AbstractGeometryType abstractGeometryType = shape.addNewAbstractGeometry();
+        DirectPositionType pos = DirectPositionType.Factory.newInstance();
+        pos.setListValue(Arrays.asList(
+                stationFeat.getLatitude(), stationFeat.getLongitude(), stationFeat.getAltitude()));
+        abstractGeometryType.set(pos);
+
+
+        writeObject(featurePropertyDocument, System.out, false);
     }
 
     public static void writeObject(XmlObject doc, OutputStream out, boolean validate)

@@ -20,5 +20,14 @@ public class NC_UnitReference {
         return uom;
     }
 
+    public static UnitReference initUom(UnitReference uom, VariableSimpleIF dataVar) {
+        // @code
+        String udunits = dataVar.getUnitsString();
+        String ucum = EDUnits.udunitsToUcum(udunits);
+        uom.setCode(ucum);
+
+        return uom;
+    }
+
     private NC_UnitReference() { }
 }

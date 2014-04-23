@@ -45,7 +45,7 @@ public abstract class NC_Collection {
         return collection;
     }
 
-    private static StationTimeSeriesFeatureCollection getStationFeatures(FeatureDatasetPoint fdPoint) {
+    public static StationTimeSeriesFeatureCollection getStationFeatures(FeatureDatasetPoint fdPoint) {
         String datasetFileName = new File(fdPoint.getNetcdfFile().getLocation()).getName();
 
         if (!fdPoint.getFeatureType().equals(FeatureType.STATION)) {
