@@ -59,6 +59,28 @@ public abstract class NC_MeasurementTimeseriesType {
         return measurementTimeseries;
     }
 
+    public static MeasurementTimeseriesType initMeasurementTimeseries(MeasurementTimeseriesType measurementTimeseries,
+            StationTimeSeriesFeature stationFeat, VariableSimpleIF dataVar) throws IOException {
+        // gml:id
+        measurementTimeseries.setId(generateId());
+
+        // wml2:defaultPointMetadata
+        NC_TVPDefaultMetadataPropertyType.initDefaultPointMetadata(
+                measurementTimeseries.addNewDefaultPointMetadata(), dataVar);
+
+        // wml2:point[0..*]
+        PointFeatureIterator pointFeatIter = stationFeat.getPointFeatureIterator(-1);
+        while (pointFeatIter.hasNext()) {
+            // wml2:point
+            MeasurementTimeseriesType.Point point = measurementTimeseries.addNewPoint();
+
+            // wml2:MeasurementTVP
+            NC_MeasureTVPType.initMeasurementTVP(point.addNewMeasurementTVP(), pointFeatIter.next(), dataVar);
+        }
+
+        return measurementTimeseries;
+    }
+
     private static int numIds = 0;
 
     private static String generateId() {

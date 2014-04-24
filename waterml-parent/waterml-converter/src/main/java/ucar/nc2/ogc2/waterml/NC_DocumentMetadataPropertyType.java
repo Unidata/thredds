@@ -18,5 +18,12 @@ public abstract class NC_DocumentMetadataPropertyType {
         return metadata;
     }
 
+    public static DocumentMetadataPropertyType initMetadata(DocumentMetadataPropertyType metadata) {
+        // wml:DocumentMetdata
+        NC_DocumentMetadataType.initDocumentMetadata(metadata.addNewDocumentMetadata());
+
+        return metadata;
+    }
+
     private NC_DocumentMetadataPropertyType() { }
 }

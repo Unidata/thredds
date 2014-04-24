@@ -45,6 +45,28 @@ public abstract class NC_Collection {
         return collection;
     }
 
+    public static CollectionType initCollection(CollectionType collection, FeatureDatasetPoint fdPoint,
+            VariableSimpleIF dataVar) throws IOException {
+        // gml:id
+        collection.setId(generateId());
+
+        // wml2:metadata
+        NC_DocumentMetadataPropertyType.initMetadata(collection.addNewMetadata());
+
+        // wml2:observationMember[0..*]
+        StationTimeSeriesFeatureCollection stationFeatColl = getStationFeatures(fdPoint);
+        PointFeatureCollectionIterator stationFeatCollIter = stationFeatColl.getPointFeatureCollectionIterator(-1);
+
+        while (stationFeatCollIter.hasNext()) {
+            // wml2:observationMember
+            StationTimeSeriesFeature stationFeat = (StationTimeSeriesFeature) stationFeatCollIter.next();
+            NC_OMObservationPropertyType.initObservationMember(
+                    collection.addNewObservationMember(), stationFeat, dataVar);
+        }
+
+        return collection;
+    }
+
     public static StationTimeSeriesFeatureCollection getStationFeatures(FeatureDatasetPoint fdPoint) {
         String datasetFileName = new File(fdPoint.getNetcdfFile().getLocation()).getName();
 

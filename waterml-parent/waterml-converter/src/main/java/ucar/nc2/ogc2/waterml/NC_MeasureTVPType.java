@@ -29,5 +29,16 @@ public abstract class NC_MeasureTVPType {
         return measurementTVP;
     }
 
+    public static MeasureTVPType initMeasurementTVP(MeasureTVPType measurementTVP, PointFeature pointFeat,
+            VariableSimpleIF dataVar) throws IOException {
+        // wml2:time
+        NC_TimePositionType.initTime(measurementTVP.addNewTime(), pointFeat);
+
+        // wml2:value
+        NC_MeasureType.initValue(measurementTVP.addNewValue(), pointFeat, dataVar);
+
+        return measurementTVP;
+    }
+
     private NC_MeasureTVPType() { }
 }

@@ -1,5 +1,6 @@
 package ucar.nc2.ogc2.om;
 
+import net.opengis.gml.x32.TimePeriodDocument;
 import net.opengis.gml.x32.TimePeriodType;
 import net.opengis.om.x20.TimeObjectPropertyType;
 import ucar.nc2.ft.StationTimeSeriesFeature;
@@ -17,6 +18,16 @@ public abstract class NC_TimeObjectPropertyType {
         TimePeriodType timePeriod = NC_TimePeriodType.createTimePeriod(stationFeat);
         phenomenonTime.setAbstractTimeObject(timePeriod);
 
+        return phenomenonTime;
+    }
+
+    public static TimeObjectPropertyType initPhenomenonTime(
+            TimeObjectPropertyType phenomenonTime, StationTimeSeriesFeature stationFeat) {
+        // gml:TimePeriod
+        TimePeriodDocument timePeriodDoc = TimePeriodDocument.Factory.newInstance();
+        NC_TimePeriodType.initTimePeriod(timePeriodDoc.addNewTimePeriod(), stationFeat);
+
+        phenomenonTime.set(timePeriodDoc);
         return phenomenonTime;
     }
 

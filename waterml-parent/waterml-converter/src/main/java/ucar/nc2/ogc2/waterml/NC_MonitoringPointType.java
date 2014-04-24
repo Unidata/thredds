@@ -38,6 +38,28 @@ public abstract class NC_MonitoringPointType {
         return sfSamplingFeatureType;
     }
 
+    public static MonitoringPointType initSfSamplingFeatureType(
+            MonitoringPointType sfSamplingFeatureType, StationTimeSeriesFeature stationFeat) {
+        // gml:id
+        String id = generateId();
+        sfSamplingFeatureType.setId(id);
+
+        // gml:identifier
+        NC_CodeWithAuthorityType.initIdentifier(sfSamplingFeatureType.addNewIdentifier(), stationFeat);
+
+        // gml:description
+        NC_StringOrRefType.initDescription(sfSamplingFeatureType.addNewDescription(), stationFeat);
+        if (sfSamplingFeatureType.getDescription().getStringValue() == null ||
+                sfSamplingFeatureType.getDescription().getStringValue().isEmpty()) {
+            sfSamplingFeatureType.unsetDescription();
+        }
+
+        // sams:shape
+        NC_Shape.initShape(sfSamplingFeatureType.addNewShape(), stationFeat);
+
+        return sfSamplingFeatureType;
+    }
+
     private static int numIds = 0;
 
     private static String generateId() {

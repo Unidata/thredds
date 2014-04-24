@@ -20,5 +20,13 @@ public abstract class NC_DirectPositionType {
         return pos;
     }
 
+    public static DirectPositionType initPos(DirectPositionType pos, StationTimeSeriesFeature stationFeat) {
+        // TEXT
+        pos.setListValue(Arrays.asList(
+                stationFeat.getLatitude(), stationFeat.getLongitude(), stationFeat.getAltitude()));
+
+        return pos;
+    }
+
     private NC_DirectPositionType() { }
 }

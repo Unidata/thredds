@@ -22,6 +22,17 @@ public abstract class NC_DocumentMetadataType {
         return documentMetadata;
     }
 
+    public static DocumentMetadataType initDocumentMetadata(DocumentMetadataType documentMetadata) {
+        // gml:id
+        documentMetadata.setId(generateId());
+
+        // wml2:generationDate
+        GregorianCalendar gregorianCalendar = new GregorianCalendar();  // Initialized to "now".
+        documentMetadata.setGenerationDate(gregorianCalendar);
+
+        return documentMetadata;
+    }
+
     private static int numIds = 0;
 
     private static String generateId() {

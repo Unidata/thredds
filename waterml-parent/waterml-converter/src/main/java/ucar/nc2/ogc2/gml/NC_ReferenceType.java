@@ -17,5 +17,12 @@ public abstract class NC_ReferenceType {
         return observedProperty;
     }
 
+    public static ReferenceType initObservedProperty(ReferenceType observedProperty, VariableSimpleIF dataVar) {
+        // @xlink:title
+        observedProperty.setTitle(dataVar.getShortName());
+
+        return observedProperty;
+    }
+
     private NC_ReferenceType() { }
 }

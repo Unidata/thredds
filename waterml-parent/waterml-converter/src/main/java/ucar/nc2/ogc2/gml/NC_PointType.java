@@ -23,6 +23,17 @@ public abstract class NC_PointType {
         return point;
     }
 
+    public static PointType initPoint(PointType point, StationTimeSeriesFeature stationFeat) {
+        // gml:id
+        String id = generateId();
+        point.setId(id);
+
+        // gml:pos
+        NC_DirectPositionType.initPos(point.addNewPos(), stationFeat);
+
+        return point;
+    }
+
     private static int numIds = 0;
 
     private static String generateId() {

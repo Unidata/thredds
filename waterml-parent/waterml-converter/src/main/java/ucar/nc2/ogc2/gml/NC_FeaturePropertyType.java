@@ -1,6 +1,7 @@
 package ucar.nc2.ogc2.gml;
 
 import net.opengis.gml.x32.FeaturePropertyType;
+import net.opengis.waterml.x20.MonitoringPointDocument;
 import net.opengis.waterml.x20.MonitoringPointType;
 import ucar.nc2.ft.StationTimeSeriesFeature;
 import ucar.nc2.ogc2.waterml.NC_MonitoringPointType;
@@ -17,6 +18,17 @@ public abstract class NC_FeaturePropertyType {
         MonitoringPointType sfSamplingFeatureType = NC_MonitoringPointType.createSfSamplingFeatureType(stationFeat);
         featureOfInterest.setAbstractFeature(sfSamplingFeatureType);
 
+        return featureOfInterest;
+    }
+
+    public static FeaturePropertyType initFeatureOfInterest(
+            FeaturePropertyType featureOfInterest, StationTimeSeriesFeature stationFeat) {
+        // sam:SF_SamplingFeatureType
+        MonitoringPointDocument monitoringPointDoc = MonitoringPointDocument.Factory.newInstance();
+
+        NC_MonitoringPointType.initSfSamplingFeatureType(monitoringPointDoc.addNewMonitoringPoint(), stationFeat);
+
+        featureOfInterest.set(monitoringPointDoc);
         return featureOfInterest;
     }
 

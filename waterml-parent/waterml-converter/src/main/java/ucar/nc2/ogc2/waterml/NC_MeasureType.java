@@ -32,5 +32,22 @@ public abstract class NC_MeasureType {
         return value;
     }
 
+    public static MeasureType initValue(MeasureType value, PointFeature pointFeat, VariableSimpleIF dataVar)
+            throws IOException {
+        StructureMembers.Member firstDataMember = pointFeat.getData().findMember(dataVar.getShortName());
+        assert firstDataMember != null : String.format(
+                "%s appeared in the list of data variables but not in the StructureData.", dataVar.getShortName());
+
+        Array dataArray = pointFeat.getData().getArray(firstDataMember);
+        assert dataArray.getSize() == 1 : String.format("Expected array to be scalar, but its shape was %s.",
+                Arrays.toString(dataArray.getShape()));
+        double dataVal = dataArray.getDouble(0);
+
+        // TEXT
+        value.setDoubleValue(dataVal);
+
+        return value;
+    }
+
     private NC_MeasureType() { }
 }

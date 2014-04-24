@@ -58,6 +58,34 @@ public abstract class NC_OMObservationType {
         return omObservation;
     }
 
+    public static OMObservationType initOmObservation(OMObservationType omObservation,
+            StationTimeSeriesFeature stationFeat, VariableSimpleIF dataVar) throws IOException {
+        // gml:id
+        omObservation.setId(generateId());
+
+        // om:observedProperty
+        NC_ReferenceType.initObservedProperty(omObservation.addNewObservedProperty(), dataVar);
+
+        // om:featureOfInterest
+        NC_FeaturePropertyType.initFeatureOfInterest(omObservation.addNewFeatureOfInterest(), stationFeat);
+
+        // om:result
+        MeasurementTimeseriesDocument measurementTimeseriesDoc = MeasurementTimeseriesDocument.Factory.newInstance();
+        NC_MeasurementTimeseriesType.initMeasurementTimeseries(
+                measurementTimeseriesDoc.addNewMeasurementTimeseries(), stationFeat, dataVar);
+        omObservation.setResult(measurementTimeseriesDoc);
+
+        // om:phenomenonTime
+        // We must set this after om:result, because the calendar date range may not be available until we iterate
+        // through stationFeat.
+        NC_TimeObjectPropertyType.initPhenomenonTime(omObservation.addNewPhenomenonTime(), stationFeat);
+
+        // om:resultTime
+        NC_TimeInstantPropertyType.initResultTime(omObservation.addNewResultTime(), stationFeat);
+
+        return omObservation;
+    }
+
     private static int numIds = 0;
 
     private static String generateId() {

@@ -17,15 +17,13 @@ public abstract class NC_TVPDefaultMetadataPropertyType {
         TVPMeasurementMetadataType defaultTVPMetadata = NC_TVPMeasurementMetadataType.createDefaultMeasurementTVPMetadata(dataVar);
         defaultPointMetadata.setDefaultTVPMetadata(defaultTVPMetadata);
 
-
-
         return defaultPointMetadata;
     }
 
     // wml2:Collection/wml2:observationMember/om:OM_Observation/om:result/wml2:MeasurementTimeseriesType/wml2:defaultPointMetadata
     public static TVPDefaultMetadataPropertyType initDefaultPointMetadata(
             TVPDefaultMetadataPropertyType defaultPointMetadata, VariableSimpleIF dataVar) {
-        // wml2:DefaultTVPMeasurementMetadata
+        // wml2:DefaultTVPMetadata
         DefaultTVPMeasurementMetadataDocument defaultTVPMeasurementMetadataDocument =
                 DefaultTVPMeasurementMetadataDocument.Factory.newInstance();
 

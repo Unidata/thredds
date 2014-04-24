@@ -18,6 +18,13 @@ public abstract class NC_TimePositionType {
         return time;
     }
 
+    public static TimePositionType initTime(TimePositionType time, PointFeature pointFeat) {
+        // TEXT
+        time.setStringValue(pointFeat.getNominalTimeAsCalendarDate().toString());
+
+        return time;
+    }
+
     // wml2:Collection/wml2:observationMember/om:OM_Observation/om:phenomenonTime/gml:TimePeriod/gml:beginPosiition
     public static TimePositionType createBeginPosition(StationTimeSeriesFeature stationFeat) {
         TimePositionType beginPosition = TimePositionType.Factory.newInstance();
@@ -30,10 +37,28 @@ public abstract class NC_TimePositionType {
         return beginPosition;
     }
 
+    public static TimePositionType initBeginPosition(TimePositionType beginPosition, StationTimeSeriesFeature stationFeat) {
+        // TEXT
+        if (stationFeat.getCalendarDateRange() != null) {
+            beginPosition.setStringValue(stationFeat.getCalendarDateRange().getStart().toString());
+        }
+
+        return beginPosition;
+    }
+
     // wml2:Collection/wml2:observationMember/om:OM_Observation/om:phenomenonTime/gml:TimePeriod/gml:endPosiition
     public static TimePositionType createEndPosition(StationTimeSeriesFeature stationFeat) {
         TimePositionType endPosition = TimePositionType.Factory.newInstance();
 
+        // TEXT
+        if (stationFeat.getCalendarDateRange() != null) {
+            endPosition.setStringValue(stationFeat.getCalendarDateRange().getEnd().toString());
+        }
+
+        return endPosition;
+    }
+
+    public static TimePositionType initEndPosition(TimePositionType endPosition, StationTimeSeriesFeature stationFeat) {
         // TEXT
         if (stationFeat.getCalendarDateRange() != null) {
             endPosition.setStringValue(stationFeat.getCalendarDateRange().getEnd().toString());

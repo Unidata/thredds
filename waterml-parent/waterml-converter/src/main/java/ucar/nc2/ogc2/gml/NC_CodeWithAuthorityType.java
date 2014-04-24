@@ -15,5 +15,12 @@ public abstract class NC_CodeWithAuthorityType {
         return identifier;
     }
 
+    public static CodeWithAuthorityType initIdentifier(
+            CodeWithAuthorityType identifier, StationTimeSeriesFeature stationFeat) {
+        identifier.setStringValue(stationFeat.getName());
+        identifier.setCodeSpace("http://unidata.ucar.edu/");
+        return identifier;
+    }
+
     private NC_CodeWithAuthorityType() { }
 }

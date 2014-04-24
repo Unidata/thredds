@@ -16,5 +16,11 @@ public abstract class NC_StringOrRefType {
         return description;
     }
 
+    public static StringOrRefType initDescription(StringOrRefType description, StationTimeSeriesFeature stationFeat) {
+        // TEXT
+        description.setStringValue(stationFeat.getDescription());
+        return description;
+    }
+
     private NC_StringOrRefType() { }
 }

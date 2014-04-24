@@ -16,5 +16,12 @@ public abstract class NC_TimeInstantPropertyType {
         return resultTime;
     }
 
+    public static TimeInstantPropertyType initResultTime(
+            TimeInstantPropertyType resultTime, StationTimeSeriesFeature stationFeat) {
+        // StationTimeSeriesFeature has no comparable property.
+
+        return resultTime;
+    }
+
     private NC_TimeInstantPropertyType() { }
 }

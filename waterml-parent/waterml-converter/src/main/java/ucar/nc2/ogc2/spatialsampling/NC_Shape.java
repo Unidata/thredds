@@ -1,5 +1,6 @@
 package ucar.nc2.ogc2.spatialsampling;
 
+import net.opengis.gml.x32.PointDocument;
 import net.opengis.gml.x32.PointType;
 import net.opengis.samplingSpatial.x20.ShapeType;
 import ucar.nc2.ft.StationTimeSeriesFeature;
@@ -16,6 +17,15 @@ public abstract class NC_Shape {
         PointType point = NC_PointType.createPoint(stationFeat);
         shape.setAbstractGeometry(point);
 
+        return shape;
+    }
+
+    public static ShapeType initShape(ShapeType shape, StationTimeSeriesFeature stationFeat) {
+        PointDocument pointDoc = PointDocument.Factory.newInstance();
+
+        NC_PointType.initPoint(pointDoc.addNewPoint(), stationFeat);
+
+        shape.set(pointDoc);
         return shape;
     }
 

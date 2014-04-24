@@ -24,5 +24,13 @@ public abstract class NC_OMObservationPropertyType {
         return observationMember;
     }
 
+    public static OMObservationPropertyType initObservationMember(OMObservationPropertyType observationMember,
+            StationTimeSeriesFeature stationFeat, VariableSimpleIF dataVar) throws IOException {
+        // om:OM_Observation
+        NC_OMObservationType.initOmObservation(observationMember.addNewOMObservation(), stationFeat, dataVar);
+
+        return observationMember;
+    }
+
     private NC_OMObservationPropertyType() { }
 }
