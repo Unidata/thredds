@@ -101,7 +101,7 @@ public class TimeCoord implements Comparable {
       if(atrCal != null)
     	  cal = Calendar.get((String)atrCal.getValue(0) );
       else
-    	  cal = Calendar.proleptic_gregorian; //Default???
+    	  cal = Calendar.getDefault();
       
     } catch (Exception e) {
       throw new IllegalArgumentException("Not a unit of time " + axis.getUnitsString());

@@ -40,6 +40,9 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import org.joda.time.DateTime;
+import org.joda.time.DateTimeZone;
+
 import thredds.server.ncss.exception.OutOfBoundariesException;
 import thredds.server.ncss.exception.TimeOutOfWindowException;
 import thredds.server.ncss.exception.VariableNotContainedInDatasetException;
@@ -49,6 +52,7 @@ import ucar.nc2.dataset.CoordinateAxis1D;
 import ucar.nc2.dt.GridDatatype;
 import ucar.nc2.dt.grid.GridAsPointDataset;
 import ucar.nc2.dt.grid.GridDataset;
+import ucar.nc2.time.Calendar;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time.CalendarDateFormatter;
 import ucar.nc2.time.CalendarDateRange;
@@ -63,8 +67,10 @@ import ucar.nc2.units.TimeDuration;
  */
 public abstract class GridDatasetResponder {
 
-  public static CalendarDateRange getRequestedDateRange(NcssParamsBean params) throws ParseException{
+  public static CalendarDateRange getRequestedDateRange(NcssParamsBean params, Calendar cal) throws ParseException{
 
+	  //CHECK --> must use Calendar!!!!
+	  
  		if(params.getTime()!=null){
  			CalendarDate date=null;
  			if( params.getTime().equalsIgnoreCase("present") ){
@@ -72,14 +78,14 @@ public abstract class GridDatasetResponder {
  			}else{
 
  				//date = CalendarDate.of( CalendarDateFormatter.isoStringToDate(params.getTime())  );
- 				date =  CalendarDateFormatter.isoStringToCalendarDate(null, params.getTime());
+ 				date =  CalendarDateFormatter.isoStringToCalendarDate(cal, params.getTime());
  			}
  			return CalendarDateRange.of(date,date);
  		}
  		//We should have valid params here...
  		CalendarDateRange dates=null;
- 		DateRange dr = new DateRange( new DateType(params.getTime_start() , null, null), new DateType(params.getTime_end(), null, null), new TimeDuration(params.getTime_duration()), null );
- 	    //dates = CalendarDateRange.of(dr);
+ 		
+ 		DateRange dr = new DateRange( new DateType(params.getTime_start() , null, null, cal), new DateType(params.getTime_end(), null, null, cal), new TimeDuration(params.getTime_duration()), null ); 		 	    
  		dates = CalendarDateRange.of(dr.getStart().getCalendarDate(), dr.getEnd().getCalendarDate()  );
 
  		return dates;
@@ -188,7 +194,10 @@ public abstract class GridDatasetResponder {
 		
 		if(dates.isEmpty() ) return dates;
 		
-		long time_window =0;
+		//Get the calendar
+		Calendar cal = dates.get(0).getCalendar();
+		
+		long time_window = 0;
 		if( params.getTime_window() != null ){
 			TimeDuration dTW = new TimeDuration(params.getTime_window());
 			time_window = (long)dTW.getValueInSeconds()*1000;
@@ -202,7 +211,9 @@ public abstract class GridDatasetResponder {
 				//Closest to present
 				List<CalendarDate> closestToPresent = new ArrayList<CalendarDate>();
 				
-				CalendarDate now = CalendarDate.of(new Date());
+				DateTime dt = new DateTime(new Date(), DateTimeZone.UTC) ;				
+				CalendarDate now = CalendarDate.of(cal, dt.getMillis() );
+				
 				CalendarDate start = dates.get(0);
 				CalendarDate end  = dates.get(dates.size()-1);
 				if( now.isBefore(start) ){ 
@@ -230,12 +241,12 @@ public abstract class GridDatasetResponder {
 			}
 		//We should have a time or a timeRange...
 		if(params.getTime_window()!=null && params.getTime()!=null){
-			DateRange dr = new DateRange( new DateType(params.getTime(), null, null ), null, new TimeDuration(params.getTime_window()), null );			
+			DateRange dr = new DateRange( new DateType(params.getTime(), null, null, cal ), null, new TimeDuration(params.getTime_window()), null );			
 			//time_window = CalendarDateRange.of(dr).getDurationInSecs()*1000;			
 			time_window = CalendarDateRange.of(dr.getStart().getCalendarDate(), dr.getEnd().getCalendarDate()).getDurationInSecs()*1000; 
 									
 		}
-		CalendarDateRange dateRange = getRequestedDateRange(params);		
+		CalendarDateRange dateRange = getRequestedDateRange(params, cal);		
 		return NcssRequestUtils.wantedDates(gap, dateRange, time_window );	
 	}	
 
