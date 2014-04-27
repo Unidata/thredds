@@ -220,6 +220,10 @@ public class CalendarDate implements Comparable<CalendarDate> {
     return CalendarDateFormatter.toDateTimeStringISO(this);
   }
 
+  public String getTimeUnits(){
+	  return CalendarDateFormatter.toTimeUnits(this);
+  }
+  
   /**
    * Get the hour of day (0-23) field for this chronology.
    * @return hour of day (0-23)

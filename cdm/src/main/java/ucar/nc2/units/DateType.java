@@ -33,11 +33,14 @@
 
 package ucar.nc2.units;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Calendar;
+import java.util.TimeZone;
+
+//import ucar.nc2.time.Calendar;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time.CalendarDateFormatter;
-
-import java.util.*;
-import java.text.SimpleDateFormat;
 
 /**
  * Implements the thredds "dateType" and "dateTypeFormatted" XML element types.
@@ -111,6 +114,7 @@ public class DateType {
    * @param type   type of date, or null
    * @throws java.text.ParseException if error parsing text
    */
+  @Deprecated
   public DateType(String text, String format, String type) throws java.text.ParseException {
 
     text = (text == null) ? "" : text.trim();
@@ -150,6 +154,62 @@ public class DateType {
     if (date == null)
       throw new java.text.ParseException("invalid ISO date unit ="+text, 0);
   }
+  
+  
+  /**
+   * Constructor.
+   *
+   * @param text   string representation
+   * @param format using java.text.SimpleDateFormat, or null
+   * @param type   type of date, or null
+   * @param cal   Calendar of date, or null
+   * @throws java.text.ParseException if error parsing text
+   */
+  public DateType(String text, String format, String type, ucar.nc2.time.Calendar cal) throws java.text.ParseException {
+
+	if( cal == null) cal = ucar.nc2.time.Calendar.getDefault();
+	  
+    text = (text == null) ? "" : text.trim();
+    this.text = text;
+    this.format = format;
+    this.type = type;
+
+    // see if its blank
+    if (text.length() == 0) {
+      isBlank = true;
+      return;
+    }
+
+    // see if its the string "present"
+    isPresent = text.equalsIgnoreCase("present");
+    if (isPresent) {
+      return;
+    }
+
+    // see if its got a format
+    if (format != null) {
+      SimpleDateFormat dateFormat = new java.text.SimpleDateFormat(format);    
+      java.util.Calendar  c =  java.util.Calendar.getInstance();
+      c.setTime(dateFormat.parse(text));      
+      date = CalendarDate.of(cal, c.getTimeInMillis());
+      
+      return;
+    }
+
+    // see if its a udunits string
+    if (text.indexOf("since") > 0) {
+      date = CalendarDate.parseUdunits(cal.name(), text);
+      if (date == null)
+        throw new java.text.ParseException("invalid udunit date unit ="+text, 0);
+      return;
+    }
+
+    date = CalendarDate.parseISOformat(cal.name(), text);
+    
+    if (date == null)
+      throw new java.text.ParseException("invalid ISO date unit ="+text, 0);
+  }
+  
 
   /**
    * Get this as a Date.

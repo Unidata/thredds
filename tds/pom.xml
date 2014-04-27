@@ -80,6 +80,10 @@
       <groupId>${project.groupId}</groupId>
       <artifactId>d4servletshared</artifactId>
     </dependency>
+    <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>d4servlet</artifactId>
+    </dependency>
 
     <!-- Apache httpclient libraries -->
     <dependency>
