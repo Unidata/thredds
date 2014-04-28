@@ -3,6 +3,7 @@ package ucar.nc2.ogc2.gml;
 import net.opengis.gml.x32.TimePositionType;
 import ucar.nc2.ft.PointFeature;
 import ucar.nc2.ft.StationTimeSeriesFeature;
+import ucar.nc2.time.CalendarDate;
 
 /**
  * Created by cwardgar on 2014/03/05.
@@ -65,6 +66,14 @@ public abstract class NC_TimePositionType {
         }
 
         return endPosition;
+    }
+
+    // wml2:Collection/wml2:observationMember/om:OM_Observation/om:resultTime/gml:TimeInstant/gml:timePosition
+    public static TimePositionType initTimePosition(TimePositionType timePosition) {
+        // TEXT
+        timePosition.setStringValue(CalendarDate.present().toString());
+
+        return timePosition;
     }
 
     private NC_TimePositionType() { }

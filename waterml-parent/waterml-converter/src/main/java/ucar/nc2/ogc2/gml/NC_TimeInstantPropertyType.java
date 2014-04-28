@@ -18,7 +18,8 @@ public abstract class NC_TimeInstantPropertyType {
 
     public static TimeInstantPropertyType initResultTime(
             TimeInstantPropertyType resultTime, StationTimeSeriesFeature stationFeat) {
-        // StationTimeSeriesFeature has no comparable property.
+        // gml:TimeInstant
+        NC_TimeInstantType.initTimeInstant(resultTime.addNewTimeInstant());
 
         return resultTime;
     }

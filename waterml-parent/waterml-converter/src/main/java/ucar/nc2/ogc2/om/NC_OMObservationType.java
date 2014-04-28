@@ -66,6 +66,9 @@ public abstract class NC_OMObservationType {
         // om:observedProperty
         NC_ReferenceType.initObservedProperty(omObservation.addNewObservedProperty(), dataVar);
 
+        // om:procedure
+        NC_OMProcessPropertyType.initProcedure(omObservation.addNewProcedure());
+
         // om:featureOfInterest
         NC_FeaturePropertyType.initFeatureOfInterest(omObservation.addNewFeatureOfInterest(), stationFeat);
 
