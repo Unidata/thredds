@@ -54,6 +54,9 @@ public abstract class NC_MonitoringPointType {
             sfSamplingFeatureType.unsetDescription();
         }
 
+        // sam:sampledFeature
+        sfSamplingFeatureType.setNilSampledFeature();
+
         // sams:shape
         NC_Shape.initShape(sfSamplingFeatureType.addNewShape(), stationFeat);
 
