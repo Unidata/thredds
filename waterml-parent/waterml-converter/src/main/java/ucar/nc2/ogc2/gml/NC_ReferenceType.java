@@ -34,7 +34,7 @@ public abstract class NC_ReferenceType {
         interpolationType.setTitle("Unknown");
 
         // @xlink:href
-        interpolationType.setHref("http://www.opengs.net/def/nil/OGC/0/unknown");
+        interpolationType.setHref("http://www.opengis.net/def/nil/OGC/0/unknown");
 
         return interpolationType;
     }

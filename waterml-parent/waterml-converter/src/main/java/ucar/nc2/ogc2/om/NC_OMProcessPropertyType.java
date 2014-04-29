@@ -9,10 +9,10 @@ public class NC_OMProcessPropertyType {
     // wml2:Collection/wml2:observationMember/om:OM_Observation/om:procedure
     public static OMProcessPropertyType initProcedure(OMProcessPropertyType procedure) {
         // @xlink:title
-        procedure.setTitle("Algorithm");
+        procedure.setTitle("Unknown");
 
         // @xlink:href
-        procedure.setHref("http://www.opengis.net/def/waterml/2.0/processType/Algorithm");
+        procedure.setHref("http://www.opengis.net/def/nil/OGC/0/unknown");
 
         return procedure;
     }
