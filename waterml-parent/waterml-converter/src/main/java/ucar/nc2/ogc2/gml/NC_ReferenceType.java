@@ -8,16 +8,6 @@ import ucar.nc2.VariableSimpleIF;
  */
 public abstract class NC_ReferenceType {
     // wml2:Collection/wml2:observationMember/om:Observation/om:observedProperty
-    public static ReferenceType createObservedProperty(VariableSimpleIF dataVar) {
-        ReferenceType observedProperty = ReferenceType.Factory.newInstance();
-
-        // @xlink:title
-        observedProperty.setTitle(dataVar.getShortName());
-
-        return observedProperty;
-    }
-
-    // wml2:Collection/wml2:observationMember/om:Observation/om:observedProperty
     public static ReferenceType initObservedProperty(ReferenceType observedProperty, VariableSimpleIF dataVar) {
         // @xlink:title
         observedProperty.setTitle(dataVar.getShortName());

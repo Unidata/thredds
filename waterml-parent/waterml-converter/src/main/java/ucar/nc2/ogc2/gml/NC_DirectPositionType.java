@@ -10,16 +10,6 @@ import java.util.Arrays;
  */
 public abstract class NC_DirectPositionType {
     // wml2:Collection/wml2:observationMember/om:OM_Observation/om:featureOfInterest/sams:SF_SpatialSamplingFeatureType/sams:shape/gml:Point/gml:pos
-    public static DirectPositionType createPos(StationTimeSeriesFeature stationFeat) {
-        DirectPositionType pos = DirectPositionType.Factory.newInstance();
-
-        // TEXT
-        pos.setListValue(Arrays.asList(
-                stationFeat.getLatitude(), stationFeat.getLongitude(), stationFeat.getAltitude()));
-
-        return pos;
-    }
-
     public static DirectPositionType initPos(DirectPositionType pos, StationTimeSeriesFeature stationFeat) {
         // TEXT
         pos.setListValue(Arrays.asList(

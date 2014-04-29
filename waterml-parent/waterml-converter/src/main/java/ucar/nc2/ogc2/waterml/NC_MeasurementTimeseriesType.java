@@ -12,53 +12,6 @@ import java.io.IOException;
  */
 public abstract class NC_MeasurementTimeseriesType {
     // wml2:Collection/wml2:observationMember/om:OM_Observation/om:result/wml2:MeasurementTimeseries
-    public static MeasurementTimeseriesType createMeasurementTimeseries(
-            StationTimeSeriesFeature stationFeat, VariableSimpleIF dataVar)
-            throws IOException {
-        MeasurementTimeseriesType measurementTimeseries = MeasurementTimeseriesType.Factory.newInstance();
-
-        // gml:id
-        String id = generateId();
-        measurementTimeseries.setId(id);
-
-//        // wml2:defaultPointMetadata
-//        TVPDefaultMetadataPropertyType defaultPointMetadata =
-//                NC_TVPDefaultMetadataPropertyType.createDefaultPointMetadata(dataVar);
-//        TVPDefaultMetadataPropertyType[] defaultPointMetadataArray =
-//                new TVPDefaultMetadataPropertyType[] { defaultPointMetadata };
-//        measurementTimeseries.setDefaultPointMetadataArray(defaultPointMetadataArray);
-
-
-//        TVPDefaultMetadataPropertyType xbMetaComponent = measurementTimeseries.addNewDefaultPointMetadata();
-//
-//        DefaultTVPMeasurementMetadataDocument xbDefMeasureMetaComponent =
-//                DefaultTVPMeasurementMetadataDocument.Factory.newInstance();
-//        TVPMeasurementMetadataType defaultTVPMeasurementMetadata =
-//                xbDefMeasureMetaComponent.addNewDefaultTVPMeasurementMetadata();
-//        defaultTVPMeasurementMetadata.addNewInterpolationType().setHref(
-//                "http://www.opengis.net/def/timeseriesType/WaterML/2.0/continuous");
-//        defaultTVPMeasurementMetadata.addNewUom().setCode("Foozle");
-//
-//        xbMetaComponent.set(xbDefMeasureMetaComponent);
-
-        // wml2:defaultPointMetadata
-        NC_TVPDefaultMetadataPropertyType.initDefaultPointMetadata(
-                measurementTimeseries.addNewDefaultPointMetadata(), dataVar);
-
-        // wml2:point[0..*]
-        PointFeatureIterator pointFeatIter = stationFeat.getPointFeatureIterator(-1);
-        while (pointFeatIter.hasNext()) {
-            // wml2:point
-            MeasurementTimeseriesType.Point point = measurementTimeseries.addNewPoint();
-
-            // wml2:MeasurementTVP
-            MeasureTVPType measurementTVP = NC_MeasureTVPType.createMeasurementTVP(pointFeatIter.next(), dataVar);
-            point.setMeasurementTVP(measurementTVP);
-        }
-
-        return measurementTimeseries;
-    }
-
     public static MeasurementTimeseriesType initMeasurementTimeseries(MeasurementTimeseriesType measurementTimeseries,
             StationTimeSeriesFeature stationFeat, VariableSimpleIF dataVar) throws IOException {
         // gml:id

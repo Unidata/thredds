@@ -8,14 +8,6 @@ import ucar.nc2.ft.StationTimeSeriesFeature;
  */
 public abstract class NC_TimeInstantPropertyType {
     // wml2:Collection/wml2:observationMember/om:OM_Observation/om:resultTime
-    public static TimeInstantPropertyType createResultTime(StationTimeSeriesFeature stationFeat) {
-        TimeInstantPropertyType resultTime = TimeInstantPropertyType.Factory.newInstance();
-
-        // StationTimeSeriesFeature has no comparable property.
-
-        return resultTime;
-    }
-
     public static TimeInstantPropertyType initResultTime(
             TimeInstantPropertyType resultTime, StationTimeSeriesFeature stationFeat) {
         // gml:TimeInstant

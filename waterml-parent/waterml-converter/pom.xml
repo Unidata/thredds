@@ -41,12 +41,6 @@
             <artifactId>52n-oxf-xmlbeans</artifactId>
             <version>1.12</version>
         </dependency>
-
-        <dependency>
-            <groupId>edu.ucar</groupId>
-            <artifactId>waterml-bindings-v_2_0_1</artifactId>
-            <version>1.0.0</version>
-        </dependency>
         <dependency>
             <groupId>edu.ucar</groupId>
             <artifactId>erddap-unit-converter</artifactId>

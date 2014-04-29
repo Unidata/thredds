@@ -1,8 +1,6 @@
 package ucar.nc2.ogc2.waterml;
 
-import net.opengis.om.x20.OMObservationPropertyType;
 import net.opengis.waterml.x20.CollectionType;
-import net.opengis.waterml.x20.DocumentMetadataPropertyType;
 import ucar.nc2.VariableSimpleIF;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.ft.*;
@@ -17,34 +15,6 @@ import java.util.List;
  */
 public abstract class NC_Collection {
     // wml2:Collection
-    public static CollectionType createCollection(FeatureDatasetPoint fdPoint, VariableSimpleIF dataVar)
-            throws IOException {
-        CollectionType collection = CollectionType.Factory.newInstance();
-
-        // gml:id
-        String id = generateId();
-        collection.setId(id);
-
-        // wml2:metadata
-        DocumentMetadataPropertyType metadata = NC_DocumentMetadataPropertyType.createMetadata();
-        collection.setMetadata(metadata);
-
-        // wml2:observationMember[0..*]
-        StationTimeSeriesFeatureCollection stationFeatColl = getStationFeatures(fdPoint);
-        PointFeatureCollectionIterator stationFeatCollIter = stationFeatColl.getPointFeatureCollectionIterator(-1);
-
-        while (stationFeatCollIter.hasNext()) {
-            // wml2:observationMember
-            StationTimeSeriesFeature stationFeat = (StationTimeSeriesFeature) stationFeatCollIter.next();
-            OMObservationPropertyType observationMember =
-                    NC_OMObservationPropertyType.createObservationMember(stationFeat, dataVar);
-            OMObservationPropertyType[] observationMemberArray = new OMObservationPropertyType[] { observationMember };
-            collection.setObservationMemberArray(observationMemberArray);
-        }
-
-        return collection;
-    }
-
     public static CollectionType initCollection(CollectionType collection, FeatureDatasetPoint fdPoint,
             VariableSimpleIF dataVar) throws IOException {
         // gml:id

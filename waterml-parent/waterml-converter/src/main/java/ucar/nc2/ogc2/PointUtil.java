@@ -1,19 +1,12 @@
-package ucar.nc2.ogc;
+package ucar.nc2.ogc2;
 
-import edu.ucar.ogc.MarshallingUtil;
-import net.opengis.waterml.v_2_0_1.CollectionType;
 import ucar.ma2.Array;
 import ucar.ma2.StructureData;
 import ucar.ma2.StructureMembers;
-import ucar.nc2.VariableSimpleIF;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.ft.*;
-import ucar.nc2.ogc.waterml.NC_Collection;
 
-import javax.xml.bind.JAXBElement;
-import javax.xml.bind.JAXBException;
 import java.io.IOException;
-import java.io.OutputStream;
 import java.io.PrintStream;
 import java.util.Formatter;
 
@@ -43,14 +36,6 @@ public class PointUtil {
         } else {
             return (FeatureDatasetPoint) fDset;
         }
-    }
-
-    public static void marshalPointDataset(
-            FeatureDatasetPoint fdPoint, VariableSimpleIF dataVar, OutputStream outputStream)
-            throws IOException, JAXBException {
-        CollectionType collection = NC_Collection.createCollection(fdPoint, dataVar);
-        JAXBElement<?> jaxbElement = Factories.WATERML.createCollection(collection);
-        MarshallingUtil.WATERML_MARSHALLER.marshal(jaxbElement, outputStream);
     }
 
     public static void printPointFeatures(FeatureDatasetPoint fdPoint, PrintStream outStream) throws IOException {

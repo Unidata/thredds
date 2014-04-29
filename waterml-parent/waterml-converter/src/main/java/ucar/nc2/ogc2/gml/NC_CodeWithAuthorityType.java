@@ -8,13 +8,6 @@ import ucar.nc2.ft.StationTimeSeriesFeature;
  */
 public abstract class NC_CodeWithAuthorityType {
     // wml2:Collection/wml2:observationMember/om:OM_Observation/om:featureOfInterest/sam:SF_SamplingFeatureType/gml:identifier
-    public static CodeWithAuthorityType createIdentifier(StationTimeSeriesFeature stationFeat) {
-        CodeWithAuthorityType identifier = CodeWithAuthorityType.Factory.newInstance();
-        identifier.setStringValue(stationFeat.getName());
-        identifier.setCodeSpace("http://unidata.ucar.edu/");
-        return identifier;
-    }
-
     public static CodeWithAuthorityType initIdentifier(
             CodeWithAuthorityType identifier, StationTimeSeriesFeature stationFeat) {
         identifier.setStringValue(stationFeat.getName());

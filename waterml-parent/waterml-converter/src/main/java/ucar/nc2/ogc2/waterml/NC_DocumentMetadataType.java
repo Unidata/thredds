@@ -8,20 +8,6 @@ import java.util.GregorianCalendar;
  */
 public abstract class NC_DocumentMetadataType {
     // wml2:Collection/wml2:metadata/wml:DocumentMetdata
-    public static DocumentMetadataType createDocumentMetadata() {
-        DocumentMetadataType documentMetadata = DocumentMetadataType.Factory.newInstance();
-
-        // gml:id
-        String id = generateId();
-        documentMetadata.setId(id);
-
-        // wml2:generationDate
-        GregorianCalendar gregorianCalendar = new GregorianCalendar();  // Initialized to "now".
-        documentMetadata.setGenerationDate(gregorianCalendar);
-
-        return documentMetadata;
-    }
-
     public static DocumentMetadataType initDocumentMetadata(DocumentMetadataType documentMetadata) {
         // gml:id
         documentMetadata.setId(generateId());

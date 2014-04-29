@@ -1,4 +1,4 @@
-package ucar.nc2.ogc;
+package ucar.nc2.ogc2;
 
 /**
  * Created by cwardgar on 2014/02/21.

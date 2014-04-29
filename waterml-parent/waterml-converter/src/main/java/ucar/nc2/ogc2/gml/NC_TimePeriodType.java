@@ -1,7 +1,6 @@
 package ucar.nc2.ogc2.gml;
 
 import net.opengis.gml.x32.TimePeriodType;
-import net.opengis.gml.x32.TimePositionType;
 import ucar.nc2.ft.StationTimeSeriesFeature;
 
 /**
@@ -9,24 +8,6 @@ import ucar.nc2.ft.StationTimeSeriesFeature;
  */
 public abstract class NC_TimePeriodType {
     // wml2:Collection/wml2:observationMember/om:OM_Observation/om:phenomenonTime/gml:TimePeriod
-    public static TimePeriodType createTimePeriod(StationTimeSeriesFeature stationFeat) {
-        TimePeriodType timePeriod = TimePeriodType.Factory.newInstance();
-
-        // gml:id
-        String id = generateId();
-        timePeriod.setId(id);
-
-        // gml:beginPosition
-        TimePositionType beginPosition = NC_TimePositionType.createBeginPosition(stationFeat);
-        timePeriod.setBeginPosition(beginPosition);
-
-        // gml:endPosition
-        TimePositionType endPosition = NC_TimePositionType.createEndPosition(stationFeat);
-        timePeriod.setEndPosition(endPosition);
-
-        return timePeriod;
-    }
-
     public static TimePeriodType initTimePeriod(TimePeriodType timePeriod, StationTimeSeriesFeature stationFeat) {
         // gml:id
         String id = generateId();

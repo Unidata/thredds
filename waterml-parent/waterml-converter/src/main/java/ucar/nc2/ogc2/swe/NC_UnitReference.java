@@ -9,17 +9,6 @@ import ucar.nc2.VariableSimpleIF;
  */
 public class NC_UnitReference {
     // wml2:Collection/wml2:observationMember/om:OM_Observation/om:result/wml2:MeasurementTimeseriesType/wml2:defaultPointMetadata/wml2:DefaultTVPMetadata/wml2:uom
-    public static UnitReference createUom(VariableSimpleIF dataVar) {
-        UnitReference uom = UnitReference.Factory.newInstance();
-
-        // @code
-        String udunits = dataVar.getUnitsString();
-        String ucum = EDUnits.udunitsToUcum(udunits);
-        uom.setCode(ucum);
-
-        return uom;
-    }
-
     public static UnitReference initUom(UnitReference uom, VariableSimpleIF dataVar) {
         // @code
         String udunits = dataVar.getUnitsString();
