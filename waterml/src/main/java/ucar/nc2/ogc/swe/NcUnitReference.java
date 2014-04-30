@@ -7,7 +7,7 @@ import ucar.nc2.VariableSimpleIF;
 /**
  * Created by cwardgar on 2014/03/06.
  */
-public class NC_UnitReference {
+public class NcUnitReference {
     // wml2:Collection/wml2:observationMember/om:OM_Observation/om:result/wml2:MeasurementTimeseriesType/wml2:defaultPointMetadata/wml2:DefaultTVPMetadata/wml2:uom
     public static UnitReference initUom(UnitReference uom, VariableSimpleIF dataVar) {
         // @code
@@ -18,5 +18,5 @@ public class NC_UnitReference {
         return uom;
     }
 
-    private NC_UnitReference() { }
+    private NcUnitReference() { }
 }

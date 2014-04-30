@@ -12,7 +12,7 @@ import java.util.Arrays;
 /**
  * Created by cwardgar on 2014/03/06.
  */
-public abstract class NC_MeasureType {
+public abstract class NcMeasureType {
     // wml2:Collection/wml2:observationMember/om:OM_Observation/om:result/wml2:MeasurementTimeseries/wml2:point/wml2:MeasurementTVP/wml2:value
     public static MeasureType initValue(MeasureType value, PointFeature pointFeat, VariableSimpleIF dataVar)
             throws IOException {
@@ -31,5 +31,5 @@ public abstract class NC_MeasureType {
         return value;
     }
 
-    private NC_MeasureType() { }
+    private NcMeasureType() { }
 }

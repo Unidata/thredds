@@ -7,7 +7,7 @@ import org.n52.oxf.xmlbeans.parser.XMLBeansParser;
 import org.n52.oxf.xmlbeans.parser.XMLHandlingException;
 import ucar.nc2.VariableSimpleIF;
 import ucar.nc2.ft.FeatureDatasetPoint;
-import ucar.nc2.ogc.waterml.NC_Collection;
+import ucar.nc2.ogc.waterml.NcCollectionType;
 
 import javax.xml.namespace.QName;
 import java.io.IOException;
@@ -20,10 +20,33 @@ import java.util.Map;
  * Created by cwardgar on 2014/04/29.
  */
 public class MarshallingUtil {
+    /////////////////////////////////////////////// ID Creation ///////////////////////////////////////////////
+
+    private static Map<Class<?>, Integer> idsMap = new HashMap<>();
+
+    public static String createIdForType(Class<?> clazz) {
+        Integer numIds = idsMap.get(clazz);
+        if (numIds == null) {
+            numIds = 0;
+        }
+
+        String id = clazz.getSimpleName() + "." + ++numIds;
+        idsMap.put(clazz, numIds);
+        return id;
+    }
+
+    public static void resetIds() {
+        idsMap.clear();
+    }
+
+    /////////////////////////////////////////////// Marshalling ///////////////////////////////////////////////
+
     public static void marshalPointDataset(FeatureDatasetPoint fdPoint, VariableSimpleIF dataVar,
             OutputStream outputStream) throws IOException, XMLHandlingException {
         CollectionDocument collectionDoc = CollectionDocument.Factory.newInstance();
-        NC_Collection.initCollection(collectionDoc.addNewCollection(), fdPoint, dataVar);
+        NcCollectionType.initCollection(collectionDoc.addNewCollection(), fdPoint, dataVar);
+
+        resetIds();
         writeObject(collectionDoc, outputStream, true);
     }
 

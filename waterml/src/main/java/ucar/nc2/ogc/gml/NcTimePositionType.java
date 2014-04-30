@@ -8,7 +8,7 @@ import ucar.nc2.time.CalendarDate;
 /**
  * Created by cwardgar on 2014/03/05.
  */
-public abstract class NC_TimePositionType {
+public abstract class NcTimePositionType {
     // wml2:Collection/wml2:observationMember/om:OM_Observation/om:result/wml2:MeasurementTimeseries/wml2:point/wml2:MeasurementTVP/wml2:time
     public static TimePositionType initTime(TimePositionType time, PointFeature pointFeat) {
         // TEXT
@@ -45,5 +45,5 @@ public abstract class NC_TimePositionType {
         return timePosition;
     }
 
-    private NC_TimePositionType() { }
+    private NcTimePositionType() { }
 }

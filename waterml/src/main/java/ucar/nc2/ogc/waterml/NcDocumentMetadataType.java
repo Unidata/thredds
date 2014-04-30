@@ -1,16 +1,19 @@
 package ucar.nc2.ogc.waterml;
 
 import net.opengis.waterml.x20.DocumentMetadataType;
+import ucar.nc2.ogc.MarshallingUtil;
+
 import java.util.GregorianCalendar;
 
 /**
  * Created by cwardgar on 2014/03/13.
  */
-public abstract class NC_DocumentMetadataType {
+public abstract class NcDocumentMetadataType {
     // wml2:Collection/wml2:metadata/wml:DocumentMetdata
     public static DocumentMetadataType initDocumentMetadata(DocumentMetadataType documentMetadata) {
         // gml:id
-        documentMetadata.setId(generateId());
+        String id = MarshallingUtil.createIdForType(DocumentMetadataType.class);
+        documentMetadata.setId(id);
 
         // wml2:generationDate
         GregorianCalendar gregorianCalendar = new GregorianCalendar();  // Initialized to "now".
@@ -19,11 +22,5 @@ public abstract class NC_DocumentMetadataType {
         return documentMetadata;
     }
 
-    private static int numIds = 0;
-
-    private static String generateId() {
-        return DocumentMetadataType.class.getSimpleName() + "." + ++numIds;
-    }
-
-    private NC_DocumentMetadataType() { }
+    private NcDocumentMetadataType() { }
 }

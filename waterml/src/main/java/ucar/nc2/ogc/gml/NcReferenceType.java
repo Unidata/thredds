@@ -6,7 +6,7 @@ import ucar.nc2.VariableSimpleIF;
 /**
  * Created by cwardgar on 3/7/14.
  */
-public abstract class NC_ReferenceType {
+public abstract class NcReferenceType {
     // wml2:Collection/wml2:observationMember/om:Observation/om:observedProperty
     public static ReferenceType initObservedProperty(ReferenceType observedProperty, VariableSimpleIF dataVar) {
         // @xlink:title
@@ -29,5 +29,5 @@ public abstract class NC_ReferenceType {
         return interpolationType;
     }
 
-    private NC_ReferenceType() { }
+    private NcReferenceType() { }
 }

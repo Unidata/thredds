@@ -6,7 +6,7 @@ import ucar.nc2.ft.StationTimeSeriesFeature;
 /**
  * Created by cwardgar on 2014/02/26.
  */
-public abstract class NC_StringOrRefType {
+public abstract class NcStringOrRefType {
     // wml2:Collection/wml2:observationMember/om:OM_Observation/om:featureOfInterest/sam:SF_SamplingFeatureType/gml:description
     public static StringOrRefType initDescription(StringOrRefType description, StationTimeSeriesFeature stationFeat) {
         // TEXT
@@ -14,5 +14,5 @@ public abstract class NC_StringOrRefType {
         return description;
     }
 
-    private NC_StringOrRefType() { }
+    private NcStringOrRefType() { }
 }

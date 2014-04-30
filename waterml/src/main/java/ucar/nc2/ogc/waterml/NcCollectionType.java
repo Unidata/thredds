@@ -4,7 +4,8 @@ import net.opengis.waterml.x20.CollectionType;
 import ucar.nc2.VariableSimpleIF;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.ft.*;
-import ucar.nc2.ogc.om.NC_OMObservationPropertyType;
+import ucar.nc2.ogc.MarshallingUtil;
+import ucar.nc2.ogc.om.NcOMObservationPropertyType;
 
 import java.io.File;
 import java.io.IOException;
@@ -13,15 +14,16 @@ import java.util.List;
 /**
  * Created by cwardgar on 2014/03/13.
  */
-public abstract class NC_Collection {
+public abstract class NcCollectionType {
     // wml2:Collection
     public static CollectionType initCollection(CollectionType collection, FeatureDatasetPoint fdPoint,
             VariableSimpleIF dataVar) throws IOException {
         // gml:id
-        collection.setId(generateId());
+        String id = MarshallingUtil.createIdForType(CollectionType.class);
+        collection.setId(id);
 
         // wml2:metadata
-        NC_DocumentMetadataPropertyType.initMetadata(collection.addNewMetadata());
+        NcDocumentMetadataPropertyType.initMetadata(collection.addNewMetadata());
 
         // wml2:observationMember[0..*]
         StationTimeSeriesFeatureCollection stationFeatColl = getStationFeatures(fdPoint);
@@ -30,7 +32,7 @@ public abstract class NC_Collection {
         while (stationFeatCollIter.hasNext()) {
             // wml2:observationMember
             StationTimeSeriesFeature stationFeat = (StationTimeSeriesFeature) stationFeatCollIter.next();
-            NC_OMObservationPropertyType.initObservationMember(
+            NcOMObservationPropertyType.initObservationMember(
                     collection.addNewObservationMember(), stationFeat, dataVar);
         }
 
@@ -61,11 +63,5 @@ public abstract class NC_Collection {
         return (StationTimeSeriesFeatureCollection) featCollList.get(0);
     }
 
-    private static int numIds = 0;
-
-    private static String generateId() {
-        return CollectionType.class.getSimpleName() + "." + ++numIds;
-    }
-
-    private NC_Collection() { }
+    private NcCollectionType() { }
 }
