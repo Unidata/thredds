@@ -38,7 +38,7 @@ import ucar.nc2.VariableSimpleIF;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.ft.*;
 import ucar.nc2.ft.point.writer.CFPointWriter;
-import ucar.nc2.ogc2.PointUtil;
+import ucar.nc2.ogc.PointUtil;
 import ucar.nc2.time.CalendarDateRange;
 import ucar.nc2.ui.dialog.NetcdfOutputChooser;
 import ucar.nc2.ui.point.PointController;

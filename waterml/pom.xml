@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <artifactId>thredds-parent</artifactId>
+        <groupId>edu.ucar</groupId>
+        <version>4.5.0-SNAPSHOT</version>
+    </parent>
+
+    <artifactId>waterml</artifactId>
+    <packaging>jar</packaging>
+
+    <name>NetCDF to WaterML Converter</name>
+    <description>Converts CDM DSGs to WaterML 2.0 timeseries and vice-versa.</description>
+    <url>http://www.unidata.ucar.edu/software/netcdf-java/</url>
+
+    <!--
+    <properties>
+        <skipTests>false</skipTests>
+    </properties>
+    -->
+
+    <repositories>
+        <repository>
+            <id>n52-releases</id>
+            <name>52n Releases</name>
+            <url>http://52north.org/maven/repo/releases</url>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+        </repository>
+    </repositories>
+
+    <dependencies>
+        <dependency>
+            <groupId>edu.ucar</groupId>
+            <artifactId>cdm</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.n52.sensorweb</groupId>
+            <artifactId>52n-xml-waterML-dr-v20</artifactId>
+            <version>1.1.5</version>
+        </dependency>
+        <dependency>
+            <groupId>org.n52.sensorweb</groupId>
+            <artifactId>52n-oxf-xmlbeans</artifactId>
+            <version>1.12</version>
+        </dependency>
+    </dependencies>
+</project>

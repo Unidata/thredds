@@ -1,9 +1,0 @@
-<?xml version="1.0"?>
-<sam:SamplingFeatureComplex
-        xmlns:sam="http://www.opengis.net/sampling/2.0"
-        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-        xmlns:xlink="http://www.w3.org/1999/xlink"
-        xsi:schemaLocation="http://www.opengis.net/sampling/2.0 http://schemas.opengis.net/sampling/2.0/samplingFeature.xsd">
-    <sam:role xlink:href="http://www.example.org/complex/member"/>
-    <sam:relatedSamplingFeature xlink:href="http://my.example.org/wfs?request=getFeature;featureid=coll32"/>
-</sam:SamplingFeatureComplex>

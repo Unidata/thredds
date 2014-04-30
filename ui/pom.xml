@@ -49,7 +49,7 @@
     </dependency>
     <dependency>
       <groupId>edu.ucar</groupId>
-      <artifactId>waterml-converter</artifactId>
+      <artifactId>waterml</artifactId>
     </dependency>
 
     <dependency>

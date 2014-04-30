@@ -288,7 +288,7 @@
       </dependency>
       <dependency>
         <groupId>${project.groupId}</groupId>
-        <artifactId>waterml-converter</artifactId>
+        <artifactId>waterml</artifactId>
         <version>${project.version}</version>
       </dependency>
 
@@ -871,8 +871,7 @@
     <module>netcdf4</module>
     <module>clcommon</module>
     <module>httpclient</module>
-
-    <module>waterml-parent</module>
+    <module>waterml</module>
   </modules>
 
   <properties>
