@@ -19,7 +19,7 @@ public abstract class NcOMObservationType {
     // wml2:Collection/wml2:observationMember/om:OM_Observation
     public static OMObservationType initOmObservation(OMObservationType omObservation,
             StationTimeSeriesFeature stationFeat, VariableSimpleIF dataVar) throws IOException {
-        // gml:id
+        // @gml:id
         String id = MarshallingUtil.createIdForType(OMObservationType.class);
         omObservation.setId(id);
 

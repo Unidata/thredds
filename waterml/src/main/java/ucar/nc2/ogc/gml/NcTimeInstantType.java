@@ -9,7 +9,7 @@ import ucar.nc2.ogc.MarshallingUtil;
 public class NcTimeInstantType {
     // wml2:Collection/wml2:observationMember/om:OM_Observation/om:resultTime/gml:TimeInstant
     public static TimeInstantType initTimeInstant(TimeInstantType timeInstant) {
-        // gml:id
+        // @gml:id
         String id = MarshallingUtil.createIdForType(TimeInstantType.class);
         timeInstant.setId(id);
 

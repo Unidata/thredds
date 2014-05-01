@@ -8,7 +8,8 @@ import ucar.nc2.VariableSimpleIF;
  * Created by cwardgar on 2014/03/06.
  */
 public class NcUnitReference {
-    // wml2:Collection/wml2:observationMember/om:OM_Observation/om:result/wml2:MeasurementTimeseriesType/wml2:defaultPointMetadata/wml2:DefaultTVPMetadata/wml2:uom
+    // wml2:Collection/wml2:observationMember/om:OM_Observation/om:result/wml2:MeasurementTimeseries/
+    //         wml2:defaultPointMetadata/wml2:DefaultTVPMeasurementMetadata/wml2:uom
     public static UnitReference initUom(UnitReference uom, VariableSimpleIF dataVar) {
         // @code
         String udunits = dataVar.getUnitsString();

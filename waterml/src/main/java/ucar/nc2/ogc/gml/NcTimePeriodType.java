@@ -10,7 +10,7 @@ import ucar.nc2.ogc.MarshallingUtil;
 public abstract class NcTimePeriodType {
     // wml2:Collection/wml2:observationMember/om:OM_Observation/om:phenomenonTime/gml:TimePeriod
     public static TimePeriodType initTimePeriod(TimePeriodType timePeriod, StationTimeSeriesFeature stationFeat) {
-        // gml:id
+        // @gml:id
         String id = MarshallingUtil.createIdForType(TimePeriodType.class);
         timePeriod.setId(id);
 

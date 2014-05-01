@@ -8,9 +8,10 @@ import ucar.nc2.ogc.MarshallingUtil;
  * Created by cwardgar on 2014/02/28.
  */
 public abstract class NcPointType {
-    // wml2:Collection/wml2:observationMember/om:OM_Observation/om:featureOfInterest/sams:SF_SpatialSamplingFeatureType/sams:shape/gml:Point
+    // wml2:Collection/wml2:observationMember/om:OM_Observation/om:featureOfInterest/wml2:MonitoringPoint/sams:shape/
+    //         gml:Point
     public static PointType initPoint(PointType point, StationTimeSeriesFeature stationFeat) {
-        // gml:id
+        // @gml:id
         String id = MarshallingUtil.createIdForType(PointType.class);
         point.setId(id);
 

@@ -2,6 +2,7 @@ package ucar.nc2.ogc.waterml;
 
 import net.opengis.waterml.x20.MeasurementTimeseriesType;
 import ucar.nc2.VariableSimpleIF;
+import ucar.nc2.ft.PointFeature;
 import ucar.nc2.ft.PointFeatureIterator;
 import ucar.nc2.ft.StationTimeSeriesFeature;
 import ucar.nc2.ogc.MarshallingUtil;
@@ -15,7 +16,7 @@ public abstract class NcMeasurementTimeseriesType {
     // wml2:Collection/wml2:observationMember/om:OM_Observation/om:result/wml2:MeasurementTimeseries
     public static MeasurementTimeseriesType initMeasurementTimeseries(MeasurementTimeseriesType measurementTimeseries,
             StationTimeSeriesFeature stationFeat, VariableSimpleIF dataVar) throws IOException {
-        // gml:id
+        // @gml:id
         String id = MarshallingUtil.createIdForType(MeasurementTimeseriesType.class);
         measurementTimeseries.setId(id);
 
@@ -27,13 +28,23 @@ public abstract class NcMeasurementTimeseriesType {
         PointFeatureIterator pointFeatIter = stationFeat.getPointFeatureIterator(-1);
         while (pointFeatIter.hasNext()) {
             // wml2:point
-            MeasurementTimeseriesType.Point point = measurementTimeseries.addNewPoint();
-
-            // wml2:MeasurementTVP
-            NcMeasureTVPType.initMeasurementTVP(point.addNewMeasurementTVP(), pointFeatIter.next(), dataVar);
+            Point.initPoint(measurementTimeseries.addNewPoint(), pointFeatIter.next(), dataVar);
         }
 
         return measurementTimeseries;
+    }
+
+    public abstract static class Point {
+        // wml2:Collection/wml2:observationMember/om:OM_Observation/om:result/wml2:MeasurementTimeseries/wml2:point
+        public static MeasurementTimeseriesType.Point initPoint(MeasurementTimeseriesType.Point point,
+                PointFeature pointFeat, VariableSimpleIF dataVar) throws IOException {
+            // wml2:MeasurementTVP
+            NcMeasureTVPType.initMeasurementTVP(point.addNewMeasurementTVP(), pointFeat, dataVar);
+
+            return point;
+        }
+
+        private Point() { }
     }
 
     private NcMeasurementTimeseriesType() { }

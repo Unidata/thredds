@@ -18,7 +18,7 @@ public abstract class NcCollectionType {
     // wml2:Collection
     public static CollectionType initCollection(CollectionType collection, FeatureDatasetPoint fdPoint,
             VariableSimpleIF dataVar) throws IOException {
-        // gml:id
+        // @gml:id
         String id = MarshallingUtil.createIdForType(CollectionType.class);
         collection.setId(id);
 

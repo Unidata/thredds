@@ -33,12 +33,13 @@
 
 package ucar.nc2.ui;
 
+import org.n52.oxf.xmlbeans.parser.XMLHandlingException;
 import ucar.nc2.NetcdfFileWriter;
 import ucar.nc2.VariableSimpleIF;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.ft.*;
 import ucar.nc2.ft.point.writer.CFPointWriter;
-import ucar.nc2.ogc.PointUtil;
+import ucar.nc2.ogc.MarshallingUtil;
 import ucar.nc2.time.CalendarDateRange;
 import ucar.nc2.ui.dialog.NetcdfOutputChooser;
 import ucar.nc2.ui.point.PointController;
@@ -59,7 +60,6 @@ import ucar.util.prefs.ui.BeanTable;
 import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
-import javax.xml.bind.JAXBException;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.beans.PropertyChangeEvent;
@@ -335,12 +335,12 @@ public class PointFeatureDatasetViewer extends JPanel {
 
       try {
         ByteArrayOutputStream outStream = new ByteArrayOutputStream(5000);
-        PointUtil.marshalPointDataset(pfDataset, dataVar, outStream);
+        MarshallingUtil.marshalPointDataset(pfDataset, dataVar, outStream);
 
         infoTA.setText(outStream.toString());
         infoTA.gotoTop();
         infoWindow.show();
-      } catch (IOException | JAXBException ex) {
+      } catch (IOException | XMLHandlingException ex) {
         ByteArrayOutputStream bos = new ByteArrayOutputStream(5000);
         ex.printStackTrace(new PrintStream(bos));
 

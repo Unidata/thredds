@@ -11,30 +11,30 @@ import ucar.nc2.ogc.spatialsampling.NcShapeType;
  * Created by cwardgar on 2014/02/26.
  */
 public abstract class NcMonitoringPointType {
-    // wml2:Collection/wml2:observationMember/om:OM_Observation/om:featureOfInterest/sam:SF_SamplingFeatureType
-    public static MonitoringPointType initSfSamplingFeatureType(
-            MonitoringPointType sfSamplingFeatureType, StationTimeSeriesFeature stationFeat) {
-        // gml:id
+    // wml2:Collection/wml2:observationMember/om:OM_Observation/om:featureOfInterest/wml2:MonitoringPoint
+    public static MonitoringPointType initMonitoringPointType(
+            MonitoringPointType monitoringPoint, StationTimeSeriesFeature stationFeat) {
+        // @gml:id
         String id = MarshallingUtil.createIdForType(MonitoringPointType.class);
-        sfSamplingFeatureType.setId(id);
+        monitoringPoint.setId(id);
 
         // gml:identifier
-        NcCodeWithAuthorityType.initIdentifier(sfSamplingFeatureType.addNewIdentifier(), stationFeat);
+        NcCodeWithAuthorityType.initIdentifier(monitoringPoint.addNewIdentifier(), stationFeat);
 
         // gml:description
-        NcStringOrRefType.initDescription(sfSamplingFeatureType.addNewDescription(), stationFeat);
-        if (sfSamplingFeatureType.getDescription().getStringValue() == null ||
-                sfSamplingFeatureType.getDescription().getStringValue().isEmpty()) {
-            sfSamplingFeatureType.unsetDescription();
+        NcStringOrRefType.initDescription(monitoringPoint.addNewDescription(), stationFeat);
+        if (monitoringPoint.getDescription().getStringValue() == null ||
+                monitoringPoint.getDescription().getStringValue().isEmpty()) {
+            monitoringPoint.unsetDescription();
         }
 
         // sam:sampledFeature
-        sfSamplingFeatureType.setNilSampledFeature();
+        monitoringPoint.setNilSampledFeature();
 
         // sams:shape
-        NcShapeType.initShape(sfSamplingFeatureType.addNewShape(), stationFeat);
+        NcShapeType.initShape(monitoringPoint.addNewShape(), stationFeat);
 
-        return sfSamplingFeatureType;
+        return monitoringPoint;
     }
 
     private NcMonitoringPointType() { }

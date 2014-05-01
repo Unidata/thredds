@@ -8,7 +8,7 @@ import net.opengis.waterml.x20.DocumentMetadataPropertyType;
 public abstract class NcDocumentMetadataPropertyType {
     // wml2:Collection/wml2:metadata
     public static DocumentMetadataPropertyType initMetadata(DocumentMetadataPropertyType metadata) {
-        // wml:DocumentMetdata
+        // wml2:DocumentMetadata
         NcDocumentMetadataType.initDocumentMetadata(metadata.addNewDocumentMetadata());
 
         return metadata;

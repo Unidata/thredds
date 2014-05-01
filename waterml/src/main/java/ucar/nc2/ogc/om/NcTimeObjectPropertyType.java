@@ -15,8 +15,8 @@ public abstract class NcTimeObjectPropertyType {
         // gml:TimePeriod
         TimePeriodDocument timePeriodDoc = TimePeriodDocument.Factory.newInstance();
         NcTimePeriodType.initTimePeriod(timePeriodDoc.addNewTimePeriod(), stationFeat);
-
         phenomenonTime.set(timePeriodDoc);
+
         return phenomenonTime;
     }
 

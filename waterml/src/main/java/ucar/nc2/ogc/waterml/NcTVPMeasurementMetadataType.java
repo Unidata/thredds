@@ -9,16 +9,17 @@ import ucar.nc2.ogc.swe.NcUnitReference;
  * Created by cwardgar on 2014/03/06.
  */
 public abstract class NcTVPMeasurementMetadataType {
-    // wml2:Collection/wml2:observationMember/om:OM_Observation/om:result/wml2:MeasurementTimeseriesType/wml2:defaultPointMetadata/wml2:DefaultTVPMetadata
+    // wml2:Collection/wml2:observationMember/om:OM_Observation/om:result/wml2:MeasurementTimeseries/
+    //         wml2:defaultPointMetadata/wml2:DefaultTVPMeasurementMetadata
     public static TVPMeasurementMetadataType initDefaultTVPMeasurementMetadata(
-            TVPMeasurementMetadataType defaultTVPMetadata, VariableSimpleIF dataVar) {
+            TVPMeasurementMetadataType defaultTVPMeasurementMetadata, VariableSimpleIF dataVar) {
         // wml2:uom
-        NcUnitReference.initUom(defaultTVPMetadata.addNewUom(), dataVar);
+        NcUnitReference.initUom(defaultTVPMeasurementMetadata.addNewUom(), dataVar);
 
         // wml2:interpolationType
-        NcReferenceType.initInterpolationType(defaultTVPMetadata.addNewInterpolationType());
+        NcReferenceType.initInterpolationType(defaultTVPMeasurementMetadata.addNewInterpolationType());
 
-        return defaultTVPMetadata;
+        return defaultTVPMeasurementMetadata;
     }
 
     private NcTVPMeasurementMetadataType() { }

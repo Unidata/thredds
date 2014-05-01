@@ -12,12 +12,11 @@ public abstract class NcFeaturePropertyType {
     // wml2:Collection/wml2:observationMember/om:OM_Observation/om:featureOfInterest
     public static FeaturePropertyType initFeatureOfInterest(
             FeaturePropertyType featureOfInterest, StationTimeSeriesFeature stationFeat) {
-        // sam:SF_SamplingFeatureType
+        // wml2:MonitoringPoint
         MonitoringPointDocument monitoringPointDoc = MonitoringPointDocument.Factory.newInstance();
-
-        NcMonitoringPointType.initSfSamplingFeatureType(monitoringPointDoc.addNewMonitoringPoint(), stationFeat);
-
+        NcMonitoringPointType.initMonitoringPointType(monitoringPointDoc.addNewMonitoringPoint(), stationFeat);
         featureOfInterest.set(monitoringPointDoc);
+
         return featureOfInterest;
     }
 
