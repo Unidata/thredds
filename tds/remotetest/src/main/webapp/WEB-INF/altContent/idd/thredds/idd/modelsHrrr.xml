@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<catalog xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xmlns="http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0"
+         xmlns:xlink="http://www.w3.org/1999/xlink"
+         name="Unidata THREDDS Data Server - NOAA GSD models"
+         version="1.0.5">
+
+  <service name="latest" serviceType="Resolver" base=""/>
+
+  <service name="fullServices" serviceType="Compound" base="">
+    <service name="ncdods" serviceType="OPENDAP" base="/thredds/dodsC/"/>
+    <service name="HTTPServer" serviceType="HTTPServer" base="/thredds/fileServer/"/>
+    <service name="wcs" serviceType="WCS" base="/thredds/wcs/"/>
+    <service name="wms" serviceType="WMS" base="/thredds/wms/"/>
+    <service name="ncss" serviceType="NetcdfSubset" base="/thredds/ncss/"/>
+    <service name="cdmremote" serviceType="CdmRemote" base="/thredds/cdmremote/"/>
+    <service name="ncml" serviceType="NCML" base="/thredds/ncml/"/>
+    <service name="uddc" serviceType="UDDC" base="/thredds/uddc/"/>
+    <service name="iso" serviceType="ISO" base="/thredds/iso/"/>
+  </service>
+
+  <dataset name="NOAA GSD Model Data (for testing purposes only, subject to change!)">
+    <metadata inherited="true">
+      <serviceName>fullServices</serviceName>
+      <authority>edu.ucar.unidata</authority>
+      <dataType>GRID</dataType>
+      <dataFormat>GRIB-2</dataFormat>
+    </metadata>
+
+    <dataset name="High Resolution Rapid Refresh (HRRR)">
+      <featureCollection name="HRRR-CONUS_3km_wrfprs" featureType="GRIB2" harvest="true" path="grib/HRRR/CONUS_3km/wrfprs">
+        <collection spec="/data/ldm/pub/native/grid/NOAA_GSD/HRRR/CONUS_3km/wrfprs/.*grib2$"
+                    timePartition="file"
+                    dateFormatMark="#HRRR_CONUS_3km_wrfprs_#yyyyMMddHHmm"
+                    olderThan="5 min"/>
+        <update startup="never" trigger="allow"/>
+        <tdm rewrite="test" rescan="0 0/15 * * * ? *" trigger="allow"/>
+      </featureCollection>
+
+      <featureCollection name="HRRR-CONUS_3km_surface" featureType="GRIB2" harvest="true" path="grib/HRRR/CONUS_3km/surface">
+
+        <collection spec="/data/ldm/pub/native/grid/NOAA_GSD/HRRR/CONUS_3km/surface/.*grib2$"
+                    timePartition="file"
+                    dateFormatMark="#HRRR_CONUS_3km_surface_#yyyyMMddHHmm"
+                    olderThan="5 min"/>
+        <update startup="never" trigger="allow"/>
+        <tdm rewrite="test" rescan="0 0/15 * * * ? *" trigger="allow"/>
+      </featureCollection>
+    </dataset>
+  </dataset>
+</catalog>
+

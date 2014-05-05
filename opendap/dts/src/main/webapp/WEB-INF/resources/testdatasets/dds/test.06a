@@ -1,0 +1,10 @@
+dataset {
+
+    Grid {
+      Array:
+	    float64 amp[10];
+      Maps:
+	    float64 x[10];
+    } OneD;
+
+} Simple;

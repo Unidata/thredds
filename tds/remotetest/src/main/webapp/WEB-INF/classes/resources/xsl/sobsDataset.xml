@@ -1,0 +1,198 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<stationObsDataset location="/thredds/ncss/metar">
+  <variable name="air_pressure_at_sea_level" type="float">
+    <attribute name="long_name" value="Air pressure at sea level" />
+    <attribute name="standard_name" value="air_pressure_at_sea_level" />
+    <attribute name="_FillValue" type="float" value="-99999.0" />
+    <attribute name="units" value="hectoPascal" />
+  </variable>
+  <variable name="air_temperature" type="float">
+    <attribute name="long_name" value="Air temperature at 2 meters" />
+    <attribute name="standard_name" value="air_temperature" />
+    <attribute name="_FillValue" type="float" value="-99999.0" />
+    <attribute name="units" value="Celsius" />
+  </variable>
+  <variable name="dew_point_temperature" type="float">
+    <attribute name="long_name" value="Dew point temperature at 2 meters" />
+    <attribute name="standard_name" value="dew_point_temperature" />
+    <attribute name="_FillValue" type="float" value="-99999.0" />
+    <attribute name="units" value="Celsius" />
+  </variable>
+  <variable name="hectoPascal_ALTIM" type="float">
+    <attribute name="long_name" value="Pressure at station" />
+    <attribute name="standard_name" value="pressure" />
+    <attribute name="_FillValue" type="float" value="-99999.0" />
+    <attribute name="units" value="hectoPascal" />
+  </variable>
+  <variable name="high_cloud_area_fraction" type="float">
+    <attribute name="long_name" value="High cloud area fraction" />
+    <attribute name="standard_name" value="cloud_area_fraction" />
+    <attribute name="_FillValue" type="float" value="-99999.0" />
+    <attribute name="units" value="" />
+  </variable>
+  <variable name="high_cloud_base_altitude" type="float">
+    <attribute name="long_name" value="High cloud base" />
+    <attribute name="standard_name" value="cloud_base_altitude" />
+    <attribute name="_FillValue" type="float" value="-99999.0" />
+    <attribute name="units" value="meters" />
+  </variable>
+  <variable name="inches_ALTIM" type="float">
+    <attribute name="long_name" value="Pressure at station" />
+    <attribute name="standard_name" value="pressure" />
+    <attribute name="_FillValue" type="float" value="-99999.0" />
+    <attribute name="units" value="inches" />
+  </variable>
+  <variable name="low_cloud_area_fraction" type="float">
+    <attribute name="long_name" value="Low cloud area fraction" />
+    <attribute name="standard_name" value="cloud_area_fraction" />
+    <attribute name="_FillValue" type="float" value="-99999.0" />
+    <attribute name="units" value="" />
+  </variable>
+  <variable name="low_cloud_base_altitude" type="float">
+    <attribute name="long_name" value="Low cloud base" />
+    <attribute name="standard_name" value="cloud_base_altitude" />
+    <attribute name="_FillValue" type="float" value="-99999.0" />
+    <attribute name="units" value="meters" />
+  </variable>
+  <variable name="middle_cloud_area_fraction" type="float">
+    <attribute name="long_name" value="Middle cloud area fraction" />
+    <attribute name="standard_name" value="cloud_area_fraction" />
+    <attribute name="_FillValue" type="float" value="-99999.0" />
+    <attribute name="units" value="" />
+  </variable>
+  <variable name="middle_cloud_base_altitude" type="float">
+    <attribute name="long_name" value="Middle cloud base" />
+    <attribute name="standard_name" value="cloud_base_altitude" />
+    <attribute name="_FillValue" type="float" value="-99999.0" />
+    <attribute name="units" value="meters" />
+  </variable>
+  <variable name="precipitation_amount_24" type="float">
+    <attribute name="long_name" value="24 hour precipitation amount" />
+    <attribute name="standard_name" value="precipitation_amount" />
+    <attribute name="_FillValue" type="float" value="-99999.0" />
+    <attribute name="units" value=".01 inches" />
+  </variable>
+  <variable name="precipitation_amount_hourly" type="float">
+    <attribute name="long_name" value="Hourly precipitation amount" />
+    <attribute name="standard_name" value="precipitation_amount" />
+    <attribute name="_FillValue" type="float" value="-99999.0" />
+    <attribute name="units" value=".01 inches" />
+  </variable>
+  <variable name="report" type="char">
+    <attribute name="long_name" value="Original report" />
+    <attribute name="reference" value="max length 192" />
+  </variable>
+  <variable name="snowfall_amount" type="float">
+    <attribute name="long_name" value="Snow fall amount on ground" />
+    <attribute name="standard_name" value="snowfall_amount" />
+    <attribute name="_FillValue" type="float" value="-99999.0" />
+    <attribute name="units" value="inches" />
+  </variable>
+  <variable name="snowfall_amount_last_hour" type="float">
+    <attribute name="long_name" value="Snow fall amount last hour" />
+    <attribute name="standard_name" value="snowfall_amount" />
+    <attribute name="_FillValue" type="float" value="-99999.0" />
+    <attribute name="units" value="inches" />
+  </variable>
+  <variable name="visibility_in_air" type="float">
+    <attribute name="long_name" value="visibility in air" />
+    <attribute name="standard_name" value="visibility_in_air" />
+    <attribute name="_FillValue" type="float" value="-99999.0" />
+    <attribute name="units" value="US_statute_mile" />
+  </variable>
+  <variable name="visibility_in_air_direction" type="char">
+    <attribute name="long_name" value="visibility in air direction" />
+    <attribute name="standard_name" value="visibility_in_air" />
+    <attribute name="_FillValue" value="" />
+    <attribute name="units" value="degrees" />
+  </variable>
+  <variable name="visibility_in_air_surface" type="float">
+    <attribute name="long_name" value="Visibility in air at surface" />
+    <attribute name="standard_name" value="visibility_in_air" />
+    <attribute name="_FillValue" type="float" value="-99999.0" />
+    <attribute name="units" value="meters" />
+  </variable>
+  <variable name="visibility_in_air_vertical" type="float">
+    <attribute name="long_name" value="Vertical visibility in air" />
+    <attribute name="standard_name" value="visibility_in_air" />
+    <attribute name="_FillValue" type="float" value="-99999.0" />
+    <attribute name="units" value="meters" />
+  </variable>
+  <variable name="weather" type="char">
+    <attribute name="long_name" value="Weather phenomena" />
+    <attribute name="_FillValue" value="" />
+    <attribute name="reference" value="WMO #306, code table 4658" />
+  </variable>
+  <variable name="wind_from_direction" type="int">
+    <attribute name="long_name" value="Wind From Direction" />
+    <attribute name="standard_name" value="wind_from_direction" />
+    <attribute name="_FillValue" type="int" value="-99999" />
+    <attribute name="valid_range" type="int" value="0 360" />
+    <attribute name="units" value="degrees" />
+  </variable>
+  <variable name="wind_from_direction_max" type="int">
+    <attribute name="long_name" value="wind from direction maximum" />
+    <attribute name="standard_name" value="wind_from_direction" />
+    <attribute name="_FillValue" type="int" value="-99999" />
+    <attribute name="valid_range" type="int" value="0 360" />
+    <attribute name="units" value="degrees" />
+  </variable>
+  <variable name="wind_from_direction_min" type="int">
+    <attribute name="long_name" value="wind from direction minimum" />
+    <attribute name="standard_name" value="wind_from_direction" />
+    <attribute name="_FillValue" type="int" value="-99999" />
+    <attribute name="valid_range" type="int" value="0 360" />
+    <attribute name="units" value="degrees" />
+  </variable>
+  <variable name="wind_gust" type="float">
+    <attribute name="long_name" value="Wind Gust" />
+    <attribute name="standard_name" value="wind_speed" />
+    <attribute name="_FillValue" type="float" value="-99999.0" />
+    <attribute name="units" value="m/s" />
+  </variable>
+  <variable name="wind_peak_from_direction" type="int">
+    <attribute name="long_name" value="Peak wind direction" />
+    <attribute name="standard_name" value="wind_from_direction" />
+    <attribute name="_FillValue" type="int" value="-99999" />
+    <attribute name="valid_range" type="int" value="0 360" />
+    <attribute name="units" value="degrees" />
+  </variable>
+  <variable name="wind_peak_speed" type="float">
+    <attribute name="long_name" value="Peak wind speed" />
+    <attribute name="standard_name" value="wind_speed" />
+    <attribute name="_FillValue" type="float" value="-99999.0" />
+    <attribute name="units" value="m/s" />
+  </variable>
+  <variable name="wind_peak_time" type="char">
+    <attribute name="long_name" value="Peak wind time" />
+    <attribute name="standard_name" value="forecast_reference_time" />
+    <attribute name="_FillValue" value="" />
+    <attribute name="format" value="YYYY-MM-DDThh:mm:ssZ" />
+  </variable>
+  <variable name="wind_speed" type="float">
+    <attribute name="long_name" value="Wind Speed" />
+    <attribute name="standard_name" value="wind_speed" />
+    <attribute name="_FillValue" type="float" value="-99999.0" />
+    <attribute name="units" value="m/s" />
+  </variable>
+  <variable name="xfields" type="char">
+    <attribute name="long_name" value="Extra fields not decoded" />
+    <attribute name="reference" value="max length 50" />
+  </variable>
+  <LatLonBox>
+    <west>0.0000</west>
+    <east>360.0000</east>
+    <south>-90.0000</south>
+    <north>90.0000</north>
+  </LatLonBox>
+  <TimeSpan>
+    <begin>2006-03-25T23:45:00Z</begin>
+    <end>2006-03-26T23:44:00Z</end>
+  </TimeSpan>
+  <AcceptList>
+      <accept>raw</accept>
+      <accept>xml</accept>
+      <accept>csv</accept>
+      <accept>netcdf</accept>
+  </AcceptList>
+</stationObsDataset>

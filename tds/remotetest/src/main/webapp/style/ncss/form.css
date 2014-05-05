@@ -1,0 +1,149 @@
+
+#gridPreviewFrame{
+	width:280px;
+	height:150px;
+	border:1px solid #cccccc;
+	padding:1px;
+}
+
+#gridPreviewFrame #mapPreview{
+	width:276px;
+	height:146px;	
+	
+}
+
+#areaInput{
+	/*clear:both;*/
+}
+
+#areaInput #spatialSubset{
+	position:relative;
+	top:0;
+	left:0;
+	height:146px;	
+}
+
+#timeInput{
+	/*clear:both;*/
+}
+
+
+#timeInput #temporalSubsetWithStride{
+	position:relative;
+	top:0;
+	left:0;
+	height:116px;	
+}
+
+#timeInput #temporalSubset{
+	position:relative;
+	top:0;
+	left:0;
+	height:86px;	
+}
+
+
+#verticalLevelInput #verticalSubset{
+	position:relative;
+	top:0;
+	left:0;
+	height:66px;	
+}
+
+
+div.clear{
+	clear:both;	
+}
+
+div.top{
+	text-align:center;
+	margin:auto;
+	align:center;
+}
+
+
+div.hidden{
+	visibility:hidden;
+}
+
+div.absoluteTopLeft{
+	position:absolute;
+	top:0;
+	left:0;	
+}
+
+
+div.selected{
+	padding:4px 4px 0 4px;
+	float:left;
+	height:16px;
+	background-color:#f0f0f0;
+
+}
+
+div.unselected{
+	padding:4px 4px 0 4px;
+	float:left;
+	height:16px;
+	background-color:#ffffff;
+}
+
+div.borderLightGrey{
+	/*border:1px solid #cccccc;*/
+	padding:4px 6px;
+	width:264px;
+	background-color:#f0f0f0;	
+}
+
+td.center{
+	text-align:center;
+	width:100%;
+}
+
+input{
+	border:1px solid #cccccc;
+	margin:2px;	
+}
+
+input:focus{
+	border:1px solid #006996;
+	box-shadow:0 1px 2px rgba(0, 0, 0, 0.3) inset;
+	background-color:#f6f6f6;	
+}
+
+select{
+	border:1px solid #cccccc;
+	margin:2px;	
+}
+
+input.button:hover{
+	border:1px solid #006996;
+	box-shadow:0 1px 2px rgba(0, 0, 0, 0.3) inset;	
+}
+
+select:focus{
+	border:1px solid #006996;
+	background-color:#f6f6f6;	
+}
+
+span.blueLink{
+	color:#006996
+}
+
+span.blueLink:hover{
+	color:#cccccc;
+}
+
+label.sized{
+	width:52px;
+	display:block;
+	float:left;
+	padding-top:8px;
+}
+
+label.sized_big{
+	width:60px;
+	display:block;
+	float:left;
+	padding-top:8px;
+}

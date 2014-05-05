@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- JNLP File for Integrated Data Viewer -->
+<jnlp spec="1.0+" codebase="http://www.unidata.ucar.edu/software/idv/current/webstart/">
+  <information>
+    <title>Integrated Data Viewer</title>
+    <vendor>Unidata</vendor>
+    <homepage href="http://www.unidata.ucar.edu/software/idv/index.html"/>
+    <description>Integrated Data Viewer (IDV)</description>
+    <description kind="short">A tool for geoscientific analysis and visualization.
+    </description>
+    <icon href="IDV/idv.gif"/>
+    <offline-allowed/>
+  </information>
+
+  <resources>
+    <j2se version="1.6+" max-heap-size="1024m" java-vm-args="-XX:MaxPermSize=128m"/>
+    <jar href="IDV/idv.jar"/>
+    <extension name="IDV Base" href="IDV/idvbase.jnlp"/>
+  </resources>
+  <resources os="Linux">
+    <property name="j3d.sharedctx" value="false"/>
+  </resources>
+
+  <application-desc main-class="ucar.unidata.idv.DefaultIdv">
+    <argument>-data</argument>
+    <argument>type:opendap.grid:{url}</argument>
+    <argument>-oneinstanceport</argument>
+    <argument>14445</argument>
+  </application-desc>
+
+  <application-desc main-class="ucar.unidata.idv.DefaultIdv"/>
+  <security>
+    <all-permissions/>
+  </security>
+
+</jnlp>

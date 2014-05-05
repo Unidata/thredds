@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<catalog xmlns="http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0"
+         xmlns:xlink="http://www.w3.org/1999/xlink"
+         name="Data for VGEE Curricula">
+   <service name="motherlode" serviceType="DODS"
+            base="/thredds/dodsC/" />
+ 
+   <dataset name="ENSO Curriculum">
+      <metadata inherited="true">
+        <serviceName>motherlode</serviceName>
+        <dataType>Grid</dataType>
+      </metadata>
+
+      <dataset name="OceanDJF (Upper Pacific Ocean Data)" ID="OceanDJF" urlPath="casestudies/vgee_demo/revOceanDJF2.nc" />
+      <dataset name="AtmosDJF2 (Global Atmospheric Data)" ID="AtmosDJF2" urlPath="casestudies/vgee_demo/AtmosDJF2.nc" />
+      <dataset name="storm4 (Convective Storm Simulation Data)" ID="storm4" urlPath="casestudies/vgee_demo/storm4.nc" />
+  </dataset>
+</catalog>
+

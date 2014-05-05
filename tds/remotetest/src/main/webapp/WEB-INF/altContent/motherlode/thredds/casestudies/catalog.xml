@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<catalog xmlns="http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0"
+         xmlns:xlink="http://www.w3.org/1999/xlink" >
+  <service name="ncdods" serviceType="OPENDAP"
+           base="/thredds/dodsC/" />
+
+  <dataset name="Casestudies Data">
+    <metadata inherited="true">
+      <serviceName>ncdods</serviceName>
+      <dataType>Grid</dataType>
+    </metadata>
+    
+    <datasetScan name="VGEE Demo Data" ID="casestudies/vgee_demo"
+                 path="casestudies/vgee_demo" location="/data/ldm/pub/casestudies/vgee_demo">
+      <filter>
+        <include wildcard="*.nc" />
+      </filter>
+      <addDatasetSize />
+    </datasetScan>
+
+    <datasetScan name="IDV Test Grids" ID="casestudies/idvtest/grids"
+                 path="casestudies/idvtest/grids" location="/data/ldm/pub/casestudies/idvtest/grids">
+      <filter>
+        <include wildcard="*.nc" />
+        <include wildcard="*.grib1" />
+        <include wildcard="*.grib2" />
+        <include wildcard="*.gem" />
+      </filter>
+      <addDatasetSize />
+    </datasetScan>
+
+    <dataset name="COMET Casestudy 034">
+      <datasetScan name="CCS034 ACARS" ID="casestudies/ccs034/acars"
+                   path="casestudies/ccs034/acars" location="/data/ldm/pub/casestudies/ccs034/acars">
+        <filter>
+          <include wildcard="acars.*.cdf" />
+        </filter>
+        <addDatasetSize />
+      </datasetScan>
+
+      <datasetScan name="CCS034 netCDF" ID="casestudies/ccs034/netcdf"
+                   path="casestudies/ccs034/netcdf" location="/data/ldm/pub/casestudies/ccs034/netcdf">
+        <filter>
+          <include wildcard="*.nc" />
+        </filter>
+        <addDatasetSize />
+      </datasetScan>
+
+      <datasetScan name="CCS034 GRIB" ID="casestudies/ccs034/grib"
+                   path="casestudies/ccs034/grib" location="/data/ldm/pub/casestudies/ccs034/grib">
+        <filter>
+          <include wildcard="us008*" />
+          <include wildcard="rucs.*" />
+        </filter>
+        <addDatasetSize />
+      </datasetScan>
+
+    </dataset>
+
+    <dataset name="COMET Casestudy 039">
+      <datasetScan name="CCS039 Grids" ID="casestudies/ccs039/grids"
+                   path="casestudies/ccs039/grids" location="/data/ldm/pub/casestudies/ccs039/grids">
+        <filter>
+          <include wildcard="*.nc" />
+          <include wildcard="*.grb" />
+          <include wildcard="dmurr*" />
+        </filter>
+        <addDatasetSize />
+      </datasetScan>
+    </dataset>
+
+    <dataset name="IDV July 18 2002 Case Study">
+      <datasetScan name="IDV July 18 2002 Case Study - Gridded data" ID="casestudies/july18_2002/grids"
+                   path="casestudies/july18_2002/grids" location="/data/ldm/pub/casestudies/july18_2002/grids">
+        <filter>
+          <include wildcard="*.nc" />
+        </filter>
+        <addDatasetSize />
+      </datasetScan>
+    </dataset>
+
+  </dataset>
+</catalog>
+

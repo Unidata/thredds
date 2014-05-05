@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!ELEMENT wmsConfig (global, overrides?)>
+
+<!ELEMENT global (defaults, standardNames?)>
+
+<!ELEMENT defaults (allowFeatureInfo, defaultColorScaleRange, defaultPaletteName, defaultNumColorBands, logScaling, intervalTime)>
+
+<!ELEMENT standardNames (standardName*)>
+
+<!ELEMENT standardName (defaultColorScaleRange?, defaultPaletteName?, defaultNumColorBands?, logScaling?, intervalTime?)>
+<!ATTLIST standardName name CDATA #REQUIRED>
+<!ATTLIST standardName units CDATA #REQUIRED>
+
+<!ELEMENT overrides (datasetPath*)>
+
+<!ELEMENT datasetPath (pathDefaults?, variables?)>
+<!ATTLIST datasetPath pathSpec CDATA #REQUIRED>
+
+<!ELEMENT pathDefaults (allowFeatureInfo?, defaultColorScaleRange?, defaultPaletteName?, defaultNumColorBands?, logScaling?, intervalTime?)>
+
+<!ELEMENT variables (variable*)>
+
+<!ELEMENT variable (defaultColorScaleRange?, defaultPaletteName?, defaultNumColorBands?, logScaling?, intervalTime?)>
+<!ATTLIST variable id CDATA #REQUIRED>
+
+<!ELEMENT allowFeatureInfo (#PCDATA)>
+<!ELEMENT defaultColorScaleRange (#PCDATA)>
+<!ELEMENT defaultPaletteName (#PCDATA)>
+<!ELEMENT defaultNumColorBands (#PCDATA)>
+<!ELEMENT logScaling (#PCDATA)>
+<!ELEMENT intervalTime (#PCDATA)> <!-- Allows to use time ranges instead of lists in the capabilities documents -->
+

@@ -1,0 +1,481 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<stationList>
+    <station name="OKLAHOMA_CITY/Norman" value="KTLX" state="OK" country="US">
+       <location3D latitude="35.32" longitude="-97.27" elevation="370" />
+    </station>
+    <station name="AMARILLO/Amarillo" value="KAMA" state="TX" country="US">
+       <location3D latitude="35.23" longitude="-101.7" elevation="1093" />
+    </station>
+    <station name="HOUSTON/GALVESTON/Dickinson" value="KHGX" state="TX" country="US">
+       <location3D latitude="29.47" longitude="-95.07" elevation="5" />
+    </station>
+    <station name="MELBOURNE/Melbourne" value="KMLB" state="FL" country="US">
+       <location3D latitude="28.1" longitude="-80.65" elevation="11" />
+    </station>
+    <station name="DODGE_CITY/Dodge_City" value="KDDC" state="KS" country="US">
+       <location3D latitude="37.75" longitude="-99.97" elevation="789" />
+    </station>
+    <station name="WICHITA/Wichita" value="KICT" state="KS" country="US">
+       <location3D latitude="37.65" longitude="-97.43" elevation="407" />
+    </station>
+    <station name="PHOENIX/Mesa" value="KIWA" state="AZ" country="US">
+       <location3D latitude="33.28" longitude="-111.67" elevation="412" />
+    </station>
+    <station name="TULSA/Inola" value="KINX" state="OK" country="US">
+       <location3D latitude="36.17" longitude="-95.55" elevation="204" />
+    </station>
+    <station name="BALTIMORE/WASH/Sterling" value="KLWX" state="MD" country="US">
+       <location3D latitude="38.97" longitude="-77.47" elevation="83" />
+    </station>
+    <station name="LITTLE_ROCK/N_Little_Rock" value="KLZK" state="AR" country="US">
+       <location3D latitude="34.83" longitude="-92.25" elevation="173" />
+    </station>
+    <station name="DENVER/BOULDER/Denver" value="KFTG" state="CO" country="US">
+       <location3D latitude="39.78" longitude="-104.53" elevation="1675" />
+    </station>
+    <station name="ST._LOUIS/St_Charles" value="KLSX" state="MO" country="US">
+       <location3D latitude="38.68" longitude="-90.67" elevation="185" />
+    </station>
+    <station name="LOUISVILLE/Fort_Knox" value="KLVX" state="KY" country="US">
+       <location3D latitude="37.97" longitude="-85.93" elevation="219" />
+    </station>
+    <station name="SACRAMENTO/Sacramento" value="KDAX" state="CA" country="US">
+       <location3D latitude="38.5" longitude="-121.67" elevation="9" />
+    </station>
+    <station name="BIRMINGHAM/Alabaster" value="KBMX" state="AL" country="US">
+       <location3D latitude="33.17" longitude="-86.77" elevation="197" />
+    </station>
+    <station name="BOSTON/Taunton" value="KBOX" state="MA" country="US">
+       <location3D latitude="41.95" longitude="-71.13" elevation="36" />
+    </station>
+    <station name="DALLAS/FORT_WORTH/Fort_Worth" value="KFWS" state="TX" country="US">
+       <location3D latitude="32.57" longitude="-97.3" elevation="208" />
+    </station>
+    <station name="HASTINGS/Webster_County" value="KUEX" state="NE" country="US">
+       <location3D latitude="40.32" longitude="-98.43" elevation="602" />
+    </station>
+    <station name="LOS_ANGELES/Ventura_County" value="KVTX" state="CA" country="US">
+       <location3D latitude="34.4" longitude="-119.17" elevation="831" />
+    </station>
+    <station name="CHICAGO/Romeoville" value="KLOT" state="IL" country="US">
+       <location3D latitude="41.6" longitude="-88.08" elevation="202" />
+    </station>
+    <station name="TOPEKA/Alma" value="KTWX" state="KS" country="US">
+       <location3D latitude="38.98" longitude="-96.22" elevation="417" />
+    </station>
+    <station name="BOISE/Ada_County" value="KCBX" state="ID" country="US">
+       <location3D latitude="43.48" longitude="-116.23" elevation="933" />
+    </station>
+    <station name="AUSTIN/SAN_ANTONIO/New_Braun" value="KEWX" state="TX" country="US">
+       <location3D latitude="29.7" longitude="-98.02" elevation="193" />
+    </station>
+    <station name="MEMPHIS/Millington" value="KNQA" state="TN" country="US">
+       <location3D latitude="35.33" longitude="-89.87" elevation="86" />
+    </station>
+    <station name="PITTSBURGH/Coraopolis" value="KPBZ" state="PA" country="US">
+       <location3D latitude="40.52" longitude="-80.22" elevation="361" />
+    </station>
+    <station name="NEW_YORK_CITY/Upton" value="KOKX" state="NY" country="US">
+       <location3D latitude="40.85" longitude="-72.85" elevation="26" />
+    </station>
+    <station name="JACKSON/Jackson" value="KDGX" state="MS" country="US">
+       <location3D latitude="32.32" longitude="-90.07" elevation="91" />
+    </station>
+    <station name="CLEVELAND/Cleveland" value="KCLE" state="OH" country="US">
+       <location3D latitude="41.4" longitude="-81.85" elevation="233" />
+    </station>
+    <station name="PHILADELPHIA/Manchester" value="KDIX" state="NJ" country="US">
+       <location3D latitude="39.93" longitude="-74.4" elevation="45" />
+    </station>
+    <station name="SEATTLE/TACOMA/Camano_Island" value="KATX" state="WA" country="US">
+       <location3D latitude="48.18" longitude="-122.48" elevation="151" />
+    </station>
+    <station name="NEW_ORLEANS/BATON_ROUGE/Slid" value="KLIX" state="LA" country="US">
+       <location3D latitude="30.33" longitude="-89.82" elevation="7" />
+    </station>
+    <station name="ATLANTA/Peachtree_City" value="KFFC" state="GA" country="US">
+       <location3D latitude="33.35" longitude="-84.55" elevation="262" />
+    </station>
+    <station name="KANSAS_CITY/PLEASANT_HILL/Pl" value="KEAX" state="MO" country="US">
+       <location3D latitude="38.8" longitude="-94.25" elevation="303" />
+    </station>
+    <station name="BINGHAMTON/Binghamton" value="KBGM" state="NY" country="US">
+       <location3D latitude="42.18" longitude="-75.98" elevation="490" />
+    </station>
+    <station name="DETROIT/White_Lake" value="KDTX" state="MI" country="US">
+       <location3D latitude="42.68" longitude="-83.47" elevation="327" />
+    </station>
+    <station name="MOBILE/Mobile" value="KMOB" state="AL" country="US">
+       <location3D latitude="30.67" longitude="-88.23" elevation="63" />
+    </station>
+    <station name="CENTRAL_PENNSYLVANIA/Rush" value="KCCX" state="PA" country="US">
+       <location3D latitude="40.92" longitude="-78" elevation="733" />
+    </station>
+    <station name="ALBANY/East_Berne" value="KENX" state="NY" country="US">
+       <location3D latitude="42.58" longitude="-74.05" elevation="557" />
+    </station>
+    <station name="MIAMI/Miami" value="KAMX" state="FL" country="US">
+       <location3D latitude="25.6" longitude="-80.4" elevation="4" />
+    </station>
+    <station name="GOODLAND/Goodland" value="KGLD" state="KS" country="US">
+       <location3D latitude="39.37" longitude="-101.7" elevation="1113" />
+    </station>
+    <station name="GREAT_FALLS/Great_Falls" value="KTFX" state="MT" country="US">
+       <location3D latitude="47.45" longitude="-111.38" elevation="1132" />
+    </station>
+    <station name="TAMPA_BAY_AREA/Ruskin" value="KTBW" state="FL" country="US">
+       <location3D latitude="27.7" longitude="-82.4" elevation="12" />
+    </station>
+    <station name="SAN_FRANCISCO_BAY_AREA/Santa" value="KMUX" state="CA" country="US">
+       <location3D latitude="37.15" longitude="-121.88" elevation="1057" />
+    </station>
+    <station name="PORTLAND/Gray" value="KGYX" state="ME" country="US">
+       <location3D latitude="43.88" longitude="-70.25" elevation="125" />
+    </station>
+    <station name="MOREHEAD_CITY/Newport" value="KMHX" state="NC" country="US">
+       <location3D latitude="34.77" longitude="-76.87" elevation="9" />
+    </station>
+    <station name="LAKE_CHARLES/Lake_Charles" value="KLCH" state="LA" country="US">
+       <location3D latitude="30.12" longitude="-93.2" elevation="4" />
+    </station>
+    <station name="INDIANAPOLIS/Indianapolis" value="KIND" state="IN" country="US">
+       <location3D latitude="39.7" longitude="-86.27" elevation="241" />
+    </station>
+    <station name="COLUMBIA/Columbia" value="KCAE" state="SC" country="US">
+       <location3D latitude="33.93" longitude="-81.12" elevation="70" />
+    </station>
+    <station name="SALT_LAKE_CITY/Elder_County" value="KMTX" state="UT" country="US">
+       <location3D latitude="41.25" longitude="-112.43" elevation="1969" />
+    </station>
+    <station name="MISSOULA/Missoula_County" value="KMSX" state="MT" country="US">
+       <location3D latitude="47.03" longitude="-113.98" elevation="2394" />
+    </station>
+    <station name="CINCINNATI/Wilmington" value="KILN" state="OH" country="US">
+       <location3D latitude="39.42" longitude="-83.82" elevation="322" />
+    </station>
+    <station name="DES_MOINES/Johnston" value="KDMX" state="IA" country="US">
+       <location3D latitude="41.72" longitude="-93.72" elevation="299" />
+    </station>
+    <station name="RENO/Washoe_County" value="KRGX" state="NV" country="US">
+       <location3D latitude="39.75" longitude="-119.45" elevation="2530" />
+    </station>
+    <station name="KNOXVILLE/TRI-CITIES/Morrist" value="KMRX" state="TN" country="US">
+       <location3D latitude="36.17" longitude="-83.4" elevation="408" />
+    </station>
+    <station name="WILMINGTON/Shallotte" value="KLTX" state="NC" country="US">
+       <location3D latitude="33.98" longitude="-78.42" elevation="20" />
+    </station>
+    <station name="RALEIGH/DURHAM/Clayton" value="KRAX" state="NC" country="US">
+       <location3D latitude="35.65" longitude="-78.48" elevation="106" />
+    </station>
+    <station name="NASHVILLE/Old_Hickory" value="KOHX" state="TN" country="US">
+       <location3D latitude="36.23" longitude="-86.55" elevation="176" />
+    </station>
+    <station name="EUREKA/Humboldt_County" value="KBHX" state="CA" country="US">
+       <location3D latitude="40.48" longitude="-124.28" elevation="732" />
+    </station>
+    <station name="PORTLAND/Scappoose" value="KRTX" state="OR" country="US">
+       <location3D latitude="45.7" longitude="-122.95" elevation="479" />
+    </station>
+    <station name="OMAHA/Valley" value="KOAX" state="NE" country="US">
+       <location3D latitude="41.32" longitude="-96.37" elevation="350" />
+    </station>
+    <station name="GREEN_BAY/Ashwaubenon" value="KGRB" state="WI" country="US">
+       <location3D latitude="44.48" longitude="-88.1" elevation="208" />
+    </station>
+    <station name="JACKSONVILLE/Jacksonville" value="KJAX" state="FL" country="US">
+       <location3D latitude="30.48" longitude="-81.7" elevation="10" />
+    </station>
+    <station name="TALLAHASSEE/Tallahassee" value="KTLH" state="FL" country="US">
+       <location3D latitude="30.38" longitude="-84.32" elevation="19" />
+    </station>
+    <station name="ALBUQUERQUE/Albuquerque" value="KABX" state="NM" country="US">
+       <location3D latitude="35.13" longitude="-106.82" elevation="1789" />
+    </station>
+    <station name="ROANOKE/Floyd_County" value="KFCX" state="VA" country="US">
+       <location3D latitude="37.02" longitude="-80.27" elevation="874" />
+    </station>
+    <station name="PUEBLO/Pueblo_County" value="KPUX" state="CO" country="US">
+       <location3D latitude="38.45" longitude="-104.17" elevation="1600" />
+    </station>
+    <station name="WAKEFIELD/Wakefield" value="KAKQ" state="VA" country="US">
+       <location3D latitude="36.98" longitude="-77" elevation="34" />
+    </station>
+    <station name="CHARLESTON/Ruthdale" value="KRLX" state="WV" country="US">
+       <location3D latitude="38.3" longitude="-81.72" elevation="329" />
+    </station>
+    <station name="ABERDEEN/Aberdeen" value="KABR" state="SD" country="US">
+       <location3D latitude="45.45" longitude="-98.4" elevation="397" />
+    </station>
+    <station name="QUAD_CITIES/Davenport" value="KDVN" state="IA" country="US">
+       <location3D latitude="41.6" longitude="-90.57" elevation="230" />
+    </station>
+    <station name="PADUCAH/Paducah" value="KPAH" state="KY" country="US">
+       <location3D latitude="37.07" longitude="-88.77" elevation="119" />
+    </station>
+    <station name="LAS_VEGAS/Nelson" value="KESX" state="NV" country="US">
+       <location3D latitude="35.7" longitude="-114.88" elevation="1483" />
+    </station>
+    <station name="LUBBOCK/Lubbock" value="KLBB" state="TX" country="US">
+       <location3D latitude="33.65" longitude="-101.8" elevation="993" />
+    </station>
+    <station name="SPRINGFIELD/Springfield" value="KSGF" state="MO" country="US">
+       <location3D latitude="37.23" longitude="-93.4" elevation="390" />
+    </station>
+    <station name="MIDLAND/ODESSA/Midland" value="KMAF" state="TX" country="US">
+       <location3D latitude="31.93" longitude="-102.18" elevation="874" />
+    </station>
+    <station name="MILWAUKEE/Dousman" value="KMKX" state="WI" country="US">
+       <location3D latitude="42.97" longitude="-88.55" elevation="292" />
+    </station>
+    <station name="SAN_JOAQUIN_VALLEY/Hanford" value="KHNX" state="CA" country="US">
+       <location3D latitude="36.3" longitude="-119.62" elevation="74" />
+    </station>
+    <station name="BROWNSVILLE/Brownsville" value="KBRO" state="TX" country="US">
+       <location3D latitude="25.9" longitude="-97.42" elevation="7" />
+    </station>
+    <station name="SHREVEPORT/Shreveport" value="KSHV" state="LA" country="US">
+       <location3D latitude="32.45" longitude="-93.83" elevation="83" />
+    </station>
+    <station name="BISMARCK/Bismarck" value="KBIS" state="ND" country="US">
+       <location3D latitude="46.77" longitude="-100.75" elevation="505" />
+    </station>
+    <station name="SIOUX_FALLS/Sioux_Falls" value="KFSD" state="SD" country="US">
+       <location3D latitude="43.58" longitude="-96.72" elevation="436" />
+    </station>
+    <station name="CHEYENNE/Cheyenne" value="KCYS" state="WY" country="US">
+       <location3D latitude="41.15" longitude="-104.8" elevation="1868" />
+    </station>
+    <station name="MINNEAPOLIS/Chanhassen" value="KMPX" state="MN" country="US">
+       <location3D latitude="44.83" longitude="-93.55" elevation="288" />
+    </station>
+    <station name="TUCSON/Pima_County" value="KEMX" state="AZ" country="US">
+       <location3D latitude="31.88" longitude="-110.62" elevation="1586" />
+    </station>
+    <station name="CENTRAL_ILLINOIS/Lincoln" value="KILX" state="IL" country="US">
+       <location3D latitude="40.15" longitude="-89.33" elevation="177" />
+    </station>
+    <station name="GRAND_RAPIDS/Grand_Rapids" value="KGRR" state="MI" country="US">
+       <location3D latitude="42.88" longitude="-85.53" elevation="237" />
+    </station>
+    <station name="MARQUETTE/Marquette" value="KMQT" state="MI" country="US">
+       <location3D latitude="46.52" longitude="-87.53" elevation="430" />
+    </station>
+    <station name="PORTLAND/Houlton" value="KCBW" state="ME" country="US">
+       <location3D latitude="46.03" longitude="-67.8" elevation="227" />
+    </station>
+    <station name="POCATELLO/IDAHO_FALLS/Spring" value="KSFX" state="ID" country="US">
+       <location3D latitude="43.1" longitude="-112.68" elevation="1364" />
+    </station>
+    <station name="GREENVILLE/SPARTANBURG/Greer" value="KGSP" state="SC" country="US">
+       <location3D latitude="34.88" longitude="-82.22" elevation="287" />
+    </station>
+    <station name="BILLINGS/Yellowstone_County" value="KBLX" state="MT" country="US">
+       <location3D latitude="45.85" longitude="-108.6" elevation="1097" />
+    </station>
+    <station name="BUFFALO/Cheektowaga" value="KBUF" state="NY" country="US">
+       <location3D latitude="42.93" longitude="-78.73" elevation="211" />
+    </station>
+    <station name="RIVERTON/Riverton" value="KRIW" state="WY" country="US">
+       <location3D latitude="43.05" longitude="-108.47" elevation="1697" />
+    </station>
+    <station name="ELKO/Lander_County" value="KLRX" state="NV" country="US">
+       <location3D latitude="40.73" longitude="-116.8" elevation="2056" />
+    </station>
+    <station name="MEDFORD/Jackson_County" value="KMAX" state="OR" country="US">
+       <location3D latitude="42.07" longitude="-122.72" elevation="2290" />
+    </station>
+    <station name="DULUTH/Duluth" value="KDLH" state="MN" country="US">
+       <location3D latitude="46.83" longitude="-92.2" elevation="435" />
+    </station>
+    <station name="FLAGSTAFF/Coconino" value="KFSX" state="AZ" country="US">
+       <location3D latitude="34.57" longitude="-111.18" elevation="2261" />
+    </station>
+    <station name="GRAND_JUNCTION/Mesa" value="KGJX" state="CO" country="US">
+       <location3D latitude="39.05" longitude="-108.2" elevation="3045" />
+    </station>
+    <station name="CHARLESTON/Grays" value="KCLX" state="SC" country="US">
+       <location3D latitude="32.65" longitude="-81.03" elevation="30" />
+    </station>
+    <station name="EASTERN_NORTH_DAKOTA/Mayvill" value="KMVX" state="ND" country="US">
+       <location3D latitude="47.52" longitude="-97.32" elevation="301" />
+    </station>
+    <station name="RAPID_CITY/New_Underwood" value="KUDX" state="SD" country="US">
+       <location3D latitude="44.12" longitude="-102.82" elevation="919" />
+    </station>
+    <station name="SPOKANE/Spokane" value="KOTX" state="WA" country="US">
+       <location3D latitude="47.67" longitude="-117.62" elevation="727" />
+    </station>
+    <station name="EL_PASO/Santa_Teresa" value="KEPZ" state="TX" country="US">
+       <location3D latitude="31.87" longitude="-106.68" elevation="1251" />
+    </station>
+    <station name="PENDLETON/Pendleton" value="KPDT" state="OR" country="US">
+       <location3D latitude="45.68" longitude="-118.85" elevation="462" />
+    </station>
+    <station name="SAN_ANGELO/San_Angelo" value="KSJT" state="TX" country="US">
+       <location3D latitude="31.37" longitude="-100.48" elevation="576" />
+    </station>
+    <station name="NORTH_PLATTE/Thedford" value="KLNX" state="NE" country="US">
+       <location3D latitude="41.95" longitude="-100.57" elevation="905" />
+    </station>
+    <station name="NORTH_CENTRAL_LOWER_MICHIGAN" value="KAPX" state="MI" country="US">
+       <location3D latitude="44.9" longitude="-84.72" elevation="446" />
+    </station>
+    <station name="GLASGOW/Glasgow" value="KGGW" state="MT" country="US">
+       <location3D latitude="48.2" longitude="-106.62" elevation="694" />
+    </station>
+    <station name="LA_CROSSE/La_Crosse" value="KARX" state="WI" country="US">
+       <location3D latitude="43.82" longitude="-91.18" elevation="389" />
+    </station>
+    <station name="CORPUS_CHRISTI/Corpus_Christ" value="KCRP" state="TX" country="US">
+       <location3D latitude="27.78" longitude="-97.5" elevation="14" />
+    </station>
+    <station name="SAN_DIEGO/San_Diego" value="KNKX" state="CA" country="US">
+       <location3D latitude="32.92" longitude="-117.03" elevation="291" />
+    </station>
+    <station name="JACKSON/Noctor" value="KJKL" state="KY" country="US">
+       <location3D latitude="37.58" longitude="-83.3" elevation="416" />
+    </station>
+    <station name="MIAMI/Boca_Chica_Key" value="KBYX" state="FL" country="US">
+       <location3D latitude="24.58" longitude="-81.7" elevation="2" />
+    </station>
+    <station name="PHOENIX/Yuma" value="KYUX" state="AZ" country="US">
+       <location3D latitude="32.48" longitude="-114.65" elevation="53" />
+    </station>
+    <station name="SAN_DIEGO/Orange_County" value="KSOX" state="CA" country="US">
+       <location3D latitude="33.82" longitude="-117.63" elevation="923" />
+    </station>
+    <station name="SALT_LAKE_CITY/Cedar_City" value="KICX" state="UT" country="US">
+       <location3D latitude="37.58" longitude="-112.85" elevation="3231" />
+    </station>
+    <station name="BURLINGTON/Colchester" value="KCXX" state="VT" country="US">
+       <location3D latitude="44.5" longitude="-73.17" elevation="97" />
+    </station>
+    <station name="TULSA/Western_Arkansas" value="KSRX" state="AR" country="US">
+       <location3D latitude="35.28" longitude="-94.35" elevation="195" />
+    </station>
+    <station name="BIRMINGHAM/Northeastern_AL" value="KHTX" state="AL" country="US">
+       <location3D latitude="34.92" longitude="-86.08" elevation="536" />
+    </station>
+    <station name="NORTHERN_INDIANA/North_Webst" value="KIWX" state="IN" country="US">
+       <location3D latitude="41.35" longitude="-85.7" elevation="293" />
+    </station>
+    <station name="FAIRBANKS/Pedro_Dome" value="KAPD" state="AK" country="US">
+       <location3D latitude="65.03" longitude="-147.5" elevation="790" />
+    </station>
+    <station name="FAIRBANKS/Nome" value="KAEC" state="AK" country="US">
+       <location3D latitude="64.5" longitude="-165.28" elevation="16" />
+    </station>
+    <station name="SAN_JUAN/Cayey" value="KJUA" state="PR" country="US">
+       <location3D latitude="18.1" longitude="-66.07" elevation="852" />
+    </station>
+    <station name="JUNEAU/Sitka" value="KACG" state="AK" country="US">
+       <location3D latitude="56.85" longitude="-135.52" elevation="63" />
+    </station>
+    <station name="ANCHORAGE/Middleton_Island" value="KAIH" state="AK" country="US">
+       <location3D latitude="59.45" longitude="-146.3" elevation="20" />
+    </station>
+    <station name="ANCHORAGE/Bethel" value="KABC" state="AK" country="US">
+       <location3D latitude="60.78" longitude="-161.87" elevation="49" />
+    </station>
+    <station name="HONOLULU/Molokai" value="PHMO" state="HI" country="US">
+       <location3D latitude="21.12" longitude="-157.17" elevation="415" />
+    </station>
+    <station name="ANCHORAGE/Nikiski" value="KAHG" state="AK" country="US">
+       <location3D latitude="60.72" longitude="-151.35" elevation="74" />
+    </station>
+    <station name="HONOLULU/Hawaii" value="PHWA" state="HI" country="US">
+       <location3D latitude="19.08" longitude="-155.57" elevation="421" />
+    </station>
+    <station name="HONOLULU/Kohala" value="PHKM" state="HI" country="US">
+       <location3D latitude="20.12" longitude="-155.77" elevation="1162" />
+    </station>
+    <station name="HONOLULU/Kauai" value="PHKI" state="HI" country="US">
+       <location3D latitude="21.88" longitude="-159.55" elevation="55" />
+    </station>
+    <station name="ANCHORAGE/King_Salmon" value="KAKC" state="AK" country="US">
+       <location3D latitude="58.67" longitude="-156.62" elevation="19" />
+    </station>
+    <station name="OKLAHOMA_CITY/Altus_AFB" value="KFDR" state="OK" country="US">
+       <location3D latitude="34.35" longitude="-98.97" elevation="386" />
+    </station>
+    <station name="TALLAHASSEE/Eglin_AFB" value="KEVX" state="FL" country="US">
+       <location3D latitude="30.55" longitude="-85.92" elevation="43" />
+    </station>
+    <station name="WAKEFIELD/Ellendale_State_Fo" value="KDOX" state="DE" country="US">
+       <location3D latitude="38.82" longitude="-75.43" elevation="15" />
+    </station>
+    <station name="DALLAS/FORT_WORTH/Ft_Hood" value="KGRK" state="TX" country="US">
+       <location3D latitude="30.72" longitude="-97.37" elevation="164" />
+    </station>
+    <station name="LOS_ANGELES/Orcutt_Oil_Field" value="KVBX" state="CA" country="US">
+       <location3D latitude="34.83" longitude="-120.38" elevation="373" />
+    </station>
+    <station name="GUAM/Barrigada_Communication" value="KGUA" state="GU" country="US">
+       <location3D latitude="13.45" longitude="144.8" elevation="80" />
+    </station>
+    <station name="OKLAHOMA_CITY/Kegelman_Aux_F" value="KVNX" state="OK" country="US">
+       <location3D latitude="36.73" longitude="-98.12" elevation="369" />
+    </station>
+    <station name="SAN_ANGELO/Shackelford_Count" value="KDYX" state="TX" country="US">
+       <location3D latitude="32.53" longitude="-99.25" elevation="462" />
+    </station>
+    <station name="ATLANTA/State_Hwy_96" value="KJGX" state="GA" country="US">
+       <location3D latitude="32.67" longitude="-83.35" elevation="159" />
+    </station>
+    <station name="BIRMINGHAM/Maxwell_AFB" value="KMXX" state="AL" country="US">
+       <location3D latitude="32.53" longitude="-85.78" elevation="122" />
+    </station>
+    <station name="ALBUQUERQUE/State_Rd_89" value="KFDX" state="NM" country="US">
+       <location3D latitude="34.63" longitude="-103.62" elevation="1417" />
+    </station>
+    <station name="EL_PASO/White_Sands_Missile" value="KHDX" state="NM" country="US">
+       <location3D latitude="33.07" longitude="-106.12" elevation="1287" />
+    </station>
+    <station name="AUSTIN/SAN_ANTONIO/US_Hwy_90" value="KDFX" state="TX" country="US">
+       <location3D latitude="29.27" longitude="-100.27" elevation="345" />
+    </station>
+    <station name="BISMARCK/McHenry_County" value="KMBX" state="ND" country="US">
+       <location3D latitude="48.38" longitude="-100.85" elevation="455" />
+    </station>
+    <station name="LAKE_CHARLES/Fort_Polk" value="KPOE" state="LA" country="US">
+       <location3D latitude="31.15" longitude="-92.97" elevation="124" />
+    </station>
+    <station name="MEMPHIS/MS_Hwy_8_and_US_Hwy_27" value="KGWX" state="MS" country="US">
+       <location3D latitude="33.88" longitude="-88.32" elevation="145" />
+    </station>
+    <station name="LAS_VEGAS/Edwards_AFB" value="KEYX" state="CA" country="US">
+       <location3D latitude="35.08" longitude="-117.55" elevation="840" />
+    </station>
+    <station name="BIRMINGHAM/Fort_Rucker" value="KEOX" state="AL" country="US">
+       <location3D latitude="31.45" longitude="-85.45" elevation="132" />
+    </station>
+    <station name="SACRAMENTO/Oro_Dam_Blvd_West" value="KBBX" state="CA" country="US">
+       <location3D latitude="39.48" longitude="-121.62" elevation="53" />
+    </station>
+    <station name="TALLAHASSEE/State_Rd_129" value="KVAX" state="GA" country="US">
+       <location3D latitude="30.88" longitude="-83" elevation="54" />
+    </station>
+    <station name="PADUCAH/US_Hwy_41_N" value="KHPX" state="KY" country="US">
+       <location3D latitude="36.73" longitude="-87.28" elevation="176" />
+    </station>
+    <station name="MONTAGUE/Fort_Drum" value="KTYX" state="NY" country="US">
+       <location3D latitude="43.76" longitude="-75.76" elevation="562" />
+    </station>
+    <station name="EVANSVILLE/Owensville" value="KVWX" state="IN" country="US">
+       <location3D latitude="38.27" longitude="-87.72" elevation="190" />
+    </station>
+    <station name="BRANDON/Jackson" value="KDGX" state="MS" country="US">
+       <location3D latitude="32.17" longitude="-89.59" elevation="186" />
+    </station>
+<!--
+    <station name="OPEN_RPG3/Norman" value="NOP3" state="OK" country="US">
+       <location3D latitude="35.23" longitude="-97.46" elevation="370" />
+    </station>
+//-->
+    <station name="San_Juan/Puerta_Rico" value="TJUA" state="PR" country="US">
+       <location3D latitude="18.12" longitude="-66.08" elevation="931" />
+    </station>
+
+</stationList>
