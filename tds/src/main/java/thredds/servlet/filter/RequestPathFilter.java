@@ -94,12 +94,11 @@ public class RequestPathFilter
       {
         String msg = "Invalid request path [" + StringValidateEncodeUtils.encodeLogMessages( request.getPathInfo() ) + "].";
         log.error( "doFilter(): " + msg );
-        response.sendError( HttpServletResponse.SC_NOT_FOUND, msg );
+        response.sendError( HttpServletResponse.SC_BAD_REQUEST, msg );
         return;
       }
     }
 
     filterChain.doFilter( servletRequest, servletResponse );
-    return;
   }
 }
