@@ -679,6 +679,11 @@ public class DatasetWriter extends JPanel {
     public boolean isShuffle(Variable v) {
       return shuffle;
     }
+
+    @Override
+    public boolean chunkByAttribute() {
+      return false;
+    }
   }
 
   public class DimensionBean {

@@ -136,7 +136,7 @@ public class H5header {
   private long baseAddress;
   byte sizeOffsets, sizeLengths;
   boolean isOffsetLong, isLengthLong;
-  boolean alreadyWarnNdimZero;
+  // boolean alreadyWarnNdimZero;
 
   /* Cant always tell if written with netcdf library. if all dimensions have coordinate variables, eg:
     Q:/cdmUnitTest/formats/netcdf4/ncom_relo_fukushima_1km_tmp_2011040800_t000.nc4
@@ -2860,10 +2860,10 @@ public class H5header {
       if (debug1) debugOut.println("   SimpleDataspace version= " + version + " flags=" +
           Integer.toBinaryString(flags) + " ndims=" + ndims + " type=" + type);
 
-      if (ndims == 0 && !alreadyWarnNdimZero) {
+      /* if (ndims == 0 && !alreadyWarnNdimZero) {
         log.warn("ndims == 0 in HDF5 file= " + raf.getLocation());
         alreadyWarnNdimZero = true;
-      }
+      }  */
 
       dimLength = new int[ndims];
       for (int i = 0; i < ndims; i++)

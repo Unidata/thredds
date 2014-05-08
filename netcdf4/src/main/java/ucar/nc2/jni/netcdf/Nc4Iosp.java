@@ -2334,14 +2334,14 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
   public void writeData(Variable v2, Section section, Array values) throws IOException, InvalidRangeException {
     Vinfo vinfo = (Vinfo) v2.getSPobject();
     if (vinfo == null) {
-      log.error("HEY vinfo null for " + v2);
+      log.error("vinfo null for " + v2);
       return;
     }
-    int vlen = (int) v2.getSize();
-    int len = (int) section.computeSize();
-    if (vlen == len) // entire array
-      writeDataAll(v2, vinfo.grpid, vinfo.varid, vinfo.typeid, values);
-    else
+   // int vlen = (int) v2.getSize();
+   // int len = (int) section.computeSize();
+  //  if (vlen == len) // entire array
+  //    writeDataAll(v2, vinfo.grpid, vinfo.varid, vinfo.typeid, values);
+  //  else
       writeData(v2, vinfo.grpid, vinfo.varid, vinfo.typeid, section, values);
   }
 

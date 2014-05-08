@@ -8,10 +8,7 @@
 </head>
 
 <body>
-<h1>NetCDF-4 C Library Loading </h1>
-
-<p align="justify"><em>Since version 4.3.13</em></p>
-
+<h1>NetCDF-4 C Library Loading</h1>
 <p align="justify">In order to write netCDF-4 files, you must have the <a href="https://www.unidata.ucar.edu/software/netcdf/">netCDF-4 C library</a>, version
   4.3 or above, compiled and available on your system, along with all supporting libraries (HDF5 etc). The details of this differ for each operating system, and
   our experience (so far) is documented below.</p>
@@ -21,11 +18,16 @@
 <ul>
   <li>For TDS users, we recommend setting the library path and name in
     <em><a href="http://www.unidata.ucar.edu/projects/THREDDS/tech/tds4.3/reference/ThreddsConfigXMLFile.html#netcdfCLibrary">threddsConfig.xml.</a></em></li>
-  <li>For stand-alone CDM library use, you can set the library path and name in the
-    <em><a href="http://www.unidata.ucar.edu/software/netcdf-java/reference/RuntimeLoading.html#XML">RuntimeConfiguration</a></em> file, or directly call
-    <strong>ucar.nc2.jni.netcdf.Nc4Iosp.setLibraryAndPath</strong>()<em>.</em></li>
+  <li>For stand-alone CDM library use, you can 
+    <ol>
+      <li>put the  library path in LD_LIBRARY_PATH (unix) or PATH (windows)</li>
+      <li>set a system property on the startup line: <strong>-Djna.library.path=<em>/path/to/library</em></strong></li>
+      <li>set the library path and name in the <em><a href="http://www.unidata.ucar.edu/software/netcdf-java/reference/RuntimeLoading.html#XML">RuntimeConfiguration</a></em> file</li>
+      <li>directly call <strong>ucar.nc2.jni.netcdf.Nc4Iosp.setLibraryAndPath</strong>()</li>
+    </ol>
+  </li>
 </ul>
-<p align="justify">We strongly recommend using 64-bit Java. We also recommend using Java 7 (Java 6 is acceptable for CDM version 4.3). In any case, use the
+<p align="justify">We strongly recommend using 64-bit Java. In any case, use the
   lastest update for Java, because security improvements are constantly being made.</p>
 
 <h2>A Note on HDF5</h2>
@@ -52,7 +54,7 @@
 <ol>
   <li>Download the latest netCDF4 C library release from <a href="http://www.unidata.ucar.edu/downloads/netcdf/index.jsp">here. </a></li>
   <li>Compile the library. See <a href="http://www.unidata.ucar.edu/software/netcdf/docs/building.html"> instructions.</a></li>
-  <li>Set the <em>library path</em> to the directory where the libraries were built in and the library name to <strong><em>netcdf</em></strong>.</li>
+  <li>Set the <em>library path</em> to the directory where the libraries were built  and the library name to <strong><em>netcdf</em></strong>.</li>
 </ol>
 <h2>Troubleshooting</h2>
 
@@ -79,7 +81,7 @@
 <h2>Writing netCDF-4 files</h2>
 <ul>
   <li>From the command line: see <a href="manPages.html#nccopy">nccopy man page</a></li>
-  <li>From ToolsUI v4.3.14: in <strong>Viewer</strong> tab, bring up the file to copy, then click &quot;write Netcdf File&quot; button to get dialog.</li>
+  <li>From ToolsUI: in <strong>Viewer</strong> tab, bring up the file to copy, then click &quot;write Netcdf File&quot; button to get dialog.</li>
   <li>From TDS Netcdf Subset Service: choose <strong>netcdf-4</strong> output type.</li>
   <li>From a Java program (see <em>ucar.nc2.dataset.NetcdfDataset.main()</em> for complete example) :
     <pre> FileWriter2 writer = new ucar.nc2.FileWriter2(ncfileIn, filenameOut, version, chunker);
@@ -99,7 +101,7 @@
 </ol>
 <hr width="100%"/>
 <address>
-  <img src="../nc.gif" alt="" width="64" height="64"/> This document was last updated May 2013
+  <img src="../nc.gif" alt="" width="64" height="64"/> This document was last updated May 2014
 </address>
 </body>
 </html>

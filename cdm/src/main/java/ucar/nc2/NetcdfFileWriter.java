@@ -53,6 +53,7 @@ import java.util.*;
  * Fairly low level wrap of IOServiceProviderWriter.
  * Construct CDM objects, then create the file and write data to it.
  *
+ * @see FileWriter2
  * @author caron
  * @since 7/25/12
  */
@@ -137,6 +138,7 @@ public class NetcdfFileWriter {
   private boolean fill;
   private int extraHeader;
   private long preallocateSize;
+  private boolean chunkerByAttribute;
 
   /**
    * Open an existing or create a new Netcdf file
@@ -189,6 +191,7 @@ public class NetcdfFileWriter {
 
           Method method = iospClass.getMethod("setChunker", Nc4Chunking.class);
           method.invoke(spi, chunker);
+          chunkerByAttribute = chunker.chunkByAttribute();
 
         } catch (Throwable e) {
           throw new IllegalArgumentException("ucar.nc2.jni.netcdf.Nc4Iosp is not on classpath, cannont use version " + version);
@@ -628,8 +631,11 @@ public class NetcdfFileWriter {
     }
 
     // these are not allowed in the file - they are added when read
-    if (att.getShortName().equals(CDM.CHUNK_SIZE)) return false;
-    if (att.getShortName().equals(CDM.COMPRESS)) return false;
+    // unless you are chunking by attribute
+    if (!chunkerByAttribute) {
+      if (att.getShortName().equals(CDM.CHUNK_SIZE)) return false;
+      if (att.getShortName().equals(CDM.COMPRESS)) return false;
+    }
 
     v.addAttribute(att);
     return true;

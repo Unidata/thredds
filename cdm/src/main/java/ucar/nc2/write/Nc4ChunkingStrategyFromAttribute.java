@@ -39,5 +39,10 @@ public class Nc4ChunkingStrategyFromAttribute extends Nc4ChunkingStrategyImpl {
 
     return super.computeChunking(v);
   }
+
+  @Override
+  public boolean chunkByAttribute() {
+    return true;
+  }
 }
 

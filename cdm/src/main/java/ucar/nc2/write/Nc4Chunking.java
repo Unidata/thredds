@@ -20,4 +20,6 @@ public interface Nc4Chunking {
 
   public boolean isShuffle(Variable v);
 
+  public boolean chunkByAttribute();
+
 }

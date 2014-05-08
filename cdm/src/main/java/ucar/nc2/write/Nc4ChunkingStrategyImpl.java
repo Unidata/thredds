@@ -9,7 +9,7 @@ import ucar.nc2.constants.CDM;
 import java.util.List;
 
 /**
- * Default strategy for netcdf-4 chunking
+ * Default strategy for netcdf-4 chunking.
 
  * @author caron
  * @since 11/14/12
@@ -28,7 +28,7 @@ public class Nc4ChunkingStrategyImpl implements Nc4Chunking {
   }
 
   private static final int DEFAULT_CHUNKSIZE = (int) Math.pow(2,22); // 4M
-  //private static final int SMALL_VARIABLE = (int) Math.pow(2,16); // 65K
+  private static final int SMALL_VARIABLE = (int) Math.pow(2,16); // 65K
 
   private final int deflateLevel;
   private final boolean shuffle;
@@ -43,11 +43,13 @@ public class Nc4ChunkingStrategyImpl implements Nc4Chunking {
     this.shuffle = shuffle;
   }
 
+  // LOOK - also consider deflate - needs to be chunked....
   @Override
   public boolean isChunked(Variable v) {
-    if (v.isUnlimited()) return true;
     long size = v.getSize() * v.getElementSize();
-    return size >= DEFAULT_CHUNKSIZE;
+    if (size < SMALL_VARIABLE) return false;
+    if (v.isUnlimited()) return true;  // unlimited and > SMALL_VARIABLE
+    return size >= DEFAULT_CHUNKSIZE;  // !unlimited && > DEFAULT_CHUNKSIZE
   }
 
   @Override
@@ -57,6 +59,11 @@ public class Nc4ChunkingStrategyImpl implements Nc4Chunking {
 
   public boolean isShuffle(Variable v) {
     return shuffle;
+  }
+
+  @Override
+  public boolean chunkByAttribute() {
+    return false;
   }
 
   @Override

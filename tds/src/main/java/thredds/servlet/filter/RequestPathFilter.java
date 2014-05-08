@@ -86,12 +86,11 @@ public class RequestPathFilter implements javax.servlet.Filter {
               || !StringValidateEncodeUtils.validPath(path)) {
         String msg = "Invalid request path [" + StringValidateEncodeUtils.encodeLogMessages(ServletUtil.getRequestPath(request)) + "].";
         log.error("doFilter(): " + msg);
-        response.sendError(HttpServletResponse.SC_NOT_FOUND, msg);
+        response.sendError(HttpServletResponse.SC_BAD_REQUEST, msg);
         return;
       }
     }
 
     filterChain.doFilter(servletRequest, servletResponse);
-    return;
   }
 }
