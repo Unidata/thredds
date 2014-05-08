@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:mvc="http://www.springframework.org/schema/mvc"
+       xmlns:util="http://www.springframework.org/schema/util"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+							http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
+              http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc.xsd
+              http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd
+              http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc.xsd">
+
+  <!-- DispatcherServlet Context: defines this servlet's request-processing infrastructure -->
+
+  <!-- Resource mapping -->
+  <mvc:resources mapping="/**" location="/"/>
+
+  <!-- View resolvers common to most tds controllers and servlets -->
+  <bean id="xmlViewResolver" class="org.springframework.web.servlet.view.XmlViewResolver">
+    <property name="cache" value="true"/>
+    <property name="order" value="1"/>
+    <property name="location" value="/WEB-INF/view.xml"/>
+  </bean>
+
+  <bean id="viewResolver" class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+    <property name="viewClass" value="org.springframework.web.servlet.view.JstlView"/>
+    <property name="prefix" value="/WEB-INF/jsp/"/>
+    <property name="suffix" value=".jsp"/>
+  </bean>
+
+  <!-- enable @PostConstruct, @PreDestroy annotation -->
+  <bean class="org.springframework.context.annotation.CommonAnnotationBeanPostProcessor"/>
+
+  <!-- A Singleton class to populate the Debug methods in DebugHandler -->
+  <bean class="thredds.server.admin.DebugCommands">
+    <property name="version" value="${tds.version}"/>
+    <property name="builddate" value="${tds.version.builddate}"/>
+  </bean>
+
+
+</beans>

@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<catalog xmlns="http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0"
+         xmlns:xlink="http://www.w3.org/1999/xlink"
+         name="IDV July 18 2002 Case Study">
+
+  <service name="motherlode" serviceType="DODS"
+           base="/thredds/dodsC/"/>
+
+  <dataset name="Case Study July 18, 2002">
+    <metadata inherited="true">
+      <dataType>Grid</dataType>
+      <dataFormat>NetCDF</dataFormat>
+      <serviceName>latest</serviceName>
+    </metadata>
+
+    <dataset name="IDV July 18 2002 Case Study" dataType="Grid">
+
+      <dataset name="NCEP ETA (2002-07-18 00:00:00 UTC)" serviceName="motherlode" ID="a"
+               urlPath="casestudies/july18_2002/grids/2002071800_eta.nc"/>
+      <dataset name="NCEP ETA (2002-07-18 12:00:00 UTC)" serviceName="motherlode" ID="b"
+               urlPath="casestudies/july18_2002/grids/2002071812_eta.nc"/>
+      <dataset name="NCEP AVN (2002-07-18 00:00:00 UTC)" serviceName="motherlode" ID="c"
+               urlPath="casestudies/july18_2002/grids/2002071800_avn-q.nc"/>
+      <dataset name="NCEP AVN (2002-07-18 12:00:00 UTC)" serviceName="motherlode" ID="d"
+               urlPath="casestudies/july18_2002/grids/2002071812_avn-q.nc"/>
+      <dataset name="NCEP RUC (2002-07-18 00:00:00 UTC)" serviceName="motherlode" ID="e"
+               urlPath="casestudies/july18_2002/grids/2002071800_ruc.nc"/>
+      <dataset name="NCEP RUC (2002-07-18 06:00:00 UTC)" serviceName="motherlode" ID="f"
+               urlPath="casestudies/july18_2002/grids/2002071806_ruc.nc"/>
+      <dataset name="NCEP RUC (2002-07-18 12:00:00 UTC)" serviceName="motherlode" ID="g"
+               urlPath="casestudies/july18_2002/grids/2002071812_ruc.nc"/>
+
+    </dataset>
+  </dataset>
+</catalog>

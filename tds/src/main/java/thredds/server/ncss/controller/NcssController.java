@@ -148,7 +148,7 @@ public class NcssController extends AbstractNcssController {
                          NcssParamsBean params, String datasetPath,
                          GridDataset gridDataset) throws IOException, NcssException, ParseException, InvalidRangeException {
 
-    params.isValidGridRequest();
+    //params.isValidGridRequest(); ???
 
     // Supported formats are netcdf3 (default) and netcdf4 (if available)
     SupportedFormat sf = SupportedOperation.GRID_REQUEST.getSupportedFormat(params.getAccept());

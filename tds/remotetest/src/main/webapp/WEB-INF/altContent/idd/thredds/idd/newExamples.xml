@@ -1,0 +1,254 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<tdsConfig xmlns="http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v2.0"
+           xmlns:xlink="http://www.w3.org/1999/xlink" name="Version 2 Catalog Prototype / Examples"
+           version="2">
+
+  <service name="fmrcServices" serviceType="Compound" base="">
+    <service name="opendap" serviceType="OPENDAP" base="/thredds/dodsC/"/>
+    <service name="fileServer" serviceType="HTTPServer" base="/thredds/fileServer/"/>
+    <service name="wcs" serviceType="WCS" base="/thredds/wcs/"/>
+    <service name="wms" serviceType="WMS" base="/thredds/wms/"/>
+  </service>
+
+  <service name="pointServices" serviceType="Compound" base="">
+    <service name="opendap" serviceType="OPENDAP" base="/thredds/dodsC/"/>
+    <service name="fileServer" serviceType="HTTPServer" base="/thredds/fileServer/"/>
+    <service name="cdm" serviceType="CdmRemote" base="/thredds/cdmremote/"/>
+  </service>
+
+  <service name="satServices" serviceType="Compound" base="">
+    <service name="opendap" serviceType="OPENDAP" base="/thredds/dodsC/"/>
+    <service name="fileServer" serviceType="HTTPServer" base="/thredds/fileServer/"/>
+    <service name="wcs" serviceType="WCS" base="/thredds/wcs/"/>
+    <service name="wms" serviceType="WMS" base="/thredds/wms/"/>
+  </service>
+
+  <dataset name="Motherlode IDD Data">
+
+    <metadata inherited="true">
+      <authority>edu.ucar.unidata</authority>
+      <documentation xlink:type="rights">Freely available</documentation>
+      <documentation xlink:type="processing_level">Transmitted through Unidata Internet Data Distribution.
+      </documentation>
+      <creator>
+        <name vocabulary="DIF">DOC/NOAA/NWS/NCEP</name>
+        <contact url="http://www.ncep.noaa.gov/" email="http://www.ncep.noaa.gov/mail_liaison.shtml"/>
+      </creator>
+      <publisher>
+        <name vocabulary="DIF">UCAR/UNIDATA</name>
+        <contact url="http://www.unidata.ucar.edu/" email="support@unidata.ucar.edu"/>
+      </publisher>
+      <creator>
+        <name vocabulary="ADN">National Oceanic and Atmospheric Administration (NOAA)/National Weather Service (NWS)
+          National Center for Environmental Prediction (NCEP)
+        </name>
+        <contact url="http://www.ncep.noaa.gov/" email="http://www.ncep.noaa.gov/mail_liaison.shtml"/>
+      </creator>
+      <publisher>
+        <name vocabulary="ADN">University Corporation for Atmospheric Research (UCAR)/Unidata</name>
+        <contact url="http://www.unidata.ucar.edu/" email="support@unidata.ucar.edu"/>
+      </publisher>
+      <timeCoverage>
+        <end>present</end>
+        <duration>30 days</duration>
+      </timeCoverage>
+    </metadata>
+
+    <!-- models -->
+    <dataset ID="NCEP" name="NCEP Model Data">
+
+      <metadata inherited="true">
+        <serviceName>fmrcServices</serviceName>
+        <documentation xlink:href="http://www.emc.ncep.noaa.gov/modelinfo/index.html"
+                       xlink:title="NCEP Model documentation"/>
+        <documentation type="processing_level">Read by CDM Forecast Model Run Collection.</documentation>
+      </metadata>
+
+      <dataset ID="NCEP/GFS" name="Global Forecast System (GFS) Model">
+        <metadata inherited="true">
+          <documentation type="summary">NCEP Global Forecast System Model, previously called AVN/MRF (Medium Range Forecast)
+          </documentation>
+          <documentation xlink:href="http://meted.ucar.edu/nwp/pcu2/avintro.htm"
+                         xlink:title="COMET MetEd (Meteorology Education and Training) documentation"/>
+          <documentation xlink:href="http://www.emc.ncep.noaa.gov/gmb/STATS/html/model_changes.html"
+                         xlink:title="NCEP Model Notes"/>
+        </metadata>
+
+        <featureCollection name="NCEP-GFS-Alaska_191km" featureType="FMRC" path="fmrc/NCEP/GFS/Alaska_191km">
+
+          <metadata>
+            <documentation type="summary">NCEP GFS Model : AWIPS 203 (J) Grid. National - Alaska (polar stereographic).
+              Model runs are made at 0, 6, 12, and 18Z, with analysis and forecasts every 6 hours out 5 days.
+              Horizontal = 45 by 39 points, resolution 190.5 km, Polar Stereographic projection.
+              Vertical = 1000 to 100 hPa mandatory pressure levels (10 levels); surface, height above ground, pressure
+              layers.
+            </documentation>
+          </metadata>
+
+          <documentation type="title">${@title} also this text ${@title2}</documentation>
+
+          <collection spec="/data/ldm/pub/native/grid/NCEP/GFS/Alaska_191km/**/GFS_Alaska_191km_#yyyyMMdd_HHmm#.grib1"
+                      recheckEvery="15 min" 
+                      olderThan="5 min" />
+
+        </featureCollection>
+      </dataset>
+    </dataset>
+
+    <!-- Point -->
+    <dataset name="Station Data">
+
+      <metadata inherited="true">
+        <serviceName>pointServices</serviceName>
+      </metadata>
+
+      <dataset name="Metars">
+
+        <metadata inherited="true">
+          <documentation xlink:type="summary">Metars: hourly surface weather observations</documentation>
+          <documentation xlink:href="http://metar.noaa.gov/" xlink:title="NWS/NOAA information"/>
+          <keyword>metar</keyword>
+          <keyword>surface observations</keyword>
+        </metadata>
+
+        <featureCollection name="Metar Station Data" featureType="Station" harvest="true" path="station/metar">
+          <dataFormat>NetCDF</dataFormat>
+
+          <collection  spec="/data/ldm/pub/decoded/netcdf/surface/metar/**/Surface_METAR_#yyyyMMdd_HHmm#.nc"
+                      recheckEvery="15 min"olderThan="5 min" />
+
+        </featureCollection>
+
+        <featureCollection name="Realtime surface Data" featureType="Station" harvest="true" path="gempak/surface">
+          <dataFormat>GEMPAK</dataFormat>
+
+          <collection recheckEvery="15 min"
+                      spec="/data/ldm/gempak/surface/**/#yyyyMMdd#.gem"
+                      olderThan="5 min">
+          </collection>
+
+        </featureCollection>
+      </dataset>
+
+      <dataset name="NOAA Profiler Network">
+        <metadata inherited="true">
+          <documentation xlink:type="summary">The NOAA Profiler Network (NPN), consisting of 35 unmanned Doppler Radar
+            sites
+            located in 18 central US states and Alaska, provides vertical wind profile data. Some of the sites are also
+            equipped with RASS temperature profilers.
+          </documentation>
+          <documentation xlink:href="http://www.arm.gov/xds/static/wpdn.stm" xlink:title="NWS/NOAA information"/>
+          <keyword>profiler</keyword>
+          <keyword>WPDN</keyword>
+        </metadata>
+
+        <dataset name="Wind Profilers">
+
+           <featureCollection name="6 minute" featureType="STATION_PROFILE" harvest="true" path="station/profiler/wind/06min">
+             <documentation type="summary">Six minute average data.</documentation>
+             <collection spec="/data/ldm/pub/native/profiler/wind/06min/**/PROFILER_wind_06min_#yyyyMMdd#.nc"
+                         recheckEvery="15 min"
+                         olderThan="5 min" />
+           </featureCollection>
+
+          <featureCollection name="1 hour" featureType="STATION_PROFILE" harvest="true" path="station/profiler/wind/1hr">
+            <documentation type="summary">Hourly average data</documentation>
+            <collection spec="/data/ldm/pub/native/profiler/wind/01hr/**/PROFILER_wind_01hr_#yyyyMMdd#.nc"
+                        recheckEvery="15 min"
+                        olderThan="5 min" />
+          </featureCollection>
+
+        </dataset>
+
+        <dataset name="RASS (Radio Acoustic Sounding System)">
+          <metadata inherited="true">
+            <documentation xlink:type="summary">Eleven NOAA Profiler sites equipped with RASS (Radio Acoustic Sounding
+              System),
+              which measure vertical temperature profiles.
+            </documentation>
+          </metadata>
+
+          <featureCollection name="6 minute" featureType="ProfileTimeSeries" harvest="true" ID="NWS/RASS/6min"
+                             path="station/profiler/RASS/06min">
+            <documentation xlink:type="summary">Six minute average data.</documentation>
+            <collection spec="/data/ldm/pub/native/profiler/RASS/06min/**/*.nc"
+                        recheckEvery="15 min"
+                        olderThan="5 min" />
+          </featureCollection>
+
+          <featureCollection name="1 hour" featureType="ProfileTimeSeries" harvest="true" ID="NWS/RASS/1hour"
+                             path="station/profiler/RASS/1hr">
+            <documentation xlink:type="summary">Hourly average data</documentation>
+            <collection spec="/data/ldm/pub/native/profiler/RASS/01hr/**/*.nc"
+                        recheckEvery="15 min"
+                        olderThan="5 min" />
+          </featureCollection>
+
+        </dataset>
+      </dataset>
+
+    </dataset>
+
+    <!-- Satellite -->
+    <dataset name="Satellite Data">
+      <metadata inherited="true">
+        <serviceName>satServices</serviceName>
+      </metadata>
+
+      <dataset name="NESDIS GOES Satellite Data">
+        <metadata inherited="true">
+          <dataFormat>GINI</dataFormat>
+          <documentation xlink:href="http://www.unidata.ucar.edu/data/satellite_data_2.html"
+                         xlink:title="Satellite Data Available Through Unidata "/>
+          <documentation xlink:href="http://www.nesdis.noaa.gov/satellites.html" xlink:title="NESDIS Satellite page"/>
+          <documentation xlink:type="summary">National Environmental Satellite, Data, And Information Service (NESDIS)
+            Geostationary Operational Environmental Satellites (GOES) Data is remapped to standard projections.
+          </documentation>
+          <creator>
+            <name>NOAA/NESDIS</name>
+            <contact url="http://www.nesdis.noaa.gov/satellites.html" email="http://www.nesdis.noaa.gov/contact.html"/>
+          </creator>
+          <timeCoverage>
+            <end>present</end>
+            <duration>7 days</duration>
+          </timeCoverage>
+        </metadata>
+
+        <dataset name="3.9">
+
+          <featureCollection name="WEST-CONUS_4km" featureType="Grid" harvest="true" path="satellite/3.9/WEST-CONUS_4km">
+            <collection spec="/data/ldm/pub/native/satellite/3.9/WEST-CONUS_4km/WEST-CONUS_4km_3.9_#yyyyMMdd_HHmm#.gini"
+                        recheckEvery="15 min"
+                        olderThan="1 min" />
+          </featureCollection>
+
+          <!-- cdmCollection name="WEST-CONUS_4km" location="satellite/3.9/WEST-CONUS_4km/*.gini">
+            <aggregation dimName="time" type="joinExisting" dateFormatMark="WEST-CONUS_4km_3.9_#yyyyMMdd_HHmm"/>
+          </cdmCollection>
+
+          <cdmCollection name="PR-REGIONAL_4km" location="satellite/3.9/PR-REGIONAL_4km/*.gini">
+            <aggregation dimName="time" type="joinExisting" dateFormatMark="PR-REGIONAL_4km_3.9_#yyyyMMdd_HHmm"/>
+          </cdmCollection>
+
+          <cdmCollections name="${dataset.name}" location="satellite/3.9/{dataset.name}/*.gini">
+            <aggregation dimName="time" type="joinExisting" dateFormatMark="${dataset.name}_3.9_#yyyyMMdd_HHmm"/>
+          </cdmCollections-->
+
+        </dataset>
+
+
+        <!-- example of possible generation
+        <foreach name="path[6]">
+          <datasetCollection name="${name}" featureType="Grid" harvest="true" path="satellite/3.9/${name}">
+            <collection  spec="/data/ldm/pub/native/satellite/3.9/${name}/${name}_3.9_#yyyyMMdd_HHmm#.gini"
+                        recheckEvery="15 min" olderThan="1 min" />
+          </datasetCollection>
+        </foreach> -->
+
+      </dataset>
+
+    </dataset>
+  </dataset>
+
+</tdsConfig>
+

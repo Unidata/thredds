@@ -1,0 +1,7 @@
+# See http://ferret.pmel.noaa.gov/HOMEPAGE/FAQ/graphics/palette_bounds.html
+0.8   0.0  1.0  # violet
+0.3   0.2  1.0  # blue
+0.0   0.6  0.3  # green
+1.0   1.0  0.0  # yellow
+1.0   0.0  0.0  # red
+0.6   0.0  0.0  # dark red

@@ -1,0 +1,35 @@
+# Allow access to "static" catalogs (those in content/thredds directory).
+# Disallow access to generated catalogs. Disallow data services and other
+# "extra" services.
+#
+# Note:
+#     To disallow everything, replace all "Disallow" lines
+#     with a single line containing "Disallow: /" or, if you
+#     are running other web apps on your server, "Disallow: /thredds/".
+#
+User-agent: *
+# Disallow generated catalogs.
+Disallow: /thredds/catalog/    # Expand to be more specific if you want some generated catalogs to be harvested.
+# Disallow all data services
+Disallow: /thredds/dodsC/
+Disallow: /thredds/wcs/
+Disallow: /thredds/wms/
+Disallow: /thredds/ncss/
+Disallow: /thredds/fileServer/
+Disallow: /thredds/cdmremote/
+# Disallow other catalog services
+Disallow: /thredds/cataloggen/
+Disallow: /thredds/catalogServices
+Disallow: /thredds/remoteCatalogService
+Disallow: /thredds/remoteCatalogValidation.html
+# Disallow various query services
+Disallow: /thredds/dqc/
+Disallow: /thredds/radarServer/
+# Disallow miscellaneous other services
+Disallow: /thredds/modelInventory/
+Disallow: /thredds/DLwriter/
+Disallow: /thredds/view/
+Disallow: /thredds/restrictedAccess/
+Disallow: /thredds/admin/
+Disallow: /oai/docs/
+Disallow: /dqcServlet/

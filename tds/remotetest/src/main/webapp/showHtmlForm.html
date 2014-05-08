@@ -1,0 +1,35 @@
+<html>
+<head>
+ <title>Show Catalog</title>
+ <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+ <link rel='stylesheet' href='/thredds/upc.css' type='text/css' />
+</head>
+<body>
+
+<table width="100%">
+    <tr>
+        <td width="95" height="95" align="left"><img src="unidataLogo.gif" width="95" height="93"> </td>
+        <td width="701" align="left" valign="top">
+            <table width="303">
+                <tr>
+                  <td width="295" height="22" align="left" valign="top"><h3><strong>Thredds Data Server</strong></h3></td>
+                </tr>
+            </table>
+        </td>
+    </tr>
+</table>
+
+<h1 align="left">Show Remote Catalog as HTML (must be absolute URL)</h1>
+
+<form method="GET" action="remoteCatalogService">
+  <input type="hidden" name="cmd" value="show">
+<p/> Remote Catalog URL:
+    <input type="text" name="catalog" size="80" value="http://motherlode.ucar.edu:8080/thredds/catalog.xml">
+<input type="submit" value="Submit"/>
+<input type="reset" value="Reset"/>
+</form>
+
+<hr width="100%"/>
+<img src="thredds.jpg" width="95" height="79"/>
+</body>
+</html>

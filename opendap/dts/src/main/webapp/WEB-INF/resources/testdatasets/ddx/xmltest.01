@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Dataset name="test data"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xmlns="http://xml.opendap.org/ns/DAP2"
+         xsi:schemaLocation="http://xml.opendap.org/ns/DAP2  http://xml.opendap.org/dap/dap2.xsd">
+
+    <Attribute name="stuff" type="String">
+        <value>Stuff about this stuff</value>
+        <value>Silly</value>
+        <value>Repitious</value>
+        <value>testing of stuff</value>
+    </Attribute>
+    <Attribute name="stuff2" type="String">
+        <value>More Stuff about this stuff</value>
+    </Attribute>
+    <Alias name="cruise" Attribute=".somearray.CruiseNumber"/>
+    <Alias name="james" Attribute=".33 ^887 6*^* *(^*(%^9875.foo.barf.jimmy"/>
+
+    <Array name="somearray">
+        <Attribute name="Principle Investigator" type="Container">
+            <Attribute name="Title" type="String">
+                <value>Dr.</value>
+            </Attribute>
+            <Attribute name="FirstName" type="String">
+                <value>Mark</value>
+            </Attribute>
+            <Attribute name="LastName" type="String">
+                <value>Abbott</value>
+            </Attribute>
+        </Attribute>
+        <Attribute name="CruiseNumber" type="String">
+            <value>WE030702</value>
+        </Attribute>
+        <Structure>
+            <Float64 name="amp"/>
+            <Float32 name="damp"/>
+            <Float64 name="clamp"/>
+        </Structure>
+        <dimension name="twizzle" size="1024"/>
+        <dimension name="dizzle" size="2211"/>
+    </Array>
+    <Structure name="33 ^887 6*^* *(^*(%^9875">
+        <Attribute name="nested01" type="Container">
+            <Attribute name="nested02" type="Container">
+                <Attribute name="nested03" type="Container">
+                    <Attribute name="nested04" type="Container">
+                        <Attribute name="leaf04a" type="Float64">
+                            <value>141.87567</value>
+                        </Attribute>
+                        <Attribute name="leaf04b" type="Float64">
+                            <value>141.87567</value>
+                        </Attribute>
+                    </Attribute>
+                    <Attribute name="leaf3a" type="Byte">
+                        <value>221</value>
+                    </Attribute>
+                    <Attribute name="leaf03b" type="Byte">
+                        <value>131</value>
+                    </Attribute>
+                    <Alias name="l4" Attribute=".33 ^887 6*^* *(^*(%^9875.nested01.nested02.nested03.nested04"/>
+                </Attribute>
+                <Attribute name="leaf2a" type="Int16">
+                    <value>1234</value>
+                </Attribute>
+                <Attribute name="leaf02b" type="Int16">
+                    <value>4321</value>
+                </Attribute>
+            </Attribute>
+            <Attribute name="leaf1a" type="String">
+                <value>Cowabunga</value>
+            </Attribute>
+            <Attribute name="leaf01b" type="String">
+                <value>Supercalifragilisticexpialidocous</value>
+            </Attribute>
+        </Attribute>
+        <Array name="a mp">
+            <Float32/>
+            <dimension name="x y" size="256"/>
+            <dimension name="y z" size="256"/>
+        </Array>
+        <Float32 name="julian day"/>
+        <Int16 name="Instrument Number"/>
+        <Structure name="foo">
+            <Alias name="james" Attribute=".33 ^887 6*^* *(^*(%^9875.foo.barf.jimmy"/>
+            <Float64 name="arf"/>
+            <Array name="barf">
+                <Attribute name="jimmy" type="Int16">
+                    <value>154</value>
+                </Attribute>
+                <Alias name="james" Attribute=".33 ^887 6*^* *(^*(%^9875.foo.barf.jimmy"/>
+                <Float64/>
+                <dimension size="2222"/>
+            </Array>
+        </Structure>
+    </Structure>
+    <Grid name="sst">
+        <Array name="sst">
+            <Float64/>
+            <dimension name="latitude" size="1024"/>
+            <dimension name="longitude" size="1024"/>
+        </Array>
+        <Map name="latitude">
+            <Float64/>
+            <dimension size="1024"/>
+        </Map>
+        <Map name="longitude">
+            <Float64/>
+            <dimension size="1024"/>
+        </Map>
+    </Grid>
+    <Sequence name="testSeq">
+        <Float64 name="jday">
+            <Alias name="jman" Attribute=".&quot;SsTT.fofo\&quot;fo\\rm\&quot;fofo.moo&quot;.Thumping.John"/>
+        </Float64>
+        <Float32 name="latitude"/>
+        <Float32 name="longitude"/>
+        <Float32 name="surface irradiance"/>
+        <Sequence name="CTD Profile">
+            <Float64 name="depth"/>
+            <Float64 name="temperature"/>
+            <Float64 name="conductivity"/>
+            <Float64 name="fluoresence"/>
+        </Sequence>
+    </Sequence>
+    <Structure name="SsTT.fofo&quot;fo\rm&quot;fofo.moo">
+        <Attribute name="Thumping" type="Container">
+            <Attribute name="John" type="String">
+                <value>Has Too Much Fun</value>
+            </Attribute>
+            <Attribute name="Sally" type="String">
+                <value>Has No Fun</value>
+            </Attribute>
+        </Attribute>
+        <Alias name="batman" Attribute=".stuff"/>
+        <Byte name="diggle"/>
+        <Byte name="piggle"/>
+        <Byte name="wiggle"/>
+        <Byte name="doo"/>
+    </Structure>
+
+    <dataBLOB href="http://dods.coas.oregonstate.edu:8080/opendap/dts/xmltest.01.blob"/>
+</Dataset>

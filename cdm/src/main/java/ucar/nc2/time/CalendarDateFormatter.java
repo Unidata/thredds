@@ -60,8 +60,10 @@ public class CalendarDateFormatter {
   private static DateTimeFormatter dtf = DateTimeFormat.forPattern("yyyy-MM-dd HH:mm:ss'Z'").withZoneUTC();
   
   private static DateTimeFormatter dtf_with_millis_of_second = DateTimeFormat.forPattern("yyyy-MM-dd HH:mm:ss.SSS'Z'").withZoneUTC();
-  private static DateTimeFormatter df = DateTimeFormat.forPattern("yyyy-MM-dd").withZoneUTC();
+  private static DateTimeFormatter df = DateTimeFormat.forPattern("yyyy-MM-dd").withZoneUTC();  
+  private static DateTimeFormatter df_units = DateTimeFormat.forPattern("yyyy-MM-dd HH:mm:ss").withZoneUTC();
 
+  
   static public String toDateTimeStringISO(CalendarDate cd) {
 	
 	 if(cd.getDateTime().getMillisOfSecond() == 0)
@@ -104,6 +106,9 @@ public class CalendarDateFormatter {
     return df.print(new DateTime());
   }
 
+  static public String toTimeUnits(CalendarDate cd){
+	  return  df_units.print(cd.getDateTime());
+  }
 
     
   /////////////////////////////////////////////////////////////////////////////

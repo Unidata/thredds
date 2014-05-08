@@ -1,0 +1,228 @@
+/* Style for all fonts */
+div {
+    font-family: Helvetica, Arial, sans-serif;
+    font-size: 12px;
+    text-align: left;
+}
+
+/* Style for the left-hand layer selector menu */
+#layerSelector {
+    position: absolute;
+    left: 0px;
+    /*top: 20px;*/
+    overflow: auto;
+    margin: 8px;
+    padding: 0px;
+    height: 470px;
+}
+
+div.help {
+    position: absolute;
+    top: 520px;
+    left: 20px;
+    font-size: 11px;
+}
+
+#leftPanel {
+    position: absolute;
+    left: 0px;
+    overflow: auto;
+    /*margin: 8px;*/
+    padding: 0px;
+    width: 300px;
+    height: 700px;
+}
+
+#resclogo {
+    position: absolute;
+    top: 570px;
+    left: 20px;
+    border: 0;
+}
+
+/* Style for the main panel */
+#mainPanel {
+    position: absolute;
+    margin: 8px;
+    padding: 0px;
+    left: 330px;
+}
+
+#panelHeader {
+    position: absolute;
+    top: 0px;
+    left: 0px;
+    width: 500px;
+}
+
+#panelText {
+    width: 390px;
+}
+
+#calendar {
+    position: absolute;
+    top: 0px;
+    left: 390px;
+}
+
+#zValues {
+    visibility: hidden;
+}
+
+#utc {
+    visibility: hidden;
+}
+
+td {
+    padding: 0;
+}
+
+div.imagePanel {
+    position: absolute;
+    left: 0px;
+    top: 160px;
+    width: 600px;
+}
+
+#throbber {
+    position: absolute;
+    left: 240px;
+    top: 209px;
+    /*visibility: hidden;*/
+    z-index: 100; /* Must appear on top */
+}
+
+div.aboveMap {
+    position: absolute;
+    left: 0px;
+    top: 0px;
+}
+
+div.map {
+    position: absolute;
+    left: 0px;
+    top: 25px;
+    width: 512px;
+    height: 400px;
+    z-index: 0; /* Ensure pop-ups appear above the map! */
+}
+
+#mapOverlayDiv {
+    visibility: hidden;
+}
+
+#setFrames {
+    visibility: hidden;
+}
+
+#animation {
+    visibility: hidden;
+}
+
+#hideAnimation {
+    visibility: hidden;
+}
+
+#copyright {
+    position: absolute;
+    top: 430px;
+    font-style: italic;
+}
+
+#underMap {
+    position: absolute;
+    top: 450px;
+}
+
+#opacityControl {
+    position: absolute;
+    top: 450px;
+    left: 350px;
+}
+
+#poweredBy {
+    position: absolute;
+    top: 480px;
+    left: 0px;
+    font-size: 10px;
+}
+
+#permalink {
+    position: absolute;
+    top: 480px;
+    right: 50px;
+    font-size: 10px;
+    visibility: hidden;
+}
+
+img.scaleBar {
+    position: absolute;
+    left: 510px;
+    top: 25px;
+    visibility: hidden;
+    border-style: solid;
+    border-width: 1px;
+}
+
+div.scaleMarkers {
+    position: absolute;
+    left: 555px;
+    top: 25px;
+    height: 400px;
+    font-size: 12px;
+}
+
+#scaleControls {
+    position: absolute;
+    top: 175px;
+    visibility: hidden;
+}
+
+input.scaleMax {
+    position: absolute;
+    top: -10px;
+    visibility: hidden;
+}
+
+input.scaleMin {
+    position: absolute;
+    top: 388px;
+    visibility: hidden;
+}
+
+#scaleOneThird {
+    position: absolute;
+    top: 255px;
+}
+
+#scaleTwoThirds {
+    position: absolute;
+    top: 121px;
+}
+
+.olControlLoadingPanel {
+    background-image:url(../theme/default/img/loading.gif);
+    background-position:center;
+    background-repeat:no-repeat;
+}
+
+/* Hide the controls on the editing panel that we're not using */
+.olControlDrawFeaturePointItemInactive {
+    visibility: hidden;
+}
+.olControlDrawFeaturePointItemActive {
+    visibility: hidden;
+}
+.olControlDrawFeaturePolygonItemInactive {
+    visibility: hidden;
+}
+.olControlDrawFeaturePolygonItemActive {
+    visibility: hidden;
+}
+
+/* Positions the navigation history control sensibly on the map */
+.olControlNavigationHistory {
+    position: relative;
+    top: 130px;
+    left: 17px;
+}

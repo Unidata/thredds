@@ -1,0 +1,67 @@
+<h2>DODS Relational Database Server</h2>
+
+<p>
+    This data is being served by a DODS Relational Database Server (DRDS), which
+    is a somewhat unusual instance of a DODS server. All of the data served by the
+    DRDS is stored in a relational database management system (DBMS). Queries from
+    DODS clients are translated into SQL queries and sent to the underlying DBMS.
+    The reuturned data is read by the DRDS and returned to the requesting client.
+</p>
+
+<p>
+    Because the DRDS is essentially a front end to a DBMS, the DDS's have a somewhat
+    different meaning than in other DODS servers. Each DDS served by the a DRDS
+    represents a table in the underlying DBMS. Since queries to the DBMS will return
+    an unknown amount of data, each DDS basically must contain a representation
+    of the tables contents defined as a DODS <b>sequence</b>. Because of this it
+    rarely makes sense for a client to request the entire &quot;dataset&quot;, as
+    this request will return the entire contents of the table. When requesting data
+    from a DRDS, it is best to get the dataset information (using the .info extension
+    on the DODS URL) and then build a constrained request that just returns data
+    that is actually desired. This doesn't mean that the entire table cannot be
+    requested and sent, it is simply a caution that each dataset/DDS/table may in
+    fact be very large.
+</p>
+
+<h3>Server Functions:</h3>
+<p>
+    <b>unique():</b> This function gets used in the selection part of the DODS
+    constraint expression. It requires no parameters. Calling this funcion will
+    cause the return to contain only unique rows. This is useful for sifting
+    through numerous identical fields, for example station data that contains
+    instrument names. This is NOT very useful if you are trying to retrieve a
+    ship track...
+    <br>Example:
+    <pre>
+        http://nasty.dods.url/server/dataset.dods?var1,var2&unique()
+    </pre>
+</p>
+
+
+<p>
+    <b>Regular Expressions:</b> The typical DODS server supports the full range
+    regular expression syntax. THIS DODS server does not. Limited string matching is
+    available. The wild card characters '.' and '.*' may used. The '[...]' notation
+    for matching a range of characters may be used, but only to match a single
+    character to a range of possiblities.
+    <br>Examples:
+    <pre>
+        http://nasty.dods.url/server/dataset.dods?var1,var2&var3~=".*south.*"
+        http://nasty.dods.url/server/dataset.dods?var1,var2&var3~=".south."
+    </pre>
+</p>
+
+<p>
+    <h3>NOTE:</h3> String fields in the DBMS may contain white space (spaces). In order
+    for a constraint to match you must include the spaces. For example, if you
+    wish to retrieve all data where a field called <i>location</i> has a value
+    of "Southern Ocean", in your DODS URL you will have to represent the space
+    between "Southern" and "Ocean" with the symbol "<b>%20</b>". Like this:
+    <pre> location="Southern%20Ocean"</pre>
+    However, if the DODS URL is formed with a space like this:
+    <pre> location="Southern Ocean"</pre>
+    It will not be handled correctly by the DRDS.
+</p>
+
+<p>Have fun!</p>
+

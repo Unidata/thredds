@@ -1,0 +1,154 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE wmsConfig SYSTEM "http://www.unidata.ucar.edu/schemas/thredds/dtd/ncwms/wmsConfig.dtd">
+<!--
+Detailed configuration of the WMS service.  This config file can be used to
+set default styling parameters for each dataset/variable, and to enable or disable
+the GetFeatureInfo operation.
+
+See http://www.resc.reading.ac.uk/trac/myocean-tools/wiki/WmsDetailedConfiguration
+for more information.
+-->
+<wmsConfig>
+  <global>
+    <!-- These settings apply to all datasets unless overridden below -->
+
+    <defaults>
+      <!-- The global defaults. All elements are mandatory -->
+      <allowFeatureInfo>true</allowFeatureInfo>
+      <defaultColorScaleRange>-50 50</defaultColorScaleRange>
+      <defaultPaletteName>rainbow</defaultPaletteName>
+      <defaultNumColorBands>20</defaultNumColorBands>
+      <logScaling>false</logScaling>
+      <intervalTime>false</intervalTime>
+    </defaults>
+  </global>
+  <overrides>
+    <datasetPath pathSpec="grib/NCEP/*">
+      <variables>
+        <variable id="Absolute_vorticity_pressure">                            <!-- units: 1/s -->
+            <defaultColorScaleRange>-0.0002 0.0002</defaultColorScaleRange>
+        </variable>
+        <variable id="Absolute_vorticity_isobaric">                            <!-- units: 1/s -->
+            <defaultColorScaleRange>0.00002 0.00030</defaultColorScaleRange>
+        </variable>
+        <variable id="Albedo_surface_Mixed_intervals_average">                 <!-- units: % -->
+            <defaultColorScaleRange>0.0 100.0</defaultColorScaleRange>
+        </variable>
+        <variable id="Best_4_layer_Lifted_Index_pressure_difference_layer">    <!-- units: K -->
+          <defaultColorScaleRange>-10 40</defaultColorScaleRange>
+        </variable>
+        <variable id="Best_4_layer_Lifted_Index_surface">                      <!-- units: K -->
+          <defaultColorScaleRange>-10 40</defaultColorScaleRange>
+        </variable>
+        <variable id="Cloud_water_entire_atmosphere">                          <!-- units: kg.m-2 -->
+          <defaultColorScaleRange>0 2</defaultColorScaleRange>
+        </variable>
+        <variable id="Convective_available_potential_energy_pressure_difference_layer"> <!-- units: J/kg -->
+          <defaultColorScaleRange>0 3000</defaultColorScaleRange>
+        </variable>
+        <variable id="Convective_available_potential_energy_surface">          <!-- units: J/kg -->
+          <defaultColorScaleRange>0 3000</defaultColorScaleRange>
+        </variable>
+        <variable id="Convective_inhibition_pressure_difference_layer">        <!-- units: J/kg -->
+          <defaultColorScaleRange>-550 0</defaultColorScaleRange>
+        </variable>
+        <variable id="Convective_inhibition_surface">                          <!-- units: J/kg -->
+          <defaultColorScaleRange>-550 0</defaultColorScaleRange>
+        </variable>
+        <variable id="Geopotential_height_pressure">                           <!-- units: gpm -->
+          <defaultColorScaleRange>-300 3000</defaultColorScaleRange>
+        </variable>
+        <variable id="Geopotential_height_surface">                            <!-- units: gpm -->
+          <defaultColorScaleRange>-300 300</defaultColorScaleRange>
+        </variable>
+        <variable id="Potential_temperature_sigma">                            <!-- units: K -->
+          <defaultColorScaleRange>200 330</defaultColorScaleRange>
+        </variable>
+        <variable id="Precipitable_water_entire_atmosphere">                   <!-- units: kg.m-2 -->
+          <defaultColorScaleRange>0 100</defaultColorScaleRange>
+        </variable>
+        <variable id="Pressure_height_above_ground">                           <!-- units: Pa -->
+          <defaultColorScaleRange>52000 105000</defaultColorScaleRange>
+        </variable>
+        <variable id="Pressure_surface">                                       <!-- units: Pa -->
+          <defaultColorScaleRange>52000 105000</defaultColorScaleRange>
+        </variable>
+        <variable id="Pressure_tropopause">                                       <!-- units: Pa -->
+          <defaultColorScaleRange>20000 40000</defaultColorScaleRange>
+        </variable>
+        <variable id="Relative_humidity_entire_atmosphere">                  <!-- units: % -->
+          <defaultColorScaleRange>0 100</defaultColorScaleRange>
+        </variable>
+        <variable id="Relative_humidity_height_above_ground">             <!-- units: % -->
+          <defaultColorScaleRange>0 100</defaultColorScaleRange>
+        </variable>
+        <variable id="Relative_humidity_highest_tropospheric_freezing">                  <!-- units: % -->
+          <defaultColorScaleRange>0 100</defaultColorScaleRange>
+        </variable>
+        <variable id="Relative_humidity_height_above_ground">                  <!-- units: % -->
+          <defaultColorScaleRange>0 100</defaultColorScaleRange>
+        </variable>
+        <variable id="Relative_humidity_isobaric">                  <!-- units: % -->
+          <defaultColorScaleRange>0 100</defaultColorScaleRange>
+        </variable>
+        <variable id="Relative_humidity_sigma">                  <!-- units: % -->
+          <defaultColorScaleRange>0 100</defaultColorScaleRange>
+        </variable>
+        <variable id="Relative_humidity_pressure">                             <!-- units: % -->
+          <defaultColorScaleRange>0 100</defaultColorScaleRange>
+        </variable>
+        <variable id="Surface_Lifted_Index_pressure_layer">                    <!-- units: K -->
+          <defaultColorScaleRange>-10 40</defaultColorScaleRange>
+        </variable>
+        <variable id="Temperature_height_above_ground">                        <!-- units: K -->
+          <defaultColorScaleRange>200 310</defaultColorScaleRange>
+        </variable>
+        <variable id="Temperature_pressure">                                   <!-- units: K -->
+          <defaultColorScaleRange>200 310</defaultColorScaleRange>
+        </variable>
+        <variable id="Temperature_sigma">                                      <!-- units: K -->
+          <defaultColorScaleRange>200 310</defaultColorScaleRange>
+        </variable>
+        <variable id="Temperature_surface">                                    <!-- units: K -->
+          <defaultColorScaleRange>200 310</defaultColorScaleRange>
+        </variable>
+        <variable id="Temperature_tropopause">                                    <!-- units: K -->
+          <defaultColorScaleRange>170 240</defaultColorScaleRange>
+        </variable>
+        <variable id="Total_cloud_cover_boundary_layer_cloud_Mixed_intervals_Average">           <!-- units: % -->
+          <defaultColorScaleRange>0 100</defaultColorScaleRange>
+        </variable>
+        <variable id="Total_cloud_cover_convective_cloud">           <!-- units: % -->
+          <defaultColorScaleRange>0 100</defaultColorScaleRange>
+        </variable>
+        <variable id="Total_cloud_cover_entire_atmosphere_Mixed_intervals_Average">           <!-- units: % -->
+          <defaultColorScaleRange>0 100</defaultColorScaleRange>
+        </variable>
+        <variable id="Total_cloud_cover_high_cloud_Mixed_intervals_Average">           <!-- units: % -->
+          <defaultColorScaleRange>0 100</defaultColorScaleRange>
+        </variable>
+        <variable id="Total_cloud_cover_low_cloud_Mixed_intervals_Average">           <!-- units: % -->
+          <defaultColorScaleRange>0 100</defaultColorScaleRange>
+        </variable>
+        <variable id="Total_cloud_cover_middle_cloud_Mixed_intervals_Average">           <!-- units: % -->
+          <defaultColorScaleRange>0 100</defaultColorScaleRange>
+        </variable>
+        <variable id="Total_ozone_entire_atmosphere">                   <!-- units: DU -->
+          <defaultColorScaleRange>200 500</defaultColorScaleRange>
+        </variable>
+        <variable id="u-component_of_wind_height_above_ground">                <!-- units: m/s -->
+          <defaultColorScaleRange>-75 75</defaultColorScaleRange>
+        </variable>
+        <variable id="u-component_of_wind_pressure">                           <!-- units: m/s -->
+          <defaultColorScaleRange>-75 75</defaultColorScaleRange>
+        </variable>
+        <variable id="v-component_of_wind_height_above_ground">                <!-- units: m/s -->
+          <defaultColorScaleRange>-75 75</defaultColorScaleRange>
+        </variable>
+        <variable id="v-component_of_wind_pressure">                           <!-- units: m/s -->
+          <defaultColorScaleRange>-75 75</defaultColorScaleRange>
+        </variable>
+      </variables>
+    </datasetPath>
+  </overrides>
+</wmsConfig>
