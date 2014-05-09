@@ -74,10 +74,10 @@ public class TestNc4Misc {
 
   // from  Jeff Johnson  jeff.m.johnson@noaa.gov   5/2/2014
   @Test
-  public void testChunkFromAttribute() throws IOException, InvalidRangeException {
+  public void testChunkStandard() throws IOException, InvalidRangeException {
     // define the file
     //String filePathName = TestLocal.temporaryDataDir +"testSizeWriting2.nc4";
-    String location = "C:/temp/testSizeWriting2.nc4";
+    String location = "C:/temp/testSizeWriting.nc4";
 
     NetcdfFileWriter dataFile = null;
 
@@ -90,7 +90,7 @@ public class TestNc4Misc {
       // dataFile = NetcdfFileWriter.createNew(NetcdfFileWriter.Version.netcdf4, filePathName);
 
       // define chunking
-      Nc4Chunking chunkingStrategy = Nc4ChunkingStrategyImpl.factory(Nc4Chunking.Strategy.fromAttribute, 0, false);
+      Nc4Chunking chunkingStrategy = Nc4ChunkingStrategyImpl.factory(Nc4Chunking.Strategy.standard, 0, false);
       dataFile = NetcdfFileWriter.createNew(NetcdfFileWriter.Version.netcdf4, location, chunkingStrategy);
 
       // create the root group
@@ -137,7 +137,8 @@ public class TestNc4Misc {
     NetcdfFile file = NetcdfFile.open(location);
     Variable time = file.findVariable("time");
     Attribute chunk = time.findAttribute(CDM.CHUNK_SIZE);
-    assert chunk.getNumericValue().equals(2000) : "chunk failed= "+ chunk.getNumericValue();
+    assert chunk != null;
+    assert chunk.getNumericValue().equals(8000) : "chunk failed= "+ chunk.getNumericValue();
     file.close();
 
   }
