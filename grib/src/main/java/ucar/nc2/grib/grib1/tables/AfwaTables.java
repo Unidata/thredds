@@ -34,10 +34,10 @@ public class AfwaTables extends Grib1Customizer {
   }
 
   static private void makeSubcenterMap() {
-    subcenterMap = new HashMap<Integer, String>(100);
+    subcenterMap = new HashMap<>(100);
 
     subcenterMap.put(0, "AFWA Primary Table");
-    subcenterMap.put(1, "	AFWA Numerical Weather Prediction Models Products");
+    subcenterMap.put(1, "AFWA Numerical Weather Prediction Models Products");
     subcenterMap.put(2, "AFWA Special Environmental Models Products");
     subcenterMap.put(3, "AFWA Space Products");
     subcenterMap.put(4, "AFWA Ensemble Products");
@@ -73,7 +73,7 @@ public class AfwaTables extends Grib1Customizer {
   }
 
   static private void makeGenProcessMap() {
-    genProcessMap = new HashMap<Integer, String>(100);
+    genProcessMap = new HashMap<>(100);
     genProcessMap.put(10, "Mesoscale Model 5 (MM5)");
     genProcessMap.put(11, "Weather Research and Forecasting Model (WRF)");
     genProcessMap.put(12, "Multivariate Optimum Interpolation Model (MVOI)");
@@ -182,7 +182,7 @@ public class AfwaTables extends Grib1Customizer {
   }
   
   static private void makeLevelTypesMap() {
-    levelTypesMap = new HashMap<Integer, GribLevelType>(100);
+    levelTypesMap = new HashMap<>(100);
     // (int code, String desc, String abbrev, String units, String datum, boolean isPositiveUp, boolean isLayer)
     levelTypesMap.put(21,  new GribLevelType(21,  "RTNEPH cloud layer", "RTNEPH", "", null, true, true));
     levelTypesMap.put(210, new GribLevelType(210, "Isobaric Surface", "ISBP", "", null, false, false));

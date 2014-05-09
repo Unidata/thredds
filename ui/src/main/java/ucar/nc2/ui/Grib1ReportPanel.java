@@ -180,9 +180,9 @@ public class Grib1ReportPanel extends ReportPanel {
   /////////////////////////////////////////////////////////////////
 
   private void doCheckTables(Formatter f, MCollection dcm, boolean useIndex) throws IOException {
-    CounterS tableSet = new CounterS("table");
-    CounterS local = new CounterS("local");
-    CounterS missing = new CounterS("missing");
+    CounterS tableSet = new CounterS("tableVersion");
+    Counter local = new Counter("local");
+    Counter missing = new Counter("missing");
 
     for (MFile mfile : dcm.getFilesSorted()) {
       String path = mfile.getPath();
@@ -191,13 +191,13 @@ public class Grib1ReportPanel extends ReportPanel {
       doCheckTables(f, mfile, useIndex, tableSet, local, missing);
     }
 
-    f.format("CHECK TABLES%n");
+    f.format("Check Parameter Tables%n");
     tableSet.show(f);
     local.show(f);
     missing.show(f);
   }
 
-  private void doCheckTables(Formatter fm, MFile ff, boolean useIndex, CounterS tableSet, CounterS local, CounterS missing) throws IOException {
+  private void doCheckTables(Formatter fm, MFile ff, boolean useIndex, CounterS tableSet, Counter local, Counter missing) throws IOException {
     String path = ff.getPath();
     RandomAccessFile raf = null;
     try {
@@ -213,12 +213,12 @@ public class Grib1ReportPanel extends ReportPanel {
         tableSet.count(key);
 
         if (pds.getParameterNumber() > 127)
-          local.count(key);
+          local.count(pds.getParameterNumber());
 
         Grib1ParamTableReader table = new Grib1ParamTables().getParameterTable(pds.getCenter(), pds.getSubCenter(), pds.getTableVersion());
         if (table == null && useIndex) table = Grib1ParamTables.getDefaultTable();
         if (table == null || null == table.getParameter(pds.getParameterNumber()))
-          missing.count(key);
+          missing.count(pds.getParameterNumber());
       }
 
     } catch (Throwable ioe) {

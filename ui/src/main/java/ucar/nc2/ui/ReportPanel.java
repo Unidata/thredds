@@ -77,6 +77,7 @@ public class ReportPanel extends JPanel {
 
     ///////////////////////////////////////////////
 
+  // a counter whose keys are ints
   protected class Counter {
     Map<Integer, Integer> set = new HashMap<>();
     String name;
@@ -119,6 +120,7 @@ public class ReportPanel extends JPanel {
   }
 
 
+  // a counter whose keys are strings
   protected class CounterS {
     Map<String, Integer> set = new HashMap<String, Integer>();
     String name;
