@@ -2,7 +2,6 @@ package ucar.nc2.ogc;
 
 import org.n52.oxf.xmlbeans.parser.XMLHandlingException;
 import org.n52.oxf.xmlbeans.parser.sosexample.OwsExceptionReport;
-import ucar.nc2.VariableSimpleIF;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.ft.FeatureDatasetPoint;
 
@@ -17,8 +16,7 @@ public class Foo {
         File pointFile = new File("C:/Users/cwardgar/Desktop/multiStationSingleVar.ncml");
         FeatureDatasetPoint fdPoint = PointUtil.openPointDataset(FeatureType.STATION, pointFile.getAbsolutePath());
         try {
-            VariableSimpleIF dataVar = fdPoint.getDataVariable("tmax");
-            MarshallingUtil.marshalPointDataset(fdPoint, dataVar, System.out);
+            MarshallingUtil.marshalPointDataset(fdPoint, System.out);
         } finally {
             fdPoint.close();
         }

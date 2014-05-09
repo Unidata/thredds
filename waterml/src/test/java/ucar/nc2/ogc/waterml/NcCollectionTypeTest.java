@@ -17,7 +17,7 @@ public class NcCollectionTypeTest {
         File pointFile = new File(getClass().getResource("multiStationSingleVar.ncml").toURI());
         FeatureDatasetPoint fdPoint = PointUtil.openPointDataset(FeatureType.STATION, pointFile.getAbsolutePath());
         try {
-            MarshallingUtil.marshalPointDataset(fdPoint, fdPoint.getDataVariable("tmax"), new ByteArrayOutputStream());
+            MarshallingUtil.marshalPointDataset(fdPoint, new ByteArrayOutputStream());
         } finally {
             fdPoint.close();
         }

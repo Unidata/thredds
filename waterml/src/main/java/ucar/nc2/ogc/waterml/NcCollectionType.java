@@ -17,7 +17,7 @@ import java.util.List;
 public abstract class NcCollectionType {
     // wml2:Collection
     public static CollectionType initCollection(CollectionType collection, FeatureDatasetPoint fdPoint,
-            VariableSimpleIF dataVar) throws IOException {
+            List<VariableSimpleIF> dataVars) throws IOException {
         // @gml:id
         String id = MarshallingUtil.createIdForType(CollectionType.class);
         collection.setId(id);
@@ -26,14 +26,17 @@ public abstract class NcCollectionType {
         NcDocumentMetadataPropertyType.initMetadata(collection.addNewMetadata());
 
         // wml2:observationMember[0..*]
-        StationTimeSeriesFeatureCollection stationFeatColl = getStationFeatures(fdPoint);
-        PointFeatureCollectionIterator stationFeatCollIter = stationFeatColl.getPointFeatureCollectionIterator(-1);
+        for (VariableSimpleIF dataVar : dataVars) {
+            StationTimeSeriesFeatureCollection stationFeatColl = getStationFeatures(fdPoint);
+            PointFeatureCollectionIterator stationFeatCollIter = stationFeatColl.getPointFeatureCollectionIterator(-1);
 
-        while (stationFeatCollIter.hasNext()) {
-            // wml2:observationMember
-            StationTimeSeriesFeature stationFeat = (StationTimeSeriesFeature) stationFeatCollIter.next();
-            NcOMObservationPropertyType.initObservationMember(
-                    collection.addNewObservationMember(), stationFeat, dataVar);
+            while (stationFeatCollIter.hasNext()) {
+                StationTimeSeriesFeature stationFeat = (StationTimeSeriesFeature) stationFeatCollIter.next();
+
+                // wml2:observationMember
+                NcOMObservationPropertyType.initObservationMember(
+                        collection.addNewObservationMember(), stationFeat, dataVar);
+            }
         }
 
         return collection;

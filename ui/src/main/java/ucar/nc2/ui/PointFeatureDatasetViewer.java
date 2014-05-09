@@ -35,7 +35,6 @@ package ucar.nc2.ui;
 
 import org.n52.oxf.xmlbeans.parser.XMLHandlingException;
 import ucar.nc2.NetcdfFileWriter;
-import ucar.nc2.VariableSimpleIF;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.ft.*;
 import ucar.nc2.ft.point.writer.CFPointWriter;
@@ -307,35 +306,9 @@ public class PointFeatureDatasetViewer extends JPanel {
         return;
       }
 
-      List<VariableSimpleIF> dataVars = pfDataset.getDataVariables();
-      assert !dataVars.isEmpty() : "No data variables found in " + pfDataset.getLocation();
-      VariableSimpleIF dataVar = dataVars.get(0);
-
-      if (dataVars.size() > 1) {
-        Component parentComponent = PointFeatureDatasetViewer.this;
-        Object message = "Currenly, we can only write 1 data variable to a WaterML file.\nSelect which to include:";
-        String title = "Select data variable";
-        int messageType = JOptionPane.QUESTION_MESSAGE;
-        Icon icon = null;
-
-        Object[] selectionValues = new Object[dataVars.size()];
-        for (int i = 0; i < dataVars.size(); ++i) {
-          selectionValues[i] = dataVars.get(i).getShortName();
-        }
-        Object initialSelectionValue = selectionValues[0];
-
-        String dataVarName = (String) JOptionPane.showInputDialog(
-                parentComponent, message, title, messageType, icon, selectionValues, initialSelectionValue);
-        if (dataVarName == null) {
-          return;
-        } else {
-          dataVar = pfDataset.getDataVariable(dataVarName);
-        }
-      }
-
       try {
         ByteArrayOutputStream outStream = new ByteArrayOutputStream(5000);
-        MarshallingUtil.marshalPointDataset(pfDataset, dataVar, outStream);
+        MarshallingUtil.marshalPointDataset(pfDataset, pfDataset.getDataVariables(), outStream);
 
         infoTA.setText(outStream.toString());
         infoTA.gotoTop();

@@ -14,6 +14,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -41,10 +42,15 @@ public class MarshallingUtil {
 
     /////////////////////////////////////////////// Marshalling ///////////////////////////////////////////////
 
-    public static void marshalPointDataset(FeatureDatasetPoint fdPoint, VariableSimpleIF dataVar,
+    public static void marshalPointDataset(FeatureDatasetPoint fdPoint, OutputStream outputStream)
+            throws IOException, XMLHandlingException {
+        marshalPointDataset(fdPoint, fdPoint.getDataVariables(), outputStream);
+    }
+
+    public static void marshalPointDataset(FeatureDatasetPoint fdPoint, List<VariableSimpleIF> dataVars,
             OutputStream outputStream) throws IOException, XMLHandlingException {
         CollectionDocument collectionDoc = CollectionDocument.Factory.newInstance();
-        NcCollectionType.initCollection(collectionDoc.addNewCollection(), fdPoint, dataVar);
+        NcCollectionType.initCollection(collectionDoc.addNewCollection(), fdPoint, dataVars);
 
         resetIds();
         writeObject(collectionDoc, outputStream, true);

@@ -1,13 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <netcdf xmlns="http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2">
-    <dimension name="station" length="2"/>
+    <dimension name="station" length="3"/>
     <dimension name="time" length="5" isUnlimited="true"/>
 
-    <variable name="tmax" shape="station time" type="float">
-        <attribute name="standard_name" value="maximum temperature"/>
-        <attribute name="units" value="°C"/>
+    <variable name="pr" shape="station time" type="float">
+        <attribute name="standard_name" value="precipitation_flux"/>
+        <attribute name="units" value="kg m-2 s-1"/>
         <attribute name="coordinates" value="lat lon alt"/>
         <values start="1" increment="3"/>
+    </variable>
+
+    <variable name="tas" shape="station time" type="float">
+        <attribute name="standard_name" value="air_temperature"/>
+        <attribute name="units" value="K"/>
+        <attribute name="coordinates" value="lat lon alt"/>
+        <values start="10" increment="30"/>
     </variable>
 
     <variable name="time" shape="time" type="double">
@@ -43,12 +50,12 @@
     <variable name="station_name" shape="station" type="string">
         <attribute name="long_name" value="station name"/>
         <attribute name="cf_role" value="timeseries_id"/>
-        <values>AAA BBB</values>
+        <values>AAA BBB CCC</values>
     </variable>
 	
 	<variable name="station_description" shape="station" type="string">
 	    <attribute name="standard_name" value="station_description"/>
-		<values>DescriptionForAAA DescriptionForBBB</values>
+		<values>DescriptionForAAA DescriptionForBBB DescriptionForCCC</values>
 	</variable>
 
     <attribute name="featureType" value="timeSeries"/>
