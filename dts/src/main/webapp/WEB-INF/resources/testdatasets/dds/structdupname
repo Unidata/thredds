@@ -1,7 +1,0 @@
-Dataset {
-    Int32 time;
-    Structure {
-        Float32 time;
-    } record;
-} structdupname;
-
