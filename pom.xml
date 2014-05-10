@@ -720,13 +720,12 @@
         <type>war</type>
         <!-- scope>provided</scope-->
       </dependency>
-      <dependency>
+      <!-- dependency>
         <groupId>${project.groupId}</groupId>
         <artifactId>remotetest</artifactId>
         <version>${project.version}</version>
         <type>war</type>
-        <!-- scope>provided</scope-->
-      </dependency>
+      </dependency -->
 
       <!-- jar dependencies -->
       <dependency>
