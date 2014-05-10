@@ -45,7 +45,7 @@ import ucar.nc2.iosp.hdf5.H5header;
 import ucar.nc2.util.CancelTask;
 import ucar.nc2.util.DebugFlags;
 import ucar.nc2.write.Nc4Chunking;
-import ucar.nc2.write.Nc4ChunkingStrategyImpl;
+import ucar.nc2.write.Nc4ChunkingDefault;
 import ucar.unidata.io.RandomAccessFile;
 import ucar.ma2.*;
 
@@ -193,7 +193,7 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
   private boolean isClosed = false;
   private Map<Integer, UserType> userTypes = new HashMap<Integer, UserType>();  // hash by typeid
   private Map<Group, Integer> groupHash = new HashMap<Group, Integer>();  // group, nc4 grpid
-  private Nc4Chunking chunker = new Nc4ChunkingStrategyImpl();
+  private Nc4Chunking chunker = new Nc4ChunkingDefault();
   private boolean isEos = false;
 
   //////////////////////////////////////////////////
@@ -207,6 +207,7 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
     this.version = version;
   }
 
+  // called by reflection from NetcdfFileWriter
   public void setChunker(Nc4Chunking chunker) {
     if (chunker != null)
       this.chunker = chunker;
@@ -2282,11 +2283,14 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
       }
     }
 
-    // dont propagate these - handles internally
+    // dont propagate these - handled internally
     if (att.getShortName().equals(H5header.HDF5_CLASS)) return;
     if (att.getShortName().equals(H5header.HDF5_DIMENSION_LIST)) return;
     if (att.getShortName().equals(H5header.HDF5_DIMENSION_SCALE)) return;
     if (att.getShortName().equals(H5header.HDF5_DIMENSION_LABELS)) return;
+
+    if (att.getShortName().equals(CDM.CHUNK_SIZES)) return;
+    if (att.getShortName().equals(CDM.COMPRESS)) return;
 
     int ret = 0;
     Array values = att.getValues();

@@ -40,7 +40,6 @@ import java.util.Map;
 
 import ucar.ma2.*;
 import ucar.nc2.write.Nc4Chunking;
-import ucar.nc2.write.Nc4ChunkingStrategyImpl;
 import ucar.nc2.util.CancelTask;
 import ucar.nc2.util.CancelTaskImpl;
 
@@ -83,7 +82,7 @@ public class FileWriter2 {
   private final List<Variable> varList = new ArrayList<Variable>();        // old Vars
   private final Map<String, Dimension> gdimHash = new HashMap<String, Dimension>(); // name, newDim : global dimensions (classic mode)
 
-  private Nc4Chunking chunker = new Nc4ChunkingStrategyImpl();
+  //private Nc4Chunking chunker = new Nc4ChunkingDefault();
 
   /**
    * Use this constructor to copy entire file. Use this.write() to do actual copy.
@@ -328,7 +327,7 @@ public class FileWriter2 {
       varList.add(oldVar);
       if (debug) System.out.println("add var= " + v);
 
-      // set chunking using the oldVar
+      /* set chunking using the oldVar
       if (chunker.isChunked(oldVar)) {
         long[] chunk = chunker.computeChunking(oldVar);
         // v.addAttribute(new Attribute(CDM.CHUNK_SIZE, Array.factory(chunk)));
@@ -339,7 +338,7 @@ public class FileWriter2 {
         }
       } else if (debugChunk) {
         System.out.printf("%s is not Chunked, size = %d bytes%n", v.getFullName(), v.getSize() * v.getElementSize());
-      }
+      } */
 
       // attributes
       for (Attribute att : oldVar.getAttributes())

@@ -1387,7 +1387,7 @@ public class H5header {
         List<Integer> chunksize = new ArrayList<Integer>();
         for (int i=0; i<vinfo.storageSize.length-1; i++)  // skip last one - its the element size
           chunksize.add(vinfo.storageSize[i]);
-        v.addAttribute(new Attribute(CDM.CHUNK_SIZE, chunksize));
+        v.addAttribute(new Attribute(CDM.CHUNK_SIZES, chunksize));
       }
     }
 

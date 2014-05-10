@@ -10,7 +10,7 @@ import ucar.nc2.Variable;
  */
 public interface Nc4Chunking {
 
-  public enum Strategy {standard, grib, fromAttribute }
+  public enum Strategy {standard, grib }
 
   public boolean isChunked(Variable v);
 
@@ -19,7 +19,5 @@ public interface Nc4Chunking {
   public int getDeflateLevel(Variable v);
 
   public boolean isShuffle(Variable v);
-
-  public boolean chunkByAttribute();
 
 }

@@ -42,7 +42,7 @@ import ucar.nc2.ui.dialog.NetcdfOutputChooser;
 import ucar.nc2.ui.widget.*;
 import ucar.nc2.ui.widget.PopupMenu;
 import ucar.nc2.util.CompareNetcdf2;
-import ucar.nc2.write.Nc4ChunkingStrategyImpl;
+import ucar.nc2.write.Nc4ChunkingStrategy;
 import ucar.util.prefs.PreferencesExt;
 import ucar.util.prefs.ui.BeanTable;
 import ucar.util.prefs.ui.Debug;
@@ -181,7 +181,7 @@ public class DatasetViewer extends JPanel {
 
     try {
       FileWriter2 writer = new FileWriter2(ds, data.outputFilename, data.version,
-              Nc4ChunkingStrategyImpl.factory(data.chunkerType, data.deflate, data.shuffle));
+              Nc4ChunkingStrategy.factory(data.chunkerType, data.deflate, data.shuffle));
       NetcdfFile result = writer.write();
       result.close();
       JOptionPane.showMessageDialog(this, "File successfully written");

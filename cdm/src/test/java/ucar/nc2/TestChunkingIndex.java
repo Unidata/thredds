@@ -37,7 +37,8 @@ package ucar.nc2;
 
 import org.junit.Test;
 import ucar.ma2.Section;
-import ucar.nc2.write.Nc4ChunkingStrategyImpl;
+import ucar.nc2.write.Nc4ChunkingDefault;
+import ucar.nc2.write.Nc4ChunkingStrategy;
 
 import java.util.Arrays;
 import java.util.List;
@@ -80,8 +81,8 @@ public class TestChunkingIndex {
   @Test
   public void testChunkingStrategy() {
     Dimension d2 = new Dimension("2", 2);
-    Dimension d10 = new Dimension("100", 100);
-    Dimension d20 = new Dimension("200", 200);
+    Dimension d10 = new Dimension("10", 10);
+    Dimension d20 = new Dimension("20", 20);
     Dimension dun = new Dimension("u", 0, true, true, false);
 
     testOneStrategy(new Dimension[]{dun, d10, d20}, 50, 40);
@@ -96,11 +97,14 @@ public class TestChunkingIndex {
     testOneStrategy(new Dimension[]{dun, dun, dun}, 400, 343);
   }
 
-  private void testOneStrategy(Dimension[] shape, long maxChunkElems, long expectSize) {
+  private void testOneStrategy(Dimension[] shape, int maxChunkElems, long expectSize) {
     List<Dimension> dims = Arrays.asList(shape);
     show("shape", dims);
     System.out.printf(" max = %d%n", maxChunkElems);
-    Nc4ChunkingStrategyImpl chunker = new Nc4ChunkingStrategyImpl();
+    Nc4ChunkingDefault chunker = new Nc4ChunkingDefault();
+    chunker.setDefaultChunkSize(maxChunkElems);
+    chunker.setMinChunksize(maxChunkElems);
+
     int[] result = chunker.computeUnlimitedChunking(dims, 1);
     show("chunk", result);
     long shapeSize = new Section(result).computeSize();
@@ -115,6 +119,31 @@ public class TestChunkingIndex {
     for (Dimension r : dims) System.out.printf("%d,", r.getLength());
     System.out.printf(")%n");
   }
+
+  @Test
+  public void testChunkingRealStrategy() {
+    Dimension d2 = new Dimension("2", 2);
+    Dimension d10 = new Dimension("10", 10);
+    Dimension d20 = new Dimension("20", 20);
+    Dimension dun = new Dimension("u", 0, true, true, false);
+
+    testRealStrategy(new Dimension[]{dun}, 8);
+  }
+
+  private void testRealStrategy(Dimension[] shape, int elemSize) {
+    List<Dimension> dims = Arrays.asList(shape);
+    show("shape", dims);
+    System.out.printf(" elemSize = %d%n", elemSize);
+    Nc4ChunkingDefault chunker = new Nc4ChunkingDefault();
+
+    int[] result = chunker.computeUnlimitedChunking(dims, elemSize);
+    show("chunk", result);
+    long shapeSize = new Section(result).computeSize();
+    System.out.printf(" size = %d%n%n", shapeSize);
+    int expectSize = chunker.getMinChunksize() / elemSize;
+    assert shapeSize == expectSize : shapeSize +" != "+ expectSize;
+  }
+
 
 
 }

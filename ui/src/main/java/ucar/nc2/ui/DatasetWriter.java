@@ -38,7 +38,7 @@ import ucar.nc2.*;
 import ucar.nc2.Dimension;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.write.Nc4Chunking;
-import ucar.nc2.write.Nc4ChunkingStrategyImpl;
+import ucar.nc2.write.Nc4ChunkingStrategy;
 import ucar.nc2.jni.netcdf.Nc4Iosp;
 import ucar.nc2.stream.NcStreamWriter;
 import ucar.nc2.ui.dialog.CompareDialog;
@@ -90,7 +90,7 @@ public class DatasetWriter extends JPanel {
   private StructureTable dataTable;
   private IndependentWindow infoWindow, dataWindow, attWindow;
 
-  private Nc4Chunking chunker = Nc4ChunkingStrategyImpl.factory(Nc4Chunking.Strategy.standard, 0, false) ;
+  private Nc4Chunking chunker = Nc4ChunkingStrategy.factory(Nc4Chunking.Strategy.standard, 0, false) ;
 
   public DatasetWriter(PreferencesExt prefs, FileManager fileChooser) {
     this.prefs = prefs;
@@ -119,7 +119,7 @@ public class DatasetWriter extends JPanel {
     outputChooser.addEventListener(new ItemListener() {
       public void itemStateChanged(ItemEvent e) {
         Nc4Chunking.Strategy strategy = (Nc4Chunking.Strategy) e.getItem();
-        chunker = Nc4ChunkingStrategyImpl.factory(strategy, 0, false) ;
+        chunker = Nc4ChunkingStrategy.factory(strategy, 0, false) ;
         showChunking();
       }
     });
