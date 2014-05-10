@@ -343,7 +343,6 @@ public class NcssParamsBean {
 		else{
 			//DateType dtDate = new DateType(time, null, null, cal);
 			dr = new DateRange( new DateType(time, null, null, cal), new DateType(time, null, null, cal), new TimeDuration(time_duration), null );
-			
 		}
 
 		//return CalendarDateRange.of(dr );
@@ -370,10 +369,8 @@ public class NcssParamsBean {
 
   public boolean intersectsTime(FeatureDataset fd, Formatter errs) throws ParseException {
     CalendarDateRange have =  fd.getCalendarDateRange();
-    
-    Calendar dataCal = have.getStart().getCalendar();
-    
     if (have == null) return true;
+    Calendar dataCal = have.getStart().getCalendar(); // use the same calendar as the dataset
 
     CalendarDateRange want = getCalendarDateRange(dataCal);
     if (want != null) {

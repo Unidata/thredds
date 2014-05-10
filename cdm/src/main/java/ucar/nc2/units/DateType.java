@@ -41,6 +41,7 @@ import java.util.TimeZone;
 //import ucar.nc2.time.Calendar;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time.CalendarDateFormatter;
+import ucar.nc2.time.CalendarPeriod;
 
 /**
  * Implements the thredds "dateType" and "dateTypeFormatted" XML element types.
@@ -78,11 +79,21 @@ public class DateType {
    * Constructor using a java.util.Date
    *
    * @param isPresent if true, this represents the "present time"
-   * @param date      the given date
+   * @param date      the given Date
    */
   public DateType(boolean isPresent, java.util.Date date) {
     this.isPresent = isPresent;
     this.date = CalendarDate.of(date);
+  }
+
+  /**
+   * Constructor using a java.util.CalendarDate
+   *
+   * @param date the given CalendarDate
+   */
+  public DateType(CalendarDate date) {
+    this.isPresent = false;
+    this.date = date;
   }
 
   /**
@@ -162,12 +173,12 @@ public class DateType {
    * @param text   string representation
    * @param format using java.text.SimpleDateFormat, or null
    * @param type   type of date, or null
-   * @param cal   Calendar of date, or null
+   * @param cal2   ucar.nc2.time.Calendar of date, or null
    * @throws java.text.ParseException if error parsing text
    */
-  public DateType(String text, String format, String type, ucar.nc2.time.Calendar cal) throws java.text.ParseException {
+  public DateType(String text, String format, String type, ucar.nc2.time.Calendar cal2) throws java.text.ParseException {
 
-	if( cal == null) cal = ucar.nc2.time.Calendar.getDefault();
+	  if( cal2 == null) cal2 = ucar.nc2.time.Calendar.getDefault();
 	  
     text = (text == null) ? "" : text.trim();
     this.text = text;
@@ -191,21 +202,21 @@ public class DateType {
       SimpleDateFormat dateFormat = new java.text.SimpleDateFormat(format);    
       java.util.Calendar  c =  java.util.Calendar.getInstance();
       c.setTime(dateFormat.parse(text));      
-      date = CalendarDate.of(cal, c.getTimeInMillis());
+      date = CalendarDate.of(cal2, c.getTimeInMillis());
       
       return;
     }
 
     // see if its a udunits string
+    String calName = (cal2 == null) ? null : cal2.name();
     if (text.indexOf("since") > 0) {
-      date = CalendarDate.parseUdunits(cal.name(), text);
+      date = CalendarDate.parseUdunits(calName, text);
       if (date == null)
         throw new java.text.ParseException("invalid udunit date unit ="+text, 0);
       return;
     }
 
-    date = CalendarDate.parseISOformat(cal.name(), text);
-    
+    date = CalendarDate.parseISOformat(calName, text);
     if (date == null)
       throw new java.text.ParseException("invalid ISO date unit ="+text, 0);
   }
@@ -377,17 +388,15 @@ public class DateType {
     return oo.getDate().equals(getDate());
   }
 
-  private Calendar cal = null;
+  //private java.util.Calendar cal = null;
 
   public DateType add(TimeDuration d) {
     return add(d.getTimeUnit());
   }
 
   public DateType add(TimeUnit d) {
-    if (cal == null) cal = Calendar.getInstance();
-    cal.setTime(getDate());
-    cal.add(Calendar.SECOND, (int) d.getValueInSeconds());
-    return new DateType(false, (Date) cal.getTime().clone()); // prob dont need clone LOOK
+    CalendarDate result = date.add((int) d.getValueInSeconds(), CalendarPeriod.Field.Second);
+    return new DateType(result);
   }
 
   public DateType subtract(TimeDuration d) {
@@ -395,10 +404,8 @@ public class DateType {
   }
 
   public DateType subtract(TimeUnit d) {
-    if (cal == null) cal = Calendar.getInstance();
-    cal.setTime(getDate());
-    cal.add(Calendar.SECOND, (int) -d.getValueInSeconds());
-    return new DateType(false, (Date) cal.getTime().clone());
+    CalendarDate result = date.add((int) -d.getValueInSeconds(), CalendarPeriod.Field.Second);
+    return new DateType(result);
   }
 
   ////////////////////////////////////////////

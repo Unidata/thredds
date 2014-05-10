@@ -36,8 +36,8 @@ public class TestNc4Misc {
   @Test
   public void testUnlimitedDimension() throws IOException, InvalidRangeException {
 
-    // String location = TestLocal.temporaryDataDir + "testNc4UnlimitedDim.nc";
-    String location = "C:/temp/testNc4UnlimitedDim.nc";
+    String location = TestLocal.temporaryDataDir + "testNc4UnlimitedDim.nc";
+    // String location = "C:/temp/testNc4UnlimitedDim.nc";
     File f = new File(location);
     System.out.printf("%s%n", f.exists());
     boolean ok = f.delete();
@@ -76,8 +76,8 @@ public class TestNc4Misc {
   @Test
   public void testChunkStandard() throws IOException, InvalidRangeException {
     // define the file
-    //String filePathName = TestLocal.temporaryDataDir +"testSizeWriting2.nc4";
-    String location = "C:/temp/testSizeWriting.nc4";
+    String location = TestLocal.temporaryDataDir +"testSizeWriting2.nc4";
+    // String location = "C:/temp/testSizeWriting.nc4";
 
     NetcdfFileWriter dataFile = null;
 
@@ -148,8 +148,8 @@ public class TestNc4Misc {
   @Test
   public void testChunkFromAttribute() throws IOException, InvalidRangeException {
     // define the file
-    //String filePathName = TestLocal.temporaryDataDir +"testSizeWriting2.nc4";
-    String location = "C:/temp/testSizeWriting.nc4";
+    String location = TestLocal.temporaryDataDir +"testSizeWriting2.nc4";
+    // String location = "C:/temp/testSizeWriting.nc4";
 
     NetcdfFileWriter dataFile = null;
 
