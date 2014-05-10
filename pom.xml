@@ -926,7 +926,6 @@
     <module>ui</module>
     <module>tdcommon</module>
     <module>tds</module>
-    <module>tds/remotetest</module>
     <module>tdm</module>
     <module>wmotables</module>
     <module>cdmvalidator</module>
