@@ -73,7 +73,7 @@ public class DateType {
   /////////////////////////////////////////////////////
   private String text, format, type;
   private boolean isPresent, isBlank;
-  private CalendarDate date;
+  private final CalendarDate date;
 
   /**
    * Constructor using a java.util.Date
@@ -83,7 +83,7 @@ public class DateType {
    */
   public DateType(boolean isPresent, java.util.Date date) {
     this.isPresent = isPresent;
-    this.date = CalendarDate.of(date);
+    this.date = isPresent ? CalendarDate.present() : CalendarDate.of(date);
   }
 
   /**
@@ -101,6 +101,7 @@ public class DateType {
    */
   public DateType() {
     isBlank = true;
+    date = null;
   }
 
   /**
@@ -136,12 +137,14 @@ public class DateType {
     // see if its blank
     if (text.length() == 0) {
       isBlank = true;
+      date = null;
       return;
     }
 
     // see if its the string "present"
     isPresent = text.equalsIgnoreCase("present");
     if (isPresent) {
+      date = CalendarDate.present();
       return;
     }
 
@@ -188,12 +191,14 @@ public class DateType {
     // see if its blank
     if (text.length() == 0) {
       isBlank = true;
+      date = null;
       return;
     }
 
     // see if its the string "present"
     isPresent = text.equalsIgnoreCase("present");
     if (isPresent) {
+      date = CalendarDate.present();
       return;
     }
 
@@ -203,7 +208,6 @@ public class DateType {
       java.util.Calendar  c =  java.util.Calendar.getInstance();
       c.setTime(dateFormat.parse(text));      
       date = CalendarDate.of(cal2, c.getTimeInMillis());
-      
       return;
     }
 
