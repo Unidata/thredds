@@ -83,7 +83,7 @@ public class DateType {
    */
   public DateType(boolean isPresent, java.util.Date date) {
     this.isPresent = isPresent;
-    this.date = isPresent ? CalendarDate.present() : CalendarDate.of(date);
+    this.date = isPresent ? null : CalendarDate.of(date);
   }
 
   /**
@@ -144,7 +144,7 @@ public class DateType {
     // see if its the string "present"
     isPresent = text.equalsIgnoreCase("present");
     if (isPresent) {
-      date = CalendarDate.present();
+      this.date = null;
       return;
     }
 
@@ -198,7 +198,7 @@ public class DateType {
     // see if its the string "present"
     isPresent = text.equalsIgnoreCase("present");
     if (isPresent) {
-      date = CalendarDate.present();
+      date = null;
       return;
     }
 
@@ -365,7 +365,7 @@ public class DateType {
    * @return ISO formatted date
    */
   public String toDateTimeStringISO() {
-    return date.toString();
+    return toDateTimeString();
   }
 
   /**
@@ -399,7 +399,8 @@ public class DateType {
   }
 
   public DateType add(TimeUnit d) {
-    CalendarDate result = date.add((int) d.getValueInSeconds(), CalendarPeriod.Field.Second);
+    CalendarDate useDate = getCalendarDate();
+    CalendarDate result = useDate.add((int) d.getValueInSeconds(), CalendarPeriod.Field.Second);
     return new DateType(result);
   }
 
@@ -408,7 +409,8 @@ public class DateType {
   }
 
   public DateType subtract(TimeUnit d) {
-    CalendarDate result = date.add((int) -d.getValueInSeconds(), CalendarPeriod.Field.Second);
+    CalendarDate useDate = getCalendarDate();
+    CalendarDate result = useDate.add((int) -d.getValueInSeconds(), CalendarPeriod.Field.Second);
     return new DateType(result);
   }
 

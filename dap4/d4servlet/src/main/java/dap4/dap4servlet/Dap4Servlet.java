@@ -83,8 +83,8 @@ public class Dap4Servlet extends javax.servlet.http.HttpServlet
         try {
             svcinfo = new ServletInfo(this);
         } catch (Exception ioe) {
-          ioe.printStackTrace();
-          //   throw new ServletException(ioe);  LOOK fix this
+          // ioe.printStackTrace();
+          throw new ServletException(ioe);
         }
         try {
             System.setProperty("file.encoding", "UTF-8");
