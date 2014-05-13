@@ -33,6 +33,7 @@
 package ucar.ma2;
 
 import java.io.IOException;
+import java.util.Iterator;
 
 /**
  * An iterator over StructureData.

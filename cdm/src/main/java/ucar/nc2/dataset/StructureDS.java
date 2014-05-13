@@ -287,7 +287,7 @@ public class StructureDS extends ucar.nc2.Structure implements VariableEnhanced 
     return false;
   }
 
-  // posibile things needed:
+  // possible things needed:
   //   1) scale/offset/enum conversion
   //   2) name, info change
   //   3) variable with cached data added to StructureDS through NcML

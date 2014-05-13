@@ -275,7 +275,7 @@ public class
 
     // nested-2 tab - grib
     gribTabPane.addTab("GribIndex", new JLabel("GribIndex"));
-    gribTabPane.addTab("CdmIndex", new JLabel("CdmIndex"));
+    //gribTabPane.addTab("CdmIndex", new JLabel("CdmIndex"));
     gribTabPane.addTab("CdmIndex2", new JLabel("CdmIndex2"));
     gribTabPane.addTab("WMO-COMMON", new JLabel("WMO-COMMON"));
     gribTabPane.addTab("WMO-CODES", new JLabel("WMO-CODES"));

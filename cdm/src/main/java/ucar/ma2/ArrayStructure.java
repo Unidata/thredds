@@ -36,6 +36,7 @@ import ucar.nc2.util.Indent;
 
 import java.io.IOException;
 import java.util.Formatter;
+import java.util.Iterator;
 import java.util.List;
 import java.nio.ByteBuffer;
 

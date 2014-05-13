@@ -493,6 +493,10 @@ public class NetcdfFileWriter {
    * @return the Variable that has been added
    */
   public Variable addVariable(Group g, String shortName, DataType dataType, List<Dimension> dims) {
+    return addVariable(g, null, shortName, dataType, dims);
+  }
+
+  public Variable addVariable(Group g, Structure parent, String shortName, DataType dataType, List<Dimension> dims) {
     if (!defineMode)
       throw new UnsupportedOperationException("not in define mode");
 
@@ -509,16 +513,8 @@ public class NetcdfFileWriter {
       }
     }
 
-    Variable v = null;
-    if (dataType == DataType.STRUCTURE) {
-      Structure s = new Structure(ncfile, g, null, shortName);
-      //for (Variable m : )
-      v = s;
-    }  else {
-      v = new Variable(ncfile, g, null, shortName);
-      v.setDataType(dataType);
-    }
-
+    Variable v = new Variable(ncfile, g, parent, shortName);
+    v.setDataType(dataType);
     v.setDimensions(dims);
 
     long size = v.getSize() * v.getElementSize();
@@ -527,6 +523,27 @@ public class NetcdfFileWriter {
 
     ncfile.addVariable(g, v);
     return v;
+  }
+
+  public Structure addStructure(Group g, String shortName, Structure org, List<Dimension> dims) {
+    if (!defineMode)
+      throw new UnsupportedOperationException("not in define mode");
+
+    shortName = makeValidObjectName(shortName);
+    if (version != Version.netcdf4)
+      throw new IllegalArgumentException("Structure type only supported in netcdf-4");
+
+    Structure s = new Structure(ncfile, g, org.getParentStructure(), shortName);
+    s.setDimensions(dims);
+    for (Variable m : org.getVariables()) {  // LOOK no nested structs
+      Variable nest = new Variable(ncfile, g, s, m.getShortName());
+      nest.setDataType(m.getDataType());
+      nest.setDimensions(m.getDimensions());
+      s.addMemberVariable(nest);
+    }
+
+    ncfile.addVariable(g, s);
+    return s;
   }
 
   /**

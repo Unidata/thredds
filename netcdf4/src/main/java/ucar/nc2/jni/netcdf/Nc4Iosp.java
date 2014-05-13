@@ -192,8 +192,8 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
   private int ncid = -1;    // file id
   private int format = 0;       // nc4 or nc3
   private boolean isClosed = false;
-  private Map<Integer, UserType> userTypes = new HashMap<Integer, UserType>();  // hash by typeid
-  private Map<Group, Integer> groupHash = new HashMap<Group, Integer>();  // group, nc4 grpid
+  private Map<Integer, UserType> userTypes = new HashMap<>();  // hash by typeid
+  private Map<Group, Integer> groupHash = new HashMap<>();     // group -> nc4 grpid
   private Nc4Chunking chunker = new Nc4ChunkingDefault();
   private boolean isEos = false;
 
@@ -1100,8 +1100,12 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
 
     void addField(Field fld) {
       if (flds == null)
-        flds = new ArrayList<Field>(10);
+        flds = new ArrayList<>(10);
       flds.add(fld);
+    }
+
+    void setFields(List<Field> flds) {
+      this.flds = flds;
     }
 
     public String toString2() {
@@ -1125,8 +1129,7 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
       return sb.toString();
     }
 
-    void readFields()
-            throws IOException {
+    void readFields() throws IOException {
       for (int fldidx = 0; fldidx < nfields; fldidx++) {
         byte[] fldname = new byte[Nc4prototypes.NC_MAX_NAME + 1];
         IntByReference field_typeidp = new IntByReference();
@@ -1252,8 +1255,7 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
     }
   }
 
-  private void makeUserTypes(int grpid, Group g)
-          throws IOException {
+  private void makeUserTypes(int grpid, Group g) throws IOException {
     // find user types in this group
     IntByReference ntypesp = new IntByReference();
     int ret = nc4.nc_inq_typeids(grpid, ntypesp, Pointer.NULL);
@@ -2215,11 +2217,14 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
       vinfo = new Vinfo(grpid, -1, typid);
     }
 
+    if (debugWrite) System.out.printf("adding variable %s (typeid %d) %n", v.getShortName(), typid);
     IntByReference varidp = new IntByReference();
     int ret = nc4.nc_def_var(grpid, v.getShortName(), typid, dimids.length, dimids, varidp);
     if (ret != 0)
-      throw new IOException(nc4.nc_strerror(ret) + " on\n" + v);
+      throw new IOException("ret="+ret+" err='"+nc4.nc_strerror(ret) + "' on\n" + v);
     int varid = varidp.getValue();
+    vinfo.varid = varid;
+    if (debugWrite) System.out.printf("added variable %s (grpid %d varid %d) %n", v.getShortName(), vinfo.grpid, vinfo.varid);
 
     if (version == NetcdfFileWriter.Version.netcdf4) {
       //   int nc_def_var_chunking(int ncid, int varid, int storage, long[] chunksizesp); // const size_t *   ??
@@ -2242,7 +2247,6 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
       }
     }
 
-    vinfo.varid = varid;
     v.setSPobject(vinfo);
 
     for (Attribute att : v.getAttributes())
@@ -2273,23 +2277,43 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
   Call nc_insert_compound once for each field you wish to insert into the compound type.
    */
   private void createCompoundType(Structure s) throws IOException {
+    int grpid = ncid; // LOOK ??
     IntByReference typeidp = new IntByReference();
     long size = s.getElementSize();
-    int ret =  nc4.nc_def_compound(ncid, size, s.getShortName(), typeidp);
+    String name =  s.getShortName() + "_t";
+    int ret =  nc4.nc_def_compound(grpid, size, name, typeidp);
     if (ret != 0)
       throw new IOException(nc4.nc_strerror(ret) + " on\n" + s);
+    int typeid = typeidp.getValue();
+    if (debugWrite) System.out.printf("added compound type %s (typeid %d) %n", name, typeid);
 
+    List<Field> flds = new ArrayList<>();
+    int fldidx = 0;
     long offset = 0;
     for (Variable v : s.getVariables()) {
       int field_typeid = convertDataType(v.getDataType());
-      ret =  nc4.nc_insert_compound(ncid, typeidp.getValue(), v.getShortName(), offset, field_typeid);
+      ret =  nc4.nc_insert_compound(ncid, typeid, v.getShortName(), offset, field_typeid);
       if (ret != 0)
        throw new IOException(nc4.nc_strerror(ret) + " on\n" + s);
+      if (debugWrite) System.out.printf(" added compound type member %s%n", v.getShortName());
+
+      int ndims = v.getRank();
+      int[] dims = new int[ndims];
+      for (int i=0; i<ndims; i++) dims[i] = v.getDimension(i).getLength();
+
+      Field fld = new Field(grpid, typeid, fldidx, v.getShortName(), (int) offset, field_typeid, ndims, dims);
+      flds.add(fld);
 
       offset += v.getElementSize() * v.getSize();
+      fldidx++;
     }
 
     s.setSPobject(new Vinfo(-1, -1, typeidp.getValue()));
+
+    // keep track of the User Defined types
+    UserType ut = new UserType(grpid, typeid, name, size, 0, (long) fldidx, NC_COMPOUND);
+    userTypes.put(typeid, ut);
+    ut.setFields(flds);
   }
 
   //////////////////////////////////////////////
@@ -2427,9 +2451,9 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
         valb = IospHelper.convertCharToByte(valc);
         ret = nc4.nc_put_vars_text(grpid, varid, origin, shape, stride, valb);
         if (ret != 0) {
-          log.error("{} on var {}", nc4.nc_strerror(ret), v);
-          return;
-          //throw new IOException(nc4.nc_strerror(ret));
+          //log.error("{} on var {}", nc4.nc_strerror(ret), v);
+          //return;
+          throw new IOException(nc4.nc_strerror(ret));
         }
         break;
 
@@ -2446,9 +2470,9 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
         assert valf.length == sectionLen;
         ret = nc4.nc_put_vars_float(grpid, varid, origin, shape, stride, valf);
         if (ret != 0) {
-          log.error("{} on var {}", nc4.nc_strerror(ret), v);
-          return;
-          //throw new IOException(nc4.nc_strerror(ret));
+          //log.error("{} on var {}", nc4.nc_strerror(ret), v);
+          //return;
+          throw new IOException(nc4.nc_strerror(ret));
         }
         break;
 
@@ -2458,9 +2482,9 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
         ret = isUnsigned ? nc4.nc_put_vars_uint(grpid, varid, origin, shape, stride, vali) :
                 nc4.nc_put_vars_int(grpid, varid, origin, shape, stride, vali);
         if (ret != 0) {
-          log.error("{} on var {}", nc4.nc_strerror(ret), v);
-          return;
-          //throw new IOException(nc4.nc_strerror(ret));
+          //log.error("{} on var {}", nc4.nc_strerror(ret), v);
+          //return;
+          throw new IOException(nc4.nc_strerror(ret));
         }
         break;
 
@@ -2505,14 +2529,59 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
           //return readOpaque(grpid, varid, section, userType.size);
 
         } else if (userType.typeClass == Nc4prototypes.NC_COMPOUND) {
-          //return readCompound(grpid, varid, section, userType);
+          writeCompoundData((Structure) v, userType, grpid, varid, typeid, section, (ArrayStructure) values);
         }
 
-        throw new IOException("Unsupported userType = " + typeid + " userType= " + userType);
+        throw new IOException("Unsupported writing of userType= " + userType);
     }
-    // System.out.printf("OK var %s%n", v);
+    if (debugWrite) System.out.printf("OK writing var %s%n", v);
 
   }
+
+  /*
+  Here is an example of using nc_put_vars_float to write – from an internal array – every other point of a netCDF variable named rh which is described by the C declaration float rh[4][6] (note the size of the dimensions):
+
+       #include <netcdf.h>
+          ...
+       #define NDIM 2                /* rank of netCDF variable
+       int ncid;                     /* netCDF ID
+       int status;                   /* error status *
+       int rhid;                     /* variable ID *
+       static size_t start[NDIM]     /* netCDF variable start point: *
+                        = {0, 0};    /* first element *
+       static size_t count[NDIM]     /* size of internal array: entire *
+                          = {2, 3};  /* (subsampled) netCDF variable *
+       static ptrdiff_t stride[NDIM] /* variable subsampling intervals: *
+                        = {2, 2};    /* access every other netCDF element *
+       float rh[2][3];               /* note subsampled sizes for netCDF variable dimensions  LOOK [][] not [,]
+          ...
+       status = nc_open("foo.nc", NC_WRITE, &ncid);
+       if (status != NC_NOERR) handle_error(status);
+          ...
+       status = nc_inq_varid(ncid, "rh", &rhid);
+       if (status != NC_NOERR) handle_error(status);
+          ...
+       status = nc_put_vars_float(ncid, rhid, start, count, stride, rh);
+       if (status != NC_NOERR) handle_error(status);
+   */
+   private void writeCompoundData(Structure s, UserType userType, int grpid, int varid, int typeid, Section section, ArrayStructure values) throws IOException, InvalidRangeException {
+
+    long[] origin = convert(section.getOrigin());
+    long[] shape = convert(section.getShape());
+    long[] stride = convert(section.getStride());
+
+    ArrayStructureBB valuesBB = IospHelper.makeArrayBB(values);
+    ByteBuffer bbuff = valuesBB.getByteBuffer();  // LOOK c library reads in native order, so need to convert??
+                                                  // LOOK embedded strings getting lost ??
+
+     if (debugWrite) System.out.printf("writing variable %s (grpid %d varid %d) %n", s.getShortName(), grpid, varid);
+
+    // write the data
+    int ret = nc4.nc_put_vars(grpid, varid, origin, shape, stride, bbuff);
+    if (ret != 0)
+      throw new IOException(ret + ": " + nc4.nc_strerror(ret));
+  }
+
 
   private void writeDataAll(Variable v, int grpid, int varid, int typeid, Array values) throws IOException, InvalidRangeException {
 
