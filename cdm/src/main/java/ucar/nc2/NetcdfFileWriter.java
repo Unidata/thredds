@@ -511,7 +511,9 @@ public class NetcdfFileWriter {
 
     Variable v = null;
     if (dataType == DataType.STRUCTURE) {
-      v = new Structure(ncfile, g, null, shortName);
+      Structure s = new Structure(ncfile, g, null, shortName);
+      //for (Variable m : )
+      v = s;
     }  else {
       v = new Variable(ncfile, g, null, shortName);
       v.setDataType(dataType);

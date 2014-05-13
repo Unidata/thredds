@@ -35,7 +35,7 @@ public class TestNcmlWriteAndCompare {
 
   @Before
   public void setLibrary() {
-    Nc4Iosp.setLibraryAndPath("/opt/netcdf", "netcdf");
+    Nc4Iosp.setLibraryAndPath("/opt/netcdf/lib", "netcdf");
     //Nc4Iosp.setLibraryAndPath("C:/cdev/lib", "netcdf");
     System.out.printf("Nc4Iosp.isClibraryPresent = %s%n", Nc4Iosp.isClibraryPresent());
 

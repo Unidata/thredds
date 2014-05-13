@@ -29,7 +29,7 @@ public class TestNc4Misc {
 
   @Before
   public void setLibrary() {
-    Nc4Iosp.setLibraryAndPath("/opt/netcdf", "netcdf");
+    Nc4Iosp.setLibraryAndPath("/opt/netcdf/lib", "netcdf");
     System.out.printf("Nc4Iosp.isClibraryPresent = %s%n", Nc4Iosp.isClibraryPresent());
   }
 
