@@ -5,6 +5,7 @@ import thredds.inventory.MFile;
 import ucar.coord.*;
 import ucar.nc2.ft.fmrc.FmrInv;
 import ucar.nc2.grib.collection.*;
+import ucar.nc2.grib.grib2.table.Grib2Customizer;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.util.Indent;
 import ucar.nc2.ui.widget.BAMutil;
@@ -454,7 +455,7 @@ public class CdmIndex2Panel extends JPanel {
 
   private void compareFiles(Formatter f) throws IOException {
     if (gc == null) return;
-    List<String> canon = new ArrayList<String>(gc.getFilenames());
+    List<String> canon = new ArrayList<>(gc.getFilenames());
     Collections.sort(canon);
 
     File idxFile = new File(gc.getIndexFilepathInCache());
@@ -468,7 +469,7 @@ public class CdmIndex2Panel extends JPanel {
     int total = 0;
     for (File file : files) {
       RandomAccessFile raf = new RandomAccessFile(file.getPath(), "r");
-      GribCollection cgc = Grib2CollectionBuilderFromIndex.readFromIndex(file.getName(), raf, null, logger);
+      GribCollection cgc = Grib2CollectionBuilderFromIndex.readFromIndex(file.getName(), raf, null, false, logger);
       List<String> cfiles = new ArrayList<String>(cgc.getFilenames());
       Collections.sort(cfiles);
       f.format("Compare files in %s to canonical files in %s%n", file.getPath(), idxFile.getPath());
@@ -523,7 +524,7 @@ public class CdmIndex2Panel extends JPanel {
     if (gc != null) gc.close();
 
     this.config = config;
-    gc = GribCdmIndex.openCdmIndex(indexFile.toString(), config, logger);
+    gc = GribCdmIndex.openCdmIndex(indexFile.toString(), config, false, logger);
     if (gc == null)
       throw new IOException("Not a grib collection index file");
 
@@ -749,13 +750,15 @@ public class CdmIndex2Panel extends JPanel {
   public class VarBean {
     GribCollection.VariableIndex v;
     GribCollection.GroupGC group;
+    String name;
 
     public VarBean() {
     }
 
-    public VarBean(GribCollection.VariableIndex v, GribCollection.GroupGC group) {
-      this.v = v;
+    public VarBean(GribCollection.VariableIndex vindex, GribCollection.GroupGC group) {
+      this.v = vindex;
       this.group = group;
+      this.name =  gc.makeVariableName(vindex);
     }
 
     public int getNRecords() {
@@ -794,6 +797,10 @@ public class CdmIndex2Panel extends JPanel {
 
     public String getVariableId() {
       return v.discipline + "-" + v.category + "-" + v.parameter;
+    }
+
+    public String getName() {
+      return name;
     }
 
     public void makeGribConfig(Formatter f) {

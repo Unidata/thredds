@@ -237,7 +237,7 @@ public class DiskCache2 {
     }
 
     if (neverUseCache) {
-      throw new IllegalStateException("neverUseCache=true, but directory is not writeable ="+fileLocation);
+      throw new IllegalStateException("neverUseCache=true, but file does not exist and directory is not writeable ="+fileLocation);
     }
 
     File f = new File(makeCachePath(fileLocation));
@@ -255,6 +255,21 @@ public class DiskCache2 {
   private static boolean canWrite(File f) {
     Path p = f.getParentFile().toPath(); // see if we can parent directory exists and is writeable
     return Files.isWritable(p);
+  }
+
+  /**
+   * Looking for an existing file, in cache or no
+   * @param fileLocation the original name
+   * @return existing file if you can find it
+   */
+  public File getExistingFileOrCache(String fileLocation) {
+    File f = new File(fileLocation);
+    if (f.exists()) return f;
+
+    File fc = new File(makeCachePath(fileLocation));
+    if (fc.exists()) return fc;
+
+    return null;
   }
 
   /**

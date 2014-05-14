@@ -68,6 +68,8 @@ import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time.CalendarDateUnit;
 import ucar.nc2.ui.coverage.CoverageDisplay;
 import ucar.nc2.ui.coverage.CoverageTable;
+import ucar.nc2.ui.dialog.DiskCache2Form;
+import ucar.nc2.ui.dialog.NetcdfOutputChooser;
 import ucar.nc2.ui.gis.shapefile.ShapeFileBean;
 import ucar.nc2.ui.gis.worldmap.WorldMapBean;
 import ucar.nc2.ui.grid.GeoGridTable;
@@ -830,22 +832,24 @@ public class
     JMenu ncMenu = new JMenu("NetcdfFile");
     modeMenu.add(ncMenu);
 
+     /////////////////////////////////////
     a = new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
         Boolean state = (Boolean) getValue(BAMutil.STATE);
-        setUseRecordStructure = state.booleanValue();
+        setUseRecordStructure = state;
       }
     };
     BAMutil.setActionPropertiesToggle(a, null, "nc3UseRecords", setUseRecordStructure, 'V', -1);
     BAMutil.addActionToMenu(ncMenu, a);
 
+     /////////////////////////////////////
     JMenu dsMenu = new JMenu("NetcdfDataset");
     modeMenu.add(dsMenu);
 
     a = new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
         Boolean state = (Boolean) getValue(BAMutil.STATE);
-        CoordSysBuilder.setUseMaximalCoordSys(state.booleanValue());
+        CoordSysBuilder.setUseMaximalCoordSys(state);
       }
     };
     BAMutil.setActionPropertiesToggle(a, null, "set Use Maximal CoordSystem", CoordSysBuilder.getUseMaximalCoordSys(), 'N', -1);
@@ -854,7 +858,7 @@ public class
     a = new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
         Boolean state = (Boolean) getValue(BAMutil.STATE);
-        NetcdfDataset.setUseNaNs(state.booleanValue());
+        NetcdfDataset.setUseNaNs(state);
       }
     };
     BAMutil.setActionPropertiesToggle(a, null, "set NaNs for missing values", NetcdfDataset.getUseNaNs(), 'N', -1);
@@ -863,7 +867,7 @@ public class
     a = new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
         Boolean state = (Boolean) getValue(BAMutil.STATE);
-        NetcdfDataset.setFillValueIsMissing(state.booleanValue());
+        NetcdfDataset.setFillValueIsMissing(state);
       }
     };
     BAMutil.setActionPropertiesToggle(a, null, "use _FillValue attribute for missing values",
@@ -873,7 +877,7 @@ public class
     a = new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
         Boolean state = (Boolean) getValue(BAMutil.STATE);
-        NetcdfDataset.setInvalidDataIsMissing(state.booleanValue());
+        NetcdfDataset.setInvalidDataIsMissing(state);
       }
     };
     BAMutil.setActionPropertiesToggle(a, null, "use valid_range attribute for missing values",
@@ -883,15 +887,24 @@ public class
     a = new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
         Boolean state = (Boolean) getValue(BAMutil.STATE);
-        NetcdfDataset.setMissingDataIsMissing(state.booleanValue());
+        NetcdfDataset.setMissingDataIsMissing(state);
       }
     };
     BAMutil.setActionPropertiesToggle(a, null, "use missing_value attribute for missing values",
             NetcdfDataset.getMissingDataIsMissing(), 'M', -1);
     BAMutil.addActionToMenu(dsMenu, a);
 
-    ncMenu = new JMenu("GRIB-1");
-    modeMenu.add(ncMenu);
+    /////////////////////////////////////
+    JMenu subMenu = new JMenu("GRIB");
+    modeMenu.add(subMenu);
+    a = new AbstractAction() {
+      public void actionPerformed(ActionEvent e) {
+        setGribDiskCache();
+      }
+    };
+    BAMutil.setActionProperties(a, null, "set Grib disk cache...", false, 'G', -1);
+    BAMutil.addActionToMenu(subMenu, a);
+
     a = new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
         Boolean state = (Boolean) getValue(BAMutil.STATE);
@@ -900,11 +913,12 @@ public class
     };
     boolean strictMode = Grib1ParamTables.isStrict();
     a.putValue(BAMutil.STATE, strictMode);
-    BAMutil.setActionPropertiesToggle(a, null, "strict", strictMode, 'S', -1);
-    BAMutil.addActionToMenu(ncMenu, a);
+    BAMutil.setActionPropertiesToggle(a, null, "GRIB1 strict", strictMode, 'S', -1);
+    BAMutil.addActionToMenu(subMenu, a);
 
-    ncMenu = new JMenu("FMRC");
-    modeMenu.add(ncMenu);
+    /////////////////////////////////////
+    subMenu = new JMenu("FMRC");
+    modeMenu.add(subMenu);
 
     a = new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
@@ -916,7 +930,7 @@ public class
     FeatureCollectionConfig.setRegularizeDefault(true);
     a.putValue(BAMutil.STATE, true);
     BAMutil.setActionPropertiesToggle(a, null, "regularize", true, 'R', -1);
-    BAMutil.addActionToMenu(ncMenu, a);
+    BAMutil.addActionToMenu(subMenu, a);
 
     a = new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
@@ -928,7 +942,15 @@ public class
     ThreddsDataFactory.setPreferCdm(true);
     a.putValue(BAMutil.STATE, true);
     BAMutil.setActionPropertiesToggle(a, null, "preferCdm", true, 'P', -1);
-    BAMutil.addActionToMenu(ncMenu, a);
+    BAMutil.addActionToMenu(subMenu, a);
+  }
+
+  DiskCache2Form diskCache2Form = null;
+  private void setGribDiskCache() {
+    if (diskCache2Form == null) {
+      diskCache2Form = new DiskCache2Form(parentFrame, GribCollection.getDiskCache2());
+    }
+    diskCache2Form.setVisible(true);
   }
 
   public void save() {
@@ -2984,7 +3006,7 @@ public class
         JOptionPane.showMessageDialog(null, "GribCdmIndexPanel cant open " + command + "\n" + ioe.getMessage());
         err = true;
 
-      } catch (Exception e) {
+      } catch (Throwable e) {
         e.printStackTrace();
         e.printStackTrace(new PrintStream(bos));
         detailTA.setText(bos.toString());
@@ -5283,7 +5305,7 @@ public class
     DirectoryPartitionViewer table;
 
     DirectoryPartitionPanel(PreferencesExt dbPrefs) {
-      super(dbPrefs, "collection:", true, false);
+      super(dbPrefs, "collection:", false, false);
       table = new DirectoryPartitionViewer(prefs, buttPanel);
       add(table, BorderLayout.CENTER);
 
@@ -5295,7 +5317,6 @@ public class
         }
         }
       });
-
     }
 
     boolean process(Object o) {
@@ -5303,7 +5324,7 @@ public class
       if (command == null) return false;
 
       try {
-        table.setCollection(command);
+        //table.setCollectionFromConfig(command);
         return true;
 
       } catch (Exception ioe) {
@@ -6155,6 +6176,17 @@ public class
         });
       }
     }
+
+    if (debugListen) {
+      System.out.println("Arguments:");
+      for (int i = 0; i < args.length; i++) {
+        String arg = args[i];
+        System.out.println(" " + arg);
+      }
+
+        HTTPSession.debugHeaders(true);
+    }
+
     ////////////////////////////////////////////////////////////////////////////////////////////////
 
     // spring initialization
@@ -6195,7 +6227,7 @@ public class
       }
     }
 
-    // prefs storage
+        // prefs storage
     try {
       // 4.4
       String prefStore = XMLStore.makeStandardFilename(".unidata", "ToolsUI.xml");
@@ -6218,23 +6250,69 @@ public class
       System.out.println("XMLStore Creation failed " + e);
     }
 
-    // misc initializations
-    BAMutil.setResourcePath("/resources/nj22/ui/icons/");
+    // LOOK needed? for efficiency, persist aggregations. every hour, delete stuff older than 30 days
+    Aggregation.setPersistenceCache(new DiskCache2("/.unidata/aggCache", true, 60 * 24 * 30, 60));
 
-    // filesystem caching
-    DiskCache2 cacheDir = new DiskCache2(".unidata/ehcache", true, -1, -1);
+        // filesystem caching
+    // DiskCache2 cacheDir = new DiskCache2(".unidata/ehcache", true, -1, -1);
     //cacheManager = thredds.filesystem.ControllerCaching.makeTestController(cacheDir.getRootDirectory());
     //DatasetCollectionMFiles.setController(cacheManager); // ehcache for files
 
-    try {
+    /* try {
       //thredds.inventory.bdb.MetadataManager.setCacheDirectory(fcCache, maxSizeBytes, jvmPercent);
       //thredds.inventory.CollectionManagerAbstract.setMetadataStore(thredds.inventory.bdb.MetadataManager.getFactory());
     } catch (Exception e) {
       log.error("CdmInit: Failed to open CollectionManagerAbstract.setMetadataStore", e);
+    } */
+
+    UrlAuthenticatorDialog provider = new UrlAuthenticatorDialog(frame);
+    HTTPSession.setGlobalCredentialsProvider(provider);
+    HTTPSession.setGlobalUserAgent("ToolsUI v4.5");
+
+    // set Authentication for accessing passsword protected services like TDS PUT
+    java.net.Authenticator.setDefault(provider);
+
+    // open dap initializations
+    ucar.nc2.dods.DODSNetcdfFile.setAllowCompression(true);
+    ucar.nc2.dods.DODSNetcdfFile.setAllowSessions(true);
+
+    GribCollection.initDataRafCache(100, 200, -1);
+
+    /* No longer needed
+    HttpClient client = HttpClientManager.init(provider, "ToolsUI");
+    opendap.dap.DConnect2.setHttpClient(client);
+    HTTPRandomAccessFile.setHttpClient(client);
+    CdmRemote.setHttpClient(client);
+    NetcdfDataset.setHttpClient(client);
+    WmsViewer.setHttpClient(client);
+    */
+
+    SwingUtilities.invokeLater(new Runnable() {
+       public void run() {
+         createGui();
+       }
+     });
+  }
+
+  // run this on the event thread
+  private static void createGui() {
+    try {
+      // Switch to Nimbus Look and Feel, if it's available.
+      for (UIManager.LookAndFeelInfo info : UIManager.getInstalledLookAndFeels()) {
+        if ("Nimbus".equals(info.getName())) {
+          UIManager.setLookAndFeel(info.getClassName());
+          break;
+        }
+      }
+    } catch (Exception e) {  // TODO: In Java 7, replace this with multi-catch of specific exceptions.
+      log.warn("Found Nimbus Look and Feel, but couldn't install it.", e);
     }
 
-    // for efficiency, persist aggregations. every hour, delete stuff older than 30 days
-    Aggregation.setPersistenceCache(new DiskCache2("/.unidata/aggCache", true, 60 * 24 * 30, 60));
+    // get a splash screen up right away
+    final SplashScreen splash = new SplashScreen();
+
+    // misc initializations
+    BAMutil.setResourcePath("/resources/nj22/ui/icons/");
 
     // test
     // java.util.logging.Logger.getLogger("ucar.nc2").setLevel( java.util.logging.Level.SEVERE);
@@ -6263,29 +6341,6 @@ public class
     frame.pack();
     frame.setBounds(bounds);
     frame.setVisible(true);
-
-    UrlAuthenticatorDialog provider = new UrlAuthenticatorDialog(frame);
-    HTTPSession.setGlobalCredentialsProvider(provider);
-    HTTPSession.setGlobalUserAgent("ToolsUI v4.5");
-
-    // set Authentication for accessing passsword protected services like TDS PUT
-    java.net.Authenticator.setDefault(provider);
-
-    // open dap initializations
-    ucar.nc2.dods.DODSNetcdfFile.setAllowCompression(true);
-    ucar.nc2.dods.DODSNetcdfFile.setAllowSessions(true);
-
-    GribCollection.initDataRafCache(100, 200, -1);
-
-
-    /* No longer needed
-    HttpClient client = HttpClientManager.init(provider, "ToolsUI");
-    opendap.dap.DConnect2.setHttpClient(client);
-    HTTPRandomAccessFile.setHttpClient(client);
-    CdmRemote.setHttpClient(client);
-    NetcdfDataset.setHttpClient(client);
-    WmsViewer.setHttpClient(client);
-    */
 
     // in case a dataset was on the command line
     if (wantDataset != null)

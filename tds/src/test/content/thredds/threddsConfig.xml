@@ -132,5 +132,8 @@
     <maxSize>1 Gb</maxSize>
   </DiskCache>
 
+  <GribIndex>
+    <neverUse>true</neverUse>
+  </GribIndex>
 
 </threddsConfig>

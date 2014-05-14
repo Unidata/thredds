@@ -81,6 +81,7 @@ public class CoordinateTimeIntv extends CoordinateTimeAbstract implements Coordi
    * @param cal  optional calendar, may be null
    * @return  calendar date range
    */
+  @Override
   public CalendarDateRange makeCalendarDateRange(ucar.nc2.time.Calendar cal) {
     CalendarDateUnit cdu = CalendarDateUnit.of(cal, timeUnit.getField(), refDate);
     CalendarDate start = cdu.makeCalendarDate(timeIntervals.get(0).getBounds2());

@@ -21,6 +21,8 @@ import java.util.*;
  * @since 12/10/13
  */
 public class CoordinateUnionizer<T> {
+  static private org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(CoordinateUnionizer.class);
+
   FeatureCollectionConfig.GribIntvFilter intvFilter;
   int varId;
 
@@ -44,7 +46,8 @@ public class CoordinateUnionizer<T> {
     for (Coordinate coord : coords) {
       switch (coord.getType()) {
         case runtime:
-          if (runtimeBuilder == null) runtimeBuilder = new CoordinateRuntime.Builder2();
+          CoordinateRuntime rtime = (CoordinateRuntime) coord;
+          if (runtimeBuilder == null) runtimeBuilder = new CoordinateRuntime.Builder2(rtime.getTimeUnits());
           runtimeBuilder.addAll(coord);
           runtime = coord;
           break;
@@ -66,7 +69,7 @@ public class CoordinateUnionizer<T> {
           // debug
           CoordinateRuntime runtimeFrom2D = time2D.getRuntimeCoordinate();
           if (!runtimeFrom2D.equals(runtime))
-            System.out.println("HEY");
+            logger.warn("HEY CoordinateUnionizer runtimes not equal");
           break;
         case vert:
           if (vertBuilder == null) vertBuilder = new CoordinateVert.Builder2(coord.getCode());
@@ -90,43 +93,11 @@ public class CoordinateUnionizer<T> {
     return result;
   }
 
-      /* true means remove
-  private boolean filterOut(Grib2Record gr, FeatureCollectionConfig.GribIntvFilter intvFilter) {
-    int[] intv = tables.getForecastTimeIntervalOffset(gr);
-    if (intv == null) return false;
-    int haveLength = intv[1] - intv[0];
-
-    // HACK
-    if (haveLength == 0 && intvFilter.isZeroExcluded()) {  // discard 0,0
-      if ((intv[0] == 0) && (intv[1] == 0)) {
-        //f.format(" FILTER INTV [0, 0] %s%n", gr);
-        return true;
-      }
-      return false;
-
-    } else if (intvFilter.hasFilter()) {
-      int discipline = gr.getIs().getDiscipline();
-      Grib2Pds pds = gr.getPDS();
-      int category = pds.getParameterCategory();
-      int number = pds.getParameterNumber();
-      int id = (discipline << 16) + (category << 8) + number;
-
-      int prob = Integer.MIN_VALUE;
-      if (pds.isProbability()) {
-        Grib2Pds.PdsProbability pdsProb = (Grib2Pds.PdsProbability) pds;
-        prob = (int) (1000 * pdsProb.getProbabilityUpperLimit());
-      }
-      return intvFilter.filterOut(id, haveLength, prob);
-    }
-    return false;
-  }  */
-
-
-  public List<Coordinate> finish() {
+   public List<Coordinate> finish() {
     if (runtimeBuilder != null)
       unionCoords.add(runtimeBuilder.finish());
     else
-      System.out.println("HEY missing runtime");
+      logger.warn("HEY CoordinateUnionizer missing runtime");
 
     if (timeBuilder != null)
       unionCoords.add(timeBuilder.finish());
@@ -135,7 +106,7 @@ public class CoordinateUnionizer<T> {
     else if (time2DBuilder != null)
       unionCoords.add(time2DBuilder.finish());
     else
-      System.out.println("HEY missing time");
+      logger.warn("HEY CoordinateUnionizer missing time");
 
     if (vertBuilder != null)
       unionCoords.add(vertBuilder.finish());
@@ -198,13 +169,13 @@ public class CoordinateUnionizer<T> {
 
       CoordinateTimeAbstract maxCoord = testOrthogonal(timeMap.values());
       if (maxCoord != null)
-        return new CoordinateTime2D(code, timeUnit, new CoordinateRuntime(runtimes), maxCoord, times);
+        return new CoordinateTime2D(code, timeUnit, new CoordinateRuntime(runtimes, timeUnit), maxCoord, times);
 
       List<Coordinate> regCoords = testIsRegular();
       if (regCoords != null)
-        return new CoordinateTime2D(code, timeUnit, new CoordinateRuntime(runtimes), regCoords, times);
+        return new CoordinateTime2D(code, timeUnit, new CoordinateRuntime(runtimes, timeUnit), regCoords, times);
 
-      return new CoordinateTime2D(code, timeUnit, null, new CoordinateRuntime(runtimes), times);
+      return new CoordinateTime2D(code, timeUnit, null, new CoordinateRuntime(runtimes, timeUnit), times);
     }
 
     // regular means that all the times for each offset from 0Z can be made into a single time coordinate (FMRC algo)

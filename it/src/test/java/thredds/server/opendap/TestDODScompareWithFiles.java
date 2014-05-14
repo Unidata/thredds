@@ -116,9 +116,9 @@ public class TestDODScompareWithFiles {
 
   } */
 
-  //@Test
+  // @Test
   public void problem() throws IOException {
-    String filename = "conventions/nuwg/eta.nc";
+    String filename = "conventions/coards/inittest24.QRIDV07200.ncml";
     String dodsUrl = TestWithLocalServer.server + path + filename;
     String localPath = contentRoot + filename;
     compareDatasets(dodsUrl, localPath);

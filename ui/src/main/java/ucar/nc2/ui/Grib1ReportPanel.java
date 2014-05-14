@@ -48,7 +48,7 @@ import ucar.nc2.grib.grib1.*;
 import ucar.nc2.Attribute;
 import ucar.nc2.dt.GridDatatype;
 import ucar.nc2.dt.grid.GridDataset;
-import ucar.nc2.grib.grib1.tables.Grib1ParamTable;
+import ucar.nc2.grib.grib1.tables.Grib1ParamTableReader;
 import ucar.nc2.grib.grib1.tables.Grib1ParamTables;
 import ucar.unidata.io.RandomAccessFile;
 import ucar.util.prefs.PreferencesExt;
@@ -151,7 +151,7 @@ public class Grib1ReportPanel extends ReportPanel {
       Attribute gatt = ncfile.findGlobalAttributeIgnoreCase("GRIB table");
       if (gatt != null) {
         String[] s = gatt.getStringValue().split("-");
-        Grib1ParamTable gtable = new Grib1ParamTables().getParameterTable(Integer.parseInt(s[0]), Integer.parseInt(s[1]), Integer.parseInt(s[2]));
+        Grib1ParamTableReader gtable = new Grib1ParamTables().getParameterTable(Integer.parseInt(s[0]), Integer.parseInt(s[1]), Integer.parseInt(s[2]));
         fm.format("  %s == %s%n", gatt, gtable.getPath());
       }
       for (GridDatatype dt : ncfile.getGrids()) {
@@ -180,9 +180,9 @@ public class Grib1ReportPanel extends ReportPanel {
   /////////////////////////////////////////////////////////////////
 
   private void doCheckTables(Formatter f, MCollection dcm, boolean useIndex) throws IOException {
-    CounterS tableSet = new CounterS("table");
-    CounterS local = new CounterS("local");
-    CounterS missing = new CounterS("missing");
+    CounterS tableSet = new CounterS("tableVersion");
+    Counter local = new Counter("local");
+    Counter missing = new Counter("missing");
 
     for (MFile mfile : dcm.getFilesSorted()) {
       String path = mfile.getPath();
@@ -191,13 +191,13 @@ public class Grib1ReportPanel extends ReportPanel {
       doCheckTables(f, mfile, useIndex, tableSet, local, missing);
     }
 
-    f.format("CHECK TABLES%n");
+    f.format("Check Parameter Tables%n");
     tableSet.show(f);
     local.show(f);
     missing.show(f);
   }
 
-  private void doCheckTables(Formatter fm, MFile ff, boolean useIndex, CounterS tableSet, CounterS local, CounterS missing) throws IOException {
+  private void doCheckTables(Formatter fm, MFile ff, boolean useIndex, CounterS tableSet, Counter local, Counter missing) throws IOException {
     String path = ff.getPath();
     RandomAccessFile raf = null;
     try {
@@ -213,12 +213,12 @@ public class Grib1ReportPanel extends ReportPanel {
         tableSet.count(key);
 
         if (pds.getParameterNumber() > 127)
-          local.count(key);
+          local.count(pds.getParameterNumber());
 
-        Grib1ParamTable table = new Grib1ParamTables().getParameterTable(pds.getCenter(), pds.getSubCenter(), pds.getTableVersion());
+        Grib1ParamTableReader table = new Grib1ParamTables().getParameterTable(pds.getCenter(), pds.getSubCenter(), pds.getTableVersion());
         if (table == null && useIndex) table = Grib1ParamTables.getDefaultTable();
         if (table == null || null == table.getParameter(pds.getParameterNumber()))
-          missing.count(key);
+          missing.count(pds.getParameterNumber());
       }
 
     } catch (Throwable ioe) {
@@ -234,25 +234,43 @@ public class Grib1ReportPanel extends ReportPanel {
   /////////////////////////////////////////////////////////////////
 
   private void doScanIssues(Formatter f, MCollection dcm, boolean useIndex) throws IOException {
-    Counter predefined = new Counter("predefined");
-    Counter thin = new Counter("thin");
-    Counter timeUnit = new Counter("timeUnit");
-    Counter vertCoord = new Counter("vertCoord");
-    Counter vertCoordInGDS = new Counter("vertCoordInGDS");
+    Counter predefinedA = new Counter("predefined");
+    Counter thinA = new Counter("thin");
+    Counter timeUnitA = new Counter("timeUnit");
+    Counter vertCoordA = new Counter("vertCoord");
+    Counter vertCoordInGDSA = new Counter("vertCoordInGDS");
 
     for (MFile mfile : dcm.getFilesSorted()) {
+      Counter predefined = new Counter("predefined");
+      Counter thin = new Counter("thin");
+      Counter timeUnit = new Counter("timeUnit");
+      Counter vertCoord = new Counter("vertCoord");
+      Counter vertCoordInGDS = new Counter("vertCoordInGDS");
+
       String path = mfile.getPath();
       if (path.endsWith(".gbx8") || path.endsWith(".gbx9") || path.endsWith(".ncx")) continue;
       f.format(" %s%n", path);
       doScanIssues(f, mfile, useIndex, predefined, thin, timeUnit, vertCoord, vertCoordInGDS);
+
+      predefined.show(f);
+      thin.show(f);
+      timeUnit.show(f);
+      vertCoord.show(f);
+      vertCoordInGDS.show(f);
+
+      predefinedA.add(predefined);
+      thinA.add(thin);
+      timeUnitA.add(timeUnit);
+      vertCoordA.add(vertCoord);
+      vertCoordInGDSA.add(vertCoordInGDS);
     }
 
-    f.format("SCAN NEW%n");
-    predefined.show(f);
-    thin.show(f);
-    timeUnit.show(f);
-    vertCoord.show(f);
-    vertCoordInGDS.show(f);
+    f.format("SUMMARY ALL%n");
+    predefinedA.show(f);
+    thinA.show(f);
+    timeUnitA.show(f);
+    vertCoordA.show(f);
+    vertCoordInGDSA.show(f);
   }
 
   private void doScanIssues(Formatter fm, MFile ff, boolean useIndex, Counter predefined, Counter thin, Counter timeUnit,

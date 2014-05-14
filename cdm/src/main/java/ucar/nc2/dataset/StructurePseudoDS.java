@@ -114,7 +114,7 @@ public class StructurePseudoDS extends StructureDS {
       VariableDS memberV = new VariableDS(ncfile, group, this, orgV.getShortName(), orgV.getDataType(), null,
           orgV.getUnitsString(), orgV.getDescription());
       memberV.setSPobject(orgV.getSPobject()); // ??
-      memberV.getAttributes().addAll(orgV.getAttributes());
+      memberV.addAll(orgV.getAttributes());
 
       List<Dimension> dims = new ArrayList<Dimension>(orgV.getDimensions());
       dims.remove(0); //remove outer dimension

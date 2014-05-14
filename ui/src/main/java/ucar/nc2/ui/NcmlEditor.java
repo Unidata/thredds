@@ -6,7 +6,7 @@ import org.bounce.text.xml.XMLDocument;
 import org.bounce.text.xml.XMLEditorKit;
 import org.bounce.text.xml.XMLStyleConstants;
 import ucar.nc2.dataset.NetcdfDataset;
-import ucar.nc2.write.Nc4ChunkingStrategyImpl;
+import ucar.nc2.write.Nc4ChunkingStrategy;
 import ucar.nc2.ncml.NcMLReader;
 import ucar.nc2.ncml.NcMLWriter;
 import ucar.nc2.ui.dialog.NetcdfOutputChooser;
@@ -288,7 +288,7 @@ public class NcmlEditor extends JPanel {
     try {
       ByteArrayInputStream bis = new ByteArrayInputStream(text.getBytes());
       NcMLReader.writeNcMLToFile(bis, data.outputFilename,  data.version,
-                    Nc4ChunkingStrategyImpl.factory(data.chunkerType, data.deflate, data.shuffle)
+                    Nc4ChunkingStrategy.factory(data.chunkerType, data.deflate, data.shuffle)
       );
       JOptionPane.showMessageDialog(this, "File successfully written");
 

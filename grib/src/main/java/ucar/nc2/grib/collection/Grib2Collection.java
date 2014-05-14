@@ -40,6 +40,7 @@ import thredds.inventory.CollectionUpdateType;
 import thredds.inventory.MFile;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.dataset.NetcdfDataset;
+import ucar.nc2.grib.grib2.table.Grib2Customizer;
 
 import java.io.File;
 import java.io.IOException;
@@ -103,6 +104,11 @@ public class Grib2Collection extends GribCollection {
       }
       return null;
     }
+  }
+
+  @Override
+  public String makeVariableName(VariableIndex vindex) {
+    return Grib2Iosp.makeVariableNameFromTable((Grib2Customizer) cust, this, vindex);
   }
 
 }

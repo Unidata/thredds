@@ -77,21 +77,6 @@ public class ConsistentDatesTest {
   private final List<DateTime> expectedDatesAsDateTime = Collections.unmodifiableList(Arrays.asList(expectedDateTime));
   //private final List<DateTime> expectedWMSDatesAsDateTime = Collections.unmodifiableList(Arrays.asList(expectedDateTime));
 
-  //Dates for noleap calendar
-  private final CalendarDate[] expectedCalendarDates = {
-          CalendarDate.parseISOformat(Calendar.uniform30day.toString(), "2038-12-28T03:00:00Z"),
-          CalendarDate.parseISOformat(Calendar.uniform30day.toString(), "2038-12-28T06:00:00Z"),
-          CalendarDate.parseISOformat(Calendar.uniform30day.toString(), "2038-12-28T09:00:00Z"),
-          CalendarDate.parseISOformat(Calendar.uniform30day.toString(), "2038-12-28T12:00:00Z"),
-          CalendarDate.parseISOformat(Calendar.uniform30day.toString(), "2038-12-28T15:00:00Z"),
-          CalendarDate.parseISOformat(Calendar.uniform30day.toString(), "2038-12-28T18:00:00Z"),
-          CalendarDate.parseISOformat(Calendar.uniform30day.toString(), "2038-12-28T21:00:00Z"),
-          CalendarDate.parseISOformat(Calendar.uniform30day.toString(), "2038-12-29T00:00:00Z"),
-          CalendarDate.parseISOformat(Calendar.uniform30day.toString(), "2038-12-29T03:00:00Z")
-  };
-
-  private final List<CalendarDate> expectedDatesAsCalendarDate = Collections.unmodifiableList(Arrays.asList(expectedCalendarDates));
-
   @Before
   public void setUp() {
   }
@@ -230,6 +215,19 @@ public class ConsistentDatesTest {
    */
   @HttpTest(method = Method.GET, path = "/ncss/scanCdmUnitTests/ncss/test/pr_HRM3_2038-2070.CO.nc?var=pr&latitude=40.019&longitude=-105.293&time_start=2038-01-01T03%3A00%3A00Z&time_end=2038-01-02T03%3A00%3A00Z&accept=netcdf")
   public void checkNCSSDatesInNetcdfWithCalendars() throws JDOMException, IOException {
+    //Dates for noleap calendar
+    CalendarDate[] expectedCalendarDates = {
+          CalendarDate.parseISOformat(Calendar.uniform30day.toString(), "2038-01-01T03:00:00Z"),
+          CalendarDate.parseISOformat(Calendar.uniform30day.toString(), "2038-01-01T06:00:00Z"),
+          CalendarDate.parseISOformat(Calendar.uniform30day.toString(), "2038-01-01T09:00:00Z"),
+          CalendarDate.parseISOformat(Calendar.uniform30day.toString(), "2038-01-01T12:00:00Z"),
+          CalendarDate.parseISOformat(Calendar.uniform30day.toString(), "2038-01-01T15:00:00Z"),
+          CalendarDate.parseISOformat(Calendar.uniform30day.toString(), "2038-01-01T18:00:00Z"),
+          CalendarDate.parseISOformat(Calendar.uniform30day.toString(), "2038-01-01T21:00:00Z"),
+          CalendarDate.parseISOformat(Calendar.uniform30day.toString(), "2038-01-02T00:00:00Z"),
+          CalendarDate.parseISOformat(Calendar.uniform30day.toString(), "2038-01-02T03:00:00Z")
+    };
+    List<CalendarDate> expectedDatesAsCalendarDate = Collections.unmodifiableList(Arrays.asList(expectedCalendarDates));
 
     assertOk(response);
     assertTrue(response.hasBody());
@@ -237,8 +235,9 @@ public class ConsistentDatesTest {
     NetcdfDataset ds = new NetcdfDataset(nf);
 
     CoordinateAxis1DTime tAxis = CoordinateAxis1DTime.factory(ds, ds.findCoordinateAxis("time"), null);
-
-    assertTrue(tAxis.getCalendarDates().equals(expectedDatesAsCalendarDate));
+    List<CalendarDate> dates = tAxis.getCalendarDates();
+    assert dates != null;
+    assertTrue(dates.equals(expectedDatesAsCalendarDate));
   }
 
 }

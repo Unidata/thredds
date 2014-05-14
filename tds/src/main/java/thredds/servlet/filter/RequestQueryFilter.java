@@ -93,31 +93,36 @@ public class RequestQueryFilter
       filterChain.doFilter( servletRequest, servletResponse );
       return;
     }
+
     HttpServletRequest request = (HttpServletRequest) servletRequest;
     HttpServletResponse response = (HttpServletResponse) servletResponse;
     String query = request.getQueryString();
     if ( query != null )
     {
-      String decodedQuery = EscapeStrings.unescapeURLQuery(query);
-      //old:URLDecoder.decode( query, StringValidateEncodeUtils.CHARACTER_ENCODING_UTF_8 );
-      boolean badQuery = false;
-      if ( ! allowAngleBrackets
-             && StringValidateEncodeUtils.containsAngleBracketCharacters( decodedQuery ) )
-        badQuery = true;
-      else if ( StringValidateEncodeUtils.containsBackslashCharacters( decodedQuery )
-                || !StringValidateEncodeUtils.validSingleLineString( decodedQuery ))
-        badQuery = true;
+      //String decodedQuery = EscapeStrings.unescapeURLQuery(query);
+      while (true) {
+        String decodedQuery = URLDecoder.decode( query, StringValidateEncodeUtils.CHARACTER_ENCODING_UTF_8 );
+        boolean badQuery = false;
+        if ( ! allowAngleBrackets && StringValidateEncodeUtils.containsAngleBracketCharacters( decodedQuery ) )
+          badQuery = true;
 
-      if ( badQuery )
-      {
-        String msg = "Invalid query string [" + query + "].";
-        log.debug( "doFilter(): " + msg );
-        response.sendError( HttpServletResponse.SC_NOT_FOUND, msg );
-        return;
-      }
+        else if ( StringValidateEncodeUtils.containsBackslashCharacters( decodedQuery )
+                  || !StringValidateEncodeUtils.validSingleLineString( decodedQuery ))
+          badQuery = true;
+
+        if ( badQuery )
+        {
+          log.debug( "doFilter(): Invalid query string [" + query + "]." );
+          String msg = "Invalid query string ";
+          response.sendError( HttpServletResponse.SC_BAD_REQUEST, msg );
+          return;
+        }
+
+        if (query.equals(decodedQuery)) break;
+        query = decodedQuery;
+      } // while
     }
 
     filterChain.doFilter( servletRequest, servletResponse );
-    return;
   }
 }

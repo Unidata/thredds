@@ -247,6 +247,9 @@ public interface Nc4prototypes extends Library {
   int nc_def_dim(int ncid,  String name, long len, IntByReference dimid);
   int nc_def_var (int ncid, String name, long xtype, int ndims, int[] dimids, IntByReference varidp);
 
+  int nc_def_compound(int ncid, long size, String name, IntByReference typeidp);
+  int nc_insert_compound(int ncid, int typeid, String name, long offset, int field_typeid);
+
   // write array section
   int nc_put_vara(int ncid, int varid, long[] startp, long[] countp, ByteBuffer bbuff);
   int nc_put_vara_uchar(int ncid, int varid, long[] startp, long[] countp, byte[] ip);

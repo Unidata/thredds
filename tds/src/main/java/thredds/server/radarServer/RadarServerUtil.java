@@ -38,7 +38,6 @@
 
 package thredds.server.radarServer;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import thredds.catalog.query.Station;
 import ucar.unidata.geoloc.LatLonPointImpl;
 import ucar.unidata.geoloc.LatLonRect;
@@ -50,13 +49,9 @@ import java.util.regex.Pattern;
 
 public class RadarServerUtil {
 
-  @Autowired
-  private RadarDatasetRepository radarDatasetRepository;
-
   public static final Pattern p_yymmdd_hhmm = Pattern.compile("(\\d{2})(\\d{4}_\\d{4})");
   public static final Pattern p_yyyymmdd_hhmm = Pattern.compile("(\\d{8}_\\d{4})");
   public static final String epic = "1970-01-01T00:00:00";
-
 
   ////////////////////// Station utilities
 
@@ -83,7 +78,6 @@ public class RadarServerUtil {
    *
    * @param boundingBox lat/lon bounding box
    * @return list of station names contained within the bounding box
-   * @throws java.io.IOException if read error
    */
 
   public static List<String> getStationNames(LatLonRect boundingBox, List<Station> stations ) {
@@ -105,7 +99,6 @@ public class RadarServerUtil {
    * @param lat latitude value
    * @param lon longitude value
    * @return name of station closest to the specified point
-   * @throws java.io.IOException if read error
    */
 
   public static String findClosestStation(double lat, double lon, List<Station> stations) {

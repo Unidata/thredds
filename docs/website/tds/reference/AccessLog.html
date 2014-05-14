@@ -14,7 +14,7 @@
 
 <p>To setup access logging, edit the Tomcat server configuration file, <strong>${tomcat_home}/conf/server.xml</strong> and uncomment the
   <strong>AccessLogValve</strong>:</p>
-<pre>        &lt;Valve className="org.apache.catalina.valves.AccessLogValve"<br>                 directory="logs"  prefix="localhost_access_log." suffix=".txt"<br>                 pattern="common" resolveHosts="false"/&gt;</pre>
+<pre>        &lt;Valve className="org.apache.catalina.valves.AccessLogValve"<br>                 directory="logs"  prefix="localhost_access_log." suffix=".txt"<br>                 pattern="common" /&gt;</pre>
 <p>By default the log files are created in the <strong>${tomcat_home}/logs</strong> directory and roll over to a new file at midnight.</p>
 
 <p>The log messages can be written in either of two standard web access
@@ -41,7 +41,7 @@ We can extend the "common" and "combined" patterns by appending the response tim
 <p>The <strong>FastCommonAccessLogValve</strong> has better performance than the <strong>AccessLogValve</strong>. If you are running a production system, you
   might consider switching to the <strong>FastCommonAccessLogValve</strong>. The main restriction is that only the "common" and "combined" log formats can be
   used.</p>
-<pre>        &lt;Valve className="org.apache.catalina.valves.FastCommonAccessLogValve"<br>                 directory="logs"  prefix="localhost_access_log." suffix=".txt"<br>                 pattern="common" resolveHosts="false"/&gt;</pre>
+<pre>        &lt;Valve className="org.apache.catalina.valves.FastCommonAccessLogValve"<br>                 directory="logs"  prefix="localhost_access_log." suffix=".txt"<br>                 pattern="common" /&gt;</pre>
 <h2><br>
   The Logging Output</h2>
 

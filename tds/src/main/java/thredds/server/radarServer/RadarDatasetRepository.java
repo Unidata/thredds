@@ -208,7 +208,8 @@ public class RadarDatasetRepository {
    * @return the InvCatalogImpl, or null if failure
    */
   public InvCatalogImpl readCatalog(File catalogFile) {
-    InvCatalogFactory factory = InvCatalogFactory.getDefaultFactory(false);
+    // InvCatalogFactory factory = InvCatalogFactory.getDefaultFactory(false);
+    InvCatalogFactory factory = DataRootHandler.getInstance().getCatalogFactory(false);
 
     URI catURI = catalogFile.toURI();
 

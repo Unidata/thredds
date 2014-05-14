@@ -1,6 +1,7 @@
 package thredds.inventory.partition;
 
 import thredds.featurecollection.FeatureCollectionConfig;
+import thredds.filesystem.MFileOS;
 import thredds.filesystem.MFileOS7;
 import thredds.inventory.*;
 import ucar.nc2.util.CloseableIterator;
@@ -20,10 +21,10 @@ import java.util.List;
  * @since 2/5/14                   `
  */
 public class PartitionManagerFromIndexList extends CollectionAbstract implements PartitionManager {
-  private List<File> partIndexFiles;
+  private List<MFile> partIndexFiles;
   private final FeatureCollectionConfig config;
 
-  public PartitionManagerFromIndexList(MCollection dcm, List<File> partFiles, org.slf4j.Logger logger) {
+  public PartitionManagerFromIndexList(MCollection dcm, List<MFile> partFiles, org.slf4j.Logger logger) {
     super(dcm.getCollectionName(), logger);
     this.config = (FeatureCollectionConfig) dcm.getAuxInfo(FeatureCollectionConfig.AUX_CONFIG);
 
@@ -36,7 +37,7 @@ public class PartitionManagerFromIndexList extends CollectionAbstract implements
   }
 
   private class PartIterator implements Iterator<MCollection>, Iterable<MCollection> {
-    Iterator<File> iter = partIndexFiles.iterator();
+    Iterator<MFile> iter = partIndexFiles.iterator();
 
     @Override
     public Iterator<MCollection> iterator() {
@@ -50,17 +51,17 @@ public class PartitionManagerFromIndexList extends CollectionAbstract implements
 
     @Override
     public MCollection next() {
-      File nextFile = iter.next();
+      MFile nextFile = iter.next();
 
-      try {
-        MCollection result = new CollectionSingleIndexFile( new MFileOS7(nextFile.getPath()), logger);
+      // try {
+        MCollection result = new CollectionSingleIndexFile( nextFile, logger);
         result.putAuxInfo(FeatureCollectionConfig.AUX_CONFIG, config);
         return result;
 
-      } catch (IOException e) {
-        logger.error("PartitionManagerFromList failed on "+nextFile.getPath(), e);
-        throw new RuntimeException(e);
-      }
+      //} catch (IOException e) {
+      //  logger.error("PartitionManagerFromList failed on "+nextFile.getPath(), e);
+     //   throw new RuntimeException(e);
+     // }
     }
 
     @Override

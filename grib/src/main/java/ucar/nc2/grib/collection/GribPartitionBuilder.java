@@ -111,24 +111,7 @@ public abstract class GribPartitionBuilder  {
         dcmp.putAuxInfo(FeatureCollectionConfig.AUX_CONFIG, partitionManager.getAuxInfo(FeatureCollectionConfig.AUX_CONFIG));
         result.addPartition(dcmp);
       }
-
-      // LOOK CLOSE cant afford to read in all partitions at once !
-      /* List<PartitionCollection.Partition> bad = new ArrayList<>();
-      for (PartitionCollection.Partition tpp : result.getPartitions()) {
-        try {
-          tpp.gc = tpp.makeGribCollection(forceChildren);  // here we read in all collections at once. can we avoid this?
-
-        } catch (Throwable t) {
-          logger.error(" Failed to open partition " + tpp.getName(), t);
-          bad.add(tpp);
-        }
-      }
-
-      // remove ones that failed
-      for (PartitionCollection.Partition tpp : bad)
-        result.removePartition(tpp);  */
-
-      result.sortPartitions(); // after this cannot change
+      result.sortPartitions(); // after this the list is immutable
 
       // choose the "canonical" partition, aka prototype
       // only used in copyInfo
@@ -210,17 +193,22 @@ public abstract class GribPartitionBuilder  {
   private PartitionCollection.Dataset makeDataset2D(CollectionUpdateType forceChildren, Formatter f) throws IOException {
     FeatureCollectionConfig config = (FeatureCollectionConfig) partitionManager.getAuxInfo(FeatureCollectionConfig.AUX_CONFIG);
     FeatureCollectionConfig.GribIntvFilter intvMap = (config != null) ? config.gribConfig.intvFilter : null;
-
     PartitionCollection.Dataset ds2D = result.makeDataset(GribCollection.Type.TwoD);
 
     // make a list of unique groups across all partitions as well as component groups for each group
     int npart = result.getPartitionSize();
     Map<Integer, GroupPartitions> groupMap = new HashMap<>(40);  // gdsHash, GroupPartition
-    CoordinateBuilder runtimeAllBuilder = new CoordinateRuntime.Builder2();
+    CoordinateBuilder runtimeAllBuilder = new CoordinateRuntime.Builder2(null); // ok to use Builder2 for both grib1 and grib2 because not extracting
     int countPartition = 0;
     for (PartitionCollection.Partition tpp : result.getPartitions()) {
       try (GribCollection gc = tpp.makeGribCollection(forceChildren)) {
-      // LOOK CLOSE GribCollection gc = tpp.makeGribCollection(forceChildren); CLOSE
+        if (gc == null) {
+          tpp.setBad(true);
+          logger.warn("Bad partition - skip "+tpp.getName());
+          continue;
+        }
+
+        // LOOK CLOSE GribCollection gc = tpp.makeGribCollection(forceChildren); CLOSE
         // tpp.gc = gc;
         CoordinateRuntime partRuntime = gc.getMasterRuntime();
         runtimeAllBuilder.addAll(partRuntime);  // also make a complete set of runtimes
@@ -240,6 +228,7 @@ public abstract class GribPartitionBuilder  {
       } // close the gc
       countPartition++;
     } // loop over partition
+
     List<GroupPartitions> groupPartitions = new ArrayList<>(groupMap.values());
     result.masterRuntime = (CoordinateRuntime) runtimeAllBuilder.finish(); // LOOK assumes that runtime = partition remains after sort ??
                                                                            // could work if partition sorted by runtime ??
@@ -247,6 +236,7 @@ public abstract class GribPartitionBuilder  {
     result.run2part = new int[result.masterRuntime.getSize()];
     int partIdx = 0;
     for (PartitionCollection.Partition tpp : result.getPartitions()) {
+      if (tpp.isBad()) continue;
       try (GribCollection gc = tpp.makeGribCollection(forceChildren)) {
         // LOOK CLOSE GribCollection gc = tpp.gc;
         CoordinateRuntime partRuntime = gc.getMasterRuntime();
@@ -331,7 +321,7 @@ public abstract class GribPartitionBuilder  {
         CoordinateRuntime runtime2D = t2d.getRuntimeCoordinate();
         CoordinateRuntime runtime = runtimes.get(runtime2D);
         if (runtime == null)
-          System.out.printf("HEY assignRuntimeNames failed on %s group %s%n", t2d.getName(), resultGroup.getId());
+          logger.warn("HEY assignRuntimeNames failed on {} group {}", t2d.getName(), resultGroup.getId());
       } // end debug
 
 
@@ -467,7 +457,7 @@ public abstract class GribPartitionBuilder  {
        if (coord.getType() == Coordinate.Type.runtime)
          rtc = (CoordinateRuntime) coord;
       assert rtc != null;
-      List<Double> runOffset = rtc.getOffsetsInHours();
+      List<Double> runOffset = rtc.getOffsetsInTimeUnits();
 
       // create the best time coordinates, for GroupB  LOOK: better, for PoP to join Best of components
       // order is preserved with Group2D
@@ -585,7 +575,7 @@ public abstract class GribPartitionBuilder  {
       int count = 0;
       for (PartitionCollection.Partition part : pc.partitions) {
         GribCollectionProto.MFile.Builder b = GribCollectionProto.MFile.newBuilder();
-        b.setFilename(part.getIndexFilename());
+        b.setFilename(part.getFilename());
         b.setLastModified(part.getLastModified());
         b.setIndex(count++);
         indexBuilder.addMfiles(b.build());
@@ -811,7 +801,7 @@ message Partition {
   private PartitionCollectionProto.Partition writePartitionProto(PartitionCollection.Partition p) throws IOException {
     PartitionCollectionProto.Partition.Builder b = PartitionCollectionProto.Partition.newBuilder();
 
-    b.setFilename(p.getIndexFilename());
+    b.setFilename(p.getFilename());
     b.setName(p.getName());
     b.setDirectory(p.getDirectory());
     b.setLastModified(p.getLastModified());

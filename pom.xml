@@ -163,13 +163,13 @@
         <dependency>
           <groupId>org.apache.tomcat</groupId>
           <artifactId>tomcat-catalina</artifactId>
-          <version>${org.apache.tomcat.version}</version>
+          <version>${tomcat7.version}</version>
           <scope>provided</scope>
         </dependency>
         <dependency>
           <groupId>org.apache.tomcat</groupId>
           <artifactId>tomcat-jasper</artifactId>
-          <version>${org.apache.tomcat.version}</version>
+          <version>${tomcat7.version}</version>
           <scope>provided</scope>
         </dependency>
       </dependencies>
@@ -273,7 +273,6 @@
         <groupId>${project.groupId}</groupId>
         <artifactId>udunits</artifactId>
         <version>${project.version}</version>
-        <!-- version>0.2</version-->
       </dependency>
       <dependency>
         <groupId>${project.groupId}</groupId>
@@ -288,10 +287,72 @@
       </dependency>
       <dependency>
         <groupId>${project.groupId}</groupId>
-        <artifactId>waterml</artifactId>
+        <artifactId>d4servlet</artifactId>
+        <version>${project.version}</version>
+        <exclusions>
+          <exclusion>
+            <groupId>javax.servlet</groupId>
+            <artifactId>servlet-api</artifactId>
+          </exclusion>
+        </exclusions>
+      </dependency>
+      <dependency>
+        <groupId>${project.groupId}</groupId>
+        <artifactId>d4core</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>${project.groupId}</groupId>
+        <artifactId>d4shared</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>${project.groupId}</groupId>
+        <artifactId>d4client</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>${project.groupId}</groupId>
+        <artifactId>d4cdmshared</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>${project.groupId}</groupId>
+        <artifactId>d4cdmclient</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>${project.groupId}</groupId>
+        <artifactId>d4servletshared</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>${project.groupId}</groupId>
+        <artifactId>d4servlet</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>${project.groupId}</groupId>
+        <artifactId>d4ts</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>${project.groupId}</groupId>
+        <artifactId>d4tests</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>${project.groupId}</groupId>
+        <artifactId>d4tswar</artifactId>
         <version>${project.version}</version>
       </dependency>
 
+      <dependency>
+        <groupId>${project.groupId}</groupId>
+        <artifactId>waterml</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+        
       <!-- logging -->
       <dependency>
         <groupId>org.apache.logging.log4j</groupId>
@@ -468,9 +529,9 @@
         <version>${com.sleepycat.version}</version>
       </dependency>
       <dependency>
-      	<groupId>net.java.dev.jna</groupId>
+      	<groupId>${jna.groupId}</groupId>
       	<artifactId>jna</artifactId>
-      	<version>4.0.0</version>
+      	<version>${jna.version}</version>
       </dependency>
       <dependency>
         <groupId>joda-time</groupId>
@@ -670,6 +731,12 @@
         <type>war</type>
         <!-- scope>provided</scope-->
       </dependency>
+      <!-- dependency>
+        <groupId>${project.groupId}</groupId>
+        <artifactId>remotetest</artifactId>
+        <version>${project.version}</version>
+        <type>war</type>
+      </dependency -->
 
       <!-- jar dependencies -->
       <dependency>
@@ -707,6 +774,13 @@
       <dependency>
         <groupId>${project.groupId}</groupId>
         <artifactId>cdm</artifactId>
+        <scope>test</scope>
+        <type>test-jar</type>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>${project.groupId}</groupId>
+        <artifactId>dap4tests</artifactId>
         <scope>test</scope>
         <type>test-jar</type>
         <version>${project.version}</version>
@@ -857,7 +931,7 @@
     <module>bufr</module>
     <module>grib</module>
     <module>opendap</module>
-    <module>dts</module>
+    <module>opendap/dts</module>
     <module>visad</module>
     <module>ncIdv</module>
     <module>ui</module>
@@ -871,10 +945,25 @@
     <module>netcdf4</module>
     <module>clcommon</module>
     <module>httpclient</module>
+    <module>dap4/d4core</module>
+    <module>dap4/d4shared</module>
+    <module>dap4/d4client</module>
+    <module>dap4/d4cdmshared</module>
+    <module>dap4/d4cdmclient</module>
+    <module>dap4/d4servletshared</module>
+    <module>dap4/d4servlet</module>
+    <module>dap4/d4ts</module>
+    <!--
+    <module>dap4/d4tests</module>
+    -->
+    <module>dap4/d4tswar</module>
+
     <module>waterml</module>
   </modules>
 
   <properties>
+    <thredds.version>4.5.0-SNAPSHOT</thredds.version>
+
     <!-- default is to skip tests. use mvn test -DskipTests=false to override on command line -->
     <skipTests>true</skipTests>
 
@@ -930,6 +1019,8 @@
     <oro.version>2.0.8</oro.version>
     <taglibs.version>1.1.2</taglibs.version>
     <saxon.version>8.7</saxon.version>
+    <jna.groupId>net.java.dev.jna</jna.groupId>
+    <jna.version>4.0.0</jna.version>
 
     <!-- Plugins versions -->
     <maven-antrun-plugin.version>1.7</maven-antrun-plugin.version>
@@ -943,9 +1034,10 @@
     <maven-surefire-plugin.version>2.16</maven-surefire-plugin.version>
     <maven-war-plugin.version>2.4</maven-war-plugin.version>
 
+    <!-- http://stackoverflow.com/questions/11222982/tomcat-binary-distribution-zip-as-maven-artifact -->
     <cargo-plugin.version>1.4.5</cargo-plugin.version>
     <apache.download>http://mirrors.ibiblio.org/apache/</apache.download>
-    <tomcat7.version>7.0.52</tomcat7.version>
+    <tomcat7.version>7.0.53</tomcat7.version>
 
   </properties>
 

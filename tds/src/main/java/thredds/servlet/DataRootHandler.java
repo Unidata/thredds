@@ -398,7 +398,7 @@ public final class DataRootHandler implements InitializingBean {
 	  
   }*/
 
-  private InvCatalogFactory getCatalogFactory(boolean validate) {
+  public InvCatalogFactory getCatalogFactory(boolean validate) {
     InvCatalogFactory factory = InvCatalogFactory.getDefaultFactory(validate);
     if (!this.dataRootLocationAliasExpanders.isEmpty())
       factory.setDataRootLocationAliasExpanders(this.dataRootLocationAliasExpanders);

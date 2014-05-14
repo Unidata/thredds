@@ -145,7 +145,7 @@ public class TestAll extends TestCase
     if ( null == System.getProperty( "thredds.tds.test.id"))
       System.setProperty( "thredds.tds.test.id", "crawl-newmlode-8080" );
     if ( null == System.getProperty( "thredds.tds.test.server" ) )
-      System.setProperty( "thredds.tds.test.server", "newmotherlode.ucar.edu:8080" );
+      System.setProperty( "thredds.tds.test.server", "thredds.ucar.edu" );
     if ( null == System.getProperty( "thredds.tds.test.level" ) )
       System.setProperty( "thredds.tds.test.level", "crawl-catalogs" );
     if ( null == System.getProperty( "thredds.tds.test.catalogs" ) )

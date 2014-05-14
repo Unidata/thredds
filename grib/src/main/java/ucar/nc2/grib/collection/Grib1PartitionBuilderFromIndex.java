@@ -50,18 +50,11 @@ import java.util.List;
  */
 public class Grib1PartitionBuilderFromIndex extends Grib1CollectionBuilderFromIndex {
 
-    /* read in the index, open raf and leave open in the GribCollection
-  static public PartitionCollection createTimePartitionFromIndex(String name, File directory, String indexFilename, FeatureCollectionConfig config, org.slf4j.Logger logger) throws IOException {
-    File idxFile = ucar.nc2.grib.collection.GribCollection.getIndexFileInCache(indexFilename);
-    RandomAccessFile raf = new RandomAccessFile(idxFile.getPath(), "r");
-    return createTimePartitionFromIndex(name, directory, raf, config, logger);
-  } */
-
   // read in the index, index raf already open; return null on failure
   static public PartitionCollection createTimePartitionFromIndex(String name, RandomAccessFile raf,
-           FeatureCollectionConfig config, org.slf4j.Logger logger) throws IOException {
+           FeatureCollectionConfig config, boolean dataOnly, org.slf4j.Logger logger) throws IOException {
 
-    Grib1PartitionBuilderFromIndex builder = new Grib1PartitionBuilderFromIndex(name, config, logger);
+    Grib1PartitionBuilderFromIndex builder = new Grib1PartitionBuilderFromIndex(name, config, dataOnly, logger);
     if (builder.readIndex(raf))
       return builder.pc;
 
@@ -73,8 +66,8 @@ public class Grib1PartitionBuilderFromIndex extends Grib1CollectionBuilderFromIn
   //private final PartitionManager tpc; // defines the partition
   private PartitionCollection pc;  // build this object
 
-  private Grib1PartitionBuilderFromIndex(String name, FeatureCollectionConfig config, org.slf4j.Logger logger) {
-    super(name, config, logger);
+  private Grib1PartitionBuilderFromIndex(String name, FeatureCollectionConfig config, boolean dataOnly, org.slf4j.Logger logger) {
+    super(name, config, dataOnly, logger);
     this.pc = new Grib1Partition(name, null, config, logger);
     this.gc = pc;
   }
@@ -145,7 +138,6 @@ message Partition {
    */
   private PartitionCollection.Partition makePartition(PartitionCollectionProto.Partition proto) {
 
-    return pc.addPartition(proto.getName(), proto.getFilename(),
-            proto.getLastModified(), proto.getDirectory());
+    return pc.addPartition(proto.getName(), proto.getFilename(), proto.getLastModified(), proto.getDirectory());
   }
 }

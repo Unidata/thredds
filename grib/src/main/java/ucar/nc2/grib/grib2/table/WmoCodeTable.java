@@ -311,7 +311,7 @@ public class WmoCodeTable implements Comparable<WmoCodeTable> {
       m1 = Integer.parseInt(slist2[0]);
       m2 = Integer.parseInt(slist2[1]);
     } else
-      System.out.println("HEY bad= %s%n" + name);
+      logger.warn("WmoCodeTable bad= %s%n" + name);
   }
 
   WmoCodeTable(String tableName, String subtableName) {
@@ -322,7 +322,7 @@ public class WmoCodeTable implements Comparable<WmoCodeTable> {
       m1 = Integer.parseInt(slist2[0]);
       m2 = Integer.parseInt(slist2[1]);
     } else
-      System.out.println("HEY bad= %s%n" + tableName);
+      logger.warn("WmoCodeTable bad tableName= %s%n" + tableName);
 
     this.tableName = subtableName;
     String[] slist = subtableName.split("[ :]+");

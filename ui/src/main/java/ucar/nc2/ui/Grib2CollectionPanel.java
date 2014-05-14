@@ -499,7 +499,7 @@ public class Grib2CollectionPanel extends JPanel {
       if (cust == null)
         cust = Grib2Customizer.factory(gr);
 
-      int id = Grib2CollectionBuilder.cdmVariableHash(cust, gr, 0, false, false);
+      int id = Grib2CollectionBuilder.cdmVariableHash(cust, gr, 0, false, false, logger);
 
       Grib2ParameterBean bean = pdsSet.get(id);
       if (bean == null) {
@@ -1413,9 +1413,8 @@ public class Grib2CollectionPanel extends JPanel {
     }
 
     public final String getForecastDate() {
-      if (cust == null)
-        System.out.println("HEY");
-      return cust.getForecastDate(gr).toString();
+      CalendarDate cd =  cust.getForecastDate(gr);
+      return cd == null ? null : cd.toString();
     }
 
     public String getHeader() {
@@ -1461,7 +1460,10 @@ public class Grib2CollectionPanel extends JPanel {
     public String showProcessedGridRecord(Formatter f) {
       f.format("%nFile=%s (%d)%n", fileList.get(gr.getFile()).getPath(), gr.getFile());
       GribTables.Parameter param = cust.getParameter(gr.getDiscipline(), gr.getPDS().getParameterCategory(), gr.getPDS().getParameterNumber());
-      f.format("  Parameter=%s (%s)%n", param.getName(), param.getAbbrev());
+      if (param == null)
+        f.format("  Parameter=Unknown %d-%d-%d %n", gr.getDiscipline(), gr.getPDS().getParameterCategory(), gr.getPDS().getParameterNumber());
+      else
+        f.format("  Parameter=%s (%s)%n", param.getName(), param.getAbbrev());
 
       VertCoord.VertUnit levelUnit = Grib2Utils.getLevelUnit(pds.getLevelType1());
       f.format("  Level=%f/%f %s; level name =  (%s)%n", pds.getLevelValue1(), pds.getLevelValue1(), levelUnit.getUnits(), cust.getLevelNameShort(pds.getLevelType1()));
@@ -1527,7 +1529,7 @@ public class Grib2CollectionPanel extends JPanel {
     public String getIntv() {
       if (cust != null) {
         TimeCoord.TinvDate intv = cust.getForecastTimeInterval(gr);
-        return intv.toString();
+        if (intv != null) return intv.toString();
       }
       return "";
     }
@@ -1535,7 +1537,7 @@ public class Grib2CollectionPanel extends JPanel {
     public String getIntv2() {
       if (cust != null) {
         int[] intv = cust.getForecastTimeIntervalOffset(gr);
-        return intv[0]+"-"+intv[1];
+        if (intv != null) return intv[0]+"-"+intv[1];
       }
       return "";
     }

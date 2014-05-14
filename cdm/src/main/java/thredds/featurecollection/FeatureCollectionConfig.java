@@ -35,6 +35,7 @@ package thredds.featurecollection;
 import org.jdom2.Element;
 import org.jdom2.Namespace;
 import thredds.inventory.CollectionUpdateType;
+import ucar.nc2.time.CalendarPeriod;
 import ucar.unidata.util.StringUtil2;
 
 import java.util.*;
@@ -136,14 +137,14 @@ public class FeatureCollectionConfig {
     if (tdmConfig != null)
       f.format("  tdmConfig =%s%n", tdmConfig);
     if (protoConfig != null)
-      f.format("  protoConfig =%s%n", protoConfig);
+      f.format("  %s%n", protoConfig);
     f.format("  hasInnerNcml =%s%n", innerNcml != null);
 
     if (type != null) {
       switch (type) {
         case GRIB1:
         case GRIB2:
-          f.format("  gribConfig =%s%n", gribConfig);
+          f.format("  %s%n", gribConfig);
           break;
         case FMRC:
           f.format("  fmrcConfig =%s%n", fmrcConfig);
@@ -368,7 +369,6 @@ public class FeatureCollectionConfig {
 
   static public class GribConfig {
     public Set<GribDatasetType> datasets = defaultGribDatasetTypes;
-    public Map<Integer, Integer> gdsHash;  // map one gds hash to another
     public Map<Integer, String> gdsNamer;  // hash, group name
     public Map<String, Boolean> pdsHash = new HashMap<>(); // featureName, yes/no
     public String lookupTablePath, paramTablePath;         // user defined tables
@@ -379,6 +379,7 @@ public class FeatureCollectionConfig {
 
     private TimeUnitConverterHash tuc;
     private boolean explicitDatasets = false;
+    private Map<Integer, Integer> gdsHash;  // map one gds hash to another
 
     public Map<String, String> params;
 
@@ -537,11 +538,30 @@ public class FeatureCollectionConfig {
       }
     }
 
-    @Override
-    public String toString() {
+    public String toString2() {
       Formatter f = new Formatter();
       f.format("GribConfig: datasetTypes=%s", datasets);
       return f.toString();
+    }
+
+    @Override
+    public String toString() {
+      final StringBuilder sb = new StringBuilder("GribConfig{");
+      sb.append("datasets=").append(datasets);
+      if (gdsHash != null) sb.append(", gdsHash=").append(gdsHash);
+      if (gdsNamer != null) sb.append(", gdsNamer=").append(gdsNamer);
+      if (pdsHash != null) sb.append(", pdsHash=").append(pdsHash);
+      if (lookupTablePath != null) sb.append(", lookupTablePath='").append(lookupTablePath).append('\'');
+      if (paramTablePath != null) sb.append(", paramTablePath='").append(paramTablePath).append('\'');
+      if (latestNamer != null) sb.append(", latestNamer='").append(latestNamer).append('\'');
+      if (bestNamer != null) sb.append(", bestNamer='").append(bestNamer).append('\'');
+      if (paramTable != null) sb.append(", paramTable=").append(paramTable);
+      if (filesSortIncreasing != null) sb.append(", filesSortIncreasing=").append(filesSortIncreasing);
+      if (intvFilter != null) sb.append(", intvFilter=").append(intvFilter);
+      CalendarPeriod tu = getUserTimeUnit();
+      if (tu != null) sb.append(", userTimeUnit='").append(tu).append('\'');
+      sb.append('}');
+      return sb.toString();
     }
 
     public Object getIospMessage() {
@@ -554,7 +574,24 @@ public class FeatureCollectionConfig {
       if (params == null) return null;
       return params.get(name);
     }
-  }
+
+    public CalendarPeriod getUserTimeUnit() {
+      CalendarPeriod result = null;
+      String timeUnitS = getParameter("timeUnit");
+      if (timeUnitS != null) {
+        result = CalendarPeriod.of(timeUnitS);  // eg "10 min" or "minute"
+      }
+      return result;
+    }
+
+    public int convertGdsHash(int hashcode) {
+      if (gdsHash == null) return hashcode;
+      Integer convertedValue = gdsHash.get(hashcode);
+      if (convertedValue == null) return hashcode;
+      return convertedValue;
+    }
+
+  } // GribConfig
 
   static class GribIntvFilterParam {
     int id;

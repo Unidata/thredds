@@ -58,12 +58,13 @@ public class GcMFile implements thredds.inventory.MFile {
 
     for (int index : allFileSet) {
       MFile file = files.get(index);
-      String reletiveName;
-      if (file.getPath().startsWith(dirPath))
-        reletiveName = file.getPath().substring(dirPath.length());
-      else
-        reletiveName = file.getPath();
-      result.add( new GcMFile(directory, reletiveName, file.getLastModified(), index));
+      String filename;
+      if (file.getPath().startsWith(dirPath)) {
+        filename = file.getPath().substring(dirPath.length());
+        if (filename.startsWith("/")) filename = filename.substring(1);
+      } else
+        filename = file.getPath();  // when does this happen ??
+      result.add( new GcMFile(directory, filename, file.getLastModified(), index));
     }
     return result;
   }

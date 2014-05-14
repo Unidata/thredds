@@ -8,12 +8,9 @@
 </head>
 
 <body>
-<h1>NetCDF-4 C Library Loading </h1>
-
-<p align="justify"><em>Since version 4.3.13</em></p>
-
+<h1>NetCDF-4 C Library Loading</h1>
 <p align="justify">In order to write netCDF-4 files, you must have the <a href="https://www.unidata.ucar.edu/software/netcdf/">netCDF-4 C library</a>, version
-  4.3 or above, compiled and available on your system, along with all supporting libraries (HDF5 etc). The details of this differ for each operating system, and
+  4.3.1 or above, compiled and available on your system, along with all supporting libraries (HDF5 etc). The details of this differ for each operating system, and
   our experience (so far) is documented below.</p>
 
 <p align="justify">The libraries must be in a directory that the operating system knows to look in, and the CDM needs to know the netcdf-4 library
@@ -21,18 +18,23 @@
 <ul>
   <li>For TDS users, we recommend setting the library path and name in
     <em><a href="http://www.unidata.ucar.edu/projects/THREDDS/tech/tds4.3/reference/ThreddsConfigXMLFile.html#netcdfCLibrary">threddsConfig.xml.</a></em></li>
-  <li>For stand-alone CDM library use, you can set the library path and name in the
-    <em><a href="http://www.unidata.ucar.edu/software/netcdf-java/reference/RuntimeLoading.html#XML">RuntimeConfiguration</a></em> file, or directly call
-    <strong>ucar.nc2.jni.netcdf.Nc4Iosp.setLibraryAndPath</strong>()<em>.</em></li>
+  <li>For stand-alone CDM library use, you can 
+    <ol>
+      <li>put the  library path in LD_LIBRARY_PATH (unix) or PATH (windows)</li>
+      <li>set a system property on the startup line: <strong>-Djna.library.path=<em>/path/to/library</em></strong></li>
+      <li>set the library path and name in the <em><a href="http://www.unidata.ucar.edu/software/netcdf-java/reference/RuntimeLoading.html#XML">RuntimeConfiguration</a></em> file</li>
+      <li>directly call <strong>ucar.nc2.jni.netcdf.Nc4Iosp.setLibraryAndPath</strong>()</li>
+    </ol>
+  </li>
 </ul>
-<p align="justify">We strongly recommend using 64-bit Java. We also recommend using Java 7 (Java 6 is acceptable for CDM version 4.3). In any case, use the
+<p align="justify">We strongly recommend using 64-bit Java. In any case, use the
   lastest update for Java, because security improvements are constantly being made.</p>
 
 <h2>A Note on HDF5</h2>
 <ul>
-  <li>When building HDF5, you <strong>must</strong> do so with both <em> --enable-threadsafe and --with-pthread=DIR</em> options</li>
+  <li>When building HDF5, you <strong>must</strong> do so with both <em> --enable-threadsafe </em>and<em> --with-pthread=DIR</em> options</li>
   <ul>
-    <li>the --with-pthread option must point to the directory that contains the POSIX Threads library install (<em>[DIR]</em>/includes/pthread.h, <em>[DIR]</em>/lib/libpthread*)
+    <li>the <em>--with-pthread</em> option must point to the directory that contains the POSIX Threads library install (<em>[DIR]</em>/includes/pthread.h, <em>[DIR]</em>/lib/libpthread*)
     </li>
   </ul>
   <li>For more information, please see the HDF5 <a href="http://www.hdfgroup.org/hdf5-quest.html#mthread">FAQ</a>.
@@ -52,7 +54,7 @@
 <ol>
   <li>Download the latest netCDF4 C library release from <a href="http://www.unidata.ucar.edu/downloads/netcdf/index.jsp">here. </a></li>
   <li>Compile the library. See <a href="http://www.unidata.ucar.edu/software/netcdf/docs/building.html"> instructions.</a></li>
-  <li>Set the <em>library path</em> to the directory where the libraries were built in and the library name to <strong><em>netcdf</em></strong>.</li>
+  <li>Set the <em>library path</em> to the directory where the libraries were built  and the library name to <strong><em>netcdf</em></strong>.</li>
 </ol>
 <h2>Troubleshooting</h2>
 
@@ -72,34 +74,72 @@
  Headers are 1.8.10, library is 1.8.5
  Bye...
 </pre>
-<p>Make sure that you dont have old version of the HDF5 library in your PATH or LD_LIBRARY_PATH.</p>
+<p>Make sure that you dont have an old version of the HDF5 library in your PATH or LD_LIBRARY_PATH.</p>
 
 <p>&nbsp;</p>
 <hr/>
 <h2>Writing netCDF-4 files</h2>
 <ul>
   <li>From the command line: see <a href="manPages.html#nccopy">nccopy man page</a></li>
-  <li>From ToolsUI v4.3.14: in <strong>Viewer</strong> tab, bring up the file to copy, then click &quot;write Netcdf File&quot; button to get dialog.</li>
+  <li>From ToolsUI: in <strong>Viewer</strong> tab, bring up the file to copy, then click &quot;write Netcdf File&quot; button to get dialog.</li>
   <li>From TDS Netcdf Subset Service: choose <strong>netcdf-4</strong> output type.</li>
   <li>From a Java program (see <em>ucar.nc2.dataset.NetcdfDataset.main()</em> for complete example) :
-    <pre> FileWriter2 writer = new ucar.nc2.FileWriter2(ncfileIn, filenameOut, version, chunker);
+    <pre>Nc4Chunking chunker = Nc4Chunking factory(Strategy type, int deflateLevel, boolean shuffle);
+NetcdfFileWriter.Version version = NetcdfFileWriter.Version.netcdf4;
 
- NetcdfFile ncfileOut = writer.write();
-
- ncfileIn.close();<br/> ncfileOut.close();</pre>
+FileWriter2 writer = new ucar.nc2.FileWriter2(ncfileIn, filenameOut, version, chunker);
+...
+NetcdfFile ncfileOut = writer.write();
+ncfileIn.close();<br/>ncfileOut.close();</pre>
   </li>
 </ul>
-<h3>Default chunk algorithm</h3>
-<ol>
-  <li>Look for Variable attribute named &quot;<strong>_ChunkSize&quot;</strong>, whose value is a vector of integer chunk sizes, one for each dimension. If it
-    exists, use it.
-  </li>
-  <li>Otherwise, if entire variable size &lt; 4,194,304 elements, use one chunk for entire variable.</li>
-  <li>Otherwise, set unlimited dimensions to 1, all other dimensions to actual size.</li>
-</ol>
+<h3>Chunking Strategy</h3>
+<p>When writing netcdf-4 files, one must decide on how the variables are to be chunked. In the netcdf-java library this is done through the use of a Nc4Chunking strategy. The possibilities currently are:</p>
+<ul>
+  <li><strong>standard</strong> : this strategy is used by default (see below for description) </li>
+  <li><strong>grib</strong>: this strategy matches how GRIB files are stored: the chunking uses only the two rightmost dimensions, which for GRIB is the x and y dimension. Use this strategy when converting GRIB files to netcdf-4, in order to optimize conversion writing time, and to get similar access speed.</li>
+  <li>custom: you may write your own inplementation of <strong>ucar.nc2.write.Nc4Chunking</strong> and pass it into <strong>FileWriter2</strong> or <strong>NetcdfFileWriter</strong>. This gives you complete control over chunking.</li>
+</ul>
+<p>Both <strong>standard</strong> and <strong>grib</strong> strategies allow you to override individual variable chunking if you want by setting the variable's <strong>_ChunkSizes </strong>attribute.</p>
+<h3>Default chunking strategy<a name="defaultStrategy" id="defaultStrategy"></a></h3>
+<blockquote>
+  <p>For each Variable:</p>
+  <ol>
+    <li>Look for a variable attribute named &quot;<strong>_ChunkSizes&quot;</strong>, whose value is a vector of integer chunk sizes, one for each dimension. If it
+      exists, use it.
+    </li>
+    <li>If the variable does not have an unlimited dimension: 
+      <ul>
+        <li> it will be chunked if the total size in bytes &gt; <strong>Nc4ChunkingDefault.minVariableSize</strong></li>
+        <li>chunk size will be <em><strong>fillFastest</strong></em><strong></strong>( variable.shape, <strong>Nc4ChunkingDefault.defaultChunkSize</strong>)  </li>
+      </ul>
+    </li>
+    <li>If the variable has one or more unlimited dimensions, it will be chunked, and the chunk size will be calculated as:    
+      <ol>
+        <li>set unlimited dimensions to length one, then compute  <em><strong>fillFastest</strong></em><strong></strong>( variable.shape, <strong>Nc4ChunkingDefault.defaultChunkSize</strong>)</li>
+        <li>if the resulting chunk size is greater than <strong>Nc4ChunkingDefault.minChunksize</strong>, use it</li>
+        <li>if not, set the  unlimited dimension chunk sizes so that the resulting chunksize is close to <strong>Nc4ChunkingDefault.minChunksize. </strong>If there are N unlimited dimensions, take the Nth root, ie evenly divide the chunk size among the unlimited dimensions. </li>
+      </ol>
+    </li>
+  </ol>
+  <p>The <em><strong>fillFastest</strong></em><strong></strong>( int[] shape,<strong> maxSize</strong>) algorithm fills the fastest varying (rightmost) dimensions first, until the chunkSize is as close to <strong>maxSize</strong> as possible without exceeding. The net effect is that the chunkSizes will be close to <strong>Nc4ChunkingDefault.defaultChunkSize</strong>, with a minimum of <strong>Nc4ChunkingDefault.minChunksize</strong>, and favoring read access along the fast dimensions. Any variable with an unlimited dimension will use at least <strong>Nc4ChunkingDefault.minChunksize</strong> bytes (approx, but if compressing, unused space should be mostly eliminated).</p>
+  <p>Current default values (these can be overidden by the user):</p>
+  <ul>
+    <li><strong>minVariableSize</strong> = 65K</li>
+    <li><strong>defaultChunkSize</strong> = 256K</li>
+    <li><strong>minChunksize</strong> = 8K</li>
+  </ul>
+  <p>By default, compression (deflate level = 5) and the shuffle filter will be used. The user can  override these by:</p>
+
+<pre>
+// set deflate &gt; 0 to compress
+// set shuffle to true for the shuffle filter 
+Nc4Chunking chunker = Nc4Chunking factory(Nc4Chunking.Strategy.standard, int deflateLevel, boolean shuffle);
+</pre>
+</blockquote>
 <hr width="100%"/>
 <address>
-  <img src="../nc.gif" alt="" width="64" height="64"/> This document was last updated May 2013
+  <img src="../nc.gif" alt="" width="64" height="64"/> This document was last updated May 2014
 </address>
 </body>
 </html>

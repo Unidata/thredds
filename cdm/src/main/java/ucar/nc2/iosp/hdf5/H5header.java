@@ -136,6 +136,7 @@ public class H5header {
   private long baseAddress;
   byte sizeOffsets, sizeLengths;
   boolean isOffsetLong, isLengthLong;
+  // boolean alreadyWarnNdimZero;
 
   /* Cant always tell if written with netcdf library. if all dimensions have coordinate variables, eg:
     Q:/cdmUnitTest/formats/netcdf4/ncom_relo_fukushima_1km_tmp_2011040800_t000.nc4
@@ -368,7 +369,7 @@ public class H5header {
       } else if (dof.linkName != null) { // symbolic links
         DataObjectFacade link = symlinkMap.get(dof.linkName);
         if (link == null) {
-          log.error(" WARNING Didnt find symbolic link=" + dof.linkName + " from " + dof.name);
+          log.warn(" WARNING Didnt find symbolic link=" + dof.linkName + " from " + dof.name);
           objList.remove(count);
           continue;
         }
@@ -376,7 +377,7 @@ public class H5header {
         // dont allow loops
         if (link.group != null) {
           if (group.isChildOf(link.group)) {
-            log.error(" ERROR Symbolic Link loop found =" + dof.linkName);
+            log.warn(" ERROR Symbolic Link loop found =" + dof.linkName);
             objList.remove(count);
             continue;
           }
@@ -483,7 +484,7 @@ public class H5header {
           if (v.getDataType().isEnum()) {
             EnumTypedef enumTypedef = v.getEnumTypedef();
             if (enumTypedef == null) {
-              log.error("EnumTypedef is missing for variable: "+v.getFullName());
+              log.warn("EnumTypedef is missing for variable: "+v.getFullName());
               throw new IllegalStateException("EnumTypedef is missing for variable: "+v.getFullName());
             }
             // This code apparently addresses the possibility of an anonymous enum LOOK ??
@@ -529,14 +530,14 @@ public class H5header {
     List<MessageAttribute> fatts = filterAttributes(h5group.facade.dobj.attributes);
     for (MessageAttribute matt : fatts) {
       try {
-        makeAttributes(null, matt, ncGroup.getAttributes());
+        makeAttributes(null, matt, ncGroup);
       } catch (InvalidRangeException e) {
         throw new IOException(e.getMessage());
       }
     }
 
     // add system attributes
-    processSystemAttributes(h5group.facade.dobj.messages, ncGroup.getAttributes());
+    processSystemAttributes(h5group.facade.dobj.messages, ncGroup);
     return allHaveSharedDimensions;
   }
 
@@ -597,7 +598,7 @@ public class H5header {
       if (matt.name.equals(HDF5_CLASS)) {
         Attribute att = makeAttribute(matt);
         String val = att.getStringValue();
-        if (val.equals(HDF5_DIMENSION_SCALE)) {
+        if (val.equals(HDF5_DIMENSION_SCALE) && facade.dobj.mds.ndims > 0) {
 
            // create a dimension - always use the first dataspace length
           facade.dimList = addDimension(g, h5group, facade.name, facade.dobj.mds.dimLength[0], facade.dobj.mds.maxLength[0] == -1);
@@ -632,7 +633,7 @@ public class H5header {
   private void findDimensionScales2D(H5Group h5group, DataObjectFacade facade) throws IOException {
     int[] lens = facade.dobj.mds.dimLength;
     if (lens.length > 2) {
-      log.error("DIMENSION_LIST: dimension scale > 2 = {}", facade.getName());
+      log.warn("DIMENSION_LIST: dimension scale > 2 = {}", facade.getName());
       return;
     }
 
@@ -664,7 +665,7 @@ public class H5header {
 
     } else {
       if (match == null) { // 3. if no length matches or multiple matches, then use anonymous
-        log.error("DIMENSION_LIST: dimension scale {} has second dimension {} but no match", facade.getName(), want_len);
+        log.warn("DIMENSION_LIST: dimension scale {} has second dimension {} but no match", facade.getName(), want_len);
         sbuff.append(Integer.toString(want_len));
       } else {
         log.warn("DIMENSION_LIST: dimension scale {} has second dimension {} but multiple matches", facade.getName(), want_len);
@@ -741,10 +742,10 @@ public class H5header {
       if (matt.name.equals(HDF5_DIMENSION_LIST)) { // references : may extend the dimension length
         Attribute att = makeAttribute(matt);       // this reads in the data
         if (att == null) {
-          log.error("DIMENSION_LIST: failed to read on variable {}", facade.getName());
+          log.warn("DIMENSION_LIST: failed to read on variable {}", facade.getName());
 
         } else if (att.getLength() !=  facade.dobj.mds.dimLength.length) { // some attempts to writing hdf5 directly fail here
-          log.error("DIMENSION_LIST: must have same number of dimension scales as dimensions att={} on variable {}", att, facade.getName());
+          log.warn("DIMENSION_LIST: must have same number of dimension scales as dimensions att={} on variable {}", att, facade.getName());
 
         } else {
           StringBuilder sbuff = new StringBuilder();
@@ -848,11 +849,11 @@ public class H5header {
    *
    * @param s       if attribute for a Structure, then deconstruct and add to member variables
    * @param matt    attribute message
-   * @param attList add Attribute to this list
+   * @param attContainer add Attribute to this
    * @throws IOException on io error
    * @throws ucar.ma2.InvalidRangeException on shape error
    */
-  private void makeAttributes(Structure s, MessageAttribute matt, List<Attribute> attList) throws IOException, InvalidRangeException {
+  private void makeAttributes(Structure s, MessageAttribute matt, AttributeContainer attContainer) throws IOException, InvalidRangeException {
     MessageDatatype mdt = matt.mdt;
 
     if (mdt.type == 6) { // structure
@@ -863,7 +864,7 @@ public class H5header {
         // flatten and add to list
         for (StructureMembers.Member sm : attData.getStructureMembers().getMembers()) {
           Array memberData = attData.extractMemberArray(sm);
-          attList.add(new Attribute(matt.name+"."+sm.getName(), memberData));
+          attContainer.addAttribute(new Attribute(matt.name + "." + sm.getName(), memberData));
         }
 
       } else {  // assign seperate attribute for each member
@@ -880,14 +881,16 @@ public class H5header {
         for (StructureMembers.Member sm : attData.getStructureMembers().getMembers()) {
           if (s.findVariable(sm.getName()) == null) {
             Array memberData = attData.extractMemberArray(sm);
-            attList.add(new Attribute(matt.name+"."+sm.getName(), memberData));
+            attContainer.addAttribute(new Attribute(matt.name + "." + sm.getName(), memberData));
           }
         }
       }
 
     } else {
       // make a single attribute
-      attList.add( makeAttribute(matt));
+      Attribute att = makeAttribute(matt);
+      if (att != null)
+        attContainer.addAttribute(att);
     }
 
     // reading attribute values might change byte order during a read
@@ -913,7 +916,7 @@ public class H5header {
       attData.setUnsigned(matt.mdt.unsigned);
       
     } catch (InvalidRangeException e) {
-      log.error("failed to read Attribute "+matt.name, e);
+      log.warn("failed to read Attribute " + matt.name + " HDF5 file=" + raf.getLocation());
       return null;
     }
 
@@ -1361,12 +1364,12 @@ public class H5header {
     List<MessageAttribute> fatts = filterAttributes(facade.dobj.attributes);
     for (MessageAttribute matt : fatts) {
       try {
-        makeAttributes(s, matt, v.getAttributes());
+        makeAttributes(s, matt, v);
       } catch (InvalidRangeException e) {
         throw new IOException(e.getMessage());
       }
     }
-    processSystemAttributes(facade.dobj.messages, v.getAttributes());
+    processSystemAttributes(facade.dobj.messages, v);
     if (fillAttribute != null && v.findAttribute(CDM.FILL_VALUE) == null)
       v.addAttribute(fillAttribute);
     if (vinfo.typeInfo.unsigned)
@@ -1384,7 +1387,7 @@ public class H5header {
         List<Integer> chunksize = new ArrayList<Integer>();
         for (int i=0; i<vinfo.storageSize.length-1; i++)  // skip last one - its the element size
           chunksize.add(vinfo.storageSize[i]);
-        v.addAttribute(new Attribute(CDM.CHUNK_SIZE, chunksize));
+        v.addAttribute(new Attribute(CDM.CHUNK_SIZES, chunksize));
       }
     }
 
@@ -1435,7 +1438,7 @@ public class H5header {
       long objId = ii.getLongNext();
       DataObject dobj = getDataObject(objId, null);
       if (dobj == null)
-        log.error("readReferenceObjectNames cant find obj= " + objId);
+        log.warn("readReferenceObjectNames cant find obj= " + objId);
       else {
         if (debugReference) System.out.println(" Referenced object= " + dobj.who);
         ii2.setObjectNext(dobj.who);
@@ -1491,7 +1494,7 @@ public class H5header {
     return v;
   }
 
-  private void processSystemAttributes(List<HeaderMessage> messages, List<Attribute> attributes) {
+  private void processSystemAttributes(List<HeaderMessage> messages, AttributeContainer attContainer) {
     for (HeaderMessage mess : messages) {
       /* if (mess.mtype == MessageType.LastModified) {
         MessageLastModified m = (MessageLastModified) mess.messData;
@@ -1512,7 +1515,7 @@ public class H5header {
       } else */
       if (mess.mtype == MessageType.Comment) {
         MessageComment m = (MessageComment) mess.messData;
-        attributes.add(new Attribute("_comment", m.comment));
+        attContainer.addAttribute(new Attribute("_comment", m.comment));
       }
     }
   }
@@ -2822,11 +2825,16 @@ public class H5header {
     public String toString() {
       Formatter sbuff = new Formatter();
       sbuff.format(" ndims=%d flags=%x type=%d ", ndims, flags, type);
-      sbuff.format(" length=(");
-      for (int size : dimLength) sbuff.format("%d,", size);
-      sbuff.format(") max=(");
-      for (int aMaxLength : maxLength) sbuff.format("%d,", aMaxLength);
-      sbuff.format(")");
+      if (dimLength != null) {
+        sbuff.format(" length=(");
+        for (int size : dimLength) sbuff.format("%d,", size);
+        sbuff.format(") ");
+      }
+      if (maxLength != null) {
+        sbuff.format("max=(");
+        for (int aMaxLength : maxLength) sbuff.format("%d,", aMaxLength);
+        sbuff.format(")");
+      }
       return sbuff.toString();
     }
 
@@ -2851,6 +2859,11 @@ public class H5header {
 
       if (debug1) debugOut.println("   SimpleDataspace version= " + version + " flags=" +
           Integer.toBinaryString(flags) + " ndims=" + ndims + " type=" + type);
+
+      /* if (ndims == 0 && !alreadyWarnNdimZero) {
+        log.warn("ndims == 0 in HDF5 file= " + raf.getLocation());
+        alreadyWarnNdimZero = true;
+      }  */
 
       dimLength = new int[ndims];
       for (int i = 0; i < ndims; i++)

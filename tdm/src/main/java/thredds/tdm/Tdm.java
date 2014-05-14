@@ -78,7 +78,7 @@ import static org.apache.http.auth.AuthScope.*;
  */
 public class Tdm {
   private static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger( Tdm.class);
-  private static final boolean debug = true;
+  private static final boolean debug = false;
 
   private Path contentDir;
   private Path contentThreddsDir;
@@ -222,9 +222,13 @@ public class Tdm {
        }
        Collections.sort(result);
 
-       System.out.printf("Feature Collections:%n");
-       for (String dir : result)
-         System.out.printf(" %s%n", dir);
+       System.out.printf("Feature Collection names:%n");
+       for (String name : result)
+         System.out.printf(" %s%n", name);
+
+       System.out.printf("%nTriggers:%n");
+       for (String name : result)
+         System.out.printf(" %s%n", makeTriggerUrl(name));
        return;
      }
 
@@ -239,6 +243,7 @@ public class Tdm {
          config.tdmConfig.startupType = CollectionUpdateType.always;
 
        Logger logger = loggerFactory.getLogger("fc." + config.name); // seperate log file for each feature collection (!!)
+       logger.info("FeatureCollection config=" + config);
        CollectionUpdater.INSTANCE.scheduleTasks(config, new Listener(config, logger), logger); // now wired for events
      }
 
@@ -291,6 +296,12 @@ public class Tdm {
     }
   }
 
+  private String makeTriggerUrl(String name) {
+    return "thredds/admin/collection/trigger?trigger=never&collection=" + name;
+    // return "thredds/admin/collection/trigger?nocheck&collection=" + name;  // LOOK changed to nocheck for triggering 4.3, temp kludge
+
+  }
+
   private class IndexTask implements Runnable {
     String name;
     FeatureCollectionConfig config;
@@ -316,11 +327,13 @@ public class Tdm {
         if (changed) System.out.printf("%s %s changed%n", CalendarDate.present(), config.name);
 
         if (changed && config.tdmConfig.triggerOk && sendTriggers) { // send a trigger if enabled
-          String path = "thredds/admin/collection/trigger?trigger=never&collection=" + name;
+          String path = makeTriggerUrl(name);
+
           sendTriggers(path);
         }
       } catch (Throwable e) {
         logger.error("Tdm.IndexTask " + name, e);
+        e.printStackTrace();
 
       } finally {
         // tell liz that task is done
@@ -454,7 +467,7 @@ public class Tdm {
     for (int i = 0; i < args.length; i++) {
       if (args[i].equalsIgnoreCase("-help")) {
         System.out.printf("usage: <Java> <Java_OPTS> -Dtds.content.root.path=<contentDir> [-catalog <cat>] [-tds <tdsServer>] [-cred <user:passwd>] [-showOnly] [-forceOnStartup]%n");
-        System.out.printf("example: /opt/jdk/bin/java -Xmx3g -jar tdm-4.5.jar -Dtds.content.root.path=/my/content -tds http://thredds-dev.unidata.ucar.edu/%n");
+        System.out.printf("example: /opt/jdk/bin/java -Xmx3g -Dtds.content.root.path=/my/content -jar tdm-4.5.jar -tds http://thredds-dev.unidata.ucar.edu/%n");
         System.exit(0);
       }
 
@@ -480,7 +493,7 @@ public class Tdm {
           driver.sendTriggers = true;
         }
       }
-                                                      // scheme://username:password@domain:port/path?query_string#fragment_id
+                                                     // scheme://username:password@domain:port/path?query_string#fragment_id
       else if (args[i].equalsIgnoreCase("-cred")) {  // LOOK could be http://user:password@server
         String cred = args[i + 1];
         String[] split = cred.split(":");

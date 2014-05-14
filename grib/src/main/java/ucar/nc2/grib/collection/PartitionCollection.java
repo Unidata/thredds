@@ -51,6 +51,7 @@ import ucar.nc2.util.cache.FileCacheable;
 import ucar.nc2.util.cache.FileFactory;
 import ucar.coord.Coordinate;
 import ucar.unidata.io.RandomAccessFile;
+import ucar.unidata.util.StringUtil2;
 
 import java.io.File;
 import java.io.IOException;
@@ -83,8 +84,7 @@ public abstract class PartitionCollection extends GribCollection {
     public FileCacheable open(String location, int buffer_size, CancelTask cancelTask, Object iospMessage) throws IOException {
       RandomAccessFile raf = new RandomAccessFile(location, "r");
       Partition p = (Partition) iospMessage;
-      return GribCdmIndex.openGribCollectionFromIndexFile(raf, p.getConfig(), p.getLogger());
-      //return GribCdmIndex2.makeGribCollectionFromRaf(false, raf, p.getConfig(), CollectionUpdateType.never, p.getLogger());
+      return GribCdmIndex.openGribCollectionFromIndexFile(raf, p.getConfig(), true, p.getLogger()); // dataOnly
     }
   };
 
@@ -270,7 +270,9 @@ public abstract class PartitionCollection extends GribCollection {
         return compVindex2Dp.getDataRecord(indexWantedP);
       } else {
         int[] indexWantedP = translateIndex1D(indexWanted, compVindex2Dp);
-        return compVindex2Dp.getDataRecord(indexWantedP);      }
+        if (indexWantedP == null) return null;
+        return compVindex2Dp.getDataRecord(indexWantedP);
+      }
     }
 
 
@@ -351,13 +353,15 @@ public abstract class PartitionCollection extends GribCollection {
           Object wholeVal = wholeCoord1D.getValue(idx);
           resultIdx = compCoord2D.matchTimeCoordinate(runtimeIdxPart, wholeVal, wholeCoord1Dtime.getRefDate());
           if (resultIdx < 0) {
-            resultIdx = compCoord2D.matchTimeCoordinate(runtimeIdxPart, wholeVal, wholeCoord1Dtime.getRefDate());
+            resultIdx = compCoord2D.matchTimeCoordinate(runtimeIdxPart, wholeVal, wholeCoord1Dtime.getRefDate()); // debug
           }
         } else {
           resultIdx = matchCoordinate(wholeCoord1D, idx, compCoord);
         }
-        if (resultIdx < 0)
+        if (resultIdx < 0) {
+          logger.info("Couldnt match coordinates for variable {}", compVindex2D);
           return null;
+        }
         result[countDim + 1] = resultIdx;
         countDim++;
       }
@@ -449,26 +453,27 @@ public abstract class PartitionCollection extends GribCollection {
   // wrapper around a GribCollection
   public class Partition implements Comparable<Partition> {
     private final String name, directory;
-    private final String indexFilename;
+    private final String filename;
     private long lastModified;
+    private boolean isBad;
 
     // temporary storage while building - do not use - must call getGribCollection()()
     // GribCollection gc;
 
     // constructor from ncx
-    public Partition(String name, String indexFilename, long lastModified, String directory) {
+    public Partition(String name, String filename, long lastModified, String directory) {
       this.name = name;
-      this.indexFilename = indexFilename; // grib collection ncx
-      this.directory = directory; // grib collection directory
+      this.filename = filename; // grib collection ncx
       this.lastModified = lastModified;
+      this.directory = directory;
     }
 
     public String getName() {
       return name;
     }
 
-    public String getIndexFilename() {
-      return indexFilename;
+    public String getFilename() {
+      return filename;
     }
 
     public String getDirectory() {
@@ -477,6 +482,14 @@ public abstract class PartitionCollection extends GribCollection {
 
     public long getLastModified() {
       return lastModified;
+    }
+
+    public boolean isBad() {
+      return isBad;
+    }
+
+    public void setBad(boolean isBad) {
+      this.isBad = isBad;
     }
 
     public boolean isGrib1() {
@@ -496,13 +509,25 @@ public abstract class PartitionCollection extends GribCollection {
       return dcm;            // in GribCollection
     }
 
+    public String getIndexFilenameInCache() {
+      File file = new File(directory, filename);
+      File existingFile = GribCollection.getExistingFileOrCache( file.getPath());
+      if (existingFile == null) {
+        GribCollection.getExistingFileOrCache( file.getPath());  // debug
+        return null;
+      }
+      return existingFile.getPath();
+    }
+
     // acquire or construct GribCollection - caller must call gc.close() when done
     public GribCollection getGribCollection() throws IOException {
       GribCollection result;
+      String path = getIndexFilenameInCache();
+
       if (partitionCache != null) {
-        result = (GribCollection) partitionCache.acquire(collectionFactory, indexFilename, indexFilename, -1, null, this);
+        result = (GribCollection) partitionCache.acquire(collectionFactory, path, path, -1, null, this);
       } else {
-        result = (GribCollection) collectionFactory.open(indexFilename, -1, null, this);
+        result = (GribCollection) collectionFactory.open(path, -1, null, this);
       }
       return result;
     }
@@ -518,8 +543,9 @@ public abstract class PartitionCollection extends GribCollection {
               "dcm=" + dcm +
               ", name='" + name + '\'' +
               ", directory='" + directory + '\'' +
-              ", indexFilename='" + indexFilename + '\'' +
+              ", filename='" + filename + '\'' +
               ", lastModified='" + CalendarDate.of(lastModified) + '\'' +
+              ", isBad=" + isBad +
               '}';
     }
 
@@ -531,13 +557,19 @@ public abstract class PartitionCollection extends GribCollection {
     public Partition(MCollection dcm) {
       this.dcm = dcm;
       this.name = dcm.getCollectionName();
-      this.directory = dcm.getRoot();
       this.lastModified = dcm.getLastModified();
-      this.indexFilename = dcm.getIndexFilename();
+      this.directory = StringUtil2.replace(dcm.getRoot(), '\\', "/");
+
+      String indexFilename = StringUtil2.replace(dcm.getIndexFilename(), '\\', "/");
+      if (indexFilename.startsWith(directory)) {
+        indexFilename = indexFilename.substring(directory.length());
+        if (indexFilename.startsWith("/")) indexFilename = indexFilename.substring(1);
+      }
+      filename = indexFilename;
 
       FeatureCollectionConfig config = (FeatureCollectionConfig) dcm.getAuxInfo(FeatureCollectionConfig.AUX_CONFIG);
       if (config == null)
-        System.out.println("HEY Partition");
+        logger.warn("HEY Partition missing a FeatureCollectionConfig {}", dcm);
     }
 
     public GribCollection makeGribCollection(CollectionUpdateType force) throws IOException {
@@ -577,12 +609,15 @@ public abstract class PartitionCollection extends GribCollection {
   }
 
   /**
-   * Use partition names as the filenames
+   * Use partition names as the file names
    */
   @Override
   public List<String> getFilenames() {
     List<String> result = new ArrayList<>();
-    for (Partition p : getPartitions()) result.add(p.indexFilename);
+    for (Partition p : getPartitions()) {
+      if (p.isBad()) continue;
+      result.add(p.getIndexFilenameInCache());
+    }
     return result;
   }
 
@@ -657,12 +692,10 @@ public abstract class PartitionCollection extends GribCollection {
 
   public void removePartition(Partition p) {
     partitions.remove(p);
-    //if (null != p.getDcm())
-    //  partitionMap.remove(p.getDcm().getCollectionName());
   }
 
+  // return open GC
   public GribCollection getLatestGribCollection(List<String> paths) throws IOException {
-
     Partition last = partitions.get(partitions.size()-1);
     paths.add(last.getName());
 
@@ -691,8 +724,9 @@ public abstract class PartitionCollection extends GribCollection {
       f.format(" master runtime -> partition %n");
       int count = 0;
       for (CalendarDate cd : masterRuntime.getRuntimesSorted()) {
-        int part =  run2part[count];
-        f.format(" %d:  %s -> part %3d %s%n", count, cd, run2part[count],  getPartition(part).getIndexFilename());
+        int partno =  run2part[count];
+        Partition part = getPartition(partno);
+        f.format(" %d:  %s -> part %3d %s%n", count, cd, run2part[count],  part);
         count++;
       }
       f.format("%n");
@@ -705,10 +739,9 @@ public abstract class PartitionCollection extends GribCollection {
 
   public RandomAccessFile getRaf(int partno, int fileno) throws IOException {
     Partition part = getPartition(partno);
-    GribCollection gc = part.getGribCollection();
-    RandomAccessFile raf = gc.getDataRaf(fileno);
-    gc.close(); // LOOK ??
-    return raf;
+    try (GribCollection gc = part.getGribCollection()) {  // LOOK this closes the GC.ncx2
+      return gc.getDataRaf(fileno);
+    }
   }
 
   /* public void close() throws java.io.IOException {
@@ -716,7 +749,7 @@ public abstract class PartitionCollection extends GribCollection {
     super.close();
   }  */
 
-  // no longer will be used
+  /* no longer will be used
   public void delete() throws java.io.IOException {
     // remove any partitions from the cache
     if (partitionCache != null) {
@@ -725,6 +758,6 @@ public abstract class PartitionCollection extends GribCollection {
       }
     }
     close();
-  }
+  }  */
 
 }

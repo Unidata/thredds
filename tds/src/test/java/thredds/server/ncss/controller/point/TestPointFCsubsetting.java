@@ -53,6 +53,7 @@ import thredds.junit4.SpringJUnit4ParameterizedClassRunner;
 import thredds.mock.web.MockTdsContextLoader;
 import thredds.server.ncss.format.SupportedFormat;
 import thredds.server.ncss.format.SupportedOperation;
+import thredds.util.ContentType;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -101,19 +102,18 @@ public class TestPointFCsubsetting {
 
 	@Test
 	public void getSubsettedData() throws Exception{
-		RequestBuilder rb = MockMvcRequestBuilders.get(dataset + req + format.getFormatName()).servletPath(dataset);
+    // problem is that browser wont display text/csv in line, so use tesxt/plain; see thredds.server.ncss.view.dsg.PointWriter.WriterCSV
+    String expectFormat = (format == SupportedFormat.CSV_STREAM) ? ContentType.text.getContentHeader() : format.getResponseContentType();
+
+    RequestBuilder rb = MockMvcRequestBuilders.get(dataset + req + format.getFormatName()).servletPath(dataset);
+    System.out.printf("Format=%s%n", format.getFormatName());
     MvcResult result = this.mockMvc.perform( rb )
             .andExpect(MockMvcResultMatchers.status().isOk())
-    		  	.andExpect(MockMvcResultMatchers.content().contentType(format.getResponseContentType()))
+    		  	.andExpect(MockMvcResultMatchers.content().contentTypeCompatibleWith(expectFormat))
             .andReturn();
 
     MockHttpServletResponse response = result.getResponse();
     System.out.printf("getSubsettedData format=%s status = %d type=%s%n", format, response.getStatus(), response.getContentType());
-    if (response.getStatus() == 200) {
-      assertTrue(format.isAlias(response.getContentType()));
-    } else {
-      System.out.printf(" return = %s%n", response.getContentAsString());
-    }
   }
 
 }

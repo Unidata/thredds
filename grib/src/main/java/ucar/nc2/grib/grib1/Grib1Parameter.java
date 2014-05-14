@@ -35,7 +35,7 @@ package ucar.nc2.grib.grib1;
 import net.jcip.annotations.Immutable;
 import ucar.nc2.grib.GribTables;
 import ucar.nc2.grib.GribUtils;
-import ucar.nc2.grib.grib1.tables.Grib1ParamTable;
+import ucar.nc2.grib.grib1.tables.Grib1ParamTableReader;
 import ucar.unidata.util.StringUtil2;
 
 /**
@@ -47,14 +47,14 @@ import ucar.unidata.util.StringUtil2;
 @Immutable
 public class Grib1Parameter implements GribTables.Parameter {
 
-  private final Grib1ParamTable table;  // which table did this come from ?
+  private final Grib1ParamTableReader table;  // which table did this come from ?
   private final int number;
   private final String name;
   private final String description;
   private final String unit;
   private final String cfName; // CF standard name, if it exists
 
-  public Grib1Parameter(Grib1ParamTable table, int number, String name, String description, String unit) {
+  public Grib1Parameter(Grib1ParamTableReader table, int number, String name, String description, String unit) {
     this.table = table;
     this.number = number;
     this.name = setName(name);
@@ -63,7 +63,7 @@ public class Grib1Parameter implements GribTables.Parameter {
     this.cfName = null;
   }
 
-  public Grib1Parameter(Grib1ParamTable table, int number, String name, String description, String unit, String cf_name) {
+  public Grib1Parameter(Grib1ParamTableReader table, int number, String name, String description, String unit, String cf_name) {
     this.table = table;
     this.number = number;
     this.name = setName(name);
@@ -72,7 +72,7 @@ public class Grib1Parameter implements GribTables.Parameter {
     this.cfName = cf_name;
   }
 
-  public Grib1ParamTable getTable() {
+  public Grib1ParamTableReader getTable() {
     return table;
   }
 

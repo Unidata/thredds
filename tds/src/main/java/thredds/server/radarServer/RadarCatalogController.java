@@ -69,8 +69,7 @@ import thredds.util.TdsPathUtils;
 import ucar.nc2.time.CalendarDateRange;
 import ucar.unidata.geoloc.LatLonRect;
 
-@Controller
-@RequestMapping("/radarServer")
+
 public class RadarCatalogController extends AbstractController {
   private static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(RadarCatalogController.class);
 
@@ -89,7 +88,6 @@ public class RadarCatalogController extends AbstractController {
    */
   private static final String MSG_CODE = "message.create.dataset";
 
-  @Autowired
   private RadarDatasetRepository radarDatasetRepository;
 
   public RadarCatalogController() {
@@ -111,7 +109,7 @@ public class RadarCatalogController extends AbstractController {
    * @return ModelAndView
    * @throws IOException
    */
-  @RequestMapping(value = {"**/catalog.xml", "**/catalog.html", "catalog.xml", "catalog.html"}, method = RequestMethod.GET)
+  //@RequestMapping(value = {"**/catalog.xml", "**/catalog.html", "catalog.xml", "catalog.html"}, method = RequestMethod.GET)
   protected ModelAndView handleRequestInternal(HttpServletRequest request, HttpServletResponse response) throws IOException {
     if (!RadarStationController.enabled) {
         response.sendError(HttpServletResponse.SC_FORBIDDEN, "Service not supported");

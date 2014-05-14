@@ -41,6 +41,8 @@ import ucar.nc2.grib.grib1.tables.Grib1Customizer;
 import ucar.nc2.grib.grib2.Grib2Record;
 import ucar.nc2.grib.grib2.table.Grib2Customizer;
 import ucar.nc2.time.CalendarDate;
+import ucar.nc2.time.CalendarDateRange;
+import ucar.nc2.time.CalendarDateUnit;
 import ucar.nc2.time.CalendarPeriod;
 import ucar.nc2.util.Indent;
 
@@ -335,19 +337,19 @@ public class CoordinateTime2D extends CoordinateTimeAbstract implements Coordina
     return firstValue;
   }
 
-  ////////////////////////////////////////////////
+  @Override
+  public CalendarDateRange makeCalendarDateRange(ucar.nc2.time.Calendar cal) {
 
-  /* translate a time value in the Best coordinate to the correct offset, eg in the partition coordinate
-  public Object getPartValue(int runIdx, Object bestVal) {
-    Coordinate time = times.get(runIdx);
-    if (isTimeInterval) {
-      TimeCoord.Tinv valIntv = (TimeCoord.Tinv) bestVal;
-      return valIntv.offset(-getOffset(runIdx));
-    } else {
-      Integer val = (Integer) bestVal;
-      return val - getOffset(runIdx);
-    }
-  } */
+    CoordinateTimeAbstract firstCoord = getTimeCoordinate(0);
+    CoordinateTimeAbstract lastCoord = getTimeCoordinate(nruns-1);
+
+    CalendarDateRange firstRange = firstCoord.makeCalendarDateRange(cal);
+    CalendarDateRange lastRange = lastCoord.makeCalendarDateRange(cal);
+
+    return CalendarDateRange.of(firstRange.getStart(), lastRange.getEnd());
+  }
+
+  ////////////////////////////////////////////////
 
   public CoordinateTimeAbstract getTimeCoordinate(int runIdx) {
     if (isOrthogonal) return otime;
@@ -639,7 +641,7 @@ public class CoordinateTime2D extends CoordinateTimeAbstract implements Coordina
     private final CalendarPeriod timeUnit;   // time duration, based on code
 
     private final CoordinateRuntime.Builder2 runBuilder;
-    private final Map<Object, CoordinateBuilderImpl<Grib2Record>> timeBuilders;
+    private final Map<Object, CoordinateBuilderImpl<Grib2Record>> timeBuilders;  // one for each runtime
 
     public Builder2(boolean isTimeInterval, Grib2Customizer cust, CalendarPeriod timeUnit, int code) {
       this.isTimeInterval = isTimeInterval;
@@ -647,7 +649,7 @@ public class CoordinateTime2D extends CoordinateTimeAbstract implements Coordina
       this.timeUnit = timeUnit;
       this.code = code;
 
-      runBuilder = new CoordinateRuntime.Builder2();
+      runBuilder = new CoordinateRuntime.Builder2(timeUnit);
       timeBuilders = new HashMap<>();
     }
 
@@ -723,7 +725,7 @@ public class CoordinateTime2D extends CoordinateTimeAbstract implements Coordina
       this.timeUnit = timeUnit;
       this.code = code;
 
-      runBuilder = new CoordinateRuntime.Builder1();
+      runBuilder = new CoordinateRuntime.Builder1(timeUnit);
       timeBuilders = new HashMap<>();
     }
 
@@ -740,7 +742,7 @@ public class CoordinateTime2D extends CoordinateTimeAbstract implements Coordina
       CalendarDate run = (CalendarDate) runBuilder.extract(gr);
       CoordinateBuilderImpl<Grib1Record> timeBuilder = timeBuilders.get(run);
       if (timeBuilder == null) {
-        timeBuilder = isTimeInterval ? new CoordinateTimeIntv.Builder1(cust, code, timeUnit, run) : new CoordinateTime.Builder1(code, timeUnit, run);
+        timeBuilder = isTimeInterval ? new CoordinateTimeIntv.Builder1(cust, code, timeUnit, run) : new CoordinateTime.Builder1(cust, code, timeUnit, run);
         timeBuilders.put(run, timeBuilder);
       }
       Object time = timeBuilder.extract(gr);
@@ -775,7 +777,7 @@ public class CoordinateTime2D extends CoordinateTimeAbstract implements Coordina
        runBuilder.add( val2D.run);
        CoordinateBuilderImpl<Grib1Record> timeBuilder = timeBuilders.get(val2D.run);
        if (timeBuilder == null) {
-         timeBuilder = isTimeInterval ? new CoordinateTimeIntv.Builder1(cust, code, timeUnit, val2D.run) : new CoordinateTime.Builder1(code, timeUnit, val2D.run);
+         timeBuilder = isTimeInterval ? new CoordinateTimeIntv.Builder1(cust, code, timeUnit, val2D.run) : new CoordinateTime.Builder1(cust, code, timeUnit, val2D.run);
          timeBuilders.put(val2D.run, timeBuilder);
        }
        timeBuilder.add(isTimeInterval ? val2D.tinv : val2D.time);

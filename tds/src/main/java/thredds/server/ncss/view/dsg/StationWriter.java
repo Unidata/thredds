@@ -557,6 +557,7 @@ public class StationWriter extends AbstractWriter {
       this.writer = writer; // LOOK what about buffering?
     }
 
+    // LOOK could do better : "all", and maybe HashSet<Name>
     protected List<Station> getStationsInSubset() throws IOException {
 
       // verify SpatialSelection has some stations
@@ -573,7 +574,7 @@ public class StationWriter extends AbstractWriter {
         if (qb.getSouth() == null || qb.getNorth() == null || qb.getEast() == null || qb.getWest() == null) {
           wantStations = sfc.getStations(); //Wants all
         } else {
-          LatLonRect llrect = new LatLonRect(new LatLonPointImpl(qb.getSouth(), qb.getWest()), new LatLonPointImpl(qb.getNorth(), qb.getEast()));
+          LatLonRect llrect = qb.getBB();
           wantStations = sfc.getStations(llrect);
         }
 

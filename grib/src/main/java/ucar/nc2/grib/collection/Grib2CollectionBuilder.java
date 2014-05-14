@@ -60,11 +60,12 @@ import java.util.*;
  * @since 2/5/14
  */
 public class Grib2CollectionBuilder extends GribCollectionBuilder {
-  static private final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(Grib2CollectionBuilder.class);
+  // static private final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(Grib2CollectionBuilder.class);
 
   private final boolean intvMerge;
   private final boolean useGenType;
 
+  private FeatureCollectionConfig.GribConfig gribConfig;
   private Grib2Customizer cust;
 
   // LOOK prob name could be dcm.getCollectionName()
@@ -72,7 +73,8 @@ public class Grib2CollectionBuilder extends GribCollectionBuilder {
     super(false, name, dcm, logger);
 
     FeatureCollectionConfig config = (FeatureCollectionConfig) dcm.getAuxInfo(FeatureCollectionConfig.AUX_CONFIG);
-    Map<String, Boolean> pdsConfig = config.gribConfig.pdsHash;
+    gribConfig = config.gribConfig;
+    Map<String, Boolean> pdsConfig = gribConfig.pdsHash;
     intvMerge = assignValue(pdsConfig, "intvMerge", true);
     useGenType = assignValue(pdsConfig, "useGenType", false);
   }
@@ -99,8 +101,9 @@ public class Grib2CollectionBuilder extends GribCollectionBuilder {
 
     logger.debug(" dcm={}", dcm);
     FeatureCollectionConfig config = (FeatureCollectionConfig) dcm.getAuxInfo(FeatureCollectionConfig.AUX_CONFIG);
-    Map<Integer, Integer> gdsConvert = config.gribConfig.gdsHash;
+    //Map<Integer, Integer> gdsConvert = config.gribConfig.gdsHash;
     Map<String, Boolean> pdsConvert = config.gribConfig.pdsHash;
+    FeatureCollectionConfig.GribIntvFilter intvMap = (config != null) ?  config.gribConfig.intvFilter : null;
 
     // place each record into its group
     int totalRecords = 0;
@@ -125,11 +128,15 @@ public class Grib2CollectionBuilder extends GribCollectionBuilder {
             this.cust = Grib2Customizer.factory(ids.getCenter_id(), ids.getSubcenter_id(), ids.getMaster_table_version(), ids.getLocal_table_version());
             if (config != null) cust.setTimeUnitConverter(config.gribConfig.getTimeUnitConverter());
           }
+          if (filterOut(gr, intvMap)) {
+            statsAll.filter++;
+            continue; // skip
+          }
 
           gr.setFile(fileno); // each record tracks which file it belongs to
           int gdsHash = gr.getGDSsection().getGDS().hashCode();  // use GDS hash code to group records
-          if (gdsConvert != null && gdsConvert.get(gdsHash) != null) // allow external config to muck with gdsHash. Why? because of error in encoding
-            gdsHash = gdsConvert.get(gdsHash);                       // and we need exact hash matching
+          gdsHash = gribConfig.convertGdsHash(gdsHash);  // allow external config to muck with gdsHash. Why? because of error in encoding and we need exact hash matching
+          if (0 == gdsHash) continue; // skip this group
 
           CalendarDate runtime = gr.getReferenceDate();
           GroupAndRuntime gar = new GroupAndRuntime(gdsHash, runtime.getMillis());
@@ -143,6 +150,11 @@ public class Grib2CollectionBuilder extends GribCollectionBuilder {
         fileno++;
         statsAll.recordsTotal += index.getRecords().size();
       }
+    }
+
+    if (totalRecords == 0) {
+      logger.warn("No records found in files. Check Grib1/Grib2 for collection {}. If wrong, delete gbx9.", name);
+      throw new IllegalStateException("No records found in dataset "+name);
     }
 
     // rectilyze each group independently
@@ -167,12 +179,57 @@ public class Grib2CollectionBuilder extends GribCollectionBuilder {
     return groups;
   }
 
+  // true means remove
+  private boolean filterOut(Grib2Record gr, FeatureCollectionConfig.GribIntvFilter intvFilter) {
+    // hack a whack - filter out records with unknown time units
+    int timeUnit = gr.getPDS().getTimeUnit();
+    if (Grib2Utils.getCalendarPeriod(timeUnit) == null) {
+      logger.info("Skip record with unknown time Unit= {}", timeUnit);
+      return true;
+    }
+
+    if (intvFilter == null) return false;
+
+    int[] intv = cust.getForecastTimeIntervalOffset(gr);
+    if (intv == null) return false;
+    int haveLength = intv[1] - intv[0];
+
+    // HACK
+    if (haveLength == 0 && intvFilter.isZeroExcluded()) {  // discard 0,0
+      if ((intv[0] == 0) && (intv[1] == 0)) {
+        //f.format(" FILTER INTV [0, 0] %s%n", gr);
+        return true;
+      }
+      return false;
+
+    } else if (intvFilter.hasFilter()) {
+      int discipline = gr.getIs().getDiscipline();
+      Grib2Pds pds = gr.getPDS();
+      int category = pds.getParameterCategory();
+      int number = pds.getParameterNumber();
+      int id = (discipline << 16) + (category << 8) + number;
+
+      int prob = Integer.MIN_VALUE;
+      if (pds.isProbability()) {
+        Grib2Pds.PdsProbability pdsProb = (Grib2Pds.PdsProbability) pds;
+        prob = (int) (1000 * pdsProb.getProbabilityUpperLimit());
+      }
+
+      // true means use, false means discard
+      return !intvFilter.filterOk(id, haveLength, prob);
+    }
+    return false;
+  }
+
+
+
+
   @Override
-  protected boolean writeIndex(String name, File indexFile, CoordinateRuntime masterRuntime, List<? extends GribCollectionBuilder.Group> groups, List<MFile> files) throws IOException {
+  protected boolean writeIndex(String name, String indexFilepath, CoordinateRuntime masterRuntime, List<? extends GribCollectionBuilder.Group> groups, List<MFile> files) throws IOException {
     Grib2CollectionWriter writer = new Grib2CollectionWriter(dcm, logger);
     List<Grib2CollectionWriter.Group> groups2 = new ArrayList<>();
     for (Object g : groups) groups2.add((Grib2CollectionWriter.Group) g);
-    File indexFileInCache = GribCollection.getFileInCache(indexFile);
+    File indexFileInCache = GribCollection.getFileInCache(indexFilepath);
     return writer.writeIndex(name, indexFileInCache, masterRuntime, groups2, files);
   }
 
@@ -200,7 +257,6 @@ public class Grib2CollectionBuilder extends GribCollectionBuilder {
   }
 
   private class Grib2Rectilyser {
-
     private final int gdsHash;
     private final List<Grib2Record> records;
     private List<VariableBag> gribvars;
@@ -212,7 +268,8 @@ public class Grib2CollectionBuilder extends GribCollectionBuilder {
     }
 
     public void make(FeatureCollectionConfig.GribConfig config, Counter counter, Formatter info) throws IOException {
-      boolean isDense = (config != null) && "dense".equals(config.getParameter("CoordSys"));
+      boolean isDense = "dense".equals(config.getParameter("CoordSys"));
+      CalendarPeriod userTimeUnit = config.getUserTimeUnit();
 
       // assign each record to unique variable using cdmVariableHash()
       Map<Integer, VariableBag> vbHash = new HashMap<>(100);
@@ -231,21 +288,21 @@ public class Grib2CollectionBuilder extends GribCollectionBuilder {
       // create coordinates for each variable
       for (VariableBag vb : gribvars) {
         Grib2Pds pdsFirst = vb.first.getPDS();
-        int unit = cust.convertTimeUnit(pdsFirst.getTimeUnit());
-        vb.timeUnit = Grib2Utils.getCalendarPeriod(unit);
+        int code = cust.convertTimeUnit(pdsFirst.getTimeUnit());
+        vb.timeUnit = userTimeUnit == null ? Grib2Utils.getCalendarPeriod(code) : userTimeUnit;   // so can override the code in config  "timeUnit"
         vb.coordND = new CoordinateND<>();
 
         boolean isTimeInterval = vb.first.getPDS().isTimeInterval();
         if (isDense) { // time is runtime X time coord
-          vb.coordND.addBuilder(new CoordinateRuntime.Builder2());
+          vb.coordND.addBuilder(new CoordinateRuntime.Builder2(vb.timeUnit));
           if (isTimeInterval)
-            vb.coordND.addBuilder(new CoordinateTimeIntv.Builder2(cust, unit, vb.timeUnit, null)); // LOOK null refdate not ok
+            vb.coordND.addBuilder(new CoordinateTimeIntv.Builder2(cust, code, vb.timeUnit, null)); // LOOK null refdate not ok
           else
-            vb.coordND.addBuilder(new CoordinateTime.Builder2(pdsFirst.getTimeUnit(), vb.timeUnit, null)); // LOOK null refdate not ok
+            vb.coordND.addBuilder(new CoordinateTime.Builder2(code, vb.timeUnit, null)); // LOOK null refdate not ok
 
         } else {  // time is kept as 2D coordinate, separate list of times for each runtime
-          vb.coordND.addBuilder(new CoordinateRuntime.Builder2());
-          vb.coordND.addBuilder(new CoordinateTime2D.Builder2(isTimeInterval, cust, vb.timeUnit, unit));
+          vb.coordND.addBuilder(new CoordinateRuntime.Builder2(vb.timeUnit));
+          vb.coordND.addBuilder(new CoordinateTime2D.Builder2(isTimeInterval, cust, vb.timeUnit, code));
         }
 
         if (vb.first.getPDS().isEnsemble())
@@ -307,7 +364,7 @@ public class Grib2CollectionBuilder extends GribCollectionBuilder {
   }
 
   private int cdmVariableHash(Grib2Record gr, int gdsHash) {
-    return cdmVariableHash(cust, gr, gdsHash, intvMerge, useGenType);
+    return cdmVariableHash(cust, gr, gdsHash, intvMerge, useGenType, logger);
   }
 
   /**
@@ -319,7 +376,7 @@ public class Grib2CollectionBuilder extends GribCollectionBuilder {
    * @param gdsHash can override the gdsHash
    * @return this record's hash code, identical hash means belongs to the same variable
    */
-  public static int cdmVariableHash(Grib2Customizer cust, Grib2Record gr, int gdsHash, boolean intvMerge, boolean useGenType) {
+  public static int cdmVariableHash(Grib2Customizer cust, Grib2Record gr, int gdsHash, boolean intvMerge, boolean useGenType, org.slf4j.Logger logger) {
     Grib2SectionGridDefinition gdss = gr.getGDSsection();
     Grib2Pds pds2 = gr.getPDS();
 
@@ -343,7 +400,7 @@ public class Grib2CollectionBuilder extends GribCollectionBuilder {
         try {
           size = cust.getForecastTimeIntervalSizeInHours(pds2); // LOOK using an Hour here, but will need to make this configurable
         } catch (Throwable t) {
-          logger.error("Failed on file = "+gr.getFile(), t);
+          if (logger != null) logger.error("Failed on file = "+gr.getFile(), t);
         }
         result += result * (int) (37 + (1000 * size)); // create new variable for each interval size - default not
       }

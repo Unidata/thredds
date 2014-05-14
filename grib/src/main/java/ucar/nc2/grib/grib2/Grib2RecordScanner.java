@@ -166,7 +166,7 @@ public class Grib2RecordScanner {
 
     } catch (Throwable t) {
       long pos = (is == null) ? -1 : is.getStartPos();
-      log.warn("Bad GRIB2 record in file {}, skipping pos={}", raf.getLocation(), pos);
+      log.warn("Bad GRIB2 record in file {}, skipping pos={} cause={}", raf.getLocation(), pos, t.getMessage());
       lastPos = raf.getFilePointer();
       if (hasNext()) // skip forward
         return next();

@@ -163,21 +163,19 @@ public class CdmRemote extends ucar.nc2.NetcdfFile {
       return new ArraySequence(s.makeStructureMembers(), siter, -1);
     }
 
-    StringBuilder sbuff = new StringBuilder(remoteURI);
-    sbuff.append("?var=");
     Formatter f = new Formatter();
-    f.format("%s", v.getFullNameEscaped()); // full name
+    f.format("%s?var=%s", remoteURI, v.getFullNameEscaped());
     if (section != null && v.getDataType() != DataType.SEQUENCE) {
       f.format("(%s)", section.toString());
     }
-    sbuff.append( URLEncoder.encode(f.toString(), "UTF-8")); // % escape entire thing varname and section
+    // sbuff.append( URLEncoder.encode(f.toString(), "UTF-8")); // LOOK dont % escape query; entire thing varname and section
 
     if (showRequest)
-      System.out.println(" CdmRemote data request for variable: " + v.getFullName() + " section= " + section + " url=" + sbuff);
+      System.out.println(" CdmRemote data request for variable: " + v.getFullName() + " section= " + section + " url=" + f);
 
     HTTPMethod method = null;
     try {
-      method = HTTPFactory.Get(httpClient, sbuff.toString());
+      method = HTTPFactory.Get(httpClient, f.toString());
       int statusCode = method.execute();
 
       if (statusCode == 404)

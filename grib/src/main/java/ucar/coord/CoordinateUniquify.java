@@ -14,11 +14,12 @@ import java.util.*;
  * @since 12/10/13
  */
 public class CoordinateUniquify<T> {
+  static private org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(CoordinateUniquify.class);
 
    List<Coordinate> unionCoords = new ArrayList<>();
    Coordinate runtimeAll;
 
-   CoordinateBuilder runtimeAllBuilder = new CoordinateRuntime.Builder2();
+   CoordinateBuilder runtimeAllBuilder = new CoordinateRuntime.Builder2(null);
    Set<Coordinate> timeBuilders = new HashSet<>();
    Set<Coordinate> timeIntvBuilders = new HashSet<>();
    Set<Coordinate> vertBuilders = new HashSet<>();
@@ -70,7 +71,7 @@ public class CoordinateUniquify<T> {
          if (coord.getType() == Coordinate.Type.runtime)
            idx = 0;
          else
-           System.out.println("CoordinateUniquify HEY");
+           logger.warn("CoordinateUniquify.reindex missing coordinate");
        }
        result.add(idx);
      }

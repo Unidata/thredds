@@ -140,14 +140,17 @@ public abstract class Grib1Gds {
     return data[index - 1] & 0xff;
   }
 
+  // signed
   protected int getOctet2(int start) {
     return GribNumbers.int2(getOctet(start), getOctet(start + 1));
   }
 
+  // signed
   protected int getOctet3(int start) {
     return GribNumbers.int3(getOctet(start), getOctet(start + 1), getOctet(start + 2));
   }
 
+  // signed
   protected int getOctet4(int start) {
     return GribNumbers.int4(getOctet(start), getOctet(start + 1), getOctet(start + 2), getOctet(start + 3));
   }

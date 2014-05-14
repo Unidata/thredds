@@ -41,7 +41,7 @@ import java.util.List;
 
 public enum SupportedFormat {
 	
-	CSV_STREAM("csv", true, ContentType.csv.toString(), "csv"  ),
+	CSV_STREAM("csv", true, ContentType.csv.toString(), "csv" ),
 	CSV_FILE("csv_file", false,  ContentType.csv.toString(), "csv_file"  ),
 	
 	XML_STREAM("xml", true, ContentType.xml.toString(), "xml"),

@@ -26,7 +26,7 @@ public class TestNc4IospWriting {
   @Before
   public void setLibrary() {
     //Nc4Iosp.setLibraryAndPath("C:/cdev/lib", "netcdf");
-    Nc4Iosp.setLibraryAndPath("/home/mhermida/opt/lib", "netcdf");   // jenkins testing on spock; works locally when netcdf.dll is in pth
+    Nc4Iosp.setLibraryAndPath("/opt/netcdf/lib", "netcdf");   // jenkins testing on spock; works locally when netcdf.dll is in pth
     //FileWriter2.setDebugFlags(new DebugFlagsImpl("ncfileWriter2/debug"));
   }
 

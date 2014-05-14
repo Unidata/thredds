@@ -1,0 +1,6 @@
+# test problems with named dimensions.
+
+dataset {
+    int32 i;
+    float64 f[ longitude 10 ];
+} BadNamedDimension;

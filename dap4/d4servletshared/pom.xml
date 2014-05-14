@@ -30,13 +30,12 @@
     </dependency>
   
     <!-- thredds/cdm dependencies -->
-
     <dependency>
-      <groupId>${project.groupId}</groupId>
+      <groupId>edu.ucar</groupId>
       <artifactId>netcdf4</artifactId>
     </dependency>
     <dependency>
-      <groupId>${project.groupId}</groupId>
+      <groupId>edu.ucar</groupId>
       <artifactId>cdm</artifactId>
     </dependency>
 

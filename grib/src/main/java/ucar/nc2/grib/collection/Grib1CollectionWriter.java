@@ -98,7 +98,7 @@ public class Grib1CollectionWriter extends GribCollectionWriter {
     public CoordinateRuntime getCoordinateRuntime() {
       List<CalendarDate> runtimes = new ArrayList<>(1);
       runtimes.add(runtime);
-      return new CoordinateRuntime(runtimes);
+      return new CoordinateRuntime(runtimes, null);
     }
   }
 

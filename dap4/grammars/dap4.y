@@ -4,14 +4,14 @@
 
 %define api.push-pull push
 %define abstract
-%define package {opuls.core.dmr.parser}
+%define package {dap4.core.dmr.parser}
 %define parser_class_name {Dap4ParserBody}
 %define extends {Dap4Actions}
 %define throws {DapException}
 %define lex_throws {DapException}
 
 %code imports {
-import opuls.core.util.DapException;
+import dap4.core.util.DapException;
 }
 
 %code lexer {

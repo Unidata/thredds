@@ -33,7 +33,6 @@
 package ucar.nc2;
 
 import ucar.ma2.*;
-import ucar.nc2.constants.CDM;
 import ucar.nc2.iosp.IOServiceProviderWriter;
 import ucar.nc2.iosp.hdf5.H5header;
 import ucar.nc2.iosp.netcdf3.N3header;
@@ -53,6 +52,7 @@ import java.util.*;
  * Fairly low level wrap of IOServiceProviderWriter.
  * Construct CDM objects, then create the file and write data to it.
  *
+ * @see FileWriter2
  * @author caron
  * @since 7/25/12
  */
@@ -191,7 +191,7 @@ public class NetcdfFileWriter {
           method.invoke(spi, chunker);
 
         } catch (Throwable e) {
-          throw new IllegalArgumentException("ucar.nc2.jni.netcdf.Nc4Iosp is not on classpath, cannont use version " + version);
+          throw new IllegalArgumentException("ucar.nc2.jni.netcdf.Nc4Iosp is not on classpath, cannot use version " + version);
         }
         spiw = spi;
       } else {
@@ -511,7 +511,9 @@ public class NetcdfFileWriter {
 
     Variable v = null;
     if (dataType == DataType.STRUCTURE) {
-      v = new Structure(ncfile, g, null, shortName);
+      Structure s = new Structure(ncfile, g, null, shortName);
+      //for (Variable m : )
+      v = s;
     }  else {
       v = new Variable(ncfile, g, null, shortName);
       v.setDataType(dataType);
@@ -626,10 +628,6 @@ public class NetcdfFileWriter {
       log.warn("illegal netCDF-3 attribute name= " + att.getShortName() + " change to " + attName);
       att = new Attribute(attName, att.getValues());
     }
-
-    // these are not allowed in the file - they are added when read
-    if (att.getShortName().equals(CDM.CHUNK_SIZE)) return false;
-    if (att.getShortName().equals(CDM.COMPRESS)) return false;
 
     v.addAttribute(att);
     return true;

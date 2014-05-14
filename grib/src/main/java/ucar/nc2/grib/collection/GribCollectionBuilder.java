@@ -45,6 +45,7 @@ import thredds.inventory.partition.PartitionManagerFromIndexList;
 import ucar.coord.CoordinateRuntime;
 import ucar.nc2.grib.GribIndex;
 import ucar.nc2.time.CalendarDate;
+import ucar.nc2.time.CalendarPeriod;
 import ucar.nc2.util.CloseableIterator;
 import ucar.unidata.util.StringUtil2;
 
@@ -53,7 +54,7 @@ import java.io.IOException;
 import java.util.*;
 
 /**
- * Superclass to builds indexes for collections of Grib files.
+ * Superclass to build indexes for collections of Grib files.
  *
  * @author caron
  * @since 2/19/14
@@ -68,8 +69,9 @@ public abstract class GribCollectionBuilder {
   protected File directory;         // top directory
 
   protected abstract List<? extends Group> makeGroups(List<MFile> allFiles, Formatter errlog) throws IOException;
+
   // indexFile not in cache
-  protected abstract boolean writeIndex(String name, File indexFile, CoordinateRuntime masterRuntime, List<? extends Group> groups, List<MFile> files) throws IOException;
+  protected abstract boolean writeIndex(String name, String indexFilepath, CoordinateRuntime masterRuntime, List<? extends Group> groups, List<MFile> files) throws IOException;
 
   // LOOK prob name could be dcm.getCollectionName()
   public GribCollectionBuilder(boolean isGrib1, String name, MCollection dcm, org.slf4j.Logger logger) {
@@ -128,15 +130,15 @@ public abstract class GribCollectionBuilder {
 
     // write each rungroup separately
     boolean multipleRuntimes = runGroups.values().size() > 1;
-    List<File> partitions = new ArrayList<>();
+    List<MFile> partitions = new ArrayList<>();
     for (List<Group> runGroupList : runGroups.values()) {
       Group g = runGroupList.get(0);
       // if multiple groups, we will write a partition. otherwise, we need to use the standard name (without runtime) so we know the filename from the collection
       String gcname = multipleRuntimes ? GribCollection.makeName(this.name, g.getRuntime()) : this.name;
-      File indexFileForRuntime = GribCollection.makeIndexFile(gcname, directory); // not in cache
+      MFile indexFileForRuntime = GribCollection.makeIndexMFile(gcname, directory); // not in cache
       partitions.add(indexFileForRuntime);
 
-      boolean ok = writeIndex(gcname, indexFileForRuntime, g.getCoordinateRuntime(), runGroupList, allFiles);
+      boolean ok = writeIndex(gcname, indexFileForRuntime.getPath(), g.getCoordinateRuntime(), runGroupList, allFiles);
       logger.info("GribCollectionBuilder write {} ok={}", indexFileForRuntime.getPath(), ok);
     }
 

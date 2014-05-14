@@ -38,13 +38,14 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.junit.Test;
-
 import org.junit.runner.RunWith;
 import org.springframework.test.context.ContextConfiguration;
+
 import thredds.junit4.SpringJUnit4ParameterizedClassRunner;
 import thredds.mock.web.MockTdsContextLoader;
 import thredds.server.ncss.controller.GridDatasetResponder;
 import thredds.server.ncss.params.NcssParamsBean;
+import ucar.nc2.time.Calendar;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time.CalendarDateFormatter;
 import ucar.nc2.time.CalendarDateRange;
@@ -102,7 +103,7 @@ public class DefaultDateRangeTests {
 	@Test
 	public void shouldGetPresent() throws ParseException{
 		
-		CalendarDateRange range= GridDatasetResponder.getRequestedDateRange(requestParams);
+		CalendarDateRange range= GridDatasetResponder.getRequestedDateRange(requestParams, Calendar.getDefault());
 		System.out.printf("range=%s%n", range);
 		System.out.printf(" duration: expected=%d actual=%d%n", durationInSeconds, range.getDurationInSecs());
 		//assertEquals(durationInSeconds, range.getDurationInSecs() );

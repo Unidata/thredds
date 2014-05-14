@@ -1,5 +1,5 @@
 /*
- * Copyright 1998-2012 University Corporation for Atmospheric Research/Unidata
+ * Copyright 1998-2014 University Corporation for Atmospheric Research/Unidata
  *
  * Portions of this software were developed by the Unidata Program at the
  * University Corporation for Atmospheric Research.
@@ -171,6 +171,11 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable {
       registerIOProvider("ucar.nc2.iosp.gini.Giniiosp");
     } catch (Throwable e) {
       if (loadWarnings) log.info("Cant load class: " + e);
+    }
+    try {
+        registerIOProvider("ucar.nc2.iosp.sigmet.SigmetIOServiceProvider");
+    } catch (Throwable e) {
+        if (loadWarnings) log.info("Cant load class: " + e);
     }
     try {
       registerIOProvider("ucar.nc2.iosp.uf.UFiosp");

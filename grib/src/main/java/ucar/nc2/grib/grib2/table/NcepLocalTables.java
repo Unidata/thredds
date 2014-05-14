@@ -213,7 +213,7 @@ public class NcepLocalTables extends Grib2Customizer {
   @Override
   public double getForecastTimeIntervalSizeInHours(Grib2Pds pds) {
     if (!isCfsr(pds)) return super.getForecastTimeIntervalSizeInHours(pds);
-    return 6.0;  // LOOK
+    return 6.0;  // LOOK  WTF ??
   }
 
   private boolean isCfsr(Grib2Pds pds) {
@@ -284,8 +284,10 @@ public class NcepLocalTables extends Grib2Customizer {
       if (plocal == null) return pwmo;
 
       // allow local table to override all but name, units
-      plocal.name = pwmo.getName();
-      plocal.unit = pwmo.getUnit();
+      if (pwmo != null) {
+        plocal.name = pwmo.getName();
+        plocal.unit = pwmo.getUnit();
+      }
     }
 
     return plocal;

@@ -37,7 +37,7 @@ import thredds.inventory.MCollection;
 import thredds.inventory.MFile;
 import ucar.nc2.grib.grib1.*;
 import ucar.nc2.grib.grib1.tables.Grib1Customizer;
-import ucar.nc2.grib.grib1.tables.Grib1ParamTable;
+import ucar.nc2.grib.grib1.tables.Grib1ParamTableReader;
 import ucar.nc2.grib.grib1.tables.Grib1ParamTables;
 import ucar.nc2.grib.grib2.*;
 import ucar.nc2.grib.grib2.table.Grib2Customizer;
@@ -300,7 +300,7 @@ public class GribFilesPanel extends JPanel {
   public class Grib1Bean {
     MFile m;
     Grib1Record first;
-    Grib1ParamTable table;
+    Grib1ParamTableReader table;
     Grib1SectionProductDefinition pds;
 
     public Grib1Bean() {

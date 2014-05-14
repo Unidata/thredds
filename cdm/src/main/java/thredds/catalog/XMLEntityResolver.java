@@ -423,7 +423,7 @@ public class XMLEntityResolver implements org.xml.sax.EntityResolver {
     }
 
     if (systemId.indexOf("InvCatalog.0.6.dtd") >= 0) {
-      entity = entityHash.get( "http://www.unidata.ucar.edu/projects/THREDDS/xml/InvCatalog.0.6.dtd");
+      entity = entityHash.get( "http://www.unidata.ucar.edu/schemas/thredds/InvCatalog.0.6.dtd");
       if (entity != null) {
         if (debugEntityResolution) System.out.println(" *** resolved2 with local copy");
         return new MyInputSource(entity);

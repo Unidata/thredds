@@ -67,20 +67,20 @@ public class Grib1ParamTables {
   static private final boolean warn = false;
 
   static private final Lookup standardLookup;
-  static private final Grib1ParamTable defaultTable;
+  static private final Grib1ParamTableReader defaultTable;
 
   static {
     try {
       standardLookup = new Lookup();
-      standardLookup.readLookupTable("resources/grib1/ecmwfGribApi/lookupTables.txt");
       standardLookup.readLookupTable("resources/grib1/lookupTables.txt");
+      standardLookup.readLookupTable("resources/grib1/ecmwfGribApi/lookupTables.txt");
       standardLookup.readLookupTable("resources/grib1/ecmwf/lookupTables.txt");
       standardLookup.readLookupTable("resources/grib1/ncl/lookupTables.txt");
       standardLookup.readLookupTable("resources/grib1/dss/lookupTables.txt");
       // standardLookup.readLookupTable("resources/grib1/ncep/lookupTables.txt");
       standardLookup.readLookupTable("resources/grib1/wrf/lookupTables.txt"); // */
       // lookup.readLookupTable("resources/grib1/tablesOld/lookupTables.txt");  // too many problems - must check every one !
-      standardLookup.tables = new CopyOnWriteArrayList<Grib1ParamTable>(standardLookup.tables); // in case user adds tables
+      standardLookup.tables = new CopyOnWriteArrayList<Grib1ParamTableReader>(standardLookup.tables); // in case user adds tables
       defaultTable = standardLookup.getParameterTable(0, -1, -1); // user cannot override default
 
     } catch (IOException ioe) {
@@ -107,7 +107,7 @@ public class Grib1ParamTables {
     Grib1ParamTables.strict = strict;
   }
 
-  public static Grib1ParamTable getDefaultTable() {
+  public static Grib1ParamTableReader getDefaultTable() {
     return defaultTable;
   }
 
@@ -119,7 +119,7 @@ public class Grib1ParamTables {
   }
 
   //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-  private static Map<String, Grib1ParamTable> localTableHash;
+  private static Map<String, Grib1ParamTableReader> localTableHash;
 
   /**
    * Get a Grib1ParamTables object, optionally specifying a parameter table or lookup table specific to this dataset.
@@ -133,12 +133,12 @@ public class Grib1ParamTables {
     if (paramTablePath == null && lookupTablePath == null) return new Grib1ParamTables();
     Grib1ParamTables result = new Grib1ParamTables();
 
-    Grib1ParamTable table;
+    Grib1ParamTableReader table;
     if (paramTablePath != null) {
-      if (localTableHash == null) localTableHash = new HashMap<String, Grib1ParamTable>();
+      if (localTableHash == null) localTableHash = new HashMap<String, Grib1ParamTableReader>();
       table = localTableHash.get(paramTablePath);
       if (table == null) {
-        table = new Grib1ParamTable(paramTablePath);
+        table = new Grib1ParamTableReader(paramTablePath);
         localTableHash.put(paramTablePath, table);
       }
       result.override = table;
@@ -164,7 +164,7 @@ public class Grib1ParamTables {
     if (paramTableElem == null) return new Grib1ParamTables();
 
     Grib1ParamTables result = new Grib1ParamTables();
-    result.override = new Grib1ParamTable(paramTableElem);
+    result.override = new Grib1ParamTableReader(paramTableElem);
 
     return result;
   }
@@ -172,7 +172,7 @@ public class Grib1ParamTables {
   ///////////////////////////////////////////////////////////////////////////
 
   private Lookup lookup; // if lookup table was set
-  private Grib1ParamTable override; // if parameter table was set
+  private Grib1ParamTableReader override; // if parameter table was set
 
   public Grib1ParamTables() {
   }
@@ -198,8 +198,8 @@ public class Grib1ParamTables {
   /**
    * Debugging only
    */
-  public Grib1ParamTable getParameterTable(int center, int subcenter, int tableVersion) {
-    Grib1ParamTable result = null;
+  public Grib1ParamTableReader getParameterTable(int center, int subcenter, int tableVersion) {
+    Grib1ParamTableReader result = null;
     if (lookup != null)
       result = lookup.getParameterTable(center, subcenter, tableVersion);
     if (result == null)
@@ -209,7 +209,7 @@ public class Grib1ParamTables {
   }
 
   // debugging
-  public static List<Grib1ParamTable> getStandardParameterTables() {
+  public static List<Grib1ParamTableReader> getStandardParameterTables() {
     return standardLookup.tables;
   }
 
@@ -241,7 +241,7 @@ public class Grib1ParamTables {
    * @param tableFilename file to read parameter table from
    */
   public static void addParameterTable(int center, int subcenter, int tableVersion, String tableFilename) {
-    Grib1ParamTable table = new Grib1ParamTable(center, subcenter, tableVersion, tableFilename);
+    Grib1ParamTableReader table = new Grib1ParamTableReader(center, subcenter, tableVersion, tableFilename);
     synchronized (lock) {
       standardLookup.tables.add(standardTablesStart, table);
       standardTablesStart++;
@@ -251,8 +251,8 @@ public class Grib1ParamTables {
   //////////////////////////////////////////////////////////////////////////
 
   public static class Lookup {
-    List<Grib1ParamTable> tables = new ArrayList<Grib1ParamTable>();
-    Map<Integer, Grib1ParamTable> tableMap = new ConcurrentHashMap<Integer, Grib1ParamTable>();
+    List<Grib1ParamTableReader> tables = new ArrayList<Grib1ParamTableReader>();
+    Map<Integer, Grib1ParamTableReader> tableMap = new ConcurrentHashMap<Integer, Grib1ParamTableReader>();
 
     /**
      * read the lookup table from file
@@ -304,7 +304,7 @@ public class Grib1ParamTables {
           path = GribResourceReader.getFileRoot(lookupFile) + "/" + filename;
         }
 
-        Grib1ParamTable table = new Grib1ParamTable(center, subcenter, version, path);
+        Grib1ParamTableReader table = new Grib1ParamTableReader(center, subcenter, version, path);
         tables.add(table);
       }
       is.close();
@@ -316,7 +316,7 @@ public class Grib1ParamTables {
       if (strict && param_number < 128 && tableVersion < 128)
         return defaultTable.getParameter(param_number);
 
-      Grib1ParamTable pt = getParameterTable(center, subcenter, tableVersion);
+      Grib1ParamTableReader pt = getParameterTable(center, subcenter, tableVersion);
       Grib1Parameter param = null;
       if (pt != null) param = pt.getParameter(param_number);
       if (!strict && param == null) param = defaultTable.getParameter(param_number);
@@ -324,10 +324,10 @@ public class Grib1ParamTables {
 
     }
 
-    public Grib1ParamTable getParameterTable(int center, int subcenter, int tableVersion) {
+    public Grib1ParamTableReader getParameterTable(int center, int subcenter, int tableVersion) {
       // look in hash table
       int key = makeKey(center, subcenter, tableVersion);
-      Grib1ParamTable table = tableMap.get(key);
+      Grib1ParamTableReader table = tableMap.get(key);
       if (table != null)
         return table;
 
@@ -348,16 +348,16 @@ public class Grib1ParamTables {
       return table;
     }
 
-    private Grib1ParamTable findParameterTableExact(int center, int subcenter, int version) {
-      List<Grib1ParamTable> localCopy = tables; // thread safe
-      for (Grib1ParamTable table : localCopy) {
+    private Grib1ParamTableReader findParameterTableExact(int center, int subcenter, int version) {
+      List<Grib1ParamTableReader> localCopy = tables; // thread safe
+      for (Grib1ParamTableReader table : localCopy) {
         // look for a match
         if (center == table.getCenter_id() && subcenter == table.getSubcenter_id() && version == table.getVersion()) {  // match
           if (table.getParameters() == null) //  see if the parameters for this table have been read in yet.
             continue; // failed - maybe theres another entry table that matches
 
           // success - initialize other tables with the same path
-          for (Grib1ParamTable table2 : localCopy) {
+          for (Grib1ParamTableReader table2 : localCopy) {
             if (table2.getPath().equals(table.getPath()))
               table2.setParameters(table.getParameters());
           }
@@ -369,9 +369,9 @@ public class Grib1ParamTables {
     }
 
     // wildcard match
-    private Grib1ParamTable findParameterTable(int center, int subcenter, int version) {
-      List<Grib1ParamTable> localCopy = tables; // thread safe
-      for (Grib1ParamTable table : localCopy) {
+    private Grib1ParamTableReader findParameterTable(int center, int subcenter, int version) {
+      List<Grib1ParamTableReader> localCopy = tables; // thread safe
+      for (Grib1ParamTableReader table : localCopy) {
         // look for a match
         if (center == table.getCenter_id()) {
           if ((table.getSubcenter_id() == -1) || (subcenter == table.getSubcenter_id())) {
@@ -382,7 +382,7 @@ public class Grib1ParamTables {
                 continue; // failed - maybe theres another entry table that matches
 
               // success - initialize other tables with the same path
-              for (Grib1ParamTable table2 : localCopy) {
+              for (Grib1ParamTableReader table2 : localCopy) {
                 if (table2.getPath().equals(table.getPath()))
                   table2.setParameters(table.getParameters());
               }

@@ -174,6 +174,11 @@ public abstract class GribCollection implements FileCacheable, AutoCloseable {
     return new File(directory, nameNoBlanks + CollectionAbstract.NCX_SUFFIX);
   }
 
+  static MFile makeIndexMFile(String collectionName, File directory) {
+    String nameNoBlanks = StringUtil2.replace(collectionName, ' ', "_");
+    return new GcMFile(directory, nameNoBlanks + CollectionAbstract.NCX_SUFFIX, -1, -1);
+  }
+
   private static CalendarDateFormatter cf = new CalendarDateFormatter("yyyyMMdd-HHmmss", new CalendarTimeZone("UTC"));
 
   static public String makeName(String collectionName, CalendarDate runtime) {
@@ -186,8 +191,7 @@ public abstract class GribCollection implements FileCacheable, AutoCloseable {
     int pos = idxPathname.lastIndexOf('/');
     String idxFilename = (pos < 0) ? idxPathname : idxPathname.substring(pos+1);
     assert idxFilename.endsWith(CollectionAbstract.NCX_SUFFIX);
-    String result =  idxFilename.substring(0, idxFilename.length() - CollectionAbstract.NCX_SUFFIX.length());
-    return result;
+    return idxFilename.substring(0, idxFilename.length() - CollectionAbstract.NCX_SUFFIX.length());
   }
 
   /**
@@ -201,6 +205,10 @@ public abstract class GribCollection implements FileCacheable, AutoCloseable {
 
   static public File getFileInCache(File f) {
     return getDiskCache2().getFile(f.getPath());
+  }
+
+  static public File getExistingFileOrCache(String path) {
+    return getDiskCache2().getExistingFileOrCache(path);
   }
 
   ////////////////////////////////////////////////////////////////
@@ -219,6 +227,7 @@ public abstract class GribCollection implements FileCacheable, AutoCloseable {
   protected List<Dataset> datasets;
   protected List<HorizCoordSys> horizCS; // one for each unique GDS
   protected CoordinateRuntime masterRuntime;
+  protected GribTables cust;
 
   // not stored
   private Map<String, MFile> filenameMap;
@@ -259,6 +268,11 @@ public abstract class GribCollection implements FileCacheable, AutoCloseable {
     return config;
   }
 
+  /**
+   * The files that comprise the colelction.
+   * Actual paths, including the grib cache if used.
+   * @return list of filename.
+   */
   public List<String> getFilenames() {
     List<String> result = new ArrayList<>();
     for (MFile file : fileMap.values())
@@ -345,8 +359,8 @@ public abstract class GribCollection implements FileCacheable, AutoCloseable {
   }
 
   private void setIndexFilename(String indexFilename) {
-    if (indexFilename.startsWith("B:\\content") || indexFilename.startsWith("B:/content"))
-      System.out.printf("HEY %s%n", indexFilename);
+    //if (indexFilename.startsWith("B:\\content") || indexFilename.startsWith("B:/content"))
+    //  System.out.printf("HEY %s%n", indexFilename);
     // this.indexFilename = indexFilename;
   }
 
@@ -408,6 +422,9 @@ public abstract class GribCollection implements FileCacheable, AutoCloseable {
 
   /////////////////////////////////////////////
 
+  // LOOK could use this in iosp
+  public abstract String makeVariableName(VariableIndex vindex);
+
   // stuff for InvDatasetFcGrib
   public abstract ucar.nc2.dataset.NetcdfDataset getNetcdfDataset(Dataset ds, GroupGC group, String filename,
                                                          FeatureCollectionConfig gribConfig, Formatter errlog, org.slf4j.Logger logger) throws IOException;
@@ -423,14 +440,16 @@ public abstract class GribCollection implements FileCacheable, AutoCloseable {
     String filename = mfile.getPath();
     File dataFile = new File(filename);
 
-    /* check reletive location - eg may be /upc/share instead of Q:  LOOK WTF ?
-    if (!dataFile.exists()) {
+    // if data file does not exist, check reletive location - eg may be /upc/share instead of Q:
+    if (!dataFile.exists() && indexRaf != null) {
+      File index = new File(indexRaf.getLocation());
+      File parent = index.getParentFile();
       if (fileMap.size() == 1) {
-        dataFile = new File(directory, name); // single file case
+        dataFile = new File(parent, name); // single file case
       } else {
-        dataFile = new File(directory, dataFile.getName()); // must be in same directory as the ncx file
+        dataFile = new File(parent, dataFile.getName()); // must be in same directory as the ncx file
       }
-    } */
+    }
 
 
     // data file not here
@@ -712,31 +731,19 @@ public abstract class GribCollection implements FileCacheable, AutoCloseable {
 
     public CalendarDateRange getCalendarDateRange() {
       if (dateRange == null) {
-        CalendarDate start = null;
-        CalendarDate lastRuntime = null;
-        CalendarDate end = null;
+        CalendarDateRange result = null;
         for (Coordinate coord : coords) {
-          Coordinate.Type type = coord.getType();
-          switch (type) {
-            case runtime:
-              CoordinateRuntime runtime = (CoordinateRuntime) coord;
-              start = runtime.getFirstDate();
-              lastRuntime = runtime.getLastDate();
-              end = lastRuntime;
-              break;
+          switch (coord.getType()) {
             case time:
-              CoordinateTime time = (CoordinateTime) coord;
-              CalendarDateRange range = time.makeCalendarDateRange(null, lastRuntime);
-              if (end.isBefore(range.getEnd())) end = range.getEnd();
-              break;
             case timeIntv:
-              CoordinateTimeIntv timeIntv = (CoordinateTimeIntv) coord;
-              range = timeIntv.makeCalendarDateRange(null);
-              if (end.isBefore(range.getEnd())) end = range.getEnd();
-              break;
+            case time2D:
+              CoordinateTimeAbstract time = (CoordinateTimeAbstract) coord;
+              CalendarDateRange range = time.makeCalendarDateRange(null);
+              if (result == null) result = range;
+              else result = result.extend(range);
           }
         }
-        dateRange = CalendarDateRange.of(start, end);
+        dateRange = result;
       }
       return dateRange;
     }
@@ -755,7 +762,7 @@ public abstract class GribCollection implements FileCacheable, AutoCloseable {
     }
 
     public void show(Formatter f) {
-       f.format("Group %s isTwoD=%s%n", horizCoordSys.getId(), isTwod);
+       f.format("Group %s (%d) isTwoD=%s%n", horizCoordSys.getId(), getGdsHash(), isTwod);
        f.format(" nfiles %d%n", filenose == null ? 0 : filenose.length);
      }
   }

@@ -110,9 +110,7 @@ public class NcssController extends AbstractNcssController {
      }
 
      String datasetPath = getDatasetPath(req);
-     FeatureDataset fd = null;
-     try {
-       fd = datasetService.findDatasetByPath(req, res, datasetPath);  // LOOK cant we get ft somewhere else first ?
+     try (FeatureDataset fd = datasetService.findDatasetByPath(req, res, datasetPath)) {
        if (fd == null)  {
          handleValidationErrorMessage(res, HttpServletResponse.SC_NOT_FOUND, "dataset path not found "+datasetPath);
          return;
@@ -142,9 +140,6 @@ public class NcssController extends AbstractNcssController {
        } else {
            throw new UnsupportedOperationException("Feature Type "+ft.toString()+" not supported");
        }
-
-      } finally {
-       if (fd != null) fd.close();
      }
 
    }
@@ -153,7 +148,7 @@ public class NcssController extends AbstractNcssController {
                          NcssParamsBean params, String datasetPath,
                          GridDataset gridDataset) throws IOException, NcssException, ParseException, InvalidRangeException {
 
-    params.isValidGridRequest();
+    //params.isValidGridRequest(); ???
 
     // Supported formats are netcdf3 (default) and netcdf4 (if available)
     SupportedFormat sf = SupportedOperation.GRID_REQUEST.getSupportedFormat(params.getAccept());

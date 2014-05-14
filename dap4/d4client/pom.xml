@@ -22,7 +22,6 @@ will be needed to make this jar complete:
   <relativePath>../../pom.xml</relativePath>
 </parent>
 
-<!--groupId>groupId</groupId-->
 <artifactId>d4client</artifactId>
 <packaging>jar</packaging>
 

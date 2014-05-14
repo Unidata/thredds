@@ -61,6 +61,7 @@ public class CollectionGeneral extends CollectionAbstract {
   public CollectionGeneral(String collectionName, Path rootPath, Logger logger) {
     super(collectionName, logger);
     this.rootPath = rootPath;
+    this.root = rootPath.toString();
   }
 
   @Override

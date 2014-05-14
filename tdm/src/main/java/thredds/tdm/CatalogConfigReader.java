@@ -101,7 +101,7 @@ public class CatalogConfigReader {
         File refCat = new File(catFile.getParent(), href);
         Resource catRnested = new FileSystemResource(refCat);
         if (!catRnested.exists()) {
-          log.error("Relative catalog {} does not exist", catR);
+          log.error("Relative catalog {} does not exist", refCat);
           continue;
         }
         readCatalog(catRnested);

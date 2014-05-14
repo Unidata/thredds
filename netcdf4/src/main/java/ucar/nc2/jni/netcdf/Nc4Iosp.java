@@ -45,7 +45,7 @@ import ucar.nc2.iosp.hdf5.H5header;
 import ucar.nc2.util.CancelTask;
 import ucar.nc2.util.DebugFlags;
 import ucar.nc2.write.Nc4Chunking;
-import ucar.nc2.write.Nc4ChunkingStrategyImpl;
+import ucar.nc2.write.Nc4ChunkingDefault;
 import ucar.unidata.io.RandomAccessFile;
 import ucar.ma2.*;
 
@@ -87,10 +87,10 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
   static private String libName = "netcdf";
 
   static private boolean warn = true;
-  static private final boolean debug = false,
-          debugCompoundAtt = false,
-          debugUserTypes = false,
-          debugWrite = false;
+  static private final boolean debug = true,
+          debugCompoundAtt = true,
+          debugUserTypes = true,
+          debugWrite = true;
 
   /**
    * Suppress warning messages
@@ -135,10 +135,10 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
    */
   static public void setLibraryAndPath(String jna_path, String libname) {
     // See if jna_path exists
-    if(jna_path != null) {
-        File f = new File(jna_path);
-        if (!f.exists())
-            jna_path = null; // ignore it
+    if (jna_path != null) {
+      File f = new File(jna_path);
+      if (!f.exists())
+        jna_path = null; // ignore it
     }
     if (jna_path == null || jna_path.length() == 0) {
       jna_path = System.getProperty(JNA_PATH);
@@ -178,6 +178,7 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
   }
 
   static private boolean skipEos = false;
+
   static public void setDebugFlags(DebugFlags flags) {
     skipEos = flags.isSet("HdfEos/turnOff");
   }
@@ -193,7 +194,7 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
   private boolean isClosed = false;
   private Map<Integer, UserType> userTypes = new HashMap<Integer, UserType>();  // hash by typeid
   private Map<Group, Integer> groupHash = new HashMap<Group, Integer>();  // group, nc4 grpid
-  private Nc4Chunking chunker = new Nc4ChunkingStrategyImpl();
+  private Nc4Chunking chunker = new Nc4ChunkingDefault();
   private boolean isEos = false;
 
   //////////////////////////////////////////////////
@@ -207,6 +208,7 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
     this.version = version;
   }
 
+  // called by reflection from NetcdfFileWriter
   public void setChunker(Nc4Chunking chunker) {
     if (chunker != null)
       this.chunker = chunker;
@@ -888,8 +890,8 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
 
   /////////////////////////////////////////////////////////////////////////////
 
-  private void makeVariables(int grpid, Group g)
-          throws IOException {
+  private void makeVariables(int grpid, Group g) throws IOException {
+
     IntByReference nvarsp = new IntByReference();
     int ret = nc4.nc_inq_nvars(grpid, nvarsp);
     if (ret != 0)
@@ -2158,7 +2160,8 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
         System.out.printf(" create dim '%s' (%d) in group '%s'%n", dim.getShortName(), dimid, g4.g.getFullName());
     }
 
-    // types
+    // a type must be created for each structure.
+    // LOOK we should look for variables with the same structure type.
     for (Variable v : g4.g.getVariables()) {
       switch (v.getDataType()) {
         case STRUCTURE:
@@ -2169,13 +2172,7 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
 
     // variables
     for (Variable v : g4.g.getVariables()) {
-      switch (v.getDataType()) {
-        case STRUCTURE:
-          createCompoundVariable(grpid, g4, (Structure) v);
-          break;
-        default:
-          createVariable(grpid, g4, v);
-      }
+      createVariable(grpid, g4, v);
     }
 
     // groups
@@ -2188,10 +2185,6 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
       int nestedId = grpidp.getValue();
       createGroup(nestedId, new Group4(nested, g4));
     }
-  }
-
-  private void createCompoundType(Structure s) {
-
   }
 
   private void createVariable(int grpid, Group4 g4, Variable v) throws IOException {
@@ -2209,10 +2202,20 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
       dimids[count++] = dimid;
     }
 
-    IntByReference varidp = new IntByReference();
-    int typid = convertDataType(v.getDataType());
-    if (typid < 0) return; // not implemented yet
+    int typid;
+    Vinfo vinfo;
+    if (v instanceof Structure) { // typid was stored in vinfo in createType
+      vinfo = (Vinfo) v.getSPobject();
+      vinfo.grpid = grpid;
+      typid = vinfo.typeid;
 
+    } else {
+      typid = convertDataType(v.getDataType());
+      if (typid < 0) return; // not implemented yet
+      vinfo = new Vinfo(grpid, -1, typid);
+    }
+
+    IntByReference varidp = new IntByReference();
     int ret = nc4.nc_def_var(grpid, v.getShortName(), typid, dimids.length, dimids, varidp);
     if (ret != 0)
       throw new IOException(nc4.nc_strerror(ret) + " on\n" + v);
@@ -2239,15 +2242,61 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
       }
     }
 
-    v.setSPobject(new Vinfo(grpid, varid, typid));
+    vinfo.varid = varid;
+    v.setSPobject(vinfo);
 
     for (Attribute att : v.getAttributes())
       writeAttribute(grpid, varid, att, v);
   }
 
+  /////////////////////////////////////
+  // compound types
+
+  /*
+  Compound data types can be defined for netCDF-4/HDF5 format files. A compound datatype is similar to a struct in C and contains a collection of one or more
+  atomic or user-defined types. The netCDF-4 compound data must comply with the properties and constraints of the HDF5 compound data type in terms of which it is implemented.
+
+  In summary these are:
+
+  It has a fixed total size.
+  It consists of zero or more named members that do not overlap with other members.
+  Each member has a name distinct from other members.
+  Each member has its own datatype.
+  Each member is referenced by an index number between zero and N-1, where N is the number of members in the compound datatype.
+  Each member has a fixed byte offset, which is the first byte (smallest byte address) of that member in the compound datatype.
+  In addition to other other user-defined data types or atomic datatypes, a member can be a small fixed-size array of any type with up to
+  four fixed-size “dimensions” (not associated with named netCDF dimensions).
+
+
+  Create a compound type. Provide an ncid, a name, and a total size (in bytes) of one element of the completed compound type.
+  After calling this function, fill out the type with repeated calls to nc_insert_compound (see nc_insert_compound).
+  Call nc_insert_compound once for each field you wish to insert into the compound type.
+   */
+  private void createCompoundType(Structure s) throws IOException {
+    IntByReference typeidp = new IntByReference();
+    long size = s.getElementSize();
+    int ret =  nc4.nc_def_compound(ncid, size, s.getShortName(), typeidp);
+    if (ret != 0)
+      throw new IOException(nc4.nc_strerror(ret) + " on\n" + s);
+
+    long offset = 0;
+    for (Variable v : s.getVariables()) {
+      int field_typeid = convertDataType(v.getDataType());
+      ret =  nc4.nc_insert_compound(ncid, typeidp.getValue(), v.getShortName(), offset, field_typeid);
+      if (ret != 0)
+       throw new IOException(nc4.nc_strerror(ret) + " on\n" + s);
+
+      offset += v.getElementSize() * v.getSize();
+    }
+
+    s.setSPobject(new Vinfo(-1, -1, typeidp.getValue()));
+  }
+
+  //////////////////////////////////////////////
 
   private void createCompoundVariable(int grpid, Group4 g4, Structure s) {
-
+    Vinfo vinfo = (Vinfo) s.getSPobject();
+    vinfo.grpid = grpid;
   }
 
   private Integer findDimensionId(Group4 g4, Dimension d) {
@@ -2282,11 +2331,14 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
       }
     }
 
-    // dont propagate these - handles internally
+    // dont propagate these - handled internally
     if (att.getShortName().equals(H5header.HDF5_CLASS)) return;
     if (att.getShortName().equals(H5header.HDF5_DIMENSION_LIST)) return;
     if (att.getShortName().equals(H5header.HDF5_DIMENSION_SCALE)) return;
     if (att.getShortName().equals(H5header.HDF5_DIMENSION_LABELS)) return;
+
+    if (att.getShortName().equals(CDM.CHUNK_SIZES)) return;
+    if (att.getShortName().equals(CDM.COMPRESS)) return;
 
     int ret = 0;
     Array values = att.getValues();
@@ -2334,15 +2386,15 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
   public void writeData(Variable v2, Section section, Array values) throws IOException, InvalidRangeException {
     Vinfo vinfo = (Vinfo) v2.getSPobject();
     if (vinfo == null) {
-      log.error("HEY vinfo null for " + v2);
-      return;
+      log.error("vinfo null for " + v2);
+      throw new IllegalStateException("vinfo null for " + v2.getFullName());
     }
-    int vlen = (int) v2.getSize();
-    int len = (int) section.computeSize();
-    if (vlen == len) // entire array
-      writeDataAll(v2, vinfo.grpid, vinfo.varid, vinfo.typeid, values);
-    else
-      writeData(v2, vinfo.grpid, vinfo.varid, vinfo.typeid, section, values);
+    // int vlen = (int) v2.getSize();
+    // int len = (int) section.computeSize();
+    //  if (vlen == len) // entire array
+    //    writeDataAll(v2, vinfo.grpid, vinfo.varid, vinfo.typeid, values);
+    //  else
+    writeData(v2, vinfo.grpid, vinfo.varid, vinfo.typeid, section, values);
   }
 
   private void writeData(Variable v, int grpid, int varid, int typeid, Section section, Array values) throws IOException, InvalidRangeException {

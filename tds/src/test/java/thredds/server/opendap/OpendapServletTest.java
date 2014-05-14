@@ -17,64 +17,72 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import thredds.mock.web.MockTdsContextLoader;
-import ucar.nc2.NetcdfFile;
-import ucar.nc2.dods.DODSNetcdfFile;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = {"/WEB-INF/applicationContext-tdsConfig.xml"}, loader = MockTdsContextLoader.class)
-public class OpendapServletTest
-{
+public class OpendapServletTest {
 
-    @Autowired
-    private MockServletConfig servletConfig;
+  @Autowired
+  private MockServletConfig servletConfig;
 
-    private OpendapServlet opendapServlet;
-    private String path = "/thredds/dodsC/gribCollection/GFS_CONUS_80km/files/GFS_CONUS_80km_20120229_1200.grib1.ascii";
+  private OpendapServlet opendapServlet;
+  private String path = "/gribCollection/GFS_CONUS_80km/GFS_CONUS_80km_20120229_1200.grib1/GC";
 
-    @Before
-    public void setUp() throws Exception
-    {
-        opendapServlet = new OpendapServlet();
-        opendapServlet.init(servletConfig);
-        opendapServlet.init();
-    }
+  @Before
+  public void setUp() throws Exception {
+    opendapServlet = new OpendapServlet();
+    opendapServlet.init(servletConfig);
+    opendapServlet.init();
+  }
 
-    @Test
-    public void asciiDataRequestTest() throws UnsupportedEncodingException
-    {
+  @Test
+  public void asciiDataRequestTest() throws UnsupportedEncodingException {
+    String mockURI = "/thredds/dodsC/" + path + ".ascii";
+    String mockQueryString = "Temperature_height_above_ground[0:1:0][0:1:0][41][31]";
+    MockHttpServletRequest request = new MockHttpServletRequest("GET", mockURI);
+    request.setContextPath("/thredds");
+    request.setQueryString(mockQueryString);
+    request.setPathInfo(path + ".ascii");
+    MockHttpServletResponse response = new MockHttpServletResponse();
+    opendapServlet.doGet(request, response);
+    assertEquals(200, response.getStatus());
 
-        String mockURI = "/thredds/dodsC/gribCollection/GFS_CONUS_80km/files/GFS_CONUS_80km_20120229_1200.grib1.ascii";
-        String mockQueryString = "Temperature_height_above_ground[0:1:0][0:1:0][41][31]";
-        MockHttpServletRequest request = new MockHttpServletRequest("GET", mockURI);
-        request.setContextPath("/thredds");
-        request.setQueryString(mockQueryString);
-        request.setPathInfo("/gribCollection/GFS_CONUS_80km/files/GFS_CONUS_80km_20120229_1200.grib1.ascii");
-        MockHttpServletResponse response = new MockHttpServletResponse();
-        opendapServlet.doGet(request, response);
-        assertEquals(200, response.getStatus());
+    String strResponse = response.getContentAsString();
+    System.out.printf("%s%n", strResponse);
+  }
 
-        String strResponse = response.getContentAsString();
-        System.out.printf("%s%n", strResponse);
-    }
+  @Test
+  public void asciiDataRequestTest2() throws UnsupportedEncodingException {
+    String mockURI = "/thredds/dodsC/" + path + ".ascii";
+    String mockQueryString = "Temperature_height_above_ground[0:1:0][0:1:0][0:10:64][0:10:92]";
+    MockHttpServletRequest request = new MockHttpServletRequest("GET", mockURI);
+    request.setContextPath("/thredds");
+    request.setQueryString(mockQueryString);
+    request.setPathInfo(path + ".ascii");
+    MockHttpServletResponse response = new MockHttpServletResponse();
+    opendapServlet.doGet(request, response);
+    assertEquals(200, response.getStatus());
+
+    String strResponse = response.getContentAsString();
+    System.out.printf("%s%n", strResponse);
+  }
 
 
-    @Test
-    public void dodsDataRequestTest() throws IOException
-    {
+  @Test
+  public void dodsDataRequestTest() throws IOException {
+    String mockURI = "/thredds/dodsC/" + path + ".dods";
+    String mockQueryString = "Temperature_height_above_ground[0:1:0][0:1:0][41][31]";
+    MockHttpServletRequest request = new MockHttpServletRequest("GET", mockURI);
+    request.setContextPath("/thredds");
+    request.setQueryString(mockQueryString);
+    request.setPathInfo(path + ".dods");
+    MockHttpServletResponse response = new MockHttpServletResponse();
+    opendapServlet.doGet(request, response);
+    assertEquals(200, response.getStatus());
+    // not set by servlet mocker :: assertEquals("application/octet-stream", response.getContentType());
 
-        String mockURI = "/thredds/dodsC/gribCollection/GFS_CONUS_80km/files/GFS_CONUS_80km_20120229_1200.grib1.dods";
-        String mockQueryString = "Temperature_height_above_ground[0:1:0][0:1:0][41][31]";
-        MockHttpServletRequest request = new MockHttpServletRequest("GET", mockURI);
-        request.setContextPath("/thredds");
-        request.setQueryString(mockQueryString);
-        request.setPathInfo("/gribCollection/GFS_CONUS_80km/files/GFS_CONUS_80km_20120229_1200.grib1.dods");
-        MockHttpServletResponse response = new MockHttpServletResponse();
-        opendapServlet.doGet(request, response);
-        assertEquals(200, response.getStatus());
-        // not set by servlet mocker :: assertEquals("application/octet-stream", response.getContentType());
-
-        String strResponse = response.getContentAsString();
-        System.out.printf("%s%n", strResponse);
-    }
+    String strResponse = response.getContentAsString();
+    System.out.printf("%s%n", strResponse);
+  }
 
 }

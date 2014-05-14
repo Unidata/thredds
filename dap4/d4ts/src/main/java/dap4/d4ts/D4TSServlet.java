@@ -197,9 +197,13 @@ public class D4TSServlet extends javax.servlet.http.HttpServlet
         // Get the complete url used to get to this point
         String url = DapUtil.canonicalpath(drq.getURL().toString(), false);
 
+        addCommonHeaders(drq);
+
         // Figure out the directory containing
         // the files to display.
         String dir = getResourceFile(drq, TESTDATADIR, true);
+        if(dir == null)
+            throw new DapException("Cannot locate resources directory");
 
         // Generate the front page
         FrontPage front = new FrontPage(dir, url);
@@ -550,6 +554,15 @@ public class D4TSServlet extends javax.servlet.http.HttpServlet
         err.setCode(httpcode);
         err.setMessage(t == null ? "Servlet Error: " + t.getClass().getName() : t.getMessage());
         err.setContext(drq.getURL());
+        ByteArrayOutputStream bsw = new ByteArrayOutputStream();
+        PrintStream pw = new PrintStream(bsw);
+        while(t.getCause() != null)
+            t = t.getCause();
+        t.printStackTrace(new PrintStream(pw));
+        bsw.close();
+        byte[] content = bsw.toByteArray();
+        String scontent = new String(content);
+        err.setOtherInfo(scontent);
         String errormsg = err.buildXML();
         drq.getResponse().sendError(httpcode, errormsg);
     }

@@ -1,0 +1,8 @@
+dataset {
+    int32 i[10][20];
+    float32 f[17][121];
+    Structure {
+	Int32 j;
+	Int32 i;
+    } exp;
+} ArraysAndStructure;

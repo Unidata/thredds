@@ -41,6 +41,7 @@ import ucar.coord.*;
 import ucar.nc2.grib.*;
 import ucar.nc2.stream.NcStream;
 import ucar.nc2.time.CalendarDate;
+import ucar.nc2.time.CalendarDateUnit;
 import ucar.nc2.time.CalendarPeriod;
 import ucar.unidata.io.RandomAccessFile;
 
@@ -56,19 +57,19 @@ import java.util.*;
  */
 public abstract class GribCollectionBuilderFromIndex {
 
+  protected final boolean dataOnly; // dont need the extra metadata like twot
   protected GribCollection gc;
   protected final org.slf4j.Logger logger;
   protected boolean debug = false;
   protected GribTables tables;
 
-  // protected abstract GribCollection.VariableIndex readVariable(GribCollection.GroupGC group, GribCollectionProto.Variable pv);
   protected abstract void readGds(GribCollectionProto.Gds p);
   protected abstract GribTables makeCustomizer() throws IOException;
   protected abstract String getLevelNameShort(int levelCode);
 
-
-  protected GribCollectionBuilderFromIndex(GribCollection gc, org.slf4j.Logger logger) {
+  protected GribCollectionBuilderFromIndex(GribCollection gc, boolean dataOnly, org.slf4j.Logger logger) {
     this.logger = logger;
+    this.dataOnly = dataOnly;
     this.gc = gc;
   }
 
@@ -153,6 +154,7 @@ public abstract class GribCollectionBuilderFromIndex {
       gc.backProcessId = proto.getBackProcessId();
       gc.local = proto.getLocal();
       this.tables = makeCustomizer();
+      gc.cust = this.tables;
 
       if (!gc.name.equals(proto.getName())) {
         logger.info("GribCollectionBuilderFromIndex raf {}: has different name= '{}' than stored in ncx= '{}' ", raf.getLocation(), gc.getName(), proto.getName());
@@ -360,19 +362,21 @@ message Coord {
     int code = pc.getCode();
     String unit = pc.hasUnit() ? pc.getUnit() : null;  // LOOK
     Coordinate.Type type = Coordinate.Type.values()[typei];
+
     switch (type) {
       case runtime:
         List<CalendarDate> dates = new ArrayList<>(pc.getMsecsCount());
         for (Long msec : pc.getMsecsList())
           dates.add(CalendarDate.of(msec));
-        return new CoordinateRuntime(dates);
+        CalendarDateUnit cdUnit = CalendarDateUnit.of(null, unit);
+        return new CoordinateRuntime(dates, cdUnit.getTimeUnit());
 
       case time:
         List<Integer> offs = new ArrayList<>(pc.getValuesCount());
         for (float val : pc.getValuesList())
           offs.add((int) val);
-        CalendarPeriod timeUnit = CalendarPeriod.of(unit);
         CalendarDate refDate = CalendarDate.of(pc.getMsecs(0));
+        CalendarPeriod timeUnit = (unit == null) ? null : CalendarPeriod.of(unit);
         return new CoordinateTime(code, timeUnit, refDate, offs);
 
       case timeIntv:
@@ -382,28 +386,28 @@ message Coord {
           int val2 = (int) pc.getBound(i);
           tinvs.add(new TimeCoord.Tinv(val1, val2));
         }
-        timeUnit = CalendarPeriod.of(unit);
         refDate = CalendarDate.of(pc.getMsecs(0));
-        return new CoordinateTimeIntv(code, timeUnit, refDate, tinvs);
+        CalendarPeriod timeUnit2 = (unit == null) ? null : CalendarPeriod.of(unit);
+        return new CoordinateTimeIntv(code, timeUnit2, refDate, tinvs);
 
       case time2D:
         dates = new ArrayList<>(pc.getMsecsCount());
         for (Long msec : pc.getMsecsList())
           dates.add(CalendarDate.of(msec));
-        CoordinateRuntime runtime = new CoordinateRuntime(dates);
+        CalendarPeriod timeUnit3 = (unit == null) ? null : CalendarPeriod.of(unit);
+        CoordinateRuntime runtime = new CoordinateRuntime(dates, timeUnit3);
 
         List<Coordinate> times = new ArrayList<>(pc.getTimesCount());
         for (GribCollectionProto.Coord coordp : pc.getTimesList())
           times.add(readCoord(coordp));
-        timeUnit = CalendarPeriod.of(unit);
         boolean isOrthogonal = pc.hasIsOrthogonal() && pc.getIsOrthogonal();
         boolean isRegular = pc.hasIsRegular() && pc.getIsRegular();
         if (isOrthogonal)
-          return new CoordinateTime2D(code, timeUnit, runtime, (CoordinateTimeAbstract) times.get(0), null);
+          return new CoordinateTime2D(code, timeUnit3, runtime, (CoordinateTimeAbstract) times.get(0), null);
         else if (isRegular)
-          return new CoordinateTime2D(code, timeUnit, runtime, times, null);
+          return new CoordinateTime2D(code, timeUnit3, runtime, times, null);
         else
-          return new CoordinateTime2D(code, timeUnit, null, runtime, times);
+          return new CoordinateTime2D(code, timeUnit3, null, runtime, times);
 
       case vert:
         boolean isLayer = pc.getValuesCount() == pc.getBoundCount();
@@ -445,7 +449,6 @@ message Coord {
     result.nrecords = pv.getNrecords();
     result.missing = pv.getMissing();
 
-    // LOOK  invCount, time2runtime
     Coordinate runtime = result.getCoordinate(Coordinate.Type.runtime);
     Coordinate time = result.getCoordinate(Coordinate.Type.time);
     if (time == null) time = result.getCoordinate(Coordinate.Type.timeIntv);
@@ -457,11 +460,13 @@ message Coord {
       ntimes = time.getSize();
     }
 
-    // 2d only
-    List<Integer> invCountList = pv.getInvCountList();
-    if (invCountList.size() > 0) {
-      result.twot = new TwoDTimeInventory(invCountList);
-      result.twot.setSize(runtime.getSize(), ntimes);
+    // 2d only  LOOK this is the big memory hog - but not needed except when building or for debug. can we make optional ??
+    if (!dataOnly) {
+      List<Integer> invCountList = pv.getInvCountList();
+      if (invCountList.size() > 0) {
+        result.twot = new TwoDTimeInventory(invCountList);
+        result.twot.setSize(runtime.getSize(), ntimes);
+      }
     }
 
     // 1d only

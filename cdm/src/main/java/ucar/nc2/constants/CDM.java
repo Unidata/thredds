@@ -45,7 +45,7 @@ public interface CDM {
   public static final Charset utf8Charset = Charset.forName("UTF-8");
 
   // structural
-  public static final String CHUNK_SIZE = "_ChunkSizes";
+  public static final String CHUNK_SIZES = "_ChunkSizes";
   public static final String COMPRESS = "_Compress";
   public static final String COMPRESS_DEFLATE = "deflate";
 
