@@ -54,7 +54,7 @@ public class CoordinateAxis2D extends CoordinateAxis {
   static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(CoordinateAxis2D.class);
   static private final boolean debug = false;
 
-  private ArrayDouble.D2 coords = null;  // maybe optional store for large arrays ??
+  private ArrayDouble.D2 coords = null;  // LOOK maybe optional for large arrays, or maybe eliminate all together, and read each time ??
 
   /**
    * Create a 2D coordinate axis from an existing VariableDS

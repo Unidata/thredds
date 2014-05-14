@@ -13,8 +13,10 @@ import ucar.nc2.grib.collection.GribCollection;
 import ucar.nc2.grib.collection.PartitionCollection;
 import ucar.nc2.ui.widget.*;
 import ucar.nc2.ui.widget.PopupMenu;
+import ucar.unidata.util.StringUtil2;
 import ucar.util.prefs.PreferencesExt;
 import ucar.util.prefs.ui.BeanTable;
+import ucar.util.prefs.ui.ComboBox;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
@@ -53,7 +55,7 @@ public class DirectoryPartitionViewer extends JPanel {
   private PreferencesExt prefs;
 
   private FeatureCollectionConfig config;
-  private String collectionName = "ncdc1year";
+  private String collectionName;
   private CdmIndex2Panel cdmIndexTables;
   private PartitionsTable partitionsTable;
 
@@ -65,28 +67,27 @@ public class DirectoryPartitionViewer extends JPanel {
 
   private TextHistoryPane infoTA;
   private IndependentWindow infoWindow;
+  private ComboBox cb;
   private FileManager dirFileChooser;
 
-  public DirectoryPartitionViewer(PreferencesExt prefs, JPanel buttPanel) {
+  public DirectoryPartitionViewer(PreferencesExt prefs, JPanel topPanel, JPanel buttPanel) {
     this.prefs = prefs;
     partitionTreeBrowser = new PartitionTreeBrowser();
     partitionsTable = new PartitionsTable((PreferencesExt) prefs.node("partTable"));
 
-    cdmIndexTables = new CdmIndex2Panel((PreferencesExt) prefs.node("cdmIdx"), null);
+    cdmIndexTables = new CdmIndex2Panel((PreferencesExt) prefs.node("cdmIdx"), buttPanel);
     cdmIndexTables.addPropertyChangeListener(new PropertyChangeListener() {
       public void propertyChange(PropertyChangeEvent evt) {
         firePropertyChange(evt.getPropertyName(), evt.getOldValue(), evt.getNewValue());
       }
     });
 
-    if (buttPanel != null) {
+    if (topPanel != null && buttPanel != null) {
 
-      // a file chooser that can choose a directory
-      dirFileChooser = new FileManager(null, null, null, (PreferencesExt) prefs.node("fileChooser"));
-      dirFileChooser.getFileChooser().setFileSelectionMode( JFileChooser.FILES_AND_DIRECTORIES);
-      AbstractAction dirFileAction = new AbstractAction() {
+      cb = new ComboBox(prefs);
+      cb.addActionListener(new ActionListener() {
         public void actionPerformed(ActionEvent e) {
-          String filename = dirFileChooser.chooseFilename();
+          String filename = (String) cb.getSelectedItem();
           if (filename == null) return;
           File d = new File( filename);
           if (d.isDirectory()) {
@@ -97,24 +98,38 @@ public class DirectoryPartitionViewer extends JPanel {
             setCollectionFromIndex(d.getPath());
           }
         }
+      });
+      topPanel.add(new JLabel("dir,ncx2,or config:"), BorderLayout.WEST);
+      topPanel.add(cb, BorderLayout.CENTER);
+
+      // a file chooser that can choose a directory
+      dirFileChooser = new FileManager(null, null, null, (PreferencesExt) prefs.node("fileChooser"));
+      dirFileChooser.getFileChooser().setFileSelectionMode( JFileChooser.FILES_AND_DIRECTORIES);
+      AbstractAction dirFileAction = new AbstractAction() {
+        public void actionPerformed(ActionEvent e) {
+          String filename = dirFileChooser.chooseFilename();
+          if (filename == null) return;
+          cb.setSelectedItem(filename);
+        }
       };
       BAMutil.setActionProperties(dirFileAction, "FileChooser", "choose file or directory...", false, 'L', -1);
       BAMutil.addActionToContainer(buttPanel, dirFileAction);
 
-      AbstractButton infoButton = BAMutil.makeButtcon("Information", "Show Info", false);
+      /* AbstractButton infoButton = BAMutil.makeButtcon("Information", "Show Info", false);
       infoButton.addActionListener(new ActionListener() {
         public void actionPerformed(ActionEvent e) {
           showInfo();
         }
       });
       buttPanel.add(infoButton);
+
       AbstractButton info2Button = BAMutil.makeButtcon("Information", "Show Detail Info", false);
       info2Button.addActionListener(new ActionListener() {
         public void actionPerformed(ActionEvent e) {
           showDetailInfo();
         }
       });
-      buttPanel.add(info2Button);
+      buttPanel.add(info2Button); */
     }
 
     setLayout(new BorderLayout());
@@ -148,6 +163,9 @@ public class DirectoryPartitionViewer extends JPanel {
 
   public void save() {
     if (mainSplit != null) prefs.putInt("mainSplit", mainSplit.getDividerLocation());
+    if (cb != null) cb.save();
+    if (dirFileChooser != null) dirFileChooser.save();
+
     cdmIndexTables.save();
     partitionsTable.save();
     prefs.putBeanObject("InfoWindowBounds", infoWindow.getBounds());
@@ -200,6 +218,7 @@ public class DirectoryPartitionViewer extends JPanel {
 
   // top directory
   private void setDirectory(File dir) {
+    config = new FeatureCollectionConfig();
     if (dir.isDirectory()) {
       partitionTreeBrowser.setRoot(dir.toPath());
     }
@@ -230,8 +249,25 @@ public class DirectoryPartitionViewer extends JPanel {
     partitionTreeBrowser.setRoot(Paths.get(spec.getRootDir()));
   }
 
-    // feature collection config
-  private void setCollectionFromIndex(String name) {
+  // ncx2 index
+  private void setCollectionFromIndex(String indexFilename) {
+    config = new FeatureCollectionConfig();
+
+    File indexFile = new File(indexFilename);
+    File parentFile = indexFile.getParentFile();
+
+    // whats the bloody collection name?
+    String name = indexFile.getName();
+    String dirName = parentFile.getName();
+    name = StringUtil2.removeFromEnd(name, CollectionAbstract.NCX_SUFFIX);
+    name = StringUtil2.removeFromEnd(name, dirName);
+    name = StringUtil2.removeFromEnd(name, "-");
+    this.collectionName = name;
+
+    setDirectory(parentFile );
+  }
+
+  private void readMFiles(String name) {
     Path path = Paths.get(name);
     GribCdmIndex reader = new GribCdmIndex(logger);
     List<MFile> result = new ArrayList<>();
@@ -246,8 +282,6 @@ public class DirectoryPartitionViewer extends JPanel {
       logger.info("Error opening ncx2 file ", e);
     }
   }
-
-
 
   private void moveCdmIndexFile(NodeInfo indexFile) throws IOException {
     GribCollection gc = null;

@@ -1373,6 +1373,7 @@ public class
 
     OpPanel(PreferencesExt prefs, String command, boolean addComboBox, boolean addFileButton, boolean addCoordButton) {
       this.prefs = prefs;
+      buttPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 5, 0));
 
       cb = new ComboBox(prefs);
       cb.addActionListener(new ActionListener() {
@@ -1387,8 +1388,6 @@ public class
           }
         }
       });
-
-      buttPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 5, 0));
 
       AbstractAction closeAction = new AbstractAction() {
         public void actionPerformed(ActionEvent e) {
@@ -1437,9 +1436,13 @@ public class
       }
 
       topPanel = new JPanel(new BorderLayout());
-      topPanel.add(new JLabel(command), BorderLayout.WEST);
-      if (addComboBox) topPanel.add(cb, BorderLayout.CENTER);
-      topPanel.add(buttPanel, BorderLayout.EAST);
+      if (addComboBox) {
+        topPanel.add(new JLabel(command), BorderLayout.WEST);
+        topPanel.add(cb, BorderLayout.CENTER);
+        topPanel.add(buttPanel, BorderLayout.EAST);
+      } else {
+        topPanel.add(buttPanel, BorderLayout.EAST);
+      }
 
       setLayout(new BorderLayout());
       add(topPanel, BorderLayout.NORTH);
@@ -5309,8 +5312,8 @@ public class
     DirectoryPartitionViewer table;
 
     DirectoryPartitionPanel(PreferencesExt dbPrefs) {
-      super(dbPrefs, "collection:", false, false);
-      table = new DirectoryPartitionViewer(prefs, buttPanel);
+      super(dbPrefs, "collection:", false, false, false);
+      table = new DirectoryPartitionViewer(prefs, topPanel, buttPanel);
       add(table, BorderLayout.CENTER);
 
       table.addPropertyChangeListener(new java.beans.PropertyChangeListener() {

@@ -1144,15 +1144,14 @@ public abstract class GribCollection implements FileCacheable, AutoCloseable {
     f.format("Class (%s)%n", getClass().getName());
     f.format("%s%n%n", toString());
 
-
-    f.format(" master runtime coordinate%n");
-    masterRuntime.showCoords(f);
-    f.format("%n");
+    //f.format(" master runtime coordinate%n");
+    //masterRuntime.showCoords(f);
+    //f.format("%n");
 
     for (Dataset ds : datasets) {
       f.format("Dataset %s%n", ds.getType());
       for (GroupGC g : ds.groups) {
-        f.format("Group %s%n", g.horizCoordSys.getId());
+        f.format(" Group %s%n", g.horizCoordSys.getId());
         for (VariableIndex v : g.variList) {
           f.format("  %s%n", v.toStringShort());
         }

@@ -518,7 +518,7 @@ public class CdmIndex2Panel extends JPanel {
   ///////////////////////////////////////////////
   GribCollection gc;
   Collection<MFile> gcFiles;
-  FeatureCollectionConfig config = null;
+  FeatureCollectionConfig config = new FeatureCollectionConfig();
 
   public void setIndexFile(Path indexFile, FeatureCollectionConfig config) throws IOException {
     if (gc != null) gc.close();

@@ -714,15 +714,16 @@ public abstract class PartitionCollection extends GribCollection {
   public void showIndex(Formatter f) {
     super.showIndex(f);
 
+    int count = 0;
     f.format("Partitions%n");
     for (Partition p :  getPartitions())
-      f.format("  %s%n", p);
+      f.format("%d:  %s%n", count++, p);
     f.format("%n");
 
     if (run2part == null) f.format("run2part null%n");
     else {
       f.format(" master runtime -> partition %n");
-      int count = 0;
+      count = 0;
       for (CalendarDate cd : masterRuntime.getRuntimesSorted()) {
         int partno =  run2part[count];
         Partition part = getPartition(partno);
