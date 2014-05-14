@@ -76,7 +76,7 @@ public class DatasetViewer extends JPanel {
   private PreferencesExt prefs;
   private NetcdfFile ds;
 
-  private List<NestedTable> nestedTableList = new ArrayList<NestedTable>();
+  private List<NestedTable> nestedTableList = new ArrayList<>();
   private BeanTable attTable;
 
   private JPanel tablePanel;
@@ -307,6 +307,13 @@ public class DatasetViewer extends JPanel {
 
   public NetcdfFile getDataset() {
     return this.ds;
+  }
+
+  public void clear() {
+    this.ds = null;
+    if (attTable != null) attTable.clearBeans();
+    for (NestedTable nt : nestedTableList) nt.table.clearBeans();
+    datasetTree.clear();
   }
 
   public void setDataset(NetcdfFile ds) {

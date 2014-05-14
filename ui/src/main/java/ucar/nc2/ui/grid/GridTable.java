@@ -99,6 +99,11 @@ public class GridTable {
     });
   }
 
+  public void clear() {
+    list.clear();
+    table.setList(list);
+  }
+
   public void setDataset(java.util.List<GridDatatype> fields) {
     if (fields == null) return;
 

@@ -1931,6 +1931,7 @@ public class
     void closeOpenFiles() throws IOException {
       if (ds != null) ds.close();
       ds = null;
+      coordSysTable.clear();
     }
 
     CoordSysPanel(PreferencesExt p) {
@@ -4716,6 +4717,8 @@ public class
     void closeOpenFiles() throws IOException {
       if (ds != null) ds.close();
       ds = null;
+      dsTable.clear();
+      if (gridUI != null) gridUI.clear();
     }
 
     void setDataset(NetcdfDataset newds) {
@@ -5082,6 +5085,7 @@ public class
     void closeOpenFiles() throws IOException {
       if (ncfile != null) ncfile.close();
       ncfile = null;
+      dsViewer.clear();
     }
 
     void setDataset(NetcdfFile nc) {

@@ -54,9 +54,7 @@ public class CoordinateAxis2D extends CoordinateAxis {
   static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(CoordinateAxis2D.class);
   static private final boolean debug = false;
 
-  private ArrayDouble.D2 coords = null;
-  private boolean wasBoundsDone = false;
-  private boolean isInterval = false;
+  private ArrayDouble.D2 coords = null;  // maybe optional store for large arrays ??
 
   /**
    * Create a 2D coordinate axis from an existing VariableDS
@@ -93,8 +91,6 @@ public class CoordinateAxis2D extends CoordinateAxis {
       throw new IllegalStateException(ioe);
     }
 
-
-    // data = data.reduce();
     if (data.getRank() != 2)
       throw new IllegalArgumentException("must be 2D");
     if (debug)
@@ -107,8 +103,7 @@ public class CoordinateAxis2D extends CoordinateAxis {
   }
 
   public boolean isInterval() {
-    if (!wasBoundsDone) makeBounds();
-    return isInterval;
+    return computeIsInterval();
   }
 
   private void makeConnectedLon(ArrayDouble.D2 mid) {
@@ -186,9 +181,8 @@ public class CoordinateAxis2D extends CoordinateAxis {
    * @return bounds array pr null if not an interval
    */
   public ArrayDouble.D3 getCoordBoundsArray() {
-    if (!wasBoundsDone) makeBounds();
-    if (!isInterval) return null;
-    return bounds;
+    if (coords == null) doRead();
+    return makeBoundsFromAux();
   }
 
   /**
@@ -266,17 +260,6 @@ public class CoordinateAxis2D extends CoordinateAxis {
       edgey.set(0, x, edgey.get(1,x) - (edgey.get(2,x) - edgey.get(1,x)));
       edgey.set(ny, x, edgey.get(ny-1,x) + (edgey.get(ny-1,x) - edgey.get(ny-2,x)));
     }
-
-
-    /* compute the interior rows
-    for (int x=0; x<nx; x++) {
-      for (int y=1; y<ny; y++) {
-        double yval = (midy.get(y-1,x) + midy.get(y,x))/2;
-        edgey.set(y, x, yval);
-      }
-      edgey.set(0, x, midy.get(0,x) - (edgey.get(1,x) - midy.get(0,x)));
-      edgey.set(ny, x,  midy.get(ny-1, x) - (edgey.get(ny-1,x) - midy.get(ny-1,x)));
-    } */
 
     return edgey;
   }
@@ -358,69 +341,39 @@ public class CoordinateAxis2D extends CoordinateAxis {
     return edgey;
   }
 
-  /* Given a coordinate position, find what grid element contains it.
-    This means that
-    <pre>
-    edge[i] <= pos < edge[i+1] (if values are ascending)
-    edge[i] > pos >= edge[i+1] (if values are descending)
-    </pre>
-
-    @param pos position in this coordinate system
-    @param lastIndex last position we looked for, or -1 if none
-    @return index of grid point containing it, or -1 if outside grid area
-  *
-  public int findCoordElement(double pos, int lastIndex) {
-    if (!isNumeric())
-       throw new UnsupportedOperationException("CoordinateAxis.findCoordElement() on non-numeric");
-
-    if (axisType == AxisType.Lon) {
-      for (int x=0; x < getSize(); x++) {
-        if (LatLonPointImpl.betweenLon( pos, getCoordEdge(x), getCoordEdge(x+1)))
-          return x;
-      }
-      return -1;
-    }
-
-    if (lastIndex < 0) lastIndex = (int) getSize()/2;
-
-    if (isAscending) {
-
-      if ((pos < getCoordEdge(0)) || (pos > getCoordEdge((int)getSize())))
-        return -1;
-      while (pos < getCoordEdge(lastIndex))
-        lastIndex--;
-      while (pos > getCoordEdge(lastIndex+1))
-        lastIndex++;
-      return lastIndex;
-
-    } else {
-
-      if ((pos > getCoordEdge(0)) || (pos < getCoordEdge((int)getSize())))
-        return -1;
-      while (pos > getCoordEdge(lastIndex))
-        lastIndex--;
-      while (pos < getCoordEdge(lastIndex+1))
-        lastIndex++;
-      return lastIndex;
-    }
-  }   */
-
   ///////////////////////////////////////////////////////////////////////////////
   // bounds calculations
 
-  // defer making until asked, use makeBounds()
-  //private double[] edge; // n+1 edges, edge[k] < midpoint[k] < edge[k+1]
-  private ArrayDouble.D3 bounds;
 
-  private void makeBounds() {
-    if (coords == null) doRead();
-    if (isNumeric()) {
-      makeBoundsFromAux();
+  private ArrayDouble.D3 makeBoundsFromAux() {
+    if (!computeIsInterval()) return null;
+
+    Attribute boundsAtt = findAttributeIgnoreCase(CF.BOUNDS);
+    String boundsVarName = boundsAtt.getStringValue();
+    VariableDS boundsVar = (VariableDS) ncd.findVariable(getParentGroup(), boundsVarName);
+
+    Array data;
+    try {
+      //boundsVar.setUseNaNs(false); // missing values not allowed
+      data = boundsVar.read();
+    } catch (IOException e) {
+      log.warn("CoordinateAxis2D.makeBoundsFromAux read failed ", e);
+      return null;
     }
-    wasBoundsDone = true;
+
+    ArrayDouble.D3 bounds;
+    assert (data.getRank() == 3) && (data.getShape()[2] == 2) : "incorrect shape data for variable " + boundsVar;
+    if (data instanceof ArrayDouble.D3) {
+      bounds = (ArrayDouble.D3) data;
+    } else {
+      bounds = (ArrayDouble.D3) Array.factory(DataType.DOUBLE, data.getShape());
+      MAMath.copy(data, bounds);
+    }
+
+    return bounds;
   }
 
-  private boolean makeBoundsFromAux() {
+  private boolean computeIsInterval() {
     Attribute boundsAtt = findAttributeIgnoreCase(CF.BOUNDS);
     if ((null == boundsAtt) || !boundsAtt.isString()) return false;
     String boundsVarName = boundsAtt.getStringValue();
@@ -431,56 +384,8 @@ public class CoordinateAxis2D extends CoordinateAxis {
     if (getDimension(0) != boundsVar.getDimension(0)) return false;
     if (2 != boundsVar.getDimension(2).getLength()) return false;
 
-    Array data;
-    try {
-      //boundsVar.setUseNaNs(false); // missing values not allowed
-      data = boundsVar.read();
-    } catch (IOException e) {
-      log.warn("CoordinateAxis2D.makeBoundsFromAux read failed ", e);
-      return false;
-    }
-
-    assert (data.getRank() == 3) && (data.getShape()[2] == 2) : "incorrect shape data for variable " + boundsVar;
-    isInterval = true;
-     if (data instanceof ArrayDouble.D3) {
-      bounds = (ArrayDouble.D3) data;
-    } else {
-      bounds = (ArrayDouble.D3) Array.factory(DataType.DOUBLE, data.getShape());
-      MAMath.copy(data, bounds);
-    }
-
     return true;
   }
-
-  /* private void makeEdges() {
-    int size = (int) getSize();
-    edge = new double[size + 1];
-    if (size < 1) return;
-    for (int i = 1; i < size; i++)
-      edge[i] = (coords[i - 1] + coords[i]) / 2;
-    edge[0] = coords[0] - (edge[1] - coords[0]);
-    edge[size] = coords[size - 1] + (coords[size - 1] - edge[size - 1]);
-  }
-
-  private void makeBoundsFromEdges() {
-    int size = (int) getSize();
-    if (size == 0) return;
-
-    bound1 = new double[size];
-    bound2 = new double[size];
-    for (int i = 0; i < size; i++) {
-      bound1[i] = edge[i];
-      bound2[i] = edge[i + 1];
-    }
-
-    // flip if needed
-    if (bound1[0] > bound2[0]) {
-      double[] temp = bound1;
-      bound1 = bound2;
-      bound2 = temp;
-    }
-  } */
-
 
   public static void main(String[] args) {
     double connect = connectLon(-167.258, 156.55109);

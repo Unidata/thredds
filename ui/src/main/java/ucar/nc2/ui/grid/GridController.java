@@ -550,6 +550,13 @@ public class GridController {
     startOK = false; // wait till redraw is hit before drawing
   }
 
+  public void clear() {
+    this.gridDataset = null;
+    this.netcdfDataset = null;
+    this.currentField = null;
+    renderGrid.clear();
+  }
+
   /* assume that this might be done in a backgound task
   boolean openDataset(thredds.catalog.InvAccess access, ucar.nc2.util.CancelTask task) {
     String urlString = access.getStandardUrlName();

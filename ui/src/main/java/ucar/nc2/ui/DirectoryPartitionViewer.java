@@ -362,6 +362,11 @@ public class DirectoryPartitionViewer extends JPanel {
   private void cmdShowIndex(NodeInfo node) {
     try {
       // this opens the index file and constructs a GribCollection
+      Path index = node.part.getIndex();
+      if (index == null) {
+        node.part.findIndex();
+      }
+
       cdmIndexTables.setIndexFile(node.part.getIndex(), config);
       swap(cdmIndexTables);
 
