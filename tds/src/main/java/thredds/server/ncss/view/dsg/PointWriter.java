@@ -3,6 +3,7 @@ package thredds.server.ncss.view.dsg;
 import org.springframework.http.HttpHeaders;
 import thredds.server.ncss.controller.NcssController;
 import thredds.server.ncss.exception.NcssException;
+import thredds.server.ncss.exception.UnsupportedResponseFormatException;
 import thredds.server.ncss.format.SupportedFormat;
 import thredds.server.ncss.params.NcssParamsBean;
 import thredds.server.ncss.util.NcssRequestUtils;
@@ -147,8 +148,7 @@ public class PointWriter extends AbstractWriter {
          break;
 
        default:
-         log.error("Unknown result type = " + format.getFormatName());
-         return null;
+           throw new UnsupportedResponseFormatException("Unknown result type = " + format.getFormatName());
      }
 
      return w;

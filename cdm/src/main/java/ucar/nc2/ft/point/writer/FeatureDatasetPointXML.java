@@ -205,9 +205,9 @@ public class FeatureDatasetPointXML {
     elem.addContent(new Element("accept").addContent("text/csv").setAttribute("displayName", "csv (file)"));
     elem.addContent(new Element("accept").addContent("xml").setAttribute("displayName", "xml"));
     elem.addContent(new Element("accept").addContent("text/xml").setAttribute("displayName", "xml (file)"));
+    elem.addContent(new Element("accept").addContent("waterml2").setAttribute("displayName", "WaterML 2.0"));
     elem.addContent(new Element("accept").addContent("netcdf").setAttribute("displayName", "netcdf"));
     //elem.addContent(new Element("accept").addContent("ncstream"));
-    elem.addContent(new Element("accept").addContent("waterml2").setAttribute("displayName", "WaterML 2.0"));
     rootElem.addContent(elem);
 
     return doc;

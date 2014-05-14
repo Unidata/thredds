@@ -1,11 +1,10 @@
 package thredds.server.config;
 
+import org.springframework.stereotype.Service;
+import thredds.server.ncss.format.SupportedFormat;
+
 import java.util.HashMap;
 import java.util.Map;
-
-import org.springframework.stereotype.Service;
-
-import thredds.server.ncss.format.SupportedFormat;
 
 @Service
 public final class FormatsAvailabilityService {
@@ -22,6 +21,7 @@ public final class FormatsAvailabilityService {
 		formatsAvailability.put(SupportedFormat.NETCDF4 , false);
 		formatsAvailability.put(SupportedFormat.WKT , true);
 		formatsAvailability.put(SupportedFormat.JSON , true);
+    formatsAvailability.put(SupportedFormat.WATERML2, true);
 	}
 	
 	private FormatsAvailabilityService(){
@@ -29,7 +29,8 @@ public final class FormatsAvailabilityService {
 	}
 	
 	public static boolean isFormatAvailable(SupportedFormat format){		
-		return formatsAvailability.get(format); 
+		Boolean available = formatsAvailability.get(format);
+        return (available == null) ? false : available;
 	}
 
 	static void setFormatAvailability(SupportedFormat format, boolean available){

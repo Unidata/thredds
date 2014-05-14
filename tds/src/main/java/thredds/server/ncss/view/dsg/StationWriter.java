@@ -33,25 +33,11 @@
 
 package thredds.server.ncss.view.dsg;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.OutputStream;
-import java.io.PrintWriter;
-import java.text.ParseException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-
-import javax.xml.stream.XMLOutputFactory;
-import javax.xml.stream.XMLStreamException;
-import javax.xml.stream.XMLStreamWriter;
-
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.MediaType;
-
 import thredds.server.ncss.controller.NcssController;
 import thredds.server.ncss.exception.FeaturesNotFoundException;
 import thredds.server.ncss.exception.NcssException;
+import thredds.server.ncss.exception.UnsupportedResponseFormatException;
 import thredds.server.ncss.format.SupportedFormat;
 import thredds.server.ncss.params.NcssParamsBean;
 import thredds.server.ncss.util.NcssRequestUtils;
@@ -63,11 +49,7 @@ import ucar.nc2.Attribute;
 import ucar.nc2.NetcdfFileWriter;
 import ucar.nc2.VariableSimpleIF;
 import ucar.nc2.constants.CDM;
-import ucar.nc2.ft.FeatureDataset;
-import ucar.nc2.ft.FeatureDatasetPoint;
-import ucar.nc2.ft.PointFeature;
-import ucar.nc2.ft.PointFeatureCollection;
-import ucar.nc2.ft.StationTimeSeriesFeatureCollection;
+import ucar.nc2.ft.*;
 import ucar.nc2.ft.point.StationPointFeature;
 import ucar.nc2.ft.point.remote.PointStream;
 import ucar.nc2.ft.point.remote.PointStreamProto;
@@ -84,6 +66,18 @@ import ucar.unidata.geoloc.LatLonPointImpl;
 import ucar.unidata.geoloc.LatLonRect;
 import ucar.unidata.geoloc.Station;
 import ucar.unidata.util.Format;
+
+import javax.xml.stream.XMLOutputFactory;
+import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.XMLStreamWriter;
+import java.io.File;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.io.PrintWriter;
+import java.text.ParseException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 
 /**
  * NCSS subsetting for station data.
@@ -151,9 +145,13 @@ public class StationWriter extends AbstractWriter {
       case NETCDF4:
         w = new WriterNetcdf(NetcdfFileWriter.Version.netcdf4, out);
         break;
+
+      case WATERML2:
+        w = new WriterWaterML2(out);
+        break;
+
       default:
-        log.error("Unknown result type = " + format.getFormatName());
-        return null;
+        throw new UnsupportedResponseFormatException("Unknown result type = " + format.getFormatName());
     }
 
     return w;
@@ -731,7 +729,6 @@ public class StationWriter extends AbstractWriter {
     }
   }
 
-
   class WriterRaw extends Writer {
 
     WriterRaw(final java.io.PrintWriter writer) {
@@ -929,10 +926,33 @@ public class StationWriter extends AbstractWriter {
     }
   }
 
-//  static public void main(String args[]) throws IOException {
-//    //getFiles("R:/testdata2/station/ldm/metar/");
-//    // StationObsCollection soc = new StationObsCollection("C:/data/metars/", false);
-//  }
+  class WriterWaterML2 extends Writer {
+    private OutputStream out;
 
+    WriterWaterML2(OutputStream out) {
+      super(null);
+      this.out = out;
+    }
+
+    @Override void header() throws IOException { }
+
+    @Override Action getAction() {
+      return new Action() {
+        public void act(PointFeature pf, StructureData sdata) throws IOException {
+          out.write("WaterML2\n".getBytes());
+        }
+      };
+    }
+
+    @Override void trailer() throws IOException {
+      out.flush();
+    }
+
+    @Override HttpHeaders getHttpHeaders(String pathInfo) {
+      HttpHeaders httpHeaders = new HttpHeaders();
+      httpHeaders.set(ContentType.HEADER, ContentType.text.getContentHeader());
+      return httpHeaders;
+    }
+  }
 }
 
