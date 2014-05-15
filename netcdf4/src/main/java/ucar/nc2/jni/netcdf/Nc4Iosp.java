@@ -62,9 +62,9 @@ import java.nio.IntBuffer;
 
 import com.sun.jna.Native;
 import com.sun.jna.Pointer;
+import com.sun.jna.NativeLong;
 import com.sun.jna.ptr.IntByReference;
 import com.sun.jna.ptr.NativeLongByReference;
-import com.sun.jna.NativeLong;
 
 import static ucar.nc2.jni.netcdf.Nc4prototypes.*;
 
@@ -84,8 +84,19 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
   static private Nc4prototypes nc4;
   static public final String JNA_PATH = "jna.library.path";
   static public final String JNA_PATH_ENV = "JNA_PATH"; // environment var
-  static private String jnaPath;
-  static private String libName = "netcdf";
+
+  static protected String DEFAULTNETCDF4LIBNAME = "netcdf";
+  static protected String netcdf4libname = DEFAULTNETCDF4LIBNAME;
+
+  static String[] DEFAULTNETCDF4PATH = new String[] {
+      "/opt/netcdf4/lib",
+      "/home/dmh/opt/netcdf4/lib", //temporary
+      "c:/opt/netcdf", // Windows
+      "/usr/jna_lib/",
+  };
+
+  static private String jnaPath = null;
+  static private String libName = DEFAULTNETCDF4LIBNAME;
 
   static private boolean warn = true;
   static private final boolean debug = true,
@@ -94,7 +105,7 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
           debugWrite = true;
 
   /**
-   * Test if the netcdf C library is present and loaded     *
+   * Test if the netcdf C library is present and loaded
    *
    * @return true if present
    */
@@ -103,13 +114,11 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
       load();
       if (warn) {
         startupLog.info("netcdf4 c library loaded jna_path= '{}' libname='{}'", jnaPath, libName);
-        //log.info("netcdf4 c library loaded jna_path= '{}' libname='{}'", jnaPath, libName);
         warn = false;
       }
     } catch (Throwable t) {
       if (warn) {
         startupLog.warn("netcdf4 c library not present jna_path='" + jnaPath + "' libname='" + libName + "' " + t.getMessage());
-        //log.warn("netcdf4 c library not present jna_path='" + jnaPath + "' libname='" + libName + "' " + t.getMessage());
         warn = false;
       }
     }
@@ -117,43 +126,58 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
   }
 
   /**
+   * Use the default path to try to set jna.library.path
+   * @return true if we set jna.library.path
+   */
+  protected String
+  defaultNetcdf4Library()
+  {
+    String pathlist = null;
+    for(String path: DEFAULTNETCDF4PATH) {
+      File f = new File(path);
+      if(f.exists() && f.canRead()) {
+	pathlist = (path == null ? "" : pathlist + File.pathSeparator);
+	pathlist = pathlist + path;
+      }
+    }
+    return pathlist;
+  }
+
+  /**
    * set the path and name of the netcdf c library.
    * must be called before load() is called.
-   * Order of priority is (currently):
-   * 1. jna_path argument to this function, it if exists
-   * 2. -Djna.library.path
-   * 3. JNA_PATH env variable
    *
-   * @param jna_path path
-   * @param libname  library name
+   * @param jna_path path to shared libraries
+   * @param lib_name  library name
    */
-  static public void setLibraryAndPath(String jna_path, String libname) {
-    // See if jna_path exists
-    if (jna_path != null) {
-      File f = new File(jna_path);
-      if (!f.exists())
-        jna_path = null; // ignore it
+  static public void setLibraryAndPath(String jna_path, String lib_name) {
+    lib_name = nullify(lib_name);
+    jna_path = nullify(jna_path);
+    if(lib_name) == null)
+      lib_name = DEFAULTNETCDF4LIBNAME;
+    libName = lib_name;
+    if(jna_path == null) {
+        // Look at -D flags first, then env variables
+        jna_path = System.getProperty(JNA_PATH);
+	jna_path = nullify(jna_path);
+        if(jna_path == null)
+            jna_path = System.getenv(JNA_PATH_ENV);
     }
-    if (jna_path == null || jna_path.length() == 0) {
-      jna_path = System.getProperty(JNA_PATH);
-      if (jna_path == null || jna_path.length() == 0)
-        jna_path = System.getenv(JNA_PATH_ENV);
-    }
-    if (jna_path != null && jna_path.length() > 0)
-      System.setProperty(JNA_PATH, jna_path);
-    if (libname != null)
-      libName = libname;
+    jna_path = nullify(jna_path);
+    if (jna_path == null)
+	jna_path = defaultNetcdf4Library;
+    if (jna_path == null)
+        System.err.println("Cannot determine Netcdf4 library path");
+    System.setProperty(JNA_PATH, jna_path);
   }
 
   static private Nc4prototypes load() {
     if (nc4 == null) {
       if (jnaPath == null) {
-        jnaPath = System.getProperty(JNA_PATH);
-        if (jnaPath == null) {
-          jnaPath = "/usr/jna_lib/";
-          System.setProperty(JNA_PATH, jnaPath);
-        }
-      }
+	setLibraryAndPath(null,null);
+      if (jnaPath == null)
+        System.err.println("Cannot determine Netcdf4 library path");
+
       //Native.setProtected(true);
       nc4 = (Nc4prototypes) Native.loadLibrary(libName, Nc4prototypes.class);
       if (debug)
@@ -162,13 +186,14 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
     return nc4;
   }
 
-  static {
-    String jnapath = System.getProperty(JNA_PATH);
-    if (jnapath == null || jnapath.length() == 0) {
-      jnapath = System.getenv(JNA_PATH_ENV);
-      if (jnapath != null && jnapath.length() > 0)
-        System.setProperty(JNA_PATH, jnapath);
-    }
+  /**
+   * Convert a zero-length string to null
+   * @param s the string to check for length
+   * @return null if s.length() == 0, s otherwise
+   */
+  static protected String nullify(String s) {
+    if(s.length() == 0) s = null;
+    return s;
   }
 
   /**
@@ -2184,7 +2209,7 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
     // variables
     for (Variable v : g4.g.getVariables()) {
           createVariable(grpid, g4, v);
-      }
+    }
 
     // groups
     for (Group nested : g4.g.getGroups()) {
