@@ -129,7 +129,7 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
    * Use the default path to try to set jna.library.path
    * @return true if we set jna.library.path
    */
-  protected String
+  static protected String
   defaultNetcdf4Library()
   {
     String pathlist = null;
@@ -153,7 +153,7 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
   static public void setLibraryAndPath(String jna_path, String lib_name) {
     lib_name = nullify(lib_name);
     jna_path = nullify(jna_path);
-    if(lib_name) == null)
+    if(lib_name == null)
       lib_name = DEFAULTNETCDF4LIBNAME;
     libName = lib_name;
     if(jna_path == null) {
@@ -165,7 +165,7 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
     }
     jna_path = nullify(jna_path);
     if (jna_path == null)
-	jna_path = defaultNetcdf4Library;
+	jna_path = defaultNetcdf4Library();
     if (jna_path == null)
         System.err.println("Cannot determine Netcdf4 library path");
     System.setProperty(JNA_PATH, jna_path);
@@ -173,16 +173,16 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
 
   static private Nc4prototypes load() {
     if (nc4 == null) {
-      if (jnaPath == null) {
+      if (jnaPath == null)
 	setLibraryAndPath(null,null);
       if (jnaPath == null)
         System.err.println("Cannot determine Netcdf4 library path");
-
-      //Native.setProtected(true);
-      nc4 = (Nc4prototypes) Native.loadLibrary(libName, Nc4prototypes.class);
-      if (debug)
-        System.out.printf(" Netcdf nc_inq_libvers='%s' isProtected=%s %n ", nc4.nc_inq_libvers(), Native.isProtected());
+	return null;	
     }
+    //Native.setProtected(true);
+    nc4 = (Nc4prototypes) Native.loadLibrary(libName, Nc4prototypes.class);
+    if (debug)
+      System.out.printf(" Netcdf nc_inq_libvers='%s' isProtected=%s %n ", nc4.nc_inq_libvers(), Native.isProtected());
     return nc4;
   }
 
