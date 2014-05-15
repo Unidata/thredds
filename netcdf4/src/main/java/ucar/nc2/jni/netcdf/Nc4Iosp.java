@@ -2304,7 +2304,7 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
     IntByReference typeidp = new IntByReference();
     long size = s.getElementSize();
     String name =  s.getShortName() + "_t";
-    int ret =  nc4.nc_def_compound(grpid, size, name, typeidp);
+    int ret = nc4.nc_def_compound(grpid, new NativeLong(size), name, typeidp);
    if (ret != 0)
       throw new IOException(nc4.nc_strerror(ret) + " on\n" + s);
     int typeid = typeidp.getValue();
@@ -2589,9 +2589,9 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
    */
    private void writeCompoundData(Structure s, UserType userType, int grpid, int varid, int typeid, Section section, ArrayStructure values) throws IOException, InvalidRangeException {
 
-    long[] origin = convert(section.getOrigin());
-    long[] shape = convert(section.getShape());
-    long[] stride = convert(section.getStride());
+    NativeLong[] origin = convert(section.getOrigin());
+    NativeLong[] shape = convert(section.getShape());
+    NativeLong[] stride = convert(section.getStride());
 
     ArrayStructureBB valuesBB = IospHelper.makeArrayBB(values);
     ByteBuffer bbuff = valuesBB.getByteBuffer();  // LOOK c library reads in native order, so need to convert??
@@ -2604,7 +2604,6 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
     if (ret != 0)
       throw new IOException(ret + ": " + nc4.nc_strerror(ret));
   }
-
 
   private void writeDataAll(Variable v, int grpid, int varid, int typeid, Array values) throws IOException, InvalidRangeException {
 
