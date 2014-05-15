@@ -33,7 +33,6 @@
 package ucar.nc2;
 
 import ucar.ma2.*;
-import ucar.nc2.constants.CDM;
 import ucar.nc2.iosp.IOServiceProviderWriter;
 import ucar.nc2.iosp.hdf5.H5header;
 import ucar.nc2.iosp.netcdf3.N3header;
@@ -53,6 +52,7 @@ import java.util.*;
  * Fairly low level wrap of IOServiceProviderWriter.
  * Construct CDM objects, then create the file and write data to it.
  *
+ * @see FileWriter2
  * @author caron
  * @since 7/25/12
  */
@@ -191,7 +191,7 @@ public class NetcdfFileWriter {
           method.invoke(spi, chunker);
 
         } catch (Throwable e) {
-          throw new IllegalArgumentException("ucar.nc2.jni.netcdf.Nc4Iosp is not on classpath, cannont use version " + version);
+          throw new IllegalArgumentException("ucar.nc2.jni.netcdf.Nc4Iosp is not on classpath, cannot use version " + version);
         }
         spiw = spi;
       } else {
@@ -493,6 +493,10 @@ public class NetcdfFileWriter {
    * @return the Variable that has been added
    */
   public Variable addVariable(Group g, String shortName, DataType dataType, List<Dimension> dims) {
+    return addVariable(g, null, shortName, dataType, dims);
+  }
+
+  public Variable addVariable(Group g, Structure parent, String shortName, DataType dataType, List<Dimension> dims) {
     if (!defineMode)
       throw new UnsupportedOperationException("not in define mode");
 
@@ -509,14 +513,8 @@ public class NetcdfFileWriter {
       }
     }
 
-    Variable v = null;
-    if (dataType == DataType.STRUCTURE) {
-      v = new Structure(ncfile, g, null, shortName);
-    }  else {
-      v = new Variable(ncfile, g, null, shortName);
-      v.setDataType(dataType);
-    }
-
+    Variable v = new Variable(ncfile, g, parent, shortName);
+    v.setDataType(dataType);
     v.setDimensions(dims);
 
     long size = v.getSize() * v.getElementSize();
@@ -525,6 +523,27 @@ public class NetcdfFileWriter {
 
     ncfile.addVariable(g, v);
     return v;
+  }
+
+  public Structure addStructure(Group g, String shortName, Structure org, List<Dimension> dims) {
+    if (!defineMode)
+      throw new UnsupportedOperationException("not in define mode");
+
+    shortName = makeValidObjectName(shortName);
+    if (version != Version.netcdf4)
+      throw new IllegalArgumentException("Structure type only supported in netcdf-4");
+
+    Structure s = new Structure(ncfile, g, org.getParentStructure(), shortName);
+    s.setDimensions(dims);
+    for (Variable m : org.getVariables()) {  // LOOK no nested structs
+      Variable nest = new Variable(ncfile, g, s, m.getShortName());
+      nest.setDataType(m.getDataType());
+      nest.setDimensions(m.getDimensions());
+      s.addMemberVariable(nest);
+    }
+
+    ncfile.addVariable(g, s);
+    return s;
   }
 
   /**
@@ -626,10 +645,6 @@ public class NetcdfFileWriter {
       log.warn("illegal netCDF-3 attribute name= " + att.getShortName() + " change to " + attName);
       att = new Attribute(attName, att.getValues());
     }
-
-    // these are not allowed in the file - they are added when read
-    if (att.getShortName().equals(CDM.CHUNK_SIZE)) return false;
-    if (att.getShortName().equals(CDM.COMPRESS)) return false;
 
     v.addAttribute(att);
     return true;

@@ -97,6 +97,7 @@ public class Rewrite {
         }
       }
 
+      // LOOK need to set chunksize
       Variable nv;
       if (!isRadial && v.getRank() >= 3) {  // make first dimension last
         StringBuilder sb = new StringBuilder();
@@ -139,7 +140,7 @@ public class Rewrite {
 
   // turn var(nt, any..) into newvar(any.., nt)
   void invertOneVar(Variable oldVar) throws IOException, InvalidRangeException {
-    System.out.printf("invertOneVar %s%n",oldVar.getNameAndDimensions());
+    System.out.printf("invertOneVar %s  ",oldVar.getNameAndDimensions());
     int rank = oldVar.getRank();
     int[] origin = new int[rank];
 
@@ -148,14 +149,17 @@ public class Rewrite {
     Variable nv = ncOut.findVariable(oldVar.getFullName());
     Cache cache = new Cache(shape, nv.getShape(), oldVar.getDataType());
 
+    System.out.printf(" read slice");
     int nt = shape[0];
     for (int k=0; k<nt; k++)  { // loop over outermost dimension
       shape[0] = 1;
       origin[0] = k;
 
       Array data = oldVar.read(origin, shape); // read inner
+      System.out.printf(" %d", k);
       cache.transfer(data.reduce(), k);
     }
+    System.out.printf(" %n");
 
     cache.write(nv);
   }
@@ -168,13 +172,18 @@ public class Rewrite {
     int counter = 0;
 
     Cache(int[] shape, int[] newshape, DataType dataType)  {
-      this.shape = shape;
-      this.newshape = newshape;
-      this.result = Array.factory(dataType, newshape);
+      System.out.printf("shape = %d, ", new Section(shape).computeSize()/1000);
+      System.out.printf("newshape = %d, ", new Section(newshape).computeSize()/1000);
 
       nt = shape[0];
       Section s = new Section(shape);
-      chunksize = (int)(s.computeSize() / nt);
+      long totalSize = s.computeSize();
+      chunksize = (int)(totalSize / nt);
+      System.out.printf("chunksize = %d (Kb)%n", chunksize/1000);
+
+      this.shape = shape;
+      this.newshape = newshape;
+      this.result = Array.factory(dataType, newshape);
 
       // get view of result as a 2d array (any..., nt);
       int[] reshape = new int[] {chunksize, nt};
@@ -194,7 +203,13 @@ public class Rewrite {
       }
     }
 
+    // look put the write in q background task tto overlap the read...
     void write(Variable newVar) throws IOException, InvalidRangeException {
+      System.out.printf("  write slice (");
+      int[] resultShape = result.getShape();
+      for (int k : resultShape) System.out.printf("%d,", k);
+      System.out.printf(")%n");
+
       ncOut.write(newVar, result);
     }
   }
@@ -221,18 +236,20 @@ public class Rewrite {
       System.exit(0);
     } */
 
-    Nc4Iosp.setLibraryAndPath("C:\\netcdfc\\netCDF 4.3.0-rc4\\bin", "netcdf");
+    // Nc4Iosp.setLibraryAndPath("C:\\netcdfc\\netCDF 4.3.0-rc4\\bin", "netcdf");
 
     long start = System.nanoTime();
-    boolean netcdf4 = false;
-    String datasetIn = "E:/data/nomads/problem/soilt1.gdas.200603.grb2";
-    String datasetOut = "C:/temp/soilt1.gdas.200603.nc3";
+    boolean netcdf4 = true;
+    String datasetIn = "E:/ncep/NAM_Firewxnest_20111231_1800.grib2";
+    String datasetOut = "E:/ncep/NAM_Firewxnest_20111231_1800.invert.nc4";
 
     NetcdfFile ncfileIn = ucar.nc2.dataset.NetcdfDataset.openFile(datasetIn, null);
     System.out.printf("Read from %s write to %s%n", datasetIn, datasetOut);
 
     NetcdfFileWriter.Version version = netcdf4 ? NetcdfFileWriter.Version.netcdf4 : NetcdfFileWriter.Version.netcdf3;
 
+    // LOOK need to set chunksize  probably (y, x, z, t) = (n, n, nz, nt), choose n so chunksize = 1 M or so?.
+    // so (time2=37, isobaric3=46, y=589, x=523) -> (time2=37, isobay=589, x=523, 46, 37)
     NetcdfFileWriter ncOut = NetcdfFileWriter.createNew(version, datasetOut);
     Rewrite rewrite = new Rewrite(ncfileIn, ncOut);
     rewrite.rewrite();

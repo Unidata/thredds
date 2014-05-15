@@ -10,7 +10,7 @@
 <body>
 <h1>Mapping between CDM and netCDF-4 Data Models </h1>
 
-<p><em>last modified: Oct 22, 2013</em></p>
+<p><em>last modified: May 2014</em></p>
 
 <p>The CDM data model is close to, but not identical to the <a href="http://www.unidata.ucar.edu/software/netcdf/workshops/2008/netcdf4/Nc4DataModel.html">netCDF-4
   data model</a>. When reading netCDF-4 files, one is interested in the mapping from netCDF-4 to CDM. This mapping is relatively stable. As of version 4.3, the
@@ -32,6 +32,7 @@
 <h3><strong>From CDM to netCDF-4</strong></h3>
 <ul>
   <li>A CDM array of Opaque may have a different length for each Opaque object. May have to read to find maximum length.</li>
+  <li>A CDM Structure may have member Variables that use shared dimensions. netCDF4 / HDF5 does not support shared dimensions in Compound fields. If writing CDM to netCDF4, currently we just anonymize the shared dimensions.</li>
 </ul>
 <h2>Type Definitions</h2>
 
@@ -90,6 +91,10 @@
 <h3>Creation Order</h3>
 <ul>
   <li>The C library preserves the creation order of the Dimensions, Variables, Groups and Attributes, while the Java library does not.</li>
+</ul>
+<h3>Compound field Types</h3>
+<ul>
+  <li>in a netCDF4 file, fields in a Compound type may not have shared dimension.</li>
 </ul>
 <hr/>
 <h2> Differences between netCDF-4 C and Java libraries for HDF5 files</h2>

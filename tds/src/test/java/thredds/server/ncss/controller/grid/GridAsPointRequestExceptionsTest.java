@@ -114,6 +114,7 @@ public class GridAsPointRequestExceptionsTest {
 		this.mockMvc.perform(requestBuilder).andExpect(new ResultMatcher(){
 			public void match(MvcResult result) throws Exception{
 				Exception ex =  result.getResolvedException();
+        assert ex != null;
 				assert ( ex instanceof OutOfBoundariesException) : ex.getMessage();
 			}
 		} );

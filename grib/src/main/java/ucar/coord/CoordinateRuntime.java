@@ -99,7 +99,7 @@ public class CoordinateRuntime implements Coordinate {
   }
 
   @Override
-  public int getIndex(Object val) {
+  public int getIndex(Object val) {   // LOOK log lookoup - should be a hash
     return Collections.binarySearch(runtimeSorted, (CalendarDate) val);
   }
 

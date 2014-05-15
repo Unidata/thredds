@@ -40,7 +40,6 @@ import java.util.Map;
 
 import ucar.ma2.*;
 import ucar.nc2.write.Nc4Chunking;
-import ucar.nc2.write.Nc4ChunkingStrategyImpl;
 import ucar.nc2.util.CancelTask;
 import ucar.nc2.util.CancelTaskImpl;
 
@@ -80,10 +79,10 @@ public class FileWriter2 {
   private final NetcdfFileWriter.Version version;
 
   private final Map<Variable, Variable> varMap = new HashMap<Variable, Variable>();  // oldVar, newVar
-  private final List<Variable> varList = new ArrayList<Variable>();        // old Vars
-  private final Map<String, Dimension> gdimHash = new HashMap<String, Dimension>(); // name, newDim : global dimensions (classic mode)
+  private final List<Variable> varList = new ArrayList<>();        // old Vars
+  private final Map<String, Dimension> gdimHash = new HashMap<>(); // name, newDim : global dimensions (classic mode)
 
-  private Nc4Chunking chunker = new Nc4ChunkingStrategyImpl();
+  //private Nc4Chunking chunker = new Nc4ChunkingDefault();
 
   /**
    * Use this constructor to copy entire file. Use this.write() to do actual copy.
@@ -154,7 +153,7 @@ public class FileWriter2 {
   }
 
   private List<Dimension> getNewDimensions(Variable oldVar) {
-    List<Dimension> result = new ArrayList<Dimension>(oldVar.getRank());
+    List<Dimension> result = new ArrayList<>(oldVar.getRank());
 
     // dimensions
     for (Dimension oldD : oldVar.getDimensions()) {
@@ -203,6 +202,7 @@ public class FileWriter2 {
       if (debug) System.out.println("FileWriter done total bytes = " + total);
 
     } catch (IOException ioe) {
+      ioe.printStackTrace();
       writer.abort();  // clean up
       throw ioe;
     }
@@ -223,7 +223,7 @@ public class FileWriter2 {
     }
 
     // dimensions
-    Map<String, Dimension> dimHash = new HashMap<String, Dimension>();
+    Map<String, Dimension> dimHash = new HashMap<>();
     for (Dimension oldD : fileIn.getDimensions()) {
       Dimension newD = writer.addDimension(null, oldD.getShortName(), oldD.isUnlimited() ? 0 : oldD.getLength(),
               oldD.isShared(), oldD.isUnlimited(), oldD.isVariableLength());
@@ -236,7 +236,7 @@ public class FileWriter2 {
     for (Variable oldVar : fileIn.getVariables()) {
       if (oldVar instanceof Structure) continue; // ignore for the moment
 
-      List<Dimension> dims = new ArrayList<Dimension>();
+      List<Dimension> dims = new ArrayList<>();
       for (Dimension oldD : oldVar.getDimensions()) {
         if (!oldD.isShared()) { // netcdf3 dimensions must be shared
           String anonName = "anon" + anonCount;
@@ -301,7 +301,7 @@ public class FileWriter2 {
     }
 
     // dimensions
-    Map<String, Dimension> dimHash = new HashMap<String, Dimension>();
+    Map<String, Dimension> dimHash = new HashMap<>();
     for (Dimension oldD : oldGroup.getDimensions()) {
       Dimension newD = writer.addDimension(newGroup, oldD.getShortName(), oldD.isUnlimited() ? 0 : oldD.getLength(),
               oldD.isShared(), oldD.isUnlimited(), oldD.isVariableLength());
@@ -311,7 +311,7 @@ public class FileWriter2 {
 
     // Variables
     for (Variable oldVar : oldGroup.getVariables()) {
-      List<Dimension> dims = new ArrayList<Dimension>();
+      List<Dimension> dims = new ArrayList<>();
       for (Dimension oldD : oldVar.getDimensions()) {
         // in case the name changed
         Dimension newD = oldD.isShared() ? dimHash.get(oldD.getShortName()) : oldD;
@@ -323,23 +323,15 @@ public class FileWriter2 {
       }
 
       DataType newType = oldVar.getDataType();
-      Variable v = writer.addVariable(newGroup, oldVar.getShortName(), newType, dims);
+      Variable v;
+      if (newType == DataType.STRUCTURE) {
+        v = writer.addStructure(newGroup, oldVar.getShortName(), (Structure) oldVar, dims);
+      } else {
+        v = writer.addVariable(newGroup, oldVar.getShortName(), newType, dims);
+      }
       varMap.put(oldVar, v);
       varList.add(oldVar);
       if (debug) System.out.println("add var= " + v);
-
-      // set chunking using the oldVar
-      if (chunker.isChunked(oldVar)) {
-        long[] chunk = chunker.computeChunking(oldVar);
-        // v.addAttribute(new Attribute(CDM.CHUNK_SIZE, Array.factory(chunk)));
-        if (debugChunk) {
-          System.out.printf("%s is Chunked = (", v.getFullName());
-          for (long c : chunk) System.out.printf("%d,", c);
-          System.out.printf(")%n");
-        }
-      } else if (debugChunk) {
-        System.out.printf("%s is not Chunked, size = %d bytes%n", v.getFullName(), v.getSize() * v.getElementSize());
-      }
 
       // attributes
       for (Attribute att : oldVar.getAttributes())

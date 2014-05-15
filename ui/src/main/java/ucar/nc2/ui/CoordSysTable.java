@@ -508,6 +508,13 @@ public class CoordSysTable extends JPanel {
     if (attWindow != null) prefs.putBeanObject("AttWindowBounds", attWindow.getBounds());
   }
 
+  public void clear() {
+    this.ds = null;
+    varTable.clearBeans();
+    axisTable.clearBeans();
+    csTable.clearBeans();
+  }
+
   public void setDataset(NetcdfDataset ds) {
     this.ds = ds;
     parseInfo = new Formatter();

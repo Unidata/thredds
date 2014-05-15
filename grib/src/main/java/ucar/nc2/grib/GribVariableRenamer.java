@@ -14,13 +14,20 @@ import java.io.InputStream;
 import java.util.*;
 
 /**
+ * @deprecated  As of version 4.5.0 - this was only intended to be
+ * used for the 4.2 - 4.3 transition. Extended to work with 4.5 dataset
+ * names, but deprecated to reminder users to update the variable names
+ * used in their applications.
+ *
  * Try to figure out what GRIB name in 4.2 maps to in 4.3 NCEP IDD datasets.
  * Not guaranteed to be correct.
+ *
  * See ToolsUI IOSP/GRIB2/GRIB-RENAME
  *
  * @author caron
  * @since 4/7/12
  */
+@Deprecated
 public class GribVariableRenamer {
   static private boolean debug = false;
   static private final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(GribVariableRenamer.class);
@@ -200,6 +207,14 @@ public class GribVariableRenamer {
 
 
   public static String extractDatasetFromLocation(String location) {
+    // check if location is from 4.5 server, and if so, remove the trailing /GC
+    // This is only a temporary fix, as this renaming was only supposed to be applied
+    // for the 4.2 to 4.3 transition. Thus, I plan on marking this class as deprecated
+    // in the 4.5 branch
+    if (location.endsWith("/GC")) {
+      int locLen = location.length();
+      location = location.substring(0, locLen - 3);
+    }
     int pos = location.lastIndexOf("/");
     if (pos > 0) location = location.substring(pos+1);
     int posSuffix = location.lastIndexOf(".");
@@ -269,6 +284,7 @@ public class GribVariableRenamer {
     }
   }
 
+  @Deprecated
   public static class VariableRenamerBean implements Comparable<VariableRenamerBean> {
     String dsName, dsType, oldName, newName, varId;
 
@@ -348,7 +364,7 @@ public class GribVariableRenamer {
 
     return map;
   }
-
+  @Deprecated
   private class Renamer {
     String oldName, newName; // newName exists when theres only one
     List<VariableRenamerBean> newVars = new ArrayList<VariableRenamerBean>();

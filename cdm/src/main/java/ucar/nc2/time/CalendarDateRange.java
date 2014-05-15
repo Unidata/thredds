@@ -32,7 +32,7 @@ public class CalendarDateRange {
     this.startDt = start.getDateTime();
     this.endDt = end.getDateTime();
     this.cal = start.getCalendar();
-    assert this.cal == end.getCalendar();
+    assert this.cal.equals(end.getCalendar());
   }
 
   public CalendarDateRange(CalendarDate start, long durationInSecs) {

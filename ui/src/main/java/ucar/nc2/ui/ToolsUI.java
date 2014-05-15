@@ -275,7 +275,7 @@ public class
 
     // nested-2 tab - grib
     gribTabPane.addTab("GribIndex", new JLabel("GribIndex"));
-    gribTabPane.addTab("CdmIndex", new JLabel("CdmIndex"));
+    //gribTabPane.addTab("CdmIndex", new JLabel("CdmIndex"));
     gribTabPane.addTab("CdmIndex2", new JLabel("CdmIndex2"));
     gribTabPane.addTab("WMO-COMMON", new JLabel("WMO-COMMON"));
     gribTabPane.addTab("WMO-CODES", new JLabel("WMO-CODES"));
@@ -1373,6 +1373,7 @@ public class
 
     OpPanel(PreferencesExt prefs, String command, boolean addComboBox, boolean addFileButton, boolean addCoordButton) {
       this.prefs = prefs;
+      buttPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 5, 0));
 
       cb = new ComboBox(prefs);
       cb.addActionListener(new ActionListener() {
@@ -1387,8 +1388,6 @@ public class
           }
         }
       });
-
-      buttPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 5, 0));
 
       AbstractAction closeAction = new AbstractAction() {
         public void actionPerformed(ActionEvent e) {
@@ -1437,9 +1436,13 @@ public class
       }
 
       topPanel = new JPanel(new BorderLayout());
-      topPanel.add(new JLabel(command), BorderLayout.WEST);
-      if (addComboBox) topPanel.add(cb, BorderLayout.CENTER);
-      topPanel.add(buttPanel, BorderLayout.EAST);
+      if (addComboBox) {
+        topPanel.add(new JLabel(command), BorderLayout.WEST);
+        topPanel.add(cb, BorderLayout.CENTER);
+        topPanel.add(buttPanel, BorderLayout.EAST);
+      } else {
+        topPanel.add(buttPanel, BorderLayout.EAST);
+      }
 
       setLayout(new BorderLayout());
       add(topPanel, BorderLayout.NORTH);
@@ -1931,6 +1934,7 @@ public class
     void closeOpenFiles() throws IOException {
       if (ds != null) ds.close();
       ds = null;
+      coordSysTable.clear();
     }
 
     CoordSysPanel(PreferencesExt p) {
@@ -4716,6 +4720,8 @@ public class
     void closeOpenFiles() throws IOException {
       if (ds != null) ds.close();
       ds = null;
+      dsTable.clear();
+      if (gridUI != null) gridUI.clear();
     }
 
     void setDataset(NetcdfDataset newds) {
@@ -5082,6 +5088,7 @@ public class
     void closeOpenFiles() throws IOException {
       if (ncfile != null) ncfile.close();
       ncfile = null;
+      dsViewer.clear();
     }
 
     void setDataset(NetcdfFile nc) {
@@ -5305,8 +5312,8 @@ public class
     DirectoryPartitionViewer table;
 
     DirectoryPartitionPanel(PreferencesExt dbPrefs) {
-      super(dbPrefs, "collection:", false, false);
-      table = new DirectoryPartitionViewer(prefs, buttPanel);
+      super(dbPrefs, "collection:", false, false, false);
+      table = new DirectoryPartitionViewer(prefs, topPanel, buttPanel);
       add(table, BorderLayout.CENTER);
 
       table.addPropertyChangeListener(new java.beans.PropertyChangeListener() {

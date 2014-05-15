@@ -37,7 +37,7 @@ public class TestNc4JniReadCompare {
 
   @Before
   public void setLibrary() {
-    Nc4Iosp.setLibraryAndPath("/home/mhermida/opt/lib", "netcdf");
+    Nc4Iosp.setLibraryAndPath("/opt/netcdf/lib", "netcdf");
     //Nc4Iosp.setLibraryAndPath("C:/cdev/lib", "netcdf");
     System.out.printf("Nc4Iosp.isClibraryPresent = %s%n", Nc4Iosp.isClibraryPresent());
   }
@@ -142,7 +142,7 @@ public class TestNc4JniReadCompare {
       String name = att.getShortName();
 
       // added by cdm
-      if (name.equals(CDM.CHUNK_SIZE)) return false;
+      if (name.equals(CDM.CHUNK_SIZES)) return false;
       if (name.equals(CDM.FILL_VALUE)) return false;
       if (name.equals("_lastModified")) return false;
 

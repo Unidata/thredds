@@ -622,7 +622,7 @@ public class IospHelper {
   }  */
 
   static public ArrayStructureBB makeArrayBB(ArrayStructure as) throws IOException {
-    if (as instanceof ArrayStructureBB)
+    if (as.getClass().equals(ArrayStructureBB.class)) // no subclasses
       return (ArrayStructureBB) as;
 
     StructureMembers smo = as.getStructureMembers();

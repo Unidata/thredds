@@ -73,8 +73,8 @@ public class Structure extends Variable {
     super(ncfile, group, parent, shortName);
     setDataType(DataType.STRUCTURE);
     this.elementSize = -1; // gotta wait before calculating
-    members = new ArrayList<Variable>();
-    memberHash = new HashMap<String, Variable>();
+    members = new ArrayList<>();
+    memberHash = new HashMap<>();
   }
 
   /** Copy constructor.
@@ -83,8 +83,8 @@ public class Structure extends Variable {
   protected Structure(Structure from) { // , boolean reparent) {
     super(from);
 
-    members = new ArrayList<Variable>(from.members);
-    memberHash = new HashMap<String, Variable>(from.memberHash);
+    members = new ArrayList<>(from.members);
+    memberHash = new HashMap<>(from.memberHash);
     isSubset = from.isSubset();
 
     /* if (reparent) {
@@ -101,7 +101,7 @@ public class Structure extends Variable {
    */
   public Structure select( List<String> memberNames) {
     Structure result = (Structure) copy();
-    List<Variable> members = new ArrayList<Variable>();
+    List<Variable> members = new ArrayList<>();
     for (String name : memberNames) {
       Variable m = findVariable(name);
       if (null != m) members.add(m);
@@ -117,7 +117,7 @@ public class Structure extends Variable {
    * @return containing just that member
    */
   public Structure select( String varName) {
-    List<String> memberNames = new ArrayList<String>(1);
+    List<String> memberNames = new ArrayList<>(1);
     memberNames.add(varName);
     return  select(memberNames);
   }
@@ -172,8 +172,8 @@ public class Structure extends Variable {
    */
   public void setMemberVariables( List<Variable> vars) {
     if (isImmutable()) throw new IllegalStateException("Cant modify");
-    members = new ArrayList<Variable>();
-    memberHash = new HashMap<String, Variable>(2*vars.size());
+    members = new ArrayList<>();
+    memberHash = new HashMap<>(2*vars.size());
     for (Variable v : vars) {
       addMemberVariable(v);
     }
@@ -250,7 +250,7 @@ public class Structure extends Variable {
    * @return List of type Variable.
    */
   public java.util.List<Variable> getVariables() {
-    return isImmutable() ?  members : new ArrayList<Variable>(members);
+    return isImmutable() ?  members : new ArrayList<>(members);
   }
 
   /** Get the number of variables contained directly in this Structure.
@@ -264,7 +264,7 @@ public class Structure extends Variable {
    * @return List of type String.
    */
   public java.util.List<String> getVariableNames() {
-    return new ArrayList<String>(memberHash.keySet());
+    return new ArrayList<>(memberHash.keySet());
   }
 
   /**

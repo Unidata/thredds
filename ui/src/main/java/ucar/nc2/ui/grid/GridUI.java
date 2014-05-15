@@ -269,6 +269,11 @@ public class GridUI extends JPanel {
     controller.setMapRenderer( mapRenderer);
   }
 
+  public void clear() {
+    controller.clear();
+    gridTable.clear();
+  }
+
   public void setDataset(InvDataset ds) {
      if (ds == null) return;
 

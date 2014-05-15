@@ -316,6 +316,13 @@ public class GeoGridTable extends JPanel {
     if (axisTable != null) axisTable.saveState(false);
   }
 
+  public void clear() {
+    this.gridDataset = null;
+    varTable.clearBeans();
+    csTable.clearBeans();
+    axisTable.clearBeans();
+  }
+
   public void setDataset(NetcdfDataset ds, Formatter parseInfo) throws IOException {
     this.gridDataset = new ucar.nc2.dt.grid.GridDataset(ds, parseInfo);
 

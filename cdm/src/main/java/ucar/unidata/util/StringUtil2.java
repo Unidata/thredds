@@ -33,7 +33,10 @@
 package ucar.unidata.util;
 
 import ucar.nc2.constants.CDM;
+import ucar.nc2.util.EscapeStrings;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -436,6 +439,14 @@ public class StringUtil2 {
       return s;
     return s.substring(0, len);
   }
+
+  static public String removeFromEnd(String s, String suffix) {
+  if (s.endsWith(suffix))
+     return s.substring(0, s.length() - suffix.length());
+
+    return s;
+  }
+
 
 
   /**
@@ -879,7 +890,7 @@ public class StringUtil2 {
     System.out.println(" StringUtil unescape <string>");
   }
 
-  public static void main(String args[]) {
+  public static void main2(String args[]) {
     if (args.length < 2) {
       showUsage();
       return;
@@ -889,8 +900,10 @@ public class StringUtil2 {
       String ok = (args.length > 2)
               ? args[2]
               : "";
+
       System.out.println(" escape(" + args[1] + "," + ok + ")= "
               + StringUtil2.escape(args[1], ok));
+
     } else if (args[0].equalsIgnoreCase("unescape")) {
       System.out.println(" unescape(" + args[1] + ")= "
               + StringUtil2.unescape(args[1]));
@@ -899,13 +912,24 @@ public class StringUtil2 {
     }
   }
 
-  public static void main2(String args[]) {
+  public static void main3(String args[]) {
     byte[] b = new byte[]{10};
     //String s = new String(b);
     String s = "\n";
     System.out.printf("quoteXmlAttribute(%s) == %s%n", s, StringUtil2.quoteXmlAttribute(s));
     String s2 = StringUtil2.quoteXmlAttribute(s);
     System.out.printf("unquoteXmlAttribute(%s) == '%s'%n", s2, StringUtil2.unquoteXmlAttribute(s2));
+  }
+
+  public static void main(String[] args) throws UnsupportedEncodingException {
+    String org = "GetCapabilitiesa84a4%253ca%2520xmlns%253aa%253d%2527http%253a%252f%252fwww%252ew3%252eorg%252f1999%252fxhtml%2527%253e%253ca%253abody%2520onload%253d%2527alert%25281%2529%2527%252f%253e%253c%252fa%253e77bfd";
+    System.out.printf("org = '%s'%n",org );
+    String unescapedQuery = EscapeStrings.unescapeURLQuery(org);
+    //System.out.printf("unescapedQuery = '%s'%n",unescapedQuery );
+    String decodedQuery = URLDecoder.decode(org, "UTF-8");
+    System.out.printf("decodedQuery = '%s'%n",decodedQuery );
+    String decodedQuery2 = URLDecoder.decode(decodedQuery, "UTF-8");
+    System.out.printf("decodedQuery2 = '%s'%n", decodedQuery2 );
   }
 
 

@@ -287,17 +287,6 @@
       </dependency>
       <dependency>
         <groupId>${project.groupId}</groupId>
-        <artifactId>d4servlet</artifactId>
-        <version>${project.version}</version>
-        <exclusions>
-          <exclusion>
-            <groupId>javax.servlet</groupId>
-            <artifactId>servlet-api</artifactId>
-          </exclusion>
-        </exclusions>
-      </dependency>
-      <dependency>
-        <groupId>${project.groupId}</groupId>
         <artifactId>d4core</artifactId>
         <version>${project.version}</version>
       </dependency>
@@ -330,6 +319,12 @@
         <groupId>${project.groupId}</groupId>
         <artifactId>d4servlet</artifactId>
         <version>${project.version}</version>
+        <exclusions>
+          <exclusion>
+            <groupId>javax.servlet</groupId>
+            <artifactId>servlet-api</artifactId>
+          </exclusion>
+        </exclusions>
       </dependency>
       <dependency>
         <groupId>${project.groupId}</groupId>
@@ -725,6 +720,12 @@
         <type>war</type>
         <!-- scope>provided</scope-->
       </dependency>
+      <!-- dependency>
+        <groupId>${project.groupId}</groupId>
+        <artifactId>remotetest</artifactId>
+        <version>${project.version}</version>
+        <type>war</type>
+      </dependency -->
 
       <!-- jar dependencies -->
       <dependency>
@@ -919,7 +920,7 @@
     <module>bufr</module>
     <module>grib</module>
     <module>opendap</module>
-    <module>dts</module>
+    <module>opendap/dts</module>
     <module>visad</module>
     <module>ncIdv</module>
     <module>ui</module>
