@@ -1861,15 +1861,15 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
     byte[] entire = bb.array();
     int[] intshape;
 
-    if(shape != null) {
-        // fix: this is ignoring the rank of section.
-        // was: ArrayObject values = new ArrayObject(ByteBuffer.class, new int[]{len});
-        intshape = new int[shape.length];
-        for (int i = 0; i < intshape.length; i++) {
-          intshape[i] = shape[i].intValue();
-	}
+    if (shape != null) {
+      // fix: this is ignoring the rank of section.
+      // was: ArrayObject values = new ArrayObject(ByteBuffer.class, new int[]{len});
+      intshape = new int[shape.length];
+      for (int i = 0; i < intshape.length; i++) {
+        intshape[i] = shape[i].intValue();
+      }
     } else
-        intshape = new int[]{1};
+      intshape = new int[]{1};
     ArrayObject values = new ArrayObject(ByteBuffer.class, intshape);
 
     int count = 0;
@@ -1932,7 +1932,7 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
   }
 
   private NativeLong[] convert(int[] from) {
-    if(from.length == 0) return null;
+    if (from.length == 0) return null;
     NativeLong[] to = new NativeLong[from.length];
     for (int i = 0; i < from.length; i++)
       to[i] = new NativeLong(from[i]);
@@ -2171,7 +2171,8 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
         System.out.printf(" create dim '%s' (%d) in group '%s'%n", dim.getShortName(), dimid, g4.g.getFullName());
     }
 
-    // types
+    // a type must be created for each structure.
+    // LOOK we should look for variables with the same structure type.
     for (Variable v : g4.g.getVariables()) {
       switch (v.getDataType()) {
         case STRUCTURE:
@@ -2181,17 +2182,9 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
     }
 
     // variables
-    // a type must be created for each structure.
-    // LOOK we should look for variables with the same structure type.
     for (Variable v : g4.g.getVariables()) {
-      switch (v.getDataType()) {
-        case STRUCTURE:
-          createCompoundVariable(grpid, g4, (Structure) v);
-          break;
-        default:
           createVariable(grpid, g4, v);
       }
-    }
 
     // groups
     for (Group nested : g4.g.getGroups()) {
@@ -2237,7 +2230,7 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
     IntByReference varidp = new IntByReference();
     int ret = nc4.nc_def_var(grpid, v.getShortName(), new NativeLong(typid), dimids.length, dimids, varidp);
     if (ret != 0)
-      throw new IOException("ret="+ret+" err='"+nc4.nc_strerror(ret) + "' on\n" + v);
+      throw new IOException("ret=" + ret + " err='" + nc4.nc_strerror(ret) + "' on\n" + v);
     int varid = varidp.getValue();
     vinfo.varid = varid;
     if (debugWrite) System.out.printf("added variable %s (grpid %d varid %d) %n", v.getShortName(), vinfo.grpid, vinfo.varid);
@@ -2247,13 +2240,13 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
       boolean isChunked = chunker.isChunked(v);
       int storage = isChunked ? Nc4prototypes.NC_CHUNKED : Nc4prototypes.NC_CONTIGUOUS;
       NativeLong[] chunking;
-      if(isChunked) {
-          long[] lchunks = chunker.computeChunking(v);
-          chunking = new NativeLong[lchunks.length];
-          for(int i=0;i<lchunks.length;i++)
-              chunking[i] = new NativeLong(lchunks[i]);
+      if (isChunked) {
+        long[] lchunks = chunker.computeChunking(v);
+        chunking = new NativeLong[lchunks.length];
+        for (int i = 0; i < lchunks.length; i++)
+          chunking[i] = new NativeLong(lchunks[i]);
       } else
-          chunking = new NativeLong[v.getRank()];
+        chunking = new NativeLong[v.getRank()];
       ret = nc4.nc_def_var_chunking(grpid, varid, storage, chunking);
       if (ret != 0) {
         throw new IOException(nc4.nc_strerror(ret) + " nc_def_var_chunking on variable " + v.getFullName());
@@ -2303,9 +2296,9 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
     int grpid = ncid; // LOOK ??
     IntByReference typeidp = new IntByReference();
     long size = s.getElementSize();
-    String name =  s.getShortName() + "_t";
-    int ret =  nc4.nc_def_compound(grpid, new NativeLong(size), name, typeidp);
-   if (ret != 0)
+    String name = s.getShortName() + "_t";
+    int ret = nc4.nc_def_compound(grpid, new NativeLong(size), name, typeidp);
+    if (ret != 0)
       throw new IOException(nc4.nc_strerror(ret) + " on\n" + s);
     int typeid = typeidp.getValue();
     if (debugWrite) System.out.printf("added compound type %s (typeid %d) %n", name, typeid);
@@ -2315,14 +2308,14 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
     long offset = 0;
     for (Variable v : s.getVariables()) {
       int field_typeid = convertDataType(v.getDataType());
-      ret =  nc4.nc_insert_compound(ncid, typeid, v.getShortName(), new NativeLong(offset), field_typeid);
+      ret = nc4.nc_insert_compound(ncid, typeid, v.getShortName(), new NativeLong(offset), field_typeid);
       if (ret != 0)
-       throw new IOException(nc4.nc_strerror(ret) + " on\n" + s);
+        throw new IOException(nc4.nc_strerror(ret) + " on\n" + s);
       if (debugWrite) System.out.printf(" added compound type member %s%n", v.getShortName());
 
       int ndims = v.getRank();
       int[] dims = new int[ndims];
-      for (int i=0; i<ndims; i++) dims[i] = v.getDimension(i).getLength();
+      for (int i = 0; i < ndims; i++) dims[i] = v.getDimension(i).getLength();
 
       Field fld = new Field(grpid, typeid, fldidx, v.getShortName(), (int) offset, field_typeid, ndims, dims);
       flds.add(fld);
@@ -2337,11 +2330,6 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
     UserType ut = new UserType(grpid, typeid, name, size, 0, (long) fldidx, NC_COMPOUND);
     userTypes.put(typeid, ut);
     ut.setFields(flds);
-  }
-
-  private void createCompoundVariable(int grpid, Group4 g4, Structure s) {
-    Vinfo vinfo = (Vinfo) s.getSPobject();
-    vinfo.grpid = grpid;
   }
 
   //////////////////////////////////////////////////
@@ -2587,17 +2575,17 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
        status = nc_put_vars_float(ncid, rhid, start, count, stride, rh);
        if (status != NC_NOERR) handle_error(status);
    */
-   private void writeCompoundData(Structure s, UserType userType, int grpid, int varid, int typeid, Section section, ArrayStructure values) throws IOException, InvalidRangeException {
+  private void writeCompoundData(Structure s, UserType userType, int grpid, int varid, int typeid, Section section, ArrayStructure values) throws IOException, InvalidRangeException {
 
-     NativeLong[] origin = convert(section.getOrigin());
-     NativeLong[] shape = convert(section.getShape());
-     NativeLong[] stride = convert(section.getStride());
+    NativeLong[] origin = convert(section.getOrigin());
+    NativeLong[] shape = convert(section.getShape());
+    NativeLong[] stride = convert(section.getStride());
 
     ArrayStructureBB valuesBB = IospHelper.makeArrayBB(values);
     ByteBuffer bbuff = valuesBB.getByteBuffer();  // LOOK c library reads in native order, so need to convert??
-                                                  // LOOK embedded strings getting lost ??
+    // LOOK embedded strings getting lost ??
 
-     if (debugWrite) System.out.printf("writing variable %s (grpid %d varid %d) %n", s.getShortName(), grpid, varid);
+    if (debugWrite) System.out.printf("writing variable %s (grpid %d varid %d) %n", s.getShortName(), grpid, varid);
 
     // write the data
     int ret = nc4.nc_put_vars(grpid, varid, origin, shape, stride, bbuff);
