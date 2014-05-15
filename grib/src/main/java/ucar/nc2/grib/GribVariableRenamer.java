@@ -198,8 +198,15 @@ public class GribVariableRenamer {
     return null; // ??
   }
 
-
   public static String extractDatasetFromLocation(String location) {
+    // check if location is from 4.5 server, and if so, remove the trailing /GC
+    // This is only a temporary fix, as this renaming was only supposed to be applied
+    // for the 4.2 to 4.3 transition. Thus, I plan on marking this class as deprecated
+    // in the 4.5 branch
+    if (location.endsWith("/GC")) {
+      int locLen = location.length();
+      location = location.substring(0, locLen - 3);
+    }
     int pos = location.lastIndexOf("/");
     if (pos > 0) location = location.substring(pos+1);
     int posSuffix = location.lastIndexOf(".");
