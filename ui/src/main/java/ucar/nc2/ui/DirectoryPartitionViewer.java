@@ -172,6 +172,12 @@ public class DirectoryPartitionViewer extends JPanel {
     fileTable.save();
   }
 
+
+  public void clear() {
+    cdmIndexTables.clear();
+    partitionsTable.clear();
+  }
+
   private Component current;
 
   private void swap(Component want) {

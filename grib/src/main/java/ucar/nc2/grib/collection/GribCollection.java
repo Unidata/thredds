@@ -223,7 +223,7 @@ public abstract class GribCollection implements FileCacheable, AutoCloseable {
   public int center, subcenter, master, local;  // GRIB 1 uses "local" for table version
   public int genProcessType, genProcessId, backProcessId;
   public List<Parameter> params;          // not used
-  private Map<Integer, MFile> fileMap;    // all the files used in the GC; key in index in original collection, GC has subset of them
+  protected Map<Integer, MFile> fileMap;    // all the files used in the GC; key in index in original collection, GC has subset of them
   protected List<Dataset> datasets;
   protected List<HorizCoordSys> horizCS; // one for each unique GDS
   protected CoordinateRuntime masterRuntime;
@@ -279,6 +279,10 @@ public abstract class GribCollection implements FileCacheable, AutoCloseable {
       result.add(file.getPath());
     Collections.sort(result);
     return result;
+  }
+
+  public String getFilename(int fileno) {
+    return fileMap.get(fileno).getPath();
   }
 
   public List<Dataset> getDatasets() {

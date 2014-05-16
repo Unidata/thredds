@@ -3,9 +3,7 @@ package ucar.nc2.ui;
 import thredds.featurecollection.FeatureCollectionConfig;
 import thredds.inventory.MFile;
 import ucar.coord.*;
-import ucar.nc2.ft.fmrc.FmrInv;
 import ucar.nc2.grib.collection.*;
-import ucar.nc2.grib.grib2.table.Grib2Customizer;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.util.Indent;
 import ucar.nc2.ui.widget.BAMutil;
@@ -65,21 +63,26 @@ public class CdmIndex2Panel extends JPanel {
       });
       buttPanel.add(infoButton);
 
-
       AbstractButton filesButton = BAMutil.makeButtcon("Information", "Show Files", false);
       filesButton.addActionListener(new ActionListener() {
         public void actionPerformed(ActionEvent e) {
-          /* Formatter f = new Formatter();
-          showFiles(f);
-          infoTA.setText(f.toString());
-          infoTA.gotoTop();
-          infoWindow.show(); */
-
           if (gc != null)
             showFileTable(gc, null);
         }
       });
       buttPanel.add(filesButton);
+
+      AbstractButton rawButton = BAMutil.makeButtcon("Information", "Show Raw Info", false);
+      rawButton.addActionListener(new ActionListener() {
+        public void actionPerformed(ActionEvent e) {
+          Formatter f = new Formatter();
+          //showRawInfo(f);
+          infoTA.setText(f.toString());
+          infoTA.gotoTop();
+          infoWindow.show();
+        }
+      });
+      buttPanel.add(rawButton);
     }
 
     ////////////////////////////
@@ -276,9 +279,16 @@ public class CdmIndex2Panel extends JPanel {
     if (split3 != null) prefs.putInt("splitPos3", split3.getDividerLocation());
   }
 
-  public void closeOpenFiles() throws IOException {
-    if (gc != null) gc.close();
+  public void clear() {
+    if (gc != null) try {
+      gc.close();
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
     gc = null;
+    groupTable.clearBeans();
+    varTable.clearBeans();
+    coordTable.clearBeans();
   }
 
   public void showInfo(Formatter f) {
@@ -470,7 +480,7 @@ public class CdmIndex2Panel extends JPanel {
     for (File file : files) {
       RandomAccessFile raf = new RandomAccessFile(file.getPath(), "r");
       GribCollection cgc = Grib2CollectionBuilderFromIndex.readFromIndex(file.getName(), raf, null, false, logger);
-      List<String> cfiles = new ArrayList<String>(cgc.getFilenames());
+      List<String> cfiles = new ArrayList<>(cgc.getFilenames());
       Collections.sort(cfiles);
       f.format("Compare files in %s to canonical files in %s%n", file.getPath(), idxFile.getPath());
       compareSortedList(f, canon.iterator(), cfiles.iterator());

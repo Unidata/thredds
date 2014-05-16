@@ -65,6 +65,10 @@ public class LayerSettings
                 Ranges.newRange(5, ColorPalette.MAX_NUM_COLOURS));
         this.logScaling = getBoolean(parentElement, "logScaling");
         this.intervalTime = getBoolean(parentElement, "intervalTime");
+        if (this.intervalTime == null)
+          {
+              this.intervalTime = false;
+          }
     }
 
     /** Package-private constructor, sets all fields to null */

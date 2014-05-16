@@ -11,6 +11,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.util.*;
+import java.util.List;
 
 /**
  * Superclass for report panels
@@ -18,26 +19,30 @@ import java.util.*;
  * @author caron
  * @since 8/22/13
  */
-public class ReportPanel extends JPanel {
+public abstract class ReportPanel extends JPanel {
 
   protected PreferencesExt prefs;
   protected TextHistoryPane reportPane;
-  protected JPanel buttPanel;
+  //protected JPanel buttPanel;
 
-  protected ReportPanel(PreferencesExt prefs, JPanel buttPanel) {
+  protected ReportPanel(PreferencesExt prefs) {
     this.prefs = prefs;
-    this.buttPanel = buttPanel;
     this.reportPane = new TextHistoryPane();
     setLayout(new BorderLayout());
     add(reportPane, BorderLayout.CENTER);
   }
 
+  protected void addOptions(JPanel buttPanel) {
 
-  public void save() {
   }
 
-  public void showInfo(Formatter f) {
-  }
+   public void save() {}
+
+  //public abstract void showInfo(Formatter f);
+
+  public abstract Object[] getOptions();
+
+  public abstract void doReport(String command, boolean useIndex, boolean eachFile, boolean extra, Object option) throws IOException;
 
   protected boolean setCollection(String spec) {
      Formatter f = new Formatter();

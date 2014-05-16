@@ -260,7 +260,9 @@ public class Grib2RecordScanner {
     raf.seek(ending-4);
     for (int i = 0; i < 4; i++) {
       if (raf.read() != 55) {
-        log.warn("  REPEAT Missing End of GRIB message at pos=" + ending + " header= " + StringUtil2.cleanup(header)+" for="+raf.getLocation());
+        String clean = StringUtil2.cleanup(header);
+        if (clean.length() > 40) clean = clean.substring(0,40) + "...";
+        log.warn("  REPEAT Missing End of GRIB message at pos=" + ending + " header= " + clean+" for="+raf.getLocation());
         break;
       }
     }
