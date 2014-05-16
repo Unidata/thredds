@@ -15,15 +15,48 @@ import java.util.List;
 import java.util.Properties;
 
 /**
- * Manage the test data directories
+ * Manage the test data directories and servers
  *
  * @author caron
  * @since 3/23/12
+ * Modified 5/15/14 to add remote test server paths
+ * 
+ * This singleton class computes and stores a variety of constants.
+ * <p>
+ * <table>
+ * <tr><th colspan="3">-D Property Names
+ * <tr><th>Static Variable<th>Property Name(s)<th>Description
+ * <tr><td>testdataDirPropName<td>unidata.testdata.path
+ *     <td>Property name for the path to the Unidata test data directory,
+ *         e.g unidata.testdata.path=//shemp/data/testdata2/
+ *         the real directory is at shemp:/data/testdata2
+ * <tr><td>threddsPropFileName<td>thredds.properties
+ *     <td>Filename of the user property file read from the "user.home" directory
+ *         if the "unidata.testdata.path" and "unidata.upc.share.path" are not
+ *         available as system properties.
+ * <tr><td>remoteTestServerPropName<td>remotetest
+ *     <td>Property name for the hostname of the remote test server.
+ * </table>
+ * <p>
+ * <table>
+ * <tr><th colspan="4">Computed Paths
+ * <tr><th>Static Variable<th>Property Name(s) (-d)<th>Default Value<th>Description
+ * <tr><td>cdmUnitTestDir<td>NA<td>NA
+ *     <td>New test data directory. Do not put temporary files in here.
+ *         Migrate all test data here eventually.
+ * <tr><td>cdmLocalTestDataDir<td>NA<td>../cdm/src/test/data
+ *     <td>Level 1 test data directory (distributed with code and MAY be used in Unidata nightly testing).
+ * <tr><td>temporaryLocalTestDataDir<td>NA<td>target/test/tmp
+ *     <td>Temporary data directory (for writing temporary data).
+ * <tr><td>remoteTestServer<td>remotetestserver<td>remotetest.unidata.ucar.edu
+ *     <td>The hostname of the test server for doing remote tests
+ * </table>
+ *
  */
 public class TestDir {
 
   /**
-   * New test data directory. do not put temporary files in here. migrate all test data here eventually
+  * New test data directory. do not put temporary files in here. migrate all test data here eventually
    * Unidata "//fileserver/data/testdata2/cdmUnitTest" directory.
    */
   public static String cdmUnitTestDir = null;
@@ -45,11 +78,18 @@ public class TestDir {
    */
   private static String testdataDirPropName ="unidata.testdata.path";
 
-
   /** Filename of the user property file read from the "user.home" directory
    * if the "unidata.testdata2.path" and "unidata.upc.share.path" are not
    * available as system properties. */
   private static String threddsPropFileName = "thredds.properties";
+
+  // Remote Test server
+
+  private static String remoteTestServerPropName = "remotetest";
+
+  static public String remoteTestServer = "remotetest.unidata.ucar.edu";
+
+  //////////////////////////////////////////////////
 
   // Determine how Unidata "/upc/share" directory is mounted
   // on local machine by reading system or THREDDS property.
@@ -98,6 +138,10 @@ public class TestDir {
         System.out.println( "**ERROR: Could not create temporary data dir <" + tmpDataDir.getAbsolutePath() + ">." );
       }
     }
+
+    String rts = System.getProperty(remoteTestServerPropName);
+    if(rts != null && rts.length() > 0)
+	remoteTestServer = rts;
   }
 
   static public void showMem(String where) {

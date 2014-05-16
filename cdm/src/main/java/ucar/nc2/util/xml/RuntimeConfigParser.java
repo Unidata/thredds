@@ -272,13 +272,10 @@ public class RuntimeConfigParser {
         if (path != null && name != null) {
 
           // reflection is used to decouple optional jars
-          Class nc4IospClass;
           try {
-            //  Nc4Iosp.setLibraryAndPath(path, name);
-            nc4IospClass = RuntimeConfigParser.class.getClassLoader().loadClass("ucar.nc2.jni.netcdf.Nc4Iosp");
+            Class nc4IospClass = RuntimeConfigParser.class.getClassLoader().loadClass("ucar.nc2.jni.netcdf.Nc4Iosp");
             Method method = nc4IospClass.getMethod("setLibraryAndPath", new Class[] {String.class, String.class});
             method.invoke(null, path, name); // static method has null for object
-
           } catch (Throwable e) {
               errlog.append("ucar.nc2.jni.netcdf.Nc4Iosp is not on classpath\n");
           }

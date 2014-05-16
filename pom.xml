@@ -754,7 +754,7 @@
 
       <dependency>
         <groupId>${project.groupId}</groupId>
-        <artifactId>dts</artifactId>
+        <artifactId>dtswar</artifactId>
         <version>${project.version}</version>
         <type>war</type>
       </dependency>
@@ -920,7 +920,7 @@
     <module>bufr</module>
     <module>grib</module>
     <module>opendap</module>
-    <module>opendap/dts</module>
+    <module>opendap/dtswar</module>
     <module>visad</module>
     <module>ncIdv</module>
     <module>ui</module>
