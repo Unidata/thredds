@@ -169,20 +169,22 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
     if (jna_path == null)
         System.err.println("Cannot determine Netcdf4 library path");
     System.setProperty(JNA_PATH, jna_path);
+    jnaPath = jna_path;
   }
 
   static private Nc4prototypes load() {
     if (nc4 == null) {
       if (jnaPath == null)
-	setLibraryAndPath(null,null);
-      if (jnaPath == null)
+	    setLibraryAndPath(null,null);
+      if (jnaPath == null) {
         System.err.println("Cannot determine Netcdf4 library path");
-	return null;	
+	    return null;
+      }
+      //Native.setProtected(true);
+      nc4 = (Nc4prototypes) Native.loadLibrary(libName, Nc4prototypes.class);
+      if (debug)
+        System.out.printf(" Netcdf nc_inq_libvers='%s' isProtected=%s %n ", nc4.nc_inq_libvers(), Native.isProtected());
     }
-    //Native.setProtected(true);
-    nc4 = (Nc4prototypes) Native.loadLibrary(libName, Nc4prototypes.class);
-    if (debug)
-      System.out.printf(" Netcdf nc_inq_libvers='%s' isProtected=%s %n ", nc4.nc_inq_libvers(), Native.isProtected());
     return nc4;
   }
 
