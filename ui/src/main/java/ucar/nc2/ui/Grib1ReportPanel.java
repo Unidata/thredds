@@ -64,19 +64,27 @@ import java.util.*;
  * @since 8/28/11
  */
 public class Grib1ReportPanel extends ReportPanel {
+
   public static enum Report {
     checkTables, showLocalParams, scanIssues, rename, checkRename, showEncoding// , localUseSection, uniqueGds, duplicatePds, drsSummary, gdsTemplate, pdsSummary, idProblems
   }
 
-  public Grib1ReportPanel(PreferencesExt prefs, JPanel buttPanel) {
-    super(prefs, buttPanel);
+  public Grib1ReportPanel(PreferencesExt prefs) {
+    super(prefs);
   }
 
-  public void doReport(String spec, boolean useIndex, Report which) throws IOException {
-    Formatter f = new Formatter();
-    f.format("%s %s %s%n", spec, useIndex, which);
+  @Override
+  public Object[] getOptions() {
+    return ucar.nc2.ui.Grib1ReportPanel.Report.values();
+  }
 
-    MCollection dcm = getCollection(spec, f);
+  @Override
+  public void doReport(String command, boolean useIndex, boolean eachFile, boolean extra, Object option) throws IOException {
+    Report which = (Report) option;
+    Formatter f = new Formatter();
+    f.format("%s on %s useIndex=%s eachFile=%s extra=%s%n", which, command, useIndex, eachFile, extra);
+
+    MCollection dcm = getCollection(command, f);
     if (dcm == null) {
       return;
     }

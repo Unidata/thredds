@@ -26,15 +26,22 @@ public class BufrReportPanel extends ReportPanel {
     checkHash, bufrSplitter
   }
 
-  public BufrReportPanel(PreferencesExt prefs, JPanel buttPanel) {
-    super(prefs, buttPanel);
+  public BufrReportPanel(PreferencesExt prefs) {
+    super(prefs);
   }
 
-  public void doReport(String spec, boolean useIndex, Report which) throws IOException {
-    Formatter f = new Formatter();
-    f.format("%s %s %s%n", spec, useIndex, which);
+  @Override
+  public Object[] getOptions() {
+    return ucar.nc2.ui.BufrReportPanel.Report.values();
+  }
 
-    MCollection dcm = getCollection(spec, f);
+  @Override
+  public void doReport(String command, boolean useIndex, boolean eachFile, boolean extra, Object option) throws IOException {
+    Report which = (Report) option;
+    Formatter f = new Formatter();
+    f.format("%s on %s useIndex=%s eachFile=%s extra=%s%n", which, command, useIndex, eachFile, extra);
+
+    MCollection dcm = getCollection(command, f);
     if (dcm == null) {
       return;
     }

@@ -161,10 +161,11 @@ public abstract class PartitionCollection extends GribCollection {
         sb.format("%d,", partVar.flag);
       sb.format("%n");
       int count = 0;
-      sb.format("  %s %4s %3s %3s %6s%n", "part", "N", "dups", "Miss", "density");
+      sb.format("     %7s %3s %3s %6s %3s%n", "N", "dups", "Miss", "density", "partition");
       int totalN = 0, totalDups = 0, totalMiss = 0;
       for (PartitionForVariable2D partVar : partList) {
-        sb.format("   %2d: %4d %3d %3d %6.2f%n", count++, partVar.nrecords, partVar.ndups, partVar.missing, partVar.density);
+        Partition part = partitions.get(partVar.partno);
+        sb.format("   %2d: %7d %3d %3d   %6.2f   %d %s%n", count++, partVar.nrecords, partVar.ndups, partVar.missing, partVar.density, partVar.partno, part.getFilename());
         totalN += partVar.nrecords;
         totalDups += partVar.ndups;
         totalMiss += partVar.missing;
@@ -582,6 +583,11 @@ public abstract class PartitionCollection extends GribCollection {
 
   protected final org.slf4j.Logger logger;
   protected List<Partition> partitions;
+
+  public boolean isPartitionOfPartitions() {
+    return isPartitionOfPartitions;
+  }
+
   protected boolean isPartitionOfPartitions;
 
   int[] run2part;   // masterRuntime.length; which partition to use for masterRuntime i

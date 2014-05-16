@@ -49,11 +49,19 @@ public class Grib2ReportPanel extends ReportPanel {
     rename, renameCheck, copyCompress
   }
 
-  public Grib2ReportPanel(PreferencesExt prefs, JPanel buttPanel) {
-    super(prefs, buttPanel);
+  public Grib2ReportPanel(PreferencesExt prefs) {
+    super(prefs);
   }
 
-  public void doReport(String spec, boolean useIndex, boolean eachFile, boolean extra, Report which) throws IOException {
+  @Override
+  public Object[] getOptions() {
+    return ucar.nc2.ui.Grib2ReportPanel.Report.values();
+  }
+
+
+  @Override
+  public void doReport(String spec, boolean useIndex, boolean eachFile, boolean extra, Object option) throws IOException {
+    Report which = (Report) option;
     Formatter f = new Formatter();
     f.format("%s on %s useIndex=%s eachFile=%s extra=%s%n", which, spec, useIndex, eachFile, extra);
 
