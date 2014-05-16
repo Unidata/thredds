@@ -71,9 +71,16 @@ import java.util.Formatter;
 public abstract class GribIosp extends AbstractIOServiceProvider {
   static public final String VARIABLE_ID_ATTNAME = "Grib_Variable_Id";
   static public final String GRIB_VALID_TIME = "GRIB forecast or observation time";
-  static private final boolean debugTime = false, debugRead = false, debugName = false;
+  static boolean debugRead = false;
+  static boolean debugIndexOnly = false;  // we are running with only index files, no data
+  static private final boolean debug = false, debugTime = false, debugName = false;
 
-  private static final boolean debug = false;
+  static public void setDebugFlags(ucar.nc2.util.DebugFlags debugFlag) {
+    debugRead = debugFlag.isSet("Grib/showRead");
+    debugIndexOnly = debugFlag.isSet("Grib/indexOnly");
+  }
+
+  ///////////////////////////////////////////////////////////////////////////////////
 
   // store custom tables in here
   protected FeatureCollectionConfig config = new FeatureCollectionConfig();
@@ -823,8 +830,6 @@ public abstract class GribIosp extends AbstractIOServiceProvider {
     Range yRange = section.getRange(sectionLen - 2);
     Range xRange = section.getRange(sectionLen - 1);
 
-    //int[] otherShape = new int[sectionLen-2];
-    //System.arraycopy(vindex.getSparseArray().getShape(), 0, otherShape, 0, sectionLen-2);  // LOOK WRONG
     Section sectionWanted = section.subSection(0, sectionLen - 2); // all but x, y
     Section.Iterator iterWanted = sectionWanted.getIterator(v.getShape());
     int[] indexWanted = new int[sectionLen - 2];                              // place to put the iterator result
@@ -836,24 +841,6 @@ public abstract class GribIosp extends AbstractIOServiceProvider {
       int sourceIndex = iterWanted.next(indexWanted);
       dataReader.addRecord(sourceIndex, count++);
     }
-
-    /*
-    DataReaderPartitioned dataReader = new DataReaderPartitioned();
-    int resultPos = 0;
-    while (iterWanted.hasNext()) {
-      iterWanted.next(indexWanted);   // returns the vindexP index in indexWanted aaray
-
-      PartitionCollection.DataRecord record = vindexP.getDataRecord(indexWanted);
-      if (record == null) {
-        vindexP.getDataRecord(indexWanted); // debug
-        resultPos++;
-        continue;
-      }
-      record.resultIndex = resultPos;
-      dataReader.addRecord(record);
-      resultPos++;
-    }
-    */
 
     // sort by file and position, then read
     DataReceiverIF dataReceiver = channel == null ? new DataReceiver(section, yRange, xRange) : new ChannelReceiver(channel, yRange, xRange);
@@ -896,6 +883,9 @@ public abstract class GribIosp extends AbstractIOServiceProvider {
 
     void addRecord(int sourceIndex, int resultIndex) {
       GribCollection.Record record = vindex.getSparseArray().getContent(sourceIndex);
+      if (debugRead) {
+        System.out.printf("GribIosp debugRead sourceIndex=%d resultIndex=%d record is null=%s%n", sourceIndex, resultIndex, record == null);
+      }
       if (record != null)
         records.add(new DataRecord(resultIndex, record.fileno, record.pos, record.bmsPos, record.scanMode, vindex.group.getGdsHorizCoordSys()));
     }
@@ -1020,8 +1010,8 @@ public abstract class GribIosp extends AbstractIOServiceProvider {
 
       PartitionCollection.DataRecord record = vindexP.getDataRecord(indexWanted);
       if (record == null) {
-        System.out.printf("readDataFromPartition Missing%n");  // LOOK
-        vindexP.getDataRecord(indexWanted); // debug
+        if (debug || debugRead) System.out.printf("readDataFromPartition missing data%n");
+        // vindexP.getDataRecord(indexWanted); // debug
         resultPos++;
         continue;
       }

@@ -159,6 +159,13 @@ public class Misc {
     fout.format("\n");
   } */
 
+  static public String showInts(int[] inta) {
+    if (inta == null) return "null";
+    Formatter f = new Formatter();
+    for (int i : inta) f.format("%d, ", i);
+    return f.toString();
+  }
+
   static public String showBytes(byte[] buff) {
     StringBuilder sbuff = new StringBuilder();
     for (int i = 0; i < buff.length; i++) {

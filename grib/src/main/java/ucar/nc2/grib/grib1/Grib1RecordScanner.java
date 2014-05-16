@@ -179,7 +179,9 @@ public class Grib1RecordScanner {
       for (int i = 0; i < 4; i++) {
         if (raf.read() != 55) {
           foundEnding = false;
-          log.debug("Missing End of GRIB message at pos=" + ending + " header= " + StringUtil2.cleanup(header)+" for="+raf.getLocation());
+          String clean = StringUtil2.cleanup(header);
+          if (clean.length() > 40) clean = clean.substring(0,40) + "...";
+          log.debug("Missing End of GRIB message at pos=" + ending + " header= " + clean+" for="+raf.getLocation());
           break;
         }
       }

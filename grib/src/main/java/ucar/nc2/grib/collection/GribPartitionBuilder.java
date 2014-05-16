@@ -393,7 +393,7 @@ public abstract class GribPartitionBuilder  {
           int timeIdxP = index[1];
           Integer timeIdxR;
           if (isTwoD) {
-            CoordinateTime2D.Time2D val = ctGC2d.getOrgValue(0, timeIdxP); // only one run in the GC, so runIdx = 0
+            CoordinateTime2D.Time2D val = ctGC2d.getOrgValue(0, timeIdxP, false); // only one run in the GC, so runIdx = 0
             ct2D.getIndex(val, index); // reuse the int[] index
             timeIdxR = index[1];
             assert runIdx == index[0];

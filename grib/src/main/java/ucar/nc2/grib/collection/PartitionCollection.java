@@ -228,17 +228,25 @@ public abstract class PartitionCollection extends GribCollection {
      */
     DataRecord getDataRecord(int[] indexWanted) throws IOException {
 
+      if (GribIosp.debugRead) System.out.printf("PartitionCollection debugRead index wanted = %s%n", Misc.showInts(indexWanted));
+
       // find the runtime index
       int firstIndex = indexWanted[0];
       int runIdx = group.isTwod ? firstIndex : time2runtime[firstIndex] - 1;
-      if (runIdx < 0) return null; // LOOK why is this possible?
+      if (GribIosp.debugRead) System.out.printf("  firstIndex = %d time2runtime[firstIndex]=%d %n", firstIndex, runIdx);
+      if (runIdx < 0) {
+        return null; // LOOK why is this possible?
+      }
 
        // find the partition by matching run coordinate with master runtime
       CoordinateRuntime runtime = (CoordinateRuntime) getCoordinate(Coordinate.Type.runtime);
       Object val = runtime.getValue(runIdx);
       int masterIdx = masterRuntime.getIndex(val);
       int partno = run2part[masterIdx];
-      if (partno < 0) return null; // missing
+      if (GribIosp.debugRead) System.out.printf("  run = %s masterIdx[run]=%d run2part[masterIdx]=%d %n", val, masterIdx, partno);
+      if (partno < 0) {
+        return null; // missing
+      }
 
       // find the vi in that partition
       GribCollection.VariableIndex compVindex2D = getVindex2D(partno); // the 2D component variable in the partno partition
@@ -268,9 +276,11 @@ public abstract class PartitionCollection extends GribCollection {
       if (group.isTwod) {
         // corresponding index into compVindex2Dp
         int[] indexWantedP = translateIndex2D(indexWanted, compVindex2Dp);
+        if (GribIosp.debugRead) System.out.printf("  getDataRecordPofP translateIndex2D= %s %n", Misc.showInts(indexWantedP));
         return compVindex2Dp.getDataRecord(indexWantedP);
       } else {
         int[] indexWantedP = translateIndex1D(indexWanted, compVindex2Dp);
+        if (GribIosp.debugRead) System.out.printf("  getDataRecordPofP translateIndex1D= %s %n", Misc.showInts(indexWantedP));
         if (indexWantedP == null) return null;
         return compVindex2Dp.getDataRecord(indexWantedP);
       }
@@ -308,7 +318,10 @@ public abstract class PartitionCollection extends GribCollection {
           break;
         }
       }
-      if (partVar == null) return null;
+      if (partVar == null) {
+        if (GribIosp.debugRead) System.out.printf("  cant find partition=%d in vip=%s%n", partno, vip);
+        return null;
+      }
 
       Partition p = getPartition(partno);
       try (GribCollection gc = p.getGribCollection()) { // ensure that its read in try-with
@@ -384,7 +397,8 @@ public abstract class PartitionCollection extends GribCollection {
       CoordinateTime2D compTime2D = (CoordinateTime2D) compVindex2D.getCoordinate(Coordinate.Type.time2D);
       if (compTime2D != null) {
         CoordinateTime2D time2D = (CoordinateTime2D) getCoordinate(Coordinate.Type.time2D);
-        CoordinateTime2D.Time2D want = time2D.getOrgValue(wholeIndex[0], wholeIndex[1]);
+        CoordinateTime2D.Time2D want = time2D.getOrgValue(wholeIndex[0], wholeIndex[1], GribIosp.debugRead);
+        if (GribIosp.debugRead) System.out.printf("    compTime2D translateIndex2D[runIdx=%d, timeIdx=%d] = %s %n", wholeIndex[0], wholeIndex[1], want);
         if (want == null) return null;
         compTime2D.getIndex(want, result); // sets the first 2 indices - run and time
         countDim = 2;
@@ -394,6 +408,7 @@ public abstract class PartitionCollection extends GribCollection {
       while (countDim < wholeIndex.length) {
         int idx = wholeIndex[countDim];
         int resultIdx = matchCoordinate(getCoordinate(countDim), idx, compVindex2D.getCoordinate(countDim));
+        if (GribIosp.debugRead) System.out.printf("    translateIndex2D[runIdx=%d, timeIdx=%d] = %d %n", wholeIndex[0], wholeIndex[1], resultIdx);
         if (resultIdx < 0) {
           matchCoordinate(getCoordinate(countDim), idx, compVindex2D.getCoordinate(countDim)); // debug
           return null;
@@ -524,6 +539,15 @@ public abstract class PartitionCollection extends GribCollection {
     public GribCollection getGribCollection() throws IOException {
       GribCollection result;
       String path = getIndexFilenameInCache();
+      if (path == null && GribIosp.debugIndexOnly) {  // we are running in debug mode where we only have the indices, not the data files
+        // see if the path exists
+        File indexFile = new File(directory, filename);
+        if (!indexFile.exists()) {
+          // tricky substitute the current root
+          String parentLocation = PartitionCollection.this.indexRaf.getLocation();
+          path = path;
+        }
+      }
 
       if (partitionCache != null) {
         result = (GribCollection) partitionCache.acquire(collectionFactory, path, path, -1, null, this);

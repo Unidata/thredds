@@ -88,11 +88,11 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
   static protected String DEFAULTNETCDF4LIBNAME = "netcdf";
   static protected String netcdf4libname = DEFAULTNETCDF4LIBNAME;
 
-  static String[] DEFAULTNETCDF4PATH = new String[] {
-      "/opt/netcdf4/lib",
-      "/home/dmh/opt/netcdf4/lib", //temporary
-      "c:/opt/netcdf", // Windows
-      "/usr/jna_lib/",
+  static String[] DEFAULTNETCDF4PATH = new String[]{
+          "/opt/netcdf4/lib",
+          "/home/dmh/opt/netcdf4/lib", //temporary
+          "c:/opt/netcdf", // Windows
+          "/usr/jna_lib/",
   };
 
   static private String jnaPath = null;
@@ -127,17 +127,17 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
 
   /**
    * Use the default path to try to set jna.library.path
+   *
    * @return true if we set jna.library.path
    */
   static protected String
-  defaultNetcdf4Library()
-  {
+  defaultNetcdf4Library() {
     String pathlist = null;
-    for(String path: DEFAULTNETCDF4PATH) {
+    for (String path : DEFAULTNETCDF4PATH) {
       File f = new File(path);
-      if(f.exists() && f.canRead()) {
-	pathlist = (path == null ? "" : pathlist + File.pathSeparator);
-	pathlist = pathlist + path;
+      if (f.exists() && f.canRead()) {
+        pathlist = (path == null ? "" : pathlist + File.pathSeparator);
+        pathlist = pathlist + path;
       }
     }
     return pathlist;
@@ -148,36 +148,36 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
    * must be called before load() is called.
    *
    * @param jna_path path to shared libraries
-   * @param lib_name  library name
+   * @param lib_name library name
    */
   static public void setLibraryAndPath(String jna_path, String lib_name) {
     lib_name = nullify(lib_name);
     jna_path = nullify(jna_path);
-    if(lib_name == null)
+    if (lib_name == null)
       lib_name = DEFAULTNETCDF4LIBNAME;
     libName = lib_name;
-    if(jna_path == null) {
-        // Look at -D flags first, then env variables
-        jna_path = System.getProperty(JNA_PATH);
-	jna_path = nullify(jna_path);
-        if(jna_path == null)
-            jna_path = System.getenv(JNA_PATH_ENV);
+    if (jna_path == null) {
+      // Look at -D flags first, then env variables
+      jna_path = System.getProperty(JNA_PATH);
+      jna_path = nullify(jna_path);
+      if (jna_path == null)
+        jna_path = System.getenv(JNA_PATH_ENV);
     }
     jna_path = nullify(jna_path);
     if (jna_path == null)
-	jna_path = defaultNetcdf4Library();
+      jna_path = defaultNetcdf4Library();
     if (jna_path == null)
-        System.err.println("Cannot determine Netcdf4 library path");
+      System.err.println("Cannot determine Netcdf4 library path");
     System.setProperty(JNA_PATH, jna_path);
   }
 
   static private Nc4prototypes load() {
     if (nc4 == null) {
       if (jnaPath == null)
-	setLibraryAndPath(null,null);
+        setLibraryAndPath(null, null);
       if (jnaPath == null)
         System.err.println("Cannot determine Netcdf4 library path");
-	return null;	
+      return null;
     }
     //Native.setProtected(true);
     nc4 = (Nc4prototypes) Native.loadLibrary(libName, Nc4prototypes.class);
@@ -188,11 +188,12 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
 
   /**
    * Convert a zero-length string to null
+   *
    * @param s the string to check for length
    * @return null if s.length() == 0, s otherwise
    */
   static protected String nullify(String s) {
-    if(s.length() == 0) s = null;
+    if (s.length() == 0) s = null;
     return s;
   }
 
@@ -2208,7 +2209,7 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
 
     // variables
     for (Variable v : g4.g.getVariables()) {
-          createVariable(grpid, g4, v);
+      createVariable(grpid, g4, v);
     }
 
     // groups
@@ -2321,7 +2322,7 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
     int grpid = ncid; // LOOK ??
     IntByReference typeidp = new IntByReference();
     long size = s.getElementSize();
-    String name =  s.getShortName() + "_t";
+    String name = s.getShortName() + "_t";
     int ret = nc4.nc_def_compound(grpid, new NativeLong(size), name, typeidp);
     if (ret != 0)
       throw new IOException(nc4.nc_strerror(ret) + " on\n" + s);

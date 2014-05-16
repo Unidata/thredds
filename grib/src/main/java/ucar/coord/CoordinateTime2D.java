@@ -371,15 +371,17 @@ public class CoordinateTime2D extends CoordinateTimeAbstract implements Coordina
    * @param timeIdx    time index
    * @return time coordinate
    */
-  public Time2D getOrgValue(int runIdx, int timeIdx) {
+  public Time2D getOrgValue(int runIdx, int timeIdx, boolean debug) {
     CoordinateTimeAbstract time = getTimeCoordinate(runIdx);
     CalendarDate runDate = runtime.getDate(runIdx);
     if (isTimeInterval) {
       TimeCoord.Tinv valIntv = (TimeCoord.Tinv) time.getValue(timeIdx);
+      if (debug) System.out.printf("    coordTime2D intv runDate=%s time.getValue(timeIdx)=%s%n", runDate, valIntv);
       if (valIntv == null) return null;
       return new Time2D(runDate, null, valIntv);
     } else {
       Integer val = (Integer) time.getValue(timeIdx);
+      if (debug) System.out.printf("    coordTime2D int runDate=%s time.getValue(timeIdx)=%s%n", runDate, val);
       if (val == null) return null;
       return new Time2D(runDate, val, null);
     }
