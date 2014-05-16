@@ -192,7 +192,7 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
    * @return null if s.length() == 0, s otherwise
    */
   static protected String nullify(String s) {
-    if(s.length() == 0) s = null;
+    if(s != null && s.length() == 0) s = null;
     return s;
   }
 
