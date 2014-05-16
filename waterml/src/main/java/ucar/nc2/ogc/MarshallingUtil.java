@@ -49,10 +49,10 @@ public class MarshallingUtil {
 
     public static void marshalPointDataset(FeatureDatasetPoint fdPoint, List<VariableSimpleIF> dataVars,
             OutputStream outputStream) throws IOException, XMLHandlingException {
+        resetIds();
+
         CollectionDocument collectionDoc = CollectionDocument.Factory.newInstance();
         NcCollectionType.initCollection(collectionDoc.addNewCollection(), fdPoint, dataVars);
-
-        resetIds();
         writeObject(collectionDoc, outputStream, true);
     }
 
