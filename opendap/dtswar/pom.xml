@@ -13,7 +13,7 @@
             Module Description
         =========================================================== -->
    <!-- groupId>edu.ucar</groupId-->
-   <artifactId>dts</artifactId>
+   <artifactId>dtswar</artifactId>
    <packaging>war</packaging>
    <name>DAP Test Server (DTS) webapp</name>
     <description>
