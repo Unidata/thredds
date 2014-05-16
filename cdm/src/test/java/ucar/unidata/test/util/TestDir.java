@@ -87,7 +87,7 @@ public class TestDir {
 
   private static String remoteTestServerPropName = "remotetest";
 
-  public String remoteTestServer = "remotetest.unidata.ucar.edu";
+  static public String remoteTestServer = "remotetest.unidata.ucar.edu";
 
   //////////////////////////////////////////////////
 
