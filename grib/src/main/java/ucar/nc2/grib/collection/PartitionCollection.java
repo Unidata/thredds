@@ -228,12 +228,12 @@ public abstract class PartitionCollection extends GribCollection {
      */
     DataRecord getDataRecord(int[] indexWanted) throws IOException {
 
-      if (GribIosp.debugRead) System.out.printf("PartitionCollection debugRead index wanted = %s%n", Misc.showInts(indexWanted));
+      if (GribIosp.debugRead) System.out.printf("%nPartitionCollection debugRead index wanted = (%s) on %s isTwod=%s%n", Misc.showInts(indexWanted), indexFilename, group.isTwod);
 
       // find the runtime index
       int firstIndex = indexWanted[0];
-      int runIdx = group.isTwod ? firstIndex : time2runtime[firstIndex] - 1;
-      if (GribIosp.debugRead) System.out.printf("  firstIndex = %d time2runtime[firstIndex]=%d %n", firstIndex, runIdx);
+      int runIdx = group.isTwod ? firstIndex : time2runtime[firstIndex] - 1; // time2runtime is oneD
+      if (GribIosp.debugRead && !group.isTwod) System.out.printf("  firstIndex = %d time2runtime[firstIndex]=%d %n", firstIndex, runIdx);
       if (runIdx < 0) {
         return null; // LOOK why is this possible?
       }
@@ -243,7 +243,7 @@ public abstract class PartitionCollection extends GribCollection {
       Object val = runtime.getValue(runIdx);
       int masterIdx = masterRuntime.getIndex(val);
       int partno = run2part[masterIdx];
-      if (GribIosp.debugRead) System.out.printf("  run = %s masterIdx[run]=%d run2part[masterIdx]=%d %n", val, masterIdx, partno);
+      if (GribIosp.debugRead) System.out.printf("  runCoord = %s masterRuntime.getIndex(runCoord)=%d partition=%d %n", val, masterIdx, partno);
       if (partno < 0) {
         return null; // missing
       }
@@ -262,6 +262,7 @@ public abstract class PartitionCollection extends GribCollection {
       if (sourceIndex == null) return null; // missing
       GribCollection.Record record = compVindex2D.getSparseArray().getContent(sourceIndex);
 
+      if (GribIosp.debugRead) System.out.printf("  result success: partno=%d fileno=%d %n", partno, record.fileno);
       return new DataRecord(PartitionCollection.this, partno, compVindex2D.group.getGdsHorizCoordSys(), record.fileno, record.pos, record.bmsPos, record.scanMode);
     }
 
@@ -276,11 +277,11 @@ public abstract class PartitionCollection extends GribCollection {
       if (group.isTwod) {
         // corresponding index into compVindex2Dp
         int[] indexWantedP = translateIndex2D(indexWanted, compVindex2Dp);
-        if (GribIosp.debugRead) System.out.printf("  getDataRecordPofP translateIndex2D= %s %n", Misc.showInts(indexWantedP));
+        if (GribIosp.debugRead) System.out.printf("  getDataRecordPofP= %s %n", Misc.showInts(indexWantedP));
         return compVindex2Dp.getDataRecord(indexWantedP);
       } else {
         int[] indexWantedP = translateIndex1D(indexWanted, compVindex2Dp);
-        if (GribIosp.debugRead) System.out.printf("  getDataRecordPofP translateIndex1D= %s %n", Misc.showInts(indexWantedP));
+        if (GribIosp.debugRead) System.out.printf("  getDataRecordPofP= %s %n", Misc.showInts(indexWantedP));
         if (indexWantedP == null) return null;
         return compVindex2Dp.getDataRecord(indexWantedP);
       }
@@ -331,7 +332,7 @@ public abstract class PartitionCollection extends GribCollection {
         GribCollection.VariableIndex vindex = g.variList.get(partVar.varno);
         vindex.readRecords();
         return vindex;
-      }  // LOOK opening the file here, and then again to read the data. partition cache helps  i guess but we could do better i think.
+      }  // LOOK opening the file here, and then again to read the data. partition cache helps i guess but we could do better i think.
     }
 
 
@@ -398,7 +399,8 @@ public abstract class PartitionCollection extends GribCollection {
       if (compTime2D != null) {
         CoordinateTime2D time2D = (CoordinateTime2D) getCoordinate(Coordinate.Type.time2D);
         CoordinateTime2D.Time2D want = time2D.getOrgValue(wholeIndex[0], wholeIndex[1], GribIosp.debugRead);
-        if (GribIosp.debugRead) System.out.printf("    compTime2D translateIndex2D[runIdx=%d, timeIdx=%d] = %s %n", wholeIndex[0], wholeIndex[1], want);
+        if (GribIosp.debugRead) System.out.printf("  translateIndex2D[runIdx=%d, timeIdx=%d] in componentVar coords = (%s,%s) %n",
+                wholeIndex[0], wholeIndex[1], (want == null) ? "null" : want.getRun(), want);
         if (want == null) return null;
         compTime2D.getIndex(want, result); // sets the first 2 indices - run and time
         countDim = 2;
@@ -408,7 +410,7 @@ public abstract class PartitionCollection extends GribCollection {
       while (countDim < wholeIndex.length) {
         int idx = wholeIndex[countDim];
         int resultIdx = matchCoordinate(getCoordinate(countDim), idx, compVindex2D.getCoordinate(countDim));
-        if (GribIosp.debugRead) System.out.printf("    translateIndex2D[runIdx=%d, timeIdx=%d] = %d %n", wholeIndex[0], wholeIndex[1], resultIdx);
+        if (GribIosp.debugRead) System.out.printf("  translateIndex2D[idx=%d] resultIdx= %d %n", idx, resultIdx);
         if (resultIdx < 0) {
           matchCoordinate(getCoordinate(countDim), idx, compVindex2D.getCoordinate(countDim)); // debug
           return null;
@@ -540,13 +542,13 @@ public abstract class PartitionCollection extends GribCollection {
       GribCollection result;
       String path = getIndexFilenameInCache();
       if (path == null && GribIosp.debugIndexOnly) {  // we are running in debug mode where we only have the indices, not the data files
-        // see if the path exists
-        File indexFile = new File(directory, filename);
-        if (!indexFile.exists()) {
-          // tricky substitute the current root
-          String parentLocation = PartitionCollection.this.indexRaf.getLocation();
-          path = path;
-        }
+        // tricky substitute the current root
+        File orgParentDir = new File(directory);
+        File currentFile = new File(PartitionCollection.this.indexFilename);
+        File currentParent =  currentFile.getParentFile();
+        File currentParentWithDir = new File(currentParent,orgParentDir.getName());
+        File nestedIndex =  isPartitionOfPartitions ? new File(currentParentWithDir, filename) : new File(currentParent, filename); // JMJ
+        path = nestedIndex.getPath();
       }
 
       if (partitionCache != null) {

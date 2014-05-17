@@ -233,6 +233,7 @@ public abstract class GribCollection implements FileCacheable, AutoCloseable {
   private Map<String, MFile> filenameMap;
   protected RandomAccessFile indexRaf; // this is the raf of the index (ncx) file, synchronize any access to it
   protected FileCache objCache = null;  // optional object cache - used in the TDS
+  protected String indexFilename;  // temp storage for debugging
 
   protected GribCollection(String name, File directory, FeatureCollectionConfig config, boolean isGrib1) {
     this.name = name;
@@ -358,14 +359,8 @@ public abstract class GribCollection implements FileCacheable, AutoCloseable {
   void setIndexRaf(RandomAccessFile indexRaf) {
     this.indexRaf = indexRaf;
     if (indexRaf != null) {
-      setIndexFilename(indexRaf.getLocation());
+      this.indexFilename = indexRaf.getLocation(); // for debugIndexOnly
     }
-  }
-
-  private void setIndexFilename(String indexFilename) {
-    //if (indexFilename.startsWith("B:\\content") || indexFilename.startsWith("B:/content"))
-    //  System.out.printf("HEY %s%n", indexFilename);
-    // this.indexFilename = indexFilename;
   }
 
   /**
@@ -454,7 +449,6 @@ public abstract class GribCollection implements FileCacheable, AutoCloseable {
         dataFile = new File(parent, dataFile.getName()); // must be in same directory as the ncx file
       }
     }
-
 
     // data file not here
     if (!dataFile.exists()) {
