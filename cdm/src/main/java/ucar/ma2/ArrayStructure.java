@@ -1006,7 +1006,21 @@ public abstract class ArrayStructure extends Array {
     throw new UnsupportedOperationException();
   }
 
-  /**
+  @Override
+  public Array sectionNoReduce(List<Range> ranges) throws InvalidRangeException {
+      Section viewSection = new Section(ranges);
+      ArrayStructureW result = new ArrayStructureW(this.members, viewSection.getShape());
+      int count = 0;
+      Section.Iterator iter = viewSection.getIterator(getShape());
+      while (iter.hasNext()) {
+          int recno = iter.next(null);
+          StructureData sd = getStructureData(recno);
+          result.setStructureData(sd, count++);
+      }
+      return result;
+  }
+
+    /**
    * DO NOT USE, throws UnsupportedOperationException
    */
   public Array copy() {

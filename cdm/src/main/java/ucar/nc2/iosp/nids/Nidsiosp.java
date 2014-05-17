@@ -245,33 +245,22 @@ ByteBuffer bos = ByteBuffer.wrap(vdata);     */
       outputData = Array.factory(v2.getDataType().getPrimitiveClassType(), v2.getShape(), data);
 
     } else if (v2.getShortName().equals("unlinkedVectorStruct")) {
-      return readUnlinkedVectorData(v2.getShortName(), bos, vinfo);
-      // JOHN outputData = Array.factory( v2.getDataType().getPrimitiveClassType(), v2.getShape(), data);
-
+      outputData = readUnlinkedVectorData(v2.getShortName(), bos, vinfo);
     } else if (v2.getShortName().equals("linkedVectorStruct")) {
-      return readLinkedVectorData(v2.getShortName(), bos, vinfo);
+      outputData = readLinkedVectorData(v2.getShortName(), bos, vinfo);
     } else if (v2.getShortName().startsWith("textStruct")) {
-      return readTextStringData(v2.getShortName(), bos, vinfo);
-      // JOHN outputData = Array.factory( v2.getDataType().getPrimitiveClassType(), v2.getShape(), data);
-
+      outputData = readTextStringData(v2.getShortName(), bos, vinfo);
     } else if (v2.getShortName().startsWith("VADWindSpeed")) {
-      return readWindBarbData(v2.getShortName(), bos, vinfo, null);
-      // JOHN outputData = Array.factory( v2.getDataType().getPrimitiveClassType(), v2.getShape(), data);
-
+      outputData = readWindBarbData(v2.getShortName(), bos, vinfo, null);
     } else if (v2.getShortName().startsWith("VectorArrow")) {
-      return readVectorArrowData(v2.getShortName(), bos, vinfo);
-      // JOHN outputData = Array.factory( v2.getDataType().getPrimitiveClassType(), v2.getShape(), data);
-
+      outputData = readVectorArrowData(v2.getShortName(), bos, vinfo);
     } else if (v2.getShortName().startsWith("TabMessagePage")) {
       data = readTabAlphaNumData(bos, vinfo);
       outputData = Array.factory(v2.getDataType().getPrimitiveClassType(), v2.getShape(), data);
-
     } else if (v2.getShortName().startsWith("circleStruct")) {
-      return readCircleStructData(v2.getShortName(), bos, vinfo);
-
+      outputData = readCircleStructData(v2.getShortName(), bos, vinfo);
     } else if (v2.getShortName().startsWith("hail") || v2.getShortName().startsWith("TVS")) {
-      return readGraphicSymbolData(v2.getShortName(), bos, vinfo);
-
+      outputData = readGraphicSymbolData(v2.getShortName(), bos, vinfo);
     } else if (v2.getShortName().startsWith("DigitalInstantaneousPrecipitationRate") ) {
         data = readOneScanGenericData(bos, vinfo, v2.getShortName());
         outputData = Array.factory(v2.getDataType().getPrimitiveClassType(), v2.getShape(), data);
@@ -280,8 +269,7 @@ ByteBuffer bos = ByteBuffer.wrap(vdata);     */
       outputData = Array.factory(v2.getDataType().getPrimitiveClassType(), v2.getShape(), data);
     }
 
-    return (outputData.sectionNoReduce(ranges).copy());
-    //return outputData;
+    return outputData.sectionNoReduce(ranges);
   }
 
   /**
