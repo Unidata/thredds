@@ -852,7 +852,7 @@ class Nidsheader{
                    }
                    plen = bos.getShort();
                    gpkcode8Doff[gpcode8Number] = ppos + 4 + icnt;
-                   gpkcode8Doff[gpcode8Number] = plen - 6;
+                   gpkcode8Size[gpcode8Number] = plen - 6;
                    icnt += plen + 4;
                    gpcode8Number++;
                 }
