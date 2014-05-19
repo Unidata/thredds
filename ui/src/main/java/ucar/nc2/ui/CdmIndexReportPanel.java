@@ -133,20 +133,27 @@ public class CdmIndexReportPanel extends ReportPanel {
         countTop(mfile.getPath(), f, varCount);
       }
 
+      int countMisplaced=0;
       f.format("%nTotals%n");
       List<VarInfo> sorted = new ArrayList<>(varCount.values());
       Collections.sort(sorted);
       for (VarInfo vinfo : sorted) {
         f.format(" %20s = %d%n", vinfo.name, vinfo.count);
-        if (vinfo.count > 1000) vinfo.ok = true; // LOOK
+        if (vinfo.count > 400) vinfo.ok = true; // LOOK arbitrary cutoff
+        if (!vinfo.ok) countMisplaced += vinfo.count;
       }
+      f.format("countMisplaced = %d%n", countMisplaced);
 
+      Set<String> filenames = new HashSet<>();
+      countMisplaced=0; // count again
       f.format("%nFind Misplaced Files%n");
       for (MFile mfile : dcm.getFilesSorted()) {
         File indexFile = new File(mfile.getPath());
-        doOneIndex(indexFile, f, varCount, new Indent(2), extra);
+        countMisplaced += doOneIndex(indexFile, f, varCount, filenames, new Indent(2), extra);
       }
-      f.format("%nDone%n");
+      f.format("%nDone countMisplaced=%d (n < 400)%n%nFiles%n", countMisplaced);
+      for (String filename : filenames)
+        f.format("  %s%n", filename);
 
     } catch (IOException ioe) {
       ByteArrayOutputStream bos = new ByteArrayOutputStream(10000);
@@ -173,10 +180,11 @@ public class CdmIndexReportPanel extends ReportPanel {
           for (GribCollection.VariableIndex vi : g.getVariables()) {
             String name = gc.makeVariableName(vi);                    // LOOK not actually right - some are partitioned by level
             f.format("  %7d: %s%n", vi.nrecords, name);
-            VarInfo vinfo = varCount.get(vi.hashCode());
+            int hash = vi.cdmHash + g.getGdsHash(); // must be both group and var
+            VarInfo vinfo = varCount.get(hash);
             if (vinfo == null) {
-              vinfo = new VarInfo(vi.cdmHash, name);
-              varCount.put(vi.cdmHash, vinfo);
+              vinfo = new VarInfo(hash, name);
+              varCount.put(hash, vinfo);
             }
             vinfo.count += vi.nrecords;
           }
@@ -186,13 +194,15 @@ public class CdmIndexReportPanel extends ReportPanel {
   }
 
   // recursively look for leaf files of records in vars
-  public void doOneIndex(File indexFile, Formatter f, Map<Integer, VarInfo> varCount, Indent indent, boolean showScan) throws IOException {
+  public int doOneIndex(File indexFile, Formatter f, Map<Integer, VarInfo> varCount, Set<String> filenames, Indent indent, boolean showScan) throws IOException {
     FeatureCollectionConfig config = new FeatureCollectionConfig();
 
     try (ucar.unidata.io.RandomAccessFile raf = new RandomAccessFile(indexFile.getPath(), "r")) {
       GribCdmIndex.GribCollectionType type = GribCdmIndex.getType(raf);
       if (showScan) f.format("%sIndex %s type=%s", indent, indexFile, type);
     }
+
+    int totalMisplaced = 0;
 
     File parent = indexFile.getParentFile();
     try (GribCollection gc = GribCdmIndex.openCdmIndex(indexFile.getPath(), config, false, logger)) {
@@ -205,7 +215,8 @@ public class CdmIndexReportPanel extends ReportPanel {
         if (ds.getType().equals(GribCollection.Type.Best)) continue;
         for (GribCollection.GroupGC g : ds.getGroups()) {
           for (GribCollection.VariableIndex vi : g.getVariables()) {
-            VarInfo vinfo = varCount.get(vi.cdmHash);
+            int hash = vi.cdmHash + g.getGdsHash();
+            VarInfo vinfo = varCount.get(hash);
             if (!vinfo.ok) countMisplaced += vi.nrecords;
           }
         }
@@ -213,7 +224,7 @@ public class CdmIndexReportPanel extends ReportPanel {
 
       if (countMisplaced == 0) {
         if (showScan) f.format(" none%n");
-        return;
+        return 0;
       }
 
       indent.incr();
@@ -227,7 +238,7 @@ public class CdmIndexReportPanel extends ReportPanel {
           File nestedIndex =  isPoP ? new File(reparent, partition.getFilename()) : new File(parent, partition.getFilename()); // JMJ
           if (showScan) f.format("%sPartition index= %s exists=%s%n", indent, nestedIndex, nestedIndex.exists());
           if (nestedIndex.exists()) {
-            doOneIndex(nestedIndex, f, varCount, indent.incr(), showScan);
+            totalMisplaced += doOneIndex(nestedIndex, f, varCount, filenames, indent.incr(), showScan);
             indent.decr();
           } else {
             f.format("%sdir=%s filename=%s nestedIndex %s NOT EXIST%n", indent, partition.getDirectory(), partition.getFilename(), nestedIndex.getPath());
@@ -243,14 +254,17 @@ public class CdmIndexReportPanel extends ReportPanel {
           if (ds.getType().equals(GribCollection.Type.Best)) continue;
           for (GribCollection.GroupGC g : ds.getGroups()) {
             for (GribCollection.VariableIndex vi : g.getVariables()) {
-              VarInfo vinfo = varCount.get(vi.cdmHash);
+              int hash = vi.cdmHash + g.getGdsHash();
+              VarInfo vinfo = varCount.get(hash);
               if (!vinfo.ok) {
                 vi.readRecords();
                 if (vi.getSparseArray() != null) {
                   SparseArray<GribCollection.Record> sa = vi.getSparseArray();
                   for (GribCollection.Record record : sa.getContent()) {
                     String filename = gc.getFilename(record.fileno);
-                    f.format("%s%s: %s at pos %d%n", indent, vinfo.name, filename, record.pos);
+                    f.format(">%s%s: %s at pos %d%n", indent, vinfo.name, filename, record.pos);
+                    totalMisplaced++;
+                    filenames.add(filename);
                   }
                 }
               }
@@ -262,6 +276,7 @@ public class CdmIndexReportPanel extends ReportPanel {
     }
 
     indent.decr();
+    return totalMisplaced;
   }
 
 

@@ -795,7 +795,7 @@ public abstract class GribCollection implements FileCacheable, AutoCloseable {
     public final int category, parameter, levelType, intvType, ensDerivedType, probType;
     private String intvName;  // eg "mixed intervals, 3 Hour, etc"
     public final String probabilityName;
-    public final boolean isLayer;
+    public final boolean isLayer, isEnsemble;
     public final int genProcessType;
 
     // stats
@@ -837,6 +837,7 @@ public abstract class GribCollection implements FileCacheable, AutoCloseable {
         this.probabilityName = null;
 
         this.genProcessType = pds.getGenProcess(); // LOOK process vs process type ??
+        this.isEnsemble = pds.isEnsemble();
 
       } else {
         Grib2SectionProductDefinition pdss = new Grib2SectionProductDefinition(rawPds);
@@ -872,6 +873,7 @@ public abstract class GribCollection implements FileCacheable, AutoCloseable {
         }
 
         this.genProcessType = pds.getGenProcessType();
+        this.isEnsemble = pds.isEnsemble();
       }
     }
 
@@ -894,6 +896,7 @@ public abstract class GribCollection implements FileCacheable, AutoCloseable {
       this.probabilityName = other.probabilityName;
       this.probType = other.probType;
       this.genProcessType = other.genProcessType;
+      this.isEnsemble = other.isEnsemble;
 
       this.time2runtime = other.time2runtime;
       this.twot = other.twot;   // LOOK why did i delete this before ??

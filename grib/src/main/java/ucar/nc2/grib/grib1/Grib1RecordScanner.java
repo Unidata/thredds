@@ -88,15 +88,14 @@ public class Grib1RecordScanner {
   private ucar.unidata.io.RandomAccessFile raf = null;
 
   private byte[] header;
-  private long startPos = 0;
+  //private long startPos = 0;
   private long lastPos = 0;
 
   public Grib1RecordScanner(RandomAccessFile raf) throws IOException {
-    startPos = 0;
     this.raf = raf;
-    raf.seek(startPos);
+    raf.seek(0);
     raf.order(RandomAccessFile.BIG_ENDIAN);
-    lastPos = startPos;
+    lastPos = 0;
   }
 
   public boolean hasNext() throws IOException {
@@ -120,10 +119,12 @@ public class Grib1RecordScanner {
     if (more) {
       // read the header - stuff between the records
       int sizeHeader = (int) (foundAt - lastPos);
+      if (sizeHeader > 100) sizeHeader = 100;   // maximum 100 bytes, more likely to be garbage
+      long startPos = foundAt-sizeHeader;
       header = new byte[sizeHeader];
-      startPos = foundAt-sizeHeader;
       raf.seek(startPos);
       raf.read(header);
+      raf.seek(foundAt);
       if (debug) System.out.println(" 'GRIB' found at "+foundAt+" starting from lastPos "+ lastPos);
     }
 
@@ -187,9 +188,16 @@ public class Grib1RecordScanner {
       }
       if (debug) System.out.printf(" read until %d grib ending at %d header ='%s' foundEnding=%s%n",
               raf.getFilePointer(), ending, StringUtil2.cleanup(header), foundEnding);
-      lastPos = foundEnding ? raf.getFilePointer() : is.getEndPos();
 
-      return new Grib1Record(header, is, gds, pds, bitmap, dataSection);
+      if (foundEnding) {
+        lastPos = raf.getFilePointer();
+        return new Grib1Record(header, is, gds, pds, bitmap, dataSection);
+
+      } else { // skip this record, start scanning again at end of is + 20 bytes
+        lastPos = is.getEndPos() + 20;
+        if (hasNext()) // search forward for another one
+         return next();
+      }
 
     } catch (Throwable t) {
       long pos = (is == null) ? -1 : is.getStartPos();
