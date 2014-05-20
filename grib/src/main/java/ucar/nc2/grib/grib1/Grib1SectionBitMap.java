@@ -68,7 +68,7 @@ public class Grib1SectionBitMap {
   /**
    * Read the bitmap array when needed
    */
-  byte[] getBitmap(RandomAccessFile raf) throws IOException {
+  public byte[] getBitmap(RandomAccessFile raf) throws IOException {
     if (startingPosition <= 0) return null;
 
     raf.seek(startingPosition);
