@@ -41,6 +41,7 @@ import ucar.coord.SparseArray;
 import ucar.nc2.grib.collection.GribCdmIndex;
 import ucar.nc2.grib.collection.GribCollection;
 import ucar.nc2.grib.collection.PartitionCollection;
+import ucar.nc2.util.CloseableIterator;
 import ucar.nc2.util.Indent;
 import ucar.unidata.io.RandomAccessFile;
 import ucar.util.prefs.PreferencesExt;
@@ -70,39 +71,98 @@ public class CdmIndexReportPanel extends ReportPanel {
     return ucar.nc2.ui.CdmIndexReportPanel.Report.values();
   }
 
-
   @Override
-  public void doReport(String spec, boolean useIndex, boolean eachFile, boolean extra, Object option) throws IOException {
-    Report which = (Report) option;
-    Formatter f = new Formatter();
-    f.format("%s on %s useIndex=%s eachFile=%s extra=%s%n", which, spec, useIndex, eachFile, extra);
+  protected void doReport(Formatter f, Object option, MCollection dcm, boolean useIndex, boolean eachFile, boolean extra) throws IOException {
 
-    MCollection dcm = getCollection(spec, f);
-    if (dcm == null) {
-      return;
-    }
+    if (eachFile) {
 
-    // CollectionSpecParser parser = dcm.getCollectionSpecParser();
+      Set<String> filenames = new HashSet<>();
+      try (CloseableIterator<MFile> iter = dcm.getFileIterator()) { // not sorted
+        while (iter.hasNext()) {
+          switch ((Report) option) {
+            case misplacedFlds:
+              doMisplacedFieldsEach(f, iter.next(), filenames, extra);
+              break;
+          }
+        }
+      }
 
-    f.format("top dir = %s%n", dcm.getRoot());
-    //f.format("filter = %s%n", parser.getFilter());
-    reportPane.setText(f.toString());
+      f.format("%nAll files%n");
+      for (String filename : filenames)
+      f.format("  %s%n", filename);
 
-    File top = new File(dcm.getRoot());
-    if (!top.exists()) {
-      f.format("top dir = %s does not exist%n", dcm.getRoot());
-    } else {
 
-      switch (which) {
+    } else {  // eachFile false
+
+      switch ((Report) option) {
         case misplacedFlds:
-          doMisplacedFields(f, dcm, useIndex, eachFile, extra);
+          doMisplacedFields(f, dcm, useIndex, extra);
           break;
       }
-    }
 
-    reportPane.setText(f.toString());
-    reportPane.gotoTop();
+    }
   }
+
+  // seperate report for each file in collection
+  private void doMisplacedFieldsEach(Formatter f2, MFile mfile, Set<String> filenames, boolean extra) throws IOException {
+    Formatter f = new Formatter(System.out);
+    f.format("Check Misplaced Fields for %s%n", mfile);
+    Map<Integer, VarInfo> varCount = new HashMap<>();
+    int countMisplaced = 0;
+
+    f.format("%n%s%n", mfile.getPath());
+    countTop(mfile.getPath(), f, varCount);
+
+    f.format("%nTotals%n");
+    List<VarInfo> sorted = new ArrayList<>(varCount.values());
+    Collections.sort(sorted);
+    for (VarInfo vinfo : sorted) {
+      f.format(" %20s = %d%n", vinfo.name, vinfo.count);
+      if (vinfo.count > 400) vinfo.ok = true; // LOOK arbitrary cutoff
+      if (!vinfo.ok) countMisplaced += vinfo.count;
+    }
+    f.format("countMisplaced = %d%n", countMisplaced);
+
+    countMisplaced = 0; // count again
+    f.format("%nFind Misplaced Files%n");
+    File indexFile = new File(mfile.getPath());
+    countMisplaced += doOneIndex(indexFile, f, varCount, filenames, new Indent(2), extra);
+    f.format("%nDone countMisplaced=%d (n < 400)%n%nFiles%n", countMisplaced);
+    f2.format("%s", f.toString());
+  }
+
+   //  report over all files in collection
+  private void doMisplacedFields(Formatter f, MCollection dcm, boolean useIndex, boolean extra) throws IOException {
+     f.format("Check Misplaced Fields%n");
+     Map<Integer, VarInfo> varCount = new HashMap<>();
+
+     for (MFile mfile : dcm.getFilesSorted()) {
+       f.format("%n%s%n", mfile.getPath());
+       countTop(mfile.getPath(), f, varCount);
+     }
+
+     int countMisplaced=0;
+     f.format("%nTotals%n");
+     List<VarInfo> sorted = new ArrayList<>(varCount.values());
+     Collections.sort(sorted);
+     for (VarInfo vinfo : sorted) {
+       f.format(" %20s = %d%n", vinfo.name, vinfo.count);
+       if (vinfo.count > 400) vinfo.ok = true; // LOOK arbitrary cutoff
+       if (!vinfo.ok) countMisplaced += vinfo.count;
+     }
+     f.format("countMisplaced = %d%n", countMisplaced);
+
+     Set<String> filenames = new HashSet<>();
+     countMisplaced=0; // count again
+     f.format("%nFind Misplaced Files%n");
+     for (MFile mfile : dcm.getFilesSorted()) {
+       File indexFile = new File(mfile.getPath());
+       countMisplaced += doOneIndex(indexFile, f, varCount, filenames, new Indent(2), extra);
+     }
+     f.format("%nDone countMisplaced=%d (n < 400)%n%nFiles%n", countMisplaced);
+     for (String filename : filenames)
+       f.format("  %s%n", filename);
+   }
 
   ///////////////////////////////////////////////
 
@@ -121,47 +181,6 @@ public class CdmIndexReportPanel extends ReportPanel {
     public int compareTo(VarInfo o) {
       return name.compareTo(o.name);
     }
-  }
-
-  private void doMisplacedFields(Formatter f, MCollection dcm, boolean useIndex, boolean eachFile, boolean extra) {
-    try {
-      f.format("Check Misplaced Fields%n");
-      Map<Integer, VarInfo> varCount = new HashMap<>();
-
-      for (MFile mfile : dcm.getFilesSorted()) {
-        f.format("%n%s%n", mfile.getPath());
-        countTop(mfile.getPath(), f, varCount);
-      }
-
-      int countMisplaced=0;
-      f.format("%nTotals%n");
-      List<VarInfo> sorted = new ArrayList<>(varCount.values());
-      Collections.sort(sorted);
-      for (VarInfo vinfo : sorted) {
-        f.format(" %20s = %d%n", vinfo.name, vinfo.count);
-        if (vinfo.count > 400) vinfo.ok = true; // LOOK arbitrary cutoff
-        if (!vinfo.ok) countMisplaced += vinfo.count;
-      }
-      f.format("countMisplaced = %d%n", countMisplaced);
-
-      Set<String> filenames = new HashSet<>();
-      countMisplaced=0; // count again
-      f.format("%nFind Misplaced Files%n");
-      for (MFile mfile : dcm.getFilesSorted()) {
-        File indexFile = new File(mfile.getPath());
-        countMisplaced += doOneIndex(indexFile, f, varCount, filenames, new Indent(2), extra);
-      }
-      f.format("%nDone countMisplaced=%d (n < 400)%n%nFiles%n", countMisplaced);
-      for (String filename : filenames)
-        f.format("  %s%n", filename);
-
-    } catch (IOException ioe) {
-      ByteArrayOutputStream bos = new ByteArrayOutputStream(10000);
-      ioe.printStackTrace(new PrintStream(bos));
-      f.format(bos.toString());
-      ioe.printStackTrace();
-    }
-
   }
 
   public void countTop(String indexFile, Formatter f, Map<Integer, VarInfo> varCount) throws IOException {
@@ -194,7 +213,7 @@ public class CdmIndexReportPanel extends ReportPanel {
   }
 
   // recursively look for leaf files of records in vars
-  public int doOneIndex(File indexFile, Formatter f, Map<Integer, VarInfo> varCount, Set<String> filenames, Indent indent, boolean showScan) throws IOException {
+  private int doOneIndex(File indexFile, Formatter f, Map<Integer, VarInfo> varCount, Set<String> filenames, Indent indent, boolean showScan) throws IOException {
     FeatureCollectionConfig config = new FeatureCollectionConfig();
 
     try (ucar.unidata.io.RandomAccessFile raf = new RandomAccessFile(indexFile.getPath(), "r")) {
@@ -217,7 +236,10 @@ public class CdmIndexReportPanel extends ReportPanel {
           for (GribCollection.VariableIndex vi : g.getVariables()) {
             int hash = vi.cdmHash + g.getGdsHash();
             VarInfo vinfo = varCount.get(hash);
-            if (!vinfo.ok) countMisplaced += vi.nrecords;
+            if (vinfo == null) f.format("ERROR on vi %s%n", vi);
+            else{
+              if (!vinfo.ok) countMisplaced += vi.nrecords;
+            }
           }
         }
       }

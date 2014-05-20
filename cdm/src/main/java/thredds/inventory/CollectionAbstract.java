@@ -4,6 +4,7 @@ import thredds.featurecollection.FeatureCollectionConfig;
 import thredds.filesystem.MFileOS7;
 import thredds.inventory.partition.DirectoryCollection;
 import ucar.nc2.time.CalendarDate;
+import ucar.nc2.util.CloseableIterator;
 import ucar.unidata.util.StringUtil2;
 
 import java.io.IOException;
@@ -26,6 +27,7 @@ public abstract class CollectionAbstract implements MCollection {
   static public final String DIR = "directory:";
   static public final String FILE = "file:";
   static public final String LIST = "list:";
+  static public final String GLOB = "glob:";
 
     // called from Aggregation, Fmrc, FeatureDatasetFactoryManager
   static public MCollection open(String collectionName, String collectionSpec, String olderThan, Formatter errlog) throws IOException {
@@ -37,6 +39,8 @@ public abstract class CollectionAbstract implements MCollection {
       return new CollectionSingleFile(MFileOS7.getExistingFile(collectionSpec.substring(FILE.length())), null);
     else if (collectionSpec.startsWith(LIST))
       return new CollectionList(collectionName, collectionSpec.substring(LIST.length()), null);
+    else if (collectionSpec.startsWith(GLOB))
+      return new CollectionGlob(collectionName, collectionSpec.substring(GLOB.length()), null);
     else
       return MFileCollectionManager.open(collectionName, collectionSpec, olderThan, errlog);
   }
@@ -209,6 +213,22 @@ public abstract class CollectionAbstract implements MCollection {
               !last.endsWith(".xml");
     }
   }
+
+  protected List<MFile> makeFileListSorted() throws IOException {
+    List<MFile> list = new ArrayList<>(100);
+    try (CloseableIterator<MFile> iter = getFileIterator()) {
+       while (iter.hasNext()) {
+         list.add(iter.next());
+       }
+     }
+    if (hasDateExtractor()) {
+      Collections.sort(list, new DateSorter());  // sort by date
+    } else {
+      Collections.sort(list);                    // sort by name
+    }
+    return list;
+  }
+
 
 }
 

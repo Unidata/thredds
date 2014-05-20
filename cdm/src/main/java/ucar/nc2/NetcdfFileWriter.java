@@ -693,7 +693,9 @@ public class NetcdfFileWriter {
    * You cannot make an attribute longer, or change the number of values.
    * For strings: truncate if longer, zero fill if shorter.  Strings are padded to 4 byte boundaries, ok to use padding if it exists.
    * For numerics: must have same number of values.
+   * This is really a netcdf-3 writing only. netcdf-4 attritutes can be changed without rewriting.
    *
+   * @deprecated DO NOT USE
    * @param v2  variable, or null for global attribute
    * @param att replace with this value
    * @throws IOException if I/O error

@@ -33,95 +33,124 @@
  *
  */
 
-package ucar.nc2.grib.collection;
+package thredds.inventory;
 
+import org.slf4j.Logger;
+import thredds.filesystem.MFileOS;
 import thredds.filesystem.MFileOS7;
-import thredds.inventory.*;
-import thredds.inventory.filter.WildcardMatchOnName;
 import ucar.nc2.util.CloseableIterator;
 
 import java.io.IOException;
-import java.nio.file.DirectoryStream;
-import java.nio.file.Files;
-import java.nio.file.Path;
+import java.nio.file.*;
+import java.nio.file.attribute.BasicFileAttributes;
 import java.util.*;
 
 /**
- * Static collection, always excludes indexes
- * Not used.
+ * Describe
  *
  * @author caron
- * @since 12/3/13
+ * @since 5/19/14
  */
-public class CollectionMFileGrib extends CollectionAbstract {
-  CollectionSpecParser sp;
+public class CollectionGlob extends CollectionAbstract {
+  PathMatcher matcher;
+  boolean debug = true;
+  int depth = 0;
 
-  public CollectionMFileGrib(String collectionName, String collectionSpec, Formatter errlog) {
-    super(collectionName, null);
-    this.sp = new CollectionSpecParser(collectionSpec, errlog);
-    List<MFileFilter> filters = new ArrayList<MFileFilter>(2);
-    if (null != sp.getFilter())
-      filters.add(new WildcardMatchOnName(sp.getFilter()));
-    this.dateExtractor = (sp.getDateFormatMark() == null) ? new DateExtractorNone() : new DateExtractorFromName(sp.getDateFormatMark(), true);
-  }
+  public CollectionGlob(String collectionName, String glob, Logger logger) {
+    super(collectionName, logger);
 
-  @Override
-  public String getRoot() {
-    return sp.getRootDir();
-  }
+    matcher = FileSystems.getDefault().getPathMatcher("glob:"+glob);
+    System.out.printf("glob=%s%n", glob);
 
-  @Override
-  public Iterable<MFile> getFilesSorted() throws IOException {
-    List<MFile> list = new ArrayList<>(100);
-    try (CloseableIterator<MFile> iter = getFileIterator()) {
-       while (iter.hasNext()) {
-         list.add(iter.next());
-       }
-     }
-    if (hasDateExtractor()) {
-      Collections.sort(list, new DateSorter());  // sort by date
-    } else {
-      Collections.sort(list);                    // sort by name
+    // lets suppose the first "*" indicates the top dir
+    int pos = glob.indexOf("*");
+    this.root = glob.substring(0, pos-1);
+    String match = glob.substring(pos);
+
+    // count how far to recurse. LAME!!! why doesnt java provide the right thing !!!!
+    pos = glob.indexOf("**");
+    if (pos > 0)
+      depth = Integer.MAX_VALUE;
+    else {
+      // count the "/" !!
+      for (char c : match.toCharArray())
+        if (c == '/') depth++;
     }
-    return list;
-  }
 
-  @Override
-  public CloseableIterator<MFile> getFileIterator() throws IOException {
-    return null; // new MFileIterator(topDir, new MyFilter());
+    if (debug) System.out.printf(" CollectionGlob.MFileIterator topPath='%s' depth=%d%n", this.root, this.depth);
+
   }
 
   @Override
   public void close() {
+
   }
 
-  // returns everything in the current directory
-  private class MFileIterator implements CloseableIterator<MFile> {
+  @Override
+  public Iterable<MFile> getFilesSorted() throws IOException {
+    return makeFileListSorted();
+  }
+
+  @Override
+  public CloseableIterator<MFile> getFileIterator() throws IOException {
+    return new MyFileIterator(this.root);
+  }
+
+  private class MyFileIterator implements CloseableIterator<MFile> {
     DirectoryStream<Path> dirStream;
     Iterator<Path> dirStreamIterator;
+    MFile nextMFile;
+    int count = 0, total = 0;
+    Stack<Path> subdirs = new Stack<>();
+    int currDepth = 0;
 
-    MFileIterator(Path dir, DirectoryStream.Filter<Path> filter) throws IOException {
-      if (filter != null)
-        dirStream = Files.newDirectoryStream(dir, filter);
-      else
-        dirStream = Files.newDirectoryStream(dir);
-
+    MyFileIterator(String topDir) throws IOException {
+      Path topPath = Paths.get(topDir);
+      dirStream = Files.newDirectoryStream(topPath);
       dirStreamIterator = dirStream.iterator();
     }
 
     public boolean hasNext() {
-      return dirStreamIterator.hasNext();
+      while (true) {
+
+        try {
+               // if (debug && count % 100 == 0) System.out.printf("%d ", count);
+          while (!dirStreamIterator.hasNext()) {
+            dirStream.close();
+            if (subdirs.isEmpty()) return false;
+            currDepth++;                             // LOOK wrong
+            Path nextSubdir = subdirs.pop();
+            dirStream = Files.newDirectoryStream(nextSubdir);
+            dirStreamIterator = dirStream.iterator();
+          }
+
+          total++;
+          Path nextPath = dirStreamIterator.next();
+          BasicFileAttributes attr = Files.readAttributes(nextPath, BasicFileAttributes.class);
+          if (attr.isDirectory()) {
+            if (currDepth < depth) subdirs.push(nextPath);
+            continue;
+          }
+
+          if (!matcher.matches(nextPath)) {
+            // if (debug) System.out.printf(" SKIP %s%n ", nextPath);
+            continue;
+          }
+
+          nextMFile = new MFileOS7(nextPath, attr);
+          return true;
+          // if (debug) System.out.printf("  OK  %s%n ", nextMFile);
+
+       } catch (IOException e) {
+         throw new RuntimeException(e);
+       }
+       // if (filter == null || filter.accept(nextMFile)) return true;
+      }
     }
 
     public MFile next() {
-      try {
-        MFileOS7 mfile = new MFileOS7(dirStreamIterator.next());
-        lastModified = Math.max(lastModified, mfile.getLastModified());
-        return mfile;
-
-      } catch (IOException e) {
-        throw new RuntimeException(e);
-      }
+      count++;
+      return nextMFile;
     }
 
     public void remove() {
@@ -131,8 +160,8 @@ public class CollectionMFileGrib extends CollectionAbstract {
     // better alternative is for caller to send in callback (Visitor pattern)
     // then we could use the try-with-resource
     public void close() throws IOException {
+      if (debug) System.out.printf("  OK=%d total=%d%n ", count, total);
       dirStream.close();
     }
   }
-
 }
