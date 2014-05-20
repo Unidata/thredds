@@ -39,7 +39,7 @@ import ucar.unidata.io.RandomAccessFile;
 import java.io.IOException;
 
 /**
- * Description
+ * Grib1 Section 3 (BitMap)
  *
  * @author John
  * @since 9/3/11
