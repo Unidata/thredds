@@ -227,8 +227,7 @@ public class CFGridWriter {
           throws IOException, InvalidRangeException {
 
     NetcdfDataset ncd = (NetcdfDataset) gds.getNetcdfFile();
-
-    LatLonRect llrect = gds.getBoundingBox();
+    LatLonRect resultBB = null;
 
     ArrayList<Variable> varList = new ArrayList<>();
     ArrayList<String> varNameList = new ArrayList<>();
@@ -254,6 +253,11 @@ public class CFGridWriter {
 
       if ((null != timeRange) || (zRangeUse != null) || (llbb != null) || (horizStride > 1)) {
         grid = grid.makeSubset(timeRange, zRangeUse, llbb, 1, horizStride, horizStride);
+        LatLonRect gridBB = grid.getCoordinateSystem().getLatLonBoundingBox();
+        if (resultBB == null)
+          resultBB = gridBB;
+        else
+          resultBB.extend(gridBB);
       }
 
       Variable gridV = grid.getVariable();
@@ -295,7 +299,7 @@ public class CFGridWriter {
     }
     NetcdfFileWriter writer = NetcdfFileWriter.createNew(version, location, chunking);
     //writer.setLargeFile(isLargeFile);
-    writeGlobalAttributes(writer, gds);
+    writeGlobalAttributes(writer, gds, resultBB);
 
     // use fileWriter to copy the variables
     FileWriter2 fileWriter = new FileWriter2(writer);
@@ -316,7 +320,7 @@ public class CFGridWriter {
   }
 
   private long makeOrTestSize(String location, ucar.nc2.dt.GridDataset gds, List<String> gridList,
-                              ProjectionRect llbb, int horizStride,
+                              ProjectionRect projRect, int horizStride,
                               Range zRange,
                               CalendarDateRange dateRange, int stride_time,
                               boolean addLatLon, boolean testSizeOnly,
@@ -329,8 +333,7 @@ public class CFGridWriter {
     ArrayList<String> varNameList = new ArrayList<String>();
     ArrayList<CoordinateAxis> axisList = new ArrayList<CoordinateAxis>();
 
-    LatLonRect llrec = new LatLonRect();
-
+    LatLonRect resultBB = null;
     // add each desired Grid to the new file
     long total_size = 0;
     for (String gridName : gridList) {
@@ -361,14 +364,14 @@ public class CFGridWriter {
 
       ProjectionRect fullBB = new ProjectionRect(xCoords[0], yCoords[0], xCoords[xCoords.length - 1], yCoords[yCoords.length - 1]);
 
-      if (!llbb.intersects(fullBB)) {
+      if (!projRect.intersects(fullBB)) {
         throw new InvalidRangeException("BBOX must intersect grid BBOX, minx=" + xCoords[0] + ", miny=" + yCoords[0] + ", maxx=" + xCoords[xCoords.length - 1] + ", maxy=" + yCoords[yCoords.length - 1]);
       }
 
-      ProjectionRect.intersect(fullBB, llbb, llbb);
+      ProjectionRect.intersect(fullBB, projRect, projRect);
 
-      ProjectionPoint lowerLeft = llbb.getLowerLeftPoint();
-      ProjectionPoint upperRigth = llbb.getUpperRightPoint();
+      ProjectionPoint lowerLeft = projRect.getLowerLeftPoint();
+      ProjectionPoint upperRigth = projRect.getUpperRightPoint();
       double minx = lowerLeft.getX();
       double miny = lowerLeft.getY();
       double maxx = upperRigth.getX();
@@ -388,9 +391,14 @@ public class CFGridWriter {
 
       Range zRangeUse = makeVerticalRange(zRange, vertAxis);
 
-      if ((null != timeRange) || (zRangeUse != null) || (llbb != null) || (horizStride > 1)) {
+      if ((null != timeRange) || (zRangeUse != null) || (projRect != null) || (horizStride > 1)) {
         grid = grid.subset(timeRange, zRangeUse, y_range, x_range);
 
+        LatLonRect gridBB = grid.getCoordinateSystem().getLatLonBoundingBox();
+        if (resultBB == null)
+          resultBB = gridBB;
+        else
+          resultBB.extend(gridBB);
       }
 
       Variable gridV = grid.getVariable();
@@ -398,7 +406,6 @@ public class CFGridWriter {
       total_size += gridV.getSize() * gridV.getElementSize();
 
       GridCoordSystem gcs = grid.getCoordinateSystem();
-      llrec = gcs.getLatLonBoundingBox();
       // add coordinate axes
       addCoordinateAxis(gcs, varNameList, varList, axisList);
 
@@ -438,7 +445,7 @@ public class CFGridWriter {
     NetcdfFileWriter writer = NetcdfFileWriter.createNew(version, location, chunking);
     writer.setLargeFile(isLargeFile);
 
-    writeGlobalAttributes(writer, gds);
+    writeGlobalAttributes(writer, gds, resultBB);
 
     // use fileWriter to copy the variables
     FileWriter2 fileWriter = new FileWriter2(writer);
@@ -718,7 +725,7 @@ public class CFGridWriter {
     return isLargeFile;
   }
 
-  private void writeGlobalAttributes(NetcdfFileWriter writer, ucar.nc2.dt.GridDataset gds) {
+  private void writeGlobalAttributes(NetcdfFileWriter writer, ucar.nc2.dt.GridDataset gds, LatLonRect llbb) {
     // global attributes
     for (Attribute att : gds.getGlobalAttributes()) {
       if (att.getShortName().equals(CDM.FILE_FORMAT)) continue;
@@ -735,11 +742,10 @@ public class CFGridWriter {
                     "Original Dataset = " + gds.getLocationURI() + "; Translation Date = " + CalendarDate.present()));
 
     // this will replace any existing
-    LatLonRect ll = gds.getBoundingBox();
-    writer.addGroupAttribute(null, new Attribute(ACDD.LAT_MIN, ll.getLatMin()));
-    writer.addGroupAttribute(null, new Attribute(ACDD.LAT_MAX, ll.getLatMax()));
-    writer.addGroupAttribute(null, new Attribute(ACDD.LON_MIN, ll.getLonMin()));
-    writer.addGroupAttribute(null, new Attribute(ACDD.LON_MAX, ll.getLonMax()));
+    writer.addGroupAttribute(null, new Attribute(ACDD.LAT_MIN, llbb.getLatMin()));
+    writer.addGroupAttribute(null, new Attribute(ACDD.LAT_MAX, llbb.getLatMax()));
+    writer.addGroupAttribute(null, new Attribute(ACDD.LON_MIN, llbb.getLonMin()));
+    writer.addGroupAttribute(null, new Attribute(ACDD.LON_MAX, llbb.getLonMax()));
   }
 
   private void addCFAnnotations(NetcdfFileWriter writer, ucar.nc2.dt.GridDataset gds, List<String> gridList, NetcdfDataset ncd,
