@@ -94,8 +94,7 @@ public class StationResponder implements NcssResponder {
 	@Override
 	public void respond(HttpServletResponse res, FeatureDataset fd, String requestPathInfo, NcssParamsBean queryParams, SupportedFormat format)
 			throws IOException, ParseException, InvalidRangeException, NcssException {
-		
-		stationWriter.write();
+        stationWriter.write();
 	}
 
 	
@@ -109,7 +108,6 @@ public class StationResponder implements NcssResponder {
 	 */
 	@Override
 	public HttpHeaders getResponseHeaders(FeatureDataset fd, SupportedFormat format, String datasetPath) {
-		return stationWriter.getHttpHeaders(datasetPath);
+        return stationWriter.getHttpHeaders(fd, format, datasetPath);
 	}
-
 }

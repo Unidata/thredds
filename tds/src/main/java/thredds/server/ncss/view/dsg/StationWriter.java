@@ -49,10 +49,7 @@ import ucar.nc2.Attribute;
 import ucar.nc2.NetcdfFileWriter;
 import ucar.nc2.VariableSimpleIF;
 import ucar.nc2.constants.CDM;
-import ucar.nc2.ft.FeatureDatasetPoint;
-import ucar.nc2.ft.PointFeature;
-import ucar.nc2.ft.PointFeatureCollection;
-import ucar.nc2.ft.StationTimeSeriesFeatureCollection;
+import ucar.nc2.ft.*;
 import ucar.nc2.ft.point.StationPointFeature;
 import ucar.nc2.ft.point.remote.PointStream;
 import ucar.nc2.ft.point.remote.PointStreamProto;
@@ -90,7 +87,7 @@ import java.util.List;
  * @author caron
  * @since Aug 19, 2009
  */
-public class StationWriter extends AbstractDsgSubsetWriter {
+public class StationWriter extends AbstractWriter {
   static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(StationWriter.class);
 
   private static final boolean debugDetail = false;
@@ -162,11 +159,11 @@ public class StationWriter extends AbstractDsgSubsetWriter {
   }
 
 
-  @Override public HttpHeaders getHttpHeaders(String datasetPath) {
-    return writer.getHttpHeaders(datasetPath);
-  }
+  public HttpHeaders getHttpHeaders(FeatureDataset fd, SupportedFormat format, String datasetPath) {
+      return writer.getHttpHeaders(datasetPath);
+    }
 
-  @Override public void write() throws ParseException, IOException, NcssException {
+    public void write() throws ParseException, IOException, NcssException {
     List<Station> stations = writer.getStationsInSubset();
 
     if (stations.isEmpty())
@@ -209,8 +206,8 @@ public class StationWriter extends AbstractDsgSubsetWriter {
     Action act = writer.getAction();
     writer.header();
 
-    if (ncssParams.getTime() != null) {
-      scanForClosestTime(pfc, new DateType(ncssParams.getTime(), null, null), act);
+    if (qb.getTime() != null) {
+      scanForClosestTime(pfc, new DateType(qb.getTime(), null, null), act);
     } else {
       scan(pfc, wantRange, act);
     }
@@ -521,25 +518,25 @@ public class StationWriter extends AbstractDsgSubsetWriter {
     // LOOK could do better : "all", and maybe HashSet<Name>
     protected List<Station> getStationsInSubset() throws IOException {
       // verify SpatialSelection has some stations
-      if (ncssParams.hasStations()) {
-        List<String> stnNames = ncssParams.getStns();
+      if (qb.hasStations()) {
+        List<String> stnNames = qb.getStns();
 
         if (stnNames.get(0).equals("all"))
           wantStations = sfc.getStations();
         else
           wantStations = sfc.getStations(stnNames);
 
-      } else if (ncssParams.hasLatLonBB()) {
+      } else if (qb.hasLatLonBB()) {
 
-        if (ncssParams.getSouth() == null || ncssParams.getNorth() == null || ncssParams.getEast() == null || ncssParams.getWest() == null) {
+        if (qb.getSouth() == null || qb.getNorth() == null || qb.getEast() == null || qb.getWest() == null) {
           wantStations = sfc.getStations(); //Wants all
         } else {
-          LatLonRect llrect = ncssParams.getBB();
+          LatLonRect llrect = qb.getBB();
           wantStations = sfc.getStations(llrect);
         }
 
-      } else if (ncssParams.hasLatLonPoint()) {
-        Station closestStation = findClosestStation(new LatLonPointImpl(ncssParams.getLatitude(), ncssParams.getLongitude()));
+      } else if (qb.hasLatLonPoint()) {
+        Station closestStation = findClosestStation(new LatLonPointImpl(qb.getLatitude(), qb.getLongitude()));
         List<String> stnList = new ArrayList<>();
         stnList.add(closestStation.getName());
         wantStations = sfc.getStations(stnList);
@@ -661,7 +658,7 @@ public class StationWriter extends AbstractDsgSubsetWriter {
         @Override public void act(PointFeature pf, StructureData sdata) throws IOException {
           try {
             if (count == 0) {  // first time : need a point feature so cant do it in header
-              PointStreamProto.PointFeatureCollection proto = PointStream.encodePointFeatureCollection(fdPoint.getLocation(), pf);
+              PointStreamProto.PointFeatureCollection proto = PointStream.encodePointFeatureCollection(fd.getLocation(), pf);
               byte[] b = proto.toByteArray();
               PointStream.writeMagic(out, PointStream.MessageType.PointFeatureCollection);
               NcStream.writeVInt(out, b.length);

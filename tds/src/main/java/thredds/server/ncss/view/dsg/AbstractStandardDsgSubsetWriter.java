@@ -8,23 +8,12 @@ import ucar.nc2.ft.PointFeature;
 import ucar.nc2.ft.PointFeatureCollection;
 
 import java.io.IOException;
-import java.io.OutputStream;
-import java.io.PrintWriter;
 import java.text.ParseException;
 
 /**
  * Created by cwardgar on 2014/05/20.
  */
 public abstract class AbstractStandardDsgSubsetWriter extends AbstractDsgSubsetWriter {
-    protected final PrintWriter outWriter;
-
-    protected AbstractStandardDsgSubsetWriter(FeatureDatasetPoint fdPoint, NcssParamsBean ncssParams,
-                                              ucar.nc2.util.DiskCache2 diskCache, OutputStream outStream)
-            throws IOException, NcssException {
-        super(fdPoint, ncssParams, diskCache);
-        this.outWriter = new PrintWriter(outStream);
-    }
-
     public abstract void writeHeader() throws IOException;
 
     public abstract void writePoint(PointFeature pf, StructureData sdata) throws IOException;
@@ -33,7 +22,9 @@ public abstract class AbstractStandardDsgSubsetWriter extends AbstractDsgSubsetW
 
     protected abstract PointFeatureCollection getPointFeatureCollection();
 
-    @Override public void write() throws ParseException, IOException, NcssException {
+    @Override
+    public void write(FeatureDatasetPoint fdPoint, NcssParamsBean ncssParams, ucar.nc2.util.DiskCache2 diskCache)
+            throws ParseException, IOException, NcssException {
         /*
         Action act = writer.getAction();
         writer.header();

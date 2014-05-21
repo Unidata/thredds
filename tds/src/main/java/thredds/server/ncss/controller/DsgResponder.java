@@ -51,14 +51,12 @@ public class DsgResponder implements NcssResponder {
 	@Override
 	public void respond(HttpServletResponse res, FeatureDataset fd, String requestPathInfo, NcssParamsBean queryParams, SupportedFormat format)
 			throws IOException, ParseException, InvalidRangeException, NcssException {
-
-    writer.write();
+      writer.write();
 	}
 
 
 	@Override
 	public HttpHeaders getResponseHeaders(FeatureDataset fd, SupportedFormat format, String datasetPath) {
-		return writer.getHttpHeaders(datasetPath);
+        return writer.getHttpHeaders(fd, format, datasetPath);
 	}
-
 }
