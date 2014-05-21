@@ -136,8 +136,8 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
     for(String path: DEFAULTNETCDF4PATH) {
       File f = new File(path);
       if(f.exists() && f.canRead()) {
-	pathlist = (path == null ? "" : pathlist + File.pathSeparator);
-	pathlist = pathlist + path;
+	    pathlist = (pathlist == null ? "" : pathlist + File.pathSeparator);
+	    pathlist = pathlist + path;
       }
     }
     return pathlist;
@@ -159,13 +159,13 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
     if(jna_path == null) {
         // Look at -D flags first, then env variables
         jna_path = System.getProperty(JNA_PATH);
-	jna_path = nullify(jna_path);
+	    jna_path = nullify(jna_path);
         if(jna_path == null)
             jna_path = System.getenv(JNA_PATH_ENV);
     }
     jna_path = nullify(jna_path);
     if (jna_path == null)
-	jna_path = defaultNetcdf4Library();
+	    jna_path = defaultNetcdf4Library();
     if (jna_path == null)
         System.err.println("Cannot determine Netcdf4 library path");
     System.setProperty(JNA_PATH, jna_path);
