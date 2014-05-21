@@ -32,17 +32,9 @@
  */
 package thredds.server.ncss.controller;
 
-import java.io.IOException;
-import java.io.OutputStream;
-import java.text.ParseException;
-import java.util.List;
-
-import javax.servlet.http.HttpServletResponse;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpHeaders;
-
 import thredds.server.ncss.exception.NcssException;
 import thredds.server.ncss.format.SupportedFormat;
 import thredds.server.ncss.params.NcssParamsBean;
@@ -53,6 +45,12 @@ import ucar.nc2.ft.FeatureDataset;
 import ucar.nc2.ft.FeatureDatasetPoint;
 import ucar.nc2.ft.StationTimeSeriesFeatureCollection;
 import ucar.nc2.util.DiskCache2;
+
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.text.ParseException;
+import java.util.List;
 
 /**
  * @author mhermida
@@ -111,7 +109,7 @@ public class StationResponder implements NcssResponder {
 	 */
 	@Override
 	public HttpHeaders getResponseHeaders(FeatureDataset fd, SupportedFormat format, String datasetPath) {
-		return stationWriter.getHttpHeaders(fd, format, datasetPath);
+		return stationWriter.getHttpHeaders(datasetPath);
 	}
 
 }

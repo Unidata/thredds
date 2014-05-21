@@ -48,7 +48,7 @@ import static thredds.server.ncss.format.SupportedFormat.*;
  * @author mhermida
  *
  */
-public enum SupportedOperation {
+@SuppressWarnings("ProblematicWhitespace") public enum SupportedOperation {
 	
 	DATASET_INFO_REQUEST("Dataset info request", XML_FILE),
 	DATASET_BOUNDARIES_REQUEST("Dataset grid boundaries request", WKT, JSON),

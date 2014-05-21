@@ -58,7 +58,7 @@ public class DsgResponder implements NcssResponder {
 
 	@Override
 	public HttpHeaders getResponseHeaders(FeatureDataset fd, SupportedFormat format, String datasetPath) {
-		return writer.getHttpHeaders(fd, format, datasetPath);
+		return writer.getHttpHeaders(datasetPath);
 	}
 
 }

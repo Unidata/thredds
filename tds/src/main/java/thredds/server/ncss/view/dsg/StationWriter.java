@@ -86,10 +86,10 @@ import java.util.List;
  * @author caron
  * @since Aug 19, 2009
  */
-public class StationWriter extends AbstractWriter {
+public class StationWriter extends AbstractDsgWriter {
   static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(StationWriter.class);
 
-  private static final boolean debug = false, debugDetail = false;
+  private static final boolean debugDetail = false;
 
   private final StationTimeSeriesFeatureCollection sfc;
   private StationWriter.Writer writer;
@@ -158,23 +158,20 @@ public class StationWriter extends AbstractWriter {
   }
 
 
-  public HttpHeaders getHttpHeaders(FeatureDataset fd, SupportedFormat format, String datasetPath) {
+  @Override public HttpHeaders getHttpHeaders(String datasetPath) {
     return writer.getHttpHeaders(datasetPath);
   }
 
-  public void write() throws ParseException, IOException, NcssException {
-
-    Limit counter = new Limit();
-
+  @Override public void write() throws ParseException, IOException, NcssException {
     // spatial: all, bb, point, stns
-    PointFeatureCollection pfc = null;
+    PointFeatureCollection pfc;
 
     List<Station> stns = writer.getStationsInSubset();
 
     if (stns.isEmpty())
       throw new FeaturesNotFoundException("Features not found");
 
-    List<String> stations = new ArrayList<String>();
+    List<String> stations = new ArrayList<>();
     for (Station st : stns)
       stations.add(st.getName());
 
@@ -211,11 +208,11 @@ public class StationWriter extends AbstractWriter {
     Action act = writer.getAction();
     writer.header();
 
-    if (qb.getTime() != null) {
-      scanForClosestTime(pfc, new DateType(qb.getTime(), null, null), null, act, counter);
+    if (ncssParams.getTime() != null) {
+      scanForClosestTime(pfc, new DateType(ncssParams.getTime(), null, null), act);
 
     } else {
-      scan(pfc, wantRange, null, act, counter);
+      scan(pfc, wantRange, act);
     }
 
     writer.trailer();
@@ -432,7 +429,7 @@ public class StationWriter extends AbstractWriter {
   // scanning flattened collection
 
   // scan PointFeatureCollection, records that pass the predicate match are acted on, within limits
-  private void scan(PointFeatureCollection collection, CalendarDateRange range, Predicate p, Action a, Limit limit) throws IOException {
+  private void scan(PointFeatureCollection collection, CalendarDateRange range, Action a) throws IOException {
 
     collection.resetIteration();
     while (collection.hasNext()) {
@@ -443,45 +440,24 @@ public class StationWriter extends AbstractWriter {
         CalendarDate obsDate = pf.getObservationTimeAsCalendarDate();
         //if (!range.contains(obsDate)) continue;
         if (!range.includes(obsDate)) continue;
-
       }
-      limit.count++;
 
       StructureData sdata = pf.getData();
-      if ((p == null) || p.match(sdata)) {
-        a.act(pf, sdata);
-        limit.matches++;
-      }
-
-      if (limit.matches > limit.limit) {
-        collection.finish();
-        break;
-      }
-      if (debugDetail && (limit.matches % 50 == 0)) System.out.println(" matches " + limit.matches);
+      a.act(pf, sdata);
     }
     collection.finish();
   }
 
-  // scan all data in the file, first eliminate any that dont pass the predicate
-  // for each station, track the closest record to the given time
-  // then act on those
-  private void scanForClosestTime(PointFeatureCollection collection, DateType time, Predicate p, Action a, Limit limit) throws IOException {
+  // For each station in the collection, act on the record whose time is closes to the given time.
+  private void scanForClosestTime(PointFeatureCollection collection, DateType time, Action a) throws IOException {
 
-    HashMap<String, StationDataTracker> map = new HashMap<String, StationDataTracker>();
+    HashMap<String, StationDataTracker> map = new HashMap<>();
     //long wantTime = time.getDate().getTime();
     long wantTime = time.getCalendarDate().getMillis();
 
     collection.resetIteration();
     while (collection.hasNext()) {
       PointFeature pf = collection.next();
-      //System.out.printf("%s%n", pf);
-
-      // general predicate filter
-      if (p != null) {
-        StructureData sdata = pf.getData();
-        if (!p.match(sdata))
-          continue;
-      }
 
       // find closest time for this station
       //long obsTime = pf.getObservationTimeAsDate().getTime();
@@ -503,10 +479,6 @@ public class StationWriter extends AbstractWriter {
     for (String name : map.keySet()) {
       StationDataTracker track = map.get(name);
       a.act(track.sobs, track.sobs.getData());
-      limit.matches++;
-
-      limit.count++;
-      if (limit.count > limit.limit) break;
     }
 
   }
@@ -522,23 +494,14 @@ public class StationWriter extends AbstractWriter {
   }
 
 
-  private interface Predicate {
-    boolean match(StructureData sdata);
-  }
-
   private interface Action {
     void act(PointFeature pf, StructureData sdata) throws IOException;
   }
 
-  private class Limit {
-    int count;   // how many scanned
-    int limit = Integer.MAX_VALUE; // max matches
-    int matches; // how want matched
-  }
 
   private abstract class Writer {
 
-    protected List<Station> wantStations = new ArrayList<Station>();
+    protected List<Station> wantStations = new ArrayList<>();
 
     abstract void header() throws IOException;
 
@@ -559,26 +522,26 @@ public class StationWriter extends AbstractWriter {
     protected List<Station> getStationsInSubset() throws IOException {
 
       // verify SpatialSelection has some stations
-      if (qb.hasStations()) {
-        List<String> stnNames = qb.getStns();
+      if (ncssParams.hasStations()) {
+        List<String> stnNames = ncssParams.getStns();
 
         if (stnNames.get(0).equals("all"))
           wantStations = sfc.getStations();
         else
           wantStations = sfc.getStations(stnNames);
 
-      } else if (qb.hasLatLonBB()) {
+      } else if (ncssParams.hasLatLonBB()) {
 
-        if (qb.getSouth() == null || qb.getNorth() == null || qb.getEast() == null || qb.getWest() == null) {
+        if (ncssParams.getSouth() == null || ncssParams.getNorth() == null || ncssParams.getEast() == null || ncssParams.getWest() == null) {
           wantStations = sfc.getStations(); //Wants all
         } else {
-          LatLonRect llrect = qb.getBB();
+          LatLonRect llrect = ncssParams.getBB();
           wantStations = sfc.getStations(llrect);
         }
 
-      } else if (qb.hasLatLonPoint()) {
-        Station closestStation = findClosestStation(new LatLonPointImpl(qb.getLatitude(), qb.getLongitude()));
-        List<String> stnList = new ArrayList<String>();
+      } else if (ncssParams.hasLatLonPoint()) {
+        Station closestStation = findClosestStation(new LatLonPointImpl(ncssParams.getLatitude(), ncssParams.getLongitude()));
+        List<String> stnList = new ArrayList<>();
         stnList.add(closestStation.getName());
         wantStations = sfc.getStations(stnList);
 
@@ -608,16 +571,16 @@ public class StationWriter extends AbstractWriter {
       super(null);
       this.version = version;
       netcdfResult = diskCache.createUniqueFile("cdmSW", ".nc");
-      List<Attribute> atts = new ArrayList<Attribute>();
+      List<Attribute> atts = new ArrayList<>();
       atts.add(new Attribute(CDM.TITLE, "Extracted data from TDS using CDM remote subsetting"));
       cfWriter = new WriterCFStationCollection(version, netcdfResult.getAbsolutePath(), atts);
 
     }
 
-    void header() {
+    @Override void header() {
     }
 
-    void trailer() throws IOException {
+    @Override void trailer() throws IOException {
       if (!headerWritten)
         throw new IllegalStateException("no data was written");
 
@@ -631,7 +594,7 @@ public class StationWriter extends AbstractWriter {
 
     }
 
-    HttpHeaders getHttpHeaders(String pathInfo) {
+    @Override HttpHeaders getHttpHeaders(String pathInfo) {
 
       HttpHeaders httpHeaders = new HttpHeaders();
       //String pathInfo = fd.getTitle();
@@ -649,9 +612,9 @@ public class StationWriter extends AbstractWriter {
       return httpHeaders;
     }
 
-    Action getAction() {
+    @Override Action getAction() {
       return new Action() {
-        public void act(PointFeature pf, StructureData sdata) throws IOException {
+        @Override public void act(PointFeature pf, StructureData sdata) throws IOException {
           if (!headerWritten) {
             try {
               cfWriter.writeHeader(wantStations, wantVars, pf.getTimeUnit(), null);
@@ -681,25 +644,25 @@ public class StationWriter extends AbstractWriter {
       out = os;
     }
 
-    void header() throws IOException {
+    @Override void header() throws IOException {
       // PointStream.writeMagic(out, PointStream.MessageType.Start);  // LOOK - not ncstream protocol
     }
 
-    void trailer() throws IOException {
+    @Override void trailer() throws IOException {
       PointStream.writeMagic(out, PointStream.MessageType.End);
       out.flush();
     }
 
-    HttpHeaders getHttpHeaders(String pathInfo) {
+    @Override HttpHeaders getHttpHeaders(String pathInfo) {
       return new HttpHeaders();
     }
 
-    Action getAction() {
+    @Override Action getAction() {
       return new Action() {
-        public void act(PointFeature pf, StructureData sdata) throws IOException {
+        @Override public void act(PointFeature pf, StructureData sdata) throws IOException {
           try {
             if (count == 0) {  // first time : need a point feature so cant do it in header
-              PointStreamProto.PointFeatureCollection proto = PointStream.encodePointFeatureCollection(fd.getLocation(), pf);
+              PointStreamProto.PointFeatureCollection proto = PointStream.encodePointFeatureCollection(fdPoint.getLocation(), pf);
               byte[] b = proto.toByteArray();
               PointStream.writeMagic(out, PointStream.MessageType.PointFeatureCollection);
               NcStream.writeVInt(out, b.length);
@@ -716,7 +679,7 @@ public class StationWriter extends AbstractWriter {
           } catch (Throwable t) {
             String mess = t.getMessage();
             if (mess == null) mess = t.getClass().getName();
-            NcStreamProto.Error err = NcStream.encodeErrorMessage(t.getMessage());
+            NcStreamProto.Error err = NcStream.encodeErrorMessage(mess);
             byte[] b = err.toByteArray();
             PointStream.writeMagic(out, PointStream.MessageType.Error);
             NcStream.writeVInt(out, b.length);
@@ -735,20 +698,20 @@ public class StationWriter extends AbstractWriter {
       super(writer);
     }
 
-    void header() {
+    @Override void header() {
     }
 
-    void trailer() {
+    @Override void trailer() {
       writer.flush();
     }
 
-    public HttpHeaders getHttpHeaders(String pathInfo) {
+    @Override public HttpHeaders getHttpHeaders(String pathInfo) {
       return new HttpHeaders();
     }
 
-    Action getAction() {
+    @Override Action getAction() {
       return new Action() {
-        public void act(PointFeature pf, StructureData sdata) throws IOException {
+        @Override public void act(PointFeature pf, StructureData sdata) throws IOException {
           writer.print(CalendarDateFormatter.toDateTimeString(pf.getObservationTimeAsCalendarDate()));
           writer.print("= ");
           String report = sdata.getScalarString("report");
@@ -775,7 +738,7 @@ public class StationWriter extends AbstractWriter {
       }
     }
 
-    void header() {
+    @Override void header() {
       try {
         staxWriter.writeStartDocument("UTF-8", "1.0");
         staxWriter.writeCharacters("\n");
@@ -790,7 +753,7 @@ public class StationWriter extends AbstractWriter {
       //writer.println("<metarCollection dataset='"+datasetName+"'>\n");
     }
 
-    void trailer() {
+    @Override void trailer() {
       try {
         staxWriter.writeEndElement();
         staxWriter.writeCharacters("\n");
@@ -802,7 +765,7 @@ public class StationWriter extends AbstractWriter {
       writer.flush();
     }
 
-    HttpHeaders getHttpHeaders(String pathInfo) {
+    @Override HttpHeaders getHttpHeaders(String pathInfo) {
       HttpHeaders httpHeaders = new HttpHeaders();
 
       if (!isStream) {
@@ -815,9 +778,9 @@ public class StationWriter extends AbstractWriter {
       return httpHeaders;
     }
 
-    Action getAction() {
+    @Override Action getAction() {
       return new Action() {
-        public void act(PointFeature pf, StructureData sdata) throws IOException {
+        @Override public void act(PointFeature pf, StructureData sdata) throws IOException {
           Station s = sfc.getStation(pf);
 
           try {
@@ -872,7 +835,7 @@ public class StationWriter extends AbstractWriter {
       this.isStream = isStream;
     }
 
-    void header() {
+    @Override void header() {
       writer.print("time,station,latitude[unit=\"degrees_north\"],longitude[unit=\"degrees_east\"]");
       for (VariableSimpleIF var : wantVars) {
         writer.print(",");
@@ -883,11 +846,11 @@ public class StationWriter extends AbstractWriter {
       writer.println();
     }
 
-    void trailer() {
+    @Override void trailer() {
       writer.flush();
     }
 
-    HttpHeaders getHttpHeaders(String pathInfo) {
+    @Override HttpHeaders getHttpHeaders(String pathInfo) {
       HttpHeaders httpHeaders = new HttpHeaders();
 
       if (!isStream) {
@@ -901,9 +864,9 @@ public class StationWriter extends AbstractWriter {
       return httpHeaders;
     }
 
-    Action getAction() {
+    @Override Action getAction() {
       return new Action() {
-        public void act(PointFeature pf, StructureData sdata) throws IOException {
+        @Override public void act(PointFeature pf, StructureData sdata) throws IOException {
           Station s = sfc.getStation(pf);
 
           writer.print(CalendarDateFormatter.toDateTimeString(pf.getObservationTimeAsCalendarDate()));
@@ -938,7 +901,7 @@ public class StationWriter extends AbstractWriter {
 
     @Override Action getAction() {
       return new Action() {
-        public void act(PointFeature pf, StructureData sdata) throws IOException {
+        @Override public void act(PointFeature pf, StructureData sdata) throws IOException {
           out.write("WaterML2\n".getBytes());
         }
       };

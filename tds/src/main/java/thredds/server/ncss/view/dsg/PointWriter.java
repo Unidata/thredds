@@ -47,7 +47,7 @@ import java.util.List;
  * @author caron
  * @since 10/3/13
  */
-public class PointWriter extends AbstractWriter {
+public class PointWriter extends AbstractDsgWriter {
   static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(thredds.server.cdmremote.StationWriter.class);
 
   private static final boolean debug = false, debugDetail = false;
@@ -66,7 +66,7 @@ public class PointWriter extends AbstractWriter {
     return sw;
   }
 
-  public HttpHeaders getHttpHeaders(FeatureDataset fd, SupportedFormat format, String datasetPath) {
+  @Override public HttpHeaders getHttpHeaders(String datasetPath) {
     return writer.getHttpHeaders(datasetPath);
   }
 
@@ -158,12 +158,7 @@ public class PointWriter extends AbstractWriter {
   ////////////////////////////////////////////////////////////////
   // writing
 
-  public File writeNetcdf() throws IOException {
-    WriterNetcdf w = (WriterNetcdf) write();
-    return w.netcdfResult;
-  }
-
-  public Writer write() throws IOException {
+  @Override public void write() throws ParseException, IOException, NcssException {
     long start = System.currentTimeMillis();
     Limit counter = new Limit();
     //counter.limit = 150;
@@ -180,8 +175,6 @@ public class PointWriter extends AbstractWriter {
       System.out.println("\nread " + counter.count + " records; match and write " + counter.matches + " raw records");
       System.out.println("that took = " + took + " msecs");
     }
-
-    return writer;
   }
 
   /* public boolean intersect(DateRange dr) throws IOException {
@@ -305,7 +298,7 @@ public class PointWriter extends AbstractWriter {
 
       netcdfResult = diskCache.createUniqueFile("ncssTemp", ".nc");
       List<Attribute> atts = new ArrayList<Attribute>();
-      atts.add( new Attribute( CDM.TITLE, "Extracted data from TDS Feature Collection " + fd.getLocation() ));
+      atts.add( new Attribute( CDM.TITLE, "Extracted data from TDS Feature Collection " + fdPoint.getLocation() ));
       cfWriter = new WriterCFPointCollection(null, netcdfResult.getAbsolutePath(), atts );
     }
 
@@ -384,7 +377,7 @@ public class PointWriter extends AbstractWriter {
         public void act(PointFeature pf, StructureData sdata) throws IOException {
           try {
             if (count == 0) {  // first time : need a point feature so cant do it in header
-              PointStreamProto.PointFeatureCollection proto = PointStream.encodePointFeatureCollection(fd.getLocation(), pf);
+              PointStreamProto.PointFeatureCollection proto = PointStream.encodePointFeatureCollection(fdPoint.getLocation(), pf);
               byte[] b = proto.toByteArray();
               PointStream.writeMagic(out, PointStream.MessageType.PointFeatureCollection);
               NcStream.writeVInt(out, b.length);
