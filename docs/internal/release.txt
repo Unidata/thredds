@@ -104,15 +104,15 @@ edited 11/25/2013
 edited 11/26/2013
 
 1. Jenkins
-  - Go to CDM/TDS project's configuration page
-      - Click on the 4rd "advanced" button from the top ("Branches to Build")
-      - For the "Checkout/merge to local branch (optional)" option, give the branch name for the next version, eg "target-{next}"
+  - Go to Jenkin project's configuration page
+      - Under "Source Code Management" - "Additional Behaviors" - Add - "Check out to specific local branch"
+      - Enter the branch name for the next version, eg "target-{next}"
       - "Save" the changes
   - Click on "Perform maven release"
       - Click on "Schedule Maven Release Build"
   - Build is done
       - Check logs for success (or any problems)
-      - If the local branch is not specified, you will get the following error
+      - If the local branch was not specified, you will get the following error
         "Detecting the current branch failed: fatal: ref HEAD is not a symbolic ref"
 
 2. Check that all went well:
@@ -126,7 +126,7 @@ edited 11/26/2013
     - Clear "Checkout/merge to local branch (optional)" value
     - Save
 
-4. Git  (ONLY IF THIS IS STABLE RELEASE)
+4. Git (ONLY IF THIS IS STABLE RELEASE)
   - if any commits have been made on master, that are not on this branch, you will first have to merge them
   - checkout new release tag, eg "v{release}" created by Jenkins/Maven build (NOT target-{release})
       git fetch origin

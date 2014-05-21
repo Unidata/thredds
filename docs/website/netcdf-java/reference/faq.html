@@ -284,7 +284,7 @@ Array.makeArray(DataType dtype, List&lt;String&gt; stringValues);</pre>
       2</a>, <a href="http://www.unidata.ucar.edu/blogs/developer/en/entry/dimension_scales_part_3">Part 3</a>.</p>
 
   <p>HDF5 is a very complicated format, and we do not plan to write a pure Java version for writing netCDF4 files (we do have a pure Java version for reading
-    both HDF5 and netCDF-4). You might also want to have a look at <a href="http://www.ral.ucar.edu/~steves/nujan.html">Nujan</a>.</p>
+    both HDF5 and netCDF-4). </p>
 </blockquote>
 <p><strong>Q: Can I stream a NetcdfFile object to a client?</strong></p>
 <blockquote>
@@ -303,7 +303,6 @@ Array.makeArray(DataType dtype, List&lt;String&gt; stringValues);</pre>
       http://www.unidata.ucar.edu/software/netcdf/docs/BestPractices.html</a></li>
     <li>Recommended Conventions: <a href="http://cf-pcmdi.llnl.gov/">CF Conventions </a></li>
   </ul>
-  <p>&nbsp;</p>
 </blockquote>
 <p><strong>Q: How do I put a valid_range attribute on a unsigned variable?</strong></p>
 <blockquote>
@@ -358,9 +357,31 @@ NaN, -100.0, -90.0, -80.0, -70.0, -60.0, -50.0, -40.0, -30.0, -20.0, -10.0}</pre
 2240.0, 2250.0, 2260.0, 2270.0, 2280.0, 2290.0, 2300.0, 2310.0, 2320.0, 2330.0, 2340.0, 2350.0, 2360.0, 2370.0, 2380.0, 2390.0, 2400.0, NaN, NaN, NaN, 
 NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN}</pre>
 </blockquote>
+<p><strong>Q: I want to convert <a name="convert" id="convert"></a>a GRIB file to netCDF. How do I do that?</strong></p>
+<blockquote>
+  <p>If you are converting the entire file, you can do it on the<a href="manPages.html#nccopy"> command line</a>. </p>
+  <p>You can do it from a Java program like this:</p>
+  <pre>void convert(String datasetIn, String filenameOut, boolean wantNetcdf4) throws IOException {   
+
+   NetcdfFileWriter.Version version = wantNetcdf4 ? NetcdfFileWriter.Version.netcdf4 : NetcdfFileWriter.Version.netcdf3;
+
+   // open the original dataset
+   NetcdfFile ncfileIn = ucar.nc2.dataset.NetcdfDataset.openFile(datasetIn, cancel);
+
+   // copy it to a netCDF file
+   FileWriter2 writer = new ucar.nc2.FileWriter2(ncfileIn, filenameOut, version, null);
+   NetcdfFile ncfileOut = writer.write(cancel);
+
+   // clean up
+   if (ncfileOut != null) ncfileOut.close();
+   ncfileIn.close();
+ }</pre>
+  <p>Note that this can be used for any <a href="https://www.unidata.ucar.edu/software/netcdf/docs/netcdf/NetCDF_002d4-Classic-Model-Format.html#NetCDF_002d4-Classic-Model-Format">classic model </a>CDM dataset, not just GRIB. So  <em>datasetIn</em> above can refer to an NcML file, an OPeNDAP URL, any of these <a href="formats/FileTypes.html">File Types</a>, etc. See <a href="DatasetUrls.html">here</a> for more details.</p>
+ 
+</blockquote>
 <hr/>
 <address>
-  <img src="../nc.gif" alt="" width="64" height="64"/> This document was last updated July 2013
+  <img src="../nc.gif" alt="" width="64" height="64"/> This document was last updated May 2014
 </address>
 </body>
 </html>
