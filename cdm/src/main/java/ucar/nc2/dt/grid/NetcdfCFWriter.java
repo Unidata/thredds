@@ -67,12 +67,7 @@ import ucar.nc2.jni.netcdf.Nc4Chunking;
 import ucar.nc2.jni.netcdf.Nc4ChunkingStrategyGrib;
 import ucar.nc2.time.CalendarDateRange;
 import ucar.nc2.units.DateFormatter;
-import ucar.unidata.geoloc.LatLonPointImpl;
-import ucar.unidata.geoloc.LatLonRect;
-import ucar.unidata.geoloc.Projection;
-import ucar.unidata.geoloc.ProjectionPoint;
-import ucar.unidata.geoloc.ProjectionPointImpl;
-import ucar.unidata.geoloc.ProjectionRect;
+import ucar.unidata.geoloc.*;
 import ucar.unidata.geoloc.projection.LatLonProjection;
 import ucar.unidata.util.Parameter;
 
@@ -231,6 +226,8 @@ public class NetcdfCFWriter {
 		ArrayList<String> varNameList = new ArrayList<String>();
 		ArrayList<CoordinateAxis> axisList = new ArrayList<CoordinateAxis>();
 
+        LatLonRect resultBB = null;
+
 		// add each desired Grid to the new file
 		long total_size = 0;
 		for (String gridName : gridList) {
@@ -251,7 +248,14 @@ public class NetcdfCFWriter {
 
 			if ((null != timeRange) || (zRangeUse != null) || (llbb != null) || (horizStride > 1)) {
 				grid = grid.makeSubset(timeRange, zRangeUse, llbb, 1, horizStride, horizStride);
-			}
+
+                LatLonRect gridBB = grid.getCoordinateSystem().getLatLonBoundingBox();
+                if (resultBB == null)
+                    resultBB = gridBB;
+                else
+                    resultBB.extend(gridBB);
+
+            }
 
 
 			Variable gridV = grid.getVariable();
@@ -295,7 +299,7 @@ public class NetcdfCFWriter {
 		NetcdfFileWriter writer = NetcdfFileWriter.createNew(version, location, chunking);
 		//writer.setLargeFile(isLargeFile);
 
-		writeGlobalAttributes(writer, gds);
+        writeGlobalAttributes(writer, gds, resultBB);
 
 
 		// use fileWriter to copy the variables
@@ -309,7 +313,7 @@ public class NetcdfCFWriter {
 
 		// use fileWriter to copy the data
 		fileWriter.copyVarData(varList, null, null);
-		updateGeospatialRanges(writer, llrect );
+		//updateGeospatialRanges(writer, llrect );
 		writer.close();
 		
 
@@ -332,7 +336,9 @@ public class NetcdfCFWriter {
 		ArrayList<String> varNameList = new ArrayList<String>();
 		ArrayList<CoordinateAxis> axisList = new ArrayList<CoordinateAxis>();
 
-		LatLonRect llrec = new LatLonRect();
+        LatLonRect resultBB = null;
+
+        LatLonRect llrec = new LatLonRect();
 
 		// add each desired Grid to the new file
 		long total_size = 0;
@@ -393,8 +399,13 @@ public class NetcdfCFWriter {
 
 			if ((null != timeRange) || (zRangeUse != null) || (llbb != null) || (horizStride > 1)) {
 				grid = grid.subset(timeRange, zRangeUse, y_range, x_range);
+                LatLonRect gridBB = grid.getCoordinateSystem().getLatLonBoundingBox();
 
-			}
+                if (resultBB == null)
+                    resultBB = gridBB;
+                else
+                    resultBB.extend(gridBB);
+ 			}
 
 			Variable gridV = grid.getVariable();
 			varList.add(gridV);
@@ -443,7 +454,7 @@ public class NetcdfCFWriter {
 		NetcdfFileWriter writer = NetcdfFileWriter.createNew(version, location, chunking);
 		writer.setLargeFile(isLargeFile);
 
-		writeGlobalAttributes(writer, gds);
+		writeGlobalAttributes(writer, gds, resultBB);
 
 		// use fileWriter to copy the variables
 		FileWriter2 fileWriter = new FileWriter2(writer);
@@ -466,7 +477,8 @@ public class NetcdfCFWriter {
 		return 0; // ok
 	}
 
-	/**
+
+    /**
 	 * Looks for the attributes in the unidata discovery conventions and, if present, updates their values
 	 * to the values in the new axes. 
 	 * 
@@ -474,6 +486,7 @@ public class NetcdfCFWriter {
 	 * @param axisList
 	 * @throws IOException 
 	 */
+    /**
 	private void  updateGeospatialRanges(NetcdfFileWriter writer, LatLonRect llRect) throws IOException{
 		//Flush before updating...
 		writer.flush();
@@ -509,6 +522,7 @@ public class NetcdfCFWriter {
 			writer.updateAttribute(null, new Attribute( attName, value));		
 		
 	}
+    */
 
 	private void convertProjectionCTV(NetcdfDataset ds, Variable ctv) {
 		Attribute att = ctv.findAttribute(_Coordinate.TransformType);
@@ -721,7 +735,7 @@ public class NetcdfCFWriter {
 		return isLargeFile;
 	}
 
-	private void writeGlobalAttributes(NetcdfFileWriter writer, ucar.nc2.dt.GridDataset gds) {
+	private void writeGlobalAttributes(NetcdfFileWriter writer, ucar.nc2.dt.GridDataset gds, LatLonRect llbb) {
 		// global attributes
 		for (Attribute att : gds.getGlobalAttributes()) {
 			if (att.getShortName().equals(CDM.FILE_FORMAT)) continue;
@@ -733,6 +747,11 @@ public class NetcdfCFWriter {
 		writer.addGroupAttribute(null, new Attribute("History",
 				"Translated to CF-1.0 Conventions by Netcdf-Java CDM (NetcdfCFWriter)\n" +
 						"Original Dataset = " + gds.getLocationURI() + "; Translation Date = " + new Date()));
+        // this will replace any existing
+        writer.addGroupAttribute(null, new Attribute(CDM.LAT_MIN, llbb.getLatMin()));
+        writer.addGroupAttribute(null, new Attribute(CDM.LAT_MAX, llbb.getLatMax()));
+        writer.addGroupAttribute(null, new Attribute(CDM.LON_MIN, llbb.getLonMin()));
+        writer.addGroupAttribute(null, new Attribute(CDM.LON_MAX, llbb.getLonMax()));
 	}
 
 	private void addCFAnnotations(NetcdfFileWriter writer, ucar.nc2.dt.GridDataset gds, List<String> gridList, NetcdfDataset ncd,
