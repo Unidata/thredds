@@ -1659,7 +1659,7 @@ if(OLDGROUPCODE) {
             dataArray = convertD2N.convertTopVariable(v, section.getRanges(), want);
         } catch (DAP2Exception ex) {
             ex.printStackTrace();
-            throw new IOException(ex.getMessage());
+            throw new IOException(ex.getMessage()+"; "+v.getShortName()+" -- "+section);
         } catch (ParseException ex) {
             ex.printStackTrace();
             throw new IOException(ex.getMessage());
