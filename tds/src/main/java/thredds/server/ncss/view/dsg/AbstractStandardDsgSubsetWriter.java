@@ -2,7 +2,9 @@ package thredds.server.ncss.view.dsg;
 
 import thredds.server.ncss.exception.NcssException;
 import thredds.server.ncss.params.NcssParamsBean;
+import ucar.ma2.StructureData;
 import ucar.nc2.ft.FeatureDatasetPoint;
+import ucar.nc2.ft.PointFeature;
 import ucar.nc2.ft.PointFeatureCollection;
 
 import java.io.IOException;
@@ -13,11 +15,11 @@ import java.text.ParseException;
 /**
  * Created by cwardgar on 2014/05/20.
  */
-public abstract class AbstractStandardDsgWriter extends AbstractDsgWriter {
+public abstract class AbstractStandardDsgSubsetWriter extends AbstractDsgSubsetWriter {
     protected final PrintWriter outWriter;
 
-    protected AbstractStandardDsgWriter(FeatureDatasetPoint fdPoint, NcssParamsBean ncssParams,
-                                        ucar.nc2.util.DiskCache2 diskCache, OutputStream outStream)
+    protected AbstractStandardDsgSubsetWriter(FeatureDatasetPoint fdPoint, NcssParamsBean ncssParams,
+                                              ucar.nc2.util.DiskCache2 diskCache, OutputStream outStream)
             throws IOException, NcssException {
         super(fdPoint, ncssParams, diskCache);
         this.outWriter = new PrintWriter(outStream);
@@ -25,7 +27,7 @@ public abstract class AbstractStandardDsgWriter extends AbstractDsgWriter {
 
     public abstract void writeHeader() throws IOException;
 
-    public abstract void writePoint() throws IOException;
+    public abstract void writePoint(PointFeature pf, StructureData sdata) throws IOException;
 
     public abstract void writeFooter() throws IOException;
 
@@ -47,5 +49,9 @@ public abstract class AbstractStandardDsgWriter extends AbstractDsgWriter {
         */
 
         writeHeader();
+
+
+
+        writeFooter();
     }
 }

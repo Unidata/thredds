@@ -9,7 +9,7 @@ import java.text.ParseException;
 /**
  * Created by cwardgar on 2014/05/20.
  */
-public interface DsgWriter {
+public interface DsgSubsetWriter {
     void write() throws ParseException, IOException, NcssException;
 
     HttpHeaders getHttpHeaders(String datasetPath);

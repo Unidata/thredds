@@ -49,7 +49,10 @@ import ucar.nc2.Attribute;
 import ucar.nc2.NetcdfFileWriter;
 import ucar.nc2.VariableSimpleIF;
 import ucar.nc2.constants.CDM;
-import ucar.nc2.ft.*;
+import ucar.nc2.ft.FeatureDatasetPoint;
+import ucar.nc2.ft.PointFeature;
+import ucar.nc2.ft.PointFeatureCollection;
+import ucar.nc2.ft.StationTimeSeriesFeatureCollection;
 import ucar.nc2.ft.point.StationPointFeature;
 import ucar.nc2.ft.point.remote.PointStream;
 import ucar.nc2.ft.point.remote.PointStreamProto;
@@ -77,6 +80,7 @@ import java.io.PrintWriter;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 
 /**
@@ -86,7 +90,7 @@ import java.util.List;
  * @author caron
  * @since Aug 19, 2009
  */
-public class StationWriter extends AbstractDsgWriter {
+public class StationWriter extends AbstractDsgSubsetWriter {
   static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(StationWriter.class);
 
   private static final boolean debugDetail = false;
@@ -163,20 +167,17 @@ public class StationWriter extends AbstractDsgWriter {
   }
 
   @Override public void write() throws ParseException, IOException, NcssException {
-    // spatial: all, bb, point, stns
-    PointFeatureCollection pfc;
+    List<Station> stations = writer.getStationsInSubset();
 
-    List<Station> stns = writer.getStationsInSubset();
-
-    if (stns.isEmpty())
+    if (stations.isEmpty())
       throw new FeaturesNotFoundException("Features not found");
 
-    List<String> stations = new ArrayList<>();
-    for (Station st : stns)
-      stations.add(st.getName());
+    List<String> stationNames = new ArrayList<>();
+    for (Station station : stations)
+      stationNames.add(station.getName());
 
     // LOOK should we always flatten ??
-    pfc = sfc.flatten(stations, wantRange, null);
+      PointFeatureCollection pfc = sfc.flatten(stationNames, wantRange, null);
 
 	    /*
       //Subsetting type
@@ -210,7 +211,6 @@ public class StationWriter extends AbstractDsgWriter {
 
     if (ncssParams.getTime() != null) {
       scanForClosestTime(pfc, new DateType(ncssParams.getTime(), null, null), act);
-
     } else {
       scan(pfc, wantRange, act);
     }
@@ -448,10 +448,10 @@ public class StationWriter extends AbstractDsgWriter {
     collection.finish();
   }
 
-  // For each station in the collection, act on the record whose time is closes to the given time.
+  // For each station in the collection, act on the record whose time is closest to the given time.
   private void scanForClosestTime(PointFeatureCollection collection, DateType time, Action a) throws IOException {
 
-    HashMap<String, StationDataTracker> map = new HashMap<>();
+    HashMap<String, StationDataTracker> map = new LinkedHashMap<>();
     //long wantTime = time.getDate().getTime();
     long wantTime = time.getCalendarDate().getMillis();
 
@@ -520,7 +520,6 @@ public class StationWriter extends AbstractDsgWriter {
 
     // LOOK could do better : "all", and maybe HashSet<Name>
     protected List<Station> getStationsInSubset() throws IOException {
-
       // verify SpatialSelection has some stations
       if (ncssParams.hasStations()) {
         List<String> stnNames = ncssParams.getStns();
@@ -574,7 +573,24 @@ public class StationWriter extends AbstractDsgWriter {
       List<Attribute> atts = new ArrayList<>();
       atts.add(new Attribute(CDM.TITLE, "Extracted data from TDS using CDM remote subsetting"));
       cfWriter = new WriterCFStationCollection(version, netcdfResult.getAbsolutePath(), atts);
+    }
 
+    @Override
+    HttpHeaders getHttpHeaders(String pathInfo) {
+      HttpHeaders httpHeaders = new HttpHeaders();
+      //String pathInfo = fd.getTitle();
+      String fileName = NetCDFPointDataWriter.getFileNameForResponse(version, pathInfo);
+      String url = NcssRequestUtils.getTdsContext().getContextPath() + NcssController.getServletCachePath() + "/" + fileName;
+      if (version == NetcdfFileWriter.Version.netcdf3)
+        httpHeaders.set(ContentType.HEADER, ContentType.netcdf.getContentHeader());
+
+      if (version == NetcdfFileWriter.Version.netcdf4)
+        httpHeaders.set(ContentType.HEADER, ContentType.netcdf4.getContentHeader());
+
+      httpHeaders.set("Content-Location", url);
+      httpHeaders.set("Content-Disposition", "attachment; filename=\"" + fileName + "\"");
+
+      return httpHeaders;
     }
 
     @Override void header() {
@@ -592,24 +608,6 @@ public class StationWriter extends AbstractDsgWriter {
         log.error("Error copying result to the output stream", ioe);
       }
 
-    }
-
-    @Override HttpHeaders getHttpHeaders(String pathInfo) {
-
-      HttpHeaders httpHeaders = new HttpHeaders();
-      //String pathInfo = fd.getTitle();
-      String fileName = NetCDFPointDataWriter.getFileNameForResponse(version, pathInfo);
-      String url = NcssRequestUtils.getTdsContext().getContextPath() + NcssController.getServletCachePath() + "/" + fileName;
-      if (version == NetcdfFileWriter.Version.netcdf3)
-        httpHeaders.set(ContentType.HEADER, ContentType.netcdf.getContentHeader());
-
-      if (version == NetcdfFileWriter.Version.netcdf4)
-        httpHeaders.set(ContentType.HEADER, ContentType.netcdf4.getContentHeader());
-
-      httpHeaders.set("Content-Location", url);
-      httpHeaders.set("Content-Disposition", "attachment; filename=\"" + fileName + "\"");
-
-      return httpHeaders;
     }
 
     @Override Action getAction() {
@@ -644,6 +642,11 @@ public class StationWriter extends AbstractDsgWriter {
       out = os;
     }
 
+    @Override
+    HttpHeaders getHttpHeaders(String pathInfo) {
+      return new HttpHeaders();
+    }
+
     @Override void header() throws IOException {
       // PointStream.writeMagic(out, PointStream.MessageType.Start);  // LOOK - not ncstream protocol
     }
@@ -651,10 +654,6 @@ public class StationWriter extends AbstractDsgWriter {
     @Override void trailer() throws IOException {
       PointStream.writeMagic(out, PointStream.MessageType.End);
       out.flush();
-    }
-
-    @Override HttpHeaders getHttpHeaders(String pathInfo) {
-      return new HttpHeaders();
     }
 
     @Override Action getAction() {
@@ -698,15 +697,16 @@ public class StationWriter extends AbstractDsgWriter {
       super(writer);
     }
 
+    @Override
+    public HttpHeaders getHttpHeaders(String pathInfo) {
+      return new HttpHeaders();
+    }
+
     @Override void header() {
     }
 
     @Override void trailer() {
       writer.flush();
-    }
-
-    @Override public HttpHeaders getHttpHeaders(String pathInfo) {
-      return new HttpHeaders();
     }
 
     @Override Action getAction() {
@@ -738,6 +738,20 @@ public class StationWriter extends AbstractDsgWriter {
       }
     }
 
+    @Override
+    HttpHeaders getHttpHeaders(String pathInfo) {
+      HttpHeaders httpHeaders = new HttpHeaders();
+
+      if (!isStream) {
+        httpHeaders.set("Content-Location", pathInfo);
+        httpHeaders.set("Content-Disposition", "attachment; filename=\"" + NcssRequestUtils.nameFromPathInfo(pathInfo) + ".xml\"");
+      }
+
+      httpHeaders.set(ContentType.HEADER, ContentType.xml.getContentHeader());
+      // httpHeaders.setContentType(MediaType.APPLICATION_XML);
+      return httpHeaders;
+    }
+
     @Override void header() {
       try {
         staxWriter.writeStartDocument("UTF-8", "1.0");
@@ -763,19 +777,6 @@ public class StationWriter extends AbstractDsgWriter {
         throw new RuntimeException(e.getMessage());
       }
       writer.flush();
-    }
-
-    @Override HttpHeaders getHttpHeaders(String pathInfo) {
-      HttpHeaders httpHeaders = new HttpHeaders();
-
-      if (!isStream) {
-        httpHeaders.set("Content-Location", pathInfo);
-        httpHeaders.set("Content-Disposition", "attachment; filename=\"" + NcssRequestUtils.nameFromPathInfo(pathInfo) + ".xml\"");
-      }
-
-      httpHeaders.set(ContentType.HEADER, ContentType.xml.getContentHeader());
-      // httpHeaders.setContentType(MediaType.APPLICATION_XML);
-      return httpHeaders;
     }
 
     @Override Action getAction() {
@@ -835,6 +836,21 @@ public class StationWriter extends AbstractDsgWriter {
       this.isStream = isStream;
     }
 
+    @Override
+    HttpHeaders getHttpHeaders(String pathInfo) {
+      HttpHeaders httpHeaders = new HttpHeaders();
+
+      if (!isStream) {
+        httpHeaders.set("Content-Location", pathInfo);
+        httpHeaders.set("Content-Disposition", "attachment; filename=\"" + NcssRequestUtils.nameFromPathInfo(pathInfo) + ".csv\"");
+        httpHeaders.add(ContentType.HEADER, ContentType.csv.getContentHeader());
+      } else {
+        httpHeaders.add(ContentType.HEADER, ContentType.text.getContentHeader());
+      }
+
+      return httpHeaders;
+    }
+
     @Override void header() {
       writer.print("time,station,latitude[unit=\"degrees_north\"],longitude[unit=\"degrees_east\"]");
       for (VariableSimpleIF var : wantVars) {
@@ -848,20 +864,6 @@ public class StationWriter extends AbstractDsgWriter {
 
     @Override void trailer() {
       writer.flush();
-    }
-
-    @Override HttpHeaders getHttpHeaders(String pathInfo) {
-      HttpHeaders httpHeaders = new HttpHeaders();
-
-      if (!isStream) {
-        httpHeaders.set("Content-Location", pathInfo);
-        httpHeaders.set("Content-Disposition", "attachment; filename=\"" + NcssRequestUtils.nameFromPathInfo(pathInfo) + ".csv\"");
-        httpHeaders.add(ContentType.HEADER, ContentType.csv.getContentHeader());
-      } else {
-        httpHeaders.add(ContentType.HEADER, ContentType.text.getContentHeader());
-      }
-
-      return httpHeaders;
     }
 
     @Override Action getAction() {
@@ -897,6 +899,13 @@ public class StationWriter extends AbstractDsgWriter {
       this.out = out;
     }
 
+    @Override
+    HttpHeaders getHttpHeaders(String pathInfo) {
+      HttpHeaders httpHeaders = new HttpHeaders();
+      httpHeaders.set(ContentType.HEADER, ContentType.text.getContentHeader());
+      return httpHeaders;
+    }
+
     @Override void header() throws IOException { }
 
     @Override Action getAction() {
@@ -909,12 +918,6 @@ public class StationWriter extends AbstractDsgWriter {
 
     @Override void trailer() throws IOException {
       out.flush();
-    }
-
-    @Override HttpHeaders getHttpHeaders(String pathInfo) {
-      HttpHeaders httpHeaders = new HttpHeaders();
-      httpHeaders.set(ContentType.HEADER, ContentType.text.getContentHeader());
-      return httpHeaders;
     }
   }
 }

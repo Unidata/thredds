@@ -19,7 +19,7 @@ import java.util.*;
  * @author caron
  * @since 10/5/13
  */
-public abstract class AbstractDsgWriter implements DsgWriter {
+public abstract class AbstractDsgSubsetWriter implements DsgSubsetWriter {
 
   protected FeatureDatasetPoint fdPoint;
   protected NcssParamsBean ncssParams;
@@ -28,7 +28,7 @@ public abstract class AbstractDsgWriter implements DsgWriter {
   protected CalendarDateRange wantRange;
   protected ucar.nc2.util.DiskCache2 diskCache;
 
-  protected AbstractDsgWriter(FeatureDatasetPoint fdPoint, NcssParamsBean ncssParams, ucar.nc2.util.DiskCache2 diskCache)
+  protected AbstractDsgSubsetWriter(FeatureDatasetPoint fdPoint, NcssParamsBean ncssParams, ucar.nc2.util.DiskCache2 diskCache)
           throws IOException, NcssException {
     this.fdPoint = fdPoint;
     this.ncssParams = ncssParams;

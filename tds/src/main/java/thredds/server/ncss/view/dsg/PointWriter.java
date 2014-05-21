@@ -47,7 +47,7 @@ import java.util.List;
  * @author caron
  * @since 10/3/13
  */
-public class PointWriter extends AbstractDsgWriter {
+public class PointWriter extends AbstractDsgSubsetWriter {
   static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(thredds.server.cdmremote.StationWriter.class);
 
   private static final boolean debug = false, debugDetail = false;
