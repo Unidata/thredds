@@ -116,6 +116,7 @@ public class CF1Convention extends CSMConvention {
   }
 
   private static final String[] vertical_coords = {
+          "atmosphere_ln_pressure_coordinate",
           "atmosphere_sigma_coordinate",
           "atmosphere_hybrid_sigma_pressure_coordinate",
           "atmosphere_hybrid_height_coordinate",
@@ -287,15 +288,26 @@ public class CF1Convention extends CSMConvention {
   //  2) being listed in coordinates attribute.
 
   /**
-   * Augment CSM axis type identification with "projection_x_coordinate", "projection_y_coordinate"
-   * and  the various dimensionless vertical coordinates
+   * Augment COARDS axis type identification with Standard names (including dimensionless vertical coordinates) and  CF.AXIS attributes
    */
   protected AxisType getAxisType(NetcdfDataset ncDataset, VariableEnhanced v) {
 
+     // standard names for unitless vertical coords
     String sname = ncDataset.findAttValueIgnoreCase((Variable) v, CF.STANDARD_NAME, null);
     if (sname != null) {
       sname = sname.trim();
 
+      for (String vertical_coord : vertical_coords)
+        if (sname.equalsIgnoreCase(vertical_coord))
+          return AxisType.GeoZ;
+    }
+
+    // COARDS - check units
+    AxisType at = super.getAxisType(ncDataset, v);
+    if (at != null) return at;
+
+    // standard names for X, Y : bug in CDO putting wrong standard name, so check units first (!)
+    if (sname != null) {
       if (sname.equalsIgnoreCase("latitude"))
         return AxisType.Lat;
 
@@ -307,57 +319,47 @@ public class CF1Convention extends CSMConvention {
 
       if (sname.equalsIgnoreCase("projection_y_coordinate") || sname.equalsIgnoreCase("grid_latitude") || sname.equalsIgnoreCase("rotated_latitude"))
         return AxisType.GeoY;
-
-      for (String vertical_coord : vertical_coords)
-        if (sname.equalsIgnoreCase(vertical_coord))
-          return AxisType.GeoZ;
     }
 
-    AxisType at = super.getAxisType(ncDataset, v);
-
     // check axis attribute - only for X, Y, Z
-    if (at == null) {
-      String axis = ncDataset.findAttValueIgnoreCase((Variable) v, CF.AXIS, null);
-      if (axis != null) {
-        axis = axis.trim();
-        String unit = v.getUnitsString();
+    String axis = ncDataset.findAttValueIgnoreCase((Variable) v, CF.AXIS, null);
+    if (axis != null) {
+      axis = axis.trim();
+      String unit = v.getUnitsString();
 
-        if (axis.equalsIgnoreCase("X")) {
-          if (SimpleUnit.isCompatible("m", unit))
-            return AxisType.GeoX;
+      if (axis.equalsIgnoreCase("X")) {
+        if (SimpleUnit.isCompatible("m", unit))
+          return AxisType.GeoX;
 
-        } else if (axis.equalsIgnoreCase("Y")) {
-          if (SimpleUnit.isCompatible("m", unit))
-            return AxisType.GeoY;
+      } else if (axis.equalsIgnoreCase("Y")) {
+        if (SimpleUnit.isCompatible("m", unit))
+          return AxisType.GeoY;
 
-        } else if (axis.equalsIgnoreCase("Z")) {
-          if (unit == null) return AxisType.GeoZ;
-          if (SimpleUnit.isCompatible("m", unit))
-            return AxisType.Height;
-          else if (SimpleUnit.isCompatible("mbar", unit))
-            return AxisType.Pressure;
-          else
-            return AxisType.GeoZ;
-        }
+      } else if (axis.equalsIgnoreCase("Z")) {
+        if (unit == null) return AxisType.GeoZ;
+        if (SimpleUnit.isCompatible("m", unit))
+          return AxisType.Height;
+        else if (SimpleUnit.isCompatible("mbar", unit))
+          return AxisType.Pressure;
+        else
+          return AxisType.GeoZ;
       }
     }
 
-    if ((at == null) && avhrr_oiv2) {
+    if (avhrr_oiv2) {
       if (v.getShortName().equals("zlev"))
         return AxisType.Height;
     }
 
-    if (at == null) {
-      try {
-        String units = v.getUnitsString();
-        CalendarDateUnit cd = CalendarDateUnit.of(null, units);
-        if (cd != null) return AxisType.Time;
-      } catch (Throwable t) {
-        // pass through
-      }
+    try {
+      String units = v.getUnitsString();
+      CalendarDateUnit cd = CalendarDateUnit.of(null, units);
+      if (cd != null) return AxisType.Time;
+    } catch (Throwable t) {
+      // ignore
     }
 
-    return at;
+    return null;
   }
 
 }

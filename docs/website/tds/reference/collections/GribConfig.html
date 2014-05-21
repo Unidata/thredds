@@ -126,50 +126,46 @@
   <p>This example also says that for variables 0-1-8 and 0-1-10, only include records with time interval length = 3. This will simplify those variables so that they only contain only 3 hour intervals, instead of a mixture of intervals.</p>
   <p>Also see <a href="../../../netcdf-java/reference/formats/GribFiles.html#intvFilter">CDM docs</a>. </p>
 </blockquote>
-<h4>&nbsp;</h4>
-<p>&nbsp;</p>
+<hr />
 <h2>Other Configuration </h2>
 <blockquote>
   <h4>7) datasetTypes: Define which
     datasets are available in the TDS catalog</h4>
   <ol>
-    <li><strong>Best</strong>: the &quot;best timeseries: of the collection dataset</li>
-    <li><strong>Files</strong>:
-        each physical file
-      is exposed as a seperate dataset. </li>
-    <li><strong>Latest</strong>: add latest resolver dataset to Files catalog (<strong>Files</strong> must also be selected)</li>
+    <li><strong>TwoD: </strong>the full dataset with two time coordinates: runtime and forecast time</li>
+    <li><strong>Best</strong>: the &quot;best timeseries&quot; of the collection dataset, one time coordinate (forecasst time)</li>
+    <li><strong>Latest</strong>: add latest resolver dataset to  catalog </li>
   </ol>
+    <pre>
+&lt;gribConfig datasetTypes=&quot;TwoD Best Latest&quot; /&gt;</pre>
   <h4>8) latestNamer: Rename the latest file dataset</h4>
   <blockquote>
     <p>Change the name of the latest file dataset in the collection, as listed under the Files entry (the default name is &quot;Latest File&quot;). The
       datasetTypes options <em><strong>LatestFile</strong></em> and <em><strong>Files</strong></em>, must be enabled. Note that this does not affect dataset <strong>urlPath</strong>, which is always <em>latest.xml</em>.</p>
   </blockquote>
   <pre>
-&lt;gribConfig datasetTypes=&quot;Best LatestFile Files&quot;&gt;
+&lt;gribConfig&gt;
   &lt;latestNamer name=&quot;My Latest Name&quot;/&gt;
-&lt;/gribConfig&gt;
-      </pre>
+&lt;/gribConfig&gt;</pre>
   <h4>9) bestNamer: Rename the Best dataset</h4>
   <blockquote>
     <p>Change the name of the Best dataset in the collection (the default name is &quot;Best Timeseries&quot;). The datasetTypes <strong><em>Best</em></strong> option must be selected. Note that this does not affect dataset <strong>urlPath</strong>.</p>
   </blockquote>
   <pre>
-&lt;gribConfig datasetTypes=&quot;Best LatestFile Files&quot;&gt;
+&lt;gribConfig&gt;
   &lt;bestNamer name=&quot;My Best Name&quot; /&gt;
-&lt;/gribConfig&gt;
-      </pre>
+&lt;/gribConfig&gt;</pre>
   <h4>10) filesSort: Sort the dataset listings under the Files dataset</h4>
   <blockquote>
     <p>Sort the files lexographically, either increasing or decreasing (default GRIB Feature Collection behavior is the same as <em>increasing =
       True</em>). The <em><strong>Files</strong></em> datasetTypes option must be enabled.</p>
   </blockquote>
   <pre>
-&lt;gribConfig datasetTypes=&quot;Best LatestFile Files&quot;&gt;
+&lt;gribConfig&gt;
   &lt;filesSort&gt;
     &lt;lexigraphicByName increasing=&quot;false&quot; /&gt;
   &lt;/filesSort&gt;
-&lt;/gribConfig&gt;
-      </pre>
+&lt;/gribConfig&gt;</pre>
 </blockquote>
 <p>If you make changes to <strong>gribConfig</strong> parameters (except <strong>datasetTypes</strong>, <strong>LatestNamer</strong>, <strong>BestNamer</strong>,
   and <strong>filesSort</strong>), you need to delete the cdm index files (<strong>*.ncx</strong>) to force them to be recreated.</p>

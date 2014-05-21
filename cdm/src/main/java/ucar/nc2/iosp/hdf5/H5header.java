@@ -2737,7 +2737,8 @@ public class H5header {
 
       } else {
         debugOut.println("****UNPROCESSED MESSAGE type = " + mtype + " raw = " + type);
-        throw new UnsupportedOperationException("****UNPROCESSED MESSAGE type = " + mtype + " raw = " + type);
+        log.warn("SKIP UNPROCESSED MESSAGE type = " + mtype + " raw = " + type);
+        //throw new UnsupportedOperationException("****UNPROCESSED MESSAGE type = " + mtype + " raw = " + type);
       }
 
       return header_length + size;

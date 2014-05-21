@@ -8,10 +8,10 @@ import ucar.util.prefs.PreferencesExt;
 import javax.swing.*;
 import java.awt.*;
 import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.util.*;
-import java.util.List;
 
 /**
  * Superclass for report panels
@@ -36,51 +36,81 @@ public abstract class ReportPanel extends JPanel {
 
   }
 
-   public void save() {}
+  public void save() {
+  }
 
   //public abstract void showInfo(Formatter f);
 
   public abstract Object[] getOptions();
 
-  public abstract void doReport(String command, boolean useIndex, boolean eachFile, boolean extra, Object option) throws IOException;
+  public void doReport(String spec, boolean useIndex, boolean eachFile, boolean extra, Object option) throws IOException {
+    Formatter f = new Formatter();
+    f.format("%s on %s useIndex=%s eachFile=%s extra=%s%n", option, spec, useIndex, eachFile, extra);
 
-  protected boolean setCollection(String spec) {
-     Formatter f = new Formatter();
-     f.format("collection = %s%n", spec);
-     boolean hasFiles = false;
-
-     MCollection dcm = getCollection(spec, f);
-     if (dcm == null) {
-       return false;
-     }
-
-    try {
-      for (MFile mfile : dcm.getFilesSorted()) {
-        f.format(" %s%n", mfile.getPath());
-        hasFiles = true;
+    try (MCollection dcm = getCollection(spec, f)) {
+      if (dcm == null) {
+        return;
       }
-    } catch (IOException e) {
-      e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+
+      f.format("top dir = %s%n", dcm.getRoot());
+      reportPane.setText(f.toString());
+
+      File top = new File(dcm.getRoot());
+      if (!top.exists()) {
+        f.format("top dir = %s does not exist%n", dcm.getRoot());
+      } else {
+        doReport(f, option, dcm, useIndex, eachFile, extra);
+      }
+
+      reportPane.setText(f.toString());
+      reportPane.gotoTop();
+
+    } catch (IOException ioe) {
+      ByteArrayOutputStream bos = new ByteArrayOutputStream(50000);
+      ioe.printStackTrace(new PrintStream(bos));
+      f.format(bos.toString());
+      ioe.printStackTrace();
     }
+  }
 
-    reportPane.setText(f.toString());
-     reportPane.gotoTop();
-     return hasFiles;
-   }
+  protected abstract void doReport(Formatter f, Object option, MCollection dcm, boolean useIndex, boolean eachFile, boolean extra) throws IOException;
 
-   MCollection getCollection(String spec, Formatter f) {
-     try {
-       return CollectionAbstract.open(spec, spec, null, f);
+  protected boolean showCollection(String spec) {
+    Formatter f = new Formatter();
+    f.format("collection = %s%n", spec);
+    boolean hasFiles = false;
 
-     } catch (Exception e) {
-       ByteArrayOutputStream bos = new ByteArrayOutputStream(10000);
-       e.printStackTrace(new PrintStream(bos));
-       reportPane.setText(bos.toString());
-       return null;
-     }
-   }
+    try (MCollection dcm = getCollection(spec, f)) {
+      if (dcm == null) return false;
 
-    ///////////////////////////////////////////////
+      try {
+        for (MFile mfile : dcm.getFilesSorted()) {
+          f.format(" %s%n", mfile.getPath());
+          hasFiles = true;
+        }
+      } catch (IOException e) {
+        e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+      }
+
+      reportPane.setText(f.toString());
+      reportPane.gotoTop();
+      return hasFiles;
+    }
+  }
+
+  MCollection getCollection(String spec, Formatter f) {
+    try {
+      return CollectionAbstract.open(spec, spec, null, f);
+
+    } catch (Exception e) {
+      ByteArrayOutputStream bos = new ByteArrayOutputStream(10000);
+      e.printStackTrace(new PrintStream(bos));
+      reportPane.setText(bos.toString());
+      return null;
+    }
+  }
+
+  ///////////////////////////////////////////////
 
   // a counter whose keys are ints
   protected class Counter {

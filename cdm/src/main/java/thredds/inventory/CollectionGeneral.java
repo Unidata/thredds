@@ -69,18 +69,7 @@ public class CollectionGeneral extends CollectionAbstract {
 
   @Override
   public Iterable<MFile> getFilesSorted() throws IOException {
-    List<MFile> list = new ArrayList<>(100);
-    try (CloseableIterator<MFile> iter = getFileIterator()) {
-       while (iter.hasNext()) {
-         list.add(iter.next());
-       }
-     }
-    if (hasDateExtractor()) {
-      Collections.sort(list, new DateSorter());  // sort by date
-    } else {
-      Collections.sort(list);                    // sort by name
-    }
-    return list;
+    return makeFileListSorted();
   }
 
   @Override

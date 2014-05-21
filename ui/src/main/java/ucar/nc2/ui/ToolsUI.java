@@ -3226,7 +3226,7 @@ public class
     }
 
     boolean process(Object o) {
-      return reportPanel.setCollection((String) o);
+      return reportPanel.showCollection((String) o);
     }
 
     boolean process() {

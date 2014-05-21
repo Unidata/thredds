@@ -36,39 +36,16 @@ public class BufrReportPanel extends ReportPanel {
   }
 
   @Override
-  public void doReport(String command, boolean useIndex, boolean eachFile, boolean extra, Object option) throws IOException {
+  protected void doReport(Formatter f, Object option, MCollection dcm, boolean useIndex, boolean eachFile, boolean extra) throws IOException {
     Report which = (Report) option;
-    Formatter f = new Formatter();
-    f.format("%s on %s useIndex=%s eachFile=%s extra=%s%n", which, command, useIndex, eachFile, extra);
-
-    MCollection dcm = getCollection(command, f);
-    if (dcm == null) {
-      return;
-    }
-
-    // CollectionSpecParser parser = dcm.getCollectionSpecParser();
-
-    f.format("top dir = %s%n", dcm.getRoot());
-    //f.format("filter = %s%n", parser.getFilter());
-    reportPane.setText(f.toString());
-
-    File top = new File(dcm.getRoot());
-    if (!top.exists()) {
-      f.format("top dir = %s does not exist%n", dcm.getRoot());
-    } else {
-
-      switch (which) {
-        case bufrSplitter:
-          doBufrSplitter(f, dcm, useIndex);
-          break;
-        case checkHash:
-           doCheckHash(f, dcm, useIndex);
-           break;
-       }
-    }
-
-    reportPane.setText(f.toString());
-    reportPane.gotoTop();
+    switch (which) {
+      case bufrSplitter:
+        doBufrSplitter(f, dcm, useIndex);
+        break;
+      case checkHash:
+         doCheckHash(f, dcm, useIndex);
+         break;
+     }
   }
 
   ///////////////////////////////////////////////
