@@ -308,20 +308,6 @@ ByteBuffer bos = ByteBuffer.wrap(vdata);     */
    * @return the arraystructure of graphic symbol data
    */
   public ArrayStructure readGraphicSymbolData(String name, ByteBuffer bos, Nidsheader.Vinfo vinfo) throws IOException, InvalidRangeException {
-
-    int[] pos = vinfo.pos;
-    int[] sizes = vinfo.len;
-    int size = pos.length;
-
-    Structure pdata = (Structure) ncfile.findVariable(name);
-
-    StructureMembers members = pdata.makeStructureMembers();
-    members.findMember("x_start").setDataParam(0);
-    members.findMember("y_start").setDataParam(2);
-
-    return new MyArrayStructureBBpos(members, new int[]{size}, bos, pos, sizes);
-
-    /*
     int[] pos = vinfo.pos;
     int[] dlen = vinfo.len;
     int size = pos.length;
@@ -336,10 +322,6 @@ ByteBuffer bos = ByteBuffer.wrap(vdata);     */
     members.findMember("x_start");
     members.findMember("y_start");
 
-    // return new ArrayStructureBBpos(members, new int[] {size}, bos, pos );
-    short istart;
-    short jstart;
-
     ArrayStructureW asw = new ArrayStructureW(members, new int[] {vlen});
 
     int ii = 0;
@@ -350,16 +332,14 @@ ByteBuffer bos = ByteBuffer.wrap(vdata);     */
          StructureDataW sdata = new StructureDataW(asw.getStructureMembers());
          Iterator memberIter = sdata.getMembers().iterator();
 
-         ArrayShort.D0 sArray ;
-         istart = bos.getShort();
-         jstart = bos.getShort();
+         ArrayFloat.D0 sArray ;
 
-         sArray = new ArrayShort.D0();
-         sArray.set( istart );
+         sArray = new ArrayFloat.D0();
+         sArray.set( bos.getShort() / 4.f);
          sdata.setMemberData( (StructureMembers.Member) memberIter.next(), sArray);
 
-         sArray = new ArrayShort.D0();
-         sArray.set( jstart );
+         sArray = new ArrayFloat.D0();
+         sArray.set( bos.getShort() / 4.f );
          sdata.setMemberData((StructureMembers.Member) memberIter.next(), sArray);
 
          asw.setStructureData(sdata, ii);
@@ -368,7 +348,6 @@ ByteBuffer bos = ByteBuffer.wrap(vdata);     */
     }   //end of for loop
 
     return asw;
-    */
   }
 
   /**
