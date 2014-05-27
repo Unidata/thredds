@@ -98,7 +98,7 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable {
   static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(NetcdfFile.class);
 
   static private int default_buffersize = 8092;
-  static private ArrayList<IOServiceProvider> registeredProviders = new ArrayList<IOServiceProvider>();
+  static private ArrayList<IOServiceProvider> registeredProviders = new ArrayList<>();
   static protected boolean debugSPI = false, debugCompress = false, showRequest = false;
   static boolean debugStructureIterator = false;
   static boolean loadWarnings = false;
@@ -115,7 +115,18 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable {
     } catch (Throwable e) {
       if (loadWarnings) log.info("Cant load class: " + e);
     }
-    // LOOK can we just load Grib through the ServiceLoader ??
+    try {
+      registerIOProvider("ucar.nc2.iosp.hdf5.H5iosp");
+    } catch (Throwable e) {
+      if (loadWarnings) log.info("Cant load class: " + e);
+    }
+    try {
+      registerIOProvider("ucar.nc2.iosp.hdf4.H4iosp");
+    } catch (Throwable e) {
+      if (loadWarnings) log.info("Cant load class: " + e);
+    }
+
+        // LOOK can we just load Grib through the ServiceLoader ??
     try {
       registerIOProvider("ucar.nc2.grib.collection.Grib1Iosp");
     } catch (Throwable e) {
@@ -127,21 +138,12 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable {
       if (loadWarnings) log.info("Cant load class: " + e);
     }
     try {
-      registerIOProvider("ucar.nc2.iosp.hdf5.H5iosp");
-    } catch (Throwable e) {
-      if (loadWarnings) log.info("Cant load class: " + e);
-    }
-    try {
-      registerIOProvider("ucar.nc2.iosp.hdf4.H4iosp");
-    } catch (Throwable e) {
-      if (loadWarnings) log.info("Cant load class: " + e);
-    }
-    try {
       Class iosp = NetcdfFile.class.getClassLoader().loadClass("ucar.nc2.iosp.bufr.BufrIosp2");
       registerIOProvider(iosp);
     } catch (Throwable e) {
       if (loadWarnings) log.info("Cant load resource: " + e);
     }
+
     try {
       registerIOProvider("ucar.nc2.iosp.nexrad2.Nexrad2IOServiceProvider");
     } catch (Throwable e) {
@@ -1069,7 +1071,7 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable {
    * @return List of type Dimension.
    */
   public List<Dimension> getDimensions() {
-    return immutable ? dimensions : new ArrayList<Dimension>(dimensions);
+    return immutable ? dimensions : new ArrayList<>(dimensions);
   }
 
   /**
@@ -1117,7 +1119,7 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable {
    * @return List of type Attribute
    */
   public java.util.List<Attribute> getGlobalAttributes() {
-    return immutable ? gattributes : new ArrayList<Attribute>(gattributes);
+    return immutable ? gattributes : new ArrayList<>(gattributes);
   }
 
   /**
@@ -1887,9 +1889,9 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable {
    */
   public void empty() {
     if (immutable) throw new IllegalStateException("Cant modify");
-    variables = new ArrayList<Variable>();
-    gattributes = new ArrayList<Attribute>();
-    dimensions = new ArrayList<Dimension>();
+    variables = new ArrayList<>();
+    gattributes = new ArrayList<>();
+    dimensions = new ArrayList<>();
     if (rootGroup == null)
       rootGroup = makeRootGroup(); //  only make the root group once
     // addedRecordStructure = false;
@@ -1908,9 +1910,9 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable {
    */
   public void finish() {
     if (immutable) throw new IllegalStateException("Cant modify");
-    variables = new ArrayList<Variable>();
-    dimensions = new ArrayList<Dimension>();
-    gattributes = new ArrayList<Attribute>();
+    variables = new ArrayList<>();
+    dimensions = new ArrayList<>();
+    gattributes = new ArrayList<>();
     finishGroup(rootGroup);
   }
 
@@ -2095,7 +2097,7 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable {
    * @throws IOException if read error
    */
   public java.util.List<Array> readArrays(java.util.List<Variable> variables) throws IOException {
-    java.util.List<Array> result = new java.util.ArrayList<Array>();
+    java.util.List<Array> result = new java.util.ArrayList<>();
     for (Variable variable : variables)
       result.add(variable.read());
     return result;
