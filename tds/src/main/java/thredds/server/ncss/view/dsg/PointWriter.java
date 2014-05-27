@@ -158,31 +158,31 @@ public class PointWriter extends AbstractWriter {
   ////////////////////////////////////////////////////////////////
   // writing
 
-    public File writeNetcdf() throws IOException {
-        WriterNetcdf w = (WriterNetcdf) write();
-        return w.netcdfResult;
+  public File writeNetcdf() throws IOException {
+    WriterNetcdf w = (WriterNetcdf) write();
+    return w.netcdfResult;
+  }
+
+  public Writer write() throws IOException {
+    long start = System.currentTimeMillis();
+    Limit counter = new Limit();
+    //counter.limit = 150;
+
+    pfc.resetIteration();
+    Action act = writer.getAction();
+    writer.header();
+    scan(pfc, wantRange, null, act, counter);
+
+    writer.trailer();
+
+    if (debug) {
+      long took = System.currentTimeMillis() - start;
+      System.out.println("\nread " + counter.count + " records; match and write " + counter.matches + " raw records");
+      System.out.println("that took = " + took + " msecs");
     }
 
-    public Writer write() throws IOException {
-        long start = System.currentTimeMillis();
-        Limit counter = new Limit();
-        //counter.limit = 150;
-
-        pfc.resetIteration();
-        Action act = writer.getAction();
-        writer.header();
-        scan(pfc, wantRange, null, act, counter);
-
-        writer.trailer();
-
-        if (debug) {
-            long took = System.currentTimeMillis() - start;
-            System.out.println("\nread " + counter.count + " records; match and write " + counter.matches + " raw records");
-            System.out.println("that took = " + took + " msecs");
-        }
-
-        return writer;
-    }
+    return writer;
+  }
 
   /* public boolean intersect(DateRange dr) throws IOException {
     return dr.intersects(start, end);

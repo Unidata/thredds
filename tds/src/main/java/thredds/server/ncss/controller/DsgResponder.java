@@ -29,8 +29,8 @@ public class DsgResponder implements NcssResponder {
   public static DsgResponder factory(FeatureDataset fd, NcssParamsBean queryParams, DiskCache2 diskCache, SupportedFormat format, OutputStream out) throws IOException, ParseException, NcssException{
  		FeatureDatasetPoint fdp = (FeatureDatasetPoint) fd;
  		List<FeatureCollection> coll = fdp.getPointFeatureCollectionList();
-    PointFeatureCollection sfc = (PointFeatureCollection) coll.get(0);
-    PointWriter writer = PointWriter.factory((FeatureDatasetPoint) fd, sfc, queryParams, diskCache, out, format);
+        PointFeatureCollection sfc = (PointFeatureCollection) coll.get(0);
+        PointWriter writer = PointWriter.factory((FeatureDatasetPoint) fd, sfc, queryParams, diskCache, out, format);
 
  		return new DsgResponder(diskCache, format, out, writer);
  	}
