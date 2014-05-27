@@ -27,7 +27,7 @@
   library is a prototype for the <a href="http://www.unidata.ucar.edu/software/netcdf/netcdf-4/index.html">NetCDF-4 project</a>, which provides a C language
   API for the &quot;data access layer&quot; of the CDM, on top of the <a href="http://hdf.ncsa.uiuc.edu/HDF5/doc/H5.format.html">HDF5 file format</a>. The
   NetCDF-Java library is a 100% Java framework for <em>reading</em> netCDF and other file formats into the CDM, as well as <em>writing</em> to the netCDF-3
-  file format. The NetCDF-Java library also implements <a href="http://www.unidata.ucar.edu/software/netcdf/ncml/">NcML</a>, which allows you to add metadata
+  file format. <a href="reference/netcdf4Clibrary.html">Writing to the netCDF-4 file format</a> requires installing the netCDF C library. The NetCDF-Java library also implements <a href="http://www.unidata.ucar.edu/software/netcdf/ncml/">NcML</a>, which allows you to add metadata
   to CDM datasets, as well as to create virtual datasets through aggregation.</p>
 
 <p><strong>Which jar files do I need?</strong> Most
@@ -39,21 +39,6 @@ To build the latest stable version from source with maven:</p>
 git clone git://github.com/Unidata/thredds.git thredds
 cd thredds
 mvn install</pre></blockquote>
-<h3 id="v44"><strong>Development branch version 4.4 </strong><strong>(requires Java 6) </strong></h3>
-<ul>
-  <li>The <a href="ftp://ftp.unidata.ucar.edu/pub/netcdf-java/v4.4/netcdfAll-4.4.jar">complete netCDF library jar</a> implements the full CDM model, with all
-  dependent jars included. </li>
-  <li>The <a href="ftp://ftp.unidata.ucar.edu/pub/netcdf-java/v4.4/toolsUI-4.4.jar">toolsUI.jar</a> also includes UI classes, and allows you to run the netCDF
-    ToolsUI application directly from it with &quot;<em>java -Xmx1g -jar toolsUI.jar</em>&quot;</li>
-  <li>The <a href="ftp://ftp.unidata.ucar.edu/pub/netcdf-java/v4.4/ncIdv-4.4.jar">ncIDV.jar</a> is for the IDV.</li>
-  <li><a href="javadoc/index.html">Public javadoc.</a> This is the public interface. Future changes to the API will attempt to remain backwards compatible
-    with this API. </li>
-  <li><a href="javadocAll/index.html">All javadoc. </a>This is the javadoc for all packages and all methods except private. CAREFUL, much of this will
-    change. </li>
-  <li>Try out the <strong> 4.4</strong> version of ToolsUI application: <a href="webstart/netCDFtools.jnlp">launch from webstart</a>.</li>
-  <li>Unidata public <a href="https://artifacts.unidata.ucar.edu/content/repositories/unidata-releases/edu/ucar/">Maven repository</a> for maven artifacts </li>
-  <li>All source is on <a href="https://github.com/Unidata/thredds">GitHub</a></li>
-</ul>
 <h3 id="v43"><strong>Current stable release version 4.3 </strong><strong>(requires Java 6) </strong></h3>
 <ul>
   <li>The <a href="ftp://ftp.unidata.ucar.edu/pub/netcdf-java/v4.3/netcdfAll-4.3.jar">complete netCDF library jar</a> implements the full CDM model, with all
@@ -71,6 +56,21 @@ mvn install</pre></blockquote>
   <li>Try out the <strong> 4.3</strong> version of ToolsUI application: <a href="http://www.unidata.ucar.edu/software/thredds/v4.3/netcdf-java/v4.3/webstart/netCDFtools.jnlp">launch from webstart</a>.</li>
   <li>Unidata public <a href="https://artifacts.unidata.ucar.edu/content/repositories/unidata-releases/edu/ucar/">Maven repository</a> for maven artifacts
   </li>
+  <li>All source is on <a href="https://github.com/Unidata/thredds">GitHub</a></li>
+</ul>
+<h3 id="v45"><strong>Development branch version 4.5 </strong><strong>(requires Java 7) </strong></h3>
+<ul>
+  <li>The <a href="ftp://ftp.unidata.ucar.edu/pub/netcdf-java/v4.5/netcdfAll-4.5.jar">complete netCDF library jar</a> implements the full CDM model, with all
+    dependent jars included. </li>
+  <li>The <a href="ftp://ftp.unidata.ucar.edu/pub/netcdf-java/v4.5/toolsUI-4.5.jar">toolsUI.jar</a> also includes UI classes, and allows you to run the netCDF
+    ToolsUI application directly from it such as &quot;<em>java -Xmx1g -jar toolsUI.jar</em>&quot;</li>
+  <li>The <a href="ftp://ftp.unidata.ucar.edu/pub/netcdf-java/v4.5/ncIdv-4.5.jar">ncIDV.jar</a> is for the IDV.</li>
+  <li><a href="javadoc/index.html">Public javadoc.</a> This is the public interface. Future changes to the API will attempt to remain backwards compatible
+    with this API. </li>
+  <li><a href="javadocAll/index.html">All javadoc. </a>This is the javadoc for all packages and all methods except private. CAREFUL, much of this will
+    change. </li>
+  <li>Try out the <strong> 4.5</strong> version of ToolsUI application: <a href="webstart/netCDFtools.jnlp">launch from webstart</a>.</li>
+  <li>Unidata public <a href="https://artifacts.unidata.ucar.edu/content/repositories/unidata-releases/edu/ucar/">Maven repository</a> for maven artifacts </li>
   <li>All source is on <a href="https://github.com/Unidata/thredds">GitHub</a></li>
 </ul>
 <h3>File format<a name="formats"></a> types</h3>
