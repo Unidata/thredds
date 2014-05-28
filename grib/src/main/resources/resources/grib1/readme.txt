@@ -170,3 +170,5 @@ Notes for grib-1 tables (global)
  - Use the main method in /ucar/nc2/grib/grib1/tables/EcmwfLocalConcepts to generate table files
  - see /src/main/sources/ecmwfGribApi/README.txt for more details
  - Removed all ECMWF tables (2.98.*) from the ecmwf and ncl directories, as these are now coming from GRIB-API
+
+ 5/28/2014 moving AFWA tables from "local" to own "afwa" directory

@@ -43,3 +43,6 @@ notes for tables in local subdir
 
   (john) examine thredds\grib\src\main\sources\afwa\v133\AFWAGRIB 20130207.doc shows there are multiple subcenters (11).
   so change lookupTables.txt to use new table just for subcenter 1.
+
+5/28/2014
+  (lansing) moved af_2.tab, afwa.tab, and afwa_133.tab to separate afwa folder
