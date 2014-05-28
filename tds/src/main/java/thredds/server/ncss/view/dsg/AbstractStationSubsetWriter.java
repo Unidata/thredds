@@ -1,13 +1,9 @@
 package thredds.server.ncss.view.dsg;
 
-import thredds.server.ncss.exception.NcssException;
 import thredds.server.ncss.params.NcssParamsBean;
 import ucar.nc2.VariableSimpleIF;
-import ucar.nc2.ft.FeatureCollection;
-import ucar.nc2.ft.FeatureDatasetPoint;
-import ucar.nc2.ft.PointFeature;
-import ucar.nc2.ft.StationTimeSeriesFeature;
-import ucar.nc2.ft.StationTimeSeriesFeatureCollection;
+import ucar.nc2.ft.*;
+import ucar.nc2.ft.point.StationPointFeature;
 import ucar.nc2.time.CalendarDateRange;
 import ucar.nc2.units.DateType;
 import ucar.unidata.geoloc.LatLonPoint;
@@ -16,7 +12,6 @@ import ucar.unidata.geoloc.LatLonRect;
 import ucar.unidata.geoloc.Station;
 
 import java.io.IOException;
-import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -24,16 +19,20 @@ import java.util.List;
  * Created by cwardgar on 2014/05/20.
  */
 public abstract class AbstractStationSubsetWriter extends AbstractDsgSubsetWriter {
-    public abstract void writeHeader() throws IOException;
+    public abstract void writeHeader(List<VariableSimpleIF> wantedVariables) throws Exception;
 
-    public abstract void writePoint(PointFeature pf, List<VariableSimpleIF> wantedVariables) throws IOException;
+    public abstract void writePoint(StationPointFeature stationPointFeat, List<VariableSimpleIF> wantedVariables)
+            throws Exception;
 
-    public abstract void writeFooter() throws IOException;
+    public abstract void writeFooter() throws Exception;
 
     @Override
     public void write(FeatureDatasetPoint fdPoint, NcssParamsBean ncssParams, ucar.nc2.util.DiskCache2 diskCache)
-            throws ParseException, IOException, NcssException {
-        writeHeader();
+            throws Exception {
+        // Perform variables subset.
+        List<VariableSimpleIF> wantedVariables = getWantedVariables(fdPoint, ncssParams);
+
+        writeHeader(wantedVariables);
 
         List<FeatureCollection> featColList = fdPoint.getPointFeatureCollectionList();
         assert featColList.size() == 1 : "Is there ever a case when this is NOT 1?";
@@ -45,9 +44,6 @@ public abstract class AbstractStationSubsetWriter extends AbstractDsgSubsetWrite
         // Perform spatial subset.
         List<Station> wantedStations = getStationsInSubset(stationFeatCol, ncssParams);
         StationTimeSeriesFeatureCollection subsettedStationFeatCol = stationFeatCol.subset(wantedStations);
-
-        // Perform variables subset.
-        List<VariableSimpleIF> wantedVariables = getWantedVariables(fdPoint, ncssParams);
 
         subsettedStationFeatCol.resetIteration();
         try {
@@ -76,12 +72,14 @@ public abstract class AbstractStationSubsetWriter extends AbstractDsgSubsetWrite
     }
 
     protected void writeAllPoints(StationTimeSeriesFeature stationFeat, List<VariableSimpleIF> wantedVariables)
-            throws IOException {
+            throws Exception {
         stationFeat.resetIteration();
         try {
             while (stationFeat.hasNext()) {
                 PointFeature pointFeat = stationFeat.next();
-                writePoint(pointFeat, wantedVariables);
+                assert pointFeat instanceof StationPointFeature :
+                        "Expected pointFeat to be a StationPointFeature, not a " + pointFeat.getClass().getSimpleName();
+                writePoint((StationPointFeature) pointFeat, wantedVariables);
             }
         } finally {
             stationFeat.finish();
@@ -89,7 +87,7 @@ public abstract class AbstractStationSubsetWriter extends AbstractDsgSubsetWrite
     }
 
     protected void writePointWithClosestTime(StationTimeSeriesFeature stationFeat,
-            List<VariableSimpleIF> wantedVariables, long wantedTime) throws IOException {
+            List<VariableSimpleIF> wantedVariables, long wantedTime) throws Exception {
         PointFeature pointWithClosestTime = null;
         long smallestDiff = Long.MAX_VALUE;
 
@@ -107,7 +105,10 @@ public abstract class AbstractStationSubsetWriter extends AbstractDsgSubsetWrite
             }
 
             if (pointWithClosestTime != null) {
-                writePoint(pointWithClosestTime, wantedVariables);
+                assert pointWithClosestTime instanceof StationPointFeature :
+                        "Expected pointWithClosestTime to be a StationPointFeature, " +
+                        "not a " + pointWithClosestTime.getClass().getSimpleName();
+                writePoint((StationPointFeature) pointWithClosestTime, wantedVariables);
             }
         } finally {
             stationFeat.finish();
