@@ -268,7 +268,7 @@ public class Grib1Iosp extends GribIosp {
     if (type == GribCdmIndex.GribCollectionType.GRIB1) return true;
     if (type == GribCdmIndex.GribCollectionType.Partition1) return true;
 
-    // check for GRIB2 data file
+    // check for GRIB1 data file
     return Grib1RecordScanner.isValidFile(raf);
   }
 

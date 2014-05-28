@@ -67,24 +67,29 @@ public class Grib1RecordScanner {
   static public boolean isValidFile(RandomAccessFile raf) {
     try {
       raf.seek(0);
-      while (raf.getFilePointer() < maxScan) {
-        boolean found = raf.searchForward(matcher, maxScan); // look in first 16K
-        if (!found) return false;
-        raf.skipBytes(7); // will be positioned on byte 0 of indicator section
-        int edition = raf.read(); // read at byte 8
-        if (edition == 1) return true;
+      boolean found = raf.searchForward(matcher, maxScan); // look in first 16K
+      if (!found) return false;
+      raf.skipBytes(4); // will be positioned on byte 0 of indicator section
+      int len = GribNumbers.uint3(raf);
+      int edition = raf.read(); // read at byte 8
+      if (edition != 1) return false;
+
+      // check ending = 7777
+      if (len > raf.length()) return false;
+      raf.skipBytes(len-12);
+      for (int i = 0; i < 4; i++) {
+        if (raf.read() != 55) return false;
       }
+      return true;
 
     } catch (IOException e) {
       return false;
     }
-
-    return false;
   }
 
   ////////////////////////////////////////////////////////////
 
-  private Map<Long, Grib1SectionGridDefinition> gdsMap = new HashMap<Long, Grib1SectionGridDefinition>();
+  private Map<Long, Grib1SectionGridDefinition> gdsMap = new HashMap<>();
   private ucar.unidata.io.RandomAccessFile raf = null;
 
   private byte[] header;
