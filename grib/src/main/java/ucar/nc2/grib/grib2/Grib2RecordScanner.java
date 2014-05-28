@@ -170,6 +170,7 @@ public class Grib2RecordScanner {
           foundEnding = false;
           String clean = StringUtil2.cleanup(header);
           if (clean.length() > 40) clean = clean.substring(0,40) + "...";
+          if (debug) System.out.printf(" **missing End of GRIB message at pos=%d start= %d%n", ending, is.getStartPos());
           log.warn("Missing End of GRIB message at pos=" + ending + " start= " + is.getStartPos()+" header= "+clean+" for="+raf.getLocation());
           break;
         }
@@ -316,8 +317,8 @@ public class Grib2RecordScanner {
     return null;
   }
 
-  public static void main(String[] args) throws IOException {
-    String filename = (args.length > 0 && args[0] != null) ? args[0] : "G:/work/carp/MSG1-SEVI-MSGCLTH-0100-0100-20050411004500.000000000Z-1058136.grb";
+  public static void main2(String[] args) throws IOException {
+    String filename = (args.length > 0 && args[0] != null) ? args[0] : "Q:/cdmUnitTest/formats/grib2/LMPEF_CLM_050518_1200.grb";
     System.out.printf("Scan %s%n", filename);
 
     try (RandomAccessFile raf = new RandomAccessFile(filename, "r")) {
@@ -334,6 +335,19 @@ public class Grib2RecordScanner {
     } catch (IOException e) {
       e.printStackTrace();
     }
+  }
+
+  public static void main(String[] args) throws IOException {
+    int count = 0;
+    RandomAccessFile raf = new RandomAccessFile("Q:/cdmUnitTest/formats/grib2/LMPEF_CLM_050518_1200.grb", "r");
+    System.out.printf("Read %s%n", raf.getLocation());
+    Grib2RecordScanner scan = new Grib2RecordScanner(raf);
+    while (scan.hasNext()) {
+      scan.next();
+      count++;
+    }
+    raf.close();
+    System.out.printf("count=%d%n",count);
   }
 
 }

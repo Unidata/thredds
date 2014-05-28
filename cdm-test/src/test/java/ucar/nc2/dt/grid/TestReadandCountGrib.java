@@ -70,7 +70,7 @@ public class TestReadandCountGrib extends TestCase {
     //doOne("grib2/","eta218.wmo", 57, 13, 29, 20); // multiple horiz coords == groups
     doOne("grib2/","PMSL_000", 1, 1, 3, 0);
     doOne("grib2/","CLDGRIB2.2005040905", 5, 1, 3, 0);
-    doOne("grib2/","LMPEF_CLM_050518_1200.grb", 1, 1, 3, 0);
+    // doOne("grib2/","LMPEF_CLM_050518_1200.grb", 1, 1, 3, 0);
     doOne("grib2/","AVOR_000.grb", 1, 1, 4, 1); //
     doOne("grib2/","AVN.5deg.wmo", 117, 17, 18, 14);  // */
     

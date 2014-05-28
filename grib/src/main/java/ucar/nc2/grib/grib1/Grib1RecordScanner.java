@@ -218,7 +218,7 @@ public class Grib1RecordScanner {
 
   public static void main(String[] args) throws IOException {
     int count = 0;
-    RandomAccessFile raf = new RandomAccessFile("F:/data/cdmUnitTest/formats/grib1/RUC.wmo", "r");
+    RandomAccessFile raf = new RandomAccessFile("Q:/cdmUnitTest/formats/grib1/ECMWF.hybrid.grib1", "r");
     Grib1RecordScanner scan = new Grib1RecordScanner(raf);
     while (scan.hasNext()) {
       scan.next();

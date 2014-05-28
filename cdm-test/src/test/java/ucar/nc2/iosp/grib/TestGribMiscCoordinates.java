@@ -54,7 +54,7 @@ public class TestGribMiscCoordinates {
   // But how do we associate it with a surface pressure variable ???
   public void testHybrid1() throws IOException {
 
-    String filename = TestDir.cdmUnitTestDir + "formats/grib1/ECMWF.hybrid.grib1";
+    String filename = TestDir.cdmUnitTestDir + "formats/grib1/ECMWF.hybrid.grib1";  // BAD FILE removed 5/28/2014
     System.out.println("\n\nReading File " + filename);
     NetcdfFile ncfile = NetcdfFile.open(filename);
     Group best = ncfile.findGroup("Best");
