@@ -7,7 +7,7 @@
 </head>
 
 <body>
-<h1> Netcdf-Java FAQ</h1>
+<h1> NetCDF-Java FAQ</h1>
 <hr/>
 <ul>
   <li><a href="#Arrays">Arrays</a></li>
@@ -20,7 +20,11 @@
   <li><a href="#Reading">Reading</a></li>
   <li><a href="#Writing">Writing</a></li>
 </ul>
-<h3><a name="Arrays" id="Arrays"></a>Arrays</h3>
+<p>Miscellaneous</p>
+<ul>
+  <li><a href="../../tds/SourceCodeBuild.html#contribute">How do I contribute code to the NetCDF_Java Library?</a></li>
+</ul>
+<h2><a name="Arrays" id="Arrays"></a>Arrays</h2>
 
 <p><strong>Q: I want to read data from a NetcdfFile and use another package to process the results, which doesn't use ucar.ma2.Array. How can I get the data out
   of the Array object most efficiently?</strong></p>
@@ -38,7 +42,7 @@
 Array.makeArray(DataType dtype, int npts, double start, double incr);
 Array.makeArray(DataType dtype, List&lt;String&gt; stringValues);</pre>
 </blockquote>
-<h3><a name="Caching" id="Caching"></a>Caching</h3>
+<h2><a name="Caching" id="Caching"></a>Caching</h2>
 
 <p><strong>Q: How do I use NetcdfFile object caching</strong>?</p>
 <blockquote>
@@ -52,7 +56,7 @@ Array.makeArray(DataType dtype, List&lt;String&gt; stringValues);</pre>
 <blockquote>
   <p>See <a href="Caching.html">Disk Caching</a>.</p>
 </blockquote>
-<h3><a name="IOSP" id="IOSP"></a>I/O Service Provider</h3>
+<h2><a name="IOSP" id="IOSP"></a>I/O Service Provider</h2>
 
 <p><strong>Q: What is an IOSP?</strong></p>
 <blockquote>
@@ -91,7 +95,7 @@ Array.makeArray(DataType dtype, List&lt;String&gt; stringValues);</pre>
     object, and writes it to your file format, in whatever way suits you best. You might find the code at <strong>ucar.nc2.FileWriter2 </strong>useful to
     look at.</p>
 </blockquote>
-<h3><a name="Logging" id="Logging"></a>Logging</h3>
+<h2><a name="Logging" id="Logging"></a>Logging</h2>
 
 <p><strong>Q: How do I control the error messages coming out of the library?</strong></p>
 <blockquote>
@@ -109,7 +113,7 @@ Array.makeArray(DataType dtype, List&lt;String&gt; stringValues);</pre>
     logger.setLevel(org.apache.log4j.Level.OFF)
 </pre>
 </blockquote>
-<h3><a name="Multithreading" id="Multithreading"></a>Multithreading</h3>
+<h2><a name="Multithreading" id="Multithreading"></a>Multithreading</h2>
 
 <p><strong>Q: Is the Netcdf-Java library thread-safe?</strong></p>
 <blockquote>
@@ -127,7 +131,7 @@ Array.makeArray(DataType dtype, List&lt;String&gt; stringValues);</pre>
     cache itself is thread-safe. So if you use it properly, you never have to do synchronization. As a rule, synchronization should not happen in
     application code, as it is too difficult to do correctly.</p>
 </blockquote>
-<h3><strong><a name="ncml" id="ncml"></a></strong>NcML</h3>
+<h2><strong><a name="ncml" id="ncml"></a></strong>NcML</h2>
 
 <p><strong>Q: The NcML in my TDS is not working. What should I do?</strong></p>
 <blockquote>
@@ -161,7 +165,7 @@ Array.makeArray(DataType dtype, List&lt;String&gt; stringValues);</pre>
     </li>
   </ol>
 </blockquote>
-<h3><a name="Unsigned" id="Unsigned"></a>Unsigned Types</h3>
+<h2><a name="Unsigned" id="Unsigned"></a>Unsigned Types</h2>
 
 <p><strong>Q: How do I work with unsigned integer types?</strong></p>
 <blockquote>
@@ -201,7 +205,7 @@ Array.makeArray(DataType dtype, List&lt;String&gt; stringValues);</pre>
  -124 =  132
  ...</pre>
 </blockquote>
-<h3><a name="Reading" id="Reading"></a>Reading</h3>
+<h2><a name="Reading" id="Reading"></a>Reading</h2>
 
 <p><strong>Q: What files can the library read?</strong></p>
 <blockquote>
@@ -258,7 +262,7 @@ Array.makeArray(DataType dtype, List&lt;String&gt; stringValues);</pre>
     the <a href="http://www.unidata.ucar.edu/software/netcdf-java/reference/Caching.html">cache directory</a> defined
     by <strong>ucar.nc2.util.DiskCache.</strong></p>
 </blockquote>
-<h3><a id="Writing"></a>Writing</h3>
+<h2><a id="Writing"></a>Writing</h2>
 
 <p><strong>Q: Ok, so you read a lot of files, what about writing?</strong></p>
 <blockquote>
