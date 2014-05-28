@@ -176,6 +176,7 @@ public class Grib2CollectionBuilder extends GribCollectionBuilder {
   }
 
   public boolean readIndex(String filename) throws IOException {
+    //this RAF instance is set on the GribCollection in readIndex(), then subsequently closed
     return readIndex( new RandomAccessFile(filename, "r") );
   }
 
@@ -277,6 +278,14 @@ public class Grib2CollectionBuilder extends GribCollectionBuilder {
 
     } catch (Throwable t) {
       logger.error("Error reading index " + raf.getLocation(), t);
+      try{
+        //when there are problems reading the index file, close the RAF and set the instance to null on the collection
+        raf.close();
+        gc.setIndexRaf( null );
+      }
+      catch( IOException e ){
+        logger.error( "Could not close RAF", e );
+      }
       return false;
     }
   }
