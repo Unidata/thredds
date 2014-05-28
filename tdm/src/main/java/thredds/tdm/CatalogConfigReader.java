@@ -73,23 +73,34 @@ public class CatalogConfigReader {
       List<Element> fcElems = new ArrayList<>();
       findFeatureCollections(root, fcName, fcElems);
       for (Element fcElem : fcElems) {
-        FeatureCollectionConfig config = FeatureCollectionReader.readFeatureCollection(fcElem);
-        // check spec
-        config.spec = aliasHandler.replaceAlias(config.spec);
-        Formatter errlog = new Formatter();
-        CollectionSpecParser specp = new CollectionSpecParser(config.spec, errlog);
-        Path rootPath = Paths.get(specp.getRootDir());
-        if (!Files.exists(rootPath)) {
-          System.out.printf("Root path %s does not exist fc='%s' from catalog=%s %n", rootPath.getFileName(), config.name, catFile.getPath());
-          continue;
-        }
+        String name = "";
+        try {
+          FeatureCollectionConfig config = FeatureCollectionReader.readFeatureCollection(fcElem);
+          name = config.name;
 
-        fcList.add(config);
-        if (debug) System.out.printf("Added  fc='%s' from catalog=%s%n", config.name, catFile.getPath());
+          // check spec
+          config.spec = aliasHandler.replaceAlias(config.spec);
+          Formatter errlog = new Formatter();
+          CollectionSpecParser specp = new CollectionSpecParser(config.spec, errlog);
+          Path rootPath = Paths.get(specp.getRootDir());
+          if (!Files.exists(rootPath)) {
+            System.out.printf("Root path %s does not exist fc='%s' from catalog=%s %n", rootPath.getFileName(), config.name, catFile.getPath());
+            log.error("Root path {} does not exist fc='{}' from catalog={}", rootPath.getFileName(), config.name, catFile.getPath());
+            continue;
+          }
+
+          fcList.add(config);
+          if (debug) System.out.printf("Added  fc='%s' from catalog=%s%n", config.name, catFile.getPath());
+
+        } catch (Throwable e) {
+          e.printStackTrace();
+          log.error("Error reading collection "+name+" skipping collection ", e);
+        }
       }
 
-    } catch (IllegalStateException e) {
+    } catch (Throwable e) {
       e.printStackTrace();
+      log.error("Error reading catalog "+catFile.getPath()+" skipping ", e);
     }
 
     // follow catrefs
@@ -109,6 +120,7 @@ public class CatalogConfigReader {
 
     } catch (IllegalStateException e) {
       e.printStackTrace();
+      log.error("Error follow catrefs in "+catFile.getPath()+" skipping ", e);
     }
 
     return true;
