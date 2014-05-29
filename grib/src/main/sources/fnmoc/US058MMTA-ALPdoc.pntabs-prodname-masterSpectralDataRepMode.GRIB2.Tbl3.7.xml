@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?><pnTable><name>Master Spectral Data Representation Mode Table</name><grib2TableName>Spectral Data Representation Mode Table</grib2TableName><updatedDTG>201110141054</updatedDTG><tableStatus setDTG="2009020712">current</tableStatus><reference>
+    <title>Product Name Standard Document</title>
+    <docId>P-3146-2.2</docId>
+    <version>2.2</version>
+    <dtg>May 2012</dtg>
+    <organization>Fleet Numerical Meteorology and Oceanography Center</organization>
+    <infoUsed>Spectral Data Representation Mode Table</infoUsed>
+  </reference><reference>
+    <title>GRIB 2</title>
+    <docId>FM 92-XII</docId>
+    <version>11.0.0</version>
+    <organization>World Meteorological Organization</organization>
+    <infoUsed>GRIB2 Spectral Data Representation Mode, table 3.7</infoUsed>
+  </reference><fnmocTable><entry><fnmocId>0</fnmocId><grib2Id>0</grib2Id><name>reserved</name><description>Reserved.</description><status>current</status><wmoStatus>operational</wmoStatus></entry><entry><fnmocId>1</fnmocId><grib2Id>1</grib2Id><name>complex number F</name><description>The complex number F sub n sup m (see code figure 1 in Code Table 3.6) are stored for m&gt;= 0 as pairs of real number Re(F sub n sup m), Im(F sub n sup m) ordered with n increasing from m to N(m), first for m=0 and then for m=1, 2, ... M.</description><status>current</status><wmoStatus>operational</wmoStatus></entry><entry><fnmocId>2</fnmocId><grib2Id>2-254</grib2Id><name>reserved</name><description>Reserved.</description><status>current</status><wmoStatus>operational</wmoStatus></entry><entry><fnmocId>255</fnmocId><grib2Id>255</grib2Id><name>missing</name><description>Missing.</description><status>current</status><wmoStatus>operational</wmoStatus></entry></fnmocTable></pnTable>

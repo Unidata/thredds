@@ -1,0 +1,69 @@
+Return-Path: <mary.clifford@navy.mil>
+X-Original-To: caron@unidata.ucar.edu
+Delivered-To: caron@unidata.ucar.edu
+Received: by abbott.unidata.ucar.edu (Postfix, from userid 99)
+	id 9D8A7615A6; Mon,  5 May 2014 14:48:08 -0600 (MDT)
+X-Spam-Checker-Version: SpamAssassin 3.3.1 (2010-03-16) on
+	uni18.unidata.ucar.edu
+X-Spam-Level: 
+X-Spam-Status: No, score=-2.5 required=5.0 tests=AWL,BAYES_00,
+	RCVD_IN_DNSWL_LOW autolearn=ham version=3.3.1
+Received: from nawesdniax12o.nmci.navy.mil (NAWESDNIAX12O.nmci.navy.mil [138.163.1.94])
+	by abbott.unidata.ucar.edu (Postfix) with ESMTP id 974B96141A
+	for <caron@unidata.ucar.edu>; Mon,  5 May 2014 14:48:07 -0600 (MDT)
+X-AuditID: 8aa3015d-b7f856d000000d78-ed-5367f6d049d6
+Received: from nawesdnieg06v.nadsuswe.nads.navy.mil (Unknown_Domain [138.163.0.41])
+	by nawesdniax12o.nmci.navy.mil (Symantec Messaging Gateway) with SMTP id A4.1E.03448.0D6F7635; Mon,  5 May 2014 13:38:40 -0700 (PDT)
+From: "Clifford, Mary B CIV 63134" <mary.clifford@navy.mil>
+To: John Caron <caron@unidata.ucar.edu>
+Subject: The newest version of FNMOC GRIB2 to WMO GRIB2 12.0.0
+Thread-Topic: The newest version of FNMOC GRIB2 to WMO GRIB2 12.0.0
+Thread-Index: Ac9oozJ81VzHh59cQw+7mw4mYb15VQ==
+Date: Mon, 5 May 2014 20:48:03 +0000
+Message-ID: <9A86BD7E988F03439B52B27462E8AB6D1619F297@NAWEMUGUXM02V.nadsuswe.nads.navy.mil>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: yes
+X-MS-TNEF-Correlator:
+x-originating-ip: [10.2.247.158]
+Content-Type: multipart/mixed;
+	boundary="_002_9A86BD7E988F03439B52B27462E8AB6D1619F297NAWEMUGUXM02Vna_"
+MIME-Version: 1.0
+X-OriginalArrivalTime: 05 May 2014 20:48:04.0591 (UTC) FILETIME=[4FDD87F0:01CF68A3]
+X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFtrIIsWRmVeSWpSXmKPExsXStZhBU/fCt/Rgg4lLdS3+XXvH5sDo8bt/
+	FnMAYxSXTUpqTmZZapG+XQJXxt0X29kLTnBUnJv2j6mB8R97FyMnh4SAicTvq3+ZIGwxiQv3
+	1rN1MXJxCAncYpQ4cOsuWBGbgLXE6h3rwWwRAXWJOysmsYHYwgJ2Eo1vPzFBxJ0l9v1axAxh
+	60ksvPkTrIZFQEXi4pyHYHFegWiJvZfvgc1hBFr2/dQasF5mAXGJW0/mQx0hIvHw4mk2CFtU
+	4uXjf6wQtoLEhMb/bBD1mRKb1nQwQcwUlDg58wkLiC0koCxx48wJqMeCJRof7GacwCg8C8mK
+	WUjaZyFph4jrSdyYOoUNwtaWWLbwNTOEbS7x+NUmVph4z7x9QHEuIHsTo8Tp2x1QRYoSU7of
+	si9g5FzFqJyXWJ5anJKXmVhhaKSXl5hSXFpcngpmAImySr3czJxNjODIY4zdwfj1iNUhRgEO
+	RiUe3it96cFCrIllxZW5hxhVgKY+2rD6AqMUS15+XqqSCG/jY6A0b0piZVVqUX58UWlOavEh
+	RmkOFiVxXrV78cFCAumJJanZqakFqUUwWSYOTqkGxqjLKTz6+tIpNe63l9c7dPte0yn2uvty
+	25OFW6bmlr3adUtndUp06Kupsm/ydu5Q11t/KijXUnem9XtloVsHBLdOePE19aNiaPbxsHPB
+	sarmPO/KT0xfnTaFxafWzaBl9fsdR2TEJr4pu3X7iiTLybzMtCbuB74rxe43X21+U9o6776C
+	vGGRvBJLcUaioRZzUXEiACEtp6/EAgAA
+
+--_002_9A86BD7E988F03439B52B27462E8AB6D1619F297NAWEMUGUXM02Vna_
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
+
+John,
+There will be multiple emails.
+Mary
+
+--_002_9A86BD7E988F03439B52B27462E8AB6D1619F297NAWEMUGUXM02Vna_
+Content-Type: text/plain; name="grib2_changes3.5.5.txt"
+Content-Description: grib2_changes3.5.5.txt
+Content-Disposition: attachment; filename="grib2_changes3.5.5.txt"; size=317;
+	creation-date="Mon, 05 May 2014 20:47:15 GMT";
+	modification-date="Mon, 05 May 2014 20:47:15 GMT"
+Content-Transfer-Encoding: base64
+
+VmVyc2lvbiAzLjUuNQoyOSBBcHJpbCAyMDE0CgpTdW1tYXJ5IG9mIGNoYW5nZXMuLi4uLi4uLi4u
+Li4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uCgogIDEuIHVw
+ZGF0ZSB0byBXTU8gR1JJQjIgdmVyc2lvbiAxMi4wLjAuCiAgICAgICAgYS4gdXBkYXRlIGZvb3Ru
+b3RlcwogICAgICAgIGIuIGFkZCBuZXcgdGVtcGxhdGVzLgogICAgICAgIGMuIGFkZCB0YWJsZSBl
+bnRyaWVzIHdoZXJlIGFwcHJvcHJpYXRlLgogIDIuIHVwZGF0ZSBXTU8gZG9jdW1lbnQgcmVmZXJl
+bmNlLgogIDMuIGNvcnJlY3RlZCBzb21lIHR5cG9zLgo=
+
+--_002_9A86BD7E988F03439B52B27462E8AB6D1619F297NAWEMUGUXM02Vna_--

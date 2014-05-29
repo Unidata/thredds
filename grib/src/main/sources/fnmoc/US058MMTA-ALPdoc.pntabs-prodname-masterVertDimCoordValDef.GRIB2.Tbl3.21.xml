@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?><pnTable><name>Master Vertical Dimension Coordinate Values Definition Table</name><grib2TableName>Vertical Dimension Coordinate Values Definition Table</grib2TableName><updatedDTG>201403041805</updatedDTG><tableStatus setDTG="2009020612">current</tableStatus><reference>
+    <title>Product Name Standard Document</title>
+    <docId>P-3146-2.2</docId>
+    <version>2.2</version>
+    <dtg>May 2012</dtg>
+    <organization>Fleet Numerical Meteorology and Oceanography Center</organization>
+    <infoUsed>Vertical Dimension Coordinate Values Definition Table</infoUsed>
+  </reference><reference>
+    <title>GRIB 2</title>
+    <docId>FM 92-XII</docId>
+    <version>12.0.0</version>
+    <organization>World Meteorological Organization</organization>
+    <infoUsed>GRIB2 Vertical Dimension Coordinate Values Definition, table 3.21</infoUsed>
+  </reference><fnmocTable><entry><fnmocId>0</fnmocId><grib2Id>0</grib2Id><name>explicit</name><description>Explicit coordinate values set.</description><status>current</status><wmoStatus>operational</wmoStatus></entry><entry><fnmocId>1</fnmocId><grib2Id>1</grib2Id><name>linear</name><description>Linear Coordinates: f(1) = C1, f(n) = f(n-1) + C2.</description><status>current</status><wmoStatus>operational</wmoStatus></entry><entry><fnmocId>2</fnmocId><grib2Id>2-10</grib2Id><name>reserved</name><description>Reserved for use by WMO.</description><status>current</status><wmoStatus>operational</wmoStatus></entry><entry><fnmocId>11</fnmocId><grib2Id>11</grib2Id><name>geometric</name><description>Geometric Coordinates: f(1) = C1, f(n) = C2 * f(n-1).</description><status>current</status><wmoStatus>operational</wmoStatus></entry><entry><fnmocId>12</fnmocId><grib2Id>12-191</grib2Id><name>reserved</name><description>Reserved for use by WMO.</description><description>Reserved for use by WMO.</description><status>current</status><wmoStatus>operational</wmoStatus></entry><entry><fnmocId>192</fnmocId><grib2Id>192-254</grib2Id><name>reserved for local use</name><description>Reserved for local use.</description><description>Reserved for local use.</description><status>current</status><wmoStatus>operational</wmoStatus></entry><entry><fnmocId>255</fnmocId><grib2Id>255</grib2Id><name>missing</name><description>Missing.</description><status>current</status><wmoStatus>operational</wmoStatus></entry></fnmocTable></pnTable>
