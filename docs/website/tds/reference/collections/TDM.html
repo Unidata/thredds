@@ -11,44 +11,51 @@
 <hr/>
 <h2>Overview</h2>
 
-<p>The TDM creates indexes for featureCollections, in a seperate process than the TDS. It is configured using the same configuration catalogs as the TDS.</p>
-<ol>
-  <li>For static datasets, let the TDM create the indexes, then start the TDS.</li>
-  <li>For dynamic datasets, the TDM should run continually, and will send messages to the TDS when a dataset changes.</li>
-</ol>
+<blockquote>
+  <p>The TDM creates indexes for featureCollections, in a seperate process than the TDS. It is configured from the same configuration catalogs as the TDS.</p>
+  <ol>
+    <li>For static datasets, let the TDM create the indexes, then start the TDS.</li>
+    <li>For dynamic datasets, the TDM should run continually, and can send messages to the TDS when a dataset changes.</li>
+  </ol>
+</blockquote>
 <h2>Installing the TDM</h2>
-<p>The TDM can be run from anywhere, but by convention we create a  directory  <strong>{tomcat}/content/tdm</strong>, and run the TDM from there.</p>
-
-<p>Create a shell script to run the TDM, for example <strong>runTdm.sh</strong>:</p>
-<pre>&lt;JAVA&gt; &lt;JVM options&gt; -Dtds.content.root.path=&lt;content directory&gt; [-tds &lt;tdsServers&gt;] [-cred &lt;user:passwd&gt;] [-showOnly] [-log level]
+<blockquote>
+  <p>The TDM can be run from anywhere, but by convention we create a  directory  <strong>{tomcat}/content/tdm</strong>, and run the TDM from there.</p>
+  <p>Create a shell script to run the TDM, for example <strong>runTdm.sh</strong>:</p>
+<pre>&lt;JAVA&gt; &lt;JVM options&gt; -Dtds.content.root.path=&lt;content directory&gt; -jar &lt;TDM jar&gt; [-tds &lt;tdsServers&gt;] [-cred &lt;user:passwd&gt;] [-showOnly] [-log level]
 </pre>
-<p>for example:</p>
+  <p>for example:</p>
 <pre>
-/opt/jdk/bin/java -d64 -Xmx4g -jar tdm-4.5.jar -Dtds.content.root.path=/opt/tds-dev/content -tds &quot;http://thredds-dev.unidata.ucar.edu/&quot;<br /></pre>
-<p>where:</p>
-<ol>
-  <li><strong>&lt;JAVA&gt;</strong> Large collections need a lot of memory, so use a 64-bit JVM</li>
-  <li><strong>&lt;JVM options&gt;</strong>
-    <ol>
-      <li><strong>-Xmx4g</strong> to give it 4 Gbytes of memory (for example). More is better.</li>
-      <li><strong>-server </strong>to use the server JVM </li>
-      <li><strong>-jar tdm-4.5.jar</strong> : execute the TDM from the jar file</li>
-      <li><strong>-Dtds.content.root.path=&lt;content directory&gt;</strong> this passes the content directory as a system property. The thredds configuration catalogs and  <strong>threddsConfig.xml</strong> are found in <strong>&lt;content directory&gt;/thredds</strong></li>
-    </ol>
-  </li>
-  <li><strong>-tds &lt;tdsServers&gt;: </strong> (optional) list of TDS servers to notify. comma seperated, no blanks.</li>
-  <li><strong>-cred &lt;user:passwd&gt;</strong>: (optional) if you send notifications, the TDS will authenticate using this user name and password. If you do not include this option, you will be prompted for the password on startup, and the user name will be &quot;tdm&quot;.</li>
-  <li><strong>-showOnly</strong>: <strong> </strong> (optional) if this is present, just show the featureCollections that will be indexed and exit.</li>
-  <li><strong>-log level</strong>: <strong> </strong> (optional) set the log4j logging level = <em>DEBUG, INFO </em>(default)<em>, WARN, ERROR</em></li>
-</ol>
+/opt/jdk/bin/java -Xmx4g -Dtds.content.root.path=/opt/tds/content -jar tdm-4.5.jar -tds &quot;http://thredds.unidata.ucar.edu/,http://thredds2.unidata.ucar.edu:8081/&quot;</pre>
+  <p>where:</p>
+  <ol>
+    <li><strong>&lt;JAVA&gt;</strong> Large collections need a lot of memory, so use a 64-bit JVM</li>
+    <li><strong>&lt;JVM options&gt;</strong>
+      <ol>
+        <li><strong>-Xmx4g</strong> to give it 4 Gbytes of memory (for example). More is better.</li>
+        <li><strong>-Dtds.content.root.path=&lt;content directory&gt;</strong> this passes the content directory as a system property. The thredds configuration catalogs and  <strong>threddsConfig.xml</strong> are found in <strong>&lt;content directory&gt;/thredds</strong></li>
+      </ol>
+    </li>
+    <li><strong>-jar tdm-4.5.jar</strong> : execute the TDM from the jar file </li>
+    <li><strong>-tds &lt;tdsServers&gt;: </strong> (optional) list of TDS servers to notify. comma seperated, no blanks, only the scheme, host and optional port with a trailing slash: <strong>http://localhost:8081/</strong></li>
+    <li><strong>-cred &lt;user:passwd&gt;</strong>: (optional) if you send notifications, the TDS will authenticate using this user name and password. If you do not include this option, you will be prompted for the password on startup, and the user name will be &quot;tdm&quot;.</li>
+    <li><strong>-showOnly</strong>: <strong> </strong> (optional) if this is present, just show the featureCollections that will be indexed and exit.</li>
+    <li><strong>-log level</strong>: <strong> </strong> (optional) set the log4j logging level = <em>DEBUG, INFO </em>(default)<em>, WARN, ERROR</em></li>
+  </ol>
+  <p>Troubleshooting:</p>
+  <ul>
+    <li>Make sure that the <strong>&lt;JVM Options&gt;</strong>, including <strong>-Dtds.content.root.path</strong>, come before the <strong>-jar &lt;TDM jar&gt;</strong></li>
+    <li>The <strong>&lt;content directory&gt;</strong> does not include the thredds subdirectory, eg<strong> /opt/tds/content </strong>not<strong> /opt/tds/content/thredds</strong>.</li>
+  </ul>
+</blockquote>
 <h2>Running the TDM:</h2>
 <ol>
-  <li>Upon startup, if <strong>-tds</strong> was used, but <strong>-cred</strong> was not, you will be prompted for the password for sending triggers to the TDS, and the user name will be <strong>tdm</strong>.</li>
+  <li>Upon startup, if <strong>-tds</strong> was used, but <strong>-cred</strong> was not, you will be prompted for the password for the <strong>tdm</strong> user password. This allows you to start up the TDM without putting the password into a startup script. Note that user <strong>tdm</strong> should be given only the role of <strong>tdsTrigger</strong>, which only allows triggering of collection reloading (see below).</li>
   <li>For each featureCollection, a log file is created in the TDM  working directory, with name <strong>fc.&lt;collectionName&gt;.log</strong>. Monitor these logs to look for problems with the indexing.</li>
 </ol>
 <h2>Sending triggers to the TDS</h2>
 <blockquote>
-  <p>The TDM scans the files in the feature Collection, and when it detects that the collection has changed, rewrites the index files. If enabled, it will send a trigger message to the TDS, and the TDS will update that feature collection dataset. To enable this, you must configure the TDS with the tdsTrigger role, and add the user <strong>tdm</strong> with that role. Typically you do that by editing the <strong>${tomcat}/conf/tomcat-user.xml </strong>file, eg:</p>
+  <p>The TDM scans the files in the feature Collection, and when it detects that the collection has changed, rewrites the index files. If enabled, it will send a trigger message to the TDS, and the TDS will update that feature collection dataset. To enable this, you must configure the TDS with the <strong>tdsTrigger</strong> role, and add the user <strong>tdm</strong> with that role. Typically you do that by editing the <strong>${tomcat}/conf/tomcat-user.xml </strong>file, eg:</p>
   <pre>&lt;?xml version='1.0' encoding='utf-8'?&gt;
 &lt;tomcat-users&gt;
   &lt;role ... /&gt;
@@ -60,43 +67,46 @@
   <pre><strong>&lt;update startup=&quot;nocheck&quot; trigger=&quot;allow&quot; /&gt;</strong>
 <strong>&lt;tdm rewrite=&quot;test&quot; rescan=&quot;0 0/15 * * * ? *&quot; trigger=&quot;allow&quot;/&gt;</strong>
 </pre>
+  <p>Make sure that the <strong>tdm</strong> user has only the <strong>tdsTrigger</strong> role, for security.</p>
 </blockquote>
 <hr width="100%"/>
 <h2>Catalog Configuration Examples</h2>
 
-<p>Example configuration in the TDS configuration catalogs. Point the TDM to the content directory using <strong>-Dtds.content.root.path=&lt;content directory&gt;</strong> on the TDM command
-  line.</p>
-
-<h3>Static dataset:</h3>
+<blockquote>
+  <p>Example configuration in the TDS configuration catalogs. Point the TDM to the content directory using <strong>-Dtds.content.root.path=&lt;content directory&gt;</strong> on the TDM command
+    line.</p>
+  <h3>Static dataset:</h3>
 <pre>&lt;featureCollection name=&quot;NOMADS CFSRR&quot; featureType=&quot;GRIB2&quot; harvest=&quot;true&quot; path=&quot;grib/NOMADS/cfsrr/timeseries&quot;&gt;<br/>  &lt;metadata inherited=&quot;true&quot;&gt;
     &lt;dataType&gt;GRID&lt;/dataType&gt;
     &lt;dataFormat&gt;GRIB-2&lt;/dataFormat&gt;
   &lt;/metadata&gt;
+
   &lt;collection name=&quot;NOMADS-cfsrr-timeseries&quot; spec=&quot;/san4/work/jcaron/cfsrr/**/.*grb2$&quot;<br/>                   dateFormatMark=&quot;#cfsrr/#yyyyMM&quot; timePartition=&quot;directory&quot;/&gt;<br/>  <strong>
-    &lt;tdm startup=&quot;always&quot;/&gt;</strong><br/>&lt;/featureCollection&gt;</pre>
+  &lt;tdm startup=&quot;always&quot;/&gt;</strong><br/>&lt;/featureCollection&gt;</pre>
 <ul>
   <li><strong>startup=&quot;always&quot;</strong> tells the TDM to index this dataset upon TDM startup.</li>
-  <li>A log file will be written to <em>fc.NOMADS-cfsrr-timeseries.log</em> in the working directory.</li>
+  <li>A log file will be written to <em>fc.NOMADS-cfsrr-timeseries.log</em> in the TDM working directory.</li>
   <li>The TDS will use the existing indexes, it does not monitor any changes in the dataset.</li>
 </ul>
-<h3>Dynamic dataset:</h3>
+  <h3>Dynamic dataset:</h3>
 <pre>&lt;featureCollection name=&quot;DGEX-Alaska_12km&quot; featureType=&quot;GRIB2&quot; harvest=&quot;true&quot; path=&quot;grib/NCEP/DGEX/Alaska_12km&quot;&gt;
   &lt;metadata inherited=&quot;true&quot;&gt;      
      &lt;dataType&gt;GRID&lt;/dataType&gt;
      &lt;dataFormat&gt;GRIB-2&lt;/dataFormat&gt;
   &lt;/metadata&gt;
+
   &lt;collection name=&quot;DGEX-Alaska_12km&quot;
    spec=&quot;/data/ldm/pub/native/grid/NCEP/DGEX/Alaska_12km/.*grib2$&quot;
    dateFormatMark=&quot;#DGEX_Alaska_12km_#yyyyMMdd_HHmm&quot;
    timePartition=&quot;file&quot;
    olderThan=&quot;5 min&quot;/&gt;
+
   <strong>&lt;tdm rewrite=&quot;true&quot; rescan=&quot;0 0/15 * * * ? *&quot; trigger=&quot;allow&quot;/&gt;</strong>
   <strong>&lt;update startup=&quot;never&quot; trigger=&quot;allow&quot; /&gt;</strong>
 &lt;/featureCollection&gt;</pre>
 
 <ul>
-  <li><strong>&lt;tdm&gt; </strong>element for the TDM
-
+  <li><strong>&lt;tdm&gt; </strong>element for the TDM    
     <ul>
       <li><strong>rewrite=&quot;test&quot;</strong> tells the TDM to test for dataset changes</li>
       <li><strong>rescan=&quot;0 0/15 * * * ? *&quot; </strong>rescan directories every 15 minutes.</li>
@@ -113,6 +123,7 @@
     </ul>
   </li>
 </ul>
+</blockquote>
 <hr width="100%"/>
 <h2>TDM configuration (do not use)</h2>
 <p>More complicated configuration can be done in the Spring configuration inside the jar file <strong>/resources/application-config.xml</strong>:</p>
@@ -155,7 +166,7 @@
 <hr width="100%"/>
 <address>
   <img src="../../thread.png" alt="" width="76" height="67"/> This document is maintained by <a href="mailto:caron@unidata.ucar.edu">John Caron</a>
-  and was last updated March 2014
+  and was last updated May 2014
 </address>
 </body>
 </html>
