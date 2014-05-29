@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?><pnTable><name>Master Source of Grid Definition Table</name><grib2TableName>Source of Grid Definition Table</grib2TableName><updatedDTG>201403032138</updatedDTG><tableStatus setDTG="2009020612">current</tableStatus><reference>
+    <title>Product Name Standard Document</title>
+    <docId>P-3146-2.2</docId>
+    <version>2.2</version>
+    <dtg>May 2012</dtg>
+    <organization>Fleet Numerical Meteorology and Oceanography Center</organization>
+    <infoUsed>Source of Grid Definition Table</infoUsed>
+  </reference><reference>
+    <title>GRIB 2</title>
+    <docId>FM 92-XII</docId>
+    <version>12.0.0</version>
+    <organization>World Meteorological Organization</organization>
+    <infoUsed>GRIB2 Source of Grid Definition, table 3.0</infoUsed>
+  </reference><fnmocTable><entry><fnmocId>0</fnmocId><grib2Id>0</grib2Id><name>specified</name><description>Specified in Code table 3.1</description><status>current</status><wmoStatus>operational</wmoStatus></entry><entry><fnmocId>1</fnmocId><grib2Id>1</grib2Id><name>predetermined</name><description>Predetermined grid definition defined by originating center.</description><status>current</status><wmoStatus>operational</wmoStatus></entry><entry><fnmocId>2</fnmocId><grib2Id>2-191</grib2Id><name>reserved</name><description>Reserved for WMO use.</description><status>current</status><wmoStatus>operational</wmoStatus></entry><entry><fnmocId>192</fnmocId><grib2Id>192-254</grib2Id><name>reserved for local use</name><description>Reserved for local use.</description><status>current</status><wmoStatus>operational</wmoStatus></entry><entry><fnmocId>255</fnmocId><grib2Id>255</grib2Id><name>not applicable</name><description>A grid definition does not apply to this product.</description><status>current</status><wmoStatus>operational</wmoStatus></entry></fnmocTable></pnTable>

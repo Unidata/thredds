@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?><pnTable><name>Master Soil Texture Fraction Table</name><grib2TableName>Soil Texture Fraction Table</grib2TableName><updatedDTG>201403071450</updatedDTG><tableStatus setDTG="2012090512">current</tableStatus><reference>
+    <title>Product Name Standard Document</title>
+    <docId>P-3146-2.2</docId>
+    <version>2.2</version>
+    <dtg>May 2012</dtg>
+    <organization>Fleet Numerical Meteorology and Oceanography Center</organization>
+    <infoUsed>Master Soil Texture Fraction Table</infoUsed>
+  </reference><reference>
+    <title>GRIB 2</title>
+    <docId>FM 92-XII</docId>
+    <version>12.0.0</version>
+    <organization>World Meteorological Organization</organization>
+    <infoUsed>GRIB2 Soil Texture Fraction, table 4.234</infoUsed>
+  </reference><fnmocTable><entry><fnmocId>1</fnmocId><grib2Id>1</grib2Id><name>coarse</name><status>current</status><wmoStatus>operational</wmoStatus></entry><entry><fnmocId>2</fnmocId><grib2Id>2</grib2Id><name>medium</name><status>current</status><wmoStatus>operational</wmoStatus></entry><entry><fnmocId>3</fnmocId><grib2Id>3</grib2Id><name>medium-fine</name><status>current</status><wmoStatus>operational</wmoStatus></entry><entry><fnmocId>4</fnmocId><grib2Id>4</grib2Id><name>fine</name><status>current</status><wmoStatus>operational</wmoStatus></entry><entry><fnmocId>5</fnmocId><grib2Id>5</grib2Id><name>very-fine</name><status>current</status><wmoStatus>operational</wmoStatus></entry><entry><fnmocId>6</fnmocId><grib2Id>6</grib2Id><name>organic</name><status>current</status><wmoStatus>operational</wmoStatus></entry><entry><fnmocId>7</fnmocId><grib2Id>7</grib2Id><name>tropical-organic</name><status>current</status><wmoStatus>operational</wmoStatus></entry></fnmocTable></pnTable>

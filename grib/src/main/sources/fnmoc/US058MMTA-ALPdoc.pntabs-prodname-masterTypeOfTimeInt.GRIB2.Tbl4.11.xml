@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?><pnTable><name>Master Type of Time Interval Table</name><grib2TableName>Type of Time Interval Table</grib2TableName><updatedDTG>201403040050</updatedDTG><tableStatus setDTG="2007101612">current</tableStatus><reference>
+    <title>Product Name Standard Document</title>
+    <docId>P-3146-2.2</docId>
+    <version>2.2</version>
+    <dtg>May 2012</dtg>
+    <organization>Fleet Numerical Meteorology and Oceanography Center</organization>
+    <infoUsed>Type of Time Interval Table</infoUsed>
+  </reference><reference>
+    <title>GRIB 2</title>
+    <docId>FM 92-XII</docId>
+    <version>12.0.0</version>
+    <organization>World Meteorological Organization</organization>
+    <infoUsed>GRIB2 Type of Time Interval, table 4.11</infoUsed>
+  </reference><fnmocTable><entry><fnmocId>0</fnmocId><grib2Id>0</grib2Id><name>reserved</name><status>current</status><wmoStatus>operational</wmoStatus></entry><entry><fnmocId>1</fnmocId><grib2Id>1</grib2Id><name>successive times processed have same forecast time, start time of forecast is incremented</name><status>current</status><wmoStatus>operational</wmoStatus></entry><entry><fnmocId>2</fnmocId><grib2Id>2</grib2Id><name>successive times processed have same start time of forecast, forecast time is incremented</name><status>current</status><wmoStatus>operational</wmoStatus></entry><entry><fnmocId>3</fnmocId><grib2Id>3</grib2Id><name>successive time processed have start time of forecast incremented and forecast time decremented so that valid time remains constant</name><status>current</status><wmoStatus>operational</wmoStatus></entry><entry><fnmocId>4</fnmocId><grib2Id>4</grib2Id><name>successive times processed have start time of forecast decremented and forecast time incremented so that valid time remains constant</name><status>current</status><wmoStatus>operational</wmoStatus></entry><entry><fnmocId>5</fnmocId><grib2Id>5</grib2Id><name>floating subinterval of time between forecast time and end of overall time interval</name><status>current</status><wmoStatus>operational</wmoStatus></entry><entry><fnmocId>6</fnmocId><grib2Id>6-191</grib2Id><name>reserved</name><status>current</status><wmoStatus>operational</wmoStatus></entry><entry><fnmocId>192</fnmocId><grib2Id>192-254</grib2Id><name>reserved for local use</name><status>current</status><wmoStatus>operational</wmoStatus></entry><entry><fnmocId>255</fnmocId><grib2Id>255</grib2Id><name>missing</name><status>current</status><wmoStatus>operational</wmoStatus></entry></fnmocTable></pnTable>

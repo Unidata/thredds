@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?><pnTable><name>Master Type of Horizontal Line Table</name><grib2TableName>Type of Horizontal Line Table</grib2TableName><updatedDTG>201403041803</updatedDTG><tableStatus setDTG="2009020612">current</tableStatus><reference>
+    <title>Product Name Standard Document</title>
+    <docId>P-3146-2.2</docId>
+    <version>2.2</version>
+    <dtg>May 2012</dtg>
+    <organization>Fleet Numerical Meteorology and Oceanography Center</organization>
+    <infoUsed>Type of Horizontal Line Table</infoUsed>
+  </reference><reference>
+    <title>GRIB 2</title>
+    <docId>FM 92-XII</docId>
+    <version>12.0.0</version>
+    <organization>World Meteorological Organization</organization>
+    <infoUsed>GRIB2 Type of Horizontal Line, table 3.20</infoUsed>
+  </reference><fnmocTable><entry><fnmocId>0</fnmocId><grib2Id>0</grib2Id><name>Rhumb</name><description>A line on a single bearing.</description><status>current</status><wmoStatus>operational</wmoStatus></entry><entry><fnmocId>1</fnmocId><grib2Id>1</grib2Id><name>Great Circle</name><description>A circle formed on the surface of a sphere by the intersection of a plane that passes throught the center of the sphere. The arc between two points on the surface of a sphere is the shortest distance on the sphere's surface between them.</description><status>current</status><wmoStatus>operational</wmoStatus></entry><entry><fnmocId>2</fnmocId><grib2Id>2-191</grib2Id><name>reserved</name><status>current</status><wmoStatus>operational</wmoStatus></entry><entry><fnmocId>192</fnmocId><grib2Id>192-254</grib2Id><name>reserved for local use</name><status>current</status><wmoStatus>operational</wmoStatus></entry><entry><fnmocId>255</fnmocId><grib2Id>255</grib2Id><name>missing</name><description>Missing.</description><status>current</status><wmoStatus>operational</wmoStatus></entry></fnmocTable></pnTable>
