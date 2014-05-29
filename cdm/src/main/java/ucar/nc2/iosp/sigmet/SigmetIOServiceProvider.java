@@ -67,7 +67,8 @@ import ucar.unidata.io.RandomAccessFile;
  * ("IRIS Programmer's Manual" 3.5.4.1)
  *
  * @author yuanho
- * @see "ftp://ftp.sigmet.com/outgoing/manuals/program/3data.pdf" esp section 3.5
+ * @see "ftp://ftp.sigmet.com/outgoing/manuals/program/3data.pdf"
+ *   esp section 3.5
  */
 
 public class SigmetIOServiceProvider extends AbstractIOServiceProvider {

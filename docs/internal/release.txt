@@ -63,7 +63,7 @@ edited 05/28/2013
     cp {github/thredds}/tdm/build/tdm-{release}.jar /web/ftp/pub/thredds/{version}/current/tdm-{version}.jar
 
 6. CDM has additional targets that are handled by gradle builds
-  - modify gradle.build in top directory to use the correct version
+  - modify build.gradle in top directory to use the correct version
   - make sure you have correct gradle.properties in ~home/.gradle/
   - cd {github/thredds}
   1. make supporting libraries

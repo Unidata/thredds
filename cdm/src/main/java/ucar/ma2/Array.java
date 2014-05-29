@@ -440,7 +440,7 @@ public abstract class Array {
 
     /**
      * Return the computed datatype for this array
-     * @return
+     * @return the data type
      */
     public DataType getDataType()
    {

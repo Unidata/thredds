@@ -41,7 +41,7 @@ public class HidableTableColumnModel extends DefaultTableColumnModel implements 
      * or its visibility status did not change.
      * <p/>
      *
-     * @param aColumn the column to show/hide
+     * @param column the column to show/hide
      * @param visible its new visibility status
      */
     // listeners will receive columnAdded()/columnRemoved() event

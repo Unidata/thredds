@@ -34,7 +34,6 @@
 package thredds.catalog;
 
 import ucar.nc2.time.CalendarDateRange;
-import ucar.nc2.units.DateRange;
 import ucar.nc2.units.DateType;
 
 import java.net.URI;
@@ -76,7 +75,7 @@ public class InvCatalogRef extends InvDatasetImpl {
    * Constructor.
    *
    * @param parent : parent dataset
-   * @param title  : display name of collection
+   * @param name  : display name of collection
    * @param href   : URL to another catalog
    */
   public InvCatalogRef(InvDatasetImpl parent, String name, String href) {
@@ -143,7 +142,7 @@ public class InvCatalogRef extends InvDatasetImpl {
    * For modest catalogs that you will repeatedly examine, do not use this method.
    */
   public void release() {
-    datasets = new java.util.ArrayList<InvDataset>();
+    datasets = new java.util.ArrayList<>();
     proxy = null;
     useProxy = false;
     init = false;
@@ -211,7 +210,7 @@ public class InvCatalogRef extends InvDatasetImpl {
       if (filter != null)
         cat.filter(filter);
 
-      proxy = (InvDatasetImpl) cat.getDataset();
+      proxy = cat.getDataset();
       if (proxy.getMark()) {
         proxy.setName(proxy.getName() + " (EMPTY)");
         proxy.addProperty(new InvProperty("isEmpty", "true"));

@@ -147,8 +147,8 @@ public abstract class GribCollection implements FileCacheable, AutoCloseable {
 
   /**
    * This is only used for the top level GribCollection.
-   * @param config
-   * @return
+   * @param config use this FeatureCollectionConfig
+   * @return index File
    */
   static public File makeTopIndexFileFromConfig(FeatureCollectionConfig config) {
     Formatter errlog = new Formatter();

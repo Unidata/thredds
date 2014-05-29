@@ -11,7 +11,7 @@ import java.util.List;
  * A collection of utility methods for Swing.
  *
  * @author Darryl Burke
- * @see http://tips4java.wordpress.com/2008/11/13/swing-utils/
+ * @see "http://tips4java.wordpress.com/2008/11/13/swing-utils/"
  */
 public final class SwingUtils {
     public static final Object NOT_NULL = new Object();

@@ -74,7 +74,8 @@ import static ucar.nc2.jni.netcdf.Nc4prototypes.*;
  * @author caron
  * @see "http://www.unidata.ucar.edu/software/netcdf/docs/netcdf-c.html"
  * @see "http://earthdata.nasa.gov/sites/default/files/field/document/ESDS-RFC-022v1.pdf"
- * @see "http://www.unidata.ucar.edu/software/netcdf/docs/faq.html#fv15" hdf5 features not supported
+ * @see "http://www.unidata.ucar.edu/software/netcdf/docs/faq.html#fv15"
+ *       hdf5 features not supported
  * @see "http://www.unidata.ucar.edu/software/netcdf/win_netcdf/"
  * @since Oct 30, 2008
  */
@@ -2312,8 +2313,7 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
   Each member is referenced by an index number between zero and N-1, where N is the number of members in the compound datatype.
   Each member has a fixed byte offset, which is the first byte (smallest byte address) of that member in the compound datatype.
   In addition to other other user-defined data types or atomic datatypes, a member can be a small fixed-size array of any type with up to
-  four fixed-size “dimensions” (not associated with named netCDF dimensions).
-
+  four fixed-size dimensions (not associated with named netCDF dimensions).
 
   Create a compound type. Provide an ncid, a name, and a total size (in bytes) of one element of the completed compound type.
   After calling this function, fill out the type with repeated calls to nc_insert_compound (see nc_insert_compound).

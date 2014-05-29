@@ -24,11 +24,11 @@ import java.io.File;
  *
  * @author Andrew Thompson
  * @version 2011-06-08
- * @TODO Bugs
+ * TODO Bugs
  * <li>Fix keyboard focus issues - especially when functions like
  * rename/delete etc. are called that update nodes & file lists.
  * <li>Needs more testing in general.
- * @TODO Functionality
+ * TODO Functionality
  * <li>Double clicking a directory in the table, should update the tree
  * <li>Move progress bar?
  * <li>Add other file display modes (besides table) in CardLayout?
@@ -36,7 +36,7 @@ import java.io.File;
  * <li>Implement history/back
  * <li>Allow multiple selection
  * <li>Add file search
- * @license LGPL
+ * license LGPL
  * @see "http://stackoverflow.com/questions/6182110"
  */
 public class FileBrowser extends JPanel {
