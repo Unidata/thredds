@@ -1,27 +1,52 @@
 package thredds.server.ncss.view.dsg;
 
-import thredds.server.ncss.exception.UnsupportedResponseFormatException;
+import thredds.server.ncss.exception.*;
 import thredds.server.ncss.format.SupportedFormat;
+import ucar.nc2.constants.FeatureType;
 
-import java.util.HashMap;
-import java.util.Map;
+import javax.xml.stream.XMLStreamException;
+import java.io.OutputStream;
+import java.lang.UnsupportedOperationException;
 
 /**
  * Created by cwardgar on 2014/05/21.
  */
 public abstract class DsgSubsetWriterFactory {
-    private static final Map<SupportedFormat, DsgSubsetWriter> writerMap = new HashMap<>();
-    static {
-        // writerMap.put(SupportedFormat.XML_Stream, DsgSubsetWriterXml);
-        // ...etc
+    public static DsgSubsetWriter newInstance(OutputStream out, FeatureType featureType, SupportedFormat format)
+            throws NcssException, XMLStreamException {
+        if (!featureType.isPointFeatureType()) {
+            throw new NcssException(String.format("Expected a point feature type, not %s", featureType));
+        }
+
+        switch (featureType) {
+            case STATION:
+                return newStationInstance(out, format);
+            default:
+                throw new UnsupportedOperationException(
+                        String.format("%s feature type is not yet supported.", featureType));
+        }
     }
 
-    public static DsgSubsetWriter getInstance(SupportedFormat format) throws UnsupportedResponseFormatException {
-        DsgSubsetWriter writer = writerMap.get(format);
-        if (writer == null) {
-            throw new UnsupportedResponseFormatException("Unknown result type = " + format.getFormatName());
-        } else {
-            return writer;
+    public static DsgSubsetWriter newStationInstance(OutputStream out, SupportedFormat format)
+            throws XMLStreamException, UnsupportedResponseFormatException {
+        switch (format) {
+            case XML_STREAM:
+            case XML_FILE:
+                return new StationSubsetWriterXML(out);
+            case CSV_STREAM:
+            case CSV_FILE:
+                return new StationSubsetWriterCSV(out);
+            case NETCDF3:
+//                w = new WriterNetcdf(NetcdfFileWriter.Version.netcdf3, out);
+                return null;
+            case NETCDF4:
+//                w = new WriterNetcdf(NetcdfFileWriter.Version.netcdf4, out);
+                return null;
+            case WATERML2:
+//                w = new WriterWaterML2(out);
+                return null;
+            default:
+                throw new UnsupportedResponseFormatException("Unknown result type = " + format.getFormatName());
         }
     }
 

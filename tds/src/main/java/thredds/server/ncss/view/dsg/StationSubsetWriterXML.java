@@ -24,16 +24,14 @@ import java.util.List;
  */
 public class StationSubsetWriterXML extends AbstractStationSubsetWriter {
     private final XMLStreamWriter staxWriter;
-    private final boolean isStream;
 
-    public StationSubsetWriterXML(OutputStream out, boolean isStream) throws XMLStreamException {
+    public StationSubsetWriterXML(OutputStream out) throws XMLStreamException {
         XMLOutputFactory factory = XMLOutputFactory.newInstance();
         staxWriter = factory.createXMLStreamWriter(out);
-        this.isStream = isStream;
     }
 
     @Override
-    public HttpHeaders getHttpHeaders(String datasetPath) {
+    public HttpHeaders getHttpHeaders(String datasetPath, boolean isStream) {
         HttpHeaders httpHeaders = new HttpHeaders();
 
         if (!isStream) {

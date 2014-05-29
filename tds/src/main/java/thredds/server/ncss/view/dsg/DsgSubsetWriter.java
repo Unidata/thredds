@@ -11,5 +11,5 @@ public interface DsgSubsetWriter {
     void write(FeatureDatasetPoint fdPoint, NcssParamsBean ncssParams, ucar.nc2.util.DiskCache2 diskCache)
             throws Exception;
 
-    HttpHeaders getHttpHeaders(String datasetPath);
+    HttpHeaders getHttpHeaders(String datasetPath, boolean isStream);
 }

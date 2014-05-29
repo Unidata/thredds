@@ -20,15 +20,13 @@ import java.util.List;
  */
 public class StationSubsetWriterCSV extends AbstractStationSubsetWriter {
     private final PrintWriter writer;
-    private final boolean isStream;
 
-    public StationSubsetWriterCSV(OutputStream out, boolean isStream) {
+    public StationSubsetWriterCSV(OutputStream out) {
         this.writer = new PrintWriter(out);
-        this.isStream = isStream;
     }
 
     @Override
-    public HttpHeaders getHttpHeaders(String datasetPath) {
+    public HttpHeaders getHttpHeaders(String datasetPath, boolean isStream) {
         HttpHeaders httpHeaders = new HttpHeaders();
 
         if (!isStream) {
