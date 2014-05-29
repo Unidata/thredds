@@ -1,0 +1,320 @@
+Return-Path: <dmurray@unidata.ucar.edu>
+Received: from [128.117.140.12] (madeline.unidata.ucar.edu [128.117.140.12])
+	by unidata.ucar.edu (UCAR/Unidata) with ESMTP id i7HKNwaW007054;
+	Tue, 17 Aug 2004 14:23:58 -0600 (MDT)
+Keywords: 200408172023.i7HKNwaW007054
+Message-ID: <4122695A.5000100@unidata.ucar.edu>
+Date: Tue, 17 Aug 2004 14:23:54 -0600
+From: Don Murray <dmurray@unidata.ucar.edu>
+Reply-To: dmurray@unidata.ucar.edu
+Organization: UCAR/Unidata
+User-Agent: Mozilla Thunderbird 0.7.3 (Windows/20040803)
+X-Accept-Language: en-us, en
+MIME-Version: 1.0
+To: John Caron <caron@unidata.ucar.edu>
+Subject: Re: StationDataset, first pass
+References: <41223FA5.8090209@unidata.ucar.edu>
+In-Reply-To: <41223FA5.8090209@unidata.ucar.edu>
+Content-Type: multipart/mixed;
+ boundary="------------010202050902030404050606"
+X-Spam-Checker-Version: SpamAssassin 2.63 (2004-01-11) on 
+	laraine.unidata.ucar.edu
+X-Spam-Level: 
+X-Spam-Status: No, hits=-4.0 required=5.0 tests=AWL,BAYES_00 autolearn=ham 
+	version=2.63
+
+This is a multi-part message in MIME format.
+--------------010202050902030404050606
+Content-Type: text/plain; charset=us-ascii; format=flowed
+Content-Transfer-Encoding: 7bit
+
+Hi John-
+
+Notes interspersed with code.
+
+John Caron wrote:
+
+> package ucar.nc2.station;
+> 
+> import java.io.IOException;
+> import java.util.*;
+> 
+> public interface StationDataset {
+
+To me, StationDataset implies a dataset of stations (e.g., a
+station table), not a dataset of Observations.  This
+should probably be ObservationDataset since by definition
+an Observation has a station or StationObservation to
+disambiguate it.
+
+(NOTE, not all observations have a Station.  Lightning data
+are point data at lat/lon/(alt) points, ship reports and
+ACARS data are at Stations that move.  We will need to handle
+those cases as well.)
+
+>  public List getStations() throws IOException;
+> 
+>  public List getObservations( Station s) throws IOException;
+>  public List getObservations( Station s, Date start, Date end) throws 
+> IOException;
+>  public List getObservations( LatLonBoundingBox boundingBox) throws 
+> IOException;
+>  public List getObservations( LatLonBoundingBox boundingBox, Date start, 
+> Date end) throws IOException;
+
+How is LatLonBoundingBox different from ucar.unidata.geoloc.LatLonRect?
+
+>  public interface Station {
+>    public String getName();
+>    public String getDescription();
+>    public double getLatitude();
+>    public double getLongitude();
+>    public int getNumObservations(); // return -1 if dont know
+>  }
+
+This should have a getAltitude() method that returns NaN or something
+if we don't know.
+
+What's the difference between getName and getDescription?  How would
+one get the station identifier (KDEN), or would that be in a subclass
+(ReportingStation).  We would need to handle things like IACO
+identifiers and WMO identifiers.
+
+getNumObservations should be in StationDataset, not station:
+
+   public int getNumObservations(Station)
+
+A station could be in several different StationDataset-s so
+the call in Station would be ambiguous.
+
+
+>  public interface Observation {
+>    public Station getStation();
+>    public java.util.Date getTime();
+>    public ucar.nc2.StructureData getData() throws IOException; // ??
+>  }
+
+I've attached the VisAD point data design and modified it
+to remove VisAD'isms.  It's close to your design, but with
+some important modifications to support the non-station point
+observations.  I've also attached the original VisAD design.
+Let me know what you think.
+
+I'll send the URLs that I promised in a separate note.
+
+Don
+*************************************************************
+Don Murray                               UCAR Unidata Program
+dmurray@unidata.ucar.edu                        P.O. Box 3000
+(303) 497-8628                              Boulder, CO 80307
+http://www.unidata.ucar.edu/staff/donm
+"There's someone in my head, but it's not me"    Roger Waters
+*************************************************************
+
+
+--------------010202050902030404050606
+Content-Type: text/plain;
+ name="pointdata.design.nc2"
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline;
+ filename="pointdata.design.nc2"
+
+Proposed Structure for supporting station (point) observations 
+(Metars, synops, raobs).
+
+/**
+ * Abstraction for a point observation (values at a lat, lon, time)
+ * would handle the most generic thing like a lightning flash
+ */
+public interface Observation 
+{
+    public ucar.unidata.geoloc.LatLonPoint getLocation(); 
+                                      //(or should this be getEarthLocation to
+                                      // include elevation where that could be
+                                      // missing if not supplied)
+    public java.util.Date getTime();
+    public ucar.nc2.StructureData getData();
+}
+
+/**
+ * Abstraction (interface) for Station observations
+ */
+public interface StationOb extends Observation
+{
+    public Station getStation();
+    public LatLonPoint getEarthLocation();   // convenience - would call
+                                             // getStation.getLatLonPoint()
+}
+
+/**
+ * Abstraction (interface) for a database of Observations
+ */
+public interface ObservationDataset
+{
+
+    public List getObservations(Date time);
+
+    public List getObservations(LatLonPoint location);
+    public List getObservations(LatLonPoint location, Date time);
+    public List getObservations(LatLonPoint location, Date start, Date end) 
+
+    public List getObservations( LatLonBoundingBox boundingBox) 
+    public List getObservations( LatLonBoundingBox boundingBox, Date time);
+    public List getObservations( LatLonBoundingBox boundingBox, Date start, 
+       Date end)
+
+    public List getTimes(LatLonPoint location);  
+
+}
+
+public interface StationObDataset extends ObservationDataset
+{
+
+//List data would be StationObs
+
+    public List getStationObs(Station location);
+    public List getStationObs(Station location, Date time);
+    public List getStationObs(Station location, Date start, Date end) 
+
+    public StationOb getStationOb(NamedLocation station, DateTime time);
+    public List getStationObs(LatLonPoint location);
+    public List getStationObs(DateTime time);
+
+    public List getStationObs( LatLonBoundingBox boundingBox) 
+    public List getStationObs( LatLonBoundingBox boundingBox, Date time);
+    public List getStationObs( LatLonBoundingBox boundingBox, Date start, 
+       Date end)
+
+    public List getTimes(Station location);  
+
+    public StationTable getStations();
+    public StationTable getStations(DateTime time);
+
+}
+
+/**
+ * Interface - abstraction for read-only table of fixed stations
+ */
+public interface StationTable
+{
+    public Station getStation(String identifier);
+    public Station getStation(String name);  // convenience
+    public StationTable getStations(LatLonBoundingBox bounds);
+    public int size();  // get number of stations
+}
+
+--------------010202050902030404050606
+Content-Type: text/plain;
+ name="pointdata.design"
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline;
+ filename="pointdata.design"
+
+Proposed Structure for supporting station (point) observations 
+(Metars, synops, raobs).
+
+/**
+ * Abstraction for a point observation (values at a lat, lon, time)
+ * would handle the most generic thing like a lightning flash
+ */
+public interface Observation extends Data
+{
+    public LatLonPoint getLocation(); //(or should this be get EarthLocation to
+                                      // include elevation where that could be
+                                      // missing if not supplied)
+    public DateTime getTime();
+    public Data getData();
+}
+
+/**
+ * Abstraction (interface) for Station observations
+ */
+public interface StationObIface extends Observation
+{
+    public NamedLocation getStation();
+    public EarthLocation getEarthLocation(); // convenience - would call
+                                             // NamedLocation.getEarthLocation()
+}
+
+/**
+ * Implementation of StationOb as a Tuple
+ */
+public class StationOb extends Tuple implements StationObIface
+{
+   // structure would be (NamedLocation, DateTime, Data)
+}
+
+/**
+ * Abstraction (interface) for a static database of VisAD objects 
+ * representing a set of Observations
+ */
+public interface ObservationDB extends Data
+{
+    public Observation getObservation(LatLonPoint location); // retrieves first
+    public Observation getObservation(LatLonPoint location, DateTime time);
+
+    public ObservationDB getObservations(LatLonPoint location);
+    public ObservationDB getObservations(DateTime time);
+    public ObservationDB getObservations(LinearLatLonSet bounds);
+
+    // these could possibly return DateTime[] instead of Gridded1DSetIface
+    public Gridded1DSetIface getTimes();  
+    public Gridded1DSetIface getTimes(LatLonPoint location);  
+
+}
+
+public interface StationObDB extends ObservationDB
+{
+    public StationOb getStationOb(NamedLocation station); // retrieves first
+    public StationOb getStationOb(NamedLocation station, DateTime time);
+    public StationObDB getStationObs(LatLonPoint location);
+    public StationObDB getStationObs(DateTime time);
+
+    public Gridded1DSetIface getTimes(NamedLocation station);
+    public StationObDB getStationObs(LinearLatLonSet bounds);
+    public Field getTimeSeries(NamedLocation station);
+    public StationTable getStations();
+    public StationTable getStations(DateTime time);
+
+    // other possible methods (maybe in impl, but not iface
+    public StationObDB getStationObs(DateTime startTime, DateTime endTime);
+    public StationObDB getStationObs(NamedLocation station, 
+                                     DateTime startTime, DateTime endTime);
+}
+
+/**
+ * Implementation of ObservationDB as a FieldImpl
+ */
+public class ObservationDBImpl extends FieldImpl implements ObservationDB
+{
+   // Structure would be index -> Observation
+}
+
+/**
+ * Implementation of StationObDB as a FieldImpl
+ */
+public class StationObDBImpl extends FieldImpl implements StationObDB
+{
+   // Structure would be index -> StationOb
+}
+
+/**
+ * Interface - abstraction for read-only table of fixed stations
+ */
+public interface StationTable extends Data
+{
+    public NamedLocation getStation(Text identifier);
+    public NamedLocation getStation(String name);  // convenience
+    public StationTable getStations(LinearLatLonSet bounds);
+    public int size();  // get number of stations
+}
+
+/**
+ * Implementation as a Field
+ */
+public class StationTableImpl extends FieldImpl implements StationTable
+{
+  // Structure would be index -> NamedLocations
+}
+
+--------------010202050902030404050606--

@@ -1,0 +1,115 @@
+Dec 19 2009
+
+Write to xml and zip
+
+origFile          size(k)  	xml         all zip     indivZip 	%
+uniqueBrasil	 508 					      2323	     +457
+uniqueFnmoc   	5427		73,159	3801		3804        -30%
+uniqueIDD		 744						3060
+uniqueExamples    4637						6036		
+		
+uniqueMessages   10582	     323,157     11195	     12031	      +14%
+
+probably zip file is sharing dictionary, so this is not a fair test.
+
+eliminate bad messages
+
+origFile          size(k)  	indivZip 	%
+
+uniqueFnmoc   	1146		 474       
+uniqueExamples    1114		2970		
+
+
+
+Dec 18,2009:
+
+Checking for % of missing values:
+
+on idd stream, one day:
+
+Grand Total nmess=331373 count=2039245861 miss=312624823 15.330414 % 
+
+on roys' data (fnmoc):
+
+Grand Total nmess=77 count=52720587 miss=2980885 5.654120 % 
+
+
+===============
+
+Nov 09, 2009.
+
+1) motherlode pqact has:
+
+#
+# other soundings and surface products in BUFR format
+# All Data in BUFR format
+HRS     ^([IJ].....) (....) ([0-3][0-9])([0-2][0-9])
+        FILE
+        data/pub/native/bufr/Bufr/(\3:yyyy)(\3:mm)\3_\400.bufr
+
+for 30 days of data, total of 78G = 2.6G/day
+
+/data/ldm/pub/native/bufr
+-bash-3.00$ du -k Bufr
+78836195        Bufr
+
+2) modify thredds.pqact on motherlode
+
+HRS     ^([IJ].....) (....) ([0-3][0-9])([0-2][0-9])
+        FILE
+        data/pub/native/bufr/hrs/(\3:yyyy)(\3:mm)\3_\400.bufr
+
+DDPLUS  ^([IJ].....) (....) ([0-3][0-9])([0-2][0-9])
+        FILE
+        data/pub/native/bufr/ddplus/(\3:yyyy)(\3:mm)\3_\400.bufr
+
+
+3) emmerson's message of 9/17/2008
+
+I've installed the latest version of the LDM on Newshemp and switched
+over to it.  Let me know of any problems.
+
+Caron & McWhirter, the "-metadata" and "-nodata" options are documented
+in the example file "~/src/pqact/pqact.conf".
+
+in ldm 6.8.1 source:
+
+#	PIPE	[tab (-close|-strip|-metadata|-nodata)] tab commandname [args]
+#		Put data on stdin of a subprocess specified by
+#			commandname [args].
+#		Uses the execvp(2) library call, so if commandname is not fully
+#		qualified, the PATH environment variable will be used.
+#
+#		"-metadata" causes the metadata of the data-product to be
+#		written to the pipe before any data.  The metadata is written
+#		in the following order using the indicated data-types:
+#                   metadata-length in bytes			uint32_t
+#                   data-product signature (MD5 checksum)	uchar[16]
+#                   data-product size in bytes			uint32_t
+#                   product creation-time in seconds since the epoch:
+#                       integer portion				uint64_t
+#                       microseconds portion			int32_t
+#                   data-product feedtype			uint32_t
+#                   data-product sequence number		uint32_t
+#                   product-identifier:
+#                       length in bytes (excluding NUL)		uint32_t
+#                       non-NUL-terminated string		char[]
+#                   product-origin:
+#                       length in bytes (excluding NUL)		uint32_t
+#                       non-NUL-terminated string		char[]
+#
+#		"-nodata" causes the data portion of the data-product to
+#		*not* be written to the pipe.  It also turns on the
+#		"-metadata" option.
+
+4  len1
+16
+4
+12
+4
+4
+4 len2
+len2
+4 len3
+len3
+len1

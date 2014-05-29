@@ -1,0 +1,193 @@
+Return-Path: <dmurray@unidata.ucar.edu>
+Received: from [128.117.140.12] (madeline.unidata.ucar.edu [128.117.140.12])
+	by unidata.ucar.edu (UCAR/Unidata) with ESMTP id i7IGeRaW016743;
+	Wed, 18 Aug 2004 10:40:27 -0600 (MDT)
+Keywords: 200408181640.i7IGeRaW016743
+Message-ID: <41238672.2050301@unidata.ucar.edu>
+Date: Wed, 18 Aug 2004 10:40:18 -0600
+From: Don Murray <dmurray@unidata.ucar.edu>
+Reply-To: dmurray@unidata.ucar.edu
+Organization: UCAR/Unidata
+User-Agent: Mozilla Thunderbird 0.7.3 (Windows/20040803)
+X-Accept-Language: en-us, en
+MIME-Version: 1.0
+To: John Caron <caron@unidata.ucar.edu>
+Subject: Point data access
+Content-Type: text/plain; charset=us-ascii; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Spam-Checker-Version: SpamAssassin 2.63 (2004-01-11) on 
+	laraine.unidata.ucar.edu
+X-Spam-Level: 
+X-Spam-Status: No, hits=-4.0 required=5.0 tests=AWL,BAYES_00 autolearn=ham 
+	version=2.63
+
+John-
+
+Here are the pointers I promised:
+
+ADDE point URLs:
+
+The ADDE point protocol allows you to query a dataset using
+any combination of parameters through a "select" clause.
+You can read more about in the McIDAS Programmer's reference at:
+
+http://www.ssec.wisc.edu/mug/prog_man/2003/access-4.html#37283
+
+For the Java client, a request would look like (from the
+edu.wisc.ssec.mcidas.adde.AddePointDataReader javadoc):
+
+AddePointDataReader interface for McIDAS ADDE point data sets. Simulates 
+a McIDAS PTLIST output using an ADDE URL if toString() method is used. 
+Note that units are ignored by this client, default units are used.
+
+  URLs must all have the following format
+    adde://host/point?keyword_1=value_1&keyword_2=value_2
+
+  there can be any valid combination of the following supported keywords:
+
+    group=<groupname>         ADDE group name
+    descr=<descriptor>        ADDE descriptor name
+    pos=<position>            request an absolute or relative ADDE
+                                position number
+    select=<select clause>    to specify which data is required
+    param=<param list>        what parameters to return
+    num=<max>                 maximum number of obs to return (def=1)
+    user=<user_id>            ADDE user identification
+    proj=<proj #>             a valid ADDE project number
+    trace=<0/1>               setting to 1 tells server to write debug
+                                trace file (imagedata, imagedirectory)
+    version=1                 ADDE version number, currently 1
+
+  the following keywords are required:
+
+    group
+    descr
+
+  an example URL might look like:
+    adde://rtds/point?group=neons&type=metar
+
+The combination of select and param determines what you get sent
+back.  You can query the dataset with a request like:
+
+adde://adde.ucar.edu/point?group=rtptsrc&descr=sfchourly
+
+which returns all the parameters for the first point in the file.
+This would be like getting a list of all the variables in a netCDF
+file.
+
+Each point object in McIDAS-X contains five blocks of information.
+
+     * The parameter block contains a list of the parameter names
+       in the point object returned by the server.
+     * The unit block contains a list of units for the parameters
+       returned by the server.
+     * The scale block contains a list of scaling factors for the
+       floating- point values returned by the server.
+     * The form block contains a list of the return forms for each
+       of the parameters.
+     * The data block contains the actual data values returned by
+       the server.
+
+AddePointDataReader allows you to get the data in either
+param order [numparams][numobs] or ob order [numobs][numparams].
+It also has methods for getting the paramter names, units (McIDAS
+unit identifiers - can be converted to udunits through
+visad.jmet.MetUnits.makeSymbol(String mcUnit)), and scaling factors.
+
+Again, with the select clause, you can ask most anything you want
+to subset the data.  Think of it as a powerful constraint expression
+in DODS.  You can do things like specify time ranges, specific
+state data, lat/lon boundaries, temperatures in a particular range,
+etc.
+
+The param keyword specifies which parameters will be returned.
+
+So for metar data, we make the request:
+
+adde://adde.ucar.edu/pointdata?compress=true&port=112&debug=true&version=1&
+user=idv&proj=0&group=RTPTSRC&descr=SFCHOURLY&select='LAT 39.5 40.5;LON 
+104.5 105.5'&pos=0&num=all&param=day time
+
+To get a list of all "day" and "time" values for all stations in the
+latlon bounding box to populate our time selection list.  (there is
+no way to query a point dataset to find out what times are available
+like you can for images).  We could do this for all stations, but that
+would take a lot of time.  This is one area where it would be nice
+to have a DQC that I could query to get the times.
+
+When we actually get the data, we do a request like:
+
+adde://adde.ucar.edu/pointdata?compress=true&port=112&debug=true&version=1&
+user=idv&proj=0&group=RTPTSRC&descr=SFCHOURLY&select='time 12,15,16;type 
+0'&num=all
+
+To get all observations for 12, 15 and 16 z for the current day.
+We use the "type" selection to only select the main hour observations
+(as opposed to the intermediate or special obs).  We request all
+parameters and let the user subselect what they want on the client
+to display only particular parameters.  Since we don't know
+a priori which params they want and it's easier to read from
+the local data instead of making another request for a new
+param, this approach works.
+
+Once we have the data, we convert to a VisAD FieldImpl of format:
+
+(index -> (tuple of parameters))
+
+We then have utility methods that take the FieldImpl and convert
+it to a format of
+
+(index -> (ucar.unidata.data.point.PointOb))
+
+A PointOb is like your Observation where it has a:
+
+EarthLocation/NamedLocation      (Station)
+DataTime                         (Date)
+Data                             (Observation)
+
+For the netCDF data, you can look at any of the _metar.nc and
+_syn.nc files in /local/ldm/data/pub/decoded/netcdf/surface or
+MADIS METAR files.
+
+With these, we take use the generic VisAD netCDF reader (Plain)
+to read in the data and pull out all the variables indexed by
+nrec which gives us:
+
+(nrec -> (tuple of parameters))
+
+then we use a similar routine to convert from this format to:
+
+(index -> (ucar.unidata.data.point.PointOb))
+
+The only differences between the ADDE and netCDF conversion routines
+are the sections of code to find the day/time variables and the
+station information.  This could probably be refactored to avoid
+code duplication much like you have with the conventions for
+grid files.
+
+Once we have this structure, we can reorder to sort by time for
+doing animations of station plots.
+
+Improvements we would like to make:
+
+- Adding a widget to subselect the region of interest.
+- Get times for all files in the dataset.  Right now it only
+   goes after today's time.
+- Support for relative times.  This can be problematic because
+   it could mean spanning multiple files which would be separate
+   requests.
+- subselection by parameter (this has been requested by RAP
+   for their netCDF files)
+
+
+Let me know if you have questions on any of the above.
+
+Don
+*************************************************************
+Don Murray                               UCAR Unidata Program
+dmurray@unidata.ucar.edu                        P.O. Box 3000
+(303) 497-8628                              Boulder, CO 80307
+http://www.unidata.ucar.edu/staff/donm
+"There's someone in my head, but it's not me"    Roger Waters
+*************************************************************
+
