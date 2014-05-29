@@ -413,7 +413,7 @@ public abstract class GribCollection implements FileCacheable, AutoCloseable {
     return directory;
   }
 
-  // set from GribCollectionBuilderFromIndex.redFromIndex()
+  // set from GribCollectionBuilderFromIndex.readFromIndex()
   public void setDirectory(File directory) {
     this.directory = directory;
   }

@@ -138,8 +138,15 @@ public class NcssController extends AbstractNcssController {
          handleRequestPoint(req, res, params, datasetPath, fd);
 
        } else {
-           throw new UnsupportedOperationException("Feature Type "+ft.toString()+" not supported");
+           throw new thredds.server.ncss.exception.UnsupportedOperationException("Feature Type "+ft.toString()+" not supported");
        }
+
+     } catch (thredds.server.ncss.exception.UnsupportedOperationException t) {
+       handleValidationErrorMessage(res, HttpServletResponse.SC_BAD_REQUEST, t.getMessage());
+       return;
+
+     } catch (Throwable t) {
+       t.printStackTrace();
      }
 
    }
