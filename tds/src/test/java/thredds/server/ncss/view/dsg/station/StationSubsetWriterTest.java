@@ -1,4 +1,4 @@
-package thredds.server.ncss.view.dsg;
+package thredds.server.ncss.view.dsg.station;
 
 import org.apache.commons.io.IOUtils;
 import org.junit.*;
@@ -6,6 +6,8 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import thredds.server.ncss.format.SupportedFormat;
 import thredds.server.ncss.params.NcssParamsBean;
+import thredds.server.ncss.view.dsg.DsgSubsetWriter;
+import thredds.server.ncss.view.dsg.DsgSubsetWriterFactory;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.ft.FeatureDataset;
 import ucar.nc2.ft.FeatureDatasetFactoryManager;
@@ -44,7 +46,10 @@ public class StationSubsetWriterTest {
         ncssParamsAll.setWest(-100.0);
 
         ncssParamsSubset = new NcssParamsBean();
-        // TODO
+        ncssParamsSubset.setVar(Arrays.asList("tas"));
+        ncssParamsSubset.setTime_start("1970-01-05T00:00:00Z");
+        ncssParamsSubset.setTime_end("1970-02-05T00:00:00Z");
+        ncssParamsSubset.setStns(Arrays.asList("AAA", "CCC"));
 
         diskCache = DiskCache2.getDefault();
     }
@@ -58,8 +63,10 @@ public class StationSubsetWriterTest {
         setupClass();
 
         return Arrays.asList(new Object[][] {
-                { SupportedFormat.CSV_FILE, ncssParamsAll, "stationCsvAll.csv" },
-                { SupportedFormat.XML_FILE, ncssParamsAll, "stationXmlAll.xml" }
+                { SupportedFormat.CSV_FILE, ncssParamsAll,    "stationCsvAll.csv"    },
+                { SupportedFormat.CSV_FILE, ncssParamsSubset, "stationCsvSubset.csv" },
+                { SupportedFormat.XML_FILE, ncssParamsAll,    "stationXmlAll.xml"    },
+                { SupportedFormat.XML_FILE, ncssParamsSubset, "stationXmlSubset.xml" }
         });
     }
 
@@ -83,12 +90,20 @@ public class StationSubsetWriterTest {
             DsgSubsetWriter subsetWriter = DsgSubsetWriterFactory.newInstance(actualOutputStream, wantedType, format);
             subsetWriter.write(fdPoint, ncssParams, diskCache);
 
-            DsgSubsetWriter subsetWriterConsole = DsgSubsetWriterFactory.newInstance(System.out, wantedType, format);
-            subsetWriterConsole.write(fdPoint, ncssParams, diskCache);
+//            DsgSubsetWriter subsetWriterConsole = DsgSubsetWriterFactory.newInstance(System.out, wantedType, format);
+//            subsetWriterConsole.write(fdPoint, ncssParams, diskCache);
 
             ByteArrayInputStream actualInputStream = new ByteArrayInputStream(actualOutputStream.toByteArray());
 
-            Assert.assertTrue(IOUtils.contentEquals(expectedInputStream, actualInputStream));
+            if (format.isBinary()) {
+                // Perform binary comparison.
+                Assert.assertTrue(IOUtils.contentEquals(expectedInputStream, actualInputStream));
+            } else {
+                // Perform text comparison.
+                Reader expectedReader = new InputStreamReader(expectedInputStream, "UTF-8");
+                Reader actualReader   = new InputStreamReader(actualInputStream,   "UTF-8");
+                Assert.assertTrue(IOUtils.contentEqualsIgnoreEOL(expectedReader, actualReader));
+            }
         } finally {
             expectedInputStream.close();
             fdPoint.close();

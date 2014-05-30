@@ -1,4 +1,4 @@
-package thredds.server.ncss.view.dsg;
+package thredds.server.ncss.view.dsg.station;
 
 import org.springframework.http.HttpHeaders;
 import thredds.server.ncss.util.NcssRequestUtils;

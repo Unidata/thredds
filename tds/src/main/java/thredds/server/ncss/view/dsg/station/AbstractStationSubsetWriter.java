@@ -1,6 +1,7 @@
-package thredds.server.ncss.view.dsg;
+package thredds.server.ncss.view.dsg.station;
 
 import thredds.server.ncss.params.NcssParamsBean;
+import thredds.server.ncss.view.dsg.AbstractDsgSubsetWriter;
 import ucar.nc2.VariableSimpleIF;
 import ucar.nc2.ft.*;
 import ucar.nc2.ft.point.StationPointFeature;

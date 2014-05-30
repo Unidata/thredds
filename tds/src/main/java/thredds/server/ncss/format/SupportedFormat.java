@@ -93,5 +93,11 @@ public enum SupportedFormat {
 		return isStream;
 	}
 	
-		
+    public boolean isBinary() {
+        return formatName.equals("netcdf") || formatName.equals("netcdf4");
+    }
+
+    public boolean isText() {
+        return !isBinary();
+    }
 }

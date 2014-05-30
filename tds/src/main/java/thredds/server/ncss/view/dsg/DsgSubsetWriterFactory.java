@@ -2,6 +2,8 @@ package thredds.server.ncss.view.dsg;
 
 import thredds.server.ncss.exception.*;
 import thredds.server.ncss.format.SupportedFormat;
+import thredds.server.ncss.view.dsg.station.StationSubsetWriterCSV;
+import thredds.server.ncss.view.dsg.station.StationSubsetWriterXML;
 import ucar.nc2.constants.FeatureType;
 
 import javax.xml.stream.XMLStreamException;
