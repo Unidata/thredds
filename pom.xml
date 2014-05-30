@@ -992,7 +992,7 @@
     <log4j.version>2.0-rc1</log4j.version>
     <net.jcip.version>1.0</net.jcip.version>
     <net.sf.ehcache.version>2.6.2</net.sf.ehcache.version>
-    <org.apache.tomcat.version>7.0.50</org.apache.tomcat.version>
+    <!-- org.apache.tomcat.version>7.0.50</org.apache.tomcat.version !-->
     <org.hibernate.version>4.3.1.Final</org.hibernate.version>
     <org.jsoup.version>1.7.2</org.jsoup.version>
     <org.jdom2.version>2.0.4</org.jdom2.version>
@@ -1021,8 +1021,8 @@
 
     <!-- http://stackoverflow.com/questions/11222982/tomcat-binary-distribution-zip-as-maven-artifact -->
     <cargo-plugin.version>1.4.5</cargo-plugin.version>
-    <apache.download>http://mirrors.ibiblio.org/apache/</apache.download>
-    <tomcat7.version>7.0.54</tomcat7.version>
+    <!-- apache.download>http://mirrors.ibiblio.org/apache/</apache.download>
+    <tomcat7.version>7.0.54</tomcat7.version -->
 
   </properties>
 
