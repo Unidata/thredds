@@ -44,6 +44,7 @@ public class NcssIntegrationTest {
   public void checkGoodRequest() throws JDOMException, IOException {
     assertOk(response);
     String xml = response.getBody(String.class);
+    System.out.printf("xml=%s%n", xml);
     Reader in = new StringReader(xml);
     SAXBuilder sb = new SAXBuilder();
     Document doc = sb.build(in);

@@ -33,6 +33,7 @@
 package thredds.server.ncss.controller;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.text.ParseException;
@@ -141,12 +142,14 @@ public class NcssController extends AbstractNcssController {
            throw new thredds.server.ncss.exception.UnsupportedOperationException("Feature Type "+ft.toString()+" not supported");
        }
 
+     /* } catch (FileNotFoundException t) {
+       handleValidationErrorMessage(res, HttpServletResponse.SC_NOT_FOUND, t.getMessage());
+
      } catch (thredds.server.ncss.exception.UnsupportedOperationException t) {
        handleValidationErrorMessage(res, HttpServletResponse.SC_BAD_REQUEST, t.getMessage());
-       return;
 
      } catch (Throwable t) {
-       t.printStackTrace();
+       t.printStackTrace();  */
      }
 
    }

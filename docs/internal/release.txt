@@ -105,6 +105,7 @@ Configuration files
    This will build config.zip files (and wget scripts) for all of the subdirectories.
    You can optionally pass one or more subdirectories to only build for them.
    This script runs on Python 2.7 as well as >= 3.2.
+   Note <subdir>/build.info is used for this script.
 
 - to make changes to config files:
  - edit thredds/TdsConfig/*
