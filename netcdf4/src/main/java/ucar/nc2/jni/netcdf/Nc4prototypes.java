@@ -161,14 +161,14 @@ public interface Nc4prototypes extends Library {
   int nc_inq_ndims(int ncid, IntByReference ndimsp);
   int nc_inq_unlimdims(int ncid, IntByReference nunlimdimsp, int[] unlimdimidsp);
   int nc_inq_dimids(int ncid, IntByReference ndims, int[] dimids, int include_parents);
-  int nc_inq_dim(int ncid, int dimid, byte[] name, NativeLongByReference lenp); // size_t
+  int nc_inq_dim(int ncid, int dimid, byte[] name, SizeTByReference lenp);
   int nc_inq_dimname(int ncid, int dimid, byte[] name);
 
   // attribute info
   int nc_inq_natts(int ncid, IntByReference nattsp);
   int nc_inq_attname(int ncid, int varid, int attnum, byte[] name);
   int nc_inq_atttype(int ncid, int varid, String name, IntByReference xtypep);
-  int nc_inq_attlen(int ncid, int varid, String name, NativeLongByReference lenp); // size_t
+  int nc_inq_attlen(int ncid, int varid, String name, SizeTByReference lenp);
 
   // attribute values
   int nc_get_att_double(int ncid, int varid, String name, double[] ip);
@@ -196,18 +196,15 @@ public interface Nc4prototypes extends Library {
   // user types
   int nc_inq_typeids(int ncid, IntByReference ntypes, Pointer np); // allow to pass NULL
   int nc_inq_typeids(int ncid, IntByReference ntypes, int[] typeids);
-  int nc_inq_type(int ncid, int xtype, byte[] name, NativeLongByReference sizep); // size_t
-  int nc_inq_user_type(int ncid, int xtype, byte[] name, NativeLongByReference sizep,
-                   IntByReference baseType, NativeLongByReference nfieldsp, IntByReference classp); // size_t
-  int nc_inq_enum(int ncid, int xtype, byte[] name, IntByReference baseType,
-              NativeLongByReference base_sizep, NativeLongByReference num_membersp); //size_t
+  int nc_inq_type(int ncid, int xtype, byte[] name, SizeTByReference sizep);
+  int nc_inq_user_type(int ncid, int xtype, byte[] name, SizeTByReference sizep, IntByReference baseType, SizeTByReference nfieldsp, IntByReference classp);
+  int nc_inq_enum(int ncid, int xtype, byte[] name, IntByReference baseType, SizeTByReference base_sizep, SizeTByReference num_membersp);
   int nc_inq_enum_member(int ncid, int xtype, int idx, byte[] name, IntByReference value); // void *
-  int nc_inq_opaque(int ncid, int xtype, byte[] name, NativeLongByReference sizep);   //size_t
+  int nc_inq_opaque(int ncid, int xtype, byte[] name, SizeTByReference sizep);
 
   // compound user type
-  int nc_inq_compound(int ncid, int xtype, byte[] name, NativeLongByReference sizep, NativeLongByReference nfieldsp);  // size_t
-  int nc_inq_compound_field(int ncid, int xtype, int fieldid, byte[] name,                                             // size_t
-	  NativeLongByReference offsetp, IntByReference field_typeidp, IntByReference ndimsp, int[] dims);
+  int nc_inq_compound(int ncid, int xtype, byte[] name, SizeTByReference sizep, SizeTByReference nfieldsp);
+  int nc_inq_compound_field(int ncid, int xtype, int fieldid, byte[] name, SizeTByReference offsetp, IntByReference field_typeidp, IntByReference ndimsp, int[] dims);
 
   // read entire array
   int nc_get_var(int ncid, int varid, ByteBuffer bbuff);
@@ -268,8 +265,8 @@ public interface Nc4prototypes extends Library {
   int nc_sync	(int ncid);
 
   int nc_def_grp (int parent_ncid, String name, IntByReference new_ncid);
-  int nc_def_dim(int ncid,  String name, NativeLong len, IntByReference dimid);
-  int nc_def_var (int ncid, String name, NativeLong xtype, int ndims, int[] dimids, IntByReference varidp);
+  int nc_def_dim(int ncid,  String name, SizeT len, IntByReference dimid);
+  int nc_def_var (int ncid, String name, SizeT xtype, int ndims, int[] dimids, IntByReference varidp);
 
   int nc_def_compound(int ncid, SizeT size, String name, IntByReference typeidp);
   int nc_insert_compound(int ncid, int typeid, String name, SizeT offset, int field_typeid);
@@ -309,6 +306,7 @@ public interface Nc4prototypes extends Library {
   int nc_put_vars_longlong(int ncid, int varid, SizeT[] startp, SizeT[] countp, SizeT[] stridep, long[] ip);
   int nc_put_vars_ulonglong(int ncid, int varid, SizeT[] startp, SizeT[] countp, SizeT[] stridep, long[] ip);
   int nc_put_vars_float(int ncid, int varid, SizeT[] startp, SizeT[] countp, SizeT[] stridep, float[] ip);
+  // nc_put_vars_double(int ncid, int varid, const size_t *startp, const size_t *countp, const ptrdiff_t *stridep, const double *op);
   int nc_put_vars_double(int ncid, int varid, SizeT[] startp, SizeT[] countp, SizeT[] stridep, double[] ip);
   int nc_put_vars_string(int ncid, int varid, SizeT[] startp, SizeT[] countp, SizeT[] stridep, String[] ip);
 
@@ -325,25 +323,20 @@ public interface Nc4prototypes extends Library {
   int nc_put_var_double(int ncid, int varid, double[] ip);
   int nc_put_var_string(int ncid, int varid, String[] op);
 
-
-  // nc_put_vars_double(int ncid, int varid, const size_t *startp, const size_t *countp, const ptrdiff_t *stridep, const double *op);
-
-  // nc_put_att_string(int ncid, int varid, const char *name, Nativelong len, const char **op);
-
   // write attributes
-  int nc_put_att (int ncid, int varid, String name, int xtype, NativeLong len, ByteBuffer value);
-  int nc_put_att_string(int ncid, int varid, String attName, NativeLong len, String[] value);
-  int nc_put_att_text(int ncid, int varid, String attName, NativeLong len, byte[] value);
-  int nc_put_att_uchar(int ncid, int varid, String attName, int xtype, NativeLong len, byte[] value);
-  int nc_put_att_schar(int ncid, int varid, String attName, int xtype, NativeLong len, byte[] value);
-  int nc_put_att_short(int ncid, int varid, String attName, int xtype, NativeLong len, short[] value);
-  int nc_put_att_ushort(int ncid, int varid, String attName, int xtype, NativeLong len, short[] value);
-  int nc_put_att_int(int ncid, int varid, String attName, int xtype, NativeLong len, int[] value);
-  int nc_put_att_uint(int ncid, int varid, String attName, int xtype, NativeLong len, int[] value);
-  int nc_put_att_longlong(int ncid, int varid, String attName, int xtype, NativeLong len, long[] value);
-  int nc_put_att_ulonglong(int ncid, int varid, String attName, int xtype, NativeLong len, long[] value);
-  int nc_put_att_float(int ncid, int varid, String attName, int xtype, NativeLong len, float[] value);
-  int nc_put_att_double(int ncid, int varid, String attName, int xtype, NativeLong len, double[] value);
+  int nc_put_att (int ncid, int varid, String name, int xtype, SizeT len, ByteBuffer value);
+  int nc_put_att_string(int ncid, int varid, String attName, SizeT len, String[] value);
+  int nc_put_att_text(int ncid, int varid, String attName, SizeT len, byte[] value);
+  int nc_put_att_uchar(int ncid, int varid, String attName, int xtype, SizeT len, byte[] value);
+  int nc_put_att_schar(int ncid, int varid, String attName, int xtype, SizeT len, byte[] value);
+  int nc_put_att_short(int ncid, int varid, String attName, int xtype, SizeT len, short[] value);
+  int nc_put_att_ushort(int ncid, int varid, String attName, int xtype, SizeT len, short[] value);
+  int nc_put_att_int(int ncid, int varid, String attName, int xtype, SizeT len, int[] value);
+  int nc_put_att_uint(int ncid, int varid, String attName, int xtype, SizeT len, int[] value);
+  int nc_put_att_longlong(int ncid, int varid, String attName, int xtype, SizeT len, long[] value);
+  int nc_put_att_ulonglong(int ncid, int varid, String attName, int xtype, SizeT len, long[] value);
+  int nc_put_att_float(int ncid, int varid, String attName, int xtype, SizeT len, float[] value);
+  int nc_put_att_double(int ncid, int varid, String attName, int xtype, SizeT len, double[] value);
   
   /* Extra netcdf-4 stuff. */
   
@@ -368,7 +361,7 @@ public interface Nc4prototypes extends Library {
   int nc_def_var_chunking(int ncid, int varid, int storage, SizeT[] chunksizesp);
 
   /* Inq chunking stuff for a var. */
-  int nc_inq_var_chunking(int ncid, int varid, IntByReference storagep, SizeT[] chunksizesp); // size_t *  ??
+  int nc_inq_var_chunking(int ncid, int varid, IntByReference storagep, SizeT[] chunksizesp);
   
   /* Define fill value behavior for a variable. This must be done after nc_def_var and before nc_enddef. */
   int nc_def_var_fill(int ncid, int varid, int no_fill, ByteBuffer fill_value); // const void *  ??
@@ -390,14 +383,14 @@ public interface Nc4prototypes extends Library {
   int nc_set_default_format(int format, IntByReference old_formatp);
   
   /* Set the cache size, nelems, and preemption policy. */
-  int nc_set_chunk_cache(NativeLong size, NativeLong nelems, float preemption);
+  int nc_set_chunk_cache(SizeT size, SizeT nelems, float preemption);
   
   /* Get the cache size, nelems, and preemption policy. */
-  int nc_get_chunk_cache(NativeLongByReference sizep, NativeLongByReference nelemsp, FloatByReference preemptionp);
+  int nc_get_chunk_cache(SizeTByReference sizep, SizeTByReference nelemsp, FloatByReference preemptionp);
   
   /* Set the per-variable cache size, nelems, and preemption policy. */
-  int nc_set_var_chunk_cache(int ncid, int varid, NativeLong size, NativeLong nelems, float preemption);
+  int nc_set_var_chunk_cache(int ncid, int varid, SizeT size, SizeT nelems, float preemption);
   
   /* Set the per-variable cache size, nelems, and preemption policy. */
-  int nc_get_var_chunk_cache(int ncid, int varid, NativeLongByReference sizep, NativeLongByReference nelemsp, FloatByReference preemptionp);  // size_t
+  int nc_get_var_chunk_cache(int ncid, int varid, SizeTByReference sizep, SizeTByReference nelemsp, FloatByReference preemptionp);  // size_t
 }
