@@ -16,7 +16,19 @@ import java.util.*;
  * Created by cwardgar on 2014/05/20.
  */
 public abstract class AbstractDsgSubsetWriter implements DsgSubsetWriter {
-    public List<VariableSimpleIF> getWantedVariables(FeatureDatasetPoint fdPoint, NcssParamsBean ncssParams)
+    protected final FeatureDatasetPoint fdPoint;
+    protected final NcssParamsBean ncssParams;
+    protected final List<VariableSimpleIF> wantedVariables;
+    protected final CalendarDateRange wantedRange;
+
+    public AbstractDsgSubsetWriter(FeatureDatasetPoint fdPoint, NcssParamsBean ncssParams) throws NcssException {
+        this.fdPoint = fdPoint;
+        this.ncssParams = ncssParams;
+        this.wantedVariables = getWantedVariables(fdPoint, ncssParams);
+        this.wantedRange = getWantedRange(ncssParams);
+    }
+
+    public static List<VariableSimpleIF> getWantedVariables(FeatureDatasetPoint fdPoint, NcssParamsBean ncssParams)
             throws VariableNotContainedInDatasetException {
         // restrict to these variables
         List<? extends VariableSimpleIF> dataVars = fdPoint.getDataVariables();
@@ -41,7 +53,7 @@ public abstract class AbstractDsgSubsetWriter implements DsgSubsetWriter {
         return wantedVars;
     }
 
-    public CalendarDateRange getWantedRange(NcssParamsBean ncssParams) throws NcssException {
+    public static CalendarDateRange getWantedRange(NcssParamsBean ncssParams) throws NcssException {
         CalendarDateRange wantedRange;
 
         // for closest time, set wantRange to the time LOOK - do we need +- increment ??

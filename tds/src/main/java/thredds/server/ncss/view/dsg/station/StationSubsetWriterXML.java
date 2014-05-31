@@ -1,12 +1,15 @@
 package thredds.server.ncss.view.dsg.station;
 
 import org.springframework.http.HttpHeaders;
+import thredds.server.ncss.exception.NcssException;
+import thredds.server.ncss.params.NcssParamsBean;
 import thredds.server.ncss.util.NcssRequestUtils;
 import thredds.util.ContentType;
 import ucar.ma2.Array;
 import ucar.ma2.StructureData;
 import ucar.nc2.VariableSimpleIF;
 import ucar.nc2.constants.CDM;
+import ucar.nc2.ft.FeatureDatasetPoint;
 import ucar.nc2.ft.point.StationPointFeature;
 import ucar.nc2.time.CalendarDateFormatter;
 import ucar.unidata.geoloc.Station;
@@ -17,7 +20,6 @@ import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.util.List;
 
 /**
  * Created by cwardgar on 2014/05/27.
@@ -25,7 +27,10 @@ import java.util.List;
 public class StationSubsetWriterXML extends AbstractStationSubsetWriter {
     private final XMLStreamWriter staxWriter;
 
-    public StationSubsetWriterXML(OutputStream out) throws XMLStreamException {
+    public StationSubsetWriterXML(FeatureDatasetPoint fdPoint, NcssParamsBean ncssParams, OutputStream out)
+            throws XMLStreamException, NcssException, IOException {
+        super(fdPoint, ncssParams);
+
         XMLOutputFactory factory = XMLOutputFactory.newInstance();
         staxWriter = factory.createXMLStreamWriter(out);
     }
@@ -45,7 +50,7 @@ public class StationSubsetWriterXML extends AbstractStationSubsetWriter {
     }
 
     @Override
-    public void writeHeader(List<VariableSimpleIF> wantedVariables) throws XMLStreamException {
+    public void writeHeader() throws XMLStreamException {
         staxWriter.writeStartDocument("UTF-8", "1.0");
         staxWriter.writeCharacters("\n");
         staxWriter.writeStartElement("stationFeatureCollection");
@@ -53,8 +58,7 @@ public class StationSubsetWriterXML extends AbstractStationSubsetWriter {
     }
 
     @Override
-    public void writePoint(StationPointFeature stationPointFeat, List<VariableSimpleIF> wantedVariables)
-            throws XMLStreamException, IOException {
+    public void writePoint(StationPointFeature stationPointFeat) throws XMLStreamException, IOException {
         Station station = stationPointFeat.getStation();
 
         staxWriter.writeStartElement("pointFeature");

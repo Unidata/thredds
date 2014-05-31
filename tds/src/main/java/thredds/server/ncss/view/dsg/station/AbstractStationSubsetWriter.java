@@ -1,11 +1,10 @@
 package thredds.server.ncss.view.dsg.station;
 
+import thredds.server.ncss.exception.NcssException;
 import thredds.server.ncss.params.NcssParamsBean;
 import thredds.server.ncss.view.dsg.AbstractDsgSubsetWriter;
-import ucar.nc2.VariableSimpleIF;
 import ucar.nc2.ft.*;
 import ucar.nc2.ft.point.StationPointFeature;
-import ucar.nc2.time.CalendarDateRange;
 import ucar.nc2.units.DateType;
 import ucar.unidata.geoloc.LatLonPoint;
 import ucar.unidata.geoloc.LatLonPointImpl;
@@ -20,31 +19,34 @@ import java.util.List;
  * Created by cwardgar on 2014/05/20.
  */
 public abstract class AbstractStationSubsetWriter extends AbstractDsgSubsetWriter {
-    public abstract void writeHeader(List<VariableSimpleIF> wantedVariables) throws Exception;
+    protected final StationTimeSeriesFeatureCollection stationFeatureCollection;
+    protected final List<Station> wantedStations;
 
-    public abstract void writePoint(StationPointFeature stationPointFeat, List<VariableSimpleIF> wantedVariables)
-            throws Exception;
-
-    public abstract void writeFooter() throws Exception;
-
-    @Override
-    public void write(FeatureDatasetPoint fdPoint, NcssParamsBean ncssParams, ucar.nc2.util.DiskCache2 diskCache)
-            throws Exception {
-        // Perform variables subset.
-        List<VariableSimpleIF> wantedVariables = getWantedVariables(fdPoint, ncssParams);
-
-        writeHeader(wantedVariables);
+    public AbstractStationSubsetWriter(FeatureDatasetPoint fdPoint, NcssParamsBean ncssParams)
+            throws NcssException, IOException {
+        super(fdPoint, ncssParams);
 
         List<FeatureCollection> featColList = fdPoint.getPointFeatureCollectionList();
         assert featColList.size() == 1 : "Is there ever a case when this is NOT 1?";
         assert featColList.get(0) instanceof StationTimeSeriesFeatureCollection :
                 "This class only deals with StationTimeSeriesFeatureCollections.";
 
-        StationTimeSeriesFeatureCollection stationFeatCol = (StationTimeSeriesFeatureCollection) featColList.get(0);
+        this.stationFeatureCollection = (StationTimeSeriesFeatureCollection) featColList.get(0);
+        this.wantedStations = getStationsInSubset(stationFeatureCollection, ncssParams);
+    }
+
+    public abstract void writeHeader() throws Exception;
+
+    public abstract void writePoint(StationPointFeature stationPointFeat) throws Exception;
+
+    public abstract void writeFooter() throws Exception;
+
+    @Override
+    public void write() throws Exception {
+        writeHeader();
 
         // Perform spatial subset.
-        List<Station> wantedStations = getStationsInSubset(stationFeatCol, ncssParams);
-        StationTimeSeriesFeatureCollection subsettedStationFeatCol = stationFeatCol.subset(wantedStations);
+        StationTimeSeriesFeatureCollection subsettedStationFeatCol = stationFeatureCollection.subset(wantedStations);
 
         subsettedStationFeatCol.resetIteration();
         try {
@@ -54,15 +56,14 @@ public abstract class AbstractStationSubsetWriter extends AbstractDsgSubsetWrite
                 // Perform temporal subset. We do this even when a time instant is specified, in which case wantedRange
                 // represents a sanity check (i.e. "give me the feature closest to the specified time, but it must at
                 // least be within an hour").
-                CalendarDateRange wantedRange = getWantedRange(ncssParams);
                 StationTimeSeriesFeature subsettedStationFeat = stationFeat.subset(wantedRange);
 
                 if (ncssParams.getTime() != null) {
                     DateType wantedDateType = new DateType(ncssParams.getTime(), null, null);  // Parse time string.
                     long wantedTime = wantedDateType.getCalendarDate().getMillis();
-                    writePointWithClosestTime(subsettedStationFeat, wantedVariables, wantedTime);
+                    writePointWithClosestTime(subsettedStationFeat, wantedTime);
                 } else {
-                    writeAllPoints(subsettedStationFeat, wantedVariables);
+                    writeAllPoints(subsettedStationFeat);
                 }
             }
         } finally {
@@ -72,7 +73,7 @@ public abstract class AbstractStationSubsetWriter extends AbstractDsgSubsetWrite
         writeFooter();
     }
 
-    protected void writeAllPoints(StationTimeSeriesFeature stationFeat, List<VariableSimpleIF> wantedVariables)
+    protected void writeAllPoints(StationTimeSeriesFeature stationFeat)
             throws Exception {
         stationFeat.resetIteration();
         try {
@@ -80,15 +81,14 @@ public abstract class AbstractStationSubsetWriter extends AbstractDsgSubsetWrite
                 PointFeature pointFeat = stationFeat.next();
                 assert pointFeat instanceof StationPointFeature :
                         "Expected pointFeat to be a StationPointFeature, not a " + pointFeat.getClass().getSimpleName();
-                writePoint((StationPointFeature) pointFeat, wantedVariables);
+                writePoint((StationPointFeature) pointFeat);
             }
         } finally {
             stationFeat.finish();
         }
     }
 
-    protected void writePointWithClosestTime(StationTimeSeriesFeature stationFeat,
-            List<VariableSimpleIF> wantedVariables, long wantedTime) throws Exception {
+    protected void writePointWithClosestTime(StationTimeSeriesFeature stationFeat, long wantedTime) throws Exception {
         PointFeature pointWithClosestTime = null;
         long smallestDiff = Long.MAX_VALUE;
 
@@ -109,7 +109,7 @@ public abstract class AbstractStationSubsetWriter extends AbstractDsgSubsetWrite
                 assert pointWithClosestTime instanceof StationPointFeature :
                         "Expected pointWithClosestTime to be a StationPointFeature, " +
                         "not a " + pointWithClosestTime.getClass().getSimpleName();
-                writePoint((StationPointFeature) pointWithClosestTime, wantedVariables);
+                writePoint((StationPointFeature) pointWithClosestTime);
             }
         } finally {
             stationFeat.finish();

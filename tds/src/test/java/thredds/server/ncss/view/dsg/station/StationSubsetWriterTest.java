@@ -87,8 +87,9 @@ public class StationSubsetWriterTest {
 
         try {
             ByteArrayOutputStream actualOutputStream = new ByteArrayOutputStream();
-            DsgSubsetWriter subsetWriter = DsgSubsetWriterFactory.newInstance(actualOutputStream, wantedType, format);
-            subsetWriter.write(fdPoint, ncssParams, diskCache);
+            DsgSubsetWriter subsetWriter = DsgSubsetWriterFactory.newInstance(
+                    fdPoint, ncssParams, diskCache, actualOutputStream, wantedType, format);
+            subsetWriter.write();
 
 //            DsgSubsetWriter subsetWriterConsole = DsgSubsetWriterFactory.newInstance(System.out, wantedType, format);
 //            subsetWriterConsole.write(fdPoint, ncssParams, diskCache);

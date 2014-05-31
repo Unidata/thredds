@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <netcdf xmlns="http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2">
     <dimension name="station" length="3"/>
-    <dimension name="time" length="5" isUnlimited="true"/>
+    <dimension name="time" length="5"/>
 
     <variable name="pr" shape="station time" type="float">
         <attribute name="standard_name" value="precipitation_flux"/>
@@ -52,11 +52,11 @@
         <attribute name="cf_role" value="timeseries_id"/>
         <values>AAA BBB CCC</values>
     </variable>
-	
-	<variable name="station_description" shape="station" type="string">
-	    <attribute name="standard_name" value="station_description"/>
-		<values>DescriptionForAAA DescriptionForBBB DescriptionForCCC</values>
-	</variable>
+    
+    <variable name="station_description" shape="station" type="string">
+        <attribute name="standard_name" value="station_description"/>
+        <values>DescriptionForAAA DescriptionForBBB DescriptionForCCC</values>
+    </variable>
 
     <attribute name="featureType" value="timeSeries"/>
     <attribute name="Conventions" value="CF-1.6"/>
