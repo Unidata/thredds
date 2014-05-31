@@ -190,8 +190,7 @@ public interface Nc4prototypes extends Library {
   // variable info
   int nc_inq_nvars(int ncid, IntByReference nvarsp);
   int nc_inq_varids(int ncid, IntByReference nvars, int[] varids);  
-  int nc_inq_var(int ncid, int varid, byte[] name, IntByReference xtypep,
-          IntByReference ndimsp, int[] dimidsp, IntByReference nattsp);
+  int nc_inq_var(int ncid, int varid, byte[] name, IntByReference xtypep, IntByReference ndimsp, int[] dimidsp, IntByReference nattsp);
 
   // user types
   int nc_inq_typeids(int ncid, IntByReference ntypes, Pointer np); // allow to pass NULL
@@ -273,6 +272,9 @@ public interface Nc4prototypes extends Library {
 
   /* Rename a group */
   int nc_rename_grp(int grpid, String name);
+
+  /* Write entire var of any type. */
+  int nc_put_var(int ncid, int varid, ByteBuffer bbuff);
 
   // write array section
   int nc_put_vara(int ncid, int varid, SizeT[] startp, SizeT[] countp, ByteBuffer bbuff);

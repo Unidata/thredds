@@ -51,10 +51,7 @@ import ucar.ma2.*;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.List;
-import java.util.ArrayList;
-import java.util.Map;
-import java.util.HashMap;
+import java.util.*;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.ShortBuffer;
@@ -101,7 +98,8 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
   static private final boolean debug = false,
           debugCompoundAtt = false,
           debugUserTypes = false,
-          debugWrite = false;
+          debugLoad = true,
+          debugWrite = true;
 
   /**
    * Test if the netcdf C library is present and loaded
@@ -181,7 +179,7 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
       }
       //Native.setProtected(true);
       nc4 = (Nc4prototypes) Native.loadLibrary(libName, Nc4prototypes.class);
-      if (debug)
+      if (debugLoad)
         System.out.printf(" Netcdf nc_inq_libvers='%s' isProtected=%s %n ", nc4.nc_inq_libvers(), Native.isProtected());
     }
     return nc4;
@@ -445,7 +443,7 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
     return false;
   }
 
-  private String makeString(byte[] b) throws IOException {
+  private String makeString(byte[] b) {
     // null terminates
     int count = 0;
     while (count < b.length) {
@@ -1043,6 +1041,34 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
     }
     return sb.toString();
   }
+
+  private boolean nc_inq_var(Formatter f, int grpid, int varno) throws IOException {
+    byte[] name = new byte[Nc4prototypes.NC_MAX_NAME + 1];
+    IntByReference xtypep = new IntByReference();
+    IntByReference ndimsp = new IntByReference();
+    int[] dimids = new int[Nc4prototypes.NC_MAX_DIMS];
+    IntByReference nattsp = new IntByReference();
+
+    int ret = nc4.nc_inq_var(grpid, varno, name, xtypep, ndimsp, dimids, nattsp);
+    if (ret != 0)
+      return false;
+
+    String vname = makeString(name);
+    int typeid = xtypep.getValue();
+    ConvertedType ctype = convertDataType(typeid);
+
+    f.format("%s %s(", ctype.dt, vname);
+    for (int i= 0; i < ndimsp.getValue(); i++) {
+      f.format("%d ", dimids[i]);
+    }
+
+    String dimList = makeDimList(grpid, ndimsp.getValue(), dimids);
+
+    f.format(") dims=(%s)%n", dimList);
+    return true;
+  }
+
+
 
   //////////////////////////////////////////////////////////////////////////
 
@@ -2172,6 +2198,7 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
 
     // done with define mode
     nc4.nc_enddef(ncid);
+    if (debugWrite) System.out.printf("create done%n%n");
   }
 
     /*
@@ -2350,7 +2377,7 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
       ret = nc4.nc_insert_compound(ncid, typeid, v.getShortName(), new SizeT(offset), field_typeid);
       if (ret != 0)
         throw new IOException(nc4.nc_strerror(ret) + " on\n" + s);
-      if (debugWrite) System.out.printf(" added compound type member %s%n", v.getShortName());
+      if (debugWrite) System.out.printf(" added compound type member %s to %d%n", v.getShortName(), typeid);
 
       int ndims = v.getRank();
       int[] dims = new int[ndims];
@@ -2629,10 +2656,23 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
 
     if (debugWrite) System.out.printf("writing variable %s (grpid %d varid %d) %n", s.getShortName(), grpid, varid);
 
+    // test variable exists
+    Formatter f = new Formatter();
+    boolean ok = nc_inq_var(f, grpid, varid);
+    System.out.printf("nc_inq_var ok=%s %s%n", ok, f);
+
     // write the data
-    int ret = nc4.nc_put_vars(grpid, varid, origin, shape, stride, bbuff);
+    int ret = nc4.nc_put_var(grpid, varid, bbuff);
+    // int ret = nc4.nc_put_vars(grpid, varid, origin, shape, stride, bbuff);
     if (ret != 0)
-      throw new IOException(ret + ": " + nc4.nc_strerror(ret));
+      throw new IOException(errMessage(ret, grpid, varid));
+  }
+
+  private String errMessage(int ret, int grpid, int varid) {
+    Formatter f = new Formatter();
+    f.format("%d: %s grpid=%d varid=%d", ret, nc4.nc_strerror(ret), grpid, varid);
+    return f.toString();
+
   }
 
   private void writeDataAll(Variable v, int grpid, int varid, int typeid, Array values) throws IOException, InvalidRangeException {

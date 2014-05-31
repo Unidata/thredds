@@ -59,17 +59,23 @@ public class TestNc4Structures {
   }
 
   @Test
-  public void writeStructure() throws IOException, InvalidRangeException {
+  public void writeStructureFromNids() throws IOException, InvalidRangeException {
     String datasetIn = TestDir.cdmUnitTestDir  + "formats/nexrad/level3/KBMX_SDUS64_NTVBMX_201104272341";
-    String datasetOut = TestLocal.temporaryDataDir + "TestNc4Structures.nc4";
+    String datasetOut = TestLocal.temporaryDataDir + "TestNc4StructuresFromNids.nc4";
+    writeStructure(datasetIn, datasetOut);
+  }
 
+  // @Test
+  public void writeStructure() throws IOException, InvalidRangeException {
+    String datasetIn = TestDir.cdmUnitTestDir  + "formats/netcdf4/compound/tst_compounds.nc4";
+    String datasetOut = TestLocal.temporaryDataDir + "TestNc4Structures.nc4";
     writeStructure(datasetIn, datasetOut);
   }
 
   private void writeStructure(String datasetIn, String datasetOut) throws IOException {
     CancelTaskImpl cancel = new CancelTaskImpl();
     NetcdfFile ncfileIn = ucar.nc2.dataset.NetcdfDataset.openFile(datasetIn, cancel);
-    System.out.printf("NetcdfDatataset read from %s write to %s ", datasetIn, datasetOut);
+    System.out.printf("NetcdfDatataset read from %s write to %s %n", datasetIn, datasetOut);
 
     FileWriter2 writer = new ucar.nc2.FileWriter2(ncfileIn, datasetOut, NetcdfFileWriter.Version.netcdf4, null);
     NetcdfFile ncfileOut = writer.write(cancel);

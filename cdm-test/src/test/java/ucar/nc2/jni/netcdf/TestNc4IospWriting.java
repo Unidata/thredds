@@ -37,15 +37,47 @@ public class TestNc4IospWriting {
   }
 
   @Test
-  public void easy() throws IOException {
-    copyFile("Q:\\cdmUnitTest\\formats\\netcdf3\\jan.nc", "C:/temp/jan.nc4", NetcdfFileWriter.Version.netcdf4);
-    //copyFile("C:/dev/github/thredds/cdm/src/test/data/testWriteRecord.nc", "C:/temp/testWriteRecord.classic.nc3", NetcdfFileWriter.Version.netcdf3c);
+  public void writeNetcdf4Files() throws IOException {
+    int count = 0;
+    count += TestDir.actOnAll(TestDir.cdmUnitTestDir + "formats/netcdf4/files/", new MyFileFilter(), new MyAct(), true);
+    System.out.printf("***READ %d files FAIL = %d%n", count, countNotOK);
   }
 
   @Test
-  public void writeAllNetcdf4() throws IOException {
+  public void writeNetcdf4Compound() throws IOException {
     int count = 0;
-    count += TestDir.actOnAll(TestDir.cdmUnitTestDir + "formats/netcdf4/files/", new MyFileFilter(), new MyAct(), true);
+    count += TestDir.actOnAll(TestDir.cdmUnitTestDir + "formats/netcdf4/compound/", new MyFileFilter(), new MyAct(), true);
+    System.out.printf("***READ %d files FAIL = %d%n", count, countNotOK);
+  }
+
+  // enum not ready
+
+  //@Test
+  public void writeHdf5Samples() throws IOException {
+    int count = 0;
+    count += TestDir.actOnAll(TestDir.cdmUnitTestDir + "formats/hdf5/samples/", new MyFileFilter(), new MyAct(), true);
+    System.out.printf("***READ %d files FAIL = %d%n", count, countNotOK);
+  }
+
+  //@Test
+  public void writeHdf5Support() throws IOException {
+    int count = 0;
+    count += TestDir.actOnAll(TestDir.cdmUnitTestDir + "formats/hdf5/support/", new MyFileFilter(), new MyAct(), true);
+    System.out.printf("***READ %d files FAIL = %d%n", count, countNotOK);
+  }
+
+  // @Test
+  public void writeNetcdf4Tst() throws IOException {
+    int count = 0;
+    count += TestDir.actOnAll(TestDir.cdmUnitTestDir + "formats/netcdf4/tst/", new MyFileFilter(), new MyAct(), true);
+    System.out.printf("***READ %d files FAIL = %d%n", count, countNotOK);
+  }
+
+
+  @Test
+  public void writeNetcdf4Zender() throws IOException {
+    int count = 0;
+    count += TestDir.actOnAll(TestDir.cdmUnitTestDir + "formats/netcdf4/zender/", new MyFileFilter(), new MyAct(), true);
     System.out.printf("***READ %d files FAIL = %d%n", count, countNotOK);
   }
 

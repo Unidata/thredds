@@ -30,13 +30,6 @@ public class TestWriteMisc {
  */
 
   @Test
-  public void fail() {
-    System.err.printf("%s%n", "HelloErr");
-    System.out.printf("%s%n", "Hello");
-    assert false;         // convince myself this works
-  }
-
-  @Test
   public void testUnsignedAttribute() throws IOException, InvalidRangeException {
      String filename = TestLocal.temporaryDataDir + "testUnsignedAttribute2.nc";
      //String filename = "C:/tmp/testUnsignedAttribute3.nc";
