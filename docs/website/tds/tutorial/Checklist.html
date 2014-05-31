@@ -23,8 +23,17 @@
       Tomcat installation.
     </li>
     <li><a href="images/fileIcon.jpg">Download and install</a> the latest version of Tomcat 7.</li>
-    <li>In <strong>${tomcat_home}/bin</strong> <a href="GettingStarted.html#makeSetenv">create a setenv.sh</a> shell script, and set the values of <strong>$JAVA_HOME,
-      $JAVA_OPTS </strong>and<strong> $CATALINA_BASE</strong>.
+    <li>In <strong>${tomcat_home}/bin</strong> <a href="GettingStarted.html#makeSetenv">create a setenv.sh</a> shell script, and set the values of <strong>$JAVA_HOME, $JAVA_OPTS </strong>and<strong> $CATALINA_BASE</strong>:
+      <pre>
+      #!/bin/sh
+      JAVA_HOME="/usr/local/tds/jdk1.7.0_60"  
+      export JAVA_HOME
+          
+      JAVA_OPTS="-Xmx4096m -Xms512m -server -Djava.awt.headless=true -Djava.util.prefs.systemRoot=$CATALINA_BASE/content/thredds/javaUtilPrefs"  
+      export JAVA_OPTS
+          
+      CATALINA_BASE="/usr/local/tds/apache-tomcat-7.0.42"  
+      export CATALINA_BASE</pre>
     </li>
     <li>Purchase a real certificate from a <a href="http://en.wikipedia.org/wiki/Certificate_authority">certificate authority</a>, so users are not confused and
       question the legitimacy of your web site.  <!-- (Otherwise, <a href="BasicTomcatAndTDSSecurity.html#createCert">create a self-signed certificate</a>).-->

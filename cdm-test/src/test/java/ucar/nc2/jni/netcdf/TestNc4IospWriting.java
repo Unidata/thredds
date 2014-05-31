@@ -37,6 +37,12 @@ public class TestNc4IospWriting {
   }
 
   @Test
+  public void easy() throws IOException {
+    copyFile("Q:\\cdmUnitTest\\formats\\netcdf3\\jan.nc", "C:/temp/jan.nc4", NetcdfFileWriter.Version.netcdf4);
+    //copyFile("C:/dev/github/thredds/cdm/src/test/data/testWriteRecord.nc", "C:/temp/testWriteRecord.classic.nc3", NetcdfFileWriter.Version.netcdf3c);
+  }
+
+  @Test
   public void writeAllNetcdf4() throws IOException {
     int count = 0;
     count += TestDir.actOnAll(TestDir.cdmUnitTestDir + "formats/netcdf4/files/", new MyFileFilter(), new MyAct(), true);
@@ -82,7 +88,7 @@ public class TestNc4IospWriting {
   private String tempDir = TestDir.temporaryLocalDataDir; // "C:/temp/";
   private boolean copyFile(String datasetIn, String datasetOut, NetcdfFileWriter.Version version) throws IOException {
 
-     System.out.printf("copy %s to %s%n", datasetIn, datasetOut);
+     System.out.printf("TestNc4IospWriting copy %s to %s%n", datasetIn, datasetOut);
      NetcdfFile ncfileIn = ucar.nc2.NetcdfFile.open(datasetIn, null);
      FileWriter2 writer2 = new FileWriter2(ncfileIn, datasetOut, version, null);
      NetcdfFile ncfileOut = writer2.write();

@@ -31,6 +31,10 @@ import com.eclipsesource.restfuse.Response;
 import com.eclipsesource.restfuse.annotation.Context;
 import com.eclipsesource.restfuse.annotation.HttpTest;
 
+/*
+  These tests fail on jenkins, but work locally
+ */
+
 @RunWith(HttpJUnitRunner.class)
 public class NcssIntegrationTest {
 

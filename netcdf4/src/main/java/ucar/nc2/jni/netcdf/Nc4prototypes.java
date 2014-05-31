@@ -134,10 +134,10 @@ public interface Nc4prototypes extends Library {
     public Pointer p;    /* Pointer to VL data */
     protected List getFieldOrder()
     {
-	List fields = new ArrayList();
-	fields.add("len");
-	fields.add("p");
-	return fields;
+      List fields = new ArrayList();
+      fields.add("len");
+      fields.add("p");
+      return fields;
     }
   }
 
@@ -202,11 +202,11 @@ public interface Nc4prototypes extends Library {
   int nc_inq_enum(int ncid, int xtype, byte[] name, IntByReference baseType,
               NativeLongByReference base_sizep, NativeLongByReference num_membersp); //size_t
   int nc_inq_enum_member(int ncid, int xtype, int idx, byte[] name, IntByReference value); // void *
-  int nc_inq_opaque(int ncid, int xtype, byte[] name, NativeLongByReference sizep);
+  int nc_inq_opaque(int ncid, int xtype, byte[] name, NativeLongByReference sizep);   //size_t
 
   // compound user type
-  int nc_inq_compound(int ncid, int xtype, byte[] name, NativeLongByReference sizep, NativeLongByReference nfieldsp);
-  int nc_inq_compound_field(int ncid, int xtype, int fieldid, byte[] name, 
+  int nc_inq_compound(int ncid, int xtype, byte[] name, NativeLongByReference sizep, NativeLongByReference nfieldsp);  // size_t
+  int nc_inq_compound_field(int ncid, int xtype, int fieldid, byte[] name,                                             // size_t
 	  NativeLongByReference offsetp, IntByReference field_typeidp, IntByReference ndimsp, int[] dims);
 
   // read entire array
@@ -228,33 +228,33 @@ public interface Nc4prototypes extends Library {
 
   // read array section
 
-  int nc_get_vara(int ncid, int varid, NativeLong[] startp, NativeLong[] countp, ByteBuffer bbuff);
-  int nc_get_vara_uchar(int ncid, int varid, NativeLong[] startp, NativeLong[] countp, byte[] ip);
-  int nc_get_vara_schar(int ncid, int varid, NativeLong[] startp, NativeLong[] countp, byte[] ip);
-  int nc_get_vara_text(int ncid, int varid, NativeLong[] startp, NativeLong[] countp, byte[] ip);
-  int nc_get_vara_short(int ncid, int varid, NativeLong[] startp, NativeLong[] countp, short[] ip);
-  int nc_get_vara_ushort(int ncid, int varid, NativeLong[] startp, NativeLong[] countp, short[] ip);
-  int nc_get_vara_int(int ncid, int varid, NativeLong[] startp, NativeLong[] countp, int[] ip);
-  int nc_get_vara_uint(int ncid, int varid, NativeLong[] startp, NativeLong[] countp, int[] ip);
-  int nc_get_vara_longlong(int ncid, int varid, NativeLong[] startp, NativeLong[] countp, long[] ip);
-  int nc_get_vara_ulonglong(int ncid, int varid, NativeLong[] startp, NativeLong[] countp, long[] ip);
-  int nc_get_vara_float(int ncid, int varid, NativeLong[] startp, NativeLong[] countp, float[] ip);
-  int nc_get_vara_double(int ncid, int varid, NativeLong[] startp, NativeLong[] countp, double[] ip);
-  int nc_get_vara_string(int ncid, int varid, NativeLong[] startp, NativeLong[] countp, String[] ip);
+  int nc_get_vara(int ncid, int varid, SizeT[] startp, SizeT[] countp, ByteBuffer bbuff);
+  int nc_get_vara_uchar(int ncid, int varid, SizeT[] startp, SizeT[] countp, byte[] ip);
+  int nc_get_vara_schar(int ncid, int varid, SizeT[] startp, SizeT[] countp, byte[] ip);
+  int nc_get_vara_text(int ncid, int varid, SizeT[] startp, SizeT[] countp, byte[] ip);
+  int nc_get_vara_short(int ncid, int varid, SizeT[] startp, SizeT[] countp, short[] ip);
+  int nc_get_vara_ushort(int ncid, int varid, SizeT[] startp, SizeT[] countp, short[] ip);
+  int nc_get_vara_int(int ncid, int varid, SizeT[] startp, SizeT[] countp, int[] ip);
+  int nc_get_vara_uint(int ncid, int varid, SizeT[] startp, SizeT[] countp, int[] ip);
+  int nc_get_vara_longlong(int ncid, int varid, SizeT[] startp, SizeT[] countp, long[] ip);
+  int nc_get_vara_ulonglong(int ncid, int varid, SizeT[] startp, SizeT[] countp, long[] ip);
+  int nc_get_vara_float(int ncid, int varid, SizeT[] startp, SizeT[] countp, float[] ip);
+  int nc_get_vara_double(int ncid, int varid, SizeT[] startp, SizeT[] countp, double[] ip);
+  int nc_get_vara_string(int ncid, int varid, SizeT[] startp, SizeT[] countp, String[] ip);
 
-  int nc_get_vars(int ncid, int varid, NativeLong[] startp, NativeLong[] countp, NativeLong[] stridep, ByteBuffer bbuff);
-  int nc_get_vars_uchar(int ncid, int varid, NativeLong[] startp, NativeLong[] countp, NativeLong[] stridep, byte[] ip);
-  int nc_get_vars_schar(int ncid, int varid, NativeLong[] startp, NativeLong[] countp, NativeLong[] stridep, byte[] ip);
-  int nc_get_vars_text(int ncid, int varid, NativeLong[] startp, NativeLong[] countp, NativeLong[] stridep, byte[] ip);
-  int nc_get_vars_short(int ncid, int varid, NativeLong[] startp, NativeLong[] countp, NativeLong[] stridep, short[] ip);
-  int nc_get_vars_ushort(int ncid, int varid, NativeLong[] startp, NativeLong[] countp, NativeLong[] stridep, short[] ip);
-  int nc_get_vars_int(int ncid, int varid, NativeLong[] startp, NativeLong[] countp, NativeLong[] stridep, int[] ip);
-  int nc_get_vars_uint(int ncid, int varid, NativeLong[] startp, NativeLong[] countp, NativeLong[] stridep, int[] ip);
-  int nc_get_vars_longlong(int ncid, int varid, NativeLong[] startp, NativeLong[] countp, NativeLong[] stridep, long[] ip);
-  int nc_get_vars_ulonglong(int ncid, int varid, NativeLong[] startp, NativeLong[] countp, NativeLong[] stridep, long[] ip);
-  int nc_get_vars_float(int ncid, int varid, NativeLong[] startp, NativeLong[] countp, NativeLong[] stridep, float[] ip);
-  int nc_get_vars_double(int ncid, int varid, NativeLong[] startp, NativeLong[] countp, NativeLong[] stridep, double[] ip);
-  int nc_get_vars_string(int ncid, int varid, NativeLong[] startp, NativeLong[] countp, NativeLong[] stridep, String[] ip);
+  int nc_get_vars(int ncid, int varid, SizeT[] startp, SizeT[] countp, SizeT[] stridep, ByteBuffer bbuff);
+  int nc_get_vars_uchar(int ncid, int varid, SizeT[] startp, SizeT[] countp, SizeT[] stridep, byte[] ip);
+  int nc_get_vars_schar(int ncid, int varid, SizeT[] startp, SizeT[] countp, SizeT[] stridep, byte[] ip);
+  int nc_get_vars_text(int ncid, int varid, SizeT[] startp, SizeT[] countp, SizeT[] stridep, byte[] ip);
+  int nc_get_vars_short(int ncid, int varid, SizeT[] startp, SizeT[] countp, SizeT[] stridep, short[] ip);
+  int nc_get_vars_ushort(int ncid, int varid, SizeT[] startp, SizeT[] countp, SizeT[] stridep, short[] ip);
+  int nc_get_vars_int(int ncid, int varid, SizeT[] startp, SizeT[] countp, SizeT[] stridep, int[] ip);
+  int nc_get_vars_uint(int ncid, int varid, SizeT[] startp, SizeT[] countp, SizeT[] stridep, int[] ip);
+  int nc_get_vars_longlong(int ncid, int varid, SizeT[] startp, SizeT[] countp, SizeT[] stridep, long[] ip);
+  int nc_get_vars_ulonglong(int ncid, int varid, SizeT[] startp, SizeT[] countp, SizeT[] stridep, long[] ip);
+  int nc_get_vars_float(int ncid, int varid, SizeT[] startp, SizeT[] countp, SizeT[] stridep, float[] ip);
+  int nc_get_vars_double(int ncid, int varid, SizeT[] startp, SizeT[] countp, SizeT[] stridep, double[] ip);
+  int nc_get_vars_string(int ncid, int varid, SizeT[] startp, SizeT[] countp, SizeT[] stridep, String[] ip);
 
   //////////////////////////////////////////////////////////////////////////////////
   //// writing
@@ -271,44 +271,46 @@ public interface Nc4prototypes extends Library {
   int nc_def_dim(int ncid,  String name, NativeLong len, IntByReference dimid);
   int nc_def_var (int ncid, String name, NativeLong xtype, int ndims, int[] dimids, IntByReference varidp);
 
-  int nc_def_compound(int ncid, NativeLong size, String name, IntByReference typeidp);
-  int nc_insert_compound(int ncid, int typeid, String name, NativeLong offset, int field_typeid);
+  int nc_def_compound(int ncid, SizeT size, String name, IntByReference typeidp);
+  int nc_insert_compound(int ncid, int typeid, String name, SizeT offset, int field_typeid);
 
   /* Rename a group */
   int nc_rename_grp(int grpid, String name);
 
   // write array section
-  int nc_put_vara(int ncid, int varid, NativeLong[] startp, NativeLong[] countp, ByteBuffer bbuff);
-  int nc_put_vara_uchar(int ncid, int varid, NativeLong[] startp, NativeLong[] countp, byte[] ip);
-  int nc_put_vara_schar(int ncid, int varid, NativeLong[] startp, NativeLong[] countp, byte[] ip);
-  int nc_put_vara_text(int ncid, int varid, NativeLong[] startp, NativeLong[] countp, byte[] ip);
-  int nc_put_vara_short(int ncid, int varid, NativeLong[] startp, NativeLong[] countp, short[] ip);
-  int nc_put_vara_ushort(int ncid, int varid, NativeLong[] startp, NativeLong[] countp, short[] ip);
-  int nc_put_vara_int(int ncid, int varid, NativeLong[] startp, NativeLong[] countp, int[] ip);
-  int nc_put_vara_uint(int ncid, int varid, NativeLong[] startp, NativeLong[] countp, int[] ip);
-  int nc_put_vara_longlong(int ncid, int varid, NativeLong[] startp, NativeLong[] countp, long[] ip);
-  int nc_put_vara_ulonglong(int ncid, int varid, NativeLong[] startp, NativeLong[] countp, long[] ip);
-  int nc_put_vara_float(int ncid, int varid, NativeLong[] startp, NativeLong[] countp, float[] ip);
-  int nc_put_vara_double(int ncid, int varid, NativeLong[] startp, NativeLong[] countp, double[] ip);
+  int nc_put_vara(int ncid, int varid, SizeT[] startp, SizeT[] countp, ByteBuffer bbuff);
+  int nc_put_vara_uchar(int ncid, int varid, SizeT[] startp, SizeT[] countp, byte[] ip);
+  int nc_put_vara_schar(int ncid, int varid, SizeT[] startp, SizeT[] countp, byte[] ip);
+  int nc_put_vara_text(int ncid, int varid, SizeT[] startp, SizeT[] countp, byte[] ip);
+  int nc_put_vara_short(int ncid, int varid, SizeT[] startp, SizeT[] countp, short[] ip);
+  int nc_put_vara_ushort(int ncid, int varid, SizeT[] startp, SizeT[] countp, short[] ip);
+  int nc_put_vara_int(int ncid, int varid, SizeT[] startp, SizeT[] countp, int[] ip);
+  int nc_put_vara_uint(int ncid, int varid, SizeT[] startp, SizeT[] countp, int[] ip);
+  int nc_put_vara_longlong(int ncid, int varid, SizeT[] startp, SizeT[] countp, long[] ip);
+  int nc_put_vara_ulonglong(int ncid, int varid, SizeT[] startp, SizeT[] countp, long[] ip);
+  int nc_put_vara_float(int ncid, int varid, SizeT[] startp, SizeT[] countp, float[] ip);
+  int nc_put_vara_double(int ncid, int varid, SizeT[] startp, SizeT[] countp, double[] ip);
 
 /*int nc_get_vara_string(int ncid, int varid, const size_t *startp, const size_t *countp, const ptrdiff_t *stridep, char **ip);  */
-  int nc_put_vara_string(int ncid, int varid, NativeLong[] startp, NativeLong[] countp, NativeLong[] stridep, String[] ip);
+  int nc_put_vara_string(int ncid, int varid, SizeT[] startp, SizeT[] countp, SizeT[] stridep, String[] ip);
 
-  int nc_put_vars(int ncid, int varid, NativeLong[] startp, NativeLong[] countp, NativeLong[] stridep, ByteBuffer bbuff);
-  int nc_put_vars_uchar(int ncid, int varid, NativeLong[] startp, NativeLong[] countp, NativeLong[] stridep, byte[] ip);
-  int nc_put_vars_schar(int ncid, int varid, NativeLong[] startp, NativeLong[] countp, NativeLong[] stridep, byte[] ip);
-  int nc_put_vars_text(int ncid, int varid, NativeLong[] startp, NativeLong[] countp, NativeLong[] stridep, byte[] ip);
-  int nc_put_vars_short(int ncid, int varid, NativeLong[] startp, NativeLong[] countp, NativeLong[] stridep, short[] ip);
-  int nc_put_vars_ushort(int ncid, int varid, NativeLong[] startp, NativeLong[] countp, NativeLong[] stridep, short[] ip);
-  int nc_put_vars_int(int ncid, int varid, NativeLong[] startp, NativeLong[] countp, NativeLong[] stridep, int[] ip);
-  int nc_put_vars_uint(int ncid, int varid, NativeLong[] startp, NativeLong[] countp, NativeLong[] stridep, int[] ip);
-  int nc_put_vars_longlong(int ncid, int varid, NativeLong[] startp, NativeLong[] countp, NativeLong[] stridep, long[] ip);
-  int nc_put_vars_ulonglong(int ncid, int varid, NativeLong[] startp, NativeLong[] countp, NativeLong[] stridep, long[] ip);
-  int nc_put_vars_float(int ncid, int varid, NativeLong[] startp, NativeLong[] countp, NativeLong[] stridep, float[] ip);
-  int nc_put_vars_double(int ncid, int varid, NativeLong[] startp, NativeLong[] countp, NativeLong[] stridep, double[] ip);
+  // int nc_put_vars_text(int ncid, int varid, const size_t *startp, const size_t *countp, const ptrdiff_t *stridep, const char *op);
+  int nc_put_vars(int ncid, int varid, SizeT[] startp, SizeT[] countp, SizeT[] stridep, ByteBuffer bbuff);
 
-/*int nc_get_vars_string(int ncid, int varid, const size_t *startp, const size_t *countp, const ptrdiff_t *stridep, char **ip);  */
-  int nc_put_vars_string(int ncid, int varid, NativeLong[] startp, NativeLong[] countp, NativeLong[] stridep, String[] ip);
+  // nc_put_vars_uchar(int ncid, int varid, const size_t *startp, const size_t *countp, const ptrdiff_t *stridep, const unsigned char *op);
+  int nc_put_vars_uchar(int ncid, int varid, SizeT[] startp, SizeT[] countp, SizeT[] stridep, byte[] ip);
+
+  int nc_put_vars_schar(int ncid, int varid, SizeT[] startp, SizeT[] countp, SizeT[] stridep, byte[] ip);
+  int nc_put_vars_text(int ncid, int varid, SizeT[] startp, SizeT[] countp, SizeT[] stridep, byte[] ip);
+  int nc_put_vars_short(int ncid, int varid, SizeT[] startp, SizeT[] countp, SizeT[] stridep, short[] ip);
+  int nc_put_vars_ushort(int ncid, int varid, SizeT[] startp, SizeT[] countp, SizeT[] stridep, short[] ip);
+  int nc_put_vars_int(int ncid, int varid, SizeT[] startp, SizeT[] countp, SizeT[] stridep, int[] ip);
+  int nc_put_vars_uint(int ncid, int varid, SizeT[] startp, SizeT[] countp, SizeT[] stridep, int[] ip);
+  int nc_put_vars_longlong(int ncid, int varid, SizeT[] startp, SizeT[] countp, SizeT[] stridep, long[] ip);
+  int nc_put_vars_ulonglong(int ncid, int varid, SizeT[] startp, SizeT[] countp, SizeT[] stridep, long[] ip);
+  int nc_put_vars_float(int ncid, int varid, SizeT[] startp, SizeT[] countp, SizeT[] stridep, float[] ip);
+  int nc_put_vars_double(int ncid, int varid, SizeT[] startp, SizeT[] countp, SizeT[] stridep, double[] ip);
+  int nc_put_vars_string(int ncid, int varid, SizeT[] startp, SizeT[] countp, SizeT[] stridep, String[] ip);
 
   int nc_put_var_uchar(int ncid, int varid, byte[] ip);
   int nc_put_var_schar(int ncid, int varid,  byte[] ip);
@@ -362,11 +364,11 @@ public interface Nc4prototypes extends Library {
   int nc_inq_var_fletcher32(int ncid, int varid, IntByReference fletcher32p);
   
   /* Define chunking for a variable. This must be done after nc_def_var and before nc_enddef. */
-  // int nc_def_var_chunking(int ncid, int varid, int *chunkalgp, int *chunksizesp, int *extend_incrementsp);
-  int nc_def_var_chunking(int ncid, int varid, int storage, NativeLong[] chunksizesp); // const size_t *   ??
-  
+  // nc_def_var_chunking(int ncid, int varid, int storage, const size_t *chunksizesp);
+  int nc_def_var_chunking(int ncid, int varid, int storage, SizeT[] chunksizesp);
+
   /* Inq chunking stuff for a var. */
-  int nc_inq_var_chunking(int ncid, int varid, IntByReference storagep, NativeLong[] chunksizesp); // size_t *  ??
+  int nc_inq_var_chunking(int ncid, int varid, IntByReference storagep, SizeT[] chunksizesp); // size_t *  ??
   
   /* Define fill value behavior for a variable. This must be done after nc_def_var and before nc_enddef. */
   int nc_def_var_fill(int ncid, int varid, int no_fill, ByteBuffer fill_value); // const void *  ??
@@ -397,5 +399,5 @@ public interface Nc4prototypes extends Library {
   int nc_set_var_chunk_cache(int ncid, int varid, NativeLong size, NativeLong nelems, float preemption);
   
   /* Set the per-variable cache size, nelems, and preemption policy. */
-  int nc_get_var_chunk_cache(int ncid, int varid, NativeLongByReference sizep, NativeLongByReference nelemsp, FloatByReference preemptionp);
+  int nc_get_var_chunk_cache(int ncid, int varid, NativeLongByReference sizep, NativeLongByReference nelemsp, FloatByReference preemptionp);  // size_t
 }

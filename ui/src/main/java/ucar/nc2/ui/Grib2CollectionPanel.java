@@ -1156,7 +1156,15 @@ public class Grib2CollectionPanel extends JPanel {
      return cdmHash;
     }
 
-    public long getIntvHash() {
+    public double getIntvHours() {
+      if (pds.isTimeInterval()) {
+        return cust.getForecastTimeIntervalSizeInHours(pds); // LOOK using an Hour here, but will need to make this configurable
+     }
+
+      return -1;
+    }
+
+    /*public long getIntvHash() {
       if (pds.isTimeInterval()) {
         long sum = 0;
         for (Grib2RecordBean bean : records) {
@@ -1166,7 +1174,7 @@ public class Grib2CollectionPanel extends JPanel {
         return sum;
       }
       return 0;
-    }
+    }  */
 
     public String toString() {
       Formatter f = new Formatter();
