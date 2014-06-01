@@ -34,7 +34,7 @@
 package ucar.nc2.ui.widget;
 
 import thredds.catalog.*;
-import thredds.catalog.query.*;
+//import thredds.catalog.query.*;
 
 import ucar.nc2.util.net.HttpClientManager;
 import ucar.nc2.util.IO;
@@ -217,7 +217,7 @@ public class TextGetPutPane extends TextHistoryPane {
     }
 
     private InvCatalogFactory catFactory = null;
-    private DqcFactory dqcFactory = null;
+   //private DqcFactory dqcFactory = null;
     void validate(String urlString) {
       if (urlString == null) return;
       URI uri;
@@ -230,11 +230,11 @@ public class TextGetPutPane extends TextHistoryPane {
         return;
       }
       String contents = getText();
-      boolean isCatalog = contents.indexOf("queryCapability") < 0;
+      //boolean isCatalog = contents.indexOf("queryCapability") < 0;
 
       ByteArrayInputStream is = new ByteArrayInputStream(contents.getBytes());
 
-      if (isCatalog) {
+      //if (isCatalog) {
         if (catFactory == null) catFactory = InvCatalogFactory.getDefaultFactory(true);
         InvCatalogImpl catalog = catFactory.readXML(is, uri);
         StringBuilder buff = new StringBuilder();
@@ -242,7 +242,7 @@ public class TextGetPutPane extends TextHistoryPane {
         javax.swing.JOptionPane.showMessageDialog(this,
            "Catalog Validation = " + check + "\n" +  buff.toString());
 
-      }  else {
+      /* }  else {
         try {
           if (dqcFactory == null)
             dqcFactory = new DqcFactory(true);
@@ -254,7 +254,7 @@ public class TextGetPutPane extends TextHistoryPane {
           javax.swing.JOptionPane.showMessageDialog(this,
              "IO Error = " +ioe);
         }
-      }
+      } */
     }
 
     void putURL(String uriString) throws IOException {
