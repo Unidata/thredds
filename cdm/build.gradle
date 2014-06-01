@@ -61,7 +61,6 @@ javadoc {
     include 'ucar/nc2/units/*.java'
     include 'ucar/nc2/util/*.java'
     include 'ucar/unidata/**/*.java'
-    include 'ucar/units/*.java'
   }
 }
 
