@@ -32,13 +32,12 @@
 
 package ucar.nc2.grib.grib2;
 
+import java.io.IOException;
+
 import ucar.jpeg.jj2000.j2k.decoder.Grib2JpegDecoder;
 import ucar.nc2.grib.GribNumbers;
-import ucar.nc2.grib.QuasiRegular;
 import ucar.nc2.iosp.BitReader;
 import ucar.unidata.io.RandomAccessFile;
-
-import java.io.IOException;
 
 /**
  * Reads the data from one grib record.
@@ -104,6 +103,9 @@ public class Grib2DataReader {
       case 40:
         data = getData40(raf, (Grib2Drs.Type40) gdrs);
         break;
+      case 50002:
+	    data = getData50002(raf, (Grib2Drs.Type50002) gdrs);
+	    break;
       default:
         throw new UnsupportedOperationException("Unsupported DRS type = " + dataTemplate);
     }
@@ -628,6 +630,123 @@ public class Grib2DataReader {
     }
   }
 
+  
+  // by jkaehler@meteomatics.com
+  // ported from https://github.com/erdc-cm/grib_api/blob/master/src/grib_accessor_class_data_g1second_order_general_extended_packing.c
+  public float[] getData50002(RandomAccessFile raf, Grib2Drs.Type50002 gdrs) throws IOException {
+
+		BitReader reader;
+		
+		reader = new BitReader(raf, startPos+5);
+		int[] groupWidth = new int[gdrs.p1];
+		for (int i = 0; i < gdrs.p1; i++) {
+			groupWidth[i] = (int) reader.bits2UInt(gdrs.widthOfWidth);
+//			System.out.println("groupWidths["+i+"]="+groupWidth[i]);
+		}
+		
+		reader = new BitReader(raf, raf.getFilePointer());
+		int[] groupLength = new int[gdrs.p1];
+		for (int i = 0; i < gdrs.p1; i++) {
+			groupLength[i] = (int) reader.bits2UInt(gdrs.widthOfLength);
+//			System.out.println("groupLengths["+i+"]="+groupLength[i]);
+		}
+		
+		reader = new BitReader(raf, raf.getFilePointer());
+		int[] firstOrderValues = new int[gdrs.p1];
+		for (int i = 0; i < gdrs.p1; i++) {
+			firstOrderValues[i] = (int) reader.bits2UInt(gdrs.widthOfFirstOrderValues);
+//			System.out.println("firstOrderValues["+i+"]="+firstOrderValues[i]);
+		}
+
+//		System.out.println(gdrs);
+		
+		int bias = 0;
+		if (gdrs.orderOfSPD > 0) {
+			  bias=gdrs.spd[gdrs.orderOfSPD];
+		}
+		
+		reader = new BitReader(raf, raf.getFilePointer());
+		int cnt = gdrs.orderOfSPD;
+		int[] data = new int[totalNPoints];
+		for (int i=0; i < gdrs.p1; i++) {
+			if (groupWidth[i] > 0) {
+		
+				for (int j=0; j < groupLength[i]; j++) {
+					data[cnt]=(int) reader.bits2UInt(groupWidth[i]);
+//					System.out.println("secondOrderValues["+cnt+"]="+data[cnt]);
+					data[cnt]+=firstOrderValues[i];
+					cnt++;
+				}
+				
+			} else {
+				
+				for (int j=0; j < groupLength[i]; j++) {
+					data[cnt]=firstOrderValues[i];
+					cnt++;
+				}
+			
+			}
+				
+		}
+		
+		for (int i=0; i < gdrs.orderOfSPD; i++) {
+			data[i]=gdrs.spd[i];
+		}
+		
+		int y, z, w;
+		switch (gdrs.orderOfSPD) {
+		case 1:
+			y=data[0];
+			for (int i = 1; i < totalNPoints; i++) {
+				y+=data[i]+bias;
+				data[i]=y;
+			}
+
+			break;
+		case 2:
+			y=data[1]-data[0];
+			z=data[1];
+			for (int i = 2; i < totalNPoints; i++) {
+				y+=data[i]+bias;
+				z+=y;
+				data[i]=z;
+//                System.out.println("i="+i+" X[i]="+data[i]+" y="+y+" z="+z+" bias="+bias);
+			}
+
+			break;
+		case 3:
+			y=data[2]-data[1];
+			z=y-(data[1]-data[0]);
+			w=data[2];
+			for (int i = 3; i < totalNPoints; i++) {
+				z+=data[i]+bias;
+				y+=z;
+				w+=y;
+				data[i]=w;
+			}
+
+			break;
+		}
+
+		int D = gdrs.decimalScaleFactor;
+		float DD = (float) java.lang.Math.pow((double) 10, (double) D);
+		float R = gdrs.referenceValue;
+		int E = gdrs.binaryScaleFactor;
+		float EE = (float) java.lang.Math.pow((double) 2.0, (double) E);
+
+//	    for (int i = 0; i < totalNPoints; i++) {
+//	        System.out.println(i+"="+data[i]);
+//	    }
+	    
+		float[] ret = new float[totalNPoints];
+		for (int i=0; i < totalNPoints; i++) {
+			ret[i] = (float) (((data[i]*EE)+R)*DD);
+		}
+
+		return ret;
+	  
+  }
+  
   // Rearrange the data array using the scanning mode.
   // LOOK ight be wrong when a quasi regular (thin) grid ??
   private void scanningModeCheck(float[] data, int scanMode, int Xlength) {

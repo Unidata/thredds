@@ -175,6 +175,8 @@ public final class Grib2DataSection {
       complexUnpackingWithSpatial(raf, gds, drs, bms);
     } else if ((dtn == 40) || (dtn == 40000)) {  // JPEG 2000 Stream Format
       jpeg2000Unpacking(raf, gds, drs, bms);
+    } else if (dtn == 50002) {    // 50002: ECMWF's second order packing
+        complexUnpackingWithSpatial(raf, gds, drs, bms);
     }
   }                                                // end Grib2DataSection
 

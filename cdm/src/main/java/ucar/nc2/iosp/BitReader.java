@@ -32,8 +32,9 @@
  */
 package ucar.nc2.iosp;
 
-import ucar.unidata.io.RandomAccessFile;
 import java.io.IOException;
+
+import ucar.unidata.io.RandomAccessFile;
 
 /**
  * Helper for reading data that has been bit packed.
@@ -42,114 +43,172 @@ import java.io.IOException;
  * @since Apr 7, 2008
  */
 public class BitReader {
-  private RandomAccessFile raf;
-  private long startPos;
 
-  private byte[] test;
-  private int testPos = 0;
+	private static final int BIT_LENGTH = Byte.SIZE;
+	private static final int BYTE_BITMASK = 0xFF;
+	private static final long LONG_BITMASK = Long.MAX_VALUE;
 
-  private int bitBuf = 0; // current byte
-  private int bitPos = 0; // Current bit position in bitBuf.
+	private RandomAccessFile raf = null;
+	private long startPos;
 
-  // for testing
-  BitReader(byte[] test) {
-    this.test = test;
-    this.testPos = 0;
-    this.bitBuf = 0;
-    this.bitPos = 0;
-  }
+	private byte[] data;
+	private int dataPos;
 
-  /**
-   * Constructor
-   * @param raf the RandomAccessFile
-   * @param startPos points to start of data in data section, in bytes
-   * @throws IOException on read error
-   */
-  public BitReader( RandomAccessFile raf, long startPos) throws IOException {
-    this.raf = raf;
-    this.startPos = startPos;
-    raf.seek(startPos);
-  }
+	private byte bitBuf = 0;
+	private int bitPos = 0; // Current bit position in bitBuf.
 
-  /**
-   * Go to the next byte in the stream
-   */
-  public void incrByte() {
-    this.bitPos = 0;
-  }
+	// for testing
+	public BitReader(byte[] test) {
+		this.data = test;
+		this.dataPos = 0;
+	}
 
-  /**
-   * Position file at bitOffset from startPos
-   * @param bitOffset bit offset from starting position
-   * @throws IOException on io error
-   */
-  public void setBitOffset(int bitOffset) throws IOException {
-    if (bitOffset % 8 == 0) {
-      raf.seek(startPos + bitOffset/8);
-      bitPos = 0;
-      bitBuf = 0;
+	/**
+	 * Constructor
+	 * @param raf the RandomAccessFile
+	 * @param startPos points to start of data in data section, in bytes
+	 * @throws IOException on read error
+	 */
+	public BitReader( RandomAccessFile raf, long startPos) throws IOException {
+		this.raf = raf;
+		this.startPos = startPos;
+		raf.seek(startPos);
+	}
 
-    } else {
-      raf.seek(startPos + bitOffset/8);
-      bitPos = 8 - (bitOffset % 8);
-      bitBuf = raf.read();
-      bitBuf &= 0xff >> (8 - bitPos);   // mask off consumed bits      
-    }
+	/**
+	 * Go to the next byte in the stream
+	 */
+	public void incrByte() {
+		this.bitPos = 0;
+	}
 
-    //     System.out.println("pos="+pos+" obs="+(pos  + bitOffset/8)+" bitPos="+bitPos+" bitBuf="+bitBuf);
-  }
+	/**
+	 * Position file at bitOffset from startPos
+	 * @param bitOffset bit offset from starting position
+	 * @throws IOException on io error
+	 */
+	public void setBitOffset(int bitOffset) throws IOException {
+		if (bitOffset % 8 == 0) {
+			raf.seek(startPos + bitOffset/8);
+			bitPos = 0;
+			bitBuf = 0;
+		} else {
+			raf.seek(startPos + bitOffset/8);
+			bitPos = 8 - (bitOffset % 8);
+			bitBuf = (byte) raf.read();
+			bitBuf &= 0xff >> (8 - bitPos);   // mask off consumed bits      
+		}
+	}
+	
+	public long getPos() throws IOException {
+		if (raf != null) {			
+			return raf.getFilePointer();
+		} else {
+			return dataPos;
+		}
+	}
+	
+	/**
+	 * Read the next nb bits and return an Unsigned Long .
+	 *
+	 * @param nb the number of bits to convert to int, must be <= 64.
+	 * @return result
+	 * @throws java.io.IOException on read error
+	 */
+	public long bits2UInt(int nb) throws IOException {
 
-  private int nextByte() throws IOException {
-    if (raf != null) return raf.read();
-    return (int) test[testPos++];
-  }
+		long result = 0;
+		int bitsLeft = nb;
 
-  /**
-   * Read the next nb bits and return an Unsigned Long .
-   *
-   * @param nb the number of bits to convert to int, must be <= 64.
-   * @return result
-   * @throws java.io.IOException on read error
-   */
-  public long bits2UInt(int nb) throws IOException {
+		while (bitsLeft > 0) {
+			
+			// we ran out of bits - fetch the next byte...
+			if (bitPos == 0) {
+				bitBuf = myNextByte();
+				bitPos = BIT_LENGTH;
+			}
+			
+			// -- retrieve bit from current byte ----------
+			// how many bit to read from the current byte
+			int size = min(bitsLeft, bitPos);
+			// move my part to start
+			int myBits = bitBuf >> (bitPos - size);
+			// mask-off sign-extending
+			myBits &= BYTE_BITMASK;
+			// mask-off bits of next value
+			myBits &= ~(BYTE_BITMASK << size);
+			
+			// -- put bit to result ----------------------
+			// where to place myBits inside of result
+			int shift = bitsLeft - size;
+			// put it there
+			result |= myBits << shift;
+			
+			// -- put bit to result ----------------------
+			// update information on what we consumed
+			bitsLeft -= size;
+			bitPos -= size;
+		
+		}
+		
+		return result;
+	
+	}
+	
+	/**
+	 * Read the next nb bits and return an Signed Long .
+	 *
+	 * @param nb the number of bits to convert to int, must be <= 64.
+	 * @return result
+	 * @throws java.io.IOException on read error
+	 */
+	public long bits2SInt(int nb) throws IOException {
 
-    int bitsLeft = nb;
-    int result = 0;
+		long result = bits2UInt(nb);
+		
+		// check if we're negative
+		if (getBit(result, nb)) {
+			// it's negative! reset leading bit
+			result = setBit(result, nb, false);
+			// build 2's-complement
+			result = ~result & LONG_BITMASK;
+			result = result + 1;
+		}
+		
+		return result;
+	
+	}
 
-    if (bitPos == 0) {
-      bitBuf = nextByte();
-      bitPos = 8;
-    }
+	private byte myNextByte() throws IOException {
+		if (raf != null) {
+			return (byte) raf.read();
+		} else {
+			return (byte) data[dataPos++];
+		}
+	}
+	
+	private int nextByte() throws IOException {
+		if (raf != null) {
+			return raf.read();
+		} else {
+			return data[dataPos++];
+		}
+	}
 
-    while (true) {
-      int shift = bitsLeft - bitPos;
-      if (shift > 0) {
-        // Consume the entire buffer
-        result |= bitBuf << shift;
-        bitsLeft -= bitPos;
+	private static int min(int a, int b) {
+		return a > b ? b : a;
+	}
+	
+	public static long setBit(long decimal, int N, boolean value){
+		return value ? decimal | (1 << (N-1)) : decimal & ~(1 << (N-1));
+	}
+	
+	public static boolean getBit(long decimal, int N){	 
+		int constant = 1 << (N-1);
+		if( (decimal & constant) > 0){
+			return true;
+		}
+		return false;
+	}
 
-        // Get the next byte from the RandomAccessFile
-        bitBuf = nextByte();
-        bitPos = 8;
-      } else {
-        // Consume a portion of the buffer
-        result |= bitBuf >> -shift;
-        bitPos -= bitsLeft;
-        bitBuf &= 0xff >> (8 - bitPos);   // mask off consumed bits
-        //System.out.println( "bitBuf = " + bitBuf );
-
-        //System.out.println( "result = " + result );
-        return result;  // LOOK problem is the unsigned 32 bit case
-      }
-    }
-  }
-
-  // debugging
-  public long getPos() throws IOException { return raf.getFilePointer(); }
-
-  static public void main( String args[]) throws IOException {
-    BitReader bu = new BitReader(new byte[] {-1,2,4,8});
-    bu.bits2UInt(7);
-    bu.bits2UInt(1);
-  }
 }
