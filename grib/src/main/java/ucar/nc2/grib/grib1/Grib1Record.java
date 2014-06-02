@@ -145,7 +145,7 @@ public class Grib1Record {
   // isolate dependencies here - in case we have a "minimal I/O" mode where not all fields are available
   public float[] readData(RandomAccessFile raf) throws IOException {
     Grib1Gds gds = gdss.getGDS();
-    Grib1DataReader reader = new Grib1DataReader(pdss.getDecimalScale(), gds.getScanMode(), gds.getNx(), gds.getNy(), dataSection.getStartingPosition());
+    Grib1DataReader reader = new Grib1DataReader(pdss.getDecimalScale(), gds.getScanMode(), gds.getNx(), gds.getNy(), gds.getNpts(), dataSection.getStartingPosition());
     byte[] bm = (bitmap == null) ? null : bitmap.getBitmap(raf);
     float[] data = reader.getData(raf, bm);
 

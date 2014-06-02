@@ -77,6 +77,7 @@ value R, the binary scale factor E and the decimal scale factor D by means of th
   private final int decimalScale;
   private final int scanMode;
   private final int nx, ny;
+  private final int nPts;
   private final long startPos;
 
   /**
@@ -87,11 +88,12 @@ value R, the binary scale factor E and the decimal scale factor D by means of th
    * @param ny
    * @param startPos starting offset of the binary data section
    */
-  public Grib1DataReader(int decimalScale, int scanMode, int nx, int ny, long startPos) {
+  public Grib1DataReader(int decimalScale, int scanMode, int nx, int ny, int nPts, long startPos) {
     this.decimalScale = decimalScale;
     this.scanMode = scanMode;
     this.nx = nx;
     this.ny = ny;
+    this.nPts = nPts;
     this.startPos = startPos;
   }
 
@@ -127,13 +129,13 @@ value R, the binary scale factor E and the decimal scale factor D by means of th
     float[] values;
 
     if (bitmap != null) {
-      if (8 * bitmap.length < nx * ny) {
+      if (8 * bitmap.length < nPts) {
         logger.error("Bitmap section length = {} != grid length {} ({},{}) for {}", bitmap.length, nx * ny, nx, ny, raf.getLocation());
         throw new IllegalStateException("Bitmap section length!= grid length");
       }
       BitReader reader = new BitReader(raf, startPos+11);
-      values = new float[nx * ny];
-      for (int i = 0; i <nx * ny; i++) {
+      values = new float[nPts];
+      for (int i = 0; i < nPts; i++) {
         if ((bitmap[i / 8] & GribNumbers.bitmask[i % 8]) != 0) {
           if (!isConstant) {
             values[i] = ref + scale * reader.bits2UInt(numbits);
@@ -209,74 +211,3 @@ value R, the binary scale factor E and the decimal scale factor D by means of th
   }
 
 }
-
-
-////////////////////
-// old stuff
-
-    /*
-   * Reads the Grib data
-   *
-   * @param gdsOffset PDS offset into file.
-   * @param dataOffset GDS offset into file.
-   * @return float[]
-   * @throws java.io.IOException
-   *
-  public final float[] getData(long gdsOffset, long dataOffset, int decimalScale, boolean bmsExists) throws IOException {
-
-    //long start = System.currentTimeMillis();
-    Grib1GridDefinitionSection gds = null;
-    Grib1GDSVariables gdsv = null;
-    boolean isThin = false;
-    try {
-      // check for thin grids
-      if ( gdsOffset != -1 ) {
-        raf.seek(gdsOffset);
-        gds = new Grib1GridDefinitionSection(raf);
-        gdsv = gds.getGdsVars();
-        int PVorPL = gdsv.getPVorPL();
-        int NV = gdsv.getNV();
-        isThin = false;
-        if (PVorPL != 255 && (NV == 0 || NV == 255) ) {
-          isThin = true;
-        }
-      }
-    } catch (NoValidGribException nvge) {
-      log.debug("gds exception was caught");
-    }
-    // seek data start
-    raf.seek(dataOffset);
-
-    // Need section 3 and 4 to read/interpet the data
-    Grib1BitMapSection bms = null;
-    if (bmsExists) {
-      // read Bit Mapped Section 3
-      bms = new Grib1BitMapSection(raf);
-    }
-
-      // read Binary Data Section 4
-
-//      Grib1BinaryDataSection bds =
-//          new Grib1BinaryDataSection(raf, decimalScale, bms, gdsv.getScanMode(), gdsv.getNx(), gdsv.getNy() );
-//      if (isThin && expandGrib1ThinGrids) {
-//        QuasiRegular qr = new QuasiRegular(bds.getValues(), gdsv.getParallels(), gdsv.getNx(), gdsv.getNy() );
-//        return qr.getData();
-//      } else {
-//        return bds.getValues();
-//      }
-
-      if ( !isThin ) {  // 99% path
-        Grib1SectionBinaryData bds = new Grib1SectionBinaryData(raf, decimalScale, bms, gdsv.getScanMode(), gdsv.getNx(), gdsv.getNy() );
-        return bds.getValues();
-      }
-      // Process thin grids
-      Grib1SectionBinaryData bds =
-          new Grib1SectionBinaryData(raf, decimalScale, bms, gdsv.getScanMode(), -1, gdsv.getNy() );
-      if (expandGrib1ThinGrids) {
-        QuasiRegular qr = new QuasiRegular(bds.getValues(), gdsv.getParallels(), gdsv.getNx(), gdsv.getNy() );
-        return qr.getData();
-      } else { // return unexpanded values, does not work in CDM stack code
-        return bds.getValues();
-      }
-
-  }  */
