@@ -108,7 +108,7 @@ public class QuasiRegular {
       /* interpolate the output row */
       for (int i = 0; i < nx; i++) {
         double mapped_i;  /* i mapped to input space */
-        mapped_i = (float) i / ((float) nx - 1) * ((float) npoints - 1);
+        mapped_i = (float) i / ((float) nx) * ((float) npoints);
 
         /* map output point to input space */
         cubicSpline(  /* interpolate the value */
@@ -133,7 +133,7 @@ public class QuasiRegular {
     return max;
   }
 
-  private static void secondDerivative(float[] inpt, int idx, int n, double x1d,
+  public static void secondDerivative(float[] inpt, int idx, int n, double x1d,
                                        double xnd, double[] y2d) {
     //    float *inpt;        /* input data */
     //    float idx;          /* input data index*/
@@ -186,7 +186,7 @@ public class QuasiRegular {
   }
 
 
-  private static void cubicSpline(float[] inpt, int iIdx, double[] y2d, double x,
+  public static void cubicSpline(float[] inpt, int iIdx, double[] y2d, double x,
                                   float[] outpt, int oIdx) {
     //    float *inpt;        /* input row */
     //    int iIdx;           /* input data index*/
@@ -213,6 +213,8 @@ public class QuasiRegular {
     a = hi - x;
     b = x - low;
 
+	hi = hi > (y2d.length - 1) ? 0 : hi;
+	
     /* evalualte the polynomial */
 
     //*outpt = a * inpt[low] + b * inpt[hi] + ((a * a * a - a) * y2d[low] + (b * b * b - b) * y2d[hi]) / 6.0;
