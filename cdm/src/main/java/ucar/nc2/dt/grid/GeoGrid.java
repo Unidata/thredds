@@ -32,18 +32,28 @@
  */
 package ucar.nc2.dt.grid;
 
-import ucar.ma2.*;
-import ucar.nc2.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
+import ucar.ma2.Array;
+import ucar.ma2.DataType;
+import ucar.ma2.InvalidRangeException;
+import ucar.ma2.MAMath;
+import ucar.ma2.Range;
+import ucar.ma2.Section;
+import ucar.nc2.Attribute;
+import ucar.nc2.Dimension;
+import ucar.nc2.Variable;
+import ucar.nc2.dataset.CoordinateAxis;
+import ucar.nc2.dataset.CoordinateAxis1D;
+import ucar.nc2.dataset.VariableDS;
 import ucar.nc2.dt.GridCoordSystem;
 import ucar.nc2.dt.GridDatatype;
 import ucar.nc2.util.NamedObject;
-import ucar.nc2.dataset.*;
-import ucar.nc2.constants._Coordinate;
-import ucar.unidata.geoloc.*;
+import ucar.unidata.geoloc.LatLonRect;
+import ucar.unidata.geoloc.ProjectionImpl;
 import ucar.unidata.util.Format;
-
-import java.util.*;
-import java.io.IOException;
 
 /**
  * A georeferencing "gridded" VariableEnhanced, that has a GridCoordSys.
@@ -518,6 +528,80 @@ public class GeoGrid implements NamedObject, ucar.nc2.dt.GridDatatype {
     return readDataSlice(0, 0, t, z, y, x);
   }
 
+  public Section generateSection(int rt, int e, int t, int z, int y, int x) throws InvalidRangeException {
+	  
+	  int rank = vs.getRank();
+	    int[] start = new int[rank];
+	    int[] shape = new int[rank];
+	    for (int i = 0; i < rank; i++) {
+	      start[i] = 0;
+	      shape[i] = 1;
+	    }
+	    Dimension xdim = getXDimension();
+	    Dimension ydim = getYDimension();
+	    Dimension zdim = getZDimension();
+	    Dimension tdim = getTimeDimension();
+	    Dimension edim = getEnsembleDimension();
+	    Dimension rtdim = getRunTimeDimension();
+
+	    // construct the shape of the data volume to be read
+	    if (rtdim != null) {
+	      if ((rt >= 0) && (rt < rtdim.getLength()))
+	        start[rtDimOrgIndex] = rt;  // fix rt
+	      else {
+	        shape[rtDimOrgIndex] = rtdim.getLength(); // all of rt
+	      }
+	    }
+
+	    if (edim != null) {
+	      if ((e >= 0) && (e < edim.getLength()))
+	        start[eDimOrgIndex] = e;  // fix e
+	      else {
+	        shape[eDimOrgIndex] = edim.getLength(); // all of e
+	      }
+	    }
+
+	    if (tdim != null) {
+	      if ((t >= 0) && (t < tdim.getLength()))
+	        start[tDimOrgIndex] = t;  // fix t
+	      else {
+	        shape[tDimOrgIndex] = tdim.getLength(); // all of t
+	      }
+	    }
+
+	    if (zdim != null) {
+	      if ((z >= 0) && (z < zdim.getLength()))
+	        start[zDimOrgIndex] = z;  // fix z
+	      else {
+	        shape[zDimOrgIndex] = zdim.getLength(); // all of z
+	      }
+	    }
+
+	    if (ydim != null) {
+	      if ((y >= 0) && (y < ydim.getLength()))
+	        start[yDimOrgIndex] = y;  // fix y
+	      else {
+	        shape[yDimOrgIndex] = ydim.getLength(); // all of y
+	      }
+	    }
+
+	    if (xdim != null) {
+	      if ((x >= 0) && (x < xdim.getLength())) // all of x
+	        start[xDimOrgIndex] = x;  // fix x
+	      else {
+	        shape[xDimOrgIndex] = xdim.getLength(); // all of x
+	      }
+	    }
+	    
+	    if (debugArrayShape) {
+	        System.out.println("read shape from org variable = ");
+	        for (int i = 0; i < rank; i++)
+	          System.out.println("   start = " + start[i] + " shape = " + shape[i] + " name = " + vs.getDimension(i).getShortName());
+	      }
+	    
+	    return new Section(start, shape);
+	    
+  }
   /**
    * This reads an arbitrary data slice, returning the data in
    * canonical order (rt-e-t-z-y-x). If any dimension does not exist, ignore it.
@@ -532,79 +616,10 @@ public class GeoGrid implements NamedObject, ucar.nc2.dt.GridDatatype {
    */
   public Array readDataSlice(int rt, int e, int t, int z, int y, int x) throws java.io.IOException {
 
-    int rank = vs.getRank();
-    int[] start = new int[rank];
-    int[] shape = new int[rank];
-    for (int i = 0; i < rank; i++) {
-      start[i] = 0;
-      shape[i] = 1;
-    }
-    Dimension xdim = getXDimension();
-    Dimension ydim = getYDimension();
-    Dimension zdim = getZDimension();
-    Dimension tdim = getTimeDimension();
-    Dimension edim = getEnsembleDimension();
-    Dimension rtdim = getRunTimeDimension();
-
-    // construct the shape of the data volume to be read
-    if (rtdim != null) {
-      if ((rt >= 0) && (rt < rtdim.getLength()))
-        start[rtDimOrgIndex] = rt;  // fix rt
-      else {
-        shape[rtDimOrgIndex] = rtdim.getLength(); // all of rt
-      }
-    }
-
-    if (edim != null) {
-      if ((e >= 0) && (e < edim.getLength()))
-        start[eDimOrgIndex] = e;  // fix e
-      else {
-        shape[eDimOrgIndex] = edim.getLength(); // all of e
-      }
-    }
-
-    if (tdim != null) {
-      if ((t >= 0) && (t < tdim.getLength()))
-        start[tDimOrgIndex] = t;  // fix t
-      else {
-        shape[tDimOrgIndex] = tdim.getLength(); // all of t
-      }
-    }
-
-    if (zdim != null) {
-      if ((z >= 0) && (z < zdim.getLength()))
-        start[zDimOrgIndex] = z;  // fix z
-      else {
-        shape[zDimOrgIndex] = zdim.getLength(); // all of z
-      }
-    }
-
-    if (ydim != null) {
-      if ((y >= 0) && (y < ydim.getLength()))
-        start[yDimOrgIndex] = y;  // fix y
-      else {
-        shape[yDimOrgIndex] = ydim.getLength(); // all of y
-      }
-    }
-
-    if (xdim != null) {
-      if ((x >= 0) && (x < xdim.getLength())) // all of x
-        start[xDimOrgIndex] = x;  // fix x
-      else {
-        shape[xDimOrgIndex] = xdim.getLength(); // all of x
-      }
-    }
-
-    if (debugArrayShape) {
-      System.out.println("read shape from org variable = ");
-      for (int i = 0; i < rank; i++)
-        System.out.println("   start = " + start[i] + " shape = " + shape[i] + " name = " + vs.getDimension(i).getShortName());
-    }
-
     // read it
     Array dataVolume;
     try {
-      dataVolume = vs.read(start, shape);
+      dataVolume = vs.read(generateSection(rt, e, t, z, y, x));
     } catch (Exception ex) {
       log.error("GeoGrid.getdataSlice() on dataset " + getFullName()+" "+ dataset.getLocation(), ex);
       throw new java.io.IOException(ex.getMessage());
@@ -614,6 +629,14 @@ public class GeoGrid implements NamedObject, ucar.nc2.dt.GridDatatype {
     // figure out correct permutation for canonical ordering for permute
     List<Dimension> oldDims = new ArrayList<Dimension>(vs.getDimensions());
     int[] permuteIndex = new int[dataVolume.getRank()];
+    
+    Dimension xdim = getXDimension();
+    Dimension ydim = getYDimension();
+    Dimension zdim = getZDimension();
+    Dimension tdim = getTimeDimension();
+    Dimension edim = getEnsembleDimension();
+    Dimension rtdim = getRunTimeDimension();
+    
     int count = 0;
     if (oldDims.contains(rtdim)) permuteIndex[count++] = oldDims.indexOf(rtdim);
     if (oldDims.contains(edim)) permuteIndex[count++] = oldDims.indexOf(edim);
@@ -666,8 +689,9 @@ public class GeoGrid implements NamedObject, ucar.nc2.dt.GridDatatype {
     }
 
     return dataVolume;
+ 
   }
-
+  
   //////////////////////////////////
 
   /**
@@ -826,4 +850,5 @@ public class GeoGrid implements NamedObject, ucar.nc2.dt.GridDatatype {
   public int compareTo(GridDatatype g) {
     return getFullName().compareTo(g.getFullName());
   }
+
 }

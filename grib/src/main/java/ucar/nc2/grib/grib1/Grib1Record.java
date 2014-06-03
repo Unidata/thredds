@@ -94,6 +94,23 @@ public class Grib1Record {
     dataSection = new Grib1SectionBinaryData(raf);
   }
 
+	/**
+	 * Construct record by reading raf, no checking
+	 *
+	 * @param raf positioned at start of message: the 'G' in "GRIB"
+	 * @param startPosition
+	 * @throws IOException on read error
+	 */
+	public Grib1Record(RandomAccessFile raf, long startPos) throws IOException {
+		raf.seek(startPos);
+		this.header = null;
+		is = new Grib1SectionIndicator(raf);
+		pdss = new Grib1SectionProductDefinition(raf);
+		gdss = pdss.gdsExists() ? new Grib1SectionGridDefinition(raf) : new Grib1SectionGridDefinition(pdss);
+		bitmap = pdss.bmsExists() ? new Grib1SectionBitMap(raf) : null;
+		dataSection = new Grib1SectionBinaryData(raf);
+	}
+
   // copy constructor
   Grib1Record(Grib1Record from) {
     this.header = from.header;
@@ -143,15 +160,26 @@ public class Grib1Record {
   /////////////// reading data
 
   // isolate dependencies here - in case we have a "minimal I/O" mode where not all fields are available
-  public float[] readData(RandomAccessFile raf) throws IOException {
+  public float[] readData(RandomAccessFile raf, int interpolation) throws IOException {
     Grib1Gds gds = gdss.getGDS();
-    Grib1DataReader reader = new Grib1DataReader(pdss.getDecimalScale(), gds.getScanMode(), gds.getNx(), gds.getNy(), gds.getNpts(), dataSection.getStartingPosition());
+    Grib1DataReader reader =
+			new Grib1DataReader(pdss.getDecimalScale(), gds.getScanMode(), gds.getNx(), gds.getNy(), gds.getNpts(), dataSection.getStartingPosition());
     byte[] bm = (bitmap == null) ? null : bitmap.getBitmap(raf);
     float[] data = reader.getData(raf, bm);
 
-    if (gdss.isThin()) {
-      data = QuasiRegular.convertQuasiGrid(data, gds.getNptsInLine(), gds.getNxRaw(), gds.getNyRaw() );
-    }
+	if (gds.getNptsInLine() != null) {
+		if (interpolation > 0) {
+			data = QuasiRegular.convertQuasiGrid(data, gds.getNptsInLine(), gds.getNxRaw(), gds.getNyRaw(), interpolation);
+		} else {
+			// unfortunately we have to blow up reduced data so that further processing will not throw ArrayIndexOutOfBounds
+			float[] newData = new float[gds.getNy() * gds.getNx()];
+			for (int i = 0; i < data.length; i++) {
+				newData[i] = data[i];
+			}
+			data = newData;
+		}
+	}
+
 
     return data;
   }
@@ -164,10 +192,10 @@ public class Grib1Record {
    * @return data as float[] array
    * @throws IOException on read error
    */
-  static public float[] readData(RandomAccessFile raf, long startPos) throws IOException {
+  static public float[] readData(RandomAccessFile raf, long startPos, int interpolation) throws IOException {
     raf.seek(startPos);
     Grib1Record gr = new Grib1Record(raf);
-    return gr.readData(raf);
+    return gr.readData(raf, interpolation);
   }
 
   /*

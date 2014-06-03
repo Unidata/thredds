@@ -32,8 +32,15 @@
 
 package ucar.nc2.grib;
 
+import java.io.IOException;
+
 import org.jdom2.Element;
+
 import thredds.featurecollection.FeatureCollectionConfig;
+import ucar.ma2.InvalidRangeException;
+import ucar.ma2.Section;
+import ucar.nc2.Variable;
+import ucar.nc2.grib.receiver.DataReceiver;
 import ucar.nc2.iosp.AbstractIOServiceProvider;
 import ucar.nc2.ncml.NcMLReader;
 
@@ -91,4 +98,24 @@ public abstract class GribIosp extends AbstractIOServiceProvider {
 
     return super.sendIospMessage(special);
   }
+  
+  
+  /**
+   * Read data as raw grid from a top level Variable and return a memory resident Array.
+   * This Array has the same element type as the Variable, and the requested shape.
+   *
+   * @param v2 a top-level Variable
+   * @param section the section of data to read.
+   *   There must be a Range for each Dimension in the variable, in order.
+   *   Note: no nulls allowed. IOSP may not modify.
+   * @param set desired interpolation method for thin grids
+   * @return the requested data as raw grid in a memory-resident Array
+   * @throws java.io.IOException if read error
+   * @throws ucar.ma2.InvalidRangeException if invalid section
+   * @see ucar.ma2.Range
+   */
+  abstract public DataReceiver readData(Variable v, Section ranges, int interpolate) throws IOException, InvalidRangeException;
+
+
+
 }

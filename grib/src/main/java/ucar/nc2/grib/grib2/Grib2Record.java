@@ -201,7 +201,7 @@ public class Grib2Record {
     float[] data = reader.getData(raf, bitmap, gdrs);
 
     if (gds.isThin())
-      data = QuasiRegular.convertQuasiGrid(data, gds.getNptsInLine(), gds.getNxRaw(), gds.getNyRaw());
+      data = QuasiRegular.convertQuasiGrid(data, gds.getNptsInLine(), gds.getNxRaw(), gds.getNyRaw(), QuasiRegular.INTERPOLATION_LINEAR);
 
     return data;
   }
@@ -246,7 +246,7 @@ public class Grib2Record {
     float[] data = reader.getData(raf, bitmap, gdrs);
 
     if (gds.isThin())
-      data = QuasiRegular.convertQuasiGrid(data, gds.getNptsInLine(), gds.getNxRaw(), gds.getNyRaw());
+      data = QuasiRegular.convertQuasiGrid(data, gds.getNptsInLine(), gds.getNxRaw(), gds.getNyRaw(), QuasiRegular.INTERPOLATION_LINEAR);
 
     return data;
   }
@@ -254,41 +254,66 @@ public class Grib2Record {
   //         float[] data = Grib2Record.readData(rafData, dr.drsPos, vindex.group.hcs.gdsNumberPoints, vindex.group.hcs.scanMode, vindex.group.hcs.nx);
 
 
-  /**
-   * Read data array: use when you want to be independent of the GribRecord
-   *
-   * @param raf             from this RandomAccessFile
-   * @param drsPos          Grib2SectionDataRepresentation starts here
-   * @param bmsPos          if non-zero, use the bms that starts here
-   * @param gdsNumberPoints gdss.getNumberPoints()
-   * @param scanMode        gds.scanMode
-   * @param nx              gds.nx
-   * @return data as float[] array
-   * @throws IOException on read error
-   */
-  static public float[] readData(RandomAccessFile raf, long drsPos, long bmsPos, int gdsNumberPoints, int scanMode, int nx, int ny, int[] nptsInLine) throws IOException {
-    raf.seek(drsPos);
-    Grib2SectionDataRepresentation drs = new Grib2SectionDataRepresentation(raf);
-    Grib2SectionBitMap bms = new Grib2SectionBitMap(raf);
-    Grib2SectionData dataSection = new Grib2SectionData(raf);
+	/**
+	 * Read data array: use when you want to be independent of the GribRecord
+	 *
+	 * @param raf             from this RandomAccessFile
+	 * @param drsPos          Grib2SectionDataRepresentation starts here
+	 * @param bmsPos          if non-zero, use the bms that starts here
+	 * @param gdsNumberPoints gdss.getNumberPoints()
+	 * @param scanMode        gds.scanMode
+	 * @param nx              gds.nx
+	 * @param interpolation	  desired interpolation method for thin grids
+	 * @return data as float[] array
+	 * @throws IOException on read error
+	 */
+	static public float[] readData(RandomAccessFile raf, long drsPos, long bmsPos, int gdsNumberPoints, int scanMode, int nx, int ny, int[] nptsInLine, int interpolation) throws IOException {
+		
+		raf.seek(drsPos);
+		
+		Grib2SectionDataRepresentation drs = new Grib2SectionDataRepresentation(raf);
+		Grib2SectionBitMap bms = new Grib2SectionBitMap(raf);
+		Grib2SectionData dataSection = new Grib2SectionData(raf);
 
-    if (bmsPos > 0)
-      bms = Grib2SectionBitMap.factory(raf, bmsPos);
+		if (bmsPos > 0) {
+			bms = Grib2SectionBitMap.factory(raf, bmsPos);
+		}
+		
+		Grib2DataReader reader = 
+				new Grib2DataReader(drs.getDataTemplate(), gdsNumberPoints, drs.getDataPoints(),
+						scanMode, nx, dataSection.getStartingPosition(), dataSection.getMsgLength());
 
-    Grib2DataReader reader = new Grib2DataReader(drs.getDataTemplate(), gdsNumberPoints, drs.getDataPoints(),
-            scanMode, nx, dataSection.getStartingPosition(), dataSection.getMsgLength());
+		byte[] bitmap = bms.getBitmap(raf);
+		Grib2Drs gdrs = drs.getDrs(raf);
 
-    byte[] bitmap = bms.getBitmap(raf);
-    Grib2Drs gdrs = drs.getDrs(raf);
-
-    //return reader.getData(raf, bitmap, gdrs);
-
-    float[] data = reader.getData(raf, bitmap, gdrs);
-
-    if (nptsInLine != null)
-      data = QuasiRegular.convertQuasiGrid(data, nptsInLine, nx, ny);
-
-    return data;
-  }
+		float[] data = reader.getData(raf, bitmap, gdrs);
+		if (nptsInLine != null) {
+			if (interpolation > 0) {
+				data = QuasiRegular.convertQuasiGrid(data, nptsInLine, nx, ny, interpolation);
+			} else {
+				// unfortunately we have to blow up reduced data so that further processing will not throw ArrayIndexOutOfBounds
+				float[] newData = new float[ny * getMaxFromIntArray(nptsInLine)];
+				for (int i = 0; i < data.length; i++) {
+					newData[i] = data[i];
+				}
+				data = newData;
+			}
+		}
+		
+		return data;
+		
+	}
+	
+	private static int getMaxFromIntArray(int[] array) {
+		int max = Integer.MIN_VALUE;
+		for (int value : array) {
+			max = max(max, value);
+		}
+		return max;
+	}
+	
+	private static int max(int a, int b) {
+		return a > b ? a : b;
+	}
 
 }

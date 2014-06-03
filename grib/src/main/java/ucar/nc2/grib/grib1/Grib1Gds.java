@@ -32,6 +32,7 @@
 
 package ucar.nc2.grib.grib1;
 
+import ucar.nc2.grib.GribGds;
 import ucar.nc2.grib.GribNumbers;
 import ucar.nc2.grib.GdsHorizCoordSys;
 import ucar.nc2.grib.QuasiRegular;
@@ -73,7 +74,7 @@ import java.util.Formatter;
  * @author John
  * @since 9/3/11
  */
-public abstract class Grib1Gds {
+public abstract class Grib1Gds implements GribGds {
   static private final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(Grib1Gds.class);
 
   public static Grib1Gds factory(int template, byte[] data) {
