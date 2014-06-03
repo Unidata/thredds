@@ -6066,22 +6066,26 @@ public class
                "<h1>Netcdf Tools User Interface (ToolsUI)</h1>" +
                "<b>" + getVersion() + "</b>" +
                "<br><i>http://www.unidata.ucar.edu/software/netcdf-java/</i>" +
-               "<br><b><i>Developers:</b>John Caron, Ethan Davis, Lansing Madry, Marcos Hermida, Sean Arms</i></b>" +
+               "<br><b><i>Developers:</b>John Caron, Ethan Davis, Sean Arms, Dennis Heimbinger, Lansing Madry, Ryan May, Christian Ward-Garrison</i></b>" +
                "</center>" +
                "<br><br>With thanks to these <b>Open Source</b> contributors:" +
                "<ul>" +
                "<li><b>ADDE/VisAD</b>: Bill Hibbard, Don Murray, Tom Whittaker, et al (http://www.ssec.wisc.edu/~billh/visad.html)</li>" +
+               "<li><b>Apache HTTP Components</b> libraries: (http://hc.apache.org/)</li>" +
                "<li><b>Apache Jakarta Commons</b> libraries: (http://http://jakarta.apache.org/commons/)</li>" +
-               "<li><b>IDV:</b> Don Murray, Jeff McWhirter (http://www.unidata.ucar.edu/software/IDV/)</li>" +
+               "<li><b>IDV:</b> Yuan Ho, Julien Chastang, Don Murray, Jeff McWhirter, Yuan H (http://www.unidata.ucar.edu/software/IDV/)</li>" +
+               "<li><b>Joda Time</b> library: Stephen Colebourne (http://www.joda.org/joda-time/)</li>" +
                "<li><b>JDOM</b> library: Jason Hunter, Brett McLaughlin et al (www.jdom.org)</li>" +
                "<li><b>JGoodies</b> library: Karsten Lentzsch (www.jgoodies.com)</li>" +
                "<li><b>JPEG-2000</b> Java library: (http://www.jpeg.org/jpeg2000/)</li>" +
                "<li><b>JUnit</b> library: Erich Gamma, Kent Beck, Erik Meade, et al (http://sourceforge.net/projects/junit/)</li>" +
-               "<li><b>OPeNDAP Java</b> library: Nathan Potter, James Gallagher, Don Denbo, et. al.(http://opendap.org)</li>" +
+               "<li><b>NetCDF C Library</b> library: Russ Rew, Ward Fisher, Dennis Heimbinger</li>" +
+               "<li><b>OPeNDAP Java</b> library: Dennis Heimbinger, James Gallagher, Nathan Potter, Don Denbo, et. al.(http://opendap.org)</li>" +
                "<li><b>Protobuf serialization</b> library: Google (http://code.google.com/p/protobuf/)</li>" +
                "<li><b>Simple Logging Facade for Java</b> library: Ceki Gulcu (http://www.slf4j.org/)</li>" +
                "<li><b>Spring lightweight framework</b> library: Rod Johnson, et. al.(http://www.springsource.org/)</li>" +
                "<li><b>Imaging utilities:</b>: Richard Eigenmann</li>" +
+               "<li><b>Udunits:</b>: Steve Emmerson</li>" +
                "</ul><center>Special thanks to <b>Sun/Oracle</b> (java.oracle.com) for the platform on which we stand." +
                "</center></body></html> ");
 

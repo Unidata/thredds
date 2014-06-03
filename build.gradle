@@ -39,7 +39,9 @@ subprojects {
               'Implementation-Vendor-Id': 'edu.ucar',
               'Built-On': new Date(),
               'Build-Jdk': System.properties['java.version'],
-              'Permissions': 'all-permissions'
+              'Codebase': 'http://www.unidata.ucar.edu/software/thredds/',
+              'Permissions': 'all-permissions',
+              'Trusted-Only': 'true'
     }
   }
 
