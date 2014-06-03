@@ -37,6 +37,7 @@ import ucar.nc2.grib.GribNumbers;
 import ucar.ma2.Array;
 import ucar.ma2.DataType;
 import ucar.nc2.grib.GdsHorizCoordSys;
+import ucar.nc2.grib.GribGds;
 import ucar.nc2.grib.QuasiRegular;
 import ucar.nc2.util.Misc;
 import ucar.unidata.geoloc.*;
@@ -54,7 +55,7 @@ import java.util.Formatter;
  * @author caron
  * @since 4/2/11
  */
-public abstract class Grib2Gds {
+public abstract class Grib2Gds implements GribGds {
   static private final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(Grib2Gds.class);
 
   public static Grib2Gds factory(int template, byte[] data) {
@@ -160,6 +161,19 @@ public abstract class Grib2Gds {
     return data;
   }
 
+  public int getNpts() {
+	  
+	  if (nptsInLine != null) {
+		  int npts = 0;
+		  for (int pts : nptsInLine) {
+			  npts += pts;
+		  }
+		  return npts;
+	  } else {
+		  return nx * ny;
+	  }
+	  
+  }
 
   public boolean isLatLon() {
     return false;

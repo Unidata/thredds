@@ -155,8 +155,8 @@ public final class QuasiRegular {
       /* interpolate the output row */
       for (int i = 0; i < ni; i++) {
         double mapped_i;  /* i mapped to input space */
-        mapped_i = (float) i / ((float) ni - 1)
-            * ((float) npoints - 1);
+        mapped_i = (float) i / ((float) ni) * ((float) npoints);
+        
         //System.out.println( " mapped_i ="+  mapped_i );
         /* map output point to input space */
         cubicSpline(  /* interpolate the value */
@@ -273,6 +273,8 @@ public final class QuasiRegular {
 
     a = hi - x;
     b = x - low;
+
+	hi = hi > (y2d.length - 1) ? 0 : hi;
 
     /* evalualte the polynomial */
 

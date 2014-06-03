@@ -32,26 +32,51 @@
 
 package ucar.nc2.grib.grib1;
 
-import thredds.catalog.DataFormatType;
-import thredds.inventory.CollectionManager;
-import ucar.ma2.*;
-import ucar.nc2.*;
-import ucar.nc2.constants.*;
-import ucar.nc2.grib.*;
-import ucar.nc2.grib.grib1.tables.Grib1Customizer;
-import ucar.nc2.grib.grib1.tables.Grib1ParamTables;
-import ucar.nc2.util.CancelTask;
-import ucar.nc2.util.Misc;
-import ucar.nc2.wmo.CommonCodeTable;
-import ucar.unidata.io.RandomAccessFile;
-import ucar.unidata.util.Parameter;
-
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Formatter;
 import java.util.List;
+
+import thredds.catalog.DataFormatType;
+import thredds.inventory.CollectionManager;
+import ucar.ma2.Array;
+import ucar.ma2.DataType;
+import ucar.ma2.IndexIterator;
+import ucar.ma2.InvalidRangeException;
+import ucar.ma2.Range;
+import ucar.ma2.Section;
+import ucar.nc2.Attribute;
+import ucar.nc2.Dimension;
+import ucar.nc2.Group;
+import ucar.nc2.NetcdfFile;
+import ucar.nc2.Variable;
+import ucar.nc2.constants.AxisType;
+import ucar.nc2.constants.CDM;
+import ucar.nc2.constants.CF;
+import ucar.nc2.constants.FeatureType;
+import ucar.nc2.constants._Coordinate;
+import ucar.nc2.grib.EnsCoord;
+import ucar.nc2.grib.GdsHorizCoordSys;
+import ucar.nc2.grib.GribCollection;
+import ucar.nc2.grib.GribIndex;
+import ucar.nc2.grib.GribIosp;
+import ucar.nc2.grib.GribStatType;
+import ucar.nc2.grib.GribUtils;
+import ucar.nc2.grib.QuasiRegular;
+import ucar.nc2.grib.TimeCoord;
+import ucar.nc2.grib.TimeCoordUnion;
+import ucar.nc2.grib.TimePartition;
+import ucar.nc2.grib.VertCoord;
+import ucar.nc2.grib.grib1.tables.Grib1Customizer;
+import ucar.nc2.grib.grib1.tables.Grib1ParamTables;
+import ucar.nc2.grib.receiver.DataReceiver;
+import ucar.nc2.util.CancelTask;
+import ucar.nc2.util.Misc;
+import ucar.nc2.wmo.CommonCodeTable;
+import ucar.unidata.io.RandomAccessFile;
+import ucar.unidata.util.Parameter;
 
 /**
  * IOSP for GRIB1 collections
@@ -60,7 +85,9 @@ import java.util.List;
  * @since 9/5/11
  */
 public class Grib1Iosp extends GribIosp {
-
+	
+  static private final int INTERPOLATION_DEFAULT = QuasiRegular.INTERPOLATION_LINEAR;
+  
   static private final float MISSING_VALUE = Float.NaN;
   static private final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(Grib1Iosp.class);
   static private final boolean debugTime = false, debugRead = false;
@@ -480,20 +507,25 @@ public class Grib1Iosp extends GribIosp {
 
   @Override
   public Array readData(Variable v2, Section section) throws IOException, InvalidRangeException {
+	  return readData(v2, section, INTERPOLATION_DEFAULT).getArray();
+  }
+
+	  @Override
+  public DataReceiver readData(Variable v2, Section section, int interpolation) throws IOException, InvalidRangeException {
     long start = System.currentTimeMillis();
 
-    Array result;
+    DataReceiver result;
     if (isTimePartitioned)
-      result = readDataFromPartition(v2, section);
+      result = readDataFromPartition(v2, section, interpolation);
     else
-      result = readDataFromCollection(v2, section);
+      result = readDataFromCollection(v2, section, interpolation);
 
     long took = System.currentTimeMillis() - start;
     if (debugTime) System.out.println("  read data took=" + took + " msec ");
     return result;
   }
 
-  private Array readDataFromPartition(Variable v2, Section section) throws IOException, InvalidRangeException {
+  private DataReceiver readDataFromPartition(Variable v2, Section section, int interpolation) throws IOException, InvalidRangeException {
     TimePartition.VariableIndexPartitioned vindexP = (TimePartition.VariableIndexPartitioned) v2.getSPobject();
 
     // canonical order: time, ens, z, y, x
@@ -543,12 +575,12 @@ public class Grib1Iosp extends GribIosp {
     }
 
     // sort by file and position, then read
-    dataReader.read(dataReceiver);
+    dataReader.read(dataReceiver, interpolation);
 
     // close partitions as needed
     vindexP.cleanup();
 
-    return dataReceiver.getArray();
+    return dataReceiver;
   }
 
   private class DataReaderPartitioned {
@@ -561,7 +593,7 @@ public class Grib1Iosp extends GribIosp {
       records.add(new DataRecord(partno, vindex, resultIndex, fileno, pos));
     }
 
-    void read(DataReceiver dataReceiver) throws IOException {
+    void read(DataReceiver dataReceiver, int interpolation) throws IOException {
       Collections.sort(records);
 
       int currPartno = -1;
@@ -581,8 +613,12 @@ public class Grib1Iosp extends GribIosp {
           show(new Grib1Record(rafData), dr.pos);
         }
 
-        float[] data = Grib1Record.readData(rafData, dr.pos);
-        dataReceiver.addData(data, dr.resultIndex, dr.vindex.group.hcs.nx);
+		Grib1Record gribRecord = new Grib1Record(rafData, dr.pos);
+		float[] data = gribRecord.readData(rafData, interpolation);
+		Grib1Gds gds = gribRecord.getGDSsection().getGDS();
+		
+		dataReceiver.addData(data, gds, dr.resultIndex, dr.vindex.group.hcs.nx);
+
       }
       if (rafData != null) rafData.close();
     }
@@ -615,7 +651,7 @@ public class Grib1Iosp extends GribIosp {
 
 ///////////////////////////////////////////////////////
 
-  private Array readDataFromCollection(Variable v, Section section) throws IOException, InvalidRangeException {
+  private DataReceiver readDataFromCollection(Variable v, Section section, int interpolation) throws IOException, InvalidRangeException {
     GribCollection.VariableIndex vindex = (GribCollection.VariableIndex) v.getSPobject();
 
     // first time, read records and keep in memory
@@ -646,8 +682,8 @@ public class Grib1Iosp extends GribIosp {
     }
 
     // sort by file and position, then read
-    dataReader.read(dataReceiver);
-    return dataReceiver.getArray();
+    dataReader.read(dataReceiver, interpolation);
+    return dataReceiver;
   }
 
   private class DataReader {
@@ -664,7 +700,7 @@ public class Grib1Iosp extends GribIosp {
       records.add(new DataRecord(timeIdx, ensIdx, levIdx, resultIndex, record.fileno, record.pos));
     }
 
-    void read(DataReceiver dataReceiver) throws IOException {
+    void read(DataReceiver dataReceiver, int interpolation) throws IOException {
       Collections.sort(records);
 
       int currFile = -1;
@@ -683,8 +719,11 @@ public class Grib1Iosp extends GribIosp {
           show(new Grib1Record(rafData), dr.pos);
         }
 
-        float[] data = Grib1Record.readData(rafData, dr.pos);
-        dataReceiver.addData(data, dr.resultIndex, vindex.group.hcs.nx);
+		Grib1Record gribRecord = new Grib1Record(rafData, dr.pos);
+		float[] data = gribRecord.readData(rafData, interpolation);
+		Grib1Gds gds = gribRecord.getGDSsection().getGDS();
+		dataReceiver.addData(data, gds, dr.resultIndex, vindex.group.hcs.nx);
+
       }
       if (rafData != null) rafData.close();
     }
@@ -710,44 +749,6 @@ public class Grib1Iosp extends GribIosp {
         if (r != 0) return r;
         return Misc.compare(pos, o.pos);
       }
-    }
-  }
-
-  private class DataReceiver {
-    Array dataArray;
-    Range yRange, xRange;
-    int horizSize;
-
-    DataReceiver(Section section, Range yRange, Range xRange) {
-      dataArray = Array.factory(DataType.FLOAT, section.getShape());
-      this.yRange = yRange;
-      this.xRange = xRange;
-      this.horizSize = yRange.length() * xRange.length();
-
-      // prefill with NaNs, to deal with missing data
-      IndexIterator iter = dataArray.getIndexIterator();
-      while (iter.hasNext())
-        iter.setFloatNext(MISSING_VALUE);
-    }
-
-    void addData(float[] data, int resultIndex, int nx) throws IOException {
-      int start = resultIndex * horizSize;
-      int count = 0;
-      for (int y = yRange.first(); y <= yRange.last(); y += yRange.stride()) {
-        for (int x = xRange.first(); x <= xRange.last(); x += xRange.stride()) {
-          int dataIdx = y * nx + x;
-          try {
-            dataArray.setFloat(start + count, data[dataIdx]);
-          } catch (ArrayIndexOutOfBoundsException t) {
-            throw t;
-          }
-          count++;
-        }
-      }
-    }
-
-    Array getArray() {
-      return dataArray;
     }
   }
 

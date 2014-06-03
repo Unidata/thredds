@@ -41,185 +41,276 @@ package ucar.nc2.grib;
  */
 public class QuasiRegular {
 
-  private static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(QuasiRegular.class);
+	public static final int INTERPOLATION_NONE = 0;
+	public static final int INTERPOLATION_CUBIC = 1;
+	public static final int INTERPOLATION_LINEAR = 2;
 
-  /**
-   * @param quasi input data
-   * @param linePts npts in each line
-   * @param nx num parellels or undefined
-   * @param ny num parellels or undefined
-   * @return regular grid
-   */
-  public static float[] convertQuasiGrid(float[] quasi, int[] linePts, int nx, int ny) {
+	/**
+	 * @param quasi
+	 *            input data
+	 * @param linePts
+	 *            npts in each line
+	 * @param nx
+	 *            num parellels or undefined
+	 * @param ny
+	 *            num parellels or undefined
+	 * @return regular grid
+	 */
+	public static float[] convertQuasiGrid(float[] quasi, int[] linePts,
+			int nx, int ny, int interpolationMethod) {
 
-    //int nrows;   /* number of rows in input */
-    //int ix[];    /* row i starts at idat[ix[i]], and ix[nrows] is 1 after last elem of idat */
-    //float *idat; /* input quasi-regular data */
-    //int ni;      /* constant length of each output row */
-    //int nj;      /* number of output rows */
-    //float *odat; /* where to put ni*nj outputs, already allocated */
+		// int nrows; /* number of rows in input */
+		// int ix[]; /* row i starts at idat[ix[i]], and ix[nrows] is 1 after
+		// last elem of idat */
+		// float *idat; /* input quasi-regular data */
+		// int ni; /* constant length of each output row */
+		// int nj; /* number of output rows */
+		// float *odat; /* where to put ni*nj outputs, already allocated */
 
-    int max = getMax(linePts);
-    if (nx < 0) {
-      assert ny == linePts.length;
-      nx = max;
-    } else {
-      assert ny < 0;
-      assert nx == linePts.length;
-      ny = max;
-    }
+		int max = getMax(linePts);
+		if (nx < 0) {
+			assert ny == linePts.length;
+			nx = max;
+		} else {
+			assert ny < 0;
+			assert nx == linePts.length;
+			ny = max;
+		}
 
-    double x1_der = 1.0e30;  /* derivative of the first end point */
-    double xn_der = 1.0e30;  /* derivative of the nth end point */
-    double[] second_d;         /* second derivatives of input row */
-    int inputIdx = 0;    /* current index position in input */
-    int outputIdx = 0;    /* current index position in output */
+		double x1_der = 1.0e30; /* derivative of the first end point */
+		double xn_der = 1.0e30; /* derivative of the nth end point */
+		double[] second_d; /* second derivatives of input row */
+		int inputIdx = 0; /* current index position in input */
+		int outputIdx = 0; /* current index position in output */
 
-    float[] data = new float[nx * ny];
+		float[] data = new float[nx * ny];
 
-    for (int j = 0; j < ny; j++) { // LOOK - assumes varies by x
-      //int inrow;            /* input row to use */
-      int npoints;  /* number input points in current parrallel */
+		if (interpolationMethod == INTERPOLATION_CUBIC) {
 
-      //inrow = j * (nrows - 1) / (nj - 1);  /* set the row number */
-      //npoints = ix[inrow+1] - ix[inrow];   /* set number of input points */
-      npoints = linePts[j];  /* number of input points in this parellel */
+			for (int j = 0; j < ny; j++) { // LOOK - assumes varies by x
+				// int inrow; /* input row to use */
+				int npoints; /* number input points in current parrallel */
 
-      // skip the processing if npoints = number of points in output parrallel
-      if (npoints == nx) {
-        for (int i = 0; i < nx; i++) {
-          data[outputIdx++] = quasi[inputIdx++];
-        }
-        continue;
-      }
-      //second_d = (float *)emalloc(npoints * sizeof(double));
-      second_d = new double[npoints];
+				// inrow = j * (nrows - 1) / (nj - 1); /* set the row number */
+				// npoints = ix[inrow+1] - ix[inrow]; /* set number of input
+				// points */
+				npoints = linePts[j]; /* number of input points in this parellel */
 
-      /* calculate the second derivatives of the input row */
-      secondDerivative(
-              //&idat[ix[inrow]], /* input row */
-              quasi,                /* input data */
-              inputIdx,             /* current index position in input */
-              npoints,              /*  number of points in input row */
-              x1_der,               /* first derivative of first element */
-              xn_der,               /* first derivative of nth element */
-              second_d);            /* output second derivative */
+				// skip the processing if npoints = number of points in output
+				// parrallel
+				if (npoints == nx) {
+					for (int i = 0; i < nx; i++) {
+						data[outputIdx++] = quasi[inputIdx++];
+					}
+					continue;
+				}
+				// second_d = (float *)emalloc(npoints * sizeof(double));
+				second_d = new double[npoints];
 
-      /* interpolate the output row */
-      for (int i = 0; i < nx; i++) {
-        double mapped_i;  /* i mapped to input space */
-        mapped_i = (float) i / ((float) nx - 1) * ((float) npoints - 1);
+				/* calculate the second derivatives of the input row */
+				secondDerivative(
+				// &idat[ix[inrow]], /* input row */
+						quasi, /* input data */
+						inputIdx, /* current index position in input */
+						npoints, /* number of points in input row */
+						x1_der, /* first derivative of first element */
+						xn_der, /* first derivative of nth element */
+						second_d); /* output second derivative */
 
-        /* map output point to input space */
-        cubicSpline(  /* interpolate the value */
-                //&idat[ix[inrow]],/* input row */
-                quasi,         /* input data */
-                inputIdx,      /* current index position in input */
-                second_d,      /* calculated second derivatives */
-                mapped_i,      /* element to be interpolated */
-                data,          /* output data */
-                outputIdx++);  /* where to put the interpolated value */
-      }
-      //System.out.println( "inputIdx ="+ inputIdx );
-      inputIdx += npoints;
-    }
+				/* interpolate the output row */
+				for (int i = 0; i < nx; i++) {
+					double mapped_i; /* i mapped to input space */
+					mapped_i = (float) i / ((float) nx) * ((float) npoints);
 
-    return data;
-  }
+					/* map output point to input space */
+					cubicSpline( /* interpolate the value */
+					quasi, /* input data */
+							inputIdx, /* current index position in input */
+							second_d, /* calculated second derivatives */
+							mapped_i, /* element to be interpolated */
+							data, /* output data */
+							outputIdx++); /* where to put the interpolated value */
+				}
 
-  public static int getMax(int[] vals) {
-    int max = 0;
-    for (int v : vals) if (v > max) max = v;
-    return max;
-  }
+				inputIdx += npoints;
 
-  private static void secondDerivative(float[] inpt, int idx, int n, double x1d,
-                                       double xnd, double[] y2d) {
-    //    float *inpt;        /* input data */
-    //    float idx;          /* input data index*/
-    //    int n;              /* number of points in input row */
-    //    float x1d;          /* first derivative of the first end point */
-    //    float xnd;          /* first derivative of the nth end point */
-    //    float *y2d;         /* output row of 2nd derivatives */
+			}
 
-    double p;
-    double qn;
-    double sig;
-    double un;
-    //float *scratch = (float *)emalloc((n - 1) * sizeof(float));
-    double[] scratch = new double[n - 1];  /* scratch vector */
+		} else if (interpolationMethod == INTERPOLATION_LINEAR) { // =>
+																	// USE_LINEAR
 
-    if (x1d > 0.99e30) {  /* lower boundary is natural */
-      y2d[0] = scratch[0] = 0;
+			for (int j = 0; j < ny; j++) { // LOOK - assumes varies by x
+				// int inrow; /* input row to use */
+				int npoints; /* number input points in current parallel */
 
-    } else {              /* calculate the lower boundary value */
-      y2d[0] = 0.5;
-      //scratch[0] = 3.0 * ((inpt[1] - inpt[0]) / (1 - x1d));
-      scratch[0] = 3.0 * ((inpt[idx + 1] - inpt[idx]) / (1 - x1d));
-    }
+				// inrow = j * (nrows - 1) / (nj - 1); /* set the row number */
+				// npoints = ix[inrow+1] - ix[inrow]; /* set number of input
+				// points */
+				npoints = linePts[j]; /* number of input points in this parallel */
 
-    for (int i = 1; i < n - 1; i++) {  /* decomposition loop */
-      sig = 0.5;
-      p = sig * y2d[i - 1] + 2.0;
-      y2d[i] = (sig - 1.0) / p;
-      //scratch[i] = (inpt[i+1] - inpt[i]) - (inpt[i] - inpt[i-1]);
-      scratch[i] = (inpt[idx + i + 1] - inpt[idx + i]) - (inpt[idx + i] - inpt[idx + i - 1]);
-      scratch[i] = (6.0 * scratch[i] / 2.0 - sig * scratch[i - 1]) / p;
-    }
+				// skip the processing if npoints = number of points in output
+				// parallel
+				if (npoints == nx) {
+					for (int i = 0; i < nx; i++) {
+						data[outputIdx++] = quasi[inputIdx++];
+					}
+					continue;
+				}
 
+				for (int i = 0; i < nx; i++) {
+					double mapped_i; /* i mapped to input space */
+					mapped_i = (float) i / ((float) nx) * ((float) npoints);
 
-    if (xnd > 0.99e30) {  /* upper boundary is natural */
-      qn = un = 0;
+					linear( /* interpolate the value */
+					quasi, /* input data */
+							inputIdx, /* current index position in input */
+							mapped_i, /* element to be interpolated */
+							data, /* output data */
+							outputIdx++, /* where to put the interpolated value */
+							npoints);
+				}
 
-    } else {              /* calculate the upper boundary value */
-      qn = 0.5;
-      //un = 3.0 * (xnd - (inpt[n-1] - inpt[n-2]));
-      un = 3.0 * (xnd - (inpt[idx + n - 1] - inpt[idx + n - 2]));
-    }
+				inputIdx += npoints;
 
-    y2d[n - 1] = (un - qn * scratch[n - 2]) / (qn * y2d[n - 2] + 1.0);
+			}
 
-    for (int i = n - 2; i >= 0; i--) {  /* back substitution loop */
-      y2d[i] = y2d[i] * y2d[i + 1] + scratch[i];
-    }
+		} else {
+			throw new RuntimeException("unsupported interpolation method");
+		}
 
-  }
+		return data;
+	}
 
+	public static int getMax(int[] vals) {
+		int max = 0;
+		for (int v : vals)
+			if (v > max)
+				max = v;
+		return max;
+	}
 
-  private static void cubicSpline(float[] inpt, int iIdx, double[] y2d, double x,
-                                  float[] outpt, int oIdx) {
-    //    float *inpt;        /* input row */
-    //    int iIdx;           /* input data index*/
-    //    float *y2d;         /* second derivatives of input row */
-    //    float x;            /* output point */
-    //    float outpt;        /* where to put the interpolated data */
-    //    int oIdx;           /* index in output, the interpolated data */
+	public static void secondDerivative(float[] inpt, int idx, int n,
+			double x1d, double xnd, double[] y2d) {
+		// float *inpt; /* input data */
+		// float idx; /* input data index*/
+		// int n; /* number of points in input row */
+		// float x1d; /* first derivative of the first end point */
+		// float xnd; /* first derivative of the nth end point */
+		// float *y2d; /* output row of 2nd derivatives */
 
-    int hi;
-    int low;
-    double a;
-    double b;
+		double p;
+		double qn;
+		double sig;
+		double un;
+		// float *scratch = (float *)emalloc((n - 1) * sizeof(float));
+		double[] scratch = new double[n - 1]; /* scratch vector */
 
-    if (java.lang.Math.floor(x) == x) {  /* existing data point */
-      //*outpt = inpt[(int)x];
-      outpt[oIdx] = inpt[iIdx + (int) x];
-      return;
-    }
+		if (x1d > 0.99e30) { /* lower boundary is natural */
+			y2d[0] = scratch[0] = 0;
 
-    /* set the input bracket */
-    hi = (int) (java.lang.Math.ceil(x));
-    low = (int) (java.lang.Math.floor(x));
+		} else { /* calculate the lower boundary value */
+			y2d[0] = 0.5;
+			// scratch[0] = 3.0 * ((inpt[1] - inpt[0]) / (1 - x1d));
+			scratch[0] = 3.0 * ((inpt[idx + 1] - inpt[idx]) / (1 - x1d));
+		}
 
-    a = hi - x;
-    b = x - low;
+		for (int i = 1; i < n - 1; i++) { /* decomposition loop */
+			sig = 0.5;
+			p = sig * y2d[i - 1] + 2.0;
+			y2d[i] = (sig - 1.0) / p;
+			// scratch[i] = (inpt[i+1] - inpt[i]) - (inpt[i] - inpt[i-1]);
+			scratch[i] = (inpt[idx + i + 1] - inpt[idx + i])
+					- (inpt[idx + i] - inpt[idx + i - 1]);
+			scratch[i] = (6.0 * scratch[i] / 2.0 - sig * scratch[i - 1]) / p;
+		}
 
-    /* evalualte the polynomial */
+		if (xnd > 0.99e30) { /* upper boundary is natural */
+			qn = un = 0;
 
-    //*outpt = a * inpt[low] + b * inpt[hi] + ((a * a * a - a) * y2d[low] + (b * b * b - b) * y2d[hi]) / 6.0;
-    outpt[oIdx] = (float) (a * inpt[iIdx + low] + b * inpt[iIdx + hi]
-            + ((a * a * a - a) * y2d[low]
-            + (b * b * b - b) * y2d[hi]) / 6.0);
+		} else { /* calculate the upper boundary value */
+			qn = 0.5;
+			// un = 3.0 * (xnd - (inpt[n-1] - inpt[n-2]));
+			un = 3.0 * (xnd - (inpt[idx + n - 1] - inpt[idx + n - 2]));
+		}
 
-  }
+		y2d[n - 1] = (un - qn * scratch[n - 2]) / (qn * y2d[n - 2] + 1.0);
+
+		for (int i = n - 2; i >= 0; i--) { /* back substitution loop */
+			y2d[i] = y2d[i] * y2d[i + 1] + scratch[i];
+		}
+
+	}
+
+	public static void cubicSpline(float[] inpt, int iIdx, double[] y2d,
+			double x, float[] outpt, int oIdx) {
+		// float *inpt; /* input row */
+		// int iIdx; /* input data index*/
+		// float *y2d; /* second derivatives of input row */
+		// float x; /* output point */
+		// float outpt; /* where to put the interpolated data */
+		// int oIdx; /* index in output, the interpolated data */
+
+		int hi;
+		int low;
+		double a;
+		double b;
+
+		if (java.lang.Math.floor(x) == x) { /* existing data point */
+			// *outpt = inpt[(int)x];
+			outpt[oIdx] = inpt[iIdx + (int) x];
+			return;
+		}
+
+		/* set the input bracket */
+		hi = (int) (java.lang.Math.ceil(x));
+		low = (int) (java.lang.Math.floor(x));
+
+		a = hi - x;
+		b = x - low;
+
+		hi = hi > (y2d.length - 1) ? 0 : hi;
+
+		/* evalualte the polynomial */
+
+		// *outpt = a * inpt[low] + b * inpt[hi] + ((a * a * a - a) * y2d[low] +
+		// (b * b * b - b) * y2d[hi]) / 6.0;
+		outpt[oIdx] = (float) (a * inpt[iIdx + low] + b * inpt[iIdx + hi] + ((a
+				* a * a - a)
+				* y2d[low] + (b * b * b - b) * y2d[hi]) / 6.0);
+
+	}
+
+	public static void linear(float[] inpt, int iIdx, double x, float[] outpt,
+			int oIdx, int npoints) {
+
+		// float *inpt; /* input row */
+		// int iIdx; /* input data index*/
+		// float x; /* output point */
+		// float outpt; /* where to put the interpolated data */
+		// int oIdx; /* index in output, the interpolated data */
+
+		int hi;
+		int low;
+		double a;
+		double b;
+
+		if (java.lang.Math.floor(x) == x) { /* existing data point */
+			outpt[oIdx] = inpt[iIdx + (int) x];
+			return;
+		}
+
+		/* set the input bracket */
+		hi = (int) (java.lang.Math.ceil(x));
+		low = (int) (java.lang.Math.floor(x));
+
+		a = hi - x;
+		b = x - low;
+
+		int hiIdx = hi > (npoints - 1) ? iIdx : iIdx + hi;
+		int lowIdx = iIdx + low;
+
+		outpt[oIdx] = (float) (a * inpt[lowIdx] + b * inpt[hiIdx]);
+
+	}
 
 }
