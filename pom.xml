@@ -250,7 +250,7 @@
       </dependency>
       <dependency>
         <groupId>${project.groupId}</groupId>
-        <artifactId>httpclient</artifactId>
+        <artifactId>httpclientu</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>
@@ -933,7 +933,7 @@
     <module>it</module>
     <module>netcdf4</module>
     <module>clcommon</module>
-    <module>httpclient</module>
+    <module>httpclientu</module>
     <module>dap4/d4core</module>
     <module>dap4/d4shared</module>
     <module>dap4/d4client</module>

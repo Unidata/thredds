@@ -12,7 +12,7 @@
            Module Description
        =========================================================== -->
   <!-- groupId>edu.ucar</groupId-->
-  <artifactId>httpclient</artifactId>
+  <artifactId>httpclientu</artifactId>
 
   <packaging>jar</packaging>
   <name>Apache HttpClient Wrappers</name>

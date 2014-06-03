@@ -1,2 +1,2 @@
-include 'udunits', 'httpclient', 'cdm', 'clcommon', 'bufr', 'grib', 'opendap', 'netcdf4', 'visad', 'ui', 'ncIdv',
+include 'udunits', 'httpclientu', 'cdm', 'clcommon', 'bufr', 'grib', 'opendap', 'netcdf4', 'visad', 'ui', 'ncIdv',
         'tdcommon', 'tdm', 'tds', 'cdm-test'

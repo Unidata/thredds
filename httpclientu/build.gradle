@@ -1,6 +1,6 @@
 jar {
     manifest {
-        attributes 'Implementation-Title': 'httpclient'
+        attributes 'Implementation-Title': 'httpclientu'
     }
 }
 
