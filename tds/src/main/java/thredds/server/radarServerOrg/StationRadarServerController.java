@@ -36,43 +36,39 @@
  * Time: 3:55:40 PM
  */
 
-package thredds.server.radarServer;
+package thredds.server.radarServerOrg;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.DependsOn;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.ModelAndView;
-import org.springframework.web.servlet.mvc.multiaction.NoSuchRequestHandlingMethodException;
+import org.springframework.web.servlet.mvc.AbstractController;
 import thredds.catalog.query.Station;
-import thredds.server.AbstractController;
 import thredds.server.config.TdsContext;
 import thredds.util.TdsPathUtils;
 
-import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class RadarStationController extends AbstractController {
-  private static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(RadarStationController.class);
+@Controller
+public class StationRadarServerController extends AbstractController {
+  private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(getClass());
 
-  private static final String CREATE_VIEW = "forward:createstation.htm";  // The view to forward to in case an dataset needs to be created.
+  private static final String CREATE_VIEW = "forward:createstation.htm";   // The view to forward to in case an dataset needs to be created.
   private static final String MODEL_KEY = "message";  // The model key used to retrieve the message from the model.
-  private static final String MSG_CODE = "message.create.station"; // The unique key for retrieving the text associated with this message.
+  private static final String MSG_CODE = "message.create.station";  // The unique key for retrieving the text associated with this message.
 
-  private RadarDatasetRepository radarDatasetRepository;
-
+  @Autowired
   private TdsContext tdsContext;
-  public static boolean enabled;
 
-  public RadarStationController() {
+
+  public StationRadarServerController() {
   }
 
   protected String getControllerPath() {
@@ -80,46 +76,31 @@ public class RadarStationController extends AbstractController {
   }
 
   @Override
-  protected String[] getEndings() {
-    return new String[] {"/stations.xml"};
-  }
+  @RequestMapping(value = {"/radarServer/**/stations.xml"}, method = RequestMethod.GET)
+  protected ModelAndView handleRequestInternal(HttpServletRequest request, HttpServletResponse response) throws Exception {
+    DatasetRepository.init(tdsContext);
 
-  @PostConstruct
-  void init() {
-    enabled = radarDatasetRepository.init(tdsContext); // for some reason this is not working directly
-  }
-
-  //@RequestMapping(value = {"**/stations.xml"}, method = RequestMethod.GET)
-  protected ModelAndView stationRequestXml(HttpServletRequest request, HttpServletResponse res) throws IOException {
- //         throws RadarServerException, IOException, NoSuchRequestHandlingMethodException {
-    if (!enabled) {
-      res.sendError(HttpServletResponse.SC_NOT_FOUND, "No radar server");
-      return null;
-    }
-
-    //try {
+    try {
       // Gather diagnostics for logging request.
       // setup
       String path = TdsPathUtils.extractPath(request, getControllerPath());
       if (path == null) path = "";
 
       int pos = path.indexOf("/");
-      String type = (pos > 0) ? path.substring(0,pos) : "";
+      String type = (pos > 0) ? path.substring(0, pos) : "";
 
-      RadarDatasetRepository.RadarType radarType;
+      DatasetRepository.RadarType radarType;
       try {
-        radarType = RadarDatasetRepository.RadarType.valueOf(type);
+        radarType = DatasetRepository.RadarType.valueOf(type);
       } catch (Exception e) {
-        res.sendError(HttpServletResponse.SC_BAD_REQUEST, "Bad radar type="+type);
+        response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Bad radar type=" + type);
         return null;
       }
-      // path = path.substring(type.length()+1);
 
       // return stations of dataset
-      Map<String, Object> model = new HashMap<String, Object>();
+      Map<String, Object> model = new HashMap<>();
       stationsXML(radarType, path, model);
-
-      if (model.size() == 0) {
+      if (model == null || model.size() == 0) {
         ModelAndView mav = new ModelAndView(CREATE_VIEW);
         mav.addObject(MODEL_KEY, MSG_CODE);
         return mav;
@@ -127,22 +108,21 @@ public class RadarStationController extends AbstractController {
         return new ModelAndView("stationXml", model);
       }
 
-    /*} catch (RadarServerException e) {
+    } catch (RadarServerException e) {
       throw e; // pass it onto Spring exceptionResolver
-
     } catch (Throwable e) {
       log.error("handleRequestInternal(): Problem handling request.", e);
       throw new RadarServerException("handleRequestInternal(): Problem handling request.", e);
-    }  */
+    }
   }
 
   /*
    * Create an ArrayList of station entries in model for radarType and path
    */
-  private void stationsXML(RadarDatasetRepository.RadarType radarType, String path, Map<String, Object> model) {
-//          throws Exception {
+  private void stationsXML(DatasetRepository.RadarType radarType, String path, Map<String, Object> model)
+          throws Exception {
     // stations in this dataset, set by path
-    String[] stations = stationsDS(radarType, radarDatasetRepository.dataRoots.get(path));
+    String[] stations = stationsDS(radarType, DatasetRepository.dataLocation.get(path));
     if (path.contains("level3") && stations[0].length() == 4) {
       for (int i = 0; i < stations.length; i++)
         stations[i] = stations[i].substring(1);
@@ -153,7 +133,7 @@ public class RadarStationController extends AbstractController {
   /*
    * Find the stations for this dataset in path directory
    */
-  private String[] stationsDS(RadarDatasetRepository.RadarType radarType, String path) { // throws Exception {
+  private String[] stationsDS(DatasetRepository.RadarType radarType, String path) throws Exception {
 
     String[] stations = null;
     // Scan directory looking for actual stations
@@ -163,14 +143,14 @@ public class RadarStationController extends AbstractController {
       // check for level3 stations
       if (path.contains("level3")) {
         dir = null;
-        if (radarType.equals(RadarDatasetRepository.RadarType.nexrad)) {
+        if (radarType.equals(DatasetRepository.RadarType.nexrad)) {
           for (String var : stations) {
             if (var.equals("N0R")) {
               dir = new File(path + "/N0R");
               break;
             }
           }
-        } else if (radarType.equals(RadarDatasetRepository.RadarType.terminal)) {
+        } else if (radarType.equals(DatasetRepository.RadarType.terminal)) {
           for (String var : stations) {
             if (var.equals("TR0")) {
               dir = new File(path + "/TR0");
@@ -202,10 +182,10 @@ public class RadarStationController extends AbstractController {
     if (stations == null || stations.length == 0) {
       if (stations == null)
         stations = new String[1];
-      if (radarType.equals(RadarDatasetRepository.RadarType.nexrad))
-        stations = radarDatasetRepository.nexradMap.keySet().toArray(stations);
+      if (radarType.equals(DatasetRepository.RadarType.nexrad))
+        stations = DatasetRepository.nexradMap.keySet().toArray(stations);
       else
-        stations = radarDatasetRepository.terminalMap.keySet().toArray(stations);
+        stations = DatasetRepository.terminalMap.keySet().toArray(stations);
     }
     return stations;
   }
@@ -215,8 +195,8 @@ public class RadarStationController extends AbstractController {
    *
    * @param stations
    */
-  private void makeStationDocument(String[] stations, RadarDatasetRepository.RadarType radarType, Map<String, Object> model) {
-//          throws Exception {
+  private void makeStationDocument(String[] stations, DatasetRepository.RadarType radarType, Map<String, Object> model)
+          throws Exception {
     /*
     <station id="KTYX" state="NY" country="US">
       <name>MONTAGUE/Fort_Drum</name>
@@ -267,22 +247,22 @@ public class RadarStationController extends AbstractController {
    * @param radarType
    * @return station
    */
-  public Station getStation(String station, RadarDatasetRepository.RadarType radarType) {
+  public Station getStation(String station, DatasetRepository.RadarType radarType) {
 
     Station stn = null;
-    if (station.length() == 3 && radarType.equals(RadarDatasetRepository.RadarType.terminal)) { // terminal level3 station
-      stn = radarDatasetRepository.terminalMap.get("T" + station);
+    if (station.length() == 3 && radarType.equals(DatasetRepository.RadarType.terminal)) { // terminal level3 station
+      stn = DatasetRepository.terminalMap.get("T" + station);
     } else if (station.length() == 3) {
-      for (Station stn3 : radarDatasetRepository.nexradList) {
+      for (Station stn3 : DatasetRepository.nexradList) {
         if (stn3.getValue().endsWith(station)) {
           stn = stn3;
           break;
         }
       }
-    } else if (radarType.equals(RadarDatasetRepository.RadarType.terminal)) {
-      stn = radarDatasetRepository.terminalMap.get(station);
+    } else if (radarType.equals(DatasetRepository.RadarType.terminal)) {
+      stn = DatasetRepository.terminalMap.get(station);
     } else {
-      stn = radarDatasetRepository.nexradMap.get(station);
+      stn = DatasetRepository.nexradMap.get(station);
     }
     return stn;
   }

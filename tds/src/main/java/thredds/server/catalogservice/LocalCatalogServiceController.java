@@ -39,6 +39,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -124,9 +125,9 @@ import java.net.URISyntaxException;
  * @see LocalCatalogRequestValidator
  * @since 4.0
  */
-@Component
+@Controller
 //@RequestMapping(value = {"/**/*.xml", "/*.xml", "/**/*.html", "/*.html"})
-@RequestMapping(value = {"**"})
+//@RequestMapping(value = {"**"})
 public class LocalCatalogServiceController {
   private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(getClass());
 
@@ -147,7 +148,7 @@ public class LocalCatalogServiceController {
     this.catalogSupportOnly = catalogSupportOnly;
   }
 
-  @RequestMapping(value = {"**/*.xml"}, method = RequestMethod.GET)
+  @RequestMapping(value = {"/**/*.xml"}, method = RequestMethod.GET)
   protected ModelAndView handleXmlRequest(HttpServletRequest request, HttpServletResponse response) throws Exception {
     try {
       // Bind HTTP request to a LocalCatalogRequest.
@@ -221,7 +222,7 @@ public class LocalCatalogServiceController {
     }
   }
 
-  @RequestMapping(value = {"**/*.html"}, method = RequestMethod.GET)
+  @RequestMapping(value = {"/**/*.html"}, method = RequestMethod.GET)
   protected ModelAndView handleHtmlRequest(HttpServletRequest request, HttpServletResponse response) throws Exception {
     try {
       // Bind HTTP request to a LocalCatalogRequest.

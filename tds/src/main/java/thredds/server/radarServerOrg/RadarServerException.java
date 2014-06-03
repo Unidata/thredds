@@ -30,53 +30,33 @@
  * NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
  * WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
  */
-
-package thredds.servlet;
-
-import java.io.*;
-import javax.servlet.http.*;
-
 /**
- * Abstract superclass for THREDDS servlets.
- * Provides some common services for servlets: debugging, logging, and file serving.
- *
- * @author caron
+ * User: rkambic
+ * Date: Dec 10, 2010
+ * Time: 12:06:11 PM
  */
-public abstract class AbstractServlet extends HttpServlet {
-  protected org.slf4j.Logger logServerStartup = org.slf4j.LoggerFactory.getLogger("serverStartup");
-  protected org.slf4j.Logger log;
-  protected String contentPath;
 
-  // must end with "/"
-  protected abstract String getPath();
+package thredds.server.radarServerOrg;
 
-  //protected abstract void makeDebugActions();
+public class RadarServerException extends Exception {
 
-  public void init() throws javax.servlet.ServletException
-  {
-    logServerStartup.info( getClass().getName() + " initialization start -  ");
+    /**
+     * Construct a new Exception with message <tt>msg</tt>.
+     *
+     * @param msg error message
+     */
 
-    contentPath = ServletUtil.getContentPath() + getPath();
-
-    // init logging
-    log = org.slf4j.LoggerFactory.getLogger(getClass());
-
-    // debug actions
-    //makeDebugActions();
-  }
-
-  protected void initContent() throws javax.servlet.ServletException {
-
-    // first time, create content directory
-    String initialContentPath = ServletUtil.getInitialContentPath() + getPath();
-    File initialContentFile = new File(initialContentPath);
-    if (initialContentFile.exists()) {
-      try {
-        if (ServletUtil.copyDir(initialContentPath, contentPath))
-          logServerStartup.info("copyDir " + initialContentPath + " to " + contentPath);
-      } catch (IOException ioe) {
-        logServerStartup.error("failed to copyDir " + initialContentPath + " to " + contentPath, ioe);
-      }
+    public RadarServerException(String msg) {
+      super(msg);
     }
+
+  /**
+   * Construct a new RadarServerException.
+   *
+   * @param message the detailed exception message
+   * @param cause the cause of this exception
+   */
+  public RadarServerException( String message, Throwable cause) {
+    super(message, cause);
   }
 }

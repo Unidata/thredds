@@ -1,33 +1,33 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd">
 
   <!-- not currently used -->
 
-  <bean id="datasetCollection" class="thredds.server.radarServer.RadarDatasetCollection">
+  <bean id="datasetCollection" class="thredds.server.radarServerOrg.RadarDatasetCollection">
     <property name="daysToRead" value="14" />
   </bean>
 
-  <bean id="repository" class="thredds.server.radarServer.RadarDatasetRepository" init-method="init">
+  <bean id="repository" class="thredds.server.radarServerOrg.DatasetRepository" init-method="init">
     <property name="tdsContext" ref="tdsContext"/>
   </bean>
 
-  <bean id="catalogXmlController" class="thredds.server.radarServer.RadarCatalogController">
+  <bean id="catalogXmlController" class="thredds.server.radarServerOrg.CatalogRadarServerController">
     <!-- property name="tdsContext" ref="tdsContext"/-->
     <property name="htmlView" value="false"/>
     <!-- property name="htmlWriter" ref="htmlWriter"/-->
     <property name="supportedMethods" value="GET"/>
   </bean>
 
-  <bean id="catalogHtmlController" class="thredds.server.radarServer.RadarCatalogController">
+  <bean id="catalogHtmlController" class="thredds.server.radarServerOrg.CatalogRadarServerController">
     <!-- property name="tdsContext" ref="tdsContext"/-->
     <property name="htmlView" value="true"/>
     <!-- property name="htmlWriter" ref="htmlWriter"/-->
     <property name="supportedMethods" value="GET"/>
   </bean>
 
-  <bean id="queryXmlController" class="thredds.server.radarServer.RadarController" >
+  <bean id="queryXmlController" class="thredds.server.radarServerOrg.QueryRadarServerController" >
     <property name="tdsContext" ref="tdsContext"/>
     <property name="htmlView" value="false"/>
     <property name="htmlWriter" ref="htmlWriter"/>
@@ -35,7 +35,7 @@
     <property name="supportedMethods" value="GET"/>
   </bean>
 
-  <bean id="stationXmlController" class="thredds.server.radarServer.RadarStationController">
+  <bean id="stationXmlController" class="thredds.server.radarServerOrg.StationRadarServerController">
     <property name="tdsContext" ref="tdsContext"/>
     <property name="htmlView" value="false"/>
     <property name="htmlWriter" ref="htmlWriter"/>
@@ -45,8 +45,6 @@
   <bean class="org.springframework.web.servlet.handler.SimpleUrlHandlerMapping">
     <property name="mappings">
       <value>
-        /*=catalogHtmlController
-        /catalog.xml=catalogXmlController
         /**/*?*=queryXmlController
         /**/catalog.xml=catalogXmlController
         /**/dataset.xml=catalogXmlController
@@ -56,7 +54,7 @@
       </value>
     </property>
   </bean>
-	
+
   <bean id="xmlViewResolver" class="org.springframework.web.servlet.view.XmlViewResolver">
     <property name="cache" value="true"/>
     <property name="order" value="1"/>

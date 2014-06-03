@@ -30,53 +30,26 @@
  * NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
  * WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
  */
+/**
+ * User: Robb
+ * Date: Jan 22, 2010
+ * Time: 3:12:00 PM
+ */
 
-package thredds.servlet;
+package thredds.server.radarServerOrg;
 
-import java.io.*;
-import javax.servlet.http.*;
+import java.io.PrintWriter;
 
 /**
- * Abstract superclass for THREDDS servlets.
- * Provides some common services for servlets: debugging, logging, and file serving.
- *
- * @author caron
+ * Takes a RadarStation Collection as input and write out an XML representation
  */
-public abstract class AbstractServlet extends HttpServlet {
-  protected org.slf4j.Logger logServerStartup = org.slf4j.LoggerFactory.getLogger("serverStartup");
-  protected org.slf4j.Logger log;
-  protected String contentPath;
+public class RadarXmlStationQuery {
 
-  // must end with "/"
-  protected abstract String getPath();
+/**
+ * constructor
+  */
+  RadarXmlStationQuery( PrintWriter pw, RadarStationCollection rsc ) {
 
-  //protected abstract void makeDebugActions();
-
-  public void init() throws javax.servlet.ServletException
-  {
-    logServerStartup.info( getClass().getName() + " initialization start -  ");
-
-    contentPath = ServletUtil.getContentPath() + getPath();
-
-    // init logging
-    log = org.slf4j.LoggerFactory.getLogger(getClass());
-
-    // debug actions
-    //makeDebugActions();
-  }
-
-  protected void initContent() throws javax.servlet.ServletException {
-
-    // first time, create content directory
-    String initialContentPath = ServletUtil.getInitialContentPath() + getPath();
-    File initialContentFile = new File(initialContentPath);
-    if (initialContentFile.exists()) {
-      try {
-        if (ServletUtil.copyDir(initialContentPath, contentPath))
-          logServerStartup.info("copyDir " + initialContentPath + " to " + contentPath);
-      } catch (IOException ioe) {
-        logServerStartup.error("failed to copyDir " + initialContentPath + " to " + contentPath, ioe);
-      }
-    }
-  }
+  
+}
 }
