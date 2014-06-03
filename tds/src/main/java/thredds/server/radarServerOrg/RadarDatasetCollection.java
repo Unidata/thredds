@@ -105,12 +105,12 @@ public class RadarDatasetCollection {
   /**
    * Map of all the stations, ArrayList of yyyyddmm times
    */
-  HashMap<String, ArrayList<String>> yyyymmdd = new HashMap<String, ArrayList<String>>();
+  HashMap<String, ArrayList<String>> yyyymmdd = new HashMap<>();
 
   /**
    *  Map  key = stn + yyyymmdd, times or full unstandard names
    */
-  HashMap<String, ArrayList<String>> hhmm = new HashMap<String, ArrayList<String>>();
+  HashMap<String, ArrayList<String>> hhmm = new HashMap<>();
 
   private static int daysToRead = 6;
 
@@ -164,7 +164,8 @@ public class RadarDatasetCollection {
       log.debug( sb.toString() );
       String[] children = dir.list();
       for (String child : children) {
-        if ( ! child.startsWith( ".2"))
+        if ( ! child.startsWith( ".2"))    // LOOK WTF ?? these are directories look like ".20140514" that are some kind of serialized directory;
+                                           // not sure who writes them, but they are owned by ldm. HAHAHAHAHAHAHA
           continue;
         rdc.add( child );
       }
@@ -262,7 +263,7 @@ public class RadarDatasetCollection {
     for( String station : stations ) {
       ArrayList<String> days = yyyymmdd.get( station );
       if ( days == null )
-        days = new ArrayList<String>();
+        days = new ArrayList<>();
       days.add( rdc.yyyymmdd );
       yyyymmdd.put( station, days );
       sb.setLength( 0 );

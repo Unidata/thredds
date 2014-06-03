@@ -50,6 +50,8 @@ import thredds.catalog.query.Location;
 import thredds.catalog.query.SelectStation;
 import thredds.catalog.query.Station;
 import thredds.server.config.TdsContext;
+import thredds.servlet.DataRootHandler;
+import thredds.servlet.DatasetHandler;
 import ucar.unidata.util.StringUtil2;
 
 import javax.xml.parsers.DocumentBuilder;
@@ -110,8 +112,10 @@ public class DatasetRepository {
       for (int j = 0; j < datasets.size(); j++) {
         InvDatasetScan ds = (InvDatasetScan) datasets.get(j);
         if (ds.getPath() != null) {
-          dataLocation.put(ds.getPath(), ds.getScanLocation());
-          startupLog.info("path =" + ds.getPath() + " location =" + ds.getScanLocation());
+
+          String locationWithAliasRemoved = DataRootHandler.getInstance().expandAliasForDataRoot(ds.getScanLocation());
+          dataLocation.put(ds.getPath(), locationWithAliasRemoved);
+          startupLog.info("path =" + ds.getPath() + " location =" + locationWithAliasRemoved);
         }
         ds.setXlinkHref(ds.getPath() + "/dataset.xml");
       }
@@ -151,7 +155,7 @@ public class DatasetRepository {
     if (rdc != null)
       reread = rdc.previousDayNowAvailable();
     if (rdc == null || reread) { // need to read or reread dataset
-      Object sync = new Object();
+      Object sync = new Object();   // LOOK BAD
       synchronized (sync) {
         if (reread) {   // remove dataset
           datasetMap.remove(dmkey);
@@ -203,6 +207,7 @@ public class DatasetRepository {
     InvCatalogImpl acat;
     try {
       catURI = new URI("file:" + StringUtil2.escape(catalogFullPath, "/:-_.")); // LOOK needed ?
+      //catURI = new URI("file:" + catalogFullPath);
     } catch (URISyntaxException e) {
       startupLog.info("radarServer readCatalog(): URISyntaxException=" + e.getMessage());
       return null;

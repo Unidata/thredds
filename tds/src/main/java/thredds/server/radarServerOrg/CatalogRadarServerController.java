@@ -318,18 +318,20 @@ public class CatalogRadarServerController extends AbstractController {
     model.put("east", gc.getLonEast());
     model.put("west", gc.getLonWest());
 
-    ThreddsMetadata.Variables cvs = (ThreddsMetadata.Variables) ds.getVariables().get(0);
-    List vl = cvs.getVariableList();
-    ArrayList<RsVar> variables = new ArrayList<RsVar>();
-    for (int j = 0; j < vl.size(); j++) {
-      ThreddsMetadata.Variable v = (ThreddsMetadata.Variable) vl.get(j);
-      RsVar rsv = new RsVar();
-      rsv.setName(v.getName());
-      rsv.setVname(v.getVocabularyName());
-      rsv.setUnits(v.getUnits());
-      variables.add(rsv);
+    if (ds.getVariables().size() > 0) {
+      ThreddsMetadata.Variables cvs = ds.getVariables().get(0);
+      List vl = cvs.getVariableList();
+      ArrayList<RsVar> variables = new ArrayList<>();
+      for (int j = 0; j < vl.size(); j++) {
+        ThreddsMetadata.Variable v = (ThreddsMetadata.Variable) vl.get(j);
+        RsVar rsv = new RsVar();
+        rsv.setName(v.getName());
+        rsv.setVname(v.getVocabularyName());
+        rsv.setUnits(v.getUnits());
+        variables.add(rsv);
+      }
+      model.put("variables", variables);
     }
-    model.put("variables", variables);
     // not necessary to get stations, IDV does separate request for stations
     //String[] stations = rm.stationsDS(radarType, dataLocation.get(ds.getPath()));
     //rm.printStations(stations, pw, radarType );

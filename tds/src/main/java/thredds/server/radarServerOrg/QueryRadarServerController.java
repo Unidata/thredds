@@ -46,6 +46,7 @@ import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.AbstractController;
 import thredds.server.config.TdsContext;
 import thredds.servlet.HtmlWriter;
+import thredds.util.TdsPathUtils;
 import ucar.nc2.units.DateRange;
 import ucar.nc2.units.DateType;
 
@@ -124,6 +125,10 @@ public class QueryRadarServerController extends AbstractController  {
     dateFormat.setTimeZone( TimeZone.getTimeZone( "GMT" ) );
   }
 
+  protected String getControllerPath() {
+    return "/radarServer/";
+  }
+
   /**
    * Query RadarServer controller for Spring Framework
    * @param request HttpServletRequest
@@ -132,7 +137,7 @@ public class QueryRadarServerController extends AbstractController  {
    * @throws Exception
    */
   //@RequestMapping(value = {"/radarServer/**/*?*"}, method = RequestMethod.GET)
-  @RequestMapping( value="/radarServer/**",  params={"stn"}, method = RequestMethod.GET)
+  @RequestMapping( value="/radarServer/**",  method = RequestMethod.GET)
   protected ModelAndView handleRequestInternal( HttpServletRequest request, HttpServletResponse response) throws Exception {
     DatasetRepository.init(tdsContext);
 
@@ -185,24 +190,24 @@ public class QueryRadarServerController extends AbstractController  {
 
   // get/check/process query  
   public void radarQuery( HttpServletRequest req, HttpServletResponse res, Map<String,Object> model )
-            throws ServletException, IOException, RadarServerException {
+           throws ServletException, IOException, RadarServerException {
 
-//      long  startms = System.currentTimeMillis();
-//      long  endms;
-      DatasetRepository.RadarType radarType = DatasetRepository.RadarType.nexrad;
-      // need to extract data according to the (dataset) given
-      String pathInfo = req.getPathInfo();
-      if (pathInfo == null) pathInfo = "";
-      if( pathInfo.startsWith( "/"))
-              pathInfo = pathInfo.substring( 1 );
-      try {
-        String rt = pathInfo.substring(0, pathInfo.indexOf('/', 1));
-        radarType = DatasetRepository.RadarType.valueOf( rt );
-      } catch ( Exception e ) {
-        log.info( "Invalid dataset url reference "+ pathInfo );
-        throw new RadarServerException( "Invalid dataset url reference "+ pathInfo, e );
-      }
-      Boolean level2 = pathInfo.contains( "level2" );
+    DatasetRepository.RadarType radarType = DatasetRepository.RadarType.nexrad;
+    // need to extract data according to the (dataset) given
+    String pathInfo = TdsPathUtils.extractPath(req, getControllerPath());
+    if (pathInfo == null) pathInfo = "";
+    if (pathInfo.startsWith("/"))
+      pathInfo = pathInfo.substring(1);
+    String rt = pathInfo.substring(0, pathInfo.indexOf('/', 1));
+
+    try {
+      radarType = DatasetRepository.RadarType.valueOf(rt);
+    } catch (Exception e) {
+      res.sendError(HttpServletResponse.SC_BAD_REQUEST, "bad radarType=" + rt);
+      return;
+
+    }
+    Boolean level2 = pathInfo.contains("level2");
 
       // parse the input
       QueryParams qp = new QueryParams();
@@ -211,32 +216,28 @@ public class QueryRadarServerController extends AbstractController  {
         //throw new RadarServerException( qp.errs.toString() );//+ req.getQueryString() );
         return; //TODO: uncomment above 2 lines when QueryParams exception is fixed
       }
-//      endms = System.currentTimeMillis();
-//      System.out.println( "after QueryParams "+ (endms - startms));
-//      startms = System.currentTimeMillis();
       // check Query Params
       if( ! checkQueryParms( radarType, qp, level2 ) ) {
-        log.error( "checkQueryParms Failed "+ qp.errs.toString() + req.getQueryString() );
-        throw new RadarServerException( qp.errs.toString() );//+ req.getQueryString() );
+        res.sendError(HttpServletResponse.SC_BAD_REQUEST, "bad query=" + qp.errs.toString());
+        return;
+
+        //log.error( "checkQueryParms Failed "+ qp.errs.toString() + req.getQueryString() );
+        //throw new RadarServerException( qp.errs.toString() );//+ req.getQueryString() );
       }
-//      endms = System.currentTimeMillis();
-//      System.out.println( "after checkQueryParms "+ (endms - startms));
-//      startms = System.currentTimeMillis();
 
       // check type of output wanted XML html
       qp.acceptType = qp.acceptType.replaceFirst( ".*/", "" );
 
       // creates first part of catalog
       if( ! createHeader( radarType,  qp, pathInfo, model ) ) {
-        log.error( "Write Header Failed "+ qp.errs.toString() + req.getQueryString() );
-        throw new RadarServerException( qp.errs.toString() ); // req.getQueryString() );
+       res.sendError(HttpServletResponse.SC_BAD_REQUEST, "bad query=" + qp.errs.toString());
+       return;
+       // log.error( "Write Header Failed "+ qp.errs.toString() + req.getQueryString() );
+       // throw new RadarServerException( qp.errs.toString() ); // req.getQueryString() );
       }
-//      endms = System.currentTimeMillis();
-//      System.out.println( "after writeHeader "+ (endms - startms));
-//      startms = System.currentTimeMillis();
       // gets products according to stations, time, and variables
       boolean dataFound = false;
-      List<DatasetEntry> entries = new ArrayList<DatasetEntry>();
+      List<DatasetEntry> entries = new ArrayList<>();
       if( qp.vars == null) {
         dataFound = processQuery( pathInfo, qp, null, entries  );
         if ( releaseDataset )
@@ -262,10 +263,6 @@ public class QueryRadarServerController extends AbstractController  {
       } else {
         model.put( "documentation", "No data available for station(s) and time range");
       }
-
-//      endms = System.currentTimeMillis();
-//      System.out.println( "after radarQuery "+ (endms - startms));
-//      startms = System.currentTimeMillis();
 
   } // end radarNexradQuery
 

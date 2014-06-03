@@ -700,7 +700,7 @@ public final class DataRootHandler implements InitializingBean {
     return true;
   }
 
-  private String expandAliasForDataRoot(String location) {
+  public String expandAliasForDataRoot(String location) {
     for (PathAliasReplacement par : this.dataRootLocationAliasExpanders) {
         String result =  par.replaceIfMatch(location);
         if (result != null)
