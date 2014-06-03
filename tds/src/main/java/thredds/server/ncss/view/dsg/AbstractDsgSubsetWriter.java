@@ -28,13 +28,17 @@ public abstract class AbstractDsgSubsetWriter implements DsgSubsetWriter {
         this.wantedRange = getWantedRange(ncssParams);
     }
 
+    // TODO: This needs testing.
     public static List<VariableSimpleIF> getWantedVariables(FeatureDatasetPoint fdPoint, NcssParamsBean ncssParams)
             throws VariableNotContainedInDatasetException {
+        if (ncssParams.getVar().size() == 1 && ncssParams.getVar().get(0).equals("all")) {
+            return fdPoint.getDataVariables();  // Return all variables.
+        }
+
         // restrict to these variables
-        List<? extends VariableSimpleIF> dataVars = fdPoint.getDataVariables();
         Map<String, VariableSimpleIF> dataVarsMap = new HashMap<>();
-        for (VariableSimpleIF v : dataVars) {
-            dataVarsMap.put(v.getShortName(), v);
+        for (VariableSimpleIF dataVar : fdPoint.getDataVariables()) {
+            dataVarsMap.put(dataVar.getShortName(), dataVar);
         }
 
         List<String> allVarNames = new ArrayList<>(dataVarsMap.keySet());
@@ -53,42 +57,49 @@ public abstract class AbstractDsgSubsetWriter implements DsgSubsetWriter {
         return wantedVars;
     }
 
+    // TODO: This needs testing.
     public static CalendarDateRange getWantedRange(NcssParamsBean ncssParams) throws NcssException {
-        CalendarDateRange wantedRange;
+        // There are 5 temporal parameters we must examine for DSGs.
+        boolean isAllTimes = ncssParams.isAllTimes();
+        String time = ncssParams.getTime();
+        String timeStart = ncssParams.getTime_start();
+        String timeEnd = ncssParams.getTime_end();
+        String timeDuration = ncssParams.getTime_duration();
 
-        // for closest time, set wantRange to the time LOOK - do we need +- increment ??
-        if (ncssParams.getTime() != null) { //Means we want just one single time
+        if (isAllTimes) {  // Client explicitly requested all times.
+            return null;   // "null" means that we want ALL times, i.e. "do not subset".
+        } else if (time != null) {  // Means we want just one single time.
+            // To prevent features from being too agressively excluded, we are accepting times that are within
+            // an hour of the specified time.
+            // LOOK: Do we really need the +- increment?
             CalendarDate startR = CalendarDate.parseISOformat(null, ncssParams.getTime());
             startR = startR.subtract(CalendarPeriod.Hour);
             CalendarDate endR = CalendarDate.parseISOformat(null, ncssParams.getTime());
             endR = endR.add(CalendarPeriod.Hour);
-            wantedRange = CalendarDateRange.of(new Date(startR.getMillis()), new Date(endR.getMillis()));
-        } else {
-            //Time range: need to compute the time range from the params
-            if (ncssParams.isAllTimes()) {
-                //Full time range -->CHECK: wantRange=null means all range???
-                wantedRange = null;
-            } else {
-                if (ncssParams.getTime_start() != null && ncssParams.getTime_end() != null) {
-                    CalendarDate startR = CalendarDate.parseISOformat(null, ncssParams.getTime_start());
-                    CalendarDate endR = CalendarDate.parseISOformat(null, ncssParams.getTime_end());
-                    wantedRange = CalendarDateRange.of(new Date(startR.getMillis()), new Date(endR.getMillis()));
-                } else if (ncssParams.getTime_start() != null && ncssParams.getTime_duration() != null) {
-                    CalendarDate startR = CalendarDate.parseISOformat(null, ncssParams.getTime_start());
-                    TimeDuration td = ncssParams.parseTimeDuration();
-                    wantedRange = new CalendarDateRange(startR, (long) td.getValueInSeconds());
-                } else if (ncssParams.getTime_end() != null && ncssParams.getTime_duration() != null) {
-                    CalendarDate endR = CalendarDate.parseISOformat(null, ncssParams.getTime_end());
-                    TimeDuration td = ncssParams.parseTimeDuration();
-                    wantedRange = new CalendarDateRange(endR, (long) td.getValueInSeconds() * (-1));
-                } else {
-                    // We may already have handled this case upstream, but it doesn't hurt to check again.
-                    throw new NcssException("Two of \"time_start\", \"time_end\", and \"time_duration\" " +
-                            "must be present to define a valid time range.");
-                }
-            }
-        }
 
-        return wantedRange;
+            return CalendarDateRange.of(new Date(startR.getMillis()), new Date(endR.getMillis()));
+        } else if (timeStart == null && timeEnd == null && timeDuration == null) {
+            // Client did not set any of the time parameters, so give them everything.
+            return null;  // "null" means that we want ALL times, i.e. "do not subset".
+        } else if (timeStart != null && timeEnd != null) {
+            CalendarDate startR = CalendarDate.parseISOformat(null, ncssParams.getTime_start());
+            CalendarDate endR = CalendarDate.parseISOformat(null, ncssParams.getTime_end());
+
+            return CalendarDateRange.of(new Date(startR.getMillis()), new Date(endR.getMillis()));
+        } else if (timeStart != null && timeDuration != null) {
+            CalendarDate startR = CalendarDate.parseISOformat(null, ncssParams.getTime_start());
+            TimeDuration td = ncssParams.parseTimeDuration();
+
+            return new CalendarDateRange(startR, (long) td.getValueInSeconds());
+        } else if (timeEnd != null && timeDuration != null) {
+            CalendarDate endR = CalendarDate.parseISOformat(null, ncssParams.getTime_end());
+            TimeDuration td = ncssParams.parseTimeDuration();
+
+            return new CalendarDateRange(endR, (long) td.getValueInSeconds() * (-1));
+        } else {
+            // We probably already handled this case upstream, but it doesn't hurt to check again.
+            throw new NcssException("Two of \"time_start\", \"time_end\", and \"time_duration\" " +
+                    "must be present to define a valid time range.");
+        }
     }
 }

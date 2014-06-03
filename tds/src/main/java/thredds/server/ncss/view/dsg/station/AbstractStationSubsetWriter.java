@@ -131,20 +131,15 @@ public abstract class AbstractStationSubsetWriter extends AbstractDsgSubsetWrite
                 wantedStations = stationFeatCol.getStations(stnNames);
             }
         } else if (ncssParams.hasLatLonBB()) {
-            if (ncssParams.getSouth() == null || ncssParams.getNorth() == null ||
-                    ncssParams.getEast() == null || ncssParams.getWest() == null) {
-                wantedStations = stationFeatCol.getStations(); //Wants all
-            } else {
-                LatLonRect llrect = ncssParams.getBB();
-                wantedStations = stationFeatCol.getStations(llrect);
-            }
+            LatLonRect llrect = ncssParams.getBoundingBox();
+            wantedStations = stationFeatCol.getStations(llrect);
         } else if (ncssParams.hasLatLonPoint()) {
             Station closestStation = findClosestStation(
                     stationFeatCol, new LatLonPointImpl(ncssParams.getLatitude(), ncssParams.getLongitude()));
             List<String> stnList = new ArrayList<>();
             stnList.add(closestStation.getName());
             wantedStations = stationFeatCol.getStations(stnList);
-        } else { //Want all
+        } else { // Want all.
             wantedStations = stationFeatCol.getStations();
         }
 

@@ -1,13 +1,12 @@
-package thredds.server.ncss.view.dsg.station;
+package thredds.server.ncss.view.dsg;
 
 import org.apache.commons.io.IOUtils;
-import org.junit.*;
+import org.junit.Assert;
+import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import thredds.server.ncss.format.SupportedFormat;
 import thredds.server.ncss.params.NcssParamsBean;
-import thredds.server.ncss.view.dsg.DsgSubsetWriter;
-import thredds.server.ncss.view.dsg.DsgSubsetWriterFactory;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.ft.FeatureDataset;
 import ucar.nc2.ft.FeatureDatasetFactoryManager;
@@ -24,26 +23,15 @@ import java.util.List;
  * Created by cwardgar on 2014/05/27.
  */
 @RunWith(Parameterized.class)
-public class StationSubsetWriterTest {
-    private static FeatureType wantedType;
-    private static File datasetFile;
+public class DsgSubsetWriterTest {
     private static NcssParamsBean ncssParamsAll;
     private static NcssParamsBean ncssParamsSubset;
     private static DiskCache2 diskCache;
 
     // @BeforeClass  <-- Can't use: JUnit won't invoke this method before getTestParameters().
     public static void setupClass() throws URISyntaxException {
-        wantedType = FeatureType.STATION;
-        datasetFile = new File(StationSubsetWriterTest.class.getResource("multiStationMultiVar.ncml").toURI());
-
         ncssParamsAll = new NcssParamsBean();
         ncssParamsAll.setVar(Arrays.asList("pr", "tas"));
-        ncssParamsAll.setTime_start("1970-01-01T00:00:00Z");
-        ncssParamsAll.setTime_end("1970-02-10T00:00:00Z");
-        ncssParamsAll.setNorth(44.0);
-        ncssParamsAll.setSouth(40.0);
-        ncssParamsAll.setEast(-94.0);
-        ncssParamsAll.setWest(-100.0);
 
         ncssParamsSubset = new NcssParamsBean();
         ncssParamsSubset.setVar(Arrays.asList("tas"));
@@ -54,7 +42,7 @@ public class StationSubsetWriterTest {
         diskCache = DiskCache2.getDefault();
     }
 
-    @Parameterized.Parameters(name = "{2}")  // Name the tests after the expectedResultResource.
+    @Parameterized.Parameters(name = "{4}")  // Name the tests after the expectedResultResource.
     public static List<Object[]> getTestParameters() throws URISyntaxException {
         // Normally, we'd annotate setupClass() with @BeforeClass and let JUnit call it. Unfortunately, that won't
         // work as expected when @Parameters gets involved.
@@ -63,18 +51,30 @@ public class StationSubsetWriterTest {
         setupClass();
 
         return Arrays.asList(new Object[][] {
-                { SupportedFormat.CSV_FILE, ncssParamsAll,    "stationCsvAll.csv"    },
-                { SupportedFormat.CSV_FILE, ncssParamsSubset, "stationCsvSubset.csv" },
-                { SupportedFormat.XML_FILE, ncssParamsAll,    "stationXmlAll.xml"    },
-                { SupportedFormat.XML_FILE, ncssParamsSubset, "stationXmlSubset.xml" }
+                { FeatureType.POINT, "pointMultiVar.ncml",
+                        SupportedFormat.CSV_FILE, ncssParamsAll, "pointCsvAll.csv" },
+
+                { FeatureType.STATION, "multiStationMultiVar.ncml",
+                        SupportedFormat.CSV_FILE, ncssParamsAll, "stationCsvAll.csv" },
+                { FeatureType.STATION, "multiStationMultiVar.ncml",
+                        SupportedFormat.CSV_FILE, ncssParamsSubset, "stationCsvSubset.csv" },
+                { FeatureType.STATION, "multiStationMultiVar.ncml",
+                        SupportedFormat.XML_FILE, ncssParamsAll, "stationXmlAll.xml" },
+                { FeatureType.STATION, "multiStationMultiVar.ncml",
+                        SupportedFormat.XML_FILE, ncssParamsSubset, "stationXmlSubset.xml" }
         });
     }
 
+    private final FeatureType wantedType;
+    private final File datasetFile;
     private final SupportedFormat format;
     private final NcssParamsBean ncssParams;
     private final String expectedResultResource;
 
-    public StationSubsetWriterTest(SupportedFormat format, NcssParamsBean ncssParams, String expectedResultResource) {
+    public DsgSubsetWriterTest(FeatureType wantedType, String datasetResource,
+            SupportedFormat format, NcssParamsBean ncssParams, String expectedResultResource) throws URISyntaxException {
+        this.wantedType = wantedType;
+        this.datasetFile = new File(DsgSubsetWriterTest.class.getResource(datasetResource).toURI());
         this.format = format;
         this.ncssParams = ncssParams;
         this.expectedResultResource = expectedResultResource;
@@ -82,7 +82,7 @@ public class StationSubsetWriterTest {
 
     @Test
     public void testWrite() throws Exception {
-        FeatureDatasetPoint fdPoint = openPointDataset(datasetFile);
+        FeatureDatasetPoint fdPoint = openPointDataset(wantedType, datasetFile);
         InputStream expectedInputStream = getClass().getResourceAsStream(expectedResultResource);
 
         try {
@@ -91,8 +91,9 @@ public class StationSubsetWriterTest {
                     fdPoint, ncssParams, diskCache, actualOutputStream, wantedType, format);
             subsetWriter.write();
 
-//            DsgSubsetWriter subsetWriterConsole = DsgSubsetWriterFactory.newInstance(System.out, wantedType, format);
-//            subsetWriterConsole.write(fdPoint, ncssParams, diskCache);
+//            DsgSubsetWriter subsetWriterConsole = DsgSubsetWriterFactory.newInstance(
+//                    fdPoint, ncssParams, diskCache, System.out, wantedType, format);
+//            subsetWriterConsole.write();
 
             ByteArrayInputStream actualInputStream = new ByteArrayInputStream(actualOutputStream.toByteArray());
 
@@ -111,7 +112,7 @@ public class StationSubsetWriterTest {
         }
     }
 
-    public static FeatureDatasetPoint openPointDataset(File datasetFile) throws IOException {
+    public static FeatureDatasetPoint openPointDataset(FeatureType wantedType, File datasetFile) throws IOException {
         Formatter errlog = new Formatter();
         FeatureDataset fDset = FeatureDatasetFactoryManager.open(
                 wantedType, datasetFile.getAbsolutePath(), null, errlog);

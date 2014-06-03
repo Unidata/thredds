@@ -1,4 +1,4 @@
-package thredds.server.ncss.view.dsg.station;
+package thredds.server.ncss.view.dsg.point;
 
 import org.springframework.http.HttpHeaders;
 import thredds.server.ncss.exception.NcssException;
@@ -8,9 +8,9 @@ import thredds.util.ContentType;
 import ucar.ma2.Array;
 import ucar.nc2.VariableSimpleIF;
 import ucar.nc2.ft.FeatureDatasetPoint;
-import ucar.nc2.ft.point.StationPointFeature;
+import ucar.nc2.ft.PointFeature;
 import ucar.nc2.time.CalendarDateFormatter;
-import ucar.unidata.geoloc.Station;
+import ucar.unidata.geoloc.EarthLocation;
 import ucar.unidata.util.Format;
 
 import java.io.IOException;
@@ -18,12 +18,12 @@ import java.io.OutputStream;
 import java.io.PrintWriter;
 
 /**
- * Created by cwardgar on 2014-05-24.
+ * Created by cwardgar on 2014/06/02.
  */
-public class StationSubsetWriterCSV extends AbstractStationSubsetWriter {
+public class PointSubsetWriterCSV extends AbstractPointSubsetWriter {
     private final PrintWriter writer;
 
-    public StationSubsetWriterCSV(FeatureDatasetPoint fdPoint, NcssParamsBean ncssParams, OutputStream out)
+    public PointSubsetWriterCSV(FeatureDatasetPoint fdPoint, NcssParamsBean ncssParams, OutputStream out)
             throws NcssException, IOException {
         super(fdPoint, ncssParams);
         this.writer = new PrintWriter(out);
@@ -47,8 +47,8 @@ public class StationSubsetWriterCSV extends AbstractStationSubsetWriter {
     }
 
     @Override
-    public void writeHeader() throws IOException {
-        writer.print("time,station,latitude[unit=\"degrees_north\"],longitude[unit=\"degrees_east\"]");
+    public void writeHeader() throws Exception {
+        writer.print("time,latitude[unit=\"degrees_north\"],longitude[unit=\"degrees_east\"]");
         for (VariableSimpleIF wantedVar : wantedVariables) {
             writer.print(",");
             writer.print(wantedVar.getShortName());
@@ -59,27 +59,25 @@ public class StationSubsetWriterCSV extends AbstractStationSubsetWriter {
     }
 
     @Override
-    public void writePoint(StationPointFeature stationPointFeat) throws IOException {
-        Station station = stationPointFeat.getStation();
+    public void writePoint(PointFeature pointFeat) throws Exception {
+        EarthLocation loc = pointFeat.getLocation();
 
-        writer.print(CalendarDateFormatter.toDateTimeString(stationPointFeat.getObservationTimeAsCalendarDate()));
+        writer.print(CalendarDateFormatter.toDateTimeString(pointFeat.getObservationTimeAsCalendarDate()));
         writer.print(',');
-        writer.print(station.getName());
+        writer.print(Format.dfrac(loc.getLatitude(), 3));
         writer.print(',');
-        writer.print(Format.dfrac(station.getLatitude(), 3));
-        writer.print(',');
-        writer.print(Format.dfrac(station.getLongitude(), 3));
+        writer.print(Format.dfrac(loc.getLongitude(), 3));
 
         for (VariableSimpleIF wantedVar : wantedVariables) {
             writer.print(',');
-            Array dataArray = stationPointFeat.getData().getArray(wantedVar.getShortName());
+            Array dataArray = pointFeat.getData().getArray(wantedVar.getShortName());
             writer.print(dataArray.toString());
         }
         writer.println();
     }
 
     @Override
-    public void writeFooter() throws IOException {
+    public void writeFooter() throws Exception {
         writer.flush();
     }
 }

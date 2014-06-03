@@ -572,7 +572,7 @@ public class StationWriter extends AbstractWriter {
         if (qb.getSouth() == null || qb.getNorth() == null || qb.getEast() == null || qb.getWest() == null) {
           wantStations = sfc.getStations(); //Wants all
         } else {
-          LatLonRect llrect = qb.getBB();
+          LatLonRect llrect = qb.getBoundingBox();
           wantStations = sfc.getStations(llrect);
         }
 
