@@ -72,9 +72,9 @@ public abstract class AbstractDsgSubsetWriter implements DsgSubsetWriter {
             // To prevent features from being too agressively excluded, we are accepting times that are within
             // an hour of the specified time.
             // LOOK: Do we really need the +- increment?
-            CalendarDate startR = CalendarDate.parseISOformat(null, ncssParams.getTime());
+            CalendarDate startR = CalendarDate.parseISOformat(null, time);
             startR = startR.subtract(CalendarPeriod.Hour);
-            CalendarDate endR = CalendarDate.parseISOformat(null, ncssParams.getTime());
+            CalendarDate endR = CalendarDate.parseISOformat(null, time);
             endR = endR.add(CalendarPeriod.Hour);
 
             return CalendarDateRange.of(new Date(startR.getMillis()), new Date(endR.getMillis()));
@@ -82,22 +82,22 @@ public abstract class AbstractDsgSubsetWriter implements DsgSubsetWriter {
             // Client did not set any of the time parameters, so give them everything.
             return null;  // "null" means that we want ALL times, i.e. "do not subset".
         } else if (timeStart != null && timeEnd != null) {
-            CalendarDate startR = CalendarDate.parseISOformat(null, ncssParams.getTime_start());
-            CalendarDate endR = CalendarDate.parseISOformat(null, ncssParams.getTime_end());
+            CalendarDate startR = CalendarDate.parseISOformat(null, timeStart);
+            CalendarDate endR = CalendarDate.parseISOformat(null, timeEnd);
 
             return CalendarDateRange.of(new Date(startR.getMillis()), new Date(endR.getMillis()));
         } else if (timeStart != null && timeDuration != null) {
-            CalendarDate startR = CalendarDate.parseISOformat(null, ncssParams.getTime_start());
+            CalendarDate startR = CalendarDate.parseISOformat(null, timeStart);
             TimeDuration td = ncssParams.parseTimeDuration();
 
             return new CalendarDateRange(startR, (long) td.getValueInSeconds());
         } else if (timeEnd != null && timeDuration != null) {
-            CalendarDate endR = CalendarDate.parseISOformat(null, ncssParams.getTime_end());
+            CalendarDate endR = CalendarDate.parseISOformat(null, timeEnd);
             TimeDuration td = ncssParams.parseTimeDuration();
 
             return new CalendarDateRange(endR, (long) td.getValueInSeconds() * (-1));
         } else {
-            // We probably already handled this case upstream, but it doesn't hurt to check again.
+            // We probably already handled this case upstream, but it doesn't hurt to handle it again.
             throw new NcssException("Two of \"time_start\", \"time_end\", and \"time_duration\" " +
                     "must be present to define a valid time range.");
         }

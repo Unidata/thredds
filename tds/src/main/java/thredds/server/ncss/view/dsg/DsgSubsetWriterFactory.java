@@ -5,6 +5,7 @@ import thredds.server.ncss.exception.UnsupportedResponseFormatException;
 import thredds.server.ncss.format.SupportedFormat;
 import thredds.server.ncss.params.NcssParamsBean;
 import thredds.server.ncss.view.dsg.point.PointSubsetWriterCSV;
+import thredds.server.ncss.view.dsg.point.PointSubsetWriterXML;
 import thredds.server.ncss.view.dsg.station.StationSubsetWriterCSV;
 import thredds.server.ncss.view.dsg.station.StationSubsetWriterXML;
 import ucar.nc2.constants.FeatureType;
@@ -43,8 +44,7 @@ public abstract class DsgSubsetWriterFactory {
         switch (format) {
             case XML_STREAM:
             case XML_FILE:
-//                return new StationSubsetWriterXML(fdPoint, ncssParams, out);
-                return null;
+                return new PointSubsetWriterXML(fdPoint, ncssParams, out);
             case CSV_STREAM:
             case CSV_FILE:
                 return new PointSubsetWriterCSV(fdPoint, ncssParams, out);

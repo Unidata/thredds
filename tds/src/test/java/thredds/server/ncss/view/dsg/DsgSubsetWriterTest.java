@@ -24,22 +24,32 @@ import java.util.List;
  */
 @RunWith(Parameterized.class)
 public class DsgSubsetWriterTest {
-    private static NcssParamsBean ncssParamsAll;
-    private static NcssParamsBean ncssParamsSubset;
     private static DiskCache2 diskCache;
+
+    private static NcssParamsBean ncssParamsAll;
+    private static NcssParamsBean ncssParamsPoint;
+    private static NcssParamsBean ncssParamsStation;
 
     // @BeforeClass  <-- Can't use: JUnit won't invoke this method before getTestParameters().
     public static void setupClass() throws URISyntaxException {
+        diskCache = DiskCache2.getDefault();
+
         ncssParamsAll = new NcssParamsBean();
         ncssParamsAll.setVar(Arrays.asList("pr", "tas"));
 
-        ncssParamsSubset = new NcssParamsBean();
-        ncssParamsSubset.setVar(Arrays.asList("tas"));
-        ncssParamsSubset.setTime_start("1970-01-05T00:00:00Z");
-        ncssParamsSubset.setTime_end("1970-02-05T00:00:00Z");
-        ncssParamsSubset.setStns(Arrays.asList("AAA", "CCC"));
+        ncssParamsPoint = new NcssParamsBean();
+        ncssParamsPoint.setVar(Arrays.asList("pr"));
+        ncssParamsPoint.setTime("1970-01-01 02:00:00Z");
+        ncssParamsPoint.setNorth(53.0);   // Full extension == 68.0
+        ncssParamsPoint.setSouth(40.0);   // Full extension == 40.0
+        ncssParamsPoint.setWest(-100.0);  // Full extension == -100.0
+        ncssParamsPoint.setEast(-58.0);   // Full extension == -58.0
 
-        diskCache = DiskCache2.getDefault();
+        ncssParamsStation = new NcssParamsBean();
+        ncssParamsStation.setVar(Arrays.asList("tas"));
+        ncssParamsStation.setTime_start("1970-01-05T00:00:00Z");
+        ncssParamsStation.setTime_end("1970-02-05T00:00:00Z");
+        ncssParamsStation.setStns(Arrays.asList("AAA", "CCC"));
     }
 
     @Parameterized.Parameters(name = "{4}")  // Name the tests after the expectedResultResource.
@@ -51,17 +61,15 @@ public class DsgSubsetWriterTest {
         setupClass();
 
         return Arrays.asList(new Object[][] {
-                { FeatureType.POINT, "pointMultiVar.ncml",
-                        SupportedFormat.CSV_FILE, ncssParamsAll, "pointCsvAll.csv" },
+            { FeatureType.POINT,   "point.ncml",   SupportedFormat.CSV_FILE, ncssParamsAll,     "pointAll.csv"      },
+            { FeatureType.POINT,   "point.ncml",   SupportedFormat.CSV_FILE, ncssParamsPoint,   "pointSubset.csv"   },
+            { FeatureType.POINT,   "point.ncml",   SupportedFormat.XML_FILE, ncssParamsAll,     "pointAll.xml"      },
+            { FeatureType.POINT,   "point.ncml",   SupportedFormat.XML_FILE, ncssParamsPoint,   "pointSubset.xml"   },
 
-                { FeatureType.STATION, "multiStationMultiVar.ncml",
-                        SupportedFormat.CSV_FILE, ncssParamsAll, "stationCsvAll.csv" },
-                { FeatureType.STATION, "multiStationMultiVar.ncml",
-                        SupportedFormat.CSV_FILE, ncssParamsSubset, "stationCsvSubset.csv" },
-                { FeatureType.STATION, "multiStationMultiVar.ncml",
-                        SupportedFormat.XML_FILE, ncssParamsAll, "stationXmlAll.xml" },
-                { FeatureType.STATION, "multiStationMultiVar.ncml",
-                        SupportedFormat.XML_FILE, ncssParamsSubset, "stationXmlSubset.xml" }
+            { FeatureType.STATION, "station.ncml", SupportedFormat.CSV_FILE, ncssParamsAll,     "stationAll.csv"    },
+            { FeatureType.STATION, "station.ncml", SupportedFormat.CSV_FILE, ncssParamsStation, "stationSubset.csv" },
+            { FeatureType.STATION, "station.ncml", SupportedFormat.XML_FILE, ncssParamsAll,     "stationAll.xml"    },
+            { FeatureType.STATION, "station.ncml", SupportedFormat.XML_FILE, ncssParamsStation, "stationSubset.xml" }
         });
     }
 
