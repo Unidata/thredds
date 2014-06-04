@@ -27,7 +27,7 @@
   <dependencies>
     <dependency>
       <groupId>edu.ucar</groupId>
-      <artifactId>httpclientu</artifactId>
+      <artifactId>httpservices</artifactId>
     </dependency>
 
     <dependency>

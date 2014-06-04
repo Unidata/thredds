@@ -30,7 +30,7 @@ Dependencies: Mandatory dependencies are listed first. Then
 
   <dependency>
     <groupId>edu.ucar</groupId>
-    <artifactId>httpclientu</artifactId>
+    <artifactId>httpservices</artifactId>
   </dependency>
 
     <dependency>
