@@ -32,8 +32,8 @@ task integrationTest(type: Test, dependsOn: jar) {
 
 dependencies {
   compile project(':udunits')
-  compile project(':httpclientu')
-  compile ('org.apache.httpcomponents:httpcore:4.2.5', 'org.apache.httpcomponents:httpclient:4.2.6', 'org.apache.httpcomponents:httpmime:4.2.6')
+  compile project(':httpservices')
+  compile ('org.apache.httpcomponents:httpcore:4.2.5')
   compile 'com.google.protobuf:protobuf-java:2.5.0'
   compile 'joda-time:joda-time:2.2'
   compile 'net.jcip:jcip-annotations:1.0'

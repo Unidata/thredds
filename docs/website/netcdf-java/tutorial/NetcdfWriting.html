@@ -6,7 +6,7 @@
   <title>Netcdf File Writing</title>
   <link rel="stylesheet" href="../cdm.css" type="text/css"/>
 </head>
-<body bgcolor="#FFFFFF">
+<body>
 <h1> NetCDF File Writing (version 4.3+)</h1>
 <hr>
 <p>CDM version 4.3 and above allows you to programatically create, edit, and add data to netCDF-3 and netCDF-4 files, using <a><em>NetcdfFileWriter</em></a> or
@@ -17,8 +17,7 @@
 <p>Writing netCDF-4 files requires that you <a href="../reference/netcdf4Clibrary.html">install the netCDF-4 C library</a> on your machine. </p>
 
 <h2><a>Using NetcdfFileWriter</a></h2>
-
-<h3>Creating a new netCDF-3 file </h3>
+<h3>Example creating a new netCDF-3 file </h3>
 <pre>  public static void main(String[] args) throws IOException {
     String location = "C:/tmp/testWrite.nc";
 1)  NetcdfFileWriter writer = NetcdfFileWriter.createNew(NetcdfFileWriter.Version.netcdf3, location, null);
@@ -276,9 +275,23 @@
   <li>Set the origin to the current record number. The other dimensions have origin 0.</li>
   <li>Write the data at the specified origin.</li>
 </ol>
+<h2>Writing to a netCDF-4 file with compression (version 4.5)</h2>
+<blockquote>
+  <p>To write to netCDF-4, you must <a href="../reference/netcdf4Clibrary.html">install the netCDF-4 C library</a> on your machine. </p>
+  <p>The main use of netCDF-4 is to get the performance benefits from compression, and possibly from chunking (<a href="http://www.unidata.ucar.edu/blogs/developer/en/entry/chunking_data_why_it_matters">why it matters</a>). <strong>By default, the Java library will write chunked and compressed netcdf-4 files</strong>, using the default chunking algorithm. To have your own control of chunking and compression, you must create a Nc4Chunking object and pass it into <em>NetcdfFileWriter.createNew()</em>:</p>
+  <pre>Nc4Chunking chunker = Nc4Chunking factory(Strategy type, int deflateLevel, boolean shuffle);
+NetcdfFileWriter.Version version = NetcdfFileWriter.Version.netcdf4;
+
+FileWriter2 writer = new ucar.nc2.FileWriter2(ncfileIn, filenameOut, version, chunker);
+...
+NetcdfFile ncfileOut = writer.write();
+ncfileIn.close();<br/>ncfileOut.close();
+  </pre>
+  <p>See <a href="../reference/netcdf4Clibrary.html#writing">here</a> for more details on Nc4Chunking.</p>
+</blockquote>
 <hr WIDTH="100%">
 <address>
-  <img src="../nc.gif" alt="" width="64" height="64"> This document was last updated on July 2013
+  <img src="../nc.gif" alt="" width="64" height="64"> This document was last updated on June 2014
 </address>
 <p><br>
 </p>

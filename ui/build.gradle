@@ -163,7 +163,7 @@ javadoc {
   source = source.plus(fileTree(dir: '../cdm/src/main/java', include: '**/*.java'))
   source = source.plus(fileTree(dir: '../clcommon/src/main/java', include: '**/*.java'))
   source = source.plus(fileTree(dir: '../grib/src/main/java', include: '**/*.java'))
-  source = source.plus(fileTree(dir: '../httpclientu/src/main/java', include: '**/*.java'))
+  source = source.plus(fileTree(dir: '../httpservices/src/main/java', include: '**/*.java'))
   source = source.plus(fileTree(dir: '../netcdf4/src/main/java', include: '**/*.java'))
   source = source.plus(fileTree(dir: '../opendap/src/main/java', include: '**/*.java'))
   source = source.plus(fileTree(dir: '../udunits/src/main/java', include: '**/*.java'))

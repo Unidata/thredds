@@ -157,7 +157,7 @@
       </modules>
     </profile>
 
-    <profile>
+    <!-- profile>
       <id>tomcat-debug</id>
       <dependencies>
         <dependency>
@@ -173,7 +173,7 @@
           <scope>provided</scope>
         </dependency>
       </dependencies>
-    </profile>
+    </profile -->
   </profiles>
 
   <distributionManagement>
@@ -433,7 +433,7 @@
        <version>${org.springframework.security.version}</version>
       </dependency>
             
-      <!-- stuff for wmotables -->
+      <!-- stuff for wmotables
       <dependency>
         <groupId>org.springframework</groupId>
         <artifactId>spring-jdbc</artifactId>
@@ -473,7 +473,7 @@
        <groupId>org.hibernate</groupId>
        <artifactId>hibernate-validator</artifactId>
        <version>${org.hibernate.version}</version>
-      </dependency>
+      </dependency>  -->
 
       <!-- client -->
       <dependency>
@@ -927,8 +927,8 @@
     <module>tdcommon</module>
     <module>tds</module>
     <module>tdm</module>
-    <module>wmotables</module>
-    <module>cdmvalidator</module>
+    <!-- module>wmotables</module -->
+    <!-- module>cdmvalidator</module -->
     <module>cdm-test</module>
     <module>it</module>
     <module>netcdf4</module>
@@ -1021,8 +1021,8 @@
 
     <!-- http://stackoverflow.com/questions/11222982/tomcat-binary-distribution-zip-as-maven-artifact -->
     <cargo-plugin.version>1.4.5</cargo-plugin.version>
-    <!-- apache.download>http://mirrors.ibiblio.org/apache/</apache.download>
-    <tomcat7.version>7.0.54</tomcat7.version -->
+    <!-- apache.download>http://mirrors.ibiblio.org/apache/</apache.download -->
+    <tomcat7.version>7.0.54</tomcat7.version>
 
   </properties>
 

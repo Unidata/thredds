@@ -102,7 +102,7 @@ To build the latest stable version from source or contribute code  to the THREDD
   <li><a href="/software/netcdf/examples/programs/">Example Basic Programs in C/C++/Fortran/Java</a></li>
   <li><a href="reference/index.html">Reference Documentation </a></li>
   <li><a href="CDM/index.html">Common Data Model</a></li>
-  <li><a href="http://www.unidata.ucar.edu/software/netcdf/ncml/">NetCDF Markup Language</a>: <a
+  <li><a href="ncml/index.htm">NetCDF Markup Language</a>: <a
       href="http://www.unidata.ucar.edu/software/netcdf/ncml/v2.2/AnnotatedSchema.html">annotated schema</a></li>
 </ul>
 <h3>Metadata:</h3>
@@ -170,11 +170,12 @@ To build the latest stable version from source or contribute code  to the THREDD
 </ul>
 <h3>Software libraries used by the Netcdf-Java library: </h3>
 <ul>
-  <li> Apache Commons <a href="http://jakarta.apache.org/commons/httpclient/">HttpClient</a> for HTTP access</li>
-  <li>Java-OPeNDAP library for reading OPeNDAP. (note this is branched from the opendap.org site)</li>
-  <li><a href="http://www.jdom.org/">JDOM</a> for parsing XML.</li>
+  <li> Apache Commons <a href="http://hc.apache.org/">HTTP Components</a> for HTTP access</li>
+  <li><a href="http://www.jdom.org/">JDOM</a> for parsing XML</li>
+  <li><a href="http://www.joda.org/joda-time/">Joda-Time</a> for Calendar Date/Time parsing</li>
   <li><a href="http://www.jgoodies.com/">JGoodies</a> for UI stuff</li>
-  <li><a href="http://www.jpeg.org/jpeg2000/">JPEG2000</a> library for decoding GRIB2 files.</li>
+  <li><a href="http://www.jpeg.org/jpeg2000/">JPEG2000</a> library for decoding GRIB2 files</li>
+  <li><a href="https://code.google.com/p/protobuf/">Protocol Buffers</a> from Google for fast object serialization</li>
   <li><a href="http://www.slf4j.org/">Simple Logging Facade for Java</a> (SLF4J) for logging</li>
   <li><a href="http://www.springframework.org/">Spring</a> lightweight application framework. Used in ToolsUI
     application.
@@ -228,6 +229,7 @@ To build the latest stable version from source or contribute code  to the THREDD
   <li>Talk at netCDF workshop 2012 (<a
       href="http://www.unidata.ucar.edu/staff/caron/presentations/NetCDFworkshop2012.pptx">pptx</a>)
   </li>
+  <li><em>On the suitability of BUFR and GRIB for archiving data</em> (short paper Dec 2011 <a href="http://www.unidata.ucar.edu/staff/caron/papers/GRIBarchivals.docx">docx</a> <a href="http://www.unidata.ucar.edu/staff/caron/papers/GRIBarchivals.pdf">pdf</a>)</li>
   <li>Streaming NetCDF (netCDF workshop 2011) (<a
       href="http://www.unidata.ucar.edu/staff/caron/presentations/Streaming_NetCDF.pptx">pptx</a>)
   </li>
@@ -237,21 +239,13 @@ To build the latest stable version from source or contribute code  to the THREDD
   <li>Talk at netCDF workshop 2009 (<a
       href="http://www.unidata.ucar.edu/staff/caron/presentations/NetCDFworkshop2009.ppt">ppt</a>)
   </li>
-  <li>Unidata public <a href="http://artifacts.unidata.ucar.edu/">Maven repository</a> for version 4.3</li>
-  <li>Unidata public<a href="http://github.com/unidata"> GitHub repository</a> for version 4.3</li>
-  <li>Unidata public<a href="http://svn.unidata.ucar.edu/repos/thredds/"> SVN repository</a> for version 4.2</li>
+  <li>Unidata public <a href="http://artifacts.unidata.ucar.edu/">Maven repository</a> for maven artifacts</li>
+  <li> Unidata public<a href="http://github.com/unidata"> GitHub repository</a> for source code</li>
   <li>NetCDF-Java <a href="ring2.jpg">logo</a></li>
-  <li><a href="http://www.unidata.ucar.edu/staff/caron/bufr/">BUFR Tables</a> project (in progress)</li>
-  <li><a href="http://www.unidata.ucar.edu/proposals/2011367OPeNDAP OPULS/OPULS Narrative final.pdf">OPULS project</a>
-    (in progress)
-  </li>
-  <li><a href="http://www.unidata.ucar.edu/proposals/2010215_NOAA_NCDC/2010215 SOW_year 2.docx">NCMP project</a> (in
-    progress)
-  </li>
 </ul>
 <hr WIDTH="100%">
 <address>
-  <a href="NetcdfUsers.htm"><img src="nc.gif" width="64" height="64" border="0" alt=""></a> This document was last updated May 2014
+  <a href="NetcdfUsers.htm"><img src="nc.gif" width="64" height="64" border="0" alt=""></a> This document was last updated June 2014
 </address>
 
 </body>

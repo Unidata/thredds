@@ -40,19 +40,19 @@
       <artifactId>httpservices</artifactId>
     </dependency>
 
-    <!-- HTTP client -->
+    <!-- HTTP client
     <dependency>
       <groupId>org.apache.httpcomponents</groupId>
       <artifactId>httpclient</artifactId>
-    </dependency>
+    </dependency -->
     <dependency>
       <groupId>org.apache.httpcomponents</groupId>
       <artifactId>httpcore</artifactId>
     </dependency>
-    <dependency>
+    <!-- dependency>
       <groupId>org.apache.httpcomponents</groupId>
       <artifactId>httpmime</artifactId>
-    </dependency>
+    </dependency -->
 
     <dependency>  <!-- replace commons-logging -->
       <groupId>org.slf4j</groupId>
