@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?><pnTable><name>Master Projection Center Table</name><grib2TableName>Projection Center Table</grib2TableName><updatedDTG>201403032158</updatedDTG><tableStatus setDTG="2009020612">current</tableStatus><reference>
+    <title>Product Name Standard Document</title>
+    <docId>P-3146-2.2</docId>
+    <version>2.2</version>
+    <dtg>May 2012</dtg>
+    <organization>Fleet Numerical Meteorology and Oceanography Center</organization>
+    <infoUsed>projection center table</infoUsed>
+  </reference><reference>
+    <title>GRIB 2</title>
+    <docId>FM 92-XII</docId>
+    <version>12.0.0</version>
+    <organization>World Meteorological Organization</organization>
+    <infoUsed>GRIB2 Projection Center Table, table 3.5</infoUsed>
+  </reference><fnmocTable><entry><bitNumber>1</bitNumber><bitValue>0</bitValue><description>North Pole is on the projection plane.</description><status>current</status><wmoStatus>operational</wmoStatus></entry><entry><bitNumber>1</bitNumber><bitValue>1</bitValue><description>South Pole is on the projection plane.</description><status>current</status><wmoStatus>operational</wmoStatus></entry><entry><bitNumber>2</bitNumber><bitValue>0</bitValue><description>Only one projection center is used.</description><status>current</status><wmoStatus>operational</wmoStatus></entry><entry><bitNumber>2</bitNumber><bitValue>1</bitValue><description>Projection is bi-polar and symmetic.</description><status>current</status><wmoStatus>operational</wmoStatus></entry></fnmocTable></pnTable>

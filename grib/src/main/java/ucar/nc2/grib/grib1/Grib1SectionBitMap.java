@@ -39,7 +39,7 @@ import ucar.unidata.io.RandomAccessFile;
 import java.io.IOException;
 
 /**
- * Description
+ * Grib1 Section 3 (BitMap)
  *
  * @author John
  * @since 9/3/11
@@ -68,7 +68,7 @@ public class Grib1SectionBitMap {
   /**
    * Read the bitmap array when needed
    */
-  byte[] getBitmap(RandomAccessFile raf) throws IOException {
+  public byte[] getBitmap(RandomAccessFile raf) throws IOException {
     if (startingPosition <= 0) return null;
 
     raf.seek(startingPosition);

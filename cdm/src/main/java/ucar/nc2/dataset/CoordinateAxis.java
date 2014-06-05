@@ -203,9 +203,14 @@ public class CoordinateAxis extends VariableDS {
     return isContiguous;
   }
 
-  // interval detection is done in subclasses
+  /**
+   * An interval coordinate consists of two numbers, bound1 and bound2.
+   * The coordinate value must lie between them, but otherwise is somewhat arbitrary.
+   * If not interval, then it has one number, the coordinate value.
+   * @return true if its an interval coordinate.
+   */
   public boolean isInterval() {
-    return false;
+    return false; // interval detection is done in subclasses
   }
 
   // causes TDS ERROR thredds.server.opendap.NcDDS:  NcDDS: Variable time1_run missing coordinate variable in hash; dataset=fmrc/NCEP/GFS/Global_onedeg/NCEP-GFS-Global_onedeg_best.ncd

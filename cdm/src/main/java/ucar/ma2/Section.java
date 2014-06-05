@@ -944,6 +944,7 @@ public class Section {
 
   /**
    * Iterate over a section, returning the index in an equivilant 1D array of shape[]
+   * So this is a section in a larger array of shape
    *
    * @param shape total array shape
    * @return iterator over this section

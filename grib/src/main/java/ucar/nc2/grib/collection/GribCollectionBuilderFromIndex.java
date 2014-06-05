@@ -160,7 +160,7 @@ public abstract class GribCollectionBuilderFromIndex {
         logger.info("GribCollectionBuilderFromIndex raf {}: has different name= '{}' than stored in ncx= '{}' ", raf.getLocation(), gc.getName(), proto.getName());
       }
 
-      // directory always taken from proto, since ncx2 file may be moved, or in cache, etc
+      // directory always taken from proto, since ncx2 file may be moved, or in cache, etc  LOOK
       File protoDir = new File(proto.getTopDir());
       gc.setDirectory(protoDir);
 

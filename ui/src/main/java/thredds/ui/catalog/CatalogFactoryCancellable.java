@@ -153,7 +153,7 @@ public class CatalogFactoryCancellable extends InvCatalogFactory {
       }
       if (debug) System.out.println("CatalogFactoryCancellable run task on " + catalogName);
 
-      if (catalogURI.getScheme().equals("file")) {
+      if (catalogURI.getScheme() != null && catalogURI.getScheme().equals("file")) {
         catalog = CatalogFactoryCancellable.super.readXML(catalogURI);
         success = !cancel;
         done = true;

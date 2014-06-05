@@ -62,9 +62,15 @@ import java.util.List;
 
 /**
  * IOSP for GrADS Binary data files.  This IOSP only handles the binary formatted grids,
- * most other GrADS data types can be read directly through other IOSPs
+ * most other GrADS data types can be read directly through other IOSPs.
+ *
+ * Notes jcaron
+ *  Apparently we need the control file (.ctl), which then references the data file (.dat)
+ *  Dont see any test data - added to cdmUnitTest/formats/grads
  *
  * @author Don Murray - CU/CIRES
+ * @see "http://www.iges.org/grads/gadoc/descriptorfile.html"
+ * @see "http://www.iges.org/grads/gadoc/aboutgriddeddata.html"
  */
 public class GradsBinaryGridServiceProvider extends AbstractIOServiceProvider {
 
@@ -175,6 +181,11 @@ public class GradsBinaryGridServiceProvider extends AbstractIOServiceProvider {
    * @throws IOException problem reading file
    */
   public boolean isValidFile(RandomAccessFile raf) throws IOException {
+    // need a fast failure for non GRADS files
+    if (GradsDataDescriptorFile.failFast(raf))
+      return false;
+
+    // we think its a GRADS file, but we have lots of restrictions on what we can handle
     try {
       gradsDDF = new GradsDataDescriptorFile(raf.getLocation());
       GradsDimension x = gradsDDF.getXDimension();

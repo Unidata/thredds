@@ -50,7 +50,7 @@ public abstract class AbstractServlet extends HttpServlet {
   // must end with "/"
   protected abstract String getPath();
 
-  protected abstract void makeDebugActions();
+  //protected abstract void makeDebugActions();
 
   public void init() throws javax.servlet.ServletException
   {
@@ -62,7 +62,7 @@ public abstract class AbstractServlet extends HttpServlet {
     log = org.slf4j.LoggerFactory.getLogger(getClass());
 
     // debug actions
-    makeDebugActions();
+    //makeDebugActions();
   }
 
   protected void initContent() throws javax.servlet.ServletException {

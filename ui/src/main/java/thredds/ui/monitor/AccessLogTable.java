@@ -593,7 +593,7 @@ public class AccessLogTable extends JPanel {
     if (!calcRoot) return;
     if (logs == null) return;
 
-    HashMap<String, Dataroot> map = new HashMap<String, Dataroot>();
+    HashMap<String, Dataroot> map = new HashMap<>();
 
     for (LogReader.Log log : logs) {
       String path = log.getPath();
@@ -607,7 +607,7 @@ public class AccessLogTable extends JPanel {
       accum.add(log);
     }
 
-    datarootTable.setBeans(new ArrayList(map.values()));
+    datarootTable.setBeans(new ArrayList<>(map.values()));
     calcRoot = false;
   }
 
@@ -628,7 +628,7 @@ public class AccessLogTable extends JPanel {
     if (!calcService) return;
     if (logs == null) return;
 
-    HashMap<String, Service> map = new HashMap<String, Service>();
+    HashMap<String, Service> map = new HashMap<>();
 
     for (LogReader.Log log : logs) {
       String path = log.getPath();
@@ -645,7 +645,7 @@ public class AccessLogTable extends JPanel {
       accum.add(log);
     }
 
-    serviceTable.setBeans(new ArrayList(map.values()));
+    serviceTable.setBeans(new ArrayList<>(map.values()));
     calcService = false;
   }
 

@@ -27,33 +27,13 @@
   library is a prototype for the <a href="http://www.unidata.ucar.edu/software/netcdf/netcdf-4/index.html">NetCDF-4 project</a>, which provides a C language
   API for the &quot;data access layer&quot; of the CDM, on top of the <a href="http://hdf.ncsa.uiuc.edu/HDF5/doc/H5.format.html">HDF5 file format</a>. The
   NetCDF-Java library is a 100% Java framework for <em>reading</em> netCDF and other file formats into the CDM, as well as <em>writing</em> to the netCDF-3
-  file format. The NetCDF-Java library also implements <a href="http://www.unidata.ucar.edu/software/netcdf/ncml/">NcML</a>, which allows you to add metadata
+  file format. <a href="reference/netcdf4Clibrary.html">Writing to the netCDF-4 file format</a> requires installing the netCDF C library. The NetCDF-Java library also implements <a href="http://www.unidata.ucar.edu/software/netcdf/ncml/">NcML</a>, which allows you to add metadata
   to CDM datasets, as well as to create virtual datasets through aggregation.</p>
 
 <p><strong>Which jar files do I need?</strong> Most
 needs can be fulfilled using  netcdfAll.jar or toolsUI.jar. See <a href="reference/JarDependencies.html">Jar Dependencies</a> for full details.</p>
-<p>CDM/TDS source is now hosted on <a href="reference/Git.html">GitHub</a>.
-To build the latest stable version from source with maven:</p>
-<blockquote>
-  <pre>
-git clone git://github.com/Unidata/thredds.git thredds
-cd thredds
-mvn install</pre></blockquote>
-<h3 id="v44"><strong>Development branch version 4.4 </strong><strong>(requires Java 6) </strong></h3>
-<ul>
-  <li>The <a href="ftp://ftp.unidata.ucar.edu/pub/netcdf-java/v4.4/netcdfAll-4.4.jar">complete netCDF library jar</a> implements the full CDM model, with all
-  dependent jars included. </li>
-  <li>The <a href="ftp://ftp.unidata.ucar.edu/pub/netcdf-java/v4.4/toolsUI-4.4.jar">toolsUI.jar</a> also includes UI classes, and allows you to run the netCDF
-    ToolsUI application directly from it with &quot;<em>java -Xmx1g -jar toolsUI.jar</em>&quot;</li>
-  <li>The <a href="ftp://ftp.unidata.ucar.edu/pub/netcdf-java/v4.4/ncIdv-4.4.jar">ncIDV.jar</a> is for the IDV.</li>
-  <li><a href="javadoc/index.html">Public javadoc.</a> This is the public interface. Future changes to the API will attempt to remain backwards compatible
-    with this API. </li>
-  <li><a href="javadocAll/index.html">All javadoc. </a>This is the javadoc for all packages and all methods except private. CAREFUL, much of this will
-    change. </li>
-  <li>Try out the <strong> 4.4</strong> version of ToolsUI application: <a href="webstart/netCDFtools.jnlp">launch from webstart</a>.</li>
-  <li>Unidata public <a href="https://artifacts.unidata.ucar.edu/content/repositories/unidata-releases/edu/ucar/">Maven repository</a> for maven artifacts </li>
-  <li>All source is on <a href="https://github.com/Unidata/thredds">GitHub</a></li>
-</ul>
+<p>CDM/TDS source is now hosted on <a href="https://github.com/Unidata/thredds">GitHub</a>.
+To build the latest stable version from source or contribute code  to the THREDDS project, see <a href="../tds/SourceCodeBuild.html">here</a>.</p>
 <h3 id="v43"><strong>Current stable release version 4.3 </strong><strong>(requires Java 6) </strong></h3>
 <ul>
   <li>The <a href="ftp://ftp.unidata.ucar.edu/pub/netcdf-java/v4.3/netcdfAll-4.3.jar">complete netCDF library jar</a> implements the full CDM model, with all
@@ -68,9 +48,24 @@ mvn install</pre></blockquote>
   <li><a href="http://www.unidata.ucar.edu/software/thredds/v4.3/netcdf-java/v4.3/javadocAll/index.html">All javadoc. </a>This is the javadoc for all packages and all methods except private. CAREFUL, much of this will
     change.
   </li>
-  <li>Try out the <strong> 4.3</strong> version of ToolsUI application: <a href="http://www.unidata.ucar.edu/software/thredds/v4.3/netcdf-java/v4.3/webstart/netCDFtools.jnlp">launch from webstart</a>.</li>
+  <li>Try out the <strong> 4.3</strong> version of ToolsUI application: <a href="http://www.unidata.ucar.edu/software/thredds/netcdf-java/v4.3/webstart/netCDFtools.jnlp">launch from webstart</a>.</li>
   <li>Unidata public <a href="https://artifacts.unidata.ucar.edu/content/repositories/unidata-releases/edu/ucar/">Maven repository</a> for maven artifacts
   </li>
+  <li>All source is on <a href="https://github.com/Unidata/thredds">GitHub</a></li>
+</ul>
+<h3 id="v45"><strong>Development branch version 4.5 </strong><strong>(requires Java 7) </strong></h3>
+<ul>
+  <li>The <a href="ftp://ftp.unidata.ucar.edu/pub/netcdf-java/v4.5/netcdfAll-4.5.jar">complete netCDF library jar</a> implements the full CDM model, with all
+    dependent jars included. </li>
+  <li>The <a href="ftp://ftp.unidata.ucar.edu/pub/netcdf-java/v4.5/toolsUI-4.5.jar">toolsUI.jar</a> also includes UI classes, and allows you to run the netCDF
+    ToolsUI application directly from it such as &quot;<em>java -Xmx1g -jar toolsUI.jar</em>&quot;</li>
+  <li>The <a href="ftp://ftp.unidata.ucar.edu/pub/netcdf-java/v4.5/ncIdv-4.5.jar">ncIDV.jar</a> is for the IDV.</li>
+  <li><a href="javadoc/index.html">Public javadoc.</a> This is the public interface. Future changes to the API will attempt to remain backwards compatible
+    with this API. </li>
+  <li><a href="javadocAll/index.html">All javadoc. </a>This is the javadoc for all packages and all methods except private. CAREFUL, much of this will
+    change. </li>
+  <li>Try out the <strong> 4.5</strong> version of ToolsUI application: <a href="webstart/netCDFtools.jnlp">launch from webstart</a>.</li>
+  <li>Unidata public <a href="https://artifacts.unidata.ucar.edu/content/repositories/unidata-releases/edu/ucar/">Maven repository</a> for maven artifacts </li>
   <li>All source is on <a href="https://github.com/Unidata/thredds">GitHub</a></li>
 </ul>
 <h3>File format<a name="formats"></a> types</h3>
@@ -80,10 +75,10 @@ mvn install</pre></blockquote>
 
 <p>Note to GRIB users:</p>
 <blockquote>
-  <p><strong>If you are depending on the CDM/TDS to read GRIB files, you must upgrade to 4.3 AND closely examine the output of any files that you really care
+  <p><strong>If you are depending on the CDM/TDS to read GRIB files, you must upgrade to 4.3+ AND closely examine the output of any files that you really care
     about. Check parameter names and everything else against the original documentation if possible, especially if there is any local parameter use. Please send
     us any files you suspect might be incorrectly read by the CDM library. Note that we will not backport fixes to version 4.2. Note that the variable names in
-    4.3 will be different from those in 4.2.<br>
+    4.3+ will be different from those in 4.2.<br>
   </strong><br>
     Evolving documentation for GRIB is at:</p>
   <ul>
@@ -107,7 +102,7 @@ mvn install</pre></blockquote>
   <li><a href="/software/netcdf/examples/programs/">Example Basic Programs in C/C++/Fortran/Java</a></li>
   <li><a href="reference/index.html">Reference Documentation </a></li>
   <li><a href="CDM/index.html">Common Data Model</a></li>
-  <li><a href="http://www.unidata.ucar.edu/software/netcdf/ncml/">NetCDF Markup Language</a>: <a
+  <li><a href="ncml/index.htm">NetCDF Markup Language</a>: <a
       href="http://www.unidata.ucar.edu/software/netcdf/ncml/v2.2/AnnotatedSchema.html">annotated schema</a></li>
 </ul>
 <h3>Metadata:</h3>
@@ -175,11 +170,12 @@ mvn install</pre></blockquote>
 </ul>
 <h3>Software libraries used by the Netcdf-Java library: </h3>
 <ul>
-  <li> Apache Commons <a href="http://jakarta.apache.org/commons/httpclient/">HttpClient</a> for HTTP access</li>
-  <li>Java-OPeNDAP library for reading OPeNDAP. (note this is branched from the opendap.org site)</li>
-  <li><a href="http://www.jdom.org/">JDOM</a> for parsing XML.</li>
+  <li> Apache Commons <a href="http://hc.apache.org/">HTTP Components</a> for HTTP access</li>
+  <li><a href="http://www.jdom.org/">JDOM</a> for parsing XML</li>
+  <li><a href="http://www.joda.org/joda-time/">Joda-Time</a> for Calendar Date/Time parsing</li>
   <li><a href="http://www.jgoodies.com/">JGoodies</a> for UI stuff</li>
-  <li><a href="http://www.jpeg.org/jpeg2000/">JPEG2000</a> library for decoding GRIB2 files.</li>
+  <li><a href="http://www.jpeg.org/jpeg2000/">JPEG2000</a> library for decoding GRIB2 files</li>
+  <li><a href="https://code.google.com/p/protobuf/">Protocol Buffers</a> from Google for fast object serialization</li>
   <li><a href="http://www.slf4j.org/">Simple Logging Facade for Java</a> (SLF4J) for logging</li>
   <li><a href="http://www.springframework.org/">Spring</a> lightweight application framework. Used in ToolsUI
     application.
@@ -233,6 +229,7 @@ mvn install</pre></blockquote>
   <li>Talk at netCDF workshop 2012 (<a
       href="http://www.unidata.ucar.edu/staff/caron/presentations/NetCDFworkshop2012.pptx">pptx</a>)
   </li>
+  <li><em>On the suitability of BUFR and GRIB for archiving data</em> (short paper Dec 2011 <a href="http://www.unidata.ucar.edu/staff/caron/papers/GRIBarchivals.docx">docx</a> <a href="http://www.unidata.ucar.edu/staff/caron/papers/GRIBarchivals.pdf">pdf</a>)</li>
   <li>Streaming NetCDF (netCDF workshop 2011) (<a
       href="http://www.unidata.ucar.edu/staff/caron/presentations/Streaming_NetCDF.pptx">pptx</a>)
   </li>
@@ -242,21 +239,13 @@ mvn install</pre></blockquote>
   <li>Talk at netCDF workshop 2009 (<a
       href="http://www.unidata.ucar.edu/staff/caron/presentations/NetCDFworkshop2009.ppt">ppt</a>)
   </li>
-  <li>Unidata public <a href="http://artifacts.unidata.ucar.edu/">Maven repository</a> for version 4.3</li>
-  <li>Unidata public<a href="http://github.com/unidata"> GitHub repository</a> for version 4.3</li>
-  <li>Unidata public<a href="http://svn.unidata.ucar.edu/repos/thredds/"> SVN repository</a> for version 4.2</li>
+  <li>Unidata public <a href="http://artifacts.unidata.ucar.edu/">Maven repository</a> for maven artifacts</li>
+  <li> Unidata public<a href="http://github.com/unidata"> GitHub repository</a> for source code</li>
   <li>NetCDF-Java <a href="ring2.jpg">logo</a></li>
-  <li><a href="http://www.unidata.ucar.edu/staff/caron/bufr/">BUFR Tables</a> project (in progress)</li>
-  <li><a href="http://www.unidata.ucar.edu/proposals/2011367OPeNDAP OPULS/OPULS Narrative final.pdf">OPULS project</a>
-    (in progress)
-  </li>
-  <li><a href="http://www.unidata.ucar.edu/proposals/2010215_NOAA_NCDC/2010215 SOW_year 2.docx">NCMP project</a> (in
-    progress)
-  </li>
 </ul>
 <hr WIDTH="100%">
 <address>
-  <a href="NetcdfUsers.htm"><img src="nc.gif" width="64" height="64" border="0" alt=""></a> This document was last updated August 2013
+  <a href="NetcdfUsers.htm"><img src="nc.gif" width="64" height="64" border="0" alt=""></a> This document was last updated June 2014
 </address>
 
 </body>

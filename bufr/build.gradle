@@ -4,9 +4,17 @@ jar {
     }
 }
 
+sourceSets {
+    main {
+        java {
+            exclude 'ucar/nc2/iosp/bufr/writer/BufrSplitter.java'
+        }
+    }
+}
+
 dependencies {
   compile project(':cdm')
-  compile ('com.lexicalscope.jewelcli:jewelcli:0.8.5')
+  //compile ('com.lexicalscope.jewelcli:jewelcli:0.8.5')
   testCompile project(':cdm').sourceSets.test.output
 }
 

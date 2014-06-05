@@ -3,8 +3,11 @@ package ucar.nc2.grib.grib2;
 import ucar.nc2.grib.QuasiRegular;
 import ucar.nc2.time.CalendarDate;
 import ucar.unidata.io.RandomAccessFile;
+import ucar.unidata.util.StringUtil2;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.PrintStream;
 import java.util.Arrays;
 import java.util.Formatter;
 
@@ -313,6 +316,42 @@ public class Grib2Record {
       data = QuasiRegular.convertQuasiGrid(data, nptsInLine, nx, ny);
 
     return data;
+  }
+
+  public void check(RandomAccessFile raf, Formatter f) throws IOException {
+    long messLen = is.getMessageLength();
+    long startPos = is.getStartPos();
+    long endPos = is.getEndPos();
+
+    if (endPos > raf.length()) {
+      f.format("End of GRIB message (start=%d len=%d) end=%d > file.length=%d for %s%n", startPos, messLen , endPos, raf.length(), raf.getLocation());
+      return;
+    }
+
+    raf.seek(endPos-4);
+    for (int i = 0; i < 4; i++) {
+      if (raf.read() != 55) {
+        String clean = StringUtil2.cleanup(header);
+        if (clean.length() > 40) clean = clean.substring(0,40) + "...";
+        f.format("Missing End of GRIB message (start=%d len=%d) end=%d header= %s for %s (len=%d)%n", startPos, messLen, endPos, clean, raf.getLocation(), raf.length());
+        break;
+      }
+    }
+
+    long dataLen = dataSection.getMsgLength();
+    long dataStart = dataSection.getStartingPosition();
+    long dataEnd = dataStart + dataLen;
+
+    if (dataEnd > raf.length()) {
+      f.format("GRIB data section (start=%d len=%d) end=%d > file.length=%d for %s%n", dataStart, dataLen, dataEnd, raf.length(), raf.getLocation());
+      return;
+    }
+
+    if (dataEnd > endPos) {
+      f.format("GRIB data section (start=%d len=%d) end=%d > message end=%d for %s%n", dataStart, dataLen, dataEnd, endPos, raf.getLocation());
+      return;
+    }
+
   }
 
 }

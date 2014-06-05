@@ -587,7 +587,7 @@ class Nidsheader{
                       }
                       plen = bos.getShort();
                       pkcode15Doff[pcode15Number] = boff + 2;
-                      pkcode15Dlen[pcode15Number] = plen/4;
+                      pkcode15Dlen[pcode15Number] = plen/6;
                       pcode15Number++;
                       break;
                  case 166:
@@ -607,7 +607,7 @@ class Nidsheader{
                       }
                       plen = bos.getShort();
                       pkcode19Doff[pcode19Number] = boff + 2;
-                      pkcode19Dlen[pcode19Number] = plen/4;
+                      pkcode19Dlen[pcode19Number] = plen/10;
                       pcode19Number++;
                       break;
                   case 20:
@@ -617,7 +617,7 @@ class Nidsheader{
                       }
                       plen = bos.getShort();
                       pkcode20Doff[pcode20Number] = boff + 2;
-                      pkcode20Dlen[pcode20Number] = plen/4;
+                      pkcode20Dlen[pcode20Number] = plen/8;
                       pcode20Number++;
                       break;
                  case 4:    // wind barb
@@ -852,7 +852,7 @@ class Nidsheader{
                    }
                    plen = bos.getShort();
                    gpkcode8Doff[gpcode8Number] = ppos + 4 + icnt;
-                   gpkcode8Doff[gpcode8Number] = plen - 6;
+                   gpkcode8Size[gpcode8Number] = plen - 6;
                    icnt += plen + 4;
                    gpcode8Number++;
                 }

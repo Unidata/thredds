@@ -1,8 +1,10 @@
 package ucar.nc2.ft.point.writer;
 
+import ucar.ma2.*;
 import ucar.nc2.Attribute;
 import ucar.nc2.Dimension;
 import ucar.nc2.NetcdfFileWriter;
+import ucar.nc2.Variable;
 import ucar.nc2.constants.ACDD;
 import ucar.nc2.constants.CDM;
 import ucar.nc2.constants.CF;
@@ -25,7 +27,7 @@ import java.util.*;
  * @since 4/11/12
  */
 public class CFPointWriter {
-  private static boolean debug = true;
+  private static boolean debug = false;
 
   public static int writeFeatureCollection(FeatureDatasetPoint fdpoint, String fileOut, NetcdfFileWriter.Version version) throws IOException {
     for (FeatureCollection fc : fdpoint.getPointFeatureCollectionList()) {
@@ -160,7 +162,12 @@ public class CFPointWriter {
   protected static final String altName = "altitude";
   protected static final String timeName = "time";
 
+  /////////////////////////////////////////////////
+  protected final boolean isNetcdf3;
   protected NetcdfFileWriter writer;
+  protected Map<String, Variable> dataVarMap = new HashMap<>(); // used for netcdf4
+  protected Variable record;  // used for netcdf3
+
   protected String altUnits = null;
   protected LatLonRect llbb = null;
 
@@ -173,6 +180,7 @@ public class CFPointWriter {
     createWriter(fileOut, version);
     addAtts(atts);
     addDefaultAtts(true);
+    isNetcdf3 = version == NetcdfFileWriter.Version.netcdf3;
   }
 
   /**
@@ -186,6 +194,7 @@ public class CFPointWriter {
     createWriter(fileOut, version);
     addAtts(atts);
     addDefaultAtts(addTimeCoverage);
+    isNetcdf3 = version == NetcdfFileWriter.Version.netcdf3;
   }
 
   private void createWriter(String fileOut, NetcdfFileWriter.Version version) throws IOException {
@@ -256,6 +265,28 @@ public class CFPointWriter {
 
     writer.close();
   }
+
+  protected void writeStructureData(int[] origin, StructureData sdata) throws IOException, InvalidRangeException {
+    if (isNetcdf3) {
+      // needs to be wrapped as an ArrayStructure, even though we are only writing one at a time.
+      ArrayStructureW sArray = new ArrayStructureW(sdata.getStructureMembers(), new int[]{1});
+      sArray.setStructureData(sdata, 0);
+      writer.write(record, origin, sArray);  // can write it all at once along unlimited dimension
+
+    } else  {
+      for (StructureMembers.Member m : sdata.getMembers()) {  // netcdf4 assume classic model
+        Array ma = sdata.getArray(m);
+        if (ma.getRank() == 0)
+          ma = Array.makeArrayRank1(ma);
+        Variable mv = dataVarMap.get(m.getName());
+        if (mv == null)
+          continue;
+        writer.write(mv, origin, ma);
+      }
+    }
+
+  }
+
 
 
 }

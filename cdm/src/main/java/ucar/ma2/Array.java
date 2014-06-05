@@ -290,8 +290,8 @@ public abstract class Array {
     // deal with special case
     if (arraySrc.isConstant()) {
       double d = arraySrc.getDouble(0);
-      for (int i=dstPos; i<dstPos+len; i++)
-        arrayDst.setDouble(i, d); 
+      for (int i = dstPos; i < dstPos + len; i++)
+        arrayDst.setDouble(i, d);
       return;
     }
 
@@ -384,6 +384,17 @@ public abstract class Array {
     return makeArray(dtype, Arrays.asList(stringValues));
   }
 
+  /**
+   * Make a rank1 array of len 1 from a rank0 array
+   *
+   * @param rank0 original rank 0 array
+   * @return rank1 array of len 1
+   */
+  static public Array makeArrayRank1(Array rank0) {
+    int[] shape = new int[1];
+    shape[0] = 1;
+    return factory(rank0.getDataType(), shape, rank0.getStorage());
+  }
 
   /////////////////////////////////////////////////////
   protected final Index indexCalc;
@@ -409,45 +420,44 @@ public abstract class Array {
    * Compute the datatype sort
    */
   DataType
-  computesort()
-  {
-    if(this instanceof ArrayBoolean)
-	return DataType.BOOLEAN;
-    if(this instanceof ArrayByte)
-	return DataType.BYTE;
-    if(this instanceof ArrayChar)
-	return DataType.CHAR;
-    if(this instanceof ArrayShort)
-	return DataType.SHORT;
-    if(this instanceof ArrayInt)
-	return DataType.INT;
-    if(this instanceof ArrayLong)
-	return DataType.LONG;
-    if(this instanceof ArrayFloat)
-	return DataType.FLOAT;
-    if(this instanceof ArrayDouble)
-	return DataType.DOUBLE;
-    if(this instanceof ArrayString)
-	return DataType.STRING;
-    if(this instanceof ArrayObject)
-	return DataType.OBJECT;
-    if(this instanceof ArraySequence)
-	return DataType.SEQUENCE;
-    if(this instanceof ArrayStructure)
-	return DataType.STRUCTURE;
+  computesort() {
+    if (this instanceof ArrayBoolean)
+      return DataType.BOOLEAN;
+    if (this instanceof ArrayByte)
+      return DataType.BYTE;
+    if (this instanceof ArrayChar)
+      return DataType.CHAR;
+    if (this instanceof ArrayShort)
+      return DataType.SHORT;
+    if (this instanceof ArrayInt)
+      return DataType.INT;
+    if (this instanceof ArrayLong)
+      return DataType.LONG;
+    if (this instanceof ArrayFloat)
+      return DataType.FLOAT;
+    if (this instanceof ArrayDouble)
+      return DataType.DOUBLE;
+    if (this instanceof ArrayString)
+      return DataType.STRING;
+    if (this instanceof ArrayObject)
+      return DataType.OBJECT;
+    if (this instanceof ArraySequence)
+      return DataType.SEQUENCE;
+    if (this instanceof ArrayStructure)
+      return DataType.STRUCTURE;
     return null;
   }
 
-    /**
-     * Return the computed datatype for this array
-     * @return
-     */
-    public DataType getDataType()
-   {
-       return this.datatype;
-   }
+  /**
+   * Return the computed datatype for this array
+   *
+   * @return the data type
+   */
+  public DataType getDataType() {
+    return this.datatype;
+  }
 
-    /**
+  /**
    * Get an Index object used for indexed access of this Array.
    *
    * @return an Index for this Array
@@ -489,7 +499,7 @@ public abstract class Array {
    * Get the shape: length of array in each dimension.
    *
    * @return array whose length is the rank of this
-   *         Array and whose elements represent the length of each of its indices.
+   * Array and whose elements represent the length of each of its indices.
    */
   public int[] getShape() {
     return indexCalc.getShape();
@@ -510,7 +520,7 @@ public abstract class Array {
    * @return total number of bytes in the array
    */
   public long getSizeBytes() {
-    DataType dtype = DataType.getType( getElementType());
+    DataType dtype = DataType.getType(getElementType());
     return indexCalc.getSize() * dtype.getSize();
   }
 
@@ -666,7 +676,7 @@ public abstract class Array {
       for (int i = 0; i < stride.length; i++) stride[i] = 1;
     }
     for (int i = 0; i < origin.length; i++) {
-      if(shape[i] < 0) // VLEN
+      if (shape[i] < 0) // VLEN
         ranges.add(Range.VLEN);
       else
         ranges.add(new Range(origin[i], origin[i] + stride[i] * shape[i] - 1, stride[i]));
@@ -703,7 +713,7 @@ public abstract class Array {
   public Array copy() {
     Array newA = factory(getElementType(), getShape());
     MAMath.copy(newA, this);
-    newA.setUnsigned( isUnsigned());
+    newA.setUnsigned(isUnsigned());
     return newA;
   }
 
@@ -739,9 +749,10 @@ public abstract class Array {
 
   /**
    * Create an Array from a ByteBuffer
+   *
    * @param dtype type of data
    * @param shape shape of data; if null, then use int[]{bb.limit()}
-   * @param bb data is in here
+   * @param bb    data is in here
    * @return equivilent Array
    */
   public static Array factory(DataType dtype, int[] shape, ByteBuffer bb) {
@@ -751,12 +762,12 @@ public abstract class Array {
     switch (dtype) {
       case ENUM1:
       case BYTE:
-        if (shape == null) shape =  new int[]{bb.limit()};
+        if (shape == null) shape = new int[]{bb.limit()};
         return factory(dtype, shape, bb.array());
 
       case CHAR:
         size = bb.limit();
-        if (shape == null) shape =  new int[]{size};
+        if (shape == null) shape = new int[]{size};
         result = factory(dtype, shape);
         for (int i = 0; i < size; i++)
           result.setChar(i, (char) bb.get(i));
@@ -766,7 +777,7 @@ public abstract class Array {
       case SHORT:
         ShortBuffer sb = bb.asShortBuffer();
         size = sb.limit();
-        if (shape == null) shape =  new int[]{size};
+        if (shape == null) shape = new int[]{size};
         result = factory(dtype, shape);
         for (int i = 0; i < size; i++)
           result.setShort(i, sb.get(i));
@@ -776,7 +787,7 @@ public abstract class Array {
       case INT:
         IntBuffer ib = bb.asIntBuffer();
         size = ib.limit();
-        if (shape == null) shape =  new int[]{size};
+        if (shape == null) shape = new int[]{size};
         result = factory(dtype, shape);
         for (int i = 0; i < size; i++)
           result.setInt(i, ib.get(i));
@@ -785,7 +796,7 @@ public abstract class Array {
       case LONG:
         LongBuffer lb = bb.asLongBuffer();
         size = lb.limit();
-        if (shape == null) shape =  new int[]{size};
+        if (shape == null) shape = new int[]{size};
         result = factory(dtype, shape);
         for (int i = 0; i < size; i++)
           result.setLong(i, lb.get(i));
@@ -794,7 +805,7 @@ public abstract class Array {
       case FLOAT:
         FloatBuffer ffb = bb.asFloatBuffer();
         size = ffb.limit();
-        if (shape == null) shape =  new int[]{size};
+        if (shape == null) shape = new int[]{size};
         result = factory(dtype, shape);
         for (int i = 0; i < size; i++)
           result.setFloat(i, ffb.get(i));
@@ -803,7 +814,7 @@ public abstract class Array {
       case DOUBLE:
         DoubleBuffer db = bb.asDoubleBuffer();
         size = db.limit();
-        if (shape == null) shape =  new int[]{size};
+        if (shape == null) shape = new int[]{size};
         result = factory(dtype, shape);
         for (int i = 0; i < size; i++)
           result.setDouble(i, db.get(i));
@@ -892,7 +903,7 @@ public abstract class Array {
     if (result.getSize() != getSize())
       throw new IllegalArgumentException("reshape arrays must have same total size");
 
-    result.setUnsigned( isUnsigned());
+    result.setUnsigned(isUnsigned());
     Array.arraycopy(this, 0, result, 0, (int) getSize());
     return result;
   }
@@ -949,6 +960,7 @@ public abstract class Array {
 
   /**
    * If this is a constant array
+   *
    * @return If this is a constant array
    */
   public boolean isConstant() {

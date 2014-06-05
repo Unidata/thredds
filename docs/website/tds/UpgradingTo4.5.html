@@ -51,7 +51,7 @@ export JAVA_OPTS
 <ol>
   <li>You must change your GRIB feature Collection from featureType=&quot;<strong>GRIB</strong>&quot; to featureType=&quot;<strong>GRIB1</strong>&quot; or featureType=&quot;<strong>GRIB2</strong>&quot;.</li>
   <li>The valid options for timePartitions are <strong>directory</strong> or <strong>file</strong>.</li>
-  <li>On-the-fly updating of datasets is no longer supported. If you have datasets that change, you must use the TDM.</li>
+  <li>On-the-fly updating of datasets is no longer supported. If you have datasets that change, you must use the <a href="reference/collections/TDM.html">TDM</a>.</li>
   <li>Datasets are automatically partitioned by GRIB reference time. If there are multiple reference times, you have the option of giving access to a TwoD dataset which has two time dimensions, reference time and valid time. </li>
 </ol>
 <p>Example 4.3 catalog:</p>
@@ -83,7 +83,7 @@ export JAVA_OPTS
 <blockquote>
   <pre> &lt;service name=&quot;ncss&quot; serviceType=&quot;NetcdfSubset&quot; base=&quot;/thredds/ncss/grid&quot;/&gt;
 </pre>
-  <p>to:</p>
+  to:
   <pre> &lt;service name=&quot;ncss&quot; serviceType=&quot;NetcdfSubset&quot; base=&quot;/thredds/ncss/&quot;/&gt;
 </pre>
 </blockquote>
@@ -103,7 +103,7 @@ export JAVA_OPTS
   <li>TDS
     <ul>
       <li>Point Feature Collections (point, stations) now handled by Netcdf Subset Service.</li>
-      <li>Automatic Metadata Extraction from the dataset into the thredds catalogs, on point collections only but will extend to other collections. </li>
+      <li>Automatic Metadata Extraction from the dataset into the thredds catalogs, on point collections only but will extend to other collections.</li>
     </ul>
   </li>
   <li>NcML
@@ -116,10 +116,12 @@ export JAVA_OPTS
   </li>
   <li>IOSPs
     <ul>
-      <li>GRIB: yet anothe rewrite of Grib Collections to allow sccaling to very large collections.</li>
+      <li><a href="../netcdf-java/reference/netcdf4Clibrary.html#writing">Netcdf-4 writing</a> improved, default chunking</li>
+      <li>GRIB: yet another rewrite of Grib Collections to allow scaling to very large collections.</li>
       <li>Improved HDF-EOS processing.</li>
       <li>CF 1.6 DSG: bug in handling station profiles, multidimensional representation [<a href="ftp://ftp.unidata.ucar.edu/pub/thredds/4.4/current/thredds.war">TDS-513</a>]</li>
       <li>MSGnavigation scan mode bug</li>
+      <li>IOSP for SIGMET radar files</li>
     </ul>
   </li>
   <li>ToolsUI 
@@ -155,7 +157,7 @@ Other Changes
 
 <address>
   <img src="thread.png" alt="TDS" height="108" width="110">This document is maintained by Unidata and was
-  last updated March 2014. Send comments to <a href="mailto:support-thredds@unidata.ucar.edu">THREDDS
+  last updated May 2014. Send comments to <a href="mailto:support-thredds@unidata.ucar.edu">THREDDS
   support</a>.
 </address>
 

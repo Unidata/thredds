@@ -136,6 +136,12 @@ public class GridRenderer {
     return orgGrid;
   }
 
+  public void clear() {
+    this.orgGrid = null;
+    this.lastGrid = null;
+    this.stridedGrid = null;
+  }
+
   /**
    * set the Grid
    */

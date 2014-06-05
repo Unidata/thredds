@@ -78,7 +78,7 @@
 
 <p>&nbsp;</p>
 <hr/>
-<h2>Writing netCDF-4 files</h2>
+<h2>Writing netCDF-4 files<a name="writing" id="writing"></a></h2>
 <ul>
   <li>From the command line: see <a href="manPages.html#nccopy">nccopy man page</a></li>
   <li>From ToolsUI: in <strong>Viewer</strong> tab, bring up the file to copy, then click &quot;write Netcdf File&quot; button to get dialog.</li>
@@ -93,14 +93,15 @@ NetcdfFile ncfileOut = writer.write();
 ncfileIn.close();<br/>ncfileOut.close();</pre>
   </li>
 </ul>
-<h3>Chunking Strategy</h3>
+<h3>Chunking Strategy (version 4.5)</h3>
 <p>When writing netcdf-4 files, one must decide on how the variables are to be chunked. In the netcdf-java library this is done through the use of a Nc4Chunking strategy. The possibilities currently are:</p>
 <ul>
   <li><strong>standard</strong> : this strategy is used by default (see below for description) </li>
   <li><strong>grib</strong>: this strategy matches how GRIB files are stored: the chunking uses only the two rightmost dimensions, which for GRIB is the x and y dimension. Use this strategy when converting GRIB files to netcdf-4, in order to optimize conversion writing time, and to get similar access speed.</li>
-  <li>custom: you may write your own inplementation of <strong>ucar.nc2.write.Nc4Chunking</strong> and pass it into <strong>FileWriter2</strong> or <strong>NetcdfFileWriter</strong>. This gives you complete control over chunking.</li>
+  <li><strong>custom</strong>: you may write your own inplementation of <strong>ucar.nc2.write.Nc4Chunking</strong> and pass it into <strong>FileWriter2</strong> or <strong>NetcdfFileWriter</strong>. This gives you complete control over chunking.</li>
 </ul>
-<p>Both <strong>standard</strong> and <strong>grib</strong> strategies allow you to override individual variable chunking if you want by setting the variable's <strong>_ChunkSizes </strong>attribute.</p>
+<p>Both <strong>standard</strong> and <strong>grib</strong> strategies allow you to override individual variable chunking if you want by setting the variable's <strong>_ChunkSizes </strong>attribute. </p>
+<p><strong>By default, the Java library will write chunked and compressed netcdf-4 files</strong>, using the default chunking algorithm. You may pass in a null for the chunking parameter to use the default.</p>
 <h3>Default chunking strategy<a name="defaultStrategy" id="defaultStrategy"></a></h3>
 <blockquote>
   <p>For each Variable:</p>

@@ -7,7 +7,7 @@
 </head>
 
 <body>
-<h1> Netcdf-Java FAQ</h1>
+<h1> NetCDF-Java FAQ</h1>
 <hr/>
 <ul>
   <li><a href="#Arrays">Arrays</a></li>
@@ -20,7 +20,11 @@
   <li><a href="#Reading">Reading</a></li>
   <li><a href="#Writing">Writing</a></li>
 </ul>
-<h3><a name="Arrays" id="Arrays"></a>Arrays</h3>
+<p>Miscellaneous</p>
+<ul>
+  <li><a href="../../tds/SourceCodeBuild.html#contribute">How do I build from source or contribute  to the NetCDF_Java Library?</a></li>
+</ul>
+<h2><a name="Arrays" id="Arrays"></a>Arrays</h2>
 
 <p><strong>Q: I want to read data from a NetcdfFile and use another package to process the results, which doesn't use ucar.ma2.Array. How can I get the data out
   of the Array object most efficiently?</strong></p>
@@ -38,7 +42,7 @@
 Array.makeArray(DataType dtype, int npts, double start, double incr);
 Array.makeArray(DataType dtype, List&lt;String&gt; stringValues);</pre>
 </blockquote>
-<h3><a name="Caching" id="Caching"></a>Caching</h3>
+<h2><a name="Caching" id="Caching"></a>Caching</h2>
 
 <p><strong>Q: How do I use NetcdfFile object caching</strong>?</p>
 <blockquote>
@@ -52,7 +56,7 @@ Array.makeArray(DataType dtype, List&lt;String&gt; stringValues);</pre>
 <blockquote>
   <p>See <a href="Caching.html">Disk Caching</a>.</p>
 </blockquote>
-<h3><a name="IOSP" id="IOSP"></a>I/O Service Provider</h3>
+<h2><a name="IOSP" id="IOSP"></a>I/O Service Provider</h2>
 
 <p><strong>Q: What is an IOSP?</strong></p>
 <blockquote>
@@ -91,7 +95,7 @@ Array.makeArray(DataType dtype, List&lt;String&gt; stringValues);</pre>
     object, and writes it to your file format, in whatever way suits you best. You might find the code at <strong>ucar.nc2.FileWriter2 </strong>useful to
     look at.</p>
 </blockquote>
-<h3><a name="Logging" id="Logging"></a>Logging</h3>
+<h2><a name="Logging" id="Logging"></a>Logging</h2>
 
 <p><strong>Q: How do I control the error messages coming out of the library?</strong></p>
 <blockquote>
@@ -109,7 +113,7 @@ Array.makeArray(DataType dtype, List&lt;String&gt; stringValues);</pre>
     logger.setLevel(org.apache.log4j.Level.OFF)
 </pre>
 </blockquote>
-<h3><a name="Multithreading" id="Multithreading"></a>Multithreading</h3>
+<h2><a name="Multithreading" id="Multithreading"></a>Multithreading</h2>
 
 <p><strong>Q: Is the Netcdf-Java library thread-safe?</strong></p>
 <blockquote>
@@ -127,7 +131,7 @@ Array.makeArray(DataType dtype, List&lt;String&gt; stringValues);</pre>
     cache itself is thread-safe. So if you use it properly, you never have to do synchronization. As a rule, synchronization should not happen in
     application code, as it is too difficult to do correctly.</p>
 </blockquote>
-<h3><strong><a name="ncml" id="ncml"></a></strong>NcML</h3>
+<h2><strong><a name="ncml" id="ncml"></a></strong>NcML</h2>
 
 <p><strong>Q: The NcML in my TDS is not working. What should I do?</strong></p>
 <blockquote>
@@ -161,7 +165,7 @@ Array.makeArray(DataType dtype, List&lt;String&gt; stringValues);</pre>
     </li>
   </ol>
 </blockquote>
-<h3><a name="Unsigned" id="Unsigned"></a>Unsigned Types</h3>
+<h2><a name="Unsigned" id="Unsigned"></a>Unsigned Types</h2>
 
 <p><strong>Q: How do I work with unsigned integer types?</strong></p>
 <blockquote>
@@ -201,7 +205,7 @@ Array.makeArray(DataType dtype, List&lt;String&gt; stringValues);</pre>
  -124 =  132
  ...</pre>
 </blockquote>
-<h3><a name="Reading" id="Reading"></a>Reading</h3>
+<h2><a name="Reading" id="Reading"></a>Reading</h2>
 
 <p><strong>Q: What files can the library read?</strong></p>
 <blockquote>
@@ -258,21 +262,19 @@ Array.makeArray(DataType dtype, List&lt;String&gt; stringValues);</pre>
     the <a href="http://www.unidata.ucar.edu/software/netcdf-java/reference/Caching.html">cache directory</a> defined
     by <strong>ucar.nc2.util.DiskCache.</strong></p>
 </blockquote>
-<h3><a id="Writing"></a>Writing</h3>
+<h2><a id="Writing"></a>Writing</h2>
 
 <p><strong>Q: Ok, so you read a lot of files, what about writing?</strong></p>
 <blockquote>
   <p>Netcdf-Java library supports writing netCDF-3 file format using the <a href="http://www.unidata.ucar.edu/software/netcdf/docs/faq.html#fv2">classic data
-    model</a>. As of version 4.3, writing to the netCDF-4 <strong><a name="netcdf4" id="netcdf4"></a></strong> file format is supported as BETA software,
+    model</a>. Writing to the netCDF-4 <strong><a name="netcdf4" id="netcdf4"></a></strong> file format is supported
     using a <a href="http://en.wikipedia.org/wiki/Java_Native_Interface">JNI</a> interface to
-    the <a href="netcdf4Clibrary.html">netCDF C library.</a> This allows you to write the full
-    <a href="http://www.unidata.ucar.edu/software/netcdf-java/CDM/">CDM data model</a>. </p>
-
-  <p>See the <strong>ucar.nc2.NetcdfFileWriter</strong> javadoc.</p>
+    the <a href="netcdf4Clibrary.html">netCDF C library.</a> Writing the full
+    <a href="http://www.unidata.ucar.edu/software/netcdf-java/CDM/">CDM data model</a> is in beta, as of version 4.5. See:</p>
   <ul>
-    <li><strong>ucar.nc2.FileWriter2 </strong>writes CDM files to netCDF-3 or netCDF-4 format.</li>
-    <li><strong>ucar.nc2.dataset.NetcdfDataset</strong>.<strong>main</strong>() is a cover for <strong>FileWriter2</strong>, but you can also open NcML,
-      OPeNDAP, and other datasets accessible with NetcdfDataset.openFile(). See <a href="formats/GribTables.html">here</a> for details.
+    <li>Program with complete control: <strong>ucar.nc2.NetcdfFileWriter</strong> javadoc and <a href="../tutorial/NetcdfWriting.html">NetCDF File Writing tutorial</a>.</li>
+    <li>Copy complete files from a program: <strong>ucar.nc2.FileWriter2 </strong>writes CDM files to netCDF-3 or netCDF-4 format.</li>
+    <li>Command line file copying:<strong>  </strong>See <a href="manPages.html#nccopy">here</a> for details.
     </li>
   </ul>
 </blockquote>
@@ -283,13 +285,12 @@ Array.makeArray(DataType dtype, List&lt;String&gt; stringValues);</pre>
       1,</a> <a href="http://www.unidata.ucar.edu/blogs/developer/en/entry/dimension_scale2">Part
       2</a>, <a href="http://www.unidata.ucar.edu/blogs/developer/en/entry/dimension_scales_part_3">Part 3</a>.</p>
 
-  <p>HDF5 is a very complicated format, and we do not plan to write a pure Java version for writing netCDF4 files (we do have a pure Java version for reading
-    both HDF5 and netCDF-4). You might also want to have a look at <a href="http://www.ral.ucar.edu/~steves/nujan.html">Nujan</a>.</p>
+  <p>HDF5 is a very complicated format, and we do not plan to write a pure Java version for <em>writing</em> netCDF4 files (we do have a pure Java version for <em>reading</em> both HDF5 and netCDF-4). You must use the JNI interfacce to the <a href="netcdf4Clibrary.html">netCDF C library</a>.</p>
 </blockquote>
 <p><strong>Q: Can I stream a NetcdfFile object to a client?</strong></p>
 <blockquote>
-  <p>NetCDF is a random access format, so streaming is not possible in general. The standard way to do this is to write to a disk file (so that you have a
-    random access file), using <strong>ucar.nc2.FileWriter2</strong>, then copy the file to the client. </p>
+  <p>NetCDF is a random access format, so streaming is not possible in general. The way to do this is to write to a disk file (so that you have a
+    random access file), using <strong>ucar.nc2.FileWriter2</strong>, then copy the file to the client. For performance, you can try copying to a solid state disk.</p>
 
   <p>We are working on an experimental streaming format for NetCDF, called <a href="stream/NcStream.html">ncstream</a>, and a remote access protocol called
     <a href="stream/CdmRemote.html">CdmRemote</a>. These are fully functional as of CDM version 4.2, but are still evolving and should only be used if you
@@ -303,7 +304,6 @@ Array.makeArray(DataType dtype, List&lt;String&gt; stringValues);</pre>
       http://www.unidata.ucar.edu/software/netcdf/docs/BestPractices.html</a></li>
     <li>Recommended Conventions: <a href="http://cf-pcmdi.llnl.gov/">CF Conventions </a></li>
   </ul>
-  <p>&nbsp;</p>
 </blockquote>
 <p><strong>Q: How do I put a valid_range attribute on a unsigned variable?</strong></p>
 <blockquote>
@@ -358,9 +358,31 @@ NaN, -100.0, -90.0, -80.0, -70.0, -60.0, -50.0, -40.0, -30.0, -20.0, -10.0}</pre
 2240.0, 2250.0, 2260.0, 2270.0, 2280.0, 2290.0, 2300.0, 2310.0, 2320.0, 2330.0, 2340.0, 2350.0, 2360.0, 2370.0, 2380.0, 2390.0, 2400.0, NaN, NaN, NaN, 
 NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN}</pre>
 </blockquote>
+<p><strong>Q: I want to convert <a name="convert" id="convert"></a>a GRIB file to netCDF. How do I do that?</strong></p>
+<blockquote>
+  <p>If you are converting the entire file, you can do it on the<a href="manPages.html#nccopy"> command line</a>. </p>
+  <p>You can do it from a Java program like this:</p>
+  <pre>void convert(String datasetIn, String filenameOut, boolean wantNetcdf4) throws IOException {   
+
+   NetcdfFileWriter.Version version = wantNetcdf4 ? NetcdfFileWriter.Version.netcdf4 : NetcdfFileWriter.Version.netcdf3;
+
+   // open the original dataset
+   NetcdfFile ncfileIn = ucar.nc2.dataset.NetcdfDataset.openFile(datasetIn, cancel);
+
+   // copy it to a netCDF file
+   FileWriter2 writer = new ucar.nc2.FileWriter2(ncfileIn, filenameOut, version, null);
+   NetcdfFile ncfileOut = writer.write(cancel);
+
+   // clean up
+   if (ncfileOut != null) ncfileOut.close();
+   ncfileIn.close();
+ }</pre>
+  <p>Note that this can be used for any <a href="https://www.unidata.ucar.edu/software/netcdf/docs/netcdf/NetCDF_002d4-Classic-Model-Format.html#NetCDF_002d4-Classic-Model-Format">classic model </a>CDM dataset, not just GRIB. So  <em>datasetIn</em> above can refer to an NcML file, an OPeNDAP URL, any of these <a href="formats/FileTypes.html">File Types</a>, etc. See <a href="DatasetUrls.html">here</a> for more details.</p>
+ 
+</blockquote>
 <hr/>
 <address>
-  <img src="../nc.gif" alt="" width="64" height="64"/> This document was last updated July 2013
+  <img src="../nc.gif" alt="" width="64" height="64"/> This document was last updated June 2014
 </address>
 </body>
 </html>

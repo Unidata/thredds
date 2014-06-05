@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?><pnTable><name>Master Cloud Top Height Quality Indicator Table</name><grib2TableName>Cloud Top Height Quality Indicator Table</grib2TableName><updatedDTG>201403071424</updatedDTG><tableStatus setDTG="2010041315">current</tableStatus><reference>
+    <title>Product Name Standard Document</title>
+    <docId>P-3146-2.2</docId>
+    <version>2.2</version>
+    <dtg>May 2012</dtg>
+    <organization>Fleet Numerical Meteorology and Oceanography Center</organization>
+    <infoUsed>Cloud Top Height Quality Indicator Table</infoUsed>
+  </reference><reference>
+    <title>GRIB 2</title>
+    <docId>FM 92-XII</docId>
+    <version>12.0.0</version>
+    <organization>World Meteorological Organization</organization>
+    <infoUsed>GRIB2 Cloud Top Height Quality Indicator, table 4.219</infoUsed>
+  </reference><fnmocTable><entry><fnmocId>0</fnmocId><grib2Id>0</grib2Id><name>nominal cloud top height quality</name><status>current</status><wmoStatus>operational</wmoStatus></entry><entry><fnmocId>1</fnmocId><grib2Id>1</grib2Id><name>fog in segment</name><status>current</status><wmoStatus>operational</wmoStatus></entry><entry><fnmocId>2</fnmocId><grib2Id>2</grib2Id><name>poor quality height estimation</name><status>current</status><wmoStatus>operational</wmoStatus></entry><entry><fnmocId>3</fnmocId><grib2Id>3</grib2Id><name>fog in segment and poor quality height estimation</name><status>current</status><wmoStatus>operational</wmoStatus></entry><entry><fnmocId>4</fnmocId><grib2Id>4-191</grib2Id><name>reserved for WMO use</name><status>current</status><wmoStatus>operational</wmoStatus></entry><entry><fnmocId>192</fnmocId><grib2Id>192-254</grib2Id><name>reserved for local use</name><status>current</status><wmoStatus>operational</wmoStatus></entry><entry><fnmocId>255</fnmocId><grib2Id>255</grib2Id><name>missing</name><status>current</status><wmoStatus>operational</wmoStatus></entry></fnmocTable></pnTable>

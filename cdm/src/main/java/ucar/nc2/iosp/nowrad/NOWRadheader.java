@@ -878,8 +878,8 @@ public class NOWRadheader {
 
     /**
      *  convert short to unsigned integer
-     * @param b
-     * @return   unsign integer
+     * @param b  convert this short
+     * @return   unsigned integer
      */
     public int convertShort2unsignedInt(short b) {
         return (b < 0)

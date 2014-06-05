@@ -37,9 +37,47 @@ public class TestNc4IospWriting {
   }
 
   @Test
-  public void writeAllNetcdf4() throws IOException {
+  public void writeNetcdf4Files() throws IOException {
     int count = 0;
     count += TestDir.actOnAll(TestDir.cdmUnitTestDir + "formats/netcdf4/files/", new MyFileFilter(), new MyAct(), true);
+    System.out.printf("***READ %d files FAIL = %d%n", count, countNotOK);
+  }
+
+  @Test
+  public void writeNetcdf4Compound() throws IOException {
+    int count = 0;
+    count += TestDir.actOnAll(TestDir.cdmUnitTestDir + "formats/netcdf4/compound/", new MyFileFilter(), new MyAct(), true);
+    System.out.printf("***READ %d files FAIL = %d%n", count, countNotOK);
+  }
+
+  // enum not ready
+
+  //@Test
+  public void writeHdf5Samples() throws IOException {
+    int count = 0;
+    count += TestDir.actOnAll(TestDir.cdmUnitTestDir + "formats/hdf5/samples/", new MyFileFilter(), new MyAct(), true);
+    System.out.printf("***READ %d files FAIL = %d%n", count, countNotOK);
+  }
+
+  //@Test
+  public void writeHdf5Support() throws IOException {
+    int count = 0;
+    count += TestDir.actOnAll(TestDir.cdmUnitTestDir + "formats/hdf5/support/", new MyFileFilter(), new MyAct(), true);
+    System.out.printf("***READ %d files FAIL = %d%n", count, countNotOK);
+  }
+
+  // @Test
+  public void writeNetcdf4Tst() throws IOException {
+    int count = 0;
+    count += TestDir.actOnAll(TestDir.cdmUnitTestDir + "formats/netcdf4/tst/", new MyFileFilter(), new MyAct(), true);
+    System.out.printf("***READ %d files FAIL = %d%n", count, countNotOK);
+  }
+
+
+  @Test
+  public void writeNetcdf4Zender() throws IOException {
+    int count = 0;
+    count += TestDir.actOnAll(TestDir.cdmUnitTestDir + "formats/netcdf4/zender/", new MyFileFilter(), new MyAct(), true);
     System.out.printf("***READ %d files FAIL = %d%n", count, countNotOK);
   }
 
@@ -82,7 +120,7 @@ public class TestNc4IospWriting {
   private String tempDir = TestDir.temporaryLocalDataDir; // "C:/temp/";
   private boolean copyFile(String datasetIn, String datasetOut, NetcdfFileWriter.Version version) throws IOException {
 
-     System.out.printf("copy %s to %s%n", datasetIn, datasetOut);
+     System.out.printf("TestNc4IospWriting copy %s to %s%n", datasetIn, datasetOut);
      NetcdfFile ncfileIn = ucar.nc2.NetcdfFile.open(datasetIn, null);
      FileWriter2 writer2 = new FileWriter2(ncfileIn, datasetOut, version, null);
      NetcdfFile ncfileOut = writer2.write();

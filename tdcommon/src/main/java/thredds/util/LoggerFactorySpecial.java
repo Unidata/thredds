@@ -114,7 +114,7 @@ public class LoggerFactorySpecial implements LoggerFactory {
 
       //create logger in log4j2
       Configuration config = new NullConfiguration(); // ?? LOOK
-      Layout layout = PatternLayout.createLayout("%d{yyyy-MM-dd'T'HH:mm:ss.SSS Z} %-5p - %m%n", config, null, null, "no");
+      Layout layout = PatternLayout.createLayout("%d{yyyy-MM-dd'T'HH:mm:ss.SSS Z} %-5p - %m%n", config, null, null, null, null);
 
       /*
        fileName - The name of the file that is actively written to. (required).

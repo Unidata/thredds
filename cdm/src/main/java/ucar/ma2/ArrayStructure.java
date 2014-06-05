@@ -36,6 +36,7 @@ import ucar.nc2.util.Indent;
 
 import java.io.IOException;
 import java.util.Formatter;
+import java.util.Iterator;
 import java.util.List;
 import java.nio.ByteBuffer;
 
@@ -997,15 +998,28 @@ public abstract class ArrayStructure extends Array {
 
   /////////////////////////////////////////////////////////////////////////////////////////////////////
 
-  /**
-   * DO NOT USE, throws UnsupportedOperationException
-   */
+  @Override
   public Array createView(Index index) {
-    if (index.getSize() == getSize()) return this;
+    //    Section viewSection = index.getSection(); / LOOK if we could do this, we could make this work
+
     throw new UnsupportedOperationException();
   }
 
-  /**
+  @Override
+  public Array sectionNoReduce(List<Range> ranges) throws InvalidRangeException {
+      Section viewSection = new Section(ranges);
+      ArrayStructureW result = new ArrayStructureW(this.members, viewSection.getShape());
+      int count = 0;
+      Section.Iterator iter = viewSection.getIterator(getShape());
+      while (iter.hasNext()) {
+          int recno = iter.next(null);
+          StructureData sd = getStructureData(recno);
+          result.setStructureData(sd, count++);
+      }
+      return result;
+  }
+
+    /**
    * DO NOT USE, throws UnsupportedOperationException
    */
   public Array copy() {

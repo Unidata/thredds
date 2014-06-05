@@ -109,7 +109,7 @@ public class AbstractNcssController {
 	public ResponseEntity<String> handle(FileNotFoundException ncsse) {
 		HttpHeaders responseHeaders = new HttpHeaders();
 		responseHeaders.setContentType(MediaType.TEXT_PLAIN);
-		return new ResponseEntity<String>(
+		return new ResponseEntity<>(
 				"NetCDF Subset Service exception handled : " + ncsse.getMessage(), responseHeaders,
 				HttpStatus.NOT_FOUND);
 	}
@@ -118,7 +118,7 @@ public class AbstractNcssController {
 	public ResponseEntity<String> handle(NcssException ncsse) {
 		HttpHeaders responseHeaders = new HttpHeaders();
 		responseHeaders.setContentType(MediaType.TEXT_PLAIN);
-		return new ResponseEntity<String>(
+		return new ResponseEntity<>(
 				"NetCDF Subset Service exception handled : " + ncsse.getMessage(), responseHeaders,
 				HttpStatus.BAD_REQUEST);
 	}
@@ -127,7 +127,7 @@ public class AbstractNcssController {
 	public ResponseEntity<String> handle(UnsupportedOperationException ex) {
 		HttpHeaders responseHeaders = new HttpHeaders();
 		responseHeaders.setContentType(MediaType.TEXT_PLAIN);
-		return new ResponseEntity<String>(
+		return new ResponseEntity<>(
 				"UnsupportedOperationException exception handled : " + ex.getMessage(), responseHeaders,
 				HttpStatus.BAD_REQUEST);
 	}	
@@ -138,7 +138,7 @@ public class AbstractNcssController {
     log.error("AbstractNcssController", ex);
 		HttpHeaders responseHeaders = new HttpHeaders();
 		responseHeaders.setContentType(MediaType.TEXT_PLAIN);
-		return new ResponseEntity<String>("Throwable exception handled : " + ex.getMessage(), responseHeaders,
+		return new ResponseEntity<>("Throwable exception handled : " + ex.getMessage(), responseHeaders,
             HttpStatus.INTERNAL_SERVER_ERROR);
 	}
 

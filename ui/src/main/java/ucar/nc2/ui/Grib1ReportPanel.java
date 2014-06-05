@@ -64,58 +64,42 @@ import java.util.*;
  * @since 8/28/11
  */
 public class Grib1ReportPanel extends ReportPanel {
+
   public static enum Report {
     checkTables, showLocalParams, scanIssues, rename, checkRename, showEncoding// , localUseSection, uniqueGds, duplicatePds, drsSummary, gdsTemplate, pdsSummary, idProblems
   }
 
-  public Grib1ReportPanel(PreferencesExt prefs, JPanel buttPanel) {
-    super(prefs, buttPanel);
+  public Grib1ReportPanel(PreferencesExt prefs) {
+    super(prefs);
   }
 
-  public void doReport(String spec, boolean useIndex, Report which) throws IOException {
-    Formatter f = new Formatter();
-    f.format("%s %s %s%n", spec, useIndex, which);
+  @Override
+  public Object[] getOptions() {
+    return ucar.nc2.ui.Grib1ReportPanel.Report.values();
+  }
 
-    MCollection dcm = getCollection(spec, f);
-    if (dcm == null) {
-      return;
+  @Override
+  protected void doReport(Formatter f, Object option, MCollection dcm, boolean useIndex, boolean eachFile, boolean extra) throws IOException {
+    switch ((Report) option) {
+      case checkTables:
+        doCheckTables(f, dcm, useIndex);
+        break;
+      case showLocalParams:
+        doCheckLocalParams(f, dcm, useIndex);
+        break;
+      case scanIssues:
+        doScanIssues(f, dcm, useIndex);
+        break;
+      case rename:
+        doRename(f, dcm, useIndex);
+        break;
+      case checkRename:
+        doCheckRename(f, dcm, useIndex);
+        break;
+      case showEncoding:
+        doShowEncoding(f, dcm, useIndex);
+        break;
     }
-
-    // CollectionSpecParser parser = dcm.getCollectionSpecParser();
-
-    f.format("top dir = %s%n", dcm.getRoot());
-    //f.format("filter = %s%n", parser.getFilter());
-    reportPane.setText(f.toString());
-
-    File top = new File(dcm.getRoot());
-    if (!top.exists()) {
-      f.format("top dir = %s does not exist%n", dcm.getRoot());
-    } else {
-
-      switch (which) {
-        case checkTables:
-          doCheckTables(f, dcm, useIndex);
-          break;
-        case showLocalParams:
-          doCheckLocalParams(f, dcm, useIndex);
-          break;
-        case scanIssues:
-          doScanIssues(f, dcm, useIndex);
-          break;
-        case rename:
-          doRename(f, dcm, useIndex);
-          break;
-        case checkRename:
-          doCheckRename(f, dcm, useIndex);
-          break;
-        case showEncoding:
-          doShowEncoding(f, dcm, useIndex);
-          break;
-      }
-    }
-
-    reportPane.setText(f.toString());
-    reportPane.gotoTop();
   }
 
   ///////////////////////////////////////////////

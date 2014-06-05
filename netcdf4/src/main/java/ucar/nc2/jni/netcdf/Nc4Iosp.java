@@ -51,10 +51,7 @@ import ucar.ma2.*;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.List;
-import java.util.ArrayList;
-import java.util.Map;
-import java.util.HashMap;
+import java.util.*;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.ShortBuffer;
@@ -63,7 +60,6 @@ import java.nio.IntBuffer;
 import com.sun.jna.Native;
 import com.sun.jna.Pointer;
 import com.sun.jna.ptr.IntByReference;
-import com.sun.jna.ptr.NativeLongByReference;
 
 import static ucar.nc2.jni.netcdf.Nc4prototypes.*;
 
@@ -73,7 +69,8 @@ import static ucar.nc2.jni.netcdf.Nc4prototypes.*;
  * @author caron
  * @see "http://www.unidata.ucar.edu/software/netcdf/docs/netcdf-c.html"
  * @see "http://earthdata.nasa.gov/sites/default/files/field/document/ESDS-RFC-022v1.pdf"
- * @see "http://www.unidata.ucar.edu/software/netcdf/docs/faq.html#fv15" hdf5 features not supported
+ * @see "http://www.unidata.ucar.edu/software/netcdf/docs/faq.html#fv15"
+ *       hdf5 features not supported
  * @see "http://www.unidata.ucar.edu/software/netcdf/win_netcdf/"
  * @since Oct 30, 2008
  */
@@ -83,24 +80,29 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
   static private Nc4prototypes nc4;
   static public final String JNA_PATH = "jna.library.path";
   static public final String JNA_PATH_ENV = "JNA_PATH"; // environment var
-  static private String jnaPath;
-  static private String libName = "netcdf";
+
+  static protected String DEFAULTNETCDF4LIBNAME = "netcdf";
+  static protected String netcdf4libname = DEFAULTNETCDF4LIBNAME;
+
+  static String[] DEFAULTNETCDF4PATH = new String[] {
+      "/opt/netcdf4/lib",
+      "/home/dmh/opt/netcdf4/lib", //temporary
+      "c:/opt/netcdf", // Windows
+      "/usr/jna_lib/",
+  };
+
+  static private String jnaPath = null;
+  static private String libName = DEFAULTNETCDF4LIBNAME;
 
   static private boolean warn = true;
-  static private final boolean debug = true,
-          debugCompoundAtt = true,
-          debugUserTypes = true,
+  static private final boolean debug = false,
+          debugCompoundAtt = false,
+          debugUserTypes = false,
+          debugLoad = true,
           debugWrite = true;
 
   /**
-   * Suppress warning messages
-   */
-  static public void setWarnOff() {
-    warn = false;
-  }
-
-  /**
-   * Test if the netcdf C library is present and loaded     *
+   * Test if the netcdf C library is present and loaded
    *
    * @return true if present
    */
@@ -109,13 +111,11 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
       load();
       if (warn) {
         startupLog.info("netcdf4 c library loaded jna_path= '{}' libname='{}'", jnaPath, libName);
-        //log.info("netcdf4 c library loaded jna_path= '{}' libname='{}'", jnaPath, libName);
         warn = false;
       }
     } catch (Throwable t) {
       if (warn) {
         startupLog.warn("netcdf4 c library not present jna_path='" + jnaPath + "' libname='" + libName + "' " + t.getMessage());
-        //log.warn("netcdf4 c library not present jna_path='" + jnaPath + "' libname='" + libName + "' " + t.getMessage());
         warn = false;
       }
     }
@@ -123,58 +123,83 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
   }
 
   /**
+   * Use the default path to try to set jna.library.path
+   * @return true if we set jna.library.path
+   */
+  static protected String
+  defaultNetcdf4Library()
+  {
+    String pathlist = null;
+    for(String path: DEFAULTNETCDF4PATH) {
+      File f = new File(path);
+      if(f.exists() && f.canRead()) {
+	    pathlist = (pathlist == null ? "" : pathlist + File.pathSeparator);
+	    pathlist = pathlist + path;
+      }
+    }
+    return pathlist;
+  }
+
+  /**
    * set the path and name of the netcdf c library.
    * must be called before load() is called.
-   * Order of priority is (currently):
-   * 1. jna_path argument to this function, it if exists
-   * 2. -Djna.library.path
-   * 3. JNA_PATH env variable
    *
-   * @param jna_path path
-   * @param libname  library name
+   * @param jna_path path to shared libraries
+   * @param lib_name  library name
    */
-  static public void setLibraryAndPath(String jna_path, String libname) {
-    // See if jna_path exists
-    if (jna_path != null) {
-      File f = new File(jna_path);
-      if (!f.exists())
-        jna_path = null; // ignore it
+  static public void setLibraryAndPath(String jna_path, String lib_name) {
+    lib_name = nullify(lib_name);
+    jna_path = nullify(jna_path);
+    if(lib_name == null)
+      lib_name = DEFAULTNETCDF4LIBNAME;
+    libName = lib_name;
+    if(jna_path == null) {
+        // Look at -D flags first, then env variables
+        jna_path = System.getProperty(JNA_PATH);
+	    jna_path = nullify(jna_path);
+        if(jna_path == null)
+            jna_path = System.getenv(JNA_PATH_ENV);
     }
-    if (jna_path == null || jna_path.length() == 0) {
-      jna_path = System.getProperty(JNA_PATH);
-      if (jna_path == null || jna_path.length() == 0)
-        jna_path = System.getenv(JNA_PATH_ENV);
-    }
-    if (jna_path != null && jna_path.length() > 0)
-      System.setProperty(JNA_PATH, jna_path);
-    if (libname != null)
-      libName = libname;
+    jna_path = nullify(jna_path);
+    if (jna_path == null)
+	    jna_path = defaultNetcdf4Library();
+    if (jna_path == null)
+        System.err.println("Cannot determine Netcdf4 library path");
+    System.setProperty(JNA_PATH, jna_path);
+    jnaPath = jna_path;
   }
 
   static private Nc4prototypes load() {
     if (nc4 == null) {
+      if (jnaPath == null)
+	    setLibraryAndPath(null,null);
       if (jnaPath == null) {
-        jnaPath = System.getProperty(JNA_PATH);
-        if (jnaPath == null) {
-          jnaPath = "/usr/jna_lib/";
-          System.setProperty(JNA_PATH, jnaPath);
-        }
+        System.err.println("Cannot determine Netcdf4 library path");
+	    return null;
       }
       //Native.setProtected(true);
       nc4 = (Nc4prototypes) Native.loadLibrary(libName, Nc4prototypes.class);
-      if (debug)
+      if (debugLoad)
         System.out.printf(" Netcdf nc_inq_libvers='%s' isProtected=%s %n ", nc4.nc_inq_libvers(), Native.isProtected());
     }
     return nc4;
   }
 
-  static {
-    String jnapath = System.getProperty(JNA_PATH);
-    if (jnapath == null || jnapath.length() == 0) {
-      jnapath = System.getenv(JNA_PATH_ENV);
-      if (jnapath != null && jnapath.length() > 0)
-        System.setProperty(JNA_PATH, jnapath);
-    }
+  /**
+   * Convert a zero-length string to null
+   * @param s the string to check for length
+   * @return null if s.length() == 0, s otherwise
+   */
+  static protected String nullify(String s) {
+    if(s != null && s.length() == 0) s = null;
+    return s;
+  }
+
+  /**
+   * Suppress warning messages
+   */
+  static public void setWarnOff() {
+    warn = false;
   }
 
   static private boolean skipEos = false;
@@ -192,8 +217,8 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
   private int ncid = -1;    // file id
   private int format = 0;       // nc4 or nc3
   private boolean isClosed = false;
-  private Map<Integer, UserType> userTypes = new HashMap<Integer, UserType>();  // hash by typeid
-  private Map<Group, Integer> groupHash = new HashMap<Group, Integer>();  // group, nc4 grpid
+  private Map<Integer, UserType> userTypes = new HashMap<>();  // hash by typeid
+  private Map<Group, Integer> groupHash = new HashMap<>();     // group -> nc4 grpid
   private Nc4Chunking chunker = new Nc4ChunkingDefault();
   private boolean isEos = false;
 
@@ -347,7 +372,7 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
     int ndims = ndimsp.getValue();
     for (int i = 0; i < ndims; i++) {
       byte[] name = new byte[Nc4prototypes.NC_MAX_NAME + 1];
-      NativeLongByReference lenp = new NativeLongByReference();
+      SizeTByReference lenp = new SizeTByReference();
       ret = nc4.nc_inq_dim(grpid, dimids[i], name, lenp);
       if (ret != 0)
         throw new IOException(ret + ": " + nc4.nc_strerror(ret));
@@ -379,7 +404,7 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
     int ndims = nunlimdimsp.getValue();
     for (int i = 0; i < ndims; i++) {
       byte[] name = new byte[Nc4prototypes.NC_MAX_NAME + 1];
-      NativeLongByReference lenp = new NativeLongByReference();
+      SizeTByReference lenp = new SizeTByReference();
       ret = nc4.nc_inq_dim(grpid, unlimdimids[i], name, lenp);
       if (ret != 0)
         throw new IOException(ret + ": " + nc4.nc_strerror(ret));
@@ -418,7 +443,7 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
     return false;
   }
 
-  private String makeString(byte[] b) throws IOException {
+  private String makeString(byte[] b) {
     // null terminates
     int count = 0;
     while (count < b.length) {
@@ -475,7 +500,7 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
               will be returned so no variable to hold the type needs to be declared.
             */
       int type = xtypep.getValue();
-      NativeLongByReference lenp = new NativeLongByReference();
+      SizeTByReference lenp = new SizeTByReference();
       ret = nc4.nc_inq_attlen(grpid, varid, attname, lenp);
       if (ret != 0)
         throw new IOException(ret + ": " + nc4.nc_strerror(ret));
@@ -1017,6 +1042,34 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
     return sb.toString();
   }
 
+  private boolean nc_inq_var(Formatter f, int grpid, int varno) throws IOException {
+    byte[] name = new byte[Nc4prototypes.NC_MAX_NAME + 1];
+    IntByReference xtypep = new IntByReference();
+    IntByReference ndimsp = new IntByReference();
+    int[] dimids = new int[Nc4prototypes.NC_MAX_DIMS];
+    IntByReference nattsp = new IntByReference();
+
+    int ret = nc4.nc_inq_var(grpid, varno, name, xtypep, ndimsp, dimids, nattsp);
+    if (ret != 0)
+      return false;
+
+    String vname = makeString(name);
+    int typeid = xtypep.getValue();
+    ConvertedType ctype = convertDataType(typeid);
+
+    f.format("%s %s(", ctype.dt, vname);
+    for (int i= 0; i < ndimsp.getValue(); i++) {
+      f.format("%d ", dimids[i]);
+    }
+
+    String dimList = makeDimList(grpid, ndimsp.getValue(), dimids);
+
+    f.format(") dims=(%s)%n", dimList);
+    return true;
+  }
+
+
+
   //////////////////////////////////////////////////////////////////////////
 
   private class Vinfo {
@@ -1100,8 +1153,12 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
 
     void addField(Field fld) {
       if (flds == null)
-        flds = new ArrayList<Field>(10);
+        flds = new ArrayList<>(10);
       flds.add(fld);
+    }
+
+    void setFields(List<Field> flds) {
+      this.flds = flds;
     }
 
     public String toString2() {
@@ -1125,13 +1182,12 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
       return sb.toString();
     }
 
-    void readFields()
-            throws IOException {
+    void readFields() throws IOException {
       for (int fldidx = 0; fldidx < nfields; fldidx++) {
         byte[] fldname = new byte[Nc4prototypes.NC_MAX_NAME + 1];
         IntByReference field_typeidp = new IntByReference();
         IntByReference ndimsp = new IntByReference();
-        NativeLongByReference offsetp = new NativeLongByReference();
+        SizeTByReference offsetp = new SizeTByReference();
 
         int[] dims = new int[Nc4prototypes.NC_MAX_DIMS];
         int ret = nc4.nc_inq_compound_field(grpid, typeid, fldidx, fldname, offsetp, field_typeidp, ndimsp, dims);
@@ -1252,8 +1308,7 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
     }
   }
 
-  private void makeUserTypes(int grpid, Group g)
-          throws IOException {
+  private void makeUserTypes(int grpid, Group g) throws IOException {
     // find user types in this group
     IntByReference ntypesp = new IntByReference();
     int ret = nc4.nc_inq_typeids(grpid, ntypesp, Pointer.NULL);
@@ -1269,9 +1324,9 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
     // for each defined "user type", get information, store in Map
     for (int typeid : xtypes) {
       byte[] nameb = new byte[Nc4prototypes.NC_MAX_NAME + 1];
-      NativeLongByReference sizep = new NativeLongByReference();
+      SizeTByReference sizep = new SizeTByReference();
       IntByReference baseType = new IntByReference();
-      NativeLongByReference nfieldsp = new NativeLongByReference();
+      SizeTByReference nfieldsp = new SizeTByReference();
       IntByReference classp = new IntByReference();
 
             /*
@@ -1303,7 +1358,7 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
         ut.setEnum(e);
       } else if (utype == Nc4prototypes.NC_OPAQUE) {
         byte[] nameo = new byte[Nc4prototypes.NC_MAX_NAME + 1];
-        NativeLongByReference sizep2 = new NativeLongByReference();
+        SizeTByReference sizep2 = new SizeTByReference();
         ret = nc4.nc_inq_opaque(grpid, typeid, nameo, sizep2);
         if (ret != 0)
           throw new IOException(ret + ": " + nc4.nc_strerror(ret));
@@ -1320,8 +1375,8 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
           throws IOException {
     byte[] nameb = new byte[Nc4prototypes.NC_MAX_NAME + 1];
     IntByReference baseType = new IntByReference();
-    NativeLongByReference baseSize = new NativeLongByReference();
-    NativeLongByReference numMembers = new NativeLongByReference();
+    SizeTByReference baseSize = new SizeTByReference();
+    SizeTByReference numMembers = new SizeTByReference();
 
     int ret = nc4.nc_inq_enum(grpid, xtype, nameb, baseType, baseSize, numMembers);
     if (ret != 0)
@@ -1367,9 +1422,10 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
   private Array readDataSection(int grpid, int varid, int typeid, Section section)
           throws IOException, InvalidRangeException {
     // general sectioning with strides
-    long[] origin = convert(section.getOrigin());
-    long[] shape = convert(section.getShape());
-    long[] stride = convert(section.getStride());
+    SizeT[] origin = convertSizeT(section.getOrigin());
+    SizeT[] shape = convertSizeT(section.getShape());
+    SizeT[] stride = convertSizeT(section.getStride());
+
     boolean isUnsigned = isUnsigned(typeid);
     int len = (int) section.computeSize();
     Array values;
@@ -1594,9 +1650,9 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
 
   private Array readCompound(int grpid, int varid, Section section, UserType userType)
           throws IOException {
-    long[] origin = convert(section.getOrigin());
-    long[] shape = convert(section.getShape());
-    long[] stride = convert(section.getStride());
+    SizeT[] origin = convertSizeT(section.getOrigin());
+    SizeT[] shape = convertSizeT(section.getShape());
+    SizeT[] stride = convertSizeT(section.getStride());
     int len = (int) section.computeSize();
 
     int buffSize = len * userType.size;
@@ -1609,6 +1665,10 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
     if (ret != 0)
       throw new IOException(ret + ": " + nc4.nc_strerror(ret));
 
+    /*
+    This does not seem right since the user type does not
+    normally appear in the CDM representation.
+    */
     StructureMembers sm = createStructureMembers(userType);
     ArrayStructureBB asbb = new ArrayStructureBB(sm, section.getShape(), bbuff, 0);
 
@@ -1842,10 +1902,9 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
   private Array readOpaque(int grpid, int varid, Section section, int size)
           throws IOException, InvalidRangeException {
     int ret;
-
-    long[] origin = convert(section.getOrigin());
-    long[] shape = convert(section.getShape());
-    long[] stride = convert(section.getStride());
+    SizeT[] origin = convertSizeT(section.getOrigin());
+    SizeT[] shape = convertSizeT(section.getShape());
+    SizeT[] stride = convertSizeT(section.getStride());
     int len = (int) section.computeSize();
 
     ByteBuffer bb = ByteBuffer.allocate(len * size);
@@ -1853,13 +1912,17 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
     if (ret != 0)
       throw new IOException(ret + ": " + nc4.nc_strerror(ret));
     byte[] entire = bb.array();
+    int[] intshape;
 
-    // fix: this is ignoring the rank of section.
-    // was: ArrayObject values = new ArrayObject(ByteBuffer.class, new int[]{len});
-    int[] intshape = new int[shape.length];
-    for (int i = 0; i < intshape.length; i++) {
-      intshape[i] = (int) shape[i];
-    }
+    if (shape != null) {
+      // fix: this is ignoring the rank of section.
+      // was: ArrayObject values = new ArrayObject(ByteBuffer.class, new int[]{len});
+      intshape = new int[shape.length];
+      for (int i = 0; i < intshape.length; i++) {
+        intshape[i] = shape[i].intValue();
+      }
+    } else
+      intshape = new int[]{1};
     ArrayObject values = new ArrayObject(ByteBuffer.class, intshape);
 
     int count = 0;
@@ -1921,11 +1984,27 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
     return true;
   }
 
-  private long[] convert(int[] from) {
-    long[] to = new long[from.length];
+  private SizeT[] convertSizeT(int[] from) {
+    if (from.length == 0) {
+      return new SizeT[0];
+    }
+    SizeT[] to = new SizeT[from.length];
     for (int i = 0; i < from.length; i++)
-      to[i] = from[i];
+      to[i] = new SizeT(from[i]);
     return to;
+  }
+
+
+  private SizeT[] convertSizeT(long[] from) {
+    if (from.length == 0) return null;
+    SizeT[] to = new SizeT[from.length];
+    for (int i = 0; i < from.length; i++)
+      to[i] = new SizeT(from[i]);
+    return to;
+  }
+
+  private SizeT[] convertPtrDiffT(int[] from) {
+    return convertSizeT(from);
   }
 
   private class ConvertedType {
@@ -2121,6 +2200,7 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
 
     // done with define mode
     nc4.nc_enddef(ncid);
+    if (debugWrite) System.out.printf("create done%n%n");
   }
 
     /*
@@ -2172,7 +2252,7 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
 
     // variables
     for (Variable v : g4.g.getVariables()) {
-      createVariable(grpid, g4, v);
+          createVariable(grpid, g4, v);
     }
 
     // groups
@@ -2215,23 +2295,32 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
       vinfo = new Vinfo(grpid, -1, typid);
     }
 
+    if (debugWrite) System.out.printf("adding variable %s (typeid %d) %n", v.getShortName(), typid);
     IntByReference varidp = new IntByReference();
-    int ret = nc4.nc_def_var(grpid, v.getShortName(), typid, dimids.length, dimids, varidp);
+    int ret = nc4.nc_def_var(grpid, v.getShortName(), new SizeT(typid), dimids.length, dimids, varidp);
     if (ret != 0)
-      throw new IOException(nc4.nc_strerror(ret) + " on\n" + v);
+      throw new IOException("ret=" + ret + " err='" + nc4.nc_strerror(ret) + "' on\n" + v);
     int varid = varidp.getValue();
+    vinfo.varid = varid;
+    if (debugWrite) System.out.printf("added variable %s (grpid %d varid %d) %n", v.getShortName(), vinfo.grpid, vinfo.varid);
 
-    if (version == NetcdfFileWriter.Version.netcdf4) {
-      //   int nc_def_var_chunking(int ncid, int varid, int storage, long[] chunksizesp); // const size_t *   ??
+    if (version == NetcdfFileWriter.Version.netcdf4 && v.getRank() > 0) {
       boolean isChunked = chunker.isChunked(v);
       int storage = isChunked ? Nc4prototypes.NC_CHUNKED : Nc4prototypes.NC_CONTIGUOUS;
-      long[] chunking = isChunked ? chunker.computeChunking(v) : new long[v.getRank()];
+      SizeT[] chunking;
+      if (isChunked) {
+        long[] lchunks = chunker.computeChunking(v);
+        chunking = new SizeT[lchunks.length];
+        for (int i = 0; i < lchunks.length; i++)
+          chunking[i] = new SizeT(lchunks[i]);
+      } else
+        chunking = new SizeT[v.getRank()];
+
       ret = nc4.nc_def_var_chunking(grpid, varid, storage, chunking);
       if (ret != 0) {
         throw new IOException(nc4.nc_strerror(ret) + " nc_def_var_chunking on variable " + v.getFullName());
       }
 
-      // int nc_def_var_deflate(int ncid, int varid, int shuffle, int deflate, int deflate_level);
       int deflateLevel = isChunked ? chunker.getDeflateLevel(v) : 0;
       int deflate = deflateLevel > 0 ? 1 : 0;
       int shuffle = isChunked && chunker.isShuffle(v) ? 1 : 0;
@@ -2242,12 +2331,12 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
       }
     }
 
-    vinfo.varid = varid;
     v.setSPobject(vinfo);
 
     for (Attribute att : v.getAttributes())
       writeAttribute(grpid, varid, att, v);
   }
+
 
   /////////////////////////////////////
   // compound types
@@ -2265,39 +2354,53 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
   Each member is referenced by an index number between zero and N-1, where N is the number of members in the compound datatype.
   Each member has a fixed byte offset, which is the first byte (smallest byte address) of that member in the compound datatype.
   In addition to other other user-defined data types or atomic datatypes, a member can be a small fixed-size array of any type with up to
-  four fixed-size “dimensions” (not associated with named netCDF dimensions).
-
+  four fixed-size dimensions (not associated with named netCDF dimensions).
 
   Create a compound type. Provide an ncid, a name, and a total size (in bytes) of one element of the completed compound type.
   After calling this function, fill out the type with repeated calls to nc_insert_compound (see nc_insert_compound).
   Call nc_insert_compound once for each field you wish to insert into the compound type.
    */
   private void createCompoundType(Structure s) throws IOException {
+    int grpid = ncid; // LOOK ??
     IntByReference typeidp = new IntByReference();
     long size = s.getElementSize();
-    int ret =  nc4.nc_def_compound(ncid, size, s.getShortName(), typeidp);
+    String name =  s.getShortName() + "_t";
+    int ret = nc4.nc_def_compound(grpid, new SizeT(size), name, typeidp);
     if (ret != 0)
       throw new IOException(nc4.nc_strerror(ret) + " on\n" + s);
+    int typeid = typeidp.getValue();
+    if (debugWrite) System.out.printf("added compound type %s (typeid %d) %n", name, typeid);
 
+    List<Field> flds = new ArrayList<>();
+    int fldidx = 0;
     long offset = 0;
     for (Variable v : s.getVariables()) {
       int field_typeid = convertDataType(v.getDataType());
-      ret =  nc4.nc_insert_compound(ncid, typeidp.getValue(), v.getShortName(), offset, field_typeid);
+      ret = nc4.nc_insert_compound(ncid, typeid, v.getShortName(), new SizeT(offset), field_typeid);
       if (ret != 0)
-       throw new IOException(nc4.nc_strerror(ret) + " on\n" + s);
+        throw new IOException(nc4.nc_strerror(ret) + " on\n" + s);
+      if (debugWrite) System.out.printf(" added compound type member %s to %d%n", v.getShortName(), typeid);
+
+      int ndims = v.getRank();
+      int[] dims = new int[ndims];
+      for (int i = 0; i < ndims; i++) dims[i] = v.getDimension(i).getLength();
+
+      Field fld = new Field(grpid, typeid, fldidx, v.getShortName(), (int) offset, field_typeid, ndims, dims);
+      flds.add(fld);
 
       offset += v.getElementSize() * v.getSize();
+      fldidx++;
     }
 
     s.setSPobject(new Vinfo(-1, -1, typeidp.getValue()));
+
+    // keep track of the User Defined types
+    UserType ut = new UserType(grpid, typeid, name, size, 0, (long) fldidx, NC_COMPOUND);
+    userTypes.put(typeid, ut);
+    ut.setFields(flds);
   }
 
-  //////////////////////////////////////////////
-
-  private void createCompoundVariable(int grpid, Group4 g4, Structure s) {
-    Vinfo vinfo = (Vinfo) s.getSPobject();
-    vinfo.grpid = grpid;
-  }
+  //////////////////////////////////////////////////
 
   private Integer findDimensionId(Group4 g4, Dimension d) {
     if (g4 == null) return null;
@@ -2312,7 +2415,7 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
 
   private int addDimension(int grpid, String name, int length) throws IOException {
     IntByReference dimidp = new IntByReference();
-    int ret = nc4.nc_def_dim(grpid, name, length, dimidp);
+    int ret = nc4.nc_def_dim(grpid, name, new SizeT(length), dimidp);
     if (ret != 0)
       throw new IOException(ret + ": " + nc4.nc_strerror(ret));
     return dimidp.getValue();
@@ -2346,33 +2449,33 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
       case STRING: // problem may be that we are mapping char * atts to string type
         if (att.getLength() == 1 && !att.getShortName().equals(CDM.FILL_VALUE)) {
           byte[] svalb = att.getStringValue().getBytes(CDM.utf8Charset);
-          ret = nc4.nc_put_att_text(grpid, varid, att.getShortName(), svalb.length, svalb);
+          ret = nc4.nc_put_att_text(grpid, varid, att.getShortName(), new SizeT(svalb.length), svalb);
         } else {
           String[] svalues = new String[att.getLength()];
           for (int i = 0; i < att.getLength(); i++) svalues[i] = (String) att.getValue(i);
-          ret = nc4.nc_put_att_string(grpid, varid, att.getShortName(), att.getLength(), svalues);
+          ret = nc4.nc_put_att_string(grpid, varid, att.getShortName(), new SizeT(att.getLength()), svalues);
         }
         break;
       case BYTE:
-        ret = nc4.nc_put_att_schar(grpid, varid, att.getShortName(), Nc4prototypes.NC_BYTE, att.getLength(), (byte[]) values.getStorage());
+        ret = nc4.nc_put_att_schar(grpid, varid, att.getShortName(), Nc4prototypes.NC_BYTE, new SizeT(att.getLength()), (byte[]) values.getStorage());
         break;
       case CHAR:
-        ret = nc4.nc_put_att_text(grpid, varid, att.getShortName(), att.getLength(), IospHelper.convertCharToByte((char[]) values.getStorage()));
+        ret = nc4.nc_put_att_text(grpid, varid, att.getShortName(), new SizeT(att.getLength()), IospHelper.convertCharToByte((char[]) values.getStorage()));
         break;
       case DOUBLE:
-        ret = nc4.nc_put_att_double(grpid, varid, att.getShortName(), Nc4prototypes.NC_DOUBLE, att.getLength(), (double[]) values.getStorage());
+        ret = nc4.nc_put_att_double(grpid, varid, att.getShortName(), Nc4prototypes.NC_DOUBLE, new SizeT(att.getLength()), (double[]) values.getStorage());
         break;
       case FLOAT:
-        ret = nc4.nc_put_att_float(grpid, varid, att.getShortName(), Nc4prototypes.NC_FLOAT, att.getLength(), (float[]) values.getStorage());
+        ret = nc4.nc_put_att_float(grpid, varid, att.getShortName(), Nc4prototypes.NC_FLOAT, new SizeT(att.getLength()), (float[]) values.getStorage());
         break;
       case INT:
-        ret = nc4.nc_put_att_int(grpid, varid, att.getShortName(), Nc4prototypes.NC_INT, att.getLength(), (int[]) values.getStorage());
+        ret = nc4.nc_put_att_int(grpid, varid, att.getShortName(), Nc4prototypes.NC_INT, new SizeT(att.getLength()), (int[]) values.getStorage());
         break;
       case LONG:
-        ret = nc4.nc_put_att_longlong(grpid, varid, att.getShortName(), Nc4prototypes.NC_INT64, att.getLength(), (long[]) values.getStorage());
+        ret = nc4.nc_put_att_longlong(grpid, varid, att.getShortName(), Nc4prototypes.NC_INT64, new SizeT(att.getLength()), (long[]) values.getStorage());
         break;
       case SHORT:
-        ret = nc4.nc_put_att_short(grpid, varid, att.getShortName(), Nc4prototypes.NC_SHORT, att.getLength(), (short[]) values.getStorage());
+        ret = nc4.nc_put_att_short(grpid, varid, att.getShortName(), Nc4prototypes.NC_SHORT, new SizeT(att.getLength()), (short[]) values.getStorage());
         break;
     }
 
@@ -2400,9 +2503,9 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
   private void writeData(Variable v, int grpid, int varid, int typeid, Section section, Array values) throws IOException, InvalidRangeException {
 
     // general sectioning with strides
-    long[] origin = convert(section.getOrigin());
-    long[] shape = convert(section.getShape());
-    long[] stride = convert(section.getStride());
+    SizeT[] origin = convertSizeT(section.getOrigin());
+    SizeT[] shape = convertSizeT(section.getShape());
+    SizeT[] stride = convertSizeT(section.getStride());
     boolean isUnsigned = isUnsigned(typeid);
     int sectionLen = (int) section.computeSize();
 
@@ -2414,8 +2517,7 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
       case Nc4prototypes.NC_UBYTE:
         byte[] valb = (byte[]) data;
         assert valb.length == sectionLen;
-        int ret = isUnsigned ? nc4.nc_put_vars_uchar(grpid, varid, origin, shape, stride, valb) :
-                nc4.nc_put_vars_schar(grpid, varid, origin, shape, stride, valb);
+        int ret = isUnsigned ? nc4.nc_put_vars_uchar(grpid, varid, origin, shape, stride, valb) : nc4.nc_put_vars_schar(grpid, varid, origin, shape, stride, valb);
         if (ret != 0)
           throw new IOException(ret + ": " + nc4.nc_strerror(ret));
         break;
@@ -2426,10 +2528,11 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
 
         valb = IospHelper.convertCharToByte(valc);
         ret = nc4.nc_put_vars_text(grpid, varid, origin, shape, stride, valb);
+
         if (ret != 0) {
-          log.error("{} on var {}", nc4.nc_strerror(ret), v);
-          return;
-          //throw new IOException(nc4.nc_strerror(ret));
+          //log.error("{} on var {}", nc4.nc_strerror(ret), v);
+          //return;
+          throw new IOException(nc4.nc_strerror(ret));
         }
         break;
 
@@ -2446,9 +2549,9 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
         assert valf.length == sectionLen;
         ret = nc4.nc_put_vars_float(grpid, varid, origin, shape, stride, valf);
         if (ret != 0) {
-          log.error("{} on var {}", nc4.nc_strerror(ret), v);
-          return;
-          //throw new IOException(nc4.nc_strerror(ret));
+          //log.error("{} on var {}", nc4.nc_strerror(ret), v);
+          //return;
+          throw new IOException(nc4.nc_strerror(ret));
         }
         break;
 
@@ -2456,11 +2559,12 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
         int[] vali = (int[]) data;
         assert vali.length == sectionLen;
         ret = isUnsigned ? nc4.nc_put_vars_uint(grpid, varid, origin, shape, stride, vali) :
-                nc4.nc_put_vars_int(grpid, varid, origin, shape, stride, vali);
+              nc4.nc_put_vars_int(grpid, varid, origin, shape, stride, vali);
+
         if (ret != 0) {
-          log.error("{} on var {}", nc4.nc_strerror(ret), v);
-          return;
-          //throw new IOException(nc4.nc_strerror(ret));
+          //log.error("{} on var {}", nc4.nc_strerror(ret), v);
+          //return;
+          throw new IOException(nc4.nc_strerror(ret));
         }
         break;
 
@@ -2468,7 +2572,8 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
         long[] vall = (long[]) data;
         assert vall.length == sectionLen;
         ret = isUnsigned ? nc4.nc_put_vars_ulonglong(grpid, varid, origin, shape, stride, vall) :
-                nc4.nc_put_vars_longlong(grpid, varid, origin, shape, stride, vall);
+              nc4.nc_put_vars_longlong(grpid, varid, origin, shape, stride, vall);
+
         if (ret != 0)
           throw new IOException(ret + ": " + nc4.nc_strerror(ret));
         break;
@@ -2477,7 +2582,7 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
         short[] vals = (short[]) data;
         assert vals.length == sectionLen;
         ret = isUnsigned ? nc4.nc_put_vars_ushort(grpid, varid, origin, shape, stride, vals) :
-                nc4.nc_put_vars_short(grpid, varid, origin, shape, stride, vals);
+            nc4.nc_put_vars_short(grpid, varid, origin, shape, stride, vals);
         if (ret != 0)
           throw new IOException(ret + ": " + nc4.nc_strerror(ret));
         break;
@@ -2485,7 +2590,7 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
       case Nc4prototypes.NC_STRING:
         String[] valss = convertStringData(data);
         assert valss.length == sectionLen;
-        ret = nc4.nc_put_vars_string(grpid, varid, origin, shape, stride, valss);
+        ret = nc4.nc_put_vars_string(grpid, varid, origin, shape, stride, valss );
         if (ret != 0)
           throw new IOException(ret + ": " + nc4.nc_strerror(ret));
         break;
@@ -2505,12 +2610,70 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
           //return readOpaque(grpid, varid, section, userType.size);
 
         } else if (userType.typeClass == Nc4prototypes.NC_COMPOUND) {
-          //return readCompound(grpid, varid, section, userType);
+          writeCompoundData((Structure) v, userType, grpid, varid, typeid, section, (ArrayStructure) values);
+          return;
         }
 
-        throw new IOException("Unsupported userType = " + typeid + " userType= " + userType);
+        throw new IOException("Unsupported writing of userType= " + userType);
     }
-    // System.out.printf("OK var %s%n", v);
+    if (debugWrite) System.out.printf("OK writing var %s%n", v);
+
+  }
+
+  /*
+  Here is an example of using nc_put_vars_float to write – from an internal array – every other point of a netCDF variable named rh which is described by the C declaration float rh[4][6] (note the size of the dimensions):
+
+       #include <netcdf.h>
+          ...
+       #define NDIM 2                /* rank of netCDF variable
+       int ncid;                     /* netCDF ID
+       int status;                   /* error status *
+       int rhid;                     /* variable ID *
+       static size_t start[NDIM]     /* netCDF variable start point: *
+                        = {0, 0};    /* first element *
+       static size_t count[NDIM]     /* size of internal array: entire *
+                          = {2, 3};  /* (subsampled) netCDF variable *
+       static ptrdiff_t stride[NDIM] /* variable subsampling intervals: *
+                        = {2, 2};    /* access every other netCDF element *
+       float rh[2][3];               /* note subsampled sizes for netCDF variable dimensions  LOOK [][] not [,]
+          ...
+       status = nc_open("foo.nc", NC_WRITE, &ncid);
+       if (status != NC_NOERR) handle_error(status);
+          ...
+       status = nc_inq_varid(ncid, "rh", &rhid);
+       if (status != NC_NOERR) handle_error(status);
+          ...
+       status = nc_put_vars_float(ncid, rhid, start, count, stride, rh);
+       if (status != NC_NOERR) handle_error(status);
+   */
+  private void writeCompoundData(Structure s, UserType userType, int grpid, int varid, int typeid, Section section, ArrayStructure values) throws IOException, InvalidRangeException {
+
+    SizeT[] origin = convertSizeT(section.getOrigin());
+    SizeT[] shape = convertSizeT(section.getShape());
+    SizeT[] stride = convertSizeT(section.getStride());
+
+    ArrayStructureBB valuesBB = IospHelper.makeArrayBB(values);
+    ByteBuffer bbuff = valuesBB.getByteBuffer();  // LOOK c library reads in native order, so need to convert??
+    // LOOK embedded strings getting lost ??
+
+    if (debugWrite) System.out.printf("writing variable %s (grpid %d varid %d) %n", s.getShortName(), grpid, varid);
+
+    // test variable exists
+    Formatter f = new Formatter();
+    boolean ok = nc_inq_var(f, grpid, varid);
+    System.out.printf("nc_inq_var ok=%s %s%n", ok, f);
+
+    // write the data
+    int ret = nc4.nc_put_var(grpid, varid, bbuff);
+    // int ret = nc4.nc_put_vars(grpid, varid, origin, shape, stride, bbuff);
+    if (ret != 0)
+      throw new IOException(errMessage(ret, grpid, varid));
+  }
+
+  private String errMessage(int ret, int grpid, int varid) {
+    Formatter f = new Formatter();
+    f.format("%d: %s grpid=%d varid=%d", ret, nc4.nc_strerror(ret), grpid, varid);
+    return f.toString();
 
   }
 
@@ -2692,4 +2855,3 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
   }
 
 }
-    

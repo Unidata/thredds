@@ -294,35 +294,6 @@ public class Grib2CollectionPanel extends JPanel {
     record2BeanTable = new BeanTable(Grib2RecordBean.class, (PreferencesExt) prefs.node(prefsName), prefsName, "from Grib2Input.getRecords()", info);
     PopupMenu varPopup = new PopupMenu(record2BeanTable.getJTable(), "Options");
 
-    varPopup.addAction("Compare GridRecord", new AbstractAction() {
-      public void actionPerformed(ActionEvent e) {
-        List list = record2BeanTable.getSelectedBeans();
-        if (list.size() == 2) {
-          Grib2RecordBean bean1 = (Grib2RecordBean) list.get(0);
-          Grib2RecordBean bean2 = (Grib2RecordBean) list.get(1);
-          Formatter f = new Formatter();
-          compare(bean1, bean2, f);
-          infoPopup2.setText(f.toString());
-          infoPopup2.gotoTop();
-          infoWindow2.show();
-        }
-      }
-    });
-
-    varPopup.addAction("Show raw PDS bytes", new AbstractAction() {
-      public void actionPerformed(ActionEvent e) {
-        Formatter f = new Formatter();
-        List list = record2BeanTable.getSelectedBeans();
-        for (int i = 0; i < list.size(); i++) {
-          Grib2RecordBean bean = (Grib2RecordBean) list.get(i);
-          bean.toRawPdsString(f);
-        }
-        infoPopup.setText(f.toString());
-        infoPopup.gotoTop();
-        infoWindow.show();
-      }
-    });
-
     varPopup.addAction("Show complete GridRecord", new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
         Grib2RecordBean bean = (Grib2RecordBean) record2BeanTable.getSelectedBean();
@@ -353,6 +324,49 @@ public class Grib2CollectionPanel extends JPanel {
         infoPopup2.setText(f.toString());
         infoPopup2.gotoTop();
         infoWindow2.show();
+      }
+    });
+
+    varPopup.addAction("Compare GridRecord", new AbstractAction() {
+      public void actionPerformed(ActionEvent e) {
+        List list = record2BeanTable.getSelectedBeans();
+        if (list.size() == 2) {
+          Grib2RecordBean bean1 = (Grib2RecordBean) list.get(0);
+          Grib2RecordBean bean2 = (Grib2RecordBean) list.get(1);
+          Formatter f = new Formatter();
+          compare(bean1, bean2, f);
+          infoPopup2.setText(f.toString());
+          infoPopup2.gotoTop();
+          infoWindow2.show();
+        }
+      }
+    });
+
+    varPopup.addAction("Show raw PDS bytes", new AbstractAction() {
+      public void actionPerformed(ActionEvent e) {
+        Formatter f = new Formatter();
+        List list = record2BeanTable.getSelectedBeans();
+        for (int i = 0; i < list.size(); i++) {
+          Grib2RecordBean bean = (Grib2RecordBean) list.get(i);
+          bean.toRawPdsString(f);
+        }
+        infoPopup.setText(f.toString());
+        infoPopup.gotoTop();
+        infoWindow.show();
+      }
+    });
+
+    varPopup.addAction("Show raw Local Use Section bytes", new AbstractAction() {
+      public void actionPerformed(ActionEvent e) {
+        Formatter f = new Formatter();
+        List list = record2BeanTable.getSelectedBeans();
+        for (int i = 0; i < list.size(); i++) {
+          Grib2RecordBean bean = (Grib2RecordBean) list.get(i);
+          bean.toRawLUString(f);
+        }
+        infoPopup.setText(f.toString());
+        infoPopup.gotoTop();
+        infoWindow.show();
       }
     });
 
@@ -389,6 +403,19 @@ public class Grib2CollectionPanel extends JPanel {
         List beans = record2BeanTable.getSelectedBeans();
         if (beans.size() > 0)
           writeToFile(beans);
+      }
+    });
+
+    varPopup.addAction("Consistency checks on GribRecord", new AbstractAction() {
+      public void actionPerformed(ActionEvent e) {
+        Grib2RecordBean bean = (Grib2RecordBean) record2BeanTable.getSelectedBean();
+        if (bean != null) {
+          Formatter f = new Formatter();
+          check(bean, f);
+          infoPopup2.setText(f.toString());
+          infoPopup2.gotoTop();
+          infoWindow2.show();
+        }
       }
     });
 
@@ -526,74 +553,6 @@ public class Grib2CollectionPanel extends JPanel {
     }
   }
 
-  /* public void runAggregator(Formatter f) throws IOException {
-    List<Grib2Record> records = new ArrayList<Grib2Record>();
-    List<String> filenames = new ArrayList<String>();
-
-    int fileno = 0;
-    for (MFile mfile : dcm.getFilesSorted()) {
-      f.format("%3d: %s%n", fileno, mfile.getPath());
-      filenames.add(mfile.getPath());
-
-      Grib2Index index = new Grib2Index();
-      if (!index.readIndex(mfile.getPath(), mfile.getLastModified())) {
-        index.makeIndex(mfile.getPath(), null);
-      }
-
-      for (Grib2Record gr : index.getRecords()) {
-        gr.setFile(fileno);
-        records.add(gr);
-      }
-      fileno++;
-    }
-
-    Grib2Rectilyser.Counter stats = new Grib2Rectilyser.Counter();
-    Grib2Rectilyser agg = new Grib2Rectilyser(cust, records, 0, null);
-    agg.make(stats, null, f);
-    agg.dump(f, cust);
-    stats.recordsTotal = records.size();
-  }
-
-  public void runAggregator2(Formatter f) throws IOException {
-    List<Grib2Record> records = new ArrayList<Grib2Record>();
-    List<String> filenames = new ArrayList<String>();
-
-    int fileno = 0;
-    for (MFile mfile : dcm.getFilesSorted()) {
-      f.format("%3d: %s%n", fileno, mfile.getPath());
-      filenames.add(mfile.getPath());
-
-      Grib2Index index = new Grib2Index();
-      if (!index.readIndex(mfile.getPath(), mfile.getLastModified())) {
-        index.makeIndex(mfile.getPath(), null);
-      }
-
-      for (Grib2Record gr : index.getRecords()) {
-        gr.setFile(fileno);
-        records.add(gr);
-      }
-      fileno++;
-    }
-    Grib2Rectilyser.Counter stats = new Grib2Rectilyser.Counter();
-    Grib2Rectilyser agg = new Grib2Rectilyser(cust, records, 0, null);
-    agg.make(stats, null, f);
-    agg.dump(f, cust);
-    stats.recordsTotal = records.size();
-  }   */
-
-  /* public void runCollate(Formatter f) throws IOException {
-    DatasetCollectionManager dcm = getCollection(spec, f);
-    GribCollection gc = GribCollectionBuilder.factory(dcm);
-    ArrayList<String> filenames = new ArrayList<String>();
-    List<GribCollection.Group> groups = gc.makeAggregatedGroups(filenames, f);
-
-    for (GribCollection.Group g : groups) {
-      f.format("====================================================%n");
-      f.format("Group %s%n", g.name);
-      g.rect.dump(f, cust);
-    }
-  } */
-
   public boolean writeIndex(Formatter f) throws IOException {
     return false;
 
@@ -708,6 +667,20 @@ public class Grib2CollectionPanel extends JPanel {
   public void checkProblems(Formatter f) {
     checkDuplicates(f);
     //checkRuntimes(f);
+  }
+
+  public void check(Grib2RecordBean bean, Formatter f) {
+    int fileno = bean.gr.getFile();
+    MFile mfile = fileList.get(fileno);
+    try (ucar.unidata.io.RandomAccessFile raf = new ucar.unidata.io.RandomAccessFile(mfile.getPath(), "r")) {
+      bean.gr.check(raf, f);
+
+    } catch (IOException ioe) {
+       ByteArrayOutputStream bos = new ByteArrayOutputStream(10000);
+       ioe.printStackTrace(new PrintStream(bos));
+       f.format("%n%s%n", bos.toString());
+    }
+    f.format("%ndone%n");
   }
 
   private class DateCount implements Comparable<DateCount> {
@@ -853,7 +826,6 @@ public class Grib2CollectionPanel extends JPanel {
       }
     }
   }
-
 
   private void compare(Grib2RecordBean bean1, Grib2RecordBean bean2, Formatter f) {
     Grib2SectionIndicator is1 = bean1.gr.getIs();
@@ -1184,7 +1156,15 @@ public class Grib2CollectionPanel extends JPanel {
      return cdmHash;
     }
 
-    public long getIntvHash() {
+    public double getIntvHours() {
+      if (pds.isTimeInterval()) {
+        return cust.getForecastTimeIntervalSizeInHours(pds); // LOOK using an Hour here, but will need to make this configurable
+     }
+
+      return -1;
+    }
+
+    /*public long getIntvHash() {
       if (pds.isTimeInterval()) {
         long sum = 0;
         for (Grib2RecordBean bean : records) {
@@ -1194,7 +1174,7 @@ public class Grib2CollectionPanel extends JPanel {
         return sum;
       }
       return 0;
-    }
+    }  */
 
     public String toString() {
       Formatter f = new Formatter();
@@ -1260,20 +1240,22 @@ public class Grib2CollectionPanel extends JPanel {
 
   ////////////////////////////////////////////////////
 
-  static void showBytes(Formatter f, byte[] buff) {
+  static void showBytes(Formatter f, byte[] buff, int max) {
+    int count = 0;
     for (byte b : buff) {
       int ub = (b < 0) ? b + 256 : b;
       if (b >= 32 && b < 127)
         f.format("%s", (char) ub);
       else
         f.format("(%d)", ub);
+      if (max > 0 && count++ > max) break;
     }
   }
 
   static public void showCompleteGribRecord(Formatter f, String path, Grib2Record gr, Grib2Customizer cust) throws IOException {
     f.format("File=%d %s %n", gr.getFile(), path);
     f.format("Header=\"");
-    showBytes(f, gr.getHeader());
+    showBytes(f, gr.getHeader(), 100);
     f.format("\"%n%n");
     int d = gr.getDiscipline();
     f.format("Grib2IndicatorSection%n");
@@ -1444,8 +1426,8 @@ public class Grib2CollectionPanel extends JPanel {
       return pds.getLevelValue1() + "-" + pds.getLevelValue2();
     }
 
-    public long getDataPos() {
-      return gr.getDataSection().getStartingPosition();
+    public long getStartPos() {
+      return gr.getIs().getStartPos();
     }
 
     public void toRawPdsString(Formatter f) {
@@ -1455,6 +1437,16 @@ public class Grib2CollectionPanel extends JPanel {
         short s = DataType.unsignedByteToShort(b);
         f.format(" %d : %d%n", count++, s);
       }
+    }
+
+    public void toRawLUString(Formatter f) {
+      if (gr.getLocalUseSection() == null) {
+        f.format("No Local Use Section");
+        return;
+      }
+      byte[] bytes = gr.getLocalUseSection().getRawBytes();
+      f.format("Local Use Section len=%d%n", bytes.length);
+      showBytes(f, bytes, -1);
     }
 
     public String showProcessedGridRecord(Formatter f) {
@@ -1497,14 +1489,9 @@ public class Grib2CollectionPanel extends JPanel {
     float[] readData() throws IOException {
       int fileno = gr.getFile();
       MFile mfile = fileList.get(fileno);
-      ucar.unidata.io.RandomAccessFile raf = null;
-      try {
-        raf = new ucar.unidata.io.RandomAccessFile(mfile.getPath(), "r");
+      try (ucar.unidata.io.RandomAccessFile raf = new ucar.unidata.io.RandomAccessFile(mfile.getPath(), "r")) {
         raf.order(ucar.unidata.io.RandomAccessFile.BIG_ENDIAN);
         return gr.readData(raf);
-      } finally {
-        if (raf != null)
-          raf.close();
       }
     }
 
@@ -1600,7 +1587,7 @@ public class Grib2CollectionPanel extends JPanel {
 
       Class cl = Grib2RecordBean.class;
       try {
-        props.add(new PropertyDescriptor("dataPos", cl, "getDataPos", null));
+        props.add(new PropertyDescriptor("startPos", cl, "getStartPos", null));
         props.add(new PropertyDescriptor("file", cl, "getFile", null));
         props.add(new PropertyDescriptor("forecastDate", cl, "getForecastDate", null));
         props.add(new PropertyDescriptor("forecastTime", cl, "getForecastTime", null));

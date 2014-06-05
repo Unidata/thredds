@@ -98,9 +98,13 @@ public class TestNc4IospReading {
     ncfile.close();
   }
 
-  //@Test
+  /*
+    ** Missing dim phony_dim_0 = 15; not in file2
+    ...
+   */
+  // @Test
   public void problem() throws IOException {
-    String filename = "Q:\\cdmUnitTest\\formats\\hdf5\\OMI-Aura_L2G-OMCLDRRG_2007m0105_v003-2008m0105t101212.he5";
+    String filename = TestDir.cdmUnitTestDir + "formats\\hdf5\\OMI-Aura_L2G-OMCLDRRG_2007m0105_v003-2008m0105t101212.he5";
     System.out.printf("***READ %s%n", filename);
     doCompare(filename, false, false, false);
   }

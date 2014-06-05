@@ -31,6 +31,10 @@ import com.eclipsesource.restfuse.Response;
 import com.eclipsesource.restfuse.annotation.Context;
 import com.eclipsesource.restfuse.annotation.HttpTest;
 
+/*
+  These tests fail on jenkins, but work locally
+ */
+
 @RunWith(HttpJUnitRunner.class)
 public class NcssIntegrationTest {
 
@@ -40,10 +44,11 @@ public class NcssIntegrationTest {
   @Context
   private Response response; // will be injected after every request
 
-  @HttpTest(method = Method.GET, path = "/ncss/gribCollection/GFS_CONUS_80km/GFS_CONUS_80km_20120227_0000.grib1/GC?var=Temperature_isobaric&latitude=40&longitude=-102&vertCoord=225")
+  @HttpTest(method = Method.GET, path = "ncss/gribCollection/GFS_CONUS_80km/GFS_CONUS_80km_20120227_0000.grib1/GC?var=Temperature_isobaric&latitude=40&longitude=-102&vertCoord=225")
   public void checkGoodRequest() throws JDOMException, IOException {
     assertOk(response);
     String xml = response.getBody(String.class);
+    System.out.printf("xml=%s%n", xml);
     Reader in = new StringReader(xml);
     SAXBuilder sb = new SAXBuilder();
     Document doc = sb.build(in);
@@ -53,7 +58,7 @@ public class NcssIntegrationTest {
     assertEquals(1, elements.size());
   }
 
-  @HttpTest(method = Method.GET, path = "/ncss/gribCollection/GFS_CONUS_80km/GFS_CONUS_80km_20120227_0000.grib1/GC?var=Temperature_isobaric")
+  @HttpTest(method = Method.GET, path = "ncss/gribCollection/GFS_CONUS_80km/GFS_CONUS_80km_20120227_0000.grib1/GC?var=Temperature_isobaric")
   public void getSomeBinaryDataRequest() throws IOException {
     assertOk(response);
     assertTrue(response.hasBody());

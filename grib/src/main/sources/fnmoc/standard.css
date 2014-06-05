@@ -1,0 +1,471 @@
+/* Contains the global, portal, portlet, and security style definitions. */
+/* Start security */
+/* .sec-unclass{display:none;} 
+.sec-unclass-bnr{display:none;} */
+.sec-unclass{color:#228B22;text-align:center;font-size:1.2em;font-weight:bold;}
+.sec-unclass-bnr{color:#FFFFFF;background-color:#228B22;font-size:1.1em;font-weight:bold;text-align:center;}
+.sec-confid{color:#0060CD;text-align:center;font-size:1.2em;font-weight:bold;}
+.sec-confid-bnr{color:#FFFFFF; background-color:#0060CD;font-size:1.1em;font-weight:bold;text-align:center;}
+.sec-secret{color:#EE2C2C;text-align:center;font-size:1.2em;font-weight:bold;}
+.sec-secret-bnr{color:#FFFFFF; background-color:#EE2C2C;font-size:1.1em;font-weight:bold;text-align:center;}
+
+/* Start Global */
+body { 
+  color:black;
+  background-color:white;
+  font-size:0.75em;
+  font-family:Arial,Helvetica,sans-serif;
+  margin:2px 2px 2px 2px;
+  padding:0px 0px 0px 0px;
+}
+
+.bg_gray {
+    background-color: #999999;
+}
+
+.paleblue {
+    color: #DEE8EB;
+}
+
+.darkblue {
+    color: #3D4A74;
+}
+
+.blue {
+    color: #0060CD;
+}
+
+.yellow {
+    color: #DA8E03;
+}
+
+.orange {
+    color: #FF5F1A;
+}
+
+.red {
+    color: #EE2C2C;
+}
+
+.green {
+    color: #228B22;
+}
+
+.purple {
+    color: #CC22CC;
+}
+
+.white {
+    color: #FFFFFF;
+}
+
+.bg_paleblue {
+    background-color: #DEE8EB;
+}
+
+.bg_darkblue {
+    background-color: #3E6176;
+    /* color: #FFFFFF; */
+}
+
+.bg_blue {
+    background-color: #0060CD;
+    /* color: #DDDDDD; */
+}
+
+.bg_black {
+    background-color: #000000;
+}
+
+.bg_yellow {
+    background-color: #FAFACF;
+}
+
+.bg_orange {
+    background-color: #FF5F1A;
+}
+
+.bg_red {
+    background-color: #EE2C2C;
+}
+
+.bg_green {
+    background-color: #228B22;
+}
+
+.bg_purple {
+    background-color: #BC22FC;
+}
+
+.big {
+    font-weight: bold;
+    font-size: 1.6em;
+}
+
+.medium {
+    font-weight: normal;
+    font-size: 1.1em;
+}
+
+.small {
+    font-weight: normal;
+    font-size: .9em;
+}
+
+.tiny {
+    font-weight: normal;
+    font-size: .75em;
+}
+
+table[border] {
+  /* border-bottom-color: #3F6176;
+   border-top-color: #3F6176;
+   border-left-color: #3F6176;
+   border-right-color: #3F6176; */
+   border-color: #3D4A74;
+   border-style: solid;
+   border-collapse: collapse;
+}
+
+/*
+td[border] {
+   border-bottom-color: #999999;
+   border-top-color: #999999;
+   border-left-color: #999999;
+   border-right-color: #999999;
+   border-style: solid;
+   border-collapse: collapse;
+}
+*/
+
+table {
+  /* border-style: solid; */
+  border-color: #3D4A74;
+  /* border-width: 0px; */
+  border-collapse: collapse; 
+  empty-cells: show;
+  font-size: 1em;
+  font-weight: inherit;
+  font-style: inherit;
+  font-variant: inherit;
+  text-align: left;
+}
+
+caption {
+  font-weight:bold;
+  font-size: 1.1em;
+  background-color: #3D4A74;  /* #3F6176; */
+  color: #FFFFFF;
+  text-align: center;
+  border-color: #3D4A74;  /* #3F6176; */
+  border-style: solid;
+  /* border-width: 2px; */
+  border-collapse: collapse; 
+}
+
+
+th, thead, tfoot {
+  color: #3D4A74;  
+  background-color: #DEE8EB; 
+  border-color: #3D4A74;  /* #3F6176; */
+  border-style: solid;
+  border-width: 1px;
+  padding: 3px 1px;
+  /* border-collapse: collapse; */
+  font-weight: bold;
+  /* font-size: 1em; */
+  text-align: center;
+}
+
+tfoot {
+  font-style: italic;
+}
+
+ 
+td {
+   border-color: #3D4A74; /* #dee8eb;  */
+   /* border-width: 1px; */
+   border-collapse: collapse; 
+}
+
+td {
+   border-width: 1px;
+}
+
+table.noborder {
+  empty-cells: show;
+  font-size: 1em;
+  font-weight: inherit;
+  font-style: inherit;
+  font-variant: inherit;
+  text-align: left;
+  border-width: 0px;
+}
+
+caption.noborder {
+  font-weight:bold;
+  font-size: 1.1em;
+  background-color: #3D4A74;
+  color: #FFFFFF;
+  text-align: center;
+}
+
+th.noborder, thead.noborder, tfoot.noborder {
+  color: #2b4453;  
+  background-color: #dee8eb;
+  font-weight: bold;
+  text-align: center;
+} 
+
+tfoot.noborder {
+  font-style: italic;
+}
+
+table.black_white, th.black_white, td.black_white {
+   margin: 0px;
+   padding: 0px;
+   background: black;
+   color: white;
+   border: black solid 1px;
+   line-height: 20pt;
+   text-align: left;
+}
+
+caption a:link, caption a:visited {
+   color: white;
+}
+
+th a:link {
+  color:#0B61A5; 
+  background-color:inherit;
+  text-decoration:underline;
+  font-weight:bold; 
+}
+
+th a:visited {
+  color:#551A8B; 
+  background-color:inherit; 
+  text-decoration:underline;
+  font-weight:bold; 
+}
+
+th a:hover {
+  font-weight:bold; 
+  text-decoration:underline; 
+}
+
+
+table.looper {
+    background: #FFFFFF;
+    font-size: 10pt;
+    border-color: #999999;
+    border-style: solid;
+    border-width: 1px;
+    margin: 0px;
+    border-collapse: collapse;
+}
+
+th.looper {
+    background: #dee8eb;
+    color: #2b4453; 
+    border-left: 0px;
+    border-right: 0px;
+    border-top: 0px;
+    border-bottom: 1px;
+    border-color: #999999;
+    border-style: solid;
+    padding: 0px;
+    border-collapse: collapse;
+}
+
+td.looper {
+    font-size: 8pt;
+    color: #3D4a74;
+    margin: 0px;
+    padding: 0px;
+    border: 0px;
+    border-style: solid;
+    border-collapse: collapse;
+    text-align: center;
+}
+
+input.slider {
+    color: #000000;
+    font-size: 8pt;
+    margin: 0;
+    padding: 0;
+    border: 1px solid;
+    border-color: #999999;
+    text-align: right;
+}
+
+input.controls {
+    color: #000000;
+    font-size: 9pt;
+    margin: 0;
+    padding: 0;
+    text-align: center;
+}
+button.controls {
+   border: 1px outset;
+   padding: 0px;
+   height: 20px;
+   width: 22px;
+}
+
+a:link  {
+  color:#0B61A5; 
+  background-color:inherit;
+  text-decoration:underline; 
+  font-family:Arial,Helvetica,sans-serif;
+}
+a:visited {
+  color:#551A8B; 
+  background-color:inherit;
+  text-decoration:underline;
+  font-family:Arial,Helvetica,sans-serif;
+}
+a:hover	{
+  text-decoration:underline; 
+  font-family:Arial,Helvetica,sans-serif;  
+}
+a.offsite:link {
+  color:#0B61A5; 
+  background-color:inherit;
+  text-decoration:underline;
+}
+a.offsite:visited {
+  color:#551A8B; 
+  background-color:inherit;
+  text-decoration:underline;
+}
+a.offsite:hover	{
+  border-bottom:1px dashed;
+  text-decoration:none; 
+}
+h1 {
+  display:block;
+  font-size:2.2em; 
+  font-weight:bold;
+  margin:.67em 0;
+}
+h2 {
+  display:block;
+  font-size:1.75em;
+  font-weight:bold;
+  margin:.83em 0;
+}
+h3 {
+  display:block;
+  font-size:1.5em;
+  font-weight:bold;
+  margin:1em 0;
+}
+h4 {
+  display:block;
+  font-size:1.2em;
+  font-weight:bold;
+  margin:1.33em 0;
+}
+h5 {
+  display:block;
+  font-size:0.95em;
+  font-weight:bold;
+  margin:1.67em 0;
+}
+h6 {
+  display:block;
+  font-size:0.8em;
+  font-weight:bold;
+  margin:2.33em 0;
+}
+ol {
+  list-style-type:decimal; 
+  margin:0px 0px 0px 25px; 
+  padding:0px 0px 0px 25px; 
+}
+ol ol {
+  list-style-type:lower-alpha; 
+  margin:0px 0px 0px 15px; 
+  padding:0px 0px 0px 15px; 
+}
+ol ol ol {
+  list-style-type:lower-roman; 
+  margin:0px 0px 0px 15px; 
+  padding:0px 0px 0px 15px; 
+}
+
+/*
+li {
+  color:black;
+  background-color:inherit;
+  margin:1px;
+  padding:0px; 
+}
+*/
+
+ul {
+  color:black;
+  list-style-type:disc;
+  margin:0px 0px 0px 15px; 
+  padding:0px 0px 0px 15px; 
+}
+
+ul ul {
+  color:black;
+  list-style-type:circle;
+  margin:0px 15px 0px 15px;
+  padding:0; 
+}
+
+ul ul ul {
+  color:black;
+  list-style-type:square;
+  margin:0px 15px 0px 15px;
+  padding:0; 
+}
+ol ul {
+  color:black;
+  list-style-type:disc;
+  margin:0px 0px 0px 15px;
+  padding:0;
+}
+pre {
+  font-size:1.2em;
+}
+pre a:link  {
+  color:#0B61A5; 
+  background-color:inherit;
+  text-decoration:underline; 
+  font-family: 'Courier New',Courier;
+  /* font-family:Arial,Helvetica,sans-serif; */
+}
+pre a:visited {
+  color:#551A8B; 
+  background-color:inherit;
+  text-decoration:underline;
+  font-family: 'Courier New',Courier;
+  /* font-family:Arial,Helvetica,sans-serif; */
+}
+
+input {
+  font-size:0.9em;
+  font-family:Verdana,Arial,Helvetica,sans-serif;
+}
+select {
+  border-color: black;
+  /* border-style:solid; */
+  border-width:1px;
+  font-size:0.9em; 
+  font-family:Geneva,Arial,Helvetica,sans-serif; 
+}
+textarea {
+  font-size:0.9em; 
+  font-family:Geneva,Arial,Helvetica,sans-serif; 
+}
+
+hr {
+  color: #3D4A74; 
+  background-color: inherit;
+}
+

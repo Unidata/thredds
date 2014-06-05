@@ -114,6 +114,12 @@ public class DatasetTreeView extends JPanel {
     }
   }
 
+  public void clear() {
+    currentDataset = null;
+    model = null;
+    tree.setModel(null);
+  }
+
   /**
    * Set the currently selected Variable.
    * @param v select this Variable, must be already in the tree.

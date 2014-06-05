@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?><pnTable><name>Master Significance of Reference Time Table</name><grib2TableName>Significance of Reference Time Table</grib2TableName><updatedDTG>201403032054</updatedDTG><tableStatus setDTG="2007050712">current</tableStatus><reference>
+    <title>Product Name Standard Document</title>
+    <docId>P-3146-2.2</docId>
+    <version>2.2</version>
+    <dtg>May 2012</dtg>
+    <organization>Fleet Numerical Meteorology and Oceanography Center</organization>
+    <infoUsed>Significance of Reference Time Table</infoUsed>
+  </reference><reference>
+    <title>GRIB 2</title>
+    <docId>FM 92-XII</docId>
+    <version>12.0.0</version>
+    <organization>World Meteorological Organization</organization>
+    <infoUsed>GRIB2 Significance of Reference Time, table 1.2</infoUsed>
+  </reference><fnmocTable><entry><fnmocId>0</fnmocId><grib2Id>0</grib2Id><name>analysis</name><status>current</status><wmoStatus>operational</wmoStatus></entry><entry><fnmocId>1</fnmocId><grib2Id>1</grib2Id><name>start of forecast</name><status>current</status><wmoStatus>operational</wmoStatus></entry><entry><fnmocId>2</fnmocId><grib2Id>2</grib2Id><name>verifying time of forecast</name><status>current</status><wmoStatus>operational</wmoStatus></entry><entry><fnmocId>3</fnmocId><grib2Id>3</grib2Id><name>observation time</name><status>current</status><wmoStatus>operational</wmoStatus></entry><entry><fnmocId>4</fnmocId><grib2Id>4-191</grib2Id><name>reserved</name><status>current</status><wmoStatus>operational</wmoStatus></entry><entry><fnmocId>192</fnmocId><grib2Id>192-254</grib2Id><name>reserved for local use</name><status>current</status><wmoStatus>operational</wmoStatus></entry><entry><fnmocId>255</fnmocId><grib2Id>255</grib2Id><name>missing</name><status>current</status><wmoStatus>operational</wmoStatus></entry></fnmocTable></pnTable>

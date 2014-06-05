@@ -13,7 +13,7 @@
   <groupId>edu.ucar</groupId>
   <artifactId>thredds-parent</artifactId>
   <packaging>pom</packaging>
-  <version>4.5.0-SNAPSHOT</version>
+  <version>4.5.1-SNAPSHOT</version>
   <name>Parent THREDDS and CDM modules</name>
   <description>
     The Unidata THREDDS project includes the netCDF-Java library (aka CDM) and
@@ -157,7 +157,7 @@
       </modules>
     </profile>
 
-    <profile>
+    <!-- profile>
       <id>tomcat-debug</id>
       <dependencies>
         <dependency>
@@ -173,7 +173,7 @@
           <scope>provided</scope>
         </dependency>
       </dependencies>
-    </profile>
+    </profile -->
   </profiles>
 
   <distributionManagement>
@@ -250,7 +250,7 @@
       </dependency>
       <dependency>
         <groupId>${project.groupId}</groupId>
-        <artifactId>httpclient</artifactId>
+        <artifactId>httpservices</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>
@@ -444,7 +444,7 @@
        <version>${org.springframework.security.version}</version>
       </dependency>
             
-      <!-- stuff for wmotables -->
+      <!-- stuff for wmotables
       <dependency>
         <groupId>org.springframework</groupId>
         <artifactId>spring-jdbc</artifactId>
@@ -484,7 +484,7 @@
        <groupId>org.hibernate</groupId>
        <artifactId>hibernate-validator</artifactId>
        <version>${org.hibernate.version}</version>
-      </dependency>
+      </dependency>  -->
 
       <!-- client -->
       <dependency>
@@ -765,7 +765,7 @@
 
       <dependency>
         <groupId>${project.groupId}</groupId>
-        <artifactId>dts</artifactId>
+        <artifactId>dtswar</artifactId>
         <version>${project.version}</version>
         <type>war</type>
       </dependency>
@@ -931,20 +931,20 @@
     <module>bufr</module>
     <module>grib</module>
     <module>opendap</module>
-    <module>opendap/dts</module>
+    <module>opendap/dtswar</module>
     <module>visad</module>
     <module>ncIdv</module>
     <module>ui</module>
     <module>tdcommon</module>
     <module>tds</module>
     <module>tdm</module>
-    <module>wmotables</module>
-    <module>cdmvalidator</module>
+    <!-- module>wmotables</module -->
+    <!-- module>cdmvalidator</module -->
     <module>cdm-test</module>
     <module>it</module>
     <module>netcdf4</module>
     <module>clcommon</module>
-    <module>httpclient</module>
+    <module>httpservices</module>
     <module>dap4/d4core</module>
     <module>dap4/d4shared</module>
     <module>dap4/d4client</module>
@@ -1004,10 +1004,10 @@
     <org.jfree.jfreechart.version>1.0.14</org.jfree.jfreechart.version>
     <joda-time.version>2.2</joda-time.version>
     <junit.version>4.11</junit.version>
-    <log4j.version>2.0-beta9</log4j.version>
+    <log4j.version>2.0-rc1</log4j.version>
     <net.jcip.version>1.0</net.jcip.version>
     <net.sf.ehcache.version>2.6.2</net.sf.ehcache.version>
-    <org.apache.tomcat.version>7.0.50</org.apache.tomcat.version>
+    <!-- org.apache.tomcat.version>7.0.50</org.apache.tomcat.version !-->
     <org.hibernate.version>4.3.1.Final</org.hibernate.version>
     <org.jsoup.version>1.7.2</org.jsoup.version>
     <org.jdom2.version>2.0.4</org.jdom2.version>
@@ -1036,8 +1036,8 @@
 
     <!-- http://stackoverflow.com/questions/11222982/tomcat-binary-distribution-zip-as-maven-artifact -->
     <cargo-plugin.version>1.4.5</cargo-plugin.version>
-    <apache.download>http://mirrors.ibiblio.org/apache/</apache.download>
-    <tomcat7.version>7.0.53</tomcat7.version>
+    <!-- apache.download>http://mirrors.ibiblio.org/apache/</apache.download -->
+    <tomcat7.version>7.0.54</tomcat7.version>
 
   </properties>
 

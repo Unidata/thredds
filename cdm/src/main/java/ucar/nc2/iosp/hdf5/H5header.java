@@ -2737,7 +2737,8 @@ public class H5header {
 
       } else {
         debugOut.println("****UNPROCESSED MESSAGE type = " + mtype + " raw = " + type);
-        throw new UnsupportedOperationException("****UNPROCESSED MESSAGE type = " + mtype + " raw = " + type);
+        log.warn("SKIP UNPROCESSED MESSAGE type = " + mtype + " raw = " + type);
+        //throw new UnsupportedOperationException("****UNPROCESSED MESSAGE type = " + mtype + " raw = " + type);
       }
 
       return header_length + size;
@@ -3696,6 +3697,14 @@ public class H5header {
         typeSize = raf.readShort();
         spaceSize = raf.readShort();
         if (version == 3) encoding = raf.readByte();
+
+      } else if (version == 72) {
+        flags = raf.readByte();
+        nameSize = raf.readShort();
+        typeSize = raf.readShort();
+        spaceSize = raf.readShort();
+        log.error("bad version "+version+" at filePos " + raf.getFilePointer());
+        // G:/work/galibert/IMOS_ANMN-NSW_AETVZ_20131127T230000Z_PH100_FV01_PH100-1311-Workhorse-ADCP-109.5_END-20140306T010000Z_C-20140521T053527Z.nc
 
       } else {
         log.error("bad version "+version+" at filePos " + raf.getFilePointer()); // buggery, may be HDF5 "more than 8 attributes" error

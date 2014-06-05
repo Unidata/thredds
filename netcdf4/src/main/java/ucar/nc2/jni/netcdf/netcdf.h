@@ -410,15 +410,13 @@ EXTERNL const char *
 nc_strerror(int ncerr);
 
 EXTERNL int
-nc__create(const char *path, int cmode, size_t initialsz,
-	 size_t *chunksizehintp, int *ncidp);
+nc__create(const char *path, int cmode, size_t initialsz, size_t *chunksizehintp, int *ncidp);
 
 EXTERNL int
 nc_create(const char *path, int cmode, int *ncidp);
 
 EXTERNL int
-nc__open(const char *path, int mode, 
-	size_t *chunksizehintp, int *ncidp);
+nc__open(const char *path, int mode, size_t *chunksizehintp, int *ncidp);
 
 EXTERNL int
 nc_open(const char *path, int mode, int *ncidp);
@@ -521,8 +519,7 @@ nc_inq_typeid(int ncid, const char *name, nc_type *typeidp);
 
 /* Get the name, size, and number of fields in a compound type. */
 EXTERNL int
-nc_inq_compound(int ncid, nc_type xtype, char *name, size_t *sizep, 
-		size_t *nfieldsp);
+nc_inq_compound(int ncid, nc_type xtype, char *name, size_t *sizep, size_t *nfieldsp);
 
 /* Get the name of a compound type. */
 EXTERNL int

@@ -147,8 +147,8 @@ public abstract class GribCollection implements FileCacheable, AutoCloseable {
 
   /**
    * This is only used for the top level GribCollection.
-   * @param config
-   * @return
+   * @param config use this FeatureCollectionConfig
+   * @return index File
    */
   static public File makeTopIndexFileFromConfig(FeatureCollectionConfig config) {
     Formatter errlog = new Formatter();
@@ -223,7 +223,7 @@ public abstract class GribCollection implements FileCacheable, AutoCloseable {
   public int center, subcenter, master, local;  // GRIB 1 uses "local" for table version
   public int genProcessType, genProcessId, backProcessId;
   public List<Parameter> params;          // not used
-  private Map<Integer, MFile> fileMap;    // all the files used in the GC; key in index in original collection, GC has subset of them
+  protected Map<Integer, MFile> fileMap;    // all the files used in the GC; key in index in original collection, GC has subset of them
   protected List<Dataset> datasets;
   protected List<HorizCoordSys> horizCS; // one for each unique GDS
   protected CoordinateRuntime masterRuntime;
@@ -233,6 +233,7 @@ public abstract class GribCollection implements FileCacheable, AutoCloseable {
   private Map<String, MFile> filenameMap;
   protected RandomAccessFile indexRaf; // this is the raf of the index (ncx) file, synchronize any access to it
   protected FileCache objCache = null;  // optional object cache - used in the TDS
+  protected String indexFilename;  // temp storage for debugging
 
   protected GribCollection(String name, File directory, FeatureCollectionConfig config, boolean isGrib1) {
     this.name = name;
@@ -279,6 +280,10 @@ public abstract class GribCollection implements FileCacheable, AutoCloseable {
       result.add(file.getPath());
     Collections.sort(result);
     return result;
+  }
+
+  public String getFilename(int fileno) {
+    return fileMap.get(fileno).getPath();
   }
 
   public List<Dataset> getDatasets() {
@@ -354,14 +359,8 @@ public abstract class GribCollection implements FileCacheable, AutoCloseable {
   void setIndexRaf(RandomAccessFile indexRaf) {
     this.indexRaf = indexRaf;
     if (indexRaf != null) {
-      setIndexFilename(indexRaf.getLocation());
+      this.indexFilename = indexRaf.getLocation(); // for debugIndexOnly
     }
-  }
-
-  private void setIndexFilename(String indexFilename) {
-    //if (indexFilename.startsWith("B:\\content") || indexFilename.startsWith("B:/content"))
-    //  System.out.printf("HEY %s%n", indexFilename);
-    // this.indexFilename = indexFilename;
   }
 
   /**
@@ -414,7 +413,7 @@ public abstract class GribCollection implements FileCacheable, AutoCloseable {
     return directory;
   }
 
-  // set from GribCollectionBuilderFromIndex.redFromIndex()
+  // set from GribCollectionBuilderFromIndex.readFromIndex()
   public void setDirectory(File directory) {
     this.directory = directory;
   }
@@ -450,7 +449,6 @@ public abstract class GribCollection implements FileCacheable, AutoCloseable {
         dataFile = new File(parent, dataFile.getName()); // must be in same directory as the ncx file
       }
     }
-
 
     // data file not here
     if (!dataFile.exists()) {
@@ -797,7 +795,7 @@ public abstract class GribCollection implements FileCacheable, AutoCloseable {
     public final int category, parameter, levelType, intvType, ensDerivedType, probType;
     private String intvName;  // eg "mixed intervals, 3 Hour, etc"
     public final String probabilityName;
-    public final boolean isLayer;
+    public final boolean isLayer, isEnsemble;
     public final int genProcessType;
 
     // stats
@@ -839,6 +837,7 @@ public abstract class GribCollection implements FileCacheable, AutoCloseable {
         this.probabilityName = null;
 
         this.genProcessType = pds.getGenProcess(); // LOOK process vs process type ??
+        this.isEnsemble = pds.isEnsemble();
 
       } else {
         Grib2SectionProductDefinition pdss = new Grib2SectionProductDefinition(rawPds);
@@ -874,6 +873,7 @@ public abstract class GribCollection implements FileCacheable, AutoCloseable {
         }
 
         this.genProcessType = pds.getGenProcessType();
+        this.isEnsemble = pds.isEnsemble();
       }
     }
 
@@ -896,6 +896,7 @@ public abstract class GribCollection implements FileCacheable, AutoCloseable {
       this.probabilityName = other.probabilityName;
       this.probType = other.probType;
       this.genProcessType = other.genProcessType;
+      this.isEnsemble = other.isEnsemble;
 
       this.time2runtime = other.time2runtime;
       this.twot = other.twot;   // LOOK why did i delete this before ??
@@ -1144,15 +1145,14 @@ public abstract class GribCollection implements FileCacheable, AutoCloseable {
     f.format("Class (%s)%n", getClass().getName());
     f.format("%s%n%n", toString());
 
-
-    f.format(" master runtime coordinate%n");
-    masterRuntime.showCoords(f);
-    f.format("%n");
+    //f.format(" master runtime coordinate%n");
+    //masterRuntime.showCoords(f);
+    //f.format("%n");
 
     for (Dataset ds : datasets) {
       f.format("Dataset %s%n", ds.getType());
       for (GroupGC g : ds.groups) {
-        f.format("Group %s%n", g.horizCoordSys.getId());
+        f.format(" Group %s%n", g.horizCoordSys.getId());
         for (VariableIndex v : g.variList) {
           f.format("  %s%n", v.toStringShort());
         }

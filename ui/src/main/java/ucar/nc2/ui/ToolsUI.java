@@ -69,7 +69,6 @@ import ucar.nc2.time.CalendarDateUnit;
 import ucar.nc2.ui.coverage.CoverageDisplay;
 import ucar.nc2.ui.coverage.CoverageTable;
 import ucar.nc2.ui.dialog.DiskCache2Form;
-import ucar.nc2.ui.dialog.NetcdfOutputChooser;
 import ucar.nc2.ui.gis.shapefile.ShapeFileBean;
 import ucar.nc2.ui.gis.worldmap.WorldMapBean;
 import ucar.nc2.ui.grid.GeoGridTable;
@@ -130,11 +129,12 @@ public class
   private BufrPanel bufrPanel;
   private BufrTableBPanel bufrTableBPanel;
   private BufrTableDPanel bufrTableDPanel;
-  private BufrReportPanel bufrReportPanel;
+  private ReportOpPanel bufrReportPanel;
   private BufrCdmIndexPanel bufrCdmIndexPanel;
   private BufrCodePanel bufrCodePanel;
   private CdmrFeature cdmremotePanel;
   private CdmIndex2Panel cdmIndex2Panel;
+  private ReportOpPanel cdmIndexReportPanel;
   private CollectionSpecPanel fcPanel;
   private CoordSysPanel coordSysPanel;
   private CoveragePanel coveragePanel;
@@ -153,12 +153,11 @@ public class
   private GribRenamePanel gribVariableRenamePanel;
   private GribTemplatePanel gribTemplatePanel;
   private Grib1CollectionPanel grib1CollectionPanel;
-  private Grib1ReportPanel grib1ReportPanel;
+  private ReportOpPanel grib1ReportPanel;
   private Grib1TablePanel grib1TablePanel;
   private Grib2CollectionPanel grib2CollectionPanel;
-  // private Grib2RectilyzePanel grib2RectilyzePanel;
   private Grib2TablePanel grib2TablePanel;
-  private Grib2ReportPanel grib2ReportPanel;
+  private ReportOpPanel grib2ReportPanel;
   private Grib2DataPanel grib2DataPanel;
   private Hdf5ObjectPanel hdf5ObjectPanel;
   private Hdf5DataPanel hdf5DataPanel;
@@ -274,9 +273,10 @@ public class
     addListeners(bufrTabPane);
 
     // nested-2 tab - grib
-    gribTabPane.addTab("GribIndex", new JLabel("GribIndex"));
-    gribTabPane.addTab("CdmIndex", new JLabel("CdmIndex"));
+    //gribTabPane.addTab("CdmIndex", new JLabel("CdmIndex"));
     gribTabPane.addTab("CdmIndex2", new JLabel("CdmIndex2"));
+    gribTabPane.addTab("CdmIndexReport", new JLabel("CdmIndexReport"));
+    gribTabPane.addTab("GribIndex", new JLabel("GribIndex"));
     gribTabPane.addTab("WMO-COMMON", new JLabel("WMO-COMMON"));
     gribTabPane.addTab("WMO-CODES", new JLabel("WMO-CODES"));
     gribTabPane.addTab("WMO-TEMPLATES", new JLabel("WMO-TEMPLATES"));
@@ -317,6 +317,7 @@ public class
 
     // nested tab - feature collection
     fcTabPane.addTab("DirectoryPartition", new JLabel("DirectoryPartition"));
+    fcTabPane.addTab("PartitionReport", new JLabel("PartitionReport"));
     fcTabPane.addTab("CollectionSpec", new JLabel("CollectionSpec"));
     addListeners(fcTabPane);
 
@@ -394,7 +395,9 @@ public class
       c = bufrTableDPanel;
 
     } else if (title.equals("BufrReports")) {
-      bufrReportPanel = new BufrReportPanel((PreferencesExt) mainPrefs.node("bufrReports"));
+      PreferencesExt prefs = (PreferencesExt) mainPrefs.node("bufrReports");
+      ReportPanel rp = new ucar.nc2.ui.BufrReportPanel(prefs);
+      bufrReportPanel = new ReportOpPanel(prefs, rp);
       c = bufrReportPanel;
 
     } else if (title.equals("BUFR-CODES")) {
@@ -429,10 +432,6 @@ public class
       grib2CollectionPanel = new Grib2CollectionPanel((PreferencesExt) mainPrefs.node("gribNew"));
       c = grib2CollectionPanel;
 
-    /* } else if (title.equals("GRIB2rectilyze")) {
-      grib2RectilyzePanel = new Grib2RectilyzePanel((PreferencesExt) mainPrefs.node("GRIB2rectilyze"));
-      c = grib2RectilyzePanel; */
-
     } else if (title.equals("GRIB2data")) {
       grib2DataPanel = new Grib2DataPanel((PreferencesExt) mainPrefs.node("grib2Data"));
       c = grib2DataPanel;
@@ -449,16 +448,26 @@ public class
       cdmIndex2Panel = new CdmIndex2Panel((PreferencesExt) mainPrefs.node("cdmIdx2"));
       c = cdmIndex2Panel;
 
+    } else if (title.equals("CdmIndexReport")) {
+      PreferencesExt prefs = (PreferencesExt) mainPrefs.node("CdmIndexReport");
+      ReportPanel rp = new ucar.nc2.ui.CdmIndexReportPanel(prefs);
+      cdmIndexReportPanel = new ReportOpPanel(prefs, rp);
+      c = cdmIndexReportPanel;
+
     } else if (title.equals("GribIndex")) {
       gribIdxPanel = new GribIndexPanel((PreferencesExt) mainPrefs.node("gribIdx"));
       c = gribIdxPanel;
 
     } else if (title.equals("GRIB1-REPORT")) {
-      grib1ReportPanel = new Grib1ReportPanel((PreferencesExt) mainPrefs.node("grib1Report"));
+      PreferencesExt prefs = (PreferencesExt) mainPrefs.node("grib1Report");
+      ReportPanel rp = new ucar.nc2.ui.Grib1ReportPanel(prefs);
+      grib1ReportPanel = new ReportOpPanel(prefs, rp);
       c = grib1ReportPanel;
 
     } else if (title.equals("GRIB2-REPORT")) {
-      grib2ReportPanel = new Grib2ReportPanel((PreferencesExt) mainPrefs.node("gribReport"));
+      PreferencesExt prefs = (PreferencesExt) mainPrefs.node("gribReport");
+      ReportPanel rp = new ucar.nc2.ui.Grib2ReportPanel(prefs);
+      grib2ReportPanel = new ReportOpPanel(prefs, rp);
       c = grib2ReportPanel;
 
     } else if (title.equals("WMO-COMMON")) {
@@ -814,6 +823,7 @@ public class
     ucar.nc2.FileWriter.setDebugFlags(debugFlags);
     ucar.nc2.FileWriter2.setDebugFlags(debugFlags);
     ucar.nc2.ft.point.standard.PointDatasetStandardFactory.setDebugFlags(debugFlags);
+    ucar.nc2.grib.collection.GribIosp.setDebugFlags(debugFlags);
   }
 
   /*public void setDebugOutputStream(boolean b) {
@@ -965,6 +975,7 @@ public class
     if (coordSysPanel != null) coordSysPanel.save();
     if (coveragePanel != null) coveragePanel.save();
     if (cdmIndex2Panel != null) cdmIndex2Panel.save();
+    if (cdmIndexReportPanel != null) cdmIndexReportPanel.save();
     if (cdmremotePanel != null) cdmremotePanel.save();
     if (dirPartPanel != null) dirPartPanel.save();
     if (bufrCdmIndexPanel != null) bufrCdmIndexPanel.save();
@@ -1373,6 +1384,7 @@ public class
 
     OpPanel(PreferencesExt prefs, String command, boolean addComboBox, boolean addFileButton, boolean addCoordButton) {
       this.prefs = prefs;
+      buttPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 5, 0));
 
       cb = new ComboBox(prefs);
       cb.addActionListener(new ActionListener() {
@@ -1387,8 +1399,6 @@ public class
           }
         }
       });
-
-      buttPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 5, 0));
 
       AbstractAction closeAction = new AbstractAction() {
         public void actionPerformed(ActionEvent e) {
@@ -1437,9 +1447,13 @@ public class
       }
 
       topPanel = new JPanel(new BorderLayout());
-      topPanel.add(new JLabel(command), BorderLayout.WEST);
-      if (addComboBox) topPanel.add(cb, BorderLayout.CENTER);
-      topPanel.add(buttPanel, BorderLayout.EAST);
+      if (addComboBox) {
+        topPanel.add(new JLabel(command), BorderLayout.WEST);
+        topPanel.add(cb, BorderLayout.CENTER);
+        topPanel.add(buttPanel, BorderLayout.EAST);
+      } else {
+        topPanel.add(buttPanel, BorderLayout.EAST);
+      }
 
       setLayout(new BorderLayout());
       add(topPanel, BorderLayout.NORTH);
@@ -1931,6 +1945,7 @@ public class
     void closeOpenFiles() throws IOException {
       if (ds != null) ds.close();
       ds = null;
+      coordSysTable.clear();
     }
 
     CoordSysPanel(PreferencesExt p) {
@@ -2383,7 +2398,7 @@ public class
   }
 
   ////////////////////////////////////////////////////////////////////////
-  private class BufrReportPanel extends OpPanel {
+  /* private class BufrReportPanel extends OpPanel {
     ucar.nc2.ui.BufrReportPanel reportPanel;
     boolean useIndex = true;
     JComboBox reports;
@@ -2448,7 +2463,7 @@ public class
       super.save();
     }
 
-  }
+  } */
 
   /////////////////////////////////////////////////////////////////////
   private class GribFilesPanel extends OpPanel {
@@ -2976,7 +2991,7 @@ public class
     ucar.nc2.ui.CdmIndex2Panel indexPanel;
 
     void closeOpenFiles() throws IOException {
-      indexPanel.closeOpenFiles();
+      indexPanel.clear();
     }
 
       CdmIndex2Panel(PreferencesExt p) {
@@ -3152,7 +3167,99 @@ public class
 
   /////////////////////////////////////////////////////////////////////
 
-  private class Grib2ReportPanel extends OpPanel {
+  private class ReportOpPanel extends OpPanel {
+    ucar.nc2.ui.ReportPanel reportPanel;
+    boolean useIndex = true;
+    boolean eachFile = false;
+    boolean extra = false;
+    JComboBox reports;
+
+    ReportOpPanel(PreferencesExt p, ReportPanel reportPanel) {
+      super(p, "collection:", true, false);
+      this.reportPanel = reportPanel;
+      add(reportPanel, BorderLayout.CENTER);
+      reportPanel.addOptions(buttPanel);
+
+      reports = new JComboBox(reportPanel.getOptions());
+      buttPanel.add(reports);
+
+      AbstractAction useIndexButt = new AbstractAction() {
+        public void actionPerformed(ActionEvent e) {
+          Boolean state = (Boolean) getValue(BAMutil.STATE);
+          useIndex = state.booleanValue();
+        }
+      };
+      useIndexButt.putValue(BAMutil.STATE, useIndex);
+      BAMutil.setActionProperties(useIndexButt, "Doit", "use Index", true, 'C', -1);
+      BAMutil.addActionToContainer(buttPanel, useIndexButt);
+
+      AbstractAction eachFileButt = new AbstractAction() {
+        public void actionPerformed(ActionEvent e) {
+          Boolean state = (Boolean) getValue(BAMutil.STATE);
+          eachFile = state.booleanValue();
+        }
+      };
+      eachFileButt.putValue(BAMutil.STATE, eachFile);
+      BAMutil.setActionProperties(eachFileButt, "Doit", "report on each file", true, 'E', -1);
+      BAMutil.addActionToContainer(buttPanel, eachFileButt);
+
+      AbstractAction extraButt = new AbstractAction() {
+        public void actionPerformed(ActionEvent e) {
+          Boolean state = (Boolean) getValue(BAMutil.STATE);
+          extra = state.booleanValue();
+        }
+      };
+      extraButt.putValue(BAMutil.STATE, extra);
+      BAMutil.setActionProperties(extraButt, "Doit", "extra info", true, 'X', -1);
+      BAMutil.addActionToContainer(buttPanel, extraButt);
+
+      AbstractAction doitButt = new AbstractAction() {
+        public void actionPerformed(ActionEvent e) {
+          process();
+        }
+      };
+      BAMutil.setActionProperties(doitButt, "alien", "make report", false, 'C', -1);
+      BAMutil.addActionToContainer(buttPanel, doitButt);
+    }
+
+    void closeOpenFiles() {
+    }
+
+    boolean process(Object o) {
+      return reportPanel.showCollection((String) o);
+    }
+
+    boolean process() {
+      boolean err = false;
+      String command = (String) cb.getSelectedItem();
+
+      ByteArrayOutputStream bos = new ByteArrayOutputStream(10000);
+      try {
+        reportPanel.doReport(command, useIndex, eachFile, extra, reports.getSelectedItem());
+
+      } catch (IOException ioe) {
+        JOptionPane.showMessageDialog(null, "Grib2ReportPanel cant open " + command + "\n" + ioe.getMessage());
+        ioe.printStackTrace();
+        err = true;
+
+      } catch (Exception e) {
+        e.printStackTrace(new PrintStream(bos));
+        detailTA.setText(bos.toString());
+        detailWindow.show();
+        err = true;
+      }
+
+      return !err;
+    }
+
+    void save() {
+      // reportPanel.save();
+      super.save();
+    }
+
+  }
+
+  /* private class Grib2ReportPanel extends OpPanel {
     ucar.nc2.ui.Grib2ReportPanel gribReport;
     boolean useIndex = true;
     boolean eachFile = false;
@@ -3241,11 +3348,11 @@ public class
       super.save();
     }
 
-  }
+  } */
 
   /////////////////////////////////////////////////////////////////////
 
-  private class Grib1ReportPanel extends OpPanel {
+  /* private class Grib1ReportPanel extends OpPanel {
     ucar.nc2.ui.Grib1ReportPanel gribReport;
     boolean useIndex = true;
     JComboBox reports;
@@ -3310,7 +3417,7 @@ public class
       super.save();
     }
 
-  }
+  }  */
 
  /////////////////////////////////////////////////////////////////////
 
@@ -4716,6 +4823,8 @@ public class
     void closeOpenFiles() throws IOException {
       if (ds != null) ds.close();
       ds = null;
+      dsTable.clear();
+      if (gridUI != null) gridUI.clear();
     }
 
     void setDataset(NetcdfDataset newds) {
@@ -5082,6 +5191,7 @@ public class
     void closeOpenFiles() throws IOException {
       if (ncfile != null) ncfile.close();
       ncfile = null;
+      dsViewer.clear();
     }
 
     void setDataset(NetcdfFile nc) {
@@ -5305,8 +5415,8 @@ public class
     DirectoryPartitionViewer table;
 
     DirectoryPartitionPanel(PreferencesExt dbPrefs) {
-      super(dbPrefs, "collection:", false, false);
-      table = new DirectoryPartitionViewer(prefs, buttPanel);
+      super(dbPrefs, "collection:", false, false, false);
+      table = new DirectoryPartitionViewer(prefs, topPanel, buttPanel);
       add(table, BorderLayout.CENTER);
 
       table.addPropertyChangeListener(new java.beans.PropertyChangeListener() {
@@ -5345,6 +5455,7 @@ public class
     void save() {
       table.save();
       super.save();
+      table.clear();
     }
   }
 
@@ -5955,22 +6066,26 @@ public class
                "<h1>Netcdf Tools User Interface (ToolsUI)</h1>" +
                "<b>" + getVersion() + "</b>" +
                "<br><i>http://www.unidata.ucar.edu/software/netcdf-java/</i>" +
-               "<br><b><i>Developers:</b>John Caron, Ethan Davis, Lansing Madry, Marcos Hermida, Sean Arms</i></b>" +
+               "<br><b><i>Developers:</b>John Caron, Ethan Davis, Sean Arms, Dennis Heimbinger, Lansing Madry, Ryan May, Christian Ward-Garrison</i></b>" +
                "</center>" +
                "<br><br>With thanks to these <b>Open Source</b> contributors:" +
                "<ul>" +
                "<li><b>ADDE/VisAD</b>: Bill Hibbard, Don Murray, Tom Whittaker, et al (http://www.ssec.wisc.edu/~billh/visad.html)</li>" +
+               "<li><b>Apache HTTP Components</b> libraries: (http://hc.apache.org/)</li>" +
                "<li><b>Apache Jakarta Commons</b> libraries: (http://http://jakarta.apache.org/commons/)</li>" +
-               "<li><b>IDV:</b> Don Murray, Jeff McWhirter (http://www.unidata.ucar.edu/software/IDV/)</li>" +
+               "<li><b>IDV:</b> Yuan Ho, Julien Chastang, Don Murray, Jeff McWhirter, Yuan H (http://www.unidata.ucar.edu/software/IDV/)</li>" +
+               "<li><b>Joda Time</b> library: Stephen Colebourne (http://www.joda.org/joda-time/)</li>" +
                "<li><b>JDOM</b> library: Jason Hunter, Brett McLaughlin et al (www.jdom.org)</li>" +
                "<li><b>JGoodies</b> library: Karsten Lentzsch (www.jgoodies.com)</li>" +
                "<li><b>JPEG-2000</b> Java library: (http://www.jpeg.org/jpeg2000/)</li>" +
                "<li><b>JUnit</b> library: Erich Gamma, Kent Beck, Erik Meade, et al (http://sourceforge.net/projects/junit/)</li>" +
-               "<li><b>OPeNDAP Java</b> library: Nathan Potter, James Gallagher, Don Denbo, et. al.(http://opendap.org)</li>" +
+               "<li><b>NetCDF C Library</b> library: Russ Rew, Ward Fisher, Dennis Heimbinger</li>" +
+               "<li><b>OPeNDAP Java</b> library: Dennis Heimbinger, James Gallagher, Nathan Potter, Don Denbo, et. al.(http://opendap.org)</li>" +
                "<li><b>Protobuf serialization</b> library: Google (http://code.google.com/p/protobuf/)</li>" +
                "<li><b>Simple Logging Facade for Java</b> library: Ceki Gulcu (http://www.slf4j.org/)</li>" +
                "<li><b>Spring lightweight framework</b> library: Rod Johnson, et. al.(http://www.springsource.org/)</li>" +
                "<li><b>Imaging utilities:</b>: Richard Eigenmann</li>" +
+               "<li><b>Udunits:</b>: Steve Emmerson</li>" +
                "</ul><center>Special thanks to <b>Sun/Oracle</b> (java.oracle.com) for the platform on which we stand." +
                "</center></body></html> ");
 

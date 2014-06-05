@@ -46,21 +46,28 @@ public class TestRadarServerUrls {
   @SpringJUnit4ParameterizedClassRunner.Parameters
   public static Collection<Object[]> getTestParameters() {
     return Arrays.asList(new Object[][]{
-            {"/radar/radarCollections.xml", null},
-            {"/radarServer/catalog.xml", null},
-            {"/radarServer/catalog.html", null},
-            {"/radarServer/radarCollections.xml", null},
+
+            {"/radarServer/nexrad/level2/IDD/dataset.xml", null},
+            {"/radarServer/nexrad/level2/IDD/stations.xml", null},
+            //{"/radarServer/nexrad/level2/IDD", "stn=KDGX&time=present"},
+
             {"/radarServer/nexrad/level3/IDD/catalog.xml", null},
+            {"/radarServer/nexrad/level3/IDD/dataset.xml", null},
+            {"/radarServer/nexrad/level3/IDD/stations.xml", null},
+            //{"/radarServer/nexrad/level3/IDD","stn=UDX&var=N0R&time=present"},
+
             {"/radarServer/nexrad/level3/IDD/N0R/catalog.xml", null},
             {"/radarServer/nexrad/level3/IDD/N0R/UDX/catalog.xml", null},
             {"/radarServer/nexrad/level3/IDD/N0R/UDX/20131114/catalog.xml", null},
             {"/radarServer/nexrad/level3/IDD/dataset.xml", null},
             {"/radarServer/nexrad/level3/IDD/stations.xml", null},
-            {"/radarServer/nexrad/level3/IDD", "north=50.00&south=20.00&west=-127&east=-66&time=present&var=KPAH"},
-            {"/radarServer/nexrad/level2/IDD", "stn=KLWX&time=present&var=NCR"},
-            {"/radarServer/terminal/level3/IDD/dataset.xml", null},
+            //{"/radarServer/nexrad/level3/IDD", "north=50.00&south=20.00&west=-127&east=-66&time=present&var=KPAH"},
+
+         /*   {"/radarServer/terminal/level3/IDD/dataset.xml", null},
             {"/radarServer/terminal/level3/IDD/stations.xml", null},
-            {"/radarServer/terminal/level3/IDD", "stn=BOS&var=TR0&time=present"},
+            {"/radarServer/terminal/level3/IDD", "stn=ORD&var=NTP&time=present"},
+            {"/radarServer/terminal/level3/IDD", "stn=OKC&time=present&var=NTP"}, */
+
     });
   }
 
@@ -71,18 +78,18 @@ public class TestRadarServerUrls {
     this.query = query;
   }
 
-  @Test
+  // @Test   LOOK BAIL out
   public void radarRequest() throws Exception {
     String url = (query == null) ? path : path + "?" + query;
     RequestBuilder rb = MockMvcRequestBuilders.get(url).servletPath(path);
-    System.out.printf("path = %s%n", path);
+    System.err.printf("url = %s%n", url);
 
     MvcResult result = this.mockMvc.perform(rb)
             .andExpect(MockMvcResultMatchers.status().is(200))
                     //   .andExpect(MockMvcResultMatchers.content().contentType(ContentType.xml.getContentHeader()))
             .andReturn();
 
-    System.out.printf("content = %s%n", result.getResponse().getContentAsString());
+    System.err.printf("content for %s=%n%s%n", url, result.getResponse().getContentAsString());
   }
 
 }

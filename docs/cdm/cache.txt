@@ -1,0 +1,23 @@
+1. NetcdfFile must be invariant. its location must be unique. so you cant open it with variations.
+If you are going to modify the object or the file, dont use acquire() !! except for ncfile.synch() !
+
+2. NetcdfDataset can be used to modify / enhance a NetcdfFile. It should not touch the NetcdfFile. It keeps
+ its own object lists. VariableDS wraps Varaible, shares cache.
+ Dimension, Attributes should never be modifued.
+
+3. NcML will modify / enhance a NetcdfFile, so it does not use acquire. Tradeoff??
+
+
+----
+NetcdfDataset
+
+NetcdfDataset.acquireFile();
+NetcdfDataset.acquire();
+
+NetcdfDataset.open( NetcdfFile ncfile); ok to acquire or open ncfile.
+
+----
+
+ship with cache disabled.
+call init() to enable. use acquire. reccommended for enterprise projects.
+clearCache( force) to clean up files you forgot to close. better to track these down and close the leak.

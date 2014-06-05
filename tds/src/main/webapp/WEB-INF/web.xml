@@ -86,7 +86,7 @@
   <!-- filter-mapping>
     <filter-name>RequestQueryFilter</filter-name>
     <servlet-name>radarServer</servlet-name>
-  </filter-mapping -->
+  </filter-mapping-->
   <filter-mapping>
     <filter-name>RequestQueryFilter</filter-name>
     <servlet-name>RestrictedDataset</servlet-name>
@@ -373,7 +373,7 @@
   </servlet-mapping -->
 
   <!-- data services -->
-  <!-- servlet-mapping>
+  <!--servlet-mapping>
     <servlet-name>radarServer</servlet-name>
     <url-pattern>/radarServer/*</url-pattern>
   </servlet-mapping -->
@@ -382,6 +382,7 @@
     <servlet-name>Opendap</servlet-name>
     <url-pattern>/dodsC/*</url-pattern>
   </servlet-mapping>
+
   <servlet-mapping>
     <servlet-name>Dap4</servlet-name>
     <url-pattern>/dap4/*</url-pattern>

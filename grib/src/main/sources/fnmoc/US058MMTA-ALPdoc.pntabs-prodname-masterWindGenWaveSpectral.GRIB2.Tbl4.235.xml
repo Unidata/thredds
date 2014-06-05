@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?><pnTable><name>Master Wind-generated Wave Spectral Description Table</name><grib2TableName>Wind-generated Wave Spectral Description Table</grib2TableName><updatedDTG>201209051521</updatedDTG><tableStatus setDTG="2012090512">current</tableStatus><reference>
+    <title>Product Name Standard Document</title>
+    <docId>P-3146-2.2</docId>
+    <version>2.2</version>
+    <dtg>May 2012</dtg>
+    <organization>Fleet Numerical Meteorology and Oceanography Center</organization>
+    <infoUsed>Master Wind-generated Wave Spectral Description Table</infoUsed>
+  </reference><reference>
+    <title>GRIB 2</title>
+    <docId>FM 92-XII</docId>
+    <version>11.0.0</version>
+    <organization>World Meteorological Organization</organization>
+    <infoUsed>GRIB2 Wind-generated Wave Spectral Description, table 4.235</infoUsed>
+  </reference><fnmocTable><entry><fnmocId>0</fnmocId><grib2Id>0</grib2Id><name>Total Wave Spectrum (combined wind waves and swell)</name><status>current</status><wmoStatus>operational</wmoStatus></entry><entry><fnmocId>1</fnmocId><grib2Id>1</grib2Id><name>generalized partition</name><status>current</status><wmoStatus>operational</wmoStatus></entry><entry><fnmocId>2</fnmocId><grib2Id>2-191</grib2Id><name>reserved</name><status>current</status><wmoStatus>operational</wmoStatus></entry><entry><fnmocId>192</fnmocId><grib2Id>192-254</grib2Id><name>reserved for local use</name><status>current</status><wmoStatus>operational</wmoStatus></entry><entry><fnmocId>255</fnmocId><grib2Id>255</grib2Id><name>missing</name><status>current</status><wmoStatus>operational</wmoStatus></entry></fnmocTable></pnTable>

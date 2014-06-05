@@ -440,6 +440,14 @@ public class StringUtil2 {
     return s.substring(0, len);
   }
 
+  static public String removeFromEnd(String s, String suffix) {
+  if (s.endsWith(suffix))
+     return s.substring(0, s.length() - suffix.length());
+
+    return s;
+  }
+
+
 
   /**
    * Remove any whitespace (ie., Character.isWhitespace) from the input string.

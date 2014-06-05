@@ -631,6 +631,7 @@ public class HtmlWriter {
       URI catURI = cat.getBaseURI();
       // Get the catalog name - we want a relative URL
       catHtml = catURI.getPath();
+      if (catHtml == null) catHtml = cat.getUriString();  // if URI is a file
       int pos = catHtml.lastIndexOf("/");
       if (pos != -1) catHtml = catHtml.substring(pos + 1);
 

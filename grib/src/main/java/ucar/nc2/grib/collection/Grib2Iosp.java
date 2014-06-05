@@ -97,6 +97,8 @@ public class Grib2Iosp extends GribIosp {
     } else if (vindex.probabilityName != null && vindex.probabilityName.length() > 0) {
       String s = StringUtil2.substitute(vindex.probabilityName, ".", "p");
       f.format("_probability_%s", s);
+    } else if (vindex.isEnsemble) {
+      f.format("_ens");
     }
 
     if (vindex.genProcessType >= 0 && useGenType) {

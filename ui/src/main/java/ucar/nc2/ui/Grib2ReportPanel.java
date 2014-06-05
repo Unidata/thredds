@@ -49,72 +49,55 @@ public class Grib2ReportPanel extends ReportPanel {
     rename, renameCheck, copyCompress
   }
 
-  public Grib2ReportPanel(PreferencesExt prefs, JPanel buttPanel) {
-    super(prefs, buttPanel);
+  public Grib2ReportPanel(PreferencesExt prefs) {
+    super(prefs);
   }
 
-  public void doReport(String spec, boolean useIndex, boolean eachFile, boolean extra, Report which) throws IOException {
-    Formatter f = new Formatter();
-    f.format("%s on %s useIndex=%s eachFile=%s extra=%s%n", which, spec, useIndex, eachFile, extra);
+  @Override
+  public Object[] getOptions() {
+    return ucar.nc2.ui.Grib2ReportPanel.Report.values();
+  }
 
-    MCollection dcm = getCollection(spec, f);
-    if (dcm == null) {
-      return;
+  @Override
+  protected void doReport(Formatter f, Object option, MCollection dcm, boolean useIndex, boolean eachFile, boolean extra) throws IOException {
+    switch ((Report) option) {
+      case checkTables:
+        doCheckTables(f, dcm, useIndex);
+        break;
+      case localUseSection:
+        doLocalUseSection(f, dcm, useIndex);
+        break;
+      case uniqueGds:
+        doUniqueGds(f, dcm, useIndex);
+        break;
+      case duplicatePds:
+        doDuplicatePds(f, dcm, useIndex);
+        break;
+      case drsSummary:
+        doDrsSummary(f, dcm, useIndex, eachFile, extra);
+        break;
+      case gdsSummary:
+        doGdsSummary(f, dcm, useIndex);
+        break;
+      case pdsSummary:
+        doPdsSummary(f, dcm, useIndex);
+        break;
+      case idProblems:
+        doIdProblems(f, dcm, useIndex);
+        break;
+      case timeCoord:
+        doTimeCoord(f, dcm, useIndex);
+        break;
+      case rename:
+        doRename(f, dcm, useIndex);
+        break;
+      case renameCheck:
+        doRenameCheck(f, dcm, useIndex);
+        break;
+      case copyCompress:
+        doCopyCompress(f, dcm, useIndex, eachFile, extra);
+        break;
     }
-
-    // CollectionSpecParser parser = dcm.getCollectionSpecParser();
-
-    f.format("top dir = %s%n", dcm.getRoot());
-    //f.format("filter = %s%n", parser.getFilter());
-    reportPane.setText(f.toString());
-
-    File top = new File(dcm.getRoot());
-    if (!top.exists()) {
-      f.format("top dir = %s does not exist%n", dcm.getRoot());
-    } else {
-
-      switch (which) {
-        case checkTables:
-          doCheckTables(f, dcm, useIndex);
-          break;
-        case localUseSection:
-          doLocalUseSection(f, dcm, useIndex);
-          break;
-        case uniqueGds:
-          doUniqueGds(f, dcm, useIndex);
-          break;
-        case duplicatePds:
-          doDuplicatePds(f, dcm, useIndex);
-          break;
-        case drsSummary:
-          doDrsSummary(f, dcm, useIndex, eachFile, extra);
-          break;
-        case gdsSummary:
-          doGdsSummary(f, dcm, useIndex);
-          break;
-        case pdsSummary:
-          doPdsSummary(f, dcm, useIndex);
-          break;
-        case idProblems:
-          doIdProblems(f, dcm, useIndex);
-          break;
-        case timeCoord:
-          doTimeCoord(f, dcm, useIndex);
-          break;
-        case rename:
-          doRename(f, dcm, useIndex);
-          break;
-        case renameCheck:
-          doRenameCheck(f, dcm, useIndex);
-          break;
-        case copyCompress:
-          doCopyCompress(f, dcm, useIndex, eachFile, extra);
-          break;
-      }
-    }
-
-    reportPane.setText(f.toString());
-    reportPane.gotoTop();
   }
 
   ///////////////////////////////////////////////

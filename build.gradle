@@ -17,7 +17,7 @@ subprojects {
   ext {
     jfreechartVersion = "1.0.14"
     junitVersion = "4.8.2"
-    log4jVersion = "2.0-beta9"
+    log4jVersion = "2.0-rc1"
     servletVersion = "3.0.1"
     slf4jVersion = "1.7.5"
     springVersion = "3.2.3.RELEASE"
@@ -39,7 +39,9 @@ subprojects {
               'Implementation-Vendor-Id': 'edu.ucar',
               'Built-On': new Date(),
               'Build-Jdk': System.properties['java.version'],
-              'Permissions': 'all-permissions'
+              'Codebase': 'http://www.unidata.ucar.edu/software/thredds/',
+              'Permissions': 'all-permissions',
+              'Trusted-Only': 'true'
     }
   }
 

@@ -13,10 +13,8 @@ import java.util.Date;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Service;
 
 import edu.ucar.unidata.wmotables.domain.Table;
-import edu.ucar.unidata.wmotables.domain.User;
 import edu.ucar.unidata.wmotables.repository.TableDao;
 
 

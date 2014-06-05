@@ -101,9 +101,10 @@ public class GridAsPointResponder extends GridDatasetResponder implements NcssRe
 		LatLonPoint point = new LatLonPointImpl(queryParams.getLatitude(), queryParams.getLongitude()); //Check if the point is within boundaries!!
 		checkRequestedVars(gridDataset, queryParams);
 		Map<String, List<String>> groupVars = groupVarsByVertLevels(gridDataset, queryParams);
-								
+
+    // LOOK - shouldnt throw exception if we can help it - just a user error
 		if( !isPointWithinBoundaries(gridDataset, point, groupVars ) ){			
-			throw  new OutOfBoundariesException("Requested Lat/Lon Point (+" + point + ") is not contained in the Data. "+
+			throw new OutOfBoundariesException("Requested Lat/Lon Point (+" + point + ") is not contained in the Data. "+
 					"Data Bounding Box = " + gridDataset.getBoundingBox().toString2());
 		}			
 
