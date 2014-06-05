@@ -99,12 +99,7 @@ public class StationSubsetWriterNetcdf extends AbstractStationSubsetWriter {
     @Override
     public void writePoint(StationPointFeature stationPointFeat) throws Exception {
         Station station = stationPointFeat.getStation();
-
-        if (version == NetcdfFileWriter.Version.netcdf3) {
-            cfWriter.writeRecord(station, stationPointFeat, stationPointFeat.getData());
-        } else if (version == NetcdfFileWriter.Version.netcdf4) {
-            cfWriter.writeStructure(station, stationPointFeat, stationPointFeat.getData());
-        }
+        cfWriter.writeRecord(station, stationPointFeat, stationPointFeat.getData());
     }
 
     @Override
