@@ -1985,9 +1985,7 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
   }
 
   private SizeT[] convertSizeT(int[] from) {
-    if (from.length == 0) {
-      return new SizeT[0];
-    }
+    if (from.length == 0) return null;
     SizeT[] to = new SizeT[from.length];
     for (int i = 0; i < from.length; i++)
       to[i] = new SizeT(from[i]);

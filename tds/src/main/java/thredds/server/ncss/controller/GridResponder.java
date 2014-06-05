@@ -394,8 +394,7 @@ class GridResponder extends GridDatasetResponder {
 
 		String filename = getFileNameForResponse(version);
 		String pathname = Integer.toString(randomInt) + "/" + filename;
-		File ncFile = NcssDiskCache.getInstance().getDiskCache()
-				.getCacheFile(pathname);
+		File ncFile = NcssDiskCache.getInstance().getDiskCache().getCacheFile(pathname);
 
 		String cacheFilename = ncFile.getPath();
 
