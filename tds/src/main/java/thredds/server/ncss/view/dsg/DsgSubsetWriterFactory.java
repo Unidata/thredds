@@ -5,9 +5,12 @@ import thredds.server.ncss.exception.UnsupportedResponseFormatException;
 import thredds.server.ncss.format.SupportedFormat;
 import thredds.server.ncss.params.NcssParamsBean;
 import thredds.server.ncss.view.dsg.point.PointSubsetWriterCSV;
+import thredds.server.ncss.view.dsg.point.PointSubsetWriterNetcdf;
 import thredds.server.ncss.view.dsg.point.PointSubsetWriterXML;
 import thredds.server.ncss.view.dsg.station.StationSubsetWriterCSV;
+import thredds.server.ncss.view.dsg.station.StationSubsetWriterNetcdf;
 import thredds.server.ncss.view.dsg.station.StationSubsetWriterXML;
+import ucar.nc2.NetcdfFileWriter.Version;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.ft.FeatureDatasetPoint;
 import ucar.nc2.util.DiskCache2;
@@ -39,7 +42,7 @@ public abstract class DsgSubsetWriterFactory {
     }
 
     public static DsgSubsetWriter newPointInstance(FeatureDatasetPoint fdPoint, NcssParamsBean ncssParams,
-                                                     DiskCache2 diskCache, OutputStream out, SupportedFormat format)
+            DiskCache2 diskCache, OutputStream out, SupportedFormat format)
             throws XMLStreamException, NcssException, IOException {
         switch (format) {
             case XML_STREAM:
@@ -49,11 +52,9 @@ public abstract class DsgSubsetWriterFactory {
             case CSV_FILE:
                 return new PointSubsetWriterCSV(fdPoint, ncssParams, out);
             case NETCDF3:
-//                w = new WriterNetcdf(NetcdfFileWriter.Version.netcdf3, out);
-                return null;
+                return new PointSubsetWriterNetcdf(fdPoint, ncssParams, diskCache, out, Version.netcdf3);
             case NETCDF4:
-//                w = new WriterNetcdf(NetcdfFileWriter.Version.netcdf4, out);
-                return null;
+                return new PointSubsetWriterNetcdf(fdPoint, ncssParams, diskCache, out, Version.netcdf4);
             case WATERML2:
 //                w = new WriterWaterML2(out);
                 return null;
@@ -73,11 +74,9 @@ public abstract class DsgSubsetWriterFactory {
             case CSV_FILE:
                 return new StationSubsetWriterCSV(fdPoint, ncssParams, out);
             case NETCDF3:
-//                w = new WriterNetcdf(NetcdfFileWriter.Version.netcdf3, out);
-                return null;
+                return new StationSubsetWriterNetcdf(fdPoint, ncssParams, diskCache, out, Version.netcdf3);
             case NETCDF4:
-//                w = new WriterNetcdf(NetcdfFileWriter.Version.netcdf4, out);
-                return null;
+                return new StationSubsetWriterNetcdf(fdPoint, ncssParams, diskCache, out, Version.netcdf4);
             case WATERML2:
 //                w = new WriterWaterML2(out);
                 return null;

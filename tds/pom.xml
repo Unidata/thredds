@@ -66,6 +66,10 @@
       <groupId>edu.wisc.ssec</groupId>
       <artifactId>visad</artifactId>
     </dependency>
+    <dependency>
+      <groupId>edu.ucar</groupId>
+      <artifactId>waterml</artifactId>
+    </dependency>
 
     <!-- DAP4 Dependencies (technically forward) -->
     <dependency>

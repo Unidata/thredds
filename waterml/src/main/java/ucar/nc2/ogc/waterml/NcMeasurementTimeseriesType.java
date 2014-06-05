@@ -3,7 +3,6 @@ package ucar.nc2.ogc.waterml;
 import net.opengis.waterml.x20.MeasurementTimeseriesType;
 import ucar.nc2.VariableSimpleIF;
 import ucar.nc2.ft.PointFeature;
-import ucar.nc2.ft.PointFeatureIterator;
 import ucar.nc2.ft.StationTimeSeriesFeature;
 import ucar.nc2.ogc.MarshallingUtil;
 
@@ -25,10 +24,14 @@ public abstract class NcMeasurementTimeseriesType {
                 measurementTimeseries.addNewDefaultPointMetadata(), dataVar);
 
         // wml2:point[0..*]
-        PointFeatureIterator pointFeatIter = stationFeat.getPointFeatureIterator(-1);
-        while (pointFeatIter.hasNext()) {
-            // wml2:point
-            Point.initPoint(measurementTimeseries.addNewPoint(), pointFeatIter.next(), dataVar);
+        stationFeat.resetIteration();
+        try {
+            while (stationFeat.hasNext()) {
+                // wml2:point
+                Point.initPoint(measurementTimeseries.addNewPoint(), stationFeat.next(), dataVar);
+            }
+        } finally {
+            stationFeat.finish();
         }
 
         return measurementTimeseries;

@@ -26,17 +26,24 @@ public abstract class NcCollectionType {
         NcDocumentMetadataPropertyType.initMetadata(collection.addNewMetadata());
 
         // wml2:observationMember[0..*]
-        for (VariableSimpleIF dataVar : dataVars) {
-            StationTimeSeriesFeatureCollection stationFeatColl = getStationFeatures(fdPoint);
-            PointFeatureCollectionIterator stationFeatCollIter = stationFeatColl.getPointFeatureCollectionIterator(-1);
+        StationTimeSeriesFeatureCollection stationFeatColl = getStationFeatures(fdPoint);
+        try {
+            while (stationFeatColl.hasNext()) {
+                StationTimeSeriesFeature stationFeat = stationFeatColl.next();
 
-            while (stationFeatCollIter.hasNext()) {
-                StationTimeSeriesFeature stationFeat = (StationTimeSeriesFeature) stationFeatCollIter.next();
-
-                // wml2:observationMember
-                NcOMObservationPropertyType.initObservationMember(
-                        collection.addNewObservationMember(), stationFeat, dataVar);
+                for (VariableSimpleIF dataVar : dataVars) {
+                    stationFeat.resetIteration();
+                    try {
+                        // wml2:observationMember
+                        NcOMObservationPropertyType.initObservationMember(
+                                collection.addNewObservationMember(), stationFeat, dataVar);
+                    } finally {
+                        stationFeat.finish();
+                    }
+                }
             }
+        } finally {
+            stationFeatColl.finish();
         }
 
         return collection;

@@ -139,10 +139,12 @@ public class MarshallingUtil {
     private static class GML32AbstractFeatureCase implements LaxValidationCase {
         private static final Object FEATURE_QN = new QName("http://www.opengis.net/gml/3.2", "AbstractFeature");
 
+        @Override
         public boolean shouldPass(XmlValidationError xve) {
             return xve.getExpectedQNames() != null && xve.getExpectedQNames().contains(FEATURE_QN);
         }
 
+        @Override
         public boolean shouldPass(XmlError validationError) {
             if (!(validationError instanceof XmlValidationError)) return false;
 

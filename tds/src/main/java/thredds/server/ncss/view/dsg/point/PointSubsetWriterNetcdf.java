@@ -1,4 +1,4 @@
-package thredds.server.ncss.view.dsg.station;
+package thredds.server.ncss.view.dsg.point;
 
 import org.springframework.http.HttpHeaders;
 import thredds.server.ncss.controller.NcssController;
@@ -14,12 +14,11 @@ import ucar.nc2.constants.CDM;
 import ucar.nc2.dataset.CoordinateAxis;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.ft.FeatureDatasetPoint;
-import ucar.nc2.ft.point.StationPointFeature;
-import ucar.nc2.ft.point.writer.WriterCFStationCollection;
+import ucar.nc2.ft.PointFeature;
+import ucar.nc2.ft.point.writer.WriterCFPointCollection;
 import ucar.nc2.units.DateUnit;
 import ucar.nc2.util.DiskCache2;
 import ucar.nc2.util.IO;
-import ucar.unidata.geoloc.Station;
 
 import java.io.File;
 import java.io.IOException;
@@ -28,16 +27,16 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Created by cwardgar on 2014/05/29.
+ * Created by cwardgar on 2014/06/04.
  */
-public class StationSubsetWriterNetcdf extends AbstractStationSubsetWriter {
+public class PointSubsetWriterNetcdf extends AbstractPointSubsetWriter {
     private final OutputStream out;
     private final NetcdfFileWriter.Version version;
 
     private final File netcdfResult;
-    private final WriterCFStationCollection cfWriter;
+    private final WriterCFPointCollection cfWriter;
 
-    public StationSubsetWriterNetcdf(FeatureDatasetPoint fdPoint, NcssParamsBean ncssParams,
+    public PointSubsetWriterNetcdf(FeatureDatasetPoint fdPoint, NcssParamsBean ncssParams,
             DiskCache2 diskCache, OutputStream out, NetcdfFileWriter.Version version) throws NcssException, IOException {
         super(fdPoint, ncssParams);
 
@@ -47,7 +46,7 @@ public class StationSubsetWriterNetcdf extends AbstractStationSubsetWriter {
         this.netcdfResult = diskCache.createUniqueFile("ncssTemp", ".nc");
         List<Attribute> attribs = new ArrayList<>();
         attribs.add(new Attribute(CDM.TITLE, "Extracted data from TDS Feature Collection " + fdPoint.getLocation()));
-        this.cfWriter = new WriterCFStationCollection(version, netcdfResult.getAbsolutePath(), attribs);
+        this.cfWriter = new WriterCFPointCollection(version, netcdfResult.getAbsolutePath(), attribs);
     }
 
     @Override
@@ -93,18 +92,12 @@ public class StationSubsetWriterNetcdf extends AbstractStationSubsetWriter {
             }
         }
 
-        cfWriter.writeHeader(wantedStations, wantedVariables, timeUnit, altUnit);
+        cfWriter.writeHeader(wantedVariables, timeUnit, altUnit);
     }
 
     @Override
-    public void writePoint(StationPointFeature stationPointFeat) throws Exception {
-        Station station = stationPointFeat.getStation();
-
-        if (version == NetcdfFileWriter.Version.netcdf3) {
-            cfWriter.writeRecord(station, stationPointFeat, stationPointFeat.getData());
-        } else if (version == NetcdfFileWriter.Version.netcdf4) {
-            cfWriter.writeStructure(station, stationPointFeat, stationPointFeat.getData());
-        }
+    public void writePoint(PointFeature pointFeat) throws Exception {
+        cfWriter.writeRecord(pointFeat, pointFeat.getData());
     }
 
     @Override
