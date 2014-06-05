@@ -1055,21 +1055,6 @@ public class TestUtil {
 
 
     /**
-     * Test String2LogOutputStream.
-     */
-    public static void testString2LogOutputStream() throws Exception {
-        String2.log("***************************************** testString2LogOutputStream");
-
-        String2LogOutputStream out = new String2LogOutputStream();
-        out.write('a');
-        out.write(new byte[]{(byte) 'b', (byte) 'c', (byte) 13, (byte) 10, (byte) 'a'});
-        out.write(new byte[]{(byte) 'b', (byte) 'c', (byte) 13, (byte) 10, (byte) 'a'});
-        out.close();
-        String2.log("It should have just logged \"abc\" twice.");
-    }
-
-
-    /**
      * Test the methods in String2.
      */
     public static void testString2() throws Exception {
@@ -4364,7 +4349,6 @@ public class TestUtil {
         testString2();
         testString2canonical();
         testString2canonical2();
-        testString2LogOutputStream();
         testByteIndexOf();
         testFile2();
         XML.test();

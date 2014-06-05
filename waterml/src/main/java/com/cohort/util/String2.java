@@ -2602,36 +2602,6 @@ public class String2 {
     }*/
 
     /**
-     * This tells Commons Logging to use com.cohort.util.String2Log.
-     * I use this at the beginning of my programs 
-     * (TestAll, NetCheck, Browser, ConvertTable, DoubleCenterGrids)
-     * to route Commons Logging requests through String2Log.
-     * !!!Don't use this in lower level methods as it will hijack the 
-     * parent program's (e.g., Armstrong's) logger setup.
-     *
-     * param level a String2Log.XXX_LEVEL constant (or -1 to leave unchanged,
-     *     default=String2Log.WARN_LEVEL)
-     */
-    public static void setupCommonsLogging(int level) {
-        //By setting this property, I specify that String2LogFactory
-        //  will be used to generate logFactories.
-        //  (It makes one String2Log, which sends all messages to String2.log.)
-        System.setProperty("org.apache.commons.logging.LogFactory", 
-            "com.cohort.util.String2LogFactory");
-        if (level >= 0) {
-            System.setProperty("com.cohort.util.String2Log.level", "" + level);
-        } else {
-            if (System.getProperty("com.cohort.util.String2Log.level") == null)
-                System.setProperty("com.cohort.util.String2Log.level", 
-                    "" + String2Log.WARN_LEVEL);
-        }
-
-        //this dummy variable ensures String2LogFactory gets compiled 
-        String2LogFactory string2LogFactory;
-
-    }
-
-    /**
      * This changes the log system set up.
      * The default log prints to System.err.
      * Use the logger by calling String2.log(msg); 
