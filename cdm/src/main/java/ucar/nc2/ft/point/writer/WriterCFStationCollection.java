@@ -40,16 +40,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import ucar.ma2.Array;
 import ucar.ma2.ArrayDouble;
 import ucar.ma2.ArrayInt;
 import ucar.ma2.ArrayObject;
-import ucar.ma2.ArrayStructureW;
 import ucar.ma2.DataType;
 import ucar.ma2.InvalidRangeException;
 import ucar.ma2.StructureData;
-import ucar.ma2.StructureMembers;
-import ucar.ma2.StructureMembers.Member;
 import ucar.nc2.Attribute;
 import ucar.nc2.Dimension;
 import ucar.nc2.NetcdfFileWriter;
@@ -83,7 +79,7 @@ import ucar.unidata.geoloc.Station;
  * @author caron
  * @since Aug 19, 2009
  */
-public class WriterCFStationCollection  extends CFPointWriter {
+public class WriterCFStationCollection extends CFPointWriter {
   private static final String stationDimName = "station";
   private static final String idName = "station_id";
   private static final String descName = "station_description";
@@ -93,16 +89,16 @@ public class WriterCFStationCollection  extends CFPointWriter {
 
   //////////////////////////////////////////////////////////
   private int name_strlen = 1, desc_strlen = 1, wmo_strlen = 1;
-  private Variable lat, lon, alt, time, id, wmoId, desc, stationIndex, record;
+  private Variable lat, lon, alt, time, id, wmoId, desc, stationIndex;
 
-  private List<Dimension> stationDims = new ArrayList<Dimension>(1);
+  private List<Dimension> stationDims = new ArrayList<>(1);
   private Dimension recordDim;
 
   private boolean useAlt = false;
   private boolean useWmoId = false;
 
   public WriterCFStationCollection(String fileOut, String title) throws IOException {
-    this(null, fileOut, Arrays.asList(new Attribute[]{new Attribute(CDM.TITLE, title)}));
+    this(null, fileOut, Arrays.asList(new Attribute(CDM.TITLE, title)));
   }
   
   public WriterCFStationCollection(NetcdfFileWriter.Version version, String fileOut, List<Attribute> atts) throws IOException {
@@ -118,7 +114,8 @@ public class WriterCFStationCollection  extends CFPointWriter {
     createDataVariables(vars);
 
     writer.create(); // done with define mode
-    record = writer.addRecordStructure();
+    record = writer.addRecordStructure(); // netcdf3 only
+    //System.out.printf("Output file = %s%n", writer.getNetcdfFile());
 
     writeStationData(stns); // write out the station info
   }
@@ -215,14 +212,14 @@ public class WriterCFStationCollection  extends CFPointWriter {
     }  */
     
     // eliminate coordinate variables
-    List<VariableSimpleIF> useDataVars = new ArrayList<VariableSimpleIF>(dataVars.size());
+    List<VariableSimpleIF> useDataVars = new ArrayList<>(dataVars.size());
     for (VariableSimpleIF var : dataVars) {
       if (writer.findVariable(var.getShortName()) == null) useDataVars.add(var);
     }
 
     // add the data variables, all using the record dimension
     for (VariableSimpleIF oldVar : useDataVars) {
-      List<Dimension> dims = getNewDimensions(oldVar);
+      List<Dimension> dims = new ArrayList<>(); // getNewDimensions(oldVar);
       dims.add(0, recordDim);
 
       /* StringBuilder dimNames = new StringBuilder(recordDimName);
@@ -257,13 +254,15 @@ public class WriterCFStationCollection  extends CFPointWriter {
           newVar.addAttribute(att);
       }
       newVar.addAttribute(new Attribute(CF.COORDINATES, coordNames));
+
+      dataVarMap.put(newVar.getShortName(), newVar);
     }
   }
 
   int countDim = 0;
-  private final Map<String, Dimension> gdimHash = new HashMap<String, Dimension>(); // name, newDim : global dimensions (classic mode)
+  private final Map<String, Dimension> gdimHash = new HashMap<>(); // name, newDim : global dimensions (classic mode)
   private List<Dimension> getNewDimensions(VariableSimpleIF oldVar) {
-    List<Dimension> result = new ArrayList<Dimension>(oldVar.getRank());
+    List<Dimension> result = new ArrayList<>(oldVar.getRank());
 
     // dimensions
     for (Dimension oldD : oldVar.getDimensions()) {
@@ -289,7 +288,7 @@ public class WriterCFStationCollection  extends CFPointWriter {
 
   private void writeStationData(List<ucar.unidata.geoloc.Station> stnList) throws IOException {
     int nstns = stnList.size();
-    stationMap = new HashMap<String, Integer>(2 * nstns);
+    stationMap = new HashMap<>(2 * nstns);
     if (debug) System.out.println("stationMap created");
 
     // now write the station data
@@ -329,9 +328,7 @@ public class WriterCFStationCollection  extends CFPointWriter {
 
   private int recno = 0;
   private ArrayDouble.D1 timeArray = new ArrayDouble.D1(1);
-  //private ArrayInt.D1 prevArray = new ArrayInt.D1(1);
   private ArrayInt.D1 parentArray = new ArrayInt.D1(1);
-  private int[] origin = new int[1];
 
   public void writeRecord(Station s, PointFeature sobs, StructureData sdata) throws IOException {
     writeRecord(s.getName(), sobs.getObservationTime(), sobs.getObservationTimeAsCalendarDate(), sdata);
@@ -344,17 +341,15 @@ public class WriterCFStationCollection  extends CFPointWriter {
     if (parentIndex == null)
       throw new RuntimeException("Cant find station " + stnName);
 
-    // needs to be wrapped as an ArrayStructure, even though we are only writing one at a time.
-    ArrayStructureW sArray = new ArrayStructureW(sdata.getStructureMembers(), new int[]{1});
-    sArray.setStructureData(sdata, 0);
-
     timeArray.set(0, timeCoordValue);
     parentArray.set(0, parentIndex);
 
     // write the recno record
+    int[] origin = new int[1];
     origin[0] = recno;
     try {
-      writer.write(record, origin, sArray);
+      super.writeStructureData(origin, sdata);
+
       writer.write(time, origin, timeArray);
       writer.write(stationIndex, origin, parentArray);
 
@@ -369,7 +364,7 @@ public class WriterCFStationCollection  extends CFPointWriter {
   /**
    * Use this when record structure is not available (netcdf4)
  * @throws IOException 
-   */
+   *
   public void writeStructure(Station s, PointFeature sobs, StructureData sdata) throws IOException{
 	  String stnName = s.getName();
 	  double timeCoordValue = sobs.getObservationTime();
@@ -417,9 +412,7 @@ public class WriterCFStationCollection  extends CFPointWriter {
 		}	      
 
 		recno++;	  
-  }
-  
-  
+  } */
   
   /*private Array getArrayFromMember(Variable var, Member m){
 		

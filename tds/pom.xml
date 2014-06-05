@@ -246,6 +246,7 @@
     <dependency>
       <groupId>org.hibernate</groupId>
       <artifactId>hibernate-validator</artifactId>
+      <version>${org.hibernate.version}</version>
     </dependency>
 
     <!-- test -->

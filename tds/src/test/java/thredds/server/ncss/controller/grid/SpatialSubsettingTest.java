@@ -140,7 +140,7 @@ public class SpatialSubsettingTest {
 	}
 	
 	@Test
-	public void shoudGetVariablesSubset() throws Exception{
+	public void shouldGetVariablesSubset() throws Exception{
 				
 		//gridDataController.getGridSubset(params, validationResult, response);
 		

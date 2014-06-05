@@ -267,16 +267,14 @@ Array.makeArray(DataType dtype, List&lt;String&gt; stringValues);</pre>
 <p><strong>Q: Ok, so you read a lot of files, what about writing?</strong></p>
 <blockquote>
   <p>Netcdf-Java library supports writing netCDF-3 file format using the <a href="http://www.unidata.ucar.edu/software/netcdf/docs/faq.html#fv2">classic data
-    model</a>. As of version 4.3, writing to the netCDF-4 <strong><a name="netcdf4" id="netcdf4"></a></strong> file format is supported as BETA software,
+    model</a>. Writing to the netCDF-4 <strong><a name="netcdf4" id="netcdf4"></a></strong> file format is supported
     using a <a href="http://en.wikipedia.org/wiki/Java_Native_Interface">JNI</a> interface to
-    the <a href="netcdf4Clibrary.html">netCDF C library.</a> This allows you to write the full
-    <a href="http://www.unidata.ucar.edu/software/netcdf-java/CDM/">CDM data model</a>. </p>
-
-  <p>See the <strong>ucar.nc2.NetcdfFileWriter</strong> javadoc.</p>
+    the <a href="netcdf4Clibrary.html">netCDF C library.</a> Writing the full
+    <a href="http://www.unidata.ucar.edu/software/netcdf-java/CDM/">CDM data model</a> is in beta, as of version 4.5. See:</p>
   <ul>
-    <li><strong>ucar.nc2.FileWriter2 </strong>writes CDM files to netCDF-3 or netCDF-4 format.</li>
-    <li><strong>ucar.nc2.dataset.NetcdfDataset</strong>.<strong>main</strong>() is a cover for <strong>FileWriter2</strong>, but you can also open NcML,
-      OPeNDAP, and other datasets accessible with NetcdfDataset.openFile(). See <a href="formats/GribTables.html">here</a> for details.
+    <li>Program with complete control: <strong>ucar.nc2.NetcdfFileWriter</strong> javadoc and <a href="../tutorial/NetcdfWriting.html">NetCDF File Writing tutorial</a>.</li>
+    <li>Copy complete files from a program: <strong>ucar.nc2.FileWriter2 </strong>writes CDM files to netCDF-3 or netCDF-4 format.</li>
+    <li>Command line file copying:<strong>  </strong>See <a href="manPages.html#nccopy">here</a> for details.
     </li>
   </ul>
 </blockquote>
@@ -287,13 +285,12 @@ Array.makeArray(DataType dtype, List&lt;String&gt; stringValues);</pre>
       1,</a> <a href="http://www.unidata.ucar.edu/blogs/developer/en/entry/dimension_scale2">Part
       2</a>, <a href="http://www.unidata.ucar.edu/blogs/developer/en/entry/dimension_scales_part_3">Part 3</a>.</p>
 
-  <p>HDF5 is a very complicated format, and we do not plan to write a pure Java version for writing netCDF4 files (we do have a pure Java version for reading
-    both HDF5 and netCDF-4). </p>
+  <p>HDF5 is a very complicated format, and we do not plan to write a pure Java version for <em>writing</em> netCDF4 files (we do have a pure Java version for <em>reading</em> both HDF5 and netCDF-4). You must use the JNI interfacce to the <a href="netcdf4Clibrary.html">netCDF C library</a>.</p>
 </blockquote>
 <p><strong>Q: Can I stream a NetcdfFile object to a client?</strong></p>
 <blockquote>
-  <p>NetCDF is a random access format, so streaming is not possible in general. The standard way to do this is to write to a disk file (so that you have a
-    random access file), using <strong>ucar.nc2.FileWriter2</strong>, then copy the file to the client. </p>
+  <p>NetCDF is a random access format, so streaming is not possible in general. The way to do this is to write to a disk file (so that you have a
+    random access file), using <strong>ucar.nc2.FileWriter2</strong>, then copy the file to the client. For performance, you can try copying to a solid state disk.</p>
 
   <p>We are working on an experimental streaming format for NetCDF, called <a href="stream/NcStream.html">ncstream</a>, and a remote access protocol called
     <a href="stream/CdmRemote.html">CdmRemote</a>. These are fully functional as of CDM version 4.2, but are still evolving and should only be used if you
@@ -385,7 +382,7 @@ NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN}</pre>
 </blockquote>
 <hr/>
 <address>
-  <img src="../nc.gif" alt="" width="64" height="64"/> This document was last updated May 2014
+  <img src="../nc.gif" alt="" width="64" height="64"/> This document was last updated June 2014
 </address>
 </body>
 </html>

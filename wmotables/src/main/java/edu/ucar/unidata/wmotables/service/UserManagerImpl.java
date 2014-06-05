@@ -5,8 +5,6 @@ import org.apache.commons.codec.digest.DigestUtils;
 import java.util.Date;
 import java.util.List;
 
-import org.springframework.stereotype.Service;
-
 import edu.ucar.unidata.wmotables.domain.User;
 import edu.ucar.unidata.wmotables.repository.UserDao;
 

@@ -114,7 +114,7 @@ public class NetcdfFileWriter {
    *
    * @param version  netcdf-3 or 4
    * @param location name of new file to open; if it exists, will overwrite it.
-   * @param chunker  used only for netcdf4, or null for default
+   * @param chunker  used only for netcdf4, or null for default chunking algorithm
    * @return new NetcdfFileWriter
    * @throws IOException on I/O error
    */
@@ -146,7 +146,7 @@ public class NetcdfFileWriter {
    * @param raf        Random access file to use, may be null if iospw is, otherwise must be opened read/write
    * @param location   open a new file at this location
    * @param isExisting true if file already exists
-   * @param chunker    used only for netcdf4, or null for default
+   * @param chunker    used only for netcdf4, or null for used only for netcdf4, or null for default chunking algorithm
    * @throws IOException on I/O error
    */
   protected NetcdfFileWriter(Version version, IOServiceProviderWriter iospw, ucar.unidata.io.RandomAccessFile raf,

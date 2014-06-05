@@ -15,7 +15,7 @@
   <artifactId>httpservices</artifactId>
 
   <packaging>jar</packaging>
-  <name>Apache HttpClient Wrappers</name>
+  <name>HttpClient Wrappers</name>
   <url>http://www.unidata.ucar.edu/software/netcdf-java/documentation.htm</url>
 
   <!-- ===========================================================
@@ -38,37 +38,38 @@
     <dependency>
       <groupId>org.apache.httpcomponents</groupId>
       <artifactId>httpclient</artifactId>
-      <scope>provided</scope>
+      <!-- scope>provided</scope -->
     </dependency>
     <dependency>
       <groupId>org.apache.httpcomponents</groupId>
       <artifactId>httpcore</artifactId>
-      <scope>provided</scope>
+      <!-- scope>provided</scope -->
     </dependency>
     <dependency>
       <groupId>org.apache.httpcomponents</groupId>
       <artifactId>httpmime</artifactId>
-      <scope>provided</scope>
+      <!-- scope>provided</scope -->
     </dependency>
      
-    <dependency>  <!-- replace commons-logging -->
+    <!-- replace commons-logging assume this is done in final artifact eg war or app
+    <dependency>
       <groupId>org.slf4j</groupId>
       <artifactId>jcl-over-slf4j</artifactId>
       <scope>provided</scope>
-    </dependency>
+    </dependency -->
 
-    <!-- logging -->
+    <!-- logging facade -->
     <dependency>
       <groupId>org.slf4j</groupId>
       <artifactId>slf4j-api</artifactId>
-      <scope>provided</scope>
+      <!-- scope>provided</scope -->
     </dependency>
 
-    <dependency>
+    <!-- dependency>
       <groupId>org.slf4j</groupId>
       <artifactId>slf4j-jdk14</artifactId>
       <scope>provided</scope>
-    </dependency>
+    </dependency -->
 
   </dependencies>
 

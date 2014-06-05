@@ -58,10 +58,10 @@ import java.io.IOException;
  * @since Nov 23, 2010
  */
 public class WriterCFPointCollection extends CFPointWriter {
-  private Variable time, lat, lon, alt, record;
+  private Variable time, lat, lon, alt;
 
   public WriterCFPointCollection(String fileOut, String title) throws IOException {
-    this(null, fileOut, Arrays.asList(new Attribute[]{new Attribute(CDM.TITLE, title)}));
+    this(null, fileOut, Arrays.asList(new Attribute(CDM.TITLE, title)));
   }
 
   public WriterCFPointCollection(NetcdfFileWriter.Version version, String fileOut, List<Attribute> atts) throws IOException {
@@ -138,6 +138,7 @@ public class WriterCFPointCollection extends CFPointWriter {
       }
 
       newVar.addAttribute( new Attribute(CF.COORDINATES, coordNames));
+      dataVarMap.put(newVar.getShortName(), newVar);
     }
 
   }
@@ -150,7 +151,6 @@ public class WriterCFPointCollection extends CFPointWriter {
   private ArrayDouble.D1 latArray = new ArrayDouble.D1(1);
   private ArrayDouble.D1 lonArray = new ArrayDouble.D1(1);
   private ArrayDouble.D1 altArray = new ArrayDouble.D1(1);
-  private int[] origin = new int[1];
 
   public void writeRecord(PointFeature sobs, StructureData sdata) throws IOException {
     writeRecord(sobs.getObservationTime(), sobs.getObservationTimeAsCalendarDate(), sobs.getLocation(), sdata);
@@ -159,10 +159,6 @@ public class WriterCFPointCollection extends CFPointWriter {
   public void writeRecord(double timeCoordValue, CalendarDate obsDate, EarthLocation loc, StructureData sdata) throws IOException {
     trackBB(loc, obsDate);
 
-    // needs to be wrapped as an ArrayStructure, even though we are only writing one at a time.
-    ArrayStructureW sArray = new ArrayStructureW(sdata.getStructureMembers(), new int[]{1});
-    sArray.setStructureData(sdata, 0);
-
     timeArray.set(0, timeCoordValue);
     latArray.set(0, loc.getLatitude());
     lonArray.set(0, loc.getLongitude());
@@ -170,9 +166,11 @@ public class WriterCFPointCollection extends CFPointWriter {
       altArray.set(0, loc.getAltitude());
 
     // write the recno record
+    int[] origin = new int[1];
     origin[0] = recno;
     try {
-      writer.write(record, origin, sArray);
+      super.writeStructureData(origin, sdata);
+
       writer.write(time, origin, timeArray);
       writer.write(lat, origin, latArray);
       writer.write(lon, origin, lonArray);

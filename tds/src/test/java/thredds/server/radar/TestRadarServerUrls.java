@@ -49,6 +49,7 @@ public class TestRadarServerUrls {
 
             {"/radarServer/nexrad/level2/IDD/dataset.xml", null},
             {"/radarServer/nexrad/level2/IDD/stations.xml", null},
+            {"/radarServer/nexrad/level2/IDD?stn=KDGX&time_start=2014-06-05T12:47:17&time_end=2014-06-05T16:07:17", null},
             //{"/radarServer/nexrad/level2/IDD", "stn=KDGX&time=present"},
 
             {"/radarServer/nexrad/level3/IDD/catalog.xml", null},
@@ -78,7 +79,7 @@ public class TestRadarServerUrls {
     this.query = query;
   }
 
-  // @Test   LOOK BAIL out
+  @Test   //LOOK BAIL out
   public void radarRequest() throws Exception {
     String url = (query == null) ? path : path + "?" + query;
     RequestBuilder rb = MockMvcRequestBuilders.get(url).servletPath(path);
