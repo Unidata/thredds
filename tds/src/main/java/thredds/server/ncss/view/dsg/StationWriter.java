@@ -663,11 +663,11 @@ public class StationWriter extends AbstractWriter {
             }
           }
 
-          if (version == NetcdfFileWriter.Version.netcdf3)
+         // if (version == NetcdfFileWriter.Version.netcdf3)
             cfWriter.writeRecord(sfc.getStation(pf), pf, sdata);
 
-          if (version == NetcdfFileWriter.Version.netcdf4)
-            cfWriter.writeStructure(sfc.getStation(pf), pf, sdata);
+          //if (version == NetcdfFileWriter.Version.netcdf4)
+          //  cfWriter.writeStructure(sfc.getStation(pf), pf, sdata);
 
           count++;
         }

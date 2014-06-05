@@ -696,6 +696,13 @@ public String NC_check_name(String name) {
       if (!(values instanceof ArrayStructure))
         throw new IllegalArgumentException("writeData for Structure: data must be ArrayStructure");
 
+      if (v2.getRank() == 0)
+        throw new IllegalArgumentException("writeData for Structure: must have rank > 0");
+
+      Dimension d = v2.getDimension(0);
+      if (!d.isUnlimited())
+        throw new IllegalArgumentException("writeData for Structure: must have unlimited dimension");
+
       writeRecordData((Structure) v2, section, (ArrayStructure) values);
 
     } else {
@@ -713,33 +720,30 @@ public String NC_check_name(String name) {
     Range recordRange = section.getRange(0);
     int countSrcRecnum = 0;
     for (int recnum = recordRange.first(); recnum <= recordRange.last(); recnum += recordRange.stride()) {
-      // System.out.println("  wrote "+recnum+" begin at "+begin);
 
       // loop over members
-      for (Variable v2 : vars) {
-        StructureMembers.Member m = members.findMember(v2.getShortName());
+      for (Variable vm : vars) {
+        StructureMembers.Member m = members.findMember(vm.getShortName());
         if (null == m)
           continue; // this means that the data is missing from the ArrayStructure
 
-        //if (v2.getShortName().equals("TOST"))
-        //  System.out.println("HEY");
-
         // convert String member data into CHAR data
         Array data = structureArray.getArray(countSrcRecnum, m);
-        if (data instanceof ArrayObject && v2.getDataType() == DataType.CHAR && v2.getRank() > 0) {
-          int strlen = v2.getShape(v2.getRank() - 1);
+        if (data instanceof ArrayObject && vm.getDataType() == DataType.CHAR && vm.getRank() > 0) {
+          int strlen = vm.getShape(vm.getRank() - 1);
           data = ArrayChar.makeFromStringArray((ArrayObject) data, strlen); // turn it into an ArrayChar
         }
 
         // layout of the destination
-        N3header.Vinfo vinfo = (N3header.Vinfo) v2.getSPobject();
-        long begin = vinfo.begin + recnum * header.recsize;
-        Layout layout = new LayoutRegular(begin, v2.getElementSize(), v2.getShape(), v2.getShapeAsSection());
+        N3header.Vinfo vinfo = (N3header.Vinfo) vm.getSPobject();
+        long begin = vinfo.begin + recnum * header.recsize;  // this assumes unlimited dimension
+        Section memberSection = vm.getShapeAsSection();
+        Layout layout = new LayoutRegular(begin, vm.getElementSize(), vm.getShape(), memberSection);
 
         try {
-          writeData(data, layout, v2.getDataType());
+          writeData(data, layout, vm.getDataType());
         } catch (Exception e) {
-          log.error("Error writing member="+v2.getShortName()+" in struct="+s.getFullName(), e);
+          log.error("Error writing member="+vm.getShortName()+" in struct="+s.getFullName(), e);
           throw new IOException(e);
         }
       }
