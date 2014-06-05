@@ -5,29 +5,29 @@
 
   <!-- not currently used -->
 
-  <bean id="datasetCollection" class="thredds.server.radarServerOrg.RadarDatasetCollection">
+  <bean id="datasetCollection" class="thredds.server.radarServer.RadarDatasetCollection">
     <property name="daysToRead" value="14" />
   </bean>
 
-  <bean id="repository" class="thredds.server.radarServerOrg.DatasetRepository" init-method="init">
+  <bean id="repository" class="thredds.server.radarServer.DatasetRepository" init-method="init">
     <property name="tdsContext" ref="tdsContext"/>
   </bean>
 
-  <bean id="catalogXmlController" class="thredds.server.radarServerOrg.CatalogRadarServerController">
+  <bean id="catalogXmlController" class="thredds.server.radarServer.CatalogRadarServerController">
     <!-- property name="tdsContext" ref="tdsContext"/-->
     <property name="htmlView" value="false"/>
     <!-- property name="htmlWriter" ref="htmlWriter"/-->
     <property name="supportedMethods" value="GET"/>
   </bean>
 
-  <bean id="catalogHtmlController" class="thredds.server.radarServerOrg.CatalogRadarServerController">
+  <bean id="catalogHtmlController" class="thredds.server.radarServer.CatalogRadarServerController">
     <!-- property name="tdsContext" ref="tdsContext"/-->
     <property name="htmlView" value="true"/>
     <!-- property name="htmlWriter" ref="htmlWriter"/-->
     <property name="supportedMethods" value="GET"/>
   </bean>
 
-  <bean id="queryXmlController" class="thredds.server.radarServerOrg.QueryRadarServerController" >
+  <bean id="queryXmlController" class="thredds.server.radarServer.QueryRadarServerController" >
     <property name="tdsContext" ref="tdsContext"/>
     <property name="htmlView" value="false"/>
     <property name="htmlWriter" ref="htmlWriter"/>
@@ -35,7 +35,7 @@
     <property name="supportedMethods" value="GET"/>
   </bean>
 
-  <bean id="stationXmlController" class="thredds.server.radarServerOrg.StationRadarServerController">
+  <bean id="stationXmlController" class="thredds.server.radarServer.StationRadarServerController">
     <property name="tdsContext" ref="tdsContext"/>
     <property name="htmlView" value="false"/>
     <property name="htmlWriter" ref="htmlWriter"/>

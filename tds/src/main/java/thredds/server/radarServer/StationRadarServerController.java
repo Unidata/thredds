@@ -36,13 +36,14 @@
  * Time: 3:55:40 PM
  */
 
-package thredds.server.radarServerOrg;
+package thredds.server.radarServer;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.ModelAndView;
+
 import org.springframework.web.servlet.mvc.AbstractController;
 import thredds.catalog.query.Station;
 import thredds.server.config.TdsContext;
@@ -60,7 +61,7 @@ import java.util.Map;
 public class StationRadarServerController extends AbstractController {
   private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(getClass());
 
-  private static final String CREATE_VIEW = "forward:createstation.htm";   // The view to forward to in case an dataset needs to be created.
+  // private static final String CREATE_VIEW = "forward:createstation.htm";   // The view to forward to in case an dataset needs to be created.
   private static final String MODEL_KEY = "message";  // The model key used to retrieve the message from the model.
   private static final String MSG_CODE = "message.create.station";  // The unique key for retrieving the text associated with this message.
 
@@ -75,7 +76,6 @@ public class StationRadarServerController extends AbstractController {
     return "/radarServer/";
   }
 
-  @Override
   @RequestMapping(value = {"/radarServer/**/stations.xml"}, method = RequestMethod.GET)
   protected ModelAndView handleRequestInternal(HttpServletRequest request, HttpServletResponse response) throws Exception {
     DatasetRepository.init(tdsContext);
@@ -100,10 +100,11 @@ public class StationRadarServerController extends AbstractController {
       // return stations of dataset
       Map<String, Object> model = new HashMap<>();
       stationsXML(radarType, path, model);
-      if (model == null || model.size() == 0) {
-        ModelAndView mav = new ModelAndView(CREATE_VIEW);
-        mav.addObject(MODEL_KEY, MSG_CODE);
-        return mav;
+      if (model.size() == 0) {
+        return null;
+        //ModelAndView mav = new ModelAndView(CREATE_VIEW);
+       // mav.addObject(MODEL_KEY, MSG_CODE);
+        //return mav;
       } else {
         return new ModelAndView("stationXml", model);
       }

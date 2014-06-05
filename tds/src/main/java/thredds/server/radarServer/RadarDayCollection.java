@@ -31,7 +31,7 @@
  * WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-package thredds.server.radarServerOrg;
+package thredds.server.radarServer;
 
 import java.io.*;
 import java.util.HashMap;
@@ -49,8 +49,8 @@ import java.util.regex.Matcher;
 
 /**
  * Stores radar data file names information for one day.
- * The class is serialized so it can later be retrieved by the RadarServer
- * servlet.
+ * The class is serialized so it can later be retrieved by the RadarServer.
+ * LOOK SERIALIZATION BRITTLE DO NOT CHANGE !!!  LOOK
  */
 public class RadarDayCollection implements Serializable {
   private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger( getClass() );

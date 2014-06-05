@@ -31,25 +31,32 @@
  * WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 /**
- * User: Robb
- * Date: Jan 22, 2010
- * Time: 3:12:00 PM
+ * User: rkambic
+ * Date: Dec 10, 2010
+ * Time: 12:06:11 PM
  */
 
-package thredds.server.radarServerOrg;
+package thredds.server.radarServer;
 
-import java.io.PrintWriter;
+public class RadarServerException extends Exception {
 
-/**
- * Takes a RadarStation Collection as input and write out an XML representation
- */
-public class RadarXmlStationQuery {
+    /**
+     * Construct a new Exception with message <tt>msg</tt>.
+     *
+     * @param msg error message
+     */
 
-/**
- * constructor
-  */
-  RadarXmlStationQuery( PrintWriter pw, RadarStationCollection rsc ) {
+    public RadarServerException(String msg) {
+      super(msg);
+    }
 
-  
-}
+  /**
+   * Construct a new RadarServerException.
+   *
+   * @param message the detailed exception message
+   * @param cause the cause of this exception
+   */
+  public RadarServerException( String message, Throwable cause) {
+    super(message, cause);
+  }
 }

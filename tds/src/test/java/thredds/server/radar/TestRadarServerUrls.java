@@ -28,9 +28,9 @@ import java.util.Collection;
  * @since 11/15/13
  */
 
-@RunWith(SpringJUnit4ParameterizedClassRunner.class)
-@WebAppConfiguration
-@ContextConfiguration(locations = {"/WEB-INF/applicationContext-tdsConfig.xml"}, loader = MockTdsContextLoader.class)
+//@RunWith(SpringJUnit4ParameterizedClassRunner.class)
+//@WebAppConfiguration
+//@ContextConfiguration(locations = {"/WEB-INF/applicationContext-tdsConfig.xml"}, loader = MockTdsContextLoader.class)
 public class TestRadarServerUrls {
 
   @Autowired

@@ -36,15 +36,13 @@
  * Time: 12:30:33 PM
  */
 
-package thredds.server.radarServerOrg;
+package thredds.server.radarServer;
 
 import thredds.catalog.query.Station;
-import ucar.nc2.units.DateType;
 import ucar.unidata.geoloc.LatLonPointImpl;
 import ucar.unidata.geoloc.LatLonRect;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;

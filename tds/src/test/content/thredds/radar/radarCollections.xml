@@ -82,7 +82,7 @@
       </metadata>
     </datasetScan>
 
-    <datasetScan name="TDWR Level III Radar from IDD" collectionType="TimeSeries" ID="terminal/level3/IDD" path="/thredds/radarServer/terminal/level3/IDD" location="${cdmUnitTest}/datasets/radar/level3/tdwr/">
+    <datasetScan name="TDWR Level III Radar from IDD" collectionType="TimeSeries" ID="terminal/level3/IDD" path="terminal/level3/IDD" location="${cdmUnitTest}/datasets/radar/level3/tdwr/">
       <metadata inherited="true">
         <dataType>Radial</dataType>
         <dataFormat>NIDS</dataFormat>

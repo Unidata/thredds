@@ -63,7 +63,7 @@ public class TestCFPointWriter {
   }
 
 
-  @Test
+  // @Test
   public void testProblem() throws IOException {
     writeDataset(TestDir.cdmUnitTestDir + "ft/point/netcdf/Surface_Buoy_20090921_0000.nc", FeatureType.POINT, NetcdfFileWriter.Version.netcdf4);
   }

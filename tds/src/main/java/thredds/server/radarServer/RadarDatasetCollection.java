@@ -36,7 +36,7 @@
  * Time: 1:31:49 PM
  */
 
-package thredds.server.radarServerOrg;
+package thredds.server.radarServer;
 
 import java.util.regex.Pattern;
 import java.util.regex.Matcher;
@@ -134,10 +134,6 @@ public class RadarDatasetCollection {
    * @param product  if level3, then get product dataset
    */
   public RadarDatasetCollection(String tdir,  String product) {
-
-    if ( tdir == null)
-      return;
-
     caseStudy = tdir.contains( "casestudies");
     
     StringBuffer sb = new StringBuffer( tdir );
@@ -158,7 +154,7 @@ public class RadarDatasetCollection {
     // Read in RadarDayCollections for this dataset
     File dir = new File(this.tdir);
     if ( !caseStudy && dir.exists() && dir.isDirectory()) {
-      ArrayList<String> rdc = new ArrayList<String>();
+      ArrayList<String> rdc = new ArrayList<>();
       sb.setLength( 0 );
       sb.append("In directory ").append(dir.getParent()).append("/").append(dir.getName());
       log.debug( sb.toString() );
@@ -183,6 +179,7 @@ public class RadarDatasetCollection {
           File pdir = null;
           if( product != null ) {
             pdir = new File( sb.append("/").append(product).toString());
+
           } else {
             pdir = new File( sb.toString());
             // it's possible to have an extra directory in between the data
@@ -195,7 +192,8 @@ public class RadarDatasetCollection {
               }
             }
           }
-          if (pdir != null && pdir.exists() && pdir.isDirectory()) {
+
+          if (pdir.exists() && pdir.isDirectory()) {
             String[] children = pdir.list();
             ArrayList<String> times = new ArrayList<String>();
             for (String child : children) {
@@ -211,13 +209,15 @@ public class RadarDatasetCollection {
             }
             ArrayList<String> days = yyyymmdd.get( stn );
             if ( days == null )
-              days = new ArrayList<String>();
+              days = new ArrayList<>();
             days.add( "all" );
-            yyyymmdd.put( stn, days );
-            sb.setLength( 0 );
-            sb.append( stn ).append("all" );
+            yyyymmdd.put(stn, days);
+            sb.setLength(0);
+            sb.append( stn ).append("all");
             Collections.sort(times, new CompareKeyDescend());
-            hhmm.put( sb.toString(), times );
+            hhmm.put(sb.toString(), times);
+            if (log.isDebugEnabled()) log.debug("RadarDayCollections {} added stn={} days={} hours={}", tdir, stn, days.size(), times.size());
+            System.out.printf("RadarDayCollections %s added stn=%s days=%d hours=%d%n", tdir, stn, days.size(), times.size());
           }
         }
       }
@@ -255,20 +255,21 @@ public class RadarDatasetCollection {
   private Boolean readRadarDayCollection( String child ) {
     StringBuffer sb = new StringBuffer( tdir );
     sb.append( "/").append( child );
-    RadarDayCollection rdc = new RadarDayCollection().read( sb.toString() );
-    if( rdc == null )
+    RadarDayCollection dayCollection = new RadarDayCollection().read( sb.toString() );
+    System.out.printf("readRadarDayCollection = %s%n", sb);
+    if( dayCollection == null )
       return false ;
-    this.standardName = rdc.standardName;
-    java.util.Set<String> stations = rdc.getStations();
+    this.standardName = dayCollection.standardName;
+    java.util.Set<String> stations = dayCollection.getStations();
     for( String station : stations ) {
       ArrayList<String> days = yyyymmdd.get( station );
       if ( days == null )
         days = new ArrayList<>();
-      days.add( rdc.yyyymmdd );
+      days.add( dayCollection.yyyymmdd );
       yyyymmdd.put( station, days );
-      sb.setLength( 0 );
-      sb.append( station ).append(rdc.yyyymmdd );
-      hhmm.put( sb.toString(), rdc.getTimes( station ) );
+      sb.setLength(0);
+      sb.append( station ).append(dayCollection.yyyymmdd);
+      hhmm.put( sb.toString(), dayCollection.getTimes( station ) );
     }
     return true;
   }
