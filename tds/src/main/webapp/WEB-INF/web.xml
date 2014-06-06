@@ -346,7 +346,15 @@
     <servlet-name>root</servlet-name>
     <url-pattern>/</url-pattern>
   </servlet-mapping>
-  
+  <servlet-mapping>
+    <servlet-name>root</servlet-name>
+    <url-pattern>*.css</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+    <servlet-name>root</servlet-name>
+    <url-pattern>*.gif</url-pattern>
+  </servlet-mapping>
+
   <!-- servlet-mapping>
     <servlet-name>catalogService</servlet-name>
     <url-pattern>*.xml</url-pattern>
