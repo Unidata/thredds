@@ -47,7 +47,7 @@ public class StationSubsetWriterCSV extends AbstractStationSubsetWriter {
     }
 
     @Override
-    public void writeHeader() throws IOException {
+    protected void writeHeader() throws IOException {
         writer.print("time,station,latitude[unit=\"degrees_north\"],longitude[unit=\"degrees_east\"]");
         for (VariableSimpleIF wantedVar : wantedVariables) {
             writer.print(",");
@@ -59,7 +59,7 @@ public class StationSubsetWriterCSV extends AbstractStationSubsetWriter {
     }
 
     @Override
-    public void writePoint(StationPointFeature stationPointFeat) throws IOException {
+    protected void writeStationPointFeature(StationPointFeature stationPointFeat) throws IOException {
         Station station = stationPointFeat.getStation();
 
         writer.print(CalendarDateFormatter.toDateTimeString(stationPointFeat.getObservationTimeAsCalendarDate()));
@@ -79,7 +79,7 @@ public class StationSubsetWriterCSV extends AbstractStationSubsetWriter {
     }
 
     @Override
-    public void writeFooter() throws IOException {
+    protected void writeFooter() throws IOException {
         writer.flush();
     }
 }

@@ -10,11 +10,10 @@ import thredds.util.ContentType;
 import ucar.nc2.VariableSimpleIF;
 import ucar.nc2.ft.FeatureDatasetPoint;
 import ucar.nc2.ft.StationTimeSeriesFeature;
-import ucar.nc2.ft.StationTimeSeriesFeatureCollection;
 import ucar.nc2.ft.point.StationPointFeature;
 import ucar.nc2.ogc.MarshallingUtil;
+import ucar.nc2.ogc.om.NcOMObservationPropertyType;
 import ucar.nc2.ogc.waterml.NcDocumentMetadataPropertyType;
-import ucar.nc2.units.DateType;
 
 import javax.xml.stream.XMLStreamException;
 import java.io.IOException;
@@ -25,14 +24,16 @@ import java.io.OutputStream;
  */
 public class StationSubsetWriterWaterML extends AbstractStationSubsetWriter {
     private final OutputStream out;
-//    private final CollectionDocument collectionDoc;
+    private final CollectionDocument collectionDoc;
+    private final CollectionType collection;
 
     public StationSubsetWriterWaterML(FeatureDatasetPoint fdPoint, NcssParamsBean ncssParams, OutputStream out)
             throws XMLStreamException, NcssException, IOException {
         super(fdPoint, ncssParams);
 
         this.out = out;
-//        this.collectionDoc = CollectionDocument.Factory.newInstance();
+        this.collectionDoc = CollectionDocument.Factory.newInstance();
+        this.collection = collectionDoc.addNewCollection();
     }
 
     @Override
@@ -49,15 +50,9 @@ public class StationSubsetWriterWaterML extends AbstractStationSubsetWriter {
         return httpHeaders;
     }
 
-
     @Override
-    public void write() throws Exception {
+    protected void writeHeader() throws Exception {
         MarshallingUtil.resetIds();
-
-
-
-        CollectionDocument collectionDoc = CollectionDocument.Factory.newInstance();
-        CollectionType collection = collectionDoc.addNewCollection();
 
         // @gml:id
         String id = MarshallingUtil.createIdForType(CollectionType.class);
@@ -65,69 +60,26 @@ public class StationSubsetWriterWaterML extends AbstractStationSubsetWriter {
 
         // wml2:metadata
         NcDocumentMetadataPropertyType.initMetadata(collection.addNewMetadata());
+    }
 
-        // wml2:observationMember[0..*]
-        // Perform spatial subset.
-        StationTimeSeriesFeatureCollection subsettedStationFeatCol = stationFeatureCollection.subset(wantedStations);
-        try {
-            while (subsettedStationFeatCol.hasNext()) {
-                StationTimeSeriesFeature stationFeat = subsettedStationFeatCol.next();
-
-                // Perform temporal subset. We do this even when a time instant is specified, in which case wantedRange
-                // represents a sanity check (i.e. "give me the feature closest to the specified time, but it must at
-                // least be within an hour").
-                StationTimeSeriesFeature subsettedStationFeat = stationFeat.subset(wantedRange);
-
-                for (VariableSimpleIF wantedVar : wantedVariables) {
-                    if (ncssParams.getTime() != null) {
-                        DateType wantedDateType = new DateType(ncssParams.getTime(), null, null);  // Parse time string.
-                        long wantedTime = wantedDateType.getCalendarDate().getMillis();
-                        writePointWithClosestTime(subsettedStationFeat, wantedTime);
-                    } else {
-                        writeAllPoints(subsettedStationFeat);
-                    }
-                }
-
-                if (ncssParams.getTime() != null) {
-                    DateType wantedDateType = new DateType(ncssParams.getTime(), null, null);  // Parse time string.
-                    long wantedTime = wantedDateType.getCalendarDate().getMillis();
-                    writePointWithClosestTime(subsettedStationFeat, wantedTime);
-                } else {
-                    writeAllPoints(subsettedStationFeat);
-                }
-
-//                for (VariableSimpleIF wantedVar : wantedVariables) {
-//                    stationFeat.resetIteration();
-//                    try {
-//                        // wml2:observationMember
-//                        NcOMObservationPropertyType.initObservationMember(
-//                                collection.addNewObservationMember(), stationFeat, wantedVar);
-//                    } finally {
-//                        stationFeat.finish();
-//                    }
-//                }
-            }
-        } finally {
-            subsettedStationFeatCol.finish();
+    @Override
+    protected void writeStationTimeSeriesFeature(StationTimeSeriesFeature stationFeat)
+            throws Exception {
+        for (VariableSimpleIF wantedVar : wantedVariables) {
+            // wml2:observationMember
+            NcOMObservationPropertyType.initObservationMember(
+                    collection.addNewObservationMember(), stationFeat, wantedVar);
         }
+    }
 
+    @Override
+    protected void writeStationPointFeature(StationPointFeature stationPointFeat) throws Exception {
+        throw new UnsupportedOperationException("Method not used in " + getClass());
+    }
+
+    @Override
+    protected void writeFooter() throws Exception {
         MarshallingUtil.writeObject(collectionDoc, out, true);
         out.flush();
-    }
-
-
-    @Override
-    public void writeHeader() throws Exception {
-
-    }
-
-    @Override
-    public void writePoint(StationPointFeature stationPointFeat) throws Exception {
-
-    }
-
-    @Override
-    public void writeFooter() throws Exception {
-
     }
 }

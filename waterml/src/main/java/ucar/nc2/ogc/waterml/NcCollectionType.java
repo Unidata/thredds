@@ -32,14 +32,9 @@ public abstract class NcCollectionType {
                 StationTimeSeriesFeature stationFeat = stationFeatColl.next();
 
                 for (VariableSimpleIF dataVar : dataVars) {
-                    stationFeat.resetIteration();
-                    try {
-                        // wml2:observationMember
-                        NcOMObservationPropertyType.initObservationMember(
-                                collection.addNewObservationMember(), stationFeat, dataVar);
-                    } finally {
-                        stationFeat.finish();
-                    }
+                    // wml2:observationMember
+                    NcOMObservationPropertyType.initObservationMember(
+                            collection.addNewObservationMember(), stationFeat, dataVar);
                 }
             }
         } finally {

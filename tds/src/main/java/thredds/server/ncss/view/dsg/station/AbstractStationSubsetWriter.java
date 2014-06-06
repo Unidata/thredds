@@ -3,9 +3,16 @@ package thredds.server.ncss.view.dsg.station;
 import thredds.server.ncss.exception.NcssException;
 import thredds.server.ncss.params.NcssParamsBean;
 import thredds.server.ncss.view.dsg.AbstractDsgSubsetWriter;
-import ucar.nc2.ft.*;
+import thredds.server.ncss.view.dsg.FilteredPointFeatureIterator;
+import ucar.nc2.ft.FeatureCollection;
+import ucar.nc2.ft.FeatureDatasetPoint;
+import ucar.nc2.ft.PointFeature;
+import ucar.nc2.ft.PointFeatureIterator;
+import ucar.nc2.ft.StationTimeSeriesFeature;
+import ucar.nc2.ft.StationTimeSeriesFeatureCollection;
 import ucar.nc2.ft.point.StationFeatureImpl;
 import ucar.nc2.ft.point.StationPointFeature;
+import ucar.nc2.time.CalendarDate;
 import ucar.nc2.units.DateType;
 import ucar.unidata.geoloc.LatLonPoint;
 import ucar.unidata.geoloc.LatLonPointImpl;
@@ -36,11 +43,11 @@ public abstract class AbstractStationSubsetWriter extends AbstractDsgSubsetWrite
         this.wantedStations = getStationsInSubset(stationFeatureCollection, ncssParams);
     }
 
-    public abstract void writeHeader() throws Exception;
+    protected abstract void writeHeader() throws Exception;
 
-    public abstract void writePoint(StationPointFeature stationPointFeat) throws Exception;
+    protected abstract void writeStationPointFeature(StationPointFeature stationPointFeat) throws Exception;
 
-    public abstract void writeFooter() throws Exception;
+    protected abstract void writeFooter() throws Exception;
 
     @Override
     public void write() throws Exception {
@@ -61,11 +68,12 @@ public abstract class AbstractStationSubsetWriter extends AbstractDsgSubsetWrite
 
                 if (ncssParams.getTime() != null) {
                     DateType wantedDateType = new DateType(ncssParams.getTime(), null, null);  // Parse time string.
-                    long wantedTime = wantedDateType.getCalendarDate().getMillis();
-                    writePointWithClosestTime(subsettedStationFeat, wantedTime);
-                } else {
-                    writeAllPoints(subsettedStationFeat);
+                    CalendarDate wantedTime = wantedDateType.getCalendarDate();
+                    subsettedStationFeat = new ClosestTimeStationFeatureSubset(
+                            (StationFeatureImpl) subsettedStationFeat, wantedTime);
                 }
+
+                writeStationTimeSeriesFeature(subsettedStationFeat);
             }
         } finally {
             subsettedStationFeatCol.finish();
@@ -74,7 +82,7 @@ public abstract class AbstractStationSubsetWriter extends AbstractDsgSubsetWrite
         writeFooter();
     }
 
-    protected void writeAllPoints(StationTimeSeriesFeature stationFeat)
+    protected void writeStationTimeSeriesFeature(StationTimeSeriesFeature stationFeat)
             throws Exception {
         stationFeat.resetIteration();
         try {
@@ -82,53 +90,62 @@ public abstract class AbstractStationSubsetWriter extends AbstractDsgSubsetWrite
                 PointFeature pointFeat = stationFeat.next();
                 assert pointFeat instanceof StationPointFeature :
                         "Expected pointFeat to be a StationPointFeature, not a " + pointFeat.getClass().getSimpleName();
-                writePoint((StationPointFeature) pointFeat);
+                writeStationPointFeature((StationPointFeature) pointFeat);
             }
         } finally {
             stationFeat.finish();
         }
     }
 
-    protected void writePointWithClosestTime(StationTimeSeriesFeature stationFeat, long wantedTime) throws Exception {
-        PointFeature pointWithClosestTime = null;
-        long smallestDiff = Long.MAX_VALUE;
+    protected static class ClosestTimeStationFeatureSubset extends StationFeatureImpl {
+        private final StationTimeSeriesFeature stationFeat;
+        private CalendarDate closestTime;
 
-        stationFeat.resetIteration();
-        try {
-            while (stationFeat.hasNext()) {
-                PointFeature pointFeat = stationFeat.next();
-                long obsTime = pointFeat.getObservationTimeAsCalendarDate().getMillis();
-                long diff = Math.abs(obsTime - wantedTime);
+        protected ClosestTimeStationFeatureSubset(
+                StationFeatureImpl stationFeat, CalendarDate wantedTime) throws IOException {
+            super(stationFeat, stationFeat.getTimeUnit(), -1);
+            this.stationFeat = stationFeat;
 
-                if (diff < smallestDiff) {
-                    // LOOK: We're caching a PointFeature here. Is this safe?
-                    pointWithClosestTime = pointFeat;
+            long smallestDiff = Long.MAX_VALUE;
+
+            stationFeat.resetIteration();
+            try {
+                while (stationFeat.hasNext()) {
+                    PointFeature pointFeat = stationFeat.next();
+                    CalendarDate obsTime = pointFeat.getObservationTimeAsCalendarDate();
+                    long diff = Math.abs(obsTime.getMillis() - wantedTime.getMillis());
+
+                    if (diff < smallestDiff) {
+                        closestTime = obsTime;
+                    }
                 }
+            } finally {
+                stationFeat.finish();
             }
-
-            if (pointWithClosestTime != null) {
-                assert pointWithClosestTime instanceof StationPointFeature :
-                        "Expected pointWithClosestTime to be a StationPointFeature, " +
-                        "not a " + pointWithClosestTime.getClass().getSimpleName();
-                writePoint((StationPointFeature) pointWithClosestTime);
-            }
-        } finally {
-            stationFeat.finish();
         }
-    }
 
+        // Filter out PointFeatures that don't have the wantedTime.
+        protected static class TimeFilter implements PointFeatureIterator.Filter {
+            private final CalendarDate wantedTime;
 
-    public static class ClosestTimeStationFeatureSubset extends StationFeatureImpl {
-        private final StationTimeSeriesFeature from;
+            protected TimeFilter(CalendarDate wantedTime) {
+                this.wantedTime = wantedTime;
+            }
 
-        public ClosestTimeStationFeatureSubset(StationFeatureImpl from) {
-            super(from, from.getTimeUnit(), -1);
-            this.from = from;
+            @Override
+            public boolean filter(PointFeature pointFeature) {
+                return pointFeature.getObservationTimeAsCalendarDate().equals(wantedTime);
+            }
         }
 
         @Override
         public PointFeatureIterator getPointFeatureIterator(int bufferSize) throws IOException {
-            return null;
+            if (closestTime == null) {
+                return stationFeat.getPointFeatureIterator(bufferSize);
+            } else {
+                return new FilteredPointFeatureIterator(
+                        stationFeat.getPointFeatureIterator(bufferSize), new TimeFilter(closestTime));
+            }
         }
     }
 

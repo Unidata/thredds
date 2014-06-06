@@ -50,14 +50,15 @@ public class StationSubsetWriterXML extends AbstractStationSubsetWriter {
     }
 
     @Override
-    public void writeHeader() throws XMLStreamException {
+    protected void writeHeader() throws XMLStreamException {
         staxWriter.writeStartDocument("UTF-8", "1.0");
         staxWriter.writeCharacters("\n");
         staxWriter.writeStartElement("stationFeatureCollection");
     }
 
     @Override
-    public void writePoint(StationPointFeature stationPointFeat) throws XMLStreamException, IOException {
+    protected void writeStationPointFeature(StationPointFeature stationPointFeat)
+            throws XMLStreamException, IOException {
         Station station = stationPointFeat.getStation();
 
         staxWriter.writeCharacters("\n    ");
@@ -97,7 +98,7 @@ public class StationSubsetWriterXML extends AbstractStationSubsetWriter {
     }
 
     @Override
-    public void writeFooter() throws XMLStreamException {
+    protected void writeFooter() throws XMLStreamException {
         staxWriter.writeCharacters("\n");
         staxWriter.writeEndElement();
         staxWriter.writeCharacters("\n");

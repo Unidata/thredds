@@ -71,7 +71,7 @@ public class StationSubsetWriterNetcdf extends AbstractStationSubsetWriter {
     }
 
     @Override
-    public void writeHeader() throws Exception {
+    protected void writeHeader() throws Exception {
         // A default value in case we can't find a better one in the dataset.
         // This is the same default that is used in PointDatasetStandard.
         DateUnit timeUnit = new DateUnit("seconds since 1970-01-01");
@@ -97,13 +97,13 @@ public class StationSubsetWriterNetcdf extends AbstractStationSubsetWriter {
     }
 
     @Override
-    public void writePoint(StationPointFeature stationPointFeat) throws Exception {
+    protected void writeStationPointFeature(StationPointFeature stationPointFeat) throws Exception {
         Station station = stationPointFeat.getStation();
         cfWriter.writeRecord(station, stationPointFeat, stationPointFeat.getData());
     }
 
     @Override
-    public void writeFooter() throws Exception {
+    protected void writeFooter() throws Exception {
         cfWriter.finish();
         IO.copyFileB(netcdfResult, out, 60000);  // Copy the file in to the OutputStream.
         out.flush();

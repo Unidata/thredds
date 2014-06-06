@@ -28,7 +28,8 @@ public class DsgSubsetWriterTest {
 
     private static NcssParamsBean ncssParamsAll;
     private static NcssParamsBean ncssParamsPoint;
-    private static NcssParamsBean ncssParamsStation;
+    private static NcssParamsBean ncssParamsStation1;
+    private static NcssParamsBean ncssParamsStation2;
 
     // @BeforeClass  <-- Can't use: JUnit won't invoke this method before getTestParameters().
     public static void setupClass() throws URISyntaxException {
@@ -45,11 +46,15 @@ public class DsgSubsetWriterTest {
         ncssParamsPoint.setWest(-100.0);  // Full extension == -100.0
         ncssParamsPoint.setEast(-58.0);   // Full extension == -58.0
 
-        ncssParamsStation = new NcssParamsBean();
-        ncssParamsStation.setVar(Arrays.asList("tas"));
-        ncssParamsStation.setTime_start("1970-01-05T00:00:00Z");
-        ncssParamsStation.setTime_end("1970-02-05T00:00:00Z");
-        ncssParamsStation.setStns(Arrays.asList("AAA", "CCC"));
+        ncssParamsStation1 = new NcssParamsBean();
+        ncssParamsStation1.setVar(Arrays.asList("tas"));
+        ncssParamsStation1.setTime_start("1970-01-05T00:00:00Z");
+        ncssParamsStation1.setTime_end("1970-02-05T00:00:00Z");
+        ncssParamsStation1.setStns(Arrays.asList("AAA", "CCC"));
+
+        ncssParamsStation2 = new NcssParamsBean();
+        ncssParamsStation2.setVar(Arrays.asList("pr", "tas"));
+        ncssParamsStation2.setTime("1970-01-21 01:00:00Z");  // The nearest will be "1970-01-21 00:00:00Z"
     }
 
     @Parameterized.Parameters(name = "{4}")  // Name the tests after the expectedResultResource.
@@ -61,15 +66,21 @@ public class DsgSubsetWriterTest {
         setupClass();
 
         return Arrays.asList(new Object[][] {
-            { FeatureType.POINT,   "point.ncml",   SupportedFormat.CSV_FILE, ncssParamsAll,     "pointAll.csv"      },
-            { FeatureType.POINT,   "point.ncml",   SupportedFormat.CSV_FILE, ncssParamsPoint,   "pointSubset.csv"   },
-            { FeatureType.POINT,   "point.ncml",   SupportedFormat.XML_FILE, ncssParamsAll,     "pointAll.xml"      },
-            { FeatureType.POINT,   "point.ncml",   SupportedFormat.XML_FILE, ncssParamsPoint,   "pointSubset.xml"   },
+            // Point
+            { FeatureType.POINT,   "point.ncml",   SupportedFormat.CSV_FILE, ncssParamsAll,      "pointAll.csv"       },
+            { FeatureType.POINT,   "point.ncml",   SupportedFormat.CSV_FILE, ncssParamsPoint,    "pointSubset.csv"    },
 
-            { FeatureType.STATION, "station.ncml", SupportedFormat.CSV_FILE, ncssParamsAll,     "stationAll.csv"    },
-            { FeatureType.STATION, "station.ncml", SupportedFormat.CSV_FILE, ncssParamsStation, "stationSubset.csv" },
-            { FeatureType.STATION, "station.ncml", SupportedFormat.XML_FILE, ncssParamsAll,     "stationAll.xml"    },
-            { FeatureType.STATION, "station.ncml", SupportedFormat.XML_FILE, ncssParamsStation, "stationSubset.xml" }
+            { FeatureType.POINT,   "point.ncml",   SupportedFormat.XML_FILE, ncssParamsAll,      "pointAll.xml"       },
+            { FeatureType.POINT,   "point.ncml",   SupportedFormat.XML_FILE, ncssParamsPoint,    "pointSubset.xml"    },
+
+            // Station
+            { FeatureType.STATION, "station.ncml", SupportedFormat.CSV_FILE, ncssParamsAll,      "stationAll.csv"     },
+            { FeatureType.STATION, "station.ncml", SupportedFormat.CSV_FILE, ncssParamsStation1, "stationSubset1.csv" },
+            { FeatureType.STATION, "station.ncml", SupportedFormat.CSV_FILE, ncssParamsStation2, "stationSubset2.csv" },
+
+            { FeatureType.STATION, "station.ncml", SupportedFormat.XML_FILE, ncssParamsAll,      "stationAll.xml"     },
+            { FeatureType.STATION, "station.ncml", SupportedFormat.XML_FILE, ncssParamsStation1, "stationSubset1.xml" },
+            { FeatureType.STATION, "station.ncml", SupportedFormat.XML_FILE, ncssParamsStation2, "stationSubset2.xml" },
         });
     }
 
@@ -99,9 +110,9 @@ public class DsgSubsetWriterTest {
                     fdPoint, ncssParams, diskCache, actualOutputStream, wantedType, format);
             subsetWriter.write();
 
-//            DsgSubsetWriter subsetWriterConsole = DsgSubsetWriterFactory.newInstance(
-//                    fdPoint, ncssParams, diskCache, System.out, wantedType, format);
-//            subsetWriterConsole.write();
+            DsgSubsetWriter subsetWriterConsole = DsgSubsetWriterFactory.newInstance(
+                    fdPoint, ncssParams, diskCache, System.out, wantedType, format);
+            subsetWriterConsole.write();
 
             ByteArrayInputStream actualInputStream = new ByteArrayInputStream(actualOutputStream.toByteArray());
 
