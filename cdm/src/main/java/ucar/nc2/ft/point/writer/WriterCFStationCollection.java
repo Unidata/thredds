@@ -361,7 +361,7 @@ public class WriterCFStationCollection extends CFPointWriter {
     recno++;
   }
   
-  /**
+  /*
    * Use this when record structure is not available (netcdf4)
  * @throws IOException 
    *

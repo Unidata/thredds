@@ -44,6 +44,7 @@ import ucar.nc2.iosp.hdf4.HdfEos;
 import ucar.nc2.iosp.hdf5.H5header;
 import ucar.nc2.util.CancelTask;
 import ucar.nc2.util.DebugFlags;
+import ucar.nc2.util.Misc;
 import ucar.nc2.write.Nc4Chunking;
 import ucar.nc2.write.Nc4ChunkingDefault;
 import ucar.unidata.io.RandomAccessFile;
@@ -98,8 +99,8 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
   static private final boolean debug = false,
           debugCompoundAtt = false,
           debugUserTypes = false,
-          debugLoad = true,
-          debugWrite = true;
+          debugLoad = false,
+          debugWrite = false;
 
   /**
    * Test if the netcdf C library is present and loaded
@@ -1992,6 +1993,12 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
     return to;
   }
 
+  static public String show(SizeT[] inta) {
+    if (inta == null) return "null";
+    Formatter f = new Formatter();
+    for (SizeT i : inta) f.format("%d, ", i.longValue());
+    return f.toString();
+  }
 
   private SizeT[] convertSizeT(long[] from) {
     if (from.length == 0) return null;
@@ -2526,10 +2533,12 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
 
         valb = IospHelper.convertCharToByte(valc);
         ret = nc4.nc_put_vars_text(grpid, varid, origin, shape, stride, valb);
+        // ret = nc4.nc_put_vara_text(grpid, varid, origin, shape, valb);
 
         if (ret != 0) {
-          //log.error("{} on var {}", nc4.nc_strerror(ret), v);
-          //return;
+          /* System.out.printf("fail %d on %s origin=%s, shape=%s, stride=%s%n", ret, v.getShortName(), show(origin), show(shape), show(stride));
+          log.error("{} on var {}", nc4.nc_strerror(ret), v.getShortName());
+          return; */
           throw new IOException(nc4.nc_strerror(ret));
         }
         break;
@@ -2654,7 +2663,8 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
     ByteBuffer bbuff = valuesBB.getByteBuffer();  // LOOK c library reads in native order, so need to convert??
     // LOOK embedded strings getting lost ??
 
-    if (debugWrite) System.out.printf("writing variable %s (grpid %d varid %d) %n", s.getShortName(), grpid, varid);
+    // if (debugWrite)
+      System.out.printf("writeCompoundData variable %s (grpid %d varid %d) %n", s.getShortName(), grpid, varid);
 
     // test variable exists
     Formatter f = new Formatter();
@@ -2668,11 +2678,14 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
       throw new IOException(errMessage(ret, grpid, varid));
   }
 
+  private void testOffsets() {
+
+  }
+
   private String errMessage(int ret, int grpid, int varid) {
     Formatter f = new Formatter();
     f.format("%d: %s grpid=%d varid=%d", ret, nc4.nc_strerror(ret), grpid, varid);
     return f.toString();
-
   }
 
   private void writeDataAll(Variable v, int grpid, int varid, int typeid, Array values) throws IOException, InvalidRangeException {

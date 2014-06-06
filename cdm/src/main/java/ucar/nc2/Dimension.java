@@ -203,7 +203,7 @@ public class Dimension extends CDMNode implements Comparable {
     String name = strict ? NetcdfFile.makeValidCDLName(getShortName()) : getShortName();
     out.format("%s%s", indent, name);
     if (isUnlimited())
-      out.format(" = UNLIMITED;   // (%d currently", getLength());
+      out.format(" = UNLIMITED;   // (%d currently)", getLength());
     else if (isVariableLength())
       out.format(" = UNKNOWN;");
     else

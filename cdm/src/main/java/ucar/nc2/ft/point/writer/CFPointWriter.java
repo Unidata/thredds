@@ -115,7 +115,7 @@ public class CFPointWriter {
 
     int count = 0;
 
-    List<String> profiles = new ArrayList<String>();
+    List<String> profiles = new ArrayList<>();
     pds.resetIteration();
     while (pds.hasNext()) {
       profiles.add(pds.next().getName());
@@ -171,7 +171,7 @@ public class CFPointWriter {
   protected String altUnits = null;
   protected LatLonRect llbb = null;
 
-  protected Set<Dimension> dimSet = new HashSet<Dimension>(20);
+  protected Set<Dimension> dimSet = new HashSet<>(20);
 
   protected CalendarDate minDate = null;
   protected CalendarDate maxDate = null;
@@ -275,13 +275,19 @@ public class CFPointWriter {
 
     } else  {
       for (StructureMembers.Member m : sdata.getMembers()) {  // netcdf4 assume classic model
-        Array ma = sdata.getArray(m);
-        if (ma.getRank() == 0)
-          ma = Array.makeArrayRank1(ma);
+        Array org = sdata.getArray(m);
+        Array orgPlus1 = Array.makeArrayRankPlusOne(org);  // add dimension on the left (slow)
+        int[] useOrigin = origin;
+
+        if (org.getRank() > 0) {                          // if rank 0 (common case, this is a nop, so skip
+          useOrigin = new int[org.getRank()+1];
+          useOrigin[0] = origin[0]; // the rest are 0
+        }
+
         Variable mv = dataVarMap.get(m.getName());
         if (mv == null)
-          continue;
-        writer.write(mv, origin, ma);
+          continue;     // LOOK
+        writer.write(mv, useOrigin, orgPlus1);
       }
     }
 
