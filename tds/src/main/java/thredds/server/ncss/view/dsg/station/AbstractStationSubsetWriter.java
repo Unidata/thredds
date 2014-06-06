@@ -4,6 +4,7 @@ import thredds.server.ncss.exception.NcssException;
 import thredds.server.ncss.params.NcssParamsBean;
 import thredds.server.ncss.view.dsg.AbstractDsgSubsetWriter;
 import ucar.nc2.ft.*;
+import ucar.nc2.ft.point.StationFeatureImpl;
 import ucar.nc2.ft.point.StationPointFeature;
 import ucar.nc2.units.DateType;
 import ucar.unidata.geoloc.LatLonPoint;
@@ -115,6 +116,22 @@ public abstract class AbstractStationSubsetWriter extends AbstractDsgSubsetWrite
             stationFeat.finish();
         }
     }
+
+
+    public static class ClosestTimeStationFeatureSubset extends StationFeatureImpl {
+        private final StationTimeSeriesFeature from;
+
+        public ClosestTimeStationFeatureSubset(StationFeatureImpl from) {
+            super(from, from.getTimeUnit(), -1);
+            this.from = from;
+        }
+
+        @Override
+        public PointFeatureIterator getPointFeatureIterator(int bufferSize) throws IOException {
+            return null;
+        }
+    }
+
 
     // LOOK could do better : "all", and maybe HashSet<Name>
     public static List<Station> getStationsInSubset(

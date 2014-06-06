@@ -23,6 +23,12 @@ public abstract class NcOMObservationType {
         String id = MarshallingUtil.createIdForType(OMObservationType.class);
         omObservation.setId(id);
 
+        // om:phenomenonTime
+        NcTimeObjectPropertyType.initPhenomenonTime(omObservation.addNewPhenomenonTime(), stationFeat);
+
+        // om:resultTime
+        NcTimeInstantPropertyType.initResultTime(omObservation.addNewResultTime());
+
         // om:observedProperty
         NcReferenceType.initObservedProperty(omObservation.addNewObservedProperty(), dataVar);
 
@@ -37,14 +43,6 @@ public abstract class NcOMObservationType {
         NcMeasurementTimeseriesType.initMeasurementTimeseries(
                 measurementTimeseriesDoc.addNewMeasurementTimeseries(), stationFeat, dataVar);
         omObservation.setResult(measurementTimeseriesDoc);
-
-        // om:phenomenonTime
-        // We must set this after om:result, because the calendar date range may not be available until we iterate
-        // through stationFeat.
-        NcTimeObjectPropertyType.initPhenomenonTime(omObservation.addNewPhenomenonTime(), stationFeat);
-
-        // om:resultTime
-        NcTimeInstantPropertyType.initResultTime(omObservation.addNewResultTime(), stationFeat);
 
         return omObservation;
     }

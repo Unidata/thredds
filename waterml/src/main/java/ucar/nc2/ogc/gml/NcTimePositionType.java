@@ -5,6 +5,8 @@ import ucar.nc2.ft.PointFeature;
 import ucar.nc2.ft.StationTimeSeriesFeature;
 import ucar.nc2.time.CalendarDate;
 
+import java.io.IOException;
+
 /**
  * Created by cwardgar on 2014/03/05.
  */
@@ -19,8 +21,10 @@ public abstract class NcTimePositionType {
     }
 
     // wml2:Collection/wml2:observationMember/om:OM_Observation/om:phenomenonTime/gml:TimePeriod/gml:beginPosition
-    public static TimePositionType initBeginPosition(TimePositionType beginPosition, StationTimeSeriesFeature stationFeat) {
+    public static TimePositionType initBeginPosition(
+            TimePositionType beginPosition, StationTimeSeriesFeature stationFeat) throws IOException {
         // TEXT
+        stationFeat.calcBounds();
         if (stationFeat.getCalendarDateRange() != null) {
             beginPosition.setStringValue(stationFeat.getCalendarDateRange().getStart().toString());
         }
@@ -29,8 +33,10 @@ public abstract class NcTimePositionType {
     }
 
     // wml2:Collection/wml2:observationMember/om:OM_Observation/om:phenomenonTime/gml:TimePeriod/gml:endPosition
-    public static TimePositionType initEndPosition(TimePositionType endPosition, StationTimeSeriesFeature stationFeat) {
+    public static TimePositionType initEndPosition(
+            TimePositionType endPosition, StationTimeSeriesFeature stationFeat) throws IOException {
         // TEXT
+        stationFeat.calcBounds();
         if (stationFeat.getCalendarDateRange() != null) {
             endPosition.setStringValue(stationFeat.getCalendarDateRange().getEnd().toString());
         }
