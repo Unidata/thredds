@@ -1,9 +1,8 @@
 package ucar.nc2.ogc.waterml;
 
 import net.opengis.waterml.x20.DocumentMetadataType;
+import org.joda.time.DateTime;
 import ucar.nc2.ogc.MarshallingUtil;
-
-import java.util.GregorianCalendar;
 
 /**
  * Created by cwardgar on 2014/03/13.
@@ -16,8 +15,11 @@ public abstract class NcDocumentMetadataType {
         documentMetadata.setId(id);
 
         // wml2:generationDate
-        GregorianCalendar gregorianCalendar = new GregorianCalendar();  // Initialized to "now".
-        documentMetadata.setGenerationDate(gregorianCalendar);
+        DateTime generationDate = MarshallingUtil.fixedGenerationDate;
+        if (generationDate == null) {
+            generationDate = new DateTime();  // Initialized to "now".
+        }
+        documentMetadata.setGenerationDate(generationDate.toGregorianCalendar());
 
         return documentMetadata;
     }

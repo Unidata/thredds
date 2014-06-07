@@ -9,6 +9,7 @@ import thredds.server.ncss.view.dsg.point.PointSubsetWriterNetcdf;
 import thredds.server.ncss.view.dsg.point.PointSubsetWriterXML;
 import thredds.server.ncss.view.dsg.station.StationSubsetWriterCSV;
 import thredds.server.ncss.view.dsg.station.StationSubsetWriterNetcdf;
+import thredds.server.ncss.view.dsg.station.StationSubsetWriterWaterML;
 import thredds.server.ncss.view.dsg.station.StationSubsetWriterXML;
 import ucar.nc2.NetcdfFileWriter.Version;
 import ucar.nc2.constants.FeatureType;
@@ -24,8 +25,10 @@ import java.io.OutputStream;
  */
 public abstract class DsgSubsetWriterFactory {
     public static DsgSubsetWriter newInstance(FeatureDatasetPoint fdPoint, NcssParamsBean ncssParams,
-            DiskCache2 diskCache, OutputStream out, FeatureType featureType, SupportedFormat format)
+            DiskCache2 diskCache, OutputStream out, SupportedFormat format)
             throws NcssException, XMLStreamException, IOException {
+        FeatureType featureType = fdPoint.getFeatureType();
+
         if (!featureType.isPointFeatureType()) {
             throw new NcssException(String.format("Expected a point feature type, not %s", featureType));
         }
@@ -56,8 +59,8 @@ public abstract class DsgSubsetWriterFactory {
             case NETCDF4:
                 return new PointSubsetWriterNetcdf(fdPoint, ncssParams, diskCache, out, Version.netcdf4);
             case WATERML2:
-//                w = new WriterWaterML2(out);
-                return null;
+                throw new UnsupportedResponseFormatException(String.format(
+                        "%s format not supported for %s feature type.", format, fdPoint.getFeatureType()));
             default:
                 throw new UnsupportedResponseFormatException("Unknown result type = " + format.getFormatName());
         }
@@ -78,8 +81,7 @@ public abstract class DsgSubsetWriterFactory {
             case NETCDF4:
                 return new StationSubsetWriterNetcdf(fdPoint, ncssParams, diskCache, out, Version.netcdf4);
             case WATERML2:
-//                w = new WriterWaterML2(out);
-                return null;
+                return new StationSubsetWriterWaterML(fdPoint, ncssParams, out);
             default:
                 throw new UnsupportedResponseFormatException("Unknown result type = " + format.getFormatName());
         }

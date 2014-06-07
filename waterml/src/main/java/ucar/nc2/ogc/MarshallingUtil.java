@@ -2,6 +2,7 @@ package ucar.nc2.ogc;
 
 import net.opengis.waterml.x20.CollectionDocument;
 import org.apache.xmlbeans.*;
+import org.joda.time.DateTime;
 import org.n52.oxf.xmlbeans.parser.LaxValidationCase;
 import org.n52.oxf.xmlbeans.parser.XMLBeansParser;
 import org.n52.oxf.xmlbeans.parser.XMLHandlingException;
@@ -21,6 +22,11 @@ import java.util.Map;
  * Created by cwardgar on 2014/04/29.
  */
 public class MarshallingUtil {
+    /////////////////////////////////////////////// Testing Util ///////////////////////////////////////////////
+
+    public static DateTime fixedGenerationDate = null;
+    public static DateTime fixedResultTime     = null;
+
     /////////////////////////////////////////////// ID Creation ///////////////////////////////////////////////
 
     private static Map<Class<?>, Integer> idsMap = new HashMap<>();

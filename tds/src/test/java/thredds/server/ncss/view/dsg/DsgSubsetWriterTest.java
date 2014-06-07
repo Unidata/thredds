@@ -1,6 +1,8 @@
 package thredds.server.ncss.view.dsg;
 
 import org.apache.commons.io.IOUtils;
+import org.joda.time.DateTime;
+import org.joda.time.DateTimeZone;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -11,6 +13,7 @@ import ucar.nc2.constants.FeatureType;
 import ucar.nc2.ft.FeatureDataset;
 import ucar.nc2.ft.FeatureDatasetFactoryManager;
 import ucar.nc2.ft.FeatureDatasetPoint;
+import ucar.nc2.ogc.MarshallingUtil;
 import ucar.nc2.util.DiskCache2;
 
 import java.io.*;
@@ -33,6 +36,12 @@ public class DsgSubsetWriterTest {
 
     // @BeforeClass  <-- Can't use: JUnit won't invoke this method before getTestParameters().
     public static void setupClass() throws URISyntaxException {
+        // The WaterML marshaller usually initializes wml2:generationDate and om:resultTime to "now". This is a problem,
+        // because those values will always differ from the fixed values we have in our expectedResultResource files.
+        // So, to facilitate testing, we're going to fix the values that the marshaller emits.
+        MarshallingUtil.fixedGenerationDate = new DateTime(1970, 1, 1, 0, 0, DateTimeZone.UTC);
+        MarshallingUtil.fixedResultTime     = new DateTime(1970, 1, 1, 0, 0, DateTimeZone.UTC);
+
         diskCache = DiskCache2.getDefault();
 
         ncssParamsAll = new NcssParamsBean();
@@ -81,6 +90,10 @@ public class DsgSubsetWriterTest {
             { FeatureType.STATION, "station.ncml", SupportedFormat.XML_FILE, ncssParamsAll,      "stationAll.xml"     },
             { FeatureType.STATION, "station.ncml", SupportedFormat.XML_FILE, ncssParamsStation1, "stationSubset1.xml" },
             { FeatureType.STATION, "station.ncml", SupportedFormat.XML_FILE, ncssParamsStation2, "stationSubset2.xml" },
+
+            { FeatureType.STATION, "station.ncml", SupportedFormat.WATERML2, ncssParamsAll,      "stationAll.wml"     },
+            { FeatureType.STATION, "station.ncml", SupportedFormat.WATERML2, ncssParamsStation1, "stationSubset1.wml" },
+            { FeatureType.STATION, "station.ncml", SupportedFormat.WATERML2, ncssParamsStation2, "stationSubset2.wml" },
         });
     }
 
@@ -107,12 +120,12 @@ public class DsgSubsetWriterTest {
         try {
             ByteArrayOutputStream actualOutputStream = new ByteArrayOutputStream();
             DsgSubsetWriter subsetWriter = DsgSubsetWriterFactory.newInstance(
-                    fdPoint, ncssParams, diskCache, actualOutputStream, wantedType, format);
+                    fdPoint, ncssParams, diskCache, actualOutputStream, format);
             subsetWriter.write();
 
-            DsgSubsetWriter subsetWriterConsole = DsgSubsetWriterFactory.newInstance(
-                    fdPoint, ncssParams, diskCache, System.out, wantedType, format);
-            subsetWriterConsole.write();
+//            DsgSubsetWriter subsetWriterConsole = DsgSubsetWriterFactory.newInstance(
+//                    fdPoint, ncssParams, diskCache, System.out, format);
+//            subsetWriterConsole.write();
 
             ByteArrayInputStream actualInputStream = new ByteArrayInputStream(actualOutputStream.toByteArray());
 

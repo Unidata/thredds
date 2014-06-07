@@ -105,6 +105,7 @@ public abstract class AbstractStationSubsetWriter extends AbstractDsgSubsetWrite
                 StationFeatureImpl stationFeat, CalendarDate wantedTime) throws IOException {
             super(stationFeat, stationFeat.getTimeUnit(), -1);
             this.stationFeat = stationFeat;
+            this.dateRange = stationFeat.getCalendarDateRange();
 
             long smallestDiff = Long.MAX_VALUE;
 
