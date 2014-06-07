@@ -2823,8 +2823,14 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
 
   @Override
   public boolean rewriteHeader(boolean largeFile) throws IOException {
-    return false;  // LOOK !!
+    return false;
   }
+
+  @Override  // LOOK not done yet
+  public int appendStructureData(Structure s, StructureData sdata) throws IOException, InvalidRangeException {
+    return -1;
+  }
+
 
   @Override
   public void updateAttribute(Variable v2, Attribute att) throws IOException {

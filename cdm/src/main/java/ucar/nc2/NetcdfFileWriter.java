@@ -1,6 +1,5 @@
 /*
- * Copyright 1998-2012 University Corporation for Atmospheric Research/Unidata
- *
+ * Copyright (c) 1998 - 2014. University Corporation for Atmospheric Research/Unidata
  * Portions of this software were developed by the Unidata Program at the
  * University Corporation for Atmospheric Research.
  *
@@ -49,19 +48,18 @@ import java.util.*;
 /**
  * Writes Netcdf 3 or 4 formatted files to disk.
  * Replaces NetcdfFileWriteable.
- * Fairly low level wrap of IOServiceProviderWriter.
- * Construct CDM objects, then create the file and write data to it.
+ * Fairly low level wrap of IOServiceProviderWriter, if possible use:
  *
- * @see FileWriter2
+ * @see ucar.nc2.FileWriter2
+ * @see ucar.nc2.dt.grid.CFGridWriter
+ * @see ucar.nc2.ft.point.writer.CFPointWriter
  * @author caron
  * @since 7/25/12
  */
 public class NetcdfFileWriter {
-
   static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(NetcdfFileWriter.class);
-  static private Set<DataType> valid = EnumSet.of(DataType.BYTE, DataType.CHAR, DataType.SHORT, DataType.INT,
+  static private Set<DataType> validN3types = EnumSet.of(DataType.BYTE, DataType.CHAR, DataType.SHORT, DataType.INT,
           DataType.DOUBLE, DataType.FLOAT);
-
 
   /**
    * The kinds of netcdf file that can be written.
@@ -336,7 +334,7 @@ public class NetcdfFileWriter {
   }
 
   private boolean isValidDataType(DataType dt) {
-    return version.isNetdf4format() || valid.contains(dt);
+    return version.isNetdf4format() || validN3types.contains(dt);
   }
 
   private String createValidObjectName(String name) {
@@ -465,21 +463,7 @@ public class NetcdfFileWriter {
    * @return the Variable that has been added
    */
   public Variable addVariable(Group g, String shortName, DataType dataType, String dims) {
-    if (g == null) g = ncfile.getRootGroup();
-    // parse the list
-    ArrayList<Dimension> list = new ArrayList<Dimension>();
-    StringTokenizer stoker = new StringTokenizer(dims);
-    while (stoker.hasMoreTokens()) {
-      String tok = stoker.nextToken();
-      Dimension d = g.findDimension(tok);
-      if (null == d) {
-        g.findDimension(tok); // debug
-        throw new IllegalArgumentException("Cant find dimension " + tok);
-      }
-      list.add(d);
-    }
-
-    return addVariable(g, shortName, dataType, list);
+    return addVariable(g, null, shortName, dataType, makeDimList(g, dims));
   }
 
   /**
@@ -496,6 +480,17 @@ public class NetcdfFileWriter {
     return addVariable(g, null, shortName, dataType, dims);
   }
 
+  /**
+   * Add a variable to the file. Must be in define mode.
+   *
+   * @param g         add to this group in the new file
+   * @param parent    parent Structure (netcdf4 only), or null if not a member of a Structure
+   * @param shortName name of Variable, must be unique with the file.
+   * @param dataType  type of underlying element
+   * @param dims      list of Dimensions for the variable in the new file, must already have been added.
+   *                  Use a list of length 0 for a scalar variable.
+   * @return the Variable that has been added
+   */
   public Variable addVariable(Group g, Structure parent, String shortName, DataType dataType, List<Dimension> dims) {
     if (!defineMode)
       throw new UnsupportedOperationException("not in define mode");
@@ -525,7 +520,17 @@ public class NetcdfFileWriter {
     return v;
   }
 
-  public Structure addStructure(Group g, String shortName, Structure org, List<Dimension> dims) {
+  /**
+   * Add a structure to the file (netcdf4 only). DO NOT USE YET
+   *
+   * @param g         add to this group in the new file
+   * @param org       rent Structure (netcdf4 only), or null if not a member of a Structure
+   * @param shortName name of Variable, must be unique with the file.
+   * @param dims      list of Dimensions for the variable in the new file, must already have been added.
+   *                  Use a list of length 0 for a scalar variable.
+   * @return the Structure vaiable that has been added
+   */
+  public Structure addStructure(Group g, Structure org, String shortName, List<Dimension> dims) {
     if (!defineMode)
       throw new UnsupportedOperationException("not in define mode");
 
@@ -533,7 +538,7 @@ public class NetcdfFileWriter {
     if (version != Version.netcdf4)
       throw new IllegalArgumentException("Structure type only supported in netcdf-4");
 
-    Structure s = new Structure(ncfile, g, org.getParentStructure(), shortName);
+    Structure s = new Structure(ncfile, g, null, shortName);
     s.setDimensions(dims);
     for (Variable m : org.getVariables()) {  // LOOK no nested structs
       Variable nest = new Variable(ncfile, g, s, m.getShortName());
@@ -607,12 +612,28 @@ public class NetcdfFileWriter {
     v.setDataType(DataType.CHAR);
 
     Dimension d = addDimension(g, shortName + "_strlen", max_strlen);
-    ArrayList<Dimension> sdims = new ArrayList<Dimension>(dims);
+    List<Dimension> sdims = new ArrayList<>(dims);
     sdims.add(d);
     v.setDimensions(sdims);
 
     ncfile.addVariable(g, v);
     return v;
+  }
+
+  public List<Dimension> makeDimList(Group g, String dimNames) {
+    if (g == null) g = ncfile.getRootGroup();
+    List<Dimension> list = new ArrayList<>();
+    StringTokenizer stoker = new StringTokenizer(dimNames);
+    while (stoker.hasMoreTokens()) {
+      String tok = stoker.nextToken();
+      Dimension d = g.findDimension(tok);
+      if (null == d) {
+        g.findDimension(tok); // debug
+        throw new IllegalArgumentException("Cant find dimension " + tok);
+      }
+      list.add(d);
+    }
+    return list;
   }
 
   /**
@@ -693,7 +714,7 @@ public class NetcdfFileWriter {
    * You cannot make an attribute longer, or change the number of values.
    * For strings: truncate if longer, zero fill if shorter.  Strings are padded to 4 byte boundaries, ok to use padding if it exists.
    * For numerics: must have same number of values.
-   * This is really a netcdf-3 writing only. netcdf-4 attritutes can be changed without rewriting.
+   * This is really a netcdf-3 writing only. netcdf-4 attributes can be changed without rewriting.
    *
    * @deprecated DO NOT USE
    * @param v2  variable, or null for global attribute
@@ -894,6 +915,11 @@ public class NetcdfFileWriter {
 
     write(v, corigin, cvalues);
   }
+
+  public int appendStructureData(Structure s, StructureData sdata) throws IOException, InvalidRangeException {
+    return spiw.appendStructureData(s, sdata);
+  }
+
 
   /**
    * Flush anything written to disk.

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998 - 2009. University Corporation for Atmospheric Research/Unidata
+ * Copyright (c) 1998 - 2014. University Corporation for Atmospheric Research/Unidata
  * Portions of this software were developed by the Unidata Program at the
  * University Corporation for Atmospheric Research.
  *
@@ -40,6 +40,7 @@ import ucar.nc2.ncml.NcMLWriter;
 import ucar.nc2.ncml.NcMLReader;
 import ucar.nc2.ft.*;
 import ucar.nc2.constants.FeatureType;
+import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time.CalendarDateFormatter;
 import ucar.nc2.time.CalendarDateRange;
 import ucar.nc2.units.DateRange;
@@ -272,18 +273,18 @@ public class FeatureDatasetPointXML {
     if ((beginS == null) || (endS == null)) return null;
 
     try {
-      Date start = CalendarDateFormatter.parseISODate(beginS);
-      Date end = CalendarDateFormatter.parseISODate(endS);
+      CalendarDate start = CalendarDateFormatter.isoStringToCalendarDate(null, beginS);
+      CalendarDate end = CalendarDateFormatter.isoStringToCalendarDate(null, endS);
       if ((start == null) || (end == null)) {
         return null;
       }
 
-      DateRange dr = new DateRange(start, end);
+      CalendarDateRange dr = CalendarDateRange.of(start, end);
 
-      if (resS != null)
-        dr.setResolution(new TimeDuration(resS));
+      // LOOK if (resS != null)
+      //  dr.setResolution(new TimeDuration(resS));
 
-      return CalendarDateRange.of(dr);
+      return dr;
 
     } catch (Exception e) {
       return null;
@@ -293,7 +294,7 @@ public class FeatureDatasetPointXML {
   public static List<VariableSimpleIF> getDataVariables(Document doc) throws IOException {
     Element root = doc.getRootElement();
 
-    List<VariableSimpleIF> dataVars = new ArrayList<VariableSimpleIF>();
+    List<VariableSimpleIF> dataVars = new ArrayList<>();
     List<Element> varElems = root.getChildren("variable");
     for (Element varElem : varElems) {
       dataVars.add(new VariableSimple(varElem));
@@ -311,7 +312,7 @@ public class FeatureDatasetPointXML {
       String type = velem.getAttributeValue("type");
       dt = DataType.getType(type);
 
-      atts = new ArrayList<Attribute>();
+      atts = new ArrayList<>();
       List<Element> attElems = velem.getChildren("attribute");
       for (Element attElem : attElems) {
         String attName = attElem.getAttributeValue("name");

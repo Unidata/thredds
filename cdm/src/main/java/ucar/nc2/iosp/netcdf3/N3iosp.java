@@ -1,6 +1,5 @@
 /*
- * Copyright 1998-2009 University Corporation for Atmospheric Research/Unidata
- *
+ * Copyright (c) 1998 - 2014. University Corporation for Atmospheric Research/Unidata
  * Portions of this software were developed by the Unidata Program at the
  * University Corporation for Atmospheric Research.
  *
@@ -382,6 +381,7 @@ public String NC_check_name(String name) {
   protected boolean debug = false, debugSize = false, debugSPIO = false, debugRecord = false, debugRead = false;
   protected boolean showHeaderBytes = false;
 
+  @Override
   public boolean isValidFile(ucar.unidata.io.RandomAccessFile raf) throws IOException {
     return N3header.isValidFile(raf);
   }
@@ -407,11 +407,13 @@ public String NC_check_name(String name) {
   //////////////////////////////////////////////////////////////////////////////////////
   // read existing file
 
+  @Override
   public void openForWriting(ucar.unidata.io.RandomAccessFile raf, ucar.nc2.NetcdfFile ncfile,
                    ucar.nc2.util.CancelTask cancelTask) throws IOException {
     open(raf, ncfile, cancelTask);
   }
 
+  @Override
   public void open(ucar.unidata.io.RandomAccessFile raf, ucar.nc2.NetcdfFile ncfile,
                    ucar.nc2.util.CancelTask cancelTask) throws IOException {
     super.open(raf, ncfile, cancelTask);
@@ -439,6 +441,7 @@ public String NC_check_name(String name) {
   }
 
 
+  @Override
   public void setFill(boolean fill) {
     this.fill = fill;
   }
@@ -446,6 +449,7 @@ public String NC_check_name(String name) {
   /////////////////////////////////////////////////////////////////////////////
   // data reading
 
+  @Override
   public Array readData(ucar.nc2.Variable v2, Section section) throws IOException, InvalidRangeException {
     /* if (debugRead) {
       System.out.printf("debugRead %s %s%n", v2.toStringDebug(), section);
@@ -581,7 +585,7 @@ public String NC_check_name(String name) {
     return structureArray;  */
   }
 
-  public ucar.ma2.Array readNestedData(ucar.nc2.Variable v2, Section section) throws java.io.IOException, ucar.ma2.InvalidRangeException {
+  private ucar.ma2.Array readNestedData(ucar.nc2.Variable v2, Section section) throws java.io.IOException, ucar.ma2.InvalidRangeException {
     N3header.Vinfo vinfo = (N3header.Vinfo) v2.getSPobject();
     DataType dataType = v2.getDataType();
 
@@ -595,6 +599,7 @@ public String NC_check_name(String name) {
     return Array.factory(dataType.getPrimitiveClassType(), section.getShape(), dataObject);
   }
 
+  @Override
   public long readToByteChannel(ucar.nc2.Variable v2, Section section, WritableByteChannel channel)
       throws java.io.IOException, ucar.ma2.InvalidRangeException {
 
@@ -646,6 +651,7 @@ public String NC_check_name(String name) {
   protected boolean fill = true;
   protected HashMap dimHash = new HashMap(50);
 
+  @Override
   public void create(String filename, ucar.nc2.NetcdfFile ncfile, int extra, long preallocateSize, boolean largeFile) throws IOException {
     this.ncfile = ncfile;
     this.readonly = false;
@@ -676,6 +682,7 @@ public String NC_check_name(String name) {
     //  raf.setMinLength(recStart); // make sure file length is long enough, even if not written to.
   }
 
+  @Override
   public boolean rewriteHeader(boolean largeFile) throws IOException {
     return header.rewriteHeader(largeFile, null);
   }
@@ -683,6 +690,7 @@ public String NC_check_name(String name) {
   //////////////////////////////////////////////////////////////////////////////////////
   // write
 
+  @Override
   public void writeData(Variable v2, Section section, Array values) throws java.io.IOException, InvalidRangeException {
     N3header.Vinfo vinfo = (N3header.Vinfo) v2.getSPobject();
     DataType dataType = v2.getDataType();
@@ -712,43 +720,53 @@ public String NC_check_name(String name) {
     }
   }
 
+  @Override
+  public int appendStructureData(Structure s, StructureData sdata) throws IOException, InvalidRangeException {
+    int recnum = header.numrecs;
+    setNumrecs(recnum + 1);
+    writeRecordData(s, recnum, sdata);
+    return recnum;
+  }
+
   private void writeRecordData(ucar.nc2.Structure s, Section section, ArrayStructure structureArray) throws java.io.IOException, ucar.ma2.InvalidRangeException {
-
-    List<Variable> vars = s.getVariables();
-    StructureMembers members = structureArray.getStructureMembers();
-
-    Range recordRange = section.getRange(0);
     int countSrcRecnum = 0;
+    Range recordRange = section.getRange(0);
     for (int recnum = recordRange.first(); recnum <= recordRange.last(); recnum += recordRange.stride()) {
+      StructureData sdata = structureArray.getStructureData(countSrcRecnum);
+      writeRecordData(s, recnum, sdata);
+      countSrcRecnum++;
+    }
+  }
 
-      // loop over members
-      for (Variable vm : vars) {
-        StructureMembers.Member m = members.findMember(vm.getShortName());
-        if (null == m)
-          continue; // this means that the data is missing from the ArrayStructure
+  private void writeRecordData(ucar.nc2.Structure s, int recnum, StructureData sdata) throws java.io.IOException, ucar.ma2.InvalidRangeException {
 
-        // convert String member data into CHAR data
-        Array data = structureArray.getArray(countSrcRecnum, m);
-        if (data instanceof ArrayObject && vm.getDataType() == DataType.CHAR && vm.getRank() > 0) {
-          int strlen = vm.getShape(vm.getRank() - 1);
-          data = ArrayChar.makeFromStringArray((ArrayObject) data, strlen); // turn it into an ArrayChar
-        }
+    StructureMembers members = sdata.getStructureMembers();
 
-        // layout of the destination
-        N3header.Vinfo vinfo = (N3header.Vinfo) vm.getSPobject();
-        long begin = vinfo.begin + recnum * header.recsize;  // this assumes unlimited dimension
-        Section memberSection = vm.getShapeAsSection();
-        Layout layout = new LayoutRegular(begin, vm.getElementSize(), vm.getShape(), memberSection);
+    // loop over members
+    for (Variable vm : s.getVariables()) {
+      StructureMembers.Member m = members.findMember(vm.getShortName());
+      if (null == m)
+        continue; // this means that the data is missing from the ArrayStructure
 
-        try {
-          writeData(data, layout, vm.getDataType());
-        } catch (Exception e) {
-          log.error("Error writing member="+vm.getShortName()+" in struct="+s.getFullName(), e);
-          throw new IOException(e);
-        }
+      // convert String member data into CHAR data
+      Array data = sdata.getArray(m);
+      if (data instanceof ArrayObject && vm.getDataType() == DataType.CHAR && vm.getRank() > 0) {
+        int strlen = vm.getShape(vm.getRank() - 1);
+        data = ArrayChar.makeFromStringArray((ArrayObject) data, strlen); // turn it into an ArrayChar
       }
 
-      countSrcRecnum++;
+      // layout of the destination
+      N3header.Vinfo vinfo = (N3header.Vinfo) vm.getSPobject();
+      long begin = vinfo.begin + recnum * header.recsize;  // this assumes unlimited dimension
+      Section memberSection = vm.getShapeAsSection();
+      Layout layout = new LayoutRegular(begin, vm.getElementSize(), vm.getShape(), memberSection);
+
+      try {
+        writeData(data, layout, vm.getDataType());
+      } catch (Exception e) {
+        log.error("Error writing member="+vm.getShortName()+" in struct="+s.getFullName(), e);
+        throw new IOException(e);
+      }
     }
   }
 
@@ -792,6 +810,7 @@ public String NC_check_name(String name) {
    * @param att replace with this value
    * @throws IOException
    */
+  @Override
   public void updateAttribute(ucar.nc2.Variable v2, Attribute att) throws IOException {
     header.updateAttribute(v2, att);
   }
@@ -903,6 +922,7 @@ public String NC_check_name(String name) {
     throw new IOException("File does not exist");
   } */
 
+  @Override
   public void flush() throws java.io.IOException {
     if (raf != null) {
       raf.flush();
@@ -911,6 +931,7 @@ public String NC_check_name(String name) {
     }
   }
 
+  @Override
   public void close() throws java.io.IOException {
     if (raf != null) {
       long size = header.calcFileSize();
@@ -940,10 +961,12 @@ public String NC_check_name(String name) {
     return super.sendIospMessage(message);
   }
 
+  @Override
   public String getFileTypeId() {
     return DataFormatType.NETCDF.toString();
   }
 
+  @Override
   public String getFileTypeDescription()  { return "NetCDF-3/CDM"; }
 
   ////////////////////////////////////////////////////////////////////////////////////////////////////

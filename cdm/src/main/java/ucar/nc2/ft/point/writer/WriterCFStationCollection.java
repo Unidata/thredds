@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998 - 2009. University Corporation for Atmospheric Research/Unidata
+ * Copyright (c) 1998 - 2014. University Corporation for Atmospheric Research/Unidata
  * Portions of this software were developed by the Unidata Program at the
  * University Corporation for Atmospheric Research.
  *
@@ -38,7 +38,6 @@ import java.util.Arrays;
 import java.util.Formatter;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import ucar.ma2.ArrayDouble;
 import ucar.ma2.ArrayInt;
@@ -54,6 +53,7 @@ import ucar.nc2.VariableSimpleIF;
 import ucar.nc2.constants.CDM;
 import ucar.nc2.constants.CF;
 import ucar.nc2.constants.FeatureType;
+import ucar.nc2.dataset.conv.CF1Convention;
 import ucar.nc2.ft.FeatureDataset;
 import ucar.nc2.ft.FeatureDatasetFactoryManager;
 import ucar.nc2.ft.FeatureDatasetPoint;
@@ -92,8 +92,6 @@ public class WriterCFStationCollection extends CFPointWriter {
   private Variable lat, lon, alt, time, id, wmoId, desc, stationIndex;
 
   private List<Dimension> stationDims = new ArrayList<>(1);
-  private Dimension recordDim;
-
   private boolean useAlt = false;
   private boolean useWmoId = false;
 
@@ -144,7 +142,7 @@ public class WriterCFStationCollection extends CFPointWriter {
     llbb = getBoundingBox(stnList); // gets written in super.finish();
 
     // add the dimensions
-    recordDim = writer.addUnlimitedDimension(recordDimName);
+    writer.addUnlimitedDimension(recordDimName);
     Dimension stationDim = writer.addDimension(null, stationDimName, nstns);
     stationDims.add(stationDim);
 
@@ -160,9 +158,9 @@ public class WriterCFStationCollection extends CFPointWriter {
     if (useAlt) {
       alt = writer.addVariable(null, altName, DataType.DOUBLE, stationDimName);
       writer.addVariableAttribute(alt, new Attribute(CDM.UNITS, "meters"));
-      writer.addVariableAttribute(alt, new Attribute(CF.POSITIVE, CF.POSITIVE_UP));
       writer.addVariableAttribute(alt, new Attribute(CDM.LONG_NAME, "station altitude"));
       writer.addVariableAttribute(alt, new Attribute(CF.STANDARD_NAME, CF.SURFACE_ALTITUDE));
+      writer.addVariableAttribute(alt, new Attribute(CF.POSITIVE, CF1Convention.getZisPositive(altName, altUnits)));
     }
 
     id = writer.addStringVariable(null, idName, stationDims, name_strlen);
@@ -192,11 +190,10 @@ public class WriterCFStationCollection extends CFPointWriter {
     writer.addVariableAttribute(stationIndex, new Attribute(CF.INSTANCE_DIMENSION, stationDimName));
   }
 
-  private void createDataVariables(List<VariableSimpleIF> dataVars) throws IOException {
-    String coordNames = latName + " " + lonName + " " + altName + " " + timeName;
-    if (!useAlt){
-    	coordNames = latName + " " + lonName + " " + timeName;
-    }
+  /* private void createDataVariables(List<VariableSimpleIF> dataVars) throws IOException {
+    String coordNames = timeName + " " + latName +" "+ lonName;
+    if (altUnits != null)
+      coordNames = coordNames +" " + altName;
 
     /* find all dimensions needed by the data variables
     for (VariableSimpleIF var : dataVars) {
@@ -209,8 +206,8 @@ public class WriterCFStationCollection extends CFPointWriter {
       if (d.isUnlimited()) continue;
       if (d.isShared())
         writer.addDimension(null, d.getShortName(), d.getLength(), d.isShared(), false, d.isVariableLength());
-    }  */
-    
+    }  *
+
     // eliminate coordinate variables
     List<VariableSimpleIF> useDataVars = new ArrayList<>(dataVars.size());
     for (VariableSimpleIF var : dataVars) {
@@ -232,7 +229,7 @@ public class WriterCFStationCollection extends CFPointWriter {
           writer.addDimension(null, dimName, d.getLength());
           dimNames.append(" ").append(dimName);
         }
-      }  */
+      }  *
 
       Variable newVar;
       if ((oldVar.getDataType().equals(DataType.STRING))) {
@@ -242,7 +239,7 @@ public class WriterCFStationCollection extends CFPointWriter {
         int n = dims.size();
         List<Dimension> cdims = dims.subList(0, n-1);
         Dimension lenDim = dims.get(n-1);
-        newVar = writer.addStringVariable(null, oldVar.getShortName(), cdims, lenDim.getLength());  */
+        newVar = writer.addStringVariable(null, oldVar.getShortName(), cdims, lenDim.getLength());  *
 
       } else {
         newVar = writer.addVariable(null, oldVar.getShortName(), oldVar.getDataType(), dims);
@@ -282,7 +279,7 @@ public class WriterCFStationCollection extends CFPointWriter {
       }
     }
     return result;
-  }
+  } */
 
   private HashMap<String, Integer> stationMap;
 

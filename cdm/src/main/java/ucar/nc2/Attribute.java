@@ -1,6 +1,5 @@
 /*
- * Copyright 1998-2009 University Corporation for Atmospheric Research/Unidata
- *
+ * Copyright (c) 1998 - 2014. University Corporation for Atmospheric Research/Unidata
  * Portions of this software were developed by the Unidata Program at the
  * University Corporation for Atmospheric Research.
  *
@@ -66,7 +65,8 @@ public class Attribute extends CDMNode {
    */
   static public Map<String, Attribute> makeMap(List<Attribute> atts) {
     int size = (atts == null) ? 1 : atts.size();
-    Map<String, Attribute> result = new HashMap<String, Attribute>(size);
+    Map<String, Attribute> result = new HashMap<>(size);
+    if (atts == null) return result;
     for (Attribute att : atts) result.put(att.getShortName(), att);
     return result;
   }
@@ -457,7 +457,7 @@ public class Attribute extends CDMNode {
   public Attribute(String name, List values) {
     this(name);
     int n = values.size();
-    Object pa = null;
+    Object pa;
 
     Class c = values.get(0).getClass();
     if (c == String.class) {

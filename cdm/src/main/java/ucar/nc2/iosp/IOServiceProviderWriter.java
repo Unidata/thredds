@@ -32,8 +32,11 @@
  */
 package ucar.nc2.iosp;
 
+import ucar.ma2.InvalidRangeException;
 import ucar.ma2.Section;
+import ucar.ma2.StructureData;
 import ucar.nc2.Attribute;
+import ucar.nc2.Structure;
 
 import java.io.IOException;
 
@@ -93,7 +96,24 @@ public interface IOServiceProviderWriter extends IOServiceProvider {
   public void writeData(ucar.nc2.Variable v2, Section section, ucar.ma2.Array values)
       throws IOException, ucar.ma2.InvalidRangeException;
 
-  public boolean rewriteHeader(boolean largeFile) throws IOException;  
+  /**
+   * append a structureData along the unlimited dimension
+   *
+   * @param s     belongs to this structure
+   * @param sdata the stucturesData to append
+   * @return      the recnum where it was written
+   * @throws IOException
+   * @throws InvalidRangeException
+   */
+  public int appendStructureData(Structure s, StructureData sdata) throws IOException, InvalidRangeException;
+
+
+  /**
+   * if theres room before data, rewrite header without moving the data. netcdf3 only
+   * @return true if it worked
+   * @throws IOException
+   */
+  public boolean rewriteHeader(boolean largeFile) throws IOException;
 
   /**
    * Update the value of an existing attribute. Attribute is found by name, which must match exactly.

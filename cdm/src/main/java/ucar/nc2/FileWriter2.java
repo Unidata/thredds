@@ -1,6 +1,5 @@
 /*
- * Copyright 1998-2013 University Corporation for Atmospheric Research/Unidata
- *
+ * Copyright (c) 1998 - 2014. University Corporation for Atmospheric Research/Unidata
  * Portions of this software were developed by the Unidata Program at the
  * University Corporation for Atmospheric Research.
  *
@@ -325,7 +324,7 @@ public class FileWriter2 {
       DataType newType = oldVar.getDataType();
       Variable v;
       if (newType == DataType.STRUCTURE) {
-        v = writer.addStructure(newGroup, oldVar.getShortName(), (Structure) oldVar, dims);
+        v = writer.addStructure(newGroup, (Structure) oldVar, oldVar.getShortName(), dims);
       } else {
         v = writer.addVariable(newGroup, oldVar.getShortName(), newType, dims);
       }

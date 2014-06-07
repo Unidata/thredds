@@ -65,6 +65,10 @@ public class CalendarDateRange {
     return null;
   }
 
+  // LOOK
+  public void setResolution()  {
+  }
+
   public boolean intersects(CalendarDateRange o)  {
     return intersects(o.getStart(), o.getEnd());
   }
