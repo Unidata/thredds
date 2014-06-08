@@ -166,7 +166,7 @@ class WriterPointCollectionNoTime extends CFPointWriter {
 		}		
 	}
 
-	private void createDataVariables(List<VariableSimpleIF> dataVars) throws IOException {
+	protected void createDataVariables(List<VariableSimpleIF> dataVars) throws IOException {
 		String coordNames = latName +" "+ lonName;
 		if (altUnits != null)
 			coordNames = coordNames +" " + altName;
