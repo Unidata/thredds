@@ -63,8 +63,7 @@ public class StationSubsetWriterWaterML extends AbstractStationSubsetWriter {
     }
 
     @Override
-    protected void writeStationTimeSeriesFeature(StationTimeSeriesFeature stationFeat)
-            throws Exception {
+    protected void writeStationTimeSeriesFeature(StationTimeSeriesFeature stationFeat) throws Exception {
         for (VariableSimpleIF wantedVar : wantedVariables) {
             // wml2:observationMember
             NcOMObservationPropertyType.initObservationMember(

@@ -76,24 +76,26 @@ public class DsgSubsetWriterTest {
 
         return Arrays.asList(new Object[][] {
             // Point
-            { FeatureType.POINT,   "point.ncml",   SupportedFormat.CSV_FILE, ncssParamsAll,      "pointAll.csv"       },
-            { FeatureType.POINT,   "point.ncml",   SupportedFormat.CSV_FILE, ncssParamsPoint,    "pointSubset.csv"    },
+//            { FeatureType.POINT,   "point.ncml",   SupportedFormat.CSV_FILE, ncssParamsAll,      "pointAll.csv"       },
+//            { FeatureType.POINT,   "point.ncml",   SupportedFormat.CSV_FILE, ncssParamsPoint,    "pointSubset.csv"    },
+//
+//            { FeatureType.POINT,   "point.ncml",   SupportedFormat.XML_FILE, ncssParamsAll,      "pointAll.xml"       },
+//            { FeatureType.POINT,   "point.ncml",   SupportedFormat.XML_FILE, ncssParamsPoint,    "pointSubset.xml"    },
 
-            { FeatureType.POINT,   "point.ncml",   SupportedFormat.XML_FILE, ncssParamsAll,      "pointAll.xml"       },
-            { FeatureType.POINT,   "point.ncml",   SupportedFormat.XML_FILE, ncssParamsPoint,    "pointSubset.xml"    },
+            { FeatureType.POINT,   "point.ncml",   SupportedFormat.NETCDF3,  ncssParamsAll,      "pointAll.nc"        },
 
             // Station
-            { FeatureType.STATION, "station.ncml", SupportedFormat.CSV_FILE, ncssParamsAll,      "stationAll.csv"     },
-            { FeatureType.STATION, "station.ncml", SupportedFormat.CSV_FILE, ncssParamsStation1, "stationSubset1.csv" },
-            { FeatureType.STATION, "station.ncml", SupportedFormat.CSV_FILE, ncssParamsStation2, "stationSubset2.csv" },
-
-            { FeatureType.STATION, "station.ncml", SupportedFormat.XML_FILE, ncssParamsAll,      "stationAll.xml"     },
-            { FeatureType.STATION, "station.ncml", SupportedFormat.XML_FILE, ncssParamsStation1, "stationSubset1.xml" },
-            { FeatureType.STATION, "station.ncml", SupportedFormat.XML_FILE, ncssParamsStation2, "stationSubset2.xml" },
-
-            { FeatureType.STATION, "station.ncml", SupportedFormat.WATERML2, ncssParamsAll,      "stationAll.wml"     },
-            { FeatureType.STATION, "station.ncml", SupportedFormat.WATERML2, ncssParamsStation1, "stationSubset1.wml" },
-            { FeatureType.STATION, "station.ncml", SupportedFormat.WATERML2, ncssParamsStation2, "stationSubset2.wml" },
+//            { FeatureType.STATION, "station.ncml", SupportedFormat.CSV_FILE, ncssParamsAll,      "stationAll.csv"     },
+//            { FeatureType.STATION, "station.ncml", SupportedFormat.CSV_FILE, ncssParamsStation1, "stationSubset1.csv" },
+//            { FeatureType.STATION, "station.ncml", SupportedFormat.CSV_FILE, ncssParamsStation2, "stationSubset2.csv" },
+//
+//            { FeatureType.STATION, "station.ncml", SupportedFormat.XML_FILE, ncssParamsAll,      "stationAll.xml"     },
+//            { FeatureType.STATION, "station.ncml", SupportedFormat.XML_FILE, ncssParamsStation1, "stationSubset1.xml" },
+//            { FeatureType.STATION, "station.ncml", SupportedFormat.XML_FILE, ncssParamsStation2, "stationSubset2.xml" },
+//
+//            { FeatureType.STATION, "station.ncml", SupportedFormat.WATERML2, ncssParamsAll,      "stationAll.wml"     },
+//            { FeatureType.STATION, "station.ncml", SupportedFormat.WATERML2, ncssParamsStation1, "stationSubset1.wml" },
+//            { FeatureType.STATION, "station.ncml", SupportedFormat.WATERML2, ncssParamsStation2, "stationSubset2.wml" },
         });
     }
 
@@ -126,6 +128,13 @@ public class DsgSubsetWriterTest {
 //            DsgSubsetWriter subsetWriterConsole = DsgSubsetWriterFactory.newInstance(
 //                    fdPoint, ncssParams, diskCache, System.out, format);
 //            subsetWriterConsole.write();
+
+            File outFile = new File("C:/Users/cwardgar/Desktop/out.nc");
+            try (OutputStream outFileStream = new BufferedOutputStream(new FileOutputStream(outFile))) {
+                DsgSubsetWriter subsetWriterFile = DsgSubsetWriterFactory.newInstance(
+                        fdPoint, ncssParams, diskCache, outFileStream, format);
+                subsetWriterFile.write();
+            }
 
             ByteArrayInputStream actualInputStream = new ByteArrayInputStream(actualOutputStream.toByteArray());
 

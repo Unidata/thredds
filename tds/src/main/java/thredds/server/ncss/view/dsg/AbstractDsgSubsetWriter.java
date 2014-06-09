@@ -1,15 +1,19 @@
 package thredds.server.ncss.view.dsg;
 
+import org.springframework.http.HttpHeaders;
 import thredds.server.ncss.exception.NcssException;
 import thredds.server.ncss.exception.VariableNotContainedInDatasetException;
+import thredds.server.ncss.format.SupportedFormat;
 import thredds.server.ncss.params.NcssParamsBean;
 import ucar.nc2.VariableSimpleIF;
+import ucar.nc2.ft.FeatureDataset;
 import ucar.nc2.ft.FeatureDatasetPoint;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time.CalendarDateRange;
 import ucar.nc2.time.CalendarPeriod;
 import ucar.nc2.units.TimeDuration;
 
+import javax.servlet.http.HttpServletResponse;
 import java.util.*;
 
 /**
@@ -27,6 +31,21 @@ public abstract class AbstractDsgSubsetWriter implements DsgSubsetWriter {
         this.wantedVariables = getWantedVariables(fdPoint, ncssParams);
         this.wantedRange = getWantedRange(ncssParams);
     }
+
+    /////////////////////////////////////////////////// NcssResponder //////////////////////////////////////////////////
+
+    @Override
+    public void respond(HttpServletResponse res, FeatureDataset ft, String requestPathInfo, NcssParamsBean queryParams,
+            SupportedFormat format) throws Exception {
+        write();
+    }
+
+    @Override
+    public HttpHeaders getResponseHeaders(FeatureDataset fd, SupportedFormat format, String datasetPath) {
+        return getHttpHeaders(datasetPath, format.isStream());
+    }
+
+    ////////////////////////////////////////////////////// Static //////////////////////////////////////////////////////
 
     // TODO: This needs testing.
     public static List<VariableSimpleIF> getWantedVariables(FeatureDatasetPoint fdPoint, NcssParamsBean ncssParams)

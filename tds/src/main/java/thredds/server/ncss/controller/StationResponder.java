@@ -39,7 +39,6 @@ import thredds.server.ncss.exception.NcssException;
 import thredds.server.ncss.format.SupportedFormat;
 import thredds.server.ncss.params.NcssParamsBean;
 import thredds.server.ncss.view.dsg.StationWriter;
-import ucar.ma2.InvalidRangeException;
 import ucar.nc2.ft.FeatureCollection;
 import ucar.nc2.ft.FeatureDataset;
 import ucar.nc2.ft.FeatureDatasetPoint;
@@ -93,7 +92,7 @@ public class StationResponder implements NcssResponder {
 	 */
 	@Override
 	public void respond(HttpServletResponse res, FeatureDataset fd, String requestPathInfo, NcssParamsBean queryParams, SupportedFormat format)
-			throws IOException, ParseException, InvalidRangeException, NcssException {
+			throws Exception {
         stationWriter.write();
 	}
 

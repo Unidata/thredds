@@ -32,27 +32,20 @@
  */
 package thredds.server.ncss.controller;
 
-import java.io.IOException;
-import java.text.ParseException;
-
-import javax.servlet.http.HttpServletResponse;
-
 import org.springframework.http.HttpHeaders;
-
-import thredds.server.ncss.exception.NcssException;
 import thredds.server.ncss.format.SupportedFormat;
 import thredds.server.ncss.params.NcssParamsBean;
-import ucar.ma2.InvalidRangeException;
 import ucar.nc2.ft.FeatureDataset;
+
+import javax.servlet.http.HttpServletResponse;
 
 /**
  * @author mhermida
  *
  */
 public interface NcssResponder {
-
-	public void respond(HttpServletResponse res, FeatureDataset ft, String requestPathInfo, NcssParamsBean queryParams, SupportedFormat format)
-          throws IOException, ParseException, InvalidRangeException, NcssException;
+	public void respond(HttpServletResponse res, FeatureDataset ft, String requestPathInfo, NcssParamsBean queryParams,
+          SupportedFormat format) throws Exception;
 
 	public HttpHeaders getResponseHeaders(FeatureDataset fd, SupportedFormat format, String datasetPath);
 }

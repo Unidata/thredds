@@ -7,8 +7,10 @@ import thredds.server.ncss.exception.NcssException;
 import thredds.server.ncss.format.SupportedFormat;
 import thredds.server.ncss.params.NcssParamsBean;
 import thredds.server.ncss.view.dsg.PointWriter;
-import ucar.ma2.InvalidRangeException;
-import ucar.nc2.ft.*;
+import ucar.nc2.ft.FeatureCollection;
+import ucar.nc2.ft.FeatureDataset;
+import ucar.nc2.ft.FeatureDatasetPoint;
+import ucar.nc2.ft.PointFeatureCollection;
 import ucar.nc2.util.DiskCache2;
 
 import javax.servlet.http.HttpServletResponse;
@@ -50,7 +52,7 @@ public class DsgResponder implements NcssResponder {
 
 	@Override
 	public void respond(HttpServletResponse res, FeatureDataset fd, String requestPathInfo, NcssParamsBean queryParams, SupportedFormat format)
-			throws IOException, ParseException, InvalidRangeException, NcssException {
+			throws Exception {
       writer.write();
 	}
 

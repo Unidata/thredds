@@ -32,7 +32,7 @@ public class StationSubsetWriterXML extends AbstractStationSubsetWriter {
         super(fdPoint, ncssParams);
 
         XMLOutputFactory factory = XMLOutputFactory.newInstance();
-        staxWriter = factory.createXMLStreamWriter(out);
+        staxWriter = factory.createXMLStreamWriter(out, "UTF-8");
     }
 
     @Override
