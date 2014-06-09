@@ -1,6 +1,5 @@
 /*
- * Copyright 1998-2009 University Corporation for Atmospheric Research/Unidata
- *
+ * Copyright (c) 1998 - 2014. University Corporation for Atmospheric Research/Unidata
  * Portions of this software were developed by the Unidata Program at the
  * University Corporation for Atmospheric Research.
  *
@@ -39,7 +38,6 @@ import ucar.unidata.io.RandomAccessFile;
 
 import java.util.*;
 import java.io.IOException;
-
 
 /**
  * Netcdf header reading and writing for version 3 file format.
@@ -603,6 +601,14 @@ public class N3header {
     writeHeader(extra, largeFile, false, fout);
   }
 
+  /**
+   * Sneaky way to make the header bigger, if there is room for it
+   *
+   * @param largeFile  is large file format
+   * @param fout  put debug messages here, mnay be null
+   * @return true if it worked
+   * @throws IOException
+   */
   boolean rewriteHeader(boolean largeFile, Formatter fout) throws IOException {
     int want = sizeHeader(largeFile);
     if (want > dataStart)

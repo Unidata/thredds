@@ -30,7 +30,7 @@
  * NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
  * WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
  */
-package thredds.server.radarServerOrg;
+package thredds.server.radarServer;
 
 import thredds.catalog.query.Station;
 import ucar.nc2.units.DateType;

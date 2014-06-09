@@ -32,10 +32,15 @@
  */
 package ucar.nc2.iosp.hdf5;
 
-import junit.framework.*;
+import ucar.ma2.Array;
+import ucar.ma2.Index;
+import ucar.nc2.NCdumpW;
 import ucar.nc2.NetcdfFile;
+import ucar.nc2.Variable;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.unidata.test.util.TestDir;
+
+import java.io.IOException;
 
 /**
  * TestSuite that runs all the sample testsNew
@@ -90,26 +95,37 @@ public class TestH5 {
     }
   }
 
-  /* public static junit.framework.Test suite ( ) {
-    TestSuite suite= new TestSuite();
 
-    // hdf5 reading
-    suite.addTest(new TestSuite(TestH5ReadBasic.class)); //
-    suite.addTest(new TestSuite(TestH5ReadAndCount.class)); //
-    suite.addTest(new TestSuite(TestH5ReadStructure.class)); //
-    suite.addTest(new TestSuite(TestH5ReadStructure2.class)); //
-    suite.addTest(new TestSuite(TestH5Vlength.class)); //
-    suite.addTest(new TestSuite(TestH5ReadArray.class)); //
-    suite.addTest(new TestSuite(TestOddTypes.class)); //
-    suite.addTest(new TestSuite(TestH5compressed.class)); //
-    suite.addTest(new TestSuite(TestH5filter.class)); //
-    suite.addTest(new TestSuite(TestH5eos.class)); //
-    suite.addTest(new TestSuite(TestH5aura.class)); //
-    suite.addTest(new TestSuite(TestH5npoess.class)); //
+  // file that is offset 2048 bytes - NPP!
+  @org.junit.Test
+  public void testSuperblockIsOffset() throws IOException {
+    NetcdfFile ncfile = TestH5.openH5("superblockIsOffsetNPP.h5");
 
-    suite.addTest(new TestSuite(TestN4.class)); //
-    suite.addTest(new TestSuite(TestH5read.class)); //
-    suite.addTest(new TestSuite(TestH5subset.class)); //
-    return suite;
-  } */
+    Variable v = ncfile.findVariable("BeamTime");
+    System.out.printf("%s%n", v);
+
+    Array data = v.read();
+    System.out.printf("%s%n", NCdumpW.printArray(data, "offset data", null));
+    Index ii = data.getIndex();
+    assert (data.getLong(ii.set(11,93)) == 1718796166693743L);
+
+    ncfile.close();
+  }
+
+  // file that is offset 512 bytes - MatLab, using compact layout (!)
+  @org.junit.Test
+  public void testOffsetCompactLayout() throws IOException {
+    NetcdfFile ncfile = TestH5.openH5("matlab_cols.mat");
+
+    Variable v = ncfile.findVariable("b");
+    System.out.printf("%s%n", v);
+
+    Array data = v.read();
+    System.out.printf("%s%n", NCdumpW.printArray(data, "offset data", null));
+    Index ii = data.getIndex();
+    assert (data.getDouble(ii.set(3,2)) == 12.0);
+
+    ncfile.close();
+  }
+
 }

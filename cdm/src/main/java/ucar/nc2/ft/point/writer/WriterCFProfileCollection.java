@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998 - 2009. University Corporation for Atmospheric Research/Unidata
+ * Copyright (c) 1998 - 2014. University Corporation for Atmospheric Research/Unidata
  * Portions of this software were developed by the Unidata Program at the
  * University Corporation for Atmospheric Research.
  *
@@ -50,6 +50,7 @@ import ucar.ma2.StructureMembers.Member;
 import ucar.nc2.*;
 import ucar.nc2.constants.CDM;
 import ucar.nc2.constants.CF;
+import ucar.nc2.dataset.conv.CF1Convention;
 import ucar.nc2.ft.PointFeature;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.units.DateUnit;
@@ -92,14 +93,11 @@ public class WriterCFProfileCollection extends CFPointWriter {
     
     createProfiles(profileNames);
     createObsVariables(timeUnit);
-    createDataVariables(dataVars);
+    addDataVariablesClassic(dataVars);
 
     writer.create(); // done with define mode
     
     record = writer.addRecordStructure();
-    
-    // System.out.printf("%s%n", ncfile);
-
     writeProfileData(profileNames); // write out the profile info
   }
 
@@ -152,6 +150,7 @@ public class WriterCFProfileCollection extends CFPointWriter {
       Variable alt = writer.addVariable(null, altName, DataType.DOUBLE, profileDimName);
       writer.addVariableAttribute(alt, new Attribute(CDM.UNITS, altUnits));
       writer.addVariableAttribute(alt, new Attribute(CDM.LONG_NAME, "profile altitude"));
+      writer.addVariableAttribute(alt, new Attribute(CF.POSITIVE, CF1Convention.getZisPositive(altName, altUnits)));
     }
   }
 
@@ -172,7 +171,7 @@ public class WriterCFProfileCollection extends CFPointWriter {
     writer.addVariableAttribute(index, new Attribute(CF.INSTANCE_DIMENSION, profileDimName));
   }
 
-  private void createDataVariables(List<VariableSimpleIF> dataVars) throws IOException {
+  /* private void createDataVariables(List<VariableSimpleIF> dataVars) throws IOException {
     String coordNames = latName + " " + lonName  + " " + timeName;
     if (altUnits != null) coordNames += " " + altName;
 
@@ -186,7 +185,7 @@ public class WriterCFProfileCollection extends CFPointWriter {
     for (Dimension d : dimSet) {
       if (!d.isUnlimited())
         ncfile.addDimension(d.getName(), d.getLength(), d.isShared(), false, d.isVariableLength());
-    } */
+    } *
     
     // find all variables already in use 
     List<VariableSimpleIF> useDataVars = new ArrayList<VariableSimpleIF>(dataVars.size()); // LOOK doesnt make sense - must eliminate non data vars in calling routine
@@ -201,7 +200,7 @@ public class WriterCFProfileCollection extends CFPointWriter {
       for (Dimension d : dims) {
         if (!d.isUnlimited())
           dimNames.append(" ").append(d.getName());
-      } */
+      } *
 
       Variable newVar = writer.addVariable(null, oldVar.getShortName(), oldVar.getDataType(), recordDimName);
       List<Attribute> atts = oldVar.getAttributes();
@@ -210,7 +209,7 @@ public class WriterCFProfileCollection extends CFPointWriter {
       }
       newVar.addAttribute(new Attribute(CF.COORDINATES, coordNames));
     }
-  }
+  }   */
 
   private HashMap<String, Integer> profileMap;
 

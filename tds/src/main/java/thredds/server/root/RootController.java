@@ -32,21 +32,58 @@
  */
 package thredds.server.root;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.servlet.mvc.LastModified;
+import thredds.server.config.TdsContext;
+import thredds.util.RequestForwardUtils;
+import thredds.util.TdsPathUtils;
+
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.File;
+import java.io.IOException;
 
 /**
  * Spring Controller redirects "/" to "/catalog.html"
- * 
+ *
  * @author edavis
  * @since 4.0
  */
 @Controller
-public class RootController{
+public class RootController implements LastModified {
 
-	@RequestMapping(value = "/")
-	public String getRootPage() {
-		return "redirect:/catalog.html";
-	}
+  @Autowired
+  private TdsContext tdsContext;
 
+
+  @RequestMapping(value = "/")
+  public String getRootPage() {
+    return "redirect:/catalog.html";
+  }
+
+  @RequestMapping(value = {"*.css", "*.gif"})
+  public ModelAndView checkPublicDirectory(HttpServletRequest req, HttpServletResponse res) throws IOException, ServletException {
+    String path = TdsPathUtils.extractPath(req, null);
+    File file = tdsContext.getPublicDocFileSource().getFile(path);
+    if (file == null) {
+      RequestForwardUtils.forwardRequest(path, tdsContext.getDefaultRequestDispatcher(), req, res);
+      return null;
+    }
+    return new ModelAndView("threddsFileView", "file", file);
+  }
+
+  public long getLastModified(HttpServletRequest req) {
+    String path = TdsPathUtils.extractPath(req, null);
+    File file = tdsContext.getPublicDocFileSource().getFile(path);
+    if (file == null)
+      return -1;
+    long lastModTime = file.lastModified();
+    if (lastModTime == 0L)
+      return -1;
+    return lastModTime;
+  }
 }

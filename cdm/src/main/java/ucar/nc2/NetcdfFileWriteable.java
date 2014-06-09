@@ -656,7 +656,7 @@ public class NetcdfFileWriteable extends NetcdfFile {
       finish();
 
       // try to rewrite header, if it fails, then we have to rewrite entire file
-      boolean ok = spiw.rewriteHeader( isLargeFile);  // LOOK seems like we should be using isNewFile
+      boolean ok = spiw.rewriteHeader(isLargeFile);  // LOOK seems like we should be using isNewFile
       if (!ok)
         rewrite();
       return !ok;

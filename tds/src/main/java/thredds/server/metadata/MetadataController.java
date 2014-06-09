@@ -56,6 +56,7 @@ import ucar.unidata.util.StringUtil2;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.URI;
@@ -115,6 +116,9 @@ public class MetadataController {
       pw.write(strResponse);
       pw.flush();
       res.flushBuffer();
+
+    } catch (FileNotFoundException e) {
+      res.sendError(HttpServletResponse.SC_NOT_FOUND, e.getMessage());
 
     } catch (Throwable t) {
       log.error("Error", t);

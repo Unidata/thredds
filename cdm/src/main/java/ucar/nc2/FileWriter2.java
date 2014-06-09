@@ -1,6 +1,5 @@
 /*
- * Copyright 1998-2013 University Corporation for Atmospheric Research/Unidata
- *
+ * Copyright (c) 1998 - 2014. University Corporation for Atmospheric Research/Unidata
  * Portions of this software were developed by the Unidata Program at the
  * University Corporation for Atmospheric Research.
  *
@@ -78,11 +77,9 @@ public class FileWriter2 {
   private final NetcdfFileWriter writer;
   private final NetcdfFileWriter.Version version;
 
-  private final Map<Variable, Variable> varMap = new HashMap<Variable, Variable>();  // oldVar, newVar
-  private final List<Variable> varList = new ArrayList<>();        // old Vars
-  private final Map<String, Dimension> gdimHash = new HashMap<>(); // name, newDim : global dimensions (classic mode)
-
-  //private Nc4Chunking chunker = new Nc4ChunkingDefault();
+  private final Map<Variable, Variable> varMap = new HashMap<>(100);  // oldVar, newVar
+  private final List<Variable> varList = new ArrayList<>(100);        // old Vars
+  private final Map<String, Dimension> gdimHash = new HashMap<>(33); // name, newDim : global dimensions (classic mode)
 
   /**
    * Use this constructor to copy entire file. Use this.write() to do actual copy.
@@ -138,7 +135,7 @@ public class FileWriter2 {
     List<Dimension> newDims = getNewDimensions(oldVar);
 
     Variable newVar;
-    if ((oldVar.getDataType().equals(DataType.STRING)) && (!version.isNetdf4format())) {
+    if ((oldVar.getDataType().equals(DataType.STRING)) && (!version.isExtendedModel())) {
       newVar = writer.addStringVariable(null, oldVar, newDims);
     } else {
       newVar = writer.addVariable(null, oldVar.getShortName(), oldVar.getDataType(), newDims);
@@ -184,10 +181,10 @@ public class FileWriter2 {
   public NetcdfFile write(CancelTask cancel) throws IOException {
 
     try {
-      if (version.isNetdf4format())
-        addGroup4(null, fileIn.getRootGroup());
+      if (version.isExtendedModel())
+        addGroupExtended(null, fileIn.getRootGroup());
       else
-        addNetcdf3();
+        addGroupClassic();
 
       if (cancel != null && cancel.isCancel()) return null;
 
@@ -210,7 +207,7 @@ public class FileWriter2 {
     return writer.getNetcdfFile();
   }
 
-  private void addNetcdf3() throws IOException {
+  private void addGroupClassic() throws IOException {
 
     if (fileIn.getRootGroup().getGroups().size() != 0) {
       throw new IllegalStateException("Input file has nested groups: cannot write to netcdf-3 format");
@@ -285,7 +282,7 @@ public class FileWriter2 {
     }
   }
 
-  private void addGroup4(Group newParent, Group oldGroup) throws IOException {
+  private void addGroupExtended(Group newParent, Group oldGroup) throws IOException {
     Group newGroup = writer.addGroup(newParent, oldGroup.getShortName());
 
     // attributes
@@ -325,7 +322,7 @@ public class FileWriter2 {
       DataType newType = oldVar.getDataType();
       Variable v;
       if (newType == DataType.STRUCTURE) {
-        v = writer.addStructure(newGroup, oldVar.getShortName(), (Structure) oldVar, dims);
+        v = writer.addStructure(newGroup, (Structure) oldVar, oldVar.getShortName(), dims);
       } else {
         v = writer.addVariable(newGroup, oldVar.getShortName(), newType, dims);
       }
@@ -340,7 +337,7 @@ public class FileWriter2 {
 
     // nested groups
     for (Group nested : oldGroup.getGroups())
-      addGroup4(newGroup, nested);
+      addGroupExtended(newGroup, nested);
 
   }
 
@@ -498,10 +495,10 @@ public class FileWriter2 {
     return newData;
   }
 
-  private boolean hasRecordStructure(NetcdfFile file) {
+  /* private boolean hasRecordStructure(NetcdfFile file) {
     Variable v = file.findVariable("record");
     return (v != null) && (v.getDataType() == DataType.STRUCTURE);
-  }
+  } */
 
   ///////////////////////////////////////////////////////////////////////////////////////////////////////////
   // contributed by  cwardgar@usgs.gov 4/12/2010

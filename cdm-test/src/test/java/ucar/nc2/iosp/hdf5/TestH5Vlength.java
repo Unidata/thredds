@@ -34,6 +34,7 @@ package ucar.nc2.iosp.hdf5;
 
 import junit.framework.*;
 import ucar.ma2.*;
+import ucar.nc2.NCdumpW;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.Attribute;
 import ucar.nc2.Variable;
@@ -117,7 +118,7 @@ public class TestH5Vlength extends TestCase {
     }
 
     ncfile.close();
-  } // */
+  }
 
   public void testVlengthVariable() throws IOException {
     NetcdfFile ncfile = TestH5.openH5("support/vlslab.h5");
@@ -193,16 +194,6 @@ public class TestH5Vlength extends TestCase {
     } catch (IOException e) {
       assert false;
     }
-
-    ncfile.close();
-  }
-
-  // file that is offset 2048 bytes - NPP!
-  public void testSuperblockIsOffset() throws IOException {
-    NetcdfFile ncfile = TestH5.openH5("superblockIsOffsetNPP.h5");
-
-    Variable v = ncfile.findVariable("BeamTime");
-    System.out.printf("%s%n", v);
 
     ncfile.close();
   }

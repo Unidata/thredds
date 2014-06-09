@@ -1,6 +1,5 @@
 /*
- * Copyright 1998-2009 University Corporation for Atmospheric Research/Unidata
- *
+ * Copyright (c) 1998 - 2014. University Corporation for Atmospheric Research/Unidata
  * Portions of this software were developed by the Unidata Program at the
  * University Corporation for Atmospheric Research.
  *
@@ -79,7 +78,7 @@ import ucar.unidata.util.Parameter;
 
 /**
  * Write a CF compliant Netcdf-3 or netcdf-4 file (classic mode only) from any gridded dataset.
- * The datasets can optionally be subsetted by a lat/lon bounding box and/or a time range.
+ * The datasets can optionally be subset by a lat/lon bounding box and/or a time range.
  *
  * @author caron
  */

@@ -36,7 +36,7 @@
  * Time: 12:15:33 PM
  */
 
-package thredds.server.radarServerOrg;
+package thredds.server.radarServer;
 
 import org.springframework.stereotype.Component;
 import org.w3c.dom.NamedNodeMap;
@@ -51,7 +51,6 @@ import thredds.catalog.query.SelectStation;
 import thredds.catalog.query.Station;
 import thredds.server.config.TdsContext;
 import thredds.servlet.DataRootHandler;
-import thredds.servlet.DatasetHandler;
 import ucar.unidata.util.StringUtil2;
 
 import javax.xml.parsers.DocumentBuilder;
@@ -88,6 +87,8 @@ public class DatasetRepository {
   static public HashMap<String, Station> nexradMap;
   static public HashMap<String, Station> terminalMap;
   static private boolean init;
+  static private Object lock = new Object();
+
   /*
    * Reads the Radar Server catalog and Radar Station information, called by bean
    */
@@ -112,10 +113,9 @@ public class DatasetRepository {
       for (int j = 0; j < datasets.size(); j++) {
         InvDatasetScan ds = (InvDatasetScan) datasets.get(j);
         if (ds.getPath() != null) {
-
           String locationWithAliasRemoved = DataRootHandler.getInstance().expandAliasForDataRoot(ds.getScanLocation());
           dataLocation.put(ds.getPath(), locationWithAliasRemoved);
-          startupLog.info("path =" + ds.getPath() + " location =" + locationWithAliasRemoved);
+          startupLog.info("Radar DatasetRepository added path =" + ds.getPath() + " location =" + locationWithAliasRemoved);
         }
         ds.setXlinkHref(ds.getPath() + "/dataset.xml");
       }
@@ -139,6 +139,19 @@ public class DatasetRepository {
     init = true;
   }
 
+  public static class RadarDatasetCollectionReturn {
+    RadarDatasetCollection rdc;
+    String err;
+
+    public RadarDatasetCollectionReturn(RadarDatasetCollection rdc) {
+      this.rdc = rdc;
+    }
+
+    public RadarDatasetCollectionReturn(String err) {
+      this.err = err;
+    }
+  }
+
   /**
    * Reads/stores requested dataset
    *
@@ -146,7 +159,7 @@ public class DatasetRepository {
    * @param var if level3, the var dataset
    * @return Datset Collection
    */
-  public static RadarDatasetCollection getRadarDatasetCollection(String key, String var) {
+  public static RadarDatasetCollectionReturn getRadarDatasetCollection(String key, String var) {
     String dmkey = key;
     if (var != null)
       dmkey = key + var;
@@ -154,9 +167,9 @@ public class DatasetRepository {
     boolean reread = false;
     if (rdc != null)
       reread = rdc.previousDayNowAvailable();
+
     if (rdc == null || reread) { // need to read or reread dataset
-      Object sync = new Object();   // LOOK BAD
-      synchronized (sync) {
+      synchronized (lock) {
         if (reread) {   // remove dataset
           datasetMap.remove(dmkey);
           rdc = null;
@@ -164,14 +177,22 @@ public class DatasetRepository {
           rdc = datasetMap.get(dmkey);
         }
         if (rdc != null)
-          return rdc;
-        rdc = new RadarDatasetCollection(dataLocation.get(key), var);
-        if (rdc == null || rdc.yyyymmdd.size() == 0 || rdc.hhmm.size() == 0)
-          return null;
+          return new RadarDatasetCollectionReturn(rdc);
+
+        String tdir = dataLocation.get(key);
+        if (tdir == null)
+          return new RadarDatasetCollectionReturn("No dataset with key= "+key);
+
+        rdc = new RadarDatasetCollection(tdir, var);
+        if (rdc.yyyymmdd.size() == 0 )
+          return new RadarDatasetCollectionReturn("No dataset with yyyymmdd= "+rdc.yyyymmdd);
+        if (rdc.hhmm.size() == 0)
+          return new RadarDatasetCollectionReturn("No dataset with hhmm= "+rdc.hhmm);
         datasetMap.put(dmkey, rdc);
       }
     }
-    return rdc;
+
+    return new RadarDatasetCollectionReturn(rdc);
   }
 
   /**

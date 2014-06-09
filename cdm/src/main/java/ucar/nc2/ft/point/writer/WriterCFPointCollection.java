@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998 - 2009. University Corporation for Atmospheric Research/Unidata
+ * Copyright (c) 1998 - 2014. University Corporation for Atmospheric Research/Unidata
  * Portions of this software were developed by the Unidata Program at the
  * University Corporation for Atmospheric Research.
  *
@@ -34,6 +34,7 @@ package ucar.nc2.ft.point.writer;
 
 import ucar.nc2.constants.CDM;
 import ucar.nc2.constants.CF;
+import ucar.nc2.dataset.conv.CF1Convention;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.units.DateUnit;
 import ucar.nc2.*;
@@ -66,29 +67,63 @@ public class WriterCFPointCollection extends CFPointWriter {
 
   public WriterCFPointCollection(NetcdfFileWriter.Version version, String fileOut, List<Attribute> atts) throws IOException {
     super(fileOut, atts, version);
-
     writer.addGroupAttribute(null, new Attribute(CF.FEATURE_TYPE, CF.FeatureType.point.name()));
   }
 
   public void writeHeader(List<VariableSimpleIF> vars, DateUnit timeUnit, String altUnits) throws IOException {
     this.altUnits = altUnits;
+    writer.addUnlimitedDimension(recordDimName);
 
-    createCoordinates(timeUnit);
-    createDataVariables(vars);
+    if (writer.getVersion().isExtendedModel()) {
+      record = (Structure) writer.addVariable(null, recordName, DataType.STRUCTURE, recordDimName);
+      addVariablesExtended(makeCoordinates(timeUnit));
+      addVariablesExtended(vars);
 
-    writer.create(); // done with define mode
-    record = writer.addRecordStructure();
+    } else {
+      createCoordinates(timeUnit);
+      addDataVariablesClassic(vars);
+    }
+
+    writer.create(); // finish with define mode
+    record = writer.addRecordStructure(); // netcdf3
+  }
+
+  private List<Variable> makeCoordinates(DateUnit timeUnit) throws IOException {
+    List<Variable> result = new ArrayList<>();
+
+    // time variable
+    time = new Variable(null, null, null, timeName, DataType.DOUBLE, null);
+    time.addAttribute(new Attribute(CDM.UNITS, timeUnit.getUnitsString()));
+    time.addAttribute(new Attribute(CDM.LONG_NAME, "time of measurement"));
+    result.add(time);
+
+    lat = new Variable(null, null, null, latName, DataType.DOUBLE, null);
+    lat.addAttribute(new Attribute(CDM.UNITS, CDM.LAT_UNITS));
+    lat.addAttribute(new Attribute(CDM.LONG_NAME, "station latitude"));
+    result.add(lat);
+
+    lon = new Variable(null, null, null, lonName, DataType.DOUBLE, null);
+    lon.addAttribute(new Attribute(CDM.UNITS, CDM.LON_UNITS));
+    lon.addAttribute(new Attribute(CDM.LONG_NAME, "station longitude"));
+    result.add(lon);
+
+    if (altUnits != null) {
+      alt = new Variable(null, null, null, altName, DataType.DOUBLE, null);
+      alt.addAttribute(new Attribute(CDM.UNITS, altUnits));
+      alt.addAttribute(new Attribute(CDM.LONG_NAME, "altitude"));
+      alt.addAttribute(new Attribute(CF.POSITIVE, CF1Convention.getZisPositive(altName, altUnits)));
+      result.add(alt);
+    }
+    return result;
   }
 
   private void createCoordinates(DateUnit timeUnit) throws IOException {
-    writer.addUnlimitedDimension(recordDimName);
 
     // time variable
     time = writer.addVariable(null, timeName, DataType.DOUBLE, recordDimName);
     writer.addVariableAttribute(time, new Attribute(CDM.UNITS, timeUnit.getUnitsString()));
     writer.addVariableAttribute(time, new Attribute(CDM.LONG_NAME, "time of measurement"));
 
-    // add the station Variables using the station dimension
     lat = writer.addVariable(null, latName, DataType.DOUBLE, recordDimName);
     writer.addVariableAttribute(lat, new Attribute(CDM.UNITS, CDM.LAT_UNITS));
     writer.addVariableAttribute(lat, new Attribute(CDM.LONG_NAME, "station latitude"));
@@ -100,47 +135,9 @@ public class WriterCFPointCollection extends CFPointWriter {
     if (altUnits != null) {
       alt = writer.addVariable(null, altName, DataType.DOUBLE, recordDimName);
       writer.addVariableAttribute(alt, new Attribute(CDM.UNITS, altUnits));
-      // ncfile.addVariableAttribute(v, new Attribute("positive", "up"));
       writer.addVariableAttribute(alt, new Attribute(CDM.LONG_NAME, "altitude"));
+      writer.addVariableAttribute(alt, new Attribute(CF.POSITIVE, CF1Convention.getZisPositive(altName, altUnits)));
     }
-  }
-
-  private void createDataVariables(List<VariableSimpleIF> dataVars) throws IOException {
-    String coordNames = timeName + " " + latName +" "+ lonName;
-    if (altUnits != null)
-      coordNames = coordNames +" " + altName;
-
-    // find all dimensions needed by the data variables
-    for (VariableSimpleIF var : dataVars) {
-      List<Dimension> dims = var.getDimensions();
-      dimSet.addAll(dims);
-    }
-
-    // add them
-    for (Dimension d : dimSet) {
-      if (!d.isUnlimited())
-        writer.addDimension(null, d.getShortName(), d.getLength(), d.isShared(), false, d.isVariableLength());
-    }
-
-    // add the data variables all using the record dimension
-    for (VariableSimpleIF oldVar : dataVars) {
-      List<Dimension> dims = oldVar.getDimensions();
-      StringBuilder dimNames = new StringBuilder(recordDimName);
-      for (Dimension d : dims) {
-        if (!d.isUnlimited())
-          dimNames.append(" ").append(d.getShortName());
-      }
-      Variable newVar = writer.addVariable(null, oldVar.getShortName(), oldVar.getDataType(), dimNames.toString());
-
-      List<Attribute> atts = oldVar.getAttributes();
-      for (Attribute att : atts) {
-        newVar.addAttribute( att);
-      }
-
-      newVar.addAttribute( new Attribute(CF.COORDINATES, coordNames));
-      dataVarMap.put(newVar.getShortName(), newVar);
-    }
-
   }
 
   /////////////////////////////////////////////////////////

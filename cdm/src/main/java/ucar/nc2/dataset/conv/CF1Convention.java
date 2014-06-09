@@ -104,6 +104,7 @@ public class CF1Convention extends CSMConvention {
    */
   public static String getZisPositive(String zaxisName, String vertCoordUnits) {
     if (vertCoordUnits == null) return CF.POSITIVE_UP;
+    if (vertCoordUnits.isEmpty()) return CF.POSITIVE_UP;
 
     if (SimpleUnit.isCompatible("millibar", vertCoordUnits))
       return CF.POSITIVE_DOWN;

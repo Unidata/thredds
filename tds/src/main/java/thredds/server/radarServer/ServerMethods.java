@@ -39,7 +39,7 @@
  *
  */
 
-package thredds.server.radarServerOrg;
+package thredds.server.radarServer;
 
 import thredds.catalog.query.*;
 

@@ -165,18 +165,10 @@ class GridResponder extends GridDatasetResponder {
 		LatLonRect maxBB = gds.getBoundingBox();
 		LatLonRect requestedBB = setBBForRequest(params, gds);
 
-		boolean hasBB = !ucar.nc2.util.Misc.closeEnough(requestedBB
-				.getUpperRightPoint().getLatitude(), maxBB.getUpperRightPoint()
-				.getLatitude())
-				|| !ucar.nc2.util.Misc.closeEnough(requestedBB
-						.getLowerLeftPoint().getLatitude(), maxBB
-						.getLowerLeftPoint().getLatitude())
-				|| !ucar.nc2.util.Misc.closeEnough(requestedBB
-						.getUpperRightPoint().getLongitude(), maxBB
-						.getUpperRightPoint().getLongitude())
-				|| !ucar.nc2.util.Misc.closeEnough(requestedBB
-						.getLowerLeftPoint().getLongitude(), maxBB
-						.getLowerLeftPoint().getLongitude());
+		boolean hasBB = !ucar.nc2.util.Misc.closeEnough(requestedBB.getUpperRightPoint().getLatitude(), maxBB.getUpperRightPoint().getLatitude())
+				|| !ucar.nc2.util.Misc.closeEnough(requestedBB.getLowerLeftPoint().getLatitude(), maxBB.getLowerLeftPoint().getLatitude())
+				|| !ucar.nc2.util.Misc.closeEnough(requestedBB.getUpperRightPoint().getLongitude(), maxBB.getUpperRightPoint().getLongitude())
+				|| !ucar.nc2.util.Misc.closeEnough(requestedBB.getLowerLeftPoint().getLongitude(), maxBB.getLowerLeftPoint().getLongitude());
 
 		// Don't check this...
 		// if (checkBB(maxBB, requestedBB)) {
@@ -185,15 +177,13 @@ class GridResponder extends GridDatasetResponder {
 		// Request with zRange --> adds a limitation: only variables with the
 		// same vertical level???
 		if (params.getVertCoord() != null || params.getVertStride() > 1)
-			zRange = getZRange(gds, params.getVertCoord(),
-					params.getVertStride(), params.getVar());
+			zRange = getZRange(gds, params.getVertCoord(), params.getVertStride(), params.getVar());
 
 		List<CalendarDate> wantedDates = getRequestedDates(gds, params);
 		CalendarDateRange wantedDateRange = null;
 
 		if (!wantedDates.isEmpty())
-			wantedDateRange = CalendarDateRange.of(wantedDates.get(0),
-					wantedDates.get(wantedDates.size() - 1));
+			wantedDateRange = CalendarDateRange.of(wantedDates.get(0), wantedDates.get(wantedDates.size() - 1));
 
 		CFGridWriter writer = new CFGridWriter();
 		maxFileDownloadSize = ThreddsConfig.getBytes("NetcdfSubsetService.maxFileDownloadSize", -1L);
@@ -394,8 +384,7 @@ class GridResponder extends GridDatasetResponder {
 
 		String filename = getFileNameForResponse(version);
 		String pathname = Integer.toString(randomInt) + "/" + filename;
-		File ncFile = NcssDiskCache.getInstance().getDiskCache()
-				.getCacheFile(pathname);
+		File ncFile = NcssDiskCache.getInstance().getDiskCache().getCacheFile(pathname);
 
 		String cacheFilename = ncFile.getPath();
 

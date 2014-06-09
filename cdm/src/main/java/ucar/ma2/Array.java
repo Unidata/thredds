@@ -385,15 +385,16 @@ public abstract class Array {
   }
 
   /**
-   * Make a rank1 array of len 1 from a rank0 array
+   * Add extra dimension with len = 1.
    *
-   * @param rank0 original rank 0 array
-   * @return rank1 array of len 1
+   * @param org original array
+   * @return rank1 array of rank + 1
    */
-  static public Array makeArrayRank1(Array rank0) {
-    int[] shape = new int[1];
+  static public Array makeArrayRankPlusOne(Array org) {
+    int[] shape = new int[org.getRank()+1];
+    System.arraycopy(org.getShape(), 0, shape, 1, org.getRank());
     shape[0] = 1;
-    return factory(rank0.getDataType(), shape, rank0.getStorage());
+    return factory(org.getDataType(), shape, org.getStorage());
   }
 
   /////////////////////////////////////////////////////

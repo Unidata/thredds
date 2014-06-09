@@ -125,7 +125,7 @@ class WriterCFStationCollection  extends CFPointWriter {
 
 		createStations(stns);
 		createObsVariables(timeDimAtts);
-		createDataVariables(vars);
+		addDataVariablesClassic(vars);
 
 		writer.create(); // done with define mode
 		//record = writer.addRecordStructure();
@@ -211,7 +211,8 @@ class WriterCFStationCollection  extends CFPointWriter {
 		writer.addVariableAttribute(stationIndex, new Attribute(CF.INSTANCE_DIMENSION, stationDimName));
 	}
 
-	private void createDataVariables(List<VariableSimpleIF> dataVars) throws IOException {
+	protected void addDataVariablesClassic(List<VariableSimpleIF> dataVars) throws IOException {
+
 		String coordNames = latName + " " + lonName + " " + altName + " " + timeName;
 		if(!useAlt){
 			coordNames = latName + " " + lonName + " " + timeName;

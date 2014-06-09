@@ -36,7 +36,7 @@
  * Time: 11:19:08 AM
  */
 
-package thredds.server.radarServerOrg;
+package thredds.server.radarServer;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -56,8 +56,8 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.ModelAndView;
-import org.springframework.web.servlet.mvc.AbstractController;
 
+import org.springframework.web.servlet.mvc.AbstractController;
 import thredds.catalog.InvCatalogFactory;
 import thredds.catalog.InvCatalogImpl;
 import thredds.catalog.InvDatasetImpl;
@@ -82,7 +82,7 @@ public class CatalogRadarServerController extends AbstractController {
   /**
    * The view to forward to in case an dataset needs to be created.
    */
-  private static final String CREATE_VIEW = "forward:createdataset.htm";
+  //private static final String CREATE_VIEW = "forward:createdataset.htm";
 
   /**
    * The model key used to retrieve the message from the model.
@@ -110,7 +110,6 @@ public class CatalogRadarServerController extends AbstractController {
    * @return ModelAndView
    * @throws Exception
    */
-  @Override
   @RequestMapping(value = {"/radarServer/**/catalog.xml", "/radarServer/**/catalog.html", "/radarServer/**/dataset.xml", "/radarServer/**/dataset.html"}, method = RequestMethod.GET)
   protected ModelAndView handleRequestInternal(HttpServletRequest request,
                                                HttpServletResponse response) throws Exception {
@@ -162,9 +161,10 @@ public class CatalogRadarServerController extends AbstractController {
     }
 
       if (catalog == null) {
-         ModelAndView mav = new ModelAndView(CREATE_VIEW); // WTF ??
-         mav.addObject(MODEL_KEY, MSG_CODE);
-         return mav;
+        return null;
+        // ModelAndView mav = new ModelAndView(CREATE_VIEW); // WTF ??
+        // mav.addObject(MODEL_KEY, MSG_CODE);
+        // return mav;
 
        } else {
          if (path.endsWith(".html")) {

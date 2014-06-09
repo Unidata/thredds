@@ -33,7 +33,6 @@
 package thredds.server.ncss.controller;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.text.ParseException;
@@ -60,6 +59,8 @@ import thredds.server.ncss.exception.UnsupportedResponseFormatException;
 import thredds.server.ncss.format.SupportedFormat;
 import thredds.server.ncss.format.SupportedOperation;
 import thredds.server.ncss.params.NcssParamsBean;
+import thredds.util.Constants;
+import thredds.util.Constants.*;
 import thredds.util.ContentType;
 import ucar.ma2.InvalidRangeException;
 import ucar.nc2.NetcdfFileWriter;
@@ -175,10 +176,18 @@ public class NcssController extends AbstractNcssController {
     GridResponder gds = GridResponder.factory(gridDataset, datasetPath);
     File netcdfResult = gds.getResponseFile(req, res, params, version);
 
+    // filename download attachment
+    String suffix = (version == NetcdfFileWriter.Version.netcdf4) ? ".nc4" : ".nc";
+    int pos = datasetPath.lastIndexOf("/");
+    String filename =  (pos >= 0) ? datasetPath.substring(pos+1) : datasetPath;
+    if (!filename.endsWith(suffix)) filename += suffix;
+
     // Headers...
     HttpHeaders httpHeaders = new HttpHeaders();
     httpHeaders.set(ContentType.HEADER, sf.getResponseContentType());
+    httpHeaders.set(Constants.Content_Disposition, Constants.setContentDispositionValue(filename));
     setResponseHeaders(res, httpHeaders);
+
     IO.copyFileB(netcdfResult, res.getOutputStream(), 60000);
     res.flushBuffer();
     res.getOutputStream().close();

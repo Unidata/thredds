@@ -36,13 +36,10 @@
  * Time: 3:06:26 PM
  */
 
-package thredds.server.radarServerOrg;
+package thredds.server.radarServer;
 
-import java.util.regex.Pattern;
-import java.util.regex.Matcher;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Collections;
 import java.util.Comparator;
 import java.io.*;
 

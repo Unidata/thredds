@@ -31,7 +31,7 @@
  * WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-package thredds.server.radarServerOrg;
+package thredds.server.radarServer;
 
 import ucar.nc2.time.CalendarDateRange;
 import ucar.unidata.geoloc.LatLonPointImpl;
