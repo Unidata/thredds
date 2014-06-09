@@ -955,7 +955,7 @@ public class IospHelper {
 
   static public ucar.ma2.Array readSection(ParsedSectionSpec cer) throws IOException, InvalidRangeException {
     Variable inner = null;
-    List<Range> totalRanges = new ArrayList<Range>();
+    List<Range> totalRanges = new ArrayList<>();
     ParsedSectionSpec current = cer;
     while (current != null) {
       totalRanges.addAll(current.section.getRanges());

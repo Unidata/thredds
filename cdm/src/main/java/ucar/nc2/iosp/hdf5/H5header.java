@@ -1694,7 +1694,8 @@ public class H5header {
      */
     Vinfo(DataObjectFacade facade) throws IOException {
       this.facade = facade;
-      this.dataPos = getFileOffset(facade.dobj.msl.dataAddress);
+      // LOOK if compact, do not use fileOffset
+      this.dataPos = (facade.dobj.msl.type == 0) ?  facade.dobj.msl.dataAddress : getFileOffset(facade.dobj.msl.dataAddress);
       this.mdt = facade.dobj.mdt;
       this.mds = facade.dobj.mds;
       this.mfp = facade.dobj.mfp;
