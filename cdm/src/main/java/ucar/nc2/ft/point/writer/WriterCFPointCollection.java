@@ -72,16 +72,52 @@ public class WriterCFPointCollection extends CFPointWriter {
 
   public void writeHeader(List<VariableSimpleIF> vars, DateUnit timeUnit, String altUnits) throws IOException {
     this.altUnits = altUnits;
+    writer.addUnlimitedDimension(recordDimName);
 
-    createCoordinates(timeUnit);
-    createDataVariables(vars);
+    if (writer.getVersion().isExtendedModel()) {
+      record = (Structure) writer.addVariable(null, recordName, DataType.STRUCTURE, recordDimName);
+      addVariablesExtended(makeCoordinates(timeUnit));
+      addVariablesExtended(vars);
+
+    } else {
+      createCoordinates(timeUnit);
+      addDataVariablesClassic(vars);
+    }
 
     writer.create(); // finish with define mode
     record = writer.addRecordStructure(); // netcdf3
   }
 
+  private List<Variable> makeCoordinates(DateUnit timeUnit) throws IOException {
+    List<Variable> result = new ArrayList<>();
+
+    // time variable
+    time = new Variable(null, null, null, timeName, DataType.DOUBLE, null);
+    time.addAttribute(new Attribute(CDM.UNITS, timeUnit.getUnitsString()));
+    time.addAttribute(new Attribute(CDM.LONG_NAME, "time of measurement"));
+    result.add(time);
+
+    lat = new Variable(null, null, null, latName, DataType.DOUBLE, null);
+    lat.addAttribute(new Attribute(CDM.UNITS, CDM.LAT_UNITS));
+    lat.addAttribute(new Attribute(CDM.LONG_NAME, "station latitude"));
+    result.add(lat);
+
+    lon = new Variable(null, null, null, lonName, DataType.DOUBLE, null);
+    lon.addAttribute(new Attribute(CDM.UNITS, CDM.LON_UNITS));
+    lon.addAttribute(new Attribute(CDM.LONG_NAME, "station longitude"));
+    result.add(lon);
+
+    if (altUnits != null) {
+      alt = new Variable(null, null, null, altName, DataType.DOUBLE, null);
+      alt.addAttribute(new Attribute(CDM.UNITS, altUnits));
+      alt.addAttribute(new Attribute(CDM.LONG_NAME, "altitude"));
+      alt.addAttribute(new Attribute(CF.POSITIVE, CF1Convention.getZisPositive(altName, altUnits)));
+      result.add(alt);
+    }
+    return result;
+  }
+
   private void createCoordinates(DateUnit timeUnit) throws IOException {
-    writer.addUnlimitedDimension(recordDimName);
 
     // time variable
     time = writer.addVariable(null, timeName, DataType.DOUBLE, recordDimName);

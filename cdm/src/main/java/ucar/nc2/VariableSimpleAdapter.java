@@ -48,7 +48,7 @@ public class VariableSimpleAdapter implements VariableSimpleIF {
 
   public static List<VariableSimpleIF> convert(StructureMembers sm) {
     List<StructureMembers.Member> mlist = sm.getMembers();
-    List<VariableSimpleIF> result = new ArrayList<VariableSimpleIF>(mlist.size());
+    List<VariableSimpleIF> result = new ArrayList<>(mlist.size());
     for (StructureMembers.Member m : mlist)
       result.add(new VariableSimpleAdapter(m));
     return result;
@@ -72,12 +72,12 @@ public class VariableSimpleAdapter implements VariableSimpleIF {
   public int getRank() {  return m.getShape().length; }
   public int[] getShape() { return m.getShape(); }
   public List<Dimension> getDimensions() {
-    List<Dimension> result = new ArrayList<Dimension>(getRank());
+    List<Dimension> result = new ArrayList<>(getRank());
     for (int aShape : getShape())
       result.add(new Dimension(null, aShape, false));
     return result;
   }
-  public List<Attribute> getAttributes() { return new ArrayList<Attribute>(1); }
+  public List<Attribute> getAttributes() { return new ArrayList<>(1); }
   public ucar.nc2.Attribute findAttributeIgnoreCase(String attName){
     return null;
   }
@@ -90,6 +90,7 @@ public class VariableSimpleAdapter implements VariableSimpleIF {
    * Sort by name
    */
   public int compareTo(VariableSimpleIF o) {
+    assert o != null;
     return getShortName().compareTo(o.getShortName());
   }
 }

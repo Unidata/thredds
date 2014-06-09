@@ -109,7 +109,7 @@ public class WriterCFStationCollection extends CFPointWriter {
 
     createStations(stns);
     createCoordVariables(timeUnit);
-    createDataVariables(vars);
+    addDataVariablesClassic(vars);
 
     writer.create(); // done with define mode
     record = writer.addRecordStructure(); // netcdf3 only

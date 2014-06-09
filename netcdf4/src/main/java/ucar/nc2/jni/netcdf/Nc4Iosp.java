@@ -71,7 +71,7 @@ import static ucar.nc2.jni.netcdf.Nc4prototypes.*;
  * @see "http://www.unidata.ucar.edu/software/netcdf/docs/netcdf-c.html"
  * @see "http://earthdata.nasa.gov/sites/default/files/field/document/ESDS-RFC-022v1.pdf"
  * @see "http://www.unidata.ucar.edu/software/netcdf/docs/faq.html#fv15"
- *       hdf5 features not supported
+ * hdf5 features not supported
  * @see "http://www.unidata.ucar.edu/software/netcdf/win_netcdf/"
  * @since Oct 30, 2008
  */
@@ -85,11 +85,11 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
   static protected String DEFAULTNETCDF4LIBNAME = "netcdf";
   static protected String netcdf4libname = DEFAULTNETCDF4LIBNAME;
 
-  static String[] DEFAULTNETCDF4PATH = new String[] {
-      "/opt/netcdf4/lib",
-      "/home/dmh/opt/netcdf4/lib", //temporary
-      "c:/opt/netcdf", // Windows
-      "/usr/jna_lib/",
+  static String[] DEFAULTNETCDF4PATH = new String[]{
+          "/opt/netcdf4/lib",
+          "/home/dmh/opt/netcdf4/lib", //temporary
+          "c:/opt/netcdf", // Windows
+          "/usr/jna_lib/",
   };
 
   static private String jnaPath = null;
@@ -99,7 +99,7 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
   static private final boolean debug = false,
           debugCompoundAtt = false,
           debugUserTypes = false,
-          debugLoad = false,
+          debugLoad = true,
           debugWrite = false;
 
   /**
@@ -125,17 +125,16 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
 
   /**
    * Use the default path to try to set jna.library.path
+   *
    * @return true if we set jna.library.path
    */
-  static protected String
-  defaultNetcdf4Library()
-  {
+  static protected String defaultNetcdf4Library() {
     String pathlist = null;
-    for(String path: DEFAULTNETCDF4PATH) {
+    for (String path : DEFAULTNETCDF4PATH) {
       File f = new File(path);
-      if(f.exists() && f.canRead()) {
-	    pathlist = (pathlist == null ? "" : pathlist + File.pathSeparator);
-	    pathlist = pathlist + path;
+      if (f.exists() && f.canRead()) {
+        pathlist = (pathlist == null ? "" : pathlist + File.pathSeparator);
+        pathlist = pathlist + path;
       }
     }
     return pathlist;
@@ -146,26 +145,26 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
    * must be called before load() is called.
    *
    * @param jna_path path to shared libraries
-   * @param lib_name  library name
+   * @param lib_name library name
    */
   static public void setLibraryAndPath(String jna_path, String lib_name) {
     lib_name = nullify(lib_name);
     jna_path = nullify(jna_path);
-    if(lib_name == null)
+    if (lib_name == null)
       lib_name = DEFAULTNETCDF4LIBNAME;
     libName = lib_name;
-    if(jna_path == null) {
-        // Look at -D flags first, then env variables
-        jna_path = System.getProperty(JNA_PATH);
-	    jna_path = nullify(jna_path);
-        if(jna_path == null)
-            jna_path = System.getenv(JNA_PATH_ENV);
+    if (jna_path == null) {
+      // Look at -D flags first, then env variables
+      jna_path = System.getProperty(JNA_PATH);
+      jna_path = nullify(jna_path);
+      if (jna_path == null)
+        jna_path = System.getenv(JNA_PATH_ENV);
     }
     jna_path = nullify(jna_path);
     if (jna_path == null)
-	    jna_path = defaultNetcdf4Library();
+      jna_path = defaultNetcdf4Library();
     if (jna_path == null)
-        System.err.println("Cannot determine Netcdf4 library path");
+      System.err.println("Cannot determine Netcdf4 library path");
     System.setProperty(JNA_PATH, jna_path);
     jnaPath = jna_path;
   }
@@ -173,10 +172,10 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
   static private Nc4prototypes load() {
     if (nc4 == null) {
       if (jnaPath == null)
-	    setLibraryAndPath(null,null);
+        setLibraryAndPath(null, null);
       if (jnaPath == null) {
         System.err.println("Cannot determine Netcdf4 library path");
-	    return null;
+        return null;
       }
       //Native.setProtected(true);
       nc4 = (Nc4prototypes) Native.loadLibrary(libName, Nc4prototypes.class);
@@ -188,11 +187,12 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
 
   /**
    * Convert a zero-length string to null
+   *
    * @param s the string to check for length
    * @return null if s.length() == 0, s otherwise
    */
   static protected String nullify(String s) {
-    if(s != null && s.length() == 0) s = null;
+    if (s != null && s.length() == 0) s = null;
     return s;
   }
 
@@ -240,10 +240,9 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
       this.chunker = chunker;
   }
 
-  public boolean isValidFile(RandomAccessFile raf)
-          throws IOException {
+  public boolean isValidFile(RandomAccessFile raf) throws IOException {
     boolean match = false;
-    if (raf.getLocation().endsWith(".nc")) {
+    if (raf.getLocation().endsWith(".nc")) {     // LOOK not a very good criteria
       long savepos = raf.getFilePointer();
       raf.seek(1);
       byte[] hdr = new byte[3];
@@ -1059,7 +1058,7 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
     ConvertedType ctype = convertDataType(typeid);
 
     f.format("%s %s(", ctype.dt, vname);
-    for (int i= 0; i < ndimsp.getValue(); i++) {
+    for (int i = 0; i < ndimsp.getValue(); i++) {
       f.format("%d ", dimids[i]);
     }
 
@@ -1068,7 +1067,6 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
     f.format(") dims=(%s)%n", dimList);
     return true;
   }
-
 
 
   //////////////////////////////////////////////////////////////////////////
@@ -2257,7 +2255,7 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
 
     // variables
     for (Variable v : g4.g.getVariables()) {
-          createVariable(grpid, g4, v);
+      createVariable(grpid, g4, v);
     }
 
     // groups
@@ -2307,7 +2305,8 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
       throw new IOException("ret=" + ret + " err='" + nc4.nc_strerror(ret) + "' on\n" + v);
     int varid = varidp.getValue();
     vinfo.varid = varid;
-    if (debugWrite) System.out.printf("added variable %s (grpid %d varid %d) %n", v.getShortName(), vinfo.grpid, vinfo.varid);
+    if (debugWrite)
+      System.out.printf("added variable %s (grpid %d varid %d) %n", v.getShortName(), vinfo.grpid, vinfo.varid);
 
     if (version == NetcdfFileWriter.Version.netcdf4 && v.getRank() > 0) {
       boolean isChunked = chunker.isChunked(v);
@@ -2369,7 +2368,7 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
     int grpid = ncid; // LOOK ??
     IntByReference typeidp = new IntByReference();
     long size = s.getElementSize();
-    String name =  s.getShortName() + "_t";
+    String name = s.getShortName() + "_t";
     int ret = nc4.nc_def_compound(grpid, new SizeT(size), name, typeidp);
     if (ret != 0)
       throw new IOException(nc4.nc_strerror(ret) + " on\n" + s);
@@ -2566,7 +2565,7 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
         int[] vali = (int[]) data;
         assert vali.length == sectionLen;
         ret = isUnsigned ? nc4.nc_put_vars_uint(grpid, varid, origin, shape, stride, vali) :
-              nc4.nc_put_vars_int(grpid, varid, origin, shape, stride, vali);
+                nc4.nc_put_vars_int(grpid, varid, origin, shape, stride, vali);
 
         if (ret != 0) {
           //log.error("{} on var {}", nc4.nc_strerror(ret), v);
@@ -2579,7 +2578,7 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
         long[] vall = (long[]) data;
         assert vall.length == sectionLen;
         ret = isUnsigned ? nc4.nc_put_vars_ulonglong(grpid, varid, origin, shape, stride, vall) :
-              nc4.nc_put_vars_longlong(grpid, varid, origin, shape, stride, vall);
+                nc4.nc_put_vars_longlong(grpid, varid, origin, shape, stride, vall);
 
         if (ret != 0)
           throw new IOException(ret + ": " + nc4.nc_strerror(ret));
@@ -2589,7 +2588,7 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
         short[] vals = (short[]) data;
         assert vals.length == sectionLen;
         ret = isUnsigned ? nc4.nc_put_vars_ushort(grpid, varid, origin, shape, stride, vals) :
-            nc4.nc_put_vars_short(grpid, varid, origin, shape, stride, vals);
+                nc4.nc_put_vars_short(grpid, varid, origin, shape, stride, vals);
         if (ret != 0)
           throw new IOException(ret + ": " + nc4.nc_strerror(ret));
         break;
@@ -2597,7 +2596,7 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
       case Nc4prototypes.NC_STRING:
         String[] valss = convertStringData(data);
         assert valss.length == sectionLen;
-        ret = nc4.nc_put_vars_string(grpid, varid, origin, shape, stride, valss );
+        ret = nc4.nc_put_vars_string(grpid, varid, origin, shape, stride, valss);
         if (ret != 0)
           throw new IOException(ret + ": " + nc4.nc_strerror(ret));
         break;
@@ -2664,7 +2663,7 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
     // LOOK embedded strings getting lost ??
 
     // if (debugWrite)
-      System.out.printf("writeCompoundData variable %s (grpid %d varid %d) %n", s.getShortName(), grpid, varid);
+    System.out.printf("writeCompoundData variable %s (grpid %d varid %d) %n", s.getShortName(), grpid, varid);
 
     // test variable exists
     Formatter f = new Formatter();

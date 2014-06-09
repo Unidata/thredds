@@ -47,12 +47,27 @@ import java.util.*;
 
 /**
  * Writes Netcdf 3 or 4 formatted files to disk.
- * Replaces NetcdfFileWriteable.
- * Fairly low level wrap of IOServiceProviderWriter, if possible use:
- *
- * @see ucar.nc2.FileWriter2
- * @see ucar.nc2.dt.grid.CFGridWriter
- * @see ucar.nc2.ft.point.writer.CFPointWriter
+ * To write new files:
+ * <ol>
+ *   <li>createNew()</li>
+ *   <li>Add objects with addXXX() deleteXXX() renameXXX() calls</li>
+ *   <li>create file and write metadata with create()</li>
+ *   <li>write data with writeXXX()</li>
+ *   <li>close()</li>
+ * </ol>
+ * To write data to existing files:
+ * <ol>
+ *   <li>openExisting()</li>
+ *   <li>write data with writeXXX()</li>
+ *   <li>close()</li>
+ * </ol>
+ * <p>
+ * NetcdfFileWriter is a low level wrap of IOServiceProviderWriter, if possible better to use:
+ *  <ul>
+  *   <li>ucar.nc2.FileWriter2()</li>
+  *   <li>ucar.nc2.dt.grid.CFGridWriter</li>
+  *   <li>ucar.nc2.ft.point.writer.CFPointWriter</li>
+  * </ul>
  * @author caron
  * @since 7/25/12
  */
@@ -67,7 +82,7 @@ public class NetcdfFileWriter {
   public enum Version {
     netcdf3(".nc"),              // java iosp
     netcdf4(".nc4"),             // jni netcdf4 iosp mode = NC_FORMAT_NETCDF4
-    netcdf4_classic(".nc4"),     // jni netcdf4 iosp mode = NC_FORMAT_NETCDF4_CLASSIC
+    netcdf4_classic(".nc"),      // jni netcdf4 iosp mode = NC_FORMAT_NETCDF4_CLASSIC
     netcdf3c(".nc"),             // jni netcdf4 iosp mode = NC_FORMAT_CLASSIC   (nc3)
     netcdf3c64(".nc"),           // jni netcdf4 iosp mode = NC_FORMAT_64BIT     (nc3 64 bit)
     ncstream(".ncs");            // ncstream iosp
@@ -82,8 +97,12 @@ public class NetcdfFileWriter {
       return this == netcdf4 || this == netcdf4_classic;
     }
 
+    public boolean isExtendedModel() {
+      return this == netcdf4 || this == ncstream;
+    }
+
     public boolean useJniIosp() {
-      return this != netcdf3;
+      return this != netcdf3 && this != ncstream;
     }
 
     public String getSuffix() {
@@ -189,7 +208,7 @@ public class NetcdfFileWriter {
           method.invoke(spi, chunker);
 
         } catch (Throwable e) {
-          throw new IllegalArgumentException("ucar.nc2.jni.netcdf.Nc4Iosp is not on classpath, cannot use version " + version);
+          throw new IllegalArgumentException("ucar.nc2.jni.netcdf.Nc4Iosp failed, cannot use version " + version);
         }
         spiw = spi;
       } else {
@@ -334,7 +353,7 @@ public class NetcdfFileWriter {
   }
 
   private boolean isValidDataType(DataType dt) {
-    return version.isNetdf4format() || validN3types.contains(dt);
+    return version.isExtendedModel() || validN3types.contains(dt);
   }
 
   private String createValidObjectName(String name) {
@@ -405,6 +424,8 @@ public class NetcdfFileWriter {
    */
   public EnumTypedef addTypedef(Group g, EnumTypedef td) {
     if (!defineMode) throw new UnsupportedOperationException("not in define mode");
+    if (!version.isExtendedModel())
+      throw new IllegalArgumentException("Enum type only supported in extended model, this version is="+version);
     g.addEnumeration(td);
     return td;
   }
@@ -499,8 +520,8 @@ public class NetcdfFileWriter {
     if (!isValidDataType(dataType))
       throw new IllegalArgumentException("illegal dataType: " + dataType + " not supported in netcdf-3");
 
-    // check unlimited if netcdf-3
-    if (!version.isNetdf4format()) {
+    // check unlimited if classic model
+    if (!version.isExtendedModel()) {
       for (int i = 0; i < dims.size(); i++) {
         Dimension d = dims.get(i);
         if (d.isUnlimited() && (i != 0))
@@ -508,12 +529,17 @@ public class NetcdfFileWriter {
       }
     }
 
-    Variable v = new Variable(ncfile, g, parent, shortName);
+    Variable v;
+    if (dataType == DataType.STRUCTURE) {
+      v = new Structure(ncfile, g, parent, shortName);
+    } else {
+      v = new Variable(ncfile, g, parent, shortName);
+    }
     v.setDataType(dataType);
     v.setDimensions(dims);
 
     long size = v.getSize() * v.getElementSize();
-    if (!version.isNetdf4format() && size > N3iosp.MAX_VARSIZE)
+    if (version == Version.netcdf3 && size > N3iosp.MAX_VARSIZE)
       throw new IllegalArgumentException("Variable size in bytes " + size + " may not exceed " + N3iosp.MAX_VARSIZE);
 
     ncfile.addVariable(g, v);
@@ -535,8 +561,8 @@ public class NetcdfFileWriter {
       throw new UnsupportedOperationException("not in define mode");
 
     shortName = makeValidObjectName(shortName);
-    if (version != Version.netcdf4)
-      throw new IllegalArgumentException("Structure type only supported in netcdf-4");
+    if (!version.isExtendedModel())
+      throw new IllegalArgumentException("Structure type only supported in extended model, version="+version);
 
     Structure s = new Structure(ncfile, g, null, shortName);
     s.setDimensions(dims);
@@ -716,7 +742,6 @@ public class NetcdfFileWriter {
    * For numerics: must have same number of values.
    * This is really a netcdf-3 writing only. netcdf-4 attributes can be changed without rewriting.
    *
-   * @deprecated DO NOT USE
    * @param v2  variable, or null for global attribute
    * @param att replace with this value
    * @throws IOException if I/O error
@@ -833,8 +858,12 @@ public class NetcdfFileWriter {
       throw new RuntimeException("Cant delete "+tmpFile.getAbsolutePath());
   }
 
+  /**
+   * For netcdf3 only, take all unlimited variables and make them into a structure.
+   * @return the record Structure, or null if not done.
+   */
   public Structure addRecordStructure() {
-    if (version.isNetdf4format()) return null;
+    if (version != Version.netcdf3) return null;
     boolean ok = (Boolean) ncfile.sendIospMessage(NetcdfFile.IOSP_MESSAGE_ADD_RECORD_STRUCTURE);
     if (!ok)
       throw new IllegalStateException("can't add record variable");
@@ -943,6 +972,10 @@ public class NetcdfFileWriter {
     }
   }
 
+  /**
+   * Abort writing to this file. The file is closed.
+   * @throws java.io.IOException
+   */
   public void abort() throws java.io.IOException {
     if (spiw != null) {
       spiw.close();

@@ -61,7 +61,7 @@ import java.util.*;
 public class CFPointWriter {
   private static boolean debug = false;
 
-  public static int writeFeatureCollection(FeatureDatasetPoint fdpoint, String fileOut, NetcdfFileWriter.Version version) throws IOException {
+  public static int  writeFeatureCollection(FeatureDatasetPoint fdpoint, String fileOut, NetcdfFileWriter.Version version) throws IOException {
     if (debug) System.out.printf("CFPointWriter write to file %s%n ", fileOut);
 
     for (FeatureCollection fc : fdpoint.getPointFeatureCollectionList()) {
@@ -182,6 +182,7 @@ public class CFPointWriter {
   protected static final List<String> reservedGlobalAtts = Arrays.asList(reservedGAtts);
   protected static final List<String> reservedVariableAtts = Arrays.asList(reservedVAtts);
 
+  protected static final String recordName = "record";
   protected static final String recordDimName = "obs";
   protected static final String latName = "latitude";
   protected static final String lonName = "longitude";
@@ -191,8 +192,8 @@ public class CFPointWriter {
   /////////////////////////////////////////////////
   //protected final boolean isNetcdf3;
   protected NetcdfFileWriter writer;
-  protected Map<String, Variable> dataVarMap = new HashMap<>(); // used for netcdf4
-  protected Structure record;  // used for netcdf3
+  protected Map<String, Variable> dataVarMap = new HashMap<>(); // used for netcdf4 classic
+  protected Structure record;  // used for netcdf3 and netcdf4 extended
   protected Set<Dimension> dimSet = new HashSet<>(20);
 
   protected String altUnits = null;
@@ -208,7 +209,7 @@ public class CFPointWriter {
     addGlobalAtts(atts);
     this.addTimeCoverage = true;
     this.isNetcdf3 = (writer.getVersion() == NetcdfFileWriter.Version.netcdf3);
-    if (isNetcdf3) addNetcdf3UnknownAtts(true);
+    addNetcdf3UnknownAtts(true);
   }
 
   /**
@@ -260,7 +261,7 @@ public class CFPointWriter {
     writer.setLength(size);
   }
 
-  protected void createDataVariables(List<VariableSimpleIF> dataVars) throws IOException {
+  protected void addDataVariablesClassic(List<VariableSimpleIF> dataVars) throws IOException {
 
     // find all dimensions needed by the data variables
     for (VariableSimpleIF var : dataVars) {
@@ -288,7 +289,7 @@ public class CFPointWriter {
       }
 
       Variable newVar;
-       if ((oldVar.getDataType().equals(DataType.STRING))) {
+       if (oldVar.getDataType().equals(DataType.STRING)  && !writer.getVersion().isExtendedModel()) {
          newVar = writer.addStringVariable(null, (Variable) oldVar, writer.makeDimList(null, dimNames.toString())); // LOOK can we cast to Variable ?
        } else {
          newVar = writer.addVariable(null, oldVar.getShortName(), oldVar.getDataType(), dimNames.toString());
@@ -310,6 +311,35 @@ public class CFPointWriter {
 
   }
 
+  // add variables to the record structure
+  protected void addVariablesExtended(List<? extends VariableSimpleIF> dataVars) throws IOException {
+    NetcdfFile resultFile = writer.getNetcdfFile();
+
+    for (VariableSimpleIF oldVar : dataVars) {
+      // make dimension list
+      StringBuilder dimNames = new StringBuilder(recordDimName);
+      for (Dimension d : oldVar.getDimensions()) {
+        if (!d.isUnlimited())
+          dimNames.append(" ").append(d.getShortName());
+      }
+
+      Variable m = (oldVar instanceof Variable) ? (Variable) oldVar : new Variable(resultFile, null, record, oldVar.getShortName(), oldVar.getDataType(), dimNames.toString());
+      record.addMemberVariable(m);
+
+      List<Attribute> atts = oldVar.getAttributes();
+      for (Attribute att : atts) {
+        if (!reservedVariableAtts.contains(att.getShortName()))
+          m.addAttribute(att);
+      }
+
+      String coordNames = timeName + " " + latName +" "+ lonName;
+      if (altUnits != null)
+        coordNames = coordNames +" " + altName;
+      m.addAttribute(new Attribute(CF.COORDINATES, coordNames));
+    }
+
+  }
+
   protected void trackBB(EarthLocation loc, CalendarDate obsDate) {
     if (loc != null) {
       if (llbb == null) {
@@ -326,31 +356,24 @@ public class CFPointWriter {
 
   public void finish() throws IOException {
     if (llbb != null) {
-      updateAtt(new Attribute(ACDD.LAT_MIN, llbb.getLowerLeftPoint().getLatitude()));
-      updateAtt(new Attribute(ACDD.LAT_MAX, llbb.getUpperRightPoint().getLatitude()));
-      updateAtt(new Attribute(ACDD.LON_MIN, llbb.getLowerLeftPoint().getLongitude()));
-      updateAtt(new Attribute(ACDD.LON_MAX, llbb.getUpperRightPoint().getLongitude()));
+      writer.updateAttribute(null, new Attribute(ACDD.LAT_MIN, llbb.getLowerLeftPoint().getLatitude()));
+      writer.updateAttribute(null, new Attribute(ACDD.LAT_MAX, llbb.getUpperRightPoint().getLatitude()));
+      writer.updateAttribute(null, new Attribute(ACDD.LON_MIN, llbb.getLowerLeftPoint().getLongitude()));
+      writer.updateAttribute(null, new Attribute(ACDD.LON_MAX, llbb.getUpperRightPoint().getLongitude()));
     }
 
     if (addTimeCoverage) {
       if (minDate == null) minDate = CalendarDate.present();
       if (maxDate == null) maxDate = CalendarDate.present();
-      updateAtt(new Attribute(ACDD.TIME_START, CalendarDateFormatter.toDateTimeStringISO(minDate)));
-      updateAtt(new Attribute(ACDD.TIME_END, CalendarDateFormatter.toDateTimeStringISO(maxDate)));
+      writer.updateAttribute(null, new Attribute(ACDD.TIME_START, CalendarDateFormatter.toDateTimeStringISO(minDate)));
+      writer.updateAttribute(null, new Attribute(ACDD.TIME_END, CalendarDateFormatter.toDateTimeStringISO(maxDate)));
     }
 
     writer.close();
   }
 
-  private void updateAtt(Attribute att) throws IOException {
-    if (writer.getVersion() == NetcdfFileWriter.Version.netcdf3)
-      writer.updateAttribute(null, att);
-    else
-      writer.addGroupAttribute(null, att);
-  }
-
   protected int writeStructureData(int[] origin, StructureData sdata) throws IOException, InvalidRangeException {
-    if (writer.getVersion() == NetcdfFileWriter.Version.netcdf3) {
+    if (writer.getVersion().isExtendedModel() || isNetcdf3) {
       return writer.appendStructureData(record, sdata);  // can write it all at once along unlimited dimension
 
     } else  {
