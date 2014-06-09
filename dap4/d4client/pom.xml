@@ -49,19 +49,16 @@
       <groupId>org.apache.httpcomponents</groupId>
       <artifactId>httpclient</artifactId>
       <version>${org.apache.httpcomponents.httpclient.version}</version>
-      <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>org.apache.httpcomponents</groupId>
       <artifactId>httpcore</artifactId>
       <version>${org.apache.httpcomponents.httpcore.version}</version>
-      <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>org.apache.httpcomponents</groupId>
       <artifactId>httpmime</artifactId>
       <version>${org.apache.httpcomponents.httpmime.version}</version>
-      <scope>provided</scope>
     </dependency>
 
     <dependency>

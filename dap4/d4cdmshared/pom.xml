@@ -46,7 +46,7 @@ Dependencies: Mandatory dependencies are listed first. Then
     <groupId>edu.ucar</groupId>
     <artifactId>cdm</artifactId>
     <version>${thredds.version}</version>
-    <scope>provided</scope>
+    <!-- scope>provided</scope -->
   </dependency>
 
 </dependencies>
