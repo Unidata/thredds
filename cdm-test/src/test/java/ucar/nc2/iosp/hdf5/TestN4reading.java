@@ -369,7 +369,7 @@ public class TestN4reading {
    */
   @Test
   public void testCompoundVlens2() throws IOException {
-    String filename = "F:/data/work/spugean/IntTimSciSamp.nc";
+    String filename = testDir+"vlen/IntTimSciSamp.nc";
     try (NetcdfFile ncfile = NetcdfFile.open(filename)) {
       System.out.println("\n**** testReadNetcdf4 done\n\n" + ncfile);
       Variable v = ncfile.findVariable("tim_records");
@@ -379,17 +379,18 @@ public class TestN4reading {
 
       assert data instanceof ArrayStructure;
       ArrayStructure as = (ArrayStructure) data;
+      assert as.getSize() == vshape[0];  //   int loopDataA(1, *, *);
       StructureData sdata = as.getStructureData(0);
       Array vdata = sdata.getArray("loopDataA");
       NCdumpW.printArray(vdata, "loopDataA", new PrintWriter(System.out), null);
 
       assert vdata instanceof ArrayObject;
-      assert vdata.getSize() == vshape[0];  //   int loopDataA(1, *, *);
       Object o1 = vdata.getObject(0);
       assert o1 instanceof Array;
       assert o1 instanceof ArrayInt;       // i thought maybe there would be 2. are we handling this correctly ??
 
       ArrayInt datai = (ArrayInt)o1;
+      assert datai.getSize() == 2;
       Index ii = datai.getIndex();
       assert datai.get(ii.set(1)) == 50334;
     }
