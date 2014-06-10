@@ -312,8 +312,6 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
       isEos = HdfEos.amendFromODL(ncfile, eosInfo);
     }
 
-    _setFill();
-
     ncfile.finish();
   }
 

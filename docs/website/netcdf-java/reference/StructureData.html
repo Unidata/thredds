@@ -307,13 +307,12 @@ class EmptyStructureDataIterator implements StructureDataIterator {
      return -1;
    }
  }</pre>
-<h2>Variable Length Member Data</h2>
+<h2>Variable Length Member Data<a name="vlen" id="vlen"></a></h2>
 
 <p>A nested variable length field, for example:</p>
 <pre>netcdf Q:/cdmUnitTest/formats/netcdf4/vlen/cdm_sea_soundings.nc4 {
  dimensions:
    Sounding = 3;
-
 
  variables:
  
@@ -322,7 +321,6 @@ class EmptyStructureDataIterator implements StructureDataIterator {
     float temp(*);
   } soundings(Sounding=3);
 
-
 }
 </pre>
 
@@ -330,8 +328,8 @@ class EmptyStructureDataIterator implements StructureDataIterator {
 <pre>
  Variable v = ncfile.findVariable(&quot;soundings&quot;);
  ArrayStructure data = (ArrayStructure) v.read();       // read all of it
- StructureData sdata = data.getStructureData(index);    // pick out the indexth one
- String memberName = &quot;temp_vl&quot;;
+ StructureData sdata = data.getStructureData(index);    // pick out one
+ String memberName = &quot;temp&quot;;
  Array tempData = sdata.getArray(memberName);           // get the data for this member
  assert tempData instanceof ArrayFloat;                 // it will be a float array
  
