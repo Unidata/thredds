@@ -36,10 +36,17 @@
 package ucar.nc2.iosp.hdf5;
 
 import org.junit.Test;
+import ucar.ma2.Array;
+import ucar.ma2.InvalidRangeException;
+import ucar.nc2.NCdumpW;
+import ucar.nc2.NetcdfFile;
+import ucar.nc2.Variable;
+import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dt.GridDatatype;
 import ucar.nc2.dt.grid.GridDataset;
 
 import java.io.IOException;
+import java.io.PrintWriter;
 
 /**
  * Describe
@@ -63,5 +70,36 @@ public class TestN4problems {
     gridDataset.close();
   }
 
+
+  //@Test
+  public void utestEnum() throws IOException {
+    H5header.setDebugFlags(new ucar.nc2.util.DebugFlagsImpl("H5header/header"));
+    String filename = TestN4reading.testDir+"nc4/tst_enum_data.nc";
+    NetcdfFile ncfile = NetcdfFile.open(filename);
+    Variable v = ncfile.findVariable("primary_cloud");
+    Array data = v.read();
+    System.out.println("\n**** testReadNetcdf4 done\n\n" + ncfile);
+    NCdumpW.printArray(data, "primary_cloud", new PrintWriter(System.out), null);
+    ncfile.close();
+    H5header.setDebugFlags( new ucar.nc2.util.DebugFlagsImpl());
+  }
+
+  //@Test
+  public void utestEnum2() throws InvalidRangeException, IOException {
+    NetcdfFile ncfile = NetcdfDataset.openFile("D:/netcdf4/tst_enum_data.nc", null);
+    Variable v2 = ncfile.findVariable("primary_cloud");
+    assert v2 != null;
+
+    Array data = v2.read();
+    assert data.getElementType() == byte.class;
+
+    NetcdfDataset ncd = NetcdfDataset.openDataset("D:/netcdf4/tst_enum_data.nc");
+    v2 = ncd.findVariable("primary_cloud");
+    assert v2 != null;
+
+    data = v2.read();
+    assert data.getElementType() == String.class;
+    ncfile.close();
+  }
 
 }

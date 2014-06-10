@@ -60,7 +60,8 @@ public class TestNc4Structures {
 
   @Test
   public void writeStructureFromNids() throws IOException, InvalidRangeException {
-    String datasetIn = TestDir.cdmUnitTestDir  + "formats/nexrad/level3/KBMX_SDUS64_NTVBMX_201104272341";
+    //String datasetIn = TestDir.cdmUnitTestDir  + "formats/nexrad/level3/KBMX_SDUS64_NTVBMX_201104272341";
+    String datasetIn = TestDir.cdmUnitTestDir  + "formats/nexrad/level3/NVW_20041117_1657";
     String datasetOut = TestLocal.temporaryDataDir + "TestNc4StructuresFromNids.nc4";
     writeStructure(datasetIn, datasetOut);
   }

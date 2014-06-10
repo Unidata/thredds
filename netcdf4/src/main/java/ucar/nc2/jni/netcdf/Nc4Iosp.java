@@ -96,6 +96,7 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
 
   static private boolean warn = true;
   static private final boolean debug = false,
+          debugCompound = true,
           debugCompoundAtt = false,
           debugUserTypes = false,
           debugLoad = true,
@@ -483,7 +484,7 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
   }
 
   private List<Attribute> makeAttributes(int grpid, int varid, int natts, Variable v) throws IOException {
-    List<Attribute> result = new ArrayList<Attribute>(natts);
+    List<Attribute> result = new ArrayList<>(natts);
 
     for (int attnum = 0; attnum < natts; attnum++) {
       byte[] name = new byte[Nc4prototypes.NC_MAX_NAME + 1];
@@ -701,9 +702,9 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
         for (int i = 0; i < len; i++) {
           //System.out.print(" len=" + vlen[i].len + "; p= " + vlen[i].p + ";");
           int[] ba = vlen[i].p.getIntArray(0, vlen[i].len);
-          for (int j = 0; j < ba.length; j++) {
+          for (int aBa : ba) {
             //System.out.print(" " + ba[j]);
-            iter.setIntNext(ba[j]);
+            iter.setIntNext(aBa);
           }
           //System.out.println();
         }
@@ -714,8 +715,7 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
         iter = fArray.getIndexIterator();
         for (int i = 0; i < len; i++) {
           float[] ba = vlen[i].p.getFloatArray(0, vlen[i].len);
-          for (int j = 0; j < ba.length; j++)
-            iter.setFloatNext(ba[j]);
+          for (float aBa : ba) iter.setFloatNext(aBa);
         }
         return fArray;
     }
@@ -1980,13 +1980,13 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
 
   private boolean isVlen(int type) {
     UserType userType = userTypes.get(type);
-    return (userType == null) ? false : (userType.typeClass == Nc4prototypes.NC_VLEN);
+    return (userType != null) && (userType.typeClass == Nc4prototypes.NC_VLEN);
   }
 
   private boolean isStride1(int[] strides) {
     if (strides == null) return true;
-    for (int i = 0; i < strides.length; i++) {
-      if (strides[i] != 1) return false;
+    for (int stride : strides) {
+      if (stride != 1) return false;
     }
     return true;
   }
@@ -2395,24 +2395,26 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
     if (ret != 0)
       throw new IOException(nc4.nc_strerror(ret) + " on\n" + s);
     int typeid = typeidp.getValue();
-    if (debugWrite) System.out.printf("added compound type %s (typeid %d) %n", name, typeid);
+    if (debugCompound) System.out.printf("added compound type %s (typeid %d) size=%d %n", name, typeid, size);
 
     List<Field> flds = new ArrayList<>();
     int fldidx = 0;
     long offset = 0;
     for (Variable v : s.getVariables()) {
+      if (v.getDataType() == DataType.STRING) continue;
+
       int field_typeid = convertDataType(v.getDataType());
-      ret = nc4.nc_insert_compound(ncid, typeid, v.getShortName(), new SizeT(offset), field_typeid);
+      if (v.isScalar())
+        ret = nc4.nc_insert_compound(ncid, typeid, v.getShortName(), new SizeT(offset), field_typeid);
+      else
+        ret = nc4.nc_insert_array_compound(ncid, typeid, v.getShortName(), new SizeT(offset), field_typeid, v.getRank(), v.getShape());
+
       if (ret != 0)
         throw new IOException(nc4.nc_strerror(ret) + " on\n" + s.getShortName());
-      if (debugWrite) System.out.printf(" added compound type member %s to %d%n", v.getShortName(), typeid);
 
-      int ndims = v.getRank();
-      int[] dims = new int[ndims];
-      for (int i = 0; i < ndims; i++) dims[i] = v.getDimension(i).getLength();
-
-      Field fld = new Field(g4.grpid, typeid, fldidx, v.getShortName(), (int) offset, field_typeid, ndims, dims);
+      Field fld = new Field(g4.grpid, typeid, fldidx, v.getShortName(), (int) offset, field_typeid, v.getRank(), v.getShape());
       flds.add(fld);
+      if (debugCompound) System.out.printf(" added compound type member %s to %d offset=%d size=%d%n", v.getShortName(), typeid, offset, v.getElementSize() * v.getSize());
 
       offset += v.getElementSize() * v.getSize();
       fldidx++;

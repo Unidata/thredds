@@ -53,7 +53,6 @@ import java.util.List;
 public class TestN4reading {
   public static String testDir = TestDir.cdmUnitTestDir + "formats/netcdf4/";
 
-
   @Test
   public void testGodivaFindsDataHole() throws IOException, InvalidRangeException {
     // this pattern of reads from godiva is finding a data hole - missing data where therre shouldnt be any
@@ -123,7 +122,7 @@ public class TestN4reading {
     List<Variable> vars = ncfile.getVariables();
     Collections.sort(vars);
     for (Variable v : vars) System.out.println(" "+v.getFullName());
-    System.out.println("nvars = "+ncfile.getVariables().size());
+    System.out.println("nvars = " + ncfile.getVariables().size());
     ncfile.close();
   }
 
@@ -136,7 +135,7 @@ public class TestN4reading {
     List<Variable> vars = ncfile.getVariables();
     Collections.sort(vars);
     for (Variable v : vars) System.out.println(" "+v.getFullName());
-    System.out.println("nvars = "+ncfile.getVariables().size());
+    System.out.println("nvars = " + ncfile.getVariables().size());
     ncfile.close();
   }
 
@@ -155,7 +154,7 @@ public class TestN4reading {
     System.out.println("\n**** testReadNetcdf4 done\n\n" + ncfile);
     Variable v = ncfile.findVariable("measure_for_measure_var");
     Array data = v.read();
-    NCdumpW.printArray(data, "measure_for_measure_var",  new PrintWriter( System.out), null);
+    NCdumpW.printArray(data, "measure_for_measure_var", new PrintWriter(System.out), null);
     ncfile.close();
   }
 
@@ -316,7 +315,6 @@ public class TestN4reading {
     ncfile.close();
   }
 
-  // LOOK these are failing
   @Test
   public void testCompoundVlens() throws IOException {
     //H5header.setDebugFlags(new ucar.nc2.util.DebugFlagsImpl("H5header/header"));
@@ -328,38 +326,74 @@ public class TestN4reading {
       NCdumpW.printArray(data, "fun_soundings", new PrintWriter(System.out), null);
 
       assert data instanceof ArrayStructure;
+      ArrayStructure as = (ArrayStructure) data;
+      int index = 2;
+      String member = "temp_vl";
+      StructureData sdata = as.getStructureData(2);
+      Array vdata = sdata.getArray("temp_vl");
+      assert vdata instanceof ArrayFloat;
+      System.out.printf("the %d record has %d elements for vlen member %s%n%n", index, vdata.getSize(), member);
+      assert vdata.getSize() == 3;
+      Index ii = vdata.getIndex();
+      assert Misc.closeEnough(vdata.getFloat(ii.set(2)), 21.5);
+
+      String memberName = "temp_vl";
+      int count = 0;
+      Structure s = (Structure) v;
+      StructureDataIterator siter = s.getStructureIterator();
+      siter.reset();
+      while (siter.hasNext()) {
+        StructureData sdata2 = siter.next();
+        Array vdata2 = sdata2.getArray(memberName);
+        System.out.printf("iter %d  has %d elements for vlen member %s%n", count++, vdata2.getSize(), memberName);
+      }
     }
   }
 
-  //@Test
-  public void utestEnum() throws IOException {
-    H5header.setDebugFlags(new ucar.nc2.util.DebugFlagsImpl("H5header/header"));
-    String filename = testDir+"nc4/tst_enum_data.nc";
-    NetcdfFile ncfile = NetcdfFile.open(filename);
-    Variable v = ncfile.findVariable("primary_cloud");
-    Array data = v.read();
-    System.out.println("\n**** testReadNetcdf4 done\n\n" + ncfile);
-    NCdumpW.printArray(data, "primary_cloud", new PrintWriter( System.out), null);
-    ncfile.close();
-    H5header.setDebugFlags( new ucar.nc2.util.DebugFlagsImpl());
+  /*
+  Structure {
+    int shutterPositionA;
+    int shutterPositionD;
+    int shutterPositionB;
+    int shutterPositionC;
+    int dspGainMode;
+    int coneActiveStateA;
+    int coneActiveStateD;
+    int coneActiveStateB;
+    int coneActiveStateC;
+    int loopDataA(1, *, *);
+    int loopDataB(1, *, *);
+    long sampleVtcw;
+  } tim_records(time=29);
+
+   */
+  @Test
+  public void testCompoundVlens2() throws IOException {
+    String filename = "F:/data/work/spugean/IntTimSciSamp.nc";
+    try (NetcdfFile ncfile = NetcdfFile.open(filename)) {
+      System.out.println("\n**** testReadNetcdf4 done\n\n" + ncfile);
+      Variable v = ncfile.findVariable("tim_records");
+      int[] vshape = v.getShape();
+      Array data = v.read();
+      NCdumpW.printArray(data, v.getFullName(), new PrintWriter(System.out), null);
+
+      assert data instanceof ArrayStructure;
+      ArrayStructure as = (ArrayStructure) data;
+      StructureData sdata = as.getStructureData(0);
+      Array vdata = sdata.getArray("loopDataA");
+      NCdumpW.printArray(vdata, "loopDataA", new PrintWriter(System.out), null);
+
+      assert vdata instanceof ArrayObject;
+      assert vdata.getSize() == vshape[0];  //   int loopDataA(1, *, *);
+      Object o1 = vdata.getObject(0);
+      assert o1 instanceof Array;
+      assert o1 instanceof ArrayInt;       // i thought maybe there would be 2. are we handling this correctly ??
+
+      ArrayInt datai = (ArrayInt)o1;
+      Index ii = datai.getIndex();
+      assert datai.get(ii.set(1)) == 50334;
+    }
   }
 
-  //@Test
-  public void utestEnum2() throws InvalidRangeException, IOException {
-    NetcdfFile ncfile = NetcdfDataset.openFile("D:/netcdf4/tst_enum_data.nc", null);
-    Variable v2 = ncfile.findVariable("primary_cloud");
-    assert v2 != null;
-
-    Array data = v2.read();
-    assert data.getElementType() == byte.class;
-
-    NetcdfDataset ncd = NetcdfDataset.openDataset("D:/netcdf4/tst_enum_data.nc");
-    v2 = ncd.findVariable("primary_cloud");
-    assert v2 != null;
-
-    data = v2.read();
-    assert data.getElementType() == String.class;
-    ncfile.close();
-  }
 
 }

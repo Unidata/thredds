@@ -501,7 +501,7 @@ public class StructureTable extends JPanel {
       }
 
       String colName = getColumnName(column);
-      return sd.getScalarObject(colName);
+      return sd.getArray(colName);
     }
 
     String enumLookup(StructureMembers.Member m, Number val) {

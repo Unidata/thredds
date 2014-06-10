@@ -307,8 +307,6 @@ class EmptyStructureDataIterator implements StructureDataIterator {
      return -1;
    }
  }</pre>
-<h2>&nbsp;</h2>
-
 <h2>Variable Length Member Data</h2>
 
 <p>A nested variable length field, for example:</p>
@@ -316,26 +314,41 @@ class EmptyStructureDataIterator implements StructureDataIterator {
  dimensions:
    Sounding = 3;
 
+
  variables:
  
   Structure {
     int sounding_no;
-    float temp_vl(*);
-  } fun_soundings(Sounding=3);
+    float temp(*);
+  } soundings(Sounding=3);
+
 
 }
 </pre>
 
-<p>The contract is:</p>
-<pre> ArrayStructure data = (ArrayStructure) v.read();
-
- StructureDat asdata = data.getStructureData(index);</pre>
-<pre>data
- </pre>
+<p>Can be read like this:</p>
+<pre>
+ Variable v = ncfile.findVariable(&quot;soundings&quot;);
+ ArrayStructure data = (ArrayStructure) v.read();       // read all of it
+ StructureData sdata = data.getStructureData(index);    // pick out the indexth one
+ String memberName = &quot;temp_vl&quot;;
+ Array tempData = sdata.getArray(memberName);           // get the data for this member
+ assert tempData instanceof ArrayFloat;                 // it will be a float array
+ 
+ System.out.printf(&quot;the %d th record has %d elements for vlen member %s%n&quot;, index, tempData.getSize(), memberName);</pre>
+<p>Or like this:</p>
+<pre>
+ int count = 0;
+ Structure s = (Structure) v;
+ StructureDataIterator siter = s.getStructureIterator();
+ while (siter.hasNext()) {
+   StructureData sdata2 = siter.next();
+   Array vdata2 = sdata2.getArray(memberName);
+   System.out.printf(&quot;iter %d  has %d elements for vlen member %s%n&quot;, count++, vdata2.getSize(), memberName);
+ }</pre>
 <hr/>
 <address>
-  <img src="../nc.gif" width="64" height="64"/> This document is maintained by <a href="mailto:caron@unidata.ucar.edu">John Caron</a> and was last updated Aug
-  2011
+  <img src="../nc.gif" width="64" height="64"/> This document is maintained by <a href="mailto:caron@unidata.ucar.edu">John Caron</a> and was last updated June 2014
 </address>
 </body>
 </html>

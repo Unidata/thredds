@@ -273,6 +273,7 @@ public interface Nc4prototypes extends Library {
 
   int nc_def_compound(int ncid, SizeT size, String name, IntByReference typeidp);
   int nc_insert_compound(int ncid, int typeid, String name, SizeT offset, int field_typeid);
+  int nc_insert_array_compound(int ncid, int typeid, String name, SizeT offset, int field_typeid, int ndims, int[] dim_sizes);
 
   /* Rename a group */
   int nc_rename_grp(int grpid, String name);
