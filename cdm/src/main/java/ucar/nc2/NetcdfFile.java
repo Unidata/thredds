@@ -89,7 +89,7 @@ import java.nio.channels.OverlappingFileLockException;
  * @author caron
  */
 
-public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable {
+public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable, AutoCloseable {
   static public final String IOSP_MESSAGE_ADD_RECORD_STRUCTURE = "AddRecordStructure";
   static public final String IOSP_MESSAGE_CONVERT_RECORD_STRUCTURE = "ConvertRecordStructure"; // not implemented yet
   static public final String IOSP_MESSAGE_REMOVE_RECORD_STRUCTURE = "RemoveRecordStructure";

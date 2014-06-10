@@ -59,7 +59,7 @@ import java.util.*;
  * @since 4/11/12
  */
 public class CFPointWriter {
-  private static boolean debug = false;
+  private static boolean debug = true;
 
   public static int  writeFeatureCollection(FeatureDatasetPoint fdpoint, String fileOut, NetcdfFileWriter.Version version) throws IOException {
     if (debug) System.out.printf("CFPointWriter write to file %s%n ", fileOut);
@@ -94,52 +94,54 @@ public class CFPointWriter {
   private static int writePointFeatureCollection(FeatureDatasetPoint fdpoint, PointFeatureCollection pfc, String fileOut,
                                                  NetcdfFileWriter.Version version) throws IOException {
 
-    WriterCFPointCollection writer = new WriterCFPointCollection(version, fileOut, fdpoint.getGlobalAttributes());
+    WriterCFPointCollection cfWriter = new WriterCFPointCollection(version, fileOut, fdpoint.getGlobalAttributes());
 
     int count = 0;
     pfc.resetIteration();
     while (pfc.hasNext()) {
       PointFeature pf = pfc.next();
-      if (count == 0)
-        writer.writeHeader(fdpoint.getDataVariables(), pf.getTimeUnit(), null);
+      if (count == 0) {
+        cfWriter.writeHeader(fdpoint.getDataVariables(), pf.getTimeUnit(), null);
+        if (debug) System.out.printf("writePointFeatureCollection created %s%n", cfWriter.writer.getNetcdfFile());
+      }
 
-      writer.writeRecord(pf, pf.getData());
+      cfWriter.writeRecord(pf, pf.getData());
       count++;
       if (debug && count % 100 == 0) System.out.printf("%d ", count);
       if (debug && count % 1000 == 0) System.out.printf("%n ");
     }
 
-    writer.finish();
+    cfWriter.finish();
     return count;
   }
 
   private static int writeStationFeatureCollection(FeatureDatasetPoint fdpoint, StationTimeSeriesFeatureCollection fds,
                                                    String fileOut, NetcdfFileWriter.Version version) throws IOException {
 
-    WriterCFStationCollection writer = new WriterCFStationCollection(version, fileOut, fdpoint.getGlobalAttributes());
+    WriterCFStationCollection cfWriter = new WriterCFStationCollection(version, fileOut, fdpoint.getGlobalAttributes());
     ucar.nc2.ft.PointFeatureCollection pfc = fds.flatten(null, (CalendarDateRange) null); // LOOK
 
     int count = 0;
     while (pfc.hasNext()) {
       PointFeature pf = pfc.next();
       if (count == 0)
-        writer.writeHeader(fds.getStations(), fdpoint.getDataVariables(), pf.getTimeUnit(), "");
+        cfWriter.writeHeader(fds.getStations(), fdpoint.getDataVariables(), pf.getTimeUnit(), "");
 
       StationPointFeature spf = (StationPointFeature) pf;
-      writer.writeRecord(spf.getStation(), pf, pf.getData());
+      cfWriter.writeRecord(spf.getStation(), pf, pf.getData());
       count++;
       if (debug && count % 100 == 0) System.out.printf("%d ", count);
       if (debug && count % 1000 == 0) System.out.printf("%n ");
     }
 
-    writer.finish();
+    cfWriter.finish();
     return count;
   }
 
   private static int writeProfileFeatureCollection(FeatureDatasetPoint fdpoint, ProfileFeatureCollection pds,
                                                    String fileOut, NetcdfFileWriter.Version version) throws IOException {
 
-    WriterCFProfileCollection writer = new WriterCFProfileCollection(fileOut, fdpoint.getGlobalAttributes(), version);
+    WriterCFProfileCollection cfWriter = new WriterCFProfileCollection(fileOut, fdpoint.getGlobalAttributes(), version);
 
     int count = 0;
     List<String> profiles = new ArrayList<>();
@@ -156,16 +158,16 @@ public class CFPointWriter {
       while (profile.hasNext()) {
         ucar.nc2.ft.PointFeature pf = profile.next();
         if (count == 0)
-          writer.writeHeader(profiles, fdpoint.getDataVariables(), pf.getTimeUnit(), null); // LOOK altitude units ??
+          cfWriter.writeHeader(profiles, fdpoint.getDataVariables(), pf.getTimeUnit(), null); // LOOK altitude units ??
 
-        writer.writeRecord(profile.getName(), pf, pf.getData());
+        cfWriter.writeRecord(profile.getName(), pf, pf.getData());
         count++;
         if (debug && count % 100 == 0) System.out.printf("%d ", count);
         if (debug && count % 1000 == 0) System.out.printf("%n ");
       }
     }
 
-    writer.finish();
+    cfWriter.finish();
     return count;
   }
 
@@ -194,7 +196,6 @@ public class CFPointWriter {
   protected NetcdfFileWriter writer;
   protected Map<String, Variable> dataVarMap = new HashMap<>(); // used for netcdf4 classic
   protected Structure record;  // used for netcdf3 and netcdf4 extended
-  protected Set<Dimension> dimSet = new HashSet<>(20);
 
   protected String altUnits = null;
   protected LatLonRect llbb = null;
@@ -261,7 +262,9 @@ public class CFPointWriter {
     writer.setLength(size);
   }
 
-  protected void addDataVariablesClassic(List<VariableSimpleIF> dataVars) throws IOException {
+
+  protected void addDataVariablesClassic(List<? extends VariableSimpleIF> dataVars) throws IOException {
+    Set<Dimension> dimSet = new HashSet<>(20);
 
     // find all dimensions needed by the data variables
     for (VariableSimpleIF var : dataVars) {
@@ -313,18 +316,16 @@ public class CFPointWriter {
 
   // add variables to the record structure
   protected void addVariablesExtended(List<? extends VariableSimpleIF> dataVars) throws IOException {
-    NetcdfFile resultFile = writer.getNetcdfFile();
 
     for (VariableSimpleIF oldVar : dataVars) {
       // make dimension list
-      StringBuilder dimNames = new StringBuilder(recordDimName);
+      StringBuilder dimNames = new StringBuilder();
       for (Dimension d : oldVar.getDimensions()) {
-        if (!d.isUnlimited())
-          dimNames.append(" ").append(d.getShortName());
+        if (!d.isUnlimited() && !d.getShortName().equals(recordDimName))
+          dimNames.append(" ").append(d.getLength());  // anonymous
       }
 
-      Variable m = (oldVar instanceof Variable) ? (Variable) oldVar : new Variable(resultFile, null, record, oldVar.getShortName(), oldVar.getDataType(), dimNames.toString());
-      record.addMemberVariable(m);
+      Variable m = writer.addStructureMember(record, oldVar.getShortName(), oldVar.getDataType(), dimNames.toString());
 
       List<Attribute> atts = oldVar.getAttributes();
       for (Attribute att : atts) {

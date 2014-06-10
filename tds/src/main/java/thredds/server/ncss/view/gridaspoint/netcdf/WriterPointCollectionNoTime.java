@@ -34,7 +34,9 @@
 package thredds.server.ncss.view.gridaspoint.netcdf;
 
 import java.io.IOException;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -116,7 +118,9 @@ class WriterPointCollectionNoTime extends CFPointWriter {
  		}
  	}
 
-	protected void addDataVariablesClassic(List<VariableSimpleIF> dataVars) throws IOException {
+	protected void addDataVariablesClassic(List<? extends VariableSimpleIF> dataVars) throws IOException {
+    Set<Dimension> dimSet = new HashSet<>(20);
+
 		String coordNames = latName +" "+ lonName;
 		if (altUnits != null)
 			coordNames = coordNames +" " + altName;

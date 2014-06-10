@@ -76,44 +76,45 @@ public class WriterCFPointCollection extends CFPointWriter {
 
     if (writer.getVersion().isExtendedModel()) {
       record = (Structure) writer.addVariable(null, recordName, DataType.STRUCTURE, recordDimName);
-      addVariablesExtended(makeCoordinates(timeUnit));
+      addCoordinatesExtended(timeUnit);
       addVariablesExtended(vars);
+      writer.create(); // finish with define mode
 
     } else {
       createCoordinates(timeUnit);
       addDataVariablesClassic(vars);
+      writer.create(); // finish with define mode
+      record = writer.addRecordStructure(); // netcdf3
     }
-
-    writer.create(); // finish with define mode
-    record = writer.addRecordStructure(); // netcdf3
   }
 
-  private List<Variable> makeCoordinates(DateUnit timeUnit) throws IOException {
+  private List<Variable> addCoordinatesExtended(DateUnit timeUnit) throws IOException {
     List<Variable> result = new ArrayList<>();
 
     // time variable
-    time = new Variable(null, null, null, timeName, DataType.DOUBLE, null);
+    time = writer.addStructureMember(record, timeName, DataType.DOUBLE, null);
     time.addAttribute(new Attribute(CDM.UNITS, timeUnit.getUnitsString()));
     time.addAttribute(new Attribute(CDM.LONG_NAME, "time of measurement"));
     result.add(time);
 
-    lat = new Variable(null, null, null, latName, DataType.DOUBLE, null);
+    lat = writer.addStructureMember(record, latName, DataType.DOUBLE, null);
     lat.addAttribute(new Attribute(CDM.UNITS, CDM.LAT_UNITS));
     lat.addAttribute(new Attribute(CDM.LONG_NAME, "station latitude"));
     result.add(lat);
 
-    lon = new Variable(null, null, null, lonName, DataType.DOUBLE, null);
+    lon = writer.addStructureMember(record, lonName, DataType.DOUBLE, null);
     lon.addAttribute(new Attribute(CDM.UNITS, CDM.LON_UNITS));
     lon.addAttribute(new Attribute(CDM.LONG_NAME, "station longitude"));
     result.add(lon);
 
     if (altUnits != null) {
-      alt = new Variable(null, null, null, altName, DataType.DOUBLE, null);
+      alt = writer.addStructureMember(record, altName, DataType.DOUBLE, null);
       alt.addAttribute(new Attribute(CDM.UNITS, altUnits));
       alt.addAttribute(new Attribute(CDM.LONG_NAME, "altitude"));
       alt.addAttribute(new Attribute(CF.POSITIVE, CF1Convention.getZisPositive(altName, altUnits)));
       result.add(alt);
     }
+
     return result;
   }
 
@@ -168,11 +169,11 @@ public class WriterCFPointCollection extends CFPointWriter {
     try {
       super.writeStructureData(origin, sdata);
 
-      writer.write(time, origin, timeArray);
+  /*    writer.write(time, origin, timeArray);
       writer.write(lat, origin, latArray);
       writer.write(lon, origin, lonArray);
       if (altUnits != null)
-        writer.write(alt, origin, altArray);
+        writer.write(alt, origin, altArray);  */
 
     } catch (InvalidRangeException e) {
       e.printStackTrace();

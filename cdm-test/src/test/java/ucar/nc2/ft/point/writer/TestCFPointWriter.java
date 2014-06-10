@@ -28,10 +28,11 @@ public class TestCFPointWriter {
   public static List<Object[]> getTestParameters() {
     List<Object[]> result = new ArrayList<>();
 
-    result.add(new Object[] {TestDir.cdmUnitTestDir + "ft/station/multiStationMultiVar.ncml", FeatureType.STATION, 15});
-    result.add(new Object[] {TestDir.cdmUnitTestDir + "ft/point/netcdf/Surface_Buoy_20090921_0000.nc", FeatureType.POINT, 32452});
-    result.add(new Object[] {TestDir.cdmUnitTestDir + "ft/station/200501q3h-gr.nc", FeatureType.STATION, 5023});
-    result.add(new Object[]{CFpointObs_topdir + "profileSingle.ncml", FeatureType.PROFILE, 13});
+   // result.add(new Object[] {TestDir.cdmUnitTestDir + "ft/station/multiStationMultiVar.ncml", FeatureType.STATION, 15});
+    result.add(new Object[] {TestDir.cdmUnitTestDir + "ft/point/ldm/04061912_buoy.nc", FeatureType.POINT, 218});
+    // result.add(new Object[] {TestDir.cdmUnitTestDir + "ft/point/netcdf/Surface_Buoy_20090921_0000.nc", FeatureType.POINT, 32452});
+   // result.add(new Object[] {TestDir.cdmUnitTestDir + "ft/station/200501q3h-gr.nc", FeatureType.STATION, 5023});
+  //  result.add(new Object[]{CFpointObs_topdir + "profileSingle.ncml", FeatureType.PROFILE, 13});
 
     return result;
   }
@@ -39,7 +40,7 @@ public class TestCFPointWriter {
   String location;
   FeatureType ftype;
   int countExpected;
-  boolean show = false;
+  boolean show = true;
 
   public TestCFPointWriter(String location, FeatureType ftype, int countExpected) {
     this.location = location;
@@ -54,6 +55,13 @@ public class TestCFPointWriter {
     assert count == countExpected : "count ="+count+" expected "+countExpected;
   }
 
+
+  @Test
+  public void testWrite4classic() throws IOException {
+    int count = writeDataset(location, ftype, NetcdfFileWriter.Version.netcdf4_classic);
+    System.out.printf("%s netcdf4_classic count=%d%n", location, count);
+    assert count == countExpected : "count ="+count+" expected "+countExpected;
+  }
 
   @Test
   public void testWrite4() throws IOException {
@@ -87,10 +95,11 @@ public class TestCFPointWriter {
 
   int writeDataset(String location, FeatureType ftype, NetcdfFileWriter.Version version) throws IOException {
     File fileIn = new File(location);
+    long start = System.currentTimeMillis();
 
     int pos = location.lastIndexOf("/");
     String name = location.substring(pos + 1);
-    String prefix = (version == NetcdfFileWriter.Version.netcdf3) ? ".nc" : ".nc4";
+    String prefix = (version == NetcdfFileWriter.Version.netcdf3) ? ".nc" : (version == NetcdfFileWriter.Version.netcdf4) ? ".nc4" : ".nc4c";
     if (!name.endsWith(prefix)) name = name + prefix;
     File fileOut = new File(TestDir.temporaryLocalDataDir, name);
 
@@ -108,7 +117,8 @@ public class TestCFPointWriter {
     assert fdataset instanceof FeatureDatasetPoint;
     FeatureDatasetPoint fdpoint = (FeatureDatasetPoint) fdataset;
     int count = CFPointWriter.writeFeatureCollection(fdpoint, fileOut.getPath(), version);
-    if (show) System.out.printf(" nrecords written = %d%n%n", count);
+    long took = System.currentTimeMillis() - start;
+    if (show) System.out.printf(" nrecords written = %d took=%d msecs%n%n", count, took);
 
     ////////////////////////////////
     // open result

@@ -106,13 +106,13 @@ extern "C" {
  * give the attribute will be used as the fill value for that
  * variable. */
 #define _FillValue	"_FillValue"
-#define NC_FILL		0	/**< Argument to nc_set_fill() to clear NC_NOFILL */
-#define NC_NOFILL	0x100	/**< Argument to nc_set_fill() to turn off filling of data. */
+#define NC_FILL		    0	    /**< Argument to nc_set_fill() to clear NC_NOFILL */
+#define NC_NOFILL	    0x100	/**< Argument to nc_set_fill() to turn off filling of data. */
 
-#define NC_NOWRITE	0	/**< Set read-only access for nc_open(). */
+#define NC_NOWRITE	    0	    /**< Set read-only access for nc_open(). */
 #define NC_WRITE    	0x0001	/**< Set read-write access for nc_open(). */
 
-#define NC_CLOBBER	 0       /**< Destroy existing file. Mode flag for nc_create(). */
+#define NC_CLOBBER	     0       /**< Destroy existing file. Mode flag for nc_create(). */
 #define NC_NOCLOBBER	 0x0004	/**< Don't destroy existing file. Mode flag for nc_create(). */
 #define NC_64BIT_OFFSET  0x0200  /**< Use large (64-bit) file offsets. Mode flag for nc_create(). */
 #define NC_NETCDF4       0x1000  /**< Use netCDF-4/HDF5 format. Mode flag for nc_create(). */
