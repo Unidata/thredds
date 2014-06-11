@@ -97,10 +97,10 @@ public interface IOServiceProviderWriter extends IOServiceProvider {
       throws IOException, ucar.ma2.InvalidRangeException;
 
   /**
-   * append a structureData along the unlimited dimension
+   * Append a structureData along the unlimited dimension
    *
    * @param s     belongs to this structure
-   * @param sdata the stucturesData to append
+   * @param sdata the stuctureData to append
    * @return      the recnum where it was written
    * @throws IOException
    * @throws InvalidRangeException

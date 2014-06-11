@@ -2346,13 +2346,15 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
         throw new IOException(nc4.nc_strerror(ret) + " nc_def_var_chunking on variable " + v.getFullName());
       }
 
-      int deflateLevel = isChunked ? chunker.getDeflateLevel(v) : 0;
-      int deflate = deflateLevel > 0 ? 1 : 0;
-      int shuffle = isChunked && chunker.isShuffle(v) ? 1 : 0;
-      if (deflateLevel > 0) {
-        ret = nc4.nc_def_var_deflate(g4.grpid, varid, shuffle, deflate, deflateLevel);
-        if (ret != 0)
-          throw new IOException(nc4.nc_strerror(ret));
+      if (isChunked) {
+        int deflateLevel = chunker.getDeflateLevel(v);
+        int deflate = deflateLevel > 0 ? 1 : 0;
+        int shuffle = chunker.isShuffle(v) ? 1 : 0;
+        if (deflateLevel > 0) {
+          ret = nc4.nc_def_var_deflate(g4.grpid, varid, shuffle, deflate, deflateLevel);
+          if (ret != 0)
+            throw new IOException(nc4.nc_strerror(ret));
+        }
       }
     }
 
@@ -2412,7 +2414,7 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
 
       Field fld = new Field(g4.grpid, typeid, fldidx, v.getShortName(), (int) offset, field_typeid, v.getRank(), v.getShape());
       flds.add(fld);
-      if (debugCompound) System.out.printf(" added compound type member %s to %d offset=%d size=%d%n", v.getShortName(), typeid, offset, v.getElementSize() * v.getSize());
+      if (debugCompound) System.out.printf(" added compound type member %s (%s) offset=%d size=%d%n", v.getShortName(), v.getDataType(), offset, v.getElementSize() * v.getSize());
 
       offset += v.getElementSize() * v.getSize();
       fldidx++;
@@ -2718,12 +2720,11 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
     SizeT[] shape = new SizeT[]{new SizeT(1)};
     SizeT[] stride = new SizeT[]{new SizeT(1)};
 
-    ArrayStructureBB valuesBB = IospHelper.copyToArrayBB(sdata);
-    ByteBuffer bbuff = valuesBB.getByteBuffer();  // LOOK c library reads in native order, so need to convert??
-    // LOOK embedded strings getting lost ??
+    //ArrayStructureBB valuesBB = IospHelper.copyToArrayBB(sdata, ByteOrder.nativeOrder());  // n4 wants native byte order
+   // ByteBuffer bbuff = valuesBB.getByteBuffer();
+    ByteBuffer bbuff = makeBB(s, sdata);
 
     // write the data
-    // int ret = nc4.nc_put_var(grpid, varid, bbuff);
     ret = nc4.nc_put_vars(vinfo.g4.grpid, vinfo.varid, origin, shape, stride, bbuff);
     if (ret != 0)
       throw new IOException(errMessage("appendStructureData (nc_put_vars)", ret, vinfo.g4.grpid, vinfo.varid));
@@ -2735,6 +2736,122 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
     Formatter f = new Formatter();
     f.format("%s: %d: %s grpid=%d objid=%d", what, ret, nc4.nc_strerror(ret), grpid, varid);
     return f.toString();
+  }
+
+  private ByteBuffer makeBB(Structure s, StructureData sdata) {
+    int size = s.getElementSize();
+    ByteBuffer bb = ByteBuffer.allocate(size);
+    bb.order(ByteOrder.nativeOrder());
+
+    long offset = 0;
+    for (Variable v : s.getVariables()) {
+      if (v.getDataType() == DataType.STRING) continue;  // LOOK embedded strings getting lost
+
+      StructureMembers.Member m = sdata.findMember(v.getShortName());
+      if (m == null) {
+        System.out.printf("WARN cant find %s%n", v.getShortName());
+        bb.position((int) (offset + v.getElementSize()*v.getSize())); // skip over it
+      } else {
+        copy(sdata, m, bb);
+      }
+
+      offset += v.getElementSize() * v.getSize();
+    }
+
+    return bb;
+  }
+
+  private void copy(StructureData sdata, StructureMembers.Member m, ByteBuffer bb) {
+       DataType dtype = m.getDataType();
+       if (m.isScalar()) {
+         switch (dtype) {
+           case FLOAT:
+             bb.putFloat(sdata.getScalarFloat(m));
+             break;
+           case DOUBLE:
+             bb.putDouble(sdata.getScalarDouble(m));
+             break;
+           case INT:
+           case ENUM4:
+             bb.putInt(sdata.getScalarInt(m));
+             break;
+           case SHORT:
+           case ENUM2:
+             bb.putShort(sdata.getScalarShort(m));
+             break;
+           case BYTE:
+           case ENUM1:
+             bb.put(sdata.getScalarByte(m));
+             break;
+           case CHAR:
+             bb.put((byte) sdata.getScalarChar(m));
+             break;
+           case LONG:
+             bb.putLong(sdata.getScalarLong(m));
+             break;
+           default:
+             throw new IllegalStateException("scalar " + dtype.toString());
+             /* case BOOLEAN:
+            break;
+          case SEQUENCE:
+            break;
+          case STRUCTURE:
+            break;
+          case OPAQUE:
+            break; */
+         }
+       } else {
+         int n = m.getSize();
+         switch (dtype) {
+           case FLOAT:
+             float[] fdata = sdata.getJavaArrayFloat(m);
+             for (int i = 0; i < n; i++)
+               bb.putFloat(fdata[i]);
+             break;
+           case DOUBLE:
+             double[] ddata = sdata.getJavaArrayDouble(m);
+             for (int i = 0; i < n; i++)
+               bb.putDouble(ddata[i]);
+             break;
+           case INT:
+           case ENUM4:
+             int[] idata = sdata.getJavaArrayInt(m);
+             for (int i = 0; i < n; i++)
+               bb.putInt(idata[i]);
+             break;
+           case SHORT:
+           case ENUM2:
+             short[] shdata = sdata.getJavaArrayShort(m);
+             for (int i = 0; i < n; i++)
+               bb.putShort(shdata[i]);
+             break;
+           case BYTE:
+           case ENUM1:
+             byte[] bdata = sdata.getJavaArrayByte(m);
+             for (int i = 0; i < n; i++)
+               bb.put(bdata[i]);
+             break;
+           case CHAR:
+             char[] cdata = sdata.getJavaArrayChar(m);
+             bb.put(IospHelper.convertCharToByte(cdata));
+             break;
+           case LONG:
+             long[] ldata = sdata.getJavaArrayLong(m);
+             for (int i = 0; i < n; i++)
+               bb.putLong(ldata[i]);
+             break;
+           default:
+             throw new IllegalStateException("array " + dtype.toString());
+             /* case BOOLEAN:
+           break;
+          case OPAQUE:
+           break;
+         case STRUCTURE:
+           break; // */
+           case SEQUENCE:
+             break; // skip
+         }
+       }
   }
 
   /* private void writeDataAll(Variable v, int grpid, int varid, int typeid, Array values) throws IOException, InvalidRangeException {

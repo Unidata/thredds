@@ -43,6 +43,8 @@ import ucar.nc2.ft.point.StationPointFeature;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time.CalendarDateFormatter;
 import ucar.nc2.time.CalendarDateRange;
+import ucar.nc2.write.Nc4Chunking;
+import ucar.nc2.write.Nc4ChunkingStrategy;
 import ucar.unidata.geoloc.EarthLocation;
 import ucar.unidata.geoloc.LatLonRect;
 
@@ -59,10 +61,9 @@ import java.util.*;
  * @since 4/11/12
  */
 public class CFPointWriter {
-  private static boolean debug = true;
+  private static boolean debug = false;
 
   public static int  writeFeatureCollection(FeatureDatasetPoint fdpoint, String fileOut, NetcdfFileWriter.Version version) throws IOException {
-    if (debug) System.out.printf("CFPointWriter write to file %s%n ", fileOut);
 
     for (FeatureCollection fc : fdpoint.getPointFeatureCollectionList()) {
       assert (fc instanceof PointFeatureCollection) || (fc instanceof NestedPointFeatureCollection) : fc.getClass().getName();
@@ -230,7 +231,7 @@ public class CFPointWriter {
   }
 
   private void createWriter(String fileOut, NetcdfFileWriter.Version version) throws IOException {
-    writer = NetcdfFileWriter.createNew(version, fileOut, null);
+    writer = NetcdfFileWriter.createNew(version, fileOut, Nc4ChunkingStrategy.factory(Nc4Chunking.Strategy.none, 0, false));
     writer.setFill(false);
   }
 
@@ -318,6 +319,9 @@ public class CFPointWriter {
   protected void addVariablesExtended(List<? extends VariableSimpleIF> dataVars) throws IOException {
 
     for (VariableSimpleIF oldVar : dataVars) {
+      // skip duplicates
+      if (record.findVariable(oldVar.getShortName()) != null) continue;
+
       // make dimension list
       StringBuilder dimNames = new StringBuilder();
       for (Dimension d : oldVar.getDimensions()) {
@@ -397,6 +401,8 @@ public class CFPointWriter {
     }
 
   }
+
+
 
 
 
