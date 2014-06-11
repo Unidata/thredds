@@ -34,8 +34,8 @@
 package ucar.nc2.ui;
 
 import ucar.nc2.*;
-
 import ucar.nc2.dataset.NetcdfDataset;
+import ucar.nc2.dataset.VariableDS;
 import ucar.nc2.jni.netcdf.Nc4ChunkingStrategyImpl;
 import ucar.nc2.stream.NcStreamWriter;
 import ucar.nc2.ui.dialog.CompareDialog;
@@ -84,10 +84,11 @@ public class DatasetViewer extends JPanel {
   private JComponent currentComponent;
   private DatasetTreeView datasetTree;
   private NCdumpPane dumpPane;
+  private VariablePlot dataPlot;
 
   private TextHistoryPane infoTA;
   private StructureTable dataTable;
-  private IndependentWindow infoWindow, dataWindow, dumpWindow, attWindow;
+  private IndependentWindow infoWindow, dataWindow, plotWindow, dumpWindow, attWindow;
 
   private boolean eventsOK = true;
 
@@ -128,7 +129,12 @@ public class DatasetViewer extends JPanel {
     dumpPane = new NCdumpPane((PreferencesExt) prefs.node("dumpPane"));
     dumpWindow = new IndependentWindow("NCDump Variable Data", BAMutil.getImage( "netcdfUI"), dumpPane);
     dumpWindow.setBounds( (Rectangle) prefs.getBean("DumpWindowBounds", new Rectangle( 300, 300, 300, 200)));
-  }
+
+    // the plot Pane
+    dataPlot = new VariablePlot((PreferencesExt) prefs.node("plotPane"));
+    plotWindow = new IndependentWindow("Plot Variable Data", BAMutil.getImage( "netcdfUI"), dataPlot);
+    plotWindow.setBounds( (Rectangle) prefs.getBean("PlotWindowBounds", new Rectangle( 300, 300, 300, 200)));
+}
 
   NetcdfOutputChooser outChooser;
   public void addActions(JPanel buttPanel) {
@@ -399,6 +405,11 @@ public class DatasetViewer extends JPanel {
             dataTable(table);
           }
         });
+        csPopup.addAction("Data Plot", new AbstractAction() {
+            public void actionPerformed(ActionEvent e) {
+              dataPlot(table);
+            }
+          });
       }
 
       // get selected variable, see if its a structure
@@ -648,10 +659,37 @@ public class DatasetViewer extends JPanel {
         ex.printStackTrace();
       }
     }
-    else return;
+    else {
+      JOptionPane.showMessageDialog(this, "Variable '" + v.getShortName() + "' not a Structure");
+      return;
+    }
 
     dataWindow.show();
   }
+
+  private void dataPlot(BeanTableSorted from) {
+	  	dataPlot.clear();
+    	dataPlot.setDataset(ds);
+	  	
+	    List<VariableBean> l = from.getSelectedBeans();
+	    
+	    for(VariableBean vb  : l) {
+		    if (vb == null) return;
+		    Variable v = vb.vs;
+		    if (v instanceof Variable) {
+		      try {
+
+		        dataPlot.setVariable(v);
+		      }
+		      catch (Exception ex) {
+		        ex.printStackTrace();
+		      }
+		    }
+		    else return;
+	    }
+
+	    plotWindow.show();
+	  }
 
   private Variable getCurrentVariable(BeanTableSorted from) {
     VariableBean vb = (VariableBean) from.getSelectedBean();
@@ -668,6 +706,7 @@ public class DatasetViewer extends JPanel {
     }
     prefs.putBeanObject("InfoWindowBounds", infoWindow.getBounds());
     prefs.putBeanObject("DumpWindowBounds", dumpWindow.getBounds());
+    prefs.putBeanObject("PlotWindowBounds", plotWindow.getBounds());
     if (attWindow != null) prefs.putBeanObject("AttWindowBounds", attWindow.getBounds());
 
     prefs.putInt("mainSplit", mainSplit.getDividerLocation());
