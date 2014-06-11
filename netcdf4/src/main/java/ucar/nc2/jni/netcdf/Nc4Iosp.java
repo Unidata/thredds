@@ -2738,6 +2738,7 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
     return f.toString();
   }
 
+  // copy data out of sdata into a ByteBuffer, based on the menmbers and offsets in s
   private ByteBuffer makeBB(Structure s, StructureData sdata) {
     int size = s.getElementSize();
     ByteBuffer bb = ByteBuffer.allocate(size);

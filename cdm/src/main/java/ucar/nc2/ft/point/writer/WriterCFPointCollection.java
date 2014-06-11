@@ -59,6 +59,7 @@ import java.io.IOException;
  * @since Nov 23, 2010
  */
 public class WriterCFPointCollection extends CFPointWriter {
+  private Variable time, lat, lon, alt;
 
   public WriterCFPointCollection(String fileOut, String title) throws IOException {
     this(null, fileOut, Arrays.asList(new Attribute(CDM.TITLE, title)));
@@ -83,7 +84,7 @@ public class WriterCFPointCollection extends CFPointWriter {
 
     if (writer.getVersion().isExtendedModel()) {
       record = (Structure) writer.addVariable(null, recordName, DataType.STRUCTURE, recordDimName);
-      // addCoordinatesExtended(coords);
+      addCoordinatesExtended(coords);
       addVariablesExtended(vars);
       record.calcElementSize();
       writer.create();
@@ -93,6 +94,11 @@ public class WriterCFPointCollection extends CFPointWriter {
       addDataVariablesClassic(vars);
       writer.create();
       record = writer.addRecordStructure(); // netcdf3
+
+      time = writer.findVariable(timeName);
+      lat = writer.findVariable(latName);
+      lon = writer.findVariable(lonName);
+      alt = writer.findVariable(altName);
     }
   }
 
@@ -146,11 +152,16 @@ public class WriterCFPointCollection extends CFPointWriter {
     try {
       super.writeStructureData(origin, sdata);
 
-  /*    writer.write(time, origin, timeArray);
-      writer.write(lat, origin, latArray);
-      writer.write(lon, origin, lonArray);
-      if (altUnits != null)
-        writer.write(alt, origin, altArray);  */
+      if (isExtendedModel) {
+        throw new RuntimeException("extended model not working yet");
+
+      } else {
+        writer.write(time, origin, timeArray);
+        writer.write(lat, origin, latArray);
+        writer.write(lon, origin, lonArray);
+        if (altUnits != null)
+          writer.write(alt, origin, altArray);
+      }
 
     } catch (InvalidRangeException e) {
       e.printStackTrace();

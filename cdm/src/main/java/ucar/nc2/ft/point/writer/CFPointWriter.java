@@ -101,10 +101,8 @@ public class CFPointWriter {
     pfc.resetIteration();
     while (pfc.hasNext()) {
       PointFeature pf = pfc.next();
-      if (count == 0) {
+      if (count == 0)
         cfWriter.writeHeader(fdpoint.getDataVariables(), pf.getTimeUnit(), null);
-        if (debug) System.out.printf("writePointFeatureCollection created %s%n", cfWriter.writer.getNetcdfFile());
-      }
 
       cfWriter.writeRecord(pf, pf.getData());
       count++;
@@ -205,13 +203,15 @@ public class CFPointWriter {
 
   protected final boolean addTimeCoverage;
   protected final boolean isNetcdf3;
+  protected final boolean isExtendedModel;
 
   protected CFPointWriter(String fileOut, List<Attribute> atts, NetcdfFileWriter.Version version) throws IOException {
     createWriter(fileOut, version);
     addGlobalAtts(atts);
     this.addTimeCoverage = true;
     this.isNetcdf3 = (writer.getVersion() == NetcdfFileWriter.Version.netcdf3);
-    addNetcdf3UnknownAtts(true);
+    this.isExtendedModel = writer.getVersion().isExtendedModel();
+     addNetcdf3UnknownAtts(true);
   }
 
   /**
@@ -227,7 +227,8 @@ public class CFPointWriter {
     addGlobalAtts(atts);
     this.addTimeCoverage = addTimeCoverage;
     this.isNetcdf3 = (writer.getVersion() == NetcdfFileWriter.Version.netcdf3);
-    if (isNetcdf3) addNetcdf3UnknownAtts(addTimeCoverage);
+    this.isExtendedModel = writer.getVersion().isExtendedModel();
+    addNetcdf3UnknownAtts(addTimeCoverage);
   }
 
   private void createWriter(String fileOut, NetcdfFileWriter.Version version) throws IOException {

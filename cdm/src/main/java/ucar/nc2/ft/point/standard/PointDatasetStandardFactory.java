@@ -40,7 +40,6 @@ import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dataset.CoordinateAxis;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.constants.AxisType;
-import ucar.nc2.VariableSimpleIF;
 
 import java.util.List;
 import java.util.ArrayList;
@@ -145,7 +144,7 @@ public class PointDatasetStandardFactory implements FeatureDatasetFactory {
       parseInfo.format(" PointFeatureDatasetImpl=%s\n", getClass().getName());
       this.analyser = analyser;
 
-      List<FeatureCollection> featureCollections = new ArrayList<FeatureCollection>();
+      List<FeatureCollection> featureCollections = new ArrayList<>();
       for (NestedTable flatTable : analyser.getFlatTables()) { // each flat table becomes a "feature collection"
 
         if (timeUnit == null) {
@@ -162,7 +161,7 @@ public class PointDatasetStandardFactory implements FeatureDatasetFactory {
         }
 
         // create member variables
-        dataVariables = new ArrayList<VariableSimpleIF>(flatTable.getDataVariables());
+        dataVariables = new ArrayList<>(flatTable.getDataVariables());
 
         featureType = flatTable.getFeatureType(); // hope they're all the same
         if (flatTable.getFeatureType() == FeatureType.POINT)
