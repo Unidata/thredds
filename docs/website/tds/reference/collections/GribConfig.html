@@ -176,22 +176,20 @@
   <p>A user can set group names manually in the TDS configuration catalog. To do so, find the group hash as in the gdsHash example above. Then use the gdsName
     element like this:</p>
   <pre>&lt;gribConfig&gt;
-  &lt;gdsName hash='-1960629519' groupName='KTUA:Arkansas-Red River RFC'/&gt;
-  &lt;gdsName hash='-1819879011' groupName='KFWR:West Gulf RFC'/&gt;
-  &lt;gdsName hash='-1571856555' groupName='KORN:Lower Mississippi RFC'/&gt;
+  &lt;gdsName hash='-1960629519' groupName='KTUA Arkansas-Red River RFC'/&gt;
+  &lt;gdsName hash='-1819879011' groupName='KFWR West Gulf RFC'/&gt;
+  &lt;gdsName hash='-1571856555' groupName='KORN Lower Mississippi RFC'/&gt;
    ...
 &lt;/gribConfig&gt;</pre>
+  <p>The groupName is used in URLs, so dont use any special characters, like &quot;:&quot;.</p>
   <p>If you are showing the collection in the
     IOSP/GRIB1(2)/GribCollection tab, the &quot;show GDS use&quot; button will print out the &lt;gdsName&gt; elements, which you can copy into the TDS
     configuration catalog and override the names. </p>
   <p>ToolsUI will generate the XML of the GDS in a collection. Open the collection in IOSP/GRIB1(2)/GribCollection tab, and click on the &quot;generate gds xml&quot; button on the top right. This will create a template you can then modify:</p>
   <pre>&lt;gribConfig&gt;
   &lt;gdsName hash='1201131096' groupName='Lambert conformal-129X185'/&gt;
-&lt;/gribConfig&gt;
-    </pre>
+&lt;/gribConfig&gt;</pre>
 </blockquote>
-<h4></h4>
-<p>&nbsp;</p>
 <hr />
 <h2><a name="gribConfig" id="gribConfig"></a> gribConfig element schema</h2>
 <p>The gribConfig schema definition:</p>

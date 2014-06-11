@@ -31,6 +31,9 @@ package thredds.server.wms;
 import java.net.URI;
 import java.net.URISyntaxException;
 import javax.servlet.http.HttpServletRequest;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import thredds.catalog.InvAccess;
 import thredds.catalog.InvDatasetImpl;
 import thredds.catalog.ServiceType;
@@ -46,6 +49,7 @@ import ucar.nc2.constants.FeatureType;
  * @author Jon
  */
 public class Godiva2Viewer implements Viewer {
+    static private final Logger logger = LoggerFactory.getLogger(Godiva2Viewer.class);
 
     /**
      * Returns true if this is a gridded dataset that is accessible via WMS.
@@ -62,10 +66,18 @@ public class Godiva2Viewer implements Viewer {
     {
       InvAccess access = ds.getAccess(ServiceType.WMS);
       URI dataURI = access.getStandardUri();
+      if (dataURI == null) {
+        logger.warn("Godiva2Viewer access URL failed on {}", ds.getName());
+        return null;
+      }
+
       try {
-        URI base = new URI( req.getRequestURL().toString()); dataURI = base.resolve( dataURI);
+        URI base = new URI( req.getRequestURL().toString());
+        dataURI = base.resolve( dataURI);
+
       } catch (URISyntaxException e) {
-        return "Error generating viewer link";
+        logger.warn("Godiva2Viewer URL=" + req.getRequestURL().toString(), e);
+        return null;
       }
 
       // ToDo Switch to use TdsContext.getContextPath()

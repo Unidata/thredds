@@ -38,6 +38,8 @@ import java.net.URLEncoder;
 import java.util.*;
 import java.net.URI;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time.CalendarDateRange;
@@ -68,6 +70,7 @@ import ucar.unidata.util.StringUtil2;
     local or inheritable ThreddsMetadata.
 */
 public class InvDatasetImpl extends InvDataset {
+  static private final Logger logger = LoggerFactory.getLogger(InvDatasetImpl.class);
 
   private String urlPath;
   private String alias;
@@ -1371,7 +1374,7 @@ public class InvDatasetImpl extends InvDataset {
         java.net.URI uri = cat.resolveUri(href);
         href = uri.toString();
       } catch (java.net.URISyntaxException e) {
-        System.err.println("InvDatasetImpl.writeHtml: error parsing URL= " + href);
+        logger.warn("InvDatasetImpl.writeHtml: error parsing URL= " + href);
       }
     }
     return href;
