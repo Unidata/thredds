@@ -577,6 +577,18 @@ public class NetcdfFileWriter {
     return s;
   }
 
+  public Variable addStructureMember(Structure s, String shortName, DataType dtype, String dims) {
+    if (!defineMode)
+      throw new UnsupportedOperationException("not in define mode");
+
+    shortName = makeValidObjectName(shortName);
+    if (!version.isExtendedModel())
+      throw new IllegalArgumentException("Structure type only supported in extended model, version="+version);
+
+    Variable m = new Variable(ncfile, null, s, shortName, dtype, dims);
+    return s.addMemberVariable(m);
+  }
+
   /**
    * Add a variable with DataType = String to a netCDF-3 file. Must be in define mode.
    * The variable will be stored in the file as a CHAR variable.

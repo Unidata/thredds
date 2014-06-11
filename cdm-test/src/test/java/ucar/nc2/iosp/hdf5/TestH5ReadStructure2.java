@@ -52,16 +52,17 @@ public class TestH5ReadStructure2 extends TestCase {
   }
 
   File tempFile;
-  PrintStream out;
+  PrintWriter out;
 
   protected void setUp() throws Exception {
     tempFile = File.createTempFile("TestLongOffset", "out");
-    out = new PrintStream(new FileOutputStream(tempFile));
+    out = new PrintWriter(new FileOutputStream(tempFile));
   }
 
   protected void tearDown() throws Exception {
     out.close();
-    tempFile.delete();
+    if (!tempFile.delete())
+      System.out.printf("Delete failed on %s%n", tempFile);
   }
 
   /*
@@ -101,7 +102,7 @@ public class TestH5ReadStructure2 extends TestCase {
     // read all with the iterator
     StructureDataIterator iter = s.getStructureIterator();
     while (iter.hasNext()) {
-      StructureData sd = (StructureData) iter.next();
+      StructureData sd = iter.next();
       assert sd.getScalarInt("a_name") == a_name;
       a_name++;
       assert sd.getScalarString("c_name").equals(c_name);
@@ -111,11 +112,9 @@ public class TestH5ReadStructure2 extends TestCase {
       for (String r : results)
         assert r.equals(b_name[count++]);
 
-      Iterator viter = sd.getMembers().iterator();
-      while (viter.hasNext()) {
-        StructureMembers.Member m = (StructureMembers.Member) viter.next();
+      for (StructureMembers.Member m : sd.getMembers()) {
         Array data = sd.getArray(m);
-        NCdump.printArray(data, m.getName(), out, null);
+        NCdumpW.printArray(data, m.getName(), out, null);
       }
     }
 
@@ -148,7 +147,7 @@ public class TestH5ReadStructure2 extends TestCase {
     // read all with the iterator
     StructureDataIterator iter = s.getStructureIterator();
     while (iter.hasNext()) {
-      StructureData sd = (StructureData) iter.next();
+      StructureData sd =  iter.next();
       assert sd.getScalarInt("a_name") == a_name;
       a_name++;
       assert sd.getScalarString("c_name").equals(c_name);
@@ -158,11 +157,9 @@ public class TestH5ReadStructure2 extends TestCase {
       for (String r : results)
         assert r.equals(b_name[count++]);
 
-      Iterator viter = sd.getMembers().iterator();
-      while (viter.hasNext()) {
-        StructureMembers.Member m = (StructureMembers.Member) viter.next();
+      for (StructureMembers.Member m : sd.getMembers()) {
         Array data = sd.getArray(m);
-        NCdump.printArray(data, m.getName(), out, null);
+        NCdumpW.printArray(data, m.getName(), out, null);
       }
     }
 
@@ -207,11 +204,9 @@ public class TestH5ReadStructure2 extends TestCase {
     while (iter.hasNext()) {
       StructureData sd = iter.next();
 
-      Iterator viter = sd.getMembers().iterator();
-      while (viter.hasNext()) {
-        StructureMembers.Member m = (StructureMembers.Member) viter.next();
+      for (StructureMembers.Member m : sd.getMembers()) {
         Array data = sd.getArray(m);
-        NCdump.printArray(data, m.getName(), out, null);
+        NCdumpW.printArray(data, m.getName(), out, null);
       }
     }
 
@@ -288,30 +283,5 @@ public class TestH5ReadStructure2 extends TestCase {
     ncfile.close();
     System.out.println("*** testReadManyAtATime ok");
   }
-
-  public void utestMemberVariable() throws java.io.IOException, InvalidRangeException {
-    NetcdfFile ncfile = NetcdfFile.open("G:/work/garrett/20130212_CN021_P3_222k_B02_WD7195FBPAT10231Nat_Nat_Std_CHTNWD_OP3_14.mip222k.oschp");
-
-    Variable v = ncfile.findVariable("/Chromosomes/Summary.StartIndex");
-    System.out.printf("%s%n", v);
-
-    //Section section=new Section(new int[]{2}, new int[]{5});
-    Array a1 = v.read(); // section);
-    System.out.printf("size = %d%n", a1.getSize());
-    System.out.printf("%s%n", a1);
-
-    Array a2 = ncfile.readSection("/Chromosomes/Summary.StartIndex");
-    CompareNetcdf.compareData(a1, a2);
-    System.out.printf("size = %d%n", a2.getSize());
-    System.out.printf("%s%n", a2);
-
-    Array a3 = ncfile.readSection("/Chromosomes/Summary(12:20).StartIndex");
-    System.out.printf("size = %d%n", a3.getSize());
-    System.out.printf("%s%n", a3);
-
-    ncfile.close();
-  }
-
-
 
 }

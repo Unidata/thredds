@@ -128,8 +128,8 @@ public abstract class Table {
   String stnId, stnDesc, stnNpts, stnWmoId, stnAlt, limit;
   String feature_id, missingVar;
 
-  List<VariableSimpleIF> cols = new ArrayList<VariableSimpleIF>();    // all variables
-  List<String> nondataVars = new ArrayList<String>(); // exclude these from the getDataVariables() list
+  Map<String, VariableSimpleIF> cols = new HashMap<>();  // all variables
+  List<String> nondataVars = new ArrayList<>();          // exclude these from the getDataVariables() list
 
   protected Table(NetcdfDataset ds, TableConfig config) {
     this.name = config.name;
@@ -174,6 +174,12 @@ public abstract class Table {
   protected void checkNonDataVariable(String name) {
     if (name != null)
       nondataVars.add(name);
+  }
+
+   // use resulting members as column variable, so shape is correct
+   protected void replaceDataVars(StructureMembers sm) {
+     for (StructureMembers.Member m : sm.getMembers())
+       this.cols.put( m.getName(), new VariableSimpleAdapter(m));
   }
 
   /**
@@ -274,14 +280,14 @@ public abstract class Table {
           break;
       }
 
-      config.vars = new ArrayList<String>();
+      config.vars = new ArrayList<>();
       for (Variable v : struct.getVariables()) {
         // remove substructures
         if (v.getDataType() == DataType.STRUCTURE) {
           if (config.structureType == TableConfig.StructureType.PsuedoStructure)
             struct.removeMemberVariable(v);
         } else {
-          this.cols.add(v);
+          this.cols.put(v.getShortName(), v);
           config.vars.add(v.getShortName());
         }
       }
@@ -330,7 +336,7 @@ public abstract class Table {
       assert (this.as != null);
 
       for (StructureMembers.Member m : config.as.getStructureMembers().getMembers())
-        cols.add(new VariableSimpleAdapter(m));
+        cols.put(m.getName(), new VariableSimpleAdapter(m));
     }
 
     @Override
@@ -481,12 +487,12 @@ public abstract class Table {
         Array index = rpIndex.read();
 
         int childIndex = 0;
-        this.indexMap = new HashMap<Integer, List<Integer>>((int) (2 * index.getSize()));
+        this.indexMap = new HashMap<>((int) (2 * index.getSize()));
         while (index.hasNext()) {
           int parent = index.nextInt();
           List<Integer> list = indexMap.get(parent);
           if (list == null) {
-            list = new ArrayList<Integer>();
+            list = new ArrayList<>();
             indexMap.put(parent, list);
           }
           list.add(childIndex);
@@ -507,7 +513,7 @@ public abstract class Table {
     public StructureDataIterator getStructureDataIterator(Cursor cursor, int bufferSize) throws IOException {
       int parentIndex = cursor.getParentRecnum();
       List<Integer> index = indexMap.get(parentIndex);
-      if (index == null) index = new ArrayList<Integer>();
+      if (index == null) index = new ArrayList<>();
       return new StructureDataIteratorIndexed(struct, index);
     }
 
@@ -546,7 +552,7 @@ public abstract class Table {
         if (index instanceof ArrayChar)
           index = ((ArrayChar)index).make1DStringArray();
 
-        parentHash = new HashMap<Object, ParentInfo>((int) (2 * index.getSize()));
+        parentHash = new HashMap<>((int) (2 * index.getSize()));
 
         int childIndex = 0;
         while (index.hasNext()) {
@@ -588,7 +594,7 @@ public abstract class Table {
     }
 
     private class ParentInfo {
-      List<Integer> recnumList = new ArrayList<Integer>();
+      List<Integer> recnumList = new ArrayList<>();
       StructureData sdata;
 
       void add(int recnum) throws IOException {
@@ -678,7 +684,7 @@ public abstract class Table {
          for (String name : config.vars) {
            Variable v = ds.findVariable(name);
            if (v == null) continue;
-           cols.add(v);
+           // cols.add(v);
            int rank = v.getRank();
            int[] shape = new int[rank - 2];
            System.arraycopy(v.getShape(), 2, shape, 0, rank - 2);
@@ -689,7 +695,7 @@ public abstract class Table {
          for (Variable v : ds.getVariables()) {
            if (v.getRank() < 2) continue;
            if (v.getDimension(0).equals(this.outer) && v.getDimension(1).equals(this.inner)) {
-             cols.add(v);
+             // cols.add(v);
              int rank = v.getRank();
              int[] shape = new int[rank - 2];
              System.arraycopy(v.getShape(), 2, shape, 0, rank - 2);
@@ -697,6 +703,8 @@ public abstract class Table {
            }
          }
        }
+
+       replaceDataVars(sm);
      }
 
      @Override
@@ -717,9 +725,9 @@ public abstract class Table {
      public StructureDataIterator getStructureDataIterator(Cursor cursor, int bufferSize) throws IOException {
        StructureData parentStruct = cursor.getParentStructure();
        ArrayStructureMA asma = new ArrayStructureMA(sm, new int[]{inner.getLength()});
-       for (VariableSimpleIF v : cols) {
-         Array data = parentStruct.getArray(v.getShortName());
-         StructureMembers.Member childm = sm.findMember(v.getShortName());
+       for (String colName : cols.keySet()) {
+         Array data = parentStruct.getArray(colName);
+         StructureMembers.Member childm = sm.findMember(colName);
          childm.setDataArray(data);
        }
        return asma.getStructureDataIterator();
@@ -751,7 +759,7 @@ public abstract class Table {
          for (String name : config.vars) {
            Variable v = ds.findVariable(name);
            if (v == null) continue;
-           cols.add(v);
+           //cols.add(v);
            int rank = v.getRank();
            int[] shape = new int[rank - 3];
            System.arraycopy(v.getShape(), 3, shape, 0, rank - 3);
@@ -762,7 +770,7 @@ public abstract class Table {
          for (Variable v : ds.getVariables()) {
            if (v.getRank() < 3) continue;
            if (v.getDimension(0).equals(dim) && v.getDimension(1).equals(middle)  && v.getDimension(2).equals(inner )) {
-             cols.add(v);
+             //cols.add(v);
              int rank = v.getRank();
              int[] shape = new int[rank - 3];
              System.arraycopy(v.getShape(), 3, shape, 0, rank - 3);
@@ -770,6 +778,8 @@ public abstract class Table {
            }
          }
        }
+
+       replaceDataVars(sm);
      }
 
      @Override
@@ -791,11 +801,11 @@ public abstract class Table {
        StructureData parentStruct = cursor.tableData[2];
        int middleIndex = cursor.recnum[1];
        ArrayStructureMA asma = new ArrayStructureMA(sm, new int[]{inner.getLength()});
-       for (VariableSimpleIF v : cols) {
-         Array data = parentStruct.getArray(v.getShortName());
+       for (String colName : cols.keySet()) {
+         Array data = parentStruct.getArray(colName);
          Array myData = data.slice(0, middleIndex);
-         StructureMembers.Member childm = sm.findMember(v.getShortName());
-         childm.setDataArray (myData.copy()); // must make copy - ARrayStucture doesnt deal with logical views
+         StructureMembers.Member childm = sm.findMember(colName);
+         childm.setDataArray (myData.copy());           // must make copy - ArrayStucture doesnt deal with logical views
        }
        return asma.getStructureDataIterator();
      }
@@ -833,6 +843,8 @@ public abstract class Table {
         System.arraycopy(v.getShape(), 1, shape, 0, rank - 1);
         sm.addMember(v.getShortName(), v.getDescription(), v.getUnitsString(), v.getDataType(), shape);
       }
+
+      replaceDataVars(sm);
     }
 
     public StructureDataIterator getStructureDataIterator(Cursor cursor, int bufferSize) throws IOException {
@@ -840,9 +852,9 @@ public abstract class Table {
       try {
         StructureData parentStruct = struct.readStructure(recnum);
         ArrayStructureMA asma = new ArrayStructureMA(sm, new int[]{inner.getLength()});
-        for (VariableSimpleIF v : cols) {
-          Array data = parentStruct.getArray(v.getShortName());
-          StructureMembers.Member childm = sm.findMember(v.getShortName());
+        for (String colName : cols.keySet()) {
+          Array data = parentStruct.getArray(colName);
+          StructureMembers.Member childm = sm.findMember(colName);
           childm.setDataArray(data);
         }
         return asma.getStructureDataIterator();
@@ -880,6 +892,8 @@ public abstract class Table {
         System.arraycopy(v.getShape(), 1, shape, 0, rank - 1);
         sm.addMember(v.getShortName(), v.getDescription(), v.getUnitsString(), v.getDataType(), shape);
       }
+
+      replaceDataVars(sm);
     }
 
     public StructureDataIterator getStructureDataIterator(Cursor cursor, int bufferSize) throws IOException {
@@ -891,9 +905,9 @@ public abstract class Table {
         assert result.getSize() == 1;
         StructureData sdata = result.getStructureData(0); // should only be one
         ArrayStructureMA asma = new ArrayStructureMA(sm, new int[]{inner.getLength()});
-        for (VariableSimpleIF v : cols) {
-          Array data = sdata.getArray(v.getShortName());
-          StructureMembers.Member childm = sm.findMember(v.getShortName());
+        for (String colName : cols.keySet()) {
+          Array data = sdata.getArray(colName);
+          StructureMembers.Member childm = sm.findMember(colName);
           childm.setDataArray(data);
         }
         return asma.getStructureDataIterator();
@@ -970,7 +984,7 @@ public abstract class Table {
       assert (struct != null) : config.structName;
 
       for (Variable v : struct.getVariables())
-        cols.add(v);
+        cols.put(v.getShortName(), v);
     }
 
     @Override
@@ -1024,7 +1038,7 @@ public abstract class Table {
       if (sdata == null) return;
 
       for (StructureMembers.Member m : sdata.getStructureMembers().getMembers())
-        cols.add(new VariableSimpleAdapter(m));
+        cols.put(m.getName(), new VariableSimpleAdapter(m));
     }
 
     @Override
@@ -1151,14 +1165,14 @@ public abstract class Table {
     return formatter.toString();
   }
 
-  public String showAll() {
+  /* public String showAll() {
     StringBuilder sbuff = new StringBuilder();
     sbuff.append("Table on dimension ").append(showDimension()).append("\n");
     for (VariableSimpleIF v : cols) {
       sbuff.append("  ").append(v.getShortName()).append("\n");
     }
     return sbuff.toString();
-  }
+  } */
 
   public int show(Formatter f, int indent) {
     if (parent != null)
@@ -1175,8 +1189,8 @@ public abstract class Table {
     showTableExtraInfo(indent(indent + 2), f);
     showCoords(s, f);
     f.format("  %sVariables:\n", s);
-    for (VariableSimpleIF v : cols) {
-      f.format("   %s  %s %s\n", s, v.getShortName(), getKind(v.getShortName()));
+    for (String colName : cols.keySet()) {
+      f.format("   %s  %s %s\n", s, colName, getKind(colName));
     }
     return indent + 2;
   }

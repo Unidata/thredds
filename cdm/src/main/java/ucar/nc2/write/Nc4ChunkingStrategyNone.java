@@ -33,56 +33,29 @@
  *
  */
 
-package ucar.nc2.jni.netcdf;
+package ucar.nc2.write;
 
-import org.junit.Before;
-import org.junit.Test;
-import ucar.ma2.InvalidRangeException;
-import ucar.nc2.*;
-import ucar.nc2.util.CancelTaskImpl;
-import ucar.unidata.test.util.TestDir;
-
-import java.io.IOException;
+import ucar.nc2.Variable;
 
 /**
- * Test writing structure data into netcdf4.
+ * Describe
  *
  * @author caron
- * @since 5/12/14
+ * @since 6/10/14
  */
-public class TestNc4Structures {
-
-  @Before
-  public void setLibrary() {
-    Nc4Iosp.setLibraryAndPath("/opt/netcdf/lib", "netcdf");
-    System.out.printf("Nc4Iosp.isClibraryPresent = %s%n", Nc4Iosp.isClibraryPresent());
+public class Nc4ChunkingStrategyNone extends Nc4ChunkingDefault {
+  @Override
+  public boolean isChunked(Variable v) {
+    return v.isUnlimited();  // must chunk
   }
 
-  @Test
-  public void writeStructureFromNids() throws IOException, InvalidRangeException {
-    //String datasetIn = TestDir.cdmUnitTestDir  + "formats/nexrad/level3/KBMX_SDUS64_NTVBMX_201104272341";
-    String datasetIn = TestDir.cdmUnitTestDir  + "formats/nexrad/level3/NVW_20041117_1657";
-    String datasetOut = TestLocal.temporaryDataDir + "TestNc4StructuresFromNids.nc4";
-    writeStructure(datasetIn, datasetOut);
+  @Override
+  public int getDeflateLevel(Variable v) {
+    return 0;
   }
 
-  @Test
-  public void writeStructure() throws IOException, InvalidRangeException {
-    String datasetIn = TestDir.cdmUnitTestDir  + "formats/netcdf4/compound/tst_compounds.nc4";
-    String datasetOut = TestLocal.temporaryDataDir + "TestNc4Structures.nc4";
-    writeStructure(datasetIn, datasetOut);
-  }
-
-  private void writeStructure(String datasetIn, String datasetOut) throws IOException {
-    CancelTaskImpl cancel = new CancelTaskImpl();
-    NetcdfFile ncfileIn = ucar.nc2.dataset.NetcdfDataset.openFile(datasetIn, cancel);
-    System.out.printf("NetcdfDatataset read from %s write to %s %n", datasetIn, datasetOut);
-
-    FileWriter2 writer = new ucar.nc2.FileWriter2(ncfileIn, datasetOut, NetcdfFileWriter.Version.netcdf4, null);
-    NetcdfFile ncfileOut = writer.write(cancel);
-    if (ncfileOut != null) ncfileOut.close();
-    ncfileIn.close();
-    cancel.setDone(true);
-    System.out.printf("%s%n", cancel);
+  @Override
+  public boolean isShuffle(Variable v) {
+    return false;
   }
 }

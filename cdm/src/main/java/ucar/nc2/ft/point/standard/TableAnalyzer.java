@@ -661,9 +661,9 @@ public class TableAnalyzer {
     tableElem.setAttribute("class", table.getClass().toString());
 
     addCoordinates(tableElem, table);
-    for (VariableSimpleIF col : table.cols) {
-      if (!table.nondataVars.contains(col.getShortName()))
-        tableElem.addContent( new Element("variable").addContent(col.getShortName()));
+    for (String colName : table.cols.keySet()) {
+      if (!table.nondataVars.contains(colName))
+        tableElem.addContent( new Element("variable").addContent(colName));
     }
 
     if (table.extraJoins != null) {

@@ -49,7 +49,7 @@ import java.nio.ByteBuffer;
  * @author caron
  * @since Jul 17, 2007
  */
-public class TestOddTypes extends TestCase {
+public class TestH5OddTypes extends TestCase {
   static public String testDir = TestH5.testDir;
 
   public void testOpaque() throws InvalidRangeException, IOException {
@@ -62,8 +62,7 @@ public class TestOddTypes extends TestCase {
     Array data = v2.read();
     assert data.getElementType() == ByteBuffer.class : data.getElementType();
     System.out.println( "data size= "+new Section(data.getShape()));
-    NCdump.printArray(data, "Opaque data", System.out, null);
-
+    System.out.printf("Opaque data = %s%n", NCdumpW.toString(data));
 
     Array odata = v2.read(new Section("1:20"));
     assert odata.getElementType() == ByteBuffer.class;
@@ -82,24 +81,6 @@ public class TestOddTypes extends TestCase {
 
     NetcdfDataset ncd = TestH5.openH5dataset("support/enum.h5");
     v2 = ncd.findVariable("enum");
-    assert v2 != null;
-
-    data = v2.read();
-    assert data.getElementType() == String.class;
-    ncfile.close();
-  }
-
-  // LOOK this ones failing
-  public void utestEnum2() throws InvalidRangeException, IOException {
-    NetcdfFile ncfile = NetcdfDataset.openFile("D:/netcdf4/tst_enum_data.nc", null);
-    Variable v2 = ncfile.findVariable("primary_cloud");
-    assert v2 != null;
-
-    Array data = v2.read();
-    assert data.getElementType() == byte.class;
-
-    NetcdfDataset ncd = NetcdfDataset.openDataset("D:/netcdf4/tst_enum_data.nc");
-    v2 = ncd.findVariable("primary_cloud");
     assert v2 != null;
 
     data = v2.read();
@@ -153,7 +134,7 @@ public class TestOddTypes extends TestCase {
     NetcdfFile ncfile = TestH5.openH5("support/cenum.h5");
     Variable v = ncfile.findVariable("enum");
     Array data = v.read();
-    NCdump.printArray(data, "enum", System.out, null);
+    System.out.printf("enum data = %s%n", NCdumpW.toString(data));
     System.out.println( "\n**** testReadNetcdf4 done\n\n"+ncfile);
     ncfile.close();
     H5header.setDebugFlags( new ucar.nc2.util.DebugFlagsImpl());
@@ -183,56 +164,6 @@ public class TestOddTypes extends TestCase {
       result += (b < 0) ? b + 256 : b;
     }
     return result;
-  }
-
-  public void testAttStruct() throws IOException {
-    NetcdfFile ncfile = NetcdfFile.open(TestN4.testDir + "attributeStruct.nc");
-    Variable v = ncfile.findVariable("observations");
-    assert v != null;
-    assert v instanceof Structure;
-
-    Structure s = (Structure) v;
-    Variable v2 = s.findVariable("tempMin");
-    assert v2 != null;
-    assert v2.getDataType() == DataType.FLOAT;
-
-    assert null != v2.findAttribute("units");
-    assert null != v2.findAttribute("coordinates");
-
-    Attribute att =  v2.findAttribute("units");
-    assert att.getStringValue().equals("degF");
-
-    ncfile.close();
-  }
-
-  public void testAttStruct2() throws IOException {
-    NetcdfFile ncfile = NetcdfFile.open(TestN4.testDir + "compound-attribute-test.nc");
-    Variable v = ncfile.findVariable("compound_test");
-    assert v != null;
-    assert v instanceof Structure;
-
-    Structure s = (Structure) v;
-    Variable v2 = s.findVariable("field0");
-    assert v2 != null;
-    assert v2.getDataType() == DataType.FLOAT;
-
-    Attribute att =  v2.findAttribute("att_primitive_test");
-    assert !att.isString();
-    assert att.getNumericValue().floatValue() == 1.0;
-
-    att =  v2.findAttribute("att_string_test");
-    assert att.getStringValue().equals("string for field 0");
-
-    att =  v2.findAttribute("att_char_array_test");
-    assert att.getStringValue().equals("a");
-
-    ncfile.close();
-  }
-
-  public void testEmptyAtts() throws IOException {
-    NetcdfFile ncfile = NetcdfFile.open(TestN4.testDir + "testEmptyAtts.nc");
-    System.out.printf("%s%n", ncfile);
-    ncfile.close();
   }
 
 }

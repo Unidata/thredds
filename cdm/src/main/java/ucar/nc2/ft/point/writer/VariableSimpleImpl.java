@@ -33,56 +33,107 @@
  *
  */
 
-package ucar.nc2.jni.netcdf;
+package ucar.nc2.ft.point.writer;
 
-import org.junit.Before;
-import org.junit.Test;
-import ucar.ma2.InvalidRangeException;
-import ucar.nc2.*;
-import ucar.nc2.util.CancelTaskImpl;
-import ucar.unidata.test.util.TestDir;
+import ucar.ma2.DataType;
+import ucar.nc2.Attribute;
+import ucar.nc2.Dimension;
+import ucar.nc2.VariableSimpleIF;
+import ucar.nc2.constants.CDM;
 
-import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
- * Test writing structure data into netcdf4.
+ * Describe
  *
  * @author caron
- * @since 5/12/14
+ * @since 6/10/14
  */
-public class TestNc4Structures {
+public class VariableSimpleImpl implements VariableSimpleIF {
 
-  @Before
-  public void setLibrary() {
-    Nc4Iosp.setLibraryAndPath("/opt/netcdf/lib", "netcdf");
-    System.out.printf("Nc4Iosp.isClibraryPresent = %s%n", Nc4Iosp.isClibraryPresent());
+  static public VariableSimpleImpl make(String name, String desc, String units, DataType dt) {
+    return new VariableSimpleImpl(name, desc, units, dt);
   }
 
-  @Test
-  public void writeStructureFromNids() throws IOException, InvalidRangeException {
-    //String datasetIn = TestDir.cdmUnitTestDir  + "formats/nexrad/level3/KBMX_SDUS64_NTVBMX_201104272341";
-    String datasetIn = TestDir.cdmUnitTestDir  + "formats/nexrad/level3/NVW_20041117_1657";
-    String datasetOut = TestLocal.temporaryDataDir + "TestNc4StructuresFromNids.nc4";
-    writeStructure(datasetIn, datasetOut);
+  private final String name, desc, units;
+  private final DataType dt;
+  private final List<Attribute> atts = new ArrayList<>();
+
+  VariableSimpleImpl(String name, String desc, String units, DataType dt) {
+    this.name = name;
+    this.desc = desc;
+    this.units = units;
+    this.dt = dt;
+
+    atts.add(new Attribute(CDM.UNITS, units));
+    atts.add(new Attribute(CDM.LONG_NAME, desc));
   }
 
-  @Test
-  public void writeStructure() throws IOException, InvalidRangeException {
-    String datasetIn = TestDir.cdmUnitTestDir  + "formats/netcdf4/compound/tst_compounds.nc4";
-    String datasetOut = TestLocal.temporaryDataDir + "TestNc4Structures.nc4";
-    writeStructure(datasetIn, datasetOut);
+  public VariableSimpleImpl add(Attribute att) {
+    atts.add(att);
+    return this;
   }
 
-  private void writeStructure(String datasetIn, String datasetOut) throws IOException {
-    CancelTaskImpl cancel = new CancelTaskImpl();
-    NetcdfFile ncfileIn = ucar.nc2.dataset.NetcdfDataset.openFile(datasetIn, cancel);
-    System.out.printf("NetcdfDatataset read from %s write to %s %n", datasetIn, datasetOut);
+  public String getName() {
+    return name;
+  }
 
-    FileWriter2 writer = new ucar.nc2.FileWriter2(ncfileIn, datasetOut, NetcdfFileWriter.Version.netcdf4, null);
-    NetcdfFile ncfileOut = writer.write(cancel);
-    if (ncfileOut != null) ncfileOut.close();
-    ncfileIn.close();
-    cancel.setDone(true);
-    System.out.printf("%s%n", cancel);
+  public String getFullName() {
+    return name;
+  }
+
+  @Override
+  public String getShortName() {
+    return name;
+  }
+
+  @Override
+  public String getDescription() {
+    return desc;
+  }
+
+  @Override
+  public String getUnitsString() {
+    return units;
+  }
+
+  @Override
+  public int getRank() {
+    return 0;
+  }
+
+  @Override
+  public int[] getShape() {
+    return new int[0];
+  }
+
+  @Override
+  public List<Dimension> getDimensions() {
+    return null;
+  }
+
+  @Override
+  public DataType getDataType() {
+    return dt;
+  }
+
+  @Override
+  public List<Attribute> getAttributes() {
+    return atts;
+  }
+
+  @Override
+  public Attribute findAttributeIgnoreCase(String name) {
+    for (Attribute att : atts) {
+      if (att.getShortName().equalsIgnoreCase(name))
+        return att;
+    }
+    return null;
+  }
+
+  @Override
+  public int compareTo(VariableSimpleIF o) {
+    return name.compareTo(o.getShortName()); // ??
   }
 }

@@ -641,10 +641,15 @@ public class IospHelper {
   }
 
   static public ArrayStructureBB copyToArrayBB(StructureData sdata) {
+    return copyToArrayBB(sdata, ByteOrder.BIG_ENDIAN);
+  }
+
+  static public ArrayStructureBB copyToArrayBB(StructureData sdata, ByteOrder bo) {
     StructureMembers smo = sdata.getStructureMembers();
     StructureMembers sm = new StructureMembers(smo);
     int size = sm.getStructureSize();
     ByteBuffer bb = ByteBuffer.allocate(size); // default is big endian
+    bb.order(bo);
     ArrayStructureBB abb = new ArrayStructureBB(sm, new int[]{1}, bb, 0);
     ArrayStructureBB.setOffsets(sm);
     copyToArrayBB(sdata, abb);

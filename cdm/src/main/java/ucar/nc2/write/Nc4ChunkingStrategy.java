@@ -30,6 +30,7 @@ public abstract class Nc4ChunkingStrategy implements Nc4Chunking {
     switch (type) {
       case standard: return new Nc4ChunkingDefault(deflateLevel, shuffle);
       case grib: return new Nc4ChunkingStrategyGrib(deflateLevel, shuffle);
+      case none: return new Nc4ChunkingStrategyNone();
     }
     throw new IllegalArgumentException("Illegal Nc4Chunking.Standard " + type);
   }

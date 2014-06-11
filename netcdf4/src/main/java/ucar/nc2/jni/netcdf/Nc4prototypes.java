@@ -259,16 +259,21 @@ public interface Nc4prototypes extends Library {
   static public final int  NC_NOFILL	= 0x100;	/**< Argument to nc_set_fill() to turn off filling of data. */
 
 
+  /* Set the default nc_create format to NC_FORMAT_CLASSIC, NC_FORMAT_64BIT, NC_FORMAT_NETCDF4, NC_FORMAT_NETCDF4_CLASSIC. */
+  int nc_set_default_format(int format, IntByReference old_formatp);
+
   int nc_create(String path, int cmode, IntByReference ncidp);
   int nc_enddef	(int ncid);
   int nc_sync	(int ncid);
 
   int nc_def_grp (int parent_ncid, String name, IntByReference new_ncid);
   int nc_def_dim(int ncid,  String name, SizeT len, IntByReference dimid);
+  int nc_inq_dimlen(int ncid, int dimid, SizeTByReference lenp);
   int nc_def_var (int ncid, String name, SizeT xtype, int ndims, int[] dimids, IntByReference varidp);
 
   int nc_def_compound(int ncid, SizeT size, String name, IntByReference typeidp);
   int nc_insert_compound(int ncid, int typeid, String name, SizeT offset, int field_typeid);
+  int nc_insert_array_compound(int ncid, int typeid, String name, SizeT offset, int field_typeid, int ndims, int[] dim_sizes);
 
   /* Rename a group */
   int nc_rename_grp(int grpid, String name);
@@ -380,11 +385,7 @@ public interface Nc4prototypes extends Library {
 
   /* Set the fill mode (classic or 64-bit offset files only). */
   int nc_set_fill(int ncid, int fillmode, IntByReference old_modep);
-  
-  /* Set the default nc_create format to NC_FORMAT_CLASSIC,
-   * NC_FORMAT_64BIT, NC_FORMAT_NETCDF4, NC_FORMAT_NETCDF4_CLASSIC. */
-  int nc_set_default_format(int format, IntByReference old_formatp);
-  
+
   /* Set the cache size, nelems, and preemption policy. */
   int nc_set_chunk_cache(SizeT size, SizeT nelems, float preemption);
   

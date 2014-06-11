@@ -71,12 +71,12 @@ public class H5header {
   static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(H5header.class);
 
   // special attribute names in HDF5
-  static public final String HDF5_CLASS  = "CLASS";
-  static public final String HDF5_DIMENSION_LIST  = "DIMENSION_LIST";
-  static public final String HDF5_DIMENSION_SCALE  = "DIMENSION_SCALE";
-  static public final String HDF5_DIMENSION_LABELS  = "DIMENSION_LABELS";
-  static public final String HDF5_DIMENSION_NAME  = "NAME";
-  static public final String HDF5_REFERENCE_LIST  = "REFERENCE_LIST";
+  static public final String HDF5_CLASS = "CLASS";
+  static public final String HDF5_DIMENSION_LIST = "DIMENSION_LIST";
+  static public final String HDF5_DIMENSION_SCALE = "DIMENSION_SCALE";
+  static public final String HDF5_DIMENSION_LABELS = "DIMENSION_LABELS";
+  static public final String HDF5_DIMENSION_NAME = "NAME";
+  static public final String HDF5_REFERENCE_LIST = "REFERENCE_LIST";
 
   // debugging
   static private boolean debugEnum = false, debugVlen = false;
@@ -189,7 +189,7 @@ public class H5header {
       filePos = (filePos == 0) ? 512 : 2 * filePos;
     }
     if (!ok) throw new IOException("Not a netCDF4/HDF5 file ");
-    if (debug1) debugOut.println("H5header 0pened file to read:'" + raf.getLocation() +"' size= " + actualSize);
+    if (debug1) debugOut.println("H5header 0pened file to read:'" + raf.getLocation() + "' size= " + actualSize);
     // now we are positioned right after the header
 
     // header information is in le byte order
@@ -213,7 +213,7 @@ public class H5header {
     replaceSymbolicLinks(rootGroup);
 
     // recursively run through all the dataObjects and add them to the ncfile
-    boolean allSharedDimensions =  makeNetcdfGroup(ncfile.getRootGroup(), rootGroup);
+    boolean allSharedDimensions = makeNetcdfGroup(ncfile.getRootGroup(), rootGroup);
     if (allSharedDimensions) isNetcdf4 = true;
 
     /*if (debugReference) {
@@ -239,7 +239,7 @@ public class H5header {
     versionSHMF = raf.readByte();
     if (debugDetail)
       debugOut.println(" versionSB= " + versionSB + " versionFSS= " + versionFSS + " versionGroup= " + versionGroup +
-          " versionSHMF= " + versionSHMF);
+              " versionSHMF= " + versionSHMF);
 
     sizeOffsets = raf.readByte();
     isOffsetLong = (sizeOffsets == 8);
@@ -291,7 +291,7 @@ public class H5header {
     // look for file truncation
     long fileSize = raf.length();
     if (fileSize < eofAddress)
-      throw new IOException("File is truncated should be= " + eofAddress + " actual = " + fileSize+"%nlocation= "+raf.getLocation());
+      throw new IOException("File is truncated should be= " + eofAddress + " actual = " + fileSize + "%nlocation= " + raf.getLocation());
 
     // next comes the root objext's SymbolTableEntry
     SymbolTableEntry rootEntry = new SymbolTableEntry(raf.getFilePointer());
@@ -484,8 +484,8 @@ public class H5header {
           if (v.getDataType().isEnum()) {
             EnumTypedef enumTypedef = v.getEnumTypedef();
             if (enumTypedef == null) {
-              log.warn("EnumTypedef is missing for variable: "+v.getFullName());
-              throw new IllegalStateException("EnumTypedef is missing for variable: "+v.getFullName());
+              log.warn("EnumTypedef is missing for variable: " + v.getFullName());
+              throw new IllegalStateException("EnumTypedef is missing for variable: " + v.getFullName());
             }
             // This code apparently addresses the possibility of an anonymous enum LOOK ??
             String ename = enumTypedef.getShortName();
@@ -511,10 +511,18 @@ public class H5header {
           if (enumTypedef == null) {
             DataType basetype;
             switch (facadeNested.dobj.mdt.byteSize) {
-            case 1: basetype = DataType.ENUM1; break;
-            case 2: basetype = DataType.ENUM2; break;
-            case 4: basetype = DataType.ENUM4; break;
-            default: basetype = DataType.ENUM4; break;
+              case 1:
+                basetype = DataType.ENUM1;
+                break;
+              case 2:
+                basetype = DataType.ENUM2;
+                break;
+              case 4:
+                basetype = DataType.ENUM4;
+                break;
+              default:
+                basetype = DataType.ENUM4;
+                break;
             }
             enumTypedef = new EnumTypedef(facadeNested.name, facadeNested.dobj.mdt.map, basetype);
             ncGroup.addEnumeration(enumTypedef);
@@ -600,10 +608,10 @@ public class H5header {
         String val = att.getStringValue();
         if (val.equals(HDF5_DIMENSION_SCALE) && facade.dobj.mds.ndims > 0) {
 
-           // create a dimension - always use the first dataspace length
+          // create a dimension - always use the first dataspace length
           facade.dimList = addDimension(g, h5group, facade.name, facade.dobj.mds.dimLength[0], facade.dobj.mds.maxLength[0] == -1);
           facade.hasNetcdfDimensions = true;
-          if (! h5iosp.includeOriginalAttributes) iter.remove();
+          if (!h5iosp.includeOriginalAttributes) iter.remove();
 
           if (facade.dobj.mds.ndims > 1)
             facade.is2DCoordinate = true;
@@ -655,7 +663,7 @@ public class H5header {
     Dimension match = null;
     boolean unique = true;
     for (Dimension d : h5group.dimList) {
-      if  (d.getLength() == want_len) {
+      if (d.getLength() == want_len) {
         if (match == null) match = d;
         else unique = false;
       }
@@ -744,7 +752,7 @@ public class H5header {
         if (att == null) {
           log.warn("DIMENSION_LIST: failed to read on variable {}", facade.getName());
 
-        } else if (att.getLength() !=  facade.dobj.mds.dimLength.length) { // some attempts to writing hdf5 directly fail here
+        } else if (att.getLength() != facade.dobj.mds.dimLength.length) { // some attempts to writing hdf5 directly fail here
           log.warn("DIMENSION_LIST: must have same number of dimension scales as dimensions att={} on variable {}", att, facade.getName());
 
         } else {
@@ -756,8 +764,9 @@ public class H5header {
           }
           facade.dimList = sbuff.toString();
           facade.hasNetcdfDimensions = true;
-          if (debugDimensionScales) System.out.printf("Found dimList '%s' for group '%s' matt=%s %n", facade.dimList, g.getFullName(), matt);
-          if (! h5iosp.includeOriginalAttributes) iter.remove();
+          if (debugDimensionScales)
+            System.out.printf("Found dimList '%s' for group '%s' matt=%s %n", facade.dimList, g.getFullName(), matt);
+          if (!h5iosp.includeOriginalAttributes) iter.remove();
         }
 
       } else if (matt.name.equals(HDF5_DIMENSION_NAME)) {
@@ -767,13 +776,13 @@ public class H5header {
           facade.isVariable = false;
           isNetcdf4 = true;
         }
-        if (! h5iosp.includeOriginalAttributes) iter.remove();
+        if (!h5iosp.includeOriginalAttributes) iter.remove();
         if (debugDimensionScales) System.out.printf("Found %s %n", val);
 
       } else if (matt.name.equals(HDF5_REFERENCE_LIST))
-        if (! h5iosp.includeOriginalAttributes) iter.remove();
+        if (!h5iosp.includeOriginalAttributes) iter.remove();
     }
-    boolean result =  facade.hasNetcdfDimensions || facade.dobj.mds.dimLength.length == 0;
+    boolean result = facade.hasNetcdfDimensions || facade.dobj.mds.dimLength.length == 0;
     //if (!result)
     //  System.out.println("HEY");
     return result;
@@ -798,7 +807,7 @@ public class H5header {
 
     } else { // check has correct length
       if (d.getLength() != length)
-        throw new IllegalStateException("addDimension: DimScale has different length than dimension it references dimScale="+dimName);
+        throw new IllegalStateException("addDimension: DimScale has different length than dimension it references dimScale=" + dimName);
     }
 
     return d.getShortName();
@@ -818,7 +827,7 @@ public class H5header {
         d.setLength(length);
 
       if (!d.isUnlimited() && (length != d.getLength())) {
-        throw new IllegalStateException("extendDimension: DimScale has different length than dimension it references dimScale="+dimName);
+        throw new IllegalStateException("extendDimension: DimScale has different length than dimension it references dimScale=" + dimName);
       }
       return d.getShortName();
     }
@@ -834,10 +843,10 @@ public class H5header {
 
   private List<MessageAttribute> filterAttributes(List<MessageAttribute> attList) {
     List<MessageAttribute> result = new ArrayList<MessageAttribute>(attList.size());
-    for  (MessageAttribute matt : attList) {
+    for (MessageAttribute matt : attList) {
       if (matt.name.equals(Nc4.NETCDF4_COORDINATES) || matt.name.equals(Nc4.NETCDF4_DIMID) || matt.name.equals(Nc4.NETCDF4_STRICT)) {
         isNetcdf4 = true;
-      } else  {
+      } else {
         result.add(matt);
       }
     }
@@ -847,10 +856,10 @@ public class H5header {
   /**
    * Create Attribute objects from the MessageAttribute and add to list
    *
-   * @param s       if attribute for a Structure, then deconstruct and add to member variables
-   * @param matt    attribute message
+   * @param s            if attribute for a Structure, then deconstruct and add to member variables
+   * @param matt         attribute message
    * @param attContainer add Attribute to this
-   * @throws IOException on io error
+   * @throws IOException                    on io error
    * @throws ucar.ma2.InvalidRangeException on shape error
    */
   private void makeAttributes(Structure s, MessageAttribute matt, AttributeContainer attContainer) throws IOException, InvalidRangeException {
@@ -914,7 +923,7 @@ public class H5header {
     try {
       attData = readAttributeData(matt, vinfo, dtype);
       attData.setUnsigned(matt.mdt.unsigned);
-      
+
     } catch (InvalidRangeException e) {
       log.warn("failed to read Attribute " + matt.name + " HDF5 file=" + raf.getLocation());
       return null;
@@ -931,7 +940,7 @@ public class H5header {
       result = new Attribute(matt.name, dataList);
 
     } else {
-      result =  new Attribute(matt.name, attData);
+      result = new Attribute(matt.name, attData);
     }
 
     raf.order(RandomAccessFile.LITTLE_ENDIAN);
@@ -967,14 +976,14 @@ public class H5header {
             break;
           default: // PRIMITIVE
             dt = getNCtype(h5sm.mdt.type, h5sm.mdt.byteSize);
-            dim = new int[] { 1 };
+            dim = new int[]{1};
             break;
         }
         StructureMembers.Member m = sm.addMember(h5sm.name, null, null, dt, dim);
 
         if (h5sm.mdt.endian >= 0) // apparently each member may have seperate byte order (!!!??)
           m.setDataObject(h5sm.mdt.endian == RandomAccessFile.LITTLE_ENDIAN ? ByteOrder.LITTLE_ENDIAN : ByteOrder.BIG_ENDIAN);
-        m.setDataParam( (h5sm.offset)); // offset since start of Structure
+        m.setDataParam((h5sm.offset)); // offset since start of Structure
         if (dt == DataType.STRING)
           hasStrings = true;
       }
@@ -999,7 +1008,7 @@ public class H5header {
       // strings are stored on the heap, and must be read separately
       if (hasStrings) {
         int destPos = 0;
-        for (int i = 0; i< layout.getTotalNelems(); i++) { // loop over each structure
+        for (int i = 0; i < layout.getTotalNelems(); i++) { // loop over each structure
           h5iosp.convertHeap(asbb, destPos, sm);
           destPos += layout.getElemSize();
         }
@@ -1068,7 +1077,7 @@ public class H5header {
       if (vinfo.mdt.byteSize > 1) {
         int[] newShape = new int[shape.length + 1];
         System.arraycopy(shape, 0, newShape, 0, shape.length);
-        newShape[shape.length] = vinfo.mdt.byteSize ;
+        newShape[shape.length] = vinfo.mdt.byteSize;
         shape = newShape;
       }
 
@@ -1088,30 +1097,30 @@ public class H5header {
 
     if ((dataType == DataType.CHAR)) {
       if (vinfo.mdt.byteSize > 1) { // chop back into pieces
-        byte [] bdata = (byte[]) data;
+        byte[] bdata = (byte[]) data;
         int strlen = vinfo.mdt.byteSize;
         int n = bdata.length / strlen;
-        ArrayObject.D1 sarray = new ArrayObject.D1( String.class, n);
-        for (int i=0; i<n; i++) {
-          String sval = convertString( bdata, i*strlen, strlen);
+        ArrayObject.D1 sarray = new ArrayObject.D1(String.class, n);
+        for (int i = 0; i < n; i++) {
+          String sval = convertString(bdata, i * strlen, strlen);
           sarray.set(i, sval);
         }
         dataArray = sarray;
 
       } else {
-        String sval = convertString( (byte[]) data);
-        ArrayObject.D1 sarray = new ArrayObject.D1( String.class, 1);
+        String sval = convertString((byte[]) data);
+        ArrayObject.D1 sarray = new ArrayObject.D1(String.class, 1);
         sarray.set(0, sval);
         dataArray = sarray;
       }
-      
+
     } else {
-      dataArray = (data instanceof Array) ? (Array) data : Array.factory( readDtype, shape, data);
+      dataArray = (data instanceof Array) ? (Array) data : Array.factory(readDtype, shape, data);
     }
 
     // convert attributes to enum strings
     if ((vinfo.typeInfo.hdfType == 8) && (matt.mdt.map != null)) {
-      dataArray = convertEnums( matt.mdt.map, dataType, dataArray);
+      dataArray = convertEnums(matt.mdt.map, dataType, dataArray);
     }
 
     return dataArray;
@@ -1134,7 +1143,7 @@ public class H5header {
       if (b[count] == 0) break;
       count++;
     }
-    return new String(b, start, count-start, CDM.utf8Charset); // all strings are considered to be UTF-8 unicode
+    return new String(b, start, count - start, CDM.utf8Charset); // all strings are considered to be UTF-8 unicode
   }
 
   protected Array convertEnums(Map<Integer, String> map, DataType dataType, Array values) {
@@ -1150,7 +1159,7 @@ public class H5header {
       else
         ival = values.nextInt();
       String sval = map.get(ival);
-      if (sval == null) sval = "Unknown enum value="+ival;
+      if (sval == null) sval = "Unknown enum value=" + ival;
       ii.setObjectNext(sval);
     }
     return result;
@@ -1385,7 +1394,7 @@ public class H5header {
 
       if (vinfo.isChunked) {  // add an attribute describing the chunk size
         List<Integer> chunksize = new ArrayList<Integer>();
-        for (int i=0; i<vinfo.storageSize.length-1; i++)  // skip last one - its the element size
+        for (int i = 0; i < vinfo.storageSize.length - 1; i++)  // skip last one - its the element size
           chunksize.add(vinfo.storageSize[i]);
         v.addAttribute(new Attribute(CDM.CHUNK_SIZES, chunksize));
       }
@@ -1400,7 +1409,7 @@ public class H5header {
     }
 
     if (transformReference && (facade.dobj.mdt.type == 7) && (facade.dobj.mdt.referenceType == 1)) { // region reference
-      log.warn("transform region Reference: facade=" + facade.name +" variable name=" + v.getFullName());
+      log.warn("transform region Reference: facade=" + facade.name + " variable name=" + v.getFullName());
       int nelems = (int) v.getSize();
       int heapIdSize = 12;
       /* doesnt work yet
@@ -1459,7 +1468,7 @@ public class H5header {
 
   // Used for Structure Members
   private Variable makeVariableMember(Group g, Structure s, String name, long dataPos, MessageDatatype mdt)
-      throws IOException {
+          throws IOException {
 
     Variable v;
     Vinfo vinfo = new Vinfo(mdt, null, dataPos); // LOOK need mds
@@ -1539,20 +1548,21 @@ public class H5header {
     // merge the shape for array type (10)
     if (mdt.type == 10) {
       int len = dim.length + mdt.dim.length;
-      if(hasvlen) len++;
+      if (hasvlen) len++;
       int[] combinedDim = new int[len];
       for (int i = 0; i < dim.length; i++)
         combinedDim[i] = dim[i];  // the dataspace is the outer (slow) dimensions
       for (int i = 0; i < mdt.dim.length; i++)
         combinedDim[dim.length + i] = mdt.dim[i];  // type 10 is the inner dimensions
-      if(hasvlen) combinedDim[len-1] = -1;
+      if (hasvlen) combinedDim[len - 1] = -1;
       dim = combinedDim;
     }
 
+    // set dimensions on the variable
     try {
       if (dims != null) { // dimensions were passed in
         if ((mdt.type == 9) && !mdt.isVString)
-          v.setDimensions(dims+" *");
+          v.setDimensions(dims + " *");
         else
           v.setDimensions(dims);
 
@@ -1567,20 +1577,21 @@ public class H5header {
           v.setDimensionsAnonymous(shape);
         }
 
-       } else if (mdt.isVlen()) { // variable length (not a string)
+      } else if (mdt.isVlen()) { // variable length (not a string)
 
         if ((dim.length == 1) && (dim[0] == 1)) { // replace scalar with vlen
-          int[] shape = new int[] {-1};
+          int[] shape = new int[]{-1};
           v.setDimensionsAnonymous(shape);
-        } else {                                  // add vlen dimension
+
+        } else if (mdt.type != 10) { // add vlen dimension already done above for array
           int[] shape = new int[dim.length + 1];
           System.arraycopy(dim, 0, shape, 0, dim.length);
           shape[dim.length] = -1;
           v.setDimensionsAnonymous(shape);
-        }  
 
-     /* } else if (mdt.type == 10) { // array
-       v.setShapeWithAnonDimensions(mdt.dim);  */
+        } else {
+          v.setDimensionsAnonymous(dim);
+        }
 
       } else { // all other cases
 
@@ -1601,9 +1612,9 @@ public class H5header {
     // set the enumTypedef
     if (dt.isEnum()) {
       Group ncGroup = v.getParentGroup();
-      EnumTypedef enumTypedef = ncGroup.findEnumeration( mdt.enumTypeName);
+      EnumTypedef enumTypedef = ncGroup.findEnumeration(mdt.enumTypeName);
       if (enumTypedef == null) { // if shared object, wont have a name, shared version gets added later
-        enumTypedef = new EnumTypedef( mdt.enumTypeName, mdt.map);
+        enumTypedef = new EnumTypedef(mdt.enumTypeName, mdt.map);
         // LOOK ncGroup.addEnumeration(enumTypedef);
       }
       v.setEnumTypedef(enumTypedef);
@@ -1622,8 +1633,8 @@ public class H5header {
 
     TypeInfo typeInfo;
     int[] storageSize;  // for type 1 (continuous) : mds.dimLength;
-                        // for type 2 (chunked)    : msl.chunkSize (last number is element size)
-                        // null for attributes
+    // for type 2 (chunked)    : msl.chunkSize (last number is element size)
+    // null for attributes
 
     boolean isvlen = false; // VLEN, but not vlenstring
 
@@ -1695,7 +1706,7 @@ public class H5header {
     Vinfo(DataObjectFacade facade) throws IOException {
       this.facade = facade;
       // LOOK if compact, do not use fileOffset
-      this.dataPos = (facade.dobj.msl.type == 0) ?  facade.dobj.msl.dataAddress : getFileOffset(facade.dobj.msl.dataAddress);
+      this.dataPos = (facade.dobj.msl.type == 0) ? facade.dobj.msl.dataAddress : getFileOffset(facade.dobj.msl.dataAddress);
       this.mdt = facade.dobj.mdt;
       this.mds = facade.dobj.mds;
       this.mfp = facade.dobj.mfp;
@@ -1721,7 +1732,7 @@ public class H5header {
      * Constructor, used for reading attributes
      *
      * @param mdt     datatype
-     * @param mds dataspace
+     * @param mds     dataspace
      * @param dataPos start of data in file
      * @throws java.io.IOException on read error
      */
@@ -1735,7 +1746,7 @@ public class H5header {
         return; // not a supported datatype
       }
 
-      isvlen = this.mdt.isVlen() ;
+      isvlen = this.mdt.isVlen();
 
       // figure out the data type
       //this.hdfType = mdt.type;
@@ -1801,8 +1812,8 @@ public class H5header {
         else if (tinfo.byteSize == 4)
           tinfo.dataType = DataType.ENUM4;
         else {
-          log.warn("Illegal byte suze for enum type = "+tinfo.byteSize);
-          throw new IllegalStateException("Illegal byte suze for enum type = "+tinfo.byteSize);
+          log.warn("Illegal byte suze for enum type = " + tinfo.byteSize);
+          throw new IllegalStateException("Illegal byte suze for enum type = " + tinfo.byteSize);
         }
 
         // enumMap = mdt.map;
@@ -1815,11 +1826,11 @@ public class H5header {
           tinfo.dataType = DataType.STRING;
         } else {
           tinfo.dataType = getNCtype(mdt.getBaseType(), mdt.getBaseSize());
-          tinfo.endian =  mdt.base.endian;
+          tinfo.endian = mdt.base.endian;
         }
       } else if (hdfType == 10) { // array : used for structure members
         tinfo.endian = (mdt.getFlags()[0] & 1) == 0 ? RandomAccessFile.LITTLE_ENDIAN : RandomAccessFile.BIG_ENDIAN;
-        if (mdt.isVString()){
+        if (mdt.isVString()) {
           tinfo.dataType = DataType.STRING;
         } else {
           int basetype = mdt.getBaseType();
@@ -1935,11 +1946,11 @@ public class H5header {
       if (typeInfo.endian >= 0)
         bbuff.order(typeInfo.endian == RandomAccessFile.LITTLE_ENDIAN ? ByteOrder.LITTLE_ENDIAN : ByteOrder.BIG_ENDIAN);
 
-      if ((typeInfo.dataType == DataType.SHORT) || (typeInfo.dataType == DataType.ENUM2))  {
+      if ((typeInfo.dataType == DataType.SHORT) || (typeInfo.dataType == DataType.ENUM2)) {
         ShortBuffer tbuff = bbuff.asShortBuffer();
         return tbuff.get();
 
-      } else if ((typeInfo.dataType == DataType.INT) || (typeInfo.dataType == DataType.ENUM4))  {
+      } else if ((typeInfo.dataType == DataType.INT) || (typeInfo.dataType == DataType.ENUM4)) {
         IntBuffer tbuff = bbuff.asIntBuffer();
         return tbuff.get();
 
@@ -2007,10 +2018,10 @@ public class H5header {
   public class TypeInfo {
     int hdfType, byteSize;
     DataType dataType;
-    int endian = -1; // 1 = RandomAccessFile.LITTLE_ENDIAN || 0 = RandomAccessFile.BIG_ENDIAN
+    int endian = -1;   // 1 = RandomAccessFile.LITTLE_ENDIAN || 0 = RandomAccessFile.BIG_ENDIAN
     boolean unsigned;
-    boolean isVString; // is it a vlen string ?
-    boolean isVlen; // vlen but not string
+    boolean isVString; // is it a vlen string
+    boolean isVlen;    // vlen but not string
     int vpad;          // string padding
     TypeInfo base;     // vlen, enum
 
@@ -2260,7 +2271,7 @@ public class H5header {
           f.format("%d,", len);
         f.format(");%n");
       }
-      for ( H5header.MessageAttribute mess : getAttributes()) {
+      for (H5header.MessageAttribute mess : getAttributes()) {
         Attribute att = mess.getNcAttribute();
         f.format("  :%s%n", att);
       }
@@ -2755,7 +2766,7 @@ public class H5header {
 
     // debugging
     public void showFractalHeap(Formatter f) {
-      if (mtype !=  H5header.MessageType.AttributeInfo) {
+      if (mtype != H5header.MessageType.AttributeInfo) {
         f.format("No fractal heap");
         return;
       }
@@ -2766,7 +2777,7 @@ public class H5header {
 
     // debugging
     public void showCompression(Formatter f) {
-      if (mtype !=  H5header.MessageType.AttributeInfo) {
+      if (mtype != H5header.MessageType.AttributeInfo) {
         f.format("No fractal heap");
         return;
       }
@@ -2811,8 +2822,8 @@ public class H5header {
   public class MessageDataspace implements Named {
     byte ndims, flags;
     byte type;  // 0	A scalar dataspace, i.e. a dataspace with a single, dimensionless element.
-                // 1	A simple dataspace, i.e. a dataspace with a a rank > 0 and an appropriate # of dimensions.
-                // 2	A null dataspace, i.e. a dataspace with no elements.
+    // 1	A simple dataspace, i.e. a dataspace with a a rank > 0 and an appropriate # of dimensions.
+    // 2	A null dataspace, i.e. a dataspace with no elements.
     int[] dimLength, maxLength; // , permute;
     // boolean isPermuted;
 
@@ -2860,7 +2871,7 @@ public class H5header {
       }
 
       if (debug1) debugOut.println("   SimpleDataspace version= " + version + " flags=" +
-          Integer.toBinaryString(flags) + " ndims=" + ndims + " type=" + type);
+              Integer.toBinaryString(flags) + " ndims=" + ndims + " type=" + type);
 
       /* if (ndims == 0 && !alreadyWarnNdimZero) {
         log.warn("ndims == 0 in HDF5 file= " + raf.getLocation());
@@ -3101,7 +3112,7 @@ public class H5header {
       DataType dtype = getNCtype(type, byteSize);
       f.format(" NCtype= %s", dtype);
       f.format(" flags= ");
-      for (int i=0; i<3; i++) f.format(" %d", flags[i]);
+      for (int i = 0; i < 3; i++) f.format(" %d", flags[i]);
       f.format(" endian= %s", endian == RandomAccessFile.BIG_ENDIAN ? "BIG" : "LITTLE");
 
       if (type == 2)
@@ -3113,9 +3124,10 @@ public class H5header {
       } else if (type == 7)
         f.format(" referenceType= %s", referenceType);
       else if (type == 9) {
-          f.format(" isVString= %s", isVString);
-          f.format(" isVlen= %s", isVlen);
-      } if ((type == 9) || (type == 10))
+        f.format(" isVString= %s", isVString);
+        f.format(" isVlen= %s", isVlen);
+      }
+      if ((type == 9) || (type == 10))
         f.format(" parent base= {%s}", base);
       return f.toString();
     }
@@ -3123,9 +3135,9 @@ public class H5header {
     public String getName() {
       DataType dtype = getNCtype(type, byteSize);
       if (dtype != null)
-        return dtype.toString() + " size= "+byteSize;
+        return dtype.toString() + " size= " + byteSize;
       else
-        return "type="+Integer.toString(type) + " size= "+byteSize;
+        return "type=" + Integer.toString(type) + " size= " + byteSize;
     }
 
     public String getType() {
@@ -3133,7 +3145,7 @@ public class H5header {
       if (dtype != null)
         return dtype.toString();
       else
-        return "type="+Integer.toString(type) + " size= "+byteSize;
+        return "type=" + Integer.toString(type) + " size= " + byteSize;
     }
 
     void read(String objectName) throws IOException {
@@ -3148,15 +3160,15 @@ public class H5header {
       endian = ((flags[0] & 1) == 0) ? RandomAccessFile.LITTLE_ENDIAN : RandomAccessFile.BIG_ENDIAN;
 
       if (debug1) debugOut.println("   Datatype type=" + type + " version= " + version + " flags = " +
-          flags[0] + " " + flags[1] + " " + flags[2] + " byteSize=" + byteSize
-          + " byteOrder=" + (endian == RandomAccessFile.BIG_ENDIAN ? "BIG" : "LITTLE"));
+              flags[0] + " " + flags[1] + " " + flags[2] + " byteSize=" + byteSize
+              + " byteOrder=" + (endian == RandomAccessFile.BIG_ENDIAN ? "BIG" : "LITTLE"));
 
       if (type == 0) {  // fixed point
         unsigned = ((flags[0] & 8) == 0);
         short bitOffset = raf.readShort();
         short bitPrecision = raf.readShort();
         if (debug1)
-          debugOut.println("   type 0 (fixed point): bitOffset= " + bitOffset + " bitPrecision= " + bitPrecision+ " unsigned= " + unsigned);
+          debugOut.println("   type 0 (fixed point): bitOffset= " + bitOffset + " bitPrecision= " + bitPrecision + " unsigned= " + unsigned);
         isOK = (bitOffset == 0) && (bitPrecision % 8 == 0);
 
       } else if (type == 1) {  // floating point
@@ -3169,8 +3181,8 @@ public class H5header {
         int expBias = raf.readInt();
         if (debug1)
           debugOut.println("   type 1 (floating point): bitOffset= " + bitOffset + " bitPrecision= " + bitPrecision +
-              " expLocation= " + expLocation + " expSize= " + expSize + " manLocation= " + manLocation +
-              " manSize= " + manSize + " expBias= " + expBias);
+                  " expLocation= " + expLocation + " expSize= " + expSize + " manLocation= " + manLocation +
+                  " manSize= " + manSize + " expBias= " + expBias);
 
       } else if (type == 2) {  // time
         short bitPrecision = raf.readShort();
@@ -3184,7 +3196,7 @@ public class H5header {
         if (debug1)
           debugOut.println("   type 2 (time): bitPrecision= " + bitPrecision + " timeType = " + timeType);
 
-      } else if (type == 3) { // string
+      } else if (type == 3) {         // string  (I think a fixed length seq of chars)
         int ptype = flags[0] & 0xf;
         if (debug1)
           debugOut.println("   type 3 (String): pad type= " + ptype);
@@ -3243,7 +3255,7 @@ public class H5header {
         raf.order(RandomAccessFile.LITTLE_ENDIAN);
 
         enumTypeName = objectName;
-        map = new TreeMap<Integer, String>();
+        map = new TreeMap<>();
         for (int i = 0; i < nmembers; i++)
           map.put(enumValue[i], enumName[i]);
 
@@ -3252,9 +3264,9 @@ public class H5header {
             debugOut.println("   " + enumValue[i] + "=" + enumName[i]);
         }
 
-      } else if (type == 9) { // variable-length
+      } else if (type == 9) { // String (A variable-length sequence of characters) or Sequence (A variable-length sequence of any datatype)
         isVString = (flags[0] & 0xf) == 1;
-        if(!isVString) isVlen = true;
+        if (!isVString) isVlen = true;
         if (debug1)
           debugOut.println("   type 9(variable length): type= " + (isVString ? "string" : "sequence of type:"));
         base = new MessageDatatype(); // base type
@@ -3298,14 +3310,12 @@ public class H5header {
       return (base != null) ? base.getFlags() : flags;
     }
 
-    boolean isVlen()
-    {
-        return (type == 10 ? base.isVlen() : isVlen);
+    boolean isVlen() {
+      return (type == 10 ? base.isVlen() : isVlen);
     }
 
-    boolean isVString()
-    {
-        return (type == 10 ? base.isVString() : isVString);
+    boolean isVString() {
+      return (type == 10 ? base.isVString() : isVString);
     }
   }
 
@@ -3335,7 +3345,7 @@ public class H5header {
 
       //HDFdumpWithCount(buffer, raf.getFilePointer(), 16);
       mdt = new MessageDatatype();
-      mdt.read( name);
+      mdt.read(name);
       if (debugDetail) debugOut.println("   ***End Member name=" + name);
 
       // ??
@@ -3434,7 +3444,7 @@ public class H5header {
       return sbuff.toString();
     }
 
-     public String getName() {
+    public String getName() {
       StringBuilder sbuff = new StringBuilder();
       for (int i = 0; i < size; i++) sbuff.append(" ").append(value[i]);
       return sbuff.toString();
@@ -3507,8 +3517,8 @@ public class H5header {
         sbuff.append(")");
       }
 
-     return sbuff.toString();
-   }
+      return sbuff.toString();
+    }
 
     void read() throws IOException {
       int ndims;
@@ -3590,7 +3600,8 @@ public class H5header {
     }
   }
 
-  private static final String[] filterName = new String[] {"", "deflate", "shuffle", "fletcher32", "szip", "nbit", "scaleoffset"};
+  private static final String[] filterName = new String[]{"", "deflate", "shuffle", "fletcher32", "szip", "nbit", "scaleoffset"};
+
   class Filter {
     short id; // 1=deflate, 2=shuffle, 3=fletcher32, 4=szip, 5=nbit, 6=scaleoffset
     short flags;
@@ -3704,11 +3715,11 @@ public class H5header {
         nameSize = raf.readShort();
         typeSize = raf.readShort();
         spaceSize = raf.readShort();
-        log.error("bad version "+version+" at filePos " + raf.getFilePointer());
+        log.error("bad version " + version + " at filePos " + raf.getFilePointer());
         // G:/work/galibert/IMOS_ANMN-NSW_AETVZ_20131127T230000Z_PH100_FV01_PH100-1311-Workhorse-ADCP-109.5_END-20140306T010000Z_C-20140521T053527Z.nc
 
       } else {
-        log.error("bad version "+version+" at filePos " + raf.getFilePointer()); // buggery, may be HDF5 "more than 8 attributes" error
+        log.error("bad version " + version + " at filePos " + raf.getFilePointer()); // buggery, may be HDF5 "more than 8 attributes" error
         return false;
         // throw new IllegalStateException("MessageAttribute unknown version " + version);
       }
@@ -3721,7 +3732,7 @@ public class H5header {
 
       if (debug1)
         debugOut.println("   MessageAttribute version= " + version + " flags = " + Integer.toBinaryString(flags) +
-            " nameSize = " + nameSize + " typeSize=" + typeSize + " spaceSize= " + spaceSize + " name= " + name);
+                " nameSize = " + nameSize + " typeSize=" + typeSize + " spaceSize= " + spaceSize + " name= " + name);
 
       // read the datatype
       filePos = raf.getFilePointer();
@@ -3731,7 +3742,7 @@ public class H5header {
         mdt = getSharedDataObject(MessageType.Datatype).mdt;
         if (debug1) debugOut.println("    MessageDatatype: " + mdt);
       } else {
-        mdt.read( name);
+        mdt.read(name);
         if (version == 1) typeSize += padding(typeSize, 8);
       }
       raf.seek(filePos + typeSize); // make it more robust for errors
@@ -3768,7 +3779,7 @@ public class H5header {
         f.format(" maxCreationIndex=" + maxCreationIndex);
       f.format(" fractalHeapAddress=%d v2BtreeAddress=%d", fractalHeapAddress, v2BtreeAddress);
       if ((flags & 2) != 0)
-        f.format(" v2BtreeAddressCreationOrder=%d",v2BtreeAddressCreationOrder);
+        f.format(" v2BtreeAddressCreationOrder=%d", v2BtreeAddressCreationOrder);
 
       showFractalHeap(f);
 
@@ -3802,7 +3813,7 @@ public class H5header {
 
             // the heapId points to an Attribute Message in the fractal Heap
             FractalHeap.DHeapId dh = fractalHeap.getHeapId(heapId);
-            f.format("   %2d %2d %2d %6d %4d %8d",  dh.type, dh.n, dh.m, dh.offset, dh.size, dh.getPos());
+            f.format("   %2d %2d %2d %6d %4d %8d", dh.type, dh.n, dh.m, dh.offset, dh.size, dh.getPos());
             if (dh.getPos() > 0) {
               raf.seek(dh.getPos());
               MessageAttribute attMessage = new MessageAttribute();
@@ -3941,7 +3952,7 @@ public class H5header {
       FractalHeap fractalHeap = new FractalHeap(H5header.this, group.displayName, groupNewMessage.fractalHeapAddress);
 
       long btreeAddress = (groupNewMessage.v2BtreeAddressCreationOrder >= 0) ?
-          groupNewMessage.v2BtreeAddressCreationOrder : groupNewMessage.v2BtreeAddress;
+              groupNewMessage.v2BtreeAddressCreationOrder : groupNewMessage.v2BtreeAddress;
       if (btreeAddress < 0) throw new IllegalStateException("no valid btree for GroupNew with Fractal Heap");
 
       // read in btree and all entries
@@ -4018,7 +4029,7 @@ public class H5header {
 
       if (s.cacheType == 2) {
         String linkName = nameHeap.getString(s.linkOffset);
-        if (debugSoftLink) debugOut.println("   Symbolic link name=" + linkName+" symbolName=" + sname);
+        if (debugSoftLink) debugOut.println("   Symbolic link name=" + linkName + " symbolName=" + sname);
         group.nestedObjects.add(new DataObjectFacade(group, sname, linkName));
       } else {
         group.nestedObjects.add(new DataObjectFacade(group, sname, s.getObjectAddress()));
@@ -4082,7 +4093,7 @@ public class H5header {
       long rightAddress = readOffset();
       if (debugGroupBtree)
         debugOut.println("    leftAddress=" + leftAddress + " " + Long.toHexString(leftAddress) +
-            " rightAddress=" + rightAddress + " " + Long.toHexString(rightAddress));
+                " rightAddress=" + rightAddress + " " + Long.toHexString(rightAddress));
 
       // read all entries in this Btree "Node"
       List<Entry> myEntries = new ArrayList<Entry>();
@@ -4141,10 +4152,10 @@ public class H5header {
         for (int i = 0; i < nentries; i++) {
           SymbolTableEntry entry = new SymbolTableEntry(posEntry);
           posEntry += entry.getSize();
-          if (entry.objectHeaderAddress != 0)  { // LOOK: Probably a bug in HDF5 file format ?? jc July 16 2010
+          if (entry.objectHeaderAddress != 0) { // LOOK: Probably a bug in HDF5 file format ?? jc July 16 2010
             if (debug1) debugOut.printf("   add %s%n", entry);
             symbols.add(entry);
-        }  else {
+          } else {
             if (debug1) debugOut.printf("   BAD objectHeaderAddress==0 !! %s%n", entry);
           }
         }
@@ -4261,9 +4272,9 @@ public class H5header {
    * Fetch a Vlen data array.
    *
    * @param globalHeapIdAddress address of the heapId, used to get the String out of the heap
-   * @param dataType type of data
-   * @param endian byteOrder of the data (0 = BE, 1 = LE)
-   * @return  the Array read from the heap
+   * @param dataType            type of data
+   * @param endian              byteOrder of the data (0 = BE, 1 = LE)
+   * @return the Array read from the heap
    * @throws IOException on read error
    */
   Array getHeapDataArray(long globalHeapIdAddress, DataType dataType, int endian) throws IOException, InvalidRangeException {
@@ -4338,7 +4349,8 @@ public class H5header {
 
   /**
    * Fetch a String from the heap, when the heap identifier has already beed read into a ByteBuffer at given pos
-   * @param bb heap id is here
+   *
+   * @param bb  heap id is here
    * @param pos at this position
    * @return String the String read from the heap
    * @throws IOException on read error
@@ -4358,10 +4370,10 @@ public class H5header {
   // debug - hdf5Table
   public List<DataObject> getDataObjects() {
     ArrayList<DataObject> result = new ArrayList<DataObject>(addressMap.values());
-    Collections.sort( result, new java.util.Comparator<DataObject>() {
+    Collections.sort(result, new java.util.Comparator<DataObject>() {
       public int compare(DataObject o1, DataObject o2) {
         // return (int) (o1.address - o2.address);
-        return (o1.address<o2.address ? -1 : (o1.address==o2.address ? 0 : 1));
+        return (o1.address < o2.address ? -1 : (o1.address == o2.address ? 0 : 1));
       }
     });
     return result;
@@ -4530,13 +4542,13 @@ There is _no_ datatype information stored for these kind of selections currently
 
         if (debugDetail)
           debugOut.println("   HeapObject  position=" + startPos + " id=" + o.id + " refCount= " + o.refCount +
-              " dataSize = " + o.dataSize + " dataPos = " + o.dataPos + " count= "+count+" countBytes= "+  countBytes);
+                  " dataSize = " + o.dataSize + " dataPos = " + o.dataPos + " count= " + count + " countBytes= " + countBytes);
 
         raf.skipBytes(dsize);
         hos.add(o);
         count++;
-        
-        if (countBytes+16 >= sizeBytes) break; // ran off the end, must be done
+
+        if (countBytes + 16 >= sizeBytes) break; // ran off the end, must be done
       }
 
       if (debugDetail) debugOut.println("-- endGlobalHeap position=" + raf.getFilePointer());
@@ -4550,7 +4562,7 @@ There is _no_ datatype information stored for these kind of selections currently
 
       @Override
       public String toString() {
-        return  "id=" + id +
+        return "id=" + id +
                 ", refCount=" + refCount +
                 ", dataSize=" + dataSize +
                 ", dataPos=" + dataPos;
@@ -4667,7 +4679,7 @@ There is _no_ datatype information stored for these kind of selections currently
     count += padding(count, 8);
     raf.seek(filePos + count);
 
-   return new String(s, CDM.utf8Charset); // all Strings are UTF-8 unicode
+    return new String(s, CDM.utf8Charset); // all Strings are UTF-8 unicode
   }
 
   /**
@@ -4743,7 +4755,7 @@ There is _no_ datatype information stored for these kind of selections currently
     } else if (size == 4) {
       return raf.readInt();
     }
-    throw new IllegalArgumentException("Dont support int size == "+size);
+    throw new IllegalArgumentException("Dont support int size == " + size);
   }
 
   // Little endian

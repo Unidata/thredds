@@ -44,7 +44,6 @@ import ucar.nc2.iosp.hdf4.HdfEos;
 import ucar.nc2.iosp.hdf5.H5header;
 import ucar.nc2.util.CancelTask;
 import ucar.nc2.util.DebugFlags;
-import ucar.nc2.util.Misc;
 import ucar.nc2.write.Nc4Chunking;
 import ucar.nc2.write.Nc4ChunkingDefault;
 import ucar.unidata.io.RandomAccessFile;
@@ -83,7 +82,7 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
   static public final String JNA_PATH_ENV = "JNA_PATH"; // environment var
 
   static protected String DEFAULTNETCDF4LIBNAME = "netcdf";
-  static protected String netcdf4libname = DEFAULTNETCDF4LIBNAME;
+  //static protected String netcdf4libname = DEFAULTNETCDF4LIBNAME;
 
   static String[] DEFAULTNETCDF4PATH = new String[]{
           "/opt/netcdf4/lib",
@@ -97,6 +96,7 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
 
   static private boolean warn = true;
   static private final boolean debug = false,
+          debugCompound = true,
           debugCompoundAtt = false,
           debugUserTypes = false,
           debugLoad = true,
@@ -215,9 +215,11 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
 
   private NetcdfFileWriter.Version version = null;  // can use c library to create these different version files
   private NetcdfFile ncfile = null;
-  private int ncid = -1;    // file id
-  private int format = 0;       // nc4 or nc3
+  private boolean fill = true;
+  private int ncid = -1;        // file id
+  private int format = 0;       // from nc_inq_format
   private boolean isClosed = false;
+
   private Map<Integer, UserType> userTypes = new HashMap<>();  // hash by typeid
   private Map<Group, Integer> groupHash = new HashMap<>();     // group -> nc4 grpid
   private Nc4Chunking chunker = new Nc4ChunkingDefault();
@@ -283,6 +285,8 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
 
   private void _open(RandomAccessFile raf, NetcdfFile ncfile, boolean readOnly) throws IOException {
     load(); // load jni
+
+    raf.close(); // not used
     this.ncfile = ncfile;
 
     // open
@@ -300,7 +304,7 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
     if (debug) System.out.printf("open %s id=%d format=%d %n", ncfile.getLocation(), ncid, format);
 
     // read root group
-    makeGroup(ncid, new Group4(ncfile.getRootGroup(), null));
+    makeGroup(new Group4(ncid, ncfile.getRootGroup(), null));
 
     // check if its an HDF5-EOS file
     Group eosInfo = ncfile.getRootGroup().findGroup(HdfEos.HDF5_GROUP);
@@ -311,32 +315,32 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
     ncfile.finish();
   }
 
-  private void makeGroup(int grpid, Group4 g4) throws IOException {
-    groupHash.put(g4.g, grpid);
+  private void makeGroup(Group4 g4) throws IOException {
+    groupHash.put(g4.g, g4.grpid);
 
-    makeDimensions(grpid, g4);
-    makeUserTypes(grpid, g4.g);
+    makeDimensions(g4);
+    makeUserTypes(g4.grpid, g4.g);
 
     // group attributes
     IntByReference ngattsp = new IntByReference();
-    int ret = nc4.nc_inq_natts(grpid, ngattsp);
+    int ret = nc4.nc_inq_natts(g4.grpid, ngattsp);
     if (ret != 0) throw new IOException(ret + ": " + nc4.nc_strerror(ret));
-    List<Attribute> gatts = makeAttributes(grpid, Nc4prototypes.NC_GLOBAL, ngattsp.getValue(), null);
+    List<Attribute> gatts = makeAttributes(g4.grpid, Nc4prototypes.NC_GLOBAL, ngattsp.getValue(), null);
     for (Attribute att : gatts) {
       ncfile.addAttribute(g4.g, att);
       if (debug) System.out.printf(" add Global Attribute %s %n", att);
     }
 
-    makeVariables(grpid, g4.g);
+    makeVariables(g4);
 
     if (format == Nc4prototypes.NC_FORMAT_NETCDF4) {
       // read subordinate groups
       IntByReference numgrps = new IntByReference();
-      ret = nc4.nc_inq_grps(grpid, numgrps, Pointer.NULL);
+      ret = nc4.nc_inq_grps(g4.grpid, numgrps, Pointer.NULL);
       if (ret != 0)
         throw new IOException(ret + ": " + nc4.nc_strerror(ret));
       int[] group_ids = new int[numgrps.getValue()];
-      ret = nc4.nc_inq_grps(grpid, numgrps, group_ids);
+      ret = nc4.nc_inq_grps(g4.grpid, numgrps, group_ids);
       if (ret != 0)
         throw new IOException(ret + ": " + nc4.nc_strerror(ret));
 
@@ -347,25 +351,25 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
           throw new IOException(ret + ": " + nc4.nc_strerror(ret));
         Group child = new Group(ncfile, g4.g, makeString(name));
         g4.g.addGroup(child);
-        makeGroup(group_id, new Group4(child, g4));
+        makeGroup(new Group4(group_id, child, g4));
       }
     }
   }
 
-  private void makeDimensions(int grpid, Group4 g4) throws IOException {
+  private void makeDimensions(Group4 g4) throws IOException {
     IntByReference ndimsp = new IntByReference();
-    int ret = nc4.nc_inq_ndims(grpid, ndimsp);
+    int ret = nc4.nc_inq_ndims(g4.grpid, ndimsp);
     if (ret != 0)
       throw new IOException(ret + ": " + nc4.nc_strerror(ret));
 
     int[] dimids = new int[ndimsp.getValue()];
-    ret = nc4.nc_inq_dimids(grpid, ndimsp, dimids, 0);
+    ret = nc4.nc_inq_dimids(g4.grpid, ndimsp, dimids, 0);
     if (ret != 0)
       throw new IOException(ret + ": " + nc4.nc_strerror(ret));
 
     IntByReference nunlimdimsp = new IntByReference();
     int[] unlimdimids = new int[Nc4prototypes.NC_MAX_DIMS];
-    ret = nc4.nc_inq_unlimdims(grpid, nunlimdimsp, unlimdimids);
+    ret = nc4.nc_inq_unlimdims(g4.grpid, nunlimdimsp, unlimdimids);
     if (ret != 0)
       throw new IOException(ret + ": " + nc4.nc_strerror(ret));
 
@@ -373,7 +377,7 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
     for (int i = 0; i < ndims; i++) {
       byte[] name = new byte[Nc4prototypes.NC_MAX_NAME + 1];
       SizeTByReference lenp = new SizeTByReference();
-      ret = nc4.nc_inq_dim(grpid, dimids[i], name, lenp);
+      ret = nc4.nc_inq_dim(g4.grpid, dimids[i], name, lenp);
       if (ret != 0)
         throw new IOException(ret + ": " + nc4.nc_strerror(ret));
       String dname = makeString(name);
@@ -478,7 +482,7 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
   }
 
   private List<Attribute> makeAttributes(int grpid, int varid, int natts, Variable v) throws IOException {
-    List<Attribute> result = new ArrayList<Attribute>(natts);
+    List<Attribute> result = new ArrayList<>(natts);
 
     for (int attnum = 0; attnum < natts; attnum++) {
       byte[] name = new byte[Nc4prototypes.NC_MAX_NAME + 1];
@@ -696,9 +700,9 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
         for (int i = 0; i < len; i++) {
           //System.out.print(" len=" + vlen[i].len + "; p= " + vlen[i].p + ";");
           int[] ba = vlen[i].p.getIntArray(0, vlen[i].len);
-          for (int j = 0; j < ba.length; j++) {
+          for (int aBa : ba) {
             //System.out.print(" " + ba[j]);
-            iter.setIntNext(ba[j]);
+            iter.setIntNext(aBa);
           }
           //System.out.println();
         }
@@ -709,8 +713,7 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
         iter = fArray.getIndexIterator();
         for (int i = 0; i < len; i++) {
           float[] ba = vlen[i].p.getFloatArray(0, vlen[i].len);
-          for (int j = 0; j < ba.length; j++)
-            iter.setFloatNext(ba[j]);
+          for (float aBa : ba) iter.setFloatNext(aBa);
         }
         return fArray;
     }
@@ -915,17 +918,17 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
 
   /////////////////////////////////////////////////////////////////////////////
 
-  private void makeVariables(int grpid, Group g) throws IOException {
+  private void makeVariables(Group4 g4) throws IOException {
 
     IntByReference nvarsp = new IntByReference();
-    int ret = nc4.nc_inq_nvars(grpid, nvarsp);
+    int ret = nc4.nc_inq_nvars(g4.grpid, nvarsp);
     if (ret != 0)
       throw new IOException(ret + ": " + nc4.nc_strerror(ret));
     int nvars = nvarsp.getValue();
     if (debug) System.out.printf(" nvars= %d %n", nvars);
 
     int[] varids = new int[nvars];
-    ret = nc4.nc_inq_varids(grpid, nvarsp, varids);
+    ret = nc4.nc_inq_varids(g4.grpid, nvarsp, varids);
     if (ret != 0)
       throw new IOException(ret + ": " + nc4.nc_strerror(ret));
 
@@ -939,7 +942,7 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
       int[] dimids = new int[Nc4prototypes.NC_MAX_DIMS];
       IntByReference nattsp = new IntByReference();
 
-      ret = nc4.nc_inq_var(grpid, varno, name, xtypep, ndimsp, dimids, nattsp);
+      ret = nc4.nc_inq_var(g4.grpid, varno, name, xtypep, ndimsp, dimids, nattsp);
       if (ret != 0)
         throw new IOException(nc4.nc_strerror(ret));
 
@@ -948,10 +951,10 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
       //DataType dtype = convertDataType(typeid).dt;
 
       String vname = makeString(name);
-      Vinfo vinfo = new Vinfo(grpid, varno, typeid);
+      Vinfo vinfo = new Vinfo(g4, varno, typeid);
 
       // figure out the dimensions
-      String dimList = makeDimList(grpid, ndimsp.getValue(), dimids);
+      String dimList = makeDimList(g4.grpid, ndimsp.getValue(), dimids);
       UserType utype = userTypes.get(typeid);
       if (utype != null) {
         vinfo.utype = utype;
@@ -959,7 +962,7 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
           dimList = dimList + " *";
       }
 
-      Variable v = makeVariable(g, null, vname, typeid, dimList);
+      Variable v = makeVariable(g4.g, null, vname, typeid, dimList);
             /* if(dtype != DataType.STRUCTURE) {
                v = new Variable(ncfile, g, null, vname, dtype, dimList);
            } else if(utype != null) {
@@ -976,14 +979,14 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
            } */
 
       // create the Variable
-      ncfile.addVariable(g, v);
+      ncfile.addVariable(g4.g, v);
       v.setSPobject(vinfo);
 
       if (isUnsigned(typeid))
         v.addAttribute(new Attribute(CDM.UNSIGNED, "true"));
 
       // read Variable attributes
-      List<Attribute> atts = makeAttributes(grpid, varno, nattsp.getValue(), v);
+      List<Attribute> atts = makeAttributes(g4.grpid, varno, nattsp.getValue(), v);
       for (Attribute att : atts) {
         v.addAttribute(att);
       }
@@ -1072,22 +1075,25 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
   //////////////////////////////////////////////////////////////////////////
 
   private class Vinfo {
-    int grpid, varid, typeid;
+    final Group4 g4;
+    int varid, typeid;
     UserType utype; // may be null
 
-    Vinfo(int grpid, int varid, int typeid) {
-      this.grpid = grpid;
+    Vinfo(Group4 g4, int varid, int typeid) {
+      this.g4 = g4;
       this.varid = varid;
       this.typeid = typeid;
     }
   }
 
   private class Group4 {
-    Group g;
-    Group4 parent;
+    final int grpid;
+    final Group g;
+    final Group4 parent;
     Map<Dimension, Integer> dimHash;
 
-    Group4(Group g, Group4 parent) {
+    Group4(int grpid, Group g, Group4 parent) {
+      this.grpid = grpid;
       this.g = g;
       this.parent = parent;
     }
@@ -1410,12 +1416,12 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
     int vlen = (int) v2.getSize();
     int len = (int) section.computeSize();
     if (vlen == len) // entire array
-      return readDataAll(vinfo.grpid, vinfo.varid, vinfo.typeid, v2.getShapeAsSection());
+      return readDataAll(vinfo.g4.grpid, vinfo.varid, vinfo.typeid, v2.getShapeAsSection());
 
     //if(!section.isStrided()) // optimisation for unstrided section
     //  return readUnstrided(vinfo.grpid, vinfo.varid, vinfo.typeid, section);
 
-    return readDataSection(vinfo.grpid, vinfo.varid, vinfo.typeid, section);
+    return readDataSection(vinfo.g4.grpid, vinfo.varid, vinfo.typeid, section);
   }
 
   private Array readDataSection(int grpid, int varid, int typeid, Section section)
@@ -1972,13 +1978,13 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
 
   private boolean isVlen(int type) {
     UserType userType = userTypes.get(type);
-    return (userType == null) ? false : (userType.typeClass == Nc4prototypes.NC_VLEN);
+    return (userType != null) && (userType.typeClass == Nc4prototypes.NC_VLEN);
   }
 
   private boolean isStride1(int[] strides) {
     if (strides == null) return true;
-    for (int i = 0; i < strides.length; i++) {
-      if (strides[i] != 1) return false;
+    for (int stride : strides) {
+      if (stride != 1) return false;
     }
     return true;
   }
@@ -2173,50 +2179,66 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
     // finish any structures
     ncfile.finish();
 
-        /*
-       cmode    The creation mode flag. The following flags are available:
-       NC_NOCLOBBER (do not overwrite existing file),
-       NC_SHARE (limit write caching - netcdf classic files onlt),
-       NC_64BIT_OFFSET (create 64-bit offset file),
-       NC_NETCDF4 (create netCDF-4/HDF5 file),
-       NC_CLASSIC_MODEL (enforce netCDF classic mode on netCDF-4/HDF5 files),
-       NC_DISKLESS (store data only in memory),
-       NC_MMAP (use MMAP for NC_DISKLESS), and
-       NC_WRITE. See discussion below.
-        */
-
     // create new file
-    if (debug) System.out.println("open " + ncfile.getLocation());
+    if (debug) System.out.println("create " + ncfile.getLocation());
+    int ret;
+
+    /* IntByReference oldFormat = new IntByReference();
+    int ret = nc4.nc_set_default_format(defineFormat(), oldFormat);
+    if (ret != 0)
+      throw new IOException(ret + ": " + nc4.nc_strerror(ret)); */
+
     IntByReference ncidp = new IntByReference();
-    int ret = nc4.nc_create(filename, createMode(), ncidp);
+    ret = nc4.nc_create(filename, createMode(), ncidp);
     if (ret != 0)
       throw new IOException(ret + ": " + nc4.nc_strerror(ret));
     ncid = ncidp.getValue();
 
-    // turn off fill mode for the moment
-    //IntByReference old_modep = new IntByReference();
-    //ret = nc4.nc_set_fill(ncid, nc4.NC_NOFILL, old_modep);
-    //        if(ret != 0)
-    //throw new IOException(ret + ": " + nc4.nc_strerror(ret));
+    _setFill();
 
-    createGroup(ncid, new Group4(ncfile.getRootGroup(), null));
+    createGroup(new Group4(ncid, ncfile.getRootGroup(), null));
 
     // done with define mode
     nc4.nc_enddef(ncid);
     if (debugWrite) System.out.printf("create done%n%n");
   }
 
-    /*
-   netcdf4,             // jni netcdf4 iosp mode = NC_FORMAT_NETCDF4
-   netcdf4_classic,     // jni netcdf4 iosp mode = NC_FORMAT_NETCDF4_CLASSIC
-   netcdf3c,            // jni netcdf4 iosp mode = NC_FORMAT_CLASSIC
-   netcdf3c64;           // jni netcdf4 iosp mode = NC_FORMAT_64BIT
-    */
 
+  /*
+    cmode    The creation mode flag. The following flags are available:
+    NC_NOCLOBBER (do not overwrite existing file),
+    NC_SHARE (limit write caching - netcdf classic files onlt),
+    NC_64BIT_OFFSET (create 64-bit offset file),
+    NC_NETCDF4 (create netCDF-4/HDF5 file),
+    NC_CLASSIC_MODEL (enforce netCDF classic mode on netCDF-4/HDF5 files),
+    NC_DISKLESS (store data only in memory),
+    NC_MMAP (use MMAP for NC_DISKLESS), and
+    NC_WRITE. See discussion below.
+ */
   private int createMode() {
+    int ret = nc4.NC_CLOBBER;
     switch (version) {
       case netcdf4:
-        return Nc4prototypes.NC_NETCDF4;
+        ret |= nc4.NC_NETCDF4;
+        break;
+      case netcdf4_classic:
+        ret |= nc4.NC_NETCDF4 | nc4.NC_CLASSIC_MODEL;
+        break;
+    }
+
+    return ret;
+  }
+
+  /*
+  #define NC_FORMAT_CLASSIC (1)
+  #define NC_FORMAT_64BIT   (2)
+  #define NC_FORMAT_NETCDF4 (3)
+  #define NC_FORMAT_NETCDF4_CLASSIC  (4)
+   */
+  private int defineFormat() {
+    switch (version) {
+      case netcdf4:
+        return Nc4prototypes.NC_FORMAT_NETCDF4;
       case netcdf4_classic:
         return Nc4prototypes.NC_FORMAT_NETCDF4_CLASSIC;
       case netcdf3c:
@@ -2227,17 +2249,17 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
     throw new IllegalStateException("version = " + version);
   }
 
-  private void createGroup(int grpid, Group4 g4) throws IOException {
-    groupHash.put(g4.g, grpid);
-    g4.dimHash = new HashMap<Dimension, Integer>();
+  private void createGroup(Group4 g4) throws IOException {
+    groupHash.put(g4.g, g4.grpid);
+    g4.dimHash = new HashMap<>();
 
     // attributes
     for (Attribute att : g4.g.getAttributes())
-      writeAttribute(grpid, Nc4prototypes.NC_GLOBAL, att, null);
+      writeAttribute(g4.grpid, Nc4prototypes.NC_GLOBAL, att, null);
 
     // dimensions
     for (Dimension dim : g4.g.getDimensions()) {
-      int dimid = addDimension(grpid, dim.getShortName(), dim.getLength());
+      int dimid = addDimension(g4.grpid, dim.getShortName(), dim.getLength());
       g4.dimHash.put(dim, dimid);
       if (debugWrite)
         System.out.printf(" create dim '%s' (%d) in group '%s'%n", dim.getShortName(), dimid, g4.g.getFullName());
@@ -2248,35 +2270,35 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
     for (Variable v : g4.g.getVariables()) {
       switch (v.getDataType()) {
         case STRUCTURE:
-          createCompoundType((Structure) v);
+          createCompoundType(g4, (Structure) v);
           break;
       }
     }
 
     // variables
     for (Variable v : g4.g.getVariables()) {
-      createVariable(grpid, g4, v);
+      createVariable(g4, v);
     }
 
     // groups
     for (Group nested : g4.g.getGroups()) {
       IntByReference grpidp = new IntByReference();
-      int ret = nc4.nc_def_grp(grpid, nested.getShortName(), grpidp);
+      int ret = nc4.nc_def_grp(g4.grpid, nested.getShortName(), grpidp);
 
       if (ret != 0)
         throw new IOException(ret + ": " + nc4.nc_strerror(ret));
       int nestedId = grpidp.getValue();
-      createGroup(nestedId, new Group4(nested, g4));
+      createGroup(new Group4(nestedId, nested, g4));
     }
   }
 
-  private void createVariable(int grpid, Group4 g4, Variable v) throws IOException {
+  private void createVariable(Group4 g4, Variable v) throws IOException {
     int[] dimids = new int[v.getRank()];
     int count = 0;
     for (Dimension d : v.getDimensions()) {
       int dimid;
       if (!d.isShared()) {
-        dimid = addDimension(grpid, v.getShortName() + "_Dim" + count, d.getLength());
+        dimid = addDimension(g4.grpid, v.getShortName() + "_Dim" + count, d.getLength());
       } else {
         dimid = findDimensionId(g4, d);
       }
@@ -2287,26 +2309,25 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
 
     int typid;
     Vinfo vinfo;
-    if (v instanceof Structure) { // typid was stored in vinfo in createType
+    if (v instanceof Structure) { // g4 and typid was stored in vinfo in createCompoundType
       vinfo = (Vinfo) v.getSPobject();
-      vinfo.grpid = grpid;
       typid = vinfo.typeid;
 
     } else {
       typid = convertDataType(v.getDataType());
       if (typid < 0) return; // not implemented yet
-      vinfo = new Vinfo(grpid, -1, typid);
+      vinfo = new Vinfo(g4, -1, typid);
     }
 
     if (debugWrite) System.out.printf("adding variable %s (typeid %d) %n", v.getShortName(), typid);
     IntByReference varidp = new IntByReference();
-    int ret = nc4.nc_def_var(grpid, v.getShortName(), new SizeT(typid), dimids.length, dimids, varidp);
+    int ret = nc4.nc_def_var(g4.grpid, v.getShortName(), new SizeT(typid), dimids.length, dimids, varidp);
     if (ret != 0)
       throw new IOException("ret=" + ret + " err='" + nc4.nc_strerror(ret) + "' on\n" + v);
     int varid = varidp.getValue();
     vinfo.varid = varid;
     if (debugWrite)
-      System.out.printf("added variable %s (grpid %d varid %d) %n", v.getShortName(), vinfo.grpid, vinfo.varid);
+      System.out.printf("added variable %s (grpid %d varid %d) %n", v.getShortName(), vinfo.g4.grpid, vinfo.varid);
 
     if (version == NetcdfFileWriter.Version.netcdf4 && v.getRank() > 0) {
       boolean isChunked = chunker.isChunked(v);
@@ -2320,25 +2341,27 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
       } else
         chunking = new SizeT[v.getRank()];
 
-      ret = nc4.nc_def_var_chunking(grpid, varid, storage, chunking);
+      ret = nc4.nc_def_var_chunking(g4.grpid, varid, storage, chunking);
       if (ret != 0) {
         throw new IOException(nc4.nc_strerror(ret) + " nc_def_var_chunking on variable " + v.getFullName());
       }
 
-      int deflateLevel = isChunked ? chunker.getDeflateLevel(v) : 0;
-      int deflate = deflateLevel > 0 ? 1 : 0;
-      int shuffle = isChunked && chunker.isShuffle(v) ? 1 : 0;
-      if (deflateLevel > 0) {
-        ret = nc4.nc_def_var_deflate(grpid, varid, shuffle, deflate, deflateLevel);
-        if (ret != 0)
-          throw new IOException(nc4.nc_strerror(ret));
+      if (isChunked) {
+        int deflateLevel = chunker.getDeflateLevel(v);
+        int deflate = deflateLevel > 0 ? 1 : 0;
+        int shuffle = chunker.isShuffle(v) ? 1 : 0;
+        if (deflateLevel > 0) {
+          ret = nc4.nc_def_var_deflate(g4.grpid, varid, shuffle, deflate, deflateLevel);
+          if (ret != 0)
+            throw new IOException(nc4.nc_strerror(ret));
+        }
       }
     }
 
     v.setSPobject(vinfo);
 
     for (Attribute att : v.getAttributes())
-      writeAttribute(grpid, varid, att, v);
+      writeAttribute(g4.grpid, varid, att, v);
   }
 
 
@@ -2364,42 +2387,43 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
   After calling this function, fill out the type with repeated calls to nc_insert_compound (see nc_insert_compound).
   Call nc_insert_compound once for each field you wish to insert into the compound type.
    */
-  private void createCompoundType(Structure s) throws IOException {
-    int grpid = ncid; // LOOK ??
+  private void createCompoundType(Group4 g4, Structure s) throws IOException {
     IntByReference typeidp = new IntByReference();
     long size = s.getElementSize();
     String name = s.getShortName() + "_t";
-    int ret = nc4.nc_def_compound(grpid, new SizeT(size), name, typeidp);
+    int ret = nc4.nc_def_compound(g4.grpid, new SizeT(size), name, typeidp);
     if (ret != 0)
       throw new IOException(nc4.nc_strerror(ret) + " on\n" + s);
     int typeid = typeidp.getValue();
-    if (debugWrite) System.out.printf("added compound type %s (typeid %d) %n", name, typeid);
+    if (debugCompound) System.out.printf("added compound type %s (typeid %d) size=%d %n", name, typeid, size);
 
     List<Field> flds = new ArrayList<>();
     int fldidx = 0;
     long offset = 0;
     for (Variable v : s.getVariables()) {
+      if (v.getDataType() == DataType.STRING) continue;
+
       int field_typeid = convertDataType(v.getDataType());
-      ret = nc4.nc_insert_compound(ncid, typeid, v.getShortName(), new SizeT(offset), field_typeid);
+      if (v.isScalar())
+        ret = nc4.nc_insert_compound(ncid, typeid, v.getShortName(), new SizeT(offset), field_typeid);
+      else
+        ret = nc4.nc_insert_array_compound(ncid, typeid, v.getShortName(), new SizeT(offset), field_typeid, v.getRank(), v.getShape());
+
       if (ret != 0)
-        throw new IOException(nc4.nc_strerror(ret) + " on\n" + s);
-      if (debugWrite) System.out.printf(" added compound type member %s to %d%n", v.getShortName(), typeid);
+        throw new IOException(nc4.nc_strerror(ret) + " on\n" + s.getShortName());
 
-      int ndims = v.getRank();
-      int[] dims = new int[ndims];
-      for (int i = 0; i < ndims; i++) dims[i] = v.getDimension(i).getLength();
-
-      Field fld = new Field(grpid, typeid, fldidx, v.getShortName(), (int) offset, field_typeid, ndims, dims);
+      Field fld = new Field(g4.grpid, typeid, fldidx, v.getShortName(), (int) offset, field_typeid, v.getRank(), v.getShape());
       flds.add(fld);
+      if (debugCompound) System.out.printf(" added compound type member %s (%s) offset=%d size=%d%n", v.getShortName(), v.getDataType(), offset, v.getElementSize() * v.getSize());
 
       offset += v.getElementSize() * v.getSize();
       fldidx++;
     }
 
-    s.setSPobject(new Vinfo(-1, -1, typeidp.getValue()));
+    s.setSPobject(new Vinfo(g4, -1, typeidp.getValue()));  // dont know the varid yet
 
     // keep track of the User Defined types
-    UserType ut = new UserType(grpid, typeid, name, size, 0, (long) fldidx, NC_COMPOUND);
+    UserType ut = new UserType(g4.grpid, typeid, name, size, 0, (long) fldidx, NC_COMPOUND);
     userTypes.put(typeid, ut);
     ut.setFields(flds);
   }
@@ -2501,7 +2525,7 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
     //  if (vlen == len) // entire array
     //    writeDataAll(v2, vinfo.grpid, vinfo.varid, vinfo.typeid, values);
     //  else
-    writeData(v2, vinfo.grpid, vinfo.varid, vinfo.typeid, section, values);
+    writeData(v2, vinfo.g4.grpid, vinfo.varid, vinfo.typeid, section, values);
   }
 
   private void writeData(Variable v, int grpid, int varid, int typeid, Section section, Array values) throws IOException, InvalidRangeException {
@@ -2671,23 +2695,167 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
     System.out.printf("nc_inq_var ok=%s %s%n", ok, f);
 
     // write the data
-    int ret = nc4.nc_put_var(grpid, varid, bbuff);
-    // int ret = nc4.nc_put_vars(grpid, varid, origin, shape, stride, bbuff);
+    // int ret = nc4.nc_put_var(grpid, varid, bbuff);
+    int ret = nc4.nc_put_vars(grpid, varid, origin, shape, stride, bbuff);
     if (ret != 0)
-      throw new IOException(errMessage(ret, grpid, varid));
+      throw new IOException(errMessage("nc_put_vars", ret, grpid, varid));
   }
 
+  // LOOK use inq_offsets to recreate the BB
   private void testOffsets() {
 
   }
 
-  private String errMessage(int ret, int grpid, int varid) {
+  @Override
+  public int appendStructureData(Structure s, StructureData sdata) throws IOException, InvalidRangeException {
+    Vinfo vinfo = (Vinfo) s.getSPobject();
+    Dimension dim = s.getDimension(0);    // LOOK must be outer dim
+    int dimid = vinfo.g4.dimHash.get(dim);
+    SizeTByReference lenp = new SizeTByReference();
+    int ret = nc4.nc_inq_dimlen(vinfo.g4.grpid, dimid, lenp);
+    if (ret != 0)
+      throw new IOException(errMessage("nc_inq_dimlen", ret, vinfo.g4.grpid, dimid));
+
+    SizeT[] origin = new SizeT[]{lenp.getValue()};
+    SizeT[] shape = new SizeT[]{new SizeT(1)};
+    SizeT[] stride = new SizeT[]{new SizeT(1)};
+
+    //ArrayStructureBB valuesBB = IospHelper.copyToArrayBB(sdata, ByteOrder.nativeOrder());  // n4 wants native byte order
+   // ByteBuffer bbuff = valuesBB.getByteBuffer();
+    ByteBuffer bbuff = makeBB(s, sdata);
+
+    // write the data
+    ret = nc4.nc_put_vars(vinfo.g4.grpid, vinfo.varid, origin, shape, stride, bbuff);
+    if (ret != 0)
+      throw new IOException(errMessage("appendStructureData (nc_put_vars)", ret, vinfo.g4.grpid, vinfo.varid));
+
+    return -1;
+  }
+
+  private String errMessage(String what, int ret, int grpid, int varid) {
     Formatter f = new Formatter();
-    f.format("%d: %s grpid=%d varid=%d", ret, nc4.nc_strerror(ret), grpid, varid);
+    f.format("%s: %d: %s grpid=%d objid=%d", what, ret, nc4.nc_strerror(ret), grpid, varid);
     return f.toString();
   }
 
-  private void writeDataAll(Variable v, int grpid, int varid, int typeid, Array values) throws IOException, InvalidRangeException {
+  // copy data out of sdata into a ByteBuffer, based on the menmbers and offsets in s
+  private ByteBuffer makeBB(Structure s, StructureData sdata) {
+    int size = s.getElementSize();
+    ByteBuffer bb = ByteBuffer.allocate(size);
+    bb.order(ByteOrder.nativeOrder());
+
+    long offset = 0;
+    for (Variable v : s.getVariables()) {
+      if (v.getDataType() == DataType.STRING) continue;  // LOOK embedded strings getting lost
+
+      StructureMembers.Member m = sdata.findMember(v.getShortName());
+      if (m == null) {
+        System.out.printf("WARN cant find %s%n", v.getShortName());
+        bb.position((int) (offset + v.getElementSize()*v.getSize())); // skip over it
+      } else {
+        copy(sdata, m, bb);
+      }
+
+      offset += v.getElementSize() * v.getSize();
+    }
+
+    return bb;
+  }
+
+  private void copy(StructureData sdata, StructureMembers.Member m, ByteBuffer bb) {
+       DataType dtype = m.getDataType();
+       if (m.isScalar()) {
+         switch (dtype) {
+           case FLOAT:
+             bb.putFloat(sdata.getScalarFloat(m));
+             break;
+           case DOUBLE:
+             bb.putDouble(sdata.getScalarDouble(m));
+             break;
+           case INT:
+           case ENUM4:
+             bb.putInt(sdata.getScalarInt(m));
+             break;
+           case SHORT:
+           case ENUM2:
+             bb.putShort(sdata.getScalarShort(m));
+             break;
+           case BYTE:
+           case ENUM1:
+             bb.put(sdata.getScalarByte(m));
+             break;
+           case CHAR:
+             bb.put((byte) sdata.getScalarChar(m));
+             break;
+           case LONG:
+             bb.putLong(sdata.getScalarLong(m));
+             break;
+           default:
+             throw new IllegalStateException("scalar " + dtype.toString());
+             /* case BOOLEAN:
+            break;
+          case SEQUENCE:
+            break;
+          case STRUCTURE:
+            break;
+          case OPAQUE:
+            break; */
+         }
+       } else {
+         int n = m.getSize();
+         switch (dtype) {
+           case FLOAT:
+             float[] fdata = sdata.getJavaArrayFloat(m);
+             for (int i = 0; i < n; i++)
+               bb.putFloat(fdata[i]);
+             break;
+           case DOUBLE:
+             double[] ddata = sdata.getJavaArrayDouble(m);
+             for (int i = 0; i < n; i++)
+               bb.putDouble(ddata[i]);
+             break;
+           case INT:
+           case ENUM4:
+             int[] idata = sdata.getJavaArrayInt(m);
+             for (int i = 0; i < n; i++)
+               bb.putInt(idata[i]);
+             break;
+           case SHORT:
+           case ENUM2:
+             short[] shdata = sdata.getJavaArrayShort(m);
+             for (int i = 0; i < n; i++)
+               bb.putShort(shdata[i]);
+             break;
+           case BYTE:
+           case ENUM1:
+             byte[] bdata = sdata.getJavaArrayByte(m);
+             for (int i = 0; i < n; i++)
+               bb.put(bdata[i]);
+             break;
+           case CHAR:
+             char[] cdata = sdata.getJavaArrayChar(m);
+             bb.put(IospHelper.convertCharToByte(cdata));
+             break;
+           case LONG:
+             long[] ldata = sdata.getJavaArrayLong(m);
+             for (int i = 0; i < n; i++)
+               bb.putLong(ldata[i]);
+             break;
+           default:
+             throw new IllegalStateException("array " + dtype.toString());
+             /* case BOOLEAN:
+           break;
+          case OPAQUE:
+           break;
+         case STRUCTURE:
+           break; // */
+           case SEQUENCE:
+             break; // skip
+         }
+       }
+  }
+
+  /* private void writeDataAll(Variable v, int grpid, int varid, int typeid, Array values) throws IOException, InvalidRangeException {
 
     Object data = values.getStorage();
     boolean isUnsigned = isUnsigned(typeid);
@@ -2787,7 +2955,7 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
     }
     // System.out.printf("OK var %s%n", v);
 
-  }
+  }   */
 
   private String[] convertStringData(Object org) throws IOException {
     if (org instanceof String[]) return (String[]) org;
@@ -2817,17 +2985,26 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
 
   @Override
   public void setFill(boolean fill) {
+    this.fill = fill;
+    try {
+      _setFill();
+    } catch (IOException e) {
+      throw new RuntimeException(e);
+    }
   }
 
+  private void _setFill() throws IOException {
+    if (nc4 == null || ncid < 0) return;  // not open yet
+
+    IntByReference old_modep = new IntByReference();
+    int ret = nc4.nc_set_fill(ncid, fill ? Nc4prototypes.NC_FILL : Nc4prototypes.NC_NOFILL, old_modep);
+    if (ret != 0)
+      throw new IOException(ret + ": " + nc4.nc_strerror(ret));
+  }
 
   @Override
   public boolean rewriteHeader(boolean largeFile) throws IOException {
     return false;
-  }
-
-  @Override  // LOOK not done yet
-  public int appendStructureData(Structure s, StructureData sdata) throws IOException, InvalidRangeException {
-    return -1;
   }
 
 
@@ -2837,7 +3014,7 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
       writeAttribute(ncid, Nc4prototypes.NC_GLOBAL, att, null);
     else {
       Vinfo vinfo = (Vinfo) v2.getSPobject();
-      writeAttribute(vinfo.grpid, vinfo.varid, att, v2);
+      writeAttribute(vinfo.g4.grpid, vinfo.varid, att, v2);
     }
   }
 

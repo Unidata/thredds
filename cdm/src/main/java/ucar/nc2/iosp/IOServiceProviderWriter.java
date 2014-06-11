@@ -75,7 +75,7 @@ public interface IOServiceProviderWriter extends IOServiceProvider {
    * Set the fill flag.
    * For new files, set in the create() method. This method is to set fill for existing files that you want to write.
    * If true, the data is first written with fill values.
-   * Leave false if you expect to write all data values, set to true if you want to be
+   * Set to false if you expect to write all data values, set to true if you want to be
    * sure that unwritten data values have the fill value in it.
    *
    * @param fill set fill mode true or false
@@ -97,10 +97,10 @@ public interface IOServiceProviderWriter extends IOServiceProvider {
       throws IOException, ucar.ma2.InvalidRangeException;
 
   /**
-   * append a structureData along the unlimited dimension
+   * Append a structureData along the unlimited dimension
    *
    * @param s     belongs to this structure
-   * @param sdata the stucturesData to append
+   * @param sdata the stuctureData to append
    * @return      the recnum where it was written
    * @throws IOException
    * @throws InvalidRangeException

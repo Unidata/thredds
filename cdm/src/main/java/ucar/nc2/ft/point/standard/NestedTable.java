@@ -413,13 +413,14 @@ public class NestedTable {
   public List<VariableSimpleIF> getDataVariables() {
     List<VariableSimpleIF> data = new ArrayList<VariableSimpleIF>();
     addDataVariables(data, leaf);
+    Collections.sort(data);
     return data;
   }
 
   // use recursion so that parent variables come first
   private void addDataVariables(List<VariableSimpleIF> list, Table t) {
     if (t.parent != null) addDataVariables(list, t.parent);
-    for (VariableSimpleIF col : t.cols) {
+    for (VariableSimpleIF col : t.cols.values()) {
       if (!t.nondataVars.contains(col.getShortName()))
         list.add(col);
     }

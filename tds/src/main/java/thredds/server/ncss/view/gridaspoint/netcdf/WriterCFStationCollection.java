@@ -33,9 +33,7 @@
 package thredds.server.ncss.view.gridaspoint.netcdf;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -211,7 +209,8 @@ class WriterCFStationCollection  extends CFPointWriter {
 		writer.addVariableAttribute(stationIndex, new Attribute(CF.INSTANCE_DIMENSION, stationDimName));
 	}
 
-	protected void addDataVariablesClassic(List<VariableSimpleIF> dataVars) throws IOException {
+	protected void addDataVariablesClassic(List<? extends VariableSimpleIF> dataVars) throws IOException {
+    Set<Dimension> dimSet = new HashSet<>(20);
 
 		String coordNames = latName + " " + lonName + " " + altName + " " + timeName;
 		if(!useAlt){

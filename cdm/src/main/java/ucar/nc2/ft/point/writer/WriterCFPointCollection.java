@@ -74,70 +74,54 @@ public class WriterCFPointCollection extends CFPointWriter {
     this.altUnits = altUnits;
     writer.addUnlimitedDimension(recordDimName);
 
+    List<VariableSimpleIF> coords = new ArrayList<>();
+    coords.add(VariableSimpleImpl.make(timeName, "time of measurement", timeUnit.getUnitsString(), DataType.DOUBLE));
+    coords.add(VariableSimpleImpl.make(latName,  "station latitude", CDM.LAT_UNITS, DataType.DOUBLE));
+    coords.add(VariableSimpleImpl.make(lonName,  "station longitude", CDM.LON_UNITS, DataType.DOUBLE));
+    if (altUnits != null) coords.add(
+          VariableSimpleImpl.make(altName, "altitude", altUnits, DataType.DOUBLE)
+          .add(new Attribute(CF.POSITIVE, CF1Convention.getZisPositive(altName, altUnits))));
+
     if (writer.getVersion().isExtendedModel()) {
       record = (Structure) writer.addVariable(null, recordName, DataType.STRUCTURE, recordDimName);
-      addVariablesExtended(makeCoordinates(timeUnit));
+      addCoordinatesExtended(coords);
       addVariablesExtended(vars);
+      record.calcElementSize();
+      writer.create();
 
     } else {
-      createCoordinates(timeUnit);
+      addCoordinatesClassic(coords);
       addDataVariablesClassic(vars);
-    }
+      writer.create();
+      record = writer.addRecordStructure(); // netcdf3
 
-    writer.create(); // finish with define mode
-    record = writer.addRecordStructure(); // netcdf3
+      time = writer.findVariable(timeName);
+      lat = writer.findVariable(latName);
+      lon = writer.findVariable(lonName);
+      alt = writer.findVariable(altName);
+    }
   }
 
-  private List<Variable> makeCoordinates(DateUnit timeUnit) throws IOException {
-    List<Variable> result = new ArrayList<>();
+  protected void addCoordinatesClassic(List<VariableSimpleIF> coords) throws IOException {
 
-    // time variable
-    time = new Variable(null, null, null, timeName, DataType.DOUBLE, null);
-    time.addAttribute(new Attribute(CDM.UNITS, timeUnit.getUnitsString()));
-    time.addAttribute(new Attribute(CDM.LONG_NAME, "time of measurement"));
-    result.add(time);
-
-    lat = new Variable(null, null, null, latName, DataType.DOUBLE, null);
-    lat.addAttribute(new Attribute(CDM.UNITS, CDM.LAT_UNITS));
-    lat.addAttribute(new Attribute(CDM.LONG_NAME, "station latitude"));
-    result.add(lat);
-
-    lon = new Variable(null, null, null, lonName, DataType.DOUBLE, null);
-    lon.addAttribute(new Attribute(CDM.UNITS, CDM.LON_UNITS));
-    lon.addAttribute(new Attribute(CDM.LONG_NAME, "station longitude"));
-    result.add(lon);
-
-    if (altUnits != null) {
-      alt = new Variable(null, null, null, altName, DataType.DOUBLE, null);
-      alt.addAttribute(new Attribute(CDM.UNITS, altUnits));
-      alt.addAttribute(new Attribute(CDM.LONG_NAME, "altitude"));
-      alt.addAttribute(new Attribute(CF.POSITIVE, CF1Convention.getZisPositive(altName, altUnits)));
-      result.add(alt);
+   // added as variables with the unlimited (record) dimension
+    for (VariableSimpleIF vs : coords) {
+      Variable member = writer.addVariable(null, vs.getShortName(), vs.getDataType(), recordDimName);
+      for (Attribute att : vs.getAttributes())
+        member.addAttribute(att);
     }
-    return result;
+
   }
 
-  private void createCoordinates(DateUnit timeUnit) throws IOException {
+  // added as members of the record structure
+  protected void addCoordinatesExtended(List<VariableSimpleIF> coords) throws IOException {
 
-    // time variable
-    time = writer.addVariable(null, timeName, DataType.DOUBLE, recordDimName);
-    writer.addVariableAttribute(time, new Attribute(CDM.UNITS, timeUnit.getUnitsString()));
-    writer.addVariableAttribute(time, new Attribute(CDM.LONG_NAME, "time of measurement"));
-
-    lat = writer.addVariable(null, latName, DataType.DOUBLE, recordDimName);
-    writer.addVariableAttribute(lat, new Attribute(CDM.UNITS, CDM.LAT_UNITS));
-    writer.addVariableAttribute(lat, new Attribute(CDM.LONG_NAME, "station latitude"));
-
-    lon = writer.addVariable(null, lonName, DataType.DOUBLE, recordDimName);
-    writer.addVariableAttribute(lon, new Attribute(CDM.UNITS, CDM.LON_UNITS));
-    writer.addVariableAttribute(lon, new Attribute(CDM.LONG_NAME, "station longitude"));
-
-    if (altUnits != null) {
-      alt = writer.addVariable(null, altName, DataType.DOUBLE, recordDimName);
-      writer.addVariableAttribute(alt, new Attribute(CDM.UNITS, altUnits));
-      writer.addVariableAttribute(alt, new Attribute(CDM.LONG_NAME, "altitude"));
-      writer.addVariableAttribute(alt, new Attribute(CF.POSITIVE, CF1Convention.getZisPositive(altName, altUnits)));
+    for (VariableSimpleIF vs : coords) {
+      Variable member = writer.addStructureMember(record, vs.getShortName(), vs.getDataType(), null);
+      for (Attribute att : vs.getAttributes())
+        member.addAttribute(att);
     }
+
   }
 
   /////////////////////////////////////////////////////////
@@ -168,11 +152,16 @@ public class WriterCFPointCollection extends CFPointWriter {
     try {
       super.writeStructureData(origin, sdata);
 
-      writer.write(time, origin, timeArray);
-      writer.write(lat, origin, latArray);
-      writer.write(lon, origin, lonArray);
-      if (altUnits != null)
-        writer.write(alt, origin, altArray);
+      if (isExtendedModel) {
+        throw new RuntimeException("extended model not working yet");
+
+      } else {
+        writer.write(time, origin, timeArray);
+        writer.write(lat, origin, latArray);
+        writer.write(lon, origin, lonArray);
+        if (altUnits != null)
+          writer.write(alt, origin, altArray);
+      }
 
     } catch (InvalidRangeException e) {
       e.printStackTrace();
