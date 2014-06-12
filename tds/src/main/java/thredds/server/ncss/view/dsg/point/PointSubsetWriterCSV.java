@@ -71,7 +71,7 @@ public class PointSubsetWriterCSV extends AbstractPointSubsetWriter {
         for (VariableSimpleIF wantedVar : wantedVariables) {
             writer.print(',');
             Array dataArray = pointFeat.getData().getArray(wantedVar.getShortName());
-            writer.print(dataArray.toString());
+            writer.print(dataArray.toString().trim());
         }
         writer.println();
     }

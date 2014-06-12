@@ -74,6 +74,7 @@ public class PointWriter extends AbstractWriter {
   private PointWriter(FeatureDatasetPoint fd, PointFeatureCollection pfc, NcssParamsBean qb, ucar.nc2.util.DiskCache2 diskCache) throws IOException, NcssException {
     super(fd, qb, diskCache);
     this.pfc = pfc;
+    this.wantBB = qb.getBoundingBox();
   }
 
   /* private boolean validate() throws IOException {
@@ -169,10 +170,12 @@ public class PointWriter extends AbstractWriter {
     Limit counter = new Limit();
     //counter.limit = 150;
 
-    pfc.resetIteration();
+    PointFeatureCollection pfcSubset = pfc.subset(wantBB, wantRange);
+
+      pfcSubset.resetIteration();
     Action act = writer.getAction();
     writer.header();
-    scan(pfc, wantRange, null, act, counter);
+    scan(pfcSubset, wantRange, null, act, counter);
 
     writer.trailer();
 
@@ -594,7 +597,7 @@ public class PointWriter extends AbstractWriter {
           for (VariableSimpleIF var : wantVars) {
             writer.print(',');
             Array sdataArray = sdata.getArray(var.getShortName());
-            writer.print(sdataArray.toString());
+            writer.print(sdataArray.toString().trim());
           }
           writer.println();
           count++;

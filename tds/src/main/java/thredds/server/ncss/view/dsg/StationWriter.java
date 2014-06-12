@@ -45,11 +45,14 @@ import thredds.server.ncss.view.gridaspoint.NetCDFPointDataWriter;
 import thredds.util.ContentType;
 import ucar.ma2.Array;
 import ucar.ma2.StructureData;
+import ucar.ma2.StructureDataW;
+import ucar.ma2.StructureMembers;
 import ucar.nc2.Attribute;
 import ucar.nc2.NetcdfFileWriter;
 import ucar.nc2.VariableSimpleIF;
 import ucar.nc2.constants.CDM;
 import ucar.nc2.ft.*;
+import ucar.nc2.ft.point.PointFeatureImpl;
 import ucar.nc2.ft.point.StationPointFeature;
 import ucar.nc2.ft.point.remote.PointStream;
 import ucar.nc2.ft.point.remote.PointStreamProto;
@@ -77,6 +80,7 @@ import java.io.PrintWriter;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 
 /**
@@ -462,34 +466,34 @@ public class StationWriter extends AbstractWriter {
   // then act on those
   private void scanForClosestTime(PointFeatureCollection collection, DateType time, Predicate p, Action a, Limit limit) throws IOException {
 
-    HashMap<String, StationDataTracker> map = new HashMap<String, StationDataTracker>();
+    HashMap<String, StationDataTracker> map = new LinkedHashMap<>();
     //long wantTime = time.getDate().getTime();
     long wantTime = time.getCalendarDate().getMillis();
 
     collection.resetIteration();
     while (collection.hasNext()) {
-      PointFeature pf = collection.next();
+      StationPointFeature spf = (StationPointFeature) collection.next();
       //System.out.printf("%s%n", pf);
 
       // general predicate filter
       if (p != null) {
-        StructureData sdata = pf.getData();
+        StructureData sdata = spf.getData();
         if (!p.match(sdata))
           continue;
       }
 
       // find closest time for this station
       //long obsTime = pf.getObservationTimeAsDate().getTime();
-      long obsTime = pf.getObservationTimeAsCalendarDate().getMillis();
+      long obsTime = spf.getObservationTimeAsCalendarDate().getMillis();
       long diff = Math.abs(obsTime - wantTime);
 
-      Station s = ((StationPointFeature) pf).getStation();
+      Station s = spf.getStation();
       StationDataTracker track = map.get(s.getName());
       if (track == null) {
-        map.put(s.getName(), new StationDataTracker(pf, diff));
+        map.put(s.getName(), new StationDataTracker(cloneFeat(spf), diff));
       } else {
         if (diff < track.timeDiff) {
-          track.sobs = pf;
+          track.sobs = cloneFeat(spf);
           track.timeDiff = diff;
         }
       }
@@ -515,6 +519,41 @@ public class StationWriter extends AbstractWriter {
       this.timeDiff = timeDiff;
     }
   }
+
+
+    private static StationPointFeature cloneFeat(StationPointFeature orig) throws IOException {
+        StructureData origData = orig.getData();
+        StructureMembers newStructMems = new StructureMembers(origData.getStructureMembers());
+        StructureDataW newData = new StructureDataW(newStructMems);
+
+        for (StructureMembers.Member member : newStructMems.getMembers()) {
+            newData.setMemberData(member, origData.getArray(member.getName()));
+        }
+
+        return new StationPointFeatureClone(orig, newData);
+    }
+
+    private static class StationPointFeatureClone extends PointFeatureImpl implements StationPointFeature {
+        private final StructureData data;
+        private final Station station;
+
+        private StationPointFeatureClone(StationPointFeature stationPointFeat, StructureData data) {
+            super(stationPointFeat.getLocation(), stationPointFeat.getObservationTime(),
+                    stationPointFeat.getNominalTime(), stationPointFeat.getTimeUnit());
+            this.data = data;
+            this.station = stationPointFeat.getStation();
+        }
+
+        @Override
+        public StructureData getData() throws IOException {
+            return data;
+        }
+
+        @Override
+        public Station getStation() {
+            return station;
+        }
+    }
 
 
   private interface Predicate {
@@ -912,7 +951,7 @@ public class StationWriter extends AbstractWriter {
           for (VariableSimpleIF var : wantVars) {
             writer.print(',');
             Array sdataArray = sdata.getArray(var.getShortName());
-            writer.print(sdataArray.toString());
+            writer.print(sdataArray.toString().trim());
           }
           writer.println();
           count++;

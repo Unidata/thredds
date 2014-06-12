@@ -89,6 +89,7 @@ public class DsgSubsetWriterTest {
             { FeatureType.POINT,   "point.ncml",   SupportedFormat.XML_FILE, ncssParamsPoint,    "pointSubset.xml"    },
 
             { FeatureType.POINT,   "point.ncml",   SupportedFormat.NETCDF3,  ncssParamsAll,      "pointAll.nc"        },
+            { FeatureType.POINT,   "point.ncml",   SupportedFormat.NETCDF3,  ncssParamsPoint,    "pointSubset.nc"     },
 
             // Station
             { FeatureType.STATION, "station.ncml", SupportedFormat.CSV_FILE, ncssParamsAll,      "stationAll.csv"     },
@@ -104,6 +105,8 @@ public class DsgSubsetWriterTest {
             { FeatureType.STATION, "station.ncml", SupportedFormat.WATERML2, ncssParamsStation2, "stationSubset2.wml" },
 
             { FeatureType.STATION, "station.ncml", SupportedFormat.NETCDF3,  ncssParamsAll,      "stationAll.nc"      },
+            { FeatureType.STATION, "station.ncml", SupportedFormat.NETCDF3,  ncssParamsStation1, "stationSubset1.nc"  },
+            { FeatureType.STATION, "station.ncml", SupportedFormat.NETCDF3,  ncssParamsStation2, "stationSubset2.nc"  },
         });
     }
 

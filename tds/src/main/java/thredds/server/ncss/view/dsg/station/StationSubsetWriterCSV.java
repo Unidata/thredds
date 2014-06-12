@@ -73,7 +73,7 @@ public class StationSubsetWriterCSV extends AbstractStationSubsetWriter {
         for (VariableSimpleIF wantedVar : wantedVariables) {
             writer.print(',');
             Array dataArray = stationPointFeat.getData().getArray(wantedVar.getShortName());
-            writer.print(dataArray.toString());
+            writer.print(dataArray.toString().trim());
         }
         writer.println();
     }
