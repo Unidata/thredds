@@ -116,7 +116,7 @@ export JAVA_OPTS
   </li>
   <li>IOSPs
     <ul>
-      <li><a href="../netcdf-java/reference/netcdf4Clibrary.html#writing">Netcdf-4 writing</a> improved, default chunking</li>
+      <li><a href="../netcdf-java/reference/netcdf4Clibrary.html#writing">Netcdf-4 writing</a> improved, default chunking improved.</li>
       <li>GRIB: yet another rewrite of Grib Collections to allow scaling to very large collections.</li>
       <li>Improved HDF-EOS processing.</li>
       <li>CF 1.6 DSG: bug in handling station profiles, multidimensional representation [<a href="ftp://ftp.unidata.ucar.edu/pub/thredds/4.4/current/thredds.war">TDS-513</a>]</li>
@@ -138,6 +138,7 @@ Other Changes
 </ul>
 <h3>API changes</h3>
 <ul>
+  <li>Writing Netcdf-4 files with chunking: The <strong>Nc4Chunking</strong>&nbsp;object changed from package ucar.nc2.jni to package ucar.nc2.write. It was substantially rewritten, and the set of standard strategies has changed.</li>
   <li><strong>ucar.unidata.geoloc.ProjectionRect</strong> no longer extends <strong>java.awt.Rectangle2D</strong>. This is necessary to remove dependence of the core package on java.awt, which is not supported on Android. If you need to convert <strong>ProjectionRect</strong> into <strong>Rectangle2D</strong>, you can use:</li>
 </ul>
 <blockquote>
