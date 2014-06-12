@@ -301,37 +301,17 @@
        =========================================================== -->
   <build>
     <finalName>thredds</finalName>
-    <!-- 
-    	BINARY FILES MUST NEVER EVER EVER EVER BE FILTERED
-        Since binary data for general unit testing is in content/thredds/public 
-        we define two mutually exclusive resource sets. The first one contains everything but the public directory and is filtered
-        The second one only contains the public directory and is not filtered.
-        BINARY FILES MUST NEVER EVER EVER EVER BE FILTERED    
-    -->
-    <!-- resources>
-      <resource>
-        <filtering>false</filtering>
-        <directory>${basedir}/src/main/webapp</directory>
-      </resource>
-    </resources -->
 
+    <!-- BINARY FILES MUST NEVER EVER EVER EVER BE FILTERED -->
     <testResources>
        <testResource>
-         <filtering>true</filtering>
+         <filtering>false</filtering>
          <directory>${basedir}/src/test/resources</directory>
        </testResource>
        <testResource>
          <filtering>false</filtering>
          <directory>${basedir}/src/main/webapp</directory>
        </testResource>
-       <!-- testResource>
-         <filtering>false</filtering>
-         <directory>${basedir}/src/main/webapp/WEB-INF/classes</directory>
-         <includes>
-           <include>ValidationMessages.properties</include>
-           <include>log4j2.xml</include>
-         </includes>
-       </testResource -->
      </testResources>
 
     <plugins>

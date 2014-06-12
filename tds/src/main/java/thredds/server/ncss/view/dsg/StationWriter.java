@@ -145,11 +145,6 @@ public class StationWriter extends AbstractWriter {
       case NETCDF4:
         w = new WriterNetcdf(NetcdfFileWriter.Version.netcdf4, out);
         break;
-
-      case WATERML2:
-        w = new WriterWaterML2(out);
-        break;
-
       default:
         throw new UnsupportedResponseFormatException("Unknown result type = " + format.getFormatName());
     }
@@ -654,7 +649,7 @@ public class StationWriter extends AbstractWriter {
         public void act(PointFeature pf, StructureData sdata) throws IOException {
           if (!headerWritten) {
             try {
-              cfWriter.writeHeader(wantStations, wantVars, pf.getTimeUnit(), null);
+              cfWriter.writeHeader(wantStations, wantVars, pf.getTimeUnit(), "m"); // look - fake units
               headerWritten = true;
             } catch (IOException e) {
               log.error("WriterNetcdf.header", e);
@@ -923,35 +918,6 @@ public class StationWriter extends AbstractWriter {
           count++;
         }
       };
-    }
-  }
-
-  class WriterWaterML2 extends Writer {
-    private OutputStream out;
-
-    WriterWaterML2(OutputStream out) {
-      super(null);
-      this.out = out;
-    }
-
-    @Override void header() throws IOException { }
-
-    @Override Action getAction() {
-      return new Action() {
-        public void act(PointFeature pf, StructureData sdata) throws IOException {
-          out.write("WaterML2\n".getBytes());
-        }
-      };
-    }
-
-    @Override void trailer() throws IOException {
-      out.flush();
-    }
-
-    @Override HttpHeaders getHttpHeaders(String pathInfo) {
-      HttpHeaders httpHeaders = new HttpHeaders();
-      httpHeaders.set(ContentType.HEADER, ContentType.text.getContentHeader());
-      return httpHeaders;
     }
   }
 }

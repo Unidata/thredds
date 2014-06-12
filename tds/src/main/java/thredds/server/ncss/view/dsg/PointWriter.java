@@ -25,6 +25,7 @@ import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time.CalendarDateFormatter;
 import ucar.nc2.time.CalendarDateRange;
 import ucar.nc2.units.DateRange;
+import ucar.nc2.util.IO;
 import ucar.unidata.geoloc.EarthLocation;
 import ucar.unidata.geoloc.LatLonRect;
 import ucar.unidata.util.Format;
@@ -306,7 +307,7 @@ public class PointWriter extends AbstractWriter {
       netcdfResult = diskCache.createUniqueFile("ncssTemp", ".nc");
       List<Attribute> atts = new ArrayList<Attribute>();
       atts.add( new Attribute( CDM.TITLE, "Extracted data from TDS Feature Collection " + fd.getLocation() ));
-      cfWriter = new WriterCFPointCollection(null, netcdfResult.getAbsolutePath(), atts );
+      cfWriter = new WriterCFPointCollection(version, netcdfResult.getAbsolutePath(), atts );
     }
 
     HttpHeaders getHttpHeaders(String pathInfo) {
@@ -331,6 +332,8 @@ public class PointWriter extends AbstractWriter {
 
       try {
         cfWriter.finish();
+        IO.copyFileB(netcdfResult, out, 60000);  // Copy the file in to the OutputStream.
+        out.flush();
       } catch (IOException e) {
         log.error("WriterNetcdf.trailer", e);
       }

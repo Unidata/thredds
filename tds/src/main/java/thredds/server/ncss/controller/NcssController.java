@@ -47,7 +47,6 @@ import thredds.server.ncss.exception.UnsupportedResponseFormatException;
 import thredds.server.ncss.format.SupportedFormat;
 import thredds.server.ncss.format.SupportedOperation;
 import thredds.server.ncss.params.NcssParamsBean;
-import thredds.server.ncss.view.dsg.DsgSubsetWriterFactory;
 import thredds.util.Constants;
 import thredds.util.ContentType;
 import ucar.ma2.InvalidRangeException;
@@ -55,7 +54,6 @@ import ucar.nc2.NetcdfFileWriter;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.dt.grid.GridDataset;
 import ucar.nc2.ft.FeatureDataset;
-import ucar.nc2.ft.FeatureDatasetPoint;
 import ucar.nc2.util.DiskCache2;
 import ucar.nc2.util.IO;
 
@@ -208,11 +206,11 @@ public class NcssController extends AbstractNcssController {
     if (ft == FeatureType.GRID) {
       return GridAsPointResponder.factory(diskCache, format, out);
     } else if (ft == FeatureType.STATION) {
-//      return StationResponder.factory(fd, queryParams, diskCache, format, out);
-        return DsgSubsetWriterFactory.newInstance((FeatureDatasetPoint) fd, queryParams, diskCache, out, format);
+      return StationResponder.factory(fd, queryParams, diskCache, format, out);
+//        return DsgSubsetWriterFactory.newInstance((FeatureDatasetPoint) fd, queryParams, diskCache, out, format);
     } else if (ft == FeatureType.POINT) {
-//      return DsgResponder.factory(fd, queryParams, diskCache, format, out);
-        return DsgSubsetWriterFactory.newInstance((FeatureDatasetPoint) fd, queryParams, diskCache, out, format);
+      return DsgResponder.factory(fd, queryParams, diskCache, format, out);
+//        return DsgSubsetWriterFactory.newInstance((FeatureDatasetPoint) fd, queryParams, diskCache, out, format);
     } else {
         throw new AssertionError("CAN'T HAPPEN: Unrecognized feature type should have caused exception above.");
     }

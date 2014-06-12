@@ -1,5 +1,6 @@
 package thredds.server.ncss.view.dsg;
 
+import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
@@ -9,11 +10,16 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import thredds.server.ncss.format.SupportedFormat;
 import thredds.server.ncss.params.NcssParamsBean;
+import ucar.nc2.Attribute;
+import ucar.nc2.NetcdfFile;
+import ucar.nc2.Variable;
+import ucar.nc2.constants.CDM;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.ft.FeatureDataset;
 import ucar.nc2.ft.FeatureDatasetFactoryManager;
 import ucar.nc2.ft.FeatureDatasetPoint;
 import ucar.nc2.ogc.MarshallingUtil;
+import ucar.nc2.util.CompareNetcdf2;
 import ucar.nc2.util.DiskCache2;
 
 import java.io.*;
@@ -76,26 +82,28 @@ public class DsgSubsetWriterTest {
 
         return Arrays.asList(new Object[][] {
             // Point
-//            { FeatureType.POINT,   "point.ncml",   SupportedFormat.CSV_FILE, ncssParamsAll,      "pointAll.csv"       },
-//            { FeatureType.POINT,   "point.ncml",   SupportedFormat.CSV_FILE, ncssParamsPoint,    "pointSubset.csv"    },
-//
-//            { FeatureType.POINT,   "point.ncml",   SupportedFormat.XML_FILE, ncssParamsAll,      "pointAll.xml"       },
-//            { FeatureType.POINT,   "point.ncml",   SupportedFormat.XML_FILE, ncssParamsPoint,    "pointSubset.xml"    },
+            { FeatureType.POINT,   "point.ncml",   SupportedFormat.CSV_FILE, ncssParamsAll,      "pointAll.csv"       },
+            { FeatureType.POINT,   "point.ncml",   SupportedFormat.CSV_FILE, ncssParamsPoint,    "pointSubset.csv"    },
+
+            { FeatureType.POINT,   "point.ncml",   SupportedFormat.XML_FILE, ncssParamsAll,      "pointAll.xml"       },
+            { FeatureType.POINT,   "point.ncml",   SupportedFormat.XML_FILE, ncssParamsPoint,    "pointSubset.xml"    },
 
             { FeatureType.POINT,   "point.ncml",   SupportedFormat.NETCDF3,  ncssParamsAll,      "pointAll.nc"        },
 
             // Station
-//            { FeatureType.STATION, "station.ncml", SupportedFormat.CSV_FILE, ncssParamsAll,      "stationAll.csv"     },
-//            { FeatureType.STATION, "station.ncml", SupportedFormat.CSV_FILE, ncssParamsStation1, "stationSubset1.csv" },
-//            { FeatureType.STATION, "station.ncml", SupportedFormat.CSV_FILE, ncssParamsStation2, "stationSubset2.csv" },
-//
-//            { FeatureType.STATION, "station.ncml", SupportedFormat.XML_FILE, ncssParamsAll,      "stationAll.xml"     },
-//            { FeatureType.STATION, "station.ncml", SupportedFormat.XML_FILE, ncssParamsStation1, "stationSubset1.xml" },
-//            { FeatureType.STATION, "station.ncml", SupportedFormat.XML_FILE, ncssParamsStation2, "stationSubset2.xml" },
-//
-//            { FeatureType.STATION, "station.ncml", SupportedFormat.WATERML2, ncssParamsAll,      "stationAll.wml"     },
-//            { FeatureType.STATION, "station.ncml", SupportedFormat.WATERML2, ncssParamsStation1, "stationSubset1.wml" },
-//            { FeatureType.STATION, "station.ncml", SupportedFormat.WATERML2, ncssParamsStation2, "stationSubset2.wml" },
+            { FeatureType.STATION, "station.ncml", SupportedFormat.CSV_FILE, ncssParamsAll,      "stationAll.csv"     },
+            { FeatureType.STATION, "station.ncml", SupportedFormat.CSV_FILE, ncssParamsStation1, "stationSubset1.csv" },
+            { FeatureType.STATION, "station.ncml", SupportedFormat.CSV_FILE, ncssParamsStation2, "stationSubset2.csv" },
+
+            { FeatureType.STATION, "station.ncml", SupportedFormat.XML_FILE, ncssParamsAll,      "stationAll.xml"     },
+            { FeatureType.STATION, "station.ncml", SupportedFormat.XML_FILE, ncssParamsStation1, "stationSubset1.xml" },
+            { FeatureType.STATION, "station.ncml", SupportedFormat.XML_FILE, ncssParamsStation2, "stationSubset2.xml" },
+
+            { FeatureType.STATION, "station.ncml", SupportedFormat.WATERML2, ncssParamsAll,      "stationAll.wml"     },
+            { FeatureType.STATION, "station.ncml", SupportedFormat.WATERML2, ncssParamsStation1, "stationSubset1.wml" },
+            { FeatureType.STATION, "station.ncml", SupportedFormat.WATERML2, ncssParamsStation2, "stationSubset2.wml" },
+
+            { FeatureType.STATION, "station.ncml", SupportedFormat.NETCDF3,  ncssParamsAll,      "stationAll.nc"      },
         });
     }
 
@@ -116,40 +124,56 @@ public class DsgSubsetWriterTest {
 
     @Test
     public void testWrite() throws Exception {
-        FeatureDatasetPoint fdPoint = openPointDataset(wantedType, datasetFile);
-        InputStream expectedInputStream = getClass().getResourceAsStream(expectedResultResource);
+        File expectedResultFile = new File(getClass().getResource(expectedResultResource).toURI());
+
+        String basename = FilenameUtils.getBaseName(expectedResultResource);
+        String extension = FilenameUtils.getExtension(expectedResultResource);
+        File actualResultFile = File.createTempFile(basename + "_", "." + extension);
 
         try {
-            ByteArrayOutputStream actualOutputStream = new ByteArrayOutputStream();
-            DsgSubsetWriter subsetWriter = DsgSubsetWriterFactory.newInstance(
-                    fdPoint, ncssParams, diskCache, actualOutputStream, format);
-            subsetWriter.write();
-
-//            DsgSubsetWriter subsetWriterConsole = DsgSubsetWriterFactory.newInstance(
-//                    fdPoint, ncssParams, diskCache, System.out, format);
-//            subsetWriterConsole.write();
-
-            File outFile = new File("C:/Users/cwardgar/Desktop/out.nc");
-            try (OutputStream outFileStream = new BufferedOutputStream(new FileOutputStream(outFile))) {
+            try (   FeatureDatasetPoint fdPoint = openPointDataset(wantedType, datasetFile);
+                    OutputStream outFileStream = new BufferedOutputStream(new FileOutputStream(actualResultFile))) {
                 DsgSubsetWriter subsetWriterFile = DsgSubsetWriterFactory.newInstance(
                         fdPoint, ncssParams, diskCache, outFileStream, format);
                 subsetWriterFile.write();
             }
 
-            ByteArrayInputStream actualInputStream = new ByteArrayInputStream(actualOutputStream.toByteArray());
-
-            if (format.isBinary()) {
-                // Perform binary comparison.
-                Assert.assertTrue(IOUtils.contentEquals(expectedInputStream, actualInputStream));
+            // outFileStream must be closed before we compare actualResultFile.
+            // That happens at the end of the try block above.
+            if (format == SupportedFormat.NETCDF3 || format == SupportedFormat.NETCDF4) {
+                Assert.assertTrue(compareNetCDF(expectedResultFile, actualResultFile));
             } else {
-                // Perform text comparison.
-                Reader expectedReader = new InputStreamReader(expectedInputStream, "UTF-8");
-                Reader actualReader   = new InputStreamReader(actualInputStream,   "UTF-8");
-                Assert.assertTrue(IOUtils.contentEqualsIgnoreEOL(expectedReader, actualReader));
+                Assert.assertTrue(compareText(expectedResultFile, actualResultFile));
             }
         } finally {
-            expectedInputStream.close();
-            fdPoint.close();
+            actualResultFile.delete();
+        }
+    }
+
+    public static boolean compareNetCDF(File expectedResultFile, File actualResultFile) throws IOException {
+        try (   NetcdfFile expectedNcFile = NetcdfFile.open(expectedResultFile.getAbsolutePath());
+                NetcdfFile actualNcFile   = NetcdfFile.open(actualResultFile.getAbsolutePath())) {
+            CompareNetcdf2 comparator = new CompareNetcdf2();
+            return comparator.compare(expectedNcFile, actualNcFile, new NcssNetcdfObjFilter(), false, false, true);
+        }
+    }
+
+    private static class NcssNetcdfObjFilter implements CompareNetcdf2.ObjFilter {
+        @Override
+        public boolean attCheckOk(Variable v, Attribute att) {
+            return !att.getShortName().equals(CDM.TITLE);  // Ignore CDM.TITLE
+        }
+
+        @Override
+        public boolean varDataTypeCheckOk(Variable v) {
+            return true;  // Check all variables.
+        }
+    }
+
+    public static boolean compareText(File expectedResultFile, File actualResultFile) throws IOException {
+        try (   BufferedReader actualReader   = new BufferedReader(new FileReader(actualResultFile));
+                BufferedReader expectedReader = new BufferedReader(new FileReader(expectedResultFile))) {
+            return IOUtils.contentEqualsIgnoreEOL(expectedReader, actualReader);
         }
     }
 
