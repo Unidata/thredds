@@ -922,14 +922,14 @@ public class StringUtil2 {
   }
 
   public static void main(String[] args) throws UnsupportedEncodingException {
-    String org = "GetCapabilitiesa84a4%253ca%2520xmlns%253aa%253d%2527http%253a%252f%252fwww%252ew3%252eorg%252f1999%252fxhtml%2527%253e%253ca%253abody%2520onload%253d%2527alert%25281%2529%2527%252f%253e%253c%252fa%253e77bfd";
+    String org = "http://dataserver.nccs.nasa.gov/thredds/ncss/grid/nex/netcdf/pr_amon_BCSD_rcp85_r1i1p1_CONUS_CESM1-CAM5_207101-207512.nc?var=pr&latitude=48.9983&longitude=247.212&time_start=2071-01-01T00%3A00%3A00Z&time_end=2072-01-01T00%3A00%3A00Z&timeStride=1&accept=csv";
     System.out.printf("org = '%s'%n",org );
     String unescapedQuery = EscapeStrings.unescapeURLQuery(org);
-    //System.out.printf("unescapedQuery = '%s'%n",unescapedQuery );
+    System.out.printf(" EscapeStrings.unescapeURLQuery(org) = '%s'%n%n",unescapedQuery );
     String decodedQuery = URLDecoder.decode(org, "UTF-8");
     System.out.printf("decodedQuery = '%s'%n",decodedQuery );
     String decodedQuery2 = URLDecoder.decode(decodedQuery, "UTF-8");
-    System.out.printf("decodedQuery2 = '%s'%n", decodedQuery2 );
+    System.out.printf("decodedQuery^2 = '%s'%n", decodedQuery2 );
   }
 
 
