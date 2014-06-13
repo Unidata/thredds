@@ -19,6 +19,7 @@ public final class FormatsAvailabilityService {
         formatsAvailability.put(SupportedFormat.CSV_STREAM, true);
         formatsAvailability.put(SupportedFormat.NETCDF3, true);
         formatsAvailability.put(SupportedFormat.NETCDF4, false);
+        formatsAvailability.put(SupportedFormat.NETCDF4EXT, false);
         formatsAvailability.put(SupportedFormat.WKT, true);
         formatsAvailability.put(SupportedFormat.JSON, true);
         formatsAvailability.put(SupportedFormat.WATERML2, true);

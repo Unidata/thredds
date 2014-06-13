@@ -49,6 +49,8 @@ public enum SupportedFormat {
 	
 	NETCDF3("netcdf", false,  ContentType.netcdf.toString(), "netcdf"),
 	NETCDF4("netcdf4", false,  ContentType.netcdf4.toString(), "netcdf4"),
+    NETCDF4EXT("netcdf4ext", false, ContentType.netcdf4.toString(), "netcdf4ext"),
+
 	JSON("json", false, ContentType.json.toString(), "json", "geojson"),
 	WKT("wkt", false, ContentType.text.toString(), "wkt"),
 

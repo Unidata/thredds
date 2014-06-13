@@ -32,33 +32,30 @@
 
 package ucar.nc2.ft.point.writer;
 
-import ucar.nc2.VariableSimpleIF;
+import org.jdom2.Document;
+import org.jdom2.Element;
+import org.jdom2.output.Format;
+import org.jdom2.output.XMLOutputter;
+import ucar.ma2.DataType;
 import ucar.nc2.Attribute;
 import ucar.nc2.Dimension;
+import ucar.nc2.VariableSimpleIF;
 import ucar.nc2.constants.CDM;
-import ucar.nc2.ncml.NcMLWriter;
-import ucar.nc2.ncml.NcMLReader;
-import ucar.nc2.ft.*;
 import ucar.nc2.constants.FeatureType;
+import ucar.nc2.ft.*;
+import ucar.nc2.ncml.NcMLReader;
+import ucar.nc2.ncml.NcMLWriter;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time.CalendarDateFormatter;
 import ucar.nc2.time.CalendarDateRange;
-import ucar.nc2.units.DateRange;
-import ucar.nc2.units.TimeDuration;
+import ucar.unidata.geoloc.LatLonPointImpl;
 import ucar.unidata.geoloc.LatLonRect;
 import ucar.unidata.geoloc.Station;
-import ucar.unidata.geoloc.LatLonPointImpl;
-import ucar.ma2.DataType;
 
-import org.jdom2.output.XMLOutputter;
-import org.jdom2.output.Format;
-import org.jdom2.Document;
-import org.jdom2.Element;
-
-import java.io.OutputStream;
-import java.io.IOException;
-import java.io.FileOutputStream;
 import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStream;
 import java.util.*;
 
 /**
@@ -207,7 +204,7 @@ public class FeatureDatasetPointXML {
     elem.addContent(new Element("accept").addContent("xml").setAttribute("displayName", "xml"));
     elem.addContent(new Element("accept").addContent("text/xml").setAttribute("displayName", "xml (file)"));
     elem.addContent(new Element("accept").addContent("waterml2").setAttribute("displayName", "WaterML 2.0"));
-    elem.addContent(new Element("accept").addContent("netcdf").setAttribute("displayName", "netcdf"));
+    elem.addContent(new Element("accept").addContent("netcdf").setAttribute("displayName", "CF/NetCDF-3"));
     //elem.addContent(new Element("accept").addContent("ncstream"));
     rootElem.addContent(elem);
 
