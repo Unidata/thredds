@@ -26,6 +26,7 @@ edited 05/28/2013
    -  Go back to the CMD/TDS project's configuration page, "Source Code Management"
     - Update "Branches to build" to new branch, eg "target-{next}"
     - Delete "Checkout/merge to local branch"
+    - Check "Branches to build" now refers to the new one
     - Save
 
 4. Git (ONLY IF THIS IS STABLE RELEASE)

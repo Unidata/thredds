@@ -153,7 +153,7 @@ public class WriterCFPointCollection extends CFPointWriter {
       super.writeStructureData(origin, sdata);
 
       if (isExtendedModel) {
-        throw new RuntimeException("extended model not working yet");
+        // throw new RuntimeException("extended model not working yet");
 
       } else {
         writer.write(time, origin, timeArray);

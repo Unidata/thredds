@@ -127,6 +127,20 @@ public abstract class Grib1Gds {
     return data;
   }
 
+  public int getNpts() {
+
+	  if (nptsInLine != null) {
+		  int npts = 0;
+		  for (int pts : nptsInLine) {
+			  npts += pts;
+		  }
+		  return npts;
+	  } else {
+		  return nx * ny;
+	  }
+
+  }
+
   public int[] getNptsInLine() {
     return nptsInLine;
   }
