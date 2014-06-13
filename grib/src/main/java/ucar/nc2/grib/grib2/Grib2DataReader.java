@@ -1,40 +1,40 @@
 /*
- * Copyright (c) 1998 - 2011. University Corporation for Atmospheric Research/Unidata
- * Portions of this software were developed by the Unidata Program at the
- * University Corporation for Atmospheric Research.
+ * Copyright 1998-2014 University Corporation for Atmospheric Research/Unidata
  *
- * Access and use of this software shall impose the following obligations
- * and understandings on the user. The user is granted the right, without
- * any fee or cost, to use, copy, modify, alter, enhance and distribute
- * this software, and any derivative works thereof, and its supporting
- * documentation for any purpose whatsoever, provided that this entire
- * notice appears in all copies of the software, derivative works and
- * supporting documentation.  Further, UCAR requests that the user credit
- * UCAR/Unidata in any publications that result from the use of this
- * software or in any product that includes this software. The names UCAR
- * and/or Unidata, however, may not be used in any advertising or publicity
- * to endorse or promote any products or commercial entity unless specific
- * written permission is obtained from UCAR/Unidata. The user also
- * understands that UCAR/Unidata is not obligated to provide the user with
- * any support, consulting, training or assistance of any kind with regard
- * to the use, operation and performance of this software nor to provide
- * the user with any updates, revisions, new versions or "bug fixes."
+ *   Portions of this software were developed by the Unidata Program at the
+ *   University Corporation for Atmospheric Research.
  *
- * THIS SOFTWARE IS PROVIDED BY UCAR/UNIDATA "AS IS" AND ANY EXPRESS OR
- * IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
- * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
- * DISCLAIMED. IN NO EVENT SHALL UCAR/UNIDATA BE LIABLE FOR ANY SPECIAL,
- * INDIRECT OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING
- * FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT,
- * NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
- * WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
+ *   Access and use of this software shall impose the following obligations
+ *   and understandings on the user. The user is granted the right, without
+ *   any fee or cost, to use, copy, modify, alter, enhance and distribute
+ *   this software, and any derivative works thereof, and its supporting
+ *   documentation for any purpose whatsoever, provided that this entire
+ *   notice appears in all copies of the software, derivative works and
+ *   supporting documentation.  Further, UCAR requests that the user credit
+ *   UCAR/Unidata in any publications that result from the use of this
+ *   software or in any product that includes this software. The names UCAR
+ *   and/or Unidata, however, may not be used in any advertising or publicity
+ *   to endorse or promote any products or commercial entity unless specific
+ *   written permission is obtained from UCAR/Unidata. The user also
+ *   understands that UCAR/Unidata is not obligated to provide the user with
+ *   any support, consulting, training or assistance of any kind with regard
+ *   to the use, operation and performance of this software nor to provide
+ *   the user with any updates, revisions, new versions or "bug fixes."
+ *
+ *   THIS SOFTWARE IS PROVIDED BY UCAR/UNIDATA "AS IS" AND ANY EXPRESS OR
+ *   IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ *   WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ *   DISCLAIMED. IN NO EVENT SHALL UCAR/UNIDATA BE LIABLE FOR ANY SPECIAL,
+ *   INDIRECT OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING
+ *   FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT,
+ *   NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
+ *   WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
 package ucar.nc2.grib.grib2;
 
 import ucar.jpeg.jj2000.j2k.decoder.Grib2JpegDecoder;
 import ucar.nc2.grib.GribNumbers;
-import ucar.nc2.grib.QuasiRegular;
 import ucar.nc2.iosp.BitReader;
 import ucar.unidata.io.RandomAccessFile;
 
@@ -104,6 +104,9 @@ public class Grib2DataReader {
       case 40:
         data = getData40(raf, (Grib2Drs.Type40) gdrs);
         break;
+      case 50002:
+	    data = getData50002(raf, (Grib2Drs.Type50002) gdrs);
+	    break;
       default:
         throw new UnsupportedOperationException("Unsupported DRS type = " + dataTemplate);
     }
@@ -121,7 +124,7 @@ public class Grib2DataReader {
   float getMissingValue(Grib2Drs.Type2 gdrs) {
     int mvm = gdrs.missingValueManagement;
 
-    float mv = Float.NaN;
+    float mv;
     if (staticMissingValueInUse || mvm == 0) {
       mv = Float.NaN;
     } else if (mvm == 1) {
@@ -224,7 +227,7 @@ public class Grib2DataReader {
     float DD = (float) java.lang.Math.pow((double) 10, (double) D);
     float R = gdrs.referenceValue;
     int E = gdrs.binaryScaleFactor;
-    float EE = (float) java.lang.Math.pow((double) 2.0, (double) E);
+    float EE = (float) java.lang.Math.pow( 2.0, (double) E);
 
     float[] data = new float[totalNPoints];
 
@@ -407,7 +410,7 @@ public class Grib2DataReader {
     float DD = (float) java.lang.Math.pow((double) 10, (double) D);
     float R = gdrs.referenceValue;
     int E = gdrs.binaryScaleFactor;
-    float EE = (float) java.lang.Math.pow((double) 2.0, (double) E);
+    float EE = (float) java.lang.Math.pow( 2.0, (double) E);
 
     float[] data = new float[totalNPoints];
 
@@ -565,7 +568,7 @@ public class Grib2DataReader {
     float DD = (float) java.lang.Math.pow((double) 10, (double) D);
     float R = gdrs.referenceValue;
     int E = gdrs.binaryScaleFactor;
-    float EE = (float) java.lang.Math.pow((double) 2.0, (double) E);
+    float EE = (float) java.lang.Math.pow( 2.0, (double) E);
 
     Grib2JpegDecoder g2j = null;
     try {
@@ -598,8 +601,7 @@ public class Grib2DataReader {
           data[i] = R;
       } else if (bitmap == null) {
         if (g2j.data.length != dataNPoints) {
-          data = null;
-          return data;
+          return null;
         }
         for (int i = 0; i < dataNPoints; i++) {
           // Y * 10^D = R + (X1 + X2) * 2^E ; // regulation 92.9.4
@@ -626,6 +628,122 @@ public class Grib2DataReader {
       }
       return data;
     }
+  }
+
+    // by jkaehler@meteomatics.com
+  // ported from https://github.com/erdc-cm/grib_api/blob/master/src/grib_accessor_class_data_g1second_order_general_extended_packing.c
+  public float[] getData50002(RandomAccessFile raf, Grib2Drs.Type50002 gdrs) throws IOException {
+
+		BitReader reader;
+
+		reader = new BitReader(raf, startPos+5);
+		int[] groupWidth = new int[gdrs.p1];
+		for (int i = 0; i < gdrs.p1; i++) {
+			groupWidth[i] = (int) reader.bits2UInt(gdrs.widthOfWidth);
+//			System.out.println("groupWidths["+i+"]="+groupWidth[i]);
+		}
+
+		reader = new BitReader(raf, raf.getFilePointer());
+		int[] groupLength = new int[gdrs.p1];
+		for (int i = 0; i < gdrs.p1; i++) {
+			groupLength[i] = (int) reader.bits2UInt(gdrs.widthOfLength);
+//			System.out.println("groupLengths["+i+"]="+groupLength[i]);
+		}
+
+		reader = new BitReader(raf, raf.getFilePointer());
+		int[] firstOrderValues = new int[gdrs.p1];
+		for (int i = 0; i < gdrs.p1; i++) {
+			firstOrderValues[i] = (int) reader.bits2UInt(gdrs.widthOfFirstOrderValues);
+//			System.out.println("firstOrderValues["+i+"]="+firstOrderValues[i]);
+		}
+
+//		System.out.println(gdrs);
+
+		int bias = 0;
+		if (gdrs.orderOfSPD > 0) {
+			  bias=gdrs.spd[gdrs.orderOfSPD];
+		}
+
+		reader = new BitReader(raf, raf.getFilePointer());
+		int cnt = gdrs.orderOfSPD;
+		int[] data = new int[totalNPoints];
+		for (int i=0; i < gdrs.p1; i++) {
+			if (groupWidth[i] > 0) {
+
+				for (int j=0; j < groupLength[i]; j++) {
+					data[cnt]=(int) reader.bits2UInt(groupWidth[i]);
+//					System.out.println("secondOrderValues["+cnt+"]="+data[cnt]);
+					data[cnt]+=firstOrderValues[i];
+					cnt++;
+				}
+
+			} else {
+
+				for (int j=0; j < groupLength[i]; j++) {
+					data[cnt]=firstOrderValues[i];
+					cnt++;
+				}
+
+			}
+
+		}
+
+		for (int i=0; i < gdrs.orderOfSPD; i++) {
+			data[i]=gdrs.spd[i];
+		}
+
+		int y, z, w;
+		switch (gdrs.orderOfSPD) {
+		case 1:
+			y=data[0];
+			for (int i = 1; i < totalNPoints; i++) {
+				y+=data[i]+bias;
+				data[i]=y;
+			}
+
+			break;
+		case 2:
+			y=data[1]-data[0];
+			z=data[1];
+			for (int i = 2; i < totalNPoints; i++) {
+				y+=data[i]+bias;
+				z+=y;
+				data[i]=z;
+//                System.out.println("i="+i+" X[i]="+data[i]+" y="+y+" z="+z+" bias="+bias);
+			}
+
+			break;
+		case 3:
+			y=data[2]-data[1];
+			z=y-(data[1]-data[0]);
+			w=data[2];
+			for (int i = 3; i < totalNPoints; i++) {
+				z+=data[i]+bias;
+				y+=z;
+				w+=y;
+				data[i]=w;
+			}
+
+			break;
+		}
+
+		int D = gdrs.decimalScaleFactor;
+		float DD = (float) java.lang.Math.pow((double) 10, (double) D);
+		float R = gdrs.referenceValue;
+		int E = gdrs.binaryScaleFactor;
+		float EE = (float) java.lang.Math.pow( 2.0, (double) E);
+
+//	    for (int i = 0; i < totalNPoints; i++) {
+//	        System.out.println(i+"="+data[i]);
+//	    }
+
+		float[] ret = new float[totalNPoints];
+		for (int i=0; i < totalNPoints; i++) {
+			ret[i] = (((data[i]*EE)+R)*DD);
+		}
+
+		return ret;
+
   }
 
   /*

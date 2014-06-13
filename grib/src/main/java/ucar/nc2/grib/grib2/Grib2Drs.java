@@ -1,38 +1,40 @@
 /*
- * Copyright (c) 1998 - 2011. University Corporation for Atmospheric Research/Unidata
- * Portions of this software were developed by the Unidata Program at the
- * University Corporation for Atmospheric Research.
+ * Copyright 1998-2014 University Corporation for Atmospheric Research/Unidata
  *
- * Access and use of this software shall impose the following obligations
- * and understandings on the user. The user is granted the right, without
- * any fee or cost, to use, copy, modify, alter, enhance and distribute
- * this software, and any derivative works thereof, and its supporting
- * documentation for any purpose whatsoever, provided that this entire
- * notice appears in all copies of the software, derivative works and
- * supporting documentation.  Further, UCAR requests that the user credit
- * UCAR/Unidata in any publications that result from the use of this
- * software or in any product that includes this software. The names UCAR
- * and/or Unidata, however, may not be used in any advertising or publicity
- * to endorse or promote any products or commercial entity unless specific
- * written permission is obtained from UCAR/Unidata. The user also
- * understands that UCAR/Unidata is not obligated to provide the user with
- * any support, consulting, training or assistance of any kind with regard
- * to the use, operation and performance of this software nor to provide
- * the user with any updates, revisions, new versions or "bug fixes."
+ *   Portions of this software were developed by the Unidata Program at the
+ *   University Corporation for Atmospheric Research.
  *
- * THIS SOFTWARE IS PROVIDED BY UCAR/UNIDATA "AS IS" AND ANY EXPRESS OR
- * IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
- * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
- * DISCLAIMED. IN NO EVENT SHALL UCAR/UNIDATA BE LIABLE FOR ANY SPECIAL,
- * INDIRECT OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING
- * FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT,
- * NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
- * WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
+ *   Access and use of this software shall impose the following obligations
+ *   and understandings on the user. The user is granted the right, without
+ *   any fee or cost, to use, copy, modify, alter, enhance and distribute
+ *   this software, and any derivative works thereof, and its supporting
+ *   documentation for any purpose whatsoever, provided that this entire
+ *   notice appears in all copies of the software, derivative works and
+ *   supporting documentation.  Further, UCAR requests that the user credit
+ *   UCAR/Unidata in any publications that result from the use of this
+ *   software or in any product that includes this software. The names UCAR
+ *   and/or Unidata, however, may not be used in any advertising or publicity
+ *   to endorse or promote any products or commercial entity unless specific
+ *   written permission is obtained from UCAR/Unidata. The user also
+ *   understands that UCAR/Unidata is not obligated to provide the user with
+ *   any support, consulting, training or assistance of any kind with regard
+ *   to the use, operation and performance of this software nor to provide
+ *   the user with any updates, revisions, new versions or "bug fixes."
+ *
+ *   THIS SOFTWARE IS PROVIDED BY UCAR/UNIDATA "AS IS" AND ANY EXPRESS OR
+ *   IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ *   WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ *   DISCLAIMED. IN NO EVENT SHALL UCAR/UNIDATA BE LIABLE FOR ANY SPECIAL,
+ *   INDIRECT OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING
+ *   FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT,
+ *   NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
+ *   WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
 package ucar.nc2.grib.grib2;
 
 import ucar.nc2.grib.GribNumbers;
+import ucar.nc2.iosp.BitReader;
 import ucar.unidata.io.RandomAccessFile;
 
 import java.io.IOException;
@@ -54,7 +56,8 @@ public class Grib2Drs {
         return new Type3(raf);
       case 40:
         return new Type40(raf);
-
+      case 50002: // ECMWF's second order packing
+    	return new Type50002(raf);
       default:
         throw new UnsupportedOperationException("Unsupported DRS type = " + template);
     }
@@ -299,6 +302,142 @@ public class Grib2Drs {
       int result = super.hashCode();
       result = 31 * result + compressionMethod;
       result = 31 * result + compressionRatio;
+      return result;
+    }
+  }
+
+  public static class Type50002 extends Grib2Drs {
+	    public float referenceValue;
+	    public int binaryScaleFactor, decimalScaleFactor, numberOfBits;
+	    public int p1, p2;
+	    public int widthOfFirstOrderValues, widthOfWidth, widthOfLength;
+	    public int boustrophonic, orderOfSPD, widthOfSPD;
+	    public int[] spd;
+	    public int lengthOfSection6, section6;
+	    public int bitMapIndicator;
+	    public int lengthOfSection7, section7;
+
+	    Type50002(RandomAccessFile raf) throws IOException {
+	      // according to https://github.com/erdc-cm/grib_api/blob/master/definitions/grib2/template.5.50002.def
+	      this.referenceValue = raf.readFloat();
+	      this.binaryScaleFactor = GribNumbers.int2(raf);
+	      this.decimalScaleFactor = GribNumbers.int2(raf);
+	      this.numberOfBits = raf.read();
+	      this.widthOfFirstOrderValues = raf.read();
+	      this.p1 = GribNumbers.int4(raf);
+	      this.p2 = GribNumbers.int4(raf);
+	      this.widthOfWidth = raf.read();
+	      this.widthOfLength = raf.read();
+	      this.boustrophonic = raf.read();
+	      this.orderOfSPD = raf.read();
+	      this.widthOfSPD = raf.read();
+	      this.spd = new int[orderOfSPD+1];
+	      BitReader bitReader = new BitReader(raf, raf.getFilePointer());
+	      for (int i = 0; i < orderOfSPD; i++) {
+/*
+ 	    	  int myInt = raf.read();
+	    	  System.out.println("spd["+i+"]="+myInt+" 0x"+Integer.toHexString(myInt)+" 0b"+Integer.toBinaryString(myInt)+" widthOfSPD="+widthOfSPD);
+	    	  myInt = raf.read();
+	    	  System.out.println("spd["+i+"]="+myInt+" 0x"+Integer.toHexString(myInt)+" 0b"+Integer.toBinaryString(myInt)+" widthOfSPD="+widthOfSPD);
+/**/
+		     this.spd[i] = (int) bitReader.bits2UInt(widthOfSPD);
+	      }
+	      this.spd[orderOfSPD] = (int) bitReader.bits2SInt(widthOfSPD);
+	      this.lengthOfSection6 = GribNumbers.int4(raf);
+	      this.section6 = raf.read();
+	      this.bitMapIndicator = raf.read();
+	      this.lengthOfSection7 = GribNumbers.int4(raf);
+	      this.section7 = raf.read();
+	    }
+
+	    @Override
+	    public int getNBits() {
+	      return numberOfBits;
+	    }
+
+	    @Override
+	    public String toString() {
+	      final StringBuilder sb = new StringBuilder();
+	      sb.append("Type50002");
+	      sb.append("{\n\treferenceValue=").append(referenceValue);
+	      sb.append(",\n\tbinaryScaleFactor=").append(binaryScaleFactor);
+	      sb.append(",\n\tdecimalScaleFactor=").append(decimalScaleFactor);
+	      sb.append(",\n\tnumberOfBits=").append(numberOfBits);
+	      sb.append(",\n\twidthOfFirstOrderValues=").append(widthOfFirstOrderValues);
+	      sb.append(",\n\tp1=").append(p1);
+	      sb.append(",\n\tp2=").append(p2);
+	      sb.append(",\n\twidthOfWidth=").append(widthOfWidth);
+	      sb.append(",\n\twidthOfLength=").append(widthOfLength);
+	      sb.append(",\n\tboustrophonic=").append(boustrophonic);
+	      sb.append(",\n\torderOfSPD=").append(orderOfSPD);
+	      sb.append(",\n\twidthOfSPD=").append(widthOfSPD);
+	      sb.append(",\n\tspd=");
+	      for (float i : spd) {
+	    	  sb.append(i).append(",");
+	      }
+	      sb.deleteCharAt(sb.length()-1);
+	      sb.append(",\n\tlengthOfSection6=").append(lengthOfSection6);
+	      sb.append(",\n\tsection6=").append(section6);
+	      sb.append(",\n\tbitMapIndicator=").append(bitMapIndicator);
+	      sb.append(",\n\tlengthOfSection7=").append(lengthOfSection7);
+	      sb.append(",\n\tsection7=").append(section7);
+	      sb.append("\n}");
+	      return sb.toString();
+	    }
+
+	    @Override
+	    public boolean equals(Object o) {
+	      if (this == o) return true;
+	      if (o == null || getClass() != o.getClass()) return false;
+
+	      Type50002 type50002 = (Type50002) o;
+
+	      if (Float.compare(type50002.referenceValue, referenceValue) != 0) return false;
+	      if (binaryScaleFactor != type50002.binaryScaleFactor) return false;
+	      if (decimalScaleFactor != type50002.decimalScaleFactor) return false;
+	      if (numberOfBits != type50002.numberOfBits) return false;
+	      if (widthOfFirstOrderValues != type50002.widthOfFirstOrderValues) return false;
+	      if (p1 != type50002.p1) return false;
+	      if (p2 != type50002.p2) return false;
+	      if (widthOfWidth != type50002.widthOfWidth) return false;
+	      if (widthOfLength != type50002.widthOfLength) return false;
+	      if (boustrophonic != type50002.boustrophonic) return false;
+	      if (orderOfSPD != type50002.orderOfSPD) return false;
+	      if (widthOfSPD != type50002.widthOfSPD) return false;
+	      for (int i = 0; i < spd.length; i++) {
+	    	  if (spd[i] != type50002.spd[i]) return false;
+	      }
+	      if (lengthOfSection6 != type50002.lengthOfSection6) return false;
+	      if (section6 != type50002.section6) return false;
+	      if (bitMapIndicator != type50002.bitMapIndicator) return false;
+	      if (lengthOfSection7 != type50002.lengthOfSection7) return false;
+	      if (section7 != type50002.section7) return false;
+
+	      return true;
+	    }
+
+	    @Override
+	    public int hashCode() {
+	      int result = (referenceValue != +0.0f ? Float.floatToIntBits(referenceValue) : 0);
+	      result = 31 * result + binaryScaleFactor;
+	      result = 31 * result + decimalScaleFactor;
+	      result = 31 * result + numberOfBits;
+	      result = 31 * result + widthOfFirstOrderValues;
+	      result = 31 * result + p1;
+	      result = 31 * result + p2;
+	      result = 31 * result + widthOfWidth;
+	      result = 31 * result + widthOfLength;
+	      result = 31 * result + boustrophonic;
+	      result = 31 * result + orderOfSPD;
+	      result = 31 * result + widthOfSPD;
+	      for (int i = 0; i < spd.length; i++) {
+	    	  result = 31 * result + spd[i];
+	      }
+	      result = 31 * result + lengthOfSection6;
+	      result = 31 * result + section6;
+	      result = 31 * result + section6;
+	      result = 31 * result + lengthOfSection7;
+	      result = 31 * result + section7;
       return result;
     }
   }
