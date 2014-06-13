@@ -53,7 +53,7 @@ import java.util.*;
  */
 public class CollectionGlob extends CollectionAbstract {
   PathMatcher matcher;
-  boolean debug = true;
+  boolean debug = false;
   int depth = 0;
 
   public CollectionGlob(String collectionName, String glob, Logger logger) {

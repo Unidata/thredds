@@ -217,7 +217,7 @@ public class RadarDatasetCollection {
             Collections.sort(times, new CompareKeyDescend());
             hhmm.put(sb.toString(), times);
             if (log.isDebugEnabled()) log.debug("RadarDayCollections {} added stn={} days={} hours={}", tdir, stn, days.size(), times.size());
-            System.out.printf("RadarDayCollections %s added stn=%s days=%d hours=%d%n", tdir, stn, days.size(), times.size());
+            // System.out.printf("RadarDayCollections %s added stn=%s days=%d hours=%d%n", tdir, stn, days.size(), times.size());
           }
         }
       }
@@ -256,7 +256,7 @@ public class RadarDatasetCollection {
     StringBuffer sb = new StringBuffer( tdir );
     sb.append( "/").append( child );
     RadarDayCollection dayCollection = new RadarDayCollection().read( sb.toString() );
-    System.out.printf("readRadarDayCollection = %s%n", sb);
+    //System.out.printf("readRadarDayCollection = %s%n", sb);
     if( dayCollection == null )
       return false ;
     this.standardName = dayCollection.standardName;

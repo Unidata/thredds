@@ -79,7 +79,7 @@ public class BufrConfig {
   private Map<String, BufrStation> map;
   private long start = Long.MAX_VALUE;
   private long end = Long.MIN_VALUE;
-  private boolean debug = true;
+  private boolean debug = false;
 
   /*
    * Open file as a stream of BUFR messages, create config file.
