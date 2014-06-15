@@ -5,16 +5,15 @@
 <parent>
   <groupId>edu.ucar</groupId>
   <artifactId>thredds-parent</artifactId>
-  <version>4.5.2-SNAPSHOT</version>
+  <version>4.5.1-SNAPSHOT</version>
   <relativePath>../../pom.xml</relativePath>
 </parent>
 
 <artifactId>d4servlet</artifactId>
 <packaging>jar</packaging>
-
 <dependencies>
-
   <dependency>
+
     <groupId>${project.groupId}</groupId>
     <artifactId>d4core</artifactId>
   </dependency>

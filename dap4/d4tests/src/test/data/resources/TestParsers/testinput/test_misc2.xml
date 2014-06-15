@@ -2,7 +2,6 @@
          name="test_atomic_array.nc"
          dapVersion="4.0"
          dmrVersion="1.0"
-         base="F:/svn/opuls/d4ts/src/test/data/resources/testfiles/test_atomic_array.nc"
          ns="http://xml.opendap.org/ns/DAP/4.0#">
     <Byte name="vu8">
         <Dim name="/d2"/>

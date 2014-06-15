@@ -5,11 +5,9 @@
 package dap4.dap4shared;
 
 import dap4.core.data.*;
-import dap4.core.dmr.DapStructure;
 import dap4.core.dmr.DapVariable;
 import dap4.core.util.*;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 

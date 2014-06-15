@@ -1,17 +1,17 @@
 package dap4.test;
 
+import dap4.core.util.DapException;
 import dap4.servlet.CDMDSP;
-import dap4.test.util.UnitTestCommon;
+import dap4.test.util.DapTestCommon;
 import ucar.nc2.dataset.NetcdfDataset;
 
 import java.io.*;
 import java.math.BigInteger;
 import java.nio.ByteOrder;
-import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
 
-public class TestNc4Iosp extends UnitTestCommon
+public class TestNc4Iosp extends DapTestCommon
 {
     static protected final boolean DEBUG = false;
 
@@ -24,13 +24,21 @@ public class TestNc4Iosp extends UnitTestCommon
     //////////////////////////////////////////////////
     // Constants
 
-    static protected String DATADIR = "tests/src/test/data"; // relative to opuls root
+    static protected String DATADIR = "d4tests/src/test/data"; // relative to dap4 root
     static protected String TESTDATADIR = DATADIR + "/resources/";
     static protected String BASELINEDIR = DATADIR + "/resources/TestIosp/baseline";
     static protected String TESTINPUTDIR = DATADIR + "/resources/testfiles";
 
 
     static protected final BigInteger MASK = new BigInteger("FFFFFFFFFFFFFFFF", 16);
+
+    static {
+        try {
+            CDMDSP.loadNc4Iosp();
+        } catch (DapException de) {
+            System.err.println("Cannot load Nc4Iosp.netcdf library");
+        }
+    }
 
     //////////////////////////////////////////////////
     // Type Declarations
@@ -66,14 +74,6 @@ public class TestNc4Iosp extends UnitTestCommon
 
     //////////////////////////////////////////////////
     // Instance variables
-
-    // System properties
-
-    protected boolean prop_diff = true;
-    protected boolean prop_baseline = false;
-    protected boolean prop_visual = false;
-    protected boolean prop_debug = DEBUG;
-    protected boolean prop_generate = true;
 
     // Misc variables
     protected boolean isbigendian = ByteOrder.nativeOrder() == ByteOrder.BIG_ENDIAN;
@@ -111,9 +111,9 @@ public class TestNc4Iosp extends UnitTestCommon
         if(!HDF5) {
             CDMDSP.loadNc4Iosp();  // Load Nc4Iosp
         }
-        this.root = getRoot();
+        this.root = getDAP4Root();
         if(this.root == null)
-            throw new Exception("Opuls root not found");
+            throw new Exception("dap4 root not found");
         Nc4IospTest.root = root;
         File f = new File(root + "/" + BASELINEDIR);
         if(!f.exists()) f.mkdir();
@@ -128,8 +128,8 @@ public class TestNc4Iosp extends UnitTestCommon
     void
     chooseTestcases()
     {
-        if(false) {
-            chosentests = locate("test_vlen4.nc");
+        if(true) {
+            chosentests = locate("test_struct_array.nc");
             //chosentests.add(new Nc4IospTest("test_test.nc"));
         } else {
             for(Nc4IospTest tc : alltestcases)
@@ -242,24 +242,6 @@ public class TestNc4Iosp extends UnitTestCommon
         return false;
     }
 
-    /**
-     * Try to get the system properties
-     */
-    void setSystemProperties()
-    {
-        if(System.getProperty("nodiff") != null)
-            prop_diff = false;
-        String value = System.getProperty("baseline");
-        if(value != null) prop_baseline = true;
-        value = System.getProperty("nogenerate");
-        if(value != null) prop_generate = false;
-        value = System.getProperty("debug");
-        if(value != null) prop_debug = true;
-        if(System.getProperty("visual") != null)
-            prop_visual = true;
-        if(prop_baseline && prop_diff)
-            prop_diff = false;
-    }
 
     // Locate the test cases with given prefix
     List<Nc4IospTest>

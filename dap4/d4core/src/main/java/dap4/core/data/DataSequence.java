@@ -4,6 +4,8 @@
 
 package dap4.core.data;
 
+import java.util.List;
+
 /**
 DataSequence represents a set of records.
 */
@@ -14,7 +16,4 @@ public interface DataSequence extends DataCompound
 
     // Read a single record
     public DataRecord readRecord(long recordno) throws DataException;
-
-    // Return a predicate-based subset of the records TBD
-    //public List<DataRecord> read() throws DataException;
 }

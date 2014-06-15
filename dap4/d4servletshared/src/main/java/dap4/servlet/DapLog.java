@@ -21,7 +21,7 @@ public class DapLog
     static synchronized private void getLog()
     {
         if(log == null)
-            log = org.slf4j.LoggerFactory.getLogger("opuls");
+            log = org.slf4j.LoggerFactory.getLogger("dap4");
     }
 
     static synchronized public void error(String s)

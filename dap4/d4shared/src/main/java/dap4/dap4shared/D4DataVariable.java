@@ -7,7 +7,7 @@ package dap4.dap4shared;
 import dap4.core.data.*;
 import dap4.core.dmr.DapVariable;
 
-abstract public class D4DataVariable extends AbstractData implements DataVariable
+abstract public class D4DataVariable extends AbstractDataVariable
 {
     //////////////////////////////////////////////////
     // Instance variables

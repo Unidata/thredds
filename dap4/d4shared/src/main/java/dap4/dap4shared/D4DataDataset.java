@@ -17,7 +17,7 @@ public class D4DataDataset extends AbstractData implements DataDataset
     // Instance variables
 
     D4DSP dsp = null;
-    List<DataVariable> variables = new ArrayList<DataVariable>();
+    List<D4DataVariable> variables = new ArrayList<D4DataVariable>();
 
     //////////////////////////////////////////////////
     // Constructors
@@ -27,19 +27,18 @@ public class D4DataDataset extends AbstractData implements DataDataset
     {
         super(dmr);
         this.dsp = dsp;
-        dsp.setD4Dataset(this);
     }
 
     //////////////////////////////////////////////////
     // Accessors
 
     public void
-    addVariable(DataVariable dv)
+    addVariable(D4DataVariable dv)
     {
         variables.add(dv);
     }
 
-    public List<DataVariable>
+    public List<D4DataVariable>
     getTopVariables()
     {
         return variables;
@@ -52,6 +51,10 @@ public class D4DataDataset extends AbstractData implements DataDataset
     getVariableData(DapVariable var)
         throws DataException
     {
+        for(D4DataVariable dv: variables) {
+            if(dv.getVariable() == var)
+                return dv;
+        }
         return null;
     }
 

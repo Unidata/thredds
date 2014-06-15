@@ -1,9 +1,8 @@
 package dap4.test;
 
-import dap4.test.util.UnitTestCommon;
+import dap4.test.util.DapTestCommon;
 import ucar.httpclient.*;
 import ucar.nc2.dataset.NetcdfDataset;
-import ucar.nc2.util.net.*;
 
 import java.io.*;
 import java.util.ArrayList;
@@ -12,7 +11,7 @@ import java.util.List;
 /**
  * Test at the NetcdfDataset level
  */
-public class TestConstraints extends UnitTestCommon
+public class TestConstraints extends DapTestCommon
 {
     static final boolean DEBUG = false;
 
@@ -23,7 +22,7 @@ public class TestConstraints extends UnitTestCommon
     //////////////////////////////////////////////////
     // Constants
 
-    static final String DATADIR = "tests/src/test/data"; // relative to opuls root
+    static final String DATADIR = "d4tests/src/test/data"; // relative to dap4 root
     static final String TESTDATADIR = DATADIR + "/resources/TestCDMClient";
     static final String BASELINEDIR = TESTDATADIR + "/baseline";
     static final String TESTINPUTDIR = TESTDATADIR + "/testinput";
@@ -61,7 +60,7 @@ public class TestConstraints extends UnitTestCommon
         String makeurl()
         {
             String url = url = server + "/" + dataset;
-            if(constraint != null) url += "?"+UnitTestCommon.CONSTRAINTTAG+"=" + constraint;
+            if(constraint != null) url += "?"+ DapTestCommon.CONSTRAINTTAG+"=" + constraint;
             return url;
         }
 
@@ -71,21 +70,13 @@ public class TestConstraints extends UnitTestCommon
             buf.append(dataset);
             buf.append("{");
             if(constraint != null)
-                buf.append("?"+UnitTestCommon.CONSTRAINTTAG+"=" + constraint);
+                buf.append("?"+ DapTestCommon.CONSTRAINTTAG+"=" + constraint);
             return buf.toString();
         }
     }
 
     //////////////////////////////////////////////////
     // Instance variables
-
-    // System properties
-
-    boolean prop_diff = true;
-    boolean prop_baseline = false;
-    boolean prop_visual = false;
-    boolean prop_debug = DEBUG;
-    String prop_server = null;
 
     // Test cases
 
@@ -117,9 +108,9 @@ public class TestConstraints extends UnitTestCommon
     {
         super(name);
         setSystemProperties();
-        this.root = getRoot();
+        this.root = getDAP4Root();
         if(this.root == null)
-            throw new Exception("Opuls root cannot be located");
+            throw new Exception("dap4 root cannot be located");
         // Check for windows path
         if(alpha.indexOf(this.root.charAt(0)) >= 0 && this.root.charAt(1) == ':') {
         } else if(this.root.charAt(0) != '/')
@@ -273,21 +264,6 @@ public class TestConstraints extends UnitTestCommon
 
     //////////////////////////////////////////////////
     // Utility methods
-
-    /**
-     * Try to get the system properties
-     */
-    void setSystemProperties()
-    {
-        prop_diff = (System.getProperty("nodiff") == null);
-        prop_baseline = (System.getProperty("baseline") != null);
-        prop_visual = (System.getProperty("visual") != null);
-        if(System.getProperty("debug") != null)
-            prop_debug = true;
-        prop_server = System.getProperty("server");
-        if(prop_diff && prop_baseline)
-            prop_diff = false;
-    }
 
     // Locate the test cases with given prefix
     ClientTest

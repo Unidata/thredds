@@ -3,6 +3,7 @@
 
 package dap4.ce.parser;
 
+import dap4.ce.CEAST;
 import dap4.core.dmr.*;
 import dap4.core.dmr.parser.ParseException;
 import dap4.core.util.*;
@@ -31,7 +32,7 @@ public class CEParser extends CEParserBody
     // Constructors
 
     public CEParser(DapDataset template)
-        throws ParseException
+            throws ParseException
     {
         super(null);
         CELexer lexer = new CELexer(this);
@@ -52,7 +53,7 @@ public class CEParser extends CEParserBody
 
     public boolean
     parse(String document)
-        throws ParseException
+            throws ParseException
     {
         ((CELexer) getLexer()).setText(document);
         return super.parse();
@@ -64,7 +65,7 @@ public class CEParser extends CEParserBody
     @Override
     CEAST
     constraint(CEAST.NodeList clauses)
-        throws ParseException
+            throws ParseException
     {
         CEAST node = new CEAST(CEAST.Sort.CONSTRAINT);
         node.clauses = clauses;
@@ -76,7 +77,7 @@ public class CEParser extends CEParserBody
     @Override
     CEAST
     projection(CEAST segmenttree)
-        throws ParseException
+            throws ParseException
     {
         CEAST node = new CEAST(CEAST.Sort.PROJECTION);
         node.tree = segmenttree;
@@ -102,26 +103,27 @@ public class CEParser extends CEParserBody
     {
         assert parent != null;
         parent.isleaf = false;
-        for(CEAST node : forest)
+        for(CEAST node : forest) {
             parent.addSegment(node);
+        }
         return parent;
     }
 
     @Override
     CEAST
     segment(String name, CEAST.SliceList slices)
-        throws ParseException
+            throws ParseException
     {
         CEAST node = new CEAST(CEAST.Sort.SEGMENT);
         node.name = name;
-        node.slices = (slices == null? new CEAST.SliceList() : slices);
+        node.slices = (slices == null ? new CEAST.SliceList() : slices);
         return node;
     }
 
     @Override
     Slice
     slice(int state, String sfirst, String send, String sstride)
-        throws ParseException
+            throws ParseException
     {
         long first = 0;
         long last = UNDEFINED;
@@ -132,7 +134,7 @@ public class CEParser extends CEParserBody
             if(sstride != null) stride = Long.parseLong(sstride);
         } catch (NumberFormatException nfe) {
             throw new ParseException(String.format("Illegal slice: [%s:%s:%s]",
-                sfirst, send, sstride));
+                    sfirst, send, sstride));
         }
 
         Slice x;
@@ -149,10 +151,10 @@ public class CEParser extends CEParserBody
                 x.setConstrained(false);
                 break;
             case 1: // [i]
-                x.setIndices(x.getFirst(),x.getFirst(),1);
+                x.setIndices(x.getFirst(), x.getFirst(), 1);
                 break;
             case 2: // [f:l]
-                x.setIndices(x.getFirst(),x.getLast(),1);
+                x.setIndices(x.getFirst(), x.getLast(), 1);
                 break;
             case 3: // [f:s:l]
             case 4: // [f:] [f:*]
@@ -170,7 +172,7 @@ public class CEParser extends CEParserBody
     @Override
     void
     dimredef(String name, Slice slice)
-        throws ParseException
+            throws ParseException
     {
         // First, make sure name is defined only once
         if(dimdefs.containsKey(name))
@@ -203,54 +205,85 @@ public class CEParser extends CEParserBody
     @Override
     CEAST
     selection(CEAST projection, CEAST filter)
-        throws ParseException
+            throws ParseException
     {
         CEAST node = new CEAST(CEAST.Sort.SELECTION);
+        node.projection = projection;
+        node.filter = filter;
         return node;
     }
 
 
     @Override
     CEAST
-    conjunction(CEAST lhs, CEAST rhs)
-        throws ParseException
+    logicalAnd(CEAST lhs, CEAST rhs)
+            throws ParseException
     {
         CEAST node = new CEAST(CEAST.Sort.EXPR);
+        node.op = CEAST.Operator.AND;
+        node.lhs = lhs;
+        node.rhs = rhs;
         return node;
     }
 
     @Override
     CEAST
-    negation(CEAST lhs)
-        throws ParseException
+    logicalNot(CEAST lhs)
+            throws ParseException
     {
         CEAST node = new CEAST(CEAST.Sort.EXPR);
+        node.op = CEAST.Operator.NOT;
+        node.lhs = lhs;
         return node;
     }
 
     @Override
     CEAST
-    predicate(CEAST.Operator op, Object lhs, Object rhs)
-        throws ParseException
+    predicate(CEAST.Operator op, CEAST lhs, CEAST rhs)
+            throws ParseException
     {
         CEAST node = new CEAST(CEAST.Sort.EXPR);
+        node.op = op;
+        node.lhs = (CEAST) lhs;
+        node.rhs = (CEAST) rhs;
         return node;
     }
 
     @Override
     CEAST
-    predicaterange(CEAST.Operator op1, CEAST.Operator op2, Object lhs, Object mid, Object rhs)
-        throws ParseException
+    predicaterange(CEAST.Operator op1, CEAST.Operator op2, CEAST lhs, CEAST mid, CEAST rhs)
+            throws ParseException
     {
-        CEAST node = new CEAST(CEAST.Sort.EXPR);
-        return node;
+        CEAST node2 = new CEAST(CEAST.Sort.EXPR);
+        node2.op = op2;
+        node2.lhs = (CEAST) mid;
+        node2.rhs = (CEAST) rhs;
+        CEAST node1 = new CEAST(CEAST.Sort.EXPR);
+        node1.op = op1;
+        node1.lhs = (CEAST) lhs;
+        node1.rhs = (CEAST) mid;
+        CEAST andnode = new CEAST(CEAST.Sort.EXPR);
+        andnode.op = CEAST.Operator.AND;
+        andnode.lhs = node1;
+        andnode.rhs = node2;
+        return andnode;
     }
 
+    @Override
+    CEAST
+    fieldname(String value)
+            throws ParseException
+    {
+	CEAST seg = new CEAST(CEAST.Sort.SEGMENT);
+	seg.name = value;
+	seg.isleaf = true;
+	return seg;	
+    }
 
     @Override
     CEAST
     constant(CEAST.Constant sort, String value)
-        throws ParseException
+            throws ParseException
     {
         CEAST con = new CEAST(CEAST.Sort.CONSTANT);
         con.kind = sort;
@@ -307,12 +340,4 @@ public class CEParser extends CEParserBody
         return list;
     }
 
-    @Override
-    CEAST.StringList
-    stringlist(CEAST.StringList list, String string)
-    {
-        if(list == null) list = new CEAST.StringList();
-        if(string != null) list.add(string);
-        return list;
-    }
 }

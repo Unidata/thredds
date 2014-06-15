@@ -17,13 +17,11 @@
     <Byte name="vu8"/>
     <Short name="v16"/>
     <Short name="vu16"/>
-    <Int name="v32"/>
-    <Int name="vu32">
-        <Attribute name="_Unsigned" type="String" value="true"/>
+    <Int32 name="v32"/>
+    <UInt32 name="vu32"/>
     </Int>
     <Long name="v64"/>
-    <Long name="vu64" isunsigned="true">
-        <Attribute name="_Unsigned" type="String" value="true"/>
+    <Long name="vu64">
     </Long>
     <Float name="vf"/>
     <Double name="vd"/>

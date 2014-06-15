@@ -3,9 +3,9 @@ package dap4.test;
 import dap4.dap4shared.ChunkInputStream;
 import dap4.core.util.DapDump;
 import dap4.dap4shared.RequestMode;
+import dap4.servlet.Generator;
 import dap4.test.servlet.*;
-import dap4.test.util.Dump;
-import dap4.test.util.UnitTestCommon;
+import dap4.test.util.*;
 
 import java.io.*;
 import java.math.BigInteger;
@@ -22,14 +22,14 @@ import java.util.List;
  * test client side deserialization.
  */
 
-public class TestServlet extends UnitTestCommon
+public class TestServlet extends DapTestCommon
 {
     static protected final boolean DEBUG = false;
 
     //////////////////////////////////////////////////
     // Constants
 
-    static protected String DATADIR = "tests/src/test/data"; // relative to opuls root
+    static protected String DATADIR = "d4tests/src/test/data"; // relative to dap4 root
     static protected String TESTDATADIR = DATADIR + "/resources";
     static protected String BASELINEDIR = DATADIR + "/resources/TestServlet/baseline";
     static protected String TESTINPUTDIR = DATADIR + "/resources/testfiles";
@@ -129,20 +129,8 @@ public class TestServlet extends UnitTestCommon
 
     }
 
-
     //////////////////////////////////////////////////
     // Instance variables
-
-    // System properties
-
-    protected boolean prop_diff = true;
-    protected boolean prop_baseline = false;
-    protected boolean prop_visual = false;
-    protected boolean prop_debug = DEBUG;
-    protected boolean prop_generate = true;
-
-    // Misc variables
-    protected boolean isbigendian = ByteOrder.nativeOrder() == ByteOrder.BIG_ENDIAN;
 
     // Test cases
 
@@ -174,9 +162,13 @@ public class TestServlet extends UnitTestCommon
     {
         super(name);
         setSystemProperties();
-        this.root = getRoot();
+        if(prop_ascii)
+            Generator.setASCII(true);
+
+        this.root = getDAP4Root();
         if(this.root == null)
-            throw new Exception("Opuls root not found");
+            throw new Exception("dap4 root not found");
+
         this.datasetpath = this.root + "/" + DATADIR;
         defineAllTestcases(this.root);
         chooseTestcases();
@@ -190,10 +182,11 @@ public class TestServlet extends UnitTestCommon
     chooseTestcases()
     {
         if(false) {
-            chosentests = locate("test_anon_dim.syn");
+            chosentests = locate("test_sequence_1.syn");
         } else {
-            for(ServletTest tc : alltestcases)
+            for(ServletTest tc : alltestcases) {
                 chosentests.add(tc);
+            }
         }
     }
 
@@ -202,6 +195,39 @@ public class TestServlet extends UnitTestCommon
     {
         ServletTest.root = root;
         this.alltestcases.add(
+            new ServletTest("test_sequence_1.syn", "dmr,dap", true,  //0
+                // S4
+                new Dump.Commands()
+                {
+                    public void run(Dump printer) throws IOException
+                    {
+                        int count = printer.printcount();
+                        for(int j = 0;j < count;j++) {
+                            printer.printvalue('S', 4);
+                            printer.printvalue('S', 2);
+                        }
+                        printer.printchecksum();
+                    }
+                }));
+        this.alltestcases.add(
+            new ServletTest("test_sequence_2.syn", "dmr,dap", true,  //0
+                // S4
+                new Dump.Commands()
+                {
+                    public void run(Dump printer) throws IOException
+                    {
+                        for(int i = 0;i < 2;i++) {
+                            int count = printer.printcount();
+                            for(int j = 0;j < count;j++) {
+                                printer.printvalue('S', 4);
+                                printer.printvalue('S', 2);
+                            }
+                            printer.newline();
+                        }
+                        printer.printchecksum();
+                    }
+                }));
+        this.alltestcases.add(
             new ServletTest("test_one_var.nc", "dmr,dap", true,  //0
                 // S4
                 new Dump.Commands()
@@ -209,6 +235,21 @@ public class TestServlet extends UnitTestCommon
                     public void run(Dump printer) throws IOException
                     {
                         printer.printvalue('S', 4);
+                        printer.printchecksum();
+                    }
+                }));
+        this.alltestcases.add(
+            new ServletTest("test_opaque.nc", "dmr,dap", true,  //0
+                // S4
+                new Dump.Commands()
+                {
+                    public void run(Dump printer) throws IOException
+                    {
+                        printer.printvalue('O', 0);
+                        printer.printchecksum();
+                        for(int i = 0;i < 2;i++) {
+                            printer.printvalue('O', 0, i);
+                        }
                         printer.printchecksum();
                     }
                 }));
@@ -242,8 +283,9 @@ public class TestServlet extends UnitTestCommon
                 {
                     public void run(Dump printer) throws IOException
                     {
-                        for(int i = 0;i < 5;i++)
+                        for(int i = 0;i < 5;i++) {
                             printer.printvalue('U', 1, i);
+                        }
                         printer.printchecksum();
                     }
                 }));
@@ -293,29 +335,37 @@ public class TestServlet extends UnitTestCommon
                 {
                     public void run(Dump printer) throws IOException
                     {
-                        for(int i = 0;i < 6;i++)
+                        for(int i = 0;i < 6;i++) {
                             printer.printvalue('U', 1, i);
+                        }
                         printer.printchecksum();
-                        for(int i = 0;i < 4;i++)
+                        for(int i = 0;i < 4;i++) {
                             printer.printvalue('S', 2, i);
+                        }
                         printer.printchecksum();
-                        for(int i = 0;i < 6;i++)
+                        for(int i = 0;i < 6;i++) {
                             printer.printvalue('U', 4, i);
+                        }
                         printer.printchecksum();
-                        for(int i = 0;i < 2;i++)
+                        for(int i = 0;i < 2;i++) {
                             printer.printvalue('F', 8, i);
+                        }
                         printer.printchecksum();
-                        for(int i = 0;i < 2;i++)
+                        for(int i = 0;i < 2;i++) {
                             printer.printvalue('C', 1, i);
+                        }
                         printer.printchecksum();
-                        for(int i = 0;i < 4;i++)
+                        for(int i = 0;i < 4;i++) {
                             printer.printvalue('T', 0, i);
+                        }
                         printer.printchecksum();
-                        for(int i = 0;i < 2;i++)
+                        for(int i = 0;i < 2;i++) {
                             printer.printvalue('O', 0, i);
+                        }
                         printer.printchecksum();
-                        for(int i = 0;i < 5;i++)
+                        for(int i = 0;i < 5;i++) {
                             printer.printvalue('S', 1, i);
+                        }
                         printer.printchecksum();
                     }
                 }));
@@ -326,17 +376,21 @@ public class TestServlet extends UnitTestCommon
                 {
                     public void run(Dump printer) throws IOException
                     {
-                        for(int i = 0;i < 5;i++)
+                        for(int i = 0;i < 5;i++) {
                             printer.printvalue('S', 4, i);
+                        }
                         printer.printchecksum();
-                        for(int i = 0;i < 3;i++)
+                        for(int i = 0;i < 3;i++) {
                             printer.printvalue('F', 4, i);
+                        }
                         printer.printchecksum();
-                        for(int i = 0;i < 5;i++)
+                        for(int i = 0;i < 5;i++) {
                             printer.printvalue('S', 4, i);
+                        }
                         printer.printchecksum();
-                        for(int i = 0;i < 7;i++)
+                        for(int i = 0;i < 7;i++) {
                             printer.printvalue('F', 4, i);
+                        }
                         printer.printchecksum();
                     }
                 }));
@@ -480,8 +534,9 @@ public class TestServlet extends UnitTestCommon
                 {
                     public void run(Dump printer) throws IOException
                     {
-                        for(int i = 0;i < 6;i++)
+                        for(int i = 0;i < 6;i++) {
                             printer.printvalue('S', 4, i);
+                        }
                         printer.printchecksum();
                     }
                 }));
@@ -531,29 +586,37 @@ public class TestServlet extends UnitTestCommon
                 {
                     public void run(Dump printer) throws IOException
                     {
-                        for(int i = 0;i < 6;i++)
+                        for(int i = 0;i < 6;i++) {
                             printer.printvalue('U', 1, i);
+                        }
                         printer.printchecksum();
-                        for(int i = 0;i < 4;i++)
+                        for(int i = 0;i < 4;i++) {
                             printer.printvalue('S', 2, i);
+                        }
                         printer.printchecksum();
-                        for(int i = 0;i < 6;i++)
+                        for(int i = 0;i < 6;i++) {
                             printer.printvalue('U', 4, i);
+                        }
                         printer.printchecksum();
-                        for(int i = 0;i < 2;i++)
+                        for(int i = 0;i < 2;i++) {
                             printer.printvalue('F', 8, i);
+                        }
                         printer.printchecksum();
-                        for(int i = 0;i < 2;i++)
+                        for(int i = 0;i < 2;i++) {
                             printer.printvalue('C', 1, i);
+                        }
                         printer.printchecksum();
-                        for(int i = 0;i < 4;i++)
+                        for(int i = 0;i < 4;i++) {
                             printer.printvalue('T', 0, i);
+                        }
                         printer.printchecksum();
-                        for(int i = 0;i < 2;i++)
+                        for(int i = 0;i < 2;i++) {
                             printer.printvalue('O', 0, i);
+                        }
                         printer.printchecksum();
-                        for(int i = 0;i < 5;i++)
+                        for(int i = 0;i < 5;i++) {
                             printer.printvalue('S', 1, i);
+                        }
                         printer.printchecksum();
                     }
                 }));
@@ -691,11 +754,10 @@ public class TestServlet extends UnitTestCommon
         // Collect the output
         FakeServletOutputStream fakestream
             = (FakeServletOutputStream) resp.getOutputStream();
-        byte[] byteresult = fakestream.toArray();
-        if(prop_debug) {
-            ByteOrder order = (isbigendian ? ByteOrder.BIG_ENDIAN : ByteOrder.LITTLE_ENDIAN);
-            DapDump.dumpbytes(ByteBuffer.wrap(byteresult).order(order), true);
+        if(prop_debug || DEBUG) {
+            DapDump.dumpbytestream(fakestream.byteStream(),ByteOrder.nativeOrder(),'*');
         }
+        byte[] byteresult = fakestream.toArray();
 
         if(!testcase.xfail && prop_generate) {
             // Dump the serialization into a file; this also includes the dmr
@@ -703,10 +765,18 @@ public class TestServlet extends UnitTestCommon
             writefile(target, byteresult);
         }
 
+        if(DEBUG) {
+            System.out.println("///////////////////");
+            ByteBuffer datab = ByteBuffer.wrap(byteresult).order(ByteOrder.nativeOrder());
+            DapDump.dumpbytes(datab,true);
+            System.out.println("///////////////////");
+            System.out.flush();
+        }
+
         // Setup a ChunkInputStream
         ByteArrayInputStream bytestream = new ByteArrayInputStream(byteresult);
 
-        ChunkInputStream reader = new ChunkInputStream(bytestream, RequestMode.DAP, isbigendian);
+        ChunkInputStream reader = new ChunkInputStream(bytestream, RequestMode.DAP, ByteOrder.nativeOrder());
 
         String sdmr = reader.readDMR(); // Read the DMR
         if(prop_visual)
@@ -762,24 +832,6 @@ public class TestServlet extends UnitTestCommon
         return false;
     }
 
-    /**
-     * Try to get the system properties
-     */
-    void setSystemProperties()
-    {
-        if(System.getProperty("nodiff") != null)
-            prop_diff = false;
-        String value = System.getProperty("baseline");
-        if(value != null) prop_baseline = true;
-        value = System.getProperty("nogenerate");
-        if(value != null) prop_generate = false;
-        value = System.getProperty("debug");
-        if(value != null) prop_debug = true;
-        if(System.getProperty("visual") != null)
-            prop_visual = true;
-        if(prop_baseline && prop_diff)
-            prop_diff = false;
-    }
 
     // Locate the test cases with given prefix
     List<ServletTest>

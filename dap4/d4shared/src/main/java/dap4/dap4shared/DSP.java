@@ -13,8 +13,18 @@ import java.io.IOException;
 
 public interface DSP
 {
-    /* All implementing classes must implement a parameterless constructor */
-    public boolean match(String path, DapContext context);
+    /* Unfortunately, Java does not (yet, sigh!) allow including
+       static methods in an interface.
+       As with IOSPs, we need a quick match function to indicate
+       that this DSP is likely to be able to process this file.
+     */
+    /* All implementing classes must implement:
+       1. a static match() function
+       2. A parameterless constructor
+     */
+
+    // static public boolean match(String path, DapContext context);
+
     public DSP open(String path, DapContext context) throws DapException;
     public DSP open(String path) throws DapException;
 

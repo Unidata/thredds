@@ -26,9 +26,6 @@
     <UInt8 name="vu8">
         <Dim name="/d2"/>
         <Dim name="/d3"/>
-        <Attribute name="_Unsigned" type="String">
-            <Value value="true"/>
-	</Attribute>
     </UInt8>
     <Int16 name="v16">
         <Dim name="/d4"/>
@@ -36,9 +33,6 @@
     <UInt32 name="vu32">
         <Dim name="/d2"/>
         <Dim name="/d3"/>
-        <Attribute name="_Unsigned" type="String">
-            <Value missing="true"/>
-        </Attribute>
     </UInt32>
     <Float64 name="vd">
         <Dim name="/d2"/>
@@ -57,7 +51,7 @@
     <Enum name="primary_cloud" enum="/cloud_class_t">
         <Dim name="/d5"/>
         <Attribute name="_FillValue" type="String">
-            <Value missing="Missing"/>
+            <Value value="Missing"/>
         </Attribute>
     </Enum>
 </Dataset>

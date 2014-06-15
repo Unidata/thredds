@@ -11,13 +11,16 @@ import java.util.List;
 /**
  * A classic implementation of an odometer
  * taken from the netcdf-c code.
+ * Extended to provide iterator interface
  */
 
-public class Odometer implements Iterator<Boolean>
+public class Odometer implements Iterator<long[]>
 {
     static public class ScalarOdometer extends Odometer
     {
         protected boolean first = true;
+
+        protected long[] scalarslice = new long[] {0};
 
         public ScalarOdometer()
         {
@@ -41,6 +44,15 @@ public class Odometer implements Iterator<Boolean>
             boolean first = this.first;
             this.first = false;
             return first;
+        }
+
+        @Override
+        public long[] next()
+        {
+            if(this.first) {
+              return this.scalarslice;
+            } else
+                return null;
         }
     }
 
@@ -71,22 +83,22 @@ public class Odometer implements Iterator<Boolean>
     }
 
     public Odometer(List<DapDimension> dimset)
-        throws DapException
+            throws DapException
     {
-	this(DapUtil.dimsetSlices(dimset),dimset);
+        this(DapUtil.dimsetSlices(dimset), dimset);
     }
 
     public Odometer(List<Slice> set, List<DapDimension> dimset)
-        throws DapException
+            throws DapException
     {
-        if(set == null)
+        if (set == null)
             throw new DapException("Null slice list");
         setup(set.size());
-        if(this.rank == 0) {
+        if (this.rank == 0) {
             // we don't actually know what is being set
             return;
         }
-        for(int i = 0;i < this.rank;i++) {
+        for (int i = 0; i < this.rank; i++) {
             Slice slice = set.get(i);
             fill(i, slice.getFirst(), slice.getLast() + 1, slice.getStride());
         }
@@ -95,15 +107,15 @@ public class Odometer implements Iterator<Boolean>
 
     protected void
     setDeclsizes(List<DapDimension> dimset)
-        throws DapException
+            throws DapException
     {
         int rank = dimset.size();
-        if(rank != this.rank)
+        if (rank != this.rank)
             throw new DapException("Odometer: |dimset| != rank");
-        for(int i = 0;i < dimset.size();i++) {
+        for (int i = 0; i < dimset.size(); i++) {
             DapDimension dim = dimset.get(i);
             long size = dim.getSize();
-            if(size <= first[i] || size < stop[i])
+            if (size <= first[i] || size < stop[i])
                 throw new DapException("Odometer: Dimset invalidates odometer");
             declsize[i] = size;
             this.dimset[i] = dim;
@@ -135,18 +147,18 @@ public class Odometer implements Iterator<Boolean>
     public String toString()
     {
         StringBuilder buf = new StringBuilder();
-        for(int i = 0;i < rank;i++) {
-            if(i > 0)
+        for (int i = 0; i < rank; i++) {
+            if (i > 0)
                 buf.append(",");
             buf.append(dimset[i] != null ? dimset[i].getShortName() : "null");
             buf.append("[");
-            if(this.stride[i] == 1) {
+            if (this.stride[i] == 1) {
                 buf.append(String.format("%d:%d", this.first[i], this.stop[i] - 1));
             } else
                 buf.append(String.format("%d:%d:%d", this.first[i], this.stride[i], this.stop[i] - 1));
-            buf.append(String.format("|%d",this.index[i]));
-            if(this.declsize[i] > 0)
-                buf.append(String.format("/%d",this.declsize[i]));
+            buf.append(String.format("|%d", this.index[i]));
+            if (this.declsize[i] > 0)
+                buf.append(String.format("/%d", this.declsize[i]));
             buf.append("]");
         }
         return buf.toString();
@@ -162,7 +174,7 @@ public class Odometer implements Iterator<Boolean>
     public long index()
     {
         long offset = 0;
-        for(int i = 0;i < rank;i++) {
+        for (int i = 0; i < rank; i++) {
             offset *= declsize[i];
             offset += index[i];
         }
@@ -175,7 +187,7 @@ public class Odometer implements Iterator<Boolean>
     public long totalSize()
     {
         long size = 1;
-        for(int i = 0;i < rank;i++) {
+        for (int i = 0; i < rank; i++) {
             size *= count[i];
         }
         return size;
@@ -191,6 +203,7 @@ public class Odometer implements Iterator<Boolean>
     {
         return index;
     }
+
     //////////////////////////////////////////////////
     // Iterator-like API
 
@@ -199,19 +212,23 @@ public class Odometer implements Iterator<Boolean>
         return (this.index[0] < this.stop[0]);
     }
 
-    public Boolean next()
+    public long[] next()
     {
-        Boolean more = Boolean.FALSE;
-        for(int i = rank - 1;i >= 0;i--) {
+        boolean done = false;
+        for (int i = rank - 1; i >= 0; i--) {
             index[i] += stride[i];
-            if(index[i] < stop[i]) {
-                more = Boolean.TRUE;
+            if (index[i] < stop[i]) {
+                done = true;
                 break;
             }
-            if(i > 0) // do not reset 0'th position so next will return false
+            if (i > 0) // do not reset 0'th position so next will return false
                 index[i] = first[i]; /* reset this position*/
         }
-        return more;
+        if (done) {
+            return null;
+        } else {
+            return index;
+        }
     }
 
     public void remove()

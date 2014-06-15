@@ -1,11 +1,13 @@
 /* Copyright 2012, UCAR/Unidata.
    See the LICENSE file for more information. */
 
-package dap4.ce.parser;
+package dap4.ce;
 
+import dap4.core.dmr.DapVariable;
 import dap4.core.util.Slice;
 
 import java.util.ArrayList;
+import java.util.EnumSet;
 import java.util.Map;
 
 public class CEAST
@@ -40,49 +42,95 @@ public class CEAST
         DEFINE,
     }
 
-    static public enum Operator
-    {
-        LT, LE, GT, GE, EQ, NEQ, REQ, AND
-    }
-
     static public enum Constant
     {
         STRING, LONG, DOUBLE, BOOLEAN;
+
+        static public EnumSet<Constant> COMPARABLE = EnumSet.of(LONG, DOUBLE, STRING);
+        static public EnumSet<Constant> NUMERIC = EnumSet.of(LONG, DOUBLE);
+
+    }
+
+    static public enum Operator
+    {
+        LT("<", true, Constant.BOOLEAN, Constant.COMPARABLE),
+        LE("<=", true, Constant.BOOLEAN, Constant.COMPARABLE),
+        GT(">", true, Constant.BOOLEAN, Constant.COMPARABLE),
+        GE(">=", true, Constant.BOOLEAN, Constant.COMPARABLE),
+        EQ("==", true, Constant.BOOLEAN, Constant.COMPARABLE),
+        NEQ("!=", true, Constant.BOOLEAN, Constant.COMPARABLE),
+        REQ("~=", true, Constant.BOOLEAN, EnumSet.of(Constant.STRING)),
+        AND(",", true, Constant.BOOLEAN, EnumSet.of(Constant.BOOLEAN)),
+        NOT("!", true, Constant.BOOLEAN, EnumSet.of(Constant.BOOLEAN));
+
+        private final String printstring;
+        private final boolean binary;
+        private final Constant type;
+        private final EnumSet<Constant> legalvalues;
+
+        Operator(String printstring, boolean binary, Constant type, EnumSet<Constant> legal)
+        {
+            this.printstring = printstring;
+            this.binary = binary;
+            this.type = type;
+            this.legalvalues = legal;
+        }
+
+        public String printstring()
+        {
+            return this.printstring;
+        }
+
+        public boolean isbinary()
+        {
+            return this.binary;
+        }
+
+        public EnumSet<Constant> legalvalues()
+        {
+            return this.legalvalues;
+        }
+
+        public Constant returntype()
+        {
+            return this.type;
+        }
     }
 
     //////////////////////////////////////////////////
-    // Instance Variables
+    // Instance Variables ; do not bother with accessors.
 
-    Sort sort = null;
+    public Sort sort = null;
 
     // case CONSTRAINT
-    NodeList clauses = null;
-    Map<String, Slice> dimdefs = null;
+    public NodeList clauses = null;
+    public Map<String, Slice> dimdefs = null;
 
     // case PROJECTION
-    CEAST tree = null;
+    public CEAST tree = null;
 
     // case SEGMENT; actually a node in a segment tree, so may have subnodes
-    String name = null;
-    boolean isleaf = true;
-    SliceList slices = null;
-    NodeList subnodes = null;
+    public String name = null;
+    public boolean isleaf = true;
+    public SliceList slices = null;
+    public NodeList subnodes = null;
 
     // case SELECTION
-    CEAST projection = null;
-    CEAST filter = null;
+    public CEAST projection = null;
+    public CEAST filter = null;
+    public DapVariable field = null; // used by compilefilter()
 
     // case EXPR
-    Operator op = null;
-    CEAST lhs = null;
-    CEAST rhs = null;
+    public Operator op = null;
+    public CEAST lhs = null;
+    public CEAST rhs = null;
 
-    // case CONSTANT
-    CEAST.Constant kind = null;
-    Object value = null;
+    // public case CONSTANT
+    public CEAST.Constant kind = null;
+    public Object value = null;
 
     // case DEFINE: also uses name
-    Slice slice = null;
+    public Slice slice = null;
 
     //////////////////////////////////////////////////
     // Constructor(s)
@@ -95,7 +143,7 @@ public class CEAST
     //////////////////////////////////////////////////
     // Sort specific
 
-    void
+    public void
     addSegment(CEAST segment)
     {
         assert sort == Sort.SEGMENT;
@@ -107,7 +155,7 @@ public class CEAST
     //////////////////////////////////////////////////
     // Misc.
 
-    static void toString(CEAST node, StringBuilder buf)
+    static public void toString(CEAST node, StringBuilder buf)
     {
         if(node == null) return;
         switch (node.sort) {
@@ -120,7 +168,7 @@ public class CEAST
             }
             break;
         case PROJECTION:
-                toString(node.tree, buf);
+            toString(node.tree, buf);
             break;
         case SELECTION:
             toString(node.projection, buf);
@@ -146,11 +194,21 @@ public class CEAST
             }
             break;
         case EXPR:
+            if(node.op.isbinary()) {
+                buf.append(node.lhs.toString());
+                buf.append(node.op.printstring());
+                buf.append(node.rhs.toString());
+            }
+            break;
         case CONSTANT:
+            buf.append(node.value.toString());
+            break;
         case DEFINE:
             buf.append(node.name);
-            if(node.slice != null)
+            if(node.slice != null) {
+                buf.append("=");
                 buf.append(node.slice.toString());
+            }
             break;
         }
     }

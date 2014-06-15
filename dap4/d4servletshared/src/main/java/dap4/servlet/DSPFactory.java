@@ -3,9 +3,11 @@
 
 package dap4.servlet;
 
+import dap4.core.util.DapContext;
 import dap4.core.util.DapException;
 import dap4.dap4shared.DSP;
 
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -28,10 +30,10 @@ abstract public class DSPFactory
     // Static initialization
 
     static {
-        // Register known DSP classes
-        try {
-            registerDSP(CDMDSP.class);
-        } catch (DapException de) {/*ignore*/}
+        // Register known DSP classes: order is important.
+        // Only used in server
+        registerDSP(SynDSP.class, true);
+        registerDSP(CDMDSP.class, true);
     }
 
     //////////////////////////////////////////////////
@@ -65,7 +67,6 @@ abstract public class DSPFactory
      * @throws ClassCastException     if class doesnt implement DSP interface.
      */
     static public void registerDSP(Class klass)
-        throws DapException
     {
         registerDSP(klass, false);
     }
@@ -80,30 +81,24 @@ abstract public class DSPFactory
      * @throws ClassCastException     if class doesnt implement DSP interface.
      */
     static synchronized public void registerDSP(Class klass, boolean last)
-        throws DapException
     {
-        try {
-            // is this already defined?
-            int pos = dspRegistry.indexOf(klass);
-            DSP dsp = (DSP) klass.newInstance(); // fail fast
-            if(pos >= 0)
-                dspRegistry.set(pos, klass);  // replace existing
-            else if(!last)
-                dspRegistry.add(0, klass);  // put first
-            else
+        // is this already defined?
+        int pos = dspRegistry.indexOf(klass);
+        if(pos < 0) {
+            if(last)
                 dspRegistry.add(klass);  // put last
-        } catch (IllegalAccessException e1) {
-            throw new DapException(e1);
-        } catch (InstantiationException e2) {
-            throw new DapException(e2);
+            else
+                dspRegistry.add(0, klass);  // put first
         }
     }
+
 
     /**
      * See if a specific DSP is registered
      *
      * @param klass Class for which to search
      */
+
     static synchronized public boolean dspRegistered(Class klass)
     {
         return dspRegistry.contains(klass);
@@ -120,7 +115,6 @@ abstract public class DSPFactory
     }
 
     /**
-     *
      * @param path
      * @return DSP object that can process this path
      * @throws DapException
@@ -130,15 +124,18 @@ abstract public class DSPFactory
         throws DapException
     {
         for(int i = 0;i < dspRegistry.size();i++) {
-            Class testclass = dspRegistry.get(i);
-            DSP dsp;
             try {
-                dsp = (DSP)testclass.newInstance();
+                Class testclass = dspRegistry.get(i);
+                Method match = testclass.getMethod("match", String.class, DapContext.class);
+                boolean ismatch = (Boolean) match.invoke(null, path, (DapContext) null);
+                if(ismatch) {
+                    DSP dsp = (DSP) testclass.newInstance();
+                    return dsp.open(path);
+                }
             } catch (Exception e) {
                 throw new DapException(e);
             }
-            if(dsp.match(path,null))
-                return dsp.open(path);
+
         }
         return null;
     }

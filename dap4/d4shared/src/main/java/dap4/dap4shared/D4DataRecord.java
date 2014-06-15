@@ -8,6 +8,8 @@ import dap4.core.data.*;
 import dap4.core.dmr.DapSequence;
 import dap4.core.dmr.DapStructure;
 
+import java.util.Arrays;
+
 /**
  * DataRecord represents a record from a sequence.
  * It is effectively equivalent to a Structure instance.
@@ -20,21 +22,22 @@ public class D4DataRecord extends D4DataVariable implements DataRecord
     // Instance variables
 
     protected D4DataSequence parent = null;
-
     protected int recno = 0;
-
     protected D4DSP dsp = null;
+    D4DataVariable[] fields;
 
     //////////////////////////////////////////////////
     // Constructors
 
-    public D4DataRecord(D4DSP dsp, DapStructure dap, D4DataSequence parent, int recno)
+    public D4DataRecord(D4DSP dsp, DapSequence dap, D4DataSequence parent, int recno)
         throws DataException
     {
-        super(dsp,dap);
+        super(dsp, dap);
         this.dsp = dsp;
         this.parent = parent;
         this.recno = recno;
+        this.fields = new D4DataVariable[dap.getFields().size()];
+        Arrays.fill(this.fields, null);
     }
 
     //////////////////////////////////////////////////
@@ -42,8 +45,11 @@ public class D4DataRecord extends D4DataVariable implements DataRecord
 
     public void
     addField(int mindex, D4DataVariable ddv)
+        throws DataException
     {
-
+        if(mindex < 0 || mindex >= fields.length)
+            throw new DataException("Illegal field index: " + mindex);
+        fields[mindex] = ddv;
     }
 
     //////////////////////////////////////////////////
@@ -53,13 +59,18 @@ public class D4DataRecord extends D4DataVariable implements DataRecord
     @Override
     public DataVariable readfield(int i) throws DataException
     {
-        return null;
+        if(i < 0 || i >= fields.length)
+            throw new DataException("Illegal field index: " + i);
+        return fields[i];
     }
 
     // Read field by name
     @Override
-    public DataVariable readfield(String name) throws DataException
+    public DataVariable readfield(String shortname) throws DataException
     {
+        for(int i = 0;i < fields.length;i++)
+            if(fields[i].getTemplate().getShortName().equals(shortname))
+                return fields[i];
         return null;
     }
 }

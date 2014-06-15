@@ -17,7 +17,7 @@ import java.util.Map;
  * DMR Printer.
  * Given a constraint and a Dataset,
  * print the constrained subset of the dataset.
- *
+ * <p/>
  * WARNING: the printDMR code in some cases duplicates code in dap4.dap4.Dap4Print;
  * so changes here should be propagated.
  */
@@ -82,7 +82,7 @@ public class DMRPrint
 
     public void
     printDMR(DapDataset dataset)
-        throws IOException
+            throws IOException
     {
         CEConstraint ce = CEConstraint.getUniversal(dataset);
         printDMR(ce);
@@ -91,7 +91,7 @@ public class DMRPrint
 
     public void
     printDMR(CEConstraint ce)
-        throws IOException
+            throws IOException
     {
         this.printer.setIndent(0);
         print(ce.getDMR(), ce); // start printing at the root
@@ -121,9 +121,9 @@ public class DMRPrint
 
     void
     print(DapNode node, CEConstraint ce)
-        throws IOException
+            throws IOException
     {
-        if(node == null)
+        if (node == null)
             return;
 
         DapSort sort = node.getSort();
@@ -132,7 +132,7 @@ public class DMRPrint
         switch (sort) {
         case DATASET:// treat like group
         case GROUP:
-            if(!ce.references(node)) break;
+            if (!ce.references(node)) break;
             DapGroup group = (DapGroup) node;
             printer.marginPrint("<" + dmrname);
             int flags = (sort == DapSort.DATASET ? PERLINE : NILFLAGS);
@@ -140,30 +140,30 @@ public class DMRPrint
             printer.println(">");
             printer.indent();
             // Make the output order conform to the spec
-            if(group.getDimensions().size() > 0) {
-                for(DapNode subnode : group.getDimensions()) {
-                    if(!ce.references(subnode)) continue;
+            if (group.getDimensions().size() > 0) {
+                for (DapNode subnode : group.getDimensions()) {
+                    if (!ce.references(subnode)) continue;
                     print(subnode, ce);
                     printer.eol();
                 }
             }
-            if(group.getEnums().size() > 0) {
-                for(DapNode subnode : group.getEnums()) {
-                    if(!ce.references(subnode)) continue;
+            if (group.getEnums().size() > 0) {
+                for (DapNode subnode : group.getEnums()) {
+                    if (!ce.references(subnode)) continue;
                     print(subnode, ce);
                     printer.eol();
                 }
             }
-            if(group.getVariables().size() > 0)
-                for(DapNode subnode : group.getVariables()) {
-                    if(!ce.references(subnode)) continue;
+            if (group.getVariables().size() > 0)
+                for (DapNode subnode : group.getVariables()) {
+                    if (!ce.references(subnode)) continue;
                     print(subnode, ce);
                     printer.eol();
                 }
             printMetadata(node, ce);
-            if(group.getGroups().size() > 0)
-                for(DapNode subnode : group.getGroups()) {
-                    if(!ce.references(subnode)) continue;
+            if (group.getGroups().size() > 0)
+                for (DapNode subnode : group.getGroups()) {
+                    if (!ce.references(subnode)) continue;
                     print(subnode, ce);
                     printer.eol();
                 }
@@ -172,12 +172,12 @@ public class DMRPrint
             break;
 
         case DIMENSION:
-            if(!ce.references(node)) break;
+            if (!ce.references(node)) break;
             DapDimension dim = (DapDimension) node;
-            if(!dim.isShared()) break; // ignore, here, anonymous dimensions
+            if (!dim.isShared()) break; // ignore, here, anonymous dimensions
             printer.marginPrint("<" + dmrname);
             printXMLAttributes(node, ce, NILFLAGS);
-            if(hasMetadata(node)) {
+            if (hasMetadata(node)) {
                 printer.println(">");
                 printMetadata(node, ce);
                 printer.marginPrint("</" + dmrname + ">");
@@ -187,19 +187,19 @@ public class DMRPrint
             break;
 
         case ENUMERATION:
-            if(!ce.references(node)) break;
+            if (!ce.references(node)) break;
             DapEnum en = (DapEnum) node;
             printer.marginPrint("<" + dmrname);
             printXMLAttributes(en, ce, NILFLAGS);
             printer.println(">");
             printer.indent();
             List<String> econstnames = en.getNames();
-            for(String econst : econstnames) {
+            for (String econst : econstnames) {
                 Long value = en.lookup(econst);
                 assert (value != null);
                 printer.marginPrintln(
-                    String.format("<EnumConst name=\"%s\" value=\"%s\"/>",
-                        Escape.entityEscape(econst), value.toString()));
+                        String.format("<EnumConst name=\"%s\" value=\"%s\"/>",
+                                Escape.entityEscape(econst), value.toString()));
             }
             printMetadata(node, ce);
             printer.outdent();
@@ -208,14 +208,14 @@ public class DMRPrint
 
         case STRUCTURE:
         case SEQUENCE:
-            if(!ce.references(node)) break;
+            if (!ce.references(node)) break;
             DapStructure struct = (DapStructure) node;
             printer.marginPrint("<" + dmrname);
             printXMLAttributes(node, ce, NILFLAGS);
             printer.println(">");
             printer.indent();
-            for(DapVariable field : struct.getFields()) {
-                if(!ce.references(field)) continue;
+            for (DapVariable field : struct.getFields()) {
+                if (!ce.references(field)) continue;
                 print(field, ce);
                 printer.eol();
             }
@@ -227,20 +227,20 @@ public class DMRPrint
             break;
 
         case ATOMICVARIABLE:
-            if(!ce.references(node)) break;
+            if (!ce.references(node)) break;
             DapAtomicVariable var = (DapAtomicVariable) node;
             // Get the type sort of the variable
             DapType basetype = var.getBaseType();
             printer.marginPrint("<" + basetype.getAtomicType().name());
             printXMLAttributes(node, ce, NILFLAGS);
-            if(hasMetadata(node) || hasDimensions(var) || hasMaps(var)) {
+            if (hasMetadata(node) || hasDimensions(var) || hasMaps(var)) {
                 printer.println(">");
                 printer.indent();
-                if(hasDimensions(var))
+                if (hasDimensions(var))
                     printDimrefs(var, ce);
-                if(hasMetadata(var))
+                if (hasMetadata(var))
                     printMetadata(var, ce);
-                if(hasMaps(var))
+                if (hasMaps(var))
                     printMaps(var, ce);
                 printer.outdent();
                 printer.marginPrint("</" + basetype.getAtomicType().name() + ">");
@@ -257,9 +257,9 @@ public class DMRPrint
 
     void
     printXMLAttributes(DapNode node, CEConstraint ce, int flags)
-        throws IOException
+            throws IOException
     {
-        if((flags & PERLINE) != 0)
+        if ((flags & PERLINE) != 0)
             printer.indent(2);
 
         // Print name first, if non-null and !NONAME
@@ -267,7 +267,7 @@ public class DMRPrint
         // entity escaping (which is done by printXMLattribute),
         // but backslash escaping is not required.
         String name = node.getShortName();
-        if(name != null && (flags & NONAME) == 0) {
+        if (name != null && (flags & NONAME) == 0) {
             name = node.getShortName();
             printXMLAttribute("name", name, flags);
         }
@@ -284,14 +284,14 @@ public class DMRPrint
 
         case DIMENSION:
             DapDimension orig = (DapDimension) node;
-            if(orig.isShared()) {//not Anonymous
+            if (orig.isShared()) {//not Anonymous
                 // name will have already been printed
                 // Now, we need to get the size as defined by the constraint
                 DapDimension actual = ce.getRedefDim(orig);
-                if(actual == null)
+                if (actual == null)
                     actual = orig;
                 long size = actual.getSize();
-                if(size == DapDimension.VARIABLELENGTH)
+                if (size == DapDimension.VARIABLELENGTH)
                     printXMLAttribute("size", "*", flags);
                 else
                     printXMLAttribute("size", Long.toString(size), flags);
@@ -305,7 +305,7 @@ public class DMRPrint
         case ATOMICVARIABLE:
             DapAtomicVariable atom = (DapAtomicVariable) node;
             DapType basetype = atom.getBaseType();
-            if(basetype.isEnumType()) {
+            if (basetype.isEnumType()) {
                 printXMLAttribute("enum", basetype.getTypeName(), flags);
             }
             break;
@@ -314,7 +314,7 @@ public class DMRPrint
             DapAttribute attr = (DapAttribute) node;
             basetype = attr.getBaseType();
             printXMLAttribute("type", basetype.getTypeName(), flags);
-            if(attr.getBaseType().isEnumType()) {
+            if (attr.getBaseType().isEnumType()) {
                 printXMLAttribute("enum", basetype.getTypeName(), flags);
             }
             break;
@@ -323,7 +323,7 @@ public class DMRPrint
             break; // node either has no attributes or name only
         } //switch
 
-        if((flags & PERLINE) != 0) {
+        if ((flags & PERLINE) != 0) {
             printer.outdent(2);
         }
     }
@@ -333,20 +333,20 @@ public class DMRPrint
      */
     void
     printXMLAttribute(String name, String value, int flags)
-        throws DapException
+            throws DapException
     {
-        if(name == null) return;
-        if((flags & NONNIL) == 0
-            && (value == null || value.length() == 0))
+        if (name == null) return;
+        if ((flags & NONNIL) == 0
+                && (value == null || value.length() == 0))
             return;
-        if((flags & PERLINE) != 0) {
+        if ((flags & PERLINE) != 0) {
             printer.eol();
             printer.margin();
         }
         printer.print(" " + name + "=");
         printer.print("\"");
 
-        if(value != null) {
+        if (value != null) {
             // add xml entity escaping
             value = Escape.entityEscape(value);
             printer.print(value);
@@ -356,14 +356,14 @@ public class DMRPrint
 
     void
     printMetadata(DapNode node, CEConstraint ce)
-        throws IOException
+            throws IOException
     {
 
         Map<String, DapAttribute> attributes = node.getAttributes();
-        if(attributes.size() == 0) {
+        if (attributes.size() == 0) {
             return;
         }
-        for(String key : attributes.keySet()) {
+        for (String key : attributes.keySet()) {
             DapAttribute attr = attributes.get(key);
             assert (attr != null);
             switch (attr.getSort()) {
@@ -392,21 +392,21 @@ public class DMRPrint
 
     void
     printAttribute(DapAttribute attr, CEConstraint ce)
-        throws IOException
+            throws IOException
     {
         printer.marginPrint("<Attribute");
         printXMLAttributes(attr, ce, NILFLAGS);
         List<Object> values = attr.getValues();
         printer.println(">");
-        if(values == null)
+        if (values == null)
             throw new DapException("Attribute with no values:" + attr.getFQN());
         printer.indent();
-        if(values.size() == 1) {
-            printer.marginPrintln(String.format("<Value value=\"%s\"/>",getPrintValue(values.get(0))));
+        if (values.size() == 1) {
+            printer.marginPrintln(String.format("<Value value=\"%s\"/>", getPrintValue(values.get(0))));
         } else {
             printer.marginPrintln("<Value>");
             printer.indent();
-            for(Object value : values) {
+            for (Object value : values) {
                 printer.marginPrint(getPrintValue(value));
                 printer.eol();
             }
@@ -428,32 +428,23 @@ public class DMRPrint
      */
     void
     printDimrefs(DapVariable var, CEConstraint ce)
-        throws DapException
+            throws DapException
     {
-        if(var.getRank() == 0) return;
-        // Use the slices from the constraint to get the dimrefs
-        List<Slice> slices = ce.getVariableSlices(var);
-        if(slices == null)
+        if (var.getRank() == 0) return;
+        List<DapDimension> dimset = ce.getConstrainedDimensions(var);
+        if (dimset == null)
             throw new DapException("Unknown variable: " + var);
-        assert var.getRank() == slices.size();
-        for(int i = 0;i < var.getRank();i++) {
+        assert var.getRank() == dimset.size();
+        for (int i = 0; i < var.getRank(); i++) {
+            DapDimension dim = dimset.get(i);
             printer.marginPrint("<Dim");
-            Slice slice = slices.get(i);
-            assert slices != null;
-            if(slice.isConstrained()) {
-                long size = slice.getCount();// the size for printing purposes
-                printXMLAttribute("size", Long.toString(size), NILFLAGS);
+            if (dim.isShared()) {
+                String fqn = dim.getFQN();
+                assert (fqn != null) : "Illegal Dimension reference";
+                printXMLAttribute("name", fqn, NILFLAGS);
             } else {
-                DapDimension dim = var.getDimension(i);
-                if(ce.getRedefDim(dim) != null)
-                    dim = ce.getRedefDim(dim);
-                if(dim.isShared()) {
-                    String fqn = dim.getFQN();
-                    assert (fqn != null) : "Illegal Dimension reference";
-                    printXMLAttribute("name", fqn, NILFLAGS);
-                } else {
-                    printXMLAttribute("size", Integer.toString((int) dim.getSize()), NILFLAGS);
-                }
+                long size = dim.getSize();// the size for printing purposes
+                printXMLAttribute("size", Long.toString(size), NILFLAGS);
             }
             printer.println("/>");
         }
@@ -461,18 +452,18 @@ public class DMRPrint
 
     void
     printMaps(DapVariable parent, CEConstraint ce)
-        throws IOException
+            throws IOException
     {
         List<DapMap> maps = parent.getMaps();
-        if(maps.size() == 0) return;
-        for(DapMap map : maps) {
+        if (maps.size() == 0) return;
+        for (DapMap map : maps) {
             printer.marginPrint("<Map");
             // Separate out name attribute so we can use FQN.
             String name = map.getFQN();
             assert (name != null) : "Illegal <Map> reference";
             printXMLAttribute("name", name, NILFLAGS);
             printXMLAttributes(map, ce, NONAME);
-            if(hasMetadata(map)) {
+            if (hasMetadata(map)) {
                 printer.println(">");
                 printer.indent();
                 printMetadata(map, ce);
@@ -489,7 +480,7 @@ public class DMRPrint
     static protected String
     getPrintValue(Object value)
     {
-        if(value instanceof String) {
+        if (value instanceof String) {
             return Escape.entityEscape((String) value);
         } else
             return value.toString();

@@ -11,7 +11,8 @@ test_struct_array \
 test_misc1 \
 test_utf8 \
 test_vlen1 \
-test_vlen2
+test_vlen2 \
+test_opaque
 
 HDF5=\
 test_struct_nested \

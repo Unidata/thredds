@@ -255,9 +255,10 @@ public class DapDataset extends DapGroup
         }
         if(fqn.charAt(0) != '/')
             return null;
+        fqn = fqn.substring(1); // remove leading /
         // Do not use split to be able to look for escaped '/'
         // Warning: elements of path are unescaped
-        List<String> path = DapUtil.backslashSplit(fqn.substring(1), '/');
+        List<String> path = DapUtil.backslashSplit(fqn, '/');
         DapGroup current = dataset;
         // Walk all but the last element to walk group path
         for(int i = 0;i < path.size() - 1;i++) {

@@ -1,7 +1,8 @@
 package dap4.test;
 
 import   dap4.cdm.DapNetcdfFile;
-import dap4.test.util.UnitTestCommon;
+import dap4.dap4shared.HttpDSP;
+import dap4.test.util.DapTestCommon;
 import ucar.nc2.dataset.NetcdfDataset;
 
 import java.io.*;
@@ -11,7 +12,7 @@ import java.util.List;
 /**
  * Test at the NetcdfDataset level; access .ser files on server.
  */
-public class TestSerial extends UnitTestCommon
+public class TestSerial extends DapTestCommon
 {
     static protected final boolean DEBUG = false;
 
@@ -26,7 +27,7 @@ public class TestSerial extends UnitTestCommon
     //////////////////////////////////////////////////
     // Constants
 
-    static protected final String DATADIR = "tests/src/test/data"; // relative to opuls root
+    static protected final String DATADIR = "d4tests/src/test/data"; // relative to dap4 root
     static protected final String TESTDATADIR = DATADIR + "/resources/TestCDMClient";
     static protected final String BASELINEDIR = TESTDATADIR + "/baseline";
 
@@ -64,7 +65,7 @@ public class TestSerial extends UnitTestCommon
         String makeurl(String ce)
         {
             String url = server + "/" + dataset + "." + SERIALEXTENSION;
-            if(ce != null && ce.length() > 0) url += "?"+UnitTestCommon.CONSTRAINTTAG+"=" + ce;
+            if(ce != null && ce.length() > 0) url += "?"+ DapTestCommon.CONSTRAINTTAG+"=" + ce;
             return url;
         }
 
@@ -86,14 +87,6 @@ public class TestSerial extends UnitTestCommon
 
     //////////////////////////////////////////////////
     // Instance variables
-
-    // System properties
-
-    protected boolean prop_diff = true;
-    protected boolean prop_baseline = false;
-    protected boolean prop_visual = false;
-    protected boolean prop_debug = DEBUG;
-    protected String prop_server = null;
 
     // Test cases
 
@@ -125,9 +118,9 @@ public class TestSerial extends UnitTestCommon
     {
         super(name);
         setSystemProperties();
-        this.root = getRoot();
+        this.root = getDAP4Root();
         if(this.root == null)
-            throw new Exception("Opuls root cannot be located");
+            throw new Exception("dap4 root cannot be located");
         // Check for windows path
         if(alpha.indexOf(this.root.charAt(0)) >= 0 && this.root.charAt(1) == ':') {
         } else if(this.root.charAt(0) != '/')
@@ -283,20 +276,6 @@ public class TestSerial extends UnitTestCommon
     //////////////////////////////////////////////////
     // Utility methods
 
-    /**
-     * Try to get the system properties
-     */
-    void setSystemProperties()
-    {
-        prop_diff = (System.getProperty("nodiff") == null);
-        prop_baseline = (System.getProperty("baseline") != null);
-        prop_visual = (System.getProperty("visual") != null);
-        if(System.getProperty("debug") != null)
-            prop_debug = true;
-        prop_server = System.getProperty("server");
-        if(prop_diff && prop_baseline)
-            prop_diff = false;
-    }
 
     // Locate the test cases with given prefix
     ClientTest
@@ -371,7 +350,7 @@ public class TestSerial extends UnitTestCommon
         System.err.print("Checking for sourceurl: " + candidate.prefix);
         try {
             DapNetcdfFile dcfile = new DapNetcdfFile(this.sourceurl);
-            String document = dcfile.getDSP().getCapabilities(candidate.prefix);
+            String document = ((HttpDSP)(dcfile.getDSP())).getCapabilities(candidate.prefix);
             System.err.println(" ; found");
             return true;
         } catch (IOException ie) {

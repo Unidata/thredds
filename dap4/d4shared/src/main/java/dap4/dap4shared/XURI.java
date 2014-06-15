@@ -6,10 +6,13 @@ package dap4.dap4shared;
 
 import dap4.core.util.DapUtil;
 import dap4.core.util.Escape;
+import org.apache.http.NameValuePair;
+import org.apache.http.client.utils.URIBuilder;
 
-import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.EnumSet;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -25,13 +28,31 @@ public class XURI
     static final String QUERYSEP = "&";
     static final String FRAGMENTSEP = "&";
 
+    // Define assembly flags
+
+    static public enum Parts
+    {
+        LEAD, // lead protocol
+        BASE, // base protocol
+        PWD,  // including user
+        HOST, // including port
+        PATH,
+        QUERY,
+        FRAG;
+    }
+
+    // Mnemonics
+    static public final EnumSet<Parts> URLONLY = EnumSet.of(Parts.BASE, Parts.PWD, Parts.HOST, Parts.PATH);
+    static public final EnumSet<Parts> URLALL = EnumSet.of(Parts.LEAD, Parts.BASE, Parts.PWD, Parts.HOST, Parts.PATH, Parts.QUERY, Parts.FRAG);
+
     //////////////////////////////////////////////////
     // Instance variables
 
     protected String originaluri = null;
-    protected String[] protocols = null;
-    protected String coreuri = null;
-    protected URI uri = null; //applied to coreurl
+    protected List<String> protocols = null;
+    protected String trueurl = null;  // without the query or frag and with proper single protocol
+    protected URIBuilder url = null; //applied to trueurl
+    protected boolean isfile = false;
 
     protected String[] allprotocols = null;
     protected String baseprotocol = null;
@@ -43,15 +64,15 @@ public class XURI
 
     // Following are url decoded
     Map<String, String> fields // decomposed query
-        = new HashMap<String, String>();
+            = new HashMap<String, String>();
     Map<String, String> parameters // decomposed fragment
-        = new HashMap<String, String>();
+            = new HashMap<String, String>();
 
     //////////////////////////////////////////////////
     // Constructor
 
     public XURI(String path)
-        throws URISyntaxException
+            throws URISyntaxException
     {
         if(path == null)
             throw new URISyntaxException(path, "Null URI");
@@ -61,63 +82,81 @@ public class XURI
         // Additionally, this may be a windows path, so it
         // will look like it has a single character protocol
         // that is really the drive letter.
-        this.protocols = DapUtil.getProtocols(path);
-        if(this.protocols.length == 0) {
+        this.isfile = false;
+        this.protocols = DapUtil.getProtocols(path); // should handle drive letters also
+        if(this.protocols.size() == 0) {
             // pretend it is a file:
-            this.protocols = new String[]{"file:"};
-            this.path = "file://" + this.path;
-        } else if(this.protocols.length == 1) {
-            // See if this looks like a drive character
-            if(this.protocols[0].length() == 1) {
-                char c = this.protocols[0].charAt(0);
-                if((c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z')) {
-                    // looks like a drive letter
-                    this.protocols = new String[]{"file"};
-                    path = "file://" + path;
-                }
-            }
+            this.protocols.add("file");
+            path = "file://" + path;
         }
+        String lastproto = this.protocols.get(this.protocols.size() - 1);
+
         // compute the core URI
-        if(this.protocols.length == 0)
-            this.coreuri = path;
-        else if(this.protocols.length == 1)
-            this.coreuri = path;
-        else {//(this.protocols.length > 1
+        if(this.protocols.size() == 0) {
+            this.trueurl = path;
+            isfile = true;
+        } else if(this.protocols.size() == 1) {
+            // If the path is dap4:... then change to http:...
+            String theproto = this.protocols.get(0);
+            this.trueurl = path;
+            this.isfile = (theproto.equals("file"));
+        } else {//(this.protocols.length > 1
             int prefix = 0;
-            for(int i = 0;i < this.protocols.length - 1;i++)
-                prefix += (this.protocols[i] + ":").length();
-            this.coreuri = path.substring(prefix);
+            for(int i = 0; i < this.protocols.size() - 1; i++) {
+                prefix += (this.protocols.get(i) + ":").length();
+            }
+            this.trueurl = path.substring(prefix);
+            this.isfile = (this.protocols.get(this.protocols.size() - 1).equals("file"));
         }
 
         // Make sure it parses
-        this.uri = new URI(this.coreuri);
+        // We use the apache URIBuilder instead of URI or URL
+        // because it is more accepting.
+        // Note that if the path has a drive letter, this parse
+        // will treat it as the host; fix below
+        try {
+            this.url = new URIBuilder(this.trueurl);
+        } catch (URISyntaxException mue) {
+            throw new URISyntaxException(this.trueurl, mue.getMessage());
+        }
 
         // Extract the parts of the uri so they can
         // be modified and later reassembled
-        String lastproto = this.protocols[this.protocols.length-1];
-        if(!lastproto.equals(canonical(this.uri.getScheme())))
-            throw new URISyntaxException(this.uri.toString(),String.format("malformed url: %s :: %s",
-                    lastproto,this.uri.getScheme()));
-        this.baseprotocol = this.protocols[this.protocols.length - 1];
-        this.userinfo = canonical(this.uri.getRawUserInfo());
-        this.host = canonical(this.uri.getRawAuthority()); // including port
-        this.path = canonical(this.uri.getRawPath());
-        this.query = canonical(this.uri.getRawQuery());
-        this.frag = canonical(this.uri.getRawFragment());
+
+        if(!lastproto.equals(canonical(this.url.getScheme())))
+            throw new URISyntaxException(this.url.toString(),
+                    String.format("malformed url: %s :: %s",
+                            lastproto, this.url.getScheme()));
+        this.baseprotocol = lastproto;
+        this.userinfo = canonical(this.url.getUserInfo());
+        if(this.isfile && DapUtil.hasDriveLetter(this.url.getHost())) {
+            this.host = null;
+            this.path = this.url.getHost();
+            if(this.url.getPort() > 0)
+                this.path += (":"+this.url.getPort());
+            this.path = canonical(this.path + this.url.getPath());
+        } else {
+            this.host = canonical(this.url.getHost());
+            if(this.url.getPort() > 0)
+                this.host += (":"+this.url.getPort());
+            this.path = canonical(this.url.getPath());
+        }
 
         // Parse the raw query (before decoding)
-        if(this.query != null) {
-            String[] pieces = this.query.split(QUERYSEP);
-            for(String piece : pieces) {
-                String[] pair = piece.split("=");
-                String name = Escape.urlDecode(pair[0]);
+        List<NameValuePair> params = this.url.getQueryParams();
+        if(params != null && params.size() > 0) {
+            this.query = "";
+            for(NameValuePair pair : params) {
+                String name = Escape.urlDecode(pair.getName());
                 name = name.toLowerCase(); // for consistent lookup
-                String value = (pair.length == 2 ? Escape.urlDecode(pair[1]) : "");
+                String value = Escape.urlDecode(pair.getValue());
                 this.fields.put(name, value);
+                this.query += name + "=" + value;
             }
         }
 
         // Parse the raw fragment (before decoding)
+        this.frag = canonical(this.url.getFragment());
         if(this.frag != null) {
             String[] pieces = this.frag.split(FRAGMENTSEP);
             for(String piece : pieces) {
@@ -125,7 +164,7 @@ public class XURI
                 String name = Escape.urlDecode(pair[0]);
                 name = name.toLowerCase(); // for consistent lookup
                 String value = (pair.length == 2 ? Escape.urlDecode(pair[1])
-                    : "");
+                        : "");
                 this.parameters.put(name, value);
             }
         }
@@ -139,14 +178,14 @@ public class XURI
         return originaluri;
     }
 
-    public String[] getProtocols()
+    public List<String> getProtocols()
     {
         return this.protocols;
     }
 
     public String getLeadProtocol()
     {
-        return this.protocols[0];
+        return this.protocols.get(0);
     }
 
     public String getBaseProtocol()
@@ -157,6 +196,11 @@ public class XURI
     public void setBaseProtocol(String base)
     {
         this.baseprotocol = base;
+    }
+
+    public boolean isFile()
+    {
+        return this.isfile;
     }
 
     public String getUserinfo()
@@ -195,22 +239,42 @@ public class XURI
     }
 
     //////////////////////////////////////////////////
-    // API 
+    // API
 
+    /**
+     * Reassemble the url using the specified parts
+     *
+     * @param parts to include
+     * @return the assembled uri
+     */
     public String
-    pureURI()
+    assemble(EnumSet<Parts> parts)
     {
-        // reassemble as modified and without the query and fragment parts
-        try {
-            String auth = this.host;
-            if(this.userinfo != null) auth = this.userinfo + "@" + auth;
-            URI urx = new URI(getBaseProtocol(), auth, this.path, null, null);
-            return urx.toString();
-        } catch (URISyntaxException e) {
-            assert (false) : "Internal Error";
+        StringBuilder uri = new StringBuilder();
+        // Note that lead and base may be same, so case it out
+        if(parts.contains(Parts.LEAD) && parts.contains(Parts.BASE) && this.protocols.size() == 1)
+            uri.append(this.protocols.get(0) + ":");
+        else {
+            if(parts.contains(Parts.LEAD))
+                uri.append(this.protocols.get(0) + ":");
+            if(parts.contains(Parts.BASE))
+                uri.append(this.baseprotocol + ":");
         }
-        return null;
+        if(parts.contains(Parts.LEAD) || parts.contains(Parts.BASE) && this.protocols.size() > 0)
+            uri.append("//");
+        if(userinfo != null && parts.contains(Parts.PWD))
+            uri.append(this.userinfo + ":");
+        if(this.host != null && parts.contains(Parts.HOST))
+            uri.append(this.host);
+        if(this.path != null && parts.contains(Parts.PATH))
+            uri.append(this.path);
+        if(this.query != null && parts.contains(Parts.QUERY))
+            uri.append("?" + this.query);
+        if(this.frag != null && parts.contains(Parts.FRAG))
+            uri.append("#" + this.frag);
+        return uri.toString();
     }
+
 
     /**
      * Canonicalize a part of a URL
@@ -227,6 +291,10 @@ public class XURI
         }
         return s;
     }
-}
 
+    public String toString()
+    {
+        return originaluri;
+    }
+}
 

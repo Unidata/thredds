@@ -21,9 +21,21 @@ public class FakeServletRequest implements javax.servlet.http.HttpServletRequest
     static final class Iter2Enumeration implements Enumeration
     {
         private final Iterator iter;
-        public Iter2Enumeration(final Iterator iter) {this.iter = iter;}
-        public boolean hasMoreElements() {return iter.hasNext();}
-        public Object nextElement() {return iter.next();}
+
+        public Iter2Enumeration(final Iterator iter)
+        {
+            this.iter = iter;
+        }
+
+        public boolean hasMoreElements()
+        {
+            return iter.hasNext();
+        }
+
+        public Object nextElement()
+        {
+            return iter.next();
+        }
     }
 
     //////////////////////////////////////////////////
@@ -38,7 +50,7 @@ public class FakeServletRequest implements javax.servlet.http.HttpServletRequest
 
     String filesystemroot = null;
 
-    Map<String,List<String>> fakeheaders = new HashMap<String,List<String>>();
+    Map<String, List<String>> fakeheaders = new HashMap<String, List<String>>();
 
     // Convenience
     void addHeader(String name, String value)
@@ -46,7 +58,7 @@ public class FakeServletRequest implements javax.servlet.http.HttpServletRequest
         List<String> matches = fakeheaders.get(name);
         if(matches == null) {
             matches = new ArrayList<String>();
-            fakeheaders.put(name,matches);
+            fakeheaders.put(name, matches);
         }
         if(!matches.contains(value))
             matches.add(value);
@@ -56,26 +68,26 @@ public class FakeServletRequest implements javax.servlet.http.HttpServletRequest
     // Constructor(s)
 
     public FakeServletRequest(String surl, FakeServlet sv)
-        throws Exception
+            throws Exception
     {
         inputurl = surl;
         this.url = new URL(surl);
         this.servlet = sv;
         this.servletname = sv.getServletName();
         // Add some fake headers
-        addHeader("User-Agent","Fake");
+        addHeader("User-Agent", "Fake");
         parsePath(url);
     }
 
     void parsePath(URL url)
-        throws Exception
+            throws Exception
     {
         String path = url.getPath();
         // Assume that the path begins with the servlet name
         String servletprefix = "/" + servletname;
         if(!path.startsWith(servletprefix))
-            throw new Exception("URL path does not start with servletname: "+url.toString());
-        this.datasetpath = DapUtil.canonicalpath(path.substring(servletprefix.length()),true);
+            throw new Exception("URL path does not start with servletname: " + url.toString());
+        this.datasetpath = DapUtil.canonicalpath(path.substring(servletprefix.length()));
     }
 
     /////////////////////////////////////////////////
@@ -97,7 +109,7 @@ public class FakeServletRequest implements javax.servlet.http.HttpServletRequest
     }
 
     public void setCharacterEncoding(String s)
-        throws UnsupportedEncodingException
+            throws UnsupportedEncodingException
     {
         return;
     }
@@ -149,12 +161,12 @@ public class FakeServletRequest implements javax.servlet.http.HttpServletRequest
 
     public String getServerName()
     {
-        return null;
+        return "localhost";
     }
 
     public int getServerPort()
     {
-        return 0;
+        return 8080;
     }
 
     public BufferedReader getReader() throws IOException
@@ -227,14 +239,19 @@ public class FakeServletRequest implements javax.servlet.http.HttpServletRequest
 
     @Override
     public ServletContext getServletContext()
-    {return servlet.getServletContext();}
+    {
+        return servlet.getServletContext();
+    }
 
     @Override
     public Collection<Part> getParts()
-    {return null;}
+    {
+        return null;
+    }
 
     @Override
-    public Part getPart(String s)   {
+    public Part getPart(String s)
+    {
         return null;
     }
 
@@ -288,7 +305,9 @@ public class FakeServletRequest implements javax.servlet.http.HttpServletRequest
 
     @Override
     public AsyncContext getAsyncContext()
-    {return null;}
+    {
+        return null;
+    }
 
     /**
      * @deprecated
@@ -336,7 +355,7 @@ public class FakeServletRequest implements javax.servlet.http.HttpServletRequest
     }
 
     public int getIntHeader(String s)
-        throws NumberFormatException
+            throws NumberFormatException
     {
         String v = getHeader(s);
         return Integer.parseInt(v);
@@ -349,7 +368,12 @@ public class FakeServletRequest implements javax.servlet.http.HttpServletRequest
 
     public String getPathInfo()
     {
-        return null;
+        String path = null;
+        if(datasetpath != null) {
+            path = datasetpath;
+            path = DapUtil.absolutize(path);
+        }
+        return path;
     }
 
     public String getPathTranslated()
@@ -396,14 +420,14 @@ public class FakeServletRequest implements javax.servlet.http.HttpServletRequest
     {
         // remove query
         int pos = inputurl.lastIndexOf('?');
-        String rqurl = (pos < 0 ? inputurl : inputurl.substring(0,pos));
+        String rqurl = (pos < 0 ? inputurl : inputurl.substring(0, pos));
         return new StringBuffer(rqurl);
     }
 
     public String getServletPath()
     {
-        String path = "/"+servletname;
-        if(datasetpath != null) path += "/" + datasetpath;
+        String path = servletname;
+        path = DapUtil.absolutize(path);
         return path;
     }
 

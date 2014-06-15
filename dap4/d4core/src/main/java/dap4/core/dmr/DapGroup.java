@@ -49,14 +49,16 @@ public class DapGroup extends DapNode implements DapDecl
 
     public void
     setDecls(List<? extends DapNode> decls)
-        throws DapException
+            throws DapException
     {
         decls.clear();
         groups.clear();
         enums.clear();
         dimensions.clear();
         variables.clear();
-        for(DapNode node : decls) addDecl(node);
+        for(DapNode node : decls) {
+            addDecl(node);
+        }
     }
 
     /**
@@ -65,7 +67,7 @@ public class DapGroup extends DapNode implements DapDecl
 
     public void
     addDecl(DapNode newdecl)
-        throws DapException
+            throws DapException
     {
         DapSort newsort = newdecl.getSort();
         String newname = newdecl.getShortName();
@@ -73,7 +75,7 @@ public class DapGroup extends DapNode implements DapDecl
         if(newsort != DapSort.DIMENSION || newname != null) {
             for(DapNode decl : decls) {
                 if(newsort == decl.getSort()
-                    && newname.equals(decl.getShortName()))
+                        && newname.equals(decl.getShortName()))
                     throw new DapException("DapGroup: attempt to add duplicate decl: " + newname);
             }
         } else { // Anonymous
@@ -160,6 +162,12 @@ public class DapGroup extends DapNode implements DapDecl
         return findInGroup(name, sort);
     }
 
+    public List<DapNode>
+    findByName(String name, EnumSet<DapSort> sortset)
+    {
+        return findInGroup(name, sortset);
+    }
+
     public DapNode
     findInGroup(String name, DapSort sort)
     {
@@ -211,6 +219,14 @@ public class DapGroup extends DapNode implements DapDecl
                         matches.add(x);
                 }
                 break;
+            case SEQUENCE:
+                for(DapVariable x : variables) {
+                    if(x.getSort() != sort)
+                        continue;
+                    if(x.getShortName().equals(name))
+                        matches.add(x);
+                }
+                break;
             case GROUP:
                 for(DapGroup x : groups) {
                     if(x.getShortName().equals(name))
@@ -237,14 +253,14 @@ public class DapGroup extends DapNode implements DapDecl
      */
     public DapNode
     findByFQN(String fqn, DapSort sort)
-        throws DapException
+            throws DapException
     {
         return findByFQN(fqn, EnumSet.of(sort)).get(0);
     }
 
     public List<DapNode>
     findByFQN(String fqn, EnumSet<DapSort> sortset)
-        throws DapException
+            throws DapException
     {
         fqn = fqn.trim();
         if(fqn == null)

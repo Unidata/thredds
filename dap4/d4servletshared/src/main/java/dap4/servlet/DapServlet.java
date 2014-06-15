@@ -2,9 +2,9 @@
    See the LICENSE file for more information.
 */
 
-package dap4.dap4servlet;
+package dap4.servlet;
 
-import dap4.ce.CEConstraint;
+import dap4.ce.*;
 import dap4.ce.parser.*;
 import dap4.core.dmr.*;
 import dap4.core.dmr.parser.Dap4Parser;
@@ -17,57 +17,62 @@ import javax.servlet.ServletException;
 import javax.servlet.http.*;
 import java.io.*;
 import java.lang.reflect.Field;
-import java.net.MalformedURLException;
+import java.net.*;
 import java.nio.ByteOrder;
 import java.nio.charset.Charset;
 
-public class Dap4Servlet extends javax.servlet.http.HttpServlet
+public class DapServlet extends javax.servlet.http.HttpServlet
 {
 
     //////////////////////////////////////////////////
     // Constants
 
-    static final boolean DEBUG = true;
+    static public final boolean DEBUG = false;
 
-    static final boolean PARSEDEBUG = false;
+    static public final boolean PARSEDEBUG = false;
 
-    static final String SERVLETNAME = "Dap4";
-
-    static final String TESTDATADIR = "testfiles";
-
-    static final String BIG_ENDIAN = "Big-Endian";
-    static final String LITTLE_ENDIAN = "Little-Endian";
+    static protected final String BIG_ENDIAN = "Big-Endian";
+    static protected final String LITTLE_ENDIAN = "Little-Endian";
 
     // Is this machine big endian?
-    static boolean IS_BIG_ENDIAN = (ByteOrder.nativeOrder() == ByteOrder.BIG_ENDIAN);
+    static protected boolean IS_BIG_ENDIAN = (ByteOrder.nativeOrder() == ByteOrder.BIG_ENDIAN);
 
-    static final String DMREXT = ".dmr";
-    static final String DATAEXT = ".dap";
-    static final String DSREXT = ".dsr";
+    static protected final String DMREXT = ".dmr";
+    static protected final String DATAEXT = ".dap";
+    static protected final String DSREXT = ".dsr";
 
-    static final String FAVICON = "favicon.ico";
+    static protected final String FAVICON = "favicon.ico"; // relative to resource dir
 
     //////////////////////////////////////////////////
     // Instance variables
 
-    boolean compress = true;
+    protected boolean compress = true;
 
     // Define the path prefix for finding a dataset
     // given a url file spec
 
-    String datasetprefix = null;
+    protected URLMap urlmap = new URLMapDefault();
 
-    ByteOrder byteorder = ByteOrder.nativeOrder();
+    protected ByteOrder byteorder = ByteOrder.nativeOrder();
 
-    DapDSR dsrbuilder = new DapDSR();
+    protected DapDSR dsrbuilder = new DapDSR();
 
-    ServletInfo svcinfo = null;
+    protected ServletInfo svcinfo = null;
 
     //////////////////////////////////////////////////
     // Constructor(s)
 
-    public Dap4Servlet()
+    public DapServlet()
     {
+    }
+
+    //////////////////////////////////////////////////////////
+    // Accessors
+
+    public ServletInfo
+    getInfo()
+    {
+        return this.svcinfo;
     }
 
     //////////////////////////////////////////////////////////
@@ -81,10 +86,9 @@ public class Dap4Servlet extends javax.servlet.http.HttpServlet
         DapLog.info(getClass().getName() + " initialization start");
         //String initParam  = config.getInitParameter("InitParam");
         try {
-            svcinfo = new ServletInfo(this);
+            this.svcinfo = new ServletInfo(this);
         } catch (Exception ioe) {
-          // ioe.printStackTrace();
-          throw new ServletException(ioe);
+            throw new ServletException(ioe);
         }
         try {
             System.setProperty("file.encoding", "UTF-8");
@@ -104,26 +108,42 @@ public class Dap4Servlet extends javax.servlet.http.HttpServlet
     {
         DapLog.debug("doGet(): User-Agent = " + req.getHeader("User-Agent"));
         String url = req.getRequestURL().toString();
+
+        // This may be a tomcat under intellij thing,
+        // but for some reason, tomcat invokes this servlet
+        // both with and without the d4ts path
+        // E.g. it gets invokes with url=http://localhost:8080/
+        // and with url=http://localhost:8080/d4ts.
+        //
+        // In any case, any request whose path does not start with svcinfo.servletname
+        // will be ignored.
+
+        try {
+            URI uri = new URI(url);
+            if(svcinfo != null && !uri.getPath().startsWith("/"+svcinfo.getServletname()))
+                return;
+        } catch (URISyntaxException use) {
+            return;
+        }
+
+        if(this.svcinfo != null)
+            this.svcinfo.setServer(url);
         String query = req.getQueryString();
         DapLog.debug("doGet(): url = " + url + (query == null || query.length() == 0 ? "" : "?" + query));
 
         DapRequest drq = getRequestState(svcinfo, req, resp);
 
         if(DEBUG) {
-            System.err.println("Dap4Servlet: processing url: " + drq.getOriginalURL());
+            System.err.println("DAP4 Servlet: processing url: " + drq.getOriginalURL());
         }
 
-        if(url.endsWith("favicon.ico")) {
+        if(url.endsWith(FAVICON)) {
             doFavicon(drq);
             return;
         }
 
-        String datasetpath = drq.getDataset();
-        if(datasetpath != null && datasetpath.length() == 0)
-            datasetpath = null;
-
+        String datasetpath = DapUtil.nullify(drq.getDataset());
         try {
-
             if(datasetpath == null) {
                 // This is the case where a request was made without a dataset;
                 // According to the spec, I think we should return the
@@ -136,13 +156,13 @@ public class Dap4Servlet extends javax.servlet.http.HttpServlet
                         .setCode(HttpServletResponse.SC_BAD_REQUEST);
                 switch (mode) {
                 case DMR:
-                    doDMR(drq, datasetpath);
+                    doDMR(drq);
                     break;
                 case DAP:
-                    doData(drq, datasetpath);
+                    doData(drq);
                     break;
                 case DSR:
-                    doDSR(drq, datasetpath);
+                    doDSR(drq);
                     break;
                 default:
                     throw new DapException("Unrecognized request extension")
@@ -174,7 +194,7 @@ public class Dap4Servlet extends javax.servlet.http.HttpServlet
 
     /**
      * Process a capabilities request.
-     * Currently, generate the front page.
+     * Currently, does nothing (but see D4TSServlet.doCapabilities).
      *
      * @param drq The merged dap state
      */
@@ -200,7 +220,7 @@ public class Dap4Servlet extends javax.servlet.http.HttpServlet
         throws IOException
     {
         try {
-            String favfile = getResourceFile(drq, FAVICON, false);
+            String favfile = getResourceFile(drq, false);
             if(favfile != null) {
                 FileInputStream fav = new FileInputStream(favfile);
                 byte[] content = DapUtil.readbinaryfile(fav);
@@ -216,11 +236,10 @@ public class Dap4Servlet extends javax.servlet.http.HttpServlet
      * Process a DSR request.
      *
      * @param drq         The merged dap state
-     * @param datasetname The name of the dataset whose DSR is to be returned.
      */
 
     protected void
-    doDSR(DapRequest drq, String datasetname)
+    doDSR(DapRequest drq)
         throws IOException
     {
         try {
@@ -241,15 +260,14 @@ public class Dap4Servlet extends javax.servlet.http.HttpServlet
      * Process a DMR request.
      *
      * @param drq         The merged dap state
-     * @param datasetname The name of the dataset whose DMR is to be returned.
      */
 
     protected void
-    doDMR(DapRequest drq, String datasetname)
+    doDMR(DapRequest drq)
         throws IOException
     {
 
-        String datasetpath = getResourceFile(drq, datasetname, false);
+        String datasetpath = getResourceFile(drq, false);
         DSP dsp = DapCache.open(datasetpath);
 
         // Process any constraint view
@@ -288,14 +306,13 @@ public class Dap4Servlet extends javax.servlet.http.HttpServlet
      * then the exception would produce an error chunk.
      *
      * @param drq         The merged dap state
-     * @param datasetname The name of the dataset whose DMR is to be returned.
      */
 
     protected void
-    doData(DapRequest drq, String datasetname)
+    doData(DapRequest drq)
         throws IOException
     {
-        String datasetpath = getResourceFile(drq, datasetname, false);
+        String datasetpath = getResourceFile(drq, false); // dataset path is relative to resource path
         DSP dsp = DapCache.open(datasetpath);
 
         // Process any constraint
@@ -312,21 +329,21 @@ public class Dap4Servlet extends javax.servlet.http.HttpServlet
         pw.close();
         sw.close();
 
-        String dmr = sw.toString();
+        String sdmr = sw.toString();
         if(DEBUG)
-            System.err.println("Sending: Data DMR:\n" + dmr);
+            System.err.println("Sending: Data DMR:\n" + sdmr);
 
         // Wrap the outputstream with a Chunk writer
         OutputStream out = drq.getOutputStream();
         ChunkWriter cw = new ChunkWriter(out, RequestMode.DAP, this.byteorder);
-        cw.writeDMR(dmr);
+        cw.writeDMR(sdmr);
         cw.flush();
 
         addCommonHeaders(drq);
 
         // Dump the databuffer part
         DapSerializer writer = new DapSerializer(dsp, ce, cw, byteorder);
-        writer.write();
+        writer.write(dsp.getDMR());
         cw.flush();
         cw.close();
     }
@@ -365,13 +382,14 @@ public class Dap4Servlet extends javax.servlet.http.HttpServlet
      * @param svc A Servlet object
      * @return the extracted servlet info
      */
-
-    ServletInfo
+/*
+    protected ServletInfo
     getRequestState(HttpServlet svc)
         throws IOException
     {
         return new ServletInfo(svc);
     }
+    */
 
     /**
      * Merge the servlet inputs into a single object
@@ -384,44 +402,50 @@ public class Dap4Servlet extends javax.servlet.http.HttpServlet
      *         from the servlet engine.
      */
 
-    DapRequest
+    protected DapRequest
     getRequestState(ServletInfo info, HttpServletRequest rq, HttpServletResponse rsp)
         throws IOException
     {
         return new DapRequest(info, rq, rsp);
     }
 
-
     /**
      * Return the full file path with
      * respect to the resource directory.
      *
      * @param drq         The request info
-     * @param datasetname the dataset name
      * @param isdir       do we want a file or a directory
      */
 
-    String
-    getResourceFile(DapRequest drq, String datasetname, boolean isdir)
+    protected String
+    getResourceFile(DapRequest drq, boolean isdir)
         throws IOException
     {
         // Using context information, we need to
         // construct a file path to the specified dataset
-        String resourcedir = drq.getResourcePath(); // presumed to be absolute path
-        // Look the dataset file
-        String datasetfilepath = DapUtil.locateRelative(datasetname, resourcedir, isdir);
-        if(datasetfilepath == null)
-            throw new FileNotFoundException("Cannot locate file:" + datasetfilepath);
+
+        // First, convert the incoming url to a file set path using URLMap
+        XURI xurl;
+        try {
+            xurl = new XURI(drq.getOriginalURL());
+        } catch (URISyntaxException use) {
+            throw new DapException(use);
+        }
+        URLMap.Result mappath = urlmap.mapURL(xurl.getPath());
+        // Locate the dataset file
+        String datasetfilepath = mappath.prefix;
+        if(DapUtil.nullify(mappath.suffix) != null)
+            datasetfilepath += "/" + mappath.suffix;
         // See if it really exists and is readable and of proper type
         File dataset = new File(datasetfilepath);
         if(!dataset.exists())
-            throw new DapException("Requested file does not exist")
+            throw new DapException("Requested file does not exist: "+ datasetfilepath)
                 .setCode(HttpServletResponse.SC_NOT_FOUND);
         if(!dataset.canRead())
-            throw new DapException("Requested file not readable")
+            throw new DapException("Requested file not readable: "+datasetfilepath)
                 .setCode(HttpServletResponse.SC_FORBIDDEN);
         if(isdir && !dataset.isDirectory())
-            throw new DapException("Requested file not a directory")
+            throw new DapException("Requested file not a directory: "+datasetfilepath)
                 .setCode(HttpServletResponse.SC_FORBIDDEN);
         return datasetfilepath;
     }
@@ -429,11 +453,11 @@ public class Dap4Servlet extends javax.servlet.http.HttpServlet
     //////////////////////////////////////////////////////////
     // Error Methods
 
-/* Note that these error returns are assumed to be before
+    /* Note that these error returns are assumed to be before
        any DAP4 response has been generated. So they will
        set the header return code and an Error Response as body.
        Error chunks are handled elsewhere.
-*/
+     */
 
     /**
      * Generate an error based on the parameters
@@ -443,7 +467,8 @@ public class Dap4Servlet extends javax.servlet.http.HttpServlet
      * @param t        exception that caused the error; may be null
      * @throws IOException
      */
-    void senderror(DapRequest drq, int httpcode, Throwable t)
+    protected void
+    senderror(DapRequest drq, int httpcode, Throwable t)
         throws IOException
     {
         if(httpcode == 0) httpcode = HttpServletResponse.SC_BAD_REQUEST;
@@ -483,7 +508,8 @@ public class Dap4Servlet extends javax.servlet.http.HttpServlet
         CEAST root = ceparser.getConstraint();
         CECompiler compiler = new CECompiler();
         CEConstraint ce = compiler.compile(dmr, root);
-        ce.finish(CEConstraint.EXPAND);
+        ce.expand();
+        ce.finish();
         return ce;
     }
 

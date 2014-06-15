@@ -5,54 +5,61 @@
 package dap4.test;
 
 import dap4.ce.CEConstraint;
-import dap4.ce.parser.CECompiler;
+import dap4.ce.CECompiler;
 import dap4.ce.parser.CEParser;
 import dap4.core.dmr.DapDataset;
 import dap4.core.dmr.DapFactoryDMR;
 import dap4.core.dmr.parser.Dap4Parser;
-import dap4.test.util.UnitTestCommon;
+import dap4.core.util.DapUtil;
+import dap4.test.util.DapTestCommon;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class TestParserCE extends UnitTestCommon
+public class TestParserCE extends DapTestCommon
 {
 
     //////////////////////////////////////////////////
     // Constants
-    static final boolean PARSEDEBUG = false;
-    static final String TESTCASEDIR = "tests/src/test/data/resources/TestParsers"; // relative to opuls root
+    static final boolean DMRPARSEDEBUG = false;
+    static final boolean CEPARSEDEBUG = false;
+    static final String TESTCASEDIR = "d4tests/src/test/data/resources/TestParsers"; // relative to dap4 root
 
     //////////////////////////////////////////////////
     // Type decls
     static class TestSet
     {
-        static public String rootdir = null;
-
-        public String title;
-        public String baseline;
         public String dmr;
-        public String[] constraints;
+        public String constraint;
+        public String expected = null;
         public String[] debug = null;
+        public int id = 0;
 
-        public TestSet(String title)
-            throws IOException
+        public TestSet(int id, String cedmr, String ces, String expected)
+                throws IOException
         {
-            this.title = title;
-            this.baseline = makepath(title+".dmp","baseline");
-            String dmrfile = makepath(title+"_dmr.txt","testinput");
-            String cefile = makepath(title+".txt","testinput");
-            this.dmr = readfile(dmrfile);
-            this.constraints = readfile(cefile).split("[\n]");
+            this.id = id;
+            this.dmr = cedmr;
+            this.constraint = ces;
+            this.expected = expected;
         }
 
-        public TestSet setdebug(String[] debug) {this.debug = debug; return this;}
-        public TestSet setdebug(String debug) {return setdebug(new String[]{debug});}
-
-        String makepath(String file, String parent)
+        public TestSet setdebug(String[] debug)
         {
-            return getRoot() + "/" + TESTCASEDIR + "/" + parent +"/" + file;
+            this.debug = debug;
+            return this;
+        }
+
+        public TestSet setdebug(String debug)
+        {
+            return setdebug(new String[]{debug});
+        }
+
+        public String
+        toString()
+        {
+            return constraint;
         }
 
     }
@@ -60,14 +67,9 @@ public class TestParserCE extends UnitTestCommon
     //////////////////////////////////////////////////
     // Instance methods
 
-    // System properties
-
-    boolean prop_diff = true;
-    boolean prop_baseline = false;
-    boolean prop_visual = false;
-
     // All test cases
-    List<TestSet> alltestsets = new ArrayList<TestSet>();
+    List<TestSet> alltestsets = new ArrayList<>();
+    List<TestSet> chosentests = new ArrayList<>();
 
     DapDataset dmr = null;
 
@@ -84,7 +86,8 @@ public class TestParserCE extends UnitTestCommon
         super(name);
         setSystemProperties();
         try {
-            defineTestCases();
+            defineAllTestCases();
+            chooseTestcases();
         } catch (IOException ioe) {
             ioe.printStackTrace();
         }
@@ -93,36 +96,56 @@ public class TestParserCE extends UnitTestCommon
     //////////////////////////////////////////////////
     // Misc. methods
 
-
-    void defineTestCases()
-        throws IOException
+    protected void
+    chooseTestcases()
     {
-        TestSet.rootdir = getRoot();
-        TestSet set = new TestSet("ce1"); // take the constraints from this.txt
-        //set = set.setdebug("b[10:16]");
-        alltestsets.add(set);
+        if(false) {
+            chosentests = locate(8);
+        } else {
+            for(TestSet tc : alltestsets) {
+                chosentests.add(tc);
+            }
+        }
     }
 
-    /**
-     * Try to get the system properties
-     */
-    void setSystemProperties()
+    // Locate the test cases
+    List<TestSet>
+    locate(Object ce)
     {
-        if(System.getProperty("nodiff") != null)
-            prop_diff = false;
-        if(System.getProperty("baseline") != null)
-            prop_baseline = true;
-        if(System.getProperty("visual") != null)
-            prop_visual = true;
+        List<TestSet> results = new ArrayList<>();
+        for(TestSet ct : this.alltestsets) {
+            if(ce instanceof String) {
+                if(ct.constraint.equals(ce))
+                    results.add(ct);
+            } else if(ce instanceof Integer) {
+                if(ct.id == ((Integer) ce))
+                    results.add(ct);
+            }
+        }
+        return results;
+    }
+
+    protected void
+    defineAllTestCases()
+            throws IOException
+    {
+        alltestsets.add(new TestSet(1, CE1_DMR, "/a[1]", "/a[1]"));
+        alltestsets.add(new TestSet(2, CE1_DMR, "/b[10:16]", "/b[10:16]"));
+        alltestsets.add(new TestSet(3, CE1_DMR, "/c[8:2:15]", "/c[8:2:15]"));
+        alltestsets.add(new TestSet(4, CE1_DMR, "/a[1];/b[10:16];/c[8:2:15]", "/a[1];/b[10:16];/c[8:2:15]"));
+        alltestsets.add(new TestSet(5, CE1_DMR, "/d[1][0:2:2];/a[1];/e[1][0];/f[0][1]", "/d[1][0:2:2];/a[1];/e[1][0];/f[0][1]"));
+        alltestsets.add(new TestSet(6, CE1_DMR, "/s[0:3][0:2].x;/s[0:3][0:2].y", "/s[0:3][0:2]"));
+        alltestsets.add(new TestSet(7, CE1_DMR, "/seq|i1<0", "/seq|i1<0"));
+        alltestsets.add(new TestSet(8, CE1_DMR, "/seq|0<i1<10", "/seq|i1>0,i1<10"));
     }
 
     //////////////////////////////////////////////////
     // Junit test method
 
-    public void testParser()
-        throws Exception
+    public void testParserCE()
+            throws Exception
     {
-        for(TestSet testset : alltestsets ) {
+        for(TestSet testset : chosentests) {
             if(!doOneTest(testset)) {
                 assertTrue(false);
                 System.exit(1);
@@ -132,15 +155,16 @@ public class TestParserCE extends UnitTestCommon
 
     boolean
     doOneTest(TestSet testset)
-        throws Exception
+            throws Exception
     {
         boolean pass = true;
 
-        System.out.println("Test Set: " + testset.title);
+        System.out.println("Test Set: " + testset.constraint);
 
         // Create the DMR tree
+        System.out.println("Parsing DMR");
         Dap4Parser pushparser = new Dap4Parser(new DapFactoryDMR());
-        if(false)
+        if(DMRPARSEDEBUG)
             pushparser.setDebugLevel(1);
         boolean parseok = pushparser.parse(testset.dmr);
         if(parseok)
@@ -149,45 +173,41 @@ public class TestParserCE extends UnitTestCommon
             parseok = false;
         if(!parseok)
             throw new Exception("DMR Parse failed");
+        System.out.flush();
+        System.err.flush();
 
         // Iterate over the constraints
         String results = "";
         CEConstraint ceroot = null;
-        String[] tests = (testset.debug != null ? testset.debug : testset.constraints);
-        for(String ce: tests) {
-            System.out.println("constraint: " + ce);
-            CEParser ceparser = null;
-            try {
-                ceparser = new CEParser(dmr);
-                if(PARSEDEBUG)
-                    ceparser.setDebugLevel(1);
-                parseok = ceparser.parse(ce);
-                CECompiler compiler = new CECompiler();
-                ceroot = compiler.compile(dmr,ceparser.getConstraint());
-            } catch (Exception e) {
-                e.printStackTrace();
-                parseok = false;
-            }
-            if(ceroot == null)
-                parseok = false;
-            if(!parseok)
-                throw new Exception("CE Parse failed");
-
-            // Dump the parsed CE for comparison purposes
-            String cedump = ceroot.toConstraintString();
-            if(prop_visual)
-                visual(testset.title+" |"+ce+"|", cedump);
-            results += (cedump+"\n");
+        System.out.println("constraint: " + testset.constraint);
+        System.out.flush();
+        CEParser ceparser = null;
+        try {
+            ceparser = new CEParser(dmr);
+            if(CEPARSEDEBUG)
+                ceparser.setDebugLevel(1);
+            parseok = ceparser.parse(testset.constraint);
+            CECompiler compiler = new CECompiler();
+            ceroot = compiler.compile(dmr, ceparser.getConstraint());
+        } catch (Exception e) {
+            e.printStackTrace();
+            parseok = false;
         }
+        if(ceroot == null)
+            parseok = false;
+        if(!parseok)
+            throw new Exception("CE Parse failed");
 
-        if(prop_baseline) {
-            writefile(testset.baseline, results);
-        } else if(prop_diff) { //compare with baseline
+        // Dump the parsed CE for comparison purposes
+        String cedump = ceroot.toConstraintString();
+        if(prop_visual)
+            visual("|" + testset.constraint + "|", cedump);
+        results += (cedump + "\n");
+        if(prop_diff) { //compare with baseline
             // Read the baseline file
-            String baselinecontent = readfile(testset.baseline);
+            String baselinecontent = testset.expected;
             pass = compare(baselinecontent, results);
         }
-
         return pass;
     }
 
@@ -196,15 +216,54 @@ public class TestParserCE extends UnitTestCommon
 
     static public void
     main(String[] argv)
-        throws Exception
+            throws Exception
     {
-        new TestParserCE("TestParserCE").testParser();
+        new TestParserCE("TestParserCE").testParserCE();
     }// main
 
 
+    ////////////////////////////////////
+    // Data for the tests
+
+    String CE1_DMR =
+            "<Dataset"
+                    + "         name=\"ce1\""
+                    + "         dapVersion=\"4.0\""
+                    + "         dmrVersion=\"1.0\""
+                    + "         ns=\"http://xml.opendap.org/ns/DAP/4.0#\">"
+                    + "  <Dimension name=\"d10\" size=\"10\"/>"
+                    + "  <Dimension name=\"d17\" size=\"17\"/>"
+                    + "  <Int32 name=\"a\">"
+                    + "    <Dim name=\"/d17\"/>"
+                    + "  </Int32>"
+                    + "  <Int32 name=\"b\">"
+                    + "    <Dim name=\"/d17\"/>"
+                    + "  </Int32>"
+                    + "  <Int32 name=\"c\">"
+                    + "    <Dim name=\"/d17\"/>"
+                    + "  </Int32>"
+                    + "  <Int32 name=\"d\">"
+                    + "    <Dim name=\"/d10\"/>"
+                    + "    <Dim name=\"/d17\"/>"
+                    + "  </Int32>"
+                    + "  <Int32 name=\"e\">"
+                    + "    <Dim name=\"/d10\"/>"
+                    + "    <Dim name=\"/d17\"/>"
+                    + "  </Int32>"
+                    + "  <Int32 name=\"f\">"
+                    + "    <Dim name=\"/d10\"/>"
+                    + "    <Dim name=\"/d17\"/>"
+                    + "  </Int32>"
+                    + "  <Structure name=\"s\">"
+                    + "      <Int32 name=\"x\"/>"
+                    + "      <Int32 name=\"y\"/>"
+                    + "    <Dim name=\"/d10\"/>"
+                    + "    <Dim name=\"/d10\"/>"
+                    + "  </Structure>"
+                    + "  <Sequence name=\"seq\">"
+                    + "    <Int32 name=\"i1\"/>"
+                    + "    <Int16 name=\"sh1\"/>"
+                    + "  </Sequence>"
+                    + "</Dataset>";
+
 }
-
-
-
-
-
