@@ -135,6 +135,7 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
       if (f.exists() && f.canRead()) {
         pathlist = (pathlist == null ? "" : pathlist + File.pathSeparator);
         pathlist = pathlist + path;
+        break;
       }
     }
     return pathlist;
@@ -286,7 +287,8 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
   private void _open(RandomAccessFile raf, NetcdfFile ncfile, boolean readOnly) throws IOException {
     load(); // load jni
 
-    raf.close(); // not used
+    if(raf != null)
+        raf.close(); // not used
     this.ncfile = ncfile;
 
     // open
