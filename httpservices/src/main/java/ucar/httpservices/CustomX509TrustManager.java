@@ -17,9 +17,9 @@
  * under the License.
  */
 
-package ucar.httpclient;
+package ucar.httpservices;
 
-import ucar.httpclient.HTTPSession;
+import ucar.httpservices.HTTPSession;
 
 import javax.net.ssl.*;
 import java.security.*;

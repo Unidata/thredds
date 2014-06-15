@@ -49,7 +49,7 @@
  * under the License.
  */
 
-package ucar.httpclient;
+package ucar.httpservices;
 
 import org.apache.http.conn.ConnectTimeoutException;
 import org.apache.http.conn.scheme.*;

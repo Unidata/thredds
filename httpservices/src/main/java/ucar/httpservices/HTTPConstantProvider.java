@@ -31,7 +31,7 @@
  * WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-package ucar.httpclient;
+package ucar.httpservices;
 
 import org.apache.http.auth.*;
 import org.apache.http.client.CredentialsProvider;
@@ -40,54 +40,32 @@ import java.io.IOException;
 import java.io.Serializable;
 import java.security.Principal;
 
+
 /**
- * Provide an HTTP SSL CredentialsProvider
- * The getCredentials method is used in a
- * non-standard way
- */
+Provide a non-interactive CredentialsProvider to hold
+an arbitrary credentials object provided by the user.
+This is used in the case when the credentials (not the provider)
+are constant. (see e.g. HTTPSession.setGlobalCredentials).
+*/
 
-public class HTTPSSLProvider implements CredentialsProvider, Credentials, Serializable
+public class HTTPConstantProvider implements CredentialsProvider, Credentials, Serializable
 {
-    String keystore = null;
-    String keypass = null;
-    String truststore = null;
-    String trustpass = null;
+    Credentials creds = null;
 
-    public HTTPSSLProvider()
+    public HTTPConstantProvider(Credentials creds)
     {
-        this(null,"",null,"");
+        this.creds = creds;
     }
 
-    public HTTPSSLProvider(String keystore,String keypass,
-                           String truststore,String trustpass)
-    {
-	this.keystore = keystore;
-	this.keypass = keypass;
-	this.truststore = truststore;
-	this.trustpass = trustpass;
-    }     
-
-    public HTTPSSLProvider(String keystore, String keypass)
-    {
-	this(keystore,keypass,null,null);
-    }     
-
-    // Provide accessors
-    public String getKeystore() {return keystore;}
-    public String getKeypassword() {return keypass;}
-    public String getTruststore() {return truststore;}
-    public String getTrustpassword() {return trustpass;}
-
-    // Credentials Provider Interface is abused
-
+    // Credentials Provider Interface
     public Credentials
     getCredentials(AuthScope scope)
     {
-	return (Credentials) this;
+        return creds;
     }
 
     public void
-    setCredentials(AuthScope scope, Credentials creds)
+    setCredentials(AuthScope authscope, Credentials credentials)
     {
 
     }
@@ -108,29 +86,37 @@ public class HTTPSSLProvider implements CredentialsProvider, Credentials, Serial
     public String
     getPassword()
     {
-       return null;
+        return null;
     }
-
 
     // Serializable Interface
     private void writeObject(java.io.ObjectOutputStream oos)
         throws IOException
     {
-        oos.writeObject(this.keystore);
-        oos.writeObject(this.keypass);
-        oos.writeObject(this.truststore);
-        oos.writeObject(this.trustpass);
+        boolean isser = (this.creds instanceof Serializable);
+        oos.writeObject(isser);
+        if(isser)
+            oos.writeObject(this.creds);
+        else {
+            oos.writeObject(this.creds.getClass());
+        }
     }
 
     private void readObject(java.io.ObjectInputStream ois)
-            throws IOException, ClassNotFoundException
+        throws IOException, ClassNotFoundException
     {
-        this.keystore = (String)ois.readObject();
-        this.keypass = (String)ois.readObject();
-        this.truststore = (String)ois.readObject();
-        this.trustpass = (String)ois.readObject();
+        // serializing the credentials is a bit tricky
+        // since it might not support the serializable interface.
+        boolean isser = (Boolean) ois.readObject();
+        Object o = ois.readObject();
+        if(isser)
+            this.creds = (Credentials) o;
+        else {
+            try {
+                this.creds = (Credentials) ((Class) o).newInstance();
+            } catch (Exception e) {
+                throw new ClassNotFoundException("HTTPCredsProvider: Cannot create Credentials instance", e);
+            }
+        }
     }
-
-
-
 }

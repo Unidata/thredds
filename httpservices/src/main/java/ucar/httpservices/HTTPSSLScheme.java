@@ -31,44 +31,64 @@
  * WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-package ucar.httpclient;
+package ucar.httpservices;
 
-import org.apache.http.client.params.AuthPolicy;
+import org.apache.http.Header;
+import org.apache.http.HttpRequest;
+import org.apache.http.auth.*;
 
-import java.util.HashSet;
-import java.util.Set;
-
-/**
- * HTTPAuthPolicy defines the set of currently supported schemes.
- *
- * @see AuthPolicy
- */
-
-
-abstract public class HTTPAuthPolicy /* mimics AuthPolicy (AuthPolicy is final for some reason) */
+public class HTTPSSLScheme implements AuthScheme
 {
-    public static final String BASIC = AuthPolicy.BASIC;
-    public static final String DIGEST = AuthPolicy.DIGEST;
-    public static final String NTLM = AuthPolicy.NTLM;
-    public static final String SSL = "SSL";
-    public static final String ANY = null;
 
-    protected static Set<String> legal;
+static public final HTTPSSLScheme Default  = new HTTPSSLScheme();
 
-    static {
-        legal = new HashSet<String>();
-        legal.add(BASIC);
-        legal.add(DIGEST);
-        legal.add(NTLM);
-        legal.add(SSL);
-    }
+public
+HTTPSSLScheme()
+{
+}
 
-    // Define parameter names
-    static public final String PROVIDER = "HTTP.provider";
+public String
+getSchemeName()
+{
+    return "SSL";
+}
 
-    static public boolean validate(String scheme)
-    {
-        if(scheme == null) return false;
-        return legal.contains(scheme);
-    }
+public void
+processChallenge(Header header)
+    throws MalformedChallengeException
+{
+}
+    
+public String
+getParameter(String key)
+{
+    return null;
+}
+    
+public String
+getRealm()
+{
+    return AuthScope.ANY_REALM;
+}
+    
+public boolean
+isConnectionBased()
+{
+    return false;
+}
+    
+public boolean
+isComplete()
+{
+    return true;
+}
+
+@Deprecated
+public Header
+authenticate(Credentials credentials, HttpRequest request)
+    throws AuthenticationException
+{
+    return null;
+}
+
 }

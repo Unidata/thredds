@@ -37,7 +37,7 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 /////////////////////////////////////////////////////////////////////////////
 
-package ucar.httpclient;
+package ucar.httpservices;
 
 import java.net.*;
 import java.nio.charset.Charset;

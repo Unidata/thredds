@@ -3,7 +3,7 @@ package dap4.test;
 import dap4.core.util.DapUtil;
 import dap4.dap4shared.DataCompiler;
 import dap4.test.util.DapTestCommon;
-import ucar.httpclient.*;
+import ucar.httpservices.*;
 import ucar.nc2.dataset.NetcdfDataset;
 
 import java.io.*;

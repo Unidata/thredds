@@ -36,7 +36,7 @@ package ucar.nc2.util.net;
 import org.apache.http.Header;
 import org.junit.Ignore;
 
-import ucar.httpclient.*;
+import ucar.httpservices.*;
 import org.apache.http.Header;
 import org.apache.http.auth.*;
 import org.apache.http.client.CredentialsProvider;

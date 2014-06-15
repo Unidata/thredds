@@ -8,8 +8,8 @@ import dap4.core.dmr.DapDataset;
 import dap4.core.util.*;
 import org.apache.http.Header;
 import org.apache.http.HttpStatus;
-import ucar.httpclient.HTTPFactory;
-import ucar.httpclient.HTTPMethod;
+import ucar.httpservices.HTTPFactory;
+import ucar.httpservices.HTTPMethod;
 
 import java.io.IOException;
 import java.io.InputStream;

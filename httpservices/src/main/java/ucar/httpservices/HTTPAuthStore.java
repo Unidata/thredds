@@ -31,7 +31,7 @@
  * WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-package ucar.httpclient;
+package ucar.httpservices;
 
 import java.util.*;
 import java.io.*;
@@ -43,7 +43,7 @@ import javax.crypto.*;
 import javax.crypto.spec.*;
 
 import static org.apache.http.auth.AuthScope.*;
-import static ucar.httpclient.HTTPAuthScope.*;
+import static ucar.httpservices.HTTPAuthScope.*;
 
 
 /**

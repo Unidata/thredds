@@ -31,7 +31,7 @@
  * WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-package ucar.httpclient;
+package ucar.httpservices;
 
 import org.apache.http.auth.*;
 import org.apache.http.client.CredentialsProvider;
@@ -41,39 +41,39 @@ import java.io.Serializable;
 import java.security.Principal;
 
 
-/**
-Provide a non-interactive CredentialsProvider to hold
-an arbitrary credentials object provided by the user.
-This is used in the case when the credentials (not the provider)
-are constant. (see e.g. HTTPSession.setGlobalCredentials).
-*/
+//////////////////////////////////////////////////
+// Provide a non-interactive CredentialsProvider to hold
+// a username + password that might have been taken from e.g.
+// the user info part of a URL.
 
-public class HTTPConstantProvider implements CredentialsProvider, Credentials, Serializable
+public class HTTPBasicProvider implements CredentialsProvider,
+                                          Credentials,
+                                          Serializable
 {
-    Credentials creds = null;
+    String username = null;
+    String password = null;
 
-    public HTTPConstantProvider(Credentials creds)
+    public HTTPBasicProvider(String username, String password)
     {
-        this.creds = creds;
+	this.username = username;
+	this.password = password;
     }
 
     // Credentials Provider Interface
     public Credentials
     getCredentials(AuthScope scope)
     {
-        return creds;
+        UsernamePasswordCredentials creds = new UsernamePasswordCredentials(username, password);
+	return creds;
     }
 
-    public void
-    setCredentials(AuthScope authscope, Credentials credentials)
+    public void setCredentials(AuthScope authscope, Credentials credentials)
     {
-
     }
 
     public void
     clear()
     {
-
     }
 
     // Credentials Interface
@@ -89,34 +89,19 @@ public class HTTPConstantProvider implements CredentialsProvider, Credentials, S
         return null;
     }
 
+
     // Serializable Interface
     private void writeObject(java.io.ObjectOutputStream oos)
-        throws IOException
+	throws IOException
     {
-        boolean isser = (this.creds instanceof Serializable);
-        oos.writeObject(isser);
-        if(isser)
-            oos.writeObject(this.creds);
-        else {
-            oos.writeObject(this.creds.getClass());
-        }
+	oos.writeObject(this.username);
+	oos.writeObject(this.password);
     }
 
     private void readObject(java.io.ObjectInputStream ois)
-        throws IOException, ClassNotFoundException
+	throws IOException, ClassNotFoundException
     {
-        // serializing the credentials is a bit tricky
-        // since it might not support the serializable interface.
-        boolean isser = (Boolean) ois.readObject();
-        Object o = ois.readObject();
-        if(isser)
-            this.creds = (Credentials) o;
-        else {
-            try {
-                this.creds = (Credentials) ((Class) o).newInstance();
-            } catch (Exception e) {
-                throw new ClassNotFoundException("HTTPCredsProvider: Cannot create Credentials instance", e);
-            }
-        }
+	this.username = (String) ois.readObject();
+	this.password = (String) ois.readObject();
     }
 }

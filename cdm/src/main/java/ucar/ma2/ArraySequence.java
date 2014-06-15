@@ -49,7 +49,7 @@ import java.util.Formatter;
  * @since Feb 27, 2008
  */
 public class ArraySequence extends ArrayStructure {
-  private StructureDataIterator iter;
+  protected StructureDataIterator iter; // never use private
 
   protected ArraySequence(StructureMembers sm, int[] shape) {
     super(sm, shape);

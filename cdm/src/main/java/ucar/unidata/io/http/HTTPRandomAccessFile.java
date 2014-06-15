@@ -33,7 +33,7 @@
 
 package ucar.unidata.io.http;
 
-import ucar.httpclient.*;
+import ucar.httpservices.*;
 import org.apache.http.Header;
 import ucar.unidata.util.Urlencoded;
 

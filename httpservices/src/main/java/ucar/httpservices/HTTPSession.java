@@ -31,7 +31,7 @@
  * WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-package ucar.httpclient;
+package ucar.httpservices;
 
 import org.apache.http.*;
 import org.apache.http.auth.AuthScope;
@@ -60,7 +60,7 @@ import java.net.*;
 import java.util.*;
 
 import static org.apache.http.auth.AuthScope.*;
-import static ucar.httpclient.HTTPAuthScope.*;
+import static ucar.httpservices.HTTPAuthScope.*;
 
 /**
  * A session is encapsulated in an instance of the class
@@ -623,7 +623,7 @@ public class HTTPSession
     // Instance variables
 
     protected AbstractHttpClient sessionClient = null;
-    protected List<ucar.httpclient.HTTPMethod> methodList = new Vector<HTTPMethod>();
+    protected List<ucar.httpservices.HTTPMethod> methodList = new Vector<HTTPMethod>();
     protected HttpContext execcontext = null; // same instance must be used for all methods
     protected String identifier = "Session";
     protected String legalurl = null;

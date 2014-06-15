@@ -31,7 +31,7 @@
  * WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-package ucar.httpclient;
+package ucar.httpservices;
 
 
 import org.apache.http.auth.AuthScope;
@@ -44,7 +44,7 @@ import java.util.Locale;
 
 
 import static org.apache.http.auth.AuthScope.*;
-import static ucar.httpclient.HTTPAuthScope.*;
+import static ucar.httpservices.HTTPAuthScope.*;
 
 
 /**

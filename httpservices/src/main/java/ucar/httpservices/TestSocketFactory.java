@@ -1,4 +1,4 @@
-package ucar.httpclient;
+package ucar.httpservices;
 
 import org.apache.http.conn.scheme.PlainSocketFactory;
 import org.apache.http.params.HttpParams;

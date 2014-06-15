@@ -32,7 +32,7 @@
  */
 package ucar.nc2.stream;
 
-import ucar.httpclient.*;
+import ucar.httpservices.*;
 import org.apache.http.Header;
 
 import ucar.ma2.*;

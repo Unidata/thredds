@@ -38,7 +38,7 @@ import ucar.nc2.stream.CdmRemote;
 import ucar.nc2.util.CancelTaskImpl;
 import ucar.nc2.util.EscapeStrings;
 import ucar.nc2.util.Misc;
-import ucar.httpclient.HTTPMethod;
+import ucar.httpservices.HTTPMethod;
 import ucar.ma2.*;
 import ucar.nc2.*;
 import ucar.nc2.constants.AxisType;
@@ -59,7 +59,7 @@ import java.lang.reflect.*;
 import java.util.*;
 
 import thredds.catalog.ServiceType;
-import ucar.httpclient.HTTPFactory;
+import ucar.httpservices.HTTPFactory;
 import ucar.unidata.util.StringUtil2;
 import ucar.unidata.util.Urlencoded;
 

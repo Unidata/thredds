@@ -31,7 +31,7 @@
  * WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-package ucar.httpclient;
+package ucar.httpservices;
 
 import java.io.*;
 import java.net.MalformedURLException;
@@ -51,7 +51,7 @@ import org.apache.http.message.BasicHttpResponse;
 import org.apache.http.params.HttpParams;
 import org.apache.http.util.EntityUtils;
 
-import static ucar.httpclient.HTTPSession.*;
+import static ucar.httpservices.HTTPSession.*;
 
 /**
  * HTTPMethod is the encapsulation of specific

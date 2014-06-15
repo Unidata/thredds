@@ -32,7 +32,7 @@
 
 package ucar.nc2.util.net;
 
-import ucar.httpclient.*;
+import ucar.httpservices.*;
 
 import org.junit.Test;
 import ucar.nc2.util.UnitTestCommon;

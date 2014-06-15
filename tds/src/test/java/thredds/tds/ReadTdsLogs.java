@@ -33,7 +33,7 @@
 
 package thredds.tds;
 
-import ucar.httpclient.*;
+import ucar.httpservices.*;
 import ucar.nc2.util.IO;
 import ucar.nc2.util.EscapeStrings;
 

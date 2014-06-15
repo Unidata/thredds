@@ -31,64 +31,32 @@
  * WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-package ucar.httpclient;
+package ucar.httpservices;
 
-import org.apache.http.Header;
-import org.apache.http.HttpRequest;
-import org.apache.http.auth.*;
+import java.io.IOException;
 
-public class HTTPSSLScheme implements AuthScheme
-{
+/**
+ * Created by IntelliJ IDEA.
+ * User: dmh
+ * Date: May 20, 2010
+ * Time: 12:04:39 PM
+ * To change this template use File | Settings | File Templates.
+ */
+public class HTTPException extends IOException {
 
-static public final HTTPSSLScheme Default  = new HTTPSSLScheme();
+    public HTTPException() {
+        super();
+    }
 
-public
-HTTPSSLScheme()
-{
-}
+    public HTTPException(java.lang.String message) {
+        super(message);
+    }
 
-public String
-getSchemeName()
-{
-    return "SSL";
-}
+    public HTTPException(java.lang.String message, java.lang.Throwable cause) {
+        super(message, cause);
+    }
 
-public void
-processChallenge(Header header)
-    throws MalformedChallengeException
-{
-}
-    
-public String
-getParameter(String key)
-{
-    return null;
-}
-    
-public String
-getRealm()
-{
-    return AuthScope.ANY_REALM;
-}
-    
-public boolean
-isConnectionBased()
-{
-    return false;
-}
-    
-public boolean
-isComplete()
-{
-    return true;
-}
-
-@Deprecated
-public Header
-authenticate(Credentials credentials, HttpRequest request)
-    throws AuthenticationException
-{
-    return null;
-}
-
+    public HTTPException(java.lang.Throwable cause) {
+        super(cause);
+    }
 }
