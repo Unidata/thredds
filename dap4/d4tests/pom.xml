@@ -52,6 +52,13 @@
 
   <!-- testing dependencies -->
   <dependency>
+      <groupId>edu.ucar</groupId>
+      <artifactId>cdm</artifactId>
+      <type>test-jar</type>
+      <scope>test</scope>
+  </dependency>
+
+  <dependency>
     <groupId>junit</groupId>
     <artifactId>junit</artifactId>
     <version>4.8.1</version>

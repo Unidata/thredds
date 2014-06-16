@@ -27,8 +27,6 @@ public class FrontPage
     //////////////////////////////////////////////////
     // Constants
 
-    static final String REMOTESERVER = "remotetest.unidata.ucar.edu";
-
     static final boolean NO_VLEN = true; // ignore vlen datasets for now
 
     // Define the file sources of interest
@@ -37,6 +35,16 @@ public class FrontPage
             new FileSource(".hdf5", "HDF5"),
             new FileSource(".syn", "Synthetic")
     };
+
+    // Remote Test server: should match values in TestDir.java
+    private static String remoteTestServerPropName = "remotetest";
+    static public String remoteTestServer = "remotetest.unidata.ucar.edu"; //mutable
+
+    static {
+        String rts = System.getProperty(remoteTestServerPropName);
+        if(rts != null && rts.length() > 0)
+            remoteTestServer = rts;
+    }
 
     //////////////////////////////////////////////////
 
@@ -162,7 +170,7 @@ public class FrontPage
             "<html>\n<head>\n<title>DAP4 Test Files</title>\n<meta http-equiv=\"Content-Type\" content=\"text/html\">\n</meta>\n<body bgcolor=\"#FFFFFF\">\n";
 
     static final String HTML_HEADER1 = "<h1>DAP4 Test Files</h1>\n";
-    static final String HTML_HEADER2 = "<h2>http://" + REMOTESERVER + "/d4ts/</h2>\n<hr>\n";
+    static final String HTML_HEADER2 = "<h2>http://" + remoteTestServer + "/d4ts/</h2>\n<hr>\n";
     static final String HTML_HEADER3 = "<h3>%s Based Test Files</h3>\n";
 
     static final String TABLE_HEADER = "<table>\n";

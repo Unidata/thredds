@@ -7,7 +7,7 @@ package dap4.test.util;
 import junit.framework.TestCase;
 import dap4.core.util.DapUtil;
 import ucar.nc2.dataset.NetcdfDataset;
-//import ucar.nc2.util.UnitTestCommon;
+import ucar.unidata.test.util.TestDir;
 
 import java.io.*;
 import java.nio.charset.Charset;
@@ -35,15 +35,8 @@ public class DapTestCommon extends TestCase
 
     // Order is important; testing reachability is in the order
     // listed
-    static public final Source[] SOURCES = new Source[]{
-            new Source("remotetest", false,
-                    "http://remotetest.unidata.ucar.edu/d4ts",
-                    "dap4://remotetest.unidata.ucar.edu/d4ts"),
-            new Source("localhost", false,
-                    "http://localhost:8080/d4ts",
-                    "dap4://localhost:8080/d4ts"),
-            new Source("file", true, null, FILESERVER),
-    };
+    static public final List<Source> SOURCES = new ArrayList<>();
+
     //////////////////////////////////////////////////
     // Type Declarations
 
@@ -77,7 +70,15 @@ public class DapTestCommon extends TestCase
         threddsroot = locateThreddsRoot();
         if(threddsroot != null)
             dap4root = threddsroot + "/" + DEFAULTTREEROOT;
-    }
+        // Compute the set of SOURCES
+         SOURCES.add(       new Source("localhost", false,
+                                    "http://localhost:8080/d4ts",
+                                    "dap4://localhost:8080/d4ts"));
+           SOURCES.add( new Source("remotetest", false,
+                   "http://"+TestDir.remoteTestServer+"/d4ts",
+                   "dap4://"+TestDir.remoteTestServer+"/d4ts"));
+            SOURCES.add(new Source("file", true, null, FILESERVER));
+    };
 
     //////////////////////////////////////////////////
     // static methods

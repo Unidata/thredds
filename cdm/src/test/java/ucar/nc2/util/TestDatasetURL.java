@@ -34,6 +34,7 @@
 package ucar.nc2.util;
 
 import junit.framework.TestCase;
+import ucar.unidata.test.util.TestDir;
 
 import java.net.URI;
 import java.net.URL;
@@ -50,9 +51,6 @@ import java.io.File;
 public class TestDatasetURL extends TestCase {
 
  
-  static public final String REMOTESERVER = "remotetest.unidata.ucar.edu";
-
-
   public TestDatasetURL(String name) {
     super(name);
   }
@@ -99,7 +97,7 @@ public class TestDatasetURL extends TestCase {
   }
 
   public void testDods() throws URISyntaxException {
-    String uriString = "http://"+REMOTESERVER+"/dts/test.53.dods?types[0:1:9]";
+    String uriString = "http://"+ TestDir.remoteTestServer+"/dts/test.53.dods?types[0:1:9]";
     new URI(uriString);
   }
 

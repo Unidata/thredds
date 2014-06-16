@@ -299,10 +299,10 @@ public class TestConstraints extends DapTestCommon
     {
         Source chosen = null;
         if(prop_server != null) {
-            for(int i = 0;i < SOURCES.length;i++) {
-		if(SOURCES[i].isfile) continue;
-                if(SOURCES[i].name.equals(prop_server)) {
-                    chosen = SOURCES[i];
+            for(int i = 0;i < SOURCES.size();i++) {
+		if(SOURCES.get(i).isfile) continue;
+                if(SOURCES.get(i).name.equals(prop_server)) {
+                    chosen = SOURCES.get(i);
                     break;
                 }
             }
@@ -317,8 +317,8 @@ public class TestConstraints extends DapTestCommon
             return chosen.prefix;
         }
         // Look for a sourceurl in order of appearance in SOURCES
-        for(int i = 0;i < SOURCES.length;i++) {
-            chosen = SOURCES[i];
+        for(int i = 0;i < SOURCES.size();i++) {
+            chosen = SOURCES.get(i);
             if(checkServer(chosen))
                 break;
         }

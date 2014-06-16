@@ -36,6 +36,7 @@ import ucar.httpservices.*;
 
 import org.junit.Test;
 import ucar.nc2.util.UnitTestCommon;
+import ucar.unidata.test.util.TestDir;
 
 import java.io.*;
 import java.nio.charset.Charset;
@@ -58,9 +59,9 @@ public class TestState extends UnitTestCommon
 {
     //////////////////////////////////////////////////
     // Constants
-    static final String SESSIONURL = "http://"+REMOTESERVER+"/dts";
-    static final String TESTSOURCE1 = SESSIONURL + "/test.01.dds";
-    static final String TESTSOURCE2 = SESSIONURL + "/test.02.dds";
+    protected final String SESSIONURL = "http://"+ TestDir.remoteTestServer+"/dts";
+    protected final String TESTSOURCE1 = SESSIONURL + "/test.01.dds";
+    protected final String TESTSOURCE2 = SESSIONURL + "/test.02.dds";
 
     static final public Charset UTF8 = Charset.forName("UTF-8");
 

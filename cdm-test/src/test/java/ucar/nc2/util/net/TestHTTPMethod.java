@@ -36,6 +36,7 @@ import ucar.httpservices.*;
 
 import org.junit.Test;
 import ucar.nc2.util.UnitTestCommon;
+import ucar.unidata.test.util.TestDir;
 
 import java.io.InputStream;
 
@@ -47,7 +48,7 @@ public class TestHTTPMethod extends UnitTestCommon
     //////////////////////////////////////////////////
     // Constants
 
-    static final String baseurl = "http://"+REMOTESERVER+"/dts";
+    protected final String baseurl = "http://"+ TestDir.remoteTestServer+"/dts";
     static String relativebaseline = "/cdm/src/test/data/ucar/nc2/util/net";
 
     static final String testcase = "test.01.dds";

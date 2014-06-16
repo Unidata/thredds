@@ -47,10 +47,6 @@ public class UnitTestCommon extends TestCase
 {
     static boolean DEBUG = false;
 
-    // Hold the primary server names here so we do not
-    // have to search all over
-    static final public String REMOTESERVER = "remotetest.unidata.ucar.edu";
-
     /**
      * Temporary data directory (for writing temporary data).
      */
