@@ -142,6 +142,8 @@ public class DSPToCDM
         Group cdmgroup = new Group(ncfile, cdmparent, dapgroup.getShortName());
         nodemap.put(dapgroup, cdmgroup);
         fillGroup(cdmgroup, dapgroup, ncfile, nodemap);
+        if(cdmgroup != null)
+            cdmparent.addGroup(cdmgroup);
     }
 
     /**

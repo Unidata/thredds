@@ -1635,7 +1635,7 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
           ret = nc4.nc_get_var(grpid, varid, bbuff);
           if (ret != 0)
             throw new IOException(ret + ": " + nc4.nc_strerror(ret));
-          ByteBuffer bb = ByteBuffer.allocate(buffSize);
+          ByteBuffer bb = ByteBuffer.wrap(bbuff);
           bb.order(ByteOrder.nativeOrder()); // c library returns in native order i hope
 
           switch (userType.baseTypeid) {

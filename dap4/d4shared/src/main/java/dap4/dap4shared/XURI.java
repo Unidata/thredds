@@ -129,11 +129,9 @@ public class XURI
                             lastproto, this.url.getScheme()));
         this.baseprotocol = lastproto;
         this.userinfo = canonical(this.url.getUserInfo());
-        if(this.isfile && DapUtil.hasDriveLetter(this.url.getHost())) {
+        if(this.isfile && DapUtil.hasDriveLetter(this.url.getHost()+":")) {
             this.host = null;
-            this.path = this.url.getHost();
-            if(this.url.getPort() > 0)
-                this.path += (":"+this.url.getPort());
+            this.path = this.url.getHost() + ":";
             this.path = canonical(this.path + this.url.getPath());
         } else {
             this.host = canonical(this.url.getHost());

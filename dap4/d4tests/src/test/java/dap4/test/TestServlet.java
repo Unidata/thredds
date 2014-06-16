@@ -182,7 +182,7 @@ public class TestServlet extends DapTestCommon
     chooseTestcases()
     {
         if(false) {
-            chosentests = locate("test_sequence_1.syn");
+            chosentests = locate("test_enum_2.nc");
         } else {
             for(ServletTest tc : alltestcases) {
                 chosentests.add(tc);
@@ -276,6 +276,17 @@ public class TestServlet extends DapTestCommon
                         printer.printchecksum();
                     }
                 }));
+        this.alltestcases.add(
+                    new ServletTest("test_enum_2.nc", "dmr,dap", true,   //
+                        // S1
+                        new Dump.Commands()
+                        {
+                            public void run(Dump printer) throws IOException
+                            {
+                                printer.printvalue('S', 1);
+                                printer.printchecksum();
+                            }
+                        }));
         this.alltestcases.add(
             new ServletTest("test_enum_array.nc", "dmr,dap", true, //3
                 // 5 S1

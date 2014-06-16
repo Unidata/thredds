@@ -4,6 +4,7 @@ test_one_vararray \
 test_atomic_types \
 test_atomic_array \
 test_enum \
+test_enum_2 \
 test_enum_array \
 test_groups1 \
 test_struct_type \

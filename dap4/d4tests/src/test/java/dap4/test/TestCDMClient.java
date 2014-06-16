@@ -73,7 +73,6 @@ public class TestCDMClient extends DapTestCommon
         ClientTest(String dataset, boolean checksumming, boolean xfail)
         {
             this.title = dataset;
-            dataset = DapUtil.absolutize(dataset);
             this.dataset = dataset;
             this.checksumming = checksumming;
             this.xfail = xfail;
@@ -178,7 +177,7 @@ public class TestCDMClient extends DapTestCommon
     chooseTestcases()
     {
         if(false) {
-            chosentests = locate("test_anon_dim.syn");
+            chosentests = locate("test_enum_2.nc");
         } else {
             for(ClientTest tc : alltestcases) {
                 chosentests.add(tc);
