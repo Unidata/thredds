@@ -59,7 +59,7 @@ public class PointSubsetWriterNetcdf extends AbstractPointSubsetWriter {
 
         if (version == NetcdfFileWriter.Version.netcdf3) {
             httpHeaders.set(ContentType.HEADER, ContentType.netcdf.getContentHeader());
-        } else if (version == NetcdfFileWriter.Version.netcdf4) {
+        } else if (version == NetcdfFileWriter.Version.netcdf4 || version == NetcdfFileWriter.Version.netcdf4_classic) {
             httpHeaders.set(ContentType.HEADER, ContentType.netcdf4.getContentHeader());
         }
 

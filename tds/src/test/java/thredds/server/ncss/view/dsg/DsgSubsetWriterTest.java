@@ -104,6 +104,9 @@ public class DsgSubsetWriterTest {
             { FeatureType.POINT,   "point.ncml",   SupportedFormat.NETCDF3,  ncssParamsAll,      "pointAll.nc"        },
             { FeatureType.POINT,   "point.ncml",   SupportedFormat.NETCDF3,  ncssParamsPoint,    "pointSubset.nc"     },
 
+            { FeatureType.POINT,   "point.ncml",   SupportedFormat.NETCDF4,  ncssParamsAll,      "pointAll.nc4"       },
+            { FeatureType.POINT,   "point.ncml",   SupportedFormat.NETCDF4,  ncssParamsPoint,    "pointSubset.nc4"    },
+
             // Station
             { FeatureType.STATION, "station.ncml", SupportedFormat.CSV_FILE, ncssParamsAll,      "stationAll.csv"     },
             { FeatureType.STATION, "station.ncml", SupportedFormat.CSV_FILE, ncssParamsStation1, "stationSubset1.csv" },
@@ -120,11 +123,15 @@ public class DsgSubsetWriterTest {
             { FeatureType.STATION, "station.ncml", SupportedFormat.NETCDF3,  ncssParamsAll,      "stationAll.nc"      },
             { FeatureType.STATION, "station.ncml", SupportedFormat.NETCDF3,  ncssParamsStation1, "stationSubset1.nc"  },
             { FeatureType.STATION, "station.ncml", SupportedFormat.NETCDF3,  ncssParamsStation2, "stationSubset2.nc"  },
+
+            { FeatureType.STATION, "station.ncml", SupportedFormat.NETCDF4,  ncssParamsAll,      "stationAll.nc4"     },
+            { FeatureType.STATION, "station.ncml", SupportedFormat.NETCDF4,  ncssParamsStation1, "stationSubset1.nc4" },
+            { FeatureType.STATION, "station.ncml", SupportedFormat.NETCDF4,  ncssParamsStation2, "stationSubset2.nc4" },
         });
     }
 
     private final FeatureType wantedType;
-    private final File datasetFile;
+    private final String datasetResource;
     private final SupportedFormat format;
     private final NcssParamsBean ncssParams;
     private final String expectedResultResource;
@@ -132,10 +139,10 @@ public class DsgSubsetWriterTest {
     public DsgSubsetWriterTest(FeatureType wantedType, String datasetResource,
             SupportedFormat format, NcssParamsBean ncssParams, String expectedResultResource) throws URISyntaxException {
         this.wantedType = wantedType;
-        this.datasetFile = new File(DsgSubsetWriterTest.class.getResource(datasetResource).toURI());
+        this.datasetResource = wantedType.name().toLowerCase() + "/" + datasetResource;
         this.format = format;
         this.ncssParams = ncssParams;
-        this.expectedResultResource = expectedResultResource;
+        this.expectedResultResource = wantedType.name().toLowerCase() + "/" + expectedResultResource;
     }
 
     @Test
@@ -144,6 +151,7 @@ public class DsgSubsetWriterTest {
             return;  // Skip NetCDF 4 test.
         }
 
+        File datasetFile = new File(getClass().getResource(datasetResource).toURI());
         File expectedResultFile = new File(getClass().getResource(expectedResultResource).toURI());
 
         String basename = FilenameUtils.getBaseName(expectedResultResource);

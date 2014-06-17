@@ -52,8 +52,8 @@ import static thredds.server.ncss.format.SupportedFormat.*;
 	
 	DATASET_INFO_REQUEST("Dataset info request", XML_FILE),
 	DATASET_BOUNDARIES_REQUEST("Dataset grid boundaries request", WKT, JSON),
-	GRID_REQUEST("Grid data request", NETCDF3, NETCDF4),
-  POINT_REQUEST("Point data request", XML_STREAM, XML_FILE, CSV_STREAM, CSV_FILE, NETCDF3, NETCDF4, WATERML2);
+	GRID_REQUEST("Grid data request", NETCDF3, NETCDF4, NETCDF4EXT),
+    POINT_REQUEST("Point data request", XML_STREAM, XML_FILE, CSV_STREAM, CSV_FILE, NETCDF3, NETCDF4, NETCDF4EXT, WATERML2);
 
 	private final String operationName; 
 	private final List<SupportedFormat> supportedFormats;

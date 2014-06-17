@@ -105,18 +105,19 @@ public class NcssShowDatasetInfoImpl implements NcssShowFeatureDatasetInfo, Serv
 
     if (FormatsAvailabilityService.isFormatAvailable(SupportedFormat.NETCDF4)) {
       String xPathForGridElement = "capabilities/AcceptList";
-      addElement(doc, xPathForGridElement, new Element("accept").addContent("netcdf4").setAttribute("displayName", "CF/NetCDF-4"));
-      addElement(doc, xPathForGridElement, new Element("accept").addContent("netcdf4ext").setAttribute("displayName", "NetCDF-4 Extended"));
+      addElement(doc, xPathForGridElement,
+              new Element("accept").addContent("netcdf4").setAttribute("displayName", "CF/NetCDF-4"));
+
+        // TODO: Re-enable when NC4Ext bugs are ironed out.
+//      addElement(doc, xPathForGridElement,
+//              new Element("accept").addContent("netcdf4ext").setAttribute("displayName", "NetCDF-4 Extended"));
     }
 
     if (wantXml) {
       XMLOutputter fmt = new XMLOutputter(Format.getPrettyFormat());
       infoString = fmt.outputString(doc);
-
     } else {
-
       try {
-
         InputStream is = getXSLT(xslt);
         //XSLTransformer transformer = new XSLTransformer(is);
 
