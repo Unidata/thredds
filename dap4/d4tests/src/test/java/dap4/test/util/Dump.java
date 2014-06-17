@@ -182,10 +182,16 @@ public class Dump
     {
         if(!checksumming)
             return;
-        buf.append("\t");
+        buf.append("\tchecksum = ");
         ByteBuffer bbuf = readn(DapUtil.CHECKSUMSIZE);
         for(int i=0;i<bbuf.limit();i++)
             buf.append(String.format("%02x", (bbuf.get() & 0xFF)));
+        buf.append("\n");
+    }
+
+    public void
+    newline()
+    {
         buf.append("\n");
     }
 

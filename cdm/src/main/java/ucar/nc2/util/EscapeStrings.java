@@ -41,7 +41,7 @@
 package ucar.nc2.util;
 
 import ucar.nc2.constants.CDM;
-import ucar.httpclient.HTTPSession;
+import ucar.httpservices.HTTPSession;
 
 import java.net.*;
 import java.util.ArrayList;

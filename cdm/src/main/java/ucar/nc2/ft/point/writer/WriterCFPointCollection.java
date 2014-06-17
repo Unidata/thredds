@@ -140,6 +140,14 @@ public class WriterCFPointCollection extends CFPointWriter {
   public void writeRecord(double timeCoordValue, CalendarDate obsDate, EarthLocation loc, StructureData sdata) throws IOException {
     trackBB(loc, obsDate);
 
+    StructureDataScalar coords = new StructureDataScalar("Coords");
+    coords.addMember(latName,  "station latitude", CDM.LAT_UNITS, loc.getLatitude());
+    coords.addMember(lonName,  "station longitude", CDM.LON_UNITS, loc.getLongitude());
+
+    StructureDataComposite sdall = new StructureDataComposite();
+    sdall.add(coords);
+    sdall.add(sdata);
+
     timeArray.set(0, timeCoordValue);
     latArray.set(0, loc.getLatitude());
     lonArray.set(0, loc.getLongitude());
@@ -150,10 +158,10 @@ public class WriterCFPointCollection extends CFPointWriter {
     int[] origin = new int[1];
     origin[0] = recno;
     try {
-      super.writeStructureData(origin, sdata);
+      super.writeStructureData(origin, sdall);
 
       if (isExtendedModel) {
-        throw new RuntimeException("extended model not working yet");
+        // throw new RuntimeException("extended model not working yet");
 
       } else {
         writer.write(time, origin, timeArray);

@@ -36,10 +36,8 @@ package ucar.nc2.jni.netcdf;
 import com.sun.jna.Library;
 import com.sun.jna.Pointer;
 import com.sun.jna.Structure;
-import com.sun.jna.NativeLong;
 import com.sun.jna.ptr.IntByReference;
 import com.sun.jna.ptr.FloatByReference;
-import com.sun.jna.ptr.NativeLongByReference;
 
 import java.nio.ByteBuffer;
 import java.util.List;
@@ -185,7 +183,7 @@ public interface Nc4prototypes extends Library {
   int nc_get_att_text(int ncid, int varid, String name, byte[] ip);
   int nc_get_att_string(int ncid, int varid, String name, String[] ip);
   int nc_get_att(int ncid, int varid, String name, Vlen_t[] vlen);    // vlen
-  int nc_get_att(int ncid, int varid, String name, ByteBuffer bbuff); // other user defined types
+  int nc_get_att(int ncid, int varid, String name, byte[] bbuff); // other user defined types
 
   // variable info
   int nc_inq_nvars(int ncid, IntByReference nvarsp);
@@ -206,7 +204,7 @@ public interface Nc4prototypes extends Library {
   int nc_inq_compound_field(int ncid, int xtype, int fieldid, byte[] name, SizeTByReference offsetp, IntByReference field_typeidp, IntByReference ndimsp, int[] dims);
 
   // read entire array
-  int nc_get_var(int ncid, int varid, ByteBuffer bbuff);
+  int nc_get_var(int ncid, int varid, byte[] bbuff);
   int nc_get_var(int ncid, int varid, Vlen_t[] vlen);      // vlen
 
   int nc_get_var_text(int ncid, int varid, byte[] op);
@@ -224,7 +222,7 @@ public interface Nc4prototypes extends Library {
 
   // read array section
 
-  int nc_get_vara(int ncid, int varid, SizeT[] startp, SizeT[] countp, ByteBuffer bbuff);
+  int nc_get_vara(int ncid, int varid, SizeT[] startp, SizeT[] countp, byte[] bbuff);
   int nc_get_vara_uchar(int ncid, int varid, SizeT[] startp, SizeT[] countp, byte[] ip);
   int nc_get_vara_schar(int ncid, int varid, SizeT[] startp, SizeT[] countp, byte[] ip);
   int nc_get_vara_text(int ncid, int varid, SizeT[] startp, SizeT[] countp, byte[] ip);
@@ -238,7 +236,7 @@ public interface Nc4prototypes extends Library {
   int nc_get_vara_double(int ncid, int varid, SizeT[] startp, SizeT[] countp, double[] ip);
   int nc_get_vara_string(int ncid, int varid, SizeT[] startp, SizeT[] countp, String[] ip);
 
-  int nc_get_vars(int ncid, int varid, SizeT[] startp, SizeT[] countp, SizeT[] stridep, ByteBuffer bbuff);
+  int nc_get_vars(int ncid, int varid, SizeT[] startp, SizeT[] countp, SizeT[] stridep, byte[] bbuff);
   int nc_get_vars_uchar(int ncid, int varid, SizeT[] startp, SizeT[] countp, SizeT[] stridep, byte[] ip);
   int nc_get_vars_schar(int ncid, int varid, SizeT[] startp, SizeT[] countp, SizeT[] stridep, byte[] ip);
   int nc_get_vars_text(int ncid, int varid, SizeT[] startp, SizeT[] countp, SizeT[] stridep, byte[] ip);
@@ -279,10 +277,10 @@ public interface Nc4prototypes extends Library {
   int nc_rename_grp(int grpid, String name);
 
   /* Write entire var of any type. */
-  int nc_put_var(int ncid, int varid, ByteBuffer bbuff);
+  int nc_put_var(int ncid, int varid, byte[] bbuff);
 
   // write array section
-  int nc_put_vara(int ncid, int varid, SizeT[] startp, SizeT[] countp, ByteBuffer bbuff);
+  int nc_put_vara(int ncid, int varid, SizeT[] startp, SizeT[] countp, byte[] bbuff);
   int nc_put_vara_uchar(int ncid, int varid, SizeT[] startp, SizeT[] countp, byte[] ip);
   int nc_put_vara_schar(int ncid, int varid, SizeT[] startp, SizeT[] countp, byte[] ip);
   int nc_put_vara_text(int ncid, int varid, SizeT[] startp, SizeT[] countp, byte[] ip);
@@ -299,7 +297,8 @@ public interface Nc4prototypes extends Library {
   int nc_put_vara_string(int ncid, int varid, SizeT[] startp, SizeT[] countp, SizeT[] stridep, String[] ip);
 
   // int nc_put_vars_text(int ncid, int varid, const size_t *startp, const size_t *countp, const ptrdiff_t *stridep, const char *op);
-  int nc_put_vars(int ncid, int varid, SizeT[] startp, SizeT[] countp, SizeT[] stridep, ByteBuffer bbuff);
+  // int nc_put_vars(int ncid, int varid, SizeT[] startp, SizeT[] countp, SizeT[] stridep, ByteBuffer bbuff);
+  int nc_put_vars(int ncid, int varid, SizeT[] startp, SizeT[] countp, SizeT[] stridep, byte[]  bbuff);
 
   // nc_put_vars_uchar(int ncid, int varid, const size_t *startp, const size_t *countp, const ptrdiff_t *stridep, const unsigned char *op);
   int nc_put_vars_uchar(int ncid, int varid, SizeT[] startp, SizeT[] countp, SizeT[] stridep, byte[] ip);
@@ -332,7 +331,7 @@ public interface Nc4prototypes extends Library {
   int nc_put_var_string(int ncid, int varid, String[] op);
 
   // write attributes
-  int nc_put_att (int ncid, int varid, String name, int xtype, SizeT len, ByteBuffer value);
+  int nc_put_att (int ncid, int varid, String name, int xtype, SizeT len, byte[] value);
   int nc_put_att_string(int ncid, int varid, String attName, SizeT len, String[] value);
   int nc_put_att_text(int ncid, int varid, String attName, SizeT len, byte[] value);
   int nc_put_att_uchar(int ncid, int varid, String attName, int xtype, SizeT len, byte[] value);
@@ -372,10 +371,10 @@ public interface Nc4prototypes extends Library {
   int nc_inq_var_chunking(int ncid, int varid, IntByReference storagep, SizeT[] chunksizesp);
   
   /* Define fill value behavior for a variable. This must be done after nc_def_var and before nc_enddef. */
-  int nc_def_var_fill(int ncid, int varid, int no_fill, ByteBuffer fill_value); // const void *  ??
+  int nc_def_var_fill(int ncid, int varid, int no_fill, byte[] fill_value); // const void *  ??
   
   /* Inq fill value setting for a var. */
-  int nc_inq_var_fill(int ncid, int varid, IntByReference no_fill, ByteBuffer fill_valuep); // void * ??
+  int nc_inq_var_fill(int ncid, int varid, IntByReference no_fill, byte[] fill_valuep); // void * ??
   
   /* Define the endianness of a variable. */
   int nc_def_var_endian(int ncid, int varid, int endian);

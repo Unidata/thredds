@@ -1,6 +1,5 @@
 <Dataset>
-    <Byte name="vu8" isunsigned="true">
-        <Attribute name="_Unsigned" type="String" value="true"/>
+    <Byte name="vu8">
         <Dim size="1"/>
         <Dim size="2"/>
     </Byte>

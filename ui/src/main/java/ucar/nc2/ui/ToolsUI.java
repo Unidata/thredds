@@ -84,7 +84,7 @@ import ucar.nc2.util.DebugFlags;
 import ucar.nc2.util.DiskCache2;
 import ucar.nc2.util.IO;
 import ucar.nc2.util.cache.FileCache;
-import ucar.httpclient.HTTPSession;
+import ucar.httpservices.HTTPSession;
 import ucar.nc2.util.xml.RuntimeConfigParser;
 import ucar.util.prefs.PreferencesExt;
 import ucar.util.prefs.XMLStore;
@@ -110,8 +110,7 @@ import java.util.List;
  *
  * @author caron
  */
-public class
-    ToolsUI extends JPanel {
+public class ToolsUI extends JPanel {
   static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(ToolsUI.class);
 
   static private final String WorldDetailMap = "/resources/nj22/ui/maps/Countries.zip";

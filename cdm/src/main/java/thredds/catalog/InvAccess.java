@@ -33,6 +33,8 @@
 
 package thredds.catalog;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import ucar.nc2.stream.CdmRemote;
 
 import java.net.URI;
@@ -44,6 +46,7 @@ import java.net.URI;
  */
 
 abstract public class InvAccess {
+  static private final Logger logger = LoggerFactory.getLogger(InvAccess.class);
 
   protected InvDataset dataset;
   protected ServiceType type;
@@ -127,7 +130,7 @@ abstract public class InvAccess {
       return cat.resolveUri(getUnresolvedUrlName());
 
     } catch (java.net.URISyntaxException e) {
-      System.err.println("Error parsing URL= " + getUnresolvedUrlName());
+      logger.warn("Error parsing URL= " + getUnresolvedUrlName());
       return null;
     }
   }

@@ -1,34 +1,34 @@
 /*
- * Copyright 1998-2009 University Corporation for Atmospheric Research/Unidata
+ * Copyright 1998-2014 University Corporation for Atmospheric Research/Unidata
  *
- * Portions of this software were developed by the Unidata Program at the
- * University Corporation for Atmospheric Research.
+ *   Portions of this software were developed by the Unidata Program at the
+ *   University Corporation for Atmospheric Research.
  *
- * Access and use of this software shall impose the following obligations
- * and understandings on the user. The user is granted the right, without
- * any fee or cost, to use, copy, modify, alter, enhance and distribute
- * this software, and any derivative works thereof, and its supporting
- * documentation for any purpose whatsoever, provided that this entire
- * notice appears in all copies of the software, derivative works and
- * supporting documentation.  Further, UCAR requests that the user credit
- * UCAR/Unidata in any publications that result from the use of this
- * software or in any product that includes this software. The names UCAR
- * and/or Unidata, however, may not be used in any advertising or publicity
- * to endorse or promote any products or commercial entity unless specific
- * written permission is obtained from UCAR/Unidata. The user also
- * understands that UCAR/Unidata is not obligated to provide the user with
- * any support, consulting, training or assistance of any kind with regard
- * to the use, operation and performance of this software nor to provide
- * the user with any updates, revisions, new versions or "bug fixes."
+ *   Access and use of this software shall impose the following obligations
+ *   and understandings on the user. The user is granted the right, without
+ *   any fee or cost, to use, copy, modify, alter, enhance and distribute
+ *   this software, and any derivative works thereof, and its supporting
+ *   documentation for any purpose whatsoever, provided that this entire
+ *   notice appears in all copies of the software, derivative works and
+ *   supporting documentation.  Further, UCAR requests that the user credit
+ *   UCAR/Unidata in any publications that result from the use of this
+ *   software or in any product that includes this software. The names UCAR
+ *   and/or Unidata, however, may not be used in any advertising or publicity
+ *   to endorse or promote any products or commercial entity unless specific
+ *   written permission is obtained from UCAR/Unidata. The user also
+ *   understands that UCAR/Unidata is not obligated to provide the user with
+ *   any support, consulting, training or assistance of any kind with regard
+ *   to the use, operation and performance of this software nor to provide
+ *   the user with any updates, revisions, new versions or "bug fixes."
  *
- * THIS SOFTWARE IS PROVIDED BY UCAR/UNIDATA "AS IS" AND ANY EXPRESS OR
- * IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
- * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
- * DISCLAIMED. IN NO EVENT SHALL UCAR/UNIDATA BE LIABLE FOR ANY SPECIAL,
- * INDIRECT OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING
- * FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT,
- * NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
- * WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
+ *   THIS SOFTWARE IS PROVIDED BY UCAR/UNIDATA "AS IS" AND ANY EXPRESS OR
+ *   IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ *   WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ *   DISCLAIMED. IN NO EVENT SHALL UCAR/UNIDATA BE LIABLE FOR ANY SPECIAL,
+ *   INDIRECT OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING
+ *   FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT,
+ *   NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
+ *   WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
 package ucar.nc2.ui;
@@ -85,10 +85,11 @@ public class DatasetViewer extends JPanel {
   private JComponent currentComponent;
   private DatasetTreeView datasetTree;
   private NCdumpPane dumpPane;
+  private VariablePlot dataPlot;
 
   private TextHistoryPane infoTA;
   private StructureTable dataTable;
-  private IndependentWindow infoWindow, dataWindow, dumpWindow, attWindow;
+  private IndependentWindow infoWindow, dataWindow, plotWindow, dumpWindow, attWindow;
 
   private boolean eventsOK = true;
 
@@ -131,6 +132,11 @@ public class DatasetViewer extends JPanel {
     dumpPane = new NCdumpPane((PreferencesExt) prefs.node("dumpPane"));
     dumpWindow = new IndependentWindow("NCDump Variable Data", BAMutil.getImage( "netcdfUI"), dumpPane);
     dumpWindow.setBounds( (Rectangle) prefs.getBean("DumpWindowBounds", new Rectangle( 300, 300, 300, 200)));
+    
+    // the plot Pane
+    dataPlot = new VariablePlot((PreferencesExt) prefs.node("plotPane"));
+    plotWindow = new IndependentWindow("Plot Variable Data", BAMutil.getImage( "netcdfUI"), dataPlot);
+    plotWindow.setBounds( (Rectangle) prefs.getBean("PlotWindowBounds", new Rectangle( 300, 300, 300, 200)));    
   }
 
   NetcdfOutputChooser outChooser;
@@ -297,7 +303,7 @@ public class DatasetViewer extends JPanel {
       attWindow.setBounds( (Rectangle) prefs.getBean("AttWindowBounds", new Rectangle( 300, 100, 500, 800)));
     }
 
-    List<AttributeBean> attlist = new ArrayList<AttributeBean>();
+    List<AttributeBean> attlist = new ArrayList<>();
     for (Attribute att : ds.getGlobalAttributes()) {
       attlist.add(new AttributeBean(att));      
     }
@@ -328,7 +334,7 @@ public class DatasetViewer extends JPanel {
   private void setSelected( Variable v ) {
     eventsOK = false;
 
-    List<Variable> vchain = new ArrayList<Variable>();
+    List<Variable> vchain = new ArrayList<>();
     vchain.add( v);
 
     Variable vp = v;
@@ -409,6 +415,11 @@ public class DatasetViewer extends JPanel {
             dataTable(table);
           }
         });
+        csPopup.addAction("Data Plot", new AbstractAction() {
+            public void actionPerformed(ActionEvent e) {
+              dataPlot(table);
+            }
+          });        
       }
 
       // get selected variable, see if its a structure
@@ -658,11 +669,38 @@ public class DatasetViewer extends JPanel {
         ex.printStackTrace();
       }
     }
-    else return;
+    else {
+        JOptionPane.showMessageDialog(this, "Variable '" + v.getShortName() + "' not a Structure");
+        return;
+    }
 
     dataWindow.show();
   }
 
+  private void dataPlot(BeanTable from) {
+	  	dataPlot.clear();
+	  	
+	    List<VariableBean> l = from.getSelectedBeans();
+	    
+	    for(VariableBean vb  : l) {
+		    if (vb == null) return;
+		    Variable v = vb.vs;
+		    if (v != null) {
+		      try {
+		    	  dataPlot.setDataset(ds);
+		        dataPlot.setVariable(v);
+		      }
+		      catch (Exception ex) {
+		        ex.printStackTrace();
+		      }
+		    }
+		    else return;
+	    }
+
+	    plotWindow.show();
+	  }
+  
+  
   private Variable getCurrentVariable(BeanTable from) {
     VariableBean vb = (VariableBean) from.getSelectedBean();
     if (vb == null) return null;
@@ -678,13 +716,14 @@ public class DatasetViewer extends JPanel {
     }
     prefs.putBeanObject("InfoWindowBounds", infoWindow.getBounds());
     prefs.putBeanObject("DumpWindowBounds", dumpWindow.getBounds());
+    prefs.putBeanObject("PlotWindowBounds", plotWindow.getBounds());    
     if (attWindow != null) prefs.putBeanObject("AttWindowBounds", attWindow.getBounds());
 
     prefs.putInt("mainSplit", mainSplit.getDividerLocation());
   }
 
   public List<VariableBean> getVariableBeans(NetcdfFile ds) {
-    List<VariableBean> vlist = new ArrayList<VariableBean>();
+    List<VariableBean> vlist = new ArrayList<>();
     for (Variable v : ds.getVariables()) {
       vlist.add(new VariableBean(v));
     }
@@ -692,7 +731,7 @@ public class DatasetViewer extends JPanel {
   }
 
   public List<VariableBean> getStructureVariables(Structure s) {
-    List<VariableBean> vlist = new ArrayList<VariableBean>();
+    List<VariableBean> vlist = new ArrayList<>();
     for (Variable v : s.getVariables()) {
       vlist.add( new VariableBean( v));
     }

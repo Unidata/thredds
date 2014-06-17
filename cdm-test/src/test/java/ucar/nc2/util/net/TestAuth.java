@@ -36,13 +36,14 @@ package ucar.nc2.util.net;
 import org.apache.http.Header;
 import org.junit.Ignore;
 
-import ucar.httpclient.*;
+import ucar.httpservices.*;
 import org.apache.http.Header;
 import org.apache.http.auth.*;
 import org.apache.http.client.CredentialsProvider;
 import org.junit.Test;
 import ucar.nc2.util.EscapeStrings;
 import ucar.nc2.util.UnitTestCommon;
+import ucar.unidata.test.util.TestDir;
 
 import java.io.*;
 import java.util.List;
@@ -185,7 +186,7 @@ public class TestAuth extends UnitTestCommon
     testSSH() throws Exception
     {
         String[] sshurls = {
-            "https://" + REMOTESERVER + "/dts/b31.dds"
+            "https://" + TestDir.remoteTestServer + "/dts/b31.dds"
         };
 
         System.out.println("*** Testing: Simple Https");
@@ -216,13 +217,13 @@ public class TestAuth extends UnitTestCommon
         }
     }
 
-    static AuthDataBasic[] basictests = {
-        new AuthDataBasic("http://" + REMOTESERVER + "/thredds/restricted/basicAuth",
+    protected AuthDataBasic[] basictests = {
+        new AuthDataBasic("http://" + TestDir.remoteTestServer + "/thredds/restricted/basicAuth",
             "remoteUser", "remotePassword"),
     };
 
-    static AuthDataBasic[] redirecttests = {
-        new AuthDataBasic("http://" + REMOTESERVER + "/thredds/dodsC/restrict/testData.nc.dds",
+    protected AuthDataBasic[] redirecttests = {
+        new AuthDataBasic("http://" + TestDir.remoteTestServer + "/thredds/dodsC/restrict/testData.nc.dds",
             "tiggUser", "tigge"),
     };
 
@@ -454,7 +455,7 @@ public class TestAuth extends UnitTestCommon
         String server;
         String path;
         if(remote) {
-            server = REMOTESERVER;
+            server = TestDir.remoteTestServer;
             path = "/dts/b31.dds";
         } else {
             server = "localhost:8843";

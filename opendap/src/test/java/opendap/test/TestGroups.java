@@ -36,6 +36,7 @@ import ucar.nc2.dods.DODSNetcdfFile;
 import ucar.nc2.util.UnitTestCommon;
 import ucar.nc2.util.rc.RC;
 import ucar.unidata.test.Diff;
+import ucar.unidata.test.util.TestDir;
 
 import java.io.*;
 import java.util.ArrayList;
@@ -43,11 +44,6 @@ import java.util.List;
 
 public class TestGroups extends UnitTestCommon
 {
-
-    static final String DFALTTESTSERVER = "remotetest.unidata.ucar.edu";
-    //static final String DFALTTESTSERVER = "localhost:8080";
-
-
     // Collect results locally
     static private class Testcase
     {
@@ -72,8 +68,7 @@ public class TestGroups extends UnitTestCommon
     {
         super("DAP Group tests");
         // Check if user specified server.
-        testserver = System.getProperty("testserver");
-        if(testserver == null) testserver = DFALTTESTSERVER;
+        testserver = TestDir.remoteTestServer;
         definetestcases();
     }
 

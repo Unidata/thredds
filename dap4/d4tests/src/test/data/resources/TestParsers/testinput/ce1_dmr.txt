@@ -2,7 +2,6 @@
          name="ce_test_dmr"
          dapVersion="4.0"
          dmrVersion="1.0"
-         base="F:/svn/opuls/d4ts/src/test/data/resources/testfiles/ce1_dmr.txt"
          ns="http://xml.opendap.org/ns/DAP/4.0#">
   <Dimension name="d10" size="10"/>
   <Dimension name="d17" size="17"/>
@@ -33,4 +32,8 @@
     <Dim name="/d10"/>
     <Dim name="/d10"/>
   </Structure>
+  <Sequence name="seq">
+      <Int32 name="i32"/>
+      <Int16 name="i16"/>
+  </Sequence>
 </Dataset>

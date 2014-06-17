@@ -269,15 +269,17 @@ public class CoordSysTable extends JPanel {
 
         if (!axis1D.isInterval()) {
           printArray("edges=", axis1D.getCoordEdges());
+
         } else {
           printArray("bound1=", axis1D.getBound1());
           printArray("bound2=", axis1D.getBound2());
 
           Formatter f = new Formatter();
+          double[] mid = axis1D.getCoordValues();
           double[] b1 = axis1D.getBound1();
           double[] b2 = axis1D.getBound2();
           for (int i = 0; i < b1.length; i++) {
-            f.format("(%f,%f) = %f%n", b1[i], b2[i], b2[i] - b1[i]);
+            f.format("%f (%f,%f) = %f%n", mid[i], b1[i], b2[i], b2[i] - b1[i]);
           }
           infoTA.appendLine(f.toString());
         }

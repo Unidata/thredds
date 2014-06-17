@@ -10,7 +10,7 @@ import java.io.IOException;
 import java.util.List;
 
 /**
-DataVariable is purely to allow
+DataCompound is purely to allow
 unified reference to:
 -DataStructure
 -DataSequence

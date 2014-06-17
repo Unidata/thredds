@@ -9,6 +9,7 @@ import dap4.core.dmr.DapStructure;
 import dap4.core.dmr.DapVariable;
 import dap4.core.util.*;
 import dap4.dap4shared.AbstractData;
+import dap4.dap4shared.AbstractDataVariable;
 import ucar.ma2.*;
 import ucar.nc2.Variable;
 
@@ -21,7 +22,7 @@ import java.util.*;
  * instances.
  */
 
-public class CDMDataCompoundArray extends AbstractData implements DataCompoundArray
+public class CDMDataCompoundArray extends AbstractDataVariable implements DataCompoundArray
 {
     //////////////////////////////////////////////////
     // Instance variables
@@ -61,7 +62,9 @@ public class CDMDataCompoundArray extends AbstractData implements DataCompoundAr
     //////////////////////////////////////////////////
     // DataCompoundArray Interface
 
-    public DataSort getElementSort()
+    @Override
+    public DataSort
+    getElementSort()
     {
         if(getTemplate().getSort() == DapSort.SEQUENCE)
             return DataSort.SEQUENCE;
@@ -69,13 +72,17 @@ public class CDMDataCompoundArray extends AbstractData implements DataCompoundAr
             return DataSort.STRUCTURE;
     }
 
-    public long getCount() // dimension cross-product
+    @Override
+    public long
+    getCount() // dimension cross-product
     {
         return this.nelems;
     }
 
     // Provide a read of a single value at a given offset in a dimensioned variable.
-    public DataCompound read(long index)
+    @Override
+    public DataCompound
+    read(long index)
         throws DataException
     {
         if(instances[(int) index] == null)

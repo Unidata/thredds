@@ -1,9 +1,10 @@
 package dap4.test;
 
-import dap4.test.util.UnitTestCommon;
-import ucar.httpclient.*;
+import dap4.core.util.DapUtil;
+import dap4.dap4shared.DataCompiler;
+import dap4.test.util.DapTestCommon;
+import ucar.httpservices.*;
 import ucar.nc2.dataset.NetcdfDataset;
-import ucar.nc2.util.net.*;
 
 import java.io.*;
 import java.util.ArrayList;
@@ -12,30 +13,43 @@ import java.util.List;
 /**
  * Test at the NetcdfDataset level
  */
-public class TestCDMClient extends UnitTestCommon
+public class TestCDMClient extends DapTestCommon
 {
-    static final boolean DEBUG = true;
+    static final boolean DEBUG = false;
 
-    static final boolean NCDUMP = true; // Use NcDumpW instead of NCPrint
-
-    static final String EXTENSION = (NCDUMP ? "ncdump" : "dmp");
+    static final String EXTENSION = "ncdump";
 
     static final String TESTEXTENSION = "raw";
 
     //////////////////////////////////////////////////
     // Constants
 
-    static final String DATADIR = "tests/src/test/data"; // relative to opuls root
+    static final String DATADIR = "d4tests/src/test/data"; // relative to dap4 root
     static final String TESTDATADIR = DATADIR + "/resources/TestCDMClient";
     static final String BASELINEDIR = TESTDATADIR + "/baseline";
     static final String TESTINPUTDIR = TESTDATADIR + "/testinput";
 
     //Define the names of the xfail tests
-    static final String[] XFAIL_TESTS = {"test_struct_array.nc"};
+    static final String[] XFAIL_TESTS = {
+            "test_struct_array.nc",
+    };
 
     static boolean isXfailTest(String t)
     {
         for(String s : XFAIL_TESTS) {
+            if(s.equals(t)) return true;
+        }
+        return false;
+    }
+
+    //Define the names of tests that are dmr only
+    static final String[] DISABLED = {
+            "test_sequence_2.syn",
+    };
+
+    static boolean isDisabledTest(String t)
+    {
+        for(String s : DISABLED) {
             if(s.equals(t)) return true;
         }
         return false;
@@ -56,11 +70,6 @@ public class TestCDMClient extends UnitTestCommon
         String testinputpath;
         String baselinepath;
 
-        ClientTest(String dataset, boolean checksumming)
-        {
-            this(dataset, checksumming, false);
-        }
-
         ClientTest(String dataset, boolean checksumming, boolean xfail)
         {
             this.title = dataset;
@@ -68,16 +77,19 @@ public class TestCDMClient extends UnitTestCommon
             this.checksumming = checksumming;
             this.xfail = xfail;
             this.testinputpath
-                = root + "/" + TESTINPUTDIR + "/" + dataset;
+                    = root + "/" + TESTINPUTDIR + "/" + dataset;
             this.baselinepath
-                = root + "/" + BASELINEDIR + "/" + dataset;
+                    = root + "/" + BASELINEDIR + "/" + dataset;
         }
 
         String makeurl()
         {
-            String url = url = server + "/" + dataset;
-            if(server.startsWith(FILESERVER))
-                url += ".raw";
+            String url = server;
+            if(server.startsWith(FILESERVER)) {
+                url = url + "/" + dataset + ".raw";
+            } else {
+                url = url + "/" + dataset;
+            }
             return url;
         }
 
@@ -115,15 +127,6 @@ public class TestCDMClient extends UnitTestCommon
     //////////////////////////////////////////////////
     // Instance variables
 
-    // System properties
-
-    boolean prop_diff = true;
-    boolean prop_baseline = false;
-    boolean prop_visual = false;
-    boolean prop_debug = DEBUG;
-    String prop_server = null;
-
-
     // Test cases
 
     List<ClientTest> alltestcases = new ArrayList<ClientTest>();
@@ -138,26 +141,26 @@ public class TestCDMClient extends UnitTestCommon
     // Constructor(s)
 
     public TestCDMClient()
-        throws Exception
+            throws Exception
     {
         this("TestCDMClient");
     }
 
     public TestCDMClient(String name)
-        throws Exception
+            throws Exception
     {
         this(name, null);
     }
 
     public TestCDMClient(String name, String[] argv)
-        throws Exception
+            throws Exception
     {
         super(name);
         setSystemProperties();
-        this.root = getRoot();
+        this.root = getDAP4Root();
         if(this.root == null)
-            throw new Exception("Opuls root cannot be located");
-        if(this.root.charAt(0) != '/')
+            throw new Exception("dap4 root cannot be located");
+        if(this.root.charAt(0) != '/' && !DapUtil.hasDriveLetter(this.root))
             this.root = "/" + this.root; // handle problem of windows paths
         this.datasetpath = this.root + "/" + TESTINPUTDIR;
         makefilesource(this.datasetpath);
@@ -173,11 +176,12 @@ public class TestCDMClient extends UnitTestCommon
     void
     chooseTestcases()
     {
-        if(true) {
-            chosentests = locate("test_struct_array.syn");
+        if(false) {
+            chosentests = locate("test_enum_2.nc");
         } else {
-            for(ClientTest tc : alltestcases)
+            for(ClientTest tc : alltestcases) {
                 chosentests.add(tc);
+            }
         }
     }
 
@@ -196,7 +200,7 @@ public class TestCDMClient extends UnitTestCommon
         // This assumes that the set of files and the set of
         // files thru the sourceurl are the same
         File[] filelist = testpath.listFiles(new TestFilter(prop_debug));
-        for(int i = 0;i < filelist.length;i++) {
+        for(int i = 0; i < filelist.length; i++) {
             File file = filelist[i];
             // remove the extension
             String name = file.getName();
@@ -204,8 +208,10 @@ public class TestCDMClient extends UnitTestCommon
             int index = name.lastIndexOf("." + TESTEXTENSION);
             assert (index > 0);
             name = name.substring(0, index);
-            ClientTest ct = new ClientTest(name, true, isXfailTest(name));
-            this.alltestcases.add(ct);
+            if(!isDisabledTest(name)) {
+                ClientTest ct = new ClientTest(name, true, isXfailTest(name));
+                this.alltestcases.add(ct);
+            }
         }
 
         return true;
@@ -215,8 +221,10 @@ public class TestCDMClient extends UnitTestCommon
     // Junit test method
 
     public void testCDMClient()
-        throws Exception
+            throws Exception
     {
+        if(DEBUG)
+            DataCompiler.DEBUG = true;
         boolean pass = true;
         for(ClientTest testcase : chosentests) {
             if(!doOneTest(testcase)) pass = false;
@@ -228,7 +236,7 @@ public class TestCDMClient extends UnitTestCommon
     // Primary test method
     boolean
     doOneTest(ClientTest testcase)
-        throws Exception
+            throws Exception
     {
         boolean pass = true;
         System.out.println("Testcase: " + testcase.testinputpath);
@@ -242,17 +250,19 @@ public class TestCDMClient extends UnitTestCommon
             return testcase.xfail;
         }
 
-        String metadata = (NCDUMP ? ncdumpmetadata(ncfile) : null);
+        String metadata = null;
+        String data = null;
+
+        metadata = ncdumpmetadata(ncfile);
         if(prop_visual) {
             visual(testcase.title + ".dmr", metadata);
         }
-
-        String data = (NCDUMP ? ncdumpdata(ncfile) : null);
-        if(prop_visual) {
+        data = ncdumpdata(ncfile);
+        if(prop_visual)
             visual(testcase.title + ".dap", data);
-        }
 
-        String testoutput = (NCDUMP ? data : metadata + data);
+
+        String testoutput = data;
 
         String baselinefile = testcase.baselinepath + "." + EXTENSION;
 
@@ -271,7 +281,7 @@ public class TestCDMClient extends UnitTestCommon
 
 
     String ncdumpmetadata(NetcdfDataset ncfile)
-        throws Exception
+            throws Exception
     {
         StringWriter sw = new StringWriter();
         // Print the meta-databuffer using these args to NcdumpW
@@ -286,7 +296,7 @@ public class TestCDMClient extends UnitTestCommon
     }
 
     String ncdumpdata(NetcdfDataset ncfile)
-        throws Exception
+            throws Exception
     {
         StringWriter sw = new StringWriter();
         // Dump the databuffer
@@ -304,21 +314,6 @@ public class TestCDMClient extends UnitTestCommon
 
     //////////////////////////////////////////////////
     // Utility methods
-
-    /**
-     * Try to get the system properties
-     */
-    void setSystemProperties()
-    {
-        prop_diff = (System.getProperty("nodiff") == null);
-        prop_baseline = (System.getProperty("baseline") != null);
-        prop_visual = (System.getProperty("visual") != null);
-        if(System.getProperty("debug") != null)
-            prop_debug = true;
-        prop_server = System.getProperty("server");
-        if(prop_diff && prop_baseline)
-            prop_diff = false;
-    }
 
     //Locate the test cases with given prefix
     List<ClientTest>
@@ -354,9 +349,9 @@ public class TestCDMClient extends UnitTestCommon
     {
         Source chosen = null;
         if(prop_server != null) {
-            for(int i = 0;i < SOURCES.length;i++) {
-                if(SOURCES[i].name.equals(prop_server)) {
-                    chosen = SOURCES[i];
+            for(int i = 0; i < SOURCES.size(); i++) {
+                if(SOURCES.get(i).name.equals(prop_server)) {
+                    chosen = SOURCES.get(i);
                     break;
                 }
             }
@@ -371,8 +366,8 @@ public class TestCDMClient extends UnitTestCommon
             return chosen.prefix;
         }
         // Look for a sourceurl in order of appearance in SOURCES
-        for(int i = 0;i < SOURCES.length;i++) {
-            chosen = SOURCES[i];
+        for(int i = 0; i < SOURCES.size(); i++) {
+            chosen = SOURCES.get(i);
             if(!chosen.isfile)
                 break;
             if(checkServer(chosen))

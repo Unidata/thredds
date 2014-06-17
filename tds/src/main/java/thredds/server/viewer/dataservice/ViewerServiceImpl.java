@@ -29,7 +29,7 @@ import ucar.unidata.util.StringUtil2;
 
 @Service
 public class ViewerServiceImpl implements ViewerService {
-	private static Logger log = LoggerFactory.getLogger(ViewerService.class);
+	private static Logger logger = LoggerFactory.getLogger(ViewerServiceImpl.class);
 
   public static ViewerLinkProvider getStaticView() {
     return new StaticView();
@@ -160,13 +160,17 @@ public class ViewerServiceImpl implements ViewerService {
 			InvAccess access = getOpendapAccess(ds);
 
 			URI dataURI = access.getStandardUri();
-			if (!dataURI.isAbsolute()) {
+      if (dataURI == null) {
+        logger.warn("IDVViewer access URL failed on {}", ds.getName());
+        return null;
+      }
+      if (!dataURI.isAbsolute()) {
 				try {
 					URI base = new URI(req.getRequestURL().toString());
 					dataURI = base.resolve(dataURI);
 					// System.out.println("Resolve URL with "+req.getRequestURL()+" got= "+dataURI.toString());
 				} catch (URISyntaxException e) {
-					log.error("Resolve URL with " + req.getRequestURL(), e);
+					logger.error("Resolve URL with " + req.getRequestURL(), e);
 				}
 			}
 

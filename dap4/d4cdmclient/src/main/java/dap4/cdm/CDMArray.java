@@ -6,7 +6,6 @@ package dap4.cdm;
 
 import dap4.core.dmr.*;
 import dap4.dap4shared.DSP;
-import dap4.dap4shared.D4DSP;
 
 /**
 It is convenient to be able to create 

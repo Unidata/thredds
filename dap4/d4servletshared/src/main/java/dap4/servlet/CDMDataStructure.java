@@ -7,6 +7,7 @@ package dap4.servlet;
 import dap4.core.data.*;
 import dap4.core.dmr.*;
 import dap4.dap4shared.AbstractData;
+import dap4.dap4shared.AbstractDataVariable;
 import ucar.ma2.*;
 
 import java.io.IOException;
@@ -18,7 +19,7 @@ Define DSP support
 for a single structure instance.
 */
 
-public class CDMDataStructure extends AbstractData implements DataStructure
+public class CDMDataStructure extends AbstractDataVariable implements DataStructure
 {
     //////////////////////////////////////////////////
     // Instance Variables

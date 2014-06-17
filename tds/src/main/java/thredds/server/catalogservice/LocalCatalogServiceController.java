@@ -291,6 +291,7 @@ public class LocalCatalogServiceController {
     } catch (IOException e) {
       log.error("handleRequestInternal(): Trouble writing to response.", e);
       return null;
+
     } catch (Throwable e) {
       log.error("handleRequestInternal(): Problem handling request.", e);
       if (!response.isCommitted()) response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);

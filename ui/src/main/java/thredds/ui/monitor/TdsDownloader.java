@@ -33,7 +33,7 @@
 
 package thredds.ui.monitor;
 
-import ucar.httpclient.*;
+import ucar.httpservices.*;
 import ucar.nc2.util.CancelTask;
 import ucar.nc2.util.net.HttpClientManager;
 

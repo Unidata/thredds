@@ -32,9 +32,7 @@ public class D4DataStructure extends D4DataVariable implements DataStructure
     // Instance variables
 
     protected D4DataCompoundArray parent = null;
-
     protected int index = 0;
-
     protected D4DataVariable[] fielddata = null;
 
     //////////////////////////////////////////////////

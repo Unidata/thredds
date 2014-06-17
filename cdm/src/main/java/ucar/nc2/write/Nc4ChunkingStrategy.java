@@ -18,7 +18,6 @@ import java.util.List;
  */
 @Immutable
 public abstract class Nc4ChunkingStrategy implements Nc4Chunking {
-  private static final boolean debug = true;
 
   /**
    * @param type         Strategy type

@@ -99,7 +99,7 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
           debugCompound = true,
           debugCompoundAtt = false,
           debugUserTypes = false,
-          debugLoad = true,
+          debugLoad = false,
           debugWrite = false;
 
   /**
@@ -135,6 +135,7 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
       if (f.exists() && f.canRead()) {
         pathlist = (pathlist == null ? "" : pathlist + File.pathSeparator);
         pathlist = pathlist + path;
+        break;
       }
     }
     return pathlist;
@@ -286,7 +287,8 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
   private void _open(RandomAccessFile raf, NetcdfFile ncfile, boolean readOnly) throws IOException {
     load(); // load jni
 
-    raf.close(); // not used
+    if(raf != null)
+        raf.close(); // not used
     this.ncfile = ncfile;
 
     // open
@@ -726,11 +728,12 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
     DataType dtype = convertDataType(userType.baseTypeid).dt;
     int elemSize = dtype.getSize();
 
-    ByteBuffer bb = ByteBuffer.allocate(len * elemSize);
-    ret = nc4.nc_get_att(grpid, varid, attname, bb);
+    byte[] bbuff = new byte[len * elemSize];
+    ret = nc4.nc_get_att(grpid, varid, attname, bbuff);
     if (ret != 0)
       throw new IOException(ret + ": " + nc4.nc_strerror(ret));
 
+    ByteBuffer bb = ByteBuffer.wrap(bbuff);
     Array data = convertByteBuffer(bb, userType.baseTypeid, new int[]{len});
     IndexIterator ii = data.getIndexIterator();
 
@@ -775,22 +778,23 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
 
   private Attribute readOpaqueAttValues(int grpid, int varid, String attname, int len, UserType userType) throws IOException {
     int total = len * userType.size;
-    ByteBuffer bb = ByteBuffer.allocate(total);
+    byte[] bb = new byte[total];
     int ret = nc4.nc_get_att(grpid, varid, attname, bb);
     if (ret != 0)
       throw new IOException(ret + ": " + nc4.nc_strerror(ret));
-    return new Attribute(attname, Array.factory(DataType.BYTE, new int[]{total}, bb.array()));
+    return new Attribute(attname, Array.factory(DataType.BYTE, new int[]{total}, bb));
   }
 
   private void readCompoundAttValues(int grpid, int varid, String attname, int len, UserType userType, List<Attribute> result, Variable v)
           throws IOException {
 
     int buffSize = len * userType.size;
-    ByteBuffer bbuff = ByteBuffer.allocate(buffSize);
-    int ret = nc4.nc_get_att(grpid, varid, attname, bbuff);
+    byte[] bb = new byte[buffSize];
+    int ret = nc4.nc_get_att(grpid, varid, attname, bb);
     if (ret != 0)
       throw new IOException(ret + ": " + nc4.nc_strerror(ret));
 
+    ByteBuffer bbuff = ByteBuffer.wrap(bb);
     decodeCompoundData(len, userType, bbuff);
 
     // if its a Structure, distribute to matching fields
@@ -1626,20 +1630,21 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
           throw new IOException("Unknown userType == " + typeid);
         } else if (userType.typeClass == Nc4prototypes.NC_ENUM) {
           int buffSize = len * userType.size;
-          ByteBuffer bbuff = ByteBuffer.allocate(buffSize);
-          bbuff.order(ByteOrder.nativeOrder()); // c library returns in native order i hope
-          // read in the data
+          byte[] bbuff = new byte[buffSize];
+           // read in the data
           ret = nc4.nc_get_var(grpid, varid, bbuff);
           if (ret != 0)
             throw new IOException(ret + ": " + nc4.nc_strerror(ret));
+          ByteBuffer bb = ByteBuffer.wrap(bbuff);
+          bb.order(ByteOrder.nativeOrder()); // c library returns in native order i hope
 
           switch (userType.baseTypeid) {
             case Nc4prototypes.NC_BYTE:
             case Nc4prototypes.NC_UBYTE:
-              return Array.factory(DataType.BYTE, shape, bbuff);
+              return Array.factory(DataType.BYTE, shape, bb);
             case Nc4prototypes.NC_SHORT:
             case Nc4prototypes.NC_USHORT:
-              return Array.factory(DataType.SHORT, shape, bbuff);
+              return Array.factory(DataType.SHORT, shape, bb);
           }
           throw new IOException("unknown type " + userType.baseTypeid);
         } else if (userType.typeClass == Nc4prototypes.NC_VLEN) {
@@ -1661,8 +1666,7 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
     int len = (int) section.computeSize();
 
     int buffSize = len * userType.size;
-    ByteBuffer bbuff = ByteBuffer.allocate(buffSize);
-    bbuff.order(ByteOrder.nativeOrder()); // c library returns in native order i hope
+    byte[] bbuff = new byte[buffSize];
 
     // read in the data
     int ret;
@@ -1670,12 +1674,15 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
     if (ret != 0)
       throw new IOException(ret + ": " + nc4.nc_strerror(ret));
 
+    ByteBuffer bb = ByteBuffer.wrap(bbuff);
+    bb.order(ByteOrder.nativeOrder()); // c library returns in native order i hope
+
     /*
     This does not seem right since the user type does not
     normally appear in the CDM representation.
     */
     StructureMembers sm = createStructureMembers(userType);
-    ArrayStructureBB asbb = new ArrayStructureBB(sm, section.getShape(), bbuff, 0);
+    ArrayStructureBB asbb = new ArrayStructureBB(sm, section.getShape(), bb, 0);
 
     // find and convert String and vlen fields, put on asbb heap
     int destPos = 0;
@@ -1912,11 +1919,10 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
     SizeT[] stride = convertSizeT(section.getStride());
     int len = (int) section.computeSize();
 
-    ByteBuffer bb = ByteBuffer.allocate(len * size);
-    ret = nc4.nc_get_vars(grpid, varid, origin, shape, stride, bb);
+    byte[] bbuff = new byte[len * size];
+    ret = nc4.nc_get_vars(grpid, varid, origin, shape, stride, bbuff);
     if (ret != 0)
       throw new IOException(ret + ": " + nc4.nc_strerror(ret));
-    byte[] entire = bb.array();
     int[] intshape;
 
     if (shape != null) {
@@ -1933,7 +1939,7 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
     int count = 0;
     IndexIterator ii = values.getIndexIterator();
     while (ii.hasNext()) {
-      ii.setObjectNext(ByteBuffer.wrap(entire, count * size, size));
+      ii.setObjectNext(ByteBuffer.wrap(bbuff, count * size, size));
       count++;
     }
     return values;
@@ -2329,7 +2335,7 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
     if (debugWrite)
       System.out.printf("added variable %s (grpid %d varid %d) %n", v.getShortName(), vinfo.g4.grpid, vinfo.varid);
 
-    if (version == NetcdfFileWriter.Version.netcdf4 && v.getRank() > 0) {
+    if (version.isNetdf4format() && v.getRank() > 0) {
       boolean isChunked = chunker.isChunked(v);
       int storage = isChunked ? Nc4prototypes.NC_CHUNKED : Nc4prototypes.NC_CONTIGUOUS;
       SizeT[] chunking;
@@ -2360,8 +2366,13 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
 
     v.setSPobject(vinfo);
 
+    if (v instanceof Structure) {
+      createCompoundMemberAtts(g4.grpid, varid, (Structure) v);
+    }
+
     for (Attribute att : v.getAttributes())
       writeAttribute(g4.grpid, varid, att, v);
+
   }
 
 
@@ -2405,9 +2416,9 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
 
       int field_typeid = convertDataType(v.getDataType());
       if (v.isScalar())
-        ret = nc4.nc_insert_compound(ncid, typeid, v.getShortName(), new SizeT(offset), field_typeid);
+        ret = nc4.nc_insert_compound(g4.grpid, typeid, v.getShortName(), new SizeT(offset), field_typeid);
       else
-        ret = nc4.nc_insert_array_compound(ncid, typeid, v.getShortName(), new SizeT(offset), field_typeid, v.getRank(), v.getShape());
+        ret = nc4.nc_insert_array_compound(g4.grpid, typeid, v.getShortName(), new SizeT(offset), field_typeid, v.getRank(), v.getShape());
 
       if (ret != 0)
         throw new IOException(nc4.nc_strerror(ret) + " on\n" + s.getShortName());
@@ -2426,6 +2437,112 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
     UserType ut = new UserType(g4.grpid, typeid, name, size, 0, (long) fldidx, NC_COMPOUND);
     userTypes.put(typeid, ut);
     ut.setFields(flds);
+  }
+
+  private void createCompoundMemberAtts(int grpid, int varid, Structure s) throws IOException {
+
+    // count size of attribute values
+    int sizeAtts = 0;
+    for (Variable m : s.getVariables()) {
+      for (Attribute att : m.getAttributes()) {
+        int elemSize;
+        if (att.isString()) {
+          String val = att.getStringValue();
+          elemSize = val.getBytes(CDM.UTF8).length;
+        } else {
+          elemSize = att.getDataType().getSize() * att.getLength();
+        }
+        sizeAtts += elemSize;
+      }
+    }
+    if (sizeAtts == 0) return; // no atts;    */
+
+    // create the compound type for member_atts_t
+    IntByReference typeidp = new IntByReference();
+    String typeName = "_"+s.getShortName() + "_member_atts_t";
+    int ret = nc4.nc_def_compound(grpid, new SizeT(sizeAtts), typeName, typeidp);
+    if (ret != 0)
+      throw new IOException(nc4.nc_strerror(ret) + " on\n" + s);
+    int typeid = typeidp.getValue();
+    if (debugCompound) System.out.printf("added compound member att type %s (typeid %d) grpid %d size=%d %n", typeName, typeid, grpid, sizeAtts);  // */
+
+    // add the fields to the member_atts_t and place the values in a ByteBuffer
+    ByteBuffer bb = ByteBuffer.allocate(sizeAtts);
+    bb.order(ByteOrder.nativeOrder());
+    for (Variable m : s.getVariables()) {
+      for (Attribute att : m.getAttributes()) {
+        // add the fields to the member_atts_t
+        String memberName = m.getShortName()+"_"+att.getShortName();
+        int field_typeid = att.isString() ? Nc4prototypes.NC_CHAR : convertDataType(att.getDataType());
+
+        if (att.isString()) {  // String gets turned into array of char; otherwise no way to pass in
+          String val = att.getStringValue();
+          int len = val.getBytes(CDM.UTF8).length;
+          ret = nc4.nc_insert_array_compound(grpid, typeid, memberName, new SizeT(bb.position()), field_typeid, 1, new int[] {len} );
+
+        } else if (!att.isArray())
+          ret = nc4.nc_insert_compound(grpid, typeid, memberName, new SizeT(bb.position()), field_typeid);
+        else
+          ret = nc4.nc_insert_array_compound(grpid, typeid, memberName, new SizeT(bb.position()), field_typeid, 1, new int[] {att.getLength()} );
+
+        if (ret != 0)
+          throw new IOException(nc4.nc_strerror(ret) + " on\n" + s.getShortName());
+
+        if (debugCompound) {
+          int elemSize;
+          if (att.isString()) {
+            String val = att.getStringValue();
+            elemSize = val.getBytes(CDM.UTF8).length;
+          } else {
+            elemSize = att.getDataType().getSize() * att.getLength();
+          }
+          System.out.printf(" added compound att member %s type %s (%d) offset=%d elemSize=%d%n", memberName, att.getDataType(), field_typeid, bb.position(), elemSize);
+        }
+
+        // place the values in a ByteBuffer
+        if (att.isString()) {
+          String val = att.getStringValue();
+          byte[] sby = val.getBytes(CDM.UTF8);
+          for (byte b : sby)
+            bb.put(b);
+        } else {
+          for (int i=0; i<att.getLength(); i++) {
+            switch (att.getDataType()) {
+              case BYTE:
+                bb.put( att.getNumericValue().byteValue());
+                break;
+              case CHAR:
+                bb.put( att.getNumericValue().byteValue());  // ??
+                break;
+              case DOUBLE:
+                bb.putDouble( att.getNumericValue().doubleValue());
+                break;
+              case FLOAT:
+                bb.putFloat( att.getNumericValue().floatValue());
+                break;
+              case INT:
+                bb.putInt( att.getNumericValue().intValue());
+                break;
+              case LONG:
+                bb.putLong( att.getNumericValue().longValue());
+                break;
+              case SHORT:
+                bb.putShort( att.getNumericValue().shortValue());
+                break;
+            }
+          }
+        }
+      }     // loop over atts
+    }       // loop over vars  */
+
+
+    // now write that attribute on the variable
+    String attName = s.getShortName()+"_atts";
+    ret = nc4.nc_put_att (grpid, varid, attName, typeid, new SizeT(sizeAtts), bb.array());
+    if (ret != 0)
+       throw new IOException(nc4.nc_strerror(ret) + " on\n" + s.getShortName());
+    if (debugCompound) System.out.printf("write att %s (typeid %d) size=%d %n", attName, typeid, sizeAtts); // */
+
   }
 
   //////////////////////////////////////////////////
@@ -2696,7 +2813,8 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
 
     // write the data
     // int ret = nc4.nc_put_var(grpid, varid, bbuff);
-    int ret = nc4.nc_put_vars(grpid, varid, origin, shape, stride, bbuff);
+    int ret = nc4.nc_put_vara(grpid, varid, origin, shape, bbuff.array());
+    // int ret = nc4.nc_put_vars(grpid, varid, origin, shape, stride, bbuff);
     if (ret != 0)
       throw new IOException(errMessage("nc_put_vars", ret, grpid, varid));
   }
@@ -2725,7 +2843,9 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
     ByteBuffer bbuff = makeBB(s, sdata);
 
     // write the data
-    ret = nc4.nc_put_vars(vinfo.g4.grpid, vinfo.varid, origin, shape, stride, bbuff);
+    //ret = nc4.nc_put_vara(vinfo.g4.grpid, vinfo.varid, origin, shape, bbuff);
+    //ret = nc4.nc_put_vars(vinfo.g4.grpid, vinfo.varid, origin, shape, stride, bbuff);
+    ret = nc4.nc_put_vars(vinfo.g4.grpid, vinfo.varid, origin, shape, stride, bbuff.array());
     if (ret != 0)
       throw new IOException(errMessage("appendStructureData (nc_put_vars)", ret, vinfo.g4.grpid, vinfo.varid));
 

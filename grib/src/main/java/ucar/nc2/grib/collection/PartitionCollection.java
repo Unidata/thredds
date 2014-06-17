@@ -54,6 +54,7 @@ import ucar.unidata.io.RandomAccessFile;
 import ucar.unidata.util.StringUtil2;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.*;
 
@@ -541,17 +542,21 @@ public abstract class PartitionCollection extends GribCollection {
     public GribCollection getGribCollection() throws IOException {
       GribCollection result;
       String path = getIndexFilenameInCache();
-      if (path == null && GribIosp.debugIndexOnly) {  // we are running in debug mode where we only have the indices, not the data files
-        // tricky substitute the current root
-        File orgParentDir = new File(directory);
-        File currentFile = new File(PartitionCollection.this.indexFilename);
-        File currentParent =  currentFile.getParentFile();
-        File currentParentWithDir = new File(currentParent,orgParentDir.getName());
-        File nestedIndex =  isPartitionOfPartitions ? new File(currentParentWithDir, filename) : new File(currentParent, filename); // JMJ
-        path = nestedIndex.getPath();
+      if (path == null) {
+        if (GribIosp.debugIndexOnly) {  // we are running in debug mode where we only have the indices, not the data files
+          // tricky: substitute the current root
+          File orgParentDir = new File(directory);
+          File currentFile = new File(PartitionCollection.this.indexFilename);
+          File currentParent = currentFile.getParentFile();
+          File currentParentWithDir = new File(currentParent, orgParentDir.getName());
+          File nestedIndex = isPartitionOfPartitions ? new File(currentParentWithDir, filename) : new File(currentParent, filename); // JMJ
+          path = nestedIndex.getPath();
+        } else {
+          throw new FileNotFoundException("No index filename for partition= "+this.toString());
+        }
       }
 
-      if (partitionCache != null) {
+      if (partitionCache != null) {                     // FileFactory factory, Object hashKey, String location, int buffer_size, CancelTask cancelTask, Object spiObject
         result = (GribCollection) partitionCache.acquire(collectionFactory, path, path, -1, null, this);
       } else {
         result = (GribCollection) collectionFactory.open(path, -1, null, this);

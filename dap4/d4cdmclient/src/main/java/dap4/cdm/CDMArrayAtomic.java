@@ -4,7 +4,6 @@
 
 package   dap4.cdm;
 
-import dap4.core.data.DataException;
 import dap4.core.dmr.*;
 import dap4.core.util.*;
 import dap4.cdmshared.CDMUtil;
@@ -12,9 +11,6 @@ import dap4.dap4shared.*;
 import ucar.ma2.*;
 
 import java.io.IOException;
-import java.nio.ByteBuffer;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * CDMArrayAtomic wraps a D4DataAtomic object to present

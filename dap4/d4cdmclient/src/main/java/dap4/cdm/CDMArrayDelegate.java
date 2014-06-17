@@ -5,6 +5,7 @@
 package   dap4.cdm;
 
 import dap4.core.dmr.*;
+import dap4.dap4shared.DSP;
 import dap4.dap4shared.D4DSP;
 
 /**
@@ -37,7 +38,7 @@ class CDMArrayDelegate implements CDMArray
 	this.primitivetype = this.basetype.getPrimitiveType();
     */
 
-    @Override public D4DSP getDSP() {return this.dsp;}
+    @Override public DSP getDSP() {return this.dsp;}
     @Override public CDMDataset getRoot() {return this.root;}
     @Override public DapVariable getTemplate() {return this.template;}
     @Override public long getByteSize() {return this.bytesize;}

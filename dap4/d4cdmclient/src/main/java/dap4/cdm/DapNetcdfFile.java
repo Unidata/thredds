@@ -2,12 +2,12 @@
    See the LICENSE file for more information.
 */
 
-package   dap4.cdm;
+package dap4.cdm;
 
+import dap4.core.util.DapUtil;
 import dap4.cdmshared.CDMUtil;
 import dap4.cdmshared.NodeMap;
 import dap4.dap4shared.*;
-import org.xml.sax.SAXException;
 import ucar.ma2.*;
 import ucar.nc2.ParsedSectionSpec;
 import ucar.nc2.Variable;
@@ -15,14 +15,13 @@ import ucar.nc2.iosp.IospHelper;
 import ucar.nc2.util.CancelTask;
 
 import java.io.IOException;
+import java.net.URISyntaxException;
 import java.nio.channels.WritableByteChannel;
 import java.util.*;
 
-import static org.apache.http.HttpStatus.*;
-
 public class DapNetcdfFile extends ucar.nc2.NetcdfFile
 {
-    static final boolean DEBUG = true;
+    static final boolean DEBUG = false;
     static final boolean PARSEDEBUG = false;
     static final boolean MERGE = false;
 
@@ -77,12 +76,21 @@ public class DapNetcdfFile extends ucar.nc2.NetcdfFile
     protected boolean closed = false;
 
     protected String originalurl = null;
+    protected String finalurl = null;
     protected XURI xuri = null;
     protected D4DSP dsp = null;
 
     protected CancelTask cancel = null;
 
     protected NodeMap nodemap = null;
+
+    /**
+     * Originally, the array for a variable was stored
+     * using var.setCacheData(). However, that is illegal
+     * for Structures and Sequences, so (for now)
+     * we maintain a map variable->array.
+     */
+    protected Map<Variable, Array> arraymap = new HashMap<>();
 
     //////////////////////////////////////////////////
     // Constructor(s)
@@ -95,17 +103,48 @@ public class DapNetcdfFile extends ucar.nc2.NetcdfFile
      * @throws IOException
      */
     public DapNetcdfFile(String url, CancelTask cancelTask)
-        throws IOException
+            throws IOException
     {
         super();
-        cancel = (cancelTask == null ? nullcancel : cancelTask);
         this.originalurl = url;
+        // url may have leading dap4:
+        XURI xuri;
+        try {
+            xuri = new XURI(url);
+        } catch (URISyntaxException use) {
+            throw new IOException(use);
+        }
+        List<String> protocols = xuri.getProtocols();
+        url = xuri.assemble(XURI.URLALL);
+        switch (protocols.size()) {
+        case 0:
+            if(xuri.isFile())
+                url = "file://" + url;
+            break;
+        case 1:
+            if(protocols.get(0).equalsIgnoreCase("dap4"))
+                url = "http" + url.substring(4/*dap4*/, url.length());
+            break;
+        case 2:
+            if(protocols.get(0).equalsIgnoreCase("dap4"))
+                url = url.substring(5/*dap4:*/, url.length());
+            break;
+        default:
+            break;
+
+        }
+        this.finalurl = url;
+        cancel = (cancelTask == null ? nullcancel : cancelTask);
         // 1. Get and parse the constrained DMR and Data v-a-v URL
-        this.dsp = new D4DSP().open(url);
+        if(xuri.isFile())
+            this.dsp = (D4DSP) new FileDSP().open(url);
+        else
+            this.dsp = (D4DSP) new HttpDSP().open(url);
+
         // 2. Construct an equivalent CDM tree and populate 
         //    this NetcdfFile object.
-        CDMCompiler compiler = new CDMCompiler(this,this.dsp);
-        compiler.compile();
+        CDMCompiler compiler = new CDMCompiler(this, this.dsp);
+        compiler.compile(arraymap);
         // set the pseudo-location, otherwise we get a name that is full path.
         setLocation(this.dsp.getDMR().getDataset().getShortName());
     }
@@ -118,7 +157,7 @@ public class DapNetcdfFile extends ucar.nc2.NetcdfFile
      */
 
     public DapNetcdfFile(String url)
-        throws IOException
+            throws IOException
     {
         this(url, null);
     }
@@ -133,7 +172,7 @@ public class DapNetcdfFile extends ucar.nc2.NetcdfFile
      */
     @Override
     public synchronized void close()
-        throws java.io.IOException
+            throws java.io.IOException
     {
         if(closed) return;
         closed = true; // avoid circular calls
@@ -157,7 +196,7 @@ public class DapNetcdfFile extends ucar.nc2.NetcdfFile
         return originalurl;
     }
 
-    public D4DSP getDSP()
+    public DSP getDSP()
     {
         return this.dsp;
     }
@@ -179,11 +218,12 @@ public class DapNetcdfFile extends ucar.nc2.NetcdfFile
     @Override
     public List<Array>
     readArrays(List<Variable> variables)
-        throws IOException
+            throws IOException
     {
         List<Array> result = new ArrayList<Array>();
-        for(Variable variable : variables)
+        for(Variable variable : variables) {
             result.add(variable.read());
+        }
         return result;
     }
 
@@ -205,7 +245,7 @@ public class DapNetcdfFile extends ucar.nc2.NetcdfFile
 
     @Override
     public long readToByteChannel(Variable v, Section section, WritableByteChannel channel)
-        throws java.io.IOException, ucar.ma2.InvalidRangeException
+            throws java.io.IOException, ucar.ma2.InvalidRangeException
     {
         Array result = readData(v, section);
         return IospHelper.transferData(result, channel);
@@ -213,10 +253,10 @@ public class DapNetcdfFile extends ucar.nc2.NetcdfFile
 
     public Array
     readSection(String variableSection)
-        throws IOException, InvalidRangeException
+            throws IOException, InvalidRangeException
     {
         ParsedSectionSpec cer
-            = ParsedSectionSpec.parseVariableSection(this, variableSection);
+                = ParsedSectionSpec.parseVariableSection(this, variableSection);
         return cer.v.read(cer.section);
     }
 
@@ -234,15 +274,18 @@ public class DapNetcdfFile extends ucar.nc2.NetcdfFile
      */
 
     @Override
-    protected Array readData(Variable cdmvar, Section section)
-        throws IOException, InvalidRangeException
+    protected Array
+    readData(Variable cdmvar, Section section)
+            throws IOException, InvalidRangeException
     {
         // The section is applied wrt to the DataDMR, so it
         // takes into account any constraint used in forming the dataDMR.
         // We use the Section to produce a view of the underlying variable array.
 
         assert this.dsp != null;
-        Array result = cdmvar.read();
+        Array result = arraymap.get(cdmvar);
+        if(result == null)
+            throw new IOException("No data for variable: " + cdmvar.getFullName());
         if(section != null) {
             if(cdmvar.getRank() != section.getRank())
                 throw new InvalidRangeException(String.format("Section rank != %s rank", cdmvar.getFullName()));

@@ -11,55 +11,55 @@ netcdf test_atomic_array.syn {
   variables:
     byte vu8(d2=2, d3=3);
       :_Unsigned = "true";
-      :_DAP4_Checksum_CRC32 = "0xe0a19273";
+      :_DAP4_Checksum_CRC32 = "0x90d192d3";
 
     short v16(d4=4);
-      :_DAP4_Checksum_CRC32 = "0x4071b233";
+      :_DAP4_Checksum_CRC32 = "0x70e102a3";
 
     int vu32(d2=2, d3=3);
       :_Unsigned = "true";
-      :_DAP4_Checksum_CRC32 = "0xe0a132a3";
+      :_DAP4_Checksum_CRC32 = "0x00a162a3";
 
     double vd(d2=2);
-      :_DAP4_Checksum_CRC32 = "0x80a17283";
+      :_DAP4_Checksum_CRC32 = "0x60f1e273";
 
     char vc(d2=2);
-      :_DAP4_Checksum_CRC32 = "0x70d112c3";
+      :_DAP4_Checksum_CRC32 = "0x3051e273";
 
     String vs(d2=2, d2=2);
-      :_DAP4_Checksum_CRC32 = "0xb07192f3";
+      :_DAP4_Checksum_CRC32 = "0x40414293";
 
     opaque vo(d1=1, d2=2);
-      :_DAP4_Checksum_CRC32 = "0xa02162a3";
+      :_DAP4_Checksum_CRC32 = "0x30e1e2f3";
 
     enum cloud_class_t primary_cloud(d5=5);
       :_FillValue = "Missing";
-      :_DAP4_Checksum_CRC32 = "0x70b16263";
+      :_DAP4_Checksum_CRC32 = "0xf041b293";
 
   // global attributes:
   :_CoordSysBuilder = "ucar.nc2.dataset.conv.DefaultConvention";
  data:
 vu8 =
   {
-    {177, 27, 126},
-    {18, 134, 26}
+    {186, 201, 131},
+    {63, 189, 55}
   }
 v16 =
-  {1562, 73, 4259, 4200}
+  {-341, -21899, -13413, -22144}
 vu32 =
   {
-    {3043, 1706, 1081},
-    {291, 9, 1994}
+    {2367803413, 3586730583, 511843988},
+    {3754752863, 2950934681, 2366232135}
   }
 vd =
-  {0.3956411760184395, 0.7870688093761804}
-vc =  "@D"
+  {0.21787008119279183, 0.6024507919967678}
+vc =  "CO"
 vs =
-  {  "`",   "%!H",  "^",   "0rE<y"
+  {  "{S",   "gb8^OE$",  "4a/q%n9;5Y",   "{fIl?T"\A["
   }
-vo =  0xcaaa215f,
-  0xc60b;
+vo =  0x0000,
+  0x04fa;
 
 primary_cloud =
-  {8, 5, 3, 9, 5}
+  {2, 9, 6, 8, 3}
 }

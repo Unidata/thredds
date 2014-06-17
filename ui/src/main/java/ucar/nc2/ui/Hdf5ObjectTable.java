@@ -193,6 +193,10 @@ public class Hdf5ObjectTable extends JPanel {
   public void closeOpenFiles() throws IOException {
     if (iosp != null) iosp.close();
     iosp = null;
+    attTable.clearBeans();
+    messTable.clearBeans();
+    objectTable.clearBeans();
+    dumpTA.clear();
   }
 
   public void setHdf5File(RandomAccessFile raf) throws IOException {

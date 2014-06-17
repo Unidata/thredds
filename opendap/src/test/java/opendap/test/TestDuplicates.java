@@ -36,6 +36,7 @@ import org.junit.Test;
 import ucar.nc2.dods.DODSNetcdfFile;
 import ucar.nc2.util.UnitTestCommon;
 import ucar.unidata.test.Diff;
+import ucar.unidata.test.util.TestDir;
 
 import java.io.*;
 import java.util.ArrayList;
@@ -43,8 +44,6 @@ import java.util.List;
 
 public class TestDuplicates extends UnitTestCommon
 {
-  static final String DFALTTESTSERVER = "remotetest.unidata.ucar.edu";
-
   public TestDuplicates() {
     setTitle("DAP duplicate names tests");
   }
@@ -66,8 +65,7 @@ public class TestDuplicates extends UnitTestCommon
   public void
   testDuplicates() throws Exception {
     // Check if we are running against remote or localhost, or what.
-    String testserver = System.getProperty("testserver");
-    if (testserver == null) testserver = DFALTTESTSERVER;
+    String testserver = TestDir.remoteTestServer;
 
     List<Result> results = new ArrayList<Result>();
     if (true) {

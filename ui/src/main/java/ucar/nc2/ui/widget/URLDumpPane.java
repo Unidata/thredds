@@ -34,7 +34,7 @@
 package ucar.nc2.ui.widget;
 
 import org.apache.http.entity.StringEntity;
-import ucar.httpclient.*;
+import ucar.httpservices.*;
 import org.apache.http.Header;
 import ucar.nc2.constants.CDM;
 import ucar.nc2.util.IO;

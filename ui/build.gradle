@@ -109,6 +109,7 @@ task releaseWebstart << {
       }
 
       println "signjar"
+      println "keystore= "+keystore
       ant.signjar( jar: "build/libs/ui-" + version + ".jar", signedjar: webstartWorkingDir + "/netcdfUI.jar",
                    alias: keystoreAlias, keystore: keystore, storepass: keystorePassword,
                    preservelastmodified: "true" )

@@ -8,25 +8,25 @@ import dap4.core.dmr.*;
 import dap4.core.dmr.parser.Dap4Parser;
 import dap4.core.dmr.parser.ParseUtil;
 import dap4.servlet.DMRPrint;
-import dap4.test.util.UnitTestCommon;
+import dap4.test.util.DapTestCommon;
 
 import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 
 
-public class TestParserDMR extends UnitTestCommon
+public class TestParserDMR extends DapTestCommon
 {
     static boolean PARSEDEBUG = false;
 
     //////////////////////////////////////////////////
     // Constants
 
-    static protected final String DIR1 = "tests/src/test/data/resources/TestParsers/testinput"; // relative to opuls root
-    static protected final String DIR2 = "tests/src/test/data/resources/TestServlet/baseline"; // relative to opuls root
-    static protected final String DIR3 = "tests/src/test/data/resources/TestParsers/dmrset"; // relative to opuls root
+    static protected final String DIR1 = "d4tests/src/test/data/resources/TestParsers/testinput"; // relative to dap4 root
+    static protected final String DIR2 = "d4tests/src/test/data/resources/TestServlet/baseline"; // relative to dap4 root
+    static protected final String DIR3 = "d4tests/src/test/data/resources/TestParsers/dmrset"; // relative to dap4  root
 
-    static protected final String BASELINEDIR = "tests/src/test/data/resources/TestParsers/baseline";
+    static protected final String BASELINEDIR = "d4tests/src/test/data/resources/TestParsers/baseline";
 
     //////////////////////////////////////////////////
 
@@ -46,15 +46,9 @@ public class TestParserDMR extends UnitTestCommon
     //////////////////////////////////////////////////
     // Instance methods
 
-    // System properties
-
-    protected boolean prop_diff = true;
-    protected boolean prop_baseline = false;
-    protected boolean prop_visual = false;
-    protected String prop_controls = null;
-
     // Test cases
-    protected List<TestCase> testcases = new ArrayList<TestCase>();
+    protected List<TestCase> alltestcases = new ArrayList<TestCase>();
+    protected List<TestCase> chosentests = new ArrayList<TestCase>();
     protected int flags = ParseUtil.FLAG_NONE;
     protected boolean debug = false;
 
@@ -72,90 +66,97 @@ public class TestParserDMR extends UnitTestCommon
         setSystemProperties();
         setControls();
         defineTestCases();
+        chooseTestcases();
     }
 
     //////////////////////////////////////////////////
     // Misc. methods
 
-    void defineTestCases()
+    protected void
+    chooseTestcases()
     {
-        String dirpath1 = getRoot() + "/" + DIR1;
-        String dirpath2 = getRoot() + "/" + DIR2;
-        String dirpath3 = getRoot() + "/" + DIR3;
-        if(false) {
-            testcases.add(new TestCase(dirpath1, "testx", "dmr"));
+        if (true) {
+            chosentests = locate("test_atomic_array.syn");
         } else {
-            if(false) {
-                testcases.add(new TestCase(dirpath1, "test_simple_1", "xml"));
-                testcases.add(new TestCase(dirpath1, "test_simple_2", "xml"));
-                testcases.add(new TestCase(dirpath1, "test_misc1", "xml"));
-                testcases.add(new TestCase(dirpath1, "testall", "xml"));
+            for (TestCase tc : alltestcases) {
+                chosentests.add(tc);
             }
-            if(true)
-                loadDir(dirpath2);
-            if(true)
-                loadDir(dirpath3);
         }
+    }
+
+    // Locate the test cases with given prefix
+    List<TestCase>
+    locate(String prefix)
+    {
+        List<TestCase> results = new ArrayList<TestCase>();
+        for (TestCase ct : this.alltestcases) {
+            if (ct.name.startsWith(prefix))
+                results.add(ct);
+        }
+        return results;
+    }
+
+    protected void defineTestCases()
+    {
+        String dirpath1 = getDAP4Root() + "/" + DIR1;
+        String dirpath2 = getDAP4Root() + "/" + DIR2;
+        String dirpath3 = getDAP4Root() + "/" + DIR3;
+
+        if (false) {
+            alltestcases.add(new TestCase(dirpath1, "test_simple_1", "xml"));
+            alltestcases.add(new TestCase(dirpath1, "test_simple_2", "xml"));
+            alltestcases.add(new TestCase(dirpath1, "test_misc1", "xml"));
+            alltestcases.add(new TestCase(dirpath1, "testall", "xml"));
+        }
+        if (true)
+            loadDir(dirpath2);
+        if (true)
+            loadDir(dirpath3);
     }
 
     void loadDir(String dirpath)
     {
         File dir = new File(dirpath);
         File[] filelist = dir.listFiles();
-        for(int i = 0;i < filelist.length;i++) {
+        for (int i = 0; i < filelist.length; i++) {
             File file = filelist[i];
             String name = file.getName();
             // check the extension
-            if(!name.endsWith("dmr"))
+            if (!name.endsWith("dmr"))
                 continue; // ignore
             String basename = name.substring(0, name.length() - ".dmr".length());
             TestCase ct = new TestCase(dirpath, basename, "dmr");
-            this.testcases.add(ct);
+            this.alltestcases.add(ct);
         }
-    }
-
-
-    /**
-     * Try to get the system properties
-     */
-    void setSystemProperties()
-    {
-        if(System.getProperty("nodiff") != null)
-            prop_diff = false;
-        if(System.getProperty("baseline") != null)
-            prop_baseline = true;
-        if(System.getProperty("visual") != null)
-            prop_visual = true;
-        prop_controls = System.getProperty("X");
     }
 
     void setControls()
     {
-	if(prop_controls == null)
-	    return;
+        if (prop_controls == null)
+            return;
         flags = ParseUtil.FLAG_NOCR; // always
-	for(int i=0;i<prop_controls.length();i++) {
-	    char c = prop_controls.charAt(i);	
-	    switch (c) {
-	    case 'w':	
+        for (int i = 0; i < prop_controls.length(); i++) {
+            char c = prop_controls.charAt(i);
+            switch (c) {
+            case 'w':
                 flags |= ParseUtil.FLAG_TRIMTEXT;
-	        break;
-            case 'l':       
+                break;
+            case 'l':
                 flags |= ParseUtil.FLAG_ELIDETEXT;
                 break;
-            case 'e':       
+            case 'e':
                 flags |= ParseUtil.FLAG_ESCAPE;
                 break;
-            case 'T':       
+            case 'T':
                 flags |= ParseUtil.FLAG_TRACE;
-		break;
-            case 'd':       
+                break;
+            case 'd':
                 debug = true;
-		break;
-	    default:
-		System.err.println("unknown X option: "+c);
-		break;
-	    }
+                break;
+            default:
+                System.err.println("unknown X option: " + c);
+                break;
+            }
         }
     }
 
@@ -163,42 +164,42 @@ public class TestParserDMR extends UnitTestCommon
     // Junit test method
 
     public void testParser()
-        throws Exception
+            throws Exception
     {
-            for(TestCase testcase : testcases) {
-                if(!doOneTest(testcase)) {
-                    assertTrue(false);
-                    System.exit(1);
-                }
+        for (TestCase testcase : chosentests) {
+            if (!doOneTest(testcase)) {
+                assertTrue(false);
+                System.exit(1);
             }
+        }
     }
 
     boolean
     doOneTest(TestCase testcase)
-        throws Exception
+            throws Exception
     {
         String document;
         int i, c;
 
         String testinput = testcase.dir + "/" + testcase.name + "." + testcase.ext;
-        String baseline = getRoot() + "/" + BASELINEDIR + "/" + testcase.name + ".dmp";
+        String baseline = getDAP4Root() + "/" + BASELINEDIR + "/" + testcase.name + ".dmp";
 
-        System.out.println("Testcase: " + testinput);
+        System.out.println("Testcase: " + testinput); System.out.flush();
 
         document = readfile(testinput);
 
         // 1. push parser
         Dap4Parser pushparser = new Dap4Parser(new DapFactoryDMR());
-        if(PARSEDEBUG || debug)
+        if (PARSEDEBUG || debug)
             pushparser.setDebugLevel(1);
 
-        if(!pushparser.parse(document))
-            throw new Exception("DMR Parse failed");
+        if (!pushparser.parse(document))
+            throw new Exception("DMR Parse failed: "+testinput);
         DapDataset dmr = pushparser.getDMR();
         ErrorResponse err = pushparser.getErrorResponse();
-        if(err != null)
+        if (err != null)
             System.err.println("Error response:\n" + err.buildXML());
-        if(dmr == null) {
+        if (dmr == null) {
             System.err.println("No dataset created");
             return false;
         }
@@ -212,13 +213,13 @@ public class TestParserDMR extends UnitTestCommon
         sw.close();
         String testresult = sw.toString();
 
-        if(prop_visual)
+        if (prop_visual)
             visual(testcase.name, testresult);
 
         boolean pass = true;
-        if(prop_baseline) {
+        if (prop_baseline) {
             writefile(baseline, testresult);
-        } else if(prop_diff) { //compare with baseline
+        } else if (prop_diff) { //compare with baseline
             // Read the baseline file
             String baselinecontent = readfile(baseline);
             pass = compare(baselinecontent, testresult);
@@ -232,7 +233,7 @@ public class TestParserDMR extends UnitTestCommon
 
     static public void
     main(String[] argv)
-        throws Exception
+            throws Exception
     {
         new TestParserDMR("TestParserDMR").testParser();
     }// main

@@ -32,20 +32,23 @@
  */
 package ucar.nc2.iosp;
 
+import org.junit.Test;
 import ucar.ma2.InvalidRangeException;
 import ucar.ma2.Section;
 import junit.framework.TestCase;
+import ucar.nc2.NetcdfFileWriter;
+import ucar.nc2.write.Nc4Chunking;
+import ucar.nc2.write.Nc4ChunkingStrategy;
+
+import java.io.IOException;
 
 /**
  * @author caron
  * @since Jan 2, 2008
  */
-public class TestIndexChunker extends TestCase {
+public class TestIndexChunker {
 
-  public TestIndexChunker( String name) {
-    super(name);
-  }
-
+  @Test
   public void testFull() throws InvalidRangeException {
     int[] shape = new int[] {123,22,92,12};
     Section section = new Section(shape);
@@ -56,6 +59,7 @@ public class TestIndexChunker extends TestCase {
     assert !index.hasNext();
   }
 
+  @Test
   public void testPart() throws InvalidRangeException {
     int[] full = new int[] {2, 10, 20};
     int[] part = new int[] {2, 5, 20};
@@ -66,6 +70,7 @@ public class TestIndexChunker extends TestCase {
     assert chunk.getNelems() == section.computeSize()/2;
   }
 
+  @Test
   public void testChunkerTiled() throws InvalidRangeException {
     Section dataSection = new Section("0:0, 20:39,  0:1353 ");
     Section wantSection = new Section("0:2, 22:3152,0:1350");
@@ -76,6 +81,7 @@ public class TestIndexChunker extends TestCase {
     }
   }
 
+  @Test
   public void testChunkerTiled2() throws InvalidRangeException {
     Section dataSection = new Section("0:0, 40:59,  0:1353  ");
     Section wantSection = new Section("0:2, 22:3152,0:1350");
@@ -84,6 +90,12 @@ public class TestIndexChunker extends TestCase {
       Layout.Chunk chunk = index.next();
       System.out.println(" "+chunk);
     }
+  }
+
+  @Test
+  public void testDean() throws IOException {
+    Nc4Chunking chunkingStrategy = Nc4ChunkingStrategy.factory(Nc4Chunking.Strategy.standard, 6, false);
+    NetcdfFileWriter ncSubsetFile = NetcdfFileWriter.createNew(NetcdfFileWriter.Version.netcdf4, "C:/tmp/test.nc4", chunkingStrategy);
   }
 
 }

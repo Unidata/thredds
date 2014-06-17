@@ -33,7 +33,7 @@ data:
   2, 1, 0 ;
  vd = 17.9, 1024.8 ;
  vc = '@', '&' ;
- vs = "hello\tworld", "abc", "\r\n", "Καλημέα" ;
+ vs = "hello\tworld", "\r\n", "Καλημέα", "abc" ;
  vo =
   0X0123456789ABCDEF, 0XABCDEF0000000000 ;
  primary_cloud = Clear, Stratus, Clear, Cumulonimbus, _ ;

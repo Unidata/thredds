@@ -4,9 +4,10 @@
 
 package dap4.test;
 
-import   dap4.cdm.DapNetcdfFile;
+import dap4.cdm.DapNetcdfFile;
 import dap4.core.dmr.DapDataset;
 import dap4.core.util.*;
+import dap4.dap4shared.DSP;
 import dap4.servlet.DMRPrint;
 import dap4.dap4shared.D4DSP;
 import ucar.nc2.*;
@@ -35,7 +36,7 @@ public class TestPrinter
     // Instance Variables
 
     protected NetcdfFile ncfile = null; // dsp can be extracted from this
-    protected D4DSP dsp = null;
+    protected DSP dsp = null;
     protected DapDataset dmr = null;
     protected PrintWriter writer = null;
     protected Map<Variable, ParsedSectionSpec> varmap = null;
@@ -46,14 +47,24 @@ public class TestPrinter
 
     public TestPrinter(NetcdfFile ncfile, PrintWriter writer)
     {
-        setDataset(ncfile);
+        try {
+            setDataset(ncfile);
+        } catch (DapException de) {
+            System.err.println("Bad NetcdfFile");
+            System.exit(1);
+        }
         setWriter(writer);
         setVarMap(null);
     }
 
     public TestPrinter(D4DSP dsp, PrintWriter writer)
     {
-        setDSP(dsp);
+        try {
+            setDSP(dsp);
+        } catch (DapException de) {
+            System.err.println("Bad DSP");
+            System.exit(1);
+        }
         setWriter(writer);
         setVarMap(null);
     }
@@ -68,12 +79,14 @@ public class TestPrinter
     }
 
     public void setDataset(NetcdfFile ncfile)
+        throws DapException
     {
         this.ncfile = ncfile;
         setDSP(((DapNetcdfFile) this.ncfile).getDSP());
     }
 
-    public void setDSP(D4DSP dsp)
+    public void setDSP(DSP dsp)
+        throws DapException
     {
         this.dsp = dsp;
         this.dmr = dsp.getDMR();

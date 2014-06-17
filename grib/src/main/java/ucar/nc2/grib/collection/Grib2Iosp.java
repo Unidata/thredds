@@ -59,7 +59,7 @@ import java.util.Formatter;
  */
 public class Grib2Iosp extends GribIosp {
   static private final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(Grib2Iosp.class);
-  static private final boolean debugTime = false, debugRead = true, debugName = false;
+  static private final boolean debugTime = false, debugRead = false, debugName = false;
   static private boolean useGenType = false; // LOOK dummy for now
 
   static public String makeVariableNameFromTable(Grib2Customizer tables, GribCollection gribCollection, GribCollection.VariableIndex vindex) {

@@ -38,7 +38,7 @@ abstract public class DapUtil // Should only contain static methods
     static public final int CHUNK_LITTLE_ENDIAN = 4; // bit 2: value 1
     // Construct the union of all flags
     static final public int CHUNK_ALL
-	= CHUNK_DATA | CHUNK_ERROR | CHUNK_END | CHUNK_LITTLE_ENDIAN;
+            = CHUNK_DATA | CHUNK_ERROR | CHUNK_END | CHUNK_LITTLE_ENDIAN;
 
     static final public String LF = "\n";
     static final public String CRLF = "\r\n";
@@ -49,6 +49,8 @@ abstract public class DapUtil // Should only contain static methods
 
     static final public int CHECKSUMSIZE = 4; // bytes if CRC32
     static final public String DIGESTER = "CRC32";
+
+    static final public String DRIVELETTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 
     //////////////////////////////////////////////////
     // return last name part of an fqn; result will be escaped.
@@ -90,7 +92,7 @@ abstract public class DapUtil // Should only contain static methods
         int len = s.length();
         StringBuilder piece = new StringBuilder();
         int i = 0;
-        for(;i <= len - 1;i++) {
+        for(; i <= len - 1; i++) {
             char c = s.charAt(i);
             if(c == '\\' && i < (len - 1)) {
                 piece.append(c); // keep escapes in place
@@ -113,7 +115,7 @@ abstract public class DapUtil // Should only contain static methods
 
         case STRUCTURE:
             DapStructure container = (DapStructure) node;
-            for(int i = 0;i < container.getFields().size();i++) {
+            for(int i = 0; i < container.getFields().size(); i++) {
                 if(hasSequence(container.getFields().get(i)))
                     return true;
             }
@@ -121,7 +123,7 @@ abstract public class DapUtil // Should only contain static methods
 
         case GROUP:
             DapGroup group = (DapGroup) node;
-            for(int i = 0;i < group.getDecls().size();i++) {
+            for(int i = 0; i < group.getDecls().size(); i++) {
                 if(hasSequence(group.getDecls().get(i)))
                     return true;
             }
@@ -162,7 +164,7 @@ abstract public class DapUtil // Should only contain static methods
         if(abspath.endsWith("/")) abspath = abspath.substring(0, abspath.length() - 1);
         q.addFirst(abspath);  // prime the search queue
 
-        for(;;) {  // breadth first search
+        for(; ; ) {  // breadth first search
             String currentpath = q.poll();
             if(currentpath == null) break; // done searching
             File current = new File(currentpath);
@@ -171,9 +173,9 @@ abstract public class DapUtil // Should only contain static methods
                 for(File subfile : contents) {
                     if(!subfile.getName().equals(filename)) continue;
                     if((wantdir && subfile.isDirectory())
-                        || (!wantdir && subfile.isFile())) {
+                            || (!wantdir && subfile.isFile())) {
                         // Assume this is it
-                        return DapUtil.canonicalpath(subfile.getAbsolutePath(),false);
+                        return DapUtil.canonicalpath(subfile.getAbsolutePath());
                     }
                 }
                 for(File subfile : contents) {
@@ -204,7 +206,7 @@ abstract public class DapUtil // Should only contain static methods
         if(relpath.endsWith("/")) relpath = relpath.substring(0, relpath.length() - 1);
         String[] pieces = relpath.split("[/]");
         String partial = abspath;
-        for(int i = 0;i < pieces.length - 1;i++) {
+        for(int i = 0; i < pieces.length - 1; i++) {
             String nextdir = locateFile(pieces[i], abspath, true);
             if(nextdir == null) return null;
             partial = nextdir;
@@ -224,15 +226,33 @@ abstract public class DapUtil // Should only contain static methods
      * @return canonicalized version
      */
     static public String
-    canonicalpath(String path, boolean relative)
+    canonicalpath(String path)
     {
         if(path == null) return null;
         path = path.trim();
         path = path.replace('\\', '/');
         if(path.endsWith("/"))
             path = path.substring(0, path.length() - 1);
-        if(relative && path.startsWith("/"))
-            path = path.substring(1);
+        return path;
+    }
+
+    static public String
+    relativize(String path)
+    {
+        if(path != null) {
+            if(path.startsWith("/"))
+                path = path.substring(1);
+            else if(hasDriveLetter(path))
+                path = path.substring(2);
+        }
+        return path;
+    }
+
+    static public String
+    absolutize(String path)
+    {
+        if(path != null && !path.startsWith("/") && !hasDriveLetter(path))
+            path = "/"+path;
         return path;
     }
 
@@ -276,35 +296,35 @@ abstract public class DapUtil // Should only contain static methods
 
     static public byte[]
     readbinaryfile(InputStream stream)
-        throws IOException
+            throws IOException
     {
         // Extract the stream into a bytebuffer
         ByteArrayOutputStream bytes = new ByteArrayOutputStream();
         byte[] tmp = new byte[1 << 16];
-        for(;;) {
+        for(; ; ) {
             int cnt;
             try {
                 cnt = stream.read(tmp);
                 if(cnt <= 0) break;
+                bytes.write(tmp, 0, cnt);
             } catch (IOException ioe) {
                 throw new DapException(ioe);
             }
-            bytes.write(tmp, 0, cnt);
         }
         return bytes.toByteArray();
     }
 
     static public String
     readtextfile(InputStream stream)
-        throws IOException
+            throws IOException
     {
-	StringBuilder buf = new StringBuilder();
-	InputStreamReader rdr = new InputStreamReader(stream,UTF8);
-	for(;;) {
-	    int c = rdr.read();
-	    if(c < 0) break;
-	    buf.append((char)c);
-	}
+        StringBuilder buf = new StringBuilder();
+        InputStreamReader rdr = new InputStreamReader(stream, UTF8);
+        for(; ; ) {
+            int c = rdr.read();
+            if(c < 0) break;
+            buf.append((char) c);
+        }
         return buf.toString();
     }
 
@@ -318,7 +338,7 @@ abstract public class DapUtil // Should only contain static methods
     {
         List<DapNode> path = var.getPath();
         List<DapVariable> structpath = new ArrayList<DapVariable>();
-        for(int i = 0;i < path.size();i++) {
+        for(int i = 0; i < path.size(); i++) {
             DapNode node = path.get(i);
             switch (node.getSort()) {
             case DATASET:
@@ -348,38 +368,12 @@ abstract public class DapUtil // Should only contain static methods
     }
 
 
-    /**
-     * Return a list of the protocols at the print of a url.
-     * There might be multiple ones (e.g. dap4:http). Also
-     * not that this will be "fooled" by Windows paths containing
-     * drive letters (e.g. "C:/...").
-     * @param url the url to test
-     * @return list of the protocols at the front of the url.
-     *         Note that the protocol elements will not have a trailing colon.
-     */
-    static final String protocol_re = "[a-zA-Z0-9_-]+";
-
-    static public String[] getProtocols(String url)
-    {
-        String[] pieces = url.split("[:]");
-        if(pieces.length > 1) {
-            for(int i=0;i<pieces.length;i++) {
-                if(!pieces[i].matches(protocol_re)) {
-                   String[] protos = new String[i];
-                   for(int j=0;j<i;j++)
-                       protos[j] = pieces[j];
-                    return protos;
-                }
-            }
-        }
-        return new String[0];
-    }
-
     static public long dimProduct(List<DapDimension> dimset) // dimension crossproduct
     {
         long count = 1;
-        for(DapDimension dim: dimset)
+        for(DapDimension dim : dimset) {
             count *= dim.getSize();
+        }
         return count;
     }
 
@@ -409,13 +403,12 @@ abstract public class DapUtil // Should only contain static methods
         return u;
     }
 */
-
     static public List<Slice>
     dimsetSlices(List<DapDimension> dimset)
-        throws DapException
+            throws DapException
     {
         List<Slice> slices = new ArrayList<Slice>(dimset.size());
-        for(int i = 0;i < dimset.size();i++) {
+        for(int i = 0; i < dimset.size(); i++) {
             DapDimension dim = dimset.get(i);
             Slice s = new Slice().fill(dim);
             slices.add(s);
@@ -436,7 +429,7 @@ abstract public class DapUtil // Should only contain static methods
     {
         if(slices.size() != dimset.size())
             return false;
-        for(int i = 0;i < slices.size();i++) {
+        for(int i = 0; i < slices.size(); i++) {
             Slice slice = slices.get(i);
             DapDimension dim = dimset.get(i);
             if(slice.getStride() != 1 || slice.getFirst() != 0 || slice.getCount() != dim.getSize())
@@ -450,20 +443,121 @@ abstract public class DapUtil // Should only contain static methods
     sliceProduct(List<Slice> slices) // another crossproduct
     {
         long count = 1;
-        for(Slice slice: slices)
+        for(Slice slice : slices) {
             count *= slice.getCount();
+        }
         return count;
     }
 
     static public boolean
     hasStrideOne(List<Slice> slices)
     {
-        for(Slice slice: slices) {
+        for(Slice slice : slices) {
             if(slice.getStride() != 1)
                 return false;
         }
         return true;
     }
+
+    /**
+     * Given an Array of Strings and a separator and a count,
+     * concat the first count elements of an array with separator
+     * between them. A null string is treated like "".
+     *
+     * @param array the array to concat
+     * @param sep   the separator
+     * @param from  start point for join (inclusive)
+     * @param upto  end point for join (exclusive)
+     * @return the join
+     */
+    static public String
+    join(String[] array, String sep, int from, int upto)
+    {
+        if(sep == null) sep = "";
+        if(from < 0 || upto <= from || upto > array.length)
+            throw new IndexOutOfBoundsException();
+        StringBuilder result = new StringBuilder();
+        boolean first = true;
+        for(int i = from; i < upto; i++, first = false) {
+            if(!first) result.append(sep);
+            result.append(array[i]);
+        }
+        return result.toString();
+    }
+
+    /**
+     * Relativizing a path =>  remove any leading '/' and cleaning it
+     *
+     * @param path
+     * @return
+     */
+    static public String
+    xrelpath(String path)
+    {
+        return DapUtil.canonicalpath(path);
+    }
+
+    /**
+     * return true if this path appears to start with a windows drive letter
+     *
+     * @param path
+     * @return
+     */
+    static public boolean
+    hasDriveLetter(String path)
+    {
+        if(path != null && path.length() >= 2) {
+            return (DRIVELETTERS.indexOf(path.charAt(0)) >= 0 && path.charAt(1) == ':');
+        }
+        return false;
+    }
+
+    /**
+     * Return the set of leading protocols for a url; may be more than one.
+     *
+     * @param url the url whose protocols to return
+     * @return list of leading protocols without the trailing :
+     */
+    static public List<String>
+    getProtocols(String url)
+    {
+        // break off any leading protocols;
+        // there may be more than one.
+        // Watch out for Windows paths starting with a drive letter.
+        // Each protocol does not have trailing :
+
+        List<String> allprotocols = new ArrayList<>(); // all leading protocols upto path or host
+
+        // Note, we cannot use split because of the context sensitivity
+        StringBuilder buf = new StringBuilder(url);
+        for(; ; ) {
+            int index = buf.indexOf(":");
+            if(index < 0) break; // no more protocols
+            String protocol = buf.substring(0, index);
+            // Check for windows drive letter
+            if(index == 1 //=>|protocol| == 1
+                    && "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
+                    .indexOf(buf.charAt(0)) >= 0) break;
+            allprotocols.add(protocol);
+            buf.delete(0, index + 1); // remove the leading protocol
+            if(buf.indexOf("/") == 0)
+                break; // anything after this is not a protocol
+        }
+        return allprotocols;
+    }
+
+    static public String
+    merge(String[] pieces, String sep)
+    {
+        if(pieces == null) return "";
+        StringBuilder buf = new StringBuilder();
+        for(int i = 0; i < pieces.length; i++) {
+            if(i > 0) buf.append(sep);
+            buf.append(pieces[i]);
+        }
+        return buf.toString();
+    }
+
 
 } // class DapUtil
 

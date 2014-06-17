@@ -1,11 +1,10 @@
 package dap4.test;
 
-import junit.framework.TestCase;
+import dap4.test.util.DapTestCommon;
 import junit.framework.TestResult;
 import junit.framework.TestSuite;
-import dap4.test.util.UnitTestCommon;
 
-public class TestDap4All extends UnitTestCommon
+public class TestDap4All extends DapTestCommon
 {
 
 
@@ -14,22 +13,21 @@ public class TestDap4All extends UnitTestCommon
     static String getClassName(Class c)
     {
         String[] pieces = c.getName().split("[.]");
-        return pieces[pieces.length-1];
+        return pieces[pieces.length - 1];
     }
 
     //////////////////////////////////////////////////
     // Instance variables
 
     protected Class[] testclasses = new Class[]{
-        TestParserDMR.class,
-        TestParserCE.class,
-        TestH5Iosp.class,
-        TestNc4Iosp.class,
-        TestServlet.class,
-        TestServletConstraints.class,
-        TestCDMClient.class,
-        TestDSR.class,
+            TestParserDMR.class,
+            TestParserCE.class,
+            TestServletConstraints.class,
+            TestFilters.class,
+            TestCDMClient.class,
+            TestDSR.class,
 /*    not yet testable
+TestH5Iosp.class,
 TestFrontPage.java
 TestHyrax.java
 TestSerial.java
@@ -45,13 +43,13 @@ TestSerial.java
     // Constructor(s)
 
     public TestDap4All()
-        throws Exception
+            throws Exception
     {
         this("TestDap4All");
     }
 
     public TestDap4All(String name)
-        throws Exception
+            throws Exception
     {
         super(name);
     }
@@ -61,13 +59,13 @@ TestSerial.java
 
     public void testAll()
     {
-        for(int i = 0;i < testmax;i++) {
+        for(int i = 0; i < testmax; i++) {
             tests[i] = new TestSuite(testclasses[i]);
             results[i] = new TestResult();
         }
         boolean pass = true;
         int nfailures = 0;
-        for(int i = 0;i < testmax;i++) {
+        for(int i = 0; i < testmax; i++) {
             setTitle(getClassName(testclasses[i]));
             System.out.println("Test Case: " + getTitle());
             tests[i].run(results[i]);
@@ -79,7 +77,7 @@ TestSerial.java
                 System.out.println("***Pass: " + getTitle());
             }
         }
-        assertTrue(nfailures + " Tests Failed",pass);
+        assertTrue(nfailures + " Tests Failed", pass);
     }
 }
 

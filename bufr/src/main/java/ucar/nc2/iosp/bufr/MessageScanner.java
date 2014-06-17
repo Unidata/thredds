@@ -78,7 +78,7 @@ public class MessageScanner {
   private byte[] header;
   private long startPos = 0;
   private long lastPos = 0;
-  private boolean debug = true;
+  private boolean debug = false;
 
   private EmbeddedTable embedTable = null;
 

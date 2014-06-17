@@ -18,16 +18,14 @@
         <EnumConst name="Cirrocumulus" value="9"/>
         <EnumConst name="Cirrus" value="10"/>
     </Enumeration>
-    <Byte name="vu8" isunsigned="true">
-        <Attribute name="_Unsigned" type="String" value="true"/>
+    <Byte name="vu8">
         <Dim name="d2"/>
         <Dim name="d3"/>
     </Byte>
     <Short name="v16">
         <Dim name="d4"/>
     </Short>
-    <Int name="vu32" isunsigned="true">
-        <Attribute name="_Unsigned" type="String" value="true"/>
+    <Int name="vu32">
         <Dim name="d2"/>
         <Dim name="d3"/>
     </Int>

@@ -206,9 +206,8 @@ public class NetcdfFileWriter {
 
           Method method = iospClass.getMethod("setChunker", Nc4Chunking.class);
           method.invoke(spi, chunker);
-
         } catch (Throwable e) {
-          throw new IllegalArgumentException("ucar.nc2.jni.netcdf.Nc4Iosp failed, cannot use version " + version);
+          throw new IllegalArgumentException("ucar.nc2.jni.netcdf.Nc4Iosp failed, cannot use version " + version, e);
         }
         spiw = spi;
       } else {

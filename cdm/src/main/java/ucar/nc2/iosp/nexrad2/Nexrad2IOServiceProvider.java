@@ -554,7 +554,10 @@ public class Nexrad2IOServiceProvider extends AbstractIOServiceProvider {
         elevData.setFloat( elevIndex.set(scan, radial), r.getElevation());
         aziData.setFloat( aziIndex.set(scan, radial), r.getAzimuth());
 
-        if (r.data_msecs < last_msecs) logger.warn("makeCoordinateData time out of order "+r.data_msecs);
+        if (r.data_msecs < last_msecs && !overMidNight)
+            logger.warn("makeCoordinateData time out of order: " +
+                    r.data_msecs + " before " + last_msecs);
+
         last_msecs = r.data_msecs;
       }
 

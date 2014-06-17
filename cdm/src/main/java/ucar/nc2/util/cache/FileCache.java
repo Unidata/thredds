@@ -213,6 +213,8 @@ public class FileCache {
                                String location, int buffer_size, CancelTask cancelTask, Object spiObject) throws IOException {
 
     if (null == hashKey) hashKey = location;
+    if (null == hashKey) throw new IllegalArgumentException();
+
     FileCacheable ncfile = acquireCacheOnly(hashKey);
     if (ncfile != null) {
       hits.incrementAndGet();
