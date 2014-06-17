@@ -38,10 +38,10 @@ package ucar.nc2.util.net;
 import org.junit.Test;
 import thredds.catalog.InvCatalogFactory;
 import thredds.catalog.InvCatalogImpl;
-import ucar.httpclient.HTTPException;
-import ucar.httpclient.HTTPFactory;
-import ucar.httpclient.HTTPMethod;
-import ucar.httpclient.HTTPSession;
+import ucar.httpservices.HTTPException;
+import ucar.httpservices.HTTPFactory;
+import ucar.httpservices.HTTPMethod;
+import ucar.httpservices.HTTPSession;
 import ucar.nc2.constants.CDM;
 
 import java.io.FileNotFoundException;

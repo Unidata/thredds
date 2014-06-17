@@ -11,12 +11,10 @@ import dap4.core.util.*;
 
 import java.nio.ByteBuffer;
 import java.util.List;
-import java.util.Map;
 
 public class DataCompiler
 {
-    static final boolean DEBUG = false;
-    static final boolean DUMP = false;
+    static public boolean DEBUG = false;
 
     //////////////////////////////////////////////////
     // Constants
@@ -33,16 +31,16 @@ public class DataCompiler
     //////////////////////////////////////////////////
     // Instance variables
 
-    D4DataDataset d4dataset = null;
+    protected D4DataDataset d4dataset = null;
 
-    DapDataset dataset = null;
+    protected DapDataset dataset = null;
 
     // Make compile arguments global
-    ByteBuffer databuffer;
+    protected ByteBuffer databuffer;
 
-    ChecksumMode checksummode = null;
+    protected ChecksumMode checksummode = null;
 
-    D4DSP dsp;
+    protected D4DSP dsp;
 
     //////////////////////////////////////////////////
     //Constructor(s)
@@ -55,7 +53,7 @@ public class DataCompiler
      * @param databuffer   the source of serialized databuffer
      */
 
-    DataCompiler(D4DSP dsp, ChecksumMode checksummode, ByteBuffer databuffer)
+    public DataCompiler(D4DSP dsp, ChecksumMode checksummode, ByteBuffer databuffer)
         throws DapException
     {
         this.dsp = dsp;
@@ -73,15 +71,17 @@ public class DataCompiler
      * in the serialized databuffer. For each DAP4 variable,
      * D4Array objects are created and linked together.
      */
-    void
+    public void
     compile()
         throws DapException
     {
         assert (this.dataset != null && this.databuffer != null);
-        if(DUMP) {
+        if(DEBUG) {
             DapDump.dumpbytes(this.databuffer, false);
         }
         this.d4dataset = new D4DataDataset(this.dsp, this.dataset);
+        this.dsp.setDataDataset(this.d4dataset);
+
         // iterate over the variables represented in the databuffer
         for(DapVariable vv : this.dataset.getTopVariables()) {
             D4DataVariable array = compileVar(vv);
@@ -121,10 +121,9 @@ public class DataCompiler
     compileAtomicVar(DapVariable dapvar)
         throws DapException
     {
-        D4DataAtomic data;
         DapAtomicVariable atomvar = (DapAtomicVariable) dapvar;
         DapType daptype = atomvar.getBaseType();
-        data = new D4DataAtomic(this.dsp, atomvar, databuffer.position());
+        D4DataAtomic data = new D4DataAtomic(this.dsp, atomvar, databuffer.position());
         long total;
         long dimproduct = data.getCount();
         if(!daptype.isEnumType() && !daptype.isFixedSize()) {
@@ -212,7 +211,9 @@ public class DataCompiler
     /**
      * Compile a sequence from a set of records.
      *
-     * @param dapseq The annotation for this sequence
+     * @param dapseq The template for this sequence
+     * @param array the parent compound array
+     * @param index within the parent compound array
      * @return A D4DataSequence for the records for this sequence.
      * @throws DapException
      */
@@ -223,15 +224,16 @@ public class DataCompiler
         int savepos = databuffer.position();
         List<DapVariable> dfields = dapseq.getFields();
         // Get the count of the number of records
-        long count = getCount(databuffer);
+        long nrecs = getCount(databuffer);
         D4DataSequence seq = new D4DataSequence(this.dsp,dapseq,array,index);
-        for(int r = 0;r < count;r++) {
+        for(int r = 0;r < nrecs;r++) {
             D4DataRecord rec = new D4DataRecord(this.dsp, dapseq, seq, r);
             for(int m = 0;m < dfields.size();m++) {
                 DapVariable dfield = dfields.get(m);
                 D4DataVariable dvfield = compileVar(dfield);
                 rec.addField(m, dvfield);
             }
+	    seq.addRecord(rec);
         }
         return seq;
     }
@@ -261,7 +263,8 @@ public class DataCompiler
     getCount(ByteBuffer data)
     {
         long count = data.getLong();
-        return (int) (count & 0xFFFFFFFF);
+        count = (count & 0xFFFFFFFF);
+        return (int)count;
     }
 
     /**

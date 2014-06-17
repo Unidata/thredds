@@ -32,7 +32,7 @@
  */
 package thredds.util;
 
-import ucar.httpclient.*;
+import ucar.httpservices.*;
 import org.apache.http.Header;
 
 import java.io.*;

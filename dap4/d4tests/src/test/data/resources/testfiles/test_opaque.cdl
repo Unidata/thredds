@@ -1,0 +1,15 @@
+netcdf test_one_var {
+types:
+  opaque(8) o_t;  
+dimensions:
+  d1 = 1;
+  d2 = 2;
+variables:
+  o_t vo1(d1);
+  o_t vo2(d2,d1);
+data:
+ vo1 =
+   0X0123456789ABCDEF ;
+ vo2 =
+   0X0123456789ABCDEF, 0XABCDEF0000000000 ;
+}

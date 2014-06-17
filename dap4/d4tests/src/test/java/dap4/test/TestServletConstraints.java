@@ -4,15 +4,14 @@ import dap4.dap4shared.ChunkInputStream;
 import dap4.core.util.*;
 import dap4.dap4shared.RequestMode;
 import dap4.test.servlet.*;
+import dap4.test.util.DapTestCommon;
 import dap4.test.util.Dump;
-import dap4.test.util.UnitTestCommon;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.math.BigInteger;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
-import java.nio.charset.Charset;
 import java.util.*;
 
 /**
@@ -20,13 +19,13 @@ import java.util.*;
  * constraint processing.
  */
 
-public class TestServletConstraints extends UnitTestCommon
+public class TestServletConstraints extends DapTestCommon
 {
 
     //////////////////////////////////////////////////
     // Constants
 
-    static String DATADIR = "tests/src/test/data"; // relative to opuls root
+    static String DATADIR = "d4tests/src/test/data"; // relative to dap4 root
     static String TESTDATADIR = DATADIR + "/resources/";
     static String BASELINEDIR = DATADIR + "/resources/TestServletConstraints/baseline";
     static String TESTINPUTDIR = DATADIR + "/resources/testfiles";
@@ -113,16 +112,6 @@ public class TestServletConstraints extends UnitTestCommon
     //////////////////////////////////////////////////
     // Instance variables
 
-    // System properties
-
-    boolean prop_diff = true;
-    boolean prop_baseline = false;
-    boolean prop_visual = false;
-    boolean prop_debug = false;
-
-    // Misc variables
-    boolean isbigendian = ByteOrder.nativeOrder() == ByteOrder.BIG_ENDIAN;
-
     // Test cases
 
     List<ConstraintTest> alltestcases = new ArrayList<ConstraintTest>();
@@ -151,10 +140,9 @@ public class TestServletConstraints extends UnitTestCommon
         throws Exception
     {
         super(name);
-        setSystemProperties();
-        this.root = getRoot();
+        this.root = getDAP4Root();
         if(this.root == null)
-            throw new Exception("Opuls root not found");
+            throw new Exception("dap4 root not found");
         this.datasetpath = this.root + "/" + DATADIR;
         defineAllTestcases(this.root);
         chooseTestcases();
@@ -167,7 +155,7 @@ public class TestServletConstraints extends UnitTestCommon
     chooseTestcases()
     {
         if(false) {
-            chosentests = locate("test_atomic_array.nc?/vu8[1][0:2:2];/vd[1];/vs[1][0];/vo[0][1]");
+            chosentests = locate("test_anon_dim.syn?/vu32[0:3]");
         } else {
             for(ConstraintTest tc : alltestcases)
                 chosentests.add(tc);
@@ -376,14 +364,13 @@ public class TestServletConstraints extends UnitTestCommon
             = (FakeServletOutputStream) resp.getOutputStream();
         byte[] byteresult = fakestream.toArray();
         if(prop_debug) {
-            ByteOrder order = (isbigendian ? ByteOrder.BIG_ENDIAN : ByteOrder.LITTLE_ENDIAN);
-            DapDump.dumpbytes(ByteBuffer.wrap(byteresult).order(order), true);
+            DapDump.dumpbytes(ByteBuffer.wrap(byteresult).order(ByteOrder.nativeOrder()), true);
         }
 
         // Setup a ChunkInputStream
         ByteArrayInputStream bytestream = new ByteArrayInputStream(byteresult);
 
-        ChunkInputStream reader = new ChunkInputStream(bytestream, RequestMode.DAP, isbigendian);
+        ChunkInputStream reader = new ChunkInputStream(bytestream, RequestMode.DAP, ByteOrder.nativeOrder());
 
         String sdmr = reader.readDMR(); // Read the DMR
         if(prop_visual)
@@ -413,22 +400,6 @@ public class TestServletConstraints extends UnitTestCommon
     //////////////////////////////////////////////////
     // Utility methods
 
-    /**
-     * Try to get the system properties
-     */
-    void setSystemProperties()
-    {
-        if(System.getProperty("nodiff") != null)
-            prop_diff = false;
-        String value = System.getProperty("baseline");
-        if(value != null) prop_baseline = true;
-        value = System.getProperty("debug");
-        if(value != null) prop_debug = true;
-        if(System.getProperty("visual") != null)
-            prop_visual = true;
-        if(prop_baseline && prop_diff)
-            prop_diff = false;
-    }
 
     // Locate the test cases with given prefix
     List<ConstraintTest>

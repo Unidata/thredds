@@ -4,6 +4,7 @@ test_one_vararray \
 test_atomic_types \
 test_atomic_array \
 test_enum \
+test_enum_2 \
 test_enum_array \
 test_groups1 \
 test_struct_type \
@@ -11,7 +12,8 @@ test_struct_array \
 test_misc1 \
 test_utf8 \
 test_vlen1 \
-test_vlen2
+test_vlen2 \
+test_opaque
 
 HDF5=\
 test_struct_nested \

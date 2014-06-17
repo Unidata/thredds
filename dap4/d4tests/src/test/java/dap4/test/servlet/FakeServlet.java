@@ -39,7 +39,7 @@ public class FakeServlet extends D4TSServlet
 
     public FakeServlet(String datasetpath)
     {
-        datasetpath = DapUtil.canonicalpath(datasetpath,false);
+        datasetpath = DapUtil.canonicalpath(datasetpath);
         this.datasetpath = datasetpath;
     }
 
@@ -108,12 +108,12 @@ public class FakeServlet extends D4TSServlet
     {
         // Create the directory from which to get
         // the entries
-        suffix = DapUtil.canonicalpath(suffix,true);
-        suffix = "/" + suffix; //guarantee leading /
+        suffix = DapUtil.canonicalpath(suffix);
+        suffix = DapUtil.absolutize(suffix); //guarantee leading /
         if(!suffix.startsWith("/WEB-INF"))
             return null;
         String suffix2 = suffix.substring("/WEB-INF".length(),suffix.length());
-        if(!suffix2.startsWith("/")) suffix2 = "/" + suffix;
+        suffix2 = DapUtil.absolutize(suffix);
         // Assume it is relative to datasetpath
         String root = datasetpath + suffix2;
         File f = new File(root);
@@ -130,7 +130,7 @@ public class FakeServlet extends D4TSServlet
 
     public java.net.URL getResource(String suffix) throws java.net.MalformedURLException
     {
-        return new URL("file://" + DapUtil.canonicalpath(getRealPath(suffix),false));
+        return new URL("file://" + DapUtil.canonicalpath(getRealPath(suffix)));
     }
 
     public InputStream getResourceAsStream(String s)
@@ -164,13 +164,14 @@ public class FakeServlet extends D4TSServlet
 
     public String getRealPath(String path)
     {
-        path = DapUtil.canonicalpath(path,true); // clean and make relative
-        path = "/" + path;
+        path = DapUtil.canonicalpath(path); // clean and make relative
+        path = DapUtil.absolutize(path);
         // Assume path starts with /WEB-INF
         if(!path.startsWith("/WEB-INF"))
             return null;
         path = path.substring("/WEB-INF".length(),path.length());
-        if(!path.startsWith("/")) path = "/" + path;
+        path = DapUtil.absolutize(path);
+
         // Assume it is relative to datasetpath
         path = datasetpath + path;
         return path;

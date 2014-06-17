@@ -142,6 +142,8 @@ public class DSPToCDM
         Group cdmgroup = new Group(ncfile, cdmparent, dapgroup.getShortName());
         nodemap.put(dapgroup, cdmgroup);
         fillGroup(cdmgroup, dapgroup, ncfile, nodemap);
+        if(cdmgroup != null)
+            cdmparent.addGroup(cdmgroup);
     }
 
     /**
@@ -195,26 +197,27 @@ public class DSPToCDM
         } else if(dapvar.getSort() == DapSort.SEQUENCE) {
             DapSequence dapseq = (DapSequence) dapvar;
             // In general one would convert the sequence
-            // to a structure with vlen
+            // to a CDM sequence with vlen
             // so Sequence {...} s[d1]...[dn]
-            // => Structure {...} s[d1]...[dn][*]
-            // However, the underlying CDM code cannot handle all cases;
-            // the one case it can handle is when we have a sequence
-            // with a set of atomic typed fields.
-            // In this case we can convert to a scalar structure
-            // containing the atomic variable fields.
-            // so Sequence {Int8 field1; Float field2} s[d1]...[dn]
-            // => Structure {Int8 field[d1]...[dn][*]; Float field[d1]...[dn][*]} s;
-            Structure cdmstruct = new Structure(ncfile,
+            // => Sequence {...} s[d1]...[dn]
+            Sequence cdmseq = new Sequence(ncfile,
                 cdmgroup,
                 cdmparentstruct,
                 dapseq.getShortName());
-            cdmvar = cdmstruct;
+            cdmvar = cdmseq;
             nodemap.put(dapvar, cdmvar);
             // Add the fields
             for(DapVariable field : dapseq.getFields()) {
-                createVar(field, ncfile, nodemap, cdmgroup, cdmstruct);
+                createVar(field, ncfile, nodemap, cdmgroup, cdmseq);
             }
+	    // If the rank > 0, then add warning attribute
+	    if(dapvar.getRank() > 0) {
+		List value = new ArrayList();
+		value.add("CDM does not support Sequences with rank > 0");
+		Attribute warning = new Attribute("_WARNING:",value);
+		cdmvar.addAttribute(warning);
+	    }	    
+	 
         } else
             assert (false) : "Unknown variable sort: " + dapvar.getSort();
         int rank = dapvar.getRank();

@@ -9,8 +9,8 @@
   <relativePath>../../pom.xml</relativePath>
 </parent>
 
-<!--groupId>groupId</groupId-->
 <artifactId>d4cdmshared</artifactId>
+<packaging>jar</packaging>
 
 <!-- ===========================================================
 Dependencies: Mandatory dependencies are listed first. Then

@@ -135,6 +135,7 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
       if (f.exists() && f.canRead()) {
         pathlist = (pathlist == null ? "" : pathlist + File.pathSeparator);
         pathlist = pathlist + path;
+        break;
       }
     }
     return pathlist;
@@ -286,7 +287,8 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
   private void _open(RandomAccessFile raf, NetcdfFile ncfile, boolean readOnly) throws IOException {
     load(); // load jni
 
-    raf.close(); // not used
+    if(raf != null)
+        raf.close(); // not used
     this.ncfile = ncfile;
 
     // open
@@ -1633,7 +1635,7 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
           ret = nc4.nc_get_var(grpid, varid, bbuff);
           if (ret != 0)
             throw new IOException(ret + ": " + nc4.nc_strerror(ret));
-          ByteBuffer bb = ByteBuffer.allocate(buffSize);
+          ByteBuffer bb = ByteBuffer.wrap(bbuff);
           bb.order(ByteOrder.nativeOrder()); // c library returns in native order i hope
 
           switch (userType.baseTypeid) {

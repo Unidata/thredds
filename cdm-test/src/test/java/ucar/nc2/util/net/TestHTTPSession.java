@@ -32,7 +32,7 @@
 
 package ucar.nc2.util.net;
 
-import ucar.httpclient.*;
+import ucar.httpservices.*;
 
 import org.apache.http.*;
 import org.junit.Test;
@@ -40,17 +40,18 @@ import org.junit.Test;
 import org.apache.http.client.CredentialsProvider;
 import org.apache.http.message.AbstractHttpMessage;
 import ucar.nc2.util.UnitTestCommon;
+import ucar.unidata.test.util.TestDir;
 
 import java.util.List;
 
-import static ucar.httpclient.HTTPSession.*;
+import static ucar.httpservices.HTTPSession.*;
 
 public class TestHTTPSession extends UnitTestCommon
 {
     //////////////////////////////////////////////////
     // Constants
 
-    static final String TESTURL1 = "http://" + REMOTESERVER + "/dts/test.01.dds";
+    protected final String TESTURL1 = "http://" + TestDir.remoteTestServer + "/dts/test.01.dds";
     static final String GLOBALAGENT = "TestUserAgent123global";
     static final String SESSIONAGENT = "TestUserAgent123session";
 

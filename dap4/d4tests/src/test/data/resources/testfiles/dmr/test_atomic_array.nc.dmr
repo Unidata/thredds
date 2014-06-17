@@ -23,18 +23,16 @@
     <Dimension name="d3" size="3"/>
     <Dimension name="d4" size="4"/>
     <Dimension name="d5" size="5"/>
-    <Byte name="vu8">
+    <UInt8 name="vu8">
         <Dim name="/d2"/>
         <Dim name="/d3"/>
-        <Attribute name="_Unsigned" type="String" value="true"/>
-    </Byte>
+    </UInt8>
     <Int16 name="v16">
         <Dim name="/d4"/>
     </Int16>
     <UInt32 name="vu32">
         <Dim name="/d2"/>
         <Dim name="/d3"/>
-        <Attribute name="_Unsigned" type="String" value="true"/>
     </UInt32>
     <Float64 name="vd">
         <Dim name="/d2"/>

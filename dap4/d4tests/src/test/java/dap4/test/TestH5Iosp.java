@@ -1,17 +1,15 @@
 package dap4.test;
 
-import dap4.servlet.DMRPrint;
-import dap4.test.util.UnitTestCommon;
+import dap4.test.util.DapTestCommon;
 import ucar.nc2.dataset.NetcdfDataset;
 
 import java.io.*;
 import java.math.BigInteger;
 import java.nio.ByteOrder;
-import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
 
-public class TestH5Iosp extends UnitTestCommon
+public class TestH5Iosp extends DapTestCommon
 {
     static protected final boolean DEBUG = false;
 
@@ -22,7 +20,7 @@ public class TestH5Iosp extends UnitTestCommon
     //////////////////////////////////////////////////
     // Constants
 
-    static protected String DATADIR = "tests/src/test/data"; // relative to opuls root
+    static protected String DATADIR = "d4tests/src/test/data"; // relative to dap4 root
     static protected String TESTDATADIR = DATADIR + "/resources/";
     static protected String BASELINEDIR = DATADIR + "/resources/TestIosp/baseline";
     static protected String TESTINPUTDIR = DATADIR + "/resources/testfiles";
@@ -61,14 +59,6 @@ public class TestH5Iosp extends UnitTestCommon
     //////////////////////////////////////////////////
     // Instance variables
 
-    // System properties
-
-    protected boolean prop_diff = true;
-    protected boolean prop_baseline = false;
-    protected boolean prop_visual = false;
-    protected boolean prop_debug = DEBUG;
-    protected boolean prop_generate = true;
-
     // Misc variables
     protected boolean isbigendian = ByteOrder.nativeOrder() == ByteOrder.BIG_ENDIAN;
 
@@ -102,9 +92,9 @@ public class TestH5Iosp extends UnitTestCommon
     {
         super(name);
         setSystemProperties();
-        this.root = getRoot();
+        this.root = getDAP4Root();
         if(this.root == null)
-            throw new Exception("Opuls root not found");
+            throw new Exception("dap4 root not found");
         File f = new File(root + "/" + BASELINEDIR);
         if(!f.exists()) f.mkdir();
         this.datasetpath = this.root + "/" + DATADIR;
@@ -118,9 +108,9 @@ public class TestH5Iosp extends UnitTestCommon
     void
     chooseTestcases()
     {
-        if(false) {
-            //chosentests = locate("test_atomic_types.nc");
-            chosentests.add(new H5IospTest("test_test.nc"));
+        if(true) {
+            chosentests = locate("test_enum.nc");
+            //chosentests.add(new H5IospTest("test_test.nc"));
         } else {
             for(H5IospTest tc : alltestcases)
                 chosentests.add(tc);
@@ -221,24 +211,6 @@ public class TestH5Iosp extends UnitTestCommon
         return false;
     }
 
-    /**
-     * Try to get the system properties
-     */
-    void setSystemProperties()
-    {
-        if(System.getProperty("nodiff") != null)
-            prop_diff = false;
-        String value = System.getProperty("baseline");
-        if(value != null) prop_baseline = true;
-        value = System.getProperty("nogenerate");
-        if(value != null) prop_generate = false;
-        value = System.getProperty("debug");
-        if(value != null) prop_debug = true;
-        if(System.getProperty("visual") != null)
-            prop_visual = true;
-        if(prop_baseline && prop_diff)
-            prop_diff = false;
-    }
 
     // Locate the test cases with given prefix
     List<H5IospTest>

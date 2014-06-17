@@ -52,6 +52,13 @@
 
   <!-- testing dependencies -->
   <dependency>
+      <groupId>edu.ucar</groupId>
+      <artifactId>cdm</artifactId>
+      <type>test-jar</type>
+      <scope>test</scope>
+  </dependency>
+
+  <dependency>
     <groupId>junit</groupId>
     <artifactId>junit</artifactId>
     <version>4.8.1</version>
@@ -135,13 +142,17 @@
          <skip>${skipTests}</skip>
          <testFailureIgnore>true</testFailureIgnore>
          <argLine>-Dfile.encoding=UTF-8</argLine>
+         <argLine>-Dserver=remotetest</argLine>
 	 <encoding>UTF-8</encoding>                    
-         <excludes>
-	    <exclude>src/test/java/dap4/test/TestFrontPage.java</exclude>
-	    <exclude>src/test/java/dap4/test/TestHyrax.java</exclude>
-	    <exclude>src/test/java/dap4/test/TestSerial.java</exclude>
-	    <exclude>src/test/java/dap4/test/TestDap4All.java</exclude>
-         </excludes>
+	 <includes>
+	     <include>**/TestParserDMR.java</include>
+             <include>**/TestParserCE.java</include>
+             <include>**/TestNc4Iosp.java</include>
+             <include>**/TestServlet.java</include>
+             <include>**/TestServletConstraints.java</include>
+             <include>**/TestCDMClient.java</include>
+             <include>**/TestDSR.java</include>
+	 </includes>
        </configuration>
        <executions>
          <execution>

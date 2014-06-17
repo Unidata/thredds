@@ -55,7 +55,7 @@ import org.apache.http.cookie.Cookie;
 import ucar.nc2.util.EscapeStrings;
 import org.apache.http.*;
 import org.apache.http.auth.*;
-import ucar.httpclient.*;
+import ucar.httpservices.*;
 
 /**
  * Rewritten 1/15/07 jcaron to use HttpCLient library instead of jdk UrlConnection class.
@@ -267,7 +267,7 @@ public class DConnect2
             int statusCode = method.execute();
 
             // debug
-            // if (debugHeaders) ucar.httpclient.HttpClientManager.showHttpRequestInfo(f, method);
+            // if (debugHeaders) ucar.httpservices.HttpClientManager.showHttpRequestInfo(f, method);
 
             if(statusCode == HttpStatus.SC_NOT_FOUND) {
                 throw new DAP2Exception(DAP2Exception.NO_SUCH_FILE, method.getStatusText() + ": " + urlString);

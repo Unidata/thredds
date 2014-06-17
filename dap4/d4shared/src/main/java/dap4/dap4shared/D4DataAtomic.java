@@ -9,6 +9,8 @@ import dap4.core.dmr.*;
 import dap4.core.util.*;
 
 import java.nio.ByteBuffer;
+import java.nio.CharBuffer;
+import java.nio.charset.CharsetDecoder;
 
 public class D4DataAtomic extends D4DataVariable implements DataAtomic
 {
@@ -20,9 +22,8 @@ public class D4DataAtomic extends D4DataVariable implements DataAtomic
     protected DapType basetype = null;
     protected AtomicType atomictype = null;
     protected boolean isscalar = false;
-    protected int offset = -1; // absolute offset of the start in bytebyffer.
-    protected ByteBuffer databuffer = null;
-    protected int elementsize = 0;
+    protected long varoffset = -1; // absolute offset of the start in bytebyffer.
+    protected long varelementsize = 0;
     protected boolean isbytestring = false;
     // Following two fields only defined if isbytestring is true
     protected long totalbytestringsize = 0;  // total space used by the bytestrings
@@ -38,12 +39,11 @@ public class D4DataAtomic extends D4DataVariable implements DataAtomic
     {
         super(dsp, dap);
         this.dsp = dsp;
-        this.databuffer = dsp.getDatabuffer();
-        this.offset = offset;
+        this.varoffset = offset;
         this.basetype = dap.getBaseType();
         this.atomictype = this.basetype.getPrimitiveType();
         this.product = DapUtil.dimProduct(dap.getDimensions());
-        this.elementsize = Dap4Util.daptypeSize(this.basetype.getPrimitiveType());
+        this.varelementsize = Dap4Util.daptypeSize(this.basetype.getPrimitiveType());
         this.isbytestring = (this.atomictype.isStringType() || this.atomictype.isOpaqueType());
     }
 
@@ -84,7 +84,7 @@ public class D4DataAtomic extends D4DataVariable implements DataAtomic
     read(long start, long count, Object data)
         throws DataException
     {
-        extractObjectVector(basetype, databuffer, start, count, data);
+        extractObjectVector(basetype, this.dsp.getData(), start, count, data);
     }
 
     @Override
@@ -93,7 +93,7 @@ public class D4DataAtomic extends D4DataVariable implements DataAtomic
         throws DataException
     {
         setup(index);
-        Object result = extractObject(basetype, databuffer);
+        Object result = extractObject(basetype, this.dsp.getData());
         return result;
     }
 
@@ -103,12 +103,13 @@ public class D4DataAtomic extends D4DataVariable implements DataAtomic
     protected void
     setup(long index)
     {
+        ByteBuffer databuffer = this.dsp.getData();
         if(index < 0 || index > this.product)
             throw new IndexOutOfBoundsException("D4DataAtomic: " + index);
         if(isbytestring) {
             databuffer.position(bytestrings[(int) index]);
         } else
-            databuffer.position((int) (offset + (elementsize * index)));
+            databuffer.position((int) (this.varoffset + (this.varelementsize * index)));
     }
 
     /**
@@ -167,7 +168,7 @@ public class D4DataAtomic extends D4DataVariable implements DataAtomic
             count = dataset.getLong();
             bytes = new byte[(int) count];
             dataset.get(bytes);
-            result = ByteBuffer.wrap(bytes);
+            result = ByteBuffer.wrap(bytes); // order is irrelevant
             break;
         case Enum:
             // recast as enum's basetype
@@ -189,23 +190,28 @@ public class D4DataAtomic extends D4DataVariable implements DataAtomic
      * @param count
      */
 
-    static protected void
+    protected void
     extractObjectVector(DapType basetype, ByteBuffer dataset,
                         long start, long count, Object vector)
     {
         long position = dataset.position();
         AtomicType atomtype = basetype.getPrimitiveType();
         long elemsize = AtomicType.getSize(atomtype);
-        long offset = elemsize * start;
+        long localoffset = this.varoffset + (elemsize * start);
         long extent = elemsize * count;
         // If this is a fixed size type, then we can immediately
         // position the buffer
         if(atomtype.isFixedSize() && !atomtype.isEnumType())
-            dataset.position((int) offset);
+            dataset.position((int) localoffset);
         switch (atomtype) {
         case Char:
+            // need to extract and convert utf8(really ascii) -> utf16
             char[] cresult = (char[]) vector;
-            dataset.asCharBuffer().get(cresult, 0, (int) count);
+            for(int i = 0;i < count;i++) {
+                int ascii = dataset.get();
+                ascii = ascii & 0x7F;
+                cresult[i] = (char)ascii;
+            }
             break;
         case UInt8:
         case Int8:
@@ -213,7 +219,7 @@ public class D4DataAtomic extends D4DataVariable implements DataAtomic
             dataset.get(byresult, 0, (int) count);
             // in order to maintain the rule at the end of the switch
             // reset the position.
-            dataset.position((int) offset);
+            dataset.position((int) localoffset);
             break;
         case Int16:
         case UInt16:
@@ -242,8 +248,9 @@ public class D4DataAtomic extends D4DataVariable implements DataAtomic
         case URL:
             String[] sresult = (String[]) vector;
             for(int i = 0;i < count;i++) {
+                dataset.position(bytestrings[i]);
                 long scount = dataset.getLong();
-                byte[] bytes = new byte[(int) count];
+                byte[] bytes = new byte[(int) scount];
                 dataset.get(bytes);
                 sresult[i] = new String(bytes, DapUtil.UTF8);
             }
@@ -266,7 +273,7 @@ public class D4DataAtomic extends D4DataVariable implements DataAtomic
         // then we can immediately
         // position the buffer past the read data
         if(atomtype.isFixedSize() && !atomtype.isEnumType())
-            dataset.position((int) (offset + extent));
+            dataset.position((int) (localoffset + extent));
     }
 
 }

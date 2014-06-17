@@ -22,4 +22,5 @@ variables:
 
 public interface DataVariable extends Data
 {
+    public DapVariable getVariable();
 }

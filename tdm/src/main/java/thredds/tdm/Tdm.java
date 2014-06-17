@@ -51,10 +51,10 @@ import ucar.nc2.grib.collection.GribCollection;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.util.DiskCache2;
 import ucar.nc2.util.log.LoggerFactory;
-import ucar.httpclient.HTTPException;
-import ucar.httpclient.HTTPFactory;
-import ucar.httpclient.HTTPMethod;
-import ucar.httpclient.HTTPSession;
+import ucar.httpservices.HTTPException;
+import ucar.httpservices.HTTPFactory;
+import ucar.httpservices.HTTPMethod;
+import ucar.httpservices.HTTPSession;
 import ucar.unidata.io.RandomAccessFile;
 
 import java.io.File;

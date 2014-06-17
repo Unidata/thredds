@@ -5,18 +5,18 @@
 package dap4.servlet;
 
 import dap4.core.dmr.ErrorResponse;
-import dap4.core.util.DapException;
-import dap4.core.util.DapUtil;
+import dap4.core.util.*;
 import dap4.dap4shared.RequestMode;
 
-import java.io.IOException;
-import java.io.OutputStream;
+import java.io.*;
 import java.nio.*;
 
 public class ChunkWriter extends OutputStream
 {
     //////////////////////////////////////////////////
     // Constants
+
+    static final protected boolean DEBUG = false;
 
     static final int MAXCHUNKSIZE = 0xFFFFFF;
 
@@ -27,7 +27,7 @@ public class ChunkWriter extends OutputStream
     //////////////////////////////////////////////////
     // Type declarations
 
-    enum State
+    protected enum State
     {
         ERROR,    // after error chunk
         END,     // after last data chunk
@@ -39,15 +39,15 @@ public class ChunkWriter extends OutputStream
     //////////////////////////////////////////////////
     // Instance variable
 
-    OutputStream output = null;
-    State state = State.INITIAL;
+    protected OutputStream output = null;
+    protected State state = State.INITIAL;
 
-    int maxbuffersize = MAXCHUNKSIZE;
-    ByteBuffer chunk = null; // give caller a chance to set the max buffersize
-    ByteBuffer header = null;
-    ByteOrder order = null;
-    RequestMode mode = null;
-    byte[] dmr8 = null; // dmr in utf-8 form
+    protected int maxbuffersize = MAXCHUNKSIZE;
+    protected ByteBuffer chunk = null; // give caller a chance to set the max buffersize
+    protected ByteBuffer header = null;
+    protected ByteOrder order = null;
+    protected RequestMode mode = null;
+    protected byte[] dmr8 = null; // dmr in utf-8 form
 
     //////////////////////////////////////////////////
     // Constructor(s)
@@ -310,10 +310,12 @@ public class ChunkWriter extends OutputStream
         int buffersize = chunk.position();
         chunkheader(buffersize, flags, header);
         // output the header followed by the data (if any)
-	// Zero size chunk is ok.
+	    // Zero size chunk is ok.
         output.write(DapUtil.extract(header));
         if(buffersize > 0)
             output.write(chunk.array(), 0, buffersize);
+        if(DEBUG)
+            DapDump.dumpbytestream(output,getOrder(),'X');
         chunk.clear();// reset
     }
 
@@ -325,6 +327,7 @@ public class ChunkWriter extends OutputStream
      * @throws IOException if an I/O error occurs
      */
 
+    @Override
     public void write(byte[] b) throws IOException
     {
         write(b, 0, b.length);
@@ -337,6 +340,7 @@ public class ChunkWriter extends OutputStream
      * @throws IOException if an I/O error occurs
      */
 
+    @Override
     public void write(int b)
         throws IOException
     {
@@ -359,6 +363,7 @@ public class ChunkWriter extends OutputStream
      * @throws IOException if an I/O error occurs
      */
 
+    @Override
     public void write(byte[] b, int off, int len)
         throws IOException
     {
@@ -386,6 +391,7 @@ public class ChunkWriter extends OutputStream
                 avail -= towrite;
             } while(left > 0);
         }
+
     }
 
     static public void

@@ -3,6 +3,7 @@
 
 package dap4.core.dmr.parser;
 
+import org.xml.sax.Locator;
 import org.xml.sax.SAXException;
 
 import java.util.HashMap;
@@ -116,16 +117,16 @@ public class Dap4EventHandler extends SaxEventHandler
             new Lexeme("Opaque", OPAQUE_, _OPAQUE,
                 new String[]{"name"}));
 
-	// <Error> related elements
-	elementmap.put("Error",
-	    new Lexeme("Error", ERROR_, _ERROR,
-		new String[]{"httpcode"}));
-	elementmap.put("Message",
-	    new Lexeme("Message", MESSAGE_, _MESSAGE, null));
-	elementmap.put("Context",
-	    new Lexeme("Context", CONTEXT_, _CONTEXT, null));
-	elementmap.put("OtherInfo",
-	    new Lexeme("OtherInfo", OTHERINFO_, _OTHERINFO, null));
+        // <Error> related elements
+        elementmap.put("Error",
+            new Lexeme("Error", ERROR_, _ERROR,
+                new String[]{"httpcode"}));
+        elementmap.put("Message",
+            new Lexeme("Message", MESSAGE_, _MESSAGE, null));
+        elementmap.put("Context",
+            new Lexeme("Context", CONTEXT_, _CONTEXT, null));
+        elementmap.put("OtherInfo",
+            new Lexeme("OtherInfo", OTHERINFO_, _OTHERINFO, null));
 
         // Always insert the lowercase name
         attributemap.put("base", new Lexeme("base", ATTR_BASE));
@@ -140,7 +141,7 @@ public class Dap4EventHandler extends SaxEventHandler
         attributemap.put("type", new Lexeme("type", ATTR_TYPE));
         attributemap.put("value", new Lexeme("value", ATTR_VALUE));
         attributemap.put("ns", new Lexeme("ns", ATTR_NS));
-	// <Error> related xml attributes
+        // <Error> related xml attributes
         attributemap.put("httpcode", new Lexeme("httpcode", ATTR_HTTPCODE));
     }
 
@@ -233,7 +234,11 @@ public class Dap4EventHandler extends SaxEventHandler
 
         int status = 0;
         try {
-            status = ((Dap4ParserBody) this).push_parse(yytoken, saxtoken);
+            Locator loc = getLocator();
+            Dap4ParserBody parser = (Dap4ParserBody)this;
+            Bison.Position pos = new Bison.Position(loc);
+            Dap4Parser.Location yyloc = parser.new Location(pos);
+            status = parser.push_parse(yytoken, saxtoken, yyloc);
         } catch (Exception e) {
             throw new SAXException(e);
         }

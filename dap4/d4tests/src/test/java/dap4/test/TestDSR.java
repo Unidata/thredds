@@ -1,23 +1,22 @@
 package dap4.test;
 
 import dap4.test.servlet.*;
-import dap4.test.util.UnitTestCommon;
+import dap4.test.util.DapTestCommon;
 
-import java.nio.charset.Charset;
 
 /**
  * TestFrontPage verifies the front page
  * generation code
  */
 
-public class TestDSR extends UnitTestCommon
+public class TestDSR extends DapTestCommon
 {
     static protected final boolean DEBUG = false;
 
     //////////////////////////////////////////////////
     // Constants
 
-    static protected String DATADIR = "tests/src/test/data"; // relative to opuls root
+    static protected String DATADIR = "d4tests/src/test/data"; // relative to dap4 root
     static protected String TESTDATADIR = DATADIR + "/resources/";
     static protected String BASELINEDIR = DATADIR + "/resources/TestDSR/baseline";
 
@@ -27,13 +26,6 @@ public class TestDSR extends UnitTestCommon
 
     //////////////////////////////////////////////////
     // Instance variables
-
-    // System properties
-
-    protected boolean prop_diff = true;
-    protected boolean prop_baseline = false;
-    protected boolean prop_visual = false;
-    protected boolean prop_debug = DEBUG;
 
     protected String datasetpath = null;
 
@@ -58,10 +50,9 @@ public class TestDSR extends UnitTestCommon
         throws Exception
     {
         super(name);
-        setSystemProperties();
-        this.root = getRoot();
+        this.root = getDAP4Root();
         if(this.root == null)
-            throw new Exception("Opuls root not found");
+            throw new Exception("dap4 root not found");
         this.datasetpath = this.root + "/" + DATADIR;
     }
 
@@ -114,23 +105,6 @@ public class TestDSR extends UnitTestCommon
 
     //////////////////////////////////////////////////
     // Utility methods
-
-    /**
-     * Try to get the system properties
-     */
-    void setSystemProperties()
-    {
-        if(System.getProperty("nodiff") != null)
-            prop_diff = false;
-        String value = System.getProperty("baseline");
-	if(value != null) prop_baseline = true;
-        value = System.getProperty("debug");
-	if(value != null) prop_debug = true;
-        if(System.getProperty("visual") != null)
-            prop_visual = true;
-        if(prop_baseline && prop_diff)
-            prop_diff = false;
-    }
 
     //////////////////////////////////////////////////
     // Stand alone

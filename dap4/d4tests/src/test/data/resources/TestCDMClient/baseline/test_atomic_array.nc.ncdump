@@ -27,7 +27,7 @@ netcdf test_atomic_array.nc {
       :_DAP4_Checksum_CRC32 = "0x00d1a263";
 
     String vs(d2=2, d2=2);
-      :_DAP4_Checksum_CRC32 = "0x50a13203";
+      :_DAP4_Checksum_CRC32 = "0xc0712263";
 
     opaque vo(d1=1, d2=2);
       :_DAP4_Checksum_CRC32 = "0x00515223";
@@ -55,8 +55,8 @@ vd =
   {17.9, 1024.8}
 vc =  "@&"
 vs =
-  {  "hello	world",   "abc",  "
-",   "Καλημέα"
+  {  "hello	world",   "
+",  "Καλημέα",   "abc"
   }
 vo =  0x0123456789abcdef,
   0xabcdef0000000000;

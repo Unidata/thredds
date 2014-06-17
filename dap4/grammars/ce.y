@@ -18,7 +18,7 @@ Comment out in case we are using an older version of bison
 %code imports {
 import dap4.core.util.Slice;
 import dap4.core.dmr.parser.ParseException;
-import static dap4.ce.parser.CEAST.*;
+import dap4.ce.CEAST;
 }
 
 %code {
@@ -36,17 +36,17 @@ abstract CEAST segment(String name, CEAST.SliceList slices) throws ParseExceptio
 abstract Slice slice(int state, String sfirst, String send, String sstride) throws ParseException;
 abstract void dimredef(String name, Slice slice) throws ParseException;
 abstract CEAST selection(CEAST projection, CEAST filter) throws ParseException;
-abstract CEAST conjunction(CEAST lhs, CEAST rhs) throws ParseException;
-abstract CEAST negation(CEAST lhs) throws ParseException;
-abstract CEAST predicate(CEAST.Operator op, Object lhs, Object rhs) throws ParseException;
-abstract CEAST predicaterange(CEAST.Operator op1, CEAST.Operator op2, Object lhs, Object mid, Object rhs) throws ParseException;
+abstract CEAST logicalAnd(CEAST lhs, CEAST rhs) throws ParseException;
+abstract CEAST logicalNot(CEAST lhs) throws ParseException;
+abstract CEAST predicate(CEAST.Operator op, CEAST lhs, CEAST rhs) throws ParseException;
+abstract CEAST predicaterange(CEAST.Operator op1, CEAST.Operator op2, CEAST lhs, CEAST mid, CEAST rhs) throws ParseException;
+abstract CEAST fieldname(String value) throws ParseException;
 abstract CEAST constant(CEAST.Constant sort, String value) throws ParseException;
 abstract CEAST segmenttree(CEAST tree, CEAST segment);
 abstract CEAST segmenttree(CEAST tree, CEAST.NodeList forest);
 
 abstract CEAST.NodeList nodelist(CEAST.NodeList list, CEAST ast);
 abstract CEAST.SliceList slicelist(CEAST.SliceList list, Slice slice);
-abstract CEAST.StringList stringlist(CEAST.StringList list, String string);
 
 }
 
@@ -65,8 +65,8 @@ abstract CEAST.StringList stringlist(CEAST.StringList list, String string);
 %type <CEAST.NodeList> segmentforest
 %type <CEAST> segmenttree
 %type <CEAST.SliceList> slicelist
-%type <CEAST.StringList> fieldpath
-%type <Object> primary constant
+%type <CEAST> primary
+%type <CEAST> constant fieldname
 
 %start constraint
 
@@ -188,20 +188,20 @@ slice:
 index:  LONG ;
 
 /* 
-Semantics: The projection in a selection cannot have any
+Semantics: The projection in a selection currently cannot have any
 slices attached. It is purely a walk to a field of a sequence object.
 */
 selection:
-        projection '|' filter
+        segmenttree '|' filter
             {$$=selection($1,$3);}
         ;
 
 filter:
           predicate
         | predicate ',' predicate  /* ',' == AND */
-            {$$=conjunction($1,$3);}
+            {$$=logicalAnd($1,$3);}
         | '!' predicate %prec NOT
-            {$$=negation($2);}
+            {$$=logicalNot($2);}
         ;
 
 predicate:
@@ -214,10 +214,10 @@ predicate:
         ;
 
 relop:
-	  '<' {$$=CEAST.Operator.LT;}
-	| '>' {$$=CEAST.Operator.LE;}
-	| '<' '=' {$$=CEAST.Operator.GT;}
+	  '<' '=' {$$=CEAST.Operator.LE;}
 	| '>' '=' {$$=CEAST.Operator.GE;}
+	| '<' {$$=CEAST.Operator.LT;}
+	| '>' {$$=CEAST.Operator.GT;}
 	;
 
 eqop:
@@ -227,21 +227,20 @@ eqop:
 	;
 
 primary:
-          fieldpath {$$=(Object)$1;}
+          fieldname
         | constant
+        | '(' predicate ')' {$$=$2;}
 	;
 
-fieldpath:
-          NAME
-	    {$$=stringlist(null,$1);}
-        | fieldpath '.' NAME
-	    {$$=stringlist($1,$3);}
-        ;
 
 dimredef:
         NAME '=' slice
             {$$=null; dimredef($1,$3);}
         ;
+
+fieldname:
+	NAME {$$=fieldname($1);}
+	;
 
 constant:
 	  STRING {$$=constant(CEAST.Constant.STRING,$1);}

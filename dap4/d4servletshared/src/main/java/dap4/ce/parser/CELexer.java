@@ -17,7 +17,7 @@ class CELexer implements CEParser.Lexer
      * Single character delimiters. Note that '/' is not
      * included; it will be part of the leading name.
      */
-    static final String DELIMS = "[].:,;";
+    static final String DELIMS = "[].:,;|=<>!";
 
     /**
      * Escape Character

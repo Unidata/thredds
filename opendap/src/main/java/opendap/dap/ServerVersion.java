@@ -42,7 +42,7 @@ package opendap.dap;
 
 import java.net.URLConnection;
 
-import ucar.httpclient.HTTPMethod;
+import ucar.httpservices.HTTPMethod;
 import org.apache.http.*;
 
 /**

@@ -10,6 +10,9 @@ package dap4.core.util;
  DAP2 and DAP4 for eventual joint support.
  */
 
+import java.util.EnumSet;
+import java.util.Iterator;
+
 /**
  * Define the kinds of AST objects to avoid having to do instanceof.
  * The name field is for debugging.
@@ -42,6 +45,10 @@ public enum DapSort
     {
         return name;
     }
+    
+    // Define a constant enumset of all variables.
+    static public final EnumSet<DapSort> VARIABLE
+            = EnumSet.of(DapSort.ATOMICVARIABLE, DapSort.STRUCTURE, DapSort.SEQUENCE);
 
 };
 

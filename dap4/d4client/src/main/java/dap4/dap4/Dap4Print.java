@@ -69,7 +69,7 @@ public class Dap4Print
     protected IndentWriter printer = null;
     protected D4DSP dsp = null;
     protected DapDataset dmr = null;
-    protected D4DataDataset data = null;
+    protected DataDataset data = null;
 
     //////////////////////////////////////////////////
     //Constructor(s)
@@ -92,7 +92,7 @@ public class Dap4Print
         throws DapException
     {
         // ask the server for the remote dataset
-        this.dsp = new D4DSP().open(this.originalurl);
+        this.dsp = (D4DSP) new HttpDSP().open(this.originalurl);
         this.dmr = dsp.getDMR();
         this.data = (D4DataDataset) dsp.getDataDataset();
         this.printer.setIndent(0);
@@ -461,9 +461,9 @@ public class Dap4Print
     {
         printer.setIndent(0);
         printer.marginPrintln("<data>");
-        List<DataVariable> topvars = data.getTopVariables();
+        List<DapVariable> topvars = dmr.getTopVariables();
         for(int i = 0;i < topvars.size();i++) {
-            printVariable(topvars.get(i));
+            printVariable(this.data.getVariableData(topvars.get(i)));
         }
         printer.setIndent(0);
         printer.marginPrintln("</data>");
@@ -473,11 +473,12 @@ public class Dap4Print
     printVariable(DataVariable datav)
         throws DataException
     {
-        DapVariable dapv = (DapVariable) datav.getTemplate();
+        DapVariable dapv = datav.getVariable();
         DapType daptype = dapv.getBaseType();
+
         if(datav.getSort() == DataSort.ATOMIC) {
-            D4DataAtomic atom = (D4DataAtomic) datav;
             DapAtomicVariable datom = (DapAtomicVariable) dapv;
+            DataAtomic atom = (DataAtomic) datav;
             long nelems = atom.getCount();
             long nrows = (nelems > 0 ? (nelems + (COLUMNS - 1)) / nelems : 0);
             printer.marginPrintf("<%s name=\"%s\">",
@@ -512,8 +513,7 @@ public class Dap4Print
                         dapv.getShortName(),
                         sindices);
                     printer.eol();
-                    DataStructure datastruct = (DataStructure) cmpd.read(odom.index());
-                    printVariable(datastruct);
+                    printVariable(this.data.getVariableData(dstruct));
                     printer.marginPrintln("</Structure>");
                 }
             } catch (IOException ioe) {
@@ -521,20 +521,44 @@ public class Dap4Print
             }
         } else if(datav.getSort() == DataSort.STRUCTURE) {
             // Print <Structure> only if scalar
-            D4DataStructure struct = (D4DataStructure) datav;
             DapStructure dstruct = (DapStructure) dapv;
             List<DapVariable> dfields = dstruct.getFields();
             if(dstruct.getRank() == 0)
                 printer.marginPrintf("<Structure name=\"%s\">",
                     dapv.getShortName());
             printer.indent();
+            DataStructure dv = (DataStructure) datav;
             for(int f = 0;f < dfields.size();f++) {
-                DataVariable dv = struct.readfield(f);
-                printVariable(dv);
+                DataVariable df = dv.readfield(f);
+                printVariable(df);
             }
             printer.outdent();
             if(dstruct.getRank() == 0)
                 printer.marginPrintln("</Structure>");
+        } else if(datav.getSort() == DataSort.SEQUENCE) {
+            DapSequence dseq = (DapSequence) dapv;
+            DataSequence dvseq = (DataSequence)datav;
+            printer.marginPrintf("<Sequence name=\"%s\">", dapv.getShortName());
+            printer.indent();
+            long nrecs = dvseq.getRecordCount();
+            for(int i = 0;i < nrecs; i++) {
+                DataRecord dr = dvseq.readRecord(i);
+                printVariable(dr);
+            }
+            printer.outdent();
+            printer.marginPrintln("</Sequence>");
+        } else if(datav.getSort() == DataSort.RECORD) {
+            DapSequence dseq = (DapSequence) dapv;
+            DataRecord dr = (DataRecord)datav;
+            List<DapVariable> dfields = dseq.getFields();
+            printer.marginPrintf("<Record>");
+            printer.indent();
+            for(int f = 0;f < dfields.size();f++) {
+                DataVariable dv = dr.readfield(f);
+                printVariable(dv);
+            }
+            printer.outdent();
+            printer.marginPrintln("</Record>");
         } else
             throw new DataException("Attempt to treat non-variable as variable:" + dapv.getFQN());
     }

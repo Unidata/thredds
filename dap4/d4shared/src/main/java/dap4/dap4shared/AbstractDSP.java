@@ -7,27 +7,30 @@ package dap4.dap4shared;
 import dap4.core.data.DataDataset;
 import dap4.core.data.DataException;
 import dap4.core.dmr.DapDataset;
+import dap4.core.dmr.DapFactoryDMR;
+import dap4.core.dmr.parser.Dap4Parser;
 import dap4.core.util.*;
+import org.xml.sax.SAXException;
 
 import java.net.URISyntaxException;
 
 /**
- * Provide a Dap equivalent of an IOSP.
+ * Provide a superclass for DSPs.
  */
 
 abstract public class AbstractDSP implements DSP
 {
+    //////////////////////////////////////////////////
+    // constants
+
+    static protected final boolean PARSEDEBUG = false;
 
     //////////////////////////////////////////////////
     // Instance variables
 
     protected Object context = null;
-
-    protected String path = null;
-
-    protected XURI xuri = null;
-
     protected DapDataset dmr = null;
+    protected String path = null;
 
     //////////////////////////////////////////////////
     // Constructor(s)
@@ -36,63 +39,91 @@ abstract public class AbstractDSP implements DSP
     {
     }
 
-    public AbstractDSP(String path, Object context)
-        throws DapException
-    {
-        this();
-        setPath(path);
-        setContext(context);
-    }
-
     //////////////////////////////////////////////////
     // DSP Interface
 
     // Subclass defined
 
-    abstract public boolean match(String path, DapContext context);
     abstract public DSP open(String path, DapContext context) throws DapException;
-    abstract public DSP open(String path) throws DapException;
+
     abstract public DataDataset getDataDataset();
 
-    // Overrideable
+    //abstract public String getPath();
 
-    @Override public String getPath()
+    @Override
+    public DSP open(String path)
+        throws DapException
     {
-        return this.path;
+        return open(path, null);
     }
 
-    @Override public Object getContext()
+    @Override
+    public Object getContext()
     {
         return this.context;
     }
 
-    @Override public DapDataset getDMR()
+    public String
+    getPath()
+    {
+        return path;
+    }
+
+    @Override
+    public DapDataset getDMR()
     {
         return this.dmr;
     }
 
     // DSP Extensions
 
-    protected void setDataset(DapDataset dataset)
-        throws DapException
-    {
-        this.dmr = dataset;
-        this.dmr.finish();
-    }
-
     protected void setContext(Object context)
     {
         this.context = context;
     }
 
-    protected void setPath(String path)
+    protected void
+    setDataset(DapDataset dataset)
+        throws DapException
+    {
+        this.dmr = dataset;
+    }
+
+    public void
+    setPath(String path)
         throws DapException
     {
         this.path = path;
+    }
+
+    //////////////////////////////////////////////////
+    // Utilities
+
+    /**
+     * It is common to want to parse a DMR text to a DapDataset,
+     * so provide this utility.
+     *
+     * @param document the dmr to parse
+     * @return the parsed dmr
+     * @throws DapException on parse errors
+     */
+
+    protected DapDataset
+    parseDMR(String document)
+        throws DapException
+    {
+        // Parse the dmr
+        Dap4Parser pushparser = new Dap4Parser(new DapFactoryDMR());
+        if(PARSEDEBUG)
+            pushparser.setDebugLevel(1);
         try {
-            this.xuri = new XURI(path);
-        } catch (URISyntaxException use) {
-            throw new DataException(use);
+            if(!pushparser.parse(document))
+                throw new DapException("DMR Parse failed");
+        } catch (SAXException se) {
+            throw new DapException(se);
         }
+        if(pushparser.getErrorResponse() != null)
+            throw new DapException("Error Response Document not supported");
+        return pushparser.getDMR();
     }
 }

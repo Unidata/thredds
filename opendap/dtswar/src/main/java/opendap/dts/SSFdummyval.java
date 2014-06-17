@@ -39,6 +39,7 @@
 
 package opendap.dts;
 
+import java.security.InvalidParameterException;
 import java.util.*;
 
 import opendap.dap.*;
@@ -52,7 +53,8 @@ public class SSFdummyval
     }
 
     public void checkArgs(List args)
-            throws InvalidParameterException {
+            throws InvalidParameterException
+    {
 
         if (args.size() < 1) {
             throw new InvalidParameterException("must have at least 1 param.");

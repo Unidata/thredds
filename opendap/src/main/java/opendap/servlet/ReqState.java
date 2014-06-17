@@ -41,7 +41,7 @@
 package opendap.servlet;
 
 import opendap.dap.DAP2Exception;
-import ucar.httpclient.HTTPSession;
+import ucar.httpservices.HTTPSession;
 
 import java.util.Enumeration;
 import javax.servlet.ServletConfig;

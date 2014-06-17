@@ -46,27 +46,18 @@ public class SerialWriter
     static final int COUNTSIZE = 8;
 
     //////////////////////////////////////////////////
-    // Type declarations
-
-    static enum State
-    {
-        INITIAL, DATASET, VARIABLE;
-    }
-
-    //////////////////////////////////////////////////
     // Instance variables
 
-    ByteOrder order = null;
-    OutputStream output = null;
-    int depth = 0;
-    State state = State.INITIAL;
+    protected ByteOrder order = null;
+    protected OutputStream output = null;
+    protected int depth = 0;
 
-    java.util.zip.Checksum checksum;
-    boolean checksumming = true;
-    boolean serialize = true; // false=>we do not need to actually serialize
-    StringBuilder lastchecksum = new StringBuilder(); // checksum from last variable
+    protected java.util.zip.Checksum checksum;
+    protected boolean checksumming = true;
+    protected boolean serialize = true; // false=>we do not need to actually serialize
+    protected StringBuilder lastchecksum = new StringBuilder(); // checksum from last variable
 
-    ByteBuffer longbuffer = null;
+    protected ByteBuffer longbuffer = null;
 
     //////////////////////////////////////////////////
     // Constructor(s)
@@ -76,7 +67,7 @@ public class SerialWriter
         this.output = output;
         this.order = order;
         this.longbuffer = ByteBuffer.allocate(8) //8==sizeof(long)
-            .order(order);
+                .order(order);
         if("CRC32".equalsIgnoreCase(DapUtil.DIGESTER)) {
             // use the one from java.util.zip.CRC32
             checksum = new java.util.zip.CRC32();
@@ -116,7 +107,24 @@ public class SerialWriter
      */
     public ByteBuffer
     encodeObject(DapType vtype, Object value)
-        throws IOException
+            throws IOException
+    {
+        return encodeObject(vtype, value, this.order);
+    }
+
+
+    /**
+     * Encode an array of primitive values.
+     *
+     * @param vtype The type of the object
+     * @param value The value
+     * @param order the byteorder to use
+     * @return bytebuffer encoding of the value using the
+     *         platform's native encoding.
+     */
+    static public ByteBuffer
+    encodeObject(DapType vtype, Object value, ByteOrder order)
+            throws IOException
     {
         AtomicType atomtype = vtype.getPrimitiveType();
         int total = (int) AtomicType.getSize(atomtype);
@@ -138,17 +146,17 @@ public class SerialWriter
             break;
         case Int32:
         case UInt32:
-            buf.putInt((Integer) value);
+            buf.putInt(((Number) value).intValue());
             break;
         case Int64:
         case UInt64:
-            buf.putLong((Long) value);
+            buf.putLong(((Number) value).longValue());
             break;
         case Float32:
-            buf.putFloat((Float) value);
+            buf.putFloat(((Number) value).floatValue());
             break;
         case Float64:
-            buf.putDouble((Double) value);
+            buf.putDouble(((Number) value).doubleValue());
             break;
 
         case URL:
@@ -157,7 +165,7 @@ public class SerialWriter
             String content = value.toString();
             byte[] bytes = content.getBytes(DapUtil.UTF8);
             buf = ByteBuffer.allocate(bytes.length + COUNTSIZE)
-                .order(order);
+                    .order(order);
             buf.putLong(bytes.length);
             buf.put(bytes);
             break;
@@ -167,7 +175,7 @@ public class SerialWriter
             // the data may be at an offset in the buffer
             int size = opaquedata.remaining(); // should be limit - pos
             buf = ByteBuffer.allocate(size + COUNTSIZE)
-                .order(order);
+                    .order(order);
             buf.putLong(size);
             buf.put(opaquedata);
             break;
@@ -184,15 +192,15 @@ public class SerialWriter
     /**
      * Encode an array of primitive values.
      *
-     * @param vtype    The type of the object
-     * @param values   The value array
+     * @param vtype  The type of the object
+     * @param values The value array
      * @return bytebuffer encoding of the array using the
      *         platform's native encoding.
      */
 
     public ByteBuffer
     encodeArray(DapType vtype, Object values)
-        throws IOException
+            throws IOException
     {
         AtomicType atomtype = vtype.getPrimitiveType();
         int count = Array.getLength(values);
@@ -203,7 +211,7 @@ public class SerialWriter
         switch (atomtype) {
         case Char:
             char[] datac = (char[]) values;
-            for(int i = 0;i < datac.length;i++) {
+            for(int i = 0; i < datac.length; i++) {
                 byte b = (byte) (0xFFL & (long) (datac[i]));
                 buf.put(b);
             }
@@ -247,14 +255,14 @@ public class SerialWriter
             String[] datas = (String[]) values;
             // Pass 1: get total size
             total = 0;
-            for(int i = 0;i < datas.length;i++) {
+            for(int i = 0; i < datas.length; i++) {
                 String content = datas[i];
                 byte[] bytes = content.getBytes(DapUtil.UTF8);
                 total += (bytes.length + COUNTSIZE);
             }
             buf = ByteBuffer.allocate(total).order(order);
             // Pass 2: write the strings
-            for(int i = 0;i < datas.length;i++) {
+            for(int i = 0; i < datas.length; i++) {
                 String content = datas[i];
                 byte[] bytes = content.getBytes(DapUtil.UTF8);
                 buf.putLong(bytes.length);
@@ -268,7 +276,7 @@ public class SerialWriter
             total = 0;
             int size = 0;
             ByteBuffer opaquedata = null;
-            for(int i = 0;i < datao.length;i++) {
+            for(int i = 0; i < datao.length; i++) {
                 opaquedata = datao[i];
                 // the data may be at an offset in the buffer
                 size = opaquedata.remaining(); // should be limit - pos
@@ -276,7 +284,7 @@ public class SerialWriter
             }
             buf = ByteBuffer.allocate(total).order(order);
             // Pass 2: write the opaque elements
-            for(int i = 0;i < datao.length;i++) {
+            for(int i = 0; i < datao.length; i++) {
                 opaquedata = datao[i];
                 size = opaquedata.remaining(); // should be limit - pos
                 buf.putLong(size);
@@ -296,20 +304,6 @@ public class SerialWriter
     // Dataset oriented writes
 
     public void
-    startDataset()
-    {
-        assert (state == State.INITIAL) : "Internal Error";
-        state = State.DATASET;
-    }
-
-    public void
-    endDataset()
-    {
-        assert (state == State.DATASET && depth == 0) : "Internal Error";
-        state = State.INITIAL;
-    }
-
-    public void
     startGroup()
     {
     }
@@ -325,9 +319,6 @@ public class SerialWriter
     public void
     startVariable()
     {
-        assert ((state == State.DATASET && depth == 0)
-            || (state == State.VARIABLE && depth > 0)) : "Internal Error";
-        state = State.VARIABLE;
         if(depth == 0)
             checksum.reset();
         depth++;
@@ -335,9 +326,8 @@ public class SerialWriter
 
     public void
     endVariable()
-        throws IOException
+            throws IOException
     {
-        assert (state == State.VARIABLE) : "Internal Error";
         depth--;
         if(depth == 0 && checksumming) {
             long digest = checksum.getValue(); // get the digest value
@@ -347,15 +337,15 @@ public class SerialWriter
             // convert to a string
             this.lastchecksum.setLength(0);
             // by experiment; checksum leads in buffer
-            for(int i = 0;i < DapUtil.CHECKSUMSIZE;i++)
+            for(int i = 0; i < DapUtil.CHECKSUMSIZE; i++) {
                 this.lastchecksum.append(Escape.toHex((int) (csum[i] & 0xff)));
+            }
             if(DEBUG) {
                 System.err.print("checksum = " + this.lastchecksum.toString());
                 System.err.println();
             }
             // Write out the digest in binary form
             output.write(csum, 0, DapUtil.CHECKSUMSIZE);
-            state = State.DATASET;
         }
     }
 
@@ -371,17 +361,19 @@ public class SerialWriter
      */
     public void
     writeObject(DapType daptype, Object value)
-        throws IOException
+            throws IOException
     {
         ByteBuffer buf = encodeObject(daptype, value);
         byte[] bytes = buf.array();
         int len = buf.position();
         if(checksumming)
             checksum.update(bytes, 0, len);
+        if(DEBUG)
+            DapDump.dumpbytes(buf);
         output.write(bytes, 0, len);
         if(DEBUG) {
             System.err.printf("%s: ", daptype.getShortName());
-            for(int i = 0;i < len;i++) {
+            for(int i = 0; i < len; i++) {
                 int x = (int) (order == ByteOrder.BIG_ENDIAN ? bytes[i] : bytes[(len - 1) - i]);
                 System.err.printf("%02x", (int) (x & 0xff));
             }
@@ -397,7 +389,7 @@ public class SerialWriter
      */
     public void
     writeCount(long count)
-        throws IOException
+            throws IOException
     {
         longbuffer.clear();
         longbuffer.putLong(count);
@@ -412,12 +404,12 @@ public class SerialWriter
     /**
      * Write out an array of values
      *
-     * @param daptype  the type of the object
+     * @param daptype the type of the object
      * @throws IOException
      */
     public void
     writeArray(DapType daptype, Object values)
-        throws IOException
+            throws IOException
     {
         int count = Array.getLength(values);
         ByteBuffer buf = encodeArray(daptype, values);
@@ -428,12 +420,28 @@ public class SerialWriter
         output.write(bytes, 0, len);
         if(DEBUG) {
             System.err.printf("%s: ", daptype.getShortName());
-            for(int i = 0;i < len;i++) {
+            for(int i = 0; i < len; i++) {
                 int x = (int) (order == ByteOrder.BIG_ENDIAN ? bytes[i] : bytes[(len - 1) - i]);
                 System.err.printf("%02x", (int) (x & 0xff));
             }
             System.err.println();
         }
     }
+
+    /**
+     * Write out a single object
+     *
+     * @param bytes to write
+     * @throws IOException
+     */
+    public void
+    writeBytes(byte[] bytes)
+            throws IOException
+    {
+        output.write(bytes);
+        if(checksumming)
+            checksum.update(bytes, 0, bytes.length);
+    }
+
 
 }//SerialWriter

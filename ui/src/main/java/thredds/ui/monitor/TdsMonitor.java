@@ -34,7 +34,7 @@
 package thredds.ui.monitor;
 
 import org.apache.http.client.CredentialsProvider;
-import ucar.httpclient.*;
+import ucar.httpservices.*;
 import thredds.logs.LogReader;
 import thredds.logs.LogCategorizer;
 import ucar.nc2.ui.widget.*;

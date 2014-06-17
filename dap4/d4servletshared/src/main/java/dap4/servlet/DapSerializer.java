@@ -12,6 +12,7 @@ import dap4.core.util.*;
 import dap4.dap4shared.DSP;
 import dap4.dap4shared.Dap4Util;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.ByteBuffer;
@@ -31,7 +32,6 @@ public class DapSerializer
     protected OutputStream stream = null;
     protected SerialWriter writer = null;
     protected DSP dsp = null;
-    protected DapDataset dmr = null;
     protected DataDataset data = null;
     protected CEConstraint ce = null;
     protected ByteOrder order = null;
@@ -53,10 +53,9 @@ public class DapSerializer
      */
     public DapSerializer(DSP dsp, CEConstraint constraint,
                          OutputStream stream, ByteOrder order)
-        throws IOException
+            throws IOException
     {
         this.dsp = dsp;
-        this.dmr = dsp.getDMR();
         this.order = order;
         this.stream = stream;
         this.data = dsp.getDataDataset();
@@ -64,21 +63,19 @@ public class DapSerializer
     }
 
     public void
-    write()
-        throws IOException
+    write(DapDataset dmr)
+            throws IOException
     {
         writer = new SerialWriter(this.stream, this.order);
-        writer.startDataset();
         // Iterate over the top-level variables in the constraint
-        for(DapVariable var : this.dmr.getTopVariables()) {
+        for(DapVariable var : dmr.getTopVariables()) {
             DataVariable dv = data.getVariableData(var);
             if(!ce.references(var))
                 continue;
             if(dv == null)
                 throw new DapException("DapSerializer: cannot find  Variable data " + var.getFQN());
-            writeVariable(var, dv);
+            writeVariable(var, dv, writer);
         }
-        writer.endDataset();
     }
 
     //////////////////////////////////////////////////
@@ -90,28 +87,28 @@ public class DapSerializer
      * @throws IOException
      */
     protected void
-    writeVariable(DapVariable dapvar, DataVariable dv)
-        throws IOException
+    writeVariable(DapVariable dapvar, DataVariable dv, SerialWriter dst)
+            throws IOException
     {
         assert (dapvar == dv.getTemplate());
-        writer.startVariable();
+        dst.startVariable();
         switch (dv.getSort()) {
         case ATOMIC:
-            writeAtomicVariable(dapvar, dv);
+            writeAtomicVariable(dapvar, dv, dst);
             break;
         case STRUCTURE:
-            writeStructure(dapvar, (DataStructure) dv);
+            writeStructure(dapvar, (DataStructure) dv, dst);
             break;
         case SEQUENCE:
-            writeSequence(dapvar, (DataSequence) dv);
+            writeSequence(dapvar, (DataSequence) dv, dst);
             break;
         case COMPOUNDARRAY:
-            writeCompoundArray(dapvar, (DataCompoundArray) dv);
+            writeCompoundArray(dapvar, (DataCompoundArray) dv, dst);
             break;
         default:
             assert false : "Unexpected variable type";
         }
-        writer.endVariable();
+        dst.endVariable();
     }
 
     /**
@@ -122,8 +119,8 @@ public class DapSerializer
      * @throws IOException
      */
     protected void
-    writeAtomicVariable(DapVariable vv, DataVariable dv)
-        throws DataException
+    writeAtomicVariable(DapVariable vv, DataVariable dv, SerialWriter dst)
+            throws DataException
     {
         try {
             DapAtomicVariable dapvar = (DapAtomicVariable) vv;
@@ -133,22 +130,22 @@ public class DapSerializer
             List<Slice> slices;
             ByteBuffer buf;
             if(dapvar.getRank() == 0) { // scalar
-                writer.writeObject(basetype, dav.read(0));
+                dst.writeObject(basetype, dav.read(0));
             } else {// dimensioned
                 // get the constrained slices
-                slices = ce.getVariableSlices(dapvar);
+                slices = ce.getConstrainedSlices(dapvar);
                 if(slices == null)
-                    throw new DataException("Unknown variable: "+dapvar.getFQN());
+                    throw new DataException("Unknown variable: " + dapvar.getFQN());
                 long count = DapUtil.sliceProduct(slices);
-                Odometer odom = new Odometer(slices,dapvar.getDimensions());
+                Odometer odom = new Odometer(slices, dapvar.getDimensions());
                 if(DapUtil.hasStrideOne(slices)) {
                     Object vector = Dap4Util.createVector(basetype.getPrimitiveType(), count);
                     dav.read(odom.index(), odom.totalSize(), vector);
-                    writer.writeArray(basetype, vector);
+                    dst.writeArray(basetype, vector);
                 } else {
                     while(odom.hasNext()) {
                         Object value = dav.read(odom.index());
-                        writer.writeObject(basetype, value);
+                        dst.writeObject(basetype, value);
                         odom.next();
                     }
                 }
@@ -204,15 +201,15 @@ public class DapSerializer
      */
 
     protected void
-    writeStructure(DapVariable vv, DataStructure ds)
-        throws DataException
+    writeStructure(DapVariable vv, DataStructure ds, SerialWriter dst)
+            throws DataException
     {
         try {
             DapStructure dapvar = (DapStructure) vv;
             for(DapVariable field : dapvar.getFields()) {
                 if(!ce.references(field)) continue; // not in the view
                 DataVariable dv = ds.readfield(field.getShortName());
-                writeVariable(field, dv);
+                writeVariable(field, dv, dst);
             }
         } catch (IOException ioe) {
             throw new DataException(ioe);
@@ -228,13 +225,13 @@ public class DapSerializer
      */
 
     protected void
-    writeCompound(DapVariable vv, DataCompound dc)
-        throws DataException
+    writeCompound(DapVariable vv, DataCompound dc, SerialWriter dst)
+            throws DataException
     {
         if(dc.getSort() == DataSort.STRUCTURE)
-            writeStructure(vv, (DataStructure) dc);
+            writeStructure(vv, (DataStructure) dc, dst);
         else
-            writeSequence(vv, (DataSequence) dc);
+            writeSequence(vv, (DataSequence) dc, dst);
         return;
     }
 
@@ -247,23 +244,23 @@ public class DapSerializer
      */
 
     protected void
-    writeCompoundArray(DapVariable dapvar, DataCompoundArray dca)
-        throws DataException
+    writeCompoundArray(DapVariable dapvar, DataCompoundArray dca, SerialWriter dst)
+            throws DataException
     {
         try {
             if(dapvar.getRank() == 0) {
-                writeCompound(dapvar, dca.read(0));
+                writeCompound(dapvar, dca.read(0), dst);
                 return;
             }
             // Get the active set of slices for this variable
-            List<Slice> slices = ce.getVariableSlices(dapvar);
+            List<Slice> slices = ce.getConstrainedSlices(dapvar);
             if(slices == null)
-                throw new DataException("Undefined variable: "+dapvar);
+                throw new DataException("Undefined variable: " + dapvar);
             long count = DapUtil.sliceProduct(slices);
-            DataCompound[] dc = new DataCompound[(int)count];
+            DataCompound[] dc = new DataCompound[(int) count];
             dca.read(slices, dc);
-            for(int i = 0;i < count;i++) {
-                writeCompound(dapvar, dc[i]);
+            for(int i = 0; i < count; i++) {
+                writeCompound(dapvar, dc[i], dst);
             }
         } catch (IOException ioe) {
             throw new DataException(ioe);
@@ -279,16 +276,15 @@ public class DapSerializer
      */
 
     protected void
-    writeRecord(DapVariable vv, DataRecord dr)
-        throws DataException
+    writeRecord(DapVariable vv, DataRecord dr, SerialWriter dst)
+            throws DataException
     {
         try {
             DapSequence dapvar = (DapSequence) vv;
-            assert (dapvar.getRank() == 0);
             for(DapVariable field : dapvar.getFields()) {
                 if(!ce.references(field)) continue; // not in the view
                 DataVariable dv = dr.readfield(field.getShortName());
-                writeVariable(field, dv);
+                writeVariable(field, dv, dst);
             }
         } catch (IOException ioe) {
             throw new DataException(ioe);
@@ -305,21 +301,40 @@ public class DapSerializer
      */
 
     protected void
-    writeSequence(DapVariable dapvar, DataSequence ds)
-        throws DataException
+    writeSequence(DapVariable dapvar, DataSequence ds, SerialWriter dst)
+            throws DataException
     {
+        DapSequence seq = (DapSequence) dapvar;
         long nrecs = ds.getRecordCount();
-        for(int i = 0;i < nrecs;i++)
-            writeRecord(dapvar, ds.readRecord(i));
+        // We need to create a temporary serializing buffer
+        // so we can properly precede the records with the correct count.
+        long actual = 0;
+        ByteArrayOutputStream bytestream = new ByteArrayOutputStream();
+        SerialWriter tmp = new SerialWriter(bytestream, this.order);
+        tmp.computeChecksums(false);
+        try {
+            for(int i = 0; i < nrecs; i++) {
+                DataRecord rec = ds.readRecord(i);
+                if(ce.match(seq, rec)) {
+                    writeRecord(dapvar, ds.readRecord(i), tmp);
+                    actual++;
+                }
+            }
+            bytestream.flush();
+            dst.writeCount(actual);
+            dst.writeBytes(bytestream.toByteArray());
+        } catch (IOException ioe) {
+            throw new DataException(ioe);
+        }
     }
 
-    /**
-     * Write out a possibly dimensioned sequence variable.
-     *
-     * @param vv   the sequence variable
-     * @param data the variable's data
-     * @throws DataException
-     */
+/**
+ * Write out a possibly dimensioned sequence variable.
+ *
+ * @param vv   the sequence variable
+ * @param data the variable's data
+ * @throws DataException
+ */
 
 /*
     void
@@ -360,6 +375,5 @@ public class DapSerializer
         }
     }
     */
-
 }
 
