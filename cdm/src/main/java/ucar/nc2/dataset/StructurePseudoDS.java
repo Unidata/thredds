@@ -90,7 +90,7 @@ public class StructurePseudoDS extends StructureDS {
 
     if (varNames == null) {
       List<Variable> vars = group.getVariables();
-      varNames = new ArrayList<String>(vars.size());
+      varNames = new ArrayList<>(vars.size());
       for (Variable orgV : vars) {
         if (orgV.getDataType() == DataType.STRUCTURE) continue;
         

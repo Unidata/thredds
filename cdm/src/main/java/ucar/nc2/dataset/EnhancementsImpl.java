@@ -126,7 +126,7 @@ class EnhancementsImpl implements Enhancements {
           desc = att.getStringValue();
       }
     }
-    return (desc == null) ? "" : desc.trim();
+    return (desc == null) ? null : desc.trim();
   }
 
   /** Set the Unit String for this Variable. Default is to use the CDM.UNITS attribute.

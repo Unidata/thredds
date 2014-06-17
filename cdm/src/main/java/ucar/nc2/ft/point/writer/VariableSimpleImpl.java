@@ -66,8 +66,10 @@ public class VariableSimpleImpl implements VariableSimpleIF {
     this.units = units;
     this.dt = dt;
 
-    atts.add(new Attribute(CDM.UNITS, units));
-    atts.add(new Attribute(CDM.LONG_NAME, desc));
+    if (units != null)
+      atts.add(new Attribute(CDM.UNITS, units));
+    if (desc != null)
+      atts.add(new Attribute(CDM.LONG_NAME, desc));
   }
 
   public VariableSimpleImpl add(Attribute att) {

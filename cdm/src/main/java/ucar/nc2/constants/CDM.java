@@ -48,6 +48,7 @@ public interface CDM {
   public static final String CHUNK_SIZES = "_ChunkSizes";
   public static final String COMPRESS = "_Compress";
   public static final String COMPRESS_DEFLATE = "deflate";
+  public static final String FIELD_ATTS = "_field_atts";    // netcdf4 compound atts
 
   // from the Netcdf Users Guide
   // http://www.unidata.ucar.edu/software/netcdf/docs/netcdf.html#Attribute-Conventions

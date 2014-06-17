@@ -107,7 +107,7 @@ public class H5header {
   static private final byte[] head = {(byte) 0x89, 'H', 'D', 'F', '\r', '\n', 0x1a, '\n'};
   static private final String hdf5magic = new String(head);
   static private final long maxHeaderPos = 500000; // header's gotta be within this
-  static private boolean transformReference = true;
+  static private final boolean transformReference = true;
 
   static public boolean isValidFile(ucar.unidata.io.RandomAccessFile raf) throws IOException {
     long filePos = 0;
@@ -876,7 +876,21 @@ public class H5header {
           attContainer.addAttribute(new Attribute(matt.name + "." + sm.getName(), memberData));
         }
 
-      } else {  // assign seperate attribute for each member
+      } else if (matt.name.equals(CDM.FIELD_ATTS)) {
+          // flatten and add to list
+          for (StructureMembers.Member sm : attData.getStructureMembers().getMembers()) {
+            String memberName = sm.getName();
+            int pos = memberName.indexOf(":");
+            if (pos < 0) continue; // LOOK
+            String fldName = memberName.substring(0,pos);
+            String attName = memberName.substring(pos+1);
+            Array memberData = attData.extractMemberArray(sm);
+            Variable v = s.findVariable(fldName);
+            if (v == null) continue; // LOOK
+            v.addAttribute(new Attribute(attName, memberData));
+          }
+
+      } else {  // assign separate attribute for each member
         StructureMembers attMembers = attData.getStructureMembers();
         for (Variable v : s.getVariables()) {
           StructureMembers.Member sm = attMembers.findMember(v.getShortName()); // does the compound attribute have a member with same name as nested variable ?

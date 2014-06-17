@@ -97,7 +97,7 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
   static private boolean warn = true;
   static private final boolean debug = false,
           debugCompound = true,
-          debugCompoundAtt = false,
+          debugCompoundAtt = true,
           debugUserTypes = false,
           debugLoad = false,
           debugWrite = false;
@@ -2459,7 +2459,7 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
 
     // create the compound type for member_atts_t
     IntByReference typeidp = new IntByReference();
-    String typeName = "_"+s.getShortName() + "_member_atts_t";
+    String typeName = "_"+s.getShortName() + "_field_atts_t";
     int ret = nc4.nc_def_compound(grpid, new SizeT(sizeAtts), typeName, typeidp);
     if (ret != 0)
       throw new IOException(nc4.nc_strerror(ret) + " on\n" + s);
@@ -2472,7 +2472,7 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
     for (Variable m : s.getVariables()) {
       for (Attribute att : m.getAttributes()) {
         // add the fields to the member_atts_t
-        String memberName = m.getShortName()+"_"+att.getShortName();
+        String memberName = m.getShortName()+":"+att.getShortName();
         int field_typeid = att.isString() ? Nc4prototypes.NC_CHAR : convertDataType(att.getDataType());
 
         if (att.isString()) {  // String gets turned into array of char; otherwise no way to pass in
@@ -2509,26 +2509,28 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
           for (int i=0; i<att.getLength(); i++) {
             switch (att.getDataType()) {
               case BYTE:
-                bb.put( att.getNumericValue().byteValue());
+                bb.put( att.getNumericValue(i).byteValue());
                 break;
               case CHAR:
-                bb.put( att.getNumericValue().byteValue());  // ??
+                bb.put( att.getNumericValue(i).byteValue());  // ??
                 break;
               case DOUBLE:
-                bb.putDouble( att.getNumericValue().doubleValue());
+                bb.putDouble( att.getNumericValue(i).doubleValue());
                 break;
               case FLOAT:
-                bb.putFloat( att.getNumericValue().floatValue());
+                bb.putFloat( att.getNumericValue(i).floatValue());
                 break;
               case INT:
-                bb.putInt( att.getNumericValue().intValue());
+                bb.putInt( att.getNumericValue(i).intValue());
                 break;
               case LONG:
-                bb.putLong( att.getNumericValue().longValue());
+                bb.putLong( att.getNumericValue(i).longValue());
                 break;
               case SHORT:
-                bb.putShort( att.getNumericValue().shortValue());
+                bb.putShort( att.getNumericValue(i).shortValue());
                 break;
+              default:
+                throw new IllegalStateException("Att type "+att.getDataType()+" not found");
             }
           }
         }
@@ -2537,8 +2539,8 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
 
 
     // now write that attribute on the variable
-    String attName = s.getShortName()+"_atts";
-    ret = nc4.nc_put_att (grpid, varid, attName, typeid, new SizeT(sizeAtts), bb.array());
+    String attName = "_field_atts";
+    ret = nc4.nc_put_att (grpid, varid, attName, typeid, new SizeT(1), bb.array());
     if (ret != 0)
        throw new IOException(nc4.nc_strerror(ret) + " on\n" + s.getShortName());
     if (debugCompound) System.out.printf("write att %s (typeid %d) size=%d %n", attName, typeid, sizeAtts); // */

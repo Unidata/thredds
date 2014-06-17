@@ -411,7 +411,7 @@ public class NestedTable {
   }
 
   public List<VariableSimpleIF> getDataVariables() {
-    List<VariableSimpleIF> data = new ArrayList<VariableSimpleIF>();
+    List<VariableSimpleIF> data = new ArrayList<>();
     addDataVariables(data, leaf);
     Collections.sort(data);
     return data;

@@ -67,7 +67,7 @@ public class TestCFPointWriter {
 
   @Test
   public void testWrite4() throws IOException {
-    int count = writeDataset(location, ftype, NetcdfFileWriter.Version.netcdf4, false);
+    int count = writeDataset(location, ftype, NetcdfFileWriter.Version.netcdf4, true);
     System.out.printf("%s netcdf4 count=%d%n", location, count);
     assert count == countExpected : "count ="+count+" expected "+countExpected;
   }

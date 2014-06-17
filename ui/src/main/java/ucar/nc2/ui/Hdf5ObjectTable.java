@@ -81,14 +81,14 @@ public class Hdf5ObjectTable extends JPanel {
       public void valueChanged(ListSelectionEvent e) {
         messTable.setBeans(new ArrayList());
 
-        ArrayList beans = new ArrayList();
+        ArrayList<Object> beans = new ArrayList<>();
         ObjectBean ob = (ObjectBean) objectTable.getSelectedBean();
         for ( H5header.HeaderMessage m : ob.m.getMessages()) {
           beans.add( new MessageBean(m));
         }
         messTable.setBeans(beans);
 
-        ArrayList attBeans = new ArrayList();
+        ArrayList<Object> attBeans = new ArrayList<>();
         for ( H5header.MessageAttribute m : ob.m.getAttributes()) {
           attBeans.add( new AttributeBean(m));
         }
@@ -203,8 +203,7 @@ public class Hdf5ObjectTable extends JPanel {
     closeOpenFiles();
 
     this.location = raf.getLocation();
-    long start = System.nanoTime();
-    java.util.List<ObjectBean> beanList = new ArrayList<ObjectBean>();
+    java.util.List<ObjectBean> beanList = new ArrayList<>();
 
     iosp = new H5iosp();
     NetcdfFile ncfile = new MyNetcdfFile(iosp, location);

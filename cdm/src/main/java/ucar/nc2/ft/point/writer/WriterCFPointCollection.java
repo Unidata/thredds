@@ -141,18 +141,14 @@ public class WriterCFPointCollection extends CFPointWriter {
     trackBB(loc, obsDate);
 
     StructureDataScalar coords = new StructureDataScalar("Coords");
+    coords.addMember(timeName, "time of measurement", null, timeCoordValue);
     coords.addMember(latName,  "station latitude", CDM.LAT_UNITS, loc.getLatitude());
     coords.addMember(lonName,  "station longitude", CDM.LON_UNITS, loc.getLongitude());
+    if (altUnits != null) coords.addMember(altName, "altitude", altUnits, loc.getAltitude());
 
     StructureDataComposite sdall = new StructureDataComposite();
-    sdall.add(coords);
+    sdall.add(coords); // coords first so it takes precedence
     sdall.add(sdata);
-
-    timeArray.set(0, timeCoordValue);
-    latArray.set(0, loc.getLatitude());
-    lonArray.set(0, loc.getLongitude());
-    if (altUnits != null)
-      altArray.set(0, loc.getAltitude());
 
     // write the recno record
     int[] origin = new int[1];
@@ -164,6 +160,12 @@ public class WriterCFPointCollection extends CFPointWriter {
         // throw new RuntimeException("extended model not working yet");
 
       } else {
+        timeArray.set(0, timeCoordValue);
+        latArray.set(0, loc.getLatitude());
+        lonArray.set(0, loc.getLongitude());
+        if (altUnits != null)
+          altArray.set(0, loc.getAltitude());
+
         writer.write(time, origin, timeArray);
         writer.write(lat, origin, latArray);
         writer.write(lon, origin, lonArray);

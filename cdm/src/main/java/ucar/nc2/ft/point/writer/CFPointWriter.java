@@ -182,7 +182,7 @@ public class CFPointWriter implements AutoCloseable {
           _Coordinate._CoordSysBuilder, CF.featureTypeAtt2, CF.featureTypeAtt3};
 
   private static final String[] reservedVAtts = new String[]{
-          _Coordinate.AxisType};
+          _Coordinate.AxisType };
 
   protected static final List<String> reservedGlobalAtts = Arrays.asList(reservedGAtts);
   protected static final List<String> reservedVariableAtts = Arrays.asList(reservedVAtts);
@@ -338,7 +338,8 @@ public class CFPointWriter implements AutoCloseable {
 
       List<Attribute> atts = oldVar.getAttributes();
       for (Attribute att : atts) {
-        if (!reservedVariableAtts.contains(att.getShortName()))
+        String attName = att.getShortName();
+        if (!reservedVariableAtts.contains(attName) && !attName.startsWith("_Coordinate"))
           m.addAttribute(att);
       }
 
