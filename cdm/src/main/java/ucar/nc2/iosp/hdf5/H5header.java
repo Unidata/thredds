@@ -877,16 +877,16 @@ public class H5header {
         }
 
       } else {  // assign seperate attribute for each member
-        StructureMembers smember = attData.getStructureMembers();
+        StructureMembers attMembers = attData.getStructureMembers();
         for (Variable v : s.getVariables()) {
-          StructureMembers.Member sm = smember.findMember(v.getShortName());
+          StructureMembers.Member sm = attMembers.findMember(v.getShortName()); // does the compound attribute have a member with same name as nested variable ?
           if (null != sm) {
-            Array memberData = attData.extractMemberArray(sm);
-            v.addAttribute(new Attribute(matt.name, memberData));
+            Array memberData = attData.extractMemberArray(sm);                 // if so, add the att to the member variable, using the name of the compound attribute
+            v.addAttribute(new Attribute(matt.name, memberData));              // LOOK want to check for missing values....
           }
         }
 
-        // look for unassigned membres, add to the list
+        // look for unassigned members, add to the list
         for (StructureMembers.Member sm : attData.getStructureMembers().getMembers()) {
           if (s.findVariable(sm.getName()) == null) {
             Array memberData = attData.extractMemberArray(sm);
