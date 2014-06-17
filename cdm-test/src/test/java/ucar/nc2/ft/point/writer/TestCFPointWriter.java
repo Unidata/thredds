@@ -7,6 +7,7 @@ import ucar.nc2.NetcdfFileWriter;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.ft.*;
 import ucar.unidata.test.util.TestDir;
+import ucar.unidata.util.StringUtil2;
 
 import java.io.File;
 import java.io.IOException;
@@ -29,9 +30,9 @@ public class TestCFPointWriter {
     List<Object[]> result = new ArrayList<>();
 
     result.add(new Object[] {TestDir.cdmUnitTestDir +  "ft/ncml/point.ncml", FeatureType.POINT, 5});
-    // result.add(new Object[] {TestDir.cdmUnitTestDir + "ft/point/ldm/04061912_buoy.nc", FeatureType.POINT, 218});
+    //result.add(new Object[] {TestDir.cdmUnitTestDir + "ft/point/ldm/04061912_buoy.nc", FeatureType.POINT, 218});
     // result.add(new Object[] {TestDir.cdmUnitTestDir + "ft/station/multiStationMultiVar.ncml", FeatureType.STATION, 15});
-    // result.add(new Object[] {TestDir.cdmUnitTestDir + "ft/point/netcdf/Surface_Buoy_20090921_0000.nc", FeatureType.POINT, 32452});
+    //result.add(new Object[] {TestDir.cdmUnitTestDir + "ft/point/netcdf/Surface_Buoy_20090921_0000.nc", FeatureType.POINT, 32452});
     // result.add(new Object[] {TestDir.cdmUnitTestDir + "ft/station/200501q3h-gr.nc", FeatureType.STATION, 5023});
     //  result.add(new Object[]{CFpointObs_topdir + "profileSingle.ncml", FeatureType.PROFILE, 13});
 
@@ -41,7 +42,7 @@ public class TestCFPointWriter {
   String location;
   FeatureType ftype;
   int countExpected;
-  boolean show = true;
+  boolean show = false;
 
   public TestCFPointWriter(String location, FeatureType ftype, int countExpected) {
     this.location = location;
@@ -49,24 +50,24 @@ public class TestCFPointWriter {
     this.countExpected = countExpected;
   }
 
-  @Test
+  //@Test
   public void testWrite3() throws IOException {
-    int count = writeDataset(location, ftype, NetcdfFileWriter.Version.netcdf3);
+    int count = writeDataset(location, ftype, NetcdfFileWriter.Version.netcdf3, true);
     System.out.printf("%s netcdf3 count=%d%n", location, count);
     assert count == countExpected : "count ="+count+" expected "+countExpected;
   }
 
 
-  @Test
+  //@Test
   public void testWrite4classic() throws IOException {
-    int count = writeDataset(location, ftype, NetcdfFileWriter.Version.netcdf4_classic);
+    int count = writeDataset(location, ftype, NetcdfFileWriter.Version.netcdf4_classic, true);
     System.out.printf("%s netcdf4_classic count=%d%n", location, count);
     assert count == countExpected : "count ="+count+" expected "+countExpected;
   }
 
-  @Test  // LOOK not working
+  @Test
   public void testWrite4() throws IOException {
-    int count = writeDataset(location, ftype, NetcdfFileWriter.Version.netcdf4);
+    int count = writeDataset(location, ftype, NetcdfFileWriter.Version.netcdf4, false);
     System.out.printf("%s netcdf4 count=%d%n", location, count);
     assert count == countExpected : "count ="+count+" expected "+countExpected;
   }
@@ -74,7 +75,7 @@ public class TestCFPointWriter {
 
   // @Test
   public void testProblem() throws IOException {
-    writeDataset(TestDir.cdmUnitTestDir + "ft/point/netcdf/Surface_Buoy_20090921_0000.nc", FeatureType.POINT, NetcdfFileWriter.Version.netcdf4);
+    writeDataset(TestDir.cdmUnitTestDir + "ft/point/netcdf/Surface_Buoy_20090921_0000.nc", FeatureType.POINT, NetcdfFileWriter.Version.netcdf4, true);
   }
 
   // synthetic variants
@@ -94,7 +95,7 @@ public class TestCFPointWriter {
     assert 22 ==  writeDataset(CFpointObs_topdir + "profileRaggedIndexTimeJoin.ncml", FeatureType.PROFILE);
   } */
 
-  int writeDataset(String location, FeatureType ftype, NetcdfFileWriter.Version version) throws IOException {
+  int writeDataset(String location, FeatureType ftype, NetcdfFileWriter.Version version, boolean readBack) throws IOException {
     File fileIn = new File(location);
     long start = System.currentTimeMillis();
 
@@ -104,8 +105,11 @@ public class TestCFPointWriter {
     if (!name.endsWith(prefix)) name = name + prefix;
     File fileOut = new File(TestDir.temporaryLocalDataDir, name);
 
-    if (show)
-      System.out.printf("================ TestCFPointWriter%n read %s size=%d%n write to=%s %n", fileIn.getAbsolutePath(), fileIn.length(), fileOut.getAbsolutePath());
+    String absIn = fileIn.getAbsolutePath();
+    absIn = StringUtil2.replace(absIn, "\\", "/");
+    String absOut = fileOut.getAbsolutePath();
+    absOut = StringUtil2.replace(absOut, "\\", "/");
+    System.out.printf("================ TestCFPointWriter%n read %s size=%d%n write to=%s%n", absIn, fileIn.length(), absOut);
 
     // open point dataset
     Formatter out = new Formatter();
@@ -119,22 +123,25 @@ public class TestCFPointWriter {
     FeatureDatasetPoint fdpoint = (FeatureDatasetPoint) fdataset;
     int count = CFPointWriter.writeFeatureCollection(fdpoint, fileOut.getPath(), version);
     long took = System.currentTimeMillis() - start;
-    if (show) System.out.printf(" nrecords written = %d took=%d msecs%n%n", count, took);
+    System.out.printf(" nrecords written = %d took=%d msecs%n%n", count, took);
 
     ////////////////////////////////
     // open result
+    if (readBack) {
 
-    if (show) System.out.printf(" open result dataset=%s size = %d (%f ratio out/in) %n", fileOut.getPath(), fileOut.length(), ((double) fileOut.length() / fileIn.length()));
-    out = new Formatter();
-    FeatureDataset result = FeatureDatasetFactoryManager.open(ftype, fileOut.getPath(), null, out);
-    if (result == null) {
-      System.out.printf(" **failed --> %n%s <--END FAIL messages%n", out);
-      assert false;
-    }
-    if (show) {
-      System.out.printf("----------- testPointDataset getDetailInfo -----------------%n");
-      result.getDetailInfo(out);
-      System.out.printf("%s %n", out);
+      System.out.printf(" open result dataset=%s size = %d (%f ratio out/in) %n", fileOut.getPath(), fileOut.length(), ((double) fileOut.length() / fileIn.length()));
+      out = new Formatter();
+
+      FeatureDataset result = FeatureDatasetFactoryManager.open(ftype, fileOut.getPath(), null, out);
+      if (result == null) {
+        System.out.printf(" **failed --> %n%s <--END FAIL messages%n", out);
+        assert false;
+      }
+      if (show) {
+        System.out.printf("----------- testPointDataset getDetailInfo -----------------%n");
+        result.getDetailInfo(out);
+        System.out.printf("%s %n", out);
+      }
     }
 
     return count;
