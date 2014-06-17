@@ -8,6 +8,8 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import thredds.server.ncss.format.SupportedFormat;
 import thredds.server.ncss.params.NcssParamsBean;
 import ucar.nc2.Attribute;
@@ -18,6 +20,7 @@ import ucar.nc2.constants.FeatureType;
 import ucar.nc2.ft.FeatureDataset;
 import ucar.nc2.ft.FeatureDatasetFactoryManager;
 import ucar.nc2.ft.FeatureDatasetPoint;
+import ucar.nc2.jni.netcdf.Nc4Iosp;
 import ucar.nc2.ogc.MarshallingUtil;
 import ucar.nc2.util.CompareNetcdf2;
 import ucar.nc2.util.DiskCache2;
@@ -33,6 +36,16 @@ import java.util.List;
  */
 @RunWith(Parameterized.class)
 public class DsgSubsetWriterTest {
+    private static final Logger logger = LoggerFactory.getLogger(DsgSubsetWriterTest.class);
+
+    private static final boolean isClibraryPresent;
+    static {
+        isClibraryPresent = Nc4Iosp.isClibraryPresent();
+        if (!isClibraryPresent) {
+            logger.error("Could not load the NetCDF-4 C library. Tests that require it will be skipped.");
+        }
+    }
+
     private static DiskCache2 diskCache;
 
     private static NcssParamsBean ncssParamsAll;
@@ -127,6 +140,10 @@ public class DsgSubsetWriterTest {
 
     @Test
     public void testWrite() throws Exception {
+        if ((format == SupportedFormat.NETCDF4 || format == SupportedFormat.NETCDF4EXT) && !isClibraryPresent) {
+            return;  // Skip NetCDF 4 test.
+        }
+
         File expectedResultFile = new File(getClass().getResource(expectedResultResource).toURI());
 
         String basename = FilenameUtils.getBaseName(expectedResultResource);
@@ -156,7 +173,7 @@ public class DsgSubsetWriterTest {
     public static boolean compareNetCDF(File expectedResultFile, File actualResultFile) throws IOException {
         try (   NetcdfFile expectedNcFile = NetcdfFile.open(expectedResultFile.getAbsolutePath());
                 NetcdfFile actualNcFile   = NetcdfFile.open(actualResultFile.getAbsolutePath())) {
-            CompareNetcdf2 comparator = new CompareNetcdf2();
+            CompareNetcdf2 comparator = new CompareNetcdf2(new Formatter());
             return comparator.compare(expectedNcFile, actualNcFile, new NcssNetcdfObjFilter(), false, false, true);
         }
     }
