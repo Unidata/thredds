@@ -1,34 +1,34 @@
 /*
- * Copyright 1998-2009 University Corporation for Atmospheric Research/Unidata
+ * Copyright 1998-2014 University Corporation for Atmospheric Research/Unidata
  *
- * Portions of this software were developed by the Unidata Program at the
- * University Corporation for Atmospheric Research.
+ *   Portions of this software were developed by the Unidata Program at the
+ *   University Corporation for Atmospheric Research.
  *
- * Access and use of this software shall impose the following obligations
- * and understandings on the user. The user is granted the right, without
- * any fee or cost, to use, copy, modify, alter, enhance and distribute
- * this software, and any derivative works thereof, and its supporting
- * documentation for any purpose whatsoever, provided that this entire
- * notice appears in all copies of the software, derivative works and
- * supporting documentation.  Further, UCAR requests that the user credit
- * UCAR/Unidata in any publications that result from the use of this
- * software or in any product that includes this software. The names UCAR
- * and/or Unidata, however, may not be used in any advertising or publicity
- * to endorse or promote any products or commercial entity unless specific
- * written permission is obtained from UCAR/Unidata. The user also
- * understands that UCAR/Unidata is not obligated to provide the user with
- * any support, consulting, training or assistance of any kind with regard
- * to the use, operation and performance of this software nor to provide
- * the user with any updates, revisions, new versions or "bug fixes."
+ *   Access and use of this software shall impose the following obligations
+ *   and understandings on the user. The user is granted the right, without
+ *   any fee or cost, to use, copy, modify, alter, enhance and distribute
+ *   this software, and any derivative works thereof, and its supporting
+ *   documentation for any purpose whatsoever, provided that this entire
+ *   notice appears in all copies of the software, derivative works and
+ *   supporting documentation.  Further, UCAR requests that the user credit
+ *   UCAR/Unidata in any publications that result from the use of this
+ *   software or in any product that includes this software. The names UCAR
+ *   and/or Unidata, however, may not be used in any advertising or publicity
+ *   to endorse or promote any products or commercial entity unless specific
+ *   written permission is obtained from UCAR/Unidata. The user also
+ *   understands that UCAR/Unidata is not obligated to provide the user with
+ *   any support, consulting, training or assistance of any kind with regard
+ *   to the use, operation and performance of this software nor to provide
+ *   the user with any updates, revisions, new versions or "bug fixes."
  *
- * THIS SOFTWARE IS PROVIDED BY UCAR/UNIDATA "AS IS" AND ANY EXPRESS OR
- * IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
- * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
- * DISCLAIMED. IN NO EVENT SHALL UCAR/UNIDATA BE LIABLE FOR ANY SPECIAL,
- * INDIRECT OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING
- * FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT,
- * NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
- * WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
+ *   THIS SOFTWARE IS PROVIDED BY UCAR/UNIDATA "AS IS" AND ANY EXPRESS OR
+ *   IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ *   WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ *   DISCLAIMED. IN NO EVENT SHALL UCAR/UNIDATA BE LIABLE FOR ANY SPECIAL,
+ *   INDIRECT OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING
+ *   FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT,
+ *   NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
+ *   WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
 package ucar.ma2;
@@ -44,34 +44,36 @@ import java.nio.ByteBuffer;
 
 public enum DataType {
 
-  BOOLEAN("boolean", 1),
-  BYTE("byte", 1),
-  CHAR("char", 1),
-  SHORT("short", 2),
-  INT("int", 4),
-  LONG("long", 8),
-  FLOAT("float", 4),
-  DOUBLE("double", 8),
+  BOOLEAN("boolean", 1, boolean.class),
+  BYTE("byte", 1, byte.class),
+  CHAR("char", 1, char.class),
+  SHORT("short", 2, short.class),
+  INT("int", 4, int.class),
+  LONG("long", 8, long.class),
+  FLOAT("float", 4, float.class),
+  DOUBLE("double", 8, double.class),
 
   // object types
-  SEQUENCE("Sequence", 4), // 32-bit index
-  STRING("String", 4),     // 32-bit index
-  STRUCTURE("Structure", 1), // size meaningless
+  SEQUENCE("Sequence", 4, StructureData.class), // 32-bit index
+  STRING("String", 4, String.class),     // 32-bit index
+  STRUCTURE("Structure", 1, StructureDataIterator.class), // size meaningless
 
-  ENUM1("enum1", 1), // byte
-  ENUM2("enum2", 2), // short
-  ENUM4("enum4", 4), // int
+  ENUM1("enum1", 1, byte.class), // byte
+  ENUM2("enum2", 2, short.class), // short
+  ENUM4("enum4", 4, int.class), // int
 
-  OPAQUE("opaque", 1), // byte blobs
+  OPAQUE("opaque", 1, ByteBuffer.class), // byte blobs
 
-  OBJECT("object", 1); // added for use with Array 
+  OBJECT("object", 1, Object.class); // added for use with Array
 
-  private String niceName;
-  private int size;
+  private final String niceName;
+  private final int size;
+  private final Class primitiveClass;
 
-  private DataType(String s, int size) {
+  private DataType(String s, int size, Class primitiveClass) {
     this.niceName = s;
     this.size = size;
+    this.primitiveClass = primitiveClass;
   }
 
   /**
@@ -108,19 +110,7 @@ public enum DataType {
    * @return the primitive class type
    */
   public Class getPrimitiveClassType() {
-    if (this == DataType.FLOAT) return float.class;
-    if (this == DataType.DOUBLE) return double.class;
-    if ((this == DataType.SHORT) || (this == DataType.ENUM2)) return short.class;
-    if ((this == DataType.INT) || (this == DataType.ENUM4)) return int.class;
-    if ((this == DataType.BYTE) || (this == DataType.ENUM1)) return byte.class;
-    if (this == DataType.CHAR) return char.class;
-    if (this == DataType.BOOLEAN) return boolean.class;
-    if (this == DataType.LONG) return long.class;
-    if (this == DataType.STRING) return String.class;
-    if (this == DataType.STRUCTURE) return StructureData.class;
-    if (this == DataType.SEQUENCE) return StructureDataIterator.class; 
-    if (this == DataType.OPAQUE) return ByteBuffer.class;
-    return null;
+    return primitiveClass;
   }
 
 
@@ -260,7 +250,7 @@ public enum DataType {
     return (short) (b & 0xff);
   }
 
-  public static void main2(String[] args) {
+  public static void main(String[] args) {
     for (int i=0; i<260; i++) {
       byte b = (byte) i;
       System.out.printf("%4d = %4d%n", b, unsignedByteToShort(b));

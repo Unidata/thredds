@@ -1,33 +1,34 @@
 /*
- * Copyright (c) 1998 - 2011. University Corporation for Atmospheric Research/Unidata
- * Portions of this software were developed by the Unidata Program at the
- * University Corporation for Atmospheric Research.
+ * Copyright 1998-2014 University Corporation for Atmospheric Research/Unidata
  *
- * Access and use of this software shall impose the following obligations
- * and understandings on the user. The user is granted the right, without
- * any fee or cost, to use, copy, modify, alter, enhance and distribute
- * this software, and any derivative works thereof, and its supporting
- * documentation for any purpose whatsoever, provided that this entire
- * notice appears in all copies of the software, derivative works and
- * supporting documentation.  Further, UCAR requests that the user credit
- * UCAR/Unidata in any publications that result from the use of this
- * software or in any product that includes this software. The names UCAR
- * and/or Unidata, however, may not be used in any advertising or publicity
- * to endorse or promote any products or commercial entity unless specific
- * written permission is obtained from UCAR/Unidata. The user also
- * understands that UCAR/Unidata is not obligated to provide the user with
- * any support, consulting, training or assistance of any kind with regard
- * to the use, operation and performance of this software nor to provide
- * the user with any updates, revisions, new versions or "bug fixes."
+ *   Portions of this software were developed by the Unidata Program at the
+ *   University Corporation for Atmospheric Research.
  *
- * THIS SOFTWARE IS PROVIDED BY UCAR/UNIDATA "AS IS" AND ANY EXPRESS OR
- * IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
- * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
- * DISCLAIMED. IN NO EVENT SHALL UCAR/UNIDATA BE LIABLE FOR ANY SPECIAL,
- * INDIRECT OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING
- * FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT,
- * NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
- * WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
+ *   Access and use of this software shall impose the following obligations
+ *   and understandings on the user. The user is granted the right, without
+ *   any fee or cost, to use, copy, modify, alter, enhance and distribute
+ *   this software, and any derivative works thereof, and its supporting
+ *   documentation for any purpose whatsoever, provided that this entire
+ *   notice appears in all copies of the software, derivative works and
+ *   supporting documentation.  Further, UCAR requests that the user credit
+ *   UCAR/Unidata in any publications that result from the use of this
+ *   software or in any product that includes this software. The names UCAR
+ *   and/or Unidata, however, may not be used in any advertising or publicity
+ *   to endorse or promote any products or commercial entity unless specific
+ *   written permission is obtained from UCAR/Unidata. The user also
+ *   understands that UCAR/Unidata is not obligated to provide the user with
+ *   any support, consulting, training or assistance of any kind with regard
+ *   to the use, operation and performance of this software nor to provide
+ *   the user with any updates, revisions, new versions or "bug fixes."
+ *
+ *   THIS SOFTWARE IS PROVIDED BY UCAR/UNIDATA "AS IS" AND ANY EXPRESS OR
+ *   IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ *   WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ *   DISCLAIMED. IN NO EVENT SHALL UCAR/UNIDATA BE LIABLE FOR ANY SPECIAL,
+ *   INDIRECT OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING
+ *   FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT,
+ *   NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
+ *   WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
 package ucar.unidata.util;
@@ -458,8 +459,7 @@ public class StringUtil2 {
   public static String removeWhitespace(String inputString) {
     StringBuilder sb = new StringBuilder();
     char[] chars = inputString.toCharArray();
-    for (int i = 0; i < chars.length; i++) {
-      char c = chars[i];
+    for (char c : chars) {
       if (Character.isWhitespace(c)) {
         continue;
       }
@@ -522,8 +522,8 @@ public class StringUtil2 {
   static public String replace(String x, char[] replaceChar, String[] replaceWith) {
     // common case no replacement
     boolean ok = true;
-    for (int i = 0; i < replaceChar.length; i++) {
-      int pos = x.indexOf(replaceChar[i]);
+    for (char aReplaceChar : replaceChar) {
+      int pos = x.indexOf(aReplaceChar);
       ok = (pos < 0);
       if (!ok)
         break;
@@ -587,8 +587,8 @@ public class StringUtil2 {
   static public String unreplace(String x, String[] orgReplace, char[] orgChar) {
     // common case no replacement
     boolean ok = true;
-    for (int i = 0; i < orgReplace.length; i++) {
-      int pos = x.indexOf(orgReplace[i]);
+    for (String anOrgReplace : orgReplace) {
+      int pos = x.indexOf(anOrgReplace);
       ok = (pos < 0);
       if (!ok) break;
     }
@@ -709,8 +709,8 @@ public class StringUtil2 {
                                   String[] subst) {
 
     boolean ok = true;
-    for (int i = 0; i < match.length; i++) {
-      if (original.contains(match[i])) {
+    for (String aMatch : match) {
+      if (original.contains(aMatch)) {
         ok = false;
         break;
       }
@@ -729,7 +729,7 @@ public class StringUtil2 {
 
   static public List<String> getTokens(String fullString, String sep) throws Exception {
 
-      List<String> strs = new ArrayList<String>();
+      List<String> strs = new ArrayList<>();
       if (sep != null) {
           int sepLength = sep.length();
           switch (sepLength) {
@@ -912,7 +912,7 @@ public class StringUtil2 {
     }
   }
 
-  public static void main3(String args[]) {
+  public static void main3() {
     byte[] b = new byte[]{10};
     //String s = new String(b);
     String s = "\n";
