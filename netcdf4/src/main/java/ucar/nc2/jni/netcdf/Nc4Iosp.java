@@ -96,8 +96,8 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
 
   static private boolean warn = true;
   static private final boolean debug = false,
-          debugCompound = true,
-          debugCompoundAtt = true,
+          debugCompound = false,
+          debugCompoundAtt = false,
           debugUserTypes = false,
           debugLoad = false,
           debugWrite = false;
@@ -2449,6 +2449,7 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
         if (att.isString()) {
           String val = att.getStringValue();
           elemSize = val.getBytes(CDM.UTF8).length;
+          if (elemSize == 0) elemSize = 1;
         } else {
           elemSize = att.getDataType().getSize() * att.getLength();
         }
@@ -2478,6 +2479,7 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
         if (att.isString()) {  // String gets turned into array of char; otherwise no way to pass in
           String val = att.getStringValue();
           int len = val.getBytes(CDM.UTF8).length;
+          if (len == 0) len = 1;
           ret = nc4.nc_insert_array_compound(grpid, typeid, memberName, new SizeT(bb.position()), field_typeid, 1, new int[] {len} );
 
         } else if (!att.isArray())
@@ -2505,6 +2507,7 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
           byte[] sby = val.getBytes(CDM.UTF8);
           for (byte b : sby)
             bb.put(b);
+          if (sby.length == 0) bb.put((byte)0); // empyy string has a 0
         } else {
           for (int i=0; i<att.getLength(); i++) {
             switch (att.getDataType()) {
