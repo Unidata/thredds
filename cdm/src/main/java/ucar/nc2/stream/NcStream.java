@@ -546,7 +546,7 @@ public class NcStream {
   static Attribute decodeAtt(NcStreamProto.Attribute attp) {
     int len = attp.getLen();
     if (len == 0) // deal with empty attribute
-      return new Attribute(attp.getName(), decodeAttributeType(attp.getType()));
+      return new Attribute(attp.getName(), decodeAttributeType(attp.getType()), false);  // LOOK unsigned
 
     DataType dt = decodeAttributeType(attp.getType());
 

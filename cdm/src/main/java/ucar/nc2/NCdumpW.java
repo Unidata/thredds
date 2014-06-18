@@ -1,34 +1,34 @@
 /*
- * Copyright 1998-2009 University Corporation for Atmospheric Research/Unidata
+ * Copyright 1998-2014 University Corporation for Atmospheric Research/Unidata
  *
- * Portions of this software were developed by the Unidata Program at the
- * University Corporation for Atmospheric Research.
+ *   Portions of this software were developed by the Unidata Program at the
+ *   University Corporation for Atmospheric Research.
  *
- * Access and use of this software shall impose the following obligations
- * and understandings on the user. The user is granted the right, without
- * any fee or cost, to use, copy, modify, alter, enhance and distribute
- * this software, and any derivative works thereof, and its supporting
- * documentation for any purpose whatsoever, provided that this entire
- * notice appears in all copies of the software, derivative works and
- * supporting documentation.  Further, UCAR requests that the user credit
- * UCAR/Unidata in any publications that result from the use of this
- * software or in any product that includes this software. The names UCAR
- * and/or Unidata, however, may not be used in any advertising or publicity
- * to endorse or promote any products or commercial entity unless specific
- * written permission is obtained from UCAR/Unidata. The user also
- * understands that UCAR/Unidata is not obligated to provide the user with
- * any support, consulting, training or assistance of any kind with regard
- * to the use, operation and performance of this software nor to provide
- * the user with any updates, revisions, new versions or "bug fixes."
+ *   Access and use of this software shall impose the following obligations
+ *   and understandings on the user. The user is granted the right, without
+ *   any fee or cost, to use, copy, modify, alter, enhance and distribute
+ *   this software, and any derivative works thereof, and its supporting
+ *   documentation for any purpose whatsoever, provided that this entire
+ *   notice appears in all copies of the software, derivative works and
+ *   supporting documentation.  Further, UCAR requests that the user credit
+ *   UCAR/Unidata in any publications that result from the use of this
+ *   software or in any product that includes this software. The names UCAR
+ *   and/or Unidata, however, may not be used in any advertising or publicity
+ *   to endorse or promote any products or commercial entity unless specific
+ *   written permission is obtained from UCAR/Unidata. The user also
+ *   understands that UCAR/Unidata is not obligated to provide the user with
+ *   any support, consulting, training or assistance of any kind with regard
+ *   to the use, operation and performance of this software nor to provide
+ *   the user with any updates, revisions, new versions or "bug fixes."
  *
- * THIS SOFTWARE IS PROVIDED BY UCAR/UNIDATA "AS IS" AND ANY EXPRESS OR
- * IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
- * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
- * DISCLAIMED. IN NO EVENT SHALL UCAR/UNIDATA BE LIABLE FOR ANY SPECIAL,
- * INDIRECT OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING
- * FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT,
- * NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
- * WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
+ *   THIS SOFTWARE IS PROVIDED BY UCAR/UNIDATA "AS IS" AND ANY EXPRESS OR
+ *   IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ *   WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ *   DISCLAIMED. IN NO EVENT SHALL UCAR/UNIDATA BE LIABLE FOR ANY SPECIAL,
+ *   INDIRECT OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING
+ *   FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT,
+ *   NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
+ *   WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 package ucar.nc2;
 
@@ -74,32 +74,31 @@ public class NCdumpW {
   static final public BigInteger BIG_UMASK64 = new BigInteger("FFFFFFFFFFFFFFFF", 16);
 
   static Object
-  fixUnsigned(Object o, boolean isunsigned)
-  {
-     if(!useUnsigned || !isunsigned || !(o instanceof Number))
-	return o;
-     if(o instanceof Byte) {
-	int i = ((Byte)o).intValue();
-	i &= 0xFF;
-	return Integer.valueOf(i);
-     }
-     if(o instanceof Short) {
-	int i = ((Short)o).intValue();
-	i &= 0xFFFF;
-	return Integer.valueOf(i);
-     }
-     if(o instanceof Integer) {
-	long l = ((Integer)o).longValue();
-	l &= 0xFFFFFFFFL;
-	return Long.valueOf(l);
-     }
-     if(o instanceof Long) {
-	long l = ((Long)o).longValue();
-	BigInteger bi = BigInteger.valueOf(l);
-	bi = bi.and(BIG_UMASK64);
-	return bi;
-     }
-     return o; // probably some form of float
+  fixUnsigned(Object o, boolean isunsigned) {
+    if (!useUnsigned || !isunsigned || !(o instanceof Number))
+      return o;
+    if (o instanceof Byte) {
+      int i = ((Byte) o).intValue();
+      i &= 0xFF;
+      return i;
+    }
+    if (o instanceof Short) {
+      int i = ((Short) o).intValue();
+      i &= 0xFFFF;
+      return i;
+    }
+    if (o instanceof Integer) {
+      long l = ((Integer) o).longValue();
+      l &= 0xFFFFFFFFL;
+      return l;
+    }
+    if (o instanceof Long) {
+      long l = (Long) o;
+      BigInteger bi = BigInteger.valueOf(l);
+      bi = bi.and(BIG_UMASK64);
+      return bi;
+    }
+    return o; // probably some form of float
   }
 
   /**
@@ -201,7 +200,7 @@ public class NCdumpW {
     boolean strict = false;
     String varNames = null;
     useUnsigned = false;
-    
+
     if (command != null) {
       StringTokenizer stoke = new StringTokenizer(command);
 
@@ -467,10 +466,10 @@ public class NCdumpW {
 
     } else if (array.getElementType() == ByteBuffer.class) { // opaque type
       array.resetLocalIterator();
-      while(array.hasNext()) {
-          printByteBuffer(out, (ByteBuffer)array.next(),ilev);
-          out.println(array.hasNext() ? "," : ";");// peek ahead
-          if (ct != null && ct.isCancel()) return;
+      while (array.hasNext()) {
+        printByteBuffer(out, (ByteBuffer) array.next(), ilev);
+        out.println(array.hasNext() ? "," : ";");// peek ahead
+        if (ct != null && ct.isCancel()) return;
       }
     } else if (array instanceof ArrayObject) {
       printVariableArray(out, (ArrayObject) array, ilev, ct);
@@ -496,7 +495,7 @@ public class NCdumpW {
     // scalar
     if (rank == 0) {
       Object o = ma.getObject(ima);
-      o = fixUnsigned(o,ma.isUnsigned());
+      o = fixUnsigned(o, ma.isUnsigned());
       out.print(o.toString());
       return;
     }
@@ -509,7 +508,7 @@ public class NCdumpW {
     if ((rank == 1) && (ma.getElementType() != StructureData.class)) {
       for (int ii = 0; ii < last; ii++) {
         Object o = ma.getObject(ima.set(ii));
-        o = fixUnsigned(o,ma.isUnsigned());
+        o = fixUnsigned(o, ma.isUnsigned());
         out.print(o.toString());
         if (ii != last - 1) out.print(", ");
         if (ct != null && ct.isCancel()) return;

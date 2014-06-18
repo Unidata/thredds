@@ -229,7 +229,7 @@
 <P> The
   <I><strong>attribute</strong></I> elements represents a netCDF attribute, i.e. a name-value pair of
   specified type. Its value may be specified in the <em><strong>value</strong></em> attribute or in the element content<strong>. </strong></P>
-<pre>  &lt;xsd:element name=&quot;attribute&quot;&gt;<br>    &lt;xsd:complexType mixed=&quot;true&quot;&gt;<br>(1)   &lt;xsd:attribute name=&quot;name&quot; type=&quot;xsd:token&quot; use=&quot;required&quot;/&gt;<br>(2)   &lt;xsd:attribute name=&quot;type&quot; type=&quot;DataType&quot; default=&quot;String&quot;/&gt;<br>(3)   &lt;xsd:attribute name=&quot;value&quot; type=&quot;xsd:string&quot; /&gt;<br>(4)   &lt;xsd:attribute name=&quot;separator&quot; type=&quot;xsd:string&quot; /&gt;<br>(5)   &lt;xsd:attribute name=&quot;orgName&quot; type=&quot;xsd:string&quot;/&gt;<br>    &lt;/xsd:complexType&gt;<br>  &lt;/xsd:element&gt;</pre>
+<pre>  &lt;xsd:element name=&quot;attribute&quot;&gt;<br>    &lt;xsd:complexType mixed=&quot;true&quot;&gt;<br>(1)   &lt;xsd:attribute name=&quot;name&quot; type=&quot;xsd:token&quot; use=&quot;required&quot;/&gt;<br>(2)   &lt;xsd:attribute name=&quot;type&quot; type=&quot;DataType&quot; default=&quot;String&quot;/&gt;<br>(3)   &lt;xsd:attribute name=&quot;value&quot; type=&quot;xsd:string&quot; /&gt;<br>(4)   &lt;xsd:attribute name=&quot;separator&quot; type=&quot;xsd:string&quot; /&gt;<br>(5)   &lt;xsd:attribute name=&quot;orgName&quot; type=&quot;xsd:string&quot;/&gt;<br>(6)   &lt;xsd:attribute name=&quot;isUnsigned&quot; type=&quot;xsd:boolean&quot;/&gt;<br>    &lt;/xsd:complexType&gt;<br>  &lt;/xsd:element&gt;</pre>
 <OL>
   <LI>The mandatory <I><strong>name</strong></I> attribute must be unique among attributes within its containing <em><strong>group, variable, </strong></em>or
     <strong><em>netcdf</em></strong> element.
@@ -247,6 +247,7 @@
     values are separated by whitespace. A different token seperator can be specified using the <em><strong>separator</strong></em> attribute.
   </LI>
   <LI>The optional attribute <em><strong>orgName</strong></em> is used when renaming an existing attribute.</LI>
+  <LI>The attribute's values may be unsigned (if <em>byte, short, int </em>or<em> long</em>). By default, they are signed.</LI>
 </OL>
 <h3><B>DataType<a name="DataType"></a> Type </B></h3>
 
@@ -718,8 +719,7 @@ forecastOffsetMatcher:                     HHH#.grb#</pre>
 <hr WIDTH="100%">
 <p>&nbsp;</p>
 <address>
-  <img src="nc.gif" width="64" height="64" alt=""> This document is maintained by <a href="mailto:caron@unidata.ucar.edu">John Caron</a> and was last updated on
-  December 2013
+  <img src="nc.gif" width="64" height="64" alt=""> This document is maintained by <a href="mailto:caron@unidata.ucar.edu">John Caron</a> and was last updated June 2014.
 </address>
 <p>&nbsp;</p>
 </BODY>

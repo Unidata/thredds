@@ -114,6 +114,7 @@
       <xsd:attribute name="value" type="xsd:string"/>
       <xsd:attribute name="separator" type="xsd:string"/>
       <xsd:attribute name="orgName" type="xsd:string"/>
+      <xsd:attribute name="isUnsigned" type="xsd:boolean"/>
     </xsd:complexType>
   </xsd:element>
 

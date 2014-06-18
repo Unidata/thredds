@@ -584,10 +584,12 @@ public class NcMLReader {
         Array oldval = oldatt.getValues();
         if (oldval != null)
           addAttribute(parent, new ucar.nc2.Attribute(name, oldatt.getValues()));
-        else {  // wierd corner case of attribute with no value - must use the type
+        else {  // weird corner case of attribute with no value - must use the type
+          String unS = attElem.getAttributeValue("isUnsigned");
+          boolean isUnsigned =  unS != null && unS.equalsIgnoreCase("true");
           String typeS = attElem.getAttributeValue("type");
           DataType type = typeS == null ? DataType.STRING : DataType.getType(typeS);
-          addAttribute(parent, new ucar.nc2.Attribute(name, type));
+          addAttribute(parent, new ucar.nc2.Attribute(name, type, isUnsigned));
         }
       }
 
