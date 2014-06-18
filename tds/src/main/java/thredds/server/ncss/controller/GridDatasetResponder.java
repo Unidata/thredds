@@ -250,6 +250,4 @@ public abstract class GridDatasetResponder {
 		return NcssRequestUtils.wantedDates(gap, dateRange, time_window );	
 	}	
 
-
-	
 }

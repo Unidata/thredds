@@ -1341,7 +1341,7 @@ public class H5header {
       if (fillValue != null) {
         Object defFillValue = vinfo.getFillValueDefault(vinfo.typeInfo.dataType);
         if (!fillValue.equals(defFillValue))
-          fillAttribute = new Attribute(CDM.FILL_VALUE, (Number) fillValue);
+          fillAttribute = new Attribute(CDM.FILL_VALUE, (Number) fillValue, vinfo.typeInfo.unsigned);
       }
     }
 

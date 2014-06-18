@@ -2610,7 +2610,10 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
         }
         break;
       case BYTE:
-        ret = nc4.nc_put_att_schar(grpid, varid, att.getShortName(), Nc4prototypes.NC_BYTE, new SizeT(att.getLength()), (byte[]) values.getStorage());
+        if (att.isUnsigned())
+          ret = nc4.nc_put_att_uchar(grpid, varid, att.getShortName(), Nc4prototypes.NC_UBYTE, new SizeT(att.getLength()), (byte[]) values.getStorage());
+        else
+          ret = nc4.nc_put_att_schar(grpid, varid, att.getShortName(), Nc4prototypes.NC_BYTE, new SizeT(att.getLength()), (byte[]) values.getStorage());
         break;
       case CHAR:
         ret = nc4.nc_put_att_text(grpid, varid, att.getShortName(), new SizeT(att.getLength()), IospHelper.convertCharToByte((char[]) values.getStorage()));
@@ -2622,13 +2625,22 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
         ret = nc4.nc_put_att_float(grpid, varid, att.getShortName(), Nc4prototypes.NC_FLOAT, new SizeT(att.getLength()), (float[]) values.getStorage());
         break;
       case INT:
-        ret = nc4.nc_put_att_int(grpid, varid, att.getShortName(), Nc4prototypes.NC_INT, new SizeT(att.getLength()), (int[]) values.getStorage());
+        if (att.isUnsigned())
+          ret = nc4.nc_put_att_uint(grpid, varid, att.getShortName(), Nc4prototypes.NC_UINT, new SizeT(att.getLength()), (int[]) values.getStorage());
+        else
+          ret = nc4.nc_put_att_int(grpid, varid, att.getShortName(), Nc4prototypes.NC_INT, new SizeT(att.getLength()), (int[]) values.getStorage());
         break;
       case LONG:
-        ret = nc4.nc_put_att_longlong(grpid, varid, att.getShortName(), Nc4prototypes.NC_INT64, new SizeT(att.getLength()), (long[]) values.getStorage());
+        if (att.isUnsigned())
+          ret = nc4.nc_put_att_ulonglong(grpid, varid, att.getShortName(), Nc4prototypes.NC_UINT64, new SizeT(att.getLength()), (long[]) values.getStorage());
+        else
+          ret = nc4.nc_put_att_longlong(grpid, varid, att.getShortName(), Nc4prototypes.NC_INT64, new SizeT(att.getLength()), (long[]) values.getStorage());
         break;
       case SHORT:
-        ret = nc4.nc_put_att_short(grpid, varid, att.getShortName(), Nc4prototypes.NC_SHORT, new SizeT(att.getLength()), (short[]) values.getStorage());
+        if (att.isUnsigned())
+          ret = nc4.nc_put_att_ushort(grpid, varid, att.getShortName(), Nc4prototypes.NC_USHORT, new SizeT(att.getLength()), (short[]) values.getStorage());
+        else
+          ret = nc4.nc_put_att_short(grpid, varid, att.getShortName(), Nc4prototypes.NC_SHORT, new SizeT(att.getLength()), (short[]) values.getStorage());
         break;
     }
 
@@ -2710,6 +2722,7 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
         }
         break;
 
+      case Nc4prototypes.NC_UINT:
       case Nc4prototypes.NC_INT:
         int[] vali = (int[]) data;
         assert vali.length == sectionLen;
@@ -2723,6 +2736,7 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
         }
         break;
 
+      case Nc4prototypes.NC_UINT64:
       case Nc4prototypes.NC_INT64:
         long[] vall = (long[]) data;
         assert vall.length == sectionLen;
@@ -2733,6 +2747,7 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
           throw new IOException(ret + ": " + nc4.nc_strerror(ret));
         break;
 
+      case Nc4prototypes.NC_USHORT:
       case Nc4prototypes.NC_SHORT:
         short[] vals = (short[]) data;
         assert vals.length == sectionLen;

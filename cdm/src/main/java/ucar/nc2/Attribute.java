@@ -301,6 +301,7 @@ public class Attribute extends CDMNode {
     this.nelems = from.nelems;
     this.svalue = from.svalue;
     this.values = from.values;
+    this.isUnsigned = from.isUnsigned;
     setImmutable(true);
   }
 
@@ -324,6 +325,10 @@ public class Attribute extends CDMNode {
    * @param val  value of Attribute
    */
   public Attribute(String name, Number val) {
+    this(name, val, false);
+  }
+
+  public Attribute(String name, Number val, boolean isUnsigned) {
     super(name);
     if (name == null) throw new IllegalArgumentException("Trying to set name to null on "+this);
 
@@ -334,6 +339,8 @@ public class Attribute extends CDMNode {
     Index ima = vala.getIndex();
     vala.setDouble(ima.set0(0), val.doubleValue());
     setValues(vala);
+    this.isUnsigned = isUnsigned;
+    if (isUnsigned) vala.setUnsigned(true);
     setImmutable(true);
   }
 
