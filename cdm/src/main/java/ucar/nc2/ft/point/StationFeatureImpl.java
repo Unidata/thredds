@@ -116,6 +116,10 @@ public abstract class StationFeatureImpl extends PointCollectionImpl implements 
     return FeatureType.STATION;
   }
 
+  public DateUnit getTimeUnit() {
+      return timeUnit;
+  }
+
   @Override
   public String toString() {
     return "StationFeatureImpl{" +

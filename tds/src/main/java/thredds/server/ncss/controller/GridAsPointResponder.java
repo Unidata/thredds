@@ -32,29 +32,13 @@
  */
 package thredds.server.ncss.controller;
 
-import java.io.IOException;
-import java.io.OutputStream;
-import java.text.ParseException;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-
-import javax.servlet.http.HttpServletResponse;
-
 import org.springframework.http.HttpHeaders;
-
-import thredds.server.ncss.exception.DateUnitException;
 import thredds.server.ncss.exception.OutOfBoundariesException;
-import thredds.server.ncss.exception.TimeOutOfWindowException;
-import thredds.server.ncss.exception.UnsupportedOperationException;
-import thredds.server.ncss.exception.VariableNotContainedInDatasetException;
 import thredds.server.ncss.format.SupportedFormat;
 import thredds.server.ncss.params.NcssParamsBean;
 import thredds.server.ncss.view.gridaspoint.PointDataWriter;
 import thredds.server.ncss.view.gridaspoint.PointDataWriterFactory;
 import ucar.ma2.DataType;
-import ucar.ma2.InvalidRangeException;
 import ucar.nc2.Attribute;
 import ucar.nc2.constants.CDM;
 import ucar.nc2.constants.CF;
@@ -68,6 +52,13 @@ import ucar.nc2.util.DiskCache2;
 import ucar.unidata.geoloc.LatLonPoint;
 import ucar.unidata.geoloc.LatLonPointImpl;
 import ucar.unidata.geoloc.ProjectionPoint;
+
+import javax.servlet.http.HttpServletResponse;
+import java.io.OutputStream;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 
 /**
  * @author mhermida
@@ -95,7 +86,7 @@ public class GridAsPointResponder extends GridDatasetResponder implements NcssRe
 	 */
 	@Override
 	public void respond(HttpServletResponse res, FeatureDataset fd, String requestPathInfo,
-                      NcssParamsBean queryParams, SupportedFormat format) throws IOException, VariableNotContainedInDatasetException, UnsupportedOperationException, OutOfBoundariesException, TimeOutOfWindowException, ParseException, DateUnitException, InvalidRangeException {
+                      NcssParamsBean queryParams, SupportedFormat format) throws Exception {
 	
 		GridDataset gridDataset = (GridDataset) fd;
 		LatLonPoint point = new LatLonPointImpl(queryParams.getLatitude(), queryParams.getLongitude()); //Check if the point is within boundaries!!

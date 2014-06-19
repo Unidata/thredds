@@ -33,19 +33,21 @@ package ucar.nc2.ft.point.collection;
 
 import thredds.inventory.TimedCollection;
 import ucar.nc2.Attribute;
-import ucar.nc2.ft.point.*;
-import ucar.nc2.ft.*;
-import ucar.nc2.time.CalendarDateRange;
-import ucar.nc2.units.DateRange;
-import ucar.nc2.units.DateUnit;
-import ucar.nc2.constants.FeatureType;
 import ucar.nc2.VariableSimpleIF;
+import ucar.nc2.constants.FeatureType;
+import ucar.nc2.ft.*;
+import ucar.nc2.ft.point.PointIteratorAbstract;
+import ucar.nc2.ft.point.StationFeatureImpl;
+import ucar.nc2.ft.point.StationHelper;
+import ucar.nc2.ft.point.StationTimeSeriesCollectionImpl;
+import ucar.nc2.time.CalendarDateRange;
+import ucar.nc2.units.DateUnit;
 import ucar.unidata.geoloc.LatLonRect;
 import ucar.unidata.geoloc.Station;
 
 import java.io.IOException;
-import java.util.Iterator;
 import java.util.Formatter;
+import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -171,17 +173,21 @@ public class CompositeStationCollection extends StationTimeSeriesCollectionImpl 
     return new PointFeatureCollectionIterator() {
       Iterator<Station> stationIter = stationHelper.getStations().iterator();
 
+      @Override
       public boolean hasNext() throws IOException {
         return stationIter.hasNext();
       }
 
+      @Override
       public PointFeatureCollection next() throws IOException {
         return (PointFeatureCollection) stationIter.next();
       }
 
+      @Override
       public void setBufferSize(int bytes) {
       }
 
+      @Override
       public void finish() {
       }
     };
@@ -200,6 +206,7 @@ public class CompositeStationCollection extends StationTimeSeriesCollectionImpl 
 
     // an iterator over the observations for this station
 
+    @Override
     public PointFeatureIterator getPointFeatureIterator(int bufferSize) throws IOException {
       CompositeStationFeatureIterator iter = new CompositeStationFeatureIterator();
       if ((boundingBox == null) || (dateRange == null) || (npts < 0))
@@ -210,8 +217,7 @@ public class CompositeStationCollection extends StationTimeSeriesCollectionImpl 
     @Override
     public StationTimeSeriesFeature subset(CalendarDateRange dateRange) throws IOException {
       if (dateRange == null) return this;
-      CompositeStationFeature stnSubset = new CompositeStationFeature(s, timeUnit, collForFeature.subset(dateRange));
-      return stnSubset.subset(dateRange);
+      return new CompositeStationFeature(s, timeUnit, collForFeature.subset(dateRange));
     }
 
     @Override

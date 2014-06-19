@@ -33,18 +33,12 @@
 
 package thredds.server.config;
 
-import java.io.File;
-import java.util.Calendar;
-import java.util.Timer;
-import java.util.TimerTask;
-
 import org.slf4j.MDC;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.DependsOn;
 import org.springframework.stereotype.Component;
-
 import thredds.catalog.InvDatasetFeatureCollection;
 import thredds.catalog.parser.jdom.InvCatalogFactory10;
 import thredds.inventory.CollectionUpdater;
@@ -63,6 +57,11 @@ import ucar.nc2.util.DiskCache;
 import ucar.nc2.util.DiskCache2;
 import ucar.nc2.util.cache.FileCache;
 import ucar.nc2.util.log.LoggerFactory;
+
+import java.io.File;
+import java.util.Calendar;
+import java.util.Timer;
+import java.util.TimerTask;
 
 /**
  * A Singleton class to initialize the CDM, instantiated by Spring.
@@ -134,13 +133,16 @@ public class CdmInit implements InitializingBean,  DisposableBean{
     }
 
     //Netcdf4 library could be set as a environment variable or as a jvm parameter
-    if(!Nc4Iosp.isClibraryPresent() ){
-      startupLog.warn("netcdf4 c library not present jna_path='" + libraryPath + "' libname=" + libraryName + "" );
-    }else{
-      FormatsAvailabilityService.setFormatAvailability(SupportedFormat.NETCDF4, true);
-      if(libraryName == null) libraryName="netcdf";
-      startupLog.info("netcdf4 c library loaded from jna_path='" + System.getProperty("jna.library.path") + "' libname=" + libraryName + "" );
-    }
+      if (!Nc4Iosp.isClibraryPresent()) {
+          startupLog.warn("netcdf4 c library not present jna_path='" + libraryPath + "' libname=" + libraryName + "");
+      } else {
+          FormatsAvailabilityService.setFormatAvailability(SupportedFormat.NETCDF4, true);
+//      FormatsAvailabilityService.setFormatAvailability(SupportedFormat.NETCDF4EXT, true);
+
+          if (libraryName == null) libraryName = "netcdf";
+          startupLog.info("netcdf4 c library loaded from jna_path='" + System.getProperty("jna.library.path") + "' " +
+                  "libname=" + libraryName + "");
+      }
 
     // how to choose the typical dataset ?
     String typicalDataset = ThreddsConfig.get("Aggregation.typicalDataset", "penultimate");

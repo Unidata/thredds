@@ -47,6 +47,10 @@
       <groupId>edu.ucar</groupId>
       <artifactId>visadCdm</artifactId>
     </dependency>
+    <dependency>
+      <groupId>edu.ucar</groupId>
+      <artifactId>waterml</artifactId>
+    </dependency>
 
     <dependency>
       <groupId>net.sf.ehcache</groupId>

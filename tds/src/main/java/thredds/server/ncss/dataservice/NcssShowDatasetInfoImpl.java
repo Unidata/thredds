@@ -33,16 +33,6 @@
 
 package thredds.server.ncss.dataservice;
 
-import java.io.IOException;
-import java.io.InputStream;
-
-import javax.servlet.ServletContext;
-import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerConfigurationException;
-import javax.xml.transform.TransformerException;
-import javax.xml.transform.TransformerFactory;
-import javax.xml.transform.stream.StreamSource;
-
 import org.jdom2.Document;
 import org.jdom2.Element;
 import org.jdom2.JDOMException;
@@ -56,7 +46,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.web.context.ServletContextAware;
 import org.springframework.web.context.support.ServletContextResource;
-
 import thredds.server.config.FormatsAvailabilityService;
 import thredds.server.ncss.format.SupportedFormat;
 import ucar.nc2.constants.FeatureType;
@@ -65,6 +54,15 @@ import ucar.nc2.dt.grid.GridDatasetInfo;
 import ucar.nc2.ft.FeatureDataset;
 import ucar.nc2.ft.FeatureDatasetPoint;
 import ucar.nc2.ft.point.writer.FeatureDatasetPointXML;
+
+import javax.servlet.ServletContext;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerConfigurationException;
+import javax.xml.transform.TransformerException;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.stream.StreamSource;
+import java.io.IOException;
+import java.io.InputStream;
 
 @Service
 public class NcssShowDatasetInfoImpl implements NcssShowFeatureDatasetInfo, ServletContextAware {
@@ -107,17 +105,19 @@ public class NcssShowDatasetInfoImpl implements NcssShowFeatureDatasetInfo, Serv
 
     if (FormatsAvailabilityService.isFormatAvailable(SupportedFormat.NETCDF4)) {
       String xPathForGridElement = "capabilities/AcceptList";
-      addElement(doc, xPathForGridElement, new Element("accept").addContent("netcdf4").setAttribute("displayName", "netcdf4"));
+      addElement(doc, xPathForGridElement,
+              new Element("accept").addContent("netcdf4").setAttribute("displayName", "CF/NetCDF-4"));
+
+        // TODO: Re-enable when NC4Ext bugs are ironed out.
+//      addElement(doc, xPathForGridElement,
+//              new Element("accept").addContent("netcdf4ext").setAttribute("displayName", "NetCDF-4 Extended"));
     }
 
     if (wantXml) {
       XMLOutputter fmt = new XMLOutputter(Format.getPrettyFormat());
       infoString = fmt.outputString(doc);
-
     } else {
-
       try {
-
         InputStream is = getXSLT(xslt);
         //XSLTransformer transformer = new XSLTransformer(is);
 
