@@ -310,7 +310,7 @@ public class CFGridWriter2 {
     }
 
     // coordinate transform variables : must convert false easting, northing to km
-    List<Variable> ctvList = new ArrayList<Variable>();
+    List<Variable> ctvList = new ArrayList<>();
     for (ucar.nc2.dt.GridDataset.Gridset gridSet : gds.getGridsets()) {
       ucar.nc2.dt.GridCoordSystem gcs = gridSet.getGeoCoordSystem();
       ProjectionCT pct = gcs.getProjectionCT();
@@ -351,7 +351,7 @@ public class CFGridWriter2 {
     double[] xData = (double[]) xaxis.read().get1DJavaArray(double.class);
     double[] yData = (double[]) yaxis.read().get1DJavaArray(double.class);
 
-    List<Dimension> dims = new ArrayList<Dimension>();
+    List<Dimension> dims = new ArrayList<>();
     dims.add(yaxis.getDimension(0));
     dims.add(xaxis.getDimension(0));
 
