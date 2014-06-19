@@ -1,12 +1,6 @@
 package thredds.server.ncss.params;
 
-import java.text.ParseException;
-import java.util.Date;
-import java.util.Formatter;
-import java.util.List;
-
 import org.springframework.format.annotation.DateTimeFormat;
-
 import thredds.server.ncss.exception.NcssException;
 import thredds.server.ncss.validation.NcssRequestConstraint;
 import thredds.server.ncss.validation.TimeParamsConstraint;
@@ -21,6 +15,11 @@ import ucar.nc2.units.DateType;
 import ucar.nc2.units.TimeDuration;
 import ucar.unidata.geoloc.LatLonPointImpl;
 import ucar.unidata.geoloc.LatLonRect;
+
+import java.text.ParseException;
+import java.util.Date;
+import java.util.Formatter;
+import java.util.List;
 
 /**
  * Ncss Parameters
@@ -48,11 +47,11 @@ public class NcssParamsBean {
  	private String time_duration;
 
   @DateTimeFormat
- 	private String time_window;  // time_window is meant to be used with time=present. When time=present it returns the closest time to current in the dataset  
+ 	private String time_window;  // time_window is meant to be used with time=present. When time=present it returns the closest time to current in the dataset
   								 // but if the dataset does not have up to date data that could be really far from the current time and most
   								 // likely useless (in particular for observation data).
-  								 // time_window tells the server give me the data if it's within this period otherwise don't bother.  								 
-  							     // time_window must be a valid W3C time duration.			
+  								 // time_window tells the server give me the data if it's within this period otherwise don't bother.
+  							     // time_window must be a valid W3C time duration.
   @DateTimeFormat
  	private String time;
 
@@ -317,11 +316,15 @@ public class NcssParamsBean {
     }
   }
 
-  public LatLonRect getBB(){
-    double width = getEast() - getWest();
-    double height = getNorth() - getSouth();
-		return new LatLonRect(new LatLonPointImpl(getSouth(), getWest()), height, width);
-	}
+  public LatLonRect getBoundingBox() {
+    if (!hasLatLonBB()) {
+      return null;
+    } else {
+      double width = getEast() - getWest();
+      double height = getNorth() - getSouth();
+      return new LatLonRect(new LatLonPointImpl(getSouth(), getWest()), height, width);
+    }
+  }
 
   private boolean hasValidTime;
   private boolean hasValidDateRange;
@@ -346,7 +349,7 @@ public class NcssParamsBean {
 		}
 
 		//return CalendarDateRange.of(dr );
-		return CalendarDateRange.of(dr.getStart().getCalendarDate(), dr.getEnd().getCalendarDate() ); 
+		return CalendarDateRange.of(dr.getStart().getCalendarDate(), dr.getEnd().getCalendarDate() );
 	}
 
   public CalendarDate getRequestedTime( Calendar cal ) throws ParseException {

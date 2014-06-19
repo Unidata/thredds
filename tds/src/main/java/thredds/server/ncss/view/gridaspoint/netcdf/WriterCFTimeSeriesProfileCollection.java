@@ -32,21 +32,9 @@
  */
 package thredds.server.ncss.view.gridaspoint.netcdf;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import ucar.ma2.Array;
-import ucar.ma2.ArrayDouble;
-import ucar.ma2.ArrayObject;
-import ucar.ma2.DataType;
-import ucar.ma2.InvalidRangeException;
-import ucar.ma2.StructureData;
-import ucar.ma2.StructureMembers;
+import ucar.ma2.*;
 import ucar.ma2.StructureMembers.Member;
 import ucar.nc2.Attribute;
 import ucar.nc2.Dimension;
@@ -63,6 +51,11 @@ import ucar.nc2.ft.point.writer.CFPointWriterUtils;
 import ucar.nc2.time.CalendarDate;
 import ucar.unidata.geoloc.EarthLocation;
 import ucar.unidata.geoloc.Station;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 /**
  * 
@@ -436,4 +429,8 @@ class WriterCFTimeSeriesProfileCollection extends CFPointWriter {
 		}		
 	}
 
+	@Override
+    public void close() throws IOException{
+		writer.close();
+	}
 }

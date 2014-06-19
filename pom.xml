@@ -287,6 +287,17 @@
       </dependency>
       <dependency>
         <groupId>${project.groupId}</groupId>
+        <artifactId>d4servlet</artifactId>
+        <version>${project.version}</version>
+        <exclusions>
+          <exclusion>
+            <groupId>javax.servlet</groupId>
+            <artifactId>servlet-api</artifactId>
+          </exclusion>
+        </exclusions>
+      </dependency>
+      <dependency>
+        <groupId>${project.groupId}</groupId>
         <artifactId>d4core</artifactId>
         <version>${project.version}</version>
       </dependency>
@@ -319,12 +330,6 @@
         <groupId>${project.groupId}</groupId>
         <artifactId>d4servlet</artifactId>
         <version>${project.version}</version>
-        <exclusions>
-          <exclusion>
-            <groupId>javax.servlet</groupId>
-            <artifactId>servlet-api</artifactId>
-          </exclusion>
-        </exclusions>
       </dependency>
       <dependency>
         <groupId>${project.groupId}</groupId>
@@ -342,6 +347,12 @@
         <version>${project.version}</version>
       </dependency>
 
+      <dependency>
+        <groupId>${project.groupId}</groupId>
+        <artifactId>waterml</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+        
       <!-- logging -->
       <dependency>
         <groupId>org.apache.logging.log4j</groupId>
@@ -455,11 +466,6 @@
          <version>${derby.version}</version>
        </dependency>
       <dependency>
-        <groupId>org.apache.commons</groupId>
-        <artifactId>commons-lang3</artifactId>
-        <version>3.1</version>
-      </dependency>
-      <dependency>
         <groupId>javax.activation</groupId>
         <artifactId>activation</artifactId>
         <version>${javax.activation.version}</version>
@@ -559,6 +565,17 @@
         <groupId>com.lexicalscope.jewelcli</groupId>
         <artifactId>jewelcli</artifactId>
         <version>0.8.5</version>
+      </dependency>
+
+      <dependency>
+        <groupId>org.apache.commons</groupId>
+        <artifactId>commons-lang3</artifactId>
+        <version>${org.apache.commons.commons-lang3}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.google.guava</groupId>
+        <artifactId>guava</artifactId>
+        <version>${com.google.guava.version}</version>
       </dependency>
 
       <!-- UI -->
@@ -942,8 +959,12 @@
     <module>dap4/d4servletshared</module>
     <module>dap4/d4servlet</module>
     <module>dap4/d4ts</module>
-    <module>dap4/d4tswar</module>
+    <!--
     <module>dap4/d4tests</module>
+    -->
+    <module>dap4/d4tswar</module>
+
+    <module>waterml</module>
   </modules>
 
   <properties>
@@ -971,11 +992,13 @@
     <atg.taglib.json.version>0.4.1</atg.taglib.json.version>
     <cas.version>3.1.10</cas.version>
     <cglib.version>2.2</cglib.version>
+    <com.google.guava.version>17.0</com.google.guava.version>
     <com.google.protobuf.version>2.5.0</com.google.protobuf.version>
     <com.jgoodies.version>1.6.0</com.jgoodies.version>
     <com.sleepycat.version>4.0.92</com.sleepycat.version>
     <commons-dbcp.version>1.4</commons-dbcp.version>
     <commons-fileupload.version>1.2.2</commons-fileupload.version>
+    <org.apache.commons.commons-lang3>3.3.2</org.apache.commons.commons-lang3>
     <org.apache.httpcomponents.httpcore.version>4.2.5</org.apache.httpcomponents.httpcore.version>
     <org.apache.httpcomponents.httpclient.version>4.2.6</org.apache.httpcomponents.httpclient.version>
     <org.apache.httpcomponents.httpmime.version>4.2.6</org.apache.httpcomponents.httpmime.version>

@@ -33,14 +33,17 @@
 
 package ucar.nc2.ui;
 
+import org.n52.oxf.xmlbeans.parser.XMLHandlingException;
 import ucar.nc2.NetcdfFileWriter;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.ft.*;
 import ucar.nc2.ft.point.writer.CFPointWriter;
+import ucar.nc2.ogc.MarshallingUtil;
 import ucar.nc2.time.CalendarDateRange;
 import ucar.nc2.ui.dialog.NetcdfOutputChooser;
 import ucar.nc2.ui.point.PointController;
 import ucar.nc2.ui.point.StationRegionDateChooser;
+import ucar.nc2.ui.util.Resource;
 import ucar.nc2.ui.widget.BAMutil;
 import ucar.nc2.ui.widget.IndependentDialog;
 import ucar.nc2.ui.widget.TextHistoryPane;
@@ -60,7 +63,9 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -106,6 +111,11 @@ public class PointFeatureDatasetViewer extends JPanel {
 
   public PointFeatureDatasetViewer(PreferencesExt prefs, JPanel buttPanel) {
     this.prefs = prefs;
+
+    // the info window
+    infoTA = new TextHistoryPane();
+    infoWindow = new IndependentDialog(null, true, "Station Information", infoTA);
+    infoWindow.setBounds((Rectangle) prefs.getBean("InfoWindowBounds", new Rectangle(300, 300, 500, 300)));
 
     stationMap = new StationRegionDateChooser();
     stationMap.addPropertyChangeListener(new PropertyChangeListener() {
@@ -172,6 +182,8 @@ public class PointFeatureDatasetViewer extends JPanel {
     };
     BAMutil.setActionProperties(getallAction, "GetAll", "get ALL data", false, 'A', -1);
     stationMap.addToolbarAction(getallAction);
+
+    stationMap.addToolbarAction(new WaterMLConverterAction());
 
     AbstractAction netcdfAction = new AbstractAction() {
        public void actionPerformed(ActionEvent e) {
@@ -255,11 +267,6 @@ public class PointFeatureDatasetViewer extends JPanel {
     // the obs table
     obsTable = new StructureTable((PreferencesExt) prefs.node("ObsBean"));
 
-    // the info window
-    infoTA = new TextHistoryPane();
-    infoWindow = new IndependentDialog(null, true, "Station Information", infoTA);
-    infoWindow.setBounds((Rectangle) prefs.getBean("InfoWindowBounds", new Rectangle(300, 300, 500, 300)));
-
     // layout
     splitFeatures = new JSplitPane(JSplitPane.VERTICAL_SPLIT, false, fcTable, changingPane);
     splitFeatures.setDividerLocation(prefs.getInt("splitPosF", 50));
@@ -273,6 +280,50 @@ public class PointFeatureDatasetViewer extends JPanel {
     setLayout(new BorderLayout());
     add(splitObs, BorderLayout.CENTER);
   }
+
+
+  // I'd like to offload this class into its own file, but it needs to read the pfDataset field, whose value may change
+  // during execution. I could still do it if I added the necessary event listener machinery, but meh.
+  private class WaterMLConverterAction extends AbstractAction {
+    private WaterMLConverterAction () {
+      putValue(NAME, "WaterML 2.0 Writer");
+      putValue(SMALL_ICON, Resource.getIcon(BAMutil.getResourcePath() + "drop_24.png", true));
+      putValue(SHORT_DESCRIPTION, "Write timeseries as an OGC WaterML v2.0 document.");
+    }
+
+    @Override public void actionPerformed(ActionEvent e) {
+      if (pfDataset == null) {
+        return;
+      }
+
+      if (!pfDataset.getFeatureType().equals(FeatureType.STATION)) {
+        Component parentComponent = PointFeatureDatasetViewer.this;
+        Object message = "Currently, only the STATION feature type is supported, not " + pfDataset.getFeatureType();
+        String title = "Invalid feature type";
+        int messageType = JOptionPane.ERROR_MESSAGE;
+
+        JOptionPane.showMessageDialog(parentComponent, message, title, messageType);
+        return;
+      }
+
+      try {
+        ByteArrayOutputStream outStream = new ByteArrayOutputStream(5000);
+        MarshallingUtil.marshalPointDataset(pfDataset, pfDataset.getDataVariables(), outStream);
+
+        infoTA.setText(outStream.toString());
+        infoTA.gotoTop();
+        infoWindow.show();
+      } catch (IOException | XMLHandlingException ex) {
+        ByteArrayOutputStream bos = new ByteArrayOutputStream(5000);
+        ex.printStackTrace(new PrintStream(bos));
+
+        infoTA.setText(bos.toString());
+        infoTA.gotoTop();
+        infoWindow.show();
+      }
+    }
+  }
+
 
   public void save() {
     fcTable.saveState(false);
