@@ -1,34 +1,34 @@
 /*
- * Copyright 1998-2009 University Corporation for Atmospheric Research/Unidata
+ * Copyright 1998-2014 University Corporation for Atmospheric Research/Unidata
  *
- * Portions of this software were developed by the Unidata Program at the
- * University Corporation for Atmospheric Research.
+ *   Portions of this software were developed by the Unidata Program at the
+ *   University Corporation for Atmospheric Research.
  *
- * Access and use of this software shall impose the following obligations
- * and understandings on the user. The user is granted the right, without
- * any fee or cost, to use, copy, modify, alter, enhance and distribute
- * this software, and any derivative works thereof, and its supporting
- * documentation for any purpose whatsoever, provided that this entire
- * notice appears in all copies of the software, derivative works and
- * supporting documentation.  Further, UCAR requests that the user credit
- * UCAR/Unidata in any publications that result from the use of this
- * software or in any product that includes this software. The names UCAR
- * and/or Unidata, however, may not be used in any advertising or publicity
- * to endorse or promote any products or commercial entity unless specific
- * written permission is obtained from UCAR/Unidata. The user also
- * understands that UCAR/Unidata is not obligated to provide the user with
- * any support, consulting, training or assistance of any kind with regard
- * to the use, operation and performance of this software nor to provide
- * the user with any updates, revisions, new versions or "bug fixes."
+ *   Access and use of this software shall impose the following obligations
+ *   and understandings on the user. The user is granted the right, without
+ *   any fee or cost, to use, copy, modify, alter, enhance and distribute
+ *   this software, and any derivative works thereof, and its supporting
+ *   documentation for any purpose whatsoever, provided that this entire
+ *   notice appears in all copies of the software, derivative works and
+ *   supporting documentation.  Further, UCAR requests that the user credit
+ *   UCAR/Unidata in any publications that result from the use of this
+ *   software or in any product that includes this software. The names UCAR
+ *   and/or Unidata, however, may not be used in any advertising or publicity
+ *   to endorse or promote any products or commercial entity unless specific
+ *   written permission is obtained from UCAR/Unidata. The user also
+ *   understands that UCAR/Unidata is not obligated to provide the user with
+ *   any support, consulting, training or assistance of any kind with regard
+ *   to the use, operation and performance of this software nor to provide
+ *   the user with any updates, revisions, new versions or "bug fixes."
  *
- * THIS SOFTWARE IS PROVIDED BY UCAR/UNIDATA "AS IS" AND ANY EXPRESS OR
- * IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
- * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
- * DISCLAIMED. IN NO EVENT SHALL UCAR/UNIDATA BE LIABLE FOR ANY SPECIAL,
- * INDIRECT OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING
- * FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT,
- * NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
- * WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
+ *   THIS SOFTWARE IS PROVIDED BY UCAR/UNIDATA "AS IS" AND ANY EXPRESS OR
+ *   IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ *   WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ *   DISCLAIMED. IN NO EVENT SHALL UCAR/UNIDATA BE LIABLE FOR ANY SPECIAL,
+ *   INDIRECT OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING
+ *   FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT,
+ *   NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
+ *   WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 package ucar.nc2.dataset;
 
@@ -456,8 +456,8 @@ public class CoordSysBuilder implements CoordSysBuilderIF {
   ////////////////////////////////////////////////////////////////////////////////////////
 
   protected String conventionName = _Coordinate.Convention; // default name of Convention, override in subclass
-  protected List<VarProcess> varList = new ArrayList<VarProcess>(); // varProcess objects
-  protected Map<Dimension, List<VarProcess>> coordVarMap = new HashMap<Dimension, List<VarProcess>>();
+  protected List<VarProcess> varList = new ArrayList<>(); // varProcess objects
+  protected Map<Dimension, List<VarProcess>> coordVarMap = new HashMap<>();
   protected Formatter parseInfo = new Formatter();
   protected Formatter userAdvice = new Formatter();
 
@@ -727,7 +727,7 @@ public class CoordSysBuilder implements CoordSysBuilderIF {
         continue;
 
       // get list of dimensions from '_CoordinateSystemFor' attribute
-      List<Dimension> dimList = new ArrayList<Dimension>(6);
+      List<Dimension> dimList = new ArrayList<>(6);
       StringTokenizer stoker = new StringTokenizer(csVar.coordSysFor);
       while (stoker.hasMoreTokens()) {
         String dname = stoker.nextToken();
@@ -773,7 +773,7 @@ public class CoordSysBuilder implements CoordSysBuilderIF {
   }
 
   private List<CoordinateAxis> getAxes(VarProcess vp, String names, String varName) {
-    List<CoordinateAxis> axesList = new ArrayList<CoordinateAxis>();
+    List<CoordinateAxis> axesList = new ArrayList<>();
     StringTokenizer stoker = new StringTokenizer(names);
     while (stoker.hasMoreTokens()) {
       String vname = stoker.nextToken();
@@ -855,7 +855,7 @@ public class CoordSysBuilder implements CoordSysBuilderIF {
       }
 
       // look through all axes that fit
-      List<CoordinateAxis> axisList = new ArrayList<CoordinateAxis>();
+      List<CoordinateAxis> axisList = new ArrayList<>();
       List<CoordinateAxis> axes = ncDataset.getCoordinateAxes();
       for (CoordinateAxis axis : axes) {
         if (isCoordinateAxisForVariable(axis, ve))
@@ -1032,7 +1032,7 @@ public class CoordSysBuilder implements CoordSysBuilderIF {
     // look for coordAxisType assignments on the coordinate transforms
     for (VarProcess vp : varList) {
       if (vp.isCoordinateTransform && (vp.ct != null) && (vp.coordAxisTypes != null)) {
-        List<AxisType> axisTypesList = new ArrayList<AxisType>();
+        List<AxisType> axisTypesList = new ArrayList<>();
         StringTokenizer stoker = new StringTokenizer(vp.coordAxisTypes);
         while (stoker.hasMoreTokens()) {
           String name = stoker.nextToken();
@@ -1093,7 +1093,7 @@ public class CoordSysBuilder implements CoordSysBuilderIF {
   protected void addCoordinateVariable(Dimension dim, VarProcess vp) {
     List<VarProcess> list = coordVarMap.get(dim);
     if (list == null) {
-      list = new ArrayList<VarProcess>();
+      list = new ArrayList<>();
       coordVarMap.put(dim, list);
     }
     if (!list.contains(vp))
@@ -1271,7 +1271,7 @@ public class CoordSysBuilder implements CoordSysBuilderIF {
     public void makeCoordinateSystem() {
 
       // find referenced coordinate axes
-      List<CoordinateAxis> axesList = new ArrayList<CoordinateAxis>();
+      List<CoordinateAxis> axesList = new ArrayList<>();
       if (coordAxes != null) {
         StringTokenizer stoker = new StringTokenizer(coordAxes); // _CoordinateAxes attribute
         while (stoker.hasMoreTokens()) {

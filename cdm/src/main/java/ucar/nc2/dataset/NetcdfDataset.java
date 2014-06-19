@@ -1,34 +1,34 @@
 /*
- * Copyright 1998-2009 University Corporation for Atmospheric Research/Unidata
+ * Copyright 1998-2014 University Corporation for Atmospheric Research/Unidata
  *
- * Portions of this software were developed by the Unidata Program at the
- * University Corporation for Atmospheric Research.
+ *   Portions of this software were developed by the Unidata Program at the
+ *   University Corporation for Atmospheric Research.
  *
- * Access and use of this software shall impose the following obligations
- * and understandings on the user. The user is granted the right, without
- * any fee or cost, to use, copy, modify, alter, enhance and distribute
- * this software, and any derivative works thereof, and its supporting
- * documentation for any purpose whatsoever, provided that this entire
- * notice appears in all copies of the software, derivative works and
- * supporting documentation.  Further, UCAR requests that the user credit
- * UCAR/Unidata in any publications that result from the use of this
- * software or in any product that includes this software. The names UCAR
- * and/or Unidata, however, may not be used in any advertising or publicity
- * to endorse or promote any products or commercial entity unless specific
- * written permission is obtained from UCAR/Unidata. The user also
- * understands that UCAR/Unidata is not obligated to provide the user with
- * any support, consulting, training or assistance of any kind with regard
- * to the use, operation and performance of this software nor to provide
- * the user with any updates, revisions, new versions or "bug fixes."
+ *   Access and use of this software shall impose the following obligations
+ *   and understandings on the user. The user is granted the right, without
+ *   any fee or cost, to use, copy, modify, alter, enhance and distribute
+ *   this software, and any derivative works thereof, and its supporting
+ *   documentation for any purpose whatsoever, provided that this entire
+ *   notice appears in all copies of the software, derivative works and
+ *   supporting documentation.  Further, UCAR requests that the user credit
+ *   UCAR/Unidata in any publications that result from the use of this
+ *   software or in any product that includes this software. The names UCAR
+ *   and/or Unidata, however, may not be used in any advertising or publicity
+ *   to endorse or promote any products or commercial entity unless specific
+ *   written permission is obtained from UCAR/Unidata. The user also
+ *   understands that UCAR/Unidata is not obligated to provide the user with
+ *   any support, consulting, training or assistance of any kind with regard
+ *   to the use, operation and performance of this software nor to provide
+ *   the user with any updates, revisions, new versions or "bug fixes."
  *
- * THIS SOFTWARE IS PROVIDED BY UCAR/UNIDATA "AS IS" AND ANY EXPRESS OR
- * IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
- * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
- * DISCLAIMED. IN NO EVENT SHALL UCAR/UNIDATA BE LIABLE FOR ANY SPECIAL,
- * INDIRECT OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING
- * FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT,
- * NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
- * WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
+ *   THIS SOFTWARE IS PROVIDED BY UCAR/UNIDATA "AS IS" AND ANY EXPRESS OR
+ *   IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ *   WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ *   DISCLAIMED. IN NO EVENT SHALL UCAR/UNIDATA BE LIABLE FOR ANY SPECIAL,
+ *   INDIRECT OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING
+ *   FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT,
+ *   NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
+ *   WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 package ucar.nc2.dataset;
 
@@ -60,7 +60,6 @@ import java.util.*;
 
 import thredds.catalog.ServiceType;
 import ucar.httpservices.HTTPFactory;
-import ucar.unidata.util.StringUtil2;
 import ucar.unidata.util.Urlencoded;
 
 /**
@@ -120,12 +119,12 @@ import ucar.unidata.util.Urlencoded;
 
 public class NetcdfDataset extends ucar.nc2.NetcdfFile {
 
-    /**
-     * Define the dap4 path
-     */
-    static final String DAP4_PATH = "dap4.cdm";
+  /**
+   * Define the dap4 path
+   */
+  static final String DAP4_PATH = "dap4.cdm";
 
-    /**
+  /**
    * Possible enhancements for a NetcdfDataset
    */
   static public enum Enhance {
@@ -637,138 +636,138 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
     return openOrAcquireFile(fileCache, factory, hashKey, location, buffer_size, cancelTask, spiObject);
   }
 
-    /**
-     * Open or acquire a NetcdfFile.
-     *
-     * @param cache       if not null, acquire through this NetcdfFileCache, otherwise simply open
-     * @param factory     if not null, use this factory if the file is not in the cache. If null, use the default factory.
-     * @param hashKey     if not null, use as the cache key, else use the location
-     * @param location    location of file
-     * @param buffer_size RandomAccessFile buffer size, if <= 0, use default size
-     * @param cancelTask  allow task to be cancelled; may be null.
-     * @param spiObject   sent to iosp.setSpecial() if not null
-     * @return NetcdfFile object
-     * @throws java.io.IOException on read error
-     */
-    static private NetcdfFile openOrAcquireFile(FileCache cache, FileFactory factory, Object hashKey,
-                                                String location, int buffer_size, ucar.nc2.util.CancelTask cancelTask, Object spiObject) throws IOException {
+  /**
+   * Open or acquire a NetcdfFile.
+   *
+   * @param cache       if not null, acquire through this NetcdfFileCache, otherwise simply open
+   * @param factory     if not null, use this factory if the file is not in the cache. If null, use the default factory.
+   * @param hashKey     if not null, use as the cache key, else use the location
+   * @param location    location of file
+   * @param buffer_size RandomAccessFile buffer size, if <= 0, use default size
+   * @param cancelTask  allow task to be cancelled; may be null.
+   * @param spiObject   sent to iosp.setSpecial() if not null
+   * @return NetcdfFile object
+   * @throws java.io.IOException on read error
+   */
+  static private NetcdfFile openOrAcquireFile(FileCache cache, FileFactory factory, Object hashKey,
+                                              String location, int buffer_size, ucar.nc2.util.CancelTask cancelTask, Object spiObject) throws IOException {
 
-      if (location == null)
-        throw new IOException("NetcdfDataset.openFile: location is null");
-      // Canonicalize the location
-      location = location.trim();
-      // should not be needed: location = StringUtil2.replace(location, '\\', '/');
-      List<String> allprotocols = Misc.getProtocols(location);
-      String trueurl = location;
-      String leadprotocol = null;
-      if(allprotocols.size() == 0) {
-        // The location has no lead protocols, assume file:
-	    leadprotocol = "file";
+    if (location == null)
+      throw new IOException("NetcdfDataset.openFile: location is null");
+    // Canonicalize the location
+    location = location.trim();
+    // should not be needed: location = StringUtil2.replace(location, '\\', '/');
+    List<String> allprotocols = Misc.getProtocols(location);
+    String trueurl = location;
+    String leadprotocol;
+    if (allprotocols.size() == 0) {
+      // The location has no lead protocols, assume file:
+      leadprotocol = "file";
+    } else {
+      leadprotocol = allprotocols.get(0);
+    }
+
+    // Priority in deciding
+    // the service type is as follows.
+    // 1. "protocol" tag in fragment
+    // 2. lead protocol
+    // 3. path extension
+    // 4. contact the server (if defined)
+
+    // remove any trailing query or fragment
+    String fragment = null;
+    int pos = trueurl.lastIndexOf('#');
+    if (pos >= 0) {
+      fragment = trueurl.substring(pos + 1, trueurl.length());
+      trueurl = trueurl.substring(0, pos);
+    }
+    String query = null;
+    pos = location.lastIndexOf('?');
+    if (pos >= 0) {
+      query = trueurl.substring(pos + 1, trueurl.length());
+      trueurl = trueurl.substring(0, pos);
+    }
+
+    ServiceType svctype = null;
+
+    if (fragment != null)
+      svctype = searchFragment(fragment);
+
+    if (svctype == null) // See if lead protocol tells us how to interpret
+      svctype = decodeLeadProtocol(leadprotocol);
+
+    if (svctype == null) {
+      //There are several possibilities at this point; all of which
+      // require further info to disambiguate
+      //  - we have file://<path> or file:<path>; we need to see if
+      //    the extension can help, otherwise, start defaulting.
+      //  - we have a simple url: e.g. http://... ; contact the server
+      if (leadprotocol.equals("file")) {
+        svctype = decodePathExtension(trueurl); // look at the path extension
       } else {
-        leadprotocol = allprotocols.get(0);
+        svctype = disambiguateHttp(trueurl);
       }
-
-      // Priority in deciding
-      // the service type is as follows.
-      // 1. "protocol" tag in fragment
-      // 2. lead protocol
-      // 3. path extension
-      // 4. contact the server (if defined)
-
-      // remove any trailing query or fragment
-      String fragment = null;
-      int pos = trueurl.lastIndexOf('#');
-      if(pos >= 0) {
-        fragment = trueurl.substring(pos+1,trueurl.length());
-        trueurl = trueurl.substring(0,pos);
-      }
-      String query = null;
-      pos = location.lastIndexOf('?');
-      if(pos >= 0) {
-        query = trueurl.substring(pos+1,trueurl.length());
-        trueurl = trueurl.substring(0,pos);
-      }
-
-      ServiceType svctype = null;
-
-      if(fragment != null)
-          svctype = searchFragment(fragment);
-
-      if(svctype == null) // See if lead protocol tells us how to interpret
-        svctype = decodeLeadProtocol(leadprotocol);
-
-      if(svctype == null) {
-        //There are several possibilities at this point; all of which
-        // require further info to disambiguate
-        //  - we have file://<path> or file:<path>; we need to see if
-        //    the extension can help, otherwise, start defaulting.
-        //  - we have a simple url: e.g. http://... ; contact the server
-        if(leadprotocol.equals("file")) {
-            svctype = decodePathExtension(trueurl); // look at the path extension
-        } else {
-          svctype = disambiguateHttp(trueurl);
-        }
-      }
-
-      if(svctype == ServiceType.OPENDAP)
-          return acquireDODS(cache, factory, hashKey, location,
-                                 buffer_size, cancelTask, spiObject);
-      else if(svctype == ServiceType.CdmRemote)
-          return acquireRemote(cache, factory, hashKey, location,
-                                   buffer_size, cancelTask, spiObject);
-      else if(svctype == ServiceType.DAP4)
-          return acquireDap4(cache, factory, hashKey, location,
-                                 buffer_size, cancelTask, spiObject);
-      else if(svctype == ServiceType.NCML) {
-          // If lead protocol was null and then pretend it was a file
-          // Note that technically, this should be 'file://'
-          String url = (allprotocols.size() == 0 ? "file:"+trueurl : trueurl);
-          return acquireNcml(cache, factory, hashKey, url,
-                             buffer_size, cancelTask, spiObject);
-      } else if(svctype == ServiceType.THREDDS) {
-          Formatter log = new Formatter();
-          ThreddsDataFactory tdf = new ThreddsDataFactory();
-          NetcdfFile ncfile = tdf.openDataset(location, false, cancelTask, log); // LOOK acquire ??
-          if (ncfile == null)
-              throw new IOException(log.toString());
-          return ncfile;
-      } else if(svctype != null)
-        throw new IOException("Unknown service type: "+svctype.toString());
-
-      // Next to last resort: look in the cache
-      if(cache != null) {
-          if(factory == null)
-              factory = defaultNetcdfFileFactory;
-          return (NetcdfFile) cache.acquire(factory, hashKey, location,
-                                            buffer_size, cancelTask, spiObject);
-      }
-      // Last resort: try to open as a file
-      return NetcdfFile.open(location, buffer_size, cancelTask, spiObject);
     }
 
+    if (svctype == ServiceType.OPENDAP)
+      return acquireDODS(cache, factory, hashKey, location,
+              buffer_size, cancelTask, spiObject);
+    else if (svctype == ServiceType.CdmRemote)
+      return acquireRemote(cache, factory, hashKey, location,
+              buffer_size, cancelTask, spiObject);
+    else if (svctype == ServiceType.DAP4)
+      return acquireDap4(cache, factory, hashKey, location,
+              buffer_size, cancelTask, spiObject);
+    else if (svctype == ServiceType.NCML) {
+      // If lead protocol was null and then pretend it was a file
+      // Note that technically, this should be 'file://'
+      String url = (allprotocols.size() == 0 ? "file:" + trueurl : trueurl);
+      return acquireNcml(cache, factory, hashKey, url,
+              buffer_size, cancelTask, spiObject);
+    } else if (svctype == ServiceType.THREDDS) {
+      Formatter log = new Formatter();
+      ThreddsDataFactory tdf = new ThreddsDataFactory();
+      NetcdfFile ncfile = tdf.openDataset(location, false, cancelTask, log); // LOOK acquire ??
+      if (ncfile == null)
+        throw new IOException(log.toString());
+      return ncfile;
+    } else if (svctype != null)
+      throw new IOException("Unknown service type: " + svctype.toString());
 
-    /**
-     * Check path extension; assumes no query or fragment
-     *
-     * @param path the path to examine for extension
-     * @return ServiceType inferred from the extension or null
-     */
-    static ServiceType
-    decodePathExtension(String path) {
-        // Look at the path extensions
-        if(path.endsWith(".dds")
-           || path.endsWith(".das")
-           || path.endsWith(".dods"))
-            return ServiceType.OPENDAP;
-        if(path.endsWith(".dmr")
-           || path.endsWith(".dap")
-           || path.endsWith(".dsr"))
-            return ServiceType.DAP4;
-        if(path.endsWith(".xml")
-           || path.endsWith(".ncml"))
-            return ServiceType.NCML;
-        return null;
+    // Next to last resort: look in the cache
+    if (cache != null) {
+      if (factory == null)
+        factory = defaultNetcdfFileFactory;
+      return (NetcdfFile) cache.acquire(factory, hashKey, location,
+              buffer_size, cancelTask, spiObject);
     }
+    // Last resort: try to open as a file
+    return NetcdfFile.open(location, buffer_size, cancelTask, spiObject);
+  }
+
+
+  /**
+   * Check path extension; assumes no query or fragment
+   *
+   * @param path the path to examine for extension
+   * @return ServiceType inferred from the extension or null
+   */
+  static ServiceType
+  decodePathExtension(String path) {
+    // Look at the path extensions
+    if (path.endsWith(".dds")
+            || path.endsWith(".das")
+            || path.endsWith(".dods"))
+      return ServiceType.OPENDAP;
+    if (path.endsWith(".dmr")
+            || path.endsWith(".dap")
+            || path.endsWith(".dsr"))
+      return ServiceType.DAP4;
+    if (path.endsWith(".xml")
+            || path.endsWith(".ncml"))
+      return ServiceType.NCML;
+    return null;
+  }
 
   /*
    * Attempt to map a lead url protocol url to a service type
@@ -783,20 +782,20 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
    * @param protocol The leading protocol
    * @return ServiceType indicating how to handle the url, or null.
    */
-    @Urlencoded
-    static ServiceType
-    decodeLeadProtocol(String protocol)
-        throws IOException {
-        if(protocol.equals("dods"))
-            return ServiceType.OPENDAP;
-        else if(protocol.equals("dap4"))
-            return ServiceType.DAP4;
-        else if(protocol.equals(CdmRemote.PROTOCOL))
-            return ServiceType.CdmRemote;
-        else if(protocol.equals(ThreddsDataFactory.PROTOCOL)) //thredds
-            return ServiceType.THREDDS;
-        return null;
-    }
+  @Urlencoded
+  static ServiceType
+  decodeLeadProtocol(String protocol)
+          throws IOException {
+    if (protocol.equals("dods"))
+      return ServiceType.OPENDAP;
+    else if (protocol.equals("dap4"))
+      return ServiceType.DAP4;
+    else if (protocol.equals(CdmRemote.PROTOCOL))
+      return ServiceType.CdmRemote;
+    else if (protocol.equals(ThreddsDataFactory.PROTOCOL)) //thredds
+      return ServiceType.THREDDS;
+    return null;
+  }
 
   /**
    * If the URL alone is not sufficient to disambiguate the location,
@@ -807,44 +806,43 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
    * in order to disambiguate.
    *
    * @param location the url to disambiguate
-   * @param location the original url string
    * @return ServiceType indicating how to handle the url
    */
-    @Urlencoded
-    static private ServiceType
-    disambiguateHttp(String location)
-        throws IOException {
-      // aggregation cache files are of form
-      // http://www.esrl.noaa.gov/psd/thredds/dodsC/Datasets/ncep.reanalysis2.dailyavgs/pressure/air.1981.nc#320092027
+  @Urlencoded
+  static private ServiceType
+  disambiguateHttp(String location)
+          throws IOException {
+    // aggregation cache files are of form
+    // http://www.esrl.noaa.gov/psd/thredds/dodsC/Datasets/ncep.reanalysis2.dailyavgs/pressure/air.1981.nc#320092027
 
-        ServiceType result = checkIfDods(location); // dods
-        if(result != null)
-            return result;
-        result = checkIfDap4(location); // dap4
-        if (result != null)
-            return result;
+    ServiceType result = checkIfDods(location); // dods
+    if (result != null)
+      return result;
+    result = checkIfDap4(location); // dap4
+    if (result != null)
+      return result;
 
-        HTTPMethod method = null;
-        try {
-            method = HTTPFactory.Head(location);
-            int statusCode = method.execute();
-            if(statusCode >= 300) {
-                if(statusCode == 401)
-                    throw new IOException("Unauthorized to open dataset " + location);
-                else
-                    throw new IOException(location + " is not a valid URL, return status=" + statusCode);
-            }
-            Header h = method.getResponseHeader("Content-Description");
-            if((h != null) && (h.getValue() != null)) {
-                String v = h.getValue();
-                if(v.equalsIgnoreCase("ncstream"))
-                return ServiceType.CdmRemote;
-            }
-            return null;
-        } finally {
-            if(method != null) method.close();
-        }
+    HTTPMethod method = null;
+    try {
+      method = HTTPFactory.Head(location);
+      int statusCode = method.execute();
+      if (statusCode >= 300) {
+        if (statusCode == 401)
+          throw new IOException("Unauthorized to open dataset " + location);
+        else
+          throw new IOException(location + " is not a valid URL, return status=" + statusCode);
+      }
+      Header h = method.getResponseHeader("Content-Description");
+      if ((h != null) && (h.getValue() != null)) {
+        String v = h.getValue();
+        if (v.equalsIgnoreCase("ncstream"))
+          return ServiceType.CdmRemote;
+      }
+      return null;
+    } finally {
+      if (method != null) method.close();
     }
+  }
 
   // not sure what other opendap servers do, so fall back on check for dds
   static private ServiceType checkIfDods(String location) throws IOException {
@@ -852,7 +850,7 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
     int len = location.length();
     // Strip off any trailing .dds, .das, or .dods
     if (location.endsWith(".dds"))
-      location = location.substring(0,  len - ".dds".length());
+      location = location.substring(0, len - ".dds".length());
     if (location.endsWith(".das"))
       location = location.substring(0, len - ".das".length());
     if (location.endsWith(".dods"))
@@ -918,70 +916,70 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
     }
   }
 
-    /**
-     * Given a location look for
-     * markers indicated which protocol to use
-     *
-     * @param fragment the fragment is to be examined
-     * @return The discovered ServiceType, or null
-     */
-    static ServiceType
-    searchFragment(String fragment) {
-        if(fragment.length() == 0)
-            return null;
-        Map<String,String> map = parseFragment(fragment);
-        String protocol = map.get("protocol");
-        if(protocol != null) {
-            if(protocol.equalsIgnoreCase("dap")
-               || protocol.equalsIgnoreCase("dods"))
-            return ServiceType.OPENDAP;
-            if(protocol.equalsIgnoreCase("dap4"))
-            return ServiceType.DAP4;
-            if(protocol.equalsIgnoreCase("cdmremote"))
-            return ServiceType.CdmRemote;
-            if(protocol.equalsIgnoreCase("thredds"))
-            return ServiceType.THREDDS;
-            if(protocol.equalsIgnoreCase("ncmdl"))
-            return ServiceType.NCML;
-        }
-        return null;
+  /**
+   * Given a location look for
+   * markers indicated which protocol to use
+   *
+   * @param fragment the fragment is to be examined
+   * @return The discovered ServiceType, or null
+   */
+  static ServiceType
+  searchFragment(String fragment) {
+    if (fragment.length() == 0)
+      return null;
+    Map<String, String> map = parseFragment(fragment);
+    String protocol = map.get("protocol");
+    if (protocol != null) {
+      if (protocol.equalsIgnoreCase("dap")
+              || protocol.equalsIgnoreCase("dods"))
+        return ServiceType.OPENDAP;
+      if (protocol.equalsIgnoreCase("dap4"))
+        return ServiceType.DAP4;
+      if (protocol.equalsIgnoreCase("cdmremote"))
+        return ServiceType.CdmRemote;
+      if (protocol.equalsIgnoreCase("thredds"))
+        return ServiceType.THREDDS;
+      if (protocol.equalsIgnoreCase("ncmdl"))
+        return ServiceType.NCML;
     }
+    return null;
+  }
 
-    /**
-     * Given the fragment part of a url, see if it
-     * parses as name=value pairs separated by '&'
-     * (same as query part).
-     *
-     * @param fragment the fragment part of a url
-     * @return a map of the name value pairs (possibly empty),
-     *         or null if the fragment does not parse.
-     */
+  /**
+   * Given the fragment part of a url, see if it
+   * parses as name=value pairs separated by '&'
+   * (same as query part).
+   *
+   * @param fragment the fragment part of a url
+   * @return a map of the name value pairs (possibly empty),
+   * or null if the fragment does not parse.
+   */
 
-    static Map<String,String>
-    parseFragment(String fragment) {
-        Map<String,String> map = new HashMap<String,String>();
-        if(fragment != null && fragment.length() >= 0) {
-            if(fragment.charAt(0) == '#')
-                fragment = fragment.substring(1);
-            String[] pairs = fragment.split("[ \t]*[&][ \t]*");
-            for(String pair: pairs) {
-                String[] pieces = fragment.split("[ \t]*[=][ \t]*");
-                switch (pieces.length) {
-                case 1:
-                    map.put(EscapeStrings.unescapeURL(pieces[0]).toLowerCase(),
-                            "true");
-                    break;
-                case 2:
-                    map.put(EscapeStrings.unescapeURL(pieces[0]).toLowerCase(),
-                            EscapeStrings.unescapeURL(pieces[1]).toLowerCase());
-                    break;
-                default:
-                    return null; // does not parse
-                }
-            }
+  static Map<String, String>
+  parseFragment(String fragment) {
+    Map<String, String> map = new HashMap<>();
+    if (fragment != null && fragment.length() >= 0) {
+      if (fragment.charAt(0) == '#')
+        fragment = fragment.substring(1);
+      String[] pairs = fragment.split("[ \t]*[&][ \t]*");
+      for (String pair : pairs) {
+        String[] pieces = fragment.split("[ \t]*[=][ \t]*");
+        switch (pieces.length) {
+          case 1:
+            map.put(EscapeStrings.unescapeURL(pieces[0]).toLowerCase(),
+                    "true");
+            break;
+          case 2:
+            map.put(EscapeStrings.unescapeURL(pieces[0]).toLowerCase(),
+                    EscapeStrings.unescapeURL(pieces[1]).toLowerCase());
+            break;
+          default:
+            return null; // does not parse
         }
-        return map;
+      }
     }
+    return map;
+  }
 
 
   //////////////////////////////////////////////////
@@ -1005,9 +1003,9 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
                                         int buffer_size,
                                         ucar.nc2.util.CancelTask cancelTask,
                                         Object spiObject)
-        throws IOException {
-    if(cache == null) {
-        return openDap4ByReflection(location,cancelTask);
+          throws IOException {
+    if (cache == null) {
+      return openDap4ByReflection(location, cancelTask);
     }
 
     if (factory == null) factory = new Dap4Factory();
@@ -1051,25 +1049,25 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
   }
 
   static private NetcdfFile openDap4ByReflection(String location, ucar.nc2.util.CancelTask cancelTask)
-        throws IOException {
+          throws IOException {
     Constructor con = null;
     Constructor constructormethod = null;
     Class dap4class = null;
     NetcdfFile file = null;
-    String target = DAP4_PATH +".DapNetcdfFile";
+    String target = DAP4_PATH + ".DapNetcdfFile";
     try {
-        dap4class = NetcdfDataset.class.getClassLoader().loadClass(target);
-        constructormethod = dap4class.getConstructor(String.class, ucar.nc2.util.CancelTask.class);
-        file = (NetcdfFile) constructormethod.newInstance(location, cancelTask);
-        return file;
+      dap4class = NetcdfDataset.class.getClassLoader().loadClass(target);
+      constructormethod = dap4class.getConstructor(String.class, ucar.nc2.util.CancelTask.class);
+      file = (NetcdfFile) constructormethod.newInstance(location, cancelTask);
+      return file;
     } catch (ClassNotFoundException e) {
-      String msg = "DapNetcdfFile is not on class path or is incorrect version: "+target;
+      String msg = "DapNetcdfFile is not on class path or is incorrect version: " + target;
       log.error(msg);
       throw new IOException(msg);
     } catch (NoSuchMethodException e) {
-        String msg = "DapNetcdfFile constructor not found";
-        log.error(msg);
-        throw new IOException(msg);
+      String msg = "DapNetcdfFile constructor not found";
+      log.error(msg);
+      throw new IOException(msg);
     } catch (InstantiationException e) {
       String msg = "DapNetcdfFileFactory constructor cannot be invoked";
       log.error(msg);
@@ -1122,9 +1120,9 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
   ////////////////////////////////////////////////////////////////////////////////////
   private NetcdfFile orgFile = null;
 
-  private List<CoordinateSystem> coordSys = new ArrayList<CoordinateSystem>();
-  private List<CoordinateAxis> coordAxes = new ArrayList<CoordinateAxis>();
-  private List<CoordinateTransform> coordTransforms = new ArrayList<CoordinateTransform>();
+  private List<CoordinateSystem> coordSys = new ArrayList<>();
+  private List<CoordinateAxis> coordAxes = new ArrayList<>();
+  private List<CoordinateTransform> coordTransforms = new ArrayList<>();
   private String convUsed;
 
   private EnumSet<Enhance> enhanceMode = EnumSet.noneOf(Enhance.class); // enhancement mode for this specific dataset
@@ -1200,9 +1198,9 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
    * Clear Coordinate System metadata, to allow them to be redone
    */
   public void clearCoordinateSystems() {
-    coordSys = new ArrayList<CoordinateSystem>();
-    coordAxes = new ArrayList<CoordinateAxis>();
-    coordTransforms = new ArrayList<CoordinateTransform>();
+    coordSys = new ArrayList<>();
+    coordAxes = new ArrayList<>();
+    coordTransforms = new ArrayList<>();
 
     for (Variable v : getVariables()) {
       VariableEnhanced ve = (VariableEnhanced) v;
@@ -1357,9 +1355,9 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
   @Override
   public void empty() {
     super.empty();
-    coordSys = new ArrayList<CoordinateSystem>();
-    coordAxes = new ArrayList<CoordinateAxis>();
-    coordTransforms = new ArrayList<CoordinateTransform>();
+    coordSys = new ArrayList<>();
+    coordAxes = new ArrayList<>();
+    coordTransforms = new ArrayList<>();
     convUsed = null;
   }
 
@@ -1745,7 +1743,7 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
    * @deprecated use Variable.setValues()
    */
   public void setValues(Variable v, List<String> values) throws IllegalArgumentException {
-    Array data = Array.makeArray(v.getDataType(), v.isUnsigned(),values);
+    Array data = Array.makeArray(v.getDataType(), v.isUnsigned(), values);
 
     if (data.getSize() != v.getSize())
       throw new IllegalArgumentException("Incorrect number of values specified for the Variable " + v.getFullName() +
@@ -1927,7 +1925,7 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
     NetcdfFile ncfileIn = ucar.nc2.dataset.NetcdfDataset.openFile(datasetIn, cancel);
     System.out.printf("NetcdfDatataset read from %s write to %s ", datasetIn, datasetOut);
 
-    NetcdfFileWriter.Version version = netcdf4? NetcdfFileWriter.Version.netcdf4 : NetcdfFileWriter.Version.netcdf3;
+    NetcdfFileWriter.Version version = netcdf4 ? NetcdfFileWriter.Version.netcdf4 : NetcdfFileWriter.Version.netcdf3;
     FileWriter2 writer = new ucar.nc2.FileWriter2(ncfileIn, datasetOut, version, null);
     writer.getNetcdfFileWriter().setLargeFile(isLargeFile);
     NetcdfFile ncfileOut = writer.write(cancel);
