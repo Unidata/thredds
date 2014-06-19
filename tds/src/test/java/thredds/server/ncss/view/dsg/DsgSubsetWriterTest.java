@@ -147,7 +147,7 @@ public class DsgSubsetWriterTest {
 
     @Test
     public void testWrite() throws Exception {
-        if ((format == SupportedFormat.NETCDF4 || format == SupportedFormat.NETCDF4EXT) && !isClibraryPresent) {
+        if ((format == SupportedFormat.NETCDF4/* || format == SupportedFormat.NETCDF4EXT*/) && !isClibraryPresent) {
             return;  // Skip NetCDF 4 test.
         }
 

@@ -1,5 +1,6 @@
 package thredds.server.ncss.view.dsg.station;
 
+import thredds.server.ncss.exception.FeaturesNotFoundException;
 import thredds.server.ncss.exception.NcssException;
 import thredds.server.ncss.params.NcssParamsBean;
 import thredds.server.ncss.view.dsg.AbstractDsgSubsetWriter;
@@ -41,6 +42,10 @@ public abstract class AbstractStationSubsetWriter extends AbstractDsgSubsetWrite
 
         this.stationFeatureCollection = (StationTimeSeriesFeatureCollection) featColList.get(0);
         this.wantedStations = getStationsInSubset(stationFeatureCollection, ncssParams);
+
+        if (this.wantedStations.isEmpty()) {
+            throw new FeaturesNotFoundException("No stations found in subset.");
+        }
     }
 
     protected abstract void writeHeader() throws Exception;

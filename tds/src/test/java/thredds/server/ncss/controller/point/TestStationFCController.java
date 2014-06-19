@@ -164,7 +164,6 @@ public class TestStationFCController {
             .param("time_start", "2006-03-25T00:00:00Z")
             .param("time_end", "2006-03-26T00:00:00Z");
 
-
     this.mockMvc.perform(rb).andExpect(MockMvcResultMatchers.status().isOk())
             .andExpect(MockMvcResultMatchers.content().contentType(ContentType.netcdf.getContentHeader()));
 
