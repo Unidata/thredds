@@ -2585,6 +2585,10 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
         log.warn("_FillValue type must agree with var = " + v.getFullName() + " type " + att.getDataType() + "!=" + v.getDataType());
         return;
       }
+      if (att.isUnsigned() != v.isUnsigned()) {
+        log.warn("_FillValue isUnsigned must agree with var = " + v.getFullName() + " isUnsigned " + att.isUnsigned() + "!=" + v.isUnsigned());
+        return;
+      }
     }
 
     // dont propagate these - handled internally
@@ -2592,7 +2596,6 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
     if (att.getShortName().equals(H5header.HDF5_DIMENSION_LIST)) return;
     if (att.getShortName().equals(H5header.HDF5_DIMENSION_SCALE)) return;
     if (att.getShortName().equals(H5header.HDF5_DIMENSION_LABELS)) return;
-
     if (att.getShortName().equals(CDM.CHUNK_SIZES)) return;
     if (att.getShortName().equals(CDM.COMPRESS)) return;
 
