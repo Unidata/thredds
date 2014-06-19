@@ -57,6 +57,7 @@ import ucar.nc2.dataset.CoordinateAxis1D;
 import ucar.nc2.dt.GridCoordSystem;
 import ucar.nc2.dt.GridDatatype;
 import ucar.nc2.dt.grid.CFGridWriter;
+import ucar.nc2.dt.grid.CFGridWriter2;
 import ucar.nc2.dt.grid.GridDataset;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time.CalendarDateRange;
@@ -69,40 +70,24 @@ import ucar.unidata.geoloc.ProjectionRect;
  * 
  */
 class GridResponder extends GridDatasetResponder {
+  static private final short ESTIMATED_C0MPRESION_RATE = 5;  // Compression rate used to estimate the filesize of netcdf4 compressed files
 
   public static GridResponder factory(GridDataset gds, String requestPathInfo) {
- 		return new GridResponder(gds, requestPathInfo);
+    return new GridResponder(gds, requestPathInfo);
  	}
 
-	/*
-	 * Compression rate used to estimate the filesize of netcdf4 compressed
-	 * files
-	 */
-	static private final short ESTIMATED_C0MPRESION_RATE = 5;
-
+  ///////////////////////////////////////////////////////////////////////////////
 	private GridDataset gds;
-	
 	private String requestPathInfo;
 
-	private long maxFileDownloadSize;
-
-	private GridResponder(GridDataset gds, String requestPathInfo) {
+  private GridResponder(GridDataset gds, String requestPathInfo) {
 		this.gds = gds;
 		this.requestPathInfo = requestPathInfo;
 	}
 
 	/**
 	 * 
-	 * Returns the response file
-	 * 
-	 * @param request
-	 * @param response
-	 * @return
-	 * @throws NcssException
-	 * @throws VariableNotContainedInDatasetException
-	 * @throws IOException
-	 * @throws ParseException
-	 * @throws InvalidRangeException
+	 * Returns the resulting file
 	 */
 	File getResponseFile(HttpServletRequest request,
 			HttpServletResponse response, NcssParamsBean params,
@@ -112,18 +97,17 @@ class GridResponder extends GridDatasetResponder {
 		if (!checkRequestedVars(gds, params) && params.getVertCoord() != null ) // LOOK should catch validation error earlier
 			throw new UnsupportedOperationException("The variables requested: " + params.getVar() + " have different vertical levels. Grid requests with vertCoord must have variables with same vertical levels.");
 			
-		File netcdfResult = null;
+		File netcdfResult;
 		if (isSpatialSubset(params)) {
-			netcdfResult = spatialSubset(params, version);
+			netcdfResult = writeLatLonSubset(params, version);
 		} else {
-			netcdfResult = coordinatesSubset(params, response, version);
+			netcdfResult = writeCoordinatesSubset(params, response, version);
 		}
 
 		return netcdfResult;
 	}
 
-	private boolean isSpatialSubset(NcssParamsBean params)
-			throws InvalidBBOXException {
+	private boolean isSpatialSubset(NcssParamsBean params) throws InvalidBBOXException {
 
 		boolean spatialSubset = false;
 		int contValid = 0;
@@ -144,6 +128,7 @@ class GridResponder extends GridDatasetResponder {
 				throw new InvalidBBOXException("Invalid bbox. Bounding Box must have east > west; if crossing 180 meridian, use east boundary > 180");
 			}
 			spatialSubset = true;
+
 		} else {
 			if (contValid > 0)
 				throw new InvalidBBOXException("Invalid bbox. All params north, south, east and west must be provided");
@@ -156,8 +141,7 @@ class GridResponder extends GridDatasetResponder {
 		return spatialSubset;
 	}
 
-	private File spatialSubset(NcssParamsBean params,
-			NetcdfFileWriter.Version version) throws RequestTooLargeException,
+	private File writeLatLonSubset(NcssParamsBean params, NetcdfFileWriter.Version version) throws RequestTooLargeException,
 			OutOfBoundariesException, InvalidRangeException, ParseException,
 			IOException, VariableNotContainedInDatasetException,
 			InvalidBBOXException, TimeOutOfWindowException {
@@ -181,34 +165,14 @@ class GridResponder extends GridDatasetResponder {
 
 		List<CalendarDate> wantedDates = getRequestedDates(gds, params);
 		CalendarDateRange wantedDateRange = null;
-
 		if (!wantedDates.isEmpty())
 			wantedDateRange = CalendarDateRange.of(wantedDates.get(0), wantedDates.get(wantedDates.size() - 1));
 
-		CFGridWriter writer = new CFGridWriter();
-		maxFileDownloadSize = ThreddsConfig.getBytes("NetcdfSubsetService.maxFileDownloadSize", -1L);
-		if (maxFileDownloadSize > 0) {
-			long estimatedSize = writer.makeGridFileSizeEstimate(gds,
-					params.getVar(), hasBB ? requestedBB : null,
-					params.getHorizStride(), zRange, wantedDateRange,
-					params.getTimeStride(), params.isAddLatLon());
-
-			if (version == NetcdfFileWriter.Version.netcdf4) {
-				estimatedSize /= ESTIMATED_C0MPRESION_RATE;
-			}
-			if (estimatedSize > maxFileDownloadSize) {
-				throw new RequestTooLargeException("NCSS response too large = " + estimatedSize + " max = " + maxFileDownloadSize);
-			}
-		}
-
-		return makeGridFile(new CFGridWriter(), gds, params.getVar(),
-				hasBB ? requestedBB : null, params.getHorizStride(), zRange,
-				wantedDateRange, params.getTimeStride(), params.isAddLatLon(),
-				version);
+    return writeGridFile(gds, params.getVar(), hasBB ? requestedBB : null, null, params.getHorizStride(), zRange, wantedDateRange,
+            params.getTimeStride(), params.isAddLatLon(), version);
 	}
 
-	private File coordinatesSubset(NcssParamsBean params,
-			HttpServletResponse response, NetcdfFileWriter.Version version)
+	private File writeCoordinatesSubset(NcssParamsBean params, HttpServletResponse response, NetcdfFileWriter.Version version)
 			throws OutOfBoundariesException, ParseException,
 			InvalidRangeException, RequestTooLargeException, IOException,
 			InvalidBBOXException, TimeOutOfWindowException {
@@ -247,50 +211,51 @@ class GridResponder extends GridDatasetResponder {
 		// Request with zRange --> adds a limitation: only variables with the
 		// same vertical level???
 		if (params.getVertCoord() != null || params.getVertStride() > 1)
-			zRange = getZRange(gds, params.getVertCoord(),
-					params.getVertStride(), params.getVar());
+			zRange = getZRange(gds, params.getVertCoord(), params.getVertStride(), params.getVar());
 
 		List<CalendarDate> wantedDates = getRequestedDates(gds, params);
 		CalendarDateRange wantedDateRange = CalendarDateRange.of(
 				wantedDates.get(0), wantedDates.get(wantedDates.size() - 1));
 
-		CFGridWriter writer = new CFGridWriter();
-		maxFileDownloadSize = ThreddsConfig.getBytes("NetcdfSubsetService.maxFileDownloadSize", -1L);
-		if (maxFileDownloadSize > 0) {
-			long estimatedSize = writer.makeGridFileSizeEstimate(gds,
-					params.getVar(), rect, params.getHorizStride(), zRange,
-					wantedDateRange, params.getTimeStride(),
-					params.isAddLatLon());
-			if (version == NetcdfFileWriter.Version.netcdf4) {
-				estimatedSize /= ESTIMATED_C0MPRESION_RATE;
-			}
-			if (estimatedSize > maxFileDownloadSize) {
-				throw new RequestTooLargeException("NCSS response too large = "
-						+ estimatedSize + " max = " + maxFileDownloadSize);
-			}
-		}
-
-		String filename = gds.getLocationURI();
-		int pos = filename.lastIndexOf("/");
-		filename = filename.substring(pos + 1);
-		if (!filename.endsWith(".nc"))
-			filename = filename + ".nc";
-
-		Random random = new Random(System.currentTimeMillis());
-		int randomInt = random.nextInt();
-		String pathname = Integer.toString(randomInt) + "/" + filename;
-		File ncFile = NcssDiskCache.getInstance().getDiskCache()
-				.getCacheFile(pathname);
-		String cacheFilename = ncFile.getPath();
-		//String url = buildCacheUrl(pathname);
-		//httpHeaders.set("Content-Location", url);
-		//httpHeaders.set("Content-Disposition", "attachment; filename=\""
-		//		+ filename + "\"");
-		writer.makeFile(cacheFilename, gds, params.getVar(), rect,
-				params.getHorizStride(), zRange, wantedDateRange, 1,
-				params.isAddLatLon(), version);
-		return new File(cacheFilename);
+    return writeGridFile(gds, params.getVar(), null, rect, params.getHorizStride(), zRange, wantedDateRange, 1, params.isAddLatLon(), version);
 	}
+
+  private File writeGridFile(GridDataset gds, List<String> vars, LatLonRect bbox, ProjectionRect projRect, Integer horizStride,
+ 			Range zRange, CalendarDateRange dateRange, Integer timeStride, boolean addLatLon, NetcdfFileWriter.Version version)
+ 			throws RequestTooLargeException, InvalidRangeException, IOException {
+
+    long maxFileDownloadSize = ThreddsConfig.getBytes("NetcdfSubsetService.maxFileDownloadSize", -1L);
+    if (maxFileDownloadSize > 0) {
+      long estimatedSize = CFGridWriter2.makeSizeEstimate(gds, vars, bbox, projRect, horizStride, zRange, dateRange, timeStride, addLatLon);
+
+      if (version == NetcdfFileWriter.Version.netcdf4)
+        estimatedSize /= ESTIMATED_C0MPRESION_RATE;
+
+      if (estimatedSize > maxFileDownloadSize)
+        throw new RequestTooLargeException("NCSS response too large = " + estimatedSize + " max = " + maxFileDownloadSize);
+    }
+
+ 		Random random = new Random(System.currentTimeMillis());
+ 		int randomInt = random.nextInt();
+
+ 		String filename = getFileNameForResponse(version);
+ 		String pathname = Integer.toString(randomInt) + "/" + filename;
+ 		File ncFile = NcssDiskCache.getInstance().getDiskCache().getCacheFile(pathname);
+ 		String cacheFilename = ncFile.getPath();
+
+ 		//String url = buildCacheUrl(pathname);
+
+ 		//httpHeaders.set("Content-Location", url);
+ 		//httpHeaders.set("Content-Disposition", "attachment; filename=\""
+ 		//		+ filename + "\"");
+
+    NetcdfFileWriter writer = NetcdfFileWriter.createNew(version, cacheFilename, null); // default chunking - let user control at some point
+    CFGridWriter2.writeFile(gds, vars, bbox, projRect, horizStride, zRange, dateRange, timeStride, addLatLon, writer);
+
+ 		return new File(cacheFilename);
+ 	}
+
+
 
 	private LatLonRect setBBForRequest(NcssParamsBean params, GridDataset gds) throws InvalidBBOXException {
 
@@ -371,34 +336,6 @@ class GridResponder extends GridDatasetResponder {
 		}
 
 		return zRange;
-	}
-
-	private File makeGridFile(CFGridWriter writer, GridDataset gds,
-			List<String> vars, LatLonRect bbox, Integer horizStride,
-			Range zRange, CalendarDateRange dateRange, Integer timeStride,
-			boolean addLatLon, NetcdfFileWriter.Version version)
-			throws RequestTooLargeException, InvalidRangeException, IOException {
-
-		Random random = new Random(System.currentTimeMillis());
-		int randomInt = random.nextInt();
-
-		String filename = getFileNameForResponse(version);
-		String pathname = Integer.toString(randomInt) + "/" + filename;
-		File ncFile = NcssDiskCache.getInstance().getDiskCache().getCacheFile(pathname);
-
-		String cacheFilename = ncFile.getPath();
-
-		//String url = buildCacheUrl(pathname);
-
-		//httpHeaders.set("Content-Location", url);
-		//httpHeaders.set("Content-Disposition", "attachment; filename=\""
-		//		+ filename + "\"");
-
-		writer.makeFile(cacheFilename, gds, vars, bbox, horizStride, zRange,
-				dateRange, timeStride, addLatLon, version);
-
-		return new File(cacheFilename);
-
 	}
 
 	private String getFileNameForResponse(NetcdfFileWriter.Version version) {

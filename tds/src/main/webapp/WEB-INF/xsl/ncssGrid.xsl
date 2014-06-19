@@ -455,7 +455,7 @@
 				<!-- Footer -->
 				<h3>
 					<a
-						href="http://www.unidata.ucar.edu/software/thredds/v4.4/tds/reference/NetcdfSubsetServiceReference.html">NetCDF Subset Service Documentation</a>
+						href="http://www.unidata.ucar.edu/software/thredds/current/tds/reference/NetcdfSubsetServiceReference.html">NetCDF Subset Service Documentation</a>
 				</h3>
 
 			</body>

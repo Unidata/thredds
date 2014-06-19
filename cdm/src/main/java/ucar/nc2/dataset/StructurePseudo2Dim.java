@@ -1,33 +1,34 @@
 /*
- * Copyright (c) 1998 - 2009. University Corporation for Atmospheric Research/Unidata
- * Portions of this software were developed by the Unidata Program at the
- * University Corporation for Atmospheric Research.
+ * Copyright 1998-2014 University Corporation for Atmospheric Research/Unidata
  *
- * Access and use of this software shall impose the following obligations
- * and understandings on the user. The user is granted the right, without
- * any fee or cost, to use, copy, modify, alter, enhance and distribute
- * this software, and any derivative works thereof, and its supporting
- * documentation for any purpose whatsoever, provided that this entire
- * notice appears in all copies of the software, derivative works and
- * supporting documentation.  Further, UCAR requests that the user credit
- * UCAR/Unidata in any publications that result from the use of this
- * software or in any product that includes this software. The names UCAR
- * and/or Unidata, however, may not be used in any advertising or publicity
- * to endorse or promote any products or commercial entity unless specific
- * written permission is obtained from UCAR/Unidata. The user also
- * understands that UCAR/Unidata is not obligated to provide the user with
- * any support, consulting, training or assistance of any kind with regard
- * to the use, operation and performance of this software nor to provide
- * the user with any updates, revisions, new versions or "bug fixes."
+ *   Portions of this software were developed by the Unidata Program at the
+ *   University Corporation for Atmospheric Research.
  *
- * THIS SOFTWARE IS PROVIDED BY UCAR/UNIDATA "AS IS" AND ANY EXPRESS OR
- * IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
- * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
- * DISCLAIMED. IN NO EVENT SHALL UCAR/UNIDATA BE LIABLE FOR ANY SPECIAL,
- * INDIRECT OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING
- * FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT,
- * NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
- * WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
+ *   Access and use of this software shall impose the following obligations
+ *   and understandings on the user. The user is granted the right, without
+ *   any fee or cost, to use, copy, modify, alter, enhance and distribute
+ *   this software, and any derivative works thereof, and its supporting
+ *   documentation for any purpose whatsoever, provided that this entire
+ *   notice appears in all copies of the software, derivative works and
+ *   supporting documentation.  Further, UCAR requests that the user credit
+ *   UCAR/Unidata in any publications that result from the use of this
+ *   software or in any product that includes this software. The names UCAR
+ *   and/or Unidata, however, may not be used in any advertising or publicity
+ *   to endorse or promote any products or commercial entity unless specific
+ *   written permission is obtained from UCAR/Unidata. The user also
+ *   understands that UCAR/Unidata is not obligated to provide the user with
+ *   any support, consulting, training or assistance of any kind with regard
+ *   to the use, operation and performance of this software nor to provide
+ *   the user with any updates, revisions, new versions or "bug fixes."
+ *
+ *   THIS SOFTWARE IS PROVIDED BY UCAR/UNIDATA "AS IS" AND ANY EXPRESS OR
+ *   IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ *   WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ *   DISCLAIMED. IN NO EVENT SHALL UCAR/UNIDATA BE LIABLE FOR ANY SPECIAL,
+ *   INDIRECT OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING
+ *   FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT,
+ *   NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
+ *   WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
 package ucar.nc2.dataset;
@@ -49,12 +50,12 @@ import java.io.IOException;
 
 public class StructurePseudo2Dim extends StructurePseudoDS {
   static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(StructurePseudo2Dim.class);
-  private List<Variable> orgVariables = new ArrayList<Variable>();
-  private boolean debugRecord = false;
+  private List<Variable> orgVariables = new ArrayList<>();
+  private static final boolean debugRecord = false;
 
   /** Make a Structure out of named Variables which have var(outer, inner, ...)
    *
-   * @param ncfile the contaning file
+   * @param ncfile the containing file
    * @param group the containing group, if null use root group
    * @param shortName short name of this Structure
    * @param varNames limited to these variables. all must var(outer, inner, ...). If null, then find all such variables.
@@ -64,7 +65,7 @@ public class StructurePseudo2Dim extends StructurePseudoDS {
   public StructurePseudo2Dim( NetcdfDataset ncfile, Group group, String shortName, List<String> varNames, Dimension outer, Dimension inner) {
     super (ncfile, group, shortName);
     setDataType(DataType.STRUCTURE);
-    ArrayList<Dimension> dims = new ArrayList<Dimension>(2);
+    ArrayList<Dimension> dims = new ArrayList<>(2);
     dims.add(outer);
     dims.add(inner);
     setDimensions( dims);
@@ -75,7 +76,7 @@ public class StructurePseudo2Dim extends StructurePseudoDS {
     // find all variables in this group that has this as the outer dimension
     if (varNames == null) {
       List<Variable> vars = group.getVariables();
-      varNames = new ArrayList<String>(vars.size());
+      varNames = new ArrayList<>(vars.size());
       for (Variable orgV : vars) {
         if (orgV.getRank() < 2) continue;
         if (outer.equals(orgV.getDimension(0)) && inner.equals(orgV.getDimension(1)))
@@ -100,7 +101,7 @@ public class StructurePseudo2Dim extends StructurePseudoDS {
       memberV.setSPobject(orgV.getSPobject()); // ??
       memberV.addAll(orgV.getAttributes());
 
-      List<Dimension> dimList = new ArrayList<Dimension>(orgV.getDimensions());
+      List<Dimension> dimList = new ArrayList<>(orgV.getDimensions());
       memberV.setDimensions( dimList.subList(2, dimList.size())); // remove first 2 dimensions
       memberV.enhance(enhanceScaleMissing);
 
@@ -136,7 +137,7 @@ public class StructurePseudo2Dim extends StructurePseudoDS {
     ArrayStructureMA asma = new ArrayStructureMA( smembers, section.getShape());
 
     for (Variable v : orgVariables) {
-      List<Range> vsection =  new ArrayList<Range>(v.getRanges());
+      List<Range> vsection =  new ArrayList<>(v.getRanges());
       vsection.set(0, outerRange);
       vsection.set(1, innerRange);
       Array data = v.read(vsection); // LOOK should these be flattened ??

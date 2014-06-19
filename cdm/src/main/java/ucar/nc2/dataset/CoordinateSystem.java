@@ -1,34 +1,34 @@
 /*
- * Copyright 1998-2009 University Corporation for Atmospheric Research/Unidata
+ * Copyright 1998-2014 University Corporation for Atmospheric Research/Unidata
  *
- * Portions of this software were developed by the Unidata Program at the
- * University Corporation for Atmospheric Research.
+ *   Portions of this software were developed by the Unidata Program at the
+ *   University Corporation for Atmospheric Research.
  *
- * Access and use of this software shall impose the following obligations
- * and understandings on the user. The user is granted the right, without
- * any fee or cost, to use, copy, modify, alter, enhance and distribute
- * this software, and any derivative works thereof, and its supporting
- * documentation for any purpose whatsoever, provided that this entire
- * notice appears in all copies of the software, derivative works and
- * supporting documentation.  Further, UCAR requests that the user credit
- * UCAR/Unidata in any publications that result from the use of this
- * software or in any product that includes this software. The names UCAR
- * and/or Unidata, however, may not be used in any advertising or publicity
- * to endorse or promote any products or commercial entity unless specific
- * written permission is obtained from UCAR/Unidata. The user also
- * understands that UCAR/Unidata is not obligated to provide the user with
- * any support, consulting, training or assistance of any kind with regard
- * to the use, operation and performance of this software nor to provide
- * the user with any updates, revisions, new versions or "bug fixes."
+ *   Access and use of this software shall impose the following obligations
+ *   and understandings on the user. The user is granted the right, without
+ *   any fee or cost, to use, copy, modify, alter, enhance and distribute
+ *   this software, and any derivative works thereof, and its supporting
+ *   documentation for any purpose whatsoever, provided that this entire
+ *   notice appears in all copies of the software, derivative works and
+ *   supporting documentation.  Further, UCAR requests that the user credit
+ *   UCAR/Unidata in any publications that result from the use of this
+ *   software or in any product that includes this software. The names UCAR
+ *   and/or Unidata, however, may not be used in any advertising or publicity
+ *   to endorse or promote any products or commercial entity unless specific
+ *   written permission is obtained from UCAR/Unidata. The user also
+ *   understands that UCAR/Unidata is not obligated to provide the user with
+ *   any support, consulting, training or assistance of any kind with regard
+ *   to the use, operation and performance of this software nor to provide
+ *   the user with any updates, revisions, new versions or "bug fixes."
  *
- * THIS SOFTWARE IS PROVIDED BY UCAR/UNIDATA "AS IS" AND ANY EXPRESS OR
- * IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
- * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
- * DISCLAIMED. IN NO EVENT SHALL UCAR/UNIDATA BE LIABLE FOR ANY SPECIAL,
- * INDIRECT OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING
- * FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT,
- * NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
- * WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
+ *   THIS SOFTWARE IS PROVIDED BY UCAR/UNIDATA "AS IS" AND ANY EXPRESS OR
+ *   IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ *   WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ *   DISCLAIMED. IN NO EVENT SHALL UCAR/UNIDATA BE LIABLE FOR ANY SPECIAL,
+ *   INDIRECT OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING
+ *   FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT,
+ *   NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
+ *   WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 package ucar.nc2.dataset;
 
@@ -36,7 +36,6 @@ import ucar.nc2.*;
 import ucar.nc2.constants.AxisType;
 import ucar.unidata.geoloc.*;
 import ucar.unidata.geoloc.projection.*;
-import ucar.ma2.DataType;
 
 import java.util.*;
 
@@ -82,7 +81,7 @@ public class CoordinateSystem {
    * @return CoordinateSystem name, created from axes names
    */
   static public String makeName( List<CoordinateAxis> axes) {
-    List<CoordinateAxis> axesSorted = new ArrayList<CoordinateAxis>( axes);
+    List<CoordinateAxis> axesSorted = new ArrayList<>( axes);
     Collections.sort( axesSorted, new CoordinateAxis.AxisComparator());
     StringBuilder buff = new StringBuilder();
     for (int i=0; i<axesSorted.size(); i++) {
@@ -96,9 +95,9 @@ public class CoordinateSystem {
   //////////////////////////////////////////////////////////////////////////////////////
 
   protected NetcdfDataset ds;
-  protected List<CoordinateAxis> coordAxes = new ArrayList<CoordinateAxis>();
-  protected List<CoordinateTransform> coordTrans = new ArrayList<CoordinateTransform>();
-  protected List<Dimension> domain = new ArrayList<Dimension>(); // set of dimension
+  protected List<CoordinateAxis> coordAxes = new ArrayList<>();
+  protected List<CoordinateTransform> coordTrans = new ArrayList<>();
+  protected List<Dimension> domain = new ArrayList<>(); // set of dimension
   protected String name;
   protected CoordinateAxis xAxis, yAxis, zAxis, tAxis, latAxis, lonAxis, hAxis, pAxis, ensAxis;
   protected CoordinateAxis aziAxis, elevAxis, radialAxis;
@@ -116,11 +115,11 @@ public class CoordinateSystem {
    */
   public CoordinateSystem(NetcdfDataset ds, Collection<CoordinateAxis> axes, Collection<CoordinateTransform> coordTrans) {
     this.ds = ds;
-    this.coordAxes = new ArrayList<CoordinateAxis>( axes);
+    this.coordAxes = new ArrayList<>( axes);
     this.name = makeName( coordAxes);
 
     if (coordTrans != null)
-      this.coordTrans = new ArrayList<CoordinateTransform>( coordTrans);
+      this.coordTrans = new ArrayList<>( coordTrans);
 
     for (CoordinateAxis axis : coordAxes) {
       // look for AxisType
@@ -345,9 +344,7 @@ public class CoordinateSystem {
    */
   public boolean isGeoXY() {
     if ((xAxis == null) || (yAxis == null)) return false;
-    if (null == getProjection()) return false;
-    if (projection instanceof LatLonProjection) return false;
-    return true;
+    return null != getProjection() && !(projection instanceof LatLonProjection);
   }
 
   /**
@@ -426,7 +423,7 @@ public class CoordinateSystem {
   }
 
   public static List<Dimension> makeDomain(Variable[] axes) {
-    List<Dimension> domain = new ArrayList<Dimension>(10);
+    List<Dimension> domain = new ArrayList<>(10);
     for (Variable axis : axes) {
       for (Dimension dim : axis.getDimensions()) {
         if (!domain.contains(dim))

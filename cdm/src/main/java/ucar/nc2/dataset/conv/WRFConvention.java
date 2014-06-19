@@ -1,34 +1,34 @@
 /*
- * Copyright 1998-2009 University Corporation for Atmospheric Research/Unidata
+ * Copyright 1998-2014 University Corporation for Atmospheric Research/Unidata
  *
- * Portions of this software were developed by the Unidata Program at the
- * University Corporation for Atmospheric Research.
+ *   Portions of this software were developed by the Unidata Program at the
+ *   University Corporation for Atmospheric Research.
  *
- * Access and use of this software shall impose the following obligations
- * and understandings on the user. The user is granted the right, without
- * any fee or cost, to use, copy, modify, alter, enhance and distribute
- * this software, and any derivative works thereof, and its supporting
- * documentation for any purpose whatsoever, provided that this entire
- * notice appears in all copies of the software, derivative works and
- * supporting documentation.  Further, UCAR requests that the user credit
- * UCAR/Unidata in any publications that result from the use of this
- * software or in any product that includes this software. The names UCAR
- * and/or Unidata, however, may not be used in any advertising or publicity
- * to endorse or promote any products or commercial entity unless specific
- * written permission is obtained from UCAR/Unidata. The user also
- * understands that UCAR/Unidata is not obligated to provide the user with
- * any support, consulting, training or assistance of any kind with regard
- * to the use, operation and performance of this software nor to provide
- * the user with any updates, revisions, new versions or "bug fixes."
+ *   Access and use of this software shall impose the following obligations
+ *   and understandings on the user. The user is granted the right, without
+ *   any fee or cost, to use, copy, modify, alter, enhance and distribute
+ *   this software, and any derivative works thereof, and its supporting
+ *   documentation for any purpose whatsoever, provided that this entire
+ *   notice appears in all copies of the software, derivative works and
+ *   supporting documentation.  Further, UCAR requests that the user credit
+ *   UCAR/Unidata in any publications that result from the use of this
+ *   software or in any product that includes this software. The names UCAR
+ *   and/or Unidata, however, may not be used in any advertising or publicity
+ *   to endorse or promote any products or commercial entity unless specific
+ *   written permission is obtained from UCAR/Unidata. The user also
+ *   understands that UCAR/Unidata is not obligated to provide the user with
+ *   any support, consulting, training or assistance of any kind with regard
+ *   to the use, operation and performance of this software nor to provide
+ *   the user with any updates, revisions, new versions or "bug fixes."
  *
- * THIS SOFTWARE IS PROVIDED BY UCAR/UNIDATA "AS IS" AND ANY EXPRESS OR
- * IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
- * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
- * DISCLAIMED. IN NO EVENT SHALL UCAR/UNIDATA BE LIABLE FOR ANY SPECIAL,
- * INDIRECT OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING
- * FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT,
- * NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
- * WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
+ *   THIS SOFTWARE IS PROVIDED BY UCAR/UNIDATA "AS IS" AND ANY EXPRESS OR
+ *   IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ *   WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ *   DISCLAIMED. IN NO EVENT SHALL UCAR/UNIDATA BE LIABLE FOR ANY SPECIAL,
+ *   INDIRECT OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING
+ *   FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT,
+ *   NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
+ *   WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
 package ucar.nc2.dataset.conv;
@@ -49,6 +49,7 @@ import ucar.unidata.geoloc.projection.*;
 import ucar.unidata.util.StringUtil2;
 
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.*;
 
 /**
@@ -87,9 +88,7 @@ public class WRFConvention extends CoordSysBuilder {
     }
 
     att = ncfile.findGlobalAttribute("MAP_PROJ");
-    if (att == null) return false;
-
-    return true;
+    return att != null;
   }
 
   private double centerX = 0.0, centerY = 0.0;
@@ -361,14 +360,24 @@ map_proj =  1: Lambert Conformal
 
   // pretty much WRF specific
   private String normalize(String units) {
-    if (units.equals("fraction")) units = "";
-    else if (units.equals("dimensionless")) units = "";
-    else if (units.equals("NA")) units = "";
-    else if (units.equals("-")) units = "";
-    else {
-      units = StringUtil2.substitute(units, "**", "^");
-      units = StringUtil2.remove(units, '}');
-      units = StringUtil2.remove(units, '{');
+    switch (units) {
+      case "fraction":
+        units = "";
+        break;
+      case "dimensionless":
+        units = "";
+        break;
+      case "NA":
+        units = "";
+        break;
+      case "-":
+        units = "";
+        break;
+      default:
+        units = StringUtil2.substitute(units, "**", "^");
+        units = StringUtil2.remove(units, '}');
+        units = StringUtil2.remove(units, '{');
+        break;
     }
     return units;
   }
@@ -441,7 +450,7 @@ map_proj =  1: Lambert Conformal
     double startx = centerX - dx * (nx - 1) / 2;
 
     CoordinateAxis v = new CoordinateAxis1D(ds, null, axisName, DataType.DOUBLE, dim.getShortName(), "degrees_east", "synthesized longitude coordinate");
-    ds.setValues(v, nx, startx, dx);
+    v.setValues(nx, startx, dx);
     v.addAttribute(new Attribute(_Coordinate.AxisType, "Lon"));
     if (!axisName.equals(dim.getShortName()))
       v.addAttribute(new Attribute(_Coordinate.AliasForDimension, dim.getShortName()));
@@ -456,7 +465,7 @@ map_proj =  1: Lambert Conformal
     double starty = centerY - dy * (ny - 1) / 2;
 
     CoordinateAxis v = new CoordinateAxis1D(ds, null, axisName, DataType.DOUBLE, dim.getShortName(), "degrees_north", "synthesized latitude coordinate");
-    ds.setValues(v, ny, starty, dy);
+    v.setValues( ny, starty, dy);
     v.addAttribute(new Attribute(_Coordinate.AxisType, "Lat"));
     if (!axisName.equals(dim.getShortName()))
       v.addAttribute(new Attribute(_Coordinate.AliasForDimension, dim.getShortName()));
@@ -542,7 +551,7 @@ map_proj =  1: Lambert Conformal
     if (!axisName.equals(dim.getShortName()))
       v.addAttribute(new Attribute(_Coordinate.AliasForDimension, dim.getShortName()));
 
-    ds.setValues(v, dim.getLength(), 0, 1);
+    v.setValues(dim.getLength(), 0, 1);
     return v;
   }
 
@@ -705,7 +714,8 @@ map_proj =  1: Lambert Conformal
     while (ii.hasNext()) {
       ii.setDoubleCurrent(Math.toDegrees(ii.getDoubleNext()));
     }
-    NCdump.printArray(glatData, "GLAT", System.out, null);
+    PrintWriter pw = new PrintWriter(System.out);
+    NCdumpW.printArray(glatData, "GLAT", pw, null);
 
     Variable glon = ncd.findVariable("GLON");
     Array glonData = glon.read();
@@ -713,7 +723,7 @@ map_proj =  1: Lambert Conformal
     while (ii.hasNext()) {
       ii.setDoubleCurrent(Math.toDegrees(ii.getDoubleNext()));
     }
-    NCdump.printArray(glonData, "GLON", System.out, null);
+    NCdumpW.printArray(glonData, "GLON", pw, null);
 
 
     Index index = glatData.getIndex();
@@ -736,8 +746,8 @@ map_proj =  1: Lambert Conformal
       diff_x.set(x, val);
     }
 
-    NCdump.printArray(diff_y, "diff_y", System.out, null);
-    NCdump.printArray(diff_x, "diff_x", System.out, null);
+    NCdumpW.printArray(diff_y, "diff_y", pw, null);
+    NCdumpW.printArray(diff_x, "diff_x", pw, null);
     ncd.close();
 
   }

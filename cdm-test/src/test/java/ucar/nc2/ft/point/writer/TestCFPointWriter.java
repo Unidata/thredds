@@ -30,9 +30,9 @@ public class TestCFPointWriter {
     List<Object[]> result = new ArrayList<>();
 
     result.add(new Object[] {TestDir.cdmUnitTestDir +  "ft/ncml/point.ncml", FeatureType.POINT, 5});
-    //result.add(new Object[] {TestDir.cdmUnitTestDir + "ft/point/ldm/04061912_buoy.nc", FeatureType.POINT, 218});
+    result.add(new Object[] {TestDir.cdmUnitTestDir + "ft/point/ldm/04061912_buoy.nc", FeatureType.POINT, 218});
     // result.add(new Object[] {TestDir.cdmUnitTestDir + "ft/station/multiStationMultiVar.ncml", FeatureType.STATION, 15});
-    //result.add(new Object[] {TestDir.cdmUnitTestDir + "ft/point/netcdf/Surface_Buoy_20090921_0000.nc", FeatureType.POINT, 32452});
+    result.add(new Object[] {TestDir.cdmUnitTestDir + "ft/point/netcdf/Surface_Buoy_20090921_0000.nc", FeatureType.POINT, 32452});
     // result.add(new Object[] {TestDir.cdmUnitTestDir + "ft/station/200501q3h-gr.nc", FeatureType.STATION, 5023});
     //  result.add(new Object[]{CFpointObs_topdir + "profileSingle.ncml", FeatureType.PROFILE, 13});
 
@@ -50,15 +50,14 @@ public class TestCFPointWriter {
     this.countExpected = countExpected;
   }
 
-  //@Test
+  @Test
   public void testWrite3() throws IOException {
     int count = writeDataset(location, ftype, NetcdfFileWriter.Version.netcdf3, true);
     System.out.printf("%s netcdf3 count=%d%n", location, count);
     assert count == countExpected : "count ="+count+" expected "+countExpected;
   }
 
-
-  //@Test
+  @Test
   public void testWrite4classic() throws IOException {
     int count = writeDataset(location, ftype, NetcdfFileWriter.Version.netcdf4_classic, true);
     System.out.printf("%s netcdf4_classic count=%d%n", location, count);
@@ -71,7 +70,6 @@ public class TestCFPointWriter {
     System.out.printf("%s netcdf4 count=%d%n", location, count);
     assert count == countExpected : "count ="+count+" expected "+countExpected;
   }
-
 
   // @Test
   public void testProblem() throws IOException {

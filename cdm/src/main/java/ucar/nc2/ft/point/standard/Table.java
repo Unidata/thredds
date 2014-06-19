@@ -1001,7 +1001,9 @@ public abstract class Table {
 
       StructureMembers members = parentStruct.getStructureMembers();
       StructureMembers.Member m = members.findMember(nestedTableName);
-      members.hideMember(m); // LOOK ??
+      if (m == null)
+        System.out.println("HEY");
+      // members.hideMember(m); // LOOK ??
       if (m.getDataType() == DataType.SEQUENCE) {
         ArraySequence seq = parentStruct.getArraySequence(m);
         return seq.getStructureDataIterator();

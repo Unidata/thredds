@@ -1,34 +1,34 @@
 /*
- * Copyright 1998-2009 University Corporation for Atmospheric Research/Unidata
+ * Copyright 1998-2014 University Corporation for Atmospheric Research/Unidata
  *
- * Portions of this software were developed by the Unidata Program at the
- * University Corporation for Atmospheric Research.
+ *   Portions of this software were developed by the Unidata Program at the
+ *   University Corporation for Atmospheric Research.
  *
- * Access and use of this software shall impose the following obligations
- * and understandings on the user. The user is granted the right, without
- * any fee or cost, to use, copy, modify, alter, enhance and distribute
- * this software, and any derivative works thereof, and its supporting
- * documentation for any purpose whatsoever, provided that this entire
- * notice appears in all copies of the software, derivative works and
- * supporting documentation.  Further, UCAR requests that the user credit
- * UCAR/Unidata in any publications that result from the use of this
- * software or in any product that includes this software. The names UCAR
- * and/or Unidata, however, may not be used in any advertising or publicity
- * to endorse or promote any products or commercial entity unless specific
- * written permission is obtained from UCAR/Unidata. The user also
- * understands that UCAR/Unidata is not obligated to provide the user with
- * any support, consulting, training or assistance of any kind with regard
- * to the use, operation and performance of this software nor to provide
- * the user with any updates, revisions, new versions or "bug fixes."
+ *   Access and use of this software shall impose the following obligations
+ *   and understandings on the user. The user is granted the right, without
+ *   any fee or cost, to use, copy, modify, alter, enhance and distribute
+ *   this software, and any derivative works thereof, and its supporting
+ *   documentation for any purpose whatsoever, provided that this entire
+ *   notice appears in all copies of the software, derivative works and
+ *   supporting documentation.  Further, UCAR requests that the user credit
+ *   UCAR/Unidata in any publications that result from the use of this
+ *   software or in any product that includes this software. The names UCAR
+ *   and/or Unidata, however, may not be used in any advertising or publicity
+ *   to endorse or promote any products or commercial entity unless specific
+ *   written permission is obtained from UCAR/Unidata. The user also
+ *   understands that UCAR/Unidata is not obligated to provide the user with
+ *   any support, consulting, training or assistance of any kind with regard
+ *   to the use, operation and performance of this software nor to provide
+ *   the user with any updates, revisions, new versions or "bug fixes."
  *
- * THIS SOFTWARE IS PROVIDED BY UCAR/UNIDATA "AS IS" AND ANY EXPRESS OR
- * IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
- * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
- * DISCLAIMED. IN NO EVENT SHALL UCAR/UNIDATA BE LIABLE FOR ANY SPECIAL,
- * INDIRECT OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING
- * FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT,
- * NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
- * WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
+ *   THIS SOFTWARE IS PROVIDED BY UCAR/UNIDATA "AS IS" AND ANY EXPRESS OR
+ *   IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ *   WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ *   DISCLAIMED. IN NO EVENT SHALL UCAR/UNIDATA BE LIABLE FOR ANY SPECIAL,
+ *   INDIRECT OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING
+ *   FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT,
+ *   NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
+ *   WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
 package ucar.ma2;
@@ -54,11 +54,11 @@ public class Section {
    * @param shape array of lengths for each Range. 0 = EMPTY, < 0 = VLEN
    */
   public Section(int[] shape) {
-    list = new ArrayList<Range>();
-    for (int i = 0; i < shape.length; i++) {
-      if (shape[i] > 0)
-        list.add(new Range(shape[i]));
-      else if (shape[i] == 0)
+    list = new ArrayList<>();
+    for (int aShape : shape) {
+      if (aShape > 0)
+        list.add(new Range(aShape));
+      else if (aShape == 0)
         list.add(Range.EMPTY);
       else {
         list.add(Range.VLEN);
@@ -75,7 +75,7 @@ public class Section {
    * @throws InvalidRangeException if origin < 0, or shape < 1.
    */
   public Section(int[] origin, int[] shape) throws InvalidRangeException {
-    list = new ArrayList<Range>();
+    list = new ArrayList<>();
     for (int i = 0; i < shape.length; i++) {
       if (shape[i] > 0)
         list.add(new Range(origin[i], origin[i] + shape[i] - 1));
@@ -97,7 +97,7 @@ public class Section {
    * @throws InvalidRangeException if origin < 0, or shape < 1.
    */
   public Section(int[] origin, int[] size, int[] stride) throws InvalidRangeException {
-    list = new ArrayList<Range>();
+    list = new ArrayList<>();
     for (int i = 0; i < size.length; i++) {
       if (size[i] > 0)
         list.add(new Range(origin[i], origin[i] + size[i] - 1, stride[i]));
@@ -116,9 +116,9 @@ public class Section {
    * @param from the list of Range
    */
   public Section(List<Range> from) {
-    list = new ArrayList<Range>(from);
-    for (int i = 0; i < from.size(); i++) {
-      if (from.get(i) == Range.VLEN)
+    list = new ArrayList<>(from);
+    for (Range aFrom : from) {
+      if (aFrom == Range.VLEN)
         isvariablelength = true;
     }
   }
@@ -130,7 +130,7 @@ public class Section {
    * @param from the Section to copy
    */
   public Section(Section from) {
-    list = new ArrayList<Range>(from.getRanges());
+    list = new ArrayList<>(from.getRanges());
   }
 
   /**
@@ -141,12 +141,12 @@ public class Section {
    * @throws InvalidRangeException if shape and range list done match
    */
   public Section(List<Range> from, int[] shape) throws InvalidRangeException {
-    list = new ArrayList<Range>(from);
+    list = new ArrayList<>(from);
     setDefaults(shape);
   }
 
   /**
-   * Return a Section guarenteed to be non null, with no null Ranges, and within the bounds set by shape.
+   * Return a Section guaranteed to be non null, with no null Ranges, and within the bounds set by shape.
    * A section with no nulls is called "filled".
    * If s is already filled, return it, otherwise return a new Section, filled from the shape.
    *
@@ -217,7 +217,7 @@ public class Section {
    */
   public Section(String sectionSpec) throws InvalidRangeException {
 
-    list = new ArrayList<Range>();
+    list = new ArrayList<>();
     Range range;
 
     StringTokenizer stoke = new StringTokenizer(sectionSpec, "(),");
@@ -261,7 +261,7 @@ public class Section {
    * @throws InvalidRangeException elements must be nonnegative, 0 <= first <= last
    */
   public Section compact() throws InvalidRangeException {
-    List<Range> results = new ArrayList<Range>(getRank());
+    List<Range> results = new ArrayList<>(getRank());
     for (Range r : list) {
       results.add(r.compact());
     }
@@ -283,7 +283,7 @@ public class Section {
     }
     if (!need) return this;
 
-    List<Range> results = new ArrayList<Range>(getRank());
+    List<Range> results = new ArrayList<>(getRank());
     for (Range r : list) {
       if (r != Range.VLEN) results.add(r);
     }
@@ -306,7 +306,7 @@ public class Section {
       throw new InvalidRangeException("Invalid Section rank");
 
     // check individual nulls
-    List<Range> results = new ArrayList<Range>(getRank());
+    List<Range> results = new ArrayList<>(getRank());
     for (int j = 0; j < list.size(); j++) {
       Range base = list.get(j);
       Range r = want.getRange(j);
@@ -332,7 +332,7 @@ public class Section {
       throw new InvalidRangeException("Invalid Section rank");
 
     // check individual nulls
-    List<Range> results = new ArrayList<Range>(getRank());
+    List<Range> results = new ArrayList<>(getRank());
     for (int j = 0; j < list.size(); j++) {
       Range base = list.get(j);
       Range r = other.getRange(j);
@@ -370,7 +370,7 @@ public class Section {
     if (other.getRank() != getRank())
       throw new InvalidRangeException("Invalid Section rank");
 
-    List<Range> results = new ArrayList<Range>(getRank());
+    List<Range> results = new ArrayList<>(getRank());
     for (int j = 0; j < list.size(); j++) {
       Range base = list.get(j);
       Range r = other.getRange(j);
@@ -393,7 +393,7 @@ public class Section {
       throw new InvalidRangeException("Invalid Section rank");
 
     // check individual nulls
-    List<Range> results = new ArrayList<Range>(getRank());
+    List<Range> results = new ArrayList<>(getRank());
     for (int j = 0; j < list.size(); j++) {
       Range base = list.get(j);
       Range r = newOrigin.getRange(j);
@@ -475,7 +475,7 @@ public class Section {
    * No-arg Constructor
    */
   public Section() {
-    list = new ArrayList<Range>();
+    list = new ArrayList<>();
   }
 
   // these make it mutable
@@ -636,7 +636,7 @@ public class Section {
     }
     if (!needed) return this;
 
-    List<Range> newList = new ArrayList<Range>(list.size());
+    List<Range> newList = new ArrayList<>(list.size());
     for (Range r : list) {
       if (r.length() > 1)
         newList.add(r);
@@ -814,8 +814,7 @@ public class Section {
    */
   public long computeSize() {
     long product = 1;
-    for (int ii = 0; ii < list.size(); ii++) {
-      Range r = list.get(ii);
+    for (Range r : list) {
       if (r != Range.VLEN)
         product *= r.length();
     }

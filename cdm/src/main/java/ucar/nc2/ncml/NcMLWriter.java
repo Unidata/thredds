@@ -246,6 +246,8 @@ public class NcMLWriter {
       attElem.setAttribute("type", dt.toString());
 
     if (att.getLength() == 0) {
+      if (att.isUnsigned())
+        attElem.setAttribute("isUnsigned", "true");
       return attElem;
     }
 
@@ -268,6 +270,9 @@ public class NcMLWriter {
         buff.append(val.toString());
       }
       attElem.setAttribute("value", buff.toString());
+
+      if (att.isUnsigned())
+        attElem.setAttribute("isUnsigned", "true");
     }
     return attElem;
   }

@@ -742,7 +742,16 @@ public class TestSubset {
     CoordinateAxis1D zaxis = gcs.getVerticalAxis();
     float zCoord = 10000;
     int zidx = zaxis.findCoordElement(zCoord);
+    assert zidx == 0 : zidx;
+
+    zCoord = 50000;
+    zidx = zaxis.findCoordElement(zCoord);
+    assert zidx == 8 : zidx;
+
+    zCoord = 100000;
+    zidx = zaxis.findCoordElement(zCoord);
     assert zidx == 28 : zidx;
+
 
     dataset.close();
   }

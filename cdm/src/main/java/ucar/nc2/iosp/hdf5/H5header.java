@@ -930,7 +930,7 @@ public class H5header {
       if (dtype == DataType.CHAR)
         return new Attribute(matt.name, ""); // empty char considered to be a 0 length string
       else
-        return new Attribute(matt.name, dtype);
+        return new Attribute(matt.name, dtype, vinfo.typeInfo.unsigned);
     }
 
     Array attData = null;
@@ -945,7 +945,7 @@ public class H5header {
 
     Attribute result;
     if (attData.getElementType() == Array.class) { // vlen LOOK
-      List<Object> dataList = new ArrayList<Object>();
+      List<Object> dataList = new ArrayList<>();
       while (attData.hasNext()) {
         Array nested = (Array) attData.next();
         while (nested.hasNext())
@@ -1341,7 +1341,7 @@ public class H5header {
       if (fillValue != null) {
         Object defFillValue = vinfo.getFillValueDefault(vinfo.typeInfo.dataType);
         if (!fillValue.equals(defFillValue))
-          fillAttribute = new Attribute(CDM.FILL_VALUE, (Number) fillValue);
+          fillAttribute = new Attribute(CDM.FILL_VALUE, (Number) fillValue, vinfo.typeInfo.unsigned);
       }
     }
 
