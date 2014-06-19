@@ -1,5 +1,9 @@
 package ucar.coord;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import ucar.nc2.util.Misc;
+
 import java.util.*;
 
 /**
@@ -9,6 +13,8 @@ import java.util.*;
  * @since 11/24/13
  */
 public class SparseArray<T> {
+  static private final Logger logger = LoggerFactory.getLogger(SparseArray.class);
+
   private int[] size;    // multidim sizes
   private int[] stride;  // for index calculation
   private int totalSize; // product of sizes
@@ -56,8 +62,9 @@ public class SparseArray<T> {
   public void add(T thing, Formatter info, int... index) {
     content.add(thing);            // add the thing at end of list, idx = size-1
     int where = calcIndex(index);
-    if (where < 0 || where >= track.length)
-      System.out.println("HEY"); // set bkeakpoint
+    if (where < 0 || where >= track.length) {
+      logger.error("BAD index add="+ Misc.showInts(index), new Throwable());
+    }
     if (track[where] > 0) {
       ndups++;  // LOOK here is where we need to decide how to handle duplicates
       if (info != null) info.format(" duplicate %s%n     with %s%n%n", thing, content.get(track[where]-1));
@@ -75,7 +82,7 @@ public class SparseArray<T> {
 
   public T getContent(int idx) {
     if (idx > track.length || idx < 0)
-      System.out.println("HEY");  // set bkeakpoint
+      logger.error("BAD index get="+ idx+" max= "+track.length, new Throwable());
     int contentIdx = track[idx]-1;
     if (contentIdx < 0)
       return null; // missing
