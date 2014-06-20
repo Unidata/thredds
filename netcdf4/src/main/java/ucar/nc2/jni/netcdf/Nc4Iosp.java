@@ -2825,7 +2825,7 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
     SizeT[] shape = convertSizeT(section.getShape());
     SizeT[] stride = convertSizeT(section.getStride());
 
-    ArrayStructureBB valuesBB = IospHelper.makeArrayBB(values);
+    ArrayStructureBB valuesBB = StructureDataDeep.copyToArrayBB(values);
     ByteBuffer bbuff = valuesBB.getByteBuffer();  // LOOK c library reads in native order, so need to convert??
     // LOOK embedded strings getting lost ??
 

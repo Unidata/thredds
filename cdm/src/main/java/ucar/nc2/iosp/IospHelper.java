@@ -1,34 +1,34 @@
 /*
- * Copyright 1998-2009 University Corporation for Atmospheric Research/Unidata
+ * Copyright 1998-2014 University Corporation for Atmospheric Research/Unidata
  *
- * Portions of this software were developed by the Unidata Program at the
- * University Corporation for Atmospheric Research.
+ *   Portions of this software were developed by the Unidata Program at the
+ *   University Corporation for Atmospheric Research.
  *
- * Access and use of this software shall impose the following obligations
- * and understandings on the user. The user is granted the right, without
- * any fee or cost, to use, copy, modify, alter, enhance and distribute
- * this software, and any derivative works thereof, and its supporting
- * documentation for any purpose whatsoever, provided that this entire
- * notice appears in all copies of the software, derivative works and
- * supporting documentation.  Further, UCAR requests that the user credit
- * UCAR/Unidata in any publications that result from the use of this
- * software or in any product that includes this software. The names UCAR
- * and/or Unidata, however, may not be used in any advertising or publicity
- * to endorse or promote any products or commercial entity unless specific
- * written permission is obtained from UCAR/Unidata. The user also
- * understands that UCAR/Unidata is not obligated to provide the user with
- * any support, consulting, training or assistance of any kind with regard
- * to the use, operation and performance of this software nor to provide
- * the user with any updates, revisions, new versions or "bug fixes."
+ *   Access and use of this software shall impose the following obligations
+ *   and understandings on the user. The user is granted the right, without
+ *   any fee or cost, to use, copy, modify, alter, enhance and distribute
+ *   this software, and any derivative works thereof, and its supporting
+ *   documentation for any purpose whatsoever, provided that this entire
+ *   notice appears in all copies of the software, derivative works and
+ *   supporting documentation.  Further, UCAR requests that the user credit
+ *   UCAR/Unidata in any publications that result from the use of this
+ *   software or in any product that includes this software. The names UCAR
+ *   and/or Unidata, however, may not be used in any advertising or publicity
+ *   to endorse or promote any products or commercial entity unless specific
+ *   written permission is obtained from UCAR/Unidata. The user also
+ *   understands that UCAR/Unidata is not obligated to provide the user with
+ *   any support, consulting, training or assistance of any kind with regard
+ *   to the use, operation and performance of this software nor to provide
+ *   the user with any updates, revisions, new versions or "bug fixes."
  *
- * THIS SOFTWARE IS PROVIDED BY UCAR/UNIDATA "AS IS" AND ANY EXPRESS OR
- * IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
- * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
- * DISCLAIMED. IN NO EVENT SHALL UCAR/UNIDATA BE LIABLE FOR ANY SPECIAL,
- * INDIRECT OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING
- * FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT,
- * NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
- * WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
+ *   THIS SOFTWARE IS PROVIDED BY UCAR/UNIDATA "AS IS" AND ANY EXPRESS OR
+ *   IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ *   WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ *   DISCLAIMED. IN NO EVENT SHALL UCAR/UNIDATA BE LIABLE FOR ANY SPECIAL,
+ *   INDIRECT OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING
+ *   FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT,
+ *   NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
+ *   WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 package ucar.nc2.iosp;
 
@@ -584,43 +584,9 @@ public class IospHelper {
     return data.getSizeBytes();
   }
 
-  /* static public void copyFromByteBuffer(ByteBuffer bb, StructureMembers.Member m, IndexIterator result) {
-    int offset = m.getDataParam();
-    int count = m.getSize();
-    DataType dtype = m.getDataType();
-
-    if (dtype == DataType.FLOAT) {
-      for (int i = 0; i < count; i++)
-        result.setFloatNext( bb.getFloat(offset + i*4));
-
-    } else if (dtype == DataType.DOUBLE) {
-      for (int i = 0; i < count; i++)
-        result.setDoubleNext( bb.getDouble(offset + i*8));
-
-    } else if ((dtype == DataType.INT) || (dtype == DataType.ENUM4)) {
-      for (int i = 0; i < count; i++)
-        result.setIntNext( bb.getInt(offset + i*4));
-
-    } else if ((dtype == DataType.SHORT) || (dtype == DataType.ENUM2)) {
-      for (int i = 0; i < count; i++)
-        result.setShortNext( bb.getShort(offset + i*2));
-
-    } else if ((dtype == DataType.BYTE) || (dtype == DataType.ENUM1)) {
-      for (int i = 0; i < count; i++)
-        result.setByteNext( bb.get(offset + i));
-
-    } else if (dtype == DataType.CHAR) {
-      for (int i = 0; i < count; i++)
-        result.setCharNext( (char) bb.get(offset + i));
-
-    } else if (dtype == DataType.LONG) {
-      for (int i = 0; i < count; i++)
-        result.setLongNext( bb.get(offset + i*8));
-
-    } else
-      throw new IllegalStateException();
-  }  */
-
+  /**
+   * @deprecated use StructureDataDeep.copyToArrayBB
+   */
   static public ArrayStructureBB makeArrayBB(ArrayStructure as) throws IOException {
     if (as.getClass().equals(ArrayStructureBB.class)) // no subclasses
       return (ArrayStructureBB) as;
@@ -633,136 +599,24 @@ public class IospHelper {
     StructureDataIterator iter = as.getStructureDataIterator();
     try {
       while (iter.hasNext())
-        copyToArrayBB(iter.next(), abb);
+        StructureDataDeep.copyToArrayBB(iter.next(), abb);
     } finally {
       iter.finish();
     }
     return abb;
   }
 
+  /**
+   * @deprecated use StructureDataDeep.copyToArrayBB
+   */
   static public ArrayStructureBB copyToArrayBB(StructureData sdata) {
     StructureMembers sm = new StructureMembers(sdata.getStructureMembers());
-    return copyToArrayBB(sdata, sm, ByteOrder.BIG_ENDIAN);
-  }
-
-  static public ArrayStructureBB copyToArrayBB(StructureData sdata, StructureMembers sm, ByteOrder bo) {
-    // StructureMembers smo = sdata.getStructureMembers();
-    // StructureMembers sm = new StructureMembers(smo);
     int size = sm.getStructureSize();
     ByteBuffer bb = ByteBuffer.allocate(size); // default is big endian
-    bb.order(bo);
     ArrayStructureBB abb = new ArrayStructureBB(sm, new int[]{1}, bb, 0);
     ArrayStructureBB.setOffsets(sm);
-    copyToArrayBB(sdata, abb);
+    StructureDataDeep.copyToArrayBB(sdata, abb);
     return abb;
-  }
-
-  static private int copyToArrayBB(StructureData sdata, ArrayStructureBB abb) {
-    StructureMembers sm = sdata.getStructureMembers();
-    ByteBuffer bb = abb.getByteBuffer();
-    int start = bb.limit();
-
-    for (StructureMembers.Member m : sm.getMembers()) {
-      DataType dtype = m.getDataType();
-      //System.out.printf("do %s (%s) = %d%n", m.getName(), m.getDataType(), bb.position());
-      if (m.isScalar()) {
-        switch (dtype) {
-          case STRING:
-            bb.putInt(abb.addObjectToHeap(sdata.getScalarString(m)));
-            break;
-          case FLOAT:
-            bb.putFloat(sdata.getScalarFloat(m));
-            break;
-          case DOUBLE:
-            bb.putDouble(sdata.getScalarDouble(m));
-            break;
-          case INT:
-          case ENUM4:
-            bb.putInt(sdata.getScalarInt(m));
-            break;
-          case SHORT:
-          case ENUM2:
-            bb.putShort(sdata.getScalarShort(m));
-            break;
-          case BYTE:
-          case ENUM1:
-            bb.put(sdata.getScalarByte(m));
-            break;
-          case CHAR:
-            bb.put((byte) sdata.getScalarChar(m));
-            break;
-          case LONG:
-            bb.putLong(sdata.getScalarLong(m));
-            break;
-          default:
-            throw new IllegalStateException("scalar " + dtype.toString());
-            /* case BOOLEAN:
-           break;
-         case SEQUENCE:
-           break;
-         case STRUCTURE:
-           break;
-         case OPAQUE:
-           break; */
-        }
-      } else {
-        int n = m.getSize();
-        switch (dtype) {
-          case STRING:
-            String[] ss = sdata.getJavaArrayString(m);
-            bb.putInt(abb.addObjectToHeap(ss)); // stored as String[] on the heap
-            break;
-          case FLOAT:
-            float[] fdata = sdata.getJavaArrayFloat(m);
-            for (int i = 0; i < n; i++)
-              bb.putFloat(fdata[i]);
-            break;
-          case DOUBLE:
-            double[] ddata = sdata.getJavaArrayDouble(m);
-            for (int i = 0; i < n; i++)
-              bb.putDouble(ddata[i]);
-            break;
-          case INT:
-          case ENUM4:
-            int[] idata = sdata.getJavaArrayInt(m);
-            for (int i = 0; i < n; i++)
-              bb.putInt(idata[i]);
-            break;
-          case SHORT:
-          case ENUM2:
-            short[] shdata = sdata.getJavaArrayShort(m);
-            for (int i = 0; i < n; i++)
-              bb.putShort(shdata[i]);
-            break;
-          case BYTE:
-          case ENUM1:
-            byte[] bdata = sdata.getJavaArrayByte(m);
-            for (int i = 0; i < n; i++)
-              bb.put(bdata[i]);
-            break;
-          case CHAR:
-            char[] cdata = sdata.getJavaArrayChar(m);
-            bb.put(IospHelper.convertCharToByte(cdata));
-            break;
-          case LONG:
-            long[] ldata = sdata.getJavaArrayLong(m);
-            for (int i = 0; i < n; i++)
-              bb.putLong(ldata[i]);
-            break;
-          default:
-            throw new IllegalStateException("array " + dtype.toString());
-            /* case BOOLEAN:
-          break;
-         case OPAQUE:
-          break;
-        case STRUCTURE:
-          break; // */
-          case SEQUENCE:
-            break; // skip
-        }
-      }
-    }
-    return bb.limit() - start;
   }
 
    /**

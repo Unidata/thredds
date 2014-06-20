@@ -113,7 +113,7 @@ public class NcStreamWriterChannel {
       try {
         while (iter.hasNext()) {
           size += writeBytes(wbc, NcStream.MAGIC_VDATA); // magic
-          ArrayStructureBB abb = IospHelper.copyToArrayBB(iter.next());
+          ArrayStructureBB abb = StructureDataDeep.copyToArrayBB(iter.next());
           size += NcStream.encodeArrayStructure(abb, os);
           count++;
         }
