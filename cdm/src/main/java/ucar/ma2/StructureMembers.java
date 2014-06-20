@@ -111,7 +111,7 @@ public class StructureMembers {
     if (m == null) return -1;
     int index = members.indexOf(m);
     members.remove(m);
-    memberHash.remove(m.getName());
+    if (memberHash != null) memberHash.remove(m.getName());
     return index;
   }
 

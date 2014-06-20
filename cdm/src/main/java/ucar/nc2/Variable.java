@@ -1430,7 +1430,7 @@ public class Variable extends CDMNode implements VariableIF, ProxyReader, Attrib
   /**
    * Set the dimensions using the dimensions names. The dimension is searched for recursively in the parent groups.
    *
-   * @param dimString : whitespace seperated list of dimension names, or '*' for Dimension.UNKNOWN. null or empty String is a scalar.
+   * @param dimString : whitespace separated list of dimension names, or '*' for Dimension.UNKNOWN, or number for anon dimension. null or empty String is a scalar.
    */
   public void setDimensions(String dimString) {
     if (immutable) throw new IllegalStateException("Cant modify");
@@ -1450,7 +1450,7 @@ public class Variable extends CDMNode implements VariableIF, ProxyReader, Attrib
         // if numeric - then its anonymous dimension
         try {
           int len = Integer.parseInt(dimName);
-          d = new Dimension("", len, false, false, false);
+          d = new Dimension(null, len, false, false, false);
         } catch (Exception e) {
           throw new IllegalArgumentException("Variable " + getFullName() + " setDimensions = '" + dimString +
                   "' FAILED, dim doesnt exist=" + dimName + " file = " + getDatasetLocation());
