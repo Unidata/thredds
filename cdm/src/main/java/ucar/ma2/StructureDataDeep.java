@@ -30,57 +30,28 @@
  *   NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
  *   WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
  */
-package ucar.nc2.dt;
 
-import ucar.nc2.time.CalendarDate;
+package ucar.ma2;
 
-import java.util.*;
+import ucar.nc2.iosp.IospHelper;
+
+import java.nio.ByteOrder;
 
 /**
- * A dataset containing Grid objects.
+ * Make a deep copy of an existing StructureData, so that all the data is contained in this object
+ *
  * @author caron
+ * @since 6/19/2014
  */
+public class StructureDataDeep extends StructureDataA {
 
-public interface GridDataset extends ucar.nc2.dt.TypedDataset {
+  static public StructureData copy(StructureData sdata, StructureMembers members) {
+    ArrayStructureBB abb = IospHelper.copyToArrayBB(sdata, members, ByteOrder.BIG_ENDIAN);
+    return new StructureDataDeep(abb);
+  }
 
-  /** get the list of GridDatatype objects contained in this dataset.
-   * @return  list of GridDatatype
-   */
-  public List<GridDatatype> getGrids();
-
-  /** find the named GridDatatype.
-   * @param name full unescaped name
-   * @return  the named GridDatatype, or null if not found
-   */
-  public GridDatatype findGridDatatype( String name);
-
-  public GridDatatype findGridByShortName(String shortName);
-
-  /**
-   * Return GridDatatype objects grouped by GridCoordSystem. All GridDatatype in a Gridset
-   *   have the same GridCoordSystem.
-   * @return List of type GridDataset.Gridset
-   */
-  public List<Gridset> getGridsets();
-
-  //LOOK change to extend FeatureType
-  public CalendarDate getCalendarDateStart();
-  public CalendarDate getCalendarDateEnd();
-
-  /**
-   * A set of GridDatatype objects with the same Coordinate System.
-   */
-  public interface Gridset {
-
-    /** Get list of GridDatatype objects with same Coordinate System
-     * @return list of GridDatatype
-     */
-    public List<GridDatatype> getGrids();
-
-    /** all the GridDatatype in this Gridset use this GridCoordSystem
-     * @return  the common GridCoordSystem
-     */
-    public ucar.nc2.dt.GridCoordSystem getGeoCoordSystem();
+  private StructureDataDeep(ArrayStructureBB abb) {
+    super(abb, 0);
   }
 
 }

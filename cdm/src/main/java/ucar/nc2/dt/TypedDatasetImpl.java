@@ -52,10 +52,10 @@ public abstract class TypedDatasetImpl implements TypedDataset {
   protected String title, desc, location;
   protected Date startDate, endDate;
   protected LatLonRect boundingBox;
-  protected List<VariableSimpleIF> dataVariables = new ArrayList<VariableSimpleIF>(); // VariableSimpleIF
+  protected List<VariableSimpleIF> dataVariables = new ArrayList<>();
   protected StringBuffer parseInfo = new StringBuffer();
 
-  /** No-arg constuctor */
+  /** No-arg constructor */
   public TypedDatasetImpl() {}
 
   /** Constructor when theres no NetcdfFile underneath.
@@ -109,7 +109,7 @@ public abstract class TypedDatasetImpl implements TypedDataset {
   public String getLocationURI() {return location; }
   public String getLocation() {return location; }
   public List<Attribute> getGlobalAttributes() {
-    if (ncfile == null) return new ArrayList<Attribute>();
+    if (ncfile == null) return new ArrayList<>();
     return ncfile.getGlobalAttributes();
   }
 
@@ -124,7 +124,7 @@ public abstract class TypedDatasetImpl implements TypedDataset {
 
   public String getDetailInfo() {
     DateFormatter formatter = new DateFormatter();
-    StringBuffer sbuff = new StringBuffer();
+    StringBuilder sbuff = new StringBuilder();
 
     sbuff.append("  location= ").append(getLocation()).append("\n");
     sbuff.append("  title= ").append(getTitle()).append("\n");
