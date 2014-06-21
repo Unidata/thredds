@@ -107,7 +107,7 @@ public class H5header {
   static private final byte[] head = {(byte) 0x89, 'H', 'D', 'F', '\r', '\n', 0x1a, '\n'};
   static private final String hdf5magic = new String(head);
   static private final long maxHeaderPos = 500000; // header's gotta be within this
-  static private boolean transformReference = true;
+  static private final boolean transformReference = true;
 
   static public boolean isValidFile(ucar.unidata.io.RandomAccessFile raf) throws IOException {
     long filePos = 0;
@@ -876,17 +876,31 @@ public class H5header {
           attContainer.addAttribute(new Attribute(matt.name + "." + sm.getName(), memberData));
         }
 
-      } else {  // assign seperate attribute for each member
-        StructureMembers smember = attData.getStructureMembers();
-        for (Variable v : s.getVariables()) {
-          StructureMembers.Member sm = smember.findMember(v.getShortName());
-          if (null != sm) {
+      } else if (matt.name.equals(CDM.FIELD_ATTS)) {
+          // flatten and add to list
+          for (StructureMembers.Member sm : attData.getStructureMembers().getMembers()) {
+            String memberName = sm.getName();
+            int pos = memberName.indexOf(":");
+            if (pos < 0) continue; // LOOK
+            String fldName = memberName.substring(0,pos);
+            String attName = memberName.substring(pos+1);
             Array memberData = attData.extractMemberArray(sm);
-            v.addAttribute(new Attribute(matt.name, memberData));
+            Variable v = s.findVariable(fldName);
+            if (v == null) continue; // LOOK
+            v.addAttribute(new Attribute(attName, memberData));
+          }
+
+      } else {  // assign separate attribute for each member
+        StructureMembers attMembers = attData.getStructureMembers();
+        for (Variable v : s.getVariables()) {
+          StructureMembers.Member sm = attMembers.findMember(v.getShortName()); // does the compound attribute have a member with same name as nested variable ?
+          if (null != sm) {
+            Array memberData = attData.extractMemberArray(sm);                 // if so, add the att to the member variable, using the name of the compound attribute
+            v.addAttribute(new Attribute(matt.name, memberData));              // LOOK want to check for missing values....
           }
         }
 
-        // look for unassigned membres, add to the list
+        // look for unassigned members, add to the list
         for (StructureMembers.Member sm : attData.getStructureMembers().getMembers()) {
           if (s.findVariable(sm.getName()) == null) {
             Array memberData = attData.extractMemberArray(sm);
@@ -916,7 +930,7 @@ public class H5header {
       if (dtype == DataType.CHAR)
         return new Attribute(matt.name, ""); // empty char considered to be a 0 length string
       else
-        return new Attribute(matt.name, dtype);
+        return new Attribute(matt.name, dtype, vinfo.typeInfo.unsigned);
     }
 
     Array attData = null;
@@ -931,7 +945,7 @@ public class H5header {
 
     Attribute result;
     if (attData.getElementType() == Array.class) { // vlen LOOK
-      List<Object> dataList = new ArrayList<Object>();
+      List<Object> dataList = new ArrayList<>();
       while (attData.hasNext()) {
         Array nested = (Array) attData.next();
         while (nested.hasNext())
@@ -1327,7 +1341,7 @@ public class H5header {
       if (fillValue != null) {
         Object defFillValue = vinfo.getFillValueDefault(vinfo.typeInfo.dataType);
         if (!fillValue.equals(defFillValue))
-          fillAttribute = new Attribute(CDM.FILL_VALUE, (Number) fillValue);
+          fillAttribute = new Attribute(CDM.FILL_VALUE, (Number) fillValue, vinfo.typeInfo.unsigned);
       }
     }
 
@@ -1827,6 +1841,7 @@ public class H5header {
         } else {
           tinfo.dataType = getNCtype(mdt.getBaseType(), mdt.getBaseSize());
           tinfo.endian = mdt.base.endian;
+          tinfo.unsigned = mdt.base.unsigned;
         }
       } else if (hdfType == 10) { // array : used for structure members
         tinfo.endian = (mdt.getFlags()[0] & 1) == 0 ? RandomAccessFile.LITTLE_ENDIAN : RandomAccessFile.BIG_ENDIAN;
@@ -3110,7 +3125,7 @@ public class H5header {
       f.format(" datatype= %d", type);
       f.format(" byteSize= %d", byteSize);
       DataType dtype = getNCtype(type, byteSize);
-      f.format(" NCtype= %s", dtype);
+      f.format(" NCtype= %s %s", dtype, unsigned ? "(unsigned)" : "");
       f.format(" flags= ");
       for (int i = 0; i < 3; i++) f.format(" %d", flags[i]);
       f.format(" endian= %s", endian == RandomAccessFile.BIG_ENDIAN ? "BIG" : "LITTLE");

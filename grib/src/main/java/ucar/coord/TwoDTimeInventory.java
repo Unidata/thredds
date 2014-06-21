@@ -1,5 +1,8 @@
 package ucar.coord;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.util.Formatter;
 import java.util.List;
 
@@ -10,8 +13,10 @@ import java.util.List;
  * @since 12/27/13
  */
 public class TwoDTimeInventory {
-   private int nruns, ntimes;
-   private int[] count;        // count number of recirds for each (run,time). more than one for vert, ens, etc.
+  static private final Logger logger = LoggerFactory.getLogger(TwoDTimeInventory.class);
+
+  private int nruns, ntimes;
+  private int[] count;        // count number of recirds for each (run,time). more than one for vert, ens, etc.
 
   public TwoDTimeInventory(int nruns, int ntimes) {
     this.nruns = nruns;
@@ -26,7 +31,7 @@ public class TwoDTimeInventory {
   public void add(int runIdx, int timeIdx) {
     int idx = runIdx * ntimes + timeIdx;
     if (idx >= count.length)
-      System.out.println("HEY"); // set breakpoint
+      logger.error("TwoDTimeInventory BAD index get=" + idx + " max= " + count.length, new Throwable());
     count[idx]++;
   }
 

@@ -96,10 +96,10 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
 
   static private boolean warn = true;
   static private final boolean debug = false,
-          debugCompound = true,
+          debugCompound = false,
           debugCompoundAtt = false,
           debugUserTypes = false,
-          debugLoad = true,
+          debugLoad = false,
           debugWrite = false;
 
   /**
@@ -166,7 +166,8 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
       jna_path = defaultNetcdf4Library();
     if (jna_path == null)
       System.err.println("Cannot determine Netcdf4 library path");
-    System.setProperty(JNA_PATH, jna_path);
+    else
+      System.setProperty(JNA_PATH, jna_path);
     jnaPath = jna_path;
   }
 
@@ -518,31 +519,31 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
         switch (type) {
           case Nc4prototypes.NC_BYTE:
           case Nc4prototypes.NC_UBYTE:
-            att = new Attribute(attname, DataType.BYTE);
+            att = new Attribute(attname, DataType.BYTE, type == Nc4prototypes.NC_UBYTE);
             break;
           case Nc4prototypes.NC_CHAR: // a zero length char is considered to be an empty string
             att = new Attribute(attname, "");
             break;
           case Nc4prototypes.NC_DOUBLE:
-            att = new Attribute(attname, DataType.DOUBLE);
+            att = new Attribute(attname, DataType.DOUBLE, false);
             break;
           case Nc4prototypes.NC_FLOAT:
-            att = new Attribute(attname, DataType.FLOAT);
+            att = new Attribute(attname, DataType.FLOAT, false);
             break;
           case Nc4prototypes.NC_INT:
           case Nc4prototypes.NC_UINT:
-            att = new Attribute(attname, DataType.INT);
+            att = new Attribute(attname, DataType.INT, type == Nc4prototypes.NC_UINT);
             break;
           case Nc4prototypes.NC_UINT64:
           case Nc4prototypes.NC_INT64:
-            att = new Attribute(attname, DataType.LONG);
+            att = new Attribute(attname, DataType.LONG, type == Nc4prototypes.NC_UINT64);
             break;
           case Nc4prototypes.NC_USHORT:
           case Nc4prototypes.NC_SHORT:
-            att = new Attribute(attname, DataType.SHORT);
+            att = new Attribute(attname, DataType.SHORT, type == Nc4prototypes.NC_USHORT);
             break;
           case Nc4prototypes.NC_STRING:
-            att = new Attribute(attname, DataType.STRING);
+            att = new Attribute(attname, DataType.STRING, false);
             break;
           default:
             log.warn("Unsupported attribute data type == " + type);
@@ -827,6 +828,7 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
       } else {
         fld.data = Array.factory(ct.dt, new int[]{len});
       }
+      if (ct.isUnsigned) fld.data.setUnsigned(true);
     }
 
     for (int i = 0; i < len; i++) {
@@ -894,7 +896,7 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
           case Nc4prototypes.NC_STRING:
             lval = bbuff.getLong(pos);
             Pointer p = new Pointer(lval);
-            String strval = p.getString(0, false);
+            String strval = p.getString(0, CDM.UTF8);
             fld.data.setObject(i, strval);
             if (debugCompoundAtt) System.out.println("result= " + strval);
             continue;
@@ -904,6 +906,7 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
             if (subUserType == null) {
               throw new IOException("Unknown compound user type == " + fld);
             } else if (subUserType.typeClass == Nc4prototypes.NC_ENUM) {
+              // WTF ?
             } else if (subUserType.typeClass == Nc4prototypes.NC_VLEN) {
               decodeVlenField(fld, subUserType, pos, i, bbuff);
               break;
@@ -1023,7 +1026,7 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
       throw new IllegalStateException("Dunno what to with " + dtype);
     }
 
-    if (isUnsigned(typeid))
+    if (cvttype.isUnsigned)
       v.addAttribute(new Attribute(CDM.UNSIGNED, "true"));
 
     if (dtype.isEnum()) {
@@ -1062,9 +1065,9 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
 
     String vname = makeString(name);
     int typeid = xtypep.getValue();
-    ConvertedType ctype = convertDataType(typeid);
+    ConvertedType cvt = convertDataType(typeid);
 
-    f.format("%s %s(", ctype.dt, vname);
+    f.format("%s %s %s(", cvt.dt, cvt.isUnsigned ? "unsigned" : "", vname);
     for (int i = 0; i < ndimsp.getValue(); i++) {
       f.format("%d ", dimids[i]);
     }
@@ -1243,7 +1246,7 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
       System.arraycopy(dimz, 0, this.dims, 0, ndims);
 
       ctype = convertDataType(fldtypeid);
-      Section s = new Section(this.dims);
+      //Section s = new Section(this.dims);
       //total_size = (int) s.computeSize() * ctype.dt.getSize();
 
       if (isVlen(fldtypeid)) {
@@ -1275,6 +1278,7 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
       for (int i = 0; dims != null && i < dims.length; ++i)
         sb.append(i == 0 ? "" : ", ").append(dims[i]);
       sb.append(", dtype=").append(ctype.dt);
+      if (ctype.isUnsigned) sb.append("(unsigned)");
       if (ctype.isVlen) sb.append("(vlen)");
       sb.append('}');
       return sb.toString();
@@ -1783,6 +1787,7 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
     ConvertedType cvt = convertDataType(userType.baseTypeid);
     Array array = decodeVlen(cvt.dt, pos, bbuff);
     fld.data.setObject(idx, array);
+    if (cvt.isUnsigned) fld.data.setUnsigned(true);
   }
 
   private Array
@@ -2010,31 +2015,21 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
     return f.toString();
   }
 
-  private SizeT[] convertSizeT(long[] from) {
-    if (from.length == 0) return null;
-    SizeT[] to = new SizeT[from.length];
-    for (int i = 0; i < from.length; i++)
-      to[i] = new SizeT(from[i]);
-    return to;
-  }
-
-  private SizeT[] convertPtrDiffT(int[] from) {
-    return convertSizeT(from);
-  }
-
   private class ConvertedType {
     DataType dt;
+    boolean isUnsigned;
     boolean isVlen;
 
-    ConvertedType(DataType dt) {
+    ConvertedType(DataType dt, boolean isUnsigned) {
       this.dt = dt;
+      this.isUnsigned = isUnsigned;
     }
   }
 
-  private int convertDataType(DataType dt) {
+  private int convertDataType(DataType dt, boolean isUnsigned) {
     switch (dt) {
       case BYTE:
-        return Nc4prototypes.NC_BYTE;
+        return isUnsigned ? Nc4prototypes.NC_UBYTE : Nc4prototypes.NC_BYTE;
       case CHAR:
         return Nc4prototypes.NC_CHAR;
       case DOUBLE:
@@ -2042,11 +2037,11 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
       case FLOAT:
         return Nc4prototypes.NC_FLOAT;
       case INT:
-        return Nc4prototypes.NC_INT;
+        return isUnsigned ? Nc4prototypes.NC_UINT : Nc4prototypes.NC_INT;
       case LONG:
-        return Nc4prototypes.NC_INT64;
+        return isUnsigned ? Nc4prototypes.NC_UINT64 : Nc4prototypes.NC_INT64;
       case SHORT:
-        return Nc4prototypes.NC_SHORT;
+        return isUnsigned ? Nc4prototypes.NC_USHORT : Nc4prototypes.NC_SHORT;
       case STRING:
         return Nc4prototypes.NC_STRING;
       case ENUM1:
@@ -2066,35 +2061,43 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
   private ConvertedType convertDataType(int type) {
     switch (type) {
       case Nc4prototypes.NC_BYTE:
+        return new ConvertedType(DataType.BYTE, false);
+
       case Nc4prototypes.NC_UBYTE:
-        return new ConvertedType(DataType.BYTE);
+        return new ConvertedType(DataType.BYTE, true);
 
       case Nc4prototypes.NC_CHAR:
-        return new ConvertedType(DataType.CHAR);
+        return new ConvertedType(DataType.CHAR, false);
 
       case Nc4prototypes.NC_SHORT:
+        return new ConvertedType(DataType.SHORT, false);
+
       case Nc4prototypes.NC_USHORT:
-        return new ConvertedType(DataType.SHORT);
+        return new ConvertedType(DataType.SHORT, true);
 
       case Nc4prototypes.NC_INT:
+        return new ConvertedType(DataType.INT, false);
+
       case Nc4prototypes.NC_UINT:
-        return new ConvertedType(DataType.INT);
+        return new ConvertedType(DataType.INT, true);
 
       case Nc4prototypes.NC_INT64:
+        return new ConvertedType(DataType.LONG, false);
+
       case Nc4prototypes.NC_UINT64:
-        return new ConvertedType(DataType.LONG);
+        return new ConvertedType(DataType.LONG, true);
 
       case Nc4prototypes.NC_FLOAT:
-        return new ConvertedType(DataType.FLOAT);
+        return new ConvertedType(DataType.FLOAT, false);
 
       case Nc4prototypes.NC_DOUBLE:
-        return new ConvertedType(DataType.DOUBLE);
+        return new ConvertedType(DataType.DOUBLE, false);
 
       case Nc4prototypes.NC_ENUM:
-        return new ConvertedType(DataType.ENUM1); // LOOK width ??
+        return new ConvertedType(DataType.ENUM1, false); // LOOK width ??
 
       case Nc4prototypes.NC_STRING:
-        return new ConvertedType(DataType.STRING);
+        return new ConvertedType(DataType.STRING, false);
 
       default:
         UserType userType = userTypes.get(type);
@@ -2103,13 +2106,13 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
 
         switch (userType.typeClass) {
           case Nc4prototypes.NC_ENUM:
-            return new ConvertedType(DataType.ENUM1);
+            return new ConvertedType(DataType.ENUM1, false);
 
           case Nc4prototypes.NC_COMPOUND:
-            return new ConvertedType(DataType.STRUCTURE);
+            return new ConvertedType(DataType.STRUCTURE, false);
 
           case Nc4prototypes.NC_OPAQUE:
-            return new ConvertedType(DataType.OPAQUE);
+            return new ConvertedType(DataType.OPAQUE, false);
 
           case Nc4prototypes.NC_VLEN:
             ConvertedType result = convertDataType(userType.baseTypeid);
@@ -2320,7 +2323,7 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
       typid = vinfo.typeid;
 
     } else {
-      typid = convertDataType(v.getDataType());
+      typid = convertDataType(v.getDataType(), v.isUnsigned());
       if (typid < 0) return; // not implemented yet
       vinfo = new Vinfo(g4, -1, typid);
     }
@@ -2335,7 +2338,7 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
     if (debugWrite)
       System.out.printf("added variable %s (grpid %d varid %d) %n", v.getShortName(), vinfo.g4.grpid, vinfo.varid);
 
-    if (version == NetcdfFileWriter.Version.netcdf4 && v.getRank() > 0) {
+    if (version.isNetdf4format() && v.getRank() > 0) {
       boolean isChunked = chunker.isChunked(v);
       int storage = isChunked ? Nc4prototypes.NC_CHUNKED : Nc4prototypes.NC_CONTIGUOUS;
       SizeT[] chunking;
@@ -2366,8 +2369,13 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
 
     v.setSPobject(vinfo);
 
+    if (v instanceof Structure) {
+      createCompoundMemberAtts(g4.grpid, varid, (Structure) v);
+    }
+
     for (Attribute att : v.getAttributes())
       writeAttribute(g4.grpid, varid, att, v);
+
   }
 
 
@@ -2409,11 +2417,11 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
     for (Variable v : s.getVariables()) {
       if (v.getDataType() == DataType.STRING) continue;
 
-      int field_typeid = convertDataType(v.getDataType());
+      int field_typeid = convertDataType(v.getDataType(), v.isUnsigned());
       if (v.isScalar())
-        ret = nc4.nc_insert_compound(ncid, typeid, v.getShortName(), new SizeT(offset), field_typeid);
+        ret = nc4.nc_insert_compound(g4.grpid, typeid, v.getShortName(), new SizeT(offset), field_typeid);
       else
-        ret = nc4.nc_insert_array_compound(ncid, typeid, v.getShortName(), new SizeT(offset), field_typeid, v.getRank(), v.getShape());
+        ret = nc4.nc_insert_array_compound(g4.grpid, typeid, v.getShortName(), new SizeT(offset), field_typeid, v.getRank(), v.getShape());
 
       if (ret != 0)
         throw new IOException(nc4.nc_strerror(ret) + " on\n" + s.getShortName());
@@ -2432,6 +2440,117 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
     UserType ut = new UserType(g4.grpid, typeid, name, size, 0, (long) fldidx, NC_COMPOUND);
     userTypes.put(typeid, ut);
     ut.setFields(flds);
+  }
+
+  private void createCompoundMemberAtts(int grpid, int varid, Structure s) throws IOException {
+
+    // count size of attribute values
+    int sizeAtts = 0;
+    for (Variable m : s.getVariables()) {
+      for (Attribute att : m.getAttributes()) {
+        int elemSize;
+        if (att.isString()) {
+          String val = att.getStringValue();
+          elemSize = val.getBytes(CDM.UTF8).length;
+          if (elemSize == 0) elemSize = 1;
+        } else {
+          elemSize = att.getDataType().getSize() * att.getLength();
+        }
+        sizeAtts += elemSize;
+      }
+    }
+    if (sizeAtts == 0) return; // no atts;    */
+
+    // create the compound type for member_atts_t
+    IntByReference typeidp = new IntByReference();
+    String typeName = "_"+s.getShortName() + "_field_atts_t";
+    int ret = nc4.nc_def_compound(grpid, new SizeT(sizeAtts), typeName, typeidp);
+    if (ret != 0)
+      throw new IOException(nc4.nc_strerror(ret) + " on\n" + s);
+    int typeid = typeidp.getValue();
+    if (debugCompound) System.out.printf("added compound member att type %s (typeid %d) grpid %d size=%d %n", typeName, typeid, grpid, sizeAtts);  // */
+
+    // add the fields to the member_atts_t and place the values in a ByteBuffer
+    ByteBuffer bb = ByteBuffer.allocate(sizeAtts);
+    bb.order(ByteOrder.nativeOrder());
+    for (Variable m : s.getVariables()) {
+      for (Attribute att : m.getAttributes()) {
+        // add the fields to the member_atts_t
+        String memberName = m.getShortName()+":"+att.getShortName();
+        int field_typeid = att.isString() ? Nc4prototypes.NC_CHAR : convertDataType(att.getDataType(), att.isUnsigned());   // LOOK override String with CHAR
+
+        if (att.isString()) {  // String gets turned into array of char; otherwise no way to pass in
+          String val = att.getStringValue();
+          int len = val.getBytes(CDM.UTF8).length;
+          if (len == 0) len = 1;
+          ret = nc4.nc_insert_array_compound(grpid, typeid, memberName, new SizeT(bb.position()), field_typeid, 1, new int[] {len} );
+
+        } else if (!att.isArray())
+          ret = nc4.nc_insert_compound(grpid, typeid, memberName, new SizeT(bb.position()), field_typeid);
+        else
+          ret = nc4.nc_insert_array_compound(grpid, typeid, memberName, new SizeT(bb.position()), field_typeid, 1, new int[] {att.getLength()} );
+
+        if (ret != 0)
+          throw new IOException(nc4.nc_strerror(ret) + " on\n" + s.getShortName());
+
+        if (debugCompound) {
+          int elemSize;
+          if (att.isString()) {
+            String val = att.getStringValue();
+            elemSize = val.getBytes(CDM.UTF8).length;
+          } else {
+            elemSize = att.getDataType().getSize() * att.getLength();
+          }
+          System.out.printf(" added compound att member %s type %s (%d) offset=%d elemSize=%d%n", memberName, att.getDataType(), field_typeid, bb.position(), elemSize);
+        }
+
+        // place the values in a ByteBuffer
+        if (att.isString()) {
+          String val = att.getStringValue();
+          byte[] sby = val.getBytes(CDM.UTF8);
+          for (byte b : sby)
+            bb.put(b);
+          if (sby.length == 0) bb.put((byte)0); // empyy string has a 0
+        } else {
+          for (int i=0; i<att.getLength(); i++) {
+            switch (att.getDataType()) {
+              case BYTE:
+                bb.put( att.getNumericValue(i).byteValue());
+                break;
+              case CHAR:
+                bb.put( att.getNumericValue(i).byteValue());  // ??
+                break;
+              case DOUBLE:
+                bb.putDouble( att.getNumericValue(i).doubleValue());
+                break;
+              case FLOAT:
+                bb.putFloat( att.getNumericValue(i).floatValue());
+                break;
+              case INT:
+                bb.putInt( att.getNumericValue(i).intValue());
+                break;
+              case LONG:
+                bb.putLong( att.getNumericValue(i).longValue());
+                break;
+              case SHORT:
+                bb.putShort( att.getNumericValue(i).shortValue());
+                break;
+              default:
+                throw new IllegalStateException("Att type "+att.getDataType()+" not found");
+            }
+          }
+        }
+      }     // loop over atts
+    }       // loop over vars  */
+
+
+    // now write that attribute on the variable
+    String attName = "_field_atts";
+    ret = nc4.nc_put_att (grpid, varid, attName, typeid, new SizeT(1), bb.array());
+    if (ret != 0)
+       throw new IOException(nc4.nc_strerror(ret) + " on\n" + s.getShortName());
+    if (debugCompound) System.out.printf("write att %s (typeid %d) size=%d %n", attName, typeid, sizeAtts); // */
+
   }
 
   //////////////////////////////////////////////////
@@ -2466,6 +2585,10 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
         log.warn("_FillValue type must agree with var = " + v.getFullName() + " type " + att.getDataType() + "!=" + v.getDataType());
         return;
       }
+      if (att.isUnsigned() != v.isUnsigned()) {
+        log.warn("_FillValue isUnsigned must agree with var = " + v.getFullName() + " isUnsigned " + att.isUnsigned() + "!=" + v.isUnsigned());
+        return;
+      }
     }
 
     // dont propagate these - handled internally
@@ -2473,7 +2596,6 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
     if (att.getShortName().equals(H5header.HDF5_DIMENSION_LIST)) return;
     if (att.getShortName().equals(H5header.HDF5_DIMENSION_SCALE)) return;
     if (att.getShortName().equals(H5header.HDF5_DIMENSION_LABELS)) return;
-
     if (att.getShortName().equals(CDM.CHUNK_SIZES)) return;
     if (att.getShortName().equals(CDM.COMPRESS)) return;
 
@@ -2491,7 +2613,10 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
         }
         break;
       case BYTE:
-        ret = nc4.nc_put_att_schar(grpid, varid, att.getShortName(), Nc4prototypes.NC_BYTE, new SizeT(att.getLength()), (byte[]) values.getStorage());
+        if (att.isUnsigned())
+          ret = nc4.nc_put_att_uchar(grpid, varid, att.getShortName(), Nc4prototypes.NC_UBYTE, new SizeT(att.getLength()), (byte[]) values.getStorage());
+        else
+          ret = nc4.nc_put_att_schar(grpid, varid, att.getShortName(), Nc4prototypes.NC_BYTE, new SizeT(att.getLength()), (byte[]) values.getStorage());
         break;
       case CHAR:
         ret = nc4.nc_put_att_text(grpid, varid, att.getShortName(), new SizeT(att.getLength()), IospHelper.convertCharToByte((char[]) values.getStorage()));
@@ -2503,13 +2628,22 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
         ret = nc4.nc_put_att_float(grpid, varid, att.getShortName(), Nc4prototypes.NC_FLOAT, new SizeT(att.getLength()), (float[]) values.getStorage());
         break;
       case INT:
-        ret = nc4.nc_put_att_int(grpid, varid, att.getShortName(), Nc4prototypes.NC_INT, new SizeT(att.getLength()), (int[]) values.getStorage());
+        if (att.isUnsigned())
+          ret = nc4.nc_put_att_uint(grpid, varid, att.getShortName(), Nc4prototypes.NC_UINT, new SizeT(att.getLength()), (int[]) values.getStorage());
+        else
+          ret = nc4.nc_put_att_int(grpid, varid, att.getShortName(), Nc4prototypes.NC_INT, new SizeT(att.getLength()), (int[]) values.getStorage());
         break;
       case LONG:
-        ret = nc4.nc_put_att_longlong(grpid, varid, att.getShortName(), Nc4prototypes.NC_INT64, new SizeT(att.getLength()), (long[]) values.getStorage());
+        if (att.isUnsigned())
+          ret = nc4.nc_put_att_ulonglong(grpid, varid, att.getShortName(), Nc4prototypes.NC_UINT64, new SizeT(att.getLength()), (long[]) values.getStorage());
+        else
+          ret = nc4.nc_put_att_longlong(grpid, varid, att.getShortName(), Nc4prototypes.NC_INT64, new SizeT(att.getLength()), (long[]) values.getStorage());
         break;
       case SHORT:
-        ret = nc4.nc_put_att_short(grpid, varid, att.getShortName(), Nc4prototypes.NC_SHORT, new SizeT(att.getLength()), (short[]) values.getStorage());
+        if (att.isUnsigned())
+          ret = nc4.nc_put_att_ushort(grpid, varid, att.getShortName(), Nc4prototypes.NC_USHORT, new SizeT(att.getLength()), (short[]) values.getStorage());
+        else
+          ret = nc4.nc_put_att_short(grpid, varid, att.getShortName(), Nc4prototypes.NC_SHORT, new SizeT(att.getLength()), (short[]) values.getStorage());
         break;
     }
 
@@ -2591,6 +2725,7 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
         }
         break;
 
+      case Nc4prototypes.NC_UINT:
       case Nc4prototypes.NC_INT:
         int[] vali = (int[]) data;
         assert vali.length == sectionLen;
@@ -2604,6 +2739,7 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
         }
         break;
 
+      case Nc4prototypes.NC_UINT64:
       case Nc4prototypes.NC_INT64:
         long[] vall = (long[]) data;
         assert vall.length == sectionLen;
@@ -2614,6 +2750,7 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
           throw new IOException(ret + ": " + nc4.nc_strerror(ret));
         break;
 
+      case Nc4prototypes.NC_USHORT:
       case Nc4prototypes.NC_SHORT:
         short[] vals = (short[]) data;
         assert vals.length == sectionLen;
@@ -2688,7 +2825,7 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
     SizeT[] shape = convertSizeT(section.getShape());
     SizeT[] stride = convertSizeT(section.getStride());
 
-    ArrayStructureBB valuesBB = IospHelper.makeArrayBB(values);
+    ArrayStructureBB valuesBB = StructureDataDeep.copyToArrayBB(values);
     ByteBuffer bbuff = valuesBB.getByteBuffer();  // LOOK c library reads in native order, so need to convert??
     // LOOK embedded strings getting lost ??
 

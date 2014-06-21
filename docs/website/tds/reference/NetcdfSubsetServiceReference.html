@@ -118,7 +118,7 @@ examples:
 			<tr>
 				<td>var</td>
 				<td>yes</td>
-				<td><span>Name of variables, separated by ',' (comma).</span></td>
+				<td><span>Name of <strong>variables</strong>, separated by ',' (comma).</span></td>
 				<td>Variables must be in the dataset description. Bounding box requests on grid datasets only support requests on variables with same vertical levels and time coordinates.</td>
 				<td>&nbsp;</td>
 				<td>&nbsp;</td>
@@ -180,7 +180,7 @@ examples:
 				<td>Used to specify a time range. Time as
 				  a <a rel="nofollow"
 					" href="#W3Cdate">W3C
-				    date</a> or "present".  Duration	as a <a rel="nofollow" href="http://www.unidata.ucar.edu/software/thredds/v4.4/tds/reference/NetcdfSubsetServiceReference.html#W3Cduration">W3C time duration</a>.</td>
+				    date</a> or "present".  Duration	as a <a rel="nofollow" href="http://www.unidata.ucar.edu/software/thredds/current/tds/reference/NetcdfSubsetServiceReference.html#W3Cduration">W3C time duration</a>.</td>
 				<td>Two of time_start, time_end,
 				      time_duration must be present to define a valid time range. The provided time range must intersect the dataset time
 					range</td>
@@ -246,27 +246,35 @@ examples:
 			</tr>
 		</tbody>
 	</table>
-	<p><strong>Variable subsetting:</strong></p>
+	<h4><strong>Variable subsetting:</strong></h4>
 	<ul>
 	  <li>For all types, you <strong>must</strong> specify a list of valid variable names.</li>
 </ul>
-	<p><strong> Horizontal spatial subsetting:</strong></p>
+	<h4><strong> Horizontal spatial subsetting:</strong></h4>
     <ul>
       <li>grids: you may specify a lat/lon bounding box or a projection bounding box. If none, return the entire horizontal grid.</li>
       <li>grids as point: you <strong>must</strong> specify a point location with the<em> latitude, longitude</em> parameters. </li>
       <li>stations: you may specify a lat/lon bounding box, a point location, or a list of stations. If none, do not filter.</li>
       <li>points: you may specify a lat/lon bounding box. If none, do not filter.</li>
     </ul>
-    <p><strong>Vertical spatial subsetting:</strong></p>
+    <h4><strong>Vertical spatial subsetting:</strong></h4>
     <ul>
       <li>grids: you may specify a vertical coordinate. If none, return all vertical levels</li>
     </ul>
-    <p><strong>Temporal subsetting:</strong></p>
+    <h4><strong>Temporal subsetting:</strong></h4>
 <ul>
       <li>For all types, you may specify a time range or a specific time. If none, return the time closest to the present. </li>
       <li>A time range will request all features that intersect the range.</li>
       <li>A time point will request the feature that is closest to that time.</li>
       <li>If you include <em>temporal=all</em>, then return all times.</li>
+</ul>
+<h4>Output Format (<em>accept</em> parameter):</h4>
+<ul>
+  <li><em>csv</em>: Comma-separated values, one feature per line</li>
+  <li><em>xml</em>: Collection of feature elements</li>
+  <li><em>netCDF</em>: CF/NetCDF-3</li>
+  <li><em>netCDF4</em>: CF/NetCDF-4 classic model</li>
+  <li><em>netCDF4ext</em>: NetCDF-4 extended model</li>
 </ul>
 <h2><strong><a name="Subsetting"></a> Subsetting types and use cases </strong>
 </h2>
@@ -316,7 +324,7 @@ examples:
 		<li><span class="bold">Default:</span>if no temporal subseting is specified the closest time to the current time is returned</li>
 		<li><span class="bold">All time range:</span>A shorthand to request all the time range in a dataset is setting the parameter temporal=all. This can also be done providing a valid temporal range containing
 		all the dataset time range</li>
-		<li><span class="bold">One single time:</span>Passing the parameter time we will get the sime slice closest to the requested time if it is within the time range of the dataset</li>
+		<li><span class="bold">One single time:</span>Passing the parameter time will get the time slice closest to the requested time if it is within the time range of the dataset</li>
 		<li><span class="bold">Valid time range:</span>A valid time range is defined with two of the three parameters: time_start, time_end and time_duration</li>
 	</ul>
 	<p>Times (time, time_start and time_end) must be specified as <a href="#W3Cdate">W3C date string</a> or "present" and time_duration as a <a rel="nofollow" href="#W3Cduration">W3C time duration</a></p>

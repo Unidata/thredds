@@ -49,8 +49,12 @@ public enum SupportedFormat {
 	
 	NETCDF3("netcdf", false,  ContentType.netcdf.toString(), "netcdf"),
 	NETCDF4("netcdf4", false,  ContentType.netcdf4.toString(), "netcdf4"),
+    // NETCDF4EXT("netcdf4ext", false, ContentType.netcdf4.toString(), "netcdf4ext"),
+
 	JSON("json", false, ContentType.json.toString(), "json", "geojson"),
-	WKT("wkt", false, ContentType.text.toString(), "wkt");
+	WKT("wkt", false, ContentType.text.toString(), "wkt"),
+
+    WATERML2("waterml2", true, ContentType.xml.toString(), "waterml2");
 	
 	/*
 	 * First alias is used as content-type in the http headers
@@ -91,5 +95,11 @@ public enum SupportedFormat {
 		return isStream;
 	}
 	
-		
+    public boolean isBinary() {
+        return formatName.equals("netcdf") || formatName.equals("netcdf4");
+    }
+
+    public boolean isText() {
+        return !isBinary();
+    }
 }

@@ -1,34 +1,34 @@
 /*
- * Copyright 1998-2009 University Corporation for Atmospheric Research/Unidata
+ * Copyright 1998-2014 University Corporation for Atmospheric Research/Unidata
  *
- * Portions of this software were developed by the Unidata Program at the
- * University Corporation for Atmospheric Research.
+ *   Portions of this software were developed by the Unidata Program at the
+ *   University Corporation for Atmospheric Research.
  *
- * Access and use of this software shall impose the following obligations
- * and understandings on the user. The user is granted the right, without
- * any fee or cost, to use, copy, modify, alter, enhance and distribute
- * this software, and any derivative works thereof, and its supporting
- * documentation for any purpose whatsoever, provided that this entire
- * notice appears in all copies of the software, derivative works and
- * supporting documentation.  Further, UCAR requests that the user credit
- * UCAR/Unidata in any publications that result from the use of this
- * software or in any product that includes this software. The names UCAR
- * and/or Unidata, however, may not be used in any advertising or publicity
- * to endorse or promote any products or commercial entity unless specific
- * written permission is obtained from UCAR/Unidata. The user also
- * understands that UCAR/Unidata is not obligated to provide the user with
- * any support, consulting, training or assistance of any kind with regard
- * to the use, operation and performance of this software nor to provide
- * the user with any updates, revisions, new versions or "bug fixes."
+ *   Access and use of this software shall impose the following obligations
+ *   and understandings on the user. The user is granted the right, without
+ *   any fee or cost, to use, copy, modify, alter, enhance and distribute
+ *   this software, and any derivative works thereof, and its supporting
+ *   documentation for any purpose whatsoever, provided that this entire
+ *   notice appears in all copies of the software, derivative works and
+ *   supporting documentation.  Further, UCAR requests that the user credit
+ *   UCAR/Unidata in any publications that result from the use of this
+ *   software or in any product that includes this software. The names UCAR
+ *   and/or Unidata, however, may not be used in any advertising or publicity
+ *   to endorse or promote any products or commercial entity unless specific
+ *   written permission is obtained from UCAR/Unidata. The user also
+ *   understands that UCAR/Unidata is not obligated to provide the user with
+ *   any support, consulting, training or assistance of any kind with regard
+ *   to the use, operation and performance of this software nor to provide
+ *   the user with any updates, revisions, new versions or "bug fixes."
  *
- * THIS SOFTWARE IS PROVIDED BY UCAR/UNIDATA "AS IS" AND ANY EXPRESS OR
- * IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
- * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
- * DISCLAIMED. IN NO EVENT SHALL UCAR/UNIDATA BE LIABLE FOR ANY SPECIAL,
- * INDIRECT OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING
- * FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT,
- * NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
- * WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
+ *   THIS SOFTWARE IS PROVIDED BY UCAR/UNIDATA "AS IS" AND ANY EXPRESS OR
+ *   IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ *   WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ *   DISCLAIMED. IN NO EVENT SHALL UCAR/UNIDATA BE LIABLE FOR ANY SPECIAL,
+ *   INDIRECT OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING
+ *   FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT,
+ *   NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
+ *   WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 package ucar.nc2;
 
@@ -98,8 +98,8 @@ public class Variable extends CDMNode implements VariableIF, ProxyReader, Attrib
 
   protected DataType dataType;
   protected int elementSize;
-  protected List<Dimension> dimensions = new ArrayList<Dimension>(5);
-  protected List<Attribute> attributes = new ArrayList<Attribute>();
+  protected List<Dimension> dimensions = new ArrayList<>(5);
+  protected List<Attribute> attributes = new ArrayList<>();
 
   protected boolean isVariableLength = false;
   protected boolean isMetadata = false;
@@ -148,9 +148,9 @@ public class Variable extends CDMNode implements VariableIF, ProxyReader, Attrib
    */
   public long getSize() {
     long size = 1;
-    for (int i = 0; i < shape.length; i++) {
-      if (shape[i] >= 0)
-        size *= shape[i];
+    for (int aShape : shape) {
+      if (aShape >= 0)
+        size *= aShape;
     }
     return size;
   }
@@ -436,7 +436,7 @@ public class Variable extends CDMNode implements VariableIF, ProxyReader, Attrib
   public Section getShapeAsSection() {
     if (shapeAsSection == null) {
       try {
-        List<Range> list = new ArrayList<Range>();
+        List<Range> list = new ArrayList<>();
         for (Dimension d : dimensions) {
           int len = d.getLength();
           if (len > 0)
@@ -502,7 +502,7 @@ public class Variable extends CDMNode implements VariableIF, ProxyReader, Attrib
     sectionV.setCaching(false); // dont cache
 
     // replace dimensions if needed !! LOOK not shared
-    sectionV.dimensions = new ArrayList<Dimension>();
+    sectionV.dimensions = new ArrayList<>();
     for (int i = 0; i < getRank(); i++) {
       Dimension oldD = getDimension(i);
       Dimension newD = (oldD.getLength() == sectionV.shape[i]) ? oldD : new Dimension(oldD.getShortName(), sectionV.shape[i], false);
@@ -565,7 +565,7 @@ public class Variable extends CDMNode implements VariableIF, ProxyReader, Attrib
    * @throws InvalidRangeException if dimension or value is illegal
    */
   public Variable reduce(List<Dimension> dims) throws InvalidRangeException {
-    List<Integer> dimIdx = new ArrayList<Integer>(dims.size());
+    List<Integer> dimIdx = new ArrayList<>(dims.size());
     for (Dimension d : dims) {
       assert dimensions.contains(d);
       assert d.getLength() == 1;
@@ -873,7 +873,7 @@ public class Variable extends CDMNode implements VariableIF, ProxyReader, Attrib
   @Override
   public Array reallyRead(Variable client, CancelTask cancelTask) throws IOException {
     if (isMemberOfStructure()) { // LOOK should be UnsupportedOperationException ??
-      List<String> memList = new ArrayList<String>();
+      List<String> memList = new ArrayList<>();
       memList.add(this.getShortName());
       Structure s = getParentStructure().select(memList);
       ArrayStructure as = (ArrayStructure) s.read();
@@ -1401,7 +1401,7 @@ public class Variable extends CDMNode implements VariableIF, ProxyReader, Attrib
    */
   public void setDimensions(List<Dimension> dims) {
     if (immutable) throw new IllegalStateException("Cant modify");
-    this.dimensions = (dims == null) ? new ArrayList<Dimension>() : new ArrayList<Dimension>(dims);
+    this.dimensions = (dims == null) ? new ArrayList<Dimension>() : new ArrayList<>(dims);
     resetShape();
   }
 
@@ -1430,11 +1430,11 @@ public class Variable extends CDMNode implements VariableIF, ProxyReader, Attrib
   /**
    * Set the dimensions using the dimensions names. The dimension is searched for recursively in the parent groups.
    *
-   * @param dimString : whitespace seperated list of dimension names, or '*' for Dimension.UNKNOWN. null or empty String is a scalar.
+   * @param dimString : whitespace separated list of dimension names, or '*' for Dimension.UNKNOWN, or number for anon dimension. null or empty String is a scalar.
    */
   public void setDimensions(String dimString) {
     if (immutable) throw new IllegalStateException("Cant modify");
-    List<Dimension> newDimensions = new ArrayList<Dimension>();
+    List<Dimension> newDimensions = new ArrayList<>();
 
     if ((dimString == null) || (dimString.length() == 0)) { // scalar
       this.dimensions = newDimensions;
@@ -1450,7 +1450,7 @@ public class Variable extends CDMNode implements VariableIF, ProxyReader, Attrib
         // if numeric - then its anonymous dimension
         try {
           int len = Integer.parseInt(dimName);
-          d = new Dimension("", len, false, false, false);
+          d = new Dimension(null, len, false, false, false);
         } catch (Exception e) {
           throw new IllegalArgumentException("Variable " + getFullName() + " setDimensions = '" + dimString +
                   "' FAILED, dim doesnt exist=" + dimName + " file = " + getDatasetLocation());
@@ -1469,7 +1469,7 @@ public class Variable extends CDMNode implements VariableIF, ProxyReader, Attrib
    */
   public void resetDimensions() {
     if (immutable) throw new IllegalStateException("Cant modify");
-    ArrayList<Dimension> newDimensions = new ArrayList<Dimension>();
+    ArrayList<Dimension> newDimensions = new ArrayList<>();
 
     for (Dimension dim : dimensions) {
       if (dim.isShared()) {
@@ -1493,7 +1493,7 @@ public class Variable extends CDMNode implements VariableIF, ProxyReader, Attrib
    */
   public void setDimensionsAnonymous(int[] shape) throws InvalidRangeException {
     if (immutable) throw new IllegalStateException("Cant modify");
-    this.dimensions = new ArrayList<Dimension>();
+    this.dimensions = new ArrayList<>();
     for (int i = 0; i < shape.length; i++) {
       if ((shape[i] < 1) && (shape[i] != -1)) throw new InvalidRangeException("shape[" + i + "]=" + shape[i] + " must be > 0");
       Dimension anon;
@@ -1514,7 +1514,7 @@ public class Variable extends CDMNode implements VariableIF, ProxyReader, Attrib
    */
   public void setIsScalar() {
     if (immutable) throw new IllegalStateException("Cant modify");
-    this.dimensions = new ArrayList<Dimension>();
+    this.dimensions = new ArrayList<>();
     resetShape();
   }
 
@@ -1741,7 +1741,7 @@ public class Variable extends CDMNode implements VariableIF, ProxyReader, Attrib
    * @return array of Dimension, rank of v plus all parents.
    */
   public List<Dimension> getDimensionsAll() {
-    List<Dimension> dimsAll = new ArrayList<Dimension>();
+    List<Dimension> dimsAll = new ArrayList<>();
     addDimensionsAll(dimsAll, this);
     return dimsAll;
   }

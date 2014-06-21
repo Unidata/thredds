@@ -449,7 +449,7 @@ public class N3header {
         DataType dtype = getDataType(type);
 
         if (nelems == 0) {
-          att = new Attribute(name, dtype); // empty - no values
+          att = new Attribute(name, dtype, false); // empty - no values
 
         } else {
           int[] shape = {nelems};

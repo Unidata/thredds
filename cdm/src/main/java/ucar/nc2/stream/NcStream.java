@@ -241,7 +241,7 @@ public class NcStream {
   public static long encodeArrayStructure(ArrayStructure as, OutputStream os) throws java.io.IOException {
     long size = 0;
 
-    ArrayStructureBB dataBB = IospHelper.makeArrayBB(as);
+    ArrayStructureBB dataBB = StructureDataDeep.copyToArrayBB(as);
     List<String> ss = new ArrayList<String>();
     List<Object> heap = dataBB.getHeap();
     List<Integer> count = new ArrayList<Integer>();
@@ -546,7 +546,7 @@ public class NcStream {
   static Attribute decodeAtt(NcStreamProto.Attribute attp) {
     int len = attp.getLen();
     if (len == 0) // deal with empty attribute
-      return new Attribute(attp.getName(), decodeAttributeType(attp.getType()));
+      return new Attribute(attp.getName(), decodeAttributeType(attp.getType()), false);  // LOOK unsigned
 
     DataType dt = decodeAttributeType(attp.getType());
 

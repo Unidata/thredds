@@ -122,7 +122,7 @@
     </ul>
   </li>
 </ul>
-<p>See <a href="Netcdf4.html">here</a> for two way mapping between netCDF-4 and CDM data models.</p>
+<p>See <a href="Netcdf4.html">here</a> for detailed mapping between the NetCDF-4 and CDM data models.</p>
 
 <h3><a name="dods"></a>Comparision to OPeNDAP (DAP 2)</h3>
 <ul>
@@ -149,7 +149,7 @@
   </li>
   <li>Since HDF5 does not support shared dimensions, however, reading HDF5 files into the higher levels of the CDM (Coordinate Systems, Grids, etc) may not work
     like you want. For this reason we recommend using the <a href="http://www.unidata.ucar.edu/software/netcdf/">netCDF-4 C library</a> for writing HDF5 files.
-  </li>
+  Heres <a href="http://www.unidata.ucar.edu/blogs/developer/en/entry/dimensions_scales">why</a>.</li>
 </ul>
 <p>Please send file examples if you find a problem with the CDM reading HDF5 files, other than the ones listed above.</p>
 <hr WIDTH="100%">
@@ -241,7 +241,7 @@ Structure {
 
 <p>Neither NetCDF, HDF5, or OPeNDAP have Coordinate Systems as part of their APIs and data models, so their specification in a file is left to to higher level
   libraries (like HDF-EOS) and to <a href="http://www.unidata.ucar.edu/software/netcdf/conventions.html">conventions</a>. If you are writing netCDF files, we
-  strongly recommend using <a href="http://cf-pcmdi.llnl.gov/documents/cf-conventions/">CF Conventions</a>.</p>
+  strongly recommend using <a href="http://cfconventions.org/">CF Conventions</a>.</p>
 
 <p>NetCDF has long had the convention of specifying a 1-dimensional CoordinateAxis
   with a <em><strong>coordinate variable</strong></em>, which is a Variable with
@@ -284,8 +284,7 @@ Structure {
 </ul>
 <hr WIDTH="100%">
 <address>
-  <img src="../nc.gif" width="64" height="64" alt=""> This document is maintained by <a href="mailto:caron@unidata.ucar.edu">John Caron</a> and was last updated July
-  2013
+  <img src="../nc.gif" width="64" height="64" alt=""> This document is maintained by <a href="mailto:caron@unidata.ucar.edu">John Caron</a> and was last updated June 2014
 </address>
 <p>&nbsp;</p>
 </body>

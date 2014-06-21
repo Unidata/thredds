@@ -33,19 +33,9 @@
 
 package thredds.server.ncss.view.gridaspoint;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.OutputStream;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpHeaders;
-
 import thredds.server.ncss.controller.GridDatasetResponder;
 import thredds.server.ncss.format.SupportedFormat;
 import thredds.server.ncss.view.gridaspoint.netcdf.CFPointWriterWrapper;
@@ -63,6 +53,11 @@ import ucar.nc2.util.DiskCache2;
 import ucar.nc2.util.IO;
 import ucar.unidata.geoloc.LatLonPoint;
 
+import java.io.File;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.util.*;
+
 public class NetCDFPointDataWriter implements PointDataWriter {
   static private Logger log = LoggerFactory.getLogger(NetCDFPointDataWriter.class);
 
@@ -71,16 +66,10 @@ public class NetCDFPointDataWriter implements PointDataWriter {
   }
 
   public static String getFileNameForResponse(NetcdfFileWriter.Version version, String pathInfo) {
-    String fileExtension = ".nc";
-
-    if (version == NetcdfFileWriter.Version.netcdf4) {
-      fileExtension = ".nc4";
-    }
-
     String[] tmp = pathInfo.split("/");
     StringBuilder sb = new StringBuilder();
     sb.append(tmp[tmp.length - 2]).append("_").append(tmp[tmp.length - 1]);
-    String filename = sb.toString().split("\\.")[0] + fileExtension;
+    String filename = sb.toString().split("\\.")[0] + version.getSuffix();
 
     return filename;
   }

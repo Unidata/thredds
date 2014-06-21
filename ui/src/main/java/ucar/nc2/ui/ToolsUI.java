@@ -110,8 +110,7 @@ import java.util.List;
  *
  * @author caron
  */
-public class
-    ToolsUI extends JPanel {
+public class ToolsUI extends JPanel {
   static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(ToolsUI.class);
 
   static private final String WorldDetailMap = "/resources/nj22/ui/maps/Countries.zip";
@@ -6223,7 +6222,33 @@ public class
   static boolean isDiskCacheInit = false;
 
   public static void main(String args[]) {
-        //////////////////////////////////////////////////////////////////////////
+    try {
+      // Switch to Nimbus Look and Feel, if it's available.
+      for (UIManager.LookAndFeelInfo info : UIManager.getInstalledLookAndFeels()) {
+        if ("Nimbus".equals(info.getName())) {
+          UIManager.setLookAndFeel(info.getClassName());
+          break;
+        }
+      }
+    } catch (ClassNotFoundException | InstantiationException | IllegalAccessException |
+            UnsupportedLookAndFeelException e) {
+      log.warn("Found Nimbus Look and Feel, but couldn't install it.", e);
+    }
+
+    // get a splash screen up right away
+    final SplashScreen splash = new SplashScreen();
+
+    if (debugListen) {
+      System.out.println("Arguments:");
+      for (int i = 0; i < args.length; i++) {
+        String arg = args[i];
+        System.out.println(" " + arg);
+      }
+
+        HTTPSession.debugHeaders(true);
+    }
+
+    //////////////////////////////////////////////////////////////////////////
     // handle multiple versions of ToolsUI, along with passing a dataset name
     SocketMessage sm;
     if (args.length > 0) {

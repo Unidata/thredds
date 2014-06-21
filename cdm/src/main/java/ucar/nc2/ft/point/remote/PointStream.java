@@ -154,7 +154,7 @@ public class PointStream {
     builder.setLoc(locBuilder);
 
     StructureData sdata = pf.getData();
-    ArrayStructureBB abb = IospHelper.copyToArrayBB(sdata);
+    ArrayStructureBB abb = StructureDataDeep.copyToArrayBB(sdata);
     ByteBuffer bb = abb.getByteBuffer();
     if (debug) {
       StructureMembers sm = sdata.getStructureMembers();

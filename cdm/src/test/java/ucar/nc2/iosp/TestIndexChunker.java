@@ -92,7 +92,7 @@ public class TestIndexChunker {
     }
   }
 
-  @Test
+  // @Test
   public void testDean() throws IOException {
     Nc4Chunking chunkingStrategy = Nc4ChunkingStrategy.factory(Nc4Chunking.Strategy.standard, 6, false);
     NetcdfFileWriter ncSubsetFile = NetcdfFileWriter.createNew(NetcdfFileWriter.Version.netcdf4, "C:/tmp/test.nc4", chunkingStrategy);

@@ -584,10 +584,12 @@ public class NcMLReader {
         Array oldval = oldatt.getValues();
         if (oldval != null)
           addAttribute(parent, new ucar.nc2.Attribute(name, oldatt.getValues()));
-        else {  // wierd corner case of attribute with no value - must use the type
+        else {  // weird corner case of attribute with no value - must use the type
+          String unS = attElem.getAttributeValue("isUnsigned");
+          boolean isUnsigned =  unS != null && unS.equalsIgnoreCase("true");
           String typeS = attElem.getAttributeValue("type");
           DataType type = typeS == null ? DataType.STRING : DataType.getType(typeS);
-          addAttribute(parent, new ucar.nc2.Attribute(name, type));
+          addAttribute(parent, new ucar.nc2.Attribute(name, type, isUnsigned));
         }
       }
 
@@ -1308,70 +1310,70 @@ public class NcMLReader {
   private void readValues(NetcdfDataset ds, Variable v, Element varElem, Element valuesElem) {
     try {
 
-    // check if values are specified by attribute
-    String fromAttribute = valuesElem.getAttributeValue("fromAttribute");
-    if (fromAttribute != null) {
-      Attribute att;
-      int pos = fromAttribute.indexOf('@'); // varName@attName
-      if (pos > 0) {
-        String varName = fromAttribute.substring(0, pos);
-        String attName = fromAttribute.substring(pos + 1);
-        Variable vFrom = ds.getRootGroup().findVariable(varName); // LOOK groups
-        if (vFrom == null) {
-          errlog.format("Cant find variable %s %n", fromAttribute);
+      // check if values are specified by attribute
+      String fromAttribute = valuesElem.getAttributeValue("fromAttribute");
+      if (fromAttribute != null) {
+        Attribute att;
+        int pos = fromAttribute.indexOf('@'); // varName@attName
+        if (pos > 0) {
+          String varName = fromAttribute.substring(0, pos);
+          String attName = fromAttribute.substring(pos + 1);
+          Variable vFrom = ds.getRootGroup().findVariable(varName); // LOOK groups
+          if (vFrom == null) {
+            errlog.format("Cant find variable %s %n", fromAttribute);
+            return;
+          }
+          att = vFrom.findAttribute(attName);
+
+        } else {  // attName or @attName
+          String attName = (pos == 0) ? fromAttribute.substring(1) : fromAttribute;
+          att = ds.getRootGroup().findAttribute(attName);
+        }
+        if (att == null) {
+          errlog.format("Cant find attribute %s %n", fromAttribute);
           return;
         }
-        att = vFrom.findAttribute(attName);
-
-      } else {  // attName or @attName
-        String attName = (pos == 0) ? fromAttribute.substring(1) : fromAttribute;
-        att = ds.getRootGroup().findAttribute(attName);
-      }
-      if (att == null) {
-        errlog.format("Cant find attribute %s %n", fromAttribute);
+        Array data = att.getValues();
+        v.setCachedData(data, true);
         return;
       }
-      Array data = att.getValues();
-      v.setCachedData(data, true);
-      return;
-    }
 
-    // check if values are specified by start / increment
-    String startS = valuesElem.getAttributeValue("start");
-    String incrS = valuesElem.getAttributeValue("increment");
-    String nptsS = valuesElem.getAttributeValue("npts");
-    int npts = (nptsS == null) ? (int) v.getSize() : Integer.parseInt(nptsS);
+      // check if values are specified by start / increment
+      String startS = valuesElem.getAttributeValue("start");
+      String incrS = valuesElem.getAttributeValue("increment");
+      String nptsS = valuesElem.getAttributeValue("npts");
+      int npts = (nptsS == null) ? (int) v.getSize() : Integer.parseInt(nptsS);
 
-    // either start, increment are specified
-    if ((startS != null) && (incrS != null)) {
-      double start = Double.parseDouble(startS);
-      double incr = Double.parseDouble(incrS);
-      v.setValues(npts, start, incr);
-      return;
-    }
-
-    // otherwise values are listed in text
-    String values = varElem.getChildText("values", ncNS);
-    String sep = valuesElem.getAttributeValue("separator");
-
-    if (v.getDataType() == DataType.CHAR) {
-      int nhave = values.length();
-      int nwant = (int) v.getSize();
-      char[] data = new char[nwant];
-      int min = Math.min(nhave, nwant);
-      for (int i = 0; i < min; i++) {
-        data[i] = values.charAt(i);
+      // either start, increment are specified
+      if ((startS != null) && (incrS != null)) {
+        double start = Double.parseDouble(startS);
+        double incr = Double.parseDouble(incrS);
+        v.setValues(npts, start, incr);
+        return;
       }
-      Array dataArray = Array.factory(DataType.CHAR.getPrimitiveClassType(), v.getShape(), data);
-      v.setCachedData(dataArray, true);
 
-    } else {
+      // otherwise values are listed in text
+      String values = varElem.getChildText("values", ncNS);
+      String sep = valuesElem.getAttributeValue("separator");
+
+      if (v.getDataType() == DataType.CHAR) {
+        int nhave = values.length();
+        int nwant = (int) v.getSize();
+        char[] data = new char[nwant];
+        int min = Math.min(nhave, nwant);
+        for (int i = 0; i < min; i++) {
+          data[i] = values.charAt(i);
+        }
+        Array dataArray = Array.factory(DataType.CHAR.getPrimitiveClassType(), v.getShape(), data);
+        v.setCachedData(dataArray, true);
+
+      } else {
         List<String> valList = getTokens(values, sep);
         v.setValues(valList);
       }
 
     } catch (Throwable t) {
-      throw new RuntimeException("Ncml Reading on "+v.getFullName(), t);
+      throw new RuntimeException("NCML Reading on " + v.getFullName(), t);
     }
   }
 

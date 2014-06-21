@@ -1,33 +1,34 @@
 /*
- * Copyright (c) 1998 - 2014. University Corporation for Atmospheric Research/Unidata
- * Portions of this software were developed by the Unidata Program at the
- * University Corporation for Atmospheric Research.
+ * Copyright 1998-2014 University Corporation for Atmospheric Research/Unidata
  *
- * Access and use of this software shall impose the following obligations
- * and understandings on the user. The user is granted the right, without
- * any fee or cost, to use, copy, modify, alter, enhance and distribute
- * this software, and any derivative works thereof, and its supporting
- * documentation for any purpose whatsoever, provided that this entire
- * notice appears in all copies of the software, derivative works and
- * supporting documentation.  Further, UCAR requests that the user credit
- * UCAR/Unidata in any publications that result from the use of this
- * software or in any product that includes this software. The names UCAR
- * and/or Unidata, however, may not be used in any advertising or publicity
- * to endorse or promote any products or commercial entity unless specific
- * written permission is obtained from UCAR/Unidata. The user also
- * understands that UCAR/Unidata is not obligated to provide the user with
- * any support, consulting, training or assistance of any kind with regard
- * to the use, operation and performance of this software nor to provide
- * the user with any updates, revisions, new versions or "bug fixes."
+ *   Portions of this software were developed by the Unidata Program at the
+ *   University Corporation for Atmospheric Research.
  *
- * THIS SOFTWARE IS PROVIDED BY UCAR/UNIDATA "AS IS" AND ANY EXPRESS OR
- * IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
- * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
- * DISCLAIMED. IN NO EVENT SHALL UCAR/UNIDATA BE LIABLE FOR ANY SPECIAL,
- * INDIRECT OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING
- * FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT,
- * NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
- * WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
+ *   Access and use of this software shall impose the following obligations
+ *   and understandings on the user. The user is granted the right, without
+ *   any fee or cost, to use, copy, modify, alter, enhance and distribute
+ *   this software, and any derivative works thereof, and its supporting
+ *   documentation for any purpose whatsoever, provided that this entire
+ *   notice appears in all copies of the software, derivative works and
+ *   supporting documentation.  Further, UCAR requests that the user credit
+ *   UCAR/Unidata in any publications that result from the use of this
+ *   software or in any product that includes this software. The names UCAR
+ *   and/or Unidata, however, may not be used in any advertising or publicity
+ *   to endorse or promote any products or commercial entity unless specific
+ *   written permission is obtained from UCAR/Unidata. The user also
+ *   understands that UCAR/Unidata is not obligated to provide the user with
+ *   any support, consulting, training or assistance of any kind with regard
+ *   to the use, operation and performance of this software nor to provide
+ *   the user with any updates, revisions, new versions or "bug fixes."
+ *
+ *   THIS SOFTWARE IS PROVIDED BY UCAR/UNIDATA "AS IS" AND ANY EXPRESS OR
+ *   IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ *   WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ *   DISCLAIMED. IN NO EVENT SHALL UCAR/UNIDATA BE LIABLE FOR ANY SPECIAL,
+ *   INDIRECT OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING
+ *   FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT,
+ *   NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
+ *   WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 package ucar.nc2;
 
@@ -53,10 +54,6 @@ import ucar.nc2.util.Indent;
 
 @Immutable
 public class Attribute extends CDMNode {
-  private String svalue; // optimization for common case of single String valued attribute
-  private DataType dataType;
-  private int nelems; // can be 0 or greater
-  private Array values;
 
   /**
    * Turn a list into a map
@@ -71,27 +68,8 @@ public class Attribute extends CDMNode {
     return result;
   }
 
-  /**
-   * Alias for getShortName
-   * Attribute names are unique within a NetcdfFile's global set, and within a Variable's set.
-   *
-   * @return name
-   */
-  /*
-  public String getName() {
-    return getShortName();
-  }  */
+  ///////////////////////////////////////////////////////////////////////////////////
 
-  /**
-   * Set the name of this Attribute.
-   * Attribute names are unique within a NetcdfFile's global set, and within a Variable's set.
-   *
-   * @param name name of attribute
-   */
-  public synchronized void setName(String name) {
-    if (immutable) throw new IllegalStateException("Cant modify");
-    setShortName(name);
-  }
   /**
    * Get the data type of the Attribute value.
    *
@@ -113,7 +91,7 @@ public class Attribute extends CDMNode {
   /**
    * Get the length of the array of values
    *
-   * @return number of elementss in the array.
+   * @return number of elements in the array.
    */
   public int getLength() {
     return nelems;
@@ -126,7 +104,7 @@ public class Attribute extends CDMNode {
    * @return true if the data is unsigned integer type.
    */
   public boolean isUnsigned() {
-    return (values != null) && values.isUnsigned();
+    return isUnsigned || (values != null) && values.isUnsigned();
   }
 
   /**
@@ -242,81 +220,6 @@ public class Attribute extends CDMNode {
   }
 
   /**
-   * Instances which have same content are equal.
-   */
-  @Override
-  public boolean equals(Object o) {
-    if (this == o) return true;
-    if ((o == null) || !(o instanceof Attribute)) return false;
-
-    final Attribute att = (Attribute) o;
-
-    String name = getShortName();
-    if (!name.equals(att.getShortName())) return false;
-    if (nelems != att.nelems) return false;
-    if (!dataType.equals(att.dataType)) return false;
-
-    if (isString())
-      return att.getStringValue().equals(getStringValue());
-    //if (svalue != null) return svalue.equals(att.getStringValue());
-
-    if (values != null) {
-      for (int i = 0; i < getLength(); i++) {
-        int r1 = isString() ? getStringValue(i).hashCode() : getNumericValue(i).hashCode();
-        int r2 = att.isString() ? att.getStringValue(i).hashCode() : att.getNumericValue(i).hashCode();
-        if (r1 != r2) return false;
-      }
-    }
-
-    return true;
-  }  
-
-  /**
-   * Override Object.hashCode() to implement equals.
-   */
-  @Override
-  public int hashCode() {
-    if (hashCode == 0) {
-      int result = 17;
-      result = 37 * result + getShortName().hashCode();
-      result = 37 * result + nelems;
-      result = 37 * result + getDataType().hashCode();
-      if (svalue != null)
-        result = 37 * result + svalue.hashCode();
-      else if (values != null) {
-        for (int i = 0; i < getLength(); i++) {
-          int h = isString() ? getStringValue(i).hashCode() : getNumericValue(i).hashCode();
-          result = 37 * result + h;
-        }
-      }
-      hashCode = result;
-    }
-    return hashCode;
-  }
-
-  private int hashCode = 0;
-
-  @Override
-  public void hashCodeShow(Indent indent) {
-    System.out.printf("%sAtt hash = %d%n", indent, hashCode());
-    System.out.printf("%s shortName '%s' = %d%n", indent, getShortName(), getShortName() == null ? -1 : getShortName().hashCode());
-    System.out.printf("%s nelems %s%n", indent, nelems);
-    System.out.printf("%s dataType %s%n", indent, getDataType());
-    if (svalue != null)
-      System.out.printf("%s svalue %s = %s%n", indent, svalue, svalue.hashCode());
-    else {
-      indent.incr();
-      for (int i = 0; i < getLength(); i++) {
-        if (isString())
-          System.out.printf("%s value %s = %s%n", indent, getStringValue(i), getStringValue(i).hashCode());
-        else
-          System.out.printf("%s value %s = %s%n", indent, getValue(i), getValue(i).hashCode());
-      }
-      indent.decr();
-    }
-  }
-
-  /**
    * CDL representation, not strict
    *
    * @return CDL representation
@@ -379,19 +282,27 @@ public class Attribute extends CDMNode {
 
   ///////////////////////////////////////////////////////////////////////////////
 
+  private String svalue; // optimization for common case of single String valued attribute
+  private DataType dataType;
+  private int nelems; // can be 0 or greater
+  private Array values;
+  private boolean isUnsigned;
+
   /**
    * Copy constructor
    *
-   * @param name name of Attribute
+   * @param name name of new Attribute
    * @param from copy value from here.
    */
   public Attribute(String name, Attribute from) {
     super(name);
-    if (name == null) throw new IllegalArgumentException("Trying to set short anem to null on "+this);
+    if (name == null) throw new IllegalArgumentException("Trying to set name to null on "+this);
     this.dataType = from.dataType;
     this.nelems = from.nelems;
     this.svalue = from.svalue;
     this.values = from.values;
+    this.isUnsigned = from.isUnsigned;
+    setImmutable(true);
   }
 
   /**
@@ -402,8 +313,9 @@ public class Attribute extends CDMNode {
    */
   public Attribute(String name, String val) {
     super(name);
-    if (name == null) throw new IllegalArgumentException("Trying to set short anem to null on "+this);
+    if (name == null) throw new IllegalArgumentException("Trying to set name to null on "+this);
     setStringValue(val);
+    setImmutable(true);
   }
 
   /**
@@ -413,8 +325,12 @@ public class Attribute extends CDMNode {
    * @param val  value of Attribute
    */
   public Attribute(String name, Number val) {
+    this(name, val, false);
+  }
+
+  public Attribute(String name, Number val, boolean isUnsigned) {
     super(name);
-    if (name == null) throw new IllegalArgumentException("Trying to set short anem to null on "+this);
+    if (name == null) throw new IllegalArgumentException("Trying to set name to null on "+this);
 
     int[] shape = new int[1];
     shape[0] = 1;
@@ -423,6 +339,9 @@ public class Attribute extends CDMNode {
     Index ima = vala.getIndex();
     vala.setDouble(ima.set0(0), val.doubleValue());
     setValues(vala);
+    this.isUnsigned = isUnsigned;
+    if (isUnsigned) vala.setUnsigned(true);
+    setImmutable(true);
   }
 
   /**
@@ -434,6 +353,7 @@ public class Attribute extends CDMNode {
   public Attribute(String name, Array values) {
     this(name);
     setValues(values);
+    setImmutable(true);
   }
 
   /**
@@ -442,10 +362,12 @@ public class Attribute extends CDMNode {
    * @param name     name of attribute
    * @param dataType type of Attribute.
    */
-  public Attribute(String name, DataType dataType) {
+  public Attribute(String name, DataType dataType, boolean isUnsigned) {
     this(name);
     this.dataType = dataType == DataType.CHAR ? DataType.STRING : dataType;
     this.nelems = 0;
+    this.isUnsigned = isUnsigned;
+    setImmutable(true);
   }
 
   /**
@@ -500,6 +422,7 @@ public class Attribute extends CDMNode {
     }
 
     setValues(Array.factory(c, new int[]{n}, pa));
+    setImmutable(true);
   }
 
 
@@ -521,20 +444,7 @@ public class Attribute extends CDMNode {
       Array vala = Array.factory(DataType.DOUBLE.getPrimitiveClassType(), new int[]{n}, values);
       setValues(vala);
     }
-  }
-
-  //////////////////////////////////////////
-  // the following make this mutable, but its restricted to subclasses
-
-
-  /**
-   * Constructor. Must also set value
-   *
-   * @param name name of Attribute
-   */
-  protected Attribute(String name) {
-    super(name);
-    if (name == null) throw new IllegalArgumentException("Trying to set short anem to null on "+this);
+    setImmutable(true);
   }
 
   /**
@@ -543,8 +453,6 @@ public class Attribute extends CDMNode {
    * @param val value of Attribute
    */
   private void setStringValue(String val) {
-    if (immutable) throw new IllegalStateException("Cant modify");
-
     if (val == null)
       throw new IllegalArgumentException("Attribute value cannot be null");
 
@@ -562,6 +470,21 @@ public class Attribute extends CDMNode {
     //values = Array.factory(String.class, new int[]{1});
     //values.setObject(values.getIndex(), val);
     //setValues(values);
+  }
+
+
+  //////////////////////////////////////////
+  // the following make this mutable, but its restricted to subclasses, namely DODSAttribute
+
+
+  /**
+   * Constructor. Must also set value
+   *
+   * @param name name of Attribute
+   */
+  protected Attribute(String name) {
+    super(name);
+    if (name == null) throw new IllegalArgumentException("Trying to set name to null on "+this);
   }
 
   /**
@@ -620,4 +543,94 @@ public class Attribute extends CDMNode {
     hashCode = 0;
   }
 
+  /**
+    * Set the name of this Attribute.
+    * Attribute names are unique within a NetcdfFile's global set, and within a Variable's set.
+    *
+    * @param name name of attribute
+    */
+  public synchronized void setName(String name) {
+    if (immutable) throw new IllegalStateException("Cant modify");
+    setShortName(name);
+  }
+
+  /* public synchronized void setUnsigned(boolean isUnsigned) {
+    if (immutable) throw new IllegalStateException("Cant modify");
+    this.isUnsigned = isUnsigned;
+  } */
+
+  /**
+   * Instances which have same content are equal.
+   */
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) return true;
+    if ((o == null) || !(o instanceof Attribute)) return false;
+
+    final Attribute att = (Attribute) o;
+
+    String name = getShortName();
+    if (!name.equals(att.getShortName())) return false;
+    if (nelems != att.nelems) return false;
+    if (!dataType.equals(att.dataType)) return false;
+
+    if (isString())
+      return att.getStringValue().equals(getStringValue());
+    //if (svalue != null) return svalue.equals(att.getStringValue());
+
+    if (values != null) {
+      for (int i = 0; i < getLength(); i++) {
+        int r1 = isString() ? getStringValue(i).hashCode() : getNumericValue(i).hashCode();
+        int r2 = att.isString() ? att.getStringValue(i).hashCode() : att.getNumericValue(i).hashCode();
+        if (r1 != r2) return false;
+      }
+    }
+
+    return true;
+  }
+
+  /**
+   * Override Object.hashCode() to implement equals.
+   */
+  @Override
+  public int hashCode() {
+    if (hashCode == 0) {
+      int result = 17;
+      result = 37 * result + getShortName().hashCode();
+      result = 37 * result + nelems;
+      result = 37 * result + getDataType().hashCode();
+      if (svalue != null)
+        result = 37 * result + svalue.hashCode();
+      else if (values != null) {
+        for (int i = 0; i < getLength(); i++) {
+          int h = isString() ? getStringValue(i).hashCode() : getNumericValue(i).hashCode();
+          result = 37 * result + h;
+        }
+      }
+      hashCode = result;
+    }
+    return hashCode;
+  }
+
+  private int hashCode = 0;
+
+  @Override
+  public void hashCodeShow(Indent indent) {
+    System.out.printf("%sAtt hash = %d%n", indent, hashCode());
+    System.out.printf("%s shortName '%s' = %d%n", indent, getShortName(), getShortName() == null ? -1 : getShortName().hashCode());
+    System.out.printf("%s nelems %s%n", indent, nelems);
+    System.out.printf("%s dataType %s%n", indent, getDataType());
+    if (svalue != null)
+      System.out.printf("%s svalue %s = %s%n", indent, svalue, svalue.hashCode());
+    else {
+      indent.incr();
+      for (int i = 0; i < getLength(); i++) {
+        if (isString())
+          System.out.printf("%s value %s = %s%n", indent, getStringValue(i), getStringValue(i).hashCode());
+        else
+          System.out.printf("%s value %s = %s%n", indent, getValue(i), getValue(i).hashCode());
+      }
+      indent.decr();
+    }
+  }
 }

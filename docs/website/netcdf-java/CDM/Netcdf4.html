@@ -4,79 +4,86 @@
   <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
   <title>CDM/Netcdf4 Mapping</title>
   <link rel="stylesheet" href="../cdm.css" type="text/css"/>
-
 </head>
 
 <body>
-<h1>Mapping between CDM and netCDF-4 Data Models </h1>
+<h1>Mapping between the CDM and NetCDF-4 Data Models </h1>
 
-<p><em>last modified: May 2014</em></p>
-
-<p>The CDM data model is close to, but not identical to the <a href="http://www.unidata.ucar.edu/software/netcdf/workshops/2008/netcdf4/Nc4DataModel.html">netCDF-4
+<p><em>last modified: June 2014</em></p>
+<p>The CDM data model is close to, but not identical to the <a href="http://www.unidata.ucar.edu/software/netcdf/workshops/2008/netcdf4/Nc4DataModel.html">NetCDF-4
   data model</a>. When reading netCDF-4 files, one is interested in the mapping from netCDF-4 to CDM. This mapping is relatively stable. As of version 4.3, the
   CDM can write to netCDF-4 files, and one is interested in the mapping from CDM to netCDF-4. This mapping is still being developed, eg to give users some
   control where needed.</p>
 <p>NetCDF-4 intentionally supports a simpler data model than HDF5, which means there are HDF5 files that cannot be converted to netCDF-4. See: <a href="http://www.unidata.ucar.edu/software/netcdf/docs/faq.html#fv15">http://www.unidata.ucar.edu/software/netcdf/docs/faq.html#fv15</a></p>
-<h2>DataTypes</h2>
+<hr/>
+<h2>Data Model Differences</h2>
+<h3>DataTypes</h3>
 
-<h3>From netCDF-4 to CDM</h3>
-<ul>
-  <li>A netCDF-4 <em>Compound</em> is a CDM <em>Structure</em>. Both can be arbitrarily nested.</li>
-  <li>A netCDF-4 <em>Enum</em> is a CDM <em>enum1, enum2, </em>or<em> enum4</em> and references a <em>EnumTypedef</em> which holds the (enum, String) map.</li>
-  <li>A netCDF-4 <em>Vlen</em> is mapped to a CDM <em>variable length Dimension</em>.</li>
-  <li>A netCDF-4 <em>Opaque </em>type is a CDM <em>opaque </em>type, but the length of the data cannot be found until you read the data.</li>
-  <li>NetCDF-4 signed and unsigned <em>byte, short, int, long</em> are mapped to CDM <em>byte, short, int, long</em>. If unsigned, the attribute <strong><em>_Unsigned
-    = &quot;true&quot;</em> </strong>is added to the CDM Variable.
-  </li>
-</ul>
-<h3><strong>From CDM to netCDF-4</strong></h3>
-<ul>
-  <li>A CDM array of Opaque may have a different length for each Opaque object. May have to read to find maximum length.</li>
-  <li>A CDM Structure may have member Variables that use shared dimensions. netCDF4 / HDF5 does not support shared dimensions in Compound fields. If writing CDM to netCDF4, currently we just anonymize the shared dimensions.</li>
-</ul>
-<h2>Type Definitions</h2>
+<blockquote>
+  <h4>From netCDF-4 to CDM</h4>
+  <ul>
+    <li>A netCDF-4 <em>Compound</em> is a CDM <em>Structure</em>. Both can be arbitrarily nested. The components of the Compound type are called <em>fields</em> in NetCDF-4 and <em>member variables</em> in the CDM.</li>
+    <li>A netCDF-4 <em>Enum</em> is a CDM <em>enum1, enum2, </em>or<em> enum4</em> and references a <em>EnumTypedef</em> which holds the (enum, String) map.</li>
+    <li>A netCDF-4 <em>Vlen</em> is mapped to a CDM <em>variable length Dimension</em>.</li>
+    <li>A netCDF-4 <em>Opaque </em>type is a CDM <em>opaque </em>type, but the length of the data cannot be found until you read the data.</li>
+    <li>NetCDF-4 signed and unsigned <em>byte, short, int, long</em> are mapped to CDM <em>byte, short, int, long</em>. If unsigned, the attribute <strong><em>_Unsigned
+      = &quot;true&quot;</em> </strong>is added to the CDM Variable, and <strong>Variable.isUnsigned()</strong> is true, as well as <strong>Array.isUnsigned(),</strong> from any data that is read from the variable.</li>
+  </ul>
+  <h4><strong>From CDM to netCDF-4</strong></h4>
+  <ul>
+    <li>A CDM array of Opaque may have a different length for each Opaque object. May have to read to find maximum length.</li>
+    <li>A CDM Structure may have member Variables that use shared dimensions. NetCDF4 / HDF5 does not support shared dimensions in Compound fields. If writing CDM to netCDF4, currently we just anonymize the shared dimensions.</li>
+    <li>A CDM Structure member Variables may have attributes. NetCDF4 / HDF5 does not support attributes on fields in Compound fields. The CDM uses <a href="Netcdf4CompoundAttributes.html">these conventions</a> for specifying attributes on compound fields.</li>
+  </ul>
+</blockquote>
+<h3>Type Definitions</h3>
 
-<h3>From netCDF-4 to CDM</h3>
-<ul>
-  <li>A netCDF-4 <em>Enumeration Type </em>becomes a CDM<em> EnumTypedef</em>.</li>
-  <li>All other netCDF-4 type definitions are repeated for each CDM variable that uses them. The attribute <strong>_Typedef = &quot;<em>typename</em>&quot;
-  </strong><strong> </strong>is added to the CDM Variable, where typename is the name of the netCDF-4 type.
-  </li>
-</ul>
-<h3><strong>From CDM to netCDF-4</strong></h3>
-<ul>
-  <li>A CDM<em> EnumTypedef</em> becomes a netCDF-4 <em>Enumeration Type.</em></li>
-  <li>If a CDM Variable has an attribute <strong>_Typedef = &quot;<em>typename</em>&quot;, </strong>then the Variables' definition is made into a netCDF-4 type.
-  </li>
-</ul>
-<h2>Attributes</h2>
+<blockquote>
+  <h4>From netCDF-4 to CDM</h4>
+  <ul>
+    <li>A netCDF-4 <em>Enumeration Type </em>becomes a CDM<em> EnumTypedef</em>.</li>
+    <li>All other netCDF-4 type definitions are repeated for each CDM variable that uses them. The attribute <strong>_Typedef = &quot;<em>typename</em>&quot;
+      </strong><strong> </strong>is added to the CDM Variable, where typename is the name of the netCDF-4 type.
+    </li>
+  </ul>
+  <p><strong>From CDM to netCDF-4</strong>
+  </p>
+  <ul>
+    <li>A CDM<em> EnumTypedef</em> becomes a netCDF-4 <em>Enumeration Type.</em></li>
+    <li>If a CDM Variable has an attribute <strong>_Typedef = &quot;<em>typename</em>&quot;, </strong>then the Variables' definition is made into a netCDF-4 type.
+    </li>
+  </ul>
+</blockquote>
+<h3>Attributes</h3>
 
-<p>In CDM, an attribute type may only be a scalar or 1D array of signed <em>byte, short, int, long, float, double, </em>or<em> String</em>. A <em>char</em> type
-  is mapped to a <em>String</em>.</p>
+<blockquote>
+  <p>In CDM, an attribute type may only be a scalar or 1D array of signed <em>byte, short, int, long, float, double, </em>or<em> String</em>. A <em>char</em> type
+    is mapped to a <em>String</em>.</p>
+  <h4>From netCDF-4 to CDM</h4>
+  <ul>
+    <li>An attribute of <em>compound</em> type in netCDF-4 is <em>flattened</em>, by making each field a separate attribute, with name <em>attName.fieldName</em>
+      in the CDM.
+    </li>
+    <li>If the compound attribute is for a compound variable, and the field name of the attribute matches a field name of the variable, the attribute is added to
+      that field instead of being flattened.
+    </li>
+    <li>An attribute of <em>enum</em> type in netCDF-4 becomes a <em>String</em> type in the CDM. <strong>???</strong></li>
+    <li>An attribute of <em>opaque</em> type in netCDF-4 becomes a <em>byte</em> type in the CDM.</li>
+    <li>An attribute of <em>vlen of type</em> in netCDF-4 becomes an array of <em>type</em> in the CDM.</li>
+    <li>An attribute of an unsigned <em>byte, short, int</em> in netCDF-4 is promoted to a signed <em>short, int, or long</em> in the CDM.</li>
+  </ul>
+  <h4><strong>From CDM to netCDF-4</strong></h4>
+  <ul>
+    <li>Attributes on member variables of Structures are made into a compound attribute on the parent Structure.</li>
+  </ul>
+</blockquote>
 
-<h3>From netCDF-4 to CDM</h3>
-<ul>
-  <li>An attribute of <em>compound</em> type in netCDF-4 is <em>flattened</em>, by making each field a separate attribute, with name <em>attName.fieldName</em>
-    in the CDM.
-  </li>
-  <li>If the compound attribute is for a compound variable, and the field name of the attribute matches a field name of the variable, the attribute is added to
-    that field instead of being flattened.
-  </li>
-  <li>An attribute of <em>enum</em> type in netCDF-4 becomes a <em>String</em> type in the CDM. <strong>???</strong></li>
-  <li>An attribute of <em>opaque</em> type in netCDF-4 becomes a <em>byte</em> type in the CDM.</li>
-  <li>An attribute of <em>vlen of type</em> in netCDF-4 becomes an array of <em>type</em> in the CDM.</li>
-  <li>An attribute of an unsigned <em>byte, short, int</em> in netCDF-4 is promoted to a signed <em>short, int, or long</em> in the CDM.</li>
-</ul>
-<h3><strong>From CDM to netCDF-4</strong></h3>
-<ul>
-  <li>Attributes on member variables of Structures are made into a compound attribute on the parent Structure.</li>
-</ul>
 <hr/>
 <h2>Differences between netCDF-4 C and Java libraries for netCDF4 files</h2>
 <h3>Unsigned types</h3>
 <ul>
   <li>The C library uses unsigned integer types: NC_UBYTE, NC_USHORT, NC_UINT, NC_UINT64.</li>
-  <li>The Java library does not have separate types for unsigned integers, but adds the reserved attribute <em><strong>_Unsigned = &quot;true&quot;</strong></em> when the variable is unsigned. One can check this with Variable.isUnsigned() and Array.isUnsigned(). Conversions done by the library are aware of this convention. The reason for this is that Java does not have unsigned types, and we dont want to double the internal memory requirements by widening the data. </li>
+  <li>The Java library does not have separate types for unsigned integers, but adds the reserved attribute <em><strong>_Unsigned = &quot;true&quot;</strong></em> when the variable is unsigned. One can check this with <em>Variable.isUnsigned(), Attribute.isUnsigned(), </em>and <em>Array.isUnsigned()</em>. Conversions done by the library are aware of this convention. Java does not have unsigned types, and we dont want to double the internal memory requirements by widening the data. </li>
 </ul>
 <h3>Enum Typedefs</h3>
 <ul>
@@ -117,7 +124,7 @@
 <p>&nbsp;</p>
 <hr/>
 <h2> </h2>
-<h2>Notes</h2>
+<h2>Internal Notes</h2>
 
 <p>1) char arrays are interpreted as UTF-8 bytes array (Strings) when they are attributes . but data arrays are not, they are run through unsignedToShort() and
   cast to char. this seems like trouble.</p>

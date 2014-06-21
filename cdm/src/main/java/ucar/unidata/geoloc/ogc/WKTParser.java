@@ -349,7 +349,7 @@ public class WKTParser {
     eatOpenBrace();
     String parameterName = eatString();
     eatComma();
-    Double value = new Double(eatReal());
+    Double value = eatReal();
     eatCloseBrace();
     parameters.put(parameterName.toLowerCase(), value);
   }

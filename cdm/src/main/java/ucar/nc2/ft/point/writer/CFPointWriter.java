@@ -44,6 +44,7 @@ import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time.CalendarDateFormatter;
 import ucar.nc2.time.CalendarDateRange;
 import ucar.nc2.write.Nc4Chunking;
+import ucar.nc2.write.Nc4ChunkingDefault;
 import ucar.nc2.write.Nc4ChunkingStrategy;
 import ucar.unidata.geoloc.EarthLocation;
 import ucar.unidata.geoloc.LatLonRect;
@@ -60,7 +61,7 @@ import java.util.*;
  * @author caron
  * @since 4/11/12
  */
-public class CFPointWriter {
+public class CFPointWriter implements AutoCloseable {
   private static boolean debug = false;
 
   public static int  writeFeatureCollection(FeatureDatasetPoint fdpoint, String fileOut, NetcdfFileWriter.Version version) throws IOException {
@@ -95,23 +96,26 @@ public class CFPointWriter {
   private static int writePointFeatureCollection(FeatureDatasetPoint fdpoint, PointFeatureCollection pfc, String fileOut,
                                                  NetcdfFileWriter.Version version) throws IOException {
 
-    WriterCFPointCollection cfWriter = new WriterCFPointCollection(version, fileOut, fdpoint.getGlobalAttributes());
+    try (WriterCFPointCollection cfWriter = new WriterCFPointCollection(version, fileOut, fdpoint.getGlobalAttributes())) {
 
-    int count = 0;
-    pfc.resetIteration();
-    while (pfc.hasNext()) {
-      PointFeature pf = pfc.next();
-      if (count == 0)
-        cfWriter.writeHeader(fdpoint.getDataVariables(), pf.getTimeUnit(), null);
+      int count = 0;
+      pfc.resetIteration();
+      while(pfc.hasNext())
 
-      cfWriter.writeRecord(pf, pf.getData());
-      count++;
-      if (debug && count % 100 == 0) System.out.printf("%d ", count);
-      if (debug && count % 1000 == 0) System.out.printf("%n ");
+      {
+        PointFeature pf = pfc.next();
+        if (count == 0)
+          cfWriter.writeHeader(fdpoint.getDataVariables(), pf.getTimeUnit(), null);
+
+        cfWriter.writeRecord(pf, pf.getData());
+        count++;
+        if (debug && count % 100 == 0) System.out.printf("%d ", count);
+        if (debug && count % 1000 == 0) System.out.printf("%n ");
+      }
+
+      cfWriter.finish();
+      return count;
     }
-
-    cfWriter.finish();
-    return count;
   }
 
   private static int writeStationFeatureCollection(FeatureDatasetPoint fdpoint, StationTimeSeriesFeatureCollection fds,
@@ -178,7 +182,7 @@ public class CFPointWriter {
           _Coordinate._CoordSysBuilder, CF.featureTypeAtt2, CF.featureTypeAtt3};
 
   private static final String[] reservedVAtts = new String[]{
-          _Coordinate.AxisType};
+          _Coordinate.AxisType };
 
   protected static final List<String> reservedGlobalAtts = Arrays.asList(reservedGAtts);
   protected static final List<String> reservedVariableAtts = Arrays.asList(reservedVAtts);
@@ -232,7 +236,7 @@ public class CFPointWriter {
   }
 
   private void createWriter(String fileOut, NetcdfFileWriter.Version version) throws IOException {
-    writer = NetcdfFileWriter.createNew(version, fileOut, Nc4ChunkingStrategy.factory(Nc4Chunking.Strategy.none, 0, false));
+    writer = NetcdfFileWriter.createNew(version, fileOut, new Nc4ChunkingDefault());
     writer.setFill(false);
   }
 
@@ -334,7 +338,8 @@ public class CFPointWriter {
 
       List<Attribute> atts = oldVar.getAttributes();
       for (Attribute att : atts) {
-        if (!reservedVariableAtts.contains(att.getShortName()))
+        String attName = att.getShortName();
+        if (!reservedVariableAtts.contains(attName) && !attName.startsWith("_Coordinate"))
           m.addAttribute(att);
       }
 
@@ -404,7 +409,8 @@ public class CFPointWriter {
   }
 
 
-
-
-
+  @Override
+  public void close() throws IOException {
+    writer.close();
+  }
 }
