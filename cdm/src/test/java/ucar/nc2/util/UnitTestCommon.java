@@ -53,7 +53,7 @@ public class UnitTestCommon extends TestCase
     static public String TEMPROOT = "target/test/tmp/"; // relative to module root
 
     // Look for these to verify we have found the thredds root
-    static final String[] SUBROOTS = new String[]{"httpclient", "cdm", "tds", "opendap"};
+    static final String[] SUBROOTS = new String[]{"httpservices", "cdm", "tds", "opendap"};
 
     static public final String threddsRoot = locateThreddsRoot();
 
