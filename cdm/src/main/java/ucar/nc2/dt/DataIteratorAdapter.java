@@ -38,6 +38,7 @@ import java.io.IOException;
 
 /**
  * make an Iterator into a DataIterator
+ * @deprecated use ucar.nc2.ft.*
  */
 public class DataIteratorAdapter implements DataIterator {
     private Iterator iter;

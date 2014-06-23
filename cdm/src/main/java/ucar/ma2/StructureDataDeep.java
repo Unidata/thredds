@@ -222,14 +222,12 @@ public class StructureDataDeep extends StructureDataA {
     return bb.limit() - start;
   }
 
-  private ArrayStructureBB abb;
+  //private ArrayStructureBB abb;
   private StructureDataDeep(ArrayStructureBB abb) {
     super(abb, 0);
-    this.abb = abb;
+    //this.abb = abb;
   }
 
-  public ByteBuffer getByteBuffer() {
-    return abb.getByteBuffer();
-  }
+  // public ByteBuffer getByteBuffer() { return abb.getByteBuffer(); }
 
 }

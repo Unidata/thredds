@@ -39,11 +39,17 @@ import ucar.ma2.StructureMembers;
 import ucar.nc2.ft.PointFeature;
 import ucar.nc2.units.DateUnit;
 import ucar.unidata.geoloc.Station;
+import ucar.unidata.geoloc.StationImpl;
 
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
- * Describe
+ * A factory for making deep copies of StationPointFeature, so all data is self contained.
+ * A factory will use the first StationPointFeature to get the StructureMembers object, and the DateUnits, and uses that for all copies.
+ * So all StationPointFeature must have the same StructureMembers and DateUnit.
+ * It will keep a hashmap of Stations, and reuse the Station object.
  *
  * @author caron
  * @since 6/20/2014
@@ -54,11 +60,13 @@ public class StationFeatureCopyFactory {
   static private final int OBJECT_SIZE = 40; // overhead per object estimate
   static private final int ARRAY_SIZE = 8;   // assume 64 bit pointers
 
+  private final Map<String, Station> stationMap;
   private final StructureMembers sm;
   private final DateUnit du;
   private final int sizeInBytes;
 
   public StationFeatureCopyFactory(StationPointFeature proto) throws IOException {
+    stationMap = new HashMap<>();
     StructureData sdata = proto.getData();
     sm = new StructureMembers(sdata.getStructureMembers());
     du = proto.getTimeUnit();
@@ -82,17 +90,25 @@ public class StationFeatureCopyFactory {
   }
 
   public StationPointFeature deepCopy(StationPointFeature from) throws IOException {
-    StationPointFeatureCopy deep = new StationPointFeatureCopy(from);
+    Station s = from.getStation();
+    Station sUse = stationMap.get(s.getName());
+    if (sUse == null) {
+      sUse =  new StationImpl(s, 0);
+      stationMap.put(s.getName(), sUse);
+    }
+    StationPointFeatureCopy deep = new StationPointFeatureCopy(sUse, from);
     deep.data = StructureDataDeep.copy(from.getData(), sm);
     return deep;
   }
 
   private class StationPointFeatureCopy extends PointFeatureImpl implements StationPointFeature {
 
+    final Station station;
     StructureData data;
 
-    StationPointFeatureCopy(PointFeature pf) {
-      super(pf.getLocation(), pf.getObservationTime(), pf.getNominalTime(), du);
+    StationPointFeatureCopy(Station station, PointFeature pf) {
+      super(station, pf.getObservationTime(), pf.getNominalTime(), du);
+      this.station = station;
     }
 
     @Override
@@ -102,7 +118,7 @@ public class StationFeatureCopyFactory {
 
     @Override
     public Station getStation() {
-      return null;
+      return station;
     }
   }
 }
