@@ -62,66 +62,51 @@ public class WriterCFPointCollection extends CFPointWriter {
   private Variable time, lat, lon, alt;
 
   public WriterCFPointCollection(String fileOut, String title) throws IOException {
-    this(null, fileOut, Arrays.asList(new Attribute(CDM.TITLE, title)));
+    this(fileOut, Arrays.asList(new Attribute(CDM.TITLE, title)), new CFPointWriterConfig(null));
   }
 
   public WriterCFPointCollection(NetcdfFileWriter.Version version, String fileOut, List<Attribute> atts) throws IOException {
-    super(fileOut, atts, version);
+    this(fileOut, atts, new CFPointWriterConfig(version));
+  }
+
+  public WriterCFPointCollection(String fileOut, List<Attribute> atts, CFPointWriterConfig config) throws IOException {
+    super(fileOut, atts, config);
     writer.addGroupAttribute(null, new Attribute(CF.FEATURE_TYPE, CF.FeatureType.point.name()));
   }
 
   public void writeHeader(List<VariableSimpleIF> vars, DateUnit timeUnit, String altUnits) throws IOException {
     this.altUnits = altUnits;
-    writer.addUnlimitedDimension(recordDimName);
+    if (noUnlimitedDimension)
+      recordDim = writer.addDimension(null, recordDimName, config.recDimensionLength);
+    else
+      recordDim = writer.addUnlimitedDimension(recordDimName);
 
     List<VariableSimpleIF> coords = new ArrayList<>();
-    coords.add(VariableSimpleImpl.make(timeName, "time of measurement", timeUnit.getUnitsString(), DataType.DOUBLE));
-    coords.add(VariableSimpleImpl.make(latName,  "station latitude", CDM.LAT_UNITS, DataType.DOUBLE));
-    coords.add(VariableSimpleImpl.make(lonName,  "station longitude", CDM.LON_UNITS, DataType.DOUBLE));
+    coords.add(VariableSimpleImpl.makeScalar(timeName, "time of measurement", timeUnit.getUnitsString(), DataType.DOUBLE));
+    coords.add(VariableSimpleImpl.makeScalar(latName,  "latitude of measurement", CDM.LAT_UNITS, DataType.DOUBLE));
+    coords.add(VariableSimpleImpl.makeScalar(lonName,  "longitude of measurement", CDM.LON_UNITS, DataType.DOUBLE));
     if (altUnits != null) coords.add(
-          VariableSimpleImpl.make(altName, "altitude", altUnits, DataType.DOUBLE)
+          VariableSimpleImpl.makeScalar(altName, "altitude of measurement", altUnits, DataType.DOUBLE)
           .add(new Attribute(CF.POSITIVE, CF1Convention.getZisPositive(altName, altUnits))));
 
     if (writer.getVersion().isExtendedModel()) {
       record = (Structure) writer.addVariable(null, recordName, DataType.STRUCTURE, recordDimName);
-      addCoordinatesExtended(coords);
+      addCoordinatesExtended(record, coords);
       addVariablesExtended(vars);
       record.calcElementSize();
       writer.create();
 
     } else {
-      addCoordinatesClassic(coords);
-      addDataVariablesClassic(vars);
+      addCoordinatesClassic(recordDim, coords);
+      addDataVariablesClassic(recordDim, vars);
       writer.create();
-      record = writer.addRecordStructure(); // netcdf3
+      if (!noUnlimitedDimension) record = writer.addRecordStructure(); // netcdf3
 
       time = writer.findVariable(timeName);
       lat = writer.findVariable(latName);
       lon = writer.findVariable(lonName);
       alt = writer.findVariable(altName);
     }
-  }
-
-  protected void addCoordinatesClassic(List<VariableSimpleIF> coords) throws IOException {
-
-   // added as variables with the unlimited (record) dimension
-    for (VariableSimpleIF vs : coords) {
-      Variable member = writer.addVariable(null, vs.getShortName(), vs.getDataType(), recordDimName);
-      for (Attribute att : vs.getAttributes())
-        member.addAttribute(att);
-    }
-
-  }
-
-  // added as members of the record structure
-  protected void addCoordinatesExtended(List<VariableSimpleIF> coords) throws IOException {
-
-    for (VariableSimpleIF vs : coords) {
-      Variable member = writer.addStructureMember(record, vs.getShortName(), vs.getDataType(), null);
-      for (Attribute att : vs.getAttributes())
-        member.addAttribute(att);
-    }
-
   }
 
   /////////////////////////////////////////////////////////

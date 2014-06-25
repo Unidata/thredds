@@ -31,66 +31,24 @@
  *   WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-package thredds.server.fileserver;
+package ucar.nc2.ft.point.writer;
 
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.servlet.mvc.LastModified;
-import thredds.servlet.DataRootHandler;
-import thredds.servlet.DatasetHandler;
-import thredds.servlet.ServletUtil;
-import thredds.util.TdsPathUtils;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.ServletException;
-import java.io.IOException;
-import java.io.File;
+import ucar.nc2.NetcdfFileWriter;
+import ucar.nc2.write.Nc4ChunkingStrategy;
 
 /**
- * HTTP File Serving
+ * Configuration for CFPointWriter
  *
- * handles /fileServer/*
+ * @author caron
+ * @since 6/23/2014
  */
-@Controller
-@RequestMapping("/fileServer")
-public class FileServerController implements LastModified {
-  protected static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(FileServerController.class);
+public class CFPointWriterConfig {
+  public NetcdfFileWriter.Version version;        // netcdf file version
+  public Nc4ChunkingStrategy chunking;            // for netcdf-4
+  public boolean noTimeCoverage = false;          // does not have a time dimension
+  public int recDimensionLength = -1;             // do use unlimited dimension (for netcdf3), use fixed dimension of this length
 
-  public long getLastModified(HttpServletRequest req) {
-    String reqPath = TdsPathUtils.extractPath(req, "fileServer/");
-    if (reqPath == null) return -1;
-
-    File file = getFile( reqPath);
-    if (file == null)
-      return -1;
-
-    return file.lastModified();
+  public CFPointWriterConfig(NetcdfFileWriter.Version version) {
+    this.version = version;
   }
-
-  @RequestMapping("**")
-  public void doGet(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
-    String reqPath = TdsPathUtils.extractPath(req, "fileServer/");
-    if (reqPath == null) return;
-
-    if (!DatasetHandler.resourceControlOk(req, res, reqPath)) {
-      return;
-    }
-
-    File file = getFile( reqPath);
-    ServletUtil.returnFile(null, req, res, file, null);
-  }
-
-  private File getFile(String reqPath) {
-    if (reqPath == null) return null;
-
-    File file = DataRootHandler.getInstance().getCrawlableDatasetAsFile(reqPath);
-    if (file == null)
-      return null;
-    if (!file.exists())
-      return null;
-
-    return file;
-  }
-
 }

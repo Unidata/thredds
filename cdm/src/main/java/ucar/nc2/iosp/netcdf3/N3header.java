@@ -632,7 +632,7 @@ public class N3header {
     raf.writeInt(0);
 
     // dims
-    List dims = ncfile.getDimensions();
+    List<Dimension> dims = ncfile.getDimensions();
     int numdims = dims.size();
     if (numdims == 0) {
       raf.writeInt(0);
@@ -642,7 +642,7 @@ public class N3header {
       raf.writeInt(numdims);
     }
     for (int i = 0; i < numdims; i++) {
-      Dimension dim = (Dimension) dims.get(i);
+      Dimension dim = dims.get(i);
       if (fout != null) fout.format("  dim %d pos %d\n", i, raf.getFilePointer());
       writeString(dim.getShortName());
       raf.writeInt(dim.isUnlimited() ? 0 : dim.getLength());

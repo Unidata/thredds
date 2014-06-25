@@ -42,29 +42,49 @@ import ucar.nc2.VariableSimpleIF;
 import ucar.nc2.constants.CDM;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
- * Describe
+ * Implementation of VariableSimpleIF
  *
  * @author caron
  * @since 6/10/14
  */
 public class VariableSimpleImpl implements VariableSimpleIF {
 
-  static public VariableSimpleImpl make(String name, String desc, String units, DataType dt) {
-    return new VariableSimpleImpl(name, desc, units, dt);
+  static public VariableSimpleImpl makeScalar(String name, String desc, String units, DataType dt) {
+    return new VariableSimpleImpl(name, desc, units, dt, null);
+  }
+
+  static public VariableSimpleImpl makeString(String name, String desc, String units, int str_len) {
+    Dimension d = new Dimension(name+"_strlen", str_len, false, false, false);
+    // String dimString = Dimension.makeDimensionsString(new int[] {str_len});
+    return new VariableSimpleImpl(name, desc, units, DataType.CHAR, Arrays.asList(d));
   }
 
   private final String name, desc, units;
   private final DataType dt;
   private final List<Attribute> atts = new ArrayList<>();
+  private final List<Dimension> dims;
+  private final int[] shape;
 
-  VariableSimpleImpl(String name, String desc, String units, DataType dt) {
+  VariableSimpleImpl(String name, String desc, String units, DataType dt, List<Dimension> dims) {
     this.name = name;
     this.desc = desc;
     this.units = units;
     this.dt = dt;
+
+    if (dims == null) {
+      this.dims = new ArrayList<>();
+      this.shape = new int[0];
+    } else {
+      this.dims = dims;
+      this.shape = new int[dims.size()];
+      int count = 0;
+      for (Dimension d : dims)
+        this.shape[count++] = d.getLength();
+    }
 
     if (units != null)
       atts.add(new Attribute(CDM.UNITS, units));
@@ -102,17 +122,17 @@ public class VariableSimpleImpl implements VariableSimpleIF {
 
   @Override
   public int getRank() {
-    return 0;
+    return shape.length;
   }
 
   @Override
   public int[] getShape() {
-    return new int[0];
+    return shape;
   }
 
   @Override
   public List<Dimension> getDimensions() {
-    return null;
+    return dims;
   }
 
   @Override

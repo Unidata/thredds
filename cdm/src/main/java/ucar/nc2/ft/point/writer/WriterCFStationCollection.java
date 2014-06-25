@@ -45,11 +45,7 @@ import ucar.ma2.ArrayObject;
 import ucar.ma2.DataType;
 import ucar.ma2.InvalidRangeException;
 import ucar.ma2.StructureData;
-import ucar.nc2.Attribute;
-import ucar.nc2.Dimension;
-import ucar.nc2.NetcdfFileWriter;
-import ucar.nc2.Variable;
-import ucar.nc2.VariableSimpleIF;
+import ucar.nc2.*;
 import ucar.nc2.constants.CDM;
 import ucar.nc2.constants.CF;
 import ucar.nc2.constants.FeatureType;
@@ -80,6 +76,7 @@ import ucar.unidata.geoloc.Station;
  * @since Aug 19, 2009
  */
 public class WriterCFStationCollection extends CFPointWriter {
+  private static final String stationName = "station";
   private static final String stationDimName = "station";
   private static final String idName = "station_id";
   private static final String descName = "station_description";
@@ -91,34 +88,67 @@ public class WriterCFStationCollection extends CFPointWriter {
   private int name_strlen = 1, desc_strlen = 1, wmo_strlen = 1;
   private Variable lat, lon, alt, time, id, wmoId, desc, stationIndex;
 
+  protected Structure station;  // used for netcdf4 extended
   private List<Dimension> stationDims = new ArrayList<>(1);
   private boolean useAlt = false;
   private boolean useWmoId = false;
 
-  public WriterCFStationCollection(String fileOut, String title) throws IOException {
-    this(null, fileOut, Arrays.asList(new Attribute(CDM.TITLE, title)));
-  }
+  /* public WriterCFStationCollection(String fileOut, String title) throws IOException {
+    this(fileOut, Arrays.asList(new Attribute(CDM.TITLE, title)), new CFPointWriterConfig(null));
+  } */
   
   public WriterCFStationCollection(NetcdfFileWriter.Version version, String fileOut, List<Attribute> atts) throws IOException {
-    super(fileOut, atts, version);
+    super(fileOut, atts, new CFPointWriterConfig(version));
+  }
+
+  public WriterCFStationCollection(String fileOut, List<Attribute> atts, CFPointWriterConfig config) throws IOException {
+    super(fileOut, atts, config);
     writer.addGroupAttribute(null, new Attribute(CF.FEATURE_TYPE, CF.FeatureType.timeSeries.name()));
   }
 
   public void writeHeader(List<ucar.unidata.geoloc.Station> stns, List<VariableSimpleIF> vars, DateUnit timeUnit, String altUnits) throws IOException {
     this.altUnits = altUnits;
+    if (noUnlimitedDimension)
+      recordDim = writer.addDimension(null, recordDimName, config.recDimensionLength);
+    else
+      recordDim = writer.addUnlimitedDimension(recordDimName);
 
-    createStations(stns);
-    createCoordVariables(timeUnit);
-    addDataVariablesClassic(vars);
+    List<VariableSimpleIF> coords = new ArrayList<>();
+    coords.add(VariableSimpleImpl.makeScalar(timeName, "time of measurement", timeUnit.getUnitsString(), DataType.DOUBLE));
+    coords.add( VariableSimpleImpl.makeScalar(stationIndexName,  "station index for this observation record", null, DataType.INT)
+            .add(new Attribute(CF.INSTANCE_DIMENSION, stationDimName)));
 
-    writer.create(); // done with define mode
-    record = writer.addRecordStructure(); // netcdf3 only
-    //System.out.printf("Output file = %s%n", writer.getNetcdfFile());
+    if (writer.getVersion().isExtendedModel()) {
+      addStations(stns, true);
+      record = (Structure) writer.addVariable(null, recordName, DataType.STRUCTURE, recordDimName);
+      addCoordinatesExtended(record, coords);
+      addVariablesExtended(vars);
+      record.calcElementSize();
+      writer.create();
 
-    writeStationData(stns); // write out the station info
+    } else {
+      addStations(stns, false);
+      addCoordinatesClassic(recordDim, coords);
+      addDataVariablesClassic(recordDim, vars);
+      writer.create();
+      record = writer.addRecordStructure(); // netcdf3
+
+      lat = writer.findVariable(latName);
+      lon = writer.findVariable(lonName);
+      alt = writer.findVariable(altName);
+      id = writer.findVariable(idName);
+      wmoId = writer.findVariable(wmoName);
+      desc = writer.findVariable(descName);
+
+      time = writer.findVariable(timeName);
+      stationIndex = writer.findVariable(stationIndexName);
+
+      writeStationData(stns); // write out the station info
+    }
+
   }
 
-  private void createStations(List<ucar.unidata.geoloc.Station> stnList) throws IOException {
+  private void addStations(List<ucar.unidata.geoloc.Station> stnList, boolean isExtended) throws IOException {
     int nstns = stnList.size();
 
     // see if there's altitude, wmoId for any stations
@@ -129,8 +159,6 @@ public class WriterCFStationCollection extends CFPointWriter {
         useWmoId = true;
     }
 
-    /* if (useAlt)
-      ncfile.addGlobalAttribute("altitude_coordinate", altName); */
 
     // find string lengths
     for (Station station : stnList) {
@@ -142,144 +170,34 @@ public class WriterCFStationCollection extends CFPointWriter {
     llbb = getBoundingBox(stnList); // gets written in super.finish();
 
     // add the dimensions
-    writer.addUnlimitedDimension(recordDimName);
     Dimension stationDim = writer.addDimension(null, stationDimName, nstns);
     stationDims.add(stationDim);
 
-    // add the station Variables using the station dimension
-    lat = writer.addVariable(null, latName, DataType.DOUBLE, stationDimName);
-    writer.addVariableAttribute(lat, new Attribute(CDM.UNITS, CDM.LAT_UNITS));
-    writer.addVariableAttribute(lat, new Attribute(CDM.LONG_NAME, "station latitude"));
+    List<VariableSimpleIF> coords = new ArrayList<>();
+    coords.add(VariableSimpleImpl.makeScalar(latName,  "station latitude", CDM.LAT_UNITS, DataType.DOUBLE));
+    coords.add(VariableSimpleImpl.makeScalar(lonName,  "station longitude", CDM.LON_UNITS, DataType.DOUBLE));
+    if (useAlt) coords.add(
+          VariableSimpleImpl.makeScalar(altName, "station altitude", altUnits, DataType.DOUBLE)
+            .add(new Attribute(CF.STANDARD_NAME, CF.SURFACE_ALTITUDE))
+            .add(new Attribute(CF.POSITIVE, CF1Convention.getZisPositive(altName, altUnits))));
 
-    lon = writer.addVariable(null, lonName, DataType.DOUBLE, stationDimName);
-    writer.addVariableAttribute(lon, new Attribute(CDM.UNITS, CDM.LON_UNITS));
-    writer.addVariableAttribute(lon, new Attribute(CDM.LONG_NAME, "station longitude"));
+    coords.add(VariableSimpleImpl.makeString(idName, "station identifier", null, name_strlen)
+            .add(new Attribute(CF.CF_ROLE, CF.TIMESERIES_ID)));         // station_id:cf_role = "timeseries_id";
 
-    if (useAlt) {
-      alt = writer.addVariable(null, altName, DataType.DOUBLE, stationDimName);
-      writer.addVariableAttribute(alt, new Attribute(CDM.UNITS, "meters"));
-      writer.addVariableAttribute(alt, new Attribute(CDM.LONG_NAME, "station altitude"));
-      writer.addVariableAttribute(alt, new Attribute(CF.STANDARD_NAME, CF.SURFACE_ALTITUDE));
-      writer.addVariableAttribute(alt, new Attribute(CF.POSITIVE, CF1Convention.getZisPositive(altName, altUnits)));
+    coords.add(VariableSimpleImpl.makeString(descName, "station description", null, desc_strlen)
+            .add(new Attribute(CF.STANDARD_NAME, CF.PLATFORM_NAME)));
+
+    if (useWmoId) coords.add(VariableSimpleImpl.makeString(wmoName, "station WMO id", null, wmo_strlen)
+            .add(new Attribute(CF.STANDARD_NAME, CF.PLATFORM_ID)));
+
+    if (isExtended) {
+      station = (Structure) writer.addVariable(null, stationName, DataType.STRUCTURE, stationDimName);
+      addCoordinatesExtended(station, coords);
+    } else {
+      addCoordinatesClassic(stationDim, coords);
     }
 
-    id = writer.addStringVariable(null, idName, stationDims, name_strlen);
-    writer.addVariableAttribute(id, new Attribute(CDM.LONG_NAME, "station identifier"));
-    writer.addVariableAttribute(id, new Attribute(CF.CF_ROLE, CF.TIMESERIES_ID));  // station_id:cf_role = "timeseries_id";
-    
-    desc = writer.addStringVariable(null, descName, stationDims, desc_strlen);
-    writer.addVariableAttribute(desc, new Attribute(CDM.LONG_NAME, "station description"));
-    writer.addVariableAttribute(desc, new Attribute(CF.STANDARD_NAME, CF.PLATFORM_NAME));
-
-    if (useWmoId) {
-      wmoId = writer.addStringVariable(null, wmoName, stationDims, wmo_strlen);
-      writer.addVariableAttribute(wmoId, new Attribute(CDM.LONG_NAME, "station WMO id"));
-      writer.addVariableAttribute(wmoId, new Attribute(CF.STANDARD_NAME, CF.PLATFORM_ID));
-    }
   }
-
-  private void createCoordVariables(DateUnit timeUnit) throws IOException {
-    // time variable
-	  
-    time = writer.addVariable(null, timeName, DataType.DOUBLE, recordDimName);
-    writer.addVariableAttribute(time, new Attribute(CDM.UNITS, timeUnit.getUnitsString()));
-    writer.addVariableAttribute(time, new Attribute(CDM.LONG_NAME, "time of measurement"));
-
-    stationIndex = writer.addVariable(null, stationIndexName, DataType.INT, recordDimName);
-    writer.addVariableAttribute(stationIndex, new Attribute(CDM.LONG_NAME, "station index for this observation record"));
-    writer.addVariableAttribute(stationIndex, new Attribute(CF.INSTANCE_DIMENSION, stationDimName));
-  }
-
-  /* private void createDataVariables(List<VariableSimpleIF> dataVars) throws IOException {
-    String coordNames = timeName + " " + latName +" "+ lonName;
-    if (altUnits != null)
-      coordNames = coordNames +" " + altName;
-
-    /* find all dimensions needed by the data variables
-    for (VariableSimpleIF var : dataVars) {
-      List<Dimension> dims = var.getDimensions();
-      dimSet.addAll(dims);
-    }
-
-    // add them
-    for (Dimension d : dimSet) {
-      if (d.isUnlimited()) continue;
-      if (d.isShared())
-        writer.addDimension(null, d.getShortName(), d.getLength(), d.isShared(), false, d.isVariableLength());
-    }  *
-
-    // eliminate coordinate variables
-    List<VariableSimpleIF> useDataVars = new ArrayList<>(dataVars.size());
-    for (VariableSimpleIF var : dataVars) {
-      if (writer.findVariable(var.getShortName()) == null) useDataVars.add(var);
-    }
-
-    // add the data variables, all using the record dimension
-    for (VariableSimpleIF oldVar : useDataVars) {
-      List<Dimension> dims = new ArrayList<>(); // getNewDimensions(oldVar);
-      dims.add(0, recordDim);
-
-      /* StringBuilder dimNames = new StringBuilder(recordDimName);
-      for (Dimension d : dims) {
-        if (d.isUnlimited()) continue;
-        if (d.isShared())
-          dimNames.append(" ").append(d.getShortName());
-        else { // anon dimensions
-          String dimName = oldVar.getShortName() + "_strlen";
-          writer.addDimension(null, dimName, d.getLength());
-          dimNames.append(" ").append(dimName);
-        }
-      }  *
-
-      Variable newVar;
-      if ((oldVar.getDataType().equals(DataType.STRING))) {
-        newVar = writer.addStringVariable(null, oldVar.getShortName(), dims, 10);
-
-      /* } else if ((oldVar.getDataType().equals(DataType.CHAR)) && dims.size() > 1) {
-        int n = dims.size();
-        List<Dimension> cdims = dims.subList(0, n-1);
-        Dimension lenDim = dims.get(n-1);
-        newVar = writer.addStringVariable(null, oldVar.getShortName(), cdims, lenDim.getLength());  *
-
-      } else {
-        newVar = writer.addVariable(null, oldVar.getShortName(), oldVar.getDataType(), dims);
-      }
-
-      List<Attribute> atts = oldVar.getAttributes();
-      for (Attribute att : atts) {
-        if (!reservedVariableAtts.contains(att.getShortName()))
-          newVar.addAttribute(att);
-      }
-      newVar.addAttribute(new Attribute(CF.COORDINATES, coordNames));
-
-      dataVarMap.put(newVar.getShortName(), newVar);
-    }
-  }
-
-  int countDim = 0;
-  private final Map<String, Dimension> gdimHash = new HashMap<>(); // name, newDim : global dimensions (classic mode)
-  private List<Dimension> getNewDimensions(VariableSimpleIF oldVar) {
-    List<Dimension> result = new ArrayList<>(oldVar.getRank());
-
-    // dimensions
-    for (Dimension oldD : oldVar.getDimensions()) {
-      Dimension newD = gdimHash.get(oldD.getShortName());
-      if (newD != null) continue;
-      if (oldD.isShared()) {
-        newD = writer.addDimension(null, oldD.getShortName(), oldD.isUnlimited() ? 0 : oldD.getLength(),
-                oldD.isShared(), oldD.isUnlimited(), oldD.isVariableLength());
-        gdimHash.put(oldD.getShortName(), newD);
-        if (debug) System.out.println("add dim= " + newD);
-        result.add(newD);
-      } else {
-        String dimName = (oldVar.getDataType() == DataType.CHAR) ? oldVar.getShortName()+"_strlen" : "dim"+countDim++;
-        newD = writer.addDimension(null, dimName, oldD.isUnlimited() ? 0 : oldD.getLength());
-        gdimHash.put(dimName, newD);
-        result.add(newD);
-      }
-    }
-    return result;
-  } */
 
   private HashMap<String, Integer> stationMap;
 
@@ -491,7 +409,7 @@ public class WriterCFStationCollection extends CFPointWriter {
     FeatureDatasetPoint fdpoint = (FeatureDatasetPoint) fdataset;
 
 
-    int count = CFPointWriter.writeFeatureCollection(fdpoint, outputFile, null);
+    int count = CFPointWriter.writeFeatureCollection(fdpoint, outputFile, NetcdfFileWriter.Version.netcdf3);
     System.out.printf(" nrecords written = %d%n%n", count);
 
 

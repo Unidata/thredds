@@ -285,34 +285,8 @@ public class Variable extends CDMNode implements VariableIF, ProxyReader, Attrib
    *
    * @return Dimension names, space delineated
    */
-  /* public String getDimensionsStringOld() {
-    StringBuilder buff = new StringBuilder();
-    for (int i = 0; i < dimensions.size(); i++) {
-      Dimension dim = dimensions.get(i);
-      if (i > 0) buff.append(" ");
-      buff.append(dim.getName());
-    }
-    return buff.toString();
-  }  */
   public String getDimensionsString() {
-    Formatter buf = new Formatter();
-    for (int i = 0; i < dimensions.size(); i++) {
-      Dimension myd = dimensions.get(i);
-      String dimName = myd.getShortName();
-
-      if (i != 0) buf.format(" ");
-
-      if (myd.isVariableLength()) {
-        buf.format("*");
-      } else if (myd.isShared()) {
-        buf.format("%s", dimName);
-      } else {
-        //if (dimName != null)          // LOOK losing anon dim name
-        //  buf.format("%s=", dimName);
-        buf.format("%d", myd.getLength());
-      }
-    }
-    return buf.toString();
+    return Dimension.makeDimensionsString(dimensions);
   }
 
   /**
@@ -1434,33 +1408,13 @@ public class Variable extends CDMNode implements VariableIF, ProxyReader, Attrib
    */
   public void setDimensions(String dimString) {
     if (immutable) throw new IllegalStateException("Cant modify");
-    List<Dimension> newDimensions = new ArrayList<>();
-
-    if ((dimString == null) || (dimString.length() == 0)) { // scalar
-      this.dimensions = newDimensions;
+    try {
+      this.dimensions = Dimension.makeDimensionsList(getParentGroup(), dimString);
       resetShape();
-      return;
+    } catch (IllegalStateException e) {
+      throw new IllegalArgumentException("Variable " + getFullName() + " setDimensions = '" + dimString +
+              "' FAILED: " + e.getMessage() + " file = " + getDatasetLocation());
     }
-
-    StringTokenizer stoke = new StringTokenizer(dimString);
-    while (stoke.hasMoreTokens()) {
-      String dimName = stoke.nextToken();
-      Dimension d = dimName.equals("*") ? Dimension.VLEN : getParentGroup().findDimension(dimName);
-      if (d == null) {
-        // if numeric - then its anonymous dimension
-        try {
-          int len = Integer.parseInt(dimName);
-          d = new Dimension(null, len, false, false, false);
-        } catch (Exception e) {
-          throw new IllegalArgumentException("Variable " + getFullName() + " setDimensions = '" + dimString +
-                  "' FAILED, dim doesnt exist=" + dimName + " file = " + getDatasetLocation());
-        }
-      }
-      newDimensions.add(d);
-    }
-
-    this.dimensions = newDimensions;
-    resetShape();
   }
 
   /**

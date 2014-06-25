@@ -429,8 +429,4 @@ class WriterCFTimeSeriesProfileCollection extends CFPointWriter {
 		}		
 	}
 
-	@Override
-    public void close() throws IOException{
-		writer.close();
-	}
 }

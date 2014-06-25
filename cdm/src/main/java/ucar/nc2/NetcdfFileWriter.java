@@ -479,12 +479,14 @@ public class NetcdfFileWriter {
    * @param g         the group to add to. if null, use root group
    * @param shortName name of Variable, must be unique with the file.
    * @param dataType  type of underlying element
-   * @param dims      names of Dimensions for the variable, blank seperated.
+   * @param dimString names of Dimensions for the variable, blank separated.
    *                  Must already have been added. Use an empty string for a scalar variable.
    * @return the Variable that has been added
    */
-  public Variable addVariable(Group g, String shortName, DataType dataType, String dims) {
-    return addVariable(g, null, shortName, dataType, makeDimList(g, dims));
+  public Variable addVariable(Group g, String shortName, DataType dataType, String dimString) {
+    Group parent = (g == null) ? ncfile.getRootGroup() : g;
+    return addVariable(g, null, shortName, dataType, Dimension.makeDimensionsList(parent, dimString));
+
   }
 
   /**
@@ -658,7 +660,7 @@ public class NetcdfFileWriter {
     return v;
   }
 
-  public List<Dimension> makeDimList(Group g, String dimNames) {
+  /* public List<Dimension> makeDimList(Group g, String dimNames) {
     if (g == null) g = ncfile.getRootGroup();
     List<Dimension> list = new ArrayList<>();
     StringTokenizer stoker = new StringTokenizer(dimNames);
@@ -672,7 +674,7 @@ public class NetcdfFileWriter {
       list.add(d);
     }
     return list;
-  }
+  } */
 
   /**
    * Rename a Variable. Must be in define mode.
@@ -822,7 +824,10 @@ public class NetcdfFileWriter {
 
     File prevFile = new File(location);
     File tmpFile = new File(location + ".tmp");
-    if (tmpFile.exists()) tmpFile.delete();
+    if (tmpFile.exists()) {
+      boolean ok = tmpFile.delete();
+      if (!ok) log.warn("rewrite unable to delete {}", tmpFile.getPath());
+    }
     if (!prevFile.renameTo(tmpFile)) {
       System.out.println(prevFile.getPath() + " prevFile.exists " + prevFile.exists() + " canRead = " + prevFile.canRead());
       System.out.println(tmpFile.getPath() + " tmpFile.exists " + tmpFile.exists() + " canWrite " + tmpFile.canWrite());

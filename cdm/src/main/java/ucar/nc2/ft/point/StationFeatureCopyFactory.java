@@ -60,7 +60,7 @@ public class StationFeatureCopyFactory {
   static private final int OBJECT_SIZE = 40; // overhead per object estimate
   static private final int ARRAY_SIZE = 8;   // assume 64 bit pointers
 
-  private final Map<String, Station> stationMap;
+  private final Map<String, StationImpl> stationMap;
   private final StructureMembers sm;
   private final DateUnit du;
   private final int sizeInBytes;
@@ -91,11 +91,12 @@ public class StationFeatureCopyFactory {
 
   public StationPointFeature deepCopy(StationPointFeature from) throws IOException {
     Station s = from.getStation();
-    Station sUse = stationMap.get(s.getName());
+    StationImpl sUse = stationMap.get(s.getName());
     if (sUse == null) {
       sUse =  new StationImpl(s, 0);
       stationMap.put(s.getName(), sUse);
     }
+    sUse.incrNobs();
     StationPointFeatureCopy deep = new StationPointFeatureCopy(sUse, from);
     deep.data = StructureDataDeep.copy(from.getData(), sm);
     return deep;

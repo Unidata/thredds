@@ -93,7 +93,7 @@ public class WriterCFProfileCollection extends CFPointWriter {
     
     createProfiles(profileNames);
     createObsVariables(timeUnit);
-    addDataVariablesClassic(dataVars);
+    addDataVariablesClassic(recordDim, dataVars);
 
     writer.create(); // done with define mode
     

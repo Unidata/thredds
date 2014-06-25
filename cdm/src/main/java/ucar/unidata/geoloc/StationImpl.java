@@ -92,6 +92,10 @@ public class StationImpl extends EarthLocationImpl implements Station {
   protected void setWmoId(String wmoId) { this.wmoId = wmoId != null ? wmoId.trim() : null; }
   protected void setNobs(int nobs) { this.nobs = nobs; }
 
+  public void incrNobs() {
+    this.nobs++;
+  }
+
   public int compareTo(Station so) {
     return name.compareTo( so.getName());
   }
