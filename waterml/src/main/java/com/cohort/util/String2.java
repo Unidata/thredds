@@ -4634,13 +4634,13 @@ public class String2 {
      */
     public static String quoteIfNeeded(boolean quoted, String s) {
         //this is Bob's unprecedented solution to dealing with newlines
-        //� is (char)166 (#166), so distinct from pipe, (char)124
+        //¦ is (char)166 (#166), so distinct from pipe, (char)124
         int po = s.indexOf('\n');
         if (po >= 0) {
-            s = replaceAll(s, '\n', (char)166); //'�'  (#166)
+            s = replaceAll(s, '\n', (char)166); //'¦'  (#166)
             s = replaceAll(s, "\r", "");
         } else {
-            s = replaceAll(s, '\r', (char)166); //'�'  (#166)
+            s = replaceAll(s, '\r', (char)166); //'¦'  (#166)
             s = replaceAll(s, "\n", ""); 
         }
         if (quoted) {
