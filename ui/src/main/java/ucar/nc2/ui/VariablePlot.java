@@ -154,6 +154,7 @@ public class VariablePlot extends JPanel {
       chart.setTitle(title.getStringValue());
 
     Variable varT = file.findVariable(null, dimName);
+    if (varT == null) return;
 
     Attribute tunit = varT.findAttribute("units");
     Attribute vunit = v.findAttribute("units");

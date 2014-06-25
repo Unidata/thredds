@@ -1841,6 +1841,7 @@ public class H5header {
         } else {
           tinfo.dataType = getNCtype(mdt.getBaseType(), mdt.getBaseSize());
           tinfo.endian = mdt.base.endian;
+          tinfo.unsigned = mdt.base.unsigned;
         }
       } else if (hdfType == 10) { // array : used for structure members
         tinfo.endian = (mdt.getFlags()[0] & 1) == 0 ? RandomAccessFile.LITTLE_ENDIAN : RandomAccessFile.BIG_ENDIAN;
@@ -3124,7 +3125,7 @@ public class H5header {
       f.format(" datatype= %d", type);
       f.format(" byteSize= %d", byteSize);
       DataType dtype = getNCtype(type, byteSize);
-      f.format(" NCtype= %s", dtype);
+      f.format(" NCtype= %s %s", dtype, unsigned ? "(unsigned)" : "");
       f.format(" flags= ");
       for (int i = 0; i < 3; i++) f.format(" %d", flags[i]);
       f.format(" endian= %s", endian == RandomAccessFile.BIG_ENDIAN ? "BIG" : "LITTLE");

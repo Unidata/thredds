@@ -81,6 +81,7 @@ public class TestStationFCController {
 
   @Test
   public void getClosestStationData() throws Exception {
+    long start = System.currentTimeMillis();
     RequestBuilder rb = MockMvcRequestBuilders.get(dataset).servletPath(dataset)
             .param("longitude", "-105.203").param("latitude", "40.019")
             .param("accept", "netcdf4")
@@ -88,8 +89,13 @@ public class TestStationFCController {
             .param("time_end", "2006-03-29T00:00:00Z")
             .param("var", "air_temperature,dew_point_temperature,precipitation_amount_24,precipitation_amount_hourly,visibility_in_air");
 
-    this.mockMvc.perform(rb).andExpect(MockMvcResultMatchers.status().isOk())
-            .andExpect(MockMvcResultMatchers.content().contentType(SupportedFormat.NETCDF4.getResponseContentType()));
+    try {
+      this.mockMvc.perform(rb).andExpect(MockMvcResultMatchers.status().isOk())
+              .andExpect(MockMvcResultMatchers.content().contentType(SupportedFormat.NETCDF4.getResponseContentType()));
+    } finally {
+      long took = System.currentTimeMillis() - start;
+      System.out.printf("that took %d msecs%n", took);
+    }
   }
 
   @Test
@@ -164,8 +170,15 @@ public class TestStationFCController {
             .param("time_start", "2006-03-25T00:00:00Z")
             .param("time_end", "2006-03-26T00:00:00Z");
 
-    this.mockMvc.perform(rb).andExpect(MockMvcResultMatchers.status().isOk())
+
+    long start = System.currentTimeMillis();
+    try {
+      this.mockMvc.perform(rb).andExpect(MockMvcResultMatchers.status().isOk())
             .andExpect(MockMvcResultMatchers.content().contentType(ContentType.netcdf.getContentHeader()));
+  } finally {
+    long took = System.currentTimeMillis() - start;
+    System.out.printf("that took %d msecs%n", took);
+  }
 
   }
 

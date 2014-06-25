@@ -53,7 +53,7 @@ import ucar.nc2.iosp.netcdf3.N3iosp;
  * then the new file is filled with fill values, like ncgen.
  * <p/>
  * <p> Use the static methods writeToFile() to copy an entire file. Create a FileWriter object to control exactly
- * what gets written to the file.
+ * what gets written to the file. </p>
  *
  * @deprecated use FileWriter2
  * @author caron

@@ -125,7 +125,7 @@ public class TestNcmlWriteAndCompare {
 
     if (showFiles) {
       System.out.println("-----------");
-      System.out.println(" input filename= " + location);
+      System.out.println("  input filename= " + location);
     }
 
     NetcdfFile org;

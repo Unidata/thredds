@@ -241,7 +241,7 @@ public class NcStream {
   public static long encodeArrayStructure(ArrayStructure as, OutputStream os) throws java.io.IOException {
     long size = 0;
 
-    ArrayStructureBB dataBB = IospHelper.makeArrayBB(as);
+    ArrayStructureBB dataBB = StructureDataDeep.copyToArrayBB(as);
     List<String> ss = new ArrayList<String>();
     List<Object> heap = dataBB.getHeap();
     List<Integer> count = new ArrayList<Integer>();

@@ -1,34 +1,34 @@
 /*
- * Copyright 1998-2009 University Corporation for Atmospheric Research/Unidata
+ * Copyright 1998-2014 University Corporation for Atmospheric Research/Unidata
  *
- * Portions of this software were developed by the Unidata Program at the
- * University Corporation for Atmospheric Research.
+ *   Portions of this software were developed by the Unidata Program at the
+ *   University Corporation for Atmospheric Research.
  *
- * Access and use of this software shall impose the following obligations
- * and understandings on the user. The user is granted the right, without
- * any fee or cost, to use, copy, modify, alter, enhance and distribute
- * this software, and any derivative works thereof, and its supporting
- * documentation for any purpose whatsoever, provided that this entire
- * notice appears in all copies of the software, derivative works and
- * supporting documentation.  Further, UCAR requests that the user credit
- * UCAR/Unidata in any publications that result from the use of this
- * software or in any product that includes this software. The names UCAR
- * and/or Unidata, however, may not be used in any advertising or publicity
- * to endorse or promote any products or commercial entity unless specific
- * written permission is obtained from UCAR/Unidata. The user also
- * understands that UCAR/Unidata is not obligated to provide the user with
- * any support, consulting, training or assistance of any kind with regard
- * to the use, operation and performance of this software nor to provide
- * the user with any updates, revisions, new versions or "bug fixes."
+ *   Access and use of this software shall impose the following obligations
+ *   and understandings on the user. The user is granted the right, without
+ *   any fee or cost, to use, copy, modify, alter, enhance and distribute
+ *   this software, and any derivative works thereof, and its supporting
+ *   documentation for any purpose whatsoever, provided that this entire
+ *   notice appears in all copies of the software, derivative works and
+ *   supporting documentation.  Further, UCAR requests that the user credit
+ *   UCAR/Unidata in any publications that result from the use of this
+ *   software or in any product that includes this software. The names UCAR
+ *   and/or Unidata, however, may not be used in any advertising or publicity
+ *   to endorse or promote any products or commercial entity unless specific
+ *   written permission is obtained from UCAR/Unidata. The user also
+ *   understands that UCAR/Unidata is not obligated to provide the user with
+ *   any support, consulting, training or assistance of any kind with regard
+ *   to the use, operation and performance of this software nor to provide
+ *   the user with any updates, revisions, new versions or "bug fixes."
  *
- * THIS SOFTWARE IS PROVIDED BY UCAR/UNIDATA "AS IS" AND ANY EXPRESS OR
- * IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
- * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
- * DISCLAIMED. IN NO EVENT SHALL UCAR/UNIDATA BE LIABLE FOR ANY SPECIAL,
- * INDIRECT OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING
- * FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT,
- * NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
- * WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
+ *   THIS SOFTWARE IS PROVIDED BY UCAR/UNIDATA "AS IS" AND ANY EXPRESS OR
+ *   IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ *   WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ *   DISCLAIMED. IN NO EVENT SHALL UCAR/UNIDATA BE LIABLE FOR ANY SPECIAL,
+ *   INDIRECT OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING
+ *   FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT,
+ *   NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
+ *   WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 package ucar.nc2.dt.grid;
 
@@ -38,12 +38,10 @@ import ucar.nc2.dt.GridCoordSystem;
 import ucar.nc2.dt.GridDatatype;
 import ucar.nc2.util.NamedObject;
 import ucar.nc2.dataset.*;
-import ucar.nc2.constants._Coordinate;
 import ucar.unidata.geoloc.*;
 import ucar.unidata.util.Format;
 
 import java.util.*;
-import java.io.IOException;
 
 /**
  * A georeferencing "gridded" VariableEnhanced, that has a GridCoordSys.
@@ -107,7 +105,7 @@ public class GeoGrid implements NamedObject, ucar.nc2.dt.GridDatatype {
 
     // construct canonical dimension list
     int count = 0;
-    this.mydims = new ArrayList<Dimension>();
+    this.mydims = new ArrayList<>();
     if ((rtDimOrgIndex >= 0) && (rtDimOrgIndex != tDimOrgIndex)) {
       mydims.add(dsvar.getDimension(rtDimOrgIndex));
       rtDimNewIndex = count++;
@@ -154,7 +152,7 @@ public class GeoGrid implements NamedObject, ucar.nc2.dt.GridDatatype {
    * @return List with objects of type Dimension, in canonical order.
    */
   public java.util.List<Dimension> getDimensions() {
-    return new ArrayList<Dimension>(mydims);
+    return new ArrayList<>(mydims);
   }
 
   /**
@@ -270,7 +268,7 @@ public class GeoGrid implements NamedObject, ucar.nc2.dt.GridDatatype {
    * @return Attribute string value, or default if not found.
    */
   public String findAttValueIgnoreCase(String attName, String defaultValue) {
-    return dataset.getNetcdfDataset().findAttValueIgnoreCase((Variable) vs, attName, defaultValue);
+    return dataset.getNetcdfDataset().findAttValueIgnoreCase( vs, attName, defaultValue);
   }
 
   // implementation of GridDatatype interface
@@ -612,7 +610,7 @@ public class GeoGrid implements NamedObject, ucar.nc2.dt.GridDatatype {
 
     // LOOK: the real problem is the lack of named dimensions in the Array object
     // figure out correct permutation for canonical ordering for permute
-    List<Dimension> oldDims = new ArrayList<Dimension>(vs.getDimensions());
+    List<Dimension> oldDims = new ArrayList<>(vs.getDimensions());
     int[] permuteIndex = new int[dataVolume.getRank()];
     int count = 0;
     if (oldDims.contains(rtdim)) permuteIndex[count++] = oldDims.indexOf(rtdim);
@@ -779,9 +777,7 @@ public class GeoGrid implements NamedObject, ucar.nc2.dt.GridDatatype {
 
     GeoGrid d = (GeoGrid) oo;
     if (!getFullName().equals(d.getFullName())) return false;
-    if (!getCoordinateSystem().equals(d.getCoordinateSystem())) return false;
-
-    return true;
+    return getCoordinateSystem().equals(d.getCoordinateSystem());
   }
 
   /**

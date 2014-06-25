@@ -83,7 +83,7 @@
 <h3>Unsigned types</h3>
 <ul>
   <li>The C library uses unsigned integer types: NC_UBYTE, NC_USHORT, NC_UINT, NC_UINT64.</li>
-  <li>The Java library does not have separate types for unsigned integers, but adds the reserved attribute <em><strong>_Unsigned = &quot;true&quot;</strong></em> when the variable is unsigned. One can check this with Variable.isUnsigned() and Array.isUnsigned(). Conversions done by the library are aware of this convention. The reason for this is that Java does not have unsigned types, and we dont want to double the internal memory requirements by widening the data. </li>
+  <li>The Java library does not have separate types for unsigned integers, but adds the reserved attribute <em><strong>_Unsigned = &quot;true&quot;</strong></em> when the variable is unsigned. One can check this with <em>Variable.isUnsigned(), Attribute.isUnsigned(), </em>and <em>Array.isUnsigned()</em>. Conversions done by the library are aware of this convention. Java does not have unsigned types, and we dont want to double the internal memory requirements by widening the data. </li>
 </ul>
 <h3>Enum Typedefs</h3>
 <ul>

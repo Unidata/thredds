@@ -699,7 +699,7 @@ public class Level2VolumeScan {
               break;
             }
           } catch (EOFException ee) {
-            log.warn("  got EOFException ");
+            log.debug("got EOFException");
             break; // assume this is ok
           }
 

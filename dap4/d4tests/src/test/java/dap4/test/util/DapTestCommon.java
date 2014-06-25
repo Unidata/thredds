@@ -24,7 +24,7 @@ public class DapTestCommon extends TestCase
 
     static final String DEFAULTTREEROOT = "dap4";
     // Look for these to verify we have found the thredds root
-    static final String[] DEFAULTSUBDIRS = new String[]{"httpclient", "cdm", "tds", "opendap", "dap4"};
+    static final String[] DEFAULTSUBDIRS = new String[]{"httpservices", "cdm", "tds", "opendap", "dap4"};
 
     static public final String FILESERVER = "dap4:file://";
 
@@ -89,7 +89,8 @@ public class DapTestCommon extends TestCase
     }
 
     // Walk around the directory structure to locate
-    // the path to the thredds root
+    // the path to the thredds root (which may not
+    // be names "thredds").
     // Same as code in UnitTestCommon, but for
     // some reason, Intellij will not let me import it.
 

@@ -42,6 +42,7 @@ import java.io.IOException;
  * Implementation of Station
  *
  * @author caron
+ * @deprecated use ucar.unidata.geoloc.StationImpl
  */
 
 public class StationImpl extends ucar.unidata.geoloc.StationImpl {

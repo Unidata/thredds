@@ -54,7 +54,15 @@ public class StationImpl extends EarthLocationImpl implements Station {
     setName(name);
     setDescription(desc);
     setWmoId(wmoId);
-    this.nobs = nobs;
+    setNobs( nobs);
+  }
+
+  public StationImpl( Station s, int nobs) {
+    super(s.getLatitude(), s.getLongitude(), s.getAltitude());
+    setName(s.getName());
+    setDescription(s.getDescription());
+    setWmoId(s.getWmoId());
+    setNobs( nobs);
   }
 
   /**
@@ -80,8 +88,8 @@ public class StationImpl extends EarthLocationImpl implements Station {
   /////
 
   protected void setName(String name) { this.name = name.trim(); }
-  protected void setDescription(String desc) { this.desc = desc.trim(); }
-  protected void setWmoId(String wmoId) { this.wmoId = wmoId.trim(); }
+  protected void setDescription(String desc) { this.desc = desc != null ? desc.trim() : null; }
+  protected void setWmoId(String wmoId) { this.wmoId = wmoId != null ? wmoId.trim() : null; }
   protected void setNobs(int nobs) { this.nobs = nobs; }
 
   public int compareTo(Station so) {

@@ -36,15 +36,12 @@ package ucar.nc2.dt.radial;
 import ucar.ma2.*;
 
 import ucar.nc2.Attribute;
-import ucar.nc2.Dimension;
 import ucar.nc2.Variable;
 import ucar.nc2.VariableSimpleIF;
-import ucar.nc2.constants.AxisType;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dt.RadialDatasetSweep;
 import ucar.nc2.dt.TypedDataset;
-import ucar.nc2.dt.TypedDatasetFactory;
 import ucar.nc2.dt.TypedDatasetFactoryIF;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time.CalendarDateUnit;
@@ -68,998 +65,869 @@ import java.util.*;
  */
 public class CFnetCDF2Dataset extends RadialDatasetSweepAdapter implements TypedDatasetFactoryIF {
 
-    /** _more_          */
-    private NetcdfDataset ds = null;
+  private NetcdfDataset ds = null;
+  private double latv, lonv, elev;
+  private double[] time;
+  private float[] elevation;
+  private float[] azimuth;
+  private float[] range;
+  private int[] rayStartIdx;
+  private int[] rayEndIdx;
+  private int nsweeps;
 
-    /** _more_          */
-    double latv, lonv, elev;
+  /////////////////////////////////////////////////
+  // TypedDatasetFactoryIF
 
-    /** _more_          */
-    double[] time;
+  public boolean isMine(NetcdfDataset ds) {
+    String convention = ds.findAttValueIgnoreCase(null, "Conventions", null);
+    return (null != convention) && convention.startsWith("CF/Radial");
+  }
 
-    /** _more_          */
-    float[] elevation;
+  public TypedDataset open(NetcdfDataset ncd, ucar.nc2.util.CancelTask task, StringBuilder errlog) throws IOException {
+    return new CFnetCDF2Dataset(ncd);
+  }
 
-    /** _more_          */
-    float[] azimuth;
+  public FeatureType getScientificDataType() {
+    return FeatureType.RADIAL;
+  }
 
-    /** _more_          */
-    float[] range;
+  public CFnetCDF2Dataset() {
+  }
 
-    /** _more_          */
-    int[] rayStartIdx;
+  /**
+   * Constructor.
+   *
+   * @param ds must be from nexrad2 IOSP
+   */
+  public CFnetCDF2Dataset(NetcdfDataset ds) {
+    this.ds = ds;
+    desc = "CF netCDF 2 radar dataset";
+    init();
 
-    /** _more_          */
-    int[] rayEndIdx;
+    for (Variable var : ds.getVariables()) {
+      addRadialVariable(ds, var);
+    }
+  }
 
-    /** _more_          */
-    int nsweeps;
+  public void init() {
+    Variable t = ds.findVariable("time");
+    Variable ele = ds.findVariable("elevation");
+    Variable azi = ds.findVariable("azimuth");
+    Variable rng = ds.findVariable("range");
+    Variable sidx0 = ds.findVariable("sweep_start_ray_index");
+    Variable sidx1 = ds.findVariable("sweep_end_ray_index");
+    Variable snumber = ds.findVariable("sweep_number");
 
-    /////////////////////////////////////////////////
-    // TypedDatasetFactoryIF
+    setEarthLocation();
+    try {
+      Array tArray = t.read();
+      time = (double[]) tArray.copyTo1DJavaArray();
+      Array eArray = ele.read();
+      elevation = (float[]) eArray.copyTo1DJavaArray();
+      Array aArray = azi.read();
+      azimuth = (float[]) aArray.copyTo1DJavaArray();
+      Array rArray = rng.read();
+      range = (float[]) rArray.copyTo1DJavaArray();
+      rayStartIdx = (int[]) sidx0.read().copyTo1DJavaArray();
+      rayEndIdx = (int[]) sidx1.read().copyTo1DJavaArray();
+      Array sn = snumber.read();
+      nsweeps = ((int[]) sn.copyTo1DJavaArray()).length;
+
+      setTimeUnits();
+    } catch (Exception e) {
+      throw new RuntimeException(e);
+    }
+    setStartDate();
+    setEndDate();
+    setBoundingBox();
+  }
+
+  protected void setBoundingBox() {
+    LatLonRect bb;
+
+    if (origin == null) {
+      return;
+    }
+
+    double dLat = Math.toDegrees(getMaximumRadialDist()
+            / Earth.getRadius());
+    double latRadians = Math.toRadians(origin.getLatitude());
+    double dLon = dLat * Math.cos(latRadians);
+
+    double lat1 = origin.getLatitude() - dLat / 2;
+    double lon1 = origin.getLongitude() - dLon / 2;
+    bb = new LatLonRect(new LatLonPointImpl(lat1, lon1), dLat, dLon);
+
+    boundingBox = bb;
+  }
+
+  double getMaximumRadialDist() {
+    double maxdist = 0.0;
+
+    for (Object dataVariable : dataVariables) {
+      RadialVariable rv = (RadialVariable) dataVariable;
+      Sweep sp = rv.getSweep(0);
+      double dist = sp.getGateNumber() * sp.getGateSize();
+
+      if (dist > maxdist) {
+        maxdist = dist;
+      }
+    }
+
+    return maxdist;
+  }
+
+  protected void setEarthLocation() {
+
+    try {
+      Variable ga = ds.findVariable("latitude");
+      if (ga != null) {
+        latv = ga.readScalarDouble();
+      } else {
+        latv = 0.0;
+      }
+
+      ga = ds.findVariable("longitude");
+
+      if (ga != null) {
+        lonv = ga.readScalarDouble();
+      } else {
+        lonv = 0.0;
+      }
+
+      ga = ds.findVariable("altitude");
+      if (ga != null) {
+        elev = ga.readScalarDouble();
+      } else {
+        elev = 0.0;
+      }
+    } catch (IOException e) {
+    }
+
+    origin = new ucar.unidata.geoloc.EarthLocationImpl(latv, lonv, elev);
+  }
+
+  @Override
+  public ucar.unidata.geoloc.EarthLocation getCommonOrigin() {
+    return origin;
+  }
+
+  @Override
+  public String getRadarID() {
+    Attribute ga = ds.findGlobalAttribute("Station");
+    if (ga != null) {
+      return ga.getStringValue();
+    } else {
+      return "XXXX";
+    }
+  }
+
+  @Override
+  public String getRadarName() {
+    Attribute ga = ds.findGlobalAttribute("instrument_name");
+    if (ga != null) {
+      return ga.getStringValue();
+    } else {
+      return "Unknown Station";
+    }
+  }
+
+  @Override
+  public String getDataFormat() {
+    return "CF/RadialNetCDF";
+  }
+
+
+  @Override
+  public boolean isVolume() {
+    return true;
+  }
+
+  public boolean isHighResolution(NetcdfDataset nds) {
+    return true;
+  }
+
+  public boolean isStationary() {
+    Variable lat = ds.findVariable("latitude");
+    return lat.getSize() == 1;
+  }
+
+  protected void setTimeUnits() throws Exception {
+    Variable t = ds.findVariable("time");
+    String ut = t.getUnitsString();
+    dateUnits = new DateUnit(ut);
+    calDateUnits = CalendarDateUnit.of(null, ut);
+  }
+
+  protected void setStartDate() {
+    String datetime = ds.findAttValueIgnoreCase(null, "time_coverage_start", null);
+    if (datetime != null) {
+      startDate = CalendarDate.parseISOformat(null, datetime).toDate();
+    } else {
+      startDate = calDateUnits.makeCalendarDate(time[0]).toDate();
+    }
+  }
+
+  protected void setEndDate() {
+    String datetime = ds.findAttValueIgnoreCase(null, "time_coverage_end", null);
+    if (datetime != null) {
+      endDate = CalendarDate.parseISOformat(null, datetime).toDate();
+    } else {
+      endDate = calDateUnits.makeCalendarDate(time[time.length - 1]).toDate();
+    }
+  }
+
+  public void clearDatasetMemory() {
+    List rvars = getDataVariables();
+    Iterator iter = rvars.iterator();
+    while (iter.hasNext()) {
+      RadialVariable radVar = (RadialVariable) iter.next();
+      radVar.clearVariableMemory();
+    }
+  }
+
+
+  /**
+   * _more_
+   *
+   * @param nds _more_
+   * @param var _more_
+   */
+  protected void addRadialVariable(NetcdfDataset nds, Variable var) {
+
+    RadialVariable rsvar = null;
+    String vName = var.getShortName();
+    int tIdx = var.findDimensionIndex("time");
+    int rIdx = var.findDimensionIndex("range");
+
+    if ((tIdx == 0) && (rIdx == 1)) {
+      VariableSimpleIF v = new MyRadialVariableAdapter(vName, var.getAttributes());
+      rsvar = makeRadialVariable(nds, v, var);
+    }
+
+    if (rsvar != null) {
+      dataVariables.add(rsvar);
+    }
+  }
+
+
+  /**
+   * _more_
+   *
+   * @param nds _more_
+   * @param v   _more_
+   * @param v0  _more_
+   * @return _more_
+   */
+  protected RadialVariable makeRadialVariable(NetcdfDataset nds,
+                                              VariableSimpleIF v, Variable v0) {
+    // this function is null in level 2
+    return new CFRadial2Variable(nds, v, v0);
+  }
+
+  /**
+   * _more_
+   *
+   * @return _more_
+   */
+  public String getInfo() {
+    StringBuffer sbuff = new StringBuffer();
+    sbuff.append("CFRadial2Dataset\n");
+    sbuff.append(super.getDetailInfo());
+    sbuff.append("\n\n");
+    sbuff.append(parseInfo.toString());
+    return sbuff.toString();
+  }
+
+
+  /**
+   * Class description
+   *
+   * @author Enter your name here...
+   * @version Enter version here..., Mon, Jun 13, '11
+   */
+  private class CFRadial2Variable extends MyRadialVariableAdapter implements RadialDatasetSweep.RadialVariable {
+
+    /**
+     * _more_
+     */
+    ArrayList sweeps;
+
+    /**
+     * _more_
+     */
+    String name;
+
 
     /**
      * _more_
      *
-     * @param ds _more_
-     *
-     * @return _more_
+     * @param nds _more_
+     * @param v   _more_
+     * @param v0  _more_
      */
-    public boolean isMine(NetcdfDataset ds) {
-        String convention = ds.findAttValueIgnoreCase(null, "Conventions",
-                                null);
-        if ((null != convention) && convention.startsWith("CF/Radial")) {
-            return true;
-        }
-        return false;
+    private CFRadial2Variable(NetcdfDataset nds, VariableSimpleIF v,
+                              Variable v0) {
+      super(v.getShortName(), v0.getAttributes());
+
+      sweeps = new ArrayList();
+      name = v.getShortName();
+
+      int[] shape = v0.getShape();
+      int count = v0.getRank() - 1;
+
+      int ngates = shape[count];
+      count--;
+      int nrays = shape[count];
+
+      for (int i = 0; i < nsweeps; i++) {
+        sweeps.add(new CFRadial2Sweep(v0, i, nrays, ngates,
+                rayStartIdx[i], rayEndIdx[i]));
+      }
     }
 
     /**
      * _more_
      *
-     * @param ncd _more_
-     * @param task _more_
-     * @param errlog _more_
+     * @return _more_
+     */
+    public String toString() {
+      return name;
+    }
+
+    /**
+     * _more_
      *
      * @return _more_
+     */
+    public int getNumSweeps() {
+      return nsweeps;
+    }
+
+    /**
+     * _more_
      *
+     * @param sweepNo _more_
+     * @return _more_
+     */
+    public Sweep getSweep(int sweepNo) {
+      return (Sweep) sweeps.get(sweepNo);
+    }
+
+    /**
+     * _more_
+     *
+     * @return _more_
+     */
+    public int getNumRadials() {
+      return azimuth.length;
+    }
+
+    // a 3D array nsweep * nradials * ngates
+    // if high resolution data, it will be transfered to the same dimension
+
+    /**
+     * _more_
+     *
+     * @return _more_
      * @throws IOException _more_
      */
-    public TypedDataset open(NetcdfDataset ncd,
-                             ucar.nc2.util.CancelTask task,
-                             StringBuilder errlog)
-            throws IOException {
-        return new CFnetCDF2Dataset(ncd);
-    }
+    public float[] readAllData() throws IOException {
+      Array allData;
+      Array hrData = null;
+      Sweep spn = (Sweep) sweeps.get(0);
+      Variable v = spn.getsweepVar();
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
-    public FeatureType getScientificDataType() {
-        return FeatureType.RADIAL;
-    }
+      int minRadial = getMinRadialNumber();
+      int minRadials = minRadial * nsweeps;
+      int radials = getNumRadials();
+      int gates = range.length;
+      try {
+        allData = v.read();
+      } catch (IOException e) {
+        throw new IOException(e.getMessage());
+      }
+      if (minRadials == radials) {
+        return (float[]) allData.get1DJavaArray(float.class);
+      } else {
 
+        float[] fa0 = (float[]) allData.get1DJavaArray(float.class);
+        float[] fa = new float[minRadials * gates * nsweeps];
+        int pos = 0;
+        for (int i = 0; i < nsweeps; i++) {
 
-    /**
-     * _more_
-     */
-    public CFnetCDF2Dataset() {}
-
-    /**
-     * Constructor.
-     *
-     * @param ds must be from nexrad2 IOSP
-     */
-    public CFnetCDF2Dataset(NetcdfDataset ds) {
-        //super(ds);
-        this.ds = ds;
-        desc    = "CF netCDF 2 radar dataset";
-        init();
-
-        List vars = ds.getVariables();
-        for (int i = 0; i < vars.size(); i++) {
-            // VariableEnhanced varDS = (VariableEnhanced) vars.get(i);
-            addRadialVariable(ds, (Variable) vars.get(i));
+          int startIdx = rayStartIdx[i];
+          // int endIdx = rayEndIdx[i];
+          int len = (minRadial) * gates;
+          System.arraycopy(fa0, startIdx * gates, fa, pos, len);
+          pos = pos + len;
         }
+        return fa;
+      }
     }
 
-    /**
-     * _more_
-     */
-    public void init() {
-        Variable t       = ds.findVariable("time");
-        Variable ele     = ds.findVariable("elevation");
-        Variable azi     = ds.findVariable("azimuth");
-        Variable rng     = ds.findVariable("range");
-        Variable sidx0   = ds.findVariable("sweep_start_ray_index");
-        Variable sidx1   = ds.findVariable("sweep_end_ray_index");
-        Variable snumber = ds.findVariable("sweep_number");
 
-        setEarthLocation();
-        try {
-            Array tArray = t.read();
-            time = (double[]) tArray.copyTo1DJavaArray();
-            Array eArray = ele.read();
-            elevation = (float[]) eArray.copyTo1DJavaArray();
-            Array aArray = azi.read();
-            azimuth = (float[]) aArray.copyTo1DJavaArray();
-            Array rArray = rng.read();
-            range       = (float[]) rArray.copyTo1DJavaArray();
-            rayStartIdx = (int[]) sidx0.read().copyTo1DJavaArray();
-            rayEndIdx   = (int[]) sidx1.read().copyTo1DJavaArray();
-            Array sn = snumber.read();
-            nsweeps = ((int[]) sn.copyTo1DJavaArray()).length;
-
-            setTimeUnits();
-        } catch (Exception e) {
-            throw new RuntimeException(e);
+    public int getMinRadialNumber() {
+      int minRadialNumber = 1000;
+      for (int i = 0; i < nsweeps; i++) {
+        Sweep swp = (Sweep) this.sweeps.get(i);
+        int radialNumber = swp.getRadialNumber();
+        if (radialNumber < minRadialNumber) {
+          minRadialNumber = radialNumber;
         }
-        setStartDate();
-        setEndDate();
-        setBoundingBox();
-    }
+      }
 
-
-    /**
-     * _more_
-     */
-    protected void setBoundingBox() {
-        LatLonRect bb;
-
-        if (origin == null) {
-            return;
-        }
-
-        double dLat = Math.toDegrees(getMaximumRadialDist()
-                                     / Earth.getRadius());
-        double latRadians = Math.toRadians(origin.getLatitude());
-        double dLon       = dLat * Math.cos(latRadians);
-
-        double lat1       = origin.getLatitude() - dLat / 2;
-        double lon1       = origin.getLongitude() - dLon / 2;
-        bb = new LatLonRect(new LatLonPointImpl(lat1, lon1), dLat, dLon);
-
-        boundingBox = bb;
-    }
-
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
-    double getMaximumRadialDist() {
-        double   maxdist = 0.0;
-        Iterator iter    = dataVariables.iterator();
-
-        while (iter.hasNext()) {
-            RadialVariable rv   = (RadialVariable) iter.next();
-            Sweep          sp   = rv.getSweep(0);
-            double         dist = sp.getGateNumber() * sp.getGateSize();
-
-            if (dist > maxdist) {
-                maxdist = dist;
-            }
-        }
-
-        return maxdist;
+      return minRadialNumber;
     }
 
     /**
      * _more_
      */
-    protected void setEarthLocation() {
-
-        try {
-            Variable ga = ds.findVariable("latitude");
-            if (ga != null) {
-                latv = ga.readScalarDouble();
-            } else {
-                latv = 0.0;
-            }
-
-            ga = ds.findVariable("longitude");
-
-            if (ga != null) {
-                lonv = ga.readScalarDouble();
-            } else {
-                lonv = 0.0;
-            }
-
-            ga = ds.findVariable("altitude");
-            if (ga != null) {
-                elev = ga.readScalarDouble();
-            } else {
-                elev = 0.0;
-            }
-        } catch (IOException e) {}
-
-        origin = new ucar.unidata.geoloc.EarthLocationImpl(latv, lonv, elev);
-    }
-
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
-    public ucar.unidata.geoloc.EarthLocation getCommonOrigin() {
-        return origin;
-    }
-
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
-    public String getRadarID() {
-        Attribute ga = ds.findGlobalAttribute("Station");
-        if (ga != null) {
-            return ga.getStringValue();
-        } else {
-            return "XXXX";
-        }
-    }
-
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
-    public String getRadarName() {
-        Attribute ga = ds.findGlobalAttribute("instrument_name");
-        if (ga != null) {
-            return ga.getStringValue();
-        } else {
-            return "Unknown Station";
-        }
-    }
-
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
-    public String getDataFormat() {
-        return "CF/RadialNetCDF";
+    public void clearVariableMemory() {
+      for (int i = 0; i < nsweeps; i++) {
+      }
     }
 
 
-
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
-    public boolean isVolume() {
-        return true;
-    }
-
-    /**
-     * _more_
-     *
-     * @param nds _more_
-     *
-     * @return _more_
-     */
-    public boolean isHighResolution(NetcdfDataset nds) {
-        return true;
-    }
-
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
-    public boolean isStationary() {
-        Variable lat = ds.findVariable("latitude");
-        return lat.getSize() == 1;
-    }
-
-    /**
-     * _more_
-     *
-     * @throws Exception _more_
-     */
-    protected void setTimeUnits() throws Exception {
-        Variable t  = ds.findVariable("time");
-        String   ut = t.getUnitsString();
-        dateUnits = new DateUnit(ut);
-        calDateUnits = CalendarDateUnit.of(null, ut);
-    }
-
-    /**
-     * _more_
-     */
-    protected void setStartDate() {
-        String datetime = ds.findAttValueIgnoreCase(null,
-                "time_coverage_start", null);
-        if (datetime != null)
-        {
-            startDate = CalendarDate.parseISOformat(null, datetime).toDate();
-        }
-        else
-        {
-            startDate = calDateUnits.makeCalendarDate(time[0]).toDate();
-        }
-    }
-
-    /**
-     * _more_
-     */
-    protected void setEndDate() {
-        String datetime = ds.findAttValueIgnoreCase(null,
-                "time_coverage_end", null);
-        if (datetime != null)
-        {
-            endDate = CalendarDate.parseISOformat(null, datetime).toDate();
-        }
-        else
-        {
-            endDate = calDateUnits.makeCalendarDate(
-                    time[time.length - 1]).toDate();
-        }
-    }
-
-    /**
-     * _more_
-     */
-    public void clearDatasetMemory() {
-        List     rvars = getDataVariables();
-        Iterator iter  = rvars.iterator();
-        while (iter.hasNext()) {
-            RadialVariable radVar = (RadialVariable) iter.next();
-            radVar.clearVariableMemory();
-        }
-    }
-
-
-
-    /**
-     * _more_
-     *
-     * @param nds _more_
-     * @param var _more_
-     */
-    protected void addRadialVariable(NetcdfDataset nds, Variable var) {
-
-        RadialVariable rsvar = null;
-        String         vName = var.getShortName();
-        int            tIdx  = var.findDimensionIndex("time");
-        int            rIdx  = var.findDimensionIndex("range");
-
-        if ((tIdx == 0) && (rIdx == 1)) {
-            VariableSimpleIF v = new MyRadialVariableAdapter(vName, var.getAttributes());
-          rsvar = makeRadialVariable(nds, v, var);
-        }
-
-        if (rsvar != null) {
-            dataVariables.add(rsvar);
-        }
-    }
-
-
-
-    /**
-     * _more_
-     *
-     * @param nds _more_
-     * @param v _more_
-     * @param v0 _more_
-     *
-     * @return _more_
-     */
-    protected RadialVariable makeRadialVariable(NetcdfDataset nds,
-            VariableSimpleIF v, Variable v0) {
-        // this function is null in level 2
-        return new CFRadial2Variable(nds, v, v0);
-    }
-
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
-    public String getInfo() {
-        StringBuffer sbuff = new StringBuffer();
-        sbuff.append("CFRadial2Dataset\n");
-        sbuff.append(super.getDetailInfo());
-        sbuff.append("\n\n");
-        sbuff.append(parseInfo.toString());
-        return sbuff.toString();
-    }
-
+    //////////////////////////////////////////////////////////////////////
+    // Checking all azi to make sure there is no missing data at sweep
+    // level, since the coordinate is 1D at this level, this checking also
+    // remove those missing radials within a sweep.
 
     /**
      * Class description
      *
-     *
-     * @version        Enter version here..., Mon, Jun 13, '11
-     * @author         Enter your name here...    
+     * @author Enter your name here...
+     * @version Enter version here..., Mon, Jun 13, '11
      */
-    private class CFRadial2Variable extends MyRadialVariableAdapter implements RadialDatasetSweep
-        .RadialVariable {
+    private class CFRadial2Sweep implements RadialDatasetSweep.Sweep {
 
-        /** _more_          */
-        ArrayList sweeps;
+      /**
+       * _more_
+       */
+      double meanElevation = Double.NaN;
 
-        /** _more_          */
-        String name;
+      /**
+       * _more_
+       */
+      double meanAzimuth = Double.NaN;
 
+      /**
+       * _more_
+       */
+      int nrays, ngates;
 
-        /**
-         * _more_
-         *
-         * @param nds _more_
-         * @param v _more_
-         * @param v0 _more_
-         */
-        private CFRadial2Variable(NetcdfDataset nds, VariableSimpleIF v,
-                                  Variable v0) {
-            super(v.getShortName(), v0.getAttributes());
+      /**
+       * _more_
+       */
+      public int startIdx, endIdx;
 
-            sweeps = new ArrayList();
-            name   = v.getShortName();
+      /**
+       * _more_
+       */
+      int sweepno;
 
-            int[] shape  = v0.getShape();
-            int   count  = v0.getRank() - 1;
-
-            int   ngates = shape[count];
-            count--;
-            int nrays = shape[count];
-
-            for (int i = 0; i < nsweeps; i++) {
-                sweeps.add(new CFRadial2Sweep(v0, i, nrays, ngates,
-                        rayStartIdx[i], rayEndIdx[i]));
-            }
-        }
-
-        /**
-         * _more_
-         *
-         * @return _more_
-         */
-        public String toString() {
-            return name;
-        }
-
-        /**
-         * _more_
-         *
-         * @return _more_
-         */
-        public int getNumSweeps() {
-            return nsweeps;
-        }
-
-        /**
-         * _more_
-         *
-         * @param sweepNo _more_
-         *
-         * @return _more_
-         */
-        public Sweep getSweep(int sweepNo) {
-            return (Sweep) sweeps.get(sweepNo);
-        }
-
-        /**
-         * _more_
-         *
-         * @return _more_
-         */
-        public int getNumRadials() {
-            return azimuth.length;
-        }
-
-        // a 3D array nsweep * nradials * ngates
-        // if high resolution data, it will be transfered to the same dimension
-
-        /**
-         * _more_
-         *
-         * @return _more_
-         *
-         * @throws IOException _more_
-         */
-        public float[] readAllData() throws IOException {
-            Array    allData;
-            Array    hrData    = null;
-            Sweep    spn       = (Sweep) sweeps.get(0);
-            Variable v         = spn.getsweepVar();
-
-            int minRadial = getMinRadialNumber();
-            int minRadials = minRadial * nsweeps;
-            int radials = getNumRadials();
-            int gates = range.length;
-            try {
-                allData = v.read();
-            } catch (IOException e) {
-                throw new IOException(e.getMessage());
-            }
-            if(minRadials == radials) {
-                return (float []) allData.get1DJavaArray(float.class);
-            } else {
-
-                float[] fa0 = (float[]) allData.get1DJavaArray(float.class);
-                float[] fa  = new float[minRadials*gates*nsweeps];
-                int pos = 0;
-                for (int i = 0; i < nsweeps; i++) {
-
-                    int startIdx = rayStartIdx[i];
-                   // int endIdx = rayEndIdx[i];
-                    int len = (minRadial) * gates;
-                    System.arraycopy(fa0, startIdx*gates, fa, pos, len);
-                    pos = pos + len;
-                }                
-                return fa;
-            }
-        }
+      /**
+       * _more_
+       */
+      Variable sweepVar;
 
 
-        public int getMinRadialNumber(){
-            int minRadialNumber = 1000;
-            for (int i = 0; i < nsweeps; i++) {
-                Sweep swp = (Sweep)this.sweeps.get(i);
-                int radialNumber = swp.getRadialNumber();
-                if(radialNumber < minRadialNumber){
-                    minRadialNumber = radialNumber;
-                }
-            }
+      /**
+       * _more_
+       *
+       * @param v        _more_
+       * @param sweepno  _more_
+       * @param rays     _more_
+       * @param gates    _more_
+       * @param startIdx _more_
+       * @param endIdx   _more_
+       */
+      CFRadial2Sweep(Variable v, int sweepno, int rays, int gates,
+                     int startIdx, int endIdx) {
+        this.sweepVar = v;
+        this.sweepno = sweepno;
+        this.nrays = rays;
+        this.ngates = gates;
+        this.startIdx = startIdx;
+        this.endIdx = endIdx;
 
-            return minRadialNumber;
-        }
-        /**
-         * _more_
-         */
-        public void clearVariableMemory() {
-            for (int i = 0; i < nsweeps; i++) {}
-        }
+      }
 
+      public int getStartIdx() {
+        return startIdx;
+      }
 
-        //////////////////////////////////////////////////////////////////////
-        // Checking all azi to make sure there is no missing data at sweep
-        // level, since the coordinate is 1D at this level, this checking also
-        // remove those missing radials within a sweep.
+      public int getEndIdx() {
+        return endIdx;
+      }
 
-        /**
-         * Class description
-         *
-         *
-         * @version        Enter version here..., Mon, Jun 13, '11
-         * @author         Enter your name here...    
-         */
-        private class CFRadial2Sweep implements RadialDatasetSweep.Sweep {
-
-            /** _more_          */
-            double meanElevation = Double.NaN;
-
-            /** _more_          */
-            double meanAzimuth = Double.NaN;
-
-            /** _more_          */
-            int nrays, ngates;
-
-            /** _more_          */
-            public int startIdx, endIdx;
-
-            /** _more_          */
-            int sweepno;
-
-            /** _more_          */
-            Variable sweepVar;
-
-
-            /**
-             * _more_
-             *
-             * @param v _more_
-             * @param sweepno _more_
-             * @param rays _more_
-             * @param gates _more_
-             * @param startIdx _more_
-             * @param endIdx _more_
-             */
-            CFRadial2Sweep(Variable v, int sweepno, int rays, int gates,
-                           int startIdx, int endIdx) {
-                this.sweepVar = v;
-                this.sweepno  = sweepno;
-                this.nrays    = rays;
-                this.ngates   = gates;
-                this.startIdx = startIdx;
-                this.endIdx   = endIdx;
-
-            }
-
-            public int getStartIdx(){
-                return startIdx;
-            }
-
-            public int getEndIdx(){
-                return endIdx;
-            }
-            /**
-             * _more_
-             *
-             * @return _more_
-             */
-            public Variable getsweepVar() {
-                return sweepVar;
-            }
+      /**
+       * _more_
+       *
+       * @return _more_
+       */
+      public Variable getsweepVar() {
+        return sweepVar;
+      }
 
             /* read 2d sweep data nradials * ngates */
 
-            /**
-             * _more_
-             *
-             * @return _more_
-             *
-             * @throws java.io.IOException _more_
-             */
-            public float[] readData() throws java.io.IOException {
-                return sweepData();
-            }
+      /**
+       * _more_
+       *
+       * @return _more_
+       * @throws java.io.IOException _more_
+       */
+      public float[] readData() throws java.io.IOException {
+        return sweepData();
+      }
 
 
+      /**
+       * _more_
+       *
+       * @return _more_
+       */
+      private float[] sweepData() {
+        int[] shape = sweepVar.getShape();
+        int[] origin = new int[2];
+        Array sweepTmp = null;
 
-            /**
-             * _more_
-             *
-             * @return _more_
-             */
-            private float[] sweepData() {
-                int[] shape    = sweepVar.getShape();
-                int[] origin   = new int[2];
-                Array sweepTmp = null;
+        // init section
+        origin[0] = startIdx;
+        shape[0] = endIdx - startIdx;
 
-                // init section
-                origin[0] = startIdx;
-                shape[0]  = endIdx - startIdx;
+        try {
+          sweepTmp = sweepVar.read(origin, shape).reduce();
+        } catch (ucar.ma2.InvalidRangeException e) {
+          e.printStackTrace();
+        } catch (java.io.IOException e) {
+          e.printStackTrace();
+        }
+        return (float[]) sweepTmp.get1DJavaArray(Float.TYPE);
+      }
 
-                try {
-                    sweepTmp = sweepVar.read(origin, shape).reduce();
-                } catch (ucar.ma2.InvalidRangeException e) {
-                    e.printStackTrace();
-                } catch (java.io.IOException e) {
-                    e.printStackTrace();
-                }
-                return (float[]) sweepTmp.get1DJavaArray(Float.TYPE);
-            }
-
-            //  private Object MUTEX =new Object();
+      //  private Object MUTEX =new Object();
             /* read 1d data ngates */
 
-            /**
-             * _more_
-             *
-             * @param ray _more_
-             *
-             * @return _more_
-             *
-             * @throws java.io.IOException _more_
-             */
-            public float[] readData(int ray) throws java.io.IOException {
-                return rayData(ray);
-            }
+      /**
+       * _more_
+       *
+       * @param ray _more_
+       * @return _more_
+       * @throws java.io.IOException _more_
+       */
+      public float[] readData(int ray) throws java.io.IOException {
+        return rayData(ray);
+      }
 
             /* read the radial data from the radial variable */
 
-            /**
-             * _more_
-             *
-             * @param ray _more_
-             *
-             * @return _more_
-             *
-             * @throws java.io.IOException _more_
-             */
-            public float[] rayData(int ray) throws java.io.IOException {
-                int[] shape    = sweepVar.getShape();
-                int[] origin   = new int[2];
-                Array sweepTmp = null;
+      /**
+       * _more_
+       *
+       * @param ray _more_
+       * @return _more_
+       * @throws java.io.IOException _more_
+       */
+      public float[] rayData(int ray) throws java.io.IOException {
+        int[] shape = sweepVar.getShape();
+        int[] origin = new int[2];
+        Array sweepTmp = null;
 
-                // init section
-                origin[0] = startIdx + ray;
-                shape[0]  = 1;
+        // init section
+        origin[0] = startIdx + ray;
+        shape[0] = 1;
 
-                try {
-                    sweepTmp = sweepVar.read(origin, shape).reduce();
-                } catch (ucar.ma2.InvalidRangeException e) {
-                    e.printStackTrace();
-                } catch (java.io.IOException e) {
-                    e.printStackTrace();
-                }
+        try {
+          sweepTmp = sweepVar.read(origin, shape).reduce();
+        } catch (ucar.ma2.InvalidRangeException e) {
+          e.printStackTrace();
+        } catch (java.io.IOException e) {
+          e.printStackTrace();
+        }
 
-                return (float[]) sweepTmp.get1DJavaArray(Float.TYPE);
-            }
+        return (float[]) sweepTmp.get1DJavaArray(Float.TYPE);
+      }
 
 
-            /**
-             * _more_
-             */
-            public void setMeanElevation() {
+      /**
+       * _more_
+       */
+      public void setMeanElevation() {
 
-                double sum     = 0.0;
-                int    sumSize = 0;
-                int    size    = endIdx - startIdx;
-                for (int i = 0; i < size; i++) {
-                    if ( !Double.isNaN(elevation[i])) {
-                        sum = sum + elevation[startIdx + i];
-                        sumSize++;
-                    }
-                }
-                meanElevation = sum / sumSize;
-            }
+        double sum = 0.0;
+        int sumSize = 0;
+        int size = endIdx - startIdx;
+        for (int i = 0; i < size; i++) {
+          if (!Double.isNaN(elevation[i])) {
+            sum = sum + elevation[startIdx + i];
+            sumSize++;
+          }
+        }
+        meanElevation = sum / sumSize;
+      }
 
-            /**
-             * _more_
-             *
-             * @return _more_
-             */
-            public float getMeanElevation() {
-                if (Double.isNaN(meanElevation)) {
-                    setMeanElevation();
-                }
-                return (float) meanElevation;
-            }
+      /**
+       * _more_
+       *
+       * @return _more_
+       */
+      public float getMeanElevation() {
+        if (Double.isNaN(meanElevation)) {
+          setMeanElevation();
+        }
+        return (float) meanElevation;
+      }
 
-            /**
-             * _more_
-             *
-             * @return _more_
-             */
-            public int getGateNumber() {
-                return ngates;
-            }
+      /**
+       * _more_
+       *
+       * @return _more_
+       */
+      public int getGateNumber() {
+        return ngates;
+      }
 
-            /**
-             * _more_
-             *
-             * @return _more_
-             */
-            public int getRadialNumber() {
-                return endIdx - startIdx;
-            }
-
-
-            /**
-             * _more_
-             *
-             * @return _more_
-             */
-            public RadialDatasetSweep.Type getType() {
-                return null;
-            }
-
-            /**
-             * _more_
-             *
-             * @param ray _more_
-             *
-             * @return _more_
-             */
-            public ucar.unidata.geoloc.EarthLocation getOrigin(int ray) {
-                return origin;
-            }
-
-            /**
-             * _more_
-             *
-             * @return _more_
-             */
-            public Date getStartingTime() {
-                return startDate;
-            }
-
-            /**
-             * _more_
-             *
-             * @return _more_
-             */
-            public Date getEndingTime() {
-                return endDate;
-            }
-
-            /**
-             * _more_
-             *
-             * @return _more_
-             */
-            public int getSweepIndex() {
-                return sweepno;
-            }
+      /**
+       * _more_
+       *
+       * @return _more_
+       */
+      public int getRadialNumber() {
+        return endIdx - startIdx;
+      }
 
 
-            /**
-             * _more_
-             */
-            public void setMeanAzimuth() {
-                double sum     = 0.0;
-                int    sumSize = 0;
-                int    size    = endIdx - startIdx;
-                for (int i = 0; i < size; i++) {
-                    if ( !Double.isNaN(azimuth[i])) {
-                        sum = sum + azimuth[startIdx + i];
-                        sumSize++;
-                    }
-                }
-                meanAzimuth = sum / sumSize;
+      /**
+       * _more_
+       *
+       * @return _more_
+       */
+      public RadialDatasetSweep.Type getType() {
+        return null;
+      }
 
-            }
+      /**
+       * _more_
+       *
+       * @param ray _more_
+       * @return _more_
+       */
+      public ucar.unidata.geoloc.EarthLocation getOrigin(int ray) {
+        return origin;
+      }
 
-            /**
-             * _more_
-             *
-             * @return _more_
-             */
-            public float getMeanAzimuth() {
-                if (Double.isNaN(meanAzimuth)) {
-                    setMeanAzimuth();
-                }
-                return (float) meanAzimuth;
-            }
+      /**
+       * _more_
+       *
+       * @return _more_
+       */
+      public Date getStartingTime() {
+        return startDate;
+      }
 
-            /**
-             * _more_
-             *
-             * @return _more_
-             */
-            public boolean isConic() {
-                return true;
-            }
+      /**
+       * _more_
+       *
+       * @return _more_
+       */
+      public Date getEndingTime() {
+        return endDate;
+      }
 
-            /**
-             * _more_
-             *
-             * @param ray _more_
-             *
-             * @return _more_
-             *
-             * @throws IOException _more_
-             */
-            public float getElevation(int ray) throws IOException {
-                return (float) elevation[ray + startIdx];
-            }
-
-            /**
-             * _more_
-             *
-             * @return _more_
-             *
-             * @throws IOException _more_
-             */
-            public float[] getElevation() throws IOException {
-                int     size = endIdx - startIdx;
-                float[] elev = new float[size];
-
-                for (int i = startIdx; i < endIdx; i++) {
-                    elev[i - startIdx] = (float) elevation[i];
-                }
-                return elev;
-
-            }
+      /**
+       * _more_
+       *
+       * @return _more_
+       */
+      public int getSweepIndex() {
+        return sweepno;
+      }
 
 
-            /**
-             * _more_
-             *
-             * @return _more_
-             *
-             * @throws IOException _more_
-             */
-            public float[] getAzimuth() throws IOException {
-                int     size  = endIdx - startIdx;
-                float[] azimu = new float[size];
+      /**
+       * _more_
+       */
+      public void setMeanAzimuth() {
+        double sum = 0.0;
+        int sumSize = 0;
+        int size = endIdx - startIdx;
+        for (int i = 0; i < size; i++) {
+          if (!Double.isNaN(azimuth[i])) {
+            sum = sum + azimuth[startIdx + i];
+            sumSize++;
+          }
+        }
+        meanAzimuth = sum / sumSize;
 
-                for (int i = startIdx; i < endIdx; i++) {
-                    azimu[i - startIdx] = (float) azimuth[i];
-                }
-                return azimu;
-            }
+      }
+
+      /**
+       * _more_
+       *
+       * @return _more_
+       */
+      public float getMeanAzimuth() {
+        if (Double.isNaN(meanAzimuth)) {
+          setMeanAzimuth();
+        }
+        return (float) meanAzimuth;
+      }
+
+      /**
+       * _more_
+       *
+       * @return _more_
+       */
+      public boolean isConic() {
+        return true;
+      }
+
+      /**
+       * _more_
+       *
+       * @param ray _more_
+       * @return _more_
+       * @throws IOException _more_
+       */
+      public float getElevation(int ray) throws IOException {
+        return (float) elevation[ray + startIdx];
+      }
+
+      /**
+       * _more_
+       *
+       * @return _more_
+       * @throws IOException _more_
+       */
+      public float[] getElevation() throws IOException {
+        int size = endIdx - startIdx;
+        float[] elev = new float[size];
+
+        for (int i = startIdx; i < endIdx; i++) {
+          elev[i - startIdx] = (float) elevation[i];
+        }
+        return elev;
+
+      }
 
 
-            /**
-             * _more_
-             *
-             * @param ray _more_
-             *
-             * @return _more_
-             *
-             * @throws IOException _more_
-             */
-            public float getAzimuth(int ray) throws IOException {
-                return azimuth[ray + startIdx];
-            }
+      /**
+       * _more_
+       *
+       * @return _more_
+       * @throws IOException _more_
+       */
+      public float[] getAzimuth() throws IOException {
+        int size = endIdx - startIdx;
+        float[] azimu = new float[size];
+
+        for (int i = startIdx; i < endIdx; i++) {
+          azimu[i - startIdx] = (float) azimuth[i];
+        }
+        return azimu;
+      }
 
 
-            /**
-             * _more_
-             *
-             * @param gate _more_
-             *
-             * @return _more_
-             *
-             * @throws IOException _more_
-             */
-            public float getRadialDistance(int gate) throws IOException {
-                return range[gate];
-            }
+      /**
+       * _more_
+       *
+       * @param ray _more_
+       * @return _more_
+       * @throws IOException _more_
+       */
+      public float getAzimuth(int ray) throws IOException {
+        return azimuth[ray + startIdx];
+      }
 
-            /**
-             * _more_
-             *
-             * @param ray _more_
-             *
-             * @return _more_
-             *
-             * @throws IOException _more_
-             */
-            public float getTime(int ray) throws IOException {
 
-                return (float) time[ray + startIdx];
+      /**
+       * _more_
+       *
+       * @param gate _more_
+       * @return _more_
+       * @throws IOException _more_
+       */
+      public float getRadialDistance(int gate) throws IOException {
+        return range[gate];
+      }
 
-            }
+      /**
+       * _more_
+       *
+       * @param ray _more_
+       * @return _more_
+       * @throws IOException _more_
+       */
+      public float getTime(int ray) throws IOException {
 
-            /**
-             * _more_
-             *
-             * @return _more_
-             */
-            public float getBeamWidth() {
-                return 0.95f;  // degrees, info from Chris Burkhart
-            }
+        return (float) time[ray + startIdx];
 
-            /**
-             * _more_
-             *
-             * @return _more_
-             */
-            public float getNyquistFrequency() {
-                return 0;  // LOOK this may be radial specific
-            }
+      }
 
-            /**
-             * _more_
-             *
-             * @return _more_
-             */
-            public float getRangeToFirstGate() {
-                try {
-                    return getRadialDistance(0);
-                } catch (IOException e) {
-                    e.printStackTrace();
-                    return 0.0f;
-                }
-            }
+      /**
+       * _more_
+       *
+       * @return _more_
+       */
+      public float getBeamWidth() {
+        return 0.95f;  // degrees, info from Chris Burkhart
+      }
 
-            /**
-             * _more_
-             *
-             * @return _more_
-             */
-            public float getGateSize() {
-                try {
-                    return getRadialDistance(1) - getRadialDistance(0);
-                } catch (IOException e) {
-                    e.printStackTrace();
-                    return 0.0f;
-                }
-            }
+      /**
+       * _more_
+       *
+       * @return _more_
+       */
+      public float getNyquistFrequency() {
+        return 0;  // LOOK this may be radial specific
+      }
 
-            /**
-             * _more_
-             *
-             * @return _more_
-             */
-            public boolean isGateSizeConstant() {
-                return true;
-            }
+      /**
+       * _more_
+       *
+       * @return _more_
+       */
+      public float getRangeToFirstGate() {
+        try {
+          return getRadialDistance(0);
+        } catch (IOException e) {
+          e.printStackTrace();
+          return 0.0f;
+        }
+      }
 
-            /**
-             * _more_
-             */
-            public void clearSweepMemory() {}
-        }  // LevelII2Sweep class
+      /**
+       * _more_
+       *
+       * @return _more_
+       */
+      public float getGateSize() {
+        try {
+          return getRadialDistance(1) - getRadialDistance(0);
+        } catch (IOException e) {
+          e.printStackTrace();
+          return 0.0f;
+        }
+      }
 
-    }      // LevelII2Variable
+      /**
+       * _more_
+       *
+       * @return _more_
+       */
+      public boolean isGateSizeConstant() {
+        return true;
+      }
+
+      /**
+       * _more_
+       */
+      public void clearSweepMemory() {
+      }
+    }  // LevelII2Sweep class
+
+  }      // LevelII2Variable
 }
