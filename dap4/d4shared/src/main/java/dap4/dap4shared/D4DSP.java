@@ -26,7 +26,7 @@ abstract public class D4DSP extends AbstractDSP
     //////////////////////////////////////////////////
     // Constants
 
-    static protected final boolean DEBUG = false;
+    static public boolean DEBUG = false;
 
     static protected final String DAPVERSION = "4.0";
     static protected final String DMRVERSION = "1.0";

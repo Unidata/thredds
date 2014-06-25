@@ -4,6 +4,7 @@
 package dap4.servlet;
 
 import dap4.ce.CEConstraint;
+import dap4.core.util.DapException;
 import dap4.dap4shared.DSP;
 
 import java.io.IOException;
@@ -44,10 +45,10 @@ abstract public class DapCache
             throws IOException
     {
         int lrusize = lru.size();
-        for (int i = lrusize - 1; i >= 0; i--) {
+        for(int i = lrusize - 1; i >= 0; i--) {
             DSP dsp = lru.get(i);
             String dsppath = dsp.getPath();
-            if (dsppath.equals(path)) {
+            if(dsppath.equals(path)) {
                 // move to the front of the queue to maintain LRU property
                 lru.remove(i);
                 lru.add(dsp);
@@ -56,7 +57,7 @@ abstract public class DapCache
         }
         // No match found, create and initialize it.
         // If cache is full, remove oldest entry
-        if (lrusize == MAXFILES) {
+        if(lrusize == MAXFILES) {
             // make room
             lru.remove(0);
             CEConstraint.release(lru.get(0).getDMR());
@@ -65,6 +66,18 @@ abstract public class DapCache
         DSP dsp = DSPFactory.create(path);
         lru.add(dsp);
         return dsp;
+    }
+
+    static public void flush() // for testing
+    {
+        while(lru.size() > 0) {
+            try {
+                DSP dsp = lru.get(0);
+                CEConstraint.release(dsp.getDMR());
+                dsp.close();
+            } catch (Exception e) {/*ignore*/}
+            lru.remove(0);
+        }
     }
 
 

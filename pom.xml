@@ -959,9 +959,7 @@
     <module>dap4/d4servletshared</module>
     <module>dap4/d4servlet</module>
     <module>dap4/d4ts</module>
-    <!--
     <module>dap4/d4tests</module>
-    -->
     <module>dap4/d4tswar</module>
 
     <module>waterml</module>

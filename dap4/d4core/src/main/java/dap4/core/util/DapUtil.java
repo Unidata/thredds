@@ -233,6 +233,9 @@ abstract public class DapUtil // Should only contain static methods
         path = path.replace('\\', '/');
         if(path.endsWith("/"))
             path = path.substring(0, path.length() - 1);
+        // As a last step, lowercase the drive letter, if any
+        if(hasDriveLetter(path))
+            path = path.substring(0,1).toLowerCase() + path.substring(1);
         return path;
     }
 

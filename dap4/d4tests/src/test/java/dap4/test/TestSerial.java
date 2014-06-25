@@ -126,7 +126,8 @@ public class TestSerial extends DapTestCommon
         } else if(this.root.charAt(0) != '/')
             this.root = "/" + this.root;
         this.datasetpath = this.root + "/" + BASELINEDIR;
-        this.sourceurl = getSourceURL();
+        findServer(this.datasetpath);
+        this.sourceurl = d4tsServer;
         System.out.println("Using source url " + this.sourceurl);
         defineAllTestcases(this.root, this.sourceurl);
         chooseTestcases();
@@ -138,7 +139,7 @@ public class TestSerial extends DapTestCommon
     void
     chooseTestcases()
     {
-        if(true) {
+        if(false) {
             chosentests = locate("test_atomic_array");
         } else {
             for(ClientTest tc : alltestcases)
@@ -305,63 +306,7 @@ public class TestSerial extends DapTestCommon
         System.err.println(msg);
         return false;
     }
-
-    String
-    getSourceURL()
-    {
-        Source chosen = null;
-        if(prop_server != null) {
-            for(int i = 0;i < SOURCES.size();i++) {
-		if(SOURCES.get(i).isfile) continue;
-                if(SOURCES.get(i).name.equals(prop_server)) {
-                    chosen = SOURCES.get(i);
-                    break;
-                }
-            }
-            if(chosen == null) {
-                System.err.println("-Dserver argument unknown: " + prop_server);
-                return null;
-            }
-            if(!checkServer(chosen)) {
-                System.err.println("-Dserver unreachable: " + prop_server);
-                return null;
-            }
-            return chosen.prefix;
-        }
-        // Look for a sourceurl in order of appearance in SOURCES
-        for(int i = 0;i < SOURCES.size();i++) {
-            chosen = SOURCES.get(i);
-            if(checkServer(chosen))
-                break;
-        }
-        // Could not find working sourceurl
-        return chosen.prefix;
-    }
-
-    boolean
-    checkServer(Source candidate)
-    {
-        if(candidate == null) return false;
-/* requires httpclient4
-        int savecount = HTTPSession.getRetryCount();
-        HTTPSession.setRetryCount(1);
-*/
-        // See if the sourceurl is available
-        System.err.print("Checking for sourceurl: " + candidate.prefix);
-        try {
-            DapNetcdfFile dcfile = new DapNetcdfFile(this.sourceurl);
-            String document = ((HttpDSP)(dcfile.getDSP())).getCapabilities(candidate.prefix);
-            System.err.println(" ; found");
-            return true;
-        } catch (IOException ie) {
-            System.err.println(" ; fail");
-            return false;
-        } finally {
-// requires httpclient4            HTTPSession.setRetryCount(savecount);
-        }
-    }
-
-    //////////////////////////////////////////////////
+////////////////////////////////////////
     // Stand alone
 
     static public void

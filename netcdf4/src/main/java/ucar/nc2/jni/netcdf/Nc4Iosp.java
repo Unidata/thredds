@@ -33,6 +33,7 @@
 
 package ucar.nc2.jni.netcdf;
 
+import com.sun.jna.NativeLong;
 import thredds.catalog.DataFormatType;
 import ucar.nc2.constants.CDM;
 import ucar.nc2.iosp.AbstractIOServiceProvider;
@@ -75,6 +76,9 @@ import static ucar.nc2.jni.netcdf.Nc4prototypes.*;
  * @since Oct 30, 2008
  */
 public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProviderWriter {
+
+  static public final boolean DEBUG = false;
+
   static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(Nc4Iosp.class);
   static private org.slf4j.Logger startupLog = org.slf4j.LoggerFactory.getLogger("serverStartup");
   static private Nc4prototypes nc4;
@@ -894,7 +898,7 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
             continue;
 
           case Nc4prototypes.NC_STRING:
-            lval = bbuff.getLong(pos);
+            lval = getNativeAddr(pos,bbuff);
             Pointer p = new Pointer(lval);
             String strval = p.getString(0, CDM.UTF8);
             fld.data.setObject(i, strval);
@@ -1384,6 +1388,35 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
     }
   }
 
+
+    static public void
+    dumpbytes(byte[] bytes, int start, int len, String tag)
+    {
+        System.err.println("++++++++++ " + tag + " ++++++++++ ");
+        int stop = start + len;
+        try {
+            for(int i = 0; i < stop; i++) {
+                byte b = bytes[i];
+                int ib = (int) b;
+                int ub = (ib & 0xFF);
+                char c = (char) ub;
+                String s = Character.toString(c);
+                if(c == '\r') s = "\\r";
+                else if(c == '\n') s = "\\n";
+                else if(c < ' ') s = "?";
+                System.err.printf("[%03d] %02x %03d %4d '%s'", i, ub, ub, ib, s);
+                System.err.println();
+                System.err.flush();
+            }
+
+        } catch (Exception e) {
+            System.err.println("failure:" + e);
+        } finally {
+            System.err.println("++++++++++ " + tag + " ++++++++++ ");
+            System.err.flush();
+        }
+    }
+
   private Map<Integer, String> makeEnum(int grpid, int xtype)
           throws IOException {
     byte[] nameb = new byte[Nc4prototypes.NC_MAX_NAME + 1];
@@ -1724,7 +1757,7 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
         int destPos = pos + m.getDataParam();
         String[] result = new String[size];
         for (int i = 0; i < size; i++) {
-          long addr = bb.getLong(pos);
+          long addr = getNativeAddr(pos,bb);
           Pointer p = new Pointer(addr);
           result[i] = p.getString(0, false);
         }
@@ -1795,7 +1828,7 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
           throws IOException {
     Array array = null;
     int n = (int) bbuff.getLong(pos); // Note that this does not increment the buffer position
-    long addr = bbuff.getLong(pos + 8); // LOOK: this assumes 64 bit pointers
+    long addr = getNativeAddr(pos + NativeLong.SIZE,bbuff); // LOOK: this assumes 64 bit pointers
     Pointer p = new Pointer(addr);
     Object data = null;
     switch (dt) {
@@ -1926,6 +1959,8 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
 
     byte[] bbuff = new byte[len * size];
     ret = nc4.nc_get_vars(grpid, varid, origin, shape, stride, bbuff);
+    if(DEBUG)
+        dumpbytes(bbuff,0,bbuff.length,"readOpaque");
     if (ret != 0)
       throw new IOException(ret + ": " + nc4.nc_strerror(ret));
     int[] intshape;
@@ -3162,6 +3197,12 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
       Vinfo vinfo = (Vinfo) v2.getSPobject();
       writeAttribute(vinfo.g4.grpid, vinfo.varid, att, v2);
     }
+  }
+
+  static public long
+  getNativeAddr(int pos, ByteBuffer buf)
+  {
+     return (NativeLong.SIZE == (Integer.SIZE/8) ? buf.getInt(pos) : buf.getLong(pos));
   }
 
 /////////////////////////////////////////////////////////////////////////

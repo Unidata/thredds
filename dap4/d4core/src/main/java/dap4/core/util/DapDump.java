@@ -63,7 +63,7 @@ abstract public class DapDump
         buf.limit(size);
         int i = 0;
         try {
-            for(i = 0;buf.position() < stop;i++) {
+            for(i = 0; buf.position() < stop; i++) {
                 int savepos = buf.position();
                 int iv = buf.getInt();
                 buf.position(savepos);
@@ -81,22 +81,24 @@ abstract public class DapDump
                 if(c == '\r') s = "\\r";
                 else if(c == '\n') s = "\\n";
                 else if(c < ' ') s = "?";
-                System.out.printf("[%03d] %02x %03d %4d '%s'", i, ub, ub, ib, s);
-                System.out.printf("\t%12d 0x%08x", iv, uiv);
-                System.out.printf("\t%5d\t0x%04x", sv, usv);
-                System.out.println();
-                System.out.flush();
+                System.err.printf("[%03d] %02x %03d %4d '%s'", i, ub, ub, ib, s);
+                System.err.printf("\t%12d 0x%08x", iv, uiv);
+                System.err.printf("\t%5d\t0x%04x", sv, usv);
+                System.err.println();
+                System.err.flush();
             }
 
         } catch (Exception e) {
-            System.out.println("failure:" + e);
+            System.err.println("failure:" + e);
         } finally {
-            System.out.flush();
+            System.err.flush();
+            //new Exception().printStackTrace(System.err);
+	        System.err.flush();
         }
     }
 
     static public void
-    dumpbytestream(OutputStream stream, ByteOrder order, char tag)
+    dumpbytestream(OutputStream stream, ByteOrder order, String tag)
     {
         if(stream instanceof ByteArrayOutputStream) {
             byte[] content = ((ByteArrayOutputStream) stream).toByteArray();
@@ -104,34 +106,28 @@ abstract public class DapDump
         }
     }
 
+    static public void
+    dumpbytestream(ByteBuffer buf, ByteOrder order, String tag)
+    {
+        dumpbytestream(buf.array(),0,buf.position(),order,tag);
+    }
 
     static public void
-    dumpbytestream(byte[] content, ByteOrder order, char tag)
+    dumpbytestream(byte[] content, ByteOrder order, String tag)
     {
-        for(int i = 0;i < 20;i++) {
-            System.out.print("" + tag);
-        }
-        System.out.println();
-        DapDump.dumpbytes(ByteBuffer.wrap(content).order(order));
-        for(int i = 0;i < 20;i++) {
-            System.out.print("" + tag);
-        }
-        System.out.println();
-        System.out.flush();
+        dumpbytestream(content,0,content.length,order,tag);
     }
 
-    //////////////////////////////////////////////////
-    // Standalone
-
-    static public void main(String[] argv)
+    static public void
+    dumpbytestream(byte[] content, int start, int len, ByteOrder order, String tag)
     {
-        try {
-            FileInputStream f = new FileInputStream(argv[0]);
-            byte[] content = DapUtil.readbinaryfile(f);
-            ByteBuffer buf = ByteBuffer.wrap(content).order(ByteOrder.LITTLE_ENDIAN);
-            DapDump.dumpbytes(buf, false);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        System.err.println("++++++++++ " + tag + " ++++++++++ ");
+        ByteBuffer tmp = ByteBuffer.wrap(content).order(order);
+        tmp.position(start);
+        tmp.limit(len);
+        DapDump.dumpbytes(tmp);
+        System.err.println("++++++++++ " + tag + " ++++++++++ ");
+        System.err.flush();
     }
+
 }

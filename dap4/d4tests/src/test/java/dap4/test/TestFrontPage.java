@@ -20,6 +20,8 @@ public class TestFrontPage extends DapTestCommon
     static protected String BASELINEDIR = DATADIR + "/resources/TestServlet/baseline";
     static protected String TESTINPUTDIR = DATADIR + "/resources/testfiles";
 
+    static protected String TESTFILE = "test_frontpage.html";
+
     // constants for Fake Request
     static protected String FAKEURLPREFIX = "http://localhost:8080/d4ts";
 
@@ -89,7 +91,7 @@ public class TestFrontPage extends DapTestCommon
             visual("Front Page", html);
 
 	    // Figure out the baseline
-        String baselinepath = this.root + "/" + BASELINEDIR + "/index.html";
+        String baselinepath = this.root + "/" + BASELINEDIR + "/" + TESTFILE;
 	
         if(prop_baseline) {
             writefile(baselinepath, html);

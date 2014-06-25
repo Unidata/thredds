@@ -38,8 +38,8 @@ data:
  vc = "@&" ;
 
  vs =
-  "hello\tworld", "abc",
-  "\r\n", "Καλημέα" ;
+  "hello\tworld", "\r\n",
+  "Καλημέα", "abc" ;
 
  vo =
   0X0123456789ABCDEF, 0XABCDEF0000000000 ;

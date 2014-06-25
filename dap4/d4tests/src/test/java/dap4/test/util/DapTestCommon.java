@@ -4,8 +4,12 @@
 
 package dap4.test.util;
 
+import dap4.core.util.DapException;
 import junit.framework.TestCase;
 import dap4.core.util.DapUtil;
+import ucar.httpservices.HTTPFactory;
+import ucar.httpservices.HTTPMethod;
+import ucar.httpservices.HTTPSession;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.unidata.test.util.TestDir;
 
@@ -26,35 +30,21 @@ public class DapTestCommon extends TestCase
     // Look for these to verify we have found the thredds root
     static final String[] DEFAULTSUBDIRS = new String[]{"httpservices", "cdm", "tds", "opendap", "dap4"};
 
-    static public final String FILESERVER = "dap4:file://";
+    static public final String FILESERVER = "dap4:file://localhost:8080";
 
     // NetcdfDataset enhancement to use: need only coord systems
     static Set<NetcdfDataset.Enhance> ENHANCEMENT = EnumSet.of(NetcdfDataset.Enhance.CoordSystems);
 
     static public final String CONSTRAINTTAG = "dap4.ce";
+    // System properties
 
-    // Order is important; testing reachability is in the order
-    // listed
-    static public final List<Source> SOURCES = new ArrayList<>();
-
-    //////////////////////////////////////////////////
-    // Type Declarations
-
-    static public class Source
-    {
-        public String name;
-        public String testurl;
-        public String prefix;
-        public boolean isfile;
-
-        public Source(String name, boolean isfile, String testurl, String prefix)
-        {
-            this.name = name;
-            this.testurl = testurl;
-            this.prefix = prefix;
-            this.isfile = isfile;
-        }
-    }
+    protected boolean prop_ascii = true;
+    protected boolean prop_diff = true;
+    protected boolean prop_baseline = false;
+    protected boolean prop_visual = false;
+    protected boolean prop_debug = DEBUG;
+    protected boolean prop_generate = true;
+    protected String prop_controls = null;
 
     //////////////////////////////////////////////////
     // Static variables
@@ -64,6 +54,7 @@ public class DapTestCommon extends TestCase
     // Define a tree pattern to recognize the root.
     static protected String threddsroot = null;
     static protected String dap4root = null;
+    static protected String d4tsServer = null;
 
     static {
         // Compute the root path
@@ -71,14 +62,8 @@ public class DapTestCommon extends TestCase
         if(threddsroot != null)
             dap4root = threddsroot + "/" + DEFAULTTREEROOT;
         // Compute the set of SOURCES
-         SOURCES.add(       new Source("localhost", false,
-                                    "http://localhost:8080/d4ts",
-                                    "dap4://localhost:8080/d4ts"));
-           SOURCES.add( new Source("remotetest", false,
-                   "http://"+TestDir.remoteTestServer+"/d4ts",
-                   "dap4://"+TestDir.remoteTestServer+"/d4ts"));
-            SOURCES.add(new Source("file", true, null, FILESERVER));
-    };
+        d4tsServer = TestDir.dap4TestServer;
+    }
 
     //////////////////////////////////////////////////
     // static methods
@@ -311,20 +296,48 @@ public class DapTestCommon extends TestCase
             prop_ascii = false;
         if(prop_baseline && prop_diff)
             prop_diff = false;
-        prop_server = System.getProperty("server");
-        prop_controls = System.getProperty("server", "");
+        prop_controls = System.getProperty("controls", "");
     }
 
-    // System properties
+    protected void
+    findServer(String path)
+            throws DapException
+    {
+        if(d4tsServer.startsWith("file")) {
+            d4tsServer = FILESERVER + "/" + path;
+        } else {
+            String svc = "http://" + d4tsServer + "/d4ts";
+            if(!checkServer(svc))
+                throw new DapException("D4TS Server not reachable: " + svc);
+            d4tsServer = "dap4://" + d4tsServer + "/d4ts";
+        }
+    }
 
-    protected boolean prop_ascii = true;
-    protected boolean prop_diff = true;
-    protected boolean prop_baseline = false;
-    protected boolean prop_visual = false;
-    protected boolean prop_debug = DEBUG;
-    protected boolean prop_generate = true;
-    protected String prop_server = null;
-    protected String prop_controls = null;
+    protected boolean
+    checkServer(String candidate)
+    {
+        if(candidate == null) return false;
+/* requires httpclient4
+        int savecount = HTTPSession.getRetryCount();
+        HTTPSession.setRetryCount(1);
+*/
+        // See if the sourceurl is available by trying to get the DSR
+        System.err.print("Checking for sourceurl: " + candidate);
+        try {
+            HTTPSession session = new HTTPSession(candidate);
+            HTTPMethod method = HTTPFactory.Get(session);
+            method.execute();
+            String s = method.getResponseAsString();
+            session.close();
+            System.err.println(" ; found");
+            return true;
+        } catch (IOException ie) {
+            System.err.println(" ; fail");
+            return false;
+        } finally {
+// requires httpclient4            HTTPSession.setRetryCount(savecount);
+        }
+    }
 
 
 }

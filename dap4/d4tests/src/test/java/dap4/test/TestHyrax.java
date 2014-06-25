@@ -37,10 +37,10 @@ public class TestHyrax extends DapTestCommon
 
     // Order is important; testing reachability is in the order
     // listed
-    static final Source[] SOURCES = new Source[]{
-        new Source("hyrax",
+    static final String[] SOURCES = new String[]{
+        "hyrax",
             "http://" + IP + ".compute-1.amazonaws.com:8080/opendap/data/reader/dap4/dap4.html",
-            "dap4://" + IP + ".compute-1.amazonaws.com:8080/opendap/data/reader/dap4"),
+            "dap4://" + IP + ".compute-1.amazonaws.com:8080/opendap/data/reader/dap4"
     };
 
     static boolean isXfailTest(String t)
@@ -175,7 +175,6 @@ public class TestHyrax extends DapTestCommon
             throw new Exception("dap4 root cannot be located");
         if(this.root.charAt(0) != '/')
             this.root = "/" + this.root; // handle problem of windows paths
-        this.sourceurl = getSourceURL();
         System.out.println("Using source url " + this.sourceurl);
         defineAllTestcases(this.root, this.sourceurl);
         chooseTestcases();
@@ -187,7 +186,7 @@ public class TestHyrax extends DapTestCommon
     void
     chooseTestcases()
     {
-        if(true) {
+        if(false) {
             chosentests = locate("dmr-testsuite/test_array_7.xml");
         } else {
             for(ClientTest tc : alltestcases)
@@ -203,7 +202,7 @@ public class TestHyrax extends DapTestCommon
 
         ClientTest.root = root;
         ClientTest.server = server;
-        if(true) {
+        if(false) {
             alltestcases.add(new ClientTest(1, "D4-xml/DMR_4.xml", "b1"));
         }if(false) {
             alltestcases.add(new ClientTest("test_simple_1.dmr"));
@@ -391,72 +390,6 @@ public class TestHyrax extends DapTestCommon
     {
         System.err.println(msg);
         return false;
-    }
-
-    void
-    makefilesource(String path)
-    {
-        for(Source s : SOURCES) {
-            if(s.name.equals("file"))
-                s.prefix = s.prefix + path;
-        }
-    }
-
-    String
-    getSourceURL()
-    {
-        Source chosen = null;
-        if(prop_server != null) {
-            for(int i = 0;i < SOURCES.length;i++) {
-                if(SOURCES[i].name.equals(prop_server)) {
-                    chosen = SOURCES[i];
-                    break;
-                }
-            }
-            if(chosen == null) {
-                System.err.println("-Dserver argument unknown: " + prop_server);
-                return null;
-            }
-            if(!checkServer(chosen)) {
-                System.err.println("-Dserver unreachable: " + prop_server);
-                return null;
-            }
-            return chosen.prefix;
-        }
-        // Look for a sourceurl in order of appearance in SOURCES
-        for(int i = 0;i < SOURCES.length;i++) {
-            chosen = SOURCES[i];
-            if(checkServer(chosen))
-                break;
-        }
-        // Could not find working sourceurl
-        return chosen.prefix;
-    }
-
-    boolean
-    checkServer(Source candidate)
-    {
-        if(candidate == null) return false;
-/* requires httpclient4
-        int savecount = HTTPSession.getRetryCount();
-        HTTPSession.setRetryCount(1);
-*/
-        // See if the sourceurl is available by trying to get the DSR
-        System.err.print("Checking for sourceurl: " + candidate.prefix);
-        try {
-            HTTPSession session = new HTTPSession(candidate.testurl);
-            HTTPMethod method = HTTPFactory.Get(session);
-            method.execute();
-            String s = method.getResponseAsString();
-            session.close();
-            System.err.println(" ; found");
-            return true;
-        } catch (IOException ie) {
-            System.err.println(" ; fail");
-            return false;
-        } finally {
-// requires httpclient4            HTTPSession.setRetryCount(savecount);
-        }
     }
 
 

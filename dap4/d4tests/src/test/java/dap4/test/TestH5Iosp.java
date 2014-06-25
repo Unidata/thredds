@@ -108,7 +108,7 @@ public class TestH5Iosp extends DapTestCommon
     void
     chooseTestcases()
     {
-        if(true) {
+        if(false) {
             chosentests = locate("test_enum.nc");
             //chosentests.add(new H5IospTest("test_test.nc"));
         } else {

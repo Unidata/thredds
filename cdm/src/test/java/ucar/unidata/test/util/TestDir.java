@@ -89,6 +89,12 @@ public class TestDir {
 
   static public String remoteTestServer = "remotetest.unidata.ucar.edu";
 
+  // DAP4 Test server (for testing)
+
+  private static String dap4TestServerPropName = "d4ts";
+
+  static public String dap4TestServer = "remotetest.unidata.ucar.edu";
+
   //////////////////////////////////////////////////
 
   // Determine how Unidata "/upc/share" directory is mounted
@@ -122,7 +128,8 @@ public class TestDir {
       testdataDirPath = "/share/testdata/";
     }
     // Make sure paths ends with a slash.
-    if ((!testdataDirPath.endsWith( "/")) && !testdataDirPath.endsWith( "\\"))
+    testdataDirPath = testdataDirPath.replace('\\','/'); //canonical
+    if ((!testdataDirPath.endsWith( "/")))
       testdataDirPath += "/";
 
     cdmUnitTestDir = testdataDirPath + "cdmUnitTest/";
@@ -140,8 +147,12 @@ public class TestDir {
     }
 
     String rts = System.getProperty(remoteTestServerPropName);
-    if(rts != null && rts.length() > 0)
-	remoteTestServer = rts;
+	if(rts != null && rts.length() > 0)
+		remoteTestServer = rts;
+
+    String d4ts = System.getProperty(dap4TestServerPropName);
+    if(d4ts != null && d4ts.length() > 0)
+      	dap4TestServer = d4ts;
   }
 
   static public void showMem(String where) {

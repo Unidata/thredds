@@ -56,6 +56,8 @@ public class GridCoordinate2D {
   static private boolean debug = false;
   static private final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(GridCoordinate2D.class);
 
+  static final String testfilename = "Q:/cdmUnitTest/ft/fmrc/rtofs/ofs.20091122/ofs_atl.t00z.F024.grb.grib2";
+
   private final CoordinateAxis2D latCoord, lonCoord;
   private final int nrows, ncols;
   private ArrayDouble.D2 latEdge, lonEdge;
@@ -448,7 +450,7 @@ public class GridCoordinate2D {
   }
 
   public static void test3() throws IOException {
-    String filename = "Q:/cdmUnitTest/ft/fmrc/rtofs/ofs.20091122/ofs_atl.t00z.F024.grb.grib2";
+    String filename = testfilename;
     GridDataset gds = GridDataset.open(filename);
     GeoGrid grid = gds.findGridByName("Sea_Surface_Height_Relative_to_Geoid_surface");
     GridCoordSystem gcs = grid.getCoordinateSystem();

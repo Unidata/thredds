@@ -116,7 +116,8 @@ public class TestConstraints extends DapTestCommon
         } else if(this.root.charAt(0) != '/')
             this.root = "/" + this.root;
         this.datasetpath = this.root + "/" + TESTINPUTDIR;
-        this.sourceurl = getSourceURL();
+	findServer(this.datasetpath);
+        this.sourceurl = d4tsServer;
         System.out.println("Using source url " + this.sourceurl);
         defineAllTestcases(this.root, this.sourceurl);
         chooseTestcases();
@@ -128,7 +129,7 @@ public class TestConstraints extends DapTestCommon
     void
     chooseTestcases()
     {
-        if(false) {
+        if(true) {
             chosentests = locate("test_struct_array.nc");
         } else {
             for(ClientTest tc : alltestcases)
@@ -294,63 +295,6 @@ public class TestConstraints extends DapTestCommon
         return false;
     }
 
-    String
-    getSourceURL()
-    {
-        Source chosen = null;
-        if(prop_server != null) {
-            for(int i = 0;i < SOURCES.size();i++) {
-		if(SOURCES.get(i).isfile) continue;
-                if(SOURCES.get(i).name.equals(prop_server)) {
-                    chosen = SOURCES.get(i);
-                    break;
-                }
-            }
-            if(chosen == null) {
-                System.err.println("-Dserver argument unknown: " + prop_server);
-                return null;
-            }
-            if(!checkServer(chosen)) {
-                System.err.println("-Dserver unreachable: " + prop_server);
-                return null;
-            }
-            return chosen.prefix;
-        }
-        // Look for a sourceurl in order of appearance in SOURCES
-        for(int i = 0;i < SOURCES.size();i++) {
-            chosen = SOURCES.get(i);
-            if(checkServer(chosen))
-                break;
-        }
-        // Could not find working sourceurl
-        return chosen.prefix;
-    }
-
-    boolean
-    checkServer(Source candidate)
-    {
-        if(candidate == null) return false;
-/* requires httpclient4
-        int savecount = HTTPSession.getRetryCount();
-        HTTPSession.setRetryCount(1);
-*/
-        // See if the sourceurl is available by trying to get the DSR
-        System.err.print("Checking for sourceurl: " + candidate.prefix);
-        try {
-            HTTPSession session = new HTTPSession(candidate.testurl);
-            HTTPMethod method = HTTPFactory.Get(session);
-            method.execute();
-            String s = method.getResponseAsString();
-            session.close();
-            System.err.println(" ; found");
-            return true;
-        } catch (IOException ie) {
-            System.err.println(" ; fail");
-            return false;
-        } finally {
-// requires httpclient4            HTTPSession.setRetryCount(savecount);
-        }
-    }
 
     //////////////////////////////////////////////////
     // Stand alone

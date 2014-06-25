@@ -64,7 +64,7 @@ public class TestNc4IospReading {
 
   // @Test
   public void timeRead() throws IOException {
-    String location = "Q:/NARR/narr-TMP-200mb_221_yyyymmdd_hh00_000.grb.grb2.nc4";
+    String location = TestDir.cdmUnitTestDir+"/NARR/narr-TMP-200mb_221_yyyymmdd_hh00_000.grb.grb2.nc4";
 
     NetcdfFile jni = openJni(location);
     Variable v = jni.findVariable("time");

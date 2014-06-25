@@ -26,30 +26,30 @@ abstract public class DapProtocol implements DapCodes
     static {
         contenttypes = new HashMap<RequestMode, ContentType>();
         contenttypes.put(RequestMode.DMR,
-            new ContentType(RequestMode.DMR, "application/vnd.opendap.dap4.dataset-metadata+xml",
-                "text/xml",
-                "text/plain",
-                "text/html"));
+                new ContentType(RequestMode.DMR, "application/vnd.opendap.dap4.dataset-metadata+xml",
+                        "text/xml",
+                        "text/plain",
+                        "text/html"));
         contenttypes.put(RequestMode.DAP,
-            new ContentType(RequestMode.DAP, "application/vnd.opendap.dap4.data",
-                "text/xml",
-                "text/plain",
-                "text/html"));
+                new ContentType(RequestMode.DAP, "application/vnd.opendap.dap4.data",
+                        "text/xml",
+                        "text/plain",
+                        "text/html"));
         contenttypes.put(RequestMode.DSR,
-            new ContentType(RequestMode.DMR, "application/vnd.opendap.dap4.dataset-services+xml",
-                "text/xml",
-                "text/plain",
-                "text/html"));
+                new ContentType(RequestMode.DSR, "application/vnd.opendap.dap4.dataset-services+xml",
+                        "text/xml",
+                        "text/plain",
+                        "text/html"));
         contenttypes.put(RequestMode.CAPABILITIES,
-            new ContentType(RequestMode.CAPABILITIES, "text/xml",
-                "text/xml",
-                "text/plain",
-                "text/html"));
+                new ContentType(RequestMode.CAPABILITIES, "text/xml",
+                        "text/xml",
+                        "text/plain",
+                        "text/html"));
         contenttypes.put(RequestMode.ERROR,
-            new ContentType(RequestMode.ERROR, "application/vnd.opendap.dap4.error+xml",
-                "text/xml",
-                "text/plain",
-                "text/html"));
+                new ContentType(RequestMode.ERROR, "application/vnd.opendap.dap4.error+xml",
+                        "text/xml",
+                        "text/plain",
+                        "text/html"));
     }
 
     //////////////////////////////////////////////////
@@ -76,7 +76,7 @@ abstract public class DapProtocol implements DapCodes
         }
 
         public String getFormat(ResponseFormat format)
-            throws DapException
+                throws DapException
         {
             if(format == null) format = ResponseFormat.NONE;
             switch (format) {
@@ -90,8 +90,8 @@ abstract public class DapProtocol implements DapCodes
                 return contenttype;
             }
             throw new DapException(String.format("Unsupported format request: %s for Mode %s",
-                format, this.mode))
-                .setCode(org.apache.http.HttpStatus.SC_BAD_REQUEST);
+                    format, this.mode))
+                    .setCode(org.apache.http.HttpStatus.SC_BAD_REQUEST);
         }
     }
 

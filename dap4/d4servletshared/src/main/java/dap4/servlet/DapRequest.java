@@ -34,6 +34,7 @@ public class DapRequest
     protected HttpServletResponse response = null;
     protected String url = null;  // without any query  and as with any modified dataset path
     protected String servletpath = null;
+    protected String urlpath = null;  // everything after the authority
     protected String datasetpath = null;   // everything after the servletpath
     protected String querystring = null;
     protected String server = null; // scheme + host + port
@@ -70,25 +71,24 @@ public class DapRequest
      * in this object.
      * <p/>
      * In particular, the incoming URL needs to be decomposed
-     * into multiple pieces. Specifically, given, for exampe,
-     * http://host.edu:8081/a/b/c/dap4/x/y/dataset.nc.dmr.txt?<query>
-     * we want to extract the following pieces.
+     * into multiple pieces. Certain assumptions are made:
+     * 1. every incoming url is of the form
+     * (a) http(s)://host:port/d4ts/
+     * or
+     * (b) http(s)://host:port/d4ts/<datasetpath>?query
+     * Case a indicates that the front page is to be returned.
+     * Case b indicates a request for a dataset (or dsr), and its
+     * value is determined by its extensions. The query may be absent.
+     * We want to extract the following pieces.
      * 1. (In URI parlance) The scheme plus the authority:
-     * http://host.edu:8081
-     * in our example.
-     * 2. The servlet path: a/b/c/<servletname>
-     * In our case, the servletname is "dap4".
-     * Note that as a rule, the "/a/b/c" part will
-     * not be present, so normally, the servlet path
-     * will just be "<servletname>".
-     * 3. The return type: ".txt" in this case.
-     * 4. The requested object: ".dmr" in this case.
-     * 5. The suffix path specifying the actual dataset:
-     * x/y/dataset.nc
-     * Note that the return type and request type are removed
-     * leaving, one hopes, the bare path to the dataset.
-     * Of course the x/y part may be empty.
-     * 6. The query part.
+     * http://host:port
+     * 2. The servlet path: should always be "d4ts".
+     * 3. The return type: depending on the last extension (e.g. ".txt").
+     * 3. The requested: depending on the next to last extension (e.g. ".dap").
+     * 5. The suffix path specifying the actual dataset: datasetpath
+     * with return and request type extensions removed.
+     * 6. The url path = servletpath + datasetpath.
+     * 7. The query part.
      */
 
     protected void
@@ -97,46 +97,33 @@ public class DapRequest
     {
         this.url = request.getRequestURL().toString();// does not include query
         this.querystring = request.getQueryString();
+        this.servletpath = DapUtil.absolutize(request.getServletPath());
+        this.datasetpath = request.getPathInfo();
+        this.datasetpath = DapUtil.canonicalpath(this.datasetpath);
+        this.datasetpath = DapUtil.absolutize(this.datasetpath);
+
         // I still do not understand what this is: this.contextpath = relpath(request.getContextPath());
 
-        String servletname = svcinfo.getServletname();
-        this.datasetpath = DapUtil.canonicalpath(DapUtil.nullify(request.getPathInfo()));
-        if(this.datasetpath != null)
-            this.datasetpath = DapUtil.relativize(this.datasetpath.substring(1));
-
         // It appears that, sometimes, tomcat does not conform to the servlet spec.
-        // Specifically, getServletPath may also contain what whould be the result
-        // of calling getPathInfo().
-        // Solution: look for this case and split the path
-        this.datasetpath = DapUtil.canonicalpath(DapUtil.nullify(request.getPathInfo()));
-        if(this.datasetpath != null)
-            this.datasetpath = DapUtil.relativize(this.datasetpath.substring(1));
-        this.servletpath = request.getServletPath();
-        // Assume that the servletpath may have leading segment (e.g. /x/dap4).
-        String[] segments = this.servletpath.split("[/]");
-        // Locate the servletname segment
-        // Note that it is possible that it may not exist
-        // if this servlet is being run as ROOT under tomcat.
-        int pos = -1;
-        for(int i = 0; i < segments.length; i++) {
-            if(segments[i].equals(servletname)) {
-                pos = i;
-                break;
+        // Specifically, we can see either of the following:
+        // 1. getServletPath() can be null.
+        // 2. getServletPath may also contain what should be the result
+        //    of calling getPathInfo().
+        // So we need to be prepared to fix.
+
+        String servletprefix = "/" + svcinfo.getServletname();
+        if(this.servletpath != null && !this.servletpath.equals(servletprefix)) {
+            if(!this.servletpath.startsWith(servletprefix)) {
+                this.servletpath = servletprefix + this.servletpath;
+                //throw new IOException("URL does not specify the servlet:" + this.url);
             }
+            this.datasetpath = this.servletpath.substring(servletprefix.length(), this.servletpath.length());
+            this.datasetpath = DapUtil.canonicalpath(this.datasetpath);
         }
-        if(pos < 0) {
-            // Looks like we are running as ROOT
-            this.datasetpath = this.servletpath;
-            this.servletpath = "";
-        } else if(pos < (segments.length - 1)) {
-            // Split the servlet path at pos
-            this.servletpath = DapUtil.join(segments, "/", 0, pos + 1);
-            this.datasetpath = DapUtil.join(segments, "/", pos + 1, segments.length);
-        } //else looks like a proper servlet path was returned, so do nothing
+        this.servletpath = servletprefix; // always
+        this.datasetpath = DapUtil.nullify(this.datasetpath);
 
-        this.datasetpath = DapUtil.nullify(DapUtil.canonicalpath(this.datasetpath));
-
-        // Now, construct #1 (scheme + authority)
+        // Now, construct various items
         StringBuilder buf = new StringBuilder();
         buf.append(request.getScheme());
         buf.append("://");
@@ -149,7 +136,7 @@ public class DapRequest
         this.server = buf.toString();
 
         this.mode = null;
-        if(DapUtil.nullify(this.datasetpath) == null) {
+        if(this.datasetpath == null) {
             // Presume mode is a capabilities request
             this.mode = RequestMode.CAPABILITIES;
             this.format = ResponseFormat.HTML;
@@ -180,7 +167,6 @@ public class DapRequest
             if(modepos > 0)
                 this.datasetpath = DapUtil.join(pieces, ".", 0, modepos);
         }
-        this.datasetpath = DapUtil.relativize(this.datasetpath);
         if(this.mode == null)
             this.mode = RequestMode.DSR;
         if(this.format == null)
@@ -192,14 +178,12 @@ public class DapRequest
         if(this.servletpath != null)
             buf.append(this.servletpath);
         if(this.datasetpath != null) {
-            buf.append(DapUtil.absolutize(this.datasetpath));
-            this.url = buf.toString();
+            buf.append(this.datasetpath);
         }
+        this.url = buf.toString();
 
         // Parse the query string into a Map
-        if(querystring != null && querystring.length() > 0)
-
-        {
+        if(querystring != null && querystring.length() > 0) {
             String[] pieces = querystring.split("&");
             for(String piece : pieces) {
                 String[] pair = piece.split("=");
@@ -210,11 +194,7 @@ public class DapRequest
             }
         }
 
-        DapLog.debug("DapRequest: resourcedir=" +
-
-                getResourcePath()
-
-        );
+        DapLog.debug("DapRequest: resourcedir=" + getResourcePath());
         DapLog.debug("DapRequest: extension=" + (this.mode == null ? "null" : this.mode.extension()));
         DapLog.debug("DapRequest: servletpath=" + this.servletpath);
         DapLog.debug("DapRequest: datasetpath=" + this.datasetpath);
@@ -261,6 +241,11 @@ public class DapRequest
         return this.servletpath;
     }
 
+    public String getURLPath()
+    {
+        return this.servletpath + (this.datasetpath == null ? "" : this.datasetpath);
+    }
+
     public RequestMode getMode()
     {
         return this.mode;
@@ -298,7 +283,4 @@ public class DapRequest
         return this.svcinfo.getResourcePath();
     }
 
-
 }
-
-
