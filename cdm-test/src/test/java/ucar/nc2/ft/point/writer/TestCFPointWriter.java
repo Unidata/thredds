@@ -16,7 +16,7 @@ import java.util.Formatter;
 import java.util.List;
 
 /**
- * Test CFPointWriter
+ * Test CFPointWriter, write into nc, nc4 and nc4c (classic) files
  *
  * @author caron
  * @since 4/11/12
@@ -29,13 +29,32 @@ public class TestCFPointWriter {
   public static List<Object[]> getTestParameters() {
     List<Object[]> result = new ArrayList<>();
 
-    result.add(new Object[] {TestDir.cdmUnitTestDir + "ft/ncml/point.ncml", FeatureType.POINT, 5});
+    result.add(new Object[] {CFpointObs_topdir + "point.ncml", FeatureType.POINT, 3});
+    result.add(new Object[] {CFpointObs_topdir + "pointUnlimited.nc", FeatureType.POINT, 3});
+    result.add(new Object[] {CFpointObs_topdir + "pointMissing.ncml", FeatureType.POINT, 4});
+
+    result.add(new Object[] {CFpointObs_topdir + "stationSingle.ncml", FeatureType.STATION, 3});
+    result.add(new Object[] {CFpointObs_topdir + "stationSingleWithZlevel.ncml", FeatureType.STATION, 3});
+    result.add(new Object[] {CFpointObs_topdir + "stationMultidim.ncml", FeatureType.STATION, 15});
+    result.add(new Object[] {CFpointObs_topdir + "stationMultidimTimeJoin.ncml", FeatureType.STATION, 15});
+    result.add(new Object[] {CFpointObs_topdir + "stationMultidimUnlimited.nc", FeatureType.STATION, 15});     // */
+    result.add(new Object[] {CFpointObs_topdir + "stationMultidimMissingTime.ncml", FeatureType.STATION, 12});
+    result.add(new Object[] {CFpointObs_topdir + "stationMultidimMissingId.ncml", FeatureType.STATION, 9});    // */
+    result.add(new Object[] {CFpointObs_topdir + "stationMultidimMissingIdString.ncml", FeatureType.STATION, 12});
+    result.add(new Object[] {CFpointObs_topdir + "stationRaggedContig.ncml", FeatureType.STATION, 6});
+    result.add(new Object[] {CFpointObs_topdir + "stationRaggedIndex.ncml", FeatureType.STATION, 6});
+    result.add(new Object[] {CFpointObs_topdir + "stationRaggedMissing.ncml", FeatureType.STATION, 5});
+    result.add(new Object[] {CFpointObs_topdir + "stationFlat.ncml", FeatureType.STATION, 13});
+    result.add(new Object[] {CFpointObs_topdir + "stationFlat.nc", FeatureType.STATION, 13});     // */
+
+        /* result.add(new Object[] {TestDir.cdmUnitTestDir + "ft/ncml/point.ncml", FeatureType.POINT, 5});
     result.add(new Object[] {TestDir.cdmUnitTestDir + "ft/point/ldm/04061912_buoy.nc", FeatureType.POINT, 218});
     result.add(new Object[] {TestDir.cdmUnitTestDir + "ft/point/netcdf/Surface_Buoy_20090921_0000.nc", FeatureType.POINT, 32452});
     result.add(new Object[] {TestDir.cdmUnitTestDir + "ft/station/multiStationMultiVar.ncml", FeatureType.STATION, 15});
     result.add(new Object[] {TestDir.cdmUnitTestDir + "cfPoint/station/sampleDataset.nc", FeatureType.STATION, 1728});
     result.add(new Object[] {TestDir.cdmUnitTestDir + "ft/station/200501q3h-gr.nc", FeatureType.STATION, 5023});  // */
-    //  result.add(new Object[]{CFpointObs_topdir + "profileSingle.ncml", FeatureType.PROFILE, 13});
+    // result.add(new Object[]{CFpointObs_topdir + "profileSingle.ncml", FeatureType.PROFILE, 13});
+
 
     return result;
   }
@@ -52,18 +71,18 @@ public class TestCFPointWriter {
   }
 
   // @Test
-  public void testWrite3() throws IOException {
+  public void testWrite3col() throws IOException {
     CFPointWriterConfig config = new CFPointWriterConfig(NetcdfFileWriter.Version.netcdf3);
     config.recDimensionLength = countExpected;
 
-    int count = writeDataset(location, ".nc", ftype, config, true);
+    int count = writeDataset(location, ".nc-col", ftype, config, true);   // column oriented
     System.out.printf("%s netcdf3 count=%d%n", location, count);
     assert count == countExpected : "count ="+count+" expected "+countExpected;
   }
 
   @Test
-  public void testWrite3u() throws IOException {
-    int count = writeDataset(location, ".ncu", ftype, new CFPointWriterConfig(NetcdfFileWriter.Version.netcdf3), true);
+  public void testWrite3() throws IOException {
+    int count = writeDataset(location, ".nc", ftype, new CFPointWriterConfig(NetcdfFileWriter.Version.netcdf3), true);
     System.out.printf("%s netcdf3 count=%d%n", location, count);
     assert count == countExpected : "count ="+count+" expected "+countExpected;
   }

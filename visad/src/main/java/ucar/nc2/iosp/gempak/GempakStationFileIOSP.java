@@ -175,7 +175,6 @@ public abstract class GempakStationFileIOSP extends AbstractIOServiceProvider {
     //System.out.printf("GempakSurfaceIOSP open %s (%s) %n", raf.getLocation(), Calendar.getInstance().getTime());
     super.open(raf, ncfile, cancelTask);
     this.ncfile = ncfile;
-    long start = System.currentTimeMillis();
     if (gemreader == null) {
       gemreader = makeStationReader();
     }
@@ -188,7 +187,7 @@ public abstract class GempakStationFileIOSP extends AbstractIOServiceProvider {
    * Initialize the parameter tables.
    */
   private void initTables() throws IOException {
-      GempakParameters.addParameters("resources/nj22/tables/gempak/params.tbl");
+    GempakParameters.addParameters("resources/nj22/tables/gempak/params.tbl");
   }
 
   /**
@@ -283,7 +282,7 @@ public abstract class GempakStationFileIOSP extends AbstractIOServiceProvider {
     var.setDataType(DataType.BYTE);
     var.setDimensions((List<Dimension>) null);
     var.addAttribute(new Attribute("description", "missing flag - 1 means all params are missing"));
-    var.addAttribute(new Attribute("missing_value", (byte) 1));
+    var.addAttribute(new Attribute(CDM.MISSING_VALUE, (byte) 1));
     return var;
   }
 
@@ -298,12 +297,12 @@ public abstract class GempakStationFileIOSP extends AbstractIOServiceProvider {
     Variable var = new Variable(ncfile, null, null, param.getName());
     var.setDataType(DataType.FLOAT);
     var.setDimensions(dims);
-    var.addAttribute(new Attribute("long_name", param.getDescription()));
+    var.addAttribute(new Attribute(CDM.LONG_NAME, param.getDescription()));
     String units = param.getUnit();
     if ((units != null) && !units.equals("")) {
       var.addAttribute(new Attribute(CDM.UNITS, units));
     }
-    var.addAttribute(new Attribute("missing_value", RMISS));
+    var.addAttribute(new Attribute(CDM.MISSING_VALUE, RMISS));
     return var;
   }
 
@@ -312,7 +311,7 @@ public abstract class GempakStationFileIOSP extends AbstractIOServiceProvider {
    */
   protected void addGlobalAttributes() {
     // global stuff
-    ncfile.addAttribute(null, new Attribute("Conventions", getConventions()));
+    ncfile.addAttribute(null, new Attribute(CDM.CONVENTIONS, getConventions()));
     String fileType = "GEMPAK " + gemreader.getFileType();
     ncfile.addAttribute(null, new Attribute("file_format", fileType));
     ncfile.addAttribute(null, new Attribute("history", "Direct read of " + fileType + " into NetCDF-Java API"));
@@ -371,12 +370,12 @@ public abstract class GempakStationFileIOSP extends AbstractIOServiceProvider {
         break;
       }
     }
-    List<Variable> vars = new ArrayList<Variable>();
+    List<Variable> vars = new ArrayList<>();
     List<String> stnKeyNames = gemreader.getStationKeyNames();
     for (String varName : stnKeyNames) {
       Variable v = makeStationVariable(varName, dim);
       // use STNM or STID as the name or description
-      Attribute stIDAttr = new Attribute("standard_name", "station_id");
+      Attribute stIDAttr = new Attribute(CF.STANDARD_NAME, "station_id");
       if (varName.equals(GempakStation.STID) && useSTID) {
         v.addAttribute(stIDAttr);
       }
@@ -464,8 +463,8 @@ public abstract class GempakStationFileIOSP extends AbstractIOServiceProvider {
     String longName = varname;
     String unit = null;
     DataType type = DataType.CHAR;
-    List<Dimension> dims = new ArrayList<Dimension>();
-    List<Attribute> attrs = new ArrayList<Attribute>();
+    List<Dimension> dims = new ArrayList<>();
+    List<Attribute> attrs = new ArrayList<>();
     if (firstDim != null) {
       dims.add(firstDim);
     }
@@ -480,18 +479,18 @@ public abstract class GempakStationFileIOSP extends AbstractIOServiceProvider {
       longName = "latitude";
       unit = CDM.LAT_UNITS;
       type = DataType.FLOAT;
-      attrs.add(new Attribute("standard_name", "latitude"));
+      attrs.add(new Attribute(CF.STANDARD_NAME, "latitude"));
     } else if (varname.equals(GempakStation.SLON)) {
       longName = "longitude";
       unit = CDM.LON_UNITS;
       type = DataType.FLOAT;
-      attrs.add(new Attribute("standard_name", "longitude"));
+      attrs.add(new Attribute(CF.STANDARD_NAME, "longitude"));
     } else if (varname.equals(GempakStation.SELV)) {
       longName = "altitude";
       unit = "meter";
       type = DataType.FLOAT;
       attrs.add(new Attribute(CF.POSITIVE, CF.POSITIVE_UP));
-      attrs.add(new Attribute("standard_name", "station_altitude"));
+      attrs.add(new Attribute(CF.STANDARD_NAME, CF.STATION_ALTITUDE));
     } else if (varname.equals(GempakStation.STAT)) {
       longName = "state or province";
       dims.add(DIM_LEN2);
@@ -513,14 +512,14 @@ public abstract class GempakStationFileIOSP extends AbstractIOServiceProvider {
     }
     Variable v = new Variable(ncfile, null, null, varname);
     v.setDataType(type);
-    v.addAttribute(new Attribute("long_name", longName));
+    v.addAttribute(new Attribute(CDM.LONG_NAME, longName));
     if (unit != null) {
       v.addAttribute(new Attribute(CDM.UNITS, unit));
     }
     if (type.equals(DataType.FLOAT)) {
-      v.addAttribute(new Attribute("missing_value", RMISS));
+      v.addAttribute(new Attribute(CDM.MISSING_VALUE, RMISS));
     } else if (type.equals(DataType.INT)) {
-      v.addAttribute(new Attribute("missing_value", IMISS));
+      v.addAttribute(new Attribute(CDM.MISSING_VALUE, IMISS));
     }
     if (!attrs.isEmpty()) {
       for (Attribute attr : attrs) {
@@ -533,44 +532,6 @@ public abstract class GempakStationFileIOSP extends AbstractIOServiceProvider {
       v.setDimensions((String) null);
     }
     return v;
-  }
-
-  /**
-   * Print the stack trace for a given line of code.
-   *
-   * @param msg      message to print
-   * @param maxLines number of lines in the stack to print
-   */
-  protected void printStack(String msg, int maxLines) {
-    String trace = getStackTrace();
-    if (msg != null) {
-      System.out.println(msg);
-    }
-    StringTokenizer tok = new StringTokenizer(trace, "\n");
-    int allcnt = 0;
-    int cnt = 0;
-    while (tok.hasMoreTokens()) {
-      String line = tok.nextToken();
-      allcnt++;
-      if (allcnt > 4) {
-        System.out.println(line);
-        cnt++;
-        if (cnt > maxLines) {
-          break;
-        }
-      }
-    }
-  }
-
-  /**
-   * Return the stack trace of this calling thread
-   *
-   * @return The stack trace
-   */
-  protected String getStackTrace() {
-    ByteArrayOutputStream baos = new ByteArrayOutputStream();
-    new IllegalArgumentException("").printStackTrace(new PrintStream(baos));
-    return baos.toString();
   }
 
 }

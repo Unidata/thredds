@@ -114,7 +114,7 @@ public class CFPointWriter implements AutoCloseable {
       while(pfc.hasNext()) {
         PointFeature pf = pfc.next();
         if (count == 0)
-          cfWriter.writeHeader(fdpoint.getDataVariables(), pf.getTimeUnit(), null);
+          cfWriter.writeHeader(fdpoint.getDataVariables(), pf.getTimeUnit(), pf.getAltUnits());
 
         cfWriter.writeRecord(pf, pf.getData());
         count++;
@@ -137,7 +137,7 @@ public class CFPointWriter implements AutoCloseable {
     while (pfc.hasNext()) {
       PointFeature pf = pfc.next();
       if (count == 0)
-        cfWriter.writeHeader(fds.getStations(), fdpoint.getDataVariables(), pf.getTimeUnit(), "");
+        cfWriter.writeHeader(fds.getStations(), fdpoint.getDataVariables(), pf.getTimeUnit(), pf.getAltUnits());
 
       StationPointFeature spf = (StationPointFeature) pf;
       cfWriter.writeRecord(spf.getStation(), pf, pf.getData());
@@ -170,7 +170,7 @@ public class CFPointWriter implements AutoCloseable {
       while (profile.hasNext()) {
         ucar.nc2.ft.PointFeature pf = profile.next();
         if (count == 0)
-          cfWriter.writeHeader(profiles, fdpoint.getDataVariables(), pf.getTimeUnit(), null); // LOOK altitude units ??
+          cfWriter.writeHeader(profiles, fdpoint.getDataVariables(), pf.getTimeUnit(), pf.getAltUnits());
 
         cfWriter.writeRecord(profile.getName(), pf, pf.getData());
         count++;
@@ -345,11 +345,12 @@ public class CFPointWriter implements AutoCloseable {
 
   }
 
+  private int fakeDims = 0;
   protected Map<String, Dimension> addDimensionsClassic(List<? extends VariableSimpleIF> vars) throws IOException {
     Set<Dimension> oldDims = new HashSet<>(20);
     Map<String, Dimension> newDims = new HashMap<>(20);
 
-    // find all dimensions needed by the coord variables
+    // find all dimensions needed by these variables
     for (VariableSimpleIF var : vars) {
       List<Dimension> dims = var.getDimensions();
       oldDims.addAll(dims);
@@ -357,7 +358,8 @@ public class CFPointWriter implements AutoCloseable {
 
     // add them
     for (Dimension d : oldDims) {
-      Dimension newDim = writer.addDimension(null, d.getShortName(), d.getLength(), true, false, d.isVariableLength());
+      String dimName = (d.getShortName() == null) ? "fake"+fakeDims++ : d.getShortName();
+      Dimension newDim = writer.addDimension(null, dimName, d.getLength(), true, false, d.isVariableLength());
       newDims.put(d.getShortName(), newDim);
     }
 
@@ -385,7 +387,8 @@ public class CFPointWriter implements AutoCloseable {
       // make dimension list
       StringBuilder dimNames = new StringBuilder();
       for (Dimension d : oldVar.getDimensions()) {
-        if (!d.isUnlimited() && !d.getShortName().equals(recordDimName))
+        if (d.isUnlimited()) continue;
+        if (d.getShortName() == null || !d.getShortName().equals(recordDimName))
           dimNames.append(" ").append(d.getLength());  // anonymous
       }
 

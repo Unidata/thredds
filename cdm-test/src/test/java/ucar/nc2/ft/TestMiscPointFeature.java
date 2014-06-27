@@ -165,4 +165,22 @@ public class TestMiscPointFeature {
     pods.close();
   }
 
+  @Test
+  public void testStationAttributes() throws Exception {
+    String file = TestDir.cdmLocalTestDataDir + "point/stationMultidim.ncml";
+    Formatter buf = new Formatter();
+    try (FeatureDatasetPoint pods = (FeatureDatasetPoint) FeatureDatasetFactoryManager.open(ucar.nc2.constants.FeatureType.STATION, file, null, buf)) {
+      List<FeatureCollection> collectionList = pods.getPointFeatureCollectionList();
+      assert (collectionList.size() == 1) : "Can't handle point data with multiple collections";
+      FeatureCollection fc = collectionList.get(0);
+      assert fc instanceof StationCollection;
+      StationCollection sc = (StationCollection) fc;
+      List<Station> stations = sc.getStations();
+      assert (stations.size() > 0) : "No stations";
+      Station s = stations.get(0);
+      assert !Double.isNaN(s.getAltitude()) : "No altitude on station";
+    }
+  }
+
+
 }

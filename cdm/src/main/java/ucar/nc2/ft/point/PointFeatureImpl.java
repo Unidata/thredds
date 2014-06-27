@@ -49,9 +49,11 @@ import java.util.Date;
 
 
 public abstract class PointFeatureImpl implements PointFeature, Comparable<PointFeature> {
+
   protected EarthLocation location;
   protected double obsTime, nomTime;
   protected DateUnit timeUnit;
+  protected String altUnit;
 
   public PointFeatureImpl( DateUnit timeUnit) {
     this.timeUnit = timeUnit;
@@ -64,37 +66,53 @@ public abstract class PointFeatureImpl implements PointFeature, Comparable<Point
     this.timeUnit = timeUnit;
   }
 
-  public EarthLocation getLocation() { return location; }
-  public double getNominalTime() { return nomTime; }
-  public double getObservationTime() { return obsTime; }
-
-  // LOOK WRONG
-  public String getZcoordUnits() {
-    return "meters";
+  public PointFeatureImpl( EarthLocation location, double obsTime, double nomTime, DateUnit timeUnit, String altUnit) {
+    this.location = location;
+    this.obsTime = obsTime;
+    this.nomTime = (nomTime == 0) ? obsTime : nomTime; // LOOK temp kludge until protobuf accepts NaN as defaults
+    this.timeUnit = timeUnit;
+    this.altUnit = altUnit;
   }
+
+  @Override
+  public EarthLocation getLocation() { return location; }
+  @Override
+  public double getNominalTime() { return nomTime; }
+  @Override
+  public double getObservationTime() { return obsTime; }
 
   public String getDescription() {
     return location.toString(); // ??
   }
 
+  @Override
   public Date getObservationTimeAsDate() {
     return timeUnit.makeDate( getObservationTime());
   }
 
+  @Override
   public Date getNominalTimeAsDate() {
     return timeUnit.makeDate(getNominalTime());
   }
 
+  @Override
   public CalendarDate getObservationTimeAsCalendarDate() {
     return timeUnit.makeCalendarDate( getObservationTime());
   }
 
+  @Override
   public CalendarDate getNominalTimeAsCalendarDate() {
     return timeUnit.makeCalendarDate( getNominalTime());
   }
 
+  @Override
   public DateUnit getTimeUnit() {
     return timeUnit;
+  }
+
+  @Override
+  public String getAltUnits() {
+    return altUnit;
   }
 
   public int compareTo(PointFeature other) {

@@ -34,6 +34,7 @@ package ucar.nc2.ft;
 
 import ucar.nc2.time.CalendarDateRange;
 import ucar.nc2.units.DateRange;
+import ucar.nc2.units.DateUnit;
 
 import java.io.IOException;
 
@@ -76,6 +77,14 @@ public interface PointFeatureCollection extends FeatureCollection {
    * @see PointFeatureIterator#finish
    */
   public void finish();
+
+  /**
+    * Get an iterator over the PointFeatures of this collection. call PointFeatureIterator.finish() when done
+    * @param bufferSize how many bytes can be used to buffer data, use -1 to use default.
+    * @return iterator over the PointFeatures of this collection
+    * @throws IOException on read error
+    */
+   public PointFeatureIterator getPointFeatureIterator(int bufferSize) throws java.io.IOException;
 
   /**
    * The number of points in the collection. May not be known until after iterating through the collection.
@@ -142,14 +151,6 @@ public interface PointFeatureCollection extends FeatureCollection {
    * @throws java.io.IOException or read error.
    */
   public void calcBounds() throws java.io.IOException;
-
-  /**
-   * Get an iterator over the PointFeatures of this collection. call PointFeatureIterator.finish() when done
-   * @param bufferSize how many bytes can be used to buffer data, use -1 to use default.
-   * @return iterator over the PointFeatures of this collection
-   * @throws IOException on read error
-   */
-  public PointFeatureIterator getPointFeatureIterator(int bufferSize) throws java.io.IOException;
 
   /**
    * Subset this collection by boundingBox and/or dateRange

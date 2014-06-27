@@ -187,6 +187,7 @@ public class CFpointObs extends TableConfigurerImpl {
         break;
 
       case raggedContiguous:
+        stnTable.numRecords = info.ragged_rowSize.getShortName();  // remove from data vars
         obsTable = makeRaggedContiguous(ds, info.parentDim, info.childDim, info.ragged_rowSize, errlog);
         break;
 
@@ -206,7 +207,9 @@ public class CFpointObs extends TableConfigurerImpl {
         if (obsTable.stnDesc == null)
           obsTable.stnDesc = Evaluator.findNameOfVariableWithAttributeValue(ds, CF.STANDARD_NAME, CF.STATION_DESC);
         obsTable.stnWmoId = Evaluator.findNameVariableWithStandardNameAndDimension(ds, CF.STATION_WMOID, obsDim, errlog);
-        obsTable.stnAlt = Evaluator.findNameVariableWithStandardNameAndDimension(ds, CF.STATION_ALTITUDE, obsDim, errlog);
+        obsTable.stnAlt = Evaluator.findNameVariableWithStandardNameAndDimension(ds, CF.SURFACE_ALTITUDE, obsDim, errlog);
+        if (obsTable.stnAlt == null)
+          obsTable.stnAlt = Evaluator.findNameVariableWithStandardNameAndDimension(ds, CF.STATION_ALTITUDE, obsDim, errlog);
         break;
     }
     if (obsTable == null) return null;
@@ -220,10 +223,10 @@ public class CFpointObs extends TableConfigurerImpl {
   private TableConfig getTrajectoryConfig(NetcdfDataset ds, EncodingInfo info, Formatter errlog) throws IOException {
     if (!identifyEncodingTraj(ds, info, errlog)) return null;
 
-    TableConfig parentTable = makeStructTable(ds, FeatureType.TRAJECTORY, info, errlog);
-    if (parentTable == null) return null;
-    parentTable.feature_id = identifyIdVariableName(ds, CF.FeatureType.trajectory);
-    if (parentTable.feature_id == null) {
+    TableConfig trajTable = makeStructTable(ds, FeatureType.TRAJECTORY, info, errlog);
+    if (trajTable == null) return null;
+    trajTable.feature_id = identifyIdVariableName(ds, CF.FeatureType.trajectory);
+    if (trajTable.feature_id == null) {
       errlog.format("CFpointObs getTrajectoryConfig cant find a trajectoy id %n");
     }
 
@@ -237,9 +240,10 @@ public class CFpointObs extends TableConfigurerImpl {
         obsConfig = makeSingle(ds, info.childDim, errlog);
         break;
       case multidim:
-        obsConfig = makeMultidimInner(ds, parentTable, info.childDim, info, errlog);
+        obsConfig = makeMultidimInner(ds, trajTable, info.childDim, info, errlog);
         break;
       case raggedContiguous:
+        trajTable.numRecords = info.ragged_rowSize.getShortName();  // remove from data vars
         obsConfig = makeRaggedContiguous(ds, info.parentDim, info.childDim, info.ragged_rowSize, errlog);
         break;
       case raggedIndex:
@@ -250,8 +254,8 @@ public class CFpointObs extends TableConfigurerImpl {
     }
     if (obsConfig == null) return null;
 
-    parentTable.addChild(obsConfig);
-    return parentTable;
+    trajTable.addChild(obsConfig);
+    return trajTable;
   }
 
   ////
@@ -259,10 +263,10 @@ public class CFpointObs extends TableConfigurerImpl {
   private TableConfig getProfileConfig(NetcdfDataset ds, EncodingInfo info, Formatter errlog) throws IOException {
     if (!identifyEncodingProfile(ds, info, errlog)) return null;
 
-    TableConfig parentTable = makeStructTable(ds, FeatureType.PROFILE, info, errlog);
-    if (parentTable == null) return null;
-    parentTable.feature_id = identifyIdVariableName(ds, CF.FeatureType.profile);
-    if (parentTable.feature_id == null) {
+    TableConfig profileTable = makeStructTable(ds, FeatureType.PROFILE, info, errlog);
+    if (profileTable == null) return null;
+    profileTable.feature_id = identifyIdVariableName(ds, CF.FeatureType.profile);
+    if (profileTable.feature_id == null) {
       errlog.format("CFpointObs getProfileConfig cant find a profile id %n");
     }
 
@@ -282,11 +286,12 @@ public class CFpointObs extends TableConfigurerImpl {
         obsTable = makeSingle(ds, info.childDim, errlog);
         break;
       case multidim:
-        obsTable = makeMultidimInner(ds, parentTable, info.childDim, info, errlog);
+        obsTable = makeMultidimInner(ds, profileTable, info.childDim, info, errlog);
         if (z.getRank() == 1) // z(z)
           obsTable.addJoin(new JoinArray(z, JoinArray.Type.raw, 0));
         break;
       case raggedContiguous:
+        profileTable.numRecords = info.ragged_rowSize.getShortName();  // remove from data vars
         obsTable = makeRaggedContiguous(ds, info.parentDim, info.childDim, info.ragged_rowSize, errlog);
         break;
       case raggedIndex:
@@ -297,8 +302,8 @@ public class CFpointObs extends TableConfigurerImpl {
     }
     if (obsTable == null) return null;
 
-    parentTable.addChild(obsTable);
-    return parentTable;
+    profileTable.addChild(obsTable);
+    return profileTable;
   }
 
   ////
@@ -734,9 +739,9 @@ public class CFpointObs extends TableConfigurerImpl {
    * @return EncodingInfo if ragged array representations is found
    */
   protected boolean identifyRaggeds(NetcdfDataset ds, EncodingInfo info, Dimension instanceDim, Dimension sampleDim, Formatter errlog) {
-    // backwards compatibility
-    Evaluator.VarAtt varatt = Evaluator.findVariableWithAttribute(ds, CF.SAMPLE_DIMENSION);
-    if (varatt == null) varatt = Evaluator.findVariableWithAttribute(ds, CF.RAGGED_ROWSIZE);
+
+    Evaluator.VarAtt varatt = Evaluator.findVariableWithAttribute(ds, CF.SAMPLE_DIMENSION);   // CF 1.6
+    if (varatt == null) varatt = Evaluator.findVariableWithAttribute(ds, CF.RAGGED_ROWSIZE);  // backwards compatibility
     if (varatt != null) {
       Variable ragged_rowSize = varatt.var;
       String sampleDimName = varatt.att.getStringValue();
@@ -779,10 +784,8 @@ public class CFpointObs extends TableConfigurerImpl {
       return true;
     }  // rowsize was found
 
-
-    // CF 1.6
-    varatt = Evaluator.findVariableWithAttribute(ds, CF.INSTANCE_DIMENSION);
-    if (varatt == null) varatt = Evaluator.findVariableWithAttribute(ds, CF.RAGGED_PARENTINDEX);
+    varatt = Evaluator.findVariableWithAttribute(ds, CF.INSTANCE_DIMENSION);                       // CF 1.6
+    if (varatt == null) varatt = Evaluator.findVariableWithAttribute(ds, CF.RAGGED_PARENTINDEX);   // backwards compatibility
     if (varatt != null) {
       Variable ragged_parentIndex = varatt.var;
       String instanceDimName = varatt.att.getStringValue();
@@ -1190,7 +1193,9 @@ public class CFpointObs extends TableConfigurerImpl {
     if (stnTable.stnDesc == null)
       stnTable.stnDesc = Evaluator.findNameVariableWithStandardNameAndDimension(ds, CF.STATION_DESC, stationDim, errlog);
     stnTable.stnWmoId = Evaluator.findNameVariableWithStandardNameAndDimension(ds, CF.STATION_WMOID, stationDim, errlog);
-    stnTable.stnAlt = Evaluator.findNameVariableWithStandardNameAndDimension(ds, CF.STATION_ALTITUDE, stationDim, errlog);
+    stnTable.stnAlt = Evaluator.findNameVariableWithStandardNameAndDimension(ds, CF.SURFACE_ALTITUDE, stationDim, errlog);
+    if (stnTable.stnAlt == null)
+      stnTable.stnAlt = Evaluator.findNameVariableWithStandardNameAndDimension(ds, CF.STATION_ALTITUDE, stationDim, errlog);
     stnTable.lat = lat.getShortName();
     stnTable.lon = lon.getShortName();
 

@@ -250,7 +250,9 @@ public class BufrFeatureDatasetFactory implements FeatureDatasetFactory {
         PointFeatureIterator.Filter filter;
 
         BufrPointFeatureCollection(LatLonRect boundingBox, CalendarDateRange dateRange) throws IOException {
-          super("", boundingBox, dateRange, -1);
+          super("");
+          setBoundingBox(boundingBox);
+          setCalendarDateRange(dateRange);
           initStationHelper();
           stationsWanted = stationHelper.subset(boundingBox);
           if (dateRange != null) filter = new PointIteratorAbstract.Filter(null, dateRange);

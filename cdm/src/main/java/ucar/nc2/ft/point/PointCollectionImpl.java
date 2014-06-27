@@ -38,6 +38,7 @@ import ucar.nc2.ft.PointFeature;
 import ucar.nc2.time.CalendarDateRange;
 import ucar.nc2.units.DateRange;
 import ucar.nc2.constants.FeatureType;
+import ucar.nc2.units.DateUnit;
 import ucar.unidata.geoloc.LatLonRect;
 
 import java.io.IOException;
@@ -55,22 +56,69 @@ public abstract class PointCollectionImpl implements PointFeatureCollection {
   protected CalendarDateRange dateRange;
   protected int npts;
   protected PointFeatureIterator localIterator;
+  //protected DateUnit timeUnit;
+  //protected String altUnits;
 
-  protected PointCollectionImpl(String name) {
+  protected PointCollectionImpl(String name) { //}, DateUnit timeUnit, String altUnits) {
     this.name = name;
+    //this.timeUnit = timeUnit;
+    //this.altUnits = altUnits;
     this.npts = -1;
   }
 
-  protected PointCollectionImpl(String name, LatLonRect boundingBox, CalendarDateRange dateRange, int npts) {
+  /* protected PointCollectionImpl(String name, LatLonRect boundingBox, CalendarDateRange dateRange, int npts) {
     this.name = name;
     this.boundingBox = boundingBox;
     this.dateRange = dateRange;
     this.npts = npts;
+  }  */
+
+
+  public void setDateRange(DateRange range) {
+    this.dateRange = CalendarDateRange.of(range);
   }
+
+  public void setCalendarDateRange(CalendarDateRange range) {
+    this.dateRange = range;
+  }
+
+  public void setBoundingBox(ucar.unidata.geoloc.LatLonRect bb) {
+    this.boundingBox = bb;
+  }
+
+  public void calcBounds() throws java.io.IOException {
+    if ((dateRange != null) && (boundingBox != null) && (size() > 0))
+      return;
+
+    PointFeatureIterator iter = getPointFeatureIterator(-1);
+    iter.setCalculateBounds(this);
+    try {
+      while (iter.hasNext())
+        iter.next();
+
+    } finally {
+      iter.finish();
+    }
+
+  }
+
+  public void setSize(int npts) {
+    this.npts = npts;
+  }
+
+  ///////////////////////////////////////////////////////////////
 
   public String getName() {
     return name;
   }
+
+  /* public String getAltUnits() {
+    return altUnits;
+  }
+
+  public DateUnit getTimeUnit() {
+    return timeUnit;
+  } */
 
   public boolean hasNext() throws IOException {
     if (localIterator == null) resetIteration();
@@ -108,38 +156,6 @@ public abstract class PointCollectionImpl implements PointFeatureCollection {
 
   public ucar.unidata.geoloc.LatLonRect getBoundingBox() {
     return boundingBox;
-  }
-
-  public void setDateRange(DateRange range) {
-    this.dateRange = CalendarDateRange.of(range);
-  }
-
-  public void setCalendarDateRange(CalendarDateRange range) {
-    this.dateRange = range;
-  }
-
-  public void setBoundingBox(ucar.unidata.geoloc.LatLonRect bb) {
-    this.boundingBox = bb;
-  }
-
-  public void calcBounds() throws java.io.IOException {
-    if ((dateRange != null) && (boundingBox != null) && (size() > 0))
-      return;
-
-    PointFeatureIterator iter = getPointFeatureIterator(-1);
-    iter.setCalculateBounds(this);
-    try {
-      while (iter.hasNext())
-        iter.next();
-
-    } finally {
-      iter.finish();
-    }
-
-  }
-
-  public void setSize(int npts) {
-    this.npts = npts;
   }
 
   public FeatureType getCollectionFeatureType() {

@@ -63,8 +63,8 @@ public class TestReadAndCountDods extends TestCase {
     TestReadandCount.doOne(base,"catalog/grib/NCEP/GFS/Puerto_Rico_0p5deg/files/latest.xml", 50, 11, 13, 8);
     TestReadandCount.doOne(base,"catalog/grib/NCEP/GFS/CONUS_80km/files/latest.xml", 31, 12, 15, 8);
 
-    // flipping 59, 15, 17, 13,  and 59, 16, 18, 13,
-    TestReadandCount.doOne(base,"catalog/grib/NCEP/NAM/Alaska_11km/files/latest.xml", 59, -1, -1, 13);
+    // flipping 59, 15, 17, 13,  and 59, 15, 18, 13,
+    TestReadandCount.doOne(base,"catalog/grib/NCEP/NAM/Alaska_11km/files/latest.xml", 59, 15, 18, 13);
     // flipping between 154, 34, 36, 31 and 154, 33, 35, 31
     TestReadandCount.doOne(base,"catalog/grib/NCEP/NAM/Alaska_45km/conduit/files/latest.xml", 154, -1, -1, 31);
     TestReadandCount.doOne(base,"catalog/grib/NCEP/NAM/CONUS_12km/files/latest.xml", 59, 15, 17, 13);

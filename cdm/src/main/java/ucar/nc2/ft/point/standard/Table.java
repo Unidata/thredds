@@ -1,34 +1,34 @@
 /*
- * Copyright 1998-2009 University Corporation for Atmospheric Research/Unidata
+ * Copyright 1998-2014 University Corporation for Atmospheric Research/Unidata
  *
- * Portions of this software were developed by the Unidata Program at the
- * University Corporation for Atmospheric Research.
+ *   Portions of this software were developed by the Unidata Program at the
+ *   University Corporation for Atmospheric Research.
  *
- * Access and use of this software shall impose the following obligations
- * and understandings on the user. The user is granted the right, without
- * any fee or cost, to use, copy, modify, alter, enhance and distribute
- * this software, and any derivative works thereof, and its supporting
- * documentation for any purpose whatsoever, provided that this entire
- * notice appears in all copies of the software, derivative works and
- * supporting documentation.  Further, UCAR requests that the user credit
- * UCAR/Unidata in any publications that result from the use of this
- * software or in any product that includes this software. The names UCAR
- * and/or Unidata, however, may not be used in any advertising or publicity
- * to endorse or promote any products or commercial entity unless specific
- * written permission is obtained from UCAR/Unidata. The user also
- * understands that UCAR/Unidata is not obligated to provide the user with
- * any support, consulting, training or assistance of any kind with regard
- * to the use, operation and performance of this software nor to provide
- * the user with any updates, revisions, new versions or "bug fixes."
+ *   Access and use of this software shall impose the following obligations
+ *   and understandings on the user. The user is granted the right, without
+ *   any fee or cost, to use, copy, modify, alter, enhance and distribute
+ *   this software, and any derivative works thereof, and its supporting
+ *   documentation for any purpose whatsoever, provided that this entire
+ *   notice appears in all copies of the software, derivative works and
+ *   supporting documentation.  Further, UCAR requests that the user credit
+ *   UCAR/Unidata in any publications that result from the use of this
+ *   software or in any product that includes this software. The names UCAR
+ *   and/or Unidata, however, may not be used in any advertising or publicity
+ *   to endorse or promote any products or commercial entity unless specific
+ *   written permission is obtained from UCAR/Unidata. The user also
+ *   understands that UCAR/Unidata is not obligated to provide the user with
+ *   any support, consulting, training or assistance of any kind with regard
+ *   to the use, operation and performance of this software nor to provide
+ *   the user with any updates, revisions, new versions or "bug fixes."
  *
- * THIS SOFTWARE IS PROVIDED BY UCAR/UNIDATA "AS IS" AND ANY EXPRESS OR
- * IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
- * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
- * DISCLAIMED. IN NO EVENT SHALL UCAR/UNIDATA BE LIABLE FOR ANY SPECIAL,
- * INDIRECT OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING
- * FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT,
- * NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
- * WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
+ *   THIS SOFTWARE IS PROVIDED BY UCAR/UNIDATA "AS IS" AND ANY EXPRESS OR
+ *   IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ *   WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ *   DISCLAIMED. IN NO EVENT SHALL UCAR/UNIDATA BE LIABLE FOR ANY SPECIAL,
+ *   INDIRECT OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING
+ *   FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT,
+ *   NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
+ *   WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 package ucar.nc2.ft.point.standard;
 
@@ -158,25 +158,25 @@ public abstract class Table {
     this.extraJoins = config.extraJoin;
 
     // try to exclude coordinate vars and "structural data" from the list of data variables
-    checkNonDataVariable(config.lat);
-    checkNonDataVariable(config.lon);
+    addNonDataVariable(config.lat);
+    addNonDataVariable(config.lon);
     // checkNonDataVariable(config.elev);  LOOK
-    checkNonDataVariable(config.timeNominal);
-    checkNonDataVariable(config.stnId);
-    checkNonDataVariable(config.stnDesc);
-    checkNonDataVariable(config.stnWmoId);
-    checkNonDataVariable(config.stnAlt);
-    checkNonDataVariable(config.stnNpts);
-    checkNonDataVariable(config.limit);
-    checkNonDataVariable(config.feature_id);
+    addNonDataVariable(config.timeNominal);
+    addNonDataVariable(config.stnId);
+    addNonDataVariable(config.stnDesc);
+    addNonDataVariable(config.stnWmoId);
+    addNonDataVariable(config.stnAlt);
+    addNonDataVariable(config.stnNpts);
+    addNonDataVariable(config.limit);
+    addNonDataVariable(config.feature_id);
 
-    checkNonDataVariable(config.parentIndex);
-    checkNonDataVariable(config.start);
-    checkNonDataVariable(config.next);
-    checkNonDataVariable(config.numRecords);
+    addNonDataVariable(config.parentIndex);
+    addNonDataVariable(config.start);
+    addNonDataVariable(config.next);
+    addNonDataVariable(config.numRecords);
   }
 
-  protected void checkNonDataVariable(String name) {
+  protected void addNonDataVariable(String name) {
     if (name != null)
       nondataVars.add(name);
   }
@@ -438,8 +438,8 @@ public abstract class Table {
         }
       }
 
-      checkNonDataVariable(config.start);
-      checkNonDataVariable(config.numRecords);
+      addNonDataVariable(config.start);
+      addNonDataVariable(config.numRecords);
     }
 
     @Override
@@ -507,7 +507,7 @@ public abstract class Table {
         throw new RuntimeException(e);
       }
 
-      checkNonDataVariable(config.parentIndex);
+      addNonDataVariable(config.parentIndex);
     }
 
     @Override
@@ -595,7 +595,7 @@ public abstract class Table {
           break;
         }
       }
-      checkNonDataVariable(parentIdName);
+      addNonDataVariable(parentIdName);
     }
 
     private class ParentInfo {
@@ -650,8 +650,8 @@ public abstract class Table {
       this.start = config.start;
       this.next = config.next;
 
-      checkNonDataVariable(config.start);
-      checkNonDataVariable(config.next);
+      addNonDataVariable(config.start);
+      addNonDataVariable(config.next);
     }
 
     public StructureDataIterator getStructureDataIterator(Cursor cursor, int bufferSize) throws IOException {

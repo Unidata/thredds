@@ -99,6 +99,12 @@ public interface PointFeature {
   public DateUnit getTimeUnit();
 
   /**
+   * Get the altitude units, if any
+   * @return altitude units or null if none
+   */
+  public String getAltUnits();
+
+  /**
    * The actual data of this observation.
    * @return the actual data of this observation.
    * @throws java.io.IOException on i/o error
