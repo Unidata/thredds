@@ -1,7 +1,10 @@
 package dap4.test;
 
 import dap4.core.util.DapUtil;
+import dap4.dap4shared.D4DSP;
 import dap4.dap4shared.DataCompiler;
+import dap4.dap4shared.HttpDSP;
+import dap4.servlet.DapCache;
 import dap4.test.util.DapTestCommon;
 import ucar.httpservices.*;
 import ucar.nc2.dataset.NetcdfDataset;
@@ -15,7 +18,7 @@ import java.util.List;
  */
 public class TestCDMClient extends DapTestCommon
 {
-    static final boolean DEBUG = false;
+    static final boolean DEBUG = true;
 
     static final String EXTENSION = "ncdump";
 
@@ -156,6 +159,7 @@ public class TestCDMClient extends DapTestCommon
             throws Exception
     {
         super(name);
+        DapCache.flush();
         setSystemProperties();
         this.root = getDAP4Root();
         if(this.root == null)
@@ -163,8 +167,8 @@ public class TestCDMClient extends DapTestCommon
         if(this.root.charAt(0) != '/' && !DapUtil.hasDriveLetter(this.root))
             this.root = "/" + this.root; // handle problem of windows paths
         this.datasetpath = this.root + "/" + TESTINPUTDIR;
-        makefilesource(this.datasetpath);
-        this.sourceurl = getSourceURL();
+        findServer(this.datasetpath);
+        this.sourceurl = d4tsServer;
         System.out.println("Using source url " + this.sourceurl);
         defineAllTestcases(this.root, this.sourceurl);
         chooseTestcases();
@@ -176,8 +180,8 @@ public class TestCDMClient extends DapTestCommon
     void
     chooseTestcases()
     {
-        if(false) {
-            chosentests = locate("test_enum_2.nc");
+        if(true) {
+            chosentests = locate("test_opaque_array.nc");
         } else {
             for(ClientTest tc : alltestcases) {
                 chosentests.add(tc);
@@ -199,7 +203,7 @@ public class TestCDMClient extends DapTestCommon
         // Generate the testcases from the located .dmr files
         // This assumes that the set of files and the set of
         // files thru the sourceurl are the same
-        File[] filelist = testpath.listFiles(new TestFilter(prop_debug));
+        File[] filelist = testpath.listFiles(new TestFilter(DEBUG));
         for(int i = 0; i < filelist.length; i++) {
             File file = filelist[i];
             // remove the extension
@@ -223,8 +227,10 @@ public class TestCDMClient extends DapTestCommon
     public void testCDMClient()
             throws Exception
     {
-        if(DEBUG)
-            DataCompiler.DEBUG = true;
+        if(DEBUG) {
+            //DataCompiler.DEBUG = true;
+            D4DSP.DEBUG = true;
+        }
         boolean pass = true;
         for(ClientTest testcase : chosentests) {
             if(!doOneTest(testcase)) pass = false;
@@ -335,74 +341,6 @@ public class TestCDMClient extends DapTestCommon
         return false;
     }
 
-    void
-    makefilesource(String path)
-    {
-        for(Source s : SOURCES) {
-            if(s.name.equals("file"))
-                s.prefix = s.prefix + path;
-        }
-    }
-
-    String
-    getSourceURL()
-    {
-        Source chosen = null;
-        if(prop_server != null) {
-            for(int i = 0; i < SOURCES.size(); i++) {
-                if(SOURCES.get(i).name.equals(prop_server)) {
-                    chosen = SOURCES.get(i);
-                    break;
-                }
-            }
-            if(chosen == null) {
-                System.err.println("-Dserver argument unknown: " + prop_server);
-                return null;
-            }
-            if(!chosen.isfile && !checkServer(chosen)) {
-                System.err.println("-Dserver unreachable: " + prop_server);
-                return null;
-            }
-            return chosen.prefix;
-        }
-        // Look for a sourceurl in order of appearance in SOURCES
-        for(int i = 0; i < SOURCES.size(); i++) {
-            chosen = SOURCES.get(i);
-            if(!chosen.isfile)
-                break;
-            if(checkServer(chosen))
-                break;
-        }
-        // Could not find working sourceurl
-        return chosen.prefix;
-    }
-
-    boolean
-    checkServer(Source candidate)
-    {
-        if(candidate == null) return false;
-/* requires httpclient4
-        int savecount = HTTPSession.getRetryCount();
-        HTTPSession.setRetryCount(1);
-*/
-        // See if the sourceurl is available by trying to get the DSR
-        System.err.print("Checking for sourceurl: " + candidate.prefix);
-        try {
-            HTTPSession session = new HTTPSession(candidate.testurl);
-            HTTPMethod method = HTTPFactory.Get(session);
-            method.execute();
-            String s = method.getResponseAsString();
-            session.close();
-            System.err.println(" ; found");
-            return true;
-        } catch (IOException ie) {
-            System.err.println(" ; fail");
-            return false;
-        } finally {
-// requires httpclient4            HTTPSession.setRetryCount(savecount);
-        }
-    }
-
 
     //////////////////////////////////////////////////
     // Stand alone
@@ -421,5 +359,5 @@ public class TestCDMClient extends DapTestCommon
         System.exit(0);
     }// main
 
-} // class TestCDMClient
+} // class TestCDMClient                                                             b
 

@@ -288,7 +288,9 @@ public class SerialWriter
                 opaquedata = datao[i];
                 size = opaquedata.remaining(); // should be limit - pos
                 buf.putLong(size);
+                int savepos = opaquedata.position();
                 buf.put(opaquedata);
+                opaquedata.position(savepos);
             }
             break;
 
@@ -374,7 +376,7 @@ public class SerialWriter
         if(DEBUG) {
             System.err.printf("%s: ", daptype.getShortName());
             for(int i = 0; i < len; i++) {
-                int x = (int) (order == ByteOrder.BIG_ENDIAN ? bytes[i] : bytes[(len - 1) - i]);
+                int x = (int)bytes[i];
                 System.err.printf("%02x", (int) (x & 0xff));
             }
             System.err.println();

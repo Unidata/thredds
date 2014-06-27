@@ -4,5 +4,8 @@
          dmrVersion="1.0"
          xmlns="http://xml.opendap.org/ns/DAP/4.0#"
          xmlns:dap="http://xml.opendap.org/ns/DAP/4.0#">
-    <Opaque name="vo1"/>
+    <Opaque name="vo2">
+        <Dim size="1"/>
+        <Dim size="1"/>
+    </Opaque>
 </Dataset>

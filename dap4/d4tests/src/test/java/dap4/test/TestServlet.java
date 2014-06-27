@@ -3,6 +3,7 @@ package dap4.test;
 import dap4.dap4shared.ChunkInputStream;
 import dap4.core.util.DapDump;
 import dap4.dap4shared.RequestMode;
+import dap4.servlet.DapCache;
 import dap4.servlet.Generator;
 import dap4.test.servlet.*;
 import dap4.test.util.*;
@@ -181,8 +182,8 @@ public class TestServlet extends DapTestCommon
     protected void
     chooseTestcases()
     {
-        if(false) {
-            chosentests = locate("test_enum_2.nc");
+        if(true) {
+            chosentests = locate("test_opaque_array.nc");
         } else {
             for(ServletTest tc : alltestcases) {
                 chosentests.add(tc);
@@ -247,12 +248,21 @@ public class TestServlet extends DapTestCommon
                     {
                         printer.printvalue('O', 0);
                         printer.printchecksum();
-                        for(int i = 0;i < 2;i++) {
-                            printer.printvalue('O', 0, i);
-                        }
-                        printer.printchecksum();
                     }
                 }));
+        this.alltestcases.add(
+                    new ServletTest("test_opaque_array.nc", "dmr,dap", true,  //0
+                        // S4
+                        new Dump.Commands()
+                        {
+                            public void run(Dump printer) throws IOException
+                            {
+                                for(int i = 0;i < 4;i++) {
+                                    printer.printvalue('O', 0, i);
+                                }
+                                printer.printchecksum();
+                            }
+                        }));
         this.alltestcases.add(
             new ServletTest("test_one_vararray.nc", "dmr,dap", true,  //1
                 // S4
@@ -662,6 +672,7 @@ public class TestServlet extends DapTestCommon
     public void testServlet()
         throws Exception
     {
+        DapCache.flush();
         for(ServletTest testcase : chosentests) {
             assertTrue(doOneTest(testcase));
         }
@@ -766,7 +777,7 @@ public class TestServlet extends DapTestCommon
         FakeServletOutputStream fakestream
             = (FakeServletOutputStream) resp.getOutputStream();
         if(prop_debug || DEBUG) {
-            DapDump.dumpbytestream(fakestream.byteStream(),ByteOrder.nativeOrder(),'*');
+            DapDump.dumpbytestream(fakestream.byteStream(),ByteOrder.nativeOrder(),"TestServlet.dodata");
         }
         byte[] byteresult = fakestream.toArray();
 

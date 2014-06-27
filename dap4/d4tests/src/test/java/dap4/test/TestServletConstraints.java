@@ -21,6 +21,7 @@ import java.util.*;
 
 public class TestServletConstraints extends DapTestCommon
 {
+    static final boolean DEBUG = false;
 
     //////////////////////////////////////////////////
     // Constants
@@ -83,9 +84,9 @@ public class TestServletConstraints extends DapTestCommon
             this.extensions = extensions.split(",");
             this.template = template;
             this.testinputpath
-                = root + "/" + TESTINPUTDIR + "/" + dataset;
+                    = root + "/" + TESTINPUTDIR + "/" + dataset;
             this.baselinepath
-                = root + "/" + BASELINEDIR + "/" + dataset + "." + String.valueOf(this.id);
+                    = root + "/" + BASELINEDIR + "/" + dataset + "." + String.valueOf(this.id);
             alltests[id] = this;
         }
 
@@ -125,19 +126,19 @@ public class TestServletConstraints extends DapTestCommon
     // Constructor(s)
 
     public TestServletConstraints()
-        throws Exception
+            throws Exception
     {
         this("TestServletConstraints");
     }
 
     public TestServletConstraints(String name)
-        throws Exception
+            throws Exception
     {
         this(name, null);
     }
 
     public TestServletConstraints(String name, String[] argv)
-        throws Exception
+            throws Exception
     {
         super(name);
         this.root = getDAP4Root();
@@ -155,10 +156,11 @@ public class TestServletConstraints extends DapTestCommon
     chooseTestcases()
     {
         if(false) {
-            chosentests = locate("test_anon_dim.syn?/vu32[0:3]");
+            chosentests = locate(7);
         } else {
-            for(ConstraintTest tc : alltestcases)
+            for(ConstraintTest tc : alltestcases) {
                 chosentests.add(tc);
+            }
         }
     }
 
@@ -166,95 +168,112 @@ public class TestServletConstraints extends DapTestCommon
     {
         ConstraintTest.root = root;
         this.alltestcases.add(
-            new ConstraintTest(1, "test_one_vararray.nc", "dmr,dap", "/t[1]",
-                // S4
-                new Dump.Commands()
-                {
-                    public void run(Dump printer) throws IOException
-                    {
-                        printer.printvalue('S', 4);
-                        printer.printchecksum();
-                    }
-                }));
-        this.alltestcases.add(
-            new ConstraintTest(2, "test_anon_dim.syn", "dmr,dap", "/vu32[0:3]",  // test for dimension inclusion
-                // S4
-                new Dump.Commands()
-                {
-                    public void run(Dump printer) throws IOException
-                    {
-                        printer.printvalue('S', 4);
-                        printer.printvalue('S', 4);
-                        printer.printvalue('S', 4);
-                        printer.printvalue('S', 4);
-                        printer.printchecksum();
-                    }
-                }));
-        this.alltestcases.add(
-            new ConstraintTest(3, "test_one_vararray.nc", "dmr,dap", "/t",  // test for dimension inclusion
-                // S4
-                new Dump.Commands()
-                {
-                    public void run(Dump printer) throws IOException
-                    {
-                        printer.printvalue('S', 4);
-                        printer.printvalue('S', 4);
-                        printer.printchecksum();
-                    }
-                }));
-        this.alltestcases.add(
-            new ConstraintTest(4, "test_enum_array.nc", "dmr,dap", "/primary_cloud[1:2:4]",
-                // 2 S1
-                new Dump.Commands()
-                {
-                    public void run(Dump printer) throws IOException
-                    {
-                        for(int i = 0;i < 2;i++)
-                            printer.printvalue('U', 1, i);
-                        printer.printchecksum();
-                    }
-                }));
-        this.alltestcases.add(
-            new ConstraintTest(5, "test_atomic_array.nc", "dmr,dap", "/vu8[1][0:2:2];/vd[1];/vs[1][0];/vo[0][1]",
-                new Dump.Commands()
-                {
-                    public void run(Dump printer) throws IOException
-                    {
-                        for(int i = 0;i < 2;i++)
-                            printer.printvalue('U', 1, i);
-                        printer.printchecksum();
-                        for(int i = 0;i < 1;i++)
-                            printer.printvalue('F', 8, i);
-                        printer.printchecksum();
-                        for(int i = 0;i < 1;i++)
-                            printer.printvalue('T', 0, i);
-                        printer.printchecksum();
-                        for(int i = 0;i < 1;i++)
-                            printer.printvalue('O', 0, i);
-                        printer.printchecksum();
-                    }
-                }));
-        this.alltestcases.add(
-            new ConstraintTest(6, "test_struct_array.nc", "dmr,dap", "/s[0:2:3][0:1]",
-                new Dump.Commands()
-                {
-                    public void run(Dump printer) throws IOException
-                    {
-                        for(int i = 0;i < 4;i++) {
-                            for(int j = 0;j < 2;j++) {
+                new ConstraintTest(1, "test_one_vararray.nc", "dmr,dap", "/t[1]",
+                        // S4
+                        new Dump.Commands()
+                        {
+                            public void run(Dump printer) throws IOException
+                            {
                                 printer.printvalue('S', 4);
+                                printer.printchecksum();
                             }
-                        }
-                        printer.printchecksum();
-                    }
-                }));
+                        }));
+        this.alltestcases.add(
+                new ConstraintTest(2, "test_anon_dim.syn", "dmr,dap", "/vu32[0:3]",  // test for dimension inclusion
+                        // S4
+                        new Dump.Commands()
+                        {
+                            public void run(Dump printer) throws IOException
+                            {
+                                printer.printvalue('S', 4);
+                                printer.printvalue('S', 4);
+                                printer.printvalue('S', 4);
+                                printer.printvalue('S', 4);
+                                printer.printchecksum();
+                            }
+                        }));
+        this.alltestcases.add(
+                new ConstraintTest(3, "test_one_vararray.nc", "dmr,dap", "/t",  // test for dimension inclusion
+                        // S4
+                        new Dump.Commands()
+                        {
+                            public void run(Dump printer) throws IOException
+                            {
+                                printer.printvalue('S', 4);
+                                printer.printvalue('S', 4);
+                                printer.printchecksum();
+                            }
+                        }));
+        this.alltestcases.add(
+                new ConstraintTest(4, "test_enum_array.nc", "dmr,dap", "/primary_cloud[1:2:4]",
+                        // 2 S1
+                        new Dump.Commands()
+                        {
+                            public void run(Dump printer) throws IOException
+                            {
+                                for(int i = 0; i < 2; i++) {
+                                    printer.printvalue('U', 1, i);
+                                }
+                                printer.printchecksum();
+                            }
+                        }));
+        this.alltestcases.add(
+                new ConstraintTest(5, "test_atomic_array.nc", "dmr,dap", "/vu8[1][0:2:2];/vd[1];/vs[1][0];/vo[0][1]",
+                        new Dump.Commands()
+                        {
+                            public void run(Dump printer) throws IOException
+                            {
+                                for(int i = 0; i < 2; i++) {
+                                    printer.printvalue('U', 1, i);
+                                }
+                                printer.printchecksum();
+                                for(int i = 0; i < 1; i++) {
+                                    printer.printvalue('F', 8, i);
+                                }
+                                printer.printchecksum();
+                                for(int i = 0; i < 1; i++) {
+                                    printer.printvalue('T', 0, i);
+                                }
+                                printer.printchecksum();
+                                for(int i = 0; i < 1; i++) {
+                                    printer.printvalue('O', 0, i);
+                                }
+                                printer.printchecksum();
+                            }
+                        }));
+        this.alltestcases.add(
+                new ConstraintTest(6, "test_struct_array.nc", "dmr,dap", "/s[0:2:3][0:1]",
+                        new Dump.Commands()
+                        {
+                            public void run(Dump printer) throws IOException
+                            {
+                                for(int i = 0; i < 4; i++) {
+                                    for(int j = 0; j < 2; j++) {
+                                        printer.printvalue('S', 4);
+                                    }
+                                }
+                                printer.printchecksum();
+                            }
+                        }));
+        this.alltestcases.add(
+                new ConstraintTest(7, "test_opaque_array.nc", "dmr,dap", "/vo2[1][0:1]",
+                        new Dump.Commands()
+                        {
+                            public void run(Dump printer) throws IOException
+                            {
+                                for(int i = 0; i < 2; i++) {
+                                    printer.printvalue('O', 0, i);
+                                }
+                                printer.printchecksum();
+                            }
+                        }));
     }
 
     //////////////////////////////////////////////////
     // Junit test methods
 
     public void testServletConstraints()
-        throws Exception
+            throws Exception
     {
         boolean pass = true;
         for(ConstraintTest testcase : chosentests) {
@@ -268,7 +287,7 @@ public class TestServletConstraints extends DapTestCommon
     // Primary test method
     boolean
     doOneTest(ConstraintTest testcase)
-        throws Exception
+            throws Exception
     {
         boolean pass = true;
         System.out.println("Testcase: " + testcase.toString());
@@ -293,7 +312,7 @@ public class TestServletConstraints extends DapTestCommon
 
     boolean
     dodmr(ConstraintTest testcase)
-        throws Exception
+            throws Exception
     {
         boolean pass = true;
         String url = testcase.makeurl(RequestMode.DMR);
@@ -337,7 +356,7 @@ public class TestServletConstraints extends DapTestCommon
 
     boolean
     dodata(ConstraintTest testcase)
-        throws Exception
+            throws Exception
     {
         boolean pass = true;
         String baseline;
@@ -361,9 +380,9 @@ public class TestServletConstraints extends DapTestCommon
 
         // Collect the output
         FakeServletOutputStream fakestream
-            = (FakeServletOutputStream) resp.getOutputStream();
+                = (FakeServletOutputStream) resp.getOutputStream();
         byte[] byteresult = fakestream.toArray();
-        if(prop_debug) {
+        if(DEBUG) {
             DapDump.dumpbytes(ByteBuffer.wrap(byteresult).order(ByteOrder.nativeOrder()), true);
         }
 
@@ -403,12 +422,17 @@ public class TestServletConstraints extends DapTestCommon
 
     // Locate the test cases with given prefix
     List<ConstraintTest>
-    locate(String prefix)
+    locate(Object tag)
     {
         List<ConstraintTest> results = new ArrayList<ConstraintTest>();
         for(ConstraintTest ct : this.alltestcases) {
-            if(ct.title.equals(prefix))
+            if(tag instanceof Integer && ct.id == (Integer) tag) {
                 results.add(ct);
+                break;
+            } else if(tag instanceof String && ct.title.equals((String) tag)) {
+                results.add(ct);
+                break;
+            }
         }
         return results;
     }

@@ -37,13 +37,13 @@ public class FrontPage
     };
 
     // Remote Test server: should match values in TestDir.java
-    private static String remoteTestServerPropName = "remotetest";
-    static public String remoteTestServer = "remotetest.unidata.ucar.edu"; //mutable
+    private static String dap4TestServerPropName = "d4ts";
+    static public String dap4TestServer = "remotetest.unidata.ucar.edu"; //mutable
 
     static {
-        String rts = System.getProperty(remoteTestServerPropName);
-        if(rts != null && rts.length() > 0)
-            remoteTestServer = rts;
+        String d4ts = System.getProperty(dap4TestServerPropName);
+        if(d4ts != null && d4ts.length() > 0)
+            dap4TestServer = d4ts;
     }
 
     //////////////////////////////////////////////////
@@ -170,7 +170,7 @@ public class FrontPage
             "<html>\n<head>\n<title>DAP4 Test Files</title>\n<meta http-equiv=\"Content-Type\" content=\"text/html\">\n</meta>\n<body bgcolor=\"#FFFFFF\">\n";
 
     static final String HTML_HEADER1 = "<h1>DAP4 Test Files</h1>\n";
-    static final String HTML_HEADER2 = "<h2>http://" + remoteTestServer + "/d4ts/</h2>\n<hr>\n";
+    static final String HTML_HEADER2 = "<h2>http://" + dap4TestServer + "/d4ts/</h2>\n<hr>\n";
     static final String HTML_HEADER3 = "<h3>%s Based Test Files</h3>\n";
 
     static final String TABLE_HEADER = "<table>\n";

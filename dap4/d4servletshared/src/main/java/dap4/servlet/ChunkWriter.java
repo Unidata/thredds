@@ -16,7 +16,7 @@ public class ChunkWriter extends OutputStream
     //////////////////////////////////////////////////
     // Constants
 
-    static final protected boolean DEBUG = false;
+    static final protected boolean DEBUG = true;
 
     static final int MAXCHUNKSIZE = 0xFFFFFF;
 
@@ -315,7 +315,7 @@ public class ChunkWriter extends OutputStream
         if(buffersize > 0)
             output.write(chunk.array(), 0, buffersize);
         if(DEBUG)
-            DapDump.dumpbytestream(output,getOrder(),'X');
+            DapDump.dumpbytestream(chunk,getOrder(),"ChunkWriter.writechunk");
         chunk.clear();// reset
     }
 

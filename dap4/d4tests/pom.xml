@@ -142,8 +142,10 @@
          <skip>${skipTests}</skip>
          <testFailureIgnore>true</testFailureIgnore>
          <argLine>-Dfile.encoding=UTF-8</argLine>
-         <argLine>-Dserver=remotetest</argLine>
 	 <encoding>UTF-8</encoding>                    
+         <systemPropertyVariables>
+            <file.encoding>UTF-8</file.encoding>
+         </systemPropertyVariables>
 	 <includes>
 	     <include>**/TestParserDMR.java</include>
              <include>**/TestParserCE.java</include>

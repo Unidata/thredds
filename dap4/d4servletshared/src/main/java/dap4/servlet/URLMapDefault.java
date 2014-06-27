@@ -13,6 +13,7 @@ import java.io.*;
 import java.net.URISyntaxException;
 import java.util.SortedMap;
 import java.util.TreeMap;
+
 import dap4.servlet.URLMap.Result;
 
 /**
@@ -43,7 +44,7 @@ public class URLMapDefault implements URLMap
 
     @Override
     public void addEntry(String urlpath, String fileprefix)
-        throws DapException
+            throws DapException
     {
         // Canonicalize the urlpath
         String urlprefix = DapUtil.canonicalpath(urlpath);
@@ -57,7 +58,7 @@ public class URLMapDefault implements URLMap
     // File loader
 
     public void load(String filepath)
-        throws IOException
+            throws IOException
     {
         InputStream is = new FileInputStream(filepath);
         String content = DapUtil.readtextfile(is);
@@ -77,7 +78,7 @@ public class URLMapDefault implements URLMap
     @Override
     public Result
     mapURL(String urlpath)
-        throws DapException
+            throws DapException
     {
         // Canonicalize the urlpath
         urlpath = DapUtil.canonicalpath(urlpath);
@@ -88,7 +89,7 @@ public class URLMapDefault implements URLMap
     @Override
     public Result
     mapPath(String path)
-        throws DapException
+            throws DapException
     {
         // canonicalize path
         path = DapUtil.canonicalpath(path);
@@ -112,7 +113,7 @@ public class URLMapDefault implements URLMap
             longestmatch = submap.lastKey();
             result.prefix = (String) submap.get(longestmatch);
         }
-        result.suffix = DapUtil.relativize(prefix.substring(longestmatch.length(), prefix.length()));
+        result.suffix = prefix.substring(longestmatch.length(), prefix.length());
         return result;
     }
 
@@ -131,6 +132,15 @@ public class URLMapDefault implements URLMap
             path = "";
         urlbuf.append("/" + path);
         return urlbuf;
+    }
+
+    public String toString()
+    {
+        StringBuilder buf = new StringBuilder();
+        for(String url : url2path.keySet()) {
+            buf.append(url + " <=> " + url2path.get(url));
+        }
+        return buf.toString();
     }
 }
 

@@ -11,9 +11,11 @@ import org.apache.http.HttpStatus;
 import ucar.httpservices.HTTPFactory;
 import ucar.httpservices.HTTPMethod;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.*;
+import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 
 /**
@@ -45,11 +47,11 @@ public class HttpDSP extends D4DSP
     static protected final int DFALTPRELOADSIZE = 50000; // databuffer
 
     static protected final String[] DAPEXTENSIONS = new String[]{
-        "dmr", "dap", "dds", "das", "ddx", "dods"
+            "dmr", "dap", "dds", "das", "ddx", "dods"
     };
 
     static protected final String[] DAP4EXTENSIONS = new String[]{
-        "dmr", "dap"
+            "dmr", "dap"
     };
 
     //////////////////////////////////////////////////
@@ -88,7 +90,7 @@ public class HttpDSP extends D4DSP
         try {
             XURI xuri = new XURI(url);
             return (xuri.getLeadProtocol().equals(DAP4PROTO)
-                || xuri.getParameters().get(PROTOTAG).equals(DAP4PROTO));
+                    || xuri.getParameters().get(PROTOTAG).equals(DAP4PROTO));
         } catch (URISyntaxException use) {
         }
         return false;
@@ -128,7 +130,7 @@ public class HttpDSP extends D4DSP
 
     protected void
     build()
-        throws DapException
+            throws DapException
     {
         String methodurl = buildURL(this.xuri.assemble(XURI.URLONLY), DATASUFFIX, this.dmr, basece);
         this.checksummode = ChecksumMode.modeFor(xuri.getParameters().get(CHECKSUMTAG));
@@ -141,9 +143,18 @@ public class HttpDSP extends D4DSP
         // Should fill in bigendian and stream fields
         stream = callServer(methodurl);
 
-        // Wrap the input stream as a ChunkInputStream
-        ChunkInputStream reader = new ChunkInputStream(stream, RequestMode.DAP, getOrder());
         try {
+            ChunkInputStream reader;
+            if(DEBUG) {
+                byte[] raw = DapUtil.readbinaryfile(stream);
+                ByteArrayInputStream bis = new ByteArrayInputStream(raw);
+                DapDump.dumpbytestream(raw, order, "httpdsp.build");
+                reader = new ChunkInputStream(bis, RequestMode.DAP, getOrder());
+            } else {
+                // Wrap the input stream as a ChunkInputStream
+                reader = new ChunkInputStream(stream, RequestMode.DAP, getOrder());
+            }
+
             // Extract and "compile" the server response
             String document = reader.readDMR();
             // Extract all the remaining bytes
@@ -162,7 +173,7 @@ public class HttpDSP extends D4DSP
 
     protected InputStream
     callServer(String methodurl)
-        throws DapException
+            throws DapException
     {
         URL url;
 
@@ -188,12 +199,12 @@ public class HttpDSP extends D4DSP
             if(this.status != HttpStatus.SC_OK) {
                 String msg = method.getResponseAsString();
                 throw new DapException("Request failure: " + method.getStatusText() + ": " + methodurl)
-                    .setCode(status);
+                        .setCode(status);
             }
             // Pull headers of interest
             Header encodingheader = method.getResponseHeader("Content-Encoding");
             String byteorder = (encodingheader != null ? encodingheader.getValue() : null);
-            setOrder(byteorder.equalsIgnoreCase("Big-Endian")? ByteOrder.BIG_ENDIAN : ByteOrder.LITTLE_ENDIAN);
+            setOrder(byteorder.equalsIgnoreCase("Big-Endian") ? ByteOrder.BIG_ENDIAN : ByteOrder.LITTLE_ENDIAN);
             if(getOrder() == null)
                 throw new DapException("Missing or ill-formed Content-Encoding header");
 
@@ -217,7 +228,7 @@ public class HttpDSP extends D4DSP
 
     public String
     getCapabilities(String url)
-        throws IOException
+            throws IOException
     {
         // Save the original url
         String saveurl = this.xuri.getOriginal();
@@ -260,7 +271,7 @@ public class HttpDSP extends D4DSP
 
     protected void
     setURL(String url)
-        throws DapException
+            throws DapException
     {
         try {
             this.xuri = new XURI(url);

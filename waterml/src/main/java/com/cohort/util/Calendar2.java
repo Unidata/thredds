@@ -1271,7 +1271,7 @@ public class Calendar2 {
      * 
      * @param s the date time string
      * @param separatorN is the separators (use "\u0000" to match any non-digit).
-     *    (� matches + or - and that becomes part of the number)
+     *    (± matches + or - and that becomes part of the number)
      *    (. matches . or , (the European decimal point))
      * @param resultsN should initially have the defaults and 
      *   will receive the results.  If trouble, resultsN[0] will be Integer.MAX_VALUE,
@@ -1335,7 +1335,7 @@ public class Calendar2 {
                     ch = '.';
                 if (separatorN[part] == '\u0000') {
 
-                } else if (separatorN[part] == '�') {
+                } else if (separatorN[part] == '�') {
                     if (ch == '+') { //do nothing
                     }else if (ch == '-') {
                         po2--; //number starts with -
@@ -1346,10 +1346,10 @@ public class Calendar2 {
 
                 } else if (ch != separatorN[part]) { //if not exact match ...
 
-                    //if current part is ':' or '.' and not matched, try to skip forward to '�'
+                    //if current part is ':' or '.' and not matched, try to skip forward to '±'
                     if ((separatorN[part] == ':' || separatorN[part] == '.') && 
                         part < nParts - 1) {
-                        int pmPart = String2.indexOf(separatorN, '�', part + 1);
+                        int pmPart = String2.indexOf(separatorN, '�', part + 1);
                         if (pmPart >= 0) {
                             //String2.log("  jump to +/-");
                             part = pmPart; 
@@ -1400,7 +1400,7 @@ public class Calendar2 {
     }
 
     /**
-     * This converts an ISO date time string ([-]YYYY-MM-DDTHH:MM:SS.SSS�ZZ:ZZ) into
+     * This converts an ISO date time string ([-]YYYY-MM-DDTHH:MM:SS.SSS±ZZ:ZZ) into
      *   a GregorianCalendar object.
      * <br>It is lenient; so Jan 32 is converted to Feb 1;
      * <br>The 'T' may be any non-digit.
@@ -1420,8 +1420,8 @@ public class Calendar2 {
      * @param gc a GregorianCalendar object. The dateTime will be interpreted
      *   as being in gc's time zone.
      *   Timezone info is relative to the gc's time zone.
-     * @param s the dateTimeString in the ISO format (YYYY-MM-DDTHH:MM:SS.SSS�ZZ:ZZ
-     *   or -YYYY-MM-DDTHH:MM:SS.SSS�ZZ:ZZ for years B.C.)
+     * @param s the dateTimeString in the ISO format (YYYY-MM-DDTHH:MM:SS.SSS±ZZ:ZZ
+     *   or -YYYY-MM-DDTHH:MM:SS.SSS±ZZ:ZZ for years B.C.)
      *   For years B.C., use calendar2Year = 1 - BCYear.  
      *   Note that BCYears are 1..., so 1 BC is calendar2Year 0 (or 0000),
      *   and 2 BC is calendar2Year -1 (or -0001).
@@ -1461,7 +1461,7 @@ public class Calendar2 {
         s = String2.replaceAll(s, ' ', '+');
 
         //separators (\u0000=any non-digit)
-        char separator[] = {'-','-','\u0000',':',':','.','�', ':', '\u0000'}; 
+        char separator[] = {'-','-','\u0000',':',':','.','�', ':', '\u0000'};
         parseN(s, separator, ymdhmsmom);
         if (ymdhmsmom[0] == Integer.MAX_VALUE) 
             Test.error(String2.ERROR + " in parseISODateTime: dateTime='" + s + "' has an invalid format!");
@@ -1487,7 +1487,7 @@ public class Calendar2 {
     }
 
     /**
-     * This converts an ISO (default *ZULU* time zone) date time string ([-]YYYY-MM-DDTHH:MM:SS�ZZ:ZZ) into
+     * This converts an ISO (default *ZULU* time zone) date time string ([-]YYYY-MM-DDTHH:MM:SS±ZZ:ZZ) into
      * a GregorianCalendar object with the Zulu time zone.
      * See parseISODateTime documentation.
      *
