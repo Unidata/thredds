@@ -56,6 +56,7 @@ import ucar.nc2.VariableSimpleIF;
 import ucar.nc2.constants.CDM;
 import ucar.nc2.constants.CF;
 import ucar.nc2.ft.point.writer.CFPointWriter;
+import ucar.nc2.ft.point.writer.CFPointWriterConfig;
 import ucar.nc2.ft.point.writer.CFPointWriterUtils;
 import ucar.unidata.geoloc.EarthLocation;
 import ucar.unidata.geoloc.Station;
@@ -82,7 +83,8 @@ class WriterPointCollectionNoTime extends CFPointWriter {
 
 	protected WriterPointCollectionNoTime(NetcdfFileWriter.Version version, String fileOut, List<Attribute> atts)
 			throws IOException {
-		super(fileOut, atts, version, false);
+
+		super(fileOut, atts, new CFPointWriterConfig(version).setNoTimeCoverage(false));
 	}
 
 

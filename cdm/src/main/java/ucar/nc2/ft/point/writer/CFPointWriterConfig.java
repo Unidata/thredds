@@ -51,4 +51,9 @@ public class CFPointWriterConfig {
   public CFPointWriterConfig(NetcdfFileWriter.Version version) {
     this.version = version;
   }
+
+  public CFPointWriterConfig setNoTimeCoverage(boolean noTimeCoverage)  {
+    this.noTimeCoverage = noTimeCoverage;
+    return this;
+  }
 }
