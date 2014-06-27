@@ -2655,6 +2655,8 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
 
   @Override
   public void writeData(Variable v2, Section section, Array values) throws IOException, InvalidRangeException {
+    if (v2 == null)
+      System.out.println("HEY");
     Vinfo vinfo = (Vinfo) v2.getSPobject();
     if (vinfo == null) {
       log.error("vinfo null for " + v2);
@@ -2825,17 +2827,11 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
     SizeT[] shape = convertSizeT(section.getShape());
     SizeT[] stride = convertSizeT(section.getStride());
 
-    ArrayStructureBB valuesBB = StructureDataDeep.copyToArrayBB(values);
-    ByteBuffer bbuff = valuesBB.getByteBuffer();  // LOOK c library reads in native order, so need to convert??
-    // LOOK embedded strings getting lost ??
+    ArrayStructureBB valuesBB = StructureDataDeep.copyToArrayBB(values, ByteOrder.nativeOrder()); // LOOK embedded strings getting lost ??
+    ByteBuffer bbuff = valuesBB.getByteBuffer();
 
-    // if (debugWrite)
-    System.out.printf("writeCompoundData variable %s (grpid %d varid %d) %n", s.getShortName(), grpid, varid);
-
-    // test variable exists
-    Formatter f = new Formatter();
-    boolean ok = nc_inq_var(f, grpid, varid);
-    System.out.printf("nc_inq_var ok=%s %s%n", ok, f);
+    if (debugCompound)
+      System.out.printf("writeCompoundData variable %s (grpid %d varid %d) %n", s.getShortName(), grpid, varid);
 
     // write the data
     // int ret = nc4.nc_put_var(grpid, varid, bbuff);
@@ -2843,11 +2839,6 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
     // int ret = nc4.nc_put_vars(grpid, varid, origin, shape, stride, bbuff);
     if (ret != 0)
       throw new IOException(errMessage("nc_put_vars", ret, grpid, varid));
-  }
-
-  // LOOK use inq_offsets to recreate the BB
-  private void testOffsets() {
-
   }
 
   @Override
@@ -2875,7 +2866,7 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
     if (ret != 0)
       throw new IOException(errMessage("appendStructureData (nc_put_vars)", ret, vinfo.g4.grpid, vinfo.varid));
 
-    return -1;
+    return origin[0].intValue();  // recnum
   }
 
   private String errMessage(String what, int ret, int grpid, int varid) {
@@ -2896,7 +2887,7 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
 
       StructureMembers.Member m = sdata.findMember(v.getShortName());
       if (m == null) {
-        System.out.printf("WARN cant find %s%n", v.getShortName());
+        System.out.printf("WARN Nc4IOSP.makeBB() cant find %s%n", v.getShortName());
         bb.position((int) (offset + v.getElementSize()*v.getSize())); // skip over it
       } else {
         copy(sdata, m, bb);

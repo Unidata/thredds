@@ -60,7 +60,7 @@ import org.jdom2.Element;
 public class TableAnalyzer {
   static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(TableAnalyzer.class);
 
-  static private List<Configurator> conventionList = new ArrayList<Configurator>();
+  static private List<Configurator> conventionList = new ArrayList<>();
   static private boolean userMode = false;
   static private boolean debug = false;
   static private boolean loadWarnings = false;
@@ -69,6 +69,7 @@ public class TableAnalyzer {
   static {
 
     registerAnalyzer("CDM", CdmDirect.class, null);
+    registerAnalyzer(CDM.CF_EXTENDED, CFpointObsExt.class, null);
 
     registerAnalyzer("CF-1.", CFpointObs.class, new ConventionNameOk() {
       public boolean isMatch(String convName, String wantName) {
@@ -174,7 +175,7 @@ public class TableAnalyzer {
 
       // now look for comma or semicolon or / delimited list
       if (anal == null) {
-        List<String> names = new ArrayList<String>();
+        List<String> names = new ArrayList<>();
 
         if ((convName.indexOf(',') > 0) || (convName.indexOf(';') > 0)) {
           StringTokenizer stoke = new StringTokenizer(convName, ",;");
@@ -290,9 +291,9 @@ public class TableAnalyzer {
   ////////////////////////////////////////////////////////////////////////////////////////////////
   private TableConfigurer tc;
   private NetcdfDataset ds;
-  private Map<String, TableConfig> tableFind = new HashMap<String, TableConfig>();
-  private Set<TableConfig> tableSet = new HashSet<TableConfig>();
-  private List<NestedTable> leaves = new ArrayList<NestedTable>();
+  private Map<String, TableConfig> tableFind = new HashMap<>();
+  private Set<TableConfig> tableSet = new HashSet<>();
+  private List<NestedTable> leaves = new ArrayList<>();
   private FeatureType ft;
   private TableConfig configResult;
 
@@ -428,7 +429,7 @@ public class TableAnalyzer {
   private void makeTablesDefault(boolean structAdded) throws IOException {
 
     // make Structures into a table
-    List<Variable> vars = new ArrayList<Variable>(ds.getVariables());
+    List<Variable> vars = new ArrayList<>(ds.getVariables());
     Iterator<Variable> iter = vars.iterator();
     while (iter.hasNext()) {
       Variable v = iter.next();
@@ -452,7 +453,7 @@ public class TableAnalyzer {
     if (tableSet.size() > 0) return;
 
     // look at dimensions that lat, lon, time coordinates use
-    Set<Dimension> dimSet = new HashSet<Dimension>(10);
+    Set<Dimension> dimSet = new HashSet<>(10);
     for (CoordinateAxis axis : ds.getCoordinateAxes()) {
       if ((axis.getAxisType() == AxisType.Lat) || (axis.getAxisType() == AxisType.Lon)|| (axis.getAxisType() == AxisType.Time))
         for (Dimension dim : axis.getDimensions())
@@ -488,7 +489,7 @@ public class TableAnalyzer {
       }
     }
     if (time != null) {
-      Dimension obsDim = (Dimension) time.getDimension(0);
+      Dimension obsDim = time.getDimension(0);
       TableConfig st = new TableConfig(Table.Type.Structure, obsDim.getShortName());
       st.structureType = TableConfig.StructureType.PsuedoStructure;
       st.dimName = obsDim.getShortName();

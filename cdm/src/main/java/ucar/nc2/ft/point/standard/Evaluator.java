@@ -32,6 +32,7 @@
  */
 package ucar.nc2.ft.point.standard;
 
+import ucar.nc2.constants.CF;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.Variable;
@@ -60,6 +61,44 @@ public class Evaluator {
     }
   }
 
+  static public String findNameVariableWithStandardNameAndDimension(NetcdfDataset ds, String standard_name, Dimension outer, Formatter errlog) {
+    Variable v = findVariableWithAttributeAndDimension(ds, CF.STANDARD_NAME, standard_name, outer, errlog);
+    return (v == null) ? null : v.getShortName();
+  }
+
+  static public Variable findVariableWithAttributeAndDimension(NetcdfDataset ds, String att_name, String att_value, Dimension outer, Formatter errlog) {
+    for (Variable v : ds.getVariables()) {
+      String attValue = ds.findAttValueIgnoreCase(v, att_name, null);
+      if ((attValue != null) && attValue.equalsIgnoreCase(att_value)) {
+        if (v.getRank() > 0 && v.getDimension(0).equals(outer))
+          return v;
+        if (isEffectivelyScaler(v) && (outer == null))
+          return v;
+      }
+    }
+
+     // descend into structures
+    for (Variable v : ds.getVariables()) {
+      if (v instanceof Structure) {
+        Structure s = (Structure) v;
+        if (s.getRank() > 0 && s.getDimension(0).equals(outer) || (s.getRank() == 0 && outer == null)) {
+          for (Variable vs : s.getVariables()) {
+            Attribute att = vs.findAttributeIgnoreCase(att_name);
+            if ((att != null) && att.isString() && att.getStringValue().equalsIgnoreCase(att_value))
+              return vs;
+          }
+        }
+      }
+    }
+
+    // failed
+    return null;
+  }
+
+  static public boolean isEffectivelyScaler(Variable v) {
+    return (v.getRank() == 0) || (v.getRank() == 1 && v.getDataType() == DataType.CHAR);
+  }
+
   /**
    * Find first variable with given attribute name
    *
@@ -82,22 +121,6 @@ public class Evaluator {
           if (att != null) return new VarAtt(vs, att);
         }
       }
-    }
-    return null;
-  }
-
-  /**
-   * Find first variable with given attribute name, return attribute value
-   *
-   * @param ds      in this dataset
-   * @param attName attribute name, case insensitive
-   * @return first attribute value, or null
-   */
-  static public String findVariableAttributeValue(NetcdfDataset ds, String attName) {
-    for (Variable v : ds.getVariables()) {
-      String haveValue = ds.findAttValueIgnoreCase(v, attName, null);
-      if (haveValue != null)
-        return haveValue;
     }
     return null;
   }
@@ -147,19 +170,6 @@ public class Evaluator {
    * @param struct   in this structure
    * @param attName  attribute name, case insensitive
    * @param attValue attribute value, case sensitive
-   * @return name of first member variable with given attribute name and value, or null
-   */
-  static public String findNameOfVariableWithAttributeValue(Structure struct, String attName, String attValue) {
-    Variable v = findVariableWithAttributeValue(struct, attName, attValue);
-    return (v == null) ? null : v.getShortName();  // LOOK short name?
-  }
-
-  /**
-   * Find first member variable in this struct with given attribute name and value
-   *
-   * @param struct   in this structure
-   * @param attName  attribute name, case insensitive
-   * @param attValue attribute value, case sensitive
    * @return first member variable with given attribute name and value, or null
    */
   static public Variable findVariableWithAttributeValue(Structure struct, String attName, String attValue) {
@@ -172,7 +182,7 @@ public class Evaluator {
   }
 
   /**
-   * Find structure variable of rank 2 withe the nameed dimensions
+   * Find structure variable of rank 2 with the nameed dimensions
    * @param ds  in this dataset
    * @param dim0 first dimension
    * @param dim1 second dimension
@@ -207,7 +217,7 @@ public class Evaluator {
    * @param ds in this dataset
    * @return true if record structure exists
    */
-  static public boolean hasRecordStructure(NetcdfDataset ds) {
+  static public boolean hasNetcdf3RecordStructure(NetcdfDataset ds) {
     Variable v = ds.findVariable("record");
     return (v != null) && (v.getDataType() == DataType.STRUCTURE);
   }

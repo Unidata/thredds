@@ -75,8 +75,7 @@ public class StandardPointFeatureIterator extends PointIteratorFromStructureData
 
   protected boolean isMissing() throws IOException {
     if (ft.isTimeMissing(this.cursor)) return true;
-    if (ft.isMissing(this.cursor)) return true;
-    return false;
+    return ft.isMissing(this.cursor);
   }
 
   private class StandardPointFeature extends PointFeatureImpl implements StationPointFeature {

@@ -196,7 +196,7 @@ public class CFPointWriter implements AutoCloseable {
   protected static final List<String> reservedGlobalAtts = Arrays.asList(reservedGAtts);
   protected static final List<String> reservedVariableAtts = Arrays.asList(reservedVAtts);
 
-  protected static final String recordName = "record";
+  protected static final String recordName = "obs";
   protected static final String recordDimName = "obs";
   protected static final String latName = "latitude";
   protected static final String lonName = "longitude";
@@ -232,12 +232,12 @@ public class CFPointWriter implements AutoCloseable {
    */
   protected CFPointWriter(String fileOut, List<Attribute> atts, CFPointWriterConfig config) throws IOException {
     createWriter(fileOut, config);
-    addGlobalAtts(atts);
     this.config = config;
-
     this.noTimeCoverage = config.noTimeCoverage;
     this.noUnlimitedDimension = (writer.getVersion() == NetcdfFileWriter.Version.netcdf3) && config.recDimensionLength >= 0;
     this.isExtendedModel = writer.getVersion().isExtendedModel();
+
+    addGlobalAtts(atts);
     addNetcdf3UnknownAtts(noTimeCoverage);
   }
 
@@ -247,7 +247,7 @@ public class CFPointWriter implements AutoCloseable {
   }
 
   private void addGlobalAtts(List<Attribute> atts) {
-    writer.addGroupAttribute(null, new Attribute(CDM.CONVENTIONS, "CF-1.6"));
+    writer.addGroupAttribute(null, new Attribute(CDM.CONVENTIONS, isExtendedModel ? CDM.CF_EXTENDED : "CF-1.6"));
     writer.addGroupAttribute(null, new Attribute(CDM.HISTORY, "Written by CFPointWriter"));
     for (Attribute att : atts) {
       if (!reservedGlobalAtts.contains(att.getShortName()))
@@ -297,7 +297,7 @@ public class CFPointWriter implements AutoCloseable {
       for (Attribute att : vs.getAttributes())
         member.addAttribute(att);
     }
-
+    parent.calcElementSize();
   }
 
 

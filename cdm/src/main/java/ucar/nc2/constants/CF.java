@@ -112,11 +112,11 @@ public interface CF {
   public static final String TIMESERIES_ID = "timeseries_id"; // alias STATION_ID
   public static final String TRAJECTORY_ID = "trajectory_id";
 
-  // DSC
+  // DSG
   public static final String SAMPLE_DIMENSION = "sample_dimension";
   public static final String INSTANCE_DIMENSION = "instance_dimension";
 
-  public static final String PLATFORM_NAME = "platform_name"; // alias STATION_DESC
+  public static final String PLATFORM_NAME = "platform_name"; // instead of STATION_DESC
   public static final String SURFACE_ALTITUDE = "surface_altitude"; // alias STATION_ALTITUDE
   public static final String PLATFORM_ID = "platform_id";  // alias STATION_WMOID
 

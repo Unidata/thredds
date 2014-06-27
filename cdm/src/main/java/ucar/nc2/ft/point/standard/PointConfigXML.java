@@ -83,7 +83,6 @@ public class PointConfigXML {
       writer.writeConfigXML(config, tc.getClass().getName(), f);
     } catch (IOException e) {
       f.format("%s error writing=%s%n", pfd.getLocation(), e.getMessage());
-      return;
     }
   }
 
@@ -122,81 +121,82 @@ public class PointConfigXML {
 
     //if (config.name != null)
     //  tableElem.setAttribute("name", config.name);
-    if (config.type != null)
+    if (config.type != null) {
       tableElem.setAttribute("type", config.type.toString());
 
-    switch (config.type) {
-      case ArrayStructure:
-        tableElem.setAttribute("dimension", config.dimName);
-        break;
+      switch (config.type) {
+        case ArrayStructure:
+          tableElem.setAttribute("dimension", config.dimName);
+          break;
 
-      case Construct:
-        break;
+        case Construct:
+          break;
 
-      case Contiguous:
-        if (config.start != null)
+        case Contiguous:
+          if (config.start != null)
+            tableElem.setAttribute("start", config.start);
+          tableElem.setAttribute("numRecords", config.numRecords);
+          break;
+
+        case LinkedList:
           tableElem.setAttribute("start", config.start);
-        tableElem.setAttribute("numRecords", config.numRecords);
-        break;
+          tableElem.setAttribute("next", config.next);
+          break;
 
-      case LinkedList:
-        tableElem.setAttribute("start", config.start);
-        tableElem.setAttribute("next", config.next);
-        break;
+        case MultidimInner:
+          tableElem.setAttribute("structName", config.structName);
+        case MultidimInnerPsuedo:
+          tableElem.setAttribute("dim0", config.outerName);
+          tableElem.setAttribute("dim1", config.innerName);
+          tableElem.setAttribute("subtype", config.structureType.toString());
+          break;
 
-      case MultidimInner:
-        tableElem.setAttribute("structName", config.structName);
-      case MultidimInnerPsuedo:
-        tableElem.setAttribute("dim0", config.outerName);
-        tableElem.setAttribute("dim1", config.innerName);
-        tableElem.setAttribute("subtype", config.structureType.toString());
-        break;
+        case MultidimInner3D:
+          break;
 
-      case MultidimInner3D:
-        break;
+        case MultidimInnerPsuedo3D:
+          break;
 
-      case MultidimInnerPsuedo3D:
-        break;
+        case MultidimStructure:
+          tableElem.setAttribute("structName", config.structName);
+          break;
 
-      case MultidimStructure:
-        tableElem.setAttribute("structName", config.structName);
-        break;
+        case NestedStructure:
+          tableElem.setAttribute("structName", config.structName);
+          break;
 
-      case NestedStructure:
-        tableElem.setAttribute("structName", config.structName);
-        break;
+        case ParentId:
+        case ParentIndex:
+          tableElem.setAttribute("parentIndex", config.parentIndex);
+          break;
 
-      case ParentId:
-      case ParentIndex:
-        tableElem.setAttribute("parentIndex", config.parentIndex);
-        break;
+        case Singleton:
+          break;
 
-      case Singleton:
-        break;
+        case Structure:
+          tableElem.setAttribute("subtype", config.structureType.toString());
+          switch (config.structureType) {
+            case Structure:
+              tableElem.setAttribute("structName", config.structName);
+              break;
+            case PsuedoStructure:
+              tableElem.setAttribute("dim", config.dimName);
+              break;
+            case PsuedoStructure2D:
+              tableElem.setAttribute("dim0", config.dimName);
+              tableElem.setAttribute("dim1", config.outerName);
+              break;
+          }
+          break;
 
-      case Structure:
-        tableElem.setAttribute("subtype", config.structureType.toString());
-        switch (config.structureType) {
-          case Structure:
-            tableElem.setAttribute("structName", config.structName);
-            break;
-          case PsuedoStructure:
-            tableElem.setAttribute("dim", config.dimName);
-            break;
-          case PsuedoStructure2D:
-            tableElem.setAttribute("dim0", config.dimName);
-            tableElem.setAttribute("dim1", config.outerName);
-            break;
-        }
-        break;
+        case Top:
+          tableElem.setAttribute("structName", config.structName);
+          break;
 
-      case Top:
-        tableElem.setAttribute("structName", config.structName);
-        break;
-
+      }
     }
 
-    List<String> varNames = (config.vars == null) ? new ArrayList<String>() : new ArrayList<String>(config.vars);
+    List<String> varNames = (config.vars == null) ? new ArrayList<String>() : new ArrayList<>(config.vars);
 
     // add coordinates
     for (Table.CoordName coord : Table.CoordName.values()) {
@@ -450,10 +450,10 @@ public class PointConfigXML {
     Dimension childDim = ds.findDimension(childTable.innerName);
 
     // divide up the variables between the parent and the child
-    List<String> obsVars = null;
+    List<String> obsVars;
     List<Variable> vars = ds.getVariables();
     List<String> parentVars = new ArrayList<String>(vars.size());
-    obsVars = new ArrayList<String>(vars.size());
+    obsVars = new ArrayList<>(vars.size());
     for (Variable orgV : vars) {
       if (orgV instanceof Structure) continue;
 

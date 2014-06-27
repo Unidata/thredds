@@ -315,6 +315,11 @@ public class NetcdfFileWriter {
     return addDimension(g, dimName, length, true, false, false);
   }
 
+  /**
+   * Add single unlimited dimension (classic model)
+   * @param dimName name of dimension
+   * @return Dimension object that was added
+   */
   public Dimension addUnlimitedDimension(String dimName) {
     return addDimension(null, dimName, 0, true, true, false);
   }

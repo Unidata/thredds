@@ -33,37 +33,84 @@
 
 package ucar.nc2.ft.point.standard.plug;
 
+import ucar.nc2.Dimension;
+import ucar.nc2.Structure;
+import ucar.nc2.constants.CDM;
+import ucar.nc2.constants.CF;
 import ucar.nc2.constants.FeatureType;
+import ucar.nc2.dataset.CoordSysBuilder;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.ft.point.standard.TableConfig;
-import ucar.nc2.ft.point.standard.TableConfigurerImpl;
-import ucar.nc2.ft.point.standard.PointConfigXML;
 
-import java.util.*;
 import java.io.IOException;
+import java.util.Formatter;
+import java.util.List;
 
 /**
- * Class Description.
+ * Describe
  *
  * @author caron
- * @since Jan 26, 2009
+ * @since 6/26/2014
  */
-public class Cosmic extends TableConfigurerImpl {
+public class CFpointObsExt extends CFpointObs {
+
+  @Override
   public boolean isMine(FeatureType wantFeatureType, NetcdfDataset ds) {
-    String center = ds.findAttValueIgnoreCase(null, "center", null);
-    return center != null && center.equals("UCAR/CDAAC");
+    String conv = ds.findAttValueIgnoreCase(null, CDM.CONVENTIONS, null);
+    return conv != null && (conv.equalsIgnoreCase(CDM.CF_EXTENDED));
   }
 
+  @Override
   public TableConfig getConfig(FeatureType wantFeatureType, NetcdfDataset ds, Formatter errlog) throws IOException {
-    PointConfigXML reader = new PointConfigXML();
-    if(ds.getConventionUsed().equalsIgnoreCase("Cosmic1"))
-        return reader.readConfigXMLfromResource("resources/nj22/pointConfig/Cosmic1.xml", wantFeatureType, ds, errlog);
-    else if(ds.getConventionUsed().equalsIgnoreCase("Cosmic2"))
-        return reader.readConfigXMLfromResource("resources/nj22/pointConfig/Cosmic2.xml", wantFeatureType, ds, errlog);
-    else if(ds.getConventionUsed().equalsIgnoreCase("Cosmic3"))
-        return reader.readConfigXMLfromResource("resources/nj22/pointConfig/Cosmic3.xml", wantFeatureType, ds, errlog);
-    else
-        return null;
-      //return reader.readConfigXML("C:\\dev\\tds\\thredds\\cdm\\src\\main\\resources\\resources\\nj22\\pointConfig\\Cosmic1.xml", wantFeatureType, ds, errlog);
+    EncodingInfo info = new EncodingInfo();
+
+    // figure out the actual feature type of the dataset
+    CF.FeatureType ftype = CF.FeatureType.getFeatureTypeFromGlobalAttribute(ds);
+    if (ftype == null) ftype = CF.FeatureType.point;
+
+    // make sure lat, lon, time coordinates exist
+    if (!checkCoordinates(ds, info, errlog)) return null; // fail fast
+
+    switch (ftype) {
+      case timeSeries:
+        return getStationConfig(ds, info, errlog);
+      /* case trajectory:
+        return getTrajectoryConfig(ds, info, errlog);
+      case profile:
+        return getProfileConfig(ds, info, errlog);
+      case timeSeriesProfile:
+        return getTimeSeriesProfileConfig(ds, info, errlog);
+      case trajectoryProfile:
+        return getSectionConfig(ds, info, errlog);  */
+    }
+
+    return null;
   }
+
+  @Override
+  protected boolean identifyEncodingStation(NetcdfDataset ds, EncodingInfo info, CF.FeatureType ftype, Formatter errlog) {
+    Structure obs =  info.time.getParentStructure();
+    if (obs.getRank() == 0) {
+      errlog.format("CFpointObs: must have a non-scalar Time coordinate%n");
+      return false;
+    }
+    Dimension obsDim = obs.getDimension(0);
+
+    Structure station =  info.lat.getParentStructure();
+    if (station.getRank() == 0) { // could be scalar
+      info.set(Encoding.single, null, obsDim);
+    }
+    Dimension stnDim = station.getDimension(0);
+
+    // the raggeds
+    if (identifyRaggeds(ds, info, stnDim, obsDim, errlog))
+      return true;
+
+
+    errlog.format("CFpointObs: %s Must have Lat/Lon coordinates of rank 0 or 1%n", ftype);
+    return false;
+  }
+
+
+
 }

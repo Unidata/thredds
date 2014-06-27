@@ -169,6 +169,11 @@ public abstract class Table {
     checkNonDataVariable(config.stnNpts);
     checkNonDataVariable(config.limit);
     checkNonDataVariable(config.feature_id);
+
+    checkNonDataVariable(config.parentIndex);
+    checkNonDataVariable(config.start);
+    checkNonDataVariable(config.next);
+    checkNonDataVariable(config.numRecords);
   }
 
   protected void checkNonDataVariable(String name) {

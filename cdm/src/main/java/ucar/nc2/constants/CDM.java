@@ -71,6 +71,7 @@ public interface CDM {
   public static final String ARAKAWA_E = "Arakawa-E";
 
   // misc
+  public static final String CF_EXTENDED = "CDM-Extended-CF";
   public static final String FILE_FORMAT = "file_format";
   public static final String LAT_UNITS = "degrees_north";
   public static final String LON_UNITS = "degrees_east";

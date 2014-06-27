@@ -528,23 +528,19 @@ public class NestedTable {
 
 
   public boolean isFeatureMissing(StructureData sdata) {
-    if (idVE== null) return false;
-    return idVE.isMissing(sdata);
+    return idVE != null && idVE.isMissing(sdata);
   }
 
   public boolean isTimeMissing(Cursor cursor) {
-    if (timeVE == null) return false;
-    return timeVE.isMissing(cursor.tableData);
+    return timeVE != null && timeVE.isMissing(cursor.tableData);
   }
 
   public boolean isAltMissing(Cursor cursor) {
-    if (altVE == null) return false;
-    return altVE.isMissing(cursor.tableData);
+    return altVE != null && altVE.isMissing(cursor.tableData);
   }
 
   public boolean isMissing(Cursor cursor) {
-    if (missingVE == null) return false;
-    return missingVE.isMissing(cursor.tableData);
+    return missingVE != null && missingVE.isMissing(cursor.tableData);
   }
 
 
@@ -569,7 +565,7 @@ public class NestedTable {
     int level = cursor.currentIndex;
     Table t = getTable(level);
     if (t.extraJoins != null) {
-      List<StructureData> sdata = new ArrayList<StructureData>(3);
+      List<StructureData> sdata = new ArrayList<>(3);
       sdata.add(cursor.tableData[level]);
       for (Join j : t.extraJoins) {
         sdata.add(j.getJoinData(cursor));

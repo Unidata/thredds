@@ -34,17 +34,11 @@ package ucar.nc2.ft.point.writer;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Formatter;
 import java.util.HashMap;
 import java.util.List;
 
-import ucar.ma2.ArrayDouble;
-import ucar.ma2.ArrayInt;
-import ucar.ma2.ArrayObject;
-import ucar.ma2.DataType;
-import ucar.ma2.InvalidRangeException;
-import ucar.ma2.StructureData;
+import ucar.ma2.*;
 import ucar.nc2.*;
 import ucar.nc2.constants.CDM;
 import ucar.nc2.constants.CF;
@@ -76,8 +70,9 @@ import ucar.unidata.geoloc.Station;
  * @since Aug 19, 2009
  */
 public class WriterCFStationCollection extends CFPointWriter {
-  private static final String stationName = "station";
+  private static final String stationStructName = "station";
   private static final String stationDimName = "station";
+
   private static final String idName = "station_id";
   private static final String descName = "station_description";
   private static final String wmoName = "wmo_id";
@@ -88,7 +83,7 @@ public class WriterCFStationCollection extends CFPointWriter {
   private int name_strlen = 1, desc_strlen = 1, wmo_strlen = 1;
   private Variable lat, lon, alt, time, id, wmoId, desc, stationIndex;
 
-  protected Structure station;  // used for netcdf4 extended
+  protected Structure stationStruct;  // used for netcdf4 extended
   private List<Dimension> stationDims = new ArrayList<>(1);
   private boolean useAlt = false;
   private boolean useWmoId = false;
@@ -115,7 +110,7 @@ public class WriterCFStationCollection extends CFPointWriter {
 
     List<VariableSimpleIF> coords = new ArrayList<>();
     coords.add(VariableSimpleImpl.makeScalar(timeName, "time of measurement", timeUnit.getUnitsString(), DataType.DOUBLE));
-    coords.add( VariableSimpleImpl.makeScalar(stationIndexName,  "station index for this observation record", null, DataType.INT)
+    coords.add( VariableSimpleImpl.makeScalar(stationIndexName, "station index for this observation record", null, DataType.INT)
             .add(new Attribute(CF.INSTANCE_DIMENSION, stationDimName)));
 
     if (writer.getVersion().isExtendedModel()) {
@@ -125,6 +120,7 @@ public class WriterCFStationCollection extends CFPointWriter {
       addVariablesExtended(vars);
       record.calcElementSize();
       writer.create();
+      writeStationDataExtended(stns);
 
     } else {
       addStations(stns, false);
@@ -169,13 +165,14 @@ public class WriterCFStationCollection extends CFPointWriter {
 
     llbb = getBoundingBox(stnList); // gets written in super.finish();
 
-    // add the dimensions
+    // add the dimensions : extendded model can use an unlimited dimension
+    //Dimension stationDim = isExtended ? writer.addDimension(null, stationDimName, 0, true, true, false) : writer.addDimension(null, stationDimName, nstns);
     Dimension stationDim = writer.addDimension(null, stationDimName, nstns);
     stationDims.add(stationDim);
 
     List<VariableSimpleIF> coords = new ArrayList<>();
-    coords.add(VariableSimpleImpl.makeScalar(latName,  "station latitude", CDM.LAT_UNITS, DataType.DOUBLE));
-    coords.add(VariableSimpleImpl.makeScalar(lonName,  "station longitude", CDM.LON_UNITS, DataType.DOUBLE));
+    coords.add(VariableSimpleImpl.makeScalar(latName, "station latitude", CDM.LAT_UNITS, DataType.DOUBLE));
+    coords.add(VariableSimpleImpl.makeScalar(lonName, "station longitude", CDM.LON_UNITS, DataType.DOUBLE));
     if (useAlt) coords.add(
           VariableSimpleImpl.makeScalar(altName, "station altitude", altUnits, DataType.DOUBLE)
             .add(new Attribute(CF.STANDARD_NAME, CF.SURFACE_ALTITUDE))
@@ -191,8 +188,8 @@ public class WriterCFStationCollection extends CFPointWriter {
             .add(new Attribute(CF.STANDARD_NAME, CF.PLATFORM_ID)));
 
     if (isExtended) {
-      station = (Structure) writer.addVariable(null, stationName, DataType.STRUCTURE, stationDimName);
-      addCoordinatesExtended(station, coords);
+      stationStruct = (Structure) writer.addVariable(null, stationStructName, DataType.STRUCTURE, stationDimName);
+      addCoordinatesExtended(stationStruct, coords);
     } else {
       addCoordinatesClassic(stationDim, coords);
     }
@@ -241,6 +238,58 @@ public class WriterCFStationCollection extends CFPointWriter {
     }
   }
 
+  private void writeStationDataExtended(List<ucar.unidata.geoloc.Station> stnList) throws IOException {
+    int nstns = stnList.size();
+    stationMap = new HashMap<>(2 * nstns);
+    if (debug) System.out.println("stationMap created");
+
+    // now write the station data
+    ArrayDouble.D1 latArray = new ArrayDouble.D1(nstns);
+    ArrayDouble.D1 lonArray = new ArrayDouble.D1(nstns);
+    ArrayDouble.D1 altArray = new ArrayDouble.D1(nstns);
+    ArrayChar.D2 idArray = new ArrayChar.D2(nstns, name_strlen);
+    ArrayChar.D2 descArray = new ArrayChar.D2(nstns, desc_strlen);
+    ArrayChar.D2 wmoArray = new ArrayChar.D2(nstns, wmo_strlen);
+
+    for (int i = 0; i < stnList.size(); i++) {
+      ucar.unidata.geoloc.Station stn = stnList.get(i);
+      stationMap.put(stn.getName(), i);
+
+      latArray.set(i, stn.getLatitude());
+      lonArray.set(i, stn.getLongitude());
+      if (useAlt) altArray.set(i, stn.getAltitude());
+
+      idArray.setString(i, stn.getName());
+      descArray.setString(i, stn.getDescription());
+      if (useWmoId) wmoArray.setString(i, stn.getWmoId());
+    }
+
+    ArrayStructureMA ma = new ArrayStructureMA(stationStruct.makeStructureMembers(), new int[] {nstns});
+    ma.setMemberArray(latName, latArray);
+    ma.setMemberArray(lonName, lonArray);
+    if (useAlt) ma.setMemberArray(altName, altArray);
+    ma.setMemberArray(idName, idArray);
+    ma.setMemberArray(descName, descArray);
+    if (useWmoId) ma.setMemberArray(wmoName, wmoArray);
+
+    try {
+      writer.write(stationStruct, ma);
+    } catch (InvalidRangeException e) {
+      e.printStackTrace();
+      throw new IllegalStateException(e);
+    }
+
+   /* try {
+      StructureDataIterator siter = ma.getStructureDataIterator();
+      while (siter.hasNext())
+        writer.appendStructureData(stationStruct, siter.next());
+    } catch (InvalidRangeException e) {
+      e.printStackTrace();
+      throw new IllegalStateException(e);
+    }  */
+  }
+
+
   private int recno = 0;
   private ArrayDouble.D1 timeArray = new ArrayDouble.D1(1);
   private ArrayInt.D1 parentArray = new ArrayInt.D1(1);
@@ -256,17 +305,27 @@ public class WriterCFStationCollection extends CFPointWriter {
     if (parentIndex == null)
       throw new RuntimeException("Cant find station " + stnName);
 
-    timeArray.set(0, timeCoordValue);
-    parentArray.set(0, parentIndex);
+    StructureDataScalar coords = new StructureDataScalar("Coords");
+    coords.addMember(timeName, null, null, DataType.DOUBLE, false, timeCoordValue);
+    coords.addMember(stationIndexName, null, null, DataType.INT, false, parentIndex);
+
+    StructureDataComposite sdall = new StructureDataComposite();
+    sdall.add(coords); // coords first so it takes precedence
+    sdall.add(sdata);
 
     // write the recno record
     int[] origin = new int[1];
     origin[0] = recno;
     try {
-      super.writeStructureData(origin, sdata);
+      super.writeStructureData(origin, sdall);
 
-      writer.write(time, origin, timeArray);
-      writer.write(stationIndex, origin, parentArray);
+      if (!isExtendedModel) {
+        timeArray.set(0, timeCoordValue);
+        parentArray.set(0, parentIndex);
+
+        writer.write(time, origin, timeArray);
+        writer.write(stationIndex, origin, parentArray);
+      }
 
     } catch (InvalidRangeException e) {
       e.printStackTrace();
@@ -275,6 +334,7 @@ public class WriterCFStationCollection extends CFPointWriter {
 
     recno++;
   }
+
   
   /*
    * Use this when record structure is not available (netcdf4)

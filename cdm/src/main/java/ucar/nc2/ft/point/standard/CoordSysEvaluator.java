@@ -40,8 +40,6 @@ import ucar.nc2.dataset.CoordinateSystem;
 import ucar.nc2.dataset.CoordinateAxis;
 import ucar.nc2.constants.AxisType;
 import ucar.nc2.Dimension;
-import ucar.nc2.Variable;
-import ucar.ma2.DataType;
 
 import java.util.List;
 

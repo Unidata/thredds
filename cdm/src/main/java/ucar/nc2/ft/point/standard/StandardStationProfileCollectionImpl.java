@@ -144,7 +144,7 @@ public class StandardStationProfileCollectionImpl extends StationProfileCollecti
 
     @Override
     public List<Date> getTimes() throws IOException {
-      List<Date> result = new ArrayList<Date>();
+      List<Date> result = new ArrayList<>();
       resetIteration();
       while (hasNext()) {
         ProfileFeature pf = next();

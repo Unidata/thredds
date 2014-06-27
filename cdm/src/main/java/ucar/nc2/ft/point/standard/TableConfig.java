@@ -33,7 +33,6 @@
 package ucar.nc2.ft.point.standard;
 
 import ucar.nc2.constants.FeatureType;
-import ucar.nc2.Dimension;
 import ucar.ma2.ArrayStructure;
 import ucar.ma2.StructureData;
 
@@ -41,7 +40,7 @@ import java.util.List;
 import java.util.ArrayList;
 
 /**
- * This encapsolates the info needed by NestedTable to handle point feature "nested table" datasets.
+ * This encapsulates the info needed by NestedTable to handle point feature "nested table" datasets.
  * A TableAnalyzer creates these from a specific dataset convention.
  * <p> a TableConfig has a tree of TableConfigs, representing the join of parent and children tables.
  *
@@ -111,13 +110,13 @@ public class TableConfig {
   }
 
   public void addChild(TableConfig t) {
-    if (children == null) children = new ArrayList<TableConfig>();
+    if (children == null) children = new ArrayList<>();
     children.add(t);
     t.parent = this;
   }
 
   public void addJoin(Join extra) {
-    if (extraJoin == null) extraJoin = new ArrayList<Join>(3);
+    if (extraJoin == null) extraJoin = new ArrayList<>(3);
     extraJoin.add(extra);
   }
 

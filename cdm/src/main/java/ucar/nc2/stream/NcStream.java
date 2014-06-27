@@ -36,6 +36,7 @@ import ucar.nc2.*;
 import ucar.ma2.*;
 
 import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
 import java.nio.channels.WritableByteChannel;
 import java.io.OutputStream;
 import java.io.IOException;
@@ -241,7 +242,7 @@ public class NcStream {
   public static long encodeArrayStructure(ArrayStructure as, OutputStream os) throws java.io.IOException {
     long size = 0;
 
-    ArrayStructureBB dataBB = StructureDataDeep.copyToArrayBB(as);
+    ArrayStructureBB dataBB = StructureDataDeep.copyToArrayBB(as, null); // LOOK what should the bo be ??
     List<String> ss = new ArrayList<String>();
     List<Object> heap = dataBB.getHeap();
     List<Integer> count = new ArrayList<Integer>();

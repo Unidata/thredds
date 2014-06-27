@@ -33,7 +33,6 @@
 package ucar.nc2.ft.point.standard;
 
 import ucar.ma2.*;
-import ucar.nc2.Variable;
 import ucar.nc2.dataset.VariableDS;
 
 import java.io.IOException;
