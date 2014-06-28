@@ -99,7 +99,7 @@ public class TestPointFeatureTypes extends TestCase {
 
   // these are internal, synthetic (ncml) datasets with (almost) all possible combinations for proposed CF point obs
   String CFpointObs_topdir = TestDir.cdmLocalTestDataDir + "point/";
-  public void testCFcanonical() throws IOException {
+  /* public void testCFcanonical() throws IOException {
     assert 3 == checkPointDataset(CFpointObs_topdir + "point.ncml", FeatureType.POINT, false);
     assert 3 == checkPointDataset(CFpointObs_topdir + "pointUnlimited.nc", FeatureType.POINT, false);
     assert 4 == checkPointDataset(CFpointObs_topdir + "pointMissing.ncml", FeatureType.POINT, false);
@@ -170,7 +170,7 @@ public class TestPointFeatureTypes extends TestCase {
     //assert 420 == checkPointDataset(CFpointObs_topdir + "sectionFlat.ncml", FeatureType.SECTION, false);
     //assert 420 == checkPointDataset(CFpointObs_topdir + "sectionFlat.nc", FeatureType.SECTION, false);
 
-  }
+  }  */
 
     // CF 1.6
   public void testCF1p6() throws IOException {
@@ -373,7 +373,7 @@ public class TestPointFeatureTypes extends TestCase {
   }
   
 
-  int checkPointDataset(String location, FeatureType type, boolean show) throws IOException {
+  public int checkPointDataset(String location, FeatureType type, boolean show) throws IOException {
     System.out.printf("================ TestPointFeatureCollection read %s %n", location);
     long start = System.currentTimeMillis();
 

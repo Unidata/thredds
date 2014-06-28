@@ -6,6 +6,7 @@ import org.junit.runners.Parameterized;
 import ucar.nc2.NetcdfFileWriter;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.ft.*;
+import ucar.nc2.ft.point.TestCFsyntheticDatasets;
 import ucar.unidata.test.util.TestDir;
 import ucar.unidata.util.StringUtil2;
 
@@ -23,39 +24,19 @@ import java.util.List;
  */
 @RunWith(Parameterized.class)
 public class TestCFPointWriter {
-  static private String CFpointObs_topdir = TestDir.cdmLocalTestDataDir + "point/";
 
   @Parameterized.Parameters
   public static List<Object[]> getTestParameters() {
     List<Object[]> result = new ArrayList<>();
 
-    result.add(new Object[] {CFpointObs_topdir + "point.ncml", FeatureType.POINT, 3});
-    result.add(new Object[] {CFpointObs_topdir + "pointUnlimited.nc", FeatureType.POINT, 3});
-    result.add(new Object[] {CFpointObs_topdir + "pointMissing.ncml", FeatureType.POINT, 4});
+    result.addAll(TestCFsyntheticDatasets.getPointDatasets());
+    result.addAll(TestCFsyntheticDatasets.getStationDatasets());
 
-    result.add(new Object[] {CFpointObs_topdir + "stationSingle.ncml", FeatureType.STATION, 3});
-    result.add(new Object[] {CFpointObs_topdir + "stationSingleWithZlevel.ncml", FeatureType.STATION, 3});
-    result.add(new Object[] {CFpointObs_topdir + "stationMultidim.ncml", FeatureType.STATION, 15});
-    result.add(new Object[] {CFpointObs_topdir + "stationMultidimTimeJoin.ncml", FeatureType.STATION, 15});
-    result.add(new Object[] {CFpointObs_topdir + "stationMultidimUnlimited.nc", FeatureType.STATION, 15});     // */
-    result.add(new Object[] {CFpointObs_topdir + "stationMultidimMissingTime.ncml", FeatureType.STATION, 12});
-    result.add(new Object[] {CFpointObs_topdir + "stationMultidimMissingId.ncml", FeatureType.STATION, 9});    // */
-    result.add(new Object[] {CFpointObs_topdir + "stationMultidimMissingIdString.ncml", FeatureType.STATION, 12});
-    result.add(new Object[] {CFpointObs_topdir + "stationRaggedContig.ncml", FeatureType.STATION, 6});
-    result.add(new Object[] {CFpointObs_topdir + "stationRaggedIndex.ncml", FeatureType.STATION, 6});
-    result.add(new Object[] {CFpointObs_topdir + "stationRaggedMissing.ncml", FeatureType.STATION, 5});
-    result.add(new Object[] {CFpointObs_topdir + "stationFlat.ncml", FeatureType.STATION, 13});
-    result.add(new Object[] {CFpointObs_topdir + "stationFlat.nc", FeatureType.STATION, 13});     // */
-
-        /* result.add(new Object[] {TestDir.cdmUnitTestDir + "ft/ncml/point.ncml", FeatureType.POINT, 5});
     result.add(new Object[] {TestDir.cdmUnitTestDir + "ft/point/ldm/04061912_buoy.nc", FeatureType.POINT, 218});
     result.add(new Object[] {TestDir.cdmUnitTestDir + "ft/point/netcdf/Surface_Buoy_20090921_0000.nc", FeatureType.POINT, 32452});
     result.add(new Object[] {TestDir.cdmUnitTestDir + "ft/station/multiStationMultiVar.ncml", FeatureType.STATION, 15});
     result.add(new Object[] {TestDir.cdmUnitTestDir + "cfPoint/station/sampleDataset.nc", FeatureType.STATION, 1728});
     result.add(new Object[] {TestDir.cdmUnitTestDir + "ft/station/200501q3h-gr.nc", FeatureType.STATION, 5023});  // */
-    // result.add(new Object[]{CFpointObs_topdir + "profileSingle.ncml", FeatureType.PROFILE, 13});
-
-
     return result;
   }
 
