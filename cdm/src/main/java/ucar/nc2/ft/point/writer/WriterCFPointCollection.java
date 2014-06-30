@@ -61,9 +61,9 @@ import java.io.IOException;
 public class WriterCFPointCollection extends CFPointWriter {
   private Variable time, lat, lon, alt;
 
-  public WriterCFPointCollection(String fileOut, String title) throws IOException {
+  /* public WriterCFPointCollection(String fileOut, String title) throws IOException {
     this(fileOut, Arrays.asList(new Attribute(CDM.TITLE, title)), new CFPointWriterConfig(null));
-  }
+  } */
 
   public WriterCFPointCollection(NetcdfFileWriter.Version version, String fileOut, List<Attribute> atts) throws IOException {
     this(fileOut, atts, new CFPointWriterConfig(version));
@@ -123,7 +123,7 @@ public class WriterCFPointCollection extends CFPointWriter {
   }
 
   public void writeRecord(double timeCoordValue, CalendarDate obsDate, EarthLocation loc, StructureData sdata) throws IOException {
-    trackBB(loc, obsDate);
+    trackBB(loc.getLatLon(), obsDate);
 
     StructureDataScalar coords = new StructureDataScalar("Coords");
     coords.addMember(timeName, null, null, DataType.DOUBLE, false, timeCoordValue);
@@ -139,13 +139,14 @@ public class WriterCFPointCollection extends CFPointWriter {
     int[] origin = new int[1];
     origin[0] = recno;
     try {
-      super.writeStructureData(origin, sdall);
+      boolean useStructure = isExtendedModel || (writer.getVersion() == NetcdfFileWriter.Version.netcdf3 && config.recDimensionLength < 0);
+      super.writeStructureData(useStructure, record, origin, sdall);
 
       if (isExtendedModel) {
         // throw new RuntimeException("extended model not working yet");
 
       } else {
-        timeArray.set(0, timeCoordValue);
+        timeArray.set(0, timeCoordValue);       // LOOK WTF ??
         latArray.set(0, loc.getLatitude());
         lonArray.set(0, loc.getLongitude());
         if (altUnits != null)
