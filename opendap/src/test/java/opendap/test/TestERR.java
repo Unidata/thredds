@@ -46,7 +46,7 @@ public class TestERR extends TestDapParser {
 
   @Test
   public void testERR() throws Exception {
-    parse();
+    testDapParser();
   }
 
   public static void main(String args[]) throws Exception {
