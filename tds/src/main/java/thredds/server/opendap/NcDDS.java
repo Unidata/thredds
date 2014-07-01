@@ -50,6 +50,10 @@ import java.util.*;
  */
 
 public class NcDDS extends ServerDDS {
+
+  // Handle the case of potential grids when the array has duplicate dims
+  static protected final boolean HANLDE_DUP_DIM_GRIDS = false;
+
   static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(NcDDS.class);
 
   //private HashMap<String, BaseType> coordHash = new HashMap<String, BaseType>(50); // non grid coordinate variables
@@ -58,9 +62,6 @@ public class NcDDS extends ServerDDS {
   private Vector<Variable> ddsvars = new Vector<Variable>(50);   // list of currently active variables
   private Hashtable<String, Variable> gridarrays = new Hashtable<String, Variable>(50);
   private Hashtable<String, Variable> used = new Hashtable<String, Variable>(50);
-  // Track malformed grids that should be converted to structs
-  private Hashtable<String, Variable> malgrids = new Hashtable<String, Variable>(50);
-
   private Variable findVariable(String name)
   {
       for (Variable v: ddsvars) {
@@ -108,11 +109,12 @@ public class NcDDS extends ServerDDS {
                      if (gv == null)
                         isgridarray = false;
                 }
-                // Check for duplicate dims
-                for(int j=i;isgridarray && j<rank;j++) {
-                    if(dimset.get(j) == dim)
-                        isgridarray = false;
-			malgrids.put(v.getFullName(),v);
+   	        if(HANDLE_DUP_DIM_GRIDS) {
+                    // Check for duplicate dims
+                    for(int j=i;isgridarray && j<rank;j++) {
+                        if(dimset.get(j) == dim)
+                            isgridarray = false;
+		    }
                 }
             }
             if(isgridarray)   {
