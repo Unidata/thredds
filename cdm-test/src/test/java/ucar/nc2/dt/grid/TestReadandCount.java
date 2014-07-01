@@ -130,8 +130,7 @@ public class TestReadandCount extends TestCase {
   }
 
   static void doOne(String dir, String filename, int ngrids, int ncoordSys, int ncoordAxes, int nVertCooordAxes) throws Exception {
-    try {
-        System.out.println("test read GridDataset = " + dir + filename);
+    System.out.println("test read GridDataset = " + dir + filename);
 
     ucar.nc2.dt.grid.GridDataset gridDs = GridDataset.open(dir + filename);
 
@@ -174,9 +173,6 @@ public class TestReadandCount extends TestCase {
       assert nVertCooordAxes == countVertCooordAxes : "VertAxes " + nVertCooordAxes + " != " + countVertCooordAxes;
 
     gridDs.close();
-    } catch (Throwable t) {
-        System.err.println("XXFAIL"); System.err.flush();
-    }
   }
 
   public void testProblem() throws Exception {
