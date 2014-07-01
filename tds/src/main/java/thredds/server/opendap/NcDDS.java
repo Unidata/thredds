@@ -52,7 +52,7 @@ import java.util.*;
 public class NcDDS extends ServerDDS {
 
   // Handle the case of potential grids when the array has duplicate dims
-  static protected final boolean HANLDE_DUP_DIM_GRIDS = false;
+  static protected final boolean HANDLE_DUP_DIM_GRIDS = false;
 
   static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(NcDDS.class);
 
