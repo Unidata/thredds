@@ -438,8 +438,14 @@ public class CFPointWriter implements AutoCloseable {
 
   protected int writeStructureData(boolean useStructure, Structure s, int[] origin, StructureData sdata) throws IOException, InvalidRangeException {
     if (useStructure) {
-      return writer.appendStructureData(s, sdata);  // can write it all at once along unlimited dimension
-
+      if (s.isUnlimited())
+        return writer.appendStructureData(s, sdata);  // can write it all at once along unlimited dimension
+      else {
+        ArrayStructureW as = new ArrayStructureW(sdata.getStructureMembers(), new int[] {1});
+        as.setStructureData(sdata, 0);
+        writer.write(s, origin, as);  // can write it all at once along unlimited dimension
+        return origin[0];
+      }
     } else  {
       for (StructureMembers.Member m : sdata.getMembers()) {  // netcdf4 classic model
         Array org = sdata.getArray(m);

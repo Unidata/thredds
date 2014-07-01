@@ -28,9 +28,9 @@ public class TestCFPointWriter {
   @Parameterized.Parameters
   public static List<Object[]> getTestParameters() {
     List<Object[]> result = new ArrayList<>();
-    // result.add(new Object[]{TestCFsyntheticDatasets.CFpointObs_topdir + "profileSingle.ncml", FeatureType.PROFILE, 13});
+    result.add(new Object[]{TestCFsyntheticDatasets.CFpointObs_topdir + "profileSingle.ncml", FeatureType.PROFILE, 13});
 
-    result.addAll(TestCFsyntheticDatasets.getPointDatasets());
+    /* result.addAll(TestCFsyntheticDatasets.getPointDatasets());
     result.addAll(TestCFsyntheticDatasets.getStationDatasets());
     result.addAll(TestCFsyntheticDatasets.getProfileDatasets());
 

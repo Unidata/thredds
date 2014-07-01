@@ -178,7 +178,7 @@ public class WriterCFProfileCollection extends CFPointWriter {
     StructureDataScalar profileData = new StructureDataScalar("Coords");
     profileData.addMember(latName, null, null, DataType.DOUBLE, false, profile.getLatLon().getLatitude());
     profileData.addMember(lonName, null, null, DataType.DOUBLE, false, profile.getLatLon().getLongitude());
-    profileData.addMember(timeName, null, null, DataType.LONG, false, profile.getTime().getTime());
+    profileData.addMember(timeName, null, null, DataType.DOUBLE, false, (double) profile.getTime().getTime());
     profileData.addMemberString(idName, null, null, profile.getName().trim(), name_strlen);
     profileData.addMember(profileRowSizeName, null, null, DataType.INT, false, nobs);
 

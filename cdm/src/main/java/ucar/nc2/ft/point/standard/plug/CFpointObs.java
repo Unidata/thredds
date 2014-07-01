@@ -187,12 +187,12 @@ public class CFpointObs extends TableConfigurerImpl {
         break;
 
       case raggedContiguous:
-        stnTable.numRecords = info.ragged_rowSize.getShortName();  // remove from data vars
-        obsTable = makeRaggedContiguous(ds, info.parentDim, info.childDim, info.ragged_rowSize, errlog);
+        stnTable.numRecords = info.ragged_rowSize.getFullName();
+        obsTable = makeRaggedContiguousChildTable(ds, info.parentDim, info.childDim, info.childStruct, errlog);
         break;
 
       case raggedIndex:
-        obsTable = makeRaggedIndex(ds, info.parentDim, info.childDim, info.ragged_parentIndex, errlog);
+        obsTable = makeRaggedIndexChildTable(ds, info.parentDim, info.childDim, info.ragged_parentIndex, errlog);
         break;
 
       case flat:
@@ -243,11 +243,11 @@ public class CFpointObs extends TableConfigurerImpl {
         obsConfig = makeMultidimInner(ds, trajTable, info.childDim, info, errlog);
         break;
       case raggedContiguous:
-        trajTable.numRecords = info.ragged_rowSize.getShortName();  // remove from data vars
-        obsConfig = makeRaggedContiguous(ds, info.parentDim, info.childDim, info.ragged_rowSize, errlog);
+        trajTable.numRecords = info.ragged_rowSize.getFullName();
+        obsConfig = makeRaggedContiguousChildTable(ds, info.parentDim, info.childDim, info.childStruct, errlog);
         break;
       case raggedIndex:
-        obsConfig = makeRaggedIndex(ds, info.parentDim, info.childDim, info.ragged_parentIndex, errlog);
+        obsConfig = makeRaggedIndexChildTable(ds, info.parentDim, info.childDim, info.ragged_parentIndex, errlog);
         break;
       case flat:
         throw new UnsupportedOperationException("CFpointObs: trajectory flat encoding");
@@ -260,7 +260,7 @@ public class CFpointObs extends TableConfigurerImpl {
 
   ////
 
-  private TableConfig getProfileConfig(NetcdfDataset ds, EncodingInfo info, Formatter errlog) throws IOException {
+  protected TableConfig getProfileConfig(NetcdfDataset ds, EncodingInfo info, Formatter errlog) throws IOException {
     if (!identifyEncodingProfile(ds, info, errlog)) return null;
 
     TableConfig profileTable = makeStructTable(ds, FeatureType.PROFILE, info, errlog);
@@ -278,7 +278,7 @@ public class CFpointObs extends TableConfigurerImpl {
       errlog.format("CFpointObs getProfileConfig cant find a Height coordinate %n");
       return null;
     }
-    //Dimension obsDim = z.getDimension(z.getRank() - 1); // may be z(z) or z(profile, z)
+    info.childStruct = z.getParentStructure();
 
     TableConfig obsTable = null;
     switch (info.encoding) {
@@ -291,11 +291,11 @@ public class CFpointObs extends TableConfigurerImpl {
           obsTable.addJoin(new JoinArray(z, JoinArray.Type.raw, 0));
         break;
       case raggedContiguous:
-        profileTable.numRecords = info.ragged_rowSize.getShortName();  // remove from data vars
-        obsTable = makeRaggedContiguous(ds, info.parentDim, info.childDim, info.ragged_rowSize, errlog);
+        profileTable.numRecords = info.ragged_rowSize.getFullName();
+        obsTable = makeRaggedContiguousChildTable(ds, info.parentDim, info.childDim, info.childStruct, errlog);
         break;
       case raggedIndex:
-        obsTable = makeRaggedIndex(ds, info.parentDim, info.childDim, info.ragged_parentIndex, errlog);
+        obsTable = makeRaggedIndexChildTable(ds, info.parentDim, info.childDim, info.ragged_parentIndex, errlog);
         break;
       case flat:
         throw new UnsupportedOperationException("CFpointObs: profile flat encoding");
@@ -430,9 +430,9 @@ public class CFpointObs extends TableConfigurerImpl {
       }
 
       case raggedIndex: {
-        TableConfig profileTable = makeRaggedIndex(ds, info.parentDim, info.childDim, info.ragged_parentIndex, errlog);
+        TableConfig profileTable = makeRaggedIndexChildTable(ds, info.parentDim, info.childDim, info.ragged_parentIndex, errlog);
         stationTable.addChild(profileTable);
-        TableConfig zTable = makeRaggedContiguous(ds, info.childDim, info.grandChildDim, info.ragged_rowSize, errlog);
+        TableConfig zTable = makeRaggedContiguousChildTable(ds, info.childDim, info.grandChildDim, info.childStruct, errlog);
         profileTable.addChild(zTable);
         break;
       }
@@ -564,9 +564,9 @@ public class CFpointObs extends TableConfigurerImpl {
       }
 
       case raggedIndex: {
-        TableConfig profileTable = makeRaggedIndex(ds, info.parentDim, info.childDim, info.ragged_parentIndex, errlog);
+        TableConfig profileTable = makeRaggedIndexChildTable(ds, info.parentDim, info.childDim, info.ragged_parentIndex, errlog);
         parentTable.addChild(profileTable);
-        TableConfig zTable = makeRaggedContiguous(ds, info.childDim, info.grandChildDim, info.ragged_rowSize, errlog);
+        TableConfig zTable = makeRaggedContiguousChildTable(ds, info.childDim, info.grandChildDim, info.childStruct, errlog);
         profileTable.addChild(zTable);
         break;
       }
@@ -606,6 +606,7 @@ public class CFpointObs extends TableConfigurerImpl {
     Dimension parentDim, childDim, grandChildDim;
     Variable instanceId;
     Variable ragged_parentIndex, ragged_rowSize;
+    Structure parentStruct, childStruct;
 
     EncodingInfo set(Encoding encoding, Dimension parentDim) {
       this.encoding = encoding;
@@ -736,10 +737,11 @@ public class CFpointObs extends TableConfigurerImpl {
    * @param instanceDim the instance dimension, null if not known yet
    * @param sampleDim   the sample dimension, null if not known yet
    * @param errlog      error go here
-   * @return EncodingInfo if ragged array representations is found
+   * @return true if ragged array representations is found; side effect: set (info.ragged_rowSize, info.parentStruct) or (info.ragged_parentIndex, info.childStruct)
    */
   protected boolean identifyRaggeds(NetcdfDataset ds, EncodingInfo info, Dimension instanceDim, Dimension sampleDim, Formatter errlog) {
 
+    // check for contiguous
     Evaluator.VarAtt varatt = Evaluator.findVariableWithAttribute(ds, CF.SAMPLE_DIMENSION);   // CF 1.6
     if (varatt == null) varatt = Evaluator.findVariableWithAttribute(ds, CF.RAGGED_ROWSIZE);  // backwards compatibility
     if (varatt != null) {
@@ -759,28 +761,31 @@ public class CFpointObs extends TableConfigurerImpl {
         }
       }
 
-      if (instanceDim == null) {
-        instanceDim = ragged_rowSize.getDimension(0);
+      Dimension rrDim;
+      if (ragged_rowSize.getRank() > 0)
+        rrDim = ragged_rowSize.getDimension(0); // nobs(station)
+      else if (ragged_rowSize.getParentStructure() != null) {
+        Structure parent = ragged_rowSize.getParentStructure(); // if ragged_rowSize is a structure member, use dimension of parent structure
+        rrDim = parent.getDimension(0);
       } else {
-        if (instanceDim != ragged_rowSize.getDimension(0)) {
-          errlog.format("CFpointObs: Contiguous ragged array representation: row_size variable has invalid instance dimension %s must be %s%n",
-                  ragged_rowSize.getDimension(0), instanceDim);
-          return false;
-        }
+        errlog.format("CFpointObs: Contiguous ragged array representation: row_size variable (%s) must have rank 1%n", ragged_rowSize);
+        return false;
       }
+
+      if (instanceDim != null && instanceDim != rrDim) {
+          errlog.format("CFpointObs: Contiguous ragged array representation: row_size variable has invalid instance dimension %s must be %s%n", rrDim, instanceDim);
+          return false;
+      }
+      instanceDim = rrDim;
 
       if (ragged_rowSize.getDataType() != DataType.INT) {
         errlog.format("CFpointObs: Contiguous ragged array representation: row_size variable must be of type integer%n");
         return false;
       }
 
-      if (ragged_rowSize.getRank() != 1 || !ragged_rowSize.getDimension(0).equals(instanceDim)) {
-        errlog.format("CFpointObs: Contiguous ragged array representation: row_size variable must be of form %s(%s) %n", ragged_rowSize.getShortName(), instanceDim.getShortName());
-        return false;
-      }
-
       info.set(Encoding.raggedContiguous, instanceDim, sampleDim);
       info.ragged_rowSize = ragged_rowSize;
+      info.parentStruct = ragged_rowSize.getParentStructure();
       return true;
     }  // rowsize was found
 
@@ -824,6 +829,7 @@ public class CFpointObs extends TableConfigurerImpl {
       }
       info.set(Encoding.raggedIndex, instanceDim, sampleDim);
       info.ragged_parentIndex = ragged_parentIndex;
+      info.childStruct = ragged_parentIndex.getParentStructure();
       return true;
     } // parent index was found
 
@@ -1250,7 +1256,13 @@ public class CFpointObs extends TableConfigurerImpl {
 
     if (info.encoding != Encoding.single) {
       tableConfig.dimName = info.parentDim.getShortName();
-      makeStructureInfo(tableConfig, ds, null, info.parentDim);
+      Structure parent = null;
+      switch (info.encoding) {
+        case raggedContiguous:
+          parent = info.ragged_rowSize.getParentStructure();
+          break;
+      }
+      makeStructureInfo(tableConfig, ds, parent, info.parentDim);
     }
 
     return tableConfig;
@@ -1282,7 +1294,7 @@ public class CFpointObs extends TableConfigurerImpl {
 
   /////////////////////////////////////////////////////////////////////////////////
 
-  private TableConfig makeRaggedContiguous(NetcdfDataset ds, Dimension parentDim, Dimension childDim, Variable ragged_rowSize, Formatter errlog) throws IOException {
+  private TableConfig makeRaggedContiguousChildTable(NetcdfDataset ds, Dimension parentDim, Dimension childDim, Structure childStruct, Formatter errlog) throws IOException {
     TableConfig obsTable = new TableConfig(Table.Type.Contiguous, childDim.getShortName());
     obsTable.dimName = childDim.getShortName();
 
@@ -1293,13 +1305,12 @@ public class CFpointObs extends TableConfigurerImpl {
     if (obsTable.elev == null) obsTable.elev = matchAxisTypeAndDimension(ds, AxisType.GeoZ, childDim);
     obsTable.time = matchAxisTypeAndDimension(ds, AxisType.Time, childDim);
 
-    makeStructureInfo(obsTable, ds, ragged_rowSize.getParentStructure(), childDim);
-    obsTable.numRecords = ragged_rowSize.getFullName();
+    makeStructureInfo(obsTable, ds, childStruct, childDim);
 
     return obsTable;
   }
 
-  private TableConfig makeRaggedIndex(NetcdfDataset ds, Dimension parentDim, Dimension childDim, Variable ragged_parentIndex, Formatter errlog) throws IOException {
+  private TableConfig makeRaggedIndexChildTable(NetcdfDataset ds, Dimension parentDim, Dimension childDim, Variable ragged_parentIndex, Formatter errlog) throws IOException {
     TableConfig obsTable = new TableConfig(Table.Type.ParentIndex, childDim.getShortName());
     obsTable.dimName = childDim.getShortName();
 

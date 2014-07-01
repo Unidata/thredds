@@ -64,18 +64,15 @@ public class TableConfig {
   public String start;  // name of variable - starting child index (in parent)
   public String next;  // name of variable - next child index (in child)
   public String numRecords;  // name of variable - number of children (in parent)
-  // public int[] startIndex;  // starting child index for each parent
 
-  // only the top one is used
+  // only the top featureType in the tree is used
   public FeatureType featureType;
 
   // TablePsuedoStructureList, Structure
   public List<String> vars;
-  //public Dimension dim; // outer dimension
   public String dimName; // outer dimension
 
   // multidim: outer and inner dimensions
-  // public Dimension outer, inner;
   public String outerName, innerName;
 
   // Table.Type ArrayStructure
@@ -85,7 +82,6 @@ public class TableConfig {
   public StructureData sdata;
 
   // Table.Type ParentIndex
-  // public Map<Integer, List<Integer>> indexMap;
   public String parentIndex;  // name of variable - parent index (in parent)
 
   // coordinate variable names

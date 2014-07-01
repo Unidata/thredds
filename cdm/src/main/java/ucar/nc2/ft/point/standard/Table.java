@@ -413,12 +413,14 @@ public abstract class Table {
 
     TableContiguous(NetcdfDataset ds, TableConfig config) {
       super(ds, config);
-      this.startVarName = config.start;
-      this.numRecordsVarName = config.numRecords;
+      startVarName = config.start;
+      if (startVarName == null) startVarName = config.parent.start;
+      numRecordsVarName = config.numRecords;
+      if (numRecordsVarName == null) numRecordsVarName = config.parent.numRecords;
 
       if (startVarName == null) {  // read numRecords when startVar is not known
         try {
-          Variable v = ds.findVariable(config.numRecords);
+          Variable v = ds.findVariable(numRecordsVarName);
           Array numRecords = v.read();
           int n = (int) v.getSize();
 
@@ -438,8 +440,8 @@ public abstract class Table {
         }
       }
 
-      addNonDataVariable(config.start);
-      addNonDataVariable(config.numRecords);
+      addNonDataVariable(startVarName);
+      addNonDataVariable(numRecordsVarName);
     }
 
     @Override

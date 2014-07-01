@@ -102,6 +102,7 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
   static private final boolean debug = false,
           debugCompound = false,
           debugCompoundAtt = false,
+          debugDim = false,
           debugUserTypes = false,
           debugLoad = false,
           debugWrite = false;
@@ -2346,7 +2347,7 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
       } else {
         dimid = findDimensionId(g4, d);
       }
-      if (debugWrite)
+      if (debugDim)
         System.out.printf("  use dim '%s' (%d) in variable '%s'%n", d.getShortName(), dimid, v.getShortName());
       dimids[count++] = dimid;
     }
@@ -2606,6 +2607,7 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
     int ret = nc4.nc_def_dim(grpid, name, new SizeT(length), dimidp);
     if (ret != 0)
       throw new IOException(ret + ": " + nc4.nc_strerror(ret));
+    if (debugDim) System.out.printf("add dimension %s len=%d%n", name, length);
     return dimidp.getValue();
   }
 
