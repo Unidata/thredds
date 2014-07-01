@@ -84,7 +84,6 @@ public class WriterCFStationCollection extends CFPointWriter {
   private Variable lat, lon, alt, time, id, wmoId, desc, stationIndex;
 
   protected Structure stationStruct;  // used for netcdf4 extended
-  private List<Dimension> stationDims = new ArrayList<>(1);
   private boolean useAlt = false;
   private boolean useWmoId = false;
 
@@ -155,7 +154,6 @@ public class WriterCFStationCollection extends CFPointWriter {
         useWmoId = true;
     }
 
-
     // find string lengths
     for (Station station : stnList) {
       name_strlen = Math.max(name_strlen, station.getName().length());
@@ -168,7 +166,6 @@ public class WriterCFStationCollection extends CFPointWriter {
     // add the dimensions : extendded model can use an unlimited dimension
     //Dimension stationDim = isExtended ? writer.addDimension(null, stationDimName, 0, true, true, false) : writer.addDimension(null, stationDimName, nstns);
     Dimension stationDim = writer.addDimension(null, stationDimName, nstns);
-    stationDims.add(stationDim);
 
     List<VariableSimpleIF> coords = new ArrayList<>();
     coords.add(VariableSimpleImpl.makeScalar(latName, "station latitude", CDM.LAT_UNITS, DataType.DOUBLE));
@@ -196,8 +193,8 @@ public class WriterCFStationCollection extends CFPointWriter {
 
   }
 
+  // this writes all the stations - could jyst write out as stations come in from data records
   private HashMap<String, Integer> stationMap;
-
   private void writeStationData(List<ucar.unidata.geoloc.Station> stnList) throws IOException {
     int nstns = stnList.size();
     stationMap = new HashMap<>(2 * nstns);
@@ -279,14 +276,6 @@ public class WriterCFStationCollection extends CFPointWriter {
       throw new IllegalStateException(e);
     }
 
-   /* try {
-      StructureDataIterator siter = ma.getStructureDataIterator();
-      while (siter.hasNext())
-        writer.appendStructureData(stationStruct, siter.next());
-    } catch (InvalidRangeException e) {
-      e.printStackTrace();
-      throw new IllegalStateException(e);
-    }  */
   }
 
 
@@ -317,7 +306,8 @@ public class WriterCFStationCollection extends CFPointWriter {
     int[] origin = new int[1];
     origin[0] = recno;
     try {
-      super.writeStructureData(origin, sdall);
+      boolean useStructure = isExtendedModel || (writer.getVersion() == NetcdfFileWriter.Version.netcdf3 && config.recDimensionLength < 0);
+      super.writeStructureData(useStructure, record, origin, sdall);
 
       if (!isExtendedModel) {
         timeArray.set(0, timeCoordValue);
@@ -334,105 +324,6 @@ public class WriterCFStationCollection extends CFPointWriter {
 
     recno++;
   }
-
-  
-  /*
-   * Use this when record structure is not available (netcdf4)
- * @throws IOException 
-   *
-  public void writeStructure(Station s, PointFeature sobs, StructureData sdata) throws IOException{
-	  String stnName = s.getName();
-	  double timeCoordValue = sobs.getObservationTime();
-	  CalendarDate obsDate = sobs.getNominalTimeAsCalendarDate();
-	  trackBB(null,obsDate);
-	  
-	  Integer parentIndex = stationMap.get(stnName);
-	  if (parentIndex == null)
-		throw new RuntimeException("Cant find station " + stnName);
-
-	  // needs to be wrapped as an ArrayStructure, even though we are only writing one at a time.
-	  ArrayStructureW sArray = new ArrayStructureW(sdata.getStructureMembers(), new int[]{1});
-	  sArray.setStructureData(sdata, 0);
-
-	  timeArray.set(0, timeCoordValue);
-	  parentArray.set(0, parentIndex);	  
-	  
-	  //update the recno record, even if we are not using record structure. It keeps track of the origin for writing vars.
-	  origin[0] = recno;
-	  
-	  try{
-		  
-		  writer.write(time, origin, timeArray);
-		  writer.write(stationIndex, origin, parentArray);
-		  
-			StructureMembers sm = sdata.getStructureMembers();
-			for( Member m : sm.getMembers() ){
-				Variable v = writer.findVariable(m.getName());
-
-				//if( v != null && !v.getShortName().equals(lonName) && !v.getShortName().equals(latName) && !v.getShortName().equals("time") ){
-				//if( v != null && v.getDataType() != DataType.CHAR && !v.getShortName().equals(lonName) && !v.getShortName().equals(latName)){
-				if( v != null && v.getDataType() != DataType.CHAR && v.getDimensionsString().equals("obs") ){					
-					
-					Array arr = CFPointWriterUtils.getArrayFromMember(v, m);
-					writer.write( v , origin, arr );																	
-
-				}																					
-			}		  
-		  
-		  
-		  
-	  }catch(InvalidRangeException e) {
-			e.printStackTrace();
-			throw new IllegalStateException(e);
-		}	      
-
-		recno++;	  
-  } */
-  
-  /*private Array getArrayFromMember(Variable var, Member m){
-		
-		//DataType m_dt = writer.findVariable(m.getName()).getDataType();
-		DataType v_dt = var.getDataType();
-		//DataType m_dt = m.getDataType();
-		
-		//Writes one single data 
-		//int[] shape = writer.findVariable(m.getName()).getShape();
-		int[] shape = var.getShape();
-		
-		//Set the shape we really want
-		for(int i=0; i< shape.length; i++ ){
-			shape[i] = 1;
-		}					
-									
-		Array arr = Array.factory(v_dt, shape );
-		setDataArray( v_dt, arr, m );						
-		
-		return arr;
-				
-	}
-  
-	private void setDataArray(DataType dt, Array arr, Member m){
-
-		//Set the value (int, short, float, double...)
-		if( dt  == DataType.SHORT){
-			arr.setShort(0, m.getDataArray().getShort(0) );
-		}
-		
-		if( dt  == DataType.INT ){
-			arr.setInt(0, m.getDataArray().getInt(0) );
-		}		
-		
-		if( dt  == DataType.DOUBLE){
-			arr.setDouble(0, m.getDataArray().getDouble(0) );
-		}
-		
-		if( dt  == DataType.FLOAT){
-			arr.setFloat(0, m.getDataArray().getFloat(0) );
-		}		
-		
-	}*/  
-  
-  
 
   private LatLonRect getBoundingBox(List stnList) {
     ucar.unidata.geoloc.Station s = (ucar.unidata.geoloc.Station) stnList.get(0);

@@ -43,7 +43,7 @@ import ucar.nc2.ft.point.StationPointFeature;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time.CalendarDateFormatter;
 import ucar.nc2.time.CalendarDateRange;
-import ucar.unidata.geoloc.EarthLocation;
+import ucar.unidata.geoloc.LatLonPoint;
 import ucar.unidata.geoloc.LatLonRect;
 
 import java.io.IOException;
@@ -153,30 +153,29 @@ public class CFPointWriter implements AutoCloseable {
   private static int writeProfileFeatureCollection(FeatureDatasetPoint fdpoint, ProfileFeatureCollection pds, String fileOut,
                                                    CFPointWriterConfig config) throws IOException {
 
-    WriterCFProfileCollection cfWriter = new WriterCFProfileCollection(fileOut, fdpoint.getGlobalAttributes(), config.version);
+    WriterCFProfileCollection cfWriter = new WriterCFProfileCollection(fileOut, fdpoint.getGlobalAttributes(), fdpoint.getDataVariables(), config);
 
+    // LOOK not always needed
     int count = 0;
-    List<String> profiles = new ArrayList<>();
-    pds.resetIteration();
-    while (pds.hasNext()) {
-      profiles.add(pds.next().getName());  // LOOK why
+    int name_strlen = -1;
+    int nprofiles = pds.size();
+    if (nprofiles < 0) {
+      pds.resetIteration();
+      while (pds.hasNext()) {
+        pds.next();
+        name_strlen = Math.max(name_strlen, pds.getName().length());
+        count++;
+      }
+      cfWriter.setHeaderInfo(count, name_strlen);
     }
 
+    count = 0;
     pds.resetIteration();
     while (pds.hasNext()) {
       ucar.nc2.ft.ProfileFeature profile = pds.next();
-
-      profile.resetIteration();
-      while (profile.hasNext()) {
-        ucar.nc2.ft.PointFeature pf = profile.next();
-        if (count == 0)
-          cfWriter.writeHeader(profiles, fdpoint.getDataVariables(), pf.getTimeUnit(), pf.getAltUnits());
-
-        cfWriter.writeRecord(profile.getName(), pf, pf.getData());
-        count++;
-        if (debug && count % 100 == 0) System.out.printf("%d ", count);
-        if (debug && count % 1000 == 0) System.out.printf("%n ");
-      }
+      count += cfWriter.writeProfile(profile);
+      if (debug && count % 10 == 0) System.out.printf("%d ", count);
+      if (debug && count % 100 == 0) System.out.printf("%n ");
     }
 
     cfWriter.finish();
@@ -186,15 +185,12 @@ public class CFPointWriter implements AutoCloseable {
   /////////////////////////////////////////////////
 
   // attributes with these names will not be copied to the output file
-  private static final String[] reservedGAtts = new String[]{
+  protected static final List<String> reservedGlobalAtts = Arrays.asList(
           CDM.CONVENTIONS, ACDD.LAT_MIN, ACDD.LAT_MAX, ACDD.LON_MIN, ACDD.LON_MAX, ACDD.TIME_START, ACDD.TIME_END,
-          _Coordinate._CoordSysBuilder, CF.featureTypeAtt2, CF.featureTypeAtt3};
+            _Coordinate._CoordSysBuilder, CF.featureTypeAtt2, CF.featureTypeAtt3);
 
-  private static final String[] reservedVAtts = new String[]{
-          _Coordinate.AxisType };
-
-  protected static final List<String> reservedGlobalAtts = Arrays.asList(reservedGAtts);
-  protected static final List<String> reservedVariableAtts = Arrays.asList(reservedVAtts);
+  protected static final List<String> reservedVariableAtts = Arrays.asList(
+          CF.SAMPLE_DIMENSION, CF.INSTANCE_DIMENSION);
 
   protected static final String recordName = "obs";
   protected static final String recordDimName = "obs";
@@ -204,20 +200,20 @@ public class CFPointWriter implements AutoCloseable {
   protected static final String timeName = "time";
 
   /////////////////////////////////////////////////
+  protected final CFPointWriterConfig config;
   protected NetcdfFileWriter writer;
   protected Map<String, Variable> dataVarMap = new HashMap<>(); // used for netcdf4 classic
   protected Structure record;  // used for netcdf3 and netcdf4 extended
+  protected Dimension recordDim;
 
   protected String altUnits = null;
   protected LatLonRect llbb = null;
   protected CalendarDate minDate = null;
   protected CalendarDate maxDate = null;
 
-  protected final CFPointWriterConfig config;
   protected final boolean noTimeCoverage;
   protected final boolean noUnlimitedDimension;  // experimental , netcdf-3
   protected final boolean isExtendedModel;
-  protected Dimension recordDim;
 
   protected CFPointWriter(String fileOut, List<Attribute> atts, NetcdfFileWriter.Version version) throws IOException {
     this(fileOut, atts, new CFPointWriterConfig(version));
@@ -270,25 +266,22 @@ public class CFPointWriter implements AutoCloseable {
     writer.addGroupAttribute(null, new Attribute(ACDD.LON_MAX, 0.0));
   }
 
-  public void setLength(long size) {
-    writer.setLength(size);
-  }
-
+   // added as variables with the unlimited (record) dimension
   protected void addCoordinatesClassic(Dimension recordDim, List<VariableSimpleIF> coords) throws IOException {
     Map<String, Dimension> dimMap = addDimensionsClassic(coords);
 
-   // added as variables with the unlimited (record) dimension
     for (VariableSimpleIF vs : coords) {
       List<Dimension> dims = makeDimensionList(dimMap, vs.getDimensions());
       dims.add(0, recordDim);
       Variable member = writer.addVariable(null, vs.getShortName(), vs.getDataType(), dims);
       for (Attribute att : vs.getAttributes())
         member.addAttribute(att);
+      dataVarMap.put(member.getShortName(), member);
     }
 
   }
 
-  // added as members of the record structure
+  // added as members of the given structure
   protected void addCoordinatesExtended(Structure parent, List<VariableSimpleIF> coords) throws IOException {
 
     for (VariableSimpleIF vs : coords) {
@@ -300,7 +293,7 @@ public class CFPointWriter implements AutoCloseable {
     parent.calcElementSize();
   }
 
-
+   // added as variables with the unlimited (record) dimension
   protected void addDataVariablesClassic(Dimension recordDim, List<? extends VariableSimpleIF> dataVars) throws IOException {
     Map<String, Dimension> dimMap = addDimensionsClassic(dataVars);
 
@@ -345,6 +338,7 @@ public class CFPointWriter implements AutoCloseable {
 
   }
 
+  // classic model: no private dimensions
   private int fakeDims = 0;
   protected Map<String, Dimension> addDimensionsClassic(List<? extends VariableSimpleIF> vars) throws IOException {
     Set<Dimension> oldDims = new HashSet<>(20);
@@ -409,13 +403,14 @@ public class CFPointWriter implements AutoCloseable {
 
   }
 
-  protected void trackBB(EarthLocation loc, CalendarDate obsDate) {
+  // keep track of the bounding box
+  protected void trackBB(LatLonPoint loc, CalendarDate obsDate) {
     if (loc != null) {
       if (llbb == null) {
-        llbb = new LatLonRect(loc.getLatLon(), .001, .001);
+        llbb = new LatLonRect(loc, .001, .001);
         return;
       }
-      llbb.extend(loc.getLatLon());
+      llbb.extend(loc);
     }
 
     // date is handled specially
@@ -441,9 +436,9 @@ public class CFPointWriter implements AutoCloseable {
     writer.close();
   }
 
-  protected int writeStructureData(int[] origin, StructureData sdata) throws IOException, InvalidRangeException {
-    if (writer.getVersion().isExtendedModel() || (writer.getVersion() == NetcdfFileWriter.Version.netcdf3) && config.recDimensionLength < 0) {
-      return writer.appendStructureData(record, sdata);  // can write it all at once along unlimited dimension
+  protected int writeStructureData(boolean useStructure, Structure s, int[] origin, StructureData sdata) throws IOException, InvalidRangeException {
+    if (useStructure) {
+      return writer.appendStructureData(s, sdata);  // can write it all at once along unlimited dimension
 
     } else  {
       for (StructureMembers.Member m : sdata.getMembers()) {  // netcdf4 classic model

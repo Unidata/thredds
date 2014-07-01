@@ -77,6 +77,13 @@ public class StructureDataScalar extends StructureDataW {
     setMemberData(m, data);
   }
 
+  public void addMemberString(String name, String desc, String units, String val, int max_len) {
+    StructureMembers.Member m = members.addMember(name, desc, units, DataType.CHAR, new int[0]);
+    Array data = ArrayChar.makeFromString(val, max_len);
+    setMemberData(m, data);
+  }
+
+
 /*  public void addMember(String name, String desc, String units, double val) {
     StructureMembers.Member m = members.addMember(name, desc, units, DataType.DOUBLE,  new int[0]);
     ArrayDouble.D0 data = new ArrayDouble.D0();

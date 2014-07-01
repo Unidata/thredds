@@ -715,15 +715,13 @@ public class IospHelper {
 
     } else if (dataType == DataType.STRUCTURE) {
       byte[] pa = new byte[size];
-      byte[] val = (byte[]) fillValue;
-      int count = 0;
-      while (count < size) {
-        for (int i = 0; i < val.length; i++) {
-          pa[count++] = val[i];
-        }
+      if (fillValue != null) {
+        byte[] val = (byte[]) fillValue;
+        int count = 0;
+        while (count < size)
+          for (byte aVal : val) pa[count++] = aVal;
       }
       return pa;
-
     }
 
     throw new IllegalStateException();
