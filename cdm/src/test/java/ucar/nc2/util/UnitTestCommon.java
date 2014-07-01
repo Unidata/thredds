@@ -46,6 +46,14 @@ import java.util.List;
 public class UnitTestCommon extends TestCase
 {
     static boolean DEBUG = false;
+    // System properties
+    protected boolean prop_ascii = true;
+    protected boolean prop_diff = true;
+    protected boolean prop_baseline = false;
+    protected boolean prop_visual = false;
+    protected boolean prop_debug = DEBUG;
+    protected boolean prop_generate = true;
+    protected String prop_controls = null;
 
     /**
      * Temporary data directory (for writing temporary data).
@@ -70,20 +78,20 @@ public class UnitTestCommon extends TestCase
         // clean up the path
         path = path.replace('\\', '/'); // only use forward slash
         assert (path != null);
-        if (path.endsWith("/")) path = path.substring(0, path.length() - 1);
+        if(path.endsWith("/")) path = path.substring(0, path.length() - 1);
 
-        while (path != null) {
+        while(path != null) {
             boolean allfound = true;
-            for (String dirname : SUBROOTS) {
+            for(String dirname : SUBROOTS) {
                 // look for dirname in current directory
                 String s = path + "/" + dirname;
                 File tmp = new File(s);
-                if (!tmp.exists()) {
+                if(!tmp.exists()) {
                     allfound = false;
                     break;
                 }
             }
-            if (allfound)
+            if(allfound)
                 return path; // presumably the thredds root
             int index = path.lastIndexOf('/');
             path = path.substring(0, index);
@@ -99,10 +107,10 @@ public class UnitTestCommon extends TestCase
             throws Exception
     {
         // wipe out the dir contents
-        if (!dir.exists()) return;
-        for (File f : dir.listFiles()) {
-            if (f.isDirectory()) {
-                if (clearsubdirs)
+        if(!dir.exists()) return;
+        for(File f : dir.listFiles()) {
+            if(f.isDirectory()) {
+                if(clearsubdirs)
                     clearDir(f, true); // clear subdirs
                 else
                     throw new Exception("InnerClass directory encountered: " + f.getAbsolutePath());
@@ -153,26 +161,56 @@ public class UnitTestCommon extends TestCase
 
     }
 
-    // suppress warning message
-    public void testFakerooni()
-    {
-        assert true;
-    }
-
     static public byte[]
     readbinaryfile(InputStream stream)
-        throws IOException
+            throws IOException
     {
         // Extract the stream into a bytebuffer
         ByteArrayOutputStream bytes = new ByteArrayOutputStream();
         byte[] tmp = new byte[1 << 16];
-        for(;;) {
+        for(; ; ) {
             int cnt;
             cnt = stream.read(tmp);
             if(cnt <= 0) break;
             bytes.write(tmp, 0, cnt);
         }
         return bytes.toByteArray();
+    }
+
+    /**
+     * Try to get the system properties
+     */
+    protected void setSystemProperties()
+    {
+        if(System.getProperty("nodiff") != null)
+            prop_diff = false;
+        if(System.getProperty("baseline") != null)
+            prop_baseline = true;
+        if(System.getProperty("nogenerate") != null)
+            prop_generate = false;
+        if(System.getProperty("debug") != null)
+            prop_debug = true;
+        if(System.getProperty("visual") != null)
+            prop_visual = true;
+        if(System.getProperty("ascii") != null)
+            prop_ascii = true;
+        if(System.getProperty("utf8") != null)
+            prop_ascii = false;
+        if(prop_baseline && prop_diff)
+            prop_diff = false;
+        prop_controls = System.getProperty("controls", "");
+    }
+
+    public void
+    visual(String header, String captured)
+    {
+        if(!captured.endsWith("\n"))
+            captured = captured + "\n";
+        // Dump the output for visual comparison
+        System.out.println("Testing " + getName() + ": " + header + ":");
+        System.out.println("---------------");
+        System.out.print(captured);
+        System.out.println("---------------");
     }
 }
 

@@ -60,9 +60,9 @@ public class TestGrid2 extends UnitTestCommon
     static final protected String DATASET = "testgrid2.nc";
 
     static final protected String URLPATH_REMOTE =
-            "/thredds/dodsC/testdods/"+DATASET;
+            "/thredds/dodsC/testdods/" + DATASET;
     static final protected String URLPATH_LOCAL =
-            "/thredds/dodsC/testAll/"+DATASET;
+            "/thredds/dodsC/testAll/" + DATASET;
 
     protected String testserver = null;
 
@@ -110,8 +110,10 @@ public class TestGrid2 extends UnitTestCommon
             if(prop_diff) { //compare with baseline
                 // Read the baseline file(s)
                 String diffs = compare("TestGrid2", BASELINE, data);
-                if(diffs != null)
+                if(diffs != null) {
+                    System.err.println(diffs);
                     pass = false;
+                }
             }
         }
         assertTrue("Testing TestGrid2" + getTitle(), pass
@@ -152,24 +154,23 @@ public class TestGrid2 extends UnitTestCommon
     }
 
     static protected final String BASELINE =
-     "netcdf dods://localhost:8080/thredds/dodsC/testAll/testgrid2.nc {"
-    +"dimensions:"
-    +"time = 2;"
-    +"variables:"
-    +"double var(time=2);"
-    +":_CoordinateAxes = \"time time \";"
-    +"float time(time=2);"
-    +":_CoordinateAxisType = \"Time\";"
-    +"// global attributes:"
-    +":_CoordSysBuilder = \"ucar.nc2.dataset.conv.DefaultConvention\";"
-    +"data:"
-    +"var ="
-    +"{"
-    +"{0.0, 1.0},"
-    +"{2.0, 3.0}"
-    +"}"
-    +"time ="
-    +"{17.0, 23.0}"
-    +"}"
-    ;
+            "netcdf dods://localhost:8080/thredds/dodsC/testAll/testgrid2.nc {\n"
+                    + "  dimensions:\n"
+                    + "    time = 2;\n"
+                    + "  variables:\n"
+                    + "    double var(time=2, time=2);\n"
+                    + "\n"
+                    + "    float time(time=2);\n"
+                    + "\n"
+                    + "  // global attributes:\n"
+                    + "  :_CoordSysBuilder = \"ucar.nc2.dataset.conv.DefaultConvention\";\n"
+                    + " data:\n"
+                    + "var =\n"
+                    + "  {\n"
+                    + "    {0.0, 1.0},\n"
+                    + "    {2.0, 3.0}\n"
+                    + "  }\n"
+                    + "time =\n"
+                    + "  {17.0, 23.0}\n"
+                    + "}\n";
 }

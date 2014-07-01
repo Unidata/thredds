@@ -164,17 +164,6 @@ public class TestGroups extends UnitTestCommon
         return pass;
     }
 
-    void visual(String title, String captured)
-    {
-        // Dump the output for visual comparison
-        if(System.getProperty("visual") != null) {
-            System.out.println("Testing " + title + " visual:");
-            System.out.println("---------------");
-            System.out.print(captured);
-            System.out.println("---------------");
-        }
-    }
-
     /**
      * Remove any _lastModified attributes
      *

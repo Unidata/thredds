@@ -58,6 +58,8 @@ public class NcDDS extends ServerDDS {
   private Vector<Variable> ddsvars = new Vector<Variable>(50);   // list of currently active variables
   private Hashtable<String, Variable> gridarrays = new Hashtable<String, Variable>(50);
   private Hashtable<String, Variable> used = new Hashtable<String, Variable>(50);
+  // Track malformed grids that should be converted to structs
+  private Hashtable<String, Variable> malgrids = new Hashtable<String, Variable>(50);
 
   private Variable findVariable(String name)
   {
@@ -110,6 +112,7 @@ public class NcDDS extends ServerDDS {
                 for(int j=i;isgridarray && j<rank;j++) {
                     if(dimset.get(j) == dim)
                         isgridarray = false;
+			malgrids.put(v.getFullName(),v);
                 }
             }
             if(isgridarray)   {
@@ -196,24 +199,24 @@ public class NcDDS extends ServerDDS {
     // no dim can be duplicated.
     boolean isGrid = (gridarrays.get(v.getFullName()) != null);
     NcSDArray arr = new NcSDArray(v, createScalarVariable(ncfile, v));
-    if (!isGrid)
-        return arr;
-
-     // isgrid == true
-    ArrayList<BaseType> list = new ArrayList<BaseType>();
-    list.add(arr); // Array is first element in the list
-    List<Dimension> dimset = v.getDimensions();
-    for (Dimension dim : dimset) {
-      Variable v1 = used.get(dim.getShortName());
-      assert (v1 != null);
-      BaseType bt = null;
-      if ((v1.getDataType() == DataType.CHAR))
-        bt = (v1.getRank() > 1) ? new NcSDCharArray(v1) : new NcSDString(v1);
-      else
-        bt = new NcSDArray(v1, createScalarVariable(ncfile, v1));
-      list.add(bt);
-    }
-    return new NcSDGrid(v.getShortName(), list);
+    if (isGrid) {
+         // isgrid == true
+        ArrayList<BaseType> list = new ArrayList<BaseType>();
+        list.add(arr); // Array is first element in the list
+        List<Dimension> dimset = v.getDimensions();
+        for (Dimension dim : dimset) {
+          Variable v1 = used.get(dim.getShortName());
+          assert (v1 != null);
+          BaseType bt = null;
+          if ((v1.getDataType() == DataType.CHAR))
+            bt = (v1.getRank() > 1) ? new NcSDCharArray(v1) : new NcSDString(v1);
+          else
+            bt = new NcSDArray(v1, createScalarVariable(ncfile, v1));
+          list.add(bt);
+        }
+        return new NcSDGrid(v.getShortName(), list);
+    } else
+      return arr;
   }
 
   private BaseType createStructure(NetcdfFile ncfile, Structure s) {
