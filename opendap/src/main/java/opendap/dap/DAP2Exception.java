@@ -43,7 +43,7 @@ package opendap.dap;
 import java.io.*;
 
 //import opendap.dap.parsers.ErrorParser;
-import opendap.dap.parsers.DapParser;
+import opendap.dap.parsers.Dap2Parser;
 import opendap.dap.parsers.ParseException;
 
 /**
@@ -276,11 +276,11 @@ public class DAP2Exception extends Exception {
      * @param stream the text containing the <code>Error</code> to parse.
      */
     public final boolean parse(InputStream stream) {
-        DapParser parser = new DapParser(new DefaultFactory());
+        Dap2Parser parser = new Dap2Parser(new DefaultFactory());
         String text;
 	try {
             text = DConnect2.captureStream(stream);
-            if(parser.errparse(text,this) != DapParser.DapERR) return false;
+            if(parser.errparse(text,this) != Dap2Parser.DapERR) return false;
 	} catch (ParseException pe) {
 	    this.initCause(pe);
 	}catch (IOException pe) {

@@ -1,11 +1,17 @@
 /* Copyright 2009, UCAR/Unidata and OPeNDAP, Inc.
    See the COPYRIGHT file for more information. */
 
+/*
+2014-06-30: Synch with oc dap2.y grammar.
+
+*/
+
+
 %error-verbose
 
 %define public
 %define package "opendap.dap.parsers"
-%define extends {Dapparse}
+%define extends {Dap2Parse}
 %define throws {ParseException}
 %define lex_throws {ParseException}
 
@@ -14,21 +20,21 @@ import opendap.dap.*;
 import opendap.dap.BaseTypeFactory;
 import opendap.dap.parsers.ParseException;
 import java.io.*;
-import static opendap.dap.parsers.DapParser.Lexer.*;
+import static opendap.dap.parsers.Dap2Parser.Lexer.*;
 }
 
 %code {
  
     /**
      * Instantiates the Bison-generated parser.
-     * @param yylexer The scanner that will supply tokens to the parser.
+     * @param factory the factory for generating tree nodes
      */
 
-    public DapParser(BaseTypeFactory factory)
+    public Dap2Parser(BaseTypeFactory factory)
     {
 	super(factory);
-	this.yylexer = new Daplex(this);
-	super.lexstate = (Daplex)this.yylexer;
+	this.yylexer = new Dap2Lex(this);
+	super.lexstate = (Dap2Lex)this.yylexer;
     }
 
     /* the parse function allows the specification of a
@@ -37,8 +43,8 @@ import static opendap.dap.parsers.DapParser.Lexer.*;
 
     public boolean parse(String input) throws ParseException
     {
-	((Daplex)yylexer).reset(parsestate);
-	((Daplex)yylexer).setText(input);
+	((Dap2Lex)yylexer).reset(parsestate);
+	((Dap2Lex)yylexer).setText(input);
 	return parse();
     }
 
@@ -51,6 +57,7 @@ import static opendap.dap.parsers.DapParser.Lexer.*;
     public String getURL() {return this.url;}
 }
 
+	
 %token SCAN_ALIAS 
 %token SCAN_ARRAY
 %token SCAN_ATTR
@@ -73,10 +80,12 @@ import static opendap.dap.parsers.DapParser.Lexer.*;
 %token SCAN_UINT16
 %token SCAN_UINT32
 %token SCAN_URL 
-%token SCAN_WORD
 /* For errorbody */
 %token SCAN_PTYPE
 %token SCAN_PROG
+
+/* Non-keywords */
+%token WORD_WORD WORD_STRING
 
 %start start
 
@@ -84,10 +93,10 @@ import static opendap.dap.parsers.DapParser.Lexer.*;
 
 start:
 	  dataset datasetbody
-	| dataset datasetbody SCAN_DATA {return YYACCEPT;}
+	| dataset datasetbody SCAN_DATA
 	| attr attributebody
 	| err errorbody
-        | error {unrecognizedresponse(parsestate);}
+        | error {unrecognizedresponse(parsestate); return YYABORT;}
 	;
 
 dataset:
@@ -120,14 +129,14 @@ declaration:
 	  base_type var_name array_decls ';'
 		{$$=makebase(parsestate,$2,$1,$3);}
 	| SCAN_STRUCTURE '{' declarations '}' var_name array_decls ';'
-	    {if(($$ = makestructure(parsestate,$5,$6,$3))==null) {return YYABORT;}}
+	    {if(($$=makestructure(parsestate,$5,$6,$3))==null) {return YYABORT;}}
 	| SCAN_SEQUENCE '{' declarations '}' var_name ';'
-	    {if(($$ = makesequence(parsestate,$5,$3))==null) {return YYABORT;}}
+	    {if(($$=makesequence(parsestate,$5,$3))==null) {return YYABORT;}}
 	| SCAN_GRID '{' SCAN_ARRAY ':' declaration SCAN_MAPS ':'
           declarations '}' var_name ';'
-	    {if(($$ = makegrid(parsestate,$10,$5,$8))==null) {return YYABORT;}}
+	    {if(($$=makegrid(parsestate,$10,$5,$8))==null) {return YYABORT;}}
         | error 
-            {daperror(parsestate,"Unrecognized type"); return YYABORT;}
+            {dapsemanticerror(parsestate,EBADTYPE,"Unrecognized type"); return YYABORT;}
 	;
  
 
@@ -149,17 +158,17 @@ array_decls:
 	;
 
 array_decl:
-	   '[' SCAN_WORD ']' {$$=arraydecl(parsestate,null,$2);}
-	 | '[' '=' SCAN_WORD ']' {$$=arraydecl(parsestate,null,$3);}
-	 | '[' name '=' SCAN_WORD ']' {$$=arraydecl(parsestate,$2,$4);}
+	   '[' WORD_WORD ']' {$$=arraydecl(parsestate,null,$2);}
+	 | '[' '=' WORD_WORD ']' {$$=arraydecl(parsestate,null,$3);}
+	 | '[' name '=' WORD_WORD ']' {$$=arraydecl(parsestate,$2,$4);}
 	 | error
-	    {daperror(parsestate,"Illegal dimension declaration/reference"); return YYABORT;}
+	    {dapsemanticerror(parsestate,EDIMSIZE,"Illegal dimension declaration"); return YYABORT;}
 	;
 
 datasetname:
 	  var_name {$$=$1;}
         | error
-	    {daperror(parsestate,"Illegal dataset declaration"); return YYABORT;}
+	    {dapsemanticerror(parsestate,EDDS,"Illegal dataset declaration"); return YYABORT;}
 	;
 
 var_name: name {$$=$1;};
@@ -167,7 +176,7 @@ var_name: name {$$=$1;};
 attributebody:
 	  '{' attr_list '}' {attributebody(parsestate,$2);}
 	| error
-            {daperror(parsestate,"Illegal DAS body"); return YYABORT;}
+            {dapsemanticerror(parsestate,EDAS,"Illegal DAS body"); return YYABORT;}
 	;
 
 attr_list:
@@ -197,40 +206,40 @@ attribute:
 	    {$$=attribute(parsestate,$2,$3,(Object)SCAN_URL);}
 	| name '{' attr_list '}' {$$=attrset(parsestate,$1,$3);}
 	| error 
-            {daperror(parsestate,"Illegal attribute"); return YYABORT;}
+            {dapsemanticerror(parsestate,EDAS,"Illegal attribute"); return YYABORT;}
 	;
 
 bytes:
-	  SCAN_WORD {$$=attrvalue(parsestate,null,$1,(Object)SCAN_BYTE);}
-	| bytes ',' SCAN_WORD
+	  WORD_WORD {$$=attrvalue(parsestate,null,$1,(Object)SCAN_BYTE);}
+	| bytes ',' WORD_WORD
 		{$$=attrvalue(parsestate,$1,$3,(Object)SCAN_BYTE);}
 	;
 int16:
-	  SCAN_WORD {$$=attrvalue(parsestate,null,$1,(Object)SCAN_INT16);}
-	| int16 ',' SCAN_WORD
+	  WORD_WORD {$$=attrvalue(parsestate,null,$1,(Object)SCAN_INT16);}
+	| int16 ',' WORD_WORD
 		{$$=attrvalue(parsestate,$1,$3,(Object)SCAN_INT16);}
 	;
 uint16:
-	  SCAN_WORD {$$=attrvalue(parsestate,null,$1,(Object)SCAN_UINT16);}
-	| uint16 ',' SCAN_WORD
+	  WORD_WORD {$$=attrvalue(parsestate,null,$1,(Object)SCAN_UINT16);}
+	| uint16 ',' WORD_WORD
 		{$$=attrvalue(parsestate,$1,$3,(Object)SCAN_UINT16);}
 	;
 int32:
-	  SCAN_WORD {$$=attrvalue(parsestate,null,$1,(Object)SCAN_INT32);}
-	| int32 ',' SCAN_WORD
+	  WORD_WORD {$$=attrvalue(parsestate,null,$1,(Object)SCAN_INT32);}
+	| int32 ',' WORD_WORD
 		{$$=attrvalue(parsestate,$1,$3,(Object)SCAN_INT32);}
 	;
 uint32:
-	  SCAN_WORD {$$=attrvalue(parsestate,null,$1,(Object)SCAN_UINT32);}
-	| uint32 ',' SCAN_WORD  {$$=attrvalue(parsestate,$1,$3,(Object)SCAN_UINT32);}
+	  WORD_WORD {$$=attrvalue(parsestate,null,$1,(Object)SCAN_UINT32);}
+	| uint32 ',' WORD_WORD  {$$=attrvalue(parsestate,$1,$3,(Object)SCAN_UINT32);}
 	;
 float32:
-	  SCAN_WORD {$$=attrvalue(parsestate,null,$1,(Object)SCAN_FLOAT32);}
-	| float32 ',' SCAN_WORD  {$$=attrvalue(parsestate,$1,$3,(Object)SCAN_FLOAT32);}
+	  WORD_WORD {$$=attrvalue(parsestate,null,$1,(Object)SCAN_FLOAT32);}
+	| float32 ',' WORD_WORD  {$$=attrvalue(parsestate,$1,$3,(Object)SCAN_FLOAT32);}
 	;
 float64:
-	  SCAN_WORD {$$=attrvalue(parsestate,null,$1,(Object)SCAN_FLOAT64);}
-	| float64 ',' SCAN_WORD  {$$=attrvalue(parsestate,$1,$3,(Object)SCAN_FLOAT64);}
+	  WORD_WORD {$$=attrvalue(parsestate,null,$1,(Object)SCAN_FLOAT64);}
+	| float64 ',' WORD_WORD  {$$=attrvalue(parsestate,$1,$3,(Object)SCAN_FLOAT64);}
 	;
 strs:
 	  str_or_id {$$=attrvalue(parsestate,null,$1,(Object)SCAN_STRING);}
@@ -243,21 +252,23 @@ urls:
 	;
 
 url:
-	SCAN_WORD {$$=$1;}
+	str_or_id {$$=$1;}
 	;
 
 str_or_id:
-	SCAN_WORD {$$=$1;}
+	  name {$$=$1;}
+	| WORD_STRING {$$=$1;}
 	;
 
 /* Not used
 float_or_int:
-	SCAN_WORD {$$=$1;}
+	  WORD_INT {$$=$1;}
+	| WORD_DOUBLE {$$=$1;}        
 	;
 */
 
 alias:
-	SCAN_ALIAS name name {$$=$2; $$=$3; $$=null;} /* Alias is ignored */
+	SCAN_ALIAS WORD_WORD WORD_WORD {$$=$2; $$=$3; $$=null;} /* Alias is ignored */
 	;
 
 errorbody:
@@ -265,16 +276,16 @@ errorbody:
 		{errorbody(parsestate,$2,$3,$4,$5);}
 	;
 
-errorcode:  /*empty*/ {$$=null;} | SCAN_CODE    '=' SCAN_WORD ';' {$$=$3;}
-errormsg:   /*empty*/ {$$=null;} | SCAN_MESSAGE '=' SCAN_WORD ';' {$$=$3;}
-errorptype: /*empty*/ {$$=null;} | SCAN_PTYPE   '=' SCAN_WORD ';' {$$=$3;}
-errorprog : /*empty*/ {$$=null;} | SCAN_PROG    '=' SCAN_WORD ';' {$$=$3;}
+errorcode:  /*empty*/ {$$=null;} | SCAN_CODE    '=' WORD_WORD ';' {$$=$3;}
+errormsg:   /*empty*/ {$$=null;} | SCAN_MESSAGE '=' WORD_WORD ';' {$$=$3;}
+errorptype: /*empty*/ {$$=null;} | SCAN_PTYPE   '=' WORD_WORD ';' {$$=$3;}
+errorprog : /*empty*/ {$$=null;} | SCAN_PROG    '=' WORD_WORD ';' {$$=$3;}
 
 /* Note that variable names like "byte" are legal names
    and are disambiguated by context
 */
 name:
-          SCAN_WORD      {$$=unescapeDAPName($1);}
+          WORD_WORD      {$$=dapdecode(parsestate.lexstate,$1);}
 	| SCAN_ALIAS     {$$=strdup("alias");}
 	| SCAN_ARRAY     {$$=strdup("array");}
 	| SCAN_ATTR      {$$=strdup("attributes");}
@@ -297,6 +308,7 @@ name:
 	| SCAN_CODE      {$$=strdup("code");}
 	| SCAN_MESSAGE   {$$=strdup("message");}
 	| SCAN_PROG      {$$=strdup("program");}
+	| SCAN_PTYPE     {$$=strdup("program_type");}
 	;
 
 %%
