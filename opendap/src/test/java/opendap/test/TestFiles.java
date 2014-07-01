@@ -40,7 +40,7 @@ import java.io.*;
 // WARNING: assumes we are operating inside cdm directory
 // when invoked
 
-public class TestFiles extends UnitTestCommon
+abstract public class TestFiles extends UnitTestCommon
 {
   // Following are with respect to threddsRoot
   static final String TESTSUFFIX = "opendap/src/test/data";
