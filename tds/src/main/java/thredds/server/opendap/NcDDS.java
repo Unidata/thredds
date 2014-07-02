@@ -51,6 +51,7 @@ import java.util.*;
 
 public class NcDDS extends ServerDDS {
 
+  // Handle the case of potential grids when the array has duplicate dims
   static protected final boolean HANDLE_DUP_DIM_GRIDS = true;
 
   static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(NcDDS.class);
@@ -61,7 +62,6 @@ public class NcDDS extends ServerDDS {
   private Vector<Variable> ddsvars = new Vector<Variable>(50);   // list of currently active variables
   private Hashtable<String, Variable> gridarrays = new Hashtable<String, Variable>(50);
   private Hashtable<String, Variable> used = new Hashtable<String, Variable>(50);
-
   private Variable findVariable(String name)
   {
       for (Variable v: ddsvars) {
@@ -98,18 +98,19 @@ public class NcDDS extends ServerDDS {
      for (Variable v : ddsvars) {
             boolean isgridarray = (v.getRank() > 1) && (v.getDataType() != DataType.STRUCTURE) && (v.getParentStructure() == null);
             if(!isgridarray) continue;
-            Iterator iter = v.getDimensions().iterator();
-            while (isgridarray && iter.hasNext()) {
-                Dimension dim = (Dimension) iter.next();
+            List<Dimension> dimset = v.getDimensions();
+            int rank = dimset.size();
+            for(int i=0;isgridarray && i<rank;i++) {
+                Dimension dim = dimset.get(i);
                 if (dim.getShortName() == null)
-                  isgridarray = false;
-                else {
-                  Variable gv = coordvars.get(dim.getShortName());
-                  if (gv == null)
-                     isgridarray = false;
-		}
+                    isgridarray = false;
+                 else {
+                     Variable gv = coordvars.get(dim.getShortName());
+                     if (gv == null)
+                        isgridarray = false;
+                }
    	        if(HANDLE_DUP_DIM_GRIDS) {
-                    // Check for duplicate dims => do not make a grid
+                    // Check for duplicate dims
                     for(int j=i;isgridarray && j<rank;j++) {
                         if(dimset.get(j) == dim)
                             isgridarray = false;
@@ -118,15 +119,15 @@ public class NcDDS extends ServerDDS {
             }
             if(isgridarray)   {
                 gridarrays.put(v.getFullName(),v);
-                for(iter=v.getDimensions().iterator();iter.hasNext();) {
-                    Dimension dim = (Dimension) iter.next();
+                for(int i=0;i<rank;i++) {
+                    Dimension dim = (Dimension) dimset.get(i);
                     Variable gv = coordvars.get(dim.getShortName());
                     if (gv != null)
                         used.put(gv.getFullName(),gv);
                 }
             }
      }
-      // remove the used coord vars from ddsvars (wrong for now; keep so that coord vars are top-level also)
+     // remove the used coord vars from ddsvars (wrong for now; keep so that coord vars are top-level also)
      // for(Variable v: used.values()) ddsvars.remove(v);
 
     // Create the set of variables
@@ -197,25 +198,27 @@ public class NcDDS extends ServerDDS {
 
   private BaseType createArray(NetcdfFile ncfile, Variable v) {
     // all dimensions must have coord vars to be a grid, also must have the same name
+    // no dim can be duplicated.
     boolean isGrid = (gridarrays.get(v.getFullName()) != null);
     NcSDArray arr = new NcSDArray(v, createScalarVariable(ncfile, v));
-    if (!isGrid)
-        return arr;
-
-     // isgrid == true
-    ArrayList<BaseType> list = new ArrayList<BaseType>();
-    list.add(arr); // Array is first element in the list
-    for (Dimension dim : v.getDimensions()) {
-      Variable v1 = used.get(dim.getShortName());
-      assert (v1 != null);
-      BaseType bt = null;
-      if ((v1.getDataType() == DataType.CHAR))
-        bt = (v1.getRank() > 1) ? new NcSDCharArray(v1) : new NcSDString(v1);
-      else
-        bt = new NcSDArray(v1, createScalarVariable(ncfile, v1));
-      list.add(bt);
-    }
-    return new NcSDGrid(v.getShortName(), list);
+    if (isGrid) {
+         // isgrid == true
+        ArrayList<BaseType> list = new ArrayList<BaseType>();
+        list.add(arr); // Array is first element in the list
+        List<Dimension> dimset = v.getDimensions();
+        for (Dimension dim : dimset) {
+          Variable v1 = used.get(dim.getShortName());
+          assert (v1 != null);
+          BaseType bt = null;
+          if ((v1.getDataType() == DataType.CHAR))
+            bt = (v1.getRank() > 1) ? new NcSDCharArray(v1) : new NcSDString(v1);
+          else
+            bt = new NcSDArray(v1, createScalarVariable(ncfile, v1));
+          list.add(bt);
+        }
+        return new NcSDGrid(v.getShortName(), list);
+    } else
+      return arr;
   }
 
   private BaseType createStructure(NetcdfFile ncfile, Structure s) {
