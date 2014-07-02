@@ -121,39 +121,6 @@ public class TestGrid1 extends UnitTestCommon
         );
     }
 
-    String ncdumpmetadata(NetcdfDataset ncfile)
-            throws Exception
-    {
-        StringWriter sw = new StringWriter();
-        // Print the meta-databuffer using these args to NcdumpW
-        try {
-            if(!ucar.nc2.NCdumpW.print(ncfile, "-unsigned", sw, null))
-                throw new Exception("NcdumpW failed");
-        } catch (IOException ioe) {
-            throw new Exception("NcdumpW failed", ioe);
-        }
-        sw.close();
-        return sw.toString();
-    }
-
-    String ncdumpdata(NetcdfDataset ncfile)
-            throws Exception
-    {
-        StringWriter sw = new StringWriter();
-        // Dump the databuffer
-        sw = new StringWriter();
-        try {
-            if(!ucar.nc2.NCdumpW.print(ncfile, "-vall -unsigned", sw, null))
-                throw new Exception("NCdumpW failed");
-        } catch (IOException ioe) {
-            ioe.printStackTrace();
-            throw new Exception("NCdumpW failed", ioe);
-        }
-        sw.close();
-        return sw.toString();
-    }
-
-
     static protected final String BASELINE =
      "netcdf dods://localhost:8080/thredds/dodsC/testAll/testgrid1.nc {"
     +"dimensions:"

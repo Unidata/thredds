@@ -111,7 +111,7 @@ public class NcDDS extends ServerDDS {
                 }
    	        if(HANDLE_DUP_DIM_GRIDS) {
                     // Check for duplicate dims
-                    for(int j=i;isgridarray && j<rank;j++) {
+                    for(int j=i+1;isgridarray && j<rank;j++) {
                         if(dimset.get(j) == dim)
                             isgridarray = false;
 		    }

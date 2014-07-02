@@ -37,6 +37,8 @@ import junit.framework.TestCase;
 import org.apache.http.*;
 import org.apache.http.protocol.HttpContext;
 import org.junit.Test;
+import ucar.nc2.NetcdfFile;
+import ucar.nc2.dataset.NetcdfDataset;
 import ucar.unidata.test.Diff;
 
 import java.io.*;
@@ -212,5 +214,41 @@ public class UnitTestCommon extends TestCase
         System.out.print(captured);
         System.out.println("---------------");
     }
+
+    static protected String
+    ncdumpmetadata(NetcdfFile ncfile)
+            throws Exception
+    {
+        StringWriter sw = new StringWriter();
+        // Print the meta-databuffer using these args to NcdumpW
+        try {
+            if(!ucar.nc2.NCdumpW.print(ncfile, "-unsigned", sw, null))
+                throw new Exception("NcdumpW failed");
+        } catch (IOException ioe) {
+            throw new Exception("NcdumpW failed", ioe);
+        }
+        sw.close();
+        return sw.toString();
+    }
+
+    static protected String
+    ncdumpdata(NetcdfFile ncfile)
+            throws Exception
+    {
+        StringWriter sw = new StringWriter();
+        // Dump the databuffer
+        sw = new StringWriter();
+        try {
+            if(!ucar.nc2.NCdumpW.print(ncfile, "-vall -unsigned", sw, null))
+                throw new Exception("NCdumpW failed");
+        } catch (IOException ioe) {
+            ioe.printStackTrace();
+            throw new Exception("NCdumpW failed", ioe);
+        }
+        sw.close();
+        return sw.toString();
+    }
+
+
 }
 
