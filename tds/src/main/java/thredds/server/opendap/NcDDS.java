@@ -50,6 +50,9 @@ import java.util.*;
  */
 
 public class NcDDS extends ServerDDS {
+
+  static protected final boolean HANDLE_DUP_DIM_GRIDS = true;
+
   static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(NcDDS.class);
 
   //private HashMap<String, BaseType> coordHash = new HashMap<String, BaseType>(50); // non grid coordinate variables
