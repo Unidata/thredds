@@ -59,6 +59,11 @@ public class StructureDataW extends StructureData {
     memberData = new HashMap<>(2*members.getMembers().size());
   }
 
+  public StructureDataW(StructureMembers members, int size) {
+    super(members);
+    memberData = new HashMap<>(2*size);
+  }
+
   /* Copy constructor.
    *  This makes a local copy of all the data in the from StrucureData.
    * @param from copy from here

@@ -566,7 +566,7 @@ public class TableAnalyzer {
 
   ////////////////////////////////////////////////////////////////////////////////////////////////
 
-  public void showCoordSys(java.util.Formatter sf) {
+  /* public void showCoordSys(java.util.Formatter sf) {
     sf.format("\nCoordinate Systems\n");
     for (CoordinateSystem cs : ds.getCoordinateSystems()) {
       sf.format(" %s\n", cs);
@@ -578,7 +578,7 @@ public class TableAnalyzer {
     for (CoordinateAxis axis : ds.getCoordinateAxes()) {
       sf.format(" %s %s\n", axis.getAxisType(), axis.getNameAndDimensions());
     }
-  }
+  } */
 
   /* public void showTables(java.util.Formatter sf) {
     sf.format("\nTables\n");
@@ -601,7 +601,7 @@ public class TableAnalyzer {
   }
 
   public void getDetailInfo(java.util.Formatter sf) {
-    sf.format("\nTableAnalyzer on Dataset %s\n", ds.getLocation());
+    sf.format("-----------------------------------------------------\nTableAnalyzer on Dataset %s\n", ds.getLocation());
     if (tc != null) sf.format(" TableAnalyser = %s\n", tc.getClass().getName());
     showNestedTables(sf);
     String errlogS = errlog.toString();

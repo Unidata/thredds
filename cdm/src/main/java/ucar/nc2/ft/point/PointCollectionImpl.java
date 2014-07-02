@@ -32,16 +32,19 @@
  */
 package ucar.nc2.ft.point;
 
+import ucar.nc2.Variable;
+import ucar.nc2.VariableSimpleIF;
 import ucar.nc2.ft.PointFeatureCollection;
 import ucar.nc2.ft.PointFeatureIterator;
 import ucar.nc2.ft.PointFeature;
 import ucar.nc2.time.CalendarDateRange;
 import ucar.nc2.units.DateRange;
 import ucar.nc2.constants.FeatureType;
-import ucar.nc2.units.DateUnit;
 import ucar.unidata.geoloc.LatLonRect;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Abstract superclass for PointFeatureCollection
@@ -56,23 +59,13 @@ public abstract class PointCollectionImpl implements PointFeatureCollection {
   protected CalendarDateRange dateRange;
   protected int npts;
   protected PointFeatureIterator localIterator;
-  //protected DateUnit timeUnit;
-  //protected String altUnits;
 
   protected PointCollectionImpl(String name) { //}, DateUnit timeUnit, String altUnits) {
     this.name = name;
-    //this.timeUnit = timeUnit;
-    //this.altUnits = altUnits;
     this.npts = -1;
   }
 
-  /* protected PointCollectionImpl(String name, LatLonRect boundingBox, CalendarDateRange dateRange, int npts) {
-    this.name = name;
-    this.boundingBox = boundingBox;
-    this.dateRange = dateRange;
-    this.npts = npts;
-  }  */
-
+  public List<Variable> getExtraVariables() { return new ArrayList<>(); }
 
   public void setDateRange(DateRange range) {
     this.dateRange = CalendarDateRange.of(range);
@@ -111,14 +104,6 @@ public abstract class PointCollectionImpl implements PointFeatureCollection {
   public String getName() {
     return name;
   }
-
-  /* public String getAltUnits() {
-    return altUnits;
-  }
-
-  public DateUnit getTimeUnit() {
-    return timeUnit;
-  } */
 
   public boolean hasNext() throws IOException {
     if (localIterator == null) resetIteration();

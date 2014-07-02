@@ -246,7 +246,10 @@ public class FeatureDatasetFactoryManager {
     }
 
     NetcdfDataset ncd = NetcdfDataset.acquireDataset(location, task);
-    return wrap(wantFeatureType, ncd, task, errlog);
+    FeatureDataset result = wrap(wantFeatureType, ncd, task, errlog);
+    if (result == null)
+      ncd.close();
+    return result;
   }
 
   /**

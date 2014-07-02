@@ -1080,6 +1080,7 @@ public abstract class Table {
    */
   public static class TableTop extends Table {
     NetcdfDataset ds;
+    StructureDataTop sdata;
 
     TableTop(NetcdfDataset ds, TableConfig config) {
       super(ds, config);
@@ -1091,12 +1092,33 @@ public abstract class Table {
     }
 
     public StructureDataIterator getStructureDataIterator(Cursor cursor, int bufferSize) throws IOException {
-      return new SingletonStructureDataIterator(null);
+      // grab scalars, make sdata
+      if (sdata == null) {
+        sdata = new StructureDataTop();
+        sdata.addVariableAsMember(ds, feature_id);
+      }
+
+      return new SingletonStructureDataIterator(sdata);
     }
 
         @Override
     public String getName() {
       return "TopScalars";
+    }
+  }
+
+  private class StructureDataTop extends StructureDataW {
+
+    public StructureDataTop() {
+      super(new StructureMembers("top"));
+    }
+
+    void addVariableAsMember(NetcdfDataset ds, String scalarVariableName) throws IOException {
+      if (scalarVariableName == null) return;
+      Variable v = ds.findVariable(scalarVariableName);
+      if (v == null) return;
+      StructureMembers.Member m = this.members.addMember(v.getFullName(), null, null, v.getDataType(), v.getShape());
+      setMemberData(m, v.read());
     }
   }
 

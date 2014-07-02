@@ -12,7 +12,7 @@
 
 <p>Point Feature Datasets (also known as Discrete Sampling Geometry (DSG) datasets) are collections of Point Features. Point Feature Datasets contain one or
   more FeatureCollections:</p>
-<pre>  public interface <strong>ucar.nc2.ft.PointFeatureDataset</strong> extends ucar.nc2.ft.<strong>FeatureDataset </strong>{<br/>    List&lt;<strong>FeatureCollection</strong>&gt; <strong>getPointFeatureCollectionList</strong>();<br/>  }</pre>
+<pre>  public interface <strong>ucar.nc2.ft.FeatureDatasetPoint</strong> extends ucar.nc2.ft.<strong>FeatureDataset </strong>{<br/>    List&lt;<strong>FeatureCollection</strong>&gt; <strong>getPointFeatureCollectionList</strong>();<br/>  }</pre>
 <p>Point Feature Datasets will contain <strong>PointFeatureCollections</strong> or <strong>NestedPointFeatureCollections</strong>, described below. We take the
   approach that all point feature types are arrangements of collections of <em>PointFeatures</em> (a set of measurements at the same point in space and time),
   distinguished by the geometry and topology of the collections. The <strong><em>Point Feature Types</em></strong> that we implement are: </p>
@@ -26,12 +26,13 @@
 </ol>
 <h3>Related documents:</h3>
 <ul>
-  <li> CF 1.6 <a href="http://cf-pcmdi.llnl.gov/documents/cf-conventions/1.6/cf-conventions.html#discrete-sampling-geometries">Discrete Sampling Geometries
+  <li> CF 1.6 <a href="http://cfconventions.org/1.6.html#discrete-sampling-geometries">Discrete Sampling Geometries
     Conventions</a></li>
   <li>CDM Feature Types <em> draft </em><a href="../../CDM/CDMfeatures.doc">doc</a></li>
   <li>CDM Point Feature Types <em> draft </em><a href="../../CDM/CDMpoints.doc">doc</a></li>
   <li>Complete <a href="PointUML.html">Point Feature UML</a></li>
 </ul>
+<hr />
 <h2>Point Features</h2>
 
 <p><img src="PF1.png" width="412" height="210" alt=""/></p>
@@ -146,7 +147,8 @@ correct state.
     ...
   } 
 </pre>
-<h2><strong>Profile Features</strong></h2>
+<hr />
+<h2><strong>Profile Feature Collection</strong></h2>
 
 <p><img src="ProfileFeature.png" width="725" height="351" alt=""/></p>
 
@@ -224,7 +226,8 @@ correct state.
   is identical to a <em>PointFeatureIterator</em>, except that it returns <em>PointFeatureCollections</em> instead of <em>PointFeature</em>s. The main reason to
   use this is probably to explicitly set the buffer size. </p>
 <pre>  public interface <strong>ucar.nc2.ft.PointFeatureCollectionIterator </strong>{<br/>    boolean <strong>hasNext</strong>();<br/>    ucar.nc2.ft.PointFeatureCollection <strong>nextFeature</strong>();<br/>    void <strong>setBufferSize</strong>(int bufferSize);<br/>  }</pre>
-<h2>Trajectory Features</h2>
+<hr />
+<h2>Trajectory Feature Collection</h2>
 
 <p><img src="TrajectoryFeature.png" width="725" height="345" alt=""/></p>
 
@@ -234,6 +237,7 @@ correct state.
 
 <p>&nbsp;</p>
 
+<hr />
 <h2><strong>Station Time Series Features </strong></h2>
 
 <h3><strong>StationTimeSeriesFeature</strong></h3>
@@ -322,6 +326,7 @@ correct state.
     ...
   }
 </pre>
+<hr />
 <h2>Station Profile Features </h2>
 
 <p><img src="StationProfile.png" width="663" height="484" alt=""/></p>
@@ -399,8 +404,7 @@ correct state.
   PointFeatures. The flattening may include subsetting by lat/lon bounding box, and/or a dateRange. </p>
 <hr width="100%"/>
 <address>
-  <img src="../../nc.gif" width="64" height="64" alt=""/> This document is maintained by <a href="mailto:caron@unidata.ucar.edu">John Caron</a> and was last updated on
-  March 5, 2009
+  <img src="../../nc.gif" width="64" height="64" alt=""/> This document  was last updated July 2014
 </address>
 </body>
 </html>

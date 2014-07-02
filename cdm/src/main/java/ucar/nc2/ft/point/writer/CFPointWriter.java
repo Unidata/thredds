@@ -210,6 +210,7 @@ public class CFPointWriter implements AutoCloseable {
   protected LatLonRect llbb = null;
   protected CalendarDate minDate = null;
   protected CalendarDate maxDate = null;
+  protected List<VariableSimpleIF> coordVars = new ArrayList<>();
 
   protected final boolean noTimeCoverage;
   protected final boolean noUnlimitedDimension;  // experimental , netcdf-3
@@ -273,10 +274,11 @@ public class CFPointWriter implements AutoCloseable {
     for (VariableSimpleIF vs : coords) {
       List<Dimension> dims = makeDimensionList(dimMap, vs.getDimensions());
       dims.add(0, recordDim);
-      Variable member = writer.addVariable(null, vs.getShortName(), vs.getDataType(), dims);
+      Variable mv = writer.addVariable(null, vs.getShortName(), vs.getDataType(), dims);
       for (Attribute att : vs.getAttributes())
-        member.addAttribute(att);
-      dataVarMap.put(member.getShortName(), member);
+        mv.addAttribute(att);
+      dataVarMap.put(mv.getShortName(), mv);
+      coordVars.add(vs);
     }
 
   }
@@ -289,6 +291,7 @@ public class CFPointWriter implements AutoCloseable {
       Variable member = writer.addStructureMember(parent, vs.getShortName(), vs.getDataType(), dims);
       for (Attribute att : vs.getAttributes())
         member.addAttribute(att);
+      coordVars.add(vs);
     }
     parent.calcElementSize();
   }
@@ -328,10 +331,10 @@ public class CFPointWriter implements AutoCloseable {
           newVar.addAttribute(att);
       }
 
-      String coordNames = timeName + " " + latName +" "+ lonName;
-      if (altUnits != null)
-        coordNames = coordNames +" " + altName;
-      newVar.addAttribute( new Attribute(CF.COORDINATES, coordNames));
+      Formatter coordName = new Formatter();
+      for (VariableSimpleIF coord : coordVars)
+        coordName.format("%s ", coord.getFullName());
+      newVar.addAttribute( new Attribute(CF.COORDINATES, coordName.toString()));
 
       dataVarMap.put(newVar.getShortName(), newVar);
     }

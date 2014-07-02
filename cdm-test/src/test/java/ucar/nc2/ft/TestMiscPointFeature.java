@@ -31,6 +31,7 @@
  */
 
 package ucar.nc2.ft;
+
 import java.io.IOException;
 import java.text.DateFormat;
 import java.text.ParseException;
@@ -40,7 +41,9 @@ import java.util.Formatter;
 import java.util.List;
 
 import org.junit.Test;
+import ucar.nc2.NetcdfFile;
 import ucar.nc2.constants.FeatureType;
+import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.time.CalendarDateRange;
 import ucar.nc2.units.DateRange;
 import ucar.unidata.geoloc.LatLonPointImpl;
@@ -105,15 +108,15 @@ public class TestMiscPointFeature {
 
   @Test
   public void testGempak() throws Exception {
-    String file = TestDir.cdmUnitTestDir +  "formats/gempak/surface/09052812.sf";       // Q:/cdmUnitTest/formats/gempak/surface/09052812.sf
+    String file = TestDir.cdmUnitTestDir + "formats/gempak/surface/09052812.sf";       // Q:/cdmUnitTest/formats/gempak/surface/09052812.sf
     Formatter buf = new Formatter();
     FeatureDatasetPoint pods = (FeatureDatasetPoint) FeatureDatasetFactoryManager.open(ucar.nc2.constants.FeatureType.POINT, file, null, buf);
     if (pods == null) {  // try as ANY_POINT
       pods = (FeatureDatasetPoint) FeatureDatasetFactoryManager.open(ucar.nc2.constants.FeatureType.ANY_POINT, file, null, buf);
     }
     if (pods == null) {
-      System.out.printf("can't open file=%s%n error=%s%n",file, buf );
-      throw new Exception("can't open file "+file);
+      System.out.printf("can't open file=%s%n error=%s%n", file, buf);
+      throw new Exception("can't open file " + file);
     }
     List<FeatureCollection> collectionList = pods.getPointFeatureCollectionList();
     if (collectionList.size() > 1) {
@@ -133,7 +136,7 @@ public class TestMiscPointFeature {
         }
       } else if (fc instanceof NestedPointFeatureCollection) {
         NestedPointFeatureCollection npfc =
-            (NestedPointFeatureCollection) fc;
+                (NestedPointFeatureCollection) fc;
         if (llr != null) {
           npfc = npfc.subset(llr);
         }
@@ -165,6 +168,7 @@ public class TestMiscPointFeature {
     pods.close();
   }
 
+
   @Test
   public void testStationAttributes() throws Exception {
     String file = TestDir.cdmLocalTestDataDir + "point/stationMultidim.ncml";
@@ -182,5 +186,48 @@ public class TestMiscPointFeature {
     }
   }
 
+  @Test
+  public void testProfileSingleId() throws Exception {
+    String file = TestDir.cdmLocalTestDataDir + "point/profileSingle.ncml";
+    Formatter buf = new Formatter();
+    try (FeatureDatasetPoint pods = (FeatureDatasetPoint) FeatureDatasetFactoryManager.open(ucar.nc2.constants.FeatureType.PROFILE, file, null, buf)) {
+      List<FeatureCollection> collectionList = pods.getPointFeatureCollectionList();
+      assert (collectionList.size() == 1) : "Can't handle point data with multiple collections";
+      FeatureCollection fc = collectionList.get(0);
+      assert fc instanceof ProfileFeatureCollection;
+      ProfileFeatureCollection pc = (ProfileFeatureCollection) fc;
+      int count = 0;
+      pc.resetIteration();
+      while (pc.hasNext()) {
+        ProfileFeature pf = pc.next();
+        assert pf.getName().equals("666") : pf.getName() + " should be '666'";
+        count++;
+      }
+      assert count == 1;
+    }
+  }
+
+  // make sure that try/with tolerates a null return from FeatureDatasetFactoryManager
+
+  @Test
+  public void testTryWith() throws IOException {
+    String location = TestDir.cdmLocalTestDataDir + "testWrite.nc";
+    Formatter errlog = new Formatter();
+    try (FeatureDataset fdataset = FeatureDatasetFactoryManager.open(null, location, null, errlog)) {
+      assert (fdataset == null);
+    }
+
+  }
+
+  @Test
+  public void testTryWithWrap() throws IOException {
+    String location = TestDir.cdmLocalTestDataDir + "testWrite.nc";
+    NetcdfDataset ncd = NetcdfDataset.openDataset(location);
+    Formatter errlog = new Formatter();
+    try (FeatureDataset fdataset = FeatureDatasetFactoryManager.wrap(null, ncd, null, errlog)) {
+      assert (fdataset == null);
+    }
+    ncd.close();
+  }
 
 }

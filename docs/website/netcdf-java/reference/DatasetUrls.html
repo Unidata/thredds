@@ -112,9 +112,6 @@
 <p>NetcdfDataset can open <em><strong><a href="stream/CdmRemote.html">CDM Remote</a></strong></em> datasets, which have the form <strong><em>cdmremote:http://server:8080/thredds/cdmremote/data.nc</em></strong>.
   In this case it expects that the URL is an endpoint for a cdmremote web service, which provides index subsetting on remote CDM datasets. This is an
   experimental web service.</p>
-
-<p>&nbsp;</p>
-
 <h3>6. DAP4 datasets</h3>
 
 <p>NetcdfDataset can open datasets through the <em><strong>DAP4</strong></em>
@@ -128,18 +125,18 @@
 <p>To avoid confusion with remote HTTP files, DAP4 URLs are often converted to use the <em>dap4</em>: prefix. Also note that when passing a DAP4 dataset URL to
   the netCDF-Java library, do not include any of the access suffixes, e.g. <em>.dmr, .dap, .dst</em>, etc. </p>
 
-<h2> ucar.nc2.ft.FeatureDatasetFactoryManager.open()</h2>
+<h2> ucar.nc2.ft.FeatureDatasetFactoryManager.open() <a name="FeatureDataset"></a></h2>
 
-<p>A FeatureDatasetFactory creates <em><strong><a href="FeatureDatasets/Overview.html">Scientific Feature Type Datasets</a></strong></em> such as GridDatasets,
+<p>A FeatureDatasetFactory creates <a href="FeatureDatasets/Overview.html">Scientific Feature Type Datasets</a><a href="FeatureDatasets/Overview.html"></a> such as GridDatasets,
   PointFeatureDatasets, RadialDatasetSweep, etc. These may be based on local files, or they may use remote access protocols. </p>
 <blockquote>
   <p><strong> ucar.nc2.ft.FeatureDatasetFactoryManager.open(FeatureType wantFeatureType, String location, CancelTask task, Formatter errlog)<br>
   </strong></p>
 </blockquote>
 <p>FeatureDatasetFactoryManager.open() looks for a FeatureDatasetFactory that knows how to create a FeatureDataset from the named location. If the
-  wantFeatureType parameter is not null, it will only look for factories that return that type.</p>
+  <em>wantFeatureType</em> parameter is not null, it will only look for factories that return that type.</p>
 
-<p>FeatureDatasetFactoryManager can open the same URLs that NetcdfDataset and NetcdfFile can open, plus the following:</p>
+<p><em>FeatureDatasetFactoryManager</em> can open the same URLs that NetcdfDataset and NetcdfFile can open, plus the following:</p>
 
 <h3>1. <strong>CdmRemote Feature Datasets</strong></h3>
 

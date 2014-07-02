@@ -48,8 +48,7 @@ import ucar.nc2.units.DateUnit;
 
 /**
  * Write a CF "Discrete Sample" profile collection file.
- * Example H.3.5. Indexed ragged array representation of profiles
- * LOOK: better to use contiguous, H.3.4
+ * Example H.3.5. Continguous ragged array representation of profiles, H.3.4
  *
  * <p/>
  * <pre>
@@ -67,10 +66,11 @@ public class WriterCFProfileCollection extends CFPointWriter {
   private static final String profileDimName = "profile";
   private static final String idName = "profileId";
   private static final String profileRowSizeName = "nobs";
+  private static final String profileTimeName = "profileNominalTime";
   private static final boolean debug = false;
 
   ///////////////////////////////////////////////////
-  private Variable lat, lon, alt, time, id, rowSize;
+  //private Variable lat, lon, alt, time, id, rowSize;
   protected Structure profileStruct;  // used for netcdf4 extended
 
   private List<VariableSimpleIF> dataVars;
@@ -114,12 +114,12 @@ public class WriterCFProfileCollection extends CFPointWriter {
       writer.create();
       record = writer.addRecordStructure(); // netcdf3
 
-      lat = writer.findVariable(latName);
+      /* lat = writer.findVariable(latName);
       lon = writer.findVariable(lonName);
       alt = writer.findVariable(altName);
       id = writer.findVariable(idName);
-      time = writer.findVariable(timeName);
-      rowSize = writer.findVariable(profileRowSizeName);
+      time = writer.findVariable(profileTimeName);
+      rowSize = writer.findVariable(profileRowSizeName);  */
 
       //writeProfileData(profileNames); // write out the station info
     }
@@ -143,7 +143,7 @@ public class WriterCFProfileCollection extends CFPointWriter {
     coords.add(VariableSimpleImpl.makeScalar(profileRowSizeName, "number of obs for this profile", null, DataType.INT)
             .add(new Attribute(CF.SAMPLE_DIMENSION, recordDimName)));         // rowSize:sample_dimension = "obs"
 
-    coords.add(VariableSimpleImpl.makeScalar(timeName, "time of measurement", timeUnit.getUnitsString(), DataType.DOUBLE));
+    coords.add(VariableSimpleImpl.makeScalar(profileTimeName, "nominal time of profile", timeUnit.getUnitsString(), DataType.DOUBLE));
 
     if (isExtended) {
       profileStruct = (Structure) writer.addVariable(null, profileStructName, DataType.STRUCTURE, profileDimName);
@@ -178,7 +178,7 @@ public class WriterCFProfileCollection extends CFPointWriter {
     StructureDataScalar profileData = new StructureDataScalar("Coords");
     profileData.addMember(latName, null, null, DataType.DOUBLE, false, profile.getLatLon().getLatitude());
     profileData.addMember(lonName, null, null, DataType.DOUBLE, false, profile.getLatLon().getLongitude());
-    profileData.addMember(timeName, null, null, DataType.DOUBLE, false, (double) profile.getTime().getTime());
+    profileData.addMember(profileTimeName, null, null, DataType.DOUBLE, false, (double) profile.getTime().getTime());  // LOOK time not always part of profile
     profileData.addMemberString(idName, null, null, profile.getName().trim(), name_strlen);
     profileData.addMember(profileRowSizeName, null, null, DataType.INT, false, nobs);
 

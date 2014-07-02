@@ -32,11 +32,14 @@
  */
 package ucar.nc2.ft;
 
+import ucar.nc2.Variable;
+import ucar.nc2.VariableSimpleIF;
 import ucar.nc2.time.CalendarDateRange;
 import ucar.nc2.units.DateRange;
 import ucar.nc2.units.DateUnit;
 
 import java.io.IOException;
+import java.util.List;
 
 /**
  * A collection of PointFeatures.
@@ -45,6 +48,8 @@ import java.io.IOException;
  * @since Mar 1, 2008
  */
 public interface PointFeatureCollection extends FeatureCollection {
+
+  public List<Variable> getExtraVariables();
 
   /**
    * Use the internal iterator to check if there is another PointFeature in the iteration.

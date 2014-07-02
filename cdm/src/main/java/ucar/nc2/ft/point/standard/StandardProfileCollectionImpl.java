@@ -136,9 +136,9 @@ public class StandardProfileCollectionImpl extends OneNestedPointCollectionImpl 
           if (iter.hasNext()) {
             PointFeature pf = iter.next();
             this.time = pf.getObservationTime();
-            this.name = timeUnit.makeStandardDateString(this.time);
+            if (name == null) this.name = timeUnit.makeStandardDateString(this.time);
           } else {
-            this.name = "empty";
+            if (name == null) this.name = "empty";
           }
         } catch (IOException e) {
           e.printStackTrace();
