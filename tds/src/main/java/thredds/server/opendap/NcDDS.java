@@ -105,6 +105,13 @@ public class NcDDS extends ServerDDS {
                   if (gv == null)
                      isgridarray = false;
 		}
+   	        if(HANDLE_DUP_DIM_GRIDS) {
+                    // Check for duplicate dims => do not make a grid
+                    for(int j=i;isgridarray && j<rank;j++) {
+                        if(dimset.get(j) == dim)
+                            isgridarray = false;
+		    }
+                }
             }
             if(isgridarray)   {
                 gridarrays.put(v.getFullName(),v);
