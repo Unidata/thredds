@@ -126,7 +126,7 @@ public abstract class SDGrid extends DGrid implements ServerArrayMethods, RelOps
             psemi = print_semi;
         } */
 
-        // If there are M (< N) componets (Array and Maps combined) in a N
+        // If there are M (< N) components (Array and Maps combined) in a N
         // component Grid, send the M components as elements of a Structure.
         // This will preserve the grouping without violating the rules for a
         // Grid.

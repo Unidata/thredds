@@ -39,6 +39,7 @@ import opendap.servers.*;
 import opendap.servlet.AsciiWriter;
 import opendap.servlet.GuardedDataset;
 import thredds.server.opendap.GuardedDatasetCacheAndClone;
+import ucar.nc2.util.UnitTestCommon;
 import ucar.unidata.test.Diff;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.dataset.NetcdfDataset;
@@ -50,9 +51,9 @@ import java.util.Enumeration;
 
 // Test that the Constraint parsing is correct
 
-public class TestCEEvaluator extends TestCase
+public class TestCEEvaluator extends UnitTestCommon
 {
-    static boolean debug = true;
+    static boolean DEBUG = true;
 
     static  boolean generate = false;
 
@@ -71,9 +72,9 @@ public class TestCEEvaluator extends TestCase
     static final String[][] testsets = new String[][]{
             new String[]{
                     "0","temp_air_01082000.nc",
-                    "1","?time",
-                    "2","?longitude,latitude",
-                    "3","?time[1:2]",
+                    //"1","?time",
+                    //"2","?longitude,latitude",
+                    //"3","?time[1:2]",
                     "4","?t[0:2:3][3:4][4:5][0:2:6]",
             },
             new String[]{
@@ -156,16 +157,21 @@ loop:        for(int i = 0; i < ntestsets && pass; i++) {
                     file = new File(path);
                     ncfile = NetcdfDataset.openFile(file.getPath(), null);
                     if(ncfile == null) throw new FileNotFoundException(path);
+                    if(DEBUG)
+                        visual("cdm file",ncdumpmetadata(ncfile));
 
                     ds = new GuardedDatasetCacheAndClone(path, ncfile, false);
                     dds = ds.getDDS();
                     // force the name
                     dds.setEncodedName(basename);
-                    if(debug) {System.err.println("initial dds:\n");dds.printDecl(System.err);}
+                    if(DEBUG) {
+                        System.err.println("initial dds:\n");
+                        dds.print(System.err);
+                    }
 
                     CEEvaluator ce = new CEEvaluator(dds);
                     ce.parseConstraint(constraint,null);
-                    if(debug) {
+                    if(DEBUG) {
                         PrintWriter w = new PrintWriter(System.err);
                         Enumeration venum = dds.getVariables();
                         boolean first = true;
@@ -192,7 +198,7 @@ loop:        for(int i = 0; i < ntestsets && pass; i++) {
                     String result = content.toString();
                     expectedfile = String.format("%s.%02d.asc", path, caseno);
                     System.err.println("expected file: "+expectedfile);
-                    if(debug) {
+                    if(DEBUG) {
                             StringReader dresult = new StringReader(result);
                             BufferedReader lns = new BufferedReader(dresult);
                             System.err.println("-----\nresult:\n-----\n"+result);

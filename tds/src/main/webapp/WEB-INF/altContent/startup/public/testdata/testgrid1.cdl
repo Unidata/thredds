@@ -1,0 +1,13 @@
+netcdf testgrid1 {
+dimensions:
+  lat = 2;
+  lon = 2;
+variables:
+  double var(lat,lon) ;
+  float lat(lat);
+  float lon(lon);
+data:
+  var = 0.0, 1.0, 2.0, 3.0, 4.0;
+  lat = 17.0, 23.0;
+  lon = -15.0, -1.0;
+}

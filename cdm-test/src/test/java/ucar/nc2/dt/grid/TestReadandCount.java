@@ -131,6 +131,7 @@ public class TestReadandCount extends TestCase {
 
   static void doOne(String dir, String filename, int ngrids, int ncoordSys, int ncoordAxes, int nVertCooordAxes) throws Exception {
     System.out.println("test read GridDataset = " + dir + filename);
+
     ucar.nc2.dt.grid.GridDataset gridDs = GridDataset.open(dir + filename);
 
     int countGrids = gridDs.getGrids().size();

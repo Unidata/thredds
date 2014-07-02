@@ -32,6 +32,7 @@
 
     <filter>
       <include wildcard="*eta_211.nc"/>
+      <include wildcard="testgrid*.nc"/>
     </filter>
 
   </datasetScan>

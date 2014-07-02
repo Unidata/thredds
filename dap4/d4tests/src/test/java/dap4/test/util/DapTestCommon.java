@@ -36,8 +36,8 @@ public class DapTestCommon extends TestCase
     static Set<NetcdfDataset.Enhance> ENHANCEMENT = EnumSet.of(NetcdfDataset.Enhance.CoordSystems);
 
     static public final String CONSTRAINTTAG = "dap4.ce";
-    // System properties
 
+    // System properties
     protected boolean prop_ascii = true;
     protected boolean prop_diff = true;
     protected boolean prop_baseline = false;
