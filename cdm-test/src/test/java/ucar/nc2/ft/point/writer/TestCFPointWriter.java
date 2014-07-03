@@ -29,12 +29,12 @@ public class TestCFPointWriter {
   public static List<Object[]> getTestParameters() {
     List<Object[]> result = new ArrayList<>();
     // result.add(new Object[]{TestCFsyntheticDatasets.CFpointObs_topdir + "point.ncml", FeatureType.POINT, 3});
-    result.add(new Object[]{TestCFsyntheticDatasets.CFpointObs_topdir + "pointUnlimited.nc", FeatureType.POINT, 3});
+    //result.add(new Object[]{TestCFsyntheticDatasets.CFpointObs_topdir + "pointUnlimited.nc", FeatureType.POINT, 3});
     //result.add(new Object[]{TestCFsyntheticDatasets.CFpointObs_topdir + "pointMissing.ncml", FeatureType.POINT, 4});
 
-    /* result.addAll(TestCFsyntheticDatasets.getPointDatasets());
+    result.addAll(TestCFsyntheticDatasets.getPointDatasets());
     result.addAll(TestCFsyntheticDatasets.getStationDatasets());
-    result.addAll(TestCFsyntheticDatasets.getProfileDatasets());
+    // result.addAll(TestCFsyntheticDatasets.getProfileDatasets());
 
     result.add(new Object[] {TestDir.cdmUnitTestDir + "ft/point/ldm/04061912_buoy.nc", FeatureType.POINT, 218});
     result.add(new Object[] {TestDir.cdmUnitTestDir + "ft/point/netcdf/Surface_Buoy_20090921_0000.nc", FeatureType.POINT, 32452});

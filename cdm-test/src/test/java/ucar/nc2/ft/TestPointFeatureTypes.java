@@ -35,6 +35,7 @@ package ucar.nc2.ft;
 
 import junit.framework.TestCase;
 import org.junit.Assert;
+import org.junit.Test;
 import ucar.ma2.DataType;
 import ucar.ma2.StructureData;
 import ucar.ma2.StructureMembers;
@@ -308,8 +309,9 @@ public class TestPointFeatureTypes extends TestCase {
   }
 
 
+  @Test
   public void testProblem() throws Exception {
-    assert 1516 == checkPointDataset(topdir + "ft/point/netcdf/Surface_Synoptic_20090921_0000.nc", FeatureType.POINT, false);
+    assert 12 == checkPointDataset(CFpointObs_topdir + "sectionRagged6.ncml", FeatureType.SECTION, false);
   }
 
 

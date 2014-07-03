@@ -155,26 +155,26 @@ public class PointDatasetImpl extends FeatureDatasetImpl implements FeatureDatas
 
     int count = 0;
     for (FeatureCollection fc : collectionList) {
-      sf.format("%nPointFeatureCollection %d %n", count++);
-      assert (fc instanceof PointFeatureCollection);
-      PointFeatureCollection pfc = (PointFeatureCollection) fc;
-      sf.format(" %s %s %n", pfc.getCollectionFeatureType(), pfc.getName());
-      sf.format("   npts = %d %n", pfc.size());
-      sf.format("     bb = %s %n", pfc.getBoundingBox() == null ? "" : pfc.getBoundingBox().toString2());
-      sf.format("  dates = %s %n", pfc.getCalendarDateRange());
-      List<Variable> extra = pfc.getExtraVariables();
-      if (extra.size() > 0) {
-        sf.format("  extra variables%n");
-        for (Variable v : extra) sf.format("     %s%n", v.getNameAndDimensions());
-      }
+      if (fc instanceof PointFeatureCollection) {
+        sf.format("%nPointFeatureCollection %d %n", count++);
+        PointFeatureCollection pfc = (PointFeatureCollection) fc;
+        sf.format(" %s %s %n", pfc.getCollectionFeatureType(), pfc.getName());
+        sf.format("   npts = %d %n", pfc.size());
+        sf.format("     bb = %s %n", pfc.getBoundingBox() == null ? "" : pfc.getBoundingBox().toString2());
+        sf.format("  dates = %s %n", pfc.getCalendarDateRange());
+        List<Variable> extra = pfc.getExtraVariables();
+        if (extra.size() > 0) {
+          sf.format("  extra variables%n");
+          for (Variable v : extra) sf.format("     %s%n", v.getNameAndDimensions());
+        }
 
-     /*  } else if (fc instanceof StationTimeSeriesFeatureCollection) {
+    } else if (fc instanceof StationTimeSeriesFeatureCollection) {
         StationTimeSeriesFeatureCollection npfc = (StationTimeSeriesFeatureCollection) fc;
         sf.format(" %s %s %n", npfc.getCollectionFeatureType(), npfc.getName());
         sf.format("   npts = %d %n", npfc.size());
         sf.format("     bb = %s %n", npfc.getBoundingBox() == null ? "" : npfc.getBoundingBox().toString2());
         // sf.format("  dates = %s %n", npfc.getDateRange() == null ? "" : npfc.getDateRange().toString());
-      }  */
+      }
     }
   }
 
