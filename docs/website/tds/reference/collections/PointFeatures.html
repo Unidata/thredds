@@ -11,7 +11,7 @@
 <hr/>
 <h2>Point Feature Datasets Requirements:</h2>
 <ul>
-  <li>Files must be able to be parsed by CDM into a feature type dataset of type POINT o STATION.</li>
+  <li>Files must be able to be parsed by CDM into a feature type dataset of type POINT or STATION.</li>
   <li>Data must be partitioned by time, with the starting time encoded into the filename.</li>
 </ul>
 <h2>&nbsp;</h2>
@@ -28,19 +28,18 @@
 </pre>
 <p><strong>point data:</strong><br/>
 </p>
-<pre>&lt;featureCollection name=&quot;Surface Buoy Point Data&quot; harvest=&quot;true&quot; featureType=&quot;Point&quot; path=&quot;nws/buoy/ncdecoded&quot;&gt;<br/>
-  &lt;collection spec=&quot;/data/ldm/pub/decoded/netcdf/surface/buoy/Surface_Buoy_#yyyyMMdd_HHmm#.nc$&quot; /&gt;<br/>
-  &lt;update startup=&quot;true&quot; rescan=&quot;0 0/15 * * * ? *&quot; trigger=&quot;allow&quot;/&gt;<br/>
-  &lt;protoDataset choice=&quot;Penultimate&quot; /&gt;<br/>
-  &lt;pointConfig datasetTypes=&quot;cdmrFeature Files&quot;/&gt;<br/>
-&lt;/featureCollection&gt;<br/>
-
+<pre>&lt;featureCollection name=&quot;Surface Buoy Point Data&quot; harvest=&quot;true&quot; featureType=&quot;Point&quot; path=&quot;nws/buoy/ncdecoded&quot;&gt;
+  &lt;collection spec=&quot;/data/ldm/pub/decoded/netcdf/surface/buoy/Surface_Buoy_#yyyyMMdd_HHmm#.nc$&quot; /&gt;
+  &lt;update startup=&quot;true&quot; rescan=&quot;0 0/15 * * * ? *&quot; trigger=&quot;allow&quot;/&gt;
+  &lt;protoDataset choice=&quot;Penultimate&quot; /&gt;
+  &lt;pointConfig datasetTypes=&quot;cdmrFeature Files&quot;/&gt;
+&lt;/featureCollection&gt;
 </pre>
 <hr/>
 <h3>pointConfig element</h3>
 
 <p>Defines options on feature collections with <strong> featureType</strong>=&quot;POINT&quot; or &quot;STATION&quot;</p>
-<pre>&lt;pointConfig datasetTypes=&quot;CdmrFeature Files&quot; /&gt;</pre>
+<pre>1)&lt;pointConfig datasetTypes=&quot;CdmrFeature Files&quot; /&gt;</pre>
 <blockquote>
   <p>where:</p>
   <ol>

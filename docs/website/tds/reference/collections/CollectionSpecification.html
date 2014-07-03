@@ -20,7 +20,7 @@
 <pre> /data/ldm/pub/native/grid/NCEP/GFS/Alaska_191km/.*nc$</pre>
 <p>All files ending with &quot;nc&quot; in the directory<em> /data/ldm/pub/native/grid/NCEP/GFS/Alaska_191km</em>. The &quot;.*nc$&quot; is a regular expression
   which tries to match the path name after the top directory<em> /data/ldm/pub/native/grid/NCEP/GFS/Alaska_191km/</em>. The &quot;.*&quot; means &quot;any
-  number of any charactor&quot; and the &quot;nc$&quot; means &quot;ending with <em>nc&quot;</em>. If you want to make sure it ends with &quot;.nc&quot;, you
+  number of any character&quot; and the &quot;nc$&quot; means &quot;ending with <em>nc&quot;</em>. If you want to make sure it ends with &quot;.nc&quot;, you
   need:</p>
 <pre> /data/ldm/pub/native/grid/NCEP/GFS/Alaska_191km/.*\.nc$</pre>
 <p>Since &quot;.&quot; is a special character in regular expressions, one needs to escape it to match a literal &quot;.&quot;, so &quot;\.nc$&quot; means match
@@ -61,7 +61,7 @@ Make sure that the name ends with &quot;grib1&quot;:
 <pre>/data/ldm/pub/native/grid/NCEP/GFS/Alaska_191km/**/GFS_Alaska_191km_#yyyyMMdd_HHmm#<strong>\.grib1$</strong></pre>
 <h3>Notes:</h3>
 <ol>
-  <li>You have to escape any of these regular expression literal charactors that you want to match. Its a good idea to avoid these charactors in directory and
+  <li>You have to escape any of these regular expression literal characters that you want to match. Its a good idea to avoid these characters in directory and
     file names, with the exception of the '.'
     <pre> .|*?+(){}[]^$\ </pre>
   </li>
