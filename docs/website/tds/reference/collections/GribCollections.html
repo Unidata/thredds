@@ -9,7 +9,7 @@
 <body>
 <h1>GRIB Feature Collections</h1>
 <hr/>
-<p>GRIB Feature Collection Datasets are collections of GRIB records, which contain gridded data typically from numeric model output. Because of the complexity of how GRIB data
+<p>GRIB Feature Collection Datasets are collections of GRIB records, which contain gridded data, typically from numeric model output. Because of the complexity of how GRIB data
     is written and stored, the TDS has developed specialized handling of GRIB datasets, as of version 4.3, called <em><strong>GRIB Feature
     Collections</strong></em>. </p>
 <ul>
@@ -38,7 +38,7 @@
   <li>For each PartitionCollection, a <em>cdm index</em> is written named<em> &lt;collection
   name&gt;.ncx2</em>. This must be rewritten if any of the collection files change.</li>
   <li>The cdm indexing uses extension  <strong>.ncx2</strong>, in order to coexist with the <strong>.ncx</strong> indexes of previous versions. If you are upgrading to 4.5, and no longer running earlier versions,  remove the <strong>ncx</strong> files (save the <strong>gbx9</strong> files).</li>
-  <li>For large collections, especially if they change, the THREDDS Data Manage (TDM) must be run as a seperate process to update the index files. Generally it is strongly recommended to run the TDM, and configure the TDS to only read and never write the indexes.</li>
+  <li>For large collections, especially if they change, the THREDDS Data Manager (TDM) must be run as a seperate process to update the index files. Generally it is strongly recommended to run the TDM, and configure the TDS to only read and never write the indexes.</li>
   <li>Collections in the millions of records are now feasible. Java 7 NIO2 package is used to efficiently scan directories. </li>
 </ul>
 <p>For background, please read:</p>
@@ -61,9 +61,9 @@
 6)   &lt;gribConfig datasetTypes=&quot;TwoD Latest Best&quot; /&gt;
    &lt;/featureCollection&gt;</pre>
 <ol>
-  <li>A featureCollection must have a <em>name, a featureType</em> and a <em>path</em> (do <strong>not</strong> set an <em>ID</em> attribute<em>)</em>. Its best to make the name short but descriptive, and it must be unique across all collections on your TDS.
-  Note that the <strong>featureType</strong> attribute must now equal <em>GRIB1</em> or <em>GRIB2</em>, not plain <em>GRIB</em></li>
-  <li>A featureCollection is a InvDataset, so it can contain any elements an InvDataset can contain. It must have or inherit a default service.</li>
+  <li>A featureCollection must have a <em>name, a featureType</em> and a <em>path</em> (do <strong>not</strong> set an <em>ID</em> attribute<em>)</em>. It's best to make the name short but descriptive, and it must be unique across all collections on your TDS.
+  Note that the <strong>featureType</strong> attribute must now equal <em>GRIB1</em> or <em>GRIB2</em>, not plain <em>GRIB</em>.</li>
+  <li>A featureCollection is an InvDataset, so it can contain any elements an InvDataset can contain. It must have or inherit a default service.</li>
   <li>The collection must consist of either GRIB-1 or GRIB-2 files. You no longer need set the dataFormat element to indicate which, as it is specified in the featureType.</li>
   <li>The <a href="CollectionSpecification.html">collection specification</a> defines the collection of files that are in this dataset.</li>
   <li>The collection of files change, and this <em>update</em> element says to rescan it on TDS startup and every 15 minutes, as well as allow manual triggers
@@ -113,7 +113,7 @@ or, simplifying:
 <hr/>
 <h2>Example 2 (Time Partition):</h2>
 
-<p>For very large datasets, use a time partition for efficiency. Currently we are using the rule of thumb (on Unidata's motherlode server) that when the number
+<p>For very large datasets, use a time partition for efficiency. Currently we are using the rule of thumb (on Unidata's thredds server) that when the number
   of GRIB records in the collection exceeds 3 million, we time partition the dataset. </p>
 <pre>&lt;featureCollection name=&quot;NAM-Polar90&quot; featureType=&quot;GRIB&quot; path=&quot;grib/NCEP/NAM/Polar90&quot;&gt;
    &lt;metadata inherited=&quot;true&quot;&gt;
@@ -197,7 +197,7 @@ de-referencing the catalogRefs, and simplifying:
 <h2>Example 3 (Multiple Groups) :</h2>
 
 <p>When a Grib Collection contains multiple horizontal domains (i.e. distinct Grid Definition Sections (GDS)), each domain gets placed into a seperate group. As
-  a rule, one cant tell if there are seperate domains without reading the files. If you open this collection through the CDM (eg using ToolsUI) you would see a
+  a rule, one can't tell if there are seperate domains without reading the files. If you open this collection through the CDM (eg using ToolsUI) you would see a
   dataset that contains groups. The TDS, however, separates groups into different datasets, so that each dataset has only a single (unnamed, aka <em>root</em>)
   group.</p>
 <pre> &lt;featureCollection name=&quot;RFC&quot; featureType=&quot;GRIB&quot; path=&quot;grib/NPVU/RFC&quot;&gt;

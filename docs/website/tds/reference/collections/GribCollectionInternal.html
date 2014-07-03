@@ -83,7 +83,7 @@
 <p> for each variable, create union of times: for each time track (value, partition, localIndex). merge time coords with same {value}. store {partition,
   localIndex} cmmon case is that variables will share {partition, localIndex}, but is it worth merging?</p>
 
-<p>dont need proto change; its reselected when index is rebuilt</p>
+<p>dont need proto change; it's reselected when index is rebuilt</p>
 
 <h2>check for changes</h2>
 
@@ -97,7 +97,7 @@
 </ol>
 <p>&nbsp;</p>
 
-<p>cant examine all files to see whats changed - too mant files. only examine each partition. maybe examine the latest?? maybe not - use manual rescan ??</p>
+<p>can't examine all files to see whats changed - too many files. only examine each partition. maybe examine the latest?? maybe not - use manual rescan ??</p>
 <hr/>
 <h2>Grib Collection Index File</h2>
 
@@ -209,7 +209,7 @@ message Variable {
   has the following special features:</p>
 <ol>
   <li>The <strong>VariableRecords</strong> section is missing, delegated to the individual grib collections.</li>
-  <li>Each Variable tracks, for each partition, which group/variable its using, i.e: groupno[partition], varno[partition] indexes.</li>
+  <li>Each Variable tracks, for each partition, which group/variable it's using, i.e: groupno[partition], varno[partition] indexes.</li>
   <li>It uses extended time coordinates, which have [start, end) for each partition:
     <pre>message TimeCoordUnion extends Coord {
    repeated int32 partition = 5; // starting index, inclusive
