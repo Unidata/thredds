@@ -2692,8 +2692,6 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
 
   @Override
   public void writeData(Variable v2, Section section, Array values) throws IOException, InvalidRangeException {
-    if (v2 == null)
-      System.out.println("HEY");
     Vinfo vinfo = (Vinfo) v2.getSPobject();
     if (vinfo == null) {
       log.error("vinfo null for " + v2);

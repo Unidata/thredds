@@ -33,10 +33,7 @@
 package ucar.nc2.ft.point.writer;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Formatter;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 
 import ucar.ma2.*;
 import ucar.nc2.*;
@@ -81,11 +78,18 @@ public class WriterCFStationCollection extends CFPointWriter {
 
   //////////////////////////////////////////////////////////
   private int name_strlen = 1, desc_strlen = 1, wmo_strlen = 1;
-  private Variable lat, lon, alt, time, id, wmoId, desc, stationIndex;
+  // private Variable lat, lon, alt, time, id, wmoId, desc, stationIndex;
 
   protected Structure stationStruct;  // used for netcdf4 extended
+  private boolean useDesc = false;
   private boolean useAlt = false;
   private boolean useWmoId = false;
+
+  private Map<String, Variable> dataMap  = new HashMap<>();
+  private Map<String, Variable> stnMap  = new HashMap<>();
+
+  private Formatter coordNames = new Formatter();
+
 
   /* public WriterCFStationCollection(String fileOut, String title) throws IOException {
     this(fileOut, Arrays.asList(new Attribute(CDM.TITLE, title)), new CFPointWriterConfig(null));
@@ -116,19 +120,19 @@ public class WriterCFStationCollection extends CFPointWriter {
       addStations(stns, true);
       record = (Structure) writer.addVariable(null, recordName, DataType.STRUCTURE, recordDimName);
       addCoordinatesExtended(record, coords);
-      addVariablesExtended(vars);
+      addDataVariablesExtended(vars, coordNames.toString());
       record.calcElementSize();
       writer.create();
       writeStationDataExtended(stns);
 
     } else {
       addStations(stns, false);
-      addCoordinatesClassic(recordDim, coords);
-      addDataVariablesClassic(recordDim, vars);
+      addCoordinatesClassic(recordDim, coords, dataMap);
+      addDataVariablesClassic(recordDim, vars, dataMap, coordNames.toString());
       writer.create();
       record = writer.addRecordStructure(); // netcdf3
 
-      lat = writer.findVariable(latName);
+      /* lat = writer.findVariable(latName);
       lon = writer.findVariable(lonName);
       alt = writer.findVariable(altName);
       id = writer.findVariable(idName);
@@ -136,7 +140,7 @@ public class WriterCFStationCollection extends CFPointWriter {
       desc = writer.findVariable(descName);
 
       time = writer.findVariable(timeName);
-      stationIndex = writer.findVariable(stationIndexName);
+      stationIndex = writer.findVariable(stationIndexName); */
 
       writeStationData(stns); // write out the station info
     }
@@ -152,12 +156,14 @@ public class WriterCFStationCollection extends CFPointWriter {
         useAlt = true;
       if ((stn.getWmoId() != null) && (stn.getWmoId().trim().length() > 0))
         useWmoId = true;
+      if ((stn.getDescription() != null) && (stn.getDescription().trim().length() > 0))
+        useDesc = true;
     }
 
     // find string lengths
     for (Station station : stnList) {
       name_strlen = Math.max(name_strlen, station.getName().length());
-      desc_strlen = Math.max(desc_strlen, station.getDescription().length());
+      if (useDesc) desc_strlen = Math.max(desc_strlen, station.getDescription().length());
       if (useWmoId) wmo_strlen = Math.max(wmo_strlen, station.getWmoId().length());
     }
 
@@ -170,15 +176,19 @@ public class WriterCFStationCollection extends CFPointWriter {
     List<VariableSimpleIF> coords = new ArrayList<>();
     coords.add(VariableSimpleImpl.makeScalar(latName, "station latitude", CDM.LAT_UNITS, DataType.DOUBLE));
     coords.add(VariableSimpleImpl.makeScalar(lonName, "station longitude", CDM.LON_UNITS, DataType.DOUBLE));
-    if (useAlt) coords.add(
-          VariableSimpleImpl.makeScalar(altName, "station altitude", altUnits, DataType.DOUBLE)
-            .add(new Attribute(CF.STANDARD_NAME, CF.SURFACE_ALTITUDE))
-            .add(new Attribute(CF.POSITIVE, CF1Convention.getZisPositive(altName, altUnits))));
+    coordNames.format("%s %s %s", timeName, latName, lonName);
+
+    if (useAlt) {
+      coords.add(VariableSimpleImpl.makeScalar(altName, "station altitude", altUnits, DataType.DOUBLE)
+                      .add(new Attribute(CF.STANDARD_NAME, CF.SURFACE_ALTITUDE))
+                      .add(new Attribute(CF.POSITIVE, CF1Convention.getZisPositive(altName, altUnits))));
+      coordNames.format(" %s", altName);
+    }
 
     coords.add(VariableSimpleImpl.makeString(idName, "station identifier", null, name_strlen)
             .add(new Attribute(CF.CF_ROLE, CF.TIMESERIES_ID)));         // station_id:cf_role = "timeseries_id";
 
-    coords.add(VariableSimpleImpl.makeString(descName, "station description", null, desc_strlen)
+    if (useDesc) coords.add(VariableSimpleImpl.makeString(descName, "station description", null, desc_strlen)
             .add(new Attribute(CF.STANDARD_NAME, CF.PLATFORM_NAME)));
 
     if (useWmoId) coords.add(VariableSimpleImpl.makeString(wmoName, "station WMO id", null, wmo_strlen)
@@ -188,12 +198,12 @@ public class WriterCFStationCollection extends CFPointWriter {
       stationStruct = (Structure) writer.addVariable(null, stationStructName, DataType.STRUCTURE, stationDimName);
       addCoordinatesExtended(stationStruct, coords);
     } else {
-      addCoordinatesClassic(stationDim, coords);
+      addCoordinatesClassic(stationDim, coords, stnMap);
     }
 
   }
 
-  // this writes all the stations - could jyst write out as stations come in from data records
+  // this writes all the stations - could just write out as stations come in from data records
   private HashMap<String, Integer> stationMap;
   private void writeStationData(List<ucar.unidata.geoloc.Station> stnList) throws IOException {
     int nstns = stnList.size();
@@ -217,17 +227,17 @@ public class WriterCFStationCollection extends CFPointWriter {
       if (useAlt) altArray.set(i, stn.getAltitude());
 
       idArray.set(i, stn.getName());
-      descArray.set(i, stn.getDescription());
+      if (useDesc) descArray.set(i, stn.getDescription());
       if (useWmoId) wmoArray.set(i, stn.getWmoId());
     }
 
     try {
-      writer.write(lat, latArray);
-      writer.write(lon, lonArray);
-      if (useAlt) writer.write(alt, altArray);
-      writer.writeStringData(id, idArray);
-      writer.writeStringData(desc, descArray);
-      if (useWmoId) writer.writeStringData(wmoId, wmoArray);
+      writer.write(stnMap.get(latName), latArray);
+      writer.write(stnMap.get(lonName), lonArray);
+      if (useAlt) writer.write(stnMap.get(altName), altArray);
+      writer.writeStringData(stnMap.get(idName), idArray);
+      if (useDesc) writer.writeStringData(stnMap.get(descName), descArray);
+      if (useWmoId) writer.writeStringData(stnMap.get(wmoName), wmoArray);
 
     } catch (InvalidRangeException e) {
       e.printStackTrace();
@@ -257,7 +267,7 @@ public class WriterCFStationCollection extends CFPointWriter {
       if (useAlt) altArray.set(i, stn.getAltitude());
 
       idArray.setString(i, stn.getName());
-      descArray.setString(i, stn.getDescription());
+      if (useDesc) descArray.setString(i, stn.getDescription());
       if (useWmoId) wmoArray.setString(i, stn.getWmoId());
     }
 
@@ -266,7 +276,7 @@ public class WriterCFStationCollection extends CFPointWriter {
     ma.setMemberArray(lonName, lonArray);
     if (useAlt) ma.setMemberArray(altName, altArray);
     ma.setMemberArray(idName, idArray);
-    ma.setMemberArray(descName, descArray);
+    if (useDesc) ma.setMemberArray(descName, descArray);
     if (useWmoId) ma.setMemberArray(wmoName, wmoArray);
 
     try {
@@ -280,8 +290,8 @@ public class WriterCFStationCollection extends CFPointWriter {
 
 
   private int recno = 0;
-  private ArrayDouble.D1 timeArray = new ArrayDouble.D1(1);
-  private ArrayInt.D1 parentArray = new ArrayInt.D1(1);
+  //private ArrayDouble.D1 timeArray = new ArrayDouble.D1(1);
+  //private ArrayInt.D1 parentArray = new ArrayInt.D1(1);
 
   public void writeRecord(Station s, PointFeature sobs, StructureData sdata) throws IOException {
     writeRecord(s.getName(), sobs.getObservationTime(), sobs.getObservationTimeAsCalendarDate(), sdata);
@@ -307,6 +317,13 @@ public class WriterCFStationCollection extends CFPointWriter {
     origin[0] = recno;
     try {
       boolean useStructure = isExtendedModel || (writer.getVersion() == NetcdfFileWriter.Version.netcdf3 && config.recDimensionLength < 0);
+      if (useStructure)
+        super.writeStructureData(record, origin, sdall);
+      else {
+        super.writeStructureDataClassic(dataMap, origin, sdall);
+      }
+
+/*      boolean useStructure = isExtendedModel || (writer.getVersion() == NetcdfFileWriter.Version.netcdf3 && config.recDimensionLength < 0);
       super.writeStructureData(useStructure, record, origin, sdall);
 
       if (!isExtendedModel) {
@@ -315,7 +332,7 @@ public class WriterCFStationCollection extends CFPointWriter {
 
         writer.write(time, origin, timeArray);
         writer.write(stationIndex, origin, parentArray);
-      }
+      }   */
 
     } catch (InvalidRangeException e) {
       e.printStackTrace();

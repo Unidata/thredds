@@ -33,8 +33,7 @@
 package ucar.nc2.ft.point.writer;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 import ucar.ma2.*;
 import ucar.nc2.*;
@@ -70,16 +69,19 @@ public class WriterCFProfileCollection extends CFPointWriter {
   private static final boolean debug = false;
 
   ///////////////////////////////////////////////////
-  //private Variable lat, lon, alt, time, id, rowSize;
+  private Formatter coordNames = new Formatter();
   protected Structure profileStruct;  // used for netcdf4 extended
 
-  private List<VariableSimpleIF> dataVars;
+  private List<VariableSimpleIF> dataVarsList;
   private boolean headerDone = false;
   private int nprofiles, name_strlen;
 
+  private Map<String, Variable> dataMap  = new HashMap<>();
+  private Map<String, Variable> stnMap  = new HashMap<>();
+
   public WriterCFProfileCollection(String fileOut, List<Attribute> globalAtts, List<VariableSimpleIF> dataVars, CFPointWriterConfig config) throws IOException {
     super(fileOut, globalAtts, config);
-    this.dataVars = dataVars;
+    this.dataVarsList = dataVars;
     writer.addGroupAttribute(null, new Attribute(CF.FEATURE_TYPE, CF.FeatureType.profile.name()));
   }
 
@@ -97,20 +99,21 @@ public class WriterCFProfileCollection extends CFPointWriter {
     coords.add( VariableSimpleImpl.makeScalar(altName, "obs altitude", altUnits, DataType.DOUBLE)
             .add(new Attribute(CF.STANDARD_NAME, "altitude"))
             .add(new Attribute(CF.POSITIVE, CF1Convention.getZisPositive(altName, altUnits))));
+    coordNames.format("%s %s %s %s", timeName, latName, lonName, altName);
 
     if (writer.getVersion().isExtendedModel()) {
       makeProfileVars(name_strlen, nprofiles, timeUnit, true);
       record = (Structure) writer.addVariable(null, recordName, DataType.STRUCTURE, recordDimName);
       addCoordinatesExtended(record, coords);
-      addVariablesExtended(dataVars);
+      addDataVariablesExtended(dataVarsList, coordNames.toString());
       record.calcElementSize();
       writer.create();
       //writeProfileDataExtended(stns);
 
     } else {
       makeProfileVars(name_strlen, nprofiles, timeUnit, false);
-      addCoordinatesClassic(recordDim, coords);
-      addDataVariablesClassic(recordDim, dataVars);
+      addCoordinatesClassic(recordDim, coords, dataMap);
+      addDataVariablesClassic(recordDim, dataVarsList, dataMap, coordNames.toString());
       writer.create();
       record = writer.addRecordStructure(); // netcdf3
 
@@ -149,7 +152,7 @@ public class WriterCFProfileCollection extends CFPointWriter {
       profileStruct = (Structure) writer.addVariable(null, profileStructName, DataType.STRUCTURE, profileDimName);
       addCoordinatesExtended(profileStruct, coords);
     } else {
-      addCoordinatesClassic(profileDim, coords);
+      addCoordinatesClassic(profileDim, coords, stnMap);
     }
   }
 
@@ -186,7 +189,11 @@ public class WriterCFProfileCollection extends CFPointWriter {
     int[] origin = new int[1];
     origin[0] = profileRecno;
     try {
-      super.writeStructureData(isExtendedModel, profileStruct, origin, profileData);
+      if (isExtendedModel)
+        super.writeStructureData(profileStruct, origin, profileData);
+      else {
+        super.writeStructureDataClassic(stnMap, origin, profileData);
+      }
 
       /* if (!isExtendedModel) {
         timeArray.set(0, timeCoordValue);
@@ -222,8 +229,11 @@ public class WriterCFProfileCollection extends CFPointWriter {
     int[] origin = new int[1];
     origin[0] = recno;
     try {
-      boolean useStructure = isExtendedModel || (writer.getVersion() == NetcdfFileWriter.Version.netcdf3 && config.recDimensionLength < 0);
-      super.writeStructureData(useStructure, record, origin, sdall);
+      if (isExtendedModel)
+        super.writeStructureData(record, origin, sdall);
+      else {
+        super.writeStructureDataClassic(dataMap, origin, sdall);
+      }
 
       /* if (!isExtendedModel) {
         timeArray.set(0, timeCoordValue);

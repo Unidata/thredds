@@ -59,7 +59,7 @@ import java.io.IOException;
  * @since Nov 23, 2010
  */
 public class WriterCFPointCollection extends CFPointWriter {
-  private Variable time, lat, lon, alt;
+  private Map<String, Variable> varMap  = new HashMap<>();
 
   /* public WriterCFPointCollection(String fileOut, String title) throws IOException {
     this(fileOut, Arrays.asList(new Attribute(CDM.TITLE, title)), new CFPointWriterConfig(null));
@@ -74,7 +74,7 @@ public class WriterCFPointCollection extends CFPointWriter {
     writer.addGroupAttribute(null, new Attribute(CF.FEATURE_TYPE, CF.FeatureType.point.name()));
   }
 
-  public void writeHeader(List<VariableSimpleIF> vars, DateUnit timeUnit, String altUnits) throws IOException {
+  public void writeHeader(List<VariableSimpleIF> vars, List<Variable> extraVariables, DateUnit timeUnit, String altUnits) throws IOException {
     this.altUnits = altUnits;
     if (noUnlimitedDimension)
       recordDim = writer.addDimension(null, recordDimName, config.recDimensionLength);
@@ -85,27 +85,25 @@ public class WriterCFPointCollection extends CFPointWriter {
     coords.add(VariableSimpleImpl.makeScalar(timeName, "time of measurement", timeUnit.getUnitsString(), DataType.DOUBLE));
     coords.add(VariableSimpleImpl.makeScalar(latName,  "latitude of measurement", CDM.LAT_UNITS, DataType.DOUBLE));
     coords.add(VariableSimpleImpl.makeScalar(lonName,  "longitude of measurement", CDM.LON_UNITS, DataType.DOUBLE));
-    if (altUnits != null) coords.add(
-          VariableSimpleImpl.makeScalar(altName, "altitude of measurement", altUnits, DataType.DOUBLE)
-          .add(new Attribute(CF.POSITIVE, CF1Convention.getZisPositive(altName, altUnits))));
+    Formatter coordNames = new Formatter().format("%s %s %s", timeName, latName, lonName);
+    if (altUnits != null) {
+      coords.add( VariableSimpleImpl.makeScalar(altName, "altitude of measurement", altUnits, DataType.DOUBLE)
+                      .add(new Attribute(CF.POSITIVE, CF1Convention.getZisPositive(altName, altUnits))));
+      coordNames.format(" %s", altName);
+    }
 
     if (writer.getVersion().isExtendedModel()) {
       record = (Structure) writer.addVariable(null, recordName, DataType.STRUCTURE, recordDimName);
       addCoordinatesExtended(record, coords);
-      addVariablesExtended(vars);
+      addDataVariablesExtended(vars, coordNames.toString());
       record.calcElementSize();
       writer.create();
 
     } else {
-      addCoordinatesClassic(recordDim, coords);
-      addDataVariablesClassic(recordDim, vars);
+      addCoordinatesClassic(recordDim, coords, varMap);
+      addDataVariablesClassic(recordDim, vars, varMap, coordNames.toString());
       writer.create();
       if (!noUnlimitedDimension) record = writer.addRecordStructure(); // netcdf3
-
-      time = writer.findVariable(timeName);
-      lat = writer.findVariable(latName);
-      lon = writer.findVariable(lonName);
-      alt = writer.findVariable(altName);
     }
   }
 
@@ -113,10 +111,10 @@ public class WriterCFPointCollection extends CFPointWriter {
   // writing data
 
   private int recno = 0;
-  private ArrayDouble.D1 timeArray = new ArrayDouble.D1(1);
+  /* private ArrayDouble.D1 timeArray = new ArrayDouble.D1(1);
   private ArrayDouble.D1 latArray = new ArrayDouble.D1(1);
   private ArrayDouble.D1 lonArray = new ArrayDouble.D1(1);
-  private ArrayDouble.D1 altArray = new ArrayDouble.D1(1);
+  private ArrayDouble.D1 altArray = new ArrayDouble.D1(1);  */
 
   public void writeRecord(PointFeature sobs, StructureData sdata) throws IOException {
     writeRecord(sobs.getObservationTime(), sobs.getObservationTimeAsCalendarDate(), sobs.getLocation(), sdata);
@@ -140,13 +138,15 @@ public class WriterCFPointCollection extends CFPointWriter {
     origin[0] = recno;
     try {
       boolean useStructure = isExtendedModel || (writer.getVersion() == NetcdfFileWriter.Version.netcdf3 && config.recDimensionLength < 0);
-      super.writeStructureData(useStructure, record, origin, sdall);
+      if (useStructure)
+        super.writeStructureData(record, origin, sdall);
+      else {
+        super.writeStructureDataClassic(varMap, origin, sdall);
+      }
 
-      if (isExtendedModel) {
-        // throw new RuntimeException("extended model not working yet");
-
-      } else {
-        timeArray.set(0, timeCoordValue);       // LOOK WTF ??
+      /* coordinate values  LOOK WTF ??
+      if (!isExtendedModel) {
+        timeArray.set(0, timeCoordValue);
         latArray.set(0, loc.getLatitude());
         lonArray.set(0, loc.getLongitude());
         if (altUnits != null)
@@ -157,7 +157,7 @@ public class WriterCFPointCollection extends CFPointWriter {
         writer.write(lon, origin, lonArray);
         if (altUnits != null)
           writer.write(alt, origin, altArray);
-      }
+      } */
 
     } catch (InvalidRangeException e) {
       e.printStackTrace();

@@ -53,7 +53,7 @@ public interface Station extends EarthLocation, Comparable<Station> {
 
   /**
    * Station description
-   * @return station description
+   * @return station description or null
    */
   public String getDescription();
 

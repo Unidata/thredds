@@ -114,7 +114,7 @@ public class CFPointWriter implements AutoCloseable {
       while(pfc.hasNext()) {
         PointFeature pf = pfc.next();
         if (count == 0)
-          cfWriter.writeHeader(fdpoint.getDataVariables(), pf.getTimeUnit(), pf.getAltUnits());
+          cfWriter.writeHeader(fdpoint.getDataVariables(), pfc.getExtraVariables(), pf.getTimeUnit(), pf.getAltUnits());
 
         cfWriter.writeRecord(pf, pf.getData());
         count++;
@@ -202,7 +202,6 @@ public class CFPointWriter implements AutoCloseable {
   /////////////////////////////////////////////////
   protected final CFPointWriterConfig config;
   protected NetcdfFileWriter writer;
-  protected Map<String, Variable> dataVarMap = new HashMap<>(); // used for netcdf4 classic
   protected Structure record;  // used for netcdf3 and netcdf4 extended
   protected Dimension recordDim;
 
@@ -210,7 +209,7 @@ public class CFPointWriter implements AutoCloseable {
   protected LatLonRect llbb = null;
   protected CalendarDate minDate = null;
   protected CalendarDate maxDate = null;
-  protected List<VariableSimpleIF> coordVars = new ArrayList<>();
+  //protected List<VariableSimpleIF> coordVarsList = new ArrayList<>();
 
   protected final boolean noTimeCoverage;
   protected final boolean noUnlimitedDimension;  // experimental , netcdf-3
@@ -268,7 +267,7 @@ public class CFPointWriter implements AutoCloseable {
   }
 
    // added as variables with the unlimited (record) dimension
-  protected void addCoordinatesClassic(Dimension recordDim, List<VariableSimpleIF> coords) throws IOException {
+  protected void addCoordinatesClassic(Dimension recordDim, List<VariableSimpleIF> coords, Map<String, Variable> varMap) throws IOException {
     Map<String, Dimension> dimMap = addDimensionsClassic(coords);
 
     for (VariableSimpleIF vs : coords) {
@@ -277,8 +276,7 @@ public class CFPointWriter implements AutoCloseable {
       Variable mv = writer.addVariable(null, vs.getShortName(), vs.getDataType(), dims);
       for (Attribute att : vs.getAttributes())
         mv.addAttribute(att);
-      dataVarMap.put(mv.getShortName(), mv);
-      coordVars.add(vs);
+      varMap.put(mv.getShortName(), mv);
     }
 
   }
@@ -291,13 +289,12 @@ public class CFPointWriter implements AutoCloseable {
       Variable member = writer.addStructureMember(parent, vs.getShortName(), vs.getDataType(), dims);
       for (Attribute att : vs.getAttributes())
         member.addAttribute(att);
-      coordVars.add(vs);
     }
     parent.calcElementSize();
   }
 
    // added as variables with the unlimited (record) dimension
-  protected void addDataVariablesClassic(Dimension recordDim, List<? extends VariableSimpleIF> dataVars) throws IOException {
+  protected void addDataVariablesClassic(Dimension recordDim, List<? extends VariableSimpleIF> dataVars, Map<String, Variable> varMap, String coordVars) throws IOException {
     Map<String, Dimension> dimMap = addDimensionsClassic(dataVars);
 
     // add the data variables all using the obs dimension
@@ -331,12 +328,37 @@ public class CFPointWriter implements AutoCloseable {
           newVar.addAttribute(att);
       }
 
-      Formatter coordName = new Formatter();
-      for (VariableSimpleIF coord : coordVars)
-        coordName.format("%s ", coord.getFullName());
-      newVar.addAttribute( new Attribute(CF.COORDINATES, coordName.toString()));
+      newVar.addAttribute( new Attribute(CF.COORDINATES, coordVars));
 
-      dataVarMap.put(newVar.getShortName(), newVar);
+      varMap.put(newVar.getShortName(), newVar);
+    }
+
+  }
+
+  // add variables to the record structure
+  protected void addDataVariablesExtended(List<? extends VariableSimpleIF> dataVars, String coordVars) throws IOException {
+
+    for (VariableSimpleIF oldVar : dataVars) {
+      // skip duplicates
+      if (record.findVariable(oldVar.getShortName()) != null) continue;
+
+      // make dimension list
+      StringBuilder dimNames = new StringBuilder();
+      for (Dimension d : oldVar.getDimensions()) {
+        if (d.isUnlimited()) continue;
+        if (d.getShortName() == null || !d.getShortName().equals(recordDimName))
+          dimNames.append(" ").append(d.getLength());  // anonymous
+      }
+
+      Variable newVar = writer.addStructureMember(record, oldVar.getShortName(), oldVar.getDataType(), dimNames.toString());
+
+      List<Attribute> atts = oldVar.getAttributes();
+      for (Attribute att : atts) {
+        String attName = att.getShortName();
+        if (!reservedVariableAtts.contains(attName) && !attName.startsWith("_Coordinate"))
+          newVar.addAttribute(att);
+      }
+      newVar.addAttribute( new Attribute(CF.COORDINATES, coordVars));
     }
 
   }
@@ -374,38 +396,6 @@ public class CFPointWriter implements AutoCloseable {
     return result;
   }
 
-  // add variables to the record structure
-  protected void addVariablesExtended(List<? extends VariableSimpleIF> dataVars) throws IOException {
-
-    for (VariableSimpleIF oldVar : dataVars) {
-      // skip duplicates
-      if (record.findVariable(oldVar.getShortName()) != null) continue;
-
-      // make dimension list
-      StringBuilder dimNames = new StringBuilder();
-      for (Dimension d : oldVar.getDimensions()) {
-        if (d.isUnlimited()) continue;
-        if (d.getShortName() == null || !d.getShortName().equals(recordDimName))
-          dimNames.append(" ").append(d.getLength());  // anonymous
-      }
-
-      Variable m = writer.addStructureMember(record, oldVar.getShortName(), oldVar.getDataType(), dimNames.toString());
-
-      List<Attribute> atts = oldVar.getAttributes();
-      for (Attribute att : atts) {
-        String attName = att.getShortName();
-        if (!reservedVariableAtts.contains(attName) && !attName.startsWith("_Coordinate"))
-          m.addAttribute(att);
-      }
-
-      String coordNames = timeName + " " + latName +" "+ lonName;
-      if (altUnits != null)
-        coordNames = coordNames +" " + altName;
-      m.addAttribute(new Attribute(CF.COORDINATES, coordNames));
-    }
-
-  }
-
   // keep track of the bounding box
   protected void trackBB(LatLonPoint loc, CalendarDate obsDate) {
     if (loc != null) {
@@ -439,36 +429,41 @@ public class CFPointWriter implements AutoCloseable {
     writer.close();
   }
 
-  protected int writeStructureData(boolean useStructure, Structure s, int[] origin, StructureData sdata) throws IOException, InvalidRangeException {
-    if (useStructure) {
-      if (s.isUnlimited())
-        return writer.appendStructureData(s, sdata);  // can write it all at once along unlimited dimension
-      else {
-        ArrayStructureW as = new ArrayStructureW(sdata.getStructureMembers(), new int[] {1});
-        as.setStructureData(sdata, 0);
-        writer.write(s, origin, as);  // can write it all at once along unlimited dimension
-        return origin[0];
-      }
-    } else  {
-      for (StructureMembers.Member m : sdata.getMembers()) {  // netcdf4 classic model
-        Array org = sdata.getArray(m);
-        Array orgPlus1 = Array.makeArrayRankPlusOne(org);  // add dimension on the left (slow)
-        int[] useOrigin = origin;
-
-        if (org.getRank() > 0) {                          // if rank 0 (common case, this is a nop, so skip
-          useOrigin = new int[org.getRank()+1];
-          useOrigin[0] = origin[0]; // the rest are 0
-        }
-
-        Variable mv = dataVarMap.get(m.getName());
-        if (mv == null)
-          continue;     // LOOK
-        writer.write(mv, useOrigin, orgPlus1);
-      }
+  protected int writeStructureData(Structure s, int[] origin, StructureData sdata) throws IOException, InvalidRangeException {
+    if (s.isUnlimited())
+      return writer.appendStructureData(s, sdata);  // can write it all at once along unlimited dimension
+    else {
+      ArrayStructureW as = new ArrayStructureW(sdata.getStructureMembers(), new int[] {1});
+      as.setStructureData(sdata, 0);
+      writer.write(s, origin, as);  // can write it all at once along regular dimension
       return origin[0];
     }
-
   }
+
+  protected int writeStructureDataClassic(Map<String, Variable> varMap, int[] origin, StructureData sdata) throws IOException, InvalidRangeException {
+    for (StructureMembers.Member m : sdata.getMembers()) {
+      Variable mv = varMap.get(m.getName());
+      if (mv == null)
+        continue;     // LOOK
+
+      Array org = sdata.getArray(m);
+      if (m.getDataType() == DataType.STRING) {  // convert to ArrayChar
+        org = ArrayChar.makeFromStringArray((ArrayObject) org);
+      }
+
+      Array orgPlus1 = Array.makeArrayRankPlusOne(org);  // add dimension on the left (slow)
+      int[] useOrigin = origin;
+
+      if (org.getRank() > 0) {                          // if rank 0 (common case, this is a nop, so skip
+        useOrigin = new int[org.getRank()+1];
+        useOrigin[0] = origin[0]; // the rest are 0
+      }
+
+      writer.write(mv, useOrigin, orgPlus1);
+    }
+    return origin[0];
+  }
+
 
 
   @Override
