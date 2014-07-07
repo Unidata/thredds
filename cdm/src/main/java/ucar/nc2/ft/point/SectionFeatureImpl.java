@@ -35,6 +35,7 @@ import ucar.nc2.ft.SectionFeature;
 import ucar.nc2.ft.ProfileFeature;
 import ucar.nc2.ft.PointFeatureCollectionIterator;
 import ucar.nc2.constants.FeatureType;
+import ucar.nc2.units.DateUnit;
 
 import java.io.IOException;
 
@@ -50,8 +51,8 @@ import java.io.IOException;
 public abstract class SectionFeatureImpl extends OneNestedPointCollectionImpl implements SectionFeature {
   protected PointFeatureCollectionIterator localIterator;
 
-  protected SectionFeatureImpl(String name) {
-    super(name, FeatureType.SECTION);
+  protected SectionFeatureImpl(String name, DateUnit timeUnit, String altUnits) {
+    super(name, timeUnit, altUnits, FeatureType.SECTION);
   }
 
   public boolean hasNext() throws IOException {

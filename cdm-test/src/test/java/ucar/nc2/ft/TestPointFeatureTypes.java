@@ -590,7 +590,7 @@ public class TestPointFeatureTypes extends TestCase {
     pfc.resetIteration();
     while (pfc.hasNext()) {
       PointFeature pf = pfc.next();
-      checkPointFeature(pf);
+      checkPointFeature(pf, pfc.getTimeUnit());
       assert bb.contains(pf.getLocation().getLatLon()) : pf.getLocation().getLatLon();
       if (!dr.contains(pf.getObservationTimeAsDate()))
         System.out.printf("  date out of Range= %s on %s %n", pf.getObservationTimeAsDate(), pfc.getName());
@@ -616,7 +616,7 @@ public class TestPointFeatureTypes extends TestCase {
       assert bb2.contains(pf.getLocation().getLatLon()) : bb2.toString2() + " does not contains point " + pf.getLocation().getLatLon();
       //System.out.printf(" contains point %s%n",pf.getLocation().getLatLon());
 
-      checkPointFeature(pf);
+      checkPointFeature(pf, pfc.getTimeUnit());
       counts++;
     }
     took = System.currentTimeMillis() - start;
@@ -628,7 +628,7 @@ public class TestPointFeatureTypes extends TestCase {
 
   // check that the location and times are filled out
   // read and test the data
-  private void checkPointFeature(PointFeature pobs) throws java.io.IOException {
+  private void checkPointFeature(PointFeature pobs, DateUnit timeUnit) throws java.io.IOException {
 
     EarthLocation loc = pobs.getLocation();
     assert loc != null;
@@ -636,9 +636,9 @@ public class TestPointFeatureTypes extends TestCase {
     assert null != pobs.getNominalTimeAsDate();
     assert null != pobs.getObservationTimeAsDate();
 
-    DateUnit timeUnit = pobs.getTimeUnit();
     assert timeUnit.makeDate(pobs.getNominalTime()).equals(pobs.getNominalTimeAsDate());
     assert timeUnit.makeDate(pobs.getObservationTime()).equals(pobs.getObservationTimeAsDate());
+
 
     StructureData sdata = pobs.getData();
     assert null != sdata;

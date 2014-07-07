@@ -50,7 +50,7 @@ public class StationTimeSeriesCollectionFlattened extends PointCollectionImpl {
   protected StationTimeSeriesCollectionImpl from;
 
   public StationTimeSeriesCollectionFlattened(StationTimeSeriesCollectionImpl from, CalendarDateRange dateRange) {
-    super( from.getName());
+    super( from.getName(), from.getTimeUnit(), from.getAltUnits());
     this.dateRange = dateRange;
     this.from = from;
   }

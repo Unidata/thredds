@@ -55,7 +55,7 @@ public abstract class PointIteratorAbstract implements PointFeatureIterator {
   private LatLonRect bb = null;
   private double minTime = Double.MAX_VALUE;
   private double maxTime = -Double.MAX_VALUE;
-  private DateUnit timeUnit;
+  //private DateUnit timeUnit;
   private int count;
 
   protected PointIteratorAbstract() {
@@ -75,9 +75,6 @@ public abstract class PointIteratorAbstract implements PointFeatureIterator {
       bb = new LatLonRect(pf.getLocation().getLatLon(), .001, .001);
     else
       bb.extend(pf.getLocation().getLatLon());
-
-    if (timeUnit == null)
-      timeUnit = pf.getTimeUnit();
 
     double obsTime = pf.getObservationTime();
     minTime = Math.min(minTime, obsTime);
@@ -119,8 +116,8 @@ public abstract class PointIteratorAbstract implements PointFeatureIterator {
 
   public CalendarDateRange getCalendarDateRange() {
     if (!calcBounds) return null;
-    if (timeUnit == null) return null;
-    return CalendarDateRange.of(timeUnit.makeCalendarDate(minTime), timeUnit.makeCalendarDate(maxTime));
+    if (collection.getTimeUnit() == null) return null;
+    return CalendarDateRange.of(collection.getTimeUnit().makeCalendarDate(minTime), collection.getTimeUnit().makeCalendarDate(maxTime));
   }
 
   public int getCount() { return count; }

@@ -49,18 +49,33 @@ import java.io.IOException;
  * @since Mar 20, 2008
  */
 public abstract class OneNestedPointCollectionImpl implements NestedPointFeatureCollection {
-  private String name;
-  private FeatureType collectionFeatureType;
+  protected String name;
+  protected DateUnit timeUnit;
+  protected String altUnits;
+  protected FeatureType collectionFeatureType;
   protected int npts;
 
-  protected OneNestedPointCollectionImpl(String name, FeatureType collectionFeatureType) {
+  protected OneNestedPointCollectionImpl(String name, DateUnit timeUnit, String altUnits, FeatureType collectionFeatureType) {
     this.name = name;
+    this.timeUnit = timeUnit;
+    this.altUnits = altUnits;
     this.collectionFeatureType = collectionFeatureType;
     this.npts = -1;
   }
 
+  @Override
   public String getName() {
     return name;
+  }
+
+  @Override
+  public DateUnit getTimeUnit() {
+    return timeUnit;
+  }
+
+  @Override
+  public String getAltUnits() {
+    return altUnits;
   }
 
   public int size() {
@@ -102,7 +117,7 @@ public abstract class OneNestedPointCollectionImpl implements NestedPointFeature
     protected CalendarDateRange dateRange;
 
     NestedPointFeatureCollectionFlatten(OneNestedPointCollectionImpl from, LatLonRect filter_bb, CalendarDateRange filter_date) {
-      super( from.getName());
+      super( from.getName(), from.getTimeUnit(), from.getAltUnits());
       this.from = from;
       this.boundingBox = filter_bb;
       this.dateRange = filter_date;

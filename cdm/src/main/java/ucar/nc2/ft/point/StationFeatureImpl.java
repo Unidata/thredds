@@ -54,19 +54,17 @@ import java.io.IOException;
 
 public abstract class StationFeatureImpl extends PointCollectionImpl implements StationTimeSeriesFeature {
   protected Station s;
-  protected DateUnit timeUnit;
 
-  public StationFeatureImpl(String name, String desc, String wmoId, double lat, double lon, double alt, DateUnit timeUnit, int npts) {
-    super(name);
+  public StationFeatureImpl(String name, String desc, String wmoId, double lat, double lon, double alt, DateUnit timeUnit, String altUnits, int npts) {
+    super(name, timeUnit, altUnits);
     s = new StationImpl(name, desc, wmoId, lat, lon, alt, npts);
     this.timeUnit = timeUnit;
     this.npts = npts;
   }
 
-  public StationFeatureImpl(Station s, DateUnit timeUnit, int npts) {
-    super(s.getName());
+  public StationFeatureImpl(Station s, DateUnit timeUnit, String altUnits, int npts) {
+    super(s.getName(), timeUnit, altUnits);
     this.s = s;
-    this.timeUnit = timeUnit;
     this.npts = npts;
     setBoundingBox( new LatLonRect(s.getLatLon(), .0001, .0001));
   }
@@ -147,7 +145,7 @@ public abstract class StationFeatureImpl extends PointCollectionImpl implements 
     StationFeatureImpl from;
 
     StationFeatureSubset(StationFeatureImpl from, CalendarDateRange filter_date) {
-      super(from.s, from.timeUnit, -1);
+      super(from.s, from.getTimeUnit(), from.getAltUnits(), -1);
       this.from = from;
 
       if (filter_date == null) {

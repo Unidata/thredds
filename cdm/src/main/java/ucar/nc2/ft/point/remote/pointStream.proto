@@ -30,6 +30,7 @@ message PointFeatureCollection {
   required string name = 1;
   required string timeUnit = 2;
   repeated Member members = 3;
+  optional string altUnit = 4;
 }
 
 message Station {

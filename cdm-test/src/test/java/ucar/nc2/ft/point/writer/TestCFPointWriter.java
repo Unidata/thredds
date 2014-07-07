@@ -29,24 +29,23 @@ public class TestCFPointWriter {
   @Parameterized.Parameters
   public static List<Object[]> getTestParameters() {
     List<Object[]> result = new ArrayList<>();
-    // result.add(new Object[]{CFpointObs_topdir + "stationSingle.ncml", FeatureType.STATION, 3});
-    // result.add(new Object[]{CFpointObs_topdir + "stationSingleWithZlevel.ncml", FeatureType.STATION, 3});
-    //result.add(new Object[]{CFpointObs_topdir + "stationMultidim.ncml", FeatureType.STATION, 15});
-    /* result.add(new Object[]{CFpointObs_topdir + "stationMultidimTimeJoin.ncml", FeatureType.STATION, 15});
-    result.add(new Object[]{CFpointObs_topdir + "stationMultidimUnlimited.nc", FeatureType.STATION, 15});
-    result.add(new Object[]{CFpointObs_topdir + "stationMultidimMissingTime.ncml", FeatureType.STATION, 12});
-    result.add(new Object[]{CFpointObs_topdir + "stationMultidimMissingId.ncml", FeatureType.STATION, 9});
-    result.add(new Object[]{CFpointObs_topdir + "stationMultidimMissingIdString.ncml", FeatureType.STATION, 12});
-    result.add(new Object[]{CFpointObs_topdir + "stationRaggedContig.ncml", FeatureType.STATION, 6});
-    result.add(new Object[]{CFpointObs_topdir + "stationRaggedIndex.ncml", FeatureType.STATION, 6});
-    result.add(new Object[]{CFpointObs_topdir + "stationRaggedMissing.ncml", FeatureType.STATION, 5});
-    result.add(new Object[]{CFpointObs_topdir + "stationFlat.ncml", FeatureType.STATION, 13});
-    result.add(new Object[]{CFpointObs_topdir + "stationFlat.nc", FeatureType.STATION, 13});     // */
+    //result.add(new Object[]{CFpointObs_topdir + "profileSingle.ncml", FeatureType.PROFILE, 13});
+    //result.add(new Object[]{CFpointObs_topdir + "profileSingleTimeJoin.ncml", FeatureType.PROFILE, 12});
+    //result.add(new Object[]{CFpointObs_topdir + "profileMultidim.ncml", FeatureType.PROFILE, 50});
+    /* result.add(new Object[]{CFpointObs_topdir + "profileMultidimTimeJoin.ncml", FeatureType.PROFILE, 50});
+    result.add(new Object[]{CFpointObs_topdir + "profileMultidimZJoin.ncml", FeatureType.PROFILE, 50});
+    result.add(new Object[]{CFpointObs_topdir + "profileMultidimTimeZJoin.ncml", FeatureType.PROFILE, 50});
+    result.add(new Object[]{CFpointObs_topdir + "profileMultidimMissingId.ncml", FeatureType.PROFILE, 40});
+    result.add(new Object[]{CFpointObs_topdir + "profileMultidimMissingAlt.ncml", FeatureType.PROFILE, 14});
+    result.add(new Object[]{CFpointObs_topdir + "profileRaggedContig.ncml", FeatureType.PROFILE, 6});
+    result.add(new Object[]{CFpointObs_topdir + "profileRaggedContigTimeJoin.ncml", FeatureType.PROFILE, 6});
+    result.add(new Object[]{CFpointObs_topdir + "profileRaggedIndex.ncml", FeatureType.PROFILE, 22});
+    result.add(new Object[]{CFpointObs_topdir + "profileRaggedIndexTimeJoin.ncml", FeatureType.PROFILE, 22});  // */
 
 
     result.addAll(TestCFsyntheticDatasets.getPointDatasets());
     result.addAll(TestCFsyntheticDatasets.getStationDatasets());
-    //result.addAll(TestCFsyntheticDatasets.getProfileDatasets());
+    result.addAll(TestCFsyntheticDatasets.getProfileDatasets());
 
     /* result.add(new Object[] {TestDir.cdmUnitTestDir + "ft/point/ldm/04061912_buoy.nc", FeatureType.POINT, 218});
     result.add(new Object[] {TestDir.cdmUnitTestDir + "ft/point/netcdf/Surface_Buoy_20090921_0000.nc", FeatureType.POINT, 32452});
@@ -84,14 +83,14 @@ public class TestCFPointWriter {
     assert count == countExpected : "count ="+count+" expected "+countExpected;
   }
 
-  @Test
+  //@Test
   public void testWrite4classic() throws IOException {
     int count = writeDataset(location, ".nc4c", ftype, new CFPointWriterConfig(NetcdfFileWriter.Version.netcdf4_classic), true);
     System.out.printf("%s netcdf4_classic count=%d%n", location, count);
     assert count == countExpected : "count ="+count+" expected "+countExpected;
   }
 
-  @Test
+  //@Test
   public void testWrite4() throws IOException {
     int count = writeDataset(location, ".nc4", ftype, new CFPointWriterConfig(NetcdfFileWriter.Version.netcdf4), true);
     System.out.printf("%s netcdf4 count=%d%n", location, count);

@@ -61,9 +61,9 @@ public class CompositeStationCollection extends StationTimeSeriesCollectionImpl 
   protected List<VariableSimpleIF> dataVariables;
   protected List<Attribute> globalAttributes;
 
-  protected CompositeStationCollection(String name, TimedCollection dataCollection,
+  protected CompositeStationCollection(String name, DateUnit timeUnit, String altUnits, TimedCollection dataCollection,
                                        List<Station> stns, List<VariableSimpleIF> dataVariables) throws IOException {
-    super(name);
+    super(name, timeUnit, altUnits);
     this.dataCollection = dataCollection;
     TimedCollection.Dataset td = dataCollection.getPrototype();
     if (td == null)
@@ -72,7 +72,7 @@ public class CompositeStationCollection extends StationTimeSeriesCollectionImpl 
     if ((stns != null) && (stns.size() > 0)) {
       stationHelper = new StationHelper();
       for (Station s : stns)
-        stationHelper.addStation(new CompositeStationFeature(s, null, this.dataCollection));
+        stationHelper.addStation(new CompositeStationFeature(s, timeUnit, altUnits, this.dataCollection));
     }
 
     this.dataVariables = dataVariables;
@@ -94,7 +94,7 @@ public class CompositeStationCollection extends StationTimeSeriesCollectionImpl 
       List<Station> stns = openCollection.getStations();
       stationHelper = new StationHelper();
       for (Station s : stns)
-        stationHelper.addStation(new CompositeStationFeature(s, null, this.dataCollection));
+        stationHelper.addStation(new CompositeStationFeature(s, timeUnit, altUnits, this.dataCollection));
 
       dataVariables = openDataset.getDataVariables();
       globalAttributes = openDataset.getGlobalAttributes();
@@ -132,25 +132,25 @@ public class CompositeStationCollection extends StationTimeSeriesCollectionImpl 
   @Override
   public StationTimeSeriesFeatureCollection subset(List<Station> stations) throws IOException {
     if (stations == null) return this;
-    return new CompositeStationCollection(getName(), dataCollection, stations, dataVariables);
+    return new CompositeStationCollection(getName(), getTimeUnit(), getAltUnits(), dataCollection, stations, dataVariables);
   }
 
   @Override
   public StationTimeSeriesFeatureCollection subset(ucar.unidata.geoloc.LatLonRect boundingBox) throws IOException {
     if (boundingBox == null) return this;
     List<Station> stations = stationHelper.getStations(boundingBox);
-    return new CompositeStationCollection(getName(), dataCollection, stations, dataVariables);
+    return new CompositeStationCollection(getName(), getTimeUnit(), getAltUnits(), dataCollection, stations, dataVariables);
   }
 
   @Override
   public StationTimeSeriesFeature getStationFeature(Station s) throws IOException {
-    return new CompositeStationFeature(s, null, dataCollection);
+    return new CompositeStationFeature(s, timeUnit, altUnits, dataCollection);
   }
 
   @Override
   public PointFeatureCollection flatten(LatLonRect boundingBox, CalendarDateRange dateRange) throws IOException {
     TimedCollection subsetCollection = (dateRange != null) ? dataCollection.subset(dateRange) : dataCollection;
-    return new CompositeStationCollectionFlattened(getName(), boundingBox, dateRange, subsetCollection);
+    return new CompositeStationCollectionFlattened(getName(), getTimeUnit(), getAltUnits(), boundingBox, dateRange, subsetCollection);
 
     //return flatten(stationHelper.getStations(boundingBox), dateRange, null);
   }
@@ -158,7 +158,7 @@ public class CompositeStationCollection extends StationTimeSeriesCollectionImpl 
   @Override
   public PointFeatureCollection flatten(List<String> stations, CalendarDateRange dateRange, List<VariableSimpleIF> varList) throws IOException {
     TimedCollection subsetCollection = (dateRange != null) ? dataCollection.subset(dateRange) : dataCollection;
-    return new CompositeStationCollectionFlattened(getName(), stations, dateRange, varList, subsetCollection);
+    return new CompositeStationCollectionFlattened(getName(), getTimeUnit(), getAltUnits(), stations, dateRange, varList, subsetCollection);
   }
 
   //////////////////////////////////////////////////////////
@@ -198,8 +198,8 @@ public class CompositeStationCollection extends StationTimeSeriesCollectionImpl 
   private class CompositeStationFeature extends StationFeatureImpl {
     private TimedCollection collForFeature;
 
-    CompositeStationFeature(Station s, DateUnit timeUnit, TimedCollection collForFeature) {
-      super(s, timeUnit, -1);
+    CompositeStationFeature(Station s, DateUnit timeUnit, String altUnits, TimedCollection collForFeature) {
+      super(s, timeUnit, altUnits, -1);
       setCalendarDateRange(collForFeature.getDateRange());
       this.collForFeature = collForFeature;
     }
@@ -217,7 +217,7 @@ public class CompositeStationCollection extends StationTimeSeriesCollectionImpl 
     @Override
     public StationTimeSeriesFeature subset(CalendarDateRange dateRange) throws IOException {
       if (dateRange == null) return this;
-      return new CompositeStationFeature(s, timeUnit, collForFeature.subset(dateRange));
+      return new CompositeStationFeature(s, getTimeUnit(), getAltUnits(), collForFeature.subset(dateRange));
     }
 
     @Override

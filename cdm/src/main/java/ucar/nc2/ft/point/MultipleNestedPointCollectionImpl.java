@@ -39,6 +39,7 @@ import ucar.nc2.ft.PointFeatureCollectionIterator;
 import ucar.nc2.time.CalendarDateRange;
 import ucar.nc2.units.DateRange;
 import ucar.nc2.constants.FeatureType;
+import ucar.nc2.units.DateUnit;
 import ucar.unidata.geoloc.LatLonRect;
 
 import java.io.IOException;
@@ -52,17 +53,32 @@ import java.io.IOException;
  */
 public abstract class MultipleNestedPointCollectionImpl implements NestedPointFeatureCollection {
   protected String name;
-  private FeatureType collectionFeatureType;
-  private int npts;
+  protected DateUnit timeUnit;
+  protected String altUnits;
+  protected FeatureType collectionFeatureType;
+  protected int npts;
 
-  protected MultipleNestedPointCollectionImpl(String name, FeatureType collectionFeatureType) {
+  protected MultipleNestedPointCollectionImpl(String name, DateUnit timeUnit, String altUnits, FeatureType collectionFeatureType) {
     this.name = name;
+    this.timeUnit = timeUnit;
+    this.altUnits = altUnits;
     this.collectionFeatureType = collectionFeatureType;
     this.npts = -1;
   }
 
+  @Override
   public String getName() {
     return name;
+  }
+
+  @Override
+  public DateUnit getTimeUnit() {
+    return timeUnit;
+  }
+
+  @Override
+  public String getAltUnits() {
+    return altUnits;
   }
 
   public int size() {
@@ -102,7 +118,7 @@ public abstract class MultipleNestedPointCollectionImpl implements NestedPointFe
     protected CalendarDateRange dateRange;
 
     NestedPointFeatureCollectionFlatten(MultipleNestedPointCollectionImpl from, LatLonRect filter_bb, CalendarDateRange filter_date) {
-      super(from.getName());
+      super(from.getName(), from.getTimeUnit(), from.getAltUnits());
       this.from = from;
       this.boundingBox = filter_bb;
       this.dateRange = filter_date;

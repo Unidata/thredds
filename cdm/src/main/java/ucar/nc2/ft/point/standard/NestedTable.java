@@ -410,6 +410,11 @@ public class NestedTable {
     }
   }
 
+  public String getAltUnits() {
+    if (altVE == null) return null;
+    else return altVE.getUnitsString();
+  }
+
   public List<VariableSimpleIF> getDataVariables() {
     List<VariableSimpleIF> data = new ArrayList<>();
     addDataVariables(data, leaf);

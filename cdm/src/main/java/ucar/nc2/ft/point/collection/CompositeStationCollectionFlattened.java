@@ -38,6 +38,7 @@ import ucar.nc2.ft.*;
 import ucar.nc2.VariableSimpleIF;
 import ucar.nc2.time.CalendarDateRange;
 import ucar.nc2.constants.FeatureType;
+import ucar.nc2.units.DateUnit;
 import ucar.unidata.geoloc.LatLonRect;
 
 import java.util.List;
@@ -63,9 +64,9 @@ public class CompositeStationCollectionFlattened extends PointCollectionImpl {
   private List<VariableSimpleIF> varList;
   private boolean wantStationsubset = false;
 
-  protected CompositeStationCollectionFlattened(String name, List<String> stations, CalendarDateRange dateRange,
+  protected CompositeStationCollectionFlattened(String name, DateUnit timeUnit, String altUnits, List<String> stations, CalendarDateRange dateRange,
                                                 List<VariableSimpleIF> varList, TimedCollection stnCollections) throws IOException {
-    super(name);
+    super(name, timeUnit, altUnits);
     this.stationsSubset = stations; // note these will be from the original collection, must transfer
     this.dateRange = dateRange;
     this.varList = varList;
@@ -74,8 +75,8 @@ public class CompositeStationCollectionFlattened extends PointCollectionImpl {
     wantStationsubset = (stations != null) && (stations.size() > 0);
   }
 
-  protected CompositeStationCollectionFlattened(String name, LatLonRect bbSubset, CalendarDateRange dateRange, TimedCollection stnCollections) throws IOException {
-    super(name);
+  protected CompositeStationCollectionFlattened(String name, DateUnit timeUnit, String altUnits, LatLonRect bbSubset, CalendarDateRange dateRange, TimedCollection stnCollections) throws IOException {
+    super(name, timeUnit, altUnits);
     this.bbSubset = bbSubset;
     this.dateRange = dateRange;
     this.stnCollections = stnCollections;

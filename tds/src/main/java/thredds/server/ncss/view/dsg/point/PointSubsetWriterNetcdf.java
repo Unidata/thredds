@@ -92,7 +92,7 @@ public class PointSubsetWriterNetcdf extends AbstractPointSubsetWriter {
             }
         }
 
-        cfWriter.writeHeader(wantedVariables, timeUnit, altUnit);
+        cfWriter.writeHeader(wantedVariables, null, timeUnit, altUnit);
     }
 
     @Override

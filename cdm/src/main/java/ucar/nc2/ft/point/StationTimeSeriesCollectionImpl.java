@@ -37,6 +37,7 @@ import ucar.nc2.constants.FeatureType;
 import ucar.nc2.time.CalendarDateRange;
 import ucar.nc2.units.DateRange;
 import ucar.nc2.VariableSimpleIF;
+import ucar.nc2.units.DateUnit;
 import ucar.unidata.geoloc.LatLonRect;
 import ucar.unidata.geoloc.Station;
 
@@ -56,8 +57,8 @@ public abstract class StationTimeSeriesCollectionImpl extends OneNestedPointColl
   protected StationHelper stationHelper;
   protected PointFeatureCollectionIterator localIterator;
 
-  public StationTimeSeriesCollectionImpl(String name) {
-    super(name, FeatureType.STATION);
+  public StationTimeSeriesCollectionImpl(String name, DateUnit timeUnit, String altUnits) {
+    super(name, timeUnit, altUnits, FeatureType.STATION);
   }
 
   protected abstract void initStationHelper(); // allow station helper to be deffered initialization
@@ -135,7 +136,7 @@ public abstract class StationTimeSeriesCollectionImpl extends OneNestedPointColl
     StationTimeSeriesCollectionImpl from; // probably not needed
 
     StationTimeSeriesCollectionSubset(StationTimeSeriesCollectionImpl from, List<Station> stations) {
-      super(from.getName());
+      super(from.getName(), from.getTimeUnit(), from.getAltUnits());
       this.from = from;
       this.stationHelper = new StationHelper();
       this.stationHelper.setStations(stations);

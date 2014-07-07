@@ -47,6 +47,18 @@ import java.io.IOException;
 public interface NestedPointFeatureCollection extends FeatureCollection {
 
   /**
+   * The udunit time unit string.
+   * @return  time unit string, may not be null
+   */
+  public DateUnit getTimeUnit();
+
+  /**
+   * The altitude unit string if it exists.
+   * @return altitude unit string, may be null
+   */
+  public String getAltUnits();
+
+  /**
    * The number of elements in the collection. May not be known until after iterating through the collection.
    * @return number of elements in the collection, or -1 if not known.
    */

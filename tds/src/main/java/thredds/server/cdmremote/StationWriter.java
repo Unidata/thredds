@@ -764,7 +764,7 @@ public class StationWriter {
         public void act(PointFeature pf, StructureData sdata) throws IOException {
           if (!headerWritten) {
             try {
-              cfWriter.writeHeader(wantStations, wantVars, pf.getTimeUnit(), null);
+              cfWriter.writeHeader(wantStations, wantVars, sfc.getTimeUnit(), sfc.getAltUnits());
               headerWritten = true;
             } catch (IOException e) {
               log.error("WriterNetcdf.header", e);
@@ -800,7 +800,7 @@ public class StationWriter {
         public void act(PointFeature pf, StructureData sdata) throws IOException {
           try {
             if (count == 0) {  // first time : need a point feature so cant do it in header
-              PointStreamProto.PointFeatureCollection proto = PointStream.encodePointFeatureCollection(fd.getLocation(), pf);
+              PointStreamProto.PointFeatureCollection proto = PointStream.encodePointFeatureCollection(fd.getLocation(), sfc.getTimeUnit().getTimeUnitString(), pf);
               byte[] b = proto.toByteArray();
               PointStream.writeMagic(out, PointStream.MessageType.PointFeatureCollection);
               NcStream.writeVInt(out, b.length);

@@ -58,10 +58,10 @@ public class PointFeatureCopyFactory {
   private final DateUnit du;
   private final int sizeInBytes;
 
-  public PointFeatureCopyFactory(PointFeature proto) throws IOException {
+  public PointFeatureCopyFactory(PointFeature proto, DateUnit du) throws IOException {
     StructureData sdata = proto.getData();
+    this.du = du;
     sm = new StructureMembers(sdata.getStructureMembers());
-    du = proto.getTimeUnit();
     sizeInBytes =  OBJECT_SIZE + POINTER_SIZE +       // PointFeatureCopy - 1 pointer                                             48
             2 * 8 + 2 * POINTER_SIZE +                // PointFeatureImpl - 2 doubles and 2 pointers                              32
             OBJECT_SIZE + 3 * 8 +                     // Earth Location - 3 doubles                                               64

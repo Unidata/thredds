@@ -57,13 +57,11 @@ import java.util.ArrayList;
  * @since Mar 28, 2008
  */
 public class StandardStationProfileCollectionImpl extends StationProfileCollectionImpl {
-  private DateUnit timeUnit;
   private NestedTable ft;
 
-  StandardStationProfileCollectionImpl(NestedTable ft, DateUnit timeUnit) throws IOException {
-    super(ft.getName());
+  StandardStationProfileCollectionImpl(NestedTable ft, DateUnit timeUnit, String altUnits) throws IOException {
+    super(ft.getName(), timeUnit, altUnits);
     this.ft = ft;
-    this.timeUnit = timeUnit;
   }
 
   @Override
@@ -124,7 +122,7 @@ public class StandardStationProfileCollectionImpl extends StationProfileCollecti
     int recnum;
 
     StandardStationProfileFeature(Station s, StructureData stationData, int recnum) {
-      super(s, StandardStationProfileCollectionImpl.this.timeUnit, -1);
+      super(s, StandardStationProfileCollectionImpl.this.getTimeUnit(), StandardStationProfileCollectionImpl.this.getAltUnits(), -1);
       this.s = s;
       this.stationData = stationData;
       this.recnum = recnum;
@@ -192,7 +190,7 @@ public class StandardStationProfileCollectionImpl extends StationProfileCollecti
 
       public PointFeatureCollection next() throws IOException {
         count++;
-        return new StandardProfileFeature(s, ft.getObsTime(cursor), cursor.copy());
+        return new StandardProfileFeature(s, getTimeUnit(), getAltUnits(), ft.getObsTime(cursor), cursor.copy());
       }
 
       public void setBufferSize(int bytes) {
@@ -210,8 +208,8 @@ public class StandardStationProfileCollectionImpl extends StationProfileCollecti
   private class StandardProfileFeature extends ProfileFeatureImpl {
     private Cursor cursor;
 
-    StandardProfileFeature(Station s, double time, Cursor cursor) throws IOException {
-      super(timeUnit.makeStandardDateString(time), s.getLatitude(), s.getLongitude(), time, -1);
+    StandardProfileFeature(Station s, DateUnit timeUnit, String altUnits, double time, Cursor cursor) throws IOException {
+      super(timeUnit.makeStandardDateString(time), timeUnit, altUnits, s.getLatitude(), s.getLongitude(), time, -1);
       this.cursor = cursor;
 
       if (Double.isNaN(time)) { // gotta read an obs to get the time

@@ -48,6 +48,7 @@ import ucar.nc2.ncml.NcMLWriter;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time.CalendarDateFormatter;
 import ucar.nc2.time.CalendarDateRange;
+import ucar.nc2.units.DateUnit;
 import ucar.unidata.geoloc.LatLonPointImpl;
 import ucar.unidata.geoloc.LatLonRect;
 import ucar.unidata.geoloc.Station;
@@ -164,6 +165,9 @@ public class FeatureDatasetPointXML {
       elem.setAttribute("url", url);
       rootElem.addContent(elem);
     }
+
+    //rootElem.addContent(new Element("TimeUnit").addContent(fdp.getTimeUnit()));
+    //rootElem.addContent(new Element("AltitudeUnits").addContent(fdp.getAltUnits()));
 
     // data variables
     List<? extends VariableSimpleIF> vars = fdp.getDataVariables();
@@ -287,6 +291,24 @@ public class FeatureDatasetPointXML {
     } catch (Exception e) {
       return null;
     }
+  }
+
+  public static DateUnit getTimeUnit(Document doc) throws IOException {
+    Element root = doc.getRootElement();
+    String timeUnitS = root.getChildText("TimeUnit");
+    if (timeUnitS == null) return null;
+
+    try {
+      return new DateUnit(timeUnitS);
+    } catch (Exception e) {
+      log.error("Illegal date unit {}", timeUnitS);
+      return null;
+    }
+  }
+
+  public static String getAltUnits(Document doc) throws IOException {
+    Element root = doc.getRootElement();
+    return root.getChildText("AltitudeUnits");
   }
 
   public static List<VariableSimpleIF> getDataVariables(Document doc) throws IOException {

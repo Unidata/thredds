@@ -54,13 +54,11 @@ import java.util.Date;
 
 
 public class StandardSectionCollectionImpl extends SectionCollectionImpl {
-  private DateUnit timeUnit;
   private NestedTable ft;
 
-  StandardSectionCollectionImpl(NestedTable ft, DateUnit timeUnit) throws IOException {
-    super(ft.getName());
+  StandardSectionCollectionImpl(NestedTable ft, DateUnit timeUnit, String altUnits) throws IOException {
+    super(ft.getName(), timeUnit, altUnits);
     this.ft = ft;
-    this.timeUnit = timeUnit;
   }
 
   @Override
@@ -103,7 +101,7 @@ public class StandardSectionCollectionImpl extends SectionCollectionImpl {
     Cursor cursor;
 
     StandardSectionFeature(Cursor cursor) {
-      super(ft.getFeatureName(cursor));
+      super(ft.getFeatureName(cursor), StandardSectionCollectionImpl.this.getTimeUnit(), StandardSectionCollectionImpl.this.getAltUnits());
       this.cursor = cursor;
     }
 
@@ -158,7 +156,9 @@ public class StandardSectionCollectionImpl extends SectionCollectionImpl {
     Cursor cursor;
 
     StandardSectionProfileFeature(Cursor cursor, double time) {
-      super( timeUnit.makeStandardDateString(time), ft.getLatitude(cursor), ft.getLongitude(cursor), time, -1);
+      super( StandardSectionCollectionImpl.this.getTimeUnit().makeStandardDateString(time),
+              StandardSectionCollectionImpl.this.getTimeUnit(), StandardSectionCollectionImpl.this.getAltUnits(),
+              ft.getLatitude(cursor), ft.getLongitude(cursor), time, -1);
       this.cursor = cursor;
 
       if (Double.isNaN(time)) { // gotta read an obs to get the time

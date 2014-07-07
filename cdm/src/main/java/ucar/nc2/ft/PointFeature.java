@@ -33,7 +33,6 @@
 package ucar.nc2.ft;
 
 import ucar.nc2.time.CalendarDate;
-import ucar.nc2.units.DateUnit;
 import ucar.unidata.geoloc.EarthLocation;
 
 import java.util.Date;
@@ -95,14 +94,14 @@ public interface PointFeature {
   /**
    * Get the time unit of the time coordinate.
    * @return time unit of the time coordinate
-   */
+   *
   public DateUnit getTimeUnit();
 
   /**
    * Get the altitude units, if any
    * @return altitude units or null if none
-   */
-  public String getAltUnits();
+   *
+  public String getAltUnits(); */
 
   /**
    * The actual data of this observation.

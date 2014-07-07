@@ -56,15 +56,15 @@ public abstract class StationProfileFeatureImpl extends OneNestedPointCollection
   protected Station s;
   protected PointFeatureCollectionIterator localIterator;
 
-  public StationProfileFeatureImpl(String name, String desc, String wmoId, double lat, double lon, double alt, DateUnit timeUnit, int npts) {
-    super( name, FeatureType.STATION_PROFILE);
+  public StationProfileFeatureImpl(String name, String desc, String wmoId, double lat, double lon, double alt, DateUnit timeUnit, String altUnits, int npts) {
+    super( name, timeUnit, altUnits, FeatureType.STATION_PROFILE);
     s = new StationImpl(name, desc, wmoId, lat, lon, alt, npts);
     this.timeUnit = timeUnit;
     this.timeSeriesNpts = npts;
   }
 
-  public StationProfileFeatureImpl(Station s, DateUnit timeUnit, int npts) {
-    super( s.getName(), FeatureType.STATION_PROFILE);
+  public StationProfileFeatureImpl(Station s, DateUnit timeUnit, String altUnits, int npts) {
+    super( s.getName(), timeUnit, altUnits, FeatureType.STATION_PROFILE);
     this.s = s;
     this.timeUnit = timeUnit;
     this.timeSeriesNpts = npts;

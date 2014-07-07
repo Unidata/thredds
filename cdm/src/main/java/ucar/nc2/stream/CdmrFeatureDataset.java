@@ -40,6 +40,7 @@ import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dt.grid.GridDataset;
 import ucar.nc2.VariableSimpleIF;
 import ucar.nc2.time.CalendarDateRange;
+import ucar.nc2.units.DateUnit;
 import ucar.unidata.geoloc.LatLonRect;
 
 import java.io.IOException;
@@ -86,8 +87,10 @@ public class CdmrFeatureDataset {
       List<VariableSimpleIF> dataVars = FeatureDatasetPointXML.getDataVariables(doc);
       LatLonRect bb = FeatureDatasetPointXML.getSpatialExtent(doc);
       CalendarDateRange dr = FeatureDatasetPointXML.getTimeSpan(doc);
+      DateUnit timeUnit = FeatureDatasetPointXML.getTimeUnit(doc);
+      String altUnits = FeatureDatasetPointXML.getAltUnits(doc);
 
-      return new PointDatasetRemote(ft, uri, dataVars, bb, dr);
+      return new PointDatasetRemote(ft, uri, timeUnit, altUnits, dataVars, bb, dr);
     }
   }
 

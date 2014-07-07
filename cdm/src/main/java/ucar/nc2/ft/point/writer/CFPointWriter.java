@@ -114,7 +114,7 @@ public class CFPointWriter implements AutoCloseable {
       while(pfc.hasNext()) {
         PointFeature pf = pfc.next();
         if (count == 0)
-          cfWriter.writeHeader(fdpoint.getDataVariables(), pfc.getExtraVariables(), pf.getTimeUnit(), pf.getAltUnits());
+          cfWriter.writeHeader(fdpoint.getDataVariables(), pfc.getExtraVariables(), pfc.getTimeUnit(), pfc.getAltUnits());
 
         cfWriter.writeRecord(pf, pf.getData());
         count++;
@@ -137,7 +137,7 @@ public class CFPointWriter implements AutoCloseable {
     while (pfc.hasNext()) {
       PointFeature pf = pfc.next();
       if (count == 0)
-        cfWriter.writeHeader(fds.getStations(), fdpoint.getDataVariables(), pf.getTimeUnit(), pf.getAltUnits());
+        cfWriter.writeHeader(fds.getStations(), fdpoint.getDataVariables(), fds.getTimeUnit(), fds.getAltUnits());
 
       StationPointFeature spf = (StationPointFeature) pf;
       cfWriter.writeRecord(spf.getStation(), pf, pf.getData());

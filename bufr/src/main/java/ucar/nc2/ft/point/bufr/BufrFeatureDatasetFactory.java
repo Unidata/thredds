@@ -66,6 +66,9 @@ import java.util.*;
  */
 public class BufrFeatureDatasetFactory implements FeatureDatasetFactory {
   static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(BufrFeatureDatasetFactory.class);
+  static private DateUnit bufrDateUnits = DateUnit.factory("msecs since 1970-01-01T00:00:00");
+  static private String bufrAltUnits = "m"; // LOOK fake
+
 
   @Override
   public Object isMine(FeatureType wantFeatureType, NetcdfDataset ncd, Formatter errlog) throws IOException {
@@ -166,11 +169,10 @@ public class BufrFeatureDatasetFactory implements FeatureDatasetFactory {
     }
 
     private class BufrStationCollection extends StationTimeSeriesCollectionImpl {
-      DateUnit dateUnit;
       StandardFields.StandardFieldsFromStructure extract;
 
       private BufrStationCollection(String name) {
-        super(name);
+        super(name, null, null);
 
         // need  the center id to match the standard fields
         Attribute centerAtt = ncfile.findGlobalAttribute(BufrIosp2.centerId);
@@ -178,10 +180,12 @@ public class BufrFeatureDatasetFactory implements FeatureDatasetFactory {
         this.extract = new StandardFields.StandardFieldsFromStructure(center, obs);
 
         try {
-          dateUnit = new DateUnit("msecs since 1970-01-01T00:00:00");
+          this.timeUnit = new DateUnit("msecs since 1970-01-01T00:00:00");
         } catch (Exception e) {
           e.printStackTrace();  //cant happen
         }
+
+        this.altUnits = "m"; // LOOK fake units
       }
 
       @Override
@@ -190,12 +194,12 @@ public class BufrFeatureDatasetFactory implements FeatureDatasetFactory {
 
         stationHelper = new StationHelper();
         for (BufrCdmIndexProto.Station s : index.stations)
-          stationHelper.addStation(new BufrStation(s, dateUnit));
+          stationHelper.addStation(new BufrStation(s));
       }
 
       private class BufrStation extends StationFeatureImpl {
-        private BufrStation(BufrCdmIndexProto.Station proto, DateUnit timeUnit) {
-          super(proto.getId(), proto.getDesc(), proto.getWmoId(), proto.getLat(), proto.getLon(), proto.getAlt(), timeUnit, proto.getCount());
+        private BufrStation(BufrCdmIndexProto.Station proto) {
+          super(proto.getId(), proto.getDesc(), proto.getWmoId(), proto.getLat(), proto.getLon(), proto.getAlt(), bufrDateUnits, bufrAltUnits, proto.getCount());
         }
 
         @Override
@@ -220,15 +224,15 @@ public class BufrFeatureDatasetFactory implements FeatureDatasetFactory {
             if (!stationId.equals(s.getName()))
               return null;
             CalendarDate date = extract.makeCalendarDate();
-            return new BufrStationPoint(s, date.getMillis(), 0, dateUnit, munger.munge(sdata));  // LOOK  obsTime, nomTime
+            return new BufrStationPoint(s, date.getMillis(), 0, munger.munge(sdata));  // LOOK  obsTime, nomTime
           }
         }
 
         public class BufrStationPoint extends PointFeatureImpl {
           StructureData sdata;
 
-          public BufrStationPoint(EarthLocation location, double obsTime, double nomTime, DateUnit timeUnit, StructureData sdata) {
-            super(location, obsTime, nomTime, timeUnit);
+          public BufrStationPoint(EarthLocation location, double obsTime, double nomTime, StructureData sdata) {
+            super(location, obsTime, nomTime, bufrDateUnits);
             this.sdata = sdata;
           }
 
@@ -250,7 +254,7 @@ public class BufrFeatureDatasetFactory implements FeatureDatasetFactory {
         PointFeatureIterator.Filter filter;
 
         BufrPointFeatureCollection(LatLonRect boundingBox, CalendarDateRange dateRange) throws IOException {
-          super("");
+          super("BufrPointFeatureCollection", bufrDateUnits, bufrAltUnits);
           setBoundingBox(boundingBox);
           setCalendarDateRange(dateRange);
           initStationHelper();
@@ -280,7 +284,7 @@ public class BufrFeatureDatasetFactory implements FeatureDatasetFactory {
               return null;
             CalendarDate date = extract.makeCalendarDate();
             countHere++;
-            return new BufrPoint(want, date.getMillis(), 0, dateUnit, munger.munge(sdata));
+            return new BufrPoint(want, date.getMillis(), 0, munger.munge(sdata));
           }
 
           @Override
@@ -294,8 +298,8 @@ public class BufrFeatureDatasetFactory implements FeatureDatasetFactory {
         public class BufrPoint extends PointFeatureImpl implements StationPointFeature {
           StructureData sdata;
 
-          public BufrPoint(Station want, double obsTime, double nomTime, DateUnit timeUnit, StructureData sdata) {
-            super(want, obsTime, nomTime, timeUnit);
+          public BufrPoint(Station want, double obsTime, double nomTime, StructureData sdata) {
+            super(want, obsTime, nomTime, bufrDateUnits);
             this.sdata = sdata;
           }
 
@@ -316,8 +320,6 @@ public class BufrFeatureDatasetFactory implements FeatureDatasetFactory {
 
   private class Action {
     BufrCdmIndexProto.FldAction what;
-    String seqName1;
-
     private Action(BufrCdmIndexProto.FldAction what) {
       this.what = what;
     }
@@ -326,15 +328,15 @@ public class BufrFeatureDatasetFactory implements FeatureDatasetFactory {
   private class Munge {
     String sdataName;
     boolean needed;
-    protected Map<String, Action> actions = new HashMap<String,Action>(32);
-    protected Map<String, StructureData> missingData = new HashMap<String, StructureData>(32);
-    protected Map<String, VariableDS> vars = new HashMap<String, VariableDS>(32);
+    protected Map<String, Action> actions = new HashMap<>(32);
+    protected Map<String, StructureData> missingData = new HashMap<>(32);
+    protected Map<String, VariableDS> vars = new HashMap<>(32);
 
     List<VariableSimpleIF> makeDataVariables(BufrCdmIndex index, Structure obs) {
       this.sdataName = obs.getShortName()+"Munged";
 
       List<Variable> members = obs.getVariables();
-      List<VariableSimpleIF> result = new ArrayList<VariableSimpleIF>(members.size());
+      List<VariableSimpleIF> result = new ArrayList<>(members.size());
 
       List<BufrCdmIndexProto.Field> flds = index.root.getFldsList();
       int count = 0;

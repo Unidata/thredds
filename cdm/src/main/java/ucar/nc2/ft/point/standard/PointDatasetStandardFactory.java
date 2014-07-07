@@ -137,7 +137,7 @@ public class PointDatasetStandardFactory implements FeatureDatasetFactory {
 
   static class PointDatasetStandard extends PointDatasetImpl {
     private TableAnalyzer analyser;
-    private DateUnit timeUnit;
+    //private DateUnit timeUnit;
 
     PointDatasetStandard(FeatureType wantFeatureType, TableAnalyzer analyser, NetcdfDataset ds, Formatter errlog) throws IOException {
       super(ds, null);
@@ -147,40 +147,41 @@ public class PointDatasetStandardFactory implements FeatureDatasetFactory {
       List<FeatureCollection> featureCollections = new ArrayList<>();
       for (NestedTable flatTable : analyser.getFlatTables()) { // each flat table becomes a "feature collection"
 
-        if (timeUnit == null) {
+        DateUnit timeUnit = null;
+        try {
+          timeUnit = flatTable.getTimeUnit();
+        } catch (Exception e) {
+          if (null != errlog) errlog.format("%s\n", e.getMessage());
           try {
-            timeUnit = flatTable.getTimeUnit();
-          } catch (Exception e) {
-            if (null != errlog) errlog.format("%s\n", e.getMessage());
-            try {
-              timeUnit = new DateUnit("seconds since 1970-01-01");
-            } catch (Exception e1) {
-              log.error("Illegal time units", e1); // cant happen i hope
-            }
+            timeUnit = new DateUnit("seconds since 1970-01-01");
+          } catch (Exception e1) {
+            log.error("Illegal time units", e1); // cant happen i hope
           }
         }
+
+        String altUnits = flatTable.getAltUnits();
 
         // create member variables
         dataVariables = new ArrayList<>(flatTable.getDataVariables());
 
         featureType = flatTable.getFeatureType(); // hope they're all the same
         if (flatTable.getFeatureType() == FeatureType.POINT)
-          featureCollections.add(new StandardPointCollectionImpl(flatTable, timeUnit));
+          featureCollections.add(new StandardPointCollectionImpl(flatTable, timeUnit, altUnits));
 
         else if (flatTable.getFeatureType() == FeatureType.PROFILE)
-          featureCollections.add(new StandardProfileCollectionImpl(flatTable, timeUnit));
+          featureCollections.add(new StandardProfileCollectionImpl(flatTable, timeUnit, altUnits));
 
         else if (flatTable.getFeatureType() == FeatureType.STATION)
-          featureCollections.add(new StandardStationCollectionImpl(flatTable, timeUnit));
+          featureCollections.add(new StandardStationCollectionImpl(flatTable, timeUnit, altUnits));
 
         else if (flatTable.getFeatureType() == FeatureType.STATION_PROFILE)
-          featureCollections.add(new StandardStationProfileCollectionImpl(flatTable, timeUnit));
+          featureCollections.add(new StandardStationProfileCollectionImpl(flatTable, timeUnit, altUnits));
 
         else if (flatTable.getFeatureType() == FeatureType.SECTION)
-          featureCollections.add(new StandardSectionCollectionImpl(flatTable, timeUnit));
+          featureCollections.add(new StandardSectionCollectionImpl(flatTable, timeUnit, altUnits));
 
         else if (flatTable.getFeatureType() == FeatureType.TRAJECTORY)
-          featureCollections.add(new StandardTrajectoryCollectionImpl(flatTable, timeUnit));
+          featureCollections.add(new StandardTrajectoryCollectionImpl(flatTable, timeUnit, altUnits));
       }
 
       if (featureCollections.size() == 0)

@@ -53,7 +53,6 @@ public abstract class PointFeatureImpl implements PointFeature, Comparable<Point
   protected EarthLocation location;
   protected double obsTime, nomTime;
   protected DateUnit timeUnit;
-  protected String altUnit;
 
   public PointFeatureImpl( DateUnit timeUnit) {
     this.timeUnit = timeUnit;
@@ -64,14 +63,6 @@ public abstract class PointFeatureImpl implements PointFeature, Comparable<Point
     this.obsTime = obsTime;
     this.nomTime = (nomTime == 0) ? obsTime : nomTime; // LOOK temp kludge until protobuf accepts NaN as defaults
     this.timeUnit = timeUnit;
-  }
-
-  public PointFeatureImpl( EarthLocation location, double obsTime, double nomTime, DateUnit timeUnit, String altUnit) {
-    this.location = location;
-    this.obsTime = obsTime;
-    this.nomTime = (nomTime == 0) ? obsTime : nomTime; // LOOK temp kludge until protobuf accepts NaN as defaults
-    this.timeUnit = timeUnit;
-    this.altUnit = altUnit;
   }
 
   @Override
@@ -103,16 +94,6 @@ public abstract class PointFeatureImpl implements PointFeature, Comparable<Point
   @Override
   public CalendarDate getNominalTimeAsCalendarDate() {
     return timeUnit.makeCalendarDate( getNominalTime());
-  }
-
-  @Override
-  public DateUnit getTimeUnit() {
-    return timeUnit;
-  }
-
-  @Override
-  public String getAltUnits() {
-    return altUnit;
   }
 
   public int compareTo(PointFeature other) {

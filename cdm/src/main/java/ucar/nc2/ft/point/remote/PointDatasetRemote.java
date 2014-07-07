@@ -32,12 +32,12 @@
  */
 package ucar.nc2.ft.point.remote;
 
-import ucar.nc2.ft.*;
 import ucar.nc2.ft.point.PointDatasetImpl;
 import ucar.nc2.stream.CdmrFeatureDataset;
 import ucar.nc2.time.CalendarDateRange;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.VariableSimpleIF;
+import ucar.nc2.units.DateUnit;
 import ucar.unidata.geoloc.LatLonRect;
 
 import java.io.IOException;
@@ -52,26 +52,25 @@ import java.util.List;
  */
 public class PointDatasetRemote extends PointDatasetImpl {
 
-  public PointDatasetRemote(FeatureType wantFeatureType, String uri, List<VariableSimpleIF> vars, LatLonRect bb,
-      CalendarDateRange dr) throws IOException {
+  public PointDatasetRemote(FeatureType wantFeatureType, String uri, DateUnit timeUnit, String altUnits, List<VariableSimpleIF> vars, LatLonRect bb, CalendarDateRange dr) throws IOException {
 
     super(wantFeatureType);
     setBoundingBox(bb);
     setDateRange(dr);
     setLocationURI(CdmrFeatureDataset.SCHEME + uri);
 
-    dataVariables = new ArrayList<VariableSimpleIF>( vars);
+    dataVariables = new ArrayList<>( vars);
 
-    collectionList = new ArrayList<FeatureCollection>(1);
+    collectionList = new ArrayList<>(1);
     switch (wantFeatureType) {
       case POINT:
-        collectionList.add(new RemotePointCollection(uri, null));
+        collectionList.add(new RemotePointCollection(uri, timeUnit, altUnits, null));
         break;
       case STATION:
-        collectionList.add(new RemoteStationCollection(uri));
+        collectionList.add(new RemoteStationCollection(uri, timeUnit, altUnits));
         break;
       default:
-        throw new UnsupportedOperationException("No implemenattion for " + wantFeatureType);
+        throw new UnsupportedOperationException("No implementation for " + wantFeatureType);
     }
   }
 

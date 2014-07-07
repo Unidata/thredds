@@ -35,7 +35,6 @@ package ucar.nc2.ft.point.remote;
 
 import ucar.nc2.ft.PointFeature;
 import ucar.nc2.ft.point.PointFeatureImpl;
-import ucar.nc2.iosp.IospHelper;
 import ucar.nc2.units.DateUnit;
 import ucar.nc2.stream.NcStream;
 import ucar.unidata.geoloc.EarthLocation;
@@ -114,12 +113,12 @@ public class PointStream {
     return true;
   }
 
-  static public PointStreamProto.PointFeatureCollection encodePointFeatureCollection(String name, PointFeature pf) throws IOException {
+  static public PointStreamProto.PointFeatureCollection encodePointFeatureCollection(String name, String timeUnitString, PointFeature pf) throws IOException {
     PointStreamProto.PointFeatureCollection.Builder builder = PointStreamProto.PointFeatureCollection.newBuilder();
     if (name == null)
       System.out.printf("HEY null pointstream name%n");
     builder.setName(name);
-    builder.setTimeUnit(pf.getTimeUnit().getUnitsString());
+    builder.setTimeUnit(timeUnitString);
 
     StructureData sdata = pf.getData();
     StructureMembers sm = sdata.getStructureMembers();

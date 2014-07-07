@@ -50,17 +50,15 @@ import java.io.IOException;
  * @since Dec 31, 2008
  */
 public class StandardTrajectoryCollectionImpl extends OneNestedPointCollectionImpl implements TrajectoryFeatureCollection {
-  private DateUnit timeUnit;
   private NestedTable ft;
 
-  protected StandardTrajectoryCollectionImpl(String name) {
-    super(name, FeatureType.TRAJECTORY);
+  protected StandardTrajectoryCollectionImpl(String name, DateUnit timeUnit, String altUnits) {
+    super(name, timeUnit, altUnits, FeatureType.TRAJECTORY);
   }
 
-  StandardTrajectoryCollectionImpl(NestedTable ft, DateUnit timeUnit) {
-    super(ft.getName(), FeatureType.TRAJECTORY);
+  StandardTrajectoryCollectionImpl(NestedTable ft, DateUnit timeUnit, String altUnits) {
+    super(ft.getName(), timeUnit, altUnits, FeatureType.TRAJECTORY);
     this.ft = ft;
-    this.timeUnit = timeUnit;
   }
 
   public PointFeatureCollectionIterator getPointFeatureCollectionIterator(int bufferSize) throws IOException {
@@ -88,7 +86,6 @@ public class StandardTrajectoryCollectionImpl extends OneNestedPointCollectionIm
 
   private class TrajCollectionIterator implements PointFeatureCollectionIterator {
     StructureDataIterator structIter;
-    int count = 0;
     StructureData nextTraj;
 
     TrajCollectionIterator(ucar.ma2.StructureDataIterator structIter) throws IOException {
@@ -128,7 +125,7 @@ public class StandardTrajectoryCollectionImpl extends OneNestedPointCollectionIm
     Cursor cursor;
 
     StandardTrajectoryFeature(Cursor cursor) {
-      super(ft.getFeatureName(cursor), -1);
+      super(ft.getFeatureName(cursor), StandardTrajectoryCollectionImpl.this.getTimeUnit(), StandardTrajectoryCollectionImpl.this.getAltUnits(), -1);
       this.cursor = cursor;
     }
 
@@ -148,7 +145,7 @@ public class StandardTrajectoryCollectionImpl extends OneNestedPointCollectionIm
     LatLonRect boundingBox;
 
     StandardTrajectoryCollectionSubset(TrajectoryFeatureCollection from, LatLonRect boundingBox) {
-      super(from.getName()+"-subset");
+      super(from.getName()+"-subset", from.getTimeUnit(), from.getAltUnits());
       this.from = from;
       this.boundingBox = boundingBox;
     }

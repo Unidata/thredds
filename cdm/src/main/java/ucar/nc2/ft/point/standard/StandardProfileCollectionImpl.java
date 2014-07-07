@@ -51,17 +51,15 @@ import java.util.Date;
  * @since Jan 20, 2009
  */
 public class StandardProfileCollectionImpl extends OneNestedPointCollectionImpl implements ProfileFeatureCollection {
-  private DateUnit timeUnit;
   private NestedTable ft;
 
-  protected StandardProfileCollectionImpl(String name) {
-    super(name, FeatureType.PROFILE);
+  protected StandardProfileCollectionImpl(String name, DateUnit timeUnit, String altUnits ) {
+    super(name, timeUnit, altUnits, FeatureType.PROFILE);
   }
 
-  StandardProfileCollectionImpl(NestedTable ft, DateUnit timeUnit) {
-    super(ft.getName(), FeatureType.PROFILE);
+  StandardProfileCollectionImpl(NestedTable ft, DateUnit timeUnit, String altUnits) {
+    super(ft.getName(), timeUnit, altUnits, FeatureType.PROFILE);
     this.ft = ft;
-    this.timeUnit = timeUnit;
   }
 
   public PointFeatureCollectionIterator getPointFeatureCollectionIterator(int bufferSize) throws IOException {
@@ -125,7 +123,8 @@ public class StandardProfileCollectionImpl extends OneNestedPointCollectionImpl 
   private class StandardProfileFeature extends ProfileFeatureImpl {
     Cursor cursor;
     StandardProfileFeature( Cursor cursor, double time) {
-      super( ft.getFeatureName(cursor), ft.getLatitude(cursor), ft.getLongitude(cursor), time, -1);
+      super( ft.getFeatureName(cursor), StandardProfileCollectionImpl.this.getTimeUnit(), StandardProfileCollectionImpl.this.getAltUnits(),
+              ft.getLatitude(cursor), ft.getLongitude(cursor), time, -1);
       this.cursor = cursor;
       if (name.equalsIgnoreCase("unknown"))
         name = timeUnit.makeStandardDateString(time); // use time as the name
@@ -183,7 +182,7 @@ public class StandardProfileCollectionImpl extends OneNestedPointCollectionImpl 
       LatLonRect boundingBox;
 
     StandardProfileCollectionSubset(StandardProfileCollectionImpl from, LatLonRect boundingBox) {
-      super(from.getName()+"-subset");
+      super(from.getName()+"-subset", from.getTimeUnit(), from.getAltUnits());
       this.from = from;
       this.boundingBox = boundingBox;
     }

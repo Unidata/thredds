@@ -65,11 +65,11 @@ public class StationFeatureCopyFactory {
   private final DateUnit du;
   private final int sizeInBytes;
 
-  public StationFeatureCopyFactory(StationPointFeature proto) throws IOException {
+  public StationFeatureCopyFactory(StationPointFeature proto, DateUnit du) throws IOException {
+    this.du = du;
     stationMap = new HashMap<>();
     StructureData sdata = proto.getData();
     sm = new StructureMembers(sdata.getStructureMembers());
-    du = proto.getTimeUnit();
     sizeInBytes =  OBJECT_SIZE + POINTER_SIZE +       // PointFeatureCopy - 1 pointer                                             48
             2 * 8 + 2 * POINTER_SIZE +                // PointFeatureImpl - 2 doubles and 2 pointers                              32
             OBJECT_SIZE + 3 * 8 +                     // Earth Location - 3 doubles                                               64

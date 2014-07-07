@@ -49,6 +49,18 @@ import java.util.List;
  */
 public interface PointFeatureCollection extends FeatureCollection {
 
+  /**
+   * The udunit time unit string.
+   * @return  time unit string, may not be null
+   */
+  public DateUnit getTimeUnit();
+
+  /**
+   * The altitude unit string if it exists.
+   * @return altitude unit string, may be null
+   */
+  public String getAltUnits();
+
   public List<Variable> getExtraVariables();
 
   /**

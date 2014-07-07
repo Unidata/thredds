@@ -39,6 +39,7 @@ import ucar.nc2.ft.*;
 import ucar.nc2.time.CalendarDateRange;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.VariableSimpleIF;
+import ucar.nc2.units.DateUnit;
 import ucar.unidata.geoloc.LatLonRect;
 
 import java.io.IOException;
@@ -57,8 +58,8 @@ public class CompositePointCollection extends PointCollectionImpl implements Upd
   protected List<VariableSimpleIF> dataVariables;
   protected List<Attribute> globalAttributes;
 
-  protected CompositePointCollection(String name, TimedCollection pointCollections) throws IOException {
-    super(name);
+  protected CompositePointCollection(String name, DateUnit timeUnit, String altUnits, TimedCollection pointCollections) throws IOException {
+    super(name, timeUnit, altUnits);
     this.pointCollections = pointCollections;
   }
 
@@ -104,7 +105,7 @@ public class CompositePointCollection extends PointCollectionImpl implements Upd
     else if (dateRange == null)
       return new PointCollectionSubset(this, boundingBox, null);
     else {
-      CompositePointCollection dateSubset = new CompositePointCollection(name, pointCollections.subset(dateRange));
+      CompositePointCollection dateSubset = new CompositePointCollection(name, getTimeUnit(), getAltUnits(), pointCollections.subset(dateRange));
       return new PointCollectionSubset(dateSubset, boundingBox, dateRange);
     }
   }

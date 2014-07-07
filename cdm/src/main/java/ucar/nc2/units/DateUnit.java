@@ -120,14 +120,20 @@ public class DateUnit { // extends SimpleUnit {
     }
   }
 
+  public static DateUnit factory(String text) {
+    try {
+      return new DateUnit(text);
+    } catch (Exception e) {
+      return null;
+    }
+  }
+
   /**
    * Constructor.
    * @param text udunits String, eg 3 secs since 1991-01-01T03:12
    * @throws Exception if malformed String.
    */
   public DateUnit(String text) throws Exception {
-    super();
-
     String timeUnitString;
 
     text = text.trim();

@@ -50,8 +50,8 @@ public abstract class ProfileFeatureImpl extends PointCollectionImpl implements 
   private LatLonPoint latlonPoint;
   protected double time;
 
-  public ProfileFeatureImpl( String name, double lat, double lon, double time, int npts) {
-    super(name);
+  public ProfileFeatureImpl( String name, DateUnit timeUnit, String altUnits, double lat, double lon, double time, int npts) {
+    super(name, timeUnit, altUnits);
     this.latlonPoint = new LatLonPointImpl(lat,lon);
     this.time = time;
     this.npts = npts;

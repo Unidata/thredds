@@ -39,6 +39,7 @@ import ucar.nc2.ft.point.PointDatasetImpl;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.time.CalendarDateRange;
 import ucar.nc2.VariableSimpleIF;
+import ucar.nc2.units.DateUnit;
 import ucar.unidata.geoloc.LatLonRect;
 
 import java.io.IOException;
@@ -66,23 +67,37 @@ public class CompositeDatasetFactory {
       throw new FileNotFoundException("Collection is empty; spec="+dcm);
     }
 
-    if (wantFeatureType == FeatureType.ANY_POINT) {
-      TimedCollection.Dataset d = collection.getPrototype();
-      FeatureDatasetPoint proto = (FeatureDatasetPoint) FeatureDatasetFactoryManager.open(FeatureType.ANY_POINT, d.getLocation(), null, errlog);
-      wantFeatureType = proto.getFeatureType();
-      proto.close(); // LOOK - try to use
+    DateUnit timeUnit = null;
+    String altUnits = null;
+
+    TimedCollection.Dataset d = collection.getPrototype();
+    try (FeatureDatasetPoint proto = (FeatureDatasetPoint) FeatureDatasetFactoryManager.open(wantFeatureType, d.getLocation(), null, errlog)) {
+      if (proto == null) {
+        throw new FileNotFoundException("Collection dataset is not a FeatureDatasetPoint; spec="+dcm);
+      }
+      if (wantFeatureType == FeatureType.ANY_POINT) wantFeatureType = proto.getFeatureType();
+
+      List<FeatureCollection> fcList = proto.getPointFeatureCollectionList();
+      if (fcList.size() == 0) {
+        throw new FileNotFoundException("FeatureCollectionList is empty; spec="+dcm);
+      }
+      PointFeatureCollection first = (PointFeatureCollection) fcList.get(0);
+      timeUnit = first.getTimeUnit();
+      altUnits = first.getAltUnits();
     }
+
+
 
     //LatLonRect bb = null;
     FeatureCollection fc = null;
     switch (wantFeatureType) {
       case POINT:
-        CompositePointCollection pfc = new CompositePointCollection(dcm.getCollectionName(), collection);
+        CompositePointCollection pfc = new CompositePointCollection(dcm.getCollectionName(), timeUnit, altUnits, collection);
         //bb = pfc.getBoundingBox();
         fc = pfc;
         break;
       case STATION:
-        CompositeStationCollection sfc = new CompositeStationCollection(dcm.getCollectionName(), collection, null, null);
+        CompositeStationCollection sfc = new CompositeStationCollection(dcm.getCollectionName(), timeUnit, altUnits, collection, null, null);
         //bb = sfc.getBoundingBox();
         fc = sfc;
         break;

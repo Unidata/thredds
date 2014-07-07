@@ -40,6 +40,7 @@ import ucar.nc2.stream.CdmRemote;
 import ucar.nc2.stream.NcStream;
 import ucar.nc2.stream.NcStreamProto;
 import ucar.nc2.time.CalendarDateRange;
+import ucar.nc2.units.DateUnit;
 import ucar.unidata.geoloc.LatLonRect;
 
 import java.io.IOException;
@@ -56,16 +57,18 @@ class RemotePointCollection extends PointCollectionImpl implements QueryMaker {
   private String uri;
   private QueryMaker queryMaker;
 
-  RemotePointCollection(String uri, QueryMaker queryMaker) {
-    super(uri);
+  RemotePointCollection(String uri, DateUnit timeUnit, String altUnits, QueryMaker queryMaker) {
+    super(uri, timeUnit, altUnits);
     this.uri = uri;
     this.queryMaker = (queryMaker == null) ? this : queryMaker;
   }
 
+  @Override
   public String makeQuery() {
     return PointDatasetRemote.makeQuery(null, boundingBox, dateRange); // default query
   }
 
+  @Override
   public PointFeatureIterator getPointFeatureIterator(int bufferSize) throws IOException {
     InputStream in = null;
     String errMessage = null;
@@ -108,6 +111,7 @@ class RemotePointCollection extends PointCollectionImpl implements QueryMaker {
   }
 
 
+
   // Must override default subsetting implementation for efficiency
 
   @Override
@@ -120,7 +124,7 @@ class RemotePointCollection extends PointCollectionImpl implements QueryMaker {
     PointCollectionImpl from;
 
     PointFeatureCollectionSubset(RemotePointCollection from, LatLonRect filter_bb, CalendarDateRange filter_date) throws IOException {
-      super(from.uri, null);
+      super(from.uri, RemotePointCollection.this.getTimeUnit(), RemotePointCollection.this.getAltUnits(), null);
       this.from = from;
 
       if (filter_bb == null)

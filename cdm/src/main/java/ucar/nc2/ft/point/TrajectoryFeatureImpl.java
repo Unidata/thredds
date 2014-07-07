@@ -34,6 +34,7 @@ package ucar.nc2.ft.point;
 
 import ucar.nc2.ft.TrajectoryFeature;
 import ucar.nc2.constants.FeatureType;
+import ucar.nc2.units.DateUnit;
 
 /**
  * Implementation of TrajectoryFeature
@@ -42,8 +43,8 @@ import ucar.nc2.constants.FeatureType;
  */
 public abstract class TrajectoryFeatureImpl extends PointCollectionImpl implements TrajectoryFeature {
 
-  public TrajectoryFeatureImpl( String name, int npts) {
-    super(name);
+  public TrajectoryFeatureImpl( String name, DateUnit timeUnit, String altUnits, int npts) {
+    super(name, timeUnit, altUnits);
     this.npts = npts;
   }
 

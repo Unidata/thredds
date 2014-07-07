@@ -55,12 +55,10 @@ import java.io.IOException;
  * @since Mar 28, 2008
  */
 public class StandardStationCollectionImpl extends StationTimeSeriesCollectionImpl {
-  private DateUnit timeUnit;
   private NestedTable ft;
 
-  StandardStationCollectionImpl(NestedTable ft, DateUnit timeUnit) throws IOException {
-    super(ft.getName());
-    this.timeUnit = timeUnit;
+  StandardStationCollectionImpl(NestedTable ft, DateUnit timeUnit, String altUnits) throws IOException {
+    super(ft.getName(), timeUnit, altUnits);
     this.ft = ft;
   }
 
@@ -102,7 +100,7 @@ public class StandardStationCollectionImpl extends StationTimeSeriesCollectionIm
     StructureData stationData;
 
     StandardStationFeatureImpl(Station s, DateUnit dateUnit, StructureData stationData, int recnum) {
-      super(s, dateUnit, -1);
+      super(s, dateUnit, StandardStationCollectionImpl.this.getAltUnits(), -1);
       this.recnum = recnum;
       this.stationData = stationData;
     }

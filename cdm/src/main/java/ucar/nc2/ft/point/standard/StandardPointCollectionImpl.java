@@ -44,13 +44,11 @@ import java.io.IOException;
  * @since Mar 28, 2008
  */
 public class StandardPointCollectionImpl extends PointCollectionImpl {
-  private DateUnit timeUnit;
   private NestedTable ft;
 
-  StandardPointCollectionImpl(NestedTable ft, DateUnit timeUnit) {
-    super(ft.getName());
+  StandardPointCollectionImpl(NestedTable ft, DateUnit timeUnit, String altUnits) {
+    super(ft.getName(), timeUnit, altUnits);
     this.ft = ft;
-    this.timeUnit = timeUnit;
   }
 
   public PointFeatureIterator getPointFeatureIterator(int bufferSize) throws IOException {

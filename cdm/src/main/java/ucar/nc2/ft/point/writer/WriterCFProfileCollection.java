@@ -65,7 +65,7 @@ public class WriterCFProfileCollection extends CFPointWriter {
   private static final String profileDimName = "profile";
   private static final String idName = "profileId";
   private static final String profileRowSizeName = "nobs";
-  private static final String profileTimeName = "profileNominalTime";
+  private static final String profileTimeName = "profileTime";
   private static final boolean debug = false;
 
   ///////////////////////////////////////////////////
@@ -99,7 +99,7 @@ public class WriterCFProfileCollection extends CFPointWriter {
     coords.add( VariableSimpleImpl.makeScalar(altName, "obs altitude", altUnits, DataType.DOUBLE)
             .add(new Attribute(CF.STANDARD_NAME, "altitude"))
             .add(new Attribute(CF.POSITIVE, CF1Convention.getZisPositive(altName, altUnits))));
-    coordNames.format("%s %s %s %s", timeName, latName, lonName, altName);
+    coordNames.format("%s %s %s %s", profileTimeName, latName, lonName, altName);
 
     if (writer.getVersion().isExtendedModel()) {
       makeProfileVars(name_strlen, nprofiles, timeUnit, true);
@@ -163,7 +163,7 @@ public class WriterCFProfileCollection extends CFPointWriter {
       PointFeature pf = profile.next();
       if (!headerDone) {
         if (name_strlen == 0) name_strlen = Math.min(profile.getName().length(), 12);
-        writeHeader(name_strlen, nprofiles, pf.getTimeUnit(), pf.getAltUnits());  // have to get time units, alt units from pointFeature (!)
+        writeHeader(name_strlen, nprofiles, profile.getTimeUnit(), profile.getAltUnits());  // have to get time units, alt units from pointFeature (!)
         headerDone = true;
       }
       writeObsData(pf);

@@ -36,6 +36,7 @@ import ucar.nc2.ft.PointFeatureCollectionIterator;
 import ucar.nc2.ft.SectionFeature;
 import ucar.nc2.ft.NestedPointFeatureCollectionIterator;
 import ucar.nc2.constants.FeatureType;
+import ucar.nc2.units.DateUnit;
 
 import java.io.IOException;
 
@@ -52,8 +53,8 @@ public abstract class SectionCollectionImpl extends MultipleNestedPointCollectio
 
   private NestedPointFeatureCollectionIterator localIterator;
 
-  protected SectionCollectionImpl(String name) {
-    super(name, FeatureType.SECTION);
+  protected SectionCollectionImpl(String name, DateUnit timeUnit, String altUnits) {
+    super(name, timeUnit, altUnits, FeatureType.SECTION);
   }
 
   public PointFeatureCollectionIterator getPointFeatureCollectionIterator(int bufferSize) throws IOException {
