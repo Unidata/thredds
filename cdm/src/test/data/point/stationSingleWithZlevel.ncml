@@ -17,11 +17,12 @@
     <values>40.0</values>
   </variable>
   <variable name="stationId" shape="" type="int">
-    <attribute name="standard_name" value="station_id" />
+    <attribute name="cf_role" value="timeseries_id" />
     <values>666</values>
   </variable>  
   <variable name="stationAlt" shape="" type="int">
-    <attribute name="standard_name" value="station_altitude" />
+    <attribute name="units" value="m" />
+    <attribute name="standard_name" value="surface_altitude" />
     <values>101</values>
   </variable>
 

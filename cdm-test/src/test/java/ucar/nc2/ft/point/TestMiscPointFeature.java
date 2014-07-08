@@ -41,7 +41,7 @@ import java.util.Formatter;
 import java.util.List;
 
 import org.junit.Test;
-import ucar.nc2.NetcdfFile;
+import ucar.nc2.VariableSimpleIF;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.ft.*;
@@ -63,7 +63,7 @@ public class TestMiscPointFeature {
     FeatureDataset fd = null;
     try {
       Formatter formatter = new Formatter(System.err);
-      fd = FeatureDatasetFactoryManager.open(FeatureType.STATION, TestDir.cdmLocalTestDataDir + "point/StandardPointFeatureIteratorIssue.ncml", null, formatter);
+      fd = FeatureDatasetFactoryManager.open(FeatureType.STATION, TestDir.cdmLocalTestDataDir + "pointPre1.6/StandardPointFeatureIteratorIssue.ncml", null, formatter);
       if (fd != null && fd instanceof FeatureDatasetPoint) {
         FeatureDatasetPoint fdp = (FeatureDatasetPoint) fd;
         FeatureCollection fc = fdp.getPointFeatureCollectionList().get(0);
@@ -169,10 +169,9 @@ public class TestMiscPointFeature {
     pods.close();
   }
 
-
   @Test
-  public void testStationAttributes() throws Exception {
-    String file = TestDir.cdmLocalTestDataDir + "point/stationMultidim.ncml";
+  public void testStationVarSingle() throws Exception {
+    String file = TestDir.cdmLocalTestDataDir + "point/stationSingle.ncml";
     Formatter buf = new Formatter();
     try (FeatureDatasetPoint pods = (FeatureDatasetPoint) FeatureDatasetFactoryManager.open(ucar.nc2.constants.FeatureType.STATION, file, null, buf)) {
       List<FeatureCollection> collectionList = pods.getPointFeatureCollectionList();
@@ -183,9 +182,36 @@ public class TestMiscPointFeature {
       List<Station> stations = sc.getStations();
       assert (stations.size() > 0) : "No stations";
       Station s = stations.get(0);
+      assert s.getName().equals("666") : "name should be '666'";
       assert !Double.isNaN(s.getAltitude()) : "No altitude on station";
+      assert s.getDescription() != null : "No description on station";
+      assert s.getDescription().equalsIgnoreCase("flabulous") : "description should equal 'flabulous'";
+      assert s.getWmoId() != null : "No wmoId on station";
+      assert s.getWmoId().equalsIgnoreCase("whoa") : "wmoId should equal 'whoa' but ='"+s.getWmoId()+"'";
     }
   }
+
+  @Test
+  public void testStationVarRagged() throws Exception {
+    String file = TestDir.cdmLocalTestDataDir + "point/stationRaggedContig.ncml";
+    Formatter buf = new Formatter();
+    try (FeatureDatasetPoint pods = (FeatureDatasetPoint) FeatureDatasetFactoryManager.open(ucar.nc2.constants.FeatureType.STATION, file, null, buf)) {
+      List<FeatureCollection> collectionList = pods.getPointFeatureCollectionList();
+      assert (collectionList.size() == 1) : "Can't handle point data with multiple collections";
+      FeatureCollection fc = collectionList.get(0);
+      assert fc instanceof StationCollection;
+      StationCollection sc = (StationCollection) fc;
+      List<Station> stations = sc.getStations();
+      assert (stations.size() == 3) : "Should be 3 stations";
+      for (Station s : stations) {
+        System.out.printf("%s%n", s);
+        assert !Double.isNaN(s.getAltitude()) : "No altitude on station";
+        assert s.getDescription() != null  && !s.getDescription().isEmpty() : "No description on station";
+        assert s.getWmoId() != null  && !s.getWmoId().isEmpty() : "No wmoId on station";
+      }
+    }
+  }
+
 
   @Test
   public void testProfileSingleId() throws Exception {
@@ -207,6 +233,54 @@ public class TestMiscPointFeature {
       assert count == 1;
     }
   }
+
+  @Test
+  public void testStationVarMulti() throws Exception {
+    String file = TestDir.cdmLocalTestDataDir + "point/stationMultidim.ncml";
+    Formatter buf = new Formatter();
+    try (FeatureDatasetPoint pods = (FeatureDatasetPoint) FeatureDatasetFactoryManager.open(ucar.nc2.constants.FeatureType.STATION, file, null, buf)) {
+      List<FeatureCollection> collectionList = pods.getPointFeatureCollectionList();
+      assert (collectionList.size() == 1) : "Can't handle point data with multiple collections";
+      FeatureCollection fc = collectionList.get(0);
+      assert fc instanceof StationCollection;
+      StationCollection sc = (StationCollection) fc;
+      List<Station> stations = sc.getStations();
+      assert (stations.size() == 5) : "Should be 5 stations";
+      for (Station s : stations) {
+        System.out.printf("%s%n", s);
+        assert !Double.isNaN(s.getAltitude()) : "No altitude on station";
+        assert s.getDescription() != null  && !s.getDescription().isEmpty() : "No description on station";
+        assert s.getWmoId() != null  && !s.getWmoId().isEmpty() : "No wmoId on station";
+      }
+    }
+  }
+
+  @Test
+   public void testDataVars() throws Exception {
+     String file = TestDir.cdmLocalTestDataDir + "point/stationSingle.ncml";
+     Formatter buf = new Formatter();
+     try (FeatureDatasetPoint pods = (FeatureDatasetPoint) FeatureDatasetFactoryManager.open(ucar.nc2.constants.FeatureType.STATION, file, null, buf)) {
+       List<VariableSimpleIF> dataVars = pods.getDataVariables();
+       for (VariableSimpleIF dv : dataVars) System.out.printf(" %s%n", dv );
+       assert (dataVars.size() == 1) : "Should only be one data var";
+       VariableSimpleIF data =  dataVars.get(0);
+       assert data.getShortName().equalsIgnoreCase("data");
+     }
+   }
+
+  @Test
+   public void testAltUnits() throws Exception {
+     String file = TestDir.cdmLocalTestDataDir + "point/stationRaggedContig.ncml";
+     Formatter buf = new Formatter();
+     try (FeatureDatasetPoint pods = (FeatureDatasetPoint) FeatureDatasetFactoryManager.open(ucar.nc2.constants.FeatureType.STATION, file, null, buf)) {
+       List<FeatureCollection> collectionList = pods.getPointFeatureCollectionList();
+       assert (collectionList.size() == 1) : "Can't handle point data with multiple collections";
+       NestedPointFeatureCollection fc = (NestedPointFeatureCollection) collectionList.get(0);
+       assert fc.getAltUnits() != null : "no Alt Units";
+       assert fc.getAltUnits().equalsIgnoreCase("m") : "Alt Units should be 'm'";
+     }
+   }
+
 
   // make sure that try/with tolerates a null return from FeatureDatasetFactoryManager
 

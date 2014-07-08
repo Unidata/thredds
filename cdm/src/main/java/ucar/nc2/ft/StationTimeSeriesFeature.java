@@ -32,6 +32,8 @@
  */
 package ucar.nc2.ft;
 
+import ucar.ma2.StructureData;
+import ucar.nc2.ft.point.StationFeature;
 import ucar.nc2.time.CalendarDateRange;
 import ucar.nc2.units.DateRange;
 import ucar.unidata.geoloc.Station;
@@ -43,7 +45,7 @@ import java.io.IOException;
  *
  * @author caron
  */
-public interface StationTimeSeriesFeature extends Station, PointFeatureCollection {
+public interface StationTimeSeriesFeature extends StationFeature, PointFeatureCollection {
 
   /**
    * The number of points in the time series. May not be known until after iterating through the collection.
@@ -63,4 +65,11 @@ public interface StationTimeSeriesFeature extends Station, PointFeatureCollectio
    * @throws IOException on read error
    */
   public StationTimeSeriesFeature subset(CalendarDateRange dateRange) throws IOException;
+
+  /**
+   * The actual data of this feature.
+   * @return the actual data of this feature.
+   * @throws java.io.IOException on i/o error
+   */
+  public StructureData getFeatureData() throws IOException;
 }

@@ -139,6 +139,7 @@ public class CoordSysBuilder implements CoordSysBuilderIF {
         return false;
       }
     });
+    registerConvention("CDM-Extended-CF", CF1Convention.class);
 
     registerConvention("COARDS", COARDSConvention.class, null);
     registerConvention("NCAR-CSM", CSMConvention.class, null);
@@ -371,7 +372,7 @@ public class CoordSysBuilder implements CoordSysBuilderIF {
         Method m;
 
         try {
-          m = c.getMethod("isMine", new Class[]{NetcdfFile.class});
+          m = c.getMethod("isMine", new Class[]{NetcdfFile.class});   // LOOK cant we test if method exists ?
         } catch (NoSuchMethodException ex) {
           continue;
         }
@@ -1140,6 +1141,7 @@ public class CoordSysBuilder implements CoordSysBuilderIF {
       VariableEnhanced ve = (VariableEnhanced) v;
       isCoordinateVariable = v.isCoordinateVariable();
       if (isCoordinateVariable) {
+        v.isCoordinateVariable(); // DEBUG
         addCoordinateVariable(v.getDimension(0), this);
         parseInfo.format(" Coordinate Variable added = %s for dimension %s\n", v.getFullName(), v.getDimension(0));
       }

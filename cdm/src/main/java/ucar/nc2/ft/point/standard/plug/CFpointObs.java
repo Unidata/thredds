@@ -1198,7 +1198,9 @@ public class CFpointObs extends TableConfigurerImpl {
     stnTable.stnDesc = Evaluator.findNameVariableWithStandardNameAndDimension(ds, CF.PLATFORM_NAME, stationDim, errlog);
     if (stnTable.stnDesc == null)
       stnTable.stnDesc = Evaluator.findNameVariableWithStandardNameAndDimension(ds, CF.STATION_DESC, stationDim, errlog);
-    stnTable.stnWmoId = Evaluator.findNameVariableWithStandardNameAndDimension(ds, CF.STATION_WMOID, stationDim, errlog);
+    stnTable.stnWmoId = Evaluator.findNameVariableWithStandardNameAndDimension(ds, CF.PLATFORM_ID, stationDim, errlog);
+    if (stnTable.stnWmoId == null)
+      stnTable.stnWmoId = Evaluator.findNameVariableWithStandardNameAndDimension(ds, CF.STATION_WMOID, stationDim, errlog);
     stnTable.stnAlt = Evaluator.findNameVariableWithStandardNameAndDimension(ds, CF.SURFACE_ALTITUDE, stationDim, errlog);
     if (stnTable.stnAlt == null)
       stnTable.stnAlt = Evaluator.findNameVariableWithStandardNameAndDimension(ds, CF.STATION_ALTITUDE, stationDim, errlog);

@@ -98,7 +98,7 @@ public class StationFeatureCopyFactory {
     }
     sUse.incrNobs();
     StationPointFeatureCopy deep = new StationPointFeatureCopy(sUse, from);
-    deep.data = StructureDataDeep.copy(from.getData(), sm);
+    deep.data = StructureDataDeep.copy(from.getFeatureData(), sm);
     return deep;
   }
 
@@ -113,7 +113,12 @@ public class StationFeatureCopyFactory {
     }
 
     @Override
-    public StructureData getData() throws IOException {
+    public StructureData getDataAll() throws IOException {
+      return data;  // ??
+    }
+
+    @Override
+    public StructureData getFeatureData() throws IOException {
       return data;
     }
 

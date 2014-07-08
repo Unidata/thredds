@@ -35,6 +35,8 @@ package ucar.nc2.ft.point.standard;
 import ucar.nc2.*;
 import ucar.nc2.ft.*;
 import ucar.ma2.StructureDataIteratorLimited;
+import ucar.nc2.ft.point.StationFeature;
+import ucar.nc2.ft.point.StationFeatureImpl;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time.CalendarDateFormatter;
 import ucar.nc2.units.DateUnit;
@@ -42,10 +44,8 @@ import ucar.nc2.constants.FeatureType;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dataset.VariableDS;
 import ucar.ma2.*;
-import ucar.unidata.geoloc.Station;
 import ucar.unidata.geoloc.EarthLocation;
 import ucar.unidata.geoloc.EarthLocationImpl;
-import ucar.unidata.geoloc.StationImpl;
 
 import java.util.*;
 import java.io.IOException;
@@ -411,8 +411,9 @@ public class NestedTable {
   }
 
   public String getAltUnits() {
-    if (altVE == null) return null;
-    else return altVE.getUnitsString();
+    if (altVE != null) return altVE.getUnitsString();         // fishy
+    if (stnAltVE != null) return stnAltVE.getUnitsString();
+    return null;
   }
 
   public List<VariableSimpleIF> getDataVariables() {
@@ -426,8 +427,9 @@ public class NestedTable {
   private void addDataVariables(List<VariableSimpleIF> list, Table t) {
     if (t.parent != null) addDataVariables(list, t.parent);
     for (VariableSimpleIF col : t.cols.values()) {
-      if (!t.nondataVars.contains(col.getFullName()))
-        list.add(col);
+      if (t.nondataVars.contains(col.getFullName())) continue;
+      if (t.nondataVars.contains(col.getShortName())) continue;  // fishy
+      list.add(col);
     }
   }
 
@@ -555,6 +557,10 @@ public class NestedTable {
     return StructureDataFactory.make(cursor.tableData);
   }
 
+  public StructureData makeObsStructureData(Cursor cursor, int nest) {
+    return cursor.tableData[nest];
+  }
+
   /* public void addParentJoin(Cursor cursor) throws IOException {
     Table t = leaf;
     int level = 0;
@@ -626,7 +632,7 @@ public class NestedTable {
   }
 
   // also called from StandardPointFeatureIterator
-  Station makeStation(StructureData stationData) {
+  StationFeature makeStation(StructureData stationData) {
     if (stnVE.isMissing(stationData)) return null;
     String stationName = stnVE.getCoordValueAsString(stationData);
 
@@ -640,7 +646,7 @@ public class NestedTable {
     // missing lat, lon means skip this station
     if (Double.isNaN(lat) || Double.isNaN(lon)) return null;
 
-    return new StationImpl(stationName, stationDesc, stnWmoId, lat, lon, elev);
+    return new StationFeatureImpl(stationName, stationDesc, stnWmoId, lat, lon, elev, -1, stationData);
   }
 
   /////////////////////////////////////////////////////////

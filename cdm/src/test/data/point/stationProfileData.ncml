@@ -17,7 +17,7 @@
     <values>40.0</values>
   </variable>
   <variable name="stationId" shape="" type="int">
-    <attribute name="standard_name" value="station_id" />
+    <attribute name="cf_role" value="station_id" />
     <values>666</values>
   </variable>
   

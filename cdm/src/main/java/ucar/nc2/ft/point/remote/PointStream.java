@@ -236,12 +236,17 @@ public class PointStream {
         this.pfp = pfp;
       }
 
-      public StructureData getData() throws IOException {
+      public StructureData getFeatureData() throws IOException {
         ByteBuffer bb = ByteBuffer.wrap(pfp.getData().toByteArray());
         ArrayStructureBB asbb = new ArrayStructureBB(sm, new int[]{1}, bb, 0);
         for (String s : pfp.getSdataList())
           asbb.addObjectToHeap(s);
         return asbb.getStructureData(0);
+      }
+
+      @Override
+      public StructureData getDataAll() throws IOException {
+        return getFeatureData();
       }
 
       public String toString() {

@@ -72,7 +72,7 @@ public class StandardStationProfileCollectionImpl extends StationProfileCollecti
       try {
         while (siter.hasNext()) {
           StructureData stationData = siter.next();
-          Station s = makeStation(stationData, siter.getCurrentRecno());
+          StationFeature s = makeStation(stationData, siter.getCurrentRecno());
           if (s != null)
             stationHelper.addStation(s);
         }
@@ -84,8 +84,8 @@ public class StandardStationProfileCollectionImpl extends StationProfileCollecti
     }
   }
 
-  public Station makeStation(StructureData stationData, int recnum) {
-    Station s = ft.makeStation(stationData);
+  public StationFeature makeStation(StructureData stationData, int recnum) {
+    StationFeature s = ft.makeStation(stationData);
     if (s == null) return null;
     return new StandardStationProfileFeature(s, stationData, recnum);
   }
@@ -117,11 +117,11 @@ public class StandardStationProfileCollectionImpl extends StationProfileCollecti
   // a time series of profiles at one station
 
   private class StandardStationProfileFeature extends StationProfileFeatureImpl {
-    Station s;
+    StationFeature s;
     StructureData stationData;
     int recnum;
 
-    StandardStationProfileFeature(Station s, StructureData stationData, int recnum) {
+    StandardStationProfileFeature(StationFeature s, StructureData stationData, int recnum) {
       super(s, StandardStationProfileCollectionImpl.this.getTimeUnit(), StandardStationProfileCollectionImpl.this.getAltUnits(), -1);
       this.s = s;
       this.stationData = stationData;
@@ -159,6 +159,11 @@ public class StandardStationProfileCollectionImpl extends StationProfileCollecti
         if (pf.getTime().equals(date)) return pf;
       }
       return null;
+    }
+
+    @Override
+    public StructureData getFeatureData() throws IOException {
+      return s.getFeatureData();
     }
 
     private class TimeSeriesOfProfileFeatureIterator implements PointFeatureCollectionIterator {

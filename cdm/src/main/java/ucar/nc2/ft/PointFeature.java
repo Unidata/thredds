@@ -91,22 +91,23 @@ public interface PointFeature {
    */
   public CalendarDate getNominalTimeAsCalendarDate();
 
-  /**
-   * Get the time unit of the time coordinate.
-   * @return time unit of the time coordinate
-   *
-  public DateUnit getTimeUnit();
 
   /**
-   * Get the altitude units, if any
-   * @return altitude units or null if none
-   *
-  public String getAltUnits(); */
+   * The actual data of this feature.
+   * @return the actual data of this feature.
+   * @throws java.io.IOException on i/o error
+   */
+  public ucar.ma2.StructureData getFeatureData() throws java.io.IOException;
 
   /**
-   * The actual data of this observation.
+   * All the data of this observation, joined with data from all parent Features, if any.
    * @return the actual data of this observation.
    * @throws java.io.IOException on i/o error
+   */
+  public ucar.ma2.StructureData getDataAll() throws java.io.IOException;
+
+  /**
+   * @deprecated use getFeatureData() or getDataAll()
    */
   public ucar.ma2.StructureData getData() throws java.io.IOException;
 

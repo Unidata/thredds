@@ -3,8 +3,8 @@
   <dimension name="prof" length="5" />
   <dimension name="z" length="10" />
 
-  <attribute name="CF:featureType" value="profile" />
-  <attribute name="Conventions" value="CF-1.5" />
+  <attribute name="featureType" value="profile" />
+  <attribute name="Conventions" value="CF-1.6" />
   
   <variable name="lon" shape="prof" type="float">
     <attribute name="long_name" value="longitude" />
@@ -17,13 +17,8 @@
     <values start="40" increment="2"/>
   </variable>
   <variable name="Id" shape="prof" type="int">
-    <attribute name="standard_name" value="profile_id" />
+    <attribute name="cf_role" value="profile_id" />
     <values start="666" increment="6"/>
-  </variable>
-  <variable name="profileAlt" shape="prof" type="int">
-    <attribute name="standard_name" value="base_altitude" />
-    <attribute name="units" value="km above msl" />
-    <values start="100" increment="6"/>
   </variable>
 
   <variable name="alt" shape="prof z" type="float">

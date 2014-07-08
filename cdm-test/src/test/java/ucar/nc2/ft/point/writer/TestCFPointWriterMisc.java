@@ -56,6 +56,31 @@ import java.util.List;
 public class TestCFPointWriterMisc {
 
   @Test
+   public void testAltUnits() throws Exception {
+     String file = TestDir.cdmLocalTestDataDir + "point/stationRaggedContig.ncml";
+     Formatter buf = new Formatter();
+     try (FeatureDatasetPoint pods = (FeatureDatasetPoint) FeatureDatasetFactoryManager.open(ucar.nc2.constants.FeatureType.STATION, file, null, buf)) {
+       List<FeatureCollection> collectionList = pods.getPointFeatureCollectionList();
+       assert (collectionList.size() == 1) : "Can't handle point data with multiple collections";
+       NestedPointFeatureCollection fc1 = (NestedPointFeatureCollection) collectionList.get(0);
+       assert fc1.getAltUnits() != null : "no Alt Units";
+       assert fc1.getAltUnits().equalsIgnoreCase("m") : "Alt Units should be 'm'";
+
+       FeatureDatasetPoint rewrite =  rewriteDataset(pods, "nc4", new CFPointWriterConfig(NetcdfFileWriter.Version.netcdf4));
+       collectionList = rewrite.getPointFeatureCollectionList();
+       FeatureCollection fc2 = collectionList.get(0);
+       assert fc2 instanceof NestedPointFeatureCollection;
+       NestedPointFeatureCollection npc = (NestedPointFeatureCollection) fc2;
+
+       assert npc.getAltUnits() != null : "no Alt Units";
+       assert npc.getAltUnits().equalsIgnoreCase("m") : "Alt Units should be 'm'";
+
+       rewrite.close();
+
+     }
+   }
+
+  @Test
   // the z coordinate doesnt fit into the structures, need a way to get it into the rewritten dataset
   public void testPointZCoord() throws Exception {
     String file = TestDir.cdmLocalTestDataDir + "point/pointUnlimited.nc";
@@ -128,4 +153,5 @@ public class TestCFPointWriterMisc {
 
     return (FeatureDatasetPoint) result;
   }
+
 }

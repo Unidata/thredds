@@ -93,13 +93,18 @@ public class StandardPointFeatureIterator extends PointIteratorFromStructureData
     }
 
     @Override
-    public StructureData getData() {
+    public StructureData getFeatureData() {
+      return ft.makeObsStructureData( cursor, 0);
+    }
+
+    @Override
+    public StructureData getDataAll() {
       return ft.makeObsStructureData( cursor);
     }
 
     @Override
     public Station getStation() {
-      return ft.makeStation(cursor.getParentStructure());
+      return ft.makeStation(cursor.getParentStructure());  // LOOK is this always possible??
     }
   }
 
