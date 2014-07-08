@@ -4,9 +4,11 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import ucar.nc2.NetcdfFileWriter;
+import ucar.nc2.VariableSimpleIF;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.ft.*;
-import ucar.nc2.ft.point.TestCFsyntheticDatasets;
+import ucar.nc2.ft.point.TestCFPointDatasets;
+import ucar.nc2.util.CompareNetcdf2;
 import ucar.unidata.test.util.TestDir;
 import ucar.unidata.util.StringUtil2;
 
@@ -29,23 +31,22 @@ public class TestCFPointWriter {
   @Parameterized.Parameters
   public static List<Object[]> getTestParameters() {
     List<Object[]> result = new ArrayList<>();
-    //result.add(new Object[]{CFpointObs_topdir + "profileSingle.ncml", FeatureType.PROFILE, 13});
-    //result.add(new Object[]{CFpointObs_topdir + "profileSingleTimeJoin.ncml", FeatureType.PROFILE, 12});
-    //result.add(new Object[]{CFpointObs_topdir + "profileMultidim.ncml", FeatureType.PROFILE, 50});
-    /* result.add(new Object[]{CFpointObs_topdir + "profileMultidimTimeJoin.ncml", FeatureType.PROFILE, 50});
-    result.add(new Object[]{CFpointObs_topdir + "profileMultidimZJoin.ncml", FeatureType.PROFILE, 50});
-    result.add(new Object[]{CFpointObs_topdir + "profileMultidimTimeZJoin.ncml", FeatureType.PROFILE, 50});
-    result.add(new Object[]{CFpointObs_topdir + "profileMultidimMissingId.ncml", FeatureType.PROFILE, 40});
-    result.add(new Object[]{CFpointObs_topdir + "profileMultidimMissingAlt.ncml", FeatureType.PROFILE, 14});
-    result.add(new Object[]{CFpointObs_topdir + "profileRaggedContig.ncml", FeatureType.PROFILE, 6});
-    result.add(new Object[]{CFpointObs_topdir + "profileRaggedContigTimeJoin.ncml", FeatureType.PROFILE, 6});
-    result.add(new Object[]{CFpointObs_topdir + "profileRaggedIndex.ncml", FeatureType.PROFILE, 22});
-    result.add(new Object[]{CFpointObs_topdir + "profileRaggedIndexTimeJoin.ncml", FeatureType.PROFILE, 22});  // */
+    // result.add(new Object[]{CFpointObs_topdir + "stationSingle.ncml", FeatureType.STATION, 3});
+   /*  result.add(new Object[]{CFpointObs_topdir + "stationSingleWithZlevel.ncml", FeatureType.STATION, 3});
+    result.add(new Object[]{CFpointObs_topdir + "stationMultidim.ncml", FeatureType.STATION, 15});
+    result.add(new Object[]{CFpointObs_topdir + "stationMultidimTimeJoin.ncml", FeatureType.STATION, 15});
+    result.add(new Object[]{CFpointObs_topdir + "stationMultidimUnlimited.nc", FeatureType.STATION, 15});
+    result.add(new Object[]{CFpointObs_topdir + "stationMultidimUnlimited.ncml", FeatureType.STATION, 15});
+    result.add(new Object[]{CFpointObs_topdir + "stationMultidimMissingTime.ncml", FeatureType.STATION, 12});
+    result.add(new Object[]{CFpointObs_topdir + "stationMultidimMissingId.ncml", FeatureType.STATION, 9});    \
+    result.add(new Object[]{CFpointObs_topdir + "stationMultidimMissingIdString.ncml", FeatureType.STATION, 12});
+    result.add(new Object[]{CFpointObs_topdir + "stationRaggedContig.ncml", FeatureType.STATION, 6});
+    result.add(new Object[]{CFpointObs_topdir + "stationRaggedIndex.ncml", FeatureType.STATION, 6});
+    result.add(new Object[]{CFpointObs_topdir + "stationRaggedMissing.ncml", FeatureType.STATION, 5});  // */
 
-
-    result.addAll(TestCFsyntheticDatasets.getPointDatasets());
-    result.addAll(TestCFsyntheticDatasets.getStationDatasets());
-    result.addAll(TestCFsyntheticDatasets.getProfileDatasets());
+    result.addAll(TestCFPointDatasets.getPointDatasets());
+    result.addAll(TestCFPointDatasets.getStationDatasets());
+    //result.addAll(TestCFPointDatasets.getProfileDatasets());
 
     /* result.add(new Object[] {TestDir.cdmUnitTestDir + "ft/point/ldm/04061912_buoy.nc", FeatureType.POINT, 218});
     result.add(new Object[] {TestDir.cdmUnitTestDir + "ft/point/netcdf/Surface_Buoy_20090921_0000.nc", FeatureType.POINT, 32452});
@@ -76,7 +77,7 @@ public class TestCFPointWriter {
     assert count == countExpected : "count ="+count+" expected "+countExpected;
   }
 
-  @Test
+  //@Test
   public void testWrite3() throws IOException {
     int count = writeDataset(location, ".nc", ftype, new CFPointWriterConfig(NetcdfFileWriter.Version.netcdf3), true);
     System.out.printf("%s netcdf3 count=%d%n", location, count);
@@ -90,7 +91,7 @@ public class TestCFPointWriter {
     assert count == countExpected : "count ="+count+" expected "+countExpected;
   }
 
-  //@Test
+  @Test
   public void testWrite4() throws IOException {
     int count = writeDataset(location, ".nc4", ftype, new CFPointWriterConfig(NetcdfFileWriter.Version.netcdf4), true);
     System.out.printf("%s netcdf4 count=%d%n", location, count);
@@ -167,9 +168,72 @@ public class TestCFPointWriter {
         result.getDetailInfo(out);
         System.out.printf("%s %n", out);
       }
+
+      compare( fdpoint, (FeatureDatasetPoint) result);
+      result.close();
     }
 
+    fdataset.close();
+
     return count;
+  }
+
+  void compare(FeatureDatasetPoint org, FeatureDatasetPoint copy) {
+
+    FeatureType fcOrg = org.getFeatureType();
+    FeatureType fcCopy = copy.getFeatureType();
+    assert fcOrg == fcCopy;
+
+    List<VariableSimpleIF> orgVars = org.getDataVariables();
+    List<VariableSimpleIF> copyVars = copy.getDataVariables();
+    Formatter f = new Formatter();
+    boolean ok = CompareNetcdf2.compareLists(getNames(orgVars), getNames(copyVars), f);
+    if (ok) System.out.printf("Data Vars OK%n");
+    else {
+      System.out.printf("Data Vars NOT OK%n %s%n", f);
+      // assert false;
+    }
+
+
+/*    FeatureCollection orgFc = org.getPointFeatureCollectionList().get(0);
+    FeatureCollection copyFc = copy.getPointFeatureCollectionList().get(0);
+
+          if (fc instanceof PointFeatureCollection) {
+            PointFeatureCollection pfc = (PointFeatureCollection) fc;
+            count = checkPointFeatureCollection(pfc, show);
+            System.out.println("PointFeatureCollection getData count= " + count + " size= " + pfc.size());
+            assert count == pfc.size();
+
+          } else if (fc instanceof StationTimeSeriesFeatureCollection) {
+            count = checkStationFeatureCollection((StationTimeSeriesFeatureCollection) fc);
+            //testNestedPointFeatureCollection((StationTimeSeriesFeatureCollection) fc, show);
+
+          } else if (fc instanceof StationProfileFeatureCollection) {
+            count = checkStationProfileFeatureCollection((StationProfileFeatureCollection) fc, show);
+            if (showStructureData) showStructureData((StationProfileFeatureCollection) fc);
+
+          } else if (fc instanceof SectionFeatureCollection) {
+            count = checkSectionFeatureCollection((SectionFeatureCollection) fc, show);
+
+          } else if (fc instanceof ProfileFeatureCollection) {
+            count = checkProfileFeatureCollection((ProfileFeatureCollection) fc, show);
+
+          } else {
+            count = checkNestedPointFeatureCollection((NestedPointFeatureCollection) fc, show);
+          }
+        }
+
+      }   */
+  }
+
+  List<String> getNames(List<VariableSimpleIF> vars) {
+    List<String> result = new ArrayList<>();
+    for (VariableSimpleIF v : vars) {
+      result.add(v.getShortName());
+      System.out.printf("  %s%n", v.getShortName());
+    }
+    System.out.printf("%n");
+    return result;
   }
 
 }

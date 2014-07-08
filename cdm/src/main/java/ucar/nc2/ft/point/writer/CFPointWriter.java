@@ -162,8 +162,8 @@ public class CFPointWriter implements AutoCloseable {
     if (nprofiles < 0) {
       pds.resetIteration();
       while (pds.hasNext()) {
-        pds.next();
-        name_strlen = Math.max(name_strlen, pds.getName().length());
+        ProfileFeature pf = pds.next();
+        name_strlen = Math.max(name_strlen, pf.getName().length());
         count++;
       }
       cfWriter.setHeaderInfo(count, name_strlen);

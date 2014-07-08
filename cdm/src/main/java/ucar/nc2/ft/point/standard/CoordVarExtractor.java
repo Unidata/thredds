@@ -43,11 +43,13 @@ import ucar.ma2.StructureData;
  */
 
 public abstract class CoordVarExtractor {
-  protected String axisName;
+  protected String axisName, memberName;
   protected int nestingLevel;
 
   protected CoordVarExtractor(String axisName, int nestingLevel) {
     this.axisName = axisName;
+    int pos = axisName.indexOf(".");
+    memberName = (pos > 0) ? axisName.substring(pos+1) : axisName;
     this.nestingLevel = nestingLevel;
   }
 

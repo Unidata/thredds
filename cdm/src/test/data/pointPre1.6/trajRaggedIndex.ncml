@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<netcdf xmlns="http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2" >
+  <dimension name="traj" length="3" />
+  <dimension name="obs" length="6"/>
+  <dimension name="z" length="2"/>
+
+  <attribute name="CF:featureType" value="trajectory" />
+  <attribute name="Conventions" value="CF-1.5" />
+  
+  <variable name="lon" shape="obs" type="float">
+    <attribute name="long_name" value="longitude" />
+    <attribute name="units" value="degrees_east" />
+    <values start="-100" increment="3"/>
+  </variable>
+  <variable name="lat" shape="obs" type="float">
+    <attribute name="long_name" value="latitude" />
+    <attribute name="units" value="degrees_north" />
+    <values start="40" increment="2"/>
+  </variable>
+  <variable name="trajId" shape="traj" type="int">
+    <attribute name="standard_name" value="trajectory_id" />
+    <values start="666" increment="6"/>
+  </variable>
+  <variable name="trajIndex" shape="obs" type="int">
+    <attribute name="CF:ragged_parent_index" value="traj" />
+    <values>0 0 0 1 1 2</values>
+  </variable>
+
+  <variable name="z" shape="obs" type="float">
+    <attribute name="long_name" value="height above mean sea level" />
+    <attribute name="units" value="km" />
+    <attribute name="positive" value="up" />
+    <values start="10" increment="10"/>
+  </variable>
+  
+  <variable name="time" shape="obs" type="double">
+    <attribute name="long_name" value="time" />
+    <attribute name="units" value="days since 1970-01-01 00:00:00" />
+    <values start="0" increment="3"/>
+  </variable>
+  
+  <variable name="data" shape="obs" type="float">
+    <attribute name="long_name" value="skin temperature" />
+    <attribute name="units" value="Celsius" />
+    <attribute name="coordinates" value="time lon lat alt" />
+    <values start="1" increment="3"/>
+  </variable>
+
+  <variable name="dataMitZ" shape="obs z" type="float">
+    <attribute name="long_name" value="skin flavor" />
+    <attribute name="units" value="Pa" />
+    <attribute name="coordinates" value="time lon lat alt" />
+    <values start="11" increment="11"/>
+  </variable>
+</netcdf>
+

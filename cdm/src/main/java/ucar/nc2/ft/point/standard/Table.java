@@ -158,9 +158,10 @@ public abstract class Table {
     this.extraJoins = config.extraJoin;
 
     // try to exclude coordinate vars and "structural data" from the list of data variables
+    addNonDataVariable(config.time);
     addNonDataVariable(config.lat);
     addNonDataVariable(config.lon);
-    // checkNonDataVariable(config.elev);  LOOK
+    addNonDataVariable(config.elev);
     addNonDataVariable(config.timeNominal);
     addNonDataVariable(config.stnId);
     addNonDataVariable(config.stnDesc);
@@ -305,6 +306,9 @@ public abstract class Table {
 
     @Override
     public VariableDS findVariable(String axisName) {
+      String structPrefix =  struct.getShortName() +".";
+      if (axisName.startsWith(structPrefix))
+        axisName = axisName.substring(structPrefix.length());
       return (VariableDS) struct.findVariable(axisName);
     }
 
@@ -415,8 +419,7 @@ public abstract class Table {
       super(ds, config);
       startVarName = config.start;
       if (startVarName == null) startVarName = config.parent.start;
-      numRecordsVarName = config.numRecords;
-      if (numRecordsVarName == null) numRecordsVarName = config.parent.numRecords;
+      numRecordsVarName = config.getNumRecords();
 
       if (startVarName == null) {  // read numRecords when startVar is not known
         try {

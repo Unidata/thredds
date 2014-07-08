@@ -136,7 +136,9 @@ public class PointConfigXML {
         case Contiguous:
           if (config.start != null)
             tableElem.setAttribute("start", config.start);
-          tableElem.setAttribute("numRecords", config.numRecords);
+
+          if (config.numRecords != null)
+            tableElem.setAttribute("numRecords", config.numRecords);
           break;
 
         case LinkedList:

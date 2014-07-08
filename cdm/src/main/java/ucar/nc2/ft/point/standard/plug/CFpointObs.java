@@ -182,7 +182,7 @@ public class CFpointObs extends TableConfigurerImpl {
         obsTable = makeMultidimInner(ds, stnTable, info.childDim, info, errlog);
         if (info.time.getRank() == 1) { // time(time)
           obsTable.addJoin(new JoinArray(info.time, JoinArray.Type.raw, 0));
-          obsTable.time = info.time.getShortName();
+          obsTable.time = info.time.getFullName();
         }
         break;
 
@@ -202,7 +202,7 @@ public class CFpointObs extends TableConfigurerImpl {
         Variable stnIdVar = Evaluator.findVariableWithAttributeAndDimension(ds, CF.CF_ROLE, CF.STATION_ID, obsDim, errlog);
         if (stnIdVar == null)
           stnIdVar = Evaluator.findVariableWithAttributeAndDimension(ds, CF.STANDARD_NAME, CF.STATION_ID, obsDim, errlog);
-        obsTable.stnId = (stnIdVar == null) ? null : stnIdVar.getShortName();
+        obsTable.stnId = (stnIdVar == null) ? null : stnIdVar.getFullName();
         obsTable.stnDesc = Evaluator.findNameOfVariableWithAttributeValue(ds, CF.STANDARD_NAME, CF.PLATFORM_NAME);
         if (obsTable.stnDesc == null)
           obsTable.stnDesc = Evaluator.findNameOfVariableWithAttributeValue(ds, CF.STANDARD_NAME, CF.STATION_DESC);
@@ -415,7 +415,7 @@ public class CFpointObs extends TableConfigurerImpl {
         if (time.getRank() == 1) {// join time(time)
           // profileTable.addJoin(new JoinArray(time, JoinArray.Type.raw, 0));
           profileTable.addJoin(new JoinArray(time, JoinArray.Type.level, 1));
-          profileTable.time = time.getShortName();
+          profileTable.time = time.getFullName();
         }
         stationTable.addChild(profileTable);
 
@@ -423,7 +423,7 @@ public class CFpointObs extends TableConfigurerImpl {
         TableConfig zTable = makeMultidimInner3D(ds, stationTable, profileTable, info.grandChildDim, errlog);
         if (z.getRank() == 1)  { // join z(z)
           zTable.addJoin(new JoinArray(z, JoinArray.Type.raw, 0));
-          zTable.elev = z.getShortName();
+          zTable.elev = z.getFullName();
         }
         profileTable.addChild(zTable);
         break;
@@ -817,13 +817,13 @@ public class CFpointObs extends TableConfigurerImpl {
       if (ragged_parentIndex.isMemberOfStructure()) {
         Structure s = ragged_parentIndex.getParentStructure();
         if (s.getRank() == 0 || !s.getDimension(0).equals(sampleDim)) {
-          errlog.format("CFpointObs: Indexed ragged array representation (structure): parent_index variable must be of form Struct { %s }(%s) %n", ragged_parentIndex.getShortName(), sampleDim.getShortName());
+          errlog.format("CFpointObs: Indexed ragged array representation (structure): parent_index variable must be of form Struct { %s }(%s) %n", ragged_parentIndex.getFullName(), sampleDim.getShortName());
           return false;
         }
 
       } else {
         if (ragged_parentIndex.getRank() != 1 || !ragged_parentIndex.getDimension(0).equals(sampleDim)) {
-          errlog.format("CFpointObs: Indexed ragged array representation: parent_index variable must be of form %s(%s) %n", ragged_parentIndex.getShortName(), sampleDim.getShortName());
+          errlog.format("CFpointObs: Indexed ragged array representation: parent_index variable must be of form %s(%s) %n", ragged_parentIndex.getFullName(), sampleDim.getShortName());
           return false;
         }
       }
@@ -1134,9 +1134,9 @@ public class CFpointObs extends TableConfigurerImpl {
     return false;
   }
 
-  private String identifyIdVariableName(NetcdfDataset ds, CF.FeatureType ftype) {
+ private String identifyIdVariableName(NetcdfDataset ds, CF.FeatureType ftype) {
     Variable v = identifyIdVariable(ds, ftype);
-    return (v == null) ? null : v.getShortName();
+    return (v == null) ? null : v.getFullName();
   }
 
   private Variable identifyIdVariable(NetcdfDataset ds, CF.FeatureType ftype) {
@@ -1192,7 +1192,7 @@ public class CFpointObs extends TableConfigurerImpl {
       errlog.format("CFpointObs: must have a Station id variable with %s = %s%n", CF.CF_ROLE, CF.TIMESERIES_ID);
       return null;
     }
-    stnTable.stnId = stnIdVar.getShortName();
+    stnTable.stnId = stnIdVar.getFullName();
     info.instanceId = stnIdVar;
 
     stnTable.stnDesc = Evaluator.findNameVariableWithStandardNameAndDimension(ds, CF.PLATFORM_NAME, stationDim, errlog);
@@ -1202,8 +1202,8 @@ public class CFpointObs extends TableConfigurerImpl {
     stnTable.stnAlt = Evaluator.findNameVariableWithStandardNameAndDimension(ds, CF.SURFACE_ALTITUDE, stationDim, errlog);
     if (stnTable.stnAlt == null)
       stnTable.stnAlt = Evaluator.findNameVariableWithStandardNameAndDimension(ds, CF.STATION_ALTITUDE, stationDim, errlog);
-    stnTable.lat = lat.getShortName();
-    stnTable.lon = lon.getShortName();
+    stnTable.lat = lat.getFullName();
+    stnTable.lon = lon.getFullName();
 
     if (info.encoding != Encoding.single) {
       stnTable.dimName = stationDim.getShortName();
@@ -1216,10 +1216,10 @@ public class CFpointObs extends TableConfigurerImpl {
       Variable alt = CoordSysEvaluator.findCoordByType(ds, AxisType.Height);
       if (alt != null) {
         if ((info.encoding == Encoding.single) && alt.getRank() == 0)
-          stnTable.stnAlt = alt.getShortName();
+          stnTable.stnAlt = alt.getFullName();
 
         if ((info.encoding != Encoding.single) && (lat.getRank() == alt.getRank()) && alt.getDimension(0).equals(stationDim))
-          stnTable.stnAlt = alt.getShortName();
+          stnTable.stnAlt = alt.getFullName();
       }
     }
 
@@ -1470,7 +1470,7 @@ public class CFpointObs extends TableConfigurerImpl {
       }
     });
     if (var == null) return null;
-    return var.getShortName();
+    return var.getFullName();
   }
 
 }

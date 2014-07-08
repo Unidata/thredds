@@ -130,7 +130,7 @@ public class WriterCFProfileCollection extends CFPointWriter {
   }
 
   private void makeProfileVars(int name_strlen, int nprofiles, DateUnit timeUnit, boolean isExtended) throws IOException {
-    name_strlen = Math.max( name_strlen, 20);
+    name_strlen = Math.max( name_strlen, 10);
 
     // LOOK why not unlimited here ?
     Dimension profileDim = writer.addDimension(null, profileDimName, nprofiles);

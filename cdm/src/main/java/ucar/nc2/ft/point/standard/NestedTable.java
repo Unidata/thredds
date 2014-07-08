@@ -212,11 +212,11 @@ public class NestedTable {
 
     public String getCoordValueString(StructureData sdata) {
       if (coordVar.getDataType().isString())
-        return sdata.getScalarString(axisName);
+        return sdata.getScalarString(memberName);
       else if (coordVar.getDataType().isIntegral())
-        return Integer.toString(sdata.convertScalarInt(axisName));
+        return Integer.toString(sdata.convertScalarInt(memberName));
       else
-        return Double.toString(sdata.convertScalarDouble(axisName));
+        return Double.toString(sdata.convertScalarDouble(memberName));
     }
 
     public String getUnitsString() {
@@ -240,7 +240,7 @@ public class NestedTable {
     }
 
     public double getCoordValue(StructureData sdata) {
-      return sdata.convertScalarDouble(axisName);
+      return sdata.convertScalarDouble(memberName);
     }
 
     public boolean isInt() {
@@ -248,7 +248,7 @@ public class NestedTable {
     }
 
     public long getCoordValueLong(StructureData sdata) {
-      return sdata.convertScalarLong(axisName);
+      return sdata.convertScalarLong(memberName);
     }
   }
 
@@ -314,30 +314,30 @@ public class NestedTable {
     }
 
     public double getCoordValue(StructureData ignore) {
-      return sdata.convertScalarDouble(axisName);
+      return sdata.convertScalarDouble(memberName);
     }
 
     public String getCoordValueString(StructureData ignore) {
-      return sdata.getScalarString(axisName);
+      return sdata.getScalarString(memberName);
     }
 
     public String getUnitsString() {
-      StructureMembers.Member m = sdata.findMember(axisName);
+      StructureMembers.Member m = sdata.findMember(memberName);
       return m.getUnitsString();
     }
 
     public boolean isString() {
-      StructureMembers.Member m = sdata.findMember(axisName);
+      StructureMembers.Member m = sdata.findMember(memberName);
       return m.getDataType().isString();
     }
 
     public boolean isInt() {
-      StructureMembers.Member m = sdata.findMember(axisName);
+      StructureMembers.Member m = sdata.findMember(memberName);
       return m.getDataType().isIntegral();
     }
 
     public long getCoordValueLong(StructureData sdata) {
-      return sdata.convertScalarLong(axisName);
+      return sdata.convertScalarLong(memberName);
     }
 
     public boolean isMissing(StructureData sdata) {
@@ -426,7 +426,7 @@ public class NestedTable {
   private void addDataVariables(List<VariableSimpleIF> list, Table t) {
     if (t.parent != null) addDataVariables(list, t.parent);
     for (VariableSimpleIF col : t.cols.values()) {
-      if (!t.nondataVars.contains(col.getShortName()))
+      if (!t.nondataVars.contains(col.getFullName()))
         list.add(col);
     }
   }
