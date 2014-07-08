@@ -15,11 +15,9 @@ import java.io.File;
 public class NcCollectionTypeTest {
     @Test public void testCreateCollection() throws Exception {
         File pointFile = new File(getClass().getResource("multiStationMultiVar.ncml").toURI());
-        FeatureDatasetPoint fdPoint = PointUtil.openPointDataset(FeatureType.STATION, pointFile.getAbsolutePath());
-        try {
+        try (FeatureDatasetPoint fdPoint =
+                PointUtil.openPointDataset(FeatureType.STATION, pointFile.getAbsolutePath())) {
             MarshallingUtil.marshalPointDataset(fdPoint, new ByteArrayOutputStream());
-        } finally {
-            fdPoint.close();
         }
     }
 }
