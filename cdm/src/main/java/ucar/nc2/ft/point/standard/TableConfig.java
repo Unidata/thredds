@@ -188,5 +188,11 @@ public class TableConfig {
     }
   }
 
+  String getNumRecords() {
+    if (numRecords != null) return numRecords;
+    if (parent != null) return parent.getNumRecords();
+    return null;
+  }
+
 
 }

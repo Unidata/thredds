@@ -37,7 +37,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import ucar.nc2.constants.FeatureType;
-import ucar.nc2.ft.TestPointFeatureTypes;
 import ucar.unidata.test.util.TestDir;
 
 import java.io.IOException;
@@ -51,7 +50,7 @@ import java.util.List;
  * @since 6/27/2014
  */
 @RunWith(Parameterized.class)
-public class TestCFsyntheticDatasets {
+public class TestCFPointDatasets {
   static public String CFpointObs_topdir = TestDir.cdmLocalTestDataDir + "point/";
 
   public static List<Object[]> getPointDatasets() {
@@ -72,14 +71,13 @@ public class TestCFsyntheticDatasets {
     result.add(new Object[]{CFpointObs_topdir + "stationMultidim.ncml", FeatureType.STATION, 15});
     result.add(new Object[]{CFpointObs_topdir + "stationMultidimTimeJoin.ncml", FeatureType.STATION, 15});
     result.add(new Object[]{CFpointObs_topdir + "stationMultidimUnlimited.nc", FeatureType.STATION, 15});     // */
+    result.add(new Object[]{CFpointObs_topdir + "stationMultidimUnlimited.ncml", FeatureType.STATION, 15});     // */
     result.add(new Object[]{CFpointObs_topdir + "stationMultidimMissingTime.ncml", FeatureType.STATION, 12});
     result.add(new Object[]{CFpointObs_topdir + "stationMultidimMissingId.ncml", FeatureType.STATION, 9});    // */
     result.add(new Object[]{CFpointObs_topdir + "stationMultidimMissingIdString.ncml", FeatureType.STATION, 12});
     result.add(new Object[]{CFpointObs_topdir + "stationRaggedContig.ncml", FeatureType.STATION, 6});
     result.add(new Object[]{CFpointObs_topdir + "stationRaggedIndex.ncml", FeatureType.STATION, 6});
     result.add(new Object[]{CFpointObs_topdir + "stationRaggedMissing.ncml", FeatureType.STATION, 5});
-    result.add(new Object[]{CFpointObs_topdir + "stationFlat.ncml", FeatureType.STATION, 13});
-    result.add(new Object[]{CFpointObs_topdir + "stationFlat.nc", FeatureType.STATION, 13});     // */
     return result;
   }
 
@@ -152,12 +150,12 @@ public class TestCFsyntheticDatasets {
   public static List<Object[]> getTestParameters() {
     List<Object[]> result = new ArrayList<>();
 
-    result.addAll(TestCFsyntheticDatasets.getPointDatasets());
-    result.addAll(TestCFsyntheticDatasets.getStationDatasets());
-    result.addAll(TestCFsyntheticDatasets.getProfileDatasets());
-    result.addAll(TestCFsyntheticDatasets.getTrajectoryDatasets());
-    result.addAll(TestCFsyntheticDatasets.getStationProfileDatasets());
-    result.addAll(TestCFsyntheticDatasets.getSectionDatasets());
+    result.addAll(TestCFPointDatasets.getPointDatasets());
+    result.addAll(TestCFPointDatasets.getStationDatasets());
+    result.addAll(TestCFPointDatasets.getProfileDatasets());
+    result.addAll(TestCFPointDatasets.getTrajectoryDatasets());
+    result.addAll(TestCFPointDatasets.getStationProfileDatasets());
+    result.addAll(TestCFPointDatasets.getSectionDatasets());
 
     return result;
   }
@@ -167,7 +165,7 @@ public class TestCFsyntheticDatasets {
   int countExpected;
   boolean show = false;
 
-  public TestCFsyntheticDatasets(String location, FeatureType ftype, int countExpected) {
+  public TestCFPointDatasets(String location, FeatureType ftype, int countExpected) {
     this.location = location;
     this.ftype = ftype;
     this.countExpected = countExpected;

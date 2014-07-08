@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<netcdf xmlns="http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2" >
+  <dimension name="prof" length="5" />
+  <dimension name="z" length="10" />
+
+  <attribute name="CF:featureType" value="profile" />
+  <attribute name="Conventions" value="CF-1.5" />
+  
+  <variable name="lon" shape="prof" type="float">
+    <attribute name="long_name" value="longitude" />
+    <attribute name="units" value="degrees_east" />
+    <values start="-100" increment="3"/>
+  </variable>
+  <variable name="lat" shape="prof" type="float">
+    <attribute name="long_name" value="latitude" />
+    <attribute name="units" value="degrees_north" />
+    <values start="40" increment="2"/>
+  </variable>
+  <variable name="Id" shape="prof" type="int">
+    <attribute name="standard_name" value="profile_id" />
+    <values start="666" increment="6"/>
+  </variable>
+  <variable name="profileAlt" shape="prof" type="int">
+    <attribute name="standard_name" value="base_altitude" />
+    <attribute name="units" value="km above msl" />
+    <values start="100" increment="6"/>
+  </variable>
+
+  <variable name="alt" shape="z" type="float">
+    <attribute name="long_name" value="height above mean sea level" />
+    <attribute name="units" value="km" />
+    <attribute name="positive" value="up" />
+    <values start="1" increment="6"/>
+  </variable>
+  
+  <variable name="time" shape="prof z" type="double">
+    <attribute name="long_name" value="time" />
+    <attribute name="units" value="days since 1970-01-01 00:00:00" />
+    <values start="0" increment="10"/>
+  </variable>
+  
+  <variable name="data" shape="prof z" type="float">
+    <attribute name="long_name" value="skin temperature" />
+    <attribute name="units" value="Celsius" />
+    <attribute name="coordinates" value="time lon lat alt" />
+    <values start="1" increment="3"/>
+  </variable>
+</netcdf>
+

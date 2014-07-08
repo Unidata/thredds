@@ -3,8 +3,8 @@
   <dimension name="z" length="3" />
   <dimension name="time" length="5"/>
 
-  <attribute name="CF:featureType" value="point" />
-  <attribute name="Conventions" value="CF-1.5" />
+  <attribute name="featureType" value="point" />
+  <attribute name="Conventions" value="CF-1.6" />
   
   <variable name="lon" shape="time" type="float">
     <attribute name="long_name" value="longitude" />

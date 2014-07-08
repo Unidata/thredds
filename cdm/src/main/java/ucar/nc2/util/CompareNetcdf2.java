@@ -66,6 +66,25 @@ public class CompareNetcdf2 {
     boolean varDataTypeCheckOk(Variable v);
   }
 
+  static public boolean compareLists(List org, List copy, Formatter f) {
+    return checkContains("org", org, copy, f) && checkContains("copy", copy, org, f);
+  }
+
+
+  static private boolean checkContains(String what, List container, List wantList, Formatter f) {
+    boolean ok = true;
+
+    for (Object want1 : wantList) {
+      int index2 = container.indexOf(want1);
+      if (index2 < 0) {
+        f.format("  ** %s missing in %s %n", want1, what);
+        ok = false;
+      }
+    }
+
+    return ok;
+  }
+
   /////////
 
   private Formatter f;
@@ -332,20 +351,6 @@ public class CompareNetcdf2 {
 
   // make sure each object in wantList is contained in container, using equals().
 
-  private boolean checkContains(List container, List wantList) {
-    boolean ok = true;
-
-    for (Object want1 : wantList) {
-      int index2 = container.indexOf(want1);
-      if (index2 < 0) {
-        f.format("  ** %s %s missing %n", want1.getClass().getName(), want1);
-        ok = false;
-      }
-    }
-
-    return ok;
-  }
-
     // make sure each object in each list are in the other list, using equals().
   // return an arrayList of paired objects.
 
@@ -440,15 +445,12 @@ public class CompareNetcdf2 {
     try {
       int index2 = list2.indexOf(want1);
       if (index2 < 0) {
-        //if (want1.getShortName().equals("b_name"))
-        //  want1.hashCodeShow(new Indent(2));
         f.format("  ** %s: %s 0x%x (%s) not in %s %n", what, want1, want1.hashCode(), name1, name2);
         ok = false;
       } else { // found it in second list
         Object want2 = list2.get(index2);
         int index1 = list1.indexOf(want2);
         if (index1 < 0) { // can this happen ??
-          //want2.hashCodeShow(new Indent(2));
           f.format("  ** %s: %s 0x%x (%s) not in %s %n", what, want2, want2.hashCode(), name2, name1);
           ok = false;
 
