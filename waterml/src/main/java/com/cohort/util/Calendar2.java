@@ -1335,7 +1335,7 @@ public class Calendar2 {
                     ch = '.';
                 if (separatorN[part] == '\u0000') {
 
-                } else if (separatorN[part] == '±') {
+                } else if (separatorN[part] == 'Â±') {
                     if (ch == '+') { //do nothing
                     }else if (ch == '-') {
                         po2--; //number starts with -
@@ -1349,7 +1349,7 @@ public class Calendar2 {
                     //if current part is ':' or '.' and not matched, try to skip forward to 'Â±'
                     if ((separatorN[part] == ':' || separatorN[part] == '.') && 
                         part < nParts - 1) {
-                        int pmPart = String2.indexOf(separatorN, '±', part + 1);
+                        int pmPart = String2.indexOf(separatorN, 'Â±', part + 1);
                         if (pmPart >= 0) {
                             //String2.log("  jump to +/-");
                             part = pmPart; 
@@ -1461,7 +1461,7 @@ public class Calendar2 {
         s = String2.replaceAll(s, ' ', '+');
 
         //separators (\u0000=any non-digit)
-        char separator[] = {'-','-','\u0000',':',':','.','±', ':', '\u0000'};
+        char separator[] = {'-','-','\u0000',':',':','.','Â±', ':', '\u0000'};
         parseN(s, separator, ymdhmsmom);
         if (ymdhmsmom[0] == Integer.MAX_VALUE) 
             Test.error(String2.ERROR + " in parseISODateTime: dateTime='" + s + "' has an invalid format!");

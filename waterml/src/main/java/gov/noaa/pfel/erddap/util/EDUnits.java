@@ -289,7 +289,7 @@ public class EDUnits {
     }
 
     private static boolean isUdunitsLetter(char ch) {
-        return String2.isLetter(ch) || ch == 'µ' || ch == '°';
+        return String2.isLetter(ch) || ch == 'Âµ' || ch == 'Â°';
     }
 
     /**
@@ -512,7 +512,7 @@ public class EDUnits {
         return String2.isLetter(ch) ||
                 ch == '[' || ch == ']' ||
                 ch == '{' || ch == '}' ||
-                ch == 'µ' || ch == '\'';
+                ch == 'Âµ' || ch == '\'';
     }
 
     /**
