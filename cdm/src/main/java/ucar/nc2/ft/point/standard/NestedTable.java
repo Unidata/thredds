@@ -53,6 +53,8 @@ import java.io.IOException;
 /**
  * Implements "nested table" views of point feature datasets.
  * A NestedTable is initialized with a TableConfig.
+ * A NestedTable Table is created after the Tables have been joined, and the leaves identified.
+ * It is a single chain of Table objects from child to parent. Highest parent is root. Lowest child is leaf
  * <p/>
  * A nested table starts with a leaf table (no children), plus all of its parents.
  * There is a "join" for each child and parent.
@@ -84,13 +86,10 @@ public class NestedTable {
 
   private CoordVarExtractor timeVE, nomTimeVE, latVE, lonVE, altVE;
   private CoordVarExtractor stnVE, stnDescVE, wmoVE, stnAltVE, idVE, missingVE;
+  private List<Variable> extras;
 
   private int nlevels;
 
-  //private DateFormatter dateFormatter = new DateFormatter();
-
-  // A NestedTable Table is created after the Tables have been joined, and the leaves identified.
-  // It is a single chain of Table objects from child to parent. Highest parent is root. Lowest child is leaf
   NestedTable(NetcdfDataset ds, TableConfig config, Formatter errlog) {
     this.ds = ds;
     this.errlog = errlog;
@@ -107,9 +106,18 @@ public class NestedTable {
       // if (!(t instanceof Table.TableTop)) // LOOK using nlevels is fishy
       nlevels++;
     }
-
-    if (featureType == null) {
+    if (featureType == null)
       featureType = FeatureDatasetFactoryManager.findFeatureType(ds);
+
+    // look for joins with extra variables
+    t = leaf;
+    while (t != null) {
+      if (t.extraJoins != null) {
+        for (Join j : t.extraJoins) {
+          addExtraVariable(j.getExtraVariable());
+        }
+      }
+      t = t.parent; // recurse upwards
     }
 
     // will find the first one, starting at the leaf and going up
@@ -159,6 +167,16 @@ public class NestedTable {
     return leaf;
   }
 
+  List<Variable> getExtras() {
+    return extras;
+  }
+
+  private void addExtraVariable( Variable v) {
+    if (v == null) return;
+    if (extras == null) extras = new ArrayList<>();
+    extras.add(v);
+  }
+
   // look for a coord axis of the given type in the table and its parents
   private CoordVarExtractor findCoordinateAxis(Table.CoordName coordName, Table t, int nestingLevel) {
     if (t == null) return null;
@@ -201,6 +219,7 @@ public class NestedTable {
     return findCoordinateAxis(coordName, t.parent, nestingLevel + 1);
   }
 
+  /////////////////////////////////////////////////////////////////////////
   // knows how to get specific coordinate data from a table or its parents
   private class CoordVarExtractorVariable extends CoordVarExtractor {
     protected VariableDS coordVar;
@@ -252,6 +271,7 @@ public class NestedTable {
     }
   }
 
+  /////////////////////////////////////////////////////////////////////////
   // knows how to get specific coordinate data from a table or its parents
   private class CoordVarTop extends CoordVarExtractor {
     protected VariableDS varTop;
@@ -304,6 +324,7 @@ public class NestedTable {
     }
   }
 
+  /////////////////////////////////////////////////////////////////////////
   // knows how to get specific coordinate data from a table or its parents
   private class CoordVarStructureData extends CoordVarExtractor {
     protected StructureData sdata;
@@ -346,6 +367,7 @@ public class NestedTable {
 
   }
 
+  /////////////////////////////////////////////////////////////////////////
   // a constant coordinate variable
   private class CoordVarConstant extends CoordVarExtractor {
     String units, value;

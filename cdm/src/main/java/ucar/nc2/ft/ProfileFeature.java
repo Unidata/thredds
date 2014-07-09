@@ -32,8 +32,10 @@
  */
 package ucar.nc2.ft;
 
+import ucar.ma2.StructureData;
 import ucar.unidata.geoloc.LatLonPoint;
 
+import java.io.IOException;
 import java.util.Date;
 
 /**
@@ -64,4 +66,11 @@ public interface ProfileFeature extends PointFeatureCollection {
    * @return number of points along the z axis, or -1 if not known.
    */
   public int size();
+
+  /**
+   * The actual data of this feature.
+   * @return the actual data of this feature.
+   * @throws java.io.IOException on i/o error
+   */
+  public StructureData getFeatureData() throws IOException;
 }

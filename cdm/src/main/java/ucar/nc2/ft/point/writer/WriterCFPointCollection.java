@@ -35,7 +35,6 @@ package ucar.nc2.ft.point.writer;
 import ucar.nc2.constants.CDM;
 import ucar.nc2.constants.CF;
 import ucar.nc2.dataset.conv.CF1Convention;
-import ucar.nc2.ft.point.StationPointFeature;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.units.DateUnit;
 import ucar.nc2.*;

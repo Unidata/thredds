@@ -85,7 +85,7 @@ public class PointDatasetImpl extends FeatureDatasetImpl implements FeatureDatas
   }
 
   protected void setPointFeatureCollection(FeatureCollection collection) {
-    this.collectionList = new ArrayList<FeatureCollection>(1);
+    this.collectionList = new ArrayList<>(1);
     this.collectionList.add(collection);
   }
 

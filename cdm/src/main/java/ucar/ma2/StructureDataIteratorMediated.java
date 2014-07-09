@@ -30,57 +30,57 @@
  *   NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
  *   WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
  */
-package ucar.nc2.ft.point.standard;
 
-import ucar.ma2.StructureData;
+package ucar.ma2;
+
+import java.io.IOException;
 
 /**
- * Keeps track of the iteration through nested tables
- * 0 is always innermost nested table, 1 is parent of 0, 2 is parent of 1, etc
+ * Read a maximum number of StructureData objects from a StructureDataIterator.
  *
  * @author caron
- * @since Jan 24, 2009
+ * @since 7/9/2014
  */
-public class Cursor {
-  StructureData[] tableData; // current struct data
-  int[] recnum;              // current recnum
-  int currentIndex;          // the "parent index", current iteration is over its children.
+public class StructureDataIteratorMediated implements StructureDataIterator {
 
-  Cursor(int nlevels) {
-    tableData = new StructureData[nlevels];
-    recnum = new int[nlevels];
+  private StructureDataIterator org;
+  private StructureDataMediator mod;
+
+  public StructureDataIteratorMediated(StructureDataIterator org, StructureDataMediator mod) throws IOException {
+    this.org = org;
+    this.mod = mod;
   }
 
-  private int getParentIndex() { // skip null structureData, to allow dummy tables to be inserted, eg FslWindProfiler
-    int indx = currentIndex;
-    while ((tableData[indx] == null) && (indx < tableData.length-1)) indx++;
-    return indx;
+  @Override
+  public StructureData next() throws IOException {
+    return mod.modify(org.next());
   }
 
-  /* t.kunicki 11/25/10
-  // Flattened data can now accurately access parent structure
-  private int getParentIndex() {
-    int maxIndex = tableData.length - 1;
-    int parentIndex = currentIndex < maxIndex ? currentIndex + 1 : currentIndex;
-    while (tableData[parentIndex] == null && parentIndex < maxIndex) parentIndex++;
-    return parentIndex;
-   }
-  // end t.kunicki 11/25/10 */
-
-  StructureData getParentStructure() {
-    return tableData[getParentIndex()];
+  @Override
+  public boolean hasNext() throws IOException {
+    return org.hasNext();
   }
 
-  int getParentRecnum() {
-    return recnum[getParentIndex()];
+  @Override
+  public StructureDataIterator reset() {
+    org.reset();
+    return this;
   }
 
-  Cursor copy() {
-    Cursor clone = new Cursor(tableData.length);
-    //clone.what = what; // not a copy !!
-    clone.currentIndex = currentIndex;
-    System.arraycopy(this.tableData, 0, clone.tableData, 0, tableData.length);
-    System.arraycopy(this.recnum, 0, clone.recnum, 0, tableData.length);
-    return clone;
+  @Override
+  public void setBufferSize(int bytes) {
+    org.setBufferSize(bytes);
   }
+
+  @Override
+  public int getCurrentRecno() {
+    return org.getCurrentRecno();
+  }
+
+  @Override
+  public void finish() {
+    org.finish();
+  }
+
 }
+

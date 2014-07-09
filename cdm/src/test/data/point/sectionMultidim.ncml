@@ -22,7 +22,7 @@
     <values>1 2</values>
   </variable>
   <variable name="profileAlt" shape="section prof" type="int">
-    <attribute name="standard_name" value="base_altitude" />
+    <attribute name="standard_name" value="surface_altitude" />
     <attribute name="units" value="km above msl" />
     <values start="100" increment="6"/>
   </variable>

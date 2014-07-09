@@ -76,7 +76,6 @@ public class WriterCFStationCollection extends CFPointWriter {
   private static final String descName = "station_description";
   private static final String wmoName = "wmo_id";
   private static final String stationIndexName = "stationIndex";
-  private static final boolean debug = false;
 
   //////////////////////////////////////////////////////////
   private int name_strlen = 1, desc_strlen = 1, wmo_strlen = 1;
@@ -89,12 +88,8 @@ public class WriterCFStationCollection extends CFPointWriter {
   private Map<String, Variable> dataMap  = new HashMap<>();
   private Map<String, Variable> stnMap  = new HashMap<>();
 
+  private HashMap<String, Integer> stationMap;
   private Formatter coordNames = new Formatter();
-
-
-  /* public WriterCFStationCollection(String fileOut, String title) throws IOException {
-    this(fileOut, Arrays.asList(new Attribute(CDM.TITLE, title)), new CFPointWriterConfig(null));
-  } */
   
   public WriterCFStationCollection(NetcdfFileWriter.Version version, String fileOut, List<Attribute> atts) throws IOException {
     super(fileOut, atts, new CFPointWriterConfig(version));
@@ -105,7 +100,7 @@ public class WriterCFStationCollection extends CFPointWriter {
     writer.addGroupAttribute(null, new Attribute(CF.FEATURE_TYPE, CF.FeatureType.timeSeries.name()));
   }
 
-  public void writeHeader(List<ucar.unidata.geoloc.Station> stns, List<VariableSimpleIF> dataVars, DateUnit timeUnit, String altUnits, StationPointFeature spf) throws IOException {
+  public void writeHeader(List<StationFeature> stns, List<VariableSimpleIF> dataVars, DateUnit timeUnit, String altUnits, StationPointFeature spf) throws IOException {
     this.dataVars = dataVars;
     this.altUnits = altUnits;
     if (noUnlimitedDimension)
@@ -113,9 +108,9 @@ public class WriterCFStationCollection extends CFPointWriter {
     else
       recordDim = writer.addUnlimitedDimension(recordDimName);
 
-    StructureData obsData = spf.getFeatureData();
     StationFeature sf = spf.getStation();
     StructureData stnData = sf.getFeatureData();
+    StructureData obsData = spf.getFeatureData();
 
     List<VariableSimpleIF> coords = new ArrayList<>();
     coords.add(VariableSimpleImpl.makeScalar(timeName, "time of measurement", timeUnit.getUnitsString(), DataType.DOUBLE));
@@ -129,7 +124,7 @@ public class WriterCFStationCollection extends CFPointWriter {
       addDataVariablesExtended(obsData, coordNames.toString());
       record.calcElementSize();
       writer.create();
-      writeStationDataExtended(stns);
+      //writeStationDataExtended(stns);
 
     } else {
       addStations(stns, stnData, false);
@@ -137,23 +132,19 @@ public class WriterCFStationCollection extends CFPointWriter {
       addDataVariablesClassic(recordDim, obsData, dataMap, coordNames.toString());
       writer.create();
       record = writer.addRecordStructure(); // netcdf3
-
-      /* lat = writer.findVariable(latName);
-      lon = writer.findVariable(lonName);
-      alt = writer.findVariable(altName);
-      id = writer.findVariable(idName);
-      wmoId = writer.findVariable(wmoName);
-      desc = writer.findVariable(descName);
-
-      time = writer.findVariable(timeName);
-      stationIndex = writer.findVariable(stationIndexName); */
-
-      writeStationData(stns); // write out the station info
+      //writeStationData(stns); // write out the station info
     }
 
+    int count = 0;
+    stationMap = new HashMap<>(2 * stns.size());
+    for (StationFeature stn : stns) {
+      writeStationData(stn);
+      stationMap.put(stn.getName(), count);
+      count++;
+    }
   }
 
-  private void addStations(List<ucar.unidata.geoloc.Station> stnList, StructureData stnData, boolean isExtended) throws IOException {
+  private void addStations(List<StationFeature> stnList, StructureData stnData, boolean isExtended) throws IOException {
     int nstns = stnList.size();
 
     // see if there's altitude, wmoId for any stations
@@ -214,9 +205,8 @@ public class WriterCFStationCollection extends CFPointWriter {
 
   }
 
-  // this writes all the stations - could just write out as stations come in from data records
-  private HashMap<String, Integer> stationMap;
-  private void writeStationData(List<ucar.unidata.geoloc.Station> stnList) throws IOException {
+  /* this writes all the stations at once - could just write them as stations come in from data records
+  private void writeStationData(List<StationFeature> stnList) throws IOException {
     int nstns = stnList.size();
     stationMap = new HashMap<>(2 * nstns);
     if (debug) System.out.println("stationMap created");
@@ -256,7 +246,7 @@ public class WriterCFStationCollection extends CFPointWriter {
     }
   }
 
-  private void writeStationDataExtended(List<ucar.unidata.geoloc.Station> stnList) throws IOException {
+   private void writeStationDataExtended(List<StationFeature> stnList) throws IOException {
     int nstns = stnList.size();
     stationMap = new HashMap<>(2 * nstns);
     if (debug) System.out.println("stationMap created");
@@ -298,16 +288,45 @@ public class WriterCFStationCollection extends CFPointWriter {
     }
 
   }
+  */
 
+  private int stnRecno = 0;
+  private void writeStationData(StationFeature stn) throws IOException {
 
-  private int recno = 0;
-  //private ArrayDouble.D1 timeArray = new ArrayDouble.D1(1);
-  //private ArrayInt.D1 parentArray = new ArrayInt.D1(1);
+    StructureDataScalar stnCoords = new StructureDataScalar("Coords");
+    stnCoords.addMember(latName, null, null, DataType.DOUBLE, false, stn.getLatLon().getLatitude());
+    stnCoords.addMember(lonName, null, null, DataType.DOUBLE, false, stn.getLatLon().getLongitude());
+    stnCoords.addMember(altName, null, null, DataType.DOUBLE, false, stn.getAltitude());
+    stnCoords.addMemberString(idName, null, null, stn.getName().trim(), name_strlen);
+    if (useDesc) stnCoords.addMemberString(descName, null, null, stn.getDescription().trim(), desc_strlen);
+    if (useWmoId) stnCoords.addMemberString(wmoName, null, null, stn.getWmoId().trim(), wmo_strlen);
+
+    StructureDataComposite sdall = new StructureDataComposite();
+    sdall.add(stnCoords); // coords first so it takes precedence
+    sdall.add(stn.getFeatureData());
+
+    int[] origin = new int[1];
+    origin[0] = stnRecno;
+    try {
+      if (isExtendedModel)
+        super.writeStructureData(stationStruct, origin, sdall);
+      else {
+        super.writeStructureDataClassic(stnMap, origin, sdall);
+      }
+
+    } catch (InvalidRangeException e) {
+      e.printStackTrace();
+      throw new IllegalStateException(e);
+    }
+
+    stnRecno++;
+  }
 
   public void writeRecord(Station s, PointFeature sobs, StructureData sdata) throws IOException {
     writeRecord(s.getName(), sobs.getObservationTime(), sobs.getObservationTimeAsCalendarDate(), sdata);
   }
 
+  private int recno = 0;
   public void writeRecord(String stnName, double timeCoordValue, CalendarDate obsDate, StructureData sdata) throws IOException {
     trackBB(null, obsDate);
 
@@ -333,17 +352,6 @@ public class WriterCFStationCollection extends CFPointWriter {
       else {
         super.writeStructureDataClassic(dataMap, origin, sdall);
       }
-
-/*      boolean useStructure = isExtendedModel || (writer.getVersion() == NetcdfFileWriter.Version.netcdf3 && config.recDimensionLength < 0);
-      super.writeStructureData(useStructure, record, origin, sdall);
-
-      if (!isExtendedModel) {
-        timeArray.set(0, timeCoordValue);
-        parentArray.set(0, parentIndex);
-
-        writer.write(time, origin, timeArray);
-        writer.write(stationIndex, origin, parentArray);
-      }   */
 
     } catch (InvalidRangeException e) {
       e.printStackTrace();

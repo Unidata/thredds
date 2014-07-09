@@ -48,6 +48,15 @@ public class StructureDataProxy extends StructureData {
     this.org = org;
   }
 
+  public StructureDataProxy( StructureMembers members, StructureData org) {
+    super(members);
+    this.org = org;
+  }
+
+  public StructureData getOriginalStructureData() {
+    return org;
+  }
+
   public Array getArray(StructureMembers.Member m) {
     return org.getArray(m.getName());
   }

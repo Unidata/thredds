@@ -32,6 +32,7 @@
  */
 package ucar.nc2.ft.point;
 
+import ucar.nc2.Variable;
 import ucar.nc2.ft.*;
 import ucar.nc2.time.CalendarDateRange;
 import ucar.nc2.units.DateRange;
@@ -40,6 +41,8 @@ import ucar.nc2.constants.FeatureType;
 import ucar.unidata.geoloc.LatLonRect;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Abstract superclass for singly nested NestedPointFeatureCollection, such as Station, Profile, and Trajectory.
@@ -54,6 +57,7 @@ public abstract class OneNestedPointCollectionImpl implements NestedPointFeature
   protected String altUnits;
   protected FeatureType collectionFeatureType;
   protected int npts;
+  protected List<Variable> extras;
 
   protected OneNestedPointCollectionImpl(String name, DateUnit timeUnit, String altUnits, FeatureType collectionFeatureType) {
     this.name = name;
@@ -77,6 +81,8 @@ public abstract class OneNestedPointCollectionImpl implements NestedPointFeature
   public String getAltUnits() {
     return altUnits;
   }
+
+  public List<Variable> getExtraVariables() { return (extras == null) ? new ArrayList<Variable>() : extras; }
 
   public int size() {
     return npts;

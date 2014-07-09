@@ -33,13 +33,10 @@
  *
  */
 
-package ucar.nc2.ft.point.writer;
+package ucar.nc2;
 
 import ucar.ma2.DataType;
 import ucar.ma2.StructureMembers;
-import ucar.nc2.Attribute;
-import ucar.nc2.Dimension;
-import ucar.nc2.VariableSimpleIF;
 import ucar.nc2.constants.CDM;
 
 import java.util.ArrayList;
@@ -54,11 +51,6 @@ import java.util.List;
  */
 public class VariableSimpleImpl implements VariableSimpleIF {
 
-  static public VariableSimpleImpl makeFromMember(StructureMembers.Member m) {
-    return new VariableSimpleImpl(m.getName(), m.getDescription(), m.getUnitsString(), m.getDataType(), null);
-
-  }
-
   static public VariableSimpleImpl makeScalar(String name, String desc, String units, DataType dt) {
     return new VariableSimpleImpl(name, desc, units, dt, null);
   }
@@ -67,6 +59,12 @@ public class VariableSimpleImpl implements VariableSimpleIF {
     Dimension d = new Dimension(name+"_strlen", str_len, false, false, false);
     // String dimString = Dimension.makeDimensionsString(new int[] {str_len});
     return new VariableSimpleImpl(name, desc, units, DataType.CHAR, Arrays.asList(d));
+  }
+
+  static public VariableSimpleImpl changeShape(VariableSimpleIF proxy, List<Dimension> dims) {
+    VariableSimpleImpl result = new VariableSimpleImpl(proxy.getShortName(), proxy.getDescription(), proxy.getUnitsString(), proxy.getDataType(), dims);
+    for (Attribute att : proxy.getAttributes()) result.add(att);
+    return result;
   }
 
   private final String name, desc, units;

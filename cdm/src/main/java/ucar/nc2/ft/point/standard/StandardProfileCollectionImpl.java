@@ -60,6 +60,7 @@ public class StandardProfileCollectionImpl extends OneNestedPointCollectionImpl 
   StandardProfileCollectionImpl(NestedTable ft, DateUnit timeUnit, String altUnits) {
     super(ft.getName(), timeUnit, altUnits, FeatureType.PROFILE);
     this.ft = ft;
+    this.extras = ft.getExtras();
   }
 
   public PointFeatureCollectionIterator getPointFeatureCollectionIterator(int bufferSize) throws IOException {
@@ -109,7 +110,7 @@ public class StandardProfileCollectionImpl extends OneNestedPointCollectionImpl 
       cursor.recnum[1] = structIter.getCurrentRecno();
       cursor.currentIndex = 1;
       ft.addParentJoin(cursor); // there may be parent joins
-      return new StandardProfileFeature(cursor, ft.getObsTime(cursor));
+      return new StandardProfileFeature(cursor, ft.getObsTime(cursor), nextProfileData);
     }
 
     public void setBufferSize(int bytes) { }
@@ -122,10 +123,15 @@ public class StandardProfileCollectionImpl extends OneNestedPointCollectionImpl 
 
   private class StandardProfileFeature extends ProfileFeatureImpl {
     Cursor cursor;
-    StandardProfileFeature( Cursor cursor, double time) {
+    StructureData profileData;
+
+    StandardProfileFeature( Cursor cursor, double time, StructureData profileData) {
       super( ft.getFeatureName(cursor), StandardProfileCollectionImpl.this.getTimeUnit(), StandardProfileCollectionImpl.this.getAltUnits(),
               ft.getLatitude(cursor), ft.getLongitude(cursor), time, -1);
+
       this.cursor = cursor;
+      this.profileData = profileData;
+
       if (name.equalsIgnoreCase("unknown"))
         name = timeUnit.makeStandardDateString(time); // use time as the name
 
@@ -143,6 +149,11 @@ public class StandardProfileCollectionImpl extends OneNestedPointCollectionImpl 
           e.printStackTrace();
         }
       }
+    }
+
+    @Override
+    public StructureData getFeatureData() {
+      return profileData;
     }
 
     public PointFeatureIterator getPointFeatureIterator(int bufferSize) throws IOException {
@@ -179,7 +190,7 @@ public class StandardProfileCollectionImpl extends OneNestedPointCollectionImpl 
 
   private class StandardProfileCollectionSubset extends StandardProfileCollectionImpl {
     StandardProfileCollectionImpl from;
-      LatLonRect boundingBox;
+     LatLonRect boundingBox;
 
     StandardProfileCollectionSubset(StandardProfileCollectionImpl from, LatLonRect boundingBox) {
       super(from.getName()+"-subset", from.getTimeUnit(), from.getAltUnits());

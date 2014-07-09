@@ -33,6 +33,7 @@
 
 package ucar.nc2.ft.point.standard;
 
+import ucar.nc2.Variable;
 import ucar.nc2.dataset.VariableDS;
 import ucar.nc2.dataset.StructureDS;
 import ucar.ma2.ArrayStructure;
@@ -74,6 +75,10 @@ public class JoinMuiltdimStructure implements Join {
 
   public VariableDS findVariable(String axisName) {
     return (VariableDS) parentStructure.findVariable(axisName);
+  }
+
+  public Variable getExtraVariable() {
+    return null;
   }
 
     @Override

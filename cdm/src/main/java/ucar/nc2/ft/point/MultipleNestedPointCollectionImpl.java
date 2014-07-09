@@ -32,6 +32,7 @@
  */
 package ucar.nc2.ft.point;
 
+import ucar.nc2.Variable;
 import ucar.nc2.ft.NestedPointFeatureCollection;
 import ucar.nc2.ft.PointFeatureCollection;
 import ucar.nc2.ft.PointFeatureIterator;
@@ -43,6 +44,8 @@ import ucar.nc2.units.DateUnit;
 import ucar.unidata.geoloc.LatLonRect;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Abstract superclass for multiply nested NestedPointFeatureCollection
@@ -57,6 +60,7 @@ public abstract class MultipleNestedPointCollectionImpl implements NestedPointFe
   protected String altUnits;
   protected FeatureType collectionFeatureType;
   protected int npts;
+  protected List<Variable> extras;
 
   protected MultipleNestedPointCollectionImpl(String name, DateUnit timeUnit, String altUnits, FeatureType collectionFeatureType) {
     this.name = name;
@@ -80,6 +84,8 @@ public abstract class MultipleNestedPointCollectionImpl implements NestedPointFe
   public String getAltUnits() {
     return altUnits;
   }
+
+  public List<Variable> getExtraVariables() { return (extras == null) ? new ArrayList<Variable>() : extras; }
 
   public int size() {
     return npts;

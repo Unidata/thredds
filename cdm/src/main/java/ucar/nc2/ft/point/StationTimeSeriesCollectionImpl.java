@@ -100,6 +100,11 @@ public abstract class StationTimeSeriesCollectionImpl extends OneNestedPointColl
     return stationFeature.getStation();
   }
 
+  @Override
+  public List<StationFeature> getStationFeatures() throws IOException {
+    return stationHelper.getStationFeatures();
+  }
+
   // might want to preserve the bb instead of the station list
   public StationTimeSeriesFeatureCollection subset(ucar.unidata.geoloc.LatLonRect boundingBox) throws IOException {
     return subset( getStations(boundingBox));
@@ -145,6 +150,11 @@ public abstract class StationTimeSeriesCollectionImpl extends OneNestedPointColl
     }
 
     protected  void initStationHelper() {}
+
+    @Override
+    public List<StationFeature> getStationFeatures() throws IOException {
+      return stationHelper.getStationFeatures();
+    }
 
     /* dont think this is needed
     public PointFeatureCollectionIterator getPointFeatureCollectionIterator(int bufferSize) throws IOException {
