@@ -12,6 +12,7 @@ import ucar.nc2.ft.PointFeature;
 import ucar.nc2.ft.PointFeatureIterator;
 import ucar.nc2.ft.StationTimeSeriesFeature;
 import ucar.nc2.ft.StationTimeSeriesFeatureCollection;
+import ucar.nc2.ft.point.StationFeature;
 import ucar.nc2.ft.point.StationTimeSeriesFeatureImpl;
 import ucar.nc2.ft.point.StationPointFeature;
 import ucar.nc2.time.CalendarDate;
@@ -30,7 +31,7 @@ import java.util.List;
  */
 public abstract class AbstractStationSubsetWriter extends AbstractDsgSubsetWriter {
     protected final StationTimeSeriesFeatureCollection stationFeatureCollection;
-    protected final List<Station> wantedStations;
+    protected final List<StationFeature> wantedStations;
     private boolean headerDone;
 
     public AbstractStationSubsetWriter(FeatureDatasetPoint fdPoint, NcssParamsBean ncssParams)
@@ -60,7 +61,7 @@ public abstract class AbstractStationSubsetWriter extends AbstractDsgSubsetWrite
     public void write() throws Exception {
 
         // Perform spatial subset.
-        StationTimeSeriesFeatureCollection subsettedStationFeatCol = stationFeatureCollection.subset(wantedStations);
+        StationTimeSeriesFeatureCollection subsettedStationFeatCol = stationFeatureCollection.subsetFeatures(wantedStations);
 
         subsettedStationFeatCol.resetIteration();
         try {
@@ -168,30 +169,30 @@ public abstract class AbstractStationSubsetWriter extends AbstractDsgSubsetWrite
 
 
     // LOOK could do better : "all", and maybe HashSet<Name>
-    public static List<Station> getStationsInSubset(
+    public static List<StationFeature> getStationsInSubset(
             StationTimeSeriesFeatureCollection stationFeatCol, NcssParamsBean ncssParams) throws IOException {
-        List<Station> wantedStations;
+        List<StationFeature> wantedStations;
 
         // verify SpatialSelection has some stations
         if (ncssParams.hasStations()) {
             List<String> stnNames = ncssParams.getStns();
 
             if (stnNames.get(0).equals("all")) {
-                wantedStations = stationFeatCol.getStations();
+                wantedStations = stationFeatCol.getStationFeatures();
             } else {
-                wantedStations = stationFeatCol.getStations(stnNames);
+                wantedStations = stationFeatCol.getStationFeatures(stnNames);
             }
         } else if (ncssParams.hasLatLonBB()) {
             LatLonRect llrect = ncssParams.getBoundingBox();
-            wantedStations = stationFeatCol.getStations(llrect);
+            wantedStations = stationFeatCol.getStationFeatures(llrect);
         } else if (ncssParams.hasLatLonPoint()) {
             Station closestStation = findClosestStation(
                     stationFeatCol, new LatLonPointImpl(ncssParams.getLatitude(), ncssParams.getLongitude()));
             List<String> stnList = new ArrayList<>();
             stnList.add(closestStation.getName());
-            wantedStations = stationFeatCol.getStations(stnList);
+            wantedStations = stationFeatCol.getStationFeatures(stnList);
         } else { // Want all.
-            wantedStations = stationFeatCol.getStations();
+            wantedStations = stationFeatCol.getStationFeatures();
         }
 
         return wantedStations;

@@ -57,6 +57,7 @@ import ucar.nc2.ft.PointFeature;
 import ucar.nc2.ft.PointFeatureCollection;
 import ucar.nc2.ft.StationTimeSeriesFeature;
 import ucar.nc2.ft.StationTimeSeriesFeatureCollection;
+import ucar.nc2.ft.point.StationFeature;
 import ucar.nc2.ft.point.StationPointFeature;
 import ucar.nc2.ft.point.remote.PointStream;
 import ucar.nc2.ft.point.remote.PointStreamProto;
@@ -728,7 +729,7 @@ public class StationWriter {
     File netcdfResult;
     WriterCFStationCollection cfWriter;
     boolean headerWritten = false;
-    private List<Station> wantStations;
+    private List<StationFeature> wantStations;
 
     WriterNetcdf() throws IOException {
       super(null);
@@ -740,14 +741,14 @@ public class StationWriter {
 
       // verify SpatialSelection has some stations
       if (qb.getSpatialSelection() == CdmrfQueryBean.SpatialSelection.bb) {
-        wantStations = sfc.getStations(qb.getLatLonRect());
+        wantStations = sfc.getStationFeatures(qb.getLatLonRect());
 
       } else if (qb.getSpatialSelection() == CdmrfQueryBean.SpatialSelection.stns) {
         List<String> stnNames = Arrays.asList(qb.getStnNames());
-        wantStations = sfc.getStations(stnNames);
+        wantStations = sfc.getStationFeatures(stnNames);
 
       } else {
-        wantStations = sfc.getStations();
+        wantStations = sfc.getStationFeatures();
       }
 
     }
