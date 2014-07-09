@@ -99,97 +99,6 @@ public class TestPointFeatureTypes extends TestCase {
     }
   }
 
-  // these are internal, synthetic (ncml) datasets with (almost) all possible combinations for proposed CF point obs
-  String CFpointObs_topdir = TestDir.cdmLocalTestDataDir + "point/";
-  /* public void testCFcanonical() throws IOException {
-    assert 3 == checkPointDataset(CFpointObs_topdir + "point.ncml", FeatureType.POINT, false);
-    assert 3 == checkPointDataset(CFpointObs_topdir + "pointUnlimited.nc", FeatureType.POINT, false);
-    assert 4 == checkPointDataset(CFpointObs_topdir + "pointMissing.ncml", FeatureType.POINT, false);
-
-    assert 3 == checkPointDataset(CFpointObs_topdir + "stationSingle.ncml", FeatureType.STATION, false);
-    assert 3 == checkPointDataset(CFpointObs_topdir + "stationSingleWithZlevel.ncml", FeatureType.STATION, false);
-    assert 15 == checkPointDataset(CFpointObs_topdir + "stationMultidim.ncml", FeatureType.STATION, false);
-    assert 15 == checkPointDataset(CFpointObs_topdir + "stationMultidimTimeJoin.ncml", FeatureType.STATION, false);
-    assert 15 == checkPointDataset(CFpointObs_topdir + "stationMultidimUnlimited.nc", FeatureType.STATION, false);
-    assert 12 == checkPointDataset(CFpointObs_topdir + "stationMultidimMissingTime.ncml", FeatureType.STATION, false);
-    assert 9 == checkPointDataset(CFpointObs_topdir + "stationMultidimMissingId.ncml", FeatureType.STATION, true);
-    assert 12 == checkPointDataset(CFpointObs_topdir + "stationMultidimMissingIdString.ncml", FeatureType.STATION, true);
-    assert 6 == checkPointDataset(CFpointObs_topdir + "stationRaggedContig.ncml", FeatureType.STATION, false);
-    assert 6 == checkPointDataset(CFpointObs_topdir + "stationRaggedIndex.ncml", FeatureType.STATION, false);
-    assert 5 == checkPointDataset(CFpointObs_topdir + "stationRaggedMissing.ncml", FeatureType.STATION, false);
-    assert 13 == checkPointDataset(CFpointObs_topdir + "stationFlat.ncml", FeatureType.STATION, false);
-    assert 13 == checkPointDataset(CFpointObs_topdir + "stationFlat.nc", FeatureType.STATION, false);
-
-    assert 10 == checkPointDataset(CFpointObs_topdir + "trajSingle.ncml", FeatureType.TRAJECTORY, false);
-    assert 20 == checkPointDataset(CFpointObs_topdir + "trajMultidim.ncml", FeatureType.TRAJECTORY, false);
-    assert 30 == checkPointDataset(CFpointObs_topdir + "trajMultidimMissingId.ncml", FeatureType.TRAJECTORY, false);
-    assert 18 == checkPointDataset(CFpointObs_topdir + "trajMultidimMissingTime.ncml", FeatureType.TRAJECTORY, false);
-    assert 6 == checkPointDataset(CFpointObs_topdir + "trajRaggedContig.ncml", FeatureType.TRAJECTORY, false);
-    assert 6 == checkPointDataset(CFpointObs_topdir + "trajRaggedIndex.ncml", FeatureType.TRAJECTORY, false);
-    assert 5 == checkPointDataset(CFpointObs_topdir + "trajRaggedMissing.ncml", FeatureType.TRAJECTORY, false);
-
-    assert 13 ==  checkPointDataset(CFpointObs_topdir + "profileSingle.ncml", FeatureType.PROFILE, false);
-    assert 12 ==  checkPointDataset(CFpointObs_topdir + "profileSingleTimeJoin.ncml", FeatureType.PROFILE, false);
-    assert 50 ==  checkPointDataset(CFpointObs_topdir + "profileMultidim.ncml", FeatureType.PROFILE, false);
-    assert 50 ==  checkPointDataset(CFpointObs_topdir + "profileMultidimTimeJoin.ncml", FeatureType.PROFILE, false);
-    assert 50 ==  checkPointDataset(CFpointObs_topdir + "profileMultidimZJoin.ncml", FeatureType.PROFILE, false);
-    assert 50 ==  checkPointDataset(CFpointObs_topdir + "profileMultidimTimeZJoin.ncml", FeatureType.PROFILE, false);
-    assert 40 ==  checkPointDataset(CFpointObs_topdir + "profileMultidimMissingId.ncml", FeatureType.PROFILE, false);
-    assert 14 == checkPointDataset(CFpointObs_topdir + "profileMultidimMissingAlt.ncml", FeatureType.PROFILE, false);
-    assert 6 ==  checkPointDataset(CFpointObs_topdir + "profileRaggedContig.ncml", FeatureType.PROFILE, false);
-    assert 6 ==  checkPointDataset(CFpointObs_topdir + "profileRaggedContigTimeJoin.ncml", FeatureType.PROFILE, false);
-    assert 22 ==  checkPointDataset(CFpointObs_topdir + "profileRaggedIndex.ncml", FeatureType.PROFILE, false);
-    assert 22 ==  checkPointDataset(CFpointObs_topdir + "profileRaggedIndexTimeJoin.ncml", FeatureType.PROFILE, false);
-
-    assert 9 == checkPointDataset(CFpointObs_topdir + "stationProfileSingle.ncml", FeatureType.STATION_PROFILE, false);
-    assert 9 == checkPointDataset(CFpointObs_topdir + "stationProfileSingleTimeJoin.ncml", FeatureType.STATION_PROFILE, false);
-    assert 18 == checkPointDataset(CFpointObs_topdir + "stationProfileMultidim.ncml", FeatureType.STATION_PROFILE, false);
-    assert 18 == checkPointDataset(CFpointObs_topdir + "stationProfileMultidimUnlimited.nc", FeatureType.STATION_PROFILE, false);
-    assert 24 == checkPointDataset(CFpointObs_topdir + "stationProfileMultidimJoinZ.ncml", FeatureType.STATION_PROFILE, false);
-    assert 18 == checkPointDataset(CFpointObs_topdir + "stationProfileMultidimJoinTime.ncml", FeatureType.STATION_PROFILE, false);
-    assert 36 == checkPointDataset(CFpointObs_topdir + "stationProfileMultidimJoinTimeAndZ.ncml", FeatureType.STATION_PROFILE, false);
-    assert 27 == checkPointDataset(CFpointObs_topdir + "stationProfileMultidimMissingId.ncml", FeatureType.STATION_PROFILE, false);
-    assert 27 == checkPointDataset(CFpointObs_topdir + "stationProfileMultidimMissingIdString.ncml", FeatureType.STATION_PROFILE, true);
-    assert 16 == checkPointDataset(CFpointObs_topdir + "stationProfileMultidimMissingTime.ncml", FeatureType.STATION_PROFILE, true);
-    assert 15 == checkPointDataset(CFpointObs_topdir + "stationProfileMultidimMissingAlt.ncml", FeatureType.STATION_PROFILE, true);
-    assert 14 == checkPointDataset(CFpointObs_topdir + "stationProfileRagged.ncml", FeatureType.STATION_PROFILE, false);
-    assert 14 == checkPointDataset(CFpointObs_topdir + "stationProfileRaggedJoinTime.ncml", FeatureType.STATION_PROFILE, false);
-
-    // forget flat for now
-    //assert 420 == checkPointDataset(CFpointObs_topdir + "stationProfileFlat.ncml", FeatureType.STATION_PROFILE, false);
-    //assert 420 == checkPointDataset(CFpointObs_topdir + "stationProfileFlat.nc", FeatureType.STATION_PROFILE, false);
-
-    assert 100 == checkPointDataset(CFpointObs_topdir + "sectionMultidim.ncml", FeatureType.SECTION, false);
-    assert 100 == checkPointDataset(CFpointObs_topdir + "sectionMultidimJoinZ.ncml", FeatureType.SECTION, false);
-    assert 100 == checkPointDataset(CFpointObs_topdir + "sectionMultidimMissingId.ncml", FeatureType.SECTION, false);
-    assert 100 == checkPointDataset(CFpointObs_topdir + "sectionMultidimMissingIdString.ncml", FeatureType.SECTION, false);
-    assert 28 == checkPointDataset(CFpointObs_topdir + "sectionMultidimMissingTime.ncml", FeatureType.SECTION, false);
-    assert 18 == checkPointDataset(CFpointObs_topdir + "sectionMultidimMissingAlt.ncml", FeatureType.SECTION, false);
-    assert 50 == checkPointDataset(CFpointObs_topdir + "sectionSingle.ncml", FeatureType.SECTION, false);
-    assert 12 == checkPointDataset(CFpointObs_topdir + "sectionRagged.ncml", FeatureType.SECTION, false);
-
-    // forget flat for now
-    //assert 420 == checkPointDataset(CFpointObs_topdir + "sectionFlat.ncml", FeatureType.SECTION, false);
-    //assert 420 == checkPointDataset(CFpointObs_topdir + "sectionFlat.nc", FeatureType.SECTION, false);
-
-  }  */
-
-    // CF 1.6
-  public void testCF1p6() throws IOException {
-    assert 6 == checkPointDataset(CFpointObs_topdir + "stationRaggedContig6.ncml", FeatureType.STATION, false);
-    assert 6 == checkPointDataset(CFpointObs_topdir + "stationRaggedIndex6.ncml", FeatureType.STATION, false);
-    assert 12 == checkPointDataset(CFpointObs_topdir + "sectionRagged6.ncml", FeatureType.SECTION, false);
-    assert 14 == checkPointDataset(CFpointObs_topdir + "stationProfileRagged6.ncml", FeatureType.STATION_PROFILE, false);
-    assert 6 ==  checkPointDataset(CFpointObs_topdir + "profileRaggedContigTimeJoin6.ncml", FeatureType.PROFILE, false);
-    assert 22 ==  checkPointDataset(CFpointObs_topdir + "profileRaggedIndexTimeJoin6.ncml", FeatureType.PROFILE, false);
-    assert 20 == checkPointDataset(CFpointObs_topdir + "trajMultidim6.ncml", FeatureType.TRAJECTORY, false);
-  }
-
-  // in this example, the time coord has a missing value.
-  public void testTimeCoordinateHasMissingValue() throws IOException {
-    assert 4 == checkPointDataset(CFpointObs_topdir + "pointMissing.ncml", FeatureType.POINT, false);
-  }
-
   public void testCF() throws IOException {
 
     /////// POINT
@@ -220,12 +129,6 @@ public class TestPointFeatureTypes extends TestCase {
 
     // CF 1.5 single trajectory (prob actually profile)
     assert 245 == checkPointDataset(topdir + "cfPoint/trajectory/p1140004.ncml", FeatureType.TRAJECTORY, true);
-
-    // netcdf-4 with structure, from tom: tkunicki@usgs.gov
-    // assert 6 == checkPointDataset(topdir + "cfPoint/station/kunicki.nc4", FeatureType.STATION, true);
-
-    // netcdf4 structs
-    assert 20 == checkPointDataset(CFpointObs_topdir + "kunicki.structs.nc4", FeatureType.STATION, true);
 
     // asa
     assert 40 == checkPointDataset(topdir + "cfPoint/stationProfile/timeSeriesProfile-Ragged-SingleStation-H.5.3.nc", FeatureType.STATION_PROFILE, true);
@@ -307,12 +210,6 @@ public class TestPointFeatureTypes extends TestCase {
     checkLocation(filename, FeatureType.ANY_POINT, true);
     //testPointDataset(filename, FeatureType.POINT, true);
     //testLocation(filename, FeatureType.POINT, true);
-  }
-
-
-  @Test
-  public void testProblem() throws Exception {
-    assert 12 == checkPointDataset(CFpointObs_topdir + "sectionRagged6.ncml", FeatureType.SECTION, false);
   }
 
 
@@ -1200,7 +1097,7 @@ public class TestPointFeatureTypes extends TestCase {
   // This is a regression test for TDS-513: https://bugtracking.unidata.ucar.edu/browse/TDS-513
   public void testStationProfileMultidim1dTime() throws IOException {
     FeatureType type = FeatureType.STATION_PROFILE;
-    String location = CFpointObs_topdir + "stationProfileMultidim1dTime.ncml";
+    String location = TestCFPointDatasets.CFpointObs_topdir + "stationProfileMultidim1dTime.ncml";
     ucar.nc2.util.CancelTask task = null;
     Formatter out = new Formatter();
 
