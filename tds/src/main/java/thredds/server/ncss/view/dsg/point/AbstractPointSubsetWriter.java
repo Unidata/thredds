@@ -13,6 +13,7 @@ import java.util.List;
  */
 public abstract class AbstractPointSubsetWriter extends AbstractDsgSubsetWriter {
     protected final PointFeatureCollection pointFeatureCollection;
+    private boolean headerDone;
 
     public AbstractPointSubsetWriter(FeatureDatasetPoint fdPoint, NcssParamsBean ncssParams)
             throws NcssException, IOException {
@@ -26,7 +27,7 @@ public abstract class AbstractPointSubsetWriter extends AbstractDsgSubsetWriter 
         this.pointFeatureCollection = (PointFeatureCollection) featColList.get(0);
     }
 
-    public abstract void writeHeader() throws Exception;
+    public abstract void writeHeader(PointFeature pf) throws Exception;
 
     public abstract void writePoint(PointFeature pointFeat) throws Exception;
 
@@ -34,7 +35,6 @@ public abstract class AbstractPointSubsetWriter extends AbstractDsgSubsetWriter 
 
     @Override
     public void write() throws Exception {
-        writeHeader();
 
         // Perform spatial and temporal subset.
         PointFeatureCollection subsettedPointFeatColl =
@@ -44,6 +44,10 @@ public abstract class AbstractPointSubsetWriter extends AbstractDsgSubsetWriter 
         try {
             while (subsettedPointFeatColl.hasNext()) {
                 PointFeature pointFeat = subsettedPointFeatColl.next();
+                if (!headerDone) {
+                  writeHeader(pointFeat);
+                  headerDone = true;
+                }
                 writePoint(pointFeat);
             }
         } finally {

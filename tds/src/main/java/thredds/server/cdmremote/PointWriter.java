@@ -320,7 +320,7 @@ public class PointWriter {
         public void act(PointFeature pf, StructureData sdata) throws IOException {
           if (!headerWritten) {
             try {
-              cfWriter.writeHeader(wantVars, null, pfc.getTimeUnit(), pfc.getAltUnits());
+              cfWriter.writeHeader(wantVars, pfc.getTimeUnit(), pfc.getAltUnits(), null);
               headerWritten = true;
             } catch (IOException e) {
               log.error("WriterNetcdf.header", e);

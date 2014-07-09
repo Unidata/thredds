@@ -50,7 +50,7 @@ public class PointSubsetWriterXML extends AbstractPointSubsetWriter {
     }
 
     @Override
-    public void writeHeader() throws XMLStreamException {
+    public void writeHeader(PointFeature pf) throws XMLStreamException {
         staxWriter.writeStartDocument("UTF-8", "1.0");
         staxWriter.writeCharacters("\n");
         staxWriter.writeStartElement("pointFeatureCollection");

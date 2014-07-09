@@ -47,7 +47,7 @@ public class PointSubsetWriterCSV extends AbstractPointSubsetWriter {
     }
 
     @Override
-    public void writeHeader() throws Exception {
+    public void writeHeader(PointFeature pf) throws Exception {
         writer.print("time,latitude[unit=\"degrees_north\"],longitude[unit=\"degrees_east\"]");
         for (VariableSimpleIF wantedVar : wantedVariables) {
             writer.print(",");

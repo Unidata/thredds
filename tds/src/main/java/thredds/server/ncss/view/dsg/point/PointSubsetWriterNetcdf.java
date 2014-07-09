@@ -70,7 +70,7 @@ public class PointSubsetWriterNetcdf extends AbstractPointSubsetWriter {
     }
 
     @Override
-    public void writeHeader() throws Exception {
+    public void writeHeader(PointFeature pf) throws Exception {
         // A default value in case we can't find a better one in the dataset.
         // This is the same default that is used in PointDatasetStandard.
         DateUnit timeUnit = new DateUnit("seconds since 1970-01-01");
@@ -92,7 +92,7 @@ public class PointSubsetWriterNetcdf extends AbstractPointSubsetWriter {
             }
         }
 
-        cfWriter.writeHeader(wantedVariables, null, timeUnit, altUnit);
+        cfWriter.writeHeader(wantedVariables, timeUnit, altUnit, pf);
     }
 
     @Override

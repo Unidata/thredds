@@ -764,7 +764,7 @@ public class StationWriter {
         public void act(PointFeature pf, StructureData sdata) throws IOException {
           if (!headerWritten) {
             try {
-              cfWriter.writeHeader(wantStations, wantVars, sfc.getTimeUnit(), sfc.getAltUnits());
+              cfWriter.writeHeader(wantStations, wantVars, sfc.getTimeUnit(), sfc.getAltUnits(), null);
               headerWritten = true;
             } catch (IOException e) {
               log.error("WriterNetcdf.header", e);

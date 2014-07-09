@@ -31,6 +31,7 @@ import java.util.List;
 public abstract class AbstractStationSubsetWriter extends AbstractDsgSubsetWriter {
     protected final StationTimeSeriesFeatureCollection stationFeatureCollection;
     protected final List<Station> wantedStations;
+    private boolean headerDone;
 
     public AbstractStationSubsetWriter(FeatureDatasetPoint fdPoint, NcssParamsBean ncssParams)
             throws NcssException, IOException {
@@ -49,7 +50,7 @@ public abstract class AbstractStationSubsetWriter extends AbstractDsgSubsetWrite
         }
     }
 
-    protected abstract void writeHeader() throws Exception;
+    protected abstract void writeHeader(StationPointFeature stationPointFeat) throws Exception;
 
     protected abstract void writeStationPointFeature(StationPointFeature stationPointFeat) throws Exception;
 
@@ -57,7 +58,6 @@ public abstract class AbstractStationSubsetWriter extends AbstractDsgSubsetWrite
 
     @Override
     public void write() throws Exception {
-        writeHeader();
 
         // Perform spatial subset.
         StationTimeSeriesFeatureCollection subsettedStationFeatCol = stationFeatureCollection.subset(wantedStations);
@@ -96,6 +96,11 @@ public abstract class AbstractStationSubsetWriter extends AbstractDsgSubsetWrite
                 PointFeature pointFeat = stationFeat.next();
                 assert pointFeat instanceof StationPointFeature :
                         "Expected pointFeat to be a StationPointFeature, not a " + pointFeat.getClass().getSimpleName();
+
+                if (!headerDone) {
+                  writeHeader((StationPointFeature) pointFeat);
+                  headerDone = true;
+                }
                 writeStationPointFeature((StationPointFeature) pointFeat);
             }
         } finally {
