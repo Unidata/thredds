@@ -45,6 +45,8 @@ import ucar.nc2.ft.FeatureDataset;
 import ucar.nc2.ft.FeatureDatasetFactoryManager;
 import ucar.nc2.ft.FeatureDatasetPoint;
 import ucar.nc2.ft.PointFeature;
+import ucar.nc2.ft.point.StationFeature;
+import ucar.nc2.ft.point.StationPointFeature;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.units.DateUnit;
 import ucar.unidata.geoloc.LatLonPointImpl;
@@ -78,7 +80,6 @@ public class WriterCFStationCollection extends CFPointWriter {
 
   //////////////////////////////////////////////////////////
   private int name_strlen = 1, desc_strlen = 1, wmo_strlen = 1;
-  // private Variable lat, lon, alt, time, id, wmoId, desc, stationIndex;
 
   protected Structure stationStruct;  // used for netcdf4 extended
   private boolean useDesc = false;
@@ -104,31 +105,36 @@ public class WriterCFStationCollection extends CFPointWriter {
     writer.addGroupAttribute(null, new Attribute(CF.FEATURE_TYPE, CF.FeatureType.timeSeries.name()));
   }
 
-  public void writeHeader(List<ucar.unidata.geoloc.Station> stns, List<VariableSimpleIF> vars, DateUnit timeUnit, String altUnits) throws IOException {
+  public void writeHeader(List<ucar.unidata.geoloc.Station> stns, List<VariableSimpleIF> dataVars, DateUnit timeUnit, String altUnits, StationPointFeature spf) throws IOException {
+    this.dataVars = dataVars;
     this.altUnits = altUnits;
     if (noUnlimitedDimension)
       recordDim = writer.addDimension(null, recordDimName, config.recDimensionLength);
     else
       recordDim = writer.addUnlimitedDimension(recordDimName);
 
+    StructureData obsData = spf.getFeatureData();
+    StationFeature sf = spf.getStation();
+    StructureData stnData = sf.getFeatureData();
+
     List<VariableSimpleIF> coords = new ArrayList<>();
     coords.add(VariableSimpleImpl.makeScalar(timeName, "time of measurement", timeUnit.getUnitsString(), DataType.DOUBLE));
-    coords.add( VariableSimpleImpl.makeScalar(stationIndexName, "station index for this observation record", null, DataType.INT)
+    coords.add(VariableSimpleImpl.makeScalar(stationIndexName, "station index for this observation record", null, DataType.INT)
             .add(new Attribute(CF.INSTANCE_DIMENSION, stationDimName)));
 
     if (writer.getVersion().isExtendedModel()) {
-      addStations(stns, true);
+      addStations(stns, stnData, true);
       record = (Structure) writer.addVariable(null, recordName, DataType.STRUCTURE, recordDimName);
       addCoordinatesExtended(record, coords);
-      addDataVariablesExtended(vars, coordNames.toString());
+      addDataVariablesExtended(obsData, coordNames.toString());
       record.calcElementSize();
       writer.create();
       writeStationDataExtended(stns);
 
     } else {
-      addStations(stns, false);
+      addStations(stns, stnData, false);
       addCoordinatesClassic(recordDim, coords, dataMap);
-      addDataVariablesClassic(recordDim, vars, dataMap, coordNames.toString());
+      addDataVariablesClassic(recordDim, obsData, dataMap, coordNames.toString());
       writer.create();
       record = writer.addRecordStructure(); // netcdf3
 
@@ -147,7 +153,7 @@ public class WriterCFStationCollection extends CFPointWriter {
 
   }
 
-  private void addStations(List<ucar.unidata.geoloc.Station> stnList, boolean isExtended) throws IOException {
+  private void addStations(List<ucar.unidata.geoloc.Station> stnList, StructureData stnData, boolean isExtended) throws IOException {
     int nstns = stnList.size();
 
     // see if there's altitude, wmoId for any stations
@@ -173,32 +179,37 @@ public class WriterCFStationCollection extends CFPointWriter {
     //Dimension stationDim = isExtended ? writer.addDimension(null, stationDimName, 0, true, true, false) : writer.addDimension(null, stationDimName, nstns);
     Dimension stationDim = writer.addDimension(null, stationDimName, nstns);
 
-    List<VariableSimpleIF> coords = new ArrayList<>();
-    coords.add(VariableSimpleImpl.makeScalar(latName, "station latitude", CDM.LAT_UNITS, DataType.DOUBLE));
-    coords.add(VariableSimpleImpl.makeScalar(lonName, "station longitude", CDM.LON_UNITS, DataType.DOUBLE));
+    List<VariableSimpleIF> stnVars = new ArrayList<>();
+    stnVars.add(VariableSimpleImpl.makeScalar(latName, "station latitude", CDM.LAT_UNITS, DataType.DOUBLE));
+    stnVars.add(VariableSimpleImpl.makeScalar(lonName, "station longitude", CDM.LON_UNITS, DataType.DOUBLE));
     coordNames.format("%s %s %s", timeName, latName, lonName);
 
     if (useAlt) {
-      coords.add(VariableSimpleImpl.makeScalar(altName, "station altitude", altUnits, DataType.DOUBLE)
-                      .add(new Attribute(CF.STANDARD_NAME, CF.SURFACE_ALTITUDE))
-                      .add(new Attribute(CF.POSITIVE, CF1Convention.getZisPositive(altName, altUnits))));
+      stnVars.add(VariableSimpleImpl.makeScalar(altName, "station altitude", altUnits, DataType.DOUBLE)
+              .add(new Attribute(CF.STANDARD_NAME, CF.SURFACE_ALTITUDE))
+              .add(new Attribute(CF.POSITIVE, CF1Convention.getZisPositive(altName, altUnits))));
       coordNames.format(" %s", altName);
     }
 
-    coords.add(VariableSimpleImpl.makeString(idName, "station identifier", null, name_strlen)
+    stnVars.add(VariableSimpleImpl.makeString(idName, "station identifier", null, name_strlen)
             .add(new Attribute(CF.CF_ROLE, CF.TIMESERIES_ID)));         // station_id:cf_role = "timeseries_id";
 
-    if (useDesc) coords.add(VariableSimpleImpl.makeString(descName, "station description", null, desc_strlen)
+    if (useDesc) stnVars.add(VariableSimpleImpl.makeString(descName, "station description", null, desc_strlen)
             .add(new Attribute(CF.STANDARD_NAME, CF.PLATFORM_NAME)));
 
-    if (useWmoId) coords.add(VariableSimpleImpl.makeString(wmoName, "station WMO id", null, wmo_strlen)
+    if (useWmoId) stnVars.add(VariableSimpleImpl.makeString(wmoName, "station WMO id", null, wmo_strlen)
             .add(new Attribute(CF.STANDARD_NAME, CF.PLATFORM_ID)));
+
+    for (StructureMembers.Member m : stnData.getMembers()) {
+      if (getDataVar(m.getName()) != null)
+        stnVars.add(new VariableSimpleAdapter(m));
+    }
 
     if (isExtended) {
       stationStruct = (Structure) writer.addVariable(null, stationStructName, DataType.STRUCTURE, stationDimName);
-      addCoordinatesExtended(stationStruct, coords);
+      addCoordinatesExtended(stationStruct, stnVars);
     } else {
-      addCoordinatesClassic(stationDim, coords, stnMap);
+      addCoordinatesClassic(stationDim, stnVars, stnMap);
     }
 
   }

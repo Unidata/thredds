@@ -60,7 +60,7 @@ public class StationFeatureCopyFactory {
   static private final int OBJECT_SIZE = 40; // overhead per object estimate
   static private final int ARRAY_SIZE = 8;   // assume 64 bit pointers
 
-  private final Map<String, StationImpl> stationMap;
+  private final Map<String, StationFeatureImpl> stationMap;
   private final StructureMembers sm;
   private final DateUnit du;
   private final int sizeInBytes;
@@ -90,10 +90,10 @@ public class StationFeatureCopyFactory {
   }
 
   public StationPointFeature deepCopy(StationPointFeature from) throws IOException {
-    Station s = from.getStation();
-    StationImpl sUse = stationMap.get(s.getName());
+    StationFeature s = from.getStation();
+    StationFeatureImpl sUse = stationMap.get(s.getName());
     if (sUse == null) {
-      sUse =  new StationImpl(s, 0);
+      sUse = new StationFeatureImpl(s);
       stationMap.put(s.getName(), sUse);
     }
     sUse.incrNobs();
@@ -104,10 +104,10 @@ public class StationFeatureCopyFactory {
 
   private class StationPointFeatureCopy extends PointFeatureImpl implements StationPointFeature {
 
-    final Station station;
+    final StationFeature station;
     StructureData data;
 
-    StationPointFeatureCopy(Station station, PointFeature pf) {
+    StationPointFeatureCopy(StationFeature station, PointFeature pf) {
       super(station, pf.getObservationTime(), pf.getNominalTime(), du);
       this.station = station;
     }
@@ -123,7 +123,7 @@ public class StationFeatureCopyFactory {
     }
 
     @Override
-    public Station getStation() {
+    public StationFeature getStation() {
       return station;
     }
   }

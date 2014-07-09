@@ -72,7 +72,6 @@ public class WriterCFProfileCollection extends CFPointWriter {
   private Formatter coordNames = new Formatter();
   protected Structure profileStruct;  // used for netcdf4 extended
 
-  private List<VariableSimpleIF> dataVarsList;
   private boolean headerDone = false;
   private int nprofiles, name_strlen;
 
@@ -81,7 +80,7 @@ public class WriterCFProfileCollection extends CFPointWriter {
 
   public WriterCFProfileCollection(String fileOut, List<Attribute> globalAtts, List<VariableSimpleIF> dataVars, CFPointWriterConfig config) throws IOException {
     super(fileOut, globalAtts, config);
-    this.dataVarsList = dataVars;
+    this.dataVars = dataVars;
     writer.addGroupAttribute(null, new Attribute(CF.FEATURE_TYPE, CF.FeatureType.profile.name()));
   }
 
@@ -105,7 +104,7 @@ public class WriterCFProfileCollection extends CFPointWriter {
       makeProfileVars(name_strlen, nprofiles, timeUnit, true);
       record = (Structure) writer.addVariable(null, recordName, DataType.STRUCTURE, recordDimName);
       addCoordinatesExtended(record, coords);
-      addDataVariablesExtended(dataVarsList, coordNames.toString());
+      addDataVariablesExtended(null, coordNames.toString());
       record.calcElementSize();
       writer.create();
       //writeProfileDataExtended(stns);
@@ -113,7 +112,7 @@ public class WriterCFProfileCollection extends CFPointWriter {
     } else {
       makeProfileVars(name_strlen, nprofiles, timeUnit, false);
       addCoordinatesClassic(recordDim, coords, dataMap);
-      addDataVariablesClassic(recordDim, dataVarsList, dataMap, coordNames.toString());
+      addDataVariablesClassic(recordDim, null, dataMap, coordNames.toString());
       writer.create();
       record = writer.addRecordStructure(); // netcdf3
 

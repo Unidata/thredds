@@ -52,6 +52,12 @@ public class StationFeatureImpl extends StationImpl implements StationFeature {
     this.sdata = sdata;
   }
 
+
+  public StationFeatureImpl( StationFeature from) throws IOException {
+    super(from, 0);
+    this.sdata = from.getFeatureData();
+  }
+
   @Override
   public StructureData getFeatureData() throws IOException {
     return sdata;

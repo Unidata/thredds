@@ -52,9 +52,6 @@ import ucar.unidata.geoloc.LatLonRect;
 import ucar.unidata.geoloc.Station;
 import ucar.unidata.test.util.TestDir;
 
-/**
- * @author tkunicki
- */
 public class TestMiscPointFeature {
 
   @Test

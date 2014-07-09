@@ -34,6 +34,7 @@ package ucar.nc2.ft.point.standard;
 
 import ucar.nc2.ft.point.PointIteratorFromStructureData;
 import ucar.nc2.ft.point.PointFeatureImpl;
+import ucar.nc2.ft.point.StationFeature;
 import ucar.nc2.ft.point.StationPointFeature;
 import ucar.nc2.ft.PointFeature;
 import ucar.nc2.units.DateUnit;
@@ -103,7 +104,7 @@ public class StandardPointFeatureIterator extends PointIteratorFromStructureData
     }
 
     @Override
-    public Station getStation() {
+    public StationFeature getStation() {
       return ft.makeStation(cursor.getParentStructure());  // LOOK is this always possible??
     }
   }

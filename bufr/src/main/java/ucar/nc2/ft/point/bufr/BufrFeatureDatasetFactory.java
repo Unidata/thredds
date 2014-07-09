@@ -288,7 +288,7 @@ public class BufrFeatureDatasetFactory implements FeatureDatasetFactory {
           protected PointFeature makeFeature(int recnum, StructureData sdata) throws IOException {
             extract.extract(sdata);
             String stationId = extract.getStationId();
-            Station want = stationsWanted.getStation(stationId);
+            StationFeature want = stationsWanted.getStation(stationId);
             if (want == null)
               return null;
             CalendarDate date = extract.makeCalendarDate();
@@ -307,7 +307,7 @@ public class BufrFeatureDatasetFactory implements FeatureDatasetFactory {
         public class BufrPoint extends PointFeatureImpl implements StationPointFeature {
           StructureData sdata;
 
-          public BufrPoint(Station want, double obsTime, double nomTime, StructureData sdata) {
+          public BufrPoint(StationFeature want, double obsTime, double nomTime, StructureData sdata) {
             super(want, obsTime, nomTime, bufrDateUnits);
             this.sdata = sdata;
           }
@@ -322,8 +322,8 @@ public class BufrFeatureDatasetFactory implements FeatureDatasetFactory {
            }
 
           @Override
-          public Station getStation() {
-            return (Station) location;
+          public StationFeature getStation() {
+            return (StationFeature) location;
           }
         }
       }

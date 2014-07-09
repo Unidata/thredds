@@ -42,6 +42,5 @@ import ucar.unidata.geoloc.Station;
  * @since Aug 27, 2009
  */
 public interface StationPointFeature extends PointFeature {
-  public Station getStation();
-
+  public StationFeature getStation();
 }

@@ -107,20 +107,22 @@ public class CFPointWriter implements AutoCloseable {
 
   private static int writePointFeatureCollection(FeatureDatasetPoint fdpoint, PointFeatureCollection pfc, String fileOut, CFPointWriterConfig config) throws IOException {
 
-    try (WriterCFPointCollection cfWriter = new WriterCFPointCollection(fileOut, fdpoint.getGlobalAttributes(), config)) {
-      cfWriter.writeHeader(fdpoint.getDataVariables(), pfc.getExtraVariables(), pfc.getTimeUnit(), pfc.getAltUnits());
+    try (WriterCFPointCollection pointWriter = new WriterCFPointCollection(fileOut, fdpoint.getGlobalAttributes(), config)) {
 
       int count = 0;
       pfc.resetIteration();
       while(pfc.hasNext()) {
         PointFeature pf = pfc.next();
-        cfWriter.writeRecord(pf, pf.getData());
+        if (count == 0)
+          pointWriter.writeHeader(fdpoint.getDataVariables(), pfc.getTimeUnit(), pfc.getAltUnits(), pf);
+
+        pointWriter.writeRecord(pf, pf.getFeatureData());
         count++;
         if (debug && count % 100 == 0) System.out.printf("%d ", count);
         if (debug && count % 1000 == 0) System.out.printf("%n ");
       }
 
-      cfWriter.finish();
+      pointWriter.finish();
       return count;
     }
   }
@@ -128,21 +130,23 @@ public class CFPointWriter implements AutoCloseable {
   private static int writeStationFeatureCollection(FeatureDatasetPoint fdpoint, StationTimeSeriesFeatureCollection fds, String fileOut,
                                                    CFPointWriterConfig config) throws IOException {
 
-    WriterCFStationCollection cfWriter = new WriterCFStationCollection(fileOut, fdpoint.getGlobalAttributes(), config);
+    WriterCFStationCollection stationWriter = new WriterCFStationCollection(fileOut, fdpoint.getGlobalAttributes(), config);
     ucar.nc2.ft.PointFeatureCollection pfc = fds.flatten(null, (CalendarDateRange) null); // LOOK
-    cfWriter.writeHeader(fds.getStations(), fdpoint.getDataVariables(), fds.getTimeUnit(), fds.getAltUnits());
 
     int count = 0;
     while (pfc.hasNext()) {
       PointFeature pf = pfc.next();
       StationPointFeature spf = (StationPointFeature) pf;
-      cfWriter.writeRecord(spf.getStation(), pf, pf.getData());
+      if (count == 0)
+        stationWriter.writeHeader(fds.getStations(), fdpoint.getDataVariables(), fds.getTimeUnit(), fds.getAltUnits(), spf);
+
+      stationWriter.writeRecord(spf.getStation(), pf, pf.getFeatureData());
       count++;
       if (debug && count % 100 == 0) System.out.printf("%d ", count);
       if (debug && count % 1000 == 0) System.out.printf("%n ");
     }
 
-    cfWriter.finish();
+    stationWriter.finish();
     return count;
   }
 
@@ -205,7 +209,7 @@ public class CFPointWriter implements AutoCloseable {
   protected LatLonRect llbb = null;
   protected CalendarDate minDate = null;
   protected CalendarDate maxDate = null;
-  //protected List<VariableSimpleIF> coordVarsList = new ArrayList<>();
+  protected List<VariableSimpleIF> dataVars;
 
   protected final boolean noTimeCoverage;
   protected final boolean noUnlimitedDimension;  // experimental , netcdf-3
@@ -231,6 +235,12 @@ public class CFPointWriter implements AutoCloseable {
 
     addGlobalAtts(atts);
     addNetcdf3UnknownAtts(noTimeCoverage);
+  }
+
+
+  protected VariableSimpleIF getDataVar(String name) {
+    for (VariableSimpleIF v : dataVars) if (v.getShortName().equals(name)) return v;
+    return null;
   }
 
   private void createWriter(String fileOut, CFPointWriterConfig config) throws IOException {
@@ -290,13 +300,15 @@ public class CFPointWriter implements AutoCloseable {
   }
 
    // added as variables with the unlimited (record) dimension
-  protected void addDataVariablesClassic(Dimension recordDim, List<? extends VariableSimpleIF> dataVars, Map<String, Variable> varMap, String coordVars) throws IOException {
+  protected void addDataVariablesClassic(Dimension recordDim, StructureData stnData, Map<String, Variable> varMap, String coordVars) throws IOException {
     Map<String, Dimension> dimMap = addDimensionsClassic(dataVars);
 
-    // add the data variables all using the obs dimension
-    for (VariableSimpleIF oldVar : dataVars) {
-      if (writer.findVariable(oldVar.getShortName()) != null)
-        continue;  // eliminate coordinate variables
+    for (StructureMembers.Member m : stnData.getMembers()) {
+      VariableSimpleIF oldVar = getDataVar(m.getName());
+      if (oldVar == null) continue;
+
+      //if (writer.findVariable(oldVar.getShortName()) != null)
+      //  continue;  // eliminate coordinate variables
 
       List<Dimension> dims = makeDimensionList(dimMap, oldVar.getDimensions());
       dims.add(0, recordDim);
@@ -332,11 +344,14 @@ public class CFPointWriter implements AutoCloseable {
   }
 
   // add variables to the record structure
-  protected void addDataVariablesExtended(List<? extends VariableSimpleIF> dataVars, String coordVars) throws IOException {
+  protected void addDataVariablesExtended(StructureData obsData, String coordVars) throws IOException {
 
-    for (VariableSimpleIF oldVar : dataVars) {
+    for (StructureMembers.Member m : obsData.getMembers()) {
+      VariableSimpleIF oldVar = getDataVar(m.getName());
+      if (oldVar == null) continue;
+
       // skip duplicates
-      if (record.findVariable(oldVar.getShortName()) != null) continue;
+      // if (record.findVariable(oldVar.getShortName()) != null) continue;
 
       // make dimension list
       StringBuilder dimNames = new StringBuilder();

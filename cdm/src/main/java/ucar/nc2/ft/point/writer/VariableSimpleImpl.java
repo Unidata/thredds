@@ -36,6 +36,7 @@
 package ucar.nc2.ft.point.writer;
 
 import ucar.ma2.DataType;
+import ucar.ma2.StructureMembers;
 import ucar.nc2.Attribute;
 import ucar.nc2.Dimension;
 import ucar.nc2.VariableSimpleIF;
@@ -52,6 +53,11 @@ import java.util.List;
  * @since 6/10/14
  */
 public class VariableSimpleImpl implements VariableSimpleIF {
+
+  static public VariableSimpleImpl makeFromMember(StructureMembers.Member m) {
+    return new VariableSimpleImpl(m.getName(), m.getDescription(), m.getUnitsString(), m.getDataType(), null);
+
+  }
 
   static public VariableSimpleImpl makeScalar(String name, String desc, String units, DataType dt) {
     return new VariableSimpleImpl(name, desc, units, dt, null);

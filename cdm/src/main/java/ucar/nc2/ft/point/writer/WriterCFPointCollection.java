@@ -35,6 +35,7 @@ package ucar.nc2.ft.point.writer;
 import ucar.nc2.constants.CDM;
 import ucar.nc2.constants.CF;
 import ucar.nc2.dataset.conv.CF1Convention;
+import ucar.nc2.ft.point.StationPointFeature;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.units.DateUnit;
 import ucar.nc2.*;
@@ -74,7 +75,8 @@ public class WriterCFPointCollection extends CFPointWriter {
     writer.addGroupAttribute(null, new Attribute(CF.FEATURE_TYPE, CF.FeatureType.point.name()));
   }
 
-  public void writeHeader(List<VariableSimpleIF> vars, List<Variable> extraVariables, DateUnit timeUnit, String altUnits) throws IOException {
+  public void writeHeader(List<VariableSimpleIF> vars, DateUnit timeUnit, String altUnits, PointFeature pf) throws IOException {
+    this.dataVars = vars;
     this.altUnits = altUnits;
     if (noUnlimitedDimension)
       recordDim = writer.addDimension(null, recordDimName, config.recDimensionLength);
@@ -95,13 +97,13 @@ public class WriterCFPointCollection extends CFPointWriter {
     if (writer.getVersion().isExtendedModel()) {
       record = (Structure) writer.addVariable(null, recordName, DataType.STRUCTURE, recordDimName);
       addCoordinatesExtended(record, coords);
-      addDataVariablesExtended(vars, coordNames.toString());
+      addDataVariablesExtended(pf.getFeatureData(), coordNames.toString());
       record.calcElementSize();
       writer.create();
 
     } else {
       addCoordinatesClassic(recordDim, coords, varMap);
-      addDataVariablesClassic(recordDim, vars, varMap, coordNames.toString());
+      addDataVariablesClassic(recordDim, pf.getFeatureData(), varMap, coordNames.toString());
       writer.create();
       if (!noUnlimitedDimension) record = writer.addRecordStructure(); // netcdf3
     }
