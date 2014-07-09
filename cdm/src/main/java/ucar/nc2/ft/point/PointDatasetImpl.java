@@ -156,7 +156,7 @@ public class PointDatasetImpl extends FeatureDatasetImpl implements FeatureDatas
     int count = 0;
     for (FeatureCollection fc : collectionList) {
       if (fc instanceof PointFeatureCollection) {
-        sf.format("%nPointFeatureCollection %d %n", count++);
+        sf.format("%nPointFeatureCollection %d %n", count);
         PointFeatureCollection pfc = (PointFeatureCollection) fc;
         sf.format(" %s %s %n", pfc.getCollectionFeatureType(), pfc.getName());
         sf.format("   npts = %d %n", pfc.size());
@@ -167,14 +167,19 @@ public class PointDatasetImpl extends FeatureDatasetImpl implements FeatureDatas
           sf.format("  extra variables%n");
           for (Variable v : extra) sf.format("     %s%n", v.getNameAndDimensions());
         }
+        sf.format("timeUnit = %s %n", pfc.getTimeUnit());
+        sf.format(" altUnit = %s %n", pfc.getAltUnits());
 
-    } else if (fc instanceof StationTimeSeriesFeatureCollection) {
-        StationTimeSeriesFeatureCollection npfc = (StationTimeSeriesFeatureCollection) fc;
+    } else if (fc instanceof NestedPointFeatureCollection) {
+        sf.format("NestedPointFeatureCollection %d %n", count);
+        NestedPointFeatureCollection npfc = (NestedPointFeatureCollection) fc;
         sf.format(" %s %s %n", npfc.getCollectionFeatureType(), npfc.getName());
         sf.format("   npts = %d %n", npfc.size());
-        sf.format("     bb = %s %n", npfc.getBoundingBox() == null ? "" : npfc.getBoundingBox().toString2());
-        // sf.format("  dates = %s %n", npfc.getDateRange() == null ? "" : npfc.getDateRange().toString());
+        sf.format("isMultipleNested = %s %n", npfc.isMultipleNested());
+        sf.format("timeUnit = %s %n", npfc.getTimeUnit());
+        sf.format(" altUnit = %s %n", npfc.getAltUnits());
       }
+      count++;
     }
   }
 

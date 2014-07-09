@@ -19,7 +19,7 @@
   </variable>
 
   <variable name="trajId" shape="traj" type="int">
-    <attribute name="standard_name" value="trajectory_id" />
+    <attribute name="cf_role" value="trajectory_id" />
     <values start="666" increment="6"/>
   </variable>
 

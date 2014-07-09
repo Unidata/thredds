@@ -1,5 +1,6 @@
 package ucar.nc2.ft.point.remote;
 
+import ucar.ma2.StructureData;
 import ucar.nc2.ft.point.*;
 import ucar.nc2.ft.*;
 import ucar.nc2.stream.CdmRemote;
@@ -56,7 +57,7 @@ public class RemoteStationCollection extends StationTimeSeriesCollectionImpl {
       PointStreamProto.StationList stationsp = PointStreamProto.StationList.parseFrom(b);
       for (ucar.nc2.ft.point.remote.PointStreamProto.Station sp : stationsp.getStationsList()) {
         Station s = new StationImpl(sp.getId(), sp.getDesc(), sp.getWmoId(), sp.getLat(), sp.getLon(), sp.getAlt());
-        stationHelper.addStation(new RemoteStationFeatureImpl(s, null));
+        stationHelper.addStation(new RemoteStationFeatureImpl(null, null));    // LOOK WRONG
       }
 
     } catch (IOException ioe) {
@@ -97,9 +98,8 @@ public class RemoteStationCollection extends StationTimeSeriesCollectionImpl {
   @Override
   public StationTimeSeriesFeatureCollection subset(List<Station> stations) throws IOException {
     if (stations == null) return this;
-    StationHelper sh = new StationHelper();
-    sh.setStations(stations);
-    return new RemoteStationCollectionSubset(this, sh, null, null);
+    List<StationFeature> subset = stationHelper.getStationFeatures(stations);
+    return new RemoteStationCollectionSubset(this, null, null, null); // LOOK WRONG
   }
 
   @Override
@@ -155,7 +155,7 @@ public class RemoteStationCollection extends StationTimeSeriesCollectionImpl {
       from.initStationHelper();
       this.stationHelper = new StationHelper();
       try {
-        this.stationHelper.setStations(this.stationHelper.getStations(boundingBoxSubset));
+        this.stationHelper.setStations(this.stationHelper.getStationFeatures(boundingBoxSubset));
       } catch (IOException e) {
         throw new RuntimeException(e);
       }
@@ -170,12 +170,14 @@ public class RemoteStationCollection extends StationTimeSeriesCollectionImpl {
 
   ///////////////////////////////////////////////////////////////////////////////
 
-  private class RemoteStationFeatureImpl extends StationFeatureImpl {
+  private class RemoteStationFeatureImpl extends StationTimeSeriesFeatureImpl {
+    StationTimeSeriesFeature stnFeature;
     RemotePointFeatureIterator riter;
     CalendarDateRange dateRange;
 
-    RemoteStationFeatureImpl(Station s, CalendarDateRange dateRange) {
+    RemoteStationFeatureImpl(StationTimeSeriesFeature s, CalendarDateRange dateRange) {
       super(s, RemoteStationCollection.this.getTimeUnit(), RemoteStationCollection.this.getAltUnits(), -1);
+      this.stnFeature = s;
       this.dateRange = dateRange;
     }
 
@@ -186,7 +188,12 @@ public class RemoteStationCollection extends StationTimeSeriesCollectionImpl {
     @Override
     public StationTimeSeriesFeature subset(CalendarDateRange dateRange) throws IOException {
       if (dateRange == null) return this;
-      return new RemoteStationFeatureImpl(s, dateRange);
+      return new RemoteStationFeatureImpl(stnFeature, dateRange);
+    }
+
+    @Override
+    public StructureData getFeatureData() throws IOException {
+      return stnFeature.getFeatureData();
     }
 
     // PointCollection

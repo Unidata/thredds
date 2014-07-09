@@ -197,7 +197,7 @@ public class BufrFeatureDatasetFactory implements FeatureDatasetFactory {
           stationHelper.addStation(new BufrStation(s));
       }
 
-      private class BufrStation extends StationFeatureImpl {
+      private class BufrStation extends StationTimeSeriesFeatureImpl {
         private BufrStation(BufrCdmIndexProto.Station proto) {
           super(proto.getId(), proto.getDesc(), proto.getWmoId(), proto.getLat(), proto.getLon(), proto.getAlt(), bufrDateUnits, bufrAltUnits, proto.getCount());
         }
@@ -205,6 +205,11 @@ public class BufrFeatureDatasetFactory implements FeatureDatasetFactory {
         @Override
         public PointFeatureIterator getPointFeatureIterator(int bufferSize) throws IOException {
           return new BufrStationIterator(obs.getStructureIterator(), null);
+        }
+
+        @Override
+        public StructureData getFeatureData() throws IOException {
+          return StructureData.EMPTY;
         }
 
         // iterates over the records for this station
@@ -237,10 +242,14 @@ public class BufrFeatureDatasetFactory implements FeatureDatasetFactory {
           }
 
           @Override
-          public StructureData getData() throws IOException {
+          public StructureData getDataAll() throws IOException {
             return sdata;
           }
-        }
+          @Override
+           public StructureData getFeatureData() throws IOException {
+             return sdata;
+           }
+         }
       }
 
       // flatten into a PointFeatureCollection
@@ -304,9 +313,13 @@ public class BufrFeatureDatasetFactory implements FeatureDatasetFactory {
           }
 
           @Override
-          public StructureData getData() throws IOException {
+          public StructureData getDataAll() throws IOException {
             return sdata;
           }
+          @Override
+          public StructureData getFeatureData() throws IOException {
+             return sdata;
+           }
 
           @Override
           public Station getStation() {

@@ -33,7 +33,7 @@
 package ucar.nc2.ft.point.standard;
 
 import ucar.nc2.ft.point.StationTimeSeriesCollectionImpl;
-import ucar.nc2.ft.point.StationFeatureImpl;
+import ucar.nc2.ft.point.StationTimeSeriesFeatureImpl;
 import ucar.nc2.ft.point.StationHelper;
 import ucar.nc2.ft.*;
 import ucar.nc2.units.DateUnit;
@@ -69,12 +69,13 @@ public class StandardStationCollectionImpl extends StationTimeSeriesCollectionIm
    * @param recnum      station data recnum within table
    * @return Station or null, skip this Station
    */
-  public Station makeStation(StructureData stationData, int recnum) {
+  public StationTimeSeriesFeature makeStation(StructureData stationData, int recnum) {
     Station s = ft.makeStation(stationData);
     if (s == null) return null;
     return new StandardStationFeatureImpl(s, timeUnit, stationData, recnum);
   }
 
+  @Override
   protected void initStationHelper() {
     try {
       stationHelper = new StationHelper();
@@ -83,7 +84,7 @@ public class StandardStationCollectionImpl extends StationTimeSeriesCollectionIm
       try {
         while (siter.hasNext()) {
           StructureData stationData = siter.next();
-          Station s = makeStation(stationData, siter.getCurrentRecno());
+          StationTimeSeriesFeature s = makeStation(stationData, siter.getCurrentRecno());
           if (s != null)
             stationHelper.addStation(s);
         }
@@ -95,7 +96,7 @@ public class StandardStationCollectionImpl extends StationTimeSeriesCollectionIm
     }
   }
 
-  private class StandardStationFeatureImpl extends StationFeatureImpl {
+  private class StandardStationFeatureImpl extends StationTimeSeriesFeatureImpl {
     int recnum;
     StructureData stationData;
 
@@ -107,6 +108,7 @@ public class StandardStationCollectionImpl extends StationTimeSeriesCollectionIm
 
     // an iterator over the observations for this station
 
+    @Override
     public PointFeatureIterator getPointFeatureIterator(int bufferSize) throws IOException {
       Cursor cursor = new Cursor(ft.getNumberOfLevels());
       cursor.recnum[1] = recnum;
@@ -119,6 +121,11 @@ public class StandardStationCollectionImpl extends StationTimeSeriesCollectionIm
       if ((boundingBox == null) || (dateRange == null) || (npts < 0))
         iter.setCalculateBounds(this);
       return iter;
+    }
+
+    @Override
+    public StructureData getFeatureData() {
+      return stationData;
     }
 
   }

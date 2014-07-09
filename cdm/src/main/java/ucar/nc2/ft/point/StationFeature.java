@@ -30,57 +30,22 @@
  *   NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
  *   WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
  */
-package ucar.nc2.ft.point.standard;
+
+package ucar.nc2.ft.point;
 
 import ucar.ma2.StructureData;
+import ucar.unidata.geoloc.Station;
+
+import java.io.IOException;
 
 /**
- * Keeps track of the iteration through nested tables
- * 0 is always innermost nested table, 1 is parent of 0, 2 is parent of 1, etc
+ * Interface for Station with getFeaturedata()
  *
  * @author caron
- * @since Jan 24, 2009
+ * @since 7/8/2014
  */
-public class Cursor {
-  StructureData[] tableData; // current struct data
-  int[] recnum;              // current recnum
-  int currentIndex;          // seems to be the "parent index", current iteration is over its children.
+public interface StationFeature extends Station {
 
-  Cursor(int nlevels) {
-    tableData = new StructureData[nlevels];
-    recnum = new int[nlevels];
-  }
+  public StructureData getFeatureData() throws IOException;
 
-  private int getParentIndex() { // skip null structureData, to allow dummy tables to be inserted, eg FslWindProfiler
-    int indx = currentIndex;
-    while ((tableData[indx] == null) && (indx < tableData.length-1)) indx++;
-    return indx;
-  }
-
-  /* t.kunicki 11/25/10
-  // Flattened data can now accurately access parent structure
-  private int getParentIndex() {
-    int maxIndex = tableData.length - 1;
-    int parentIndex = currentIndex < maxIndex ? currentIndex + 1 : currentIndex;
-    while (tableData[parentIndex] == null && parentIndex < maxIndex) parentIndex++;
-    return parentIndex;
-   }
-  // end t.kunicki 11/25/10 */
-
-  StructureData getParentStructure() {
-    return tableData[getParentIndex()];
-  }
-
-  int getParentRecnum() {
-    return recnum[getParentIndex()];
-  }
-
-  Cursor copy() {
-    Cursor clone = new Cursor(tableData.length);
-    //clone.what = what; // not a copy !!
-    clone.currentIndex = currentIndex;
-    System.arraycopy(this.tableData, 0, clone.tableData, 0, tableData.length);
-    System.arraycopy(this.recnum, 0, clone.recnum, 0, tableData.length);
-    return clone;
-  }
 }

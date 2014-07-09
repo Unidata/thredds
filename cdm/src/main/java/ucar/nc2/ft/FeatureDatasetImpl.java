@@ -32,6 +32,7 @@
  */
 package ucar.nc2.ft;
 
+import ucar.nc2.Dimension;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.VariableSimpleIF;
 import ucar.nc2.NetcdfFile;
@@ -157,10 +158,14 @@ public abstract class FeatureDatasetImpl implements FeatureDataset {
 
     List<VariableSimpleIF> vars = getDataVariables();
     sf.format("%n  Data Variables (%d)%n",vars.size());
-    for (VariableSimpleIF v : vars)
-      sf.format("    name='%s' desc='%s' units=%s' type='%s'\n", v.getShortName(),v.getDescription(),v.getUnitsString(),v.getDataType());
+    for (VariableSimpleIF v : vars) {
+      sf.format("    name='%s' desc='%s' units=%s' type='%s' dims=(", v.getShortName(), v.getDescription(), v.getUnitsString(), v.getDataType());
+      for (Dimension d : v.getDimensions()) sf.format("%s ", d);
+      sf.format(")%n");
+    }
 
-    sf.format("\nparseInfo=\n%s\n", parseInfo);
+    if (parseInfo.toString().length() > 0)
+      sf.format("\nparseInfo=\n%s\n", parseInfo);
   }
 
   @Override

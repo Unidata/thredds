@@ -47,24 +47,24 @@ import java.io.IOException;
  * @since Feb 5, 2008
  */
 public class StationHelper {
-  private List<Station> stations;
-  private Map<String, Station> stationHash;
-  private boolean debug = false;
+  private List<StationFeature> stations;
+  private Map<String, StationFeature> stationHash;
+  private static final boolean debug = false;
 
   public StationHelper() {
-    stations = new ArrayList<Station>();
-    stationHash = new HashMap<String, Station>();
+    stations = new ArrayList<>();
+    stationHash = new HashMap<>();
   }
 
-  public void addStation( Station s) {
+  public void addStation( StationFeature s) {
     stations.add(s);
     stationHash.put(s.getName(), s);
   }
 
-  public void setStations( List<Station> nstations) {
-    stations = new ArrayList<Station>();
-    stationHash = new HashMap<String, Station>();
-    for (Station s : nstations)
+  public void setStations( List<StationFeature> nstations) {
+    stations = new ArrayList<>();
+    stationHash = new HashMap<>();
+    for (StationFeature s : nstations)
       addStation(s);
   }
 
@@ -97,11 +97,11 @@ public class StationHelper {
   }
 
   public List<Station> getStations(LatLonRect boundingBox) throws IOException {
-    if (boundingBox == null) return stations;
+    if (boundingBox == null) return getStations();
     
     LatLonPointImpl latlonPt = new LatLonPointImpl();
-    List<Station> result = new ArrayList<Station>();
-    for (Station s : stations) {
+    List<Station> result = new ArrayList<>();
+    for (StationFeature s : stations) {
       latlonPt.set(s.getLatitude(), s.getLongitude());
       if (boundingBox.contains(latlonPt))
         result.add(s);
@@ -109,16 +109,59 @@ public class StationHelper {
     return result;
   }
 
-  public Station getStation(String name) {
+  public List<StationFeature> getStationFeatures(LatLonRect boundingBox) throws IOException {
+    if (boundingBox == null) return stations;
+
+    LatLonPointImpl latlonPt = new LatLonPointImpl();
+    List<StationFeature> result = new ArrayList<>();
+    for (StationFeature s : stations) {
+      latlonPt.set(s.getLatitude(), s.getLongitude());
+      if (boundingBox.contains(latlonPt))
+        result.add(s);
+    }
+    return result;
+  }
+
+  public StationFeature getStation(String name) {
     return stationHash.get( name);
   }
 
-  public List<Station> getStations() {
+  public List<StationFeature> getStationFeatures() {
     return stations;
   }
 
+  public List<Station> getStations() {
+    List<Station> result = new ArrayList<>(stations.size());
+    result.addAll(stations);
+    return result;
+  }
+
+  public List<StationFeature> getStationFeaturesFromNames( List<String> stnNames) {
+    List<StationFeature> result = new ArrayList<>(stnNames.size());
+    for (String ss : stnNames) {
+      StationFeature s = stationHash.get(ss);
+      if (s != null)
+        result.add(s);
+    }
+    return result;
+  }
+
+  public List<StationFeature> getStationFeatures( List<Station> stations) {
+    List<StationFeature> result = new ArrayList<>(stations.size());
+    for (Station s : stations) {
+      StationFeature ss = stationHash.get(s.getName());
+      if (ss != null)
+        result.add(ss);
+    }
+    return result;
+  }
+
+  public StationFeature getStationFeature( Station stn) {
+      return stationHash.get(stn.getName());
+  }
+
   public List<Station> getStations( List<String> stnNames) {
-    List<Station> result = new ArrayList<Station>(stnNames.size());
+    List<Station> result = new ArrayList<>(stnNames.size());
     for (String ss : stnNames) {
       Station s = stationHash.get(ss);
       if (s != null)
@@ -129,7 +172,13 @@ public class StationHelper {
 
   public StationHelper subset(LatLonRect bb) throws IOException {
     StationHelper result = new StationHelper();
-    result.setStations( getStations(bb));
+    result.setStations( getStationFeatures(bb));
+    return result;
+  }
+
+  public StationHelper subset(List<Station> stns) throws IOException {
+    StationHelper result = new StationHelper();
+    result.setStations( getStationFeatures(stns));
     return result;
   }
 

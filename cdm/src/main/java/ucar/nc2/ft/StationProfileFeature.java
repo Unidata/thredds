@@ -32,8 +32,8 @@
  */
 package ucar.nc2.ft;
 
+import ucar.nc2.ft.point.StationFeature;
 import ucar.nc2.units.DateRange;
-import ucar.unidata.geoloc.Station;
 
 import java.io.IOException;
 import java.util.Date;
@@ -44,7 +44,7 @@ import java.util.List;
  * @author caron
  * @since Feb 29, 2008
  */
-public interface StationProfileFeature extends Station, NestedPointFeatureCollection {
+public interface StationProfileFeature extends StationFeature, NestedPointFeatureCollection {
 
   /**
    * Use the internal iterator to check if there is another ProfileFeature in the iteration.

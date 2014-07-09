@@ -108,14 +108,12 @@ public class CFPointWriter implements AutoCloseable {
   private static int writePointFeatureCollection(FeatureDatasetPoint fdpoint, PointFeatureCollection pfc, String fileOut, CFPointWriterConfig config) throws IOException {
 
     try (WriterCFPointCollection cfWriter = new WriterCFPointCollection(fileOut, fdpoint.getGlobalAttributes(), config)) {
+      cfWriter.writeHeader(fdpoint.getDataVariables(), pfc.getExtraVariables(), pfc.getTimeUnit(), pfc.getAltUnits());
 
       int count = 0;
       pfc.resetIteration();
       while(pfc.hasNext()) {
         PointFeature pf = pfc.next();
-        if (count == 0)
-          cfWriter.writeHeader(fdpoint.getDataVariables(), pfc.getExtraVariables(), pfc.getTimeUnit(), pfc.getAltUnits());
-
         cfWriter.writeRecord(pf, pf.getData());
         count++;
         if (debug && count % 100 == 0) System.out.printf("%d ", count);
@@ -132,13 +130,11 @@ public class CFPointWriter implements AutoCloseable {
 
     WriterCFStationCollection cfWriter = new WriterCFStationCollection(fileOut, fdpoint.getGlobalAttributes(), config);
     ucar.nc2.ft.PointFeatureCollection pfc = fds.flatten(null, (CalendarDateRange) null); // LOOK
+    cfWriter.writeHeader(fds.getStations(), fdpoint.getDataVariables(), fds.getTimeUnit(), fds.getAltUnits());
 
     int count = 0;
     while (pfc.hasNext()) {
       PointFeature pf = pfc.next();
-      if (count == 0)
-        cfWriter.writeHeader(fds.getStations(), fdpoint.getDataVariables(), fds.getTimeUnit(), fds.getAltUnits());
-
       StationPointFeature spf = (StationPointFeature) pf;
       cfWriter.writeRecord(spf.getStation(), pf, pf.getData());
       count++;

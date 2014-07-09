@@ -41,7 +41,7 @@ import java.util.Date;
 
 /**
  * Abstract superclass for implementations of PointFeature.
- * Concrete subclass must implement getData();
+ * Concrete subclass must implement getFeatureData() and getDataAll();
  *
  * @author caron
  * @since Feb 29, 2008
@@ -111,4 +111,10 @@ public abstract class PointFeatureImpl implements PointFeature, Comparable<Point
         ", timeUnit=" + timeUnit +
         '}';
   }
+
+  @Override
+  public ucar.ma2.StructureData getData() throws java.io.IOException {
+    return getDataAll();
+  }
+
 }

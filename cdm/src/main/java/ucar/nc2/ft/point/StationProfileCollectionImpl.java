@@ -56,7 +56,7 @@ public abstract class StationProfileCollectionImpl extends MultipleNestedPointCo
     super( name, timeUnit, altUnits, FeatureType.STATION_PROFILE);
   }
 
-  protected abstract void initStationHelper(); // allow station helper to be deffered initialization
+  protected abstract void initStationHelper(); // allow station helper to be defered initialization
 
   public List<Station> getStations() {
     if (stationHelper == null) initStationHelper();
@@ -121,11 +121,11 @@ public abstract class StationProfileCollectionImpl extends MultipleNestedPointCo
   private class StationProfileFeatureCollectionSubset extends StationProfileCollectionImpl {
     StationProfileCollectionImpl from;
 
-    StationProfileFeatureCollectionSubset(StationProfileCollectionImpl from, List<Station> stations) {
+    StationProfileFeatureCollectionSubset(StationProfileCollectionImpl from, List<Station> stations) throws IOException {
       super( from.getName(), from.getTimeUnit(), from.getAltUnits());
       this.from = from;
-      stationHelper = new StationHelper();
-      stationHelper.setStations(stations);
+      if (stationHelper == null) initStationHelper();
+      stationHelper = stationHelper.subset(stations);
     }
 
       // already done

@@ -82,6 +82,8 @@ import java.util.List;
 
 abstract public class StructureData {
 
+  static public final StructureData EMPTY = new StructureDataScalar("empty");
+
   /*
    * Copy all the data out of 'from' and into a new StructureData.
    * @param from copy from here

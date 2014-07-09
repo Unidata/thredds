@@ -17,12 +17,25 @@
     <values>40.0</values>
   </variable>
   <variable name="stationId" shape="" type="int">
-    <attribute name="standard_name" value="station_id" />
+    <attribute name="cf_role" value="timeseries_id" />
     <values>666</values>
   </variable>  
   <variable name="stationAlt" shape="" type="int">
-    <attribute name="standard_name" value="station_altitude" />
+    <attribute name="standard_name" value="surface_altitude" />
     <values>101</values>
+  </variable>
+  <variable name="stationName" shape="" type="string">
+    <attribute name="standard_name" value="platform_name" />
+    <values>flabulous</values>
+  </variable>
+  <variable name="wmoID" shape="" type="string">
+    <attribute name="standard_name" value="platform_id" />
+    <values>whoa</values>
+  </variable>
+  <variable name="stationAlt" shape="" type="int">
+    <attribute name="units" value="m" />
+    <attribute name="standard_name" value="surface_altitude" />
+    <values start="100" increment="6"/>
   </variable>
 
   <variable name="z" shape="z" type="float">

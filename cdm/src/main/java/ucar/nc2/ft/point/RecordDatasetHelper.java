@@ -427,7 +427,7 @@ public class RecordDatasetHelper {
       return new LatLonPointImpl(location.getLatitude(), location.getLongitude());
     }
 
-    public StructureData getData() throws IOException {
+    public StructureData getFeatureData() throws IOException {
       if (null == sdata) {
         try {
           // deal with files that are updating // LOOK kludge?
@@ -445,6 +445,11 @@ public class RecordDatasetHelper {
       }
       return sdata;
     }
+
+    public ucar.ma2.StructureData getDataAll() throws java.io.IOException {
+      return getFeatureData();
+    }
+
   }
 
   //////////////////////////////////////////////////////////////////////////////////////

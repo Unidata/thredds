@@ -96,7 +96,12 @@ public class PointFeatureCopyFactory {
     }
 
     @Override
-    public StructureData getData() throws IOException {
+    public StructureData getDataAll() throws IOException {
+      return data;
+    }
+
+    @Override
+    public StructureData getFeatureData() throws IOException {
       return data;
     }
   }

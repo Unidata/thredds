@@ -96,6 +96,7 @@ public class TestCFPointDatasets {
     result.add(new Object[]{CFpointObs_topdir + "profileRaggedContigTimeJoin.ncml", FeatureType.PROFILE, 6});
     result.add(new Object[]{CFpointObs_topdir + "profileRaggedIndex.ncml", FeatureType.PROFILE, 22});
     result.add(new Object[]{CFpointObs_topdir + "profileRaggedIndexTimeJoin.ncml", FeatureType.PROFILE, 22});
+    result.add(new Object[]{CFpointObs_topdir + "profileData2Levels.ncml", FeatureType.PROFILE, 50});
     return result;
   }
 
@@ -153,9 +154,9 @@ public class TestCFPointDatasets {
     result.addAll(TestCFPointDatasets.getPointDatasets());
     result.addAll(TestCFPointDatasets.getStationDatasets());
     result.addAll(TestCFPointDatasets.getProfileDatasets());
-    result.addAll(TestCFPointDatasets.getTrajectoryDatasets());
-    result.addAll(TestCFPointDatasets.getStationProfileDatasets());
-    result.addAll(TestCFPointDatasets.getSectionDatasets());
+    //result.addAll(TestCFPointDatasets.getTrajectoryDatasets());
+    //result.addAll(TestCFPointDatasets.getStationProfileDatasets());
+    //result.addAll(TestCFPointDatasets.getSectionDatasets());
 
     return result;
   }

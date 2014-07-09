@@ -5,13 +5,14 @@ import thredds.server.ncss.exception.NcssException;
 import thredds.server.ncss.params.NcssParamsBean;
 import thredds.server.ncss.view.dsg.AbstractDsgSubsetWriter;
 import thredds.server.ncss.view.dsg.FilteredPointFeatureIterator;
+import ucar.ma2.StructureData;
 import ucar.nc2.ft.FeatureCollection;
 import ucar.nc2.ft.FeatureDatasetPoint;
 import ucar.nc2.ft.PointFeature;
 import ucar.nc2.ft.PointFeatureIterator;
 import ucar.nc2.ft.StationTimeSeriesFeature;
 import ucar.nc2.ft.StationTimeSeriesFeatureCollection;
-import ucar.nc2.ft.point.StationFeatureImpl;
+import ucar.nc2.ft.point.StationTimeSeriesFeatureImpl;
 import ucar.nc2.ft.point.StationPointFeature;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.units.DateType;
@@ -75,7 +76,7 @@ public abstract class AbstractStationSubsetWriter extends AbstractDsgSubsetWrite
                     DateType wantedDateType = new DateType(ncssParams.getTime(), null, null);  // Parse time string.
                     CalendarDate wantedTime = wantedDateType.getCalendarDate();
                     subsettedStationFeat = new ClosestTimeStationFeatureSubset(
-                            (StationFeatureImpl) subsettedStationFeat, wantedTime);
+                            (StationTimeSeriesFeatureImpl) subsettedStationFeat, wantedTime);
                 }
 
                 writeStationTimeSeriesFeature(subsettedStationFeat);
@@ -102,12 +103,12 @@ public abstract class AbstractStationSubsetWriter extends AbstractDsgSubsetWrite
         }
     }
 
-    protected static class ClosestTimeStationFeatureSubset extends StationFeatureImpl {
+    protected static class ClosestTimeStationFeatureSubset extends StationTimeSeriesFeatureImpl {
         private final StationTimeSeriesFeature stationFeat;
         private CalendarDate closestTime;
 
         protected ClosestTimeStationFeatureSubset(
-                StationFeatureImpl stationFeat, CalendarDate wantedTime) throws IOException {
+                StationTimeSeriesFeatureImpl stationFeat, CalendarDate wantedTime) throws IOException {
             super(stationFeat, stationFeat.getTimeUnit(), stationFeat.getAltUnits(), -1);
             this.stationFeat = stationFeat;
             this.dateRange = stationFeat.getCalendarDateRange();
@@ -130,7 +131,12 @@ public abstract class AbstractStationSubsetWriter extends AbstractDsgSubsetWrite
             }
         }
 
-        // Filter out PointFeatures that don't have the wantedTime.
+      @Override
+      public StructureData getFeatureData() throws IOException {
+        return stationFeat.getFeatureData();
+      }
+
+      // Filter out PointFeatures that don't have the wantedTime.
         protected static class TimeFilter implements PointFeatureIterator.Filter {
             private final CalendarDate wantedTime;
 

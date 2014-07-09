@@ -129,7 +129,7 @@ public abstract class Table {
   String feature_id, missingVar;
 
   Map<String, VariableSimpleIF> cols = new HashMap<>();  // all variables
-  List<String> nondataVars = new ArrayList<>();          // exclude these from the getDataVariables() list
+  Set<String> nondataVars = new HashSet<>();          // exclude these from the getDataVariables() list
 
   protected Table(NetcdfDataset ds, TableConfig config) {
     this.name = config.name;
@@ -403,7 +403,7 @@ public abstract class Table {
   ///////////////////////////////////////////////////////
 
   /**
-   * Contiguous children, using start and numRecords variables in the parent.
+   * Contiguous children, using start and numRecords variables in the parent. This assumes column store.
    * TableContiguous is the children, config.struct describes the cols.
    * <p/>
    * Used by:
@@ -414,14 +414,22 @@ public abstract class Table {
     private String startVarName; // variable name holding the starting index in parent
     private String numRecordsVarName; // variable name holding the number of children in parent
     private int[] startIndex, numRecords;
+    private NetcdfDataset ds;
+    private boolean isInit;
 
     TableContiguous(NetcdfDataset ds, TableConfig config) {
       super(ds, config);
+      this.ds = ds;
       startVarName = config.start;
       if (startVarName == null) startVarName = config.parent.start;
       numRecordsVarName = config.getNumRecords();
 
-      if (startVarName == null) {  // read numRecords when startVar is not known
+      addNonDataVariable(startVarName);
+      addNonDataVariable(numRecordsVarName);
+    }
+
+    private void init() {
+      if (startVarName == null) {  // read numRecords when startVar is not known  LOOK this should be deffered
         try {
           Variable v = ds.findVariable(numRecordsVarName);
           Array numRecords = v.read();
@@ -438,13 +446,11 @@ public abstract class Table {
             count += this.numRecords[i];
             i++;
           }
+          isInit = true;
         } catch (IOException e) {
           throw new RuntimeException(e);
         }
       }
-
-      addNonDataVariable(startVarName);
-      addNonDataVariable(numRecordsVarName);
     }
 
     @Override
@@ -453,6 +459,8 @@ public abstract class Table {
     }
 
     public StructureDataIterator getStructureDataIterator(Cursor cursor, int bufferSize) throws IOException {
+      if (!isInit) init();
+
       int firstRecno, numrecs;
       StructureData parentStruct = cursor.getParentStructure();
       if (startIndex != null) {
@@ -1177,10 +1185,6 @@ public abstract class Table {
     return featureType;
   }
 
-  /* public List<? super VariableSimpleIF> getDataVariables() {
-    return cols;
-  } */
-
   // LOOK others should override
   public VariableDS findVariable(String axisName) {
     return null;
@@ -1198,15 +1202,6 @@ public abstract class Table {
     formatter.format("  Parent= %s\n", ((parent == null) ? "none" : parent.getName()));
     return formatter.toString();
   }
-
-  /* public String showAll() {
-    StringBuilder sbuff = new StringBuilder();
-    sbuff.append("Table on dimension ").append(showDimension()).append("\n");
-    for (VariableSimpleIF v : cols) {
-      sbuff.append("  ").append(v.getShortName()).append("\n");
-    }
-    return sbuff.toString();
-  } */
 
   public int show(Formatter f, int indent) {
     if (parent != null)
@@ -1236,6 +1231,7 @@ public abstract class Table {
   }
 
   protected abstract void showTableExtraInfo(String indent, Formatter f);
+
 
   String getKind(String v) {
     if (v.equals(lat)) return "[Lat]";
