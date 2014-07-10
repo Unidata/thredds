@@ -60,6 +60,7 @@ public class StandardStationCollectionImpl extends StationTimeSeriesCollectionIm
   StandardStationCollectionImpl(NestedTable ft, DateUnit timeUnit, String altUnits) throws IOException {
     super(ft.getName(), timeUnit, altUnits);
     this.ft = ft;
+    this.extras = ft.getExtras();
   }
 
   /**

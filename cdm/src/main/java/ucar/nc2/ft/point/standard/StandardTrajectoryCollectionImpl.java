@@ -59,6 +59,7 @@ public class StandardTrajectoryCollectionImpl extends OneNestedPointCollectionIm
   StandardTrajectoryCollectionImpl(NestedTable ft, DateUnit timeUnit, String altUnits) {
     super(ft.getName(), timeUnit, altUnits, FeatureType.TRAJECTORY);
     this.ft = ft;
+    this.extras = ft.getExtras();
   }
 
   public PointFeatureCollectionIterator getPointFeatureCollectionIterator(int bufferSize) throws IOException {

@@ -49,6 +49,7 @@ public class StandardPointCollectionImpl extends PointCollectionImpl {
   StandardPointCollectionImpl(NestedTable ft, DateUnit timeUnit, String altUnits) {
     super(ft.getName(), timeUnit, altUnits);
     this.ft = ft;
+    this.extras = ft.getExtras();
   }
 
   public PointFeatureIterator getPointFeatureIterator(int bufferSize) throws IOException {

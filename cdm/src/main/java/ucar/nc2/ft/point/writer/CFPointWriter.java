@@ -34,10 +34,8 @@ package ucar.nc2.ft.point.writer;
 
 import ucar.ma2.*;
 import ucar.nc2.*;
-import ucar.nc2.constants.ACDD;
-import ucar.nc2.constants.CDM;
-import ucar.nc2.constants.CF;
-import ucar.nc2.constants._Coordinate;
+import ucar.nc2.constants.*;
+import ucar.nc2.dataset.CoordinateAxis;
 import ucar.nc2.ft.*;
 import ucar.nc2.ft.point.StationPointFeature;
 import ucar.nc2.time.CalendarDate;
@@ -138,7 +136,7 @@ public class CFPointWriter implements AutoCloseable {
       PointFeature pf = pfc.next();
       StationPointFeature spf = (StationPointFeature) pf;
       if (count == 0)
-        stationWriter.writeHeader(fds.getStations(), fdpoint.getDataVariables(), fds.getTimeUnit(), fds.getAltUnits(), spf);
+        stationWriter.writeHeader(fds.getStationFeatures(), fdpoint.getDataVariables(), fds.getTimeUnit(), fds.getAltUnits(), spf);
 
       stationWriter.writeRecord(spf.getStation(), pf, pf.getFeatureData());
       count++;
@@ -153,11 +151,11 @@ public class CFPointWriter implements AutoCloseable {
   private static int writeProfileFeatureCollection(FeatureDatasetPoint fdpoint, ProfileFeatureCollection pds, String fileOut,
                                                    CFPointWriterConfig config) throws IOException {
 
-    WriterCFProfileCollection cfWriter = new WriterCFProfileCollection(fileOut, fdpoint.getGlobalAttributes(), fdpoint.getDataVariables(), config);
+    WriterCFProfileCollection cfWriter = new WriterCFProfileCollection(fileOut, fdpoint.getGlobalAttributes(), fdpoint.getDataVariables(), pds.getExtraVariables(), config);
 
     // LOOK not always needed
     int count = 0;
-    int name_strlen = -1;
+    int name_strlen = 0;
     int nprofiles = pds.size();
     if (nprofiles < 0) {
       pds.resetIteration();
@@ -166,8 +164,9 @@ public class CFPointWriter implements AutoCloseable {
         name_strlen = Math.max(name_strlen, pf.getName().length());
         count++;
       }
-      cfWriter.setHeaderInfo(count, name_strlen);
+      nprofiles = count;
     }
+    cfWriter.setHeaderInfo(nprofiles, name_strlen);
 
     count = 0;
     pds.resetIteration();
@@ -210,6 +209,9 @@ public class CFPointWriter implements AutoCloseable {
   protected CalendarDate minDate = null;
   protected CalendarDate maxDate = null;
   protected List<VariableSimpleIF> dataVars;
+  protected List<Variable> extra;
+  protected boolean useAlt = true;
+  protected String altitudeCoordinateName = altName;
 
   protected final boolean noTimeCoverage;
   protected final boolean noUnlimitedDimension;  // experimental , netcdf-3
@@ -236,7 +238,6 @@ public class CFPointWriter implements AutoCloseable {
     addGlobalAtts(atts);
     addNetcdf3UnknownAtts(noTimeCoverage);
   }
-
 
   protected VariableSimpleIF getDataVar(String name) {
     for (VariableSimpleIF v : dataVars) if (v.getShortName().equals(name)) return v;
@@ -271,6 +272,52 @@ public class CFPointWriter implements AutoCloseable {
     writer.addGroupAttribute(null, new Attribute(ACDD.LON_MIN, 0.0));
     writer.addGroupAttribute(null, new Attribute(ACDD.LON_MAX, 0.0));
   }
+
+  protected void setExtraVariables(List<Variable> extra) {
+    this.extra = extra;
+    if (extra != null) {
+      for (Variable v : extra) {
+        if (v instanceof CoordinateAxis) {
+          CoordinateAxis axis = (CoordinateAxis) v;
+          if (axis.getAxisType() == AxisType.Height) {
+            useAlt = false; // dont need another altitude variable
+            altitudeCoordinateName = v.getFullName();
+          }
+        }
+      }
+    }
+  }
+
+     // added as variables just as they are
+  private Map<String, Variable> extraMap;
+  protected void addExtraVariables() throws IOException {
+    if (extra == null) return;
+    if (extraMap == null) extraMap = new HashMap<>();
+
+    Map<String, Dimension> dimMap = addDimensionsClassic(extra);
+
+    for (VariableSimpleIF vs : extra) {
+      List<Dimension> dims = makeDimensionList(dimMap, vs.getDimensions());
+      Variable mv = writer.addVariable(null, vs.getShortName(), vs.getDataType(), dims);
+      for (Attribute att : vs.getAttributes())
+        mv.addAttribute(att);
+      extraMap.put(mv.getShortName(), mv);
+    }
+  }
+
+  protected void writeExtraVariables() throws IOException {
+    if (extra == null) return;
+
+    for (Variable v : extra) {
+      Variable mv = extraMap.get(v.getShortName());
+      try {
+        writer.write(mv, v.read());
+      } catch (InvalidRangeException e) {
+        e.printStackTrace(); // cant happen haha
+      }
+    }
+  }
+
 
    // added as variables with the unlimited (record) dimension
   protected void addCoordinatesClassic(Dimension recordDim, List<VariableSimpleIF> coords, Map<String, Variable> varMap) throws IOException {

@@ -35,6 +35,7 @@ package ucar.nc2.ft.point.standard;
 
 import ucar.ma2.ArrayStructure;
 import ucar.ma2.StructureData;
+import ucar.nc2.Variable;
 import ucar.nc2.dataset.StructureDS;
 import ucar.nc2.dataset.VariableDS;
 
@@ -78,6 +79,9 @@ public class JoinParentIndex implements Join {
     return (VariableDS) parentStructure.findVariable(axisName);
   }
 
+  public Variable getExtraVariable() {
+    return null;
+  }
 
   @Override
   public String toString() {

@@ -27,7 +27,7 @@ import java.util.List;
 import static org.junit.Assert.assertEquals;
 
 /**
- * Test nss point dataset info
+ * Test ncss point dataset info
  *
  * @author caron
  * @since 11/1/13

@@ -21,7 +21,7 @@
     <values start="666" increment="6"/>
   </variable>
   <variable name="profileBase" shape="prof" type="int">
-    <attribute name="standard_name" value="base_altitude" />
+    <attribute name="standard_name" value="surface_altitude" />
     <attribute name="units" value="km above msl" />
     <values start="100" increment="6"/>
   </variable>

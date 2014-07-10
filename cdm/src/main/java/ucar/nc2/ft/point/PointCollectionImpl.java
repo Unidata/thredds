@@ -61,6 +61,7 @@ public abstract class PointCollectionImpl implements PointFeatureCollection {
   protected PointFeatureIterator localIterator;
   protected DateUnit timeUnit;
   protected String altUnits;
+  protected List<Variable> extras;
 
   /* protected PointCollectionImpl(String name) { //}, DateUnit timeUnit, String altUnits) {
     this.name = name;
@@ -82,7 +83,7 @@ public abstract class PointCollectionImpl implements PointFeatureCollection {
     return altUnits;
   }
 
-  public List<Variable> getExtraVariables() { return new ArrayList<>(); }
+  public List<Variable> getExtraVariables() { return (extras == null) ? new ArrayList<Variable>() : extras; }
 
   public void setDateRange(DateRange range) {
     this.dateRange = CalendarDateRange.of(range);

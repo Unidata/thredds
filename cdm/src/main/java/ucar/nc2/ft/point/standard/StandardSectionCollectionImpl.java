@@ -59,6 +59,7 @@ public class StandardSectionCollectionImpl extends SectionCollectionImpl {
   StandardSectionCollectionImpl(NestedTable ft, DateUnit timeUnit, String altUnits) throws IOException {
     super(ft.getName(), timeUnit, altUnits);
     this.ft = ft;
+    this.extras = ft.getExtras();
   }
 
   @Override
@@ -119,6 +120,7 @@ public class StandardSectionCollectionImpl extends SectionCollectionImpl {
   private class StandardSectionFeatureIterator implements PointFeatureCollectionIterator {
     Cursor cursor;
     private ucar.ma2.StructureDataIterator iter;
+    StructureData profileData;
 
     StandardSectionFeatureIterator(Cursor cursor) throws IOException {
       this.cursor = cursor;
@@ -131,13 +133,14 @@ public class StandardSectionCollectionImpl extends SectionCollectionImpl {
 
     public PointFeatureCollection next() throws IOException {
       Cursor cursorIter = cursor.copy();
-      cursorIter.tableData[1] = iter.next();
+      profileData = iter.next();
+      cursorIter.tableData[1] = profileData;
       cursorIter.recnum[1] = iter.getCurrentRecno();
       cursorIter.currentIndex = 1;
       ft.addParentJoin(cursor); // there may be parent joins
 
       // double time = ft.getObsTime(cursorIter);
-      return new StandardSectionProfileFeature(cursorIter, ft.getObsTime(cursor));
+      return new StandardSectionProfileFeature(cursorIter, ft.getObsTime(cursor), profileData);
     }
 
     public void setBufferSize(int bytes) {
@@ -154,12 +157,14 @@ public class StandardSectionCollectionImpl extends SectionCollectionImpl {
   // LOOK duplicate from StandardProfileFeatureCollection - also check StationProfile
   private class StandardSectionProfileFeature extends ProfileFeatureImpl {
     Cursor cursor;
+    StructureData profileData;
 
-    StandardSectionProfileFeature(Cursor cursor, double time) {
+    StandardSectionProfileFeature(Cursor cursor, double time, StructureData profileData) {
       super( StandardSectionCollectionImpl.this.getTimeUnit().makeStandardDateString(time),
               StandardSectionCollectionImpl.this.getTimeUnit(), StandardSectionCollectionImpl.this.getAltUnits(),
               ft.getLatitude(cursor), ft.getLongitude(cursor), time, -1);
       this.cursor = cursor;
+      this.profileData = profileData;
 
       if (Double.isNaN(time)) { // gotta read an obs to get the time
         try {
@@ -189,6 +194,11 @@ public class StandardSectionCollectionImpl extends SectionCollectionImpl {
     @Override
     public Date getTime() {
       return timeUnit.makeDate(time);
+    }
+
+    @Override
+    public StructureData getFeatureData() throws IOException {
+      return profileData;
     }
   }
 

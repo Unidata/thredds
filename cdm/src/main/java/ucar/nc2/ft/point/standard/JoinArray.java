@@ -32,6 +32,7 @@
  */
 package ucar.nc2.ft.point.standard;
 
+import ucar.nc2.Variable;
 import ucar.nc2.dataset.VariableDS;
 import ucar.ma2.StructureData;
 import ucar.ma2.Array;
@@ -75,6 +76,11 @@ public class JoinArray implements Join {
       throw new RuntimeException(e);
     }
   }
+
+  public Variable getExtraVariable() {
+    return v;
+  }
+
 
   public StructureData getJoinData(Cursor cursor) {
     int recnum = -1;

@@ -32,6 +32,7 @@
  */
 package ucar.nc2.ft;
 
+import ucar.nc2.ft.point.StationFeature;
 import ucar.nc2.time.CalendarDateRange;
 import ucar.unidata.geoloc.Station;
 import ucar.nc2.units.DateRange;
@@ -86,6 +87,15 @@ public interface StationTimeSeriesFeatureCollection extends StationCollection, N
   public StationTimeSeriesFeatureCollection subset(List<Station> stations) throws IOException;
 
   /**
+    * Get a subsetted StationCollection based on a list of Stations.
+    *
+    * @param stations only contain these stations
+    * @return subsetted collection
+    * @throws java.io.IOException on i/o error
+    */
+   public StationTimeSeriesFeatureCollection subsetFeatures(List<StationFeature> stations) throws IOException;
+
+   /**
    * Get a subsetted StationCollection from a LatLonRect
    *
    * @param boundingBox spatial subset. may be null
@@ -111,6 +121,19 @@ public interface StationTimeSeriesFeatureCollection extends StationCollection, N
    * @throws java.io.IOException on i/o error
    */
   public Station getStation(PointFeature feature) throws IOException;
+
+  /**
+   * Get list of stations as StationFeatures
+   *
+   * @return list of stations as StationFeatures
+   * @throws java.io.IOException on i/o error
+   */
+  public List<StationFeature> getStationFeatures() throws IOException;
+
+  public List<StationFeature> getStationFeatures( List<String> stnNames)  throws IOException;
+
+  public List<StationFeature> getStationFeatures( ucar.unidata.geoloc.LatLonRect boundingBox) throws IOException;
+
 
   /**
     * Flatten into a PointFeatureCollection, discarding connectedness information.

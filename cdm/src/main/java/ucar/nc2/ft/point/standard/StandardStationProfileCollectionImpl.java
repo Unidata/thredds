@@ -170,7 +170,7 @@ public class StandardStationProfileCollectionImpl extends StationProfileCollecti
       private Cursor cursor;
       private ucar.ma2.StructureDataIterator iter;
       private int count = 0;
-      //private StructureData nextProfile;
+      private StructureData profileData;
 
       TimeSeriesOfProfileFeatureIterator(Cursor cursor) throws IOException {
         this.cursor = cursor;
@@ -184,7 +184,8 @@ public class StandardStationProfileCollectionImpl extends StationProfileCollecti
             return false;
           }
           //nextProfile = iter.next();
-          cursor.tableData[1] = iter.next();
+          profileData = iter.next();
+          cursor.tableData[1] = profileData;
           cursor.recnum[1] = iter.getCurrentRecno();
           cursor.currentIndex = 1;
           ft.addParentJoin(cursor); // there may be parent joins
@@ -195,7 +196,7 @@ public class StandardStationProfileCollectionImpl extends StationProfileCollecti
 
       public PointFeatureCollection next() throws IOException {
         count++;
-        return new StandardProfileFeature(s, getTimeUnit(), getAltUnits(), ft.getObsTime(cursor), cursor.copy());
+        return new StandardProfileFeature(s, getTimeUnit(), getAltUnits(), ft.getObsTime(cursor), cursor.copy(), profileData);
       }
 
       public void setBufferSize(int bytes) {
@@ -212,10 +213,12 @@ public class StandardStationProfileCollectionImpl extends StationProfileCollecti
 
   private class StandardProfileFeature extends ProfileFeatureImpl {
     private Cursor cursor;
+    StructureData profileData;
 
-    StandardProfileFeature(Station s, DateUnit timeUnit, String altUnits, double time, Cursor cursor) throws IOException {
+    StandardProfileFeature(Station s, DateUnit timeUnit, String altUnits, double time, Cursor cursor, StructureData profileData) throws IOException {
       super(timeUnit.makeStandardDateString(time), timeUnit, altUnits, s.getLatitude(), s.getLongitude(), time, -1);
       this.cursor = cursor;
+      this.profileData = profileData;
 
       if (Double.isNaN(time)) { // gotta read an obs to get the time
         try {
@@ -247,6 +250,11 @@ public class StandardStationProfileCollectionImpl extends StationProfileCollecti
     @Override
     public Date getTime() {
       return timeUnit.makeDate(time);
+    }
+
+    @Override
+    public StructureData getFeatureData() throws IOException {
+      return profileData;
     }
   }
 

@@ -182,10 +182,14 @@ public abstract class Table {
       nondataVars.add(name);
   }
 
-   // use resulting members as column variable, so shape is correct
+   // change shape of the data variables
    protected void replaceDataVars(StructureMembers sm) {
-     for (StructureMembers.Member m : sm.getMembers())
-       this.cols.put( m.getName(), new VariableSimpleAdapter(m));
+     for (StructureMembers.Member m : sm.getMembers()) {
+       VariableSimpleIF curr = this.cols.get(m.getName());
+       if (curr == null)
+         System.out.println("HEY");
+       this.cols.put(m.getName(), VariableSimpleImpl.changeShape(curr, Dimension.makeDimensionsAnon(m.getShape())));
+     }
   }
 
   /**
@@ -317,13 +321,34 @@ public abstract class Table {
       return dim.getShortName();
     }
 
+    @Override
     public StructureDataIterator getStructureDataIterator(Cursor cursor, int bufferSize) throws IOException {
-      return struct.getStructureIterator(bufferSize);
+      return new StructureDataIteratorMediated(struct.getStructureIterator(bufferSize), new RestrictToColumns());
     }
 
     @Override
     public String getName() {
       return stype.toString()+"("+struct.getShortName()+")";
+    }
+  }
+
+  private class RestrictToColumns implements StructureDataMediator {
+    StructureMembers members;
+
+    @Override
+    public StructureData modify(StructureData sdata) {
+      // make members restricted to column names
+      if (members == null) {
+        StructureMembers orgMembers = sdata.getStructureMembers();
+        members = new StructureMembers(orgMembers.getName()+"RestrictToColumns");
+        for (String colName : cols.keySet()) {
+          StructureMembers.Member m =  orgMembers.findMember(colName);
+          if (m == null)
+            throw new IllegalStateException("Cant find "+colName);
+          members.addMember(m);
+        }
+      }
+      return new StructureDataProxy(members, sdata);
     }
   }
 
@@ -707,6 +732,7 @@ public abstract class Table {
            int[] shape = new int[rank - 2];
            System.arraycopy(v.getShape(), 2, shape, 0, rank - 2);
            sm.addMember(v.getShortName(), v.getDescription(), v.getUnitsString(), v.getDataType(), shape);
+           this.cols.put(v.getShortName(), v);
          }
 
        } else {
@@ -718,6 +744,7 @@ public abstract class Table {
              int[] shape = new int[rank - 2];
              System.arraycopy(v.getShape(), 2, shape, 0, rank - 2);
              sm.addMember(v.getShortName(), v.getDescription(), v.getUnitsString(), v.getDataType(), shape);
+             this.cols.put(v.getShortName(), v);
            }
          }
        }
@@ -741,7 +768,8 @@ public abstract class Table {
      }
 
      public StructureDataIterator getStructureDataIterator(Cursor cursor, int bufferSize) throws IOException {
-       StructureData parentStruct = cursor.getParentStructure();
+       StructureDataProxy proxyStruct = (StructureDataProxy) cursor.getParentStructure();
+       StructureData parentStruct = proxyStruct.getOriginalStructureData(); // tricky dicky
        ArrayStructureMA asma = new ArrayStructureMA(sm, new int[]{inner.getLength()});
        for (String colName : cols.keySet()) {
          Array data = parentStruct.getArray(colName);

@@ -32,11 +32,13 @@
  */
 package ucar.nc2.ft;
 
+import ucar.nc2.Variable;
 import ucar.nc2.time.CalendarDateRange;
 import ucar.nc2.units.DateRange;
 import ucar.nc2.units.DateUnit;
 
 import java.io.IOException;
+import java.util.List;
 
 /**
  * A collection of PointFeatures nested inside one or more PointFeatureCollection.
@@ -57,6 +59,12 @@ public interface NestedPointFeatureCollection extends FeatureCollection {
    * @return altitude unit string, may be null
    */
   public String getAltUnits();
+
+  /**
+   * Other variables needed for co,pleteness, eg joined coordinate variables
+   * @return list of extra variables, may be empty not null
+   */
+  public List<Variable> getExtraVariables();
 
   /**
    * The number of elements in the collection. May not be known until after iterating through the collection.
