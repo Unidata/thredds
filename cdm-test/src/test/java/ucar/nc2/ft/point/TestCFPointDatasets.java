@@ -146,7 +146,6 @@ public class TestCFPointDatasets {
     return result;
   }
 
-
   @Parameterized.Parameters
   public static List<Object[]> getTestParameters() {
     List<Object[]> result = new ArrayList<>();
@@ -174,7 +173,7 @@ public class TestCFPointDatasets {
 
   @Test
   public void checkPointDataset() throws IOException {
-    TestPointFeatureTypes test = new TestPointFeatureTypes("");
+    TestPointDatasets test = new TestPointDatasets(location, ftype, countExpected);
     assert countExpected == test.checkPointDataset(location, ftype, show);
   }
 

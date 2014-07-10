@@ -65,7 +65,6 @@ public class TestCfDocDsgExamples {
 
     @Test
     public void checkPointDataset() throws IOException {
-        TestPointFeatureTypes test = new TestPointFeatureTypes("");
-        assert countExpected == test.checkPointDataset(location, ftype, show);
+        assert countExpected == TestPointDatasets.checkPointDataset(location, ftype, show);
     }
 }

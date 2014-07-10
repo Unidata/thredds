@@ -36,10 +36,9 @@ import java.io.IOException;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Formatter;
-import java.util.List;
+import java.util.*;
 
+import org.junit.Assert;
 import org.junit.Test;
 import ucar.nc2.VariableSimpleIF;
 import ucar.nc2.constants.FeatureType;
@@ -55,12 +54,10 @@ import ucar.unidata.test.util.TestDir;
 public class TestMiscPointFeature {
 
   @Test
-  public void testIterator() {
+  public void testIterator() {  // kunicki
     DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
-    FeatureDataset fd = null;
-    try {
-      Formatter formatter = new Formatter(System.err);
-      fd = FeatureDatasetFactoryManager.open(FeatureType.STATION, TestDir.cdmLocalTestDataDir + "pointPre1.6/StandardPointFeatureIteratorIssue.ncml", null, formatter);
+    Formatter formatter = new Formatter(System.err);
+    try (FeatureDataset fd = FeatureDatasetFactoryManager.open(FeatureType.STATION, TestDir.cdmLocalTestDataDir + "pointPre1.6/StandardPointFeatureIteratorIssue.ncml", null, formatter)) {
       if (fd != null && fd instanceof FeatureDatasetPoint) {
         FeatureDatasetPoint fdp = (FeatureDatasetPoint) fd;
         FeatureCollection fc = fdp.getPointFeatureCollectionList().get(0);
@@ -88,19 +85,9 @@ public class TestMiscPointFeature {
           }
         }
       }
-    } catch (IOException e) {
+    } catch (IOException | ParseException e) {
       e.printStackTrace();
       assert false;
-    } catch (ParseException e) {
-      e.printStackTrace();
-      assert false;
-    } finally {
-      if (fd != null) {
-        try {
-          fd.close();
-        } catch (IOException e) {
-        }
-      }
     }
   }
 
@@ -120,7 +107,7 @@ public class TestMiscPointFeature {
     if (collectionList.size() > 1) {
       throw new IllegalArgumentException("Can't handle point data with multiple collections");
     }
-    boolean sample = true;
+    boolean sample;
     for (int time = 0; time < 2; time++) {
       sample = time < 1;
       FeatureCollection fc = collectionList.get(0);
@@ -129,36 +116,33 @@ public class TestMiscPointFeature {
       System.out.println("llr = " + llr);
       if (fc instanceof PointFeatureCollection) {
         collection = (PointFeatureCollection) fc;
-        if (llr != null) {
-          collection = collection.subset(llr, (CalendarDateRange) null);
-        }
+        collection = collection.subset(llr, (CalendarDateRange) null);
+
       } else if (fc instanceof NestedPointFeatureCollection) {
-        NestedPointFeatureCollection npfc =
-                (NestedPointFeatureCollection) fc;
-        if (llr != null) {
-          npfc = npfc.subset(llr);
-        }
+        NestedPointFeatureCollection npfc = (NestedPointFeatureCollection) fc;
+        npfc = npfc.subset(llr);
         collection = npfc.flatten(llr, (CalendarDateRange) null);
+
       } else {
         throw new IllegalArgumentException("Can't handle collection of type " + fc.getClass().getName());
       }
-      List pos = new ArrayList(100000);
-      List times = new ArrayList(100000);
+
+      List<PointFeature> pos = new ArrayList<>(100000);
+      List<Date> times = new ArrayList<>(100000);
       PointFeatureIterator dataIterator = collection.getPointFeatureIterator(16384);
 
       while (dataIterator.hasNext()) {
         PointFeature po = dataIterator.next();
         pos.add(po);
         times.add(po.getNominalTimeAsDate());
-        System.out.println("po = " + po);
+        // System.out.println("po = " + po);
         if (sample) {
           break;
         }
       }
       int size = pos.size();
 
-      for (int i = 0; i < size; i++) {
-        PointFeature po = (PointFeature) pos.get(i);
+      for (PointFeature po : pos) {
         ucar.unidata.geoloc.EarthLocation el = po.getLocation();
         System.out.println("el = " + el);
       }
@@ -300,6 +284,34 @@ public class TestMiscPointFeature {
       assert (fdataset == null);
     }
     ncd.close();
+  }
+
+
+  // This is a regression test for TDS-513: https://bugtracking.unidata.ucar.edu/browse/TDS-513
+  @Test
+  public void testStationProfileMultidim1dTime() throws IOException {
+    FeatureType type = FeatureType.STATION_PROFILE;
+    String location = TestCFPointDatasets.CFpointObs_topdir + "stationProfileMultidim1dTime.ncml";
+    ucar.nc2.util.CancelTask task = null;
+    Formatter out = new Formatter();
+
+    FeatureDataset featDset = FeatureDatasetFactoryManager.open(type, location, task, out);
+    assert featDset != null && featDset instanceof FeatureDatasetPoint;
+    FeatureDatasetPoint featDsetPoint = (FeatureDatasetPoint) featDset;
+
+    List<FeatureCollection> featCols = featDsetPoint.getPointFeatureCollectionList();
+    assert !featCols.isEmpty();
+    FeatureCollection featCol = featCols.get(0);  // We only care about the first one.
+
+    assert featCol instanceof StationProfileFeatureCollection;
+    StationProfileFeatureCollection stationProfileFeatCol = (StationProfileFeatureCollection) featCol;
+
+    assert stationProfileFeatCol.hasNext();
+    StationProfileFeature stationProfileFeat = stationProfileFeatCol.next();  // We only care about the first one.
+
+    List<Date> timesList = stationProfileFeat.getTimes();
+    Set<Date> timesSet = new TreeSet<Date>(stationProfileFeat.getTimes());  // Nukes dupes.
+    Assert.assertEquals(timesList.size(), timesSet.size());  // Assert that the times are unique.
   }
 
 }

@@ -105,8 +105,7 @@ public class TestPreCFpointDatasets {
 
   @Test
   public void checkPointDataset() throws IOException {
-    TestPointFeatureTypes test = new TestPointFeatureTypes("");
-    assert 0 < test.checkPointDataset(location, ftype, show);
+    assert 0 < TestPointDatasets.checkPointDataset(location, ftype, show);
   }
 
 
