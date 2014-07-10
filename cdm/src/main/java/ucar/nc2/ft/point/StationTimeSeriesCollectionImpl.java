@@ -102,6 +102,7 @@ public abstract class StationTimeSeriesCollectionImpl extends OneNestedPointColl
 
   @Override
   public List<StationFeature> getStationFeatures() throws IOException {
+    if (stationHelper == null) initStationHelper();
     return stationHelper.getStationFeatures();
   }
 
@@ -111,6 +112,7 @@ public abstract class StationTimeSeriesCollectionImpl extends OneNestedPointColl
   }
 
   public List<StationFeature> getStationFeatures( ucar.unidata.geoloc.LatLonRect boundingBox) throws IOException {
+    if (stationHelper == null) initStationHelper();
     return stationHelper.getStationFeatures(boundingBox);
   }
 

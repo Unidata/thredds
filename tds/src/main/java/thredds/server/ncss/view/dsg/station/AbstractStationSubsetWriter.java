@@ -32,7 +32,7 @@ import java.util.List;
 public abstract class AbstractStationSubsetWriter extends AbstractDsgSubsetWriter {
     protected final StationTimeSeriesFeatureCollection stationFeatureCollection;
     protected final List<StationFeature> wantedStations;
-    private boolean headerDone;
+    protected boolean headerDone = false;
 
     public AbstractStationSubsetWriter(FeatureDatasetPoint fdPoint, NcssParamsBean ncssParams)
             throws NcssException, IOException {
@@ -137,12 +137,12 @@ public abstract class AbstractStationSubsetWriter extends AbstractDsgSubsetWrite
             }
         }
 
-      @Override
-      public StructureData getFeatureData() throws IOException {
-        return stationFeat.getFeatureData();
-      }
+        @Override
+        public StructureData getFeatureData() throws IOException {
+            return stationFeat.getFeatureData();
+        }
 
-      // Filter out PointFeatures that don't have the wantedTime.
+        // Filter out PointFeatures that don't have the wantedTime.
         protected static class TimeFilter implements PointFeatureIterator.Filter {
             private final CalendarDate wantedTime;
 

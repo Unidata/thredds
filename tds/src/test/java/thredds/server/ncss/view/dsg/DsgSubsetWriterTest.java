@@ -181,8 +181,15 @@ public class DsgSubsetWriterTest {
     public static boolean compareNetCDF(File expectedResultFile, File actualResultFile) throws IOException {
         try (   NetcdfFile expectedNcFile = NetcdfFile.open(expectedResultFile.getAbsolutePath());
                 NetcdfFile actualNcFile   = NetcdfFile.open(actualResultFile.getAbsolutePath())) {
-            CompareNetcdf2 comparator = new CompareNetcdf2(new Formatter());
-            return comparator.compare(expectedNcFile, actualNcFile, new NcssNetcdfObjFilter(), false, false, true);
+            Formatter formatter = new Formatter();
+            boolean contentsAreEqual = new CompareNetcdf2(formatter).compare(
+                    expectedNcFile, actualNcFile, new NcssNetcdfObjFilter(), false, false, true);
+
+            if (!contentsAreEqual) {
+                System.err.println(formatter.toString());
+            }
+
+            return contentsAreEqual;
         }
     }
 
