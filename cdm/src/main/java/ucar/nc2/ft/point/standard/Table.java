@@ -457,6 +457,8 @@ public abstract class Table {
       if (startVarName == null) {  // read numRecords when startVar is not known  LOOK this should be deffered
         try {
           Variable v = ds.findVariable(numRecordsVarName);
+          if (v == null)
+            System.out.println("HEY");
           Array numRecords = v.read();
           int n = (int) v.getSize();
 

@@ -34,11 +34,16 @@
 package ucar.nc2.ft.point.writer;
 
 import org.junit.Test;
+import ucar.ma2.DataType;
+import ucar.ma2.StructureData;
+import ucar.ma2.StructureMembers;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.NetcdfFileWriter;
 import ucar.nc2.Variable;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.ft.*;
+import ucar.nc2.ft.point.StationPointFeature;
+import ucar.nc2.ft.point.StationTimeSeriesFeatureImpl;
 import ucar.unidata.test.util.TestDir;
 import ucar.unidata.util.StringUtil2;
 
@@ -48,12 +53,71 @@ import java.util.Formatter;
 import java.util.List;
 
 /**
- * Describe
+ * misc tests involving CFPointWriter
  *
  * @author caron
  * @since 7/2/2014
  */
 public class TestCFPointWriterMisc {
+
+  @Test
+   public void testProfileInnerTime() throws Exception {
+     String file = TestDir.cdmLocalTestDataDir + "point/profileMultidimTimePrecise.ncml";
+     Formatter buf = new Formatter();
+     try (FeatureDatasetPoint pods = (FeatureDatasetPoint) FeatureDatasetFactoryManager.open(ucar.nc2.constants.FeatureType.PROFILE, file, null, buf)) {
+       List<FeatureCollection> collectionList = pods.getPointFeatureCollectionList();
+       assert (collectionList.size() == 1) : "Can't handle point data with multiple collections";
+       NestedPointFeatureCollection fc1 = (NestedPointFeatureCollection) collectionList.get(0);
+       assert fc1 instanceof ProfileFeatureCollection;
+
+       ProfileFeatureCollection profileCollection = (ProfileFeatureCollection) fc1;
+       PointFeatureCollectionIterator iter = profileCollection.getPointFeatureCollectionIterator(-1);
+        while (iter.hasNext()) {
+          PointFeatureCollection pfc = iter.next();
+          assert pfc instanceof ProfileFeature : pfc.getClass().getName();
+          ProfileFeature profile = (ProfileFeature) pfc;
+
+          PointFeatureIterator inner = profile.getPointFeatureIterator(-1);
+          while (inner.hasNext()) {
+            PointFeature pf = inner.next();
+            StructureData sdata = pf.getFeatureData();
+            StructureMembers.Member m = sdata.findMember("timePrecise");
+            assert m != null : "missing timePrecise";
+            assert m.getDataType() == DataType.DOUBLE : "time not a double";
+            System.out.printf(" %s", sdata.getScalarDouble(m));
+          }
+          System.out.printf("%n");
+        }
+
+       try (FeatureDatasetPoint rewrite = rewriteDataset(pods, "nc", new CFPointWriterConfig(NetcdfFileWriter.Version.netcdf3))) {
+         collectionList = rewrite.getPointFeatureCollectionList();
+         FeatureCollection fc2 = collectionList.get(0);
+         assert fc2 instanceof NestedPointFeatureCollection;
+         NestedPointFeatureCollection npc = (NestedPointFeatureCollection) fc2;
+         assert npc instanceof ProfileFeatureCollection;
+
+         ProfileFeatureCollection profileCollection2 = (ProfileFeatureCollection) npc;
+         PointFeatureCollectionIterator iter2 = profileCollection2.getPointFeatureCollectionIterator(-1);
+         while (iter2.hasNext()) {
+           PointFeatureCollection pfc = iter2.next();
+           assert pfc instanceof ProfileFeature : pfc.getClass().getName();
+           ProfileFeature profile = (ProfileFeature) pfc;
+
+           PointFeatureIterator inner = profile.getPointFeatureIterator(-1);
+           while (inner.hasNext()) {
+             PointFeature pf = inner.next();
+             StructureData sdata = pf.getFeatureData();
+             StructureMembers.Member m = sdata.findMember("timePrecise");
+             assert m != null : "missing timePrecise";
+             assert m.getDataType() == DataType.DOUBLE : "time not a double";
+             System.out.printf(" %s", sdata.getScalarDouble(m));
+           }
+           System.out.printf("%n");
+         }
+       }
+     }
+   }
+
 
   @Test
    public void testAltUnits() throws Exception {

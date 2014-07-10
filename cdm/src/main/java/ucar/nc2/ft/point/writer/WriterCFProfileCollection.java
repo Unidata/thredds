@@ -121,7 +121,7 @@ public class WriterCFProfileCollection extends CFPointWriter {
             .add(new Attribute(CF.POSITIVE, CF1Convention.getZisPositive(altitudeCoordinateName, altUnits))));
     coordNames.format("%s %s %s %s", profileTimeName, latName, lonName, altitudeCoordinateName);
 
-    //addExtraVariables();
+    addExtraVariables();
 
     if (writer.getVersion().isExtendedModel()) {
       makeProfileVars(name_strlen, nprofiles, profileData, timeUnit, true);
@@ -139,7 +139,7 @@ public class WriterCFProfileCollection extends CFPointWriter {
       record = writer.addRecordStructure(); // for netcdf3
     }
 
-    //writeExtraVariables();
+    writeExtraVariables();
   }
 
   private void makeProfileVars(int name_strlen, int nprofiles, StructureData profileData, DateUnit timeUnit, boolean isExtended) throws IOException {

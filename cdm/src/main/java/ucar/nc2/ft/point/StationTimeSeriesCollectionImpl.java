@@ -91,6 +91,7 @@ public abstract class StationTimeSeriesCollectionImpl extends OneNestedPointColl
 
   // note this assumes that a Station is-a StationTimeSeriesFeature
   public StationTimeSeriesFeature getStationFeature(Station s) throws IOException {
+    if (stationHelper == null) initStationHelper();
     return (StationTimeSeriesFeature) stationHelper.getStationFeature(s);  // subclasses nust override if not true
   }
 
@@ -124,6 +125,7 @@ public abstract class StationTimeSeriesCollectionImpl extends OneNestedPointColl
   // might need to override for efficiency
   public StationTimeSeriesFeatureCollection subset(List<Station> stations) throws IOException {
     if (stations == null) return this;
+    if (stationHelper == null) initStationHelper();
     List<StationFeature> stationsFeatures = stationHelper.getStationFeatures(stations);
     return new StationTimeSeriesCollectionSubset(this, stationsFeatures);
   }
@@ -144,7 +146,7 @@ public abstract class StationTimeSeriesCollectionImpl extends OneNestedPointColl
   public PointFeatureCollection flatten(LatLonRect boundingBox, CalendarDateRange dateRange) throws IOException {
     if (boundingBox == null)
       return new StationTimeSeriesCollectionFlattened(this, dateRange);
-    initStationHelper();
+    if (stationHelper == null) initStationHelper();
     List<StationFeature> subsetStations = stationHelper.getStationFeatures(boundingBox);
     return new StationTimeSeriesCollectionFlattened(new StationTimeSeriesCollectionSubset(this, subsetStations), dateRange);
   }

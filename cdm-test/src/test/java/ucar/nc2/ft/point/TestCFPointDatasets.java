@@ -78,6 +78,7 @@ public class TestCFPointDatasets {
     result.add(new Object[]{CFpointObs_topdir + "stationRaggedContig.ncml", FeatureType.STATION, 6});
     result.add(new Object[]{CFpointObs_topdir + "stationRaggedIndex.ncml", FeatureType.STATION, 6});
     result.add(new Object[]{CFpointObs_topdir + "stationRaggedMissing.ncml", FeatureType.STATION, 5});
+    result.add(new Object[]{CFpointObs_topdir + "stationData2Levels.ncml", FeatureType.STATION, 15});
     return result;
   }
 
@@ -85,17 +86,17 @@ public class TestCFPointDatasets {
     List<Object[]> result = new ArrayList<>();
 
     result.add(new Object[]{CFpointObs_topdir + "profileSingle.ncml", FeatureType.PROFILE, 13});
-    result.add(new Object[]{CFpointObs_topdir + "profileSingleTimeJoin.ncml", FeatureType.PROFILE, 12});
+    result.add(new Object[]{CFpointObs_topdir + "profileSingleTimePrecise.ncml", FeatureType.PROFILE, 12});
     result.add(new Object[]{CFpointObs_topdir + "profileMultidim.ncml", FeatureType.PROFILE, 50});
-    result.add(new Object[]{CFpointObs_topdir + "profileMultidimTimeJoin.ncml", FeatureType.PROFILE, 50});
+    result.add(new Object[]{CFpointObs_topdir + "profileMultidimTimePrecise.ncml", FeatureType.PROFILE, 50});
     result.add(new Object[]{CFpointObs_topdir + "profileMultidimZJoin.ncml", FeatureType.PROFILE, 50});
-    result.add(new Object[]{CFpointObs_topdir + "profileMultidimTimeZJoin.ncml", FeatureType.PROFILE, 50});
+    result.add(new Object[]{CFpointObs_topdir + "profileMultidimZJoinTimePrecise.ncml", FeatureType.PROFILE, 50});
     result.add(new Object[]{CFpointObs_topdir + "profileMultidimMissingId.ncml", FeatureType.PROFILE, 40});
     result.add(new Object[]{CFpointObs_topdir + "profileMultidimMissingAlt.ncml", FeatureType.PROFILE, 14});
     result.add(new Object[]{CFpointObs_topdir + "profileRaggedContig.ncml", FeatureType.PROFILE, 6});
-    result.add(new Object[]{CFpointObs_topdir + "profileRaggedContigTimeJoin.ncml", FeatureType.PROFILE, 6});
+    result.add(new Object[]{CFpointObs_topdir + "profileRaggedContigTimePrecise.ncml", FeatureType.PROFILE, 6});
     result.add(new Object[]{CFpointObs_topdir + "profileRaggedIndex.ncml", FeatureType.PROFILE, 22});
-    result.add(new Object[]{CFpointObs_topdir + "profileRaggedIndexTimeJoin.ncml", FeatureType.PROFILE, 22});
+    result.add(new Object[]{CFpointObs_topdir + "profileRaggedIndexTimePrecise.ncml", FeatureType.PROFILE, 22});
     result.add(new Object[]{CFpointObs_topdir + "profileData2Levels.ncml", FeatureType.PROFILE, 50});
     return result;
   }
@@ -153,7 +154,7 @@ public class TestCFPointDatasets {
     result.addAll(TestCFPointDatasets.getPointDatasets());
     result.addAll(TestCFPointDatasets.getStationDatasets());
     result.addAll(TestCFPointDatasets.getProfileDatasets());
-    //result.addAll(TestCFPointDatasets.getTrajectoryDatasets());
+    result.addAll(TestCFPointDatasets.getTrajectoryDatasets());
     //result.addAll(TestCFPointDatasets.getStationProfileDatasets());
     //result.addAll(TestCFPointDatasets.getSectionDatasets());
 

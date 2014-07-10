@@ -105,7 +105,7 @@ public class CFPointWriter implements AutoCloseable {
 
   private static int writePointFeatureCollection(FeatureDatasetPoint fdpoint, PointFeatureCollection pfc, String fileOut, CFPointWriterConfig config) throws IOException {
 
-    try (WriterCFPointCollection pointWriter = new WriterCFPointCollection(fileOut, fdpoint.getGlobalAttributes(), config)) {
+    try (WriterCFPointCollection pointWriter = new WriterCFPointCollection(fileOut, fdpoint.getGlobalAttributes(), pfc.getExtraVariables(), config)) {
 
       int count = 0;
       pfc.resetIteration();
@@ -128,7 +128,7 @@ public class CFPointWriter implements AutoCloseable {
   private static int writeStationFeatureCollection(FeatureDatasetPoint fdpoint, StationTimeSeriesFeatureCollection fds, String fileOut,
                                                    CFPointWriterConfig config) throws IOException {
 
-    WriterCFStationCollection stationWriter = new WriterCFStationCollection(fileOut, fdpoint.getGlobalAttributes(), config);
+    WriterCFStationCollection stationWriter = new WriterCFStationCollection(fileOut, fdpoint.getGlobalAttributes(), fds.getExtraVariables(), config);
     ucar.nc2.ft.PointFeatureCollection pfc = fds.flatten(null, (CalendarDateRange) null); // LOOK
 
     int count = 0;
@@ -290,11 +290,13 @@ public class CFPointWriter implements AutoCloseable {
 
      // added as variables just as they are
   private Map<String, Variable> extraMap;
+  private Map<String, Dimension> dimMap = new HashMap<>();
+
   protected void addExtraVariables() throws IOException {
     if (extra == null) return;
     if (extraMap == null) extraMap = new HashMap<>();
 
-    Map<String, Dimension> dimMap = addDimensionsClassic(extra);
+    addDimensionsClassic(extra, dimMap);
 
     for (VariableSimpleIF vs : extra) {
       List<Dimension> dims = makeDimensionList(dimMap, vs.getDimensions());
@@ -321,15 +323,23 @@ public class CFPointWriter implements AutoCloseable {
 
    // added as variables with the unlimited (record) dimension
   protected void addCoordinatesClassic(Dimension recordDim, List<VariableSimpleIF> coords, Map<String, Variable> varMap) throws IOException {
-    Map<String, Dimension> dimMap = addDimensionsClassic(coords);
+    addDimensionsClassic(coords, dimMap);
 
-    for (VariableSimpleIF vs : coords) {
-      List<Dimension> dims = makeDimensionList(dimMap, vs.getDimensions());
+    for (VariableSimpleIF oldVar : coords) {
+      List<Dimension> dims = makeDimensionList(dimMap, oldVar.getDimensions());
       dims.add(0, recordDim);
-      Variable mv = writer.addVariable(null, vs.getShortName(), vs.getDataType(), dims);
-      for (Attribute att : vs.getAttributes())
-        mv.addAttribute(att);
-      varMap.put(mv.getShortName(), mv);
+      Variable newVar;
+      if (oldVar.getDataType().equals(DataType.STRING)  && !writer.getVersion().isExtendedModel()) {
+        if (oldVar instanceof Variable)
+          newVar = writer.addStringVariable(null, (Variable) oldVar, dims);
+        else
+          newVar = writer.addStringVariable(null, oldVar.getShortName(), dims, 20); // LOOK barf
+      } else {
+        newVar = writer.addVariable(null, oldVar.getShortName(), oldVar.getDataType(), dims);
+      }
+      for (Attribute att : oldVar.getAttributes())
+        newVar.addAttribute(att);
+      varMap.put(newVar.getShortName(), newVar);
     }
 
   }
@@ -348,7 +358,7 @@ public class CFPointWriter implements AutoCloseable {
 
    // added as variables with the unlimited (record) dimension
   protected void addDataVariablesClassic(Dimension recordDim, StructureData stnData, Map<String, Variable> varMap, String coordVars) throws IOException {
-    Map<String, Dimension> dimMap = addDimensionsClassic(dataVars);
+    addDimensionsClassic(dataVars, dimMap);
 
     for (StructureMembers.Member m : stnData.getMembers()) {
       VariableSimpleIF oldVar = getDataVar(m.getName());
@@ -371,8 +381,11 @@ public class CFPointWriter implements AutoCloseable {
 
       Variable newVar;
        if (oldVar.getDataType().equals(DataType.STRING)  && !writer.getVersion().isExtendedModel()) {
-         // Group parent = writer.getNetcdfFile().getRootGroup();
-         newVar = writer.addStringVariable(null, (Variable) oldVar, dims); // LOOK can we cast to Variable ? LOOK reading oldVar for strlen
+         if (oldVar instanceof Variable)
+          newVar = writer.addStringVariable(null, (Variable) oldVar, dims);
+        else
+          newVar = writer.addStringVariable(null, oldVar.getShortName(), dims, 20); // LOOK barf
+
        } else {
          newVar = writer.addVariable(null, oldVar.getShortName(), oldVar.getDataType(), dims);
        }
@@ -423,9 +436,8 @@ public class CFPointWriter implements AutoCloseable {
 
   // classic model: no private dimensions
   private int fakeDims = 0;
-  protected Map<String, Dimension> addDimensionsClassic(List<? extends VariableSimpleIF> vars) throws IOException {
+  protected void addDimensionsClassic(List<? extends VariableSimpleIF> vars, Map<String, Dimension> dimMap) throws IOException {
     Set<Dimension> oldDims = new HashSet<>(20);
-    Map<String, Dimension> newDims = new HashMap<>(20);
 
     // find all dimensions needed by these variables
     for (VariableSimpleIF var : vars) {
@@ -436,11 +448,11 @@ public class CFPointWriter implements AutoCloseable {
     // add them
     for (Dimension d : oldDims) {
       String dimName = (d.getShortName() == null) ? "fake"+fakeDims++ : d.getShortName();
-      Dimension newDim = writer.addDimension(null, dimName, d.getLength(), true, false, d.isVariableLength());
-      newDims.put(d.getShortName(), newDim);
+      if (!writer.hasDimension(null, dimName)) {
+        Dimension newDim = writer.addDimension(null, dimName, d.getLength(), true, false, d.isVariableLength());
+        dimMap.put(d.getShortName(), newDim);
+      }
     }
-
-    return newDims;
   }
 
   protected List<Dimension> makeDimensionList(Map<String, Dimension> dimMap, List<Dimension> oldDims) throws IOException {
@@ -448,7 +460,10 @@ public class CFPointWriter implements AutoCloseable {
 
     // find all dimensions needed by the coord variables
     for (Dimension dim : oldDims) {
-      result.add( dimMap.get(dim.getShortName()));
+      Dimension newDim = dimMap.get(dim.getShortName());
+      if (null == newDim)
+        System.out.println("HEY");
+      result.add( newDim);
     }
 
     return result;

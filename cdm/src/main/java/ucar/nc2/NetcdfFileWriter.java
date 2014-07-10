@@ -344,6 +344,11 @@ public class NetcdfFileWriter {
     return dim;
   }
 
+  public boolean hasDimension(Group g, String dimName) {
+    if (g == null) g = ncfile.getRootGroup();
+    return g.findDimension(dimName) != null;
+  }
+
   private String makeValidObjectName(String name) {
     if (!isValidObjectName(name)) {
       String nname = createValidObjectName(name);

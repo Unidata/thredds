@@ -95,9 +95,10 @@ public class WriterCFStationCollection extends CFPointWriter {
     super(fileOut, atts, new CFPointWriterConfig(version));
   }
 
-  public WriterCFStationCollection(String fileOut, List<Attribute> atts, CFPointWriterConfig config) throws IOException {
+  public WriterCFStationCollection(String fileOut, List<Attribute> atts, List<Variable> extra, CFPointWriterConfig config) throws IOException {
     super(fileOut, atts, config);
     writer.addGroupAttribute(null, new Attribute(CF.FEATURE_TYPE, CF.FeatureType.timeSeries.name()));
+    setExtraVariables(extra);
   }
 
   public void writeHeader(List<StationFeature> stns, List<VariableSimpleIF> dataVars, DateUnit timeUnit, String altUnits, StationPointFeature spf) throws IOException {
@@ -117,6 +118,8 @@ public class WriterCFStationCollection extends CFPointWriter {
     coords.add(VariableSimpleImpl.makeScalar(stationIndexName, "station index for this observation record", null, DataType.INT)
             .add(new Attribute(CF.INSTANCE_DIMENSION, stationDimName)));
 
+    addExtraVariables();
+
     if (writer.getVersion().isExtendedModel()) {
       addStations(stns, stnData, true);
       record = (Structure) writer.addVariable(null, recordName, DataType.STRUCTURE, recordDimName);
@@ -124,7 +127,6 @@ public class WriterCFStationCollection extends CFPointWriter {
       addDataVariablesExtended(obsData, coordNames.toString());
       record.calcElementSize();
       writer.create();
-      //writeStationDataExtended(stns);
 
     } else {
       addStations(stns, stnData, false);
@@ -132,7 +134,6 @@ public class WriterCFStationCollection extends CFPointWriter {
       addDataVariablesClassic(recordDim, obsData, dataMap, coordNames.toString());
       writer.create();
       record = writer.addRecordStructure(); // netcdf3
-      //writeStationData(stns); // write out the station info
     }
 
     int count = 0;
@@ -142,6 +143,8 @@ public class WriterCFStationCollection extends CFPointWriter {
       stationMap.put(stn.getName(), count);
       count++;
     }
+
+    writeExtraVariables();
   }
 
   private void addStations(List<StationFeature> stnList, StructureData stnData, boolean isExtended) throws IOException {

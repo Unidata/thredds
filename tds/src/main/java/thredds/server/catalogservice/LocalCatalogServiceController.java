@@ -148,7 +148,7 @@ public class LocalCatalogServiceController {
     this.catalogSupportOnly = catalogSupportOnly;
   }
 
-  @RequestMapping(value = {"/**/*.xml"}, method = RequestMethod.GET)
+  @RequestMapping(value = {"/**/*.xml"}, method = {RequestMethod.GET, RequestMethod.HEAD})
   protected ModelAndView handleXmlRequest(HttpServletRequest request, HttpServletResponse response) throws Exception {
     try {
       // Bind HTTP request to a LocalCatalogRequest.
@@ -222,7 +222,7 @@ public class LocalCatalogServiceController {
     }
   }
 
-  @RequestMapping(value = {"/**/*.html"}, method = RequestMethod.GET)
+  @RequestMapping(value = {"/**/*.html"}, method = {RequestMethod.GET, RequestMethod.HEAD})
   protected ModelAndView handleHtmlRequest(HttpServletRequest request, HttpServletResponse response) throws Exception {
     try {
       // Bind HTTP request to a LocalCatalogRequest.

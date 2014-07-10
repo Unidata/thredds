@@ -176,6 +176,11 @@ public class PointDatasetImpl extends FeatureDatasetImpl implements FeatureDatas
         sf.format(" %s %s %n", npfc.getCollectionFeatureType(), npfc.getName());
         sf.format("   npts = %d %n", npfc.size());
         sf.format("isMultipleNested = %s %n", npfc.isMultipleNested());
+        List<Variable> extra = npfc.getExtraVariables();
+        if (extra.size() > 0) {
+          sf.format("  extra variables%n");
+          for (Variable v : extra) sf.format("     %s%n", v.getNameAndDimensions());
+        }
         sf.format("timeUnit = %s %n", npfc.getTimeUnit());
         sf.format(" altUnit = %s %n", npfc.getAltUnits());
       }

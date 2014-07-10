@@ -66,12 +66,14 @@ public class WriterCFPointCollection extends CFPointWriter {
   } */
 
   public WriterCFPointCollection(NetcdfFileWriter.Version version, String fileOut, List<Attribute> atts) throws IOException {
-    this(fileOut, atts, new CFPointWriterConfig(version));
+    this(fileOut, atts, null, new CFPointWriterConfig(version));
   }
 
-  public WriterCFPointCollection(String fileOut, List<Attribute> atts, CFPointWriterConfig config) throws IOException {
-    super(fileOut, atts, config);
+  public WriterCFPointCollection(String fileOut, List<Attribute> globalAtts, List<Variable> extra, CFPointWriterConfig config) throws IOException {
+  //public WriterCFPointCollection(String fileOut, List<Attribute> atts, CFPointWriterConfig config) throws IOException {
+    super(fileOut, globalAtts, config);
     writer.addGroupAttribute(null, new Attribute(CF.FEATURE_TYPE, CF.FeatureType.point.name()));
+    setExtraVariables(extra);
   }
 
   public void writeHeader(List<VariableSimpleIF> vars, DateUnit timeUnit, String altUnits, PointFeature pf) throws IOException {
@@ -93,6 +95,9 @@ public class WriterCFPointCollection extends CFPointWriter {
       coordNames.format(" %s", altName);
     }
 
+    addExtraVariables();
+
+
     if (writer.getVersion().isExtendedModel()) {
       record = (Structure) writer.addVariable(null, recordName, DataType.STRUCTURE, recordDimName);
       addCoordinatesExtended(record, coords);
@@ -106,6 +111,9 @@ public class WriterCFPointCollection extends CFPointWriter {
       writer.create();
       if (!noUnlimitedDimension) record = writer.addRecordStructure(); // netcdf3
     }
+
+    writeExtraVariables();
+
   }
 
   /////////////////////////////////////////////////////////

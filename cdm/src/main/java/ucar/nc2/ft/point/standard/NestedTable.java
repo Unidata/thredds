@@ -33,6 +33,7 @@
 package ucar.nc2.ft.point.standard;
 
 import ucar.nc2.*;
+import ucar.nc2.dataset.CoordinateAxis;
 import ucar.nc2.ft.*;
 import ucar.ma2.StructureDataIteratorLimited;
 import ucar.nc2.ft.point.StationFeature;
@@ -109,7 +110,7 @@ public class NestedTable {
     if (featureType == null)
       featureType = FeatureDatasetFactoryManager.findFeatureType(ds);
 
-    // look for joins with extra variables
+    /* look for joins with extra variables
     t = leaf;
     while (t != null) {
       if (t.extraJoins != null) {
@@ -118,7 +119,7 @@ public class NestedTable {
         }
       }
       t = t.parent; // recurse upwards
-    }
+    } */
 
     // will find the first one, starting at the leaf and going up
     timeVE = findCoordinateAxis(Table.CoordName.Time, leaf, 0);
@@ -141,6 +142,12 @@ public class NestedTable {
       if (nlevels == 1) featureType = FeatureType.POINT;
       if (nlevels == 2) featureType = FeatureType.STATION;
       if (nlevels == 3) featureType = FeatureType.STATION_PROFILE;
+    }
+
+        // look for coordinates that are not part of the extras
+    for (CoordinateAxis axis : ds.getCoordinateAxes()) {
+      if (!isCoordinate(axis) && !isExtra(axis))
+        addExtraVariable(axis);
     }
 
     /* check for singleton
@@ -175,6 +182,23 @@ public class NestedTable {
     if (v == null) return;
     if (extras == null) extras = new ArrayList<>();
     extras.add(v);
+  }
+
+  private boolean isExtra( Variable v) {
+    if (v == null) return false;
+    if (extras == null) return false;
+    return extras.contains(v);
+  }
+
+  private boolean isCoordinate( Variable v) {
+    if (v == null) return false;
+    String name = v.getShortName();
+    return  (latVE != null && latVE.axisName.equals(name)) ||
+            (lonVE != null && lonVE.axisName.equals(name)) ||
+            (altVE != null && altVE.axisName.equals(name)) ||
+            (stnAltVE != null && stnAltVE.axisName.equals(name)) ||
+            (timeVE != null && timeVE.axisName.equals(name)) ||
+            (nomTimeVE != null && nomTimeVE.axisName.equals(name));
   }
 
   // look for a coord axis of the given type in the table and its parents

@@ -110,7 +110,8 @@ public class CatalogRadarServerController extends AbstractController {
    * @return ModelAndView
    * @throws Exception
    */
-  @RequestMapping(value = {"/radarServer/**/catalog.xml", "/radarServer/**/catalog.html", "/radarServer/**/dataset.xml", "/radarServer/**/dataset.html"}, method = RequestMethod.GET)
+  @RequestMapping(value = {"/radarServer/**/catalog.xml", "/radarServer/**/catalog.html", "/radarServer/**/dataset.xml", "/radarServer/**/dataset.html"},
+          method = {RequestMethod.GET, RequestMethod.HEAD})
   protected ModelAndView handleRequestInternal(HttpServletRequest request,
                                                HttpServletResponse response) throws Exception {
     DatasetRepository.init(tdsContext);
