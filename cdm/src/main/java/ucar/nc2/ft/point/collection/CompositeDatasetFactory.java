@@ -64,48 +64,44 @@ public class CompositeDatasetFactory {
 
     TimedCollection collection = new TimedCollection(dcm, errlog);
     if (collection.getDatasets().size() == 0) {
-      throw new FileNotFoundException("Collection is empty; spec="+dcm);
+      throw new FileNotFoundException("Collection is empty; spec=" + dcm);
     }
 
-    DateUnit timeUnit = null;
-    String altUnits = null;
-
+    FeatureCollection first;
     TimedCollection.Dataset d = collection.getPrototype();
     try (FeatureDatasetPoint proto = (FeatureDatasetPoint) FeatureDatasetFactoryManager.open(wantFeatureType, d.getLocation(), null, errlog)) {
       if (proto == null) {
-        throw new FileNotFoundException("Collection dataset is not a FeatureDatasetPoint; spec="+dcm);
+        throw new FileNotFoundException("Collection dataset is not a FeatureDatasetPoint; spec=" + dcm);
       }
       if (wantFeatureType == FeatureType.ANY_POINT) wantFeatureType = proto.getFeatureType();
 
       List<FeatureCollection> fcList = proto.getPointFeatureCollectionList();
       if (fcList.size() == 0) {
-        throw new FileNotFoundException("FeatureCollectionList is empty; spec="+dcm);
+        throw new FileNotFoundException("FeatureCollectionList is empty; spec=" + dcm);
       }
-      PointFeatureCollection first = (PointFeatureCollection) fcList.get(0);
-      timeUnit = first.getTimeUnit();
-      altUnits = first.getAltUnits();
+      first = fcList.get(0);
+
+      //LatLonRect bb = null;
+      FeatureCollection fc = null;
+      switch (wantFeatureType) {
+        case POINT:
+          PointFeatureCollection firstPc = (PointFeatureCollection) first;
+          CompositePointCollection pfc = new CompositePointCollection(dcm.getCollectionName(), firstPc.getTimeUnit(), firstPc.getAltUnits(), collection);
+          //bb = pfc.getBoundingBox();
+          fc = pfc;
+          break;
+        case STATION:
+          NestedPointFeatureCollection firstNpc = (NestedPointFeatureCollection) first;
+          CompositeStationCollection sfc = new CompositeStationCollection(dcm.getCollectionName(), firstNpc.getTimeUnit(), firstNpc.getAltUnits(), collection, null, null);
+          //bb = sfc.getBoundingBox();
+          fc = sfc;
+          break;
+        default:
+          return null;
+      }
+
+      return new CompositePointDataset(location, wantFeatureType, fc, collection, null);
     }
-
-
-
-    //LatLonRect bb = null;
-    FeatureCollection fc = null;
-    switch (wantFeatureType) {
-      case POINT:
-        CompositePointCollection pfc = new CompositePointCollection(dcm.getCollectionName(), timeUnit, altUnits, collection);
-        //bb = pfc.getBoundingBox();
-        fc = pfc;
-        break;
-      case STATION:
-        CompositeStationCollection sfc = new CompositeStationCollection(dcm.getCollectionName(), timeUnit, altUnits, collection, null, null);
-        //bb = sfc.getBoundingBox();
-        fc = sfc;
-        break;
-      default:
-        return null;
-    }
-
-    return new CompositePointDataset(location, wantFeatureType, fc, collection, null);
   }
 
   private static class CompositePointDataset extends PointDatasetImpl implements UpdateableCollection  {

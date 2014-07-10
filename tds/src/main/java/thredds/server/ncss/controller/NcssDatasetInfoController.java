@@ -113,13 +113,8 @@ class NcssDatasetInfoController extends AbstractNcssController {
 
 
   @RequestMapping(value = {"/ncss/**/station.xml"})
-  void getStations(HttpServletRequest req, HttpServletResponse res, @Valid NcssParamsBean params,
-                   BindingResult validationResult) throws IOException {
+  void getStations(HttpServletRequest req, HttpServletResponse res, NcssParamsBean params) throws IOException {
 
-    if (validationResult.hasErrors()) {
-      handleValidationErrorsResponse(res, HttpServletResponse.SC_BAD_REQUEST, validationResult);
-
-    } else {
       String datasetPath = getDatasetPath(req);
       extractRequestPathInfo(datasetPath);
       FeatureDataset fd = null;
@@ -154,7 +149,6 @@ class NcssDatasetInfoController extends AbstractNcssController {
       } finally {
         if (fd != null) fd.close();
       }
-    }
   }
 
   private String buildDatasetUrl(String path) {
