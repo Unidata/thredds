@@ -3,7 +3,10 @@ package ucar.nc2.ogc.waterml;
 import net.opengis.waterml.x20.CollectionType;
 import ucar.nc2.VariableSimpleIF;
 import ucar.nc2.constants.FeatureType;
-import ucar.nc2.ft.*;
+import ucar.nc2.ft.FeatureCollection;
+import ucar.nc2.ft.FeatureDatasetPoint;
+import ucar.nc2.ft.StationTimeSeriesFeature;
+import ucar.nc2.ft.StationTimeSeriesFeatureCollection;
 import ucar.nc2.ogc.MarshallingUtil;
 import ucar.nc2.ogc.om.NcOMObservationPropertyType;
 
@@ -32,9 +35,11 @@ public abstract class NcCollectionType {
                 StationTimeSeriesFeature stationFeat = stationFeatColl.next();
 
                 for (VariableSimpleIF dataVar : dataVars) {
-                    // wml2:observationMember
-                    NcOMObservationPropertyType.initObservationMember(
-                            collection.addNewObservationMember(), stationFeat, dataVar);
+                    if (dataVar.getDataType().isNumeric()) {
+                        // wml2:observationMember
+                        NcOMObservationPropertyType.initObservationMember(
+                                collection.addNewObservationMember(), stationFeat, dataVar);
+                    }
                 }
             }
         } finally {

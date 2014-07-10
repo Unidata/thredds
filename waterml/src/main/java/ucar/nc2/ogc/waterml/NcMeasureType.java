@@ -25,8 +25,8 @@ public abstract class NcMeasureType {
         Array dataArray = pointFeat.getData().getArray(firstDataMember);
         assert dataArray.getSize() == 1 : String.format("Expected array to be scalar, but its shape was %s.",
                 Arrays.toString(dataArray.getShape()));
-        double dataVal = dataArray.getDouble(0);
 
+        double dataVal = dataArray.getDouble(0);
         value.setDoubleValue(dataVal);
 
         return value;

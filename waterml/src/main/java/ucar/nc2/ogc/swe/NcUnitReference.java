@@ -13,6 +13,10 @@ public class NcUnitReference {
     public static UnitReference initUom(UnitReference uom, VariableSimpleIF dataVar) {
         // @code
         String udunits = dataVar.getUnitsString();
+        if (udunits == null) {  // Variable may not have a "units" attribute.
+            return null;
+        }
+
         String ucum = EDUnits.udunitsToUcum(udunits);
         uom.setCode(ucum);
 

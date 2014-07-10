@@ -1,5 +1,6 @@
 package ucar.nc2.ogc.waterml;
 
+import net.opengis.swe.x20.UnitReference;
 import net.opengis.waterml.x20.TVPMeasurementMetadataType;
 import ucar.nc2.VariableSimpleIF;
 import ucar.nc2.ogc.gml.NcReferenceType;
@@ -14,7 +15,10 @@ public abstract class NcTVPMeasurementMetadataType {
     public static TVPMeasurementMetadataType initDefaultTVPMeasurementMetadata(
             TVPMeasurementMetadataType defaultTVPMeasurementMetadata, VariableSimpleIF dataVar) {
         // wml2:uom
-        NcUnitReference.initUom(defaultTVPMeasurementMetadata.addNewUom(), dataVar);
+        UnitReference uom = NcUnitReference.initUom(defaultTVPMeasurementMetadata.addNewUom(), dataVar);
+        if (uom == null) {
+            defaultTVPMeasurementMetadata.unsetUom();
+        }
 
         // wml2:interpolationType
         NcReferenceType.initInterpolationType(defaultTVPMeasurementMetadata.addNewInterpolationType());
