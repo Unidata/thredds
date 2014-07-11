@@ -32,9 +32,6 @@
 
 package ucar.nc2.ft.point.writer;
 
-import java.io.IOException;
-import java.util.*;
-
 import ucar.ma2.*;
 import ucar.nc2.*;
 import ucar.nc2.constants.CDM;
@@ -49,9 +46,10 @@ import ucar.nc2.ft.point.StationFeature;
 import ucar.nc2.ft.point.StationPointFeature;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.units.DateUnit;
-import ucar.unidata.geoloc.LatLonPointImpl;
-import ucar.unidata.geoloc.LatLonRect;
 import ucar.unidata.geoloc.Station;
+
+import java.io.IOException;
+import java.util.*;
 
 /**
  * Write a CF "Discrete Sample" station file.
@@ -167,7 +165,7 @@ public class WriterCFStationCollection extends CFPointWriter {
       if (useWmoId) wmo_strlen = Math.max(wmo_strlen, station.getWmoId().length());
     }
 
-    llbb = getBoundingBox(stnList); // gets written in super.finish();
+    llbb = CFPointWriterUtils.getBoundingBox(stnList); // gets written in super.finish();
 
     // add the dimensions : extendded model can use an unlimited dimension
     //Dimension stationDim = isExtended ? writer.addDimension(null, stationDimName, 0, true, true, false) : writer.addDimension(null, stationDimName, nstns);
@@ -362,21 +360,6 @@ public class WriterCFStationCollection extends CFPointWriter {
     }
 
     recno++;
-  }
-
-  private LatLonRect getBoundingBox(List stnList) {
-    ucar.unidata.geoloc.Station s = (ucar.unidata.geoloc.Station) stnList.get(0);
-    LatLonPointImpl llpt = new LatLonPointImpl();
-    llpt.set(s.getLatitude(), s.getLongitude());
-    LatLonRect rect = new LatLonRect(llpt, .001, .001);
-
-    for (int i = 1; i < stnList.size(); i++) {
-      s = (ucar.unidata.geoloc.Station) stnList.get(i);
-      llpt.set(s.getLatitude(), s.getLongitude());
-      rect.extend(llpt);
-    }
-
-    return rect;
   }
 
   ////////////////////////////

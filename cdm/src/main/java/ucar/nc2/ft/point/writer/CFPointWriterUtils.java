@@ -35,9 +35,6 @@
  */
 package ucar.nc2.ft.point.writer;
 
-import java.util.Iterator;
-import java.util.List;
-
 import ucar.ma2.Array;
 import ucar.ma2.DataType;
 import ucar.ma2.StructureMembers.Member;
@@ -46,6 +43,9 @@ import ucar.nc2.Variable;
 import ucar.unidata.geoloc.LatLonPointImpl;
 import ucar.unidata.geoloc.LatLonRect;
 import ucar.unidata.geoloc.Station;
+
+import java.util.Iterator;
+import java.util.List;
 
 /**
  * @author mhermida
@@ -98,17 +98,29 @@ public final class CFPointWriterUtils {
 		
 	}
 
-	public static LatLonRect getBoundingBox(List<Station> stnList) {
+	public static LatLonRect getBoundingBox(List<? extends Station> stnList) {
 		Station s =  stnList.get(0);
 		LatLonPointImpl llpt = new LatLonPointImpl();
 		llpt.set(s.getLatitude(), s.getLongitude());
-		LatLonRect rect = new LatLonRect(llpt, .001, .001);
+		LatLonRect rect = new LatLonRect(llpt, 0, 0);
 
 		for (int i = 1; i < stnList.size(); i++) {
 			s = stnList.get(i);
 			llpt.set(s.getLatitude(), s.getLongitude());
 			rect.extend(llpt);
 		}
+
+    // To give a little "wiggle room", we're going to slightly expand the bounding box.
+    double newLowerLeftLat = rect.getLowerLeftPoint().getLatitude() - .0005;
+    double newLowerLeftLon = rect.getLowerLeftPoint().getLongitude() - .0005;
+    LatLonPointImpl newLowerLeftPoint = new LatLonPointImpl(newLowerLeftLat, newLowerLeftLon);
+
+    double newUpperRightLat = rect.getUpperRightPoint().getLatitude() + .0005;
+    double newUpperRightLon = rect.getUpperRightPoint().getLongitude() + .0005;
+    LatLonPointImpl newUpperRightPoint = new LatLonPointImpl(newUpperRightLat, newUpperRightLon);
+
+    rect.extend(newLowerLeftPoint);
+    rect.extend(newUpperRightPoint);
 
 		return rect;
 	}
