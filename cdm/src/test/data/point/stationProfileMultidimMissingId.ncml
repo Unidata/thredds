@@ -4,8 +4,8 @@
   <dimension name="z" length="3" />
   <dimension name="time" length="3" />
 
-  <attribute name="CF:featureType" value="stationProfile" />
-  <attribute name="Conventions" value="CF-1.5" />
+  <attribute name="featureType" value="timeSeriesProfile" />
+  <attribute name="Conventions" value="CF-1.6" />
   
   <variable name="lon" shape="station" type="float">
     <attribute name="long_name" value="longitude" />
@@ -18,7 +18,7 @@
     <values start="40" increment="2"/>
   </variable>
   <variable name="stationId" shape="station" type="int">
-    <attribute name="cf_role" value="station_id" />
+    <attribute name="cf_role" value="timeseries_id" />
     <attribute name="missing_value" type="int" value="-9999" />
     <values>1 2 -9999 4</values>
   </variable>

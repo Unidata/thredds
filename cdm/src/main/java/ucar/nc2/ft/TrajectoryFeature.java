@@ -32,7 +32,10 @@
  */
 package ucar.nc2.ft;
 
+import ucar.ma2.StructureData;
 import ucar.nc2.units.DateRange;
+
+import java.io.IOException;
 
 /**
  * A set of observations along a 1 dimensional path, connected in space and time.
@@ -61,5 +64,12 @@ public interface TrajectoryFeature extends PointFeatureCollection {
    * @return BoundingBox for the trajectory, or null if not known.
    */
   public ucar.unidata.geoloc.LatLonRect getBoundingBox();
+
+  /**
+    * The actual data of this feature.
+    * @return the actual data of this feature.
+    * @throws java.io.IOException on i/o error
+    */
+   public StructureData getFeatureData() throws IOException;
 
 }

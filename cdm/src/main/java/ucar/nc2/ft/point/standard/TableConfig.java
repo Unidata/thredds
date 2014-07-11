@@ -194,5 +194,11 @@ public class TableConfig {
     return null;
   }
 
+  String getStart() {
+    if (start != null) return start;
+    if (parent != null) return parent.getStart();
+    return null;
+  }
+
 
 }

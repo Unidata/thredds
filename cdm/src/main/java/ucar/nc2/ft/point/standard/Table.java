@@ -445,8 +445,7 @@ public abstract class Table {
     TableContiguous(NetcdfDataset ds, TableConfig config) {
       super(ds, config);
       this.ds = ds;
-      startVarName = config.start;
-      if (startVarName == null) startVarName = config.parent.start;
+      startVarName = config.getStart();
       numRecordsVarName = config.getNumRecords();
 
       addNonDataVariable(startVarName);
@@ -812,6 +811,7 @@ public abstract class Table {
            int[] shape = new int[rank - 3];
            System.arraycopy(v.getShape(), 3, shape, 0, rank - 3);
            sm.addMember(v.getShortName(), v.getDescription(), v.getUnitsString(), v.getDataType(), shape);
+           this.cols.put(v.getShortName(), v);
          }
 
        } else {
@@ -823,6 +823,7 @@ public abstract class Table {
              int[] shape = new int[rank - 3];
              System.arraycopy(v.getShape(), 3, shape, 0, rank - 3);
              sm.addMember(v.getShortName(), v.getDescription(), v.getUnitsString(), v.getDataType(), shape);
+             this.cols.put(v.getShortName(), v);
            }
          }
        }
@@ -846,7 +847,8 @@ public abstract class Table {
      }
 
      public StructureDataIterator getStructureDataIterator(Cursor cursor, int bufferSize) throws IOException {
-       StructureData parentStruct = cursor.tableData[2];
+       StructureDataProxy proxyStruct = (StructureDataProxy) cursor.tableData[2];
+       StructureData parentStruct = proxyStruct.getOriginalStructureData(); // tricky dicky
        int middleIndex = cursor.recnum[1];
        ArrayStructureMA asma = new ArrayStructureMA(sm, new int[]{inner.getLength()});
        for (String colName : cols.keySet()) {

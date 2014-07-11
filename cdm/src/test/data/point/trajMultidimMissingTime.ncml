@@ -4,8 +4,8 @@
   <dimension name="traj" length="2"/>
   <dimension name="obs" length="10"/>
 
-  <attribute name="CF:featureType" value="trajectory" />
-  <attribute name="Conventions" value="CF-1.5" />
+  <attribute name="featureType" value="trajectory" />
+  <attribute name="Conventions" value="CF-1.6" />
   
   <variable name="lon" shape="traj obs" type="float">
     <attribute name="long_name" value="longitude" />

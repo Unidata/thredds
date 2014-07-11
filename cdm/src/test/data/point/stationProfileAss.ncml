@@ -4,8 +4,8 @@
   <dimension name="profile" length="6"/>
   <dimension name="obs" length="14"/>
 
-  <attribute name="CF:featureType" value="stationProfile" />
-  <attribute name="Conventions" value="CF-1.5" />
+  <attribute name="featureType" value="timeSeriesProfile" />
+  <attribute name="Conventions" value="CF-1.6" />
   
   <variable name="lon" shape="s" type="float">
     <attribute name="long_name" value="longitude" />
@@ -18,11 +18,11 @@
     <values start="40" increment="2"/>
   </variable>
   <variable name="stationId" shape="s" type="int">
-    <attribute name="cf_role" value="station_id" />
+    <attribute name="cf_role" value="timeseries_id" />
     <values start="666" increment="6"/>
   </variable>
   <variable name="stationAlt" shape="s" type="int">
-    <attribute name="standard_name" value="station_altitude" />
+    <attribute name="standard_name" value="surface_altitude" />
     <values start="100" increment="6"/>
   </variable>
   <variable name="stationIndex" shape="profile" type="int">

@@ -4,8 +4,8 @@
   <dimension name="obs" length="6"/>
   <dimension name="z" length="2"/>
 
-  <attribute name="CF:featureType" value="trajectory" />
-  <attribute name="Conventions" value="CF-1.5" />
+  <attribute name="featureType" value="trajectory" />
+  <attribute name="Conventions" value="CF-1.6" />
   
   <variable name="lon" shape="obs" type="float">
     <attribute name="long_name" value="longitude" />
@@ -22,7 +22,7 @@
     <values start="666" increment="6"/>
   </variable>
   <variable name="trajIndex" shape="obs" type="int">
-    <attribute name="CF:ragged_parent_index" value="traj" />
+    <attribute name="instance_dimension" value="traj" />
     <values>0 0 0 1 1 2</values>
   </variable>
 

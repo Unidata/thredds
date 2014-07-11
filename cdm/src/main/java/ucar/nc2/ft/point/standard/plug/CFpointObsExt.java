@@ -76,12 +76,12 @@ public class CFpointObsExt extends CFpointObs {
         return getStationConfig(ds, info, errlog);
       case profile:
         return getProfileConfig(ds, info, errlog);
-      /* case trajectory:
+      case trajectory:
         return getTrajectoryConfig(ds, info, errlog);
       case timeSeriesProfile:
         return getTimeSeriesProfileConfig(ds, info, errlog);
       case trajectoryProfile:
-        return getSectionConfig(ds, info, errlog);  */
+        return getSectionConfig(ds, info, errlog);
     }
 
     return null;

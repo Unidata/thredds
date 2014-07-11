@@ -220,46 +220,6 @@ public class CFpointObs extends TableConfigurerImpl {
 
   ////
 
-  private TableConfig getTrajectoryConfig(NetcdfDataset ds, EncodingInfo info, Formatter errlog) throws IOException {
-    if (!identifyEncodingTraj(ds, info, errlog)) return null;
-
-    TableConfig trajTable = makeStructTable(ds, FeatureType.TRAJECTORY, info, errlog);
-    if (trajTable == null) return null;
-    trajTable.feature_id = identifyIdVariableName(ds, CF.FeatureType.trajectory);
-    if (trajTable.feature_id == null) {
-      errlog.format("CFpointObs getTrajectoryConfig cant find a trajectoy id %n");
-    }
-
-    // obs table
-    //Variable time = CoordSysEvaluator.findCoordByType(ds, AxisType.Time);
-    //Dimension obsDim = time.getDimension(time.getRank() - 1); // may be time(time) or time(traj, obs)
-
-    TableConfig obsConfig = null;
-    switch (info.encoding) {
-      case single:
-        obsConfig = makeSingle(ds, info.childDim, errlog);
-        break;
-      case multidim:
-        obsConfig = makeMultidimInner(ds, trajTable, info.childDim, info, errlog);
-        break;
-      case raggedContiguous:
-        trajTable.numRecords = info.ragged_rowSize.getFullName();
-        obsConfig = makeRaggedContiguousChildTable(ds, info.parentDim, info.childDim, info.childStruct, errlog);
-        break;
-      case raggedIndex:
-        obsConfig = makeRaggedIndexChildTable(ds, info.parentDim, info.childDim, info.ragged_parentIndex, errlog);
-        break;
-      case flat:
-        throw new UnsupportedOperationException("CFpointObs: trajectory flat encoding");
-    }
-    if (obsConfig == null) return null;
-
-    trajTable.addChild(obsConfig);
-    return trajTable;
-  }
-
-  ////
-
   protected TableConfig getProfileConfig(NetcdfDataset ds, EncodingInfo info, Formatter errlog) throws IOException {
     if (!identifyEncodingProfile(ds, info, errlog)) return null;
 
@@ -308,7 +268,47 @@ public class CFpointObs extends TableConfigurerImpl {
 
   ////
 
-  private TableConfig getTimeSeriesProfileConfig(NetcdfDataset ds, EncodingInfo info, Formatter errlog) throws IOException {
+  protected TableConfig getTrajectoryConfig(NetcdfDataset ds, EncodingInfo info, Formatter errlog) throws IOException {
+    if (!identifyEncodingTraj(ds, info, errlog)) return null;
+
+    TableConfig trajTable = makeStructTable(ds, FeatureType.TRAJECTORY, info, errlog);
+    if (trajTable == null) return null;
+    trajTable.feature_id = identifyIdVariableName(ds, CF.FeatureType.trajectory);
+    if (trajTable.feature_id == null) {
+      errlog.format("CFpointObs getTrajectoryConfig cant find a trajectoy id %n");
+    }
+
+    // obs table
+    //Variable time = CoordSysEvaluator.findCoordByType(ds, AxisType.Time);
+    //Dimension obsDim = time.getDimension(time.getRank() - 1); // may be time(time) or time(traj, obs)
+
+    TableConfig obsConfig = null;
+    switch (info.encoding) {
+      case single:
+        obsConfig = makeSingle(ds, info.childDim, errlog);
+        break;
+      case multidim:
+        obsConfig = makeMultidimInner(ds, trajTable, info.childDim, info, errlog);
+        break;
+      case raggedContiguous:
+        trajTable.numRecords = info.ragged_rowSize.getFullName();
+        obsConfig = makeRaggedContiguousChildTable(ds, info.parentDim, info.childDim, info.childStruct, errlog);
+        break;
+      case raggedIndex:
+        obsConfig = makeRaggedIndexChildTable(ds, info.parentDim, info.childDim, info.ragged_parentIndex, errlog);
+        break;
+      case flat:
+        throw new UnsupportedOperationException("CFpointObs: trajectory flat encoding");
+    }
+    if (obsConfig == null) return null;
+
+    trajTable.addChild(obsConfig);
+    return trajTable;
+  }
+
+  ////
+
+  protected TableConfig getTimeSeriesProfileConfig(NetcdfDataset ds, EncodingInfo info, Formatter errlog) throws IOException {
     if (!identifyEncodingTimeSeriesProfile(ds, info, CF.FeatureType.timeSeriesProfile, errlog)) return null;
 
     VariableDS time = CoordSysEvaluator.findCoordByType(ds, AxisType.Time);
@@ -432,6 +432,7 @@ public class CFpointObs extends TableConfigurerImpl {
       case raggedIndex: {
         TableConfig profileTable = makeRaggedIndexChildTable(ds, info.parentDim, info.childDim, info.ragged_parentIndex, errlog);
         stationTable.addChild(profileTable);
+        profileTable.numRecords = info.ragged_rowSize.getFullName();
         TableConfig zTable = makeRaggedContiguousChildTable(ds, info.childDim, info.grandChildDim, info.childStruct, errlog);
         profileTable.addChild(zTable);
         break;
@@ -465,7 +466,7 @@ public class CFpointObs extends TableConfigurerImpl {
     return stationTable;
   }
 
-  private TableConfig getSectionConfig(NetcdfDataset ds, EncodingInfo info, Formatter errlog) throws IOException {
+  protected TableConfig getSectionConfig(NetcdfDataset ds, EncodingInfo info, Formatter errlog) throws IOException {
     if (!identifyEncodingSection(ds, info, CF.FeatureType.trajectoryProfile, errlog)) return null;
 
     TableConfig parentTable = makeStructTable(ds, FeatureType.SECTION, info, errlog);
@@ -566,6 +567,7 @@ public class CFpointObs extends TableConfigurerImpl {
       case raggedIndex: {
         TableConfig profileTable = makeRaggedIndexChildTable(ds, info.parentDim, info.childDim, info.ragged_parentIndex, errlog);
         parentTable.addChild(profileTable);
+        profileTable.numRecords = info.ragged_rowSize.getFullName();
         TableConfig zTable = makeRaggedContiguousChildTable(ds, info.childDim, info.grandChildDim, info.childStruct, errlog);
         profileTable.addChild(zTable);
         break;

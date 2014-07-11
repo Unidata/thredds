@@ -4,8 +4,8 @@
   <dimension name="z" length="2"/>
   <dimension name="obs" length="6"/>
 
-  <attribute name="CF:featureType" value="trajectory" />
-  <attribute name="Conventions" value="CF-1.5" />
+  <attribute name="featureType" value="trajectory" />
+  <attribute name="Conventions" value="CF-1.6" />
   
   <variable name="lon" shape="obs" type="float">
     <attribute name="long_name" value="longitude" />
@@ -22,7 +22,7 @@
     <values start="666" increment="6"/>
   </variable>
   <variable name="obsCount" shape="traj" type="int">
-    <attribute name="CF:ragged_row_count" value="obs" />
+    <attribute name="sample_dimension" value="obs" />
     <values>1 2 3</values>
   </variable>
 

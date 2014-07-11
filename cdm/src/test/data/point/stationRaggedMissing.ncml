@@ -29,7 +29,7 @@
     <values start="100" increment="6"/>
   </variable>
   <variable name="stationIndex" shape="obs" type="int">
-    <attribute name="CF:ragged_parent_index" value="s" />
+    <attribute name="instance_dimension" value="s" />
     <values>0 0 0 1 2 2</values>
   </variable>
 

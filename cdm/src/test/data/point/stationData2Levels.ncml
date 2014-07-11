@@ -56,7 +56,7 @@
   </variable>
   <variable name="stationAlt" shape="s" type="int">
     <attribute name="units" value="m" />
-    <attribute name="standard_name" value="station_altitude" />
+    <attribute name="standard_name" value="surface_altitude" />
     <values start="100" increment="6"/>
   </variable>
   <variable name="stationName" shape="s" type="string">

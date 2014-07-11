@@ -109,7 +109,7 @@ public class StandardTrajectoryCollectionImpl extends OneNestedPointCollectionIm
       cursor.currentIndex = 1;
       ft.addParentJoin(cursor); // there may be parent joins
 
-      return new StandardTrajectoryFeature(cursor);
+      return new StandardTrajectoryFeature(cursor, nextTraj);
     }
 
     public void setBufferSize(int bytes) { }
@@ -124,10 +124,12 @@ public class StandardTrajectoryCollectionImpl extends OneNestedPointCollectionIm
   // TrajectoryFeature using nested tables.
   private class StandardTrajectoryFeature extends TrajectoryFeatureImpl {
     Cursor cursor;
+    StructureData trajData;
 
-    StandardTrajectoryFeature(Cursor cursor) {
+    StandardTrajectoryFeature(Cursor cursor, StructureData trajData) {
       super(ft.getFeatureName(cursor), StandardTrajectoryCollectionImpl.this.getTimeUnit(), StandardTrajectoryCollectionImpl.this.getAltUnits(), -1);
       this.cursor = cursor;
+      this.trajData = trajData;
     }
 
     public PointFeatureIterator getPointFeatureIterator(int bufferSize) throws IOException {
@@ -137,6 +139,11 @@ public class StandardTrajectoryCollectionImpl extends OneNestedPointCollectionIm
       if ((boundingBox == null) || (dateRange == null) || (npts < 0))
         iter.setCalculateBounds(this);
       return iter;
+    }
+
+    @Override
+    public StructureData getFeatureData() {
+      return trajData;
     }
   }
 
