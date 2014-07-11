@@ -30,6 +30,7 @@
  *   NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
  *   WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
  */
+
 package ucar.nc2.ft.point.standard;
 
 import ucar.nc2.ft.point.PointIteratorFromStructureData;
@@ -39,7 +40,6 @@ import ucar.nc2.ft.point.StationPointFeature;
 import ucar.nc2.ft.PointFeature;
 import ucar.nc2.units.DateUnit;
 import ucar.ma2.StructureData;
-import ucar.unidata.geoloc.Station;
 
 import java.io.IOException;
 
@@ -75,8 +75,7 @@ public class StandardPointFeatureIterator extends PointIteratorFromStructureData
   }
 
   protected boolean isMissing() throws IOException {
-    if (ft.isTimeMissing(this.cursor)) return true;
-    return ft.isMissing(this.cursor);
+    return ft.isTimeMissing(this.cursor) || ft.isMissing(this.cursor);
   }
 
   private class StandardPointFeature extends PointFeatureImpl implements StationPointFeature {

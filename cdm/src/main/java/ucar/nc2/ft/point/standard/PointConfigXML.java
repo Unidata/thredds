@@ -58,7 +58,7 @@ import ucar.nc2.Structure;
 import ucar.ma2.DataType;
 
 /**
- * Helper class to convert a  TableConfig to and from XML
+ * Helper class to convert a TableConfig to and from XML
  *
  * @author caron
  * @since Aug 18, 2009
@@ -455,7 +455,7 @@ public class PointConfigXML {
     // divide up the variables between the parent and the child
     List<String> obsVars;
     List<Variable> vars = ds.getVariables();
-    List<String> parentVars = new ArrayList<String>(vars.size());
+    List<String> parentVars = new ArrayList<>(vars.size());
     obsVars = new ArrayList<>(vars.size());
     for (Variable orgV : vars) {
       if (orgV instanceof Structure) continue;

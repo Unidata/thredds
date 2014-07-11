@@ -218,7 +218,7 @@ public class CFPointWriter implements AutoCloseable {
   protected final boolean isExtendedModel;
 
   protected CFPointWriter(String fileOut, List<Attribute> atts, NetcdfFileWriter.Version version) throws IOException {
-    this(fileOut, atts, new CFPointWriterConfig(version));
+    this(fileOut, atts, null, new CFPointWriterConfig(version));
   }
 
   /**
@@ -228,8 +228,9 @@ public class CFPointWriter implements AutoCloseable {
    * @param config              configure
    * @throws IOException
    */
-  protected CFPointWriter(String fileOut, List<Attribute> atts, CFPointWriterConfig config) throws IOException {
+  protected CFPointWriter(String fileOut, List<Attribute> atts, List<Variable> extra, CFPointWriterConfig config) throws IOException {
     createWriter(fileOut, config);
+    setExtraVariables(extra);
     this.config = config;
     this.noTimeCoverage = config.noTimeCoverage;
     this.noUnlimitedDimension = (writer.getVersion() == NetcdfFileWriter.Version.netcdf3) && config.recDimensionLength >= 0;

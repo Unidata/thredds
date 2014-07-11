@@ -30,6 +30,7 @@
  *   NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
  *   WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
  */
+
 package ucar.nc2.ft.point.standard;
 
 import ucar.nc2.ft.point.SectionCollectionImpl;
@@ -75,7 +76,7 @@ public class StandardSectionCollectionImpl extends SectionCollectionImpl {
         cursor.currentIndex = 2;
         ft.addParentJoin(cursor); // there may be parent joins
 
-        return new StandardSectionFeature(cursor);
+        return new StandardSectionFeature(cursor, nextSection);
       }
 
       public boolean hasNext() throws IOException {
@@ -100,10 +101,12 @@ public class StandardSectionCollectionImpl extends SectionCollectionImpl {
   // a single section: a collection of profiles along a trajectory
   private class StandardSectionFeature extends SectionFeatureImpl {
     Cursor cursor;
+    StructureData sectionData;
 
-    StandardSectionFeature(Cursor cursor) {
+    StandardSectionFeature(Cursor cursor, StructureData sectionData) {
       super(ft.getFeatureName(cursor), StandardSectionCollectionImpl.this.getTimeUnit(), StandardSectionCollectionImpl.this.getAltUnits());
       this.cursor = cursor;
+      this.sectionData = sectionData;
     }
 
     @Override
@@ -114,6 +117,10 @@ public class StandardSectionCollectionImpl extends SectionCollectionImpl {
     @Override
     public NestedPointFeatureCollection subset(LatLonRect boundingBox) throws IOException {
       return null;  //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    public StructureData getFeatureData() throws IOException {
+      return sectionData;
     }
   }
 

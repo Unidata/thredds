@@ -30,6 +30,7 @@
  *   NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
  *   WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
  */
+
 package ucar.nc2.ft.point.standard;
 
 import ucar.nc2.*;
@@ -186,8 +187,7 @@ public class NestedTable {
 
   private boolean isExtra( Variable v) {
     if (v == null) return false;
-    if (extras == null) return false;
-    return extras.contains(v);
+    return extras != null && extras.contains(v);
   }
 
   private boolean isCoordinate( Variable v) {

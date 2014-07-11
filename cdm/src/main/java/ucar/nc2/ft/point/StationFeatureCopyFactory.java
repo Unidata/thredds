@@ -38,8 +38,6 @@ import ucar.ma2.StructureDataDeep;
 import ucar.ma2.StructureMembers;
 import ucar.nc2.ft.PointFeature;
 import ucar.nc2.units.DateUnit;
-import ucar.unidata.geoloc.Station;
-import ucar.unidata.geoloc.StationImpl;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -68,7 +66,7 @@ public class StationFeatureCopyFactory {
   public StationFeatureCopyFactory(StationPointFeature proto, DateUnit du) throws IOException {
     this.du = du;
     stationMap = new HashMap<>();
-    StructureData sdata = proto.getData();
+    StructureData sdata = proto.getDataAll();
     sm = new StructureMembers(sdata.getStructureMembers());
     sizeInBytes =  OBJECT_SIZE + POINTER_SIZE +       // PointFeatureCopy - 1 pointer                                             48
             2 * 8 + 2 * POINTER_SIZE +                // PointFeatureImpl - 2 doubles and 2 pointers                              32

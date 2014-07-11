@@ -78,9 +78,8 @@ public class WriterCFProfileCollection extends CFPointWriter {
   private Map<String, Variable> profileMap  = new HashMap<>();
 
   public WriterCFProfileCollection(String fileOut, List<Attribute> globalAtts, List<VariableSimpleIF> dataVars, List<Variable> extra, CFPointWriterConfig config) throws IOException {
-    super(fileOut, globalAtts, config);
+    super(fileOut, globalAtts, extra, config);
     this.dataVars = dataVars;
-    setExtraVariables(extra);
     writer.addGroupAttribute(null, new Attribute(CF.FEATURE_TYPE, CF.FeatureType.profile.name()));
   }
 

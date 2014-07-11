@@ -90,13 +90,12 @@ public class WriterCFStationCollection extends CFPointWriter {
   private Formatter coordNames = new Formatter();
   
   public WriterCFStationCollection(NetcdfFileWriter.Version version, String fileOut, List<Attribute> atts) throws IOException {
-    super(fileOut, atts, new CFPointWriterConfig(version));
+    super(fileOut, atts, null, new CFPointWriterConfig(version));
   }
 
   public WriterCFStationCollection(String fileOut, List<Attribute> atts, List<Variable> extra, CFPointWriterConfig config) throws IOException {
-    super(fileOut, atts, config);
+    super(fileOut, atts, extra, config);
     writer.addGroupAttribute(null, new Attribute(CF.FEATURE_TYPE, CF.FeatureType.timeSeries.name()));
-    setExtraVariables(extra);
   }
 
   public void writeHeader(List<StationFeature> stns, List<VariableSimpleIF> dataVars, DateUnit timeUnit, String altUnits, StationPointFeature spf) throws IOException {

@@ -70,14 +70,12 @@ public class WriterCFPointCollection extends CFPointWriter {
   }
 
   public WriterCFPointCollection(String fileOut, List<Attribute> globalAtts, List<Variable> extra, CFPointWriterConfig config) throws IOException {
-  //public WriterCFPointCollection(String fileOut, List<Attribute> atts, CFPointWriterConfig config) throws IOException {
-    super(fileOut, globalAtts, config);
+    super(fileOut, globalAtts, extra, config);
     writer.addGroupAttribute(null, new Attribute(CF.FEATURE_TYPE, CF.FeatureType.point.name()));
-    setExtraVariables(extra);
   }
 
-  public void writeHeader(List<VariableSimpleIF> vars, DateUnit timeUnit, String altUnits, PointFeature pf) throws IOException {
-    this.dataVars = vars;
+  public void writeHeader(List<VariableSimpleIF> dataVars, DateUnit timeUnit, String altUnits, PointFeature pf) throws IOException {
+    this.dataVars = dataVars;
     this.altUnits = altUnits;
     if (noUnlimitedDimension)
       recordDim = writer.addDimension(null, recordDimName, config.recDimensionLength);
@@ -97,7 +95,6 @@ public class WriterCFPointCollection extends CFPointWriter {
 
     addExtraVariables();
 
-
     if (writer.getVersion().isExtendedModel()) {
       record = (Structure) writer.addVariable(null, recordName, DataType.STRUCTURE, recordDimName);
       addCoordinatesExtended(record, coords);
@@ -113,17 +110,12 @@ public class WriterCFPointCollection extends CFPointWriter {
     }
 
     writeExtraVariables();
-
   }
 
   /////////////////////////////////////////////////////////
   // writing data
 
   private int recno = 0;
-  /* private ArrayDouble.D1 timeArray = new ArrayDouble.D1(1);
-  private ArrayDouble.D1 latArray = new ArrayDouble.D1(1);
-  private ArrayDouble.D1 lonArray = new ArrayDouble.D1(1);
-  private ArrayDouble.D1 altArray = new ArrayDouble.D1(1);  */
 
   public void writeRecord(PointFeature sobs, StructureData sdata) throws IOException {
     writeRecord(sobs.getObservationTime(), sobs.getObservationTimeAsCalendarDate(), sobs.getLocation(), sdata);
@@ -152,21 +144,6 @@ public class WriterCFPointCollection extends CFPointWriter {
       else {
         super.writeStructureDataClassic(varMap, origin, sdall);
       }
-
-      /* coordinate values  LOOK WTF ??
-      if (!isExtendedModel) {
-        timeArray.set(0, timeCoordValue);
-        latArray.set(0, loc.getLatitude());
-        lonArray.set(0, loc.getLongitude());
-        if (altUnits != null)
-          altArray.set(0, loc.getAltitude());
-
-        writer.write(time, origin, timeArray);
-        writer.write(lat, origin, latArray);
-        writer.write(lon, origin, lonArray);
-        if (altUnits != null)
-          writer.write(alt, origin, altArray);
-      } */
 
     } catch (InvalidRangeException e) {
       e.printStackTrace();

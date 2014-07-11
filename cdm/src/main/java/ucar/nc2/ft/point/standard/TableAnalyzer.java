@@ -30,6 +30,7 @@
  *   NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
  *   WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
  */
+
 package ucar.nc2.ft.point.standard;
 
 import ucar.nc2.*;
@@ -240,9 +241,7 @@ public class TableAnalyzer {
         tc = (TableConfigurer) anal.confClass.newInstance();
         tc.setConvName( convName);
         tc.setConvUsed( convUsed);
-      } catch (InstantiationException e) {
-        log.error("TableConfigurer create failed", e);
-      } catch (IllegalAccessException e) {
+      } catch (InstantiationException | IllegalAccessException e) {
         log.error("TableConfigurer create failed", e);
       }
     }
