@@ -32,13 +32,15 @@
  */
 package ucar.nc2.ft.point;
 
-import ucar.unidata.geoloc.*;
+import ucar.unidata.geoloc.LatLonPointImpl;
+import ucar.unidata.geoloc.LatLonRect;
+import ucar.unidata.geoloc.Station;
 
-import java.util.Map;
-import java.util.HashMap;
-import java.util.ArrayList;
-import java.util.List;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Helper class for Station Collections.
@@ -77,7 +79,7 @@ public class StationHelper {
       Station s = stations.get(0);
       LatLonPointImpl llpt = new LatLonPointImpl();
       llpt.set( s.getLatitude(), s.getLongitude());
-      rect = new LatLonRect(llpt, .001, .001);
+      rect = new LatLonRect(llpt, 0, 0);
       if (debug) System.out.println("start="+s.getLatitude()+" "+s.getLongitude()+" rect= "+rect.toString2());
 
       for (int i = 1; i < stations.size(); i++) {
@@ -92,6 +94,18 @@ public class StationHelper {
       double deltaLat = rect.getUpperLeftPoint().getLatitude() - lat_min;
       rect = new LatLonRect( new LatLonPointImpl(lat_min, -180.0), deltaLat, 360.0);
     }
+
+    // To give a little "wiggle room", we're going to slightly expand the bounding box.
+    double newLowerLeftLat = rect.getLowerLeftPoint().getLatitude() - .0005;
+    double newLowerLeftLon = rect.getLowerLeftPoint().getLongitude() - .0005;
+    LatLonPointImpl newLowerLeftPoint = new LatLonPointImpl(newLowerLeftLat, newLowerLeftLon);
+
+    double newUpperRightLat = rect.getUpperRightPoint().getLatitude() + .0005;
+    double newUpperRightLon = rect.getUpperRightPoint().getLongitude() + .0005;
+    LatLonPointImpl newUpperRightPoint = new LatLonPointImpl(newUpperRightLat, newUpperRightLon);
+
+    rect.extend(newLowerLeftPoint);
+    rect.extend(newUpperRightPoint);
 
     return rect;
   }
