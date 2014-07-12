@@ -84,7 +84,7 @@ class WriterPointCollectionNoTime extends CFPointWriter {
 	protected WriterPointCollectionNoTime(NetcdfFileWriter.Version version, String fileOut, List<Attribute> atts)
 			throws IOException {
 
-		super(fileOut, atts, new CFPointWriterConfig(version).setNoTimeCoverage(false));
+		super(fileOut, atts, version);
 	}
 
 
