@@ -34,9 +34,9 @@ public class TestCFPointWriter {
     //result.add(new Object[]{CFpointObs_topdir + "stationData2Levels.ncml", FeatureType.STATION, 15});
 
 
-    //result.addAll(TestCFPointDatasets.getPointDatasets());
-    //result.addAll(TestCFPointDatasets.getStationDatasets());
-    //result.addAll(TestCFPointDatasets.getProfileDatasets());
+    result.addAll(TestCFPointDatasets.getPointDatasets());
+    result.addAll(TestCFPointDatasets.getStationDatasets());
+    result.addAll(TestCFPointDatasets.getProfileDatasets());
     result.addAll(TestCFPointDatasets.getTrajectoryDatasets());
 
     /* result.add(new Object[] {TestDir.cdmUnitTestDir + "ft/point/ldm/04061912_buoy.nc", FeatureType.POINT, 218});
