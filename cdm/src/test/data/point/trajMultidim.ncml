@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <netcdf xmlns="http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2" >
-  <dimension name="z" length="3" />
   <dimension name="traj" length="2"/>
   <dimension name="time" length="10"/>
 
@@ -12,6 +11,7 @@
     <attribute name="units" value="degrees_east" />
     <values start="-100" increment="3"/>
   </variable>
+
   <variable name="lat" shape="traj time" type="float">
     <attribute name="long_name" value="latitude" />
     <attribute name="units" value="degrees_north" />
@@ -23,11 +23,11 @@
     <values start="666" increment="6"/>
   </variable>
 
-  <variable name="z" shape="z" type="float">
+  <variable name="z" shape="traj time" type="float">
     <attribute name="long_name" value="height above mean sea level" />
     <attribute name="units" value="km" />
     <attribute name="positive" value="up" />
-    <values>10 20 30</values>
+    <values start="10" increment="10"/>
   </variable>
 
   <variable name="time" shape="traj time" type="double">
@@ -39,13 +39,6 @@
   <variable name="data" shape="traj time" type="float">
     <attribute name="long_name" value="skin temperature" />
     <attribute name="units" value="Celsius" />
-    <attribute name="coordinates" value="time lon lat" />
-    <values start="1" increment="3"/>
-  </variable>
-
-  <variable name="data3" shape="traj time z" type="float">
-    <attribute name="long_name" value="skin color" />
-    <attribute name="units" value="db" />
     <attribute name="coordinates" value="time lon lat z" />
     <values start="1" increment="3"/>
   </variable>

@@ -22,13 +22,6 @@
     <attribute name="cf_role" value="trajectory_id" />
     <values start="666" increment="6"/>
   </variable>
-
-  <variable name="z" shape="z" type="float">
-    <attribute name="long_name" value="height above mean sea level" />
-    <attribute name="units" value="km" />
-    <attribute name="positive" value="up" />
-    <values>10 20 30</values>
-  </variable>
   
   <variable name="time" shape="traj obs" type="double">
     <attribute name="long_name" value="time" />
@@ -47,7 +40,7 @@
   <variable name="data3" shape="traj obs z" type="float">
     <attribute name="long_name" value="skin color" />
     <attribute name="units" value="db" />
-    <attribute name="coordinates" value="time lon lat alt z" />
+    <attribute name="coordinates" value="time lon lat alt" />
     <values start="1" increment="3"/>
   </variable>
 

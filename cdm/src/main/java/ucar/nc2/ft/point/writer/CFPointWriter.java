@@ -41,6 +41,7 @@ import ucar.nc2.ft.point.StationPointFeature;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time.CalendarDateFormatter;
 import ucar.nc2.time.CalendarDateRange;
+import ucar.nc2.units.DateUnit;
 import ucar.unidata.geoloc.LatLonPoint;
 import ucar.unidata.geoloc.LatLonRect;
 
@@ -87,11 +88,11 @@ public class CFPointWriter implements AutoCloseable {
       } else if (fc instanceof ProfileFeatureCollection) {
         return writeProfileFeatureCollection(fdpoint, (ProfileFeatureCollection) fc, fileOut, config);
 
-      } /* else if (fc instanceof StationProfileFeatureCollection) {
-        count = checkStationProfileFeatureCollection((StationProfileFeatureCollection) fc, show);
-        if (showStructureData) showStructureData((StationProfileFeatureCollection) fc );
+      } else if (fc instanceof TrajectoryFeatureCollection) {
+        return writeTrajectoryFeatureCollection(fdpoint, (TrajectoryFeatureCollection) fc, fileOut, config);
 
-      } else if (fc instanceof SectionFeatureCollection) {
+
+      } /* else if (fc instanceof SectionFeatureCollection) {
         count = checkSectionFeatureCollection((SectionFeatureCollection) fc, show);
 
       } else {
@@ -151,7 +152,8 @@ public class CFPointWriter implements AutoCloseable {
   private static int writeProfileFeatureCollection(FeatureDatasetPoint fdpoint, ProfileFeatureCollection pds, String fileOut,
                                                    CFPointWriterConfig config) throws IOException {
 
-    WriterCFProfileCollection cfWriter = new WriterCFProfileCollection(fileOut, fdpoint.getGlobalAttributes(), fdpoint.getDataVariables(), pds.getExtraVariables(), config);
+    WriterCFProfileCollection cfWriter = new WriterCFProfileCollection(fileOut, fdpoint.getGlobalAttributes(), fdpoint.getDataVariables(), pds.getExtraVariables(),
+            pds.getTimeUnit(), config);
 
     // LOOK not always needed
     int count = 0;
@@ -173,6 +175,40 @@ public class CFPointWriter implements AutoCloseable {
     while (pds.hasNext()) {
       ucar.nc2.ft.ProfileFeature profile = pds.next();
       count += cfWriter.writeProfile(profile);
+      if (debug && count % 10 == 0) System.out.printf("%d ", count);
+      if (debug && count % 100 == 0) System.out.printf("%n ");
+    }
+
+    cfWriter.finish();
+    return count;
+  }
+
+  private static int writeTrajectoryFeatureCollection(FeatureDatasetPoint fdpoint, TrajectoryFeatureCollection pds, String fileOut,
+                                                   CFPointWriterConfig config) throws IOException {
+
+    WriterCFTrajectoryCollection cfWriter = new WriterCFTrajectoryCollection(fileOut, fdpoint.getGlobalAttributes(), fdpoint.getDataVariables(),
+            pds.getExtraVariables(), pds.getTimeUnit(), config);
+
+    // LOOK not always needed
+    int count = 0;
+    int name_strlen = 0;
+    int ntrajs = pds.size();
+    if (ntrajs < 0) {
+      pds.resetIteration();
+      while (pds.hasNext()) {
+        TrajectoryFeature feature = pds.next();
+        name_strlen = Math.max(name_strlen, feature.getName().length());
+        count++;
+      }
+      ntrajs = count;
+    }
+    cfWriter.setHeaderInfo(ntrajs, name_strlen);
+
+    count = 0;
+    pds.resetIteration();
+    while (pds.hasNext()) {
+      TrajectoryFeature feature = pds.next();
+      count += cfWriter.writeTrajectory(feature);
       if (debug && count % 10 == 0) System.out.printf("%d ", count);
       if (debug && count % 100 == 0) System.out.printf("%n ");
     }
@@ -204,6 +240,7 @@ public class CFPointWriter implements AutoCloseable {
   protected Structure record;  // used for netcdf3 and netcdf4 extended
   protected Dimension recordDim;
 
+  protected DateUnit timeUnit = null;
   protected String altUnits = null;
   protected LatLonRect llbb = null;
   protected CalendarDate minDate = null;
