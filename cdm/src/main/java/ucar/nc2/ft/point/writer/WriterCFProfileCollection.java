@@ -47,7 +47,7 @@ import ucar.nc2.units.DateUnit;
 
 /**
  * Write a CF "Discrete Sample" profile collection file.
- * Example H.3.5. Continguous ragged array representation of profiles, H.3.4
+ * Example H.3.5. Contiguous ragged array representation of profiles, H.3.4
  *
  * <p/>
  * <pre>
@@ -61,32 +61,17 @@ import ucar.nc2.units.DateUnit;
  * @since April, 2012
  */
 public class WriterCFProfileCollection extends CFPointWriter {
-  private static final String profileStructName = "profile";
-  private static final String profileDimName = "profile";
-  private static final String idName = "profileId";
-  private static final String profileRowSizeName = "nobs";
-  private static final String profileTimeName = "profileTime";
 
   ///////////////////////////////////////////////////
-  private Formatter coordNames = new Formatter();
+  // private Formatter coordNames = new Formatter();
   protected Structure profileStruct;  // used for netcdf4 extended
-
+  private Map<String, Variable> featureVarMap = new HashMap<>();
   private boolean headerDone = false;
-  private int nprofiles, name_strlen;
 
-  private Map<String, Variable> dataMap  = new HashMap<>();
-  private Map<String, Variable> profileMap  = new HashMap<>();
-
-  public WriterCFProfileCollection(String fileOut, List<Attribute> globalAtts, List<VariableSimpleIF> dataVars, List<Variable> extra, DateUnit timeUnit, CFPointWriterConfig config) throws IOException {
-    super(fileOut, globalAtts, extra, config);
-    this.timeUnit = timeUnit;
-    this.dataVars = dataVars;
+  public WriterCFProfileCollection(String fileOut, List<Attribute> globalAtts, List<VariableSimpleIF> dataVars, List<Variable> extra,
+                                   DateUnit timeUnit, String altUnits, CFPointWriterConfig config) throws IOException {
+    super(fileOut, globalAtts, dataVars, extra, timeUnit, altUnits, config);
     writer.addGroupAttribute(null, new Attribute(CF.FEATURE_TYPE, CF.FeatureType.profile.name()));
-  }
-
-  public void setHeaderInfo(int nprofiles, int name_strlen) {
-    this.nprofiles = nprofiles;
-    this.name_strlen = name_strlen;
   }
 
   public int writeProfile (ProfileFeature profile) throws IOException {
@@ -95,8 +80,8 @@ public class WriterCFProfileCollection extends CFPointWriter {
     while (profile.hasNext()) {
       PointFeature pf = profile.next();
       if (!headerDone) {
-        if (name_strlen == 0) name_strlen = profile.getName().length() * 2;
-        writeHeader(name_strlen, nprofiles, profile, pf);
+        if (id_strlen == 0) id_strlen = profile.getName().length() * 2;
+        writeHeader(profile, pf);
         headerDone = true;
       }
       writeObsData(pf);
@@ -107,53 +92,31 @@ public class WriterCFProfileCollection extends CFPointWriter {
     return count;
   }
 
-  private void writeHeader(int name_strlen, int nprofiles, ProfileFeature profile, PointFeature obs) throws IOException {
-    this.recordDim = writer.addUnlimitedDimension(recordDimName);
-    this.altUnits = profile.getAltUnits();
-    DateUnit timeUnit = profile.getTimeUnit();
+  private void writeHeader(ProfileFeature profile, PointFeature obs) throws IOException {
 
-    StructureData profileData = profile.getFeatureData();
-    StructureData obsData = obs.getFeatureData();
-
+    Formatter coordNames = new Formatter().format("%s %s %s", profileTimeName, latName, lonName);
     List<VariableSimpleIF> coords = new ArrayList<>();
-    if (useAlt) coords.add( VariableSimpleImpl.makeScalar(altitudeCoordinateName, "obs altitude", altUnits, DataType.DOUBLE)
-            .add(new Attribute(CF.STANDARD_NAME, "altitude"))
-            .add(new Attribute(CF.POSITIVE, CF1Convention.getZisPositive(altitudeCoordinateName, altUnits))));
-    coordNames.format("%s %s %s %s", profileTimeName, latName, lonName, altitudeCoordinateName);
-
-    addExtraVariables();
-
-    if (writer.getVersion().isExtendedModel()) {
-      makeProfileVars(name_strlen, nprofiles, profileData, timeUnit, true);
-      record = (Structure) writer.addVariable(null, recordName, DataType.STRUCTURE, recordDimName);
-      addCoordinatesExtended(record, coords);
-      addDataVariablesExtended(obsData, coordNames.toString());
-      record.calcElementSize();
-      writer.create();
-
-    } else {
-      makeProfileVars(name_strlen, nprofiles, profileData, timeUnit, false);
-      addCoordinatesClassic(recordDim, coords, dataMap);
-      addDataVariablesClassic(recordDim, obsData, dataMap, coordNames.toString());
-      writer.create();
-      record = writer.addRecordStructure(); // for netcdf3
+    if (useAlt) {
+      coords.add( VariableSimpleImpl.makeScalar(altitudeCoordinateName, "obs altitude", altUnits, DataType.DOUBLE)
+              .add(new Attribute(CF.STANDARD_NAME, "altitude"))
+              .add(new Attribute(CF.POSITIVE, CF1Convention.getZisPositive(altitudeCoordinateName, altUnits))));
+      coordNames.format(" %s", altitudeCoordinateName);
     }
 
-    writeExtraVariables();
+    super.writeHeader(coords, profile.getFeatureData(), obs.getFeatureData(), coordNames.toString());
   }
 
-  private void makeProfileVars(int name_strlen, int nprofiles, StructureData profileData, DateUnit timeUnit, boolean isExtended) throws IOException {
-    name_strlen = Math.max( name_strlen, 10);
+  protected void makeFeatureVariables(StructureData featureData, boolean isExtended) throws IOException {
 
     // LOOK why not unlimited here ?
-    Dimension profileDim = writer.addDimension(null, profileDimName, nprofiles);
+    Dimension profileDim = writer.addDimension(null, profileDimName, nfeatures);
     // Dimension profileDim = isExtendedModel ?  writer.addUnlimitedDimension(profileDimName) : writer.addDimension(null, profileDimName, nprofiles);
 
     // add the profile Variables using the profile dimension
     List<VariableSimpleIF> profileVars = new ArrayList<>();
     profileVars.add(VariableSimpleImpl.makeScalar(latName, "profile latitude", CDM.LAT_UNITS, DataType.DOUBLE));
     profileVars.add(VariableSimpleImpl.makeScalar(lonName, "profile longitude", CDM.LON_UNITS, DataType.DOUBLE));
-    profileVars.add(VariableSimpleImpl.makeString(idName, "profile identifier", null, name_strlen)
+    profileVars.add(VariableSimpleImpl.makeString(profileIdName, "profile identifier", null, id_strlen)
             .add(new Attribute(CF.CF_ROLE, CF.PROFILE_ID)));         // profileId:cf_role = "profile_id";
 
     profileVars.add(VariableSimpleImpl.makeScalar(profileRowSizeName, "number of obs for this profile", null, DataType.INT)
@@ -161,7 +124,7 @@ public class WriterCFProfileCollection extends CFPointWriter {
 
     profileVars.add(VariableSimpleImpl.makeScalar(profileTimeName, "nominal time of profile", timeUnit.getUnitsString(), DataType.DOUBLE));
 
-    for (StructureMembers.Member m : profileData.getMembers()) {
+    for (StructureMembers.Member m : featureData.getMembers()) {
       VariableSimpleIF dv = getDataVar(m.getName());
       if (dv != null)
         profileVars.add(dv);
@@ -171,7 +134,7 @@ public class WriterCFProfileCollection extends CFPointWriter {
       profileStruct = (Structure) writer.addVariable(null, profileStructName, DataType.STRUCTURE, profileDimName);
       addCoordinatesExtended(profileStruct, profileVars);
     } else {
-      addCoordinatesClassic(profileDim, profileVars, profileMap);
+      addCoordinatesClassic(profileDim, profileVars, featureVarMap);
     }
   }
 
@@ -182,33 +145,20 @@ public class WriterCFProfileCollection extends CFPointWriter {
     StructureDataScalar profileCoords = new StructureDataScalar("Coords");
     profileCoords.addMember(latName, null, null, DataType.DOUBLE, false, profile.getLatLon().getLatitude());
     profileCoords.addMember(lonName, null, null, DataType.DOUBLE, false, profile.getLatLon().getLongitude());
-    profileCoords.addMember(profileTimeName, null, null, DataType.DOUBLE, false, (double) profile.getTime().getTime());  // LOOK time not always part of profile
-    profileCoords.addMemberString(idName, null, null, profile.getName().trim(), name_strlen);
+    if (profile.getTime() != null)
+      profileCoords.addMember(profileTimeName, null, null, DataType.DOUBLE, false, (double) profile.getTime().getTime());  // LOOK time not always part of profile
+    profileCoords.addMemberString(profileIdName, null, null, profile.getName().trim(), id_strlen);
     profileCoords.addMember(profileRowSizeName, null, null, DataType.INT, false, nobs);
 
     StructureDataComposite sdall = new StructureDataComposite();
     sdall.add(profileCoords); // coords first so it takes precedence
     sdall.add(profile.getFeatureData());
 
-    int[] origin = new int[1];
-    origin[0] = profileRecno;
-    try {
-      if (isExtendedModel)
-        super.writeStructureData(profileStruct, origin, sdall);
-      else {
-        super.writeStructureDataClassic(profileMap, origin, sdall);
-      }
-
-    } catch (InvalidRangeException e) {
-      e.printStackTrace();
-      throw new IllegalStateException(e);
-    }
-
-    profileRecno++;
+    profileRecno = super.writeStructureData(profileRecno, profileStruct, sdall, featureVarMap);
   }
 
 
-  private int recno = 0;
+  private int obsRecno = 0;
   public void writeObsData(PointFeature pf) throws IOException {
 
     StructureDataScalar coords = new StructureDataScalar("Coords");
@@ -218,22 +168,7 @@ public class WriterCFProfileCollection extends CFPointWriter {
     sdall.add(coords); // coords first so it takes precedence
     sdall.add(pf.getFeatureData());
 
-    // write the recno record
-    int[] origin = new int[1];
-    origin[0] = recno;
-    try {
-      if (isExtendedModel)
-        super.writeStructureData(record, origin, sdall);
-      else {
-        super.writeStructureDataClassic(dataMap, origin, sdall);
-      }
-
-    } catch (InvalidRangeException e) {
-      e.printStackTrace();
-      throw new IllegalStateException(e);
-    }
-
-    recno++;
+    obsRecno = super.writeStructureData(obsRecno, record, sdall, dataMap);
   }
 
 }

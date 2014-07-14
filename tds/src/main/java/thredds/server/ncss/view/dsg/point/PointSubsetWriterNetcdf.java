@@ -15,6 +15,7 @@ import ucar.nc2.dataset.CoordinateAxis;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.ft.FeatureDatasetPoint;
 import ucar.nc2.ft.PointFeature;
+import ucar.nc2.ft.point.writer.CFPointWriterConfig;
 import ucar.nc2.ft.point.writer.WriterCFPointCollection;
 import ucar.nc2.units.DateUnit;
 import ucar.nc2.util.DiskCache2;
@@ -46,7 +47,31 @@ public class PointSubsetWriterNetcdf extends AbstractPointSubsetWriter {
         this.netcdfResult = diskCache.createUniqueFile("ncssTemp", ".nc");
         List<Attribute> attribs = new ArrayList<>();
         attribs.add(new Attribute(CDM.TITLE, "Extracted data from TDS Feature Collection " + fdPoint.getLocation()));
-        this.cfWriter = new WriterCFPointCollection(version, netcdfResult.getAbsolutePath(), attribs);
+
+              // A default value in case we can't find a better one in the dataset.
+        // This is the same default that is used in PointDatasetStandard.
+        DateUnit timeUnit = DateUnit.factory("seconds since 1970-01-01");
+
+        // If this remains null, it means the dataset has no altitude variable.
+        String altUnit = null;
+
+        if (fdPoint.getNetcdfFile() instanceof NetcdfDataset) {
+            NetcdfDataset dataset = (NetcdfDataset) fdPoint.getNetcdfFile();
+
+            CoordinateAxis timeAxis = dataset.findCoordinateAxis(AxisType.Time);
+            if (timeAxis != null && timeAxis.getUnitsString() != null) {
+                timeUnit = DateUnit.factory(timeAxis.getUnitsString());
+            }
+
+            CoordinateAxis altAxis = dataset.findCoordinateAxis(AxisType.Height);
+            if (altAxis != null) {
+                altUnit = altAxis.getUnitsString();
+            }
+        }
+
+
+        this.cfWriter = new WriterCFPointCollection(netcdfResult.getAbsolutePath(), attribs, wantedVariables, null,
+                timeUnit, altUnit, new CFPointWriterConfig(version));
     }
 
     @Override
@@ -71,33 +96,12 @@ public class PointSubsetWriterNetcdf extends AbstractPointSubsetWriter {
 
     @Override
     public void writeHeader(PointFeature pf) throws Exception {
-        // A default value in case we can't find a better one in the dataset.
-        // This is the same default that is used in PointDatasetStandard.
-        DateUnit timeUnit = new DateUnit("seconds since 1970-01-01");
-
-        // If this remains null, it means the dataset has no altitude variable.
-        String altUnit = null;
-
-        if (fdPoint.getNetcdfFile() instanceof NetcdfDataset) {
-            NetcdfDataset dataset = (NetcdfDataset) fdPoint.getNetcdfFile();
-
-            CoordinateAxis timeAxis = dataset.findCoordinateAxis(AxisType.Time);
-            if (timeAxis != null && timeAxis.getUnitsString() != null) {
-                timeUnit = new DateUnit(timeAxis.getUnitsString());
-            }
-
-            CoordinateAxis altAxis = dataset.findCoordinateAxis(AxisType.Height);
-            if (altAxis != null) {
-                altUnit = altAxis.getUnitsString();
-            }
-        }
-
-        cfWriter.writeHeader(wantedVariables, timeUnit, altUnit, pf);
+        cfWriter.writeHeader(pf);
     }
 
     @Override
     public void writePoint(PointFeature pointFeat) throws Exception {
-        cfWriter.writeRecord(pointFeat, pointFeat.getData());
+        cfWriter.writeRecord(pointFeat, pointFeat.getDataAll());
     }
 
     @Override

@@ -57,7 +57,29 @@ import java.util.*;
  * @author caron
  * @since 4/11/12
  */
-public class CFPointWriter implements AutoCloseable {
+public abstract class CFPointWriter implements AutoCloseable {
+  public static final String recordName = "obs";
+  public static final String recordDimName = "obs";
+  public static final String latName = "latitude";
+  public static final String lonName = "longitude";
+  public static final String altName = "altitude";
+  public static final String timeName = "time";
+
+  public static final String stationStructName = "station";
+  public static final String stationDimName = "station";
+  public static final String stationIdName = "station_id";
+  public static final String stationAltName = "stationAltitude";
+  public static final String descName = "station_description";
+  public static final String wmoName = "wmo_id";
+  public static final String stationIndexName = "stationIndex";
+
+  public static final String profileStructName = "profile";
+  public static final String profileDimName = "profile";
+  public static final String profileIdName = "profileId";
+  public static final String profileRowSizeName = "nobs";
+  public static final String profileTimeName = "profileTime";
+
+
   private static boolean debug = false;
 
   public static int writeFeatureCollection(FeatureDatasetPoint fdpoint, String fileOut, NetcdfFileWriter.Version version) throws IOException {
@@ -91,6 +113,9 @@ public class CFPointWriter implements AutoCloseable {
       } else if (fc instanceof TrajectoryFeatureCollection) {
         return writeTrajectoryFeatureCollection(fdpoint, (TrajectoryFeatureCollection) fc, fileOut, config);
 
+      } else if (fc instanceof StationProfileFeatureCollection) {
+        return writeStationProfileFeatureCollection(fdpoint, (StationProfileFeatureCollection) fc, fileOut, config);
+
 
       } /* else if (fc instanceof SectionFeatureCollection) {
         count = checkSectionFeatureCollection((SectionFeatureCollection) fc, show);
@@ -106,14 +131,15 @@ public class CFPointWriter implements AutoCloseable {
 
   private static int writePointFeatureCollection(FeatureDatasetPoint fdpoint, PointFeatureCollection pfc, String fileOut, CFPointWriterConfig config) throws IOException {
 
-    try (WriterCFPointCollection pointWriter = new WriterCFPointCollection(fileOut, fdpoint.getGlobalAttributes(), pfc.getExtraVariables(), config)) {
+    try (WriterCFPointCollection pointWriter = new WriterCFPointCollection(fileOut, fdpoint.getGlobalAttributes(), fdpoint.getDataVariables(), pfc.getExtraVariables(),
+            pfc.getTimeUnit(), pfc.getAltUnits(), config)) {
 
       int count = 0;
       pfc.resetIteration();
       while(pfc.hasNext()) {
         PointFeature pf = pfc.next();
         if (count == 0)
-          pointWriter.writeHeader(fdpoint.getDataVariables(), pfc.getTimeUnit(), pfc.getAltUnits(), pf);
+          pointWriter.writeHeader(pf);
 
         pointWriter.writeRecord(pf, pf.getFeatureData());
         count++;
@@ -126,26 +152,27 @@ public class CFPointWriter implements AutoCloseable {
     }
   }
 
-  private static int writeStationFeatureCollection(FeatureDatasetPoint fdpoint, StationTimeSeriesFeatureCollection fds, String fileOut,
+  private static int writeStationFeatureCollection(FeatureDatasetPoint dataset, StationTimeSeriesFeatureCollection fc, String fileOut,
                                                    CFPointWriterConfig config) throws IOException {
 
-    WriterCFStationCollection stationWriter = new WriterCFStationCollection(fileOut, fdpoint.getGlobalAttributes(), fds.getExtraVariables(), config);
-    ucar.nc2.ft.PointFeatureCollection pfc = fds.flatten(null, (CalendarDateRange) null); // LOOK
+    WriterCFStationCollection cfWriter = new WriterCFStationCollection(fileOut, dataset.getGlobalAttributes(), dataset.getDataVariables(), fc.getExtraVariables(),
+            fc.getTimeUnit(), fc.getAltUnits(), config);
+    ucar.nc2.ft.PointFeatureCollection pfc = fc.flatten(null, (CalendarDateRange) null); // LOOK
 
     int count = 0;
     while (pfc.hasNext()) {
       PointFeature pf = pfc.next();
       StationPointFeature spf = (StationPointFeature) pf;
       if (count == 0)
-        stationWriter.writeHeader(fds.getStationFeatures(), fdpoint.getDataVariables(), fds.getTimeUnit(), fds.getAltUnits(), spf);
+        cfWriter.writeHeader(fc.getStationFeatures(), spf);
 
-      stationWriter.writeRecord(spf.getStation(), pf, pf.getFeatureData());
+      cfWriter.writeRecord(spf.getStation(), pf, pf.getFeatureData());
       count++;
       if (debug && count % 100 == 0) System.out.printf("%d ", count);
       if (debug && count % 1000 == 0) System.out.printf("%n ");
     }
 
-    stationWriter.finish();
+    cfWriter.finish();
     return count;
   }
 
@@ -153,7 +180,7 @@ public class CFPointWriter implements AutoCloseable {
                                                    CFPointWriterConfig config) throws IOException {
 
     WriterCFProfileCollection cfWriter = new WriterCFProfileCollection(fileOut, fdpoint.getGlobalAttributes(), fdpoint.getDataVariables(), pds.getExtraVariables(),
-            pds.getTimeUnit(), config);
+            pds.getTimeUnit(), pds.getAltUnits(), config);
 
     // LOOK not always needed
     int count = 0;
@@ -168,7 +195,7 @@ public class CFPointWriter implements AutoCloseable {
       }
       nprofiles = count;
     }
-    cfWriter.setHeaderInfo(nprofiles, name_strlen);
+    cfWriter.setFeatureAuxInfo(nprofiles, name_strlen);
 
     count = 0;
     pds.resetIteration();
@@ -186,8 +213,8 @@ public class CFPointWriter implements AutoCloseable {
   private static int writeTrajectoryFeatureCollection(FeatureDatasetPoint fdpoint, TrajectoryFeatureCollection pds, String fileOut,
                                                    CFPointWriterConfig config) throws IOException {
 
-    WriterCFTrajectoryCollection cfWriter = new WriterCFTrajectoryCollection(fileOut, fdpoint.getGlobalAttributes(), fdpoint.getDataVariables(),
-            pds.getExtraVariables(), pds.getTimeUnit(), config);
+    WriterCFTrajectoryCollection cfWriter = new WriterCFTrajectoryCollection(fileOut, fdpoint.getGlobalAttributes(), fdpoint.getDataVariables(), pds.getExtraVariables(),
+            pds.getTimeUnit(), pds.getAltUnits(), config);
 
     // LOOK not always needed
     int count = 0;
@@ -202,7 +229,7 @@ public class CFPointWriter implements AutoCloseable {
       }
       ntrajs = count;
     }
-    cfWriter.setHeaderInfo(ntrajs, name_strlen);
+    cfWriter.setFeatureAuxInfo(ntrajs, name_strlen);
 
     count = 0;
     pds.resetIteration();
@@ -217,45 +244,72 @@ public class CFPointWriter implements AutoCloseable {
     return count;
   }
 
-  /////////////////////////////////////////////////
+  private static int writeStationProfileFeatureCollection(FeatureDatasetPoint dataset, StationProfileFeatureCollection fc, String fileOut,
+                                                   CFPointWriterConfig config) throws IOException {
+
+    WriterCFStationProfileCollection cfWriter = new WriterCFStationProfileCollection(fileOut, dataset.getGlobalAttributes(), dataset.getDataVariables(), fc.getExtraVariables(),
+            fc.getTimeUnit(), fc.getAltUnits(), config);
+    cfWriter.setStations(fc.getStationFeatures());
+    cfWriter.setFeatureAuxInfo(100, 0);  // LOOK fake
+
+    int count = 0;
+    while (fc.hasNext()) {
+      StationProfileFeature spf = fc.next();
+
+      spf.resetIteration();
+      while (spf.hasNext()) {
+        ProfileFeature pf = spf.next();
+
+        count += cfWriter.writeProfile(spf, pf);
+        if (debug && count % 100 == 0) System.out.printf("%d ", count);
+        if (debug && count % 1000 == 0) System.out.printf("%n ");
+      }
+    }
+
+    cfWriter.finish();
+    return count;
+  }
+
+
+  //////////////////////////////////////////////////////////////////////////////////////////////////
 
   // attributes with these names will not be copied to the output file
   protected static final List<String> reservedGlobalAtts = Arrays.asList(
           CDM.CONVENTIONS, ACDD.LAT_MIN, ACDD.LAT_MAX, ACDD.LON_MIN, ACDD.LON_MAX, ACDD.TIME_START, ACDD.TIME_END,
             _Coordinate._CoordSysBuilder, CF.featureTypeAtt2, CF.featureTypeAtt3);
 
-  protected static final List<String> reservedVariableAtts = Arrays.asList(
-          CF.SAMPLE_DIMENSION, CF.INSTANCE_DIMENSION);
-
-  protected static final String recordName = "obs";
-  protected static final String recordDimName = "obs";
-  protected static final String latName = "latitude";
-  protected static final String lonName = "longitude";
-  protected static final String altName = "altitude";
-  protected static final String timeName = "time";
+  protected static final List<String> reservedVariableAtts = Arrays.asList( CF.SAMPLE_DIMENSION, CF.INSTANCE_DIMENSION);
 
   /////////////////////////////////////////////////
   protected final CFPointWriterConfig config;
   protected NetcdfFileWriter writer;
-  protected Structure record;  // used for netcdf3 and netcdf4 extended
-  protected Dimension recordDim;
 
   protected DateUnit timeUnit = null;
   protected String altUnits = null;
-  protected LatLonRect llbb = null;
-  protected CalendarDate minDate = null;
-  protected CalendarDate maxDate = null;
-  protected List<VariableSimpleIF> dataVars;
-  protected List<Variable> extra;
-  protected boolean useAlt = true;
   protected String altitudeCoordinateName = altName;
 
   protected final boolean noTimeCoverage;
   protected final boolean noUnlimitedDimension;  // experimental , netcdf-3
   protected final boolean isExtendedModel;
+  protected boolean useAlt = true;
+  protected int nfeatures, id_strlen;
 
+  private Map<String, Dimension> dimMap = new HashMap<>();
+  protected Structure record;  // used for netcdf3 and netcdf4 extended
+  protected Dimension recordDim;
+  protected Map<String, Variable> dataMap  = new HashMap<>();
+  protected List<VariableSimpleIF> dataVars;
+
+  private Map<String, Variable> extraMap;  // added as variables just as they are
+  protected List<Variable> extra;
+
+  protected LatLonRect llbb = null;
+  protected CalendarDate minDate = null;
+  protected CalendarDate maxDate = null;
+
+  // LOOK doesnt work
   protected CFPointWriter(String fileOut, List<Attribute> atts, NetcdfFileWriter.Version version) throws IOException {
-    this(fileOut, atts, null, new CFPointWriterConfig(version));
+    this(fileOut, atts, null, null, null, null, new CFPointWriterConfig(version));
   }
 
   /**
@@ -265,16 +319,26 @@ public class CFPointWriter implements AutoCloseable {
    * @param config              configure
    * @throws IOException
    */
-  protected CFPointWriter(String fileOut, List<Attribute> atts, List<Variable> extra, CFPointWriterConfig config) throws IOException {
+  protected CFPointWriter(String fileOut, List<Attribute> atts, List<VariableSimpleIF> dataVars, List<Variable> extra,
+                          DateUnit timeUnit, String altUnits, CFPointWriterConfig config) throws IOException {
     createWriter(fileOut, config);
-    setExtraVariables(extra);
+    this.dataVars = dataVars;
+    this.timeUnit = timeUnit;
+    this.altUnits = altUnits;
     this.config = config;
     this.noTimeCoverage = config.noTimeCoverage;
-    this.noUnlimitedDimension = (writer.getVersion() == NetcdfFileWriter.Version.netcdf3) && config.recDimensionLength >= 0;
+    this.noUnlimitedDimension = (writer.getVersion() == NetcdfFileWriter.Version.netcdf3) && config.recDimensionLength >= 0;   // LOOK NOT USED
     this.isExtendedModel = writer.getVersion().isExtendedModel();
 
+    setExtraVariables(extra);
     addGlobalAtts(atts);
     addNetcdf3UnknownAtts(noTimeCoverage);
+  }
+
+
+  public void setFeatureAuxInfo(int nfeatures, int id_strlen) {
+    this.nfeatures = nfeatures;
+    this.id_strlen = id_strlen;
   }
 
   protected VariableSimpleIF getDataVar(String name) {
@@ -311,7 +375,7 @@ public class CFPointWriter implements AutoCloseable {
     writer.addGroupAttribute(null, new Attribute(ACDD.LON_MAX, 0.0));
   }
 
-  protected void setExtraVariables(List<Variable> extra) {
+  private void setExtraVariables(List<Variable> extra) {
     this.extra = extra;
     if (extra != null) {
       for (Variable v : extra) {
@@ -326,9 +390,60 @@ public class CFPointWriter implements AutoCloseable {
     }
   }
 
-     // added as variables just as they are
-  private Map<String, Variable> extraMap;
-  private Map<String, Dimension> dimMap = new HashMap<>();
+  protected abstract void makeFeatureVariables(StructureData featureData, boolean isExtended) throws IOException;
+  protected void makeMiddleVariables(StructureData middleData, boolean isExtended) throws IOException {
+    // NOOP
+  }
+
+  protected void writeHeader(List<VariableSimpleIF> obsCoords, StructureData featureData, StructureData obsData, String coordNames) throws IOException {
+    this.recordDim = writer.addUnlimitedDimension(recordDimName);
+
+    addExtraVariables();
+
+    if (writer.getVersion().isExtendedModel()) {
+      makeFeatureVariables(featureData, true);
+      record = (Structure) writer.addVariable(null, recordName, DataType.STRUCTURE, recordDimName);
+      addCoordinatesExtended(record, obsCoords);
+      addDataVariablesExtended(obsData, coordNames);
+      record.calcElementSize();
+      writer.create();
+
+    } else {
+      makeFeatureVariables(featureData, false);
+      addCoordinatesClassic(recordDim, obsCoords, dataMap);
+      addDataVariablesClassic(recordDim, obsData, dataMap, coordNames);
+      writer.create();
+      record = writer.addRecordStructure(); // for netcdf3
+    }
+
+    writeExtraVariables();
+  }
+
+  protected void writeHeader2(List<VariableSimpleIF> obsCoords, StructureData featureData, StructureData middleData, StructureData obsData, String coordNames) throws IOException {
+    this.recordDim = writer.addUnlimitedDimension(recordDimName);
+
+    addExtraVariables();
+
+    if (writer.getVersion().isExtendedModel()) {
+      makeFeatureVariables(featureData, true);
+      makeMiddleVariables(middleData, true);
+      record = (Structure) writer.addVariable(null, recordName, DataType.STRUCTURE, recordDimName);
+      addCoordinatesExtended(record, obsCoords);
+      addDataVariablesExtended(obsData, coordNames);
+      record.calcElementSize();
+      writer.create();
+
+    } else {
+      makeFeatureVariables(featureData, false);
+      makeMiddleVariables(middleData, false);
+      addCoordinatesClassic(recordDim, obsCoords, dataMap);
+      addDataVariablesClassic(recordDim, obsData, dataMap, coordNames);
+      writer.create();
+      record = writer.addRecordStructure(); // for netcdf3
+    }
+
+    writeExtraVariables();
+  }
 
   protected void addExtraVariables() throws IOException {
     if (extra == null) return;
@@ -357,7 +472,6 @@ public class CFPointWriter implements AutoCloseable {
       }
     }
   }
-
 
    // added as variables with the unlimited (record) dimension
   protected void addCoordinatesClassic(Dimension recordDim, List<VariableSimpleIF> coords, Map<String, Variable> varMap) throws IOException {
@@ -507,6 +621,60 @@ public class CFPointWriter implements AutoCloseable {
     return result;
   }
 
+  protected int writeStructureData(int recno, Structure s, StructureData sdata, Map<String, Variable> varMap) throws IOException {
+
+    // write the recno record
+    int[] origin = new int[1];
+    origin[0] = recno;
+    try {
+      if (isExtendedModel) {
+        if (s.isUnlimited())
+          return writer.appendStructureData(s, sdata);  // can write it all at once along unlimited dimension
+        else {
+          ArrayStructureW as = new ArrayStructureW(sdata.getStructureMembers(), new int[] {1});
+          as.setStructureData(sdata, 0);
+          writer.write(s, origin, as);  // can write it all at once along regular dimension
+          return origin[0];
+        }
+
+      } else {
+        writeStructureDataClassic(varMap, origin, sdata);
+      }
+
+    } catch (InvalidRangeException e) {
+      e.printStackTrace();
+      throw new IllegalStateException(e);
+    }
+
+    return recno+1;
+  }
+
+  protected int writeStructureDataClassic(Map<String, Variable> varMap, int[] origin, StructureData sdata) throws IOException, InvalidRangeException {
+    for (StructureMembers.Member m : sdata.getMembers()) {
+      Variable mv = varMap.get(m.getName());
+      if (mv == null)
+        continue;     // LOOK OK??
+
+      Array org = sdata.getArray(m);
+      if (m.getDataType() == DataType.STRING) {  // convert to ArrayChar
+        org = ArrayChar.makeFromStringArray((ArrayObject) org);
+      }
+
+      Array orgPlus1 = Array.makeArrayRankPlusOne(org);  // add dimension on the left (slow)
+      int[] useOrigin = origin;
+
+      if (org.getRank() > 0) {                          // if rank 0 (common case, this is a nop, so skip
+        useOrigin = new int[org.getRank()+1];
+        useOrigin[0] = origin[0]; // the rest are 0
+      }
+
+      writer.write(mv, useOrigin, orgPlus1);
+    }
+
+    return origin[0];
+  }
+
+
   // keep track of the bounding box
   protected void trackBB(LatLonPoint loc, CalendarDate obsDate) {
     if (loc != null) {
@@ -539,43 +707,6 @@ public class CFPointWriter implements AutoCloseable {
 
     writer.close();
   }
-
-  protected int writeStructureData(Structure s, int[] origin, StructureData sdata) throws IOException, InvalidRangeException {
-    if (s.isUnlimited())
-      return writer.appendStructureData(s, sdata);  // can write it all at once along unlimited dimension
-    else {
-      ArrayStructureW as = new ArrayStructureW(sdata.getStructureMembers(), new int[] {1});
-      as.setStructureData(sdata, 0);
-      writer.write(s, origin, as);  // can write it all at once along regular dimension
-      return origin[0];
-    }
-  }
-
-  protected int writeStructureDataClassic(Map<String, Variable> varMap, int[] origin, StructureData sdata) throws IOException, InvalidRangeException {
-    for (StructureMembers.Member m : sdata.getMembers()) {
-      Variable mv = varMap.get(m.getName());
-      if (mv == null)
-        continue;     // LOOK
-
-      Array org = sdata.getArray(m);
-      if (m.getDataType() == DataType.STRING) {  // convert to ArrayChar
-        org = ArrayChar.makeFromStringArray((ArrayObject) org);
-      }
-
-      Array orgPlus1 = Array.makeArrayRankPlusOne(org);  // add dimension on the left (slow)
-      int[] useOrigin = origin;
-
-      if (org.getRank() > 0) {                          // if rank 0 (common case, this is a nop, so skip
-        useOrigin = new int[org.getRank()+1];
-        useOrigin[0] = origin[0]; // the rest are 0
-      }
-
-      writer.write(mv, useOrigin, orgPlus1);
-    }
-    return origin[0];
-  }
-
-
 
   @Override
   public void close() throws IOException {

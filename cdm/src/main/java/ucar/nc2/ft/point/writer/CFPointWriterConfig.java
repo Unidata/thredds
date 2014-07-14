@@ -46,7 +46,7 @@ public class CFPointWriterConfig {
   public NetcdfFileWriter.Version version;        // netcdf file version
   public Nc4ChunkingStrategy chunking;            // for netcdf-4
   public boolean noTimeCoverage = false;          // does not have a time dimension
-  public int recDimensionLength = -1;             // do use unlimited dimension (for netcdf3), use fixed dimension of this length
+  public int recDimensionLength = -1;             // do use unlimited dimension (for netcdf3), use fixed dimension of this length NOT USED
 
   public CFPointWriterConfig(NetcdfFileWriter.Version version) {
     this.version = version;

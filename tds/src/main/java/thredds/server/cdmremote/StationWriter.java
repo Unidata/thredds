@@ -737,7 +737,7 @@ public class StationWriter {
       netcdfResult = diskCache.createUniqueFile("cdmSW", ".nc");
       List<Attribute> atts = new ArrayList<Attribute>();
       atts.add(new Attribute(CDM.TITLE, "Extracted data from TDS using CDM remote subsetting"));
-      cfWriter = new WriterCFStationCollection(null, netcdfResult.getAbsolutePath(), atts);
+      cfWriter = null; // new WriterCFStationCollection(null, netcdfResult.getAbsolutePath(), atts);
 
       // verify SpatialSelection has some stations
       if (qb.getSpatialSelection() == CdmrfQueryBean.SpatialSelection.bb) {
@@ -765,7 +765,8 @@ public class StationWriter {
         public void act(PointFeature pf, StructureData sdata) throws IOException {
           if (!headerWritten) {
             try {
-              cfWriter.writeHeader(wantStations, wantVars, sfc.getTimeUnit(), sfc.getAltUnits(), null);
+              // LOOK cfWriter.writeHeader(wantStations, wantVars, sfc.getTimeUnit(), sfc.getAltUnits(), null);
+              cfWriter.writeHeader(wantStations, (StationPointFeature) pf);
               headerWritten = true;
             } catch (IOException e) {
               log.error("WriterNetcdf.header", e);

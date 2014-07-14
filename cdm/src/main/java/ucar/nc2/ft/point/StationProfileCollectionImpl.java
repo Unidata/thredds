@@ -58,6 +58,12 @@ public abstract class StationProfileCollectionImpl extends MultipleNestedPointCo
 
   protected abstract void initStationHelper(); // allow station helper to be defered initialization
 
+  @Override
+  public List<StationFeature> getStationFeatures() throws IOException {
+    if (stationHelper == null) initStationHelper();
+    return stationHelper.getStationFeatures();
+  }
+
   public List<Station> getStations() {
     if (stationHelper == null) initStationHelper();
     return stationHelper.getStations();

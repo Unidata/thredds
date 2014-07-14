@@ -87,6 +87,10 @@ class WriterPointCollectionNoTime extends CFPointWriter {
 		super(fileOut, atts, version);
 	}
 
+    // LOOK fake
+  @Override
+  protected void makeFeatureVariables(StructureData featureData, boolean isExtended) throws IOException {}
+
 
 	public void writeHeader(List<Station> stns, List<VariableSimpleIF> vars, String altUnits) throws IOException {
 		this.altUnits = altUnits;

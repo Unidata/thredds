@@ -32,6 +32,7 @@
  */
 package ucar.nc2.ft;
 
+import ucar.nc2.ft.point.StationFeature;
 import ucar.unidata.geoloc.Station;
 
 import java.util.List;
@@ -82,5 +83,14 @@ public interface StationProfileFeatureCollection extends NestedPointFeatureColle
    * @throws java.io.IOException on i/o error
    */
   public StationProfileFeature getStationProfileFeature(Station s) throws IOException;
+
+  /**
+   * Get list of stations as StationFeatures
+   *
+   * @return list of stations as StationFeatures
+   * @throws java.io.IOException on i/o error
+   */
+  public List<StationFeature> getStationFeatures() throws IOException;
+
 
 }

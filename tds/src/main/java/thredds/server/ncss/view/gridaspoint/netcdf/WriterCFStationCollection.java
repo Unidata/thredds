@@ -81,7 +81,7 @@ import ucar.unidata.geoloc.Station;
  * @author mhermida
  * @since Nov 09, 2012
  */
-class WriterCFStationCollection  extends CFPointWriter {
+class WriterCFStationCollection extends CFPointWriter {
 
 	static private Logger log = LoggerFactory.getLogger(WriterCFStationCollection.class);
 
@@ -115,6 +115,9 @@ class WriterCFStationCollection  extends CFPointWriter {
 		super(fileOut, atts, version);
 		writer.addGroupAttribute(null, new Attribute(CF.FEATURE_TYPE, CF.FeatureType.timeSeries.name()));
 	}
+
+  // LOOK fake
+  protected void makeFeatureVariables(StructureData featureData, boolean isExtended) throws IOException {}
 
 	void writeHeader(List<Station> stns, List<VariableSimpleIF> vars, GridDataset gds, List<Attribute> timeDimAtts, String altUnits) throws IOException {
 

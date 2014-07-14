@@ -31,13 +31,13 @@ public class TestCFPointWriter {
   @Parameterized.Parameters
   public static List<Object[]> getTestParameters() {
     List<Object[]> result = new ArrayList<>();
-    //result.add(new Object[]{CFpointObs_topdir + "stationData2Levels.ncml", FeatureType.STATION, 15});
-
+    //result.add(new Object[]{CFpointObs_topdir + "stationProfileSingle.ncml", FeatureType.STATION_PROFILE, 9});
 
     result.addAll(TestCFPointDatasets.getPointDatasets());
     result.addAll(TestCFPointDatasets.getStationDatasets());
     result.addAll(TestCFPointDatasets.getProfileDatasets());
     result.addAll(TestCFPointDatasets.getTrajectoryDatasets());
+    result.addAll(TestCFPointDatasets.getStationProfileDatasets());
 
     /* result.add(new Object[] {TestDir.cdmUnitTestDir + "ft/point/ldm/04061912_buoy.nc", FeatureType.POINT, 218});
     result.add(new Object[] {TestDir.cdmUnitTestDir + "ft/point/netcdf/Surface_Buoy_20090921_0000.nc", FeatureType.POINT, 32452});
@@ -169,6 +169,7 @@ public class TestCFPointWriter {
     return count;
   }
 
+  final boolean failOnDataVarsDifferent = false;
   void compare(FeatureDatasetPoint org, FeatureDatasetPoint copy) {
 
     FeatureType fcOrg = org.getFeatureType();
@@ -182,7 +183,7 @@ public class TestCFPointWriter {
     if (ok) System.out.printf("Data Vars OK%n");
     else {
       System.out.printf("Data Vars NOT OK%n %s%n", f);
-      assert false;
+      if (failOnDataVarsDifferent) assert false;
     }
 
 

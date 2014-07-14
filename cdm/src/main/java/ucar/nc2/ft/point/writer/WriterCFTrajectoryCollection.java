@@ -48,7 +48,7 @@ import java.util.*;
 
 /**
  * Write a CF "Discrete Sample" trajectory collection file.
- * Example H.3.5. Contiguous ragged array representation of trajectories, H.4.4
+ * Example H.3.5. Contiguous ragged array representation of trajectories, H.4.3
  *
  * @author caron
  * @since 7/11/2014
@@ -61,24 +61,14 @@ public class WriterCFTrajectoryCollection extends CFPointWriter {
   private static final String numberOfObsName = "nobs";
 
   ///////////////////////////////////////////////////
-  protected Structure featureStruct;  // used for netcdf4 extended
-
+  private Structure featureStruct;  // used for netcdf4 extended
+  private Map<String, Variable> featureVarMap = new HashMap<>();
   private boolean headerDone = false;
-  private int ntrajs, name_strlen;
 
-  private Map<String, Variable> dataMap  = new HashMap<>();
-  private Map<String, Variable> profileMap  = new HashMap<>();
-
-  public WriterCFTrajectoryCollection(String fileOut, List<Attribute> globalAtts, List<VariableSimpleIF> dataVars, List<Variable> extra, DateUnit timeUnit, CFPointWriterConfig config) throws IOException {
-    super(fileOut, globalAtts, extra, config);
-    this.timeUnit = timeUnit;
-    this.dataVars = dataVars;
+  public WriterCFTrajectoryCollection(String fileOut, List<Attribute> globalAtts, List<VariableSimpleIF> dataVars, List<Variable> extra,
+                                      DateUnit timeUnit, String altUnits, CFPointWriterConfig config) throws IOException {
+    super(fileOut, globalAtts, dataVars, extra, timeUnit, altUnits, config);
     writer.addGroupAttribute(null, new Attribute(CF.FEATURE_TYPE, CF.FeatureType.trajectory.name()));
-  }
-
-  public void setHeaderInfo(int nprofiles, int name_strlen) {
-    this.ntrajs = nprofiles;
-    this.name_strlen = name_strlen;
   }
 
   public int writeTrajectory (TrajectoryFeature feature) throws IOException {
@@ -87,8 +77,8 @@ public class WriterCFTrajectoryCollection extends CFPointWriter {
     while (feature.hasNext()) {
       PointFeature pf = feature.next();
       if (!headerDone) {
-        if (name_strlen == 0) name_strlen = feature.getName().length() * 2;
-        writeHeader(name_strlen, ntrajs, feature, pf);
+        if (id_strlen == 0) id_strlen = feature.getName().length() * 2;
+        writeHeader(feature, pf);
         headerDone = true;
       }
       writeObsData(pf);
@@ -99,15 +89,9 @@ public class WriterCFTrajectoryCollection extends CFPointWriter {
     return count;
   }
 
-  private void writeHeader(int name_strlen, int ntrajs, TrajectoryFeature feature, PointFeature obs) throws IOException {
-    this.recordDim = writer.addUnlimitedDimension(recordDimName);
-    this.altUnits = feature.getAltUnits();
-    DateUnit timeUnit = feature.getTimeUnit();
+  private void writeHeader(TrajectoryFeature feature, PointFeature obs) throws IOException {
 
-    StructureData trajData = feature.getFeatureData();
-    StructureData obsData = obs.getFeatureData();
-
-    // obs
+    // obs data
     List<VariableSimpleIF> coords = new ArrayList<>();
     coords.add(VariableSimpleImpl.makeScalar(timeName, "time of measurement", timeUnit.getUnitsString(), DataType.DOUBLE));
     coords.add(VariableSimpleImpl.makeScalar(latName,  "latitude of measurement", CDM.LAT_UNITS, DataType.DOUBLE));
@@ -119,42 +103,23 @@ public class WriterCFTrajectoryCollection extends CFPointWriter {
       coordNames.format(" %s", altName);
     }
 
-    addExtraVariables();
-
-    if (writer.getVersion().isExtendedModel()) {
-      makeFeatureVariables(name_strlen, ntrajs, trajData, timeUnit, true);
-      record = (Structure) writer.addVariable(null, recordName, DataType.STRUCTURE, recordDimName);
-      addCoordinatesExtended(record, coords);
-      addDataVariablesExtended(obsData, coordNames.toString());
-      record.calcElementSize();
-      writer.create();
-
-    } else {
-      makeFeatureVariables(name_strlen, ntrajs, trajData, timeUnit, false);
-      addCoordinatesClassic(recordDim, coords, dataMap);
-      addDataVariablesClassic(recordDim, obsData, dataMap, coordNames.toString());
-      writer.create();
-      record = writer.addRecordStructure(); // for netcdf3
-    }
-
-    writeExtraVariables();
+    super.writeHeader(coords, feature.getFeatureData(), obs.getFeatureData(), coordNames.toString());
   }
 
-  private void makeFeatureVariables(int name_strlen, int ntrajs, StructureData trajData, DateUnit timeUnit, boolean isExtended) throws IOException {
-    name_strlen = Math.max( name_strlen, 10);
+  protected void makeFeatureVariables(StructureData featureData, boolean isExtended) throws IOException {
 
-    // LOOK why not unlimited here ?
-    Dimension profileDim = writer.addDimension(null, featureDimName, ntrajs);
+    // LOOK why not unlimited here fro extended model ?
+    Dimension profileDim = writer.addDimension(null, featureDimName, nfeatures);
 
     // add the profile Variables using the profile dimension
     List<VariableSimpleIF> featureVars = new ArrayList<>();
-    featureVars.add(VariableSimpleImpl.makeString(idName, "trajectory identifier", null, name_strlen)
+    featureVars.add(VariableSimpleImpl.makeString(idName, "trajectory identifier", null, id_strlen)
             .add(new Attribute(CF.CF_ROLE, CF.TRAJECTORY_ID)));
 
     featureVars.add(VariableSimpleImpl.makeScalar(numberOfObsName, "number of obs for this profile", null, DataType.INT)
             .add(new Attribute(CF.SAMPLE_DIMENSION, recordDimName)));
 
-    for (StructureMembers.Member m : trajData.getMembers()) {
+    for (StructureMembers.Member m : featureData.getMembers()) {
       VariableSimpleIF dv = getDataVar(m.getName());
       if (dv != null)
         featureVars.add(dv);
@@ -164,40 +129,26 @@ public class WriterCFTrajectoryCollection extends CFPointWriter {
       featureStruct = (Structure) writer.addVariable(null, featureStructName, DataType.STRUCTURE, featureDimName);
       addCoordinatesExtended(featureStruct, featureVars);
     } else {
-      addCoordinatesClassic(profileDim, featureVars, profileMap);
+      addCoordinatesClassic(profileDim, featureVars, featureVarMap);
     }
   }
 
-  private int profileRecno = 0;
+  private int trajRecno = 0;
   public void writeTrajectoryData(TrajectoryFeature profile, int nobs) throws IOException {
 
     StructureDataScalar profileCoords = new StructureDataScalar("Coords");
-    profileCoords.addMemberString(idName, null, null, profile.getName().trim(), name_strlen);
+    profileCoords.addMemberString(idName, null, null, profile.getName().trim(), id_strlen);
     profileCoords.addMember(numberOfObsName, null, null, DataType.INT, false, nobs);
 
     StructureDataComposite sdall = new StructureDataComposite();
-    sdall.add(profileCoords); // coords first so it takes precedence
+    sdall.add(profileCoords);
     sdall.add(profile.getFeatureData());
 
-    int[] origin = new int[1];
-    origin[0] = profileRecno;
-    try {
-      if (isExtendedModel)
-        super.writeStructureData(featureStruct, origin, sdall);
-      else {
-        super.writeStructureDataClassic(profileMap, origin, sdall);
-      }
-
-    } catch (InvalidRangeException e) {
-      e.printStackTrace();
-      throw new IllegalStateException(e);
-    }
-
-    profileRecno++;
+    trajRecno = super.writeStructureData(trajRecno, featureStruct, sdall, featureVarMap);
   }
 
 
-  private int recno = 0;
+  private int obsRecno = 0;
   public void writeObsData(PointFeature pf) throws IOException {
     EarthLocation loc = pf.getLocation();
     trackBB(loc.getLatLon(), timeUnit.makeCalendarDate(pf.getObservationTime()));
@@ -212,22 +163,8 @@ public class WriterCFTrajectoryCollection extends CFPointWriter {
     sdall.add(coords); // coords first so it takes precedence
     sdall.add(pf.getFeatureData());
 
-    // write the recno record
-    int[] origin = new int[1];
-    origin[0] = recno;
-    try {
-      if (isExtendedModel)
-        super.writeStructureData(record, origin, sdall);
-      else {
-        super.writeStructureDataClassic(dataMap, origin, sdall);
-      }
-
-    } catch (InvalidRangeException e) {
-      e.printStackTrace();
-      throw new IllegalStateException(e);
-    }
-
-    recno++;
+    obsRecno = super.writeStructureData(obsRecno, record, sdall, dataMap);
   }
+
 
 }

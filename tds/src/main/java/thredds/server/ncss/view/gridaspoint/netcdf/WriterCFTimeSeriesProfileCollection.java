@@ -429,4 +429,8 @@ class WriterCFTimeSeriesProfileCollection extends CFPointWriter {
 		}		
 	}
 
+  @Override
+  protected void makeFeatureVariables(StructureData featureData, boolean isExtended) throws IOException {
+    // LOOK FAKE
+  }
 }

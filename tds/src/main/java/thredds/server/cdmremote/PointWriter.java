@@ -301,7 +301,7 @@ public class PointWriter {
       netcdfResult = diskCache.createUniqueFile("CdmrFeature", ".nc");
       List<Attribute> atts = new ArrayList<Attribute>();
       atts.add( new Attribute( CDM.TITLE, "Extracted data from TDS Feature Collection " + fd.getLocation() ));
-      cfWriter = new WriterCFPointCollection(null, netcdfResult.getAbsolutePath(), atts );
+      cfWriter = null; // LOOK new WriterCFPointCollection(null, netcdfResult.getAbsolutePath(), atts );
     }
 
     public void header() {
@@ -320,7 +320,8 @@ public class PointWriter {
         public void act(PointFeature pf, StructureData sdata) throws IOException {
           if (!headerWritten) {
             try {
-              cfWriter.writeHeader(wantVars, pfc.getTimeUnit(), pfc.getAltUnits(), null);
+              // LOOK cfWriter.writeHeader(wantVars, pfc.getTimeUnit(), pfc.getAltUnits(), null);
+              cfWriter.writeHeader(pf);
               headerWritten = true;
             } catch (IOException e) {
               log.error("WriterNetcdf.header", e);

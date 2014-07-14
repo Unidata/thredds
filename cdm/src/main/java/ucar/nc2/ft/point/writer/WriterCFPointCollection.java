@@ -61,27 +61,13 @@ import java.io.IOException;
 public class WriterCFPointCollection extends CFPointWriter {
   private Map<String, Variable> varMap  = new HashMap<>();
 
-  /* public WriterCFPointCollection(String fileOut, String title) throws IOException {
-    this(fileOut, Arrays.asList(new Attribute(CDM.TITLE, title)), new CFPointWriterConfig(null));
-  } */
-
-  public WriterCFPointCollection(NetcdfFileWriter.Version version, String fileOut, List<Attribute> atts) throws IOException {
-    this(fileOut, atts, null, new CFPointWriterConfig(version));
-  }
-
-  public WriterCFPointCollection(String fileOut, List<Attribute> globalAtts, List<Variable> extra, CFPointWriterConfig config) throws IOException {
-    super(fileOut, globalAtts, extra, config);
+  public WriterCFPointCollection(String fileOut, List<Attribute> globalAtts, List<VariableSimpleIF> dataVars, List<Variable> extra,
+                                 DateUnit timeUnit, String altUnits, CFPointWriterConfig config) throws IOException {
+    super(fileOut, globalAtts, dataVars, extra, timeUnit, altUnits, config);
     writer.addGroupAttribute(null, new Attribute(CF.FEATURE_TYPE, CF.FeatureType.point.name()));
   }
 
-  public void writeHeader(List<VariableSimpleIF> dataVars, DateUnit timeUnit, String altUnits, PointFeature pf) throws IOException {
-    this.dataVars = dataVars;
-    this.altUnits = altUnits;
-    if (noUnlimitedDimension)
-      recordDim = writer.addDimension(null, recordDimName, config.recDimensionLength);
-    else
-      recordDim = writer.addUnlimitedDimension(recordDimName);
-
+  public void writeHeader(PointFeature pf) throws IOException {
     List<VariableSimpleIF> coords = new ArrayList<>();
     coords.add(VariableSimpleImpl.makeScalar(timeName, "time of measurement", timeUnit.getUnitsString(), DataType.DOUBLE));
     coords.add(VariableSimpleImpl.makeScalar(latName,  "latitude of measurement", CDM.LAT_UNITS, DataType.DOUBLE));
@@ -93,34 +79,22 @@ public class WriterCFPointCollection extends CFPointWriter {
       coordNames.format(" %s", altName);
     }
 
-    addExtraVariables();
-
-    if (writer.getVersion().isExtendedModel()) {
-      record = (Structure) writer.addVariable(null, recordName, DataType.STRUCTURE, recordDimName);
-      addCoordinatesExtended(record, coords);
-      addDataVariablesExtended(pf.getFeatureData(), coordNames.toString());
-      record.calcElementSize();
-      writer.create();
-
-    } else {
-      addCoordinatesClassic(recordDim, coords, varMap);
-      addDataVariablesClassic(recordDim, pf.getFeatureData(), varMap, coordNames.toString());
-      writer.create();
-      if (!noUnlimitedDimension) record = writer.addRecordStructure(); // netcdf3
-    }
-
-    writeExtraVariables();
+    super.writeHeader(coords, null, pf.getDataAll(), coordNames.toString());
   }
+
+  protected void makeFeatureVariables(StructureData featureData, boolean isExtended) throws IOException {
+    // NOOP
+  }
+
 
   /////////////////////////////////////////////////////////
   // writing data
-
-  private int recno = 0;
 
   public void writeRecord(PointFeature sobs, StructureData sdata) throws IOException {
     writeRecord(sobs.getObservationTime(), sobs.getObservationTimeAsCalendarDate(), sobs.getLocation(), sdata);
   }
 
+  private int obsRecno = 0;
   public void writeRecord(double timeCoordValue, CalendarDate obsDate, EarthLocation loc, StructureData sdata) throws IOException {
     trackBB(loc.getLatLon(), obsDate);
 
@@ -134,23 +108,7 @@ public class WriterCFPointCollection extends CFPointWriter {
     sdall.add(coords); // coords first so it takes precedence
     sdall.add(sdata);
 
-    // write the recno record
-    int[] origin = new int[1];
-    origin[0] = recno;
-    try {
-      boolean useStructure = isExtendedModel || (writer.getVersion() == NetcdfFileWriter.Version.netcdf3 && config.recDimensionLength < 0);
-      if (useStructure)
-        super.writeStructureData(record, origin, sdall);
-      else {
-        super.writeStructureDataClassic(varMap, origin, sdall);
-      }
-
-    } catch (InvalidRangeException e) {
-      e.printStackTrace();
-      throw new IllegalStateException(e);
-    }
-
-    recno++;
+    obsRecno = super.writeStructureData(obsRecno, record, sdall, varMap);
   }
 
 }
