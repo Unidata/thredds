@@ -97,10 +97,10 @@ public class CFpointObs extends TableConfigurerImpl {
         return getPointConfig(ds, info, errlog);
       case timeSeries:
         return getStationConfig(ds, info, errlog);
-      case trajectory:
-        return getTrajectoryConfig(ds, info, errlog);
       case profile:
         return getProfileConfig(ds, info, errlog);
+      case trajectory:
+        return getTrajectoryConfig(ds, info, errlog);
       case timeSeriesProfile:
         return getTimeSeriesProfileConfig(ds, info, errlog);
       case trajectoryProfile:
@@ -238,7 +238,8 @@ public class CFpointObs extends TableConfigurerImpl {
       errlog.format("CFpointObs getProfileConfig cant find a Height coordinate %n");
       return null;
     }
-    info.childStruct = z.getParentStructure();
+    if (info.childStruct == null)
+      info.childStruct = z.getParentStructure();
 
     TableConfig obsTable = null;
     switch (info.encoding) {
@@ -608,7 +609,7 @@ public class CFpointObs extends TableConfigurerImpl {
     Dimension parentDim, childDim, grandChildDim;
     Variable instanceId;
     Variable ragged_parentIndex, ragged_rowSize;
-    Structure parentStruct, childStruct;
+    Structure parentStruct, childStruct, grandChildStruct;
 
     EncodingInfo set(Encoding encoding, Dimension parentDim) {
       this.encoding = encoding;
@@ -861,7 +862,7 @@ public class CFpointObs extends TableConfigurerImpl {
    * @param errlog      error go here
    * @return EncodingInfo if ragged array representations is found
    */
-  private boolean identifyDoubleRaggeds(NetcdfDataset ds, EncodingInfo info, Formatter errlog) {
+  protected boolean identifyDoubleRaggeds(NetcdfDataset ds, EncodingInfo info, Formatter errlog) {
     // the timeseries are stored as ragged index
     Evaluator.VarAtt varatt = Evaluator.findVariableWithAttribute(ds, CF.INSTANCE_DIMENSION);
     if (varatt == null) varatt = Evaluator.findVariableWithAttribute(ds, CF.RAGGED_PARENTINDEX);
@@ -923,45 +924,7 @@ public class CFpointObs extends TableConfigurerImpl {
     return true;
   }
 
-  private boolean identifyEncodingTraj(NetcdfDataset ds, EncodingInfo info, Formatter errlog) {
-    // find the obs dimension
-    Dimension obsDim = null;
-    if (info.time.getRank() > 0)
-      obsDim = info.time.getDimension(info.time.getRank() - 1); // may be time(time) or time(traj, obs)
-    else if (info.time.getParentStructure() != null) {
-      Structure parent = info.time.getParentStructure(); // if time axis is a structure member, try pulling dimension out of parent structure
-      obsDim = parent.getDimension(parent.getRank() - 1);
-    }
-    if (obsDim == null) {
-      errlog.format("CFpointObs: Must have a non-scalar Time coordinate%n");
-      return false;
-    }
-
-    if (identifyRaggeds(ds, info, null, obsDim, errlog)) return true;
-
-    // parent dimension
-    Dimension parentDim;
-    if (info.time.getRank() > 1) {
-      parentDim = info.time.getDimension(0);
-      info.set(Encoding.multidim, parentDim, obsDim);
-      return true;
-    }
-
-    if (info.lat.getRank() > 0) { // multidim case
-      for (Dimension d : info.lat.getDimensions()) {
-        if (!d.equals(obsDim)) {
-          info.set(Encoding.multidim, d, obsDim);
-          return true;
-        }
-      }
-    }
-
-    //otherwise its a single traj in the file
-    info.set(Encoding.single, null, obsDim);
-    return true;
-  }
-
-  private boolean identifyEncodingProfile(NetcdfDataset ds, EncodingInfo info, Formatter errlog) {
+  protected boolean identifyEncodingProfile(NetcdfDataset ds, EncodingInfo info, Formatter errlog) {
     // find the obs dimension
     VariableDS z = CoordSysEvaluator.findCoordByType(ds, AxisType.Height);
     if (z == null) z = CoordSysEvaluator.findCoordByType(ds, AxisType.Pressure);
@@ -1004,7 +967,45 @@ public class CFpointObs extends TableConfigurerImpl {
     return true;
   }
 
-  private boolean identifyEncodingSection(NetcdfDataset ds, EncodingInfo info, CF.FeatureType ftype, Formatter errlog) {
+  protected boolean identifyEncodingTraj(NetcdfDataset ds, EncodingInfo info, Formatter errlog) {
+    // find the obs dimension
+    Dimension obsDim = null;
+    if (info.time.getRank() > 0)
+      obsDim = info.time.getDimension(info.time.getRank() - 1); // may be time(time) or time(traj, obs)
+    else if (info.time.getParentStructure() != null) {
+      Structure parent = info.time.getParentStructure(); // if time axis is a structure member, try pulling dimension out of parent structure
+      obsDim = parent.getDimension(parent.getRank() - 1);
+    }
+    if (obsDim == null) {
+      errlog.format("CFpointObs: Must have a non-scalar Time coordinate%n");
+      return false;
+    }
+
+    if (identifyRaggeds(ds, info, null, obsDim, errlog)) return true;
+
+    // parent dimension
+    Dimension parentDim;
+    if (info.time.getRank() > 1) {
+      parentDim = info.time.getDimension(0);
+      info.set(Encoding.multidim, parentDim, obsDim);
+      return true;
+    }
+
+    if (info.lat.getRank() > 0) { // multidim case
+      for (Dimension d : info.lat.getDimensions()) {
+        if (!d.equals(obsDim)) {
+          info.set(Encoding.multidim, d, obsDim);
+          return true;
+        }
+      }
+    }
+
+    //otherwise its a single traj in the file
+    info.set(Encoding.single, null, obsDim);
+    return true;
+  }
+
+  protected boolean identifyEncodingSection(NetcdfDataset ds, EncodingInfo info, CF.FeatureType ftype, Formatter errlog) {
         // find the non-station altitude
     VariableDS z = findZAxisNotStationAlt(ds);
     if (z == null) {
@@ -1068,7 +1069,7 @@ public class CFpointObs extends TableConfigurerImpl {
     return false;
   }
 
-  private boolean identifyEncodingTimeSeriesProfile(NetcdfDataset ds, EncodingInfo info, CF.FeatureType ftype, Formatter errlog) {
+  protected boolean identifyEncodingTimeSeriesProfile(NetcdfDataset ds, EncodingInfo info, CF.FeatureType ftype, Formatter errlog) {
     // find the non-station altitude
     VariableDS z = findZAxisNotStationAlt(ds);
     if (z == null) {

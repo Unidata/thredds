@@ -51,6 +51,7 @@ public class StructureDataIteratorLinked implements StructureDataIterator {
   private int firstRecord, nextRecno, numRecords;
   private String linkVarName;
   private int currRecno;
+  private boolean isContiguous;
 
   public StructureDataIteratorLinked(Structure s, int firstRecord, int numRecords, String linkVarName) throws IOException {
     this.s = s;
@@ -58,6 +59,7 @@ public class StructureDataIteratorLinked implements StructureDataIterator {
     this.nextRecno = firstRecord;
     this.numRecords = numRecords; // contiguous only
     this.linkVarName = linkVarName;
+    this.isContiguous = (linkVarName == null);
   }
 
   @Override
@@ -71,10 +73,8 @@ public class StructureDataIteratorLinked implements StructureDataIterator {
       throw new IOException(e.getMessage());
     }
 
-    if (numRecords > 0) { // contiguous case
+    if (isContiguous) {
       nextRecno++;
-      if (nextRecno >= firstRecord + numRecords)
-        nextRecno = -1;
 
     } else {
       nextRecno = sdata.getScalarInt(linkVarName);
@@ -87,7 +87,7 @@ public class StructureDataIteratorLinked implements StructureDataIterator {
 
   @Override
   public boolean hasNext() throws IOException {
-    return nextRecno >= 0;
+    return isContiguous ? nextRecno < firstRecord + numRecords : nextRecno >= 0;
   }
 
   @Override

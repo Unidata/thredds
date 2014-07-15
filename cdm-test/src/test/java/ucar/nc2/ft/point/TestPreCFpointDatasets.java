@@ -55,43 +55,9 @@ import java.util.List;
 public class TestPreCFpointDatasets {
   static public String CFpointObs_pre16 = TestDir.cdmLocalTestDataDir + "pointPre1.6/";
 
-  private static class FileSort implements Comparable<FileSort> {
-    String path;
-    int order = 10;
-
-    FileSort(File f) {
-      this.path = f.getPath();
-      String name = f.getName().toLowerCase();
-      if (name.contains("point")) order = 1;
-      else if (name.contains("stationprofile")) order = 5;
-      else if (name.contains("station")) order = 2;
-      else if (name.contains("profile")) order = 3;
-      else if (name.contains("traj")) order = 4;
-      else if (name.contains("section")) order = 6;
-    }
-
-    @Override
-    public int compareTo(FileSort o) {
-      return order - o.order;
-    }
-  }
-
   @Parameterized.Parameters
   public static List<Object[]> getTestParameters() {
-    List<FileSort> files = new ArrayList<>();
-    File topDir = new File(CFpointObs_pre16);
-    for (File f : topDir.listFiles()) {
-      files.add( new FileSort(f));
-    }
-    Collections.sort(files);
-
-    List<Object[]> result = new ArrayList<>();
-    for (FileSort f : files) {
-      result.add(new Object[] {f.path, FeatureType.ANY_POINT});
-      System.out.printf("%s%n", f.path);
-    }
-
-    return result;
+    return TestPointDatasets.getAllFilesInDirectory(CFpointObs_pre16);
   }
 
   String location;
@@ -107,6 +73,5 @@ public class TestPreCFpointDatasets {
   public void checkPointDataset() throws IOException {
     assert 0 < TestPointDatasets.checkPointDataset(location, ftype, show);
   }
-
 
 }

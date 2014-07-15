@@ -33,6 +33,7 @@
 
 package ucar.ma2;
 
+import ucar.nc2.Structure;
 import ucar.nc2.iosp.IospHelper;
 
 import java.io.IOException;
@@ -92,6 +93,34 @@ public class StructureDataDeep extends StructureDataA {
   }
 
   /**
+   * Make deep copy to an ArrayStructureBB whose data is contained in a ByteBuffer.
+   * Use the order of the members in the given Structure; skip copying any not in the Structure
+   * @param s     list of structure members come from here; must be compatible with ArrayStructure's data
+   * @param as    original ArrayStructure
+   * @param bo    what byte order to use ? (null for default)
+   * @return ArrayStructureBB with all data self contained
+   */
+  static public ArrayStructureBB copyToArrayBB(Structure s, ArrayStructure as, ByteOrder bo) throws IOException {
+    StructureMembers sm = s.makeStructureMembers();
+    ArrayStructureBB abb = new ArrayStructureBB(sm, as.getShape());
+    ArrayStructureBB.setOffsets(sm);
+    if (bo != null) {
+      ByteBuffer bb = abb.getByteBuffer();
+      bb.order(bo);
+    }
+
+    StructureDataIterator iter = as.getStructureDataIterator();
+    try {
+      while (iter.hasNext())
+        copyToArrayBB(iter.next(), abb);
+    } finally {
+      iter.finish();
+    }
+    return abb;
+  }
+
+
+  /**
    * Make deep copy from a StructureData to a ArrayStructureBB whose data is contained in a ByteBuffer
    * @param sdata  original ArrayStructure.
    * @return ArrayStructureBB with all data self contained
@@ -118,17 +147,20 @@ public class StructureDataDeep extends StructureDataA {
   }
 
   /**
-   * Make deep copy from a StructureData to the given ArrayStructureBB
+   * Make deep copy from a StructureData into the given ArrayStructureBB
    * @param sdata    original data from here
-   * @param abb      copy data into this ArrayStructureBB, starting fro wherever the ByteBuffer current position is
+   * @param abb      copy data into this ArrayStructureBB, starting from wherever the ByteBuffer current position is
    * @return number of bytes copied
    */
   static public int copyToArrayBB(StructureData sdata, ArrayStructureBB abb) {
-    StructureMembers sm = sdata.getStructureMembers();
+    //StructureMembers sm = sdata.getStructureMembers();
     ByteBuffer bb = abb.getByteBuffer();
     int start = bb.limit();
 
-    for (StructureMembers.Member m : sm.getMembers()) {
+    for (StructureMembers.Member wantMember : abb.getMembers()) {
+      StructureMembers.Member m = sdata.findMember(wantMember.getName());
+      assert m.getDataType() == wantMember.getDataType();
+
       DataType dtype = m.getDataType();
       //System.out.printf("do %s (%s) = %d%n", m.getName(), m.getDataType(), bb.position());
       if (m.isScalar()) {

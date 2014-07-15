@@ -153,7 +153,16 @@ public class WriterCFStationProfileCollection extends CFPointWriter {
     if (!isExtendedModel) {
       Variable stnIndexVar = writer.findVariable(stationIndexName);
       try {
-        writer.write(stnIndexVar, Array.factory(DataType.INT, new int[]{nfeatures}));
+        writer.write(stnIndexVar, Array.factory(DataType.INT, new int[]{nfeatures}));  // default 0
+      } catch (InvalidRangeException e) {
+        e.printStackTrace();
+      }
+
+      Variable profileIdxVar = writer.findVariable(profileIdName);
+      try {
+        Array prefill = Array.factory(DataType.INT, new int[]{nfeatures});
+        MAMath.setDouble(prefill, idMissingValue);
+        writer.write(profileIdxVar, prefill);
       } catch (InvalidRangeException e) {
         e.printStackTrace();
       }
@@ -200,6 +209,26 @@ public class WriterCFStationProfileCollection extends CFPointWriter {
 
   }
 
+  private int stnRecno = 0;
+  private void writeStationData(StationFeature stn) throws IOException {
+
+    StructureDataScalar stnCoords = new StructureDataScalar("Coords");
+    stnCoords.addMember(latName, null, null, DataType.DOUBLE, false, stn.getLatLon().getLatitude());
+    stnCoords.addMember(lonName, null, null, DataType.DOUBLE, false, stn.getLatLon().getLongitude());
+    if (useAlt) stnCoords.addMember(stationAltName, null, null, DataType.DOUBLE, false, stn.getAltitude());
+    stnCoords.addMemberString(stationIdName, null, null, stn.getName().trim(), id_strlen);
+    if (useDesc) stnCoords.addMemberString(descName, null, null, stn.getDescription().trim(), desc_strlen);
+    if (useWmoId) stnCoords.addMemberString(wmoName, null, null, stn.getWmoId().trim(), wmo_strlen);
+
+    StructureDataComposite sdall = new StructureDataComposite();
+    sdall.add(stnCoords); // coords first so it takes precedence
+    sdall.add(stn.getFeatureData());
+
+    stnRecno = super.writeStructureData(stnRecno, stationStruct, sdall, stationVarMap);
+  }
+
+
+
   @Override
   protected void makeMiddleVariables(StructureData profileData, boolean isExtended) throws IOException {
 
@@ -208,7 +237,8 @@ public class WriterCFStationProfileCollection extends CFPointWriter {
     // add the profile Variables using the profile dimension
     List<VariableSimpleIF> profileVars = new ArrayList<>();
     profileVars.add(VariableSimpleImpl.makeString(profileIdName, "profile identifier", null, id_strlen)
-            .add(new Attribute(CF.CF_ROLE, CF.PROFILE_ID)));         // profileId:cf_role = "profile_id";
+            .add(new Attribute(CF.CF_ROLE, CF.PROFILE_ID))             // profileId:cf_role = "profile_id";
+            .add(new Attribute(CDM.MISSING_VALUE, String.valueOf(idMissingValue))));
 
     profileVars.add(VariableSimpleImpl.makeScalar(profileRowSizeName, "number of obs for this profile", null, DataType.INT)
             .add(new Attribute(CF.SAMPLE_DIMENSION, recordDimName)));         // rowSize:sample_dimension = "obs"
@@ -231,25 +261,6 @@ public class WriterCFStationProfileCollection extends CFPointWriter {
       addCoordinatesClassic(profileDim, profileVars, profileVarMap);
     }
   }
-
-  private int stnRecno = 0;
-  private void writeStationData(StationFeature stn) throws IOException {
-
-    StructureDataScalar stnCoords = new StructureDataScalar("Coords");
-    stnCoords.addMember(latName, null, null, DataType.DOUBLE, false, stn.getLatLon().getLatitude());
-    stnCoords.addMember(lonName, null, null, DataType.DOUBLE, false, stn.getLatLon().getLongitude());
-    stnCoords.addMember(stationAltName, null, null, DataType.DOUBLE, false, stn.getAltitude());
-    stnCoords.addMemberString(stationIdName, null, null, stn.getName().trim(), id_strlen);
-    if (useDesc) stnCoords.addMemberString(descName, null, null, stn.getDescription().trim(), desc_strlen);
-    if (useWmoId) stnCoords.addMemberString(wmoName, null, null, stn.getWmoId().trim(), wmo_strlen);
-
-    StructureDataComposite sdall = new StructureDataComposite();
-    sdall.add(stnCoords); // coords first so it takes precedence
-    sdall.add(stn.getFeatureData());
-
-    stnRecno = super.writeStructureData(stnRecno, stationStruct, sdall, stationVarMap);
-  }
-
 
   private int profileRecno = 0;
   public void writeProfileData(int stnIndex, ProfileFeature profile, int nobs) throws IOException {

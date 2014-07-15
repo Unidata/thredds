@@ -59,7 +59,7 @@ import java.io.IOException;
  * @since Nov 23, 2010
  */
 public class WriterCFPointCollection extends CFPointWriter {
-  private Map<String, Variable> varMap  = new HashMap<>();
+  //private Map<String, Variable> varMap  = new HashMap<>();
 
   public WriterCFPointCollection(String fileOut, List<Attribute> globalAtts, List<VariableSimpleIF> dataVars, List<Variable> extra,
                                  DateUnit timeUnit, String altUnits, CFPointWriterConfig config) throws IOException {
@@ -108,7 +108,7 @@ public class WriterCFPointCollection extends CFPointWriter {
     sdall.add(coords); // coords first so it takes precedence
     sdall.add(sdata);
 
-    obsRecno = super.writeStructureData(obsRecno, record, sdall, varMap);
+    obsRecno = super.writeStructureData(obsRecno, record, sdall, dataMap);
   }
 
 }

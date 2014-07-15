@@ -79,6 +79,8 @@ public abstract class CFPointWriter implements AutoCloseable {
   public static final String profileRowSizeName = "nobs";
   public static final String profileTimeName = "profileTime";
 
+  public static final int idMissingValue = -9999;
+
 
   private static boolean debug = false;
 
@@ -634,7 +636,7 @@ public abstract class CFPointWriter implements AutoCloseable {
           ArrayStructureW as = new ArrayStructureW(sdata.getStructureMembers(), new int[] {1});
           as.setStructureData(sdata, 0);
           writer.write(s, origin, as);  // can write it all at once along regular dimension
-          return origin[0];
+          return recno + 1;
         }
 
       } else {

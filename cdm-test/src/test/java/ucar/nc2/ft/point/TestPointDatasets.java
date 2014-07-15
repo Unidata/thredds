@@ -48,7 +48,9 @@ import ucar.nc2.units.*;
 import ucar.unidata.geoloc.EarthLocation;
 import ucar.unidata.geoloc.LatLonRect;
 import ucar.unidata.test.util.TestDir;
+import ucar.unidata.util.StringUtil2;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.*;
@@ -61,6 +63,47 @@ import java.util.*;
  */
 @RunWith(Parameterized.class)
 public class TestPointDatasets {
+
+  public static List<Object[]> getAllFilesInDirectory(String topdir) {
+    List<FileSort> files = new ArrayList<>();
+    File topDir = new File(topdir);
+    for (File f : topDir.listFiles()) {
+      files.add( new FileSort(f));
+    }
+    Collections.sort(files);
+
+    List<Object[]> result = new ArrayList<>();
+    for (FileSort f : files) {
+      result.add(new Object[] {f.path, FeatureType.ANY_POINT});
+      System.out.printf("%s%n", f.path);
+    }
+
+    return result;
+  }
+
+  private static class FileSort implements Comparable<FileSort> {
+    String path;
+    int order = 10;
+
+    FileSort(File f) {
+      this.path = f.getPath();
+      String name = f.getName().toLowerCase();
+      if (name.contains("point")) order = 1;
+      else if (name.contains("stationprofile")) order = 5;
+      else if (name.contains("station")) order = 2;
+      else if (name.contains("profile")) order = 3;
+      else if (name.contains("traj")) order = 4;
+      else if (name.contains("section")) order = 6;
+    }
+
+    @Override
+    public int compareTo(FileSort o) {
+      return order - o.order;
+    }
+  }
+
+  //////////////////////////////////////////////////////////////////////
+
   public static String topdir = TestDir.cdmUnitTestDir;
   private static final boolean showStructureData = false;
 
@@ -131,22 +174,6 @@ public class TestPointDatasets {
     return result;
   }
 
-
-
-  public void testGempak() throws IOException {
-    assert 8769 == checkPointDataset(topdir+"ft/sounding/gempak/19580807_upa.ncml", FeatureType.STATION_PROFILE, false);
-
-    // (GEMPAK IOSP) stn = psuedoStruct, obs = multidim Structure, time(time) as extraJoin
-    checkPointDataset(TestDir.cdmUnitTestDir + "formats/gempak/surface/19580807_sao.gem", FeatureType.STATION, true);
-
-    // stationAsPoint (GEMPAK IOSP) stn = psuedoStruct, obs = multidim Structure, time(time) as extraJoin
-    //testPointDataset(TestDir.cdmUnitTestDir + "formats/gempak/surface/20090521_sao.gem", FeatureType.POINT, true);
-
-    //testGempakAll(TestDir.cdmUnitTestDir + "formats/gempak/surface/20090524_sao.gem");
-    //testGempakAll(TestDir.cdmUnitTestDir+"C:/data/ft/station/09052812.sf");
-  }
-
-
   public static List<Object[]> getGempakDatasets() {
     List<Object[]> result = new ArrayList<>();
 
@@ -167,6 +194,17 @@ public class TestPointDatasets {
     return result;
   }
 
+
+  public static List<Object[]> getMiscDatasets() {
+    List<Object[]> result = new ArrayList<>();
+    result.add(new Object[]{TestDir.cdmUnitTestDir + "ft/point/ldm/04061912_buoy.nc", FeatureType.POINT, 218});
+    result.add(new Object[]{TestDir.cdmUnitTestDir + "ft/point/netcdf/Surface_Buoy_20090921_0000.nc", FeatureType.POINT, 32452});
+    result.add(new Object[]{TestDir.cdmUnitTestDir + "ft/station/multiStationMultiVar.ncml", FeatureType.STATION, 15});
+    result.add(new Object[]{TestDir.cdmUnitTestDir + "cfPoint/station/sampleDataset.nc", FeatureType.STATION, 1728});
+    result.add(new Object[]{TestDir.cdmUnitTestDir + "ft/station/200501q3h-gr.nc", FeatureType.STATION, 5023});  // */
+    return result;
+  }
+
   @Parameterized.Parameters
   public static List<Object[]> getTestParameters() {
     List<Object[]> result = new ArrayList<>();
@@ -174,6 +212,7 @@ public class TestPointDatasets {
     result.addAll(getCFDatasets());
     result.addAll(getPlugDatasets());
     result.addAll(getGempakDatasets());
+    result.addAll(getMiscDatasets());
 
     return result;
   }
@@ -195,9 +234,11 @@ public class TestPointDatasets {
   }
 
   public static int checkPointDataset(String location, FeatureType type, boolean show) throws IOException {
-    System.out.printf("================ TestPointFeatureCollection read %s %n", location);
-    long start = System.currentTimeMillis();
-    int count = 0;
+    File fileIn = new File(location);
+    String absIn = fileIn.getCanonicalPath();
+    absIn = StringUtil2.replace(absIn, "\\", "/");
+
+    System.out.printf("================ TestPointFeatureCollection read %s %n", absIn);
 
     Formatter out = new Formatter();
     try (FeatureDataset fdataset = FeatureDatasetFactoryManager.open(type, location, null, out)) {
@@ -215,53 +256,60 @@ public class TestPointDatasets {
         System.out.printf("  Feature Type %s %n", fdataset.getFeatureType());
       }
 
-      Date d1 = fdataset.getStartDate();
-      Date d2 = fdataset.getEndDate();
-      if ((d1 != null) && (d2 != null))
-        assert d1.before(d2) || d1.equals(d2);
-
-      List<VariableSimpleIF> dataVars = fdataset.getDataVariables();
-      assert dataVars != null;
-      for (VariableSimpleIF v : dataVars) {
-        assert null != fdataset.getDataVariable(v.getShortName());
-      }
-
-      // FeatureDatasetPoint
-      assert fdataset instanceof FeatureDatasetPoint;
-      FeatureDatasetPoint fdpoint = (FeatureDatasetPoint) fdataset;
-
-      for (FeatureCollection fc : fdpoint.getPointFeatureCollectionList()) {
-        assert (fc instanceof PointFeatureCollection) || (fc instanceof NestedPointFeatureCollection) : fc.getClass().getName();
-
-        if (fc instanceof PointFeatureCollection) {
-          PointFeatureCollection pfc = (PointFeatureCollection) fc;
-          count = checkPointFeatureCollection(pfc, show);
-          System.out.println("PointFeatureCollection getData count= " + count + " size= " + pfc.size());
-          assert count == pfc.size();
-
-        } else if (fc instanceof StationTimeSeriesFeatureCollection) {
-          count = checkStationFeatureCollection((StationTimeSeriesFeatureCollection) fc);
-          //testNestedPointFeatureCollection((StationTimeSeriesFeatureCollection) fc, show);
-
-        } else if (fc instanceof StationProfileFeatureCollection) {
-          count = checkStationProfileFeatureCollection((StationProfileFeatureCollection) fc, show);
-          if (showStructureData) showStructureData((StationProfileFeatureCollection) fc);
-
-        } else if (fc instanceof SectionFeatureCollection) {
-          count = checkSectionFeatureCollection((SectionFeatureCollection) fc, show);
-
-        } else if (fc instanceof ProfileFeatureCollection) {
-          count = checkProfileFeatureCollection((ProfileFeatureCollection) fc, show);
-
-        } else {
-          count = checkNestedPointFeatureCollection((NestedPointFeatureCollection) fc, show);
-        }
-      }
-
+      return checkPointDataset(fdataset, show);
     }
+  }
+
+
+  public static int checkPointDataset(FeatureDataset fdataset, boolean show) throws IOException {
+    long start = System.currentTimeMillis();
+    int count = 0;
+
+    Date d1 = fdataset.getStartDate();
+    Date d2 = fdataset.getEndDate();
+    if ((d1 != null) && (d2 != null))
+      assert d1.before(d2) || d1.equals(d2);
+
+    List<VariableSimpleIF> dataVars = fdataset.getDataVariables();
+    assert dataVars != null;
+    for (VariableSimpleIF v : dataVars) {
+      assert null != fdataset.getDataVariable(v.getShortName());
+    }
+
+    // FeatureDatasetPoint
+    assert fdataset instanceof FeatureDatasetPoint;
+    FeatureDatasetPoint fdpoint = (FeatureDatasetPoint) fdataset;
+
+    for (FeatureCollection fc : fdpoint.getPointFeatureCollectionList()) {
+      assert (fc instanceof PointFeatureCollection) || (fc instanceof NestedPointFeatureCollection) : fc.getClass().getName();
+
+      if (fc instanceof PointFeatureCollection) {
+        PointFeatureCollection pfc = (PointFeatureCollection) fc;
+        count = checkPointFeatureCollection(pfc, show);
+        System.out.println("PointFeatureCollection getData count= " + count + " size= " + pfc.size());
+        assert count == pfc.size();
+
+      } else if (fc instanceof StationTimeSeriesFeatureCollection) {
+        count = checkStationFeatureCollection((StationTimeSeriesFeatureCollection) fc);
+        //testNestedPointFeatureCollection((StationTimeSeriesFeatureCollection) fc, show);
+
+      } else if (fc instanceof StationProfileFeatureCollection) {
+        count = checkStationProfileFeatureCollection((StationProfileFeatureCollection) fc, show);
+        if (showStructureData) showStructureData((StationProfileFeatureCollection) fc);
+
+      } else if (fc instanceof SectionFeatureCollection) {
+        count = checkSectionFeatureCollection((SectionFeatureCollection) fc, show);
+
+      } else if (fc instanceof ProfileFeatureCollection) {
+        count = checkProfileFeatureCollection((ProfileFeatureCollection) fc, show);
+
+      } else {
+        count = checkNestedPointFeatureCollection((NestedPointFeatureCollection) fc, show);
+      }
+    }
+
     long took = System.currentTimeMillis() - start;
     System.out.printf(" nobs=%d took= %d msec%n", count, took);
-
     return count;
   }
 

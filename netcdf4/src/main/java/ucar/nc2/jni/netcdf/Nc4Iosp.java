@@ -2862,7 +2862,7 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
     SizeT[] shape = convertSizeT(section.getShape());
     SizeT[] stride = convertSizeT(section.getStride());
 
-    ArrayStructureBB valuesBB = StructureDataDeep.copyToArrayBB(values, ByteOrder.nativeOrder()); // LOOK embedded strings getting lost ??
+    ArrayStructureBB valuesBB = StructureDataDeep.copyToArrayBB(s, values, ByteOrder.nativeOrder()); // LOOK embedded strings getting lost ??
     ByteBuffer bbuff = valuesBB.getByteBuffer();
 
     if (debugCompound)

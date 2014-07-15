@@ -8,6 +8,7 @@ import ucar.nc2.VariableSimpleIF;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.ft.*;
 import ucar.nc2.ft.point.TestCFPointDatasets;
+import ucar.nc2.ft.point.TestPointDatasets;
 import ucar.nc2.util.CompareNetcdf2;
 import ucar.unidata.test.util.TestDir;
 import ucar.unidata.util.StringUtil2;
@@ -39,11 +40,6 @@ public class TestCFPointWriter {
     result.addAll(TestCFPointDatasets.getTrajectoryDatasets());
     result.addAll(TestCFPointDatasets.getStationProfileDatasets());
 
-    /* result.add(new Object[] {TestDir.cdmUnitTestDir + "ft/point/ldm/04061912_buoy.nc", FeatureType.POINT, 218});
-    result.add(new Object[] {TestDir.cdmUnitTestDir + "ft/point/netcdf/Surface_Buoy_20090921_0000.nc", FeatureType.POINT, 32452});
-    result.add(new Object[] {TestDir.cdmUnitTestDir + "ft/station/multiStationMultiVar.ncml", FeatureType.STATION, 15});
-    result.add(new Object[] {TestDir.cdmUnitTestDir + "cfPoint/station/sampleDataset.nc", FeatureType.STATION, 1728});
-    result.add(new Object[] {TestDir.cdmUnitTestDir + "ft/station/200501q3h-gr.nc", FeatureType.STATION, 5023});  // */
     return result;
   }
 
@@ -68,14 +64,14 @@ public class TestCFPointWriter {
     assert count == countExpected : "count ="+count+" expected "+countExpected;
   }
 
-  @Test
+  //@Test
   public void testWrite3() throws IOException {
     int count = writeDataset(location, ".nc", ftype, new CFPointWriterConfig(NetcdfFileWriter.Version.netcdf3), true);
     System.out.printf("%s netcdf3 count=%d%n", location, count);
     assert count == countExpected : "count ="+count+" expected "+countExpected;
   }
 
-  @Test
+  //@Test
   public void testWrite4classic() throws IOException {
     int count = writeDataset(location, ".nc4c", ftype, new CFPointWriterConfig(NetcdfFileWriter.Version.netcdf4_classic), true);
     System.out.printf("%s netcdf4_classic count=%d%n", location, count);
@@ -122,9 +118,9 @@ public class TestCFPointWriter {
     if (!name.endsWith(prefix)) name = name + prefix;
     File fileOut = new File(TestDir.temporaryLocalDataDir, name);
 
-    String absIn = fileIn.getAbsolutePath();
+    String absIn = fileIn.getCanonicalPath();
     absIn = StringUtil2.replace(absIn, "\\", "/");
-    String absOut = fileOut.getAbsolutePath();
+    String absOut = fileOut.getCanonicalPath();
     absOut = StringUtil2.replace(absOut, "\\", "/");
     System.out.printf("================ TestCFPointWriter%n read %s size=%d%n write to=%s%n", absIn, fileIn.length(), absOut);
 
@@ -160,7 +156,10 @@ public class TestCFPointWriter {
         System.out.printf("%s %n", out);
       }
 
+      // sanity checks
       compare( fdpoint, (FeatureDatasetPoint) result);
+      assert 0 < TestPointDatasets.checkPointDataset(result, show);
+
       result.close();
     }
 

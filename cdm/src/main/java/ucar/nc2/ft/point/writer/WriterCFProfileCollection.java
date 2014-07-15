@@ -150,9 +150,10 @@ public class WriterCFProfileCollection extends CFPointWriter {
     profileCoords.addMemberString(profileIdName, null, null, profile.getName().trim(), id_strlen);
     profileCoords.addMember(profileRowSizeName, null, null, DataType.INT, false, nobs);
 
+    StructureData profileData = profile.getFeatureData();
     StructureDataComposite sdall = new StructureDataComposite();
     sdall.add(profileCoords); // coords first so it takes precedence
-    sdall.add(profile.getFeatureData());
+    sdall.add(profileData);
 
     profileRecno = super.writeStructureData(profileRecno, profileStruct, sdall, featureVarMap);
   }

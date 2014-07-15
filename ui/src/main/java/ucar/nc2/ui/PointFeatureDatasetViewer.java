@@ -324,6 +324,19 @@ public class PointFeatureDatasetViewer extends JPanel {
     }
   }
 
+  public void clear() {
+
+    fcTable.clearBeans();
+    stnTable.clearBeans();
+    profileTable.clearBeans();
+    stnProfileTable.clearBeans();
+
+    infoTA.clear();
+    stationMap.setStations(new ArrayList());
+    obsTable.clear();
+    selectedCollection = null;
+  }
+
 
   public void save() {
     fcTable.saveState(false);
@@ -354,14 +367,7 @@ public class PointFeatureDatasetViewer extends JPanel {
   public void setDataset(FeatureDatasetPoint dataset) {
     this.pfDataset = dataset;
 
-    stnTable.clearBeans();
-    profileTable.clearBeans();
-    stnProfileTable.clearBeans();
-
-    infoTA.clear();
-    stationMap.setStations(new ArrayList());
-    obsTable.clear();
-    selectedCollection = null;
+    clear();
 
     // set the feature collection table - all use this
     List<FeatureCollectionBean> fcBeans = new ArrayList<FeatureCollectionBean>();

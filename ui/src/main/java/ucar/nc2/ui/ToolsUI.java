@@ -5548,6 +5548,7 @@ public class ToolsUI extends JPanel {
     void closeOpenFiles() throws IOException {
       if (pfDataset != null) pfDataset.close();
       pfDataset = null;
+      pfViewer.clear();
     }
 
     void save() {

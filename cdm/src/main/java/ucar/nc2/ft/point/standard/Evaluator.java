@@ -183,20 +183,24 @@ public class Evaluator {
   }
 
   /**
-   * Find structure variable of rank 2 with the nameed dimensions
+   * Find structure variable of rank 2 with the 2 given dimensions
+   * (or) Find structure variable of rank 1 with the 1 given dimension
    * @param ds  in this dataset
    * @param dim0 first dimension
-   * @param dim1 second dimension
+   * @param dim1 second dimension  (ok to be null)
    * @return structure variable or null
    */
   static public Structure findStructureWithDimensions(NetcdfDataset ds, Dimension dim0, Dimension dim1) {
     for (Variable v : ds.getVariables()) {
-      if ((v instanceof Structure) && (v.getRank() == 2)) {
-        if (v.getDimension(0).equals(dim0) && v.getDimension(1).equals(dim1))
-          return (Structure) v;
+      if (!(v instanceof Structure)) continue;
+
+      if (dim1 != null && v.getRank() == 2 && v.getDimension(0).equals(dim0) && v.getDimension(1).equals(dim1))
+        return (Structure) v;
+
+      if (dim1 == null && v.getRank() == 1 && v.getDimension(0).equals(dim0))
+         return (Structure) v;
       }
-    }
-    return null;
+  return null;
   }
 
   /**
@@ -211,7 +215,6 @@ public class Evaluator {
     }
     return null;
   }
-
 
   /**
    * Does this dataset have a record structure? netcdf-3 specific
