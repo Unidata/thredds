@@ -2922,7 +2922,7 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
 
       StructureMembers.Member m = sdata.findMember(v.getShortName());
       if (m == null) {
-        System.out.printf("WARN Nc4IOSP.makeBB() cant find %s%n", v.getShortName());
+        System.out.printf("WARN Nc4Iosp.makeBB() cant find %s%n", v.getShortName());
         bb.position((int) (offset + v.getElementSize()*v.getSize())); // skip over it
       } else {
         copy(sdata, m, bb);

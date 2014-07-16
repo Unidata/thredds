@@ -160,11 +160,6 @@ public class CFpointObsExt extends CFpointObs {
       errlog.format("CFpointObs: timeSeriesProfile must have a z coordinate, not the station altitude%n");
       return false;
     }
-    if (z.getRank() == 0) {
-      errlog.format("CFpointObs: timeSeriesProfile cannot have a scalar z coordinate%n");
-      return false;
-    }
-
     info.alt = z;
 
     // raggeds

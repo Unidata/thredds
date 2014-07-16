@@ -149,7 +149,7 @@ public class WriterCFStationProfileCollection extends CFPointWriter {
       count++;
     }
 
-    // prefill any needed profile vars
+    /* prefill any needed profile vars
     if (!isExtendedModel) {
       Variable stnIndexVar = writer.findVariable(stationIndexName);
       try {
@@ -162,11 +162,11 @@ public class WriterCFStationProfileCollection extends CFPointWriter {
       try {
         Array prefill = Array.factory(DataType.INT, new int[]{nfeatures});
         MAMath.setDouble(prefill, idMissingValue);
-        writer.write(profileIdxVar, prefill);
+        writer.write(stnIndexVar, prefill);
       } catch (InvalidRangeException e) {
         e.printStackTrace();
       }
-    }
+    } */
 
   }
 
@@ -227,8 +227,6 @@ public class WriterCFStationProfileCollection extends CFPointWriter {
     stnRecno = super.writeStructureData(stnRecno, stationStruct, sdall, stationVarMap);
   }
 
-
-
   @Override
   protected void makeMiddleVariables(StructureData profileData, boolean isExtended) throws IOException {
 
@@ -287,7 +285,7 @@ public class WriterCFStationProfileCollection extends CFPointWriter {
   public void writeObsData(PointFeature pf) throws IOException {
 
     StructureDataScalar coords = new StructureDataScalar("Coords");
-    if (useAlt) coords.addMember(altitudeCoordinateName, null, null, DataType.DOUBLE, false, pf.getLocation().getAltitude());
+    coords.addMember(altitudeCoordinateName, null, null, DataType.DOUBLE, false, pf.getLocation().getAltitude());
 
     StructureDataComposite sdall = new StructureDataComposite();
     sdall.add(coords); // coords first so it takes precedence

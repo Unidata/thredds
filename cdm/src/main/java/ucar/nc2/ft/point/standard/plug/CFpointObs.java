@@ -313,7 +313,7 @@ public class CFpointObs extends TableConfigurerImpl {
     if (!identifyEncodingTimeSeriesProfile(ds, info, CF.FeatureType.timeSeriesProfile, errlog)) return null;
 
     VariableDS time = CoordSysEvaluator.findCoordByType(ds, AxisType.Time);
-    if (time.getRank() == 0) {
+    if (time.getRank() == 0 && time.getParentStructure() == null) {
       errlog.format("CFpointObs timeSeriesProfile cannot have a scalar time coordinate%n");  // why ?
       return null;
     }
@@ -434,8 +434,8 @@ public class CFpointObs extends TableConfigurerImpl {
         TableConfig profileTable = makeRaggedIndexChildTable(ds, info.parentDim, info.childDim, info.ragged_parentIndex, errlog);
         stationTable.addChild(profileTable);
         profileTable.numRecords = info.ragged_rowSize.getFullName();
-        TableConfig zTable = makeRaggedContiguousChildTable(ds, info.childDim, info.grandChildDim, info.childStruct, errlog);
-        profileTable.addChild(zTable);
+        TableConfig obsTable = makeRaggedContiguousChildTable(ds, info.childDim, info.grandChildDim, info.grandChildStruct, errlog);
+        profileTable.addChild(obsTable);
         break;
       }
 
@@ -882,11 +882,11 @@ public class CFpointObs extends TableConfigurerImpl {
       return false;
     }
 
-    if (ragged_parentIndex.getRank() != 1) {
+    if (ragged_parentIndex.getRank() != 1 && info.childStruct == null) {
       errlog.format("CFpointObs: Indexed ragged array representation: parent_index variable %s must be 1D %n", ragged_parentIndex);
       return false;
     }
-    Dimension profileDim = ragged_parentIndex.getDimension(0);
+    Dimension profileDim = (info.childDim != null) ? info.childDim : ragged_parentIndex.getDimension(0);
 
     // onto the profiles, stored contiguously
     varatt = Evaluator.findVariableWithAttribute(ds, CF.SAMPLE_DIMENSION);
@@ -907,15 +907,17 @@ public class CFpointObs extends TableConfigurerImpl {
       return false;
     }
 
-    Dimension profileDim2 = ragged_rowSize.getDimension(0);
-    if (profileDim2 != profileDim) {
-      errlog.format("CFpointObs: Double ragged array representation dimensions do not agree: %s != %s%n", profileDim2.getShortName(), profileDim.getShortName());
-      return false;
-    }
-
     if (ragged_rowSize.getDataType() != DataType.INT) {
       errlog.format("CFpointObs: Contiguous ragged array representation: row_size variable must be of type integer%n");
       return false;
+    }
+
+    if (info.childDim == null) {  // nc4 ext
+      Dimension profileDim2 = ragged_rowSize.getDimension(0);
+      if (profileDim2 != profileDim) {
+        errlog.format("CFpointObs: Double ragged array representation dimensions do not agree: %s != %s%n", profileDim2.getShortName(), profileDim.getShortName());
+        return false;
+      }
     }
 
     info.set(Encoding.raggedIndex, stationDim, profileDim, obsDim);
@@ -1223,7 +1225,7 @@ public class CFpointObs extends TableConfigurerImpl {
         if ((info.encoding == Encoding.single) && alt.getRank() == 0)
           stnTable.stnAlt = alt.getFullName();
 
-        if ((info.encoding != Encoding.single) && (lat.getRank() == alt.getRank()) && alt.getDimension(0).equals(stationDim))
+        if ((info.encoding != Encoding.single) && (lat.getRank() == alt.getRank()) && alt.getRank() > 0 && alt.getDimension(0).equals(stationDim))
           stnTable.stnAlt = alt.getFullName();
       }
     }

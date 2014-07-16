@@ -37,8 +37,8 @@ public class TestCFPointWriter {
     result.addAll(TestCFPointDatasets.getPointDatasets());
     result.addAll(TestCFPointDatasets.getStationDatasets());
     result.addAll(TestCFPointDatasets.getProfileDatasets());
-    result.addAll(TestCFPointDatasets.getTrajectoryDatasets());
-    result.addAll(TestCFPointDatasets.getStationProfileDatasets());
+    result.addAll(TestCFPointDatasets.getTrajectoryDatasets()); // */
+    result.addAll(TestCFPointDatasets.getStationProfileDatasets());  // */
 
     return result;
   }
@@ -64,14 +64,14 @@ public class TestCFPointWriter {
     assert count == countExpected : "count ="+count+" expected "+countExpected;
   }
 
-  //@Test
+  @Test
   public void testWrite3() throws IOException {
     int count = writeDataset(location, ".nc", ftype, new CFPointWriterConfig(NetcdfFileWriter.Version.netcdf3), true);
     System.out.printf("%s netcdf3 count=%d%n", location, count);
     assert count == countExpected : "count ="+count+" expected "+countExpected;
   }
 
-  //@Test
+  @Test
   public void testWrite4classic() throws IOException {
     int count = writeDataset(location, ".nc4c", ftype, new CFPointWriterConfig(NetcdfFileWriter.Version.netcdf4_classic), true);
     System.out.printf("%s netcdf4_classic count=%d%n", location, count);

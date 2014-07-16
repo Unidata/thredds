@@ -252,9 +252,26 @@ public abstract class CFPointWriter implements AutoCloseable {
     WriterCFStationProfileCollection cfWriter = new WriterCFStationProfileCollection(fileOut, dataset.getGlobalAttributes(), dataset.getDataVariables(), fc.getExtraVariables(),
             fc.getTimeUnit(), fc.getAltUnits(), config);
     cfWriter.setStations(fc.getStationFeatures());
-    cfWriter.setFeatureAuxInfo(100, 0);  // LOOK fake
+
+    int name_strlen = 0;
+    int countProfiles = 0;
+    fc.resetIteration();
+    while (fc.hasNext()) {
+      StationProfileFeature spf = fc.next();
+      name_strlen = Math.max(name_strlen, spf.getName().length());
+      if (spf.size() >= 0)
+        countProfiles += spf.size();
+      else {
+        while (spf.hasNext()) {
+          spf.next();
+          countProfiles++;
+        }
+      }
+    }
+    cfWriter.setFeatureAuxInfo(countProfiles, name_strlen);
 
     int count = 0;
+    fc.resetIteration();
     while (fc.hasNext()) {
       StationProfileFeature spf = fc.next();
 
