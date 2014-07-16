@@ -76,8 +76,12 @@ public abstract class CFPointWriter implements AutoCloseable {
   public static final String profileStructName = "profile";
   public static final String profileDimName = "profile";
   public static final String profileIdName = "profileId";
-  public static final String profileRowSizeName = "nobs";
+  public static final String numberOfObsName = "nobs";
   public static final String profileTimeName = "profileTime";
+
+  public static final String trajStructName = "trajectory";
+  public static final String trajDimName = "traj";
+  public static final String trajIdName = "trajectoryId";
 
   public static final int idMissingValue = -9999;
 
@@ -118,13 +122,10 @@ public abstract class CFPointWriter implements AutoCloseable {
       } else if (fc instanceof StationProfileFeatureCollection) {
         return writeStationProfileFeatureCollection(fdpoint, (StationProfileFeatureCollection) fc, fileOut, config);
 
+      } else if (fc instanceof SectionFeatureCollection) {
+        return writeTrajectoryProfileFeatureCollection(fdpoint, (SectionFeatureCollection) fc, fileOut, config);
 
-      } /* else if (fc instanceof SectionFeatureCollection) {
-        count = checkSectionFeatureCollection((SectionFeatureCollection) fc, show);
-
-      } else {
-        count = checkNestedPointFeatureCollection((NestedPointFeatureCollection) fc, show);
-      } */
+      }
     }
 
     return 0;
@@ -274,6 +275,53 @@ public abstract class CFPointWriter implements AutoCloseable {
     fc.resetIteration();
     while (fc.hasNext()) {
       StationProfileFeature spf = fc.next();
+
+      spf.resetIteration();
+      while (spf.hasNext()) {
+        ProfileFeature pf = spf.next();
+
+        count += cfWriter.writeProfile(spf, pf);
+        if (debug && count % 100 == 0) System.out.printf("%d ", count);
+        if (debug && count % 1000 == 0) System.out.printf("%n ");
+      }
+    }
+
+    cfWriter.finish();
+    return count;
+  }
+
+  private static int writeTrajectoryProfileFeatureCollection(FeatureDatasetPoint dataset, SectionFeatureCollection fc, String fileOut,
+                                                   CFPointWriterConfig config) throws IOException {
+
+    WriterCFTrajectoryProfileCollection cfWriter = new WriterCFTrajectoryProfileCollection(fileOut, dataset.getGlobalAttributes(), dataset.getDataVariables(), fc.getExtraVariables(),
+            fc.getTimeUnit(), fc.getAltUnits(), config);
+
+    int traj_strlen = 0;
+    int prof_strlen = 0;
+    int countTrajectories = 0;
+    int countProfiles = 0;
+    fc.resetIteration();
+    while (fc.hasNext()) {
+      SectionFeature spf = fc.next();
+      countTrajectories++;
+      traj_strlen = Math.max(traj_strlen, spf.getName().length());
+      if (spf.size() >= 0)
+        countProfiles += spf.size();
+      else {
+        while (spf.hasNext()) {
+          ProfileFeature profile = spf.next();
+          prof_strlen = Math.max(prof_strlen, profile.getName().length());
+          countProfiles++;
+        }
+      }
+    }
+    cfWriter.setFeatureAuxInfo(countProfiles, prof_strlen);
+    cfWriter.setFeatureAuxInfo2(countTrajectories, traj_strlen);
+
+    int count = 0;
+    fc.resetIteration();     // LOOK should flatten
+    while (fc.hasNext()) {
+      SectionFeature spf = fc.next();
 
       spf.resetIteration();
       while (spf.hasNext()) {

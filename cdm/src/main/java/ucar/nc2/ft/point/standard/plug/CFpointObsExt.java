@@ -154,7 +154,7 @@ public class CFpointObsExt extends CFpointObs {
     info.childDim = profile.getDimension(0);
     info.childStruct = profile;
 
-        // find the non-station altitude
+    // find the non-station altitude
     VariableDS z = findZAxisNotStationAlt(ds);
     if (z == null) {
       errlog.format("CFpointObs: timeSeriesProfile must have a z coordinate, not the station altitude%n");
@@ -167,6 +167,49 @@ public class CFpointObsExt extends CFpointObs {
       return true;
 
     errlog.format("CFpointObsExt: %s only supports ragged array representation%n", CF.FeatureType.timeSeriesProfile);
+    return false;
+  }
+
+  @Override
+  protected boolean identifyEncodingSection(NetcdfDataset ds, EncodingInfo info, CF.FeatureType ftype, Formatter errlog) {
+    // find the obs structure
+    Evaluator.VarAtt varatt = Evaluator.findVariableWithAttribute(ds, CF.SAMPLE_DIMENSION);
+    String dimName = varatt.att.getStringValue();
+    info.grandChildDim = ds.findDimension(dimName);
+    info.grandChildStruct = Evaluator.findStructureWithDimensions(ds, info.grandChildDim, null);
+
+   // find the traj structure
+    Variable trajId = Evaluator.findVariableWithAttributeValue(ds, CF.CF_ROLE, CF.TRAJECTORY_ID);
+    Structure traj =  trajId.getParentStructure();
+    if (traj.getRank() == 0) { // could be scalar
+      info.set(Encoding.single, null, info.grandChildDim);
+    }
+    info.parentDim = traj.getDimension(0);
+    info.parentStruct = traj;
+
+    // find the profile structure
+    Variable profileId = Evaluator.findVariableWithAttributeValue(ds, CF.CF_ROLE, CF.PROFILE_ID);
+    Structure profile =  profileId.getParentStructure();
+    info.childDim = profile.getDimension(0);
+    info.childStruct = profile;
+
+    // find the non-station altitude
+    VariableDS z = findZAxisNotStationAlt(ds);
+    if (z == null) {
+      errlog.format("CFpointObs: section must have a z coordinate%n");
+      return false;
+    }
+    if (z.getRank() == 0 && z.getParentStructure() == null) {
+      errlog.format("CFpointObs: section cannot have a scalar z coordinate%n");
+      return false;
+    }
+    info.alt = z;
+
+        // raggeds
+    if (identifyDoubleRaggeds(ds, info, errlog))
+      return true;
+
+    errlog.format("CFpointObsExt: %s only supports ragged array representation%n", CF.FeatureType.trajectoryProfile);
     return false;
   }
 }

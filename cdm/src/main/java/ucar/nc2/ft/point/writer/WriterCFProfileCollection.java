@@ -119,7 +119,7 @@ public class WriterCFProfileCollection extends CFPointWriter {
     profileVars.add(VariableSimpleImpl.makeString(profileIdName, "profile identifier", null, id_strlen)
             .add(new Attribute(CF.CF_ROLE, CF.PROFILE_ID)));         // profileId:cf_role = "profile_id";
 
-    profileVars.add(VariableSimpleImpl.makeScalar(profileRowSizeName, "number of obs for this profile", null, DataType.INT)
+    profileVars.add(VariableSimpleImpl.makeScalar(numberOfObsName, "number of obs for this profile", null, DataType.INT)
             .add(new Attribute(CF.SAMPLE_DIMENSION, recordDimName)));         // rowSize:sample_dimension = "obs"
 
     profileVars.add(VariableSimpleImpl.makeScalar(profileTimeName, "nominal time of profile", timeUnit.getUnitsString(), DataType.DOUBLE));
@@ -148,7 +148,7 @@ public class WriterCFProfileCollection extends CFPointWriter {
     if (profile.getTime() != null)
       profileCoords.addMember(profileTimeName, null, null, DataType.DOUBLE, false, (double) profile.getTime().getTime());  // LOOK time not always part of profile
     profileCoords.addMemberString(profileIdName, null, null, profile.getName().trim(), id_strlen);
-    profileCoords.addMember(profileRowSizeName, null, null, DataType.INT, false, nobs);
+    profileCoords.addMember(numberOfObsName, null, null, DataType.INT, false, nobs);
 
     StructureData profileData = profile.getFeatureData();
     StructureDataComposite sdall = new StructureDataComposite();

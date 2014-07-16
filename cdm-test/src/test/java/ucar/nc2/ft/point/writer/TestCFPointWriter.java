@@ -32,13 +32,14 @@ public class TestCFPointWriter {
   @Parameterized.Parameters
   public static List<Object[]> getTestParameters() {
     List<Object[]> result = new ArrayList<>();
-    //result.add(new Object[]{CFpointObs_topdir + "stationProfileSingle.ncml", FeatureType.STATION_PROFILE, 9});
+    //result.add(new Object[]{CFpointObs_topdir + "sectionSingle.ncml", FeatureType.SECTION, 50});
 
     result.addAll(TestCFPointDatasets.getPointDatasets());
     result.addAll(TestCFPointDatasets.getStationDatasets());
     result.addAll(TestCFPointDatasets.getProfileDatasets());
-    result.addAll(TestCFPointDatasets.getTrajectoryDatasets()); // */
-    result.addAll(TestCFPointDatasets.getStationProfileDatasets());  // */
+    result.addAll(TestCFPointDatasets.getTrajectoryDatasets());
+    result.addAll(TestCFPointDatasets.getStationProfileDatasets());  //
+    result.addAll(TestCFPointDatasets.getSectionDatasets());  // */
 
     return result;
   }
@@ -90,23 +91,6 @@ public class TestCFPointWriter {
     writeDataset(TestDir.cdmUnitTestDir + "ft/point/netcdf/Surface_Buoy_20090921_0000.nc", "nc4", FeatureType.POINT,
             new CFPointWriterConfig(NetcdfFileWriter.Version.netcdf4), true);
   }
-
-  // synthetic variants
-  /* @Test
-  public void testWriteProfileVariants() throws IOException {
-    assert 13 ==  writeDataset(CFpointObs_topdir + "profileSingle.ncml", FeatureType.PROFILE);
-    assert 12 ==  writeDataset(CFpointObs_topdir + "profileSingleTimeJoin.ncml", FeatureType.PROFILE);
-    assert 50 ==  writeDataset(CFpointObs_topdir + "profileMultidim.ncml", FeatureType.PROFILE);
-    assert 50 ==  writeDataset(CFpointObs_topdir + "profileMultidimTimeJoin.ncml", FeatureType.PROFILE);
-    assert 50 ==  writeDataset(CFpointObs_topdir + "profileMultidimZJoin.ncml", FeatureType.PROFILE);
-    assert 50 ==  writeDataset(CFpointObs_topdir + "profileMultidimTimeZJoin.ncml", FeatureType.PROFILE);
-    assert 40 ==  writeDataset(CFpointObs_topdir + "profileMultidimMissingId.ncml", FeatureType.PROFILE);
-    assert 14 == writeDataset(CFpointObs_topdir + "profileMultidimMissingAlt.ncml", FeatureType.PROFILE);
-    assert 6 ==  writeDataset(CFpointObs_topdir + "profileRaggedContig.ncml", FeatureType.PROFILE);
-    assert 6 ==  writeDataset(CFpointObs_topdir + "profileRaggedContigTimeJoin.ncml", FeatureType.PROFILE);
-    assert 22 ==  writeDataset(CFpointObs_topdir + "profileRaggedIndex.ncml", FeatureType.PROFILE);
-    assert 22 ==  writeDataset(CFpointObs_topdir + "profileRaggedIndexTimeJoin.ncml", FeatureType.PROFILE);
-  } */
 
   int writeDataset(String location, String prefix, FeatureType ftype, CFPointWriterConfig config, boolean readBack) throws IOException {
     File fileIn = new File(location);

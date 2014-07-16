@@ -55,11 +55,6 @@ import java.util.*;
  */
 public class WriterCFTrajectoryCollection extends CFPointWriter {
 
-  private static final String featureStructName = "traj";
-  private static final String featureDimName = "traj";
-  private static final String idName = "trajectoryId";
-  private static final String numberOfObsName = "nobs";
-
   ///////////////////////////////////////////////////
   private Structure featureStruct;  // used for netcdf4 extended
   private Map<String, Variable> featureVarMap = new HashMap<>();
@@ -109,11 +104,11 @@ public class WriterCFTrajectoryCollection extends CFPointWriter {
   protected void makeFeatureVariables(StructureData featureData, boolean isExtended) throws IOException {
 
     // LOOK why not unlimited here fro extended model ?
-    Dimension profileDim = writer.addDimension(null, featureDimName, nfeatures);
+    Dimension profileDim = writer.addDimension(null, trajDimName, nfeatures);
 
     // add the profile Variables using the profile dimension
     List<VariableSimpleIF> featureVars = new ArrayList<>();
-    featureVars.add(VariableSimpleImpl.makeString(idName, "trajectory identifier", null, id_strlen)
+    featureVars.add(VariableSimpleImpl.makeString(trajIdName, "trajectory identifier", null, id_strlen)
             .add(new Attribute(CF.CF_ROLE, CF.TRAJECTORY_ID)));
 
     featureVars.add(VariableSimpleImpl.makeScalar(numberOfObsName, "number of obs for this profile", null, DataType.INT)
@@ -126,7 +121,7 @@ public class WriterCFTrajectoryCollection extends CFPointWriter {
     }
 
     if (isExtended) {
-      featureStruct = (Structure) writer.addVariable(null, featureStructName, DataType.STRUCTURE, featureDimName);
+      featureStruct = (Structure) writer.addVariable(null, trajStructName, DataType.STRUCTURE, trajDimName);
       addCoordinatesExtended(featureStruct, featureVars);
     } else {
       addCoordinatesClassic(profileDim, featureVars, featureVarMap);
@@ -137,7 +132,7 @@ public class WriterCFTrajectoryCollection extends CFPointWriter {
   public void writeTrajectoryData(TrajectoryFeature profile, int nobs) throws IOException {
 
     StructureDataScalar profileCoords = new StructureDataScalar("Coords");
-    profileCoords.addMemberString(idName, null, null, profile.getName().trim(), id_strlen);
+    profileCoords.addMemberString(trajIdName, null, null, profile.getName().trim(), id_strlen);
     profileCoords.addMember(numberOfObsName, null, null, DataType.INT, false, nobs);
 
     StructureDataComposite sdall = new StructureDataComposite();

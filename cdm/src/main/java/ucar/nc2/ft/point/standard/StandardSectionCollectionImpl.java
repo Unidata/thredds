@@ -161,15 +161,21 @@ public class StandardSectionCollectionImpl extends SectionCollectionImpl {
 
   }
 
-  // LOOK duplicate from StandardProfileFeatureCollection - also check StationProfile
+  // LOOK duplicate from StandardProfileCollection - also check StationProfile
   private class StandardSectionProfileFeature extends ProfileFeatureImpl {
     Cursor cursor;
     StructureData profileData;
 
-    StandardSectionProfileFeature(Cursor cursor, double time, StructureData profileData) {
+    StandardSectionProfileFeature( Cursor cursor, double time, StructureData profileData) {
+      super( ft.getFeatureName(cursor), StandardSectionCollectionImpl.this.getTimeUnit(), StandardSectionCollectionImpl.this.getAltUnits(),
+              ft.getLatitude(cursor), ft.getLongitude(cursor), time, -1);
+
+
+   /* StandardSectionProfileFeature(Cursor cursor, double time, StructureData profileData) {
       super( StandardSectionCollectionImpl.this.getTimeUnit().makeStandardDateString(time),
               StandardSectionCollectionImpl.this.getTimeUnit(), StandardSectionCollectionImpl.this.getAltUnits(),
-              ft.getLatitude(cursor), ft.getLongitude(cursor), time, -1);
+              ft.getLatitude(cursor), ft.getLongitude(cursor), time, -1);  */
+
       this.cursor = cursor;
       this.profileData = profileData;
 

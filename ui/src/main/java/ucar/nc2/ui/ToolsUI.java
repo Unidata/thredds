@@ -138,6 +138,7 @@ public class ToolsUI extends JPanel {
   private CoordSysPanel coordSysPanel;
   private CoveragePanel coveragePanel;
   private DatasetViewerPanel viewerPanel;
+  private DatasetViewerPanel nc4viewer;
   private DatasetWriterPanel writerPanel;
   private DirectoryPartitionPanel dirPartPanel;
   private FeatureScanPanel ftPanel;
@@ -145,7 +146,6 @@ public class ToolsUI extends JPanel {
   private FmrcCollectionPanel fmrcCollectionPanel;
   private GeoGridPanel gridPanel;
   private GeotiffPanel geotiffPanel;
-  // private GribCdmIndexPanel gribCdmIndexPanel;
   private GribCodePanel gribCodePanel;
   private GribFilesPanel gribFilesPanel;
   private GribIndexPanel gribIdxPanel;
@@ -162,7 +162,6 @@ public class ToolsUI extends JPanel {
   private Hdf5DataPanel hdf5DataPanel;
   private Hdf4Panel hdf4Panel;
   private ImagePanel imagePanel;
-  private DatasetViewerPanel nc4viewer;
   private NcStreamPanel ncStreamPanel;
   private NCdumpPanel ncdumpPanel;
   private NcmlEditorPanel ncmlEditorPanel;

@@ -370,7 +370,7 @@ public class PointFeatureDatasetViewer extends JPanel {
     clear();
 
     // set the feature collection table - all use this
-    List<FeatureCollectionBean> fcBeans = new ArrayList<FeatureCollectionBean>();
+    List<FeatureCollectionBean> fcBeans = new ArrayList<>();
     for (FeatureCollection fc : dataset.getPointFeatureCollectionList()) {
       fcBeans.add( new FeatureCollectionBean(fc));
     }
@@ -442,7 +442,7 @@ public class PointFeatureDatasetViewer extends JPanel {
   }
 
   private void setStations(StationCollection stationCollection) {
-    List<StationBean> stationBeans = new ArrayList<StationBean>();
+    List<StationBean> stationBeans = new ArrayList<>();
     try {
       List<Station> stations = stationCollection.getStations();
       if (stations == null) return;
@@ -462,7 +462,7 @@ public class PointFeatureDatasetViewer extends JPanel {
   }
 
   private void setPointCollection(PointFeatureCollection pointCollection) throws IOException {
-    List<PointObsBean> pointBeans = new ArrayList<PointObsBean>();
+    List<PointObsBean> pointBeans = new ArrayList<>();
     int count = 0;
 
     PointFeatureIterator iter = pointCollection.getPointFeatureIterator(-1);
@@ -482,7 +482,7 @@ public class PointFeatureDatasetViewer extends JPanel {
   }
 
   private void setProfileCollection(ProfileFeatureCollection profileCollection) throws IOException {
-    List<ProfileFeatureBean> beans = new ArrayList<ProfileFeatureBean>();
+    List<ProfileFeatureBean> beans = new ArrayList<>();
 
     PointFeatureCollectionIterator iter = profileCollection.getPointFeatureCollectionIterator(-1);
     while (iter.hasNext()) {
@@ -498,7 +498,7 @@ public class PointFeatureDatasetViewer extends JPanel {
   }
 
   private void setTrajectoryCollection(TrajectoryFeatureCollection trajCollection) throws IOException {
-    List<TrajectoryFeatureBean> beans = new ArrayList<TrajectoryFeatureBean>();
+    List<TrajectoryFeatureBean> beans = new ArrayList<>();
 
     PointFeatureCollectionIterator iter = trajCollection.getPointFeatureCollectionIterator(-1);
     while (iter.hasNext()) {
@@ -514,7 +514,7 @@ public class PointFeatureDatasetViewer extends JPanel {
   }
 
   private void setSectionCollection(SectionFeatureCollection sectionCollection) throws IOException {
-    List<SectionFeatureBean> beans = new ArrayList<SectionFeatureBean>();
+    List<SectionFeatureBean> beans = new ArrayList<>();
 
     NestedPointFeatureCollectionIterator iter = sectionCollection.getNestedPointFeatureCollectionIterator(-1);
     while (iter.hasNext()) {
@@ -560,7 +560,7 @@ public class PointFeatureDatasetViewer extends JPanel {
   private void setStation(StationBean sb, DateRange dr) throws IOException {
     if (selectedType == FeatureType.POINT) {
       PointObsBean pobsBean = (PointObsBean) sb;
-      List<PointFeature> obsList = new ArrayList<PointFeature>();
+      List<PointFeature> obsList = new ArrayList<>();
       obsList.add( pobsBean.pobs);
       setObservations(obsList);
 
@@ -671,7 +671,7 @@ public class PointFeatureDatasetViewer extends JPanel {
    }
 
   private void setStnProfiles(List<PointFeatureCollection> pfcList) throws IOException {
-    List<StnProfileFeatureBean> beans = new ArrayList<StnProfileFeatureBean>();
+    List<StnProfileFeatureBean> beans = new ArrayList<>();
 
     for (PointFeatureCollection pfc : pfcList)
       beans.add(new StnProfileFeatureBean((ProfileFeature) pfc));
@@ -681,7 +681,7 @@ public class PointFeatureDatasetViewer extends JPanel {
   }
 
   private void setSectionProfiles(List<PointFeatureCollection> pfcList) throws IOException {
-    List<ProfileFeatureBean> beans = new ArrayList<ProfileFeatureBean>();
+    List<ProfileFeatureBean> beans = new ArrayList<>();
 
     for (PointFeatureCollection pfc : pfcList)
       beans.add(new ProfileFeatureBean((ProfileFeature) pfc));
@@ -699,7 +699,7 @@ public class PointFeatureDatasetViewer extends JPanel {
       StationTimeSeriesFeatureCollection stationCollection = (StationTimeSeriesFeatureCollection) selectedCollection;
       PointFeatureCollection pfc = stationCollection.flatten(null, (CalendarDateRange) null);
       PointFeatureIterator iter = pfc.getPointFeatureIterator(-1);
-      List<PointFeature> obsList = new ArrayList<PointFeature>();
+      List<PointFeature> obsList = new ArrayList<>();
       int count = 0;
       while (iter.hasNext() && (count++ < maxCount))
         obsList.add( iter.next());
@@ -708,7 +708,7 @@ public class PointFeatureDatasetViewer extends JPanel {
     } else if (selectedType == FeatureType.STATION_PROFILE) {
       StationProfileFeatureCollection stationCollection = (StationProfileFeatureCollection) selectedCollection;
       PointFeatureCollectionIterator iter = stationCollection.getPointFeatureCollectionIterator(-1);
-      List<PointFeature> obsList = new ArrayList<PointFeature>();
+      List<PointFeature> obsList = new ArrayList<>();
       int count = 0;
       while (iter.hasNext() && (count++ < maxCount))
         obsList.add((PointFeature) iter.next());
@@ -719,7 +719,7 @@ public class PointFeatureDatasetViewer extends JPanel {
   private int setObservations(PointFeatureCollection pointCollection) throws IOException {
     PointFeatureIterator iter = pointCollection.getPointFeatureIterator(-1);
     //iter.setCalculateBounds(pointCollection);
-    List<PointFeature> obsList = new ArrayList<PointFeature>();
+    List<PointFeature> obsList = new ArrayList<>();
     int count = 0;
     try {
       while (iter.hasNext() && (count++ < maxCount))
@@ -733,7 +733,7 @@ public class PointFeatureDatasetViewer extends JPanel {
 
   private void setStnProfileObservations(NestedPointFeatureCollection nestedPointCollection) throws IOException {
     PointFeatureCollectionIterator iter = nestedPointCollection.getPointFeatureCollectionIterator(-1); // not multiple
-    List<PointFeatureCollection> pfcList = new ArrayList<PointFeatureCollection>();
+    List<PointFeatureCollection> pfcList = new ArrayList<>();
     while (iter.hasNext()) {
       pfcList.add(iter.next());
     }
@@ -742,7 +742,7 @@ public class PointFeatureDatasetViewer extends JPanel {
 
   private void setSectionObservations(SectionFeature sectionFeature) throws IOException {
     PointFeatureCollectionIterator iter = sectionFeature.getPointFeatureCollectionIterator(-1); // not multiple
-    List<PointFeatureCollection> pfcList = new ArrayList<PointFeatureCollection>();
+    List<PointFeatureCollection> pfcList = new ArrayList<>();
     while (iter.hasNext()) {
       pfcList.add(iter.next());
     }
@@ -884,7 +884,7 @@ public class PointFeatureDatasetViewer extends JPanel {
       try {
         pfc.resetIteration();
         if (pfc.hasNext()) {
-          pf = pfc.next();
+          pf = pfc.next();    // get first one
         }
       } catch (IOException ioe) {
         log.warn("Trajectory empty ", ioe);
@@ -951,7 +951,7 @@ public class PointFeatureDatasetViewer extends JPanel {
       this.pfc = pfc;
       try {
         if (pfc.hasNext()) {
-          pf = pfc.next();
+          pf = pfc.next();                   // get first one
         }
       } catch (IOException ioe) {
         log.warn("Section empty ", ioe);

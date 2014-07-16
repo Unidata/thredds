@@ -565,12 +565,12 @@ public class CFpointObs extends TableConfigurerImpl {
         break;
       }
 
-      case raggedIndex: {
+       case raggedIndex: {
         TableConfig profileTable = makeRaggedIndexChildTable(ds, info.parentDim, info.childDim, info.ragged_parentIndex, errlog);
         parentTable.addChild(profileTable);
         profileTable.numRecords = info.ragged_rowSize.getFullName();
-        TableConfig zTable = makeRaggedContiguousChildTable(ds, info.childDim, info.grandChildDim, info.childStruct, errlog);
-        profileTable.addChild(zTable);
+        TableConfig obsTable = makeRaggedContiguousChildTable(ds, info.childDim, info.grandChildDim, info.grandChildStruct, errlog);
+        profileTable.addChild(obsTable);
         break;
       }
 
