@@ -1,6 +1,15 @@
-language: java
 jdk:
   - oraclejdk7
+  - oraclejdk8
+  - openjdk7
 
-before_install:
- - chmod +x gradlew
+install: mvn install -DskipTests=true
+script: mvn test
+
+matrix:
+  allow_failures:
+    - jdk: oraclejdk8
+
+cache:
+  directories:
+    - $HOME/.m2
