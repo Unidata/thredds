@@ -44,7 +44,7 @@ import java.util.Formatter;
 import java.io.IOException;
 
 /**
- * Describe
+ * RAF Nimbus conventions
  *
  * @author caron
  * @since Nov 6, 2009
@@ -63,7 +63,7 @@ public class RafNimbus extends TableConfigurerImpl {
       errlog.format("Cant find a time coordinate");
       return null;
     }
-    Dimension innerDim = coordAxis.getDimension(0);
+    final Dimension innerDim = coordAxis.getDimension(0);
     boolean obsIsStruct = Evaluator.hasNetcdf3RecordStructure(ds) && innerDim.isUnlimited();
 
     TableConfig obsTable = new TableConfig(Table.Type.Structure, innerDim.getShortName());
@@ -71,7 +71,11 @@ public class RafNimbus extends TableConfigurerImpl {
     obsTable.time = coordAxis.getFullName();
     obsTable.structName = obsIsStruct ? "record" : innerDim.getShortName();
     obsTable.structureType = obsIsStruct ? TableConfig.StructureType.Structure : TableConfig.StructureType.PsuedoStructure;
-    CoordSysEvaluator.findCoordWithDimension(obsTable, ds, innerDim); 
+    CoordSysEvaluator.findCoords(obsTable, ds, new CoordSysEvaluator.Predicate() {
+      public boolean match(CoordinateAxis axis) {
+        return innerDim.equals(axis.getDimension(0));
+      }
+    });
 
     topTable.addChild(obsTable);
     return topTable;

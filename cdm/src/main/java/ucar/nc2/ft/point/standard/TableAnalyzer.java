@@ -433,7 +433,7 @@ public class TableAnalyzer {
       Variable v = iter.next();
       if (v instanceof Structure) {  // handles Sequences too
         TableConfig st = new TableConfig(Table.Type.Structure, v.getFullName());
-        CoordSysEvaluator.findCoords(st, ds);
+        CoordSysEvaluator.findCoords(st, ds, null);
         st.structName = v.getFullName();
         st.nestedTableName = v.getShortName();
 
@@ -460,12 +460,16 @@ public class TableAnalyzer {
 
     // lat, lon, time all use same dimension - use it
     if (dimSet.size() == 1) {
-      Dimension obsDim = (Dimension) dimSet.toArray()[0];
+      final Dimension obsDim = (Dimension) dimSet.toArray()[0];
       TableConfig st = new TableConfig(Table.Type.Structure, obsDim.getShortName());
       st.structureType = obsDim.isUnlimited() ? TableConfig.StructureType.Structure : TableConfig.StructureType.PsuedoStructure;
       st.structName = obsDim.isUnlimited() ? "record" : obsDim.getShortName();
       st.dimName = obsDim.getShortName();
-      CoordSysEvaluator.findCoordWithDimension(st, ds, obsDim);
+      CoordSysEvaluator.findCoords(st, ds, new CoordSysEvaluator.Predicate() {
+        public boolean match(CoordinateAxis axis) {
+          return obsDim.equals(axis.getDimension(0));
+        }
+      });
 
       CoordinateAxis time = CoordSysEvaluator.findCoordByType(ds, AxisType.Time);
       if ((time != null) && (time.getRank() == 0)) {
@@ -491,7 +495,7 @@ public class TableAnalyzer {
       TableConfig st = new TableConfig(Table.Type.Structure, obsDim.getShortName());
       st.structureType = TableConfig.StructureType.PsuedoStructure;
       st.dimName = obsDim.getShortName();
-      CoordSysEvaluator.findCoords(st, ds);
+      CoordSysEvaluator.findCoords(st, ds, null);
 
       addTable( st);
     }

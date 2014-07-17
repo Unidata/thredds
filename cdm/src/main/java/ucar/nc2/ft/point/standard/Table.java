@@ -768,8 +768,8 @@ public abstract class Table {
      }
 
      public StructureDataIterator getStructureDataIterator(Cursor cursor, int bufferSize) throws IOException {
-       StructureDataProxy proxyStruct = (StructureDataProxy) cursor.getParentStructure();
-       StructureData parentStruct = proxyStruct.getOriginalStructureData(); // tricky dicky
+       StructureData parentStruct = cursor.getParentStructure();
+       if (parentStruct instanceof StructureDataProxy) parentStruct =  ((StructureDataProxy) parentStruct).getOriginalStructureData(); // tricky dicky
        ArrayStructureMA asma = new ArrayStructureMA(sm, new int[]{inner.getLength()});
        for (String colName : cols.keySet()) {
          Array data = parentStruct.getArray(colName);
@@ -846,8 +846,8 @@ public abstract class Table {
      }
 
      public StructureDataIterator getStructureDataIterator(Cursor cursor, int bufferSize) throws IOException {
-       StructureDataProxy proxyStruct = (StructureDataProxy) cursor.tableData[2];
-       StructureData parentStruct = proxyStruct.getOriginalStructureData(); // tricky dicky
+       StructureData parentStruct = cursor.tableData[2];
+       if (parentStruct instanceof StructureDataProxy) parentStruct =  ((StructureDataProxy) parentStruct).getOriginalStructureData(); // tricky dicky
        int middleIndex = cursor.recnum[1];
        ArrayStructureMA asma = new ArrayStructureMA(sm, new int[]{inner.getLength()});
        for (String colName : cols.keySet()) {

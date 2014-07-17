@@ -106,7 +106,7 @@ public class NdbcCoards extends TableConfigurerImpl  {
       nt.structName = "record";
       nt.structureType = hasStruct ? TableConfig.StructureType.Structure : TableConfig.StructureType.PsuedoStructure;      
       nt.featureType = FeatureType.POINT;
-      CoordSysEvaluator.findCoords(nt, ds);
+      CoordSysEvaluator.findCoords(nt, ds, null);
       return nt;
     }
 
