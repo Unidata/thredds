@@ -71,6 +71,12 @@
 				</xsl:element>				
 
 				<script type="text/javascript">
+					function buildUrl() {
+				  		$("urlBuilder").empty();
+						$("urlBuilder").append( $("form").serialize());
+					}
+				</script>
+				<script type="text/javascript">
 
 					var context = '<xsl:value-of select="$tdsContext"></xsl:value-of>';
 					var gridWKT = '<xsl:value-of select="$gridWKT"></xsl:value-of>';
@@ -155,6 +161,7 @@
 							<a href="dataset.xml">Gridded Dataset Description</a>
 							)
 						</h2>
+						<div id="urlBuilder"></div>
 						<h3>
 							<span>Base Time:</span>
 							<span class="black">
@@ -230,7 +237,7 @@
 												</xsl:if>
 												<br />
 												<xsl:for-each select="grid">
-													<input type="checkbox" name="var" value="{@name}" />
+													<input onchange="buildUrl" type="checkbox" name="var" value="{@name}" />
 													<xsl:value-of select="@name" />
 													=
 													<xsl:value-of select="@desc" />
