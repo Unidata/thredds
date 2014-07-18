@@ -32,36 +32,104 @@
  */
 package ucar.nc2.dt.grid;
 
-import junit.framework.*;
+import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
 import ucar.nc2.dataset.CoordinateAxis;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.constants.AxisType;
 import ucar.nc2.ncml.NcMLReader;
 import ucar.unidata.test.util.TestDir;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Iterator;
 import java.io.ByteArrayInputStream;
 
 /** Count geogrid objects - sanity check when anything changes. */
 
-public class TestReadandCount extends TestCase {
+@RunWith(Parameterized.class)
+public class TestReadandCount {
+  private static final boolean show = false, showCount = true;
+  private static String griddir = TestDir.cdmUnitTestDir +"conventions/";
+  private static String grib1dir = TestDir.cdmUnitTestDir +"formats/grib1/";
+  private static String grib2dir = TestDir.cdmUnitTestDir +"formats/grib2/";
 
-  private static boolean show = false, showCount = true;
+  @Parameterized.Parameters
+  public static List<Object[]> getTestParameters() {
+    List<Object[]> result = new ArrayList<>();
 
-  public TestReadandCount( String name) {
-    super(name);
+    result.add(new Object[]{griddir + "avhrr/", "amsr-avhrr-v2.20040729.nc", 0, 1, 4, 0});
+
+       /* doOne(griddir+"atd-radar/","rgg.20020411.000000.lel.ll.nc", 5, 1, 4, 1);
+    doOne(griddir+"atd-radar/","SPOL_3Volumes.nc", 3, 1, 4, 1);
+
+    doOne(griddir+"gief/","coamps.wind_uv.nc", 2, 1, 4, 1);
+
+    //// coards derived
+    doOne(griddir+"coards/", "cldc.mean.nc", 1, 1, 3, 0);
+    doOne(griddir+"coards/","inittest24.QRIDV07200.nc", -1, -1, -1, -1); // no "positive" att on level
+    */
+    result.add(new Object[]{griddir+"coards/","inittest24.QRIDV07200.ncml", 1, 1, 3, 1});
+//    result.add(new Object[]{griddir+"avhrr/","amsr-avhrr-v2.20040729.nc", 4, 1, 4, 1});
+
+//    result.add(new Object[]{griddir+"csm/","o3monthly.nc", 4, 1, 7, 2});
+    result.add(new Object[]{griddir+"csm/","ha0001.nc", 35, 3, 5, 2}); //
+
+    result.add(new Object[]{griddir+"cf/","cf1.nc", 1,1,5,2});
+    result.add(new Object[]{griddir+"cf/","ccsm2.nc", 107, 3, 5, 2}); //
+    result.add(new Object[]{griddir+"cf/","tomw.nc", 19, 3, 4, 1});
+    result.add(new Object[]{griddir+"cf/","cf1_rap.nc", 11, 2, 4, 0}); // not getting x, y
+    // result.add(new Object[]{"C:/data/conventions/cf/signell/","signell_july2_03.nc", -1, -1, -1, -1}); // 2D lat, lon; no x,y
+//**    result.add(new Object[]{griddir+"cf/","feb2003_short.nc", 14, 4, 4, 1});
+    result.add(new Object[]{griddir+"cf/","feb2003_short2.nc", 22, 9, 8, 1});
+    result.add(new Object[]{griddir+"cf/","temperature.nc", 4, 3, 5, 1});
+
+    result.add(new Object[]{griddir+"gdv/","testGDV.nc", 30, 1, 4, 1});
+    result.add(new Object[]{griddir+"gdv/","OceanDJF.nc", 15, 1, 4, 1});
+
+    // uses GDV as default
+    result.add(new Object[]{griddir+"mars/","temp_air_01082000.ncml", 1, 1, 4, 1}); // uses GDV
+    //result.add(new Object[]{"C:/data/conventions/mm5/","n040.nc", -1, -1, -1, -1}); // no Conventions code
+
+    result.add(new Object[]{griddir+"m3io/","agg.cctmJ3fx.b312.nh3c1.dep_wa.annual.2001base.nc", 13, 1, 5, 1}); // m3io
+    result.add(new Object[]{griddir+"m3io/","19L.nc", 23, 1, 4, 1});   // M3IOVGGrid
+
+    //// the uglies
+    result.add(new Object[]{griddir+"nuwg/", "avn-x.nc", 31, 4, 8, 4});
+    result.add(new Object[]{griddir+"nuwg/", "2003021212_avn-x.nc", 30, 5, 7, 4});
+    result.add(new Object[]{griddir+"nuwg/", "avn-q.nc", 22, 7, 9, 6});
+    result.add(new Object[]{griddir+"nuwg/", "eta.nc", 28,9,11,8});
+    result.add(new Object[]{griddir+"nuwg/", "ocean.nc", 5, 1, 3, 0});
+    result.add(new Object[]{griddir+"nuwg/", "ruc.nc", 31,5, 6, 3});
+    result.add(new Object[]{griddir+"nuwg/", "CMC-HGT.nc", 1, 1, 3, 0}); // */
+
+    result.add(new Object[]{griddir+"wrf/","wrfout_v2_Lambert.nc", 57, 11, 8, 3});
+    result.add(new Object[]{griddir+"wrf/","wrf2-2005-02-01_12.nc", 60, 11, 8, 3});
+    result.add(new Object[]{griddir+"wrf/","wrfout_d01_2006-03-08_21-00-00", 70, 11, 8, 3});
+    result.add(new Object[]{griddir+"wrf/","wrfrst_d01_2002-07-02_12_00_00.nc", 162, 11, 8, 3});
+
+    result.add(new Object[]{griddir+"awips/","19981109_1200.nc", 36, 13, 14, 11});
+    result.add(new Object[]{griddir+"awips/","awips.nc", 38, 12, 13, 10}); //
+
+    result.add(new Object[]{griddir+"ifps/","HUNGrids.netcdf", 26, 26, 29, 0}); // *
+
+    // our grib reader */
+    result.add(new Object[]{ grib1dir ,"AVN.wmo", 22, -1, -1, -1});
+    result.add(new Object[]{ grib1dir,"RUC_W.wmo", 44,-1, -1, -1});
+    result.add(new Object[]{ grib1dir,"NOGAPS-Temp-Regional.grib", 1, -1, -1, -1});  // */
+
+    result.add(new Object[]{ grib1dir,"eta.Y.Q.wmo", 25, -1, -1, -1});
+    result.add(new Object[]{ grib2dir,"ndfd.wmo", 1, -1, -1, -1});
+
+      // radar mosaic
+    result.add(new Object[]{ grib1dir,"radar_national.grib", 1, 1, 3, 0});
+    result.add(new Object[]{ grib1dir,"radar_regional.grib", 1, 1, 3, 0});
+
+    return result;
   }
 
-  private String griddir = TestDir.cdmUnitTestDir +"conventions/";
-  private String grib1dir = TestDir.cdmUnitTestDir +"formats/grib1/";
-  private String grib2dir = TestDir.cdmUnitTestDir +"formats/grib2/";
 
-  public void testRead1() throws Exception {
-    doOne(griddir+"avhrr/","amsr-avhrr-v2.20040729.nc", 0, 1, 4, 0);
-  }
-
-  public void testRead() throws Exception {
+  /* public void testRead() throws Exception {
 
     /* doOne(griddir+"atd-radar/","rgg.20020411.000000.lel.ll.nc", 5, 1, 4, 1);
     doOne(griddir+"atd-radar/","SPOL_3Volumes.nc", 3, 1, 4, 1);
@@ -71,7 +139,7 @@ public class TestReadandCount extends TestCase {
     //// coards derived
     doOne(griddir+"coards/", "cldc.mean.nc", 1, 1, 3, 0);
     doOne(griddir+"coards/","inittest24.QRIDV07200.nc", -1, -1, -1, -1); // no "positive" att on level
-    */
+
     doOne(griddir+"coards/","inittest24.QRIDV07200.ncml", 1, 1, 3, 1);
 //    doOne(griddir+"avhrr/","amsr-avhrr-v2.20040729.nc", 4, 1, 4, 1);
 
@@ -104,7 +172,7 @@ public class TestReadandCount extends TestCase {
     doOne(griddir+"nuwg/", "eta.nc", 28,9,11,8);
     doOne(griddir+"nuwg/", "ocean.nc", 5, 1, 3, 0);
     doOne(griddir+"nuwg/", "ruc.nc", 31,5, 6, 3);
-    doOne(griddir+"nuwg/", "CMC-HGT.nc", 1, 1, 3, 0); // */
+    doOne(griddir+"nuwg/", "CMC-HGT.nc", 1, 1, 3, 0); //
 
     doOne(griddir+"wrf/","wrfout_v2_Lambert.nc", 57, 11, 8, 3);
     doOne(griddir+"wrf/","wrf2-2005-02-01_12.nc", 60, 11, 8, 3);
@@ -116,10 +184,10 @@ public class TestReadandCount extends TestCase {
 
     doOne(griddir+"ifps/","HUNGrids.netcdf", 26, 26, 29, 0); // *
 
-    // our grib reader */
+    // our grib reader
     doOne( grib1dir ,"AVN.wmo", 22, -1, -1, -1);
     doOne( grib1dir,"RUC_W.wmo", 44,-1, -1, -1);
-    doOne( grib1dir,"NOGAPS-Temp-Regional.grib", 1, -1, -1, -1);  // */
+    doOne( grib1dir,"NOGAPS-Temp-Regional.grib", 1, -1, -1, -1);  //
 
     doOne( grib1dir,"eta.Y.Q.wmo", 25, -1, -1, -1);
     doOne( grib2dir,"ndfd.wmo", 1, -1, -1, -1);
@@ -127,12 +195,29 @@ public class TestReadandCount extends TestCase {
       // radar mosaic
     doOne( grib1dir,"radar_national.grib", 1, 1, 3, 0);
     doOne( grib1dir,"radar_regional.grib", 1, 1, 3, 0);
+  }  */
+
+  String dir, name;
+  int ngrids, ncoordSys, ncoordAxes, nVertCooordAxes;
+
+  public TestReadandCount( String dir, String name, int ngrids, int ncoordSys, int ncoordAxes, int nVertCooordAxes) {
+    this.dir = dir;
+    this.name = name;
+    this.ngrids = ngrids;
+    this.ncoordSys = ncoordSys;
+    this.ncoordAxes = ncoordAxes;
+    this.nVertCooordAxes = nVertCooordAxes;
   }
 
-  static void doOne(String dir, String filename, int ngrids, int ncoordSys, int ncoordAxes, int nVertCooordAxes) throws Exception {
-    System.out.println("test read GridDataset = " + dir + filename);
+  @org.junit.Test
+  public void openAsGridAndCount() throws Exception {
+    doOne(dir, name, ngrids, ncoordSys, ncoordAxes, nVertCooordAxes);
+  }
 
-    ucar.nc2.dt.grid.GridDataset gridDs = GridDataset.open(dir + filename);
+  static public void doOne( String dir, String name, int ngrids, int ncoordSys, int ncoordAxes, int nVertCooordAxes) throws Exception {
+    System.out.println("test read GridDataset = " + dir + name);
+
+    ucar.nc2.dt.grid.GridDataset gridDs = GridDataset.open(dir + name);
 
     int countGrids = gridDs.getGrids().size();
     int countCoordAxes = gridDs.getNetcdfDataset().getCoordinateAxes().size();
@@ -175,9 +260,6 @@ public class TestReadandCount extends TestCase {
     gridDs.close();
   }
 
-  public void testProblem() throws Exception {
-    doOne(griddir+"mars/","temp_air_01082000.ncml", 1, 1, 4, 1); // uses GDV
-  }
 
   // test readding as a stream. theres no file location to be reletive to
   public void utestReadNcMLInputStream() throws Exception {
@@ -200,12 +282,5 @@ public class TestReadandCount extends TestCase {
     assert emptyDataset.getGrids().size() == fullDataset.getGrids().size();
   }
 
-
-   public static void main( String arg[]) throws Exception {
-     // new TestReadandCount("dummy").doOne("C:/data/conventions/wrf/","wrf.nc", 33, 5, 7, 7);  // missing TSLB
-     //new TestReadandCount("dummy").testRead();  // missing TSLB
-     //doOne(TestAll.testdataDir + "grid/grib/grib1/data/","AVN.wmo", 22, -1, -1, -1);
-
-  }
 
 }
