@@ -40,6 +40,7 @@ import ucar.nc2.constants.FeatureType;
 import ucar.unidata.test.util.TestDir;
 
 import java.io.File;
+import java.io.FileFilter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -57,7 +58,11 @@ public class TestPreCFpointDatasets {
 
   @Parameterized.Parameters
   public static List<Object[]> getTestParameters() {
-    return TestPointDatasets.getAllFilesInDirectory(CFpointObs_pre16);
+    return TestPointDatasets.getAllFilesInDirectory(CFpointObs_pre16, new FileFilter() {
+      public boolean accept(File f) {
+        return !f.getPath().contains("Flat");
+      }
+    });
   }
 
   String location;

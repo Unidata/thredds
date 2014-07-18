@@ -99,7 +99,7 @@ public class TestStructureArrayBB {
     ArrayStructureBB bb = new ArrayStructureBB(members, new int[]{4});
     fillStructureArray(bb);
 
-    System.out.println( NCdumpW.printArray(bb, "test arrayBB", null));
+    System.out.println( NCdumpW.toString(bb, "test arrayBB", null));
 
     new TestStructureArray().testArrayStructure(bb);
 

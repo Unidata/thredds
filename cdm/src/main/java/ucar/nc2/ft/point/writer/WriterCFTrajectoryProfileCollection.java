@@ -202,8 +202,8 @@ public class WriterCFTrajectoryProfileCollection extends CFPointWriter {
     StructureDataScalar profileCoords = new StructureDataScalar("Coords");
     profileCoords.addMember(latName, null, null, DataType.DOUBLE, false, profile.getLatLon().getLatitude());
     profileCoords.addMember(lonName, null, null, DataType.DOUBLE, false, profile.getLatLon().getLongitude());
-    if (profile.getTime() != null)
-      profileCoords.addMember(profileTimeName, null, null, DataType.DOUBLE, false, (double) profile.getTime().getTime());  // LOOK time not always part of profile
+    double time = (profile.getTime() != null) ? (double) profile.getTime().getTime() : 0.0;
+    profileCoords.addMember(profileTimeName, null, null, DataType.DOUBLE, false, time);  // LOOK time not always part of profile
     profileCoords.addMemberString(profileIdName, null, null, profile.getName().trim(), id_strlen);
     profileCoords.addMember(numberOfObsName, null, null, DataType.INT, false, nobs);
     profileCoords.addMember(trajectoryIndexName, null, null, DataType.INT, false, sectionIndex);

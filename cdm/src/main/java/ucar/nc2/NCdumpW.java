@@ -429,7 +429,15 @@ public class NCdumpW {
     out.flush();
   }
 
-  static public String printArray(Array array, String name, CancelTask ct) { // throws IOException {
+  /**
+   *
+   * @deprecated use toString()
+   */
+  static public String printArray(Array array, String name, CancelTask ct) {
+    return toString(array, name, ct);
+  }
+
+  static public String toString(Array array, String name, CancelTask ct) {
     CharArrayWriter carray = new CharArrayWriter(100000);
     PrintWriter pw = new PrintWriter(carray);
     printArray(array, name, null, pw, new Indent(2), ct, true);
@@ -684,6 +692,20 @@ public class NCdumpW {
     indent.decr();
   }
 
+  static public String toString(StructureData sdata) throws IOException {
+    CharArrayWriter carray = new CharArrayWriter(1000);
+    PrintWriter pw = new PrintWriter(carray);
+    for (StructureMembers.Member m : sdata.getMembers()) {
+      Array memData = sdata.getArray(m);
+      if (memData instanceof ArrayChar)
+        pw.print(((ArrayChar) memData).getString());
+      else
+        printArray(memData, pw);
+      pw.print(',');
+    }
+    return carray.toString();
+  }
+
   /**
    * Print array as undifferentiated sequence of values.
    *
@@ -705,7 +727,7 @@ public class NCdumpW {
   }
 
   static public String toString(Array ma) throws IOException {
-    return printArray(ma, "", null);
+    return toString(ma, "", null);
   }
 
   //////////////////////////////////////////////////////////////////////////////////////

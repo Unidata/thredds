@@ -241,7 +241,7 @@ public class TestN4reading {
     assert m != null;
     assert (m.getDataType() == DataType.STRUCTURE);
 
-    System.out.println( NCdumpW.printArray(data, "", null));
+    System.out.println( NCdumpW.toString(data, "", null));
 
     ncfile.close();
     System.out.println("*** testNestedStructure ok");

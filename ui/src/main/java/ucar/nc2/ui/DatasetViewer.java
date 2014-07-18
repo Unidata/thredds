@@ -842,7 +842,7 @@ public class DatasetViewer extends JPanel {
     public String getName() { return att.getShortName(); }
     public String getValue() {
       Array value = att.getValues();
-      return NCdumpW.printArray(value, null, null);
+      return NCdumpW.toString(value, null, null);
     }
 
   }

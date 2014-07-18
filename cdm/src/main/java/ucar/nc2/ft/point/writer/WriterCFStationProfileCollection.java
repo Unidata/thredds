@@ -129,8 +129,8 @@ public class WriterCFStationProfileCollection extends CFPointWriter {
     StructureData obsData = obs.getFeatureData();
 
     List<VariableSimpleIF> obsCoords = new ArrayList<>();
-    obsCoords.add(VariableSimpleImpl.makeScalar(timeName, "time of measurement", timeUnit.getUnitsString(), DataType.DOUBLE)); // LOOK ??
-    Formatter coordNames = new Formatter().format("%s %s %s", timeName, latName, lonName);
+    // obsCoords.add(VariableSimpleImpl.makeScalar(timeName, "time of measurement", timeUnit.getUnitsString(), DataType.DOUBLE)); // LOOK ??
+    Formatter coordNames = new Formatter().format("%s %s %s", profileTimeName, latName, lonName);
     //if (useAlt) {
       obsCoords.add( VariableSimpleImpl.makeScalar(altitudeCoordinateName, "obs altitude", altUnits, DataType.DOUBLE)
               .add(new Attribute(CF.STANDARD_NAME, "altitude"))
@@ -267,8 +267,8 @@ public class WriterCFStationProfileCollection extends CFPointWriter {
     StructureDataScalar profileCoords = new StructureDataScalar("Coords");
     profileCoords.addMember(latName, null, null, DataType.DOUBLE, false, profile.getLatLon().getLatitude());
     profileCoords.addMember(lonName, null, null, DataType.DOUBLE, false, profile.getLatLon().getLongitude());
-    if (profile.getTime() != null)
-      profileCoords.addMember(profileTimeName, null, null, DataType.DOUBLE, false, (double) profile.getTime().getTime());  // LOOK time not always part of profile
+    double time = (profile.getTime() != null) ? (double) profile.getTime().getTime() : 0.0;
+    profileCoords.addMember(profileTimeName, null, null, DataType.DOUBLE, false, time);  // LOOK time not always part of profile
     profileCoords.addMemberString(profileIdName, null, null, profile.getName().trim(), id_strlen);
     profileCoords.addMember(numberOfObsName, null, null, DataType.INT, false, nobs);
     profileCoords.addMember(stationIndexName, null, null, DataType.INT, false, stnIndex);

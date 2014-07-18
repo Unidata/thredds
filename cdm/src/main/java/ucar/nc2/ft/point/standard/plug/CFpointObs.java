@@ -565,8 +565,12 @@ public class CFpointObs extends TableConfigurerImpl {
         break;
       }
 
-       case raggedIndex: {
+      case raggedIndex: {
         TableConfig profileTable = makeRaggedIndexChildTable(ds, info.parentDim, info.childDim, info.ragged_parentIndex, errlog);
+        profileTable.feature_id = identifyIdVariableName(ds, CF.FeatureType.profile);
+        if (profileTable.feature_id == null) {
+           errlog.format("CFpointObs:getSectionConfig cant find a profile id %n");
+         }
         parentTable.addChild(profileTable);
         profileTable.numRecords = info.ragged_rowSize.getFullName();
         TableConfig obsTable = makeRaggedContiguousChildTable(ds, info.childDim, info.grandChildDim, info.grandChildStruct, errlog);
@@ -1263,11 +1267,16 @@ public class CFpointObs extends TableConfigurerImpl {
 
     if (info.encoding != Encoding.single) {
       tableConfig.dimName = info.parentDim.getShortName();
-      Structure parent = null;
-      switch (info.encoding) {
-        case raggedContiguous:
-          parent = info.ragged_rowSize.getParentStructure();
-          break;
+      Structure parent = info.parentStruct;
+      if (parent == null) {
+        switch (info.encoding) {
+          case raggedContiguous:
+            parent = info.ragged_rowSize.getParentStructure();
+            break;
+          case raggedIndex:
+            parent = info.ragged_parentIndex.getParentStructure();
+            break;
+        }
       }
       makeStructureInfo(tableConfig, ds, parent, info.parentDim);
     }
@@ -1302,36 +1311,36 @@ public class CFpointObs extends TableConfigurerImpl {
   /////////////////////////////////////////////////////////////////////////////////
 
   private TableConfig makeRaggedContiguousChildTable(NetcdfDataset ds, Dimension parentDim, Dimension childDim, Structure childStruct, Formatter errlog) throws IOException {
-    TableConfig obsTable = new TableConfig(Table.Type.Contiguous, childDim.getShortName());
-    obsTable.dimName = childDim.getShortName();
+    TableConfig childTable = new TableConfig(Table.Type.Contiguous, childDim.getShortName());
+    childTable.dimName = childDim.getShortName();
 
-    obsTable.lat = matchAxisTypeAndDimension(ds, AxisType.Lat, childDim);
-    obsTable.lon = matchAxisTypeAndDimension(ds, AxisType.Lon, childDim);
-    obsTable.elev = matchAxisTypeAndDimension(ds, AxisType.Height, childDim);
-    if (obsTable.elev == null) obsTable.elev = matchAxisTypeAndDimension(ds, AxisType.Pressure, childDim);
-    if (obsTable.elev == null) obsTable.elev = matchAxisTypeAndDimension(ds, AxisType.GeoZ, childDim);
-    obsTable.time = matchAxisTypeAndDimension(ds, AxisType.Time, childDim);
+    childTable.lat = matchAxisTypeAndDimension(ds, AxisType.Lat, childDim);
+    childTable.lon = matchAxisTypeAndDimension(ds, AxisType.Lon, childDim);
+    childTable.elev = matchAxisTypeAndDimension(ds, AxisType.Height, childDim);
+    if (childTable.elev == null) childTable.elev = matchAxisTypeAndDimension(ds, AxisType.Pressure, childDim);
+    if (childTable.elev == null) childTable.elev = matchAxisTypeAndDimension(ds, AxisType.GeoZ, childDim);
+    childTable.time = matchAxisTypeAndDimension(ds, AxisType.Time, childDim);
 
-    makeStructureInfo(obsTable, ds, childStruct, childDim);
+    makeStructureInfo(childTable, ds, childStruct, childDim);
 
-    return obsTable;
+    return childTable;
   }
 
   private TableConfig makeRaggedIndexChildTable(NetcdfDataset ds, Dimension parentDim, Dimension childDim, Variable ragged_parentIndex, Formatter errlog) throws IOException {
-    TableConfig obsTable = new TableConfig(Table.Type.ParentIndex, childDim.getShortName());
-    obsTable.dimName = childDim.getShortName();
+    TableConfig childTable = new TableConfig(Table.Type.ParentIndex, childDim.getShortName());
+    childTable.dimName = childDim.getShortName();
 
-    obsTable.lat = matchAxisTypeAndDimension(ds, AxisType.Lat, childDim);
-    obsTable.lon = matchAxisTypeAndDimension(ds, AxisType.Lon, childDim);
-    obsTable.elev = matchAxisTypeAndDimension(ds, AxisType.Height, childDim);
-    if (obsTable.elev == null) obsTable.elev = matchAxisTypeAndDimension(ds, AxisType.Pressure, childDim);
-    if (obsTable.elev == null) obsTable.elev = matchAxisTypeAndDimension(ds, AxisType.GeoZ, childDim);
-    obsTable.time = matchAxisTypeAndDimension(ds, AxisType.Time, childDim);
+    childTable.lat = matchAxisTypeAndDimension(ds, AxisType.Lat, childDim);
+    childTable.lon = matchAxisTypeAndDimension(ds, AxisType.Lon, childDim);
+    childTable.elev = matchAxisTypeAndDimension(ds, AxisType.Height, childDim);
+    if (childTable.elev == null) childTable.elev = matchAxisTypeAndDimension(ds, AxisType.Pressure, childDim);
+    if (childTable.elev == null) childTable.elev = matchAxisTypeAndDimension(ds, AxisType.GeoZ, childDim);
+    childTable.time = matchAxisTypeAndDimension(ds, AxisType.Time, childDim);
 
-    makeStructureInfo(obsTable, ds, ragged_parentIndex.getParentStructure(), childDim);
-    obsTable.parentIndex = ragged_parentIndex.getFullName();
+    makeStructureInfo(childTable, ds, ragged_parentIndex.getParentStructure(), childDim);
+    childTable.parentIndex = ragged_parentIndex.getFullName();
 
-    return obsTable;
+    return childTable;
   }
 
   // the inner table of Structure(outer, inner) and middle table of Structure(outer, middle, inner)

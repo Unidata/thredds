@@ -32,13 +32,12 @@ public class TestCFPointWriter {
   @Parameterized.Parameters
   public static List<Object[]> getTestParameters() {
     List<Object[]> result = new ArrayList<>();
-    //result.add(new Object[]{CFpointObs_topdir + "sectionSingle.ncml", FeatureType.SECTION, 50});
 
     result.addAll(TestCFPointDatasets.getPointDatasets());
     result.addAll(TestCFPointDatasets.getStationDatasets());
     result.addAll(TestCFPointDatasets.getProfileDatasets());
     result.addAll(TestCFPointDatasets.getTrajectoryDatasets());
-    result.addAll(TestCFPointDatasets.getStationProfileDatasets());  //
+    result.addAll(TestCFPointDatasets.getStationProfileDatasets());  //  */
     result.addAll(TestCFPointDatasets.getSectionDatasets());  // */
 
     return result;

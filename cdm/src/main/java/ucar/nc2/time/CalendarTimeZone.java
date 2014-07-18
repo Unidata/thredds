@@ -13,6 +13,8 @@ import java.util.TimeZone;
  */
 public class CalendarTimeZone {
 
+  public static final CalendarTimeZone UTC = new CalendarTimeZone("UTC");
+
   public static Set<String> getAvailableIDs() {
     return DateTimeZone.getAvailableIDs();
   }

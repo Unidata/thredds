@@ -798,8 +798,8 @@ public class GridRenderer {
             System.out.printf("x=%d y=%d %n", x, y);
             System.out.printf("%f %f %f %f %n", edgex.get(y, x), edgex.get(y, x + 1), edgex.get(y + 1, x), edgex.get(y + 1, x + 1));
 
-            System.out.printf("%n%s", NCdumpW.printArray(edgex.slice(0,y+1), "row "+y, null));
-            System.out.printf("%n%s", NCdumpW.printArray(edgex.slice(0,y+1), "row "+(y+1), null));
+            System.out.printf("%n%s", NCdumpW.toString(edgex.slice(0,y+1), "row "+y, null));
+            System.out.printf("%n%s", NCdumpW.toString(edgex.slice(0,y+1), "row "+(y+1), null));
           }
         }
 

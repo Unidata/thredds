@@ -173,7 +173,7 @@ public class AggTable extends JPanel {
       Variable aggCoord = current.findVariable(aggDimName);
       Array data = aggCoord.read();
       f.format("   Aggregated coordinate variable %s%n", aggCoord);
-      f.format(NCdumpW.printArray(data, aggDimName, null));
+      f.format(NCdumpW.toString(data, aggDimName, null));
 
       for (Object bean : datasetTable.getBeans()) {
         DatasetBean dbean = (DatasetBean) bean;
@@ -186,7 +186,7 @@ public class AggTable extends JPanel {
           f.format("   doesnt have coordinate variable%n");
         } else {
           data = aggCoordp.read();
-          f.format(NCdumpW.printArray(data, aggCoordp.getNameAndDimensions() +" ("+aggCoordp.getUnitsString()+")", null));
+          f.format(NCdumpW.toString(data, aggCoordp.getNameAndDimensions() +" ("+aggCoordp.getUnitsString()+")", null));
         }
       }
     } catch (Throwable t) {

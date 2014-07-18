@@ -1371,7 +1371,7 @@ public class H4header {
         TagVH chunkTableTag = (TagVH) tagMap.get(tagid(chunk_tbl_ref, chunk_tbl_tag));
         Structure s = (Structure) makeVariable(chunkTableTag);
         ArrayStructure sdata = (ArrayStructure) s.read();
-        if (debugChunkDetail) System.out.println(NCdumpW.printArray(sdata, "getChunkedTable", null));
+        if (debugChunkDetail) System.out.println(NCdumpW.toString(sdata, "getChunkedTable", null));
 
         // construct the chunks
         StructureMembers members = sdata.getStructureMembers();

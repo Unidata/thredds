@@ -37,9 +37,11 @@ import ucar.ma2.*;
 import ucar.nc2.NCdumpW;
 import ucar.nc2.Structure;
 import ucar.nc2.Variable;
-import ucar.nc2.dt.PointObsDatatype;
-import ucar.nc2.dt.TrajectoryObsDatatype;
 import ucar.nc2.ft.PointFeature;
+import ucar.nc2.time.CalendarDate;
+import ucar.nc2.time.CalendarDateFormatter;
+import ucar.nc2.time.CalendarPeriod;
+import ucar.nc2.time.CalendarTimeZone;
 import ucar.nc2.ui.table.ColumnWidthsResizer;
 import ucar.nc2.ui.table.HidableTableColumnModel;
 import ucar.nc2.ui.table.TableAligner;
@@ -180,29 +182,6 @@ public class StructureTable extends JPanel {
   }
 
   /**
-   * This is used for a trajectory.
-   *
-   * @param traj treajectory
-   * @throws IOException on io error
-   */
-  public void setTrajectory(TrajectoryObsDatatype traj) throws IOException {
-    dataModel = new TrajectoryModel(traj);
-    initTable(dataModel);
-  }
-
-  /**
-   * Set the data as a collection of PointObsDatatype.
-   *
-   * @param obsData List of type PointObsDatatype
-   * @throws IOException on io error
-   */
-  public void setPointObsData(List<PointObsDatatype> obsData) throws IOException {
-    dataModel = new PointObsDataModel(obsData);
-    initTable(dataModel);
-    //jtable.getColumnModel().getColumn(0).setCellRenderer(new DateRenderer());
-  }
-
-  /**
    * Set the data as a collection of PointFeature.
    *
    * @param obsData List of type PointFeature
@@ -293,7 +272,7 @@ public class StructureTable extends JPanel {
   }
 
   // display subtables
-  private static HashMap<String, IndependentWindow> windows = new HashMap<String, IndependentWindow>();
+  private static HashMap<String, IndependentWindow> windows = new HashMap<>();
 
   private class SubtableAbstractAction extends AbstractAction {
     Structure s;
@@ -374,7 +353,6 @@ public class StructureTable extends JPanel {
       bos.write(mess.getBytes(), 0, mess.length());
     }
     dumpTA.setText(bos.toString());
-
     dumpWindow.setVisible(true);
   }
 
@@ -413,10 +391,7 @@ public class StructureTable extends JPanel {
 
     try {
       return dataModel.getRow(modelRowIndex);
-    } catch (InvalidRangeException e) {
-      JOptionPane.showMessageDialog(this, "ERROR: " + e.getMessage());
-      e.printStackTrace();
-    } catch (IOException e) {
+    } catch (InvalidRangeException | IOException e) {
       JOptionPane.showMessageDialog(this, "ERROR: " + e.getMessage());
       e.printStackTrace();
     }
@@ -429,7 +404,7 @@ public class StructureTable extends JPanel {
     protected HashMapLRU rowHash = new HashMapLRU(500, 500); // cache 500 rows
     protected StructureMembers members;
     protected boolean wantDate = false;
-    protected List<Structure> subtables = new ArrayList<Structure>();
+    protected List<Structure> subtables = new ArrayList<>();
 
     // subclasses implement these
 
@@ -441,9 +416,9 @@ public class StructureTable extends JPanel {
 
     // if we know how to extract the date for this data, add two extra columns
 
-    abstract public Date getObsDate(int row);
+    abstract public CalendarDate getObsDate(int row);
 
-    abstract public Date getNomDate(int row);
+    abstract public CalendarDate getNomDate(int row);
 
     public Object getRow(int row) throws InvalidRangeException, IOException {
       return getStructureData(row);
@@ -525,11 +500,11 @@ public class StructureTable extends JPanel {
       }
     }
 
-    public Date getObsDate(int row) {
+    public CalendarDate getObsDate(int row) {
       return null;
     }
 
-    public Date getNomDate(int row) {
+    public CalendarDate getNomDate(int row) {
       return null;
     }
 
@@ -563,7 +538,7 @@ public class StructureTable extends JPanel {
       super(seq);
 
       if (readData) {
-        sdataList = new ArrayList<StructureData>();
+        sdataList = new ArrayList<>();
         try {
           StructureDataIterator iter = seq.getStructureIterator();
           try {
@@ -579,11 +554,11 @@ public class StructureTable extends JPanel {
       }
     }
 
-    public Date getObsDate(int row) {
+    public CalendarDate getObsDate(int row) {
       return null;
     }
 
-    public Date getNomDate(int row) {
+    public CalendarDate getNomDate(int row) {
       return null;
     }
 
@@ -611,7 +586,7 @@ public class StructureTable extends JPanel {
     }
 
     public void clear() {
-      sdataList = new ArrayList<StructureData>();
+      sdataList = new ArrayList<>();
       fireTableDataChanged();
     }
   }
@@ -623,7 +598,7 @@ public class StructureTable extends JPanel {
 
       this.members = seq.getStructureMembers();
 
-      sdataList = new ArrayList<StructureData>();
+      sdataList = new ArrayList<>();
       try {
         StructureDataIterator iter = seq.getStructureDataIterator();
         try {
@@ -653,11 +628,11 @@ public class StructureTable extends JPanel {
       }
     }
 
-    public Date getObsDate(int row) {
+    public CalendarDate getObsDate(int row) {
       return null;
     }
 
-    public Date getNomDate(int row) {
+    public CalendarDate getNomDate(int row) {
       return null;
     }
 
@@ -670,7 +645,7 @@ public class StructureTable extends JPanel {
     }
 
     public void clear() {
-      structureData = new ArrayList<StructureData>(); // empty list
+      structureData = new ArrayList<>(); // empty list
       fireTableDataChanged();
     }
 
@@ -686,11 +661,11 @@ public class StructureTable extends JPanel {
       this.members = as.getStructureMembers();
     }
 
-    public Date getObsDate(int row) {
+    public CalendarDate getObsDate(int row) {
       return null;
     }
 
-    public Date getNomDate(int row) {
+    public CalendarDate getNomDate(int row) {
       return null;
     }
 
@@ -709,7 +684,7 @@ public class StructureTable extends JPanel {
 
   }
 
-  ////////////////////////////////////////////////////////////////////////
+  /*
 
   private class TrajectoryModel extends StructureTableModel {
     private TrajectoryObsDatatype traj;
@@ -768,8 +743,6 @@ public class StructureTable extends JPanel {
 
   }
 
-  ////////////////////////////////////////////////////////////////////////
-
   private class PointObsDataModel extends StructureTableModel {
     private List<PointObsDatatype> obsData;
 
@@ -816,7 +789,7 @@ public class StructureTable extends JPanel {
       obsData = new ArrayList<PointObsDatatype>(); // empty list
       fireTableDataChanged();
     }
-  }
+  }  */
 
   ////////////////////////////////////////////////////////////////////////
 
@@ -839,14 +812,14 @@ public class StructureTable extends JPanel {
       }
     }
 
-    public Date getObsDate(int row) {
+    public CalendarDate getObsDate(int row) {
       PointFeature obs = obsData.get(row);
-      return obs.getObservationTimeAsDate();
+      return obs.getObservationTimeAsCalendarDate();
     }
 
-    public Date getNomDate(int row) {
+    public CalendarDate getNomDate(int row) {
       PointFeature obs = obsData.get(row);
-      return obs.getNominalTimeAsDate();
+      return obs.getNominalTimeAsCalendarDate();
     }
 
     public int getRowCount() {
@@ -855,7 +828,7 @@ public class StructureTable extends JPanel {
 
     public StructureData getStructureData(int row) throws InvalidRangeException, IOException {
       PointFeature obs = obsData.get(row);
-      return obs.getData();
+      return obs.getFeatureData();
     }
 
     public Object getRow(int row) throws InvalidRangeException, IOException {
@@ -863,7 +836,7 @@ public class StructureTable extends JPanel {
     }
 
     public void clear() {
-      obsData = new ArrayList<PointFeature>(); // empty list
+      obsData = new ArrayList<>(); // empty list
       fireTableDataChanged();
     }
   }
@@ -909,31 +882,28 @@ public class StructureTable extends JPanel {
    * Renderer for Date type
    */
   static class DateRenderer extends DefaultTableCellRenderer {
-    private java.text.SimpleDateFormat newForm, oldForm;
-    private Date cutoff;
+    private CalendarDateFormatter newForm, oldForm;
+    private CalendarDate cutoff;
 
     DateRenderer() {
       super();
 
-      oldForm = new java.text.SimpleDateFormat("yyyy MMM dd HH:mm z");
-      oldForm.setTimeZone(java.util.TimeZone.getTimeZone("GMT"));
-      newForm = new java.text.SimpleDateFormat("MMM dd, HH:mm z");
-      newForm.setTimeZone(java.util.TimeZone.getTimeZone("GMT"));
-      Calendar cal = Calendar.getInstance();
-      cal.setTimeZone(java.util.TimeZone.getTimeZone("GMT"));
-      cal.add(Calendar.YEAR, -1); // "now" time format within a year
-      cutoff = cal.getTime();
+      oldForm = new CalendarDateFormatter("yyyy MMM dd HH:mm", CalendarTimeZone.UTC);
+      newForm = new CalendarDateFormatter("MMM dd, HH:mm", CalendarTimeZone.UTC);
+
+      CalendarDate now =  CalendarDate.present();
+      cutoff = now.add(-1, CalendarPeriod.Field.Year); // "now" time format within a year
     }
 
     public void setValue(Object value) {
       if (value == null)
         setText("");
       else {
-        Date date = (Date) value;
-        if (date.before(cutoff))
-          setText(oldForm.format(date));
+        CalendarDate date = (CalendarDate) value;
+        if (date.isBefore(cutoff))
+          setText(oldForm.toString(date));
         else
-          setText(newForm.format(date));
+          setText(newForm.toString(date));
       }
     }
   }

@@ -356,7 +356,7 @@ public class CoordSysTable extends JPanel {
             diffx.set(j, i, diff);
           }
         }
-        infoTA.appendLine(NCdumpW.printArray(diffx, "diff in x", null));
+        infoTA.appendLine(NCdumpW.toString(diffx, "diff in x", null));
 
         ArrayDouble.D2 diffy = (ArrayDouble.D2) Array.factory(DataType.DOUBLE, new int[]{shape[0] - 1, shape[1]});
         for (int j = 0; j < shape[0] - 1; j++) {
@@ -366,7 +366,7 @@ public class CoordSysTable extends JPanel {
           }
         }
         infoTA.appendLine("\n\n\n");
-        infoTA.appendLine(NCdumpW.printArray(diffy, "diff in y", null));
+        infoTA.appendLine(NCdumpW.toString(diffy, "diff in y", null));
 
       }
 
@@ -886,7 +886,7 @@ public class CoordSysTable extends JPanel {
 
     public String getValue() {
       Array value = att.getValues();
-      return NCdumpW.printArray(value, null, null);
+      return NCdumpW.toString(value, null, null);
     }
 
   }

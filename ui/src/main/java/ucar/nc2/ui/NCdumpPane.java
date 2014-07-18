@@ -242,7 +242,7 @@ public class NCdumpPane extends TextHistoryPane {
     public void run() {
       try {
         data = ds.readSection(command);
-        contents = NCdumpW.printArray( data, null, this);
+        contents = NCdumpW.toString( data, null, this);
 
       } catch (Exception e) {
         e.printStackTrace();

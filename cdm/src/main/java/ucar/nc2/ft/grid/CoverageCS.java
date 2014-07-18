@@ -72,6 +72,14 @@ import java.util.Date;
  *  allow different indexes
  *  each coordinate must correspond to a dimension (?)
  *
+ *  From Martin Schultz:
+ *  http://redmine.iek.fz-juelich.de/projects/julich_wcs_interface/wiki/MetOcean_data_types
+ *
+ *  "rectified"  : all coordinates are 1D
+ *      (a "grid for which there is an affine transformation between the grid coordinates and the coordinates of an external coordinate reference system")
+ *      (seems to imply CRS coordinates are 1D)
+ *
+ *
  */
 
 public interface CoverageCS {

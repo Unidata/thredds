@@ -51,6 +51,7 @@ import ucar.unidata.test.util.TestDir;
 import ucar.unidata.util.StringUtil2;
 
 import java.io.File;
+import java.io.FileFilter;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.*;
@@ -64,10 +65,11 @@ import java.util.*;
 @RunWith(Parameterized.class)
 public class TestPointDatasets {
 
-  public static List<Object[]> getAllFilesInDirectory(String topdir) {
+  public static List<Object[]> getAllFilesInDirectory(String topdir, FileFilter filter) {
     List<FileSort> files = new ArrayList<>();
     File topDir = new File(topdir);
     for (File f : topDir.listFiles()) {
+      if (filter != null && !filter.accept(f)) continue;
       files.add( new FileSort(f));
     }
     Collections.sort(files);

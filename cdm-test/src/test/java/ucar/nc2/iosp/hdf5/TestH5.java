@@ -105,7 +105,7 @@ public class TestH5 {
     System.out.printf("%s%n", v);
 
     Array data = v.read();
-    System.out.printf("%s%n", NCdumpW.printArray(data, "offset data", null));
+    System.out.printf("%s%n", NCdumpW.toString(data, "offset data", null));
     Index ii = data.getIndex();
     assert (data.getLong(ii.set(11,93)) == 1718796166693743L);
 
@@ -121,7 +121,7 @@ public class TestH5 {
     System.out.printf("%s%n", v);
 
     Array data = v.read();
-    System.out.printf("%s%n", NCdumpW.printArray(data, "offset data", null));
+    System.out.printf("%s%n", NCdumpW.toString(data, "offset data", null));
     Index ii = data.getIndex();
     assert (data.getDouble(ii.set(3,2)) == 12.0);
 

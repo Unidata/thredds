@@ -1821,15 +1821,15 @@ public class NmcObsLegacy extends AbstractIOServiceProvider {
 
     Variable v = ncfile.findVariable("station");
     Array data = v.read(new Section().appendRange(0, 1));
-    System.out.println(NCdumpW.printArray(data, "station", null));
+    System.out.println(NCdumpW.toString(data, "station", null));
 
     v = ncfile.findVariable("report");
     data = v.read(new Section().appendRange(0, 0));
-    System.out.println(NCdumpW.printArray(data, "report", null));
+    System.out.println(NCdumpW.toString(data, "report", null));
 
     v = ncfile.findVariable("reportIndex");
     data = v.read();
-    System.out.println(NCdumpW.printArray(data, "reportIndex", null));
+    System.out.println(NCdumpW.toString(data, "reportIndex", null));
 
     iosp.close();
   }

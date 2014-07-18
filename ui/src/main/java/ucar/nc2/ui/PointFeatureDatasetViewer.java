@@ -34,9 +34,12 @@
 package ucar.nc2.ui;
 
 import org.n52.oxf.xmlbeans.parser.XMLHandlingException;
+import ucar.ma2.StructureData;
+import ucar.nc2.NCdumpW;
 import ucar.nc2.NetcdfFileWriter;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.ft.*;
+import ucar.nc2.ft.point.StationFeature;
 import ucar.nc2.ft.point.writer.CFPointWriter;
 import ucar.nc2.ogc.MarshallingUtil;
 import ucar.nc2.time.CalendarDateRange;
@@ -44,9 +47,7 @@ import ucar.nc2.ui.dialog.NetcdfOutputChooser;
 import ucar.nc2.ui.point.PointController;
 import ucar.nc2.ui.point.StationRegionDateChooser;
 import ucar.nc2.ui.util.Resource;
-import ucar.nc2.ui.widget.BAMutil;
-import ucar.nc2.ui.widget.IndependentDialog;
-import ucar.nc2.ui.widget.TextHistoryPane;
+import ucar.nc2.ui.widget.*;
 import ucar.nc2.units.DateFormatter;
 import ucar.nc2.units.DateRange;
 import ucar.unidata.geoloc.LatLonPoint;
@@ -61,11 +62,11 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import java.awt.*;
 import java.awt.event.ActionEvent;
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
+import java.beans.*;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.PrintStream;
+import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -157,7 +158,7 @@ public class PointFeatureDatasetViewer extends JPanel {
           } else if (useRegion || (dateRange != null)) {
             subset(geoRegion, dateRange);
           } else {
-            JOptionPane.showMessageDialog(null, "You must subset in space and/or time ");            
+            JOptionPane.showMessageDialog(null, "You must subset in space and/or time ");
           }
 
         } catch (IOException e1) {
@@ -174,7 +175,6 @@ public class PointFeatureDatasetViewer extends JPanel {
         if (selectedCollection == null) return;
         try {
           setObservationsAll();
-
         } catch (IOException e1) {
           e1.printStackTrace();
         }
@@ -182,27 +182,26 @@ public class PointFeatureDatasetViewer extends JPanel {
     };
     BAMutil.setActionProperties(getallAction, "GetAll", "get ALL data", false, 'A', -1);
     stationMap.addToolbarAction(getallAction);
-
     stationMap.addToolbarAction(new WaterMLConverterAction());
 
     AbstractAction netcdfAction = new AbstractAction() {
-       public void actionPerformed(ActionEvent e) {
-       if (pfDataset == null) return;
+      public void actionPerformed(ActionEvent e) {
+        if (pfDataset == null) return;
 
-       if (outChooser == null) {
-         outChooser = new NetcdfOutputChooser((Frame)null);
-         outChooser.addPropertyChangeListener("OK", new PropertyChangeListener() {
+        if (outChooser == null) {
+          outChooser = new NetcdfOutputChooser((Frame) null);
+          outChooser.addPropertyChangeListener("OK", new PropertyChangeListener() {
             public void propertyChange(PropertyChangeEvent evt) {
               writeNetcdf((NetcdfOutputChooser.Data) evt.getNewValue());
             }
           });
-       }
-       outChooser.setOutputFilename(pfDataset.getLocation());
-       outChooser.setVisible(true);
-       }
-     };
-     BAMutil.setActionProperties(netcdfAction, "netcdf", "Write netCDF-CF file", false, 'S', -1);
-     BAMutil.addActionToContainer(buttPanel, netcdfAction);
+        }
+        outChooser.setOutputFilename(pfDataset.getLocation());
+        outChooser.setVisible(true);
+      }
+    };
+    BAMutil.setActionProperties(netcdfAction, "netcdf", "Write netCDF-CF file", false, 'S', -1);
+    BAMutil.addActionToContainer(buttPanel, netcdfAction);
 
 
     // feature collection table
@@ -218,6 +217,7 @@ public class PointFeatureDatasetViewer extends JPanel {
         }
       }
     });
+    new BeanContextMenu(fcTable);
 
     // profile table
     profileTable = new BeanTable(ProfileFeatureBean.class, (PreferencesExt) prefs.node("ProfileFeatureBean"), false);
@@ -232,6 +232,7 @@ public class PointFeatureDatasetViewer extends JPanel {
         }
       }
     });
+    new BeanContextMenu(profileTable);
 
     // station table
     stnTable = new BeanTable(StationBean.class, (PreferencesExt) prefs.node("StationBeans"), false);
@@ -247,6 +248,7 @@ public class PointFeatureDatasetViewer extends JPanel {
         if (eventsOK) stationMap.setSelectedStation(sb.getName());
       }
     });
+    new BeanContextMenu(stnTable);
 
     // station profile table
     stnProfileTable = new BeanTable(StnProfileFeatureBean.class, (PreferencesExt) prefs.node("StnProfileFeatureBean"), false);
@@ -261,8 +263,9 @@ public class PointFeatureDatasetViewer extends JPanel {
         }
       }
     });
+    new BeanContextMenu(stnProfileTable);
 
-    pointController = new PointController();    
+    pointController = new PointController();
 
     // the obs table
     obsTable = new StructureTable((PreferencesExt) prefs.node("ObsBean"));
@@ -281,17 +284,38 @@ public class PointFeatureDatasetViewer extends JPanel {
     add(splitObs, BorderLayout.CENTER);
   }
 
+  private class BeanContextMenu extends ucar.nc2.ui.widget.PopupMenu {
+    final BeanTable beanTable2;
+
+    BeanContextMenu(BeanTable beanTable) {
+      super(beanTable.getJTable(), "Options");
+      this.beanTable2 = beanTable;
+
+      addAction("Show Fields", new AbstractAction() {
+        public void actionPerformed(ActionEvent e) {
+          FeatureBean bean = (FeatureBean) beanTable2.getSelectedBean();
+          if (bean == null) return;
+          infoTA.clear();
+          infoTA.appendLine(bean.showFields());
+          infoTA.gotoTop();
+          infoWindow.setVisible(true);
+        }
+      });
+    }
+  }
+
 
   // I'd like to offload this class into its own file, but it needs to read the pfDataset field, whose value may change
   // during execution. I could still do it if I added the necessary event listener machinery, but meh.
   private class WaterMLConverterAction extends AbstractAction {
-    private WaterMLConverterAction () {
+    private WaterMLConverterAction() {
       putValue(NAME, "WaterML 2.0 Writer");
       putValue(SMALL_ICON, Resource.getIcon(BAMutil.getResourcePath() + "drop_24.png", true));
       putValue(SHORT_DESCRIPTION, "Write timeseries as an OGC WaterML v2.0 document.");
     }
 
-    @Override public void actionPerformed(ActionEvent e) {
+    @Override
+    public void actionPerformed(ActionEvent e) {
       if (pfDataset == null) {
         return;
       }
@@ -312,14 +336,14 @@ public class PointFeatureDatasetViewer extends JPanel {
 
         infoTA.setText(outStream.toString());
         infoTA.gotoTop();
-        infoWindow.show();
+        infoWindow.setVisible(true);
       } catch (IOException | XMLHandlingException ex) {
         ByteArrayOutputStream bos = new ByteArrayOutputStream(5000);
         ex.printStackTrace(new PrintStream(bos));
 
         infoTA.setText(bos.toString());
         infoTA.gotoTop();
-        infoWindow.show();
+        infoWindow.setVisible(true);
       }
     }
   }
@@ -372,7 +396,7 @@ public class PointFeatureDatasetViewer extends JPanel {
     // set the feature collection table - all use this
     List<FeatureCollectionBean> fcBeans = new ArrayList<>();
     for (FeatureCollection fc : dataset.getPointFeatureCollectionList()) {
-      fcBeans.add( new FeatureCollectionBean(fc));
+      fcBeans.add(new FeatureCollectionBean(fc));
     }
     if (fcBeans.size() == 0)
       JOptionPane.showMessageDialog(null, "No PointFeatureCollections found that could be displayed");
@@ -400,16 +424,16 @@ public class PointFeatureDatasetViewer extends JPanel {
     if (ftype == FeatureType.POINT) {
       //PointFeatureCollection pfc = (PointFeatureCollection) fcb.fc;
       //setPointCollection(pfc);
-      changingPane.add( pointController, BorderLayout.CENTER);
+      changingPane.add(pointController, BorderLayout.CENTER);
 
     } else if (ftype == FeatureType.PROFILE) {
       ProfileFeatureCollection pfc = (ProfileFeatureCollection) fcb.fc;
       setProfileCollection(pfc);
-      changingPane.add( stnTable, BorderLayout.CENTER);
+      changingPane.add(stnTable, BorderLayout.CENTER);
     } else if (ftype == FeatureType.STATION) {
       StationCollection sfc = (StationCollection) fcb.fc;
       setStations(sfc);
-      changingPane.add( stnTable, BorderLayout.CENTER);
+      changingPane.add(stnTable, BorderLayout.CENTER);
 
     } else if (ftype == FeatureType.STATION_PROFILE) {
       StationCollection sfc = (StationCollection) fcb.fc;
@@ -417,12 +441,12 @@ public class PointFeatureDatasetViewer extends JPanel {
 
       JSplitPane splitExtra = new JSplitPane(JSplitPane.VERTICAL_SPLIT, false, stnTable, stnProfileTable);
       splitExtra.setDividerLocation(changingPane.getHeight() / 2);
-      changingPane.add( splitExtra, BorderLayout.CENTER);
+      changingPane.add(splitExtra, BorderLayout.CENTER);
 
     } else if (ftype == FeatureType.TRAJECTORY) {
       TrajectoryFeatureCollection pfc = (TrajectoryFeatureCollection) fcb.fc;
       setTrajectoryCollection(pfc);
-      changingPane.add( stnTable, BorderLayout.CENTER);
+      changingPane.add(stnTable, BorderLayout.CENTER);
 
     } else if (ftype == FeatureType.SECTION) {
       SectionFeatureCollection pfc = (SectionFeatureCollection) fcb.fc;
@@ -430,7 +454,7 @@ public class PointFeatureDatasetViewer extends JPanel {
 
       JSplitPane splitExtra = new JSplitPane(JSplitPane.VERTICAL_SPLIT, false, stnTable, profileTable);
       splitExtra.setDividerLocation(changingPane.getHeight() / 2);
-      changingPane.add( splitExtra, BorderLayout.CENTER);
+      changingPane.add(splitExtra, BorderLayout.CENTER);
     }
 
     this.selectedCollection = fcb.fc;
@@ -448,7 +472,7 @@ public class PointFeatureDatasetViewer extends JPanel {
       if (stations == null) return;
 
       for (Station station : stations) {
-        stationBeans.add( new StationBean(station));
+        stationBeans.add(new StationBean(station));
       }
 
     } catch (IOException ioe) {
@@ -535,20 +559,16 @@ public class PointFeatureDatasetViewer extends JPanel {
     if (selectedType == FeatureType.POINT) {
       PointFeatureCollection ptCollection = (PointFeatureCollection) selectedCollection;
       pc = ptCollection.subset(geoRegion, dateRange);
-    }
-
-    else if (selectedType == FeatureType.STATION) {
+    } else if (selectedType == FeatureType.STATION) {
       StationTimeSeriesFeatureCollection stationCollection = (StationTimeSeriesFeatureCollection) selectedCollection;
      /*  if (geoRegion != null) {
         StationTimeSeriesFeatureCollection stationSubset = stationCollection.subset(geoRegion);
         setStations( stationSubset);
         return;
       } else { */
-        pc = stationCollection.flatten(geoRegion, dateRange);
+      pc = stationCollection.flatten(geoRegion, dateRange);
       //}
-    }
-
-    else if (selectedType == FeatureType.STATION_PROFILE) {
+    } else if (selectedType == FeatureType.STATION_PROFILE) {
       StationProfileFeatureCollection stationProfileCollection = (StationProfileFeatureCollection) selectedCollection;
       pc = stationProfileCollection.flatten(geoRegion, dateRange);
     }
@@ -561,10 +581,10 @@ public class PointFeatureDatasetViewer extends JPanel {
     if (selectedType == FeatureType.POINT) {
       PointObsBean pobsBean = (PointObsBean) sb;
       List<PointFeature> obsList = new ArrayList<>();
-      obsList.add( pobsBean.pobs);
+      obsList.add(pobsBean.pobs);
       setObservations(obsList);
 
-     } else if (selectedType == FeatureType.PROFILE) {
+    } else if (selectedType == FeatureType.PROFILE) {
       ProfileFeatureBean profBean = (ProfileFeatureBean) sb;
       ProfileFeature feature = profBean.pfc;
       setObservations(feature);
@@ -624,51 +644,51 @@ public class PointFeatureDatasetViewer extends JPanel {
   }
 
   private void setStnProfile(StnProfileFeatureBean sb) throws IOException {
-     ProfileFeature feature = sb.pfc;
-     setObservations(feature);
+    ProfileFeature feature = sb.pfc;
+    setObservations(feature);
 
-     // iterator may count points
-     int npts = feature.size();
-     if (npts >= 0) {
-       sb.setNobs(npts);
-     }
-   }
+    // iterator may count points
+    int npts = feature.size();
+    if (npts >= 0) {
+      sb.setNobs(npts);
+    }
+  }
 
   private void setProfile(ProfileFeatureBean sb) throws IOException {
-     ProfileFeature feature = sb.pfc;
-     setObservations(feature);
+    ProfileFeature feature = sb.pfc;
+    setObservations(feature);
 
-     // iterator may count points
-     int npts = feature.size();
-     if (npts >= 0) {
-       sb.setNobs(npts);
-       stnTable.refresh();
-     }
-   }
+    // iterator may count points
+    int npts = feature.size();
+    if (npts >= 0) {
+      sb.setNobs(npts);
+      stnTable.refresh();
+    }
+  }
 
   private void setTrajectory(TrajectoryFeatureBean sb) throws IOException {
-     TrajectoryFeature feature = sb.pfc;
-     setObservations(feature);
+    TrajectoryFeature feature = sb.pfc;
+    setObservations(feature);
 
-     // iterator may count points
-     int npts = feature.size();
-     if (npts >= 0) {
-       sb.setNobs(npts);
-       stnTable.refresh();
-     }
-   }
+    // iterator may count points
+    int npts = feature.size();
+    if (npts >= 0) {
+      sb.setNobs(npts);
+      stnTable.refresh();
+    }
+  }
 
   private void setSection(SectionFeatureBean sb) throws IOException {
-     SectionFeature feature = sb.pfc;
-     setSectionObservations(feature);
+    SectionFeature feature = sb.pfc;
+    setSectionObservations(feature);
 
-     // iterator may count points
-     int npts = feature.size();
-     if (npts >= 0) {
-       sb.setNobs(npts);
-       stnTable.refresh();
-     }
-   }
+    // iterator may count points
+    int npts = feature.size();
+    if (npts >= 0) {
+      sb.setNobs(npts);
+      stnTable.refresh();
+    }
+  }
 
   private void setStnProfiles(List<PointFeatureCollection> pfcList) throws IOException {
     List<StnProfileFeatureBean> beans = new ArrayList<>();
@@ -690,7 +710,7 @@ public class PointFeatureDatasetViewer extends JPanel {
     obsTable.clear();
   }
 
-   private void setObservationsAll() throws IOException {
+  private void setObservationsAll() throws IOException {
     if (selectedType == FeatureType.POINT) {
       PointFeatureCollection pointCollection = (PointFeatureCollection) selectedCollection;
       setObservations(pointCollection);
@@ -702,7 +722,7 @@ public class PointFeatureDatasetViewer extends JPanel {
       List<PointFeature> obsList = new ArrayList<>();
       int count = 0;
       while (iter.hasNext() && (count++ < maxCount))
-        obsList.add( iter.next());
+        obsList.add(iter.next());
       setObservations(obsList);
 
     } else if (selectedType == FeatureType.STATION_PROFILE) {
@@ -749,7 +769,7 @@ public class PointFeatureDatasetViewer extends JPanel {
     setSectionProfiles(pfcList);
   }
 
-  private void setObservations(List<PointFeature>obsList) throws IOException {
+  private void setObservations(List<PointFeature> obsList) throws IOException {
     if (obsList.size() == 0) {
       obsTable.clear();
       JOptionPane.showMessageDialog(null, "There are no observations for this selection");
@@ -765,7 +785,9 @@ public class PointFeatureDatasetViewer extends JPanel {
     return prefs;
   }
 
-  public class FeatureCollectionBean {
+  /////////////////////////////////////////////////////////////////////////////////////////////////
+
+  static public class FeatureCollectionBean {
     FeatureCollection fc;
 
     public FeatureCollectionBean(FeatureCollection fc) {
@@ -781,44 +803,47 @@ public class PointFeatureDatasetViewer extends JPanel {
     }
   }
 
-  public class StnProfileFeatureBean {
-    ProfileFeature pfc;
-    int npts;
+  static public class FeatureBean {
+    StructureData sdata;
+    String fields;
 
-    public StnProfileFeatureBean(ProfileFeature pfc) {
-      this.pfc = pfc;
-      npts = pfc.size();
+    public FeatureBean() {
     }
 
-    public String getProfileName() {
-      return pfc.getName();
+    FeatureBean(StructureData sdata) throws IOException {
+      this.sdata = sdata;
+      fields = NCdumpW.toString(sdata);
     }
 
-    public void setNobs(int npts) {
-      this.npts = npts;
+    public String getFields() {
+      return fields;
     }
 
-    public int getNobs() {
-      return npts;
+    public String showFields() {
+      ByteArrayOutputStream bos = new ByteArrayOutputStream(10000);
+      try {
+        NCdumpW.printStructureData(new PrintWriter(bos), sdata);
+      } catch (IOException e) {
+        e.printStackTrace(new PrintStream(bos));
+      }
+      return bos.toString();
     }
 
-    public double getLatitude() {
-      return pfc.getLatLon().getLatitude();
-    }
-
-    public double getLongitude() {
-      return pfc.getLatLon().getLongitude();
-    }
   }
 
-  public static class StationBean implements ucar.unidata.geoloc.Station {
+  static public class StationBean extends FeatureBean implements ucar.unidata.geoloc.Station {
     private Station s;
     private int npts = -1;
 
     public StationBean() {
     }
 
-    public StationBean(Station s) {
+    public StationBean(StructureData sdata) throws IOException {
+      super(sdata);
+    }
+
+    public StationBean(Station s) throws IOException {
+      super(((StationFeature) s).getFeatureData());
       this.s = s;
       this.npts = s.getNobs();
     }
@@ -873,205 +898,6 @@ public class PointFeatureDatasetViewer extends JPanel {
       return getName().compareTo(so.getName());
     }
   }
-                                   
-  public static class TrajectoryFeatureBean extends StationBean {
-    int npts;
-    TrajectoryFeature pfc;
-    PointFeature pf;
-
-    public TrajectoryFeatureBean(TrajectoryFeature pfc) {
-      this.pfc = pfc;
-      try {
-        pfc.resetIteration();
-        if (pfc.hasNext()) {
-          pf = pfc.next();    // get first one
-        }
-      } catch (IOException ioe) {
-        log.warn("Trajectory empty ", ioe);
-      }
-      npts = pfc.size();
-    }
-
-        // for BeanTable
-    static public String hiddenProperties() {
-      return "latLon";
-    }
-
-    public void setNobs(int npts) {
-      this.npts = npts;
-    }
-
-    public int getNobs() {
-      return npts;
-    }
-
-    public String getName() {
-      return pfc.getName();
-    }
-
-    public String getDescription() {
-      return null;
-    }
-
-    public String getWmoId() {
-      return null;
-    }
-
-    public double getLatitude() {
-      return pf.getLocation().getLatitude();
-    }
-
-    public double getLongitude() {
-      return  pf.getLocation().getLongitude();
-    }
-
-    public double getAltitude() {
-      return pf.getLocation().getAltitude();
-    }
-
-    public LatLonPoint getLatLon() {
-      return pf.getLocation().getLatLon();
-    }
-
-    public int compareTo(Station so) {
-      return getName().compareTo(so.getName());
-    }
-
-    public boolean isMissing() {
-      return Double.isNaN(getLatitude());
-    }
-  }
-
-  public static class SectionFeatureBean extends StationBean {
-    int npts;
-    SectionFeature pfc;
-    ProfileFeature pf;
-
-    public SectionFeatureBean(SectionFeature pfc) {
-      this.pfc = pfc;
-      try {
-        if (pfc.hasNext()) {
-          pf = pfc.next();                   // get first one
-        }
-      } catch (IOException ioe) {
-        log.warn("Section empty ", ioe);
-      }
-      npts = pfc.size();
-    }
-
-        // for BeanTable
-    static public String hiddenProperties() {
-      return "latLon";
-    }
-
-    public void setNobs(int npts) {
-      this.npts = npts;
-    }
-
-    public int getNobs() {
-      return npts;
-    }
-
-    public String getName() {
-      return pfc.getName();
-    }
-
-    public String getDescription() {
-      return null;
-    }
-
-    public String getWmoId() {
-      return null;
-    }
-
-    public double getLatitude() {
-      return pf.getLatLon().getLatitude();
-    }
-
-    public double getLongitude() {
-      return  pf.getLatLon().getLongitude();
-    }
-
-    public double getAltitude() {
-      return Double.NaN;
-    }
-
-    public LatLonPoint getLatLon() {
-      return pf.getLatLon();
-    }
-
-    public int compareTo(Station so) {
-      return getName().compareTo(so.getName());
-    }
-
-    public boolean isMissing() {
-      return Double.isNaN(getLatitude());
-    }
-  }
-
-  public class ProfileFeatureBean extends StationBean {
-    int npts;
-    ProfileFeature pfc;
-    PointFeature pf;
-
-    public ProfileFeatureBean(ProfileFeature pfc) {
-      this.pfc = pfc;
-      try {
-        pfc.calcBounds();
-        pfc.resetIteration();
-        if (pfc.hasNext())
-          pf = pfc.next();
-      } catch (IOException ioe) {
-        log.warn("Profile empty ", ioe);
-      }
-      pfc.finish();
-      npts = pfc.size();
-    }
-
-    public void setNobs(int npts) {
-      this.npts = npts;
-    }
-
-    public int getNobs() {
-      return npts;
-    }
-
-    public String getName() {
-      return pfc.getName();
-    }
-
-    public String getDescription() {
-      return null;
-    }
-
-    public String getWmoId() {
-      return null;
-    }
-
-    public double getLatitude() {
-      return pf.getLocation().getLatitude();
-    }
-
-    public double getLongitude() {
-      return  pf.getLocation().getLongitude();
-    }
-
-    public double getAltitude() {
-      return pf.getLocation().getAltitude();
-    }
-
-    public LatLonPoint getLatLon() {
-      return pf.getLocation().getLatLon();
-    }
-
-    public boolean isMissing() {
-      return Double.isNaN(getLatitude());
-    }
-
-    public int compareTo(Station so) {
-      return getName().compareTo(so.getName());
-    }
-  }
 
   public static class PointObsBean extends StationBean {  // fake Station, so we can use StationRegionChooser
     private PointFeature pobs;
@@ -1084,6 +910,11 @@ public class PointFeatureDatasetViewer extends JPanel {
       this.pobs = obs;
       this.df = df;
       setTime(obs.getObservationTimeAsDate());
+    }
+
+    // for BeanTable
+    static public String hiddenProperties() {
+      return "latLon description wmoId";
     }
 
     public String getTime() {
@@ -1128,6 +959,248 @@ public class PointFeatureDatasetViewer extends JPanel {
 
     public int compareTo(Station so) {
       return getName().compareTo(so.getName());
+    }
+  }
+
+  public static class TrajectoryFeatureBean extends StationBean {
+    int npts;
+    TrajectoryFeature pfc;
+    PointFeature pf;
+
+    public TrajectoryFeatureBean(TrajectoryFeature pfc) throws IOException {
+      super(pfc.getFeatureData());
+      this.pfc = pfc;
+      try {
+        pfc.resetIteration();
+        if (pfc.hasNext()) {
+          pf = pfc.next();    // get first one
+        }
+      } catch (IOException ioe) {
+        log.warn("Trajectory empty ", ioe);
+      }
+      npts = pfc.size();
+    }
+
+    // for BeanTable
+    static public String hiddenProperties() {
+      return "latLon description wmoId";
+    }
+
+    public void setNobs(int npts) {
+      this.npts = npts;
+    }
+
+    public int getNobs() {
+      return npts;
+    }
+
+    public String getName() {
+      return pfc.getName();
+    }
+
+    public String getDescription() {
+      return null;
+    }
+
+    public String getWmoId() {
+      return null;
+    }
+
+    public double getLatitude() {
+      return pf.getLocation().getLatitude();
+    }
+
+    public double getLongitude() {
+      return pf.getLocation().getLongitude();
+    }
+
+    public double getAltitude() {
+      return pf.getLocation().getAltitude();
+    }
+
+    public LatLonPoint getLatLon() {
+      return pf.getLocation().getLatLon();
+    }
+
+    public int compareTo(Station so) {
+      return getName().compareTo(so.getName());
+    }
+
+    public boolean isMissing() {
+      return Double.isNaN(getLatitude());
+    }
+  }
+
+  static public class ProfileFeatureBean extends StationBean {
+    int npts;
+    ProfileFeature pfc;
+    PointFeature pf;
+
+    public ProfileFeatureBean(ProfileFeature pfc) throws IOException {
+      super(pfc.getFeatureData());
+      this.pfc = pfc;
+      try {
+        pfc.calcBounds();
+        pfc.resetIteration();
+        if (pfc.hasNext())
+          pf = pfc.next();
+      } catch (IOException ioe) {
+        log.warn("Profile empty ", ioe);
+      }
+      pfc.finish();
+      npts = pfc.size();
+    }
+
+    // for BeanTable
+    static public String hiddenProperties() {
+      return "latLon description wmoId";
+    }
+
+    public void setNobs(int npts) {
+      this.npts = npts;
+    }
+
+    public int getNobs() {
+      return npts;
+    }
+
+    public String getName() {
+      return pfc.getName();
+    }
+
+    public String getDescription() {
+      return null;
+    }
+
+    public String getWmoId() {
+      return null;
+    }
+
+    public double getLatitude() {
+      return pf == null ? Double.NaN : pf.getLocation().getLatitude();
+    }
+
+    public double getLongitude() {
+      return pf == null ? Double.NaN : pf.getLocation().getLongitude();
+    }
+
+    public double getAltitude() {
+      return pf == null ? Double.NaN : pf.getLocation().getAltitude();
+    }
+
+    public LatLonPoint getLatLon() {
+      return pf == null ? null : pf.getLocation().getLatLon();
+    }
+
+    public boolean isMissing() {
+      return Double.isNaN(getLatitude());
+    }
+
+    public int compareTo(Station so) {
+      return getName().compareTo(so.getName());
+    }
+  }
+
+  static public class StnProfileFeatureBean extends FeatureBean {
+    ProfileFeature pfc;
+    int npts;
+
+    public StnProfileFeatureBean(ProfileFeature pfc) throws IOException {
+      super(pfc.getFeatureData());
+      this.pfc = pfc;
+      npts = pfc.size();
+    }
+
+    public String getProfileName() {
+      return pfc.getName();
+    }
+
+    public void setNobs(int npts) {
+      this.npts = npts;
+    }
+
+    public int getNobs() {
+      return npts;
+    }
+
+    public double getLatitude() {
+      return pfc.getLatLon().getLatitude();
+    }
+
+    public double getLongitude() {
+      return pfc.getLatLon().getLongitude();
+    }
+
+    public Date getDate() {
+      return pfc.getTime();
+    }
+  }
+
+  public static class SectionFeatureBean extends StationBean {
+    int npts;
+    SectionFeature pfc;
+    ProfileFeature pf;
+
+    public SectionFeatureBean(SectionFeature pfc) throws IOException {
+      super(pfc.getFeatureData());
+      this.pfc = pfc;
+      try {
+        if (pfc.hasNext()) {
+          pf = pfc.next();                   // get first one
+        }
+      } catch (IOException ioe) {
+        log.warn("Section empty ", ioe);
+      }
+      npts = pfc.size();
+    }
+
+    // for BeanTable
+    static public String hiddenProperties() {
+      return "latLon description wmoId";
+    }
+
+    public void setNobs(int npts) {
+      this.npts = npts;
+    }
+
+    public int getNobs() {
+      return npts;
+    }
+
+    public String getName() {
+      return pfc.getName();
+    }
+
+    public String getDescription() {
+      return null;
+    }
+
+    public String getWmoId() {
+      return null;
+    }
+
+    public double getLatitude() {
+      return pf.getLatLon().getLatitude();
+    }
+
+    public double getLongitude() {
+      return pf.getLatLon().getLongitude();
+    }
+
+    public double getAltitude() {
+      return Double.NaN;
+    }
+
+    public LatLonPoint getLatLon() {
+      return pf.getLatLon();
+    }
+
+    public int compareTo(Station so) {
+      return getName().compareTo(so.getName());
+    }
+
+    public boolean isMissing() {
+      return Double.isNaN(getLatitude());
     }
   }
 
