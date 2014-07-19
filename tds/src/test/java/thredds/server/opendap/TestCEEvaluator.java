@@ -53,7 +53,7 @@ import java.util.Enumeration;
 
 public class TestCEEvaluator extends UnitTestCommon
 {
-    static boolean DEBUG = true;
+    static boolean DEBUG = false;
 
     static  boolean generate = false;
 

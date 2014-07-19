@@ -35,7 +35,7 @@ public class D4DataAtomic extends D4DataVariable implements DataAtomic
     // Constructors
 
     public D4DataAtomic(D4DSP dsp, DapAtomicVariable dap, int offset)
-        throws DataException
+            throws DataException
     {
         super(dsp, dap);
         this.dsp = dsp;
@@ -81,19 +81,18 @@ public class D4DataAtomic extends D4DataVariable implements DataAtomic
 
     @Override
     public void
-    read(long start, long count, Object data)
-        throws DataException
+    read(long start, long count, Object data, long offset)
+            throws DataException
     {
-        extractObjectVector(basetype, this.dsp.getData(), start, count, data);
+        extractObjectVector(basetype, this.dsp.getData(), start, count, data, offset);
     }
 
     @Override
     public Object
     read(long index)
-        throws DataException
+            throws DataException
     {
-        setup(index);
-        Object result = extractObject(basetype, this.dsp.getData());
+        Object result = extractObject(basetype, this.dsp.getData(), index);
         return result;
     }
 
@@ -123,12 +122,13 @@ public class D4DataAtomic extends D4DataVariable implements DataAtomic
      *         to Convert.ValueClass.
      */
 
-    static protected Object
-    extractObject(DapType basetype, ByteBuffer dataset)
+    protected Object
+    extractObject(DapType basetype, ByteBuffer dataset, long index)
     {
         Object result = null;
         long lvalue = 0;
         AtomicType atomtype = basetype.getPrimitiveType();
+        setup(index);
         switch (atomtype) {
         case Char:
             lvalue = dataset.get();
@@ -172,7 +172,7 @@ public class D4DataAtomic extends D4DataVariable implements DataAtomic
             break;
         case Enum:
             // recast as enum's basetype
-            result = extractObject(((DapEnum) basetype).getBaseType(), dataset);
+            result = extractObject(((DapEnum) basetype).getBaseType(), dataset, index);
             break;
         }
         return result;
@@ -192,88 +192,99 @@ public class D4DataAtomic extends D4DataVariable implements DataAtomic
 
     protected void
     extractObjectVector(DapType basetype, ByteBuffer dataset,
-                        long start, long count, Object vector)
+                        long start, long count, Object vector, long offset)
     {
+        int ioffset = (int) offset;
         long position = dataset.position();
         AtomicType atomtype = basetype.getPrimitiveType();
-        long elemsize = AtomicType.getSize(atomtype);
-        long localoffset = this.varoffset + (elemsize * start);
+        setup(start);
+        //long elemsize = AtomicType.getSize(atomtype);
+        long elemsize = this.varelementsize;
+        //long localoffset = this.varoffset + (elemsize * start);
         long extent = elemsize * count;
         // If this is a fixed size type, then we can immediately
         // position the buffer
-        if(atomtype.isFixedSize() && !atomtype.isEnumType())
+        /*if(atomtype.isFixedSize() && !atomtype.isEnumType()) {
             dataset.position((int) localoffset);
+        }*/
         switch (atomtype) {
         case Char:
             // need to extract and convert utf8(really ascii) -> utf16
             char[] cresult = (char[]) vector;
-            for(int i = 0;i < count;i++) {
+            for(int i = 0; i < count; i++) {
                 int ascii = dataset.get();
                 ascii = ascii & 0x7F;
-                cresult[i] = (char)ascii;
+                cresult[ioffset + i] = (char) ascii;
             }
             break;
         case UInt8:
         case Int8:
             byte[] byresult = (byte[]) vector;
-            dataset.get(byresult, 0, (int) count);
+            dataset.get(byresult, ioffset, (int) count);
             // in order to maintain the rule at the end of the switch
             // reset the position.
-            dataset.position((int) localoffset);
+            //dataset.position((int) localoffset);
             break;
         case Int16:
         case UInt16:
             short[] shresult = (short[]) vector;
-            dataset.asShortBuffer().get(shresult, 0, (int) count);
+            dataset.asShortBuffer().get(shresult, ioffset, (int) count);
             break;
         case Int32:
         case UInt32:
             int[] iresult = (int[]) vector;
-            dataset.asIntBuffer().get(iresult, 0, (int) count);
+            dataset.asIntBuffer().get(iresult, ioffset, (int) count);
             break;
         case Int64:
         case UInt64:
             long[] lresult = (long[]) vector;
-            dataset.asLongBuffer().get(lresult, 0, (int) count);
+            dataset.asLongBuffer().get(lresult, ioffset, (int) count);
             break;
         case Float32:
             float[] fresult = (float[]) vector;
-            dataset.asFloatBuffer().get(fresult, 0, (int) count);
+            dataset.asFloatBuffer().get(fresult, ioffset, (int) count);
             break;
         case Float64:
             double[] dresult = (double[]) vector;
-            dataset.asDoubleBuffer().get(dresult, 0, (int) count);
+            dataset.asDoubleBuffer().get(dresult, ioffset, (int) count);
             break;
         case String:
         case URL:
             String[] sresult = (String[]) vector;
-            for(int i = 0;i < count;i++) {
-                dataset.position(bytestrings[i]);
+            for(int i = 0; i < count; i++) {
+                dataset.position(bytestrings[(int) start + i]);
                 long scount = dataset.getLong();
                 byte[] bytes = new byte[(int) scount];
                 dataset.get(bytes);
-                sresult[i] = new String(bytes, DapUtil.UTF8);
+                sresult[ioffset + i] = new String(bytes, DapUtil.UTF8);
             }
             break;
         case Opaque:
             ByteBuffer[] oresult = (ByteBuffer[]) vector;
-            for(int i = 0;i < count;i++) {
+            for(int i = 0; i < count; i++) {
+                dataset.position(bytestrings[(int) start + i]);
+                long scount = dataset.getLong();
+                byte[] bytes = new byte[(int) scount];
+                dataset.get(bytes);
+                oresult[ioffset + i] = ByteBuffer.wrap(bytes);
+            }
+            /*for(int i = 0;i < count;i++) {
                 long ocount = dataset.getLong();
                 byte[] bytes = new byte[(int) count];
                 dataset.get(bytes);
-                oresult[i] = ByteBuffer.wrap(bytes);
-            }
+                oresult[ioffset+i] = ByteBuffer.wrap(bytes);
+            } */
             break;
         case Enum:
             // recast as enum's basetype
-            extractObjectVector(((DapEnum) basetype).getBaseType(), dataset, start, count, vector);
+            extractObjectVector(((DapEnum) basetype).getBaseType(), dataset, start, count, vector, offset);
             break;
         }
         // If this is a fixed size type (with exceptions),
         // then we can immediately
         // position the buffer past the read data
-        if(atomtype.isFixedSize() && !atomtype.isEnumType())
-            dataset.position((int) (localoffset + extent));
+        //if(atomtype.isFixedSize() && !atomtype.isEnumType())
+        //    dataset.position((int) (localoffset + extent));
     }
 
 }

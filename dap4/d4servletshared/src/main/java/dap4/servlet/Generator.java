@@ -211,12 +211,12 @@ public class Generator extends DapSerializer
         DapType basetype = dapvar.getBaseType();
         Odometer odom = null;
         if(dapvar.getRank() == 0) {//scalar
-            odom = Odometer.getScalarOdometer();
+            odom = new ScalarOdometer();
         } else {// dimensioned
             // get the slices from the constraint
             List<Slice> slices = ce.getConstrainedSlices(dapvar);
             // Create an odometer from the slices
-            odom = new Odometer(slices, dapvar.getDimensions());
+            odom = Odometer.factory(slices, dapvar.getDimensions(),false);
         }
         while(odom.hasNext()) {
             Object value = values.nextValue(basetype);
@@ -240,10 +240,10 @@ public class Generator extends DapSerializer
         List<DapVariable> fields = struct.getFields();
         Odometer odom = null;
         if(struct.getRank() == 0) {//scalar
-            odom = Odometer.getScalarOdometer();
+            odom = new ScalarOdometer();
         } else {// dimensioned
             List<Slice> slices = ce.getConstrainedSlices(struct);
-            odom = new Odometer(slices, struct.getDimensions());
+            odom = Odometer.factory(slices, struct.getDimensions(),false);
         }
         while(odom.hasNext()) {
             // generate a value for each field recursively
@@ -262,10 +262,10 @@ public class Generator extends DapSerializer
         List<DapVariable> fields = seq.getFields();
         Odometer odom = null;
         if(seq.getRank() == 0) {//scalar
-            odom = Odometer.getScalarOdometer();
+            odom = new ScalarOdometer();
         } else {// dimensioned
             List<Slice> slices = ce.getConstrainedSlices(seq);
-            odom = new Odometer(slices, seq.getDimensions());
+            odom = Odometer.factory(slices, seq.getDimensions(), false);
         }
         try {
             while(odom.hasNext()) {

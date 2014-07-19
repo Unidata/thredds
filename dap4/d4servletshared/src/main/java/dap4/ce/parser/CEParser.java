@@ -122,7 +122,33 @@ public class CEParser extends CEParserBody
 
     @Override
     Slice
-    slice(int state, String sfirst, String send, String sstride)
+    slice(CEAST.SliceList subslices)
+            throws ParseException
+    {
+        Slice slice = null;
+        if(subslices != null) {
+            switch (subslices.size()) {
+            case 0:
+                break;
+            case 1:
+                slice = subslices.get(0); // no need for a multislice
+                break;
+            default:
+                List<Slice> list = new ArrayList(subslices);
+                try {
+                    slice = new MultiSlice(list);
+                } catch (DapException de) {
+                    throw new ParseException(de);
+                }
+                break;
+            }
+        }
+        return slice;
+    }
+
+    @Override
+    Slice
+    subslice(int state, String sfirst, String send, String sstride)
             throws ParseException
     {
         long first = 0;
@@ -147,7 +173,7 @@ public class CEParser extends CEParserBody
         try {
             // Fill in where possible
             switch (state) {
-            case 0: // [] [*]
+            case 0: // []
                 x.setConstrained(false);
                 break;
             case 1: // [i]
@@ -157,8 +183,8 @@ public class CEParser extends CEParserBody
                 x.setIndices(x.getFirst(), x.getLast(), 1);
                 break;
             case 3: // [f:s:l]
-            case 4: // [f:] [f:*]
-            case 5: // [f:s:] [f:s:*]
+            case 4: // [f:]
+            case 5: // [f:s:]
                 break;
             default:
                 assert false : "Illegal slice case";
@@ -188,9 +214,8 @@ public class CEParser extends CEParserBody
             throw new ParseException("Attempt to redefine a non-existent shared dimension: " + name);
         // Verify that the slice is consistent with the shared dimension
         try {
-            if(slice.incomplete())
-                slice.complete(dim);
-            slice.validate();
+            slice.setMaxSize(dim.getSize());
+            slice.finish();
         } catch (DapException de) {
             throw new ParseException(de);
         }
@@ -274,10 +299,10 @@ public class CEParser extends CEParserBody
     fieldname(String value)
             throws ParseException
     {
-	CEAST seg = new CEAST(CEAST.Sort.SEGMENT);
-	seg.name = value;
-	seg.isleaf = true;
-	return seg;	
+        CEAST seg = new CEAST(CEAST.Sort.SEGMENT);
+        seg.name = value;
+        seg.isleaf = true;
+        return seg;
     }
 
     @Override
@@ -339,5 +364,6 @@ public class CEParser extends CEParserBody
         if(slice != null) list.add(slice);
         return list;
     }
+
 
 }

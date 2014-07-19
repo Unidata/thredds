@@ -33,11 +33,12 @@ public interface DataAtomic extends DataVariable
      *  For opaque data, the result is ByteBuffer[].
      *
      *  @param start the first value to read
-     *  @param count the number of values to read; |data| must >= count
+     *  @param count the number of values to read; |data| must >= (offset+count)
      *  @param data the array into which the values are returned
+     *  @param offset the offset into data into which to read
      */
 
-    public void read(long start, long count, Object data) throws DataException;
+    public void read(long start, long count, Object data, long offset) throws DataException;
 
     /**
      *  Provide a read of a single value at a given offset in a (possibly dimensioned)

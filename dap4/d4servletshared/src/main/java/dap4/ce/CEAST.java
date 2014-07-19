@@ -8,6 +8,7 @@ import dap4.core.util.Slice;
 
 import java.util.ArrayList;
 import java.util.EnumSet;
+import java.util.List;
 import java.util.Map;
 
 public class CEAST
@@ -112,7 +113,7 @@ public class CEAST
     // case SEGMENT; actually a node in a segment tree, so may have subnodes
     public String name = null;
     public boolean isleaf = true;
-    public SliceList slices = null;
+    public List<Slice> slices = null;
     public NodeList subnodes = null;
 
     // case SELECTION

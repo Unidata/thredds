@@ -72,15 +72,16 @@ public class D4DataCompoundArray extends D4DataVariable implements DataCompoundA
     {
         Odometer odom;
         try {
-            odom = new Odometer(slices, ((DapVariable) this.getTemplate()).getDimensions());
+            odom = Odometer.factory(slices,
+                    ((DapVariable) this.getTemplate()).getDimensions(),
+                    false);
         } catch (DapException de) {
             throw new DataException(de);
         }
         assert (odom.index() <= data.length);
         for(int i = 0;odom.hasNext();i++) {
-            long offset = odom.index();
+            long offset = odom.next();
             data[i] = read(offset);
-            odom.next();
         }
     }
 

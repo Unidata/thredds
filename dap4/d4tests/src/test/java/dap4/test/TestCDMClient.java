@@ -18,7 +18,7 @@ import java.util.List;
  */
 public class TestCDMClient extends DapTestCommon
 {
-    static final boolean DEBUG = true;
+    static final boolean DEBUG = false;
 
     static final String EXTENSION = "ncdump";
 

@@ -339,301 +339,301 @@ abstract class CEParserBody
       {
           case 2:
   if (yyn == 2)
-    /* "ce.y":102  */ /* lalr1.java:489  */
+    /* "ce.y":103  */ /* lalr1.java:489  */
     {yyval=constraint(((CEAST.NodeList)(yystack.valueAt (2-(2)))));};
   break;
     
 
   case 5:
   if (yyn == 5)
-    /* "ce.y":112  */ /* lalr1.java:489  */
+    /* "ce.y":113  */ /* lalr1.java:489  */
     {yyval=nodelist(null,((CEAST)(yystack.valueAt (1-(1)))));};
   break;
     
 
   case 6:
   if (yyn == 6)
-    /* "ce.y":114  */ /* lalr1.java:489  */
+    /* "ce.y":115  */ /* lalr1.java:489  */
     {yyval=nodelist(((CEAST.NodeList)(yystack.valueAt (3-(1)))),((CEAST)(yystack.valueAt (3-(3)))));};
   break;
     
 
   case 9:
   if (yyn == 9)
-    /* "ce.y":132  */ /* lalr1.java:489  */
+    /* "ce.y":133  */ /* lalr1.java:489  */
     {yyval=projection(((CEAST)(yystack.valueAt (1-(1)))));};
   break;
     
 
   case 10:
   if (yyn == 10)
-    /* "ce.y":137  */ /* lalr1.java:489  */
+    /* "ce.y":138  */ /* lalr1.java:489  */
     {yyval=segmenttree(null,((CEAST)(yystack.valueAt (1-(1)))));};
   break;
     
 
   case 11:
   if (yyn == 11)
-    /* "ce.y":139  */ /* lalr1.java:489  */
+    /* "ce.y":140  */ /* lalr1.java:489  */
     {yyval=segmenttree(((CEAST)(yystack.valueAt (3-(1)))),((CEAST)(yystack.valueAt (3-(3)))));};
   break;
     
 
   case 12:
   if (yyn == 12)
-    /* "ce.y":141  */ /* lalr1.java:489  */
+    /* "ce.y":142  */ /* lalr1.java:489  */
     {yyval=segmenttree(((CEAST)(yystack.valueAt (5-(1)))),((CEAST.NodeList)(yystack.valueAt (5-(4)))));};
   break;
     
 
   case 13:
   if (yyn == 13)
-    /* "ce.y":143  */ /* lalr1.java:489  */
+    /* "ce.y":144  */ /* lalr1.java:489  */
     {yyval=segmenttree(((CEAST)(yystack.valueAt (4-(1)))),((CEAST.NodeList)(yystack.valueAt (4-(3)))));};
   break;
     
 
   case 14:
   if (yyn == 14)
-    /* "ce.y":148  */ /* lalr1.java:489  */
+    /* "ce.y":149  */ /* lalr1.java:489  */
     {yyval=nodelist(null,((CEAST)(yystack.valueAt (1-(1)))));};
   break;
     
 
   case 15:
   if (yyn == 15)
-    /* "ce.y":150  */ /* lalr1.java:489  */
+    /* "ce.y":151  */ /* lalr1.java:489  */
     {yyval=nodelist(((CEAST.NodeList)(yystack.valueAt (3-(1)))),((CEAST)(yystack.valueAt (3-(3)))));};
   break;
     
 
   case 16:
   if (yyn == 16)
-    /* "ce.y":155  */ /* lalr1.java:489  */
+    /* "ce.y":156  */ /* lalr1.java:489  */
     {yyval=segment(((String)(yystack.valueAt (1-(1)))),null);};
   break;
     
 
   case 17:
   if (yyn == 17)
-    /* "ce.y":157  */ /* lalr1.java:489  */
+    /* "ce.y":158  */ /* lalr1.java:489  */
     {yyval=segment(((String)(yystack.valueAt (2-(1)))),((CEAST.SliceList)(yystack.valueAt (2-(2)))));};
   break;
     
 
   case 18:
   if (yyn == 18)
-    /* "ce.y":162  */ /* lalr1.java:489  */
+    /* "ce.y":163  */ /* lalr1.java:489  */
     {yyval=slicelist(null,((Slice)(yystack.valueAt (1-(1)))));};
   break;
     
 
   case 19:
   if (yyn == 19)
-    /* "ce.y":164  */ /* lalr1.java:489  */
+    /* "ce.y":165  */ /* lalr1.java:489  */
     {yyval=slicelist(((CEAST.SliceList)(yystack.valueAt (2-(1)))),((Slice)(yystack.valueAt (2-(2)))));};
   break;
     
 
   case 20:
   if (yyn == 20)
-    /* "ce.y":169  */ /* lalr1.java:489  */
-    {yyval=slice(0,null,null,null);};
+    /* "ce.y":170  */ /* lalr1.java:489  */
+    {yyval=slice(null);};
   break;
     
 
   case 21:
   if (yyn == 21)
-    /* "ce.y":171  */ /* lalr1.java:489  */
-    {yyval=slice(0,null,null,null);};
+    /* "ce.y":172  */ /* lalr1.java:489  */
+    {yyval=slice(((CEAST.SliceList)(yystack.valueAt (3-(2)))));};
   break;
     
 
   case 22:
   if (yyn == 22)
-    /* "ce.y":173  */ /* lalr1.java:489  */
-    {yyval=slice(1,((String)(yystack.valueAt (3-(2)))),null,null);};
+    /* "ce.y":177  */ /* lalr1.java:489  */
+    {yyval=slicelist(null,((Slice)(yystack.valueAt (1-(1)))));};
   break;
     
 
   case 23:
   if (yyn == 23)
-    /* "ce.y":175  */ /* lalr1.java:489  */
-    {yyval=slice(2,((String)(yystack.valueAt (5-(2)))),((String)(yystack.valueAt (5-(4)))),null);};
+    /* "ce.y":179  */ /* lalr1.java:489  */
+    {yyval=slicelist(((CEAST.SliceList)(yystack.valueAt (3-(1)))),((Slice)(yystack.valueAt (3-(3)))));};
   break;
     
 
   case 24:
   if (yyn == 24)
-    /* "ce.y":177  */ /* lalr1.java:489  */
-    {yyval=slice(3,((String)(yystack.valueAt (7-(2)))),((String)(yystack.valueAt (7-(6)))),((String)(yystack.valueAt (7-(4)))));};
+    /* "ce.y":184  */ /* lalr1.java:489  */
+    {yyval=subslice(1,((String)(yystack.valueAt (1-(1)))),null,null);};
   break;
     
 
   case 25:
   if (yyn == 25)
-    /* "ce.y":179  */ /* lalr1.java:489  */
-    {yyval=slice(4,((String)(yystack.valueAt (4-(2)))),null,null);};
+    /* "ce.y":186  */ /* lalr1.java:489  */
+    {yyval=subslice(2,((String)(yystack.valueAt (3-(1)))),((String)(yystack.valueAt (3-(3)))),null);};
   break;
     
 
   case 26:
   if (yyn == 26)
-    /* "ce.y":181  */ /* lalr1.java:489  */
-    {yyval=slice(4,((String)(yystack.valueAt (5-(2)))),null,null);};
+    /* "ce.y":188  */ /* lalr1.java:489  */
+    {yyval=subslice(3,((String)(yystack.valueAt (5-(1)))),((String)(yystack.valueAt (5-(5)))),((String)(yystack.valueAt (5-(3)))));};
   break;
     
 
   case 27:
   if (yyn == 27)
-    /* "ce.y":183  */ /* lalr1.java:489  */
-    {yyval=slice(5,((String)(yystack.valueAt (6-(2)))),null,((String)(yystack.valueAt (6-(4)))));};
+    /* "ce.y":190  */ /* lalr1.java:489  */
+    {yyval=subslice(4,((String)(yystack.valueAt (2-(1)))),null,null);};
   break;
     
 
   case 28:
   if (yyn == 28)
-    /* "ce.y":185  */ /* lalr1.java:489  */
-    {yyval=slice(5,((String)(yystack.valueAt (7-(2)))),null,((String)(yystack.valueAt (7-(4)))));};
+    /* "ce.y":192  */ /* lalr1.java:489  */
+    {yyval=subslice(5,((String)(yystack.valueAt (4-(1)))),null,((String)(yystack.valueAt (4-(3)))));};
   break;
     
 
   case 30:
   if (yyn == 30)
-    /* "ce.y":196  */ /* lalr1.java:489  */
+    /* "ce.y":203  */ /* lalr1.java:489  */
     {yyval=selection(((CEAST)(yystack.valueAt (3-(1)))),((CEAST)(yystack.valueAt (3-(3)))));};
   break;
     
 
   case 32:
   if (yyn == 32)
-    /* "ce.y":202  */ /* lalr1.java:489  */
+    /* "ce.y":209  */ /* lalr1.java:489  */
     {yyval=logicalAnd(((CEAST)(yystack.valueAt (3-(1)))),((CEAST)(yystack.valueAt (3-(3)))));};
   break;
     
 
   case 33:
   if (yyn == 33)
-    /* "ce.y":204  */ /* lalr1.java:489  */
+    /* "ce.y":211  */ /* lalr1.java:489  */
     {yyval=logicalNot(((CEAST)(yystack.valueAt (2-(2)))));};
   break;
     
 
   case 34:
   if (yyn == 34)
-    /* "ce.y":209  */ /* lalr1.java:489  */
+    /* "ce.y":216  */ /* lalr1.java:489  */
     {yyval=predicate(((CEAST.Operator)(yystack.valueAt (3-(2)))),((CEAST)(yystack.valueAt (3-(1)))),((CEAST)(yystack.valueAt (3-(3)))));};
   break;
     
 
   case 35:
   if (yyn == 35)
-    /* "ce.y":211  */ /* lalr1.java:489  */
+    /* "ce.y":218  */ /* lalr1.java:489  */
     {yyval=predicaterange(((CEAST.Operator)(yystack.valueAt (5-(2)))),((CEAST.Operator)(yystack.valueAt (5-(4)))),((CEAST)(yystack.valueAt (5-(1)))),((CEAST)(yystack.valueAt (5-(3)))),((CEAST)(yystack.valueAt (5-(5)))));};
   break;
     
 
   case 36:
   if (yyn == 36)
-    /* "ce.y":213  */ /* lalr1.java:489  */
+    /* "ce.y":220  */ /* lalr1.java:489  */
     {yyval=predicate(((CEAST.Operator)(yystack.valueAt (3-(2)))),((CEAST)(yystack.valueAt (3-(1)))),((CEAST)(yystack.valueAt (3-(3)))));};
   break;
     
 
   case 37:
   if (yyn == 37)
-    /* "ce.y":217  */ /* lalr1.java:489  */
+    /* "ce.y":224  */ /* lalr1.java:489  */
     {yyval=CEAST.Operator.LE;};
   break;
     
 
   case 38:
   if (yyn == 38)
-    /* "ce.y":218  */ /* lalr1.java:489  */
+    /* "ce.y":225  */ /* lalr1.java:489  */
     {yyval=CEAST.Operator.GE;};
   break;
     
 
   case 39:
   if (yyn == 39)
-    /* "ce.y":219  */ /* lalr1.java:489  */
+    /* "ce.y":226  */ /* lalr1.java:489  */
     {yyval=CEAST.Operator.LT;};
   break;
     
 
   case 40:
   if (yyn == 40)
-    /* "ce.y":220  */ /* lalr1.java:489  */
+    /* "ce.y":227  */ /* lalr1.java:489  */
     {yyval=CEAST.Operator.GT;};
   break;
     
 
   case 41:
   if (yyn == 41)
-    /* "ce.y":224  */ /* lalr1.java:489  */
+    /* "ce.y":231  */ /* lalr1.java:489  */
     {yyval=CEAST.Operator.EQ;};
   break;
     
 
   case 42:
   if (yyn == 42)
-    /* "ce.y":225  */ /* lalr1.java:489  */
+    /* "ce.y":232  */ /* lalr1.java:489  */
     {yyval=CEAST.Operator.NEQ;};
   break;
     
 
   case 43:
   if (yyn == 43)
-    /* "ce.y":226  */ /* lalr1.java:489  */
+    /* "ce.y":233  */ /* lalr1.java:489  */
     {yyval=CEAST.Operator.REQ;};
   break;
     
 
   case 46:
   if (yyn == 46)
-    /* "ce.y":232  */ /* lalr1.java:489  */
+    /* "ce.y":239  */ /* lalr1.java:489  */
     {yyval=((CEAST)(yystack.valueAt (3-(2))));};
   break;
     
 
   case 47:
   if (yyn == 47)
-    /* "ce.y":238  */ /* lalr1.java:489  */
+    /* "ce.y":245  */ /* lalr1.java:489  */
     {yyval=null; dimredef(((String)(yystack.valueAt (3-(1)))),((Slice)(yystack.valueAt (3-(3)))));};
   break;
     
 
   case 48:
   if (yyn == 48)
-    /* "ce.y":242  */ /* lalr1.java:489  */
+    /* "ce.y":249  */ /* lalr1.java:489  */
     {yyval=fieldname(((String)(yystack.valueAt (1-(1)))));};
   break;
     
 
   case 49:
   if (yyn == 49)
-    /* "ce.y":246  */ /* lalr1.java:489  */
+    /* "ce.y":253  */ /* lalr1.java:489  */
     {yyval=constant(CEAST.Constant.STRING,((String)(yystack.valueAt (1-(1)))));};
   break;
     
 
   case 50:
   if (yyn == 50)
-    /* "ce.y":247  */ /* lalr1.java:489  */
+    /* "ce.y":254  */ /* lalr1.java:489  */
     {yyval=constant(CEAST.Constant.LONG,((String)(yystack.valueAt (1-(1)))));};
   break;
     
 
   case 51:
   if (yyn == 51)
-    /* "ce.y":248  */ /* lalr1.java:489  */
+    /* "ce.y":255  */ /* lalr1.java:489  */
     {yyval=constant(CEAST.Constant.DOUBLE,((String)(yystack.valueAt (1-(1)))));};
   break;
     
 
   case 52:
   if (yyn == 52)
-    /* "ce.y":249  */ /* lalr1.java:489  */
+    /* "ce.y":256  */ /* lalr1.java:489  */
     {yyval=constant(CEAST.Constant.BOOLEAN,((String)(yystack.valueAt (1-(1)))));};
   break;
     
@@ -1048,7 +1048,7 @@ abstract class CEParserBody
     return yyvalue == yytable_ninf_;
   }
 
-  private static final byte yypact_ninf_ = -52;
+  private static final byte yypact_ninf_ = -47;
   private static final byte yytable_ninf_ = -1;
 
   /* YYPACT[STATE-NUM] -- Index in YYTABLE of the portion describing
@@ -1058,15 +1058,14 @@ abstract class CEParserBody
   {
     return new byte[]
     {
-     -52,     1,    39,   -52,     6,    31,    34,   -52,   -52,    27,
-     -52,   -52,    13,     6,   -52,    26,   -52,    47,    14,    47,
-       0,   -52,   -52,    51,    42,   -52,     6,   -52,    47,   -52,
-      53,    35,   -52,   -52,   -52,   -52,   -52,     9,     9,   -52,
-      54,    33,   -52,   -52,   -52,   -52,    20,   -52,    38,    47,
-     -52,   -52,    44,     9,    46,    49,    50,    52,    55,     9,
-       9,   -52,    57,    43,   -52,    53,   -52,   -52,   -52,   -52,
-     -52,   -52,   -52,    41,   -52,   -52,   -52,    25,     9,   -52,
-      59,    60,   -52,   -52,   -52
+     -47,    40,    18,   -47,    -5,    23,    17,   -47,   -47,    26,
+     -47,   -47,    15,    -5,   -47,    35,   -47,    50,    21,    50,
+      -1,   -47,   -47,    27,   -47,    41,   -47,    -5,   -47,    50,
+     -47,    34,    28,   -47,   -47,   -47,   -47,   -47,     9,     9,
+     -47,    48,    29,   -47,   -47,    53,   -47,    53,   -47,    31,
+      50,   -47,   -47,    36,     9,    39,    42,    43,    44,    45,
+       9,     9,   -47,    51,   -47,    34,   -47,   -47,   -47,   -47,
+     -47,   -47,   -47,    33,   -47,    53,     9,   -47,   -47
     };
   }
 
@@ -1080,13 +1079,12 @@ abstract class CEParserBody
     {
        3,     0,     0,     1,    16,     0,     2,     5,     7,     9,
       10,     8,     0,    17,    18,     0,     4,     0,     0,     0,
-       0,    29,    20,     0,     0,    19,     0,     6,     0,    11,
-      14,     0,    48,    49,    50,    51,    52,     0,     0,    30,
-      31,     0,    44,    45,    21,    22,     0,    47,     0,     0,
-      13,    33,     0,     0,     0,    39,     0,    40,     0,     0,
-       0,    25,     0,     0,    12,    15,    46,    32,    42,    37,
-      41,    38,    43,    34,    36,    26,    23,     0,     0,    27,
-       0,     0,    35,    28,    24
+       0,    29,    20,     0,    22,    24,    19,     0,     6,     0,
+      11,    14,     0,    48,    49,    50,    51,    52,     0,     0,
+      30,    31,     0,    44,    45,     0,    21,    27,    47,     0,
+       0,    13,    33,     0,     0,     0,    39,     0,    40,     0,
+       0,     0,    23,    25,    12,    15,    46,    32,    42,    37,
+      41,    38,    43,    34,    36,    28,     0,    26,    35
     };
   }
 
@@ -1096,9 +1094,9 @@ abstract class CEParserBody
   {
     return new byte[]
     {
-     -52,   -52,   -52,   -52,    61,   -52,   -17,    40,    62,   -52,
-      -3,   -46,   -52,   -52,   -16,     4,   -52,   -51,   -52,   -52,
-     -52
+     -47,   -47,   -47,   -47,    49,   -47,   -19,    32,    52,   -47,
+      -2,   -47,    24,   -46,   -47,   -47,   -31,     0,   -47,   -42,
+     -47,   -47,   -47
     };
   }
 
@@ -1108,9 +1106,9 @@ abstract class CEParserBody
   {
     return new byte[]
     {
-      -1,     1,     2,     6,     7,     8,     9,    31,    10,    13,
-      14,    24,    11,    39,    40,    59,    60,    41,    16,    42,
-      43
+      -1,     1,     2,     6,     7,     8,     9,    32,    10,    13,
+      14,    23,    24,    25,    11,    40,    41,    60,    61,    42,
+      16,    43,    44
     };
   }
 
@@ -1122,15 +1120,14 @@ abstract class CEParserBody
   {
     return new byte[]
     {
-      63,     3,    30,    32,    33,    34,    35,    36,    73,    74,
-      25,    30,    32,    33,    34,    35,    36,     4,    21,    37,
-      12,    51,    52,    47,    38,    21,    28,    82,    22,    23,
-      21,    81,    65,    38,    15,    61,    62,    67,    18,    19,
-      79,    80,     4,    49,    17,    20,    49,    26,    50,     5,
-       4,    64,    54,    55,    56,    57,    58,    45,    76,    46,
-      77,    55,    53,    57,    18,    19,    44,    68,    48,    66,
-      69,    70,    75,    71,    83,    84,    72,    78,    27,     0,
-      29
+      31,    63,    33,    34,    35,    36,    37,    52,    53,    12,
+      31,    26,    33,    34,    35,    36,    37,    38,    73,    74,
+      21,     4,    39,    67,     4,    48,    15,    17,     5,    77,
+      22,    65,    39,    29,    78,    45,    50,    18,    19,    50,
+       3,    51,    46,    20,    64,    18,    19,    55,    56,    57,
+      58,    59,    56,     4,    58,    27,    54,    47,    21,    68,
+      66,    49,    69,    70,    71,    72,    28,    75,     0,    62,
+      30,     0,     0,    76
     };
   }
 
@@ -1139,15 +1136,14 @@ private static final byte yycheck_[] = yycheck_init();
   {
     return new byte[]
     {
-      46,     0,    19,     3,     4,     5,     6,     7,    59,    60,
-      13,    28,     3,     4,     5,     6,     7,     3,     5,    19,
-      14,    37,    38,    26,    24,     5,    12,    78,    15,    16,
-       5,    77,    49,    24,     3,    15,    16,    53,    11,    12,
-      15,    16,     3,     8,    10,    18,     8,    21,    13,    10,
-       3,    13,    19,    20,    21,    22,    23,    15,    15,    17,
-      17,    20,     8,    22,    11,    12,    15,    21,    28,    25,
-      21,    21,    15,    21,    15,    15,    21,    73,    17,    -1,
-      18
+      19,    47,     3,     4,     5,     6,     7,    38,    39,    14,
+      29,    13,     3,     4,     5,     6,     7,    18,    60,    61,
+       5,     3,    23,    54,     3,    27,     3,    10,    10,    75,
+      15,    50,    23,    12,    76,     8,     8,    11,    12,     8,
+       0,    13,    15,    17,    13,    11,    12,    18,    19,    20,
+      21,    22,    19,     3,    21,    20,     8,    16,     5,    20,
+      24,    29,    20,    20,    20,    20,    17,    16,    -1,    45,
+      18,    -1,    -1,    73
     };
   }
 
@@ -1158,15 +1154,14 @@ private static final byte yycheck_[] = yycheck_init();
   {
     return new byte[]
     {
-       0,    27,    28,     0,     3,    10,    29,    30,    31,    32,
-      34,    38,    14,    35,    36,     3,    44,    10,    11,    12,
-      18,     5,    15,    16,    37,    36,    21,    30,    12,    34,
-      32,    33,     3,     4,     5,     6,     7,    19,    24,    39,
-      40,    43,    45,    46,    15,    15,    17,    36,    33,     8,
-      13,    40,    40,     8,    19,    20,    21,    22,    23,    41,
-      42,    15,    16,    37,    13,    32,    25,    40,    21,    21,
-      21,    21,    21,    43,    43,    15,    15,    17,    41,    15,
-      16,    37,    43,    15,    15
+       0,    26,    27,     0,     3,    10,    28,    29,    30,    31,
+      33,    39,    14,    34,    35,     3,    45,    10,    11,    12,
+      17,     5,    15,    36,    37,    38,    35,    20,    29,    12,
+      33,    31,    32,     3,     4,     5,     6,     7,    18,    23,
+      40,    41,    44,    46,    47,     8,    15,    16,    35,    32,
+       8,    13,    41,    41,     8,    18,    19,    20,    21,    22,
+      42,    43,    37,    38,    13,    31,    24,    41,    20,    20,
+      20,    20,    20,    44,    44,    16,    42,    38,    44
     };
   }
 
@@ -1176,12 +1171,12 @@ private static final byte yycheck_[] = yycheck_init();
   {
     return new byte[]
     {
-       0,    26,    27,    28,    28,    29,    29,    30,    30,    31,
-      32,    32,    32,    32,    33,    33,    34,    34,    35,    35,
-      36,    36,    36,    36,    36,    36,    36,    36,    36,    37,
-      38,    39,    39,    39,    40,    40,    40,    41,    41,    41,
-      41,    42,    42,    42,    43,    43,    43,    44,    45,    46,
-      46,    46,    46
+       0,    25,    26,    27,    27,    28,    28,    29,    29,    30,
+      31,    31,    31,    31,    32,    32,    33,    33,    34,    34,
+      35,    35,    36,    36,    37,    37,    37,    37,    37,    38,
+      39,    40,    40,    40,    41,    41,    41,    42,    42,    42,
+      42,    43,    43,    43,    44,    44,    44,    45,    46,    47,
+      47,    47,    47
     };
   }
 
@@ -1193,7 +1188,7 @@ private static final byte yycheck_[] = yycheck_init();
     {
        0,     2,     2,     0,     3,     1,     3,     1,     1,     1,
        1,     3,     5,     4,     1,     3,     1,     2,     1,     2,
-       2,     3,     3,     5,     7,     4,     5,     6,     7,     1,
+       2,     3,     1,     3,     1,     3,     5,     2,     4,     1,
        3,     1,     3,     2,     3,     5,     3,     2,     2,     1,
        1,     2,     2,     2,     1,     1,     3,     3,     1,     1,
        1,     1,     1
@@ -1208,8 +1203,8 @@ private static final byte yycheck_[] = yycheck_init();
     return new short[]
     {
        0,   256,   257,   258,   259,   260,   261,   262,    44,   263,
-      59,    46,   123,   125,    91,    93,    42,    58,   124,    33,
-      60,    61,    62,   126,    40,    41
+      59,    46,   123,   125,    91,    93,    58,   124,    33,    60,
+      61,    62,   126,    40,    41
     };
   }
 
@@ -1221,12 +1216,12 @@ private static final byte yycheck_[] = yycheck_init();
     return new String[]
     {
   "$end", "error", "$undefined", "NAME", "STRING", "LONG", "DOUBLE",
-  "BOOLEAN", "','", "NOT", "';'", "'.'", "'{'", "'}'", "'['", "']'", "'*'",
-  "':'", "'|'", "'!'", "'<'", "'='", "'>'", "'~'", "'('", "')'", "$accept",
+  "BOOLEAN", "','", "NOT", "';'", "'.'", "'{'", "'}'", "'['", "']'", "':'",
+  "'|'", "'!'", "'<'", "'='", "'>'", "'~'", "'('", "')'", "$accept",
   "constraint", "dimredeflist", "clauselist", "clause", "projection",
-  "segmenttree", "segmentforest", "segment", "slicelist", "slice", "index",
-  "selection", "filter", "predicate", "relop", "eqop", "primary",
-  "dimredef", "fieldname", "constant", null
+  "segmenttree", "segmentforest", "segment", "slicelist", "slice",
+  "subslicelist", "subslice", "index", "selection", "filter", "predicate",
+  "relop", "eqop", "primary", "dimredef", "fieldname", "constant", null
     };
   }
 
@@ -1236,12 +1231,12 @@ private static final byte yycheck_[] = yycheck_init();
   {
     return new short[]
     {
-       0,   100,   100,   105,   107,   111,   113,   118,   119,   131,
-     136,   138,   140,   142,   147,   149,   154,   156,   161,   163,
-     168,   170,   172,   174,   176,   178,   180,   182,   184,   188,
-     195,   200,   201,   203,   208,   210,   212,   217,   218,   219,
-     220,   224,   225,   226,   230,   231,   232,   237,   242,   246,
-     247,   248,   249
+       0,   101,   101,   106,   108,   112,   114,   119,   120,   132,
+     137,   139,   141,   143,   148,   150,   155,   157,   162,   164,
+     169,   171,   176,   178,   183,   185,   187,   189,   191,   195,
+     202,   207,   208,   210,   215,   217,   219,   224,   225,   226,
+     227,   231,   232,   233,   237,   238,   239,   244,   249,   253,
+     254,   255,   256
     };
   }
 
@@ -1274,16 +1269,16 @@ private static final byte yycheck_[] = yycheck_init();
        0,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
-       2,     2,     2,    19,     2,     2,     2,     2,     2,     2,
-      24,    25,    16,     2,     8,     2,    11,     2,     2,     2,
-       2,     2,     2,     2,     2,     2,     2,     2,    17,    10,
-      20,    21,    22,     2,     2,     2,     2,     2,     2,     2,
+       2,     2,     2,    18,     2,     2,     2,     2,     2,     2,
+      23,    24,     2,     2,     8,     2,    11,     2,     2,     2,
+       2,     2,     2,     2,     2,     2,     2,     2,    16,    10,
+      19,    20,    21,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,    14,     2,    15,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
-       2,     2,     2,    12,    18,    13,    23,     2,     2,     2,
+       2,     2,     2,    12,    17,    13,    22,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
@@ -1309,13 +1304,13 @@ private static final byte yycheck_[] = yycheck_init();
       return yyundef_token_;
   }
 
-  private static final int yylast_ = 80;
-  private static final int yynnts_ = 21;
+  private static final int yylast_ = 73;
+  private static final int yynnts_ = 23;
   private static final int yyempty_ = -2;
   private static final int yyfinal_ = 3;
   private static final int yyterror_ = 1;
   private static final int yyerrcode_ = 256;
-  private static final int yyntokens_ = 26;
+  private static final int yyntokens_ = 25;
 
   private static final int yyuser_token_number_max_ = 263;
   private static final int yyundef_token_ = 2;
@@ -1334,7 +1329,8 @@ private static final byte yycheck_[] = yycheck_init();
 abstract CEAST constraint(CEAST.NodeList clauses) throws ParseException;
 abstract CEAST projection(CEAST segmenttree) throws ParseException;
 abstract CEAST segment(String name, CEAST.SliceList slices) throws ParseException;
-abstract Slice slice(int state, String sfirst, String send, String sstride) throws ParseException;
+abstract Slice slice(CEAST.SliceList subslices) throws ParseException;
+abstract Slice subslice(int state, String sfirst, String send, String sstride) throws ParseException;
 abstract void dimredef(String name, Slice slice) throws ParseException;
 abstract CEAST selection(CEAST projection, CEAST filter) throws ParseException;
 abstract CEAST logicalAnd(CEAST lhs, CEAST rhs) throws ParseException;
@@ -1350,7 +1346,7 @@ abstract CEAST.NodeList nodelist(CEAST.NodeList list, CEAST ast);
 abstract CEAST.SliceList slicelist(CEAST.SliceList list, Slice slice);
 
 
-/* "CEParserBody.java":1354  */ /* lalr1.java:1066  */
+/* "CEParserBody.java":1350  */ /* lalr1.java:1066  */
 
 }
 

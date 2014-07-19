@@ -33,7 +33,8 @@ import dap4.ce.CEAST;
 abstract CEAST constraint(CEAST.NodeList clauses) throws ParseException;
 abstract CEAST projection(CEAST segmenttree) throws ParseException;
 abstract CEAST segment(String name, CEAST.SliceList slices) throws ParseException;
-abstract Slice slice(int state, String sfirst, String send, String sstride) throws ParseException;
+abstract Slice slice(CEAST.SliceList subslices) throws ParseException;
+abstract Slice subslice(int state, String sfirst, String send, String sstride) throws ParseException;
 abstract void dimredef(String name, Slice slice) throws ParseException;
 abstract CEAST selection(CEAST projection, CEAST filter) throws ParseException;
 abstract CEAST logicalAnd(CEAST lhs, CEAST rhs) throws ParseException;
@@ -56,7 +57,7 @@ abstract CEAST.SliceList slicelist(CEAST.SliceList list, Slice slice);
 %precedence NOT
 
 %type <CEAST> constraint clause projection selection segment
-%type <Slice> slice
+%type <Slice> slice subslice
 %type <CEAST> filter predicate
 %type <CEAST> dimredef
 %type <String> index
@@ -64,7 +65,7 @@ abstract CEAST.SliceList slicelist(CEAST.SliceList list, Slice slice);
 %type <CEAST.NodeList> clauselist
 %type <CEAST.NodeList> segmentforest
 %type <CEAST> segmenttree
-%type <CEAST.SliceList> slicelist
+%type <CEAST.SliceList> slicelist subslicelist
 %type <CEAST> primary
 %type <CEAST> constant fieldname
 
@@ -166,23 +167,29 @@ slicelist:
 
 slice:
           '[' ']' /* total dimension */ /* case 0 */
-            {$$=slice(0,null,null,null);} 
-        | '[' '*' ']' /* total dimension */
-            {$$=slice(0,null,null,null);} 
-        |  '[' index ']' /* case 1 */
-            {$$=slice(1,$2,null,null);} 
-        | '[' index ':' index ']' /* case 2 */
-            {$$=slice(2,$2,$4,null);}
-        | '[' index ':' index ':' index ']' /*case 3*/
-            {$$=slice(3,$2,$6,$4);}
-        | '[' index ':' ']' /* case 4 */
-            {$$=slice(4,$2,null,null);}
-        | '[' index ':' '*' ']'
-            {$$=slice(4,$2,null,null);}
-        | '[' index ':' index ':' ']' /* case 5 */
-            {$$=slice(5,$2,null,$4);}
-        | '[' index ':' index ':' '*' ']'
-            {$$=slice(5,$2,null,$4);}
+            {$$=slice(null);}
+        |  '[' subslicelist ']'
+            {$$=slice($2);}
+        ;
+
+subslicelist: 
+          subslice
+	    {$$=slicelist(null,$1);}
+        | subslicelist ',' subslice
+	    {$$=slicelist($1,$3);}
+        ;
+
+subslice:
+          index /* case 1 */
+            {$$=subslice(1,$1,null,null);} 
+        | index ':' index /* case 2 */
+            {$$=subslice(2,$1,$3,null);}
+        | index ':' index ':' index /*case 3*/
+            {$$=subslice(3,$1,$5,$3);}
+        | index ':' /* case 4 */
+            {$$=subslice(4,$1,null,null);}
+        | index ':' index ':' /* case 5 */
+            {$$=subslice(5,$1,null,$3);}
         ;
 
 index:  LONG ;

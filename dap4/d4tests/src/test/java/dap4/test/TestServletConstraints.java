@@ -156,7 +156,7 @@ public class TestServletConstraints extends DapTestCommon
     chooseTestcases()
     {
         if(false) {
-            chosentests = locate(7);
+            chosentests = locate(9);
         } else {
             for(ConstraintTest tc : alltestcases) {
                 chosentests.add(tc);
@@ -185,10 +185,10 @@ public class TestServletConstraints extends DapTestCommon
                         {
                             public void run(Dump printer) throws IOException
                             {
-                                printer.printvalue('S', 4);
-                                printer.printvalue('S', 4);
-                                printer.printvalue('S', 4);
-                                printer.printvalue('S', 4);
+                                printer.printvalue('U', 4);
+                                printer.printvalue('U', 4);
+                                printer.printvalue('U', 4);
+                                printer.printvalue('U', 4);
                                 printer.printchecksum();
                             }
                         }));
@@ -263,6 +263,30 @@ public class TestServletConstraints extends DapTestCommon
                             {
                                 for(int i = 0; i < 2; i++) {
                                     printer.printvalue('O', 0, i);
+                                }
+                                printer.printchecksum();
+                            }
+                        }));
+        this.alltestcases.add(
+                new ConstraintTest(8, "test_atomic_array.nc", "dmr,dap", "/v16[0:1,3]",
+                        new Dump.Commands()
+                        {
+                            public void run(Dump printer) throws IOException
+                            {
+                                for(int i = 0; i < 3; i++) {
+                                    printer.printvalue('S', 2, i);
+                                }
+                                printer.printchecksum();
+                            }
+                        }));
+        this.alltestcases.add(
+                new ConstraintTest(9, "test_atomic_array.nc", "dmr,dap", "/v16[3,0:1]",
+                        new Dump.Commands()
+                        {
+                            public void run(Dump printer) throws IOException
+                            {
+                                for(int i = 0; i < 3; i++) {
+                                    printer.printvalue('S', 2, i);
                                 }
                                 printer.printchecksum();
                             }

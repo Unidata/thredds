@@ -228,7 +228,7 @@ public class CECompiler
         if(dim == null)
             throw new DapException("Constraint dim redef: no dimension name: " + node.name);
         Slice slice = node.slice;
-        slice.validate();
+        slice.finish();
         ce.addRedef(dim, slice);
     }
 

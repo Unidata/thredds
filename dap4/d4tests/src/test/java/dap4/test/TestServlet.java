@@ -182,8 +182,8 @@ public class TestServlet extends DapTestCommon
     protected void
     chooseTestcases()
     {
-        if(true) {
-            chosentests = locate("test_opaque_array.nc");
+        if(false) {
+            chosentests = locate("test_atomic_array.syn");
         } else {
             for(ServletTest tc : alltestcases) {
                 chosentests.add(tc);

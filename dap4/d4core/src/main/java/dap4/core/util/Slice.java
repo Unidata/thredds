@@ -6,6 +6,11 @@ package dap4.core.util;
 
 import dap4.core.dmr.DapDimension;
 
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.NoSuchElementException;
+
 /**
  * A Slice is used for two purposes
  * <ol>
@@ -13,9 +18,10 @@ import dap4.core.dmr.DapDimension;
  * <li> To specify a subset of data as specified in a constraint.
  * </ol>
  * In case two, the "last" value of the slice may be undefined
- * (e.q. specifying [0:*]) and so they must be filled in at some point.
+ * (e.q. specifying [0:]) and so they must be filled in at some point.
  * Note that first cannot be undefined because it always defaults to zero;
  * similarly stride defaults to one.
+ * Slice Supports iteration.
  */
 
 public class Slice
@@ -47,8 +53,16 @@ public class Slice
     }
 */
 
+    static public enum Sort
+    {
+        Single, Multi;
+    }
+
     //////////////////////////////////////////////////
     // Instance variables
+
+    // Is this a Slice or a Multislice
+    protected Sort sort = Sort.Single;
 
     /**
      * First index
@@ -66,17 +80,17 @@ public class Slice
     long stride = UNDEFINED;
 
     /**
+     * Max size
+     */
+    long size = MAXLENGTH;
+
+    /**
      * Indicate if this is known to be a whole slice
      * Boolean.TRUE => yes
      * Boolean.FALSE => no
      * null => unknown
      */
     Boolean whole = null;
-
-    /**
-     * Non-null if this slice is associated with a shared DapDimension.
-     */
-//    DapDimension srcdim = null;
 
     /**
      * Indicate that this slice's first/last/stride were
@@ -93,34 +107,93 @@ public class Slice
     }
 
     public Slice(long first, long last, long stride)
-        throws DapException
+            throws DapException
+    {
+        this(first, last, stride, (last == UNDEFINED ? UNDEFINED : last + 1));
+    }
+
+    public Slice(long first, long last, long stride, long maxsize)
+            throws DapException
     {
         this();
-        setIndices(first, last, stride);
+        setIndices(first, last, stride, maxsize);
     }
 
     public Slice(Slice s)
-        throws DapException
+            throws DapException
     {
         this();
-        setIndices(s.getFirst(), s.getLast(), s.getStride());
+        setIndices(s.getFirst(), s.getLast(), s.getStride(), s.getMaxSize());
         setConstrained(s.isConstrained());
         setWhole(s.isWhole());
     }
 
-/*
     public Slice(DapDimension dim)
-        throws DapException
+            throws DapException
     {
         this();
-        setSourceDimension(dim);
-        setIndicesFrom(dim); // fill in the rest of the info
-        setWhole(dim.isShared());
+        setIndices(0, dim.getSize() - 1, 1, dim.getSize());
+        setWhole(true);
+        setConstrained(false);
     }
-*/
+
+    //////////////////////////////////////////////////
+    // Slice specific API
+
+    /**
+     * Perform sanity checks on a slice and repair where possible.
+     *
+     * @return this (fluent interface)
+     * @throws DapException if slice is malformed
+     */
+    public Slice
+    finish()
+            throws DapException
+    {
+        // Attempt to repair undefined values
+        if(this.first == UNDEFINED) this.first = 0;   // default
+        if(this.stride == UNDEFINED) this.stride = 1; // default
+        if(this.last == UNDEFINED && this.size != UNDEFINED)
+            this.last = this.size - 1;
+        if(this.size == UNDEFINED && this.last != UNDEFINED)
+            this.size = this.last + 1;
+        else if(this.last == UNDEFINED && this.size == UNDEFINED)
+            throw new DapException("Slice: both last and size are UNDEFINED");
+        // else (this.last != UNDEFINED && this.size != UNDEFINED)
+        assert (first != UNDEFINED);
+        assert (stride != UNDEFINED);
+        assert (last != UNDEFINED);
+        // sanity checks
+        if(first > this.size)
+            throw new DapException("Slice: first index > max size");
+        if(stride > size)
+            throw new DapException("Slice: stride > max size");
+        if(last > size)
+            throw new DapException("Slice: last > max size");
+        if(first < 0)
+            throw new DapException("Slice: first index < 0");
+        if(last < 0)
+            throw new DapException("Slice: last index < 0");
+        if(stride <= 0)
+            throw new DapException("Slice: stride index <= 0");
+        if(first > last)
+            throw new DapException("Slice: first index > last");
+        return this; // fluent interface
+    }
+
+    public SliceIterator
+    iterator()
+    {
+        return new SliceIterator(this);
+    }
 
     //////////////////////////////////////////////////
     // Accessors
+
+    public Sort getSort()
+    {
+        return this.sort;
+    }
 
     public long getFirst()
     {
@@ -137,37 +210,41 @@ public class Slice
         return stride;
     }
 
-
-    public Slice complete(DapDimension dim)
+    public long getMaxSize()
     {
-        if(this.last == UNDEFINED)
-            this.last = dim.getSize()-1;
-        if(this.first == UNDEFINED)
-            this.first = 0;
-        if(this.stride == UNDEFINED)
-            this.stride = 1;
-        return this; // fluent interface
+        return size;
     }
 
-
-    public Slice fill(DapDimension dim)
-        throws DapException
+    public void setMaxSize(long size)
+            throws DapException
     {
-        setIndices(0, dim.getSize() - 1, 1);
+        setIndices(first, last, stride, size);
+    }
+
+/*    public Slice fill(DapDimension dim)
+            throws DapException
+    {
+        setIndices(0, dim.getSize() - 1, 1, dim.getSize());
         setWhole(true);
         setConstrained(false);
         return this; // fluent interface
     }
 
+*/
 
     public Slice setIndices(long first, long last, long stride)
-        throws DapException
+            throws DapException
     {
-        assert first != UNDEFINED;
-        assert stride != UNDEFINED;
+        return setIndices(first, last, stride, UNDEFINED);
+    }
+
+    public Slice setIndices(long first, long last, long stride, long maxsize)
+            throws DapException
+    {
         this.first = first;
         this.last = last;
         this.stride = stride;
+        this.size = maxsize;
         return this; // fluent interface
     }
 
@@ -182,6 +259,7 @@ public class Slice
         return this; // fluent interface
     }
 
+/*
     public Slice setWholeWRT(long maxsize)
     {
         if(last == 0 && stride == 1 && (last + 1) == maxsize)
@@ -190,6 +268,7 @@ public class Slice
             whole = Boolean.FALSE;
         return this; // fluent interface
     }
+*/
 
     public Boolean isConstrained()
     {
@@ -216,19 +295,14 @@ public class Slice
     }
 */
 
+/*
     //////////////////////////////////////////////////
     // Computed accessors
 
-    // Determine if this slice is incomplete; this is independent
+    // Determine if this slice is incomplete
     public boolean incomplete()
     {
         return (getLast() == Slice.UNDEFINED);
-    }
-
-/*
-    public boolean isShared()
-    {
-        return (this.srcdim != null && this.srcdim.isShared());
     }
 */
 
@@ -240,12 +314,21 @@ public class Slice
      * the slice. Note that this is different from
      * the getLast()+1
      */
-    public long getCount()
+    public long
+    getCount()
     {
-        long count = (getLast() + 1) - getFirst();
-        count = (count + getStride() - 1);
-        count /= stride;
+        assert this.first != UNDEFINED && this.stride != UNDEFINED && this.last != UNDEFINED;
+        long count = (this.last + 1) - this.first;
+        count = (count + this.stride - 1);
+        count /= this.stride;
         return count;
+    }
+
+    public long
+    getStop()
+    {
+        assert this.last != UNDEFINED;
+        return this.last + 1;
     }
 
     /**
@@ -261,40 +344,77 @@ public class Slice
         Slice other = (Slice) o;
         if(other == this) return true;
         return other.getFirst() == getFirst()
-            && other.getLast() == getLast()
-            && other.getStride() == getStride();
+                && other.getLast() == getLast()
+                && other.getStride() == getStride();
     }
+
 
     @Override
     public String toString()
     {
-        String slast = getLast() == UNDEFINED ? "?" : Long.toString(getLast());
-        String sstride = getStride() == UNDEFINED ? "?" : Long.toString(getStride());
-        String sfirst = getFirst() == UNDEFINED ? "?" : Long.toString(getFirst());
-        if(getStride() == 1)
-            return String.format("[%s:%s]", sfirst, slast);
+        return toString(true);
+    }
+
+    public String toString(boolean withbrackets)
+    {
+        StringBuilder buf = new StringBuilder();
+        String slast = this.last == UNDEFINED ? "?" : Long.toString(this.last);
+        String sstride = this.stride == UNDEFINED ? "?" : Long.toString(this.stride);
+        String sfirst = this.first == UNDEFINED ? "?" : Long.toString(this.first);
+        String ssize = this.size == UNDEFINED ? "?" : Long.toString(this.size);
+        if(withbrackets)
+            buf.append("[");
+        if(this.stride == 1)
+            buf.append(String.format("%s:%s", sfirst, slast));
         else
-            return String.format("[%s:%s:%s]", sfirst, sstride, slast);
+            buf.append(String.format("%s:%s:%s", sfirst, sstride, slast));
+        buf.append("|");
+        buf.append(ssize);
+        if(withbrackets)
+            buf.append("]");
+        return buf.toString();
     }
 
     /**
-     * Convert this slice to a bracketed string
+     * Convert this slice to a string
      * suitable for use in a constraint
      *
      * @return constraint usable string
+     * @throws DapException
      */
     public String toConstraintString()
+            throws DapException
     {
-        if(incomplete())
-            return "[]";
-        if(getStride() == 1) {
-	    if(getFirst() == getLast())
-                return String.format("[%d]", getFirst());
-	    else
-                return String.format("[%d:%d]", getFirst(), getLast());
+        assert this.first != UNDEFINED && this.stride != UNDEFINED && this.last != UNDEFINED;
+        if(this.stride == 1) {
+            if(this.first == this.last)
+                return String.format("[%d]", this.first);
+            else
+                return String.format("[%d:%d]", this.first, this.last);
         } else
-            return String.format("[%d:%d:%d]", getFirst(), getStride(), getLast());
+            return String.format("[%d:%d:%d]", this.first, this.stride, this.last);
     }
+
+    //////////////////////////////////////////////////
+    // Contiguous slice extraction
+
+    public boolean
+    isContiguous()
+    {
+        return (this.stride == 1);
+    }
+
+    public List<Slice>
+    getContiguous()
+    {
+        List<Slice> contig = new ArrayList();
+        if(this.stride == 1)
+            contig.add(this);
+        return contig;
+    }
+
+    //////////////////////////////////////////////////
+    // Static Utilities
 
     /**
      * Take two slices and compose src wrt target
@@ -309,14 +429,13 @@ public class Slice
      */
     static public Slice
     compose(Slice target, Slice src)
-        throws DapException
+            throws DapException
     {
         long sr_stride = target.getStride() * src.getStride();
         long sr_first = MAP(target, src.getFirst());
         long lastx = MAP(target, src.getLast());
-        long sr_last = (target.getLast() < lastx ? target.getLast()
-            : lastx); //min(last(),lastx)
-        return new Slice(sr_first, sr_last, sr_stride).validate();
+        long sr_last = (target.getLast() < lastx ? target.getLast() : lastx); //min(last(),lastx)
+        return new Slice(sr_first, sr_last, sr_stride, sr_last + 1).finish();
     }
 
     /**
@@ -329,53 +448,13 @@ public class Slice
      */
     static long
     MAP(Slice target, long i)
-        throws DapException
+            throws DapException
     {
         if(i < 0)
             throw new DapException("Slice.compose: i must be >= 0");
         if(i > target.getLast())
             throw new DapException("i must be <= last");
         return target.getFirst() + i * target.getStride();
-    }
-
-    /**
-     * Perform sanity checks on a slice
-     *
-     * @throws DapException if slice is malformed
-     */
-    public Slice
-    validate()
-        throws DapException
-    {
-        long first = getFirst();
-        long last = getLast();
-        long stride = getStride();
-        assert (first != UNDEFINED);
-        assert (stride != UNDEFINED);
-        assert (last != UNDEFINED);
-        if(first > MAXLENGTH)
-            throw new DapException("Slice: first index > MAXLENGTH");
-        if(stride > MAXLENGTH)
-            throw new DapException("Slice: stride > MAXLENGTH");
-        if(last > MAXLENGTH)
-            throw new DapException("Slice: last > MAXLENGTH");
-        if(first < 0)
-            throw new DapException("Slice: first index < 0");
-        if(last < 0)
-            throw new DapException("Slice: last index < 0");
-        if(stride <= 0)
-            throw new DapException("Slice: stride index <= 0");
-        if(first > last)
-            throw new DapException("Slice: first index > last");
-/*
-        if(srcdim != null) {
-            if(last != UNDEFINED && srcdim.getSize() <= last)
-                throw new DapException("Slice: last index >= "
-                    + srcdim.getShortName()
-                    + ".getSize()");
-        }
-*/
-        return this; // fluent interface
     }
 
 }
