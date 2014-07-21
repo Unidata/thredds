@@ -953,12 +953,12 @@ class Nidsheader{
 
         Variable i0 = new Variable(ncfile, null, dist, "x_start");
         i0.setDimensions((String)null);
-        i0.setDataType(DataType.SHORT);
+        i0.setDataType(DataType.FLOAT);
         i0.addAttribute( new Attribute(CDM.UNITS, "KM"));
         dist.addMemberVariable(i0);
         Variable j0 = new Variable(ncfile, null, dist, "y_start");
         j0.setDimensions((String)null);
-        j0.setDataType(DataType.SHORT);
+        j0.setDataType(DataType.FLOAT);
         j0.addAttribute( new Attribute(CDM.UNITS, "KM"));
         dist.addMemberVariable(j0);
 

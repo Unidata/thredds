@@ -132,21 +132,34 @@ public class DapSerializer
             if(dapvar.getRank() == 0) { // scalar
                 dst.writeObject(basetype, dav.read(0));
             } else {// dimensioned
-                // get the constrained slices
+                // get the slices from constraint
                 slices = ce.getConstrainedSlices(dapvar);
                 if(slices == null)
                     throw new DataException("Unknown variable: " + dapvar.getFQN());
-                long count = DapUtil.sliceProduct(slices);
-                Odometer odom = new Odometer(slices, dapvar.getDimensions());
-                if(DapUtil.hasStrideOne(slices)) {
+                boolean contig = DapUtil.isContiguous(slices);
+                Odometer odom = Odometer.factory(slices, dapvar.getDimensions(),contig);
+                long count = odom.totalSize();
+                if(odom.isContiguous()) {
                     Object vector = Dap4Util.createVector(basetype.getPrimitiveType(), count);
-                    dav.read(odom.index(), odom.totalSize(), vector);
-                    dst.writeArray(basetype, vector);
-                } else {
+                    List<Slice> pieces = odom.getContiguous();
+                    assert pieces.size() > 0;
+                    long offset = 0;
                     while(odom.hasNext()) {
-                        Object value = dav.read(odom.index());
+                        long index = odom.next();
+                        for(int i = 0; i < pieces.size(); i++) {
+                            Slice piece = pieces.get(i);
+                            long thiscount = piece.getCount();
+                            long start = index + piece.getFirst();
+                            dav.read(start, thiscount, vector, offset);
+                            offset += thiscount;
+                        }
+                    }
+                    dst.writeArray(basetype, vector);
+                } else { // read one by one
+                    while(odom.hasNext()) {
+                        long index = odom.next();
+                        Object value = dav.read(index);
                         dst.writeObject(basetype, value);
-                        odom.next();
                     }
                 }
             }

@@ -102,7 +102,7 @@ public class CEConstraint implements Constraint
     {
         CEConstraint parent;
         DapVariable var;
-        List<Slice> slices; // projections slices for this variable
+        List<Slice> slices; // projection slices for this variable
         List<DapDimension> dimset; // dimensions for the variable; including
         // redefs and anonymous derived from slices
         CEAST filter;
@@ -121,8 +121,12 @@ public class CEConstraint implements Constraint
         }
 
         void setSlices(List<Slice> slices)
+                throws DapException
         {
             this.slices = slices;
+            // Make sure they are finished
+            for(Slice sl: slices)
+                sl.finish();
         }
 
         void setFilter(CEAST filter)
@@ -134,10 +138,7 @@ public class CEConstraint implements Constraint
         {
             StringBuilder buf = new StringBuilder();
             buf.append(var.getFQN());
-            if(slices != null)
-                for(int i = 0; i < slices.size(); i++) {
-                    buf.append(slices.get(i).toString());
-                }
+            buf.append(slices.toString());
             if(this.filter != null) {
                 buf.append("|");
                 buf.append(filter.toString());
@@ -290,23 +291,23 @@ public class CEConstraint implements Constraint
 
     static protected int
     compare(Object lvalue, Object rvalue)
-                throws DapException
-        {
-            if (lvalue instanceof String && rvalue instanceof String)
-                return ((String) lvalue).compareTo((String) rvalue);
-            if (lvalue instanceof Boolean && rvalue instanceof Boolean)
-                return compare((Boolean) lvalue ? 1 : 0, (Boolean) rvalue ? 1 : 0);
-            if (lvalue instanceof Double || lvalue instanceof Float
-                    || rvalue instanceof Double || rvalue instanceof Float) {
-                double d1 = ((Number) lvalue).doubleValue();
-                double d2 = ((Number) lvalue).doubleValue();
-                return Double.compare(d1, d2);
-            } else {
-                long l1 = ((Number) lvalue).longValue();
-                long l2 = ((Number) rvalue).longValue();
-                return Long.compare(l1, l2);
-            }
+            throws DapException
+    {
+        if(lvalue instanceof String && rvalue instanceof String)
+            return ((String) lvalue).compareTo((String) rvalue);
+        if(lvalue instanceof Boolean && rvalue instanceof Boolean)
+            return compare((Boolean) lvalue ? 1 : 0, (Boolean) rvalue ? 1 : 0);
+        if(lvalue instanceof Double || lvalue instanceof Float
+                || rvalue instanceof Double || rvalue instanceof Float) {
+            double d1 = ((Number) lvalue).doubleValue();
+            double d2 = ((Number) lvalue).doubleValue();
+            return Double.compare(d1, d2);
+        } else {
+            long l1 = ((Number) lvalue).longValue();
+            long l2 = ((Number) rvalue).longValue();
+            return Long.compare(l1, l2);
         }
+    }
 
 
     /**
@@ -337,13 +338,13 @@ public class CEConstraint implements Constraint
             Object rhs = (expr.rhs == null ? null : eval(seq, record, expr.rhs));
             switch (expr.op) {
             case LT:
-                return compare(lhs,rhs) < 0;
+                return compare(lhs, rhs) < 0;
             case LE:
-                return compare(lhs,rhs) <= 0;
+                return compare(lhs, rhs) <= 0;
             case GT:
-                return compare(lhs,rhs) > 0;
+                return compare(lhs, rhs) > 0;
             case GE:
-                return compare(lhs,rhs) >= 0;
+                return compare(lhs, rhs) >= 0;
             case EQ:
                 return lhs.equals(rhs);
             case NEQ:
@@ -437,6 +438,7 @@ public class CEConstraint implements Constraint
     }
 
     public void addVariable(DapVariable var, List<Slice> slices)
+            throws DapException
     {
         if(findVariableIndex(var) < 0) {
             Segment segment = new Segment(var);
@@ -449,7 +451,7 @@ public class CEConstraint implements Constraint
     public void addAttribute(DapNode node, DapAttribute attr)
     {
         List<DapAttribute> attrs = this.attributes.get(node);
-        if (attrs == null) {
+        if(attrs == null) {
             attrs = new ArrayList<DapAttribute>();
             this.attributes.put(node, attrs);
         }
@@ -465,12 +467,12 @@ public class CEConstraint implements Constraint
 
     public List<Slice>
     getConstrainedSlices(DapVariable var)
-       {
-           Segment seg = findSegment(var);
-           if (seg == null)
-               return null;
-           return seg.slices;
-       }
+    {
+        Segment seg = findSegment(var);
+        if(seg == null)
+            return null;
+        return seg.slices;
+    }
 
     public List<DapDimension>
     getConstrainedDimensions(DapVariable var)
@@ -493,7 +495,7 @@ public class CEConstraint implements Constraint
             Segment seg = segments.get(i);
             if(!seg.var.isTopLevel())
                 continue;
-            if (!first) buf.append(";");
+            if(!first) buf.append(";");
             first = false;
             dumpvar(seg, buf, false);
         }
@@ -513,7 +515,7 @@ public class CEConstraint implements Constraint
     finish()
             throws DapException
     {
-        if (!finished) {
+        if(!finished) {
             finished = true;
             // order is important
             computeenums();
@@ -537,7 +539,7 @@ public class CEConstraint implements Constraint
             Segment seg = segments.get(i);
             if(!seg.var.isTopLevel())
                 continue;
-            if (!first) buf.append(";");
+            if(!first) buf.append(";");
             first = false;
             dumpvar(seg, buf, true);
         }
@@ -554,25 +556,25 @@ public class CEConstraint implements Constraint
     protected void
     dumpvar(Segment seg, StringBuilder buf, boolean forconstraint)
     {
-        if (seg.var.isTopLevel())
+        if(seg.var.isTopLevel())
             buf.append(seg.var.getFQN());
         else
             buf.append(seg.var.getShortName());
         // Add any slices
         List<Slice> slices = seg.slices;
         List<DapDimension> dimset = seg.var.getDimensions();
-        if (slices != null)
+        if(slices != null)
             assert dimset.size() == slices.size();
         for(int i = 0; i < dimset.size(); i++) {
             Slice slice = slices.get(i);
             DapDimension dim = dimset.get(i);
-            if (!slice.isConstrained() && slice.isWhole())
-                buf.append("[]");
-            else
+            try {
                 buf.append(forconstraint ? slice.toConstraintString() : slice.toString());
+            } catch (DapException de) {
+            }
         }
         // if the var is atomic, then we are done
-        if (seg.var.getSort() == DapSort.ATOMICVARIABLE)
+        if(seg.var.getSort() == DapSort.ATOMICVARIABLE)
             return;
         // If structure and all fields are in the view, then done
         if(seg.var.getSort() == DapSort.STRUCTURE
@@ -683,7 +685,7 @@ public class CEConstraint implements Constraint
         Segment seg = findSegment(var);
         if(seg == null)
             return null;
-        return new Odometer(seg.slices, seg.dimset);
+        return Odometer.factory(seg.slices, seg.dimset,false);
     }
 
     //////////////////////////////////////////////////
@@ -691,11 +693,11 @@ public class CEConstraint implements Constraint
 
     /**
      * Selection X match
-     *
+     * <p/>
      * Evaluate a filter with respect to a Sequence record.
      * Assumes the filter has been canonicalized.
      *
-     * @param seq    the template
+     * @param seq the template
      * @param rec the record to evaluate
      * @throws DapException
      * @returns true if the filter matches the record
@@ -717,8 +719,8 @@ public class CEConstraint implements Constraint
      * Evaluate a filter with respect to a Sequence record.
      *
      * @param seq    the template
-     * @param rec the record to evaluate
-     * @param filter   the filter
+     * @param rec    the record to evaluate
+     * @param filter the filter
      * @throws DapException
      * @returns true if a match
      */
@@ -800,7 +802,7 @@ public class CEConstraint implements Constraint
             }
         }
         // Process the queue in prefix order
-        while (queue.size() > 0) {
+        while(queue.size() > 0) {
             DapVariable vvstruct = queue.remove();
             DapStructure dstruct = (DapStructure) vvstruct;
             for(DapVariable field : dstruct.getFields()) {
@@ -809,8 +811,8 @@ public class CEConstraint implements Constraint
                     this.segments.add(new Segment(field));
                     this.variables.add(field);
                 }
-                if (field.getSort() == DapSort.STRUCTURE || field.getSort() == DapSort.SEQUENCE) {
-                    if (expansionCount((DapStructure) field) == 0)
+                if(field.getSort() == DapSort.STRUCTURE || field.getSort() == DapSort.SEQUENCE) {
+                    if(expansionCount((DapStructure) field) == 0)
                         queue.add(field);
                 }
             }
@@ -972,7 +974,7 @@ public class CEConstraint implements Constraint
             throws DapException
     {
         // Build the redefmap
-        for (DapDimension key : redefslice.keySet()) {
+        for(DapDimension key : redefslice.keySet()) {
             Slice slice = redefslice.get(key);
             DapDimension newdim = (DapDimension) key.clone();
             newdim.setSize(slice.getCount());
@@ -989,7 +991,7 @@ public class CEConstraint implements Constraint
             List<DapDimension> newdims = new ArrayList<>();
             // If the slice list is short then pad it with
             // default slices
-            if (slices == null)
+            if(slices == null)
                 slices = new ArrayList<Slice>();
             while(slices.size() < orig.size()) // pad
             {
@@ -1002,17 +1004,19 @@ public class CEConstraint implements Constraint
                 DapDimension newdim = redef.get(dim0);
                 if(newdim == null)
                     newdim = dim0;
-                if(slice.incomplete())  // fill in the undefined last value
-                    slice.complete(newdim);
+                // fill in the undefined last value
+                slice.setMaxSize(newdim.getSize());
+                slice.finish();
+
                 Slice newslice = null;
                 if(slice.isConstrained()) {
                     // Construct an anonymous dimension for this slice
                     newdim = new DapDimension(slice.getCount());
                 } else { // replace with a new slice from the dim
-                    newslice = new Slice().fill(newdim);
-                    if (newslice != null) {
+                    newslice = new Slice(newdim);
+                    if(newslice != null) {
                         // track set of referenced non-anonymous dimensions
-                        if (!dimrefs.contains(dim0)) dimrefs.add(dim0);
+                        if(!dimrefs.contains(dim0)) dimrefs.add(dim0);
                         slices.set(j, newslice);
                     }
                 }
@@ -1036,7 +1040,7 @@ public class CEConstraint implements Constraint
             DapType daptype = var.getBaseType();
             if(!daptype.isEnumType())
                 continue;
-            if (!this.enums.contains((DapEnum) daptype))
+            if(!this.enums.contains((DapEnum) daptype))
                 this.enums.add((DapEnum) daptype);
         }
     }
@@ -1051,26 +1055,26 @@ public class CEConstraint implements Constraint
         for(int i = 0; i < variables.size(); i++) {
             DapVariable var = variables.get(i);
             List<DapGroup> path = var.getGroupPath();
-            for (DapGroup group : path) {
-                if (!this.groups.contains(group))
+            for(DapGroup group : path) {
+                if(!this.groups.contains(group))
                     this.groups.add(group);
             }
         }
         // 2. Dimensions
-        for (DapDimension dim : this.dimrefs) {
-            if (!dim.isShared())
+        for(DapDimension dim : this.dimrefs) {
+            if(!dim.isShared())
                 continue;
             List<DapGroup> path = dim.getGroupPath();
-            for (DapGroup group : path) {
-                if (!this.groups.contains(group))
+            for(DapGroup group : path) {
+                if(!this.groups.contains(group))
                     this.groups.add(group);
             }
         }
         // 2. enumerations
-        for (DapEnum en : this.enums) {
+        for(DapEnum en : this.enums) {
             List<DapGroup> path = en.getGroupPath();
-            for (DapGroup group : path) {
-                if (!this.groups.contains(group))
+            for(DapGroup group : path) {
+                if(!this.groups.contains(group))
                     this.groups.add(group);
             }
         }

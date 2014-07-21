@@ -47,7 +47,7 @@ abstract public class CDMUtil
             int first = r.first();
             int n = r.length();
             int stop = first + (n * stride);
-            Slice cer = new Slice(first, stop - 1, stride).validate();
+            Slice cer = new Slice(first, stop - 1, stride);
             slices.add(cer);
         }
         return slices;
@@ -588,14 +588,14 @@ abstract public class CDMUtil
      */
 
     static public Object
-    extractVector(D4DataAtomic dataset, long index, long count)
+    extractVector(D4DataAtomic dataset, long index, long count, long offset)
         throws DataException
     {
         int i;
         int icount = (int) count;
         Object vector = createVector(dataset.getType().getPrimitiveType(),count);
         try {
-            dataset.read(index, count, vector);
+            dataset.read(index, count, vector, offset);
         } catch (IOException ioe) {
             throw new DataException(ioe);
         }

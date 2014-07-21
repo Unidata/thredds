@@ -16,7 +16,7 @@ public class ChunkWriter extends OutputStream
     //////////////////////////////////////////////////
     // Constants
 
-    static final protected boolean DEBUG = true;
+    static final protected boolean DEBUG = false;
 
     static final int MAXCHUNKSIZE = 0xFFFFFF;
 

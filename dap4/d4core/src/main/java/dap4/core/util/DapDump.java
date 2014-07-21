@@ -58,7 +58,7 @@ abstract public class DapDump
         int size = stop + 8;
         ByteBuffer buf = ByteBuffer.allocate(size).order(buf0.order());
         Arrays.fill(buf.array(), (byte) 0);
-        buf.put(buf0);
+        buf.put(buf0.array());
         buf.position(0);
         buf.limit(size);
         int i = 0;

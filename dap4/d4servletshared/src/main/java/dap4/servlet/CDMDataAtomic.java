@@ -69,7 +69,7 @@ public class CDMDataAtomic extends AbstractDataVariable
 
     @Override
     public void
-    read(long start, long count, Object data)
+    read(long start, long count, Object data, long offset)
         throws DataException
     {
         Array content = (Array)this.data;
@@ -82,7 +82,7 @@ public class CDMDataAtomic extends AbstractDataVariable
             throw new DataException("Attempt to read non-atomic value of type: " + datatype);
         Object vector = content.get1DJavaArray(elementclass);
         try {
-            System.arraycopy(vector, (int)start, data, 0, (int)count);
+            System.arraycopy(vector, (int)start, data, (int)offset, (int)count);
         } catch (IndexOutOfBoundsException iobe) {
             throw new DataException(String.format("Index out of bounds: start=%d count=%d",
                 start, count));

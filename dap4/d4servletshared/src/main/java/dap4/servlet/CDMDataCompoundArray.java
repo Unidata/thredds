@@ -105,19 +105,19 @@ public class CDMDataCompoundArray extends AbstractDataVariable implements DataCo
             throw new DataException("read(slices,result): result is too short");
         Odometer odom;
         try {
-            odom = new Odometer(slices,((DapVariable)this.getTemplate()).getDimensions());
+            odom = Odometer.factory(slices,((DapVariable)this.getTemplate()).getDimensions(),false);
         } catch (DapException de) {
             throw new DataException(de);
         }
-        for(int i=0;odom.hasNext();i++) {
-            long offset = odom.index();
+        int i;
+        for(i=0;odom.hasNext();i++) {
+            long offset = odom.next();
             int ioffset = (int)offset;
             if(instances[ioffset] == null) {
                 StructureData data = (StructureData) this.array.getStructureData(ioffset);
                 instances[ioffset] = new CDMDataStructure(this.dsp, (DapStructure) this.getTemplate(), this, offset, data);
             }
             result[i] = instances[ioffset];
-            odom.next();
         }
     }
 

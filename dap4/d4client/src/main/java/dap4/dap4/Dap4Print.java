@@ -506,7 +506,7 @@ public class Dap4Print
                 DapStructure dstruct = (DapStructure) dapv;
                 List<DapVariable> dfields = dstruct.getFields();
                 long nelems = cmpd.getCount();
-                Odometer odom = new Odometer(dstruct.getDimensions());
+                Odometer odom = new Odometer(dstruct.getDimensions(),false);
                 while(odom.hasNext()) {
                     String sindices = indicesToString(odom.getIndices());
                     printer.marginPrintf("<Structure name=\"%s\" indices=\"%s\">",

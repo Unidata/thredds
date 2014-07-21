@@ -413,7 +413,7 @@ abstract public class DapUtil // Should only contain static methods
         List<Slice> slices = new ArrayList<Slice>(dimset.size());
         for(int i = 0; i < dimset.size(); i++) {
             DapDimension dim = dimset.get(i);
-            Slice s = new Slice().fill(dim);
+            Slice s = new Slice(dim);
             slices.add(s);
         }
         return slices;
@@ -561,6 +561,36 @@ abstract public class DapUtil // Should only contain static methods
         return buf.toString();
     }
 
+    static String
+    multiSliceString(List<List<Slice>> slices)
+    {
+        if(slices == null || slices.size() ==0)
+            return "[]";
+        StringBuilder buf = new StringBuilder();
+        for(int i = 0; i<slices.size();i++) {
+            List<Slice> set = slices.get(i);
+            buf.append("[");
+            for(int j=0;j<set.size();j++) {
+                if(i > 0)
+                    buf.append(",");
+                buf.append(set.get(j));
+            }
+            buf.append("]");
+        }
+        buf.append("]");
+        return buf.toString();
+    }
 
+    static public boolean
+    isContiguous(List<Slice> slices)
+    {
+        if(slices == null)
+            return false;
+        for(Slice s: slices) {
+            if(!s.isContiguous())
+                return false;
+        }
+        return true;
+    }
 } // class DapUtil
 
