@@ -33,6 +33,7 @@
 
 package thredds.servlet;
 
+import com.coverity.security.Escape;
 import thredds.catalog.*;
 
 import java.io.*;
@@ -101,8 +102,8 @@ public class AnnotateServlet extends AbstractServlet {
       pw.println("</head>");
       pw.println("<body bgcolor=\"#FFF0FF\">");
       pw.println("<img src='/thredds/thredds.jpg' >");
-      pw.println("<h2> Catalog (" + catURL + ")</h2>");
-      pw.println("<h3> Dataset (" + datasetID + ")</h3><ul>");
+      pw.println("<h2> Catalog (" + Escape.html(catURL) + ")</h2>");
+      pw.println("<h3> Dataset (" + Escape.html(datasetID) + ")</h3><ul>");
 
       List<Annotation> views = Annotation.findAnnotation(catURL, datasetID, "IDV");
       for (Annotation v : views) {

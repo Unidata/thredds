@@ -121,7 +121,12 @@
       <groupId>org.slf4j</groupId>
       <artifactId>jcl-over-slf4j</artifactId>
       <scope>test</scope>
-    </dependency> 
+    </dependency>
+
+    <dependency>
+        <groupId>com.coverity.security</groupId>
+        <artifactId>coverity-escapers</artifactId>
+    </dependency>
 
   </dependencies>
 

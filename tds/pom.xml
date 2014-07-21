@@ -71,6 +71,11 @@
       <artifactId>waterml</artifactId>
     </dependency>
 
+    <dependency>
+        <groupId>com.coverity.security</groupId>
+        <artifactId>coverity-escapers</artifactId>
+    </dependency>
+
     <!-- DAP4 Dependencies (technically forward) -->
     <dependency>
       <groupId>${project.groupId}</groupId>

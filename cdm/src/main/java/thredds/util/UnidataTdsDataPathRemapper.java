@@ -260,7 +260,7 @@ public class UnidataTdsDataPathRemapper {
         List<String> result1 = u.getMappedUrlPaths("fmrc/NCEP/GFS/Alaska_191km/files/");
 
         assert result1.size() == 1;
-        assert result1.get(0) == "grib/NCEP/GFS/Alaska_191km/files/";
+        assert result1.get(0).equals( "grib/NCEP/GFS/Alaska_191km/files/");
 
         System.out.println(result1.toString());
 

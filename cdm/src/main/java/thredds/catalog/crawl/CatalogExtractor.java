@@ -335,7 +335,7 @@ public class CatalogExtractor implements CatalogCrawler.Listener {
           buff.append(" ");
           buff.append(Double.toString(ur.getLatitude()));
           buff.append(" ");
-          out.println("  BoundingBox == " + llbb + " width= " + llbb.getWidth() + " " + (llbb.getWidth() >= 360.0 ? "global" : ""));
+          out.println("  BoundingBox == " + buff + " width= " + llbb.getWidth() + " " + (llbb.getWidth() >= 360.0 ? "global" : ""));
         }
 
       }

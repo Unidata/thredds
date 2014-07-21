@@ -8,6 +8,7 @@ import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.coverity.security.Escape;
 import org.quartz.JobKey;
 import org.quartz.TriggerKey;
 import org.quartz.impl.matchers.GroupMatcher;
@@ -248,7 +249,7 @@ public class CollectionController  {
       if (null == contents) {
         res.setContentType(ContentType.html.getContentHeader());
         PrintWriter pw = res.getWriter();
-        pw.println("<p/> Cant find filename="+fileName+" in collection = "+collectName);
+        pw.println("<p/> Cant find filename="+fileName+" in collection = "+ Escape.html(collectName));
       }  else {
         res.setContentType(ContentType.xml.getContentHeader());
         PrintWriter pw = res.getWriter();
