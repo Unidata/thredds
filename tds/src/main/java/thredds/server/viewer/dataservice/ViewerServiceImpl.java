@@ -1,3 +1,36 @@
+/*
+ * Copyright 1998-2014 University Corporation for Atmospheric Research/Unidata
+ *
+ *   Portions of this software were developed by the Unidata Program at the
+ *   University Corporation for Atmospheric Research.
+ *
+ *   Access and use of this software shall impose the following obligations
+ *   and understandings on the user. The user is granted the right, without
+ *   any fee or cost, to use, copy, modify, alter, enhance and distribute
+ *   this software, and any derivative works thereof, and its supporting
+ *   documentation for any purpose whatsoever, provided that this entire
+ *   notice appears in all copies of the software, derivative works and
+ *   supporting documentation.  Further, UCAR requests that the user credit
+ *   UCAR/Unidata in any publications that result from the use of this
+ *   software or in any product that includes this software. The names UCAR
+ *   and/or Unidata, however, may not be used in any advertising or publicity
+ *   to endorse or promote any products or commercial entity unless specific
+ *   written permission is obtained from UCAR/Unidata. The user also
+ *   understands that UCAR/Unidata is not obligated to provide the user with
+ *   any support, consulting, training or assistance of any kind with regard
+ *   to the use, operation and performance of this software nor to provide
+ *   the user with any updates, revisions, new versions or "bug fixes."
+ *
+ *   THIS SOFTWARE IS PROVIDED BY UCAR/UNIDATA "AS IS" AND ANY EXPRESS OR
+ *   IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ *   WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ *   DISCLAIMED. IN NO EVENT SHALL UCAR/UNIDATA BE LIABLE FOR ANY SPECIAL,
+ *   INDIRECT OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING
+ *   FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT,
+ *   NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
+ *   WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
+ */
+
 package thredds.server.viewer.dataservice;
 
 import java.io.IOException;
@@ -35,8 +68,8 @@ public class ViewerServiceImpl implements ViewerService {
     return new StaticView();
   }
 
-	private List<Viewer> viewers = new ArrayList<Viewer>();
-	private HashMap<String, String> templates = new HashMap<String, String>();
+	private List<Viewer> viewers = new ArrayList<>();
+	private HashMap<String, String> templates = new HashMap<>();
 
 	@Override
 	public List<Viewer> getViewers() {
@@ -93,7 +126,7 @@ public class ViewerServiceImpl implements ViewerService {
 	        {
 	          List<ViewerLinkProvider.ViewerLink> sp = ( (ViewerLinkProvider) viewer ).getViewerLinks( dataset, req );
 	          for ( ViewerLinkProvider.ViewerLink vl : sp )
-	            if ( vl.getUrl() != null & !vl.getUrl().equals( "" ) )
+	            if ( vl.getUrl() != null && !vl.getUrl().equals( "" ) )
 	              sbuff.append( "<li><a href='" ).append( vl.getUrl() )
 	                      .append( "'>" ).append( vl.getTitle() != null ? vl.getTitle() : vl.getUrl() )
 	                      .append( "</a></li>\n" );
@@ -151,10 +184,8 @@ public class ViewerServiceImpl implements ViewerService {
 				return false;
 
 			FeatureType dt = ds.getDataType();
-			if (dt != FeatureType.GRID)
-				return false;
-			return true;
-		}
+      return dt == FeatureType.GRID;
+    }
 
 		public String getViewerLinkHtml(InvDatasetImpl ds, HttpServletRequest req) {
 			InvAccess access = getOpendapAccess(ds);
@@ -209,16 +240,16 @@ public class ViewerServiceImpl implements ViewerService {
 			List<InvProperty> viewerProperties = findViewerProperties(ds);
 			if (viewerProperties.isEmpty())
 				return Collections.emptyList();
-			List<ViewerLink> result = new ArrayList<ViewerLink>();
+			List<ViewerLink> result = new ArrayList<>();
 			for (InvProperty p : viewerProperties) {
-				ViewerLink viewerLink = parseViewerPropertyValue(p.getName(), p.getValue(), ds, req);
+				ViewerLink viewerLink = parseViewerPropertyValue(p.getName(), p.getValue(), ds);
 				if (viewerLink != null)
 					result.add(viewerLink);
 			}
 			return result;
 		}
 
-		private ViewerLink parseViewerPropertyValue(String viewerName, String viewerValue, InvDatasetImpl ds, HttpServletRequest req) {
+		private ViewerLink parseViewerPropertyValue(String viewerName, String viewerValue, InvDatasetImpl ds) {
 			String viewerUrl;
 			String viewerTitle;
 
@@ -234,10 +265,9 @@ public class ViewerServiceImpl implements ViewerService {
 				viewerUrl = viewerValue;
 				viewerTitle = viewerName;
 			}
-			viewerUrl = StringUtil2.quoteHtmlContent(sub(viewerUrl, ds, req));
+			viewerUrl = StringUtil2.quoteHtmlContent(sub(viewerUrl, ds));
 
-			ViewerLink viewerLink = new ViewerLink(viewerTitle, viewerUrl);
-			return viewerLink;
+			return new ViewerLink(viewerTitle, viewerUrl);
 		}
 
 		private boolean hasViewerProperties(InvDatasetImpl ds) {
@@ -249,7 +279,7 @@ public class ViewerServiceImpl implements ViewerService {
 		}
 
 		private List<InvProperty> findViewerProperties(InvDatasetImpl ds) {
-			List<InvProperty> result = new ArrayList<InvProperty>();
+			List<InvProperty> result = new ArrayList<>();
 			for (InvProperty p : ds.getProperties())
 				if (p.getName().startsWith(propertyNamePrefix))
 					result.add(p);
@@ -257,7 +287,7 @@ public class ViewerServiceImpl implements ViewerService {
 			return result;
 		}
 
-		private String sub(String org, InvDatasetImpl ds, HttpServletRequest req) {
+		private String sub(String org, InvDatasetImpl ds) {
 			List<InvAccess> access = ds.getAccess();
 			if (access.size() == 0)
 				return org;
@@ -265,13 +295,13 @@ public class ViewerServiceImpl implements ViewerService {
 			// look through all access for {serviceName}
 			for (InvAccess acc : access) {
 				String sname = "{" + acc.getService().getServiceType() + "}";
-				if (org.indexOf(sname) >= 0)
+				if (org.contains(sname))
 					return StringUtil2.substitute(org, sname, acc
 							.getStandardUri().toString());
 			}
 
 			String sname = "{url}";
-			if ((org.indexOf(sname) >= 0) && (access.size() > 0)) {
+			if ((org.contains(sname)) && (access.size() > 0)) {
 				InvAccess acc = access.get(0); // just use the first one
 				return StringUtil2.substitute(org, sname, acc.getStandardUri()
 						.toString());

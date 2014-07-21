@@ -34,7 +34,6 @@ package thredds.server.wms;
 
 import org.joda.time.DateTime;
 import thredds.server.config.TdsContext;
-import thredds.servlet.*;
 import uk.ac.rdg.resc.ncwms.controller.ServerConfig;
 
 import javax.servlet.ServletContext;
@@ -89,12 +88,12 @@ public class ThreddsServerConfig implements ServerConfig
 
       String msg = "User configured palette files location [" + this.getUserConfigPaletteLocationDir()
                    + "] not available. Using default location [" + this.defaultPaletteLocation + "].";
-      logServerStartup.warn( msg.toString() );
+      logServerStartup.warn(msg);
     }
     else
     {
       String msg = "No user configured palette files location. Using default location [" + this.defaultPaletteLocation + "].";
-      logServerStartup.debug( msg.toString() );
+      logServerStartup.debug(msg);
     }
 
     if ( this.defaultPaletteLocation != null && ! this.defaultPaletteLocation.trim().equals( "" ) )
@@ -168,7 +167,7 @@ public class ThreddsServerConfig implements ServerConfig
     public Set<String> getKeywords() {
       String[] keysArray = this.tdsContext.getServerInfo().getKeywords().split( ",\\s*" );
       // preserves iteration order
-      Set<String> keywords = new LinkedHashSet<String>( keysArray.length );
+      Set<String> keywords = new LinkedHashSet<>( keysArray.length );
       keywords.addAll( Arrays.asList( keysArray ) );
       return keywords;
     }

@@ -59,13 +59,8 @@ public class Doradeheader {
       if (file == null) return false;
       boolean t = DoradeSweep.isDoradeSweep(file);
       if (!t) return false;
-      //DoradeSweep mySweep = new DoradeSweep(raf.getLocation());
     } catch (DoradeSweep.DoradeSweepException ex) {
-      ex.printStackTrace();
       return false;
-      // } catch (java.io.IOException ex) {
-      //      ex.printStackTrace();
-      //     return false;
     }
     return true;
   }

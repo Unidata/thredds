@@ -1,33 +1,34 @@
 /*
- * Copyright (c) 1998 - 2009. University Corporation for Atmospheric Research/Unidata
- * Portions of this software were developed by the Unidata Program at the
- * University Corporation for Atmospheric Research.
+ * Copyright 1998-2014 University Corporation for Atmospheric Research/Unidata
  *
- * Access and use of this software shall impose the following obligations
- * and understandings on the user. The user is granted the right, without
- * any fee or cost, to use, copy, modify, alter, enhance and distribute
- * this software, and any derivative works thereof, and its supporting
- * documentation for any purpose whatsoever, provided that this entire
- * notice appears in all copies of the software, derivative works and
- * supporting documentation.  Further, UCAR requests that the user credit
- * UCAR/Unidata in any publications that result from the use of this
- * software or in any product that includes this software. The names UCAR
- * and/or Unidata, however, may not be used in any advertising or publicity
- * to endorse or promote any products or commercial entity unless specific
- * written permission is obtained from UCAR/Unidata. The user also
- * understands that UCAR/Unidata is not obligated to provide the user with
- * any support, consulting, training or assistance of any kind with regard
- * to the use, operation and performance of this software nor to provide
- * the user with any updates, revisions, new versions or "bug fixes."
+ *   Portions of this software were developed by the Unidata Program at the
+ *   University Corporation for Atmospheric Research.
  *
- * THIS SOFTWARE IS PROVIDED BY UCAR/UNIDATA "AS IS" AND ANY EXPRESS OR
- * IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
- * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
- * DISCLAIMED. IN NO EVENT SHALL UCAR/UNIDATA BE LIABLE FOR ANY SPECIAL,
- * INDIRECT OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING
- * FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT,
- * NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
- * WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
+ *   Access and use of this software shall impose the following obligations
+ *   and understandings on the user. The user is granted the right, without
+ *   any fee or cost, to use, copy, modify, alter, enhance and distribute
+ *   this software, and any derivative works thereof, and its supporting
+ *   documentation for any purpose whatsoever, provided that this entire
+ *   notice appears in all copies of the software, derivative works and
+ *   supporting documentation.  Further, UCAR requests that the user credit
+ *   UCAR/Unidata in any publications that result from the use of this
+ *   software or in any product that includes this software. The names UCAR
+ *   and/or Unidata, however, may not be used in any advertising or publicity
+ *   to endorse or promote any products or commercial entity unless specific
+ *   written permission is obtained from UCAR/Unidata. The user also
+ *   understands that UCAR/Unidata is not obligated to provide the user with
+ *   any support, consulting, training or assistance of any kind with regard
+ *   to the use, operation and performance of this software nor to provide
+ *   the user with any updates, revisions, new versions or "bug fixes."
+ *
+ *   THIS SOFTWARE IS PROVIDED BY UCAR/UNIDATA "AS IS" AND ANY EXPRESS OR
+ *   IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ *   WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ *   DISCLAIMED. IN NO EVENT SHALL UCAR/UNIDATA BE LIABLE FOR ANY SPECIAL,
+ *   INDIRECT OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING
+ *   FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT,
+ *   NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
+ *   WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
 package thredds.server.cdmremote;
@@ -126,9 +127,9 @@ public class StationWriter {
     String[] vars = qb.getVarNames();
     List<String> varNames = (vars == null) ? null : Arrays.asList(vars);
     if ((varNames == null) || (varNames.size() == 0)) {
-      wantVars = new ArrayList<VariableSimpleIF>(dataVars);
+      wantVars = new ArrayList<>(dataVars);
     } else {
-      wantVars = new ArrayList<VariableSimpleIF>();
+      wantVars = new ArrayList<>();
       for (VariableSimpleIF v : dataVars) {
         if (varNames.contains(v.getShortName())) // LOOK N**2
           wantVars.add(v);
@@ -295,7 +296,7 @@ public class StationWriter {
   private List<Station> getStationList(String[] stnNames) throws IOException {
     makeStationMap();
 
-    List<Station> result = new ArrayList<Station>(stnNames.length);
+    List<Station> result = new ArrayList<>(stnNames.length);
     for (String s : stnNames) {
       Station stn = stationMap.get(s);
       if (stn != null)
@@ -307,7 +308,7 @@ public class StationWriter {
 
   private void makeStationMap() throws IOException {
     if (null == stationMap) {
-      stationMap = new HashMap<String, Station>();
+      stationMap = new HashMap<>();
       for (Station station : sfc.getStations()) {
         stationMap.put(station.getName(), station);
       }
@@ -323,7 +324,7 @@ public class StationWriter {
    */
   public List<String> getStationNames(LatLonRect boundingBox) throws IOException {
     LatLonPointImpl latlonPt = new LatLonPointImpl();
-    ArrayList<String> result = new ArrayList<String>();
+    ArrayList<String> result = new ArrayList<>();
     for (Station s : sfc.getStations()) {
       latlonPt.set(s.getLatitude(), s.getLongitude());
       if (boundingBox.contains(latlonPt)) {
@@ -407,7 +408,7 @@ public class StationWriter {
   // then act on those
   private void scanForClosestTime(PointFeatureCollection collection, DateType time, Predicate p, Action a, Limit limit) throws IOException {
 
-    HashMap<String, StationDataTracker> map = new HashMap<String, StationDataTracker>();
+    HashMap<String, StationDataTracker> map = new HashMap<>();
     long wantTime = time.getDate().getTime();
 
     collection.resetIteration();
@@ -735,7 +736,7 @@ public class StationWriter {
       super(null);
 
       netcdfResult = diskCache.createUniqueFile("cdmSW", ".nc");
-      List<Attribute> atts = new ArrayList<Attribute>();
+      List<Attribute> atts = new ArrayList<>();
       atts.add(new Attribute(CDM.TITLE, "Extracted data from TDS using CDM remote subsetting"));
       cfWriter = null; // new WriterCFStationCollection(null, netcdfResult.getAbsolutePath(), atts);
 

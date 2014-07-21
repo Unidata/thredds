@@ -51,7 +51,6 @@ public class Doradeiosp extends AbstractIOServiceProvider {
   protected Doradeheader headerParser;
 
   public DoradeSweep mySweep = null;
-  boolean littleEndian;
 
   public boolean isValidFile(ucar.unidata.io.RandomAccessFile raf) {
     return (Doradeheader.isValidFile(raf));
@@ -73,24 +72,13 @@ public class Doradeiosp extends AbstractIOServiceProvider {
 
     super.open(raf, ncfile, cancelTask);
 
-    try {
-      mySweep = new DoradeSweep(raf.getRandomAccessFile());
-    } catch (DoradeSweep.DoradeSweepException ex) {
-      ex.printStackTrace();
+    mySweep = new DoradeSweep(raf.getRandomAccessFile());
+    headerParser = new Doradeheader();
+    headerParser.read(mySweep, ncfile, null);
 
-    } catch (java.io.IOException ex) {
-      ex.printStackTrace();
-    }
-
+    // should be in isValidFile()
     if (mySweep.getScanMode(0) != ScanMode.MODE_SUR) {
-   //   System.err.println("ScanMode is : " + mySweep.getScanMode(0).getName());
-      //System.exit(1);
-    }
-    try {
-      headerParser = new Doradeheader();
-      headerParser.read(mySweep, ncfile, null);
-    } catch (DoradeSweep.DoradeSweepException e) {
-      e.printStackTrace();
+       throw new IllegalStateException();
     }
 
     ncfile.finish();
@@ -258,23 +246,6 @@ public class Doradeiosp extends AbstractIOServiceProvider {
 
   protected boolean fill;
   protected HashMap dimHash = new HashMap(50);
-
-  public static void main(String args[]) throws IOException, InstantiationException, IllegalAccessException {
-    String fileIn = "/home/yuanho/dorade/swp.1020511015815.SP0L.573.1.2_SUR_v1";
-    //String fileIn = "c:/data/image/Dorade/n0r_20041013_1852";
-    ucar.nc2.NetcdfFile.registerIOProvider(ucar.nc2.iosp.dorade.Doradeiosp.class);
-    ucar.nc2.NetcdfFile ncf = ucar.nc2.NetcdfFile.open(fileIn);
-
-    //List alist = ncf.getGlobalAttributes();
-    ucar.unidata.io.RandomAccessFile file = new ucar.unidata.io.RandomAccessFile(fileIn, "r");
-
-    //open1(file, null, null);
-    //ucar.nc2.Variable v = ncf.findVariable("BaseReflectivity");
-
-    //ncf.close();
-
-
-  }
 
 
 }

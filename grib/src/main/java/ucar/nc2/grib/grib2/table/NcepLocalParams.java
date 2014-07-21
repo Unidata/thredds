@@ -1,33 +1,34 @@
 /*
- * Copyright (c) 1998 - 2012. University Corporation for Atmospheric Research/Unidata
- * Portions of this software were developed by the Unidata Program at the
- * University Corporation for Atmospheric Research.
+ * Copyright 1998-2014 University Corporation for Atmospheric Research/Unidata
  *
- * Access and use of this software shall impose the following obligations
- * and understandings on the user. The user is granted the right, without
- * any fee or cost, to use, copy, modify, alter, enhance and distribute
- * this software, and any derivative works thereof, and its supporting
- * documentation for any purpose whatsoever, provided that this entire
- * notice appears in all copies of the software, derivative works and
- * supporting documentation.  Further, UCAR requests that the user credit
- * UCAR/Unidata in any publications that result from the use of this
- * software or in any product that includes this software. The names UCAR
- * and/or Unidata, however, may not be used in any advertising or publicity
- * to endorse or promote any products or commercial entity unless specific
- * written permission is obtained from UCAR/Unidata. The user also
- * understands that UCAR/Unidata is not obligated to provide the user with
- * any support, consulting, training or assistance of any kind with regard
- * to the use, operation and performance of this software nor to provide
- * the user with any updates, revisions, new versions or "bug fixes."
+ *   Portions of this software were developed by the Unidata Program at the
+ *   University Corporation for Atmospheric Research.
  *
- * THIS SOFTWARE IS PROVIDED BY UCAR/UNIDATA "AS IS" AND ANY EXPRESS OR
- * IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
- * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
- * DISCLAIMED. IN NO EVENT SHALL UCAR/UNIDATA BE LIABLE FOR ANY SPECIAL,
- * INDIRECT OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING
- * FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT,
- * NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
- * WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
+ *   Access and use of this software shall impose the following obligations
+ *   and understandings on the user. The user is granted the right, without
+ *   any fee or cost, to use, copy, modify, alter, enhance and distribute
+ *   this software, and any derivative works thereof, and its supporting
+ *   documentation for any purpose whatsoever, provided that this entire
+ *   notice appears in all copies of the software, derivative works and
+ *   supporting documentation.  Further, UCAR requests that the user credit
+ *   UCAR/Unidata in any publications that result from the use of this
+ *   software or in any product that includes this software. The names UCAR
+ *   and/or Unidata, however, may not be used in any advertising or publicity
+ *   to endorse or promote any products or commercial entity unless specific
+ *   written permission is obtained from UCAR/Unidata. The user also
+ *   understands that UCAR/Unidata is not obligated to provide the user with
+ *   any support, consulting, training or assistance of any kind with regard
+ *   to the use, operation and performance of this software nor to provide
+ *   the user with any updates, revisions, new versions or "bug fixes."
+ *
+ *   THIS SOFTWARE IS PROVIDED BY UCAR/UNIDATA "AS IS" AND ANY EXPRESS OR
+ *   IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ *   WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ *   DISCLAIMED. IN NO EVENT SHALL UCAR/UNIDATA BE LIABLE FOR ANY SPECIAL,
+ *   INDIRECT OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING
+ *   FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT,
+ *   NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
+ *   WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
 package ucar.nc2.grib.grib2.table;
@@ -56,7 +57,7 @@ import java.util.*;
 public class NcepLocalParams {
   static private final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(NcepLocalParams.class);
   private static boolean debug = false;
-  private static Map<Integer, NcepLocalParams> tableMap = new HashMap<Integer, NcepLocalParams>(30);
+  private static Map<Integer, NcepLocalParams> tableMap = new HashMap<>(30);
 
   public static Grib2Parameter getParameter(int discipline, int category, int number) {
     int key = (discipline << 8) + category;
@@ -100,7 +101,7 @@ public class NcepLocalParams {
   }
 
   public List<Grib2Parameter> getParameters() {
-    List<Grib2Parameter> result = new ArrayList<Grib2Parameter>(paramMap.values());
+    List<Grib2Parameter> result = new ArrayList<>(paramMap.values());
     Collections.sort(result);
     return result;
   }
@@ -112,9 +113,7 @@ public class NcepLocalParams {
 
   private boolean readParameterTableXml(String path) {
     if (debug) System.out.printf("reading table %s%n", path);
-    InputStream is = null;
-    try {
-      is = GribResourceReader.getInputStream(path);
+    try (InputStream is = GribResourceReader.getInputStream(path)) {
       if (is == null) {
         log.warn("Cant read file "+path);
         return false;
@@ -133,21 +132,13 @@ public class NcepLocalParams {
     } catch (JDOMException e) {
       e.printStackTrace();
       return false;
-
-    } finally {
-      if (is != null) try {
-        is.close();
-      } catch (IOException e) {
-      }
     }
   }
 
   private boolean readParameterTableFromResource(String resource) {
     if (debug) System.out.printf("reading table from resource %s%n", resource);
-    InputStream is = null;
-    try {
-      Class c = WmoCodeTable.class;
-      is = c.getResourceAsStream(resource);
+    Class c = WmoCodeTable.class;
+    try (InputStream is = c.getResourceAsStream(resource)) {
       if (is == null) {
         log.info("Cant read resource "+resource);
         return false;
@@ -165,12 +156,6 @@ public class NcepLocalParams {
     } catch (JDOMException e) {
       e.printStackTrace();
       return false;
-
-    } finally {
-      if (is != null) try {
-        is.close();
-      } catch (IOException e) {
-      }
     }
   }
 
@@ -197,7 +182,7 @@ public class NcepLocalParams {
     discipline =  Integer.parseInt(dcs[0]);
     category =  Integer.parseInt(dcs[1]);
 
-    HashMap<Integer, Grib2Parameter> result = new HashMap<Integer, Grib2Parameter>();
+    HashMap<Integer, Grib2Parameter> result = new HashMap<>();
     List<Element> params = root.getChildren("parameter");
     for (Element elem : params) {
       int code = Integer.parseInt(elem.getAttributeValue("code"));
@@ -344,7 +329,7 @@ public class NcepLocalParams {
   }
 
   public static void main(String[] args) {
-    Map<String, Grib2Parameter> abbrevSet = new HashMap<String, Grib2Parameter>(5000);
+    Map<String, Grib2Parameter> abbrevSet = new HashMap<>(5000);
      File dir = new File("C:\\dev\\github\\thredds\\grib\\src\\main\\resources\\resources\\grib2\\ncep");
      for (File f : dir.listFiles()) {
        if (f.getName().startsWith(match)) {

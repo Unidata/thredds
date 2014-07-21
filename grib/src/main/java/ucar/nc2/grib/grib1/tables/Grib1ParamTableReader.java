@@ -1,33 +1,34 @@
 /*
- * Copyright (c) 1998 - 2011. University Corporation for Atmospheric Research/Unidata
- * Portions of this software were developed by the Unidata Program at the
- * University Corporation for Atmospheric Research.
+ * Copyright 1998-2014 University Corporation for Atmospheric Research/Unidata
  *
- * Access and use of this software shall impose the following obligations
- * and understandings on the user. The user is granted the right, without
- * any fee or cost, to use, copy, modify, alter, enhance and distribute
- * this software, and any derivative works thereof, and its supporting
- * documentation for any purpose whatsoever, provided that this entire
- * notice appears in all copies of the software, derivative works and
- * supporting documentation.  Further, UCAR requests that the user credit
- * UCAR/Unidata in any publications that result from the use of this
- * software or in any product that includes this software. The names UCAR
- * and/or Unidata, however, may not be used in any advertising or publicity
- * to endorse or promote any products or commercial entity unless specific
- * written permission is obtained from UCAR/Unidata. The user also
- * understands that UCAR/Unidata is not obligated to provide the user with
- * any support, consulting, training or assistance of any kind with regard
- * to the use, operation and performance of this software nor to provide
- * the user with any updates, revisions, new versions or "bug fixes."
+ *   Portions of this software were developed by the Unidata Program at the
+ *   University Corporation for Atmospheric Research.
  *
- * THIS SOFTWARE IS PROVIDED BY UCAR/UNIDATA "AS IS" AND ANY EXPRESS OR
- * IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
- * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
- * DISCLAIMED. IN NO EVENT SHALL UCAR/UNIDATA BE LIABLE FOR ANY SPECIAL,
- * INDIRECT OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING
- * FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT,
- * NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
- * WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
+ *   Access and use of this software shall impose the following obligations
+ *   and understandings on the user. The user is granted the right, without
+ *   any fee or cost, to use, copy, modify, alter, enhance and distribute
+ *   this software, and any derivative works thereof, and its supporting
+ *   documentation for any purpose whatsoever, provided that this entire
+ *   notice appears in all copies of the software, derivative works and
+ *   supporting documentation.  Further, UCAR requests that the user credit
+ *   UCAR/Unidata in any publications that result from the use of this
+ *   software or in any product that includes this software. The names UCAR
+ *   and/or Unidata, however, may not be used in any advertising or publicity
+ *   to endorse or promote any products or commercial entity unless specific
+ *   written permission is obtained from UCAR/Unidata. The user also
+ *   understands that UCAR/Unidata is not obligated to provide the user with
+ *   any support, consulting, training or assistance of any kind with regard
+ *   to the use, operation and performance of this software nor to provide
+ *   the user with any updates, revisions, new versions or "bug fixes."
+ *
+ *   THIS SOFTWARE IS PROVIDED BY UCAR/UNIDATA "AS IS" AND ANY EXPRESS OR
+ *   IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ *   WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ *   DISCLAIMED. IN NO EVENT SHALL UCAR/UNIDATA BE LIABLE FOR ANY SPECIAL,
+ *   INDIRECT OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING
+ *   FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT,
+ *   NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
+ *   WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
 package ucar.nc2.grib.grib1.tables;
@@ -231,11 +232,9 @@ TBLE2 cptec_254_params[] = {
   static private final Pattern nclPattern = Pattern.compile("\\{(\\d*)\\,\\s*\"([^\"]*)\"\\,\\s*\"([^\"]*)\"\\,\\s*\"([^\"]*)\".*");
 
   private boolean readParameterTableNcl() {
-    HashMap<Integer, Grib1Parameter> result = new HashMap<Integer, Grib1Parameter>();
+    HashMap<Integer, Grib1Parameter> result = new HashMap<>();
 
-    InputStream is = null;
-    try {
-      is = GribResourceReader.getInputStream(path);
+    try (InputStream is =  GribResourceReader.getInputStream(path)) {
       if (is == null) return false;
 
       BufferedReader br = new BufferedReader(new InputStreamReader(is));
@@ -283,12 +282,6 @@ TBLE2 cptec_254_params[] = {
       logger.warn("An error occurred in Grib1ParamTable while trying to open the parameter table "
               + path + " : " + ioError);
       return false;
-
-    } finally {
-      if (is != null) try {
-        is.close();
-      } catch (IOException e) {
-      }
     }
 
   }
@@ -341,11 +334,9 @@ TBLE2 cptec_254_params[] = {
    */
 
   private boolean readParameterTableEcmwf() {
-    HashMap<Integer, Grib1Parameter> result = new HashMap<Integer, Grib1Parameter>();
+    HashMap<Integer, Grib1Parameter> result = new HashMap<>();
 
-    InputStream is = null;
-    try {
-      is = GribResourceReader.getInputStream(path);
+    try (InputStream is =  GribResourceReader.getInputStream(path)) {
       if (is == null) {
         logger.error("Cant open "+path);
         return false;
@@ -377,7 +368,7 @@ TBLE2 cptec_254_params[] = {
         line = br.readLine();
         String notes = (line == null || line.startsWith("...")) ? null : line.trim();
 
-        if (desc.equalsIgnoreCase("undefined")) continue; // skip
+        if (desc != null && desc.equalsIgnoreCase("undefined")) continue; // skip
 
         int p1;
         try {
@@ -398,12 +389,6 @@ TBLE2 cptec_254_params[] = {
       logger.warn("An error occurred in Grib1ParamTable while trying to open the parameter table "
               + path + " : " + ioError);
       return false;
-
-    } finally {
-      if (is != null) try {
-        is.close();
-      } catch (IOException e) {
-      }
     }
 
   }
@@ -430,11 +415,10 @@ TBLE2 cptec_254_params[] = {
  *
  */
   private boolean readParameterTableEcmwfGribApi() {
-      HashMap<Integer, Grib1Parameter> result = new HashMap<Integer, Grib1Parameter>();
+      HashMap<Integer, Grib1Parameter> result = new HashMap<>();
 
-      InputStream is = null;
-      try {
-          is = GribResourceReader.getInputStream(path);
+    try (InputStream is =  GribResourceReader.getInputStream(path)) {
+
           if (is == null) {
               logger.error("Cant open " + path);
               return false;
@@ -500,19 +484,12 @@ TBLE2 cptec_254_params[] = {
           logger.warn("An error occurred in Grib1ParamTable while trying to open the parameter table for "
                   + path + " : " + ioError);
           return false;
-      } finally {
-          if (is != null) try {
-              is.close();
-          } catch (IOException e) {
       }
-      return false;
-    }
   }
 
   private boolean readParameterTableXml(XmlTableParser parser) {
-    InputStream is = null;
-    try {
-      is = GribResourceReader.getInputStream(path);
+    try (InputStream is =  GribResourceReader.getInputStream(path)) {
+
       if (is == null) return false;
 
       SAXBuilder builder = new SAXBuilder();
@@ -528,12 +505,6 @@ TBLE2 cptec_254_params[] = {
     } catch (JDOMException e) {
       e.printStackTrace();
       return false;
-
-    } finally {
-      if (is != null) try {
-        is.close();
-      } catch (IOException e) {
-      }
     }
   }
 
@@ -555,7 +526,7 @@ TBLE2 cptec_254_params[] = {
     </parameter>
     */
    public HashMap<Integer, Grib1Parameter> parseXml(Element root) {
-      HashMap<Integer, Grib1Parameter> result = new HashMap<Integer, Grib1Parameter>();
+      HashMap<Integer, Grib1Parameter> result = new HashMap<>();
       List<Element> params = root.getChildren("parameter", ns);
       for (Element elem1 : params) {
         int code = Integer.parseInt(elem1.getAttributeValue("code"));
@@ -595,7 +566,7 @@ TBLE2 cptec_254_params[] = {
     */
 
     public HashMap<Integer, Grib1Parameter> parseXml(Element root) {
-      HashMap<Integer, Grib1Parameter> result = new HashMap<Integer, Grib1Parameter>();
+      HashMap<Integer, Grib1Parameter> result = new HashMap<>();
       Element fnmocTable = root.getChild("fnmocTable");
       List<Element> params = fnmocTable.getChildren("entry");
       for (Element elem1 : params) {
@@ -624,11 +595,10 @@ TBLE2 cptec_254_params[] = {
 
   // order: num, name, desc, unit
   private boolean readParameterTableSplit(String regexp, int[] order) {
-    HashMap<Integer, Grib1Parameter> result = new HashMap<Integer, Grib1Parameter>();
+    HashMap<Integer, Grib1Parameter> result = new HashMap<>();
 
-    InputStream is = null;
-    try {
-      is = GribResourceReader.getInputStream(path);
+    try (InputStream is =  GribResourceReader.getInputStream(path)) {
+
       if (is == null) return false;
 
       BufferedReader br = new BufferedReader(new InputStreamReader(is));
@@ -658,12 +628,6 @@ TBLE2 cptec_254_params[] = {
       logger.warn("An error occurred in Grib1ParamTable while trying to open the parameter table "
               + path + " : " + ioError);
       return false;
-
-    } finally {
-      if (is != null) try {
-        is.close();
-      } catch (IOException e) {
-      }
     }
 
   }
@@ -673,10 +637,7 @@ TBLE2 cptec_254_params[] = {
       logger.error("Grib1ParamTable: unknown path for " + this);
       return false;
     }
-
-    InputStream is = null;
-    try {
-      is = GribResourceReader.getInputStream(path);
+    try (InputStream is =  GribResourceReader.getInputStream(path)) {
       if (is == null) {
         logger.error("Grib1ParamTable: error getInputStream on " + this);
         return false;
@@ -684,7 +645,7 @@ TBLE2 cptec_254_params[] = {
       BufferedReader br = new BufferedReader(new InputStreamReader(is));
       br.readLine(); // skip a line
 
-      HashMap<Integer, Grib1Parameter> params = new HashMap<Integer, Grib1Parameter>(); // thread safe - local var
+      HashMap<Integer, Grib1Parameter> params = new HashMap<>(); // thread safe - local var
       while (true) {
         String line = br.readLine();
         if (line == null) break;
@@ -718,12 +679,6 @@ TBLE2 cptec_254_params[] = {
     } catch (IOException ioError) {
       logger.warn("An error occurred in Grib1ParamTable while trying to open the parameter table " + path + " : " + ioError);
       return false;
-
-    } finally {
-      if (is != null) try {
-        is.close();
-      } catch (IOException e) {
-      }
     }
 
   }

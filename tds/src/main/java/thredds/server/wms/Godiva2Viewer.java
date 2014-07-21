@@ -40,7 +40,6 @@ import thredds.catalog.ServiceType;
 import thredds.servlet.ServletUtil;
 import thredds.servlet.ThreddsConfig;
 import thredds.servlet.Viewer;
-import ucar.nc2.constants.FeatureType;
 
 /**
  * A Viewer for viewing datasets using the built-in Godiva2 client.  The viewer

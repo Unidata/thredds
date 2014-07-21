@@ -54,10 +54,9 @@ public class GridIndexToNC {
   /**
    * map of horizontal coordinate systems
    */
-  private Map<String,GridHorizCoordSys> hcsHash = new HashMap<String,GridHorizCoordSys>(10);  // GridHorizCoordSys
+  private Map<String,GridHorizCoordSys> hcsHash = new HashMap<>(10);  // GridHorizCoordSys
 
   private DateFormatter formatter = new DateFormatter();
-  private boolean debug = false;
   private String indexFilename;
   private ucar.unidata.io.RandomAccessFile raf;
 
@@ -79,7 +78,6 @@ public class GridIndexToNC {
    * @param lookup       lookup table
    * @param version      version of data
    * @param ncfile       netCDF file to fill in
-   * @param fmrcCoordSys forecast model run CS
    * @param cancelTask   cancel task
    * @throws IOException Problem reading from the file
    */
@@ -111,7 +109,7 @@ public class GridIndexToNC {
 
       GridHorizCoordSys hcs =  hcsHash.get(gridRecord.getGridDefRecordId());
       int cdmHash = gridRecord.cdmVariableHash();
-      GridVariable pv = (GridVariable) hcs.varHash.get(cdmHash);
+      GridVariable pv = hcs.varHash.get(cdmHash);
       if (null == pv) {
         String name = gridRecord.cdmVariableName(lookup, true, true);
         pv = makeGridVariable(indexFilename, name, hcs, lookup);
@@ -121,7 +119,7 @@ public class GridIndexToNC {
         String simpleName = gridRecord.getParameterDescription();
         List<GridVariable> plist = hcs.productHash.get(simpleName);
         if (null == plist) {
-          plist = new ArrayList<GridVariable>();
+          plist = new ArrayList<>();
           hcs.productHash.put(simpleName, plist);
         }
         plist.add(pv);
@@ -196,7 +194,7 @@ public class GridIndexToNC {
       int count = 0;
       Collection<GridHorizCoordSys> hcset = hcsHash.values();
       for (GridHorizCoordSys hcs : hcset) {
-        List<GridVariable> gribvars = new ArrayList<GridVariable>(hcs.varHash.values());
+        List<GridVariable> gribvars = new ArrayList<>(hcs.varHash.values());
         for (GridVariable gv : gribvars) {
           count += gv.showMissingSummary(f);
         }
@@ -205,13 +203,13 @@ public class GridIndexToNC {
     }
 
     if (GridServiceProvider.debugMissingDetails) {
-      Formatter f = new Formatter(System.out);
+      Formatter f = new Formatter();
       Collection<GridHorizCoordSys> hcset = hcsHash.values();
       for (GridHorizCoordSys hcs : hcset) {
         f.format("******** Horiz Coordinate= %s%n", hcs.getGridName());
 
         String lastVertDesc = null;
-        List<GridVariable> gribvars = new ArrayList<GridVariable>(hcs.varHash.values());
+        List<GridVariable> gribvars = new ArrayList<>(hcs.varHash.values());
         Collections.sort(gribvars, new CompareGridVariableByVertName());
 
         for (GridVariable gv : gribvars) {
@@ -275,9 +273,9 @@ public class GridIndexToNC {
    * @throws IOException problem reading file
    */
   private void makeDenseCoordSys(NetcdfFile ncfile, GridTableLookup lookup, CancelTask cancelTask) throws IOException {
-    List<GridTimeCoord> timeCoords = new ArrayList<GridTimeCoord>();
-    List<GridVertCoord> vertCoords = new ArrayList<GridVertCoord>();
-    List<GridEnsembleCoord> ensembleCoords = new ArrayList<GridEnsembleCoord>();
+    List<GridTimeCoord> timeCoords = new ArrayList<>();
+    List<GridVertCoord> vertCoords = new ArrayList<>();
+    List<GridEnsembleCoord> ensembleCoords = new ArrayList<>();
 
     Calendar calendar = Calendar.getInstance();
     calendar.setTimeZone(java.util.TimeZone.getTimeZone("GMT"));
@@ -289,7 +287,7 @@ public class GridIndexToNC {
 
       // loop over GridVariables in the HorizCoordSys
       // create the time and vertical coordinates
-      List<GridVariable> gribvars = new ArrayList<GridVariable>(hcs.varHash.values());
+      List<GridVariable> gribvars = new ArrayList<>(hcs.varHash.values());
       for (GridVariable gv : gribvars) {
         if ((cancelTask != null) && cancelTask.isCancel()) break;
 
@@ -357,7 +355,7 @@ public class GridIndexToNC {
       String listName = null;
       int start = 0;
       for (vcIndex = 0; vcIndex < vertCoords.size(); vcIndex++) {
-        GridVertCoord gvcs = (GridVertCoord) vertCoords.get(vcIndex);
+        GridVertCoord gvcs = vertCoords.get(vcIndex);
         String vname = gvcs.getLevelName();
         if (listName == null) {
           listName = vname;  // initial
@@ -372,7 +370,7 @@ public class GridIndexToNC {
       makeVerticalDimensions(vertCoords.subList(start, vcIndex), ncfile, hcs.getGroup());
 
       // create a variable for each entry, but check for other products with same simple name to disambiguate
-      List<List<GridVariable>> products = new ArrayList<List<GridVariable>>(hcs.productHash.values());
+      List<List<GridVariable>> products = new ArrayList<>(hcs.productHash.values());
       for (List<GridVariable> plist : products) {
         if ((cancelTask != null) && cancelTask.isCancel()) break;
 
@@ -385,7 +383,7 @@ public class GridIndexToNC {
         } else {
 
           // collect them grouped by vertical coord
-          Map<GridVertCoord,VertCollection> vcMap = new HashMap<GridVertCoord,VertCollection>();
+          Map<GridVertCoord,VertCollection> vcMap = new HashMap<>();
           for (GridVariable gv : plist) {
             VertCollection vc = vcMap.get(gv.getVertCoord());
             if (vc == null) {
@@ -396,7 +394,7 @@ public class GridIndexToNC {
           }
 
           // sort by larger # vert levels
-          List<VertCollection> vclist = new ArrayList<VertCollection>(vcMap.values());
+          List<VertCollection> vclist = new ArrayList<>(vcMap.values());
           Collections.sort(vclist);
 
           boolean firstVertCoord = true;
@@ -447,7 +445,7 @@ public class GridIndexToNC {
 
   private class VertCollection implements Comparable<VertCollection> {
     GridVertCoord vc;
-    List<GridVariable> list = new ArrayList<GridVariable>(3);
+    List<GridVariable> list = new ArrayList<>(3);
 
     VertCollection(GridVariable gv) {
       this.vc = gv.getVertCoord();

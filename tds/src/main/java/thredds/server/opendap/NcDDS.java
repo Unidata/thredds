@@ -1,34 +1,34 @@
 /*
- * Copyright 1998-2009 University Corporation for Atmospheric Research/Unidata
+ * Copyright 1998-2014 University Corporation for Atmospheric Research/Unidata
  *
- * Portions of this software were developed by the Unidata Program at the
- * University Corporation for Atmospheric Research.
+ *   Portions of this software were developed by the Unidata Program at the
+ *   University Corporation for Atmospheric Research.
  *
- * Access and use of this software shall impose the following obligations
- * and understandings on the user. The user is granted the right, without
- * any fee or cost, to use, copy, modify, alter, enhance and distribute
- * this software, and any derivative works thereof, and its supporting
- * documentation for any purpose whatsoever, provided that this entire
- * notice appears in all copies of the software, derivative works and
- * supporting documentation.  Further, UCAR requests that the user credit
- * UCAR/Unidata in any publications that result from the use of this
- * software or in any product that includes this software. The names UCAR
- * and/or Unidata, however, may not be used in any advertising or publicity
- * to endorse or promote any products or commercial entity unless specific
- * written permission is obtained from UCAR/Unidata. The user also
- * understands that UCAR/Unidata is not obligated to provide the user with
- * any support, consulting, training or assistance of any kind with regard
- * to the use, operation and performance of this software nor to provide
- * the user with any updates, revisions, new versions or "bug fixes."
+ *   Access and use of this software shall impose the following obligations
+ *   and understandings on the user. The user is granted the right, without
+ *   any fee or cost, to use, copy, modify, alter, enhance and distribute
+ *   this software, and any derivative works thereof, and its supporting
+ *   documentation for any purpose whatsoever, provided that this entire
+ *   notice appears in all copies of the software, derivative works and
+ *   supporting documentation.  Further, UCAR requests that the user credit
+ *   UCAR/Unidata in any publications that result from the use of this
+ *   software or in any product that includes this software. The names UCAR
+ *   and/or Unidata, however, may not be used in any advertising or publicity
+ *   to endorse or promote any products or commercial entity unless specific
+ *   written permission is obtained from UCAR/Unidata. The user also
+ *   understands that UCAR/Unidata is not obligated to provide the user with
+ *   any support, consulting, training or assistance of any kind with regard
+ *   to the use, operation and performance of this software nor to provide
+ *   the user with any updates, revisions, new versions or "bug fixes."
  *
- * THIS SOFTWARE IS PROVIDED BY UCAR/UNIDATA "AS IS" AND ANY EXPRESS OR
- * IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
- * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
- * DISCLAIMED. IN NO EVENT SHALL UCAR/UNIDATA BE LIABLE FOR ANY SPECIAL,
- * INDIRECT OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING
- * FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT,
- * NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
- * WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
+ *   THIS SOFTWARE IS PROVIDED BY UCAR/UNIDATA "AS IS" AND ANY EXPRESS OR
+ *   IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ *   WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ *   DISCLAIMED. IN NO EVENT SHALL UCAR/UNIDATA BE LIABLE FOR ANY SPECIAL,
+ *   INDIRECT OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING
+ *   FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT,
+ *   NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
+ *   WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
 package thredds.server.opendap;
@@ -58,10 +58,10 @@ public class NcDDS extends ServerDDS {
 
   //private HashMap<String, BaseType> coordHash = new HashMap<String, BaseType>(50); // non grid coordinate variables
   // Track various subsets of the variables
-  private Hashtable<String, Variable> coordvars = new Hashtable<String, Variable>(50);
-  private Vector<Variable> ddsvars = new Vector<Variable>(50);   // list of currently active variables
-  private Hashtable<String, Variable> gridarrays = new Hashtable<String, Variable>(50);
-  private Hashtable<String, Variable> used = new Hashtable<String, Variable>(50);
+  private Hashtable<String, Variable> coordvars = new Hashtable<>(50);
+  private Vector<Variable> ddsvars = new Vector<>(50);   // list of currently active variables
+  private Hashtable<String, Variable> gridarrays = new Hashtable<>(50);
+  private Hashtable<String, Variable> used = new Hashtable<>(50);
   private Variable findVariable(String name)
   {
       for (Variable v: ddsvars) {
@@ -119,12 +119,11 @@ public class NcDDS extends ServerDDS {
             }
             if(isgridarray)   {
                 gridarrays.put(v.getFullName(),v);
-                for(int i=0;i<rank;i++) {
-                    Dimension dim = (Dimension) dimset.get(i);
-                    Variable gv = coordvars.get(dim.getShortName());
-                    if (gv != null)
-                        used.put(gv.getFullName(),gv);
-                }
+              for (Dimension dim : dimset) {
+                Variable gv = coordvars.get(dim.getShortName());
+                if (gv != null)
+                  used.put(gv.getFullName(), gv);
+              }
             }
      }
      // remove the used coord vars from ddsvars (wrong for now; keep so that coord vars are top-level also)
@@ -134,7 +133,6 @@ public class NcDDS extends ServerDDS {
     for (Object o1 : ddsvars) {
       Variable cv = (Variable) o1;
       BaseType bt = null;
-
 
       if (false && cv.isCoordinateVariable()) {
         if ((cv.getDataType() == DataType.CHAR))
@@ -203,7 +201,7 @@ public class NcDDS extends ServerDDS {
     NcSDArray arr = new NcSDArray(v, createScalarVariable(ncfile, v));
     if (isGrid) {
          // isgrid == true
-        ArrayList<BaseType> list = new ArrayList<BaseType>();
+        ArrayList<BaseType> list = new ArrayList<>();
         list.add(arr); // Array is first element in the list
         List<Dimension> dimset = v.getDimensions();
         for (Dimension dim : dimset) {
@@ -222,7 +220,7 @@ public class NcDDS extends ServerDDS {
   }
 
   private BaseType createStructure(NetcdfFile ncfile, Structure s) {
-    ArrayList<BaseType> list = new ArrayList<BaseType>();
+    ArrayList<BaseType> list = new ArrayList<>();
     for (Object o : s.getVariables()) {
       Variable nested = (Variable) o;
       list.add(createVariable(ncfile, nested));

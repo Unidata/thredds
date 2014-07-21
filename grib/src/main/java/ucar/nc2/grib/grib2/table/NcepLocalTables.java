@@ -1,33 +1,34 @@
 /*
- * Copyright (c) 1998 - 2011. University Corporation for Atmospheric Research/Unidata
- * Portions of this software were developed by the Unidata Program at the
- * University Corporation for Atmospheric Research.
+ * Copyright 1998-2014 University Corporation for Atmospheric Research/Unidata
  *
- * Access and use of this software shall impose the following obligations
- * and understandings on the user. The user is granted the right, without
- * any fee or cost, to use, copy, modify, alter, enhance and distribute
- * this software, and any derivative works thereof, and its supporting
- * documentation for any purpose whatsoever, provided that this entire
- * notice appears in all copies of the software, derivative works and
- * supporting documentation.  Further, UCAR requests that the user credit
- * UCAR/Unidata in any publications that result from the use of this
- * software or in any product that includes this software. The names UCAR
- * and/or Unidata, however, may not be used in any advertising or publicity
- * to endorse or promote any products or commercial entity unless specific
- * written permission is obtained from UCAR/Unidata. The user also
- * understands that UCAR/Unidata is not obligated to provide the user with
- * any support, consulting, training or assistance of any kind with regard
- * to the use, operation and performance of this software nor to provide
- * the user with any updates, revisions, new versions or "bug fixes."
+ *   Portions of this software were developed by the Unidata Program at the
+ *   University Corporation for Atmospheric Research.
  *
- * THIS SOFTWARE IS PROVIDED BY UCAR/UNIDATA "AS IS" AND ANY EXPRESS OR
- * IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
- * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
- * DISCLAIMED. IN NO EVENT SHALL UCAR/UNIDATA BE LIABLE FOR ANY SPECIAL,
- * INDIRECT OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING
- * FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT,
- * NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
- * WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
+ *   Access and use of this software shall impose the following obligations
+ *   and understandings on the user. The user is granted the right, without
+ *   any fee or cost, to use, copy, modify, alter, enhance and distribute
+ *   this software, and any derivative works thereof, and its supporting
+ *   documentation for any purpose whatsoever, provided that this entire
+ *   notice appears in all copies of the software, derivative works and
+ *   supporting documentation.  Further, UCAR requests that the user credit
+ *   UCAR/Unidata in any publications that result from the use of this
+ *   software or in any product that includes this software. The names UCAR
+ *   and/or Unidata, however, may not be used in any advertising or publicity
+ *   to endorse or promote any products or commercial entity unless specific
+ *   written permission is obtained from UCAR/Unidata. The user also
+ *   understands that UCAR/Unidata is not obligated to provide the user with
+ *   any support, consulting, training or assistance of any kind with regard
+ *   to the use, operation and performance of this software nor to provide
+ *   the user with any updates, revisions, new versions or "bug fixes."
+ *
+ *   THIS SOFTWARE IS PROVIDED BY UCAR/UNIDATA "AS IS" AND ANY EXPRESS OR
+ *   IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ *   WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ *   DISCLAIMED. IN NO EVENT SHALL UCAR/UNIDATA BE LIABLE FOR ANY SPECIAL,
+ *   INDIRECT OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING
+ *   FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT,
+ *   NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
+ *   WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
 package ucar.nc2.grib.grib2.table;
@@ -110,7 +111,7 @@ public class NcepLocalTables extends Grib2Customizer {
       String jarPath = dirURL.getPath().substring(5, dirURL.getPath().indexOf("!")); //strip out only the JAR file
       JarFile jar = new JarFile(URLDecoder.decode(jarPath, "UTF-8"));
       Enumeration<JarEntry> entries = jar.entries(); //gives ALL entries in jar
-      Set<String> result = new HashSet<String>(); //avoid duplicates in case it is a subdirectory
+      Set<String> result = new HashSet<>(); //avoid duplicates in case it is a subdirectory
       while (entries.hasMoreElements()) {
         String name = entries.nextElement().getName();
         if (name.startsWith(path)) { //filter according to the path
@@ -148,9 +149,7 @@ public class NcepLocalTables extends Grib2Customizer {
         }
       }
       return allParams;
-    } catch (URISyntaxException e) {
-      System.out.println(e);
-    } catch (IOException e) {
+    } catch (URISyntaxException | IOException e) {
       System.out.println(e);
     }
     return null;
@@ -222,9 +221,7 @@ public class NcepLocalTables extends Grib2Customizer {
 
     Grib2Pds.PdsInterval pdsIntv = (Grib2Pds.PdsInterval) pds;
     Grib2Pds.TimeInterval[] ti = pdsIntv.getTimeIntervals();
-    if (ti.length == 1) return false;
-
-    return true;
+    return ti.length != 1;
   }
 
 
@@ -496,7 +493,7 @@ public class NcepLocalTables extends Grib2Customizer {
       org.jdom2.Document doc = builder.build(is);
       Element root = doc.getRootElement();
 
-      HashMap<Integer, String> result = new HashMap<Integer, String>(200);
+      HashMap<Integer, String> result = new HashMap<>(200);
       List<Element> params = root.getChildren("parameter");
       for (Element elem1 : params) {
         int code = Integer.parseInt(elem1.getAttributeValue("code"));
@@ -559,7 +556,7 @@ Updated again on 3/26/2008
 */
 
   //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-  private Map<String, String> codeMap = new HashMap<String, String>(400);
+  private Map<String, String> codeMap = new HashMap<>(400);
 
   // see http://www.nco.ncep.noaa.gov/pmb/docs/grib2/grib2_doc.shtml
   private Map<String, String> initCodes() {
@@ -650,7 +647,7 @@ Updated again on 3/26/2008
   }
 
   public static void main(String arg[]) {
-    Map<Integer, CompTable> map = new HashMap<Integer, CompTable>(500);
+    Map<Integer, CompTable> map = new HashMap<>(500);
 
     NcepLocalTables tables = new NcepLocalTables(0, 0, 0, 0);
     NcepLocalParamsOld ncepOld = new NcepLocalParamsOld();
@@ -674,7 +671,7 @@ Updated again on 3/26/2008
     }
 
     System.out.printf("NcepLocalTables%nNcepLocalParamsOld%n%n");
-    ArrayList<Integer> keys = new ArrayList<Integer>();
+    ArrayList<Integer> keys = new ArrayList<>();
     for (int key : map.keySet()) keys.add(key);
     Collections.sort(keys);
     for (int key : keys) {

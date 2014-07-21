@@ -1,36 +1,38 @@
-// $Id: NcSDCharArray.java 51 2006-07-12 17:13:13Z caron $
 /*
- * Copyright 1998-2009 University Corporation for Atmospheric Research/Unidata
+ * Copyright 1998-2014 University Corporation for Atmospheric Research/Unidata
  *
- * Portions of this software were developed by the Unidata Program at the
- * University Corporation for Atmospheric Research.
+ *   Portions of this software were developed by the Unidata Program at the
+ *   University Corporation for Atmospheric Research.
  *
- * Access and use of this software shall impose the following obligations
- * and understandings on the user. The user is granted the right, without
- * any fee or cost, to use, copy, modify, alter, enhance and distribute
- * this software, and any derivative works thereof, and its supporting
- * documentation for any purpose whatsoever, provided that this entire
- * notice appears in all copies of the software, derivative works and
- * supporting documentation.  Further, UCAR requests that the user credit
- * UCAR/Unidata in any publications that result from the use of this
- * software or in any product that includes this software. The names UCAR
- * and/or Unidata, however, may not be used in any advertising or publicity
- * to endorse or promote any products or commercial entity unless specific
- * written permission is obtained from UCAR/Unidata. The user also
- * understands that UCAR/Unidata is not obligated to provide the user with
- * any support, consulting, training or assistance of any kind with regard
- * to the use, operation and performance of this software nor to provide
- * the user with any updates, revisions, new versions or "bug fixes."
+ *   Access and use of this software shall impose the following obligations
+ *   and understandings on the user. The user is granted the right, without
+ *   any fee or cost, to use, copy, modify, alter, enhance and distribute
+ *   this software, and any derivative works thereof, and its supporting
+ *   documentation for any purpose whatsoever, provided that this entire
+ *   notice appears in all copies of the software, derivative works and
+ *   supporting documentation.  Further, UCAR requests that the user credit
+ *   UCAR/Unidata in any publications that result from the use of this
+ *   software or in any product that includes this software. The names UCAR
+ *   and/or Unidata, however, may not be used in any advertising or publicity
+ *   to endorse or promote any products or commercial entity unless specific
+ *   written permission is obtained from UCAR/Unidata. The user also
+ *   understands that UCAR/Unidata is not obligated to provide the user with
+ *   any support, consulting, training or assistance of any kind with regard
+ *   to the use, operation and performance of this software nor to provide
+ *   the user with any updates, revisions, new versions or "bug fixes."
  *
- * THIS SOFTWARE IS PROVIDED BY UCAR/UNIDATA "AS IS" AND ANY EXPRESS OR
- * IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
- * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
- * DISCLAIMED. IN NO EVENT SHALL UCAR/UNIDATA BE LIABLE FOR ANY SPECIAL,
- * INDIRECT OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING
- * FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT,
- * NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
- * WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
+ *   THIS SOFTWARE IS PROVIDED BY UCAR/UNIDATA "AS IS" AND ANY EXPRESS OR
+ *   IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ *   WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ *   DISCLAIMED. IN NO EVENT SHALL UCAR/UNIDATA BE LIABLE FOR ANY SPECIAL,
+ *   INDIRECT OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING
+ *   FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT,
+ *   NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
+ *   WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
  */
+
+// $Id: NcSDCharArray.java 51 2006-07-12 17:13:13Z caron $
+
 
 package thredds.server.opendap;
 
@@ -53,7 +55,7 @@ import java.util.*;
 public class NcSDCharArray extends SDArray implements HasNetcdfVariable {
   static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(NcSDCharArray.class);
 
-  private boolean debugRead = false, debugReadDetail = false;
+  private static final boolean debugRead = false, debugReadDetail = false;
   private Variable ncVar = null;
   private int strLen = 1;
 
@@ -95,7 +97,7 @@ public class NcSDCharArray extends SDArray implements HasNetcdfVariable {
    * @throws IOException
    * @throws EOFException
    */
-  public boolean read(String datasetName, Object specialO) throws IOException, EOFException {
+  public boolean read(String datasetName, Object specialO) throws IOException {
     boolean hasStride = false;
     Array a;
     try {
@@ -126,7 +128,7 @@ public class NcSDCharArray extends SDArray implements HasNetcdfVariable {
 
       // deal with strides using a section
       if (hasStride) {
-        ArrayList ranges = new ArrayList();
+        List<Range> ranges = new ArrayList<>();
         for (int i = 0; i < n; i++) {
           int s = getStride(i);
           if (s > 1) {  // otherwise null, means "take all elements"

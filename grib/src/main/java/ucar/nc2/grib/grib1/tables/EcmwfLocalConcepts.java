@@ -1,3 +1,36 @@
+/*
+ * Copyright 1998-2014 University Corporation for Atmospheric Research/Unidata
+ *
+ *   Portions of this software were developed by the Unidata Program at the
+ *   University Corporation for Atmospheric Research.
+ *
+ *   Access and use of this software shall impose the following obligations
+ *   and understandings on the user. The user is granted the right, without
+ *   any fee or cost, to use, copy, modify, alter, enhance and distribute
+ *   this software, and any derivative works thereof, and its supporting
+ *   documentation for any purpose whatsoever, provided that this entire
+ *   notice appears in all copies of the software, derivative works and
+ *   supporting documentation.  Further, UCAR requests that the user credit
+ *   UCAR/Unidata in any publications that result from the use of this
+ *   software or in any product that includes this software. The names UCAR
+ *   and/or Unidata, however, may not be used in any advertising or publicity
+ *   to endorse or promote any products or commercial entity unless specific
+ *   written permission is obtained from UCAR/Unidata. The user also
+ *   understands that UCAR/Unidata is not obligated to provide the user with
+ *   any support, consulting, training or assistance of any kind with regard
+ *   to the use, operation and performance of this software nor to provide
+ *   the user with any updates, revisions, new versions or "bug fixes."
+ *
+ *   THIS SOFTWARE IS PROVIDED BY UCAR/UNIDATA "AS IS" AND ANY EXPRESS OR
+ *   IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ *   WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ *   DISCLAIMED. IN NO EVENT SHALL UCAR/UNIDATA BE LIABLE FOR ANY SPECIAL,
+ *   INDIRECT OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING
+ *   FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT,
+ *   NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
+ *   WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
+ */
+
 package ucar.nc2.grib.grib1.tables;
 
 import java.io.*;
@@ -24,12 +57,12 @@ public class EcmwfLocalConcepts {
     private static String PARAM_NUM_ID = "indicatorOfParameter";
 
     // input streams for the necessary localConcept files
-    private InputStream descriptionsIs = null;
-    private InputStream shortNamesIs = null;
-    private InputStream unitsIs = null;
+    //private InputStream descriptionsIs = null;
+    //private InputStream shortNamesIs = null;
+    //private InputStream unitsIs = null;
 
     // tableNumber -> paramNumber -> metadata from table
-    private HashMap<String, HashMap<String, HashMap<String,String>>> localConcepts = new HashMap<String, HashMap<String, HashMap<String,String>>>();
+    private HashMap<String, HashMap<String, HashMap<String,String>>> localConcepts = new HashMap<>();
 
     // location of the localConcept files
     private String ecmwfLocalConceptsLoc;
@@ -45,9 +78,9 @@ public class EcmwfLocalConcepts {
         ecmwfLocalConceptsLoc = sourcesPath+"thredds"+sep+"grib"+sep+"src"+sep+"main"+sep+"sources"+sep+"ecmwfGribApi"+sep;
         // initialize input streams for reading the localConcept files
         try {
-            descriptionsIs = new FileInputStream(ecmwfLocalConceptsLoc + "name.def");
-            shortNamesIs = new FileInputStream(ecmwfLocalConceptsLoc + "shortName.def");
-            unitsIs = new FileInputStream(ecmwfLocalConceptsLoc + "units.def");
+          parseLocalConcept(ecmwfLocalConceptsLoc + "shortName.def", SHORTNAME_ID);
+          parseLocalConcept(ecmwfLocalConceptsLoc + "name.def", DESCRIPTION_ID);
+          parseLocalConcept(ecmwfLocalConceptsLoc + "units.def", UNIT_ID);
         } catch  (IOException e) {
             e.printStackTrace();
         }
@@ -57,11 +90,12 @@ public class EcmwfLocalConcepts {
      * Parse the localConcept files needed to create grib1 tables for use by the CDM
      * @throws IOException
      */
-    public void parseLocalConcepts() throws IOException {
+    private void parseLocalConcept(String filename, String conceptName) throws IOException {
 
-        addLocalConcept(shortNamesIs, SHORTNAME_ID);
-        addLocalConcept(descriptionsIs, DESCRIPTION_ID);
-        addLocalConcept(unitsIs, UNIT_ID);
+      try (InputStream is = new FileInputStream(filename)) {
+        addLocalConcept(is, conceptName);
+      }
+
     }
 
     /**
@@ -90,7 +124,7 @@ public class EcmwfLocalConcepts {
             line = br.readLine(); // skip
 
         while (true) {
-            HashMap<String, String> items = new HashMap<String,String>();
+            HashMap<String, String> items = new HashMap<>();
             line = br.readLine();
             if (line == null) break; // done with the file
             if ((line.length() == 0) || line.startsWith("#")) continue;
@@ -118,7 +152,7 @@ public class EcmwfLocalConcepts {
      * @return cleaned version of lineIn
      */
     private String cleanLine(String lineIn) {
-        String lineOut = "";
+        String lineOut;
         lineOut = lineIn.replaceAll("'", "");
         lineOut = lineOut.replaceAll("\t", "");
         lineOut = lineOut.replaceAll(";", "");
@@ -136,24 +170,24 @@ public class EcmwfLocalConcepts {
      */
     private void storeConcept(String tableVersion, String parameterNumber, String key, String value) {
 
-        HashMap<String,HashMap<String, String>> tmpTable = null;
+        HashMap<String, HashMap<String, String>> tmpTable;
         if (localConcepts.containsKey(tableVersion)) {
             tmpTable = localConcepts.get(tableVersion);
             if (tmpTable.containsKey(parameterNumber)) {
-                HashMap tmpParam = (HashMap) tmpTable.get(parameterNumber);
+              HashMap<String, String> tmpParam = tmpTable.get(parameterNumber);
                 if (!tmpParam.containsKey(key)) {
                      tmpParam.put(key, value);
                 } else {
                     System.out.println("already has key value pair: " + key + ":" + value);
                 }
             } else {
-                HashMap<String, String> tmpParam = new HashMap<String,String>(4);
+                HashMap<String, String> tmpParam = new HashMap<>(4);
                 tmpParam.put(key, value);
                 tmpTable.put(parameterNumber, tmpParam);
             }
         } else {
-            tmpTable = new HashMap<String,HashMap<String, String>>();
-            HashMap<String, String> tmpParam = new HashMap<String,String>(4);
+            tmpTable = new HashMap<>();
+            HashMap<String, String> tmpParam = new HashMap<>(4);
             tmpParam.put(key, value);
             tmpTable.put(parameterNumber, tmpParam);
         }
@@ -173,7 +207,7 @@ public class EcmwfLocalConcepts {
         Calendar cal = Calendar.getInstance();
         String writeDate = dateFormat.format(cal.getTime());
         String grib1Info;
-        List<String> tableNums = new ArrayList<String>();
+        List<String> tableNums = new ArrayList<>();
         HashMap<String, String> paramInfo;
         Path dir = Paths.get(ecmwfLocalConceptsLoc.replace("sources/", "resources/resources/grib1/"));
         for (String tableNum : localConcepts.keySet()) {
@@ -253,11 +287,8 @@ public class EcmwfLocalConcepts {
 
         EcmwfLocalConcepts ec = new EcmwfLocalConcepts();
         try {
-            ec.parseLocalConcepts();
             ec.writeGrib1Tables();
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (ParseException e) {
+        } catch (IOException | ParseException e) {
             e.printStackTrace();
         }
     }

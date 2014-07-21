@@ -1,34 +1,34 @@
 /*
- * Copyright 1998-2009 University Corporation for Atmospheric Research/Unidata
+ * Copyright 1998-2014 University Corporation for Atmospheric Research/Unidata
  *
- * Portions of this software were developed by the Unidata Program at the
- * University Corporation for Atmospheric Research.
+ *   Portions of this software were developed by the Unidata Program at the
+ *   University Corporation for Atmospheric Research.
  *
- * Access and use of this software shall impose the following obligations
- * and understandings on the user. The user is granted the right, without
- * any fee or cost, to use, copy, modify, alter, enhance and distribute
- * this software, and any derivative works thereof, and its supporting
- * documentation for any purpose whatsoever, provided that this entire
- * notice appears in all copies of the software, derivative works and
- * supporting documentation.  Further, UCAR requests that the user credit
- * UCAR/Unidata in any publications that result from the use of this
- * software or in any product that includes this software. The names UCAR
- * and/or Unidata, however, may not be used in any advertising or publicity
- * to endorse or promote any products or commercial entity unless specific
- * written permission is obtained from UCAR/Unidata. The user also
- * understands that UCAR/Unidata is not obligated to provide the user with
- * any support, consulting, training or assistance of any kind with regard
- * to the use, operation and performance of this software nor to provide
- * the user with any updates, revisions, new versions or "bug fixes."
+ *   Access and use of this software shall impose the following obligations
+ *   and understandings on the user. The user is granted the right, without
+ *   any fee or cost, to use, copy, modify, alter, enhance and distribute
+ *   this software, and any derivative works thereof, and its supporting
+ *   documentation for any purpose whatsoever, provided that this entire
+ *   notice appears in all copies of the software, derivative works and
+ *   supporting documentation.  Further, UCAR requests that the user credit
+ *   UCAR/Unidata in any publications that result from the use of this
+ *   software or in any product that includes this software. The names UCAR
+ *   and/or Unidata, however, may not be used in any advertising or publicity
+ *   to endorse or promote any products or commercial entity unless specific
+ *   written permission is obtained from UCAR/Unidata. The user also
+ *   understands that UCAR/Unidata is not obligated to provide the user with
+ *   any support, consulting, training or assistance of any kind with regard
+ *   to the use, operation and performance of this software nor to provide
+ *   the user with any updates, revisions, new versions or "bug fixes."
  *
- * THIS SOFTWARE IS PROVIDED BY UCAR/UNIDATA "AS IS" AND ANY EXPRESS OR
- * IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
- * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
- * DISCLAIMED. IN NO EVENT SHALL UCAR/UNIDATA BE LIABLE FOR ANY SPECIAL,
- * INDIRECT OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING
- * FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT,
- * NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
- * WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
+ *   THIS SOFTWARE IS PROVIDED BY UCAR/UNIDATA "AS IS" AND ANY EXPRESS OR
+ *   IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ *   WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ *   DISCLAIMED. IN NO EVENT SHALL UCAR/UNIDATA BE LIABLE FOR ANY SPECIAL,
+ *   INDIRECT OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING
+ *   FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT,
+ *   NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
+ *   WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 package ucar.nc2.grib.grib2.table;
 
@@ -207,11 +207,7 @@ public class WmoCodeTable implements Comparable<WmoCodeTable> {
   }
 
   static public WmoTables readGribCodes(Version version) throws IOException {
-    InputStream ios = null;
-    try {
-      Class c = WmoCodeTable.class;
-      String name = version.getResourceName();
-      ios = c.getResourceAsStream(name);
+    try (InputStream ios = WmoCodeTable.class.getResourceAsStream(version.getResourceName())) {
       if (ios == null) {
         logger.error("cant open WmoCodeTable=" + version.getResourceName());
         throw new IOException("cant open WmoCodeTable=" + version.getResourceName());
@@ -226,13 +222,11 @@ public class WmoCodeTable implements Comparable<WmoCodeTable> {
       }
       Element root = doc.getRootElement();
 
-      Map<String, WmoCodeTable> map = new HashMap<String, WmoCodeTable>();
+      Map<String, WmoCodeTable> map = new HashMap<>();
       String[] elems = version.getElemNames();
 
       List<Element> featList = root.getChildren(elems[0]); // main element
-      //for (Element elem : featList) {
-      for (int i=0;i<featList.size();i++) {
-        Element elem = featList.get(i);
+      for (Element elem : featList) {
         //i == 1332
         String line = elem.getChildTextNormalize("No");
         String tableName = elem.getChildTextNormalize(elems[1]); // 1 = table name
@@ -269,21 +263,18 @@ public class WmoCodeTable implements Comparable<WmoCodeTable> {
 
       ios.close();
 
-      List<WmoCodeTable> tlist = new ArrayList<WmoCodeTable>(map.values());
+      List<WmoCodeTable> tlist = new ArrayList<>(map.values());
       Collections.sort(tlist);
       for (WmoCodeTable gt : tlist)
         Collections.sort(gt.entries);
 
-      Map<String, WmoCodeTable> map2 = new HashMap<String, WmoCodeTable>(2 * tlist.size());
+      Map<String, WmoCodeTable> map2 = new HashMap<>(2 * tlist.size());
       for (WmoCodeTable ct : tlist) {
         map2.put(ct.getTableId(), ct);
       }
 
       return new WmoTables(version.getResourceName(), tlist, map2);
 
-    } finally {
-      if (ios != null)
-        ios.close();
     }
   }
 
@@ -296,7 +287,7 @@ public class WmoCodeTable implements Comparable<WmoCodeTable> {
   public int category = -1;
   String id;
 
-  public List<TableEntry> entries = new ArrayList<TableEntry>();
+  public List<TableEntry> entries = new ArrayList<>();
   public Map<Integer, TableEntry> entryMap;
 
   WmoCodeTable() {
@@ -334,6 +325,7 @@ public class WmoCodeTable implements Comparable<WmoCodeTable> {
           category = Integer.parseInt(slist[i + 1]);
       }
     } catch (Exception e) {
+      logger.warn("Error parsing wmo table "+tableName, e);
     }
 
     isParameter = (discipline >= 0) && (category >= 0);
@@ -347,7 +339,7 @@ public class WmoCodeTable implements Comparable<WmoCodeTable> {
 
   TableEntry get(int value) {
     if (entryMap == null) {
-      entryMap = new HashMap<Integer, TableEntry>(2*entries.size());
+      entryMap = new HashMap<>(2*entries.size());
       for (TableEntry p : entries) {
         if (p.start == p.stop) // skip ranges
           entryMap.put(p.start, p);

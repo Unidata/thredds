@@ -1187,14 +1187,15 @@ public class Ghcnm extends AbstractIOServiceProvider {
     int balony = 0;
     long start = System.currentTimeMillis();
     System.out.printf("regexp %s%n", filename);
-    RandomAccessFile raf = new RandomAccessFile(filename, "r");
-    String line;
-    while (true) {
-      line = raf.readLine();
-      if (line == null) break;
-      if (line.startsWith("#")) continue;
-      if (line.trim().length() == 0) continue;
-      balony += parseLine(line);
+    try (RandomAccessFile raf = new RandomAccessFile(filename, "r")) {
+      String line;
+      while (true) {
+        line = raf.readLine();
+        if (line == null) break;
+        if (line.startsWith("#")) continue;
+        if (line.trim().length() == 0) continue;
+        balony += parseLine(line);
+      }
     }
 
     long took = System.currentTimeMillis() - start;
@@ -1205,28 +1206,28 @@ public class Ghcnm extends AbstractIOServiceProvider {
     long start = System.currentTimeMillis();
     System.out.printf("%s%n", filename);
     int balony = 0;
-    NetcdfFile ncfile = open(filename);
-    Sequence seq = (Sequence) ncfile.findVariable(RECORD);
-    StructureDataIterator iter = seq.getStructureIterator(-1);
-    try {
-      while (iter.hasNext()) {
-        StructureData sdata = iter.next();
-        StructureMembers.Member m = sdata.findMember(YEAR);
-        balony += sdata.getScalarInt(m);
+    try (NetcdfFile ncfile = open(filename)) {
+      Sequence seq = (Sequence) ncfile.findVariable(RECORD);
+      StructureDataIterator iter = seq.getStructureIterator(-1);
+      try {
+        while (iter.hasNext()) {
+          StructureData sdata = iter.next();
+          StructureMembers.Member m = sdata.findMember(YEAR);
+          balony += sdata.getScalarInt(m);
 
         /* StructureMembers sm = sdata.getStructureMembers();
        for (StructureMembers.Member m : sm.getMembers()) {
          Array data = sdata.getArray(m);
          balony += data.getSize();
        } */
+        }
+      } finally {
+        iter.finish();
       }
-    } finally {
-      iter.finish();
     }
     long took = System.currentTimeMillis() - start;
     System.out.printf("DONE %d == %d msecs%n", balony, took);
   }
-
 
   static public void main(String args[]) throws IOException {
     readData("C:/data/ghcnm/ghcnm.v3.0.0-beta1.20101207.qcu.dat");

@@ -41,7 +41,6 @@ import org.springframework.web.servlet.ModelAndView;
 import thredds.server.dataset.TdsRequestedDataset;
 import thredds.server.wms.config.WmsDetailedConfig;
 import thredds.servlet.ServletUtil;
-import thredds.util.ContentType;
 import ucar.nc2.dt.GridDataset;
 import uk.ac.rdg.resc.ncwms.controller.AbstractWmsController;
 import uk.ac.rdg.resc.ncwms.controller.RequestParams;
@@ -168,53 +167,46 @@ public final class ThreddsWmsController extends AbstractWmsController
       ThreddsLayerFactory layerFactory = new ThreddsLayerFactory( ds );
 
       ModelAndView modelAndView;
-      if ( request.equals( "GetCapabilities" ) )
-      {
-        // The Capabilities document will contain a single dataset
-        Collection<? extends Dataset> datasets = Arrays.asList( ds );
-        // In THREDDS we don't know the last update time so we use null
-        modelAndView = getCapabilities( datasets, null, params, httpServletRequest, usageLogEntry );
-        //httpServletResponse.setContentType(ContentType.xml.toString());
-      }
-      else if ( request.equals( "GetMap" ) )
-      {
-        modelAndView = getMap( params, layerFactory, httpServletResponse, usageLogEntry );
-      }
-      else if ( request.equals( "GetFeatureInfo" ) )
-      {
-        modelAndView = getFeatureInfo( params, layerFactory, httpServletRequest, httpServletResponse, usageLogEntry );
-      }
-      // The REQUESTs below are non-standard and could be refactored into
-      // a different servlet endpoint
-      else if (request.equals("GetMetadata"))
-      {
-        ThreddsMetadataController tms =
-            new ThreddsMetadataController(layerFactory, tdsWmsServerConfig, ds);
-        // This is a request for non-standard metadata.  (This will one
-        // day be replaced by queries to Capabilities fragments, if possible.)
-        // Delegate to the ThreddsMetadataController
-        modelAndView = tms.handleRequest( httpServletRequest, httpServletResponse, usageLogEntry );
-      }
-      else if ( request.equals( "GetLegendGraphic" ) )
-      {
-        // This is a request for an image that contains the colour scale
-        // and range for a given layer
-        modelAndView = getLegendGraphic( params, layerFactory, httpServletResponse );
-      }
-      else if ( request.equals( "GetTransect" ) )
-      {
-        modelAndView = getTransect( params, layerFactory, httpServletResponse, usageLogEntry );
-      }else if( request.equals("GetVerticalProfile"))
-      {
-    	modelAndView = getVerticalProfile(params, layerFactory, httpServletResponse, usageLogEntry);  
-      }
-      else if(request.equals("GetVerticalSection"))
-      {
-    	modelAndView = getVerticalSection(params, layerFactory, httpServletResponse, usageLogEntry);
-      }
-      else
-      {
-        throw new OperationNotSupportedException( request );
+      switch (request) {
+        case "GetCapabilities":
+          // The Capabilities document will contain a single dataset
+          Collection<? extends Dataset> datasets = Arrays.asList(ds);
+          // In THREDDS we don't know the last update time so we use null
+          modelAndView = getCapabilities(datasets, null, params, httpServletRequest, usageLogEntry);
+          //httpServletResponse.setContentType(ContentType.xml.toString());
+          break;
+        case "GetMap":
+          modelAndView = getMap(params, layerFactory, httpServletResponse, usageLogEntry);
+          break;
+        case "GetFeatureInfo":
+          modelAndView = getFeatureInfo(params, layerFactory, httpServletRequest, httpServletResponse, usageLogEntry);
+          break;
+        // The REQUESTs below are non-standard and could be refactored into
+        // a different servlet endpoint
+        case "GetMetadata":
+          ThreddsMetadataController tms =
+                  new ThreddsMetadataController(layerFactory, tdsWmsServerConfig, ds);
+          // This is a request for non-standard metadata.  (This will one
+          // day be replaced by queries to Capabilities fragments, if possible.)
+          // Delegate to the ThreddsMetadataController
+          modelAndView = tms.handleRequest(httpServletRequest, httpServletResponse, usageLogEntry);
+          break;
+        case "GetLegendGraphic":
+          // This is a request for an image that contains the colour scale
+          // and range for a given layer
+          modelAndView = getLegendGraphic(params, layerFactory, httpServletResponse);
+          break;
+        case "GetTransect":
+          modelAndView = getTransect(params, layerFactory, httpServletResponse, usageLogEntry);
+          break;
+        case "GetVerticalProfile":
+          modelAndView = getVerticalProfile(params, layerFactory, httpServletResponse, usageLogEntry);
+          break;
+        case "GetVerticalSection":
+          modelAndView = getVerticalSection(params, layerFactory, httpServletResponse, usageLogEntry);
+          break;
+        default:
+          throw new OperationNotSupportedException(request);
       }
 
       return modelAndView;

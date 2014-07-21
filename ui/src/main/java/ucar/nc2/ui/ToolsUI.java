@@ -801,7 +801,20 @@ public class ToolsUI extends JPanel {
 
     AbstractAction logoAction = new AbstractAction() {
       public void actionPerformed(ActionEvent evt) {
-        new SplashScreen();
+        new MySplashScreen();
+        /* final SplashScreen splash = SplashScreen.getSplashScreen();
+               if (splash == null) {
+                   System.out.println("SplashScreen.getSplashScreen() returned null");
+                   return;
+               }
+               Graphics2D g = splash.createGraphics();
+               if (g == null) {
+                   System.out.println("g is null");
+                   return;
+               }
+        Image image = Resource.getImage("/resources/nj22/ui/pix/ring2.jpg");
+        g.drawImage(image, null, null);  */
+
       }
     };
     BAMutil.setActionProperties(logoAction, null, "Logo", false, 'L', 0);
@@ -6143,8 +6156,8 @@ public class ToolsUI extends JPanel {
   }
 
   // Splash Window
-  private static class SplashScreen extends javax.swing.JWindow {
-    public SplashScreen() {
+  private static class MySplashScreen extends javax.swing.JWindow {
+    public MySplashScreen() {
       Image image = Resource.getImage("/resources/nj22/ui/pix/ring2.jpg");
       ImageIcon icon = new ImageIcon(image);
       JLabel lab = new JLabel(icon);
@@ -6164,6 +6177,7 @@ public class ToolsUI extends JPanel {
       setVisible(true);
     }
   }
+
 
   //////////////////////////////////////////////////////////////////////////
   static private void exit() {
@@ -6236,7 +6250,7 @@ public class ToolsUI extends JPanel {
     }
 
     // get a splash screen up right away
-    final SplashScreen splash = new SplashScreen();
+    // final SplashScreen splash = new SplashScreen();
 
     if (debugListen) {
       System.out.println("Arguments:");
@@ -6423,7 +6437,7 @@ public class ToolsUI extends JPanel {
     }
 
     // get a splash screen up right away
-    final SplashScreen splash = new SplashScreen();
+    final MySplashScreen splash = new MySplashScreen();
 
     // misc initializations
     BAMutil.setResourcePath("/resources/nj22/ui/icons/");

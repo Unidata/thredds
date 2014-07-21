@@ -1,34 +1,34 @@
 /*
- * Copyright 1998-2013 University Corporation for Atmospheric Research/Unidata
+ * Copyright 1998-2014 University Corporation for Atmospheric Research/Unidata
  *
- *  Portions of this software were developed by the Unidata Program at the
- *  University Corporation for Atmospheric Research.
+ *   Portions of this software were developed by the Unidata Program at the
+ *   University Corporation for Atmospheric Research.
  *
- *  Access and use of this software shall impose the following obligations
- *  and understandings on the user. The user is granted the right, without
- *  any fee or cost, to use, copy, modify, alter, enhance and distribute
- *  this software, and any derivative works thereof, and its supporting
- *  documentation for any purpose whatsoever, provided that this entire
- *  notice appears in all copies of the software, derivative works and
- *  supporting documentation.  Further, UCAR requests that the user credit
- *  UCAR/Unidata in any publications that result from the use of this
- *  software or in any product that includes this software. The names UCAR
- *  and/or Unidata, however, may not be used in any advertising or publicity
- *  to endorse or promote any products or commercial entity unless specific
- *  written permission is obtained from UCAR/Unidata. The user also
- *  understands that UCAR/Unidata is not obligated to provide the user with
- *  any support, consulting, training or assistance of any kind with regard
- *  to the use, operation and performance of this software nor to provide
- *  the user with any updates, revisions, new versions or "bug fixes."
+ *   Access and use of this software shall impose the following obligations
+ *   and understandings on the user. The user is granted the right, without
+ *   any fee or cost, to use, copy, modify, alter, enhance and distribute
+ *   this software, and any derivative works thereof, and its supporting
+ *   documentation for any purpose whatsoever, provided that this entire
+ *   notice appears in all copies of the software, derivative works and
+ *   supporting documentation.  Further, UCAR requests that the user credit
+ *   UCAR/Unidata in any publications that result from the use of this
+ *   software or in any product that includes this software. The names UCAR
+ *   and/or Unidata, however, may not be used in any advertising or publicity
+ *   to endorse or promote any products or commercial entity unless specific
+ *   written permission is obtained from UCAR/Unidata. The user also
+ *   understands that UCAR/Unidata is not obligated to provide the user with
+ *   any support, consulting, training or assistance of any kind with regard
+ *   to the use, operation and performance of this software nor to provide
+ *   the user with any updates, revisions, new versions or "bug fixes."
  *
- *  THIS SOFTWARE IS PROVIDED BY UCAR/UNIDATA "AS IS" AND ANY EXPRESS OR
- *  IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
- *  WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
- *  DISCLAIMED. IN NO EVENT SHALL UCAR/UNIDATA BE LIABLE FOR ANY SPECIAL,
- *  INDIRECT OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING
- *  FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT,
- *  NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
- *  WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
+ *   THIS SOFTWARE IS PROVIDED BY UCAR/UNIDATA "AS IS" AND ANY EXPRESS OR
+ *   IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ *   WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ *   DISCLAIMED. IN NO EVENT SHALL UCAR/UNIDATA BE LIABLE FOR ANY SPECIAL,
+ *   INDIRECT OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING
+ *   FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT,
+ *   NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
+ *   WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
 package thredds.server.ncss.util;
@@ -76,7 +76,7 @@ public final class NcssRequestUtils implements ApplicationContextAware {
 
   public static GridAsPointDataset buildGridAsPointDataset(GridDataset gds, List<String> vars) {
 
-    List<GridDatatype> grids = new ArrayList<GridDatatype>();
+    List<GridDatatype> grids = new ArrayList<>();
     for (String gridName : vars) {
       GridDatatype grid = gds.findGridDatatype(gridName);
 
@@ -88,7 +88,7 @@ public final class NcssRequestUtils implements ApplicationContextAware {
   }
 
   public static List<String> getAllVarsAsList(GridDataset gds) {
-    List<String> vars = new ArrayList<String>();
+    List<String> vars = new ArrayList<>();
 
     List<VariableSimpleIF> allVars = gds.getDataVariables();
     for (VariableSimpleIF var : allVars) {
@@ -110,7 +110,7 @@ public final class NcssRequestUtils implements ApplicationContextAware {
     if (start.isAfter(gdsDates.get(gdsDates.size() - 1)) || end.isBefore(gdsDates.get(0)))
       throw new OutOfBoundariesException("Requested time range does not intersect the Data Time Range = " + gdsDates.get(0) + " to " + gdsDates.get(gdsDates.size() - 1));
 
-    List<CalendarDate> wantDates = new ArrayList<CalendarDate>();
+    List<CalendarDate> wantDates = new ArrayList<>();
 
     if (dates.isPoint()) {
       int best_index = 0;
@@ -144,7 +144,7 @@ public final class NcssRequestUtils implements ApplicationContextAware {
   public static List<VariableSimpleIF> wantedVars2VariableSimple(List<String> wantedVars, GridDataset gds, NetcdfDataset ncfile) {
 
     // need VariableSimpleIF for each variable
-    List<VariableSimpleIF> varList = new ArrayList<VariableSimpleIF>(wantedVars.size());
+    List<VariableSimpleIF> varList = new ArrayList<>(wantedVars.size());
 
     //And wantedVars must be in the dataset
     for (String var : wantedVars) {
@@ -168,9 +168,9 @@ public final class NcssRequestUtils implements ApplicationContextAware {
 
   public static GridDatatype getTimeGrid(Map<String, List<String>> groupedVars, GridDataset gridDataset) {
 
-    List<String> keys = new ArrayList<String>(groupedVars.keySet());
+    List<String> keys = new ArrayList<>(groupedVars.keySet());
     GridDatatype timeGrid = null;
-    List<String> allVars = new ArrayList<String>();
+    List<String> allVars = new ArrayList<>();
     for (String key : keys) {
       allVars.addAll(groupedVars.get(key));
     }
@@ -195,7 +195,7 @@ public final class NcssRequestUtils implements ApplicationContextAware {
       return -1.0;
 
     Integer wIndex = tAxis.findTimeIndexFromCalendarDate(date);
-    Double coordVal = 0.;
+    Double coordVal;
 
     //Check axis dataType --> Time axis for some collections (joinExistingOne) is String
     //In that case we use the seconds since the origin of the time axis as unit
@@ -213,7 +213,7 @@ public final class NcssRequestUtils implements ApplicationContextAware {
   public static Double getTargetLevelForVertCoord(CoordinateAxis1D zAxis, Double vertLevel) {
 
     Double targetLevel = vertLevel;
-    int coordLevel = 0;
+    int coordLevel;
     // If zAxis has one level zAxis.findCoordElement(vertLevel) returns -1 and only works with vertLevel = 0
     // Workaround while not fixed in CoordinateAxis1D
     if (zAxis.getSize() == 1) {
@@ -232,14 +232,6 @@ public final class NcssRequestUtils implements ApplicationContextAware {
 
   /**
    * Returns the actual vertical level if the grid has vertical transformation or -9999.9 otherwise
-   *
-   * @param grid
-   * @param date
-   * @param point
-   * @param targetLevel
-   * @return
-   * @throws InvalidRangeException
-   * @throws IOException
    */
   public static double getActualVertLevel(GridDatatype grid, CalendarDate date, LatLonPoint point, double targetLevel) throws IOException, InvalidRangeException {
 
@@ -260,9 +252,7 @@ public final class NcssRequestUtils implements ApplicationContextAware {
         timeIndex = timeAxis.findTimeIndexFromCalendarDate(date);
       }//If null timAxis might be 2D -> not supported (handle this)
 
-      ArrayDouble.D1 actualLevels = null;
-
-      actualLevels = vt.getCoordinateArray1D(timeIndex, result[0], result[1]);
+      ArrayDouble.D1 actualLevels = vt.getCoordinateArray1D(timeIndex, result[0], result[1]);
       actualLevel = actualLevels.get(vertCoord);
     }
 

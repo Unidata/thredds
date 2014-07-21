@@ -53,7 +53,7 @@ class DatasetPathSettings {
     {
         this.pathSpec = el.getAttributeValue("pathSpec");
         this.defaultSettings = new LayerSettings(el.getChild("pathDefaults"));
-        this.settingsPerVariable = new HashMap<String, LayerSettings>();
+        this.settingsPerVariable = new HashMap<>();
 
         try
         {

@@ -29,9 +29,6 @@
 package thredds.server.wms.config;
 
 import org.jdom2.Element;
-import ucar.nc2.units.SimpleUnit;
-import ucar.units.ConversionException;
-import uk.ac.rdg.resc.edal.util.Range;
 
 /**
  * Encapsulates the setting per standard name
@@ -42,13 +39,13 @@ class StandardNameSettings {
     private final String standardName;
     private final String units;
     private final LayerSettings settings;
-    private final SimpleUnit nativeUnits;
+    //private final SimpleUnit nativeUnits;
 
     public StandardNameSettings(Element el) throws WmsConfigException
     {
         this.standardName = el.getAttributeValue("name");
         this.units = el.getAttributeValue("units");
-        this.nativeUnits = SimpleUnit.factory(this.units);
+        //this.nativeUnits = SimpleUnit.factory(this.units);
         this.settings = new LayerSettings(el);
     }
 

@@ -54,12 +54,10 @@ public class WmsDetailedConfig
     private LayerSettings defaultSettings;
 
     /** Maps standard names to corresponding default settings */
-    private Map<String, StandardNameSettings> standardNames =
-            new HashMap<String, StandardNameSettings>();
+    private Map<String, StandardNameSettings> standardNames = new HashMap<>();
 
     /** Maps dataset paths to corresponding default settings */
-    private Map<String, DatasetPathSettings> datasetPaths =
-            new HashMap<String, DatasetPathSettings>();
+    private Map<String, DatasetPathSettings> datasetPaths = new HashMap<>();
 
     /** Private constructor to prevent direct instantiation */
     private WmsDetailedConfig() {}

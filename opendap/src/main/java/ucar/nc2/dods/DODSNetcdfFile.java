@@ -2332,8 +2332,7 @@ if(OLDGROUPCODE) {
         String url = "http://localhost:8080/thredds/dodsC/testContent/testData.nc.ascii?reftime[0:1:0]";
 
         // "http://ingrid.ldeo.columbia.edu/expert/SOURCES/.LEVITUS94/dods";
-        try {
-            DODSNetcdfFile df = new DODSNetcdfFile(url, null);
+        try (DODSNetcdfFile df = new DODSNetcdfFile(url, null)) {
             System.out.println("dods file = " + url + "\n" + df);
         } catch (Exception ioe) {
             System.out.println("error = " + url);

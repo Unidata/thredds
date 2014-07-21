@@ -51,7 +51,7 @@ public class DoradeSweep {
     DoradeSWIB mySWIB;
     boolean littleEndian;
 
-    public static class DoradeSweepException extends Exception {
+    public static class DoradeSweepException extends IOException {
         protected DoradeSweepException(String message) {
             super(message);
         }
@@ -60,7 +60,7 @@ public class DoradeSweep {
         }
     }
 
-    public static class MovingSensorException extends Exception {
+    public static class MovingSensorException extends IOException {
         protected MovingSensorException(String message) {
             super(message);
         }

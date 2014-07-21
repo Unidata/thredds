@@ -72,322 +72,293 @@ import uk.ac.rdg.resc.ncwms.wms.VectorLayer;
  *
  * @author Jon
  */
-public class ThreddsDataset implements Dataset
-{
+public class ThreddsDataset implements Dataset {
 
-	private static final Logger log = LoggerFactory.getLogger( ThreddsDataset.class );	
+  private static final Logger log = LoggerFactory.getLogger(ThreddsDataset.class);
 
-	private final String urlPath;
-	private final String title;
-	private final Map<String, ThreddsScalarLayer> scalarLayers =
-			new LinkedHashMap<String, ThreddsScalarLayer>();
-	private final Map<String, ThreddsVectorLayer> vectorLayers =
-			new LinkedHashMap<String, ThreddsVectorLayer>();
+  private final String urlPath;
+  private final String title;
+  private final Map<String, ThreddsScalarLayer> scalarLayers = new LinkedHashMap<>();
+  private final Map<String, ThreddsVectorLayer> vectorLayers = new LinkedHashMap<>();
 
-	/**
-	 * Creates a new ThreddsDataset with the given id from the given NetcdfDataset
-	 */
-	private ThreddsDataset( String urlPath, GridDataset gridDataset, WmsDetailedConfig wmsConfig ) throws IOException
-	{
-		this.urlPath = urlPath;
-		this.title = gridDataset.getTitle();
+  /**
+   * Creates a new ThreddsDataset with the given id from the given NetcdfDataset
+   */
+  private ThreddsDataset(String urlPath, GridDataset gridDataset, WmsDetailedConfig wmsConfig) throws IOException {
+    this.urlPath = urlPath;
+    this.title = gridDataset.getTitle();
 
-		NetcdfDataset ncDataset = (NetcdfDataset) gridDataset.getNetcdfFile();
+    NetcdfDataset ncDataset = (NetcdfDataset) gridDataset.getNetcdfFile();
 
-		DataReadingStrategy drStrategy =CdmUtils.getOptimumDataReadingStrategy(ncDataset);
-		// Now load the scalar layers    
-		Collection<CoverageMetadata> ccm =CdmUtils.readCoverageMetadata(gridDataset);
-		Iterator<CoverageMetadata> icm = ccm.iterator();
-		while ( icm.hasNext()  ){    
-			CoverageMetadata cm  = icm.next();
-			// Get the most appropriate data-reading strategy for this dataset
-			//PixelMap pxm = new PixelMap(cm.getHorizontalGrid(), null);
-			//DataReadingStrategy drStrategy = CdmUtils.getOptimumDataReadingStrategy( pxm, ncDataset );
-			GridDatatype gdt = gridDataset.findGridDatatype(cm.getId());
-			//GridDatatype gdt = gridDataset.findGridByShortName(cm.getId());
-			ThreddsScalarLayer tsl = ThreddsScalarLayer.getNewLayer(cm, gdt, drStrategy, this, wmsConfig);
-			this.scalarLayers.put( tsl.getName()  , tsl);
-		}
-		//CdmUtils.findAndUpdateLayers( gridDataset, THREDDS_LAYER_BUILDER, this.scalarLayers );
+    DataReadingStrategy drStrategy = CdmUtils.getOptimumDataReadingStrategy(ncDataset);
+    // Now load the scalar layers
+    Collection<CoverageMetadata> ccm = CdmUtils.readCoverageMetadata(gridDataset);
+    Iterator<CoverageMetadata> icm = ccm.iterator();
+    while (icm.hasNext()) {
+      CoverageMetadata cm = icm.next();
+      // Get the most appropriate data-reading strategy for this dataset
+      //PixelMap pxm = new PixelMap(cm.getHorizontalGrid(), null);
+      //DataReadingStrategy drStrategy = CdmUtils.getOptimumDataReadingStrategy( pxm, ncDataset );
+      GridDatatype gdt = gridDataset.findGridDatatype(cm.getId());
+      //GridDatatype gdt = gridDataset.findGridByShortName(cm.getId());
+      ThreddsScalarLayer tsl = ThreddsScalarLayer.getNewLayer(cm, gdt, drStrategy, this, wmsConfig);
+      this.scalarLayers.put(tsl.getName(), tsl);
+    }
+    //CdmUtils.findAndUpdateLayers( gridDataset, THREDDS_LAYER_BUILDER, this.scalarLayers );
 
 
-		// Find the vector quantities
-		Collection<VectorLayer> vectorLayersColl = WmsUtils.findVectorLayers( this.scalarLayers.values() );
-		// Add the vector quantities to the map of layers
-		for ( VectorLayer vecLayer : vectorLayersColl )
-		{
-			// We must wrap these vector layers as ThreddsVectorLayers to ensure that
-			// the name of each layer matches its id.
-			ThreddsVectorLayer tdsVecLayer = new ThreddsVectorLayer(vecLayer);
-			tdsVecLayer.setLayerSettings(wmsConfig.getSettings(tdsVecLayer));
-			this.vectorLayers.put( vecLayer.getId(), tdsVecLayer );
-		}
-	}
+    // Find the vector quantities
+    Collection<VectorLayer> vectorLayersColl = WmsUtils.findVectorLayers(this.scalarLayers.values());
+    // Add the vector quantities to the map of layers
+    for (VectorLayer vecLayer : vectorLayersColl) {
+      // We must wrap these vector layers as ThreddsVectorLayers to ensure that
+      // the name of each layer matches its id.
+      ThreddsVectorLayer tdsVecLayer = new ThreddsVectorLayer(vecLayer);
+      tdsVecLayer.setLayerSettings(wmsConfig.getSettings(tdsVecLayer));
+      this.vectorLayers.put(vecLayer.getId(), tdsVecLayer);
+    }
+  }
 
-	/**
-	 * Creates a new ThreddsDataset for one single layer 
-	 */  
-	private ThreddsDataset(String urlPath, GridDataset gd, List<String> layers, WmsDetailedConfig wmsConfig){
+  /**
+   * Creates a new ThreddsDataset for one single layer
+   */
+  private ThreddsDataset(String urlPath, GridDataset gd, List<String> layers, WmsDetailedConfig wmsConfig) {
 
-		this.urlPath = urlPath;
-		this.title = gd.getTitle();
+    this.urlPath = urlPath;
+    this.title = gd.getTitle();
 
-		NetcdfDataset ncDataset = (NetcdfDataset) gd.getNetcdfFile();	   
-		DataReadingStrategy drStrategy =CdmUtils.getOptimumDataReadingStrategy(ncDataset);
+    NetcdfDataset ncDataset = (NetcdfDataset) gd.getNetcdfFile();
+    DataReadingStrategy drStrategy = CdmUtils.getOptimumDataReadingStrategy(ncDataset);
 
-		for(String layer : layers){
-			//GridDatatype gdt = gd.findGridByShortName(layer);
-			GridDatatype gdt = gd.findGridDatatype(layer);
-			CoverageMetadata cm = CdmUtils.readCoverageMetadata(gdt);			
-			ThreddsScalarLayer tsl = ThreddsScalarLayer.getNewLayer(cm, gdt, drStrategy, this, wmsConfig);		  
-			this.scalarLayers.put( tsl.getName()  , tsl);
-		}
+    for (String layer : layers) {
+      //GridDatatype gdt = gd.findGridByShortName(layer);
+      GridDatatype gdt = gd.findGridDatatype(layer);
+      CoverageMetadata cm = CdmUtils.readCoverageMetadata(gdt);
+      ThreddsScalarLayer tsl = ThreddsScalarLayer.getNewLayer(cm, gdt, drStrategy, this, wmsConfig);
+      this.scalarLayers.put(tsl.getName(), tsl);
+    }
 
-		// Find the vector quantities
-		Collection<VectorLayer> vectorLayersColl = WmsUtils.findVectorLayers( this.scalarLayers.values() );
-		// Add the vector quantities to the map of layers
-		for ( VectorLayer vecLayer : vectorLayersColl )
-		{
-			// We must wrap these vector layers as ThreddsVectorLayers to ensure that
-			// the name of each layer matches its id.
-			ThreddsVectorLayer tdsVecLayer = new ThreddsVectorLayer(vecLayer);
-			tdsVecLayer.setLayerSettings(wmsConfig.getSettings(tdsVecLayer));
-			this.vectorLayers.put( vecLayer.getId(), tdsVecLayer );
-		}	  
+    // Find the vector quantities
+    Collection<VectorLayer> vectorLayersColl = WmsUtils.findVectorLayers(this.scalarLayers.values());
+    // Add the vector quantities to the map of layers
+    for (VectorLayer vecLayer : vectorLayersColl) {
+      // We must wrap these vector layers as ThreddsVectorLayers to ensure that
+      // the name of each layer matches its id.
+      ThreddsVectorLayer tdsVecLayer = new ThreddsVectorLayer(vecLayer);
+      tdsVecLayer.setLayerSettings(wmsConfig.getSettings(tdsVecLayer));
+      this.vectorLayers.put(vecLayer.getId(), tdsVecLayer);
+    }
 
-	}
+  }
 
-	/**
-	 * Uses the {@link #getDatasetPath() url path} as the unique id.
-	 */
-	@Override
-	public String getId()
-	{
-		return this.urlPath;
-	}
+  /**
+   * Uses the {@link #getDatasetPath() url path} as the unique id.
+   */
+  @Override
+  public String getId() {
+    return this.urlPath;
+  }
 
-	@Override
-	public String getTitle()
-	{
-		return this.title;
-	}
+  @Override
+  public String getTitle() {
+    return this.title;
+  }
 
-	/** Gets the path that was specified on the incoming URL */
-	public String getDatasetPath()
-	{
-		return this.urlPath;
-	}
+  /**
+   * Gets the path that was specified on the incoming URL
+   */
+  public String getDatasetPath() {
+    return this.urlPath;
+  }
 
-	/**
-	 * Returns the current time, since datasets could change at any time without
-	 * our knowledge.
-	 *
-	 * @see ThreddsServerConfig#getLastUpdateTime()
-	 */
-	@Override
-	public DateTime getLastUpdateTime()
-	{
-		return new DateTime();
-	}
+  /**
+   * Returns the current time, since datasets could change at any time without
+   * our knowledge.
+   *
+   * @see ThreddsServerConfig#getLastUpdateTime()
+   */
+  @Override
+  public DateTime getLastUpdateTime() {
+    return new DateTime();
+  }
 
-	/**
-	 * Gets the {@link uk.ac.rdg.resc.ncwms.wms.Layer} with the given {@link uk.ac.rdg.resc.ncwms.wms.Layer#getId() id}.  The id
-	 * is unique within the dataset, not necessarily on the whole server.
-	 *
-	 * @return The layer with the given id, or null if there is no layer with
-	 *         the given id.
-	 * @todo repetitive of code in ncwms.config.Dataset: any way to refactor?
-	 */
-	@Override
-	public ThreddsLayer getLayerById( String layerId )
-	{
-		ThreddsLayer layer = this.scalarLayers.get( layerId );
-		if ( layer == null )
-			layer = this.vectorLayers.get( layerId );
+  /**
+   * Gets the {@link uk.ac.rdg.resc.ncwms.wms.Layer} with the given {@link uk.ac.rdg.resc.ncwms.wms.Layer#getId() id}.  The id
+   * is unique within the dataset, not necessarily on the whole server.
+   *
+   * @return The layer with the given id, or null if there is no layer with
+   * the given id.
+   * @todo repetitive of code in ncwms.config.Dataset: any way to refactor?
+   */
+  @Override
+  public ThreddsLayer getLayerById(String layerId) {
+    ThreddsLayer layer = this.scalarLayers.get(layerId);
+    if (layer == null)
+      layer = this.vectorLayers.get(layerId);
 
-		return layer;
-	}
+    return layer;
+  }
 
-	/**
-	 * @todo repetitive of code in ncwms.config.Dataset: any way to refactor?
-	 */
-	@Override
-	public Set<Layer> getLayers()
-	{
-		Set<Layer> layerSet = new LinkedHashSet<Layer>();
-		layerSet.addAll( this.scalarLayers.values() );
-		layerSet.addAll( this.vectorLayers.values() );
-		return layerSet;
-	}
+  /**
+   * @todo repetitive of code in ncwms.config.Dataset: any way to refactor?
+   */
+  @Override
+  public Set<Layer> getLayers() {
+    Set<Layer> layerSet = new LinkedHashSet<>();
+    layerSet.addAll(this.scalarLayers.values());
+    layerSet.addAll(this.vectorLayers.values());
+    return layerSet;
+  }
 
-	/**
-	 * Returns an empty string
-	 */
-	@Override
-	public String getCopyrightStatement()
-	{
-		return "";
-	}
+  /**
+   * Returns an empty string
+   */
+  @Override
+  public String getCopyrightStatement() {
+    return "";
+  }
 
-	/**
-	 * Returns an empty string
-	 */
-	@Override
-	public String getMoreInfoUrl()
-	{
-		return "";
-	}
+  /**
+   * Returns an empty string
+   */
+  @Override
+  public String getMoreInfoUrl() {
+    return "";
+  }
 
-	@Override
-	public boolean isReady()
-	{
-		return true;
-	}
+  @Override
+  public boolean isReady() {
+    return true;
+  }
 
-	@Override
-	public boolean isLoading()
-	{
-		return false;
-	}
+  @Override
+  public boolean isLoading() {
+    return false;
+  }
 
-	@Override
-	public boolean isError()
-	{
-		return false;
-	}
+  @Override
+  public boolean isError() {
+    return false;
+  }
 
-	@Override
-	public Exception getException()
-	{
-		return null;
-	}
+  @Override
+  public Exception getException() {
+    return null;
+  }
 
-	@Override
-	public boolean isDisabled()
-	{
-		return false;
-	}
+  @Override
+  public boolean isDisabled() {
+    return false;
+  }
 
-	/**
-	 * Builds a ThreddsDataset specific for each WMS requests that contains only the layers needed by the requests.
-	 * 
-	 * @return
-	 * @throws IOException 
-	 * @throws DatasetException 
-	 * @throws WmsException 
-	 */
-	static ThreddsDataset getThreddsDatasetForRequest(String request, GridDataset gridDataset, TdsRequestedDataset reqDataset,  WmsDetailedConfig wmsConfig, RequestParams params) throws IOException, DatasetException, WmsException{
+  /**
+   * Builds a ThreddsDataset specific for each WMS requests that contains only the layers needed by the requests.
+   *
+   * @return ThreddsDataset
+   * @throws IOException
+   * @throws DatasetException
+   * @throws WmsException
+   */
+  static ThreddsDataset getThreddsDatasetForRequest(String request, GridDataset gridDataset, TdsRequestedDataset reqDataset, WmsDetailedConfig wmsConfig, RequestParams params) throws IOException, DatasetException, WmsException {
 
-		ThreddsDataset tdsds = null;
+    ThreddsDataset tdsds = null;
 
-		//GetLegendGraphic may not even need to create a ThreddsDataset (if no text is required)
-		if( request.equals("GetLegendGraphic") &&  params.getString("LAYER")== null) return null;
+    //GetLegendGraphic may not even need to create a ThreddsDataset (if no text is required)
+    if (request.equals("GetLegendGraphic") && params.getString("LAYER") == null) return null;
 
-		if( params.getString("LAYERS")== null && params.getString("LAYER")== null  && params.getString("LAYERNAME")== null ){
-			tdsds = new ThreddsDataset(reqDataset.getPath() , gridDataset, wmsConfig);
-		}else{
-			//Only one layer for each request. Need two components for vector layers!		
-			String layers =params.getString("LAYERS");			
-			if(layers==null)					
-				layers = params.getString("LAYER");
-			if(layers==null)
-				layers= params.getString("LAYERNAME");
+    if (params.getString("LAYERS") == null && params.getString("LAYER") == null && params.getString("LAYERNAME") == null) {
+      tdsds = new ThreddsDataset(reqDataset.getPath(), gridDataset, wmsConfig);
+    } else {
+      //Only one layer for each request. Need two components for vector layers!
+      String layers = params.getString("LAYERS");
+      if (layers == null)
+        layers = params.getString("LAYER");
+      if (layers == null)
+        layers = params.getString("LAYERNAME");
 
-			List<String> requestedLayers = getLayerComponents(gridDataset, layers);					
-			tdsds = new ThreddsDataset(reqDataset.getPath(), gridDataset, requestedLayers, wmsConfig);
-		}          
-		return tdsds;
-	}
+      List<String> requestedLayers = getLayerComponents(gridDataset, layers);
+      tdsds = new ThreddsDataset(reqDataset.getPath(), gridDataset, requestedLayers, wmsConfig);
+    }
+    return tdsds;
+  }
 
-	/**
-	 * 
-	 * Here we have to revert what was done in WMSUtils methods for creating the virtual datasets
-	 * 
-	 * @param gd
-	 * @param layer
-	 * @return
-	 */
-	private static List<String> getLayerComponents(GridDataset gd, String layer){
+  /**
+   * Here we have to revert what was done in WMSUtils methods for creating the virtual datasets
+   */
+  private static List<String> getLayerComponents(GridDataset gd, String layer) {
 
-		List<String> layers = new ArrayList<String>();
+    List<String> layers = new ArrayList<>();
 
-		
-		//Layer name is grid.getFullName()  --> vs.getFullName()
-		GridDatatype grid = gd.findGridDatatype(layer); //Actually searches by vs.getFullName()
-			
 
-		if(grid ==null){
-			List<GridDatatype> grids = gd.getGrids();
-			Iterator<GridDatatype> gridsIt = grids.iterator();
+    //Layer name is grid.getFullName()  --> vs.getFullName()
+    GridDatatype grid = gd.findGridDatatype(layer); //Actually searches by vs.getFullName()
 
-			while(gridsIt.hasNext() && layers.size() < 2){
-				GridDatatype g = gridsIt.next();
-				//Search the components by standard_name, long_name and fullname				
-				VariableDS var = g.getVariable();
-				Attribute stdName = var.findAttributeIgnoreCase("standard_name"); 
-				if( stdName != null ){
 
-					if( isComponent(layer, stdName.getStringValue()) )
-						layers.add(var.getFullName());
+    if (grid == null) {
+      List<GridDatatype> grids = gd.getGrids();
+      Iterator<GridDatatype> gridsIt = grids.iterator();
 
-				}else{
-					Attribute longName = var.findAttributeIgnoreCase("long_name");
-					if(longName != null){
-						if( isComponent(layer, longName.getStringValue()) )
-							layers.add(var.getFullName());
+      while (gridsIt.hasNext() && layers.size() < 2) {
+        GridDatatype g = gridsIt.next();
+        //Search the components by standard_name, long_name and fullname
+        VariableDS var = g.getVariable();
+        Attribute stdName = var.findAttributeIgnoreCase("standard_name");
+        if (stdName != null) {
 
-					}else{//full name
-						if( isComponent(layer, var.getFullName()) )
-							layers.add(var.getFullName() );
-					}
-				}				
+          if (isComponent(layer, stdName.getStringValue()))
+            layers.add(var.getFullName());
 
-			}
+        } else {
+          Attribute longName = var.findAttributeIgnoreCase("long_name");
+          if (longName != null) {
+            if (isComponent(layer, longName.getStringValue()))
+              layers.add(var.getFullName());
 
-		}else{
-			layers.add(layer);
-		}
+          } else {//full name
+            if (isComponent(layer, var.getFullName()))
+              layers.add(var.getFullName());
+          }
+        }
 
-		return layers;
-	}
+      }
 
-	/**
-	 * Returns true if the layerName contains some of the standard components prefixes for CF-1.0 or 
-	 * Grib convention
-	 * 
-	 * @param layerName
-	 * @param varAtt
-	 * @return
-	 */
-	static boolean isComponent(String layerName, String varAtt){		
+    } else {
+      layers.add(layer);
+    }
 
-		if( varAtt.contains("eastward_") ||  varAtt.contains("northward_") ){
-			//CF-Conventions
-			String[] tokens = layerName.split("_");
+    return layers;
+  }
 
-			StringBuilder sb = new StringBuilder();
+  /**
+   * Returns true if the layerName contains some of the standard components prefixes for CF-1.0 or
+   * Grib convention
+   */
+  static boolean isComponent(String layerName, String varAtt) {
 
-			if(tokens.length ==1){
-				sb.append(tokens[0]+"\\b");
-			}else{ 
+    if (varAtt.contains("eastward_") || varAtt.contains("northward_")) {
+      //CF-Conventions
+      String[] tokens = layerName.split("_");
 
-				sb.append(tokens[0]+"\\B");
-				for(int i = 1; i < tokens.length-1; i++ ){
-					sb.append(".*\\B"+tokens[i]+"\\B");
-				}
-				sb.append(".*\\B"+tokens[ tokens.length -1 ]+"\\b");
-			}
-			Pattern pattern = Pattern.compile(sb.toString());
-			Matcher matcher = pattern.matcher(varAtt);						
+      StringBuilder sb = new StringBuilder();
 
-			return matcher.find();
+      if (tokens.length == 1) {
+        sb.append(tokens[0]).append("\\b");
+      } else {
 
-		}
+        sb.append(tokens[0]).append("\\B");
+        for (int i = 1; i < tokens.length - 1; i++) {
+          sb.append(".*\\B").append(tokens[i]).append("\\B");
+        }
+        sb.append(".*\\B").append(tokens[tokens.length - 1]).append("\\b");
+      }
+      Pattern pattern = Pattern.compile(sb.toString());
+      Matcher matcher = pattern.matcher(varAtt);
 
-		if( varAtt.contains("u-component of "+layerName) ||  varAtt.contains("v-component of "+layerName) ){
-			return true;
-		}			
+      return matcher.find();
 
-		return false;
-	}
+    }
+
+    return varAtt.contains("u-component of " + layerName) || varAtt.contains("v-component of " + layerName);
+
+  }
 }

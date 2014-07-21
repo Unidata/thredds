@@ -1,34 +1,34 @@
 /*
- * Copyright 1998-2013 University Corporation for Atmospheric Research/Unidata
+ * Copyright 1998-2014 University Corporation for Atmospheric Research/Unidata
  *
- *  Portions of this software were developed by the Unidata Program at the
- *  University Corporation for Atmospheric Research.
+ *   Portions of this software were developed by the Unidata Program at the
+ *   University Corporation for Atmospheric Research.
  *
- *  Access and use of this software shall impose the following obligations
- *  and understandings on the user. The user is granted the right, without
- *  any fee or cost, to use, copy, modify, alter, enhance and distribute
- *  this software, and any derivative works thereof, and its supporting
- *  documentation for any purpose whatsoever, provided that this entire
- *  notice appears in all copies of the software, derivative works and
- *  supporting documentation.  Further, UCAR requests that the user credit
- *  UCAR/Unidata in any publications that result from the use of this
- *  software or in any product that includes this software. The names UCAR
- *  and/or Unidata, however, may not be used in any advertising or publicity
- *  to endorse or promote any products or commercial entity unless specific
- *  written permission is obtained from UCAR/Unidata. The user also
- *  understands that UCAR/Unidata is not obligated to provide the user with
- *  any support, consulting, training or assistance of any kind with regard
- *  to the use, operation and performance of this software nor to provide
- *  the user with any updates, revisions, new versions or "bug fixes."
+ *   Access and use of this software shall impose the following obligations
+ *   and understandings on the user. The user is granted the right, without
+ *   any fee or cost, to use, copy, modify, alter, enhance and distribute
+ *   this software, and any derivative works thereof, and its supporting
+ *   documentation for any purpose whatsoever, provided that this entire
+ *   notice appears in all copies of the software, derivative works and
+ *   supporting documentation.  Further, UCAR requests that the user credit
+ *   UCAR/Unidata in any publications that result from the use of this
+ *   software or in any product that includes this software. The names UCAR
+ *   and/or Unidata, however, may not be used in any advertising or publicity
+ *   to endorse or promote any products or commercial entity unless specific
+ *   written permission is obtained from UCAR/Unidata. The user also
+ *   understands that UCAR/Unidata is not obligated to provide the user with
+ *   any support, consulting, training or assistance of any kind with regard
+ *   to the use, operation and performance of this software nor to provide
+ *   the user with any updates, revisions, new versions or "bug fixes."
  *
- *  THIS SOFTWARE IS PROVIDED BY UCAR/UNIDATA "AS IS" AND ANY EXPRESS OR
- *  IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
- *  WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
- *  DISCLAIMED. IN NO EVENT SHALL UCAR/UNIDATA BE LIABLE FOR ANY SPECIAL,
- *  INDIRECT OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING
- *  FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT,
- *  NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
- *  WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
+ *   THIS SOFTWARE IS PROVIDED BY UCAR/UNIDATA "AS IS" AND ANY EXPRESS OR
+ *   IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ *   WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ *   DISCLAIMED. IN NO EVENT SHALL UCAR/UNIDATA BE LIABLE FOR ANY SPECIAL,
+ *   INDIRECT OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING
+ *   FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT,
+ *   NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
+ *   WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
 package thredds.server.ncss.view.gridaspoint;
@@ -50,7 +50,6 @@ import javax.xml.stream.XMLStreamWriter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.MediaType;
 
 import thredds.server.ncss.util.NcssRequestUtils;
 import thredds.util.ContentType;
@@ -71,8 +70,8 @@ class XMLPointDataWriter implements PointDataWriter {
  		return new XMLPointDataWriter(os);
  	}
 
-	private Map<String,List<String>> allVars;	
-	private Map<String, GridAsPointDataset> gridAsPointDatasets=new HashMap<String, GridAsPointDataset>();	
+	private Map<String,List<String>> allVars;
+	private Map<String, GridAsPointDataset> gridAsPointDatasets=new HashMap<>();
 	private XMLStreamWriter xmlStreamWriter;
 	private HttpHeaders httpHeaders = new HttpHeaders(); 
 	
@@ -146,7 +145,7 @@ class XMLPointDataWriter implements PointDataWriter {
 		CalendarDate date;
 		Iterator<CalendarDate> it = wDates.iterator();
 		boolean pointRead =true;
-		List<String> keysAsList = new ArrayList<String>(groupedVars.keySet()); 
+		List<String> keysAsList = new ArrayList<>(groupedVars.keySet());
 		//Check wDates -> Could be empty (dataset with not time axis)
 		if( wDates.isEmpty() ){
 			//pointRead = write(groupedVars, gds, point, vertCoord);
@@ -207,7 +206,7 @@ class XMLPointDataWriter implements PointDataWriter {
 		boolean pointDone=false;
 		try {
 			xmlStreamWriter.writeStartElement("point");
-			Map<String, String> attributes = new HashMap<String, String>();
+			Map<String, String> attributes = new HashMap<>();
 			attributes.put("name", "date");
 			writeDataTag( xmlStreamWriter, attributes, date.toString() );
 			attributes.clear();
@@ -234,7 +233,7 @@ class XMLPointDataWriter implements PointDataWriter {
 
 						if (contVars == 0) {
 							//writeCoordinates(xmlStreamWriter, Double.valueOf(p.lat), Double.valueOf(p.lon));
-							writeCoordinates(xmlStreamWriter, Double.valueOf(point.getLatitude()), Double.valueOf(point.getLongitude()));
+							writeCoordinates(xmlStreamWriter, point.getLatitude(), point.getLongitude());
 							attributes.put("name", "vertCoord");
 							attributes.put("units", zUnits);						
 							writeDataTag(xmlStreamWriter, attributes, Double.valueOf(p.z).toString());
@@ -262,7 +261,7 @@ class XMLPointDataWriter implements PointDataWriter {
 					} else {
 						// write missingvalues!!!
 						if (contVars == 0) {
-							writeCoordinates(xmlStreamWriter, Double.valueOf(point.getLatitude()), Double.valueOf(point.getLongitude()));
+							writeCoordinates(xmlStreamWriter, point.getLatitude(), point.getLongitude());
 						}
 						attributes.put("name", varName);
 						attributes.put("units", grid.getUnitsString());
@@ -286,14 +285,6 @@ class XMLPointDataWriter implements PointDataWriter {
 	/**
 	 * 
 	 * Write method when the grid has no time axis but has vertical axis
-	 * 
-	 * @param vars
-	 * @param gridDataset
-	 * @param gap
-	 * @param point
-	 * @param targetLevel
-	 * @param zUnits
-	 * @return
 	 */
 	private boolean write(List<String> vars, GridDataset gridDataset, GridAsPointDataset gap,  LatLonPoint point, Double targetLevel, String zUnits) {
 
@@ -301,7 +292,7 @@ class XMLPointDataWriter implements PointDataWriter {
 		boolean pointDone=false;
 		try {
 			xmlStreamWriter.writeStartElement("point");
-			Map<String, String> attributes = new HashMap<String, String>();
+			Map<String, String> attributes = new HashMap<>();
 			//attributes.put("name", "date");
 			//writeDataTag( xmlStreamWriter, attributes, date.toString() );
 			//attributes.clear();
@@ -314,7 +305,7 @@ class XMLPointDataWriter implements PointDataWriter {
 					GridAsPointDataset.Point p = gap.readData(grid, null, targetLevel, point.getLatitude(),	point.getLongitude());
 					if (contVars == 0) {
 						//writeCoordinates(xmlStreamWriter, Double.valueOf(p.lat), Double.valueOf(p.lon));
-						writeCoordinates(xmlStreamWriter, Double.valueOf(point.getLatitude()), Double.valueOf(point.getLongitude()));
+						writeCoordinates(xmlStreamWriter, point.getLatitude(), point.getLongitude());
 						attributes.put("name", "vertCoord");
 						attributes.put("units", zUnits);
 						writeDataTag(xmlStreamWriter, attributes, Double.valueOf(p.z).toString());
@@ -328,7 +319,7 @@ class XMLPointDataWriter implements PointDataWriter {
 				} else {
 					// write missingvalues!!!
 					if (contVars == 0) {
-						writeCoordinates(xmlStreamWriter, Double.valueOf(point.getLatitude()), Double.valueOf(point.getLongitude()));
+						writeCoordinates(xmlStreamWriter, point.getLatitude(), point.getLongitude());
 					}
 					attributes.put("name", varName);
 					attributes.put("units", grid.getUnitsString());
@@ -351,12 +342,6 @@ class XMLPointDataWriter implements PointDataWriter {
 	/**
 	 * 
 	 * Write method when the grid has no time axis and no vertical axis
-	 * 
-	 * @param vars
-	 * @param gridDataset
-	 * @param gap
-	 * @param point
-	 * @return
 	 */
 	private boolean write(List<String> vars, GridDataset gridDataset, GridAsPointDataset gap, LatLonPoint point){
 
@@ -364,7 +349,7 @@ class XMLPointDataWriter implements PointDataWriter {
 		boolean pointDone=false;
 		try {
 			xmlStreamWriter.writeStartElement("point");
-			Map<String, String> attributes = new HashMap<String, String>();
+			Map<String, String> attributes = new HashMap<>();
 			attributes.clear();
 			int contVars = 0;
 			while (itVars.hasNext()) {
@@ -399,13 +384,6 @@ class XMLPointDataWriter implements PointDataWriter {
 	/**
 	 * 
 	 * Write method for grids with time axis but not vertical level
-	 * 
-	 * @param vars
-	 * @param gridDataset
-	 * @param gap
-	 * @param date
-	 * @param point
-	 * @return
 	 */
 	private boolean write(List<String> vars, GridDataset gridDataset, GridAsPointDataset gap, CalendarDate date, LatLonPoint point){
 
@@ -413,7 +391,7 @@ class XMLPointDataWriter implements PointDataWriter {
 		boolean pointDone=false;
 		try {
 			xmlStreamWriter.writeStartElement("point");
-			Map<String, String> attributes = new HashMap<String, String>();
+			Map<String, String> attributes = new HashMap<>();
 			attributes.put("name", "date");
 			writeDataTag( xmlStreamWriter, attributes, date.toString() );
 			attributes.clear();
@@ -451,7 +429,7 @@ class XMLPointDataWriter implements PointDataWriter {
 					} else {
 						// write missingvalues!!!
 						if (contVars == 0) {
-							writeCoordinates(xmlStreamWriter, Double.valueOf(point.getLatitude()), Double.valueOf(point.getLongitude()));
+							writeCoordinates(xmlStreamWriter, point.getLatitude(), point.getLongitude());
 						}
 						attributes.put("name", varName);
 						attributes.put("units", grid.getUnitsString());
@@ -537,7 +515,7 @@ class XMLPointDataWriter implements PointDataWriter {
 	private void writeCoordinates(XMLStreamWriter writer, Double lat, Double lon)
 			throws XMLStreamException {
 
-		Map<String, String> attributes = new HashMap<String, String>();
+		Map<String, String> attributes = new HashMap<>();
 		// tag data for lat
 		attributes.put("name", "lat");
 		attributes.put("units", CDM.LAT_UNITS);
