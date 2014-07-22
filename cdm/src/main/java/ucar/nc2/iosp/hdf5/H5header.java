@@ -4358,6 +4358,7 @@ public class H5header {
   String readHeapString(long heapIdAddress) throws IOException {
     H5header.HeapIdentifier heapId = new HeapIdentifier(heapIdAddress);
     H5header.GlobalHeap.HeapObject ho = heapId.getHeapObject();
+    if (ho == null) throw new IllegalStateException("Cant find Heap Object,heapId="+heapId);
     raf.seek(ho.dataPos);
     return readStringFixedLength((int) ho.dataSize);
   }
@@ -4373,6 +4374,7 @@ public class H5header {
   String readHeapString(ByteBuffer bb, int pos) throws IOException {
     H5header.HeapIdentifier heapId = new HeapIdentifier(bb, pos);
     H5header.GlobalHeap.HeapObject ho = heapId.getHeapObject();
+    if (ho == null) throw new IllegalStateException("Cant find Heap Object,heapId="+heapId);
     raf.seek(ho.dataPos);
     return readStringFixedLength((int) ho.dataSize);
   }

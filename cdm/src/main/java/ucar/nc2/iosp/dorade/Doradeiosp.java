@@ -53,7 +53,7 @@ public class Doradeiosp extends AbstractIOServiceProvider {
   public DoradeSweep mySweep = null;
 
   public boolean isValidFile(ucar.unidata.io.RandomAccessFile raf) {
-    return (Doradeheader.isValidFile(raf));
+    return Doradeheader.isValidFile(raf);
   }
 
   public String getFileTypeId() {
@@ -76,11 +76,6 @@ public class Doradeiosp extends AbstractIOServiceProvider {
     headerParser = new Doradeheader();
     headerParser.read(mySweep, ncfile, null);
 
-    // should be in isValidFile()
-    if (mySweep.getScanMode(0) != ScanMode.MODE_SUR) {
-       throw new IllegalStateException();
-    }
-
     ncfile.finish();
   }
 
@@ -97,6 +92,8 @@ public class Doradeiosp extends AbstractIOServiceProvider {
       //outputData = Array.factory( v2.getDataType().getPrimitiveClassType(), v2.getShape(), elev);
     } else if (v2.getShortName().equals("rays_time")) {
       Date[] dd = mySweep.getTimes();
+      if (dd == null)
+        throw new IllegalStateException("missing dates for "+v2.getShortName());
       double[] d = new double[dd.length];
       for (int i = 0; i < dd.length; i++)
         d[i] = (double) dd[i].getTime();
@@ -185,6 +182,8 @@ public class Doradeiosp extends AbstractIOServiceProvider {
       IndexIterator ii = data.getIndexIterator();
 
       DoradePARM dp = mySweep.lookupParamIgnoreCase(v2.getShortName());
+      if (dp == null)
+        throw new IllegalStateException("Cant find param "+v2.getShortName());
       int ncells = dp.getNCells();
       float[] rayValues = new float[ncells];
       /*

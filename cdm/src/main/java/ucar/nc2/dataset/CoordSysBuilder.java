@@ -327,7 +327,7 @@ public class CoordSysBuilder implements CoordSysBuilderIF {
     // look for the Conventions attribute
     String convName = ds.findAttValueIgnoreCase(null, CDM.CONVENTIONS, null);
     if (convName == null)
-      convName = ds.findAttValueIgnoreCase(null, "Convention", null);
+      convName = ds.findAttValueIgnoreCase(null, "Convention", null); // common mistake Convention instead of Conventions
     if (convName != null)
       convName = convName.trim();
 

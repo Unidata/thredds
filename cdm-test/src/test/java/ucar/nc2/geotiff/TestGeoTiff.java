@@ -31,61 +31,43 @@
  *   WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-package ucar.atd.dorade;
+package ucar.nc2.geotiff;
 
-import java.io.File;
-import java.io.FileOutputStream;
+import java.io.IOException;
+import java.nio.ByteBuffer;
 
 /**
- * A dumper for DORADE radar data
+ * Describe
+ *
+ * @author caron
+ * @since 7/22/2014
  */
-public class DoradeAsciiDump {
+public class TestGeoTiff {
 
-  public static void main(String[] args) throws Exception {
-    if (args.length < 2) {
-      System.err.println("Error: usage: java ucar.unidata.data.radar.DoradeDump <parameter (e.g., VR,ZDR,DBZ)> <spol filename>");
-      System.exit(1);
+  /**
+   * test
+   */
+  public static void main(String[] argv) {
+    try {
+      GeoTiff geotiff = new GeoTiff("/home/yuanho/tmp/ilatlon_float.tif");
+      //GeoTiff geotiff = new GeoTiff("/home/yuanho/tmp/maxtemp.tif");
+      //GeoTiff geotiff = new GeoTiff("/home/yuanho/tmp/test.tif");
+      //GeoTiff geotiff = new GeoTiff("C:/data/geotiff/c41078a1.tif");
+      //GeoTiff geotiff = new GeoTiff("C:/data/geotiff/L7ETMbands147.tif");
+      //GeoTiff geotiff = new GeoTiff("data/blueTest.tiff");
+
+      /*GeoTiff geotiff = new GeoTiff("data/testWrite.tiff");
+      geotiff.addTag( new IFDEntry(Tag.SampleFormat, FieldType.SHORT, 3));
+      geotiff.write();
+      geotiff.close();
+
+      geotiff = new GeoTiff("data/testWrite.tiff"); */
+      geotiff.read();
+      geotiff.showInfo(System.out);
+      geotiff.testReadData();
+      geotiff.close();
+    } catch (Exception e) {
+      e.printStackTrace();
     }
-    String paramName = args[0];
-    for (int i = 2; i < args.length; i++) {
-      String filename = args[i];
-      File sourceFile = new File(filename);
-      File destFile = new File(sourceFile.getName() + ".txt");
-      DoradeSweep sweep = new DoradeSweep(filename);
-      if (sweep.getScanMode() != ScanMode.MODE_SUR) {
-        System.err.println("Skipping:" + sourceFile);
-        continue;
-      }
-      int nRays = sweep.getNRays();
-      int nCells = sweep.getNCells(0);
-      DoradePARM param = sweep.lookupParamIgnoreCase(paramName);
-      if (param == null) {
-        System.err.println("Error: Could not find given paramter:" + paramName);
-        System.exit(1);
-      }
-      float[] azimuths = sweep.getAzimuths();
-      float[] elevations = sweep.getElevations();
-      StringBuilder sb = new StringBuilder();
-
-      System.err.println("File:" + sourceFile + " #rays:" + nRays + " #cells:" + nCells);
-      for (int rayIdx = 0; rayIdx < nRays; rayIdx++) {
-        sb.append("ray:").append(rayIdx).append(" ").append(elevations[rayIdx]).append(" ").append(azimuths[rayIdx]).append("\n");
-        float[] rayValues = sweep.getRayData(param, rayIdx);
-        for (int cellIdx = 0; cellIdx < rayValues.length; cellIdx++) {
-          if (cellIdx > 0)
-            sb.append(",");
-          sb.append(rayValues[cellIdx]);
-        }
-        sb.append("\n");
-      }
-
-      FileOutputStream out = new FileOutputStream(destFile);
-      out.write(sb.toString().getBytes());
-      out.flush();
-      out.close();
-    }
-
   }
-
-
 }

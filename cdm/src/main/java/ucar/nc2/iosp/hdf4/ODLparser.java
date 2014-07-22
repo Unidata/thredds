@@ -100,6 +100,8 @@ public class ODLparser {
     StringTokenizer lineFinder = new StringTokenizer(text, "\t\n\r\f");
     while (lineFinder.hasMoreTokens()) {
       String line = lineFinder.nextToken();
+      if (line == null) continue;
+
       if (line.startsWith("GROUP")) {
         current = startGroup(current, line);
 

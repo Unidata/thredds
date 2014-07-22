@@ -44,18 +44,19 @@ import java.util.*;
  * @author Yuan Ho
  */
 public class GeoTiff {
+  static final private boolean showBytes = false, debugRead = false, debugReadGeoKey = false;
+  static final private boolean showHeaderBytes = false;
+
   private String filename;
   private RandomAccessFile file;
   private FileChannel channel;
-  private List<IFDEntry> tags = new ArrayList<IFDEntry>();
+  private List<IFDEntry> tags = new ArrayList<>();
   private ByteOrder byteOrder = ByteOrder.BIG_ENDIAN;
   private boolean readonly;
 
-  private boolean showBytes = false, debugRead = false, debugReadGeoKey = false;
-  private boolean showHeaderBytes = false;
-
   /**
    * Constructor. Does not open or create the file.
+   *
    * @param filename pathname of file
    */
   public GeoTiff(String filename) {
@@ -64,6 +65,7 @@ public class GeoTiff {
 
   /**
    * Close the Geotiff file.
+   *
    * @throws java.io.IOException on io error
    */
   public void close() throws IOException {
@@ -98,14 +100,14 @@ public class GeoTiff {
   void setTransform(double xStart, double yStart, double xInc, double yInc) {
     // tie the raster 0, 0 to xStart, yStart
     addTag(new IFDEntry(Tag.ModelTiepointTag, FieldType.DOUBLE).setValue(
-        new double[]{0.0, 0.0, 0.0, xStart, yStart, 0.0}));
+            new double[]{0.0, 0.0, 0.0, xStart, yStart, 0.0}));
 
     // define the "affine transformation" : requires grid to be regular (!)
     addTag(new IFDEntry(Tag.ModelPixelScaleTag, FieldType.DOUBLE).setValue(
-        new double[]{xInc, yInc, 0.0}));
+            new double[]{xInc, yInc, 0.0}));
   }
 
-  private List<GeoKey> geokeys = new ArrayList<GeoKey>();
+  private List<GeoKey> geokeys = new ArrayList<>();
 
   void addGeoKey(GeoKey geokey) {
     geokeys.add(geokey);
@@ -265,8 +267,8 @@ public class GeoTiff {
   }
 
   public void initTags() throws IOException {
-    tags = new ArrayList<IFDEntry>();
-    geokeys = new ArrayList<GeoKey>();
+    tags = new ArrayList<>();
+    geokeys = new ArrayList<>();
   }
 
   private void init() throws IOException {
@@ -418,43 +420,6 @@ public class GeoTiff {
         return ifd;
     }
     return null;
-  }
-
-  void testReadData() throws IOException {
-    IFDEntry tileOffsetTag = findTag(Tag.TileOffsets);
-    if (tileOffsetTag != null) {
-      int tileOffset = tileOffsetTag.value[0];
-      IFDEntry tileSizeTag = findTag(Tag.TileByteCounts);
-      int tileSize = tileSizeTag.value[0];
-      System.out.println("tileOffset =" + tileOffset + " tileSize=" + tileSize);
-      testReadData(tileOffset, tileSize);
-    } else {
-
-      IFDEntry stripOffsetTag = findTag(Tag.StripOffsets);
-      if (stripOffsetTag != null) {
-        int stripOffset = stripOffsetTag.value[0];
-        IFDEntry stripSizeTag = findTag(Tag.StripByteCounts);
-        int stripSize = stripSizeTag.value[0];
-        System.out.println("stripOffset =" + stripOffset + " stripSize=" + stripSize);
-        testReadData(stripOffset, stripSize);
-      }
-    }
-  }
-
-  private void testReadData(int offset, int size) throws IOException {
-    channel.position(offset);
-    ByteBuffer buffer = ByteBuffer.allocate(size);
-    buffer.order(byteOrder);
-
-    channel.read(buffer);
-    buffer.flip();
-
-    //printBytes( System.out, "data", buffer, 32);
-    //buffer.rewind();
-
-    for (int i = 0; i < size / 4; i++) {
-      System.out.println(i + ": " + buffer.getFloat());
-    }
   }
 
   private int readHeader(FileChannel channel) throws IOException {
@@ -726,31 +691,43 @@ public class GeoTiff {
     return bout.toString();
   }
 
-  /**
-   * test
-   */
-  public static void main(String[] argv) {
-    try {
-      GeoTiff geotiff = new GeoTiff("/home/yuanho/tmp/ilatlon_float.tif");
-      //GeoTiff geotiff = new GeoTiff("/home/yuanho/tmp/maxtemp.tif");
-      //GeoTiff geotiff = new GeoTiff("/home/yuanho/tmp/test.tif");
-      //GeoTiff geotiff = new GeoTiff("C:/data/geotiff/c41078a1.tif");
-      //GeoTiff geotiff = new GeoTiff("C:/data/geotiff/L7ETMbands147.tif");
-      //GeoTiff geotiff = new GeoTiff("data/blueTest.tiff");
 
-      /*GeoTiff geotiff = new GeoTiff("data/testWrite.tiff");
-      geotiff.addTag( new IFDEntry(Tag.SampleFormat, FieldType.SHORT, 3));
-      geotiff.write();
-      geotiff.close();
+  //////////////////////////////////////////////////////////////////////////
 
-      geotiff = new GeoTiff("data/testWrite.tiff"); */
-      geotiff.read();
-      geotiff.showInfo(System.out);
-      geotiff.testReadData();
-      geotiff.close();
-    } catch (Exception e) {
-      e.printStackTrace();
+  void testReadData() throws IOException {
+    IFDEntry tileOffsetTag = findTag(Tag.TileOffsets);
+    if (tileOffsetTag != null) {
+      int tileOffset = tileOffsetTag.value[0];
+      IFDEntry tileSizeTag = findTag(Tag.TileByteCounts);
+      int tileSize = tileSizeTag.value[0];
+      System.out.println("tileOffset =" + tileOffset + " tileSize=" + tileSize);
+      testReadData(tileOffset, tileSize);
+
+    } else {
+      IFDEntry stripOffsetTag = findTag(Tag.StripOffsets);
+      if (stripOffsetTag != null) {
+        int stripOffset = stripOffsetTag.value[0];
+        IFDEntry stripSizeTag = findTag(Tag.StripByteCounts);
+        int stripSize = stripSizeTag.value[0];
+        System.out.println("stripOffset =" + stripOffset + " stripSize=" + stripSize);
+        testReadData(stripOffset, stripSize);
+      }
     }
   }
 
+  private void testReadData(int offset, int size) throws IOException {
+    channel.position(offset);
+    ByteBuffer buffer = ByteBuffer.allocate(size);
+    buffer.order(byteOrder);
+
+    channel.read(buffer);
+    buffer.flip();
+
+    //printBytes( System.out, "data", buffer, 32);
+    //buffer.rewind();
+
+    for (int i = 0; i < size / 4; i++) {
+      System.out.println(i + ": " + buffer.getFloat());
+    }
+  }
 }

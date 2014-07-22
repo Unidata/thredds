@@ -269,13 +269,12 @@ public class CatalogExtractor implements CatalogCrawler.Listener {
       out.println("    ngrids = " + gridDs.getGrids().size());
       return;
     }
+    if (gridDs == null) return;
 
     out.println("Global Attributes");
     NetcdfDataset ds = (NetcdfDataset) gridDs.getNetcdfFile();
     showAtts(out, ds.getGlobalAttributes());
     out.println();
-
-    if (gridDs == null) return;
 
     GridCoordSystem gcsMax = null;
     LatLonRect llbbMax = null;

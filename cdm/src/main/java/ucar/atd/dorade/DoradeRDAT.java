@@ -32,8 +32,6 @@
  */
 package ucar.atd.dorade;
 
-/* $Id:DoradeRDAT.java 51 2006-07-12 17:13:13Z caron $ */
-
 import java.io.RandomAccessFile;
 
 class DoradeRDAT extends DoradeDescriptor {
@@ -41,8 +39,7 @@ class DoradeRDAT extends DoradeDescriptor {
   private String paramName;
   private byte[] paramData;
 
-  public DoradeRDAT(RandomAccessFile file, boolean littleEndianData)
-          throws DescriptorException {
+  public DoradeRDAT(RandomAccessFile file, boolean littleEndianData) throws DescriptorException {
     byte[] data = readDescriptor(file, littleEndianData, "RDAT");
 
     //
@@ -74,9 +71,7 @@ class DoradeRDAT extends DoradeDescriptor {
     return paramData;
   }
 
-  public static DoradeRDAT getNextOf(DoradePARM parm, RandomAccessFile file,
-                                     boolean littleEndianData)
-          throws DescriptorException, java.io.IOException {
+  public static DoradeRDAT getNextOf(DoradePARM parm, RandomAccessFile file, boolean littleEndianData) throws DescriptorException, java.io.IOException {
     while (true) {
       long pos = findNextWithName("RDAT", file, littleEndianData);
       if (peekParamName(file).equals(parm.getName()))
@@ -86,8 +81,7 @@ class DoradeRDAT extends DoradeDescriptor {
     }
   }
 
-  private static String peekParamName(RandomAccessFile file)
-          throws DescriptorException {
+  private static String peekParamName(RandomAccessFile file) throws DescriptorException {
     try {
       long filepos = file.getFilePointer();
       file.skipBytes(8);
@@ -96,6 +90,7 @@ class DoradeRDAT extends DoradeDescriptor {
         throw new DescriptorException("unexpected EOF");
       file.seek(filepos);
       return new String(nameBytes).trim();
+
     } catch (Exception ex) {
       throw new DescriptorException(ex);
     }

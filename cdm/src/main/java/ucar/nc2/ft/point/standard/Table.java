@@ -366,9 +366,9 @@ public abstract class Table {
 
     TableArrayStructure(NetcdfDataset ds, TableConfig config) {
       super(ds, config);
+      assert (config.as != null);
       this.as = config.as;
       this.dim = new Dimension(config.structName, (int) config.as.getSize(), false);
-      assert (this.as != null);
 
       for (StructureMembers.Member m : config.as.getStructureMembers().getMembers())
         cols.put(m.getName(), new VariableSimpleAdapter(m));
