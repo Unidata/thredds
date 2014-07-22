@@ -117,10 +117,8 @@ public class UnidataTdsDataPathRemapper {
 
     private List<UrlRemapperBean> readUrlRemapFile(String path) {
         java.util.List<UrlRemapperBean> beans = new ArrayList<UrlRemapperBean>(1000);
-        InputStream is = null;
 
-        try {
-            is = getInputStream(path, null);
+        try (InputStream is = getInputStream(path, null)) {
 
             if (is == null) {
                 System.out.println("Cant read file " + path);
@@ -150,11 +148,6 @@ public class UnidataTdsDataPathRemapper {
             e.printStackTrace();
             return null;
 
-        } finally {
-            if (is != null) try {
-                is.close();
-            } catch (IOException e) {
-            }
         }
     }
 

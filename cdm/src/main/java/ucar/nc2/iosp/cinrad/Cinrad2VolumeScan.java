@@ -610,31 +610,6 @@ public class Cinrad2VolumeScan {
     return dout2;
   }
 
-// debugging
-
-  static void bdiff(String filename) throws IOException {
-
-    InputStream in1 = new FileInputStream(filename + ".tmp");
-    InputStream in2 = new FileInputStream(filename + ".tmp2");
-
-    int count = 0;
-    int bad = 0;
-    while (true) {
-      int b1 = in1.read();
-      int b2 = in2.read();
-      if (b1 < 0) break;
-      if (b2 < 0) break;
-
-      if (b1 != b2) {
-        System.out.println(count + " in1=" + b1 + " in2= " + b2);
-        bad++;
-        if (bad > 130) break;
-      }
-      count++;
-    }
-    System.out.println("total read = " + count);
-  }
-
   // check if compressed file seems ok
   static public long testValid(String ufilename) throws IOException {
     boolean lookForHeader = false;

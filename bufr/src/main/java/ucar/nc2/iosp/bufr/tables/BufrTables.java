@@ -1,34 +1,34 @@
 /*
- * Copyright 1998-2013 University Corporation for Atmospheric Research/Unidata
+ * Copyright 1998-2014 University Corporation for Atmospheric Research/Unidata
  *
- *  Portions of this software were developed by the Unidata Program at the
- *  University Corporation for Atmospheric Research.
+ *   Portions of this software were developed by the Unidata Program at the
+ *   University Corporation for Atmospheric Research.
  *
- *  Access and use of this software shall impose the following obligations
- *  and understandings on the user. The user is granted the right, without
- *  any fee or cost, to use, copy, modify, alter, enhance and distribute
- *  this software, and any derivative works thereof, and its supporting
- *  documentation for any purpose whatsoever, provided that this entire
- *  notice appears in all copies of the software, derivative works and
- *  supporting documentation.  Further, UCAR requests that the user credit
- *  UCAR/Unidata in any publications that result from the use of this
- *  software or in any product that includes this software. The names UCAR
- *  and/or Unidata, however, may not be used in any advertising or publicity
- *  to endorse or promote any products or commercial entity unless specific
- *  written permission is obtained from UCAR/Unidata. The user also
- *  understands that UCAR/Unidata is not obligated to provide the user with
- *  any support, consulting, training or assistance of any kind with regard
- *  to the use, operation and performance of this software nor to provide
- *  the user with any updates, revisions, new versions or "bug fixes."
+ *   Access and use of this software shall impose the following obligations
+ *   and understandings on the user. The user is granted the right, without
+ *   any fee or cost, to use, copy, modify, alter, enhance and distribute
+ *   this software, and any derivative works thereof, and its supporting
+ *   documentation for any purpose whatsoever, provided that this entire
+ *   notice appears in all copies of the software, derivative works and
+ *   supporting documentation.  Further, UCAR requests that the user credit
+ *   UCAR/Unidata in any publications that result from the use of this
+ *   software or in any product that includes this software. The names UCAR
+ *   and/or Unidata, however, may not be used in any advertising or publicity
+ *   to endorse or promote any products or commercial entity unless specific
+ *   written permission is obtained from UCAR/Unidata. The user also
+ *   understands that UCAR/Unidata is not obligated to provide the user with
+ *   any support, consulting, training or assistance of any kind with regard
+ *   to the use, operation and performance of this software nor to provide
+ *   the user with any updates, revisions, new versions or "bug fixes."
  *
- *  THIS SOFTWARE IS PROVIDED BY UCAR/UNIDATA "AS IS" AND ANY EXPRESS OR
- *  IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
- *  WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
- *  DISCLAIMED. IN NO EVENT SHALL UCAR/UNIDATA BE LIABLE FOR ANY SPECIAL,
- *  INDIRECT OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING
- *  FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT,
- *  NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
- *  WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
+ *   THIS SOFTWARE IS PROVIDED BY UCAR/UNIDATA "AS IS" AND ANY EXPRESS OR
+ *   IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ *   WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ *   DISCLAIMED. IN NO EVENT SHALL UCAR/UNIDATA BE LIABLE FOR ANY SPECIAL,
+ *   INDIRECT OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING
+ *   FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT,
+ *   NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
+ *   WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 package ucar.nc2.iosp.bufr.tables;
 
@@ -188,8 +188,7 @@ public class BufrTables {
   // center,subcenter,master,local,cat,tableB,tableBformat,tableD,tableDformat, mode
   static private void readLookupTable(String filename) {
 
-    try {
-      InputStream ios = openStream(filename);
+    try(InputStream ios = openStream(filename)) {
       BufferedReader dataIS = new BufferedReader(new InputStreamReader(ios, Charset.forName("UTF8")));
       int count = 0;
       while (true) {
@@ -236,7 +235,7 @@ public class BufrTables {
           if (showReadErrs) System.out.printf("%d %d BAD line == %s (%s)%n", count, fldidx, line, e.getMessage());
         }
       }
-      dataIS.close();
+
     } catch (IOException ioe) {
       String mess = "Need BUFR tables in path; looking for " + filename;
       throw new RuntimeException(mess, ioe);
@@ -372,8 +371,9 @@ public class BufrTables {
       b = new TableB(tc.tableBname, tc.tableBname);
       d = new TableD(tc.tableBname, tc.tableBname);
       Tables t = new Tables(b, d, tc.mode);
-      InputStream ios = openStream(tc.tableBname);
-      NcepMnemonic.read(ios, t);
+      try (InputStream ios = openStream(tc.tableBname)) {
+        NcepMnemonic.read(ios, t);
+      }
 
       // cache 
       tablesB.put(tc.tableBname, t.b);
@@ -445,44 +445,44 @@ public class BufrTables {
     }
     if (showTables) System.out.printf("Read BufrTable B %s format=%s%n", location, format);
 
-    InputStream ios = openStream(location);
     TableB b = new TableB(location, location);
-    switch (format) {
-      case cypher:
-        readCypherTableB(ios, b);
-        break;
-      case ecmwf:
-        readEcmwfTableB(ios, b);
-        break;
-      case embed:
-        ios.close();
-        b = readEmbeddedTableB(location);
-        break;
-      case ncep:
-        readNcepTableB(ios, b);
-        break;
-      case ncep_nm:
-        Tables t = new Tables(b, null, null);
-        NcepMnemonic.read(ios, t);
-        break;
-      case mel_bufr:
-        readMelbufrTableB(ios, b);
-        break;
-      case mel_tabs:
-        readMeltabTableB(ios, b);
-        break;
-      case opera:
-        readOperaTableB(ios, b);
-        break;
-      case ukmet:
-        readBmetTableB(ios, b);
-        break;
-      case wmo_csv:
-        readWmoCsvTableB(ios, b);
-        break;
-      case wmo_xml:
-        WmoXmlReader.readWmoXmlTableB(ios, b);
-        break;
+    try (InputStream ios = openStream(location)) {
+      switch (format) {
+        case cypher:
+          readCypherTableB(ios, b);
+          break;
+        case ecmwf:
+          readEcmwfTableB(ios, b);
+          break;
+        case embed:
+          b = readEmbeddedTableB(location);
+          break;
+        case ncep:
+          readNcepTableB(ios, b);
+          break;
+        case ncep_nm:
+          Tables t = new Tables(b, null, null);
+          NcepMnemonic.read(ios, t);
+          break;
+        case mel_bufr:
+          readMelbufrTableB(ios, b);
+          break;
+        case mel_tabs:
+          readMeltabTableB(ios, b);
+          break;
+        case opera:
+          readOperaTableB(ios, b);
+          break;
+        case ukmet:
+          readBmetTableB(ios, b);
+          break;
+        case wmo_csv:
+          readWmoCsvTableB(ios, b);
+          break;
+        case wmo_xml:
+          WmoXmlReader.readWmoXmlTableB(ios, b);
+          break;
+      }
     }
 
     if (b != null) tablesB.put(location, b);
@@ -537,7 +537,6 @@ public class BufrTables {
         if (showReadErrs) System.out.printf("%d %d BAD line == %s%n", count, fldidx, line);
       }
     }
-    dataIS.close();
   }
 
   static private String clean(String s) {
@@ -545,32 +544,24 @@ public class BufrTables {
   }
 
   static private TableB readEmbeddedTableB(String location) throws IOException {
-    RandomAccessFile raf = null;
-    try {
-      raf = new RandomAccessFile(location, "r");
+    try (RandomAccessFile raf = new RandomAccessFile(location, "r")) {
       MessageScanner scan = new MessageScanner(raf);
       TableLookup lookup = scan.getTableLookup();
       if (lookup != null) {
         return lookup.getLocalTableB();
       }
       return null;
-    } finally {
-      if (raf != null) raf.close();
     }
   }
 
   static private TableD readEmbeddedTableD(String location) throws IOException {
-    RandomAccessFile raf = null;
-    try {
-      raf = new RandomAccessFile(location, "r");
+    try (RandomAccessFile raf = new RandomAccessFile(location, "r")) {
       MessageScanner scan = new MessageScanner(raf);
       TableLookup lookup = scan.getTableLookup();
       if (lookup != null) {
         return lookup.getLocalTableD();
       }
       return null;
-    } finally {
-      if (raf != null) raf.close();
     }
   }
 
@@ -598,10 +589,8 @@ public class BufrTables {
         b.addDescriptor(x, y, scale, refVal, width, split[7], split[6], null);
       } catch (Exception e) {
         log.error("Bad table B entry: table=" + b.getName() + " entry=<" + line + ">", e.getMessage());
-        continue;
       }
     }
-    dataIS.close();
 
     return b;
   }
@@ -650,11 +639,9 @@ public class BufrTables {
           startMode = false;
         } catch (Exception e) {
           log.error("Bad table B entry: table=" + b.getName() + " entry=<" + line + ">", e.getMessage());
-          continue;
         }
       }
     }
-    dataIS.close();
 
     return b;
   }
@@ -685,10 +672,8 @@ public class BufrTables {
         b.addDescriptor(x, y, scale, refVal, width, split[7], split[6], null);
       } catch (Exception e) {
         log.error("Bad table " + b.getName() + " entry=<" + line + ">", e);
-        continue;
       }
     }
-    dataIS.close();
 
     return b;
   }
@@ -738,10 +723,7 @@ public class BufrTables {
       } catch (Exception e) {
         log.error("Bad table " + b.getName() + " entry=<" + line + ">", e);
       }
-
-
     }
-    dataIS.close();
 
     return b;
   }
@@ -784,7 +766,6 @@ public class BufrTables {
         if (showReadErrs) System.out.printf("%d %d BAD line == %s%n", count, fldidx, line);
       }
     }
-    dataIS.close();
   }
 
   /*
@@ -815,7 +796,6 @@ public class BufrTables {
     if (count > 10) break;
     count++;  */
     }
-    ios.close();
 
     return b;
   }
@@ -871,7 +851,6 @@ public class BufrTables {
       }
     }
 
-    ios.close();
   }
 
   ///////////////////////////////////////////////////////
@@ -906,43 +885,42 @@ public class BufrTables {
     }
 
     if (showTables) System.out.printf("Read BufrTable D %s format=%s%n", location, format);
-    InputStream ios = openStream(location);
     TableD d = new TableD(location, location);
 
-    switch (format) {
-
-      case cypher:
-        readCypherTableD(ios, d);
-        break;
-       case embed:
-        ios.close();
-        d = readEmbeddedTableD(location);
-        break;
-      case ncep:
-        readNcepTableD(ios, d);
-        break;
-      case ncep_nm:
-        Tables t = new Tables(null, d, null);
-        NcepMnemonic.read(ios, t);
-        break;
-      case ecmwf:
-        readEcmwfTableD(ios, d);
-        break;
-      case mel_bufr:
-        readMelbufrTableD(ios, d);
-        break;
-      case opera:
-        readOperaTableD(ios, d);
-        break;
-      case wmo_csv:
-        readWmoCsvTableD(ios, d);
-        break;
-      case wmo_xml:
-        WmoXmlReader.readWmoXmlTableD(ios, d);
-        break;
-      default:
-        System.out.printf("Unknown format= %s %n", format);
-        return null;
+    try (InputStream ios = openStream(location)) {
+      switch (format) {
+        case cypher:
+          readCypherTableD(ios, d);
+          break;
+        case embed:
+          d = readEmbeddedTableD(location);
+          break;
+        case ncep:
+          readNcepTableD(ios, d);
+          break;
+        case ncep_nm:
+          Tables t = new Tables(null, d, null);
+          NcepMnemonic.read(ios, t);
+          break;
+        case ecmwf:
+          readEcmwfTableD(ios, d);
+          break;
+        case mel_bufr:
+          readMelbufrTableD(ios, d);
+          break;
+        case opera:
+          readOperaTableD(ios, d);
+          break;
+        case wmo_csv:
+          readWmoCsvTableD(ios, d);
+          break;
+        case wmo_xml:
+          WmoXmlReader.readWmoXmlTableD(ios, d);
+          break;
+        default:
+          System.out.printf("Unknown format= %s %n", format);
+          return null;
+      }
     }
 
     if (d != null) tablesD.put(location, d);
@@ -1030,7 +1008,6 @@ public class BufrTables {
         log.warn("Bad table " + t.getName() + " line=<" + line + ">", e.getMessage());
       }
     }
-    dataIS.close();
   }
 
   static String cleanNumber(String s) {
@@ -1084,7 +1061,6 @@ public class BufrTables {
         log.error("Bad table " + t.getName() + " entry=<" + line + ">", e);
       }
     }
-    dataIS.close();
   }
 
 
@@ -1155,7 +1131,6 @@ public class BufrTables {
         if (showReadErrs) System.out.printf("%d %d BAD line == %s : %s%n", count, fldidx, line, e.getMessage());
       }
     }
-    dataIS.close();
   }
 
   private static final Pattern threeInts = Pattern.compile("^\\s*(\\d+)\\s+(\\d+)\\s+(\\d+)");  // get 3 integers from beginning of line
@@ -1227,7 +1202,6 @@ public class BufrTables {
         //e.printStackTrace();
       }
     }
-    dataIS.close();
   }
 
   /*
@@ -1291,7 +1265,6 @@ public class BufrTables {
 
 
     }
-    dataIS.close();
   }
 
   /*
@@ -1349,30 +1322,9 @@ public class BufrTables {
         log.error("Bad table " + t.getName() + " entry=<" + line + ">", e);
       }
     }
-    dataIS.close();
   }
 
   /////////////////////////////////////////////////////////////////////////////////////////
-
-  private static InputStream open(String location) throws IOException {
-    InputStream ios = null;
-
-    // Try class loader to get resource
-    String tmp = RESOURCE_PATH + "local/" + location;
-    ios = BufrTables.class.getResourceAsStream(tmp);
-    if (ios != null) {
-      if (debugTable) System.out.printf("BufrTables open %s %n", tmp);
-      return ios;
-    }
-
-    if (location.startsWith("http:")) {
-      URL url = new URL(location);
-      ios = url.openStream();
-    } else {
-      ios = new FileInputStream(location);
-    }
-    return ios;
-  }
 
   static InputStream openStream(String location) throws IOException {
     InputStream ios = null;
@@ -1406,8 +1358,9 @@ public class BufrTables {
     tableD.show(out); */
 
     String location = "resource:/resources/bufrTables/local/opera/localtabd_65535_5.csv";
-    InputStream ios = openStream(location);
-    TableD d = new TableD(location, location);
-    readOperaTableD(ios, d);
+    try (InputStream ios = openStream(location)) {
+      TableD d = new TableD(location, location);
+      readOperaTableD(ios, d);
+    }
   }
 }

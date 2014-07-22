@@ -178,34 +178,35 @@ typedef enum
   }
 
   static public void main( String args[]) throws IOException {
-    FileInputStream ios = new FileInputStream("C:/dev/hdf4/HDF4.2r1/hdf/src/htags.h");
-    BufferedReader dataIS = new BufferedReader(new InputStreamReader(ios));
-    while (true) {
-      String line = dataIS.readLine();
-      if (line == null) break;
-      if (line.startsWith("#define")) {
-        StringTokenizer stoker = new StringTokenizer(line," ()");
-        stoker.nextToken(); // skip define
-        String name = stoker.nextToken();
-        if (!stoker.hasMoreTokens()) continue;
-        //System.out.println(line);
+    try (FileInputStream ios = new FileInputStream("C:/dev/hdf4/HDF4.2r1/hdf/src/htags.h")) {
+      BufferedReader dataIS = new BufferedReader(new InputStreamReader(ios));
+      while (true) {
+        String line = dataIS.readLine();
+        if (line == null) break;
+        if (line.startsWith("#define")) {
+          StringTokenizer stoker = new StringTokenizer(line, " ()");
+          stoker.nextToken(); // skip define
+          String name = stoker.nextToken();
+          if (!stoker.hasMoreTokens()) continue;
+          //System.out.println(line);
 
-        if (name.startsWith("DFTAG_"))
-          name = name.substring(6);
+          if (name.startsWith("DFTAG_"))
+            name = name.substring(6);
 
-        String code = stoker.nextToken();
-        if (code.startsWith("u"))
-          code = stoker.nextToken();
+          String code = stoker.nextToken();
+          if (code.startsWith("u"))
+            code = stoker.nextToken();
 
-        int pos = line.indexOf("/*");
-        String desc = "";
-        if (pos > 0) {
-          int pos2 = line.indexOf("*/");
-          desc = (pos2 > 0) ? line.substring(pos+3, pos2) : line.substring(pos+3);
-          desc = desc.trim();
+          int pos = line.indexOf("/*");
+          String desc = "";
+          if (pos > 0) {
+            int pos2 = line.indexOf("*/");
+            desc = (pos2 > 0) ? line.substring(pos + 3, pos2) : line.substring(pos + 3);
+            desc = desc.trim();
+          }
+
+          System.out.println("  public final static Tags " + name + " = new Tags(\"" + name + "\", \"" + desc + "\", (short) " + code + ");");
         }
-
-        System.out.println("  public final static Tags "+name+" = new Tags(\""+name+"\", \""+desc+"\", (short) "+code+");");
       }
     }
   }

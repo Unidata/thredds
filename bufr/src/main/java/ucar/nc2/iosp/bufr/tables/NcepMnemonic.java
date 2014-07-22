@@ -1,34 +1,34 @@
 /*
- * Copyright 1998-2013 University Corporation for Atmospheric Research/Unidata
+ * Copyright 1998-2014 University Corporation for Atmospheric Research/Unidata
  *
- *  Portions of this software were developed by the Unidata Program at the
- *  University Corporation for Atmospheric Research.
+ *   Portions of this software were developed by the Unidata Program at the
+ *   University Corporation for Atmospheric Research.
  *
- *  Access and use of this software shall impose the following obligations
- *  and understandings on the user. The user is granted the right, without
- *  any fee or cost, to use, copy, modify, alter, enhance and distribute
- *  this software, and any derivative works thereof, and its supporting
- *  documentation for any purpose whatsoever, provided that this entire
- *  notice appears in all copies of the software, derivative works and
- *  supporting documentation.  Further, UCAR requests that the user credit
- *  UCAR/Unidata in any publications that result from the use of this
- *  software or in any product that includes this software. The names UCAR
- *  and/or Unidata, however, may not be used in any advertising or publicity
- *  to endorse or promote any products or commercial entity unless specific
- *  written permission is obtained from UCAR/Unidata. The user also
- *  understands that UCAR/Unidata is not obligated to provide the user with
- *  any support, consulting, training or assistance of any kind with regard
- *  to the use, operation and performance of this software nor to provide
- *  the user with any updates, revisions, new versions or "bug fixes."
+ *   Access and use of this software shall impose the following obligations
+ *   and understandings on the user. The user is granted the right, without
+ *   any fee or cost, to use, copy, modify, alter, enhance and distribute
+ *   this software, and any derivative works thereof, and its supporting
+ *   documentation for any purpose whatsoever, provided that this entire
+ *   notice appears in all copies of the software, derivative works and
+ *   supporting documentation.  Further, UCAR requests that the user credit
+ *   UCAR/Unidata in any publications that result from the use of this
+ *   software or in any product that includes this software. The names UCAR
+ *   and/or Unidata, however, may not be used in any advertising or publicity
+ *   to endorse or promote any products or commercial entity unless specific
+ *   written permission is obtained from UCAR/Unidata. The user also
+ *   understands that UCAR/Unidata is not obligated to provide the user with
+ *   any support, consulting, training or assistance of any kind with regard
+ *   to the use, operation and performance of this software nor to provide
+ *   the user with any updates, revisions, new versions or "bug fixes."
  *
- *  THIS SOFTWARE IS PROVIDED BY UCAR/UNIDATA "AS IS" AND ANY EXPRESS OR
- *  IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
- *  WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
- *  DISCLAIMED. IN NO EVENT SHALL UCAR/UNIDATA BE LIABLE FOR ANY SPECIAL,
- *  INDIRECT OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING
- *  FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT,
- *  NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
- *  WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
+ *   THIS SOFTWARE IS PROVIDED BY UCAR/UNIDATA "AS IS" AND ANY EXPRESS OR
+ *   IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ *   WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ *   DISCLAIMED. IN NO EVENT SHALL UCAR/UNIDATA BE LIABLE FOR ANY SPECIAL,
+ *   INDIRECT OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING
+ *   FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT,
+ *   NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
+ *   WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 package ucar.nc2.iosp.bufr.tables;
 
@@ -86,9 +86,9 @@ public class NcepMnemonic {
     if (tables.d == null)
       tables.d = new TableD("fake", "fake");
 
-    HashMap<String, String> number = new HashMap<String, String>(); // key = mnemonic value = fxy
-    HashMap<String, String> desc = new HashMap<String, String>(); // key = mnemonic value = description
-    HashMap<String, String> mnseq = new HashMap<String, String>();
+    HashMap<String, String> number = new HashMap<>(); // key = mnemonic value = fxy
+    HashMap<String, String> desc = new HashMap<>(); // key = mnemonic value = description
+    HashMap<String, String> mnseq = new HashMap<>();
 
     try {
       BufferedReader dataIS = new BufferedReader(new InputStreamReader(ios));
@@ -163,7 +163,7 @@ public class NcepMnemonic {
         seq = seq.replaceAll("\\)", "");
 
         StringTokenizer stoke = new StringTokenizer(seq, " ");
-        List<Short> list = new ArrayList<Short>();
+        List<Short> list = new ArrayList<>();
         while (stoke.hasMoreTokens()) {
           String mn = stoke.nextToken();
           if (mn.charAt(1) == '-') {
@@ -219,7 +219,7 @@ public class NcepMnemonic {
 
       // add some static repetition sequences
       // LOOK why?
-      List<Short> list = new ArrayList<Short>();
+      List<Short> list = new ArrayList<>();
       // 16 bit delayed repetition
       list.add(Descriptor.getFxy("1-1-0"));
       list.add(Descriptor.getFxy("0-31-2"));
@@ -229,7 +229,7 @@ public class NcepMnemonic {
       //short id = Descriptor.getFxy("3-60-1");
       //sequences.put(Short.valueOf(id), tableD);
 
-      list = new ArrayList<Short>();
+      list = new ArrayList<>();
       // 8 bit delayed repetition
       list.add(Descriptor.getFxy("1-1-0"));
       list.add(Descriptor.getFxy("0-31-1"));
@@ -239,7 +239,7 @@ public class NcepMnemonic {
       //id = Descriptor.getFxy("3-60-2");
       //sequences.put(Short.valueOf(id), tableD);
 
-      list = new ArrayList<Short>();
+      list = new ArrayList<>();
       // 8 bit delayed repetition
       list.add(Descriptor.getFxy("1-1-0"));
       list.add(Descriptor.getFxy("0-31-1"));
@@ -249,7 +249,7 @@ public class NcepMnemonic {
       //id = Descriptor.getFxy("3-60-3");
       //sequences.put(Short.valueOf(id), tableD);
 
-      list = new ArrayList<Short>();
+      list = new ArrayList<>();
       // 1 bit delayed repetition
       list.add(Descriptor.getFxy("1-1-0"));
       list.add(Descriptor.getFxy("0-31-0"));
@@ -391,13 +391,14 @@ public class NcepMnemonic {
     System.exit(0);
 
     String location = "resource:/resources/bufrTables/local/ncep/ncep.bufrtab.ETACLS1";
-    InputStream ios = BufrTables.openStream(location);
-    BufrTables.Tables tables = new BufrTables.Tables();
-    NcepMnemonic.read(ios, tables);
+    try (InputStream ios = BufrTables.openStream(location)) {
+      BufrTables.Tables tables = new BufrTables.Tables();
+      NcepMnemonic.read(ios, tables);
 
-    Formatter out = new Formatter(System.out);
-    tables.b.show(out);
-    tables.d.show(out);
+      Formatter out = new Formatter(System.out);
+      tables.b.show(out);
+      tables.d.show(out);
+    }
 
   }
 

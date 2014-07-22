@@ -149,7 +149,8 @@ public class ShapefileIosp extends AbstractIOServiceProvider {
   static public void main(String args[]) throws IOException {
     String fname = "C:\\data\\g4g/EcoAtlas_modern_baylands.shp";
     ShapefileIosp iosp = new ShapefileIosp();
-    RandomAccessFile raf = new RandomAccessFile(fname, "r");
-    System.out.printf("%s%n",iosp.isValidFile(raf));
+    try (RandomAccessFile raf = new RandomAccessFile(fname, "r")) {
+      System.out.printf("%s%n", iosp.isValidFile(raf));
+    }
   }
 }

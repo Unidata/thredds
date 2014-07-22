@@ -737,8 +737,9 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable, AutoClosea
   public static NetcdfFile openInMemory(String filename) throws IOException {
     File file = new File(filename);
     ByteArrayOutputStream bos = new ByteArrayOutputStream((int) file.length());
-    InputStream in = new BufferedInputStream(new FileInputStream(filename));
-    IO.copy(in, bos);
+    try (InputStream in = new BufferedInputStream(new FileInputStream(filename))) {
+      IO.copy(in, bos);
+    }
     return openInMemory(filename, bos.toByteArray());
   }
 

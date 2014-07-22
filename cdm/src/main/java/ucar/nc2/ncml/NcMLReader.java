@@ -97,8 +97,9 @@ public class NcMLReader {
 
     if (debugXML) {
       System.out.println(" NetcdfDataset URL = <" + ncmlResourceLocation + ">");
-      InputStream is2 = cl.getResourceAsStream(ncmlResourceLocation);
-      System.out.println(" contents=\n" + IO.readContents(is2));
+      try (InputStream is2 = cl.getResourceAsStream(ncmlResourceLocation)) {
+        System.out.println(" contents=\n" + IO.readContents(is2));
+      }
     }
 
     org.jdom2.Document doc;

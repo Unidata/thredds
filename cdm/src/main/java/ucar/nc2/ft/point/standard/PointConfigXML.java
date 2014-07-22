@@ -290,36 +290,37 @@ public class PointConfigXML {
 
   public TableConfig readConfigXMLfromResource(String resourceLocation, FeatureType wantFeatureType, NetcdfDataset ds, Formatter errlog) throws IOException {
     ClassLoader cl = this.getClass().getClassLoader();
-    InputStream is = cl.getResourceAsStream(resourceLocation);
-    if (is == null)
-      throw new FileNotFoundException(resourceLocation);
+    try (InputStream is = cl.getResourceAsStream(resourceLocation)) {
+      if (is == null)
+        throw new FileNotFoundException(resourceLocation);
 
-    if (debugXML) {
-      System.out.println(" PointConfig URL = <" + resourceLocation + ">");
-      InputStream is2 = cl.getResourceAsStream(resourceLocation);
-      System.out.println(" contents=\n" + IO.readContents(is2));
+      if (debugXML) {
+        System.out.println(" PointConfig URL = <" + resourceLocation + ">");
+        InputStream is2 = cl.getResourceAsStream(resourceLocation);
+        System.out.println(" contents=\n" + IO.readContents(is2));
+      }
+
+      org.jdom2.Document doc;
+      try {
+        SAXBuilder builder = new SAXBuilder(false);
+        if (debugURL) System.out.println(" PointConfig URL = <" + resourceLocation + ">");
+        doc = builder.build(is);
+      } catch (JDOMException e) {
+        throw new IOException(e.getMessage());
+      }
+      if (debugXML) System.out.println(" SAXBuilder done");
+
+      if (showParsedXML) {
+        XMLOutputter xmlOut = new XMLOutputter();
+        System.out.println("*** PointConfig/showParsedXML = \n" + xmlOut.outputString(doc) + "\n*******");
+      }
+
+      Element configElem = doc.getRootElement();
+      String featureType = configElem.getAttributeValue("featureType");
+      Element tableElem = configElem.getChild("table");
+      TableConfig tc = parseTableConfig(ds, tableElem, null);
+      tc.featureType = FeatureType.valueOf(featureType);
     }
-
-    org.jdom2.Document doc;
-    try {
-      SAXBuilder builder = new SAXBuilder(false);
-      if (debugURL) System.out.println(" PointConfig URL = <" + resourceLocation + ">");
-      doc = builder.build(is);
-    } catch (JDOMException e) {
-      throw new IOException(e.getMessage());
-    }
-    if (debugXML) System.out.println(" SAXBuilder done");
-
-    if (showParsedXML) {
-      XMLOutputter xmlOut = new XMLOutputter();
-      System.out.println("*** PointConfig/showParsedXML = \n" + xmlOut.outputString(doc) + "\n*******");
-    }
-
-    Element configElem = doc.getRootElement();
-    String featureType = configElem.getAttributeValue("featureType");
-    Element tableElem = configElem.getChild("table");
-    TableConfig tc = parseTableConfig(ds, tableElem, null);
-    tc.featureType = FeatureType.valueOf(featureType);
 
     return tc;
   }

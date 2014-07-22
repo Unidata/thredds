@@ -1,34 +1,34 @@
 /*
- * Copyright 1998-2013 University Corporation for Atmospheric Research/Unidata
+ * Copyright 1998-2014 University Corporation for Atmospheric Research/Unidata
  *
- *  Portions of this software were developed by the Unidata Program at the
- *  University Corporation for Atmospheric Research.
+ *   Portions of this software were developed by the Unidata Program at the
+ *   University Corporation for Atmospheric Research.
  *
- *  Access and use of this software shall impose the following obligations
- *  and understandings on the user. The user is granted the right, without
- *  any fee or cost, to use, copy, modify, alter, enhance and distribute
- *  this software, and any derivative works thereof, and its supporting
- *  documentation for any purpose whatsoever, provided that this entire
- *  notice appears in all copies of the software, derivative works and
- *  supporting documentation.  Further, UCAR requests that the user credit
- *  UCAR/Unidata in any publications that result from the use of this
- *  software or in any product that includes this software. The names UCAR
- *  and/or Unidata, however, may not be used in any advertising or publicity
- *  to endorse or promote any products or commercial entity unless specific
- *  written permission is obtained from UCAR/Unidata. The user also
- *  understands that UCAR/Unidata is not obligated to provide the user with
- *  any support, consulting, training or assistance of any kind with regard
- *  to the use, operation and performance of this software nor to provide
- *  the user with any updates, revisions, new versions or "bug fixes."
+ *   Access and use of this software shall impose the following obligations
+ *   and understandings on the user. The user is granted the right, without
+ *   any fee or cost, to use, copy, modify, alter, enhance and distribute
+ *   this software, and any derivative works thereof, and its supporting
+ *   documentation for any purpose whatsoever, provided that this entire
+ *   notice appears in all copies of the software, derivative works and
+ *   supporting documentation.  Further, UCAR requests that the user credit
+ *   UCAR/Unidata in any publications that result from the use of this
+ *   software or in any product that includes this software. The names UCAR
+ *   and/or Unidata, however, may not be used in any advertising or publicity
+ *   to endorse or promote any products or commercial entity unless specific
+ *   written permission is obtained from UCAR/Unidata. The user also
+ *   understands that UCAR/Unidata is not obligated to provide the user with
+ *   any support, consulting, training or assistance of any kind with regard
+ *   to the use, operation and performance of this software nor to provide
+ *   the user with any updates, revisions, new versions or "bug fixes."
  *
- *  THIS SOFTWARE IS PROVIDED BY UCAR/UNIDATA "AS IS" AND ANY EXPRESS OR
- *  IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
- *  WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
- *  DISCLAIMED. IN NO EVENT SHALL UCAR/UNIDATA BE LIABLE FOR ANY SPECIAL,
- *  INDIRECT OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING
- *  FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT,
- *  NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
- *  WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
+ *   THIS SOFTWARE IS PROVIDED BY UCAR/UNIDATA "AS IS" AND ANY EXPRESS OR
+ *   IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ *   WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ *   DISCLAIMED. IN NO EVENT SHALL UCAR/UNIDATA BE LIABLE FOR ANY SPECIAL,
+ *   INDIRECT OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING
+ *   FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT,
+ *   NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
+ *   WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 package ucar.nc2.iosp.bufr.tables;
 
@@ -87,7 +87,7 @@ public class CodeFlagTables {
   }
 
   static private void init() {
-    tableMap = new HashMap<Short, CodeFlagTables>(300);
+    tableMap = new HashMap<>(300);
     init(tableMap);
   }
 
@@ -118,9 +118,7 @@ public class CodeFlagTables {
    */
   static private void init(Map<Short, CodeFlagTables> table) {
     String filename = BufrTables.RESOURCE_PATH + CodeFlagFilename;
-    InputStream is = CodeFlagTables.class.getResourceAsStream(filename);
-
-    try {
+    try (InputStream is = CodeFlagTables.class.getResourceAsStream(filename)) {
       SAXBuilder builder = new SAXBuilder();
       org.jdom2.Document tdoc = builder.build(is);
       org.jdom2.Element root = tdoc.getRootElement();
@@ -160,16 +158,10 @@ public class CodeFlagTables {
 
     } catch (Exception e) {
       log.error("Can't read BUFR code table " + filename, e);
-
-    } finally {
-      try {
-        if (is != null) is.close();
-      } catch (IOException e) {
-      }
     }
   }
 
-  static private boolean showReadErrs = false, showNameDiff = false;
+  static private final boolean showReadErrs = false, showNameDiff = false;
 
   static private void init2(Map<Short, CodeFlagTables> table) {
     String filename = BufrTables.RESOURCE_PATH + "wmo/BC_CodeFlagTable.csv";
@@ -253,10 +245,10 @@ public class CodeFlagTables {
   }
 
   public static void main(String arg[]) throws IOException {
-    HashMap<Short, CodeFlagTables> tableMap1 = new HashMap<Short, CodeFlagTables>(300);
+    HashMap<Short, CodeFlagTables> tableMap1 = new HashMap<>(300);
     init(tableMap1);
 
-    HashMap<Short, CodeFlagTables> tableMap2 = new HashMap<Short, CodeFlagTables>(300);
+    HashMap<Short, CodeFlagTables> tableMap2 = new HashMap<>(300);
     init2(tableMap2);
 
     System.out.printf("Compare 1 with 2%n");
@@ -305,7 +297,7 @@ public class CodeFlagTables {
   private CodeFlagTables(short fxy, String name) {
     this.fxy = fxy;
     this.name = (name == null) ? fxy() : name; // StringUtil2.replace(name, ' ', "_") + "("+fxy()+")";
-    map = new HashMap<Integer, String>(20);
+    map = new HashMap<>(20);
   }
 
   private CodeFlagTables(short fxy, String name, Map<Integer, String> map) {
