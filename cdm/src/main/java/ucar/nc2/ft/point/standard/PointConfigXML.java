@@ -286,7 +286,7 @@ public class PointConfigXML {
   ///////////////////////////////////////////////////////////////////////////
   private static boolean debugXML = false;
   private static boolean debugURL = false;
-  private static boolean showParsedXML = false;
+  private static boolean showParsedXML = true;
 
   public TableConfig readConfigXMLfromResource(String resourceLocation, FeatureType wantFeatureType, NetcdfDataset ds, Formatter errlog) throws IOException {
     ClassLoader cl = this.getClass().getClassLoader();
@@ -321,9 +321,9 @@ public class PointConfigXML {
       Element tableElem = configElem.getChild("table");
       TableConfig tc = parseTableConfig(ds, tableElem, null);
       tc.featureType = FeatureType.valueOf(featureType);
+      return tc;
     }
 
-    return tc;
   }
 
   public TableConfig readConfigXML(String fileLocation, FeatureType wantFeatureType, NetcdfDataset ds, Formatter errlog) throws IOException {

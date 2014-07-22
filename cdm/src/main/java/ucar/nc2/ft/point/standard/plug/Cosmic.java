@@ -43,7 +43,7 @@ import java.util.*;
 import java.io.IOException;
 
 /**
- * Class Description.
+ * TableConfigurer for cosmic data
  *
  * @author caron
  * @since Jan 26, 2009

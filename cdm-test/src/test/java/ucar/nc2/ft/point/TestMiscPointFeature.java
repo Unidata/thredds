@@ -56,6 +56,14 @@ import ucar.unidata.test.util.TestDir;
 
 public class TestMiscPointFeature {
 
+
+  @Test
+  public void testProblem() throws IOException {
+    String location = TestPointDatasets.topdir + "ft/trajectory/cosmic/wetPrf_C005.2007.294.16.22.G17_0001.0002_nc";
+    assert 383 == TestPointDatasets.checkPointDataset(location, FeatureType.TRAJECTORY, true);
+  }
+
+
   @Test
   public void testStationVarLevels() throws Exception {
     String file = TestDir.cdmLocalTestDataDir + "point/stationData2Levels.ncml";
