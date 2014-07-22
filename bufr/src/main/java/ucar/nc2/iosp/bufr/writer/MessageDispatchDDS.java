@@ -118,19 +118,20 @@ public class MessageDispatchDDS {
     if (configFilename != null) {
       File inputFile = new File(configFilename);
       if (inputFile.exists()) {
-        BufferedReader dataIS = new BufferedReader(new InputStreamReader(new FileInputStream(inputFile)));
-        while (true) {
-          String line = dataIS.readLine();
-          if (line == null) break;
-          line = line.trim();
-          if (line.length() == 0) break;
-          if (line.charAt(0) == '#') continue;
+        try (BufferedReader dataIS = new BufferedReader(new InputStreamReader(new FileInputStream(inputFile)))) {
+          while (true) {
+            String line = dataIS.readLine();
+            if (line == null) break;
+            line = line.trim();
+            if (line.length() == 0) break;
+            if (line.charAt(0) == '#') continue;
 
-          String[] toke = line.split(",");
-          //String hashS = toke[0].substring(2); // remove the "0x"
-          Integer hash = Integer.parseInt(toke[0]);
-          String bitsOk = (toke.length > 8) ? toke[7].trim() : "";
-          typeMap.put(hash, new MessType(hash, toke[1], toke[2], toke[3], bitsOk));
+            String[] toke = line.split(",");
+            //String hashS = toke[0].substring(2); // remove the "0x"
+            Integer hash = Integer.parseInt(toke[0]);
+            String bitsOk = (toke.length > 8) ? toke[7].trim() : "";
+            typeMap.put(hash, new MessType(hash, toke[1], toke[2], toke[3], bitsOk));
+          }
         }
       }
     }
@@ -237,27 +238,32 @@ public class MessageDispatchDDS {
       for (MessageWriter writer : writers.values())
         writer.close();
 
-      //for (MessType mtype : typeMap.values())
-      //  if (mtype.indexer != null) mtype.indexer.close();
-
       if (badWbc != null) badWbc.close();
       if (sampleWbc != null) sampleWbc.close();
       if (allWbc != null) allWbc.close();
 
-      Formatter cfg = (inputFilenameOut != null) ? new Formatter(new FileOutputStream(inputFilenameOut)) : null;
+    } catch (IOException ioe) {
+      logger.error("MessageDispatchDDS.exit", ioe);
+    }
 
-      if (out != null) out.format("\n===============================================\n");
+    //for (MessType mtype : typeMap.values())
+    //  if (mtype.indexer != null) mtype.indexer.close();
 
-      int avg_msg = (total_msgs == 0) ? 0 : (int) (total_bytes / total_msgs);
-      int avg_obs = (total_msgs == 0) ? 0 : (total_obs / total_msgs);
-      if (out != null) {
-        out.format("total_msgs=%d total_obs=%d total_bytes=%d avg_msg_size=%d avg_obs/msg=%d \n",
-                total_msgs, total_obs, total_bytes, avg_msg, avg_obs);
-        out.format("matched=%d types=%d bad=%d badTypes=%d badBytes=%d ignored=%d failWrite=%d %n",
-                match, typeMap.size(), badCount, badHashSet.size(), badBytes, ignored, failWrite);
-      }
+    // report out
+    if (out != null) out.format("\n===============================================\n");
 
-      if (cfg != null) {
+    int avg_msg = (total_msgs == 0) ? 0 : (int) (total_bytes / total_msgs);
+    int avg_obs = (total_msgs == 0) ? 0 : (total_obs / total_msgs);
+    if (out != null) {
+      out.format("total_msgs=%d total_obs=%d total_bytes=%d avg_msg_size=%d avg_obs/msg=%d \n",
+              total_msgs, total_obs, total_bytes, avg_msg, avg_obs);
+      out.format("matched=%d types=%d bad=%d badTypes=%d badBytes=%d ignored=%d failWrite=%d %n",
+              match, typeMap.size(), badCount, badHashSet.size(), badBytes, ignored, failWrite);
+    }
+
+    if ((inputFilenameOut != null)) {
+      try (FileOutputStream cout = new FileOutputStream(inputFilenameOut)) {
+        Formatter cfg = new Formatter(cout);
         cfg.format("#    hash, filename, wmo, index, nmess, nobs, kBytes, complete, bitsOk, nbad, center, table, edition, category%n");
         List<MessType> mtypes = new ArrayList<MessType>(typeMap.values());
         Collections.sort(mtypes, new MessTypeSorter());
@@ -279,11 +285,10 @@ public class MessageDispatchDDS {
                   m.getLookup().getCenterNo(), m.getLookup().getTableName(), m.is.getBufrEdition(), m.getLookup().getCategoryNo());
         }
         if (out != null) out.format("\n");
-        cfg.close();
-      }
 
-    } catch (IOException ioe) {
-      logger.error("MessageDispatchDDS.exit", ioe);
+      } catch (IOException ioe) {
+        logger.error("MessageDispatchDDS.exit", ioe);
+      }
     }
   }
 
@@ -356,7 +361,7 @@ public class MessageDispatchDDS {
 
     boolean scheduleWrite(Message m) throws IOException {
       CalendarDate cd = m.ids.getReferenceTime();
-      String writerName = (dayRollover) ? fileout+"."+CalendarDateFormatter.toDateString(cd) : fileout;
+      String writerName = (dayRollover) ? fileout + "." + CalendarDateFormatter.toDateString(cd) : fileout;
 
       // fetch or create the MessageWriter
       MessageWriter writer = writers.get(writerName);
@@ -369,11 +374,11 @@ public class MessageDispatchDDS {
             //String centerDir = "Center-"+lookup.getCenter()+"."+lookup.getSubCenter();
             //File dir1 = new File(dispatchDir, centerDir);
             //if (!dir1.exists() && !dir1.mkdirs()) logger.warn("Failed to make "+dir1.getPath());
-            String catDir = "Category-"+lookup.getCategory()+"."+lookup.getSubCategory();
+            String catDir = "Category-" + lookup.getCategory() + "." + lookup.getSubCategory();
             File dir2 = new File(dispatchDir, catDir);
-            if (!dir2.exists() && !dir2.mkdirs()) logger.warn("Failed to make "+dir2.getPath());
-            String filename = (dayRollover) ? fileout+"."+CalendarDateFormatter.toDateString(cd) : fileout;
-            file2write = new File(dir2, filename+".bufr");
+            if (!dir2.exists() && !dir2.mkdirs()) logger.warn("Failed to make " + dir2.getPath());
+            String filename = (dayRollover) ? fileout + "." + CalendarDateFormatter.toDateString(cd) : fileout;
+            file2write = new File(dir2, filename + ".bufr");
 
             System.out.printf("Start %s internalTableMessages=%d%n   %s%n   %s%n", file2write, bufrTableMessages.size(), lookup.getCenterName(), lookup.getCategoryFullName());
 

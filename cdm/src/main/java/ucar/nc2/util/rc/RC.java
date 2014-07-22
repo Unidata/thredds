@@ -345,56 +345,51 @@ load(String abspath)
 	return false;
     }
     if(showlog) log.debug("Loading rc file: "+abspath);
-    FileReader frdr = null;
-    try {
-        frdr = new FileReader(rcFile);
-    } catch (FileNotFoundException fe) {
-        if(showlog) log.debug("Loading rc file: "+abspath);
-        return false;
-    }
-    BufferedReader rdr = new BufferedReader(frdr);
-    try {
-        for(int lineno=1;;lineno++) {
-            URL url = null;
-            String line = rdr.readLine();
-            if(line == null) break;
-            // trim leading blanks
-            line = line.trim();
-            if(line.length()==0) continue; // empty line
-            if(line.charAt(0) == '#') continue; // check for comment
-            // parse the line
-            if(line.charAt(0) == LTAG) {
-                int rindex = line.indexOf(RTAG);
-                if(rindex < 0) return false;
-                if(showlog) log.error("Malformed [url] at "+abspath+"."+lineno);
-                String surl = line.substring(1,rindex);
-                try {
-                    url = new URL(surl);
-                } catch (MalformedURLException mue) {
-                    if(showlog) log.error("Malformed [url] at "+abspath+"."+lineno);
-                }
-                line = line.substring(rindex+1);
-                // trim again
-                line = line.trim();
+    try (BufferedReader rdr = new BufferedReader(new FileReader(rcFile))) {
+        for (int lineno = 1; ; lineno++) {
+          URL url = null;
+          String line = rdr.readLine();
+          if (line == null) break;
+          // trim leading blanks
+          line = line.trim();
+          if (line.length() == 0) continue; // empty line
+          if (line.charAt(0) == '#') continue; // check for comment
+          // parse the line
+          if (line.charAt(0) == LTAG) {
+            int rindex = line.indexOf(RTAG);
+            if (rindex < 0) return false;
+            if (showlog) log.error("Malformed [url] at " + abspath + "." + lineno);
+            String surl = line.substring(1, rindex);
+            try {
+              url = new URL(surl);
+            } catch (MalformedURLException mue) {
+              if (showlog) log.error("Malformed [url] at " + abspath + "." + lineno);
             }
-            // Get the key,value part
-            String[] pieces = line.split("\\s*=\\s*");
-            assert(pieces.length == 1 || pieces.length == 2);
-            // Create the triple
-            String value = "1";
-            if(pieces.length == 2) value = pieces[1].trim();
-            Triple triple = new Triple(pieces[0].trim(), value, url);
-            List<Triple> list = triplestore.get(triple.key);
-            if(list == null) list = new ArrayList<Triple>();
-            Triple prev = addtriple(list,triple);
-            triplestore.put(triple.key,list);
+            line = line.substring(rindex + 1);
+            // trim again
+            line = line.trim();
+          }
+          // Get the key,value part
+          String[] pieces = line.split("\\s*=\\s*");
+          assert (pieces.length == 1 || pieces.length == 2);
+          // Create the triple
+          String value = "1";
+          if (pieces.length == 2) value = pieces[1].trim();
+          Triple triple = new Triple(pieces[0].trim(), value, url);
+          List<Triple> list = triplestore.get(triple.key);
+          if (list == null) list = new ArrayList<Triple>();
+          Triple prev = addtriple(list, triple);
+          triplestore.put(triple.key, list);
         }
-        rdr.close();
-        frdr.close();
-    } catch (IOException ioe) {
-        if(showlog) log.error("File "+abspath+": IO exception: "+ioe.getMessage());
+
+      } catch (FileNotFoundException fe) {
+        if (showlog) log.debug("Loading rc file: " + abspath);
         return false;
-    }
+
+      } catch (IOException ioe) {
+        if (showlog) log.error("File " + abspath + ": IO exception: " + ioe.getMessage());
+        return false;
+      }
     return true;
 }
 
