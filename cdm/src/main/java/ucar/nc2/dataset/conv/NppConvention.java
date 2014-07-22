@@ -77,6 +77,7 @@ public class NppConvention extends ucar.nc2.dataset.CoordSysBuilder {
     // http://npp.gsfc.nasa.gov/cris.html
     if (loc == null) {
       loc = ncfile.findGroup("All_Data");
+      if (loc == null) return false;
       Attribute att = ncfile.findGlobalAttribute("Instrument_Name");
       if ((att == null) || !att.getStringValue().equals("CrIS")) return false;
       if (null == loc.findVariable(PRESSURE_COORD_NAME)) return false;
@@ -101,6 +102,7 @@ public class NppConvention extends ucar.nc2.dataset.CoordSysBuilder {
        group = ds.findGroup("All_Data/VIIRS-CLD-AGG-GEO_All");
     if (group == null) {
       group = ds.findGroup("All_Data");
+      if (group == null) throw new IllegalStateException();
       hasPressureLevels = true;
       spectralCoord = group.findVariable(SPECTRAL_COORD_NAME);
     }

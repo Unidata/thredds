@@ -190,16 +190,17 @@ public class GridIndexToNC {
     makeDenseCoordSys(ncfile, lookup, cancelTask);
 
     if (GridServiceProvider.debugMissing) {
-      Formatter f = new Formatter(System.out);
-      int count = 0;
-      Collection<GridHorizCoordSys> hcset = hcsHash.values();
-      for (GridHorizCoordSys hcs : hcset) {
-        List<GridVariable> gribvars = new ArrayList<>(hcs.varHash.values());
-        for (GridVariable gv : gribvars) {
-          count += gv.showMissingSummary(f);
+      try (Formatter f = new Formatter(System.out)) {
+        int count = 0;
+        Collection<GridHorizCoordSys> hcset = hcsHash.values();
+        for (GridHorizCoordSys hcs : hcset) {
+          List<GridVariable> gribvars = new ArrayList<>(hcs.varHash.values());
+          for (GridVariable gv : gribvars) {
+            count += gv.showMissingSummary(f);
+          }
         }
+        System.out.println(" total missing= " + count);
       }
-      System.out.println(" total missing= " + count);
     }
 
     if (GridServiceProvider.debugMissingDetails) {

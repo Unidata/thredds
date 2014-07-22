@@ -1233,7 +1233,7 @@ public class NcMLReader {
     if (refv == null) { // new
       if (debugConstruct) System.out.println(" add new var = " + name);
       Variable nested = readVariableNew(ds, parentS.getParentGroup(), parentS, varElem);
-      parentS.addMemberVariable(nested);
+      if (nested != null) parentS.addMemberVariable(nested);
       return;
     }
 

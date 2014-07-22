@@ -106,7 +106,8 @@ public class CrawlableCatalog implements CrawlableDataset {
 
   public String getPath() {
     if (serviceType != null) {
-      return dataset.getAccess( serviceType).getStandardUrlName();
+      InvAccess access = dataset.getAccess( serviceType);
+      if (access != null) return access.getStandardUrlName();
     }
     return dataset.getCatalogUrl();
   }

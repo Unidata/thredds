@@ -13,7 +13,7 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * Just Open  all the files in the formats directory.
+ * Just Open all the files in the formats directory.
  *
  * @author caron
  * @since 2/28/11

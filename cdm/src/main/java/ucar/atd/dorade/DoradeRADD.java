@@ -34,8 +34,6 @@ package ucar.atd.dorade;
 
 import java.io.*;
 
-/* $Id:DoradeRADD.java 51 2006-07-12 17:13:13Z caron $ */
-
 class DoradeRADD extends DoradeDescriptor {
 
   /**
@@ -58,53 +56,43 @@ class DoradeRADD extends DoradeDescriptor {
   /**
    * ground-based radar type
    */
-  public static final RadarType TYPE_GROUND =
-          new RadarType("ground");
+  public static final RadarType TYPE_GROUND = new RadarType("ground");
   /**
    * airborne tail-mounted radar, forward beam type
    */
-  public static final RadarType TYPE_AIR_FORE =
-          new RadarType("airborne (fore)");
+  public static final RadarType TYPE_AIR_FORE = new RadarType("airborne (fore)");
   /**
    * airborne tail-mounted radar, aft beam type
    */
-  public static final RadarType TYPE_AIR_AFT =
-          new RadarType("airborne (aft)");
+  public static final RadarType TYPE_AIR_AFT = new RadarType("airborne (aft)");
   /**
    * airborne tail-mounted radar type
    */
-  public static final RadarType TYPE_AIR_TAIL =
-          new RadarType("airborne (tail)");
+  public static final RadarType TYPE_AIR_TAIL = new RadarType("airborne (tail)");
   /**
    * airborne lower fuselage radar type
    */
-  public static final RadarType TYPE_AIR_LF =
-          new RadarType("airborne (lower fuselage)");
+  public static final RadarType TYPE_AIR_LF = new RadarType("airborne (lower fuselage)");
   /**
    * shipborne radar type
    */
-  public static final RadarType TYPE_SHIP =
-          new RadarType("shipborne");
+  public static final RadarType TYPE_SHIP = new RadarType("shipborne");
   /**
    * airborne nose radar type
    */
-  public static final RadarType TYPE_AIR_NOSE =
-          new RadarType("airborne (nose)");
+  public static final RadarType TYPE_AIR_NOSE = new RadarType("airborne (nose)");
   /**
    * satellite radar type
    */
-  public static final RadarType TYPE_SATELLITE =
-          new RadarType("satellite");
+  public static final RadarType TYPE_SATELLITE = new RadarType("satellite");
   /**
    * fixed lidar type
    */
-  public static final RadarType TYPE_FIXED_LIDAR =
-          new RadarType("fixed lidar");
+  public static final RadarType TYPE_FIXED_LIDAR = new RadarType("fixed lidar");
   /**
    * moving lidar type
    */
-  public static final RadarType TYPE_MOVING_LIDAR =
-          new RadarType("moving lidar");
+  public static final RadarType TYPE_MOVING_LIDAR = new RadarType("moving lidar");
 
   private static RadarType[] radarTypes = {
           TYPE_GROUND,       // 0
@@ -153,11 +141,11 @@ class DoradeRADD extends DoradeDescriptor {
   private float scanParam1; // mode-specific scan parameter
   private short nParams;
   private short nAdditionalDescriptors;
+
   //
   // Compression scheme and known legal values
   //
   private short compressionScheme;
-
   public static final int COMPRESSION_NONE = 0;
   public static final int COMPRESSION_HRD = 1;
 
@@ -165,16 +153,13 @@ class DoradeRADD extends DoradeDescriptor {
   // Data reduction method and known legal values
   //
   private short dataReductionMethod;
-
   public static final int DATA_REDUCTION_NONE = 1;
   public static final int DATA_REDUCTION_BY_AZIMUTH = 2;
   public static final int DATA_REDUCTION_BY_RANGE = 3;
   public static final int DATA_REDUCTION_BY_ALTITUDE = 4;
 
-  private float reductionBound0; // left azimuth, inner circle diameter, or
-  // minimum altitude
-  private float reductionBound1; // right azimuth, outer circle diameter, or
-  // maximum altitude
+  private float reductionBound0; // left azimuth, inner circle diameter, or minimum altitude
+  private float reductionBound1; // right azimuth, outer circle diameter, or maximum altitude
   private float longitude;
   private float latitude;
   private float altitude; // km MSL
@@ -191,8 +176,7 @@ class DoradeRADD extends DoradeDescriptor {
   private int nCells;  // extracted from our CELV
 
 
-  public DoradeRADD(RandomAccessFile file, boolean littleEndianData)
-          throws DescriptorException {
+  public DoradeRADD(RandomAccessFile file, boolean littleEndianData) throws DescriptorException {
     byte[] data = readDescriptor(file, littleEndianData, "RADD");
 
     //
@@ -255,16 +239,13 @@ class DoradeRADD extends DoradeDescriptor {
       switch (dName) {
         case "CELV":
           myCELV = new DoradeCELV(file, littleEndianData);
-
           break;
         case "CSFD":
           file.seek(startpos);
           myCELV = new DoradeCSFD(file, littleEndianData);
-
           break;
         default:
-          throw new DescriptorException("Expected " + dName +
-                  " descriptor not found!");
+          throw new DescriptorException("Expected " + dName + " descriptor not found!");
       }
       //    } catch (DescriptorException ex) {
       //    file.seek(startpos);
@@ -273,7 +254,6 @@ class DoradeRADD extends DoradeDescriptor {
     } catch (IOException ioex) {
       throw new DescriptorException(ioex);
     }
-
 
     nCells = myCELV.getNCells();
 

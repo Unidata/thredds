@@ -155,7 +155,7 @@ public class ThreddsDataFactory {
           throws IOException {
     ThreddsDataFactory.Result result = new ThreddsDataFactory.Result();
     InvDataset invDataset = processLocation(urlString, task, result);
-    if (result.fatalError)
+    if (result.fatalError || invDataset == null)
       return result;
 
     return openFeatureDataset(wantFeatureType, invDataset, task, result);
@@ -360,7 +360,7 @@ public class ThreddsDataFactory {
   public NetcdfDataset openDataset(String location, boolean acquire, ucar.nc2.util.CancelTask task, Formatter log) throws IOException {
     Result result = new Result();
     InvDataset invDataset = processLocation(location, task, result);
-    if (result.fatalError) {
+    if (result.fatalError || invDataset == null) {
       if (log != null) log.format("%s", result.errLog);
       return null;
     }

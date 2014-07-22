@@ -34,15 +34,11 @@ package ucar.nc2.ft.grid;
 
 import ucar.nc2.Dimension;
 import ucar.nc2.time.CalendarDateRange;
-import ucar.nc2.units.DateRange;
 import ucar.nc2.dataset.*;
-import ucar.ma2.Range;
 import ucar.ma2.InvalidRangeException;
-import ucar.unidata.geoloc.LatLonPoint;
 
 import java.util.Formatter;
 import java.util.List;
-import java.util.Date;
 
 /**
  * A Coordinate System for coverage data. Where:

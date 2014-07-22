@@ -963,7 +963,7 @@ public class CFpointObs extends TableConfigurerImpl {
     }
 
     VariableDS time = CoordSysEvaluator.findCoordByType(ds, AxisType.Time);
-    if ((time.getRank() == 0) || (time.getDimension(0) == obsDim)) {
+    if (time != null && (time.getRank() == 0 || time.getDimension(0) == obsDim)) {
       info.set(Encoding.single, null, obsDim);
       return true;
     }

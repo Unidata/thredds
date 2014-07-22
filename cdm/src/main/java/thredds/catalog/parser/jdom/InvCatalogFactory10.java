@@ -1817,7 +1817,7 @@ public class InvCatalogFactory10 implements InvCatalogConvertIF, MetadataConvert
   Element writeDatasetScanFilter( CrawlableDatasetFilter filter )
   {
     Element filterElem = new Element( "filter", defNS );
-    if ( filter.getClass().isAssignableFrom( MultiSelectorFilter.class ) )
+    if ( filter.getClass().isAssignableFrom( MultiSelectorFilter.class ) && filter.getConfigObject() != null)
     {
       for ( Iterator it = ((List) filter.getConfigObject()).iterator(); it.hasNext(); )
       {

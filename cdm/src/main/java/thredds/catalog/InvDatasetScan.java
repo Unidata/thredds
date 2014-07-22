@@ -550,6 +550,12 @@ public class InvDatasetScan extends InvCatalogRef {
       return null;
     }
 
+
+    // Setup and create catalog builder.
+    CatalogBuilder catBuilder = buildCatalogBuilder();
+    if ( catBuilder == null )
+      return null;
+
     // A very round about way to remove the filename (e.g., "catalog.xml").
     // Note: Gets around "path separator at end of path" issues that are CrDs implementation dependant.
     // Note: Does not check that CrDs is allowed by filters.
@@ -557,12 +563,12 @@ public class InvDatasetScan extends InvCatalogRef {
     if ( dsPath.startsWith( "/" ))
       dsPath = dsPath.substring( 1 );
     CrawlableDataset reqCrDs = scanLocationCrDs.getDescendant( dsPath );
-    dsDirPath = reqCrDs.getParentDataset().getPath();
-
-    // Setup and create catalog builder.
-    CatalogBuilder catBuilder = buildCatalogBuilder();
-    if ( catBuilder == null )
+    CrawlableDataset parent = reqCrDs.getParentDataset();
+    if (parent == null) {
+      log.error( "makeCatalogForDirectory(): I/O error getting parent crDs level <" + dsDirPath + ">: ");
       return null;
+    }
+    dsDirPath = parent.getPath();
 
     // Get the CrawlableDataset for the desired catalog level (checks that allowed by filters).
     CrawlableDataset catalogCrDs;

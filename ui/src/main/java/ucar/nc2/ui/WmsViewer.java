@@ -326,8 +326,9 @@ public class WmsViewer extends JPanel {
               ZipEntry entry = (ZipEntry) entries.nextElement();
               info.append(" entry=" + entry + "\n");
               if (entry.getName().endsWith(".kml")) {
-                InputStream kml = zfile.getInputStream(entry);
-                contents = IO.readContentsToByteArray(kml);
+                try (InputStream kml = zfile.getInputStream(entry)) {
+                  contents = IO.readContentsToByteArray(kml);
+                }
               }
             }
           }
