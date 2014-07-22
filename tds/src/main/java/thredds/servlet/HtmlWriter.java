@@ -623,10 +623,9 @@ public class HtmlWriter {
     //URI catURI = cat.getBaseURI();
     String catHtml;
     if (!isLocalCatalog) {
-      // Setup HREF url to link to HTML dataset page (more below).
-      catHtml = this.tdsContext.getContextPath() + "/remoteCatalogService?command=subset&catalog=" + cat.getUriString() + "&";
-      // Can't be "/catalogServices?..." because subset decides on xml or html by trailing ".html" on URL path
-
+        // Setup HREF url to link to HTML dataset page (more below).
+        catHtml = this.tdsContext.getContextPath() + "/remoteCatalogService?command=subset&catalog=" + cat.getUriString() + "&";
+        // Can't be "/catalogServices?..." because subset decides on xml or html by trailing ".html" on URL path
     } else { // replace xml with html
       URI catURI = cat.getBaseURI();
       // Get the catalog name - we want a relative URL
@@ -670,7 +669,16 @@ public class HtmlWriter {
         try {
           URI uri = new URI(href);
           if (uri.isAbsolute()) {
-            href = this.tdsContext.getContextPath() + "/remoteCatalogService?catalog=" + href;
+              // read default as set in threddsConfig.xml
+              boolean useRemoteCatalogService = this.htmlConfig.getUseRemoteCatalogService();
+              // check to see if catalogRef contains tag that overrides default
+
+              if (useRemoteCatalogService) {
+                  href = this.tdsContext.getContextPath() + "/remoteCatalogService?catalog=" + href;
+              } else {
+                  int pos = href.lastIndexOf('.');
+                  href = href.substring(0, pos) + ".html";
+              }
           } else {
             int pos = href.lastIndexOf('.');
             href = href.substring(0, pos) + ".html";
@@ -699,8 +707,19 @@ public class HtmlWriter {
           InvAccess access = ds.getAccess().get(0);
           String accessUrlName = access.getUnresolvedUrlName();
           int pos = accessUrlName.lastIndexOf(".xml");
-          if (pos != -1)
-            accessUrlName = accessUrlName.substring(0, pos) + ".html";
+
+          if (accessUrlName.equalsIgnoreCase("latest.xml")) {
+              String catBaseUriPath = "";
+              String catBaseUri = cat.getBaseURI().toString();
+              pos = catBaseUri.lastIndexOf("catalog.xml");
+              if (pos != -1) {
+                  catBaseUriPath = catBaseUri.substring(0,pos);
+              }
+              accessUrlName = this.tdsContext.getContextPath() + "/remoteCatalogService?catalog=" + catBaseUriPath + accessUrlName;
+          } else if (pos != -1) {
+              accessUrlName = accessUrlName.substring(0, pos) + ".html";
+          }
+
           sb.append("<a href='");
           sb.append(StringUtil2.quoteHtmlContent(accessUrlName));
           sb.append("'><tt>");

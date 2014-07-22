@@ -111,7 +111,8 @@ class TdsConfigMapper
     HTML_FOLDER_ICON_URL( "htmlSetup.folderIconUrl", null,"folder.gif"),
     HTML_FOLDER_ICON_ALT( "htmlSetup.folderIconAlt", null,"Folder"),
     HTML_DATASET_ICON_URL( "htmlSetup.datasetIconUrl", null,""),
-    HTML_DATASET_ICON_ALT( "htmlSetup.datasetIconAlt", null,"");
+    HTML_DATASET_ICON_ALT( "htmlSetup.datasetIconAlt", null,""),
+    HTML_USE_REMOTE_CAT_SERVICE( "htmlSetup.useRemoteCatalogService", null, "true");
 
     private String key;
     private String alternateKey;
@@ -221,6 +222,8 @@ class TdsConfigMapper
     this.htmlConfig.setFolderIconAlt( HtmlConfigMappings.HTML_FOLDER_ICON_ALT.getValueFromThreddsConfig() );
     this.htmlConfig.setDatasetIconUrl( HtmlConfigMappings.HTML_DATASET_ICON_URL.getValueFromThreddsConfig() );
     this.htmlConfig.setDatasetIconAlt( HtmlConfigMappings.HTML_DATASET_ICON_ALT.getValueFromThreddsConfig() );
+
+    this.htmlConfig.setUseRemoteCatalogService( Boolean.parseBoolean(HtmlConfigMappings.HTML_USE_REMOTE_CAT_SERVICE.getValueFromThreddsConfig()));
   }
 
   private void setupWmsConfig()
