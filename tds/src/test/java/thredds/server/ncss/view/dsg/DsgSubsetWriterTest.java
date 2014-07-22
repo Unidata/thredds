@@ -17,6 +17,7 @@ import ucar.nc2.NetcdfFile;
 import ucar.nc2.Variable;
 import ucar.nc2.constants.CDM;
 import ucar.nc2.constants.FeatureType;
+import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.ft.FeatureDataset;
 import ucar.nc2.ft.FeatureDatasetFactoryManager;
 import ucar.nc2.ft.FeatureDatasetPoint;
@@ -85,7 +86,7 @@ public class DsgSubsetWriterTest {
         ncssParamsStation2.setTime("1970-01-21 01:00:00Z");  // The nearest will be "1970-01-21 00:00:00Z"
     }
 
-    @Parameterized.Parameters(name = "{4}")  // Name the tests after the expectedResultResource.
+    @Parameterized.Parameters(name = "{0}/{1}/{3}")
     public static List<Object[]> getTestParameters() throws URISyntaxException {
         // Normally, we'd annotate setupClass() with @BeforeClass and let JUnit call it. Unfortunately, that won't
         // work as expected when @Parameters gets involved.
@@ -94,39 +95,39 @@ public class DsgSubsetWriterTest {
         setupClass();
 
         return Arrays.asList(new Object[][] {
-            // Point
-            { FeatureType.POINT,   "point.ncml",   SupportedFormat.CSV_FILE, ncssParamsAll,      "pointAll.csv"       },
-            { FeatureType.POINT,   "point.ncml",   SupportedFormat.CSV_FILE, ncssParamsPoint,    "pointSubset.csv"    },
+                // Point
+                { FeatureType.POINT,   SupportedFormat.CSV_FILE, ncssParamsAll,      "outputAll.csv"      },
+                { FeatureType.POINT,   SupportedFormat.CSV_FILE, ncssParamsPoint,    "outputSubset.csv"   },
 
-            { FeatureType.POINT,   "point.ncml",   SupportedFormat.XML_FILE, ncssParamsAll,      "pointAll.xml"       },
-            { FeatureType.POINT,   "point.ncml",   SupportedFormat.XML_FILE, ncssParamsPoint,    "pointSubset.xml"    },
+                { FeatureType.POINT,   SupportedFormat.XML_FILE, ncssParamsAll,      "outputAll.xml"      },
+                { FeatureType.POINT,   SupportedFormat.XML_FILE, ncssParamsPoint,    "outputSubset.xml"   },
 
-            { FeatureType.POINT,   "point.ncml",   SupportedFormat.NETCDF3,  ncssParamsAll,      "pointAll.nc"        },
-            { FeatureType.POINT,   "point.ncml",   SupportedFormat.NETCDF3,  ncssParamsPoint,    "pointSubset.nc"     },
+                { FeatureType.POINT,   SupportedFormat.NETCDF3,  ncssParamsAll,      "outputAll.ncml"     },
+                { FeatureType.POINT,   SupportedFormat.NETCDF3,  ncssParamsPoint,    "outputSubset.ncml"  },
 
-            { FeatureType.POINT,   "point.ncml",   SupportedFormat.NETCDF4,  ncssParamsAll,      "pointAll.nc4"       },
-            { FeatureType.POINT,   "point.ncml",   SupportedFormat.NETCDF4,  ncssParamsPoint,    "pointSubset.nc4"    },
+                { FeatureType.POINT,   SupportedFormat.NETCDF4,  ncssParamsAll,      "outputAll.ncml"     },
+                { FeatureType.POINT,   SupportedFormat.NETCDF4,  ncssParamsPoint,    "outputSubset.ncml"  },
 
-            // Station
-            { FeatureType.STATION, "station.ncml", SupportedFormat.CSV_FILE, ncssParamsAll,      "stationAll.csv"     },
-            { FeatureType.STATION, "station.ncml", SupportedFormat.CSV_FILE, ncssParamsStation1, "stationSubset1.csv" },
-            { FeatureType.STATION, "station.ncml", SupportedFormat.CSV_FILE, ncssParamsStation2, "stationSubset2.csv" },
+                // Station
+                { FeatureType.STATION, SupportedFormat.CSV_FILE, ncssParamsAll,      "outputAll.csv"      },
+                { FeatureType.STATION, SupportedFormat.CSV_FILE, ncssParamsStation1, "outputSubset1.csv"  },
+                { FeatureType.STATION, SupportedFormat.CSV_FILE, ncssParamsStation2, "outputSubset2.csv"  },
 
-            { FeatureType.STATION, "station.ncml", SupportedFormat.XML_FILE, ncssParamsAll,      "stationAll.xml"     },
-            { FeatureType.STATION, "station.ncml", SupportedFormat.XML_FILE, ncssParamsStation1, "stationSubset1.xml" },
-            { FeatureType.STATION, "station.ncml", SupportedFormat.XML_FILE, ncssParamsStation2, "stationSubset2.xml" },
+                { FeatureType.STATION, SupportedFormat.XML_FILE, ncssParamsAll,      "outputAll.xml"      },
+                { FeatureType.STATION, SupportedFormat.XML_FILE, ncssParamsStation1, "outputSubset1.xml"  },
+                { FeatureType.STATION, SupportedFormat.XML_FILE, ncssParamsStation2, "outputSubset2.xml"  },
 
-            { FeatureType.STATION, "station.ncml", SupportedFormat.WATERML2, ncssParamsAll,      "stationAll.wml"     },
-            { FeatureType.STATION, "station.ncml", SupportedFormat.WATERML2, ncssParamsStation1, "stationSubset1.wml" },
-            { FeatureType.STATION, "station.ncml", SupportedFormat.WATERML2, ncssParamsStation2, "stationSubset2.wml" },
+                { FeatureType.STATION, SupportedFormat.WATERML2, ncssParamsAll,      "outputAll.xml"      },
+                { FeatureType.STATION, SupportedFormat.WATERML2, ncssParamsStation1, "outputSubset1.xml"  },
+                { FeatureType.STATION, SupportedFormat.WATERML2, ncssParamsStation2, "outputSubset2.xml"  },
 
-            { FeatureType.STATION, "station.ncml", SupportedFormat.NETCDF3,  ncssParamsAll,      "stationAll.nc"      },
-            { FeatureType.STATION, "station.ncml", SupportedFormat.NETCDF3,  ncssParamsStation1, "stationSubset1.nc"  },
-            { FeatureType.STATION, "station.ncml", SupportedFormat.NETCDF3,  ncssParamsStation2, "stationSubset2.nc"  },
+                { FeatureType.STATION, SupportedFormat.NETCDF3,  ncssParamsAll,      "outputAll.ncml"     },
+                { FeatureType.STATION, SupportedFormat.NETCDF3,  ncssParamsStation1, "outputSubset1.ncml" },
+                { FeatureType.STATION, SupportedFormat.NETCDF3,  ncssParamsStation2, "outputSubset2.ncml" },
 
-            { FeatureType.STATION, "station.ncml", SupportedFormat.NETCDF4,  ncssParamsAll,      "stationAll.nc4"     },
-            { FeatureType.STATION, "station.ncml", SupportedFormat.NETCDF4,  ncssParamsStation1, "stationSubset1.nc4" },
-            { FeatureType.STATION, "station.ncml", SupportedFormat.NETCDF4,  ncssParamsStation2, "stationSubset2.nc4" },
+                { FeatureType.STATION, SupportedFormat.NETCDF4,  ncssParamsAll,      "outputAll.ncml"     },
+                { FeatureType.STATION, SupportedFormat.NETCDF4,  ncssParamsStation1, "outputSubset1.ncml" },
+                { FeatureType.STATION, SupportedFormat.NETCDF4,  ncssParamsStation2, "outputSubset2.ncml" },
         });
     }
 
@@ -136,13 +137,14 @@ public class DsgSubsetWriterTest {
     private final NcssParamsBean ncssParams;
     private final String expectedResultResource;
 
-    public DsgSubsetWriterTest(FeatureType wantedType, String datasetResource,
-            SupportedFormat format, NcssParamsBean ncssParams, String expectedResultResource) throws URISyntaxException {
+    public DsgSubsetWriterTest(FeatureType wantedType, SupportedFormat format, NcssParamsBean ncssParams,
+            String expectedResultResource) throws URISyntaxException {
         this.wantedType = wantedType;
-        this.datasetResource = wantedType.name().toLowerCase() + "/" + datasetResource;
+        this.datasetResource = wantedType.name().toLowerCase() + "/input.ncml";
         this.format = format;
         this.ncssParams = ncssParams;
-        this.expectedResultResource = wantedType.name().toLowerCase() + "/" + expectedResultResource;
+        this.expectedResultResource =
+                wantedType.name().toLowerCase() + "/" + format.name().toLowerCase() + "/" + expectedResultResource;
     }
 
     @Test
@@ -154,8 +156,17 @@ public class DsgSubsetWriterTest {
         File datasetFile = new File(getClass().getResource(datasetResource).toURI());
         File expectedResultFile = new File(getClass().getResource(expectedResultResource).toURI());
 
+        String extension;
+        switch (format) {
+            case CSV_FILE: extension = "csv"; break;
+            case XML_FILE: // fall through
+            case WATERML2: extension = "xml"; break;
+            case NETCDF3:  extension = "nc";  break;
+            case NETCDF4:  extension = "nc4"; break;
+            default: throw new AssertionError("Unknown format: " + format);
+        }
+
         String basename = FilenameUtils.getBaseName(expectedResultResource);
-        String extension = FilenameUtils.getExtension(expectedResultResource);
         File actualResultFile = File.createTempFile(basename + "_", "." + extension);
 
         try {
@@ -174,13 +185,15 @@ public class DsgSubsetWriterTest {
                 Assert.assertTrue(compareText(expectedResultFile, actualResultFile));
             }
         } finally {
-            actualResultFile.delete();
+            if (!actualResultFile.delete()) {
+                logger.warn("Failed to delete " + actualResultFile);
+            }
         }
     }
 
     public static boolean compareNetCDF(File expectedResultFile, File actualResultFile) throws IOException {
-        try (   NetcdfFile expectedNcFile = NetcdfFile.open(expectedResultFile.getAbsolutePath());
-                NetcdfFile actualNcFile   = NetcdfFile.open(actualResultFile.getAbsolutePath())) {
+        try (   NetcdfFile expectedNcFile = NetcdfDataset.openDataset(expectedResultFile.getAbsolutePath());
+                NetcdfFile actualNcFile   = NetcdfDataset.openDataset(actualResultFile.getAbsolutePath())) {
             Formatter formatter = new Formatter();
             boolean contentsAreEqual = new CompareNetcdf2(formatter).compare(
                     expectedNcFile, actualNcFile, new NcssNetcdfObjFilter(), false, false, true);
@@ -196,7 +209,7 @@ public class DsgSubsetWriterTest {
     private static class NcssNetcdfObjFilter implements CompareNetcdf2.ObjFilter {
         @Override
         public boolean attCheckOk(Variable v, Attribute att) {
-            return !att.getShortName().equals(CDM.TITLE);  // Ignore CDM.TITLE
+            return !att.getShortName().equals(CDM.TITLE);  // Ignore the "title" attribute.
         }
 
         @Override
