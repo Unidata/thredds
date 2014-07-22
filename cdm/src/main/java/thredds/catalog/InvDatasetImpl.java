@@ -1574,21 +1574,4 @@ public class InvDatasetImpl extends InvDataset {
 
   private volatile int hashCode = 0; // Bloch, item 8 - lazily initialize hash value
 
-
-  /**
-   * test
-   */
-  public static void main(String[] args) {
-    InvDatasetImpl topDs = new InvDatasetImpl(null, "topDs", FeatureType.valueOf("GRID"), "myService", "myUrlPath/");
-    InvService myS = new InvService("myService", ServiceType.DODS.toString(),
-            "http://thredds.ucar.edu/cgi-bin/dods/nph-dods", "", null);
-    topDs.addService(myS);
-    topDs.getLocalMetadata().setServiceName("myService");
-    InvDatasetImpl childDs = new InvDatasetImpl(null, "childDs", null, null, "myUrlPath/");
-    topDs.addDataset(childDs);
-    InvService ts = childDs.findService("myService");
-
-    System.out.println("InvDatasetImpl.main(): " + childDs.getAccess(ServiceType.DODS).toString());
-  }
-
 }

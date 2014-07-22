@@ -40,7 +40,7 @@ public class CoverageDatasetImpl implements CoverageDataset {
     CoverageCSFactory fac = new CoverageCSFactory();
     type =  fac.classify(ds, parseInfo);
 
-    coverageSets = new ArrayList<CoverageSet> (ds.getVariables().size());
+    coverageSets = new ArrayList<> (ds.getVariables().size());
     for (CoordinateSystem cs : ds.getCoordinateSystems())  {
       CoverageCS ccs = CoverageCSFactory.make(ds, cs);
       if (ccs == null) continue;
@@ -48,7 +48,7 @@ public class CoverageDatasetImpl implements CoverageDataset {
       coverageSets.add(cset);
     }
 
-    coverages = new ArrayList<Coverage> (ds.getVariables().size());
+    coverages = new ArrayList<> (ds.getVariables().size());
     for (Variable v : ds.getVariables())  {
       VariableEnhanced ve = (VariableEnhanced) v;
       List<CoordinateSystem> css = ve.getCoordinateSystems();

@@ -698,7 +698,7 @@ public class GeoGrid implements NamedObject, ucar.nc2.dt.GridDatatype {
     if (y_stride > 1) {
       if (y_range == null) {
         Dimension ydim = getYDimension();
-        y_range = new Range(0, ydim.getLength() - 1, y_stride);
+        if (ydim != null) y_range = new Range(0, ydim.getLength() - 1, y_stride);
       } else {
         y_range = new Range(y_range.first(), y_range.last(), y_stride);
       }
@@ -707,7 +707,7 @@ public class GeoGrid implements NamedObject, ucar.nc2.dt.GridDatatype {
     if (x_stride > 1) {
       if (x_range == null) {
         Dimension xdim = getXDimension();
-        x_range = new Range(0, xdim.getLength() - 1, x_stride);
+        if (xdim != null) x_range = new Range(0, xdim.getLength() - 1, x_stride);
       } else {
         x_range = new Range(x_range.first(), x_range.last(), x_stride);
       }

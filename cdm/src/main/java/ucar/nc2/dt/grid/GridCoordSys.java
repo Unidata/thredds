@@ -1415,7 +1415,7 @@ public class GridCoordSys extends CoordinateSystem implements ucar.nc2.dt.GridCo
       return makeCalendarDates2D();
 
     else
-      return null;
+      return new ArrayList<>();
   }
 
   @Override
@@ -1511,7 +1511,7 @@ public class GridCoordSys extends CoordinateSystem implements ucar.nc2.dt.GridCo
    */
   public List<NamedObject> getTimes() {
     List<CalendarDate> cdates = getCalendarDates();
-    List<NamedObject> times = new ArrayList<NamedObject>( cdates.size());
+    List<NamedObject> times = new ArrayList<>( cdates.size());
     for (CalendarDate cd: cdates) {
       times.add(new ucar.nc2.util.NamedAnything(cd.toString(), "calendar date"));
     }

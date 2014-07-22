@@ -923,11 +923,11 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
    * @param fragment the fragment is to be examined
    * @return The discovered ServiceType, or null
    */
-  static ServiceType
-  searchFragment(String fragment) {
+  static ServiceType searchFragment(String fragment) {
     if (fragment.length() == 0)
       return null;
     Map<String, String> map = parseFragment(fragment);
+    if (map == null) return null;
     String protocol = map.get("protocol");
     if (protocol != null) {
       if (protocol.equalsIgnoreCase("dap")
@@ -955,8 +955,7 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
    * or null if the fragment does not parse.
    */
 
-  static Map<String, String>
-  parseFragment(String fragment) {
+  static Map<String, String> parseFragment(String fragment) {
     Map<String, String> map = new HashMap<>();
     if (fragment != null && fragment.length() >= 0) {
       if (fragment.charAt(0) == '#')
