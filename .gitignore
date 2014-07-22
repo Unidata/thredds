@@ -35,6 +35,8 @@ tds/src/content/
 tds/src/test/data/thredds/cataloggen/config/
 tds/src/test/data/thredds/logs/
 opendap/src/test/data/test.*.*
+tds/src/test/content/thredds/logs
+tds/src/test/content/thredds/cache
 
 # OS generated files 
 .DS_Store*
@@ -42,7 +44,9 @@ ehthumbs.db
 # On Windows (and Mac?), it appears that the "Icon" line is followed by two blank lines.
 # DO NOT DELETE THEM. They are actually carraige returns ('\r'), and are part of the pattern.
 # See https://github.com/github/gitignore/pull/183
-Icon
+Icon
+
+
 Thumbs.db
 *.swp
 *.*~
