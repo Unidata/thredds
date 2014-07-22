@@ -296,8 +296,9 @@ public class PointConfigXML {
 
       if (debugXML) {
         System.out.println(" PointConfig URL = <" + resourceLocation + ">");
-        InputStream is2 = cl.getResourceAsStream(resourceLocation);
-        System.out.println(" contents=\n" + IO.readContents(is2));
+        try (InputStream is2 = cl.getResourceAsStream(resourceLocation)) {
+          System.out.println(" contents=\n" + IO.readContents(is2));
+        }
       }
 
       org.jdom2.Document doc;

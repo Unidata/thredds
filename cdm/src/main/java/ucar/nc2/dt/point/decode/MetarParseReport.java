@@ -1734,20 +1734,18 @@ public class MetarParseReport {
         if( args.length == 1 ) { // read external file of Metar reports
             System.out.println( args[ 0 ] +" "+ args.length );
             // read reports from file to parse
-            InputStream ios = new FileInputStream( args[ 0 ] );
-            BufferedReader dataIS =
-                new BufferedReader(new InputStreamReader(ios));
-
-            //System.out.println("<report>");
-            while (true) {
+            try (InputStream ios = new FileInputStream( args[ 0 ] )) {
+              BufferedReader dataIS = new BufferedReader(new InputStreamReader(ios));
+              //System.out.println("<report>");
+              while (true) {
                 report = dataIS.readLine();
                 if (report == null) {
-                    break;
+                  break;
                 }
-                System.out.println( "\n"+ report );
-                if( ! func.parseReport(report) ) {
-                    System.out.println("badly formed report, can't parse");
-                    continue; // bad report, can't parse
+                System.out.println("\n" + report);
+                if (!func.parseReport(report)) {
+                  System.out.println("badly formed report, can't parse");
+                  continue; // bad report, can't parse
                 }
 
                 LinkedHashMap field = func.getFields();
@@ -1755,18 +1753,19 @@ public class MetarParseReport {
                 String key;
 
                 System.out.println("<report>");
-                for( Iterator it = field.keySet().iterator(); it.hasNext(); ) {
-                    key = (String) it.next();
-                    //System.out.println(key + "\t\t" + (String) field.get(key));
-                    System.out.println("\t<parameter name=\""+ key +"\" value=\""+ 
-                   (String) field.get(key) +"\" units=\""+ (String) unit.get(key)
-                       +"\" />" );
+                for (Iterator it = field.keySet().iterator(); it.hasNext(); ) {
+                  key = (String) it.next();
+                  //System.out.println(key + "\t\t" + (String) field.get(key));
+                  System.out.println("\t<parameter name=\"" + key + "\" value=\"" +
+                          (String) field.get(key) + "\" units=\"" + (String) unit.get(key)
+                          + "\" />");
                 }
                 System.out.println("</report>");
-            }
+              }
 
-            //System.out.println("</report>");
-            return;
+              //System.out.println("</report>");
+              return;
+            }
         }
 
 
