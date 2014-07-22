@@ -49,6 +49,7 @@ import java.io.IOException;
  * Date: Jul 14, 2009
  * Time: 3:02:33 PM
  * To change this template use File | Settings | File Templates.
+ * @deprecated use ucar.nc2.ft.point
  */
 public class COSMICTrajectoryObsDataset  extends TrajectoryObsDatasetImpl implements TypedDatasetFactoryIF {
   private static String dimName = "MSL_alt";

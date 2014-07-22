@@ -51,6 +51,7 @@ import java.io.*;
 /**
  * Write ProfileObsDataset in Unidata Obs Convention.
  *
+ * @deprecated use ucar.nc2.ft.point
  * @author caron
  */
 public class WriterProfileObsDataset {

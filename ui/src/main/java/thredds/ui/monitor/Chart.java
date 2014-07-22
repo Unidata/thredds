@@ -103,10 +103,7 @@ public class Chart extends JPanel {
     }
   }
 
-
   public Chart(String filename) {
-    try {
-      // Get Stock Symbol
       this.stockSymbol = filename.substring(0, filename.indexOf('.'));
 
       // Create time series
@@ -116,53 +113,52 @@ public class Chart extends JPanel {
       TimeSeries low = new TimeSeries("Low", Day.class);
       TimeSeries volume = new TimeSeries("Volume", Day.class);
 
-      BufferedReader br = new BufferedReader(new FileReader(filename));
-      String key = br.readLine();
-      String line = br.readLine();
-      while (line != null && !line.startsWith("<!--")) {
-        StringTokenizer st = new StringTokenizer(line, ",", false);
-        Day day = getDay(st.nextToken());
-        double openValue = Double.parseDouble(st.nextToken());
-        double highValue = Double.parseDouble(st.nextToken());
-        double lowValue = Double.parseDouble(st.nextToken());
-        double closeValue = Double.parseDouble(st.nextToken());
-        long volumeValue = Long.parseLong(st.nextToken());
+      try (BufferedReader br = new BufferedReader(new FileReader(filename))) {
+        String key = br.readLine();
+        String line = br.readLine();
+        while (line != null && !line.startsWith("<!--")) {
+          StringTokenizer st = new StringTokenizer(line, ",", false);
+          Day day = getDay(st.nextToken());
+          double openValue = Double.parseDouble(st.nextToken());
+          double highValue = Double.parseDouble(st.nextToken());
+          double lowValue = Double.parseDouble(st.nextToken());
+          double closeValue = Double.parseDouble(st.nextToken());
+          long volumeValue = Long.parseLong(st.nextToken());
 
-        // Add this value to our series'
-        open.add(day, openValue);
-        close.add(day, closeValue);
-        high.add(day, highValue);
-        low.add(day, lowValue);
+          // Add this value to our series'
+          open.add(day, openValue);
+          close.add(day, closeValue);
+          high.add(day, highValue);
+          low.add(day, lowValue);
 
-        // Read the next day
-        line = br.readLine();
+          // Read the next day
+          line = br.readLine();
+        }
+
+        // Build the datasets
+        dataset.addSeries(open);
+        dataset.addSeries(close);
+        dataset.addSeries(low);
+        dataset.addSeries(high);
+        datasetOpenClose.addSeries(open);
+        datasetOpenClose.addSeries(close);
+        datasetHighLow.addSeries(high);
+        datasetHighLow.addSeries(low);
+
+        JFreeChart summaryChart = buildChart(dataset, "Summary", true);
+        JFreeChart openCloseChart = buildChart(datasetOpenClose, "Open/Close Data", false);
+        JFreeChart highLowChart = buildChart(datasetHighLow, "High/Low Data", true);
+        JFreeChart highLowDifChart = buildDifferenceChart(datasetHighLow, "High/Low Difference Chart");
+
+        // Create this panel
+        this.setLayout(new GridLayout(2, 2));
+        this.add(new ChartPanel(summaryChart));
+        this.add(new ChartPanel(openCloseChart));
+        this.add(new ChartPanel(highLowChart));
+        this.add(new ChartPanel(highLowDifChart));
+      } catch (Exception e) {
+        e.printStackTrace();
       }
-
-      // Build the datasets
-      dataset.addSeries(open);
-      dataset.addSeries(close);
-      dataset.addSeries(low);
-      dataset.addSeries(high);
-      datasetOpenClose.addSeries(open);
-      datasetOpenClose.addSeries(close);
-      datasetHighLow.addSeries(high);
-      datasetHighLow.addSeries(low);
-
-      JFreeChart summaryChart = buildChart(dataset, "Summary", true);
-      JFreeChart openCloseChart = buildChart(datasetOpenClose, "Open/Close Data", false);
-      JFreeChart highLowChart = buildChart(datasetHighLow, "High/Low Data", true);
-      JFreeChart highLowDifChart = buildDifferenceChart(datasetHighLow, "High/Low Difference Chart");
-
-      // Create this panel
-      this.setLayout(new GridLayout(2, 2));
-      this.add(new ChartPanel(summaryChart));
-      this.add(new ChartPanel(openCloseChart));
-      this.add(new ChartPanel(highLowChart));
-      this.add(new ChartPanel(highLowDifChart));
-    }
-    catch (Exception e) {
-      e.printStackTrace();
-    }
   }
 
   private JFreeChart buildChart(TimeSeriesCollection dataset, String title, boolean endPoints) {

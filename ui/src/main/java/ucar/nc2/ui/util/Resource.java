@@ -157,14 +157,14 @@ public class Resource {
   }
 
   // test
-  public static void main(String[] args) {
+  public static void main(String[] args) throws IOException {
     System.out.println("java.class.path = "+ System.getProperty("java.class.path"));
     System.out.println("Class = "+ cl);
     System.out.println("Class Loader = "+ cl.getClassLoader());
 
-    getFileResource("/ucar.unidata.util/Resource.java");
-    getFileResource("Resource.java");
-    getFileResource("test/test/Resource.java");
+    try (InputStream is = getFileResource("/ucar.unidata.util/Resource.java")) {}
+    try (InputStream is = getFileResource("Resource.java")) {}
+    try (InputStream is = getFileResource("test/test/Resource.java")) {}
   }
 
 }

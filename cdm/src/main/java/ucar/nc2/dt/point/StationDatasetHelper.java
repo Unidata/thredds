@@ -49,6 +49,7 @@ import java.util.*;
  *
  * This assumes that calling getData( Station s) is reletively cheap, ie that theres no cheaper filtering to do.
  *
+ * @deprecated use ucar.nc2.ft.point
  * @author caron
  */
 public class StationDatasetHelper {

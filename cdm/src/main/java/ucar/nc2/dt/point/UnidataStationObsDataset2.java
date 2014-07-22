@@ -47,6 +47,7 @@ import java.util.*;
  * This handles datasets in the original (now outdated) "Unidata Point Format".
  * @deprecated  use UnidataStationObsDataset instead of this.
  *
+ * @deprecated use ucar.nc2.ft.point
  * @author John Caron
  * @version $Id: UnidataStationObsDataset2.java 51 2006-07-12 17:13:13Z caron $
  */

@@ -52,6 +52,7 @@ import java.text.ParseException;
  * Superclass for implementations of PointObsDataset.
  *
  *
+ * @deprecated use ucar.nc2.ft.point
  * @author caron
  */
 

@@ -50,6 +50,7 @@ import java.util.*;
  *
  * @see <a href="http://www.ndbc.noaa.gov/index.shtml">http://www.ndbc.noaa.gov/index.shtml</a>
  *
+ * @deprecated use ucar.nc2.ft.point
  * @author caron
  */
 

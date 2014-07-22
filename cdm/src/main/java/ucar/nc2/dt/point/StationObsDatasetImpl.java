@@ -49,6 +49,7 @@ import java.util.*;
  * <li> fill the station array
  * <li> implement getData( Station s, CancelTask)
  *
+ * @deprecated use ucar.nc2.ft.point
  * @author caron
  */
 

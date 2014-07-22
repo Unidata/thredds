@@ -46,6 +46,7 @@ import java.text.ParseException;
 
 /**
  * A Collection of StationDatasets
+ * @deprecated use ucar.nc2.ft.point
  */
 public class StationDatasetCollection {
   private boolean debug = false;

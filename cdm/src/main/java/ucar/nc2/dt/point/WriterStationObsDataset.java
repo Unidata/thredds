@@ -49,6 +49,7 @@ import java.io.*;
 /**
  * Write StationObsDataset in Unidata Station Obs Convention.
  *
+ * @deprecated use ucar.nc2.ft.point
  * @author caron
  */
 public class WriterStationObsDataset {

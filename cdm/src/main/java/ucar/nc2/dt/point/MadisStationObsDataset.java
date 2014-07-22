@@ -54,6 +54,7 @@ import java.util.*;
  *  this is being corrected.
  * </ol>
  *
+ * @deprecated use ucar.nc2.ft.point
  * @author caron
  */
 

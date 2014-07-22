@@ -55,6 +55,7 @@ import ucar.nc2.constants.FeatureType;
 /**
  * This handles point datasets in "Unidata Observation Dataset v1.0"
  *
+ * @deprecated use ucar.nc2.ft.point
  * @author caron
  * @version $Revision:51 $ $Date:2006-07-12 17:13:13Z $
  */

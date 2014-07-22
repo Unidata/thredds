@@ -56,6 +56,7 @@ import java.util.List;
  *        units "deg", "deg", and "m", respectively.
  * </ul>
  *
+ * @deprecated use ucar.nc2.ft.point
  * @author edavis
  * @since Feb 22, 2005T5:37:14 PM
  */

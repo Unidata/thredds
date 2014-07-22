@@ -52,6 +52,7 @@ import java.io.IOException;
  * This handles station datasets in "Unidata Observation Dataset v1.0" implemented as multidimensional Structures.
  * For linked or contiguous lists use UnidataStationObsDataset
  *
+ * @deprecated use ucar.nc2.ft.point
  * @author caron
  * @since Dec 8, 2007
  */

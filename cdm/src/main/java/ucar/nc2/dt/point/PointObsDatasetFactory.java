@@ -43,7 +43,7 @@ import thredds.catalog.ServiceType;
  * A factory for both PointObsDataset and StationObsDataset.
  *
  * @author caron
- * @deprecated use ucar.nc2.dt.TypedDatasetFactory
+ * @deprecated use ucar.nc2.ft.point
  */
 public class PointObsDatasetFactory {
 

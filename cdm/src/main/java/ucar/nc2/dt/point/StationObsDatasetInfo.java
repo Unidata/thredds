@@ -57,6 +57,7 @@ import java.io.File;
 /**
  * A helper class to StationObsDataset; creates XML documents.
  *
+ * @deprecated use ucar.nc2.ft.point
  * @author caron
  */
 public class StationObsDatasetInfo {

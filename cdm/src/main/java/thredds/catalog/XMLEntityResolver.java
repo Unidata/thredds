@@ -160,7 +160,7 @@ Add these to the jnlp file: (see Viewer.jnlp):
 
 public class XMLEntityResolver implements org.xml.sax.EntityResolver {
   static private boolean debugEntityResolution = false; //, debugFactory = false, debugMessages = false;
-  static private Map<String, String> entityHash = new HashMap<String, String>();
+  static private Map<String, String> entityHash = new HashMap<>();
 
   // schema validation
   static private boolean schemaValidationOk = true;
@@ -285,9 +285,8 @@ public class XMLEntityResolver implements org.xml.sax.EntityResolver {
   static public void initEntity( String entityName, String resourceName, String urlName) {
     String entity = null;
 
-    try { // try to read from local file resource, eg from catalog.jar
+    try (InputStream is = ucar.nc2.util.IO.getFileResource( resourceName)) { // try to read from local file resource, eg from catalog.jar
       ByteArrayOutputStream sbuff = new ByteArrayOutputStream(3000);
-      InputStream is = ucar.nc2.util.IO.getFileResource( resourceName);
       if (is != null) {
         IO.copy(is, sbuff);
         entity = sbuff.toString();
@@ -422,7 +421,7 @@ public class XMLEntityResolver implements org.xml.sax.EntityResolver {
       return new MyInputSource(entity);
     }
 
-    if (systemId.indexOf("InvCatalog.0.6.dtd") >= 0) {
+    if (systemId.contains("InvCatalog.0.6.dtd")) {
       entity = entityHash.get( "http://www.unidata.ucar.edu/schemas/thredds/InvCatalog.0.6.dtd");
       if (entity != null) {
         if (debugEntityResolution) System.out.println(" *** resolved2 with local copy");

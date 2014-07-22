@@ -39,6 +39,7 @@ import ucar.unidata.geoloc.EarthLocation;
  * Abstract superclass for implemenation of PointObsDatatype.
  * Concrete subclass must implement getData();
  *
+ * @deprecated use ucar.nc2.ft.point
  * @author caron
  */
 

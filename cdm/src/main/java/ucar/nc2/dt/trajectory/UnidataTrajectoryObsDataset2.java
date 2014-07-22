@@ -50,6 +50,7 @@ import java.util.*;
  * Documentation on this convention is available at
  * http://www.unidata.ucar.edu/software/netcdf-java/formats/UnidataObsConvention.html
  *
+ * @deprecated use ucar.nc2.ft.point
  * @author edavis
  * @since 2006-11-17T17:26:14-0700
  */

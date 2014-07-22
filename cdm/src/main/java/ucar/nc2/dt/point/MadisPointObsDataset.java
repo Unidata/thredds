@@ -49,6 +49,7 @@ import thredds.catalog.*;
 /**
  * Class Description.
  *
+ * @deprecated use ucar.nc2.ft.point
  * @author caron
  */
 public class MadisPointObsDataset extends PointObsDatasetImpl  implements TypedDatasetFactoryIF {

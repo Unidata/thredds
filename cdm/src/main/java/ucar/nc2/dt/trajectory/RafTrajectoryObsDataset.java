@@ -54,6 +54,7 @@ import java.util.*;
  * Documentation on this convention is available at
  * http://www.eol.ucar.edu/raf/Software/netCDF.html
  *
+ * @deprecated use ucar.nc2.ft.point
  * @author edavis
  * @since 2005-02-07T17:26:14-0700
  */

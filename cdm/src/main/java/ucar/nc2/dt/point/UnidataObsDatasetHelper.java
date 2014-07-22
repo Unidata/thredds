@@ -48,6 +48,7 @@ import java.util.Date;
 /**
  * Helper routines for  station/point datasets
  *
+ * @deprecated use ucar.nc2.ft.point
  * @author caron
  */
 public class UnidataObsDatasetHelper {

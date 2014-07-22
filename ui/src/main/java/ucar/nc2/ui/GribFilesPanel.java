@@ -262,7 +262,7 @@ public class GribFilesPanel extends JPanel {
 
   public class CollectionBean {
     String spec;
-    MCollection dcm;
+    // MCollection dcm;
     Iterable<MFile> fileList;
 
     // no-arg constructor
@@ -274,9 +274,7 @@ public class GribFilesPanel extends JPanel {
       this.spec = spec;
 
       Formatter f = new Formatter();
-      MCollection dc = null;
-      try {
-        dc = CollectionAbstract.open(spec, spec, null, f);
+      try ( MCollection dc = CollectionAbstract.open(spec, spec, null, f)) {
         fileList = dc.getFilesSorted();
 
       } catch (Exception e) {

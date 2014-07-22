@@ -355,9 +355,10 @@ public class Grib2ReportPanel extends ReportPanel {
     Grib2Index index = new Grib2Index();
     if (!index.readIndex(path, mf.getLastModified())) {
       // make sure its a grib2 file
-      RandomAccessFile raf = new RandomAccessFile(path, "r");
-      if (!Grib2RecordScanner.isValidFile(raf)) return null;
-      index.makeIndex(path, null);
+      try (RandomAccessFile raf = new RandomAccessFile(path, "r")) {
+        if (!Grib2RecordScanner.isValidFile(raf)) return null;
+        index.makeIndex(path, raf);
+      }
     }
     return index;
   }

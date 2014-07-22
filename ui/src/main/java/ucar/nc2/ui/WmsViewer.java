@@ -303,45 +303,44 @@ public class WmsViewer extends JPanel {
       String mimeType = (h == null) ? "" : h.getValue();
       info.append(" mimeType = " + mimeType + "\n");
 
-      byte[] contents = IO.readContentsToByteArray(method.getResponseBodyAsStream());
-      info.append(" content len = " + contents.length + "\n");
+      try (InputStream isFromHttp = method.getResponseBodyAsStream()) {
+        byte[] contents = IO.readContentsToByteArray(isFromHttp);
+        info.append(" content len = " + contents.length + "\n");
 
-      ByteArrayInputStream is = new ByteArrayInputStream(contents);
+        ByteArrayInputStream is = new ByteArrayInputStream(contents);
 
-      BufferedImage img = ImageIO.read(is);
-      showImage(img);
+        BufferedImage img = ImageIO.read(is);
+        showImage(img);
 
-      if (img == null) {
-        info.append("getMap:\n\n");
-        if (mimeType.equals("application/vnd.google-earth.kmz")) {
-          File temp = File.createTempFile("Temp", ".kmz");
-          // File temp = new File("C:/temp/temp.kmz");
-          IO.writeToFile(contents, temp);
-          contents = null;
+        if (img == null) {
+          info.append("getMap:\n\n");
+          if (mimeType.equals("application/vnd.google-earth.kmz")) {
+            File temp = File.createTempFile("Temp", ".kmz");
+            // File temp = new File("C:/temp/temp.kmz");
+            IO.writeToFile(contents, temp);
+            contents = null;
 
-          ZipFile zfile = new ZipFile(temp);
-          Enumeration entries = zfile.entries();
-          while (entries.hasMoreElements()) {
-            ZipEntry entry = (ZipEntry) entries.nextElement();
-            info.append(" entry=" + entry + "\n");
-            if (entry.getName().endsWith(".kml")) {
-              InputStream kml = zfile.getInputStream(entry);
-              contents = IO.readContentsToByteArray(kml);
+            ZipFile zfile = new ZipFile(temp);
+            Enumeration entries = zfile.entries();
+            while (entries.hasMoreElements()) {
+              ZipEntry entry = (ZipEntry) entries.nextElement();
+              info.append(" entry=" + entry + "\n");
+              if (entry.getName().endsWith(".kml")) {
+                InputStream kml = zfile.getInputStream(entry);
+                contents = IO.readContentsToByteArray(kml);
+              }
             }
           }
-        }
 
-        if (contents != null)
-          info.append(new String(contents) + "\n");
+          if (contents != null)
+            info.append(new String(contents) + "\n");
+        }
       }
 
     } catch (Exception e) {
       info.append(e.getMessage());
       JOptionPane.showMessageDialog(this, "Failed "+e.getMessage());
       return false;
-
-    } finally {
-      if (session != null) session.close();
     }
 
     return true;

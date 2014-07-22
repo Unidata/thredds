@@ -426,28 +426,29 @@ public class UAMIVServiceProvider extends AbstractIOServiceProvider {
     projpath = projpath + File.separator + "camxproj.txt";
     File paramFile = new File(projpath);
     if (paramFile.exists()) {
-      BufferedReader br = new BufferedReader(new FileReader(paramFile));
-      while ((thisLine = br.readLine()) != null) {
-        if ((thisLine.substring(0, 1) != "#") && (thisLine != "")) {
-          key_value = thisLine.split("=");
-          if (key_value[0].equals("GDTYP")) {
-            gdtyp = Integer.parseInt(key_value[1]);
-            lgdtyp = true;
-          } else if (key_value[0].equals("P_ALP")) {
-            p_alp = Double.parseDouble(key_value[1]);
-            lp_alp = true;
-          } else if (key_value[0].equals("P_BET")) {
-            p_bet = Double.parseDouble(key_value[1]);
-            lp_bet = true;
-          } else if (key_value[0].equals("P_GAM")) {
-            p_gam = Double.parseDouble(key_value[1]);
-            lp_gam = true;
-          } else if (key_value[0].equals("YCENT")) {
-            ycent = Double.parseDouble(key_value[1]);
-            lycent = true;
-          } else if (key_value[0].equals("XCENT")) {
-            xcent = Double.parseDouble(key_value[1]);
-            lxcent = true;
+      try (BufferedReader br = new BufferedReader(new FileReader(paramFile))) {
+        while ((thisLine = br.readLine()) != null) {
+          if ((thisLine.substring(0, 1) != "#") && (thisLine != "")) {
+            key_value = thisLine.split("=");
+            if (key_value[0].equals("GDTYP")) {
+              gdtyp = Integer.parseInt(key_value[1]);
+              lgdtyp = true;
+            } else if (key_value[0].equals("P_ALP")) {
+              p_alp = Double.parseDouble(key_value[1]);
+              lp_alp = true;
+            } else if (key_value[0].equals("P_BET")) {
+              p_bet = Double.parseDouble(key_value[1]);
+              lp_bet = true;
+            } else if (key_value[0].equals("P_GAM")) {
+              p_gam = Double.parseDouble(key_value[1]);
+              lp_gam = true;
+            } else if (key_value[0].equals("YCENT")) {
+              ycent = Double.parseDouble(key_value[1]);
+              lycent = true;
+            } else if (key_value[0].equals("XCENT")) {
+              xcent = Double.parseDouble(key_value[1]);
+              lxcent = true;
+            }
           }
         }
       }
@@ -460,29 +461,30 @@ public class UAMIVServiceProvider extends AbstractIOServiceProvider {
 
     } else {
       if (log.isDebugEnabled()) log.debug("UAMIVServiceProvider: adding projection file");
-      BufferedWriter bw = new BufferedWriter(new java.io.FileWriter(paramFile));
-      bw.write("# Projection parameters are based on IOAPI.  For details, see www.baronams.com/products/ioapi/GRIDS.html");
-      bw.newLine();
-      bw.write("GDTYP=");
-      bw.write(gdtyp.toString());
-      bw.newLine();
-      bw.write("P_ALP=");
-      bw.write(p_alp.toString());
-      bw.newLine();
-      bw.write("P_BET=");
-      bw.write(p_bet.toString());
-      bw.newLine();
-      bw.write("P_GAM=");
-      bw.write(p_gam.toString());
-      bw.newLine();
-      bw.write("XCENT=");
-      bw.write(xcent.toString());
-      bw.newLine();
-      bw.write("YCENT=");
-      bw.write(ycent.toString());
-      bw.newLine();
-      bw.flush();
-      bw.close();
+      try (BufferedWriter bw = new BufferedWriter(new java.io.FileWriter(paramFile))) {
+        bw.write("# Projection parameters are based on IOAPI.  For details, see www.baronams.com/products/ioapi/GRIDS.html");
+        bw.newLine();
+        bw.write("GDTYP=");
+        bw.write(gdtyp.toString());
+        bw.newLine();
+        bw.write("P_ALP=");
+        bw.write(p_alp.toString());
+        bw.newLine();
+        bw.write("P_BET=");
+        bw.write(p_bet.toString());
+        bw.newLine();
+        bw.write("P_GAM=");
+        bw.write(p_gam.toString());
+        bw.newLine();
+        bw.write("XCENT=");
+        bw.write(xcent.toString());
+        bw.newLine();
+        bw.write("YCENT=");
+        bw.write(ycent.toString());
+        bw.newLine();
+        bw.flush();
+        bw.close();
+      }
     }
 
     ncfile.addAttribute(null, new Attribute("GDTYP", gdtyp));
