@@ -23,21 +23,29 @@ public class TestCfDocDsgExamples {
     public static List<Object[]> getPointDatasets() {
         List<Object[]> result = new ArrayList<>();
 
-        result.add(new Object[] { cfDocDsgExamplesDir + "H.1.1.ncml", FeatureType.POINT, 12 });
+        result.add(new Object[] { "H.1.1.ncml", FeatureType.POINT, 12 });
 
         return result;
     }
 
-
     public static List<Object[]> getStationDatasets() {
         List<Object[]> result = new ArrayList<>();
 
-        result.add(new Object[] { cfDocDsgExamplesDir + "H.2.1.1.ncml", FeatureType.STATION, 50  });
-        result.add(new Object[] { cfDocDsgExamplesDir + "H.2.2.1.ncml", FeatureType.STATION, 130 });
-        result.add(new Object[] { cfDocDsgExamplesDir + "H.2.3.1.ncml", FeatureType.STATION, 5   });
-        result.add(new Object[] { cfDocDsgExamplesDir + "H.2.3.2.ncml", FeatureType.STATION, 15  });
-        result.add(new Object[] { cfDocDsgExamplesDir + "H.2.4.1.ncml", FeatureType.STATION, 100 });
-        result.add(new Object[] { cfDocDsgExamplesDir + "H.2.5.1.ncml", FeatureType.STATION, 30  });
+        result.add(new Object[] { "H.2.1.1.ncml", FeatureType.STATION, 50  });
+        result.add(new Object[] { "H.2.2.1.ncml", FeatureType.STATION, 130 });
+        result.add(new Object[] { "H.2.3.1.ncml", FeatureType.STATION, 5   });
+        result.add(new Object[] { "H.2.3.2.ncml", FeatureType.STATION, 15  });
+        result.add(new Object[] { "H.2.4.1.ncml", FeatureType.STATION, 100 });
+        result.add(new Object[] { "H.2.5.1.ncml", FeatureType.STATION, 30  });
+
+        return result;
+    }
+
+    public static List<Object[]> getProfileDatasets() {
+        List<Object[]> result = new ArrayList<>();
+
+        result.add(new Object[] { "H.3.1.1.ncml", FeatureType.PROFILE, 56 });
+        result.add(new Object[] { "H.3.3.1.ncml", FeatureType.PROFILE, 42 });
 
         return result;
     }
@@ -48,6 +56,7 @@ public class TestCfDocDsgExamples {
 
         result.addAll(getPointDatasets());
         result.addAll(getStationDatasets());
+        result.addAll(getProfileDatasets());
 
         return result;
     }
@@ -58,7 +67,7 @@ public class TestCfDocDsgExamples {
     private boolean show = false;
 
     public TestCfDocDsgExamples(String location, FeatureType ftype, int countExpected) {
-        this.location = location;
+        this.location = cfDocDsgExamplesDir + location;
         this.ftype = ftype;
         this.countExpected = countExpected;
     }

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- See http://cfconventions.org/1.6.html#Example%20H.2.4.1 -->
+<!-- See http://cfconventions.org/Data/cf-convetions/cf-conventions-1.6/build/cf-conventions.html#Example%20H.2.4.1 -->
 <netcdf xmlns="http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2">
     <dimension name="station" length="10"/>
     <dimension name="obs" length="100"/>
@@ -36,7 +36,6 @@
 	
 	<variable name="station_info" shape="station" type="int">
 		<attribute name="long_name" value="any kind of station info"/>
-		<attribute name="standard_name" value="platform_name"/>
 		<values start="4" increment="4"/>
 	</variable>
 	
