@@ -36,7 +36,6 @@ package thredds.catalog.dl;
 import thredds.catalog.*;
 import ucar.nc2.time.CalendarDateRange;
 import ucar.nc2.units.DateType;
-import ucar.nc2.units.DateRange;
 
 
 import org.jdom2.*;
@@ -48,8 +47,7 @@ import java.util.*;
 public class DCWriter {
   private static final Namespace defNS = Namespace.getNamespace("http://purl.org/dc/elements/1.1/");
   private static final String schemaLocation = defNS.getURI() + " http://www.unidata.ucar.edu/schemas/other/dc/dc.xsd";
-  private static final String schemaLocationLocal = defNS.getURI() + " file://P:/schemas/other/dc/dc.xsd";
-  private static String threddsServerURL = "http://localhost:8080/thredds/subset.html";
+  private static final String threddsServerURL = "http://localhost:8080/thredds/subset.html";
 
   private InvCatalog cat;
   public DCWriter( InvCatalog cat) {
@@ -61,10 +59,8 @@ public class DCWriter {
     if (!dir.exists())
       dir.mkdirs();
 
-    List datasets = cat.getDatasets();
-    for (int i=0; i<datasets.size(); i++) {
-      InvDataset elem = (InvDataset) datasets.get(i);
-      doDataset( elem, fileDir);
+    for (InvDataset dataset :  cat.getDatasets()) {
+      doDataset(dataset, fileDir);
     }
 
   }
@@ -72,21 +68,16 @@ public class DCWriter {
   private void doDataset( InvDataset ds, String fileDir) {
     if (ds.isHarvest() && (ds.getID() != null)) {
       String fileOutName = fileDir+"/"+ds.getID()+".dc.xml";
-      try {
-        OutputStream out = new BufferedOutputStream(new FileOutputStream(
-            fileOutName));
+      try ( OutputStream out = new BufferedOutputStream(new FileOutputStream(fileOutName))) {
         writeOneItem(ds, System.out);
         writeOneItem(ds, out);
-        out.close();
         return;
       } catch (IOException ioe) {
         ioe.printStackTrace();
       }
     }
 
-    List datasets = ds.getDatasets();
-    for (int i=0; i<datasets.size(); i++) {
-      InvDataset nested = (InvDataset) datasets.get(i);
+    for (InvDataset nested :  ds.getDatasets()) {
       doDataset( nested, fileDir);
     }
   }
@@ -131,10 +122,9 @@ public class DCWriter {
     rootElem.addContent( new Element("Entry_ID", defNS).addContent(ds.getUniqueID()));
 
     // keywords
-    List list = ds.getKeywords();
+    List<ThreddsMetadata.Vocab> list = ds.getKeywords();
     if (list.size() > 0) {
-      for (int i=0; i<list.size(); i++) {
-        ThreddsMetadata.Vocab k = (ThreddsMetadata.Vocab) list.get(i);
+      for (ThreddsMetadata.Vocab k : list) {
         rootElem.addContent( new Element("Keyword", defNS).addContent( k.getText()));
       }
     }
@@ -160,10 +150,9 @@ public class DCWriter {
     rootElem.addContent( new Element("Use_Constraints", defNS).addContent(ds.getDocumentation("rights")));
 
     // data center
-    list = ds.getPublishers();
+    List<ThreddsMetadata.Source> slist = ds.getPublishers();
     if (list.size() > 0) {
-      for (int i=0; i<list.size(); i++) {
-        ThreddsMetadata.Source p = (ThreddsMetadata.Source) list.get(i);
+      for ( ThreddsMetadata.Source p : slist) {
         Element dataCenter = new Element("Data_Center", defNS);
         rootElem.addContent( dataCenter);
         writePublisher(p, dataCenter);
@@ -220,7 +209,7 @@ public class DCWriter {
   private static void doOne( InvCatalogFactory fac, String url) {
     System.out.println("***read "+url);
     try {
-        InvCatalogImpl cat = (InvCatalogImpl) fac.readXML(url);
+        InvCatalogImpl cat = fac.readXML(url);
         StringBuilder buff = new StringBuilder();
         boolean isValid = cat.check( buff, false);
         System.out.println("catalog <" + cat.getName()+ "> "+ (isValid ? "is" : "is not") + " valid");
@@ -243,27 +232,3 @@ public class DCWriter {
   }
 
 }
-
-/* Change History:
-   $Log: DCWriter.java,v $
-   Revision 1.7  2006/04/20 22:13:14  caron
-   improve DL record extraction
-   CatalogCrawler improvements
-
-   Revision 1.6  2006/01/04 00:16:33  caron
-   jdom 1.0
-   use nj22.12, visadNoDods
-
-   Revision 1.5  2005/05/04 17:56:26  caron
-   use nj22.09
-
-   Revision 1.4  2005/05/04 17:16:23  caron
-   replace ThreddsMetadata.TimeCoverage object with DateRange
-
-   Revision 1.3  2004/09/24 03:26:28  caron
-   merge nj22
-
-   Revision 1.2  2004/06/09 00:27:26  caron
-   version 2.0a release; cleanup javadoc
-
- */

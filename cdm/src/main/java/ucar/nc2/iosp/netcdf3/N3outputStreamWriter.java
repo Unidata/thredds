@@ -240,12 +240,12 @@ public class N3outputStreamWriter extends N3streamWriter {
   ////////////////////////////////////////
 
   public static void writeFromFile(NetcdfFile fileIn, String fileOutName) throws IOException {
-    DataOutputStream stream = new DataOutputStream(new BufferedOutputStream(new FileOutputStream(fileOutName), 10 * 1000));
-    N3outputStreamWriter writer = new N3outputStreamWriter(fileIn);
-    int numrec = fileIn.getUnlimitedDimension() == null ? 0 : fileIn.getUnlimitedDimension().getLength();
-    writer.writeHeader(stream, numrec);
-    writer.writeDataAll(stream);
-    stream.close();
+    try (DataOutputStream stream = new DataOutputStream(new BufferedOutputStream(new FileOutputStream(fileOutName), 10 * 1000))) {
+      N3outputStreamWriter writer = new N3outputStreamWriter(fileIn);
+      int numrec = fileIn.getUnlimitedDimension() == null ? 0 : fileIn.getUnlimitedDimension().getLength();
+      writer.writeHeader(stream, numrec);
+      writer.writeDataAll(stream);
+    }
   }
 
   static public void main(String args[]) throws IOException {

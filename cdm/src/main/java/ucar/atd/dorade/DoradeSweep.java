@@ -82,8 +82,8 @@ public class DoradeSweep {
    */
   public DoradeSweep(String filename)
           throws DoradeSweepException, java.io.FileNotFoundException {
-    RandomAccessFile file = new RandomAccessFile(filename, "r");
-    try {
+
+    try (RandomAccessFile file = new RandomAccessFile(filename, "r")) {
       littleEndian = DoradeDescriptor.sweepfileIsLittleEndian(file);
 
       mySSWB = new DoradeSSWB(file, littleEndian);

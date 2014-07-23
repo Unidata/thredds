@@ -617,68 +617,68 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable, AutoClosea
       return null; // bail out  */
 
     InputStream in = null;
-    FileOutputStream fout = new FileOutputStream(uncompressedFile);
+    try (FileOutputStream fout = new FileOutputStream(uncompressedFile)) {
 
-    // obtain the lock
-    FileLock lock;
-    while (true) { // loop waiting for the lock
-      try {
-        lock = fout.getChannel().lock(0, 1, false);
-        break;
-
-      } catch (OverlappingFileLockException oe) { // not sure why lock() doesnt block
+      // obtain the lock
+      FileLock lock;
+      while (true) { // loop waiting for the lock
         try {
-          Thread.sleep(100); // msecs
-        } catch (InterruptedException e1) {
+          lock = fout.getChannel().lock(0, 1, false);
+          break;
+
+        } catch (OverlappingFileLockException oe) { // not sure why lock() doesnt block
+          try {
+            Thread.sleep(100); // msecs
+          } catch (InterruptedException e1) {
+          }
         }
       }
-    }
 
-    try {
-      if (suffix.equalsIgnoreCase("Z")) {
-        in = new UncompressInputStream(new FileInputStream(filename));
-        copy(in, fout, 100000);
-        if (debugCompress) System.out.println("uncompressed " + filename + " to " + uncompressedFile);
-
-      } else if (suffix.equalsIgnoreCase("zip")) {
-        ZipInputStream zin = new ZipInputStream(new FileInputStream(filename));
-        ZipEntry ze = zin.getNextEntry();
-        if (ze != null) {
-          in = zin;
+      try {
+        if (suffix.equalsIgnoreCase("Z")) {
+          in = new UncompressInputStream(new FileInputStream(filename));
           copy(in, fout, 100000);
-          if (debugCompress)
-            System.out.println("unzipped " + filename + " entry " + ze.getName() + " to " + uncompressedFile);
+          if (debugCompress) System.out.println("uncompressed " + filename + " to " + uncompressedFile);
+
+        } else if (suffix.equalsIgnoreCase("zip")) {
+          ZipInputStream zin = new ZipInputStream(new FileInputStream(filename));
+          ZipEntry ze = zin.getNextEntry();
+          if (ze != null) {
+            in = zin;
+            copy(in, fout, 100000);
+            if (debugCompress)
+              System.out.println("unzipped " + filename + " entry " + ze.getName() + " to " + uncompressedFile);
+          }
+
+        } else if (suffix.equalsIgnoreCase("bz2")) {
+          in = new CBZip2InputStream(new FileInputStream(filename), true);
+          copy(in, fout, 100000);
+          if (debugCompress) System.out.println("unbzipped " + filename + " to " + uncompressedFile);
+
+        } else if (suffix.equalsIgnoreCase("gzip") || suffix.equalsIgnoreCase("gz")) {
+
+          in = new GZIPInputStream(new FileInputStream(filename));
+          copy(in, fout, 100000);
+
+          if (debugCompress) System.out.println("ungzipped " + filename + " to " + uncompressedFile);
         }
+      } catch (Exception e) {
 
-      } else if (suffix.equalsIgnoreCase("bz2")) {
-        in = new CBZip2InputStream(new FileInputStream(filename), true);
-        copy(in, fout, 100000);
-        if (debugCompress) System.out.println("unbzipped " + filename + " to " + uncompressedFile);
+        // appears we have to close before we can delete   LOOK
+        //fout.close();
+        //fout = null;
 
-      } else if (suffix.equalsIgnoreCase("gzip") || suffix.equalsIgnoreCase("gz")) {
+        // dont leave bad files around
+        if (uncompressedFile.exists()) {
+          if (!uncompressedFile.delete())
+            log.warn("failed to delete uncompressed file (IOException)" + uncompressedFile);
+        }
+        throw e;
 
-        in = new GZIPInputStream(new FileInputStream(filename));
-        copy(in, fout, 100000);
-
-        if (debugCompress) System.out.println("ungzipped " + filename + " to " + uncompressedFile);
+      } finally {
+        if (lock != null) lock.release();
+        if (in != null) in.close();
       }
-    } catch (Exception e) {
-
-      // appears we have to close before we can delete
-      fout.close();
-      fout = null;
-
-      // dont leave bad files around
-      if (uncompressedFile.exists()) {
-        if (!uncompressedFile.delete())
-          log.warn("failed to delete uncompressed file (IOException)" + uncompressedFile);
-      }
-      throw e;
-
-    } finally {
-      if (lock != null) lock.release();
-      if (in != null) in.close();
-      if (fout != null) fout.close();
     }
 
     return uncompressedFile.getPath();

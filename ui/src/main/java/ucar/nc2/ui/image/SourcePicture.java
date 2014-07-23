@@ -519,13 +519,6 @@ public class SourcePicture implements Cloneable {
 		return this;
 	}
 
-	/**
-	 *  used to check when the garbage collector wandered by
-	 */
-	public void finalize() {
-		Tools.log("SourcePicture.finalize: " + imageUrl.toString() );
-	}
-
 
 	/**
 	 *  creates a copy of the SourcePicture

@@ -738,10 +738,13 @@ public abstract class PartitionCollection extends GribCollection {
 
     GribCollection gc = last.getGribCollection();
     if (gc instanceof PartitionCollection) {
-      PartitionCollection pc = (PartitionCollection) gc;
-      GribCollection result = pc.getLatestGribCollection(paths);
-      gc.close();
-      return result;
+      try {
+        PartitionCollection pc = (PartitionCollection) gc;
+        GribCollection result = pc.getLatestGribCollection(paths);
+        return result;
+      } finally {
+        gc.close();  // make sure its closed even on exception
+      }
     } else {
       return gc;
     }

@@ -128,9 +128,9 @@ public class NcepHtmlScraper {
      XMLOutputter fmt = new XMLOutputter(Format.getPrettyFormat());
      String x = fmt.outputString(doc);
 
-     FileOutputStream fout = new FileOutputStream(dirOut + filename);
-     fout.write(x.getBytes());
-     fout.close();
+     try (FileOutputStream fout = new FileOutputStream(dirOut + filename)) {
+       fout.write(x.getBytes());
+     }
 
      if (show) System.out.printf("%s%n", x);
    }
@@ -243,9 +243,9 @@ public class NcepHtmlScraper {
     XMLOutputter fmt = new XMLOutputter(Format.getPrettyFormat());
     String x = fmt.outputString(doc);
 
-    FileOutputStream fout = new FileOutputStream(dirOut + filename);
-    fout.write(x.getBytes());
-    fout.close();
+    try (FileOutputStream fout = new FileOutputStream(dirOut + filename)) {
+      fout.write(x.getBytes());
+    }
 
     if (show) System.out.printf("%s%n", x);
   }
@@ -346,9 +346,9 @@ public class NcepHtmlScraper {
     XMLOutputter fmt = new XMLOutputter(Format.getPrettyFormat());
     String x = fmt.outputString(doc);
 
-    FileOutputStream fout = new FileOutputStream(dirOut + filename);
-    fout.write(x.getBytes());
-    fout.close();
+    try (FileOutputStream fout = new FileOutputStream(dirOut + filename)) {
+      fout.write(x.getBytes());
+    }
 
     if (show) System.out.printf("%s%n", x);
   }
@@ -360,9 +360,9 @@ public class NcepHtmlScraper {
     for (Param p : params)
       f.format("%3d:%s:%s [%s]%n", p.pnum, p.name, p.desc, p.unit); // 1:PRES:Pressure [Pa]
 
-    FileOutputStream fout = new FileOutputStream(dirOut + filename);
-    fout.write(f.toString().getBytes());
-    fout.close();
+    try (FileOutputStream fout = new FileOutputStream(dirOut + filename)) {
+      fout.write(f.toString().getBytes());
+    }
 
     if (show) System.out.printf("%s%n", f);
   }

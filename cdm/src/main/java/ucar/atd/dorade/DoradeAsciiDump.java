@@ -79,10 +79,10 @@ public class DoradeAsciiDump {
         sb.append("\n");
       }
 
-      FileOutputStream out = new FileOutputStream(destFile);
-      out.write(sb.toString().getBytes());
-      out.flush();
-      out.close();
+      try (FileOutputStream out = new FileOutputStream(destFile)) {
+        out.write(sb.toString().getBytes());
+        out.flush();
+      }
     }
 
   }

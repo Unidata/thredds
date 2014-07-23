@@ -895,24 +895,27 @@ public abstract class GribIosp extends AbstractIOServiceProvider {
 
       int currFile = -1;
       RandomAccessFile rafData = null;
-      for (DataRecord dr : records) {
-        if (dr.fileno != currFile) {
-          if (rafData != null) rafData.close();
-          rafData = gribCollection.getDataRaf(dr.fileno);
-          currFile = dr.fileno;
+      try {
+        for (DataRecord dr : records) {
+          if (dr.fileno != currFile) {
+            if (rafData != null) rafData.close();
+            rafData = gribCollection.getDataRaf(dr.fileno);
+            currFile = dr.fileno;
+          }
+
+          if (dr.dataPos == GribCollection.MISSING_RECORD) continue;
+
+          if (debugRead) { // for validation
+            show(rafData, dr.dataPos);
+          }
+
+          float[] data = readData(rafData, dr);
+          GdsHorizCoordSys hcs = vindex.group.getGdsHorizCoordSys();
+          dataReceiver.addData(data, dr.resultIndex, hcs.nx);
         }
-
-        if (dr.dataPos == GribCollection.MISSING_RECORD) continue;
-
-        if (debugRead) { // for validation
-          show(rafData, dr.dataPos);
-        }
-
-        float[] data = readData(rafData, dr);
-        GdsHorizCoordSys hcs = vindex.group.getGdsHorizCoordSys();
-        dataReceiver.addData(data, dr.resultIndex, hcs.nx);
+      } finally {
+        if (rafData != null) rafData.close();  // make sure its closed even on exception
       }
-      if (rafData != null) rafData.close();
     }
   }
 
@@ -1042,25 +1045,29 @@ public abstract class GribIosp extends AbstractIOServiceProvider {
 
       PartitionCollection.DataRecord lastRecord = null;
       RandomAccessFile rafData = null;
+      try {
 
-      for (PartitionCollection.DataRecord dr : records) {
-        if ((rafData == null) || !dr.usesSameFile(lastRecord)) {
-          if (rafData != null) rafData.close();
-          rafData = dr.usePartition.getRaf(dr.partno, dr.fileno);
+        for (PartitionCollection.DataRecord dr : records) {
+          if ((rafData == null) || !dr.usesSameFile(lastRecord)) {
+            if (rafData != null) rafData.close();
+            rafData = dr.usePartition.getRaf(dr.partno, dr.fileno);
+          }
+          lastRecord = dr;
+
+          if (dr.dataPos == GribCollection.MISSING_RECORD) continue;
+
+          if (debugRead) { // for validation
+            show(rafData, dr.dataPos);
+          }
+
+          float[] data = readData(rafData, dr);
+          GdsHorizCoordSys hcs = dr.hcs;
+          dataReceiver.addData(data, dr.resultIndex, hcs.nx);
         }
-        lastRecord = dr;
 
-        if (dr.dataPos == GribCollection.MISSING_RECORD) continue;
-
-        if (debugRead) { // for validation
-          show(rafData, dr.dataPos);
-        }
-
-        float[] data = readData(rafData, dr);
-        GdsHorizCoordSys hcs = dr.hcs;
-        dataReceiver.addData(data, dr.resultIndex, hcs.nx);
+      } finally {
+        if (rafData != null) rafData.close();  // make sure its closed even on exception
       }
-      if (rafData != null) rafData.close();
     }
   }
 

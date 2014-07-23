@@ -214,13 +214,13 @@ public class PointDatasetStandardFactory implements FeatureDatasetFactory {
   static void doit(PointDatasetStandardFactory fac, String filename) throws IOException {
     System.out.println(filename);
     Formatter errlog = new Formatter(System.out);
-    NetcdfDataset ncd = ucar.nc2.dataset.NetcdfDataset.openDataset(filename);
-    TableAnalyzer analysis = (TableAnalyzer) fac.isMine(FeatureType.ANY_POINT, ncd, errlog);
+    try (NetcdfDataset ncd = ucar.nc2.dataset.NetcdfDataset.openDataset(filename)) {
+      TableAnalyzer analysis = (TableAnalyzer) fac.isMine(FeatureType.ANY_POINT, ncd, errlog);
 
-    fac.open(FeatureType.ANY_POINT, ncd, analysis, null, errlog);
-    analysis.getDetailInfo(errlog);
-    System.out.printf("\n-----------------");
-    ncd.close();
+      fac.open(FeatureType.ANY_POINT, ncd, analysis, null, errlog);
+      analysis.getDetailInfo(errlog);
+      System.out.printf("\n-----------------");
+    }
   }
 
 

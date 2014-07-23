@@ -35,8 +35,6 @@ package ucar.atd.dorade;
 import java.io.RandomAccessFile;
 import java.util.Date;
 
-/* $Id:DoradeSSWB.java 51 2006-07-12 17:13:13Z caron $ */
-
 class DoradeSSWB extends DoradeDescriptor {
 
     private class KeyTable {
@@ -71,8 +69,7 @@ class DoradeSSWB extends DoradeDescriptor {
     private int nKeyTables;
     private KeyTable[] keyTables;
 
-    public DoradeSSWB(RandomAccessFile file, boolean littleEndianData)
-            throws DescriptorException {
+    public DoradeSSWB(RandomAccessFile file, boolean littleEndianData) throws DescriptorException {
         byte[] data = readDescriptor(file, littleEndianData, "SSWB");
 
         //
@@ -80,8 +77,7 @@ class DoradeSSWB extends DoradeDescriptor {
         //
 
         if (data == null) {
-            System.out.println("SSWB data null");
-            System.exit(1);
+            throw new IllegalStateException("SSWB data null");
         }
 
         int intTime = grabInt(data, 8);

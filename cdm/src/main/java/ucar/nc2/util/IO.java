@@ -1007,16 +1007,16 @@ public class IO {
   // read URL to File
   static Formatter fout;
   static public void main(String[] args) throws IOException {
-    FileOutputStream f = new FileOutputStream("C:/TEMP/read.txt");
-    fout = new Formatter(f);
-    //String url = "http://newmotherlode.ucar.edu:8081/thredds/fileServer/nexrad/level2/KDVN/20080921/Level2_KDVN_20080921_1024.ar2v";
-    String url = "http://newmotherlode.ucar.edu:8081/thredds/fileServer/fmrc/NCEP/GFS/Global_onedeg/files/GFS_Global_onedeg_20080922_0600.grib2";
-    long start = System.currentTimeMillis();
-    IO.copyUrlB(url, null, 1000 * 1000); // read data and throw away
-    double took = .001 * (System.currentTimeMillis() - start);
+    try (FileOutputStream f = new FileOutputStream("C:/TEMP/read.txt")) {
+      fout = new Formatter(f);
+      //String url = "http://newmotherlode.ucar.edu:8081/thredds/fileServer/nexrad/level2/KDVN/20080921/Level2_KDVN_20080921_1024.ar2v";
+      String url = "http://newmotherlode.ucar.edu:8081/thredds/fileServer/fmrc/NCEP/GFS/Global_onedeg/files/GFS_Global_onedeg_20080922_0600.grib2";
+      long start = System.currentTimeMillis();
+      IO.copyUrlB(url, null, 1000 * 1000); // read data and throw away
+      double took = .001 * (System.currentTimeMillis() - start);
 
-    //String url = "http://motherlode.ucar.edu:9080/thredds/ncss/metars?variables=all&north=82.5199&west=88.4499&east=90.4000&south=-90.0000&latitude=&longitude=&spatial=stns&stn=LOWW&time_start=2007-12-02T23%3A45%3A04Z&time_end=present&temporal=point&time=2007-12-02T23%3A45%3A04Z&accept=raw";
-    //String url2 = "http://motherlode.ucar.edu:8080/thredds/dodsC/fmrc/NCEP/NAM/CONUS_80km/files/NAM_CONUS_80km_20071217_0000.grib1.dods?Total_precipitation";
+      //String url = "http://motherlode.ucar.edu:9080/thredds/ncss/metars?variables=all&north=82.5199&west=88.4499&east=90.4000&south=-90.0000&latitude=&longitude=&spatial=stns&stn=LOWW&time_start=2007-12-02T23%3A45%3A04Z&time_end=present&temporal=point&time=2007-12-02T23%3A45%3A04Z&accept=raw";
+      //String url2 = "http://motherlode.ucar.edu:8080/thredds/dodsC/fmrc/NCEP/NAM/CONUS_80km/files/NAM_CONUS_80km_20071217_0000.grib1.dods?Total_precipitation";
     /* long start = System.currentTimeMillis();
     File fileResult = new File("R:/testdata2/bufr/vosclim_2008032301");
     String result = readURLtoFile(url, fileResult);
@@ -1025,9 +1025,9 @@ public class IO {
     System.out.println(" result size = " + result.length());
     System.out.println(" file size = " + fileResult.length());
     */
-    fout.flush();
-    f.close();
-    System.out.println(" that took = " + took + " sec");
+      fout.flush();
+      System.out.println(" that took = " + took + " sec");
+    }
   }
 
 }

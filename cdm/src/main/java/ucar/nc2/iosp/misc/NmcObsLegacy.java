@@ -615,7 +615,6 @@ public class NmcObsLegacy extends AbstractIOServiceProvider {
         System.out.println("BAD reportId=" + new String(reportId));
         System.out.println("ReportId start at " + filePos);
         e.printStackTrace();
-        System.exit(1);
         return false;
       }
     }

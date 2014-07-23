@@ -60,11 +60,6 @@ public class ScaleThread extends Thread {
 		sclPic.scalePicture();
 	}
 
-
-	public void finalize() {
-    //Tools.log( "ScaleThread.finalize: " + sclPic.imageUrl.toString() );
-	}
-
 }
 
 

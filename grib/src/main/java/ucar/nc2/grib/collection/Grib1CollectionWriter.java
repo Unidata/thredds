@@ -122,9 +122,9 @@ public class Grib1CollectionWriter extends GribCollectionWriter {
     }
     logger.debug(" createIndex for {}", indexFileInCache.getPath());
 
-    RandomAccessFile raf = new RandomAccessFile(indexFileInCache.getPath(), "rw");
-    raf.order(RandomAccessFile.BIG_ENDIAN);
-    try {
+    try (RandomAccessFile raf = new RandomAccessFile(indexFileInCache.getPath(), "rw")) {
+      raf.order(RandomAccessFile.BIG_ENDIAN);
+
       //// header message
       raf.write(MAGIC_START.getBytes(CDM.utf8Charset));
       raf.writeInt(version);
@@ -205,12 +205,12 @@ public class Grib1CollectionWriter extends GribCollectionWriter {
       byte[] b = index.toByteArray();
       NcStream.writeVInt(raf, b.length); // message size
       raf.write(b);  // message  - all in one gulp
+
       logger.debug("  write GribCollectionIndex= {} bytes", b.length);
+      logger.debug("  file size =  %d bytes", raf.length());
       return true;
 
     } finally {
-      logger.debug("  file size =  %d bytes", raf.length());
-      raf.close();
 
       // remove it on failure
       if (deleteOnClose && !indexFileInCache.delete())

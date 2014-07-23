@@ -167,9 +167,9 @@ public class NcepHtmlScraper  {
     XMLOutputter fmt = new XMLOutputter(Format.getPrettyFormat());
     String x = fmt.outputString(doc);
 
-    FileOutputStream fout = new FileOutputStream(dirOut + filename+".xml");
-    fout.write(x.getBytes());
-    fout.close();
+    try (FileOutputStream fout = new FileOutputStream(dirOut + filename+".xml")) {
+      fout.write(x.getBytes());
+    }
 
     if (show) System.out.printf("%s%n", x);
   }
@@ -297,9 +297,9 @@ public class NcepHtmlScraper  {
     XMLOutputter fmt = new XMLOutputter(Format.getPrettyFormat());
     String x = fmt.outputString(doc);
 
-    FileOutputStream fout = new FileOutputStream(dirOut + filename+".xml");
-    fout.write(x.getBytes());
-    fout.close();
+    try (FileOutputStream fout = new FileOutputStream(dirOut + filename+".xml")) {
+      fout.write(x.getBytes());
+    }
 
     if (show) System.out.printf("%s%n", x);
   }

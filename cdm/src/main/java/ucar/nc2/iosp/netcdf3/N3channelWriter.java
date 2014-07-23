@@ -129,18 +129,18 @@ public class N3channelWriter extends N3streamWriter {
 
   public static void writeFromFile(NetcdfFile fileIn, String fileOutName) throws IOException, InvalidRangeException {
 
-    FileOutputStream stream = new FileOutputStream(fileOutName);
-    WritableByteChannel channel = stream.getChannel();
-    DataOutputStream dout = new DataOutputStream(Channels.newOutputStream(channel));
+    try (FileOutputStream stream = new FileOutputStream(fileOutName)) {
+      WritableByteChannel channel = stream.getChannel();
+      DataOutputStream dout = new DataOutputStream(Channels.newOutputStream(channel));
 
-    N3channelWriter writer = new N3channelWriter(fileIn);
-    int numrec = fileIn.getUnlimitedDimension() == null ? 0 : fileIn.getUnlimitedDimension().getLength();
+      N3channelWriter writer = new N3channelWriter(fileIn);
+      int numrec = fileIn.getUnlimitedDimension() == null ? 0 : fileIn.getUnlimitedDimension().getLength();
 
-    writer.writeHeader(dout, numrec);
-    dout.flush();
+      writer.writeHeader(dout, numrec);
+      dout.flush();
 
-    writer.writeDataAll(channel);
-    channel.close();
+      writer.writeDataAll(channel);
+    }
   }
 
   /**

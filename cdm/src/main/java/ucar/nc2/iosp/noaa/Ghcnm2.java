@@ -809,24 +809,24 @@ public class Ghcnm2 extends AbstractIOServiceProvider {
     ///////////////////////////////////////////
 
   private void readIndex(String indexFilename) throws IOException {
-    FileInputStream fin = new FileInputStream(indexFilename);
+    try (FileInputStream fin = new FileInputStream(indexFilename)) {
 
-    if (!NcStream.readAndTest(fin, MAGIC_START_IDX.getBytes(CDM.utf8Charset)))
-      throw new IllegalStateException("bad index file");
-    int version = fin.read();
-    if (version != 1)
-      throw new IllegalStateException("Bad version = "+version);
+      if (!NcStream.readAndTest(fin, MAGIC_START_IDX.getBytes(CDM.utf8Charset)))
+        throw new IllegalStateException("bad index file");
+      int version = fin.read();
+      if (version != 1)
+        throw new IllegalStateException("Bad version = " + version);
 
-    int count = NcStream.readVInt(fin);
+      int count = NcStream.readVInt(fin);
 
-    for (int i=0; i<count; i++) {
-      int size = NcStream.readVInt(fin);
-      byte[] pb = new byte[size];
-      NcStream.readFully(fin, pb);
-      StationIndex si = decodeStationIndex(pb);
-      map.put(si.stnId, si);
+      for (int i = 0; i < count; i++) {
+        int size = NcStream.readVInt(fin);
+        byte[] pb = new byte[size];
+        NcStream.readFully(fin, pb);
+        StationIndex si = decodeStationIndex(pb);
+        map.put(si.stnId, si);
+      }
     }
-    fin.close();
 
     System.out.println(" read index map size=" + map.values().size());
   }
@@ -899,26 +899,26 @@ public class Ghcnm2 extends AbstractIOServiceProvider {
 
     //////////////////////////////
     // write the index file
-    FileOutputStream fout = new FileOutputStream(indexFile); // LOOK need DiskCache for non-writeable directories
-    long size = 0;
+    try (FileOutputStream fout = new FileOutputStream(indexFile)) { // LOOK need DiskCache for non-writeable directories
+      long size = 0;
 
-    //// header message
-    fout.write(MAGIC_START_IDX.getBytes(CDM.utf8Charset));
-    fout.write(version);
-    size += NcStream.writeVInt(fout, stnCount);
+      //// header message
+      fout.write(MAGIC_START_IDX.getBytes(CDM.utf8Charset));
+      fout.write(version);
+      size += NcStream.writeVInt(fout, stnCount);
 
     /* byte[] pb = encodeStationListProto( map.values());
     size += NcStream.writeVInt(fout, pb.length);
     size += pb.length;
     fout.write(pb); */
 
-    for (StationIndex s : map.values()) {
-      byte[] pb = s.encodeStationProto();
-      size += NcStream.writeVInt(fout, pb.length);
-      size += pb.length;
-      fout.write(pb);
+      for (StationIndex s : map.values()) {
+        byte[] pb = s.encodeStationProto();
+        size += NcStream.writeVInt(fout, pb.length);
+        size += pb.length;
+        fout.write(pb);
+      }
     }
-    fout.close();
 
     //System.out.println(" index size=" + size);
   }

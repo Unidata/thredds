@@ -275,60 +275,26 @@ public class CdmRemote extends ucar.nc2.NetcdfFile {
 
   public void writeToFile(String filename) throws IOException {
     File file = new File(filename);
-    FileOutputStream fos = new FileOutputStream(file);
-    // WritableByteChannel wbc = fos.getChannel();
+    try (FileOutputStream fos = new FileOutputStream(file)) {
+      // WritableByteChannel wbc = fos.getChannel();
 
-    long size = 4;
-    fos.write(NcStream.MAGIC_START);
+      long size = 4;
+      fos.write(NcStream.MAGIC_START);
 
-    // header
-    HTTPMethod method = null;
-    try {
-      // get the header
-      String url = remoteURI + "?req=header";
-      method = HTTPFactory.Get(httpClient, url);
-      if (showRequest) System.out.printf("CdmRemote request %s %n", url);
-      int statusCode = method.execute();
-
-      if (statusCode == 404)
-        throw new FileNotFoundException(method.getURL() + " " + method.getStatusLine());
-
-      if (statusCode >= 300)
-        throw new IOException(method.getURL() + " " + method.getStatusLine());
-
-      InputStream is = method.getResponseBodyAsStream();
-      size += IO.copyB(is, fos, IO.default_socket_buffersize);
-
-    } finally {
-      if (method != null) method.close();
-    }
-
-    for (Variable v : getVariables()) {
-      StringBuilder sbuff = new StringBuilder(remoteURI);
-      sbuff.append("?var=");
-      sbuff.append(URLEncoder.encode(v.getShortName(), "UTF-8"));
-
-      if (showRequest)
-        System.out.println(" CdmRemote data request for variable: " + v.getFullName() + " url=" + sbuff);
-
+      // header
+      HTTPMethod method = null;
       try {
-        method = HTTPFactory.Get(httpClient, sbuff.toString());
+        // get the header
+        String url = remoteURI + "?req=header";
+        method = HTTPFactory.Get(httpClient, url);
+        if (showRequest) System.out.printf("CdmRemote request %s %n", url);
         int statusCode = method.execute();
 
         if (statusCode == 404)
-          throw new FileNotFoundException(method.getPath() + " " + method.getStatusLine());
+          throw new FileNotFoundException(method.getURL() + " " + method.getStatusLine());
 
         if (statusCode >= 300)
-          throw new IOException(method.getPath() + " " + method.getStatusLine());
-
-        int wantSize = (int) (v.getSize());
-        Header h = method.getResponseHeader("Content-Length");
-        if (h != null) {
-          String s = h.getValue();
-          int readLen = Integer.parseInt(s);
-          if (readLen != wantSize)
-            throw new IOException("content-length= " + readLen + " not equal expected Size= " + wantSize);
-        }
+          throw new IOException(method.getURL() + " " + method.getStatusLine());
 
         InputStream is = method.getResponseBodyAsStream();
         size += IO.copyB(is, fos, IO.default_socket_buffersize);
@@ -336,10 +302,44 @@ public class CdmRemote extends ucar.nc2.NetcdfFile {
       } finally {
         if (method != null) method.close();
       }
-    }
 
-    fos.flush();
-    fos.close();
+      for (Variable v : getVariables()) {
+        StringBuilder sbuff = new StringBuilder(remoteURI);
+        sbuff.append("?var=");
+        sbuff.append(URLEncoder.encode(v.getShortName(), "UTF-8"));
+
+        if (showRequest)
+          System.out.println(" CdmRemote data request for variable: " + v.getFullName() + " url=" + sbuff);
+
+        try {
+          method = HTTPFactory.Get(httpClient, sbuff.toString());
+          int statusCode = method.execute();
+
+          if (statusCode == 404)
+            throw new FileNotFoundException(method.getPath() + " " + method.getStatusLine());
+
+          if (statusCode >= 300)
+            throw new IOException(method.getPath() + " " + method.getStatusLine());
+
+          int wantSize = (int) (v.getSize());
+          Header h = method.getResponseHeader("Content-Length");
+          if (h != null) {
+            String s = h.getValue();
+            int readLen = Integer.parseInt(s);
+            if (readLen != wantSize)
+              throw new IOException("content-length= " + readLen + " not equal expected Size= " + wantSize);
+          }
+
+          InputStream is = method.getResponseBodyAsStream();
+          size += IO.copyB(is, fos, IO.default_socket_buffersize);
+
+        } finally {
+          if (method != null) method.close();
+        }
+      }
+
+      fos.flush();
+    }
   }
 
   @Override

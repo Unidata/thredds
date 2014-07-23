@@ -91,37 +91,38 @@ public class NcMLReader {
    */
   static public void wrapNcMLresource(NetcdfDataset ncDataset, String ncmlResourceLocation, CancelTask cancelTask) throws IOException {
     ClassLoader cl = ncDataset.getClass().getClassLoader();
-    InputStream is = cl.getResourceAsStream(ncmlResourceLocation);
-    if (is == null)
-      throw new FileNotFoundException(ncmlResourceLocation);
+    try (InputStream is = cl.getResourceAsStream(ncmlResourceLocation)) {
+      if (is == null)
+        throw new FileNotFoundException(ncmlResourceLocation);
 
-    if (debugXML) {
-      System.out.println(" NetcdfDataset URL = <" + ncmlResourceLocation + ">");
-      try (InputStream is2 = cl.getResourceAsStream(ncmlResourceLocation)) {
-        System.out.println(" contents=\n" + IO.readContents(is2));
+      if (debugXML) {
+        System.out.println(" NetcdfDataset URL = <" + ncmlResourceLocation + ">");
+        try (InputStream is2 = cl.getResourceAsStream(ncmlResourceLocation)) {
+          System.out.println(" contents=\n" + IO.readContents(is2));
+        }
       }
+
+      org.jdom2.Document doc;
+      try {
+        SAXBuilder builder = new SAXBuilder();
+        if (debugURL) System.out.println(" NetcdfDataset URL = <" + ncmlResourceLocation + ">");
+        doc = builder.build(is);
+      } catch (JDOMException e) {
+        throw new IOException(e.getMessage());
+      }
+      if (debugXML) System.out.println(" SAXBuilder done");
+
+      if (showParsedXML) {
+        XMLOutputter xmlOut = new XMLOutputter();
+        System.out.println("*** NetcdfDataset/showParsedXML = \n" + xmlOut.outputString(doc) + "\n*******");
+      }
+
+      Element netcdfElem = doc.getRootElement();
+
+      NcMLReader reader = new NcMLReader();
+      reader.readNetcdf(ncDataset.getLocation(), ncDataset, ncDataset, netcdfElem, cancelTask);
+      if (debugOpen) System.out.println("***NcMLReader.wrapNcML result= \n" + ncDataset);
     }
-
-    org.jdom2.Document doc;
-    try {
-      SAXBuilder builder = new SAXBuilder();
-      if (debugURL) System.out.println(" NetcdfDataset URL = <" + ncmlResourceLocation + ">");
-      doc = builder.build(is);
-    } catch (JDOMException e) {
-      throw new IOException(e.getMessage());
-    }
-    if (debugXML) System.out.println(" SAXBuilder done");
-
-    if (showParsedXML) {
-      XMLOutputter xmlOut = new XMLOutputter();
-      System.out.println("*** NetcdfDataset/showParsedXML = \n" + xmlOut.outputString(doc) + "\n*******");
-    }
-
-    Element netcdfElem = doc.getRootElement();
-
-    NcMLReader reader = new NcMLReader();
-    reader.readNetcdf(ncDataset.getLocation(), ncDataset, ncDataset, netcdfElem, cancelTask);
-    if (debugOpen) System.out.println("***NcMLReader.wrapNcML result= \n" + ncDataset);
   }
 
 
