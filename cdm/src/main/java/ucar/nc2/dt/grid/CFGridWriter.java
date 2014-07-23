@@ -37,6 +37,7 @@ import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 
 import ucar.ma2.Array;
 import ucar.ma2.DataType;
@@ -326,6 +327,8 @@ public class CFGridWriter {
                               boolean addLatLon, boolean testSizeOnly,
                               NetcdfFileWriter.Version version)
           throws IOException, InvalidRangeException {
+
+    Objects.requireNonNull(projRect);
 
     NetcdfDataset ncd = (NetcdfDataset) gds.getNetcdfFile();
 

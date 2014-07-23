@@ -2623,7 +2623,7 @@ public class String2 {
      *   logStringBuffer is deleted.
      *   Specify 0 for no limit to the size.    
      */
-    public static synchronized void setupLog(
+    public static synchronized void setupLog (
             boolean tLogToSystemOut, boolean tLogToSystemErr,
             String fullFileName, boolean logToStringBuffer, 
             boolean append, int maxSize) 
@@ -4619,7 +4619,9 @@ public class String2 {
 
     /** This is only used to test canonical. */
     public static int canonicalSize() {
+      synchronized (canonicalMap) {
         return canonicalMap.size();
+      }
     }
 
     /** If quoted=true, this puts double quotes around a string, if needed.

@@ -61,12 +61,8 @@ import ucar.unidata.geoloc.LatLonRect;
 @Controller
 @Scope("request")
 class NcssDatasetInfoController extends AbstractNcssController {
-  //static private final Logger log = LoggerFactory.getLogger(NcssDatasetInfoController.class);
 
-  private boolean wantXML = false;
-  private boolean showForm = false;
-  private boolean showPointForm = false;
-  private String datasetPath;
+  // static private final Logger log = LoggerFactory.getLogger(NcssDatasetInfoController.class);
 
   @Autowired
   private NcssShowFeatureDatasetInfo ncssShowDatasetInfo;
@@ -82,7 +78,11 @@ class NcssDatasetInfoController extends AbstractNcssController {
       throw new UnsupportedOperationException("Invalid info request.");
     }
 
-    extractRequestPathInfo(req.getServletPath());
+        // the forms and dataset description
+    String path = req.getServletPath();
+    boolean wantXML = path.endsWith("/dataset.xml") || path.endsWith("/pointDataset.xml");
+    boolean showPointForm = path.endsWith("/pointDataset.html");
+    String datasetPath =  getDatasetPath(path);
 
     FeatureDataset fd = null;
     try {
@@ -111,8 +111,8 @@ class NcssDatasetInfoController extends AbstractNcssController {
   @RequestMapping(value = {"/ncss/**/station.xml"})
   void getStations(HttpServletRequest req, HttpServletResponse res, NcssParamsBean params) throws IOException {
 
-      String datasetPath = getDatasetPath(req);
-      extractRequestPathInfo(datasetPath);
+    String path = req.getServletPath();
+    String datasetPath =  getDatasetPath(path);
       FeatureDataset fd = null;
       try {
         fd = datasetService.findDatasetByPath(req, res, datasetPath);
@@ -152,7 +152,7 @@ class NcssDatasetInfoController extends AbstractNcssController {
     return NcssRequestUtils.getTdsContext().getContextPath() + NcssController.getNCSSServletPath() + path;
   }
 
-  void extractRequestPathInfo(String requestPathInfo) {
+  /* void extractRequestPathInfo(String requestPathInfo) {
 
     // the forms and dataset description
     wantXML = requestPathInfo.endsWith("/dataset.xml") || requestPathInfo.endsWith("/pointDataset.xml");
@@ -160,7 +160,7 @@ class NcssDatasetInfoController extends AbstractNcssController {
     showPointForm = requestPathInfo.endsWith("/pointDataset.html");
 
     this.datasetPath =  getDatasetPath(requestPathInfo);
-  }
+  }  */
 
   /**
    * Writes out the responseStr to the response object

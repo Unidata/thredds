@@ -77,9 +77,9 @@ public class BufrSplitter {
   public void execute(String filename) throws IOException {
     File input = new File(filename);
     out.format("BufrSplitter on %s length=%d%n", input.getPath(), input.length());
-    InputStream is = new FileInputStream(input);
-    processStream(is);
-    is.close();
+    try (InputStream is = new FileInputStream(input)) {
+      processStream(is);
+    }
   }
 
   public void exit() {
