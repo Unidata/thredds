@@ -276,7 +276,7 @@ public class CFpointObs extends TableConfigurerImpl {
     if (trajTable == null) return null;
     trajTable.feature_id = identifyIdVariableName(ds, CF.FeatureType.trajectory);
     if (trajTable.feature_id == null) {
-      errlog.format("CFpointObs getTrajectoryConfig cant find a trajectoy id %n");
+      errlog.format("CFpointObs getTrajectoryConfig can't find a trajectory id %n");
     }
 
     // obs table
