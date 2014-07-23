@@ -738,13 +738,12 @@ public class ServletUtil {
     }
 
     // save new file
-    try {
-      OutputStream out = new BufferedOutputStream(new FileOutputStream(filename));
+    try ( OutputStream out = new BufferedOutputStream(new FileOutputStream(filename))) {
       IO.copy(req.getInputStream(), out);
-      out.close();
       if (debugRequest) log.debug("saveFile(): ok= " + filename);
       res.setStatus(HttpServletResponse.SC_CREATED);
       return true;
+
     } catch (IOException e) {
       log.error("saveFile(): Unable to PUT file " + filename + " to " + fileSave + "\n" + e.getMessage());
       return false;

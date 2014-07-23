@@ -499,14 +499,14 @@ public class BufrMessageViewer extends JPanel {
         }
 
         File file = new File(dirName + "/" + header + ".bufr");
-        FileOutputStream fos = new FileOutputStream(file);
-        WritableByteChannel wbc = fos.getChannel();
-        String headerS = m.getHeader();
-        if (headerS != null)
-          wbc.write(ByteBuffer.wrap(headerS.getBytes()));
-        byte[] raw = scan.getMessageBytes(m);
-        wbc.write(ByteBuffer.wrap(raw));
-        wbc.close();
+        try (FileOutputStream fos = new FileOutputStream(file);
+             WritableByteChannel wbc = fos.getChannel()) {
+          String headerS = m.getHeader();
+          if (headerS != null)
+            wbc.write(ByteBuffer.wrap(headerS.getBytes()));
+          byte[] raw = scan.getMessageBytes(m);
+          wbc.write(ByteBuffer.wrap(raw));
+        }
         count++;
       }
       JOptionPane.showMessageDialog(BufrMessageViewer.this, count + " successfully written to " + dirName);

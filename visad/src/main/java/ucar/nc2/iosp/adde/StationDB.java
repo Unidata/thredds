@@ -71,34 +71,34 @@ public class StationDB {
     }
 
     // DataInputStream dataIS = new DataInputStream( new BufferedInputStream(ios, 20000));
-    BufferedReader dataIS = new BufferedReader(new InputStreamReader(ios));
+    try (BufferedReader dataIS = new BufferedReader(new InputStreamReader(ios))) {
 
-    dataIS.readLine();
-    dataIS.readLine();
-    int count = 0;
-    while (true) {
-      String line = dataIS.readLine();
-      if (line == null) break;
-      if (line.length() < 85) break;
+      dataIS.readLine();
+      dataIS.readLine();
+      int count = 0;
+      while (true) {
+        String line = dataIS.readLine();
+        if (line == null) break;
+        if (line.length() < 85) break;
 
-      String idn = line.substring(0, 5);
-      String id = line.substring(6, 10);
-      String name = line.substring(13, 33);
-      String type = line.substring(34, 51);
-      String state = line.substring(52, 54);
-      String country = line.substring(55, 57);
-      String latS = line.substring(58, 68);
-      String lonS = line.substring(69, 79);
-      String elevS = line.substring(80, 85);
-      Station s = new Station(idn, id, name, type, state, country, latS, lonS, elevS);
-      stations.add(s);
+        String idn = line.substring(0, 5);
+        String id = line.substring(6, 10);
+        String name = line.substring(13, 33);
+        String type = line.substring(34, 51);
+        String state = line.substring(52, 54);
+        String country = line.substring(55, 57);
+        String latS = line.substring(58, 68);
+        String lonS = line.substring(69, 79);
+        String elevS = line.substring(80, 85);
+        Station s = new Station(idn, id, name, type, state, country, latS, lonS, elevS);
+        stations.add(s);
 
-      if (debugParse) System.out.println(s);
-      count++;
-      // if (count > 1) break;
+        if (debugParse) System.out.println(s);
+        count++;
+        // if (count > 1) break;
+      }
+
     }
-
-    dataIS.close();
 
     if (debugCall) {
       long took = System.currentTimeMillis() - start;

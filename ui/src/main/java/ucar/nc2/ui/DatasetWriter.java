@@ -270,12 +270,11 @@ public class DatasetWriter extends JPanel {
   }
 
   void writeNcstream(String filename) {
-    try {
+    try (OutputStream fos = new BufferedOutputStream( new FileOutputStream(filename), 50 * 1000)) {
       NcStreamWriter writer = new NcStreamWriter(ds, null);
-      OutputStream fos = new BufferedOutputStream( new FileOutputStream(filename), 50 * 1000);
       writer.streamAll(fos);
-      fos.close();
       JOptionPane.showMessageDialog(this, "File successfully written");
+
     } catch (Exception ioe) {
       JOptionPane.showMessageDialog(this, "ERROR: " + ioe.getMessage());
       ioe.printStackTrace();
@@ -283,12 +282,11 @@ public class DatasetWriter extends JPanel {
   }
 
   void writeNcstreamHeader(String filename) {
-    try {
+    try (FileOutputStream fos = new FileOutputStream(filename)) {
       NcStreamWriter writer = new NcStreamWriter(ds, null);
-      FileOutputStream fos = new FileOutputStream(filename);
       writer.sendHeader(fos);
-      fos.close();
       JOptionPane.showMessageDialog(this, "File successfully written");
+
     } catch (Exception ioe) {
       JOptionPane.showMessageDialog(this, "ERROR: " + ioe.getMessage());
       ioe.printStackTrace();
@@ -315,9 +313,7 @@ public class DatasetWriter extends JPanel {
   private void compareDataset(CompareDialog.Data data) {
     if (data.name == null) return;
 
-    NetcdfFile compareFile = null;
-    try {
-      compareFile = NetcdfDataset.openFile(data.name, null);
+    try (NetcdfFile compareFile = NetcdfDataset.openFile(data.name, null)) {
 
       Formatter f = new Formatter();
       CompareNetcdf2 cn = new CompareNetcdf2(f, data.showCompare, data.showDetails, data.readData);
@@ -344,13 +340,6 @@ public class DatasetWriter extends JPanel {
       infoTA.gotoTop();
       infoWindow.show();
 
-    } finally {
-      if (compareFile != null)
-        try {
-          compareFile.close();
-        }
-        catch (Exception eek) {
-        }
     }
   }
 
@@ -373,7 +362,7 @@ public class DatasetWriter extends JPanel {
         }
       });
       attWindow = new IndependentWindow("Global Attributes", BAMutil.getImage( "netcdfUI"), attTable);
-      attWindow.setBounds( (Rectangle) prefs.getBean("AttWindowBounds", new Rectangle( 300, 100, 500, 800)));
+      attWindow.setBounds((Rectangle) prefs.getBean("AttWindowBounds", new Rectangle(300, 100, 500, 800)));
     }
 
     List<AttributeBean> attlist = new ArrayList<AttributeBean>();

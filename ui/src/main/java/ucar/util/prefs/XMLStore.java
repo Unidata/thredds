@@ -783,12 +783,4 @@ public class XMLStore {
 
   }
 
-  /** testing */
-  public static void main(String args[]) throws IOException {
-    InputStream is = new FileInputStream( "C:\\Users\\caron\\.unidata\\NetcdfUI22.xml");
-    XMLStore store = new XMLStore();
-    IO.copy(is, System.out);
-    is.close();
-  }
-
 }

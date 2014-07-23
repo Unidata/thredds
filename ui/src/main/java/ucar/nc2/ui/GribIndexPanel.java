@@ -130,21 +130,18 @@ public class GribIndexPanel extends JPanel {
   public void setIndexFile(String indexFile) throws IOException {
     closeOpenFiles();
 
-    RandomAccessFile raf = new RandomAccessFile(indexFile, "r");
-    raf.seek(0);
-    byte[] b = new byte[Grib2Index.MAGIC_START.getBytes().length];
-    raf.read(b);
-    String magic = new String(b);
-    if (magic.equals(Grib2Index.MAGIC_START)) {
-      raf.close();
-      readIndex2(indexFile);
+    try (RandomAccessFile raf = new RandomAccessFile(indexFile, "r")) {
+      raf.seek(0);
+      byte[] b = new byte[Grib2Index.MAGIC_START.getBytes().length];
+      raf.read(b);
+      String magic = new String(b);
+      if (magic.equals(Grib2Index.MAGIC_START)) {
+        readIndex2(indexFile);
+      } else if (magic.equals(Grib1Index.MAGIC_START)) {
+        readIndex1(indexFile);
+      } else
+        throw new IOException("Not a grib index file =" + magic);
     }
-    else if (magic.equals(Grib1Index.MAGIC_START))  {
-      raf.close();
-      readIndex1(indexFile);
-    }
-    else
-      throw new IOException("Not a grib index file ="+magic);
 
   }
 

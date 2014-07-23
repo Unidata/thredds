@@ -55,91 +55,57 @@ public class WriteT42_ncRect {
 
   WriteT42_ncRect(NetcdfFile bufr, String fileOutName, boolean fill) throws IOException, InvalidRangeException {
 
-    NetcdfFileWriteable ncfile = NetcdfFileWriteable.createNew(fileOutName, fill);
-    if (debug) {
-      System.out.println("FileWriter write " + bufr.getLocation() + " to " + fileOutName);
-    }
-
-    // global attributes
-    List<Attribute> glist = bufr.getGlobalAttributes();
-    for (Attribute att : glist) {
-      String useName = N3iosp.makeValidNetcdfObjectName(att.getShortName());
-      Attribute useAtt;
-      if (att.isArray())
-        useAtt = ncfile.addGlobalAttribute(useName, att.getValues());
-      else if (att.isString())
-        useAtt = ncfile.addGlobalAttribute(useName, att.getStringValue());
-      else
-        useAtt = ncfile.addGlobalAttribute(useName, att.getNumericValue());
-      if (debug) System.out.println("add gatt= " + useAtt);
-    }
-
-    // global dimensions
-    Dimension recordDim = null;
-    Map<String, Dimension> dimHash = new HashMap<String, Dimension>();
-    for (Dimension oldD : bufr.getDimensions()) {
-      String useName = N3iosp.makeValidNetcdfObjectName(oldD.getShortName());
-      boolean isRecord = useName.equals("record");
-      Dimension newD = ncfile.addDimension(useName, isRecord ? 0 : oldD.getLength(),
-              oldD.isShared(), isRecord, oldD.isVariableLength());
-      dimHash.put(newD.getShortName(), newD);
-      if (isRecord) recordDim = newD;
-      if (debug) System.out.println("add dim= " + newD);
-    }
-
-    // Variables
-    Structure recordStruct = (Structure) bufr.findVariable(BufrIosp2.obsRecord);
-    for (Variable oldVar : recordStruct.getVariables()) {
-      if (oldVar.getDataType() == DataType.SEQUENCE) continue;
-
-      String varName = N3iosp.makeValidNetcdfObjectName(oldVar.getShortName());
-      DataType newType = oldVar.getDataType();
-
-      List<Dimension> newDims = new ArrayList<Dimension>();
-      newDims.add(recordDim);
-      for (Dimension dim : oldVar.getDimensions()) {
-        newDims.add(ncfile.addDimension(oldVar.getShortName() + "_strlen", dim.getLength()));
+    try (NetcdfFileWriteable ncfile = NetcdfFileWriteable.createNew(fileOutName, fill)) {
+      if (debug) {
+        System.out.println("FileWriter write " + bufr.getLocation() + " to " + fileOutName);
       }
 
-      Variable newVar = ncfile.addVariable(varName, newType, newDims);
-      if (debug) System.out.println("add var= " + newVar);
-
-      // attributes
-      List<Attribute> attList = oldVar.getAttributes();
-      for (Attribute att : attList) {
+      // global attributes
+      List<Attribute> glist = bufr.getGlobalAttributes();
+      for (Attribute att : glist) {
         String useName = N3iosp.makeValidNetcdfObjectName(att.getShortName());
+        Attribute useAtt;
         if (att.isArray())
-          ncfile.addVariableAttribute(varName, useName, att.getValues());
+          useAtt = ncfile.addGlobalAttribute(useName, att.getValues());
         else if (att.isString())
-          ncfile.addVariableAttribute(varName, useName, att.getStringValue());
+          useAtt = ncfile.addGlobalAttribute(useName, att.getStringValue());
         else
-          ncfile.addVariableAttribute(varName, useName, att.getNumericValue());
+          useAtt = ncfile.addGlobalAttribute(useName, att.getNumericValue());
+        if (debug) System.out.println("add gatt= " + useAtt);
       }
-    }
 
-    int max_seq = 0; // countSeq(recordStruct, "seq1");
-    Dimension seqD = ncfile.addDimension("level", max_seq);
+      // global dimensions
+      Dimension recordDim = null;
+      Map<String, Dimension> dimHash = new HashMap<String, Dimension>();
+      for (Dimension oldD : bufr.getDimensions()) {
+        String useName = N3iosp.makeValidNetcdfObjectName(oldD.getShortName());
+        boolean isRecord = useName.equals("record");
+        Dimension newD = ncfile.addDimension(useName, isRecord ? 0 : oldD.getLength(),
+                oldD.isShared(), isRecord, oldD.isVariableLength());
+        dimHash.put(newD.getShortName(), newD);
+        if (isRecord) recordDim = newD;
+        if (debug) System.out.println("add dim= " + newD);
+      }
 
-    for (Variable v : recordStruct.getVariables()) {
-      if (v.getDataType() != DataType.SEQUENCE) continue;
+      // Variables
+      Structure recordStruct = (Structure) bufr.findVariable(BufrIosp2.obsRecord);
+      for (Variable oldVar : recordStruct.getVariables()) {
+        if (oldVar.getDataType() == DataType.SEQUENCE) continue;
 
-      Structure seq = (Structure) v;
-      for (Variable seqVar : seq.getVariables()) {
-        String varName = N3iosp.makeValidNetcdfObjectName(seqVar.getShortName());
-        DataType newType = seqVar.getDataType();
+        String varName = N3iosp.makeValidNetcdfObjectName(oldVar.getShortName());
+        DataType newType = oldVar.getDataType();
 
         List<Dimension> newDims = new ArrayList<Dimension>();
         newDims.add(recordDim);
-        newDims.add(seqD);
-        for (Dimension dim : seqVar.getDimensions()) {
-          newDims.add(ncfile.addDimension(seqVar.getShortName() + "_strlen", dim.getLength()));
+        for (Dimension dim : oldVar.getDimensions()) {
+          newDims.add(ncfile.addDimension(oldVar.getShortName() + "_strlen", dim.getLength()));
         }
 
         Variable newVar = ncfile.addVariable(varName, newType, newDims);
         if (debug) System.out.println("add var= " + newVar);
 
         // attributes
-        List<Attribute> attList = seqVar.getAttributes();
+        List<Attribute> attList = oldVar.getAttributes();
         for (Attribute att : attList) {
           String useName = N3iosp.makeValidNetcdfObjectName(att.getShortName());
           if (att.isArray())
@@ -150,19 +116,53 @@ public class WriteT42_ncRect {
             ncfile.addVariableAttribute(varName, useName, att.getNumericValue());
         }
       }
+
+      int max_seq = 0; // countSeq(recordStruct, "seq1");
+      Dimension seqD = ncfile.addDimension("level", max_seq);
+
+      for (Variable v : recordStruct.getVariables()) {
+        if (v.getDataType() != DataType.SEQUENCE) continue;
+
+        Structure seq = (Structure) v;
+        for (Variable seqVar : seq.getVariables()) {
+          String varName = N3iosp.makeValidNetcdfObjectName(seqVar.getShortName());
+          DataType newType = seqVar.getDataType();
+
+          List<Dimension> newDims = new ArrayList<Dimension>();
+          newDims.add(recordDim);
+          newDims.add(seqD);
+          for (Dimension dim : seqVar.getDimensions()) {
+            newDims.add(ncfile.addDimension(seqVar.getShortName() + "_strlen", dim.getLength()));
+          }
+
+          Variable newVar = ncfile.addVariable(varName, newType, newDims);
+          if (debug) System.out.println("add var= " + newVar);
+
+          // attributes
+          List<Attribute> attList = seqVar.getAttributes();
+          for (Attribute att : attList) {
+            String useName = N3iosp.makeValidNetcdfObjectName(att.getShortName());
+            if (att.isArray())
+              ncfile.addVariableAttribute(varName, useName, att.getValues());
+            else if (att.isString())
+              ncfile.addVariableAttribute(varName, useName, att.getStringValue());
+            else
+              ncfile.addVariableAttribute(varName, useName, att.getNumericValue());
+          }
+        }
+      }
+
+      // create the file
+      ncfile.create();
+      if (debug)
+        System.out.println("File Out= " + ncfile.toString());
+
+      // boolean ok = (Boolean) ncfile.sendIospMessage(NetcdfFile.IOSP_MESSAGE_ADD_RECORD_STRUCTURE);
+
+      double total = copyVarData(bufr, ncfile, recordStruct);
+      ncfile.flush();
+      if (debug) System.out.println("FileWriter done total bytes = " + total);
     }
-
-    // create the file
-    ncfile.create();
-    if (debug)
-      System.out.println("File Out= " + ncfile.toString());
-
-    // boolean ok = (Boolean) ncfile.sendIospMessage(NetcdfFile.IOSP_MESSAGE_ADD_RECORD_STRUCTURE);
-
-    double total = copyVarData(bufr, ncfile, recordStruct);
-    ncfile.flush();
-    if (debug) System.out.println("FileWriter done total bytes = " + total);
-    ncfile.close();
   }
 
   private class SeqCount {

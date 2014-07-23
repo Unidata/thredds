@@ -254,30 +254,30 @@ public class LogReader {
    * @throws IOException on read error
    */
   public void scanLogFile(File file, Closure closure, LogFilter logf, Stats stat) throws IOException {
-    InputStream ios = new FileInputStream(file);
-    System.out.printf("-----Reading %s %n", file.getPath());
+    try (InputStream ios = new FileInputStream(file)) {
+      System.out.printf("-----Reading %s %n", file.getPath());
 
-    BufferedReader dataIS = new BufferedReader(new InputStreamReader(ios), 40 * 1000);
-    int total = 0;
-    int count = 0;
-    while ((maxLines < 0) || (count < maxLines)) {
-      Log log = parser.nextLog(dataIS);
-      if (log == null) break;
-      total++;
+      BufferedReader dataIS = new BufferedReader(new InputStreamReader(ios), 40 * 1000);
+      int total = 0;
+      int count = 0;
+      while ((maxLines < 0) || (count < maxLines)) {
+        Log log = parser.nextLog(dataIS);
+        if (log == null) break;
+        total++;
 
-      if ((logf != null) && !logf.pass(log)) continue;
+        if ((logf != null) && !logf.pass(log)) continue;
 
-      closure.process( log);
-      count++;
+        closure.process(log);
+        count++;
+      }
+
+      if (stat != null) {
+        stat.total += total;
+        stat.passed += count;
+      }
+
+      System.out.printf("----- %s total requests=%d passed=%d %n", file.getPath(), total, count);
     }
-
-    if (stat != null) {
-      stat.total += total;
-      stat.passed += count;
-    }
-
-    ios.close();
-    System.out.printf("----- %s total requests=%d passed=%d %n", file.getPath(), total, count);
   }
 
 

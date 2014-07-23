@@ -544,6 +544,7 @@ public class Grib1CollectionPanel extends JPanel {
       ByteArrayOutputStream bos = new ByteArrayOutputStream(10000);
       e.printStackTrace(new PrintStream(bos));
       f.format("%s", bos.toString());
+      if (dc != null) dc.close();
       return null;
     }
   }

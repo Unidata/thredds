@@ -104,9 +104,8 @@ public class BufrCdmIndex {
     }
     log.debug(" createIndex for {}", indexFile.getPath());
 
-    RandomAccessFile raf = new RandomAccessFile(indexFile.getPath(), "rw");
-    raf.order(RandomAccessFile.BIG_ENDIAN);
-    try {
+    try (RandomAccessFile raf = new RandomAccessFile(indexFile.getPath(), "rw")) {
+      raf.order(RandomAccessFile.BIG_ENDIAN);
       //// header message
       raf.write(MAGIC_START.getBytes(CDM.utf8Charset));
       raf.writeInt(version);
@@ -135,11 +134,8 @@ public class BufrCdmIndex {
       NcStream.writeVInt(raf, b.length); // message size
       raf.write(b);  // message  - all in one gulp
 
-      return true;
-
-    } finally {
       log.debug("  file size =  %d bytes", raf.length());
-      raf.close();
+      return true;
     }
   }
 
@@ -150,9 +146,8 @@ public class BufrCdmIndex {
     }
     log.debug(" createIndex for {}", indexFile.getPath());
 
-    RandomAccessFile raf = new RandomAccessFile(indexFile.getPath(), "rw");
-    raf.order(RandomAccessFile.BIG_ENDIAN);
-    try {
+    try (RandomAccessFile raf = new RandomAccessFile(indexFile.getPath(), "rw")) {
+      raf.order(RandomAccessFile.BIG_ENDIAN);
       //// header message
       raf.write(MAGIC_START.getBytes(CDM.utf8Charset));
       raf.writeInt(version);
@@ -182,11 +177,8 @@ public class BufrCdmIndex {
       //System.out.printf("  write BufrCdmIndexProto= %d bytes", b.length);
       //showProtoRoot(rootf);
 
-      return true;
-
-    } finally {
       log.debug("  file size =  %d bytes", raf.length());
-      raf.close();
+      return true;
     }
   }
 

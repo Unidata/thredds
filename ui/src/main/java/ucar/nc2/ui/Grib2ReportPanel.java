@@ -113,21 +113,19 @@ public class Grib2ReportPanel extends ReportPanel {
       f.format("------- %s%n", mfile.getPath());
       long orgSize = mfile.getLength();
       totalOrg += orgSize;
-
-      RandomAccessFile raf = new RandomAccessFile(mfile.getPath(), "r");
-
       File fileOut = new File(dir+mfile.getName()+".bzip2");
-      OutputStream fout = new BufferedOutputStream(new FileOutputStream(fileOut), 100 * 1000);  // 100K buffer
 
-      int count = 0;
-      Grib2RecordScanner scan = new Grib2RecordScanner(raf);
-      while (scan.hasNext()) {
-        ucar.nc2.grib.grib2.Grib2Record gr = scan.next();
-        doCopyCompress(f, gr, raf, fout, nbitsC);
-        if (count++ % 100 == 0) System.out.printf("%s%n", count);
+      try (RandomAccessFile raf = new RandomAccessFile(mfile.getPath(), "r");
+           OutputStream fout = new BufferedOutputStream(new FileOutputStream(fileOut), 100 * 1000)) {
+
+        int count = 0;
+        Grib2RecordScanner scan = new Grib2RecordScanner(raf);
+        while (scan.hasNext()) {
+          ucar.nc2.grib.grib2.Grib2Record gr = scan.next();
+          doCopyCompress(f, gr, raf, fout, nbitsC);
+          if (count++ % 100 == 0) System.out.printf("%s%n", count);
+        }
       }
-      raf.close();
-      fout.close();
       long zipSize = fileOut.length();
       totalZip += zipSize;
       double r = ((double) zipSize) / orgSize;

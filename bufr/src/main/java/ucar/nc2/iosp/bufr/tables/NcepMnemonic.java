@@ -331,61 +331,61 @@ public class NcepMnemonic {
    */
   private static void readSubCategories(String fileIn, PrintStream out, String token) throws IOException {
     System.out.printf("%s%n", fileIn);
-    FileInputStream in = new  FileInputStream(fileIn);
-    BufferedReader dataIS = new BufferedReader(new InputStreamReader(in));
-    while (true) {
-      String line = dataIS.readLine();
-      if (line == null) break;
-      int posb = line.indexOf("DISCONTINUED");
-      if (posb > 0) continue;
-      posb = line.indexOf("NO LONGER");
-      if (posb > 0) continue;
-      posb = line.indexOf("WAS REPLACED");
-      if (posb > 0) continue;
+    try (FileInputStream in = new  FileInputStream(fileIn)) {
+      BufferedReader dataIS = new BufferedReader(new InputStreamReader(in));
+      while (true) {
+        String line = dataIS.readLine();
+        if (line == null) break;
+        int posb = line.indexOf("DISCONTINUED");
+        if (posb > 0) continue;
+        posb = line.indexOf("NO LONGER");
+        if (posb > 0) continue;
+        posb = line.indexOf("WAS REPLACED");
+        if (posb > 0) continue;
 
-      int pos = line.indexOf(token);
-      if (pos < 0) continue;
-      System.out.printf("%s%n", line);
+        int pos = line.indexOf(token);
+        if (pos < 0) continue;
+        System.out.printf("%s%n", line);
 
-      boolean is31 = token.equals("031-");
-      String subline = is31 ? line.substring(pos) : line.substring(pos+token.length());
-      //if (is31) System.out.printf(" '%s'%n", subline);
+        boolean is31 = token.equals("031-");
+        String subline = is31 ? line.substring(pos) : line.substring(pos + token.length());
+        //if (is31) System.out.printf(" '%s'%n", subline);
 
-      int pos2 = subline.indexOf(' ');
-      String catS = subline.substring(0, pos2);
-      String desc = subline.substring(pos2 + 1);
-      //System.out.printf("   cat='%s'%n", catS);
-      //System.out.printf("  desc='%s'%n", desc);
-      int cat = Integer.parseInt(catS.substring(0,3));
-      int subcat = Integer.parseInt(catS.substring(4,7));
-      desc = StringUtil2.remove(desc,'|').trim();
-      //System.out.printf("  cat=%d subcat=%d%n", cat,subcat);
-      //System.out.printf("  desc='%s'%n", desc);
-      //System.out.printf("%d, %d, %s%n", cat, subcat, desc);
-      out.printf("%d; %d; %s%n", cat, subcat, desc);
+        int pos2 = subline.indexOf(' ');
+        String catS = subline.substring(0, pos2);
+        String desc = subline.substring(pos2 + 1);
+        //System.out.printf("   cat='%s'%n", catS);
+        //System.out.printf("  desc='%s'%n", desc);
+        int cat = Integer.parseInt(catS.substring(0, 3));
+        int subcat = Integer.parseInt(catS.substring(4, 7));
+        desc = StringUtil2.remove(desc, '|').trim();
+        //System.out.printf("  cat=%d subcat=%d%n", cat,subcat);
+        //System.out.printf("  desc='%s'%n", desc);
+        //System.out.printf("%d, %d, %s%n", cat, subcat, desc);
+        out.printf("%d; %d; %s%n", cat, subcat, desc);
+      }
     }
-    in.close();
 
 
   }
 
   public static void main(String args[]) throws IOException {
     String fileOut = "C:/dev/github/thredds/bufr/src/main/resources/resources/bufrTables/local/ncep/DataSubCategories.csv";
-    PrintStream pout = new PrintStream(fileOut);
-    readSubCategories("C:/dev/github/thredds/bufr/src/main/sources/ncep/bufrtab.000.txt",  pout, "MSG TYPE ");
-    readSubCategories("C:/dev/github/thredds/bufr/src/main/sources/ncep/bufrtab.001.txt",  pout, "MESSAGE TYPE ");
-    readSubCategories("C:/dev/github/thredds/bufr/src/main/sources/ncep/bufrtab.002.txt",  pout, "MSG TYPE ");
-    readSubCategories("C:/dev/github/thredds/bufr/src/main/sources/ncep/bufrtab.003.txt",  pout, "MTYP ");
-    readSubCategories("C:/dev/github/thredds/bufr/src/main/sources/ncep/bufrtab.004.txt",  pout, "MSG TYPE ");
-    readSubCategories("C:/dev/github/thredds/bufr/src/main/sources/ncep/bufrtab.005.txt",  pout, "MSG TYPE ");
-    readSubCategories("C:/dev/github/thredds/bufr/src/main/sources/ncep/bufrtab.006.txt",  pout, "M TYPE ");
-    readSubCategories("C:/dev/github/thredds/bufr/src/main/sources/ncep/bufrtab.007.txt",  pout, "MTYPE ");
-    readSubCategories("C:/dev/github/thredds/bufr/src/main/sources/ncep/bufrtab.008.txt",  pout, "MSG TYPE ");
-    readSubCategories("C:/dev/github/thredds/bufr/src/main/sources/ncep/bufrtab.012.txt",  pout, "M TYPE ");
-    readSubCategories("C:/dev/github/thredds/bufr/src/main/sources/ncep/bufrtab.021.txt",  pout, "MTYP ");
-    readSubCategories("C:/dev/github/thredds/bufr/src/main/sources/ncep/bufrtab.031.txt",  pout, "031-");
-    readSubCategories("C:/dev/github/thredds/bufr/src/main/sources/ncep/bufrtab.255.txt",  pout, "MTYP ");
-    pout.close();
+    try (PrintStream pout = new PrintStream(fileOut)) {
+      readSubCategories("C:/dev/github/thredds/bufr/src/main/sources/ncep/bufrtab.000.txt", pout, "MSG TYPE ");
+      readSubCategories("C:/dev/github/thredds/bufr/src/main/sources/ncep/bufrtab.001.txt", pout, "MESSAGE TYPE ");
+      readSubCategories("C:/dev/github/thredds/bufr/src/main/sources/ncep/bufrtab.002.txt", pout, "MSG TYPE ");
+      readSubCategories("C:/dev/github/thredds/bufr/src/main/sources/ncep/bufrtab.003.txt", pout, "MTYP ");
+      readSubCategories("C:/dev/github/thredds/bufr/src/main/sources/ncep/bufrtab.004.txt", pout, "MSG TYPE ");
+      readSubCategories("C:/dev/github/thredds/bufr/src/main/sources/ncep/bufrtab.005.txt", pout, "MSG TYPE ");
+      readSubCategories("C:/dev/github/thredds/bufr/src/main/sources/ncep/bufrtab.006.txt", pout, "M TYPE ");
+      readSubCategories("C:/dev/github/thredds/bufr/src/main/sources/ncep/bufrtab.007.txt", pout, "MTYPE ");
+      readSubCategories("C:/dev/github/thredds/bufr/src/main/sources/ncep/bufrtab.008.txt", pout, "MSG TYPE ");
+      readSubCategories("C:/dev/github/thredds/bufr/src/main/sources/ncep/bufrtab.012.txt", pout, "M TYPE ");
+      readSubCategories("C:/dev/github/thredds/bufr/src/main/sources/ncep/bufrtab.021.txt", pout, "MTYP ");
+      readSubCategories("C:/dev/github/thredds/bufr/src/main/sources/ncep/bufrtab.031.txt", pout, "031-");
+      readSubCategories("C:/dev/github/thredds/bufr/src/main/sources/ncep/bufrtab.255.txt", pout, "MTYP ");
+    }
     System.out.printf("=======================================%n");
     System.out.printf("%s%n", IO.readFile(fileOut));
     System.exit(0);
