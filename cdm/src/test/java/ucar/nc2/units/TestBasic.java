@@ -33,6 +33,7 @@
 package ucar.nc2.units;
 
 import junit.framework.*;
+import ucar.nc2.util.Misc;
 import ucar.units.*;
 
 public class TestBasic extends TestCase {
@@ -55,15 +56,11 @@ public class TestBasic extends TestCase {
       if (debug) System.out.println("5 knots is " +
         knot.convertTo(5, meterPerSecondUnit) +
         ' ' + format.format(meterPerSecondUnit));
-      assert(closeEnough(2.5722222, knot.convertTo(5, meterPerSecondUnit)));
+      assert(Misc.closeEnough(2.5722222, knot.convertTo(5, meterPerSecondUnit)));
 
     } catch (Exception e) {
       System.out.println("Exception " + e);
     }
-  }
-
-  private boolean closeEnough( double d1, double d2) {
-    return Math.abs(d1-d2) < 1.0e-5;
   }
 
   public void testTimeConversion()   {
@@ -81,7 +78,7 @@ public class TestBasic extends TestCase {
 
     try {
       if (debug) System.out.println("t2.convertTo(0.0, t1) " +t2.convertTo(0.0, t1));
-      assert(closeEnough(86400.0, t2.convertTo(0.0, t1)));
+      assert(Misc.closeEnough(86400.0, t2.convertTo(0.0, t1)));
     } catch (Exception e) {
       System.out.println("testTimeConversion failed 2 =" +e);
     }

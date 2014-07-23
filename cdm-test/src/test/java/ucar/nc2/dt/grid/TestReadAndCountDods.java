@@ -53,7 +53,7 @@ public class TestReadAndCountDods {
     result.add(new Object[]{"catalog/grib/NCEP/DGEX/Alaska_12km/files/latest.xml", -1, 11, 13, 8});
 
     result.add(new Object[]{"catalog/grib/NCEP/GEFS/Global_1p0deg_Ensemble/members/files/latest.xml", 35, 11, 13, 6});
-    result.add(new Object[]{"grib/NCEP/GEFS/Global_1p0deg_Ensemble/derived/files/latest.xml", 63, 15, 14, 6});
+    result.add(new Object[]{"grib/NCEP/GEFS/Global_1p0deg_Ensemble/derived/files/latest.xml", 70, 17, 16, 6}); // 63, 15, 14, 6});
 
     // 133, 26, 27, 21 vs 133, 31, 29, 21
     result.add(new Object[]{"catalog/grib/NCEP/GFS/Global_0p5deg/files/latest.xml", 133, -1, -1, 21});
