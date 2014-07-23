@@ -76,6 +76,8 @@ public class HtmlConfig
   private String hostInstLogoUrl;
   private String hostInstLogoAlt;
 
+  private boolean useRemoteCatalogService;
+
   public HtmlConfig()
   {}
 
@@ -377,7 +379,18 @@ public class HtmlConfig
     this.hostInstLogoAlt = hostInstLogoAlt;
   }
 
-  /**
+    /**
+     * Return the config option that sets the default of whether or not to use remoteCatalogService
+     * for html representation of catalogRef's in client catalogs.
+     * @return true: use remoteCatalogService, false: assume catalogRef's point to a TDS, so simply link
+     *         the html url of the remote catalog.
+     */
+  public Boolean getUseRemoteCatalogService() { return useRemoteCatalogService;}
+
+  public void setUseRemoteCatalogService(Boolean remoteCatalogService) {this.useRemoteCatalogService = remoteCatalogService;}
+
+
+   /**
    * Return a URL ready to use in a generated HTML page from a URL that
    * is either absolute or relative to the webapp context path. That is,
    * if relative, it is relative to "http://server:port/thredds/".
@@ -427,6 +440,8 @@ public class HtmlConfig
     model.put( "installationUrl", this.prepareUrlStringForHtml( this.getInstallUrl() ) );
     model.put( "installationLogoUrl", this.prepareUrlStringForHtml( this.getInstallLogoUrl() ) );
     model.put( "installationLogoAlt", this.getInstallLogoAlt() );
+
+    model.put( "useRemoteCatalogService", this.getUseRemoteCatalogService());
 
     model.put( "webappName", this.getWebappName() );
     model.put( "webappVersion", this.getWebappVersion() );
