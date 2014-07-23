@@ -49,66 +49,66 @@ import java.nio.channels.WritableByteChannel;
 public class ScannerPqact extends Scanner {
 
   static void extract(String filename) throws IOException {
-    RandomAccessFile raf = new RandomAccessFile(filename, "r");
-    out.format("Open %s size = %d Kb \n", raf.getLocation(), raf.length() / 1000);
+    try (RandomAccessFile raf = new RandomAccessFile(filename, "r")) {
+      out.format("Open %s size = %d Kb \n", raf.getLocation(), raf.length() / 1000);
 
-    MessageScanner scan = new MessageScanner(raf);
-    while (scan.hasNext()) {
+      MessageScanner scan = new MessageScanner(raf);
+      while (scan.hasNext()) {
 
-      Message m = scan.next();
-      if (m == null) {
-        out.format(" bad message in file %s %n", filename);
-        bad_msgs++;
-        continue;
-      }
-      readBytes += m.is.getBufrLength();
-
-      // incomplete tables
-      try {
-        if (!m.isTablesComplete()) {
-          bad_tables++;
-          //out.format(" missing table in file %s %n", filename);
+        Message m = scan.next();
+        if (m == null) {
+          out.format(" bad message in file %s %n", filename);
+          bad_msgs++;
           continue;
         }
-      } catch (UnsupportedOperationException e) {
-        bad_operation++;
-        out.format(" missing operation in file %s, %s %n", filename, e.getMessage());
-        continue;
+        readBytes += m.is.getBufrLength();
 
-      } catch (Exception e) {
-        out.format(" Exception in file %s, %n", filename);
-        m.dumpHeader(out);
-        continue;
-      }
+        // incomplete tables
+        try {
+          if (!m.isTablesComplete()) {
+            bad_tables++;
+            //out.format(" missing table in file %s %n", filename);
+            continue;
+          }
+        } catch (UnsupportedOperationException e) {
+          bad_operation++;
+          out.format(" missing operation in file %s, %s %n", filename, e.getMessage());
+          continue;
 
-      // track desc to headers
-      String ttaaii = extractWMO(m.getHeader());
-      if (ttaaii == null) {
-        bad_wmo++;
-        out.format(" bad wmo header in file %s, %s %n", filename, m.getHeader());
-        continue;
-      }
+        } catch (Exception e) {
+          out.format(" Exception in file %s, %n", filename);
+          m.dumpHeader(out);
+          continue;
+        }
 
-      //readBytes += m.is.getBufrLength();
+        // track desc to headers
+        String ttaaii = extractWMO(m.getHeader());
+        if (ttaaii == null) {
+          bad_wmo++;
+          out.format(" bad wmo header in file %s, %s %n", filename, m.getHeader());
+          continue;
+        }
 
-      // run through the pattern matching
-      boolean hasMatch = false;
-      for (Pqact pqact : pqactList) {
-        if (pqact.match(ttaaii, m)) {
-          hasMatch = true;
-          writeBytes+= scan.writeCurrentMessage(pqact.getWBC());
+        //readBytes += m.is.getBufrLength();
+
+        // run through the pattern matching
+        boolean hasMatch = false;
+        for (Pqact pqact : pqactList) {
+          if (pqact.match(ttaaii, m)) {
+            hasMatch = true;
+            writeBytes += scan.writeCurrentMessage(pqact.getWBC());
+            writemsg++;
+            break;
+          }
+        }
+
+        if (!hasMatch && (wbc != null)) {
           writemsg++;
-          break;
+          writeBytes += scan.writeCurrentMessage(wbc);
         }
       }
-
-      if (!hasMatch && (wbc != null)) {
-        writemsg++;
-        writeBytes+= scan.writeCurrentMessage(wbc);
-      }
+      total_msgs += scan.getTotalMessages();
     }
-    raf.close();
-    total_msgs += scan.getTotalMessages();
 
   }
 
@@ -118,64 +118,64 @@ public class ScannerPqact extends Scanner {
   static long writeBytes, readBytes;
 
   static void scanMessageTypesPqact(String filename) throws IOException {
-    RandomAccessFile raf = new RandomAccessFile(filename, "r");
-    //out.format("\n-----\nOpen %s size = %d Kb \n", raf.getLocation(), raf.length() / 1000);
-    file_size += raf.length();
+    try (RandomAccessFile raf = new RandomAccessFile(filename, "r")) {
+      //out.format("\n-----\nOpen %s size = %d Kb \n", raf.getLocation(), raf.length() / 1000);
+      file_size += raf.length();
 
-    MessageScanner scan = new MessageScanner(raf);
-    int count = 0;
-    while (scan.hasNext()) {
+      MessageScanner scan = new MessageScanner(raf);
+      int count = 0;
+      while (scan.hasNext()) {
 
-      Message m = scan.next();
-      if (m == null) {
-        out.format(" bad message in file %s %n", filename);
-        bad_msgs++;
-        continue;
-      }
-
-      // incomplete tables
-      try {
-        if (!m.isTablesComplete()) {
-          bad_tables++;
-          //out.format(" missing table in file %s %n", filename);
+        Message m = scan.next();
+        if (m == null) {
+          out.format(" bad message in file %s %n", filename);
+          bad_msgs++;
           continue;
         }
-      } catch (UnsupportedOperationException e) {
-        bad_operation++;
-        out.format(" missing operation in file %s %n", filename);
-        if (wbc != null)
-          scan.writeCurrentMessage(wbc);
-        continue;
-      }
 
-      // track desc to headers
-      String ttaaii = extractWMO(m.getHeader());
-      if (ttaaii == null) {
-        bad_wmo++;
-        continue;
-      }
+        // incomplete tables
+        try {
+          if (!m.isTablesComplete()) {
+            bad_tables++;
+            //out.format(" missing table in file %s %n", filename);
+            continue;
+          }
+        } catch (UnsupportedOperationException e) {
+          bad_operation++;
+          out.format(" missing operation in file %s %n", filename);
+          if (wbc != null)
+            scan.writeCurrentMessage(wbc);
+          continue;
+        }
 
-      // run through the pattern matching
-      Pqact matched = null;
-      for (Pqact pqact : pqactList) {
-        boolean match = pqact.match(ttaaii, m);
-        if ((matched != null) && match)
-          System.out.println("double match <" + ttaaii + "> with " + matched.pats + " and " + pqact.pats);
-        if (match)
-          matched = pqact;
-      }
-      if (matched == null) {
-        System.out.println("no match <" + ttaaii + ">");
-        nomatch++;
-      }
+        // track desc to headers
+        String ttaaii = extractWMO(m.getHeader());
+        if (ttaaii == null) {
+          bad_wmo++;
+          continue;
+        }
 
-      count++;
+        // run through the pattern matching
+        Pqact matched = null;
+        for (Pqact pqact : pqactList) {
+          boolean match = pqact.match(ttaaii, m);
+          if ((matched != null) && match)
+            System.out.println("double match <" + ttaaii + "> with " + matched.pats + " and " + pqact.pats);
+          if (match)
+            matched = pqact;
+        }
+        if (matched == null) {
+          System.out.println("no match <" + ttaaii + ">");
+          nomatch++;
+        }
+
+        count++;
+      }
+      //out.format("total_msgs= %d good=%d total_obs = %d\n", scan.getTotalMessages(), count, scan.getTotalObs());
+      total_msgs += scan.getTotalMessages();
+      good_msgs += count;
+      total_obs += scan.getTotalObs();
     }
-    raf.close();
-    //out.format("total_msgs= %d good=%d total_obs = %d\n", scan.getTotalMessages(), count, scan.getTotalObs());
-    total_msgs += scan.getTotalMessages();
-    good_msgs += count;
-    total_obs += scan.getTotalObs();
   }
 
   static void showTypes() throws IOException {

@@ -100,31 +100,31 @@ public class Scanner {
 
   static void scanDDS(String filename) throws IOException {
     long start = System.nanoTime();
-    RandomAccessFile raf = new RandomAccessFile(filename, "r");
-    out.format("\nOpen %s size = %d Kb \n", raf.getLocation(), raf.length() / 1000);
+    try (RandomAccessFile raf = new RandomAccessFile(filename, "r")) {
+      out.format("\nOpen %s size = %d Kb \n", raf.getLocation(), raf.length() / 1000);
 
-    MessageScanner scan = new MessageScanner(raf);
-    int count = 0;
-    while (scan.hasNext()) {
-      Message m = scan.next();
-      if (m == null) continue;
-      m.dump(out);
+      MessageScanner scan = new MessageScanner(raf);
+      int count = 0;
+      while (scan.hasNext()) {
+        Message m = scan.next();
+        if (m == null) continue;
+        m.dump(out);
 
-      if (!m.isTablesComplete()) {
-        out.format("**INCOMPLETE ");
+        if (!m.isTablesComplete()) {
+          out.format("**INCOMPLETE ");
+        }
+
+        long startPos = m.is.getStartPos();
+        out.format(" msg= %d time=%s starts=%d len=%d end=%d dataEnd=%d\n",
+                count, m.getReferenceTime(), startPos, m.is.getBufrLength(), (startPos + m.is.getBufrLength()),
+                (m.dataSection.getDataPos() + m.dataSection.getDataLength()));
+        out.format("  ndatasets=%d isCompressed=%s datatype=0x%x header=%s\n",
+                m.getNumberDatasets(), m.dds.isCompressed(), m.dds.getDataType(), m.getHeader());
+
+        count++;
+        break;
       }
-
-      long startPos = m.is.getStartPos();
-      out.format(" msg= %d time=%s starts=%d len=%d end=%d dataEnd=%d\n",
-              count, m.getReferenceTime(), startPos, m.is.getBufrLength(), (startPos + m.is.getBufrLength()),
-              (m.dataSection.getDataPos() + m.dataSection.getDataLength()));
-      out.format("  ndatasets=%d isCompressed=%s datatype=0x%x header=%s\n",
-              m.getNumberDatasets(), m.dds.isCompressed(), m.dds.getDataType(), m.getHeader());
-
-      count++;
-      break;
     }
-    raf.close();
   }
 
   //////////////////////////////////////////////////////////////
@@ -132,63 +132,63 @@ public class Scanner {
   // o = minimal, 1=header, 2=dump dds
   static int dumpMessages(String filename, int mode) throws IOException {
     long start = System.nanoTime();
-    RandomAccessFile raf = new RandomAccessFile(filename, "r");
-    out.format("\nOpen %s size = %d Kb \n", raf.getLocation(), raf.length() / 1000);
+    try (RandomAccessFile raf = new RandomAccessFile(filename, "r")) {
+      out.format("\nOpen %s size = %d Kb \n", raf.getLocation(), raf.length() / 1000);
 
-    MessageScanner scan = new MessageScanner(raf);
-    int count = 0;
-    while (scan.hasNext()) {
-      Message m = scan.next();
-      if (m == null) continue;
-      //if (count == 0) new BufrDump2().dump(out, m);
+      MessageScanner scan = new MessageScanner(raf);
+      int count = 0;
+      while (scan.hasNext()) {
+        Message m = scan.next();
+        if (m == null) continue;
+        //if (count == 0) new BufrDump2().dump(out, m);
 
-      if (!m.isTablesComplete()) {
-        out.format("**INCOMPLETE ");
+        if (!m.isTablesComplete()) {
+          out.format("**INCOMPLETE ");
+        }
+
+        if (mode >= 0) {
+          long startPos = m.is.getStartPos();
+          out.format(" msg= %d time=%s starts=%d len=%d end=%d dataEnd=%d hash=[0x%x]\n",
+                  count, m.getReferenceTime(), startPos, m.is.getBufrLength(), (startPos + m.is.getBufrLength()),
+                  (m.dataSection.getDataPos() + m.dataSection.getDataLength()), m.hashCode());
+          out.format("  ndatasets=%d isCompressed=%s datatype=0x%x header=%s\n",
+                  m.getNumberDatasets(), m.dds.isCompressed(), m.dds.getDataType(), m.getHeader());
+        }
+
+        if (mode == 2)
+          m.dump(out);
+        else if (mode == 1)
+          m.dumpHeader(out);
+
+        if (mode >= 0) out.format("%n");
+        count++;
       }
 
-      if (mode >= 0) {
-        long startPos = m.is.getStartPos();
-        out.format(" msg= %d time=%s starts=%d len=%d end=%d dataEnd=%d hash=[0x%x]\n",
-                count, m.getReferenceTime(), startPos, m.is.getBufrLength(), (startPos + m.is.getBufrLength()),
-                (m.dataSection.getDataPos() + m.dataSection.getDataLength()), m.hashCode());
-        out.format("  ndatasets=%d isCompressed=%s datatype=0x%x header=%s\n",
-                m.getNumberDatasets(), m.dds.isCompressed(), m.dds.getDataType(), m.getHeader());
-      }
-
-      if (mode == 2)
-        m.dump(out);
-      else if (mode == 1)
-        m.dumpHeader(out);
-
-      if (mode >= 0) out.format("%n");
-      count++;
+      long took = (System.nanoTime() - start);
+      double rate = (took > 0) ? ((double) (1000 * 1000) * count / took) : 0.0;
+      out.format(" nmsgs= %d nobs = %d took %d msecs rate = %f msgs/msec\n", count, scan.getTotalObs(), took / (1000 * 1000), rate);
+      return scan.getTotalObs();
     }
-    raf.close();
-
-    long took = (System.nanoTime() - start);
-    double rate = (took > 0) ? ((double) (1000 * 1000) * count / took) : 0.0;
-    out.format(" nmsgs= %d nobs = %d took %d msecs rate = %f msgs/msec\n", count, scan.getTotalObs(), took / (1000 * 1000), rate);
-    return scan.getTotalObs();
   }
 
   //////////////////////////////////////////////////////////////
 
   static void scanTimes(String filename) throws IOException {
     long start = System.nanoTime();
-    RandomAccessFile raf = new RandomAccessFile(filename, "r");
-    out.format("\nOpen %s size = %d Kb \n", raf.getLocation(), raf.length() / 1000);
+    try (RandomAccessFile raf = new RandomAccessFile(filename, "r")) {
+      out.format("\nOpen %s size = %d Kb \n", raf.getLocation(), raf.length() / 1000);
 
-    MessageScanner scan = new MessageScanner(raf);
-    int count = 0;
-    while (scan.hasNext()) {
-      Message m = scan.next();
-      if (m == null) continue;
-      //if (count == 0) new BufrDump2().dump(out, m);
+      MessageScanner scan = new MessageScanner(raf);
+      int count = 0;
+      while (scan.hasNext()) {
+        Message m = scan.next();
+        if (m == null) continue;
+        //if (count == 0) new BufrDump2().dump(out, m);
 
-      out.format(" %s time=%s\n", m.getHeader(), m.getReferenceTime());
-      count++;
+        out.format(" %s time=%s\n", m.getHeader(), m.getReferenceTime());
+        count++;
+      }
     }
-    raf.close();
   }
 
   //////////////////////////////////////////////////////////////
@@ -198,58 +198,58 @@ public class Scanner {
   static void scanMixedMessageTypes(String filename) throws IOException {
 
     //RandomAccessFile raf = new RandomAccessFile("C:\\data\\bufr\\edition3\\idd\\radiosonde\\SoundingVerticalRadiosonde4.bufr", "r");
-    RandomAccessFile raf = new RandomAccessFile(filename, "r");
-    out.format("\n-----\nOpen %s size = %d Kb \n", raf.getLocation(), raf.length() / 1000);
+    try (RandomAccessFile raf = new RandomAccessFile(filename, "r")) {
+      out.format("\n-----\nOpen %s size = %d Kb \n", raf.getLocation(), raf.length() / 1000);
 
-    MessageScanner scan = new MessageScanner(raf);
-    int count = 0;
-    while (scan.hasNext()) {
-      Message m = scan.next();
-      if (m == null) continue;
+      MessageScanner scan = new MessageScanner(raf);
+      int count = 0;
+      while (scan.hasNext()) {
+        Message m = scan.next();
+        if (m == null) continue;
 
-      List<String> desc = m.dds.getDescriptors();
-      String key = mixedSet.get(desc);
-      if (null == key) {
-        out.format(" new Message Type msg=%d <%s> ndesc=%d hashCode=%d\n", count, m.getHeader(), desc.size(), desc.hashCode());
-        m.getRootDataDescriptor();
-        m.dump(out);
-        mixedSet.put(desc, filename);
-      } else if (!key.equals(filename)) {
-        out.format(" msg type from file= %s, hashcode=%d\n", key, desc.hashCode());
+        List<String> desc = m.dds.getDescriptors();
+        String key = mixedSet.get(desc);
+        if (null == key) {
+          out.format(" new Message Type msg=%d <%s> ndesc=%d hashCode=%d\n", count, m.getHeader(), desc.size(), desc.hashCode());
+          m.getRootDataDescriptor();
+          m.dump(out);
+          mixedSet.put(desc, filename);
+        } else if (!key.equals(filename)) {
+          out.format(" msg type from file= %s, hashcode=%d\n", key, desc.hashCode());
+        }
+        count++;
       }
-      count++;
+      out.format("nmsgs= %d nobs = %d\n", count, scan.getTotalObs());
     }
-    raf.close();
-    out.format("nmsgs= %d nobs = %d\n", count, scan.getTotalObs());
   }
 
   //////////////////////////////////////////////////////////////
 
   static void scanMessageSizes(String filename, Formatter formatter) throws IOException {
-    RandomAccessFile raf = new RandomAccessFile(filename, "r");
-    out.format("\n-----\nOpen %s size = %d Kb \n", raf.getLocation(), raf.length() / 1000);
+    try (RandomAccessFile raf = new RandomAccessFile(filename, "r")) {
+      out.format("\n-----\nOpen %s size = %d Kb \n", raf.getLocation(), raf.length() / 1000);
 
-    MessageScanner scan = new MessageScanner(raf);
-    int count = 0;
-    while (scan.hasNext()) {
-      Message m = scan.next();
-      if (m == null) continue;
-      if (!m.isTablesComplete()) {
-        out.format("Message "+count+" INCOMPLETE TABLES%n");
-        count++;
-        break;
-      }
+      MessageScanner scan = new MessageScanner(raf);
+      int count = 0;
+      while (scan.hasNext()) {
+        Message m = scan.next();
+        if (m == null) continue;
+        if (!m.isTablesComplete()) {
+          out.format("Message " + count + " INCOMPLETE TABLES%n");
+          count++;
+          break;
+        }
 
-      DataDescriptor root = m.getRootDataDescriptor(); // make sure the dds has been formed
-      m.dumpHeader(out);
+        DataDescriptor root = m.getRootDataDescriptor(); // make sure the dds has been formed
+        m.dumpHeader(out);
 
-      m.calcTotalBits(formatter);
-      int nbitsCounted = m.getTotalBits();
-      int nbitsGiven = 8 * (m.dataSection.getDataLength() - 4);
+        m.calcTotalBits(formatter);
+        int nbitsCounted = m.getTotalBits();
+        int nbitsGiven = 8 * (m.dataSection.getDataLength() - 4);
 
-      boolean ok = Math.abs(m.getCountedDataBytes()- m.dataSection.getDataLength()) <= 1; // radiosondes dataLen not even number of bytes
+        boolean ok = Math.abs(m.getCountedDataBytes() - m.dataSection.getDataLength()) <= 1; // radiosondes dataLen not even number of bytes
 
-      if (!ok) out.format("*** BAD ");
+        if (!ok) out.format("*** BAD ");
         long last = m.dataSection.getDataPos() + m.dataSection.getDataLength();
         out.format("Message %d nds=%d compressed=%s vlen=%s countBits= %d givenBits=%d data start=0x%x end=0x%x",
                 count, m.getNumberDatasets(), m.dds.isCompressed(), root.isVarLength(),
@@ -261,10 +261,10 @@ public class Scanner {
         out.format(" extra=");
         showBytes(out, raf, m.dataSection.dataPos + m.getCountedDataBytes(), m.dataSection.dataLength - m.getCountedDataBytes());
       } */
-      count++;
+        count++;
+      }
+      out.format("nmsgs= %d nobs = %d\n", count, scan.getTotalObs());
     }
-    raf.close();
-    out.format("nmsgs= %d nobs = %d\n", count, scan.getTotalObs());
   }
 
   static private void showBytes(Formatter out, RandomAccessFile raf, long start, int count) throws IOException {
@@ -283,92 +283,92 @@ public class Scanner {
   static long file_size = 0;
 
   static void scanMessageTypes(String filename) throws IOException {
-    RandomAccessFile raf = new RandomAccessFile(filename, "r");
-    //out.format("\n-----\nOpen %s size = %d Kb \n", raf.getLocation(), raf.length() / 1000);
-    file_size += raf.length();
+    try (RandomAccessFile raf = new RandomAccessFile(filename, "r")) {
+      //out.format("\n-----\nOpen %s size = %d Kb \n", raf.getLocation(), raf.length() / 1000);
+      file_size += raf.length();
 
-    MessageScanner scan = new MessageScanner(raf);
-    int count = 0;
-    while (scan.hasNext()) {
+      MessageScanner scan = new MessageScanner(raf);
+      int count = 0;
+      while (scan.hasNext()) {
 
-      Message m = scan.next();
-      if (m == null) {
-        bad_msgs++;
-        continue;
-      }
-
-      // incomplete tables
-      try {
-        if (!m.isTablesComplete()) {
-          int[] nbad = badMap.get(m);
-          if (nbad == null) {
-            nbad = new int[1];
-            badMap.put(m, nbad);
-          }
-          nbad[0]++;
-          bad_tables++;
-          //continue; dont exclude 
+        Message m = scan.next();
+        if (m == null) {
+          bad_msgs++;
+          continue;
         }
-      } catch (UnsupportedOperationException e) {
-        m.dumpHeader(out);
-        bad_operation++;
-        continue;
-      }
 
-      // track desc to headers
-      String ttaaii = extractWMO(m.getHeader());
-      if (ttaaii == null) {
-        bad_wmo++;
-        continue;
-      }
+        // incomplete tables
+        try {
+          if (!m.isTablesComplete()) {
+            int[] nbad = badMap.get(m);
+            if (nbad == null) {
+              nbad = new int[1];
+              badMap.put(m, nbad);
+            }
+            nbad[0]++;
+            bad_tables++;
+            //continue; dont exclude
+          }
+        } catch (UnsupportedOperationException e) {
+          m.dumpHeader(out);
+          bad_operation++;
+          continue;
+        }
 
-      // map dds -> wmoheader
-      Map<String, Counter> keys = typeMap.get(m);
-      if (null == keys) {
-        //out.format("  new Descriptor Type msg %d ttaaii=%s hashCode=%d cat=%s\n",
-        //        count, ttaaii, m.hashCode(), m.getCategory());
-        //new BufrDump2().dump(out, m);
-        keys = new HashMap<String, Counter>();
-        keys.put(ttaaii, new Counter(ttaaii));
-        typeMap.put(m, keys);
-      }
-      Counter c = keys.get(ttaaii);
-      if (c == null) {
-        //out.format("  msg %d has different ttaaii = %s hashcode=%d cat=%s\n",
-        //        count, ttaaii, m.hashCode(), m.getCategory());
-        c = new Counter(ttaaii);
-        keys.put(ttaaii, c);
-      }
-      c.count++;
-      c.countObs += m.getNumberDatasets();
+        // track desc to headers
+        String ttaaii = extractWMO(m.getHeader());
+        if (ttaaii == null) {
+          bad_wmo++;
+          continue;
+        }
 
-      // map wmoheader to dds
-      List<Message> mtypes = headerMap.get(ttaaii);
-      if (mtypes == null) {
-        mtypes = new ArrayList<Message>();
-        headerMap.put(ttaaii, mtypes);
-        mtypes.add(m);
-      } else if (!mtypes.contains(m)) {
-        //out.format(" Different desc for header %s hashCode=%d prev hashcode=%d\n", ttaaii, desc.hashCode(), hdesc.hashCode());
-        mtypes.add(m);
-        total_different++;
-      }
+        // map dds -> wmoheader
+        Map<String, Counter> keys = typeMap.get(m);
+        if (null == keys) {
+          //out.format("  new Descriptor Type msg %d ttaaii=%s hashCode=%d cat=%s\n",
+          //        count, ttaaii, m.hashCode(), m.getCategory());
+          //new BufrDump2().dump(out, m);
+          keys = new HashMap<String, Counter>();
+          keys.put(ttaaii, new Counter(ttaaii));
+          typeMap.put(m, keys);
+        }
+        Counter c = keys.get(ttaaii);
+        if (c == null) {
+          //out.format("  msg %d has different ttaaii = %s hashcode=%d cat=%s\n",
+          //        count, ttaaii, m.hashCode(), m.getCategory());
+          c = new Counter(ttaaii);
+          keys.put(ttaaii, c);
+        }
+        c.count++;
+        c.countObs += m.getNumberDatasets();
 
-      // track header count
-      Counter hc = headerCount.get(ttaaii);
-      if (hc == null) {
-        hc = new Counter(ttaaii);
-        headerCount.put(ttaaii, hc);
-      }
-      hc.count++;
+        // map wmoheader to dds
+        List<Message> mtypes = headerMap.get(ttaaii);
+        if (mtypes == null) {
+          mtypes = new ArrayList<Message>();
+          headerMap.put(ttaaii, mtypes);
+          mtypes.add(m);
+        } else if (!mtypes.contains(m)) {
+          //out.format(" Different desc for header %s hashCode=%d prev hashcode=%d\n", ttaaii, desc.hashCode(), hdesc.hashCode());
+          mtypes.add(m);
+          total_different++;
+        }
 
-      count++;
+        // track header count
+        Counter hc = headerCount.get(ttaaii);
+        if (hc == null) {
+          hc = new Counter(ttaaii);
+          headerCount.put(ttaaii, hc);
+        }
+        hc.count++;
+
+        count++;
+      }
+      out.format(filename + " total_msgs= %d good=%d total_obs = %d\n", scan.getTotalMessages(), count, scan.getTotalObs());
+      total_msgs += scan.getTotalMessages();
+      good_msgs += count;
+      total_obs += scan.getTotalObs();
     }
-    raf.close();
-    out.format(filename+" total_msgs= %d good=%d total_obs = %d\n", scan.getTotalMessages(), count, scan.getTotalObs());
-    total_msgs += scan.getTotalMessages();
-    good_msgs += count;
-    total_obs += scan.getTotalObs();
   }
 
   static void showTypes(Formatter csv) throws IOException {
@@ -554,28 +554,28 @@ public class Scanner {
 
   static void writeUniqueDDS(String filename, WritableByteChannel wbc) throws IOException {
     System.out.printf("open %s ",filename);
-    RandomAccessFile raf = new RandomAccessFile(filename, "r");
+    try (RandomAccessFile raf = new RandomAccessFile(filename, "r")) {
 
-    MessageScanner scan = new MessageScanner(raf);
-    int count = 0;
-    while (scan.hasNext()) {
+      MessageScanner scan = new MessageScanner(raf);
+      int count = 0;
+      while (scan.hasNext()) {
 
-      Message m = scan.next();
-      if (m == null) {
-        bad_msgs++;
-        System.out.printf("Bad Message%n");
-        continue;
+        Message m = scan.next();
+        if (m == null) {
+          bad_msgs++;
+          System.out.printf("Bad Message%n");
+          continue;
+        }
+
+        if (!messSet.contains(m)) {
+          scan.writeCurrentMessage(wbc);
+          messSet.add(m);
+        }
+
+        count++;
       }
-
-      if (!messSet.contains(m)) {
-        scan.writeCurrentMessage(wbc);
-        messSet.add(m);
-      }
-
-      count++;
+      System.out.printf(" read  = %d%n ", count);
     }
-    raf.close();
-    System.out.printf(" read  = %d%n ", count);
 
   }
 
@@ -587,60 +587,60 @@ public class Scanner {
   static Map<Short, Counter> descMap = new HashMap<Short, Counter>();
 
   static void scanMessageDDS(String filename) throws IOException {
-    RandomAccessFile raf = new RandomAccessFile(filename, "r");
-    //out.format("\n-----\nOpen %s size = %d Kb \n", raf.getLocation(), raf.length() / 1000);
-    file_size += raf.length();
+    try (RandomAccessFile raf = new RandomAccessFile(filename, "r")) {
+      //out.format("\n-----\nOpen %s size = %d Kb \n", raf.getLocation(), raf.length() / 1000);
+      file_size += raf.length();
 
-    MessageScanner scan = new MessageScanner(raf);
-    int count = 0;
-    while (scan.hasNext()) {
+      MessageScanner scan = new MessageScanner(raf);
+      int count = 0;
+      while (scan.hasNext()) {
 
-      Message m = scan.next();
-      if (m == null) {
-        bad_msgs++;
-        continue;
-      }
-
-      // incomplete tables
-      try {
-        if (!m.isTablesComplete()) {
-          int[] nbad = badMap.get(m);
-          if (nbad == null) {
-            nbad = new int[1];
-            badMap.put(m, nbad);
-          }
-          nbad[0]++;
-          bad_tables++;
-          //continue;
+        Message m = scan.next();
+        if (m == null) {
+          bad_msgs++;
+          continue;
         }
-      } catch (UnsupportedOperationException e) {
-        m.dumpHeader(out);
-        bad_operation++;
-        continue;
+
+        // incomplete tables
+        try {
+          if (!m.isTablesComplete()) {
+            int[] nbad = badMap.get(m);
+            if (nbad == null) {
+              nbad = new int[1];
+              badMap.put(m, nbad);
+            }
+            nbad[0]++;
+            bad_tables++;
+            //continue;
+          }
+        } catch (UnsupportedOperationException e) {
+          m.dumpHeader(out);
+          bad_operation++;
+          continue;
+        }
+
+        String ttaaii = extractWMO(m.getHeader());
+
+        Counter c = messMap.get(m);
+        if (null == c) {
+          c = new Counter(ttaaii);
+          c.m = m;
+          messMap.put(m, c);
+
+          addDDS(ttaaii, m, m.getRootDataDescriptor());
+          addDesc(m, m.dds.getDescriptors());
+        }
+        c.count++;
+        c.countObs += m.getNumberDatasets();
+        c.countBytes += m.getMessageSize();
+
+        count++;
       }
-
-      String ttaaii = extractWMO(m.getHeader());
-
-      Counter c = messMap.get(m);
-      if (null == c) {
-        c = new Counter(ttaaii);
-        c.m = m;
-        messMap.put(m, c);
-
-        addDDS(ttaaii, m, m.getRootDataDescriptor());
-        addDesc(m, m.dds.getDescriptors());
-      }
-      c.count++;
-      c.countObs += m.getNumberDatasets();
-      c.countBytes += m.getMessageSize();
-
-      count++;
+      out.format("total_msgs= %d good=%d total_obs = %d\n", scan.getTotalMessages(), count, scan.getTotalObs());
+      total_msgs += scan.getTotalMessages();
+      good_msgs += count;
+      total_obs += scan.getTotalObs();
     }
-    raf.close();
-    out.format("total_msgs= %d good=%d total_obs = %d\n", scan.getTotalMessages(), count, scan.getTotalObs());
-    total_msgs += scan.getTotalMessages();
-    good_msgs += count;
-    total_obs += scan.getTotalObs();
   }
 
   static void addDDS( String ttaaii, Message m, DataDescriptor parent) {
@@ -765,122 +765,123 @@ public class Scanner {
   static void scanReader(String filein) throws IOException {
     Formatter f = new Formatter(System.out);
 
-    RandomAccessFile raf = new RandomAccessFile(filein, "r");
-    MessageScanner scan = new MessageScanner(raf);
-    while (scan.hasNext()) {
-      Message m = scan.next();
-      m.dumpHeader(out);
-      if (!m.dds.isCompressed()) {
-        MessageUncompressedDataReader reader = new MessageUncompressedDataReader();
-        reader.readData(null, m, raf, null, false, null);
-      } else {
-        MessageCompressedDataReader reader = new MessageCompressedDataReader();
-        reader.readData(null, m, raf, null, f);
-      }
+    try (RandomAccessFile raf = new RandomAccessFile(filein, "r")) {
+      MessageScanner scan = new MessageScanner(raf);
+      while (scan.hasNext()) {
+        Message m = scan.next();
+        m.dumpHeader(out);
+        if (!m.dds.isCompressed()) {
+          MessageUncompressedDataReader reader = new MessageUncompressedDataReader();
+          reader.readData(null, m, raf, null, false, null);
+        } else {
+          MessageCompressedDataReader reader = new MessageCompressedDataReader();
+          reader.readData(null, m, raf, null, f);
+        }
 
-      int nbitsGiven = 8 * (m.dataSection.getDataLength() - 4);
-      System.out.printf("nbits counted = %d expected=%d %n", m.msg_nbits, nbitsGiven);
-      System.out.printf("nbytes counted = %d expected=%d %n", m.getCountedDataBytes(), m.dataSection.getDataLength());
-      if (m.isTablesComplete() && !m.isBitCountOk())
-        System.out.printf("BAD BIT COUNT %n%n");
+        int nbitsGiven = 8 * (m.dataSection.getDataLength() - 4);
+        System.out.printf("nbits counted = %d expected=%d %n", m.msg_nbits, nbitsGiven);
+        System.out.printf("nbytes counted = %d expected=%d %n", m.getCountedDataBytes(), m.dataSection.getDataLength());
+        if (m.isTablesComplete() && !m.isBitCountOk())
+          System.out.printf("BAD BIT COUNT %n%n");
+      }
     }
   }
 
 
   // extract the msgno-th message to fileOut
   static void extractNthMessage(String filein, int msgno, String fileout) throws IOException {
-    FileOutputStream fos = new FileOutputStream(fileout);
-    WritableByteChannel wbc = fos.getChannel();
-
-    RandomAccessFile raf = new RandomAccessFile(filein, "r");
-    MessageScanner scan = new MessageScanner(raf);
-    int count = 0;
-    while (scan.hasNext()) {
-      Message m = scan.next();
-      if (msgno == count) {
-        scan.writeCurrentMessage(wbc);
-        wbc.close();
-        raf.close();
-        return;
+    try (RandomAccessFile raf = new RandomAccessFile(filein, "r");
+         FileOutputStream fos = new FileOutputStream(fileout);
+         WritableByteChannel wbc = fos.getChannel()) {
+      MessageScanner scan = new MessageScanner(raf);
+      int count = 0;
+      while (scan.hasNext()) {
+        Message m = scan.next();
+        if (msgno == count) {
+          scan.writeCurrentMessage(wbc);
+          wbc.close();
+          raf.close();
+          return;
+        }
+        count++;
       }
-      count++;
     }
   }
 
   // extract the message matching listHash
   static void extractMessageByListhash(String filein, int want, String fileout) throws IOException {
-    FileOutputStream fos = new FileOutputStream(fileout);
-    WritableByteChannel wbc = fos.getChannel();
+    try (RandomAccessFile raf = new RandomAccessFile(filein, "r");
+         FileOutputStream fos = new FileOutputStream(fileout);
+         WritableByteChannel wbc = fos.getChannel()) {
+      int count = 0;
+      MessageScanner scan = new MessageScanner(raf);
+      while (scan.hasNext()) {
+        Message m = scan.next();
+        int listHash = m.dds.getDataDescriptors().hashCode();
 
-    int count = 0;
-    RandomAccessFile raf = new RandomAccessFile(filein, "r");
-    MessageScanner scan = new MessageScanner(raf);
-    while (scan.hasNext()) {
-      Message m = scan.next();
-      int listHash = m.dds.getDataDescriptors().hashCode();
-
-      if (listHash == want) {
-        scan.writeCurrentMessage(wbc);
-        wbc.close();
-        raf.close();
-        System.out.printf("output %d from %s %n",count, filein);
-        return;
+        if (listHash == want) {
+          scan.writeCurrentMessage(wbc);
+          wbc.close();
+          raf.close();
+          System.out.printf("output %d from %s %n", count, filein);
+          return;
+        }
+        count++;
       }
-      count++;
     }
   }
 
   // extract n messages to fileOut
   static void extractNMessages(String filein, int n, String fileout) throws IOException {
-    FileOutputStream fos = new FileOutputStream(fileout);
-    WritableByteChannel wbc = fos.getChannel();
-
-    RandomAccessFile raf = new RandomAccessFile(filein, "r");
-    MessageScanner scan = new MessageScanner(raf);
-    int count = 0;
-    while (scan.hasNext() && (count < n)) {
-      Message m = scan.next();
+    try (RandomAccessFile raf = new RandomAccessFile(filein, "r");
+         FileOutputStream fos = new FileOutputStream(fileout);
+         WritableByteChannel wbc = fos.getChannel()) {
+      MessageScanner scan = new MessageScanner(raf);
+      int count = 0;
+      while (scan.hasNext() && (count < n)) {
+        Message m = scan.next();
         scan.writeCurrentMessage(wbc);
-      count++;
+        count++;
+      }
     }
-    wbc.close();
-    raf.close();
   }
 
   // extract the first message that contains the header string to fileOut
   static void extractFirstMessageWithHeader(String filein, String header, String fileout) throws IOException {
-    FileOutputStream fos = new FileOutputStream(fileout);
-    WritableByteChannel wbc = fos.getChannel();
 
-    RandomAccessFile raf = new RandomAccessFile(filein, "r");
-    MessageScanner scan = new MessageScanner(raf);
-    int count = 0;
-    while (scan.hasNext()) {
-      Message m = scan.next();
-      if (m.getHeader().contains(header)) {
-        scan.writeCurrentMessage(wbc);
-        wbc.close();
-        raf.close();
-        return;
+    try (RandomAccessFile raf = new RandomAccessFile(filein, "r");
+         FileOutputStream fos = new FileOutputStream(fileout);
+         WritableByteChannel wbc = fos.getChannel()) {
+
+      MessageScanner scan = new MessageScanner(raf);
+      int count = 0;
+      while (scan.hasNext()) {
+        Message m = scan.next();
+        if (m.getHeader().contains(header)) {
+          scan.writeCurrentMessage(wbc);
+          wbc.close();
+          raf.close();
+          return;
+        }
+        count++;
       }
-      count++;
     }
   }
 
     // extract all messages that contains the header string to fileOut
   static void extractAllWithHeader(String filein, Pattern p, WritableByteChannel wbc) throws IOException {
     System.out.println("extract "+filein);
-    RandomAccessFile raf = new RandomAccessFile(filein, "r");
-    MessageScanner scan = new MessageScanner(raf);
-    while (scan.hasNext()) {
-      Message m = scan.next();
-      Matcher matcher = p.matcher(m.getHeader());
-      if (matcher.matches()) {
-        scan.writeCurrentMessage(wbc);
-        System.out.println(" found match "+m.getHeader());
+    try (RandomAccessFile raf = new RandomAccessFile(filein, "r")) {
+      MessageScanner scan = new MessageScanner(raf);
+      while (scan.hasNext()) {
+        Message m = scan.next();
+        Matcher matcher = p.matcher(m.getHeader());
+        if (matcher.matches()) {
+          scan.writeCurrentMessage(wbc);
+          System.out.println(" found match " + m.getHeader());
+        }
       }
     }
-    raf.close();
   }
 
   static Formatter out = new Formatter(System.out);

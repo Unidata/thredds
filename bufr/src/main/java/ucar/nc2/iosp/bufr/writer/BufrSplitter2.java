@@ -71,25 +71,25 @@ public class BufrSplitter2 {
 
     // LOOK - needs to be a directory, or maybe an MFILE collection
     public void execute(String filename) throws IOException {
-      RandomAccessFile mraf = new RandomAccessFile(filename, "r");
-      MessageScanner scanner = new MessageScanner( mraf);
+      try (RandomAccessFile mraf = new RandomAccessFile(filename, "r")) {
+        MessageScanner scanner = new MessageScanner(mraf);
 
-      while(scanner.hasNext()) {
-        Message m = scanner.next();
-        if (m == null) continue;
-        total_msgs++;
-        if (m.getNumberDatasets() == 0) continue;
+        while (scanner.hasNext()) {
+          Message m = scanner.next();
+          if (m == null) continue;
+          total_msgs++;
+          if (m.getNumberDatasets() == 0) continue;
 
-        // LOOK check on tables complete etc ??
+          // LOOK check on tables complete etc ??
 
-        m.setRawBytes(scanner.getMessageBytes(m));
+          m.setRawBytes(scanner.getMessageBytes(m));
 
-        // decide what to do with the message
-        dispatcher.dispatch(m);
+          // decide what to do with the message
+          dispatcher.dispatch(m);
         }
 
-      mraf.close();
-      dispatcher.resetBufrTableMessages();
+        dispatcher.resetBufrTableMessages();
+      }
     }
 
     public void exit() {

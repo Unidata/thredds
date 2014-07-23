@@ -128,6 +128,11 @@ public class GribCdmIndex implements IndexReader {
 
     } catch (Throwable t) {
       logger.warn("GribCdmIndex.openCdmIndex failed on "+indexFilenameInCache, t);
+      if (raf != null) try {
+        raf.close();
+      } catch (IOException e) {
+        e.printStackTrace();
+      }
     }
 
     // clean up on failure

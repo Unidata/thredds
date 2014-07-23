@@ -311,37 +311,27 @@ public class Bufr2Xml {
     //String filename = "C:/temp/cache/uniqueMessages.bufr";
     String filename = "C:/data/formats/bufr/uniqueExamples.bufr";
     Message message = null;
-    RandomAccessFile raf = null;
-    OutputStream out = null;
     int size = 0;
+    int count = 0;
 
-
-    try {
-
-      int count = 0;
-      raf = new RandomAccessFile(filename, "r");
+    try (RandomAccessFile raf = new RandomAccessFile(filename, "r");
+         OutputStream out = new FileOutputStream("C:/data/formats/bufr/uniqueE/" + count + ".xml")) {
       MessageScanner scan = new MessageScanner(raf);
       while (scan.hasNext()) {
         message = scan.next();
         if (!message.isTablesComplete() || !message.isBitCountOk()) continue;
         byte[] mbytes = scan.getMessageBytesFromLast(message);
-        try {
-          out = new FileOutputStream("C:/data/formats/bufr/uniqueE/" + count + ".xml");
-          NetcdfFile ncfile = NetcdfFile.openInMemory("test", mbytes, "ucar.nc2.iosp.bufr.BufrIosp");
-          NetcdfDataset ncd = new NetcdfDataset(ncfile);
-          new Bufr2Xml(message, ncd, out, true);
-          out.close();
-          count++;
-          size += message.getMessageSize();
-        } catch (Throwable e) {
-          // e.printStackTrace();
-        }
+        NetcdfFile ncfile = NetcdfFile.openInMemory("test", mbytes, "ucar.nc2.iosp.bufr.BufrIosp");
+        NetcdfDataset ncd = new NetcdfDataset(ncfile);
+        new Bufr2Xml(message, ncd, out, true);
+        out.close();
+        count++;
+        size += message.getMessageSize();
       }
 
-    } finally {
-      if (raf != null) raf.close();
-      if (out != null) out.close();
-    }
+      } catch (Throwable e) {
+        e.printStackTrace();
+      }
 
     System.out.printf("total size= %f Kb %n", .001 * size);
   }

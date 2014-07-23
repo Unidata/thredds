@@ -79,12 +79,8 @@ public class BufrCdmIndex {
 
   public static BufrCdmIndex readIndex(String indexFilename) throws IOException {
     BufrCdmIndex index =  new BufrCdmIndex();
-    RandomAccessFile raf = null;
-    try {
-       raf = new RandomAccessFile(indexFilename, "r");
+    try (RandomAccessFile raf = new RandomAccessFile(indexFilename, "r")) {
        index.readIndex(raf);
-    } finally {
-      if (raf != null) raf.close();
     }
     return index;
   }

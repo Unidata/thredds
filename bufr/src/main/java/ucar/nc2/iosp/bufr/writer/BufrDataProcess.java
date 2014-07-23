@@ -124,9 +124,7 @@ public class BufrDataProcess {
 
   public int scanBufrFile(String filename, Counter total) throws Exception {
     int count = 0;
-    RandomAccessFile raf = null;
-    try {
-      raf = new RandomAccessFile(filename, "r");
+    try (RandomAccessFile raf = new RandomAccessFile(filename, "r")) {
 
       MessageScanner scan = new MessageScanner(raf);
       while (scan.hasNext()) {
@@ -145,9 +143,6 @@ public class BufrDataProcess {
           indent.setIndentLevel(0);
         }
       }
-    } finally {
-      if (raf != null)
-        raf.close();
     }
     return count;
   }

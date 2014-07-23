@@ -110,39 +110,39 @@ public class Bufr2Xml {
 
   int scan(String filename) throws IOException {
     long start = System.nanoTime();
-    RandomAccessFile raf = new RandomAccessFile(filename, "r");
-    out.format("\nOpen %s size = %d Kb \n", raf.getLocation(), raf.length() / 1000);
+    try (RandomAccessFile raf = new RandomAccessFile(filename, "r")) {
+      out.format("\nOpen %s size = %d Kb \n", raf.getLocation(), raf.length() / 1000);
 
-    MessageScanner scan = new MessageScanner(raf);
-    int count = 0;
-    int bad = 0;
-    while (scan.hasNext()) {
-      Message m = scan.next();
-      if (m == null) continue;
-      //if (count == 0) new BufrDump2().dump(out, m);
+      MessageScanner scan = new MessageScanner(raf);
+      int count = 0;
+      int bad = 0;
+      while (scan.hasNext()) {
+        Message m = scan.next();
+        if (m == null) continue;
+        //if (count == 0) new BufrDump2().dump(out, m);
 
-      if (!m.isTablesComplete()) {
-        out.format("**INCOMPLETE%n");
-        bad++;
-        continue;
+        if (!m.isTablesComplete()) {
+          out.format("**INCOMPLETE%n");
+          bad++;
+          continue;
+        }
+
+        int nbitsCounted = m.getTotalBits();
+        if (!(Math.abs(m.getCountedDataBytes() - m.dataSection.getDataLength()) <= 1)) {
+          out.format("**BitCount Fails expect=%d != dataLength=%d%n", m.getCountedDataBytes(), m.dataSection.getDataLength());
+          bad++;
+          continue;
+        }
+
+        byte[] mbytes = scan.getMessageBytesFromLast(m);
+
+        NetcdfFile ncfile = NetcdfFile.openInMemory("test", mbytes);
+        NetcdfDataset ncd = new NetcdfDataset(ncfile);
+
+        writeMessage(m, ncd);
+        count++;
       }
-
-      int nbitsCounted = m.getTotalBits();
-      if (!(Math.abs(m.getCountedDataBytes()- m.dataSection.getDataLength()) <= 1)) {
-        out.format("**BitCount Fails expect=%d != dataLength=%d%n", m.getCountedDataBytes(), m.dataSection.getDataLength());
-        bad++;
-        continue;
-      }
-
-      byte[] mbytes = scan.getMessageBytesFromLast(m);
-
-      NetcdfFile ncfile = NetcdfFile.openInMemory("test", mbytes);
-      NetcdfDataset ncd = new NetcdfDataset(ncfile);
-
-      writeMessage(m, ncd);
-      count++;
     }
-    raf.close();
 
     long took = (System.nanoTime() - start);
     double rate = (took > 0) ? ((double) (1000 * 1000) * count / took) : 0.0;

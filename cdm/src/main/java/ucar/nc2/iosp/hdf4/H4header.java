@@ -2148,16 +2148,18 @@ public class H4header {
   private static boolean showFile = true;
 
   static void testPelim(String filename) throws IOException {
-    RandomAccessFile raf = new RandomAccessFile(filename, "r");
-    NetcdfFile ncfile = new MyNetcdfFile();
-    H4header header = new H4header();
-    header.read(raf, ncfile);
-    if (showFile) System.out.println(ncfile);
+    try (RandomAccessFile raf = new RandomAccessFile(filename, "r")) {
+      NetcdfFile ncfile = new MyNetcdfFile();
+      H4header header = new H4header();
+      header.read(raf, ncfile);
+      if (showFile) System.out.println(ncfile);
+    }
   }
 
   static void test(String filename) throws IOException {
-    NetcdfFile ncfile = NetcdfFile.open(filename);
-    if (showFile) System.out.println(ncfile);
+    try (NetcdfFile ncfile = NetcdfFile.open(filename)) {
+      if (showFile) System.out.println(ncfile);
+    }
   }
 
   static void testTagid(short tag, short refno) throws IOException {

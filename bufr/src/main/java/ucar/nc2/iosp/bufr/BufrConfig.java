@@ -638,13 +638,11 @@ public class BufrConfig {
 
     String filename = "G:/work/manross/split/872d794d.bufr";
     //String filename = "Q:/cdmUnitTest/formats/bufr/US058MCUS-BUFtdp.SPOUT_00011_buoy_20091101021700.bufr";
-    RandomAccessFile raf = new RandomAccessFile(filename, "r");
-    BufrConfig config = BufrConfig.scanEntireFile(raf);
-
-    Formatter out = new Formatter();
-    config.show(out);
-    System.out.printf("%s%n", out);
-
-    raf.close();
+    try (RandomAccessFile raf = new RandomAccessFile(filename, "r")) {
+      BufrConfig config = BufrConfig.scanEntireFile(raf);
+      Formatter out = new Formatter();
+      config.show(out);
+      System.out.printf("%s%n", out);
+    }
   }
 }

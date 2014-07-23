@@ -83,9 +83,16 @@ public abstract class PartitionCollection extends GribCollection {
 
   static private final ucar.nc2.util.cache.FileFactory collectionFactory = new FileFactory() {
     public FileCacheable open(String location, int buffer_size, CancelTask cancelTask, Object iospMessage) throws IOException {
-      RandomAccessFile raf = new RandomAccessFile(location, "r");
-      Partition p = (Partition) iospMessage;
-      return GribCdmIndex.openGribCollectionFromIndexFile(raf, p.getConfig(), true, p.getLogger()); // dataOnly
+      RandomAccessFile raf = null;
+      try {
+        raf = new RandomAccessFile(location, "r");
+        Partition p = (Partition) iospMessage;
+        return GribCdmIndex.openGribCollectionFromIndexFile(raf, p.getConfig(), true, p.getLogger()); // dataOnly
+      } catch (Throwable t) {
+        if (raf != null)
+          raf.close();
+        throw t;
+      }
     }
   };
 
