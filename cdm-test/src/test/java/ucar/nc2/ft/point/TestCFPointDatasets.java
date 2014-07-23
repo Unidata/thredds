@@ -36,9 +36,15 @@ package ucar.nc2.ft.point;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
+import ucar.nc2.FileWriter2;
+import ucar.nc2.NetcdfFile;
+import ucar.nc2.NetcdfFileWriter;
 import ucar.nc2.constants.FeatureType;
+import ucar.nc2.dataset.NetcdfDataset;
 import ucar.unidata.test.util.TestDir;
 
+import java.io.File;
+import java.io.FilenameFilter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -178,5 +184,34 @@ public class TestCFPointDatasets {
     assert countExpected == test.checkPointDataset(location, ftype, show);
   }
 
+    // Convert all NCML files in CFpointObs_topdir to NetCDF-3 files.
+    public static void main(String[] args) throws IOException {
+        File examplesDir = new File(CFpointObs_topdir);
+        File convertedDir = new File(examplesDir, "converted");
+        convertedDir.mkdirs();
 
+        for (File inputFile : examplesDir.listFiles(new NcmlFilenameFilter())) {
+            String inputFilePath = inputFile.getCanonicalPath();
+            String outputFileName = inputFile.getName().substring(0, inputFile.getName().length() - 2);
+            String outputFilePath = new File(convertedDir, outputFileName).getCanonicalPath();
+            System.out.printf("Writing %s to %s.%n", inputFilePath, outputFilePath);
+
+            try (NetcdfFile ncfileIn = NetcdfDataset.openFile(inputFilePath, null)) {
+                NetcdfFileWriter.Version version = NetcdfFileWriter.Version.netcdf3;
+                FileWriter2 writer = new FileWriter2(ncfileIn, outputFilePath, version, null);
+
+                NetcdfFile ncfileOut = writer.write(null);
+                if (ncfileOut != null) {
+                    ncfileOut.close();
+                }
+            }
+        }
+    }
+
+    private static class NcmlFilenameFilter implements FilenameFilter {
+        @Override
+        public boolean accept(File dir, String name) {
+            return name.endsWith("ncml");
+        }
+    }
 }
