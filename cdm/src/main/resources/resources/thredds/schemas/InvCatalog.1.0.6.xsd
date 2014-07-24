@@ -146,6 +146,7 @@
       <xsd:complexContent>
         <xsd:extension base="DatasetType">
           <xsd:attributeGroup ref="XLink"/>
+          <xsd:attribute name="useRemoteCatalogService" type="xsd:boolean"/>
         </xsd:extension>
       </xsd:complexContent>
     </xsd:complexType>
