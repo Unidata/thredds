@@ -64,6 +64,8 @@ import ucar.nc2.constants.FeatureType;
 
 public class InvCatalogRef extends InvDatasetImpl {
   private String href;
+  private Boolean useRemoteCatalogService;
+
   private InvDatasetImpl proxy = null; // top dataset of referenced catalog
   private URI uri = null;
   private String errMessage = null;
@@ -82,6 +84,22 @@ public class InvCatalogRef extends InvDatasetImpl {
     super(parent, name);
     this.href = href.trim();
   }
+
+  /**
+   * Constructor.
+   *
+   * @param parent : parent dataset
+   * @param name  : display name of collection
+   * @param href   : URL to another catalog
+   * @param useRemoteCatalogService : force catalogRef to go through the remoteCatalogService
+   */
+  public InvCatalogRef(InvDatasetImpl parent, String name, String href, Boolean useRemoteCatalogService) {
+    super(parent, name);
+    this.href = href.trim();
+    this.useRemoteCatalogService = useRemoteCatalogService;
+  }
+
+  public Boolean useRemoteCatalogService() { return useRemoteCatalogService; }
 
   /**
    * @return Xlink Href, as a String, unresolved
