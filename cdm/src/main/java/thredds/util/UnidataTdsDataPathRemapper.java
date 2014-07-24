@@ -24,39 +24,6 @@ import java.util.List;
  */
 public class UnidataTdsDataPathRemapper {
 
-    private static InputStream getInputStream(String resourceName, Class originClass) {
-
-        InputStream s;
-        while (originClass != null) {
-            s = originClass.getResourceAsStream(resourceName);
-            if (s != null) {
-                break;
-            }
-            originClass = originClass.getSuperclass();
-        }
-
-        // Try class loader to get resource
-        ClassLoader cl = UnidataTdsDataPathRemapper.class.getClassLoader();
-        s = cl.getResourceAsStream(resourceName);
-        if (s != null) {
-            return s;
-        }
-
-        //Try the file system
-        File f = new File(resourceName);
-        if (f.exists()) {
-            try {
-                s = new FileInputStream(f);
-            } catch (Exception e) {
-            }
-        }
-        if (s != null) {
-            return s;
-        }
-
-        return s;
-    }
-
     private static HashMap<String, Remapper> map;
 
     private void initMap() {
@@ -118,7 +85,9 @@ public class UnidataTdsDataPathRemapper {
     private List<UrlRemapperBean> readUrlRemapFile(String path) {
         java.util.List<UrlRemapperBean> beans = new ArrayList<UrlRemapperBean>(1000);
 
-        try (InputStream is = getInputStream(path, null)) {
+        ClassLoader cl = this.getClass().getClassLoader();
+
+        try (InputStream is = cl.getResourceAsStream(path)) {
 
             if (is == null) {
                 System.out.println("Cant read file " + path);
@@ -245,21 +214,5 @@ public class UnidataTdsDataPathRemapper {
         public String getOldUrl() {
             return oldUrl;
         }
-    }
-
-    public static void main(String[] args) throws IOException {
-        UnidataTdsDataPathRemapper u = new UnidataTdsDataPathRemapper();
-
-        List<String> result1 = u.getMappedUrlPaths("fmrc/NCEP/GFS/Alaska_191km/files/");
-
-        assert result1.size() == 1;
-        assert result1.get(0).equals( "grib/NCEP/GFS/Alaska_191km/files/");
-
-        System.out.println(result1.toString());
-
-        List<String> result2 = u.getMappedUrlPaths("fmrc/NCEP/GFS/Alaska_191km/files/", "files");
-        assert result1 == result2;
-
-        System.out.println(result2.toString());
     }
 }
