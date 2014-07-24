@@ -98,7 +98,7 @@ public class RemoteCatalogControllerTest extends AbstractCatalogServiceTest{
 		catUriString = "http://thredds.ucar.edu/thredds/catalog/grib/NCEP/NAM/CONUS_80km/catalog.xml";
 		request.setParameter(parameterNameCatalog, catUriString);
 		request.setParameter(parameterNameCommand, command);
-		request.setParameter(parameterNameDatasetId, "grib/NCEP/NAM/CONUS_80km/best");
+		request.setParameter(parameterNameDatasetId, "grib/NCEP/NAM/CONUS_80km/Best");
 		request.setParameter(parameterNameHtmlView, htmlView);
 		request.setParameter(parameterNameVerbose, verbose);
 		

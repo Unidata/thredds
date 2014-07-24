@@ -95,7 +95,7 @@ public abstract class InvCatalog {
   /**
    * Find a contained dataset by its ID.
    *
-   * @param id : dataset ID
+   * @param id : dataset ID, case sensitive
    * @return InvDataset or null if not found.
    */
   public InvDataset findDatasetByID(String id) {
