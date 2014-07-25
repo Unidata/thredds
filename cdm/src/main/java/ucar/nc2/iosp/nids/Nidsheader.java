@@ -1989,6 +1989,9 @@ class Nidsheader{
         bos.getDouble(); // skip 8 bytes
         List aa = parseParameters(bos);   // do nothing
         List cc = parseComponents(bos);   // assuming only radial component
+        if (cc == null) {
+            throw new IOException("Error reading components for radial data");
+        }
         int num_radials = (Integer)cc.get(1);
         int num_bin = (Integer)cc.get(0);
         float rangeToFirstBin = (Float)cc.get(2);
