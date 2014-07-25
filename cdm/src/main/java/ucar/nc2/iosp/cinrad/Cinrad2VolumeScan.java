@@ -615,24 +615,24 @@ public class Cinrad2VolumeScan {
     boolean lookForHeader = false;
 
     // gotta make it
-    RandomAccessFile raf = new RandomAccessFile(ufilename, "r");
-    raf.order(RandomAccessFile.LITTLE_ENDIAN); //.BIG_ENDIAN);
-    raf.seek(0);
-    byte[] b = new byte[8];
-    raf.read(b);
-    String test = new String(b);
-    if (test.equals(Cinrad2VolumeScan.ARCHIVE2) || test.equals(Cinrad2VolumeScan.AR2V0001)) {
-      System.out.println("--Good header= " + test);
-      raf.seek(24);
-    } else {
-      System.out.println("--No header ");
-      lookForHeader = true;
+    try (RandomAccessFile raf = new RandomAccessFile(ufilename, "r")) {
+      raf.order(RandomAccessFile.LITTLE_ENDIAN); //.BIG_ENDIAN);
       raf.seek(0);
-    }
+      byte[] b = new byte[8];
+      raf.read(b);
+      String test = new String(b);
+      if (test.equals(Cinrad2VolumeScan.ARCHIVE2) || test.equals
+             (Cinrad2VolumeScan.AR2V0001)) {
+        System.out.println("--Good header= " + test);
+        raf.seek(24);
+      } else {
+        System.out.println("--No header ");
+        lookForHeader = true;
+        raf.seek(0);
+      }
 
-    boolean eof = false;
-    int numCompBytes;
-    try {
+      boolean eof = false;
+      int numCompBytes;
 
       while (!eof) {
 
@@ -668,11 +668,11 @@ public class Cinrad2VolumeScan {
 
         raf.skipBytes(numCompBytes);
       }
+      return raf.getFilePointer();
     } catch (EOFException e) {
       e.printStackTrace();
     }
-
-    return raf.getFilePointer();
+    return 0;
   }
 
   /**
