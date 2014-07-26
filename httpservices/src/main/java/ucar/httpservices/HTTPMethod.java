@@ -482,7 +482,9 @@ public class HTTPMethod
             try {
                 Charset cset = Charset.forName(charset);
                 content = EntityUtils.toString(response.getEntity(), cset);
-            } catch (Exception e) {/*ignore*/}
+            } catch (Exception e) {
+                throw new IllegalArgumentException(e.getMessage());
+            }
         close();//getting the response will disallow later stream
         return content;
     }

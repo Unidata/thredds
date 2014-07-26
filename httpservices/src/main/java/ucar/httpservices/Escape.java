@@ -112,8 +112,10 @@ public class Escape
    private static String escapeString(String in, String allowable)
    {return xescapeString(in,allowable,_URIEscape,false);}
 
+   /*unused
    private static String escapeString(String in, String allowable, char esc)
    {return xescapeString(in,allowable,esc,false);}
+   */
 
     /**
      * Given a string that contains WWW escape sequences, translate those escape
@@ -162,8 +164,10 @@ public class Escape
     private static String unescapeString(String in)
     {return xunescapeString(in, _URIEscape,false);}
 
+    /*unused
     private static String unescapeString(String in, char escape)
     {return xunescapeString(in, escape,false);}
+    */
 
     static final byte hexa = (byte)'a';
     static final byte hexf = (byte)'f';
@@ -191,7 +195,7 @@ public class Escape
      static private final Pattern p
             = Pattern.compile("([\\w]+)://([.\\w]+(:[\\d]+)?)([/][^?#])?([?][^#]*)?([#].*)?");
 
-     public static String escapeURL(String url)
+     public static String escapeURL(String surl)
      {
         String protocol = null;
         String authority = null;
@@ -200,7 +204,7 @@ public class Escape
         String fragment = null;
         if(false) {
             // We split the url ourselves to minimize character dependencies
-            Matcher m = p.matcher(url);
+            Matcher m = p.matcher(surl);
             boolean match = m.matches();
             if(!match) return null;
             protocol = m.group(1);
@@ -210,7 +214,7 @@ public class Escape
             fragment = m.group(5);
         } else {// faster, but may not work quite right
             URL u = null;
-            try {u = new URL(url);} catch (MalformedURLException e) {
+            try {u = new URL(surl);} catch (MalformedURLException e) {
                 return null;
             }
             protocol = u.getProtocol();
@@ -220,22 +224,29 @@ public class Escape
             fragment = u.getRef();
         }
         // Reassemble
-        url = protocol + "://" + authority;
+        StringBuilder url = new StringBuilder();
+        url.append(protocol);
+        url.append("://");
+        url.append(authority);
         if(path != null && path.length() > 0) {
             // Encode pieces between '/'
             String pieces[] = path.split("[/]",-1);
             for(int i=0;i<pieces.length;i++)  {
                 String p = pieces[i];
                 if(p == null) p = "";
-                if(i > 0) url += "/";
-                url += urlEncode(p);
+                if(i > 0) url.append("/");
+                url.append(urlEncode(p));
             }
         }
-        if(query != null && query.length() > 0)
-            url += ("?"+escapeURLQuery(query));
-        if(fragment != null && fragment.length() > 0)
-            url += ("#"+urlEncode(fragment));
-        return url;
+        if(query != null && query.length() > 0) {
+            url.append("?");
+            url.append(escapeURLQuery(query));
+        }
+        if(fragment != null && fragment.length() > 0) {
+            url.append("#");
+            url.append(urlEncode(fragment));
+        }
+        return url.toString();
      }
 
      static int nextpiece(String s, int index, String sep)

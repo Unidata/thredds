@@ -88,7 +88,6 @@ public class HTTPCachingProvider implements CredentialsProvider
     // Instance variables
 
     protected HTTPAuthStore store = null;
-    protected int retryCount = 0;
     protected AuthScope authscope = null; // for verification
     protected String principal = null;
 
@@ -100,7 +99,6 @@ public class HTTPCachingProvider implements CredentialsProvider
         this.store = store;
         this.authscope = authscope;
         this.principal = principal;
-        this.retryCount = MAX_RETRIES;
     }
 
     //////////////////////////////////////////////////
@@ -235,9 +233,13 @@ public class HTTPCachingProvider implements CredentialsProvider
         Triple p = null;
         Credentials old = null;
 
-        int index = HTTPCachingProvider.cache.indexOf(scope);
-        if(index >= 0) {
-            p = HTTPCachingProvider.cache.get(index);
+        for(Triple t: HTTPCachingProvider.cache) {
+            if(t.scope.equals(scope))  {
+                p = t;
+                break;
+            }
+        }
+        if(p != null) {
             old = p.creds;
             p.creds = creds;
         } else {
