@@ -32,15 +32,6 @@
  */
 package thredds.server.config;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-
-import javax.servlet.RequestDispatcher;
-import javax.servlet.ServletContext;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.DisposableBean;
@@ -51,19 +42,22 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 import org.springframework.web.context.ServletContextAware;
 import org.springframework.web.util.Log4jWebConfigurer;
-
 import thredds.catalog.InvDatasetFeatureCollection;
 import thredds.catalog.InvDatasetScan;
 import thredds.inventory.CollectionUpdater;
 import thredds.servlet.ServletUtil;
 import thredds.servlet.ThreddsConfig;
-import thredds.util.filesource.BasicDescendantFileSource;
-import thredds.util.filesource.BasicWithExclusionsDescendantFileSource;
-import thredds.util.filesource.ChainedFileSource;
-import thredds.util.filesource.DescendantFileSource;
-import thredds.util.filesource.FileSource;
+import thredds.util.filesource.*;
 import ucar.nc2.util.IO;
 import ucar.unidata.util.StringUtil2;
+
+import javax.servlet.RequestDispatcher;
+import javax.servlet.ServletContext;
+import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * TDS context implements ServletContextAware so it gets a ServletContext and performs most initial THREDDS set up:
@@ -320,9 +314,12 @@ public final class TdsContext implements ServletContextAware, InitializingBean, 
         throw new IllegalStateException(msg);
       }
     }
-    // If the content directory doesn't exist, try to copy startup content directory.
-    if (!this.contentDirectory.exists()) {
+
+    // If we're deploying for the first time, try to copy startup content directory.
+    if (isFirstDeployment(contentDirectory)) {
       try {
+        logServerStartup.info("Initial TDS deployment. Copying conents of {} to {}.",
+                this.startupContentDirectory.getPath(), this.contentDirectory.getPath());
         IO.copyDirTree(this.startupContentDirectory.getPath(), this.contentDirectory.getPath());
       } catch (IOException e) {
         String tmpMsg = "Content directory does not exist and could not be created";
@@ -365,8 +362,14 @@ public final class TdsContext implements ServletContextAware, InitializingBean, 
 
     // read in persistent user-defined params from threddsConfig.xml
     File tdsConfigFile = this.contentDirSource.getFile(this.getTdsConfigFileName());
-    String tdsConfigFilename = tdsConfigFile != null ? tdsConfigFile.getPath() : "";
-    ThreddsConfig.init(tdsConfigFilename);
+    if (tdsConfigFile == null) {
+      tdsConfigFile = new File(this.contentDirSource.getRootDirectory(), this.getTdsConfigFileName());
+      String msg = "TDS configuration file doesn't exist: " + tdsConfigFile;
+      logServerStartup.error("TdsContext.init(): " + msg);
+      throw new IllegalStateException(msg);
+    }
+
+    ThreddsConfig.init(tdsConfigFile.getPath());
 
     this.publicContentDirectory = new File(this.contentDirectory, "public");
     if (!publicContentDirectory.exists()) {
@@ -423,6 +426,29 @@ public final class TdsContext implements ServletContextAware, InitializingBean, 
     tdsConfigMapper.setHtmlConfig(this.htmlConfig);
     tdsConfigMapper.setWmsConfig(this.wmsConfig);
     tdsConfigMapper.init(this);
+  }
+
+  /**
+   * Tries to determine whether we're deploying for the first time. We used to simply be able to check for the
+   * presence of {@code contentDirectory}. But now we're using log4j, which runs <b>before</b> TDS init and creates a
+   * directory at {@code contentDirectory/logs}. So now, to determine whether we're deploying for the first time,
+   * we have to check whether "logs/" is the ONLY file currently in {@code contentDirectory}.
+   *
+   * @param contentDirectory the TDS content directory.
+   * @return  {@code true} if we're <i>probably</i> deploying for the first time.
+   */
+  private static boolean isFirstDeployment(File contentDirectory) {
+    if (!contentDirectory.exists()) {
+      return true;
+    }
+
+    File[] contents = contentDirectory.listFiles();
+    if (contents.length != 1) {
+      return false;
+    }
+
+    File content = contents[0];
+    return content.isDirectory() && content.getName().equals("logs");
   }
 
   /**
