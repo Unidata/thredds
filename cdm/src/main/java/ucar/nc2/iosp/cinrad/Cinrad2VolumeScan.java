@@ -146,7 +146,13 @@ public class Cinrad2VolumeScan {
         } else {
           // nope, gotta uncompress it
           uraf = uncompress(raf, uncompressedFile.getPath(), debug);
-          uraf.flush();
+          try {
+              uraf.flush();
+          } catch (IOException e) {
+              uraf.close();
+              throw e;
+          }
+
           if (debug) log.debug("flushed uncompressed file= " + uncompressedFile.getPath());
         }
         // switch to uncompressed file
@@ -604,6 +610,9 @@ public class Cinrad2VolumeScan {
       }
     } catch (EOFException e) {
       e.printStackTrace();
+    } catch (Exception e) {
+      dout2.close();
+      throw e;
     }
 
     dout2.flush();
