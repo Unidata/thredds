@@ -238,24 +238,28 @@ public class NetcdfCFWriter {
 
 			GridDatatype grid = gds.findGridDatatype(gridName);
 			GridCoordSystem gcsOrg = grid.getCoordinateSystem();
+			LatLonRect gridBB = gcsOrg.getLatLonBoundingBox();
 			CoordinateAxis1DTime timeAxis = gcsOrg.getTimeAxis1D();
 			CoordinateAxis1D vertAxis = gcsOrg.getVerticalAxis();
 			boolean global = gcsOrg.isGlobalLon();
 
-			// make subset if needed
+                        // make subset if needed
 			Range timeRange = makeTimeRange(dateRange, timeAxis, stride_time);
 			Range zRangeUse = makeVerticalRange(zRange, vertAxis);
 
 			if ((null != timeRange) || (zRangeUse != null) || (llbb != null) || (horizStride > 1)) {
 				grid = grid.makeSubset(timeRange, zRangeUse, llbb, 1, horizStride, horizStride);
-
-                LatLonRect gridBB = grid.getCoordinateSystem().getLatLonBoundingBox();
-                if (resultBB == null)
-                    resultBB = gridBB;
-                else
-                    resultBB.extend(gridBB);
-
-            }
+				LatLonRect subsetGridBB = grid.getCoordinateSystem().getLatLonBoundingBox();
+				if (resultBB == null)
+					resultBB = subsetGridBB;
+				else
+					resultBB.extend(subsetGridBB);
+            } else {
+				if (resultBB == null)
+					resultBB = gridBB;
+				else
+					resultBB.extend(gridBB);
+			}
 
 
 			Variable gridV = grid.getVariable();
