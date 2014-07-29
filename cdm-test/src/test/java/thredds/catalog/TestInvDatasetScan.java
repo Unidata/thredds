@@ -48,11 +48,9 @@ import java.net.URI;
 import java.net.URISyntaxException;
 
 /**
- * A description
- * <p/>
- * User: edavis
- * Date: Dec 13, 2004
- * Time: 1:00:42 PM
+ * Misc tests on InvDatasetScan
+ * @author edavis
+ * @since Dec 13, 2004
  */
 public class TestInvDatasetScan
 {
@@ -91,12 +89,10 @@ public class TestInvDatasetScan
   public void setupResultsDirectory() {
     expectedResultsDir = new File( "src/test/data/thredds/catalog" );
     //expectedResultsDir = new File( TestDir.cdmLocalTestDataDir, configResourcePath );
-    assertTrue( "Directory [" + expectedResultsDir.getPath() + "] does not exist.",
-                expectedResultsDir.exists() );
+    assertTrue( "Directory [" + expectedResultsDir.getPath() + "] does not exist.", expectedResultsDir.exists() );
 
     dsScanTmpDir = new File( TestDir.temporaryLocalDataDir );
-    assertTrue(  "Directory [" + dsScanTmpDir.getPath() + "] does not exist.",
-                 dsScanTmpDir.exists() );
+    assertTrue(  "Directory [" + dsScanTmpDir.getPath() + "] does not exist.", dsScanTmpDir.exists() );
   }
 
   @Test

@@ -364,24 +364,18 @@ public class InvDatasetImpl extends InvDataset {
     List<InvMetadata> whatsLeft = new ArrayList<>();
 
     // transfer all non-inherited thredds metadata to tm
+    // transfer all inherited thredds metadata to tmi
     Iterator iter = tm.metadata.iterator();
     while (iter.hasNext()) {
       InvMetadata m = (InvMetadata) iter.next();
       if (m.isThreddsMetadata() && !m.isInherited() && !m.hasXlink()) {
         ThreddsMetadata nested = m.getThreddsMetadata();
         tm.add(nested, false);
-      } else {
-        whatsLeft.add(m);
-      }
-    }
 
-    // transfer all inherited thredds metadata to tmi
-    iter = tm.metadata.iterator();
-    while (iter.hasNext()) {
-      InvMetadata m = (InvMetadata) iter.next();
-      if (m.isThreddsMetadata() && m.isInherited() && !m.hasXlink()) {
+      } else if (m.isThreddsMetadata() && m.isInherited() && !m.hasXlink()) {
         ThreddsMetadata nested = m.getThreddsMetadata();
         tmi.add(nested, true);
+
       } else {
         whatsLeft.add(m);
       }
