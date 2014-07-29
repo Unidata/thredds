@@ -39,10 +39,7 @@ import ucar.unidata.util.StringUtil2;
 
 import java.io.*;
 import java.net.*;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.Formatter;
+import java.util.*;
 import java.util.zip.GZIPInputStream;
 import java.nio.channels.FileChannel;
 import java.nio.ByteBuffer;
@@ -568,19 +565,7 @@ public class IO {
       }
 
       if (showHeaders) {
-        System.out.println("\nREQUEST Properties for " + urlString + ": ");
-        Map reqs = connection.getRequestProperties();
-        Iterator reqIter = reqs.keySet().iterator();
-        while (reqIter.hasNext()) {
-          String key = (String) reqIter.next();
-          java.util.List values = (java.util.List) reqs.get(key);
-          System.out.print(" " + key + ": ");
-          for (int i = 0; i < values.size(); i++) {
-            String v = (String) values.get(i);
-            System.out.print(v + " ");
-          }
-          System.out.println("");
-        }
+        showRequestHeaders(urlString, connection);
       }
 
       // get response
@@ -642,6 +627,16 @@ public class IO {
     return count;
   }
 
+  static private void showRequestHeaders(String urlString, java.net.URLConnection connection) {
+    System.out.println("\nREQUEST Properties for " + urlString + ": ");
+     Map<String,List<String>> reqs = connection.getRequestProperties();
+     for (Map.Entry<String,List<String>> entry : reqs.entrySet()) {
+       System.out.printf(" %s:", entry.getKey());
+       for (String v : entry.getValue()) System.out.printf("%s,", v);
+       System.out.printf("%n");
+     }
+  }
+
   /**
    * get input stream from URL
    *
@@ -669,19 +664,7 @@ public class IO {
       }
 
       if (showHeaders) {
-        System.out.println("\nREQUEST Properties for " + urlString + ": ");
-        Map reqs = connection.getRequestProperties();
-        Iterator reqIter = reqs.keySet().iterator();
-        while (reqIter.hasNext()) {
-          String key = (String) reqIter.next();
-          java.util.List values = (java.util.List) reqs.get(key);
-          System.out.print(" " + key + ": ");
-          for (int i = 0; i < values.size(); i++) {
-            String v = (String) values.get(i);
-            System.out.print(v + " ");
-          }
-          System.out.println("");
-        }
+        showRequestHeaders(urlString, connection);
       }
 
       // get response

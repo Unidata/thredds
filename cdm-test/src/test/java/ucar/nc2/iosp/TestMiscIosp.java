@@ -109,4 +109,18 @@ public class TestMiscIosp {
   }
 
 
+  @Test
+  public void testUfRadar() throws IOException, InvalidRangeException {
+    //String fileIn = "/home/yuanho/dev/netcdf-java-2.2/src/ucar/nc2/n0r_20040823_2215";    // uncompressed
+    String fileIn = TestDir.cdmUnitTestDir + "formats/uf/KTLX__sur_20080624.214247.uf";
+    //   ucar.nc2.NetcdfFile.registerIOProvider( ucar.nc.iosp.uf.UFiosp.class);
+    try (ucar.nc2.NetcdfFile ncf = ucar.nc2.NetcdfFile.open(fileIn)) {
+      System.out.printf("%s%n", ncf);
+    }
+
+
+  }
+
+
+
 }

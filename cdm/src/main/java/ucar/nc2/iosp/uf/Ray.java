@@ -37,19 +37,9 @@ import ucar.ma2.Range;
 import ucar.ma2.IndexIterator;
 
 import java.nio.ByteBuffer;
-import java.util.Date;
-import java.util.Calendar;
-import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.*;
 import java.io.IOException;
 
-/**
- * Created by IntelliJ IDEA.
- * User: yuanho
- * Date: Oct 3, 2008
- * Time: 1:30:05 PM
- * To change this template use File | Settings | File Templates.
- */
 public class Ray {
 
     int raySize;
@@ -68,13 +58,12 @@ public class Ray {
     short      numberOfRecords;  // in this ray
     short      numberOfFieldsInRecord;   // in this record
 
-    HashMap<String, UF_field_header2>  field_header_map;
-
+    Map<String, UF_field_header2> field_header_map;  // key = 2 byte "data type"
 
     public Ray( ByteBuffer bos, int raySize, long rayOffset) {
         this.raySize = raySize;
         this.rayOffset = rayOffset;
-        field_header_map = new HashMap();
+        field_header_map = new HashMap<>();
         bos.position(0);
 
         byte[] data = new byte[UF_MANDATORY_HEADER2_LEN];

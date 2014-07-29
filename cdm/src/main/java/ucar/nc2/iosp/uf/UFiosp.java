@@ -56,7 +56,6 @@ public class UFiosp extends AbstractIOServiceProvider {
   static private final int MISSING_INT = -9999;
   static private final float MISSING_FLOAT = Float.NaN;
   private ucar.nc2.NetcdfFile ncfile;
-  // private Nidsheader.Vinfo myInfo;
   protected UFheader headerParser;
 
   public boolean isValidFile(ucar.unidata.io.RandomAccessFile raf) {
@@ -78,17 +77,15 @@ public class UFiosp extends AbstractIOServiceProvider {
     ncfile = file;
 
     headerParser = new UFheader();
-    headerParser.read(this.raf, ncfile);
-    //myInfo = headerParser.getVarInfo();
-    HashMap variables = headerParser.variableGroup;
+    headerParser.read(this.raf);
+    //Map variables = headerParser.variableGroup;
 
-    Set vSet = variables.keySet();
-    for (Iterator it = vSet.iterator(); it.hasNext(); ) {
-      String key = (String) it.next();
-      ArrayList group = (ArrayList) variables.get(key);
-      List<Ray> firstGroup = (List) group.get(0);
-      Ray ray0 = (Ray) firstGroup.get(0);
-      makeVariable(ncfile, ray0.getDatatypeName(key), ray0.getDatatypeName(key), key, group);
+    for (Map.Entry<String,List<List<Ray>>> entry : headerParser.variableGroup.entrySet()) {
+      String key = entry.getKey();
+      List<List<Ray>> groups = entry.getValue();
+      List<Ray> rays = groups.get(0);
+      Ray ray0 = rays.get(0);
+      makeVariable(ncfile, ray0.getDatatypeName(key), ray0.getDatatypeName(key), key, groups);
     }
 
 
@@ -99,32 +96,27 @@ public class UFiosp extends AbstractIOServiceProvider {
     ncfile.addAttribute(null, new Attribute("StationName", headerParser.getStationId()));
     //Date d = Cinrad2Record.getDate(volScan.getTitleJulianDays(), volScan.getTitleMsecs());
     //ncfile.addAttribute(null, new Attribute("base_date", formatter.toDateOnlyString(d)));
-    ncfile.addAttribute(null, new Attribute("StationLatitude", new Double(headerParser.getStationLatitude())));
-    ncfile.addAttribute(null, new Attribute("StationLongitude", new Double(headerParser.getStationLongitude())));
-    ncfile.addAttribute(null, new Attribute("StationElevationInMeters", new Double(headerParser.getStationElevation())));
+    ncfile.addAttribute(null, new Attribute("StationLatitude", (double) headerParser.getStationLatitude()));
+    ncfile.addAttribute(null, new Attribute("StationLongitude", (double) headerParser.getStationLongitude()));
+    ncfile.addAttribute(null, new Attribute("StationElevationInMeters", (double) headerParser.getStationElevation()));
     ncfile.addAttribute(null, new Attribute("time_coverage_start", formatter.toDateTimeStringISO(headerParser.getStartDate())));
-    ; //.toDateTimeStringISO(d)));
+    //.toDateTimeStringISO(d)));
     ncfile.addAttribute(null, new Attribute("time_coverage_end", formatter.toDateTimeStringISO(headerParser.getEndDate())));
     double latRadiusDegrees = Math.toDegrees(radarRadius / ucar.unidata.geoloc.Earth.getRadius());
-    ncfile.addAttribute(null, new Attribute("geospatial_lat_min", new Double(headerParser.getStationLatitude() - latRadiusDegrees)));
-    ncfile.addAttribute(null, new Attribute("geospatial_lat_max", new Double(headerParser.getStationLatitude() + latRadiusDegrees)));
+    ncfile.addAttribute(null, new Attribute("geospatial_lat_min", headerParser.getStationLatitude() - latRadiusDegrees));
+    ncfile.addAttribute(null, new Attribute("geospatial_lat_max", headerParser.getStationLatitude() + latRadiusDegrees));
     double cosLat = Math.cos(Math.toRadians(headerParser.getStationLatitude()));
     double lonRadiusDegrees = Math.toDegrees(radarRadius / cosLat / ucar.unidata.geoloc.Earth.getRadius());
-    ncfile.addAttribute(null, new Attribute("geospatial_lon_min", new Double(headerParser.getStationLongitude() - lonRadiusDegrees)));
-    ncfile.addAttribute(null, new Attribute("geospatial_lon_max", new Double(headerParser.getStationLongitude() + lonRadiusDegrees)));
-    ncfile.addAttribute(null, new Attribute(CDM.HISTORY, "Direct read of Nexrad Level 2 file into NetCDF-Java 2.2 API"));
+    ncfile.addAttribute(null, new Attribute("geospatial_lon_min", headerParser.getStationLongitude() - lonRadiusDegrees));
+    ncfile.addAttribute(null, new Attribute("geospatial_lon_max", headerParser.getStationLongitude() + lonRadiusDegrees));
+    ncfile.addAttribute(null, new Attribute(CDM.HISTORY, "Direct read of UF Radar by CDM (version 4.5)"));
     ncfile.addAttribute(null, new Attribute("DataType", "Radial"));
 
     ncfile.addAttribute(null, new Attribute("Title", "Nexrad Level 2 Station " + headerParser.getStationId() + " from " +
             formatter.toDateTimeStringISO(headerParser.getStartDate()) + " to " +
             formatter.toDateTimeStringISO(headerParser.getEndDate())));
 
-    ncfile.addAttribute(null, new Attribute("Summary", "Weather Surveillance Radar-1988 Doppler (WSR-88D) " +
-            "Level II data are the three meteorological base data quantities: reflectivity, mean radial velocity, and " +
-            "spectrum width."));
-
-    ncfile.addAttribute(null, new Attribute("keywords", "WSR-88D; NEXRAD; Radar Level II; reflectivity; mean radial velocity; spectrum width"));
-    ncfile.addAttribute(null, new Attribute("SweepMode", new Short(headerParser.getSweepMode())));
+    ncfile.addAttribute(null, new Attribute("SweepMode", headerParser.getSweepMode()));
 
     // ncfile.addAttribute(null, new Attribute("VolumeCoveragePattern", new Integer(headerParser.getVCP())));
     // ncfile.addAttribute(null, new Attribute("HorizonatalBeamWidthInDegrees", new Double(headerParser.getHorizontalBeamWidth(abbrev))));
@@ -137,7 +129,7 @@ public class UFiosp extends AbstractIOServiceProvider {
   private double radarRadius = 100000.0;
 
   public Variable makeVariable(NetcdfFile ncfile, String shortName, String longName,
-                               String abbrev, List groups) throws IOException {
+                               String abbrev, List<List<Ray>> groups) throws IOException {
     int nscans = groups.size();
 
     if (nscans == 0) {
@@ -145,7 +137,7 @@ public class UFiosp extends AbstractIOServiceProvider {
     }
 
     // get representative record
-    List<Ray> firstGroup = (List) groups.get(0);
+    List<Ray> firstGroup = groups.get(0);
     Ray firstRay = firstGroup.get(0);
     int ngates = firstRay.getGateCount(abbrev);
 
@@ -159,7 +151,7 @@ public class UFiosp extends AbstractIOServiceProvider {
     ncfile.addDimension(null, gateDim);
     ncfile.addDimension(null, radialDim);
 
-    List<Dimension> dims = new ArrayList<Dimension>();
+    List<Dimension> dims = new ArrayList<>();
     dims.add(scanDim);
     dims.add(radialDim);
     dims.add(gateDim);
@@ -180,7 +172,7 @@ public class UFiosp extends AbstractIOServiceProvider {
 
     v.addAttribute(new Attribute("range_folding_threshold", firstRay.getDatatypeRangeFoldingThreshhold(abbrev)));
 
-    List<Dimension> dim2 = new ArrayList<Dimension>();
+    List<Dimension> dim2 = new ArrayList<>();
     dim2.add(scanDim);
     dim2.add(radialDim);
 
@@ -268,7 +260,7 @@ public class UFiosp extends AbstractIOServiceProvider {
     Ray[][] map = new Ray[nscans][nradials];
     for (int i = 0; i < groups.size(); i++) {
       Ray[] mapScan = map[i];
-      List<Ray> group = (List) groups.get(i);
+      List<Ray> group = groups.get(i);
       int radial = 0;
       for (Ray r : group) {
         mapScan[radial] = r;
@@ -283,7 +275,7 @@ public class UFiosp extends AbstractIOServiceProvider {
   }
 
   private void makeCoordinateDataWithMissing(String abbrev, Variable time, Variable elev, Variable azi, Variable nradialsVar,
-                                             Variable ngatesVar, List groups) {
+                                             Variable ngatesVar, List<List<Ray>> groups) {
 
     Array timeData = Array.factory(time.getDataType().getPrimitiveClassType(), time.getShape());
     Index timeIndex = timeData.getIndex();
@@ -318,13 +310,12 @@ public class UFiosp extends AbstractIOServiceProvider {
     int nscans = groups.size();
     try {
       for (int scan = 0; scan < nscans; scan++) {
-        List scanGroup = (List) groups.get(scan);
+        List<Ray> scanGroup = groups.get(scan);
         int nradials = scanGroup.size();
 
         Ray first = null;
         int radial = 0;
-        for (int j = 0; j < nradials; j++) {
-          Ray r = (Ray) scanGroup.get(j);
+        for (Ray r : scanGroup) {
           if (first == null) first = r;
 
           // int radial = r.uf_header2.rayNumber ;
@@ -350,7 +341,7 @@ public class UFiosp extends AbstractIOServiceProvider {
     ngatesVar.setCachedData(ngatesData, false);
   }
 
-  private class Vgroup {
+  private static class Vgroup {
     Ray[][] map;
     String abbrev;
 
@@ -394,18 +385,6 @@ public class UFiosp extends AbstractIOServiceProvider {
     r.readData(raf, abbrev, gateRange, ii);
   }
 
-
-  public static void main(String args[]) throws Exception, IOException, InstantiationException, IllegalAccessException {
-    //String fileIn = "/home/yuanho/dev/netcdf-java-2.2/src/ucar/nc2/n0r_20040823_2215";    // uncompressed
-    String fileIn = "/home/yuanho/Desktop/ufData/KTLX__sur_20080624.214247.uf";
-    //   ucar.nc2.NetcdfFile.registerIOProvider( ucar.nc.iosp.uf.UFiosp.class);
-    ucar.nc2.NetcdfFile ncf = ucar.nc2.NetcdfFile.open(fileIn);
-
-
-    ncf.close();
-
-
-  }
 
 
 }
