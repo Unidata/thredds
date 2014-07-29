@@ -47,7 +47,6 @@ import java.util.*;
 
 public class Doradeiosp extends AbstractIOServiceProvider {
 
-  protected boolean readonly;
   protected Doradeheader headerParser;
 
   public DoradeSweep mySweep = null;
@@ -240,12 +239,4 @@ public class Doradeiosp extends AbstractIOServiceProvider {
     return data;
   }
 
-  // for the compressed data read all out into a array and then parse into requested
-
-
-  protected boolean fill;
-  protected HashMap dimHash = new HashMap(50);
-
-
 }
-

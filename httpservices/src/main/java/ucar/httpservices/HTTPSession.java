@@ -186,7 +186,7 @@ public class HTTPSession
                      HttpContext context)
         {
             if(verbose) {
-                HTTPSession.log.debug(String.format("Retry: count=%d exception=%s\n", executionCount, exception.toString()));
+                HTTPSession.log.debug(String.format("Retry: count=%d exception=%s", executionCount, exception.toString()));
             }
             if(executionCount >= retries)
                 return false;
@@ -321,7 +321,7 @@ public class HTTPSession
         props.setParameter(USER_AGENT, DFALTUSERAGENT);
     }
 
-    public Settings getGlobalSettings()
+    static synchronized public Settings getGlobalSettings()
     {
         return globalsettings;
     }
@@ -331,7 +331,7 @@ public class HTTPSession
         globalsettings.setParameter(USER_AGENT, userAgent);
     }
 
-    static public String getGlobalUserAgent()
+    static synchronized public String getGlobalUserAgent()
     {
         return (String) globalsettings.getParameter(USER_AGENT);
     }
@@ -348,12 +348,12 @@ public class HTTPSession
         setGlobalThreadCount(nthreads);
     }
 
-    static public int getGlobalThreadCount()
+    static synchronized public int getGlobalThreadCount()
     {
         return connmgr.getMaxTotal();
     }
 
-    static public List<Cookie> getGlobalCookies()
+    static synchronized public List<Cookie> getGlobalCookies()
     {
         AbstractHttpClient client = new DefaultHttpClient(connmgr);
         List<Cookie> cookies = client.getCookieStore().getCookies();
@@ -595,7 +595,6 @@ public class HTTPSession
     static void
     getGlobalProxyD()
     {
-        Proxy proxy = new Proxy();
         String host = System.getProperty("http.proxyHost");
         String port = System.getProperty("http.proxyPort");
         int portno = -1;
@@ -953,7 +952,7 @@ public class HTTPSession
             if(hr instanceof HTTPUtil.InterceptCommon)
                 reqintercepts.remove(i);
         }
-        for(int i=rspintercepts.size()-1;i>=0;i++) {
+        for(int i=rspintercepts.size()-1;i>=0;i--) {
             HttpResponseInterceptor hr = rspintercepts.get(i);
             if(hr instanceof HTTPUtil.InterceptCommon)
                 rspintercepts.remove(i);

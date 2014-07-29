@@ -680,93 +680,100 @@ public class Level2VolumeScan {
     }
 
     try {
-      inputRaf.seek(0);
-      byte[] header = new byte[Level2Record.FILE_HEADER_SIZE];
-      inputRaf.read(header);
-      outputRaf.write(header);
+        inputRaf.seek(0);
+        byte[] header = new byte[Level2Record.FILE_HEADER_SIZE];
+        inputRaf.read(header);
+        outputRaf.write(header);
 
-      boolean eof = false;
-      int numCompBytes;
-      byte[] ubuff = new byte[40000];
-      byte[] obuff = new byte[40000];
-      try {
-        CBZip2InputStream cbzip2 = new CBZip2InputStream();
-        while (!eof) {
-          try {
-            numCompBytes = inputRaf.readInt();
-            if (numCompBytes == -1) {
-              if (log.isDebugEnabled()) log.debug("  done: numCompBytes=-1 ");
-              break;
-            }
-          } catch (EOFException ee) {
-            log.debug("got EOFException");
-            break; // assume this is ok
-          }
+        boolean eof = false;
+        int numCompBytes;
+        byte[] ubuff = new byte[40000];
+        byte[] obuff = new byte[40000];
+        try {
+            CBZip2InputStream cbzip2 = new CBZip2InputStream();
+            while (!eof) {
+                try {
+                    numCompBytes = inputRaf.readInt();
+                    if (numCompBytes == -1) {
+                        if (log.isDebugEnabled())
+                            log.debug("  done: numCompBytes=-1 ");
+                        break;
+                    }
+                } catch (EOFException ee) {
+                    log.debug("got EOFException");
+                    break; // assume this is ok
+                }
 
-          if (log.isDebugEnabled()) {
-            log.debug("reading compressed bytes " + numCompBytes + " input starts at " + inputRaf.getFilePointer() + "; output starts at " + outputRaf.getFilePointer());
-          }
+                if (log.isDebugEnabled()) {
+                    log.debug("reading compressed bytes " + numCompBytes + " input starts at " + inputRaf.getFilePointer() + "; output starts at " + outputRaf.getFilePointer());
+
+                }
           /*
           * For some stupid reason, the last block seems to
           * have the number of bytes negated.  So, we just
           * assume that any negative number (other than -1)
           * is the last block and go on our merry little way.
           */
-          if (numCompBytes < 0) {
-            if (log.isDebugEnabled()) log.debug("last block?" + numCompBytes);
-            numCompBytes = -numCompBytes;
-            eof = true;
-          }
-          byte[] buf = new byte[numCompBytes];
-          inputRaf.readFully(buf);
-          ByteArrayInputStream bis = new ByteArrayInputStream(buf, 2, numCompBytes - 2);
+                if (numCompBytes < 0) {
+                    if (log.isDebugEnabled())
+                        log.debug("last block?" + numCompBytes);
+                    numCompBytes = -numCompBytes;
+                    eof = true;
+                }
+                byte[] buf = new byte[numCompBytes];
+                inputRaf.readFully(buf);
+                ByteArrayInputStream bis = new ByteArrayInputStream(buf, 2,
+                        numCompBytes - 2);
 
-          //CBZip2InputStream cbzip2 = new CBZip2InputStream(bis);
-          cbzip2.setStream(bis);
-          int total = 0;
-          int nread;
+                //CBZip2InputStream cbzip2 = new CBZip2InputStream(bis);
+                cbzip2.setStream(bis);
+                int total = 0;
+                int nread;
           /*
           while ((nread = cbzip2.read(ubuff)) != -1) {
             dout2.write(ubuff, 0, nread);
             total += nread;
           }
           */
-          try {
-            while ((nread = cbzip2.read(ubuff)) != -1) {
-              if (total + nread > obuff.length) {
-                byte[] temp = obuff;
-                obuff = new byte[temp.length * 2];
-                System.arraycopy(temp, 0, obuff, 0, temp.length);
-              }
-              System.arraycopy(ubuff, 0, obuff, total, nread);
-              total += nread;
+                try {
+                    while ((nread = cbzip2.read(ubuff)) != -1) {
+                        if (total + nread > obuff.length) {
+                            byte[] temp = obuff;
+                            obuff = new byte[temp.length * 2];
+                            System.arraycopy(temp, 0, obuff, 0, temp.length);
+                        }
+                        System.arraycopy(ubuff, 0, obuff, total, nread);
+                        total += nread;
+                    }
+                    if (obuff.length >= 0) outputRaf.write(obuff, 0, total);
+                } catch (BZip2ReadException ioe) {
+                    log.warn("Nexrad2IOSP.uncompress ", ioe);
+                }
+                float nrecords = (float) (total / 2432.0);
+                if (log.isDebugEnabled())
+                    log.debug("  unpacked " + total + " num bytes " + nrecords + " records; ouput ends at " + outputRaf.getFilePointer());
             }
-            if (obuff.length >= 0) outputRaf.write(obuff, 0, total);
-          } catch (BZip2ReadException ioe) {
-            log.warn("Nexrad2IOSP.uncompress ", ioe);
-          }
-          float nrecords = (float) (total / 2432.0);
-          if (log.isDebugEnabled())
-            log.debug("  unpacked " + total + " num bytes " + nrecords + " records; ouput ends at " + outputRaf.getFilePointer());
+
+        } catch (Exception e) {
+            if (outputRaf != null) outputRaf.close();
+            outputRaf = null;
+
+            // dont leave bad files around
+            File ufile = new File(ufilename);
+            if (ufile.exists()) {
+                if (!ufile.delete())
+                    log.warn("failed to delete uncompressed file (IOException)" + ufilename);
+            }
+
+            if (e instanceof IOException)
+                throw (IOException) e;
+            else
+                throw new RuntimeException(e);
         }
 
-      } catch (Exception e) {
+    } catch (Exception e) {
         if (outputRaf != null) outputRaf.close();
         outputRaf = null;
-
-        // dont leave bad files around
-        File ufile = new File(ufilename);
-        if (ufile.exists()) {
-          if (!ufile.delete())
-            log.warn("failed to delete uncompressed file (IOException)" + ufilename);
-        }
-
-        if (e instanceof IOException)
-          throw (IOException) e;
-        else
-          throw new RuntimeException(e);
-      }
-
     } finally {
       if (null != outputRaf) outputRaf.flush();
       if (lock != null) lock.release();
@@ -780,24 +787,24 @@ public class Level2VolumeScan {
     boolean lookForHeader = false;
 
     // gotta make it
-    RandomAccessFile raf = new RandomAccessFile(ufilename, "r");
-    raf.order(RandomAccessFile.BIG_ENDIAN);
-    raf.seek(0);
-    byte[] b = new byte[8];
-    raf.read(b);
-    String test = new String(b);
-    if (test.equals(Level2VolumeScan.ARCHIVE2) || test.equals(Level2VolumeScan.AR2V0001)) {
-      System.out.println("--Good header= " + test);
-      raf.seek(24);
-    } else {
-      System.out.println("--No header ");
-      lookForHeader = true;
+    try (RandomAccessFile raf = new RandomAccessFile(ufilename, "r")) {
+      raf.order(RandomAccessFile.BIG_ENDIAN);
       raf.seek(0);
-    }
+      byte[] b = new byte[8];
+      raf.read(b);
+      String test = new String(b);
+      if (test.equals(Level2VolumeScan.ARCHIVE2) || test.equals
+             (Level2VolumeScan.AR2V0001)) {
+        System.out.println("--Good header= " + test);
+        raf.seek(24);
+      } else {
+        System.out.println("--No header ");
+        lookForHeader = true;
+        raf.seek(0);
+      }
 
-    boolean eof = false;
-    int numCompBytes;
-    try {
+      boolean eof = false;
+      int numCompBytes;
 
       while (!eof) {
 
@@ -833,11 +840,11 @@ public class Level2VolumeScan {
 
         raf.skipBytes(numCompBytes);
       }
+      return raf.getFilePointer();
     } catch (EOFException e) {
       e.printStackTrace();
     }
-
-    return raf.getFilePointer();
+    return 0;
   }
 
   /**

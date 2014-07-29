@@ -71,7 +71,6 @@ public class HTTPAuthStore implements Serializable
     static public org.slf4j.Logger log
         = org.slf4j.LoggerFactory.getLogger(HTTPSession.class);
 
-    static public HTTPAuthStore DEFAULTS = new HTTPAuthStore(true);
 
     //////////////////////////////////////////////////
     // Constants
@@ -84,6 +83,8 @@ public class HTTPAuthStore implements Serializable
     // Class variables
 
     static public boolean TESTING = false;
+
+    static public HTTPAuthStore DEFAULTS = new HTTPAuthStore(true);
 
     //////////////////////////////////////////////////
     // Type Decls
@@ -155,7 +156,7 @@ public class HTTPAuthStore implements Serializable
 
         public boolean equals(Object obj)
         {
-            return false;
+            return (obj == this);     // never used
         }
 
     }
@@ -174,20 +175,17 @@ public class HTTPAuthStore implements Serializable
      */
     static boolean equivalent(Entry e1, Entry e2)
     {
-        AuthScope a1 = e1.scope;
-        AuthScope a2 = e2.scope;
         if(e1 == null ^ e2 == null)
             return false;
         if(e1 == e2)
             return true;
+        AuthScope a1 = e1.scope;
+        AuthScope a2 = e2.scope;
         if(!HTTPAuthScope.identical(a1, a2))
             return false;
         if(e1.principal == ANY_PRINCIPAL || e2.principal == ANY_PRINCIPAL)
             return true;
-        if(e1.principal != ANY_PRINCIPAL)
-            return (e1.principal.equals(e2.principal));
-        return (e2.principal.equals(e1.principal));
-
+        return (e1.principal.equals(e2.principal));
     }
 
     //////////////////////////////////////////////////
@@ -226,9 +224,9 @@ public class HTTPAuthStore implements Serializable
                 if(kpwd != null) kpwd = kpwd.trim();
                 if(tpwd != null) tpwd = tpwd.trim();
                 if(kpath.length() == 0) kpath = null;
-                if(tpath.length() == 0) tpath = null;
-                if(kpwd.length() == 0) kpwd = null;
-                if(tpwd.length() == 0) tpwd = null;
+                if(tpath != null && tpath.length() == 0) tpath = null;
+                if(kpwd != null && kpwd.length() == 0) kpwd = null;
+                if(tpwd != null && tpwd.length() == 0) tpwd = null;
 
                 CredentialsProvider creds = new HTTPSSLProvider(kpath, kpwd, tpath, tpwd);
                 try {
@@ -425,7 +423,7 @@ public class HTTPAuthStore implements Serializable
     print(PrintStream p)
         throws IOException
     {
-        print(new PrintWriter(p, true));
+        print(new PrintWriter(new OutputStreamWriter(p,Escape.utf8Charset), true));
     }
 
     public void
@@ -435,7 +433,7 @@ public class HTTPAuthStore implements Serializable
         List<Entry> elist = getAllRows();
         for(int i = 0;i < elist.size();i++) {
             Entry e = elist.get(i);
-            p.printf("[%02d] %s\n", e.toString());
+            p.printf("[%02d] %s\n", i, e.toString());
         }
     }
 
@@ -443,14 +441,14 @@ public class HTTPAuthStore implements Serializable
     // Seriablizable interface
     // Encrypted (De-)Serialize
 
-    public void
+    synchronized public void
     serialize(OutputStream ostream, String password)
         throws HTTPException
     {
         try {
 
             // Create Key
-            byte deskey[] = password.getBytes();
+            byte deskey[] = password.getBytes(Escape.utf8Charset);
             DESKeySpec desKeySpec = new DESKeySpec(deskey);
             SecretKeyFactory keyFactory = SecretKeyFactory.getInstance("DES");
             SecretKey secretKey = keyFactory.generateSecret(desKeySpec);
@@ -479,7 +477,7 @@ public class HTTPAuthStore implements Serializable
 
     }
 
-    public void
+    synchronized public void
     deserialize(InputStream istream, String password)
         throws HTTPException
     {
@@ -503,7 +501,7 @@ public class HTTPAuthStore implements Serializable
     {
         try {
             // Create Key
-            byte key[] = password.getBytes();
+            byte key[] = password.getBytes(Escape.utf8Charset);
             DESKeySpec desKeySpec = new DESKeySpec(key);
             SecretKeyFactory keyFactory = SecretKeyFactory.getInstance("DES");
             SecretKey secretKey = keyFactory.generateSecret(desKeySpec);

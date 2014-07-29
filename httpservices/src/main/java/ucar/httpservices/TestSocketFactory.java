@@ -25,6 +25,7 @@ public class TestSocketFactory extends PlainSocketFactory
     {
         // See if our test parameter is present
         Object o = params.getParameter("testtesttest");
+        assert(o != null);
         return super.connectSocket(socket, remote, local, params);
     }
 
@@ -34,6 +35,7 @@ public class TestSocketFactory extends PlainSocketFactory
     {
         // See if our test parameter is present
         Object o = params.getParameter("testtesttest");
+        assert(o != null);
         return super.createSocket(params);
     }
 
