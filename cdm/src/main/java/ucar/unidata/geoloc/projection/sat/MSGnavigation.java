@@ -221,13 +221,13 @@ public class MSGnavigation extends ProjectionImpl {
     maxR2 = maxR * maxR;
 
     addParameter(CF.GRID_MAPPING_NAME, "MSGnavigation");
-    addParameter(CF.LONGITUDE_OF_PROJECTION_ORIGIN, new Double(lon0));
-    addParameter(CF.LATITUDE_OF_PROJECTION_ORIGIN, new Double(lat0));
-    addParameter(CF.SEMI_MAJOR_AXIS, new Double(major_axis));
-    addParameter(CF.SEMI_MINOR_AXIS, new Double(minor_axis));
-    addParameter(HEIGHT_FROM_EARTH_CENTER, new Double(sat_height));
-    addParameter(SCALE_X, new Double(scale_x));
-    addParameter(SCALE_Y, new Double(scale_y));
+    addParameter(CF.LONGITUDE_OF_PROJECTION_ORIGIN, lon0);
+    addParameter(CF.LATITUDE_OF_PROJECTION_ORIGIN, lat0);
+    addParameter(CF.SEMI_MAJOR_AXIS, major_axis);
+    addParameter(CF.SEMI_MINOR_AXIS, minor_axis);
+    addParameter(HEIGHT_FROM_EARTH_CENTER, sat_height);
+    addParameter(SCALE_X, scale_x);
+    addParameter(SCALE_Y, scale_y);
 
     //System.out.printf("%s %n", this);
   }
@@ -364,7 +364,8 @@ public class MSGnavigation extends ProjectionImpl {
 
   @Override
   public ProjectionImpl constructCopy() {
-    ProjectionImpl result =  new MSGnavigation(lat0, lon0, 1000 * major_axis, 1000 * minor_axis, 1000 * sat_height, scale_x, scale_y);
+    ProjectionImpl result =  new MSGnavigation(
+            lat0, Math.toDegrees(lon0), 1000 * major_axis, 1000 * minor_axis, 1000 * sat_height, scale_x, scale_y);
     result.setDefaultMapArea(defaultMapArea);
     result.setName(name);
     return result;
@@ -521,6 +522,10 @@ public class MSGnavigation extends ProjectionImpl {
       maxy = Math.max(maxy, pp.getY());
     }
     return new ProjectionRect(minx, miny, maxx, maxy);
+  }
+
+  public double getLon0() {
+    return lon0;  // Exposed for testing in MSGnavigationTest.
   }
 
   //////////////////////////////////////////////////////////////////////////////////////////////////////////
