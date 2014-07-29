@@ -3844,6 +3844,7 @@ class Nidsheader{
             break;
           case 48:
             pname = "NVW";
+            break;
           case 56:
               pname = "N" + elevation + "S";
 
