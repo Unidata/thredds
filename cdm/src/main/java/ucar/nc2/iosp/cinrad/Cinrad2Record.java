@@ -306,7 +306,7 @@ public class Cinrad2Record {
   public Cinrad2Record(RandomAccessFile din, int record) throws IOException {
 
     this.recno = record;
-    message_offset = record * RADAR_DATA_SIZE + FILE_HEADER_SIZE;
+    message_offset = (long)record * RADAR_DATA_SIZE + FILE_HEADER_SIZE;
     din.seek(message_offset);
 
     din.skipBytes(CTM_HEADER_SIZE);
