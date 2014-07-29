@@ -46,25 +46,20 @@ import java.util.zip.DataFormatException;
 
 /**
  * FY satellite data stored in AWX format include both original observation and the derived dataset
- * no online document available for the details
+ *
  * @author yuan
+ * @see "http://www.nsmc.cma.gov.cn/en/NSMC/UploadFiles/files/AWX%20File%20Format%20Specification%20Version%202.1.pdf"
  */
 
 public class Fysatiosp extends AbstractIOServiceProvider {
 
-  protected boolean readonly;
   private ucar.nc2.NetcdfFile ncfile;
   protected FysatHeader headerParser;
 
   final static int Z_DEFLATED = 8;
   final static int DEF_WBITS = 15;
 
-  // used for writing
-  protected int fileUsed = 0; // how much of the file is written to ?
-  protected int recStart = 0; // where the record data starts
-
-  protected boolean debug = false, debugSize = false, debugSPIO = false;
-  protected boolean showHeaderBytes = false;
+  protected boolean debug = false;
 
   public boolean isValidFile(ucar.unidata.io.RandomAccessFile raf) {
     FysatHeader localHeader = new FysatHeader();
@@ -123,7 +118,7 @@ public class Fysatiosp extends AbstractIOServiceProvider {
     byte[] data = new byte[data_size];
     raf.read(data);
 
-    Array array = null;
+    Array array;
     if (vi.classType == DataType.BYTE.getPrimitiveClassType()) {
 
       array = Array.factory(DataType.BYTE.getPrimitiveClassType(), v2.getShape(), data);
@@ -154,7 +149,7 @@ public class Fysatiosp extends AbstractIOServiceProvider {
     if (shape == null) shape = v2.getShape();
 
     FysatHeader.Vinfo vinfo = (FysatHeader.Vinfo) v2.getSPobject();
-    ucar.ma2.DataType dataType = v2.getDataType();
+    //ucar.ma2.DataType dataType = v2.getDataType();
 
     int nx = vinfo.nx;
     int ny = vinfo.ny;
@@ -179,19 +174,16 @@ public class Fysatiosp extends AbstractIOServiceProvider {
     }
 
     int Len = shape[1]; // length of pixels read each line
-    ucar.ma2.DataType ConvertFrom = ucar.ma2.DataType.BYTE;
     ArrayByte adata = new ArrayByte(new int[]{shape[0], shape[1]});
     Index indx = adata.getIndex();
     long doff = dataPos + start_p;
     // initially no data conversion is needed.
-    if (ConvertFrom == ucar.ma2.DataType.BYTE) {
-      for (int iline = start_l; iline <= stop_l; iline += stride_l) {
-        /* read 1D byte[] */
-        byte[] buf = getGiniLine(nx, ny, doff, iline, Len, stride_p);
-        /* write into 2D array */
-        for (int i = 0; i < Len; i++) {
-          adata.setByte(indx.set(iline - start_l, i), buf[i]);
-        }
+    for (int iline = start_l; iline <= stop_l; iline += stride_l) {
+      /* read 1D byte[] */
+      byte[] buf = getGiniLine(nx, ny, doff, iline, Len, stride_p);
+      /* write into 2D array */
+      for (int i = 0; i < Len; i++) {
+        adata.setByte(indx.set(iline - start_l, i), buf[i]);
       }
     }
     return adata;
@@ -209,7 +201,7 @@ public class Fysatiosp extends AbstractIOServiceProvider {
 
     int data_size = (int) (length - dataPos);
     byte[] data = new byte[data_size];
-    raf.read(data);
+    raf.readFully(data);
     ByteArrayInputStream ios = new ByteArrayInputStream(data);
 
     BufferedImage image = javax.imageio.ImageIO.read(ios);
@@ -255,12 +247,12 @@ public class Fysatiosp extends AbstractIOServiceProvider {
     while (inflater.getRemaining() > 0) {
       try {
         resultLength = inflater.inflate(uncomp, offset, 4000);
-      }
-      catch (DataFormatException ex) {
-        System.out.println("ERROR on inflation " + ex.getMessage());
+
+      } catch (DataFormatException ex) {
         ex.printStackTrace();
         throw new IOException(ex.getMessage());
       }
+
       offset = offset + resultLength;
       result = result + resultLength;
       if ((result) > limit) {
@@ -271,17 +263,18 @@ public class Fysatiosp extends AbstractIOServiceProvider {
         uncomp = new byte[uncompLen];
         System.arraycopy(tmp, 0, uncomp, 0, result);
       }
+
       if (resultLength == 0) {
         int tt = inflater.getRemaining();
         byte[] b2 = new byte[2];
-        System.arraycopy(data, (int) data_size - tt, b2, 0, 2);
+        System.arraycopy(data, data_size - tt, b2, 0, 2);
         if (isZlibHed(b2) == 0) {
-          System.arraycopy(data, (int) data_size - tt, uncomp, result, tt);
+          System.arraycopy(data, data_size - tt, uncomp, result, tt);
           result = result + tt;
           break;
         }
         inflater.reset();
-        inflater.setInput(data, (int) data_size - tt, tt);
+        inflater.setInput(data, data_size - tt, tt);
       }
 
     }
@@ -289,15 +282,10 @@ public class Fysatiosp extends AbstractIOServiceProvider {
     inflater.end();
 
     System.arraycopy(uncomp, 0, inflateData, 0, nx * ny);
-    if (data != null) {
-
-      Array array = Array.factory(DataType.BYTE.getPrimitiveClassType(), v2.getShape(), uncomp);
-      if (array.getSize() < Variable.defaultSizeToCache)
-        v2.setCachedData(array, false);
-      return array.sectionNoReduce(origin, shape, stride);
-    }
-
-    return null;
+    Array array = Array.factory(DataType.BYTE.getPrimitiveClassType(), v2.getShape(), uncomp);
+    if (array.getSize() < Variable.defaultSizeToCache)
+      v2.setCachedData(array, false);
+    return array.sectionNoReduce(origin, shape, stride);
   }
 
   /*
@@ -345,54 +333,7 @@ public class Fysatiosp extends AbstractIOServiceProvider {
 
   }
 
-
-  // convert byte array to char array
-  static protected char[] convertByteToChar(byte[] byteArray) {
-    int size = byteArray.length;
-    char[] cbuff = new char[size];
-    for (int i = 0; i < size; i++)
-      cbuff[i] = (char) byteArray[i];
-    return cbuff;
-  }
-
-  // convert char array to byte array
-  static protected byte[] convertCharToByte(char[] from) {
-    int size = from.length;
-    byte[] to = new byte[size];
-    for (int i = 0; i < size; i++)
-      to[i] = (byte) from[i];
-    return to;
-  }
-
-  /*
-  ** Name:       IsZlibed
-  **
-  ** Purpose:    Check a two-byte sequence to see if it indicates the start of
-  **             a zlib-compressed buffer
-  **
-  ** Parameters:
-  **             buf     - buffer containing at least two bytes
-  **
-  ** Returns:
-  **             SUCCESS 1
-  **             FAILURE 0
-  **
-  */
-  int issZlibed(byte[] buf) {
-
-    if ((buf[0] & 0xf) == Z_DEFLATED) {
-      if ((buf[0] >> 4) + 8 <= DEF_WBITS) {
-        if ((((buf[0] << 8) + (buf[1])) % 31) == 0) {
-          return 1;
-        }
-      }
-    }
-
-    return 0;
-  }
-
   protected boolean fill;
-  protected HashMap dimHash = new HashMap(50);
 
   public short convertunsignedByte2Short(byte b) {
     return (short) ((b < 0) ? (short) b + 256 : (short) b);
@@ -413,47 +354,5 @@ public class Fysatiosp extends AbstractIOServiceProvider {
     return 0;
 
   }
-
-  public static void main(String args[]) throws Exception, IOException, InstantiationException, IllegalAccessException {
-    //String fileIn = "/home/yuanho/dev/netcdf-java-2.2/src/ucar/nc2/n0r_20040823_2215";    // uncompressed
-    // String fileIn = "c:/data/image/gini/n0r_20041013_1852";
-
-    String fileIn =  "Q:\\cdmUnitTest\\formats\\fysat\\SATE_L3_F2C_VISSR_MWB_SNO_CNB-DAY-2008010115.AWX";
-
-    //String fileIn = "E:/SATE_L3_F2C_VISSR_MWB_SNO_CNB/200801/SATE_L3_F2C_VISSR_MWB_SNO_CNB-DAY-2008010815.AWX";
-    //ucar.nc2.NetcdfFile.registerIOProvider(ucar.nc2.iosp.fysat.Fysatiosp.class);
-    ucar.nc2.NetcdfFile ncf = ucar.nc2.NetcdfFile.open(fileIn);
-
-    List alist = ncf.getGlobalAttributes();
-
-    //   ucar.nc2.Variable v = ncf.findVariable("BaseReflectivity");
-
-    //   int[] origin  = {0, 0};
-    //   int[] shape = {3000, 4736};
-
-    //   ArrayByte data = (ArrayByte)v.read(origin,shape);
-    for (int i = 0; i < alist.size(); i++) {
-      Attribute att = (Attribute) alist.get(i);
-      DataType dt = att.getDataType();
-
-      if (dt == DataType.BOOLEAN
-          || dt == DataType.BYTE
-          || dt == DataType.BYTE
-          || dt == DataType.SHORT
-          || dt == DataType.INT
-          || dt == DataType.LONG
-          || dt == DataType.FLOAT
-          || dt == DataType.DOUBLE) {
-        System.out.print(att.getShortName() + " : " + att.getNumericValue() + "\n");
-      } else {
-        System.out.print(att.getShortName() + " : " + att.getStringValue() + "\n");
-      }
-    }
-
-    ncf.close();
-
-
-  }
-
 
 }

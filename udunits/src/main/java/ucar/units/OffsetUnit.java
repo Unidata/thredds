@@ -1,4 +1,3 @@
-// $Id: OffsetUnit.java 64 2006-07-12 22:30:50Z edavis $
 /*
  * Copyright 1998-2009 University Corporation for Atmospheric Research/Unidata
  *
@@ -39,7 +38,6 @@ package ucar.units;
  * of this class are immutable.
  * 
  * @author Steven R. Emmerson
- * @version $Id: OffsetUnit.java 64 2006-07-12 22:30:50Z edavis $
  */
 public final class OffsetUnit extends UnitImpl implements DerivableUnit {
     private static final long serialVersionUID = 1L;
@@ -474,50 +472,5 @@ public final class OffsetUnit extends UnitImpl implements DerivableUnit {
      */
     public String getCanonicalString() {
         return "(" + getUnit().toString() + ") @ " + getOffset();
-    }
-
-    /**
-     * Tests this class.
-     */
-    public static void main(final String[] args) throws Exception {
-        final BaseUnit kelvin = BaseUnit.getOrCreate(UnitName.newUnitName(
-                "kelvin", null, "K"), BaseQuantity.THERMODYNAMIC_TEMPERATURE);
-        final OffsetUnit celsius = new OffsetUnit(kelvin, 273.15);
-        System.out.println("celsius.equals(kelvin)=" + celsius.equals(kelvin));
-        System.out.println("celsius.getUnit().equals(kelvin)="
-                + celsius.getUnit().equals(kelvin));
-        final Unit celsiusKelvin = celsius.multiplyBy(kelvin);
-        System.out.println("celsiusKelvin.divideBy(celsius)="
-                + celsiusKelvin.divideBy(celsius));
-        System.out.println("celsius.divideBy(kelvin)="
-                + celsius.divideBy(kelvin));
-        System.out.println("kelvin.divideBy(celsius)="
-                + kelvin.divideBy(celsius));
-        System.out.println("celsius.raiseTo(2)=" + celsius.raiseTo(2));
-        System.out.println("celsius.toDerivedUnit(1.)="
-                + celsius.toDerivedUnit(1.));
-        System.out
-                .println("celsius.toDerivedUnit(new float[]{1,2,3}, new float[3])[1]="
-                        + celsius.toDerivedUnit(new float[] { 1, 2, 3 },
-                                new float[3])[1]);
-        System.out.println("celsius.fromDerivedUnit(274.15)="
-                + celsius.fromDerivedUnit(274.15));
-        System.out
-                .println("celsius.fromDerivedUnit(new float[]{274.15f},new float[1])[0]="
-                        + celsius.fromDerivedUnit(new float[] { 274.15f },
-                                new float[1])[0]);
-        System.out
-                .println("celsius.equals(celsius)=" + celsius.equals(celsius));
-        final OffsetUnit celsius100 = new OffsetUnit(celsius, 100.);
-        System.out.println("celsius.equals(celsius100)="
-                + celsius.equals(celsius100));
-        System.out.println("celsius.isDimensionless()="
-                + celsius.isDimensionless());
-        final BaseUnit radian = BaseUnit.getOrCreate(UnitName.newUnitName(
-                "radian", null, "rad"), BaseQuantity.PLANE_ANGLE);
-        final OffsetUnit offRadian = new OffsetUnit(radian, 3.14159 / 2);
-        System.out.println("offRadian.isDimensionless()="
-                + offRadian.isDimensionless());
-        ;
     }
 }

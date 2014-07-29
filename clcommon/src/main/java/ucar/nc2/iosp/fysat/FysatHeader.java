@@ -89,7 +89,6 @@ public final class FysatHeader {
   private AwxFileFirstHeader firstHeader;
   private AwxFileSecondHeader secondHeader;
 
-
   public boolean isValidFile(ucar.unidata.io.RandomAccessFile raf) {
     // first check the size of file
     try {
@@ -207,6 +206,7 @@ public final class FysatHeader {
 
       case AwxFileFirstHeader.AWX_PRODUCT_TYPE_UNDEFINED:
         throw new UnsupportedDatasetException();
+
       case AwxFileFirstHeader.AWX_PRODUCT_TYPE_GEOSAT_IMAGE: {
         AwxFileGeoSatelliteSecondHeader geoSatelliteSecondHeader = (AwxFileGeoSatelliteSecondHeader) this.secondHeader;
 
@@ -242,11 +242,11 @@ public final class FysatHeader {
         taxis.addAttribute(new Attribute(CDM.UNITS, "msecs since " + formatter.toDateTimeStringISO(new Date(0))));
         ncfile.addVariable(null, taxis);
         //  Get dimensions
-        Integer ni = new Integer(geoSatelliteSecondHeader.widthOfImage);
+        Integer ni = (int) geoSatelliteSecondHeader.widthOfImage;
         att = new Attribute("NX", ni);
         this.ncfile.addAttribute(null, att);
 
-        ni = new Integer(geoSatelliteSecondHeader.heightOfImage);
+        ni = (int) geoSatelliteSecondHeader.heightOfImage;
         att = new Attribute("NY", ni);
         this.ncfile.addAttribute(null, att);
 

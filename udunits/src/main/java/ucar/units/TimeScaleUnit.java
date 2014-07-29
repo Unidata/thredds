@@ -1,4 +1,3 @@
-// $Id: TimeScaleUnit.java 64 2006-07-12 22:30:50Z edavis $
 /*
  * Copyright 1998-2009 University Corporation for Atmospheric Research/Unidata
  *
@@ -35,7 +34,6 @@ package ucar.units;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
 import java.util.TimeZone;
@@ -46,7 +44,6 @@ import java.util.TimeZone;
  * Instances of this class are immutable.
  * 
  * @author Steven R. Emmerson
- * @version $Id: TimeScaleUnit.java 64 2006-07-12 22:30:50Z edavis $
  */
 public final class TimeScaleUnit extends UnitImpl {
     private static final long             serialVersionUID = 1L;
@@ -75,20 +72,17 @@ public final class TimeScaleUnit extends UnitImpl {
     /**
      * The second unit.
      */
-    private static final BaseUnit         SECOND;
+    static final BaseUnit         SECOND;
 
     static {
-        dateFormat = (SimpleDateFormat) DateFormat.getDateInstance(
-                DateFormat.SHORT, Locale.US);
+        dateFormat = (SimpleDateFormat) DateFormat.getDateInstance(DateFormat.SHORT, Locale.US);
         dateFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
         dateFormat.applyPattern(" 'since' yyyy-MM-dd HH:mm:ss.SSS 'UTC'");
         try {
-            SECOND = BaseUnit.getOrCreate(UnitName.newUnitName("second", null,
-                    "s"), BaseQuantity.TIME);
+            SECOND = BaseUnit.getOrCreate(UnitName.newUnitName("second", null, "s"), BaseQuantity.TIME);
         }
         catch (final Exception e) {
-            throw (ExceptionInInitializerError) new ExceptionInInitializerError()
-                    .initCause(e);
+            throw (ExceptionInInitializerError) new ExceptionInInitializerError().initCause(e);
         }
     }
 
@@ -408,14 +402,4 @@ public final class TimeScaleUnit extends UnitImpl {
         return getUnit().toString() + dateFormat.format(getOrigin());
     }
 
-    /**
-     * Tests this class.
-     */
-    public static void main(final String[] args) throws Exception {
-        final TimeZone tz = TimeZone.getTimeZone("UTC");
-        final Calendar calendar = Calendar.getInstance(tz);
-        calendar.clear();
-        calendar.set(1970, 0, 1);
-        new TimeScaleUnit(SECOND, calendar.getTime());
-    }
 }

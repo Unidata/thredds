@@ -152,7 +152,7 @@ public class ListenerManager {
       logger.warn("ListenerManager.removeListener couldnt find Listener " + l);
   }
 
-  public boolean hasListeners() {
+  public synchronized boolean hasListeners() {
     return hasListeners;
   }
 

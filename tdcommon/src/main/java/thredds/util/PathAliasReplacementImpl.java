@@ -37,6 +37,7 @@ import org.springframework.util.StringUtils;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 
 /**
@@ -51,13 +52,13 @@ public class PathAliasReplacementImpl implements PathAliasReplacement {
   public static List<PathAliasReplacement> makePathAliasReplacements(Map<String, String> aliases) {
     List<PathAliasReplacement> result = new ArrayList<PathAliasReplacement>();
 
-      for (String key : aliases.keySet()) {
-        String value = aliases.get(key);
-        if (value == null || value.isEmpty()) continue;
-        PathAliasReplacementImpl alias = new PathAliasReplacementImpl("${" + key + "}", value);
-        result.add(alias);
-        if (debug) System.out.printf("DataRootHandler alias= %s%n", alias);
-      }
+    for (Map.Entry<String, String> entry : aliases.entrySet()) {
+      String value = entry.getValue();
+      if (value == null || value.isEmpty()) continue;
+      PathAliasReplacementImpl alias = new PathAliasReplacementImpl("${" + entry.getKey() + "}", value);
+      result.add(alias);
+      if (debug) System.out.printf("DataRootHandler alias= %s%n", alias);
+    }
     return result;
   }
 

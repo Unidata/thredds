@@ -1,4 +1,3 @@
-// $Id: OffsetUnit.java 64 2006-07-12 22:30:50Z edavis $
 /*
  * Copyright 1998-2009 University Corporation for Atmospheric Research/Unidata
  *
@@ -40,7 +39,6 @@ package ucar.units;
  * Instances of this class are immutable.
  * 
  * @author Steven R. Emmerson
- * @version $Id: OffsetUnit.java 64 2006-07-12 22:30:50Z edavis $
  */
 public final class LogarithmicUnit extends UnitImpl implements DerivableUnit {
     private static final long           serialVersionUID = 1L;
@@ -447,49 +445,4 @@ public final class LogarithmicUnit extends UnitImpl implements DerivableUnit {
                         : "lg") + "(re " + getReference().toString() + ")";
     }
 
-    /**
-     * Tests this class.
-     */
-    public static void main(final String[] args) throws Exception {
-        final BaseUnit meter = BaseUnit.getOrCreate(UnitName.newUnitName(
-                "meter", null, "m"), BaseQuantity.LENGTH);
-        final ScaledUnit micron = new ScaledUnit(1e-6, meter);
-        final Unit cubicMicron = micron.raiseTo(3);
-        final LogarithmicUnit Bz = new LogarithmicUnit(cubicMicron, 10.0);
-        assert Bz.isDimensionless();
-        assert Bz.equals(Bz);
-        assert Bz.getReference().equals(cubicMicron);
-        assert Bz.getBase() == 10.0;
-        assert !Bz.equals(cubicMicron);
-        assert !Bz.equals(micron);
-        assert !Bz.equals(meter);
-        try {
-            Bz.multiplyBy(meter);
-            assert false;
-        }
-        catch (final MultiplyException e) {
-        }
-        try {
-            Bz.divideBy(meter);
-            assert false;
-        }
-        catch (final DivideException e) {
-        }
-        try {
-            Bz.raiseTo(2);
-            assert false;
-        }
-        catch (final RaiseException e) {
-        }
-        double value = Bz.toDerivedUnit(0);
-        assert 0.9e-18 < value && value < 1.1e-18 : value;
-        value = Bz.toDerivedUnit(1);
-        assert 0.9e-17 < value && value < 1.1e-17 : value;
-        value = Bz.fromDerivedUnit(1e-18);
-        assert -0.1 < value && value < 0.1 : value;
-        value = Bz.fromDerivedUnit(1e-17);
-        assert 0.9 < value && value < 1.1 : value;
-        final String string = Bz.toString();
-        assert string.equals("lg(re 9.999999999999999E-19 m3)") : string;
-    }
 }

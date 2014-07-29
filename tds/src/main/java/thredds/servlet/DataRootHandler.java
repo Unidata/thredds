@@ -313,34 +313,80 @@ public final class DataRootHandler implements InitializingBean {
    * @throws IOException if reading catalog fails
    */
   private void initCatalog(String path, boolean recurse, boolean cache) throws IOException {
-    path = StringUtils.cleanPath(path);
-    File f = this.tdsContext.getConfigFileSource().getFile(path);
-    System.out.printf("initCatalog %s%n", f.getPath());
+      path = StringUtils.cleanPath(path);
+      File f = this.tdsContext.getConfigFileSource().getFile(path);
+      System.out.printf("initCatalog %s%n", f.getPath());
 
-    if (f == null) {
-      logCatalogInit.error(ERROR + "initCatalog(): Catalog [" + path + "] does not exist in config directory.");
-      return;
+      if (f == null) {
+        logCatalogInit.error(ERROR + "initCatalog(): Catalog [" + path + "] does not exist in config directory.");
+        return;
+      }
+
+      // make sure we dont already have it
+      if (staticCatalogNames.contains(path)) {
+        logCatalogInit.error(ERROR + "initCatalog(): Catalog [" + path + "] already seen, possible loop (skip).");
+        return;
+      }
+      staticCatalogNames.add(path);
+      if (logCatalogInit.isDebugEnabled()) logCatalogInit.debug("catalog {} -> {}%n", path, f.getAbsolutePath());
+
+      // read it
+      InvCatalogFactory factory = this.getCatalogFactory(true); // always validate the config catalogs
+      InvCatalogImpl cat = readCatalog(factory, path, f.getPath());
+      if (cat == null) {
+        logCatalogInit.error(ERROR + "initCatalog(): failed to read catalog <" + f.getPath() + ">.");
+        return;
+      }
+
+      // Notify listeners of config catalog.
+      for (ConfigListener cl : configListeners)
+        cl.configCatalog(cat);
+
+      // look for datasetRoots
+      for (DataRootConfig p : cat.getDatasetRoots()) {
+        addRoot(p, true);
+      }
+
+      List<String> disallowedServices = AllowableService.checkCatalogServices(cat);
+      if (!disallowedServices.isEmpty()) {
+        logCatalogInit.error(ERROR + "initCatalog(): declared services: " + disallowedServices.toString() + " in catalog: " + f.getPath() + " are disallowed in threddsConfig file");
+      }
+
+      // old style - in the service elements
+      for (InvService s : cat.getServices()) {
+        for (InvProperty p : s.getDatasetRoots()) {
+          addRoot(p.getName(), p.getValue(), true);
+        }
+      }
+
+      // get the directory path, reletive to the contentPath
+      int pos = path.lastIndexOf("/");
+      String dirPath = (pos > 0) ? path.substring(0, pos + 1) : "";
+
+      // look for datasetScans and NcML elements and Fmrc and featureCollections
+      boolean needsCache = initSpecialDatasets(cat.getDatasets());
+
+      // optionally add catalog to cache
+      if (staticCache || cache || needsCache) {
+        cat.setStatic(true);
+        staticCatalogHash.put(path, cat);
+        if (logCatalogInit.isDebugEnabled()) logCatalogInit.debug("  add static catalog to hash=" + path);
+      }
+
+      if (recurse) {
+        initFollowCatrefs(dirPath, cat.getDatasets());
+      }
     }
 
-    // make sure we dont already have it
-    if (staticCatalogNames.contains(path)) {
-      logCatalogInit.error(ERROR + "initCatalog(): Catalog [" + path + "] already seen, possible loop (skip).");
-      return;
-    }
-    staticCatalogNames.add(path);
-    if (logCatalogInit.isDebugEnabled()) logCatalogInit.debug("catalog {} -> {}%n", path, f.getAbsolutePath());
-
-    // read it
-    InvCatalogFactory factory = this.getCatalogFactory(true); // always validate the config catalogs
-    InvCatalogImpl cat = readCatalog(factory, path, f.getPath());
-    if (cat == null) {
-      logCatalogInit.error(ERROR + "initCatalog(): failed to read catalog <" + f.getPath() + ">.");
-      return;
-    }
-
-    // Notify listeners of config catalog.
-    for (ConfigListener cl : configListeners)
-      cl.configCatalog(cat);
+  // testing only
+  void initCatalog(String path, String absPath) throws IOException {
+       // read it
+      InvCatalogFactory factory = this.getCatalogFactory(true); // always validate the config catalogs
+      InvCatalogImpl cat = readCatalog(factory, path, absPath);
+      if (cat == null) {
+        logCatalogInit.error(ERROR + "initCatalog(): failed to read catalog <" + absPath + ">.");
+        return;
+      }
 
     // look for datasetRoots
     for (DataRootConfig p : cat.getDatasetRoots()) {
@@ -349,32 +395,14 @@ public final class DataRootHandler implements InitializingBean {
 
     List<String> disallowedServices = AllowableService.checkCatalogServices(cat);
     if (!disallowedServices.isEmpty()) {
-      logCatalogInit.error(ERROR + "initCatalog(): declared services: " + disallowedServices.toString() + " in catalog: " + f.getPath() + " are disallowed in threddsConfig file");
+      logCatalogInit.error(ERROR + "initCatalog(): declared services: " + disallowedServices.toString() + " in catalog: " + cat.getName() + " are disallowed in threddsConfig file");
     }
 
-    // old style - in the service elements    
+    // old style - in the service elements
     for (InvService s : cat.getServices()) {
       for (InvProperty p : s.getDatasetRoots()) {
         addRoot(p.getName(), p.getValue(), true);
       }
-    }
-
-    // get the directory path, reletive to the contentPath
-    int pos = path.lastIndexOf("/");
-    String dirPath = (pos > 0) ? path.substring(0, pos + 1) : "";
-
-    // look for datasetScans and NcML elements and Fmrc and featureCollections
-    boolean needsCache = initSpecialDatasets(cat.getDatasets());
-
-    // optionally add catalog to cache
-    if (staticCache || cache || needsCache) {
-      cat.setStatic(true);
-      staticCatalogHash.put(path, cat);
-      if (logCatalogInit.isDebugEnabled()) logCatalogInit.debug("  add static catalog to hash=" + path);
-    }
-
-    if (recurse) {
-      initFollowCatrefs(dirPath, cat.getDatasets());
     }
   }
   

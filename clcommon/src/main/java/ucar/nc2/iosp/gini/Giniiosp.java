@@ -444,7 +444,7 @@ public class Giniiosp extends AbstractIOServiceProvider {
   **             SUCCESS 1
   **             FAILURE 0
   **
-  */
+  *
   int issZlibed(byte[] buf) {
 
     if ((buf[0] & 0xf) == Z_DEFLATED) {
@@ -456,7 +456,7 @@ public class Giniiosp extends AbstractIOServiceProvider {
     }
 
     return 0;
-  }
+  }  */
 
   protected boolean fill;
   protected HashMap dimHash = new HashMap(50);
@@ -488,24 +488,5 @@ public class Giniiosp extends AbstractIOServiceProvider {
   public String getFileTypeDescription() {
     return "GOES Ingest and NOAAPORT Interface";
   }
-
-  public static void main(String args[]) throws Exception, IOException, InstantiationException, IllegalAccessException {
-    //String fileIn = "/home/yuanho/dev/netcdf-java-2.2/src/ucar/nc2/n0r_20040823_2215";    // uncompressed
-    String fileIn = "c:/data/image/gini/n0r_20041013_1852";
-    ucar.nc2.NetcdfFile.registerIOProvider(ucar.nc2.iosp.gini.Giniiosp.class);
-    ucar.nc2.NetcdfFile ncf = ucar.nc2.NetcdfFile.open(fileIn);
-
-    List alist = ncf.getGlobalAttributes();
-
-    ucar.nc2.Variable v = ncf.findVariable("BaseReflectivity");
-
-    int[] origin = {0, 0};
-    int[] shape = {3000, 4736};
-
-    ArrayByte data = (ArrayByte) v.read(origin, shape);
-
-    ncf.close();
-  }
-
 
 }

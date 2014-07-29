@@ -2054,7 +2054,7 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
     return f.toString();
   }
 
-  private class ConvertedType {
+  private static class ConvertedType {
     DataType dt;
     boolean isUnsigned;
     boolean isVlen;

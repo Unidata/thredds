@@ -1,4 +1,3 @@
-// $Id: UnknownBaseQuantity.java 64 2006-07-12 22:30:50Z edavis $
 /*
  * Copyright 1998-2009 University Corporation for Atmospheric Research/Unidata
  *
@@ -37,7 +36,6 @@ package ucar.units;
  * Provides support for an unknown base quantity.
  * 
  * @author Steven R. Emmerson
- * @version $Id: UnknownBaseQuantity.java 64 2006-07-12 22:30:50Z edavis $
  */
 public final class UnknownBaseQuantity extends BaseQuantity {
 	private static final long	serialVersionUID	= 1L;

@@ -47,8 +47,8 @@ public class TestJavaUtilPreferences {
   // only works if System.setProperty called before anything else
   @Before
   public void testWho() {
-    System.out.println("***TestBasic");
     System.setProperty("java.util.prefs.PreferencesFactory", "ucar.util.prefs.PreferencesExtFactory");
+    System.out.printf("TestJavaUtilPreferences: java.util.prefs.PreferencesFactory='%s'%n", System.getProperty("java.util.prefs.PreferencesFactory"));
 
     // this makes PreferencesExt the SPI
     Preferences userRoot = Preferences.userRoot();
