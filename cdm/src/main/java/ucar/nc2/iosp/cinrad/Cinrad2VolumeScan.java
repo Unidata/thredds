@@ -369,8 +369,8 @@ public class Cinrad2VolumeScan {
       }
     }
 
-    double avg = sum / n;
-    double sd = Math.sqrt((n * sum2 - sum * sum) / (n * (n - 1)));
+    // double avg = sum / n;
+    // double sd = Math.sqrt((n * sum2 - sum * sum) / (n * (n - 1)));
     // System.out.println(" avg elev="+avg+" std.dev="+sd);
 
     return ok;
