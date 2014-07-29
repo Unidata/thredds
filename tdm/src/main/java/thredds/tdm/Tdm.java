@@ -46,6 +46,7 @@ import thredds.featurecollection.FeatureCollectionConfig;
 import thredds.featurecollection.FeatureCollectionType;
 import thredds.inventory.*;
 import thredds.util.*;
+import ucar.nc2.constants.CDM;
 import ucar.nc2.grib.collection.GribCdmIndex;
 import ucar.nc2.grib.collection.GribCollection;
 import ucar.nc2.time.CalendarDate;
@@ -67,8 +68,6 @@ import java.util.*;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicBoolean;
-
-import static org.apache.http.auth.AuthScope.*;
 
 /**
  * Describe
@@ -98,7 +97,7 @@ public class Tdm {
 
   LoggerFactory loggerFactory;
 
-  private class Server {
+  private static class Server {
     String name;
     HTTPSession session;
 
@@ -461,7 +460,7 @@ public class Tdm {
     RandomAccessFile.setDebugLeaks(true);
     HTTPSession.setGlobalUserAgent("TDM v4.5");
     // GribCollection.getDiskCache2().setNeverUseCache(true);
-    String logLevel = "INFO";
+    String logLevel;
 
     // /opt/jdk/bin/java -d64 -Xmx3g -jar -Dtds.content.root.path=/opt/tds-dev/content tdm-4.5.jar -cred tdm:trigger -tds "http://thredds-dev.unidata.ucar.edu/"
     for (int i = 0; i < args.length; i++) {
@@ -522,8 +521,8 @@ public class Tdm {
     }
 
     if (driver.pass == null && driver.sendTriggers) {
-      Scanner scanner = new Scanner( System.in );
-      String passw = null;
+      Scanner scanner = new Scanner( System.in, CDM.UTF8 );
+      String passw;
       while (true) {
         System.out.printf("%nEnter password for tds trigger: ");
         passw = scanner.nextLine();

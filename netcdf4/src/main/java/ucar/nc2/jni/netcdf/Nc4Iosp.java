@@ -133,7 +133,7 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
    *
    * @return true if we set jna.library.path
    */
-  static protected String defaultNetcdf4Library() {
+  static private String defaultNetcdf4Library() {
     String pathlist = null;
     for (String path : DEFAULTNETCDF4PATH) {
       File f = new File(path);
@@ -255,7 +255,7 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
       long savepos = raf.getFilePointer();
       raf.seek(1);
       byte[] hdr = new byte[3];
-      raf.read(hdr);
+      raf.readFully(hdr);
       String shdr = new String(hdr, "US-ASCII");
       if ("HDF".equals(shdr)) match = true;
       raf.seek(savepos);
@@ -779,7 +779,7 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
         sArray = Array.factory(DataType.INT, shape, ib.array());
         return (baseType == Nc4prototypes.NC_INT) ? sArray : MAMath.convertUnsigned(sArray);
     }
-    return null;
+    throw new IllegalArgumentException("Illegal type="+baseType);
   }
 
   private Attribute readOpaqueAttValues(int grpid, int varid, String attname, int len, UserType userType) throws IOException {
@@ -1148,22 +1148,25 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
           case NC_CHAR:
           case NC_UBYTE:
             isunsigned = true;
+            //coverity[MISSING_BREAK]
           case NC_BYTE:
             cdmtype = DataType.ENUM1;
             break;
           case NC_USHORT:
             isunsigned = true;
+             //coverity[MISSING_BREAK]
           case NC_SHORT:
             cdmtype = DataType.ENUM1;
             break;
           case NC_UINT:
             isunsigned = true;
+            //coverity[MISSING_BREAK]
           case NC_INT:
           default:
             cdmtype = DataType.ENUM4;
             break;
         }
-        // not supported this.e.setUnsigned(isunsigned);
+        // not supported this.e.setUnsigned(isunsigned);  LOOK
         this.e.setBaseType(cdmtype);
       }
     }

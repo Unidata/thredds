@@ -656,7 +656,7 @@ public class DatasetWriter extends JPanel {
     @Override
     public long[] computeChunking(Variable v) {
       VariableBean bean = map.get(v.getFullName());
-       return (bean == null) ? null : bean.chunked;
+       return (bean == null) ? new long[0] : bean.chunked;
     }
 
     @Override
