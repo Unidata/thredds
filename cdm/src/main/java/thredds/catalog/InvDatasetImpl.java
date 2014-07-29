@@ -361,6 +361,7 @@ public class InvDatasetImpl extends InvDataset {
    * This is needed to do reliable editing.
    */
   protected void canonicalize() {
+    List<InvMetadata> whatsLeft = new ArrayList<>();
 
     // transfer all non-inherited thredds metadata to tm
     Iterator iter = tm.metadata.iterator();
@@ -369,7 +370,8 @@ public class InvDatasetImpl extends InvDataset {
       if (m.isThreddsMetadata() && !m.isInherited() && !m.hasXlink()) {
         ThreddsMetadata nested = m.getThreddsMetadata();
         tm.add(nested, false);
-        iter.remove();
+      } else {
+        whatsLeft.add(m);
       }
     }
 
@@ -380,9 +382,12 @@ public class InvDatasetImpl extends InvDataset {
       if (m.isThreddsMetadata() && m.isInherited() && !m.hasXlink()) {
         ThreddsMetadata nested = m.getThreddsMetadata();
         tmi.add(nested, true);
-        iter.remove();
+      } else {
+        whatsLeft.add(m);
       }
     }
+
+    tm.metadata = whatsLeft;
   }
 
   /**
@@ -400,7 +405,7 @@ public class InvDatasetImpl extends InvDataset {
     tm.setServiceName("anon");
     this.urlPath = urlPath;
 
-    // create anonomous service
+    // create anonymous service
     addService(new InvService(tm.getServiceName(), stype.toString(), "", "", null));
 
     finish();

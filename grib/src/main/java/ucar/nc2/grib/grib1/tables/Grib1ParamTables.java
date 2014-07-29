@@ -65,8 +65,6 @@ public class Grib1ParamTables {
   static private final Object lock = new Object();
   static private int standardTablesStart = 0; // heres where the standard tables start - keep track so user additions can go first
 
-  static private final boolean warn = false;
-
   static private final Lookup standardLookup;
   static private final Grib1ParamTableReader defaultTable;
 
@@ -81,7 +79,7 @@ public class Grib1ParamTables {
       // standardLookup.readLookupTable("resources/grib1/ncep/lookupTables.txt");
       standardLookup.readLookupTable("resources/grib1/wrf/lookupTables.txt"); // */
       // lookup.readLookupTable("resources/grib1/tablesOld/lookupTables.txt");  // too many problems - must check every one !
-      standardLookup.tables = new CopyOnWriteArrayList<Grib1ParamTableReader>(standardLookup.tables); // in case user adds tables
+      standardLookup.tables = new CopyOnWriteArrayList<>(standardLookup.tables); // in case user adds tables
       defaultTable = standardLookup.getParameterTable(0, -1, -1); // user cannot override default
 
     } catch (IOException ioe) {
@@ -136,7 +134,7 @@ public class Grib1ParamTables {
 
     Grib1ParamTableReader table;
     if (paramTablePath != null) {
-      if (localTableHash == null) localTableHash = new HashMap<String, Grib1ParamTableReader>();
+      if (localTableHash == null) localTableHash = new HashMap<>();
       table = localTableHash.get(paramTablePath);
       if (table == null) {
         table = new Grib1ParamTableReader(paramTablePath);
@@ -252,8 +250,8 @@ public class Grib1ParamTables {
   //////////////////////////////////////////////////////////////////////////
 
   public static class Lookup {
-    List<Grib1ParamTableReader> tables = new ArrayList<Grib1ParamTableReader>();
-    Map<Integer, Grib1ParamTableReader> tableMap = new ConcurrentHashMap<Integer, Grib1ParamTableReader>();
+    List<Grib1ParamTableReader> tables = new ArrayList<>();
+    Map<Integer, Grib1ParamTableReader> tableMap = new ConcurrentHashMap<>();
 
     /**
      * read the lookup table from file
@@ -273,7 +271,7 @@ public class Grib1ParamTables {
     }
 
     /**
-     * read the lookup table from input stream
+     * read the lookup table from an input stream
      *
      * @param is         The input stream
      * @param lookupFile full pathname of lookup file
@@ -284,6 +282,7 @@ public class Grib1ParamTables {
       if (is == null)
         return false;
 
+      File parent = new File(lookupFile).getParentFile();
       InputStreamReader isr = new InputStreamReader(is);
       BufferedReader br = new BufferedReader(isr);
 
@@ -303,7 +302,8 @@ public class Grib1ParamTables {
         if (filename.startsWith("/") || filename.startsWith("\\") || filename.startsWith("file:") || filename.startsWith("http://")) {
           path = filename;
         } else {
-          path = GribResourceReader.getFileRoot(lookupFile) + "/" + filename;
+          File tableFile = new File(parent, filename); // reletive file
+          path = tableFile.getPath();
         }
 
         Grib1ParamTableReader table = new Grib1ParamTableReader(center, subcenter, version, path);
@@ -338,7 +338,7 @@ public class Grib1ParamTables {
         table = findParameterTable(center, subcenter, tableVersion);
       if (table == null) {
         if (strict || defaultTable == null) {
-          table = findParameterTable(center, subcenter, tableVersion); // debug
+          // table = findParameterTable(center, subcenter, tableVersion); // debug
           logger.warn("Could not find a table for GRIB file with center: " + center + " subCenter: " + subcenter + " version: " + tableVersion);
           throw new UnsupportedOperationException("Could not find a table for GRIB file with center: " + center + " subCenter: " + subcenter + " version: " + tableVersion);
         }

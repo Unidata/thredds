@@ -654,13 +654,13 @@ public class MAMath {
     MAMath.MinMax minmax = getMinMaxSkipMissingData(a, missingValue);
 
     if (isUnsigned) {
-      long size = (1 << nbits) - 1;
+      long size = (1L << nbits) - 1;
       double offset = minmax.min;
       double scale =(minmax.max - minmax.min) / size;
       return new ScaleOffset(scale, offset);
 
     } else {
-      long size = (1 << nbits) - 2;
+      long size = (1L << nbits) - 2;
       double offset = (minmax.max + minmax.min) / 2;
       double scale =(minmax.max - minmax.min) / size;
       return new ScaleOffset(scale, offset);

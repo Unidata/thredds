@@ -628,6 +628,7 @@ public class GradsBinaryGridServiceProvider extends AbstractIOServiceProvider {
 
     Array dataArray = Array.factory(DataType.FLOAT, section.getShape());
     GradsVariable gradsVar = findVar(v2);
+    if (gradsVar == null) throw new IOException();
 
     // Canonical ordering is ens, time, level, lat, lon
     int rangeIdx = 0;

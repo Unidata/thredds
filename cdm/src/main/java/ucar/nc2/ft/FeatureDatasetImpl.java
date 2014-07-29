@@ -233,7 +233,7 @@ public abstract class FeatureDatasetImpl implements FeatureDataset {
   protected FileCache fileCache;
 
   @Override
-  public void setFileCache(FileCache fileCache) {
+  public synchronized void setFileCache(FileCache fileCache) {
     this.fileCache = fileCache;
   }
 

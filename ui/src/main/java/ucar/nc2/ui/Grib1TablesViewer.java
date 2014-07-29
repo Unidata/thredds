@@ -255,8 +255,7 @@ public class Grib1TablesViewer extends JPanel {
 
   private void showFile(TableBean bean) {
     infoTA.setText("Table:" + bean.getPath() + "\n");
-    InputStream is = GribResourceReader.getInputStream(bean.getPath());
-    try {
+    try (InputStream is = GribResourceReader.getInputStream(bean.getPath())) {
       infoTA.appendLine( IO.readContents(is));
       infoWindow.setVisible(true);
       

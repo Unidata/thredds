@@ -159,13 +159,13 @@ public class TableConfig {
         break;
       case Lon:
         lon = name;
+        break;
       case Time:
         time = name;
         break;
       case TimeNominal:
         timeNominal = name;
         break;
-
       case StnId:
         stnId = name;
         break;

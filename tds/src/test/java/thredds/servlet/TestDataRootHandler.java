@@ -195,6 +195,7 @@ public class TestDataRootHandler
    * Test behavior when a datasetScan@location results in
    * a CrDs whose isCollection() method returns false.
    */
+  @Test
   public void testNondirectoryScanLocation()
   {
     // Create a non-directory file which will be the datasetScan@location value.
@@ -240,6 +241,7 @@ public class TestDataRootHandler
    * listDatasets() returns a set of CrDs all of whose isCollection()
    * method returns false.
    */
+  @Test
   public void testScanLocationContainOnlyAtomicDatasets() throws IOException {
     // Create public data directory in content path.
     File publicDataDir = new File( publicContentDir, "dataDir");
@@ -336,6 +338,7 @@ public class TestDataRootHandler
    * Test behavior when dataset with name containing a plus sign ("+") is
    * found under a datasetScan@location.
    */
+  @Test
   public void testScanLocationContainsDatasetWithPlusSignInName() throws IOException {
     // Create public data directory in content path.
     File publicDataDir = new File( publicContentDir, "dataDir");
@@ -438,6 +441,7 @@ public class TestDataRootHandler
    * Test behavior when a catalogRef@xlink:href, using ".." directory path
    * segments, points to a catalog outside of the content directory.
    */
+  @Test
   public void testCatRefOutOfContentDirUsingDotDotDirs() throws IOException {
     File publicDataDir = TestFileDirUtils.addDirectory( publicContentDir, "dataDir" );
     File dataFileNc = TestFileDirUtils.addFile( publicDataDir, "data.nc");
@@ -486,6 +490,7 @@ public class TestDataRootHandler
   /**
    * Test canonicalization of paths to remove "./" and "../" directories.
    */
+  @Test
   public void testInitCatalogWithDotDotInPath() throws IOException {
     String subDirName = "aSubDir";
     File subDir = TestFileDirUtils.addDirectory( contentDir, subDirName );

@@ -77,15 +77,13 @@ public class CompositeStationCollection extends StationTimeSeriesCollectionImpl 
   }
 
   @Override
-  protected void initStationHelper() {
+  protected StationHelper initStationHelper() {
     TimedCollection.Dataset td = dataCollection.getPrototype();
     if (td == null)
       throw new RuntimeException("No datasets in the collection");
 
     Formatter errlog = new Formatter();
-    FeatureDatasetPoint openDataset = null;
-    try {
-      openDataset = (FeatureDatasetPoint) FeatureDatasetFactoryManager.open(FeatureType.STATION, td.getLocation(), null, errlog);
+    try (FeatureDatasetPoint openDataset = (FeatureDatasetPoint) FeatureDatasetFactoryManager.open(FeatureType.STATION, td.getLocation(), null, errlog)) {
 
       List<FeatureCollection> fcList = openDataset.getPointFeatureCollectionList();
       StationTimeSeriesCollectionImpl openCollection = (StationTimeSeriesCollectionImpl) fcList.get(0);
@@ -98,15 +96,10 @@ public class CompositeStationCollection extends StationTimeSeriesCollectionImpl 
 
       dataVariables = openDataset.getDataVariables();
       globalAttributes = openDataset.getGlobalAttributes();
+      return stationHelper;
 
     } catch (Exception ioe) {
       throw new RuntimeException(td.getLocation(), ioe);
-
-    } finally {
-      try {
-        if (openDataset != null) openDataset.close();
-      } catch (Throwable t) {
-      }
     }
   }
 

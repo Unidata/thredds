@@ -56,36 +56,36 @@ public abstract class StationProfileCollectionImpl extends MultipleNestedPointCo
     super( name, timeUnit, altUnits, FeatureType.STATION_PROFILE);
   }
 
-  protected abstract void initStationHelper(); // allow station helper to be defered initialization
+  protected abstract StationHelper initStationHelper(); // allow station helper to be defered initialization
 
   @Override
   public List<StationFeature> getStationFeatures() throws IOException {
-    if (stationHelper == null) initStationHelper();
+    if (stationHelper == null) stationHelper = initStationHelper();
     return stationHelper.getStationFeatures();
   }
 
   public List<Station> getStations() {
-    if (stationHelper == null) initStationHelper();
+    if (stationHelper == null) stationHelper = initStationHelper();
     return stationHelper.getStations();
   }
 
   public List<Station> getStations(List<String> stnNames) {
-    if (stationHelper == null) initStationHelper();
+    if (stationHelper == null) stationHelper = initStationHelper();
     return stationHelper.getStations(stnNames);
   }
 
   public List<Station> getStations(LatLonRect boundingBox) throws IOException {
-    if (stationHelper == null) initStationHelper();
+    if (stationHelper == null) stationHelper = initStationHelper();
     return stationHelper.getStations(boundingBox);
   }
 
   public Station getStation(String name) {
-    if (stationHelper == null) initStationHelper();
+    if (stationHelper == null) stationHelper = initStationHelper();
     return stationHelper.getStation(name);
   }
 
   public LatLonRect getBoundingBox() {
-    if (stationHelper == null) initStationHelper();
+    if (stationHelper == null) stationHelper = initStationHelper();
     return stationHelper.getBoundingBox();
   }
 
@@ -135,7 +135,7 @@ public abstract class StationProfileCollectionImpl extends MultipleNestedPointCo
     }
 
       // already done
-    protected void initStationHelper() {}
+    protected StationHelper initStationHelper() { return stationHelper; }
 
     // use this only if it is multiply nested
     public NestedPointFeatureCollectionIterator getNestedPointFeatureCollectionIterator(int bufferSize) throws IOException {

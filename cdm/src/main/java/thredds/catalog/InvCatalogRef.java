@@ -106,7 +106,9 @@ public class InvCatalogRef extends InvDatasetImpl {
       return getParentCatalog().resolveUri(href);
     }
     catch (java.net.URISyntaxException e) {
-      errMessage = "URISyntaxException on url  " + href + " = " + e.getMessage();
+      synchronized (this) {
+        errMessage = "URISyntaxException on url  " + href + " = " + e.getMessage();
+      }
       return null;
     }
   }
@@ -163,8 +165,6 @@ public class InvCatalogRef extends InvDatasetImpl {
     if (uriResolved == null) {
       // this is to display an error message
       proxy = new InvDatasetImpl(null, "HREF ERROR");
-      if (debug)
-        System.out.println(errMessage);
       proxy.addProperty(new InvProperty("HREF ERROR", errMessage));
       datasets.add(proxy);
       init = true;

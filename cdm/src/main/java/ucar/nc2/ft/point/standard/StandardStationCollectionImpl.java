@@ -78,7 +78,7 @@ public class StandardStationCollectionImpl extends StationTimeSeriesCollectionIm
   }
 
   @Override
-  protected void initStationHelper() {
+  protected StationHelper initStationHelper() {
     try {
       stationHelper = new StationHelper();
 
@@ -96,6 +96,8 @@ public class StandardStationCollectionImpl extends StationTimeSeriesCollectionIm
     } catch (IOException ioe) {
       throw new RuntimeException(ioe);
     }
+
+    return stationHelper;
   }
 
   private class StandardStationFeatureImpl extends StationTimeSeriesFeatureImpl {

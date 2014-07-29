@@ -228,8 +228,10 @@ public class InvCatalogFactory10 implements InvCatalogConvertIF, MetadataConvert
     String alias = dsElem.getAttributeValue("alias");
     if (alias != null) {
       InvDatasetImpl ds = (InvDatasetImpl) catalog.findDatasetByID( alias);
-      if (ds == null)
-        factory.appendErr(" ** Parse error: dataset named "+name+" has illegal alias = "+alias+"\n");
+      if (ds == null) {
+        factory.appendErr(" ** Parse error: dataset named " + name + " has illegal alias = " + alias + "\n");
+        return null;
+      }
       return new InvDatasetImplProxy(name, ds);
     }
 

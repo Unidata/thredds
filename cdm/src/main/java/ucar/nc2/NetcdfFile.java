@@ -2179,6 +2179,7 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable, AutoClosea
           data = v.read();
         } catch (IOException e) {
           e.printStackTrace();
+          return;
         }
         long size = data.getSizeBytes();
         f.format(" %8d", size);

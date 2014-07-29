@@ -175,12 +175,16 @@ public class AggregationTiled extends Aggregation implements ProxyReader {
       try {
         // read in the entire data from this nested dataset
         varData = dtiled.read(mainv, cancelTask);
+        if (varData == null)
+          throw new IOException("cant read "+mainv.getFullName());
+
         index = new TileLayout(tiledSection, wantSection);
 
         if (debug) System.out.println(" varData read: " + new Section(varData.getShape()));
       } catch (InvalidRangeException e) {
         throw new IllegalArgumentException(e.getMessage());
       }
+
 
       while (index.hasNext()) {
         try {
@@ -238,6 +242,8 @@ public class AggregationTiled extends Aggregation implements ProxyReader {
 
         Section localNeed = needToRead.shiftOrigin(tiledSection); // shifted to the tiled section
         varData = dtiled.read(mainv, cancelTask, localNeed.getRanges());
+        if (varData == null)
+          throw new IOException("cant read "+mainv.getFullName());
 
         index = new TileLayout(needToRead, wantSection);
 

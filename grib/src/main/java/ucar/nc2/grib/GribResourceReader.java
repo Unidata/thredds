@@ -37,137 +37,44 @@ import java.io.*;
 import java.net.URL;
 import java.net.URLConnection;
 
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.regex.*;
 
 /**
- * A class that allows external packages to define how to read resource files.
+ * Static methods to read resource files.
  *
+ * @author caron 07/28/14
  * @author Jeff McWhirter  02/07/2007
  * @version 2.0
  */
 
-public abstract class GribResourceReader {
-
-  /**
-   * The singleton reader. Can be set by other packages to read resources
-   */
-  private static GribResourceReader gribResourceReader;
-
-  /**
-   * Set the singleton reader. This is used to read in resources and can be set by external
-   * packages
-   *
-   * @param reader The reader
-   */
-  public static void setGribResourceReader(GribResourceReader reader) {
-    gribResourceReader = reader;
-  }
-
-  /**
-   * Overridden by instances of the singleton
-   *
-   * @param resourceName The resource name. May be a file, url, java resource, etc.
-   * @return The input stream to the resource
-   * @throws IOException _more_
-   */
-  public abstract InputStream openInputStream(String resourceName)
-          throws IOException;
+public class GribResourceReader {
 
 
   /**
    * Get the input stream to the given resource
    *
-   * @param resourceName The resource name. May be a file, url, java resource, etc.
+   * @param resourceName The resource name. May be a resource on the class path or a file
    * @return The input stream to the resource
    */
-  public static InputStream getInputStream(String resourceName) {
-    return getInputStream(resourceName, null);
-  }
-
-
-  /**
-   * Get the input stream to the given resource
-   *
-   * @param resourceName The resource name. May be a file, url, java resource, etc.
-   * @param originClass  If non-null we use this to find java resources that are relative to a class
-   * @return The input stream to the resource
-   */
-
-  public static InputStream getInputStream(String resourceName, Class originClass) {
-    if (gribResourceReader != null) {
-      try {
-        InputStream inputStream = gribResourceReader.openInputStream(resourceName);
-        if (inputStream != null)
-          return inputStream;
-      } catch (IOException ioe) {
-        System.err.println("Failed to open:" + resourceName + "\n" + ioe);
-      }
-    }
-
-    InputStream s;
-    while (originClass != null) {
-      s = originClass.getResourceAsStream(resourceName);
-      if (s != null) {
-        break;
-      }
-      originClass = originClass.getSuperclass();
-    }
+  public static InputStream getInputStream(String resourceName) throws FileNotFoundException {
 
     // Try class loader to get resource
     ClassLoader cl = GribResourceReader.class.getClassLoader();
-    s = cl.getResourceAsStream(resourceName);
+    InputStream s = cl.getResourceAsStream(resourceName);
     if (s != null) {
       return s;
     }
 
-    //Try the file system
+    // Try the file system
     File f = new File(resourceName);
-    if (f.exists()) {
-      try {
-        s = new FileInputStream(f);
-      } catch (Exception e) {
-      }
-    }
-    if (s != null) {
-      return s;
-    }
+    if (f.exists())
+      return new FileInputStream(f);
 
-    /* try it as a url
-    try {
-      Matcher m = Pattern.compile(" ").matcher(resourceName);  // LOOK WTF?
-      String encodedUrl = m.replaceAll("%20");
-      URL dataUrl = new URL(encodedUrl);
-      URLConnection connection = dataUrl.openConnection();
-      s = connection.getInputStream();
-    } catch (Exception exc) {
-    } */
-
-    return s;
+    // give up
+    return null;
   }
-
-  public static String getFileRoot(String f) {
-    int idx = f.lastIndexOf("/");
-    if (idx < 0) {
-      idx = f.lastIndexOf(File.separator);
-    }
-    if (idx < 0) {
-      return f;
-    }
-    return f.substring(0, idx);
-  }
-
-
-  public static String getFilename(String f) {
-    int idx = f.lastIndexOf("/");
-    if (idx < 0) {
-      idx = f.lastIndexOf(File.separator);
-    }
-    if (idx < 0) {
-      return f;
-    }
-    return f.substring(idx+1);
-  }
-
 
 }
 

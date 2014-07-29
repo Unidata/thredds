@@ -66,7 +66,7 @@ public class StandardStationProfileCollectionImpl extends StationProfileCollecti
   }
 
   @Override
-  protected void initStationHelper() {
+  protected StationHelper initStationHelper() {
     try {
       stationHelper = new StationHelper();
       StructureDataIterator siter = ft.getStationDataIterator(-1);
@@ -83,6 +83,7 @@ public class StandardStationProfileCollectionImpl extends StationProfileCollecti
     } catch (IOException ioe) {
       throw new RuntimeException(ioe);
     }
+    return stationHelper;
   }
 
   public StationFeature makeStation(StructureData stationData, int recnum) {

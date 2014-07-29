@@ -146,7 +146,7 @@ public class TableParser {
 
   /////////////////////////////////////////////////////////////////////////////////////////////////
 
-  private List<Field> fields = new ArrayList<Field>();
+  private List<Field> fields = new ArrayList<>();
   public TableParser(String format) throws IOException, NumberFormatException {
     int start = 0;
     StringTokenizer stoker = new StringTokenizer(format, " ,");
@@ -176,7 +176,7 @@ public class TableParser {
 
   public List<Record> readAllRecords(InputStream ios, int maxLines) throws IOException, NumberFormatException {
 
-    List<Record> records = new ArrayList<Record>();
+    List<Record> records = new ArrayList<>();
 
     BufferedReader dataIS = new BufferedReader(new InputStreamReader(ios));
     int count = 0;
@@ -245,7 +245,7 @@ public class TableParser {
         if (type == int.class) {
           Integer result = isBlank ? 0 : new Integer(svalue);
           if (hasScale)
-            return new Float(result.intValue() * scale);
+            return result * scale;
           else
             return result;
         }
@@ -297,7 +297,7 @@ public class TableParser {
    * A set of values for one line.
    */
   static public class Record {
-    List<Object> values = new ArrayList<Object>();
+    List<Object> values = new ArrayList<>();
 
     static Record make(String line, List fields) {
       try {
@@ -328,10 +328,8 @@ public class TableParser {
     }
 
     public void toString(Formatter f) {
-      for (int j = 0; j < values.size(); j++) {
-        Object s = values.get(j);
+      for (Object s : values)
         f.format(" %s,", s.toString());
-      }
       f.format("%n");
     }
   }

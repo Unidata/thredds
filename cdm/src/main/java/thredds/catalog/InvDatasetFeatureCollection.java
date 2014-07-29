@@ -361,13 +361,15 @@ public abstract class InvDatasetFeatureCollection extends InvCatalogRef implemen
 
   @Override
   public java.util.List<InvDataset> getDatasets() { // probably not used
+    State localState;
     try {
-      checkState();
+      localState = checkState();
     } catch (Exception e) {
       logger.error("Error in checkState", e);
+      return new ArrayList<>(0);
     }
-    List<InvDataset> tops = new ArrayList<InvDataset>(1);
-    tops.add(state.top);
+    List<InvDataset> tops = new ArrayList<>(1);
+    tops.add(localState.top);
     return tops;
   }
 

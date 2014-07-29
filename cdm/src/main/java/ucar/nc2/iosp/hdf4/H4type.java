@@ -97,21 +97,25 @@ public class H4type {
         break;
       case 21:
         unsigned = true;
+        //coverity[missing_break]
       case 20:
         dt =  DataType.BYTE;
         break;
       case 23:
         unsigned = true;
+         //coverity[missing_break]
       case 22:
         dt =  DataType.SHORT;
         break;
       case 25:
+        //coverity[missing_break]
         unsigned = true;
       case 24:
         dt =  DataType.INT;
         break;
       case 27:
         unsigned = true;
+         //coverity[missing_break]
       case 26:
         dt =  DataType.LONG;
         break;

@@ -27,12 +27,13 @@ public class GeoTiffWriter2 extends GeotiffWriter {
     double scaler;
     GridDataset dataset = ucar.nc2.dt.grid.GridDataset.open(fileName);
     GridDatatype grid = dataset.findGridDatatype(gridName);
-    GridCoordSystem gcs = grid.getCoordinateSystem();
-    ProjectionImpl proj = grid.getProjection();
-
     if (grid == null) {
       throw new IllegalArgumentException("No grid named " + gridName + " in fileName");
     }
+
+    GridCoordSystem gcs = grid.getCoordinateSystem();
+    ProjectionImpl proj = grid.getProjection();
+
     if (!gcs.isRegularSpatial()) {
       Attribute att = dataset.findGlobalAttributeIgnoreCase("datasetId");
       if (att != null && att.getStringValue().contains("DMSP")) {  // LOOK!!

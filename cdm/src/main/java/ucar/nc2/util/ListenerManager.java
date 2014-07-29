@@ -162,7 +162,7 @@ public class ListenerManager {
    *
    * @param event the event to be sent: public void method_name( event_class event)
    */
-  public void sendEvent(java.util.EventObject event) {
+  public synchronized void sendEvent(java.util.EventObject event) {
     if (!hasListeners || !enabled)
       return;
 
@@ -193,7 +193,7 @@ public class ListenerManager {
    *
    * @param event the event to be sent: public void method_name( event_class event)
    */
-  public void sendEventExcludeSource(java.util.EventObject event) {
+  public synchronized void sendEventExcludeSource(java.util.EventObject event) {
     if (!hasListeners || !enabled)
       return;
 

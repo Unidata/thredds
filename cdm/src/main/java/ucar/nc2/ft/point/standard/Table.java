@@ -187,8 +187,6 @@ public abstract class Table {
    protected void replaceDataVars(StructureMembers sm) {
      for (StructureMembers.Member m : sm.getMembers()) {
        VariableSimpleIF curr = this.cols.get(m.getName());
-       if (curr == null)
-         System.out.println("HEY");
        this.cols.put(m.getName(), VariableSimpleImpl.changeShape(curr, Dimension.makeDimensionsAnon(m.getShape())));
      }
   }

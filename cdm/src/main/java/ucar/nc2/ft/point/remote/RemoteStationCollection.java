@@ -38,14 +38,10 @@ public class RemoteStationCollection extends StationTimeSeriesCollectionImpl {
    * initialize the stationHelper.
    */
   @Override
-  protected void initStationHelper() {
+  protected StationHelper initStationHelper() {
     // read in all the stations with the "stations" query
     stationHelper = new StationHelper();
-    InputStream in = null;
-    try {
-      String query = "req=stations";
-      in = CdmRemote.sendQuery(uri, query);
-
+    try (InputStream in = CdmRemote.sendQuery(uri, "req=stations")) {
       PointStream.MessageType mtype = PointStream.readMagic(in);
       if (mtype != PointStream.MessageType.StationList) {
         throw new RuntimeException("Station Request: bad response");
@@ -59,15 +55,10 @@ public class RemoteStationCollection extends StationTimeSeriesCollectionImpl {
         Station s = new StationImpl(sp.getId(), sp.getDesc(), sp.getWmoId(), sp.getLat(), sp.getLon(), sp.getAlt());
         stationHelper.addStation(new RemoteStationFeatureImpl(null, null));    // LOOK WRONG
       }
+      return stationHelper;
 
     } catch (IOException ioe) {
       throw new RuntimeException(ioe);
-
-    } finally {
-      if (in != null) try {
-        in.close();
-      } catch (IOException ioe) {
-      }
     }
   }
 
@@ -151,11 +142,13 @@ public class RemoteStationCollection extends StationTimeSeriesCollectionImpl {
     }
 
     @Override
-    protected void initStationHelper() {
+    protected StationHelper initStationHelper() {
       from.initStationHelper();
       this.stationHelper = new StationHelper();
       try {
         this.stationHelper.setStations(this.stationHelper.getStationFeatures(boundingBoxSubset));
+        return stationHelper;
+
       } catch (IOException e) {
         throw new RuntimeException(e);
       }

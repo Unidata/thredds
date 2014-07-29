@@ -708,6 +708,7 @@ public class GeoTiff {
       if (stripOffsetTag != null) {
         int stripOffset = stripOffsetTag.value[0];
         IFDEntry stripSizeTag = findTag(Tag.StripByteCounts);
+        if (stripSizeTag == null) throw new IllegalStateException();
         int stripSize = stripSizeTag.value[0];
         System.out.println("stripOffset =" + stripOffset + " stripSize=" + stripSize);
         testReadData(stripOffset, stripSize);

@@ -189,12 +189,14 @@ public class BufrFeatureDatasetFactory implements FeatureDatasetFactory {
       }
 
       @Override
-      protected void initStationHelper() {
-        if (stationHelper != null) return;
+      protected StationHelper initStationHelper() {
+        if (stationHelper == null) {
+          stationHelper = new StationHelper();
+          for (BufrCdmIndexProto.Station s : index.stations)
+            stationHelper.addStation(new BufrStation(s));
+        }
 
-        stationHelper = new StationHelper();
-        for (BufrCdmIndexProto.Station s : index.stations)
-          stationHelper.addStation(new BufrStation(s));
+        return stationHelper;
       }
 
       private class BufrStation extends StationTimeSeriesFeatureImpl {

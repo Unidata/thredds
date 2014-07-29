@@ -183,7 +183,7 @@ public class DataBTree {
       if (type != wantType)
         throw new IllegalStateException("DataBTree must be type " + wantType);
 
-      long size = 8 + 2 * h5.getSizeOffsets() + nentries * (8 + h5.getSizeOffsets() + 8 + ndimStorage);
+      long size = 8 + 2 * h5.getSizeOffsets() + ((long)nentries) * (8 + h5.getSizeOffsets() + 8 + ndimStorage);
       if (memTracker != null) memTracker.addByLen("Data BTree (" + owner + ")", address, size);
       if (debugDataBtree) debugOut.println("    type=" + type + " level=" + level + " nentries=" + nentries + " size = " + size);
 

@@ -111,10 +111,12 @@ public class ODLparser {
       } else if (line.startsWith("END_OBJECT")) {
         endObject( current, line);
         current = current.getParentElement();
+        if (current == null) throw new IllegalStateException();
 
       } else if (line.startsWith("END_GROUP")) {
         endGroup( current, line);
         current = current.getParentElement();
+        if (current == null) throw new IllegalStateException();
 
       } else {
         addField( current, line);

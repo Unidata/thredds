@@ -173,6 +173,9 @@ public abstract class AggregationOuterDimension extends Aggregation implements P
       PromoteVar pv = (PromoteVar) cv;
 
       Array data = pv.read(typicalDataset);
+      if (data == null)
+        throw new IOException("cant read "+typicalDataset);
+
       pv.dtype = DataType.getType(data.getElementType());
       VariableDS promotedVar = new VariableDS(ncDataset, null, null, pv.varName, pv.dtype, dimName, null, null);
       /* if (data.getSize() > 1) { // LOOK case of non-scalar global attribute not delat with
@@ -846,6 +849,8 @@ public abstract class AggregationOuterDimension extends Aggregation implements P
         if (debugStride) System.out.printf("%d: %s [%d,%d) (%d) %f for %s%n",
                 resultPos, nestedJoinRange, dod.aggStart, dod.aggEnd, dod.ncoord,  dod.aggStart / 8.0, vnested.getLocation());
         Array varData = read(dod);
+        if (varData == null)
+          throw new IOException("cant read "+dod);
 
         // which subset do we want?
         // bit tricky - assume returned array's rank depends on type LOOK is this true?
@@ -857,7 +862,7 @@ public abstract class AggregationOuterDimension extends Aggregation implements P
           List<Range> nestedSection = new ArrayList<Range>(ranges); // make copy
           nestedSection.set(0, nestedJoinRange);
           varData = varData.section(nestedSection);
-        }
+     }
 
         // may not know the data type until now
         if (dtype == null)

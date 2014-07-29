@@ -132,7 +132,7 @@ public class N3outputStreamWriter extends N3streamWriter {
   private boolean first = true;
 
   public void writeRecordData(DataOutputStream stream, List<Variable> varList) throws IOException {
-    long want = recStart + recno * recSize;
+    long want = recStart + ((long) recno) * recSize;
     if (debugWriteData) System.out.println("Write record at filePos= " + filePos + " should be= " + want);
     if (filePos != want) throw new IllegalStateException();
 
