@@ -61,9 +61,7 @@ public class Nexrad2IOServiceProvider extends AbstractIOServiceProvider {
   public boolean isValidFile( RandomAccessFile raf) throws IOException {
     try {
       raf.seek(0);
-      byte[] b = new byte[8];
-      raf.read(b);
-      String test = new String( b);
+      String test = raf.readString(8);
       return test.equals( Level2VolumeScan.ARCHIVE2) || test.equals( Level2VolumeScan.AR2V0001) ||
              test.equals( Level2VolumeScan.AR2V0003)|| test.equals( Level2VolumeScan.AR2V0004) ||
              test.equals( Level2VolumeScan.AR2V0002) || test.equals( Level2VolumeScan.AR2V0006) ||
