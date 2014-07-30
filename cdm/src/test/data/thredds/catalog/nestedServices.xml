@@ -8,7 +8,7 @@
      <service name="most" serviceType="Compound" base="">
        <service name="iso" serviceType="ISO" base="/thredds/iso/" />
        <service name="odap" serviceType="OpenDAP" base="/thredds/dodsC/" />
-       <service name="ncss" serviceType="NetCDFSubset" base="/thredds/ncss/grid/" />
+       <service name="ncss" serviceType="NetCDFSubset" base="/thredds/ncss/" />
        <service name="ncml" serviceType="NCML" base="/thredds/ncml/" />
        <service name="uddc" serviceType="UDDC" base="/thredds/uddc/" />
        <service name="wcs" serviceType="WCS" base="/thredds/wcs/" />

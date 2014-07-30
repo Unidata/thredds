@@ -922,7 +922,7 @@ public class StringUtil2 {
   }
 
   public static void main(String[] args) throws UnsupportedEncodingException {
-    String org = "http://dataserver.nccs.nasa.gov/thredds/ncss/grid/nex/netcdf/pr_amon_BCSD_rcp85_r1i1p1_CONUS_CESM1-CAM5_207101-207512.nc?var=pr&latitude=48.9983&longitude=247.212&time_start=2071-01-01T00%3A00%3A00Z&time_end=2072-01-01T00%3A00%3A00Z&timeStride=1&accept=csv";
+    String org = "http://dataserver.nccs.nasa.gov/thredds/ncss/nex/netcdf/pr_amon_BCSD_rcp85_r1i1p1_CONUS_CESM1-CAM5_207101-207512.nc?var=pr&latitude=48.9983&longitude=247.212&time_start=2071-01-01T00%3A00%3A00Z&time_end=2072-01-01T00%3A00%3A00Z&timeStride=1&accept=csv";
     System.out.printf("org = '%s'%n",org );
     String unescapedQuery = EscapeStrings.unescapeURLQuery(org);
     System.out.printf(" EscapeStrings.unescapeURLQuery(org) = '%s'%n%n",unescapedQuery );
