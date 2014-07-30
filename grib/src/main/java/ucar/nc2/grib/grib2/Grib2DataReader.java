@@ -611,7 +611,13 @@ public class Grib2DataReader {
       } else {  // use bitmap
         for (int i = 0, j = 0; i < totalNPoints; i++) {
           if ((bitmap[i / 8] & GribNumbers.bitmask[i % 8]) != 0) {
-            data[i] = (R + g2j.data[j++] * EE) / DD;
+            if (j >= g2j.data.length) {
+              System.out.printf("HEY jj2000 data count %d < bitmask count %d, i=%d, totalNPoints=%d%n", g2j.data.length, j, i, totalNPoints);
+              break;
+            }
+            int indata = g2j.data[j];
+            data[i] = (R + indata * EE) / DD;
+            j++;
           } else {
             data[i] = staticMissingValue;  // LOOK ??
           }

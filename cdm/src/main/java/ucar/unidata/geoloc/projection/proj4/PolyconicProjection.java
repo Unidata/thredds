@@ -248,9 +248,8 @@ public class PolyconicProjection extends ProjectionImpl {
    */
   @Override
   public boolean equals(Object proj) {
-    if (!(proj instanceof LambertConformalConicEllipse)) {
+    if (!(proj instanceof PolyconicProjection))
       return false;
-    }
 
     PolyconicProjection oo = (PolyconicProjection) proj;
     if ((this.getDefaultMapArea() == null) != (oo.defaultMapArea == null)) return false; // common case is that these are null

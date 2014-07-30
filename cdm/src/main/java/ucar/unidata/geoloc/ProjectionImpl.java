@@ -760,7 +760,7 @@ public abstract class ProjectionImpl implements Projection, java.io.Serializable
    * @param world input world coordinate bounding box
    * @return minimum enclosing box in lat,lon coordinates.
    */
-  public LatLonRect projToLatLonBB(ProjectionRect world) {
+  public LatLonRect projToLatLonBBold(ProjectionRect world) {
     //System.out.println("world = " + world);
     ProjectionPoint min = world.getMinPoint();
     ProjectionPoint max = world.getMaxPoint();
@@ -803,17 +803,16 @@ public abstract class ProjectionImpl implements Projection, java.io.Serializable
   }
 
   /**
-   * From GridCoordSys. use this instead of  projToLatLonBB() ?
-   * Compute lat/lon bounding box from projection bounding box.
+   * Compute lat/lon bounding box from projection bounding box by finding the minimum enclosing box.
    * @param bb projection bounding box
    * @return lat, lon bounding box.
    */
-  public LatLonRect getLatLonBoundingBox(ProjectionRect bb) {
+  public LatLonRect projToLatLonBB(ProjectionRect bb) {
     // look at all 4 corners of the bounding box
-    LatLonPointImpl llpt = (LatLonPointImpl) projToLatLon(bb.getLowerLeftPoint(), new LatLonPointImpl());
-    LatLonPointImpl lrpt = (LatLonPointImpl) projToLatLon(bb.getLowerRightPoint(), new LatLonPointImpl());
-    LatLonPointImpl urpt = (LatLonPointImpl) projToLatLon(bb.getUpperRightPoint(), new LatLonPointImpl());
-    LatLonPointImpl ulpt = (LatLonPointImpl) projToLatLon(bb.getUpperLeftPoint(), new LatLonPointImpl());
+    LatLonPoint llpt = projToLatLon(bb.getLowerLeftPoint(), new LatLonPointImpl());
+    LatLonPoint lrpt = projToLatLon(bb.getLowerRightPoint(), new LatLonPointImpl());
+    LatLonPoint urpt = projToLatLon(bb.getUpperRightPoint(), new LatLonPointImpl());
+    LatLonPoint ulpt = projToLatLon(bb.getUpperLeftPoint(), new LatLonPointImpl());
 
     // Check if grid contains poles.
     boolean includesNorthPole = false;
@@ -853,10 +852,9 @@ public abstract class ProjectionImpl implements Projection, java.io.Serializable
       double lonMin = getMinOrMaxLon(llpt.getLongitude(), ulpt.getLongitude(), true);
       double lonMax = getMinOrMaxLon(lrpt.getLongitude(), urpt.getLongitude(), false);
 
-      llpt.set(latMin, lonMin);
-      urpt.set(latMax, lonMax);
-
-      llbb = new LatLonRect(llpt, urpt);
+      LatLonPointImpl min = new LatLonPointImpl(latMin, lonMin);
+      LatLonPointImpl max = new LatLonPointImpl(latMax, lonMax);
+      llbb = new LatLonRect(min, max);
     }
 
     return llbb;

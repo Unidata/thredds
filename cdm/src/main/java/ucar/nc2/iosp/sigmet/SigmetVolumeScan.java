@@ -629,6 +629,7 @@ public class SigmetVolumeScan {
       differentialReflectivityGroups = sortScans("diffReflectivity", diffReflectivity, 1000);
       hasDifferentialReflectivity = true;
     }
+
     if (time.size() > 0) {
       timeGroups = sortScans("diffReflectivity", diffReflectivity, 1000);
       hasTime = true;

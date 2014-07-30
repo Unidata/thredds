@@ -35,9 +35,7 @@ package ucar.unidata.geoloc.projection;
 import ucar.nc2.constants.CDM;
 import ucar.nc2.constants.CF;
 import ucar.unidata.geoloc.*;
-
-import java.util.List;
-import java.util.ArrayList;
+import ucar.unidata.geoloc.projection.sat.BoundingBoxHelper;
 
 /**
  * Vertical Perspective Projection, spherical earth.
@@ -59,7 +57,7 @@ public class VerticalPerspectiveView extends ProjectionImpl {
   // constants from Snyder's equations
   private double P, lon0Degrees;
   private double cosLat0, sinLat0;
-  private double maxR, maxR2; // square of "map limit" circle of this radius from the origin, p 173
+  private double maxR; // "map limit" circle of this radius from the origin, p 173
 
   @Override
   public ProjectionImpl constructCopy() {
@@ -137,7 +135,6 @@ public class VerticalPerspectiveView extends ProjectionImpl {
 
     // "map limit" circle of this radius from the origin, p 173
     maxR = .99 * R * Math.sqrt((P - 1) / (P + 1));
-    maxR2 = maxR * maxR;
   }
 
   @Override
@@ -156,7 +153,7 @@ public class VerticalPerspectiveView extends ProjectionImpl {
     if ((defaultMapArea == null) != (that.defaultMapArea == null)) return false; // common case is that these are null
     if (defaultMapArea != null && !that.defaultMapArea.equals(defaultMapArea)) return false;
 
-      return true;
+    return true;
   }
 
   @Override
@@ -684,124 +681,10 @@ public class VerticalPerspectiveView extends ProjectionImpl {
    * @return ProjectionRect, or null if no part of the LatLonRect intersects the projection plane
    */
   @Override
-  public ProjectionRect latLonToProjBB(LatLonRect rect) {
-
-    ProjectionPoint llpt = latLonToProj(rect.getLowerLeftPoint(), new ProjectionPointImpl());
-    ProjectionPoint urpt = latLonToProj(rect.getUpperRightPoint(), new ProjectionPointImpl());
-    ProjectionPoint lrpt = latLonToProj(rect.getLowerRightPoint(), new ProjectionPointImpl());
-    ProjectionPoint ulpt = latLonToProj(rect.getUpperLeftPoint(), new ProjectionPointImpl());
-
-    // how many are bad?
-    List<ProjectionPoint> goodPts = new ArrayList<ProjectionPoint>(4);
-    int countBad = 0;
-    if (!addGoodPts(goodPts, llpt))
-      countBad++;
-    if (!addGoodPts(goodPts, urpt))
-      countBad++;
-    if (!addGoodPts(goodPts, lrpt))
-      countBad++;
-    if (!addGoodPts(goodPts, ulpt))
-      countBad++;
-
-    // case : 3 or 4 good points, just use those
-
-    // case: only 2 good ones : extend to edge of the limit circle
-    if (countBad == 2) {
-
-      if (!ProjectionPointImpl.isInfinite(llpt) && !ProjectionPointImpl.isInfinite(lrpt)) {
-        addGoodPts(goodPts, new ProjectionPointImpl(0, maxR));
-
-      } else if (!ProjectionPointImpl.isInfinite(ulpt) && !ProjectionPointImpl.isInfinite(llpt)) {
-        addGoodPts(goodPts, new ProjectionPointImpl(maxR, 0));
-
-      } else if (!ProjectionPointImpl.isInfinite(ulpt) && !ProjectionPointImpl.isInfinite(urpt)) {
-        addGoodPts(goodPts, new ProjectionPointImpl(0, -maxR));
-
-      } else if (!ProjectionPointImpl.isInfinite(urpt) && !ProjectionPointImpl.isInfinite(lrpt)) {
-        addGoodPts(goodPts, new ProjectionPointImpl(-maxR, 0));
-
-      } else {
-        throw new IllegalStateException();
-      }
-
-    } else if (countBad == 3) { // case: only 1 good one : extend to wedge of the limit circle
-
-      if (!ProjectionPointImpl.isInfinite(llpt)) {
-        double xcoord = llpt.getX();
-        addGoodPts(goodPts, new ProjectionPointImpl(xcoord, getLimitCoord(xcoord)));
-
-        double ycoord = llpt.getY();
-        addGoodPts(goodPts, new ProjectionPointImpl(getLimitCoord(ycoord), ycoord));
-      } else if (!ProjectionPointImpl.isInfinite(urpt)) {
-        double xcoord = urpt.getX();
-        addGoodPts(goodPts, new ProjectionPointImpl(xcoord, -getLimitCoord(xcoord)));
-
-        double ycoord = urpt.getY();
-        addGoodPts(goodPts, new ProjectionPointImpl(-getLimitCoord(ycoord), ycoord));
-      } else if (!ProjectionPointImpl.isInfinite(ulpt)) {
-        double xcoord = ulpt.getX();
-        addGoodPts(goodPts, new ProjectionPointImpl(xcoord, -getLimitCoord(xcoord)));
-
-        double ycoord = ulpt.getY();
-        addGoodPts(goodPts, new ProjectionPointImpl(getLimitCoord(ycoord), ycoord));
-      } else if (!ProjectionPointImpl.isInfinite(lrpt)) {
-        double xcoord = lrpt.getX();
-        addGoodPts(goodPts, new ProjectionPointImpl(xcoord, getLimitCoord(xcoord)));
-
-        double ycoord = lrpt.getY();
-        addGoodPts(goodPts, new ProjectionPointImpl(-getLimitCoord(ycoord), ycoord));
-
-      } else {
-        throw new IllegalStateException();
-      }
-
-    }
-
-    return makeRect(goodPts);
+ public ProjectionRect latLonToProjBB(LatLonRect rect) {
+    BoundingBoxHelper bbhelper = new BoundingBoxHelper(this, maxR);
+    return bbhelper.latLonToProjBB(rect);
   }
-
-  private boolean addGoodPts(List<ProjectionPoint> goodPts, ProjectionPoint pt) {
-    if (!ProjectionPointImpl.isInfinite(pt)) {
-      goodPts.add(pt);
-      //System.out.println("  good= "+pt);
-      return true;
-    } else return false;
-  }
-
-  // where does line x|y = coord intersest the map limit circle?
-  // return the positive root.
-  private double getLimitCoord(double coord) {
-    return Math.sqrt(maxR2 - coord * coord);
-  }
-
-  private ProjectionRect makeRect(List<ProjectionPoint> goodPts) {
-    double minx = Double.MAX_VALUE;
-    double miny = Double.MAX_VALUE;
-    double maxx = -Double.MAX_VALUE;
-    double maxy = -Double.MAX_VALUE;
-    for (ProjectionPoint pp : goodPts) {
-      minx = Math.min(minx, pp.getX());
-      maxx = Math.max(maxx, pp.getX());
-      miny = Math.min(miny, pp.getY());
-      maxy = Math.max(maxy, pp.getY());
-    }
-    return new ProjectionRect(minx, miny, maxx, maxy);
-  }
-
-
-  /*LatLonPointImpl clip(LatLonPointImpl llpt) {
-
- }
-
-
- ProjectionRect clip(LatLonRect bb) {
-   LatLonPointImpl llpt = bb.getLowerLeftPoint();
-   LatLonPointImpl urpt = bb.getUpperRightPoint();
-   LatLonPointImpl lrpt = bb.getLowerRightPoint();
-   LatLonPointImpl ulpt = bb.getUpperLeftPoint();
-
- } */
-
 
   private static void test(double lat, double lon) {
     double radius = 6371.0;
@@ -817,16 +700,6 @@ public class VerticalPerspectiveView extends ProjectionImpl {
     System.out.println(" lon = " + ll.getLongitude() + " should be= " + lon);
   }
 
-  /**
-   * Test
-   *
-   * @param args not used
-   */
-  public static void main2(String[] args) {
-    test(40.0, 0.0);
-    test(40.0, 40.0);
-    test(0.0, 40.0);
-  }
 
   public static void main(String[] args) {
     double radius = 6371.0;

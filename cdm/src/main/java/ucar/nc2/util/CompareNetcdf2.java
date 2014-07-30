@@ -640,7 +640,7 @@ public class CompareNetcdf2 {
 
     NetcdfFile ncfile1 = NetcdfDataset.open(file1);
     NetcdfFile ncfile2 = NetcdfDataset.open(file2);
-    compareFiles(ncfile1, ncfile2, new Formatter(System.out), true, showEach, compareData);
+    compareFiles(ncfile1, ncfile2, new Formatter(System.out), true, compareData, showEach);
     ncfile1.close();
     ncfile2.close();
   }

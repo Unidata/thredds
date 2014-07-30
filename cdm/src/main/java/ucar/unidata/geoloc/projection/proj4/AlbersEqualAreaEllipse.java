@@ -486,6 +486,7 @@ public class AlbersEqualAreaEllipse extends ProjectionImpl {
         }
       }
 
+      // coverity[swapped_arguments]
       toLon = Math.atan2(fromX, fromY) / n;
       toLat = lpphi;
     }
