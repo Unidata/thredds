@@ -123,8 +123,7 @@ public class Level2VolumeScan {
 
     // volume scan header
     dataFormat = raf.readString(8);
-    raf.skipBytes(1);
-    String volumeNo = raf.readString(3);
+    raf.skipBytes(4);
     title_julianDay = raf.readInt(); // since 1/1/70
     title_msecs = raf.readInt();
     stationId = raf.readString(4).trim(); // only in AR2V0001
