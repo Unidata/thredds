@@ -58,11 +58,13 @@ public abstract class AbstractCoordTransBuilder implements ucar.nc2.dataset.Coor
   static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(AbstractCoordTransBuilder.class);
   protected Formatter errBuffer = null;
 
+  @Override
   public void setErrorBuffer(Formatter errBuffer) {
     this.errBuffer = errBuffer;
   }
 
   // for vertical transforms
+  @Override
   public ucar.unidata.geoloc.vertical.VerticalTransform makeMathTransform(NetcdfDataset ds, Dimension timeDim, VerticalCT vCT) {
     throw new UnsupportedOperationException();
   }

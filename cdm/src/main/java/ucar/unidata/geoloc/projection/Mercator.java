@@ -233,6 +233,7 @@ public class Mercator extends ProjectionImpl {
    *
    * @return the parameters as a String
    */
+  @Override
   public String paramsToString() {
     return toString();
   }
@@ -255,6 +256,7 @@ public class Mercator extends ProjectionImpl {
    * @param pt2 the line goes between these two points
    * @return false if there is no seam
    */
+  @Override
   public boolean crossSeam(ProjectionPoint pt1, ProjectionPoint pt2) {
     // either point is infinite
     if (ProjectionPointImpl.isInfinite(pt1) || ProjectionPointImpl.isInfinite(pt2)) {
@@ -307,6 +309,7 @@ public class Mercator extends ProjectionImpl {
    * @param result the object to write to
    * @return the given result
    */
+  @Override
   public ProjectionPoint latLonToProj(LatLonPoint latLon, ProjectionPointImpl result) {
     double toX, toY;
     double fromLat = latLon.getLatitude();
@@ -334,6 +337,7 @@ public class Mercator extends ProjectionImpl {
    * @param result the object to write to
    * @return LatLonPoint convert to these lat/lon coordinates
    */
+  @Override
   public LatLonPoint projToLatLon(ProjectionPoint world, LatLonPointImpl result) {
     double fromX = world.getX() - falseEasting;
     double fromY = world.getY() - falseNorthing;
