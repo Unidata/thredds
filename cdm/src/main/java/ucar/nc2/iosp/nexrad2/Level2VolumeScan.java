@@ -766,10 +766,7 @@ public class Level2VolumeScan {
                 log.warn("failed to delete uncompressed file (IOException)" + ufilename);
         }
 
-        if (e instanceof IOException)
-            throw e;
-        else
-            throw new RuntimeException(e);
+        throw e;
     } finally {
       if (lock != null) lock.release();
     }
