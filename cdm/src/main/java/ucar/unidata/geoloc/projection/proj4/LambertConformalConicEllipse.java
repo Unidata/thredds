@@ -530,7 +530,7 @@ public class LambertConformalConicEllipse extends ProjectionImpl {
 			else
 				toLat = MapMath.phi2(Math.pow(rho / c, 1.0/n), e);
 
-      // coverity[swapped_arguments]
+      //coverity[swapped_arguments]
 			toLon = Math.atan2(fromX, fromY) / n;
 
 		} else {

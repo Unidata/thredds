@@ -482,7 +482,7 @@ public class Ghcnm extends AbstractIOServiceProvider {
 
       raf.seek(0);
       byte[] b = new byte[MAGIC_START.length()];
-      raf.read(b);
+      raf.readFully(b);
       String test = new String(b, CDM.utf8Charset);
       return test.equals(MAGIC_START);
 

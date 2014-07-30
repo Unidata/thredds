@@ -424,7 +424,7 @@ public class DMSPHeader
       throw new IOException( "Invalid DMSP file: the number of header records <" + this.numHeaderRecords + ">, data records <" + this.numDataRecordsDim.getLength() + ">, and artificial data records <" + this.numArtificialDataRecords + "> is not equal to total records <" + this.numRecords + ">." );
     }
     this.headerSizeInBytes = this.numHeaderRecords * this.recordSizeInBytes;
-    if ( numRecords * this.recordSizeInBytes != this.actualSize )
+    if ( numRecords * ((long) this.recordSizeInBytes) != this.actualSize )
     {
       throw new IOException( "Invalid DMSP file: the number of records <" + this.numRecords + "> times the record size <" + this.recordSizeInBytes + "> does not equal the size of the file <" + this.actualSize + ">." );
     }

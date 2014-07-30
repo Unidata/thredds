@@ -505,14 +505,11 @@ public class NUWGConvention extends CoordSysBuilder {
       return nav.svalue;
     }
 
-    private StringBuilder buf = new StringBuilder(2000);
     public String toString() {
-      buf.setLength(0);
+      StringBuilder buf = new StringBuilder(2000);
       buf.append("\nNav Info\n");
       buf.append("Name___________Value_____________________Description\n");
-      Iterator iter = iterator();
-      while (iter.hasNext()) {
-        NavInfo nava = (NavInfo) iter.next();
+      for (NavInfo nava : this) {
         buf.append(nava).append("\n");
       }
       buf.append("\n");

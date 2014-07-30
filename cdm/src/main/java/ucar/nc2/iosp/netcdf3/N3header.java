@@ -60,7 +60,7 @@ public class N3header {
     // this is the first time we try to read the file - if there's a problem we get a IOException
     raf.seek(0);
     byte[] b = new byte[4];
-    raf.read(b);
+    raf.readFully(b);
     for (int i = 0; i < 3; i++)
       if (b[i] != MAGIC[i])
         return false;
@@ -122,7 +122,7 @@ public class N3header {
     raf.seek(pos);
 
     byte[] b = new byte[4];
-    raf.read(b);
+    raf.readFully(b);
     for (int i = 0; i < 3; i++)
       if (b[i] != MAGIC[i])
         throw new IOException("Not a netCDF file "+raf.getLocation());
@@ -517,7 +517,7 @@ public class N3header {
   private String readString() throws IOException {
     int nelems = raf.readInt();
     byte[] b = new byte[nelems];
-    raf.read(b);
+    raf.readFully(b);
     skip(nelems); // pad to 4 byte boundary
 
     if (nelems == 0)

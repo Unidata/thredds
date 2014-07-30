@@ -85,7 +85,7 @@ public class GeoGrid implements NamedObject, ucar.nc2.dt.GridDatatype {
       yDimOrgIndex = findDimension(gcs.getYHorizAxis().getDimension(0));
 
     } else { // 2D case
-      // coverity[COPY_PASTE_ERROR]
+      //coverity[COPY_PASTE_ERROR]
       yDimOrgIndex = findDimension(gcs.getXHorizAxis().getDimension(0));
       xDimOrgIndex = findDimension(gcs.getXHorizAxis().getDimension(1));
     }

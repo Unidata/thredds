@@ -32,6 +32,8 @@
  */
 package ucar.nc2.iosp.misc;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import ucar.ma2.*;
 
 import ucar.nc2.*;
@@ -63,6 +65,7 @@ import java.util.regex.Pattern;
  * @see "http://www.unidata.ucar.edu/data/lightning.html"
  */
 public class Uspln extends AbstractLightningIOSP {
+  static private final Logger logger = LoggerFactory.getLogger(Uspln.class);
 
   /*
     USPLN/NAPLN data format:
@@ -225,7 +228,7 @@ public class Uspln extends AbstractLightningIOSP {
     }
 
     byte[] b = new byte[n];
-    raf.read(b);
+    raf.readFully(b);
     String got = new String(b);
 
     return (pMAGIC.matcher(got).find() || pMAGIC_OLD.matcher(got).find());
@@ -596,29 +599,43 @@ public class Uspln extends AbstractLightningIOSP {
                   : new Stroke(date, lat, lon, amp, nstrokes);
         }
       } catch (Exception e) {
-        //System.out.println("bad flash: " + line.trim());
+        logger.error("bad header: {}", line.trim());
+        return false;
+      }
+
+      if (stroke == null) {
+        logger.error("bad header: {}", line.trim());
         return false;
       }
 
       byte[] data = new byte[sm.getStructureSize()];
       ByteBuffer bbdata = ByteBuffer.wrap(data);
       for (String mbrName : sm.getMemberNames()) {
-        if (mbrName.equals(TIME)) {
-          bbdata.putDouble(stroke.secs);
-        } else if (mbrName.equals(LAT)) {
-          bbdata.putDouble(stroke.lat);
-        } else if (mbrName.equals(LON)) {
-          bbdata.putDouble(stroke.lon);
-        } else if (mbrName.equals(SIGNAL)) {
-          bbdata.putFloat((float) stroke.amp);
-        } else if (mbrName.equals(MULTIPLICITY)) {
-          bbdata.putInt(stroke.n);
-        } else if (mbrName.equals(MAJOR_AXIS)) {
-          bbdata.putFloat((float) stroke.axisMajor);
-        } else if (mbrName.equals(MINOR_AXIS)) {
-          bbdata.putFloat((float) stroke.axisMinor);
-        } else if (mbrName.equals(ELLIPSE_ANGLE)) {
-          bbdata.putInt(stroke.axisOrient);
+        switch (mbrName) {
+          case TIME:
+            bbdata.putDouble(stroke.secs);
+            break;
+          case LAT:
+            bbdata.putDouble(stroke.lat);
+            break;
+          case LON:
+            bbdata.putDouble(stroke.lon);
+            break;
+          case SIGNAL:
+            bbdata.putFloat((float) stroke.amp);
+            break;
+          case MULTIPLICITY:
+            bbdata.putInt(stroke.n);
+            break;
+          case MAJOR_AXIS:
+            bbdata.putFloat((float) stroke.axisMajor);
+            break;
+          case MINOR_AXIS:
+            bbdata.putFloat((float) stroke.axisMinor);
+            break;
+          case ELLIPSE_ANGLE:
+            bbdata.putInt(stroke.axisOrient);
+            break;
         }
       }
       asbb = new ArrayStructureBB(sm, new int[]{1}, bbdata, 0);
