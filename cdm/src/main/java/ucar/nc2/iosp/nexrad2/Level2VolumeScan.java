@@ -839,7 +839,7 @@ public class Level2VolumeScan {
    * test
    */
   public static void main2(String[] args) throws IOException {
-    File testDir = new File("C:/data/bad/radar2/");
+    File testDir = new File("/share/testdata/radar/problem");
 
     File[] files = testDir.listFiles();
     for (int i = 0; i < files.length; i++) {
