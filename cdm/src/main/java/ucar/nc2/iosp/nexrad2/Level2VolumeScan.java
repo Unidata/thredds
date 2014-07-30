@@ -570,7 +570,8 @@ public class Level2VolumeScan {
     return coefficientHighResGroups;
   }
 
-  private class GroupComparator implements Comparator<List<Level2Record>> {
+  private static class GroupComparator implements
+    Comparator<List<Level2Record>> {
 
     public int compare(List<Level2Record> group1, List<Level2Record> group2) {
       Level2Record record1 = group1.get(0);

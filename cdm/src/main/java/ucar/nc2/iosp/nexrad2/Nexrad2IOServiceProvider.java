@@ -604,7 +604,7 @@ public class Nexrad2IOServiceProvider extends AbstractIOServiceProvider {
     r.readData(volScan.raf, datatype, gateRange, ii);
   }
 
-  private class Vgroup {
+  private static class Vgroup {
     Level2Record[][] map;
     int datatype;
 
