@@ -209,6 +209,8 @@ public class Nexrad2IOServiceProvider extends AbstractIOServiceProvider {
         groups = vScan.getHighResCoeffocientGroups();
       else if( shortName.startsWith("DifferentialPhase"))
         groups = vScan.getHighResDiffPhaseGroups();
+      else
+        throw new IllegalStateException("Bad group: " + shortName);
 
       int nscans = groups.size();
 
