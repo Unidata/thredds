@@ -781,9 +781,7 @@ public class Level2VolumeScan {
     try (RandomAccessFile raf = new RandomAccessFile(ufilename, "r")) {
       raf.order(RandomAccessFile.BIG_ENDIAN);
       raf.seek(0);
-      byte[] b = new byte[8];
-      raf.read(b);
-      String test = new String(b);
+      String test = raf.readString(8);
       if (test.equals(Level2VolumeScan.ARCHIVE2) || test.equals
              (Level2VolumeScan.AR2V0001)) {
         System.out.println("--Good header= " + test);
@@ -800,8 +798,7 @@ public class Level2VolumeScan {
       while (!eof) {
 
         if (lookForHeader) {
-          raf.read(b);
-          test = new String(b);
+          test = raf.readString(8);
           if (test.equals(Level2VolumeScan.ARCHIVE2) || test.equals(Level2VolumeScan.AR2V0001)) {
             System.out.println("  found header= " + test);
             raf.skipBytes(16);
