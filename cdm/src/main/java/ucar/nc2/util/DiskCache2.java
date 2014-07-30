@@ -253,8 +253,8 @@ public class DiskCache2 {
   // File.canWrite() appears to be flaky on some systems
   // will java 7 help ??
   private static boolean canWrite(File f) {
-    Path path = f.toPath();
-    return Files.isWritable(path);
+    Path path = f.toPath().toAbsolutePath();
+    return Files.isWritable(path.getParent());
     /* Path apath = path.toAbsolutePath();
     System.out.printf("%s%n", path.toAbsolutePath());
     File parent = f.getParentFile();

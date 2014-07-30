@@ -54,6 +54,7 @@ public class TestBufrRead {
     public boolean accept(File pathname) {
       if (pathname.getPath().indexOf("exclude") > 0) return false;
       if (pathname.getName().endsWith(".bfx")) return false;
+      if (pathname.getName().endsWith(".jpg")) return false;
       return true;
     }
   }
