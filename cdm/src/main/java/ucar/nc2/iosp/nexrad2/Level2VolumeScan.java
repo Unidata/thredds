@@ -754,6 +754,7 @@ public class Level2VolumeScan {
                 log.debug("  unpacked " + total + " num bytes " + nrecords + " records; ouput ends at " + outputRaf.getFilePointer());
         }
 
+        outputRaf.flush();
     } catch (IOException e) {
         if (outputRaf != null) outputRaf.close();
         outputRaf = null;
@@ -773,7 +774,6 @@ public class Level2VolumeScan {
       if (lock != null) lock.release();
     }
 
-    outputRaf.flush();
     return outputRaf;
   }
 
