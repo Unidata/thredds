@@ -49,7 +49,7 @@ import java.util.*;
  * @author caron
  */
 
-public interface TypedDataset {
+public interface TypedDataset extends AutoCloseable {
 
   /** @return Title of the dataset. */
   public String getTitle();

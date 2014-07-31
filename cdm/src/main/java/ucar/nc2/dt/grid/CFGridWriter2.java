@@ -63,6 +63,22 @@ import java.util.List;
 public class CFGridWriter2 {
   static private final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(CFGridWriter2.class);
 
+  /**
+   * Compute the size of the file without writing
+   *
+   * @param gds              the GridDataset
+   * @param gridList         the list of variables to be written, or null for all
+   * @param llbb             the lat/lon bounding box, or null for all
+   * @param projRect         the projection bounding box, or null for all
+   * @param horizStride      the x and y stride
+   * @param zRange           the z stride
+   * @param dateRange        date range, or null for all
+   * @param stride_time      the time stride
+   * @param addLatLon        add 2D lat/lon coordinates if needed
+   * @return total bytes written
+   * @throws IOException
+   * @throws InvalidRangeException
+   */
   static public long makeSizeEstimate(ucar.nc2.dt.GridDataset gds, List<String> gridList,
                                        LatLonRect llbb, ProjectionRect projRect, int horizStride, Range zRange,
                                        CalendarDateRange dateRange, int stride_time, boolean addLatLon) throws IOException, InvalidRangeException {
@@ -71,6 +87,23 @@ public class CFGridWriter2 {
     return writer2.writeOrTestSize(gds, gridList, llbb, projRect, horizStride, zRange, dateRange, stride_time, addLatLon, true, null);
   }
 
+  /**
+   * Write a netcdf/CF file from a GridDataset
+   *
+   * @param gds              the GridDataset
+   * @param gridList         the list of variables to be written, or null for all
+   * @param llbb             the lat/lon bounding box, or null for all
+   * @param projRect         the projection bounding box, or null for all
+   * @param horizStride      the x and y stride
+   * @param zRange           the z stride
+   * @param dateRange        date range, or null for all
+   * @param stride_time      the time stride
+   * @param addLatLon        add 2D lat/lon coordinates if needed
+   * @param writer           this does the actual writing
+   * @return total bytes written
+   * @throws IOException
+   * @throws InvalidRangeException
+   */
   static public long writeFile(ucar.nc2.dt.GridDataset gds, List<String> gridList,
                                        LatLonRect llbb, ProjectionRect projRect, int horizStride, Range zRange,
                                        CalendarDateRange dateRange, int stride_time, boolean addLatLon, NetcdfFileWriter writer) throws IOException, InvalidRangeException {
@@ -79,11 +112,28 @@ public class CFGridWriter2 {
     return writer2.writeOrTestSize(gds, gridList, llbb, projRect, horizStride, zRange, dateRange, stride_time, addLatLon, false, writer);
   }
 
+  /**
+   *
+   * @param gds              the GridDataset
+   * @param gridList         the list of variables to be written, or null for all
+   * @param llbb             the lat/lon bounding box, or null for all
+   * @param projRect         the projection bounding box, or null for all
+   * @param horizStride      the x and y stride
+   * @param zRange           the z stride
+   * @param dateRange        date range, or null for all
+   * @param stride_time      the time stride
+   * @param addLatLon        add 2D lat/lon coordinates if needed
+   * @param testSizeOnly     dont write, just return size
+   * @param writer           this does the actual writing
+   * @return total bytes written
+   * @throws IOException
+   * @throws InvalidRangeException
+   */
   private long writeOrTestSize(ucar.nc2.dt.GridDataset gds, List<String> gridList,
                               LatLonRect llbb, ProjectionRect projRect, int horizStride, Range zRange,
                               CalendarDateRange dateRange, int stride_time,
                               boolean addLatLon, boolean testSizeOnly,
-                              NetcdfFileWriter writer)      throws IOException, InvalidRangeException {
+                              NetcdfFileWriter writer) throws IOException, InvalidRangeException {
 
     NetcdfDataset ncd = (NetcdfDataset) gds.getNetcdfFile();
     LatLonRect resultBB = null;
@@ -91,6 +141,12 @@ public class CFGridWriter2 {
     List<Variable> varList = new ArrayList<>();
     List<String> varNameList = new ArrayList<>();
     List<CoordinateAxis> axisList = new ArrayList<>();
+
+    if (gridList == null) {
+      gridList = new ArrayList<>();
+      for (GridDatatype grid : gds.getGrids())
+        gridList.add(grid.getName());
+    }
 
     // add each desired Grid to the new file
     long total_size = 0;

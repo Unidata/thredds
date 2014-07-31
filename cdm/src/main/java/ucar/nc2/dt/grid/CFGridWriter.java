@@ -200,13 +200,13 @@ public class CFGridWriter {
   }
 
   public long makeFile(String location, ucar.nc2.dt.GridDataset gds, List<String> gridList,
-                       ProjectionRect llbb, int horizStride,
+                       ProjectionRect projRect, int horizStride,
                        Range zRange,
                        CalendarDateRange dateRange, int stride_time,
                        boolean addLatLon)
           throws IOException, InvalidRangeException {
 
-    return makeOrTestSize(location, gds, gridList, llbb, horizStride, zRange, dateRange, stride_time, addLatLon, false, NetcdfFileWriter.Version.netcdf3);
+    return makeOrTestSize(location, gds, gridList, projRect, horizStride, zRange, dateRange, stride_time, addLatLon, false, NetcdfFileWriter.Version.netcdf3);
   }
 
   public long makeFile(String location, ucar.nc2.dt.GridDataset gds, List<String> gridList,
@@ -328,13 +328,11 @@ public class CFGridWriter {
                               NetcdfFileWriter.Version version)
           throws IOException, InvalidRangeException {
 
-    Objects.requireNonNull(projRect);
-
     NetcdfDataset ncd = (NetcdfDataset) gds.getNetcdfFile();
 
-    ArrayList<Variable> varList = new ArrayList<Variable>();
-    ArrayList<String> varNameList = new ArrayList<String>();
-    ArrayList<CoordinateAxis> axisList = new ArrayList<CoordinateAxis>();
+    ArrayList<Variable> varList = new ArrayList<>();
+    ArrayList<String> varNameList = new ArrayList<>();
+    ArrayList<CoordinateAxis> axisList = new ArrayList<>();
 
     LatLonRect resultBB = null;
     // add each desired Grid to the new file
@@ -364,45 +362,46 @@ public class CFGridWriter {
       CoordinateAxis1D yAxis = (CoordinateAxis1D) gcsOrg.getYHorizAxis();
       double[] yCoords = yAxis.getCoordValues();
 
+      Range x_range = null;
+      Range y_range = null;
+      if (projRect != null) {
 
-      ProjectionRect fullBB = new ProjectionRect(xCoords[0], yCoords[0], xCoords[xCoords.length - 1], yCoords[yCoords.length - 1]);
+        // use the intersection
+        ProjectionRect fullBB = new ProjectionRect(xCoords[0], yCoords[0], xCoords[xCoords.length - 1], yCoords[yCoords.length - 1]);
+        if (!projRect.intersects(fullBB))
+          throw new InvalidRangeException("BBOX must intersect grid BBOX, minx=" + xCoords[0] + ", miny=" + yCoords[0] + ", maxx=" + xCoords[xCoords.length - 1] + ", maxy=" + yCoords[yCoords.length - 1]);
+        ProjectionRect.intersect(fullBB, projRect, projRect);
 
-      if (!projRect.intersects(fullBB)) {
-        throw new InvalidRangeException("BBOX must intersect grid BBOX, minx=" + xCoords[0] + ", miny=" + yCoords[0] + ", maxx=" + xCoords[xCoords.length - 1] + ", maxy=" + yCoords[yCoords.length - 1]);
+        ProjectionPoint lowerLeft = projRect.getLowerLeftPoint();
+        ProjectionPoint upperRigth = projRect.getUpperRightPoint();
+        double minx = lowerLeft.getX();
+        double miny = lowerLeft.getY();
+        double maxx = upperRigth.getX();
+        double maxy = upperRigth.getY();
+
+        //y_range
+        int minyCoord = yAxis.findCoordElement(miny);
+        int maxyCoord = yAxis.findCoordElement(maxy);
+
+        //x_range
+        int minxCoord = xAxis.findCoordElement(minx);
+        int maxxCoord = xAxis.findCoordElement(maxx);
+
+        y_range = new Range(minyCoord, maxyCoord, horizStride);
+        x_range = new Range(minxCoord, maxxCoord, horizStride);
       }
-
-      ProjectionRect.intersect(fullBB, projRect, projRect);
-
-      ProjectionPoint lowerLeft = projRect.getLowerLeftPoint();
-      ProjectionPoint upperRigth = projRect.getUpperRightPoint();
-      double minx = lowerLeft.getX();
-      double miny = lowerLeft.getY();
-      double maxx = upperRigth.getX();
-      double maxy = upperRigth.getY();
-
-      //y_range
-      int minyCoord = yAxis.findCoordElement(miny);
-      int maxyCoord = yAxis.findCoordElement(maxy);
-
-      //x_range
-      int minxCoord = xAxis.findCoordElement(minx);
-      int maxxCoord = xAxis.findCoordElement(maxx);
-
-
-      Range y_range = new Range(minyCoord, maxyCoord, horizStride);
-      Range x_range = new Range(minxCoord, maxxCoord, horizStride);
 
       Range zRangeUse = makeVerticalRange(zRange, vertAxis);
 
       if ((null != timeRange) || (zRangeUse != null) || (projRect != null) || (horizStride > 1)) {
         grid = grid.subset(timeRange, zRangeUse, y_range, x_range);
-
-        LatLonRect gridBB = grid.getCoordinateSystem().getLatLonBoundingBox();
-        if (resultBB == null)
-          resultBB = gridBB;
-        else
-          resultBB.extend(gridBB);
       }
+
+      LatLonRect gridBB = grid.getCoordinateSystem().getLatLonBoundingBox();
+      if (resultBB == null)
+        resultBB = gridBB;
+      else
+        resultBB.extend(gridBB);
 
       Variable gridV = grid.getVariable();
       varList.add(gridV);
@@ -414,7 +413,6 @@ public class CFGridWriter {
 
       //add coordinate transforms
       addCoordinateTransform(gcs, ncd, varNameList, varList);
-
 
       //Add Variables from the formula_terms
       total_size += processTransformationVars(varList, varNameList, ncd, gds, grid, timeRange, zRangeUse, y_range, x_range, 1, horizStride, horizStride);
