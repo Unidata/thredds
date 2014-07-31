@@ -32,6 +32,8 @@
  */
 package ucar.nc2.iosp.hdf4;
 
+import ucar.nc2.constants.CDM;
+
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.io.IOException;
@@ -179,7 +181,7 @@ typedef enum
 
   static public void main( String args[]) throws IOException {
     try (FileInputStream ios = new FileInputStream("C:/dev/hdf4/HDF4.2r1/hdf/src/htags.h")) {
-      BufferedReader dataIS = new BufferedReader(new InputStreamReader(ios));
+      BufferedReader dataIS = new BufferedReader(new InputStreamReader(ios, CDM.utf8Charset));
       while (true) {
         String line = dataIS.readLine();
         if (line == null) break;

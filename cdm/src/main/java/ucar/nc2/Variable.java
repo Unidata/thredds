@@ -1861,7 +1861,7 @@ public class Variable extends CDMNode implements VariableIF, ProxyReader, Attrib
     return false;
   }
 
-  public Object clone() throws CloneNotSupportedException {
+  /* public Object clone() throws CloneNotSupportedException {
     Variable clone = (Variable) super.clone();
 
     // Do we need to clone these?
@@ -1872,7 +1872,7 @@ public class Variable extends CDMNode implements VariableIF, ProxyReader, Attrib
     clone.setParentStructure(getParentStructure());
     clone.setProxyReader(clone);
     return clone;
-  }
+  }   */
 
 
   ///////////////////////////////////////////////////////////////////////

@@ -229,7 +229,7 @@ public abstract class Aggregation {
 
   // experimental
   public void addCollection(String spec, String olderThan) throws IOException {
-    datasetManager = MFileCollectionManager.open(spec, spec, olderThan, null); // LOOK no name
+    datasetManager = MFileCollectionManager.open(spec, spec, olderThan, new Formatter());
  }
 
   public void setModifications(Element ncmlMods) {
@@ -492,7 +492,7 @@ public abstract class Aggregation {
    * Open one of the nested datasets as a template for the aggregation dataset.
    *
    * @return a typical Dataset
-   * @throws FileNotFoundException if there are no datasets
+   * @throws IOException if there are no datasets
    */
   protected Dataset getTypicalDataset() throws IOException {
     List<Dataset> nestedDatasets = getDatasets();
@@ -507,11 +507,14 @@ public abstract class Aggregation {
       select = (n < 2) ? 0 : n - 2;
     else if (typicalDatasetMode == TypicalDataset.FIRST)
       select = 0;
-    else // random is default
-      select = (n < 2) ? 0 : new Random().nextInt(n);
+    else { // random is default
+      if (r == null) r = new Random();
+      select = (n < 2) ? 0 : r.nextInt(n);
+    }
 
     return nestedDatasets.get(select);
   }
+  private Random r;
 
 
   //////////////////////////////////////////////////////////////////////////////////////////////////

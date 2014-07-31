@@ -552,16 +552,11 @@ if(false) {// Original version
    * Override Object.hashCode() to implement equals.
    */
   public int hashCode() {
-    if (hashCode == 0) {
-      int result = first();
-      result = 37 * result + last();
-      result = 37 * result + stride();
-      hashCode = result;
-    }
-    return hashCode;
+    int result = first();
+    result = 37 * result + last();
+    result = 37 * result + stride();
+    return result;
   }
-
-  private int hashCode = 0;
 
 
   //////////////////////////////////////////////////////////////////////////

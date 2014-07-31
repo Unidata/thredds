@@ -578,6 +578,7 @@ map_proj =  1: Lambert Conformal
         try {
           Date d = dateFormat.parse(dateS);
           values.set(count++, (double) d.getTime() / 1000);
+
         } catch (java.text.ParseException e) {
           parseInfo.format("ERROR: cant parse Time string = <%s> err= %s\n", dateS, e.getMessage());
 

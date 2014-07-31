@@ -63,7 +63,7 @@ public class EarthEllipsoid extends Earth {
   public static final EarthEllipsoid IAG_GRS80 = new EarthEllipsoid("IIAG-GRS80", -1, 6378137.0, 298.257222101);
 
 
-  private static Map<String, EarthEllipsoid> hash;
+  private static final Map<String, EarthEllipsoid> hash = new java.util.LinkedHashMap<>(10);
 
   /**
    * get a collection of all defined EarthEllipsoid objects
@@ -71,9 +71,6 @@ public class EarthEllipsoid extends Earth {
    * @return all defined EarthEllipsoid objects
    */
   public static Collection<EarthEllipsoid> getAll() {
-    if (hash == null) {
-      hash = new java.util.LinkedHashMap<>(10);
-    }
     return hash.values();
   }
 
@@ -85,12 +82,8 @@ public class EarthEllipsoid extends Earth {
    * @return EarthEllipsoid or null if no match.
    */
   public static EarthEllipsoid getType(String name) {
-    if (name == null) {
+    if (name == null)
       return null;
-    }
-    if (hash == null) {
-      hash = new java.util.LinkedHashMap<>(10);
-    }
     return hash.get(name);
   }
 
@@ -137,9 +130,6 @@ public class EarthEllipsoid extends Earth {
   public EarthEllipsoid(String name, int epsgId, double a, double b, double invF) {
     super(a, b, invF, name);
     this.epsgId = epsgId;
-    if (hash == null) {
-      hash = new java.util.LinkedHashMap<>(10);
-    }
     hash.put(name, this);
   }
 

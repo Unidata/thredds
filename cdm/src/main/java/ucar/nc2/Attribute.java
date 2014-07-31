@@ -540,7 +540,6 @@ public class Attribute extends CDMNode {
     this.values = arr;
     this.nelems = (int) arr.getSize();
     this.dataType = DataType.getType(arr.getElementType());
-    hashCode = 0;
   }
 
   /**
@@ -594,25 +593,20 @@ public class Attribute extends CDMNode {
    */
   @Override
   public int hashCode() {
-    if (hashCode == 0) {
-      int result = 17;
-      result = 37 * result + getShortName().hashCode();
-      result = 37 * result + nelems;
-      result = 37 * result + getDataType().hashCode();
-      if (svalue != null)
-        result = 37 * result + svalue.hashCode();
-      else if (values != null) {
-        for (int i = 0; i < getLength(); i++) {
-          int h = isString() ? getStringValue(i).hashCode() : getNumericValue(i).hashCode();
-          result = 37 * result + h;
-        }
+    int result = 17;
+    result = 37 * result + getShortName().hashCode();
+    result = 37 * result + nelems;
+    result = 37 * result + getDataType().hashCode();
+    if (svalue != null)
+      result = 37 * result + svalue.hashCode();
+    else if (values != null) {
+      for (int i = 0; i < getLength(); i++) {
+        int h = isString() ? getStringValue(i).hashCode() : getNumericValue(i).hashCode();
+        result = 37 * result + h;
       }
-      hashCode = result;
     }
-    return hashCode;
+    return result;
   }
-
-  private int hashCode = 0;
 
   @Override
   public void hashCodeShow(Indent indent) {

@@ -727,13 +727,11 @@ public class Ghcnm2 extends AbstractIOServiceProvider {
   //////////////////////////////////////////////////////
 
   private class StructureDataRegexpGhcnm extends StructureDataRegexp {
-    StructureMembers members;
-    Matcher matcher;          // matcher on the station ascii
+    // StructureMembers members;
+    // Matcher matcher;          // matcher on the station ascii
 
     StructureDataRegexpGhcnm(StructureMembers members, Matcher matcher) {
       super(members, matcher);
-      this.members = members;
-      this.matcher = matcher;
     }
 
     @Override

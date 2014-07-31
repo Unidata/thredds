@@ -87,7 +87,7 @@ public class IFPSConvention extends CoordSysBuilder {
 
     projVar = latVar;
     String projName = ds.findAttValueIgnoreCase(projVar, "projectionType", null);
-    if (projName.equals("LAMBERT_CONFORMAL")) {
+    if (projName != null && projName.equals("LAMBERT_CONFORMAL")) {
       Projection proj = makeLCProjection( ds);
       makeXYcoords( ds, proj, latVar, lonVar);
     }

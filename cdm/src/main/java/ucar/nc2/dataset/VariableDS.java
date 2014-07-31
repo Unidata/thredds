@@ -117,6 +117,7 @@ public class VariableDS extends ucar.nc2.Variable implements VariableEnhanced, E
    *    Must not be a Structure, use StructureDS instead.
    */
   public VariableDS(Group group, Structure parent, String shortName, Variable orgVar) {
+    //coverity[FORWARD_NULL]
     super(null, group, parent, shortName);
     setDimensions( getDimensionsString()); // reset the dimensions
 

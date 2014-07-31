@@ -31,7 +31,10 @@ public class RemotePointFeatureIterator extends PointIteratorAbstract {
   public void finish() {
     if (finished) return;
     if (in != null)
-      try { in.close(); } catch (IOException ioe) {}
+      try { in.close(); }
+      catch (IOException ioe) {
+        //coverity[FB.DE_MIGHT_IGNORE]
+      }
     in = null;
     finishCalcBounds();
     finished = true;

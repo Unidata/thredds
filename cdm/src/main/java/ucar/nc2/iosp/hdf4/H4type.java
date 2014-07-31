@@ -108,8 +108,8 @@ public class H4type {
         dt =  DataType.SHORT;
         break;
       case 25:
-        //coverity[missing_break]
         unsigned = true;
+        //coverity[missing_break]
       case 24:
         dt =  DataType.INT;
         break;

@@ -69,6 +69,8 @@ public class FslWindProfiler extends TableConfigurerImpl  {
     String title = ds.findAttValueIgnoreCase(null, "title", null);
     if (title == null)
         title = ds.findAttValueIgnoreCase(null, "DD_reference", null);
+    assert (title != null);
+
     boolean isRass = title.startsWith("RASS data");
     String xml = isRass ? "resources/nj22/pointConfig/FslRassProfiler.xml" : "resources/nj22/pointConfig/FslWindProfiler.xml";
 

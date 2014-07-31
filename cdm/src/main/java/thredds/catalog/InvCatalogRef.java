@@ -335,10 +335,7 @@ public class InvCatalogRef extends InvDatasetImpl {
   public boolean equals(Object o) {
     if (this == o) return true;
     if (!(o instanceof InvCatalogRef)) return false;
-    // Comment out the super comparison as it is the problem.
-    //if ( !super.equals( o ) ) return false;
-
-    final InvCatalogRef invCatalogRef = (InvCatalogRef) o;
+    InvCatalogRef invCatalogRef = (InvCatalogRef) o;
 
     if (href != null ? !href.equals(invCatalogRef.href) : invCatalogRef.href != null) return false;
     // Add the name comparison from super.

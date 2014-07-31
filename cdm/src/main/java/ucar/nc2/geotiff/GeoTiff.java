@@ -692,7 +692,7 @@ public class GeoTiff {
   }
 
 
-  //////////////////////////////////////////////////////////////////////////
+  /* /////////////////////////////////////////////////////////////////////////
 
   void testReadData() throws IOException {
     IFDEntry tileOffsetTag = findTag(Tag.TileOffsets);
@@ -730,5 +730,5 @@ public class GeoTiff {
     for (int i = 0; i < size / 4; i++) {
       System.out.println(i + ": " + buffer.getFloat());
     }
-  }
+  }  */
 }

@@ -294,16 +294,16 @@ public class NcMLWriter {
     return dimElem;
   }
 
-  // enum Typedef
+     // enum Typedef
   public static Element writeEnumTypedef(EnumTypedef etd, Namespace ns) {
     Element typeElem = new Element("enumTypedef", ns);
     typeElem.setAttribute("name", etd.getShortName());
     typeElem.setAttribute("type", etd.getBaseType().toString());
     Map<Integer, String> map = etd.getMap();
-    for (Integer key : map.keySet()) {
+    for (Map.Entry<Integer, String> entry : map.entrySet()) {
       typeElem.addContent(new Element("enum", ns)
-              .setAttribute("key", Integer.toString(key))
-              .addContent(map.get(key)));
+              .setAttribute("key", Integer.toString(entry.getKey()))
+              .setAttribute("value", entry.getValue()));
     }
 
     return typeElem;

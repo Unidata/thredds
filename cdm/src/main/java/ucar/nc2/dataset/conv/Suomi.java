@@ -81,6 +81,8 @@ public class Suomi extends CoordSysBuilder {
 
   public void augmentDataset(NetcdfDataset ds, CancelTask cancelTask) throws IOException {
     String start_date = ds.findAttValueIgnoreCase(null, "start_date", null);
+    if (start_date == null) return;
+
     SimpleDateFormat df = new SimpleDateFormat("yyyy.DDD.HH.mm.ss");   // "2006.105.00.00.00"
     DateFormatter dfo = new DateFormatter();
 

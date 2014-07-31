@@ -822,7 +822,7 @@ public class IO {
   static public String readURLcontentsWithException(String urlString) throws IOException {
     ByteArrayOutputStream bout = new ByteArrayOutputStream(20000);
     copyUrlB(urlString, bout, 20000);
-    return bout.toString();
+    return bout.toString(CDM.UTF8);
   }
 
   /**
@@ -895,7 +895,7 @@ public class IO {
   }
 
   ////////////////////////////////////////////////////////////////////////////////////////////////////////
-  // test
+  /* test
 
   static public void testRead() {
     String baseUrl = "http://moca.virtual.museum/legac/legac01.htm";
@@ -927,7 +927,7 @@ public class IO {
     System.out.println(" file size = " + f.length());
   }
 
-  // how many files can be opened ??
+  /* how many files can be opened ??
   static public void mainn(String[] args) {
     long start = System.currentTimeMillis();
     ArrayList fileList = new ArrayList();
@@ -1007,10 +1007,10 @@ public class IO {
     System.out.println(result);
     System.out.println(" result size = " + result.length());
     System.out.println(" file size = " + fileResult.length());
-    */
+    *
       fout.flush();
       System.out.println(" that took = " + took + " sec");
     }
-  }
+  } */
 
 }

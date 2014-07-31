@@ -41,7 +41,6 @@ import org.joda.time.Period;
 
 @Immutable
 public class CalendarDuration {
-  static private final boolean debug = false;
 
   /**
    * Convert a time udunit string
@@ -52,32 +51,35 @@ public class CalendarDuration {
   static org.joda.time.Period convertToPeriod(int value, String udunit) {
     if (udunit.endsWith("s")) udunit = udunit.substring(0, udunit.length()-1);
 
-    if (udunit.equals("msec"))
-      return Period.millis(value);
-    else if (udunit.equals("sec"))
-      return Period.seconds(value);
-    else if (udunit.equals("minute"))
-      return Period.minutes(value);
-    else if (udunit.equals("hour") || udunit.equals("hr"))
-      return Period.hours(value);
-    else if (udunit.equals("day"))
-      return Period.days(value);
-    else if (udunit.equals("week"))
-      return Period.weeks(value);
-    else if (udunit.equals("month"))
-      return Period.months(value);
-     else if (udunit.equals("year"))
-      return Period.years(value);
+    switch (udunit) {
+      case "msec":
+        return Period.millis(value);
+      case "sec":
+        return Period.seconds(value);
+      case "minute":
+        return Period.minutes(value);
+      case "hour":
+      case "hr":
+        return Period.hours(value);
+      case "day":
+        return Period.days(value);
+      case "week":
+        return Period.weeks(value);
+      case "month":
+        return Period.months(value);
+      case "year":
+        return Period.years(value);
+    }
 
     throw new IllegalArgumentException("cant convert "+ udunit +" to Joda Period");
   }
 
   /////////////////////////////////////////////////////////////////////
 
-  private String text;
-  private CalendarPeriod.Field timeUnit;
-  private boolean isBlank;
-  private double value;
+  //private final String text;
+  private final CalendarPeriod.Field timeUnit;
+  //private final boolean isBlank;
+  private final double value;
   //private org.joda.time.Period jperiod;
 
   public CalendarDuration(int value, CalendarPeriod.Field timeUnit) {
@@ -231,28 +233,28 @@ public class CalendarDuration {
     else throw new IllegalStateException();
   } */
 
-  /**
+  /*
    * If this is a blank string
    * @return true if this is a blank string
-   */
+   *
   public boolean isBlank() {
     return isBlank;
   }
 
-  /**
+  /*
    * Get the String text
    * @return the text
-   */
+   *
   public String getText() {
     return text == null ? timeUnit.toString() : text;
-  }
+  } */
 
   /**
    * String representation
    * @return getText()
    */
   public String toString() {
-    return getText();
+    return timeUnit.toString();
   }
 
   /*
@@ -282,11 +284,8 @@ public class CalendarDuration {
 
     CalendarDuration that = (CalendarDuration) o;
 
-    if (isBlank != that.isBlank) return false;
     if (Double.compare(that.value, value) != 0) return false;
-    if (timeUnit != that.timeUnit) return false;
-
-    return true;
+    return timeUnit == that.timeUnit;
   }
 
   @Override
@@ -294,7 +293,6 @@ public class CalendarDuration {
     int result;
     long temp;
     result = timeUnit != null ? timeUnit.hashCode() : 0;
-    result = 31 * result + (isBlank ? 1 : 0);
     temp = value != +0.0d ? Double.doubleToLongBits(value) : 0L;
     result = 31 * result + (int) (temp ^ (temp >>> 32));
     return result;

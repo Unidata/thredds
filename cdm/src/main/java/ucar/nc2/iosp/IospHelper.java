@@ -820,6 +820,7 @@ public class IospHelper {
       inner = current.v;
       current = current.child;
     }
+    assert inner != null;
 
     Section total = new Section(totalRanges);
     Array result = Array.factory(inner.getDataType(), total.getShape());

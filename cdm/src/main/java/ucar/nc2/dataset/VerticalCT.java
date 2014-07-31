@@ -108,7 +108,7 @@ public class VerticalCT extends CoordinateTransform {
 
   //////////////////////////////////////////////////////////////////////////////////////////////////
   // inner class VerticalCT.Type
-  private static java.util.Map<String,Type> hash = new java.util.HashMap<>(10);
+  private static final java.util.Map<String,Type> hash = new java.util.HashMap<>(10);
 
   /**
    * Enumeration of known Vertical transformations.

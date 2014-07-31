@@ -120,8 +120,6 @@ public abstract class MultipleNestedPointCollectionImpl implements NestedPointFe
 
   private class NestedPointFeatureCollectionFlatten extends PointCollectionImpl {
     protected MultipleNestedPointCollectionImpl from;
-    protected LatLonRect boundingBox;
-    protected CalendarDateRange dateRange;
 
     NestedPointFeatureCollectionFlatten(MultipleNestedPointCollectionImpl from, LatLonRect filter_bb, CalendarDateRange filter_date) {
       super(from.getName(), from.getTimeUnit(), from.getAltUnits());

@@ -35,6 +35,7 @@ package ucar.nc2.iosp.hdf5;
 import thredds.catalog.DataFormatType;
 import ucar.ma2.*;
 
+import ucar.nc2.constants.CDM;
 import ucar.nc2.time.CalendarDate;
 import ucar.unidata.io.RandomAccessFile;
 import ucar.nc2.iosp.*;
@@ -567,18 +568,20 @@ public class H5iosp extends AbstractIOServiceProvider {
   }
 
   public String getDetailInfo() {
+    Formatter f = new Formatter();
     ByteArrayOutputStream ff = new ByteArrayOutputStream(100 * 1000);
     try {
       NetcdfFile ncfile = new FakeNetcdfFile();
       H5header detailParser = new H5header(raf, ncfile, this);
       detailParser.read(new PrintStream(ff));
+      f.format("%s",super.getDetailInfo());
+      f.format("%s",ff.toString(CDM.UTF8));
+
     } catch (IOException e) {
       e.printStackTrace();
+      e.printStackTrace(new PrintStream(ff));
     }
 
-    Formatter f = new Formatter();
-    f.format("%s",super.getDetailInfo());
-    f.format("%s",ff.toString());
     return f.toString();
   }
 

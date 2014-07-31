@@ -517,12 +517,11 @@ public class IgraPor extends AbstractIOServiceProvider {
     }
 
     private class TimeSeriesData extends StructureDataRegexp {
-      Matcher matcher;          // matcher on the station ascii
-      List<String> lines = new ArrayList<String>(30);
+      // Matcher matcher;          // matcher on the station ascii
+      List<String> lines = new ArrayList<>(30);
 
       TimeSeriesData(Matcher matcher) throws IOException {
         super(seriesVinfo.sm, matcher);
-        this.matcher = matcher;
 
         String line;
         long pos;

@@ -881,21 +881,16 @@ public class GradsDataDescriptorFile {
   public String getFileName(int eIndex, int tIndex) {
 
     String dataFilePath = dataFile;
-    if ((getTemplateType() == ENS_TEMPLATE)
-            || (getTemplateType() == ENS_TIME_TEMPLATE)) {
-      dataFilePath =
-              getEnsembleDimension().replaceFileTemplate(dataFilePath,
-                      eIndex);
-    }
-    dataFilePath = getTimeDimension().replaceFileTemplate(dataFilePath,
-            tIndex);
-    if ((chsubs != null)
-            && (dataFilePath.indexOf(CHSUB_TEMPLATE_ID) >= 0)) {
-      for (Chsub ch : chsubs) {
-        if ((tIndex >= ch.startTimeIndex)
-                && (tIndex <= ch.endTimeIndex)) {
-          dataFilePath.replace(CHSUB_TEMPLATE_ID, ch.subString);
 
+    if ((getTemplateType() == ENS_TEMPLATE) || (getTemplateType() == ENS_TIME_TEMPLATE)) {
+      dataFilePath = getEnsembleDimension().replaceFileTemplate(dataFilePath, eIndex);
+    }
+
+    dataFilePath = getTimeDimension().replaceFileTemplate(dataFilePath, tIndex);
+    if ((chsubs != null) && (dataFilePath.contains(CHSUB_TEMPLATE_ID))) {
+      for (Chsub ch : chsubs) {
+        if ((tIndex >= ch.startTimeIndex) && (tIndex <= ch.endTimeIndex)) {
+          dataFilePath = dataFilePath.replace(CHSUB_TEMPLATE_ID, ch.subString);
           break;
         }
       }

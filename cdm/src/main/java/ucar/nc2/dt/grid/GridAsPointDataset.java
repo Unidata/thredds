@@ -232,7 +232,7 @@ public class GridAsPointDataset {
 
   
 	  if(!bounded){
-		  if( location.getAltitude() == Double.NaN ){			  
+		  if( Double.isNaN(location.getAltitude()) ){
 			  return readData(grid, date, location.getLatitude(), location.getLongitude());
 		  }else{
 			  return readData(grid, date, location.getAltitude(), location.getLatitude(), location.getLongitude());
@@ -250,7 +250,7 @@ public class GridAsPointDataset {
 	  p.lon = latlon.getLongitude();
 	    	  
 	  int zidx=-1;
-	  if(location.getAltitude() != Double.NaN){
+	  if( !Double.isNaN(location.getAltitude())){
 		    CoordinateAxis1D zAxis = gcs.getVerticalAxis();
 		    zidx = zAxis.findCoordElement( location.getAltitude());
 		    p.z = zAxis.getCoordValue( zidx);

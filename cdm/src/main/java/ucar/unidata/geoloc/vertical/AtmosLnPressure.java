@@ -58,7 +58,7 @@ public class AtmosLnPressure extends VerticalTransformImpl {
   public static final String P0 = "ReferencePressureVariableName";
   public static final String LEV = "VerticalCoordinateVariableName";
 
-  private Array pressure;
+  private final Array pressure;
 
   /**
    * Create a new vertical transform for Ocean S coordinates
@@ -94,8 +94,7 @@ public class AtmosLnPressure extends VerticalTransformImpl {
       }
 
     } catch (IOException e) {
-      throw new IllegalArgumentException("AtmosLnPressure failed to read "
-          + levName + " err= " + e.getMessage());
+      throw new IllegalArgumentException("AtmosLnPressure failed to read " + levName + " err= " + e.getMessage());
     }
 
     units = p0var.getUnitsString();
@@ -110,12 +109,9 @@ public class AtmosLnPressure extends VerticalTransformImpl {
    * @throws ucar.ma2.InvalidRangeException _more_
    */
   public ArrayDouble.D3 getCoordinateArray(int timeIndex) throws IOException, InvalidRangeException {
-    // LOOK! we dont know what size to make this !!
-    Array ps = null; // readArray(psVar, timeIndex);
-    //Index psIndex = ps.getIndex();
 
     int nz = (int) pressure.getSize();
-    int[] shape2D = ps.getShape();
+    int[] shape2D = pressure.getShape();
     int ny = shape2D[0];
     int nx = shape2D[1];
 

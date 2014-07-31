@@ -1,5 +1,6 @@
 package ucar.nc2.iosp.hdf5;
 
+import ucar.nc2.constants.CDM;
 import ucar.unidata.io.RandomAccessFile;
 import ucar.unidata.util.SpecialMathFunction;
 
@@ -112,8 +113,8 @@ Where startingBlockSize is from the header, ie the same for all indirect blocks.
 
     // header
     byte[] heapname = new byte[4];
-    raf.read(heapname);
-    String magic = new String(heapname);
+    raf.readFully(heapname);
+    String magic = new String(heapname, CDM.utf8Charset);
     if (!magic.equals("FRHP"))
       throw new IllegalStateException(magic + " should equal FRHP");
 
@@ -384,8 +385,8 @@ Where startingBlockSize is from the header, ie the same for all indirect blocks.
 
     // header
     byte[] heapname = new byte[4];
-    raf.read(heapname);
-    String magic = new String(heapname);
+    raf.readFully(heapname);
+    String magic = new String(heapname, CDM.utf8Charset);
     if (!magic.equals("FHIB"))
       throw new IllegalStateException(magic + " should equal FHIB");
 
@@ -453,8 +454,8 @@ Where startingBlockSize is from the header, ie the same for all indirect blocks.
 
     // header
     byte[] heapname = new byte[4];
-    raf.read(heapname);
-    String magic = new String(heapname);
+    raf.readFully(heapname);
+    String magic = new String(heapname, CDM.utf8Charset);
     if (!magic.equals("FHDB"))
       throw new IllegalStateException(magic + " should equal FHDB");
 

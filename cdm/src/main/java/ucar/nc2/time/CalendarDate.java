@@ -200,16 +200,12 @@ public class CalendarDate implements Comparable<CalendarDate> {
 
   @Override
   public int hashCode() {
-    if (hashCode == 0) {
-      int result = 17;
-      if (cal != null)
-        result += 37 * result + cal.hashCode();
-      result += 37 * result + dateTime.hashCode();
-      hashCode = result;
-    }
-    return hashCode;
+    int result = 17;
+    if (cal != null)
+      result += 37 * result + cal.hashCode();
+    result += 37 * result + dateTime.hashCode();
+    return result;
   }
-  private int hashCode = 0;
 
   /**
    * ISO formatted string

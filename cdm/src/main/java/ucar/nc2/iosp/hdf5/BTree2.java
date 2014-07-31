@@ -1,5 +1,6 @@
 package ucar.nc2.iosp.hdf5;
 
+import ucar.nc2.constants.CDM;
 import ucar.nc2.util.Misc;
 import ucar.unidata.io.RandomAccessFile;
 
@@ -52,8 +53,8 @@ public class BTree2 {
 
     // header
     byte[] heapname = new byte[4];
-    raf.read(heapname);
-    String magic = new String(heapname);
+    raf.readFully(heapname);
+    String magic = new String(heapname, CDM.utf8Charset);
     if (!magic.equals("BTHD"))
       throw new IllegalStateException(magic + " should equal BTHD");
 
@@ -102,8 +103,8 @@ public class BTree2 {
 
       // header
       byte[] sig = new byte[4];
-      raf.read(sig);
-      String magic = new String(sig);
+      raf.readFully(sig);
+      String magic = new String(sig, CDM.utf8Charset);
       if (!magic.equals("BTIN"))
         throw new IllegalStateException(magic + " should equal BTIN");
 
@@ -164,8 +165,8 @@ public class BTree2 {
 
       // header
       byte[] sig = new byte[4];
-      raf.read(sig);
-      String magic = new String(sig);
+      raf.readFully(sig);
+      String magic = new String(sig, CDM.utf8Charset);
       if (!magic.equals("BTLF"))
         throw new IllegalStateException(magic + " should equal BTLF");
 
@@ -270,7 +271,7 @@ public class BTree2 {
 
     Record5() throws IOException {
       nameHash = raf.readInt();
-      raf.read(heapId);
+      raf.readFully(heapId);
 
       if (debugBtree2)
         debugOut.println("  record5 nameHash=" + nameHash + " heapId=" + Misc.showBytes(heapId));
@@ -283,7 +284,7 @@ public class BTree2 {
 
     Record6() throws IOException {
       creationOrder = raf.readLong();
-      raf.read(heapId);
+      raf.readFully(heapId);
       if (debugBtree2)
         debugOut.println("  record6 creationOrder=" + creationOrder + " heapId=" + Misc.showBytes(heapId));
     }
@@ -297,7 +298,7 @@ public class BTree2 {
     Record70() throws IOException {
       location = raf.readByte();
       refCount = raf.readInt();
-      raf.read(id);
+      raf.readFully(id);
     }
   }
 
@@ -321,7 +322,7 @@ public class BTree2 {
     byte[] heapId = new byte[8];
 
     Record8() throws IOException {
-      raf.read(heapId);
+      raf.readFully(heapId);
       flags = raf.readByte();
       creationOrder = raf.readInt();
       nameHash = raf.readInt();
@@ -336,7 +337,7 @@ public class BTree2 {
     byte[] heapId = new byte[8];
 
     Record9() throws IOException {
-      raf.read(heapId);
+      raf.readFully(heapId);
       flags = raf.readByte();
       creationOrder = raf.readInt();
     }

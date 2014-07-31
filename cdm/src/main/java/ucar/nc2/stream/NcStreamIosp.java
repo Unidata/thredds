@@ -218,6 +218,8 @@ public class NcStreamIosp extends AbstractIOServiceProvider {
       }
     }
 
+    if (result == null) return null;
+
     return Array.factory(v.getDataType(), v.getShape(), result);
     //return dataArray.sectionNoReduce(section.getRanges());
   }

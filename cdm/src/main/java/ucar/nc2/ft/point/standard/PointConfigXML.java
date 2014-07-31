@@ -321,6 +321,7 @@ public class PointConfigXML {
       Element configElem = doc.getRootElement();
       String featureType = configElem.getAttributeValue("featureType");
       Element tableElem = configElem.getChild("table");
+      assert tableElem != null;
       TableConfig tc = parseTableConfig(ds, tableElem, null);
       tc.featureType = FeatureType.valueOf(featureType);
       return tc;
@@ -388,6 +389,7 @@ public class PointConfigXML {
         tc.dimName = tc.outerName;
         tc.innerName = tableElem.getAttributeValue("dim1");
         tc.structureType = TableConfig.StructureType.valueOf(tableElem.getAttributeValue("subtype"));
+        assert parent != null;
         makeMultidimInner(ds, parent, tc);
         break;
 

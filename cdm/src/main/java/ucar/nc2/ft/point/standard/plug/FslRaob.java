@@ -63,6 +63,7 @@ public class FslRaob extends TableConfigurerImpl {
 
   public TableConfig getConfig(FeatureType wantFeatureType, NetcdfDataset ds, Formatter errlog) throws IOException {
     String title = ds.findAttValueIgnoreCase(null, "version", null);
+    assert title != null;
     boolean v4 = title.startsWith("Forecast Systems Lab 1.4");
     String xml = v4 ? "resources/nj22/pointConfig/FslRaob14.xml" : "resources/nj22/pointConfig/FslRaob13.xml";
 

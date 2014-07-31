@@ -1138,8 +1138,7 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
         readFields();
     }
 
-    void setEnum(EnumTypedef e) {
-      this.e = e;
+    DataType getEnumBaseType() {
       // set the enum's basetype
       if (baseTypeid > 0 && baseTypeid <= NC_MAX_ATOMIC_TYPE) {
         DataType cdmtype = null;
@@ -1167,8 +1166,9 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
             break;
         }
         // not supported this.e.setUnsigned(isunsigned);  LOOK
-        this.e.setBaseType(cdmtype);
+        return cdmtype;
       }
+      return null;
     }
 
     void addField(Field fld) {
@@ -1374,9 +1374,9 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
 
       if (utype == Nc4prototypes.NC_ENUM) {
         Map<Integer, String> map = makeEnum(grpid, typeid);
-        EnumTypedef e = new EnumTypedef(name, map);
-        g.addEnumeration(e);
-        ut.setEnum(e);
+        ut.e = new EnumTypedef(name, map, ut.getEnumBaseType());
+        g.addEnumeration(ut.e);
+
       } else if (utype == Nc4prototypes.NC_OPAQUE) {
         byte[] nameo = new byte[Nc4prototypes.NC_MAX_NAME + 1];
         SizeTByReference sizep2 = new SizeTByReference();

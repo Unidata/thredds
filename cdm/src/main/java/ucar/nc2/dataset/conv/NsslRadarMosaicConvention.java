@@ -88,6 +88,8 @@ public class NsslRadarMosaicConvention extends CoordSysBuilder {
   public void augmentDataset(NetcdfDataset ds, CancelTask cancelTask) throws IOException {
     if (null != ds.findVariable("Lat")) return; // check if its already been done - aggregating enhanced datasets.
     String s = ds.findAttValueIgnoreCase(null, "DataType", null);
+    if (s == null) return;
+
     if (s.equalsIgnoreCase("LatLonGrid"))
       augment2D(ds, cancelTask);
     else

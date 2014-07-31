@@ -166,7 +166,6 @@ public class RemoteStationCollection extends StationTimeSeriesCollectionImpl {
   private class RemoteStationFeatureImpl extends StationTimeSeriesFeatureImpl {
     StationTimeSeriesFeature stnFeature;
     RemotePointFeatureIterator riter;
-    CalendarDateRange dateRange;
 
     RemoteStationFeatureImpl(StationTimeSeriesFeature s, CalendarDateRange dateRange) {
       super(s, RemoteStationCollection.this.getTimeUnit(), RemoteStationCollection.this.getAltUnits(), -1);

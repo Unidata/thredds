@@ -779,22 +779,6 @@ public class NcMLReader {
 
   }
 
-    // enum Typedef
-  public static Element writeEnumTypedef(EnumTypedef etd, Namespace ns) {
-    Element typeElem = new Element("enumTypedef", ns);
-    typeElem.setAttribute("name", etd.getShortName());
-    typeElem.setAttribute("type", etd.getBaseType().toString());
-    Map<Integer, String> map = etd.getMap();
-    for (Integer key : map.keySet()) {
-      typeElem.addContent(new Element("enum", ns)
-              .setAttribute("key", Integer.toString(key))
-              .setAttribute("value", map.get(key)));
-    }
-
-    return typeElem;
-  }
-
-
   /**
    * Read the NcML group element, and nested elements.
    *

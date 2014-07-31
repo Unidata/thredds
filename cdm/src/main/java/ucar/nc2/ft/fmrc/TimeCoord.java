@@ -416,6 +416,7 @@ public class TimeCoord implements Comparable {
 
     @Override
     public boolean equals(Object o) {
+      if (!(o instanceof Tinv)) return false;
       Tinv tinv = (Tinv) o;
       if (Double.compare(tinv.b1, b1) != 0) return false;
       if (Double.compare(tinv.b2, b2) != 0) return false;

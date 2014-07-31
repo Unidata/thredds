@@ -250,7 +250,7 @@ public class TableParser {
             return result;
         }
         if (type == long.class)
-          return isBlank ? 0 : new Long(svalue);
+          return isBlank ? 0L : new Long(svalue);
 
       } catch (NumberFormatException e) {
         System.out.printf("  [%d,%d) = <%s> %n", start, end, svalue);

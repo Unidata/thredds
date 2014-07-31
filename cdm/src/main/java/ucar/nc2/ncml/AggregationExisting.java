@@ -207,6 +207,7 @@ public class AggregationExisting extends AggregationOuterDimension {
       }
       if (cancelTask != null && cancelTask.isCancel()) return;
     }
+    assert timeUnits != null;
 
     int[] shape = timeAxis.getShape();
     int ntimes = shape[0];

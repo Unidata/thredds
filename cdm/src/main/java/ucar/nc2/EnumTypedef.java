@@ -55,8 +55,8 @@ public class EnumTypedef extends CDMNode {
   //not used static public final long UINT_MAX = 4294967295L;
 
   private final Map<Integer, String> map;
-  private ArrayList<String> enumStrings;
-  private DataType basetype;
+  private final ArrayList<String> enumStrings;
+  private final DataType basetype;
 
   public EnumTypedef(String name, Map<Integer, String> map) {
     this(name, map, DataType.ENUM4); //default basetype
@@ -66,14 +66,15 @@ public class EnumTypedef extends CDMNode {
     super(name);
     assert (validateMap(map, basetype));
     this.map = map;
-    setBaseType(basetype); // default
+
+    enumStrings = new ArrayList<>(map.values());
+    Collections.sort(enumStrings);
+
+    assert basetype == DataType.ENUM1 || basetype == DataType.ENUM2 || basetype == DataType.ENUM4;
+    this.basetype = basetype;
   }
 
   public List<String> getEnumStrings() {
-    if (enumStrings != null) {
-      enumStrings = new ArrayList<>(map.values());
-      Collections.sort(enumStrings);
-    }
     return enumStrings;
   }
 
@@ -83,18 +84,6 @@ public class EnumTypedef extends CDMNode {
 
   public DataType getBaseType() {
     return this.basetype;
-  }
-
-  public void setBaseType(DataType basetype) {
-    switch (basetype) {
-      case ENUM1:
-      case ENUM2:
-      case ENUM4:
-        this.basetype = basetype;
-        break;
-      default:
-        assert (false) : "Illegal Enum basetype";
-    }
   }
 
   public boolean

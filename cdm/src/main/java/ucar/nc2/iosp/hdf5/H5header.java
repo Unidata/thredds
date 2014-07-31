@@ -105,7 +105,7 @@ public class H5header {
   }
 
   static private final byte[] head = {(byte) 0x89, 'H', 'D', 'F', '\r', '\n', 0x1a, '\n'};
-  static private final String hdf5magic = new String(head);
+  static private final String hdf5magic = new String(head, CDM.utf8Charset);
   static private final long maxHeaderPos = 500000; // header's gotta be within this
   static private final boolean transformReference = true;
 
@@ -118,7 +118,7 @@ public class H5header {
     while ((filePos < size) && (filePos < maxHeaderPos)) {
       raf.seek(filePos);
       raf.readFully(b);
-      String magic = new String(b);
+      String magic = new String(b, CDM.utf8Charset);
       if (magic.equals(hdf5magic))
         return true;
       filePos = (filePos == 0) ? 512 : 2 * filePos;
@@ -1016,7 +1016,7 @@ public class H5header {
           System.out.println(" readStructure " + matt.name + " chunk= " + chunk + " index.getElemSize= " + layout.getElemSize());
         // copy bytes directly into the underlying byte[]
         raf.seek(chunk.getSrcPos());
-        raf.read(byteArray, (int) chunk.getDestElem() * recsize, chunk.getNelems() * recsize);
+        raf.readFully(byteArray, (int) chunk.getDestElem() * recsize, chunk.getNelems() * recsize);
       }
 
       // strings are stored on the heap, and must be read separately
@@ -2331,8 +2331,8 @@ public class H5header {
       } else { // level 2A2 (first part, before the messages)
         // first byte was already read
         byte[] name = new byte[3];
-        raf.read(name);
-        String magic = new String(name);
+        raf.readFully(name);
+        String magic = new String(name, CDM.utf8Charset);
         if (!magic.equals("HDR"))
           throw new IllegalStateException("DataObject doesnt start with OHDR");
 
@@ -3170,7 +3170,7 @@ public class H5header {
       type = (tandv & 0xf);
       version = ((tandv & 0xf0) >> 4);
 
-      raf.read(flags);
+      raf.readFully(flags);
       byteSize = raf.readInt();
       endian = ((flags[0] & 1) == 0) ? RandomAccessFile.LITTLE_ENDIAN : RandomAccessFile.BIG_ENDIAN;
 
@@ -3392,7 +3392,7 @@ public class H5header {
     void read() throws IOException {
       size = raf.readInt();
       value = new byte[size];
-      raf.read(value);
+      raf.readFully(value);
 
       if (debug1) debugOut.println(this);
     }
@@ -3441,7 +3441,7 @@ public class H5header {
         size = raf.readInt();
         if (size > 0) {
           value = new byte[size];
-          raf.read(value);
+          raf.readFully(value);
           hasFillValue = true;
         } else {
           hasFillValue = false;
@@ -3899,7 +3899,7 @@ public class H5header {
     }
 
     public String toString() {
-      return new Date(secs * 1000).toString();
+      return new Date( (long) secs * 1000).toString();
     }
 
     public String getName() {
@@ -3913,8 +3913,8 @@ public class H5header {
 
     void read() throws IOException {
       byte[] s = new byte[14];
-      raf.read(s);
-      datemod = new String(s);
+      raf.readFully(s);
+      datemod = new String(s, CDM.utf8Charset);
       if (debug1) debugOut.println("   MessageLastModifiedOld=" + datemod);
     }
 
@@ -4088,8 +4088,8 @@ public class H5header {
       if (debugGroupBtree) debugOut.println("\n--> GroupBTree read tree at position=" + raf.getFilePointer());
 
       byte[] name = new byte[4];
-      raf.read(name);
-      String magic = new String(name);
+      raf.readFully(name);
+      String magic = new String(name, CDM.utf8Charset);
       if (!magic.equals("TREE"))
         throw new IllegalStateException("BtreeGroup doesnt start with TREE");
 
@@ -4153,8 +4153,8 @@ public class H5header {
 
         // header
         byte[] sig = new byte[4];
-        raf.read(sig);
-        String magic = new String(sig);
+        raf.readFully(sig);
+        String magic = new String(sig, CDM.utf8Charset);
         if (!magic.equals("SNOD"))
           throw new IllegalStateException(magic + " should equal SNOD");
 
@@ -4525,8 +4525,8 @@ There is _no_ datatype information stored for these kind of selections currently
 
       // header
       byte[] heapname = new byte[4];
-      raf.read(heapname);
-      String magic = new String(heapname);
+      raf.readFully(heapname);
+      String magic = new String(heapname, CDM.utf8Charset);
       if (!magic.equals("GCOL"))
         throw new IllegalStateException(magic + " should equal GCOL");
 
@@ -4607,8 +4607,8 @@ There is _no_ datatype information stored for these kind of selections currently
 
       // header
       byte[] heapname = new byte[4];
-      raf.read(heapname);
-      String magic = new String(heapname);
+      raf.readFully(heapname);
+      String magic = new String(heapname, CDM.utf8Charset);
       if (!magic.equals("HEAP"))
         throw new IllegalStateException(magic + " should equal HEAP");
 
@@ -4624,7 +4624,7 @@ There is _no_ datatype information stored for these kind of selections currently
       // data
       raf.seek(getFileOffset(dataAddress));
       heap = new byte[size];
-      raf.read(heap);
+      raf.readFully(heap);
       //if (debugHeap) printBytes( out, "heap", heap, size, true);
 
       if (debugDetail) debugOut.println("-- endLocalHeap position=" + raf.getFilePointer());
@@ -4669,7 +4669,7 @@ There is _no_ datatype information stored for these kind of selections currently
 
     raf.seek(filePos);
     byte[] s = new byte[count];
-    raf.read(s);
+    raf.readFully(s);
     raf.readByte(); // skip the zero byte! nn
     return new String(s, CDM.utf8Charset); // all Strings are UTF-8 unicode
   }
@@ -4689,7 +4689,7 @@ There is _no_ datatype information stored for these kind of selections currently
 
     raf.seek(filePos);
     byte[] s = new byte[count];
-    raf.read(s);
+    raf.readFully(s);
 
     // skip to 8 byte boundary, note zero byte is skipped
     count++;
@@ -4708,7 +4708,7 @@ There is _no_ datatype information stored for these kind of selections currently
    */
   private String readStringFixedLength(int size) throws IOException {
     byte[] s = new byte[size];
-    raf.read(s);
+    raf.readFully(s);
     return new String(s, CDM.utf8Charset); // all Strings are UTF-8 unicode
   }
 
@@ -4809,7 +4809,7 @@ There is _no_ datatype information stored for these kind of selections currently
     long savePos = raf.getFilePointer();
     if (filePos >= 0) raf.seek(filePos);
     byte[] mess = new byte[nbytes];
-    raf.read(mess);
+    raf.readFully(mess);
     printBytes(head, mess, nbytes, false, debugOut);
     raf.seek(savePos);
   }

@@ -124,7 +124,7 @@ public class StringUtil2 {
       if (b >= 32 && b < 127)
         bb[count++] = b;
     }
-    return new String(bb, 0, count);
+    return new String(bb, 0, count, CDM.utf8Charset);
   }
 
   public static String cleanup(String s) {

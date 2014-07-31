@@ -82,7 +82,7 @@ public class StructureDataRegexp extends StructureData {
         return isBlank ? 0 : new Integer(svalue);
       }
       else if (dt == DataType.LONG)
-        return isBlank ? 0 : new Long(svalue);
+        return isBlank ? 0L : new Long(svalue);
 
     } catch (NumberFormatException e) {
       System.out.printf("  %d = <%s> %n", fldno, svalue);

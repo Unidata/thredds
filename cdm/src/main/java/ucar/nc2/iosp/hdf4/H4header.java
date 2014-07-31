@@ -327,7 +327,7 @@ public class H4header {
       Group current = dim.getGroup();
       //if (current == null)
       //  System.out.println("HEY! current == null");
-      if (current != lowest) {
+      if (lowest != null && current != lowest) {
         lowest.addDimension(dim);
         current.remove(dim);
       }
