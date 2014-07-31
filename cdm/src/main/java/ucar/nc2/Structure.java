@@ -580,9 +580,9 @@ public class Structure extends Variable {
     Formatter sbuff = new Formatter();
     sbuff.format("Structure ");
     getNameAndDimensions(sbuff, false, true);
-    sbuff.format("\n");
+    sbuff.format("%n");
     for (Attribute att : attributes) {
-      sbuff.format("  %s:%s;\n",getShortName(), att.toString());
+      sbuff.format("  %s:%s;%n",getShortName(), att.toString());
     }
     return sbuff.toString();
   }
@@ -608,9 +608,9 @@ public class Structure extends Variable {
       buf.format(";");
       if (!strict && (att.getDataType() != DataType.STRING))
         buf.format(" // %s", att.getDataType());
-      buf.format("\n");
+      buf.format("%n");
     }
-    buf.format("\n");
+    buf.format("%n");
   }
 
 }

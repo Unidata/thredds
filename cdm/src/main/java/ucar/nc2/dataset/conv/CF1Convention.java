@@ -268,7 +268,7 @@ public class CF1Convention extends CSMConvention {
       ds.addVariable(null, p);
       //Dimension d = p.getDimension(0);
       //d.addCoordinateVariable(p);
-      parseInfo.format(" added Vertical Pressure coordinate %s\n", p.getFullName());
+      parseInfo.format(" added Vertical Pressure coordinate %s%n", p.getFullName());
 
     } catch (IOException e) {
       String msg = " Unable to read variables from " + v.getFullName() + " formula_terms\n";

@@ -552,8 +552,7 @@ public class AddeStationObsDataset extends StationObsDatasetImpl {
 
     test(sbuff.toString());
 
-    try {
-      AddeStationObsDataset ads = new AddeStationObsDataset(loc, null);
+    try ( AddeStationObsDataset ads = new AddeStationObsDataset(loc, null)) {
       System.out.println(loc+" =\n"+ads);
     } catch (IOException e) {
       e.printStackTrace();

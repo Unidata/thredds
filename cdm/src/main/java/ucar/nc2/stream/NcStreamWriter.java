@@ -112,8 +112,8 @@ public class NcStreamWriter {
 
     if (v.getDataType() == DataType.SEQUENCE) {
       int count = 0;
-       //coverity[FB.BC_UNCONFIRMED_CAST]
       Structure seq = (Structure) v; // superclass for Sequence, SequenceDS
+       //coverity[FB.BC_UNCONFIRMED_CAST]
       StructureDataIterator iter = seq.getStructureIterator(-1);
       try {
         while (iter.hasNext()) {

@@ -869,7 +869,7 @@ public class NCdumpW {
     // any attributes ?
     java.util.List<Attribute> atts = v.getAttributes();
     if (atts.size() > 0) {
-      out.format(" >\n");
+      out.format(" >%n");
       closed = true;
       for (Attribute att : atts) {
         writeNcMLAtt(att, out, indent);
@@ -880,7 +880,7 @@ public class NCdumpW {
     if ((showValues == WantValues.all) ||
             ((showValues == WantValues.coordsOnly) && v.isCoordinateVariable())) {
       if (!closed) {
-        out.format(" >\n");
+        out.format(" >%n");
         closed = true;
       }
       writeNcMLValues(v, out, indent);
@@ -890,7 +890,7 @@ public class NCdumpW {
 
     // close variable element
     if (!closed)
-      out.format(" />\n");
+      out.format(" />%n");
     else {
       out.format("%s</variable>%n", indent);
     }
@@ -929,7 +929,7 @@ public class NCdumpW {
       }
       out.format("' type='%s", att.getDataType());
     }
-    out.format("' />\n");
+    out.format("' />%n");
   }
 
   static private void writeNcMLValues(Variable v, Formatter out, Indent indent) throws IOException {

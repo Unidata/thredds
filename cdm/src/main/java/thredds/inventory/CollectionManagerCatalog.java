@@ -114,7 +114,7 @@ public class CollectionManagerCatalog extends CollectionManagerAbstract implemen
       crawler.crawl(cat, null, null, null);
     } finally {
       long took = (System.currentTimeMillis() - start);
-      if (debug) System.out.format("***Done " + catalogUrl + " took = " + took + " msecs\n");
+      if (debug) System.out.format("***Done " + catalogUrl + " took = " + took + " msecs%n");
     }
 
     lastScanned = System.currentTimeMillis();

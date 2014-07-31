@@ -295,7 +295,7 @@ public class CoordinateAxis1DTime extends CoordinateAxis1D {
     CalendarDate cd =  CalendarDateFormatter.isoStringToCalendarDate(calendar, coordValue);
     if (cd == null) {
       if (errMessages != null) {
-        errMessages.format("String time coordinate must be ISO formatted= %s\n", coordValue);
+        errMessages.format("String time coordinate must be ISO formatted= %s%n", coordValue);
         logger.info("Char time coordinate must be ISO formatted= {} file = {}", coordValue, org.getDatasetLocation());
       }
       throw new IllegalArgumentException();

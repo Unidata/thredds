@@ -180,7 +180,7 @@ public class CoordTransBuilder {
       transform_name = ds.findAttValueIgnoreCase(ctv, CF.STANDARD_NAME, null);
 
     if (null == transform_name) {
-      parseInfo.format("**Failed to find Coordinate Transform name from Variable= %s\n", ctv);
+      parseInfo.format("**Failed to find Coordinate Transform name from Variable= %s%n", ctv);
       return null;
     }
 
@@ -195,7 +195,7 @@ public class CoordTransBuilder {
       }
     }
     if (null == builderClass) {
-      parseInfo.format("**Failed to find CoordTransBuilder name= %s from Variable= %s\n", transform_name, ctv);
+      parseInfo.format("**Failed to find CoordTransBuilder name= %s from Variable= %s%n", transform_name, ctv);
       return null;
     }
 
@@ -209,7 +209,7 @@ public class CoordTransBuilder {
       log.error("Cant access "+builderClass.getName(), e);
     }
     if (null == builder) { // cant happen - because this was tested in registerTransform()
-      parseInfo.format("**Failed to build CoordTransBuilder object from class= %s for Variable= %s\n", builderClass.getName(), ctv);
+      parseInfo.format("**Failed to build CoordTransBuilder object from class= %s for Variable= %s%n", builderClass.getName(), ctv);
       return null;
     }
 
@@ -217,7 +217,7 @@ public class CoordTransBuilder {
     CoordinateTransform ct = builder.makeCoordinateTransform(ds, ctv);
 
     if (ct != null) {
-      parseInfo.format(" Made Coordinate transform %s from variable %s: %s\n",transform_name, ctv.getFullName(), builder);
+      parseInfo.format(" Made Coordinate transform %s from variable %s: %s%n",transform_name, ctv.getFullName(), builder);
     }
 
     return ct;

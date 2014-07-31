@@ -303,7 +303,7 @@ public class CalendarDateFormatter {
       }
 
       return dt;
-    } catch (Exception e) {  // catch random joda exceptions
+    } catch (Throwable e) {  // catch random joda exceptions
       throw new IllegalArgumentException("Illegal base time specification: '" + dateString+"' "+e.getMessage());
     }
   }

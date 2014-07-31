@@ -190,6 +190,7 @@ public class EquidistantAzimuthalProjection extends ProjectionImpl {
       switch (mode) {
         case NORTH_POLE:
           coslam = -coslam;
+          //coverity[missing_break]
         case SOUTH_POLE:
           double x = (rho = Math.abs(Mp - MapMath.mlfn(phi, sinphi, cosphi, en))) * Math.sin(lam);
           double y = rho * coslam;

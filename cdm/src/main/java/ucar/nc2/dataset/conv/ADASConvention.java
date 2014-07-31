@@ -121,7 +121,7 @@ public class ADASConvention extends CoordSysBuilder {
       projCT = new ProjectionCT("Projection", "FGDC", proj);
       if (false_easting == 0.0) calcCenterPoints(ds, proj); // old way
     } else {
-      parseInfo.format("ERROR: unknown projection type = %s\n", projName);
+      parseInfo.format("ERROR: unknown projection type = %s%n", projName);
     }
 
     if (debugProj) {
@@ -338,7 +338,7 @@ public class ADASConvention extends CoordSysBuilder {
           VerticalCT vct = makeWRFEtaVerticalCoordinateTransform(ncDataset, cs);
           if (vct != null) {
             cs.addCoordinateTransform(vct);
-            parseInfo.format("***Added WRFEta verticalCoordinateTransform to %s\n", cs.getName());
+            parseInfo.format("***Added WRFEta verticalCoordinateTransform to %s%n", cs.getName());
           }
         }
       }

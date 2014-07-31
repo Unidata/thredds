@@ -37,6 +37,8 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import ucar.nc2.ft.point.TestCFPointDatasets;
+import ucar.unidata.geoloc.LatLonPointImpl;
+import ucar.unidata.geoloc.LatLonRect;
 import ucar.unidata.test.util.TestDir;
 
 import java.io.FileFilter;
@@ -52,7 +54,7 @@ import java.util.List;
  * @since 7/22/2014
  */
 @RunWith(Parameterized.class)
-public class TestGeoTiff {
+public class TestGeotiffRead {
   static public String topdir = TestDir.cdmUnitTestDir + "/formats/geotiff/";
 
   @Parameterized.Parameters
@@ -67,7 +69,7 @@ public class TestGeoTiff {
 
   String filename;
 
-  public TestGeoTiff(String filename) {
+  public TestGeotiffRead(String filename) {
     this.filename = filename;
   }
 
@@ -105,7 +107,6 @@ public class TestGeoTiff {
           }
         }
       }
-
     }
   }
 

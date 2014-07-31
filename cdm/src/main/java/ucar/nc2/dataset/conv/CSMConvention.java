@@ -131,7 +131,7 @@ public class CSMConvention extends COARDSConvention {
       if (!addParameter2(rs, HybridSigmaPressure.A, ds, ctv, "A_var", false)) return null;
       if (!addParameter2(rs, HybridSigmaPressure.B, ds, ctv, "B_var", false)) return null;
       if (!addParameter2(rs, HybridSigmaPressure.P0, ds, ctv, "P0_var", false)) return null;
-      parseInfo.format("CSMConvention made SigmaPressureCT %s\n",ctv.getFullName());
+      parseInfo.format("CSMConvention made SigmaPressureCT %s%n",ctv.getFullName());
       return rs;
     }
 
@@ -156,7 +156,7 @@ public class CSMConvention extends COARDSConvention {
       if (!addParameter2(rs, AtmosSigma.PS, ds, ctv, "PS_var", false)) return null;
       if (!addParameter2(rs, AtmosSigma.SIGMA, ds, ctv, "B_var", false)) return null;
       if (!addParameter2(rs, AtmosSigma.PTOP, ds, ctv, "P0_var", false)) return null;
-      parseInfo.format("CSMConvention made SigmaCT %s\n", ctv.getFullName());
+      parseInfo.format("CSMConvention made SigmaCT %s%n", ctv.getFullName());
       return rs;
     }
 
@@ -181,14 +181,14 @@ public class CSMConvention extends COARDSConvention {
   protected boolean addParameter2(CoordinateTransform rs, String paramName, NetcdfFile ds, Variable v, String attName, boolean readData) {
     String varName;
     if (null == (varName = ds.findAttValueIgnoreCase(v, attName, null))) {
-      parseInfo.format("CSMConvention No Attribute named %s\n", attName);
+      parseInfo.format("CSMConvention No Attribute named %s%n", attName);
       return false;
     }
     varName = varName.trim();
 
     Variable dataVar;
     if (null == (dataVar = ds.findVariable(varName))) {
-      parseInfo.format("CSMConvention No Variable named %s\n", varName);
+      parseInfo.format("CSMConvention No Variable named %s%n", varName);
       return false;
     }
 
@@ -197,7 +197,7 @@ public class CSMConvention extends COARDSConvention {
       try {
         data = dataVar.read();
       } catch (IOException e) {
-        parseInfo.format("CSMConvention failed on read of %s err= %s\n", varName, e.getMessage());
+        parseInfo.format("CSMConvention failed on read of %s err= %s%n", varName, e.getMessage());
         return false;
       }
       double[] vals = (double []) data.get1DJavaArray(double.class);

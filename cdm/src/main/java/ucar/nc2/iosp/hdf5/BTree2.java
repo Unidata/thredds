@@ -6,6 +6,7 @@ import ucar.unidata.io.RandomAccessFile;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -30,19 +31,18 @@ import java.util.List;
  * @since 6/27/12
  */
 public class BTree2 {
-  private boolean debugBtree2, debugPos;
+  private boolean debugBtree2 = false, debugPos = false;
   private java.io.PrintStream debugOut = System.out;
 
-  private String owner;
   byte btreeType;
   private int nodeSize; // size in bytes of btree nodes
   private short recordSize; // size in bytes of btree records
-  private short numRecordsRootNode;
 
+  private String owner;
   private H5header h5;
   private RandomAccessFile raf;
 
-  List<Entry2> entryList = new ArrayList<Entry2>();
+  List<Entry2> entryList = new ArrayList<>();
 
   BTree2(H5header h5, String owner, long address) throws IOException {
     this.h5 = h5;
@@ -66,14 +66,13 @@ public class BTree2 {
     byte split = raf.readByte();
     byte merge = raf.readByte();
     long rootNodeAddress = h5.readOffset();
-    numRecordsRootNode = raf.readShort();
+    short numRecordsRootNode = raf.readShort();
     long totalRecords = h5.readLength(); // total in entire btree
     int checksum = raf.readInt();
 
     if (debugBtree2) {
-      debugOut.println("BTree2 version=" + version + " type=" + btreeType + " treeDepth=" + treeDepth);
-      debugOut.println(" nodeSize=" + nodeSize + " recordSize=" + recordSize + " numRecordsRootNode="
-              + numRecordsRootNode + " totalRecords=" + totalRecords + " rootNodeAddress=" + rootNodeAddress);
+      debugOut.printf("BTree2 (%s) version=%d type=%d treeDepth=%d nodeSize=%d recordSize=%d numRecordsRootNode=%d totalRecords=%d rootNodeAddress=%d%n",
+              owner, version, btreeType, treeDepth, nodeSize, recordSize, numRecordsRootNode, totalRecords, rootNodeAddress);
     }
 
     if (treeDepth > 0) {
@@ -136,7 +135,8 @@ public class BTree2 {
           debugOut.println(" BTree2 entry childAddress=" + e.childAddress + " nrecords=" + e.nrecords + " totNrecords=" + e.totNrecords);
       }
 
-      int checksum = raf.readInt();
+      // skip
+      raf.readInt();
     }
 
     void recurse() throws IOException {
@@ -184,14 +184,12 @@ public class BTree2 {
         entries[i].record = readRecord(btreeType);
       }
 
-      int checksum = raf.readInt();
+      // skip
+      raf.readInt();
     }
 
     void addEntries(List<Entry2> list) {
-      for (int i = 0; i < entries.length; i++) {
-        list.add(entries[i]);
-      }
-
+      Collections.addAll(list, entries);
     }
   }
 

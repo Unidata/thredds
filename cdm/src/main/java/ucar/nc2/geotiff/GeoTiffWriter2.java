@@ -23,107 +23,108 @@ public class GeoTiffWriter2 extends GeotiffWriter {
     super(fileOut);
   }
 
-  public void writeGrid(String fileName, String gridName, int time, int level, boolean greyScale, LatLonRect pt) throws IOException {
+  public void writeGrid(String gridDataset_filename, String gridName, int time, int level, boolean greyScale, LatLonRect pt) throws IOException {
     double scaler;
-    GridDataset dataset = ucar.nc2.dt.grid.GridDataset.open(fileName);
-    GridDatatype grid = dataset.findGridDatatype(gridName);
-    if (grid == null) {
-      throw new IllegalArgumentException("No grid named " + gridName + " in fileName");
-    }
-
-    GridCoordSystem gcs = grid.getCoordinateSystem();
-    ProjectionImpl proj = grid.getProjection();
-
-    if (!gcs.isRegularSpatial()) {
-      Attribute att = dataset.findGlobalAttributeIgnoreCase("datasetId");
-      if (att != null && att.getStringValue().contains("DMSP")) {  // LOOK!!
-        writeSwathGrid(fileName, gridName, time, level, greyScale, pt);
-        return;
-      } else {
-        throw new IllegalArgumentException("Must have 1D x and y axes for " + grid.getFullName());
+    try (GridDataset dataset = ucar.nc2.dt.grid.GridDataset.open(gridDataset_filename)) {
+      GridDatatype grid = dataset.findGridDatatype(gridName);
+      if (grid == null) {
+        throw new IllegalArgumentException("No grid named " + gridName + " in fileName");
       }
 
+      GridCoordSystem gcs = grid.getCoordinateSystem();
+      ProjectionImpl proj = grid.getProjection();
+
+      if (!gcs.isRegularSpatial()) {
+        Attribute att = dataset.findGlobalAttributeIgnoreCase("datasetId");
+        if (att != null && att.getStringValue().contains("DMSP")) {  // LOOK!!
+          writeSwathGrid(gridDataset_filename, gridName, time, level, greyScale, pt);
+          return;
+        } else {
+          throw new IllegalArgumentException("Must have 1D x and y axes for " + grid.getFullName());
+        }
+
+      }
+
+      CoordinateAxis1D xaxis = (CoordinateAxis1D) gcs.getXHorizAxis();
+      CoordinateAxis1D yaxis = (CoordinateAxis1D) gcs.getYHorizAxis();
+      if (!xaxis.isRegular() || !yaxis.isRegular()) {
+        throw new IllegalArgumentException("Must be evenly spaced grid = " + grid.getFullName());
+      }
+
+      // read in data
+      Array data = grid.readDataSlice(time, level, -1, -1);
+      Array lon = xaxis.read();
+      Array lat = yaxis.read();
+
+      //latlon coord does not need to time 1000.0
+      if (gcs.isLatLon()) {
+        scaler = 1.0;
+      } else {
+        scaler = 1000.0;
+      }
+
+      if (yaxis.getCoordValue(0) < yaxis.getCoordValue(1)) {
+        data = data.flip(0);
+        lat = lat.flip(0);
+      }
+
+      if (gcs.isLatLon()) {
+        data = geoShiftDataAtLon(data, lon);
+        lon = geoShiftLon(lon);
+      }
+      // now it is time to subset the data out of latlonrect
+      // it is assumed that latlonrect pt is in +-180
+      LatLonPointImpl llp0 = pt.getLowerLeftPoint();
+      LatLonPointImpl llpn = pt.getUpperRightPoint();
+      double minLon = llp0.getLongitude();
+      double minLat = llp0.getLatitude();
+      double maxLon = llpn.getLongitude();
+      double maxLat = llpn.getLatitude();
+
+      // (x1, y1) is upper left point and (x2, y2) is lower right point
+      int x1;
+      int x2;
+      int y1;
+      int y2;
+      double xStart;
+      double yStart;
+      if (!gcs.isLatLon()) {
+
+        ProjectionPoint pjp0 = proj.latLonToProj(maxLat, minLon);
+        double[] lonArray = (double[]) lon.copyTo1DJavaArray();
+        double[] latArray = (double[]) lat.copyTo1DJavaArray();
+        x1 = getXIndex(lon, pjp0.getX(), 0);
+        y1 = getYIndex(lat, pjp0.getY(), 0);
+        yStart = pjp0.getY() * 1000.0;  //latArray[y1];
+        xStart = pjp0.getX() * 1000.0;  //lonArray[x1];
+        ProjectionPoint pjpn = proj.latLonToProj(minLat, maxLon);
+        x2 = getXIndex(lon, pjpn.getX(), 1);
+        y2 = getYIndex(lat, pjpn.getY(), 1);
+
+      } else {
+        xStart = minLon;
+        yStart = maxLat;
+        x1 = getLonIndex(lon, minLon, 0);
+        y1 = getLatIndex(lat, maxLat, 0);
+        x2 = getLonIndex(lon, maxLon, 1);
+        y2 = getLatIndex(lat, minLat, 1);
+      }
+
+      // data must go from top to bottom
+      double xInc = xaxis.getIncrement() * scaler;
+      double yInc = Math.abs(yaxis.getIncrement()) * scaler;
+
+      // subsetting data inside the box
+      Array data1 = getYXDataInBox(data, x1, x2, y1, y2);
+
+      if (pageNumber > 1) {
+        geotiff.initTags();
+      }
+
+      // write it out
+      writeGrid(grid, data1, greyScale, xStart, yStart, xInc, yInc, pageNumber);
+      pageNumber++;
     }
-
-    CoordinateAxis1D xaxis = (CoordinateAxis1D) gcs.getXHorizAxis();
-    CoordinateAxis1D yaxis = (CoordinateAxis1D) gcs.getYHorizAxis();
-    if (!xaxis.isRegular() || !yaxis.isRegular()) {
-      throw new IllegalArgumentException("Must be evenly spaced grid = " + grid.getFullName());
-    }
-
-    // read in data
-    Array data = grid.readDataSlice(time, level, -1, -1);
-    Array lon = xaxis.read();
-    Array lat = yaxis.read();
-
-    //latlon coord does not need to time 1000.0
-    if (gcs.isLatLon()) {
-      scaler = 1.0;
-    } else {
-      scaler = 1000.0;
-    }
-
-    if (yaxis.getCoordValue(0) < yaxis.getCoordValue(1)) {
-      data = data.flip(0);
-      lat = lat.flip(0);
-    }
-
-    if (gcs.isLatLon()) {
-      data = geoShiftDataAtLon(data, lon);
-      lon = geoShiftLon(lon);
-    }
-    // now it is time to subset the data out of latlonrect
-    // it is assumed that latlonrect pt is in +-180
-    LatLonPointImpl llp0 = pt.getLowerLeftPoint();
-    LatLonPointImpl llpn = pt.getUpperRightPoint();
-    double minLon = llp0.getLongitude();
-    double minLat = llp0.getLatitude();
-    double maxLon = llpn.getLongitude();
-    double maxLat = llpn.getLatitude();
-
-    // (x1, y1) is upper left point and (x2, y2) is lower right point
-    int x1;
-    int x2;
-    int y1;
-    int y2;
-    double xStart;
-    double yStart;
-    if (!gcs.isLatLon()) {
-
-      ProjectionPoint pjp0 = proj.latLonToProj(maxLat, minLon);
-      double[] lonArray = (double[]) lon.copyTo1DJavaArray();
-      double[] latArray = (double[]) lat.copyTo1DJavaArray();
-      x1 = getXIndex(lon, pjp0.getX(), 0);
-      y1 = getYIndex(lat, pjp0.getY(), 0);
-      yStart = pjp0.getY() * 1000.0;  //latArray[y1];
-      xStart = pjp0.getX() * 1000.0;  //lonArray[x1];
-      ProjectionPoint pjpn = proj.latLonToProj(minLat, maxLon);
-      x2 = getXIndex(lon, pjpn.getX(), 1);
-      y2 = getYIndex(lat, pjpn.getY(), 1);
-
-    } else {
-      xStart = minLon;
-      yStart = maxLat;
-      x1 = getLonIndex(lon, minLon, 0);
-      y1 = getLatIndex(lat, maxLat, 0);
-      x2 = getLonIndex(lon, maxLon, 1);
-      y2 = getLatIndex(lat, minLat, 1);
-    }
-
-    // data must go from top to bottom
-    double xInc = xaxis.getIncrement() * scaler;
-    double yInc = Math.abs(yaxis.getIncrement()) * scaler;
-
-    // subsetting data inside the box
-    Array data1 = getYXDataInBox(data, x1, x2, y1, y2);
-
-    if (pageNumber > 1) {
-      geotiff.initTags();
-    }
-
-    // write it out
-    writeGrid(grid, data1, greyScale, xStart, yStart, xInc, yInc, pageNumber);
-    pageNumber++;
   }
 
   /**
@@ -753,33 +754,5 @@ public class GeoTiffWriter2 extends GeotiffWriter {
     } else {
       return lon;
     }
-  }
-
-
-  public static void main(String args[]) throws IOException {
-    String fileOut = "/home/yuanho/Download/F15_s.tmp_new.tif";
-    //String fileOut = "/home/yuanho/tmp/tmbF.tif";
-    //LatLonPointImpl p1 = new LatLonPointImpl(38.0625, -80.6875);
-    //LatLonPointImpl p2 = new LatLonPointImpl(47.8125, -67.0625);
-    LatLonPointImpl p1 = new LatLonPointImpl(-5, -52.0);
-    LatLonPointImpl p2 = new LatLonPointImpl(25, -20.0);
-    LatLonRect llr = new LatLonRect(p1, p2);
-    GeoTiffWriter2 writer = new GeoTiffWriter2(fileOut);
-    //writer.writeGrid("radar.nc", "noice_wat", 0, 0, true);
-    //writer.writeGrid("dods://www.cdc.noaa.gov/cgi-bin/nph-nc/Datasets/coads/2degree/enh/cldc.mean.nc?lat[40:1:50],lon[70:1:110],time[2370:1:2375],cldc[2370:1:2375][40:1:50][70:1:110]", "cldc", 0, 0,true);
-    //writer.writeGrid("dods://www.cdc.noaa.gov/cgi-bin/nph-nc/Datasets/noaa.oisst.v2/sst.mnmean.nc", "sst", 0, 0,false);
-    //writer.writeGrid("2003091116_ruc2.nc", "P_sfc", 0, 0, false);
-    //writer.writeGrid("/home/yuanho/dev/netcdf-java/geotiff/2003072918_avn-x.nc", "P_sfc", 0, 0, false,llr);
-    //writer.writeGrid("/home/yuanho/tmp/NE_1961-1990_Yearly_Max_Temp.nc", "tmax", 0, 0, false, llr);
-    // writer.writeGrid("/home/yuanho/tmp/TMB.nc", "MBchla", 0, 0, false, llr);
-    writer.writeGrid("/home/yuanho/GIS/DataAndCode/F15_s.tmp", "infraredImagery", 0, 0, true, llr);
-    writer.close();
-
-    // read it back in
-    GeoTiff geotiff = new GeoTiff(fileOut);
-    geotiff.read();
-    System.out.println("geotiff read in = " + geotiff.showInfo());
-    //geotiff.testReadData();
-    geotiff.close();
   }
 }
