@@ -153,11 +153,15 @@ public class CFGridWriter2 {
     for (String gridName : gridList) {
       if (varNameList.contains(gridName))  // already contains
         continue;
-      varNameList.add(gridName);
-
       GridDatatype grid = gds.findGridDatatype(gridName);
+      if (grid == null) {
+        System.out.printf("cant find %s%n", gridName);
+        continue;
+      }
+
       GridCoordSystem gcsOrg = grid.getCoordinateSystem();
       boolean isGlobal = gcsOrg.isGlobalLon();
+      varNameList.add(gridName);
 
       // make subset as needed
       Range timeRange = makeTimeRange(dateRange, gcsOrg.getTimeAxis1D(), stride_time);

@@ -56,7 +56,6 @@ import ucar.nc2.NetcdfFileWriter;
 import ucar.nc2.dataset.CoordinateAxis1D;
 import ucar.nc2.dt.GridCoordSystem;
 import ucar.nc2.dt.GridDatatype;
-import ucar.nc2.dt.grid.CFGridWriter;
 import ucar.nc2.dt.grid.CFGridWriter2;
 import ucar.nc2.dt.grid.GridDataset;
 import ucar.nc2.time.CalendarDate;

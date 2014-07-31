@@ -255,6 +255,8 @@ public class AggregationExisting extends AggregationOuterDimension {
 
     String cacheName = getCacheName();
     if (cacheName == null) return;
+    if (cacheName.startsWith("file:"))      // LOOK
+      cacheName = cacheName.substring(5);
     File cacheFile = diskCache2.getCacheFile(cacheName);
 
     // only write out if something changed after the cache file was last written, or if the file has been deleted
@@ -340,6 +342,9 @@ public class AggregationExisting extends AggregationOuterDimension {
 
     String cacheName = getCacheName();
     if (cacheName == null) return;
+    if (cacheName.startsWith("file:"))      // LOOK
+      cacheName = cacheName.substring(5);
+
     File cacheFile = diskCache2.getCacheFile(cacheName);
     if (!cacheFile.exists())
       return;

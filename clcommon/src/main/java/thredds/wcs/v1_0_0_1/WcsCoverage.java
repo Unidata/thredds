@@ -32,11 +32,13 @@
  */
 package thredds.wcs.v1_0_0_1;
 
+import ucar.nc2.NetcdfFileWriter;
 import ucar.nc2.dt.GridDatatype;
 import ucar.nc2.dt.GridCoordSystem;
 import ucar.nc2.dt.grid.CFGridWriter;
 import ucar.nc2.dataset.CoordinateAxis1D;
 import ucar.nc2.dataset.CoordinateAxis1DTime;
+import ucar.nc2.dt.grid.CFGridWriter2;
 import ucar.nc2.time.CalendarDateRange;
 import ucar.nc2.util.DiskCache2;
 import ucar.nc2.geotiff.GeotiffWriter;
@@ -264,23 +266,20 @@ public class WcsCoverage
   
         return tifFile;
       }
-      else if ( format == Request.Format.NetCDF3 )
-      {
+      else if ( format == Request.Format.NetCDF3 ) {
         File dir = new File( getDiskCache().getRootDirectory() );
-        File ncFile = File.createTempFile( "WCS", ".nc", dir );
+        File outFile = File.createTempFile( "WCS", ".nc", dir );
         if ( log.isDebugEnabled() )
-          log.debug( "writeCoverageDataToFile(): ncFile=" + ncFile.getPath() );
+          log.debug( "writeCoverageDataToFile(): ncFile=" + outFile.getPath() );
 
-        //GridDatatype gridDatatype = this.coverage.getGridDatatype().makeSubset( );
-
-        CFGridWriter writer = new CFGridWriter();
-        writer.makeFile( ncFile.getPath(), this.dataset.getDataset(),
-                         Collections.singletonList( this.coverage.getFullName() ),
-                         bboxLatLonRect, 1,
-                         zRange,
-                         timeRange, 1,
-                         true );
-        return ncFile;
+        NetcdfFileWriter writer = NetcdfFileWriter.createNew(NetcdfFileWriter.Version.netcdf3, outFile.getAbsolutePath());
+        CFGridWriter2.writeFile(this.dataset.getDataset(),
+                Collections.singletonList( this.coverage.getFullName()),
+                bboxLatLonRect, null,
+                1, zRange, timeRange, 1,
+                true,
+                writer);
+        return outFile;
       }
       else
       {

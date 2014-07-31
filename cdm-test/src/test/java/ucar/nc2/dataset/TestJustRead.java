@@ -33,6 +33,10 @@
 package ucar.nc2.dataset;
 
 import java.io.*;
+
+import org.junit.Test;
+import ucar.nc2.ncml.Aggregation;
+import ucar.nc2.util.DiskCache2;
 import ucar.unidata.test.util.TestDir;
 
 /** Test writing and reading back. */
@@ -40,7 +44,7 @@ import ucar.unidata.test.util.TestDir;
 public class TestJustRead {
   private boolean show = false;
 
-  @org.junit.Test
+  @Test
   public void testReadConventionFiles() throws Exception {
     readAllDir( TestDir.cdmUnitTestDir + "conventions");
   }
@@ -65,9 +69,11 @@ public class TestJustRead {
 
   }
 
-  public void utestProblem() throws Exception {
+  @Test
+  public void testProblem() throws Exception {
     show = true;
-    doOne( "http://dods.ndbc.noaa.gov/thredds/dodsC/data/stdmet/31201/31201h2005.nc");
+    Aggregation.setPersistenceCache(new DiskCache2("/.unidata/aggCache", true, -1, -1));
+    doOne( TestDir.cdmUnitTestDir+"/ft/grid/cg/cg.ncml");
   }
 
   private void doOne(String filename) throws Exception {

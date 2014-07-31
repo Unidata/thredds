@@ -82,6 +82,7 @@ import ucar.unidata.util.Parameter;
  * Write a CF compliant Netcdf-3 or netcdf-4 file (classic mode only) from any gridded dataset.
  * The datasets can optionally be subset by a lat/lon bounding box and/or a time range.
  *
+ * @deprecated use CFGridWriter2
  * @author caron
  */
 public class CFGridWriter {
@@ -704,8 +705,6 @@ public class CFGridWriter {
             varNameList.add(paramVar.getFullName());
             varsSize += paramVar.getSize() * paramVar.getElementSize();
             varList.add(paramVar);
-
-
           }
 
         }
@@ -815,55 +814,6 @@ public class CFGridWriter {
       }
     }
   }
-
-  //////////////////////////////////////////////////////////////////////////////////////
-  public static void test1() throws IOException, InvalidRangeException, ParseException {
-    String fileIn = "C:/data/ncmodels/NAM_CONUS_80km_20051206_0000.nc";
-    String fileOut = "C:/temp/cf3.nc";
-
-    ucar.nc2.dt.GridDataset gds = ucar.nc2.dt.grid.GridDataset.open(fileIn);
-
-    CFGridWriter writer = new CFGridWriter();
-
-    List<String> gridList = new ArrayList<String>();
-    gridList.add("RH");
-    gridList.add("T");
-
-    DateFormatter format = new DateFormatter();
-    Date start = format.getISODate("2005-12-06T18:00:00Z");
-    Date end = format.getISODate("2005-12-07T18:00:00Z");
-
-    writer.makeFile(fileOut, gds, gridList,
-            new LatLonRect(new LatLonPointImpl(37, -109), 400, 7),
-            CalendarDateRange.of(start, end),
-            true,
-            1, 1, 1);
-
-  }
-
-  public static void main(String args[]) throws IOException, InvalidRangeException, ParseException {
-    String fileIn = "dods://thredds.ucar.edu/repository/entry/show/output:data.opendap/entryid:c41a3a26-57e5-4b15-b8b1-a8762b6f02c7/dodsC/entry";
-    String fileOut = "C:/temp/testCF.nc";
-
-    ucar.nc2.dt.GridDataset gds = ucar.nc2.dt.grid.GridDataset.open(fileIn);
-
-    CFGridWriter writer = new CFGridWriter();
-
-    List<String> gridList = new ArrayList<String>();
-    gridList.add("Z_sfc");
-
-    DateFormatter format = new DateFormatter();
-    Date start = format.getISODate("2003-06-01T03:00:00Z");
-    Date end = format.getISODate("2004-01-01T00:00:00Z");
-
-    writer.makeFile(fileOut, gds, gridList, null,
-            // new LatLonRect(new LatLonPointImpl(30, -109), 10, 50),
-            CalendarDateRange.of(start, end),
-            true,
-            1, 1, 1);
-
-  }
-
 
 }
 

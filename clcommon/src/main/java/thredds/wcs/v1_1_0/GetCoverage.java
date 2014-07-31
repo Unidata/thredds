@@ -44,8 +44,10 @@ import java.io.PrintWriter;
 import java.io.IOException;
 import java.io.File;
 
+import ucar.nc2.NetcdfFileWriter;
 import ucar.nc2.dt.GridDataset;
 import ucar.nc2.dt.grid.CFGridWriter;
+import ucar.nc2.dt.grid.CFGridWriter2;
 import ucar.nc2.util.DiskCache2;
 import ucar.ma2.InvalidRangeException;
 
@@ -114,11 +116,24 @@ public class GetCoverage
   }
 
 
-  public File writeCoverageDataToFile()
-          throws WcsException
-  {
-    try
-    {
+  public File writeCoverageDataToFile() throws WcsException {
+    try {
+      File dir = new File( getDiskCache().getRootDirectory() );
+      File outFile = File.createTempFile( "WCS", ".nc", dir );
+      if ( log.isDebugEnabled() )
+        log.debug( "writeCoverageDataToFile(): ncFile=" + outFile.getPath() );
+      // WTF ?? this.coordSys.getVerticalAxis().isNumeric();
+
+      NetcdfFileWriter writer = NetcdfFileWriter.createNew(NetcdfFileWriter.Version.netcdf3, outFile.getAbsolutePath());
+      CFGridWriter2.writeFile(dataset,
+              Collections.singletonList( identifier ),
+              null, null,                          // LOOK no horiz subset
+              1, null, null, 1,                    // LOOK no date Range ??
+              true,
+              writer);
+      return outFile;
+
+      /*
       File dir = new File( getDiskCache().getRootDirectory() );
       File ncFile = File.createTempFile( "WCS", ".nc", dir );
 
@@ -128,7 +143,7 @@ public class GetCoverage
   //                     Collections.singletonList( req.getCoverage() ),
   //                     req.getBoundingBox(), dateRange,
                        true, 1, 1, 1 );
-      return ncFile;
+      return ncFile;  */
     }
     catch ( InvalidRangeException e )
     {
