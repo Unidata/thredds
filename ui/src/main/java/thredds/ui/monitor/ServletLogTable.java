@@ -368,11 +368,12 @@ public class ServletLogTable extends JPanel {
       f.format("%nRestricted, merged logs n=%d%n", restrict.size());
     }
 
-    if (logFiles != null)
+    if (logFiles != null) {
       f.format("%nFiles used%n");
       for (LogLocalManager.FileDateRange fdr : logFiles) {
         f.format(" %s [%s,%s]%n", fdr.f.getName(), fdr.start, fdr.end);
       }
+    }
   }
 
   ////////////////////////////////////////////////////////

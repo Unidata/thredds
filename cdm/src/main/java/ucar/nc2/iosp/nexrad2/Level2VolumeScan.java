@@ -123,8 +123,7 @@ public class Level2VolumeScan {
 
     // volume scan header
     dataFormat = raf.readString(8);
-    raf.skipBytes(1);
-    String volumeNo = raf.readString(3);
+    raf.skipBytes(4);
     title_julianDay = raf.readInt(); // since 1/1/70
     title_msecs = raf.readInt();
     stationId = raf.readString(4).trim(); // only in AR2V0001
@@ -571,7 +570,8 @@ public class Level2VolumeScan {
     return coefficientHighResGroups;
   }
 
-  private class GroupComparator implements Comparator<List<Level2Record>> {
+  private static class GroupComparator implements
+    Comparator<List<Level2Record>> {
 
     public int compare(List<Level2Record> group1, List<Level2Record> group2) {
       Level2Record record1 = group1.get(0);
@@ -754,6 +754,7 @@ public class Level2VolumeScan {
                 log.debug("  unpacked " + total + " num bytes " + nrecords + " records; ouput ends at " + outputRaf.getFilePointer());
         }
 
+        outputRaf.flush();
     } catch (IOException e) {
         if (outputRaf != null) outputRaf.close();
         outputRaf = null;
@@ -765,15 +766,11 @@ public class Level2VolumeScan {
                 log.warn("failed to delete uncompressed file (IOException)" + ufilename);
         }
 
-        if (e instanceof IOException)
-            throw e;
-        else
-            throw new RuntimeException(e);
+        throw e;
     } finally {
       if (lock != null) lock.release();
     }
 
-    outputRaf.flush();
     return outputRaf;
   }
 
@@ -785,9 +782,7 @@ public class Level2VolumeScan {
     try (RandomAccessFile raf = new RandomAccessFile(ufilename, "r")) {
       raf.order(RandomAccessFile.BIG_ENDIAN);
       raf.seek(0);
-      byte[] b = new byte[8];
-      raf.read(b);
-      String test = new String(b);
+      String test = raf.readString(8);
       if (test.equals(Level2VolumeScan.ARCHIVE2) || test.equals
              (Level2VolumeScan.AR2V0001)) {
         System.out.println("--Good header= " + test);
@@ -804,8 +799,7 @@ public class Level2VolumeScan {
       while (!eof) {
 
         if (lookForHeader) {
-          raf.read(b);
-          test = new String(b);
+          test = raf.readString(8);
           if (test.equals(Level2VolumeScan.ARCHIVE2) || test.equals(Level2VolumeScan.AR2V0001)) {
             System.out.println("  found header= " + test);
             raf.skipBytes(16);
@@ -846,7 +840,7 @@ public class Level2VolumeScan {
    * test
    */
   public static void main2(String[] args) throws IOException {
-    File testDir = new File("C:/data/bad/radar2/");
+    File testDir = new File("/share/testdata/radar/problem");
 
     File[] files = testDir.listFiles();
     for (int i = 0; i < files.length; i++) {

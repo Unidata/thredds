@@ -47,20 +47,24 @@ import ucar.nc2.Variable;
  */
 public class Mercator extends AbstractCoordTransBuilder {
 
+  @Override
   public String getTransformName() {
     return CF.MERCATOR;
   }
 
+  @Override
   public TransformType getTransformType() {
     return TransformType.Projection;
   }
 
+  @Override
   public CoordinateTransform makeCoordinateTransform(NetcdfDataset ds, Variable ctv) {
     double par = readAttributeDouble( ctv, CF.STANDARD_PARALLEL, Double.NaN);
     if (Double.isNaN(par)) {
       double scale = readAttributeDouble( ctv, CF.SCALE_FACTOR_AT_PROJECTION_ORIGIN, Double.NaN);
       if (Double.isNaN(scale))
-        throw new IllegalArgumentException("Mercator projection must have attribute "+CF.STANDARD_PARALLEL+" or "+ CF.SCALE_FACTOR_AT_PROJECTION_ORIGIN);
+        throw new IllegalArgumentException("Mercator projection must have attribute " +
+                CF.STANDARD_PARALLEL + " or " + CF.SCALE_FACTOR_AT_PROJECTION_ORIGIN);
       par = ucar.unidata.geoloc.projection.Mercator.convertScaleToStandardParallel(scale);
     }
 

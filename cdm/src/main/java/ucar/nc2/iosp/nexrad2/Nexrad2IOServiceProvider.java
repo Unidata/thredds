@@ -61,9 +61,7 @@ public class Nexrad2IOServiceProvider extends AbstractIOServiceProvider {
   public boolean isValidFile( RandomAccessFile raf) throws IOException {
     try {
       raf.seek(0);
-      byte[] b = new byte[8];
-      raf.read(b);
-      String test = new String( b);
+      String test = raf.readString(8);
       return test.equals( Level2VolumeScan.ARCHIVE2) || test.equals( Level2VolumeScan.AR2V0001) ||
              test.equals( Level2VolumeScan.AR2V0003)|| test.equals( Level2VolumeScan.AR2V0004) ||
              test.equals( Level2VolumeScan.AR2V0002) || test.equals( Level2VolumeScan.AR2V0006) ||
@@ -211,6 +209,8 @@ public class Nexrad2IOServiceProvider extends AbstractIOServiceProvider {
         groups = vScan.getHighResCoeffocientGroups();
       else if( shortName.startsWith("DifferentialPhase"))
         groups = vScan.getHighResDiffPhaseGroups();
+      else
+        throw new IllegalStateException("Bad group: " + shortName);
 
       int nscans = groups.size();
 
@@ -604,7 +604,7 @@ public class Nexrad2IOServiceProvider extends AbstractIOServiceProvider {
     r.readData(volScan.raf, datatype, gateRange, ii);
   }
 
-  private class Vgroup {
+  private static class Vgroup {
     Level2Record[][] map;
     int datatype;
 

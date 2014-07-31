@@ -36,39 +36,39 @@
   </li>
   <li>Make the following modifications to <strong>${tomcat_home}/conf/server.xml</strong>:</li>
   <ul>
-    <li><a href="Security.html#digested">Enable digest passwords</a> by commenting out the <strong>UserDatabaseRealm</strong> and enabling the <strong>MemoryRealm</strong>. </li>
-    <li><a href="Security.html#ssl">Enable SSL</a> by uncommenting the SSL Connector listening on port 8443, and add the required <strong>keystoreFile</strong> and <strong>keystorePass</strong> attributes. </li>
+    <li><a href="../tutorial/Security.html#digested">Enable digest passwords</a> by commenting out the <strong>UserDatabaseRealm</strong> and enabling the <strong>MemoryRealm</strong>. </li>
+    <li><a href="../tutorial/Security.html#ssl">Enable SSL</a> by uncommenting the SSL Connector listening on port 8443, and add the required <strong>keystoreFile</strong> and <strong>keystorePass</strong> attributes. </li>
     <li><a href="../reference/Performance.html#enableCompression">Enable compression</a> by adding <strong>compression</strong> and <strong>compressableMimeType</strong> attributes to 8080 Connector. </li>
-    <li><a href="TDSMonitoringAndDebugging.html#access">Enable access logging</a> by uncommenting the <strong>AccessLogValve</strong> and change the <strong>prefix</strong> and <strong>suffix</strong> and <strong>pattern</strong> attributes. </li>
+    <li><a href="../tutorial/TDSMonitoringAndDebugging.html#access">Enable access logging</a> by uncommenting the <strong>AccessLogValve</strong> and change the <strong>prefix</strong> and <strong>suffix</strong> and <strong>pattern</strong> attributes. </li>
   </ul>
   <li>For each user, create a SHA1 password digest using the <strong>${tomcat_home}/bin/digest.sh</strong> script or an online service such as <a href="http://www.freeformatter.com/message-digest.html">http://www.freeformatter.com/message-digest.html</a></li>
   <li>Make the following modifications to <strong>${tomcat_home}/conf/tomcat-users.xml</strong>:</li>
   <ul>
-    <li>Define the roles <a href="GettingStarted.html#grantingAccess">manager-gui</a> and <a href="examples/accessingTDSMonitoringAndDebuggingTools.html">tdsConfig</a> and <a href="examples/accessingTDSMonitoringAndDebuggingTools.html">tdsMonitor</a>. </li>
-    <li><a href="GettingStarted.html#grantingAccess">Add yourself as a user</a> with the roles manager-gui and tdsConfig using your digest password your
+    <li>Define the roles <a href="../tutorial/GettingStarted.html#grantingAccess">manager-gui</a> and <a href="../tutorial/examples/accessingTDSMonitoringAndDebuggingTools.html">tdsConfig</a> and <a href="../tutorial/examples/accessingTDSMonitoringAndDebuggingTools.html">tdsMonitor</a>. </li>
+    <li><a href="../tutorial/GettingStarted.html#grantingAccess">Add yourself as a user</a> with the roles manager-gui and tdsConfig using your digest password your
       created in step #6 above. </li>
     <pre>&lt;?xml version='1.0' encoding='utf-8'?&gt;<br />&lt;tomcat-users&gt;<br /> &lt;role rolename=&quot;manager-gui&quot;/&gt;<br /> &lt;role rolename=&quot;tdsConfig&quot; description=&quot;can change THREDDS configuration files&quot;/&gt;<br /> &lt;role rolename=&quot;tdsMonitor&quot; description=&quot;can download THREDDS log files&quot;/&gt;<br /> &lt;role rolename=&quot;tdsTrigger&quot; description=&quot;can trigger featureCollection reloads&quot;/&gt;
 <br /> &lt;user username=&quot;generalissimo&quot; password=&quot;digest1&quot; roles=&quot;manager-gui&quot;/&gt;<br /> &lt;user username=&quot;capitan&quot; password=&quot;digest2&quot; roles=&quot;tdsTrigger,tdsConfig,tdsMonitor&quot;/&gt;<br /> &lt;user username=&quot;tdm&quot; password=&quot;digest3&quot; roles=&quot;tdsTrigger&quot;/&gt;<br />&lt;/tomcat-users&gt;</pre>
   </ul>
   <li>Make the following modifications to <strong>${tomcat_home}/webapps/manager/WEB-INF/web.xml</strong>:</li>
   <ol>
-    <li>Make sure the manager is only <a href="examples/tomcatManagerSSL.html">available via SSL</a> by adding a user-data-constraint with a
+    <li>Make sure the manager is only <a href="../tutorial/examples/tomcatManagerSSL.html">available via SSL</a> by adding a user-data-constraint with a
       transport-guarantee of CONFIDENTIAL inside the security-constraint element. </li>
   </ol>
-  <li><a href="Security.html#unused">Remove any unused applications</a> from ${tomcat_home}/webapps.</li>
+  <li><a href="../tutorial/Security.html#unused">Remove any unused applications</a> from ${tomcat_home}/webapps.</li>
   <li>(optional) <a href="../../netcdf-java/reference/netcdf4Clibrary.html">Build netCDF-C library</a> on your server. Standard install directory is <strong>/opt/netcdf.</strong></li>
 </ol>
 <h3>TDS Install</h3>
 <ol>
-  <li><a href="GettingStarted.html#deploying">Download</a> the latest thredds.war file, and put it into <strong>${tomcat_home}/webapps</strong>.</li>
+  <li><a href="../tutorial/GettingStarted.html#deploying">Download</a> the latest thredds.war file, and put it into <strong>${tomcat_home}/webapps</strong>.</li>
   <li>Start/restart Tomcat so that it has a chance to create initial files in <strong>${tomcat_home}/content/thredds</strong>.</li>
-  <li>Modify <strong>${tomcat_home}/content/thredds/catalog.xml</strong> for your site, as in this <a href="BasicConfigCatalogs.html#exampleCatalog">example</a>. </li>
+  <li>Modify <strong>${tomcat_home}/content/thredds/catalog.xml</strong> for your site, as in this <a href="../tutorial/BasicConfigCatalogs.html#exampleCatalog">example</a>. </li>
   <li>Modify  <strong>${tomcat_home}/content/thredds/threddsConfig.xml</strong> for your site in the following manner:</li>
   <ul>
-    <li>Add the needed information to the <a href="BasicThreddsConfig_xml.html#serverInfo"><code>serverInformation</code> element</a></li>
-    <li><a href="AddingServices.html">Enable any other optional services</a> like WMS or WCS.</li>
+    <li>Add the needed information to the <a href="../tutorial/BasicThreddsConfig_xml.html#serverInfo"><code>serverInformation</code> element</a></li>
+    <li><a href="../tutorial/AddingServices.html">Enable any other optional services</a> like WMS or WCS.</li>
   </ul>
-  <li>If needed, <a href="Security.html#access">limit access to the TDS</a> and create a robots.txt file in <strong>${tomcat_home}/webapps/ROOT/</strong> to
+  <li>If needed, <a href="../tutorial/Security.html#access">limit access to the TDS</a> and create a robots.txt file in <strong>${tomcat_home}/webapps/ROOT/</strong> to
     restrict crawler activity. </li>
 </ol>
 <p>&nbsp;</p>
@@ -76,18 +76,18 @@
 <!-- end section -->
 <h2><a name="maintenance" id="maintenance">Maintenance and Upgrades</a></h2>
 <h3>Maintenance</h3>
-<p><strong>Be sure to periodically check to make sure you are running the <a href="Security.html#versions">latest versions</a> of Java, Tomcat and the TDS.</strong></p>
+<p><strong>Be sure to periodically check to make sure you are running the <a href="../tutorial/Security.html#versions">latest versions</a> of Java, Tomcat and the TDS.</strong></p>
 <ul>
-  <li>If you have enabled <a href="TomcatAndTDSLogs.html#access">access logging</a> (and you should), zip up the unused access logs in <strong>${tomcat_home}/logs/</strong> and archive them off to another directory. </li>
-  <li>Likewise, zip up the unused <a href="TomcatAndTDSLogs.html#tds">TDS servlet logs</a> in <strong>${tomcat_home}/content/thredds/logs</strong> and archive
+  <li>If you have enabled <a href="../tutorial/TomcatAndTDSLogs.html#access">access logging</a> (and you should), zip up the unused access logs in <strong>${tomcat_home}/logs/</strong> and archive them off to another directory. </li>
+  <li>Likewise, zip up the unused <a href="../tutorial/TomcatAndTDSLogs.html#tds">TDS servlet logs</a> in <strong>${tomcat_home}/content/thredds/logs</strong> and archive
     them as well. </li>
 </ul>
 <h3>Upgrading the TDS</h3>
 <p>When installing a new thredds.war, everything in <strong>${tomcat_home}/webapps/</strong> is overwritten. However, nothing in <strong>${tomcat_home}/content/</strong> is overwritten.</p>
 <p>Use one of the following methods to deploying a new version of the TDS</p>
 <ul>
-  <li><a href="GettingStarted.html#manager">Tomcat manager application</a></li>
-  <li><a href="GettingStarted.html#deploying">manual installation</a></li>
+  <li><a href="../tutorial/GettingStarted.html#manager">Tomcat manager application</a></li>
+  <li><a href="../tutorial/GettingStarted.html#deploying">manual installation</a></li>
 </ul>
 <!-- end section -->
 </body>
