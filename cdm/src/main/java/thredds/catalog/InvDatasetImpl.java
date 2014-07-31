@@ -1295,10 +1295,10 @@ public class InvDatasetImpl extends InvDataset {
         buff.append(" <li><em>  End: </em> ").append(end.toString()).append("\n");
       }
       CalendarDuration duration = tc.getDuration();
-      if ((duration != null) && !duration.isBlank())
+      if (duration != null)
         buff.append(" <li><em>  Duration: </em> ").append(StringUtil2.quoteHtmlContent(duration.toString())).append("\n");
       CalendarDuration resolution = tc.getResolution();
-      if (resolution != null && !resolution.isBlank()) {
+      if (resolution != null) {
         buff.append(" <li><em>  Resolution: </em> ").append(StringUtil2.quoteHtmlContent(resolution.toString())).append("\n");
       }
       buff.append(" </ul>\n");

@@ -43,7 +43,7 @@ import java.util.*;
  * @author John Caron
  * @author Yuan Ho
  */
-public class GeoTiff {
+public class GeoTiff implements AutoCloseable {
   static final private boolean showBytes = false, debugRead = false, debugReadGeoKey = false;
   static final private boolean showHeaderBytes = false;
 
@@ -692,43 +692,15 @@ public class GeoTiff {
   }
 
 
-  /* /////////////////////////////////////////////////////////////////////////
+  //////////////////////////////////////////////////////////////////////////
 
-  void testReadData() throws IOException {
-    IFDEntry tileOffsetTag = findTag(Tag.TileOffsets);
-    if (tileOffsetTag != null) {
-      int tileOffset = tileOffsetTag.value[0];
-      IFDEntry tileSizeTag = findTag(Tag.TileByteCounts);
-      int tileSize = tileSizeTag.value[0];
-      System.out.println("tileOffset =" + tileOffset + " tileSize=" + tileSize);
-      testReadData(tileOffset, tileSize);
-
-    } else {
-      IFDEntry stripOffsetTag = findTag(Tag.StripOffsets);
-      if (stripOffsetTag != null) {
-        int stripOffset = stripOffsetTag.value[0];
-        IFDEntry stripSizeTag = findTag(Tag.StripByteCounts);
-        if (stripSizeTag == null) throw new IllegalStateException();
-        int stripSize = stripSizeTag.value[0];
-        System.out.println("stripOffset =" + stripOffset + " stripSize=" + stripSize);
-        testReadData(stripOffset, stripSize);
-      }
-    }
-  }
-
-  private void testReadData(int offset, int size) throws IOException {
+  // testing only
+  ByteBuffer testReadData(int offset, int size) throws IOException {
     channel.position(offset);
     ByteBuffer buffer = ByteBuffer.allocate(size);
     buffer.order(byteOrder);
-
     channel.read(buffer);
     buffer.flip();
-
-    //printBytes( System.out, "data", buffer, 32);
-    //buffer.rewind();
-
-    for (int i = 0; i < size / 4; i++) {
-      System.out.println(i + ": " + buffer.getFloat());
-    }
-  }  */
+    return buffer;
+  }
 }

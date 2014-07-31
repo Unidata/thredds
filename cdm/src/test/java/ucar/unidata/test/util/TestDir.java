@@ -4,15 +4,13 @@ import ucar.ma2.InvalidRangeException;
 import ucar.ma2.Section;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.Variable;
+import ucar.nc2.constants.FeatureType;
 
 import java.io.File;
 import java.io.FileFilter;
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.Properties;
+import java.util.*;
 
 /**
  * Manage the test data directories and servers
@@ -354,5 +352,26 @@ public class TestDir {
 
     return 1;
   }
+
+  ////////////////////////////////////////////////////
+
+  public static List<Object[]> getAllFilesInDirectory(String topdir, FileFilter filter) {
+    List<File> files = new ArrayList<>();
+    File topDir = new File(topdir);
+    for (File f : topDir.listFiles()) {
+      if (filter != null && !filter.accept(f)) continue;
+      files.add( f);
+    }
+    Collections.sort(files);
+
+    List<Object[]> result = new ArrayList<>();
+    for (File f : files) {
+      result.add(new Object[] {f.getAbsolutePath()});
+      System.out.printf("%s%n", f.getAbsolutePath());
+    }
+
+    return result;
+  }
+
 
 }

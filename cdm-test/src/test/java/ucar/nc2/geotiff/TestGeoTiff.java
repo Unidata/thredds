@@ -33,41 +33,80 @@
 
 package ucar.nc2.geotiff;
 
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
+import ucar.nc2.ft.point.TestCFPointDatasets;
+import ucar.unidata.test.util.TestDir;
+
+import java.io.FileFilter;
 import java.io.IOException;
 import java.nio.ByteBuffer;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
- * Describe
+ * reading geotiff
  *
  * @author caron
  * @since 7/22/2014
  */
+@RunWith(Parameterized.class)
 public class TestGeoTiff {
+  static public String topdir = TestDir.cdmUnitTestDir + "/formats/geotiff/";
 
-  /**
-   * test
-   */
-  public static void main(String[] argv) {
-    try {
-      GeoTiff geotiff = new GeoTiff("/home/yuanho/tmp/ilatlon_float.tif");
-      //GeoTiff geotiff = new GeoTiff("/home/yuanho/tmp/maxtemp.tif");
-      //GeoTiff geotiff = new GeoTiff("/home/yuanho/tmp/test.tif");
-      //GeoTiff geotiff = new GeoTiff("C:/data/geotiff/c41078a1.tif");
-      //GeoTiff geotiff = new GeoTiff("C:/data/geotiff/L7ETMbands147.tif");
-      //GeoTiff geotiff = new GeoTiff("data/blueTest.tiff");
+  @Parameterized.Parameters
+  public static List<Object[]> getTestParameters() {
+    List<Object[]> result = new ArrayList<>();
 
-      /*GeoTiff geotiff = new GeoTiff("data/testWrite.tiff");
-      geotiff.addTag( new IFDEntry(Tag.SampleFormat, FieldType.SHORT, 3));
-      geotiff.write();
-      geotiff.close();
+    result.addAll(TestDir.getAllFilesInDirectory(topdir, null));
 
-      geotiff = new GeoTiff("data/testWrite.tiff"); */
+    return result;
+  }
+
+
+  String filename;
+
+  public TestGeoTiff(String filename) {
+    this.filename = filename;
+  }
+
+  @Test
+  public void testRead() throws IOException {
+
+    try (GeoTiff geotiff = new GeoTiff(filename)) {
       geotiff.read();
       geotiff.showInfo(System.out);
-      geotiff.testReadData();
-      geotiff.close();
-    } catch (Exception e) {
-      e.printStackTrace();
+
+      IFDEntry tileOffsetTag = geotiff.findTag(Tag.TileOffsets);
+      if (tileOffsetTag != null) {
+        int tileOffset = tileOffsetTag.value[0];
+        IFDEntry tileSizeTag = geotiff.findTag(Tag.TileByteCounts);
+        int tileSize = tileSizeTag.value[0];
+        System.out.println("tileOffset =" + tileOffset + " tileSize=" + tileSize);
+        ByteBuffer buffer = geotiff.testReadData(tileOffset, tileSize);
+
+        for (int i = 0; i < tileSize / 4; i++) {
+          System.out.println(i + ": " + buffer.getFloat());
+        }
+
+      } else {
+        IFDEntry stripOffsetTag = geotiff.findTag(Tag.StripOffsets);
+        if (stripOffsetTag != null) {
+          int stripOffset = stripOffsetTag.value[0];
+          IFDEntry stripSizeTag = geotiff.findTag(Tag.StripByteCounts);
+          if (stripSizeTag == null) throw new IllegalStateException();
+          int stripSize = stripSizeTag.value[0];
+          System.out.println("stripOffset =" + stripOffset + " stripSize=" + stripSize);
+          ByteBuffer buffer = geotiff.testReadData(stripOffset, stripSize);
+
+          for (int i = 0; i < stripSize / 4; i++) {
+            System.out.println(i + ": " + buffer.getFloat());
+          }
+        }
+      }
+
     }
   }
+
 }
