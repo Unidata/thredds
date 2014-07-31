@@ -67,6 +67,7 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.io.*;
 import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
 import java.nio.ShortBuffer;
 import java.util.*;
 import java.util.List;
@@ -359,14 +360,15 @@ public class Grib2DataPanel extends JPanel {
     Map<Integer, Grib2ParameterBean> pdsSet = new HashMap<Integer, Grib2ParameterBean>();
     Map<Integer, Grib2SectionGridDefinition> gdsSet = new HashMap<Integer, Grib2SectionGridDefinition>();
 
-    java.util.List<Grib2ParameterBean> params = new ArrayList<Grib2ParameterBean>();
+    java.util.List<Grib2ParameterBean> params = new ArrayList<>();
 
     int fileno = 0;
     for (MFile mfile : fileList) {
       f.format("%n %s%n", mfile.getPath());
-      ucar.unidata.io.RandomAccessFile raf = new ucar.unidata.io.RandomAccessFile(mfile.getPath(), "r");
-      processGribFile(mfile, fileno++, raf, pdsSet, gdsSet, params, f);
-      raf.close();
+      try (ucar.unidata.io.RandomAccessFile raf = new ucar.unidata.io.RandomAccessFile(mfile.getPath(), "r")) {
+        raf.order(ByteOrder.BIG_ENDIAN);
+        processGribFile(mfile, fileno++, raf, pdsSet, gdsSet, params, f);
+      }
     }
     param2BeanTable.setBeans(params);
   }
@@ -388,6 +390,9 @@ public class Grib2DataPanel extends JPanel {
     }
 
     for (Grib2Record gr : index.getRecords()) {
+      if (cust == null)
+        cust = Grib2Customizer.factory(gr);
+
       gr.setFile(fileno);
 
       int id = Grib2CollectionBuilder.cdmVariableHash(cust, gr, 0, false, false, logger);
@@ -750,6 +755,7 @@ public class Grib2DataPanel extends JPanel {
         f.format("%n");
     }
     f.format("%n%n#bits on = %d%n", bits);
+    f.format("bitmap size = %d%n", 8 * count);
   }
 
   void calcData(Grib2RecordBean bean1, Formatter f) {

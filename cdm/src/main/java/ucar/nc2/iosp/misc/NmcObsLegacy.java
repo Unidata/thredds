@@ -344,6 +344,7 @@ public class NmcObsLegacy extends AbstractIOServiceProvider {
   }
 
   public Array readReportIndex(Variable v, Section section) throws IOException, InvalidRangeException {
+      //coverity[FB.BC_UNCONFIRMED_CAST]
     Structure s = (Structure) v;
     StructureMembers members = s.makeStructureMembers();
     for (Variable v2 : s.getVariables()) {
@@ -366,6 +367,7 @@ public class NmcObsLegacy extends AbstractIOServiceProvider {
   }
 
   public Array readReport(Variable v, Section section) throws IOException, InvalidRangeException {
+    //coverity[FB.BC_UNCONFIRMED_CAST]
     Structure s = (Structure) v;
     StructureMembers members = s.makeStructureMembers();
     for (Variable v2 : s.getVariables()) {

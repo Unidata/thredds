@@ -36,6 +36,7 @@ public class TestReadFormats {
       if (name.endsWith(".ncx")) return false;
       if (name.endsWith(".ncx2")) return false;
       if (name.endsWith(".java")) return false;
+      if (name.endsWith(".jpg")) return false;
       if (name.endsWith(".tif")) return false;
       if (name.endsWith(".txt")) return false;
       if (name.endsWith(".xml")) return false;

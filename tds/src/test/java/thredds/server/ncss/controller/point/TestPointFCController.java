@@ -50,8 +50,8 @@ public class TestPointFCController {
   @SpringJUnit4ParameterizedClassRunner.Parameters
  	public static Collection<Object[]> getTestParameters(){
  		return Arrays.asList(new Object[][]{
-            {"/ncss/testBuoyFeatureCollection/Surface_Buoy_Point_Data_fc.cdmr", 55, "point"},
-            {"/ncss/testSurfaceSynopticFeatureCollection/Surface_Synoptic_Point_Data_fc.cdmr", 43, "point"},
+            {"/ncss/testBuoyFeatureCollection/Surface_Buoy_Point_Data_fc.cdmr", 54, "point"},
+            {"/ncss/testSurfaceSynopticFeatureCollection/Surface_Synoptic_Point_Data_fc.cdmr", 41, "point"},
     });
  	}
 
@@ -66,6 +66,7 @@ public class TestPointFCController {
   @Test
   public void getDatasetXml() throws Exception {
     String xmlpath = path + "/dataset.xml";
+    System.out.printf("request='%s'%n", xmlpath);
     RequestBuilder rb = MockMvcRequestBuilders.get(xmlpath).servletPath(xmlpath);
     MvcResult result = this.mockMvc.perform(rb)
             .andExpect(MockMvcResultMatchers.status().isOk())
@@ -92,6 +93,7 @@ public class TestPointFCController {
   @Test
   public void getDatasetHtml() throws Exception {
     String htmlpath = path + "/dataset.html";
+    System.out.printf("request='%s'%n", htmlpath);
     RequestBuilder rb = MockMvcRequestBuilders.get(htmlpath).servletPath(htmlpath);
     MvcResult result = this.mockMvc.perform(rb)
             .andExpect(MockMvcResultMatchers.status().isOk())

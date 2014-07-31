@@ -99,14 +99,14 @@ public class UFheader {
     raf.order(RandomAccessFile.BIG_ENDIAN);
     while (!raf.isAtEndOfFile()) {
       byte[] b4 = new byte[4];
-      raf.read(b4, 0, 4);
+      raf.readFully(b4);
 
       int rsize = bytesToInt(b4, false);
       byte[] buffer = new byte[rsize];
 
       long offset = raf.getFilePointer();
-      raf.read(buffer, 0, rsize);
-      raf.read(b4, 0, 4);
+      raf.readFully(buffer);
+      raf.readFully(b4);
 
       int endPoint = bytesToInt(b4, false);
       if (endPoint != rsize || rsize == 0) {

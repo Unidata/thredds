@@ -120,7 +120,7 @@ public class KMPMatch {
       while (j > 0 && match[j] != match[i])
         j = result[j - 1];
 
-      if (match[i] == match[i])
+      if (match[j] == match[i])
         j++;
 
       result[i] = j;

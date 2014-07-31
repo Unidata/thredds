@@ -37,6 +37,7 @@ import ucar.nc2.constants.CDM;
 import ucar.nc2.constants.CF;
 import ucar.nc2.util.Misc;
 import ucar.unidata.geoloc.*;
+import ucar.unidata.geoloc.projection.sat.BoundingBoxHelper;
 
 /**
  * Sinusoidal projection, spherical earth.
@@ -48,7 +49,7 @@ import ucar.unidata.geoloc.*;
 
 public class Sinusoidal extends ProjectionImpl {
 
-  private final double earthRadius;
+  private final double earthRadius, maxR, maxR2;
   private double centMeridian; // central Meridian in degrees
   private double falseEasting, falseNorthing;
 
@@ -83,6 +84,8 @@ public class Sinusoidal extends ProjectionImpl {
     this.falseEasting = false_easting;
     this.falseNorthing = false_northing;
     this.earthRadius = radius;
+    this.maxR2 = 2 * earthRadius * earthRadius;  // LOOK ??
+    this.maxR = Math.sqrt(maxR2);
 
     addParameter(CF.GRID_MAPPING_NAME, CF.SINUSOIDAL);
     addParameter(CF.LONGITUDE_OF_CENTRAL_MERIDIAN, centMeridian);
@@ -260,6 +263,10 @@ public class Sinusoidal extends ProjectionImpl {
     double fromX = world.getX() - falseEasting;
     double fromY = world.getY() - falseNorthing;
 
+        // off the map
+    double r2 = fromX*fromX + fromY*fromY;
+    if (r2 > maxR2) return LatLonPointImmutable.INVALID;
+
     double toLat_r = fromY / earthRadius;
     double toLon_r = centMeridian;
     if (!Misc.closeEnough(toLat_r, Math.PI/2, 1e-10)) // if lat = +- pi/2, set lon = centMeridian (Snyder 248)
@@ -268,6 +275,19 @@ public class Sinusoidal extends ProjectionImpl {
     result.setLatitude(Math.toDegrees(toLat_r));
     result.setLongitude(Math.toDegrees(toLon_r));
     return result;
+  }
+
+  /**
+   * Create a ProjectionRect from the given LatLonRect.
+   * Handles lat/lon points that do not intersect the projection panel.
+   *
+   * @param rect the LatLonRect
+   * @return ProjectionRect, or null if no part of the LatLonRect intersects the projection plane
+   */
+  @Override
+ public ProjectionRect latLonToProjBB(LatLonRect rect) {
+    BoundingBoxHelper bbhelper = new BoundingBoxHelper(this, maxR);
+    return bbhelper.latLonToProjBB(rect);
   }
 
 }

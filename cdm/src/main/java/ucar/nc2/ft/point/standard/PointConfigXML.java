@@ -288,7 +288,7 @@ public class PointConfigXML {
   ///////////////////////////////////////////////////////////////////////////
   private static boolean debugXML = false;
   private static boolean debugURL = false;
-  private static boolean showParsedXML = true;
+  private static boolean showParsedXML = false;
 
   public TableConfig readConfigXMLfromResource(String resourceLocation, FeatureType wantFeatureType, NetcdfDataset ds, Formatter errlog) throws IOException {
     ClassLoader cl = this.getClass().getClassLoader();

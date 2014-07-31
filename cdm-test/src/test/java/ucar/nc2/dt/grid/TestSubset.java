@@ -317,7 +317,7 @@ public class TestSubset {
   public void test3D() throws Exception {
     // GridDataset dataset = GridDataset.open("thredds:resolve:http://motherlode.ucar.edu:8080/thredds/dodsC/model/NCEP/NAM/CONUS_12km/latest.xml");
     // GridDataset dataset = GridDataset.open("dods://motherlode.ucar.edu:8080/thredds/dodsC/fmrc/NCEP/NAM/CONUS_12km/NCEP-NAM-CONUS_12km_best.ncd");
-    GridDataset dataset = GridDataset.open("dods://thredds-test.ucar.edu/thredds/dodsC/grib/NCEP/NAM/CONUS_12km/best");
+    GridDataset dataset = GridDataset.open("dods://thredds-test.unidata.ucar.edu/thredds/dodsC/grib/NCEP/NAM/CONUS_12km/best");
 
     GeoGrid grid = dataset.findGridByName("Relative_humidity_isobaric");
     assert null != grid;

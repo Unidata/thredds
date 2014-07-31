@@ -916,7 +916,8 @@ public class Level2Record {
     }
 
     if ((spectWidth_offset < 0) || (spectWidth_offset > RADAR_DATA_SIZE)) {
-      logger.warn("****" + recno + " HAS bad spwidth offset= " + reflect_offset + who());
+      logger.warn("****" + recno + " HAS bad spwidth offset= " +
+              spectWidth_offset + who());
       ok = false;
     }
 

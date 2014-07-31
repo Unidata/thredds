@@ -117,7 +117,7 @@ public class H5header {
     // search forward for the header
     while ((filePos < size) && (filePos < maxHeaderPos)) {
       raf.seek(filePos);
-      raf.read(b);
+      raf.readFully(b);
       String magic = new String(b);
       if (magic.equals(hdf5magic))
         return true;
@@ -180,7 +180,7 @@ public class H5header {
     byte[] b = new byte[8];
     while ((filePos < actualSize)) {
       raf.seek(filePos);
-      raf.read(b);
+      raf.readFully(b);
       String magic = new String(b);
       if (magic.equals(hdf5magic)) {
         ok = true;

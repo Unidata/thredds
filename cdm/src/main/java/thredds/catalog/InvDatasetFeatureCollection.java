@@ -531,6 +531,8 @@ public abstract class InvDatasetFeatureCollection extends InvCatalogRef implemen
     }
 
     MFile mfile = datasetCollection.getLatestFile();  // LOOK - assumes dcm is up to date
+    if (mfile == null) return null;
+
     String mpath = mfile.getPath();
     if (!mpath.startsWith(topDirectory))
       logger.warn("File {} doesnt start with topDir {}", mpath, topDirectory);

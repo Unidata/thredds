@@ -185,7 +185,7 @@ public class MSGnavigation extends ProjectionImpl {
   private double scale_x, scale_y;
 
   private double const1, const2, const3;
-  private double maxR, maxR2;
+  private double maxR;
 
   public MSGnavigation() {
     this(0.0, SUB_LON, R_EQ, R_POL, SAT_HEIGHT, SAT_HEIGHT - R_EQ, SAT_HEIGHT - R_EQ);
@@ -218,7 +218,6 @@ public class MSGnavigation extends ProjectionImpl {
     // "map limit" circle of this radius from the origin, p 173 (Vertical Perspective Projection)
     double P = sat_height / major_axis;
     maxR = .99 * this.major_axis * Math.sqrt((P - 1) / (P + 1));
-    maxR2 = maxR * maxR;
 
     addParameter(CF.GRID_MAPPING_NAME, "MSGnavigation");
     addParameter(CF.LONGITUDE_OF_PROJECTION_ORIGIN, lon0);
@@ -421,107 +420,8 @@ public class MSGnavigation extends ProjectionImpl {
    */
   @Override
   public ProjectionRect latLonToProjBB(LatLonRect rect) {
-
-    ProjectionPoint llpt = latLonToProj(rect.getLowerLeftPoint(), new ProjectionPointImpl());
-    ProjectionPoint urpt = latLonToProj(rect.getUpperRightPoint(), new ProjectionPointImpl());
-    ProjectionPoint lrpt = latLonToProj(rect.getLowerRightPoint(), new ProjectionPointImpl());
-    ProjectionPoint ulpt = latLonToProj(rect.getUpperLeftPoint(), new ProjectionPointImpl());
-
-    // how many are bad?
-    List<ProjectionPoint> goodPts = new ArrayList<ProjectionPoint>(4);
-    int countBad = 0;
-    if (!addGoodPts(goodPts, llpt))
-      countBad++;
-    if (!addGoodPts(goodPts, urpt))
-      countBad++;
-    if (!addGoodPts(goodPts, lrpt))
-      countBad++;
-    if (!addGoodPts(goodPts, ulpt))
-      countBad++;
-
-    // case : 3 or 4 good points, just use those
-
-    // case: only 2 good ones : extend to edge of the limit circle
-    if (countBad == 2) {
-
-      if (!ProjectionPointImpl.isInfinite(llpt) && !ProjectionPointImpl.isInfinite(lrpt)) {
-        addGoodPts(goodPts, new ProjectionPointImpl(0, maxR));
-
-      } else if (!ProjectionPointImpl.isInfinite(ulpt) && !ProjectionPointImpl.isInfinite(llpt)) {
-        addGoodPts(goodPts, new ProjectionPointImpl(maxR, 0));
-
-      } else if (!ProjectionPointImpl.isInfinite(ulpt) && !ProjectionPointImpl.isInfinite(urpt)) {
-        addGoodPts(goodPts, new ProjectionPointImpl(0, -maxR));
-
-      } else if (!ProjectionPointImpl.isInfinite(urpt) && !ProjectionPointImpl.isInfinite(lrpt)) {
-        addGoodPts(goodPts, new ProjectionPointImpl(-maxR, 0));
-
-      } else {
-        throw new IllegalStateException();
-      }
-
-    } else if (countBad == 3) { // case: only 1 good one : extend to wedge of the limit circle
-
-      if (!ProjectionPointImpl.isInfinite(llpt)) {
-        double xcoord = llpt.getX();
-        addGoodPts(goodPts, new ProjectionPointImpl(xcoord, getLimitCoord(xcoord)));
-
-        double ycoord = llpt.getY();
-        addGoodPts(goodPts, new ProjectionPointImpl(getLimitCoord(ycoord), ycoord));
-      } else if (!ProjectionPointImpl.isInfinite(urpt)) {
-        double xcoord = urpt.getX();
-        addGoodPts(goodPts, new ProjectionPointImpl(xcoord, -getLimitCoord(xcoord)));
-
-        double ycoord = urpt.getY();
-        addGoodPts(goodPts, new ProjectionPointImpl(-getLimitCoord(ycoord), ycoord));
-      } else if (!ProjectionPointImpl.isInfinite(ulpt)) {
-        double xcoord = ulpt.getX();
-        addGoodPts(goodPts, new ProjectionPointImpl(xcoord, -getLimitCoord(xcoord)));
-
-        double ycoord = ulpt.getY();
-        addGoodPts(goodPts, new ProjectionPointImpl(getLimitCoord(ycoord), ycoord));
-      } else if (!ProjectionPointImpl.isInfinite(lrpt)) {
-        double xcoord = lrpt.getX();
-        addGoodPts(goodPts, new ProjectionPointImpl(xcoord, getLimitCoord(xcoord)));
-
-        double ycoord = lrpt.getY();
-        addGoodPts(goodPts, new ProjectionPointImpl(-getLimitCoord(ycoord), ycoord));
-
-      } else {
-        throw new IllegalStateException();
-      }
-
-    }
-
-    return makeRect(goodPts);
-  }
-
-  private boolean addGoodPts(List<ProjectionPoint> goodPts, ProjectionPoint pt) {
-    if (!ProjectionPointImpl.isInfinite(pt)) {
-      goodPts.add(pt);
-      //System.out.println("  good= "+pt);
-      return true;
-    } else return false;
-  }
-
-  // where does line x|y = coord intersest the map limit circle?
-  // return the positive root.
-  private double getLimitCoord(double coord) {
-    return Math.sqrt(maxR2 - coord * coord);
-  }
-
-  private ProjectionRect makeRect(List<ProjectionPoint> goodPts) {
-    double minx = Double.MAX_VALUE;
-    double miny = Double.MAX_VALUE;
-    double maxx = -Double.MAX_VALUE;
-    double maxy = -Double.MAX_VALUE;
-    for (ProjectionPoint pp : goodPts) {
-      minx = Math.min(minx, pp.getX());
-      maxx = Math.max(maxx, pp.getX());
-      miny = Math.min(miny, pp.getY());
-      maxy = Math.max(maxy, pp.getY());
-    }
-    return new ProjectionRect(minx, miny, maxx, maxy);
+    BoundingBoxHelper bbhelper = new BoundingBoxHelper(this, maxR);
+    return bbhelper.latLonToProjBB(rect);
   }
 
   public double getLon0() {

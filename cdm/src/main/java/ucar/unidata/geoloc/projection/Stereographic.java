@@ -467,8 +467,7 @@ public class Stereographic extends ProjectionImpl {
    * @param result the object to write to
    * @return the given result
    */
-  public ProjectionPoint latLonToProj(LatLonPoint latLon,
-                                      ProjectionPointImpl result) {
+  public ProjectionPoint latLonToProj(LatLonPoint latLon, ProjectionPointImpl result) {
     double toX, toY;
     double fromLat = latLon.getLatitude();
     double fromLon = latLon.getLongitude();
@@ -503,8 +502,7 @@ public class Stereographic extends ProjectionImpl {
    * @param result the object to write to
    * @return LatLonPoint convert to these lat/lon coordinates
    */
-  public LatLonPoint projToLatLon(ProjectionPoint world,
-                                  LatLonPointImpl result) {
+  public LatLonPoint projToLatLon(ProjectionPoint world, LatLonPointImpl result) {
     double toLat, toLon;
     double fromX = world.getX() - falseEasting;
     double fromY = world.getY() - falseNorthing;
@@ -555,8 +553,7 @@ public class Stereographic extends ProjectionImpl {
    * @param lonIndex index of lon coordinate; must be 0 or 1
    * @return the "to" array
    */
-  public float[][] latLonToProj(float[][] from, float[][] to, int latIndex,
-                                int lonIndex) {
+  public float[][] latLonToProj(float[][] from, float[][] to, int latIndex, int lonIndex) {
     int cnt = from[0].length;
     float[] fromLatA = from[latIndex];
     float[] fromLonA = from[lonIndex];
@@ -663,8 +660,7 @@ public class Stereographic extends ProjectionImpl {
    * @param lonIndex index of lon coordinate; must be 0 or 1
    * @return the "to" array
    */
-  public double[][] latLonToProj(double[][] from, double[][] to,
-                                 int latIndex, int lonIndex) {
+  public double[][] latLonToProj(double[][] from, double[][] to, int latIndex, int lonIndex) {
     int cnt = from[0].length;
     double[] fromLatA = from[latIndex];
     double[] fromLonA = from[lonIndex];

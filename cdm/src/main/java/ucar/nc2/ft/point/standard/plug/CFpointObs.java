@@ -313,6 +313,8 @@ public class CFpointObs extends TableConfigurerImpl {
     if (!identifyEncodingTimeSeriesProfile(ds, info, CF.FeatureType.timeSeriesProfile, errlog)) return null;
 
     VariableDS time = CoordSysEvaluator.findCoordByType(ds, AxisType.Time);
+    if (time == null) return null;
+
     if (time.getRank() == 0 && time.getParentStructure() == null) {
       errlog.format("CFpointObs timeSeriesProfile cannot have a scalar time coordinate%n");  // why ?
       return null;
@@ -963,7 +965,9 @@ public class CFpointObs extends TableConfigurerImpl {
     }
 
     VariableDS time = CoordSysEvaluator.findCoordByType(ds, AxisType.Time);
-    if (time != null && (time.getRank() == 0 || time.getDimension(0) == obsDim)) {
+    if (time == null) return false;
+
+    if (time.getRank() == 0 || time.getDimension(0) == obsDim) {
       info.set(Encoding.single, null, obsDim);
       return true;
     }

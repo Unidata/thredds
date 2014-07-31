@@ -349,6 +349,8 @@ public class CoordinateAxis2D extends CoordinateAxis {
     if (!computeIsInterval()) return null;
 
     Attribute boundsAtt = findAttributeIgnoreCase(CF.BOUNDS);
+    if (boundsAtt == null) return null;
+
     String boundsVarName = boundsAtt.getStringValue();
     VariableDS boundsVar = (VariableDS) ncd.findVariable(getParentGroup(), boundsVarName);
 
