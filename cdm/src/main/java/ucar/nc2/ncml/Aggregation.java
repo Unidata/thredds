@@ -115,6 +115,8 @@ public abstract class Aggregation {
   // this is where  persist() reads/writes files
   static public void setPersistenceCache(DiskCache2 dc) {
     diskCache2 = dc;
+    if (diskCache2 != null)
+      diskCache2.setAlwaysUseCache(true); // the persistence cache file has same name as the ncml - must put it into the cache else clobber ncml  7/31/2014
   }
 
   // experimental multithreading

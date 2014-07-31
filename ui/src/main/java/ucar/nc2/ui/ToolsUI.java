@@ -6376,7 +6376,7 @@ public class ToolsUI extends JPanel {
       System.out.println("XMLStore Creation failed " + e);
     }
 
-    // LOOK needed? for efficiency, persist aggregations. every hour, delete stuff older than 30 days
+    // LOOK needed? for efficiency, persist aggregations. Every hour, delete stuff older than 30 days
     Aggregation.setPersistenceCache(new DiskCache2("/.unidata/aggCache", true, 60 * 24 * 30, 60));
 
         // filesystem caching

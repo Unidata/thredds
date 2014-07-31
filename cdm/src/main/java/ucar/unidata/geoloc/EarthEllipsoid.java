@@ -45,6 +45,10 @@ import java.util.Map;
  */
 @Immutable
 public class EarthEllipsoid extends Earth {
+
+  // must be done first, as other static fields depend on it
+  private static final Map<String, EarthEllipsoid> hash = new java.util.LinkedHashMap<>(10);
+
   /**
    * Ellipsoid for WGS84 (edavis - correct 1/f as per EPSG database ver 6.14)
    */
@@ -62,8 +66,6 @@ public class EarthEllipsoid extends Earth {
   // From Grib2: 4: oblate spheroid as defined in IAG-GRS80 model (major axis = 6 378 137.0 m, minor axis = 6 356 752.314 m, f = 1/298.257 222 101)
   public static final EarthEllipsoid IAG_GRS80 = new EarthEllipsoid("IIAG-GRS80", -1, 6378137.0, 298.257222101);
 
-
-  private static final Map<String, EarthEllipsoid> hash = new java.util.LinkedHashMap<>(10);
 
   /**
    * get a collection of all defined EarthEllipsoid objects

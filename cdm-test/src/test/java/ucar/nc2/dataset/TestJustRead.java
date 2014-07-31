@@ -74,6 +74,7 @@ public class TestJustRead {
     show = true;
     Aggregation.setPersistenceCache(new DiskCache2("/.unidata/aggCache", true, -1, -1));
     doOne( TestDir.cdmUnitTestDir+"/ft/grid/cg/cg.ncml");
+    Aggregation.setPersistenceCache(null);
   }
 
   private void doOne(String filename) throws Exception {
