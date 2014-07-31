@@ -148,13 +148,20 @@
           <div id="dataheader">
             <h2>
               <span>Dataset:</span>
-              <span class="black">
+              <span id="datasetPath" class="black">
                 <xsl:value-of select="gridForm/@location"/>
               </span>
               (
               <a href="dataset.xml">Gridded Dataset Description</a>
               )
             </h2>
+            <h3>
+              <div id="dataheader">
+                <span>NCSS Request: </span>
+                <input id="urlBuilder" name="url" type="text" size="140" value="" />
+                <!-- span class="black" id="urlBuilder"></span -->
+              </div>
+            </h3>
             <h3>
               <span>Base Time:</span>
               <span class="black">
@@ -229,7 +236,7 @@
                         </xsl:if>
                         <br/>
                         <xsl:for-each select="grid">
-                          <input type="checkbox" name="var" value="{@name}"/>
+                          <input onchange="Ncss.buildAccessUrl()" type="checkbox" name="var" value="{@name}"/>
                           <xsl:value-of select="@name"/>
                           =
                           <xsl:value-of select="@desc"/>
@@ -258,25 +265,25 @@
 
                   <div class="borderLightGrey">
                     <label class="sized_big">Latitude:</label>
-                    <input type="text" name="latitude" size="10"/>
+                    <input onchange="Ncss.buildAccessUrl()" type="text" name="latitude" size="10"/>
                     <br/>
                     <label class="sized_big">Longitude:</label>
-                    <input type="text" name="longitude" size="10"/>
+                    <input onchange="Ncss.buildAccessUrl()" type="text" name="longitude" size="10"/>
                     <br/>
                     <span class="bold">Within Bounding Box:</span>
                     <div class="top">
                       <span>north</span>
                       <br/>
-                      <input disabled="disabled" type="text" name="north" size="8" value="{gridForm/LatLonBox/north}"/>
+                      <input onchange="Ncss.buildAccessUrl()" disabled="disabled" type="text" name="north" size="8" value="{gridForm/LatLonBox/north}"/>
                     </div>
                     <div>
                       west
-                      <input disabled="disabled" type="text" name="west" size="8" value="{gridForm/LatLonBox/west}"/>
-                      <input disabled="disabled" type="text" name="east" size="8" value="{gridForm/LatLonBox/east}"/>
+                      <input onchange="Ncss.buildAccessUrl()" disabled="disabled" type="text" name="west" size="8" value="{gridForm/LatLonBox/west}"/>
+                      <input onchange="Ncss.buildAccessUrl()" disabled="disabled" type="text" name="east" size="8" value="{gridForm/LatLonBox/east}"/>
                       east
                     </div>
                     <div class="top">
-                      <input disabled="disabled" type="text" name="south" size="8" value="{gridForm/LatLonBox/south}"/>
+                      <input onchange="Ncss.buildAccessUrl()" disabled="disabled" type="text" name="south" size="8" value="{gridForm/LatLonBox/south}"/>
                       <br/>
                       <span>south</span>
                     </div>
@@ -296,12 +303,12 @@
                         <!-- Time range -->
                         <div id="timeRangeSubset" class="absoluteTopLeft borderLightGrey">
                           <label class="sized">Start:</label>
-                          <input type="text" name="time_start" size="21" value="{gridForm/TimeSpan/begin}"/>
-                          <input type="hidden" disabled="disabled" name="dis_time_start" size="21" value="{gridForm/TimeSpan/begin}"/>
+                          <input onchange="Ncss.buildAccessUrl()" type="text" name="time_start" size="21" value="{gridForm/TimeSpan/begin}"/>
+                          <input onchange="Ncss.buildAccessUrl()" type="hidden" disabled="disabled" name="dis_time_start" size="21" value="{gridForm/TimeSpan/begin}"/>
                           <br/>
                           <label class="sized">End:</label>
-                          <input type="text" name="time_end" size="21" value="{gridForm/TimeSpan/end}"/>
-                          <input type="hidden" disabled="disabled" name="dis_time_end" size="21" value="{gridForm/TimeSpan/end}"/>
+                          <input onchange="Ncss.buildAccessUrl()" type="text" name="time_end" size="21" value="{gridForm/TimeSpan/end}"/>
+                          <input onchange="Ncss.buildAccessUrl()" type="hidden" disabled="disabled" name="dis_time_end" size="21" value="{gridForm/TimeSpan/end}"/>
                           <!-- label class="sized">Stride:</label>
                           <input type="text" name="timeStride" size="5" value="1" /-->
                           <br/>
@@ -309,7 +316,7 @@
                         </div>
                         <div id="singleTimeSubset" class="hidden absoluteTopLeft borderLightGrey">
                           <label class="sized">Time:</label>
-                          <input type="text" name="time" size="21" disabled="disabled" value="{gridForm/TimeSpan/end}"/>
+                          <input onchange="Ncss.buildAccessUrl()" type="text" name="time" size="21" disabled="disabled" value="{gridForm/TimeSpan/end}"/>
                         </div>
                       </div>
                     </div>
@@ -319,7 +326,7 @@
                     <h3>Choose Vertical Level:</h3>
                     <div class="borderLightGrey">
                       <label class="sized">Level:</label>
-                      <input type="text" name="vertCoord" size="10"/>
+                      <input onchange="Ncss.buildAccessUrl()" type="text" name="vertCoord" size="10"/>
                       <br/>
                     </div>
                   </xsl:if>
@@ -327,7 +334,7 @@
                   <h3>Choose Output Format:</h3>
                   <div class="borderLightGrey">
                     <label class="sized">Format:</label>
-                    <select name="accept" size="1">
+                    <select onchange="Ncss.buildAccessUrl()" name="accept" size="1">
                       <xsl:for-each select="gridForm/AcceptList/GridAsPoint/accept">
                         <option value="{.}">
                           <xsl:value-of select="@displayName"/>
@@ -341,7 +348,7 @@
               <tr>
                 <td colspan="2" class="center">
                   <input class="button" type="submit" value="Submit"/>
-                  <input class="button" type="reset" value="Reset"/>
+                  <input class="button" type="button" onclick="Ncss.resetForm()" value="Reset" />
                 </td>
               </tr>
             </table>
