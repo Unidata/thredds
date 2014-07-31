@@ -560,7 +560,6 @@ public class Nids2Dataset extends RadialDatasetSweepAdapter implements TypedData
     Sweep sw;
 
     sw = rv.getSweep(0);
-    float[] ddd = sw.readData();
     float gsize = sw.getGateSize();
      System.out.println("*** radar Sweep gate is: \n" + gsize);
    /* assert (null != ddd);
@@ -592,11 +591,6 @@ public class Nids2Dataset extends RadialDatasetSweepAdapter implements TypedData
     //RadialDatasetSweep rds = datasetFactory.open(fileIn, null);
     RadialDatasetSweep rds = (RadialDatasetSweep) TypedDatasetFactory.open(FeatureType.RADIAL, fileIn, null, new StringBuilder());
     RadialDatasetSweep rds1 = (RadialDatasetSweep) TypedDatasetFactory.open(FeatureType.RADIAL, fileIn1, null, new StringBuilder());
-    String st = rds.getStartDate().toString();
-    String et = rds.getEndDate().toString();
-    String id = rds.getRadarID();
-    String name = rds.getRadarName();
-    rds.getRadarID();
     //List rvars = rds.getDataVariables();
     RadialDatasetSweep.RadialVariable rf = (RadialDatasetSweep.RadialVariable) rds.getDataVariable("BaseReflectivity");
    // rf.getSweep(0);

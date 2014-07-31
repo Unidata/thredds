@@ -238,7 +238,7 @@ public class Dorade2Dataset extends RadialDatasetSweepAdapter implements TypedDa
         int nsweeps;
         String name;
 
-        float ele, azi, alt, lon, lat;
+        float azi;
         //float rt;
         //RadialDatasetSweep.Sweep sweep;
 
