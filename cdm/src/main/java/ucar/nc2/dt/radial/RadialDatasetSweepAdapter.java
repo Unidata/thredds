@@ -127,7 +127,7 @@ public abstract class RadialDatasetSweepAdapter extends TypedDatasetImpl impleme
       LatLonRect bb = sys.getBoundingBox();
       if (largestBB == null)
         largestBB = bb;
-      else
+      else if (bb != null)
         largestBB.extend(bb);
     }
     boundingBox = largestBB;

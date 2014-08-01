@@ -589,23 +589,20 @@ public class CFnetCDF2Dataset extends RadialDatasetSweepAdapter implements Typed
        *
        * @return _more_
        */
-      private float[] sweepData() {
+      private float[] sweepData() throws IOException {
         int[] shape = sweepVar.getShape();
         int[] origin = new int[2];
-        Array sweepTmp = null;
 
         // init section
         origin[0] = startIdx;
         shape[0] = endIdx - startIdx;
 
         try {
-          sweepTmp = sweepVar.read(origin, shape).reduce();
+          Array sweepTmp = sweepVar.read(origin, shape).reduce();
+          return (float[]) sweepTmp.get1DJavaArray(Float.TYPE);
         } catch (ucar.ma2.InvalidRangeException e) {
-          e.printStackTrace();
-        } catch (java.io.IOException e) {
-          e.printStackTrace();
+          throw new IOException(e);
         }
-        return (float[]) sweepTmp.get1DJavaArray(Float.TYPE);
       }
 
       //  private Object MUTEX =new Object();
@@ -634,21 +631,17 @@ public class CFnetCDF2Dataset extends RadialDatasetSweepAdapter implements Typed
       public float[] rayData(int ray) throws java.io.IOException {
         int[] shape = sweepVar.getShape();
         int[] origin = new int[2];
-        Array sweepTmp = null;
 
         // init section
         origin[0] = startIdx + ray;
         shape[0] = 1;
 
         try {
-          sweepTmp = sweepVar.read(origin, shape).reduce();
+          Array sweepTmp = sweepVar.read(origin, shape).reduce();
+          return (float[]) sweepTmp.get1DJavaArray(Float.TYPE);
         } catch (ucar.ma2.InvalidRangeException e) {
-          e.printStackTrace();
-        } catch (java.io.IOException e) {
-          e.printStackTrace();
+          throw new IOException(e);
         }
-
-        return (float[]) sweepTmp.get1DJavaArray(Float.TYPE);
       }
 
 
@@ -656,7 +649,6 @@ public class CFnetCDF2Dataset extends RadialDatasetSweepAdapter implements Typed
        * _more_
        */
       public void setMeanElevation() {
-
         double sum = 0.0;
         int sumSize = 0;
         int size = endIdx - startIdx;
@@ -666,7 +658,8 @@ public class CFnetCDF2Dataset extends RadialDatasetSweepAdapter implements Typed
             sumSize++;
           }
         }
-        meanElevation = sum / sumSize;
+        if (sumSize > 0)
+            meanElevation = sum / sumSize;
       }
 
       /**
@@ -760,8 +753,8 @@ public class CFnetCDF2Dataset extends RadialDatasetSweepAdapter implements Typed
             sumSize++;
           }
         }
-        meanAzimuth = sum / sumSize;
-
+        if (sumSize > 0)
+            meanAzimuth = sum / sumSize;
       }
 
       /**
