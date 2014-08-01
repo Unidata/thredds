@@ -719,7 +719,10 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
       return acquireDap4(cache, factory, hashKey, location,
               buffer_size, cancelTask, spiObject);
     else if (svctype == ServiceType.NCML) {
-      return acquireNcml(cache, factory, hashKey, location,
+      // If lead protocol was null and then pretend it was a file
+      // Note that technically, this should be 'file://'
+      String url = (allprotocols.size() == 0 ? "file:" + trueurl : trueurl);
+      return acquireNcml(cache, factory, hashKey, url,
               buffer_size, cancelTask, spiObject);
     } else if (svctype == ServiceType.THREDDS) {
       Formatter log = new Formatter();
