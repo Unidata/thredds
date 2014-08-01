@@ -131,7 +131,7 @@ public class Misc {
     int val3 = 2348;
     int val4 = 32;
     Formatter f = new Formatter(System.out);
-    f.format("  address            dataPos            offset size\n");
+    f.format("  address            dataPos            offset size%n");
     f.format("  %#-18x %#-18x %5d  %4d%n", val1, val2, val3, val4);
 
   }

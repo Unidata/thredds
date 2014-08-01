@@ -198,12 +198,12 @@ Where startingBlockSize is from the header, ie the same for all indirect blocks.
   }
 
   void showDetails(Formatter f) {
-    f.format("FractalHeap version=" + version + " heapIdLen=" + heapIdLen + " ioFilterLen=" + ioFilterLen + " flags= " + flags + "\n");
+    f.format("FractalHeap version=" + version + " heapIdLen=" + heapIdLen + " ioFilterLen=" + ioFilterLen + " flags= " + flags + "%n");
     f.format(" maxSizeOfObjects=" + maxSizeOfObjects + " nextHugeObjectId=" + nextHugeObjectId + " btreeAddress="
-            + btreeAddress + " managedSpace=" + managedSpace + " allocatedManagedSpace=" + allocatedManagedSpace + " freeSpace=" + freeSpace + "\n");
+            + btreeAddress + " managedSpace=" + managedSpace + " allocatedManagedSpace=" + allocatedManagedSpace + " freeSpace=" + freeSpace + "%n");
     f.format(" nManagedObjects=" + nManagedObjects + " nHugeObjects= " + nHugeObjects + " nTinyObjects=" + nTinyObjects +
-            " maxDirectBlockSize=" + maxDirectBlockSize + " maxHeapSize= 2^" + maxHeapSize + "\n");
-    f.format(" rootBlockAddress=" + rootBlockAddress + " startingNumRows=" + startingNumRows + " currentNumRows=" + currentNumRows + "\n\n");
+            " maxDirectBlockSize=" + maxDirectBlockSize + " maxHeapSize= 2^" + maxHeapSize + "%n");
+    f.format(" rootBlockAddress=" + rootBlockAddress + " startingNumRows=" + startingNumRows + " currentNumRows=" + currentNumRows + "%n%n");
     rootBlock.showDetails(f);
     // doublingTable.showDetails(f);
   }
@@ -295,9 +295,9 @@ Where startingBlockSize is from the header, ie the same for all indirect blocks.
     void showDetails(Formatter f) {
       f.format(" DoublingTable: tableWidth= %d startingBlockSize = %d managedSpace=%d maxDirectBlockSize=%d%n",
               tableWidth, startingBlockSize, managedSpace, maxDirectBlockSize);
-      //sbuff.append(" nrows=" + nrows + " nDirectRows=" + nDirectRows + " nIndirectRows=" + nIndirectRows+"\n");
-      f.format(" DataBlocks:\n");
-      f.format("  address            dataPos            offset size\n");
+      //sbuff.append(" nrows=" + nrows + " nDirectRows=" + nDirectRows + " nIndirectRows=" + nIndirectRows+"%n");
+      f.format(" DataBlocks:%n");
+      f.format("  address            dataPos            offset size%n");
       for (DataBlock dblock : blockList) {
         f.format("  %#-18x %#-18x %5d  %4d%n", dblock.address, dblock.dataPos, dblock.offset, dblock.size);
       }
@@ -346,9 +346,9 @@ Where startingBlockSize is from the header, ie the same for all indirect blocks.
     void showDetails(Formatter f) {
       f.format("%n IndirectBlock: nrows= %d directRows = %d indirectRows=%d startingSize=%d%n",
               nrows, directRows, indirectRows, size);
-      //sbuff.append(" nrows=" + nrows + " nDirectRows=" + nDirectRows + " nIndirectRows=" + nIndirectRows+"\n");
-      f.format(" DataBlocks:\n");
-      f.format("  address            dataPos            offset size end\n");
+      //sbuff.append(" nrows=" + nrows + " nDirectRows=" + nDirectRows + " nIndirectRows=" + nIndirectRows+"%n");
+      f.format(" DataBlocks:%n");
+      f.format("  address            dataPos            offset size end%n");
       if (directBlocks != null)
         for (DataBlock dblock : directBlocks)
           f.format("  %#-18x %#-18x %5d  %4d %5d %n", dblock.address, dblock.dataPos, dblock.offset, dblock.size,

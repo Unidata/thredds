@@ -494,18 +494,18 @@ public class NestedTable {
 
   public String toString() {
     Formatter formatter = new Formatter();
-    formatter.format("NestedTable = %s\n", getName());
-    formatter.format("  Time= %s\n", timeVE);
-    formatter.format("  Lat= %s\n", latVE);
-    formatter.format("  Lon= %s\n", lonVE);
-    formatter.format("  Height= %s\n", altVE);
+    formatter.format("NestedTable = %s%n", getName());
+    formatter.format("  Time= %s%n", timeVE);
+    formatter.format("  Lat= %s%n", latVE);
+    formatter.format("  Lon= %s%n", lonVE);
+    formatter.format("  Height= %s%n", altVE);
 
     return formatter.toString();
   }
 
   public void show(Formatter formatter) {
-    formatter.format(" NestedTable = %s\n", getName());
-    formatter.format("   nlevels = %d\n", nlevels);
+    formatter.format(" NestedTable = %s%n", getName());
+    formatter.format("   nlevels = %d%n", nlevels);
     leaf.show(formatter, 2);
   }
 

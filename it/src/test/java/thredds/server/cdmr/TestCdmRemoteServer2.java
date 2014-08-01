@@ -121,7 +121,7 @@ public class TestCdmRemoteServer2 {
       crawler.crawl(cat, null, null, null);
     } finally {
       long took = (System.currentTimeMillis() - start);
-      System.out.format("***Done " + cat + " took = " + took + " msecs\n");
+      System.out.format("***Done " + cat + " took = " + took + " msecs%n");
     }
   }
 

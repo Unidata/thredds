@@ -45,21 +45,30 @@ import java.util.*;
  * @since 6/22/11
  */
 public abstract class LocalTables extends Grib2Customizer {
-  protected Map<Integer, Grib2Parameter> local = new HashMap<>(100);
+
+  //////////////////////////////////////////////////////////////////////
+  protected Map<Integer, Grib2Parameter> local = new HashMap<>(100);  // subclass must set
 
   LocalTables(int center, int subCenter, int masterVersion, int localVersion) {
     super(center, subCenter, masterVersion, localVersion);
-    initLocalTable();
   }
 
-  protected abstract void initLocalTable();
-
   @Override
-  public List getParameters() {
-    List<Grib2Parameter> result = new ArrayList<>();
+  public List<GribTables.Parameter> getParameters() {
+    List<GribTables.Parameter> result = new ArrayList<>();
     for (Grib2Parameter p : local.values()) result.add(p);
-    Collections.sort(result);
+    Collections.sort(result, new ParameterSort());
     return result;
+  }
+
+  private static class ParameterSort implements Comparator<Parameter> {
+    public int compare(Parameter p1, Parameter p2) {
+      int c = p1.getDiscipline() - p2.getDiscipline();
+      if (c != 0) return c;
+      c = p1.getCategory() - p2.getCategory();
+      if (c != 0) return c;
+      return p1.getNumber() - p2.getNumber() ;
+    }
   }
 
   @Override
@@ -82,7 +91,7 @@ public abstract class LocalTables extends Grib2Customizer {
       GribTables.Parameter pwmo = WmoCodeTable.getParameterEntry(discipline, category, number);
       if (plocal == null) return pwmo;
 
-      // allow local table to override all but name, units
+      // allow local table to override all but name, units  LOOK WTF ??
       plocal.name = pwmo.getName();
       plocal.unit = pwmo.getUnit();
     }

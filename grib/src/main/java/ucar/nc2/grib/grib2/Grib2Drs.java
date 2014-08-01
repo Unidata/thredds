@@ -306,6 +306,7 @@ public class Grib2Drs {
     }
   }
 
+  // pull request #52 "lost-carrier" jkaehler@meteomatics.com
   public static class Type50002 extends Grib2Drs {
 	    public float referenceValue;
 	    public int binaryScaleFactor, decimalScaleFactor, numberOfBits;

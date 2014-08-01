@@ -95,7 +95,6 @@ public class TestNcmlWriteAndCompare {
     }, true);
   }
 
-
   /////////////////////////////////////////////////////////////
   boolean showFiles = true;
   boolean compareData = false;
@@ -118,7 +117,6 @@ public class TestNcmlWriteAndCompare {
     compareNcML(false, false, true);
     compareNcML(false, false, false);
   }
-
 
   public void compareNcML(boolean useRecords, boolean explicit, boolean openDataset) throws IOException {
     if (compareData) useRecords = false;

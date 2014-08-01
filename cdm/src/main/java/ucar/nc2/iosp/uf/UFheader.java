@@ -99,7 +99,8 @@ public class UFheader {
     raf.order(RandomAccessFile.BIG_ENDIAN);
     while (!raf.isAtEndOfFile()) {
       byte[] b4 = new byte[4];
-      raf.readFully(b4);
+      int bytesRead = raf.read(b4);
+      if (bytesRead != 4) break; // done
 
       int rsize = bytesToInt(b4, false);
       byte[] buffer = new byte[rsize];

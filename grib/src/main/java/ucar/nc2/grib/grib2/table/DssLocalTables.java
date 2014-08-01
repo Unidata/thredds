@@ -55,6 +55,7 @@ public class DssLocalTables extends LocalTables {
 
   DssLocalTables(int center, int subCenter, int masterVersion, int localVersion) {
     super(center, subCenter, masterVersion, localVersion);
+    initLocalTable();
   }
 
   @Override
@@ -118,11 +119,11 @@ public class DssLocalTables extends LocalTables {
   public static void main(String[] args) {
     DssLocalTables t = new DssLocalTables(7,0,0,0);
     Formatter f = new Formatter();
-    Grib2Parameter.compareTables("DSS-093", "Standard WMO version 8", t.getParameters(), Grib2Customizer.factory(0,0,0,0), f);
+    Grib2Parameter.compareTables("DSS-093", "Standard WMO version 8", t.getParameters(), Grib2Customizer.factory(0,0,0,0,0), f);
     System.out.printf("%s%n", f);
 
     Formatter f2 = new Formatter();
-    Grib2Parameter.compareTables("DSS-093", "NCEP Table", t.getParameters(), Grib2Customizer.factory(7,0,0,0), f2);
+    Grib2Parameter.compareTables("DSS-093", "NCEP Table", t.getParameters(), Grib2Customizer.factory(7,0,0,0,0), f2);
     System.out.printf("%s%n", f2);
 
   }

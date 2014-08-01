@@ -61,11 +61,13 @@ import java.util.jar.JarFile;
  * @author caron
  * @since 4/3/11
  */
-public class NcepLocalTables extends Grib2Customizer {
+public class NcepLocalTables extends LocalTables {
   static private final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(NcepLocalTables.class);
 
-  NcepLocalTables(int center, int subCenter, int masterVersion, int localVersion) {
+  protected final int genProcessId;
+  NcepLocalTables(int center, int subCenter, int masterVersion, int localVersion, int genProcessId) {
     super(center, subCenter, masterVersion, localVersion);
+    this.genProcessId = genProcessId;
     initCodes();
   }
 
@@ -131,8 +133,8 @@ public class NcepLocalTables extends Grib2Customizer {
   }
 
   @Override
-  public List getParameters() {
-    List allParams = new ArrayList(3000);
+  public List<GribTables.Parameter> getParameters() {
+    List<GribTables.Parameter> allParams = new ArrayList<>(3000);
     String path = "resources/grib2/ncep/";
     try {
       String[] fileNames = getResourceListing(ucar.nc2.grib.GribNumbers.class, path);
@@ -236,6 +238,8 @@ public class NcepLocalTables extends Grib2Customizer {
     else
       return te.getName();
   }
+
+
 
   public GribTables.Parameter getParameterOld(int discipline, int category, int number) {
     if ((category <= 191) && (number <= 191)) {
@@ -481,9 +485,7 @@ public class NcepLocalTables extends Grib2Customizer {
   // public so can be called from Grib2
   private Map<Integer, String> initTable410() {
     String path = "resources/grib2/ncep/Table4.10.xml";
-    InputStream is = null;
-    try {
-      is = GribResourceReader.getInputStream(path);
+    try (InputStream is = GribResourceReader.getInputStream(path)) {
       if (is == null) {
         logger.error("Cant find = " + path);
         return null;
@@ -506,14 +508,10 @@ public class NcepLocalTables extends Grib2Customizer {
     } catch (IOException ioe) {
       logger.error("Cant read  " + path, ioe);
       return null;
+
     } catch (JDOMException e) {
       logger.error("Cant parse = " + path, e);
       return null;
-    } finally {
-      if (is != null) try {
-        is.close();
-      } catch (IOException e) {
-      }
     }
   }
 
@@ -649,7 +647,7 @@ Updated again on 3/26/2008
   public static void main(String arg[]) {
     Map<Integer, CompTable> map = new HashMap<>(500);
 
-    NcepLocalTables tables = new NcepLocalTables(0, 0, 0, 0);
+    NcepLocalTables tables = new NcepLocalTables(0, 0, 0, 0, 0);
     NcepLocalParamsOld ncepOld = new NcepLocalParamsOld();
 
     for (int key : ncepOld.local.keySet()) {

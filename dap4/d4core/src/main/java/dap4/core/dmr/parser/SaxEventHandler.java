@@ -225,7 +225,7 @@ abstract public class SaxEventHandler extends DefaultHandler
             throws SAXException
     {
         throw new SAXParseException(
-                String.format("Sax fatal error: %s; %s\n", e, report(this.locator)),
+                String.format("Sax fatal error: %s; %s%n", e, report(this.locator)),
                 this.locator);
     }
 
@@ -287,7 +287,7 @@ abstract public class SaxEventHandler extends DefaultHandler
     protected String
     locatedError(String msg)
     {
-        String locmsg = msg + String.format("; near %s\n", this.locator.toString());
+        String locmsg = msg + String.format("; near %s%n", this.locator.toString());
         return locmsg;
     }
 

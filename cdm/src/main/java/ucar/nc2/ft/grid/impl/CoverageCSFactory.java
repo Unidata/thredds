@@ -208,7 +208,7 @@ public class CoverageCSFactory {
 
         } catch (Exception e) {
           if (errlog != null)
-            errlog.format("%s: Error reading time coord= %s err= %s\n", t.getDatasetLocation(), t.getFullName(), e.getMessage());
+            errlog.format("%s: Error reading time coord= %s err= %s%n", t.getDatasetLocation(), t.getFullName(), e.getMessage());
         }
 
       } else { // 2d LOOK ??

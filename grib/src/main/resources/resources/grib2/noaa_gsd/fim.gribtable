@@ -1,0 +1,146 @@
+#	       FIM Table 1: variable definitions for GRIB
+#      (note: * indicates NCEP needs to permanatly assign number)
+#                                                                                                GRIB      GRIB
+#                                                         iparm ztype   iz1   iz2  itr iscale  ABBREV     UNITS
+#
+u-component of wind - b                                      33   109                       1   US3D_B       m/s 
+v-component of wind - b                                      34   109                       1   VS3D_B       m/s 
+height - b                                                    7   109                       1   PH3D_B       gpm 
+pressure - b                                                  1   109                       0   PR3D_B        Pa  
+virtual potential temperature - b                           189   109                       2   TH3D_B         K
+temperature - b                                              11   109                       1   TK3D_B         K
+dew-point temperature - b                                    17   109                       1   TD3D_B         K
+water vapor mixing ratio - b                                 53   109                       5   QV3D_B            
+vertical velocity - b                                        39   109                       1   WS3D_B      Pa/s
+cloud water mixing ratio - b                                153   109                       6   QW3D_B     Kg/Kg
+ozone mixing ratio - b                                      154   109                       8   OZ3D_B     Kg/Kg
+u-component of wind - p                                      33   100                       1   US3D_P       m/s 
+v-component of wind - p                                      34   100                       1   VS3D_P       m/s 
+height - p                                                    7   100                       1   PH3D_P       gpm 
+pressure - p                                                  1   100                       0   PR3D_P        Pa  
+virtual potential temperature - p                           189   100                       2   TH3D_P         K
+temperature - p                                              11   100                       1   TK3D_P         K
+dew-point temperature - p                                    17   100                       1   TD3D_P         K
+water vapor mixing ratio - p                                 53   100                       5   QV3D_P            
+water vapor mixing ratio - p                                 53   100                       6   QV3P              
+vertical velocity - p                                        39   100                       1   VV3P        Pa/s
+cloud water mixing ratio - p                                153   100                       8   QW3D_P     Kg/Kg
+cloud water mixing ratio - p                                153   100                       5   QC3P       Kg/Kg
+ozone mixing ratio - p                                      154   100                       8   OZ3D_P     Kg/Kg
+ozone mixing ratio - p                                      154   100                       8   OZ3P       Kg/Kg
+soil temperature at level 1 below surface                    85   111           5           2   ST_1          K
+soil temperature at level 2 below surface                    85   111          20           2   ST_2          K 
+soil temperature at level 3 below surface                    85   111          40           2   ST_3          K  
+soil temperature at level 4 below surface                    85   111         160           2   ST_4          K
+soil moisture content at level 1                             86   111           5           4   SM_1    kg/m**2
+soil moisture content at level 2                             86   111          20           4   SM_2    kg/m**2
+soil moisture content at level 3                             86   111          40           4   SM_3    kg/m**2
+soil moisture content at level 4                             86   111         160           4   SM_4    kg/m**2
+water equivalent of snow depth                               65     1                       5   SN2D          m
+radiation shortwave downward at surface                     204     1                       1   RSDS     W/m**2
+radiation longwave downward at surface                      205     1                       1   RLDS     W/m**2
+radiation shortwave upward at surface                       211     1                       1   RSUS     W/m**2
+radiation longwave upward at surface                        212     1                       1   RLUS     W/m**2
+outgoing top of atmosphere LW flux                          114     1                       1   RLUT     W/m**2
+sensible heat flux                                          122     1                       1   HFSS     W/m**2
+latent heat flux                                            121     1                       1   HFLS     W/m**2
+relative humidity - b                                        52   109                       2   RH3D_B        %
+montgomery stream function - b                               37   109                       2   MP3D_B  m**2/s**2
+pressure thickness         - b                              172   109                       1   DP3D_B       Pa 
+relative humidity - p                                        52   100                       2   RP3D          %
+montgomery stream function  - p                              37   100                       2   MP3D_P  m**2/s**2
+pressure thickness - p                                      172   100                       1   DP3D_P       Pa 
+total precipitation accumulative                             61     1                4      2   RN2D         mm 
+total precipitation                                          61     1                       2   R12D         mm 
+grid scale precipitation accumulative                        62     1                4      2   RG2D         mm 
+grid scale precipitation                                     62     1                       2   R32D         mm 
+convective precipitation accumulative                        63     1                4      2   RC2D         mm 
+convective precipitation                                     63     1                       2   R22D         mm 
+precipitable water                                           54     1                       1   PW2D    kg/m**2
+skin temperature                                             11     1                       2   TS2D          K
+Friction velocity                                           253     1                       1   US2D        m/s
+MAPS mean sea level pressure                                129   102                      -1   MS2D         Pa
+u-component of wind - p                                      33   100                       1   UP3P        m/s 
+v-component of wind - p                                      34   100                       1   VP3P        m/s 
+u-component of wind, 10m fixed height                        33   105         10            1   U12D        m/s
+v-component of wind, 10m fixed height                        34   105         10            1   V12D        m/s
+temperature, 2m fixed height                                 11   105          2            1   T22D        m/s
+wind speed, 80m fixed height                                190   105         80            1   W080        m/s
+specific humidity, 2m fixed height                           51   105          2            5   Q22D        m/s
+height - p                                                    7   100                       1   HGTP        gpm 
+relative humidity - p                                        52   100                       2   RP3P          %
+relative humidity - p                                        52   100                       2   RP3P_B        %
+temperature - p                                              11   100                       1   TMPP          K
+pressure at tropopause                                        1     7                      -1   PRPV         Pa
+potential temperature at tropopause                          13     7                       1   THPV          K  
+u-component of wind at tropopause                            33     7                       1   USPV        m/s
+v-component of wind at tropopause                            34     7                       1   VSPV        m/s
+grid point latitude                                         207     1                       5   LAT         deg 
+grid point longitude                                        208     1                       5   LON         deg
+PBL height                                                  221     1                       0
+gust wind speed                                             180     1                       0
+cloud base height                                             7     2                       0   CB2D          m
+cloud top height                                              7     3                       0   CT2D          m
+visibility                                                   20     1                       0
+maximum equivalent potential temperature pressure             1   246                       2
+convective cloud top height                                   7   243                       1
+equilibrium level height                                      7   247                       1
+convective cloud mass flux                                  231     1                       2
+wet-bulb zero height                                          7   245                       1
+radar reflectivity - max                                    212   200                8      1
+radar reflectivity - 1km                                    211   105        1000    8      1
+radar reflectivity - 4km                                    211   105        4000    8      1
+relative humidity w.r.t. precipitable water                 223   200                       2   RP2D       %
+soil type                                                   224     1                       0
+Integrated PM25                                             130     1                       3   IA2D      ug/m3
+Integrated organic carbon                                   131     1                       3   IO2D      ug/kg
+Integrated black carbon                                     132     1                       3   IB2D      ug/kg
+Integrated sulf                                             133     1                       7   IS2D        ppm
+Integrated fine dust                                        134     1                       3   ID2D      ug/kg
+Aerosol Optical Depth                                       135     1                       2   AO2D      ug/kg
+Ash1                                                        160   109                       3   ASH1_B     ug/kg
+Ash2                                                        161   109                       3   ASH2_B     ug/kg
+Ash3                                                        162   109                       3   ASH3_B     ug/kg
+Ash4                                                        163   109                       3   ASH4_B     ug/kg
+Integrated Ash                                              164     1                       3   IASH       ug/kg
+Ces1                                                        165   109                       3   C13D_B     ug/kg
+Ces2                                                        166   109                       3   C23D_B     ug/kg
+fallout                                                     167     1                       3   FL2D       ug/kg
+hydrophillic organic carbon - p                             233   109                       3   OBC1_B     ug/kg
+hydrophillic organic carbon - p                             234   109                       3   OBC2_B     ug/kg
+hydrophobic black carbon - p                                235   109                       3   PBC1_B     ug/kg
+hydrophobic black carbon - p                                236   109                       3   PBC2_B     ug/kg
+so2 - p                                                     237   109                       7   PSO2_B     ppm
+sulfate - p                                                 238   109                       7   SULF_B     ppm
+dust1 - p                                                   239   109                       3   D1ST_B     ppm
+dust2 - p                                                   240   109                       3   D2ST_B     ppm
+dust3 - p                                                   241   109                       3   D3ST_B     ppm
+dust4 - p                                                   242   109                       3   D4ST_B     ppm
+dust5 - p                                                   244   109                       3   D5ST_B     ppm
+seasalt1 - p                                                248   109                       3   S1EA_B     ppm
+seasalt2 - p                                                249   109                       3   S2EA_B     ppm
+seasalt3 - p                                                250   109                       3   S3EA_B     ppm
+seasalt4 - p                                                251   109                       3   S4EA_B     ppm
+dms - p                                                     252   109                       7   DMS1_B     ppm
+msa - p                                                     254   109                       7   PMSA_B     ppm
+prmary pm25 - p                                             155   109                       3   PP25_B     ug/kg
+prmary pm10 - p                                             156   109                       3   PP10_B     ug/kg
+hydrophillic organic carbon - p                             233   100                       3   OC1P       ug/kg
+hydrophillic organic carbon - p                             234   100                       3   OC2P       ug/kg
+hydrophobic black carbon - p                                235   100                       3   BC1P       ug/kg
+hydrophobic black carbon - p                                236   100                       3   BC2P       ug/kg
+so2 - p                                                     237   100                       7   SO2P       ppm
+sulfate - p                                                 238   100                       7   SLFP       ppm
+dust1 - p                                                   239   100                       3   D1SP       ppm
+dust2 - p                                                   240   100                       3   D2SP       ppm
+dust3 - p                                                   241   100                       3   D3SP       ppm
+dust4 - p                                                   242   100                       3   D4SP       ppm
+dust5 - p                                                   244   100                       3   D5SP       ppm
+seasalt1 - p                                                248   100                       3   S1SP       ppm
+seasalt2 - p                                                249   100                       3   S2SP       ppm
+seasalt3 - p                                                250   100                       3   S3SP       ppm
+seasalt4 - p                                                251   100                       3   S4SP       ppm
+dms - p                                                     252   100                       7   DMSP       ppm
+msa - p                                                     254   100                       7   MSAP       ppm
+prmary pm25 - p                                             155   100                       3   P25P       ug/kg
+prmary pm10 - p                                             156   100                       3   P10P       ug/kg

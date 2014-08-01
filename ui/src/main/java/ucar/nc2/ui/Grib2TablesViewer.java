@@ -157,7 +157,7 @@ public class Grib2TablesViewer extends JPanel {
   }
 
   private void setEntries(Grib2Customizer.GribTableId tableId) {
-    Grib2Customizer gt = Grib2Customizer.factory(tableId.center, tableId.subCenter, tableId.masterVersion, tableId.localVersion);
+    Grib2Customizer gt = Grib2Customizer.factory(tableId.center, tableId.subCenter, tableId.masterVersion, tableId.localVersion, tableId.genProcessId);
     List params = gt.getParameters();
     java.util.List<EntryBean> beans = new ArrayList<EntryBean>(params.size());
     for (Object p : params) {
@@ -172,7 +172,7 @@ public class Grib2TablesViewer extends JPanel {
     int probs = 0;
 
     Formatter f = new Formatter();
-    Grib2Customizer cust = Grib2Customizer.factory(current.center, current.subCenter, current.masterVersion, current.localVersion);
+    Grib2Customizer cust = Grib2Customizer.factory(current.center, current.subCenter, current.masterVersion, current.localVersion, current.genProcessId);
     cust.lookForProblems(f);
 
     f.format("PROBLEMS with units%n");
@@ -228,8 +228,8 @@ public class Grib2TablesViewer extends JPanel {
   }
 
   private void compareTables(Grib2Customizer.GribTableId id1, Grib2Customizer.GribTableId id2) {
-    Grib2Customizer t1 = Grib2Customizer.factory(id1.center, id1.subCenter, id1.masterVersion, id1.localVersion);
-    Grib2Customizer t2 = Grib2Customizer.factory(id2.center, id2.subCenter, id2.masterVersion, id2.localVersion);
+    Grib2Customizer t1 = Grib2Customizer.factory(id1.center, id1.subCenter, id1.masterVersion, id1.localVersion, id1.genProcessId);
+    Grib2Customizer t2 = Grib2Customizer.factory(id2.center, id2.subCenter, id2.masterVersion, id2.localVersion, id2.genProcessId);
 
     Formatter f = new Formatter();
 
@@ -281,7 +281,7 @@ public class Grib2TablesViewer extends JPanel {
 
     public TableBean(Grib2Customizer.GribTableId table) {
       this.table = table;
-      Grib2Customizer t1 = Grib2Customizer.factory(table.center, table.subCenter, table.masterVersion, table.localVersion);
+      Grib2Customizer t1 = Grib2Customizer.factory(table.center, table.subCenter, table.masterVersion, table.localVersion, table.genProcessId);
       filename = t1.getTablePath(0, 192, 192); // local
     }
 
@@ -305,7 +305,11 @@ public class Grib2TablesViewer extends JPanel {
       return table.localVersion;
     }
 
-    public String getFilename() {
+    public int getGenProcessId() {
+       return table.genProcessId;
+     }
+
+     public String getFilename() {
       return filename;
     }
 

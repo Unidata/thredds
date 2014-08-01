@@ -286,7 +286,7 @@ public class FeatureDatasetFactoryManager {
     }
 
     if (null == useFactory) {
-      errlog.format("**Failed to find FeatureDatasetFactory for= %s datatype=%s\n", ncd.getLocation(), wantFeatureType);
+      errlog.format("**Failed to find FeatureDatasetFactory for= %s datatype=%s%n", ncd.getLocation(), wantFeatureType);
       return null;
     }
 
@@ -332,7 +332,7 @@ public class FeatureDatasetFactoryManager {
 
     // Fail
     if (null == useFactory) {
-      errlog.format("Failed (wrapUnknown) to find Datatype Factory for= %s\n", ncd.getLocation());
+      errlog.format("Failed (wrapUnknown) to find Datatype Factory for= %s%n", ncd.getLocation());
       return null;
     }
 

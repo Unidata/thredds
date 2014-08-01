@@ -87,21 +87,21 @@ public class DebugCommands {
         }
 
         fc = GribCollection.getDataRafCache();
-        if (fc == null) f.format("\nGribCollectionDataRafCache : turned off\n");
+        if (fc == null) f.format("%nGribCollectionDataRafCache : turned off%n");
         else {
           f.format("%n%n");
           fc.showCache(f);
         }
 
         fc = PartitionCollection.getPartitionCache();
-        if (fc == null) f.format("\nTimePartitionCache : turned off\n");
+        if (fc == null) f.format("%nTimePartitionCache : turned off%n");
         else {
           f.format("%n%n");
           fc.showCache(f);
         }
 
         fc = ServletUtil.getFileCache();
-        if (fc == null) f.format("\nHTTPFileCache : turned off\n");
+        if (fc == null) f.format("%nHTTPFileCache : turned off%n");
         else {
           f.format("%n%n");
           fc.showCache(f);

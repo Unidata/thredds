@@ -92,7 +92,7 @@ public class GDVConvention extends CSMConvention {
       Dimension dim = ds.findDimension(dimName);
       if (null != dim) {
         vp.isCoordinateAxis = true;
-        parseInfo.format(" Coordinate Axis added (GDV alias) = %s for dimension %s\n", vp.v.getFullName(), dimName);
+        parseInfo.format(" Coordinate Axis added (GDV alias) = %s for dimension %s%n", vp.v.getFullName(), dimName);
       }
     }
 
@@ -125,7 +125,7 @@ public class GDVConvention extends CSMConvention {
       if (atype != null) {
         if (map.get(atype) == null) {
           vp.isCoordinateAxis = true;
-          parseInfo.format(" Coordinate Axis added (GDV forced) = %s  for axis %s\n", vp.v.getFullName(), atype);
+          parseInfo.format(" Coordinate Axis added (GDV forced) = %s  for axis %s%n", vp.v.getFullName(), atype);
         }
       }
     }
@@ -202,13 +202,13 @@ public class GDVConvention extends CSMConvention {
     // look for projection in global attribute
     String projection = ds.findAttValueIgnoreCase(null, "projection", null);
     if (null == projection) {
-      parseInfo.format("GDV Conventions error: NO projection name found \n");
+      parseInfo.format("GDV Conventions error: NO projection name found %n");
       return null;
     }
     String params = ds.findAttValueIgnoreCase(null, "projection_params", null);
     if (null == params) params = ds.findAttValueIgnoreCase(null, "proj_params", null);
     if (null == params) {
-      parseInfo.format("GDV Conventions error: NO projection parameters found \n");
+      parseInfo.format("GDV Conventions error: NO projection parameters found %n");
       return null;
     }
 
@@ -231,7 +231,7 @@ public class GDVConvention extends CSMConvention {
 
     }
 
-    parseInfo.format("GDV Conventions projection %s params = %f %f %f %f\n", projection, p[0],p[1],p[2],p[3]);
+    parseInfo.format("GDV Conventions projection %s params = %f %f %f %f%n", projection, p[0],p[1],p[2],p[3]);
 
     ProjectionImpl proj;
     if (projection.equalsIgnoreCase("LambertConformal"))
@@ -241,7 +241,7 @@ public class GDVConvention extends CSMConvention {
     else if (projection.equalsIgnoreCase("Stereographic") || projection.equalsIgnoreCase("Oblique_Stereographic"))
       proj = new Stereographic(p[0], p[1], p[2]);
     else {
-      parseInfo.format("GDV Conventions error: Unknown projection %s\n", projection);
+      parseInfo.format("GDV Conventions error: Unknown projection %s%n", projection);
       return null;
     }
 

@@ -2163,7 +2163,7 @@ public class H4header {
   }
 
   static void testTagid(short tag, short refno) throws IOException {
-    System.out.format(" tag= %#x refno=%#x tagid=%#x \n", tag, refno, tagid(refno, tag));
+    System.out.format(" tag= %#x refno=%#x tagid=%#x %n", tag, refno, tagid(refno, tag));
   }
 
   static public void main(String args[]) throws IOException {

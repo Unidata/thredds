@@ -141,7 +141,7 @@ public class PointDatasetStandardFactory implements FeatureDatasetFactory {
 
     PointDatasetStandard(FeatureType wantFeatureType, TableAnalyzer analyser, NetcdfDataset ds, Formatter errlog) throws IOException {
       super(ds, null);
-      parseInfo.format(" PointFeatureDatasetImpl=%s\n", getClass().getName());
+      parseInfo.format(" PointFeatureDatasetImpl=%s%n", getClass().getName());
       this.analyser = analyser;
 
       List<FeatureCollection> featureCollections = new ArrayList<>();
@@ -151,7 +151,7 @@ public class PointDatasetStandardFactory implements FeatureDatasetFactory {
         try {
           timeUnit = flatTable.getTimeUnit();
         } catch (Exception e) {
-          if (null != errlog) errlog.format("%s\n", e.getMessage());
+          if (null != errlog) errlog.format("%s%n", e.getMessage());
           try {
             timeUnit = new DateUnit("seconds since 1970-01-01");
           } catch (Exception e1) {

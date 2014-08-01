@@ -269,10 +269,10 @@ public class TestNetcdfFileCache extends TestCase {
       }
     }
 
-    format.format("awaitTermination 10 secs qsize= %3d\n", q.size());
+    format.format("awaitTermination 10 secs qsize= %3d%n", q.size());
     cache.showStats(format);
     exec.awaitTermination(10, TimeUnit.SECONDS);
-    format.format("done qsize= %4d\n", q.size());
+    format.format("done qsize= %4d%n", q.size());
     cache.showStats(format);
 
     int total = 0;
@@ -294,7 +294,7 @@ public class TestNetcdfFileCache extends TestCase {
 //    assert total_locks == map.keySet().size();
 
     cache.clearCache(false);
-    format.format("after cleanup qsize= %4d\n", q.size());
+    format.format("after cleanup qsize= %4d%n", q.size());
     cache.showStats(format);
 
     cache.clearCache(true);

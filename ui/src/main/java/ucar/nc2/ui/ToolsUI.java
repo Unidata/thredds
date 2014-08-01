@@ -635,7 +635,7 @@ public class ToolsUI extends JPanel {
     AbstractAction showCacheAction = new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
         Formatter f = new Formatter();
-        f.format("NetcdfFileCache contents\n");
+        f.format("NetcdfFileCache contents%n");
         ucar.nc2.util.cache.FileCache cache = NetcdfDataset.getNetcdfFileCache();
         if (null != cache)
           cache.showCache(f);

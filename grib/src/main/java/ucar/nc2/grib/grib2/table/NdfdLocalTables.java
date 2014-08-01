@@ -33,7 +33,6 @@
 
 package ucar.nc2.grib.grib2.table;
 
-import ucar.nc2.grib.GribTables;
 import ucar.nc2.grib.grib2.Grib2Parameter;
 
 import java.util.*;
@@ -43,8 +42,7 @@ import java.util.*;
  * @see "http://graphical.weather.gov/docs/grib_design.html"
  */
 
-public class NdfdLocalTables extends Grib2Customizer {
-  private final Map<Integer, Grib2Parameter> local = new HashMap<>(100);
+public class NdfdLocalTables extends LocalTables {
 
   NdfdLocalTables(int center, int subCenter, int masterVersion, int localVersion) {
     super(center, subCenter, masterVersion, localVersion);
@@ -55,31 +53,6 @@ public class NdfdLocalTables extends Grib2Customizer {
   public String getTablePath(int discipline, int category, int number) {
     if ((category <= 191) && (number <= 191)) return super.getTablePath(discipline, category, number);
     return this.getClass().getName();
-  }
-
-    @Override
-  public List getParameters() {
-    List<Grib2Parameter> result = new ArrayList<>();
-    for (Grib2Parameter p : local.values()) result.add(p);
-    Collections.sort(result);
-    return result;
-  }
-
-  @Override
-  public String getVariableName(int discipline, int category, int parameter) {
-    if ((category <= 191) && (parameter <= 191))
-      return super.getVariableName(discipline, category, parameter);
-
-    GribTables.Parameter p = getParameter(discipline, category, parameter);
-    return (p == null) ? null : p.getName();
-  }
-
-  @Override
-  public Grib2Customizer.Parameter getParameter(int discipline, int category, int number) {
-    if ((category <= 191) && (number <= 191))
-      return WmoCodeTable.getParameterEntry(discipline, category, number);
-
-    return local.get(makeHash(discipline, category, number));
   }
 
   /*

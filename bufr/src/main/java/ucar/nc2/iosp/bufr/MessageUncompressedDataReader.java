@@ -150,7 +150,7 @@ public class MessageUncompressedDataReader {
     // loop over the rows
     int count = 0;
     for (int i = 0; i < n; i++) {
-      if (f != null) f.format("Count bits in observation %d\n", i);
+      if (f != null) f.format("Count bits in observation %d%n", i);
       // the top table always has exactly one "row", since we are working with a single obs
       m.counterDatasets[i] = new BitCounterUncompressed(root, 1, 0);
       DebugOut out = (f == null) ? null : new DebugOut(f);
@@ -243,7 +243,7 @@ public class MessageUncompressedDataReader {
       // compound
       if (dkey.type == 3) {
         BitCounterUncompressed nested = table.makeNested(dkey, dkey.replication, nestedRow, 0);
-        if (out != null) out.f.format("%4d %s read structure %s count= %d\n", out.fldno, out.indent(), dkey.getFxyName(), dkey.replication);
+        if (out != null) out.f.format("%4d %s read structure %s count= %d%n", out.fldno, out.indent(), dkey.getFxyName(), dkey.replication);
 
         for (int i = 0; i < dkey.replication; i++) {
           if (out != null) {
@@ -263,7 +263,7 @@ public class MessageUncompressedDataReader {
         byte[] vals = readCharData(dkey, reader, req);
         if (out != null) {
           String s = new String(vals, CDM.utf8Charset);
-          out.f.format("%4d %s read char %s (%s) width=%d end at= 0x%x val=<%s>\n",
+          out.f.format("%4d %s read char %s (%s) width=%d end at= 0x%x val=<%s>%n",
                   out.fldno++, out.indent(), dkey.getFxyName(), dkey.getName(), dkey.bitWidth, reader.getPos(), s);
         }
         continue;
@@ -272,7 +272,7 @@ public class MessageUncompressedDataReader {
       // otherwise read a number
       long val = readNumericData(dkey, reader, req);
       if (out != null)
-        out.f.format("%4d %s read %s (%s %s) bitWidth=%d end at= 0x%x raw=%d convert=%f\n",
+        out.f.format("%4d %s read %s (%s %s) bitWidth=%d end at= 0x%x raw=%d convert=%f%n",
                 out.fldno++, out.indent(), dkey.getFxyName(), dkey.getName(), dkey.getUnits(), dkey.bitWidth, reader.getPos(), val, dkey.convert(val));
 
       /* if (bbtest == null && req.abb != null && req.bb != null) {

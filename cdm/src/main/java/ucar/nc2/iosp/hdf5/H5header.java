@@ -2952,7 +2952,7 @@ public class H5header {
 
       if (fractalHeapAddress > 0) {
         try {
-          f.format("\n\n");
+          f.format("%n%n");
           FractalHeap fractalHeap = new FractalHeap(H5header.this, "", fractalHeapAddress);
           fractalHeap.showDetails(f);
         } catch (IOException e) {
@@ -3822,7 +3822,7 @@ public class H5header {
                 heapId = ((BTree2.Record9) e.record).heapId;
                 break;
               default:
-                f.format(" unknown btreetype %d\n", btree.btreeType);
+                f.format(" unknown btreetype %d%n", btree.btreeType);
                 continue;
             }
 
