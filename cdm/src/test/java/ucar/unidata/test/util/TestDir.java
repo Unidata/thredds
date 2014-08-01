@@ -4,7 +4,6 @@ import ucar.ma2.InvalidRangeException;
 import ucar.ma2.Section;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.Variable;
-import ucar.nc2.constants.FeatureType;
 
 import java.io.File;
 import java.io.FileFilter;
@@ -52,6 +51,8 @@ import java.util.*;
  *
  */
 public class TestDir {
+  /** path to the Unidata test data directory */
+  public static String testdataDir = null;
 
   /**
   * New test data directory. do not put temporary files in here. migrate all test data here eventually
@@ -99,9 +100,9 @@ public class TestDir {
   // on local machine by reading system or THREDDS property.
   static {
     // Check for system property
-    String testdataDirPath = System.getProperty( testdataDirPropName );
+    testdataDir = System.getProperty( testdataDirPropName );
 
-    if (testdataDirPath == null ) {
+    if (testdataDir == null ) {
       // Get user property.
       File userHomeDirFile = new File( System.getProperty( "user.home" ) );
       File userThreddsPropsFile = new File( userHomeDirFile, threddsPropFileName );
@@ -114,23 +115,23 @@ public class TestDir {
           System.out.println( "**Failed loading user THREDDS property file: " + e.getMessage() );
         }
         if ( userThreddsProps != null && ! userThreddsProps.isEmpty() ) {
-          if ( testdataDirPath == null )
-            testdataDirPath = userThreddsProps.getProperty( testdataDirPropName );
+          if ( testdataDir == null )
+            testdataDir = userThreddsProps.getProperty( testdataDirPropName );
         }
       }
     }
 
     // Use default paths if needed.
-    if ( testdataDirPath == null ) {
+    if ( testdataDir == null ) {
       System.out.println( "**No \"unidata.testdata.path\"property, defaulting to \"/share/testdata/\"." );
-      testdataDirPath = "/share/testdata/";
+      testdataDir = "/share/testdata/";
     }
     // Make sure paths ends with a slash.
-    testdataDirPath = testdataDirPath.replace('\\','/'); //canonical
-    if ((!testdataDirPath.endsWith( "/")))
-      testdataDirPath += "/";
+    testdataDir = testdataDir.replace('\\','/'); //canonical
+    if ((!testdataDir.endsWith( "/")))
+      testdataDir += "/";
 
-    cdmUnitTestDir = testdataDirPath + "cdmUnitTest/";
+    cdmUnitTestDir = testdataDir + "cdmUnitTest/";
 
     File file = new File( cdmUnitTestDir );
     if ( ! file.exists() || !file.isDirectory() ) {
