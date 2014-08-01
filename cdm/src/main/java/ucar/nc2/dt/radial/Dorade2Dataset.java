@@ -57,7 +57,6 @@ import java.util.ArrayList;
  */
 
 public class Dorade2Dataset extends RadialDatasetSweepAdapter implements TypedDatasetFactoryIF {
-    protected ucar.nc2.units.DateUnit dateUnits;
     private NetcdfDataset ncd;
     float [] elev, aziv, disv, lonv, altv, latv;
     double[] timv;
@@ -69,7 +68,7 @@ public class Dorade2Dataset extends RadialDatasetSweepAdapter implements TypedDa
     String convention = ds.findAttValueIgnoreCase(null, "Conventions", null);
     if ((null != convention) && convention.equals(_Coordinate.Convention)) {
       String format = ds.findAttValueIgnoreCase(null, "Format", null);
-      if (format.equals("Unidata/netCDF/Dorade"))
+      if (format != null && format.equals("Unidata/netCDF/Dorade"))
         return true;
     }
 
@@ -111,11 +110,12 @@ public class Dorade2Dataset extends RadialDatasetSweepAdapter implements TypedDa
           contv = ncd.findVariable("Radar_Constant").readScalarFloat();
           rgainv = ncd.findVariable("rcvr_gain").readScalarFloat();
           //bwidthv = ncd.findVariable("bm_width").readScalarFloat();
+
+          setStartDate();
+          setEndDate();
         } catch (IOException e) {
           e.printStackTrace();
         }
-        setStartDate();
-        setEndDate();
     }
 
     public String getRadarID() {
@@ -293,14 +293,12 @@ public class Dorade2Dataset extends RadialDatasetSweepAdapter implements TypedDa
           int nrays, ngates;
           double meanElevation = Double.NaN;
           Variable sweepVar;
-          int sweepno;
           //int[] shape, origi;
 
           Dorade2Sweep(Variable v, int sweepno, int rays, int gates){
             this.sweepVar = v;
             this.nrays = rays;
             this.ngates = gates;
-            this.sweepno = sweepno;
           }
 
           public Variable getsweepVar(){
@@ -449,25 +447,21 @@ public class Dorade2Dataset extends RadialDatasetSweepAdapter implements TypedDa
     }
     Sweep sw = rv.getSweep(0);
     int nrays = sw.getRadialNumber();
-    float [] ddd = sw.readData();
+    sw.readData();
     for (int i = 0; i < nrays; i++) {
+      sw.getGateNumber();
 
-      int ngates = sw.getGateNumber();
+      sw.readData(i);
+      sw.getAzimuth(i);
+      sw.getElevation(i);
+      sw.getTime(i);
+      sw.getRangeToFirstGate();
+      sw.getBeamWidth();
+      sw.getGateSize();
 
-      float [] d = sw.readData(i);
-      float azi = sw.getAzimuth(i);
-      float ele = sw.getElevation(i);
-      double t = sw.getTime(i);
-      Date da = new Date((long) t);
-      //da.setTime((long)t);
-      String start_datetime = da.toString();
-      float dis = sw.getRangeToFirstGate();
-      float beamW = sw.getBeamWidth();
-      float gsize = sw.getGateSize();
-
-      float la = (float) sw.getOrigin(i).getLatitude();
-      float lo = (float) sw.getOrigin(i).getLongitude();
-      float al = (float) sw.getOrigin(i).getAltitude();
+      sw.getOrigin(i).getLatitude();
+      sw.getOrigin(i).getLongitude();
+      sw.getOrigin(i).getAltitude();
     }
   }
 
@@ -475,8 +469,6 @@ public class Dorade2Dataset extends RadialDatasetSweepAdapter implements TypedDa
   public static void main(String args[]) throws Exception, IOException, InstantiationException, IllegalAccessException {
     String fileIn = "/home/yuanho/dorade/swp.1020511015815.SP0L.573.1.2_SUR_v1";
     RadialDatasetSweep rds = (RadialDatasetSweep) TypedDatasetFactory.open( FeatureType.RADIAL, fileIn, null, new StringBuilder());
-    String st = rds.getStartDate().toString();
-    String et = rds.getEndDate().toString();
     if (rds.isStationary()) {
       System.out.println("*** radar is stationary\n");
     }

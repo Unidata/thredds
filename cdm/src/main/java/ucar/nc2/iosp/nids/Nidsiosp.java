@@ -35,6 +35,7 @@ package ucar.nc2.iosp.nids;
 import thredds.catalog.DataFormatType;
 import ucar.ma2.*;
 import ucar.nc2.*;
+import ucar.nc2.constants.CDM;
 import ucar.nc2.iosp.AbstractIOServiceProvider;
 
 import ucar.nc2.units.DateUnit;
@@ -541,14 +542,14 @@ ByteBuffer bos = ByteBuffer.wrap(vdata);     */
 
       byte[] b = new byte[llen];
       bos.get(b);
-      String sl = new String(b) + "\n";
+      String sl = new String(b, CDM.utf8Charset) + "\n";
       sbuf.append(sl);
       icnt = icnt + llen + 2;
     }
 
     return pdata;
-
   }
+
     /**
      * Read one scan radar data
      *
@@ -558,7 +559,6 @@ ByteBuffer bos = ByteBuffer.wrap(vdata);     */
      */
     // all the work is here, so can be called recursively
     public Object readOneScanGenericData(ByteBuffer bos, Nidsheader.Vinfo vinfo, String vName) throws IOException, InvalidRangeException {
-        int doff = 0;
         int npixel = 0;
         short [] pdata = null;
 
@@ -570,9 +570,9 @@ ByteBuffer bos = ByteBuffer.wrap(vdata);     */
         for(int k = 0; k < numRadials; k++)
         {
             angleData[k] = bos.getFloat();
-            float t1 = bos.getFloat();
-            float t2 = bos.getFloat();
-            numBins0 = bos.getInt();
+            bos.getFloat(); // t1
+            bos.getFloat(); // t2
+            bos.getInt(); // numBins0
             Nidsheader.readInString(bos);
 
             numBins0 = bos.getInt();
@@ -582,10 +582,9 @@ ByteBuffer bos = ByteBuffer.wrap(vdata);     */
             }
             for(int l = 0; l < numBins0; l++)
                 pdata[k * numBins0 + l] = (short)bos.getInt();
-
         }
 
-        int offset = 0;
+        int offset;
         if (vName.endsWith("_RAW")) {
             return pdata;
         } else if (vName.startsWith("azimuth")  ) {
@@ -595,7 +594,6 @@ ByteBuffer bos = ByteBuffer.wrap(vdata);     */
             int[] levels = vinfo.len;
             int scale = levels[0];
             offset = levels[1];
-            float isc = vinfo.code;
             float[] fdata = new float[npixel];
             for (int i = 0; i < npixel; i++) {
                 int ival =  pdata[i];
@@ -797,11 +795,10 @@ ByteBuffer bos = ByteBuffer.wrap(vdata);     */
       return fdata;
     }  else if (vName.startsWith("EnhancedEchoTop")) {
       int[] levels = vinfo.len;
-      int iscale = vinfo.code;
       float[] fdata = new float[npixel];
       for (int i = 0; i < npixel; i++) {
         int ival = DataType.unsignedByteToShort(pdata[i]);
-        if (ival == 0 && ival == 1)
+        if (ival == 0 || ival == 1)
           fdata[i] = Float.NaN;
         else
           fdata[i] = (float)( ival & levels[0])/ (float) levels[1] - (float) levels[2];
@@ -810,7 +807,6 @@ ByteBuffer bos = ByteBuffer.wrap(vdata);     */
 
     } else if (vName.startsWith("DigitalIntegLiquid")) {
       int[] levels = vinfo.len;
-      int iscale = vinfo.code;
       float[] fdata = new float[npixel];
       float a = getHexDecodeValue((short)levels[0]);
       float b = getHexDecodeValue((short)levels[1]);
@@ -821,9 +817,9 @@ ByteBuffer bos = ByteBuffer.wrap(vdata);     */
         if(ival == 0 || ival ==1)
           fdata[i] = Float.NaN;
         else if (ival < 20)
-          fdata[i] = (float)(ival - b)/a;
+          fdata[i] = (ival - b)/a;
         else {
-          float t =  (float)(ival - d)/c;
+          float t =  (ival - d)/c;
           fdata[i] = (float) Math.exp(t);
         }
       }
@@ -1288,7 +1284,7 @@ short arrowHeadValue = 0;    */
 
   }
 
-  private class MyArrayStructureBBpos extends ArrayStructureBBpos {
+  private static class MyArrayStructureBBpos extends ArrayStructureBBpos {
     int[] size;
 
     MyArrayStructureBBpos(StructureMembers members, int[] shape, ByteBuffer bbuffer, int[] positions, int[] size) {
@@ -1313,7 +1309,7 @@ short arrowHeadValue = 0;    */
           pa[i] = bbuffer.get(offset + i);
           if (0 == pa[i]) break;
         }
-        return new String(pa, 0, i);
+        return new String(pa, 0, i, CDM.utf8Charset);
       }
 
       throw new IllegalArgumentException("Type is " + m.getDataType() + ", must be String or char");
@@ -1726,7 +1722,7 @@ short arrowHeadValue = 0;    */
     byte b1, b2;
     b1 = uncomp[0];
     b2 = uncomp[1];
-    off = 2 * (((b1 & 63) << 8) + b2);
+    off = 2 * (((b1 & 0x3F) << 8) | b2);
     /* eat WMO and PIL */
     for (int i = 0; i < 2; i++) {
       while ((off < uncomp.length) && (uncomp[off] != '\n')) off++;
@@ -1856,7 +1852,7 @@ short arrowHeadValue = 0;    */
     byte b1, b2;
     b1 = uncomp[0];
     b2 = uncomp[1];
-    off = 2 * (((b1 & 63) << 8) + b2);
+    off = 2 * (((b1 & 0x3F) << 8) | b2);
     /* eat WMO and PIL */
     for (int i = 0; i < 2; i++) {
       while ((off < result) && (uncomp[off] != '\n')) off++;
@@ -1904,32 +1900,6 @@ short arrowHeadValue = 0;    */
 
     return data;
 
-  }
-
-  /*
-  ** Name:       IsZlibed
-  **
-  ** Purpose:    Check a two-byte sequence to see if it indicates the start of
-  **             a zlib-compressed buffer
-  **
-  ** Parameters:
-  **             buf     - buffer containing at least two bytes
-  **
-  ** Returns:
-  **             SUCCESS 1
-  **             FAILURE 0
-  **
-  */
-  int issZlibed(byte[] buf) {
-    if ((buf[0] & 0xf) == Z_DEFLATED) {
-      if ((buf[0] >> 4) + 8 <= DEF_WBITS) {
-        if ((((buf[0] << 8) + (buf[1])) % 31) == 0) {
-          return 1;
-        }
-      }
-    }
-
-    return 0;
   }
 
   int getUInt(byte[] b, int offset, int num) {
@@ -2008,12 +1978,8 @@ short arrowHeadValue = 0;    */
     int[] origin = {0, 0};
     int[] shape = {300, 36};
 
-    ArrayByte data = (ArrayByte) v.read(origin, shape);
-
+    v.read(origin, shape);
     ncf.close();
-
-
   }
-
 
 }
