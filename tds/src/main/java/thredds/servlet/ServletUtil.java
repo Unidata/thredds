@@ -41,6 +41,7 @@ import javax.servlet.*;
 import javax.servlet.http.*;
 
 import thredds.util.ContentType;
+import ucar.nc2.constants.CDM;
 import ucar.nc2.util.CancelTask;
 import ucar.nc2.util.cache.FileCache;
 import ucar.nc2.util.IO;
@@ -674,7 +675,7 @@ public class ServletUtil {
 
     try {
       ServletOutputStream out = res.getOutputStream();
-      IO.copy(new ByteArrayInputStream(contents.getBytes()), out);
+      IO.copy(new ByteArrayInputStream(contents.getBytes(CDM.utf8Charset)), out);
     }
     catch (IOException e) {
       log.error(" IOException sending string: ", e);
@@ -802,7 +803,7 @@ public class ServletUtil {
         ByteArrayOutputStream bs = new ByteArrayOutputStream();
         PrintStream ps = new PrintStream(bs);
         t.printStackTrace(ps);
-        message = new String(bs.toByteArray());
+        message = new String(bs.toByteArray(), CDM.utf8Charset);
       }
       log.error("handleException", t);
       t.printStackTrace(); // debugging - log.error not showing stack trace !!   

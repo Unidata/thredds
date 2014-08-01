@@ -43,6 +43,7 @@ import javax.servlet.*;
 import javax.servlet.http.*;
 
 import thredds.util.ContentType;
+import ucar.nc2.constants.CDM;
 import ucar.nc2.util.IO;
 
 /**
@@ -164,7 +165,7 @@ public class AnnotateServlet extends AbstractServlet {
         return;
       }
 
-      PrintWriter pw = new PrintWriter(res.getOutputStream());
+      PrintStream  pw = new PrintStream (res.getOutputStream(), false, CDM.UTF8);
 
       String jnlpString = req.getParameter("jnlp");
       File dir = new File(contentPath);
