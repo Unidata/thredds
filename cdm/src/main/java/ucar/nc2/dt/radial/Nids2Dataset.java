@@ -64,7 +64,7 @@ public class Nids2Dataset extends RadialDatasetSweepAdapter implements TypedData
     String convention = ds.findAttValueIgnoreCase(null, "Conventions", null);
     if ((null != convention) && convention.equals(_Coordinate.Convention)) {
       String format = ds.findAttValueIgnoreCase(null, "Format", null);
-      if (format.equals("Level3/NIDS"))
+      if (format != null && format.equals("Level3/NIDS"))
         return true;
     }
     return false;
@@ -312,7 +312,7 @@ public class Nids2Dataset extends RadialDatasetSweepAdapter implements TypedData
       double meanElevation = Double.NaN;
       double meanAzimuth = Double.NaN;
       double gateSize = Double.NaN;
-      int sweepno, nrays, ngates;
+      int nrays, ngates;
       Variable sweepVar;
       NetcdfDataset ds;
 
@@ -320,29 +320,26 @@ public class Nids2Dataset extends RadialDatasetSweepAdapter implements TypedData
         this.sweepVar = v;
         this.nrays = rays;
         this.ngates = gates;
-        this.sweepno = sweepno;
         this.ds = nds;
         //setMeanElevation(nds);
         //setMeanAzimuth(nds);
       }
 
       public Variable getsweepVar() {
-        return (Variable) sweepVar;
+        return sweepVar;
       }
 
       private void setMeanElevation() {
-        Array spData = null;
         if (Double.isNaN(meanElevation)) {
           try {
             Variable sp = ds.findVariable("elevation");
-            spData = sp.read();
+            Array spData = sp.read();
             sp.setCachedData(spData, false);
+            meanElevation = MAMath.sumDouble(spData) / spData.getSize();
           } catch (IOException e) {
             e.printStackTrace();
             meanElevation = 0.0;
           }
-
-          meanElevation = MAMath.sumDouble(spData) / spData.getSize();
         }
       }
 
@@ -442,55 +439,32 @@ public class Nids2Dataset extends RadialDatasetSweepAdapter implements TypedData
       }
 
       public float getAzimuth(int ray) throws IOException {
-        Array spData = null;
-        try {
-          Variable sp = ds.findVariable("azimuth");
-          spData = sp.read();
-          sp.setCachedData(spData, false);
-        } catch (IOException e) {
-          e.printStackTrace();
-        }
+        Variable sp = ds.findVariable("azimuth");
+        Array spData = sp.read();
+        sp.setCachedData(spData, false);
         Index index = spData.getIndex();
         return spData.getFloat(index.set(ray));
       }
 
       public float[] getAzimuth() throws IOException {
-        float[] spArray = null;
-        try {
-          Variable sp = ds.findVariable("azimuth");
-          Array spData = sp.read();
-          sp.setCachedData(spData, false);
-          spArray = (float[]) spData.get1DJavaArray(float.class);
-
-        } catch (IOException e) {
-          e.printStackTrace();
-        }
-
-        return spArray;
+        Variable sp = ds.findVariable("azimuth");
+        Array spData = sp.read();
+        sp.setCachedData(spData, false);
+        return (float[]) spData.get1DJavaArray(float.class);
       }
 
       public float getRadialDistance(int gate) throws IOException {
-        Array spData = null;
-        try {
-          Variable sp = ds.findVariable("gate");
-          spData = sp.read();
-          sp.setCachedData(spData, false);
-        } catch (IOException e) {
-          e.printStackTrace();
-        }
+        Variable sp = ds.findVariable("gate");
+        Array spData = sp.read();
+        sp.setCachedData(spData, false);
         Index index = spData.getIndex();
         return spData.getFloat(index.set(gate));
       }
 
       public float getTime(int ray) throws IOException {
-        Array timeData = null;
-        try {
-          Variable sp = ds.findVariable("rays_time");
-          timeData = sp.read();
-          sp.setCachedData(timeData, false);
-        } catch (IOException e) {
-          e.printStackTrace();
-        }
+        Variable sp = ds.findVariable("rays_time");
+        Array timeData = sp.read();
+        sp.setCachedData(timeData, false);
         Index index = timeData.getIndex();
         return timeData.getFloat(index.set(ray));
       }
