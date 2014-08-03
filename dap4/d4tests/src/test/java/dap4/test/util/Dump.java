@@ -213,7 +213,7 @@ public class Dump
     public void
     format(String s)
     {
-        buf.append(s);
+        buf.append(String.format(s));
     }
 
     char
