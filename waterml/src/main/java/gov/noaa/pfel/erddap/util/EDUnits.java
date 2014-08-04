@@ -75,8 +75,9 @@ public class EDUnits {
      * throws Exception if trouble.
      */
     public static String udunitsToUcum(String udunits) {
-        if (udunits == null)
+        if (udunits == null) {
             return null;
+        }
 
         //is it a point in time? e.g., seconds since 1970-01-01T00:00:00T
         int sincePo = udunits.indexOf(" since ");
@@ -93,7 +94,9 @@ public class EDUnits {
                                                 baf[1] == Calendar2.SECONDS_PER_DAY ? "d" :
                                                         baf[1] == 30 * Calendar2.SECONDS_PER_DAY ? "mo" :  //mo_j?
                                                                 baf[1] == 360 * Calendar2.SECONDS_PER_DAY ? "a" : //a_j?
-                                                                        udunitsToUcum(udunits.substring(0, sincePo)); //shouldn't happen, but weeks? microsec?
+                                                                        udunitsToUcum(udunits.substring(0,
+                                                                                sincePo)); //shouldn't happen,
+                                                                                // but weeks? microsec?
 
                 //make "s{since 1970-01-01T00:00:00T}
                 return u + "{" +
@@ -115,8 +118,9 @@ public class EDUnits {
                 int po2 = po + 1;
                 while (po2 < udLength &&
                         (isUdunitsLetter(udunits.charAt(po2)) || udunits.charAt(po2) == '_' ||
-                                String2.isDigit(udunits.charAt(po2))))
+                                String2.isDigit(udunits.charAt(po2)))) {
                     po2++;
+                }
                 String tUdunits = udunits.substring(po, po2);
                 po = po2;
 
@@ -124,8 +128,9 @@ public class EDUnits {
                 //if it ends in digits, treat as exponent
                 //find contiguous digits at end
                 int firstDigit = tUdunits.length();
-                while (firstDigit >= 1 && String2.isDigit(tUdunits.charAt(firstDigit - 1)))
+                while (firstDigit >= 1 && String2.isDigit(tUdunits.charAt(firstDigit - 1))) {
                     firstDigit--;
+                }
                 String exponent = tUdunits.substring(firstDigit);
                 tUdunits = tUdunits.substring(0, firstDigit);
                 String tUcum = oneUdunitsToUcum(tUdunits);
@@ -133,11 +138,13 @@ public class EDUnits {
                 //deal with PER -> / 
                 if (tUcum.equals("/")) {
                     char lastUcum = ucum.length() == 0 ? '\u0000' : ucum.charAt(ucum.length() - 1);
-                    if (lastUcum == '/')
+                    if (lastUcum == '/') {
                         ucum.setCharAt(ucum.length() - 1, '.'); //2 '/' cancel out
-                    else if (lastUcum == '.')
+                    } else if (lastUcum == '.') {
                         ucum.setCharAt(ucum.length() - 1, '/'); //  '/' replaces '.'
-                    else ucum.append('/');
+                    } else {
+                        ucum.append('/');
+                    }
 
                 } else {
                     ucum.append(tUcum);
@@ -154,16 +161,18 @@ public class EDUnits {
             if (ch == '-' || String2.isDigit(ch)) {
                 //find contiguous digits
                 int po2 = po + 1;
-                while (po2 < udLength && String2.isDigit(udunits.charAt(po2)))
+                while (po2 < udLength && String2.isDigit(udunits.charAt(po2))) {
                     po2++;
+                }
 
                 //decimal place + digit (not just .=multiplication)
                 boolean hasDot = false;
                 if (po2 < udLength - 1 && udunits.charAt(po2) == '.' && String2.isDigit(udunits.charAt(po2 + 1))) {
                     hasDot = true;
                     po2 += 2;
-                    while (po2 < udLength && String2.isDigit(udunits.charAt(po2)))
+                    while (po2 < udLength && String2.isDigit(udunits.charAt(po2))) {
                         po2++;
+                    }
                 }
 
                 //exponent?     e-  or e{digit}
@@ -172,8 +181,9 @@ public class EDUnits {
                         (udunits.charAt(po2 + 1) == '-' || String2.isDigit(udunits.charAt(po2 + 1)))) {
                     hasE = true;
                     po2 += 2;
-                    while (po2 < udLength && String2.isDigit(udunits.charAt(po2)))
+                    while (po2 < udLength && String2.isDigit(udunits.charAt(po2))) {
                         po2++;
+                    }
                 }
                 String num = udunits.substring(po, po2);
                 po = po2;
@@ -181,38 +191,14 @@ public class EDUnits {
                 //convert floating point to rational number
                 if (hasDot || hasE) {
                     int rational[] = String2.toRational(String2.parseDouble(num));
-                    if (rational[1] == Integer.MAX_VALUE)
+                    if (rational[1] == Integer.MAX_VALUE) {
                         ucum.append(num); //ignore the trouble !!! ???
-                    else if (rational[1] == 0) //includes {0, 0}
+                    } else if (rational[1] == 0) //includes {0, 0}
+                    {
                         ucum.append(rational[0]);
-                    else ucum.append(rational[0] + ".10^" + rational[1]);
-
-                    /*double d = Math2.niceDouble(String2.parseDouble(num), 13);
-                    if (Double.isNaN(d)) {
-                        ucum.append(num);  //ignore the trouble !!! ???
-                    } else if (d == 0) {
-                        ucum.append("0");    //ignore the trouble !!! ???
-                    } else if (d == Math2.roundToInt(d)) {
-                        ucum.append(Math2.roundToInt(d));
                     } else {
-                        int ie = Math2.intExponent(d);
-                        String man = "" + Math2.mantissa(d);  //e.g. -1.76948
-                        if (reallyReallyVerbose) String2.log("  man=" + man + " ie=" + ie);
-                        if (ie == Integer.MAX_VALUE) {
-                            ucum.append(num);  //infinity    //ignore the trouble !!! ???
-                        } else if (man.endsWith(".0")) {
-                            ucum.append(man.substring(0, man.length() - 2) + ".10^" + ie);
-                        } else {
-                            int dotPo = man.indexOf('.');
-                            if (dotPo < 0) 
-                                ucum.append(man + ".10^" + ie);                            
-                            else 
-                                ucum.append(
-                                    man.substring(0, dotPo) +
-                                    man.substring(dotPo + 1, man.length()) + 
-                                    ".10^" + (ie - (man.length() - dotPo - 1)));                            
-                        }
-                    }*/
+                        ucum.append(rational[0]).append(".10^").append(rational[1]);
+                    }
                 } else {
                     //just copy num
                     ucum.append(num);
@@ -225,8 +211,10 @@ public class EDUnits {
             if (ch == ' ' || ch == '.' || ch == 183) {
                 char lastUcum = ucum.length() == 0 ? '\u0000' : ucum.charAt(ucum.length() - 1);
                 if (lastUcum == '/' || lastUcum == '.') {
-                } //if last token was / or .,  do nothing
-                else ucum.append('.');
+                    //if last token was / or .,  do nothing
+                } else {
+                    ucum.append('.');
+                }
                 po++;
                 continue;
             }
@@ -240,8 +228,10 @@ public class EDUnits {
                 } else {
                     char lastUcum = ucum.length() == 0 ? '\u0000' : ucum.charAt(ucum.length() - 1);
                     if (lastUcum == '/' || lastUcum == '.') {
-                    } //if last token was / or .,  do nothing
-                    else ucum.append('.');
+                        //if last token was / or .,  do nothing
+                    } else {
+                        ucum.append('.');
+                    }
                 }
                 continue;
             }
@@ -250,11 +240,13 @@ public class EDUnits {
             if (ch == '/') {
                 po++;
                 char lastUcum = ucum.length() == 0 ? '\u0000' : ucum.charAt(ucum.length() - 1);
-                if (lastUcum == '/')
+                if (lastUcum == '/') {
                     ucum.setCharAt(ucum.length() - 1, '.'); //  2 '/' cancel out
-                else if (lastUcum == '.')
+                } else if (lastUcum == '.') {
                     ucum.setCharAt(ucum.length() - 1, '/'); //  '/' replaces '.'
-                else ucum.append('/');
+                } else {
+                    ucum.append('/');
+                }
 
                 continue;
             }
@@ -359,13 +351,15 @@ public class EDUnits {
      * null returns null. "" returns "".
      */
     public static String ucumToUdunits(String ucum) {
-        if (ucum == null)
+        if (ucum == null) {
             return null;
+        }
 
         StringBuilder udunits = new StringBuilder();
         int ucLength = ucum.length();
-        if (ucLength == 0)
+        if (ucLength == 0) {
             return "";
+        }
 
         //is it a time point?  e.g., s{since 1970-01-01T00:00:00T}
         if (ucum.charAt(ucLength - 1) == '}' &&  //quick reject
@@ -374,11 +368,11 @@ public class EDUnits {
             if (sincePo > 0) {
                 //is first part an atomic ucum unit?
                 String tUdunits = ucHashMap.get(ucum.substring(0, sincePo));
-                if (tUdunits != null)
+                if (tUdunits != null) {
                     return tUdunits + " " + ucum.substring(sincePo + 1, ucLength - 1);
+                }
             }
         }
-
 
         //parse ucum and build udunits, till done        
         int po = 0;  //po is next position to be read
@@ -391,8 +385,9 @@ public class EDUnits {
                 int po2 = po + 1;
                 while (po2 < ucLength &&
                         (isUcumLetter(ucum.charAt(po2)) || ucum.charAt(po2) == '_' ||
-                                String2.isDigit(ucum.charAt(po2))))
+                                String2.isDigit(ucum.charAt(po2)))) {
                     po2++;
+                }
                 String tUcum = ucum.substring(po, po2);
                 po = po2;
 
@@ -400,8 +395,9 @@ public class EDUnits {
                 //if it ends in digits, treat as exponent
                 //find contiguous digits at end
                 int firstDigit = tUcum.length();
-                while (firstDigit >= 1 && String2.isDigit(tUcum.charAt(firstDigit - 1)))
+                while (firstDigit >= 1 && String2.isDigit(tUcum.charAt(firstDigit - 1))) {
                     firstDigit--;
+                }
                 String exponent = tUcum.substring(firstDigit);
                 tUcum = tUcum.substring(0, firstDigit);
                 String tUdunits = oneUcumToUdunits(tUcum);
@@ -409,11 +405,13 @@ public class EDUnits {
                 //deal with PER -> / 
                 if (tUdunits.equals("/")) {
                     char lastUdunits = udunits.length() == 0 ? '\u0000' : udunits.charAt(udunits.length() - 1);
-                    if (lastUdunits == '/')
+                    if (lastUdunits == '/') {
                         udunits.setCharAt(udunits.length() - 1, '.'); //2 '/' cancel out
-                    else if (lastUdunits == '.')
+                    } else if (lastUdunits == '.') {
                         udunits.setCharAt(udunits.length() - 1, '/'); //  '/' replaces '.'
-                    else udunits.append('/');
+                    } else {
+                        udunits.append('/');
+                    }
 
                 } else {
                     udunits.append(tUdunits);
@@ -430,15 +428,17 @@ public class EDUnits {
             if (ch == '-' || String2.isDigit(ch)) {
                 //find contiguous digits
                 int po2 = po + 1;
-                while (po2 < ucLength && String2.isDigit(ucum.charAt(po2)))
+                while (po2 < ucLength && String2.isDigit(ucum.charAt(po2))) {
                     po2++;
+                }
 
                 // ^-  or ^{digit}
                 if (po2 < ucLength - 1 && Character.toLowerCase(ucum.charAt(po2)) == '^' &&
                         (ucum.charAt(po2 + 1) == '-' || String2.isDigit(ucum.charAt(po2 + 1)))) {
                     po2 += 2;
-                    while (po2 < ucLength && String2.isDigit(ucum.charAt(po2)))
+                    while (po2 < ucLength && String2.isDigit(ucum.charAt(po2))) {
                         po2++;
+                    }
                 }
                 String num = ucum.substring(po, po2);
                 po = po2;
@@ -527,21 +527,23 @@ public class EDUnits {
                 if (ucum.startsWith(twoAcronym[p])) {
                     ucum = ucum.substring(twoAcronym[p].length());
                     char udch = udunits.length() > 0 ? udunits.charAt(udunits.length() - 1) : '\u0000';
-                    if (udch != '\u0000' && udch != '.' && udch != '/')
+                    if (udch != '\u0000' && udch != '.' && udch != '/') {
                         udunits.append('.');
+                    }
                     if (ucum.length() == 0) {
                         udunits.append("{count}");
                         return udunits.toString();
                     }
-                    udunits.append(twoValue[p] + ".");
+                    udunits.append(twoValue[p]).append(".");
                     continue MAIN;
                 }
             }
 
             //ends in comment?  try to just convert the beginning
             int po1 = oldUcum.lastIndexOf('{');
-            if (po1 > 0 && oldUcum.endsWith("}"))
+            if (po1 > 0 && oldUcum.endsWith("}")) {
                 return oneUcumToUdunits(oldUcum.substring(0, po1)) + oldUcum.substring(po1);
+            }
 
             return oldUcum;
         }
@@ -549,23 +551,24 @@ public class EDUnits {
 
     public static HashMap<String, String> getHashMapStringString(InputStream inputStream, String charset) {
         try {
-            HashMap ht = new HashMap();
+            HashMap<String, String> ht = new HashMap<>();
             StringArray sa = StringArray.fromInputStream(inputStream, charset);
             int n = sa.size();
             int i = 0;
             while (i < n) {
                 String s = sa.get(i++);
-                if (s.startsWith("#"))
+                if (s.startsWith("#")) {
                     continue;
-                while (i < n && s.endsWith("\\"))
+                }
+                while (i < n && s.endsWith("\\")) {
                     s = s.substring(0, s.length() - 1) + sa.get(i++);
+                }
                 int po = s.indexOf('=');
-                if (po < 0)
+                if (po < 0) {
                     continue;
+                }
                 //new String: so not linked to big source file's text
-                ht.put(
-                        new String(s.substring(0, po).trim()),
-                        new String(s.substring(po + 1).trim()));
+                ht.put(s.substring(0, po).trim(), s.substring(po + 1).trim());
             }
             return ht;
         } catch (Throwable t) {

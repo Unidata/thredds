@@ -357,7 +357,6 @@ public class Calendar2 {
      * @param s the dateTimeString in the ISO format ([-]YYYY-MM-DDTHH:MM:SS)
      *   This may include hours, minutes, seconds, decimal, and Z or timezone offset (default=Zulu).  
      * @return a GregorianCalendar object
-     * @throws Exception if trouble (e.g., s is null or not at least #)
      */
     public static GregorianCalendar parseISODateTimeZulu(String s) {
         return parseISODateTime(newGCalendarZulu(), s);

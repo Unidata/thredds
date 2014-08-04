@@ -42,7 +42,7 @@ public class String2 {
      * @param c a char
      * @return true if c is a letter
      */
-    public static final boolean isLetter(int c) {
+    public static boolean isLetter(int c) {
         //return (((c >= 'a') && (c <= 'z')) || ((c >= 'A') && (c <= 'Z'))
         //|| ((c >= '\u00c0') && (c <= '\u00FF') && (c != '\u00d7')
         //&& (c != '\u00f7')));
@@ -63,7 +63,7 @@ public class String2 {
      * @param c a char
      * @return true if c is a digit
      */
-    public static final boolean isDigit(int c) {
+    public static boolean isDigit(int c) {
         return ((c >= '0') && (c <= '9'));
     }
 

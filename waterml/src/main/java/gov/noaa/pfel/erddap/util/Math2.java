@@ -42,8 +42,6 @@ public class Math2 {
      * @param tSize
      * @param attributeTo for a WARNING or ERROR message, this is the string 
      *   to which this not-enough-memory issue should be attributed.
-     * @throws Exception if tSize >= Integer.MAX_VALUE.  
-     *  (equals is forbidden for safety since I often use if as missing value / trouble)
      */
     public static void ensureArraySizeOkay(long tSize, String attributeTo) { 
         if (tSize >= Integer.MAX_VALUE) 
@@ -61,7 +59,7 @@ public class Math2 {
      *   otherwise d, rounded to the nearest int.
      *   Undesirable: d.5 rounds up for positive numbers, down for negative.
      */
-    public static final int roundToInt(double d) {
+    public static int roundToInt(double d) {
         return d > Integer.MAX_VALUE || d <= Integer.MIN_VALUE - 0.5 || !isFinite(d)? 
             Integer.MAX_VALUE : 
             (int)Math.round(d); //safe since checked for larger values above

@@ -99,7 +99,6 @@ public class StringArray {
      * This gets a specified element.
      *
      * @param index 0 ... size-1
-     * @throws Exception if trouble.
      */
     public String get(int index) {
         if (index >= size)
