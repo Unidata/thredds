@@ -360,7 +360,7 @@ message Coord {
   private Coordinate readCoord(GribCollectionProto.Coord pc) {
     int typei = pc.getType();
     int code = pc.getCode();
-    String unit = pc.hasUnit() ? pc.getUnit() : null;  // LOOK
+    String unit = pc.hasUnit() ? pc.getUnit() : null;  // LOOK may be null
     Coordinate.Type type = Coordinate.Type.values()[typei];
 
     switch (type) {

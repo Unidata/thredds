@@ -159,7 +159,7 @@ public class WmoCodeTable implements Comparable<WmoCodeTable> {
   public static String getTableValue(String tableId, int value) {
     if (wmoTables == null)
       try {
-        getWmoStandard();
+        wmoTables = getWmoStandard();
       } catch (IOException e) {
         throw new IllegalStateException("cant open wmo tables");
       }
@@ -174,7 +174,7 @@ public class WmoCodeTable implements Comparable<WmoCodeTable> {
   public static TableEntry getTableEntry(String tableId, int value) {
     if (wmoTables == null)
       try {
-        getWmoStandard();
+        wmoTables = getWmoStandard();
       } catch (IOException e) {
         throw new IllegalStateException("cant open wmo tables");
       }

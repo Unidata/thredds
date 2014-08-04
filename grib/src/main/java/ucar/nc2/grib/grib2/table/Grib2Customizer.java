@@ -467,7 +467,7 @@ Code Table Code table 4.7 - Derived forecast (4.7)
   }
 
   /////////////////////////////////////////////
-  private TimeUnitConverter timeUnitConverter;
+  private TimeUnitConverter timeUnitConverter;  // LOOK not really immutable
 
   public void setTimeUnitConverter(TimeUnitConverter timeUnitConverter) {
     this.timeUnitConverter = timeUnitConverter;

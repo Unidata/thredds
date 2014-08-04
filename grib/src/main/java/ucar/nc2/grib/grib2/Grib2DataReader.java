@@ -105,8 +105,8 @@ public class Grib2DataReader {
         data = getData40(raf, (Grib2Drs.Type40) gdrs);
         break;
       case 50002:
-	    data = getData50002(raf, (Grib2Drs.Type50002) gdrs);
-	    break;
+        data = getData50002(raf, (Grib2Drs.Type50002) gdrs);
+        break;
       default:
         throw new UnsupportedOperationException("Unsupported DRS type = " + dataTemplate);
     }
@@ -525,7 +525,7 @@ public class Grib2DataReader {
       for (int i = 0; i < data.length; i++) {
         data[i] = (R + (data[i] * EE)) / DD;
       }
-    } else {         // missing value == 1  || missing value == 2
+    } else if (mvm == 1 || mvm == 2) {         // missing value == 1  || missing value == 2
       int count2 = 0;
       float[] tmp = new float[totalNPoints];
       for (int i = 0; i < data.length; i++) {
@@ -589,7 +589,7 @@ public class Grib2DataReader {
         //g2j.decode(raf, length - 5);
         // jpeg-1.0.jar added method to have the data read first
         byte[] buf = new byte[dataLength - 5];
-        raf.read(buf);
+        raf.readFully(buf);
         g2j.decode(buf);
         gdrs.hasSignedProblem = g2j.hasSignedProblem();
       }
@@ -803,7 +803,7 @@ public class Grib2DataReader {
     int mid = Xlength / 2;
     for (int index = 0; index < data.length; index += Xlength) {
       int row = index / Xlength;
-      if (row % 2 == 1) {  // odd numbered row, calculate reverse index
+      if (row % 2 != 0) {  // odd numbered row, calculate reverse index
         for (int idx = 0; idx < mid; idx++) {
           tmp = data[index + idx];
           data[index + idx] = data[index + Xlength - idx - 1];
