@@ -80,10 +80,10 @@ public class RadialCoordSys {
     if (isRadialCoordSys( parseInfo, cs)) {
       RadialCoordSys rcs = new RadialCoordSys( cs);
       if (cs.isComplete( v)) {
-        if (parseInfo != null) parseInfo.format(" OK\n");
+        if (parseInfo != null) parseInfo.format(" OK%n");
         return rcs;
       } else {
-        if (parseInfo != null) parseInfo.format(" NOT complete\n");
+        if (parseInfo != null) parseInfo.format(" NOT complete%n");
       }
     }
 

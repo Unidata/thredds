@@ -241,7 +241,7 @@ public class Evaluator {
     if (key.startsWith(":")) {
       String val = ds.findAttValueIgnoreCase(null, key.substring(1), null);
       if ((val == null) && (errlog != null))
-        errlog.format(" Cant find global attribute %s\n", key);
+        errlog.format(" Cant find global attribute %s%n", key);
       return val;
     }
 
@@ -262,7 +262,7 @@ public class Evaluator {
     if (fts != null) {
       ft = FeatureType.valueOf(fts.toUpperCase());
       if ((ft == null) && (errlog != null))
-        errlog.format(" Cant find Feature type %s from %s\n", fts, key);
+        errlog.format(" Cant find Feature type %s from %s%n", fts, key);
     }
     return ft;
   }
@@ -281,7 +281,7 @@ public class Evaluator {
     if (vs != null) {
       v = ds.findVariable(vs);
       if ((v == null) && (errlog != null))
-        errlog.format(" Cant find Variable %s from %s\n", vs, key);
+        errlog.format(" Cant find Variable %s from %s%n", vs, key);
     }
     return v == null ? null : v.getShortName();
   }
@@ -300,7 +300,7 @@ public class Evaluator {
     if (s != null) {
       d = ds.findDimension(s); // LOOK use group
       if ((d == null) && (errlog != null))
-        errlog.format(" Cant find Variable %s from %s\n", s, key);
+        errlog.format(" Cant find Variable %s from %s%n", s, key);
     }
     return d;
   }

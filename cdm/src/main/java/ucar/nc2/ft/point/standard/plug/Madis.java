@@ -195,7 +195,7 @@ public class Madis extends TableConfigurerImpl  {
     if (val == null)
       val = ds.findAttValueIgnoreCase(null, "latLonVars", null);
     if (val == null) {
-      if (errlog != null) errlog.format(" Cant find global attribute stationLocationVariables\n");
+      if (errlog != null) errlog.format(" Cant find global attribute stationLocationVariables%n");
       vn.lat = "latitude";
       vn.lon = "longitude";
     } else {
@@ -207,7 +207,7 @@ public class Madis extends TableConfigurerImpl  {
 
     val = ds.findAttValueIgnoreCase(null, "timeVariables", null);
     if (val == null) {
-      if (errlog != null) errlog.format(" Cant find global attribute timeVariables\n");
+      if (errlog != null) errlog.format(" Cant find global attribute timeVariables%n");
       vn.obsTime = "observationTime";
       vn.nominalTime = "reportTime";
     } else {
@@ -218,7 +218,7 @@ public class Madis extends TableConfigurerImpl  {
 
     val = ds.findAttValueIgnoreCase(null, "stationDescriptionVariable", null);
     if (val == null) {
-      if (errlog != null) errlog.format(" Cant find global attribute stationDescriptionVariable\n");
+      if (errlog != null) errlog.format(" Cant find global attribute stationDescriptionVariable%n");
       vn.stnDesc = "stationName";
     } else {
       vn.stnDesc = val;
@@ -228,7 +228,7 @@ public class Madis extends TableConfigurerImpl  {
     if (val == null)
       val = ds.findAttValueIgnoreCase(null, "idVariables", null);
     if (val == null) {
-      if (errlog != null) errlog.format(" Cant find global attribute stationIdVariable\n");
+      if (errlog != null) errlog.format(" Cant find global attribute stationIdVariable%n");
       vn.stnId = "stationId";
     } else {
       vn.stnId = val;

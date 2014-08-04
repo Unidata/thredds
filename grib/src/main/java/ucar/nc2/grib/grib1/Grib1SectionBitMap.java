@@ -88,7 +88,7 @@ public class Grib1SectionBitMap {
     // read the bits as integers
     int n = length - 6;
     byte[] data = new byte[n];
-    raf.read(data);
+    raf.readFully(data);
     return data;
 
     // create new bit map, octet 4 contains number of unused bits at the end

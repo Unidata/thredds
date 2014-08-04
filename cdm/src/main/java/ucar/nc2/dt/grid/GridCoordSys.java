@@ -276,7 +276,7 @@ public class GridCoordSys extends CoordinateSystem implements ucar.nc2.dt.GridCo
         }
       }
       if (!CoordinateSystem.isSubset(v.getDimensionsAll(), testDomain)) {
-        if (sbuff != null) sbuff.format(" NOT complete\n");
+        if (sbuff != null) sbuff.format(" NOT complete%n");
         return false;
       }
     }
@@ -301,7 +301,7 @@ public class GridCoordSys extends CoordinateSystem implements ucar.nc2.dt.GridCo
 
     if (isGridCoordSys(sbuff, cs, v)) {
       GridCoordSys gcs = new GridCoordSys(cs, sbuff);
-      if (sbuff != null) sbuff.format(" OK\n");
+      if (sbuff != null) sbuff.format(" OK%n");
       return gcs;
     }
 
@@ -410,7 +410,7 @@ public class GridCoordSys extends CoordinateSystem implements ucar.nc2.dt.GridCo
 
         } catch (Exception e) {
           if (sbuff != null)
-            sbuff.format("%s: Error reading time coord= %s err= %s\n", t.getDatasetLocation(), t.getFullName(), e.getMessage());
+            sbuff.format("%s: Error reading time coord= %s err= %s%n", t.getDatasetLocation(), t.getFullName(), e.getMessage());
           log.error(t.getDatasetLocation()+": Error reading time coord= "+t.getFullName(), e);
         }
 
@@ -438,7 +438,7 @@ public class GridCoordSys extends CoordinateSystem implements ucar.nc2.dt.GridCo
 
       } catch (IOException e) {
         if (sbuff != null) {
-          sbuff.format("Error reading runtime coord= %s err= %s\n", t.getFullName(), e.getMessage());
+          sbuff.format("Error reading runtime coord= %s err= %s%n", t.getFullName(), e.getMessage());
         }
       }
     }
@@ -694,9 +694,9 @@ public class GridCoordSys extends CoordinateSystem implements ucar.nc2.dt.GridCo
 
     if (vt == null) {
       if (parseInfo != null)
-        parseInfo.format("  - ERR can't make VerticalTransform = %s\n", vCT.getVerticalTransformType());
+        parseInfo.format("  - ERR can't make VerticalTransform = %s%n", vCT.getVerticalTransformType());
     } else {
-      if (parseInfo != null) parseInfo.format("  - VerticalTransform = %s\n", vCT.getVerticalTransformType());
+      if (parseInfo != null) parseInfo.format("  - VerticalTransform = %s%n", vCT.getVerticalTransformType());
     }
   }
 

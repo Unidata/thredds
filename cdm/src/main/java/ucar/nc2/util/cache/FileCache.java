@@ -554,7 +554,7 @@ public class FileCache {
    * @param format add to this
    */
   public void showStats(Formatter format) {
-    format.format("  hits= %d miss= %d nfiles= %d elems= %d\n", hits.get(), miss.get(), files.size(), cache.values().size());
+    format.format("  hits= %d miss= %d nfiles= %d elems= %d%n", hits.get(), miss.get(), files.size(), cache.values().size());
   }
 
   /**

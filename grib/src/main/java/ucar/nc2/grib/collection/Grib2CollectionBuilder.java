@@ -103,7 +103,7 @@ public class Grib2CollectionBuilder extends GribCollectionBuilder {
     FeatureCollectionConfig config = (FeatureCollectionConfig) dcm.getAuxInfo(FeatureCollectionConfig.AUX_CONFIG);
     //Map<Integer, Integer> gdsConvert = config.gribConfig.gdsHash;
     Map<String, Boolean> pdsConvert = config.gribConfig.pdsHash;
-    FeatureCollectionConfig.GribIntvFilter intvMap = (config != null) ?  config.gribConfig.intvFilter : null;
+    FeatureCollectionConfig.GribIntvFilter intvMap = config.gribConfig.intvFilter;
 
     // place each record into its group
     int totalRecords = 0;
@@ -124,9 +124,8 @@ public class Grib2CollectionBuilder extends GribCollectionBuilder {
 
         for (Grib2Record gr : index.getRecords()) { // we are using entire Grib2Record - memory limitations
           if (this.cust == null) {
-            Grib2SectionIdentification ids = gr.getId(); // so all records must use the same table (!)
-            this.cust = Grib2Customizer.factory(ids.getCenter_id(), ids.getSubcenter_id(), ids.getMaster_table_version(), ids.getLocal_table_version());
-            if (config != null) cust.setTimeUnitConverter(config.gribConfig.getTimeUnitConverter());
+            this.cust = Grib2Customizer.factory(gr);
+            cust.setTimeUnitConverter(config.gribConfig.getTimeUnitConverter());
           }
           if (filterOut(gr, intvMap)) {
             statsAll.filter++;

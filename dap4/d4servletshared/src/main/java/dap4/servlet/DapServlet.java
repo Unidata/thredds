@@ -375,7 +375,7 @@ public class DapServlet extends javax.servlet.http.HttpServlet
         // Again, not sure what value to use
         //setHeader("Content-Disposition","?");
 
-        drq.setResponseHeader("Content-Encoding", IS_BIG_ENDIAN ? BIG_ENDIAN : LITTLE_ENDIAN);
+        //not legal drq.setResponseHeader("Content-Encoding", IS_BIG_ENDIAN ? BIG_ENDIAN : LITTLE_ENDIAN);
     }
 
     /**

@@ -812,7 +812,11 @@ public class Grib1CollectionPanel extends JPanel {
     }
 
     public String getPeriod() {
-      return GribUtils.getCalendarPeriod(pds.getTimeUnit()).toString();
+      try {
+        return GribUtils.getCalendarPeriod(pds.getTimeUnit()).toString();
+      } catch (UnsupportedOperationException e) {
+        return "Unknown Time Unit = "+ pds.getTimeUnit();
+      }
     }
 
     public String getTimeTypeName() {

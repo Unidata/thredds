@@ -125,14 +125,14 @@ public class Grib2Parameter implements GribTables.Parameter, Comparable<Grib2Par
 
   //////////////////////////////////////////////////////////////////////////////////////////////////////
 
-  public static void compareTables(String name1, String name2, List<Grib2Parameter> test, Grib2Customizer reference, Formatter f) {
+  public static void compareTables(String name1, String name2, List<? extends GribTables.Parameter> test, Grib2Customizer reference, Formatter f) {
 
     int extra = 0;
     int udunits = 0;
     int conflict = 0;
     f.format("Table 1 : %s%n", name1);
     f.format("Table 2 : %s%n", name2);
-    for (Grib2Parameter p1 : test) {
+    for (GribTables.Parameter p1 : test) {
       Grib2Customizer.Parameter  p2 = reference.getParameter(p1.getDiscipline(), p1.getCategory(), p1.getNumber());
       if (p2 == null) {
         if (p1.getCategory() < 192 && p1.getNumber() < 192) {
@@ -182,7 +182,7 @@ public class Grib2Parameter implements GribTables.Parameter, Comparable<Grib2Par
 
     f.format("Parameters in %s not in %s%n", name1, name2);
     int local = 0;
-    for (Grib2Parameter p1 : test) {
+    for (GribTables.Parameter p1 : test) {
       Grib2Customizer.Parameter  p2 = reference.getParameter(p1.getDiscipline(), p1.getCategory(), p1.getNumber());
       if (p2 == null) {
         local++;

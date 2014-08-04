@@ -52,6 +52,7 @@ public class KmaLocalTables extends LocalTables {
 
   KmaLocalTables(int center, int subCenter, int masterVersion, int localVersion) {
     super(center, subCenter, masterVersion, localVersion);
+    initLocalTable();
   }
 
   @Override

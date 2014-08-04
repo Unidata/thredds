@@ -123,9 +123,9 @@ public class AWIPSConvention extends CoordSysBuilder {
         List<Dimension> levels = breakupLevels(ds, levelVar);
         createNewVariables(ds, ncvar, levels, levelVar.getDimension(0));
       } catch (InvalidRangeException ex) {
-        parseInfo.format("createNewVariables InvalidRangeException\n");
+        parseInfo.format("createNewVariables InvalidRangeException%n");
       } catch (IOException ioe) {
-        parseInfo.format("createNewVariables IOException\n");
+        parseInfo.format("createNewVariables IOException%n");
       }
       mungedList.add(ncvar);
     }
@@ -169,7 +169,7 @@ public class AWIPSConvention extends CoordSysBuilder {
   // return the list of Dimensions that were created
 
   private List<Dimension> breakupLevels(NetcdfDataset ds, Variable levelVar) throws IOException {
-    if (debugBreakup) parseInfo.format("breakupLevels = %s\n", levelVar.getShortName());
+    if (debugBreakup) parseInfo.format("breakupLevels = %s%n", levelVar.getShortName());
     List<Dimension> dimList = new ArrayList<>();
 
     ArrayChar levelVarData;
@@ -184,7 +184,7 @@ public class AWIPSConvention extends CoordSysBuilder {
     ArrayChar.StringIterator iter = levelVarData.getStringIterator();
     while (iter.hasNext()) {
       String s = iter.next();
-      if (debugBreakup) parseInfo.format("   %s\n", s);
+      if (debugBreakup) parseInfo.format("   %s%n", s);
       StringTokenizer stoke = new StringTokenizer(s);
 
 /* problem with blank string:
@@ -215,7 +215,7 @@ public class AWIPSConvention extends CoordSysBuilder {
     if (values != null)
       dimList.add(makeZCoordAxis(ds, values, currentUnits));
 
-    if (debugBreakup) parseInfo.format("  done breakup\n");
+    if (debugBreakup) parseInfo.format("  done breakup%n");
 
     return dimList;
   }
@@ -239,7 +239,7 @@ public class AWIPSConvention extends CoordSysBuilder {
         Array coordData = coord.read();
         Array newData = Array.makeArray(coord.getDataType(), values);
         if (MAMath.isEqual(coordData, newData)) {
-          if (debugBreakup) parseInfo.format("  use existing coord %s\n", dim);
+          if (debugBreakup) parseInfo.format("  use existing coord %s%n", dim);
           return dim;
         }
       }
@@ -255,12 +255,12 @@ public class AWIPSConvention extends CoordSysBuilder {
     // create new one
     dim = new Dimension(name, len);
     ds.addDimension(null, dim);
-    if (debugBreakup) parseInfo.format("  make Dimension = %s length = %d\n", name, len);
+    if (debugBreakup) parseInfo.format("  make Dimension = %s length = %d%n", name, len);
 
     // if (len < 2) return dim; // skip 1D
 
     if (debugBreakup) {
-      parseInfo.format("  make ZCoordAxis = = %s length = %d\n", name, len);
+      parseInfo.format("  make ZCoordAxis = = %s length = %d%n", name, len);
     }
 
     CoordinateAxis v = new CoordinateAxis1D(ds, null, name, DataType.DOUBLE, name,
@@ -274,7 +274,7 @@ public class AWIPSConvention extends CoordSysBuilder {
 
     parseInfo.format("Created Z Coordinate Axis = ");
     v.getNameAndDimensions(parseInfo, true, false);
-    parseInfo.format("\n");
+    parseInfo.format("%n");
 
     return dim;
   }
@@ -339,7 +339,7 @@ public class AWIPSConvention extends CoordSysBuilder {
 
       parseInfo.format("Created New Variable as section = ");
       varNew.getNameAndDimensions(parseInfo, true, false);
-      parseInfo.format("\n");
+      parseInfo.format("%n");
 
       count += dim.getLength();
     }
@@ -419,7 +419,7 @@ public class AWIPSConvention extends CoordSysBuilder {
     double lat0 = findAttributeDouble(ds, "lat00");
     double lon0 = findAttributeDouble(ds, "lon00");
     ProjectionPointImpl start = (ProjectionPointImpl) lc.latLonToProj(new LatLonPointImpl(lat0, lon0));
-    if (debugProj) parseInfo.format("getLCProjection start at proj coord %s\n", start);
+    if (debugProj) parseInfo.format("getLCProjection start at proj coord %s%n", start);
     startx = start.getX();
     starty = start.getY();
 
@@ -448,13 +448,13 @@ public class AWIPSConvention extends CoordSysBuilder {
     starty = start.getY();
 
     // projection info
-    parseInfo.format("---makeStereoProjection start at proj coord %s\n", start);
+    parseInfo.format("---makeStereoProjection start at proj coord %s%n", start);
 
     double latN = findAttributeDouble(ds, "latNxNy");
     double lonN = findAttributeDouble(ds, "lonNxNy");
     ProjectionPointImpl pt = (ProjectionPointImpl) proj.latLonToProj(new LatLonPointImpl(latN, lonN));
-    parseInfo.format("                        end at proj coord %s\n", pt);
-    parseInfo.format("                        scale= %f\n", scale);
+    parseInfo.format("                        end at proj coord %s%n", pt);
+    parseInfo.format("                        scale= %f%n", scale);
 
     return new ProjectionCT(name, "FGDC", proj);
   }
@@ -466,7 +466,7 @@ public class AWIPSConvention extends CoordSysBuilder {
 
     parseInfo.format("Created X Coordinate Axis = ");
     v.getNameAndDimensions(parseInfo, true, false);
-    parseInfo.format("\n");
+    parseInfo.format("%n");
 
     return v;
   }
@@ -478,7 +478,7 @@ public class AWIPSConvention extends CoordSysBuilder {
 
     parseInfo.format("Created Y Coordinate Axis = ");
     v.getNameAndDimensions(parseInfo, true, false);
-    parseInfo.format("\n");
+    parseInfo.format("%n");
 
     return v;
   }
@@ -494,9 +494,9 @@ public class AWIPSConvention extends CoordSysBuilder {
     v.addAttribute(new Attribute(_Coordinate.AxisType, AxisType.Lon.toString()));
 
     double maxCalc = min + d * n;
-    parseInfo.format("Created Lon Coordinate Axis (max calc= %f shoule be = %f)\n", maxCalc, max);
+    parseInfo.format("Created Lon Coordinate Axis (max calc= %f shoule be = %f)%n", maxCalc, max);
     v.getNameAndDimensions(parseInfo, true, false);
-    parseInfo.format("\n");
+    parseInfo.format("%n");
 
     return v;
   }
@@ -512,9 +512,9 @@ public class AWIPSConvention extends CoordSysBuilder {
     v.addAttribute(new Attribute(_Coordinate.AxisType, AxisType.Lat.toString()));
 
     double maxCalc = min + d * n;
-    parseInfo.format("Created Lat Coordinate Axis (max calc= %f should be = %f)\n", maxCalc, max);
+    parseInfo.format("Created Lat Coordinate Axis (max calc= %f should be = %f)%n", maxCalc, max);
     v.getNameAndDimensions(parseInfo, true, false);
-    parseInfo.format("\n");
+    parseInfo.format("%n");
 
     return v;
   }
@@ -537,9 +537,9 @@ public class AWIPSConvention extends CoordSysBuilder {
     if (recLen != valLen) {
       try {
         vals = vals.sectionNoReduce(new int[]{0}, new int[]{recordDim.getLength()}, null);
-        parseInfo.format(" corrected the TimeCoordAxis length\n");
+        parseInfo.format(" corrected the TimeCoordAxis length%n");
       } catch (InvalidRangeException e) {
-        parseInfo.format("makeTimeCoordAxis InvalidRangeException\n");
+        parseInfo.format("makeTimeCoordAxis InvalidRangeException%n");
       }
     }
 
@@ -556,7 +556,7 @@ public class AWIPSConvention extends CoordSysBuilder {
 
     parseInfo.format("Created Time Coordinate Axis = ");
     timeCoord.getNameAndDimensions(parseInfo, true, false);
-    parseInfo.format("\n");
+    parseInfo.format("%n");
 
     return timeCoord;
   }
@@ -616,7 +616,7 @@ public class AWIPSConvention extends CoordSysBuilder {
 
     parseInfo.format("Created Time Coordinate Axis From Reference = ");
     timeCoord.getNameAndDimensions(parseInfo, true, false);
-    parseInfo.format("\n");
+    parseInfo.format("%n");
 
     return timeCoord;
   }
@@ -624,7 +624,7 @@ public class AWIPSConvention extends CoordSysBuilder {
   private double findAttributeDouble(NetcdfDataset ds, String attname) {
     Attribute att = ds.findGlobalAttributeIgnoreCase(attname);
     if (att == null) {
-      parseInfo.format("ERROR cant find attribute= %s\n", attname);
+      parseInfo.format("ERROR cant find attribute= %s%n", attname);
       return Double.NaN;
     }
     return att.getNumericValue().doubleValue();

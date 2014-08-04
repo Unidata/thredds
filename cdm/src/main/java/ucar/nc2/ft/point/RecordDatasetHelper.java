@@ -132,7 +132,7 @@ public class RecordDatasetHelper {
       timeUnit = new DateUnit(timeUnitString);
     } catch (Exception e) {
       if (null != errs)
-        errs.format("Error on string = %s == %s\n", timeUnitString, e.getMessage());
+        errs.format("Error on string = %s == %s%n", timeUnitString, e.getMessage());
       try {
         timeUnit = new DateUnit("seconds since 1970-01-01");
       } catch (Exception e1) {
@@ -511,7 +511,7 @@ public class RecordDatasetHelper {
         } else
           stationId = sdata.getScalarString(stnIdVName).trim();
         station = stationHelper.getStation(stationId);
-        if (null != errs) errs.format(" cant find station id = <%s> when reading record %d\n", stationId, recno);
+        if (null != errs) errs.format(" cant find station id = <%s> when reading record %d%n", stationId, recno);
         log.error(" cant find station id = <"+stationId+"> when reading record "+recno);
 
       } else {
@@ -519,7 +519,7 @@ public class RecordDatasetHelper {
         List<Station> stations = stationHelper.getStations();
         int stationIndex = sdata.getScalarInt(stnIndexVName);
         if (stationIndex < 0 || stationIndex >= stations.size()) {
-          if (null != errs) errs.format(" cant find station at index =%d when reading record %d\n", stationIndex, recno);
+          if (null != errs) errs.format(" cant find station at index =%d when reading record %d%n", stationIndex, recno);
           log.error("cant find station at index = "+stationIndex+" when reading record "+recno);
         } else
           station = stations.get(stationIndex);

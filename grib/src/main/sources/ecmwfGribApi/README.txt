@@ -196,3 +196,17 @@ sources directory (/src/main/sources/ecmwfGribApi) and running the main method o
 /ucar/nc2/grib/grib1/tables/EcmwfLocalConcepts
 
 This will generate the new table files, as well as the appropriate lookupTables.txt
+
+
+===============
+
+8/1/2014
+john + sean
+
+grib1
+
+the things that look like grib tables (*.table), arent actually grib tables that can be used;
+instead use localConcepts/*.def
+
+grib2
+WTF ??

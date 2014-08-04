@@ -488,7 +488,10 @@ public class Netcdf2Dataset extends RadialDatasetSweepAdapter implements TypedDa
                 size ++;
               }
             }
-            return sum / size;
+            if (size > 0)
+                return sum / size;
+            else
+                return Double.POSITIVE_INFINITY;
         }
 
         public int getGateNumber() {
@@ -550,43 +553,28 @@ public class Netcdf2Dataset extends RadialDatasetSweepAdapter implements TypedDa
         }
 
         public float[] getAzimuth() throws IOException {
-            Array aziData = null;
-            try{
-                Variable azi = ds.findVariable("Azimuth");
-                 aziData = azi.read();
-            } catch (IOException e) {
-                e.printStackTrace();
-                meanElevation = 0.0;
-            }
+            Array aziData = ds.findVariable("Azimuth").read();
             return (float [])aziData.get1DJavaArray(float.class);
         }
 
 
-        public float getAzimuth( int ray) throws IOException {
+        public float getAzimuth(int ray) throws IOException {
             String aziName = "Azimuth";
-            Array aziData = null;
 
-            if(aziData == null) {
              try {
-                 Array aziTmp = ds.findVariable(aziName).read();
+                 Array aziData = ds.findVariable(aziName).read();
                  if(isVolume) {
                      int [] aziOrigin = new int[2];
                      aziOrigin[0] = sweepno;
                      aziOrigin[1] = 0;
                      int [] aziShape = {1, getRadialNumber()};
-                     aziData = aziTmp.section(aziOrigin, aziShape);
-                 } else {
-                     aziData = aziTmp;
+                     aziData = aziData.section(aziOrigin, aziShape);
                  }
-             } catch (IOException e) {
-                 e.printStackTrace();
+                 Index index = aziData.getIndex();
+                 return aziData.getFloat(index.set(ray));
              } catch (ucar.ma2.InvalidRangeException e) {
-                 e.printStackTrace();
+                 throw new IOException(e);
              }
-            }
-
-            Index index = aziData.getIndex();
-            return aziData.getFloat(index.set(ray));
         }
 
 
@@ -594,7 +582,7 @@ public class Netcdf2Dataset extends RadialDatasetSweepAdapter implements TypedDa
             float gateStart =  getRangeToFirstGate();
             Variable gateSize =  ds.findVariable("GateWidth");
             float [] data = (float [])gateSize.read().get1DJavaArray(float.class);
-            float dist = (float)(gateStart + gate*data[0]);
+            float dist = gateStart + gate*data[0];
 
             return dist;
         }
@@ -641,12 +629,11 @@ public class Netcdf2Dataset extends RadialDatasetSweepAdapter implements TypedDa
         int nsweep = rv.getNumSweeps();
         //System.out.println("*** radar Sweep number is: \n" + nsweep);
         Sweep sw;
-        float mele;
         float [] az;
         for (int i = 0; i < nsweep; i++) {
           //ucar.unidata.util.Trace.call1("LevelII2Dataset:testRadialVariable getSweep " + i);
           sw = rv.getSweep(i);
-          mele = sw.getMeanElevation();
+          sw.getMeanElevation();
           //ucar.unidata.util.Trace.call2("LevelII2Dataset:testRadialVariable getSweep " + i);
           float me = sw.getMeanElevation();
           System.out.println("*** radar Sweep mean elevation of sweep " + i + " is: " + me);
@@ -661,8 +648,8 @@ public class Netcdf2Dataset extends RadialDatasetSweepAdapter implements TypedDa
         sw = rv.getSweep(0);
           //ucar.unidata.util.Trace.call1("LevelII2Dataset:testRadialVariable readData");
         float [] ddd = sw.readData();
-        float [] da = sw.getAzimuth();
-        float [] de = sw.getElevation();
+        sw.getAzimuth();
+        sw.getElevation();
           //ucar.unidata.util.Trace.call2("LevelII2Dataset:testRadialVariable readData");
         assert(null != ddd);
         int nrays = sw.getRadialNumber();
@@ -699,14 +686,10 @@ public class Netcdf2Dataset extends RadialDatasetSweepAdapter implements TypedDa
       //String id = rds.getRadarID();
       //String name = rds.getRadarName();
       rds.getRadarID();
-      List rvars = rds.getDataVariables();
+      rds.getDataVariables();
       RadialDatasetSweep.RadialVariable rf = (RadialDatasetSweep.RadialVariable) rds.getDataVariable("Reflectivity");
       rf.getSweep(0);
 
- 
       testRadialVariable(rf);
-
     }
-
-
 }

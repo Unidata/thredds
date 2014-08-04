@@ -682,7 +682,12 @@ public class Level2VolumeScan {
     try {
         inputRaf.seek(0);
         byte[] header = new byte[Level2Record.FILE_HEADER_SIZE];
-        inputRaf.read(header);
+        int bytesRead = inputRaf.read(header);
+        if (bytesRead != header.length)
+        {
+            throw new IOException("Error reading NEXRAD2 header -- got " +
+                    bytesRead + " rather than" + header.length);
+        }
         outputRaf.write(header);
 
         boolean eof = false;

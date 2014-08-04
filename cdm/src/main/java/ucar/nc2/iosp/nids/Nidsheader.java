@@ -206,11 +206,10 @@ class Nidsheader{
         //long     actualSize = 0;
         raf.seek(pos);
         int readLen = 35;
-        int rc = 0;
 
         // Read in the contents of the NEXRAD Level III product head
         byte[] b = new byte[readLen];
-        rc = raf.read(b);
+        int rc = raf.read(b);
         if ( rc != readLen )
         {
             // out.println(" error reading nids product header");
@@ -232,7 +231,7 @@ class Nidsheader{
         }
         //Get product message header into a string for processing
 
-        String pib = new String(b);
+        String pib = new String(b, CDM.utf8Charset);
         if(  pib.indexOf("SDUS")!= -1){
             noHeader = false;
             return 1;
@@ -293,7 +292,7 @@ class Nidsheader{
         int      encrypt;
         long     actualSize ;
         int      readLen ;
-        int     p = readWMO( raf );
+        readWMO( raf );
         this.ncfile = ncfile;
         actualSize = raf.length();
         int pos = 0;
@@ -339,7 +338,6 @@ class Nidsheader{
             }
            // process product description for station ID
             byte[] b3 = new byte[3];
-            //byte[] uncompdata = null;
 
             switch ( type ) {
               case 0:
@@ -350,7 +348,7 @@ class Nidsheader{
               case 3:
               case 4:
                 System.arraycopy(b, hoff - 6, b3, 0, 3);
-                stationId  = new String(b3);
+                stationId  = new String(b3, CDM.utf8Charset);
                 try {
                   NexradStationDB.init(); // make sure database is initialized
                   NexradStationDB.Station station = NexradStationDB.get("K"+stationId);
@@ -372,6 +370,8 @@ class Nidsheader{
               //uncompdata = Nidsiosp.readCompData(hoff, 160) ;
               if ( uncompdata == null ) {
                 log.warn( "ReadNexrInfo: error uncompressing image " +raf.getLocation());
+                uncompdata = new byte[b.length - hoff];
+                System.arraycopy(b, hoff, uncompdata, 0, b.length - hoff);
               }
         }
         else {
@@ -1350,8 +1350,8 @@ class Nidsheader{
         numX0 = 0;
         numX = numBox;
         numY = numRow;
-        Dimension jDim = new Dimension("Row", numY);
-        Dimension iDim = new Dimension("Box", numX);
+        Dimension jDim;
+        Dimension iDim;
         if(slayer == 0){
             jDim = new Dimension("y", numY);
             iDim = new Dimension("x", numX);
@@ -1368,7 +1368,11 @@ class Nidsheader{
             v.addAttribute( new Attribute(CDM.UNITS, cunit));
             v.addAttribute( new Attribute(CDM.MISSING_VALUE, 255));
 
-        } //else  if(slayer == 1) {
+        } else {
+            jDim = new Dimension("Row", numY);
+            iDim = new Dimension("Box", numX);
+        }
+        //else  if(slayer == 1) {
           //  ncfile.addDimension( null, iDim);
           //  ncfile.addDimension( null, jDim);
         //}
@@ -1389,7 +1393,6 @@ class Nidsheader{
         if(slayer == 0){
             double ddx = code_reslookup( pcode );
             ncfile.addAttribute(null, new Attribute("cdm_data_type", FeatureType.GRID.toString()));
-            String coordinates = "x y time latitude longitude altitude";
             // create coordinate variables
             Variable xaxis = new Variable( ncfile, null, null, "x");
             xaxis.setDataType( DataType.DOUBLE);
@@ -1399,7 +1402,7 @@ class Nidsheader{
             xaxis.addAttribute( new Attribute(_Coordinate.AxisType, "GeoX"));
             double[] data1 = new double[numX];
             for (int i = 0; i < numX; i++)
-              data1[i] = (double) (numX0 + i*ddx);
+              data1[i] = numX0 + i*ddx;
             Array dataA = Array.factory(DataType.DOUBLE.getPrimitiveClassType(), new int[] {numX}, data1);
             xaxis.setCachedData( dataA, false);
             ncfile.addVariable(null, xaxis);
@@ -1468,21 +1471,21 @@ class Nidsheader{
         bos.get(b2, 0, 2);
         rasp_code[2] = (short)getInt(b2, 2);
         bos.get(b2, 0, 2);
-        short rasp_i = (short)getInt(b2, 2);
+//        short rasp_i = (short)getInt(b2, 2);
         bos.get(b2, 0, 2);
-        short rasp_j = (short)getInt(b2, 2);
+//        short rasp_j = (short)getInt(b2, 2);
         bos.get(b2, 0, 2);
         short rasp_xscale = (short)getInt(b2, 2);
         bos.get(b2, 0, 2);
-        short rasp_xscalefract = (short)getInt(b2, 2);
+//        short rasp_xscalefract = (short)getInt(b2, 2);
         bos.get(b2, 0, 2);
-        short rasp_yscale = (short)getInt(b2, 2);
+//        short rasp_yscale = (short)getInt(b2, 2);
         bos.get(b2, 0, 2);
-        short rasp_yscalefract = (short)getInt(b2, 2);
+//        short rasp_yscalefract = (short)getInt(b2, 2);
         bos.get(b2, 0, 2);
         short num_rows = (short)getInt(b2, 2);
         bos.get(b2, 0, 2);
-        short packing = (short)getInt(b2, 2);
+//        short packing = (short)getInt(b2, 2);
         soff= 20;
         hedsiz = hedsiz + soff;
 
@@ -1552,7 +1555,7 @@ class Nidsheader{
         xaxis.addAttribute( new Attribute(_Coordinate.AxisType, "GeoX"));
         double[] data1 = new double[numX];
         for (int i = 0; i < numX; i++)
-          data1[i] = (double) (numX0 + i*ddx);
+          data1[i] = numX0 + i*ddx;
         Array dataA = Array.factory(DataType.DOUBLE.getPrimitiveClassType(), new int[] {numX}, data1);
         xaxis.setCachedData( dataA, false);
         ncfile.addVariable(null, xaxis);
@@ -1620,9 +1623,9 @@ class Nidsheader{
         if(this.pcode == 94 || this.pcode == 99)
             num_bin = addBinSize(num_bin);
         bos.get(b2, 0, 2);
-        short radp_i = (short)getInt(b2, 2);
+//        short radp_i = (short)getInt(b2, 2);
         bos.get(b2, 0, 2);
-        short radp_j = (short)getInt(b2, 2);
+//        short radp_j = (short)getInt(b2, 2);
         bos.get(b2, 0, 2);
         short radp_scale = (short)getInt(b2, 2);
         if(this.pcode == 134 || this.pcode == 135)
@@ -1835,15 +1838,12 @@ class Nidsheader{
         int numRadials;
         int numBins;
         int dataOffset;
-        float angleData [];
-        String desc = readInString(datainput);
-        numBins = (int)datainput.getFloat();
+        readInString(datainput); // desc
+        datainput.getFloat(); // numBins
         float rangeToFirstBin = datainput.getFloat();
         int numOfParms = datainput.getInt();
-        for(int j = 0; j < numOfParms; j++);
+        datainput.getInt();
         numRadials = datainput.getInt();
-        numRadials = datainput.getInt();
-        angleData = new float[numRadials];
         dataOffset = datainput.position();
 
         //getting numbin  by checking the first radial, but the data offset should be before this read
@@ -1950,44 +1950,39 @@ class Nidsheader{
 
     int pcode_generic( ByteBuffer  bos, int hoff, int hedsiz, boolean isZ, byte[] data, short[] threshold ) throws IOException
     {
-        byte[] bb = new byte[hedsiz];
         byte[] b2 = new byte[2];
         int soff = 0;
         ArrayList dims =  new ArrayList();
         int iscale = 1;                         /* data scale                    */
-        int ival;
-        int ttt = bos.position();
         bos.get(b2, 0, 2);
         bos.get(b2, 0, 2);
         bos.get(b2, 0, 2);
 
-        String vname = readInString(bos);
-        String vdesp = readInString(bos);
+        readInString(bos); // vname
+        readInString(bos); // vdesp
 
-        int code =  bos.getInt();
-        int type = bos.getInt();
-        int time = bos.getInt();
-        long ttl = time*1000L;
-        Date d = new Date( ttl);
-        String rnameStr = readInString(bos);
+        bos.getInt(); // code
+        bos.getInt(); // type
+        bos.getInt(); // time
+        readInString(bos); // rnameStr
 
-        float lat = bos.getFloat();
-        float lon = bos.getFloat();
-        float height = bos.getFloat();
+        bos.getFloat(); // lat
+        bos.getFloat(); // lon
+        bos.getFloat(); // height
 
-        int vscanStartTime = bos.getInt();
-        int eleScanStartTime = bos.getInt();
+        bos.getInt(); // vscanStartTime
+        bos.getInt(); // eleScanStartTime
 
         float eleAngle = bos.getFloat();
         p3 = (short) eleAngle;
 
-        int volScanNum = bos.getInt();
-        int opMode = bos.getInt();
-        int volPattern = bos.getInt();
-        int eleNum = bos.getInt();
+        bos.getInt(); // volScanNum
+        bos.getInt(); // opMode
+        bos.getInt(); // volPattern
+        bos.getInt(); // eleNum
 
         bos.getDouble(); // skip 8 bytes
-        List aa = parseParameters(bos);   // do nothing
+        parseParameters(bos);   // aa - do nothing
         List cc = parseComponents(bos);   // assuming only radial component
         if (cc == null) {
             throw new IOException("Error reading components for radial data");
@@ -2913,7 +2908,6 @@ class Nidsheader{
       */
     Sinfo read_dividlen( ByteBuffer buf, int offset  )
     {
-        int off = offset;
         byte[] b2 = new byte[2];
         byte[] b4 = new byte[4];
         short D_divider;
@@ -2930,10 +2924,8 @@ class Nidsheader{
         block_length  = getInt(b4, 4);
         buf.get(b2, 0, 2);
         number_layers  = (short)getInt(b2, 2);
-        off = off + 10;
 
         return new Sinfo ( D_divider, D_id, block_length, number_layers);
-
     }
 
     void read_SATab( ByteBuffer buf, int offset  )
@@ -2944,7 +2936,6 @@ class Nidsheader{
           short B_divider;
           short numPages;
           short numChars;
-          short E_divider;
           Short tShort ;
 
           buf.position(offset);
@@ -2956,7 +2947,6 @@ class Nidsheader{
           }
           buf.get(b2, 0, 2);
           numPages = (Short)convert(b2, DataType.SHORT, -1);
-          int ppos =  buf.position();
           for(int i = 0; i < numPages; i++){
             buf.get(b2, 0, 2);
             while(getInt(b2, 2) != -1) {
@@ -2966,7 +2956,6 @@ class Nidsheader{
                 }
                 byte[] tmp = new byte[numChars];
                 buf.get(tmp);
-                String text = new String(tmp);
                 buf.get(b2, 0, 2);
             }
           }
@@ -3003,7 +2992,6 @@ class Nidsheader{
         mtime = getInt(b4, 4);
         buf.get(b4, 0, 4);
         java.util.Date volumnDate = getDate( mdate, mtime*1000);
-        String dstring = formatter.toDateTimeStringISO(volumnDate);
         //out.println( "product date is " + dstring);
         mlength = getInt(b4, 4);
         buf.get(b2, 0, 2);
@@ -3506,7 +3494,7 @@ class Nidsheader{
         /*
         ** These tests were deduced from inspection from encrypted NOAAPORT files.
         */
-        String b = new String(buf);
+        String b = new String(buf, CDM.utf8Charset);
         if ( b.startsWith("R3") ) {
         return 1;
         }
@@ -3622,7 +3610,7 @@ class Nidsheader{
       byte   b1, b2;
       b1 = uncomp[0];
       b2 = uncomp[1];
-      doff  = 2 * (((b1 & 63) << 8) + b2);
+      doff  = 2 * (((b1 & 0x3f) << 8) | b2);
 
       for ( int i = 0; i < 2; i++ ) {                         /* eat WMO and PIL */
         while ( (doff < result ) && (uncomp[doff] != '\n') ) doff++;
@@ -4055,13 +4043,12 @@ class Nidsheader{
 
 
   // product info for reading/writing
-    class Pinfo {
+    static class Pinfo {
         short divider, pcode, opmode, sequenceNumber, volumeScanNumber, volumeScanDate, productDate;
         double latitude, longitude;
         double height; // meters
         int volumeScanTime,  productTime;
         short p1, p2, p3, p4, p5, p6, p7, p8, p9, p10;
-        short elevationNumber, numberOfMaps;
         int offsetToSymbologyBlock, offsetToGraphicBlock, offsetToTabularBlock;
         short [] threshold;
         Pinfo() {
@@ -4096,8 +4083,6 @@ class Nidsheader{
           this.p9 = p9 ;
           this.p10 = p10 ;
           this.threshold = threshold;
-          this.elevationNumber = elevationNumber ;
-          this.numberOfMaps = numberOfMaps ;
           this.offsetToSymbologyBlock = offsetToSymbologyBlock ;
           this.offsetToGraphicBlock = offsetToGraphicBlock ;
           this.offsetToTabularBlock = offsetToTabularBlock ;

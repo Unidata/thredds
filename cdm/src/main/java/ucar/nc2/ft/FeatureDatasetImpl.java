@@ -69,8 +69,8 @@ public abstract class FeatureDatasetImpl implements FeatureDataset {
     this.parseInfo = new Formatter();
     String fromInfo = from.parseInfo.toString().trim();
     if (fromInfo.length() > 0)
-      parseInfo.format("%s\n", fromInfo);
-    this.parseInfo.format("Subsetted from original\n");
+      parseInfo.format("%s%n", fromInfo);
+    this.parseInfo.format("Subsetted from original%n");
   }
 
   /** No-arg constuctor */
@@ -136,24 +136,24 @@ public abstract class FeatureDatasetImpl implements FeatureDataset {
 
   public void getDetailInfo( java.util.Formatter sf) {
 
-    sf.format("FeatureDataset on location= %s\n", getLocation());
-    sf.format("  featureType= %s\n",getFeatureType());
-    sf.format("  title= %s\n",getTitle());
-    sf.format("  desc= %s\n",getDescription());
-    sf.format("  range= %s\n",getCalendarDateRange());
-    sf.format("  start= %s\n", getCalendarDateEnd());
-    sf.format("  end  = %s\n",getCalendarDateEnd());
+    sf.format("FeatureDataset on location= %s%n", getLocation());
+    sf.format("  featureType= %s%n",getFeatureType());
+    sf.format("  title= %s%n",getTitle());
+    sf.format("  desc= %s%n",getDescription());
+    sf.format("  range= %s%n",getCalendarDateRange());
+    sf.format("  start= %s%n", getCalendarDateEnd());
+    sf.format("  end  = %s%n",getCalendarDateEnd());
     LatLonRect bb = getBoundingBox();
-    sf.format("  bb   = %s\n", bb);
+    sf.format("  bb   = %s%n", bb);
     if (bb != null)
-      sf.format("  bb   = %s\n",getBoundingBox().toString2());
+      sf.format("  bb   = %s%n",getBoundingBox().toString2());
 
-    sf.format("  has netcdf = %b\n", (getNetcdfFile() != null));
+    sf.format("  has netcdf = %b%n", (getNetcdfFile() != null));
     List<Attribute> ga = getGlobalAttributes();
     if (ga.size() > 0) {
-      sf.format("  Attributes\n");
+      sf.format("  Attributes%n");
       for (Attribute a : ga)
-        sf.format("    %s\n",a);
+        sf.format("    %s%n",a);
     }
 
     List<VariableSimpleIF> vars = getDataVariables();
@@ -165,7 +165,7 @@ public abstract class FeatureDatasetImpl implements FeatureDataset {
     }
 
     if (parseInfo.toString().length() > 0)
-      sf.format("\nparseInfo=\n%s\n", parseInfo);
+      sf.format("%nparseInfo=%n%s%n", parseInfo);
   }
 
   @Override

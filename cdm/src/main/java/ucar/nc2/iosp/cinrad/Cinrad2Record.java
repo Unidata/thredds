@@ -268,7 +268,7 @@ public class Cinrad2Record {
   private short spectWidth_offset; // spectrum-width data pointer (byte number from start of message)
 
   public static Cinrad2Record factory(RandomAccessFile din, int record) throws IOException {
-    long offset = record * RADAR_DATA_SIZE + FILE_HEADER_SIZE;
+    long offset = (long)record * RADAR_DATA_SIZE + FILE_HEADER_SIZE;
     if (offset >= din.length())
       return null;
     else
@@ -338,7 +338,6 @@ public class Cinrad2Record {
     data_msecs    = bytesToInt(b4, true); //din.readInt();   // collection time for this radial, msecs since midnight
     byte[] b2 = din.readBytes(2);
     data_julian_date  = (short)bytesToShort(b2, true); //din.readShort(); // prob "collection time"
-      java.util.Date dd =  getDate();
     unamb_range   = din.readShort(); // unambiguous range
     azimuth_ang   = din.readUnsignedShort(); // LOOK why unsigned ??
     radial_num   = din.readShort(); // radial number within the elevation
@@ -452,7 +451,7 @@ public class Cinrad2Record {
     }
 
     if ((spectWidth_offset < 0) || (spectWidth_offset > RADAR_DATA_SIZE)) {
-      logger.warn("****"+recno+ " HAS bad spwidth offset= "+reflect_offset+who());
+      logger.warn("****"+recno+ " HAS bad spwidth offset= "+spectWidth_offset+who());
       ok = false;
     }
 

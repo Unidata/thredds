@@ -166,7 +166,7 @@ public abstract class AbstractCoordTransBuilder implements ucar.nc2.dataset.Coor
   protected boolean addParameter(CoordinateTransform rs, String paramName, NetcdfFile ds, String varNameEscaped) {
     if (null == (ds.findVariable(varNameEscaped))) {
       if (null != errBuffer)
-        errBuffer.format("CoordTransBuilder %s: no Variable named %s\n", getTransformName(), varNameEscaped);
+        errBuffer.format("CoordTransBuilder %s: no Variable named %s%n", getTransformName(), varNameEscaped);
       return false;
     }
 
@@ -178,7 +178,7 @@ public abstract class AbstractCoordTransBuilder implements ucar.nc2.dataset.Coor
     String formula = ds.findAttValueIgnoreCase(ctv, "formula_terms", null);
     if (null == formula) {
       if (null != errBuffer)
-        errBuffer.format("CoordTransBuilder %s: needs attribute 'formula_terms' on Variable %s\n", getTransformName(), ctv.getFullName());
+        errBuffer.format("CoordTransBuilder %s: needs attribute 'formula_terms' on Variable %s%n", getTransformName(), ctv.getFullName());
       return null;
     }
     return formula;

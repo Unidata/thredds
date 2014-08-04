@@ -307,7 +307,7 @@ public class NcepLocalParams {
   public static void main2(String[] args) {
 
     //Grib2Customizer current = Grib2Customizer.factory(7, -1, -1, -1);
-    Grib2Customizer wmo = Grib2Customizer.factory(0, 0, 0, 0);
+    Grib2Customizer wmo = Grib2Customizer.factory(0, 0, 0, 0, 0);
 
     File dir = new File("C:\\dev\\github\\thredds\\grib\\src\\main\\resources\\resources\\grib2\\ncep");
     for (File f : dir.listFiles()) {
@@ -323,7 +323,7 @@ public class NcepLocalParams {
     GribTables.Parameter p = getParameter(0, 16, 195);
     System.out.printf("%s%n", p);
 
-    Grib2Customizer tables = Grib2Customizer.factory(7, 0, 0, 0);
+    Grib2Customizer tables = Grib2Customizer.factory(7, 0, 0, 0, 0);
     GribTables.Parameter p2 = tables.getParameter(0, 16, 195);
     System.out.printf("%s%n", p2);
   }

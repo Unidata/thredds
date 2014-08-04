@@ -336,7 +336,7 @@ public class Message {
     out.format("    Table B= wmoTable= %s localTable= %s mode=%s%n", lookup.getWmoTableBName(), lookup.getLocalTableBName(), lookup.getMode());
     out.format("    Table D= wmoTable= %s localTable= %s%n", lookup.getWmoTableDName(), lookup.getLocalTableDName());
 
-    out.format("  DDS nsubsets=%d type=0x%x isObs=%b isCompressed=%b\n", dds.getNumberDatasets(), dds.getDataType(),
+    out.format("  DDS nsubsets=%d type=0x%x isObs=%b isCompressed=%b%n", dds.getNumberDatasets(), dds.getDataType(),
             dds.isObserved(), dds.isCompressed());
 
     long startPos = is.getStartPos();
@@ -347,7 +347,7 @@ public class Message {
 
     dumpDesc(out, dds.getDataDescriptors(), lookup, 4);
 
-    out.format("%n  CDM Nested Table=\n");
+    out.format("%n  CDM Nested Table=%n");
     DataDescriptor root = new DataDescriptorTreeConstructor().factory(lookup, dds);
     dumpKeys(out, root, 4);
 
@@ -375,7 +375,7 @@ public class Message {
   private void dumpKeys(Formatter out, DataDescriptor tree, int indent) {
     for (DataDescriptor key : tree.subKeys) {
       for (int i = 0; i < indent; i++) out.format(" ");
-      out.format("%s\n", key);
+      out.format("%s%n", key);
       if (key.getSubKeys() != null)
         dumpKeys(out, key, indent + 2);
     }
@@ -390,7 +390,7 @@ public class Message {
             ids.getMasterTableId(), ids.getMasterTableVersion(), ids.getLocalTableVersion(),
             lookup.getWmoTableBName(), lookup.getWmoTableDName(), lookup.getLocalTableBName(), lookup.getLocalTableDName());
 
-    out.format("  DDS nsubsets=%d type=0x%x isObs=%b isCompressed=%b\n", dds.getNumberDatasets(), dds.getDataType(),
+    out.format("  DDS nsubsets=%d type=0x%x isObs=%b isCompressed=%b%n", dds.getNumberDatasets(), dds.getDataType(),
             dds.isObserved(), dds.isCompressed());
   }
 

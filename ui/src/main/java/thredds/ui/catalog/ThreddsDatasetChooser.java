@@ -263,7 +263,7 @@ public class ThreddsDatasetChooser extends JPanel {
 
     } else if (e.getPropertyName().equals("Datasets")) {
       Object[] ds = (Object[]) e.getNewValue();
-      buff.format(" element class = "+ds[0].getClass().getName()+"\n");
+      buff.format(" element class = %s%n",ds[0].getClass().getName());
 
       for (int i=0; i<ds.length; i++)
         if (ds[i] instanceof InvDataset)
@@ -298,7 +298,7 @@ public class ThreddsDatasetChooser extends JPanel {
 
   private void showDatasetInfo( Formatter buff, thredds.catalog.InvDataset ds) {
     buff.format(" Dataset = %s", ds.getName());
-    buff.format(", dataType = %s", ds.getDataType()+"\n");
+    buff.format(", dataType = %s%n", ds.getDataType());
     for (thredds.catalog.InvAccess ac : ds.getAccess()) {
       buff.format("  service = %s, url = %s%n", ac.getService().getServiceType(), ac.getStandardUrlName());
       //System.out.println("  url = "+ac.getStandardUrlName());

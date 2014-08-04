@@ -47,10 +47,8 @@ import java.io.*;
 import java.util.*;
 
 public class Doradeheader {
-  private boolean debug = false, debugPos = false, debugString = false, debugHeaderSize = false;
+  private boolean debug = false;
   private ucar.nc2.NetcdfFile ncfile;
-  private PrintStream out = System.out;
-  private HashMap paramMap;
   private float[] lat_min, lat_max, lon_min, lon_max, hi_max, hi_min;
 
   static public boolean isValidFile(ucar.unidata.io.RandomAccessFile raf) {
@@ -204,7 +202,6 @@ public class Doradeheader {
 
     vName = "Range_to_First_Cell";
     lName = "Range to the center of the first cell";
-    att = new Attribute(_Coordinate.Axes, "latitudes_1 longitudes_1 altitudes_1");
     addParameter(vName, lName, ncfile, null, null, DataType.FLOAT, "meters");
 
     vName = "Cell_Spacing";
@@ -255,7 +252,6 @@ public class Doradeheader {
     try {
           for (int p = 0; p < parms.length; p++) {
               String pval = parms[p].getDescription();
-              int ptype = parms[p].getBinaryFormat();
               nCells =  parms[p].getNCells();
               int ii = getGateDimsIndex(nCells, gateDim, numSensor);
 
@@ -403,26 +399,6 @@ public class Doradeheader {
       return p;
   }
   ////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-  // variable info for reading/writing
-  class Vinfo {
-    int vsize; // size of array in bytes. if isRecord, size per record.
-    long begin; // offset of start of data from start of file
-    boolean isRecord; // is it a record variable?
-    int nx;
-    int ny;
-    Vinfo( int vsize, long begin, boolean isRecord, int x, int y) {
-      this.vsize = vsize;
-      this.begin = begin;
-      this.isRecord = isRecord;
-      this.nx = x;
-      this.ny = y;
-    }
-  }
-
-
-
-
 }
 /* Change History:
    $Log: Doradeheader.java,v $

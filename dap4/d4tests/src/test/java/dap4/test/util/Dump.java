@@ -78,7 +78,7 @@ public class Dump
         }
         bytes.flip();
         long l = bytes.getLong();
-        buf.append(String.format("count=%d\n",l));
+        buf.append(String.format("count=%d%n",l));
         return (int) l;
     }
 
@@ -213,7 +213,7 @@ public class Dump
     public void
     format(String s)
     {
-        buf.append(s);
+        buf.append(String.format(s));
     }
 
     char

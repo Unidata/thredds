@@ -1225,10 +1225,10 @@ public abstract class Table {
 
   public String toString() {
     Formatter formatter = new Formatter();
-    formatter.format(" Table %s on dimension %s type=%s\n", getName(), showDimension(), getClass().toString());
+    formatter.format(" Table %s on dimension %s type=%s%n", getName(), showDimension(), getClass().toString());
     formatter.format("  Coordinates=");
-    formatter.format("\n  Data Variables= %d\n", cols.size());
-    formatter.format("  Parent= %s\n", ((parent == null) ? "none" : parent.getName()));
+    formatter.format("%n  Data Variables= %d%n", cols.size());
+    formatter.format("  Parent= %s%n", ((parent == null) ? "none" : parent.getName()));
     return formatter.toString();
   }
 
@@ -1240,15 +1240,15 @@ public abstract class Table {
     String ftDesc = (featureType == null) ? "" : "featureType=" + featureType.toString();
     f.format("%n%sTable %s: type=%s %s%n", s, getName(), getClass().toString(), ftDesc);
     if (extraJoins != null) {
-      f.format("  %sExtraJoins:\n", s);
+      f.format("  %sExtraJoins:%n", s);
       for (Join j : extraJoins)
-        f.format("   %s  %s \n", s, j);
+        f.format("   %s  %s %n", s, j);
     }
     showTableExtraInfo(indent(indent + 2), f);
     showCoords(s, f);
-    f.format("  %sVariables:\n", s);
+    f.format("  %sVariables:%n", s);
     for (String colName : cols.keySet()) {
-      f.format("   %s  %s %s\n", s, colName, getKind(colName));
+      f.format("   %s  %s %s%n", s, colName, getKind(colName));
     }
     return indent + 2;
   }
@@ -1284,10 +1284,10 @@ public abstract class Table {
       String varName = findCoordinateVariableName(coord);
       if (varName != null) {
         gotSome = true;
-        out.format(" %s Coord %s [%s]\n", indent, varName, coord);
+        out.format(" %s Coord %s [%s]%n", indent, varName, coord);
       }
     }
-    if (gotSome) out.format("\n");
+    if (gotSome) out.format("%n");
   }
 
 }

@@ -202,12 +202,13 @@ public class HttpDSP extends D4DSP
                         .setCode(status);
             }
             // Pull headers of interest
+            /*not legal
             Header encodingheader = method.getResponseHeader("Content-Encoding");
             String byteorder = (encodingheader != null ? encodingheader.getValue() : null);
             setOrder(byteorder.equalsIgnoreCase("Big-Endian") ? ByteOrder.BIG_ENDIAN : ByteOrder.LITTLE_ENDIAN);
             if(getOrder() == null)
                 throw new DapException("Missing or ill-formed Content-Encoding header");
-
+            */
             // Get the response body stream => do not close the method
             return method.getResponseAsStream();
 

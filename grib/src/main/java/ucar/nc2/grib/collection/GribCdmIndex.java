@@ -76,7 +76,7 @@ public class GribCdmIndex implements IndexReader {
 
     raf.seek(0);
     byte[] b = new byte[Grib2CollectionWriter.MAGIC_START.getBytes().length];   // they are all the same
-    raf.read(b);
+    raf.readFully(b);
     magic = new String(b);
 
     switch (magic) {
@@ -750,7 +750,7 @@ public class GribCdmIndex implements IndexReader {
 
       //// header message
       magic = new byte[Grib2CollectionWriter.MAGIC_START.getBytes().length];   // they are all the same
-      indexRaf.read(magic);
+      indexRaf.readFully(magic);
 
       version = indexRaf.readInt();
 

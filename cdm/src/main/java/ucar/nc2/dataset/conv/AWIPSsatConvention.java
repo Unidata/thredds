@@ -184,7 +184,7 @@ public class AWIPSsatConvention extends CoordSysBuilder {
     double lat0 = findAttributeDouble( ds, "lat00");
     double lon0 = findAttributeDouble( ds, "lon00");
     ProjectionPointImpl start = (ProjectionPointImpl) proj.latLonToProj( new LatLonPointImpl( lat0, lon0));
-    if (debugProj) parseInfo.format("getLCProjection start at proj coord %s\n", start);
+    if (debugProj) parseInfo.format("getLCProjection start at proj coord %s%n", start);
     startx = start.getX();
     starty = start.getY();
 
@@ -196,12 +196,12 @@ public class AWIPSsatConvention extends CoordSysBuilder {
     dy = (end.getY() - starty) / ny;
 
     if (debugProj) {
-      parseInfo.format("  makeProjectionLC start at proj coord %f %f\n", startx, starty);
-      parseInfo.format("  makeProjectionLC end at proj coord %f %f\n", end.getX(),end.getY());
+      parseInfo.format("  makeProjectionLC start at proj coord %f %f%n", startx, starty);
+      parseInfo.format("  makeProjectionLC end at proj coord %f %f%n", end.getX(),end.getY());
       double fdx = findAttributeDouble(ds, "dxKm");
       double fdy = findAttributeDouble(ds, "dyKm");
-      parseInfo.format("  makeProjectionLC calc dx= %f file dx= %f\n",dx,fdx);
-      parseInfo.format("  makeProjectionLC calc dy= %f file dy= %f\n",dy,fdy);
+      parseInfo.format("  makeProjectionLC calc dx= %f file dx= %f%n",dx,fdx);
+      parseInfo.format("  makeProjectionLC calc dy= %f file dy= %f%n",dy,fdy);
     }
 
     return new ProjectionCT(name, "FGDC", proj);
@@ -236,12 +236,12 @@ public class AWIPSsatConvention extends CoordSysBuilder {
     dy = (end.getY() - starty) / ny;
 
     if (debugProj) {
-      parseInfo.format("  makeProjectionMercator start at proj coord %f %f\n", startx, starty);
-      parseInfo.format("  makeProjectionMercator end at proj coord %f %f\n", end.getX(), end.getY());
+      parseInfo.format("  makeProjectionMercator start at proj coord %f %f%n", startx, starty);
+      parseInfo.format("  makeProjectionMercator end at proj coord %f %f%n", end.getX(), end.getY());
       double fdx = findAttributeDouble(ds, "dxKm");
       double fdy = findAttributeDouble(ds, "dyKm");
-      parseInfo.format("  makeProjectionMercator calc dx= %f file dx= %f\n",dx,fdx);
-      parseInfo.format("  makeProjectionMercator calc dy= %f file dy= %f\n",dy,fdy);
+      parseInfo.format("  makeProjectionMercator calc dx= %f file dx= %f%n",dx,fdx);
+      parseInfo.format("  makeProjectionMercator calc dy= %f file dy= %f%n",dy,fdy);
     }
 
     return new ProjectionCT(name, "FGDC", proj);
@@ -253,10 +253,10 @@ public class AWIPSsatConvention extends CoordSysBuilder {
 
     parseInfo.format("Created X Coordinate Axis = ");
     v.getNameAndDimensions(parseInfo, true, false);
-    parseInfo.format("\n");
+    parseInfo.format("%n");
 
     if (debugProj)
-      parseInfo.format("  makeXCoordAxis ending x %f nx= %d dx= %f\n",startx + nx * dx, nx, dx);
+      parseInfo.format("  makeXCoordAxis ending x %f nx= %d dx= %f%n",startx + nx * dx, nx, dx);
     return v;
   }
 
@@ -266,10 +266,10 @@ public class AWIPSsatConvention extends CoordSysBuilder {
 
     parseInfo.format("Created Y Coordinate Axis = ");
     v.getNameAndDimensions(parseInfo, true, false);
-    parseInfo.format("\n");
+    parseInfo.format("%n");
 
     if (debugProj)
-      parseInfo.format("  makeYCoordAxis ending y %f ny= %d dy= %f\n",starty + ny * dy, ny, dy);
+      parseInfo.format("  makeYCoordAxis ending y %f ny= %d dy= %f%n",starty + ny * dy, ny, dy);
     return v;
   }
 

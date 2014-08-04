@@ -128,6 +128,29 @@ public class Grib2Drs {
     }
   }
 
+  /*
+  Data representation template 5.2 – Grid point data – complex packing
+  Note: For most templates, details of the packing process are described in Regulation
+
+  22 Group splitting method used (see Code table 5.4)
+  23 Missing value management used (see Code table 5.5)
+  24–27 Primary missing value substitute
+  28–31 Secondary missing value substitute
+  32–35 NG – number of groups of data values into which field is split
+  36 Reference for group widths (see Note 12)
+  37 Number of bits used for the group widths (after the reference value in octet 36 has been removed)
+  38–41 Reference for group lengths (see Note 13)
+  42 Length increment for the group lengths (see Note 14)
+  43–46 True length of last group
+  47 Number of bits used for the scaled group lengths (after subtraction of the reference value
+  given in octets 38–41 and division by the length increment given in octet 42)
+
+  Code Table Code table 5.5 - Missing value management for complex packing (5.5)
+      0: No explicit missing values included within data values
+      1: Primary missing values included within data values
+      2: Primary and secondary missing values included within data values
+   */
+
   public static class Type2 extends Type0 {
     public float secondaryMissingValue, primaryMissingValue;
     public int missingValueManagement, splittingMethod, numberOfGroups, referenceGroupWidths, bitsGroupWidths;
@@ -306,6 +329,7 @@ public class Grib2Drs {
     }
   }
 
+  // pull request #52 "lost-carrier" jkaehler@meteomatics.com
   public static class Type50002 extends Grib2Drs {
 	    public float referenceValue;
 	    public int binaryScaleFactor, decimalScaleFactor, numberOfBits;

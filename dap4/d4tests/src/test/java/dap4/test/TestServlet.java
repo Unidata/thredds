@@ -436,7 +436,7 @@ public class TestServlet extends DapTestCommon
                     {
                         for(int i = 0;i < 2;i++) {
                             printer.printvalue('T', 0, i);
-                            printer.format("\n");
+                            printer.format("%n");
                         }
                         printer.printchecksum();
                     }
@@ -653,7 +653,7 @@ public class TestServlet extends DapTestCommon
                                 printer.printvalue('S', 4, i);
                                 printer.format(" ");
                                 printer.printvalue('S', 4);
-                                printer.format("\n");
+                                printer.format("%n");
                             }
                         }
                         printer.printchecksum();

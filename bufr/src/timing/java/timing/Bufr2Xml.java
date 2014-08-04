@@ -111,7 +111,7 @@ public class Bufr2Xml {
   int scan(String filename) throws IOException {
     long start = System.nanoTime();
     try (RandomAccessFile raf = new RandomAccessFile(filename, "r")) {
-      out.format("\nOpen %s size = %d Kb \n", raf.getLocation(), raf.length() / 1000);
+      out.format("\nOpen %s size = %d Kb %n", raf.getLocation(), raf.length() / 1000);
 
       MessageScanner scan = new MessageScanner(raf);
       int count = 0;
@@ -146,7 +146,7 @@ public class Bufr2Xml {
 
     long took = (System.nanoTime() - start);
     double rate = (took > 0) ? ((double) (1000 * 1000) * count / took) : 0.0;
-    out.format("----nmsgs= %d bad=%d nobs = %d took %d msecs rate = %f msgs/msec\n", count, bad, scan.getTotalObs(), took / (1000 * 1000), rate);
+    out.format("----nmsgs= %d bad=%d nobs = %d took %d msecs rate = %f msgs/msec%n", count, bad, scan.getTotalObs(), took / (1000 * 1000), rate);
     return scan.getTotalObs();
   }
 

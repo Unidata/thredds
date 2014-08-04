@@ -279,12 +279,12 @@ public class FeatureScan {
     public void toString(Formatter f, boolean showInfo) {
       f.format("%s%n %s%n map = '%s'%n %s%n %s%n", getName(), getFileType(), getCoordMap(), getFeatureType(), getFeatureImpl());
       if (showInfo && info != null) {
-        f.format("\n%s", info);
+        f.format("%n%s", info);
       }
       if (problem != null) {
         ByteArrayOutputStream bout = new ByteArrayOutputStream(10000);
         problem.printStackTrace(new PrintStream(bout));
-        f.format("\n%s", bout.toString());
+        f.format("%n%s", bout.toString());
       }
     }
 
@@ -296,21 +296,15 @@ public class FeatureScan {
 
     public String runClassifier() {
       Formatter ff = new Formatter();
-      NetcdfDataset ds = null;
       String type = null;
-      try {
-        ds = NetcdfDataset.openDataset(f.getPath());
+      try (NetcdfDataset ds = NetcdfDataset.openDataset(f.getPath())) {
         type = CoverageCSFactory.describe(ff, ds);
 
       } catch (IOException e) {
         ByteArrayOutputStream bout = new ByteArrayOutputStream(10000);
         problem.printStackTrace(new PrintStream(bout));
-        ff.format("\n%s", bout.toString());
+        ff.format("%n%s", bout.toString());
 
-      } finally {
-        if (ds != null)
-          try { ds.close(); }
-          catch (IOException e) {}
       }
       ff.format("CoverageCS.Type = %s", type);
       return ff.toString();

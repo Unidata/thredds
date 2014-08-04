@@ -41,7 +41,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Set;
 
 import javax.xml.stream.XMLOutputFactory;
 import javax.xml.stream.XMLStreamException;
@@ -495,25 +494,18 @@ class XMLPointDataWriter implements PointDataWriter {
 		//httpHeaders.setContentType(MediaType.APPLICATION_XML);
 	}
 
-	private void writeDataTag(XMLStreamWriter writer,
-			Map<String, String> attributes, String content)
-					throws XMLStreamException {
+	private void writeDataTag(XMLStreamWriter writer, Map<String, String> attributes, String content) throws XMLStreamException {
 
 		writer.writeStartElement("data");
-		Set<String> attNames = attributes.keySet();
-
-		Iterator<String> it = attNames.iterator();
-		while (it.hasNext()) {
-			String attName = it.next();
-			writer.writeAttribute(attName, attributes.get(attName));
-		}
+    for (Map.Entry<String, String> entry : attributes.entrySet()) {
+      writer.writeAttribute(entry.getKey(), entry.getValue());
+    }
 
 		writer.writeCharacters(content);
 		writer.writeEndElement();
 	}
 
-	private void writeCoordinates(XMLStreamWriter writer, Double lat, Double lon)
-			throws XMLStreamException {
+	private void writeCoordinates(XMLStreamWriter writer, Double lat, Double lon) throws XMLStreamException {
 
 		Map<String, String> attributes = new HashMap<>();
 		// tag data for lat
@@ -526,7 +518,6 @@ class XMLPointDataWriter implements PointDataWriter {
 		attributes.put("units", CDM.LON_UNITS);
 		writeDataTag(writer, attributes, lon.toString());
 		attributes.clear();
-
 	}
 
 }

@@ -69,7 +69,7 @@ public final class Grib1SectionProductDefinition {
     int length = GribNumbers.uint3(raf);
     rawData = new byte[length];
     raf.skipBytes(-3);
-    raf.read(rawData);
+    raf.readFully(rawData);
   }
 
   /**
@@ -321,6 +321,14 @@ public final class Grib1SectionProductDefinition {
     return ptime;
   }
 
+  private String getCalendarPeriodAsString() {
+    try {
+      return GribUtils.getCalendarPeriod(getTimeUnit()).toString();
+    } catch (UnsupportedOperationException e) {
+      return "Unknown Time Unit";
+    }
+  }
+
   public void showPds(Grib1Customizer cust, Formatter f) {
 
     f.format("            Originating Center : (%d) %s%n", getCenter(), CommonCodeTable.getCenterName(getCenter(), 1));
@@ -341,7 +349,7 @@ public final class Grib1SectionProductDefinition {
     f.format("       Generating Process Type : (%d) %s%n", getGenProcess(), cust.getGeneratingProcessName(getGenProcess()));
 
     f.format("                Reference Time : %s%n", getReferenceDate());
-    f.format("                    Time Units : (%d) %s%n", getTimeUnit(), GribUtils.getCalendarPeriod(getTimeUnit()));
+    f.format("                    Time Units : (%d) %s%n", getTimeUnit(), getCalendarPeriodAsString());
     Grib1ParamTime ptime = getParamTime(cust);
     f.format("          Time Range Indicator : (%d) %s%n", getTimeRangeIndicator(), ptime.getTimeTypeName());
     f.format("                   Time 1 (P1) : %d%n", getTimeValue1());
@@ -390,14 +398,12 @@ public final class Grib1SectionProductDefinition {
   public boolean isEnsemble() {
     switch (getCenter()) {
       case 7:
-        if ((rawData.length >= 43) && (getOctet(41) == 1))
-          return true;
+        return ((rawData.length >= 43) && (getOctet(41) == 1));
 
       case 98:
-        if ((rawData.length >= 51) &&
+        return ((rawData.length >= 51) &&
             (getOctet(41) == 1 || getOctet(41) == 30) &&
-            (getOctet(43) == 10 || getOctet(43) == 11))
-          return true;
+            (getOctet(43) == 10 || getOctet(43) == 11));
     }
     return false;
   }

@@ -250,12 +250,12 @@ public class MessageDispatchDDS {
     //  if (mtype.indexer != null) mtype.indexer.close();
 
     // report out
-    if (out != null) out.format("\n===============================================\n");
+    if (out != null) out.format("%n===============================================%n");
 
     int avg_msg = (total_msgs == 0) ? 0 : (int) (total_bytes / total_msgs);
     int avg_obs = (total_msgs == 0) ? 0 : (total_obs / total_msgs);
     if (out != null) {
-      out.format("total_msgs=%d total_obs=%d total_bytes=%d avg_msg_size=%d avg_obs/msg=%d \n",
+      out.format("total_msgs=%d total_obs=%d total_bytes=%d avg_msg_size=%d avg_obs/msg=%d %n",
               total_msgs, total_obs, total_bytes, avg_msg, avg_obs);
       out.format("matched=%d types=%d bad=%d badTypes=%d badBytes=%d ignored=%d failWrite=%d %n",
               match, typeMap.size(), badCount, badHashSet.size(), badBytes, ignored, failWrite);
@@ -269,7 +269,7 @@ public class MessageDispatchDDS {
         Collections.sort(mtypes, new MessTypeSorter());
         for (MessType mtype : mtypes) {
           if (mtype.proto == null) {
-            if (out != null) out.format(" MessType %s count=%d fileout= %s\n", mtype.name, mtype.count, mtype.fileout);
+            if (out != null) out.format(" MessType %s count=%d fileout= %s%n", mtype.name, mtype.count, mtype.fileout);
             cfg.format("Ox%x, %s, %s, %s, %5d, %8d, %5f %n",
                     mtype.hash, mtype.fileout, mtype.name, mtype.index,
                     mtype.count, mtype.countObs, mtype.countBytes / 1000);
@@ -277,14 +277,14 @@ public class MessageDispatchDDS {
           }
           Message m = mtype.proto;
           boolean hasBadMessages = badHashSet.contains(m.hashCode()); // did we find any messages that fail bit count ??
-          if (out != null) out.format(" MessType %s count=%d fileout= %s\n", mtype.name, mtype.count, mtype.fileout);
+          if (out != null) out.format(" MessType %s count=%d fileout= %s%n", mtype.name, mtype.count, mtype.fileout);
           cfg.format("Ox%x, %s, %s, %s, %5d, %8d, %5f, %5s, %5s, %d, %s, %s, %s, %s%n",
                   mtype.hash, mtype.fileout, mtype.name, mtype.index,
                   mtype.count, mtype.countObs, mtype.countBytes / 1000,
                   m.isTablesComplete(), !hasBadMessages, mtype.nbad,
                   m.getLookup().getCenterNo(), m.getLookup().getTableName(), m.is.getBufrEdition(), m.getLookup().getCategoryNo());
         }
-        if (out != null) out.format("\n");
+        if (out != null) out.format("%n");
 
       } catch (IOException ioe) {
         logger.error("MessageDispatchDDS.exit", ioe);

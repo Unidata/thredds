@@ -305,18 +305,20 @@ public class UFiosp extends AbstractIOServiceProvider {
     while (ii.hasNext())
       ii.setFloatNext(MISSING_FLOAT);
 
-    // now set the  coordinate variables from the Cinrad2Record radial
-    long last_msecs = Integer.MIN_VALUE;
     int nscans = groups.size();
     try {
       for (int scan = 0; scan < nscans; scan++) {
         List<Ray> scanGroup = groups.get(scan);
         int nradials = scanGroup.size();
 
-        Ray first = null;
         int radial = 0;
+        boolean needFirst = true;
         for (Ray r : scanGroup) {
-          if (first == null) first = r;
+          if (needFirst && r != null)
+          {
+              ngatesIter.setIntNext(r.getGateCount(abbrev));
+              needFirst = false;
+          }
 
           // int radial = r.uf_header2.rayNumber ;
           // if(scan == 0) System.out.println("AZI " + r.getAzimuth());
@@ -324,12 +326,9 @@ public class UFiosp extends AbstractIOServiceProvider {
           elevData.setFloat(elevIndex.set(scan, radial), r.getElevation());
           aziData.setFloat(aziIndex.set(scan, radial), r.getAzimuth());
           radial++;
-          //if (r.data_msecs < last_msecs) logger.warn("makeCoordinateData time out of order "+r.data_msecs);
-          last_msecs = r.data_msecs;
         }
 
         nradialsIter.setIntNext(nradials);
-        ngatesIter.setIntNext(first.getGateCount(abbrev));
       }
     } catch (java.lang.ArrayIndexOutOfBoundsException ae) {
 

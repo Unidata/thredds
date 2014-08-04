@@ -85,7 +85,7 @@ public class Grib2CollectionBuilderFromIndex extends GribCollectionBuilderFromIn
   }
 
   protected GribTables makeCustomizer() {
-    this.cust = Grib2Customizer.factory(gc.center, gc.subcenter, gc.master, gc.local);
+    this.cust = Grib2Customizer.factory(gc.center, gc.subcenter, gc.master, gc.local, gc.getGenProcessId());
     return this.cust;
   }
 

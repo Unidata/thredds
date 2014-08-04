@@ -195,7 +195,7 @@ map_proj =  1: Lambert Conformal
 
       Variable glat = ds.findVariable("GLAT");
       if (glat == null) {
-        parseInfo.format("Projection type 203 - expected GLAT variable not found\n");
+        parseInfo.format("Projection type 203 - expected GLAT variable not found%n");
       } else {
         glat.addAttribute(new Attribute(_Coordinate.AxisType, AxisType.Lat.toString()));
         if (gridE) glat.addAttribute(new Attribute(_Coordinate.Stagger, CDM.ARAKAWA_E));
@@ -206,7 +206,7 @@ map_proj =  1: Lambert Conformal
 
       Variable glon = ds.findVariable("GLON");
       if (glon == null) {
-        parseInfo.format("Projection type 203 - expected GLON variable not found\n");
+        parseInfo.format("Projection type 203 - expected GLON variable not found%n");
       } else {
         glon.addAttribute(new Attribute(_Coordinate.AxisType, AxisType.Lon.toString()));
         if (gridE) glon.addAttribute(new Attribute(_Coordinate.Stagger, CDM.ARAKAWA_E));
@@ -296,7 +296,7 @@ map_proj =  1: Lambert Conformal
           }
           break;
         default:
-          parseInfo.format("ERROR: unknown projection type = %s\n", projType);
+          parseInfo.format("ERROR: unknown projection type = %s%n", projType);
           break;
       }
 
@@ -580,7 +580,7 @@ map_proj =  1: Lambert Conformal
           values.set(count++, (double) d.getTime() / 1000);
 
         } catch (java.text.ParseException e) {
-          parseInfo.format("ERROR: cant parse Time string = <%s> err= %s\n", dateS, e.getMessage());
+          parseInfo.format("ERROR: cant parse Time string = <%s> err= %s%n", dateS, e.getMessage());
 
           // one more try
           String startAtt = ds.findAttValueIgnoreCase(null, "START_DATE", null);
@@ -589,7 +589,7 @@ map_proj =  1: Lambert Conformal
               Date d = dateFormat.parse(startAtt);
               values.set(0, (double) d.getTime() / 1000);
             } catch (java.text.ParseException e2) {
-              parseInfo.format("ERROR: cant parse global attribute START_DATE = <%s> err=%s\n", startAtt, e2.getMessage());
+              parseInfo.format("ERROR: cant parse global attribute START_DATE = <%s> err=%s%n", startAtt, e2.getMessage());
             }
           }
         }
@@ -602,7 +602,7 @@ map_proj =  1: Lambert Conformal
           Date d = dateFormat.parse(dateS);
           values.set(count++, (double) d.getTime() / 1000);
         } catch (java.text.ParseException e) {
-          parseInfo.format("ERROR: cant parse Time string = %s\n", dateS);
+          parseInfo.format("ERROR: cant parse Time string = %s%n", dateS);
         }
       }
 
@@ -691,7 +691,7 @@ map_proj =  1: Lambert Conformal
           VerticalCT vct = makeWRFEtaVerticalCoordinateTransform(ncDataset, cs);
           if (vct != null)
             cs.addCoordinateTransform(vct);
-          parseInfo.format("***Added WRFEta verticalCoordinateTransform to %s\n", cs.getName());
+          parseInfo.format("***Added WRFEta verticalCoordinateTransform to %s%n", cs.getName());
         }
       }
     }

@@ -56,28 +56,30 @@ import java.util.List;
 @Immutable
 public class Grib2Customizer implements ucar.nc2.grib.GribTables, TimeUnitConverter {
   static private final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(Grib2Pds.class);
-  static private Grib2Customizer wmoTables, ncepTables, ndfdTables, kmaTables, fslTables, fslTables2;
+  static private Grib2Customizer wmoTables, ncepTables, ndfdTables, kmaTables, fslTables, fslTables2;  // major lame
 
-  static public Grib2Customizer factory(Grib2Record gr) {
+  static public Grib2Customizer factory(Grib2Record gr) throws IOException {
     Grib2SectionIdentification ids = gr.getId();
-    return factory(ids.getCenter_id(), ids.getSubcenter_id(), ids.getMaster_table_version(), ids.getLocal_table_version());
+    Grib2SectionProductDefinition pdss = gr.getPDSsection();
+    Grib2Pds pds = pdss.getPDS();
+    return factory(ids.getCenter_id(), ids.getSubcenter_id(), ids.getMaster_table_version(), ids.getLocal_table_version(), pds.getGenProcessId());
   }
 
-  static public Grib2Customizer factory(int center, int subCenter, int masterVersion, int localVersion) {
+  static public Grib2Customizer factory(int center, int subCenter, int masterVersion, int localVersion, int genProcessId) {
     /* if ((center == 7) && (masterVersion == 2)&& (localVersion == 1)) { // FAKE
       if (dssTables == null ) dssTables = new DssLocalTables(center, subCenter, masterVersion, localVersion);
       return dssTables;
     } else */
 
     if ((center == 7) || (center == 9) || (center == 54)) { // canadian met
-        if (ncepTables == null ) ncepTables = new NcepLocalTables(center, subCenter, masterVersion, localVersion);
+        if (ncepTables == null ) ncepTables = new NcepLocalTables(center, subCenter, masterVersion, localVersion, genProcessId);
         return ncepTables;
 
     } else if (center == 59 && localVersion == 0) { // FSL-2
-        return FslLocalTables.localFactory(center, subCenter, masterVersion, localVersion);
+        return FslLocalTables.localFactory(subCenter, masterVersion, localVersion, genProcessId);
 
     } else if (center == 59) { // FSL
-        if (fslTables == null ) fslTables = FslLocalTables.localFactory(center, subCenter, masterVersion, localVersion);
+        if (fslTables == null ) fslTables = FslLocalTables.localFactory(subCenter, masterVersion, localVersion, genProcessId);
         return fslTables;
 
     } else if ((center == 8) && ((subCenter == 0) || (subCenter == -9999))){ // NDFD
@@ -96,27 +98,29 @@ public class Grib2Customizer implements ucar.nc2.grib.GribTables, TimeUnitConver
 
   static public class GribTableId {
     public final String name;
-    public final int center, subCenter, masterVersion, localVersion;
+    public final int center, subCenter, masterVersion, localVersion, genProcessId;
 
-    GribTableId(String name, int center, int subCenter, int masterVersion, int localVersion) {
+    GribTableId(String name, int center, int subCenter, int masterVersion, int localVersion, int genProcessId) {
       this.name = name;
       this.center = center;
       this.subCenter = subCenter;
       this.masterVersion = masterVersion;
       this.localVersion = localVersion;
+      this.genProcessId = genProcessId;
     }
   }
 
   // debugging
   static public List<GribTableId> getTableIds() {
     List<GribTableId> result = new ArrayList<>();
-    result.add(new GribTableId("WMO",0,-1,-1,-1));
-    result.add(new GribTableId("NCEP",7,-1,-1,-1));
-    result.add(new GribTableId("NDFD",8,0,-1,-1));
-    result.add(new GribTableId("KMA",40,-1,-1,-1));
+    result.add(new GribTableId("WMO",0,-1,-1,-1,-1));
+    result.add(new GribTableId("NCEP",7,-1,-1,-1,-1));
+    result.add(new GribTableId("NDFD",8,0,-1,-1,-1));
+    result.add(new GribTableId("KMA",40,-1,-1,-1,-1));
     // result.add(new GribTableId("DSS",7,-1,2,1)); // ??
     // result.add(new GribTableId("FSL2",59,-1,-1,0)); // fake
-    result.add(new GribTableId("FSL",59,-1,-1,-1));
+    result.add(new GribTableId("GSD_HRRR",59,0,-1,-1, 125));
+    result.add(new GribTableId("GSD_FIM",59, 1,-1,-1, 116));
     return result;
   }
 
@@ -169,8 +173,8 @@ public class Grib2Customizer implements ucar.nc2.grib.GribTables, TimeUnitConver
   }
 
   // debugging
-  public List getParameters() {
-    List allParams = new ArrayList(3000);
+  public List<GribTables.Parameter> getParameters() {
+    List<GribTables.Parameter> allParams = new ArrayList<>(3000);
     try {
       WmoCodeTable.WmoTables wmo = WmoCodeTable.getWmoStandard();
       for (String key : wmo.map.keySet()) {
@@ -185,8 +189,11 @@ public class Grib2Customizer implements ucar.nc2.grib.GribTables, TimeUnitConver
     return allParams;
   }
 
+  // debugging
   public void lookForProblems(Formatter f) {
   }
+
+  ////////////////////////////////////////////////////////////////////////////////////////////
 
   public CalendarDate getForecastDate(Grib2Record gr) {
     Grib2Pds pds = gr.getPDS();
@@ -460,7 +467,7 @@ Code Table Code table 4.7 - Derived forecast (4.7)
   }
 
   /////////////////////////////////////////////
-  private TimeUnitConverter timeUnitConverter;
+  private TimeUnitConverter timeUnitConverter;  // LOOK not really immutable
 
   public void setTimeUnitConverter(TimeUnitConverter timeUnitConverter) {
     this.timeUnitConverter = timeUnitConverter;
@@ -490,7 +497,7 @@ Code Table Code table 4.7 - Derived forecast (4.7)
   }
 
   public static void main(String[] args) {
-    Grib2Customizer cust = factory(0, 0, 0, 0);
+    Grib2Customizer cust = factory(0, 0, 0, 0, 0);
     String c = cust.getCategory(0, 14);
     System.out.printf("%s%n", c);
   }

@@ -104,7 +104,7 @@ public class Grib2RecordScanner {
       if (sizeHeader > 100) sizeHeader = 100;   // maximum 100 bytes; more is likely to be garbage
       header = new byte[sizeHeader];
       raf.seek(startPos);
-      raf.read(header);
+      raf.readFully(header);
       raf.seek(stop);
     }
     if (debug) System.out.println(" more "+more+" at "+stop+" header at "+ lastPos);

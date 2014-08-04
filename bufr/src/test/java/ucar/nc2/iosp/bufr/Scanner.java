@@ -148,10 +148,10 @@ public class Scanner {
 
         if (mode >= 0) {
           long startPos = m.is.getStartPos();
-          out.format(" msg= %d time=%s starts=%d len=%d end=%d dataEnd=%d hash=[0x%x]\n",
+          out.format(" msg= %d time=%s starts=%d len=%d end=%d dataEnd=%d hash=[0x%x]%n",
                   count, m.getReferenceTime(), startPos, m.is.getBufrLength(), (startPos + m.is.getBufrLength()),
                   (m.dataSection.getDataPos() + m.dataSection.getDataLength()), m.hashCode());
-          out.format("  ndatasets=%d isCompressed=%s datatype=0x%x header=%s\n",
+          out.format("  ndatasets=%d isCompressed=%s datatype=0x%x header=%s%n",
                   m.getNumberDatasets(), m.dds.isCompressed(), m.dds.getDataType(), m.getHeader());
         }
 
@@ -166,7 +166,7 @@ public class Scanner {
 
       long took = (System.nanoTime() - start);
       double rate = (took > 0) ? ((double) (1000 * 1000) * count / took) : 0.0;
-      out.format(" nmsgs= %d nobs = %d took %d msecs rate = %f msgs/msec\n", count, scan.getTotalObs(), took / (1000 * 1000), rate);
+      out.format(" nmsgs= %d nobs = %d took %d msecs rate = %f msgs/msec%n", count, scan.getTotalObs(), took / (1000 * 1000), rate);
       return scan.getTotalObs();
     }
   }
@@ -176,7 +176,7 @@ public class Scanner {
   static void scanTimes(String filename) throws IOException {
     long start = System.nanoTime();
     try (RandomAccessFile raf = new RandomAccessFile(filename, "r")) {
-      out.format("\nOpen %s size = %d Kb \n", raf.getLocation(), raf.length() / 1000);
+      out.format("%nOpen %s size = %d Kb %n", raf.getLocation(), raf.length() / 1000);
 
       MessageScanner scan = new MessageScanner(raf);
       int count = 0;
@@ -185,7 +185,7 @@ public class Scanner {
         if (m == null) continue;
         //if (count == 0) new BufrDump2().dump(out, m);
 
-        out.format(" %s time=%s\n", m.getHeader(), m.getReferenceTime());
+        out.format(" %s time=%s%n", m.getHeader(), m.getReferenceTime());
         count++;
       }
     }
@@ -199,7 +199,7 @@ public class Scanner {
 
     //RandomAccessFile raf = new RandomAccessFile("C:\\data\\bufr\\edition3\\idd\\radiosonde\\SoundingVerticalRadiosonde4.bufr", "r");
     try (RandomAccessFile raf = new RandomAccessFile(filename, "r")) {
-      out.format("\n-----\nOpen %s size = %d Kb \n", raf.getLocation(), raf.length() / 1000);
+      out.format("%n-----%nOpen %s size = %d Kb %n", raf.getLocation(), raf.length() / 1000);
 
       MessageScanner scan = new MessageScanner(raf);
       int count = 0;
@@ -210,16 +210,16 @@ public class Scanner {
         List<String> desc = m.dds.getDescriptors();
         String key = mixedSet.get(desc);
         if (null == key) {
-          out.format(" new Message Type msg=%d <%s> ndesc=%d hashCode=%d\n", count, m.getHeader(), desc.size(), desc.hashCode());
+          out.format(" new Message Type msg=%d <%s> ndesc=%d hashCode=%d%n", count, m.getHeader(), desc.size(), desc.hashCode());
           m.getRootDataDescriptor();
           m.dump(out);
           mixedSet.put(desc, filename);
         } else if (!key.equals(filename)) {
-          out.format(" msg type from file= %s, hashcode=%d\n", key, desc.hashCode());
+          out.format(" msg type from file= %s, hashcode=%d%n", key, desc.hashCode());
         }
         count++;
       }
-      out.format("nmsgs= %d nobs = %d\n", count, scan.getTotalObs());
+      out.format("nmsgs= %d nobs = %d%n", count, scan.getTotalObs());
     }
   }
 
@@ -227,7 +227,7 @@ public class Scanner {
 
   static void scanMessageSizes(String filename, Formatter formatter) throws IOException {
     try (RandomAccessFile raf = new RandomAccessFile(filename, "r")) {
-      out.format("\n-----\nOpen %s size = %d Kb \n", raf.getLocation(), raf.length() / 1000);
+      out.format("%n-----%nOpen %s size = %d Kb %n", raf.getLocation(), raf.length() / 1000);
 
       MessageScanner scan = new MessageScanner(raf);
       int count = 0;
@@ -263,7 +263,7 @@ public class Scanner {
       } */
         count++;
       }
-      out.format("nmsgs= %d nobs = %d\n", count, scan.getTotalObs());
+      out.format("nmsgs= %d nobs = %d%n", count, scan.getTotalObs());
     }
   }
 
@@ -284,7 +284,7 @@ public class Scanner {
 
   static void scanMessageTypes(String filename) throws IOException {
     try (RandomAccessFile raf = new RandomAccessFile(filename, "r")) {
-      //out.format("\n-----\nOpen %s size = %d Kb \n", raf.getLocation(), raf.length() / 1000);
+      //out.format("%n-----%nOpen %s size = %d Kb %n", raf.getLocation(), raf.length() / 1000);
       file_size += raf.length();
 
       MessageScanner scan = new MessageScanner(raf);
@@ -325,7 +325,7 @@ public class Scanner {
         // map dds -> wmoheader
         Map<String, Counter> keys = typeMap.get(m);
         if (null == keys) {
-          //out.format("  new Descriptor Type msg %d ttaaii=%s hashCode=%d cat=%s\n",
+          //out.format("  new Descriptor Type msg %d ttaaii=%s hashCode=%d cat=%s%n",
           //        count, ttaaii, m.hashCode(), m.getCategory());
           //new BufrDump2().dump(out, m);
           keys = new HashMap<String, Counter>();
@@ -334,7 +334,7 @@ public class Scanner {
         }
         Counter c = keys.get(ttaaii);
         if (c == null) {
-          //out.format("  msg %d has different ttaaii = %s hashcode=%d cat=%s\n",
+          //out.format("  msg %d has different ttaaii = %s hashcode=%d cat=%s%n",
           //        count, ttaaii, m.hashCode(), m.getCategory());
           c = new Counter(ttaaii);
           keys.put(ttaaii, c);
@@ -349,7 +349,7 @@ public class Scanner {
           headerMap.put(ttaaii, mtypes);
           mtypes.add(m);
         } else if (!mtypes.contains(m)) {
-          //out.format(" Different desc for header %s hashCode=%d prev hashcode=%d\n", ttaaii, desc.hashCode(), hdesc.hashCode());
+          //out.format(" Different desc for header %s hashCode=%d prev hashcode=%d%n", ttaaii, desc.hashCode(), hdesc.hashCode());
           mtypes.add(m);
           total_different++;
         }
@@ -364,7 +364,7 @@ public class Scanner {
 
         count++;
       }
-      out.format(filename + " total_msgs= %d good=%d total_obs = %d\n", scan.getTotalMessages(), count, scan.getTotalObs());
+      out.format(filename + " total_msgs= %d good=%d total_obs = %d%n", scan.getTotalMessages(), count, scan.getTotalObs());
       total_msgs += scan.getTotalMessages();
       good_msgs += count;
       total_obs += scan.getTotalObs();
@@ -373,44 +373,44 @@ public class Scanner {
 
   static void showTypes(Formatter csv) throws IOException {
 
-    out.format("\n===============================================\n");
-    out.format("total_msgs=%d good_msgs=%d bad_msgs=%d incomplete_tables=%d bad_operation=%d total_obs=%d\n",
+    out.format("%n===============================================%n");
+    out.format("total_msgs=%d good_msgs=%d bad_msgs=%d incomplete_tables=%d bad_operation=%d total_obs=%d%n",
             total_msgs, good_msgs, bad_msgs, bad_tables, bad_operation, total_obs);
     int avg_msg = (int) (file_size / total_msgs);
     int avg_obs = (int) (total_obs / total_msgs);
-    out.format("total_bytes=%d avg_msg_size=%d avg_obs/msg=%d \n", file_size, avg_msg, avg_obs);
+    out.format("total_bytes=%d avg_msg_size=%d avg_obs/msg=%d %n", file_size, avg_msg, avg_obs);
 
     int good_dds = typeMap.keySet().size();
     int bad_dds = badMap.keySet().size();
     int total_wmo = headerMap.keySet().size();
-    out.format(" good_dds=%d good_msgs=%d\n",good_dds, good_msgs);
-    out.format(" incomplete_dds=%d incomplete_msgs=%d\n",bad_dds, bad_tables);
-    out.format(" wmoHeaders=%d bad_wmo=%d wmo_multipleDDS=%d\n", total_wmo, bad_wmo, total_different);
+    out.format(" good_dds=%d good_msgs=%d%n",good_dds, good_msgs);
+    out.format(" incomplete_dds=%d incomplete_msgs=%d%n",bad_dds, bad_tables);
+    out.format(" wmoHeaders=%d bad_wmo=%d wmo_multipleDDS=%d%n", total_wmo, bad_wmo, total_different);
 
-    out.format("\nIncomplete Tables\n");
+    out.format("%nIncomplete Tables%n");
     for (Message m : badMap.keySet()) {
       int[] nbad = badMap.get(m);
-      out.format(" nbad messages = %d\n", nbad[0]);
+      out.format(" nbad messages = %d%n", nbad[0]);
       m.dumpHeader(out);
       out.format(" missing keys= ");
       m.showMissingFields(out);
-      out.format("\n\n");
+      out.format("%n%n");
     }
-    out.format("\n");
+    out.format("%n");
 
     if (csv != null)
       csv.format("hash, header, nMess, nObs, complete, center, table, edition, category %n");
 
-    out.format("Map dds -> wmoHeaders\n");
+    out.format("Map dds -> wmoHeaders%n");
     for (Message m : typeMap.keySet()) {
       out.format(" [0x%x] ", m.hashCode());
       m.dumpHeaderShort(out);
-      //out.format("Message Type %d ndesc=%d cat = %s\n", m.hashCode(), m.dds.getDescriptors().size(), m.getCategory());
+      //out.format("Message Type %d ndesc=%d cat = %s%n", m.hashCode(), m.dds.getDescriptors().size(), m.getCategory());
       int totalm = 0, totalo = 0;
       Map<String, Counter> keys = typeMap.get(m);
       for (String key : keys.keySet()) {
         Counter cc = keys.get(key);
-        out.format("  %s count=%d\n", key, cc.count);
+        out.format("  %s count=%d%n", key, cc.count);
         totalm += cc.count;
         totalo += cc.countObs;
       }
@@ -422,7 +422,7 @@ public class Scanner {
 
     int nwmo = 0;
     int total_wmo_count = 0;
-    out.format("\nMap wmoHeaders -> dds (unique)\n");
+    out.format("%nMap wmoHeaders -> dds (unique)%n");
     Set<String> headerSet = headerMap.keySet();
     List<String> headers = new ArrayList<String>();
     headers.addAll(headerSet);
@@ -433,14 +433,14 @@ public class Scanner {
       Message m = msgs.get(0);
       Counter hc = headerCount.get( extractWMO(m.getHeader()));
       int count = (hc == null) ? 0 : hc.count;
-      out.format(" WMO %s (%d) cat= %s (%s), center = %s (%s) [0x%x]\n", wmo, count,
+      out.format(" WMO %s (%d) cat= %s (%s), center = %s (%s) [0x%x]%n", wmo, count,
               m.getLookup().getCategoryName(), m.getLookup().getCategoryNo(), m.getLookup().getCenterName(), m.getLookup().getCenterNo(), m.hashCode());
       total_wmo_count += count;
       nwmo++;
     }
     out.format("  nwmo=%d total_wmo_count=%d %n", nwmo, total_wmo_count);
 
-    out.format("\nMap wmoHeaders -> dds (multiple)\n");
+    out.format("%nMap wmoHeaders -> dds (multiple)%n");
     for (String wmo : headers) {
       List<Message> msgs = headerMap.get(wmo);
       if (msgs.size() <= 1) continue;
@@ -456,7 +456,7 @@ public class Scanner {
         Counter hc = headerCount.get(extractWMO(m.getHeader()));
         int count = (hc == null) ? 0 : hc.count;
         m.dumpHeader(out);
-        out.format(" hash=%d\n\n", m.hashCode());
+        out.format(" hash=%d%n%n", m.hashCode());
       }
     }
   }
@@ -483,7 +483,7 @@ public class Scanner {
       }
     }
 
-    out.format("***header= %s\n", header);
+    out.format("***header= %s%n", header);
     return null;
     /* int pos = header.indexOf('I');
     if (pos > 0)
@@ -499,7 +499,7 @@ public class Scanner {
   static String extractWMO(String header) {
     Matcher matcher = wmoPattern.matcher( header);
     if (!matcher.matches()) {
-      //out.format("***header failed= %s\n", header);
+      //out.format("***header failed= %s%n", header);
       return null;
     }
     return matcher.group(1);
@@ -513,7 +513,7 @@ public class Scanner {
     if (pos < 0)
       pos = Math.max(pos1, pos2);
     if (pos < 0) {
-      out.format("***header= %s\n", header);
+      out.format("***header= %s%n", header);
       return null;
     }
     header = header.substring(pos);
@@ -588,7 +588,7 @@ public class Scanner {
 
   static void scanMessageDDS(String filename) throws IOException {
     try (RandomAccessFile raf = new RandomAccessFile(filename, "r")) {
-      //out.format("\n-----\nOpen %s size = %d Kb \n", raf.getLocation(), raf.length() / 1000);
+      //out.format("%n-----%nOpen %s size = %d Kb %n", raf.getLocation(), raf.length() / 1000);
       file_size += raf.length();
 
       MessageScanner scan = new MessageScanner(raf);
@@ -636,7 +636,7 @@ public class Scanner {
 
         count++;
       }
-      out.format("total_msgs= %d good=%d total_obs = %d\n", scan.getTotalMessages(), count, scan.getTotalObs());
+      out.format("total_msgs= %d good=%d total_obs = %d%n", scan.getTotalMessages(), count, scan.getTotalObs());
       total_msgs += scan.getTotalMessages();
       good_msgs += count;
       total_obs += scan.getTotalObs();
@@ -687,28 +687,28 @@ public class Scanner {
 
   static void showDDS(Formatter messCsv, Formatter ddsCsv) throws IOException {
 
-    out.format("\n===============================================\n");
-    out.format("total_msgs=%d good_msgs=%d bad_msgs=%d incomplete_tables=%d bad_operation=%d total_obs=%d\n",
+    out.format("%n===============================================%n");
+    out.format("total_msgs=%d good_msgs=%d bad_msgs=%d incomplete_tables=%d bad_operation=%d total_obs=%d%n",
             total_msgs, good_msgs, bad_msgs, bad_tables, bad_operation, total_obs);
     int avg_msg = (int) (file_size / total_msgs);
     int avg_obs = (int) (total_obs / total_msgs);
-    out.format("total_bytes=%d avg_msg_size=%d avg_obs/msg=%d \n", file_size, avg_msg, avg_obs);
+    out.format("total_bytes=%d avg_msg_size=%d avg_obs/msg=%d %n", file_size, avg_msg, avg_obs);
 
     int good_dds = messMap.keySet().size();
     int bad_dds = badMap.keySet().size();
-    out.format(" good_dds=%d good_msgs=%d\n",good_dds, good_msgs);
-    out.format(" incomplete_dds=%d incomplete_msgs=%d\n", bad_dds, bad_tables);
+    out.format(" good_dds=%d good_msgs=%d%n",good_dds, good_msgs);
+    out.format(" incomplete_dds=%d incomplete_msgs=%d%n", bad_dds, bad_tables);
 
     List<Counter> cc = new ArrayList<Counter>(messMap.values());
     Collections.sort(cc);
 
-    out.format("Unique message DDS\n");
+    out.format("Unique message DDS%n");
     if (messCsv != null)
       messCsv.format("header, nMess, nObs, Kbytes, hash, center, table, edition, category %n");
     for (Counter c : cc) {
       c.m.dumpHeader(out);
       out.format(" %s [0x%x] ", c.s, c.m.hashCode());
-      //out.format("Message Type %d ndesc=%d cat = %s\n", m.hashCode(), m.dds.getDescriptors().size(), m.getCategory());
+      //out.format("Message Type %d ndesc=%d cat = %s%n", m.hashCode(), m.dds.getDescriptors().size(), m.getCategory());
       out.format(" Count msg=%d obs=%d bytes=%d %n%n", c.count, c.countObs, c.countBytes);
       if (messCsv != null) {
         messCsv.format("%s, %d, %d, %d, 0x%x, %s, %s, %s, %s %n",
@@ -717,14 +717,14 @@ public class Scanner {
       }
     }
 
-    List<Counter> ddsCollection = new ArrayList<Counter>(ddsMap.values());
+    List<Counter> ddsCollection = new ArrayList<>(ddsMap.values());
     Collections.sort(ddsCollection, new CompareDDS());
-    out.format("DataDescriptors\n");
+    out.format("DataDescriptors%n");
     for (Counter c : ddsCollection) {
       out.format(" %d %10s %s [0x%x] %n",  c.count, c.dkey.getFxyName(), c.s, c.m.hashCode());
     }
 
-    List<Short> descCollection = new ArrayList<Short>(descMap.keySet());
+    List<Short> descCollection = new ArrayList<>(descMap.keySet());
     Collections.sort(descCollection);
     out.format("%n%nRaw Descriptors%n");
     if (ddsCsv != null)

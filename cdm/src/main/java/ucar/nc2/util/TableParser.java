@@ -100,6 +100,7 @@ import java.net.URL;
 
  */
 public class TableParser {
+  static private final boolean debug = false;
 
   /**
    * Reads a URL or file in as a table.
@@ -185,7 +186,7 @@ public class TableParser {
       if (line == null) break;
       if (line.startsWith("#")) continue;
       if (line.trim().length() == 0) continue;
-      //System.out.printf("%s%n", line);
+      if (debug) System.out.printf("%s%n", line);
       Record r = Record.make(line, fields);
       if (r != null)
         records.add(r);
@@ -231,7 +232,13 @@ public class TableParser {
     }
 
     protected Object parse(String line, int start, int end) throws NumberFormatException {
-      String svalue = (end > line.length()) ? line.substring(start) : line.substring(start, end);
+      String svalue;
+      if (start >= line.length())
+        svalue = "";
+      else if (end >= line.length())
+        svalue = line.substring(start);
+      else
+        svalue = line.substring(start, end);
       //System.out.printf("  [%d,%d) = %s %n",start, end, svalue);
 
       if (type == String.class)

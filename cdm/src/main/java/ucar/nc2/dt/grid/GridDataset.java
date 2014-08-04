@@ -143,7 +143,7 @@ public class GridDataset implements ucar.nc2.dt.GridDataset, ucar.nc2.ft.Feature
     ds.enhance(enhance);
 
     // look for geoGrids
-    if (parseInfo != null) parseInfo.format("GridDataset look for GeoGrids\n");
+    if (parseInfo != null) parseInfo.format("GridDataset look for GeoGrids%n");
     List<Variable> vars = ds.getVariables();
     for (Variable var : vars) {
       VariableEnhanced varDS = (VariableEnhanced) var;
@@ -307,7 +307,7 @@ public class GridDataset implements ucar.nc2.dt.GridDataset, ucar.nc2.ft.Feature
     if (null == (gridset = gridsetHash.get(gcs.getName()))) {
       gridset = new Gridset(gcs);
       gridsetHash.put(gcs.getName(), gridset);
-      if (parseInfo != null) parseInfo.format(" -make new GridCoordSys= %s\n",gcs.getName());
+      if (parseInfo != null) parseInfo.format(" -make new GridCoordSys= %s%n",gcs.getName());
       gcs.makeVerticalTransform(this, parseInfo); // delayed until now LOOK why for each grid ??
     }
 
@@ -404,7 +404,7 @@ public class GridDataset implements ucar.nc2.dt.GridDataset, ucar.nc2.ft.Feature
 
   public void getDetailInfo(Formatter buff) {
     getInfo(buff);
-    buff.format("\n\n----------------------------------------------------\n");
+    buff.format("%n%n----------------------------------------------------%n");
     NetcdfDatasetInfo info = null;
     try {
       info = new NetcdfDatasetInfo( ds);
@@ -414,9 +414,9 @@ public class GridDataset implements ucar.nc2.dt.GridDataset, ucar.nc2.ft.Feature
     } finally {
       if (info != null) try { info.close(); } catch (IOException ee) {} // do nothing
     }
-    buff.format("\n\n----------------------------------------------------\n");
+    buff.format("%n%n----------------------------------------------------%n");
     buff.format("%s", ds.toString());
-    buff.format("\n\n----------------------------------------------------\n");
+    buff.format("%n%n----------------------------------------------------%n");
   }
 
   /**
@@ -441,12 +441,12 @@ public class GridDataset implements ucar.nc2.dt.GridDataset, ucar.nc2.ft.Feature
       buf.format("%n");
     }
 
-    buf.format("\nGeoReferencing Coordinate Axes\n");
-    buf.format("Name__________________________Units_______________Type______Description\n");
+    buf.format("%nGeoReferencing Coordinate Axes%n");
+    buf.format("Name__________________________Units_______________Type______Description%n");
     for (CoordinateAxis axis : ds.getCoordinateAxes()) {
       if (axis.getAxisType() == null) continue;
       axis.getInfo(buf);
-      buf.format("\n");
+      buf.format("%n");
     }
   }
 

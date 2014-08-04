@@ -33,9 +33,7 @@
 
 package thredds.server.ncss.view.gridaspoint;
 
-import java.io.IOException;
-import java.io.OutputStream;
-import java.io.PrintWriter;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -52,6 +50,7 @@ import thredds.server.ncss.util.NcssRequestUtils;
 import thredds.util.ContentType;
 import ucar.ma2.InvalidRangeException;
 import ucar.nc2.Attribute;
+import ucar.nc2.constants.CDM;
 import ucar.nc2.dataset.CoordinateAxis1D;
 import ucar.nc2.dt.GridCoordSystem;
 import ucar.nc2.dt.GridDataset;
@@ -68,15 +67,19 @@ class CSVPointDataWriter implements PointDataWriter  {
  		return new CSVPointDataWriter(os);
  	}
 
-	private PrintWriter printWriter;
+	private PrintStream printWriter;
 	private Map<String,List<String>> allVars;
 	private Map<String, GridAsPointDataset> gridAsPointDatasets = new HashMap<>(); // LOOK WTF ??
 	private boolean headersSet = false;
 	private HttpHeaders httpHeaders;
 
-	private CSVPointDataWriter(OutputStream os){
-		printWriter= new PrintWriter(os);
-	}
+	private CSVPointDataWriter(OutputStream os) {
+    try {
+      printWriter= new PrintStream(os, false, CDM.UTF8);
+    } catch (UnsupportedEncodingException e) {
+      log.error("CSVPointDataWriter", e);
+    }
+  }
 
 	public boolean header(Map<String,List<String>> groupedVars, GridDataset gridDataset, List<CalendarDate> wDates, List<Attribute> timeDimAtts, LatLonPoint point, Double vertCoord) {
 		allVars = groupedVars; 
@@ -230,22 +233,22 @@ class CSVPointDataWriter implements PointDataWriter  {
 		CoordinateAxis1D zAxis = coordSystem.getVerticalAxis();
 
 		if(zAxis != null)
-			sb.append("vertCoord[unit=\""+zAxis.getUnitsString() +"\"],");
+			sb.append("vertCoord[unit=\"").append(zAxis.getUnitsString()).append("\"],");
 
 		VerticalTransform vt = coordSystem.getVerticalTransform();
 		if(vt != null){
-			sb.append("vertCoord[unit=\""+vt.getUnitString() +"\"],");
+			sb.append("vertCoord[unit=\"").append(vt.getUnitString()).append("\"],");
 		}
 
 		Iterator<String> it = varGroup.iterator();
 		while(it.hasNext()){
 			GridDatatype grid = gridDataset.findGridDatatype(it.next());
 			sb.append(grid.getName());			
-			if( grid.getUnitsString()!=null ) sb.append("[unit=\"" + grid.getUnitsString() + "\"]");			
+			if( grid.getUnitsString()!=null ) sb.append("[unit=\"").append(grid.getUnitsString()).append("\"]");
 			if(it.hasNext()) sb.append(",");
 		}
 
-		printWriter.write(sb.toString());
+		printWriter.print(sb.toString());
 		printWriter.println();					
 	}
 
@@ -259,27 +262,31 @@ class CSVPointDataWriter implements PointDataWriter  {
 		try{
 			while (itVars.hasNext()) {
 				GridDatatype grid = gridDataset.findGridDatatype(itVars.next());
-				if (  gap.hasVert(grid, targetLevel) ) {
+				if ( gap.hasVert(grid, targetLevel) ) {
 					GridAsPointDataset.Point p = gap.readData(grid, null, targetLevel, point.getLatitude(), point.getLongitude());
 					if(contVars == 0){
-						//printWriter.write(Double.valueOf(p.lat).toString()+"," );
-						//printWriter.write(Double.valueOf(p.lon).toString()+"," );
-						printWriter.write(Double.valueOf(point.getLatitude() ).toString()+"," );
-						printWriter.write(Double.valueOf(point.getLongitude()).toString()+"," );						
-						printWriter.write(Double.valueOf(p.z).toString()+"," );
-					}							
-					printWriter.write(Double.valueOf(p.dataValue).toString());
-					if(itVars.hasNext()) printWriter.write(",");
+						printWriter.print(point.getLatitude());
+						printWriter.print(",");
+						printWriter.print(point.getLongitude());
+            printWriter.print("," );
+						printWriter.print(p.z);
+            printWriter.print(",");
+					}
+					printWriter.print(p.dataValue);
+					if(itVars.hasNext()) printWriter.print(",");
 
 				} else {
 					// write missingvalues!!!
 					if(contVars==0){
-						printWriter.write( point.getLatitude()+"," );
-						printWriter.write( point.getLongitude() +"," );
-						printWriter.write( targetLevel +"," );
+						printWriter.print( point.getLatitude());
+            printWriter.print(",");
+						printWriter.print( point.getLongitude());
+            printWriter.print(",");
+						printWriter.print( targetLevel);
+            printWriter.print(",");
 					}
-					printWriter.write( Double.valueOf(gap.getMissingValue(grid)).toString() );
-					if(itVars.hasNext()) printWriter.write(",");
+					printWriter.print(gap.getMissingValue(grid));
+					if(itVars.hasNext()) printWriter.print(",");
 				}					
 				contVars++;
 			}
@@ -295,8 +302,9 @@ class CSVPointDataWriter implements PointDataWriter  {
 	private boolean write(List<String> vars, GridDataset gridDataset, GridAsPointDataset gap, CalendarDate date, LatLonPoint point,	Double ensCoord,Double targetLevel, String zUnits) throws InvalidRangeException {
 
 		boolean allDone = false;
-		printWriter.write(date.toString()+",");
-		int contVars= 0;					 
+		printWriter.print(date.toString());
+    printWriter.print(",");
+		int contVars= 0;
 		Iterator<String> itVars = vars.iterator();
 		try{
 			while (itVars.hasNext()) {
@@ -307,31 +315,38 @@ class CSVPointDataWriter implements PointDataWriter  {
 				if ( gap.hasTime(grid, date) && gap.hasVert(grid, targetLevel) ) {
 					GridAsPointDataset.Point p = gap.readData(grid, date, ensCoord, targetLevel, point.getLatitude(), point.getLongitude());
 					if(contVars == 0){							
-						//printWriter.write(Double.valueOf(p.lat).toString()+"," );
-						//printWriter.write(Double.valueOf(p.lon).toString()+"," );
-						printWriter.write( point.getLatitude()+"," );
-						printWriter.write( point.getLongitude() +"," );						
-						if( ensCoord >= 0 )
-							printWriter.write(Double.valueOf(p.ens).toString()+"," );
+						printWriter.print(point.getLatitude());
+            printWriter.print("," );
+						printWriter.print(point.getLongitude());
+            printWriter.print("," );
+						if( ensCoord >= 0 ) {
+              printWriter.print(p.ens);
+              printWriter.print(",");
+            }
 
-						printWriter.write(Double.valueOf(p.z).toString()+"," );
+						printWriter.print(p.z);
+            printWriter.print("," );
 
-						if(actualLevel != -9999.9)//Print the actual level
-							printWriter.write(Double.valueOf(actualLevel).toString()+"," );
+						if(actualLevel != -9999.9) {//Print the actual level LOOK WTF ??
+              printWriter.print(actualLevel);
+              printWriter.print(",");
+            }
 
 					}							
-					printWriter.write(Double.valueOf(p.dataValue).toString());
-					if(itVars.hasNext()) printWriter.write(",");
+					printWriter.print(p.dataValue);
+					if (itVars.hasNext()) printWriter.print(",");
 
 				} else {
 					// write missingvalues!!!
 					if(contVars==0){
-						printWriter.write( point.getLatitude()+"," );
-						printWriter.write( point.getLongitude() +"," );
-						printWriter.write( targetLevel +"," );
+						printWriter.print(point.getLatitude());
+            printWriter.print(",");
+						printWriter.print(point.getLongitude());
+            printWriter.print(",");
+						printWriter.print(targetLevel);
 					}
-					printWriter.write( Double.valueOf(gap.getMissingValue(grid)).toString() );
-					if(itVars.hasNext()) printWriter.write(",");
+					printWriter.print(gap.getMissingValue(grid));
+					if (itVars.hasNext()) printWriter.print(",");
 				}					
 				contVars++;
 
@@ -359,13 +374,13 @@ class CSVPointDataWriter implements PointDataWriter  {
 				//if (gap.hasTime(grid, date) ) {
 				GridAsPointDataset.Point p = gap.readData(grid, null, point.getLatitude(), point.getLongitude());
 				if(contVars == 0){
-					//printWriter.write(Double.valueOf(p.lat).toString()+"," );
-					//printWriter.write(Double.valueOf(p.lon).toString()+"," );
-					printWriter.write( point.getLatitude()+"," );
-					printWriter.write( point.getLongitude() +"," );					
-				}							
-				printWriter.write(Double.valueOf(p.dataValue).toString());
-				if(itVars.hasNext()) printWriter.write(",");
+					printWriter.print(point.getLatitude());
+          printWriter.print(",");
+					printWriter.print(point.getLongitude());
+          printWriter.print("," );
+				}
+				printWriter.print(p.dataValue);
+				if (itVars.hasNext()) printWriter.print(",");
 
 				//} else {
 				// write missingvalues!!!
@@ -390,8 +405,9 @@ class CSVPointDataWriter implements PointDataWriter  {
 	private boolean write(List<String> vars, GridDataset gridDataset, GridAsPointDataset gap, CalendarDate date, LatLonPoint point, Double ensCoord) {
 
 		boolean allDone = false;
-		printWriter.write(date.toString()+",");
-		int contVars= 0;					 
+		printWriter.print(date.toString());
+    printWriter.print("," );
+		int contVars= 0;
 		Iterator<String> itVars = vars.iterator();
 		try{
 			while (itVars.hasNext()) {
@@ -399,24 +415,28 @@ class CSVPointDataWriter implements PointDataWriter  {
 				if (gap.hasTime(grid, date) ) {
 					GridAsPointDataset.Point p = gap.readData(grid, date, ensCoord, -1, point.getLatitude(), point.getLongitude());
 					if(contVars == 0){
-						//printWriter.write(Double.valueOf(p.lat).toString()+"," );
-						//printWriter.write(Double.valueOf(p.lon).toString()+"," );
-						printWriter.write( point.getLatitude()+"," );
-						printWriter.write( point.getLongitude() +"," );						
-						if(ensCoord >= 0)
-							printWriter.write(Double.valueOf(p.ens).toString()+"," );
+						printWriter.print( point.getLatitude());
+            printWriter.print("," );
+						printWriter.print( point.getLongitude());
+            printWriter.print("," );
+						if (ensCoord >= 0) {
+              printWriter.print(p.ens);
+              printWriter.print("," );
+            }
 					}							
-					printWriter.write(Double.valueOf(p.dataValue).toString());
-					if(itVars.hasNext()) printWriter.write(",");
+					printWriter.print(p.dataValue);
+					if(itVars.hasNext()) printWriter.print(",");
 
 				} else {
 					// write missingvalues!!!
-					if(contVars==0){
-						printWriter.write( point.getLatitude()+"," );
-						printWriter.write( point.getLongitude() +"," );
+					if (contVars==0){
+						printWriter.print(point.getLatitude());
+            printWriter.print("," );
+						printWriter.print(point.getLongitude());
+            printWriter.print("," );
 					}
-					printWriter.write( Double.valueOf(gap.getMissingValue(grid)).toString() );
-					if(itVars.hasNext()) printWriter.write(",");
+					printWriter.print(grid);
+					if(itVars.hasNext()) printWriter.print(",");
 				}					
 				contVars++;
 			}

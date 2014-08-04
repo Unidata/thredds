@@ -30,7 +30,7 @@ public class Grib2SectionIndicator {
   public Grib2SectionIndicator(RandomAccessFile raf) throws IOException {
     startPos = raf.getFilePointer();
     byte[] b = new byte[4];
-    raf.read(b);
+    raf.readFully(b);
     for (int i = 0; i < b.length; i++)
       if (b[i] != MAGIC[i])
         throw new IllegalArgumentException("Not a GRIB record");

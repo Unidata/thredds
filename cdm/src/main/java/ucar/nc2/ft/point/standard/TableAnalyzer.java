@@ -229,7 +229,7 @@ public class TableAnalyzer {
             break;
           }
         } catch (Exception ex) {
-          System.out.println("ERROR: Class " + c.getName() + " Exception invoking isMine method\n" + ex);
+          System.out.println("ERROR: Class " + c.getName() + " Exception invoking isMine method%n" + ex);
         }
       }
     }
@@ -265,7 +265,7 @@ public class TableAnalyzer {
 
     if (tc != null) {
       if (tc.getConvName() == null)
-        analyzer.userAdvice.format(" No 'Conventions' global attribute.\n");
+        analyzer.userAdvice.format(" No 'Conventions' global attribute.%n");
       else
         analyzer.userAdvice.format(" Conventions global attribute = %s %n", tc.getConvName());
 
@@ -273,11 +273,11 @@ public class TableAnalyzer {
       if (tc.getConvUsed() != null) {
         analyzer.setConventionUsed(tc.getConvUsed());
         if (!tc.getConvUsed().equals(tc.getConvName()))
-          analyzer.userAdvice.format(" TableConfigurer used = "+tc.getConvUsed()+".\n");
+          analyzer.userAdvice.format(" TableConfigurer used = "+tc.getConvUsed()+".%n");
       }
 
     } else {
-      analyzer.userAdvice.format(" No TableConfigurer found, using default analysis.\n");
+      analyzer.userAdvice.format(" No TableConfigurer found, using default analysis.%n");
 
     }
 
@@ -300,7 +300,7 @@ public class TableAnalyzer {
     this.ds = ds;
 
     if (tc == null)
-      userAdvice.format("Using default TableConfigurer.\n");
+      userAdvice.format("Using default TableConfigurer.%n");
   }
 
   public List<NestedTable> getFlatTables() {
@@ -570,27 +570,27 @@ public class TableAnalyzer {
   ////////////////////////////////////////////////////////////////////////////////////////////////
 
   /* public void showCoordSys(java.util.Formatter sf) {
-    sf.format("\nCoordinate Systems\n");
+    sf.format("%nCoordinate Systems%n");
     for (CoordinateSystem cs : ds.getCoordinateSystems()) {
-      sf.format(" %s\n", cs);
+      sf.format(" %s%n", cs);
     }
   }
 
   public void showCoordAxes(java.util.Formatter sf) {
-    sf.format("\nAxes\n");
+    sf.format("%nAxes%n");
     for (CoordinateAxis axis : ds.getCoordinateAxes()) {
-      sf.format(" %s %s\n", axis.getAxisType(), axis.getNameAndDimensions());
+      sf.format(" %s %s%n", axis.getAxisType(), axis.getNameAndDimensions());
     }
   } */
 
   /* public void showTables(java.util.Formatter sf) {
-    sf.format("\nTables\n");
+    sf.format("%nTables%n");
     for (NestedTable.Table t : tableSet)
-      sf.format(" %s\n", t);
+      sf.format(" %s%n", t);
 
-    sf.format("\nJoins\n");
+    sf.format("%nJoins%n");
     for (Join j : joins)
-      sf.format(" %s\n", j);
+      sf.format(" %s%n", j);
   } */
 
   public void showNestedTables(java.util.Formatter sf) {
@@ -604,15 +604,15 @@ public class TableAnalyzer {
   }
 
   public void getDetailInfo(java.util.Formatter sf) {
-    sf.format("-----------------------------------------------------\nTableAnalyzer on Dataset %s\n", ds.getLocation());
-    if (tc != null) sf.format(" TableAnalyser = %s\n", tc.getClass().getName());
+    sf.format("-----------------------------------------------------%nTableAnalyzer on Dataset %s%n", ds.getLocation());
+    if (tc != null) sf.format(" TableAnalyser = %s%n", tc.getClass().getName());
     showNestedTables(sf);
     String errlogS = errlog.toString();
     if (errlogS.length() > 0)
-      sf.format("\n Errlog=\n%s",errlogS);
+      sf.format("%n Errlog=%n%s",errlogS);
     String userAdviceS = userAdvice.toString();
     if (userAdviceS.length() > 0)
-      sf.format("\n userAdvice=\n%s\n",userAdviceS);
+      sf.format("%n userAdvice=%n%s%n",userAdviceS);
 
     try {
       writeConfigXML(sf);
@@ -741,7 +741,7 @@ public class TableAnalyzer {
     NetcdfDataset ncd = ucar.nc2.dataset.NetcdfDataset.openDataset(filename);
     TableAnalyzer csa = TableAnalyzer.factory(null, null, ncd);
     csa.getDetailInfo(new Formatter(System.out));
-    System.out.println("\n-----------------");
+    System.out.println("%n-----------------");
   }
 
   static public void main(String args[]) throws IOException {

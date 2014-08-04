@@ -518,7 +518,7 @@ public class ReadTdsLogs {
     public void show(Formatter out) {
       double mb = .001 * .001 * accumBytes;
       double secs = .001 * accumTime;
-      out.format(" %20s: %10d %10.3f %10.3f\n", name, nreqs, secs, mb);
+      out.format(" %20s: %10d %10.3f %10.3f%n", name, nreqs, secs, mb);
     }
   }
 

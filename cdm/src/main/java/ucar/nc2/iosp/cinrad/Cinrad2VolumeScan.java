@@ -445,7 +445,7 @@ public class Cinrad2VolumeScan {
     return dopplerGroups;
   }
 
-  private class GroupComparator implements Comparator {
+  private static class GroupComparator implements Comparator {
 
     public int compare(Object o1, Object o2) {
       List group1 = (List) o1;
@@ -539,7 +539,12 @@ public class Cinrad2VolumeScan {
   private RandomAccessFile uncompress(RandomAccessFile raf2, String ufilename, boolean debug) throws IOException {
     raf2.seek(0);
     byte[] header = new byte[Cinrad2Record.FILE_HEADER_SIZE];
-    raf2.read(header);
+    int bytesRead = raf2.read(header);
+    if (bytesRead != header.length)
+    {
+        throw new IOException("Error reading CINRAD header -- got " +
+                bytesRead + " rather than" + header.length);
+    }
     RandomAccessFile dout2 = new RandomAccessFile(ufilename, "rw");
     dout2.write(header);
 
@@ -627,9 +632,7 @@ public class Cinrad2VolumeScan {
     try (RandomAccessFile raf = new RandomAccessFile(ufilename, "r")) {
       raf.order(RandomAccessFile.LITTLE_ENDIAN); //.BIG_ENDIAN);
       raf.seek(0);
-      byte[] b = new byte[8];
-      raf.read(b);
-      String test = new String(b);
+      String test = raf.readString(8);
       if (test.equals(Cinrad2VolumeScan.ARCHIVE2) || test.equals
              (Cinrad2VolumeScan.AR2V0001)) {
         System.out.println("--Good header= " + test);
@@ -646,8 +649,7 @@ public class Cinrad2VolumeScan {
       while (!eof) {
 
         if (lookForHeader) {
-          raf.read(b);
-          test = new String(b);
+          test = raf.readString(8);
           if (test.equals(Cinrad2VolumeScan.ARCHIVE2) || test.equals(Cinrad2VolumeScan.AR2V0001)) {
             System.out.println("  found header= " + test);
             raf.skipBytes(16);
@@ -688,7 +690,7 @@ public class Cinrad2VolumeScan {
    * test
    */
   public static void main2(String[] args) throws IOException {
-    File testDir = new File("C:/data/bad/radar2/");
+    File testDir = new File("/share/testdata/radar/problem");
 
     File[] files = testDir.listFiles();
     for (int i = 0; i < files.length; i++) {

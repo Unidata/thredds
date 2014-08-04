@@ -50,7 +50,7 @@ public class ScannerPqact extends Scanner {
 
   static void extract(String filename) throws IOException {
     try (RandomAccessFile raf = new RandomAccessFile(filename, "r")) {
-      out.format("Open %s size = %d Kb \n", raf.getLocation(), raf.length() / 1000);
+      out.format("Open %s size = %d Kb %n", raf.getLocation(), raf.length() / 1000);
 
       MessageScanner scan = new MessageScanner(raf);
       while (scan.hasNext()) {
@@ -180,26 +180,26 @@ public class ScannerPqact extends Scanner {
 
   static void showTypes() throws IOException {
 
-    out.format("\n===============================================\n");
+    out.format("\n===============================================%n");
     out.format("total_msgs=%d good_msgs=%d bad_msgs=%d incomplete_tables=%d bad_operation=%d %n",
             total_msgs, good_msgs, bad_msgs, bad_tables, bad_operation);
     out.format(" nomatch=%d badmatch=%d %n", nomatch, badmatch);
 
     int avg_msg = (int) (file_size / total_msgs);
     int avg_obs = (int) (total_obs / total_msgs);
-    out.format("total_bytes=%d total_obs=%d avg_msg_size=%d avg_obs/msg=%d \n", file_size, total_obs, avg_msg, avg_obs);
-    out.format("\n");
+    out.format("total_bytes=%d total_obs=%d avg_msg_size=%d avg_obs/msg=%d %n", file_size, total_obs, avg_msg, avg_obs);
+    out.format("%n");
 
     Collections.sort(pqactList, new PqactSorter());
     for (Pqact pqact : pqactList) {
-      out.format("Pqact %s count=%d fileout= %s\n", pqact.pats, pqact.count, pqact.fileout);
+      out.format("Pqact %s count=%d fileout= %s%n", pqact.pats, pqact.count, pqact.fileout);
       if (pqact.first != null) {
         pqact.first.dumpHeader(out);
         //out.format("  Example file=%s\n", pqact.exampleFile);
       }
-      out.format("\n");
+      out.format("%n");
     }
-    out.format("\n");
+    out.format("%n");
   }
 
   static private void readPqactTable(String filename) throws IOException {
