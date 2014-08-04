@@ -2908,7 +2908,6 @@ class Nidsheader{
       */
     Sinfo read_dividlen( ByteBuffer buf, int offset  )
     {
-        int off = offset;
         byte[] b2 = new byte[2];
         byte[] b4 = new byte[4];
         short D_divider;
@@ -2925,10 +2924,8 @@ class Nidsheader{
         block_length  = getInt(b4, 4);
         buf.get(b2, 0, 2);
         number_layers  = (short)getInt(b2, 2);
-        off = off + 10;
 
         return new Sinfo ( D_divider, D_id, block_length, number_layers);
-
     }
 
     void read_SATab( ByteBuffer buf, int offset  )
@@ -2995,7 +2992,6 @@ class Nidsheader{
         mtime = getInt(b4, 4);
         buf.get(b4, 0, 4);
         java.util.Date volumnDate = getDate( mdate, mtime*1000);
-        String dstring = formatter.toDateTimeStringISO(volumnDate);
         //out.println( "product date is " + dstring);
         mlength = getInt(b4, 4);
         buf.get(b2, 0, 2);

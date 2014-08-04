@@ -32,6 +32,7 @@
  */
 package ucar.nc2.iosp.uf;
 
+import ucar.nc2.constants.CDM;
 import ucar.unidata.io.RandomAccessFile;
 import ucar.ma2.Range;
 import ucar.ma2.IndexIterator;
@@ -41,12 +42,10 @@ import java.util.*;
 import java.io.IOException;
 
 public class Ray {
-
     int raySize;
     long rayOffset;
     static final int UF_MANDATORY_HEADER2_LEN = 90;
     static final int UF_FIELD_HEADER2_LEN = 50;
-    static final boolean littleEndianData = true;
     boolean debug = false;
 
      /**   moment identifier */
@@ -91,7 +90,7 @@ public class Ray {
         for(int i = 0; i < numberOfFields; i++){
             bos.get(b2);
             //int type = getShort(b2, 0);
-            String type = new String(b2);
+            String type = new String(b2, CDM.utf8Charset);
             bos.get(b2);
             int offs = getShort(b2, 0);
             int position0 = bos.position();
@@ -100,7 +99,6 @@ public class Ray {
             UF_field_header2 field_header = new UF_field_header2(data);
             bos.position(position0);
             field_header_map.put(type, field_header);
-
         }
     }
 
@@ -148,7 +146,6 @@ public class Ray {
             return "ZDR";
         else
           return abbrev;
-
     }
 
    public String getDatatypeUnits(String abbrev) {
@@ -169,32 +166,26 @@ public class Ray {
 
         else
           return abbrev;
-
    }
 
     public short getDatatypeRangeFoldingThreshhold(String abbrev) {
         UF_field_header2 header = field_header_map.get(abbrev);
         return header.thresholdValue;
-
     }
 
     public float getDatatypeScaleFactor(String abbrev) {
         UF_field_header2 header = field_header_map.get(abbrev);
         return 1.0f/header.scaleFactor;
-
     }
 
     public float getDatatypeAddOffset(String abbrev) {
         return 0.0f;
-
-
     }
 
 
     public int getGateStart(String abbrev) {
         UF_field_header2 header = field_header_map.get(abbrev);
         return header.startRange;
-
     }
 
     public int getDataOffset(String abbrev) {
@@ -317,7 +308,7 @@ public class Ray {
 
         UF_mandatory_header2(byte[] data){
             // data is of length 90 bytes
-            textUF = new String(data, 0, 2);
+            textUF = new String(data, 0, 2, CDM.utf8Charset);
             if (debug){
                 System.out.println(textUF);
             }
@@ -330,8 +321,8 @@ public class Ray {
             rayNumber= getShort(data, 14);
             recordNumber1= getShort(data, 16);
             sweepNumber= getShort(data, 18);
-            radarName= new String(data, 20, 8) ;
-            siteName= new String(data, 28, 8);
+            radarName= new String(data, 20, 8, CDM.utf8Charset) ;
+            siteName= new String(data, 28, 8, CDM.utf8Charset);
             latitudeD= getShort(data, 36);
             latitudeM= getShort(data, 38);
             latitudeS= getShort(data, 40);
@@ -346,7 +337,7 @@ public class Ray {
             hour= getShort(data, 56);
             minute= getShort(data, 58);
             second= getShort(data, 60);
-            timeZone = new String(data, 62, 2);
+            timeZone = new String(data, 62, 2, CDM.utf8Charset);
             azimuth= getShort(data, 64);
             elevation= getShort(data, 66);
             sweepMode= getShort(data, 68);
@@ -355,7 +346,8 @@ public class Ray {
             year1 = getShort(data, 74);              // (generation data of UF format)
             month1 = getShort(data, 76);
             day1 = getShort(data, 78);
-            nameOfUFGeneratorProgram = new String(data, 80, 8); //  char[8]
+            nameOfUFGeneratorProgram = new String(data, 80, 8,
+                    CDM.utf8Charset); //  char[8]
             missing = getShort(data, 88);             // Value stored for deleted or missing data (0x8000)
 
         }
@@ -376,7 +368,7 @@ public class Ray {
         short     iFlag;
 
         UF_optional_header(byte[] data){
-            sProjectName = new String(data, 0, 8);
+            sProjectName = new String(data, 0, 8, CDM.utf8Charset);
             iBaselineAzimuth = getShort(data, 8);
             iBaselineelevation = getShort(data, 10);
             iVolumeScanHour = getShort(data, 12);
@@ -426,53 +418,15 @@ public class Ray {
             polarization = getShort(data, 20);
             waveLength = getShort(data, 22);
             sampleSize = getShort(data, 24);
-            typeOfData = new String(data, 26, 2);
+            typeOfData = new String(data, 26, 2, CDM.utf8Charset);
             thresholdValue = getShort(data, 28);
             scale = getShort(data, 30);
-            editCode = new String(data, 32, 2);
+            editCode = new String(data, 32, 2, CDM.utf8Charset);
             prt = getShort(data, 34);
             bits = getShort(data, 36);
         }
     }
 
-
-    class UF_fsi2{
-
-       //If velocity data:
-        short nyquistVelocity;
-       //2           SINT2 <spare>
-       //If DM data:
-        short radarConstant;
-        short noisePower;
-        short receiverGain;
-        short peakPower;
-        short antennaGain;
-        short pulseDuration; // (microseconds*64)
-
-        UF_fsi2(byte[] data){
-            if(data.length > 4){
-                radarConstant = getShort(data, 0);
-                noisePower = getShort(data, 2);
-                receiverGain = getShort(data, 24);
-                peakPower = getShort(data, 6);
-                antennaGain = getShort(data, 8);
-                pulseDuration = getShort(data, 10);
-
-            }
-            else {
-                nyquistVelocity = getShort(data, 0);
-            }
-        }
-
-
-    }
-
-    protected short getShort1(byte[] bytes, int offset) {
-        int ndx0 = offset + (littleEndianData ? 1 : 0);
-        int ndx1 = offset + (littleEndianData ? 0 : 1);
-        // careful that we only allow sign extension on the highest order byte
-        return (short)(bytes[ndx0] << 8 | (bytes[ndx1] & 0xff));
-    }
 
     protected short getShort(byte[] bytes, int offset) {
 
@@ -486,23 +440,6 @@ public class Ray {
             return (a & 0xff) + ((int)b << 8);
         } else {
             return ((int)a << 8) + (b & 0xff);
-        }
-    }
-    public static int bytesToInt(byte [] bytes, boolean swapBytes) {
-        byte a = bytes[0];
-        byte b = bytes[1];
-        byte c = bytes[2];
-        byte d = bytes[3];
-        if (swapBytes) {
-            return ((a & 0xff) ) +
-                ((b & 0xff) << 8 ) +
-                ((c & 0xff) << 16 ) +
-                ((d & 0xff) << 24);
-        } else {
-            return ((a & 0xff) << 24 ) +
-                ((b & 0xff) << 16 ) +
-                ((c & 0xff) << 8 ) +
-                ((d & 0xff) );
         }
     }
 
@@ -536,7 +473,6 @@ public class Ray {
         int dataCount = getGateCount( abbrev);
         byte[] data = new byte[dataCount*2];
         raf.readFully(data);
-        short[] tmp = byte2short(data, 2*dataCount);
 
         for (int i = gateRange.first(); i <= gateRange.last(); i += gateRange.stride()) {
             if (i >= dataCount)

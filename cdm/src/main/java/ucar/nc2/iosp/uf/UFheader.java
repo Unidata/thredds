@@ -47,7 +47,6 @@ import java.util.*;
  */
 public class UFheader {
   ucar.unidata.io.RandomAccessFile raf;
-  ucar.nc2.NetcdfFile ncfile;
   static final boolean littleEndianData = true;
   String dataFormat = "UNIVERSALFORMAT";  // temp setting
   Ray firstRay = null;
@@ -60,24 +59,18 @@ public class UFheader {
     try {
       raf.seek(0);
       raf.order(RandomAccessFile.BIG_ENDIAN);
-      byte[] b6 = new byte[6];
-      byte[] b4 = new byte[4];
 
-      raf.read(b6, 0, 6);
-      String ufStr = new String(b6, 4, 2);
+      String ufStr = raf.readString(6);
       if (!ufStr.equals("UF"))
         return false;
       //if ufStr is UF, then a further checking apply
       raf.seek(0);
-      raf.read(b4, 0, 4);
-      int rsize = bytesToInt(b4, false);
+      int rsize = raf.readInt();
 
       byte[] buffer = new byte[rsize];
       long offset = raf.getFilePointer();
       raf.read(buffer, 0, rsize);
-      raf.read(b4, 0, 4);
-
-      int endPoint = bytesToInt(b4, false);
+      int endPoint = raf.readInt();
       if (endPoint != rsize) {
         return false;
       }
