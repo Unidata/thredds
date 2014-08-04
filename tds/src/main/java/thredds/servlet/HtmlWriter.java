@@ -723,7 +723,7 @@ public class HtmlWriter {
           String accessUrlName = access.getUnresolvedUrlName();
           int pos = accessUrlName.lastIndexOf(".xml");
 
-          if (accessUrlName.equalsIgnoreCase("latest.xml")) {
+          if (accessUrlName.equalsIgnoreCase("latest.xml") && !isLocalCatalog) {
             String catBaseUriPath = "";
             String catBaseUri = cat.getBaseURI().toString();
             pos = catBaseUri.lastIndexOf("catalog.xml");
