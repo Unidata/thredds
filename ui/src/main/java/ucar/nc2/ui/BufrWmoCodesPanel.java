@@ -58,12 +58,10 @@ public class BufrWmoCodesPanel extends JPanel {
   private PreferencesExt prefs;
 
   private BeanTable codeTable, entryTable;
-  private JSplitPane split, split2;
+  private JSplitPane split;
 
   private TextHistoryPane compareTA;
   private IndependentWindow infoWindow;
-
-  private FileManager fileChooser;
 
   public BufrWmoCodesPanel(final PreferencesExt prefs, JPanel buttPanel) {
     this.prefs = prefs;
@@ -125,7 +123,6 @@ public class BufrWmoCodesPanel extends JPanel {
     //prefs.putBeanObject("InfoWindowBounds2", infoWindow2.getBounds());
     prefs.putInt("splitPos", split.getDividerLocation());
     //prefs.putInt("splitPos2", split2.getDividerLocation());
-    if (fileChooser != null) fileChooser.save();
   }
 
   public void setEntries(CodeFlagTables codeTable) {

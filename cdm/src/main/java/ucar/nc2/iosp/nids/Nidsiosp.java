@@ -1719,10 +1719,7 @@ short arrowHeadValue = 0;    */
   // We referenced McIDAS GetNexrLine function
   public byte[] readCompData1(byte[] uncomp, long hoff, long doff) throws IOException {
     int off;
-    byte b1, b2;
-    b1 = uncomp[0];
-    b2 = uncomp[1];
-    off = 2 * (((b1 & 0x3F) << 8) | b2);
+    off = 2 * (((uncomp[0] & 0x3F) << 8) | (uncomp[1] & 0xFF));
     /* eat WMO and PIL */
     for (int i = 0; i < 2; i++) {
       while ((off < uncomp.length) && (uncomp[off] != '\n')) off++;
@@ -1849,10 +1846,7 @@ short arrowHeadValue = 0;    */
     inf.end();
 
     int off;
-    byte b1, b2;
-    b1 = uncomp[0];
-    b2 = uncomp[1];
-    off = 2 * (((b1 & 0x3F) << 8) | b2);
+    off = 2 * (((uncomp[0] & 0x3F) << 8) | (uncomp[1] & 0xFF));
     /* eat WMO and PIL */
     for (int i = 0; i < 2; i++) {
       while ((off < result) && (uncomp[off] != '\n')) off++;

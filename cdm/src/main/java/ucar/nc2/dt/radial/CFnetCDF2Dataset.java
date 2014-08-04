@@ -547,7 +547,6 @@ public class CFnetCDF2Dataset extends RadialDatasetSweepAdapter implements Typed
                      int startIdx, int endIdx) {
         this.sweepVar = v;
         this.sweepno = sweepno;
-        this.nrays = rays;
         this.ngates = gates;
         this.startIdx = startIdx;
         this.endIdx = endIdx;

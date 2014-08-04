@@ -322,7 +322,7 @@ public class AreaFile3 {
     for (i = 0; i<numLines; i++) {
 
       try {
-        long newPosition = (long) (datLoc + linePrefixLength + i*lineLength) ;
+        long newPosition = datLoc + linePrefixLength + (long)i * lineLength;
         int skipByteCount = (int) (newPosition - position);
         af.skipBytes(skipByteCount);
         position = newPosition;
