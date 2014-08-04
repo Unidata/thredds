@@ -4,10 +4,6 @@
  */
 package gov.noaa.pfel.erddap.util;
 
-import com.cohort.array.StringArray;
-import com.cohort.util.Calendar2;
-import com.cohort.util.String2;
-
 import java.io.InputStream;
 import java.util.HashMap;
 
@@ -49,13 +45,6 @@ public class EDUnits {
     private static final HashMap<String, String> ucHashMap =
             getHashMapStringString(EDUnits.class.getResourceAsStream("UcumToUdunits.properties"), "ISO-8859-1");
 
-    /**
-     * Set this to true (by calling reallyReallyVerbose=true in your program,
-     * not but changing the code here)
-     * if you want lots of diagnostic messages sent to String2.log.
-     */
-    public static boolean reallyReallyVerbose = false;
-
 
     /**
      * This converts UDUnits to UCUM.
@@ -88,8 +77,6 @@ public class EDUnits {
     public static String udunitsToUcum(String udunits) {
         if (udunits == null)
             return null;
-        if (reallyReallyVerbose)
-            String2.log("  udunits=" + udunits);
 
         //is it a point in time? e.g., seconds since 1970-01-01T00:00:00T
         int sincePo = udunits.indexOf(" since ");
@@ -120,7 +107,6 @@ public class EDUnits {
         int udLength = udunits.length();
         int po = 0;  //po is next position to be read
         while (po < udLength) {
-            if (reallyReallyVerbose && ucum.length() > 0) String2.log("  ucum=" + ucum);
             char ch = udunits.charAt(po);
 
             //letter  
@@ -305,9 +291,6 @@ public class EDUnits {
         StringBuilder ucum = new StringBuilder();
         MAIN:
         while (true) {
-            if (reallyReallyVerbose)
-                String2.log(ucum.length() == 0 ? "" : "  ucum=" + ucum + " udunits=" + udunits);
-
             //try to find udunits in hashMap
             String tUcum = udHashMap.get(udunits);
             if (tUcum != null) {
@@ -342,13 +325,7 @@ public class EDUnits {
                 }
             }
 
-            //no change? failure; return original udunits
-            //  because I don't want to change "exact" into "ect" 
-            //  (i.e., seeing a metric prefix that isn't a metric prefix)
-            if (reallyReallyVerbose) String2.log("EDUnits.oneUdunitsToUcum fail: ucum=" +
-                    ucum + " udunits=" + udunits);
-            //ucum.append(udunits);
-            return oldUdunits; //ucum.toString();
+            return oldUdunits;
         }
     }
 
@@ -384,8 +361,6 @@ public class EDUnits {
     public static String ucumToUdunits(String ucum) {
         if (ucum == null)
             return null;
-        if (reallyReallyVerbose)
-            String2.log("  ucum=" + ucum);
 
         StringBuilder udunits = new StringBuilder();
         int ucLength = ucum.length();
@@ -408,7 +383,6 @@ public class EDUnits {
         //parse ucum and build udunits, till done        
         int po = 0;  //po is next position to be read
         while (po < ucLength) {
-            if (reallyReallyVerbose && udunits.length() > 0) String2.log("  udunits=" + udunits);
             char ch = ucum.charAt(po);
 
             //letter  
@@ -460,10 +434,8 @@ public class EDUnits {
                     po2++;
 
                 // ^-  or ^{digit}
-                boolean hasE = false;
                 if (po2 < ucLength - 1 && Character.toLowerCase(ucum.charAt(po2)) == '^' &&
                         (ucum.charAt(po2 + 1) == '-' || String2.isDigit(ucum.charAt(po2 + 1)))) {
-                    hasE = true;
                     po2 += 2;
                     while (po2 < ucLength && String2.isDigit(ucum.charAt(po2)))
                         po2++;
@@ -529,9 +501,6 @@ public class EDUnits {
         StringBuilder udunits = new StringBuilder();
         MAIN:
         while (true) {
-            if (reallyReallyVerbose)
-                String2.log(udunits.length() == 0 ? "" : "  udunits=" + udunits + " ucum=" + ucum);
-
             //try to find ucum in hashMap
             String tUdunits = ucHashMap.get(ucum);
             if (tUdunits != null) {
@@ -574,48 +543,7 @@ public class EDUnits {
             if (po1 > 0 && oldUcum.endsWith("}"))
                 return oneUcumToUdunits(oldUcum.substring(0, po1)) + oldUcum.substring(po1);
 
-            //no change? failure; return original ucum
-            //  because I don't want to change "exact" into "ect" 
-            // (i.e., seeing a metric prefix that isn't a metric prefix)
-            if (reallyReallyVerbose) String2.log("EDUnits.oneUcumToUdunits fail: udunits=" +
-                    udunits + " ucum=" + ucum);
-            //udunits.append(ucum);
             return oldUcum;
-        }
-    }
-
-    /**
-     * This makes a HashMap&lt;String, String&gt; from the ResourceBundle-like file's keys=values.
-     * The key and value strings are trim()'d.
-     *
-     * @param fileName the full file name of the key=value file.
-     * @param charset  e.g., ISO-8859-1; or "" or null for the default
-     * @throws RuntimeException if trouble
-     */
-    public static HashMap<String, String> getHashMapStringString(String fileName, String charset)
-            throws RuntimeException {
-        try {
-            HashMap ht = new HashMap();
-            StringArray sa = StringArray.fromFile(fileName, charset);
-            int n = sa.size();
-            int i = 0;
-            while (i < n) {
-                String s = sa.get(i++);
-                if (s.startsWith("#"))
-                    continue;
-                while (i < n && s.endsWith("\\"))
-                    s = s.substring(0, s.length() - 1) + sa.get(i++);
-                int po = s.indexOf('=');
-                if (po < 0)
-                    continue;
-                //new String: so not linked to big source file's text
-                ht.put(
-                        new String(s.substring(0, po).trim()),
-                        new String(s.substring(po + 1).trim()));
-            }
-            return ht;
-        } catch (Throwable t) {
-            throw new RuntimeException(t);
         }
     }
 
