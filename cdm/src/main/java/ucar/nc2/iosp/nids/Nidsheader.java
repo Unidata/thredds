@@ -3607,10 +3607,7 @@ class Nidsheader{
       ** 6 bits from the first uncompressed byte and all 8 bits of the
       ** second uncompressed byte.
       */
-      byte   b1, b2;
-      b1 = uncomp[0];
-      b2 = uncomp[1];
-      doff  = 2 * (((b1 & 0x3f) << 8) | b2);
+      doff  = 2 * (((uncomp[0] & 0x3f) << 8) | (uncomp[1] & 0xFF));
 
       for ( int i = 0; i < 2; i++ ) {                         /* eat WMO and PIL */
         while ( (doff < result ) && (uncomp[doff] != '\n') ) doff++;

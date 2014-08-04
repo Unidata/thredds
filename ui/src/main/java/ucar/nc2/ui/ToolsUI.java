@@ -4894,7 +4894,7 @@ public class ToolsUI extends JPanel {
     CoverageTable dsTable;
     CoverageDisplay display;
     JSplitPane split;
-    IndependentWindow viewerWindow, imageWindow;
+    IndependentWindow viewerWindow;
 
     NetcdfDataset ds = null;
 
@@ -4916,20 +4916,6 @@ public class ToolsUI extends JPanel {
         }
       });
       buttPanel.add(viewButton);
-
-      /* AbstractButton imageButton = BAMutil.makeButtcon("VCRMovieLoop", "Image Viewer", false);
-      imageButton.addActionListener(new ActionListener() {
-        public void actionPerformed(ActionEvent e) {
-          if (ds != null) {
-            GridDatatype grid = dsTable.getGrid();
-            if (grid == null) return;
-            if (imageWindow == null) makeImageWindow();
-            imageViewer.setImageFromGrid(grid);
-            imageWindow.show();
-          }
-        }
-      });
-      buttPanel.add(imageButton);   */
 
       dsTable.addExtra(buttPanel, fileChooser);
     }
@@ -5028,7 +5014,6 @@ public class ToolsUI extends JPanel {
       super.save();
       dsTable.save();
       if (viewerWindow != null) mainPrefs.putBeanObject(GRIDVIEW_FRAME_SIZE, viewerWindow.getBounds());
-      if (imageWindow != null) mainPrefs.putBeanObject(GRIDIMAGE_FRAME_SIZE, imageWindow.getBounds());
     }
 
   }
