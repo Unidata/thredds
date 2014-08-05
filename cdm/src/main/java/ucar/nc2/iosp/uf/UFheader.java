@@ -69,7 +69,10 @@ public class UFheader {
 
       byte[] buffer = new byte[rsize];
       long offset = raf.getFilePointer();
-      raf.read(buffer, 0, rsize);
+      int readBytes = raf.read(buffer, 0, rsize);
+      if (readBytes != rsize) {
+          return false;
+      }
       int endPoint = raf.readInt();
       if (endPoint != rsize) {
         return false;

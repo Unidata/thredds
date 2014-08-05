@@ -374,7 +374,7 @@ public class Ray {
             iVolumeScanHour = getShort(data, 12);
             iVolumeScanMinute = getShort(data, 14);
             iVolumeScanSecond = getShort(data, 16);
-            sFieldTapeName = new String(data, 18, 8);
+            sFieldTapeName = new String(data, 18, 8, CDM.utf8Charset);
             iFlag = getShort(data, 26);
         }
 
