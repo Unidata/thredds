@@ -546,13 +546,13 @@ public class Cinrad2VolumeScan {
                 bytesRead + " rather than" + header.length);
     }
     RandomAccessFile dout2 = new RandomAccessFile(ufilename, "rw");
-    dout2.write(header);
 
     boolean eof = false;
     int numCompBytes;
     byte[] ubuff = new byte[40000];
     byte[] obuff = new byte[40000];
     try {
+      dout2.write(header);
       CBZip2InputStream cbzip2 = new CBZip2InputStream();
       while (!eof) {
 
@@ -613,6 +613,7 @@ public class Cinrad2VolumeScan {
         if (debug)
           log.debug("  unpacked " + total + " num bytes " + nrecords + " records; ouput ends at " + dout2.getFilePointer());
       }
+      dout2.flush();
     } catch (EOFException e) {
       e.printStackTrace();
     } catch (Exception e) {
@@ -620,7 +621,6 @@ public class Cinrad2VolumeScan {
       throw e;
     }
 
-    dout2.flush();
     return dout2;
   }
 

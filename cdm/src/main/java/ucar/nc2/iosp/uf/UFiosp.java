@@ -314,7 +314,7 @@ public class UFiosp extends AbstractIOServiceProvider {
         int radial = 0;
         boolean needFirst = true;
         for (Ray r : scanGroup) {
-          if (needFirst && r != null)
+          if (needFirst)
           {
               ngatesIter.setIntNext(r.getGateCount(abbrev));
               needFirst = false;
