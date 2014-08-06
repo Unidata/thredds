@@ -1,14 +1,25 @@
 /* Copyright */
 package thredds.server.catalog.tracker;
 
-import java.nio.file.*;
+import java.io.Closeable;
+import java.io.IOException;
+import java.nio.file.FileSystems;
+import java.nio.file.FileVisitResult;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.SimpleFileVisitor;
+import java.nio.file.WatchEvent;
+import java.nio.file.WatchKey;
+import java.nio.file.WatchService;
+import java.nio.file.attribute.BasicFileAttributes;
+import java.util.HashMap;
+import java.util.Map;
 
-import static java.nio.file.StandardWatchEventKinds.*;
-import static java.nio.file.LinkOption.*;
-
-import java.nio.file.attribute.*;
-import java.io.*;
-import java.util.*;
+import static java.nio.file.LinkOption.NOFOLLOW_LINKS;
+import static java.nio.file.StandardWatchEventKinds.ENTRY_CREATE;
+import static java.nio.file.StandardWatchEventKinds.ENTRY_DELETE;
+import static java.nio.file.StandardWatchEventKinds.ENTRY_MODIFY;
+import static java.nio.file.StandardWatchEventKinds.OVERFLOW;
 
 /**
  * Put a watch on directories for when catalogs change. not used yet
@@ -16,7 +27,7 @@ import java.util.*;
  * @author caron
  * @since 6/9/2015
  */
-public class CatalogWatcher implements AutoCloseable {
+public class CatalogWatcher implements Closeable {
 
   private final WatchService watcher;
   private final DatasetTracker tracker;

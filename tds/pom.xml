@@ -344,14 +344,14 @@
             </manifestEntries>
           </archive>
           <webResources>
-            <resource>
-              <targetPath>WEB-INF/classes</targetPath>
-              <filtering>true</filtering>
-              <directory>${basedir}/src/main/template</directory>
-              <includes>
-                <include>**/tds.properties</include>
-              </includes>
-            </resource>
+            <!--<resource>-->
+              <!--<targetPath>WEB-INF/classes</targetPath>-->
+              <!--<filtering>true</filtering>-->
+              <!--<directory>${basedir}/src/main/template</directory>-->
+              <!--<includes>-->
+                <!--<include>**/tds.properties</include>-->
+              <!--</includes>-->
+            <!--</resource>-->
             <resource>
               <targetPath>docs</targetPath>
               <filtering>true</filtering>

@@ -169,4 +169,26 @@ public class CalendarDateRange {
     return new DateRange(start.toDate(), end.toDate());
   }
 
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) {
+      return true;
+    }
+    if (o == null || getClass() != o.getClass()) {
+      return false;
+    }
+
+    CalendarDateRange that = (CalendarDateRange) o;
+
+    // All other fields in this class are derived from start or end.
+    return start.equals(that.start) && end.equals(that.end);
+  }
+
+  @Override
+  public int hashCode() {
+    int result = start.hashCode();
+    result = 31 * result + end.hashCode();
+    return result;
+  }
 }

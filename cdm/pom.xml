@@ -73,6 +73,11 @@
       <artifactId>jcommander</artifactId>
     </dependency>
 
+    <dependency>
+      <groupId>org.jmockit</groupId>
+      <artifactId>jmockit</artifactId>
+    </dependency>
+
     <!--~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Logging ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
     <dependency>
       <groupId>org.slf4j</groupId>
@@ -180,11 +185,11 @@
         <directory>src/test/resources</directory>
         <includes>
           <include>thredds/**</include>
+          <include>ucar/**</include>
         </includes>
       </testResource>
     </testResources>
 
   </build>
-
 
 </project>

@@ -1,7 +1,8 @@
-package ucar.nc2.ogc;
+package ucar.nc2.ft;
 
 /**
- * Created by cwardgar on 2014/02/21.
+ * Indicates that no suitable {@link ucar.nc2.ft.FeatureDatasetFactory factory} could be found to open a
+ * {@link ucar.nc2.ft.FeatureDataset feature dataset}.
  */
 public class NoFactoryFoundException extends Exception {
     /**

@@ -25,7 +25,7 @@ import java.util.List;
  */
 @RunWith(Parameterized.class)
 public class TestCfDocDsgExamples {
-    public static String cfDocDsgExamplesDir = TestDir.cdmLocalTestDataDir + "cfDocDsgExamples/";
+    public static final String cfDocDsgExamplesDir = TestDir.cdmLocalTestDataDir + "cfDocDsgExamples/";
 
     public static List<Object[]> getPointDatasets() {
         List<Object[]> result = new ArrayList<>();
@@ -105,10 +105,10 @@ public class TestCfDocDsgExamples {
         return result;
     }
 
-    private String location;
-    private FeatureType ftype;
-    private int countExpected;
-    private boolean show = false;
+    private final String location;
+    private final FeatureType ftype;
+    private final int countExpected;
+    private final boolean show = true;
 
     public TestCfDocDsgExamples(String location, FeatureType ftype, int countExpected) {
         this.location = cfDocDsgExamplesDir + location;

@@ -33,21 +33,39 @@
 
 package ucar.nc2.dataset.conv;
 
-import ucar.ma2.*;
-import ucar.nc2.*;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.NoSuchElementException;
+import java.util.StringTokenizer;
+import ucar.ma2.Array;
+import ucar.ma2.ArrayChar;
+import ucar.ma2.DataType;
+import ucar.ma2.IndexIterator;
+import ucar.ma2.InvalidRangeException;
+import ucar.ma2.MAMath;
+import ucar.ma2.Section;
+import ucar.nc2.Attribute;
+import ucar.nc2.Dimension;
+import ucar.nc2.NetcdfFile;
+import ucar.nc2.Variable;
+import ucar.nc2.constants.AxisType;
 import ucar.nc2.constants.CDM;
 import ucar.nc2.constants._Coordinate;
-import ucar.nc2.constants.AxisType;
-import ucar.nc2.util.CancelTask;
-import ucar.nc2.dataset.*;
+import ucar.nc2.dataset.CoordSysBuilder;
+import ucar.nc2.dataset.CoordinateAxis;
+import ucar.nc2.dataset.CoordinateAxis1D;
+import ucar.nc2.dataset.NetcdfDataset;
+import ucar.nc2.dataset.ProjectionCT;
+import ucar.nc2.dataset.VariableDS;
+import ucar.nc2.dataset.VariableEnhanced;
 import ucar.nc2.units.SimpleUnit;
-
-import ucar.unidata.geoloc.*;
-import ucar.unidata.geoloc.projection.*;
+import ucar.nc2.util.CancelTask;
+import ucar.unidata.geoloc.LatLonPointImpl;
+import ucar.unidata.geoloc.ProjectionPointImpl;
+import ucar.unidata.geoloc.projection.LambertConformal;
+import ucar.unidata.geoloc.projection.Stereographic;
 import ucar.unidata.util.StringUtil2;
-
-import java.io.IOException;
-import java.util.*;
 
 /**
  * AWIPS netcdf output.
@@ -238,7 +256,7 @@ public class AWIPSConvention extends CoordSysBuilder {
         Variable coord = ds.getRootGroup().findVariable(name);
         Array coordData = coord.read();
         Array newData = Array.makeArray(coord.getDataType(), values);
-        if (MAMath.isEqual(coordData, newData)) {
+        if (MAMath.fuzzyEquals(coordData, newData)) {
           if (debugBreakup) parseInfo.format("  use existing coord %s%n", dim);
           return dim;
         }

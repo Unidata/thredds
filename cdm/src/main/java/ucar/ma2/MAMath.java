@@ -32,6 +32,8 @@
  */
 package ucar.ma2;
 
+import java.util.Arrays;
+import java.util.Objects;
 import ucar.nc2.util.Misc;
 
 /**
@@ -698,7 +700,25 @@ public class MAMath {
     }
   }
 
-  public static boolean isEqual(Array data1, Array data2) {
+  /**
+   * Returns true if the specified arrays have the same size, signedness, and <b>approximately</b> equal corresponding
+   * elements. {@code float} elements must be within {@code 1.0e-5} of each other and {@code double} elements must be
+   * within {@code 1.0e-8} of each other.
+   * <p>
+   * {@link #equals(Array, Array)} is an alternative to this method that requires that corresponding elements be
+   * <b>exactly</b> equal. It is suitable for use in {@link Object#equals} implementations, whereas this method isn't.
+   *
+   * @param data1  one array to be tested for equality.
+   * @param data2  the other array to be tested for equality.
+   * @return true if the specified arrays have the same size, signedness, and approximately equal corresponding elems.
+   */
+  public static boolean fuzzyEquals(Array data1, Array data2) {
+    if (data1 == data2) {  // Covers case when both are null.
+      return true;
+    } else if (data1 == null || data2 == null) {
+      return false;
+    }
+
     if (data1.getSize() != data2.getSize()) return false;
     if (data1.isUnsigned() != data2.isUnsigned()) return false;
     DataType dt = DataType.getType(data1);
@@ -749,5 +769,111 @@ public class MAMath {
     }
 
     return true;
+  }
+
+
+  /**
+   * Returns true if the specified arrays have the same data type, shape, and equal corresponding elements. This method
+   * is suitable for use in {@link Object#equals} implementations.
+   * <p>
+   * Note that floating-point elements must be exactly equal, not merely within some epsilon of each other. This is
+   * because it's <b>impossible</b> to write a strictly-conforming {@link Object#equals} implementation when an
+   * epsilon is incorporated, due to the transitivity requirement.
+   * <p>
+   * {@link #fuzzyEquals} is an alternative to this method that returns true if the corresponding elements are
+   * "approximately" equal to each other.
+   *
+   * @param array1 one array to be tested for equality.
+   * @param array2 the other array to be tested for equality.
+   * @return true if the specified arrays have the same data type, shape, and equal corresponding elements.
+   * @see <a href=http://goo.gl/psfLb>Is there a way to get a hashcode of a float with epsilon? - Stack Overflow</a>
+   */
+  // TODO: Should we add this to Array as the Object.equals() implementation? How much work is that?
+  public static boolean equals(Array array1, Array array2) {
+    if (array1 == array2) {  // Covers case when both are null.
+      return true;
+    } else if (array1 == null || array2 == null) {
+      return false;
+    }
+
+    // MAMath.isEquals() does not require DataTypes to be equal, but in so doing, it becomes non-symmetric.
+    // For example, suppose we have 2 arrays:
+    //     ArrayLong  al;
+    //     ArrayShort as;
+    // If al contains elements that don't fit in a short, we could have the following:
+    //     MAMath.isEquals(al, as);  // true
+    //     MAMath.isEquals(as, al);  // false
+    // This is because when MAMath.isEquals() does comparisons, elements from the 2nd array are converted to the
+    // type of the 1st array.
+    //
+    // In our implementation, we avoid this problem--and thus preserve symmetry--by insisting that the element
+    // types of the 2 arrays are the same. This means that we lose some of the "flexibility" offered by the MAMath
+    // version, but it turns out that it's not a good idea to compare different Number subtypes in the first place:
+    // http://stackoverflow.com/questions/480632/why-doesnt-java-lang-number-implement-comparable
+    if (array1.getDataType() != array2.getDataType()) {
+      return false;
+    }
+
+    // MAMath.isEquals() only requires that the 2 arrays have the same size, not the same shape. That was an
+    // option I considered. Also, there's MAMath.conformable(), which returns true if shapes are equal after
+    // reduction (e.g. { 3,4,5 } and { 3,1,4,1,5 } are conformable). By definition, conformable arrays have
+    // the same size.
+    //
+    // Ultimately, I decided on the stricter requirement that the arrays must have the exact same shape. That's
+    // because if 2 objects compare as equal, there's a general expectation that you can perform the same
+    // operations on them and get the same result. But imagine this:
+    //     Array a1 = Array.factory(DataType.INT, new int[] { 3,4 }, new int[] { 0,1,2,3,4,5,6,7,8,9,10,11 });
+    //     Array a2 = Array.factory(DataType.INT, new int[] { 2,6 }, new int[] { 0,1,2,3,4,5,6,7,8,9,10,11 });
+    // MAMath.isEquals() will consider the arrays equal because they have the same size, but:
+    //     a1.getInt(a1.getIndex().set(1, 1)) == 5
+    //     a2.getInt(a2.getIndex().set(1, 1)) == 7
+    if (!Arrays.equals(array1.getShape(), array2.getShape())) {
+      return false;
+    }
+
+    // Note that we did not examine the Indexes of the arrays, nor their 1D backing stores. That's because we're
+    // interested in the VIEWS of the data that the Arrays present, not with how the data is manipulated behind the
+    // scenes.
+
+    IndexIterator iter1 = array1.getIndexIterator();
+    IndexIterator iter2 = array2.getIndexIterator();
+
+    while (iter1.hasNext() && iter2.hasNext()) {
+      if (!Objects.equals(iter1.next(), iter2.next())) {
+        return false;
+      }
+      if (!Arrays.equals(iter1.getCurrentCounter(), iter2.getCurrentCounter())) {
+        return false;
+      }
+    }
+
+    assert !iter1.hasNext() && !iter2.hasNext();    // Iterators ought to be the same length.
+    return true;
+  }
+
+  /**
+   * An implementation of {@link Object#hashCode} that is consistent with {@link #equals(Array, Array)}.
+   *
+   * @param array an array to hash.
+   * @return a hash code value for the array.
+   */
+  // TODO: Should we add this to Array as the Object.hashCode() implementation? How much work is that?
+  public static int hashCode(Array array) {
+    if (array == null) {
+      return 0;
+    }
+
+    int hash = 3;
+    hash = 29 * hash + array.getDataType().hashCode();
+    hash = 29 * hash + Arrays.hashCode(array.getShape());
+
+    // We can't simply hash array.getStorage(), because array may be a "view" that doesn't include all of the
+    // elements in the backing store.
+    for (IndexIterator iter = array.getIndexIterator(); iter.hasNext(); ) {
+      hash = 29 * hash + iter.next().hashCode();
+      hash = 29 * hash + Arrays.hashCode(iter.getCurrentCounter());
+    }
+
+    return hash;
   }
 }

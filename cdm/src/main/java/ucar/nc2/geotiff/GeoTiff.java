@@ -32,13 +32,23 @@
  */
 package ucar.nc2.geotiff;
 
+import java.io.Closeable;
+import java.io.IOException;
+import java.io.PrintStream;
+import java.io.PrintWriter;
+import java.io.RandomAccessFile;
+import java.io.StringWriter;
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
+import java.nio.FloatBuffer;
+import java.nio.channels.FileChannel;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Formatter;
+import java.util.List;
+
 import ucar.nc2.constants.CDM;
 import ucar.nc2.util.CompareNetcdf2;
-
-import java.nio.*;
-import java.nio.channels.*;
-import java.io.*;
-import java.util.*;
 
 /**
  * Low level read/write geotiff files.
@@ -46,7 +56,7 @@ import java.util.*;
  * @author John Caron
  * @author Yuan Ho
  */
-public class GeoTiff implements AutoCloseable {
+public class GeoTiff implements Closeable {
   static final private boolean showBytes = false, debugRead = false, debugReadGeoKey = false;
   static final private boolean showHeaderBytes = false;
 

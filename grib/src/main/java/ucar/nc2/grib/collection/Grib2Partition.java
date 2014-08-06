@@ -33,20 +33,21 @@
 
 package ucar.nc2.grib.collection;
 
-import ucar.nc2.AttributeContainer;
-import ucar.nc2.constants.DataFormatType;
-import thredds.featurecollection.FeatureCollectionConfig;
-import ucar.nc2.Attribute;
-import ucar.nc2.NetcdfFile;
-import ucar.nc2.NetcdfFileSubclass;
-import ucar.nc2.constants.CDM;
-import ucar.nc2.dataset.NetcdfDataset;
-import ucar.nc2.ft2.coverage.CoverageDataset;
-import ucar.nc2.grib.coverage.GribCoverageDataset;
-
+import java.io.Closeable;
 import java.io.IOException;
 import java.util.Formatter;
 import java.util.List;
+
+import thredds.featurecollection.FeatureCollectionConfig;
+import ucar.nc2.Attribute;
+import ucar.nc2.AttributeContainer;
+import ucar.nc2.NetcdfFile;
+import ucar.nc2.NetcdfFileSubclass;
+import ucar.nc2.constants.CDM;
+import ucar.nc2.constants.DataFormatType;
+import ucar.nc2.dataset.NetcdfDataset;
+import ucar.nc2.ft2.coverage.CoverageDataset;
+import ucar.nc2.grib.coverage.GribCoverageDataset;
 
 /**
  * PartitionCollection for Grib2.
@@ -54,7 +55,7 @@ import java.util.List;
  * @author John
  * @since 12/7/13
  */
-public class Grib2Partition extends PartitionCollectionImmutable implements AutoCloseable {
+public class Grib2Partition extends PartitionCollectionImmutable implements Closeable {
 
   Grib2Partition( PartitionCollectionMutable pc) {
     super(pc);

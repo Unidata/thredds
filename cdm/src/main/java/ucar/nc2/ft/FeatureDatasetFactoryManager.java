@@ -206,6 +206,36 @@ public class FeatureDatasetFactoryManager {
    * Open a dataset as a FeatureDataset.
    *
    * @param wantFeatureType open this kind of FeatureDataset; may be null, which means search all factories.
+   *                        If datatype is not null, only return correct FeatureDataset (eg PointFeatureDataset for
+   *                        DataType.POINT).
+   * @param location        URL or file location of the dataset. This may be a
+   *                        <ol>
+   *                        <li>thredds catalog#dataset (with a thredds: prefix)
+   *                        <li>cdmremote dataset (with an cdmremote: prefix)
+   *                        <li>collection dataset (with a collection: prefix)
+   *                        <li>cdm dataset opened with NetcdfDataset.acquireDataset(), then wrapped
+   *                        </ol>
+   * @param task            user may cancel
+   * @return a subclass of FeatureDataset. Guaranteed to be non-null.
+   * @throws java.io.IOException on io error
+   * @throws ucar.nc2.ft.NoFactoryFoundException if no suitable factory was found.
+   */
+  public static FeatureDataset open(FeatureType wantFeatureType, String location, ucar.nc2.util.CancelTask task)
+          throws IOException, NoFactoryFoundException {
+    Formatter errlog = new Formatter();
+    FeatureDataset fd = FeatureDatasetFactoryManager.open(wantFeatureType, location, task, errlog);
+
+    if (fd == null) {
+      throw new NoFactoryFoundException(errlog.toString());
+    } else {
+      return fd;
+    }
+  }
+
+  /**
+   * Open a dataset as a FeatureDataset.
+   *
+   * @param wantFeatureType open this kind of FeatureDataset; may be null, which means search all factories.
    *                        If datatype is not null, only return correct FeatureDataset (eg PointFeatureDataset for DataType.POINT).
    * @param location        URL or file location of the dataset. This may be a
    *                    <ol>

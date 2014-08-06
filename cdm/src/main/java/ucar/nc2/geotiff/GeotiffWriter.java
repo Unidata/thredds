@@ -33,17 +33,34 @@
 
 package ucar.nc2.geotiff;
 
-import ucar.ma2.*;
+import java.io.Closeable;
+import java.io.IOException;
+
+import ucar.ma2.Array;
+import ucar.ma2.ArrayByte;
+import ucar.ma2.ArrayFloat;
+import ucar.ma2.DataType;
+import ucar.ma2.Index;
+import ucar.ma2.IndexIterator;
+import ucar.ma2.IsMissingEvaluator;
+import ucar.ma2.MAMath;
 import ucar.nc2.dataset.CoordinateAxis1D;
 import ucar.nc2.dt.GridCoordSystem;
 import ucar.nc2.dt.GridDataset;
 import ucar.nc2.dt.GridDatatype;
-import ucar.nc2.ft2.coverage.*;
-import ucar.unidata.geoloc.*;
-import ucar.unidata.geoloc.projection.*;
+import ucar.nc2.ft2.coverage.CoverageCoordAxis1D;
+import ucar.nc2.ft2.coverage.CoverageCoordSys;
+import ucar.nc2.ft2.coverage.GeoReferencedArray;
+import ucar.unidata.geoloc.LatLonPoint;
+import ucar.unidata.geoloc.LatLonPointImpl;
+import ucar.unidata.geoloc.Projection;
+import ucar.unidata.geoloc.projection.AlbersEqualArea;
+import ucar.unidata.geoloc.projection.LambertConformal;
+import ucar.unidata.geoloc.projection.LatLonProjection;
+import ucar.unidata.geoloc.projection.Mercator;
+import ucar.unidata.geoloc.projection.Stereographic;
+import ucar.unidata.geoloc.projection.TransverseMercator;
 import ucar.unidata.geoloc.projection.proj4.AlbersEqualAreaEllipse;
-
-import java.io.IOException;
 
 /**
  * Write GeoTIFF files.
@@ -51,7 +68,7 @@ import java.io.IOException;
  *
  * @author caron, yuan
  */
-public class GeotiffWriter implements AutoCloseable {
+public class GeotiffWriter implements Closeable {
 
   protected GeoTiff geotiff;
   protected short pageNumber = 1;

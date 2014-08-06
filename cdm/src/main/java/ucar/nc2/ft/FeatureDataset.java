@@ -33,14 +33,14 @@
 
 package ucar.nc2.ft;
 
+import java.io.Closeable;
+import java.util.List;
 import ucar.nc2.VariableSimpleIF;
+import ucar.nc2.constants.FeatureType;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time.CalendarDateRange;
 import ucar.nc2.util.cache.FileCacheable;
-import ucar.nc2.constants.FeatureType;
-
 import javax.annotation.Nullable;
-import java.util.*;
 
 /**
  * Superclass for "scientific feature type" datasets.
@@ -54,7 +54,7 @@ import java.util.*;
  * @author caron
  */
 
-public interface FeatureDataset extends FileCacheable, AutoCloseable {
+public interface FeatureDataset extends FileCacheable, Closeable {
 
   /**
    * Contains collections of this FeatureType.

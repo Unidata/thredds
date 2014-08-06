@@ -32,11 +32,14 @@
  */
 package thredds.server.ncss.view.dsg.station;
 
+import java.io.IOException;
+import java.io.OutputStream;
+import javax.xml.stream.XMLOutputFactory;
+import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.XMLStreamWriter;
 import org.springframework.http.HttpHeaders;
-import thredds.server.ncss.exception.NcssException;
-import thredds.server.ncss.params.NcssParamsBean;
 import thredds.server.ncss.controller.NcssRequestUtils;
-import thredds.server.ncss.params.NcssPointParamsBean;
+import thredds.server.ncss.exception.NcssException;
 import thredds.util.ContentType;
 import ucar.ma2.Array;
 import ucar.ma2.StructureData;
@@ -48,12 +51,6 @@ import ucar.nc2.ft2.coverage.SubsetParams;
 import ucar.nc2.time.CalendarDateFormatter;
 import ucar.unidata.geoloc.Station;
 import ucar.unidata.util.Format;
-
-import javax.xml.stream.XMLOutputFactory;
-import javax.xml.stream.XMLStreamException;
-import javax.xml.stream.XMLStreamWriter;
-import java.io.IOException;
-import java.io.OutputStream;
 
 /**
  * Created by cwardgar on 2014/05/27.

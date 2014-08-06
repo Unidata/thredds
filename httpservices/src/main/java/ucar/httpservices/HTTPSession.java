@@ -33,13 +33,33 @@
 
 package ucar.httpservices;
 
+import java.io.Closeable;
+import java.io.IOException;
+import java.io.InterruptedIOException;
+import java.net.ConnectException;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.UnknownHostException;
+import java.nio.charset.UnsupportedCharsetException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Vector;
+import javax.net.ssl.SSLException;
+
 import net.jcip.annotations.NotThreadSafe;
-import org.apache.http.*;
+import org.apache.http.Header;
+import org.apache.http.HeaderElement;
+import org.apache.http.HttpEntity;
+import org.apache.http.HttpEntityEnclosingRequest;
+import org.apache.http.HttpException;
+import org.apache.http.HttpRequest;
+import org.apache.http.HttpRequestInterceptor;
+import org.apache.http.HttpResponse;
+import org.apache.http.HttpResponseInterceptor;
 import org.apache.http.auth.AuthScope;
 import org.apache.http.auth.Credentials;
 import org.apache.http.client.CredentialsProvider;
 import org.apache.http.client.HttpClient;
-import org.apache.http.client.config.AuthSchemes;
 import org.apache.http.client.entity.DeflateDecompressingEntity;
 import org.apache.http.client.entity.GzipDecompressingEntity;
 import org.apache.http.client.methods.HttpRequestBase;
@@ -57,19 +77,10 @@ import org.apache.http.protocol.BasicHttpContext;
 import org.apache.http.protocol.ExecutionContext;
 import org.apache.http.protocol.HttpContext;
 
-import javax.net.ssl.SSLException;
-import java.io.IOException;
-import java.io.InterruptedIOException;
-import java.net.ConnectException;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.net.UnknownHostException;
-import java.nio.charset.UnsupportedCharsetException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Vector;
-
-import static org.apache.http.auth.AuthScope.*;
+import static org.apache.http.auth.AuthScope.ANY_HOST;
+import static org.apache.http.auth.AuthScope.ANY_PORT;
+import static org.apache.http.auth.AuthScope.ANY_REALM;
+import static org.apache.http.auth.AuthScope.ANY_SCHEME;
 
 /**
  * A session is encapsulated in an instance of the class
@@ -112,7 +123,7 @@ import static org.apache.http.auth.AuthScope.*;
  */
 
 @NotThreadSafe
-public class HTTPSession implements AutoCloseable
+public class HTTPSession implements Closeable
 {
     //////////////////////////////////////////////////
     // Constants

@@ -32,13 +32,14 @@
  */
 package ucar.nc2.ft.point;
 
-import ucar.nc2.ft.*;
+import javax.annotation.Nonnull;
+
+import com.google.common.base.Preconditions;
+import ucar.nc2.ft.DsgFeatureCollection;
+import ucar.nc2.ft.PointFeature;
 import ucar.nc2.time.CalendarDate;
-// import ucar.nc2.units.DateUnit;
 import ucar.nc2.time.CalendarDateUnit;
 import ucar.unidata.geoloc.EarthLocation;
-
-import javax.annotation.Nonnull;
 
 /**
  * Abstract superclass for implementations of PointFeature.
@@ -47,9 +48,7 @@ import javax.annotation.Nonnull;
  * @author caron
  * @since Feb 29, 2008
  */
-
 public abstract class PointFeatureImpl implements PointFeature, Comparable<PointFeature> {
-
   protected DsgFeatureCollection dsg;
   protected EarthLocation location;
   protected double obsTime, nomTime;
@@ -60,11 +59,11 @@ public abstract class PointFeatureImpl implements PointFeature, Comparable<Point
   }
 
   public PointFeatureImpl( DsgFeatureCollection dsg, EarthLocation location, double obsTime, double nomTime, CalendarDateUnit timeUnit) {
-    this.dsg = dsg;
-    this.location = location;
+    this.dsg = Preconditions.checkNotNull(dsg, "dgs == null");
+    this.location = Preconditions.checkNotNull(location, "location == null");
     this.obsTime = obsTime;
     this.nomTime = (nomTime == 0) ? obsTime : nomTime; // LOOK temp kludge until protobuf accepts NaN as defaults
-    this.timeUnit = timeUnit;
+    this.timeUnit = Preconditions.checkNotNull(timeUnit, "timeUnit == null");
   }
 
   @Nonnull
@@ -90,13 +89,13 @@ public abstract class PointFeatureImpl implements PointFeature, Comparable<Point
   @Nonnull
   @Override
   public CalendarDate getObservationTimeAsCalendarDate() {
-    return timeUnit.makeCalendarDate( getObservationTime());
+    return timeUnit.makeCalendarDate(getObservationTime());
   }
 
   @Nonnull
   @Override
   public CalendarDate getNominalTimeAsCalendarDate() {
-    return timeUnit.makeCalendarDate( getNominalTime());
+    return timeUnit.makeCalendarDate(getNominalTime());
   }
 
   public int compareTo(@Nonnull PointFeature other) {
@@ -114,5 +113,4 @@ public abstract class PointFeatureImpl implements PointFeature, Comparable<Point
         ", timeUnit=" + timeUnit +
         '}';
   }
-
 }

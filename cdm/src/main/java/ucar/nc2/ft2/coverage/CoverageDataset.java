@@ -33,6 +33,15 @@
  */
 package ucar.nc2.ft2.coverage;
 
+import java.io.Closeable;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Formatter;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import net.jcip.annotations.Immutable;
 import ucar.nc2.Attribute;
 import ucar.nc2.AttributeContainerHelper;
@@ -41,9 +50,6 @@ import ucar.nc2.time.CalendarDateRange;
 import ucar.nc2.util.Indent;
 import ucar.unidata.geoloc.LatLonRect;
 import ucar.unidata.geoloc.ProjectionRect;
-
-import java.io.IOException;
-import java.util.*;
 
 /**
  * A Coverage Dataset.
@@ -54,7 +60,7 @@ import java.util.*;
  * @since 7/11/2015
  */
 @Immutable
-public class CoverageDataset implements AutoCloseable, CoordSysContainer {
+public class CoverageDataset implements Closeable, CoordSysContainer {
 
   private final String name;
   private final AttributeContainerHelper atts;

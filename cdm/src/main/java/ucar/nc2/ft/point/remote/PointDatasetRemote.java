@@ -64,10 +64,10 @@ public class PointDatasetRemote extends PointDatasetImpl {
     collectionList = new ArrayList<>(1);
     switch (wantFeatureType) {
       case POINT:
-        collectionList.add(new RemotePointCollection(uri, timeUnit, altUnits, null));
+        collectionList.add(new PointCollectionStreamRemote(uri, timeUnit, altUnits, null));
         break;
       case STATION:
-        collectionList.add(new RemoteStationCollection(uri, timeUnit, altUnits));
+        collectionList.add(new StationCollectionStream(uri, timeUnit, altUnits));
         break;
       default:
         throw new UnsupportedOperationException("No implementation for " + wantFeatureType);

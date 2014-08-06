@@ -89,9 +89,9 @@ public class DateRange {
    *
    * @param range     copy start and end from here
    * @param timeUnits make resolution using new TimeDuration( timeUnits)
-   * @throws Exception is units are not valid time units
+   * @throws ParseException is units are not valid time units
    */
-  public DateRange(DateRange range, String timeUnits) throws Exception {
+  public DateRange(DateRange range, String timeUnits) throws ParseException {
     this(new DateType(false, range.getStart().getDate()), new DateType(false, range.getEnd().getDate()), null, new TimeDuration(timeUnits));
   }
 

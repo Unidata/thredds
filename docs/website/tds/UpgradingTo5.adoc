@@ -72,7 +72,7 @@ wherever possible, eg:
 [source,java]
 ----
  for (StructureData sdata : myArrayStructure) {
-    ...
+    // ...
  }
 ----
 
@@ -109,14 +109,33 @@ The interface is changed to remove _throws IOException_, which will now be wrapp
 [source,java]
 ----
  for (int i=range.first(); i<=range.last(); i+= range.stride()) {    // REPLACE THIS
-    ...
+    // ...
+ }
 
  for (int i : range) {  // USE THIS
-   ...
+   // ...
+ }
 ----
 
 === ucar.nc2.dataset
 ** CoordinateAxis2D.getMidpoints() was deprecated and now removed, use getCoordValuesArray()
+
+=== ucar.nc2.ft.PointFeature
+* Added method `getTimeUnit()`. An implementation exists in `ucar.nc2.ft.point.PointFeatureImpl`, so if your
+`PointFeature` extends it, you shouldn't need to do any work.
+* Removed method `getObservationTimeAsDate()`. Instead, use `getObservationTimeAsCalendarDate().toDate()`.
+* Removed method `getNominalTimeAsDate()`. Instead, use `getNominalTimeAsCalendarDate().toDate()`.
+* Removed method `getData()`. Instead, use `getDataAll()`.
+
+=== ucar.ma2.MAMath
+* Added method `equals(Array, Array)`. It is intended for use in `Object.equals()` implementations.
+This means, among other things, that corresponding floating-point elements must be exactly equal, not merely within
+some epsilon of each other.
+* Added method `hashCode(Array array)`. It is intended for use in `Object.hashCode()` implementations and is
+compatible with `equals(Array, Array)`.
+* Renamed `isEqual(Array, Array)` to `fuzzyEquals(Array, Array)`. This was done to avoid (some) confusion with the new
+`equals(Array, Array)`, and to highlight that this method performs *approximate* comparison of floating-point numbers,
+instead of the exact comparison done by `equals(Array, Array)`.
 
 === Coordinate Systems
 
@@ -212,6 +231,7 @@ processed uniformly for all types of feature collections. When a collection show
 a decreasing sort, use the element *<filesSort increasing="false" />* inside the *featureCollection* element. This supercedes the old way of placing
 that element in the *<gribConfig>* element, or the older verbose *lexigraphicByName* element:
 +
+[source,xml]
 -----------------------------------------------------------
   <filesSort>
     <lexigraphicByName increasing="false" />  // deprecated
@@ -341,4 +361,4 @@ For example:
 
 '''''
 
-image:thread.png[TDS]This document was last updated August 2015. Send comments to the mailto:thredds@unidata.ucar.edu[THREDDS list].
+image:thread.png[TDS] Send comments to the mailto:thredds@unidata.ucar.edu[THREDDS list].

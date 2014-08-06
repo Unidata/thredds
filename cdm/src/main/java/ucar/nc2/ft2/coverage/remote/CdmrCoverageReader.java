@@ -33,23 +33,31 @@
  */
 package ucar.nc2.ft2.coverage.remote;
 
-import com.google.common.escape.Escaper;
-import com.google.common.net.UrlEscapers;
-import org.apache.http.Header;
-import ucar.httpservices.HTTPFactory;
-import ucar.httpservices.HTTPMethod;
-import ucar.httpservices.HTTPSession;
-import ucar.ma2.*;
-import ucar.nc2.ft2.coverage.*;
-import ucar.nc2.stream.NcStream;
-
-import java.io.*;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.Formatter;
 import java.util.List;
 import java.util.Map;
 import java.util.zip.InflaterInputStream;
+
+import com.google.common.escape.Escaper;
+import com.google.common.net.UrlEscapers;
+import org.apache.http.Header;
+import ucar.httpservices.HTTPFactory;
+import ucar.httpservices.HTTPMethod;
+import ucar.httpservices.HTTPSession;
+import ucar.ma2.Array;
+import ucar.nc2.ft2.coverage.CoordAxisReader;
+import ucar.nc2.ft2.coverage.Coverage;
+import ucar.nc2.ft2.coverage.CoverageCoordAxis;
+import ucar.nc2.ft2.coverage.CoverageCoordSys;
+import ucar.nc2.ft2.coverage.CoverageReader;
+import ucar.nc2.ft2.coverage.GeoReferencedArray;
+import ucar.nc2.ft2.coverage.SubsetParams;
+import ucar.nc2.stream.NcStream;
 
 /**
  * Client side cdmrFeature interface to GridCoverage
@@ -71,7 +79,7 @@ public class CdmrCoverageReader implements CoverageReader, CoordAxisReader {
   }
 
   @Override
-  public void close() throws Exception {
+  public void close() throws IOException {
     httpClient.close();
   }
 

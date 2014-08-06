@@ -33,15 +33,22 @@
 package ucar.nc2.ft;
 
 import ucar.nc2.time.CalendarDate;
-
+import ucar.nc2.units.DateUnit;
 import javax.annotation.Nonnull;
 
 /**
  * A collection of observations at one time and location.
+ *
  * @author caron
  * @since Feb 29, 2008
  */
 public interface PointFeature {
+  /**
+   * The time unit of this observation. Using it, we can turn raw, numeric dates into {@link CalendarDate}s.
+   *
+   * @return  the time unit of this observation.
+   */
+  DateUnit getTimeUnit();
 
   /**
    * Location of this observation
@@ -50,7 +57,7 @@ public interface PointFeature {
   @Nonnull
   ucar.unidata.geoloc.EarthLocation getLocation();
 
- /**
+  /**
    * Actual time of this observation.
    * Convert to CalendarDate with getFeatureCollection().getTimeUnit().makeDate()
    * @return actual time of this observation.

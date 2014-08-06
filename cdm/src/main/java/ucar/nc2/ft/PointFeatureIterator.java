@@ -32,6 +32,7 @@
  */
 package ucar.nc2.ft;
 
+import java.io.Closeable;
 import java.util.Iterator;
 
 /**
@@ -47,7 +48,7 @@ import java.util.Iterator;
  * @author caron
  * @since Feb 18, 2008
  */
-public interface PointFeatureIterator extends AutoCloseable, Iterator<PointFeature> {
+public interface PointFeatureIterator extends Closeable, Iterator<PointFeature> {
 
   /**
    * Check if another PointFeature is available
