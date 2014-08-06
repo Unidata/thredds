@@ -46,7 +46,7 @@ import java.io.IOException;
  */
 @Immutable
 public class TableLookup {
-  static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(TableLookup.class);
+  static private final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(TableLookup.class);
   static private final boolean showErrors = false;
 
   /////////////////////////////////////////

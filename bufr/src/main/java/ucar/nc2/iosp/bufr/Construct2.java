@@ -207,7 +207,6 @@ class Construct2 {
     else if (dkey.replication > 1) {
       List<DataDescriptor> subKeys = dkey.subKeys;
       if (subKeys.size() == 1) {
-        DataDescriptor sub = dkey.subKeys.get(0);
         BufrConfig.FieldConverter subFld = fld.flds.get(0);
         Variable v = addVariable(parent, subFld, dkey.replication);
         v.setSPobject(fld); // set the replicating field as SPI object
