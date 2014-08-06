@@ -256,14 +256,12 @@ public class Nids2Dataset extends RadialDatasetSweepAdapter implements TypedData
 
   private class Nids2Variable extends MyRadialVariableAdapter implements RadialDatasetSweep.RadialVariable {
     ArrayList sweeps;
-    int nsweeps;
     String name;
 
 
     private Nids2Variable(NetcdfDataset nds, VariableSimpleIF v, Variable v0) {
       super(v.getShortName(), v0.getAttributes());
       sweeps = new ArrayList();
-      nsweeps = 0;
       name = v.getShortName();
 
       int[] shape = v0.getShape();

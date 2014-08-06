@@ -515,7 +515,7 @@ public class CFnetCDF2Dataset extends RadialDatasetSweepAdapter implements Typed
       /**
        * _more_
        */
-      int nrays, ngates;
+      int ngates;
 
       /**
        * _more_
