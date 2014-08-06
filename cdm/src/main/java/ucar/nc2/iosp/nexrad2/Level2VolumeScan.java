@@ -676,6 +676,9 @@ public class Level2VolumeScan {
           Thread.sleep(100); // msecs
         } catch (InterruptedException e1) {
         }
+      } catch (IOException e) {
+          outputRaf.close();
+          throw e;
       }
     }
 
