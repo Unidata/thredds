@@ -38,18 +38,31 @@ public class StringArray {
         array = new String[8];
     }
 
+    /**
+     * Reads the contents of {@code inputStream} into a StringArray. Each line of input will result in an element in
+     * the array.
+     * <p/>
+     * The specified stream remains open after this method returns.
+     *
+     * @param inputStream  a stream with line-based content.
+     * @param charset      the name of a supported {@link java.nio.charset.Charset charset}.
+     * @return  a StringArray created from the stream.
+     * @throws IOException  if an I/O error occurs
+     */
     public static StringArray fromInputStream(InputStream inputStream, String charset) throws IOException {
-        StringArray sa = new StringArray();
         InputStreamReader isr = charset == null || charset.length() == 0 ?
                 new InputStreamReader(inputStream) :
                 new InputStreamReader(inputStream, charset);
         BufferedReader bufferedReader = new BufferedReader(isr);
-        String s = bufferedReader.readLine();
-        while (s != null) { //null = end-of-file
+
+        StringArray sa = new StringArray();
+        for (String s; (s = bufferedReader.readLine()) != null; ) {
             sa.add(s);
-            s = bufferedReader.readLine();
         }
-        bufferedReader.close();
+
+        // Do not call BufferedReader.close() here; that would close the underlying InputStream, which is the
+        // responsibility of the client. This ought to be safe, as neither InputStreamReader nor BufferedReader hold any
+        // resources that a call to close() would make free and which the garbage collector would not make free anyway.
         return sa;
     }
 

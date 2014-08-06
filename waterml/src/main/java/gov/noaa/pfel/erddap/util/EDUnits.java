@@ -4,6 +4,9 @@
  */
 package gov.noaa.pfel.erddap.util;
 
+import com.google.common.math.DoubleMath;
+
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashMap;
 
@@ -39,11 +42,18 @@ public class EDUnits {
             "1024", "1048576", "1073741824", "1.099511627776e12"};
     public static int nTwo = twoAcronym.length;
 
-    // These don't need to be thread-safe because they are read-only after creation.
-    private static final HashMap<String, String> udHashMap =
-            getHashMapStringString(EDUnits.class.getResourceAsStream("UdunitsToUcum.properties"), "ISO-8859-1");
-    private static final HashMap<String, String> ucHashMap =
-            getHashMapStringString(EDUnits.class.getResourceAsStream("UcumToUdunits.properties"), "ISO-8859-1");
+    private static final HashMap<String, String> udHashMap;
+    private static final HashMap<String, String> ucHashMap;
+
+    static {
+        try (   InputStream udunitsToUcumStream = EDUnits.class.getResourceAsStream("UdunitsToUcum.properties");
+                InputStream ucumToUdunitsStream = EDUnits.class.getResourceAsStream("UcumToUdunits.properties")) {
+            udHashMap = getHashMapStringString(udunitsToUcumStream, "ISO-8859-1");
+            ucHashMap = getHashMapStringString(ucumToUdunitsStream, "ISO-8859-1");
+        } catch (IOException e) {
+            throw new ExceptionInInitializerError(e);
+        }
+    }
 
 
     /**
@@ -87,20 +97,27 @@ public class EDUnits {
                 double baf[] = Calendar2.getTimeBaseAndFactor(udunits); //throws exception if trouble
 
                 //use 'factor', since it is more forgiving than udunitsToUcum converter
-                String u = baf[1] == 0.001 ? "ms" :
-                        baf[1] == 1 ? "s" :
-                                baf[1] == Calendar2.SECONDS_PER_MINUTE ? "min" :
-                                        baf[1] == Calendar2.SECONDS_PER_HOUR ? "h" :
-                                                baf[1] == Calendar2.SECONDS_PER_DAY ? "d" :
-                                                        baf[1] == 30 * Calendar2.SECONDS_PER_DAY ? "mo" :  //mo_j?
-                                                                baf[1] == 360 * Calendar2.SECONDS_PER_DAY ? "a" : //a_j?
-                                                                        udunitsToUcum(udunits.substring(0,
-                                                                                sincePo)); //shouldn't happen,
-                                                                                // but weeks? microsec?
+                String u;
+                if (DoubleMath.fuzzyEquals(baf[1], 0.001, 1e-6)) {  // Can't simply do "baf[1] == 0.001".
+                    u = "ms";
+                } else if (baf[1] == 1) {
+                    u = "s";
+                } else if (baf[1] == Calendar2.SECONDS_PER_MINUTE) {
+                    u = "min";
+                } else if (baf[1] == Calendar2.SECONDS_PER_HOUR) {
+                    u = "h";
+                } else if (baf[1] == Calendar2.SECONDS_PER_DAY) {
+                    u = "d";
+                } else if (baf[1] == 30 * Calendar2.SECONDS_PER_DAY) {  // mo_j ?
+                    u = "mo";
+                } else if (baf[1] == 360 * Calendar2.SECONDS_PER_DAY) {  // a_j ?
+                    u = "a";
+                } else {
+                    u = udunitsToUcum(udunits.substring(0, sincePo)); //shouldn't happen, but weeks? microsec?
+                }
 
                 //make "s{since 1970-01-01T00:00:00T}
-                return u + "{" +
-                        udunits.substring(sincePo + 1) + "}";
+                return u + "{" + udunits.substring(sincePo + 1) + "}";
             } catch (Exception e) {
             }
         }
@@ -549,30 +566,38 @@ public class EDUnits {
         }
     }
 
-    public static HashMap<String, String> getHashMapStringString(InputStream inputStream, String charset) {
-        try {
-            HashMap<String, String> ht = new HashMap<>();
-            StringArray sa = StringArray.fromInputStream(inputStream, charset);
-            int n = sa.size();
-            int i = 0;
-            while (i < n) {
-                String s = sa.get(i++);
-                if (s.startsWith("#")) {
-                    continue;
-                }
-                while (i < n && s.endsWith("\\")) {
-                    s = s.substring(0, s.length() - 1) + sa.get(i++);
-                }
-                int po = s.indexOf('=');
-                if (po < 0) {
-                    continue;
-                }
-                //new String: so not linked to big source file's text
-                ht.put(s.substring(0, po).trim(), s.substring(po + 1).trim());
+    /**
+     * Reads the contents of {@code inputStream} into a HashMap. Each key-value pair in the input will result in an
+     * entry in the map.
+     * <p/>
+     * The specified stream remains open after this method returns.
+     *
+     * @param inputStream a stream with line-based, key-value pairs.
+     * @param charset     the name of a supported {@link java.nio.charset.Charset charset}.
+     * @return a HashMap initialized from the stream.
+     * @throws java.io.IOException if an I/O error occurs
+     */
+    public static HashMap<String, String> getHashMapStringString(InputStream inputStream, String charset)
+            throws IOException {
+        HashMap<String, String> ht = new HashMap<>();
+        StringArray sa = StringArray.fromInputStream(inputStream, charset);
+        int n = sa.size();
+        int i = 0;
+        while (i < n) {
+            String s = sa.get(i++);
+            if (s.startsWith("#")) {
+                continue;
             }
-            return ht;
-        } catch (Throwable t) {
-            throw new RuntimeException(t);
+            while (i < n && s.endsWith("\\")) {
+                s = s.substring(0, s.length() - 1) + sa.get(i++);
+            }
+            int po = s.indexOf('=');
+            if (po < 0) {
+                continue;
+            }
+            //new String: so not linked to big source file's text
+            ht.put(s.substring(0, po).trim(), s.substring(po + 1).trim());
         }
+        return ht;
     }
 }
