@@ -874,12 +874,4 @@ public class Level2VolumeScan {
     }
   }
 
-  public static void main(String args[]) throws IOException {
-    NexradStationDB.init();
-
-    RandomAccessFile raf = new RandomAccessFile("/upc/share/testdata/radar/nexrad/level2/Level2_KFTG_20060818_1814.ar2v.uncompress.missingradials", "r");
-    // RandomAccessFile raf = new RandomAccessFile("R:/testdata2/radar/nexrad/level2/problem/KCCX_20060627_1701", "r");
-    new Level2VolumeScan(raf, null);
-  }
-
 }
