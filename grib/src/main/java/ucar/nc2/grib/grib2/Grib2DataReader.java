@@ -33,7 +33,6 @@
 
 package ucar.nc2.grib.grib2;
 
-import ucar.jpeg.jj2000.j2k.decoder.Grib2JpegDecoder;
 import ucar.nc2.grib.GribNumbers;
 import ucar.nc2.iosp.BitReader;
 import ucar.unidata.io.RandomAccessFile;
