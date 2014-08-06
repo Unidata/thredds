@@ -762,7 +762,6 @@ public class Level2VolumeScan {
         outputRaf.flush();
     } catch (IOException e) {
         if (outputRaf != null) outputRaf.close();
-        outputRaf = null;
 
         // dont leave bad files around
         File ufile = new File(ufilename);
@@ -773,7 +772,12 @@ public class Level2VolumeScan {
 
         throw e;
     } finally {
-      if (lock != null) lock.release();
+      try {
+          if (lock != null) lock.release();
+      } catch (IOException e) {
+          if (outputRaf != null) outputRaf.close();
+          throw e;
+      }
     }
 
     return outputRaf;

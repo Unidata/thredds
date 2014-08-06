@@ -80,7 +80,7 @@ public class DebugCommands {
         Formatter f = new Formatter(e.pw);
 
         FileCache fc = NetcdfDataset.getNetcdfFileCache();
-        if (fc == null) f.format("NetcdfDatasetFileCache : turned off\n");
+        if (fc == null) f.format("NetcdfDatasetFileCache : turned off%n");
         else {
           f.format("%n%n");
           fc.showCache(f);

@@ -312,7 +312,7 @@ class Nidsheader{
 
         if( !noHeader ) {
         //Get product message header into a string for processing
-            String pib = new String(b, 0, 100);
+            String pib = new String(b, 0, 100, CDM.utf8Charset);
             type = 0;
             pos = pib.indexOf ( "\r\r\n" );
             while ( pos != -1 ) {
@@ -1350,11 +1350,9 @@ class Nidsheader{
         numX0 = 0;
         numX = numBox;
         numY = numRow;
-        Dimension jDim;
-        Dimension iDim;
         if(slayer == 0){
-            jDim = new Dimension("y", numY);
-            iDim = new Dimension("x", numX);
+            Dimension jDim = new Dimension("y", numY);
+            Dimension iDim = new Dimension("x", numX);
             ncfile.addDimension( null, iDim);
             ncfile.addDimension( null, jDim);
              dims.add( jDim);
@@ -1367,10 +1365,6 @@ class Nidsheader{
             v.setSPobject( new Vinfo (numX, numX0, numY, numY0, hoff, hedsiz, isR, isZ, null, null, code, 0));
             v.addAttribute( new Attribute(CDM.UNITS, cunit));
             v.addAttribute( new Attribute(CDM.MISSING_VALUE, 255));
-
-        } else {
-            jDim = new Dimension("Row", numY);
-            iDim = new Dimension("Box", numX);
         }
         //else  if(slayer == 1) {
           //  ncfile.addDimension( null, iDim);
@@ -1841,7 +1835,7 @@ class Nidsheader{
         readInString(datainput); // desc
         datainput.getFloat(); // numBins
         float rangeToFirstBin = datainput.getFloat();
-        int numOfParms = datainput.getInt();
+        datainput.getInt(); // numOfParms
         datainput.getInt();
         numRadials = datainput.getInt();
         dataOffset = datainput.position();
@@ -2991,7 +2985,6 @@ class Nidsheader{
         buf.get(b4, 0, 4);
         mtime = getInt(b4, 4);
         buf.get(b4, 0, 4);
-        java.util.Date volumnDate = getDate( mdate, mtime*1000);
         //out.println( "product date is " + dstring);
         mlength = getInt(b4, 4);
         buf.get(b2, 0, 2);
@@ -3607,10 +3600,7 @@ class Nidsheader{
       ** 6 bits from the first uncompressed byte and all 8 bits of the
       ** second uncompressed byte.
       */
-      byte   b1, b2;
-      b1 = uncomp[0];
-      b2 = uncomp[1];
-      doff  = 2 * (((b1 & 0x3f) << 8) | b2);
+      doff  = 2 * (((uncomp[0] & 0x3f) << 8) | (uncomp[1] & 0xFF));
 
       for ( int i = 0; i < 2; i++ ) {                         /* eat WMO and PIL */
         while ( (doff < result ) && (uncomp[doff] != '\n') ) doff++;
@@ -3995,7 +3985,7 @@ class Nidsheader{
     }
 
     // Symbology block info for reading/writing
-    class Sinfo {
+    static class Sinfo {
       short divider;
       short id;
       int blockLength;
@@ -4010,7 +4000,7 @@ class Nidsheader{
     }
 
   // variable info for reading/writing
-    class Vinfo {
+    static class Vinfo {
         int xt;
         int x0;
         int yt;
@@ -4045,7 +4035,7 @@ class Nidsheader{
   // product info for reading/writing
     static class Pinfo {
         short divider, pcode, opmode, sequenceNumber, volumeScanNumber, volumeScanDate, productDate;
-        double latitude, longitude;
+//        double latitude, longitude;
         double height; // meters
         int volumeScanTime,  productTime;
         short p1, p2, p3, p4, p5, p6, p7, p8, p9, p10;
@@ -4061,8 +4051,6 @@ class Nidsheader{
                short elevationNumber, short numberOfMaps, int offsetToSymbologyBlock,
                int offsetToGraphicBlock, int offsetToTabularBlock)   {
           this.divider = divider;
-          this.latitude= latitude;
-          this.longitude = longitude;
           this.height = height;
           this.pcode = pcode;
           this.opmode = opmode;

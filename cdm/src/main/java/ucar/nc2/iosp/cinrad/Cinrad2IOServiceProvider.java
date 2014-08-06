@@ -439,7 +439,7 @@ public class Cinrad2IOServiceProvider extends AbstractIOServiceProvider {
       boolean needFirst = true;
       for (int j = 0; j < nradials; j++) {
         Cinrad2Record r =  (Cinrad2Record) scanGroup.get(j);
-        if (needFirst && r != null) {
+        if (needFirst) {
             ngatesIter.setIntNext(r.getGateCount(datatype));
             needFirst = false;
         }
@@ -510,7 +510,7 @@ public class Cinrad2IOServiceProvider extends AbstractIOServiceProvider {
       boolean needFirst = true;
       for (int j = 0; j < nradials; j++) {
         Cinrad2Record r =  (Cinrad2Record) scanGroup.get(j);
-        if (needFirst && r != null)
+        if (needFirst)
         {
             ngatesIter.setIntNext(r.getGateCount(datatype));
             needFirst = false;

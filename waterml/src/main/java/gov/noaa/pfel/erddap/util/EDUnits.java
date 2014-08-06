@@ -4,10 +4,9 @@
  */
 package gov.noaa.pfel.erddap.util;
 
-import com.cohort.array.StringArray;
-import com.cohort.util.Calendar2;
-import com.cohort.util.String2;
+import com.google.common.math.DoubleMath;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashMap;
 
@@ -43,18 +42,18 @@ public class EDUnits {
             "1024", "1048576", "1073741824", "1.099511627776e12"};
     public static int nTwo = twoAcronym.length;
 
-    // These don't need to be thread-safe because they are read-only after creation.
-    private static final HashMap<String, String> udHashMap =
-            getHashMapStringString(EDUnits.class.getResourceAsStream("UdunitsToUcum.properties"), "ISO-8859-1");
-    private static final HashMap<String, String> ucHashMap =
-            getHashMapStringString(EDUnits.class.getResourceAsStream("UcumToUdunits.properties"), "ISO-8859-1");
+    private static final HashMap<String, String> udHashMap;
+    private static final HashMap<String, String> ucHashMap;
 
-    /**
-     * Set this to true (by calling reallyReallyVerbose=true in your program,
-     * not but changing the code here)
-     * if you want lots of diagnostic messages sent to String2.log.
-     */
-    public static boolean reallyReallyVerbose = false;
+    static {
+        try (   InputStream udunitsToUcumStream = EDUnits.class.getResourceAsStream("UdunitsToUcum.properties");
+                InputStream ucumToUdunitsStream = EDUnits.class.getResourceAsStream("UcumToUdunits.properties")) {
+            udHashMap = getHashMapStringString(udunitsToUcumStream, "ISO-8859-1");
+            ucHashMap = getHashMapStringString(ucumToUdunitsStream, "ISO-8859-1");
+        } catch (IOException e) {
+            throw new ExceptionInInitializerError(e);
+        }
+    }
 
 
     /**
@@ -86,10 +85,9 @@ public class EDUnits {
      * throws Exception if trouble.
      */
     public static String udunitsToUcum(String udunits) {
-        if (udunits == null)
+        if (udunits == null) {
             return null;
-        if (reallyReallyVerbose)
-            String2.log("  udunits=" + udunits);
+        }
 
         //is it a point in time? e.g., seconds since 1970-01-01T00:00:00T
         int sincePo = udunits.indexOf(" since ");
@@ -99,18 +97,27 @@ public class EDUnits {
                 double baf[] = Calendar2.getTimeBaseAndFactor(udunits); //throws exception if trouble
 
                 //use 'factor', since it is more forgiving than udunitsToUcum converter
-                String u = baf[1] == 0.001 ? "ms" :
-                        baf[1] == 1 ? "s" :
-                                baf[1] == Calendar2.SECONDS_PER_MINUTE ? "min" :
-                                        baf[1] == Calendar2.SECONDS_PER_HOUR ? "h" :
-                                                baf[1] == Calendar2.SECONDS_PER_DAY ? "d" :
-                                                        baf[1] == 30 * Calendar2.SECONDS_PER_DAY ? "mo" :  //mo_j?
-                                                                baf[1] == 360 * Calendar2.SECONDS_PER_DAY ? "a" : //a_j?
-                                                                        udunitsToUcum(udunits.substring(0, sincePo)); //shouldn't happen, but weeks? microsec?
+                String u;
+                if (DoubleMath.fuzzyEquals(baf[1], 0.001, 1e-6)) {  // Can't simply do "baf[1] == 0.001".
+                    u = "ms";
+                } else if (baf[1] == 1) {
+                    u = "s";
+                } else if (baf[1] == Calendar2.SECONDS_PER_MINUTE) {
+                    u = "min";
+                } else if (baf[1] == Calendar2.SECONDS_PER_HOUR) {
+                    u = "h";
+                } else if (baf[1] == Calendar2.SECONDS_PER_DAY) {
+                    u = "d";
+                } else if (baf[1] == 30 * Calendar2.SECONDS_PER_DAY) {  // mo_j ?
+                    u = "mo";
+                } else if (baf[1] == 360 * Calendar2.SECONDS_PER_DAY) {  // a_j ?
+                    u = "a";
+                } else {
+                    u = udunitsToUcum(udunits.substring(0, sincePo)); //shouldn't happen, but weeks? microsec?
+                }
 
                 //make "s{since 1970-01-01T00:00:00T}
-                return u + "{" +
-                        udunits.substring(sincePo + 1) + "}";
+                return u + "{" + udunits.substring(sincePo + 1) + "}";
             } catch (Exception e) {
             }
         }
@@ -120,7 +127,6 @@ public class EDUnits {
         int udLength = udunits.length();
         int po = 0;  //po is next position to be read
         while (po < udLength) {
-            if (reallyReallyVerbose && ucum.length() > 0) String2.log("  ucum=" + ucum);
             char ch = udunits.charAt(po);
 
             //letter  
@@ -129,8 +135,9 @@ public class EDUnits {
                 int po2 = po + 1;
                 while (po2 < udLength &&
                         (isUdunitsLetter(udunits.charAt(po2)) || udunits.charAt(po2) == '_' ||
-                                String2.isDigit(udunits.charAt(po2))))
+                                String2.isDigit(udunits.charAt(po2)))) {
                     po2++;
+                }
                 String tUdunits = udunits.substring(po, po2);
                 po = po2;
 
@@ -138,8 +145,9 @@ public class EDUnits {
                 //if it ends in digits, treat as exponent
                 //find contiguous digits at end
                 int firstDigit = tUdunits.length();
-                while (firstDigit >= 1 && String2.isDigit(tUdunits.charAt(firstDigit - 1)))
+                while (firstDigit >= 1 && String2.isDigit(tUdunits.charAt(firstDigit - 1))) {
                     firstDigit--;
+                }
                 String exponent = tUdunits.substring(firstDigit);
                 tUdunits = tUdunits.substring(0, firstDigit);
                 String tUcum = oneUdunitsToUcum(tUdunits);
@@ -147,11 +155,13 @@ public class EDUnits {
                 //deal with PER -> / 
                 if (tUcum.equals("/")) {
                     char lastUcum = ucum.length() == 0 ? '\u0000' : ucum.charAt(ucum.length() - 1);
-                    if (lastUcum == '/')
+                    if (lastUcum == '/') {
                         ucum.setCharAt(ucum.length() - 1, '.'); //2 '/' cancel out
-                    else if (lastUcum == '.')
+                    } else if (lastUcum == '.') {
                         ucum.setCharAt(ucum.length() - 1, '/'); //  '/' replaces '.'
-                    else ucum.append('/');
+                    } else {
+                        ucum.append('/');
+                    }
 
                 } else {
                     ucum.append(tUcum);
@@ -168,16 +178,18 @@ public class EDUnits {
             if (ch == '-' || String2.isDigit(ch)) {
                 //find contiguous digits
                 int po2 = po + 1;
-                while (po2 < udLength && String2.isDigit(udunits.charAt(po2)))
+                while (po2 < udLength && String2.isDigit(udunits.charAt(po2))) {
                     po2++;
+                }
 
                 //decimal place + digit (not just .=multiplication)
                 boolean hasDot = false;
                 if (po2 < udLength - 1 && udunits.charAt(po2) == '.' && String2.isDigit(udunits.charAt(po2 + 1))) {
                     hasDot = true;
                     po2 += 2;
-                    while (po2 < udLength && String2.isDigit(udunits.charAt(po2)))
+                    while (po2 < udLength && String2.isDigit(udunits.charAt(po2))) {
                         po2++;
+                    }
                 }
 
                 //exponent?     e-  or e{digit}
@@ -186,8 +198,9 @@ public class EDUnits {
                         (udunits.charAt(po2 + 1) == '-' || String2.isDigit(udunits.charAt(po2 + 1)))) {
                     hasE = true;
                     po2 += 2;
-                    while (po2 < udLength && String2.isDigit(udunits.charAt(po2)))
+                    while (po2 < udLength && String2.isDigit(udunits.charAt(po2))) {
                         po2++;
+                    }
                 }
                 String num = udunits.substring(po, po2);
                 po = po2;
@@ -195,38 +208,14 @@ public class EDUnits {
                 //convert floating point to rational number
                 if (hasDot || hasE) {
                     int rational[] = String2.toRational(String2.parseDouble(num));
-                    if (rational[1] == Integer.MAX_VALUE)
+                    if (rational[1] == Integer.MAX_VALUE) {
                         ucum.append(num); //ignore the trouble !!! ???
-                    else if (rational[1] == 0) //includes {0, 0}
+                    } else if (rational[1] == 0) //includes {0, 0}
+                    {
                         ucum.append(rational[0]);
-                    else ucum.append(rational[0] + ".10^" + rational[1]);
-
-                    /*double d = Math2.niceDouble(String2.parseDouble(num), 13);
-                    if (Double.isNaN(d)) {
-                        ucum.append(num);  //ignore the trouble !!! ???
-                    } else if (d == 0) {
-                        ucum.append("0");    //ignore the trouble !!! ???
-                    } else if (d == Math2.roundToInt(d)) {
-                        ucum.append(Math2.roundToInt(d));
                     } else {
-                        int ie = Math2.intExponent(d);
-                        String man = "" + Math2.mantissa(d);  //e.g. -1.76948
-                        if (reallyReallyVerbose) String2.log("  man=" + man + " ie=" + ie);
-                        if (ie == Integer.MAX_VALUE) {
-                            ucum.append(num);  //infinity    //ignore the trouble !!! ???
-                        } else if (man.endsWith(".0")) {
-                            ucum.append(man.substring(0, man.length() - 2) + ".10^" + ie);
-                        } else {
-                            int dotPo = man.indexOf('.');
-                            if (dotPo < 0) 
-                                ucum.append(man + ".10^" + ie);                            
-                            else 
-                                ucum.append(
-                                    man.substring(0, dotPo) +
-                                    man.substring(dotPo + 1, man.length()) + 
-                                    ".10^" + (ie - (man.length() - dotPo - 1)));                            
-                        }
-                    }*/
+                        ucum.append(rational[0]).append(".10^").append(rational[1]);
+                    }
                 } else {
                     //just copy num
                     ucum.append(num);
@@ -239,8 +228,10 @@ public class EDUnits {
             if (ch == ' ' || ch == '.' || ch == 183) {
                 char lastUcum = ucum.length() == 0 ? '\u0000' : ucum.charAt(ucum.length() - 1);
                 if (lastUcum == '/' || lastUcum == '.') {
-                } //if last token was / or .,  do nothing
-                else ucum.append('.');
+                    //if last token was / or .,  do nothing
+                } else {
+                    ucum.append('.');
+                }
                 po++;
                 continue;
             }
@@ -254,8 +245,10 @@ public class EDUnits {
                 } else {
                     char lastUcum = ucum.length() == 0 ? '\u0000' : ucum.charAt(ucum.length() - 1);
                     if (lastUcum == '/' || lastUcum == '.') {
-                    } //if last token was / or .,  do nothing
-                    else ucum.append('.');
+                        //if last token was / or .,  do nothing
+                    } else {
+                        ucum.append('.');
+                    }
                 }
                 continue;
             }
@@ -264,11 +257,13 @@ public class EDUnits {
             if (ch == '/') {
                 po++;
                 char lastUcum = ucum.length() == 0 ? '\u0000' : ucum.charAt(ucum.length() - 1);
-                if (lastUcum == '/')
+                if (lastUcum == '/') {
                     ucum.setCharAt(ucum.length() - 1, '.'); //  2 '/' cancel out
-                else if (lastUcum == '.')
+                } else if (lastUcum == '.') {
                     ucum.setCharAt(ucum.length() - 1, '/'); //  '/' replaces '.'
-                else ucum.append('/');
+                } else {
+                    ucum.append('/');
+                }
 
                 continue;
             }
@@ -305,9 +300,6 @@ public class EDUnits {
         StringBuilder ucum = new StringBuilder();
         MAIN:
         while (true) {
-            if (reallyReallyVerbose)
-                String2.log(ucum.length() == 0 ? "" : "  ucum=" + ucum + " udunits=" + udunits);
-
             //try to find udunits in hashMap
             String tUcum = udHashMap.get(udunits);
             if (tUcum != null) {
@@ -342,13 +334,7 @@ public class EDUnits {
                 }
             }
 
-            //no change? failure; return original udunits
-            //  because I don't want to change "exact" into "ect" 
-            //  (i.e., seeing a metric prefix that isn't a metric prefix)
-            if (reallyReallyVerbose) String2.log("EDUnits.oneUdunitsToUcum fail: ucum=" +
-                    ucum + " udunits=" + udunits);
-            //ucum.append(udunits);
-            return oldUdunits; //ucum.toString();
+            return oldUdunits;
         }
     }
 
@@ -382,15 +368,15 @@ public class EDUnits {
      * null returns null. "" returns "".
      */
     public static String ucumToUdunits(String ucum) {
-        if (ucum == null)
+        if (ucum == null) {
             return null;
-        if (reallyReallyVerbose)
-            String2.log("  ucum=" + ucum);
+        }
 
         StringBuilder udunits = new StringBuilder();
         int ucLength = ucum.length();
-        if (ucLength == 0)
+        if (ucLength == 0) {
             return "";
+        }
 
         //is it a time point?  e.g., s{since 1970-01-01T00:00:00T}
         if (ucum.charAt(ucLength - 1) == '}' &&  //quick reject
@@ -399,16 +385,15 @@ public class EDUnits {
             if (sincePo > 0) {
                 //is first part an atomic ucum unit?
                 String tUdunits = ucHashMap.get(ucum.substring(0, sincePo));
-                if (tUdunits != null)
+                if (tUdunits != null) {
                     return tUdunits + " " + ucum.substring(sincePo + 1, ucLength - 1);
+                }
             }
         }
-
 
         //parse ucum and build udunits, till done        
         int po = 0;  //po is next position to be read
         while (po < ucLength) {
-            if (reallyReallyVerbose && udunits.length() > 0) String2.log("  udunits=" + udunits);
             char ch = ucum.charAt(po);
 
             //letter  
@@ -417,8 +402,9 @@ public class EDUnits {
                 int po2 = po + 1;
                 while (po2 < ucLength &&
                         (isUcumLetter(ucum.charAt(po2)) || ucum.charAt(po2) == '_' ||
-                                String2.isDigit(ucum.charAt(po2))))
+                                String2.isDigit(ucum.charAt(po2)))) {
                     po2++;
+                }
                 String tUcum = ucum.substring(po, po2);
                 po = po2;
 
@@ -426,8 +412,9 @@ public class EDUnits {
                 //if it ends in digits, treat as exponent
                 //find contiguous digits at end
                 int firstDigit = tUcum.length();
-                while (firstDigit >= 1 && String2.isDigit(tUcum.charAt(firstDigit - 1)))
+                while (firstDigit >= 1 && String2.isDigit(tUcum.charAt(firstDigit - 1))) {
                     firstDigit--;
+                }
                 String exponent = tUcum.substring(firstDigit);
                 tUcum = tUcum.substring(0, firstDigit);
                 String tUdunits = oneUcumToUdunits(tUcum);
@@ -435,11 +422,13 @@ public class EDUnits {
                 //deal with PER -> / 
                 if (tUdunits.equals("/")) {
                     char lastUdunits = udunits.length() == 0 ? '\u0000' : udunits.charAt(udunits.length() - 1);
-                    if (lastUdunits == '/')
+                    if (lastUdunits == '/') {
                         udunits.setCharAt(udunits.length() - 1, '.'); //2 '/' cancel out
-                    else if (lastUdunits == '.')
+                    } else if (lastUdunits == '.') {
                         udunits.setCharAt(udunits.length() - 1, '/'); //  '/' replaces '.'
-                    else udunits.append('/');
+                    } else {
+                        udunits.append('/');
+                    }
 
                 } else {
                     udunits.append(tUdunits);
@@ -456,17 +445,17 @@ public class EDUnits {
             if (ch == '-' || String2.isDigit(ch)) {
                 //find contiguous digits
                 int po2 = po + 1;
-                while (po2 < ucLength && String2.isDigit(ucum.charAt(po2)))
+                while (po2 < ucLength && String2.isDigit(ucum.charAt(po2))) {
                     po2++;
+                }
 
                 // ^-  or ^{digit}
-                boolean hasE = false;
                 if (po2 < ucLength - 1 && Character.toLowerCase(ucum.charAt(po2)) == '^' &&
                         (ucum.charAt(po2 + 1) == '-' || String2.isDigit(ucum.charAt(po2 + 1)))) {
-                    hasE = true;
                     po2 += 2;
-                    while (po2 < ucLength && String2.isDigit(ucum.charAt(po2)))
+                    while (po2 < ucLength && String2.isDigit(ucum.charAt(po2))) {
                         po2++;
+                    }
                 }
                 String num = ucum.substring(po, po2);
                 po = po2;
@@ -529,9 +518,6 @@ public class EDUnits {
         StringBuilder udunits = new StringBuilder();
         MAIN:
         while (true) {
-            if (reallyReallyVerbose)
-                String2.log(udunits.length() == 0 ? "" : "  udunits=" + udunits + " ucum=" + ucum);
-
             //try to find ucum in hashMap
             String tUdunits = ucHashMap.get(ucum);
             if (tUdunits != null) {
@@ -558,90 +544,60 @@ public class EDUnits {
                 if (ucum.startsWith(twoAcronym[p])) {
                     ucum = ucum.substring(twoAcronym[p].length());
                     char udch = udunits.length() > 0 ? udunits.charAt(udunits.length() - 1) : '\u0000';
-                    if (udch != '\u0000' && udch != '.' && udch != '/')
+                    if (udch != '\u0000' && udch != '.' && udch != '/') {
                         udunits.append('.');
+                    }
                     if (ucum.length() == 0) {
                         udunits.append("{count}");
                         return udunits.toString();
                     }
-                    udunits.append(twoValue[p] + ".");
+                    udunits.append(twoValue[p]).append(".");
                     continue MAIN;
                 }
             }
 
             //ends in comment?  try to just convert the beginning
             int po1 = oldUcum.lastIndexOf('{');
-            if (po1 > 0 && oldUcum.endsWith("}"))
+            if (po1 > 0 && oldUcum.endsWith("}")) {
                 return oneUcumToUdunits(oldUcum.substring(0, po1)) + oldUcum.substring(po1);
+            }
 
-            //no change? failure; return original ucum
-            //  because I don't want to change "exact" into "ect" 
-            // (i.e., seeing a metric prefix that isn't a metric prefix)
-            if (reallyReallyVerbose) String2.log("EDUnits.oneUcumToUdunits fail: udunits=" +
-                    udunits + " ucum=" + ucum);
-            //udunits.append(ucum);
             return oldUcum;
         }
     }
 
     /**
-     * This makes a HashMap&lt;String, String&gt; from the ResourceBundle-like file's keys=values.
-     * The key and value strings are trim()'d.
+     * Reads the contents of {@code inputStream} into a HashMap. Each key-value pair in the input will result in an
+     * entry in the map.
+     * <p/>
+     * The specified stream remains open after this method returns.
      *
-     * @param fileName the full file name of the key=value file.
-     * @param charset  e.g., ISO-8859-1; or "" or null for the default
-     * @throws RuntimeException if trouble
+     * @param inputStream a stream with line-based, key-value pairs.
+     * @param charset     the name of a supported {@link java.nio.charset.Charset charset}.
+     * @return a HashMap initialized from the stream.
+     * @throws java.io.IOException if an I/O error occurs
      */
-    public static HashMap<String, String> getHashMapStringString(String fileName, String charset)
-            throws RuntimeException {
-        try {
-            HashMap ht = new HashMap();
-            StringArray sa = StringArray.fromFile(fileName, charset);
-            int n = sa.size();
-            int i = 0;
-            while (i < n) {
-                String s = sa.get(i++);
-                if (s.startsWith("#"))
-                    continue;
-                while (i < n && s.endsWith("\\"))
-                    s = s.substring(0, s.length() - 1) + sa.get(i++);
-                int po = s.indexOf('=');
-                if (po < 0)
-                    continue;
-                //new String: so not linked to big source file's text
-                ht.put(
-                        new String(s.substring(0, po).trim()),
-                        new String(s.substring(po + 1).trim()));
+    public static HashMap<String, String> getHashMapStringString(InputStream inputStream, String charset)
+            throws IOException {
+        HashMap<String, String> ht = new HashMap<>();
+        StringArray sa = StringArray.fromInputStream(inputStream, charset);
+        int n = sa.size();
+        int i = 0;
+        while (i < n) {
+            String s = sa.get(i++);
+            if (s.startsWith("#")) {
+                continue;
             }
-            return ht;
-        } catch (Throwable t) {
-            throw new RuntimeException(t);
-        }
-    }
-
-    public static HashMap<String, String> getHashMapStringString(InputStream inputStream, String charset) {
-        try {
-            HashMap ht = new HashMap();
-            StringArray sa = StringArray.fromInputStream(inputStream, charset);
-            int n = sa.size();
-            int i = 0;
-            while (i < n) {
-                String s = sa.get(i++);
-                if (s.startsWith("#"))
-                    continue;
-                while (i < n && s.endsWith("\\"))
-                    s = s.substring(0, s.length() - 1) + sa.get(i++);
-                int po = s.indexOf('=');
-                if (po < 0)
-                    continue;
-                //new String: so not linked to big source file's text
-                ht.put(
-                        new String(s.substring(0, po).trim()),
-                        new String(s.substring(po + 1).trim()));
+            while (i < n && s.endsWith("\\")) {
+                s = s.substring(0, s.length() - 1) + sa.get(i++);
             }
-            return ht;
-        } catch (Throwable t) {
-            throw new RuntimeException(t);
+            int po = s.indexOf('=');
+            if (po < 0) {
+                continue;
+            }
+            //new String: so not linked to big source file's text
+            ht.put(s.substring(0, po).trim(), s.substring(po + 1).trim());
         }
+        return ht;
     }
 }
