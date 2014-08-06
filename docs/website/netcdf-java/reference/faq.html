@@ -166,7 +166,6 @@ Array.makeArray(DataType dtype, List&lt;String&gt; stringValues);</pre>
   </ol>
 </blockquote>
 <h2><a name="Unsigned" id="Unsigned"></a>Unsigned Types</h2>
-
 <p><strong>Q: How do I work with unsigned integer types?</strong></p>
 <blockquote>
   <p>Classic netCDF-3 format has only signed bytes. The CDM library often sees unsigned integers coming from other data formats, and we made the decision not
@@ -204,6 +203,22 @@ Array.makeArray(DataType dtype, List&lt;String&gt; stringValues);</pre>
  -125 =  131
  -124 =  132
  ...</pre>
+</blockquote>
+<p><strong>Q: How do I specify an unsigned integer type in NcML?<a name="ncml_unsigned" id="ncml_unsigned"></a></strong></p>
+<blockquote>
+  <p>In the following example, the <strong>type</strong> may be <em>byte, short, int </em>or<em> long</em>:</p>
+  <pre>
+&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
+&lt;netcdf xmlns=&quot;http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2&quot; location=&quot;nc/cldc.mean.nc&quot;&gt;
+  ...
+  &lt;variable name=&quot;temperature&quot; shape=&quot;time pressure latitude longitude&quot; type=&quot;int&quot;&gt;
+    &lt;attribute name=&quot;long_name&quot; value=&quot;Sea Temperature&quot; /&gt;   
+    &lt;attribute name=&quot;units&quot; value=&quot;Celsius&quot; /&gt;
+    &lt;attribute name=&quot;_Unsigned&quot; value=&quot;true&quot; /&gt;
+  &lt;/variable&gt;
+
+&lt;/netcdf&gt;
+</pre>
 </blockquote>
 <h2><a name="Reading" id="Reading"></a>Reading</h2>
 

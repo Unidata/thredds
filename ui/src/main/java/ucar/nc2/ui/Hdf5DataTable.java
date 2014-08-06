@@ -326,7 +326,15 @@ public class Hdf5DataTable extends JPanel {
       return f.toString();
     }
 
-    public long getNelems() {
+    public int getChunkSize() {
+       if (!vinfo.isChunked()) return -1;
+       int[] chunks = vinfo.getChunking();
+       int total = 1;
+       for (int chunk : chunks) total *= chunk;
+       return total;
+     }
+
+     public long getNelems() {
       return v.getSize();
     }
 

@@ -676,9 +676,15 @@ public class Grib1CollectionPanel extends JPanel {
 
   public void showCompleteRecord(RecordBean rbean, Formatter f) {
     f.format("Header = %s%n", new String(rbean.gr.getHeader()));
+    f.format("Total length of GRIB message = %d%n", rbean.gr.getIs().getMessageLength());
     f.format("file = %d %s%n", rbean.gr.getFile(), fileList.get(rbean.gr.getFile()).getPath());
+    f.format("PDS len=%d%n", rbean.pds.getLength());
     rbean.pds.showPds(cust, f);
+    f.format("%nGDS len=%d%n", rbean.gds.getLength());
     showGds(rbean.gds, rbean.gds.getGDS(), f);
+    f.format("%nDataSection len=%d%n", rbean.gr.getDataSection().getLength());
+    f.format("   has bitmap=%s%n", rbean.pds.bmsExists());
+    rbean.showDataRecord(f);
   }
 
   public void showProcessedPds(ParameterBean pbean, Formatter f) {
@@ -866,6 +872,10 @@ public class Grib1CollectionPanel extends JPanel {
       return Float.toString(plevel.getValue1());
     }
 
+    public long getLength() {
+      return gr.getIs().getMessageLength();
+    }
+
     public long getPos() {
       return gr.getDataSection().getStartingPosition();
     }
@@ -877,16 +887,24 @@ public class Grib1CollectionPanel extends JPanel {
     float[] readData() throws IOException {
       int fileno = gr.getFile();
       MFile mfile = fileList.get(fileno);
-      ucar.unidata.io.RandomAccessFile raf = null;
-      try {
-        raf = new ucar.unidata.io.RandomAccessFile(mfile.getPath(), "r");
+      try (ucar.unidata.io.RandomAccessFile raf = new ucar.unidata.io.RandomAccessFile(mfile.getPath(), "r")) {
         raf.order(ucar.unidata.io.RandomAccessFile.BIG_ENDIAN);
         return gr.readData(raf);
-      } finally {
-        if (raf != null)
-          raf.close();
       }
     }
+
+    void showDataRecord(Formatter f) {
+      int fileno = gr.getFile();
+      MFile mfile = fileList.get(fileno);
+      try (ucar.unidata.io.RandomAccessFile raf = new ucar.unidata.io.RandomAccessFile(mfile.getPath(), "r")) {
+        raf.order(ucar.unidata.io.RandomAccessFile.BIG_ENDIAN);
+        gr.showDataInfo(raf, f);
+      } catch (IOException e) {
+        e.printStackTrace();
+        logger.error("showDataRecord", e);
+      }
+    }
+
 
   }
 

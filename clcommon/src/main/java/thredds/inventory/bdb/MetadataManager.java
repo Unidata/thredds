@@ -430,7 +430,7 @@ public class MetadataManager implements StoreKeyValue {
     return result;
   }
 
-  public class KeyValue {
+  public static class KeyValue {
     public String key;
     public String value;
 

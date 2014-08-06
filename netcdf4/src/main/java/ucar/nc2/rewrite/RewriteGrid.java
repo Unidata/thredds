@@ -31,72 +31,63 @@
  *   WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-package ucar.nc2.dt.image.image;
+package ucar.nc2.rewrite;
 
-import java.awt.image.BufferedImage;
-import java.io.IOException;
+import ucar.nc2.NetcdfFileWriter;
+import ucar.nc2.dt.grid.CFGridWriter2;
+import ucar.nc2.write.Nc4Chunking;
+import ucar.nc2.write.Nc4ChunkingStrategy;
+
 import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
+import java.io.IOException;
+import java.util.Formatter;
 
 /**
- * Read in all images in a dir and subdirs, and randomly iterate.
+ * Describe
  *
  * @author caron
- * @since Oct 9, 2008
+ * @since 8/5/2014
  */
-public class ImageFactoryRandom {
-  private java.util.List<File> holdList;
-  private java.util.List<File> fileList;
-  private Random random = new Random( System.currentTimeMillis());
+public class RewriteGrid {
 
-  public ImageFactoryRandom(File topDir) {
-    if (!topDir.exists())
-      return;
+  double rewrite(String filenameIn, String filenameOut,
+                     NetcdfFileWriter.Version version, Nc4Chunking.Strategy chunkerType, int deflateLevel, boolean shuffle,
+                     Formatter fw) throws IOException {
 
-    fileList = new ArrayList<>(1000);
-    addToList(topDir, fileList);
-    System.out.println("nfiles= "+ fileList.size());
-    holdList = new ArrayList<>( fileList);
-  }
+    ucar.nc2.dt.GridDataset gds = ucar.nc2.dt.grid.GridDataset.open(filenameIn);
+    Nc4Chunking chunking = (version == NetcdfFileWriter.Version.netcdf3) ? null : Nc4ChunkingStrategy.factory(chunkerType, deflateLevel, shuffle);
+    NetcdfFileWriter writer = NetcdfFileWriter.createNew(version, filenameOut, chunking);
 
-  private void addToList(File dir, List<File> list) {
-    for (File file : dir.listFiles()) {
-      if (file.isDirectory())
-        addToList(file, list);
-      else if (file.getName().endsWith(".jpg") || file.getName().endsWith(".JPG"))
-        list.add(file);
-    }
-  }
+    long start = System.currentTimeMillis();
 
-  File nextFile = null;
-  public BufferedImage getNextImage() {
-    if (holdList.size() == 0)
-      holdList = new ArrayList<>( fileList);
-
-    int next = random.nextInt( holdList.size());
-    nextFile = holdList.get(next);
-    holdList.remove( nextFile); // random draw without replacement
-
+    long totalBytes;
     try {
-      System.out.printf("next %d %s %n", next, nextFile);
-      return javax.imageio.ImageIO.read(nextFile);
-    } catch (IOException e) {
-      System.out.println("Failed to open image " + nextFile);
-      fileList.remove( nextFile);
-      return getNextImage();
+      totalBytes = CFGridWriter2.writeFile(gds, null, null, null, 1, null, null, 1, true, writer);
+    } catch (Throwable e) {
+      e.printStackTrace();
+      return 0;
     }
 
-  }
+    File fin = new File(filenameIn);
+    double lenIn = (double) fin.length();
+    lenIn /= 1000 * 1000;
 
-  // remove last file
-  public boolean delete() {
-    if (nextFile == null) return false;
-    fileList.remove( nextFile);
-    File f = new File("C:/tmp/deleted/"+nextFile.getName());
-    return nextFile.renameTo(f);
-  }
+    File fout = new File(filenameOut);
+    double lenOut = (double) fout.length();
+    lenOut /= 1000 * 1000;
 
+    System.out.format("   %10.3f: %s%n", lenOut / lenIn, fout.getCanonicalPath());
+    double took = (System.currentTimeMillis() - start) /1000.0;
+    System.out.format("   that took: %f secs%n", took);
+
+    if (fw != null)
+      fw.format("%s,%10.3f, %s,%s, %d, %10.3f,%10.3f,%d%n", fin.getName(), lenIn,
+            (chunkerType != null) ? chunkerType : "nc3",
+            shuffle ? "shuffle" : "",
+            deflateLevel,
+            lenOut, lenOut / lenIn, totalBytes);
+
+    return lenOut;
+  }
 
 }

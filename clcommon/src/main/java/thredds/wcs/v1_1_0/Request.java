@@ -35,6 +35,7 @@ package thredds.wcs.v1_1_0;
 import java.util.List;
 import java.util.Collections;
 import java.util.ArrayList;
+import java.util.Objects;
 
 import ucar.nc2.dt.GridDataset;
 
@@ -45,16 +46,14 @@ import ucar.nc2.dt.GridDataset;
  * @since 4.0
  * ToDo Make this an AbstractFactory class for GetCapabilities, DescribeCoverge, and GetCoverage classes.
  */
-public class Request
-{
-  private static org.slf4j.Logger log =
-          org.slf4j.LoggerFactory.getLogger( Request.class );
+public class Request {
+  private static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(Request.class);
+  private static final String expectedVersion = "1.1.0";
 
   // General request info
   private Operation operation;
   private String negotiatedVersion;
 
-  private String expectedVersion = "1.1.0"; 
 
   // GetCapabilities request info
   private List<GetCapabilities.Section> sections;
@@ -71,140 +70,147 @@ public class Request
   private List<String> availableCoverageNames;
 
 
-  public enum Operation
-  {
+  public enum Operation {
     GetCapabilities, DescribeCoverage, GetCoverage
   }
 
-  public enum RequestEncoding
-  {
+  public enum RequestEncoding {
     GET_KVP, POST_XML, POST_SOAP
   }
 
-  public enum Format
-  {
-    NONE( "" ),
-    GeoTIFF( "image/tiff" ),
-    GeoTIFF_Float( "image/tiff" ),
-    NetCDF3( "application/x-netcdf" );
+  public enum Format {
+    NONE(""),
+    GeoTIFF("image/tiff"),
+    GeoTIFF_Float("image/tiff"),
+    NetCDF3("application/x-netcdf");
 
     private String mimeType;
 
-    Format( String mimeType ) { this.mimeType = mimeType; }
+    Format(String mimeType) {
+      this.mimeType = mimeType;
+    }
 
-    public String getMimeType() { return mimeType; }
+    public String getMimeType() {
+      return mimeType;
+    }
 
-    public static Format getFormat( String mimeType )
-    {
-      for ( Format curSection : Format.values() )
-      {
-        if ( curSection.mimeType.equals( mimeType ) )
+    public static Format getFormat(String mimeType) {
+      for (Format curSection : Format.values()) {
+        if (curSection.mimeType.equals(mimeType))
           return curSection;
       }
-      throw new IllegalArgumentException( "No such instance <" + mimeType + ">." );
+      throw new IllegalArgumentException("No such instance <" + mimeType + ">.");
     }
   }
 
-  static public Request getGetCapabilitiesRequest( Operation operation,
-                                                   String negotiatedVersion,
-                                                   List<GetCapabilities.Section> sections,
-                                                   String datasetPath,
-                                                   GridDataset dataset)
-  {
-    Request req = new Request( operation, negotiatedVersion, datasetPath, dataset );
-    if ( ! operation.equals( Operation.GetCapabilities ) )
-      throw new IllegalArgumentException( "The \"" + operation.toString() + "\" operation not supported by this method.");
-    req.sections = sections;
+  static public Request getGetCapabilitiesRequest(Operation operation,
+                                                  String negotiatedVersion,
+                                                  List<GetCapabilities.Section> sections,
+                                                  String datasetPath,
+                                                  GridDataset dataset) {
 
-    if ( req.sections == null )
-      throw new IllegalArgumentException( "Non-null section list required.");
+
+    if (!operation.equals(Operation.GetCapabilities))
+      throw new IllegalArgumentException("The \"" + operation.toString() + "\" operation not supported by this method.");
+
+    Objects.requireNonNull(sections);
+
+    Request req = new Request(operation, negotiatedVersion, datasetPath, dataset);
+    req.sections = sections;
 
     return req;
   }
 
-  static public Request getDescribeCoverageRequest( Operation operation,
-                                                    String negotiatedVersion,
-                                                    List<String> identifiers,
-                                                    String datasetPath,
-                                                    GridDataset dataset)
-          throws WcsException
-  {
-    Request req = new Request( operation, negotiatedVersion, datasetPath, dataset );
-    if ( ! operation.equals( Operation.DescribeCoverage ) )
-      throw new IllegalArgumentException( "The \"" + operation.toString() + "\" operation not supported by this method." );
-    if ( ! req.availableCoverageNames.containsAll( identifiers))
-      throw new WcsException( WcsException.Code.InvalidParameterValue, "identifiers", "The \"identifiers\" parameter contains unrecognized values: " + identifiers);
+  static public Request getDescribeCoverageRequest(Operation operation,
+                                                   String negotiatedVersion,
+                                                   List<String> identifiers,
+                                                   String datasetPath,
+                                                   GridDataset dataset)
+          throws WcsException {
+
+     if (!operation.equals(Operation.DescribeCoverage))
+      throw new IllegalArgumentException("The \"" + operation.toString() + "\" operation not supported by this method.");
+
+    Request req = new Request(operation, negotiatedVersion, datasetPath, dataset);
+    if (!req.availableCoverageNames.containsAll(identifiers))
+      throw new WcsException(WcsException.Code.InvalidParameterValue, "identifiers", "The \"identifiers\" parameter contains unrecognized values: " + identifiers);
     req.identifierList = identifiers;
 
     return req;
   }
 
-  static public Request getGetCoverageRequest( Operation operation,
-                                               String negotiatedVersion,
-                                               String identifier,
-                                               String datasetPath,
-                                               GridDataset dataset)
-          throws WcsException
-  {
-    Request req = new Request( operation, negotiatedVersion, datasetPath, dataset );
-    if ( !operation.equals( Operation.GetCoverage ) )
-      throw new IllegalArgumentException( "The \"" + operation.toString() + "\" operation not supported by this method." );
-    if ( !req.availableCoverageNames.contains( identifier ) )
-      throw new WcsException( WcsException.Code.InvalidParameterValue, "identifier", "Unrecognized value in \"identifier\" parameter: " + identifier );
+  static public Request getGetCoverageRequest(Operation operation,
+                                              String negotiatedVersion,
+                                              String identifier,
+                                              String datasetPath,
+                                              GridDataset dataset)
+          throws WcsException {
+
+    if (!operation.equals(Operation.GetCoverage))
+      throw new IllegalArgumentException("The \"" + operation.toString() + "\" operation not supported by this method.");
+
+    Request req = new Request(operation, negotiatedVersion, datasetPath, dataset);
+    if (!req.availableCoverageNames.contains(identifier))
+      throw new WcsException(WcsException.Code.InvalidParameterValue, "identifier", "Unrecognized value in \"identifier\" parameter: " + identifier);
     req.identifier = identifier;
 
     return req;
   }
 
-  Request( Operation operation, String negotiatedVersion, String datasetPath, GridDataset dataset)
-  {
+  Request(Operation operation, String negotiatedVersion, String datasetPath, GridDataset dataset) {
+    Objects.requireNonNull(operation);
+    Objects.requireNonNull(negotiatedVersion);
+    Objects.requireNonNull(datasetPath);
+    Objects.requireNonNull(dataset);
+
+    if (!this.negotiatedVersion.equals(expectedVersion))
+       throw new IllegalArgumentException("Version <" + negotiatedVersion + "> not as expected <" + expectedVersion + ">.");
+
     this.operation = operation;
     this.negotiatedVersion = negotiatedVersion;
     this.datasetPath = datasetPath;
     this.dataset = dataset;
-    this.availableCoverageNames = new ArrayList<String>();
-    for ( GridDataset.Gridset gs : this.dataset.getGridsets() )
-    {
-      this.availableCoverageNames.add( gs.getGeoCoordSystem().getName() );
-    }
-
-
-    if ( operation == null )
-      throw new IllegalArgumentException( "Non-null operation required." );
-    if ( this.negotiatedVersion == null )
-      throw new IllegalArgumentException( "Non-null negotiated version required." );
-    if ( ! this.negotiatedVersion.equals( expectedVersion) )
-      throw new IllegalArgumentException( "Version <" + negotiatedVersion + "> not as expected <" + expectedVersion + ">." );
-    if ( this.datasetPath == null )
-      throw new IllegalArgumentException( "Non-null dataset path required." );
-    if ( this.dataset == null )
-      throw new IllegalArgumentException( "Non-null dataset required." );
-  }
+    this.availableCoverageNames = new ArrayList<>();
+    for (GridDataset.Gridset gs : this.dataset.getGridsets())
+      this.availableCoverageNames.add(gs.getGeoCoordSystem().getName());
+   }
 
   // ---------- General getters
-  public Operation getOperation() { return operation; }
-
-  public String getDatasetName()
-  {
-    int pos = datasetPath.lastIndexOf('/');
-    return pos == -1 ? datasetPath : datasetPath.substring( pos + 1 );
+  public Operation getOperation() {
+    return operation;
   }
 
-  public String getDatasetPath() { return datasetPath; }
-  public GridDataset getDataset() { return dataset; }
-  public List<String> getAvailableCoverageNames() { return availableCoverageNames; }
+  public String getDatasetName() {
+    int pos = datasetPath.lastIndexOf('/');
+    return pos == -1 ? datasetPath : datasetPath.substring(pos + 1);
+  }
+
+  public String getDatasetPath() {
+    return datasetPath;
+  }
+
+  public GridDataset getDataset() {
+    return dataset;
+  }
+
+  public List<String> getAvailableCoverageNames() {
+    return availableCoverageNames;
+  }
 
 
   // ---------- GetCapabilities getters
-  public List<GetCapabilities.Section> getSections()
-  {
-    return Collections.unmodifiableList( sections );
+  public List<GetCapabilities.Section> getSections() {
+    return Collections.unmodifiableList(sections);
   }
 
   // ---------- DescribeCoverage getters
-  public List<String> getIdentifierList() { return identifierList; }
+  public List<String> getIdentifierList() {
+    return identifierList;
+  }
 
   // ---------- GetCoverage getters
-  public String getIdentifier() { return identifier; }
+  public String getIdentifier() {
+    return identifier;
+  }
 
 }

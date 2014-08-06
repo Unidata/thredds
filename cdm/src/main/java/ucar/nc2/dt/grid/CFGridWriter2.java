@@ -242,14 +242,14 @@ public class CFGridWriter2 {
     writer.close();
 
     // this writes the data to the new file.
-    return 0; // ok
+    return total_size; // ok
   }
 
   private boolean isLargeFile(long total_size) {
     boolean isLargeFile = false;
     long maxSize = 2 * 1000 * 1000 * 1000;  // LOOK why not use exact
     if (total_size > maxSize) {
-      log.info("Request size = {} Mbytes", total_size / 1000 / 1000);
+      log.debug("Request size = {} Mbytes", total_size / 1000 / 1000);
       isLargeFile = true;
     }
     return isLargeFile;

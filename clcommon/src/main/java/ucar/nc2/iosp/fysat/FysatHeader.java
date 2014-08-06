@@ -1052,7 +1052,7 @@ public final class FysatHeader {
 //
   // variable info for reading/writing
 
-  class Vinfo {
+  static class Vinfo {
     int vsize; // size of array in bytes. if isRecord, size per record.
     long begin; // offset of start of data from start of file
     boolean isRecord; // is it a record variable?

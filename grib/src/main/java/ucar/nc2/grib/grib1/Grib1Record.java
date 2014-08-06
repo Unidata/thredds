@@ -38,6 +38,7 @@ import ucar.nc2.time.CalendarDate;
 import ucar.unidata.io.RandomAccessFile;
 
 import java.io.IOException;
+import java.util.Formatter;
 
 /**
  * A Grib1 message.
@@ -155,6 +156,19 @@ public class Grib1Record {
     }
 
     return data;
+  }
+
+  // isolate dependencies here - in case we have a "minimal I/O" mode where not all fields are available
+  public void showDataInfo(RandomAccessFile raf, Formatter f) throws IOException {
+    Grib1Gds gds = gdss.getGDS();
+    f.format(" decimal scale = %d%n", pdss.getDecimalScale());
+    f.format("     scan mode = %d%n", gds.getScanMode());
+    f.format("            nx = %d%n", gds.getNx());
+    f.format("            ny = %d%n", gds.getNy());
+    f.format("          Npts = %d%n", gds.getNpts());
+    f.format("        isThin = %s%n", gdss.isThin());
+    Grib1DataReader reader = new Grib1DataReader(pdss.getDecimalScale(), gds.getScanMode(), gds.getNx(), gds.getNy(), gds.getNpts(), dataSection.getStartingPosition());
+    reader.showDataInfo(raf, f);
   }
 
   /**

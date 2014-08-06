@@ -249,6 +249,8 @@ public enum DataType {
   static public short unsignedByteToShort(byte b) {
     return (short) (b & 0xff);
   }
+  //      return (short)((b<0)? (short)b + 256 : (short)b);
+
 
   public static void main(String[] args) {
     for (int i=0; i<260; i++) {

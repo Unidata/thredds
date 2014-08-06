@@ -46,13 +46,16 @@ import ucar.nc2.util.CancelTaskImpl;
 /**
  * Utility class for copying a NetcdfFile object, or parts of one, to a netcdf-3 or netcdf-4 disk file.
  * Uses NetcdfFileWriter.
- * This handles the entire CDM model (groups, etc) if you are writing to netcdf-4
+ * This handles the entire CDM model (groups, etc) if you are writing to netcdf-4.
  * <p/>
  * The fileIn may be an NcML file which has a referenced dataset in the location URL, the underlying data
  * (modified by the NcML) is written to the new file. If the NcML does not have a referenced dataset,
  * then the new file is filled with fill values, like ncgen.
  * <p/>
  * <p> Use a NetcdfFileWriter object for a lower level API.
+ *
+ * @see ucar.nc2.dt.grid.CFGridWriter2
+ * @see ucar.nc2.ft.point.writer.CFPointWriter
  *
  * @author caron
  */

@@ -90,6 +90,10 @@ public final class Grib1SectionProductDefinition {
     return rawData;
   }
 
+  public int getLength() {
+    return GribNumbers.uint3(getOctet(1),getOctet(2),getOctet(3));
+  }
+
   /**
    * gets the Table version (octet 4).
    *
@@ -308,7 +312,7 @@ public final class Grib1SectionProductDefinition {
    * @param index 1 based index
    * @return rawData[index-1] & 0xff
    */
-  private final int getOctet(int index) {
+  private int getOctet(int index) {
     if (index > rawData.length) return GribNumbers.UNDEFINED;
     return rawData[index - 1] & 0xff;
   }

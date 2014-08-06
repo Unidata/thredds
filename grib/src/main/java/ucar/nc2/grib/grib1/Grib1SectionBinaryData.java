@@ -37,6 +37,7 @@ import ucar.nc2.grib.GribNumbers;
 import ucar.unidata.io.RandomAccessFile;
 
 import java.io.IOException;
+import java.util.Formatter;
 
 /**
  * The Binary Data Section for GRIB-1 files
@@ -118,6 +119,10 @@ public class Grib1SectionBinaryData {
   public float getRefValue(RandomAccessFile raf) throws IOException {
     raf.seek(startingPosition + 6); // go to the data section
     return GribNumbers.float4(raf);
+  }
+
+  public void show(RandomAccessFile raf, Formatter f) {
+
   }
 
 
