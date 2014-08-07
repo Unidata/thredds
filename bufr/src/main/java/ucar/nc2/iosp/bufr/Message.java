@@ -67,7 +67,6 @@ public class Message {
 
   // bit counting
   BitCounterUncompressed[] counterDatasets; // uncompressed: one for each dataset
-  BitCounterCompressed[] counterFlds; // compressed: one for each field
   int msg_nbits;
 
   public Message(RandomAccessFile raf, BufrIndicatorSection is, BufrIdentificationSection ids, BufrDataDescriptionSection dds,

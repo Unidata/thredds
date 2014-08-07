@@ -170,7 +170,7 @@ public class MessageUncompressedDataReader {
     return count;
   }
 
-  private class Request {
+  private static class Request {
     ArrayStructureBB abb;
     ByteBuffer bb;
     Range r;
@@ -391,7 +391,7 @@ public class MessageUncompressedDataReader {
       bb.order(ByteOrder.BIG_ENDIAN);
     }
 
-    Request nreq = (req == null) ? null : new Request(abb, null);
+    Request nreq = new Request(abb, null);
 
     // loop through nested obs
     for (int i = 0; i < count; i++) {
