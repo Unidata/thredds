@@ -56,10 +56,10 @@ public class UFheader {
 
   public boolean isValidFile(ucar.unidata.io.RandomAccessFile raf) {
     try {
-      raf.seek(0);
       raf.order(RandomAccessFile.BIG_ENDIAN);
 
-      String ufStr = raf.readString(6);
+      raf.seek(4);
+      String ufStr = raf.readString(2);
       if (!ufStr.equals("UF"))
         return false;
       //if ufStr is UF, then a further checking apply
