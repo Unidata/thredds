@@ -84,9 +84,7 @@ export JAVA_OPTS
   <pre> &lt;service name=&quot;ncss&quot; serviceType=&quot;NetcdfSubset&quot; base=&quot;/thredds/ncss/grid&quot;/&gt;
 </pre>
   to:
-  <pre> &lt;service name=&quot;ncss&quot; serviceType=&quot;NetcdfSubset&quot; base=&quot;/thredds/ncss/&quot;/&gt;
-</pre>
-</blockquote>
+  <pre> &lt;service name=&quot;ncss&quot; serviceType=&quot;NetcdfSubset&quot; base=&quot;/thredds/ncss/&quot;/&gt;</pre></blockquote>
   <li>Consequently, access to the NCSS has a different URL path. (If you are accessing NCSS from the HTML form, or are correctly parsing the catalog, then you dont need to do anything different)</li>
 <blockquote>
   <p>An old (4.3) NCSS URL:</p>
@@ -104,36 +102,51 @@ export JAVA_OPTS
     <ul>
       <li>Point Feature Collections (point, stations) now handled by Netcdf Subset Service.</li>
       <li>Automatic Metadata Extraction from the dataset into the thredds catalogs, on point collections only but will extend to other collections.</li>
+      <li>NCSS Station data can output WaterML (beta).</li>
+      <li>NCSS Point can output NetCDF-4/CF.</li>
     </ul>
   </li>
   <li>NcML
     <ul>
       <li> updated to implement full extended model.</li>
       <li> logicalReduce allows you to remove length 1 dimensions [<a href="https://bugtracking.unidata.ucar.edu/browse/TDS-267">TDS-267</a>].</li>
-      <li>NcML handles multichar separators.<br>
-      </li>
+      <li>NcML handles multichar separators.</li>
+    </ul>
+  </li>
+  <li>CDM
+    <ul>
+      <li>add Albers Equal Area projection</li>
+      <li>CFPointWriter refactored, can write to netCDF-4</li>
+      <li>CFGridWriter2 replaces CFGridWriter</li>
     </ul>
   </li>
   <li>IOSPs
+  </li>
+  <ul>
+    <li><a href="../netcdf-java/reference/netcdf4Clibrary.html#writing">Netcdf-4 writing</a> improved, default chunking improved.</li>
+    <li>GRIB: yet another rewrite of Grib Collections to allow scaling to very large collections.</li>
+    <li>Improved HDF-EOS processing.</li>
+    <li>CF 1.6 DSG: bug in handling station profiles, multidimensional representation [<a href="ftp://ftp.unidata.ucar.edu/pub/thredds/4.4/current/thredds.war">TDS-513</a>]</li>
+    <li>MSGnavigation scan mode bug</li>
+    <li>IOSP for SIGMET radar files (beta)</li>
+  </ul>
+  <li>GRIB
     <ul>
-      <li><a href="../netcdf-java/reference/netcdf4Clibrary.html#writing">Netcdf-4 writing</a> improved, default chunking improved.</li>
-      <li>GRIB: yet another rewrite of Grib Collections to allow scaling to very large collections.</li>
-      <li>Improved HDF-EOS processing.</li>
-      <li>CF 1.6 DSG: bug in handling station profiles, multidimensional representation [<a href="ftp://ftp.unidata.ucar.edu/pub/thredds/4.4/current/thredds.war">TDS-513</a>]</li>
-      <li>MSGnavigation scan mode bug</li>
-      <li>IOSP for SIGMET radar files</li>
+      <li>ECMWF DRS 50002 added by <a href="mailto:jkaehler@meteomatics.com">jkaehler@meteomatics.com</a></li>
     </ul>
   </li>
   <li>ToolsUI 
-    <ul>
-      <li>using new Swing Look and Feel</li>
-      <li>table columns can be set by user (upper right button on header line)</li>
-      <li>File Chooser improvements</li>
-    </ul>
   </li>
+  <ul>
+    <li>using new Swing Look and Feel</li>
+    <li>table columns can be set by user (upper right button on header line)</li>
+    <li>File Chooser improvements</li>
+    <li></li>
+  </ul>
 </ul>
 <h3>API changes</h3>
 <ul>
+  <li>Writing CF gridded data: <strong>ucar.nc2.dt.grid.CFGridWriter</strong> is deprecated in favor of <strong>ucar.nc2.dt.grid.CFGridWriter2</strong>. The API is a bit different, and simpler. Please switch to it.</li>
   <li>Writing Netcdf-4 files with chunking: The <strong>Nc4Chunking</strong>&nbsp;object changed from package ucar.nc2.jni to package ucar.nc2.write. It was substantially rewritten, and the set of standard strategies has changed.</li>
   <li><strong>ucar.unidata.geoloc.ProjectionRect</strong> no longer extends <strong>java.awt.Rectangle2D</strong>. This is necessary to remove dependence of the core package on java.awt, which is not supported on Android. If you need to convert <strong>ProjectionRect</strong> into <strong>Rectangle2D</strong>, you can use:</li>
 </ul>
@@ -147,14 +160,17 @@ export JAVA_OPTS
   <li><strong>HttpClient</strong> library upgraded to 4.2, previously was 3.</li>
   <li>We are now using <strong>log4j2</strong>. The configuration file is in <strong>{tomcat}/webapps/thredds//WEB-INF/classes/log4j2.xml</strong>. See <a href="http://logging.apache.org/log4j/2.x/">http://logging.apache.org/log4j/2.x/</a></li>
   <li> Most services have been converted to <a href="http://docs.spring.io/spring/docs/3.0.x/reference/mvc.html">annotated Spring controllers</a>. Documentation on adding your own service is coming soon.</li>
-  <li>    Unit testing framework now complete; 2000+ unit tests.</li>
+  <li>Point dataset unit tests upgraded to CF 1.6.</li>
+  <li>    Unit testing framework now complete; 2500+ unit tests.</li>
+  <li>Covarity defects actively being eliminated.</li>
+  <li>Code being converted to use Java 7 constructs, eg try-with-resources, generics.</li>
 </ul>
 <p>&nbsp;</p>
 <hr>
 
 <address>
   <img src="thread.png" alt="TDS" height="108" width="110">This document is maintained by Unidata and was
-  last updated May 2014. Send comments to <a href="mailto:support-thredds@unidata.ucar.edu">THREDDS
+  last updated Aug 2014. Send comments to <a href="mailto:support-thredds@unidata.ucar.edu">THREDDS
   support</a>.
 </address>
 

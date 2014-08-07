@@ -54,13 +54,13 @@ import java.nio.ByteBuffer;
 
 public class HTTPRandomAccessFile extends ucar.unidata.io.RandomAccessFile {
   static public int defaultHTTPBufferSize = 20000;
+  static private final boolean debug = false, debugDetails = false;
 
   ///////////////////////////////////////////////////////////////////////////////////
 
   private String url;
   private HTTPSession session = null;
   private long total_length = 0;
-  private final boolean debug = false, debugDetails = false;
 
   public HTTPRandomAccessFile(String url) throws IOException {
     this(url, defaultHTTPBufferSize);
@@ -136,7 +136,7 @@ public class HTTPRandomAccessFile extends ucar.unidata.io.RandomAccessFile {
   private boolean rangeOk(String url) {
     HTTPMethod method = null;
     try {
-      method = HTTPFactory.Get(session,url);
+      method = HTTPFactory.Get(session, url);
       method.setRequestHeader("Range", "bytes=" + 0 + "-" + 1);
       doConnect(method);
 

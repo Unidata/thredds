@@ -654,15 +654,14 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
 
     if (location == null)
       throw new IOException("NetcdfDataset.openFile: location is null");
+
     // Canonicalize the location
-    location = location.trim();
-    // should not be needed: location = StringUtil2.replace(location, '\\', '/');
+    location = location.trim();  // should not be needed: location = StringUtil2.replace(location, '\\', '/');
     List<String> allprotocols = Misc.getProtocols(location);
     String trueurl = location;
     String leadprotocol;
     if (allprotocols.size() == 0) {
-      // The location has no lead protocols, assume file:
-      leadprotocol = "file";
+      leadprotocol = "file";  // The location has no lead protocols, assume file:
     } else {
       leadprotocol = allprotocols.get(0);
     }
@@ -822,9 +821,7 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
     if (result != null)
       return result;
 
-    HTTPMethod method = null;
-    try {
-      method = HTTPFactory.Head(location);
+    try (HTTPMethod method = HTTPFactory.Head(location)) {
       int statusCode = method.execute();
       if (statusCode >= 300) {
         if (statusCode == 401)
@@ -839,8 +836,6 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
           return ServiceType.CdmRemote;
       }
       return null;
-    } finally {
-      if (method != null) method.close();
     }
   }
 
