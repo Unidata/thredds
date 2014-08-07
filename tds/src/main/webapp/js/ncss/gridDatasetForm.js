@@ -131,6 +131,7 @@ Ncss.verticalSubsetting = function(){
 Ncss.initGridDataset = function(){
 	Ncss.initGridDatasetForm();
 	Ncss.initMapPreview();
+    Ncss.buildAccessUrl();
 };
 
 Ncss.initGridDatasetForm = function(){	
@@ -163,7 +164,8 @@ Ncss.initGridDatasetForm = function(){
 		$('input[name=north]').val(Ncss.fullLatLonExt.north);
 		$('input[name=south]').val(Ncss.fullLatLonExt.south);
 		$('input[name=west]').val(Ncss.fullLatLonExt.west);
-		$('input[name=east]').val(Ncss.fullLatLonExt.east);		
+		$('input[name=east]').val(Ncss.fullLatLonExt.east);
+        Ncss.buildAccessUrl();
 	});
 	
 	$('#resetProjbbox').click(function(){
@@ -171,8 +173,8 @@ Ncss.initGridDatasetForm = function(){
 		$('input[name=maxy]').val(Ncss.fullProjExt.maxy);
 		$('input[name=miny]').val(Ncss.fullProjExt.miny);
 		$('input[name=minx]').val(Ncss.fullProjExt.minx);
-		$('input[name=maxx]').val(Ncss.fullProjExt.maxx);				
-		
+		$('input[name=maxx]').val(Ncss.fullProjExt.maxx);
+        Ncss.buildAccessUrl()
 	});
 	
 	//Add events to temporal subset selectors
@@ -187,6 +189,7 @@ Ncss.initGridDatasetForm = function(){
 	$('#resetTimeRange').click(function(){
 		$('input[name=time_start]').val(Ncss.fullTimeExt.time_start);
 		$('input[name=time_end]').val(Ncss.fullTimeExt.time_end);
+        Ncss.buildAccessUrl()
 	});
 	
 	//Add events to vertical subset selectors	
@@ -199,7 +202,7 @@ Ncss.initGridDatasetForm = function(){
 		$('#disableLLSubset').prop("disabled", "disabled");
 		$('#disableProjSubset').prop("disabled", "disabled");
 	});
-	
+
 	Ncss.log("initGridDatasetForm...(ends)");
 	    
 };
@@ -239,6 +242,7 @@ Ncss.toogleProjSubsetting = function(){
 		}		
 	}
 };
+
 
 
 
