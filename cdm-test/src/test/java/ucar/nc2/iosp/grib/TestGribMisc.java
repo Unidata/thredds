@@ -94,6 +94,23 @@ public class TestGribMisc {
     ncfile.close();
   }
 
-
+  @Test
+  public void testJPEG2K() throws Exception {
+    // Tests specifically if the land-sea mask from GFS is decoded properly.
+    // Not only does this test generally if the decoding works, but covers
+    // a corner case with a single-bit field; this case was broken in the
+    // original jj2000 code
+    String filename = TestDir.cdmUnitTestDir +
+            "tds/ncep/GFS_Global_onedeg_20100913_0000.grib2";
+    NetcdfFile ncfile = NetcdfFile.open(filename, null);
+    Variable v = ncfile.findVariableByAttribute(null,
+            GribIosp.VARIABLE_ID_ATTNAME, "VAR_2-0-0_L1");
+    int[] origin = {0, 38, 281};
+    int[] shape = {1, 1, 2};
+    Array vals = v.read(origin, shape);
+    assert Misc.closeEnough(vals.getFloat(0), 0.0);
+    assert Misc.closeEnough(vals.getFloat(1), 1.0);
+    ncfile.close();
+  }
 
 }
