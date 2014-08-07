@@ -91,7 +91,7 @@ Ncss.buildAccessUrl = function() {
     var req = $("form").serialize();
     var serverUrl = document.URL.split("/thredds/")[0];
     var dataUrl = serverUrl + $("#datasetPath")[0].innerHTML;
-    $("#urlBuilder").val( dataUrl + "?" + req);
+    $("#urlBuilder").html(dataUrl + "?" + req);
 }
 
 Ncss.resetForm = function() {
