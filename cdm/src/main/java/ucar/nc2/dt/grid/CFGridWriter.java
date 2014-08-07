@@ -245,6 +245,7 @@ public class CFGridWriter {
 
       GridDatatype grid = gds.findGridDatatype(gridName);
       GridCoordSystem gcsOrg = grid.getCoordinateSystem();
+      LatLonRect gridBB = gcsOrg.getLatLonBoundingBox();
       CoordinateAxis1DTime timeAxis = gcsOrg.getTimeAxis1D();
       CoordinateAxis1D vertAxis = gcsOrg.getVerticalAxis();
       boolean global = gcsOrg.isGlobalLon();
@@ -255,11 +256,17 @@ public class CFGridWriter {
 
       if ((null != timeRange) || (zRangeUse != null) || (llbb != null) || (horizStride > 1)) {
         grid = grid.makeSubset(timeRange, zRangeUse, llbb, 1, horizStride, horizStride);
-        LatLonRect gridBB = grid.getCoordinateSystem().getLatLonBoundingBox();
+        LatLonRect subsetGridBB = grid.getCoordinateSystem().getLatLonBoundingBox();
         if (resultBB == null)
-          resultBB = gridBB;
+          resultBB = subsetGridBB;
         else
+          resultBB.extend(subsetGridBB);
+      } else {
+        if (resultBB == null) {
+          resultBB = gridBB;
+        } else {
           resultBB.extend(gridBB);
+        }
       }
 
       Variable gridV = grid.getVariable();
