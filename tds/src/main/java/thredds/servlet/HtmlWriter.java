@@ -669,16 +669,31 @@ public class HtmlWriter {
         try {
           URI uri = new URI(href);
           if (uri.isAbsolute()) {
-              // read default as set in threddsConfig.xml
-              boolean useRemoteCatalogService = this.htmlConfig.getUseRemoteCatalogService();
-              // check to see if catalogRef contains tag that overrides default
+            // read default as set in threddsConfig.xml
+            boolean defaultUseRemoteCatalogService = this.htmlConfig.getUseRemoteCatalogService();
 
-              if (useRemoteCatalogService) {
-                  href = this.tdsContext.getContextPath() + "/remoteCatalogService?catalog=" + href;
-              } else {
-                  int pos = href.lastIndexOf('.');
-                  href = href.substring(0, pos) + ".html";
-              }
+            // check to see if catalogRef contains tag that overrides default
+            Boolean dsUseRemoteCatalogSerivce = ((InvCatalogRef) ds).useRemoteCatalogService();
+
+            // by default, use the option found in threddsConfig.xml
+            boolean useRemoteCatalogService = defaultUseRemoteCatalogService;
+
+            // if the dataset does not have the useRemoteDataset option set, opt for the default behavior
+            if (dsUseRemoteCatalogSerivce == null) dsUseRemoteCatalogSerivce = defaultUseRemoteCatalogService;
+
+            // if the default is not the same as what is defined in the catalog, go with the catalog option
+            // as the user has explicitly overridden the default
+            if (defaultUseRemoteCatalogService != dsUseRemoteCatalogSerivce) {
+             useRemoteCatalogService = dsUseRemoteCatalogSerivce;
+            }
+
+            // now, do the right thing with using the remoteCatalogService, or not
+            if (useRemoteCatalogService) {
+              href = this.tdsContext.getContextPath() + "/remoteCatalogService?catalog=" + href;
+            } else {
+              int pos = href.lastIndexOf('.');
+              href = href.substring(0, pos) + ".html";
+            }
           } else {
             int pos = href.lastIndexOf('.');
             href = href.substring(0, pos) + ".html";
@@ -708,16 +723,16 @@ public class HtmlWriter {
           String accessUrlName = access.getUnresolvedUrlName();
           int pos = accessUrlName.lastIndexOf(".xml");
 
-          if (accessUrlName.equalsIgnoreCase("latest.xml")) {
-              String catBaseUriPath = "";
-              String catBaseUri = cat.getBaseURI().toString();
-              pos = catBaseUri.lastIndexOf("catalog.xml");
-              if (pos != -1) {
-                  catBaseUriPath = catBaseUri.substring(0,pos);
-              }
-              accessUrlName = this.tdsContext.getContextPath() + "/remoteCatalogService?catalog=" + catBaseUriPath + accessUrlName;
+          if (accessUrlName.equalsIgnoreCase("latest.xml") && !isLocalCatalog) {
+            String catBaseUriPath = "";
+            String catBaseUri = cat.getBaseURI().toString();
+            pos = catBaseUri.lastIndexOf("catalog.xml");
+            if (pos != -1) {
+              catBaseUriPath = catBaseUri.substring(0,pos);
+            }
+            accessUrlName = this.tdsContext.getContextPath() + "/remoteCatalogService?catalog=" + catBaseUriPath + accessUrlName;
           } else if (pos != -1) {
-              accessUrlName = accessUrlName.substring(0, pos) + ".html";
+            accessUrlName = accessUrlName.substring(0, pos) + ".html";
           }
 
           sb.append("<a href='");

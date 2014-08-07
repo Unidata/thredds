@@ -199,6 +199,9 @@
     <testResources>
       <testResource>
         <directory>src/test/resources</directory>
+        <includes>
+          <include>thredds/**</include>
+        </includes>
       </testResource>
     </testResources>
 

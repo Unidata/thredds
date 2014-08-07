@@ -204,8 +204,10 @@ public class InvCatalogFactory10 implements InvCatalogConvertIF, MetadataConvert
     String title = catRefElem.getAttributeValue("title", xlinkNS);
     if (title == null) title = catRefElem.getAttributeValue("name");
     String href = catRefElem.getAttributeValue("href", xlinkNS);
-
-    InvCatalogRef catRef = new InvCatalogRef( parent, title, href);
+    String useRemCatSerStr = catRefElem.getAttributeValue("useRemoteCatalogService");
+    Boolean useRemoteCatalogService = null;
+    if (useRemCatSerStr != null) useRemoteCatalogService = Boolean.parseBoolean(useRemCatSerStr);
+    InvCatalogRef catRef = new InvCatalogRef(parent, title, href, useRemoteCatalogService);
     readDatasetInfo( cat, catRef, catRefElem, baseURI);
     return catRef;
   }
