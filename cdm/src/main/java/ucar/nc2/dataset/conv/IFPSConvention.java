@@ -182,6 +182,7 @@ public class IFPSConvention extends CoordSysBuilder {
 
   private Projection makeLCProjection(NetcdfDataset ds) {
     Attribute latLonOrigin = projVar.findAttributeIgnoreCase("latLonOrigin");
+    if (latLonOrigin == null) throw new IllegalStateException();
     double centralLon = latLonOrigin.getNumericValue(0).doubleValue();
     double centralLat = latLonOrigin.getNumericValue(1).doubleValue();
 
@@ -253,7 +254,7 @@ public class IFPSConvention extends CoordSysBuilder {
 
    private double findAttributeDouble(String attname) {
     Attribute att = projVar.findAttributeIgnoreCase(attname);
-    return att.getNumericValue().doubleValue();
+    return (att == null) ? Double.NaN : att.getNumericValue().doubleValue();
   }
 
 }

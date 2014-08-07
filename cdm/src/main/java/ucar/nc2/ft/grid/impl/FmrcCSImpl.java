@@ -29,6 +29,7 @@ public class FmrcCSImpl extends CoverageCSImpl implements FmrcCS {
   @Override
   public CoordinateAxis1DTime getTimeAxisForRun(CalendarDate runTime) {
     CoordinateAxis1DTime runTimeAxis = getRunTimeAxis();
+    if (runTimeAxis == null) return null;
     int runIndex = runTimeAxis.findTimeIndexFromCalendarDate(runTime);
 
     int nruns = (int) runTimeAxis.getSize();
@@ -50,9 +51,7 @@ public class FmrcCSImpl extends CoverageCSImpl implements FmrcCS {
     try {
       section = (VariableDS) tAxis.slice(0, run_index);
       return CoordinateAxis1DTime.factory(ds, section, null);
-    } catch (InvalidRangeException e) {
-      e.printStackTrace();
-    } catch (IOException e) {
+    } catch (InvalidRangeException | IOException e) {
       e.printStackTrace();
     }
 

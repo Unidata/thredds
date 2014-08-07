@@ -99,7 +99,7 @@ public class IgraPor extends AbstractIOServiceProvider {
       if (!datFile.exists())
         return false;
       File stnFile = getStnFile(location);
-      if (!stnFile.exists())
+      if (stnFile == null || !stnFile.exists())
         return false;
 
       raf.seek(0);
@@ -178,6 +178,8 @@ public class IgraPor extends AbstractIOServiceProvider {
 
     File file = new File(location);
     File stnFile = getStnFile(location);
+    if (stnFile == null)
+      throw new FileNotFoundException("Station File does not exist="+location);
 
     if (ext.equals(IDX_EXT)) {
       stnRaf = new RandomAccessFile(stnFile.getPath(), "r");

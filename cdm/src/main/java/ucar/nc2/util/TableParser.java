@@ -33,6 +33,7 @@
 
 package ucar.nc2.util;
 
+import ucar.nc2.constants.CDM;
 import ucar.unidata.util.StringUtil2;
 
 import java.io.*;
@@ -179,7 +180,7 @@ public class TableParser {
 
     List<Record> records = new ArrayList<>();
 
-    BufferedReader dataIS = new BufferedReader(new InputStreamReader(ios));
+    BufferedReader dataIS = new BufferedReader(new InputStreamReader(ios, CDM.utf8Charset));
     int count = 0;
     while ((maxLines < 0) || (count < maxLines)) {
       String line = dataIS.readLine();

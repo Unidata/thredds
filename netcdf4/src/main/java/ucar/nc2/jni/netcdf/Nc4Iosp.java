@@ -104,7 +104,7 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
           debugCompoundAtt = false,
           debugDim = false,
           debugUserTypes = false,
-          debugLoad = false,
+          debugLoad = true,
           debugWrite = false;
 
   /**

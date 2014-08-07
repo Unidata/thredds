@@ -283,7 +283,7 @@ public class WmoTemplateTable implements Comparable<WmoTemplateTable> {
             stop = Integer.parseInt(stops);
             nbytes = stop - start + 1;
           } catch (Exception e) {
-            logger.warn("Error parsing wmo template line='{}'",content);
+            logger.warn("Error parsing wmo template line=" + content, e);
           }
         } else {
           start = Integer.parseInt(octet);

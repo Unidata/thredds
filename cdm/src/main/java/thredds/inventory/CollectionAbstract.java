@@ -29,7 +29,7 @@ public abstract class CollectionAbstract implements MCollection {
   static public final String LIST = "list:";
   static public final String GLOB = "glob:";
 
-    // called from Aggregation, Fmrc, FeatureDatasetFactoryManager
+  // called from Aggregation, Fmrc, FeatureDatasetFactoryManager
   static public MCollection open(String collectionName, String collectionSpec, String olderThan, Formatter errlog) throws IOException {
     if (collectionSpec.startsWith(CATALOG))
       return new CollectionManagerCatalog(collectionName, collectionSpec.substring(CATALOG.length()), olderThan, errlog);
@@ -66,14 +66,20 @@ public abstract class CollectionAbstract implements MCollection {
   protected MFileFilter filter;
   protected DirectoryStream.Filter<Path> sfilter;
 
-  protected CollectionAbstract( String collectionName, org.slf4j.Logger logger) {
+  protected CollectionAbstract(String collectionName, org.slf4j.Logger logger) {
     this.collectionName = cleanName(collectionName);
     this.logger = logger != null ? logger : defaultLog;
   }
 
   @Override
-  public boolean isLeaf() { return isLeaf; }
-  public void setLeaf(boolean isLeaf) { this.isLeaf = isLeaf; }
+  public boolean isLeaf() {
+    return isLeaf;
+  }
+
+  public void setLeaf(boolean isLeaf) {
+    this.isLeaf = isLeaf;
+  }
+
   private boolean isLeaf = true;
 
   @Override
@@ -110,7 +116,7 @@ public abstract class CollectionAbstract implements MCollection {
   @Override
   public MFile getLatestFile() throws IOException {
     MFile result = null;
-    for (MFile f: getFilesSorted()) // only have an Iterable
+    for (MFile f : getFilesSorted()) // only have an Iterable
       result = f;
     return result;
   }
@@ -118,7 +124,7 @@ public abstract class CollectionAbstract implements MCollection {
   @Override
   public List<String> getFilenames() throws IOException {
     List<String> result = new ArrayList<>();
-    for (MFile f: getFilesSorted())
+    for (MFile f : getFilesSorted())
       result.add(f.getPath());
     return result;
   }
@@ -156,7 +162,7 @@ public abstract class CollectionAbstract implements MCollection {
     auxInfo.put(key, value);
   }
 
-   ////////////////////////////////////////////////////
+  ////////////////////////////////////////////////////
   // proto dataset choosing
 
   @Override
@@ -188,8 +194,9 @@ public abstract class CollectionAbstract implements MCollection {
       CalendarDate cd1 = extractRunDateWithError(m1);
       CalendarDate cd2 = extractRunDateWithError(m2);
       if ((cd1 == null) || (cd2 == null)) {
-         cd1 = extractRunDateWithError(m1);  //debug
-         cd2 = extractRunDateWithError(m2);
+        cd1 = extractRunDateWithError(m1);  //debug
+        cd2 = extractRunDateWithError(m2);
+        throw new IllegalStateException();
       }
       return cd1.compareTo(cd2);
     }
@@ -208,7 +215,7 @@ public abstract class CollectionAbstract implements MCollection {
   public class MyGribFilter implements DirectoryStream.Filter<Path> {
     public boolean accept(Path entry) throws IOException {
       if (sfilter != null && !sfilter.accept(entry)) return false;
-      String last = entry.getName(entry.getNameCount()-1).toString();
+      String last = entry.getName(entry.getNameCount() - 1).toString();
       return !last.endsWith(".gbx9") && !last.endsWith(".gbx8") && !last.endsWith(".ncx") && !last.endsWith(".ncx2") &&  // LOOK GRIB specific
               !last.endsWith(".xml");
     }
@@ -217,10 +224,10 @@ public abstract class CollectionAbstract implements MCollection {
   protected List<MFile> makeFileListSorted() throws IOException {
     List<MFile> list = new ArrayList<>(100);
     try (CloseableIterator<MFile> iter = getFileIterator()) {
-       while (iter.hasNext()) {
-         list.add(iter.next());
-       }
-     }
+      while (iter.hasNext()) {
+        list.add(iter.next());
+      }
+    }
     if (hasDateExtractor()) {
       Collections.sort(list, new DateSorter());  // sort by date
     } else {

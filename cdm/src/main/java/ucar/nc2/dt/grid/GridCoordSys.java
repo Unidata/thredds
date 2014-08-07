@@ -1439,6 +1439,7 @@ public class GridCoordSys extends CoordinateSystem implements ucar.nc2.dt.GridCo
     List<CalendarDate> runtimes = rtaxis.getCalendarDates();
     for (int i = 0; i < runtimes.size(); i++) {
       CoordinateAxis1DTime taxis = getTimeAxisForRun(i);
+      if (taxis == null) throw new IllegalStateException();
       List<CalendarDate> times = taxis.getCalendarDates();
       for (CalendarDate time : times) dates.add(time);
     }

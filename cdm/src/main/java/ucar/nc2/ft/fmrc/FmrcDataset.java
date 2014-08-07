@@ -33,19 +33,9 @@
 package ucar.nc2.ft.fmrc;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Formatter;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Random;
-import java.util.Set;
+import java.util.*;
 
 import net.jcip.annotations.ThreadSafe;
-
-import org.joda.time.Chronology;
-import org.joda.time.DateTime;
-import org.joda.time.format.DateTimeFormat;
-import org.joda.time.format.DateTimeFormatter;
 
 import thredds.featurecollection.FeatureCollectionConfig;
 import ucar.ma2.Array;
@@ -82,7 +72,6 @@ import ucar.nc2.dt.GridCoordSystem;
 import ucar.nc2.dt.GridDatatype;
 import ucar.nc2.dt.grid.GridDataset;
 import ucar.nc2.ncml.NcMLReader;
-import ucar.nc2.time.Calendar;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time.CalendarDateRange;
 import ucar.nc2.util.CancelTask;
@@ -308,7 +297,7 @@ class FmrcDataset {
     }
     FmrInv proto = list.get(protoIdx); // use this one
 
-    HashMap<String, NetcdfDataset> openFilesProto = new HashMap<String, NetcdfDataset>();
+    Map<String, NetcdfDataset> openFilesProto = new HashMap<>();
 
     try {
       // create the union of all objects in that run
@@ -334,7 +323,7 @@ class FmrcDataset {
 
       // protoList = new ArrayList<String>();
       // these are the non-agg variables - store data or ProxyReader in proto
-      List<Variable> copyList = new ArrayList<Variable>(root.getVariables()); // use copy since we may be removing some variables
+      List<Variable> copyList = new ArrayList<>(root.getVariables()); // use copy since we may be removing some variables
       for (Variable v : copyList) {
         // see if its a non-agg variable
         FmrcInv.UberGrid grid = fmrcInv.findUberGrid(v.getFullName());
@@ -417,7 +406,7 @@ class FmrcDataset {
 
       // more troublesome attributes, use pure CF
       for (Variable v : result.getVariables()) {
-        Attribute att = null;
+        Attribute att;
         if (null != (att = v.findAttribute(_Coordinate.Axes)))
            v.remove(att);
         if (null != (att = v.findAttribute(_Coordinate.Systems)))
@@ -804,7 +793,7 @@ class FmrcDataset {
       List<Range> innerSection = ranges.subList(2, ranges.size());
 
       // keep track of open file - must be local variable for thread safety
-      HashMap<String, NetcdfDataset> openFilesRead = new HashMap<String, NetcdfDataset>();
+      HashMap<String, NetcdfDataset> openFilesRead = new HashMap<>();
       try {
 
         // iterate over the desired runs
@@ -1087,7 +1076,7 @@ class FmrcDataset {
      List<Range> innerSection = ranges.subList(1, ranges.size());
 
        // keep track of open files - must be local variable for thread safety
-      HashMap<String, NetcdfDataset> openFilesRead = new HashMap<String, NetcdfDataset>();
+      HashMap<String, NetcdfDataset> openFilesRead = new HashMap<>();
 
       try {
 
@@ -1213,26 +1202,21 @@ class FmrcDataset {
    * @param openFiles keep track of open files
    * @return file or null if not found
    */
-  private NetcdfDataset open(String location, HashMap<String, NetcdfDataset> openFiles)  { // } throws IOException {
-    NetcdfDataset ncd = null;
+  private NetcdfDataset open(String location, Map<String, NetcdfDataset> openFiles)  throws IOException {
+    NetcdfDataset ncd;
 
     if (openFiles != null) {
       ncd = openFiles.get(location);
       if (ncd != null) return ncd;
     }
 
-    try {
-      if (config.innerNcml == null) {
-        ncd = NetcdfDataset.acquireDataset(location, null);  // default enhance
+    if (config.innerNcml == null) {
+      ncd = NetcdfDataset.acquireDataset(location, null);  // default enhance
 
-      } else {
-        NetcdfFile nc = NetcdfDataset.acquireFile(location, null);
-        ncd = NcMLReader.mergeNcML(nc, config.innerNcml); // create new dataset
-        ncd.enhance(); // now that the ncml is added, enhance "in place", ie modify the NetcdfDataset
-      }
-    } catch (IOException ioe) {
-      logger.error("Cant open file ", ioe);  // file was deleted ??
-      return null;
+    } else {
+      NetcdfFile nc = NetcdfDataset.acquireFile(location, null);
+      ncd = NcMLReader.mergeNcML(nc, config.innerNcml); // create new dataset
+      ncd.enhance(); // now that the ncml is added, enhance "in place", ie modify the NetcdfDataset
     }
 
     if (openFiles != null && ncd != null) {
@@ -1270,10 +1254,9 @@ class FmrcDataset {
     return ds;
   } */
 
-  private void closeAll(HashMap<String, NetcdfDataset> openFiles) throws IOException {
-    for (NetcdfDataset ncfile : openFiles.values()) {
+  private void closeAll(Map<String, NetcdfDataset> openFiles) throws IOException {
+    for (NetcdfDataset ncfile : openFiles.values())
       ncfile.close();
-    }
     openFiles.clear();
   }
 
@@ -1289,26 +1272,18 @@ class FmrcDataset {
     }
 
     public Array reallyRead(Variable client, CancelTask cancelTask) throws IOException {
-      NetcdfFile ncfile = null;
-      try {
-        ncfile = open(location, null);
+      try (NetcdfFile ncfile= open(location, null)) {
         if ((cancelTask != null) && cancelTask.isCancel()) return null;
         Variable proxyV = findVariable(ncfile, client);
         return proxyV.read();
-      } finally {
-        ncfile.close();
       }
     }
 
     public Array reallyRead(Variable client, Section section, CancelTask cancelTask) throws IOException, InvalidRangeException {
-      NetcdfFile ncfile = null;
-      try {
-        ncfile = open(location, null);
+      try (NetcdfFile ncfile = open(location, null)) {
         Variable proxyV = findVariable(ncfile, client);
         if ((cancelTask != null) && cancelTask.isCancel()) return null;
         return proxyV.read(section);
-      } finally {
-        ncfile.close();
       }
     }
   }

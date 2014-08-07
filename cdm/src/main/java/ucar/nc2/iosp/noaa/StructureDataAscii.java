@@ -36,7 +36,7 @@ import ucar.ma2.*;
 import ucar.nc2.util.TableParser;
 
 /**
- * StructureData whose data is stored in ascii, with a TableParser to extrat the values.
+ * StructureData whose data is stored in ascii, with a TableParser to extract the values.
  * @author caron
  * @since Dec 8, 2010
  */
@@ -128,8 +128,10 @@ public class StructureDataAscii extends StructureData {
     int n = m.getSize();
     float[] result = new float[n];
     TableParser.Field f = (TableParser.Field) m.getDataObject();
-    for (int i=0; i<n; i++)
-      result[i] = (Float) f.parse(line, i*8);
+    for (int i=0; i<n; i++) {
+      Float val = (Float) f.parse(line, i * 8);
+      result[i] = (val == null) ? Float.NaN : val;
+    }
     return result;
   }
 
@@ -146,7 +148,7 @@ public class StructureDataAscii extends StructureData {
     TableParser.Field f = (TableParser.Field) m.getDataObject();
     for (int i=0; i<n; i++) {
       String s = (String) f.parse(line, i*8);
-      result[i] = (byte) s.charAt(0);
+      result[i] = (s == null) ? 0 : (byte) s.charAt(0);
     }
     return result;
   }
@@ -198,7 +200,7 @@ public class StructureDataAscii extends StructureData {
     TableParser.Field f = (TableParser.Field) m.getDataObject();
     for (int i=0; i<n; i++) {
       String s = (String) f.parse(line, i*8);
-      result[i] = s.charAt(0);
+      result[i] = (s == null) ? 0 : s.charAt(0);
     }
     return result;
   }

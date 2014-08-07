@@ -49,12 +49,12 @@ import java.util.Formatter;
  * @since 8/4/2014
  */
 public class TestGrib2Netcdf {
-  static String dirOut = "G:/write/";
+  static String dirOut = "G:/write2/";
   static PrintStream fw;
 
  static  void  writeHeader() throws FileNotFoundException {
     File outDir = new File(dirOut);
-    fw = new PrintStream(new File(outDir, "results.grib.csv"));
+    fw = new PrintStream(new File(outDir, "results3.grib.csv"));
     fw.printf("file, sizeIn(MB), type, shuffle, deflate, sizeOut(MB), sizeOut/sizeIn, dataLen(MB), dataLen/sizeOut, time(secs) %n");
   }
 
@@ -130,19 +130,12 @@ public class TestGrib2Netcdf {
     public int doAct(String filename) throws IOException {
 
       TestGrib2Netcdf writer = new TestGrib2Netcdf();
-      total += writer.writeNetcdf(filename, NetcdfFileWriter.Version.netcdf4, Nc4Chunking.Strategy.grib, 1, true);
-      total += writer.writeNetcdf(filename, NetcdfFileWriter.Version.netcdf4, Nc4Chunking.Strategy.grib, 3, true);
-      total += writer.writeNetcdf(filename, NetcdfFileWriter.Version.netcdf4, Nc4Chunking.Strategy.grib, 5, true);
-      total += writer.writeNetcdf(filename, NetcdfFileWriter.Version.netcdf4, Nc4Chunking.Strategy.grib, 7, true);
-      total += writer.writeNetcdf(filename, NetcdfFileWriter.Version.netcdf4, Nc4Chunking.Strategy.grib, 9, true);
+      for (int level=1; level<8; level++) {
+        total += writer.writeNetcdf(filename, NetcdfFileWriter.Version.netcdf4, Nc4Chunking.Strategy.grib, level, true);
+        total += writer.writeNetcdf(filename, NetcdfFileWriter.Version.netcdf4, Nc4Chunking.Strategy.grib, level, false);
+        fw.flush();
+      }
 
-      total += writer.writeNetcdf(filename, NetcdfFileWriter.Version.netcdf4, Nc4Chunking.Strategy.grib, 1, false);
-      total += writer.writeNetcdf(filename, NetcdfFileWriter.Version.netcdf4, Nc4Chunking.Strategy.grib, 3, false);
-      total += writer.writeNetcdf(filename, NetcdfFileWriter.Version.netcdf4, Nc4Chunking.Strategy.grib, 5, false);
-      total += writer.writeNetcdf(filename, NetcdfFileWriter.Version.netcdf4, Nc4Chunking.Strategy.grib, 7, false);
-      total += writer.writeNetcdf(filename, NetcdfFileWriter.Version.netcdf4, Nc4Chunking.Strategy.grib, 9, false);
-
-      System.out.format("   total so far: %10.3f%n%n", total);
       fw.flush();
 
       return 1;
@@ -152,7 +145,7 @@ public class TestGrib2Netcdf {
   static double total = 0;
 
 
-  public static void main(String[] args) throws IOException {
+  public static void main1(String[] args) throws IOException {
     writeHeader();
 
     try {
@@ -166,7 +159,7 @@ public class TestGrib2Netcdf {
   }
 
 
-  public static void main2(String[] args) throws IOException {
+  public static void main(String[] args) throws IOException {
     writeHeader();
 
     try {

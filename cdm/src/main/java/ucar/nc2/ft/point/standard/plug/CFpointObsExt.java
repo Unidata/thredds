@@ -89,6 +89,7 @@ public class CFpointObsExt extends CFpointObs {
   @Override
   protected boolean identifyEncodingProfile(NetcdfDataset ds, EncodingInfo info, Formatter errlog) {
     Evaluator.VarAtt varatt = Evaluator.findVariableWithAttribute(ds, CF.SAMPLE_DIMENSION);
+    if (varatt == null) return false;
     String dimName = varatt.att.getStringValue();
     Dimension obsDim = ds.findDimension(dimName);
 
@@ -135,6 +136,7 @@ public class CFpointObsExt extends CFpointObs {
   protected boolean identifyEncodingTimeSeriesProfile(NetcdfDataset ds, EncodingInfo info, CF.FeatureType ftype, Formatter errlog) {
     // find the obs structure
     Evaluator.VarAtt varatt = Evaluator.findVariableWithAttribute(ds, CF.SAMPLE_DIMENSION);
+    if (varatt == null) return false;
     String dimName = varatt.att.getStringValue();
     info.grandChildDim = ds.findDimension(dimName);
     info.grandChildStruct = Evaluator.findStructureWithDimensions(ds, info.grandChildDim, null);
@@ -174,6 +176,7 @@ public class CFpointObsExt extends CFpointObs {
   protected boolean identifyEncodingSection(NetcdfDataset ds, EncodingInfo info, CF.FeatureType ftype, Formatter errlog) {
     // find the obs structure
     Evaluator.VarAtt varatt = Evaluator.findVariableWithAttribute(ds, CF.SAMPLE_DIMENSION);
+    if (varatt == null) return false;
     String dimName = varatt.att.getStringValue();
     info.grandChildDim = ds.findDimension(dimName);
     info.grandChildStruct = Evaluator.findStructureWithDimensions(ds, info.grandChildDim, null);

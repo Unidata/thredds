@@ -605,6 +605,7 @@ public class H5header {
       MessageAttribute matt = iter.next();
       if (matt.name.equals(HDF5_CLASS)) {
         Attribute att = makeAttribute(matt);
+        if (att == null) throw new IllegalStateException();
         String val = att.getStringValue();
         if (val.equals(HDF5_DIMENSION_SCALE) && facade.dobj.mds.ndims > 0) {
 
@@ -771,6 +772,7 @@ public class H5header {
 
       } else if (matt.name.equals(HDF5_DIMENSION_NAME)) {
         Attribute att = makeAttribute(matt);
+        if (att == null) throw new IllegalStateException();
         String val = att.getStringValue();
         if (val.startsWith("This is a netCDF dimension but not a netCDF variable")) {
           facade.isVariable = false;
@@ -782,10 +784,7 @@ public class H5header {
       } else if (matt.name.equals(HDF5_REFERENCE_LIST))
         if (!h5iosp.includeOriginalAttributes) iter.remove();
     }
-    boolean result = facade.hasNetcdfDimensions || facade.dobj.mds.dimLength.length == 0;
-    //if (!result)
-    //  System.out.println("HEY");
-    return result;
+    return facade.hasNetcdfDimensions || facade.dobj.mds.dimLength.length == 0;
 
   }
 

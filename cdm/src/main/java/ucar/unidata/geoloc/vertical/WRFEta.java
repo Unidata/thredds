@@ -155,8 +155,7 @@ public class WRFEta extends VerticalTransformImpl {
       for (int j = 0; j < nj; j++) {
         for (int k = 0; k < nk; k++) {
           index.set(i, j, k);
-          double d = pertArray.getDouble(index)
-              + baseArray.getDouble(index);
+          double d = pertArray.getDouble(index) + baseArray.getDouble(index);
           if (isZStag) {
             d = d / 9.81;  //convert geopotential to height
           }
@@ -334,7 +333,7 @@ public class WRFEta extends VerticalTransformImpl {
     try {
       return v.read(origin, shape).reduce();
     } catch (InvalidRangeException e) {
-      return null;
+      throw new IOException(e);
     }
   }
 

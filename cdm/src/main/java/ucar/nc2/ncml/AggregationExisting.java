@@ -258,6 +258,7 @@ public class AggregationExisting extends AggregationOuterDimension {
     if (cacheName.startsWith("file:"))      // LOOK
       cacheName = cacheName.substring(5);
     File cacheFile = diskCache2.getCacheFile(cacheName);
+    if (cacheFile == null) throw new IllegalStateException();
 
     // only write out if something changed after the cache file was last written, or if the file has been deleted
     if (!cacheDirty && cacheFile.exists())
@@ -346,6 +347,7 @@ public class AggregationExisting extends AggregationOuterDimension {
       cacheName = cacheName.substring(5);
 
     File cacheFile = diskCache2.getCacheFile(cacheName);
+    if (cacheFile == null) throw new IllegalStateException();
     if (!cacheFile.exists())
       return;
     long lastWritten = cacheFile.lastModified();

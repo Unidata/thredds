@@ -32,8 +32,6 @@
  */
 package ucar.nc2.dods;
 
-import junit.framework.*;
-import org.junit.*;
 import ucar.ma2.*;
 import ucar.nc2.*;
 
@@ -53,23 +51,24 @@ public class TestBennoGrid {
 
   @org.junit.Test
   public void testGrid() throws IOException, InvalidRangeException {
-    DODSNetcdfFile dodsfile = TestDODSRead.openAbs("http://iridl.ldeo.columbia.edu/SOURCES/.NOAA/.NCEP/.CPC/.GLOBAL/.daily/dods");
+    try (DODSNetcdfFile dodsfile = TestDODSRead.openAbs("http://iridl.ldeo.columbia.edu/SOURCES/.NOAA/.NCEP/.CPC/.GLOBAL/.daily/dods")) {
 
-    Variable dataV = null;
+      Variable dataV = null;
 
-    // array
-    assert(null != (dataV = dodsfile.findVariable("olr")));
-    assert dataV instanceof DODSVariable;
+      // array
+      assert (null != (dataV = dodsfile.findVariable("olr")));
+      assert dataV instanceof DODSVariable;
 
-    // maps
-    Variable v = null;
-    assert(null != (v = dodsfile.findVariable("time")));
-    assert(null != (v = dodsfile.findVariable("lat")));
-    assert(null != (v = dodsfile.findVariable("lon")));
+      // maps
+      Variable v = null;
+      assert (null != (v = dodsfile.findVariable("time")));
+      assert (null != (v = dodsfile.findVariable("lat")));
+      assert (null != (v = dodsfile.findVariable("lon")));
 
-    // read data
-    Array data = dataV.read("0, 0:72:1, 0:143:1" );
-    assert null != data;
+      // read data
+      Array data = dataV.read("0, 0:72:1, 0:143:1");
+      assert null != data;
+    }
   }
 
 }

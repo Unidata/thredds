@@ -40,7 +40,6 @@ import java.io.UnsupportedEncodingException;
 import java.io.PrintStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.*;
 import java.net.URLDecoder;
 
@@ -173,7 +172,9 @@ public class DiskCache2 {
     root = StringUtil2.replace(cacheDir, '\\', "/"); // no nasty backslash
 
     File dir = new File(root);
-    dir.mkdirs();
+    if (!dir.mkdirs()) {
+      // ok
+    }
     if (!dir.exists()) {
       fail = true;
       cacheLog.error("DiskCache2 failed to create directory "+root);
@@ -508,6 +509,7 @@ public class DiskCache2 {
   /** debug */
   static void make(DiskCache2 dc, String filename) throws IOException {
     File want = dc.getCacheFile(filename);
+    if (want == null) return;
     System.out.println("make=" + want.getPath() + "; exists = " + want.exists());
     if (!want.exists())
       want.createNewFile();

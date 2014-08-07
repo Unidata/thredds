@@ -44,6 +44,7 @@ import java.io.File;
 import java.io.FilenameFilter;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
@@ -63,10 +64,11 @@ public class PartitionManagerFromIndexDirectory extends CollectionAbstract imple
     this.root = directory.getPath();
     this.partIndexFiles = new ArrayList<>();
 
-    for (File indexFile : directory.listFiles( new FilenameFilter() {
-        public boolean accept(File dir, String name) { return name.endsWith(".ncx2"); }
-      } )) {
-      partIndexFiles.add(indexFile);
+    File[] files = directory.listFiles( new FilenameFilter() {
+      public boolean accept(File dir, String name) { return name.endsWith(".ncx2"); }
+    });
+    if (files != null) {
+      Collections.addAll(partIndexFiles, files);
     }
 
     this.putAuxInfo(FeatureCollectionConfig.AUX_CONFIG, config);

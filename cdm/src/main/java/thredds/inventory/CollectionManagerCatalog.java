@@ -188,6 +188,7 @@ public class CollectionManagerCatalog extends CollectionManagerAbstract implemen
     if (ds.hasAccess()) {
       ThreddsDataFactory tdataFactory = new ThreddsDataFactory();
       InvAccess access = tdataFactory.chooseDatasetAccess(ds.getAccess());
+      if (access == null) throw new IllegalStateException();
       MFileRemote mfile = new MFileRemote(access);
       if (mfile.getPath().endsWith(".xml")) return; // eliminate latest.xml  LOOK kludge-o-rama
       mfiles.add(mfile);

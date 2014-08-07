@@ -180,6 +180,10 @@ public class GridDatasetInv {
       }
     }
 
+    if (this.runDate == null) {
+      throw new IllegalStateException("No run date");
+    }
+
     this.runTimeString = this.runDate.toString();
 
     // add each variable, collect unique time and vertical axes

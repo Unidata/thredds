@@ -80,6 +80,7 @@ public class AvhrrConvention extends ucar.nc2.dataset.CoordSysBuilder {
     ds.addAttribute(null, new Attribute("FeatureType", FeatureType.SWATH.toString()));
 
     Group vhrr = ds.findGroup("VHRR");
+    if (vhrr == null) throw new IllegalStateException();
     Group loc = vhrr.findGroup("Geo-Location");
     if (loc == null) throw new IllegalStateException();
     Variable lat = loc.findVariable("Latitude");

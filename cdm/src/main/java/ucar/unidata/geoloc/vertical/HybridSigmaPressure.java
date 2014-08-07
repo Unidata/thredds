@@ -261,6 +261,7 @@ public class HybridSigmaPressure extends VerticalTransformImpl {
 	  //Units check:
 	  // P0 must have same units as PS
 	  String p0UnitStr = p0Var.findAttributeIgnoreCase(CDM.UNITS).getStringValue();
+    if (p0UnitStr == null) throw new IllegalStateException();
 	  if (!units.equalsIgnoreCase(p0UnitStr)) {
 		  p0 = convertPressureToPSUnits(p0UnitStr, p0);		  
 	  }	  
