@@ -59,7 +59,7 @@
 Ncss.initGridAsPoint = function(){
 	Ncss.initGridAsPointForm();
 	Ncss.initMapPreview();
-
+    Ncss.buildAccessUrl();
 };
 
 Ncss.initGridAsPointForm = function(){
@@ -77,8 +77,9 @@ Ncss.initGridAsPointForm = function(){
 	$('#resetTimeRange').click(function(){
 		$('input[name=time_start]').val(Ncss.fullTimeExt.time_start);
 		$('input[name=time_end]').val(Ncss.fullTimeExt.time_end);
+        Ncss.buildAccessUrl();
 	});
-		
+	Ncss.buildAccessUrl();
 	Ncss.log("initGridAsPointForm...(ends)");
 
 };

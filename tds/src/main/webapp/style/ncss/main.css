@@ -112,3 +112,14 @@ span.black{
 span.bold{
 	font-weight:bold;
 }
+
+pre {
+    position: relative;
+    left: 20px;
+    white-space: pre-wrap;
+    font-size: 9pt;
+    padding: 10px;
+    background-color: #E7E7E7;
+    border: 1px solid #CFCFCF;
+    width: 85%;
+}

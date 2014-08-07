@@ -87,6 +87,18 @@ Ncss.initMapPreview = function(){
 
 };
 
+Ncss.buildAccessUrl = function() {
+    var req = $("form").serialize();
+    var serverUrl = document.URL.split("/thredds/")[0];
+    var dataUrl = serverUrl + $("#datasetPath")[0].innerHTML;
+    $("#urlBuilder").html(dataUrl + "?" + req);
+}
+
+Ncss.resetForm = function() {
+    $("form")[0].reset();
+    Ncss.buildAccessUrl();
+}
+
 var ncssFormatOutput = function(lonLat) {
     var digits = parseInt(this.numDigits);
     
