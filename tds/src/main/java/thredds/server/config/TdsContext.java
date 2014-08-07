@@ -32,6 +32,11 @@
  */
 package thredds.server.config;
 
+import org.apache.http.HttpEntity;
+import org.apache.http.HttpResponse;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.impl.client.DefaultHttpClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.DisposableBean;
@@ -42,6 +47,10 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 import org.springframework.web.context.ServletContextAware;
 import org.springframework.web.util.Log4jWebConfigurer;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.NodeList;
+import org.xml.sax.SAXException;
 import thredds.catalog.InvDatasetFeatureCollection;
 import thredds.catalog.InvDatasetScan;
 import thredds.inventory.CollectionUpdater;
@@ -53,15 +62,18 @@ import ucar.unidata.util.StringUtil2;
 
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletContext;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import java.io.InputStream;
+import java.util.*;
 
 /**
  * TDS context implements ServletContextAware so it gets a ServletContext and performs most initial THREDDS set up:
  * - checks version
+ * - check for latest stable and development release versions
  * - sets the content directory
  * - reads persistent user defined params and runs ThreddsConfig.init
  * - creates, if don't exist, log and public dirs in content directory
@@ -358,6 +370,12 @@ public final class TdsContext implements ServletContextAware, InitializingBean, 
     // LOOK Remove Log4jWebConfigurer,initLogging - depends on log4g v1, we are using v2 JC 9/2/2013
     // Log4jWebConfigurer.initLogging( servletContext );
     logServerStartup.info("TdsContext version= " + getVersionInfo());
+
+    // log the latest stable and development version information
+    Map<String,String> latestVersionInfo = getLatestVersionInfo();
+    for (String versionType : latestVersionInfo.keySet()) {
+      logServerStartup.info("TdsContext latest " + versionType + " version = " + latestVersionInfo.get(versionType));
+    }
     logServerStartup.info("TdsContext intialized logging in " + logDir.getPath());
 
     // read in persistent user-defined params from threddsConfig.xml
@@ -500,6 +518,56 @@ public final class TdsContext implements ServletContextAware, InitializingBean, 
       sb.append(getWebappVersionBuildDate());
     }
     return sb.toString();
+  }
+
+  /**
+   * Retrieve the latest stable and development versions
+   * available from Unidata. Needs to connect to
+   * http://www.unidata.ucar.edu in order to get the
+   * latest version numbers. The propose is to easily let users
+   * know if the version of TDS they are running is out of
+   * date, as this information is recorded in the
+   * serverStartup.log file.
+   *
+   * @return A hashmap containing versionTypes as key (i.e.
+   *         "stable", "development") and their corresponding
+   *         version numbers (i.e. 4.5.2)
+   */
+  private Map<String,String> getLatestVersionInfo() {
+  Map<String,String> latestVersionInfo = new HashMap<>();
+
+  String versionUrl = "http://www.unidata.ucar.edu/software/thredds/latest.xml";
+
+  HttpClient httpclient = new DefaultHttpClient();
+  HttpGet request = new HttpGet(versionUrl);
+  request.setHeader("User-Agent", "TDS_" + getVersionInfo().replace(" ", ""));
+  HttpResponse response = null;
+  try {
+    response = httpclient.execute(request);
+    HttpEntity entity = response.getEntity();
+    InputStream content = entity.getContent();
+    DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+    DocumentBuilder db = dbf.newDocumentBuilder();
+    Document dom = db.parse(content);
+    Element docEle = dom.getDocumentElement();
+    NodeList versionElements = docEle.getElementsByTagName("version");
+    if(versionElements != null && versionElements.getLength() > 0) {
+      for(int i = 0 ; i < versionElements.getLength();i++) {
+        //get the version element
+        Element versionElement = (Element)versionElements.item(i);
+        String verType = versionElement.getAttribute("name");
+        String verStr = versionElement.getAttribute("value");
+        latestVersionInfo.put(verType, verStr);
+      }
+    }
+    } catch (IOException e) {
+      logServerStartup.warn("TdsContext - Could not get latest version information from Unidata.");
+    } catch (ParserConfigurationException e) {
+      logServerStartup.error("TdsContext - Error configuring latest version xml parser" + e.getMessage() + ".");
+    } catch (SAXException e) {
+      logServerStartup.error("TdsContext - Could not parse latest version information.");
+    }
+    return latestVersionInfo;
   }
 
   /**
