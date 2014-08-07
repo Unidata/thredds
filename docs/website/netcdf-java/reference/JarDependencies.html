@@ -8,63 +8,103 @@
 </head>
 
 <body>
-<h1>CDM / Netcdf Library Dependencies Version 4.4<a></a></h1>
+<h1>CDM / Netcdf Library Dependencies Version 4.5</h1>
 <hr/>
-<h3>Which jar file should I use?</h3>
+<h2>Which jar file should I use?</h2>
 
-<p>1. Simplest is to use <strong>netcdfAll-{version}.jar</strong>. This includes all other jars, and uses JDK logging. Use it when you want all the capabilities
-  of the netCDF-Java/CDM library, and are not concerned about jar size and compatiblity with other libraries. Use maven to package your own custom .jar files if
-  you need to.</p>
-
-<p>2. The <strong>netcdf-{version}.jar</strong> implements the full CDM model, but is unbundled from the other jar dependencies, including logging. Use it when
-  you need to choose which other jars to use, for example when using the netCDF-Java library as part of a bigger system, such as a server. Choose a
-  <a href="#logging">logging implementation</a>, and add the following libraries to your classpath as needed:</p>
+    <h3><strong>If you dont use maven to build</strong>:</h3>
+    <blockquote>
+      <p> The simplest thing to do is to use <strong>netcdfAll-{version}.jar</strong>. This includes all other jars, and uses JDK logging. Use it when you want all the capabilities
+      of the netCDF-Java/CDM library, and are not concerned about jar size and compatiblity with other libraries, and you dont use maven to build.</p>
+    </blockquote>
+<h3><br />
+      <strong>If you do use maven to build (recommended):</strong><br />
+    </h3>
 <ol>
-  <li>Always include <strong>netcdf-{version}.jar<strong>,<strong> jdom.jar, <strong>jodatime.jar</strong></strong>, </strong></strong> and a logger</li>
-  <li>Optionally include:
-    <ol>
-      <li>Reading BUFR files: <strong>bufr.jar</strong></li>
-      <li>Reading GRIB files: <strong>grib.jar,<strong> </strong><strong>protobuf.jar</strong></strong></li>
-      <li>Reading OPeNDAP: <strong>opendap.jar, commons-httpclient.jar, commons-logging.jar, commons-codec.jar. </strong></li>
-      <li>Reading remote files over HTTP: <strong>commons-httpclient.jar, commons-logging.jar, commons-codec.jar</strong></li>
-      <li>Reading McIDAS or GEMPAK files, or for accessing ADDE: <strong>visadCdm.jar</strong></li>
-      <li>Reading GEMPAK GRID files: <strong>visadCdm.jar, grib.jar</strong></li>
-      <li>Using aggregations: <strong>je.jar</strong> (Berkely DB, Java Edition)</li>
-      <li>Object caching:<strong> ehcache.jar</strong></li>
-      <li>Using ncstream, cdmRemote: <strong>protobuf.jar</strong></li>
-    </ol>
+      <li>The minimal use is <strong>netcdf-{version}.jar </strong>and an slf4j logger. This allows you to read netCDF3/4 files (and a number of others file types that are in the cdm code module).
+        Example using  JDK14 logging:</li>
+ 
+  <pre>&lt;dependency&gt;
+  &lt;groupId&gt;edu.ucar&lt;/groupId&gt;
+  &lt;artifactId&gt;cdm&lt;/artifactId&gt;
+  &lt;version&gt;4.5.2&lt;/version&gt;
+&lt;/dependency&gt;
+    
+&lt;dependency&gt;
+  &lt;groupId&gt;org.slf4j&lt;/groupId&gt;
+  &lt;artifactId&gt;slf4j-jdk14&lt;/artifactId&gt;
+  &lt;version&gt;1.7.5&lt;/version&gt;<br />&lt;/dependency&gt;
+ </pre>
+    <p>The cdm maven configuration file (aka <em>pom file</em>) has a number of dependencies that will automatically be included in your build. The above is all you need to add to your own pom file.
+      </li>
+  <li>The maximum use is to include all the  modules<strong> </strong>and an slf4j logger. This gives you the same functionality as the <strong>netcdfAll</strong>.jar, but keeps the dependent jars separate.
+        Example using  log4j2 logging:
   </li>
+  <pre>    &lt;dependency&gt;<br />      &lt;groupId&gt;edu.ucar&lt;/groupId&gt;<br />      &lt;artifactId&gt;cdm&lt;/artifactId&gt;<br />      &lt;version&gt;${netcdf-java.version}&lt;/version&gt;
+    &lt;/dependency&gt;
+<br />    &lt;dependency&gt;<br />      &lt;groupId&gt;edu.ucar&lt;/groupId&gt;<br />      &lt;artifactId&gt;clcommon&lt;/artifactId&gt;<br />      &lt;version&gt;${netcdf-java.version}&lt;/version&gt;
+    &lt;/dependency&gt;
+<br />    &lt;dependency&gt;<br />      &lt;groupId&gt;edu.ucar&lt;/groupId&gt;<br />      &lt;artifactId&gt;bufr&lt;/artifactId&gt;<br />      &lt;version&gt;${netcdf-java.version}&lt;/version&gt;
+    &lt;/dependency&gt;
+<br />    &lt;dependency&gt;<br />      &lt;groupId&gt;edu.ucar&lt;/groupId&gt;<br />      &lt;artifactId&gt;grib&lt;/artifactId&gt;<br />      &lt;version&gt;${netcdf-java.version}&lt;/version&gt;
+    &lt;/dependency&gt;
+<br />    &lt;dependency&gt;<br />      &lt;groupId&gt;edu.ucar&lt;/groupId&gt;<br />      &lt;artifactId&gt;netcdf4&lt;/artifactId&gt;<br />      &lt;version&gt;${netcdf-java.version}&lt;/version&gt;
+    &lt;/dependency&gt;
+<br />    &lt;dependency&gt;<br />      &lt;groupId&gt;edu.ucar&lt;/groupId&gt;<br />      &lt;artifactId&gt;opendap&lt;/artifactId&gt;<br />      &lt;version&gt;${netcdf-java.version}&lt;/version&gt;
+    &lt;/dependency&gt;
+<br />    &lt;dependency&gt;<br />      &lt;groupId&gt;edu.ucar&lt;/groupId&gt;<br />      &lt;artifactId&gt;visadCdm&lt;/artifactId&gt;<br />      &lt;version&gt;${netcdf-java.version}&lt;/version&gt;
+    &lt;/dependency&gt;
+<br />    &lt;dependency&gt;<br />      &lt;groupId&gt;org.apache.logging.log4j&lt;/groupId&gt;<br />      &lt;artifactId&gt;log4j-slf4j-impl&lt;/artifactId&gt;<br />      &lt;version&gt;1.7.5&lt;/version&gt;<br />    &lt;/dependency&gt;
+<br />    &lt;dependency&gt;<br />      &lt;groupId&gt;org.apache.logging.log4j&lt;/groupId&gt;<br />      &lt;artifactId&gt;log4j-core&lt;/artifactId&gt;<br />      &lt;version&gt;1.7.5&lt;/version&gt;<br />    &lt;/dependency&gt;</pre> 
+
+  <p>You can include any or all of the above components.</p>
 </ol>
-<p>3. <strong>UI classes</strong>. When you also want to use the UI classes, you can either use the &quot;all in one&quot;
-  <strong>toolsUI-{version}.jar</strong> or the unbundled <strong>netcdfUI-{version}.jar</strong>. For the unbundled case, follow the same process for the
-  unbundled CDM library (above), along with these optional jars:</p>
+<h3><strong>Not using maven, but you want to choose which components to use:</strong></h3>
 <ol>
+  <ol>
+    <li>Always include <strong>netcdf-{version}.jar<strong>,<strong> jdom.jar, <strong>jodatime.jar</strong></strong>, </strong></strong> and a logger</li>
+    <li>Optionally include:
+      <ol>
+        <li>Reading BUFR files: <strong>bufr.jar</strong></li>
+        <li>Reading GRIB files: <strong>grib.jar,<strong> </strong><strong>protobuf.jar</strong></strong></li>
+        <li>Reading OPeNDAP: <strong>opendap.jar, commons-httpclient.jar, commons-logging.jar, commons-codec.jar. </strong></li>
+        <li>Reading remote files over HTTP: <strong>commons-httpclient.jar, commons-logging.jar, commons-codec.jar</strong></li>
+        <li>Reading McIDAS or GEMPAK files, or for accessing ADDE: <strong>visadCdm.jar</strong></li>
+        <li>Reading GEMPAK GRID files: <strong>visadCdm.jar, grib.jar</strong></li>
+        <li>Using aggregations: <strong>je.jar</strong> (Berkely DB, Java Edition)</li>
+        <li>Object caching:<strong> ehcache.jar</strong></li>
+        <li>Using ncstream, cdmRemote: <strong>protobuf.jar</strong>      <br/>
+    </li>
+      </ol>
+    </li>
+  </ol>
+</ol>
+<h3><strong>Using the UI classes</strong>:</h3>
+  <p>When you also want to use the UI classes, you can either use the &quot;all in one&quot;
+    <strong>toolsUI-{version}.jar</strong> or the unbundled <strong>netcdfUI-{version}.jar</strong>. For the unbundled case, follow the same process for the
+    unbundled CDM library (above), along with these optional jars:
+  </blockquote>
+</p>
   <ol>
     <li> GUI resources (icons, map overlays): <strong>resourcesOptional.jar</strong></li>
     <li>Dependency injection with the <a href="http://www.springsource.org/">Spring</a> framework: <strong>spring.jar</strong></li>
     <li>Java user interface (Look and Feel, forms layout) using<a href="http://www.jgoodies.com/"> JGoodies</a>: <strong>forms.jar</strong></li>
     <li>Editing XML with <a href="http://www.edankert.com/bounce/">XMLEditorKit</a>: <strong>bounce.jar</strong></li>
     <li>Creating graphs with <a href="http://www.jfree.org/jfreechart/">JFreeChart</a> : <strong>jfreechart.jar, jcommon.jar</strong><br>
-</li>
+    </li>
   </ol>
-</ol>
-<blockquote>&nbsp;</blockquote>
 <hr/>
 <h2>Logging<a name="logging" id="logging"></a></h2>
-
-<p>The Netcdf-Java library uses the <a href="http://www.slf4j.org/">SLF4J</a> logging facade. This allows applications to select their own logging
-  implementation, by including the correct jar files on the classpath at runtime.</p>
-
-<p>You always need the SLF4J API jar: <strong>slf4j-api-{version}.jar</strong></p>
-
-<p>You also must choose a logging implementation. Common choices are:</p>
+The Netcdf-Java library uses the <a href="http://www.slf4j.org/">SLF4J</a> logging facade. This allows applications to select their own logging
+  implementation, by including the correct jar files on the classpath at runtime.You always need the SLF4J API jar: <strong>slf4j-api-{version}.jar</strong>
+You also must choose a logging implementation. Common choices are:
 
 <h3>1) <a href="http://java.sun.com/j2se/1.4.2/docs/guide/util/logging/">JDK Logging</a></h3>
 <ul>
   <li>You must include the SLF4J to JDK Logging interface jar: <strong>slf4j-jdk14-{version}.jar.</strong></li>
   <li>The actual logging is implemented in the java.util.log package, part of the Java runtime.</li>
 </ul>
-<p>To configure JDK logging:</p>
+To configure JDK logging:
 <ul>
   <li>Modify the file <strong>$JAVA_HOME/jre/lib/logging.properties</strong>. Or override this by setting the system property <strong>java.util.logging.config.file</strong>
     to the name of your properties file.
@@ -74,14 +114,14 @@
     <pre><strong>.level= SEVERE</strong></pre>
   </li>
 </ul>
-<p>You can also set the configuration by using
-  <a href="http://java.sun.com/j2se/1.4.2/docs/api/java/util/logging/LogManager.html">java.util.logging.LogManager</a> from your application. most likely by
-  creating your own properties file or resources and calling:</p>
+You can also set the configuration by using
+<a href="http://java.sun.com/j2se/1.4.2/docs/api/java/util/logging/LogManager.html">java.util.logging.LogManager</a> from your application. most likely by
+  creating your own properties file or resources and calling:
 <blockquote>
-  <pre><strong>
+  <pre>
     FileInputStream inputStream = new FileInputStream(&quot;my.properties&quot;);
     LogManager lm = java.util.logging.LogManager.getLogManager();
-    lm.readConfiguration(<a href="http://java.sun.com/j2se/1.4.2/docs/api/java/io/InputStream.html" title="class in java.io"> </a>inputStream); </strong> </pre>
+    lm.readConfiguration(inputStream);</pre>
 </blockquote>
 <h3>2)<a href="http://logging.apache.org/log4j/1.2/index.html"> log4j</a> (4.3)</h3>
 <ul>
@@ -100,12 +140,12 @@
   &lt;appender-ref ref=&quot;applog&quot;/&gt;
  &lt;/root&gt;
 &lt;/log4j:configuration&gt;</pre>
-<p><strong>3)</strong> See <a href="http://www.slf4j.org/">SLF4J</a> pages for more possibilities.</p>
+<strong>3)</strong> See <a href="http://www.slf4j.org/">SLF4J</a> pages for more possibilities.
 <hr width="100%"/>
 <address>
 </address>
 <address>
-  <img src="../nc.gif" alt="" width="64" height="64"/> This document is maintained by <a href="mailto:caron@unidata.ucar.edu">John Caron</a> and was last
+<img src="../nc.gif" alt="" width="64" height="64"/> This document is maintained by <a href="mailto:caron@unidata.ucar.edu">John Caron</a> and was last
   updated Feb 2014
 </address>
 </body>
