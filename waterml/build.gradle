@@ -1,3 +1,9 @@
+repositories {
+    maven {
+        url "http://52north.org/maven/repo/releases"
+    }
+}
+
 jar {
     manifest {
         attributes 'Implementation-Title': 'waterml'
@@ -10,4 +16,5 @@ dependencies {
   compile 'org.n52.sensorweb:52n-oxf-xmlbeans:1.12'
   compile 'com.google.guava:guava:17.0'
   compile group: 'org.slf4j', name: 'slf4j-api', version: slf4jVersion
+  testRuntime group: 'org.slf4j', name: 'slf4j-jdk14', version: slf4jVersion
 }

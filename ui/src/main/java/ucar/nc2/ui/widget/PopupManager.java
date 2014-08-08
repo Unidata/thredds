@@ -61,10 +61,8 @@ public class PopupManager {
   }
 
   public void show(String text, Point p, Component owner, Object forWho) {
-    if (isShowing && (showing == forWho))
-      return;
-    if (isShowing && (showing != forWho))
-      popup.hide();
+    if (isShowing && (showing == forWho)) { return; }
+    if (isShowing && (showing != forWho)) { popup.hide(); };
 
     isShowing = true;
     showing = forWho;
@@ -82,13 +80,13 @@ public class PopupManager {
     int y = (int) (p.getY());
 
     popup = factory.getPopup(owner, main, x + 5, y + 5); // LOOK 1.4
-    popup.show();
+    if (popup != null ) { popup.show(); }
   }
 
   public void hide() {
     if (!isShowing)
       return;
     isShowing = false;
-    popup.hide();
+    if (popup != null) { popup.hide(); }
   }
 }

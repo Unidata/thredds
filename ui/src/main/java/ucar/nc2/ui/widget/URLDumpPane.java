@@ -253,6 +253,21 @@ public class URLDumpPane extends TextHistoryPane {
       appendLine(" " + key + ": " + value);
   }  */
 
+  private HTTPMethod processMethod (HTTPSession httpclient, Command cmd) throws HTTPException, UnsupportedEncodingException {
+      HTTPMethod m = null;
+      if (cmd == Command.GET)
+          m = HTTPFactory.Get(httpclient);
+      else if (cmd == Command.HEAD)
+          m = HTTPFactory.Head(httpclient);
+      else if (cmd == Command.OPTIONS)
+          m = HTTPFactory.Options(httpclient);
+      else if (cmd == Command.PUT) {
+          m = HTTPFactory.Put(httpclient);
+          m.setRequestContent(new StringEntity(ta.getText())); // was  setRequestContentAsString(ta.getText());
+      }
+
+      return m;
+  }
   ///////////////////////////////////////////////////////
   // Uses apache commons HttpClient
   @Urlencoded
@@ -353,6 +368,9 @@ public class URLDumpPane extends TextHistoryPane {
       ByteArrayOutputStream bos = new ByteArrayOutputStream(5000);
       e.printStackTrace(new PrintStream(bos));
       appendLine(bos.toString());
+
+    } finally {
+      if (httpclient != null) httpclient.close();
     }
   }
 

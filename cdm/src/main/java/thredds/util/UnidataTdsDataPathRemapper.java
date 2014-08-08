@@ -3,8 +3,6 @@ package thredds.util;
 import org.jdom2.JDOMException;
 import org.jdom2.input.SAXBuilder;
 
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -14,7 +12,7 @@ import java.util.List;
 /**
  * Remap the dataset UrlPath's from TDS 4.2 to
  * TDS 4.3 for the Unidata TDS server. This is only
- * valid for the initial move from 4.3 to 4.3.
+ * valid for the initial move from 4.2 to 4.3.
  *
  * This code is heavily based on
  * ucar.nc2.grib.GribVariableRenamer.
@@ -39,8 +37,7 @@ public class UnidataTdsDataPathRemapper {
      * @return result List<String> containing possible remaps
      */
     public List<String> getMappedUrlPaths(String oldUrlPath) {
-        List<String> result = getMappedUrlPaths(oldUrlPath,null);
-        return result;
+        return getMappedUrlPaths(oldUrlPath,null);
     }
 
     /**
@@ -59,21 +56,21 @@ public class UnidataTdsDataPathRemapper {
      * @return result List<String> containing possible remaps
      */
     public List<String> getMappedUrlPaths(String oldUrlPath,String urlType) {
-        List<String> result = new ArrayList<String>();
+        List<String> result = new ArrayList<>();
         // look in our Url Remapper map
         if (map == null) {
             initMap();
         }
 
         Remapper mbean = map.get(oldUrlPath);
-        if (mbean != null && mbean.newUrls != null)  {
+        if (mbean != null && mbean.newUrl != null)  {
             result.add(mbean.newUrl); // if its unique, then we are done
             return result;
         }
 
         // not unique - match against urlType (best, latest, or files)
         if (urlType != null) {
-            if (mbean != null) {
+            if (mbean != null && mbean.newUrls.size() > 0) {
                 for (UrlRemapperBean r : mbean.newUrls) {
                     if (r.getUrlType().equals(urlType)) result.add(r.newUrlPath);
                 }
@@ -83,7 +80,7 @@ public class UnidataTdsDataPathRemapper {
     }
 
     private List<UrlRemapperBean> readUrlRemapFile(String path) {
-        java.util.List<UrlRemapperBean> beans = new ArrayList<UrlRemapperBean>(1000);
+        java.util.List<UrlRemapperBean> beans = new ArrayList<>(1000);
 
         ClassLoader cl = this.getClass().getClassLoader();
 
@@ -120,24 +117,12 @@ public class UnidataTdsDataPathRemapper {
         }
     }
 
-    private String getNewName(HashMap<String, Remapper> map, String urlType, String oldUrlPath) {
-        Remapper mbean = map.get(oldUrlPath);
-        if (mbean == null) return null; // ??
-        if (mbean.newUrl != null) return mbean.newUrl; // if its unique, then we are done
-
-        for (UrlRemapperBean r : mbean.newUrls) {
-            if (r.getUrlType().equals(urlType)) return r.getNewUrlPath();
-        }
-
-        return null;
-    }
-
     public static class UrlRemapperBean implements Comparable<UrlRemapperBean> {
         String urlType, oldUrlPath, newUrlPath;
 
-        // no-arg constructor
-        public UrlRemapperBean() {
-        }
+        // used in IDV
+        @SuppressWarnings("unused")
+        public UrlRemapperBean() {}
 
         public UrlRemapperBean(String dsType, String oldUrlPath, String newUrlPath) {
             this.urlType = dsType;
@@ -164,33 +149,34 @@ public class UnidataTdsDataPathRemapper {
     }
 
     private HashMap<String, Remapper> makeMapBeans(List<UrlRemapperBean> vbeans) {
-        HashMap<String, Remapper> map = new HashMap<String, Remapper>(200);
-        for (UrlRemapperBean vbean : vbeans) {
+        HashMap<String, Remapper> map = new HashMap<>(200);
+        if (vbeans != null) {
+            for (UrlRemapperBean vbean : vbeans) {
 
-            // construct the old -> new mapping
-            Remapper mbean = map.get(vbean.getOldUrlPath());
-            if (mbean == null) {
-                mbean = new Remapper(vbean.getOldUrlPath());
-                map.put(vbean.getOldUrlPath(), mbean);
+                // construct the old -> new mapping
+                Remapper mbean = map.get(vbean.getOldUrlPath());
+                if (mbean == null) {
+                    mbean = new Remapper(vbean.getOldUrlPath());
+                    map.put(vbean.getOldUrlPath(), mbean);
+                }
+                mbean.add(vbean);
             }
-            mbean.add(vbean);
-        }
 
-        for (Remapper rmap : map.values()) {
-            rmap.finish();
+            for (Remapper rmap : map.values()) {
+                rmap.finish();
+            }
         }
-
         return map;
     }
 
     private class Remapper {
         String oldUrl, newUrl; // newName exists when theres only one
-        List<UrlRemapperBean> newUrls = new ArrayList<UrlRemapperBean>();
-        HashMap<String, UrlRemapperBean> newUrlMap = new HashMap<String, UrlRemapperBean>();
+        List<UrlRemapperBean> newUrls = new ArrayList<>();
+        HashMap<String, UrlRemapperBean> newUrlMap = new HashMap<>();
 
-        // no-arg constructor
-        public Remapper() {
-        }
+        // no-arg constructor, used by IDV
+        @SuppressWarnings("unused")
+        public Remapper() {}
 
         public Remapper(String oldUrl) {
             this.oldUrl = oldUrl;
@@ -211,6 +197,8 @@ public class UnidataTdsDataPathRemapper {
             return newUrls.size();
         }
 
+        // used by IDV
+        @SuppressWarnings("unused")
         public String getOldUrl() {
             return oldUrl;
         }

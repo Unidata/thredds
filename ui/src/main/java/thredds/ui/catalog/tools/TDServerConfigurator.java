@@ -88,9 +88,9 @@ public class TDServerConfigurator extends JPanel {
   private boolean debugEvents = false, debugSave = false;
 
   public TDServerConfigurator(PreferencesExt prefs, Component parent) {
-    this.prefs = prefs;
-    this.myParent = parent;
+    if (prefs == null) { throw new IllegalArgumentException("`prefs` = null is not a valid parameter"); }
 
+    this.prefs = prefs;
     catalogCB = new ComboBox((prefs == null) ? null : (PreferencesExt) prefs.node("catalogCB"));
 
     // top panel buttons
@@ -276,20 +276,20 @@ public class TDServerConfigurator extends JPanel {
     //configPane = new TextGetPutPane( (PreferencesExt) prefs.node("configPane"));
 
     sourcePane = new TextHistoryPane( false);
-    sourceWindow = new IndependentWindow( "Catalog Source", BAMutil.getImage( "thredds"), sourcePane);
-    sourceWindow.setBounds((Rectangle)prefs.getBean(SOURCE_WINDOW_SIZE, new Rectangle(50, 50, 725, 450)));
+    sourceWindow = new IndependentWindow("Catalog Source", BAMutil.getImage("thredds"), sourcePane);
+    sourceWindow.setBounds((Rectangle) prefs.getBean(SOURCE_WINDOW_SIZE, new Rectangle(50, 50, 725, 450)));
 
-    extractPane = new TextHistoryPane( false);
-    extractWindow = new IndependentWindow( "Extract from dataset", BAMutil.getImage( "thredds"), extractPane);
-    extractWindow.setBounds((Rectangle)prefs.getBean(EXTRACT_WINDOW_SIZE, new Rectangle(50, 150, 725, 450)));
+    extractPane = new TextHistoryPane(false);
+    extractWindow = new IndependentWindow("Extract from dataset", BAMutil.getImage("thredds"), extractPane);
+    extractWindow.setBounds((Rectangle) prefs.getBean(EXTRACT_WINDOW_SIZE, new Rectangle(50, 150, 725, 450)));
 
-    savePane = new TextGetPutPane( prefs);
-    saveWindow = new IndependentWindow( "Save Changes", BAMutil.getImage( "thredds"), savePane);
-    saveWindow.setBounds((Rectangle)prefs.getBean(SAVE_WINDOW_SIZE, new Rectangle(50, 150, 725, 450)));
+    savePane = new TextGetPutPane(prefs);
+    saveWindow = new IndependentWindow("Save Changes", BAMutil.getImage("thredds"), savePane);
+    saveWindow.setBounds((Rectangle) prefs.getBean(SAVE_WINDOW_SIZE, new Rectangle(50, 150, 725, 450)));
 
     htmlViewer = new HtmlBrowser();
-    htmlWindow = new IndependentWindow( "Dataset", BAMutil.getImage( "thredds"), htmlViewer);
-    htmlWindow.setBounds((Rectangle)prefs.getBean(SAVE_HTML_SIZE, new Rectangle(12, 25, 725, 900)));
+    htmlWindow = new IndependentWindow("Dataset", BAMutil.getImage("thredds"), htmlViewer);
+    htmlWindow.setBounds((Rectangle) prefs.getBean(SAVE_HTML_SIZE, new Rectangle(12, 25, 725, 900)));
 
     JButton rereadButt = new JButton("Server Reinit");
     rereadButt.addActionListener( new ActionListener() {

@@ -22,6 +22,7 @@ dependencies {
   compile (project(':visad')) {   // eliminate original visad.jar
     transitive = false
   }
+  compile project(':waterml')
   compile ('com.jgoodies:forms:1.0.7')
   compile (group: 'org.jfree', name: 'jfreechart', version: jfreechartVersion) {
     exclude group: 'com.lowagie'

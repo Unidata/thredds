@@ -340,15 +340,21 @@ public class Fmrc2Panel extends JPanel {
     } catch (IOException e) {
       e.printStackTrace();
     }
-    
-    if (data.where.startsWith("NetcdfFile"))
-      firePropertyChange("openNetcdfFile", null, gds.getNetcdfFile());
-    else if (data.where.startsWith("CoordSys"))
-      firePropertyChange("openCoordSys", null, gds.getNetcdfFile());
-    else if (data.where.startsWith("GridDataset"))
-      showGridDatasetInfo(gds);
-    else if (data.where.startsWith("Grid"))
-      firePropertyChange("openGridDataset", null, gds);
+
+
+    if (gds != null ) {
+      if (data.where.startsWith("NetcdfFile")) {
+        firePropertyChange("openNetcdfFile", null, gds.getNetcdfFile());
+      } else if (data.where.startsWith("CoordSys")) {
+        firePropertyChange("openCoordSys", null, gds.getNetcdfFile());
+      } else if (data.where.startsWith("GridDataset")) {
+        showGridDatasetInfo(gds);
+      } else if (data.where.startsWith("Grid")) {
+          firePropertyChange("openGridDataset", null, gds);
+      }
+    } else {
+      System.out.print("The GridDataset was null, so the Fmrc2Panel isn't going to update.");
+    }
   }
 
   private void showGridDatasetInfo(GridDataset gds) {

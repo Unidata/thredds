@@ -6142,10 +6142,12 @@ public class ToolsUI extends JPanel {
   private static class MySplashScreen extends javax.swing.JWindow {
     public MySplashScreen() {
       Image image = Resource.getImage("/resources/nj22/ui/pix/ring2.jpg");
-      ImageIcon icon = new ImageIcon(image);
-      JLabel lab = new JLabel(icon);
-      getContentPane().add(lab);
-      pack();
+      if (image != null) {
+        ImageIcon icon = new ImageIcon(image);
+        JLabel lab = new JLabel(icon);
+        getContentPane().add(lab);
+        pack();
+      }
 
       //show();
       java.awt.Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
