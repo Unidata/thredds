@@ -3,11 +3,10 @@ subprojects {
 
   sourceCompatibility = 1.7
   version = '4.5.3'
+  compileJava.options.encoding = 'UTF-8'
 
   repositories {
-    maven {
-        url "C:/Users/caron/.m2/repository"
-    }
+    mavenLocal()
     maven {
         url "https://artifacts.unidata.ucar.edu/content/groups/unidata/"
     }
