@@ -1325,8 +1325,11 @@ public class Grib2DataPanel extends JPanel {
     public String showProcessedGridRecord(Formatter f) {
       f.format("%nFile=%s (%d)%n", fileList.get(gr.getFile()).getPath(), gr.getFile());
       GribTables.Parameter param = cust.getParameter(gr.getDiscipline(), gr.getPDS().getParameterCategory(), gr.getPDS().getParameterNumber());
-      f.format("  Parameter=%s (%s)%n", param.getName(), param.getAbbrev());
-
+      if (param != null) {
+        f.format("  Parameter=%s (%s)%n", param.getName(), param.getAbbrev());
+      } else {
+        f.format(" Unknown Parameter  = %d-%d-%d %n", gr.getDiscipline(), gr.getPDS().getParameterCategory(), gr.getPDS().getParameterNumber());
+      }
       VertCoord.VertUnit levelUnit = Grib2Utils.getLevelUnit(pds.getLevelType1());
       f.format("  Level=%f/%f %s; level name =  (%s)%n", pds.getLevelValue1(), pds.getLevelValue1(), levelUnit.getUnits(), cust.getLevelNameShort(pds.getLevelType1()));
 

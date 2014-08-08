@@ -84,8 +84,7 @@ public class TdsDownloader {
     ta.append(String.format("Download URL = %s%n", urls));
 
     String contents = null;
-    try {
-        HTTPMethod method = HTTPFactory.Get(session, urls);
+    try (HTTPMethod method = HTTPFactory.Get(session, urls)) {
         int statusCode = method.execute();
         if (statusCode == 200)
           contents = method.getResponseAsString();

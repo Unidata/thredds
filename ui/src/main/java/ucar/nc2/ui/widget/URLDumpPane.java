@@ -253,13 +253,27 @@ public class URLDumpPane extends TextHistoryPane {
       appendLine(" " + key + ": " + value);
   }  */
 
+  private HTTPMethod processMethod (HTTPSession httpclient, Command cmd) throws HTTPException, UnsupportedEncodingException {
+      HTTPMethod m = null;
+      if (cmd == Command.GET)
+          m = HTTPFactory.Get(httpclient);
+      else if (cmd == Command.HEAD)
+          m = HTTPFactory.Head(httpclient);
+      else if (cmd == Command.OPTIONS)
+          m = HTTPFactory.Options(httpclient);
+      else if (cmd == Command.PUT) {
+          m = HTTPFactory.Put(httpclient);
+          m.setRequestContent(new StringEntity(ta.getText())); // was  setRequestContentAsString(ta.getText());
+      }
+
+      return m;
+  }
   ///////////////////////////////////////////////////////
   // Uses apache commons HttpClient
   @Urlencoded
   private void openURL2(String urlString, Command cmd) {
 
     HTTPSession httpclient = null;
-    HTTPMethod m = null;
 
     try {
       /* you might think this works, but it doesnt:
@@ -278,86 +292,78 @@ public class URLDumpPane extends TextHistoryPane {
 
       //urlString = URLnaming.escapeQuery(urlString);
       httpclient = HTTPFactory.newSession(urlString);
-      if (cmd == Command.GET)
-          m = HTTPFactory.Get(httpclient);
-      else if (cmd == Command.HEAD)
-          m = HTTPFactory.Head(httpclient);
-      else if (cmd == Command.OPTIONS)
-          m = HTTPFactory.Options(httpclient);
-      else if (cmd == Command.PUT) {
-          m = HTTPFactory.Put(httpclient);
-          m.setRequestContent(new StringEntity(ta.getText())); // was  setRequestContentAsString(ta.getText());
-      }
-
-      m.setRequestHeader("Accept-Encoding", "gzip,deflate");
-
-      /* FIX
-      appendLine("HttpClient " + m.getName() + " " + urlString);
-
-      appendLine("   do Authentication= " + m.getDoAuthentication());
-      appendLine("   follow Redirects= " + m.getFollowRedirects());
 
 
-      appendLine("   cookie policy= " + p.getCookiePolicy());
-      appendLine("   http version= " + p.getVersion().toString());
-      appendLine("   timeout (msecs)= " + p.getSoTimeout());
-      appendLine("   virtual host= " + p.getVirtualHost());
-      */
-      printHeaders("Request Headers = ", m.getRequestHeaders());
-      appendLine(" ");
+      try ( HTTPMethod m = processMethod(httpclient, cmd) ) {
+        m.setRequestHeader("Accept-Encoding", "gzip,deflate");
 
-      m.execute();
+        /* FIX
+        appendLine("HttpClient " + m.getName() + " " + urlString);
 
-      printHeaders("Request Headers2 = ", m.getRequestHeaders());
-      appendLine(" ");
+        appendLine("   do Authentication= " + m.getDoAuthentication());
+        appendLine("   follow Redirects= " + m.getFollowRedirects());
 
-      appendLine("Status = " + m.getStatusCode() + " " + m.getStatusText());
-      appendLine("Status Line = " + m.getStatusLine());
-      printHeaders("Response Headers = ", m.getResponseHeaders());
-      if (cmd == Command.GET) {
-        appendLine("\nResponseBody---------------");
+        appendLine("   cookie policy= " + p.getCookiePolicy());
+        appendLine("   http version= " + p.getVersion().toString());
+        appendLine("   timeout (msecs)= " + p.getSoTimeout());
+        appendLine("   virtual host= " + p.getVirtualHost());
+        */
+        printHeaders("Request Headers = ", m.getRequestHeaders());
+        appendLine(" ");
 
-        String charset = m.getResponseCharSet();
-        if (charset == null) charset = CDM.UTF8;
-        String contents = null;
+        m.execute();
 
-        // check for deflate and gzip compression
-        Header h = m.getResponseHeader("content-encoding");
-        String encoding = (h == null) ? null : h.getValue();
+        printHeaders("Request Headers2 = ", m.getRequestHeaders());
+        appendLine(" ");
 
-        if (encoding != null && encoding.equals("deflate")) {
-          byte[] body = m.getResponseAsBytes();
-          InputStream is = new BufferedInputStream(new InflaterInputStream(new ByteArrayInputStream(body)), 10000);
-          contents = IO.readContents(is, charset);
-          double ratio = (double) contents.length() / body.length;
-          appendLine("  deflate encoded=" + body.length + " decoded=" + contents.length() + " ratio= " + ratio);
+        appendLine("Status = " + m.getStatusCode() + " " + m.getStatusText());
+        appendLine("Status Line = " + m.getStatusLine());
+        printHeaders("Response Headers = ", m.getResponseHeaders());
+        if (cmd == Command.OPTIONS) {
+          printSet("AllowedMethods = ", m.getAllowedMethods());
+        } else if (cmd == Command.GET) {
+          appendLine("\nResponseBody---------------");
 
-        } else if (encoding != null && encoding.equals("gzip")) {
-          byte[] body = m.getResponseAsBytes();
-          InputStream is = new BufferedInputStream(new GZIPInputStream(new ByteArrayInputStream(body)), 10000);
-          contents = IO.readContents(is, charset);
-          double ratio = (double) contents.length() / body.length;
-          appendLine("  gzip encoded=" + body.length + " decoded=" + contents.length() + " ratio= " + ratio);
+          String charset = m.getResponseCharSet();
+          if (charset == null) { charset = CDM.UTF8; }
 
-        } else {
-          byte[] body = m.getResponseAsBytes(50 * 1000); // max 50 Kbytes
-          contents = new String(body, charset);
+          String contents = null;
+
+          // check for deflate and gzip compression
+          Header h = m.getResponseHeader("content-encoding");
+          String encoding = (h == null) ? null : h.getValue();
+
+          if (encoding != null && encoding.equals("deflate")) {
+            byte[] body = m.getResponseAsBytes();
+            try (InputStream is = new BufferedInputStream(new InflaterInputStream(new ByteArrayInputStream(body)), 10000)) {
+              contents = IO.readContents(is, charset);
+              double ratio = (double) contents.length() / body.length;
+              appendLine("  deflate encoded=" + body.length + " decoded=" + contents.length() + " ratio= " + ratio);
+            }
+          } else if (encoding != null && encoding.equals("gzip")) {
+            byte[] body = m.getResponseAsBytes();
+            try (InputStream is = new BufferedInputStream(new GZIPInputStream(new ByteArrayInputStream(body)), 10000)) {
+              contents = IO.readContents(is, charset);
+              double ratio = (double) contents.length() / body.length;
+              appendLine("  gzip encoded=" + body.length + " decoded=" + contents.length() + " ratio= " + ratio);
+            }
+          } else {
+            byte[] body = m.getResponseAsBytes(50 * 1000); // max 50 Kbytes
+            contents = new String(body, charset);
+          }
+
+          if (contents.length() > 50 * 1000) {
+            contents = contents.substring(0, 50 * 1000);
+          }
+          appendLine(contents);
         }
-
-        if (contents.length() > 50 * 1000)
-          contents = contents.substring(0, 50 * 1000);
-        appendLine(contents);
-
-      } else if (cmd == Command.OPTIONS)
-        printSet("AllowedMethods = ", m.getAllowedMethods());
-
+      }
     } catch (Exception e) {
       ByteArrayOutputStream bos = new ByteArrayOutputStream(5000);
       e.printStackTrace(new PrintStream(bos));
       appendLine(bos.toString());
-
     } finally {
-      if (httpclient != null) httpclient.close();
+      if (httpclient != null) {httpclient.close();}
     }
   }
 

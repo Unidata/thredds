@@ -681,12 +681,10 @@ public class ScalablePicture implements SourcePictureListener {
     params.setDestinationType(new ImageTypeSpecifier(java.awt.image.IndexColorModel.getRGBdefault(),
         IndexColorModel.getRGBdefault().createCompatibleSampleModel(16, 16)));
 
-    try {
-      ImageOutputStream ios = ImageIO.createImageOutputStream(new FileOutputStream(writeFile));
+    try(ImageOutputStream ios = ImageIO.createImageOutputStream(new FileOutputStream(writeFile))) {
       writer.setOutput(ios);
       writer.write(null, new IIOImage(renderedImage, null, null), params);
       ios.close();
-
     } catch (IOException e) {
       //Tools.log("ScalablePicture.writeJpg caught IOException: " +  e.getMessage() + "\nwhile writing " + writeFile.toString());
       e.printStackTrace();
