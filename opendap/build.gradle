@@ -2,6 +2,7 @@ apply plugin: 'war'
 
 dependencies {
   compile project(':cdm')
+  compile ('com.coverity.security:coverity-escapers:1.1.1')
   providedCompile (group: 'javax.servlet', name: 'javax.servlet-api', version:servletVersion)
   testCompile project(':cdm').sourceSets.test.output
 }

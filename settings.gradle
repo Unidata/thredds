@@ -1,2 +1,2 @@
 include 'udunits', 'httpservices', 'cdm', 'clcommon', 'bufr', 'grib', 'opendap', 'netcdf4', 'visad', 'ui', 'ncIdv',
-        'tdcommon', 'tdm', 'tds', 'cdm-test'
+        'tdcommon', 'tdm', 'waterml', 'tds', 'cdm-test'

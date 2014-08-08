@@ -1,0 +1,13 @@
+jar {
+    manifest {
+        attributes 'Implementation-Title': 'waterml'
+    }
+}
+
+dependencies {
+  compile project(':cdm')
+  compile 'org.n52.sensorweb:52n-xml-waterML-dr-v20:1.1.5'
+  compile 'org.n52.sensorweb:52n-oxf-xmlbeans:1.12'
+  compile 'com.google.guava:guava:17.0'
+  compile group: 'org.slf4j', name: 'slf4j-api', version: slf4jVersion
+}

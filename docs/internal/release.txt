@@ -54,6 +54,7 @@ edited 05/28/2013
     cp {github/thredds}/ui/target/toolsUI-{release}.jar to /web/ftp/pub/netcdf-java/v{version}
 
     (from ssh)
+    cd /web/ftp/pub/netcdf-java/{version}
     rm toolsUI-{version}.jar netcdfAll-{version}.jar ncIdv-{version}.jar
     ln -s toolsUI-{release}.jar toolsUI-{version}.jar
     ln -s netcdfAll-{release}.jar netcdfAll-{version}.jar
@@ -62,7 +63,7 @@ edited 05/28/2013
 8. put tdm onto conan ftp (version 4.5 and above)
     cp {github/thredds}/tdm/build/tdm-{release}.jar /web/ftp/pub/thredds/{version}/current/tdm-{version}.jar
 
-6. CDM has additional targets that are handled by gradle builds
+9. CDM has additional targets that are handled by gradle builds
   - modify build.gradle in top directory to use the correct version
   - make sure you have correct gradle.properties in ~home/.gradle/
   - cd {github/thredds}
@@ -75,15 +76,15 @@ edited 05/28/2013
   6. release all javadocs to conan:/content/software/netcdf-java/v{version}/javadocAll
       gradle -p ui releaseDocs
 
-9. update Unidata download page(s)
+10. update Unidata download page(s)
   - check http://www.unidata.ucar.edu/downloads/thredds/index.jsp
     modify conan:/content/downloads/thredds/toc.xml as needed
   - check http://www.unidata.ucar.edu/downloads/netcdf/netcdf-java-4/index.jsp
     modify conan:/content/downloads/netcdf/netcdf-java-4/toc.xml as needed
 
-10. if you need to do any changes to web pages, do it on the next branch (eg target-{next})
+11. if you need to do any changes to web pages, do it on the next branch (eg target-{next})
 
-11. To start working with the next branch in IntelliJ
+12. To start working with the next branch in IntelliJ
   - Git Fetch
   - Checkout <new branch>
 
