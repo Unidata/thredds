@@ -96,7 +96,7 @@ public class TestDcm {
 
     FeatureCollectionConfig config = new FeatureCollectionConfig("testScanFromConfig", "path", FeatureCollectionType.FMRC,
             TestDir.cdmUnitTestDir + "agg/updating/.*nc$",
-            null, "10 sec", null, null, null, null);
+            null, "10 sec", null, null, null);
 
     assert touch(TestDir.cdmUnitTestDir + "agg/updating/extra.nc");
 
