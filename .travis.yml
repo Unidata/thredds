@@ -4,7 +4,11 @@ jdk:
   - openjdk7
 
 install: mvn install -DskipTests=true
-script: mvn test
+
+script:
+    - cd cdm && mvn test -DskipTests=false -DfailIfNoTests=false -DtestFailureIgnore=true
+    - cd ../udunits && mvn test -DskipTests=false -DfailIfNoTests=false -DtestFailureIgnore=true
+    - cd ../waterml && mvn test -DskipTests=false -DfailIfNoTests=false -DtestFailureIgnore=true
 
 matrix:
   allow_failures:
