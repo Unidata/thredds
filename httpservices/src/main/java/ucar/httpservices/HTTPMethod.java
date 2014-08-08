@@ -325,13 +325,15 @@ public class HTTPMethod implements AutoCloseable
     {
         // merge global and local settings.
         Settings merge = new Settings();
-        Settings s = session.getGlobalSettings();
-        for(String key : s.getNames()) {
-            merge.setParameter(key, s.getParameter(key));
-        }
-        s = session.getSettings();
-        for(String key : s.getNames()) {
-            merge.setParameter(key, s.getParameter(key));
+        synchronized (this) {
+            Settings s = session.getGlobalSettings();
+            for(String key : s.getNames()) {
+                merge.setParameter(key, s.getParameter(key));
+            }
+            s = session.getSettings();
+            for(String key : s.getNames()) {
+                merge.setParameter(key, s.getParameter(key));
+            }
         }
         for(String key : merge.getNames()) {
             Object value = merge.getParameter(key);
@@ -388,10 +390,12 @@ public class HTTPMethod implements AutoCloseable
             this.request.releaseConnection();
             this.request = null;
         }
-        session.removeMethod(this);
-        if(localsession && session != null) {
-            session.close();
-            session = null;
+        if(session != null) {
+            session.removeMethod(this);
+            if(localsession) {
+                session.close();
+                session = null;
+            }
         }
     }
 

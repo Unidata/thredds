@@ -80,13 +80,6 @@ public class HTTPAuthStore implements Serializable
     static public final String ANY_PRINCIPAL = null;
 
     //////////////////////////////////////////////////
-    // Class variables
-
-    static public boolean TESTING = false;
-
-    static public HTTPAuthStore DEFAULTS = new HTTPAuthStore(true);
-
-    //////////////////////////////////////////////////
     // Type Decls
 
     static public class Entry implements Serializable
@@ -138,6 +131,7 @@ public class HTTPAuthStore implements Serializable
         }
     }
 
+    //Coverity(FB.SE_COMPARATOR_SHOULD_BE_SERIALIZABLE)
     static protected class Compare implements Comparator<Entry>
     {
 
@@ -187,6 +181,12 @@ public class HTTPAuthStore implements Serializable
             return true;
         return (e1.principal.equals(e2.principal));
     }
+
+    //////////////////////////////////////////////////
+    // Class variables
+
+    static public boolean TESTING = false;
+    static public HTTPAuthStore DEFAULTS = new HTTPAuthStore(true);
 
     //////////////////////////////////////////////////
     // Instance variables
@@ -323,10 +323,10 @@ public class HTTPAuthStore implements Serializable
     /**
      * Return all entries in the auth store
      */
-    public List<Entry>
+    synchronized public List<Entry>
     getAllRows()
     {
-        return rows;
+        return this.rows;
     }
 
     /**
@@ -347,7 +347,7 @@ public class HTTPAuthStore implements Serializable
         if(scope == null || rows.size() == 0)
             return matches;
 
-        for(Entry e : rows) {
+        for(Entry e : getAllRows()) {
             if(principal != ANY_PRINCIPAL && e.principal.equals(principal))
                 continue;
             if(HTTPAuthScope.equivalent(scope, e.scope))
@@ -433,7 +433,7 @@ public class HTTPAuthStore implements Serializable
         List<Entry> elist = getAllRows();
         for(int i = 0;i < elist.size();i++) {
             Entry e = elist.get(i);
-            p.printf("[%02d] %s\n", i, e.toString());
+            p.printf("[%02d] %s%n", i, e.toString());
         }
     }
 
@@ -464,7 +464,7 @@ public class HTTPAuthStore implements Serializable
 
             oos.writeInt(getAllRows().size());
 
-            for(Entry e : rows) {
+            for(Entry e : getAllRows()) {
                 oos.writeObject(e);
             }
 

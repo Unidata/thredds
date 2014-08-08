@@ -178,8 +178,7 @@ public class CustomSSLProtocolSocketFactory implements SchemeLayeredSocketFactor
 
     public boolean equals(Object obj)
     {
-        return ((obj != null) && obj.getClass().equals(
-            CustomSSLProtocolSocketFactory.class));
+        return ((obj != null) && (obj instanceof CustomSSLProtocolSocketFactory));
     }
 
     public int hashCode()

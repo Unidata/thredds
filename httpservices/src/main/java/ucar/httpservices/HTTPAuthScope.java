@@ -114,6 +114,8 @@ abstract public class HTTPAuthScope
     {
         if(a2 == null ^ a1 == null)
             return false;
+	if(a1 == a2)
+	    return true;
         // So it turns out that AuthScope#equals does not
         // test port values correctly, so we need to fix here.
         if(true) {
@@ -163,7 +165,7 @@ abstract public class HTTPAuthScope
     static public boolean
     wildcardMatch(String p1, String p2)
     {
-        if(p1 == null ^ p2 == null)
+        if((p1 == null ^ p2 == null)|| (p1 == p2))
             return true;
         return (p1.equals(p2));
     }
