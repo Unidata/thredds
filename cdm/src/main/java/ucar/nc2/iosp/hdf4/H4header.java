@@ -61,13 +61,11 @@ public class H4header {
   static boolean isValidFile(ucar.unidata.io.RandomAccessFile raf) throws IOException {
     long pos = 0;
     long size = raf.length();
-    byte[] b = new byte[4];
 
     // search forward for the header
     while ((pos < size) && (pos < maxHeaderPos)) {
       raf.seek(pos);
-      raf.read(b);
-      String magic = new String(b);
+      String magic = raf.readString(4);
       if (magic.equals(shead))
         return true;
       pos = (pos == 0) ? 512 : 2 * pos;
@@ -454,11 +452,11 @@ public class H4header {
       case 3:
       case 4:
         if (nelems == 1)
-          att = new Attribute(name, readString(size));
+          att = new Attribute(name, raf.readStringMax(size));
         else {
           String[] vals = new String[nelems];
           for (int i = 0; i < nelems; i++)
-            vals[i] = readString(size);
+            vals[i] = raf.readStringMax(size);
           att = new Attribute(name, Array.factory(DataType.STRING.getPrimitiveClassType(), new int[]{nelems}, vals));
         }
         break;
@@ -1344,20 +1342,20 @@ public class H4header {
       dim_length = new int[ndims];
       chunk_length = new int[ndims];
       for (int i = 0; i < ndims; i++) {
-        raf.read(dim_flag[i]);
+        raf.readFully(dim_flag[i]);
         dim_length[i] = raf.readInt();
         chunk_length[i] = raf.readInt();
       }
 
       int fill_val_numtype = raf.readInt();
       byte[] fill_value = new byte[fill_val_numtype];
-      raf.read(fill_value);
+      raf.readFully(fill_value);
 
       // LOOK wuzzit stuff? "specialness"
       sp_tag_desc = raf.readShort();
       int sp_header_len = raf.readInt();
       sp_tag_header = new byte[sp_header_len];
-      raf.read(sp_tag_header);
+      raf.readFully(sp_tag_header);
     }
 
     List<DataChunk> dataChunks = null;
@@ -1590,7 +1588,7 @@ public class H4header {
       major = raf.readInt();
       minor = raf.readInt();
       release = raf.readInt();
-      name = readString(length - 12);
+      name = raf.readStringMax(length - 12);
     }
 
     public String value() {
@@ -1612,7 +1610,7 @@ public class H4header {
 
     void read() throws IOException {
       raf.seek(offset);
-      text = readString(length);
+      text = raf.readStringMax(length);
     }
 
     public String detail() {
@@ -1634,7 +1632,7 @@ public class H4header {
       raf.seek(offset);
       obj_tagno = raf.readShort();
       obj_refno = raf.readShort();
-      text = readString(length - 4).trim();
+      text = raf.readStringMax(length - 4).trim();
     }
 
     public String detail() {
@@ -1787,7 +1785,7 @@ public class H4header {
 
       raf.seek(offset);
       byte[] b = new byte[length];
-      raf.read(b);
+      raf.readFully(b);
       int count = 0;
       int start = 0;
       for (int i = 0; i < length; i++) {
@@ -1813,7 +1811,7 @@ public class H4header {
     void read() throws IOException {
       raf.seek(offset);
       byte[] buff = new byte[length];
-      raf.read(buff);
+      raf.readFully(buff);
       bb = ByteBuffer.wrap(buff);
     }
 
@@ -1909,9 +1907,9 @@ public class H4header {
         elem_ref[i] = raf.readShort();
 
       short len = raf.readShort();
-      name = readString(len);
+      name = raf.readStringMax(len);
       len = raf.readShort();
-      className = readString(len);
+      className = raf.readStringMax(len);
 
       extag = raf.readShort();
       exref = raf.readShort();
@@ -1986,14 +1984,14 @@ public class H4header {
       fld_name = new String[nfields];
       for (int i = 0; i < nfields; i++) {
         short len = raf.readShort();
-        fld_name[i] = readString(len);
+        fld_name[i] = raf.readStringMax(len);
       }
 
       short len = raf.readShort();
-      name = readString(len);
+      name = raf.readStringMax(len);
 
       len = raf.readShort();
-      className = readString(len);
+      className = raf.readStringMax(len);
 
       extag = raf.readShort();
       exref = raf.readShort();
@@ -2037,17 +2035,15 @@ public class H4header {
   //  return StringUtil2.remove(name.trim(), '.'); // just avoid the whole mess by removing "."
   //}
 
-  private String readString(int len) throws IOException {
-    if (len < 0)
-      System.out.println("what");
+  /* private String readString(int len) throws IOException {
     byte[] b = new byte[len];
-    raf.read(b);
+    raf.readFully(b);
     int count;
     for (count = 0; count < len; count++)
       if (b[count] == 0)
         break;
     return new String(b, 0, count, CDM.utf8Charset);
-  }
+  } */
 
   private class MemTracker {
     private List<Mem> memList = new ArrayList<Mem>();

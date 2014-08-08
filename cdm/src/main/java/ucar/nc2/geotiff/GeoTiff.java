@@ -426,7 +426,7 @@ public class GeoTiff implements AutoCloseable {
     channel.position(0);
 
     ByteBuffer buffer = ByteBuffer.allocate(8);
-    channel.read(buffer);
+    assert 8 == channel.read(buffer);
     buffer.flip();
     if (showHeaderBytes) {
       printBytes(System.out, "header", buffer, 4);
@@ -472,7 +472,7 @@ public class GeoTiff implements AutoCloseable {
     channel.position(start);
     buffer = ByteBuffer.allocate(4);
     buffer.order(byteOrder);
-    n = channel.read(buffer);
+    assert 4 == channel.read(buffer);
     buffer.flip();
     int nextIFD = buffer.getInt();
     if (debugRead) System.out.println(" nextIFD == " + nextIFD);
@@ -507,7 +507,7 @@ public class GeoTiff implements AutoCloseable {
       channel.position(offset);
       ByteBuffer vbuffer = ByteBuffer.allocate(ifd.count * ifd.type.size);
       vbuffer.order(byteOrder);
-      channel.read(vbuffer);
+      assert ifd.count * ifd.type.size == channel.read(vbuffer);
       vbuffer.flip();
       readValues(vbuffer, ifd);
     }
@@ -699,7 +699,7 @@ public class GeoTiff implements AutoCloseable {
     channel.position(offset);
     ByteBuffer buffer = ByteBuffer.allocate(size);
     buffer.order(byteOrder);
-    channel.read(buffer);
+    assert size == channel.read(buffer);
     buffer.flip();
     return buffer;
   }

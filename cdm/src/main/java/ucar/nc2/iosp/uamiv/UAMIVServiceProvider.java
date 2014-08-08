@@ -25,10 +25,10 @@ import java.util.Arrays;
 public class UAMIVServiceProvider extends AbstractIOServiceProvider {
   static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(UAMIVServiceProvider.class);
 
-  static private final String AVERAGE = "A   V   E   R   A   G   E               ";
+  static private final String AVERAGE =   "A   V   E   R   A   G   E               ";
   static private final String EMISSIONS = "E   M   I   S   S   I   O   N   S       ";
-  static private final String AIRQUALITY = "A   I   R   Q   U   A   L   I   T   Y   ";
-  static private final String INSTANT = "I   N   S   T   A   N   T               ";
+  static private final String AIRQUALITY ="A   I   R   Q   U   A   L   I   T   Y   ";
+  static private final String INSTANT =   "I   N   S   T   A   N   T               ";
 
   static private final String HEIGHT = "HEIGHT";
   static private final String PBL = "PBL";
@@ -69,12 +69,8 @@ public class UAMIVServiceProvider extends AbstractIOServiceProvider {
       raf.order(RandomAccessFile.BIG_ENDIAN);
       raf.seek(0);
       raf.skipBytes(4);
-      byte[] b = new byte[40];
-      raf.read(b);
-      String test = new String(b);
-      // System.out.println("UAMIV");
-      return test.equals(EMISSIONS) || test.equals(AVERAGE) ||
-              test.equals(AIRQUALITY) || test.equals(INSTANT);
+      String test = raf.readString(40);
+      return test.equals(EMISSIONS) || test.equals(AVERAGE) || test.equals(AIRQUALITY) || test.equals(INSTANT);
     } catch (IOException ioe) {
       return false;
     }

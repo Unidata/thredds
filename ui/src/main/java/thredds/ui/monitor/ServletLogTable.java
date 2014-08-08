@@ -451,7 +451,7 @@ public class ServletLogTable extends JPanel {
     }
 
     public void process(LogReader.Log log) {
-      if (log != null)
+      if (log != null && log instanceof ServletLogParser.ServletLog)
         logs.add((ServletLogParser.ServletLog) log);
       else
         System.out.printf("HEY NULL LOG%n");

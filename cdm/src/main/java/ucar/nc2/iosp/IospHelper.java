@@ -171,7 +171,7 @@ public class IospHelper {
         Layout.Chunk chunk = layout.next();
         raf.order(byteOrder);
         raf.seek(chunk.getSrcPos());
-        raf.read(pa, (int) chunk.getDestElem() * recsize, chunk.getNelems() * recsize);
+        raf.readFully(pa, (int) chunk.getDestElem() * recsize, chunk.getNelems() * recsize);
       }
       return pa;
     }

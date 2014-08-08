@@ -81,7 +81,7 @@ public class URLDumpPane extends TextHistoryPane {
     cb = new ComboBox(prefs);
 
     // holds Library impl enum
-    implCB = new JComboBox();
+    implCB = new JComboBox<Library>();
     for (Library e : Library.values())
       implCB.addItem(e);
 
@@ -258,10 +258,9 @@ public class URLDumpPane extends TextHistoryPane {
   @Urlencoded
   private void openURL2(String urlString, Command cmd) {
 
-    HTTPSession httpclient = null;
     HTTPMethod m = null;
 
-    try {
+    try (HTTPSession httpclient = HTTPFactory.newSession(urlString)) {
       /* you might think this works, but it doesnt:
       URI raw = new URI(urlString.trim());
       appendLine("raw scheme= " + raw.getScheme() + "\n auth= " + raw.getRawAuthority() + "\n path= " + raw.getRawPath() +
@@ -277,7 +276,6 @@ public class URLDumpPane extends TextHistoryPane {
               */
 
       //urlString = URLnaming.escapeQuery(urlString);
-      httpclient = HTTPFactory.newSession(urlString);
       if (cmd == Command.GET)
           m = HTTPFactory.Get(httpclient);
       else if (cmd == Command.HEAD)
@@ -355,9 +353,6 @@ public class URLDumpPane extends TextHistoryPane {
       ByteArrayOutputStream bos = new ByteArrayOutputStream(5000);
       e.printStackTrace(new PrintStream(bos));
       appendLine(bos.toString());
-
-    } finally {
-      if (httpclient != null) httpclient.close();
     }
   }
 

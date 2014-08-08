@@ -454,7 +454,7 @@ public class DMSPiosp extends AbstractIOServiceProvider {
     this.raf.seek(header.getRecordSizeInBytes() * header.getNumHeaderRecords() + offsetInRecord);
 
     for (int i = 0; i < header.getNumDataRecords(); i++) {
-      this.raf.read(elementArray);
+      this.raf.readFully(elementArray);
       array[i] = elementArray[3];
       this.raf.skipBytes(header.getRecordSizeInBytes() - elementSizeInBytes);
     }
@@ -513,7 +513,7 @@ public class DMSPiosp extends AbstractIOServiceProvider {
     this.raf.seek(header.getRecordSizeInBytes() * header.getNumHeaderRecords() + offsetInRecord);
 
     for (int i = 0; i < header.getNumDataRecords(); i++) {
-      this.raf.read(array, i * numElementsInRecord, numElementsInRecord);
+      this.raf.readFully(array, i * numElementsInRecord, numElementsInRecord);
       this.raf.skipBytes(header.getRecordSizeInBytes() - numElementsInRecord);
     }
 

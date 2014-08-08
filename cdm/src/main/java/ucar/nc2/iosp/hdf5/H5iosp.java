@@ -303,7 +303,7 @@ public class H5iosp extends AbstractIOServiceProvider {
           System.out.println(" readStructure " + v.getFullName() + " chunk= " + chunk + " index.getElemSize= " + layout.getElemSize());
         // copy bytes directly into the underlying byte[] LOOK : assumes contiguous layout ??
         raf.seek(chunk.getSrcPos());
-        raf.read(byteArray, (int) chunk.getDestElem() * recsize, chunk.getNelems() * recsize);
+        raf.readFully(byteArray, (int) chunk.getDestElem() * recsize, chunk.getNelems() * recsize);
       }
 
       // place data into an ArrayStructureBB
@@ -512,7 +512,7 @@ public class H5iosp extends AbstractIOServiceProvider {
         for (int i = 0; i < chunk.getNelems(); i++) {
           byte[] pa = new byte[recsize];
           raf.seek(chunk.getSrcPos() + i * recsize);
-          raf.read(pa, 0, recsize);
+          raf.readFully(pa, 0, recsize);
           opArray.setObject(count++, ByteBuffer.wrap(pa));
         }
       }

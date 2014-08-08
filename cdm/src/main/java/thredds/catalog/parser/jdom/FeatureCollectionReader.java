@@ -1,15 +1,11 @@
 package thredds.catalog.parser.jdom;
 
 import org.jdom2.Element;
-import org.jdom2.filter.Filters;
 import org.jdom2.input.SAXBuilder;
-import org.jdom2.xpath.XPathExpression;
-import org.jdom2.xpath.XPathFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import thredds.featurecollection.FeatureCollectionConfig;
 import thredds.featurecollection.FeatureCollectionType;
-import thredds.inventory.CollectionUpdateType;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -30,7 +26,7 @@ public class FeatureCollectionReader {
    * @return FeatureCollectionConfig or null
    */
   static public FeatureCollectionConfig readFeatureCollection(String catalogAndPath) {
-    String catFilename = null;
+    String catFilename;
     String fcName = null;
 
     int pos = catalogAndPath.indexOf("#");
@@ -103,16 +99,16 @@ public class FeatureCollectionReader {
     String dateFormatMark = collElem.getAttributeValue("dateFormatMark");
     String olderThan = collElem.getAttributeValue("olderThan");
     String useIndexOnly = collElem.getAttributeValue("useIndexOnly");
-    String recheckAfter = collElem.getAttributeValue("recheckAfter");
-    if (recheckAfter == null)
-       recheckAfter = collElem.getAttributeValue("recheckEvery"); // old name
+    //String recheckAfter = collElem.getAttributeValue("recheckAfter");
+    //if (recheckAfter == null)
+    //   recheckAfter = collElem.getAttributeValue("recheckEvery"); // old name
     if (spec == null) {
       logger.error( "featureCollection "+name+" must have a spec attribute." );
       return null;
     }
     String collName = (specName != null) ? specName : name;
     Element innerNcml = featureCollectionElement.getChild( "netcdf", InvCatalogFactory10.ncmlNS );
-    FeatureCollectionConfig config = new FeatureCollectionConfig(collName, path, fcType, spec, dateFormatMark, olderThan, recheckAfter,
+    FeatureCollectionConfig config = new FeatureCollectionConfig(collName, path, fcType, spec, dateFormatMark, olderThan,
             timePartition, useIndexOnly, innerNcml);
 
     // tds and update elements

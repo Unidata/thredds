@@ -103,7 +103,7 @@ import static ucar.httpservices.HTTPAuthScope.*;
  * constructions must specify a url.
  */
 
-public class HTTPSession
+public class HTTPSession implements AutoCloseable
 {
     //////////////////////////////////////////////////
     // Constants

@@ -171,9 +171,7 @@ public class DataBTree {
       raf.seek( h5.getFileOffset(address));
       this.address = address;
 
-      byte[] name = new byte[4];
-      raf.read(name);
-      String magic = new String(name);
+      String magic = raf.readString(4);
       if (!magic.equals("TREE"))
         throw new IllegalStateException("DataBTree doesnt start with TREE");
 

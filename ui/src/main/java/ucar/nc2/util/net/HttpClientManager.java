@@ -125,11 +125,7 @@ public class HttpClientManager
      */
     public static int putContent(String urlencoded, String content) throws IOException
     {
-        HTTPSession session = null;
-
-        try {
-
-            session = HTTPFactory.newSession(urlencoded);
+        try (HTTPSession session = HTTPFactory.newSession(urlencoded)) {
             HTTPMethod m = HTTPFactory.Put(session);
 
             m.setRequestContent(new StringEntity(content, "application/text", "UTF-8"));
@@ -149,8 +145,6 @@ public class HttpClientManager
 
             return resultCode;
 
-        } finally {
-            if(session != null) session.close();
         }
     }
 
@@ -164,38 +158,39 @@ public class HttpClientManager
     static public String getUrlContentsAsString(HTTPSession session, String urlencoded, int maxKbytes) throws IOException {
         HTTPSession useSession = session;
         try {
-            if(useSession == null)
+            if (useSession == null)
                 useSession = HTTPFactory.newSession(urlencoded);
 
-            HTTPMethod m = HTTPFactory.Get(useSession,urlencoded);
-            m.setFollowRedirects(true);
-            m.setRequestHeader("Accept-Encoding", "gzip,deflate");
+            try (HTTPMethod m = HTTPFactory.Get(useSession,urlencoded)) {
+              m.setFollowRedirects(true);
+              m.setRequestHeader("Accept-Encoding", "gzip,deflate");
 
-            int status = m.execute();
-            if(status != 200) {
+              int status = m.execute();
+              if (status != 200) {
                 throw new RuntimeException("failed status = " + status);
-            }
+              }
 
-            String charset = m.getResponseCharSet();
-            if(charset == null) charset = "UTF-8";
+              String charset = m.getResponseCharSet();
+              if (charset == null) charset = "UTF-8";
 
-            // check for deflate and gzip compression
-            Header h = m.getResponseHeader("content-encoding");
-            String encoding = (h == null) ? null : h.getValue();
+              // check for deflate and gzip compression
+              Header h = m.getResponseHeader("content-encoding");
+              String encoding = (h == null) ? null : h.getValue();
 
-            if(encoding != null && encoding.equals("deflate")) {
+              if (encoding != null && encoding.equals("deflate")) {
                 byte[] body = m.getResponseAsBytes();
                 InputStream is = new BufferedInputStream(new InflaterInputStream(new ByteArrayInputStream(body)), 10000);
                 return readContents(is, charset, maxKbytes);
 
-            } else if(encoding != null && encoding.equals("gzip")) {
+              } else if (encoding != null && encoding.equals("gzip")) {
                 byte[] body = m.getResponseAsBytes();
                 InputStream is = new BufferedInputStream(new GZIPInputStream(new ByteArrayInputStream(body)), 10000);
                 return readContents(is, charset, maxKbytes);
 
-            } else {
+              } else {
                 byte[] body = m.getResponseAsBytes(maxKbytes * 1000);
                 return new String(body, charset);
+              }
             }
 
         } finally {

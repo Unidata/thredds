@@ -148,11 +148,8 @@ The specifics for the binary NLDN data record contained in the IDD is:
    */
   public boolean isValidFile(RandomAccessFile raf) throws IOException {
     raf.seek(0);
-    int n = MAGIC.length();
-    byte[] b = new byte[n];
-    raf.read(b);
-    String got = new String(b);
-    return got.equals(MAGIC);
+    String test = raf.readString(MAGIC.length());
+    return test.equals(MAGIC);
   }
 
   /**
@@ -469,7 +466,7 @@ The specifics for the binary NLDN data record contained in the IDD is:
         return false;
       }
       byte[] data = new byte[count * recSize];
-      raf.read(data);
+      raf.readFully(data);
       bytesRead += count * recSize;
       alreadyRead += count;
       nextIndex = 0;

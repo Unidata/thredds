@@ -182,6 +182,7 @@ public class StereographicAzimuthalProjection extends ProjectionImpl {
         case NORTH_POLE:
           coslam = -coslam;
           phi = -phi;
+        //coverity[missing_break]
         case SOUTH_POLE:
           if (Math.abs(phi - MapMath.HALFPI) < TOL)
             throw new RuntimeException("I");
@@ -215,6 +216,7 @@ public class StereographicAzimuthalProjection extends ProjectionImpl {
           phi = -phi;
           coslam = -coslam;
           sinphi = -sinphi;
+        //coverity[missing_break]
         case NORTH_POLE:
           x = akm1 * MapMath.tsfn(phi, sinphi, e);
           y = -x * coslam;
@@ -421,10 +423,8 @@ public class StereographicAzimuthalProjection extends ProjectionImpl {
     for (int i = 0; i < lat.length; ++i) {
       ProjectionPointImpl p = new ProjectionPointImpl(x[i], y[i]);
       LatLonPointImpl lp = (LatLonPointImpl) proj.projToLatLon(p);
-      if ((Math.abs(lp.getLatitude() - lat[i]) > 1e-5)
-              || (Math.abs(lp.getLongitude() - lon[i]) > 1e-5)) {
-        if (Math.abs(lp.getLatitude()) > 89.99 &&
-                (Math.abs(lp.getLatitude() - lat[i]) < 1e-5)) {
+      if ((Math.abs(lp.getLatitude() - lat[i]) > 1e-5) || (Math.abs(lp.getLongitude() - lon[i]) > 1e-5)) {
+        if (Math.abs(lp.getLatitude()) > 89.99 && (Math.abs(lp.getLatitude() - lat[i]) < 1e-5)) {
           // ignore longitude singularities at poles
         } else {
           System.err.print("ERROR:");

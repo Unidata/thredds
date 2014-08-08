@@ -112,9 +112,7 @@ Where startingBlockSize is from the header, ie the same for all indirect blocks.
     if (debugDetail) debugOut.println("-- readFractalHeap position=" + raf.getFilePointer());
 
     // header
-    byte[] heapname = new byte[4];
-    raf.readFully(heapname);
-    String magic = new String(heapname, CDM.utf8Charset);
+    String magic = raf.readString(4);
     if (!magic.equals("FRHP"))
       throw new IllegalStateException(magic + " should equal FRHP");
 
@@ -150,7 +148,7 @@ Where startingBlockSize is from the header, ie the same for all indirect blocks.
       sizeFilteredRootDirectBlock = h5.readLength();
       ioFilterMask = raf.readInt();
       ioFilterInfo = new byte[ioFilterLen];
-      raf.read(ioFilterInfo);
+      raf.readFully(ioFilterInfo);
     }
     int checksum = raf.readInt();
 
@@ -384,9 +382,7 @@ Where startingBlockSize is from the header, ie the same for all indirect blocks.
     raf.seek(pos);
 
     // header
-    byte[] heapname = new byte[4];
-    raf.readFully(heapname);
-    String magic = new String(heapname, CDM.utf8Charset);
+    String magic = raf.readString(4);
     if (!magic.equals("FHIB"))
       throw new IllegalStateException(magic + " should equal FHIB");
 
@@ -453,9 +449,7 @@ Where startingBlockSize is from the header, ie the same for all indirect blocks.
     raf.seek(pos);
 
     // header
-    byte[] heapname = new byte[4];
-    raf.readFully(heapname);
-    String magic = new String(heapname, CDM.utf8Charset);
+    String magic = raf.readString(4);
     if (!magic.equals("FHDB"))
       throw new IllegalStateException(magic + " should equal FHDB");
 

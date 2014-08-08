@@ -679,8 +679,6 @@ private class Iterator implements StructureDataIterator {
   }
 
   public java.util.List<CoordinateSystem> getCoordinateSystems() {
-    if (proxy == null)
-      System.out.println("HEY");
     return proxy.getCoordinateSystems();
   }
 

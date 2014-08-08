@@ -512,20 +512,20 @@ public class ThreddsDataFactory {
       ds = acquire ? NetcdfDataset.acquireDataset(datasetLocation, enhanceMode, task) : NetcdfDataset.openDataset(datasetLocation, enhanceMode, task);
     }
 
-    if (ds != null) {
-      ds.setId(datasetId);
-      ds.setTitle(title);
-      annotate(invDataset, ds);
-    }
+    result.accessUsed = access;
+    if (ds == null) return null;
+
+    ds.setId(datasetId);
+    ds.setTitle(title);
+    annotate(invDataset, ds);
 
     // see if there's metadata LOOK whats this
-    List list = invDataset.getMetadata(MetadataType.NcML);
+    List<InvMetadata> list = invDataset.getMetadata(MetadataType.NcML);
     if (list.size() > 0) {
-      InvMetadata ncmlMetadata = (InvMetadata) list.get(0);
+      InvMetadata ncmlMetadata = list.get(0);
       NcMLReader.wrapNcML(ds, ncmlMetadata.getXlinkHref(), null);
     }
 
-    result.accessUsed = access;
     return ds;
   }
 

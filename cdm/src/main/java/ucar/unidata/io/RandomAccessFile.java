@@ -1426,6 +1426,22 @@ public class RandomAccessFile implements DataInput, DataOutput, FileCacheable, A
     return new String(data, CDM.utf8Charset);
   }
 
+  /**
+   * Read a String of max length, zero terminate.
+   *
+   * @param nbytes number of bytes to read
+   * @return String wrapping the bytes.
+   * @throws IOException if an I/O error occurs.
+   */
+  public String readStringMax(int nbytes) throws IOException {
+    byte[] b = new byte[nbytes];
+    readFully(b);
+    int count;
+    for (count = 0; count < nbytes; count++)
+      if (b[count] == 0) break;
+    return new String(b, 0, count, CDM.utf8Charset);
+  }
+
   //
   // DataOutput methods.
   //

@@ -171,6 +171,7 @@ public class CoverageTable extends JPanel {
     invButton.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent e) {
         if (gridDataset == null) return;
+        if (!(gridDataset instanceof ucar.nc2.dt.grid.GridDataset)) return;
         GridDatasetInv inv = new GridDatasetInv((ucar.nc2.dt.grid.GridDataset) gridDataset, null);
         try {
           infoTA.setText(inv.writeXML(new Date()));

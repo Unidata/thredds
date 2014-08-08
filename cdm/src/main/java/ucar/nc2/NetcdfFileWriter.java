@@ -185,6 +185,7 @@ public class NetcdfFileWriter {
         else version = Version.netcdf3;
 
       } else {
+        raf.close();
         throw new IllegalArgumentException(location + " must be netcdf-3 or netcdf-4 file");
       }
 

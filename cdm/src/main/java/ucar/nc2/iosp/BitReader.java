@@ -132,7 +132,7 @@ public class BitReader {
       }
 
       // -- retrieve bit from current byte ----------
-      // how many bit to read from the current byte
+      // how many bits to read from the current byte
       int size = min(bitsLeft, bitPos);
       // move my part to start
       int myBits = bitBuf >> (bitPos - size);

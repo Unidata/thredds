@@ -1556,17 +1556,15 @@ public class H5header {
     int[] dim = (msd != null) ? msd.dimLength : new int[0];
     if (dim == null) dim = new int[0]; // scaler
 
-    boolean hasvlen = (mdt != null && mdt.isVlen());
+    boolean hasvlen = mdt.isVlen();
 
     // merge the shape for array type (10)
     if (mdt.type == 10) {
       int len = dim.length + mdt.dim.length;
       if (hasvlen) len++;
       int[] combinedDim = new int[len];
-      for (int i = 0; i < dim.length; i++)
-        combinedDim[i] = dim[i];  // the dataspace is the outer (slow) dimensions
-      for (int i = 0; i < mdt.dim.length; i++)
-        combinedDim[dim.length + i] = mdt.dim[i];  // type 10 is the inner dimensions
+      System.arraycopy(dim, 0, combinedDim, 0, dim.length);
+      System.arraycopy(mdt.dim, 0, combinedDim, dim.length, mdt.dim.length); // // type 10 is the inner dimensions
       if (hasvlen) combinedDim[len - 1] = -1;
       dim = combinedDim;
     }
@@ -4322,7 +4320,7 @@ public class H5header {
     } else if (DataType.BYTE == dataType) {
       byte[] pa = new byte[heapId.nelems];
       raf.seek(ho.dataPos);
-      raf.read(pa, 0, pa.length);
+      raf.readFully(pa, 0, pa.length);
       return Array.factory(dataType.getPrimitiveClassType(), new int[]{pa.length}, pa);
 
     } else if (DataType.SHORT == dataType) {

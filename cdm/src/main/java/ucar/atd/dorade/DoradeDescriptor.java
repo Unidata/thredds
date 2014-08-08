@@ -104,7 +104,7 @@ abstract class DoradeDescriptor {
       // get the name and descriptor size
       //
       byte[] header = new byte[8];
-      file.read(header);
+      file.readFully(header);
       descName = new String(header, 0, 4);
       int size = grabInt(header, 4);
 
@@ -115,7 +115,7 @@ abstract class DoradeDescriptor {
       file.seek(startpos);
 
       data = new byte[size];
-      file.read(data);
+      file.readFully(data);
     } catch (java.io.IOException ex) {
       throw new DescriptorException(ex);
     }
@@ -143,11 +143,11 @@ abstract class DoradeDescriptor {
                                        boolean littleEndianData)
           throws DescriptorException, java.io.IOException {
     try {
-      file.read(new byte[4]); // skip name
+      file.readFully(new byte[4]); // skip name
       byte[] lenBytes = new byte[4];
-      file.read(lenBytes);
+      file.readFully(lenBytes);
       int descLen = grabInt(lenBytes, 0, littleEndianData);
-      file.read(new byte[descLen - 8]);
+      file.readFully(new byte[descLen - 8]);
     } catch (java.io.EOFException eofex) {
       return; // just leave the file at EOF
     } catch (Exception ex) {
@@ -196,7 +196,7 @@ abstract class DoradeDescriptor {
       // skip the 4-byte descriptor name
       //
       byte[] bytes = new byte[4];
-      file.read(bytes);
+      file.readFully(bytes);
       //
       // get the descriptor length
       //

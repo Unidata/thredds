@@ -159,8 +159,7 @@ public class StructureDataDeep extends StructureDataA {
 
     for (StructureMembers.Member wantMember : abb.getMembers()) {
       StructureMembers.Member m = sdata.findMember(wantMember.getName());
-      if (m == null)
-        System.out.printf("HEY missing %s", wantMember.getName());
+      assert m != null;
       assert m.getDataType() == wantMember.getDataType();
 
       DataType dtype = m.getDataType();

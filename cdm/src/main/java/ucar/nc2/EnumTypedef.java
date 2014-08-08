@@ -180,16 +180,13 @@ public class EnumTypedef extends CDMNode {
 
     EnumTypedef that = (EnumTypedef) o;
 
-    if(map == that.map)
-        return true;
-    if (map == null ^ that.map == null)
-      return false;
-    if(!map.equals(that.map)) return false;
+    if (map == that.map) return true;
+    if (map == null) return false;
+    if (!map.equals(that.map)) return false;
     String name = getShortName();
     String thatname = that.getShortName();
-    if (name != null ? !name.equals(thatname) : thatname != null) return false;
+    return !(name != null ? !name.equals(thatname) : thatname != null);
 
-    return true;
   }
 
   @Override

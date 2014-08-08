@@ -34,7 +34,6 @@ package ucar.nc2.iosp.noaa;
 
 import ucar.ma2.*;
 import ucar.nc2.*;
-import ucar.nc2.constants.CDM;
 import ucar.nc2.iosp.AbstractIOServiceProvider;
 import ucar.nc2.ncml.NcmlConstructor;
 import ucar.nc2.util.CancelTask;
@@ -103,16 +102,12 @@ public class IgraPor extends AbstractIOServiceProvider {
         return false;
 
       raf.seek(0);
-      byte[] b = new byte[MAGIC_START_IDX.length()];
-      raf.read(b);
-      String test = new String(b, CDM.utf8Charset);
+      String test = raf.readString(MAGIC_START_IDX.length());
       return test.equals(MAGIC_START_IDX);
 
     } else if (ext.equals(DAT_EXT)) {
       File stnFile = getStnFile(location);
-      if (stnFile == null)
-        return false;
-      return isValidFile(raf, dataHeaderPattern);
+      return stnFile != null && isValidFile(raf, dataHeaderPattern);
 
     } else {
       // data directory must exist

@@ -508,9 +508,7 @@ public class Ghcnm2 extends AbstractIOServiceProvider {
         return false;
 
       raf.seek(0);
-      byte[] b = new byte[MAGIC_START_IDX.length()];
-      raf.read(b);
-      String test = new String(b, CDM.utf8Charset);
+      String test = raf.readString(MAGIC_START_IDX.length());
       return test.equals(MAGIC_START_IDX);
 
     } else if (ext.equals(DAT_EXT)) {

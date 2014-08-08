@@ -100,7 +100,7 @@ public class FeatureCollectionConfig {
   }
 
   public FeatureCollectionConfig(String name, String path, FeatureCollectionType fcType, String spec,
-                                 String dateFormatMark, String olderThan, String recheckAfter,
+                                 String dateFormatMark, String olderThan,
                                  String timePartition, String useIndexOnlyS, Element innerNcml) {
     this.name = name;
     this.path = path;
@@ -108,7 +108,7 @@ public class FeatureCollectionConfig {
     this.spec = spec;
     this.dateFormatMark = dateFormatMark;
     this.olderThan = olderThan;
-    if (recheckAfter != null) this.updateConfig.recheckAfter = recheckAfter;
+    //if (recheckAfter != null) this.updateConfig.recheckAfter = recheckAfter;
     if (null != timePartition) {
       if (timePartition.equalsIgnoreCase("directory")) ptype = PartitionType.directory;
       if (timePartition.equalsIgnoreCase("file")) ptype = PartitionType.file;
