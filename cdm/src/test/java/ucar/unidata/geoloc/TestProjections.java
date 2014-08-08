@@ -81,7 +81,9 @@ public class TestProjections extends TestCase {
       ProjectionPoint p = proj.latLonToProj(startL);
       if (Double.isNaN(p.getX()) || Double.isNaN(p.getY())) continue;
       LatLonPoint endL = proj.projToLatLon(p);
-      if (Double.isNaN(endL.getLatitude()) || Double.isNaN(endL.getLongitude())) continue;
+      if (Double.isNaN(endL.getLatitude()) ||
+              Double.isNaN(endL.getLongitude()) ||
+              endL.equals(LatLonPointImmutable.INVALID)) continue;
 
       assert (Misc.closeEnough(startL.getLatitude(), endL.getLatitude(), 1.0e-3)) :
           proj.getClass().getName() + " failed start= " + startL + " end = " + endL + " diff = "+ Misc.howClose(startL.getLatitude(), endL.getLatitude());
