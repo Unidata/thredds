@@ -153,6 +153,8 @@ public class FrontPage
                     throw new DapException(ioe);
                 }
                 URLMap.Result result = urlmap.mapPath(absname);
+                if(result == null)
+                    throw new DapException("Unmappable path:"+absname);
                 String urlpath = this.svcinfo.getServer() + result.prefix + "/" + result.suffix; // append remainder not used by mappath
                 String line = String.format(HTML_FORMAT, name, urlpath, urlpath, urlpath, urlpath);
                 html.append(line);
@@ -167,7 +169,7 @@ public class FrontPage
     // HTML prefix and suffix
     // (Remember that java does not allow Strings to cross lines)
     static final String HTML_PREFIX =
-            "<html>\n<head>\n<title>DAP4 Test Files</title>\n<meta http-equiv=\"Content-Type\" content=\"text/html\">\n</meta>\n<body bgcolor=\"#FFFFFF\">\n";
+            "<html>%n<head>%n<title>DAP4 Test Files</title>%n<meta http-equiv=\"Content-Type\" content=\"text/html\">%n</meta>%n<body bgcolor=\"#FFFFFF\">%n";
 
     static final String HTML_HEADER1 = "<h1>DAP4 Test Files</h1>\n";
     static final String HTML_HEADER2 = "<h2>http://" + dap4TestServer + "/d4ts/</h2>\n<hr>\n";

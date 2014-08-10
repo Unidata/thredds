@@ -155,7 +155,6 @@ public class DataCompiler
         D4DataCompoundArray structarray
             = new D4DataCompoundArray(this.dsp, dapvar);
         DapStructure struct = (DapStructure) dapvar;
-        List<DapVariable> dfields = struct.getFields();
         long dimproduct = structarray.getCount();
         for(int i = 0;i < dimproduct;i++) {
             D4DataStructure instance = compileStructure(struct,structarray,i);
@@ -221,7 +220,6 @@ public class DataCompiler
     compileSequence(DapSequence dapseq, D4DataCompoundArray array, int index)
         throws DapException
     {
-        int savepos = databuffer.position();
         List<DapVariable> dfields = dapseq.getFields();
         // Get the count of the number of records
         long nrecs = getCount(databuffer);

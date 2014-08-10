@@ -54,7 +54,6 @@ public class XURI
     protected URIBuilder url = null; //applied to trueurl
     protected boolean isfile = false;
 
-    protected String[] allprotocols = null;
     protected String baseprotocol = null;
     protected String userinfo = null;
     protected String host = null;

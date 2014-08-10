@@ -541,6 +541,7 @@ abstract public class Dap4Util
                     }
                     bresult[i] = (byte) fsrc[i];
                 }
+                break;
             case Int16: //Float32->Int16
                 result = (shresult = new short[len]);
                 for(i = 0;i < len;i++) shresult[i] = (short) fsrc[i];

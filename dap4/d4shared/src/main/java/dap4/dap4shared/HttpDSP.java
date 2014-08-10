@@ -47,11 +47,11 @@ public class HttpDSP extends D4DSP
     static protected final int DFALTPRELOADSIZE = 50000; // databuffer
 
     static protected final String[] DAPEXTENSIONS = new String[]{
-            "dmr", "dap", "dds", "das", "ddx", "dods"
+        "dmr", "dap", "dds", "das", "ddx", "dods"
     };
 
     static protected final String[] DAP4EXTENSIONS = new String[]{
-            "dmr", "dap"
+        "dmr", "dap"
     };
 
     //////////////////////////////////////////////////
@@ -59,8 +59,7 @@ public class HttpDSP extends D4DSP
 
     protected String originalurl = null;
     protected boolean allowCompression = true;
-    protected int preloadsize = DFALTPRELOADSIZE;
-    protected String basece; // the constraint(s) from the original url
+    protected String basece = null; // the constraint(s) from the original url
 
     protected int status = HttpStatus.SC_OK;    // response
     protected XURI xuri = null;
@@ -90,7 +89,7 @@ public class HttpDSP extends D4DSP
         try {
             XURI xuri = new XURI(url);
             return (xuri.getLeadProtocol().equals(DAP4PROTO)
-                    || xuri.getParameters().get(PROTOTAG).equals(DAP4PROTO));
+                || xuri.getParameters().get(PROTOTAG).equals(DAP4PROTO));
         } catch (URISyntaxException use) {
         }
         return false;
@@ -130,12 +129,12 @@ public class HttpDSP extends D4DSP
 
     protected void
     build()
-            throws DapException
+        throws DapException
     {
-        String methodurl = buildURL(this.xuri.assemble(XURI.URLONLY), DATASUFFIX, this.dmr, basece);
+        String methodurl = buildURL(this.xuri.assemble(XURI.URLONLY), DATASUFFIX, this.dmr, this.basece);
         this.checksummode = ChecksumMode.modeFor(xuri.getParameters().get(CHECKSUMTAG));
-        if(checksummode == null) {
-            checksummode = ChecksumMode.DAP;
+        if(this.checksummode == null) {
+            this.checksummode = ChecksumMode.DAP;
         }
 
         InputStream stream;
@@ -173,7 +172,7 @@ public class HttpDSP extends D4DSP
 
     protected InputStream
     callServer(String methodurl)
-            throws DapException
+        throws DapException
     {
         URL url;
 
@@ -183,13 +182,12 @@ public class HttpDSP extends D4DSP
             throw new DapException("Malformed url: " + methodurl);
         }
 
-        HTTPMethod method = null;
-
         long start = System.currentTimeMillis();
         long stop = 0;
-        try {
-            this.status = 0;
-
+        this.status = 0;
+        HTTPMethod method = null;
+        try {   // Note that we cannot use try with resources because we exort the method stream, so method
+            // must not be closed.
             method = HTTPFactory.Get(methodurl);
             if(allowCompression)
                 method.setRequestHeader("Accept-Encoding", "deflate,gzip");
@@ -199,7 +197,7 @@ public class HttpDSP extends D4DSP
             if(this.status != HttpStatus.SC_OK) {
                 String msg = method.getResponseAsString();
                 throw new DapException("Request failure: " + method.getStatusText() + ": " + methodurl)
-                        .setCode(status);
+                    .setCode(status);
             }
             // Pull headers of interest
             /*not legal
@@ -215,8 +213,6 @@ public class HttpDSP extends D4DSP
         } catch (Exception e) {
             method.close();
             throw new DapException(e);
-        } finally {
-            stop = System.currentTimeMillis();
         }
     }
 
@@ -229,13 +225,12 @@ public class HttpDSP extends D4DSP
 
     public String
     getCapabilities(String url)
-            throws IOException
+        throws IOException
     {
         // Save the original url
         String saveurl = this.xuri.getOriginal();
         setURL(url);
         String fdsurl = buildURL(this.xuri.assemble(XURI.URLALL), DSRSUFFIX, null, null);
-        long start = System.currentTimeMillis();
         try {
             // Make the request and return an input stream for accessing the databuffer
             // Should fill in context bigendian and stream fields
@@ -272,7 +267,7 @@ public class HttpDSP extends D4DSP
 
     protected void
     setURL(String url)
-            throws DapException
+        throws DapException
     {
         try {
             this.xuri = new XURI(url);

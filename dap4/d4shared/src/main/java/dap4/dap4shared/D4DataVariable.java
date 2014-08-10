@@ -13,7 +13,6 @@ abstract public class D4DataVariable extends AbstractDataVariable
     // Instance variables
 
     protected D4DSP dsp = null;
-    protected DapVariable dapvar = null;
 
     //////////////////////////////////////////////////
     // Constructors
@@ -23,7 +22,6 @@ abstract public class D4DataVariable extends AbstractDataVariable
     {
         super(dv);
         this.dsp = dsp;
-        this.dapvar = dv;
     }
 
     //////////////////////////////////////////////////

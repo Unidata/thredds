@@ -22,6 +22,7 @@ public class FileDSP extends D4DSP
     //////////////////////////////////////////////////
     // Instance variables
 
+    //Coverity(FB.URF_UNREAD_PUBLIC_OR_PROTECTED_FIELD)
     protected byte[] raw = null; // Complete serialized binary databuffer
 
     //////////////////////////////////////////////////
@@ -71,6 +72,7 @@ public class FileDSP extends D4DSP
             XURI xuri = new XURI(path);
             if(xuri.getProtocols().size() > 0)
                 filepath = xuri.getPath();
+            //Coverity(RESOURCE_LEAK)
             FileInputStream stream = new FileInputStream(filepath);
             this.raw = DapUtil.readbinaryfile(stream);
             stream = new FileInputStream(filepath); // == rewind

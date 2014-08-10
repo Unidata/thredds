@@ -77,8 +77,6 @@ public class D4TSServlet extends DapServlet
         throws IOException
     {
         addCommonHeaders(drq);
-        // Get the complete url used to get to this point
-        String url = drq.getURL().toString();
 
         // Figure out the directory containing
         // the files to display.
