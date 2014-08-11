@@ -60,9 +60,10 @@ import java.util.Formatter;
 public class Grib2Iosp extends GribIosp {
   static private final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(Grib2Iosp.class);
   static private final boolean debugTime = false, debugRead = false, debugName = false;
-  static private boolean useGenType = false; // LOOK dummy for now
+ // static private boolean useGenType = false; // LOOK dummy for now
 
-  static public String makeVariableNameFromTable(Grib2Customizer tables, GribCollection gribCollection, GribCollection.VariableIndex vindex) {
+  static public String makeVariableNameFromTable(Grib2Customizer tables, GribCollection gribCollection, GribCollection.VariableIndex vindex,
+                                                 boolean useGenType) {
     Formatter f = new Formatter();
 
     GribTables.Parameter param = tables.getParameter(vindex.discipline, vindex.category, vindex.parameter);
@@ -73,8 +74,13 @@ public class Grib2Iosp extends GribIosp {
       f.format("%s", GribUtils.makeNameFromDescription(param.getName()));
     }
 
-    if (!useGenType && (vindex.genProcessType == 6 || vindex.genProcessType == 7)) { // LOOK
+    if (vindex.genProcessType == 6 || vindex.genProcessType == 7) {
       f.format("_error");  // its an "error" type variable - add to name
+
+    } else if (useGenType && vindex.genProcessType >= 0) {
+        String genType = tables.getGeneratingProcessTypeName(vindex.genProcessType);
+        String s = StringUtil2.substitute(genType, " ", "_");
+        f.format("_%s", s);
     }
 
     if (vindex.levelType != GribNumbers.UNDEFINED) { // satellite data doesnt have a level
@@ -101,16 +107,10 @@ public class Grib2Iosp extends GribIosp {
       f.format("_ens");
     }
 
-    if (vindex.genProcessType >= 0 && useGenType) {
-      String genType = tables.getGeneratingProcessTypeName(vindex.genProcessType);
-      String s = StringUtil2.substitute(genType, " ", "_");
-      f.format("_%s", s);
-    }
-
     return f.toString();
   }
 
-  static public String makeVariableLongName(Grib2Customizer cust, GribCollection.VariableIndex vindex) {
+  static public String makeVariableLongName(Grib2Customizer cust, GribCollection.VariableIndex vindex, boolean useGenType) {
     Formatter f = new Formatter();
 
     boolean isProb = (vindex.probabilityName != null && vindex.probabilityName.length() > 0);
@@ -140,8 +140,9 @@ public class Grib2Iosp extends GribIosp {
     else if (isProb)
       f.format(" %s %s", vindex.probabilityName, getVindexUnits(cust, vindex)); // add data units here
 
-    if (!useGenType && (vindex.genProcessType == 6 || vindex.genProcessType == 7)) {
-      f.format(" error");
+    if (vindex.genProcessType == 6 || vindex.genProcessType == 7) {
+      f.format(" error");  // its an "error" type variable - add to name
+
     } else if (useGenType && vindex.genProcessType >= 0) {
       f.format(" %s", cust.getGeneratingProcessTypeName(vindex.genProcessType));
     }
@@ -205,7 +206,7 @@ public class Grib2Iosp extends GribIosp {
 
     f.format("VAR_%d-%d-%d", vindex.discipline, vindex.category, vindex.parameter);
 
-    if (!useGenType && (vindex.genProcessType == 6 || vindex.genProcessType == 7)) { // LOOK
+    if (vindex.genProcessType == 6 || vindex.genProcessType == 7) {
       f.format("_error");  // its an "error" type variable - add to name
     }
 
@@ -239,12 +240,12 @@ public class Grib2Iosp extends GribIosp {
 
   @Override
   protected String makeVariableName(GribCollection.VariableIndex vindex) {
-    return makeVariableNameFromTable(cust, gribCollection, vindex);
+    return makeVariableNameFromTable(cust, gribCollection, vindex, false);  // LOOK where to get useGenType ?
   }
 
   @Override
   protected String makeVariableLongName(GribCollection.VariableIndex vindex) {
-    return makeVariableLongName(cust, vindex);
+    return makeVariableLongName(cust, vindex, false);                       // LOOK where to get useGenType ?
   }
 
   @Override

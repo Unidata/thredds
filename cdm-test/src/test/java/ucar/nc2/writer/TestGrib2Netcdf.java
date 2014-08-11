@@ -112,7 +112,7 @@ public class TestGrib2Netcdf {
 
   /////////////////////////////////////////////////////////////////////////
 
-  private static class Act3and4 implements TestDir.Act {
+  private static class ChunkGribAct implements TestDir.Act {
     public int doAct(String filename) throws IOException {
 
       TestGrib2Netcdf writer = new TestGrib2Netcdf();
@@ -125,7 +125,7 @@ public class TestGrib2Netcdf {
     }
   }
 
-  private static class DeflateLevelAct implements TestDir.Act {
+  private static class DeflateByLevelAct implements TestDir.Act {
 
     public int doAct(String filename) throws IOException {
 
@@ -150,7 +150,7 @@ public class TestGrib2Netcdf {
 
     try {
       String dirName = "Q:/cdmUnitTest/tds/ncep/";
-      TestDir.actOnAll(dirName, new TestDir.FileFilterFromSuffixes("grib1 grib2"), new Act3and4(), false);
+      TestDir.actOnAll(dirName, new TestDir.FileFilterFromSuffixes("grib1 grib2"), new ChunkGribAct(), false);
       System.out.printf("%n%n%10.3f Mbytes%n", total);
 
     } finally {
@@ -163,9 +163,9 @@ public class TestGrib2Netcdf {
     writeHeader();
 
     try {
-      DeflateLevelAct act = new DeflateLevelAct();
+      ChunkGribAct act = new ChunkGribAct();
       // act.doAct("Q:/cdmUnitTest/tds/ncep/NAM_CONUS_12km_conduit_20140804_0000.grib2");
-      act.doAct("Q:/cdmUnitTest/tds/ncep/WW3_Global_20140804_0000.grib2");
+      act.doAct("Q:/cdmUnitTest/tds/ncep/RTMA_GUAM_2p5km_20140803_0600.grib2");
 
       System.out.printf("%n%n%10.3f Mbytes%n", total);
 

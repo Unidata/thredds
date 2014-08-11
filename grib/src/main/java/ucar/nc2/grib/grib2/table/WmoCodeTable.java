@@ -51,11 +51,11 @@ import java.util.*;
 
 public class WmoCodeTable implements Comparable<WmoCodeTable> {
   static private final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(WmoCodeTable.class);
-  static public final Version standard = Version.GRIB2_10_0_1;
+  static public final Version standard = Version.GRIB2_13_0_1;
 
   public enum Version {
     // GRIB2_8_0_0, GRIB2_7_0_0, GRIB2_6_0_1, GRIB2_5_2_0;
-    GRIB2_10_0_1, GRIB2_8_0_0;
+    GRIB2_13_0_1, GRIB2_10_0_1, GRIB2_8_0_0;
 
     String getResourceName() {
       return "/resources/grib2/wmo/" + this.name() + "_CodeFlag_en.xml";
@@ -78,6 +78,9 @@ public class WmoCodeTable implements Comparable<WmoCodeTable> {
 
       } else if (this == GRIB2_10_0_1) {
         return new String[]{"GRIB2_10_0_1_CodeFlag_en", "Title_en", "SubTitle_en", "MeaningParameterDescription_en", "UnitComments_en"};
+
+      }  else if (this == GRIB2_13_0_1) {
+        return new String[]{"GRIB2_13_0_1_CodeFlag_en", "Title_en", "SubTitle_en", "MeaningParameterDescription_en", "UnitComments_en"};
       }
 
       return null;

@@ -79,7 +79,7 @@ public class Grib2Partition extends PartitionCollection implements AutoCloseable
 
   @Override
   public String makeVariableName(VariableIndex vindex) {
-    return Grib2Iosp.makeVariableNameFromTable((Grib2Customizer) cust, this, vindex);
+    return Grib2Iosp.makeVariableNameFromTable((Grib2Customizer) cust, this, vindex, false);
   }
 
 }

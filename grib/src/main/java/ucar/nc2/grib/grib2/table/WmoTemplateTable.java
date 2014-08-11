@@ -51,11 +51,11 @@ import java.util.*;
 public class WmoTemplateTable implements Comparable<WmoTemplateTable> {
   static private org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(WmoTemplateTable.class);
 
-  public static final Version standard = Version.GRIB2_10_0_1;
+  public static final Version standard = Version.GRIB2_13_0_1;
 
   public enum Version {
     // GRIB2_5_2_0, GRIB2_6_0_1, GRIB2_7_0_0, GRIB2_8_0_0;
-    GRIB2_10_0_1, GRIB2_8_0_0;
+    GRIB2_13_0_1, GRIB2_10_0_1, GRIB2_8_0_0;
 
     String getResourceName() {
       return "/resources/grib2/wmo/" + this.name() + "_Template_en.xml";
@@ -78,6 +78,9 @@ public class WmoTemplateTable implements Comparable<WmoTemplateTable> {
 
       } else if (this == GRIB2_10_0_1) {
         return new String[]{"GRIB2_10_0_1_Template_en", "Title_en", "Note_en", "Contents_en"};
+
+      } else if (this == GRIB2_13_0_1) {
+        return new String[]{"GRIB2_13_0_1_Template_en", "Title_en", "Note_en", "Contents_en"};
       }
 
       return null;
@@ -283,7 +286,7 @@ public class WmoTemplateTable implements Comparable<WmoTemplateTable> {
             stop = Integer.parseInt(stops);
             nbytes = stop - start + 1;
           } catch (Exception e) {
-            logger.warn("Error parsing wmo template line=" + content, e);
+            logger.debug("Error parsing wmo template line=" + content, e);
           }
         } else {
           start = Integer.parseInt(octet);

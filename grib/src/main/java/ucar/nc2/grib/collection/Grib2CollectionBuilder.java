@@ -440,12 +440,9 @@ public class Grib2CollectionBuilder extends GribCollectionBuilder {
         result += result * 37 + id.getSubcenter_id();
     }
 
-    /* LOOK may be need to be variable specific, using
-    <useGen><variable></useGen> ??
-     */
     // only use the GenProcessType when "error" 2/8/2012 LOOK WTF ??
     int genType = pds2.getGenProcessType();
-    if (useGenType && (genType == 6 || genType == 7)) {
+    if (useGenType) {
       result += result * 37 + genType;
     }
 
