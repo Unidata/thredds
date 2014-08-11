@@ -57,7 +57,7 @@ import java.io.OutputStream;
  *
  * @author john caron
  */
-public class NetcdfDatasetInfo {
+public class NetcdfDatasetInfo implements AutoCloseable {
   private NetcdfDataset ds;
   private CoordSysBuilderIF builder;
 

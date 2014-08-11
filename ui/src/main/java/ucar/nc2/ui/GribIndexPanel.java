@@ -132,9 +132,7 @@ public class GribIndexPanel extends JPanel {
 
     try (RandomAccessFile raf = new RandomAccessFile(indexFile, "r")) {
       raf.seek(0);
-      byte[] b = new byte[Grib2Index.MAGIC_START.getBytes().length];
-      raf.read(b);
-      String magic = new String(b);
+      String magic = raf.readString(Grib2Index.MAGIC_START.getBytes().length);
       if (magic.equals(Grib2Index.MAGIC_START)) {
         readIndex2(indexFile);
       } else if (magic.equals(Grib1Index.MAGIC_START)) {

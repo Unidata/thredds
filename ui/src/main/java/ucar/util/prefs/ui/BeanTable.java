@@ -91,7 +91,7 @@ public class BeanTable extends JPanel {
   protected PreferencesExt store;
   protected JTable jtable;
   protected JScrollPane scrollPane;
-  protected EventListenerList listenerList = new EventListenerList();
+  // protected EventListenerList listenerList = new EventListenerList();
 
   protected List<Object> beans;
   protected TableBeanModel model;

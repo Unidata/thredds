@@ -41,6 +41,7 @@ import thredds.inventory.bdb.MetadataManager;
 import ucar.nc2.NCdumpW;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.NetcdfFileWriter;
+import ucar.nc2.Variable;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.dataset.CoordSysBuilder;
 import ucar.nc2.dataset.NetcdfDataset;
@@ -150,6 +151,7 @@ public class ToolsUI extends JPanel {
   private GribFilesPanel gribFilesPanel;
   private GribIndexPanel gribIdxPanel;
   private GribRenamePanel gribVariableRenamePanel;
+  private GribRewritePanel gribRewritePanel;
   private GribTemplatePanel gribTemplatePanel;
   private Grib1CollectionPanel grib1CollectionPanel;
   private ReportOpPanel grib1ReportPanel;
@@ -278,7 +280,8 @@ public class ToolsUI extends JPanel {
     gribTabPane.addTab("WMO-COMMON", new JLabel("WMO-COMMON"));
     gribTabPane.addTab("WMO-CODES", new JLabel("WMO-CODES"));
     gribTabPane.addTab("WMO-TEMPLATES", new JLabel("WMO-TEMPLATES"));
-    gribTabPane.addTab("GRIB-RENAME", new JLabel("GRIB-RENAME"));
+    gribTabPane.addTab("GRIB-Rename", new JLabel("GRIB-Rename"));
+    gribTabPane.addTab("GRIB-Rewrite", new JLabel("GRIB-Rewrite"));
     addListeners(gribTabPane);
 
     // nested-2 tab - grib-2
@@ -376,229 +379,288 @@ public class ToolsUI extends JPanel {
     }
 
     Component c;
-    if (title.equals("Aggregation")) {
-      aggPanel = new AggPanel((PreferencesExt) mainPrefs.node("NcMLAggregation"));
-      c = aggPanel;
+    switch (title) {
+      case "Aggregation":
+        aggPanel = new AggPanel((PreferencesExt) mainPrefs.node("NcMLAggregation"));
+        c = aggPanel;
 
-    } else if (title.equals("BUFR")) {
-      bufrPanel = new BufrPanel((PreferencesExt) mainPrefs.node("bufr"));
-      c = bufrPanel;
+        break;
+      case "BUFR":
+        bufrPanel = new BufrPanel((PreferencesExt) mainPrefs.node("bufr"));
+        c = bufrPanel;
 
-    } else if (title.equals("BUFRTableB")) {
-      bufrTableBPanel = new BufrTableBPanel((PreferencesExt) mainPrefs.node("bufr2"));
-      c = bufrTableBPanel;
+        break;
+      case "BUFRTableB":
+        bufrTableBPanel = new BufrTableBPanel((PreferencesExt) mainPrefs.node("bufr2"));
+        c = bufrTableBPanel;
 
-    } else if (title.equals("BUFRTableD")) {
-      bufrTableDPanel = new BufrTableDPanel((PreferencesExt) mainPrefs.node("bufrD"));
-      c = bufrTableDPanel;
+        break;
+      case "BUFRTableD":
+        bufrTableDPanel = new BufrTableDPanel((PreferencesExt) mainPrefs.node("bufrD"));
+        c = bufrTableDPanel;
 
-    } else if (title.equals("BufrReports")) {
-      PreferencesExt prefs = (PreferencesExt) mainPrefs.node("bufrReports");
-      ReportPanel rp = new ucar.nc2.ui.BufrReportPanel(prefs);
-      bufrReportPanel = new ReportOpPanel(prefs, rp);
-      c = bufrReportPanel;
+        break;
+      case "BufrReports": {
+        PreferencesExt prefs = (PreferencesExt) mainPrefs.node("bufrReports");
+        ReportPanel rp = new BufrReportPanel(prefs);
+        bufrReportPanel = new ReportOpPanel(prefs, rp);
+        c = bufrReportPanel;
 
-    } else if (title.equals("BUFR-CODES")) {
-      bufrCodePanel = new BufrCodePanel((PreferencesExt) mainPrefs.node("bufr-codes"));
-      c = bufrCodePanel;
+        break;
+      }
+      case "BUFR-CODES":
+        bufrCodePanel = new BufrCodePanel((PreferencesExt) mainPrefs.node("bufr-codes"));
+        c = bufrCodePanel;
 
-    } else if (title.equals("CdmrFeature")) {
-      cdmremotePanel = new CdmrFeature((PreferencesExt) mainPrefs.node("CdmrFeature"));
-      c = cdmremotePanel;
+        break;
+      case "CdmrFeature":
+        cdmremotePanel = new CdmrFeature((PreferencesExt) mainPrefs.node("CdmrFeature"));
+        c = cdmremotePanel;
 
-    } else if (title.equals("CollectionSpec")) {
-      fcPanel = new CollectionSpecPanel((PreferencesExt) mainPrefs.node("collSpec"));
-      c = fcPanel;
+        break;
+      case "CollectionSpec":
+        fcPanel = new CollectionSpecPanel((PreferencesExt) mainPrefs.node("collSpec"));
+        c = fcPanel;
 
-    } else if (title.equals("DirectoryPartition")) {
-      dirPartPanel = new DirectoryPartitionPanel((PreferencesExt) mainPrefs.node("dirPartition"));
-      c = dirPartPanel;
+        break;
+      case "DirectoryPartition":
+        dirPartPanel = new DirectoryPartitionPanel((PreferencesExt) mainPrefs.node("dirPartition"));
+        c = dirPartPanel;
 
-    } else if (title.equals("NcStream")) {
-      ncStreamPanel = new NcStreamPanel((PreferencesExt) mainPrefs.node("NcStream"));
-      c = ncStreamPanel;
+        break;
+      case "NcStream":
+        ncStreamPanel = new NcStreamPanel((PreferencesExt) mainPrefs.node("NcStream"));
+        c = ncStreamPanel;
 
-    } else if (title.equals("GRIB1collection")) {
-      grib1CollectionPanel = new Grib1CollectionPanel((PreferencesExt) mainPrefs.node("grib1raw"));
-      c = grib1CollectionPanel;
+        break;
+      case "GRIB1collection":
+        grib1CollectionPanel = new Grib1CollectionPanel((PreferencesExt) mainPrefs.node("grib1raw"));
+        c = grib1CollectionPanel;
 
-    } else if (title.equals("GRIB-FILES")) {
-      gribFilesPanel = new GribFilesPanel((PreferencesExt) mainPrefs.node("gribFiles"));
-      c = gribFilesPanel;
+        break;
+      case "GRIB-FILES":
+        gribFilesPanel = new GribFilesPanel((PreferencesExt) mainPrefs.node("gribFiles"));
+        c = gribFilesPanel;
 
-    } else if (title.equals("GRIB2collection")) {
-      grib2CollectionPanel = new Grib2CollectionPanel((PreferencesExt) mainPrefs.node("gribNew"));
-      c = grib2CollectionPanel;
+        break;
+      case "GRIB2collection":
+        grib2CollectionPanel = new Grib2CollectionPanel((PreferencesExt) mainPrefs.node("gribNew"));
+        c = grib2CollectionPanel;
 
-    } else if (title.equals("GRIB2data")) {
-      grib2DataPanel = new Grib2DataPanel((PreferencesExt) mainPrefs.node("grib2Data"));
-      c = grib2DataPanel;
+        break;
+      case "GRIB2data":
+        grib2DataPanel = new Grib2DataPanel((PreferencesExt) mainPrefs.node("grib2Data"));
+        c = grib2DataPanel;
 
-    } else if (title.equals("BufrCdmIndex")) {
-      bufrCdmIndexPanel = new BufrCdmIndexPanel((PreferencesExt) mainPrefs.node("bufrCdmIdx"));
-      c = bufrCdmIndexPanel;
+        break;
+      case "BufrCdmIndex":
+        bufrCdmIndexPanel = new BufrCdmIndexPanel((PreferencesExt) mainPrefs.node("bufrCdmIdx"));
+        c = bufrCdmIndexPanel;
 
     /* } else if (title.equals("CdmIndex")) {
       gribCdmIndexPanel = new GribCdmIndexPanel((PreferencesExt) mainPrefs.node("cdmIdx"));
       c = gribCdmIndexPanel; */
 
-    } else if (title.equals("CdmIndex2")) {
-      cdmIndex2Panel = new CdmIndex2Panel((PreferencesExt) mainPrefs.node("cdmIdx2"));
-      c = cdmIndex2Panel;
+        break;
+      case "CdmIndex2":
+        cdmIndex2Panel = new CdmIndex2Panel((PreferencesExt) mainPrefs.node("cdmIdx2"));
+        c = cdmIndex2Panel;
 
-    } else if (title.equals("CdmIndexReport")) {
-      PreferencesExt prefs = (PreferencesExt) mainPrefs.node("CdmIndexReport");
-      ReportPanel rp = new ucar.nc2.ui.CdmIndexReportPanel(prefs);
-      cdmIndexReportPanel = new ReportOpPanel(prefs, rp);
-      c = cdmIndexReportPanel;
+        break;
+      case "CdmIndexReport": {
+        PreferencesExt prefs = (PreferencesExt) mainPrefs.node("CdmIndexReport");
+        ReportPanel rp = new CdmIndexReportPanel(prefs);
+        cdmIndexReportPanel = new ReportOpPanel(prefs, rp);
+        c = cdmIndexReportPanel;
 
-    } else if (title.equals("GribIndex")) {
-      gribIdxPanel = new GribIndexPanel((PreferencesExt) mainPrefs.node("gribIdx"));
-      c = gribIdxPanel;
+        break;
+      }
+      case "GribIndex":
+        gribIdxPanel = new GribIndexPanel((PreferencesExt) mainPrefs.node("gribIdx"));
+        c = gribIdxPanel;
 
-    } else if (title.equals("GRIB1-REPORT")) {
-      PreferencesExt prefs = (PreferencesExt) mainPrefs.node("grib1Report");
-      ReportPanel rp = new ucar.nc2.ui.Grib1ReportPanel(prefs);
-      grib1ReportPanel = new ReportOpPanel(prefs, rp);
-      c = grib1ReportPanel;
+        break;
+      case "GRIB1-REPORT": {
+        PreferencesExt prefs = (PreferencesExt) mainPrefs.node("grib1Report");
+        ReportPanel rp = new Grib1ReportPanel(prefs);
+        grib1ReportPanel = new ReportOpPanel(prefs, rp);
+        c = grib1ReportPanel;
 
-    } else if (title.equals("GRIB2-REPORT")) {
-      PreferencesExt prefs = (PreferencesExt) mainPrefs.node("gribReport");
-      ReportPanel rp = new ucar.nc2.ui.Grib2ReportPanel(prefs);
-      grib2ReportPanel = new ReportOpPanel(prefs, rp);
-      c = grib2ReportPanel;
+        break;
+      }
+      case "GRIB2-REPORT": {
+        PreferencesExt prefs = (PreferencesExt) mainPrefs.node("gribReport");
+        ReportPanel rp = new Grib2ReportPanel(prefs);
+        grib2ReportPanel = new ReportOpPanel(prefs, rp);
+        c = grib2ReportPanel;
 
-    } else if (title.equals("WMO-COMMON")) {
-      wmoCommonCodePanel = new WmoCCPanel((PreferencesExt) mainPrefs.node("wmo-common"));
-      c = wmoCommonCodePanel;
+        break;
+      }
+      case "WMO-COMMON":
+        wmoCommonCodePanel = new WmoCCPanel((PreferencesExt) mainPrefs.node("wmo-common"));
+        c = wmoCommonCodePanel;
 
-    } else if (title.equals("WMO-CODES")) {
-      gribCodePanel = new GribCodePanel((PreferencesExt) mainPrefs.node("wmo-codes"));
-      c = gribCodePanel;
+        break;
+      case "WMO-CODES":
+        gribCodePanel = new GribCodePanel((PreferencesExt) mainPrefs.node("wmo-codes"));
+        c = gribCodePanel;
 
-    } else if (title.equals("WMO-TEMPLATES")) {
-      gribTemplatePanel = new GribTemplatePanel((PreferencesExt) mainPrefs.node("wmo-templates"));
-      c = gribTemplatePanel;
+        break;
+      case "WMO-TEMPLATES":
+        gribTemplatePanel = new GribTemplatePanel((PreferencesExt) mainPrefs.node("wmo-templates"));
+        c = gribTemplatePanel;
 
-    } else if (title.equals("GRIB1-TABLES")) {
-      grib1TablePanel = new Grib1TablePanel((PreferencesExt) mainPrefs.node("grib1-tables"));
-      c = grib1TablePanel;
+        break;
+      case "GRIB1-TABLES":
+        grib1TablePanel = new Grib1TablePanel((PreferencesExt) mainPrefs.node("grib1-tables"));
+        c = grib1TablePanel;
 
-    } else if (title.equals("GRIB2-TABLES")) {
-      grib2TablePanel = new Grib2TablePanel((PreferencesExt) mainPrefs.node("grib2-tables"));
-      c = grib2TablePanel;
+        break;
+      case "GRIB2-TABLES":
+        grib2TablePanel = new Grib2TablePanel((PreferencesExt) mainPrefs.node("grib2-tables"));
+        c = grib2TablePanel;
 
-    } else if (title.equals("GRIB-RENAME")) {
-      gribVariableRenamePanel = new GribRenamePanel((PreferencesExt) mainPrefs.node("grib-rename"));
-      c = gribVariableRenamePanel;
+        break;
+      case "GRIB-Rename":
+        gribVariableRenamePanel = new GribRenamePanel((PreferencesExt) mainPrefs.node("grib-rename"));
+        c = gribVariableRenamePanel;
 
-    } else if (title.equals("CoordSys")) {
-      coordSysPanel = new CoordSysPanel((PreferencesExt) mainPrefs.node("CoordSys"));
-      c = coordSysPanel;
+        break;
+      case "GRIB-Rewrite":
+        gribRewritePanel = new GribRewritePanel((PreferencesExt) mainPrefs.node("grib-rewrite"));
+        c = gribRewritePanel;
 
-    } else if (title.equals("FeatureScan")) {
-      ftPanel = new FeatureScanPanel((PreferencesExt) mainPrefs.node("ftPanel"));
-      c = ftPanel;
+        break;
+      case "CoordSys":
+        coordSysPanel = new CoordSysPanel((PreferencesExt) mainPrefs.node("CoordSys"));
+        c = coordSysPanel;
 
-    } else if (title.equals("GeoTiff")) {
-      geotiffPanel = new GeotiffPanel((PreferencesExt) mainPrefs.node("WCS"));
-      c = geotiffPanel;
+        break;
+      case "FeatureScan":
+        ftPanel = new FeatureScanPanel((PreferencesExt) mainPrefs.node("ftPanel"));
+        c = ftPanel;
 
-    } else if (title.equals("Grids")) {
-      gridPanel = new GeoGridPanel((PreferencesExt) mainPrefs.node("grid"));
-      c = gridPanel;
+        break;
+      case "GeoTiff":
+        geotiffPanel = new GeotiffPanel((PreferencesExt) mainPrefs.node("WCS"));
+        c = geotiffPanel;
 
-    } else if (title.equals("Coverages")) {
-      coveragePanel = new CoveragePanel((PreferencesExt) mainPrefs.node("coverage"));
-      c = coveragePanel;
+        break;
+      case "Grids":
+        gridPanel = new GeoGridPanel((PreferencesExt) mainPrefs.node("grid"));
+        c = gridPanel;
 
-    } else if (title.equals("HDF5-Objects")) {
-      hdf5ObjectPanel = new Hdf5ObjectPanel((PreferencesExt) mainPrefs.node("hdf5"));
-      c = hdf5ObjectPanel;
+        break;
+      case "Coverages":
+        coveragePanel = new CoveragePanel((PreferencesExt) mainPrefs.node("coverage"));
+        c = coveragePanel;
 
-    } else if (title.equals("HDF5-Data")) {
-      hdf5DataPanel = new Hdf5DataPanel((PreferencesExt) mainPrefs.node("hdf5data"));
-      c = hdf5DataPanel;
+        break;
+      case "HDF5-Objects":
+        hdf5ObjectPanel = new Hdf5ObjectPanel((PreferencesExt) mainPrefs.node("hdf5"));
+        c = hdf5ObjectPanel;
 
-    } else if (title.equals("Netcdf4-JNI")) {
-      nc4viewer = new DatasetViewerPanel((PreferencesExt) mainPrefs.node("nc4viewer"), true);
-      c = nc4viewer;
+        break;
+      case "HDF5-Data":
+        hdf5DataPanel = new Hdf5DataPanel((PreferencesExt) mainPrefs.node("hdf5data"));
+        c = hdf5DataPanel;
 
-    } else if (title.equals("HDF4")) {
-      hdf4Panel = new Hdf4Panel((PreferencesExt) mainPrefs.node("hdf4"));
-      c = hdf4Panel;
+        break;
+      case "Netcdf4-JNI":
+        nc4viewer = new DatasetViewerPanel((PreferencesExt) mainPrefs.node("nc4viewer"), true);
+        c = nc4viewer;
 
-    } else if (title.equals("Images")) {
-      imagePanel = new ImagePanel((PreferencesExt) mainPrefs.node("images"));
-      c = imagePanel;
+        break;
+      case "HDF4":
+        hdf4Panel = new Hdf4Panel((PreferencesExt) mainPrefs.node("hdf4"));
+        c = hdf4Panel;
 
-    } else if (title.equals("Fmrc")) {
-      fmrcPanel = new FmrcPanel((PreferencesExt) mainPrefs.node("fmrc2"));
-      c = fmrcPanel;
+        break;
+      case "Images":
+        imagePanel = new ImagePanel((PreferencesExt) mainPrefs.node("images"));
+        c = imagePanel;
 
-    } else if (title.equals("Collections")) {
-      fmrcCollectionPanel = new FmrcCollectionPanel((PreferencesExt) mainPrefs.node("collections"));
-      c = fmrcCollectionPanel;
+        break;
+      case "Fmrc":
+        fmrcPanel = new FmrcPanel((PreferencesExt) mainPrefs.node("fmrc2"));
+        c = fmrcPanel;
 
-    } else if (title.equals("NCDump")) {
-      ncdumpPanel = new NCdumpPanel((PreferencesExt) mainPrefs.node("NCDump"));
-      c = ncdumpPanel;
+        break;
+      case "Collections":
+        fmrcCollectionPanel = new FmrcCollectionPanel((PreferencesExt) mainPrefs.node("collections"));
+        c = fmrcCollectionPanel;
 
-    } else if (title.equals("NcmlEditor")) {
-      ncmlEditorPanel = new NcmlEditorPanel((PreferencesExt) mainPrefs.node("NcmlEditor"));
-      c = ncmlEditorPanel;
+        break;
+      case "NCDump":
+        ncdumpPanel = new NCdumpPanel((PreferencesExt) mainPrefs.node("NCDump"));
+        c = ncdumpPanel;
 
-    } else if (title.equals("PointFeature")) {
-      pointFeaturePanel = new PointFeaturePanel((PreferencesExt) mainPrefs.node("pointFeature"));
-      c = pointFeaturePanel;
+        break;
+      case "NcmlEditor":
+        ncmlEditorPanel = new NcmlEditorPanel((PreferencesExt) mainPrefs.node("NcmlEditor"));
+        c = ncmlEditorPanel;
 
-    } else if (title.equals("Radial")) {
-      radialPanel = new RadialPanel((PreferencesExt) mainPrefs.node("radial"));
-      c = radialPanel;
+        break;
+      case "PointFeature":
+        pointFeaturePanel = new PointFeaturePanel((PreferencesExt) mainPrefs.node("pointFeature"));
+        c = pointFeaturePanel;
 
-    } else if (title.equals("StationRadial")) {
-      stationRadialPanel = new StationRadialPanel((PreferencesExt) mainPrefs.node("stationRadar"));
-      c = stationRadialPanel;
+        break;
+      case "Radial":
+        radialPanel = new RadialPanel((PreferencesExt) mainPrefs.node("radial"));
+        c = radialPanel;
 
-    } else if (title.equals("THREDDS")) {
-      threddsUI = new ThreddsUI(ToolsUI.this.parentFrame, (PreferencesExt) mainPrefs.node("thredds"));
-      threddsUI.addPropertyChangeListener(new java.beans.PropertyChangeListener() {
-        public void propertyChange(java.beans.PropertyChangeEvent e) {
-          if (e.getPropertyName().equals("InvAccess")) {
-            thredds.catalog.InvAccess access = (thredds.catalog.InvAccess) e.getNewValue();
-            jumptoThreddsDatatype(access);
+        break;
+      case "StationRadial":
+        stationRadialPanel = new StationRadialPanel((PreferencesExt) mainPrefs.node("stationRadar"));
+        c = stationRadialPanel;
+
+        break;
+      case "THREDDS":
+        threddsUI = new ThreddsUI(ToolsUI.this.parentFrame, (PreferencesExt) mainPrefs.node("thredds"));
+        threddsUI.addPropertyChangeListener(new PropertyChangeListener() {
+          public void propertyChange(PropertyChangeEvent e) {
+            if (e.getPropertyName().equals("InvAccess")) {
+              thredds.catalog.InvAccess access = (thredds.catalog.InvAccess) e.getNewValue();
+              jumptoThreddsDatatype(access);
+            }
+            if (e.getPropertyName().equals("Dataset") || e.getPropertyName().equals("CoordSys") || e.getPropertyName().equals("File")) {
+              thredds.catalog.InvDataset ds = (thredds.catalog.InvDataset) e.getNewValue();
+              setThreddsDatatype(ds, e.getPropertyName());
+            }
           }
-          if (e.getPropertyName().equals("Dataset") || e.getPropertyName().equals("CoordSys") || e.getPropertyName().equals("File")) {
-            thredds.catalog.InvDataset ds = (thredds.catalog.InvDataset) e.getNewValue();
-            setThreddsDatatype(ds, e.getPropertyName());
-          }
-        }
-      });
+        });
 
-      c = threddsUI;
+        c = threddsUI;
 
-    } else if (title.equals("Units")) {
-      unitsPanel = new UnitsPanel((PreferencesExt) mainPrefs.node("units"));
-      c = unitsPanel;
+        break;
+      case "Units":
+        unitsPanel = new UnitsPanel((PreferencesExt) mainPrefs.node("units"));
+        c = unitsPanel;
 
-    } else if (title.equals("URLdump")) {
-      urlPanel = new URLDumpPane((PreferencesExt) mainPrefs.node("urlDump"));
-      c = urlPanel;
+        break;
+      case "URLdump":
+        urlPanel = new URLDumpPane((PreferencesExt) mainPrefs.node("urlDump"));
+        c = urlPanel;
 
-    } else if (title.equals("Viewer")) {
-      c = viewerPanel;
+        break;
+      case "Viewer":
+        c = viewerPanel;
 
-    } else if (title.equals("Writer")) {
-      writerPanel = new DatasetWriterPanel((PreferencesExt) mainPrefs.node("writer"));
-      c = writerPanel;
+        break;
+      case "Writer":
+        writerPanel = new DatasetWriterPanel((PreferencesExt) mainPrefs.node("writer"));
+        c = writerPanel;
 
-    } else if (title.equals("WMS")) {
-      wmsPanel = new WmsPanel((PreferencesExt) mainPrefs.node("wms"));
-      c = wmsPanel;
+        break;
+      case "WMS":
+        wmsPanel = new WmsPanel((PreferencesExt) mainPrefs.node("wms"));
+        c = wmsPanel;
 
-    } else {
-      System.out.println("tabbedPane unknown component " + title);
-      return;
+        break;
+      default:
+        System.out.println("tabbedPane unknown component " + title);
+        return;
     }
 
     parent.setComponentAt(idx, c);
@@ -856,8 +918,7 @@ public class ToolsUI extends JPanel {
      /////////////////////////////////////
     a = new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
-        Boolean state = (Boolean) getValue(BAMutil.STATE);
-        setUseRecordStructure = state;
+        setUseRecordStructure = (Boolean) getValue(BAMutil.STATE);
       }
     };
     BAMutil.setActionPropertiesToggle(a, null, "nc3UseRecords", setUseRecordStructure, 'V', -1);
@@ -1009,6 +1070,7 @@ public class ToolsUI extends JPanel {
     if (grib1TablePanel != null) grib1TablePanel.save();
     if (grib2TablePanel != null) grib2TablePanel.save();
     if (gribVariableRenamePanel != null) gribVariableRenamePanel.save();
+    if (gribRewritePanel != null) gribRewritePanel.save();
     if (gridPanel != null) gridPanel.save();
     if (hdf5ObjectPanel != null) hdf5ObjectPanel.save();
     if (hdf5DataPanel != null) hdf5DataPanel.save();
@@ -1295,10 +1357,6 @@ public class ToolsUI extends JPanel {
       if (!(ioe instanceof FileNotFoundException))
         ioe.printStackTrace();
 
-      try {
-        if (ncfile != null) ncfile.close();
-      } catch (IOException ee) {
-      }
       ncfile = null;
 
     } catch (Exception e) {
@@ -1309,6 +1367,7 @@ public class ToolsUI extends JPanel {
       try {
         if (ncfile != null) ncfile.close();
       } catch (IOException ee) {
+        System.out.printf("close failed%n");
       }
       ncfile = null;
     }
@@ -1331,25 +1390,15 @@ public class ToolsUI extends JPanel {
     GetDataRunnable runner = new GetDataRunnable() {
       public void run(Object o) {
         String[] values = (String[]) o;
-        BufferedOutputStream out = null;
-        try {
-          FileOutputStream fos = new FileOutputStream(values[0]);
-          out = new BufferedOutputStream(fos, 60000);
-        } catch (IOException ioe) {
-          downloadStatus = "Error opening" + values[0] + "\n" + ioe.getMessage();
-          return;
-        }
+        BufferedOutputStream out;
 
-        try {
+        try ( FileOutputStream fos = new FileOutputStream(values[0])) {
+          out = new BufferedOutputStream(fos, 60000);
           IO.copyUrlB(values[1], out, 60000);
           downloadStatus = values[1] + " written to " + values[0];
+
         } catch (IOException ioe) {
-          downloadStatus = "Error reading " + values[1] + "\n" + ioe.getMessage();
-        } finally {
-          try {
-            out.close();
-          } catch (IOException e) {
-          }
+          downloadStatus = "Error opening " + values[0] + " and reading " + values[1] + "\n" + ioe.getMessage();
         }
       }
     };
@@ -1439,7 +1488,7 @@ public class ToolsUI extends JPanel {
         AbstractAction coordAction = new AbstractAction() {
           public void actionPerformed(ActionEvent e) {
             Boolean state = (Boolean) getValue(BAMutil.STATE);
-            addCoords = state.booleanValue();
+            addCoords = state;
             String tooltip = addCoords ? "add Coordinates is ON" : "add Coordinates is OFF";
             coordButt.setToolTipText(tooltip);
             //doit( cb.getSelectedItem()); // called from cb action listener
@@ -1448,7 +1497,7 @@ public class ToolsUI extends JPanel {
         addCoords = prefs.getBoolean("coordState", false);
         String tooltip2 = addCoords ? "add Coordinates is ON" : "add Coordinates is OFF";
         BAMutil.setActionProperties(coordAction, "addCoords", tooltip2, true, 'C', -1);
-        coordAction.putValue(BAMutil.STATE, new Boolean(addCoords));
+        coordAction.putValue(BAMutil.STATE, Boolean.valueOf(addCoords));
         coordButt = BAMutil.addActionToContainer(buttPanel, coordAction);
       }
 
@@ -1593,6 +1642,7 @@ public class ToolsUI extends JPanel {
           if (ncfile != null) ncfile.close();
           ncfile = null;
         } catch (IOException ioe) {
+          System.out.printf("Error closing %n");
         }
       }
     }
@@ -1648,7 +1698,6 @@ public class ToolsUI extends JPanel {
 
 
   private class UnitDatasetCheck extends OpPanel {
-    NetcdfFile ncfile = null;
     TextHistoryPane ta;
 
     UnitDatasetCheck(PreferencesExt p) {
@@ -1661,13 +1710,11 @@ public class ToolsUI extends JPanel {
       String command = (String) o;
       boolean err = false;
 
-      try {
-        ncfile = NetcdfDataset.openDataset(command, addCoords, null);
+      try (NetcdfFile ncfile = NetcdfDataset.openDataset(command, addCoords, null)) {
 
         ta.setText("Variables for " + command + ":");
-        Iterator iter = ncfile.getVariables().iterator();
-        while (iter.hasNext()) {
-          VariableEnhanced vs = (VariableEnhanced) iter.next();
+        for (Variable o1 : ncfile.getVariables()) {
+          VariableEnhanced vs = (VariableEnhanced) o1;
           String units = vs.getUnitsString();
           StringBuilder sb = new StringBuilder();
           sb.append("   ").append(vs.getShortName()).append(" has unit= <").append(units).append(">");
@@ -1694,20 +1741,13 @@ public class ToolsUI extends JPanel {
       } catch (IOException ioe) {
         ioe.printStackTrace();
         err = true;
-      } finally {
-        try {
-          if (ncfile != null) ncfile.close();
-          ncfile = null;
-        } catch (IOException ioe) {
-        }
       }
 
       return !err;
     }
 
     void closeOpenFiles() throws IOException {
-      if (ncfile != null) ncfile.close();
-      ncfile = null;
+      ta.clear();
     }
 
   }
@@ -1778,7 +1818,7 @@ public class ToolsUI extends JPanel {
     void compare(Object o) {
       String command = (String) o;
       StringTokenizer stoke = new StringTokenizer(command);
-      List<String> list = new ArrayList<String>();
+      List<String> list = new ArrayList<>();
       while (stoke.hasMoreTokens())
         list.add(stoke.nextToken());
 
@@ -1830,7 +1870,7 @@ public class ToolsUI extends JPanel {
         try {
           SimpleUnit su = SimpleUnit.factory(command);
           boolean isTime = su instanceof TimeUnit;
-          ta.setText("<" + command + "> isDateUnit= " + isDate + " isTimeUnit= " + isTime);
+          ta.setText("<" + command + "> isTimeUnit= " + isTime);
           if (isTime) {
             TimeUnit du = (TimeUnit) su;
             ta.appendLine("\nTimeUnit = " + du);
@@ -1865,10 +1905,9 @@ public class ToolsUI extends JPanel {
         String valString = command.substring(0, pos).trim();
         String unitString = command.substring(pos+1).trim();  */
 
-        String unitString = command;
-        ta.appendLine("\nParse CalendarDateUnit: <" + unitString + ">\n");
+        ta.appendLine("\nParse CalendarDateUnit: <" + command + ">\n");
 
-        CalendarDateUnit cdu = CalendarDateUnit.of(null, unitString);
+        CalendarDateUnit cdu = CalendarDateUnit.of(null, command);
         ta.appendLine("CalendarDateUnit = " + cdu);
         ta.appendLine(" Calendar        = " + cdu.getCalendar());
         ta.appendLine(" PeriodField     = " + cdu.getTimeUnit().getField());
@@ -1968,9 +2007,7 @@ public class ToolsUI extends JPanel {
       infoButton.addActionListener(new ActionListener() {
         public void actionPerformed(ActionEvent e) {
           if (ds != null) {
-            NetcdfDatasetInfo info = null;
-            try {
-              info = new NetcdfDatasetInfo(ds);
+            try (NetcdfDatasetInfo info = new NetcdfDatasetInfo( ds)) {
               detailTA.setText(info.writeXML());
               detailTA.appendLine("----------------------");
               detailTA.appendLine(info.getParseInfo());
@@ -1980,12 +2017,6 @@ public class ToolsUI extends JPanel {
               ByteArrayOutputStream out = new ByteArrayOutputStream();
               e1.printStackTrace(new PrintStream(out));
               detailTA.setText(out.toString());
-
-            } finally {
-              if (info != null) try {
-                info.close();
-              } catch (IOException ee) {
-              } // do nothing
             }
             detailWindow.show();
           }
@@ -2016,6 +2047,7 @@ public class ToolsUI extends JPanel {
       try {
         if (ds != null) ds.close();
       } catch (IOException ioe) {
+        System.out.printf("close failed %n");
       }
 
       Object spiObject = null;
@@ -2047,6 +2079,7 @@ public class ToolsUI extends JPanel {
         if (ds != null) ds.close();
         ds = null;
       } catch (IOException ioe) {
+        System.out.printf("close failed %n");
       }
       ds = ncd;
 
@@ -2358,7 +2391,6 @@ public class ToolsUI extends JPanel {
     void accept() {
       String command = (String) cb.getSelectedItem();
       if (command == null) return;
-      boolean err = false;
 
       ByteArrayOutputStream bos = new ByteArrayOutputStream(10000);
       try {
@@ -2369,14 +2401,12 @@ public class ToolsUI extends JPanel {
         JOptionPane.showMessageDialog(null, "BufrTableViewer cant open " + command + "\n" + ioe.getMessage());
         detailTA.setText("Failed to open <" + command + ">\n" + ioe.getMessage());
         detailTA.setVisible(true);
-        err = true;
 
       } catch (Exception e) {
         e.printStackTrace();
         e.printStackTrace(new PrintStream(bos));
         detailTA.setText(bos.toString());
         detailTA.setVisible(true);
-        err = true;
       }
 
     }
@@ -2540,7 +2570,7 @@ public class ToolsUI extends JPanel {
   }
 
   /////////////////////////////////////////////////////////////////////
-  // GRIB2 new
+  // GRIB2
   private class Grib2CollectionPanel extends OpPanel {
     ucar.nc2.ui.Grib2CollectionPanel gribTable;
 
@@ -2598,54 +2628,6 @@ public class ToolsUI extends JPanel {
       });
       buttPanel.add(gdsButton);
 
-      /* AbstractButton aggButton = BAMutil.makeButtcon("V3", "Run Rectilyser", false);
-      aggButton.addActionListener(new ActionListener() {
-        public void actionPerformed(ActionEvent e) {
-          Formatter f = new Formatter();
-          try {
-            gribTable.runAggregator(f);
-          } catch (IOException e1) {
-            e1.printStackTrace();
-          }
-          detailTA.setText(f.toString());
-          detailTA.gotoTop();
-          detailWindow.show();
-        }
-      });
-      buttPanel.add(aggButton);
-
-      AbstractButton agg2Button = BAMutil.makeButtcon("V3", "Run Rectilyser2", false);
-      agg2Button.addActionListener(new ActionListener() {
-        public void actionPerformed(ActionEvent e) {
-          Formatter f = new Formatter();
-          try {
-            gribTable.runAggregator2(f);
-          } catch (IOException e1) {
-            e1.printStackTrace();
-          }
-          detailTA.setText(f.toString());
-          detailTA.gotoTop();
-          detailWindow.show();
-        }
-      });
-      buttPanel.add(agg2Button);  */
-
-      /* AbstractButton collateButton = BAMutil.makeButtcon("V3", "Run GribCollection", false);
-      collateButton.addActionListener(new ActionListener() {
-        public void actionPerformed(ActionEvent e) {
-          Formatter f = new Formatter();
-          try {
-            gribTable.runCollate(f);
-          } catch (IOException e1) {
-            e1.printStackTrace();
-          }
-          detailTA.setText(f.toString());
-          detailTA.gotoTop();
-          detailWindow.show();
-        }
-      });
-      buttPanel.add(collateButton); */
-
       AbstractButton writeButton = BAMutil.makeButtcon("netcdf", "Write index", false);
       writeButton.addActionListener(new ActionListener() {
         public void actionPerformed(ActionEvent e) {
@@ -2700,6 +2682,7 @@ public class ToolsUI extends JPanel {
   }
 
   /////////////////////////////////////////////////////////////////////
+
   /////////////////////////////////////////////////////////////////////
   /* private class Grib2RectilyzePanel extends OpPanel {
     ucar.nc2.ui.Grib2RectilyzePanel gribTable;
@@ -3197,7 +3180,7 @@ public class ToolsUI extends JPanel {
       AbstractAction useIndexButt = new AbstractAction() {
         public void actionPerformed(ActionEvent e) {
           Boolean state = (Boolean) getValue(BAMutil.STATE);
-          useIndex = state.booleanValue();
+          useIndex = state;
         }
       };
       useIndexButt.putValue(BAMutil.STATE, useIndex);
@@ -3207,7 +3190,7 @@ public class ToolsUI extends JPanel {
       AbstractAction eachFileButt = new AbstractAction() {
         public void actionPerformed(ActionEvent e) {
           Boolean state = (Boolean) getValue(BAMutil.STATE);
-          eachFile = state.booleanValue();
+          eachFile = state;
         }
       };
       eachFileButt.putValue(BAMutil.STATE, eachFile);
@@ -3217,7 +3200,7 @@ public class ToolsUI extends JPanel {
       AbstractAction extraButt = new AbstractAction() {
         public void actionPerformed(ActionEvent e) {
           Boolean state = (Boolean) getValue(BAMutil.STATE);
-          extra = state.booleanValue();
+          extra = state;
         }
       };
       extraButt.putValue(BAMutil.STATE, extra);
@@ -3438,7 +3421,7 @@ public class ToolsUI extends JPanel {
     GribTemplatePanel(PreferencesExt p) {
       super(p, "table:", false, false, false);
 
-      final JComboBox modes = new JComboBox(WmoTemplateTable.Version.values());
+      final JComboBox<WmoTemplateTable.Version> modes = new JComboBox<>(WmoTemplateTable.Version.values());
       modes.setSelectedItem(WmoTemplateTable.standard);
       topPanel.add(modes, BorderLayout.CENTER);
       modes.addActionListener(new ActionListener() {
@@ -3473,7 +3456,7 @@ public class ToolsUI extends JPanel {
     GribCodePanel(PreferencesExt p) {
       super(p, "table:", false, false, false);
 
-      final JComboBox modes = new JComboBox(WmoCodeTable.Version.values());
+      final JComboBox<WmoCodeTable.Version> modes = new JComboBox<>(WmoCodeTable.Version.values());
       modes.setSelectedItem(WmoCodeTable.standard);
       topPanel.add(modes, BorderLayout.CENTER);
       modes.addActionListener(new ActionListener() {
@@ -3627,6 +3610,58 @@ public class ToolsUI extends JPanel {
     void closeOpenFiles() {
     }
 
+  }
+
+    /////////////////////////////////////////////////////////////////////
+  private class GribRewritePanel extends OpPanel {
+    ucar.nc2.ui.GribRewritePanel ftTable;
+    final FileManager dirChooser;
+
+      GribRewritePanel(PreferencesExt prefs) {
+      super(prefs, "dir:", false, false);
+      dirChooser = new FileManager(parentFrame, null, null, (PreferencesExt) prefs.node("FeatureScanFileManager"));
+      ftTable = new ucar.nc2.ui.GribRewritePanel(prefs);
+      add(ftTable, BorderLayout.CENTER);
+      ftTable.addPropertyChangeListener(new java.beans.PropertyChangeListener() {
+        public void propertyChange(java.beans.PropertyChangeEvent e) {
+          if (e.getPropertyName().equals("openNetcdfFile")) {
+            String datasetName = (String) e.getNewValue();
+            openNetcdfFile(datasetName);
+          } else if (e.getPropertyName().equals("openGridDataset")) {
+            String datasetName = (String) e.getNewValue();
+            openGridDataset(datasetName);
+          }
+        }
+      });
+
+      dirChooser.getFileChooser().setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
+      dirChooser.setCurrentDirectory(prefs.get("currDir", "."));
+      AbstractAction fileAction = new AbstractAction() {
+        public void actionPerformed(ActionEvent e) {
+          String filename = dirChooser.chooseFilename();
+          if (filename == null) return;
+          cb.setSelectedItem(filename);
+        }
+      };
+      BAMutil.setActionProperties(fileAction, "FileChooser", "open Local dataset...", false, 'L', -1);
+      BAMutil.addActionToContainer(buttPanel, fileAction);
+    }
+
+    boolean process(Object o) {
+      String command = (String) o;
+      return ftTable.setScanDirectory(command);
+    }
+
+    void closeOpenFiles() {
+      ftTable.clear();
+    }
+
+    void save() {
+      dirChooser.save();
+      ftTable.save();
+      prefs.put("currDir", dirChooser.getCurrentDirectory());
+      super.save();
+    }
   }
 
   /////////////////////////////////////////////////////////////////////
@@ -4843,6 +4878,7 @@ public class ToolsUI extends JPanel {
       try {
         if (ds != null) ds.close();
       } catch (IOException ioe) {
+        System.out.printf("close failed %n");
       }
 
       Formatter parseInfo = new Formatter();
@@ -4866,6 +4902,7 @@ public class ToolsUI extends JPanel {
       try {
         if (ds != null) ds.close();
       } catch (IOException ioe) {
+        System.out.printf("close failed %n");
       }
 
       this.ds = (NetcdfDataset) gds.getNetcdfFile(); // ??
@@ -4976,6 +5013,7 @@ public class ToolsUI extends JPanel {
       try {
         if (ds != null) ds.close();
       } catch (IOException ioe) {
+        System.out.printf("close failed %n");
       }
 
       Formatter parseInfo = new Formatter();
@@ -4999,6 +5037,7 @@ public class ToolsUI extends JPanel {
       try {
         if (ds != null) ds.close();
       } catch (IOException ioe) {
+        System.out.printf("close failed %n");
       }
 
       try {
@@ -5088,6 +5127,7 @@ public class ToolsUI extends JPanel {
       try {
         if (ds != null) ds.close();
       } catch (IOException ioe) {
+        System.out.printf("close failed %n");
       }
 
       this.ds = newds;
@@ -5154,11 +5194,12 @@ public class ToolsUI extends JPanel {
     boolean process(Object o) {
       String location = (String) o;
       boolean err = false;
-      NetcdfFile ncnew = null;
+      NetcdfFile ncnew;
 
       try {
         if (ncfile != null) ncfile.close();
       } catch (IOException ioe) {
+        System.out.printf("close failed %n");
       }
 
       try {
@@ -5195,6 +5236,7 @@ public class ToolsUI extends JPanel {
         if (ncfile != null) ncfile.close();
         ncfile = null;
       } catch (IOException ioe) {
+        System.out.printf("close failed %n");
       }
       ncfile = nc;
 
@@ -5239,6 +5281,7 @@ public class ToolsUI extends JPanel {
       try {
         if (ncfile != null) ncfile.close();
       } catch (IOException ioe) {
+        System.out.printf("close failed %n");
       }
 
       try {
@@ -5267,6 +5310,7 @@ public class ToolsUI extends JPanel {
         if (ncfile != null) ncfile.close();
         ncfile = null;
       } catch (IOException ioe) {
+        System.out.printf("close failed %n");
       }
       ncfile = nc;
 
@@ -5339,6 +5383,7 @@ public class ToolsUI extends JPanel {
     }
 
     void closeOpenFiles() {
+      ftTable.clear();
     }
 
     void save() {
@@ -5347,8 +5392,9 @@ public class ToolsUI extends JPanel {
       prefs.put("currDir", dirChooser.getCurrentDirectory());
       super.save();
     }
-
   }
+
+  //////////////////////////////////////////////////////////////////////////////////////
 
   private class CollectionSpecPanel extends OpPanel {
     CollectionSpecTable table;
@@ -5461,14 +5507,14 @@ public class ToolsUI extends JPanel {
     PointFeatureDatasetViewer pfViewer;
     JSplitPane split;
     FeatureDatasetPoint pfDataset = null;
-    JComboBox types;
+    JComboBox<FeatureType> types;
 
     PointFeaturePanel(PreferencesExt dbPrefs) {
       super(dbPrefs, "dataset:", true, false);
       pfViewer = new PointFeatureDatasetViewer(dbPrefs, buttPanel);
       add(pfViewer, BorderLayout.CENTER);
 
-      types = new JComboBox();
+      types = new JComboBox<>();
       for (FeatureType ft : FeatureType.values())
         types.addItem(ft);
       types.getModel().setSelectedItem(FeatureType.ANY_POINT);
@@ -5559,6 +5605,7 @@ public class ToolsUI extends JPanel {
       try {
         if (pfDataset != null) pfDataset.close();
       } catch (IOException ioe) {
+        System.out.printf("close failed %n");
       }
       detailTA.clear();
 
@@ -5602,6 +5649,7 @@ public class ToolsUI extends JPanel {
       try {
         if (pfDataset != null) pfDataset.close();
       } catch (IOException ioe) {
+        System.out.printf("close failed %n");
       }
       detailTA.clear();
 
@@ -5633,7 +5681,7 @@ public class ToolsUI extends JPanel {
   private class WmsPanel extends OpPanel {
     WmsViewer wmsViewer;
     JSplitPane split;
-    JComboBox types;
+    JComboBox<String> types;
 
     WmsPanel(PreferencesExt dbPrefs) {
       super(dbPrefs, "dataset:", true, false);
@@ -5641,7 +5689,7 @@ public class ToolsUI extends JPanel {
       add(wmsViewer, BorderLayout.CENTER);
 
       buttPanel.add(new JLabel("version:"));
-      types = new JComboBox();
+      types = new JComboBox<>();
       types.addItem("1.3.0");
       types.addItem("1.1.1");
       types.addItem("1.0.0");
@@ -5718,9 +5766,10 @@ public class ToolsUI extends JPanel {
       try {
         if (radarCollectionDataset != null) radarCollectionDataset.close();
       } catch (IOException ioe) {
+        System.out.printf("close failed %n");
       }
 
-      StringBuilder log = new StringBuilder();
+      //StringBuilder log = new StringBuilder();
       ByteArrayOutputStream bos = new ByteArrayOutputStream(10000);
       try {
         ThreddsDataFactory.Result result = threddsDataFactory.openFeatureDataset(FeatureType.STATION_RADIAL, location, null);
@@ -5749,6 +5798,7 @@ public class ToolsUI extends JPanel {
       try {
         if (radarCollectionDataset != null) radarCollectionDataset.close();
       } catch (IOException ioe) {
+        System.out.printf("close failed %n");
       }
 
       radarCollectionDataset = dataset;
@@ -5933,6 +5983,7 @@ public class ToolsUI extends JPanel {
         try {
           if (gridDs != null) gridDs.close();
         } catch (IOException ioe) {
+          System.out.printf("close failed %n");
         }
       }
       return true;
@@ -5952,6 +6003,7 @@ public class ToolsUI extends JPanel {
         try {
           if (geotiff != null) geotiff.close();
         } catch (IOException ioe) {
+          System.out.printf("close failed %n");
         }
       }
     }
@@ -6041,10 +6093,10 @@ public class ToolsUI extends JPanel {
         return super.toString();
       // System.out.println("proxy= "+proxy+" method = "+method+" args="+args);
       if (method.getName().equals("isSet")) {
-        return new Boolean(ucar.util.prefs.ui.Debug.isSet((String) args[0]));
+        return Debug.isSet((String) args[0]);
       }
       if (method.getName().equals("set")) {
-        ucar.util.prefs.ui.Debug.set((String) args[0], ((Boolean) args[1]).booleanValue());
+        ucar.util.prefs.ui.Debug.set((String) args[0], (Boolean) args[1]);
         return null;
       }
       return Boolean.FALSE;
@@ -6179,7 +6231,6 @@ public class ToolsUI extends JPanel {
     if (cache != null)
       cache.clearCache(true);
     FileCache.shutdown(); // shutdown threads
-    if (cacheManager != null) cacheManager.close(); // shutdown ehcache
     MetadataManager.closeAll(); // shutdown bdb
 
     System.exit(0);
@@ -6191,7 +6242,6 @@ public class ToolsUI extends JPanel {
   private static PreferencesExt prefs;
   private static XMLStore store;
   private static boolean done = false;
-  private static MController cacheManager;
 
   private static String wantDataset = null;
 
@@ -6217,7 +6267,6 @@ public class ToolsUI extends JPanel {
   }
 
   static boolean isCacheInit = false;
-  static boolean isDiskCacheInit = false;
 
   public static void main(String args[]) {
     try {
@@ -6238,8 +6287,7 @@ public class ToolsUI extends JPanel {
 
     if (debugListen) {
       System.out.println("Arguments:");
-      for (int i = 0; i < args.length; i++) {
-        String arg = args[i];
+      for (String arg : args) {
         System.out.println(" " + arg);
       }
 
@@ -6252,8 +6300,8 @@ public class ToolsUI extends JPanel {
     if (args.length > 0) {
       // munge arguments into a single string
       StringBuilder sbuff = new StringBuilder();
-      for (int i = 0; i < args.length; i++) {
-        sbuff.append(args[i]);
+      for (String arg : args) {
+        sbuff.append(arg);
         sbuff.append(" ");
       }
       String arguments = sbuff.toString();
@@ -6277,7 +6325,6 @@ public class ToolsUI extends JPanel {
       sm = new SocketMessage(14444, null);
       if (sm.isAlreadyRunning()) {
         System.out.println("ToolsUI already running - start up another copy");
-        sm = null;
       } else {
         sm.addEventListener(new SocketMessage.EventListener() {
           public void setMessage(SocketMessage.Event event) {
@@ -6291,8 +6338,7 @@ public class ToolsUI extends JPanel {
 
     if (debugListen) {
       System.out.println("Arguments:");
-      for (int i = 0; i < args.length; i++) {
-        String arg = args[i];
+      for (String arg : args) {
         System.out.println(" " + arg);
       }
 

@@ -36,6 +36,7 @@ package ucar.nc2.ui.widget;
 import thredds.catalog.*;
 //import thredds.catalog.query.*;
 
+import ucar.nc2.constants.CDM;
 import ucar.nc2.util.net.HttpClientManager;
 import ucar.nc2.util.IO;
 import ucar.util.prefs.PreferencesExt;
@@ -213,7 +214,7 @@ public class TextGetPutPane extends TextHistoryPane {
       // write catalog to text
       ByteArrayOutputStream os = new ByteArrayOutputStream(20000);
       cat.writeXML(os, true);
-      ta.setText(os.toString());
+      ta.setText(os.toString(CDM.UTF8));
     }
 
     private InvCatalogFactory catFactory = null;
@@ -232,7 +233,7 @@ public class TextGetPutPane extends TextHistoryPane {
       String contents = getText();
       //boolean isCatalog = contents.indexOf("queryCapability") < 0;
 
-      ByteArrayInputStream is = new ByteArrayInputStream(contents.getBytes());
+      ByteArrayInputStream is = new ByteArrayInputStream(contents.getBytes(CDM.utf8Charset));
 
       //if (isCatalog) {
         if (catFactory == null) catFactory = InvCatalogFactory.getDefaultFactory(true);

@@ -33,6 +33,7 @@
 package ucar.nc2.ui.util;
 
 import ucar.httpservices.*;
+import ucar.nc2.constants.CDM;
 import ucar.nc2.util.EscapeStrings;
 import ucar.nc2.util.IO;
 import ucar.nc2.util.ListenerManager;
@@ -156,7 +157,7 @@ public class SocketMessage {
             InputStream in = connection.getInputStream();
             byte[] buffer = new byte[8000];
             int bytesRead = in.read(buffer);
-            System.out.printf("%s == %s%n", bytesRead, new String(buffer,0,bytesRead));
+            System.out.printf("%s == %s%n", bytesRead, new String(buffer,0,bytesRead, CDM.utf8Charset));
           } else {
             message = IO.readContents(connection.getInputStream());
             if (debug) System.out.println(" SocketMessage got message= "+message);

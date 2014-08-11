@@ -232,7 +232,7 @@ public class XMLStore {
         public void exceptionThrown(Exception e) {
           if (showDecoderExceptions)
             System.out.println("***XMLStore.read() got Exception= "+e.getClass().getName()+" "+e.getMessage());
-            e.printStackTrace();
+          e.printStackTrace();
         }
       });
 

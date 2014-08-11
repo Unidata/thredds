@@ -393,8 +393,10 @@ public class GridController {
           currentRunTime = runtime;
           if (hasDependentTimeAxis) {
             GridCoordSystem gcs = currentField.getCoordinateSystem();
-            CoordinateAxis1DTime taxis = gcs.getTimeAxisForRun(runtime);
-            timeNames = taxis.getNames();
+            if (gcs != null) {
+              CoordinateAxis1DTime taxis = gcs.getTimeAxisForRun(runtime);
+              timeNames = taxis.getNames();
+            }
             ui.timeChooser.setCollection(timeNames.iterator(), true);
             if (currentTime >= timeNames.size())
               currentTime = 0;

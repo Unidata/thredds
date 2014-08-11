@@ -165,7 +165,7 @@ public class TestGrib2Netcdf {
     try {
       ChunkGribAct act = new ChunkGribAct();
       // act.doAct("Q:/cdmUnitTest/tds/ncep/NAM_CONUS_12km_conduit_20140804_0000.grib2");
-      act.doAct("Q:/cdmUnitTest/tds/ncep/RTMA_GUAM_2p5km_20140803_0600.grib2");
+      act.doAct("Q:/cdmUnitTest/tds/ncep/RTMA_CONUS_2p5km_20111221_0800.grib2");
 
       System.out.printf("%n%n%10.3f Mbytes%n", total);
 

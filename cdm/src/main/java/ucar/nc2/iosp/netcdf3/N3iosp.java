@@ -518,7 +518,7 @@ public String NC_check_name(String name) {
       if (recnum != header.numrecs - 1)
         raf.readFully(result, (int) (count * header.recsize), (int) header.recsize);
       else
-        raf.readFully(result, (int) (count * header.recsize), (int) header.recsize); // "wart" allows file to be one byte short. since its always padding, we allow
+        raf.read(result, (int) (count * header.recsize), (int) header.recsize); // "wart" allows file to be one byte short. since its always padding, we allow
       count++;
     }
 

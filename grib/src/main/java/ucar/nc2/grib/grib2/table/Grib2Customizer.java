@@ -333,7 +333,8 @@ public class Grib2Customizer implements ucar.nc2.grib.GribTables, TimeUnitConver
     return getTableValue("4.5", id);
   }
 
-  // 4.5
+  // Table 4.5
+  @Override
   public String getLevelNameShort(int id) {
 
     switch (id) {
@@ -457,6 +458,7 @@ Code Table Code table 4.7 - Derived forecast (4.7)
     return (stat == null) ?"UnknownStatType-" + id : stat.toString();
   }
 
+  @Override
   public GribStatType getStatType(int grib2StatCode) {
     return GribStatType.getStatTypeFromGrib2(grib2StatCode);
   }
@@ -466,6 +468,11 @@ Code Table Code table 4.7 - Derived forecast (4.7)
     return Grib2Utils.getLevelUnit(code);
   }
 
+  @Override
+  public int addVariableHash(Object gribRecord) {
+    return 0;
+  }
+
   /////////////////////////////////////////////
   private TimeUnitConverter timeUnitConverter;  // LOOK not really immutable
 
@@ -473,6 +480,7 @@ Code Table Code table 4.7 - Derived forecast (4.7)
     this.timeUnitConverter = timeUnitConverter;
   }
 
+  @Override
   public int convertTimeUnit(int timeUnit) {
     if (timeUnitConverter == null) return timeUnit;
     return timeUnitConverter.convertTimeUnit(timeUnit);
@@ -480,6 +488,7 @@ Code Table Code table 4.7 - Derived forecast (4.7)
 
   //////////////
 
+  @Override
   public String getSubCenterName(int center_id, int subcenter_id) {
     return CommonCodeTable.getSubCenterName(center_id, subcenter_id);
   }

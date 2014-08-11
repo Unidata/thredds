@@ -351,7 +351,9 @@ public class EsriShapefile {
   }
 
   private void skipBytes(int n) throws IOException {
-    bdis.skip(n);
+    long skipped = 0;
+    while (skipped < n)
+      skipped += bdis.skip(n-skipped);
     bytesSeen += n;
   }
 

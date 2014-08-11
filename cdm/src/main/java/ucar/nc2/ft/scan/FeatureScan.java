@@ -40,10 +40,7 @@ import ucar.nc2.constants.FeatureType;
 import ucar.nc2.ft.grid.CoverageCS;
 import ucar.nc2.ft.grid.impl.CoverageCSFactory;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.ByteArrayOutputStream;
-import java.io.PrintStream;
+import java.io.*;
 import java.util.Formatter;
 import java.util.ArrayList;
 import java.util.List;
@@ -67,7 +64,7 @@ public class FeatureScan {
 
   public java.util.List<FeatureScan.Bean> scan(Formatter errlog) {
 
-    List<Bean> result = new ArrayList<Bean>();
+    List<Bean> result = new ArrayList<>();
 
     File topFile = new File(top);
     if (!topFile.exists()) {
@@ -89,7 +86,7 @@ public class FeatureScan {
     if ((dir.getName().equals("exclude")) || (dir.getName().equals("problem")))return;
 
     // get list of files
-    List<File> files = new ArrayList<File>();
+    List<File> files = new ArrayList<>();
     for (File f : dir.listFiles()) {
       if (!f.isDirectory()) {
         files.add(f);
@@ -282,9 +279,9 @@ public class FeatureScan {
         f.format("%n%s", info);
       }
       if (problem != null) {
-        ByteArrayOutputStream bout = new ByteArrayOutputStream(10000);
-        problem.printStackTrace(new PrintStream(bout));
-        f.format("%n%s", bout.toString());
+        StringWriter sw = new StringWriter(5000);
+        problem.printStackTrace(new PrintWriter(sw));
+        f.format(sw.toString());
       }
     }
 
@@ -301,10 +298,9 @@ public class FeatureScan {
         type = CoverageCSFactory.describe(ff, ds);
 
       } catch (IOException e) {
-        ByteArrayOutputStream bout = new ByteArrayOutputStream(10000);
-        problem.printStackTrace(new PrintStream(bout));
-        ff.format("%n%s", bout.toString());
-
+        StringWriter sw = new StringWriter(10000);
+        e.printStackTrace(new PrintWriter(sw));
+        ff.format("%n%s", sw.toString());
       }
       ff.format("CoverageCS.Type = %s", type);
       return ff.toString();

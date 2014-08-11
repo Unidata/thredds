@@ -111,6 +111,11 @@ public class Grib1Customizer implements GribTables {
     return CommonCodeTable.getSubCenterName(center, subcenter);
   }
 
+  @Override
+  public int addVariableHash(Object gribRecord) {
+    return 0;
+  }
+
   ///////////////////////////////////////////////////
   // time
 

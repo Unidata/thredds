@@ -251,7 +251,7 @@ public class CoordSysTable extends JPanel {
       attWindow.setBounds( (Rectangle) prefs.getBean("AttWindowBounds", new Rectangle( 300, 100, 500, 800)));
     }
 
-    List<AttributeBean> attlist = new ArrayList<AttributeBean>();
+    List<AttributeBean> attlist = new ArrayList<>();
     for (Attribute att : ds.getGlobalAttributes()) {
       attlist.add(new AttributeBean(att));
     }
@@ -307,6 +307,10 @@ public class CoordSysTable extends JPanel {
     if (axis2D.isInterval()) {
       ArrayDouble.D2 coords = axis2D.getCoordValuesArray();
       ArrayDouble.D3 bounds = axis2D.getCoordBoundsArray();
+      if (bounds == null) {
+        infoTA.appendLine("No bounds for interval " + axis2D.getFullName());
+        return;
+      }
 
       IndexIterator coordIter = coords.getIndexIterator();
       IndexIterator boundsIter = bounds.getIndexIterator();
@@ -431,6 +435,10 @@ public class CoordSysTable extends JPanel {
     if (axis2D.isInterval()) {
       ArrayDouble.D2 coords = axis2D.getCoordValuesArray();
       ArrayDouble.D3 bounds = axis2D.getCoordBoundsArray();
+      if (bounds == null) {
+        infoTA.appendLine("No bounds for interval " + axis2D.getFullName());
+        return;
+      }
 
       IndexIterator coordIter = coords.getIndexIterator();
       IndexIterator boundsIter = bounds.getIndexIterator();
@@ -454,7 +462,6 @@ public class CoordSysTable extends JPanel {
       }
 
     }
-
 
     infoTA.appendLine(f.toString());
   }
@@ -488,8 +495,8 @@ public class CoordSysTable extends JPanel {
   private void printArray(String title, double vals[]) {
     StringBuilder sbuff = new StringBuilder();
     sbuff.append(" ").append(title);
-    for (int i = 0; i < vals.length; i++) {
-      sbuff.append(" ").append(vals[i]);
+    for (double val : vals) {
+      sbuff.append(" ").append(val);
     }
     sbuff.append("\n");
     infoTA.appendLine(sbuff.toString());
@@ -521,8 +528,8 @@ public class CoordSysTable extends JPanel {
     this.ds = ds;
     parseInfo = new Formatter();
 
-    List<VariableBean> beanList = new ArrayList<VariableBean>();
-    List<AxisBean> axisList = new ArrayList<AxisBean>();
+    List<VariableBean> beanList = new ArrayList<>();
+    List<AxisBean> axisList = new ArrayList<>();
     setVariables(ds.getVariables(), axisList, beanList);
 
     varTable.setBeans(beanList);
@@ -531,25 +538,23 @@ public class CoordSysTable extends JPanel {
   }
 
   private void setVariables(List<Variable> varList, List<AxisBean> axisList, List<VariableBean> beanList) {
-    for (int i = 0; i < varList.size(); i++) {
-      VariableEnhanced v = (VariableEnhanced) varList.get(i);
+    for (Variable aVarList : varList) {
+      VariableEnhanced v = (VariableEnhanced) aVarList;
       if (v instanceof CoordinateAxis)
         axisList.add(new AxisBean((CoordinateAxis) v));
       else
         beanList.add(new VariableBean(v));
 
       if (v instanceof Structure) {
-        java.util.List<Variable> nested = ((Structure) v).getVariables();
+        List<Variable> nested = ((Structure) v).getVariables();
         setVariables(nested, axisList, beanList);
       }
     }
   }
 
   public List<CoordinateSystemBean> getCoordinateSystemBeans(NetcdfDataset ds) {
-    List<CoordinateSystemBean> vlist = new ArrayList<CoordinateSystemBean>();
-    java.util.List<CoordinateSystem> list = ds.getCoordinateSystems();
-    for (int i = 0; i < list.size(); i++) {
-      CoordinateSystem elem = list.get(i);
+    List<CoordinateSystemBean> vlist = new ArrayList<>();
+    for (CoordinateSystem elem : ds.getCoordinateSystems()) {
       vlist.add(new CoordinateSystemBean(elem));
     }
     return vlist;
@@ -557,8 +562,8 @@ public class CoordSysTable extends JPanel {
 
   private void setSelectedCoordinateSystem(CoordinateSystem coordSys) {
     List beans = csTable.getBeans();
-    for (int i = 0; i < beans.size(); i++) {
-      CoordinateSystemBean bean = (CoordinateSystemBean) beans.get(i);
+    for (Object bean1 : beans) {
+      CoordinateSystemBean bean = (CoordinateSystemBean) bean1;
       if (bean.coordSys == coordSys) {
         csTable.setSelectedBean(bean);
         return;
@@ -572,8 +577,8 @@ public class CoordSysTable extends JPanel {
     CoordinateAxis axis = (CoordinateAxis) axesList.get(0);
 
     List beans = axisTable.getBeans();
-    for (int i = 0; i < beans.size(); i++) {
-      AxisBean bean = (AxisBean) beans.get(i);
+    for (Object bean1 : beans) {
+      AxisBean bean = (AxisBean) bean1;
       if (bean.axis == axis) {
         axisTable.setSelectedBean(bean);
         return;
@@ -616,9 +621,8 @@ public class CoordSysTable extends JPanel {
 
     VariableEnhanced ve;
     CoordinateSystem firstCoordSys = null;
-    String name, desc, units, axisType = "", positive = "";
+    String name, desc, units;
     String dims, shape, csNames, dataType = "";
-    boolean isCoordVar, axis;
 
     // no-arg constructor
 

@@ -365,10 +365,9 @@ public class URLDumpPane extends TextHistoryPane {
         printSet("AllowedMethods = ", m.getAllowedMethods());
 
     } catch (Exception e) {
-      ByteArrayOutputStream bos = new ByteArrayOutputStream(5000);
-      e.printStackTrace(new PrintStream(bos));
-      appendLine(bos.toString());
-
+      StringWriter sw = new StringWriter(5000);
+      e.printStackTrace(new PrintWriter(sw));
+      appendLine(sw.toString());
     }
   }
 
@@ -444,7 +443,7 @@ public class URLDumpPane extends TextHistoryPane {
       IO.copy(is, bout);
       is.close();
 
-      append(new String(bout.toByteArray()));
+      append(new String(bout.toByteArray(), CDM.utf8Charset));
       appendLine("end contents");
 
     } catch (MalformedURLException e) {
@@ -496,7 +495,7 @@ public class URLDumpPane extends TextHistoryPane {
       IO.copy(is, bout);
       is.close();
 
-      append(new String(bout.toByteArray()));
+      append(new String(bout.toByteArray(), CDM.utf8Charset));
 
     } catch (MalformedURLException e) {
       append(urlString + " is not a parseable URL");

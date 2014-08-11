@@ -279,9 +279,7 @@ public class CdmValidatorController extends AbstractController {
 
   private int showValidatorResults(HttpServletResponse res, String location, boolean wantXml) throws Exception {
 
-    NetcdfDatasetInfo info = null;
-    try {
-      info = new NetcdfDatasetInfo(location);
+    try (NetcdfDatasetInfo info = new NetcdfDatasetInfo( location)) {
 
       String infoString;
 
@@ -309,14 +307,6 @@ public class CdmValidatorController extends AbstractController {
       out.flush();
 
       return infoString.length();
-
-    } finally {
-      if (null != info)
-        try {
-          info.close();
-        } catch (IOException ioe) {
-          log.error("showValidatorResults(): Failed to close = " + location);
-        }
     }
   }
 

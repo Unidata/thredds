@@ -32,8 +32,6 @@
 
 package ucar.nc2.ui;
 
-//import org.apache.commons.compress.compressors.bzip2.BZip2CompressorOutputStream;
-//import org.apache.commons.compress.compressors.xz.XZCompressorOutputStream;
 import thredds.inventory.CollectionAbstract;
 import thredds.inventory.MCollection;
 import thredds.inventory.MFile;
@@ -407,16 +405,16 @@ public class Grib2DataPanel extends JPanel {
   }
 
   private MCollection scanCollection(String spec, Formatter f) {
-    MCollection dc = null;
+    MCollection dc;
     try {
       dc = CollectionAbstract.open(spec, spec, null, f);
       fileList = (List<MFile>) Misc.getList(dc.getFilesSorted());
       return dc;
 
     } catch (Exception e) {
-      ByteArrayOutputStream bos = new ByteArrayOutputStream(10000);
-      e.printStackTrace(new PrintStream(bos));
-      f.format("%s", bos.toString());
+      StringWriter sw = new StringWriter(5000);
+      e.printStackTrace(new PrintWriter(sw));
+      f.format(sw.toString());
       return null;
     }
   }

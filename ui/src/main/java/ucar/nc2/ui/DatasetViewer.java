@@ -200,9 +200,9 @@ public class DatasetViewer extends JPanel {
   void writeNcstream(String filename) {
     try {
       NcStreamWriter writer = new NcStreamWriter(ds, null);
-      OutputStream fos = new BufferedOutputStream( new FileOutputStream(filename), 50 * 1000);
-      writer.streamAll(fos);
-      fos.close();
+      try (OutputStream fos = new BufferedOutputStream( new FileOutputStream(filename), 50 * 1000)) {
+        writer.streamAll(fos);
+      }
       JOptionPane.showMessageDialog(this, "File successfully written");
     } catch (Exception ioe) {
       JOptionPane.showMessageDialog(this, "ERROR: " + ioe.getMessage());
@@ -213,9 +213,9 @@ public class DatasetViewer extends JPanel {
   void writeNcstreamHeader(String filename) {
     try {
       NcStreamWriter writer = new NcStreamWriter(ds, null);
-      FileOutputStream fos = new FileOutputStream(filename);
-      writer.sendHeader(fos);
-      fos.close();
+      try (FileOutputStream fos = new FileOutputStream(filename)) {
+        writer.sendHeader(fos);
+      }
       JOptionPane.showMessageDialog(this, "File successfully written");
     } catch (Exception ioe) {
       JOptionPane.showMessageDialog(this, "ERROR: " + ioe.getMessage());

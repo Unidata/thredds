@@ -405,14 +405,10 @@ public class GridDataset implements ucar.nc2.dt.GridDataset, ucar.nc2.ft.Feature
   public void getDetailInfo(Formatter buff) {
     getInfo(buff);
     buff.format("%n%n----------------------------------------------------%n");
-    NetcdfDatasetInfo info = null;
-    try {
-      info = new NetcdfDatasetInfo( ds);
+    try (NetcdfDatasetInfo info = new NetcdfDatasetInfo( ds)) {
       buff.format("%s", info.getParseInfo());
     } catch (IOException e) {
       buff.format("NetcdfDatasetInfo failed");
-    } finally {
-      if (info != null) try { info.close(); } catch (IOException ee) {} // do nothing
     }
     buff.format("%n%n----------------------------------------------------%n");
     buff.format("%s", ds.toString());

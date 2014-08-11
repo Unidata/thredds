@@ -440,11 +440,15 @@ public class Grib2CollectionBuilder extends GribCollectionBuilder {
         result += result * 37 + id.getSubcenter_id();
     }
 
-    // only use the GenProcessType when "error" 2/8/2012 LOOK WTF ??
+    // always use the GenProcessType when "error" (6 or 7) 2/8/2012
     int genType = pds2.getGenProcessType();
-    if (useGenType) {
+    if (genType == 6 || genType == 7 || (useGenType && genType > 0)) {
       result += result * 37 + genType;
     }
+
+    int addHash = cust.addVariableHash(gr);
+    if (addHash != 0)
+      result += result * 37 + addHash;
 
     return result;
   }

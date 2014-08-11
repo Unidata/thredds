@@ -60,7 +60,7 @@ public class FeatureScanPanel extends JPanel {
 
   private BeanTable ftTable;
   private JSplitPane split;
-  private TextHistoryPane infoTA, dumpTA;
+  private TextHistoryPane dumpTA;
   private IndependentWindow infoWindow;
 
   public FeatureScanPanel(PreferencesExt prefs) {
@@ -133,7 +133,7 @@ public class FeatureScanPanel extends JPanel {
 
     varPopup.addAction("Show Report on selected rows", new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
-        List<FeatureScan.Bean> selected = ftTable.getSelectedBeans();
+        List<FeatureScan.Bean> selected = (List<FeatureScan.Bean>) ftTable.getSelectedBeans();
         Formatter f = new Formatter();
         for (FeatureScan.Bean bean : selected) {
           bean.toString(f, false);
@@ -151,7 +151,7 @@ public class FeatureScanPanel extends JPanel {
     });
 
     // the info window
-    infoTA = new TextHistoryPane();
+    TextHistoryPane infoTA = new TextHistoryPane();
     infoWindow = new IndependentWindow("Extra Information", BAMutil.getImage("netcdfUI"), infoTA);
     infoWindow.setBounds((Rectangle) prefs.getBean("InfoWindowBounds", new Rectangle(300, 300, 500, 300)));
 
@@ -173,8 +173,13 @@ public class FeatureScanPanel extends JPanel {
     prefs.putBeanObject("InfoWindowBounds", infoWindow.getBounds());
   }
 
-  public boolean setScanDirectory(String dirName) {
+  public void clear() {
     ftTable.setBeans(new ArrayList()); // clear
+  }
+
+  public boolean setScanDirectory(String dirName) {
+    clear();
+
     //repaint();
     FeatureScan scanner = new FeatureScan(dirName, true);
     Formatter errlog = new Formatter();
