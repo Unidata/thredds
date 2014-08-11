@@ -91,7 +91,7 @@ public class TDServerConfigurator extends JPanel {
     if (prefs == null) { throw new IllegalArgumentException("`prefs` = null is not a valid parameter"); }
 
     this.prefs = prefs;
-    catalogCB = new ComboBox((prefs == null) ? null : (PreferencesExt) prefs.node("catalogCB"));
+    catalogCB = new ComboBox((PreferencesExt) prefs.node("catalogCB"));
 
     // top panel buttons
     JButton connectButton = new JButton("Connect");

@@ -6147,19 +6147,18 @@ public class ToolsUI extends JPanel {
         JLabel lab = new JLabel(icon);
         getContentPane().add(lab);
         pack();
+        //show();
+        java.awt.Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+        int width = image.getWidth(null);
+        int height = image.getHeight(null);
+        setLocation(screenSize.width / 2 - (width / 2), screenSize.height / 2 - (height / 2));
+        addMouseListener(new MouseAdapter() {
+            public void mousePressed(MouseEvent e) {
+                setVisible(false);
+            }
+        });
+        setVisible(true);
       }
-
-      //show();
-      java.awt.Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-      int width = image.getWidth(null);
-      int height = image.getHeight(null);
-      setLocation(screenSize.width / 2 - (width / 2), screenSize.height / 2 - (height / 2));
-      addMouseListener(new MouseAdapter() {
-        public void mousePressed(MouseEvent e) {
-          setVisible(false);
-        }
-      });
-      setVisible(true);
     }
   }
 
