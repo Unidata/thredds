@@ -375,7 +375,6 @@
         <configuration>
           <!-- Enabling tests for first unit testing -->
           <skip>${skipTests}</skip>
-          <testFailureIgnore>true</testFailureIgnore>
           <excludes>
             <exclude>/thredds/tds/**</exclude>
           </excludes>

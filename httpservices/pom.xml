@@ -86,7 +86,6 @@
         </dependencies -->
         <configuration>
           <skip>${skipTests}</skip>
-          <testFailureIgnore>true</testFailureIgnore>
           <argLine>-Dfile.encoding=UTF-8</argLine>
         </configuration>
       </plugin>

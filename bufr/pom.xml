@@ -94,7 +94,6 @@
         <artifactId>maven-surefire-plugin</artifactId>
         <configuration>
           <skip>${skipTests}</skip>
-        	<testFailureIgnore>true</testFailureIgnore>
           <includes>
             <include>ucar/nc2/iosp/bufr/Test*.java</include>
           </includes>

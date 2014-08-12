@@ -140,7 +140,6 @@
         <artifactId>maven-surefire-plugin</artifactId>
         <configuration>
           <skip>${skipTests}</skip>
-        	<!-- testFailureIgnore>true</testFailureIgnore-->
         	<!--failIfNoTests>true</failIfNoTests-->
           <includes>
             <include>opendap/test/Test*.java</include>

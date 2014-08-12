@@ -6,9 +6,9 @@ jdk:
 install: mvn install -DskipTests=true
 
 script:
-    - cd cdm && mvn test -DskipTests=false -DfailIfNoTests=false -DtestFailureIgnore=true
-    - cd ../udunits && mvn test -DskipTests=false -DfailIfNoTests=false -DtestFailureIgnore=true
-    - cd ../waterml && mvn test -DskipTests=false -DfailIfNoTests=false -DtestFailureIgnore=true
+    - cd cdm && mvn test -DskipTests=false -DfailIfNoTests=false
+    - cd ../udunits && mvn test -DskipTests=false -DfailIfNoTests=false
+    - cd ../waterml && mvn test -DskipTests=false -DfailIfNoTests=false
 
 matrix:
   allow_failures:

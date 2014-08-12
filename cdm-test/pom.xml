@@ -97,7 +97,6 @@
         <version>2.16</version>
         <configuration>
           <skip>${skipTests}</skip>
-          <testFailureIgnore>true</testFailureIgnore>
           <argLine>-Dfile.encoding=UTF-8</argLine>
         </configuration>
       </plugin>
