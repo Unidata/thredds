@@ -174,10 +174,10 @@ public class AreaReader {
         Dimension       lines  = new Dimension("lines", numLines, true);
         Dimension       bands  = new Dimension("bands", numBands, true);
         Dimension       time   = new Dimension("time", 1, true);
-        Dimension       dirDim = new Dimension("dirSize", af.AD_DIRSIZE,
+        Dimension       dirDim = new Dimension("dirSize", AreaFile.AD_DIRSIZE,
                                      true);
         Dimension navDim = new Dimension("navSize", navBlock.length, true);
-        List<Dimension> image  = new ArrayList<Dimension>();
+        List<Dimension> image  = new ArrayList<>();
         image.add(time);
         image.add(bands);
         image.add(lines);
@@ -258,7 +258,7 @@ public class AreaReader {
         imageVar.setDataType(DataType.INT);
         imageVar.setDimensions(image);
         setCalTypeAttributes(imageVar, getCalType(calName));
-        imageVar.addAttribute(new Attribute(getADDescription(af.AD_CALTYPE),
+        imageVar.addAttribute(new Attribute(getADDescription(AreaFile.AD_CALTYPE),
                                             calName));
         imageVar.addAttribute(new Attribute("bands", bandArray));
         imageVar.addAttribute(new Attribute("grid_mapping", "AREAnav"));
@@ -340,6 +340,7 @@ public class AreaReader {
         String fileName = raf.getLocation();
         try {
             AreaFile af = new AreaFile(fileName);
+            af.close();
             return true;
         } catch (AreaFileException e) {
             return false;
@@ -360,34 +361,44 @@ public class AreaReader {
      */
     public Array readVariable(Variable v2, Section section)
             throws IOException, InvalidRangeException {
-
-        Range timeRange = null;
+        // not sure why timeRange isn't used...will comment out
+        // for now
+        // TODO: use timeRange in readVariable
+        //Range timeRange = null;
         Range bandRange = null;
         Range geoXRange = null;
         Range geoYRange = null;
-        if (section != null & section.getRank() > 0) {
-            if (section.getRank() > 3) {
-                timeRange = (Range) section.getRange(0);
-                bandRange = (Range) section.getRange(1);
-                geoYRange = (Range) section.getRange(2);
-                geoXRange = (Range) section.getRange(3);
-            } else if (section.getRank() > 2) {
-                timeRange = (Range) section.getRange(0);
-                geoYRange = (Range) section.getRange(1);
-                geoXRange = (Range) section.getRange(2);
-            } else if (section.getRank() > 1) {
-                geoYRange = (Range) section.getRange(0);
-                geoXRange = (Range) section.getRange(1);
-            } else {
-                geoXRange = (Range) section.getRange(0);
-            }
-        }
+        Array dataArray;
 
+        if (section == null) {
+            dataArray =
+                    Array.factory(v2.getDataType().getPrimitiveClassType(),
+                            v2.getShape());
+        } else if (section.getRank() > 0) {
+            if (section.getRank() > 3) {
+                //timeRange = (Range) section.getRange(0);
+                bandRange = section.getRange(1);
+                geoYRange = section.getRange(2);
+                geoXRange = section.getRange(3);
+            } else if (section.getRank() > 2) {
+                //timeRange = (Range) section.getRange(0);
+                geoYRange = section.getRange(1);
+                geoXRange = section.getRange(2);
+            } else if (section.getRank() > 1) {
+                geoYRange = section.getRange(0);
+                geoXRange = section.getRange(1);
+            }
+
+            dataArray =
+                    Array.factory(v2.getDataType().getPrimitiveClassType(),
+                            section.getShape());
+        } else {
+            String strRank = Integer.toString(section.getRank());
+            String msg = "Invalid Rank: " + strRank + ". Must be > 0.";
+            throw new IndexOutOfBoundsException(msg);
+        }
         String varname = v2.getFullName();
 
-        Array dataArray =
-            Array.factory(v2.getDataType().getPrimitiveClassType(),
-                          section.getShape());
 
         Index dataIndex = dataArray.getIndex();
 
@@ -442,7 +453,6 @@ public class AreaReader {
                                              (pixelData[0][0]));
                         }
                     }
-
                 }
             } catch (AreaFileException afe) {
                 throw new IOException(afe.toString());
@@ -676,7 +686,7 @@ public class AreaReader {
      */
     private void setCalTypeAttributes(Variable image, int calType) {
         String longName = "image values";
-        String unit     = "";
+        //String unit     = "";
         switch (calType) {
 
           case Calibrator.CAL_ALB :
