@@ -56,8 +56,6 @@ public class TestDiskCache {
     assert !file.canWrite();
   }
 
-    // https://github.com/Unidata/thredds/issues/58  from Cameron Beccario
-  @Test
   public void testReletivePath() throws Exception {
     String org = System.getProperty("user.dir");
     try {
