@@ -690,7 +690,7 @@ public class VerticalPerspectiveView extends ProjectionImpl {
     double radius = 6371.0;
 
     VerticalPerspectiveView a = new VerticalPerspectiveView(0, 0, radius, 5.62 * radius);
-    ProjectionPointImpl p = a.latLonToProj(lat, lon);
+    ProjectionPoint p = a.latLonToProj(lat, lon);
     System.out.println("-----\nproj point = " + p);
     System.out.println("x/r = " + p.getX() / radius); // see snyder p 174
     System.out.println("y/r = " + p.getY() / radius);

@@ -33,29 +33,25 @@
 
 package ucar.nc2.dataset;
 
+import junit.framework.TestCase;
+import ucar.ma2.InvalidRangeException;
 import ucar.nc2.Variable;
 import ucar.nc2.constants.CF;
 import ucar.nc2.dt.GridCoordSystem;
 import ucar.nc2.dt.grid.GridDataset;
 import ucar.nc2.util.Misc;
-import ucar.unidata.geoloc.LatLonPointImpl;
-import ucar.unidata.geoloc.Projection;
-import ucar.unidata.geoloc.ProjectionImpl;
-import ucar.unidata.geoloc.ProjectionPoint;
+import ucar.unidata.geoloc.*;
 import ucar.unidata.geoloc.projection.*;
 import ucar.unidata.geoloc.projection.proj4.CylindricalEqualAreaProjection;
 import ucar.unidata.geoloc.projection.proj4.EquidistantAzimuthalProjection;
 import ucar.unidata.geoloc.projection.sat.MSGnavigation;
-import ucar.ma2.InvalidRangeException;
-
-import java.io.IOException;
-import java.util.Formatter;
-import java.util.List;
-import java.util.ArrayList;
-
-import junit.framework.TestCase;
 import ucar.unidata.test.util.TestDir;
 import ucar.unidata.util.Parameter;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Formatter;
+import java.util.List;
 
 /**
  * test projections
@@ -263,8 +259,8 @@ public class TestProjections extends TestCase {
     CoordinateAxis1D xaxis = (CoordinateAxis1D) gsys.getXHorizAxis();
     CoordinateAxis1D yaxis =  (CoordinateAxis1D) gsys.getYHorizAxis();
     p.projToLatLon(xaxis.getCoordValue(0), yaxis.getCoordValue(0)  );
-    LatLonPointImpl start1 =  p.projToLatLon(xaxis.getCoordValue(0), yaxis.getCoordValue(0));
-    LatLonPointImpl start2 =  p.projToLatLon(xaxis.getCoordValue((int)xaxis.getSize()-1), yaxis.getCoordValue((int)yaxis.getSize()-1));
+    LatLonPoint start1 =  p.projToLatLon(xaxis.getCoordValue(0), yaxis.getCoordValue(0));
+    LatLonPoint start2 =  p.projToLatLon(xaxis.getCoordValue((int)xaxis.getSize()-1), yaxis.getCoordValue((int)yaxis.getSize()-1));
     System.out.printf( "start = %f %f%n", start1.getLatitude(), start1.getLongitude());
     System.out.printf( "end = %f %f%n", start2.getLatitude(), start2.getLongitude());
 
@@ -297,8 +293,8 @@ public class TestProjections extends TestCase {
     CoordinateAxis1D xaxis = (CoordinateAxis1D) gsys.getXHorizAxis();
     CoordinateAxis1D yaxis =  (CoordinateAxis1D) gsys.getYHorizAxis();
     p.projToLatLon(xaxis.getCoordValue(0), yaxis.getCoordValue(0)  );
-    LatLonPointImpl start1 =  p.projToLatLon(xaxis.getCoordValue(0), yaxis.getCoordValue(0));
-    LatLonPointImpl start2 =  p.projToLatLon(xaxis.getCoordValue((int)xaxis.getSize()-1), yaxis.getCoordValue((int)yaxis.getSize()-1));
+    LatLonPoint start1 =  p.projToLatLon(xaxis.getCoordValue(0), yaxis.getCoordValue(0));
+    LatLonPoint start2 =  p.projToLatLon(xaxis.getCoordValue((int)xaxis.getSize()-1), yaxis.getCoordValue((int)yaxis.getSize()-1));
     System.out.printf( "start = %f %f%n", start1.getLatitude(), start1.getLongitude());
     System.out.printf( "end = %f %f%n", start2.getLatitude(), start2.getLongitude());
     
@@ -340,8 +336,8 @@ public class TestProjections extends TestCase {
     CoordinateAxis1D xaxis = (CoordinateAxis1D) gsys.getXHorizAxis();
     CoordinateAxis1D yaxis =  (CoordinateAxis1D) gsys.getYHorizAxis();
     p.projToLatLon(xaxis.getCoordValue(0), yaxis.getCoordValue(0)  );
-    LatLonPointImpl start1 =  p.projToLatLon(xaxis.getCoordValue(0), yaxis.getCoordValue(0));
-    LatLonPointImpl end =  p.projToLatLon(xaxis.getCoordValue((int)xaxis.getSize()-1), yaxis.getCoordValue((int)yaxis.getSize()-1));
+    LatLonPoint start1 =  p.projToLatLon(xaxis.getCoordValue(0), yaxis.getCoordValue(0));
+    LatLonPoint end =  p.projToLatLon(xaxis.getCoordValue((int)xaxis.getSize()-1), yaxis.getCoordValue((int)yaxis.getSize()-1));
     System.out.printf( "start = %f %f%n", start1.getLatitude(), start1.getLongitude());
     System.out.printf( "end = %f %f%n", end.getLatitude(), end.getLongitude());
 

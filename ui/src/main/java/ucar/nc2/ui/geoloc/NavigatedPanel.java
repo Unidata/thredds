@@ -35,19 +35,23 @@ package ucar.nc2.ui.geoloc;
 import ucar.nc2.ui.widget.BAMutil;
 import ucar.nc2.util.ListenerManager;
 import ucar.unidata.geoloc.*;
-import ucar.unidata.geoloc.projection.*;
-
+import ucar.unidata.geoloc.projection.LatLonProjection;
 import ucar.unidata.util.Format;
 import ucar.util.prefs.ui.Debug;
 
+import javax.swing.*;
 import java.awt.*;
-import java.awt.geom.*;
-import java.awt.datatransfer.*;
+import java.awt.datatransfer.DataFlavor;
+import java.awt.datatransfer.Transferable;
+import java.awt.datatransfer.UnsupportedFlavorException;
 import java.awt.dnd.*;
 import java.awt.event.*;
-import java.awt.image.*;
-import java.io.*;
-import javax.swing.*;
+import java.awt.geom.AffineTransform;
+import java.awt.geom.Point2D;
+import java.awt.geom.Rectangle2D;
+import java.awt.image.BufferedImage;
+import java.awt.image.ImageObserver;
+import java.io.IOException;
 
 /**
  * Implements a "navigated" JPanel within which a user can zoom and pan.
@@ -358,7 +362,7 @@ public class NavigatedPanel extends JPanel {
 
   /** set the center point of the MapArea */
   public void setLatLonCenterMapArea( double lat, double lon) {
-    ProjectionPointImpl center = project.latLonToProj(lat, lon);
+    ProjectionPoint center = project.latLonToProj(lat, lon);
 
     ProjectionRect ma = getMapArea();
     ma.setX( center.getX() - ma.getWidth()/2);

@@ -450,7 +450,7 @@ public class GridRenderer {
     sbuff.append(" @ ");
 
     if ((wantx >= 0) && (wanty >= 0)) {
-      LatLonPointImpl lpt;
+      LatLonPoint lpt;
       if (dataProjection.isLatLon())
         lpt = new LatLonPointImpl(yaxis.getCoordValue(wanty), xaxis.getCoordValue(wantx));
       else

@@ -96,6 +96,6 @@ public class SinusoidalTest {
         double projX = 30_000;
 
         Sinusoidal proj = new Sinusoidal();
-        double[] minAndMaxYs = proj.calcMinAndMaxYsAt(projX);  // Should throw IllegalArgumentException.
+        proj.calcMinAndMaxYsAt(projX);  // Should throw IllegalArgumentException.
     }
 }
