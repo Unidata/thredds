@@ -2,8 +2,7 @@ package ucar.unidata.geoloc.projection;
 
 import org.junit.Assert;
 import org.junit.Test;
-import ucar.unidata.geoloc.LatLonRect;
-import ucar.unidata.geoloc.ProjectionRect;
+import ucar.unidata.geoloc.*;
 
 public class SinusoidalTest {
     // Reproduces issue from ETO-719860:
@@ -26,5 +25,77 @@ public class SinusoidalTest {
         Assert.assertEquals(180.0, latLonBB.getLonMax(), 0.1);
         Assert.assertEquals(60.0,  latLonBB.getLatMin(), 0.1);
         Assert.assertEquals(67.11, latLonBB.getLatMax(), 0.1);
+    }
+
+    @Test
+    public void testCalcMinAndMaxYs_1() {
+        // Along the equator, in the default Sinusoidal, the range of valid x's is [-20015, +20015].
+        double projX = 10_000;
+
+        Sinusoidal proj = new Sinusoidal();
+        double[] minAndMaxYs = proj.calcMinAndMaxYsAt(projX);
+
+        ProjectionPoint projMinPoint = new ProjectionPointImpl(projX, minAndMaxYs[0]);
+        ProjectionPoint projMaxPoint = new ProjectionPointImpl(projX, minAndMaxYs[1]);
+
+        Assert.assertEquals(projX, projMinPoint.getX(), 1e-6);
+        Assert.assertEquals(projX, projMaxPoint.getX(), 1e-6);
+
+        LatLonPoint latLonMinPoint = proj.projToLatLon(projMinPoint);
+        LatLonPoint latLonMaxPoint = proj.projToLatLon(projMaxPoint);
+
+        Assert.assertEquals(180, latLonMinPoint.getLongitude(), 1e-6);
+        Assert.assertEquals(180, latLonMaxPoint.getLongitude(), 1e-6);
+    }
+
+    @Test
+    public void testCalcMinAndMaxYs_2() {
+        // Along the equator, in the default Sinusoidal, the range of valid x's is [-20015, +20015].
+        double projX = -4_545;
+
+        Sinusoidal proj = new Sinusoidal();
+        double[] minAndMaxYs = proj.calcMinAndMaxYsAt(projX);
+
+        ProjectionPoint projMinPoint = new ProjectionPointImpl(projX, minAndMaxYs[0]);
+        ProjectionPoint projMaxPoint = new ProjectionPointImpl(projX, minAndMaxYs[1]);
+
+        Assert.assertEquals(projX, projMinPoint.getX(), 1e-6);
+        Assert.assertEquals(projX, projMaxPoint.getX(), 1e-6);
+
+        LatLonPoint latLonMinPoint = proj.projToLatLon(projMinPoint);
+        LatLonPoint latLonMaxPoint = proj.projToLatLon(projMaxPoint);
+
+        Assert.assertEquals(-180, latLonMinPoint.getLongitude(), 1e-6);
+        Assert.assertEquals(-180, latLonMaxPoint.getLongitude(), 1e-6);
+    }
+
+    @Test
+    public void testCalcMinAndMaxYs_3() {
+        // Along the equator, in the default Sinusoidal, the range of valid x's is [-20015, +20015].
+        double projX = 0;
+
+        Sinusoidal proj = new Sinusoidal();
+        double[] minAndMaxYs = proj.calcMinAndMaxYsAt(projX);
+
+        ProjectionPoint projMinPoint = new ProjectionPointImpl(projX, minAndMaxYs[0]);
+        ProjectionPoint projMaxPoint = new ProjectionPointImpl(projX, minAndMaxYs[1]);
+
+        LatLonPoint latLonMinPoint = proj.projToLatLon(projMinPoint);
+        LatLonPoint latLonMaxPoint = proj.projToLatLon(projMaxPoint);
+
+        Assert.assertEquals(-90, latLonMinPoint.getLatitude(),  1e-6);
+        Assert.assertEquals(0,   latLonMinPoint.getLongitude(), 1e-6);
+
+        Assert.assertEquals(+90, latLonMaxPoint.getLatitude(),  1e-6);
+        Assert.assertEquals(0,   latLonMaxPoint.getLongitude(), 1e-6);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testCalcMinAndMaxYs_4() {
+        // Along the equator, in the default Sinusoidal, the range of valid x's is [-20015, +20015].
+        double projX = 30_000;
+
+        Sinusoidal proj = new Sinusoidal();
+        double[] minAndMaxYs = proj.calcMinAndMaxYsAt(projX);  // Should throw IllegalArgumentException.
     }
 }
