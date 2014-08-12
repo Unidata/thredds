@@ -105,7 +105,7 @@ public class TestDorade extends TestCase {
     assert( testAtt.getStringValue().equalsIgnoreCase("2") );
 
     testAtt = ncfile.getRootGroup().findAttribute("Sweep_Date");
-    assert( testAtt.getStringValue().equalsIgnoreCase("Fri May 10 19:58:15 MDT 2002") );
+    assert( testAtt.getStringValue().equalsIgnoreCase("2002-05-11 01:58:15Z") );
 
     var = ncfile.findVariable("elevation");
     testReadData(var);
