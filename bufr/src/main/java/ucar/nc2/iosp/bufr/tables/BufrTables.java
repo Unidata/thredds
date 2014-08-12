@@ -306,6 +306,12 @@ public class BufrTables {
     return tables;
   }
 
+  public static TableConfig[] getTableConfigsAsArray() {
+    if (tables == null) readLookupTable();
+    TableConfig[] result = new TableConfig[tables.size()];
+    return tables.toArray(result);
+  }
+
   private static TableConfig matchTableConfig(int center, int subcenter, int master, int local, int cat) {
     if (tables == null) readLookupTable();
 

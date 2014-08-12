@@ -49,7 +49,7 @@ import java.util.Formatter;
  * @since 8/4/2014
  */
 public class TestGrib2Netcdf {
-  static String dirOut = "G:/write2/";
+  static String dirOut = "G:/write/";
   static PrintStream fw;
 
  static  void  writeHeader() throws FileNotFoundException {
@@ -62,10 +62,10 @@ public class TestGrib2Netcdf {
                    Nc4Chunking.Strategy chunkerType, int deflateLevel, boolean shuffle) throws IOException {
 
     File fin = new File(fileInName);
-    if (fin.length() > 2000 * 1000 * 1000) {
-      System.out.format("   skip %s: %d%n", fin.getName(), fin.length());
-      return 0; // skip > 2G
-    }
+    //if (fin.length() > 2000 * 1000 * 1000) {
+   //   System.out.format("   skip %s: %d%n", fin.getName(), fin.length());
+    //  return 0; // skip > 2G
+    //}
     Formatter foutf = new Formatter();
     foutf.format("%s", fin.getName());
     if (deflateLevel > 0) foutf.format(".%d", deflateLevel);
@@ -145,7 +145,7 @@ public class TestGrib2Netcdf {
   static double total = 0;
 
 
-  public static void main1(String[] args) throws IOException {
+  public static void main(String[] args) throws IOException {
     writeHeader();
 
     try {
@@ -159,7 +159,7 @@ public class TestGrib2Netcdf {
   }
 
 
-  public static void main(String[] args) throws IOException {
+  public static void main2(String[] args) throws IOException {
     writeHeader();
 
     try {

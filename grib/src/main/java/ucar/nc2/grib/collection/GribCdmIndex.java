@@ -98,8 +98,12 @@ public class GribCdmIndex implements IndexReader {
 
     // open GribCollection from an existing index file. caller must close; return null on failure
   static public GribCollection openCdmIndex(String indexFilename, FeatureCollectionConfig config, boolean dataOnly, Logger logger) {
+    return openCdmIndex(indexFilename, config, dataOnly, true, logger);
+  }
 
-    File indexFileInCache = GribCollection.getFileInCache(indexFilename);
+    // open GribCollection from an existing index file. caller must close; return null on failure
+  static public GribCollection openCdmIndex(String indexFilename, FeatureCollectionConfig config, boolean dataOnly, boolean useCache, Logger logger) {
+    File indexFileInCache = useCache ? GribCollection.getFileInCache(indexFilename) : new File(indexFilename);
     String indexFilenameInCache = indexFileInCache.getPath();
     String name = GribCollection.makeNameFromIndexFilename(indexFilename);
     RandomAccessFile raf = null;

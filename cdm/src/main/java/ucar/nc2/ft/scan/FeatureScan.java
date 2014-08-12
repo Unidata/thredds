@@ -169,10 +169,8 @@ public class FeatureScan {
     public Bean(File f) {
       this.f = f;
 
-      NetcdfDataset ds = null;
-      try {
-        if (debug) System.out.printf(" featureScan=%s%n", f.getPath());
-        ds = NetcdfDataset.openDataset(f.getPath());
+      if (debug) System.out.printf(" featureScan=%s%n", f.getPath());
+      try (NetcdfDataset ds = NetcdfDataset.openDataset(f.getPath())){
         fileType = ds.getFileTypeId();
         setCoordMap(ds.getCoordinateSystems());
         coordSysBuilder = ds.findAttValueIgnoreCase(null, _Coordinate._CoordSysBuilder, "none");
@@ -211,12 +209,6 @@ public class FeatureScan {
       } catch (Throwable t) {
         fileType = " ERR: " + t.getMessage();
         problem = t;
-
-      } finally {
-        if (ds != null) try {
-          ds.close();
-        } catch (IOException ioe) {
-        }
       }
     }
 

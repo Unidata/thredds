@@ -33,13 +33,16 @@
 
 package ucar.nc2.ui;
 
-import ucar.nc2.constants.FeatureType;
-import ucar.nc2.constants._Coordinate;
-import ucar.nc2.dataset.CoordinateSystem;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import thredds.featurecollection.FeatureCollectionConfig;
+import thredds.inventory.CollectionAbstract;
 import ucar.nc2.dataset.NetcdfDataset;
-import ucar.nc2.ft.FeatureDataset;
-import ucar.nc2.ft.FeatureDatasetFactoryManager;
-import ucar.nc2.ft.grid.impl.CoverageCSFactory;
+import ucar.nc2.dt.GridDatatype;
+import ucar.nc2.dt.grid.GridDataset;
+import ucar.nc2.grib.collection.GribCdmIndex;
+import ucar.nc2.grib.collection.GribCollection;
+import ucar.nc2.grib.collection.PartitionCollection;
 import ucar.nc2.ui.widget.BAMutil;
 import ucar.nc2.ui.widget.IndependentWindow;
 import ucar.nc2.ui.widget.PopupMenu;
@@ -52,22 +55,23 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import java.awt.*;
 import java.awt.event.ActionEvent;
-import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileFilter;
 import java.io.IOException;
-import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Formatter;
 import java.util.List;
 
 /**
- * Describe
+ * Rewrite GRIB files - track stats etc
  *
  * @author caron
  * @since 8/11/2014
  */
 public class GribRewritePanel extends JPanel {
+  static private final Logger logger = LoggerFactory.getLogger(GribRewritePanel.class);
+
   private PreferencesExt prefs;
 
   private BeanTable ftTable;
@@ -75,16 +79,24 @@ public class GribRewritePanel extends JPanel {
   private TextHistoryPane dumpTA;
   private IndependentWindow infoWindow;
 
-  public GribRewritePanel(PreferencesExt prefs) {
+  public GribRewritePanel(PreferencesExt prefs, JPanel buttPanel) {
     this.prefs = prefs;
 
     ftTable = new BeanTable(FileBean.class, (PreferencesExt) prefs.node("FeatureDatasetBeans"), false);
-    ftTable.addListSelectionListener(new ListSelectionListener() {
+    /* ftTable.addListSelectionListener(new ListSelectionListener() {
       public void valueChanged(ListSelectionEvent e) {
         FileBean ftb = (FileBean) ftTable.getSelectedBean();
         setSelectedFeatureDataset(ftb);
       }
-    });
+    }); */
+
+    AbstractAction calcAction = new AbstractAction() {
+      public void actionPerformed(ActionEvent e) {
+        calcAverage();
+      }
+    };
+    BAMutil.setActionProperties(calcAction, "Dataset", "calc storage", false, 'C', -1);
+    BAMutil.addActionToContainer(buttPanel, calcAction);
 
     PopupMenu varPopup = new ucar.nc2.ui.widget.PopupMenu(ftTable.getJTable(), "Options");
     varPopup.addAction("Open as NetcdfFile", new AbstractAction() {
@@ -103,7 +115,7 @@ public class GribRewritePanel extends JPanel {
       }
     });
 
-    varPopup.addAction("Show Report on selected rows", new AbstractAction() {
+    /* varPopup.addAction("Show Report on selected rows", new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
         List<FileBean> selected = ftTable.getSelectedBeans();
         Formatter f = new Formatter();
@@ -120,7 +132,7 @@ public class GribRewritePanel extends JPanel {
         if (ftb == null) return;
         dumpTA.setText(ftb.runClassifier());
       }
-    });
+    });  */
 
     // the info window
     TextHistoryPane infoTA = new TextHistoryPane();
@@ -154,7 +166,7 @@ public class GribRewritePanel extends JPanel {
 
     //repaint();
     Formatter errlog = new Formatter();
-    List<FileBean> beans = scan(errlog);
+    List<FileBean> beans = scan(dirName, errlog);
     if (beans.size() == 0)  {
       dumpTA.setText(errlog.toString());
       return false;
@@ -169,10 +181,28 @@ public class GribRewritePanel extends JPanel {
     dumpTA.setText(ftb.toString());
     dumpTA.gotoTop();
   }
+
+  private void calcAverage() {
+
+    double totalRecords = 0.0;
+    double ratio = 0.0;
+    List<FileBean> beans = ftTable.getBeans();
+    for (FileBean bean : beans) {
+      if (bean.getNdups() > 0) continue;
+      if (bean.getRatio() == 0) continue;
+      if (bean.getName().contains("GEFS")) continue; // LOOK
+      totalRecords += bean.getNrecords();
+      ratio += bean.getNrecords() * bean.getRatio();
+    }
+
+    double weightedAvg =  ratio / totalRecords;
+    dumpTA.setText("Weighted average ratio ="+weightedAvg);
+    dumpTA.gotoTop();
+  }
   
   ///////////////
   
-  public java.util.List<FileBean> scan(Formatter errlog) {
+  public java.util.List<FileBean> scan(String top, Formatter errlog) {
 
     List<FileBean> result = new ArrayList<>();
 
@@ -183,21 +213,41 @@ public class GribRewritePanel extends JPanel {
     }
 
     if (topFile.isDirectory())
-      scanDirectory(topFile, result, errlog);
+      scanDirectory(topFile, false, result, errlog);
     else {
-      FileBean fdb = new FileBean(topFile);
+      FileBean fdb = null;
+      try {
+        fdb = new FileBean(topFile);
+      } catch (IOException e) {
+        System.out.printf("FAIL, skip %s%n", topFile.getPath());
+      }
       result.add(fdb);
     }
 
     return result;
   }
 
-  private void scanDirectory(File dir, java.util.List<FileBean> result, Formatter errlog) {
+  public static class FileFilterFromSuffixes implements FileFilter {
+    String[] suffixes;
+    public FileFilterFromSuffixes(String suffixes) {
+      this.suffixes = suffixes.split(" ");
+    }
+
+    @Override
+    public boolean accept(File file) {
+      for (String s: suffixes)
+        if (file.getPath().endsWith(s)) return true;
+      return false;
+    }
+  }
+
+
+  private void scanDirectory(File dir, boolean subdirs, java.util.List<FileBean> result, Formatter errlog) {
     if ((dir.getName().equals("exclude")) || (dir.getName().equals("problem")))return;
 
     // get list of files
     List<File> files = new ArrayList<>();
-    for (File f : dir.listFiles()) {
+    for (File f : dir.listFiles(new FileFilterFromSuffixes("grib1 grib2"))) {
       if (!f.isDirectory()) {
         files.add(f);
       }
@@ -207,31 +257,16 @@ public class GribRewritePanel extends JPanel {
     // ".Z", ".zip", ".gzip", ".gz", or ".bz2"
     if (files.size() > 0) {
       Collections.sort(files);
-      ArrayList<File> files2 = new ArrayList<File>(files);
+      List<File> files2 = new ArrayList<>(files);
 
       File prev = null;
       for (File f : files) {
         String name = f.getName();
         String stem = stem(name);
-        if (name.endsWith(".gbx") || name.endsWith(".gbx8") || name.endsWith(".pdf") || name.endsWith(".xml") || name.endsWith(".gbx9")
-                || name.endsWith(".ncx") || name.endsWith(".txt") || name.endsWith(".tar")) {
-          files2.remove(f);
-
-        } else if (prev != null) {
-
+        if (prev != null) {
           if (name.endsWith(".ncml")) {
-            if (prev.getName().equals(stem) || prev.getName().equals(stem + ".nc"))
+            if (prev.getName().equals(stem) || prev.getName().equals(stem + ".grib2"))
                files2.remove(prev);
-          } else if (name.endsWith(".bz2")) {
-            if (prev.getName().equals(stem)) files2.remove(f);
-          } else if (name.endsWith(".gz")) {
-            if (prev.getName().equals(stem)) files2.remove(f);
-          } else if (name.endsWith(".gzip")) {
-            if (prev.getName().equals(stem)) files2.remove(f);
-          } else if (name.endsWith(".zip")) {
-            if (prev.getName().equals(stem)) files2.remove(f);
-          } else if (name.endsWith(".Z")) {
-            if (prev.getName().equals(stem)) files2.remove(f);
           }
         }
         prev = f;
@@ -239,7 +274,11 @@ public class GribRewritePanel extends JPanel {
 
       // do the remaining
       for (File f : files2) {
-        result.add(new FileBean(f));
+        try {
+          result.add(new FileBean(f));
+        } catch (IOException e) {
+          System.out.printf("FAIL, skip %s%n", f.getPath());
+        }
       }
     }
 
@@ -247,7 +286,7 @@ public class GribRewritePanel extends JPanel {
     if (subdirs) {
       for (File f : dir.listFiles()) {
         if (f.isDirectory() && !f.getName().equals("exclude"))
-          scanDirectory(f, result, errlog);
+          scanDirectory(f, subdirs, result, errlog);
       }
     }
 
@@ -260,76 +299,27 @@ public class GribRewritePanel extends JPanel {
 
   private static final boolean debug = true;
 
-  private class FileBean {
+  public class FileBean {
     public File f;
     String fileType;
-    String coordMap;
-    FeatureType featureType, ftFromMetadata;
-    String ftype;
-    StringBuilder info = new StringBuilder();
-    String coordSysBuilder;
-    String ftImpl;
-    Throwable problem;
-    String isCoverage;
+    long cdmData2D, nc4Data2D, nc4Size;
+    int nrecords, nvars, ndups;
 
     // no-arg constructor
     public FileBean() {
     }
 
-    public FileBean(File f) {
+    public FileBean(File f) throws IOException {
       this.f = f;
 
-      NetcdfDataset ds = null;
-      try {
-        if (debug) System.out.printf(" featureScan=%s%n", f.getPath());
-        ds = NetcdfDataset.openDataset(f.getPath());
-        fileType = ds.getFileTypeId();
-        setCoordMap(ds.getCoordinateSystems());
-        coordSysBuilder = ds.findAttValueIgnoreCase(null, _Coordinate._CoordSysBuilder, "none");
-
-        Formatter errlog = new Formatter();
-        isCoverage = CoverageCSFactory.describe(errlog, ds);
-        info.append(errlog.toString());
-
-        ftFromMetadata = FeatureDatasetFactoryManager.findFeatureType(ds);
-
-        try {
-          errlog = new Formatter();
-          FeatureDataset featureDataset = FeatureDatasetFactoryManager.wrap(null, ds, null, errlog);
-          info.append("FeatureDatasetFactoryManager errlog = ");
-          info.append(errlog.toString());
-          info.append("\n\n");
-
-          if (featureDataset != null) {
-            featureType = featureDataset.getFeatureType();
-            if (featureType != null)
-              ftype = featureType.toString();
-            ftImpl = featureDataset.getImplementationName();
-            Formatter infof = new Formatter();
-            featureDataset.getDetailInfo(infof);
-            info.append(infof.toString());
-          } else {
-            ftype = "";
-          }
-
-        } catch (Throwable t) {
-          ftype = " ERR: " + t.getMessage();
-          info.append(errlog.toString());
-          problem = t;
-        }
-
-      } catch (Throwable t) {
-        fileType = " ERR: " + t.getMessage();
-        problem = t;
-
-      } finally {
-        if (ds != null) try {
-          ds.close();
-        } catch (IOException ioe) {
-        }
+      if (debug) System.out.printf(" fileScan=%s%n", f.getPath());
+      try (NetcdfDataset ncd = NetcdfDataset.openDataset(f.getPath())) {
+        fileType = ncd.getFileTypeId();
+        cdmData2D = countCdmData2D(ncd);
+        countGribData2D(f);
+        countNc4Data2D(f);
       }
     }
-
 
     public String getName() {
       return f.getPath();
@@ -339,82 +329,96 @@ public class GribRewritePanel extends JPanel {
       return fileType;
     }
 
-    public String getSizeK() {
-      Formatter fm = new Formatter();
+    public double getGribSizeM() {
+      return ((double) f.length()) / 1000 /1000;
+      /* Formatter fm = new Formatter();
       //long size = f.length();
       //if (size > 10 * 1000 * 1000) fm.format("%6.1f M", ((float) size) / 1000 / 1000);
       //else if (size > 10 * 1000) fm.format("%6.1f K", ((float) size) / 1000);
       //else fm.format("%d", size);
-      fm.format("%,10d", f.length() / 1000);
-      return fm.toString();
+      fm.format("%,-15d", f.length() / 1000);
+      return fm.toString(); */
     }
 
-    public String getCoordMap() {
-      return coordMap;
+    public long getCdmData2D() {
+      return cdmData2D;
     }
 
-    public String getCoordSysBuilder() {
-      return coordSysBuilder;
+    public int getNrecords() {
+      return nrecords;
     }
 
-    public void setCoordMap(java.util.List<CoordinateSystem> csysList) {
-      CoordinateSystem use = null;
-      for (CoordinateSystem csys : csysList) {
-        if (use == null) use = csys;
-        else if (csys.getCoordinateAxes().size() > use.getCoordinateAxes().size())
-          use = csys;
+    public boolean isMatch() {
+      return nrecords == cdmData2D;
+    }
+
+    public int getNvars() {
+      return nvars;
+    }
+
+    public int getNdups() {
+      return ndups;
+    }
+
+    public double getNc4SizeM() {
+      return ((double) nc4Size) / 1000 / 1000;
+    }
+
+    public long getNc4Data2D() {
+      return nc4Data2D;
+    }
+
+    public double getRatio() {
+      return nc4Size / (double) f.length();
+    }
+
+    public long countCdmData2D(NetcdfDataset ncd) throws IOException {
+      long result = 0;
+      GridDataset ds = new GridDataset(ncd);
+      for (GridDatatype grid : ds.getGrids()) {
+        int [] shape = grid.getShape();
+        int rank = grid.getRank();
+        long data2D = 1;
+        for (int i=0; i<rank-2; i++)
+          data2D *= shape[i];
+        result += data2D;
       }
-      coordMap = (use == null) ? "" : "f:D(" + use.getRankDomain() + ")->R(" + use.getRankRange() + ")";
+      return result;
     }
 
-    public String getFeatureType() {
-      return ftype;
-    }
+    public void countGribData2D(File f) throws IOException {
+      String indexFilename = f.getPath() + CollectionAbstract.NCX_SUFFIX;
 
-    public String getFtMetadata() {
-      return (ftFromMetadata == null) ? "" : ftFromMetadata.toString();
-    }
+      FeatureCollectionConfig config = new FeatureCollectionConfig();
 
-    public String getFeatureImpl() {
-      return ftImpl;
-    }
+      try (GribCollection gc = GribCdmIndex.openCdmIndex(indexFilename, config, false, false, logger)) {
+        if (gc == null)
+          throw new IOException("Not a grib collection index file");
 
-    public String getCoverage() {
-      return isCoverage == null ? "" : isCoverage;
-    }
-
-    public void toString(Formatter f, boolean showInfo) {
-      f.format("%s%n %s%n map = '%s'%n %s%n %s%n", getName(), getFileType(), getCoordMap(), getFeatureType(), getFeatureImpl());
-      if (showInfo && info != null) {
-        f.format("%n%s", info);
-      }
-      if (problem != null) {
-        ByteArrayOutputStream bout = new ByteArrayOutputStream(10000);
-        problem.printStackTrace(new PrintStream(bout));
-        f.format("%n%s", bout.toString());
+        for (PartitionCollection.Dataset ds : gc.getDatasets())
+          for (GribCollection.GroupGC group : ds.getGroups())
+            for (GribCollection.VariableIndex vi : group.getVariables()) {
+              vi.calcTotalSize();
+              nrecords += vi.nrecords;
+              ndups += vi.ndups;
+              nvars++;
+            }
       }
     }
 
-    public String toString() {
-      Formatter f = new Formatter();
-      toString(f, true);
-      return f.toString();
-    }
+    public void countNc4Data2D(File f) {
+      String filename = f.getName();
 
-    public String runClassifier() {
-      Formatter ff = new Formatter();
-      String type = null;
-      try (NetcdfDataset ds = NetcdfDataset.openDataset(f.getPath())) {
-        type = CoverageCSFactory.describe(ff, ds);
+      String nc4Filename = "G:/write/"+filename+".3.grib.nc4";
+      File nc4 = new File(nc4Filename);
+      if (!nc4.exists()) return;
+      nc4Size = nc4.length();
 
-      } catch (IOException e) {
-        ByteArrayOutputStream bout = new ByteArrayOutputStream(10000);
-        problem.printStackTrace(new PrintStream(bout));
-        ff.format("%n%s", bout.toString());
-
+      try (NetcdfDataset ncd = NetcdfDataset.openDataset(nc4Filename)) {
+         nc4Data2D = countCdmData2D(ncd);
+       } catch (IOException e) {
+        System.out.printf("Error opening %s%n", nc4Filename);
       }
-      ff.format("CoverageCS.Type = %s", type);
-      return ff.toString();
     }
 
   }

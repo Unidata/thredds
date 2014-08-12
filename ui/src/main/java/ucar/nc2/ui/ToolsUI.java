@@ -1,34 +1,34 @@
 /*
- * Copyright 1998-2013 University Corporation for Atmospheric Research/Unidata
+ * Copyright 1998-2014 University Corporation for Atmospheric Research/Unidata
  *
- * Portions of this software were developed by the Unidata Program at the
- * University Corporation for Atmospheric Research.
+ *   Portions of this software were developed by the Unidata Program at the
+ *   University Corporation for Atmospheric Research.
  *
- * Access and use of this software shall impose the following obligations
- * and understandings on the user. The user is granted the right, without
- * any fee or cost, to use, copy, modify, alter, enhance and distribute
- * this software, and any derivative works thereof, and its supporting
- * documentation for any purpose whatsoever, provided that this entire
- * notice appears in all copies of the software, derivative works and
- * supporting documentation.  Further, UCAR requests that the user credit
- * UCAR/Unidata in any publications that result from the use of this
- * software or in any product that includes this software. The names UCAR
- * and/or Unidata, however, may not be used in any advertising or publicity
- * to endorse or promote any products or commercial entity unless specific
- * written permission is obtained from UCAR/Unidata. The user also
- * understands that UCAR/Unidata is not obligated to provide the user with
- * any support, consulting, training or assistance of any kind with regard
- * to the use, operation and performance of this software nor to provide
- * the user with any updates, revisions, new versions or "bug fixes."
+ *   Access and use of this software shall impose the following obligations
+ *   and understandings on the user. The user is granted the right, without
+ *   any fee or cost, to use, copy, modify, alter, enhance and distribute
+ *   this software, and any derivative works thereof, and its supporting
+ *   documentation for any purpose whatsoever, provided that this entire
+ *   notice appears in all copies of the software, derivative works and
+ *   supporting documentation.  Further, UCAR requests that the user credit
+ *   UCAR/Unidata in any publications that result from the use of this
+ *   software or in any product that includes this software. The names UCAR
+ *   and/or Unidata, however, may not be used in any advertising or publicity
+ *   to endorse or promote any products or commercial entity unless specific
+ *   written permission is obtained from UCAR/Unidata. The user also
+ *   understands that UCAR/Unidata is not obligated to provide the user with
+ *   any support, consulting, training or assistance of any kind with regard
+ *   to the use, operation and performance of this software nor to provide
+ *   the user with any updates, revisions, new versions or "bug fixes."
  *
- * THIS SOFTWARE IS PROVIDED BY UCAR/UNIDATA "AS IS" AND ANY EXPRESS OR
- * IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
- * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
- * DISCLAIMED. IN NO EVENT SHALL UCAR/UNIDATA BE LIABLE FOR ANY SPECIAL,
- * INDIRECT OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING
- * FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT,
- * NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
- * WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
+ *   THIS SOFTWARE IS PROVIDED BY UCAR/UNIDATA "AS IS" AND ANY EXPRESS OR
+ *   IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ *   WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ *   DISCLAIMED. IN NO EVENT SHALL UCAR/UNIDATA BE LIABLE FOR ANY SPECIAL,
+ *   INDIRECT OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING
+ *   FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT,
+ *   NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
+ *   WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
 package ucar.nc2.ui;
@@ -36,7 +36,6 @@ package ucar.nc2.ui;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 import thredds.featurecollection.FeatureCollectionConfig;
-import thredds.inventory.MController;
 import thredds.inventory.bdb.MetadataManager;
 import ucar.nc2.NCdumpW;
 import ucar.nc2.NetcdfFile;
@@ -1487,8 +1486,7 @@ public class ToolsUI extends JPanel {
       if (addCoordButton) {
         AbstractAction coordAction = new AbstractAction() {
           public void actionPerformed(ActionEvent e) {
-            Boolean state = (Boolean) getValue(BAMutil.STATE);
-            addCoords = state;
+            addCoords = (Boolean) getValue(BAMutil.STATE);
             String tooltip = addCoords ? "add Coordinates is ON" : "add Coordinates is OFF";
             coordButt.setToolTipText(tooltip);
             //doit( cb.getSelectedItem()); // called from cb action listener
@@ -2241,8 +2239,8 @@ public class ToolsUI extends JPanel {
 
   private class BufrTableBPanel extends OpPanel {
     BufrTableBViewer bufrTable;
-    JComboBox modes;
-    JComboBox tables;
+    JComboBox<BufrTables.Format> modes;
+    JComboBox<BufrTables.TableConfig> tables;
 
     BufrTableBPanel(PreferencesExt p) {
       super(p, "tableB:", false, false);
@@ -2258,7 +2256,7 @@ public class ToolsUI extends JPanel {
       BAMutil.setActionProperties(fileAction, "FileChooser", "open Local table...", false, 'L', -1);
       BAMutil.addActionToContainer(buttPanel, fileAction);
 
-      modes = new JComboBox(BufrTables.Format.values());
+      modes = new JComboBox<>(BufrTables.Format.values());
       buttPanel.add(modes);
 
       JButton accept = new JButton("Accept");
@@ -2269,7 +2267,7 @@ public class ToolsUI extends JPanel {
         }
       });
 
-      tables = new JComboBox(BufrTables.getTables().toArray());
+      tables = new JComboBox<>(BufrTables.getTableConfigsAsArray());
       buttPanel.add(tables);
       tables.addActionListener(new ActionListener() {
         public void actionPerformed(ActionEvent e) {
@@ -2340,8 +2338,8 @@ public class ToolsUI extends JPanel {
   /////////////////////////////////////////////////////////////////////
   private class BufrTableDPanel extends OpPanel {
     BufrTableDViewer bufrTable;
-    JComboBox modes;
-    JComboBox tables;
+    JComboBox<BufrTables.Format> modes;
+    JComboBox<BufrTables.TableConfig> tables;
 
     BufrTableDPanel(PreferencesExt p) {
       super(p, "tableD:", false, false);
@@ -2357,7 +2355,7 @@ public class ToolsUI extends JPanel {
       BAMutil.setActionProperties(fileAction, "FileChooser", "open Local table...", false, 'L', -1);
       BAMutil.addActionToContainer(buttPanel, fileAction);
 
-      modes = new JComboBox(BufrTables.Format.values());
+      modes = new JComboBox<>(BufrTables.Format.values());
       buttPanel.add(modes);
 
       JButton accept = new JButton("Accept");
@@ -2368,7 +2366,7 @@ public class ToolsUI extends JPanel {
         }
       });
 
-      tables = new JComboBox(BufrTables.getTables().toArray());
+      tables = new JComboBox<>(BufrTables.getTableConfigsAsArray());
       buttPanel.add(tables);
       tables.addActionListener(new ActionListener() {
         public void actionPerformed(ActionEvent e) {
@@ -3620,7 +3618,7 @@ public class ToolsUI extends JPanel {
       GribRewritePanel(PreferencesExt prefs) {
       super(prefs, "dir:", false, false);
       dirChooser = new FileManager(parentFrame, null, null, (PreferencesExt) prefs.node("FeatureScanFileManager"));
-      ftTable = new ucar.nc2.ui.GribRewritePanel(prefs);
+      ftTable = new ucar.nc2.ui.GribRewritePanel(prefs, buttPanel);
       add(ftTable, BorderLayout.CENTER);
       ftTable.addPropertyChangeListener(new java.beans.PropertyChangeListener() {
         public void propertyChange(java.beans.PropertyChangeEvent e) {
