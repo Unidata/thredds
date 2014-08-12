@@ -39,6 +39,9 @@ import java.io.*;
 import java.util.prefs.*;
 
 public class TestEvents extends TestCase {
+    static {
+        System.setProperty("java.util.prefs.PreferencesFactory", "ucar.util.prefs.PreferencesExtFactory");
+    }
 
   private boolean debug = false;
 
