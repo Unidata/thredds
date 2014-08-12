@@ -63,7 +63,7 @@ public class BoundingBoxHelper {
     ProjectionPoint ulpt = proj.latLonToProj(rect.getUpperLeftPoint(), new ProjectionPointImpl());
 
     // how many are bad?
-    List<ProjectionPoint> goodPts = new ArrayList<ProjectionPoint>(4);
+    List<ProjectionPoint> goodPts = new ArrayList<>(4);
     int countBad = 0;
     if (!addGoodPts(goodPts, llpt))
       countBad++;
