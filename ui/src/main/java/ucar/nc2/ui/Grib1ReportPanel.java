@@ -1,33 +1,34 @@
 /*
- * Copyright (c) 1998 - 2011. University Corporation for Atmospheric Research/Unidata
- * Portions of this software were developed by the Unidata Program at the
- * University Corporation for Atmospheric Research.
+ * Copyright 1998-2014 University Corporation for Atmospheric Research/Unidata
  *
- * Access and use of this software shall impose the following obligations
- * and understandings on the user. The user is granted the right, without
- * any fee or cost, to use, copy, modify, alter, enhance and distribute
- * this software, and any derivative works thereof, and its supporting
- * documentation for any purpose whatsoever, provided that this entire
- * notice appears in all copies of the software, derivative works and
- * supporting documentation.  Further, UCAR requests that the user credit
- * UCAR/Unidata in any publications that result from the use of this
- * software or in any product that includes this software. The names UCAR
- * and/or Unidata, however, may not be used in any advertising or publicity
- * to endorse or promote any products or commercial entity unless specific
- * written permission is obtained from UCAR/Unidata. The user also
- * understands that UCAR/Unidata is not obligated to provide the user with
- * any support, consulting, training or assistance of any kind with regard
- * to the use, operation and performance of this software nor to provide
- * the user with any updates, revisions, new versions or "bug fixes."
+ *   Portions of this software were developed by the Unidata Program at the
+ *   University Corporation for Atmospheric Research.
  *
- * THIS SOFTWARE IS PROVIDED BY UCAR/UNIDATA "AS IS" AND ANY EXPRESS OR
- * IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
- * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
- * DISCLAIMED. IN NO EVENT SHALL UCAR/UNIDATA BE LIABLE FOR ANY SPECIAL,
- * INDIRECT OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING
- * FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT,
- * NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
- * WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
+ *   Access and use of this software shall impose the following obligations
+ *   and understandings on the user. The user is granted the right, without
+ *   any fee or cost, to use, copy, modify, alter, enhance and distribute
+ *   this software, and any derivative works thereof, and its supporting
+ *   documentation for any purpose whatsoever, provided that this entire
+ *   notice appears in all copies of the software, derivative works and
+ *   supporting documentation.  Further, UCAR requests that the user credit
+ *   UCAR/Unidata in any publications that result from the use of this
+ *   software or in any product that includes this software. The names UCAR
+ *   and/or Unidata, however, may not be used in any advertising or publicity
+ *   to endorse or promote any products or commercial entity unless specific
+ *   written permission is obtained from UCAR/Unidata. The user also
+ *   understands that UCAR/Unidata is not obligated to provide the user with
+ *   any support, consulting, training or assistance of any kind with regard
+ *   to the use, operation and performance of this software nor to provide
+ *   the user with any updates, revisions, new versions or "bug fixes."
+ *
+ *   THIS SOFTWARE IS PROVIDED BY UCAR/UNIDATA "AS IS" AND ANY EXPRESS OR
+ *   IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ *   WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ *   DISCLAIMED. IN NO EVENT SHALL UCAR/UNIDATA BE LIABLE FOR ANY SPECIAL,
+ *   INDIRECT OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING
+ *   FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT,
+ *   NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
+ *   WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
 package ucar.nc2.ui;
@@ -53,7 +54,6 @@ import ucar.nc2.grib.grib1.tables.Grib1ParamTables;
 import ucar.unidata.io.RandomAccessFile;
 import ucar.util.prefs.PreferencesExt;
 
-import javax.swing.*;
 import java.io.*;
 import java.util.*;
 
@@ -428,8 +428,8 @@ public class Grib1ReportPanel extends ReportPanel {
   private void doRename(Formatter f, MCollection dcm, boolean useIndex) throws IOException {
     f.format("CHECK Grib-1 Names: Old vs New for collection %s%n", dcm.getCollectionName());
 
-    List<VarName> varNames = new ArrayList<VarName>(3000);
-    Map<String,List<String>> gridsAll = new HashMap<String,List<String>>(1000); // old -> list<new>
+    List<VarName> varNames = new ArrayList<>(3000);
+    Map<String,List<String>> gridsAll = new HashMap<>(1000); // old -> list<new>
 
     for (MFile mfile : dcm.getFilesSorted()) {
       f.format("%n%s%n", mfile.getPath());
@@ -457,7 +457,7 @@ public class Grib1ReportPanel extends ReportPanel {
       }
 
       f.format("%n");
-      List<GridMatch> listNew = new ArrayList<GridMatch>(gridsNew.values());
+      List<GridMatch> listNew = new ArrayList<>(gridsNew.values());
       Collections.sort(listNew);
       for (GridMatch gm : listNew) {
         f.format(" %s%n", gm.grid.getFullName());
@@ -467,7 +467,7 @@ public class Grib1ReportPanel extends ReportPanel {
       }
 
       f.format("%nMISSING MATCHES IN NEW%n");
-      List<GridMatch> list = new ArrayList<GridMatch>(gridsNew.values());
+      List<GridMatch> list = new ArrayList<>(gridsNew.values());
       Collections.sort(list);
       for (GridMatch gm : list) {
         if (gm.match == null)
@@ -476,7 +476,7 @@ public class Grib1ReportPanel extends ReportPanel {
 
 
       f.format("%nMISSING MATCHES IN OLD%n");
-      List<GridMatch> listOld = new ArrayList<GridMatch>(gridsOld.values());
+      List<GridMatch> listOld = new ArrayList<>(gridsOld.values());
       Collections.sort(listOld);
       for (GridMatch gm : listOld) {
         if (gm.match == null)
@@ -488,7 +488,7 @@ public class Grib1ReportPanel extends ReportPanel {
          String key = gmOld.grid.getFullName();
          List<String> newGrids = gridsAll.get(key);
          if (newGrids == null) {
-           newGrids = new ArrayList<String>();
+           newGrids = new ArrayList<>();
            gridsAll.put(key, newGrids);
          }
          if (gmOld.match != null) {
@@ -511,7 +511,7 @@ public class Grib1ReportPanel extends ReportPanel {
     }
 
     f.format("%nOLD -> NEW MAPPINGS%n");
-    List<String> keys = new ArrayList<String>(gridsAll.keySet());
+    List<String> keys = new ArrayList<>(gridsAll.keySet());
     int total = keys.size();
     int dups = 0;
     Collections.sort(keys);
@@ -757,7 +757,7 @@ public class Grib1ReportPanel extends ReportPanel {
   }
 
   private Map<Integer,GridMatch> getGridsNew(MFile ff, Formatter f) throws IOException {
-    Map<Integer,GridMatch> grids = new HashMap<Integer,GridMatch>(100);
+    Map<Integer,GridMatch> grids = new HashMap<>(100);
     GridDataset ncfile = null;
     try {
       ncfile = GridDataset.open(ff.getPath());
@@ -776,7 +776,7 @@ public class Grib1ReportPanel extends ReportPanel {
   }
 
   private Map<Integer,GridMatch> getGridsOld(MFile ff, Formatter f) throws IOException {
-    Map<Integer,GridMatch> grids = new HashMap<Integer,GridMatch>(100);
+    Map<Integer,GridMatch> grids = new HashMap<>(100);
     NetcdfFile ncfile = null;
     try {
       ncfile = NetcdfFile.open(ff.getPath(), "ucar.nc2.iosp.grib.GribServiceProvider", -1, null, null);

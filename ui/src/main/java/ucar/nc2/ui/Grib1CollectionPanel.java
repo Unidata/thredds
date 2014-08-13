@@ -78,7 +78,6 @@ public class Grib1CollectionPanel extends JPanel {
 
   private TextHistoryPane infoPopup, infoPopup2, infoPopup3;
   private IndependentWindow infoWindow, infoWindow2, infoWindow3;
-  private FileManager fileChooser;
   private Grib1Customizer cust = null;
   //private Grib1Rectilyser rect = null;
 
