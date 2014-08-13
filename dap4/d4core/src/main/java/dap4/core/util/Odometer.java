@@ -112,7 +112,7 @@ public class Odometer implements Iterator<Long>
                 slices[i].finish();
                 this.indices[i] = this.slices[i].getFirst();
                 this.endpoint[i] = this.slices[i].getLast() - this.slices[i].getStride();
-            } catch (DapException de) {/*ignore*/}
+            } catch (DapException de) {throw new IllegalArgumentException(de);}
             if(usecontiguous)
                 this.indices[this.rank - 1] = 0;
         }
@@ -144,7 +144,6 @@ public class Odometer implements Iterator<Long>
     index()
     {
         long offset = 0;
-        int stop = this.rank - contiguousdelta;
         for(int i = 0; i < this.rank; i++) {
             offset *= slices[i].getMaxSize();
             offset += this.indices[i];

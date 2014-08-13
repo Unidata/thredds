@@ -16,8 +16,9 @@ public class D4DataDataset extends AbstractData implements DataDataset
     //////////////////////////////////////////////////
     // Instance variables
 
-    D4DSP dsp = null;
-    List<D4DataVariable> variables = new ArrayList<D4DataVariable>();
+    //Coverity[FB.URF_UNREAD_FIELD]
+    protected D4DSP dsp = null;
+    protected List<D4DataVariable> variables = new ArrayList<D4DataVariable>();
 
     //////////////////////////////////////////////////
     // Constructors

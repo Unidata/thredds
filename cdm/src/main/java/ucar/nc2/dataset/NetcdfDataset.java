@@ -1806,7 +1806,7 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
     return new NetcdfDatasetInfo(this);
   } */
 
-  void dumpClasses(Group g, PrintStream out) {
+  void dumpClasses(Group g, PrintWriter out) {
 
     out.println("Dimensions:");
     for (Dimension ds : g.getDimensions()) {
@@ -1828,7 +1828,7 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
     }
   }
 
-  private void dumpVariables(List<Variable> vars, PrintStream out) {
+  private void dumpVariables(List<Variable> vars, PrintWriter out) {
     for (Variable v : vars) {
       out.print("  " + v.getFullName() + " " + v.getClass().getName()); // +" "+Integer.toHexString(v.hashCode()));
       if (v instanceof CoordinateAxis)
@@ -1847,7 +1847,7 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
    * @param out write here
    * @param ncd info about this
    */
-  public static void debugDump(PrintStream out, NetcdfDataset ncd) {
+  public static void debugDump(PrintWriter out, NetcdfDataset ncd) {
     String referencedLocation = ncd.orgFile == null ? "(null)" : ncd.orgFile.getLocation();
     out.println("\nNetcdfDataset dump = " + ncd.getLocation() + " url= " + referencedLocation + "\n");
     ncd.dumpClasses(ncd.getRootGroup(), out);

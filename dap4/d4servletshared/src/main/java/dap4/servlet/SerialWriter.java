@@ -128,9 +128,7 @@ public class SerialWriter
     {
         AtomicType atomtype = vtype.getPrimitiveType();
         int total = (int) AtomicType.getSize(atomtype);
-        ByteBuffer buf = null;
-        if(atomtype.isFixedSize())
-            buf = ByteBuffer.allocate(total).order(order);
+        ByteBuffer buf = ByteBuffer.allocate(total).order(order);
         switch (atomtype) {
         case Char:
             byte b = (byte) (0xFFL & (long) ((Character) value).charValue());
@@ -205,9 +203,7 @@ public class SerialWriter
         AtomicType atomtype = vtype.getPrimitiveType();
         int count = Array.getLength(values);
         int total = (int) AtomicType.getSize(atomtype) * count;
-        ByteBuffer buf = null;
-        if(atomtype.isFixedSize())
-            buf = ByteBuffer.allocate(total).order(order);
+        ByteBuffer buf = ByteBuffer.allocate(total).order(order);
         switch (atomtype) {
         case Char:
             char[] datac = (char[]) values;
@@ -275,9 +271,8 @@ public class SerialWriter
             // Pass 1: get total size
             total = 0;
             int size = 0;
-            ByteBuffer opaquedata = null;
             for(int i = 0; i < datao.length; i++) {
-                opaquedata = datao[i];
+                ByteBuffer opaquedata = datao[i];
                 // the data may be at an offset in the buffer
                 size = opaquedata.remaining(); // should be limit - pos
                 total += (size + COUNTSIZE);
@@ -285,7 +280,7 @@ public class SerialWriter
             buf = ByteBuffer.allocate(total).order(order);
             // Pass 2: write the opaque elements
             for(int i = 0; i < datao.length; i++) {
-                opaquedata = datao[i];
+                ByteBuffer opaquedata = datao[i];
                 size = opaquedata.remaining(); // should be limit - pos
                 buf.putLong(size);
                 int savepos = opaquedata.position();
@@ -399,7 +394,7 @@ public class SerialWriter
         int len = longbuffer.position();
         output.write(countbuf, 0, len);
         if(DEBUG) {
-            System.err.printf("count: %d\n", count);
+            System.err.printf("count: %d%n", count);
         }
     }
 
@@ -413,7 +408,6 @@ public class SerialWriter
     writeArray(DapType daptype, Object values)
             throws IOException
     {
-        int count = Array.getLength(values);
         ByteBuffer buf = encodeArray(daptype, values);
         byte[] bytes = buf.array();
         int len = buf.position();

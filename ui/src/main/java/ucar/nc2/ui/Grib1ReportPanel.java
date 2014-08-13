@@ -1,33 +1,34 @@
 /*
- * Copyright (c) 1998 - 2011. University Corporation for Atmospheric Research/Unidata
- * Portions of this software were developed by the Unidata Program at the
- * University Corporation for Atmospheric Research.
+ * Copyright 1998-2014 University Corporation for Atmospheric Research/Unidata
  *
- * Access and use of this software shall impose the following obligations
- * and understandings on the user. The user is granted the right, without
- * any fee or cost, to use, copy, modify, alter, enhance and distribute
- * this software, and any derivative works thereof, and its supporting
- * documentation for any purpose whatsoever, provided that this entire
- * notice appears in all copies of the software, derivative works and
- * supporting documentation.  Further, UCAR requests that the user credit
- * UCAR/Unidata in any publications that result from the use of this
- * software or in any product that includes this software. The names UCAR
- * and/or Unidata, however, may not be used in any advertising or publicity
- * to endorse or promote any products or commercial entity unless specific
- * written permission is obtained from UCAR/Unidata. The user also
- * understands that UCAR/Unidata is not obligated to provide the user with
- * any support, consulting, training or assistance of any kind with regard
- * to the use, operation and performance of this software nor to provide
- * the user with any updates, revisions, new versions or "bug fixes."
+ *   Portions of this software were developed by the Unidata Program at the
+ *   University Corporation for Atmospheric Research.
  *
- * THIS SOFTWARE IS PROVIDED BY UCAR/UNIDATA "AS IS" AND ANY EXPRESS OR
- * IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
- * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
- * DISCLAIMED. IN NO EVENT SHALL UCAR/UNIDATA BE LIABLE FOR ANY SPECIAL,
- * INDIRECT OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING
- * FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT,
- * NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
- * WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
+ *   Access and use of this software shall impose the following obligations
+ *   and understandings on the user. The user is granted the right, without
+ *   any fee or cost, to use, copy, modify, alter, enhance and distribute
+ *   this software, and any derivative works thereof, and its supporting
+ *   documentation for any purpose whatsoever, provided that this entire
+ *   notice appears in all copies of the software, derivative works and
+ *   supporting documentation.  Further, UCAR requests that the user credit
+ *   UCAR/Unidata in any publications that result from the use of this
+ *   software or in any product that includes this software. The names UCAR
+ *   and/or Unidata, however, may not be used in any advertising or publicity
+ *   to endorse or promote any products or commercial entity unless specific
+ *   written permission is obtained from UCAR/Unidata. The user also
+ *   understands that UCAR/Unidata is not obligated to provide the user with
+ *   any support, consulting, training or assistance of any kind with regard
+ *   to the use, operation and performance of this software nor to provide
+ *   the user with any updates, revisions, new versions or "bug fixes."
+ *
+ *   THIS SOFTWARE IS PROVIDED BY UCAR/UNIDATA "AS IS" AND ANY EXPRESS OR
+ *   IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ *   WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ *   DISCLAIMED. IN NO EVENT SHALL UCAR/UNIDATA BE LIABLE FOR ANY SPECIAL,
+ *   INDIRECT OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING
+ *   FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT,
+ *   NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
+ *   WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
 package ucar.nc2.ui;
@@ -53,7 +54,6 @@ import ucar.nc2.grib.grib1.tables.Grib1ParamTables;
 import ucar.unidata.io.RandomAccessFile;
 import ucar.util.prefs.PreferencesExt;
 
-import javax.swing.*;
 import java.io.*;
 import java.util.*;
 
@@ -129,9 +129,7 @@ public class Grib1ReportPanel extends ReportPanel {
     int nonop = 0;
     int total = 0;
 
-    GridDataset ncfile = null;
-    try {
-      ncfile = GridDataset.open(ff.getPath());
+    try (GridDataset ncfile = GridDataset.open(ff.getPath())) {
       Attribute gatt = ncfile.findGlobalAttributeIgnoreCase("GRIB table");
       if (gatt != null) {
         String[] s = gatt.getStringValue().split("-");
@@ -151,9 +149,8 @@ public class Grib1ReportPanel extends ReportPanel {
         }
 
       }
-    } finally {
-      if (ncfile != null) ncfile.close();
     }
+
     fm.format("total=%d local = %d miss=%d %n", total, local, miss);
     accum[0] += total;
     accum[1] += nonop;
@@ -183,9 +180,8 @@ public class Grib1ReportPanel extends ReportPanel {
 
   private void doCheckTables(Formatter fm, MFile ff, boolean useIndex, CounterS tableSet, Counter local, Counter missing) throws IOException {
     String path = ff.getPath();
-    RandomAccessFile raf = null;
-    try {
-      raf = new ucar.unidata.io.RandomAccessFile(path, "r");
+    try (RandomAccessFile raf= new ucar.unidata.io.RandomAccessFile(path, "r")) {
+
       raf.order(ucar.unidata.io.RandomAccessFile.BIG_ENDIAN);
       raf.seek(0);
 
@@ -210,8 +206,6 @@ public class Grib1ReportPanel extends ReportPanel {
       System.out.printf("Failed on %s%n", path);
       ioe.printStackTrace();
 
-    } finally {
-      if (raf != null) raf.close();
     }
   }
 
@@ -263,9 +257,7 @@ public class Grib1ReportPanel extends ReportPanel {
     boolean showPredefined = true;
     boolean showVert = true;
     String path = ff.getPath();
-    RandomAccessFile raf = null;
-    try {
-      raf = new ucar.unidata.io.RandomAccessFile(path, "r");
+    try (RandomAccessFile raf= new ucar.unidata.io.RandomAccessFile(path, "r")) {
       raf.order(ucar.unidata.io.RandomAccessFile.BIG_ENDIAN);
       raf.seek(0);
 
@@ -301,9 +293,6 @@ public class Grib1ReportPanel extends ReportPanel {
       fm.format("Failed on %s == %s%n", path, ioe.getMessage());
       System.out.printf("Failed on %s%n", path);
       ioe.printStackTrace();
-
-    } finally {
-      if (raf != null) raf.close();
     }
   }
 
@@ -311,18 +300,26 @@ public class Grib1ReportPanel extends ReportPanel {
 
   private void doShowEncoding(Formatter f, MCollection dcm, boolean useIndex) throws IOException {
     Counter decimals = new Counter("decimalScale");
+    Counter binScale = new Counter("binScale");
     Counter nbits = new Counter("nbits");
-    Counter refVal = new Counter("refVal");
+    Counter gridType = new Counter("gridType");
+    Counter packing = new Counter("packing");
+    Counter dataType = new Counter("dataType");
+    Counter hasMore = new Counter("hasMore");
 
     for (MFile mfile : dcm.getFilesSorted()) {
       f.format(" %s%n", mfile.getPath());
       //if (useIndex) doShowEncodingIndex(f, mfile, decimals); else doShowEncoding(f, mfile, decimals);
-      doShowEncoding(f, mfile, decimals, nbits, refVal);
+      doShowEncoding(f, mfile, decimals, binScale, nbits, gridType, packing, dataType, hasMore);
     }
 
     decimals.show(f);
+    binScale.show(f);
     nbits.show(f);
-    refVal.show(f);
+    gridType.show(f);
+    packing.show(f);
+    dataType.show(f);
+    hasMore.show(f);
   }
 
   /* private void doShowEncodingIndex(Formatter fm, MFile ff, Counter decimals) throws IOException {
@@ -339,35 +336,32 @@ public class Grib1ReportPanel extends ReportPanel {
     }
   } */
 
-  private void doShowEncoding(Formatter fm, MFile ff, Counter decimals, Counter nbits, Counter refVal) throws IOException {
+  private void doShowEncoding(Formatter fm, MFile ff, Counter decimals, Counter binScale, Counter nbits, Counter gridType, Counter packing, Counter dataType, Counter hasMore) throws IOException {
     String path = ff.getPath();
-    RandomAccessFile raf = null;
-    try {
-      raf = new ucar.unidata.io.RandomAccessFile(path, "r");
+    try (RandomAccessFile raf= new ucar.unidata.io.RandomAccessFile(path, "r")) {
       raf.order(ucar.unidata.io.RandomAccessFile.BIG_ENDIAN);
       raf.seek(0);
 
       Grib1RecordScanner reader = new Grib1RecordScanner(raf);
       while (reader.hasNext()) {
         ucar.nc2.grib.grib1.Grib1Record gr = reader.next();
-        //Grib1SectionGridDefinition gdss = gr.getGDSsection();
-        //String key = pds.getCenter() + "-" + pds.getSubCenter() + "-" + pds.getTableVersion(); // for CounterS
 
         Grib1SectionProductDefinition pds = gr.getPDSsection();
         decimals.count(pds.getDecimalScale());
-        double scale = Math.pow(10, pds.getDecimalScale());
-        Grib1SectionBinaryData data = gr.getDataSection();
-        nbits.count(data.getNBits(raf));
-        refVal.count((int) (scale * data.getRefValue(raf)));
+        Grib1SectionBinaryData dataSection = gr.getDataSection();
+        Grib1SectionBinaryData.BinaryDataInfo info = dataSection.getBinaryDataInfo(raf);
+        binScale.count(info.binscale);
+        nbits.count(info.numbits);
+        gridType.count(info.getGridPoint());
+        packing.count(info.getPacking());
+        dataType.count(info.getDataType());
+        hasMore.count(info.hasMore() ? 1 : 0);
       }
 
     } catch (Throwable ioe) {
       fm.format("Failed on %s == %s%n", path, ioe.getMessage());
       System.out.printf("Failed on %s%n", path);
       ioe.printStackTrace();
-
-    } finally {
-      if (raf != null) raf.close();
     }
   }
 
@@ -384,16 +378,14 @@ public class Grib1ReportPanel extends ReportPanel {
     for (MFile mfile : dcm.getFilesSorted()) {
       f.format("%n%s%n", mfile.getPath());
 
-      NetcdfFile ncfileOld = null;
-      GridDataset gdsNew = null;
-      try {
-        ncfileOld = NetcdfFile.open(mfile.getPath(), "ucar.nc2.iosp.grib.GribServiceProvider", -1, null, null);
+      try (NetcdfFile ncfileOld = NetcdfFile.open(mfile.getPath(), "ucar.nc2.iosp.grib.GribServiceProvider", -1, null, null)) {
         NetcdfDataset ncdOld = new NetcdfDataset(ncfileOld);
         GridDataset gridOld = new GridDataset(ncdOld);
-        gdsNew = GridDataset.open(mfile.getPath());
 
-        for (GridDatatype grid : gridOld.getGrids()) {
-          // if (useIndex) {
+        try (GridDataset gdsNew = GridDataset.open(mfile.getPath())){
+
+          for (GridDatatype grid : gridOld.getGrids()) {
+            // if (useIndex) {
             List<String> newNames = renamer.matchNcepNames(gdsNew, grid.getShortName());
             if (newNames.size() == 0) {
               f.format(" ***FAIL %s%n", grid.getShortName());
@@ -420,13 +412,11 @@ public class Grib1ReportPanel extends ReportPanel {
             GridDatatype ggrid = gdsNew.findGridByName(newName);
             if (ggrid == null) f.format(" ***Grid %s new name = %s not found%n", grid.getShortName(), newName);
           } */
+          }
         }
 
       } catch (Throwable t) {
         t.printStackTrace();
-      } finally {
-        if (ncfileOld != null) ncfileOld.close();
-        if (gdsNew != null) gdsNew.close();
       }
     }
 
@@ -438,8 +428,8 @@ public class Grib1ReportPanel extends ReportPanel {
   private void doRename(Formatter f, MCollection dcm, boolean useIndex) throws IOException {
     f.format("CHECK Grib-1 Names: Old vs New for collection %s%n", dcm.getCollectionName());
 
-    List<VarName> varNames = new ArrayList<VarName>(3000);
-    Map<String,List<String>> gridsAll = new HashMap<String,List<String>>(1000); // old -> list<new>
+    List<VarName> varNames = new ArrayList<>(3000);
+    Map<String,List<String>> gridsAll = new HashMap<>(1000); // old -> list<new>
 
     for (MFile mfile : dcm.getFilesSorted()) {
       f.format("%n%s%n", mfile.getPath());
@@ -467,7 +457,7 @@ public class Grib1ReportPanel extends ReportPanel {
       }
 
       f.format("%n");
-      List<GridMatch> listNew = new ArrayList<GridMatch>(gridsNew.values());
+      List<GridMatch> listNew = new ArrayList<>(gridsNew.values());
       Collections.sort(listNew);
       for (GridMatch gm : listNew) {
         f.format(" %s%n", gm.grid.getFullName());
@@ -477,7 +467,7 @@ public class Grib1ReportPanel extends ReportPanel {
       }
 
       f.format("%nMISSING MATCHES IN NEW%n");
-      List<GridMatch> list = new ArrayList<GridMatch>(gridsNew.values());
+      List<GridMatch> list = new ArrayList<>(gridsNew.values());
       Collections.sort(list);
       for (GridMatch gm : list) {
         if (gm.match == null)
@@ -486,7 +476,7 @@ public class Grib1ReportPanel extends ReportPanel {
 
 
       f.format("%nMISSING MATCHES IN OLD%n");
-      List<GridMatch> listOld = new ArrayList<GridMatch>(gridsOld.values());
+      List<GridMatch> listOld = new ArrayList<>(gridsOld.values());
       Collections.sort(listOld);
       for (GridMatch gm : listOld) {
         if (gm.match == null)
@@ -498,7 +488,7 @@ public class Grib1ReportPanel extends ReportPanel {
          String key = gmOld.grid.getFullName();
          List<String> newGrids = gridsAll.get(key);
          if (newGrids == null) {
-           newGrids = new ArrayList<String>();
+           newGrids = new ArrayList<>();
            gridsAll.put(key, newGrids);
          }
          if (gmOld.match != null) {
@@ -521,7 +511,7 @@ public class Grib1ReportPanel extends ReportPanel {
     }
 
     f.format("%nOLD -> NEW MAPPINGS%n");
-    List<String> keys = new ArrayList<String>(gridsAll.keySet());
+    List<String> keys = new ArrayList<>(gridsAll.keySet());
     int total = keys.size();
     int dups = 0;
     Collections.sort(keys);
@@ -767,7 +757,7 @@ public class Grib1ReportPanel extends ReportPanel {
   }
 
   private Map<Integer,GridMatch> getGridsNew(MFile ff, Formatter f) throws IOException {
-    Map<Integer,GridMatch> grids = new HashMap<Integer,GridMatch>(100);
+    Map<Integer,GridMatch> grids = new HashMap<>(100);
     GridDataset ncfile = null;
     try {
       ncfile = GridDataset.open(ff.getPath());
@@ -786,7 +776,7 @@ public class Grib1ReportPanel extends ReportPanel {
   }
 
   private Map<Integer,GridMatch> getGridsOld(MFile ff, Formatter f) throws IOException {
-    Map<Integer,GridMatch> grids = new HashMap<Integer,GridMatch>(100);
+    Map<Integer,GridMatch> grids = new HashMap<>(100);
     NetcdfFile ncfile = null;
     try {
       ncfile = NetcdfFile.open(ff.getPath(), "ucar.nc2.iosp.grib.GribServiceProvider", -1, null, null);

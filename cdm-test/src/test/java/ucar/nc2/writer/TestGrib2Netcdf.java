@@ -49,12 +49,13 @@ import java.util.Formatter;
  * @since 8/4/2014
  */
 public class TestGrib2Netcdf {
-  static String dirOut = "G:/write/";
+  static String dirOut;
+  static String csvOut;
   static PrintStream fw;
 
  static  void  writeHeader() throws FileNotFoundException {
     File outDir = new File(dirOut);
-    fw = new PrintStream(new File(outDir, "results3.grib.csv"));
+    fw = new PrintStream(new File(outDir, csvOut));
     fw.printf("file, sizeIn(MB), type, shuffle, deflate, sizeOut(MB), sizeOut/sizeIn, dataLen(MB), dataLen/sizeOut, time(secs) %n");
   }
 
@@ -145,7 +146,9 @@ public class TestGrib2Netcdf {
   static double total = 0;
 
 
-  public static void main(String[] args) throws IOException {
+  public static void main2(String[] args) throws IOException {
+    dirOut = "G:/write/";
+    csvOut = "results.grib.csv";
     writeHeader();
 
     try {
@@ -159,13 +162,15 @@ public class TestGrib2Netcdf {
   }
 
 
-  public static void main2(String[] args) throws IOException {
+  public static void main(String[] args) throws IOException {
+    dirOut = "G:/write2/";
+    csvOut = "results2.grib.csv";
     writeHeader();
 
     try {
-      ChunkGribAct act = new ChunkGribAct();
+      DeflateByLevelAct act = new DeflateByLevelAct();
       // act.doAct("Q:/cdmUnitTest/tds/ncep/NAM_CONUS_12km_conduit_20140804_0000.grib2");
-      act.doAct("Q:/cdmUnitTest/tds/ncep/RTMA_CONUS_2p5km_20111221_0800.grib2");
+      act.doAct("Q:\\cdmUnitTest\\tds\\ncep\\GFS_Puerto_Rico_0p5deg_20140106_1800.grib2");
 
       System.out.printf("%n%n%10.3f Mbytes%n", total);
 

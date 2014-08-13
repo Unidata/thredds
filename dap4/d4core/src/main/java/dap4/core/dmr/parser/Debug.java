@@ -5,6 +5,8 @@ package dap4.core.dmr.parser;
 
 import dap4.core.util.Escape;
 
+import java.util.Map;
+
 import static dap4.core.dmr.parser.ParseUtil.DEFAULTFLAGS;
 import static dap4.core.dmr.parser.ParseUtil.MAXTEXT;
 
@@ -130,15 +132,17 @@ public abstract class Debug
     static String
     traceList(Dap4Actions.XMLAttributeMap map)
     {
-        String result = "";
-        for(String key : map.keySet()) {
-            SaxEvent event = map.get(key);
+        StringBuilder result = new StringBuilder();
+        for(Map.Entry<String,SaxEvent> entry : map.entrySet()) {
+            SaxEvent event = entry.getValue();
             String trace = trace(event);
             if(result.length() != 0)
-                result += "\n";
-            result = result + key + ": " + trace;
+                result.append("\n");
+            result.append(entry.getKey());
+            result.append(": ");
+            result.append(trace);
         }
-        return result;
+        return result.toString();
     }
 
 

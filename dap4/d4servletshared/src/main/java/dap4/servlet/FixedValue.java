@@ -44,16 +44,6 @@ public class FixedValue extends Value
     };
 
     //////////////////////////////////////////////////
-
-    protected int intindex = 0;
-    protected int longindex = 0;
-    protected int doubleindex = 0;
-    protected int charindex = 0;
-    protected int opaqueindex = 0;
-    protected int stringindex = 0;
-    protected int urlindex = 0;
-
-    //////////////////////////////////////////////////
     // Constructors
 
     public FixedValue()
@@ -73,8 +63,6 @@ public class FixedValue extends Value
         throws DapException
     {
         AtomicType atomtype = basetype.getAtomicType();
-        boolean unsigned = atomtype.isUnsigned();
-        long typebits = 8 * Dap4Util.daptypeSize(atomtype);
         switch (atomtype) {
         case Int8:
         case UInt8:
@@ -84,7 +72,7 @@ public class FixedValue extends Value
         case UInt32:
         case Int64:
         case UInt64:
-	    return null;
+	        return null;
 
         case Float32:
         case Float64:

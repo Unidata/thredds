@@ -8,15 +8,14 @@ import dap4.core.util.DapException;
 import dap4.core.util.DapSort;
 
 import java.math.BigInteger;
-import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.*;
 
 /**
-The role of this class is as follows:
-1. Define the abstract action procedures
-2. Define useful common constants
-3. Define useful common utility procedures
-*/
+ * The role of this class is as follows:
+ * 1. Define the abstract action procedures
+ * 2. Define useful common constants
+ * 3. Define useful common utility procedures
+ */
 
 abstract public class Dap4Actions extends Dap4EventHandler
 {
@@ -62,7 +61,9 @@ abstract public class Dap4Actions extends Dap4EventHandler
     //////////////////////////////////////////////////
     // Constructor(s)
 
-    public Dap4Actions() {}
+    public Dap4Actions()
+    {
+    }
 
     ///////////////////////////////////////////////////
     // Node creation
@@ -70,7 +71,7 @@ abstract public class Dap4Actions extends Dap4EventHandler
     DapNode newNode(DapSort sort)
         throws ParseException
     {
-	    return newNode(null,sort);
+        return newNode(null, sort);
     }
 
     abstract DapNode newNode(String name, DapSort sort) throws ParseException;
@@ -89,10 +90,9 @@ abstract public class Dap4Actions extends Dap4EventHandler
     xml_attribute_map(XMLAttributeMap map, SaxEvent token)
         throws DapException
     {
-        assert (map != null);
-        if(token != null)
-            if(map.containsKey(token.name))
-                throw new DapException("XML attribute: duplicate xml attribute: " + token.name);
+        assert (map != null && token != null);
+        if(map.containsKey(token.name))
+            throw new DapException("XML attribute: duplicate xml attribute: " + token.name);
         map.put(token.name.toLowerCase(), token);
         return map;
     }
@@ -139,8 +139,8 @@ abstract public class Dap4Actions extends Dap4EventHandler
             element.addElement(node);
         } else
             throw new DapException("XMLElement: unknown parent type");
-        for(String key : map.keySet()) {
-            SaxEvent att = map.get(key);
+        for(Map.Entry<String,SaxEvent> entry : map.entrySet()) {
+            SaxEvent att = entry.getValue();
             DapXML a = (DapXML) newNode(att.name, DapSort.XML);
             a.setNodeType(DapXML.NodeType.ATTRIBUTE);
             a.addXMLAttribute(a);
@@ -152,39 +152,73 @@ abstract public class Dap4Actions extends Dap4EventHandler
     // Abstract (subclass defined) parser actions
 
     abstract void enterdataset(XMLAttributeMap attrs) throws ParseException;
+
     abstract void leavedataset() throws ParseException;
+
     abstract void entergroup(SaxEvent name) throws ParseException;
+
     abstract void leavegroup() throws ParseException;
+
     abstract void enterenumdef(XMLAttributeMap attrs) throws ParseException;
+
     abstract void leaveenumdef() throws ParseException;
+
     abstract void enumconst(SaxEvent name, SaxEvent value) throws ParseException;
+
     abstract void enterdimdef(XMLAttributeMap attrs) throws ParseException;
+
     abstract void leavedimdef() throws ParseException;
+
     abstract void dimref(SaxEvent nameorsize) throws ParseException;
+
     abstract void enteratomicvariable(SaxEvent open, SaxEvent nameattr) throws ParseException;
+
     abstract void leaveatomicvariable(SaxEvent close) throws ParseException;
+
     abstract void enterenumvariable(XMLAttributeMap attrs) throws ParseException;
+
     abstract void leaveenumvariable(SaxEvent close) throws ParseException;
+
     abstract void entermap(SaxEvent name) throws ParseException;
+
     abstract void leavemap() throws ParseException;
+
     abstract void enterstructurevariable(SaxEvent name) throws ParseException;
+
     abstract void leavestructurevariable(SaxEvent close) throws ParseException;
+
     abstract void entersequencevariable(SaxEvent name) throws ParseException;
+
     abstract void leavesequencevariable(SaxEvent close) throws ParseException;
+
     abstract void enteratomicattribute(XMLAttributeMap attrs, NamespaceList nslist) throws ParseException;
+
     abstract void leaveatomicattribute() throws ParseException;
+
     abstract void entercontainerattribute(XMLAttributeMap attrs, NamespaceList nslist) throws ParseException;
+
     abstract void leavecontainerattribute() throws ParseException;
+
     abstract void value(SaxEvent value) throws ParseException;
+
     abstract void enterotherxml(XMLAttributeMap attrs) throws ParseException;
+
     abstract void leaveotherxml() throws ParseException;
+
     abstract void enterxmlelement(SaxEvent open, XMLAttributeMap map) throws ParseException;
+
     abstract void leavexmlelement(SaxEvent close) throws ParseException;
+
     abstract void xmltext(SaxEvent text) throws ParseException;
+
     abstract void entererror(XMLAttributeMap attrs) throws ParseException;
+
     abstract void leaveerror() throws ParseException;
+
     abstract void errormessage(SaxEvent value) throws ParseException;
+
     abstract void errorcontext(SaxEvent value) throws ParseException;
+
     abstract void errorotherinfo(SaxEvent value) throws ParseException;
 
 

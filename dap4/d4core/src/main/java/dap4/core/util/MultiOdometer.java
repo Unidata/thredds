@@ -56,7 +56,7 @@ public class MultiOdometer extends Odometer
             PowerSet ps = new PowerSet(this.sizes);
             this.setindices = ps.getPowerSet();
             if(DEBUG) {
-                System.err.printf("Multi: |slicesets| = %d\n", setindices.length);
+                System.err.printf("Multi: |slicesets| = %d%n", setindices.length);
                 System.err.println(ps.toString());
             }
         }

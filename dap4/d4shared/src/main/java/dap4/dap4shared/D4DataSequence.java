@@ -35,6 +35,7 @@ public class D4DataSequence extends D4DataVariable implements DataSequence
     // Instance variables
 
     protected D4DataCompoundArray parent = null;
+    //Coverity[FB.URF_UNREAD_PUBLIC_OR_PROTECTED_FIELD]
     protected int index = 0;
     List<D4DataRecord> records = new ArrayList<D4DataRecord>();
 

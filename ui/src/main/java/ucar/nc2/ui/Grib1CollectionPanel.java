@@ -78,7 +78,6 @@ public class Grib1CollectionPanel extends JPanel {
 
   private TextHistoryPane infoPopup, infoPopup2, infoPopup3;
   private IndependentWindow infoWindow, infoWindow2, infoWindow3;
-  private FileManager fileChooser;
   private Grib1Customizer cust = null;
   //private Grib1Rectilyser rect = null;
 
@@ -124,10 +123,10 @@ public class Grib1CollectionPanel extends JPanel {
     });
     varPopup.addAction("Show processed PDS", new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
-        ParameterBean pb = (ParameterBean) param1BeanTable.getSelectedBean();
-        if (pb != null) {
+        ParameterBean pbean = (ParameterBean) param1BeanTable.getSelectedBean();
+        if (pbean != null) {
           Formatter f = new Formatter();
-          showProcessedPds(pb, f);
+          pbean.pds.showPds(cust, f);
           infoPopup3.setText(f.toString());
           infoPopup3.gotoTop();
           infoWindow3.show();
@@ -157,7 +156,8 @@ public class Grib1CollectionPanel extends JPanel {
         RecordBean bean = (RecordBean) record1BeanTable.getSelectedBean();
         if (bean != null) {
           Formatter f = new Formatter();
-          showCompleteRecord(bean, f);
+          String filename = fileList.get(bean.gr.getFile()).getPath();
+          showCompleteRecord(cust, bean.gr, filename, f);
           infoPopup3.setText(f.toString());
           infoPopup3.gotoTop();
           infoWindow3.show();
@@ -393,53 +393,11 @@ public class Grib1CollectionPanel extends JPanel {
     if (!h1.equals(h2))
       f.format("WMO headers differ %s != %s %n", h1, h2);
 
-
-    /* Grib2SectionIndicator is1 = bean1.gr.getIs();
-    Grib2SectionIndicator is2 = bean2.gr.getIs();
-    f.format("Indicator Section%n");
-    if (is1.getDiscipline() != is2.getDiscipline())
-      f.format("getDiscipline differs %d != %d %n", is1.getDiscipline(), is2.getDiscipline());
-    if (is1.getMessageLength() != is2.getMessageLength())
-      f.format("getGribLength differs %d != %d %n", is1.getMessageLength(), is2.getMessageLength());
-
-    f.format("%nId Section%n");
-    Grib2SectionIdentification id1 = bean1.gr.getId();
-    Grib2SectionIdentification id2 = bean2.gr.getId();
-    if (id1.getCenter_id() != id2.getCenter_id())
-      f.format("Center_id differs %d != %d %n", id1.getCenter_id(), id2.getCenter_id());
-    if (id1.getSubcenter_id() != id2.getSubcenter_id())
-      f.format("Subcenter_id differs %d != %d %n", id1.getSubcenter_id(), id2.getSubcenter_id());
-    if (id1.getMaster_table_version() != id2.getMaster_table_version())
-      f.format("Master_table_version differs %d != %d %n", id1.getMaster_table_version(), id2.getMaster_table_version());
-    if (id1.getLocal_table_version() != id2.getLocal_table_version())
-      f.format("Local_table_version differs %d != %d %n", id1.getLocal_table_version(), id2.getLocal_table_version());
-    if (id1.getProductionStatus() != id2.getProductionStatus())
-      f.format("ProductionStatus differs %d != %d %n", id1.getProductionStatus(), id2.getProductionStatus());
-    if (id1.getTypeOfProcessedData() != id2.getTypeOfProcessedData())
-      f.format("TypeOfProcessedData differs %d != %d %n", id1.getTypeOfProcessedData(), id2.getTypeOfProcessedData());
-    if (!id1.getReferenceDate().equals(id2.getReferenceDate()))
-      f.format("ReferenceDate differs %s != %s %n", id1.getReferenceDate(), id2.getReferenceDate());
-    if (id1.getSignificanceOfRT() != id2.getSignificanceOfRT())
-      f.format("getSignificanceOfRT differs %d != %d %n", id1.getSignificanceOfRT(), id2.getSignificanceOfRT());
-
-
-    Grib2SectionLocalUse lus1 = bean1.gr.getLocalUseSection();
-    Grib2SectionLocalUse lus2 = bean2.gr.getLocalUseSection();
-    if (lus1 == null || lus2 == null) {
-      if (lus1 == lus2)
-        f.format("%nLus are both null%n");
-      else
-        f.format("%nLus are different %s != %s %n", lus1, lus2);
-    } else {
-      f.format("%nCompare LocalUseSection%n");
-      Misc.compare(lus1.getRawBytes(), lus2.getRawBytes(), f);
-    }   */
-
     compare(bean1.gr.getPDSsection(), bean2.gr.getPDSsection(), f);
     compare(bean1.gr.getGDSsection(), bean2.gr.getGDSsection(), f);
   }
 
-  private void compare(Grib1SectionGridDefinition gdss1, Grib1SectionGridDefinition gdss2, Formatter f) {
+  static public void compare(Grib1SectionGridDefinition gdss1, Grib1SectionGridDefinition gdss2, Formatter f) {
     f.format("1 GribGDS hash = %s%n", gdss1.getGDS().hashCode());
     f.format("2 GribGDS hash = %s%n", gdss2.getGDS().hashCode());
     f.format("%nCompare Gds%n");
@@ -464,14 +422,14 @@ public class Grib1CollectionPanel extends JPanel {
     f.format(" Center lat diff : %f%n", pt1.getLatitude() - pt2.getLatitude());
   }
 
-  private void compare(Grib1SectionProductDefinition pds1, Grib1SectionProductDefinition pds2, Formatter f) {
+  static public void compare(Grib1SectionProductDefinition pds1, Grib1SectionProductDefinition pds2, Formatter f) {
     f.format("%nCompare Pds%n");
     byte[] raw1 = pds1.getRawBytes();
     byte[] raw2 = pds2.getRawBytes();
     Misc.compare(raw1, raw2, f);
   }
 
-  void compareData(RecordBean bean1, RecordBean bean2, Formatter f) {
+  private void compareData(RecordBean bean1, RecordBean bean2, Formatter f) {
     float[] data1 = null, data2 = null;
     try {
       data1 = bean1.readData();
@@ -484,7 +442,7 @@ public class Grib1CollectionPanel extends JPanel {
     Misc.compare(data1, data2, f);
   }
 
-  void showData(RecordBean bean1, Formatter f) {
+  private void showData(RecordBean bean1, Formatter f) {
     float[] data;
     try {
       data = bean1.readData();
@@ -635,9 +593,9 @@ public class Grib1CollectionPanel extends JPanel {
     gds1Table.setBeans(gdsList);
   }
 
-  // see ggr.cdmVariableHash() {
+  ////////////////////////////////////////////////////////////////
 
-  public int makeUniqueId(Grib1SectionProductDefinition pds) {
+  static public int makeUniqueId(Grib1SectionProductDefinition pds) {
     int result = 17;
     result += result * 37 + pds.getParameterNumber();
     result *= result * 37 + pds.getLevelType();
@@ -646,7 +604,7 @@ public class Grib1CollectionPanel extends JPanel {
     return result;
   }
 
-  private void showRawPds(Grib1SectionProductDefinition pds, Formatter f) {
+  static public void showRawPds(Grib1SectionProductDefinition pds, Formatter f) {
     byte[] raw = pds.getRawBytes();
     f.format("%n");
     for (int i = 0; i < raw.length; i++) {
@@ -654,7 +612,7 @@ public class Grib1CollectionPanel extends JPanel {
     }
   }
 
-  public void showRawGds(Grib1SectionGridDefinition gds, Formatter f) {
+  static public void showRawGds(Grib1SectionGridDefinition gds, Formatter f) {
     byte[] raw = gds.getRawBytes();
     f.format("%n");
     for (int i = 0; i < raw.length; i++) {
@@ -662,7 +620,32 @@ public class Grib1CollectionPanel extends JPanel {
     }
   }
 
-  public void showGds(Grib1SectionGridDefinition gdss, Grib1Gds gds, Formatter f) {
+  static public void showCompleteRecord(Grib1Customizer cust, Grib1Record gr, String filename, Formatter f) {
+    f.format("File = %s%n", filename);
+    f.format("Header = %s%n", new String(gr.getHeader()));
+    f.format("Total length of GRIB message = %d%n", gr.getIs().getMessageLength());
+    Grib1SectionProductDefinition pds = gr.getPDSsection();
+    f.format("PDS len=%d%n", pds.getLength());
+    pds.showPds(cust, f);
+    Grib1SectionGridDefinition gds = gr.getGDSsection();
+    f.format("%nGDS len=%d%n", gds.getLength());
+    showGds(gds, gds.getGDS(), f);
+    f.format("%nDataSection len=%d%n", gr.getDataSection().getLength());
+    f.format("   has bitmap=%s%n", pds.bmsExists());
+
+
+    if (filename != null) {
+      try (ucar.unidata.io.RandomAccessFile raf = new ucar.unidata.io.RandomAccessFile(filename, "r")) {
+        raf.order(ucar.unidata.io.RandomAccessFile.BIG_ENDIAN);
+        gr.showDataInfo(raf, f);
+      } catch (IOException e) {
+        e.printStackTrace();
+        logger.error("showDataRecord", e);
+      }
+    }
+  }
+
+  static public void showGds(Grib1SectionGridDefinition gdss, Grib1Gds gds, Formatter f) {
     f.format("Grib1SectionGridDefinition = %s", gdss);
     f.format("Grib1GDS hash = %s%n", gds.hashCode());
     f.format("Grib1GDS = %s", gds);
@@ -672,23 +655,6 @@ public class Grib1CollectionPanel extends JPanel {
     f.format("%n%nProjection %s%n", proj.getName());
     for (Parameter p : proj.getProjectionParameters())
       f.format("  %s == %s%n", p.getName(), p.getStringValue());
-  }
-
-  public void showCompleteRecord(RecordBean rbean, Formatter f) {
-    f.format("Header = %s%n", new String(rbean.gr.getHeader()));
-    f.format("Total length of GRIB message = %d%n", rbean.gr.getIs().getMessageLength());
-    f.format("file = %d %s%n", rbean.gr.getFile(), fileList.get(rbean.gr.getFile()).getPath());
-    f.format("PDS len=%d%n", rbean.pds.getLength());
-    rbean.pds.showPds(cust, f);
-    f.format("%nGDS len=%d%n", rbean.gds.getLength());
-    showGds(rbean.gds, rbean.gds.getGDS(), f);
-    f.format("%nDataSection len=%d%n", rbean.gr.getDataSection().getLength());
-    f.format("   has bitmap=%s%n", rbean.pds.bmsExists());
-    rbean.showDataRecord(f);
-  }
-
-  public void showProcessedPds(ParameterBean pbean, Formatter f) {
-    pbean.pds.showPds(cust, f);
   }
 
   //////////////////////////////////////////////////////////////////////////////
@@ -892,20 +858,6 @@ public class Grib1CollectionPanel extends JPanel {
         return gr.readData(raf);
       }
     }
-
-    void showDataRecord(Formatter f) {
-      int fileno = gr.getFile();
-      MFile mfile = fileList.get(fileno);
-      try (ucar.unidata.io.RandomAccessFile raf = new ucar.unidata.io.RandomAccessFile(mfile.getPath(), "r")) {
-        raf.order(ucar.unidata.io.RandomAccessFile.BIG_ENDIAN);
-        gr.showDataInfo(raf, f);
-      } catch (IOException e) {
-        e.printStackTrace();
-        logger.error("showDataRecord", e);
-      }
-    }
-
-
   }
 
   ////////////////////////////////////////////////////////////////////////////

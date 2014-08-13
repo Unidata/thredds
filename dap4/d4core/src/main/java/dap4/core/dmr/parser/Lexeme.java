@@ -47,13 +47,15 @@ public class Lexeme
 
     public String toString()
     {
-        String text = String.format("%s open=%d close=%d a=%d", name, open, close, atoken);
+        StringBuilder text = new StringBuilder();
+        text.append(String.format("%s open=%d close=%d a=%d", name, open, close, atoken));
         if(legalAttributes != null && legalAttributes.length > 0) {
-            text += " attributes=";
+            text.append(" attributes=");
             for(String s : legalAttributes) {
-                text += " " + s;
+                text.append(" ");
+                text.append(s);
             }
         }
-        return text;
+        return text.toString();
     }
 } // class Lexeme

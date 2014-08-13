@@ -1,39 +1,40 @@
 /*
- * Copyright 1998-2013 University Corporation for Atmospheric Research/Unidata
+ * Copyright 1998-2014 University Corporation for Atmospheric Research/Unidata
  *
- * Portions of this software were developed by the Unidata Program at the
- * University Corporation for Atmospheric Research.
+ *   Portions of this software were developed by the Unidata Program at the
+ *   University Corporation for Atmospheric Research.
  *
- * Access and use of this software shall impose the following obligations
- * and understandings on the user. The user is granted the right, without
- * any fee or cost, to use, copy, modify, alter, enhance and distribute
- * this software, and any derivative works thereof, and its supporting
- * documentation for any purpose whatsoever, provided that this entire
- * notice appears in all copies of the software, derivative works and
- * supporting documentation.  Further, UCAR requests that the user credit
- * UCAR/Unidata in any publications that result from the use of this
- * software or in any product that includes this software. The names UCAR
- * and/or Unidata, however, may not be used in any advertising or publicity
- * to endorse or promote any products or commercial entity unless specific
- * written permission is obtained from UCAR/Unidata. The user also
- * understands that UCAR/Unidata is not obligated to provide the user with
- * any support, consulting, training or assistance of any kind with regard
- * to the use, operation and performance of this software nor to provide
- * the user with any updates, revisions, new versions or "bug fixes."
+ *   Access and use of this software shall impose the following obligations
+ *   and understandings on the user. The user is granted the right, without
+ *   any fee or cost, to use, copy, modify, alter, enhance and distribute
+ *   this software, and any derivative works thereof, and its supporting
+ *   documentation for any purpose whatsoever, provided that this entire
+ *   notice appears in all copies of the software, derivative works and
+ *   supporting documentation.  Further, UCAR requests that the user credit
+ *   UCAR/Unidata in any publications that result from the use of this
+ *   software or in any product that includes this software. The names UCAR
+ *   and/or Unidata, however, may not be used in any advertising or publicity
+ *   to endorse or promote any products or commercial entity unless specific
+ *   written permission is obtained from UCAR/Unidata. The user also
+ *   understands that UCAR/Unidata is not obligated to provide the user with
+ *   any support, consulting, training or assistance of any kind with regard
+ *   to the use, operation and performance of this software nor to provide
+ *   the user with any updates, revisions, new versions or "bug fixes."
  *
- * THIS SOFTWARE IS PROVIDED BY UCAR/UNIDATA "AS IS" AND ANY EXPRESS OR
- * IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
- * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
- * DISCLAIMED. IN NO EVENT SHALL UCAR/UNIDATA BE LIABLE FOR ANY SPECIAL,
- * INDIRECT OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING
- * FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT,
- * NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
- * WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
+ *   THIS SOFTWARE IS PROVIDED BY UCAR/UNIDATA "AS IS" AND ANY EXPRESS OR
+ *   IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ *   WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ *   DISCLAIMED. IN NO EVENT SHALL UCAR/UNIDATA BE LIABLE FOR ANY SPECIAL,
+ *   INDIRECT OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING
+ *   FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT,
+ *   NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
+ *   WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
 package ucar.nc2.ui;
 
 import ucar.httpservices.*;
+import ucar.nc2.constants.CDM;
 import ucar.nc2.ui.event.ActionValueEvent;
 import ucar.nc2.ui.event.ActionValueListener;
 import ucar.nc2.ui.widget.BAMutil;
@@ -78,7 +79,7 @@ public class WmsViewer extends JPanel {
   private BeanTable ftTable;
 
   private JSplitPane split;
-  private StringBuilder info = new StringBuilder();
+  private Formatter info = new Formatter();
 
   public WmsViewer(PreferencesExt prefs, RootPaneContainer root) {
     this.prefs = prefs;
@@ -164,6 +165,7 @@ public class WmsViewer extends JPanel {
 
   public void save() {
     ftTable.saveState(false);
+    if (split != null) prefs.putInt("splitPos", split.getDividerLocation());
   }
 
   private BufferedImage currImage = null;
@@ -196,20 +198,18 @@ public class WmsViewer extends JPanel {
       f.format("%s?request=GetCapabilities&service=WMS&version=%s", endpoint, version);
     System.out.printf("getCapabilities request = '%s'%n", f);
     String url = f.toString();
-    info.setLength(0);
-    info.append(url + "\n");
+    info = new Formatter();
+    info.format("%s%n",url);
 
-    HTTPSession session = null;
-    HTTPMethod method = null;
-    try {
-      session = HTTPFactory.newSession(url);
+    HTTPMethod method;
+    try (HTTPSession session = HTTPFactory.newSession(url)) {
       method = HTTPFactory.Get(session);
       int statusCode = method.execute();
 
-      info.append(" Status = " + method.getStatusCode() + " " + method.getStatusText() + "\n");
-      info.append(" Status Line = " + method.getStatusLine() + "\n");
-      printHeaders(" Response Headers = ", method.getResponseHeaders());
-      info.append("GetCapabilities:\n\n");
+      info.format(" Status = %d %s%n",method.getStatusCode(),method.getStatusText());
+      info.format(" Status Line = %s%n", method.getStatusLine());
+      printHeaders(" Response Headers", method.getResponseHeaders());
+      info.format("GetCapabilities:%n%n");
 
       if (statusCode == 404)
         throw new FileNotFoundException(method.getPath() + " " + method.getStatusLine());
@@ -223,12 +223,10 @@ public class WmsViewer extends JPanel {
       parseGetCapabilities(root);
 
     } catch (Exception e) {
-      info.append(e.getMessage());
-      JOptionPane.showMessageDialog(this, "Failed "+e.getMessage());
+      info.format("%s%n", e.getMessage());
+      JOptionPane.showMessageDialog(this, "Failed " + e.getMessage());
       return false;
 
-    } finally {
-      if (session != null) session.close();
     }
 
     return true;
@@ -239,7 +237,7 @@ public class WmsViewer extends JPanel {
     Element capElem = root.getChild("Capability", wmsNamespace);
     Element layer1Elem = capElem.getChild("Layer", wmsNamespace);
 
-    java.util.List<String> crsList = new ArrayList<String>(100);
+    java.util.List<String> crsList = new ArrayList<>(100);
     java.util.List<Element> crs = layer1Elem.getChildren("CRS", wmsNamespace);
     for (Element crsElem : crs) {
       crsList.add(crsElem.getText());
@@ -248,14 +246,14 @@ public class WmsViewer extends JPanel {
 
     Element reqElem = capElem.getChild("Request", wmsNamespace);
     Element mapElem = reqElem.getChild("GetMap", wmsNamespace);
-    java.util.List<String> formatList = new ArrayList<String>(100);
+    java.util.List<String> formatList = new ArrayList<>(100);
     java.util.List<Element> formats = mapElem.getChildren("Format", wmsNamespace);
     for (Element formatElem : formats) {
       formatList.add(formatElem.getText());
     }
     formatChooser.setCollection(formatList.iterator());
 
-    java.util.List<LayerBean> beans = new ArrayList<LayerBean>(100);
+    java.util.List<LayerBean> beans = new ArrayList<>(100);
     Element layer2Elem = layer1Elem.getChild("Layer", wmsNamespace);
     java.util.List<Element> layers = layer2Elem.getChildren("Layer", wmsNamespace);
     for (Element layer3Elem : layers) {
@@ -279,19 +277,16 @@ public class WmsViewer extends JPanel {
     if (layer.hasLevel)
       f.format("elevation=%s&", levelChooser.getSelectedObject());
     String url = f.toString();
-    info.setLength(0);
-    info.append(url + "\n");
+    info.format("%s%n", url);
 
-    HTTPSession session = null;
-    HTTPMethod method = null;
-    try {
-      session = HTTPFactory.newSession(url);
+    HTTPMethod method;
+    try (HTTPSession session = HTTPFactory.newSession(url)) {
       method = HTTPFactory.Get(session);
       int statusCode = method.execute();
 
-      info.append(" Status = " + method.getStatusCode() + " " + method.getStatusText() + "\n");
-      info.append(" Status Line = " + method.getStatusLine() + "\n");
-      printHeaders(" Response Headers = ", method.getResponseHeaders());
+      info.format(" Status = %d %s%n", method.getStatusCode(), method.getStatusText());
+      info.format(" Status Line = %s%n", method.getStatusLine());
+      printHeaders(" Response Headers", method.getResponseHeaders());
 
       if (statusCode == 404)
         throw new FileNotFoundException(method.getPath() + " " + method.getStatusLine());
@@ -301,11 +296,11 @@ public class WmsViewer extends JPanel {
 
       Header h = method.getResponseHeader("Content-Type");
       String mimeType = (h == null) ? "" : h.getValue();
-      info.append(" mimeType = " + mimeType + "\n");
+      info.format(" mimeType = %s%n" ,mimeType);
 
       try (InputStream isFromHttp = method.getResponseBodyAsStream()) {
         byte[] contents = IO.readContentsToByteArray(isFromHttp);
-        info.append(" content len = " + contents.length + "\n");
+        info.format(" content len = %s%n", contents.length);
 
         ByteArrayInputStream is = new ByteArrayInputStream(contents);
 
@@ -313,7 +308,7 @@ public class WmsViewer extends JPanel {
         showImage(img);
 
         if (img == null) {
-          info.append("getMap:\n\n");
+          info.format("getMap:%n%n");
           if (mimeType.equals("application/vnd.google-earth.kmz")) {
             File temp = File.createTempFile("Temp", ".kmz");
             // File temp = new File("C:/temp/temp.kmz");
@@ -324,7 +319,7 @@ public class WmsViewer extends JPanel {
             Enumeration entries = zfile.entries();
             while (entries.hasMoreElements()) {
               ZipEntry entry = (ZipEntry) entries.nextElement();
-              info.append(" entry=" + entry + "\n");
+              info.format(" entry= %s%n", entry);
               if (entry.getName().endsWith(".kml")) {
                 try (InputStream kml = zfile.getInputStream(entry)) {
                   contents = IO.readContentsToByteArray(kml);
@@ -334,12 +329,12 @@ public class WmsViewer extends JPanel {
           }
 
           if (contents != null)
-            info.append(new String(contents) + "\n");
+            info.format("%s%n", new String(contents, CDM.utf8Charset));
         }
       }
 
-    } catch (Exception e) {
-      info.append(e.getMessage());
+    } catch (IOException e) {
+      info.format("%s%n", e.getMessage());
       JOptionPane.showMessageDialog(this, "Failed "+e.getMessage());
       return false;
     }
@@ -349,12 +344,11 @@ public class WmsViewer extends JPanel {
 
 
   private void printHeaders(String title, Header[] heads) {
-    info.append(title + "\n");
-    for (int i = 0; i < heads.length; i++) {
-      Header head = heads[i];
-      info.append("  " + head.toString());
+    info.format("%s%n", title);
+    for (Header head : heads) {
+      info.format("%s ", head.toString());
     }
-    info.append("\n");
+    info.format("%n");
   }
 
   ///////////////////////////////////////////////////////////////////////////////////
@@ -370,9 +364,9 @@ public class WmsViewer extends JPanel {
 
     boolean hasTime, hasLevel;
 
-    java.util.List<String> styles = new ArrayList<String>();
-    java.util.List<String> levels = new ArrayList<String>();
-    java.util.List<String> times = new ArrayList<String>();
+    java.util.List<String> styles = new ArrayList<>();
+    java.util.List<String> levels = new ArrayList<>();
+    java.util.List<String> times = new ArrayList<>();
 
     // no-arg constructor
     public LayerBean() {
@@ -389,12 +383,12 @@ public class WmsViewer extends JPanel {
       this.miny = bbElem.getAttributeValue("miny");
       this.maxy = bbElem.getAttributeValue("maxy");
 
-      for (Element elem : (java.util.List<Element>) layer3Elem.getChildren("Style", wmsNamespace)) {
+      for (Element elem : layer3Elem.getChildren("Style", wmsNamespace)) {
         Element nameElem = elem.getChild("Name", wmsNamespace);
         styles.add(nameElem.getText());
       }
 
-      for (Element elem : (java.util.List<Element>) layer3Elem.getChildren("Dimension", wmsNamespace)) {
+      for (Element elem : layer3Elem.getChildren("Dimension", wmsNamespace)) {
         String name = elem.getAttributeValue("name");
         if (name.equals("time")) {
           String[] st = elem.getText().split(",");
@@ -415,8 +409,8 @@ public class WmsViewer extends JPanel {
     }
 
     java.util.List<String> getVals(Element parent, String name) {
-      java.util.List<String> result = new ArrayList<String>(10);
-      for (Element elem : (java.util.List<Element>) parent.getChildren(name, wmsNamespace)) {
+      java.util.List<String> result = new ArrayList<>(10);
+      for (Element elem : parent.getChildren(name, wmsNamespace)) {
         result.add(elem.getText());
       }
       return result;

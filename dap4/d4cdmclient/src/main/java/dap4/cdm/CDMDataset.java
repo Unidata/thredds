@@ -27,11 +27,7 @@ public class CDMDataset
     // Constants
 
     /////////////////////////////////////////////////////
-    // Instance databuffer for dataset subparts
-    // Fields are "friended" (i.e. directly accessed)
-    // by CDMArrayStructure class
 
-    protected NodeMap nodemap;
     protected Map<CDMNode, Array> arraymap = new HashMap<CDMNode, Array>();
 
     //////////////////////////////////////////////////

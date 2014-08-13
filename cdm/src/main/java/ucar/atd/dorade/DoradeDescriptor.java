@@ -32,6 +32,8 @@
  */
 package ucar.atd.dorade;
 
+import ucar.nc2.time.CalendarDateFormatter;
+
 import java.io.RandomAccessFile;
 import java.io.ByteArrayInputStream;
 import java.io.DataInputStream;
@@ -357,9 +359,7 @@ abstract class DoradeDescriptor {
    * @return a string containing the representation of the date
    */
   public static String formatDate(Date date) {
-    SimpleDateFormat df = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss.SSS z");
-    df.setTimeZone(TZ_UTC);
-    return df.format(date);
+    return CalendarDateFormatter.toDateTimeString(date);
   }
 
   /**

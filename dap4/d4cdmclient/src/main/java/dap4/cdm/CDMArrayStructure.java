@@ -154,7 +154,7 @@ public class CDMArrayStructure extends ArrayStructure implements CDMArray
     void addField(int index, StructureMembers.Member m, Array instance)
     {
         int mindex = memberIndex(m);
-        addField(index, m, instance);
+        addField(index, mindex, instance);
     }
 
     void addField(long recno, int mindex, Array instance)
@@ -221,8 +221,8 @@ public class CDMArrayStructure extends ArrayStructure implements CDMArray
     @Override
     public StructureData getStructureData(int index)
     {
-        if(super.sdata == null
-                || index < 0 || index >= this.dimsize)
+        assert(super.sdata != null);
+        if(index < 0 || index >= this.dimsize)
             throw new IllegalArgumentException(index + " >= " + super.sdata.length);
         assert (super.sdata[index] != null);
         return super.sdata[index];

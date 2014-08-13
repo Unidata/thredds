@@ -47,12 +47,11 @@ import ucar.nc2.ui.widget.BAMutil;
 import ucar.nc2.ui.widget.IndependentWindow;
 import ucar.nc2.ui.widget.PopupMenu;
 import ucar.nc2.ui.widget.TextHistoryPane;
+import ucar.unidata.util.StringUtil2;
 import ucar.util.prefs.PreferencesExt;
 import ucar.util.prefs.ui.BeanTable;
 
 import javax.swing.*;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.io.File;
@@ -103,7 +102,7 @@ public class GribRewritePanel extends JPanel {
       public void actionPerformed(ActionEvent e) {
         FileBean ftb = (FileBean) ftTable.getSelectedBean();
         if (ftb == null) return;
-        GribRewritePanel.this.firePropertyChange("openNetcdfFile", null, ftb.f.getPath());
+        GribRewritePanel.this.firePropertyChange("openNetcdfFile", null, ftb.getPath());
       }
     });
     
@@ -111,7 +110,23 @@ public class GribRewritePanel extends JPanel {
       public void actionPerformed(ActionEvent e) {
         FileBean ftb = (FileBean) ftTable.getSelectedBean();
         if (ftb == null) return;
-        GribRewritePanel.this.firePropertyChange("openGridDataset", null, ftb.f.getPath());
+        GribRewritePanel.this.firePropertyChange("openGridDataset", null, ftb.getPath());
+      }
+    });
+
+    varPopup.addAction("Open in Grib2Data", new AbstractAction() {
+      public void actionPerformed(ActionEvent e) {
+        FileBean ftb = (FileBean) ftTable.getSelectedBean();
+        if (ftb == null) return;
+        GribRewritePanel.this.firePropertyChange("openGrib2Data", null, ftb.getPath());
+      }
+    });
+
+    varPopup.addAction("Open in Grib1Data", new AbstractAction() {
+      public void actionPerformed(ActionEvent e) {
+        FileBean ftb = (FileBean) ftTable.getSelectedBean();
+        if (ftb == null) return;
+        GribRewritePanel.this.firePropertyChange("openGrib1Data", null, ftb.getPath());
       }
     });
 
@@ -183,6 +198,16 @@ public class GribRewritePanel extends JPanel {
   }
 
   private void calcAverage() {
+    Formatter f = new Formatter();
+    calcAverage(null, f);
+    calcAverage("grib1", f);
+    calcAverage("grib2", f);
+
+    dumpTA.setText(f.toString());
+    dumpTA.gotoTop();
+  }
+  
+  private void calcAverage(String what, Formatter f) {
 
     double totalRecords = 0.0;
     double ratio = 0.0;
@@ -190,16 +215,17 @@ public class GribRewritePanel extends JPanel {
     for (FileBean bean : beans) {
       if (bean.getNdups() > 0) continue;
       if (bean.getRatio() == 0) continue;
-      if (bean.getName().contains("GEFS")) continue; // LOOK
+      if (what != null && (!bean.getPath().contains(what))) continue;
       totalRecords += bean.getNrecords();
       ratio += bean.getNrecords() * bean.getRatio();
     }
 
     double weightedAvg =  ratio / totalRecords;
-    dumpTA.setText("Weighted average ratio ="+weightedAvg);
-    dumpTA.gotoTop();
+    if (what != null) f.format("%n%s%n", what);
+    f.format("Weighted average ratio = %f%n", weightedAvg);
+    f.format("Total # grib records = %f%n", totalRecords);
   }
-  
+
   ///////////////
   
   public java.util.List<FileBean> scan(String top, Formatter errlog) {
@@ -300,7 +326,7 @@ public class GribRewritePanel extends JPanel {
   private static final boolean debug = true;
 
   public class FileBean {
-    public File f;
+    private File f;
     String fileType;
     long cdmData2D, nc4Data2D, nc4Size;
     int nrecords, nvars, ndups;
@@ -312,8 +338,8 @@ public class GribRewritePanel extends JPanel {
     public FileBean(File f) throws IOException {
       this.f = f;
 
-      if (debug) System.out.printf(" fileScan=%s%n", f.getPath());
-      try (NetcdfDataset ncd = NetcdfDataset.openDataset(f.getPath())) {
+      if (debug) System.out.printf(" fileScan=%s%n", getPath());
+      try (NetcdfDataset ncd = NetcdfDataset.openDataset(getPath())) {
         fileType = ncd.getFileTypeId();
         cdmData2D = countCdmData2D(ncd);
         countGribData2D(f);
@@ -321,8 +347,9 @@ public class GribRewritePanel extends JPanel {
       }
     }
 
-    public String getName() {
-      return f.getPath();
+    public String getPath() {
+      String p = f.getPath();
+      return StringUtil2.replace(p, "\\", "/");
     }
 
     public String getFileType() {

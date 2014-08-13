@@ -70,9 +70,9 @@ public class SynDSP extends D4DSP
         // Read the .dmr/.syn file
         String document;
         try {
-            FileInputStream stream = new FileInputStream(path);
-            document = DapUtil.readtextfile(stream);
-            stream.close();
+            try (FileInputStream stream = new FileInputStream(path);) {
+                document = DapUtil.readtextfile(stream);
+            }
         } catch (IOException ioe) {
             throw new DapException(ioe);
         }
@@ -93,7 +93,7 @@ public class SynDSP extends D4DSP
             ByteArrayInputStream bis = new ByteArrayInputStream(raw);
             ChunkInputStream crdr = new ChunkInputStream(bis,RequestMode.DAP, getOrder());
             // Skip the dmr
-            String dmr2 = crdr.readDMR();
+            crdr.readDMR();
             this.raw = DapUtil.readbinaryfile(crdr);
             super.build(dmr, this.raw, getOrder());
             return this;

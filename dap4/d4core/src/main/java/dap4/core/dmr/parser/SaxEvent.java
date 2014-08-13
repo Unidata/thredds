@@ -18,8 +18,8 @@ public class SaxEvent
     public String value = null; // for attributes
     public String text = null;  // for text
 
-    public String publicid = null;
-    public String systemid = null;
+    //public String publicid = null;
+    //public String systemid = null;
 
     public Locator locator = null;
 
@@ -49,25 +49,26 @@ public class SaxEvent
 
     public String toString()
     {
-        String text = "";
+        StringBuilder text = new StringBuilder();
         if(eventtype == null)
-            text += "notype";
+            text.append("notype");
         else
-            text += eventtype.toString();
-        text += " ";
+            text.append(eventtype.toString());
+        text.append(" ");
         if(fullname != null)
-            text += fullname;
+            text.append(fullname);
         else if(name != null)
-            text += name;
-        else text += "noname";
-        if(value != null)
-            text += " = "+value;
-        if(this.text != null)
-            text += " = "+this.text;
-        switch (eventtype) {
-        default:
+            text.append(name);
+        else text.append("noname");
+        if(value != null) {
+            text.append(" = ");
+            text.append(value);
         }
-        return text;
+        if(this.text != null) {
+            text.append(" = ");
+            text.append(this.text);
+        }
+        return text.toString();
     }
 
 } // class SaxEvent

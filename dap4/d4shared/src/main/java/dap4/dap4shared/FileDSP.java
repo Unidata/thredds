@@ -22,7 +22,7 @@ public class FileDSP extends D4DSP
     //////////////////////////////////////////////////
     // Instance variables
 
-    //Coverity(FB.URF_UNREAD_PUBLIC_OR_PROTECTED_FIELD)
+    //Coverity[FB.URF_UNREAD_PUBLIC_OR_PROTECTED_FIELD]
     protected byte[] raw = null; // Complete serialized binary databuffer
 
     //////////////////////////////////////////////////
@@ -72,13 +72,14 @@ public class FileDSP extends D4DSP
             XURI xuri = new XURI(path);
             if(xuri.getProtocols().size() > 0)
                 filepath = xuri.getPath();
-            //Coverity(RESOURCE_LEAK)
             FileInputStream stream = new FileInputStream(filepath);
             this.raw = DapUtil.readbinaryfile(stream);
+            stream.close();
             stream = new FileInputStream(filepath); // == rewind
             ChunkInputStream rdr = new ChunkInputStream(stream, RequestMode.DAP);
             String document = rdr.readDMR();
             byte[] serialdata = DapUtil.readbinaryfile(rdr);
+            stream.close();
             super.build(document, serialdata, rdr.getByteOrder());
             return this;
         } catch (URISyntaxException use) {

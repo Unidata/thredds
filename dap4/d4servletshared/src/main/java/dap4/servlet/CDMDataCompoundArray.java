@@ -30,7 +30,6 @@ public class CDMDataCompoundArray extends AbstractDataVariable implements DataCo
     protected CDMDSP dsp = null;
     protected Variable cdmvar = null;
     protected DapVariable template = null;
-    protected byte[] checksum = null;
     protected DataCompound[] instances = null;
     protected ArrayStructure array = null;
     protected int[] shape = null;

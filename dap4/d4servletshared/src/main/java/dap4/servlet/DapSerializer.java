@@ -126,7 +126,6 @@ public class DapSerializer
             DapAtomicVariable dapvar = (DapAtomicVariable) vv;
             DataAtomic dav = (DataAtomic) dv;
             DapType basetype = dapvar.getBaseType();
-            long esize = dav.getType().getSize();
             List<Slice> slices;
             ByteBuffer buf;
             if(dapvar.getRank() == 0) { // scalar

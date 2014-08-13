@@ -363,7 +363,8 @@ public class Doradeheader {
         nc.addAttribute(null, new Attribute("VolumeCoveragePatternName", mySweep.getScanMode(0).getName()));
         nc.addAttribute(null, new Attribute("Volume_Number", ""+mySweep.getVolumnNumber()));
         nc.addAttribute(null, new Attribute("Sweep_Number", ""+mySweep.getSweepNumber()));
-        nc.addAttribute(null, new Attribute("Sweep_Date", mySweep.getTime().toString()));
+        nc.addAttribute(null, new Attribute("Sweep_Date",
+                mySweep.formatDate(mySweep.getTime())));
         if(mySweep.sensorIsMoving(0) == true)
           nc.addAttribute(null, new Attribute("IsStationary", "0"));
         else

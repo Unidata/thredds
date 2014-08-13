@@ -50,7 +50,7 @@ public class Escape
     entityEscape(String s)
     {
         StringBuilder escaped = new StringBuilder();
-        for(int i = 0; i < s.length(); i++) {
+        for(int i = 0;i < s.length();i++) {
             char c = s.charAt(i);
             switch (c) {
             case '&':
@@ -98,7 +98,6 @@ public class Escape
         if(s == null) len = 0;
         else len = s.length();
         u = new StringBuilder();
-        if(u == null) return null;
         p = 0;
         q = 0;
         stop = (len);
@@ -110,7 +109,7 @@ public class Escape
             case '&': // see if this is a legitimate entity
                 entity.setLength(0);
                 // move forward looking for a semicolon;
-                for(found = true, count = 0; ; count++) {
+                for(found = true, count = 0;;count++) {
                     if(q + count >= len) break;
                     c = s.charAt(q + count);
                     if(c == ';')
@@ -159,7 +158,7 @@ public class Escape
         if(wrt == null)
             wrt = BACKSLASHESCAPE;
         StringBuilder escaped = new StringBuilder();
-        for(int i = 0; i < s.length(); i++) {
+        for(int i = 0;i < s.length();i++) {
             char c = s.charAt(i);
             if(c < ' ' || c == 127) {
                 escaped.append('\\');
@@ -195,7 +194,7 @@ public class Escape
     backslashUnescape(String s)
     {
         StringBuilder clear = new StringBuilder();
-        for(int i = 0; i < s.length(); ) {
+        for(int i = 0;i < s.length();) {
             char c = s.charAt(i++);
             if(c == '\\') {
                 c = s.charAt(i++);
@@ -256,30 +255,31 @@ public class Escape
 
     static public boolean isHexDigit(char c)
     {
-	return allhexchars.indexOf(c) >= 0;
+        return allhexchars.indexOf(c) >= 0;
     }
 
 
     static public String
     bytes2hex(byte[] bytes)
     {
-	int len = bytes.length;
-	StringBuilder buf = new StringBuilder(2+(len*2));
-	buf.append("0x");
-	for(int i=0;i<len;i++) {
-	    byte b = bytes[i];
+        int len = bytes.length;
+        StringBuilder buf = new StringBuilder(2 + (len * 2));
+        buf.append("0x");
+        for(int i = 0;i < len;i++) {
+            byte b = bytes[i];
             buf.append(hexchars.charAt((b >>> 4) & 0xF));
-	    buf.append(hexchars.charAt((i & 0xF)));
-	}
-	return buf.toString();
+            buf.append(hexchars.charAt((i & 0xF)));
+        }
+        return buf.toString();
     }
 
     static public String urlDecode(String s)
     {
-	try {
-	    s = URLDecoder.decode(s, "UTF8");
-	} catch (UnsupportedEncodingException uee) {}
-	return s;
+        try {
+            s = URLDecoder.decode(s, "UTF8");
+        } catch (UnsupportedEncodingException uee) {
+        }
+        return s;
     }
 
     // (Minimal?) Set of non-alphanum characters that need to be escaped in a query
@@ -290,16 +290,17 @@ public class Escape
     {
         if(s == null || s.length() == 0) return s;
         if(false) try {// Note that URLEncoder over encodes. For practical purposes,
-             // only a limited set of characters needs to be encoded
+            // only a limited set of characters needs to be encoded
             s = URLEncoder.encode(s, "UTF8");
-        } catch (UnsupportedEncodingException uee) {}
+        } catch (UnsupportedEncodingException uee) {
+        }
         else {
             StringBuilder buf = new StringBuilder();
-            for(int i=0;i<s.length();i++) {
+            for(int i = 0;i < s.length();i++) {
                 char c = s.charAt(i);
                 if(URLESCAPECHARS.indexOf(c) >= 0) {
                     buf.append("%");
-                    String encode = Integer.toHexString((int)c);
+                    String encode = Integer.toHexString((int) c);
                     if(encode.length() == 1) buf.append("0");
                     buf.append(encode);
                 } else

@@ -10,10 +10,6 @@ script:
     - cd ../udunits && mvn test -DskipTests=false -DfailIfNoTests=false
     - cd ../waterml && mvn test -DskipTests=false -DfailIfNoTests=false
 
-matrix:
-  allow_failures:
-    - jdk: oraclejdk8
-
 cache:
   directories:
     - $HOME/.m2

@@ -18,7 +18,7 @@ import java.util.*;
 
 public class CECompiler
 {
-    protected Stack<DapVariable> scopestack = null;
+    protected Deque<DapVariable> scopestack = null;
 
     protected DapDataset dataset = null;
 
@@ -36,7 +36,7 @@ public class CECompiler
         this.dataset = template;
         this.root = root;
         this.ce = new CEConstraint(this.dataset);
-        this.scopestack = new Stack<DapVariable>();
+        this.scopestack = new ArrayDeque<DapVariable>();
         compileAST(root);
         return this.ce;
     }
@@ -103,12 +103,11 @@ public class CECompiler
         if(parent == null) {
             // name must be fqn
             List<DapNode> matches = this.dataset.findByFQN(ast.name, EnumSet.of(DapSort.ATOMICVARIABLE, DapSort.SEQUENCE, DapSort.STRUCTURE));
+            if(matches == null || matches.size() == 0)
+                throw new DapException("Multiply defined variable name: " + ast.name);
             if(matches.size() > 1)
                 throw new DapException("Multiply defined variable name: " + ast.name);
-            if(matches.size() == 0)
-                throw new DapException("Undefined variable name: " + ast.name);
-            else
-                node = matches.get(0);
+            node = matches.get(0);
         } else if(parent.getSort() == DapSort.STRUCTURE) {
             DapStructure struct = (DapStructure) parent;
             node = struct.findByName(ast.name);

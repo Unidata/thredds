@@ -35,7 +35,6 @@ abstract public class D4DSP extends AbstractDSP
     // Instance variables
 
     protected D4DataDataset d4data = null; // root of the DataXXX tree
-    protected byte[] serialization = null;
     protected ByteBuffer databuffer = null;
     protected ByteOrder order = null;
     protected ChecksumMode checksummode = ChecksumMode.DAP;

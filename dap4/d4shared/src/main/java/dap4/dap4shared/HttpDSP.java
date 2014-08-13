@@ -102,6 +102,7 @@ public class HttpDSP extends D4DSP
         this.originalurl = url;
         // See if this is a local vs remote request
         setURL(url);
+        this.basece = this.xuri.getFields().get(CONSTRAINTTAG);
         build();
         return this;
 

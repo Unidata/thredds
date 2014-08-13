@@ -34,7 +34,6 @@ public class DapRequest
     protected HttpServletResponse response = null;
     protected String url = null;  // without any query  and as with any modified dataset path
     protected String servletpath = null;
-    protected String urlpath = null;  // everything after the authority
     protected String datasetpath = null;   // everything after the servletpath
     protected String querystring = null;
     protected String server = null; // scheme + host + port

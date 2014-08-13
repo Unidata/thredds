@@ -46,6 +46,7 @@ import ucar.unidata.io.RandomAccessFile;
 
 import java.io.IOException;
 import java.util.Formatter;
+import java.util.zip.CRC32;
 
 /**
  * The Product Definition Section for GRIB-1 files
@@ -435,6 +436,12 @@ public final class Grib1SectionProductDefinition {
       case 98: return getOctet(50);
     }
     return GribNumbers.UNDEFINED;
+  }
+
+  public long calcCRC() {
+    CRC32 crc32 = new CRC32();
+    crc32.update(rawData);
+    return crc32.getValue();
   }
 
 }

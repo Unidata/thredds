@@ -158,7 +158,6 @@ public class Grib1Record {
     return data;
   }
 
-  // isolate dependencies here - in case we have a "minimal I/O" mode where not all fields are available
   public void showDataInfo(RandomAccessFile raf, Formatter f) throws IOException {
     Grib1Gds gds = gdss.getGDS();
     f.format(" decimal scale = %d%n", pdss.getDecimalScale());
@@ -167,8 +166,19 @@ public class Grib1Record {
     f.format("            ny = %d%n", gds.getNy());
     f.format("          Npts = %d%n", gds.getNpts());
     f.format("        isThin = %s%n", gdss.isThin());
-    Grib1DataReader reader = new Grib1DataReader(pdss.getDecimalScale(), gds.getScanMode(), gds.getNx(), gds.getNy(), gds.getNpts(), dataSection.getStartingPosition());
-    reader.showDataInfo(raf, f);
+
+    Grib1SectionBinaryData.BinaryDataInfo info = dataSection.getBinaryDataInfo(raf);
+    f.format("   msgLength = %d%n", info.msgLength);
+
+    // octet 4, 1st half (packing flag)
+    f.format("    ----flag = %s%n", Long.toHexString(info.flag));
+    f.format("        data = %s%n", info.getGridPointS());
+    f.format("     packing = %s%n", info.getPackingS());
+    f.format("        type = %s%n", info.getDataTypeS());
+    f.format("        more = %s%n", info.hasMore());
+    f.format("scale factor = %d%n", info.binscale);
+    f.format("reference value = %f%n", info.refvalue);
+    f.format("      nbits = %d%n", info.numbits);
   }
 
   /**
