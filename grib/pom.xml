@@ -82,6 +82,12 @@
     </dependency>
 
     <dependency>
+	<groupId>edu.ucar</groupId>
+	<artifactId>jj2000</artifactId>
+        <version>5.2-SNAPSHOT</version>
+    </dependency>
+
+    <dependency>
       <groupId>edu.ucar</groupId>
       <artifactId>cdm</artifactId>
       <type>test-jar</type>

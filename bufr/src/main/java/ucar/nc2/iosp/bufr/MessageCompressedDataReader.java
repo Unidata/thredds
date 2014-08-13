@@ -155,7 +155,7 @@ public class MessageCompressedDataReader {
   }
 
   // manage the request
-  private class Request {
+  private static class Request {
     ArrayStructureMA ama; // data goes here, may be null
     HashMap<DataDescriptor, StructureMembers.Member> map; // map of DataDescriptor to members of ama, may be null
     Range r; // requested range
@@ -190,8 +190,6 @@ public class MessageCompressedDataReader {
         setIterators( (ArrayStructureMA) data);
 
       } else {
-        if (data == null)
-          System.out.println("HEY");
         int[] shape = data.getShape();
         if ((shape.length > 1) && (sm.getDataType() != DataType.CHAR)) {
           Array datap;
@@ -334,13 +332,11 @@ public class MessageCompressedDataReader {
 
       // all other fields
 
-      StructureMembers.Member member = null;
+      StructureMembers.Member member;
       IndexIterator iter = null;
       ArrayStructure dataDpi = null; // if iter is missing - for the dpi case
       if (req.map != null) {
         member = req.map.get(dkey);
-        if (member == null)
-          System.out.printf("HEY missing member %s%n", dkey);
         iter = (IndexIterator) member.getDataObject();
         if (iter == null) {
           //System.out.printf("HEY missing iter %s%n", dkey);
@@ -483,7 +479,7 @@ public class MessageCompressedDataReader {
       setIterators(ama);
 
       members = ama.getStructureMembers();
-      nmap = new HashMap<DataDescriptor, StructureMembers.Member>(2*members.getMembers().size());
+      nmap = new HashMap<>(2*members.getMembers().size());
       associateMessage2Members(members, seqdd, nmap);
     }
     Request nreq = new Request(ama, nmap, req.r);
@@ -500,11 +496,9 @@ public class MessageCompressedDataReader {
     // add ArraySequence to the ArrayObject in the outer structure
     if (req.map != null) {
       StructureMembers.Member m = req.map.get(seqdd);
-      if (m == null)
-        System.out.printf("HEY missing seq %s%n", seqdd);
       ArrayObject arrObj = (ArrayObject) m.getDataArray();
 
-      // we need to break ama into seperate sequences, one for each dataset
+      // we need to break ama into separate sequences, one for each dataset
       int start = 0;
       for (int i = 0; i < ndatasets; i++) {
         ArraySequence arrSeq = new ArraySequence(members, new SequenceIterator(start, count, ama), count);
@@ -516,7 +510,7 @@ public class MessageCompressedDataReader {
     return bitOffset;
   }
 
-  private class DpiTracker {
+  private static class DpiTracker {
     DataDescriptorTreeConstructor.DataPresentIndicator dpi;
     boolean[] isPresent;
     List<DataDescriptor> dpiDD = null;
@@ -532,7 +526,7 @@ public class MessageCompressedDataReader {
 
     DataDescriptor getDpiDD(int fldPresentIndex) {
       if (dpiDD == null) {
-        dpiDD = new ArrayList<DataDescriptor>();
+        dpiDD = new ArrayList<>();
         for (int i=0; i<isPresent.length; i++) {
           if (isPresent[i])
              dpiDD.add(dpi.linear.get(i));

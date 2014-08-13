@@ -32,7 +32,6 @@
 
 package ucar.nc2.grib.grib2;
 
-import ucar.jpeg.jj2000.j2k.NotImplementedError;
 import ucar.nc2.grib.GribNumbers;
 import ucar.ma2.Array;
 import ucar.ma2.DataType;
@@ -241,7 +240,7 @@ public abstract class Grib2Gds {
     int numOctetsPerNumber = getOctet(11);
     int octet12 = getOctet(12);
     if (octet12 != 1)
-      throw new NotImplementedError("Thin grid octet 12 =" + octet12);
+      throw new IllegalArgumentException("Thin grid octet 12 =" + octet12);
 
     int numPts = (nx > 0) ? nx : ny;
     int[] parallels = new int[numPts];
