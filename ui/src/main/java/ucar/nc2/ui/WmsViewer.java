@@ -34,6 +34,7 @@
 package ucar.nc2.ui;
 
 import ucar.httpservices.*;
+import ucar.nc2.constants.CDM;
 import ucar.nc2.ui.event.ActionValueEvent;
 import ucar.nc2.ui.event.ActionValueListener;
 import ucar.nc2.ui.widget.BAMutil;
@@ -78,7 +79,7 @@ public class WmsViewer extends JPanel {
   private BeanTable ftTable;
 
   private JSplitPane split;
-  private StringBuilder info = new StringBuilder();
+  private Formatter info = new Formatter();
 
   public WmsViewer(PreferencesExt prefs, RootPaneContainer root) {
     this.prefs = prefs;
@@ -196,8 +197,8 @@ public class WmsViewer extends JPanel {
       f.format("%s?request=GetCapabilities&service=WMS&version=%s", endpoint, version);
     System.out.printf("getCapabilities request = '%s'%n", f);
     String url = f.toString();
-    info.setLength(0);
-    info.append(url + "\n");
+    info = new Formatter();
+    info.format("%s%n",url);
 
     HTTPSession session = null;
     HTTPMethod method = null;
@@ -206,10 +207,10 @@ public class WmsViewer extends JPanel {
       method = HTTPFactory.Get(session);
       int statusCode = method.execute();
 
-      info.append(" Status = " + method.getStatusCode() + " " + method.getStatusText() + "\n");
-      info.append(" Status Line = " + method.getStatusLine() + "\n");
-      printHeaders(" Response Headers = ", method.getResponseHeaders());
-      info.append("GetCapabilities:\n\n");
+      info.format(" Status = %d %s%n",method.getStatusCode(),method.getStatusText());
+      info.format(" Status Line = %s%n", method.getStatusLine());
+      printHeaders(" Response Headers", method.getResponseHeaders());
+      info.format("GetCapabilities:%n%n");
 
       if (statusCode == 404)
         throw new FileNotFoundException(method.getPath() + " " + method.getStatusLine());
@@ -223,8 +224,8 @@ public class WmsViewer extends JPanel {
       parseGetCapabilities(root);
 
     } catch (Exception e) {
-      info.append(e.getMessage());
-      JOptionPane.showMessageDialog(this, "Failed "+e.getMessage());
+      info.format("%s%n", e.getMessage());
+      JOptionPane.showMessageDialog(this, "Failed " + e.getMessage());
       return false;
 
     } finally {
@@ -279,19 +280,16 @@ public class WmsViewer extends JPanel {
     if (layer.hasLevel)
       f.format("elevation=%s&", levelChooser.getSelectedObject());
     String url = f.toString();
-    info.setLength(0);
-    info.append(url + "\n");
+    info.format("%s%n", url);
 
-    HTTPSession session = null;
-    HTTPMethod method = null;
-    try {
-      session = HTTPFactory.newSession(url);
+    HTTPMethod method;
+    try (HTTPSession session = HTTPFactory.newSession(url)) {
       method = HTTPFactory.Get(session);
       int statusCode = method.execute();
 
-      info.append(" Status = " + method.getStatusCode() + " " + method.getStatusText() + "\n");
-      info.append(" Status Line = " + method.getStatusLine() + "\n");
-      printHeaders(" Response Headers = ", method.getResponseHeaders());
+      info.format(" Status = %d %s%n", method.getStatusCode(), method.getStatusText());
+      info.format(" Status Line = %s%n", method.getStatusLine());
+      printHeaders(" Response Headers", method.getResponseHeaders());
 
       if (statusCode == 404)
         throw new FileNotFoundException(method.getPath() + " " + method.getStatusLine());
@@ -301,11 +299,11 @@ public class WmsViewer extends JPanel {
 
       Header h = method.getResponseHeader("Content-Type");
       String mimeType = (h == null) ? "" : h.getValue();
-      info.append(" mimeType = " + mimeType + "\n");
+      info.format(" mimeType = %s%n" ,mimeType);
 
       try (InputStream isFromHttp = method.getResponseBodyAsStream()) {
         byte[] contents = IO.readContentsToByteArray(isFromHttp);
-        info.append(" content len = " + contents.length + "\n");
+        info.format(" content len = %s%n", contents.length);
 
         ByteArrayInputStream is = new ByteArrayInputStream(contents);
 
@@ -313,7 +311,7 @@ public class WmsViewer extends JPanel {
         showImage(img);
 
         if (img == null) {
-          info.append("getMap:\n\n");
+          info.format("getMap:%n%n");
           if (mimeType.equals("application/vnd.google-earth.kmz")) {
             File temp = File.createTempFile("Temp", ".kmz");
             // File temp = new File("C:/temp/temp.kmz");
@@ -324,7 +322,7 @@ public class WmsViewer extends JPanel {
             Enumeration entries = zfile.entries();
             while (entries.hasMoreElements()) {
               ZipEntry entry = (ZipEntry) entries.nextElement();
-              info.append(" entry=" + entry + "\n");
+              info.format(" entry= %s%n", entry);
               if (entry.getName().endsWith(".kml")) {
                 try (InputStream kml = zfile.getInputStream(entry)) {
                   contents = IO.readContentsToByteArray(kml);
@@ -334,12 +332,12 @@ public class WmsViewer extends JPanel {
           }
 
           if (contents != null)
-            info.append(new String(contents) + "\n");
+            info.format("%s%n", new String(contents, CDM.utf8Charset));
         }
       }
 
-    } catch (Exception e) {
-      info.append(e.getMessage());
+    } catch (IOException e) {
+      info.format("%s%n", e.getMessage());
       JOptionPane.showMessageDialog(this, "Failed "+e.getMessage());
       return false;
     }
@@ -349,12 +347,12 @@ public class WmsViewer extends JPanel {
 
 
   private void printHeaders(String title, Header[] heads) {
-    info.append(title + "\n");
+    info.format("%s%n", title);
     for (int i = 0; i < heads.length; i++) {
       Header head = heads[i];
-      info.append("  " + head.toString());
+      info.format("%s ", head.toString());
     }
-    info.append("\n");
+    info.format("%n");
   }
 
   ///////////////////////////////////////////////////////////////////////////////////

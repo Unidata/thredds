@@ -1824,9 +1824,9 @@ public class ToolsUI extends JPanel {
       } catch (Exception e) {
 
         if (Debug.isSet("Xdeveloper")) {
-          ByteArrayOutputStream bos = new ByteArrayOutputStream(10000);
-          e.printStackTrace(new PrintStream(bos));
-          ta.setText(bos.toString());
+          StringWriter sw = new StringWriter(10000);
+          e.printStackTrace(new PrintWriter(sw));
+          ta.setText(sw.toString());
         } else {
           ta.setText(e.getClass().getName() + ":" + e.getMessage() + "\n" + command);
         }
@@ -1855,9 +1855,9 @@ public class ToolsUI extends JPanel {
       } catch (Exception e) {
 
         if (Debug.isSet("Xdeveloper")) {
-          ByteArrayOutputStream bos = new ByteArrayOutputStream(10000);
-          e.printStackTrace(new PrintStream(bos));
-          ta.setText(bos.toString());
+           StringWriter sw = new StringWriter(10000);
+           e.printStackTrace(new PrintWriter(sw));
+           ta.setText(sw.toString());
         } else {
           ta.setText(e.getClass().getName() + ":" + e.getMessage() + "\n" + command);
         }
@@ -1900,9 +1900,9 @@ public class ToolsUI extends JPanel {
 
         } catch (Exception e) {
           if (Debug.isSet("Xdeveloper")) {
-            ByteArrayOutputStream bos = new ByteArrayOutputStream(10000);
-            e.printStackTrace(new PrintStream(bos));
-            ta.setText(bos.toString());
+           StringWriter sw = new StringWriter(10000);
+           e.printStackTrace(new PrintWriter(sw));
+           ta.setText(sw.toString());
           } else {
             ta.setText(e.getClass().getName() + ":" + e.getMessage() + "\n" + command);
           }
@@ -2001,9 +2001,9 @@ public class ToolsUI extends JPanel {
         ta.setText("got date= " + coordValue);
 
       } catch (Exception e) {
-        ByteArrayOutputStream bos = new ByteArrayOutputStream(10000);
-        e.printStackTrace(new PrintStream(bos));
-        ta.setText(bos.toString());
+        StringWriter sw = new StringWriter(5000);
+        e.printStackTrace(new PrintWriter(sw));
+        ta.setText(sw.toString());
       }
     }
   }
@@ -2036,9 +2036,9 @@ public class ToolsUI extends JPanel {
               detailTA.gotoTop();
 
             } catch (IOException e1) {
-              ByteArrayOutputStream out = new ByteArrayOutputStream();
-              e1.printStackTrace(new PrintStream(out));
-              detailTA.setText(out.toString());
+              StringWriter sw = new StringWriter(5000);
+              e1.printStackTrace(new PrintWriter(sw));
+              detailTA.setText(sw.toString());
             }
             detailWindow.show();
           }
@@ -2050,9 +2050,9 @@ public class ToolsUI extends JPanel {
       dsButton.addActionListener(new ActionListener() {
         public void actionPerformed(ActionEvent e) {
           if (ds != null) {
-            ByteArrayOutputStream bos = new ByteArrayOutputStream(10000);
-            NetcdfDataset.debugDump(new PrintStream(bos), ds);
-            detailTA.setText(bos.toString());
+            StringWriter sw = new StringWriter(5000);
+            NetcdfDataset.debugDump(new PrintWriter(sw), ds);
+            detailTA.setText(sw.toString());
             detailTA.gotoTop();
             detailWindow.show();
           }
@@ -2087,8 +2087,9 @@ public class ToolsUI extends JPanel {
         err = true;
 
       } catch (Exception e) {
-        e.printStackTrace(new PrintStream(bos));
-        detailTA.setText(bos.toString());
+        StringWriter sw = new StringWriter(5000);
+        e.printStackTrace(new PrintWriter(sw));
+        detailTA.setText(sw.toString());
         detailWindow.show();
         err = true;
       }
@@ -2185,9 +2186,9 @@ public class ToolsUI extends JPanel {
 
       } catch (Throwable e) {
         e.printStackTrace();
-        ByteArrayOutputStream bos = new ByteArrayOutputStream(5000);
-        e.printStackTrace(new PrintStream(bos));
-        detailTA.setText(bos.toString());
+        StringWriter sw = new StringWriter(5000);
+        e.printStackTrace(new PrintWriter(sw));
+        detailTA.setText(sw.toString());
         detailTA.gotoTop();
         detailWindow.show();
         err = true;
@@ -2224,7 +2225,6 @@ public class ToolsUI extends JPanel {
       String command = (String) o;
       boolean err = false;
 
-      ByteArrayOutputStream bos = new ByteArrayOutputStream(10000);
       try {
         if (raf != null)
           raf.close();
@@ -2238,8 +2238,9 @@ public class ToolsUI extends JPanel {
 
       } catch (Exception e) {
         e.printStackTrace();
-        e.printStackTrace(new PrintStream(bos));
-        detailTA.setText(bos.toString());
+        StringWriter sw = new StringWriter(5000);
+        e.printStackTrace(new PrintWriter(sw));
+        detailTA.setText(sw.toString());
         detailWindow.show();
         err = true;
       }
@@ -2313,7 +2314,6 @@ public class ToolsUI extends JPanel {
     void accept() {
       String command = (String) cb.getSelectedItem();
 
-      ByteArrayOutputStream bos = new ByteArrayOutputStream(10000);
       try {
         Object format = modes.getSelectedItem();
         bufrTable.setBufrTableB(command, (BufrTables.Format) format);
@@ -2325,8 +2325,9 @@ public class ToolsUI extends JPanel {
 
       } catch (Exception e) {
         e.printStackTrace();
-        e.printStackTrace(new PrintStream(bos));
-        detailTA.setText(bos.toString());
+        StringWriter sw = new StringWriter(5000);
+        e.printStackTrace(new PrintWriter(sw));
+        detailTA.setText(sw.toString());
         detailTA.setVisible(true);
       }
 
@@ -2334,7 +2335,6 @@ public class ToolsUI extends JPanel {
 
     void acceptTable(BufrTables.TableConfig tc) {
 
-      ByteArrayOutputStream bos = new ByteArrayOutputStream(10000);
       try {
         bufrTable.setBufrTableB(tc.getTableBname(), tc.getTableBformat());
 
@@ -2345,8 +2345,9 @@ public class ToolsUI extends JPanel {
 
       } catch (Exception e) {
         e.printStackTrace();
-        e.printStackTrace(new PrintStream(bos));
-        detailTA.setText(bos.toString());
+        StringWriter sw = new StringWriter(5000);
+        e.printStackTrace(new PrintWriter(sw));
+        detailTA.setText(sw.toString());
         detailTA.setVisible(true);
       }
 
@@ -2414,7 +2415,6 @@ public class ToolsUI extends JPanel {
       String command = (String) cb.getSelectedItem();
       if (command == null) return;
 
-      ByteArrayOutputStream bos = new ByteArrayOutputStream(10000);
       try {
         Object mode = modes.getSelectedItem();
         bufrTable.setBufrTableD(command, (BufrTables.Format) mode);
@@ -2426,8 +2426,9 @@ public class ToolsUI extends JPanel {
 
       } catch (Exception e) {
         e.printStackTrace();
-        e.printStackTrace(new PrintStream(bos));
-        detailTA.setText(bos.toString());
+        StringWriter sw = new StringWriter(5000);
+        e.printStackTrace(new PrintWriter(sw));
+        detailTA.setText(sw.toString());
         detailTA.setVisible(true);
       }
 
@@ -2435,7 +2436,6 @@ public class ToolsUI extends JPanel {
 
     void acceptTable(BufrTables.TableConfig tc) {
 
-      ByteArrayOutputStream bos = new ByteArrayOutputStream(10000);
       try {
         bufrTable.setBufrTableD(tc.getTableDname(), tc.getTableDformat());
 
@@ -2446,8 +2446,9 @@ public class ToolsUI extends JPanel {
 
       } catch (Exception e) {
         e.printStackTrace();
-        e.printStackTrace(new PrintStream(bos));
-        detailTA.setText(bos.toString());
+        StringWriter sw = new StringWriter(5000);
+        e.printStackTrace(new PrintWriter(sw));
+        detailTA.setText(sw.toString());
         detailTA.setVisible(true);
       }
 
@@ -2565,7 +2566,6 @@ public class ToolsUI extends JPanel {
       String command = (String) o;
       boolean err = false;
 
-      ByteArrayOutputStream bos = new ByteArrayOutputStream(10000);
       try {
         gribTable.setCollection(command);
 
@@ -2575,8 +2575,9 @@ public class ToolsUI extends JPanel {
 
       } catch (Exception e) {
         e.printStackTrace();
-        e.printStackTrace(new PrintStream(bos));
-        detailTA.setText(bos.toString());
+        StringWriter sw = new StringWriter(5000);
+        e.printStackTrace(new PrintWriter(sw));
+        detailTA.setText(sw.toString());
         detailWindow.show();
         err = true;
       }
@@ -2677,7 +2678,6 @@ public class ToolsUI extends JPanel {
       String command = (String) o;
       boolean err = false;
 
-      ByteArrayOutputStream bos = new ByteArrayOutputStream(10000);
       try {
         gribTable.setCollection(command);
 
@@ -2687,8 +2687,9 @@ public class ToolsUI extends JPanel {
 
       } catch (Exception e) {
         e.printStackTrace();
-        e.printStackTrace(new PrintStream(bos));
-        detailTA.setText(bos.toString());
+        StringWriter sw = new StringWriter(5000);
+        e.printStackTrace(new PrintWriter(sw));
+        detailTA.setText(sw.toString());
         detailWindow.show();
         err = true;
       }
@@ -2862,7 +2863,6 @@ public class ToolsUI extends JPanel {
       String command = (String) o;
       boolean err = false;
 
-      ByteArrayOutputStream bos = new ByteArrayOutputStream(10000);
       try {
         gribTable.setCollection(command);
 
@@ -2872,8 +2872,9 @@ public class ToolsUI extends JPanel {
 
       } catch (Exception e) {
         e.printStackTrace();
-        e.printStackTrace(new PrintStream(bos));
-        detailTA.setText(bos.toString());
+        StringWriter sw = new StringWriter(5000);
+        e.printStackTrace(new PrintWriter(sw));
+        detailTA.setText(sw.toString());
         detailWindow.show();
         err = true;
       }
@@ -2932,7 +2933,6 @@ public class ToolsUI extends JPanel {
       String command = (String) o;
       boolean err = false;
 
-      ByteArrayOutputStream bos = new ByteArrayOutputStream(10000);
       try {
         gribTable.setCollection(command);
 
@@ -2942,8 +2942,9 @@ public class ToolsUI extends JPanel {
 
       } catch (Exception e) {
         e.printStackTrace();
-        e.printStackTrace(new PrintStream(bos));
-        detailTA.setText(bos.toString());
+        StringWriter sw = new StringWriter(5000);
+        e.printStackTrace(new PrintWriter(sw));
+        detailTA.setText(sw.toString());
         detailWindow.show();
         err = true;
       }
@@ -2976,7 +2977,6 @@ public class ToolsUI extends JPanel {
       String command = (String) o;
       boolean err = false;
 
-      ByteArrayOutputStream bos = new ByteArrayOutputStream(10000);
       try {
         table.setIndexFile(command);
 
@@ -2986,8 +2986,9 @@ public class ToolsUI extends JPanel {
 
       } catch (Exception e) {
         e.printStackTrace();
-        e.printStackTrace(new PrintStream(bos));
-        detailTA.setText(bos.toString());
+        StringWriter sw = new StringWriter(5000);
+        e.printStackTrace(new PrintWriter(sw));
+        detailTA.setText(sw.toString());
         detailWindow.show();
         err = true;
       }
@@ -3083,7 +3084,6 @@ public class ToolsUI extends JPanel {
       String command = (String) o;
       boolean err = false;
 
-      ByteArrayOutputStream bos = new ByteArrayOutputStream(10000);
       try {
         indexPanel.setIndexFile(Paths.get(command), new FeatureCollectionConfig());
 
@@ -3093,8 +3093,9 @@ public class ToolsUI extends JPanel {
 
       } catch (Throwable e) {
         e.printStackTrace();
-        e.printStackTrace(new PrintStream(bos));
-        detailTA.setText(bos.toString());
+        StringWriter sw = new StringWriter(5000);
+        e.printStackTrace(new PrintWriter(sw));
+        detailTA.setText(sw.toString());
         detailWindow.show();
         err = true;
       }
@@ -3127,7 +3128,6 @@ public class ToolsUI extends JPanel {
       String command = (String) o;
       boolean err = false;
 
-      ByteArrayOutputStream bos = new ByteArrayOutputStream(10000);
       try {
         gribTable.setIndexFile(command);
 
@@ -3137,8 +3137,9 @@ public class ToolsUI extends JPanel {
 
       } catch (Exception e) {
         e.printStackTrace();
-        e.printStackTrace(new PrintStream(bos));
-        detailTA.setText(bos.toString());
+        StringWriter sw = new StringWriter(5000);
+        e.printStackTrace(new PrintWriter(sw));
+        detailTA.setText(sw.toString());
         detailWindow.show();
         err = true;
       }
@@ -3206,7 +3207,6 @@ public class ToolsUI extends JPanel {
       String command = (String) o;
       boolean err = false;
 
-      ByteArrayOutputStream bos = new ByteArrayOutputStream(10000);
       try {
         gribTable.setCollection(command);
 
@@ -3216,8 +3216,9 @@ public class ToolsUI extends JPanel {
 
       } catch (Exception e) {
         e.printStackTrace();
-        e.printStackTrace(new PrintStream(bos));
-        detailTA.setText(bos.toString());
+        StringWriter sw = new StringWriter(5000);
+        e.printStackTrace(new PrintWriter(sw));
+        detailTA.setText(sw.toString());
         detailWindow.show();
         err = true;
       }
@@ -3300,7 +3301,6 @@ public class ToolsUI extends JPanel {
       boolean err = false;
       String command = (String) cb.getSelectedItem();
 
-      ByteArrayOutputStream bos = new ByteArrayOutputStream(10000);
       try {
         reportPanel.doReport(command, useIndex, eachFile, extra, reports.getSelectedItem());
 
@@ -3310,8 +3310,9 @@ public class ToolsUI extends JPanel {
         err = true;
 
       } catch (Exception e) {
-        e.printStackTrace(new PrintStream(bos));
-        detailTA.setText(bos.toString());
+        StringWriter sw = new StringWriter(5000);
+        e.printStackTrace(new PrintWriter(sw));
+        detailTA.setText(sw.toString());
         detailWindow.show();
         err = true;
       }
@@ -3766,9 +3767,9 @@ public class ToolsUI extends JPanel {
             hdf5Table.showInfo(f);
 
           } catch (IOException ioe) {
-            ByteArrayOutputStream bos = new ByteArrayOutputStream(10000);
-            ioe.printStackTrace(new PrintStream(bos));
-            detailTA.setText(bos.toString());
+            StringWriter sw = new StringWriter(5000);
+            ioe.printStackTrace(new PrintWriter(sw));
+            detailTA.setText(sw.toString());
             detailWindow.show();
             return;
           }
@@ -3787,9 +3788,9 @@ public class ToolsUI extends JPanel {
             hdf5Table.showInfo2(f);
 
           } catch (IOException ioe) {
-            ByteArrayOutputStream bos = new ByteArrayOutputStream(10000);
-            ioe.printStackTrace(new PrintStream(bos));
-            detailTA.setText(bos.toString());
+            StringWriter sw = new StringWriter(5000);
+            ioe.printStackTrace(new PrintWriter(sw));
+            detailTA.setText(sw.toString());
             detailWindow.show();
             return;
           }
@@ -3809,9 +3810,9 @@ public class ToolsUI extends JPanel {
             detailTA.setText(f.toString());
             detailWindow.show();
           } catch (IOException ioe) {
-            ByteArrayOutputStream bos = new ByteArrayOutputStream(10000);
-            ioe.printStackTrace(new PrintStream(bos));
-            detailTA.setText(bos.toString());
+            StringWriter sw = new StringWriter(5000);
+            ioe.printStackTrace(new PrintWriter(sw));
+            detailTA.setText(sw.toString());
             detailWindow.show();
           }
         }
@@ -3824,7 +3825,6 @@ public class ToolsUI extends JPanel {
       String command = (String) o;
       boolean err = false;
 
-      ByteArrayOutputStream bos = new ByteArrayOutputStream(10000);
       try {
         if (raf != null)
           raf.close();
@@ -3837,8 +3837,9 @@ public class ToolsUI extends JPanel {
         err = true;
 
       } catch (Exception e) {
-        e.printStackTrace(new PrintStream(bos));
-        detailTA.setText(bos.toString());
+        StringWriter sw = new StringWriter(5000);
+        e.printStackTrace(new PrintWriter(sw));
+        detailTA.setText(sw.toString());
         detailWindow.show();
         err = true;
       }
@@ -3875,9 +3876,9 @@ public class ToolsUI extends JPanel {
             hdf5Table.showInfo(f);
 
           } catch (IOException ioe) {
-            ByteArrayOutputStream bos = new ByteArrayOutputStream(10000);
-            ioe.printStackTrace(new PrintStream(bos));
-            detailTA.setText(bos.toString());
+            StringWriter sw = new StringWriter(5000);
+            ioe.printStackTrace(new PrintWriter(sw));
+            detailTA.setText(sw.toString());
             detailWindow.show();
             return;
           }
@@ -3893,7 +3894,6 @@ public class ToolsUI extends JPanel {
       String command = (String) o;
       boolean err = false;
 
-      ByteArrayOutputStream bos = new ByteArrayOutputStream(10000);
       try {
         if (raf != null)
           raf.close();
@@ -3906,8 +3906,9 @@ public class ToolsUI extends JPanel {
         err = true;
 
       } catch (Exception e) {
-        e.printStackTrace(new PrintStream(bos));
-        detailTA.setText(bos.toString());
+        StringWriter sw = new StringWriter(5000);
+        e.printStackTrace(new PrintWriter(sw));
+        detailTA.setText(sw.toString());
         detailWindow.show();
         err = true;
       }
@@ -3945,9 +3946,9 @@ public class ToolsUI extends JPanel {
             detailTA.setText(f.toString());
             detailWindow.show();
           } catch (IOException ioe) {
-            ByteArrayOutputStream bos = new ByteArrayOutputStream(10000);
-            ioe.printStackTrace(new PrintStream(bos));
-            detailTA.setText(bos.toString());
+            StringWriter sw = new StringWriter(5000);
+            ioe.printStackTrace(new PrintWriter(sw));
+            detailTA.setText(sw.toString());
             detailWindow.show();
           }
         }
@@ -3959,7 +3960,6 @@ public class ToolsUI extends JPanel {
       String command = (String) o;
       boolean err = false;
 
-      ByteArrayOutputStream bos = new ByteArrayOutputStream(10000);
       try {
         if (raf != null)
           raf.close();
@@ -3972,8 +3972,9 @@ public class ToolsUI extends JPanel {
         err = true;
 
       } catch (Exception e) {
-        e.printStackTrace(new PrintStream(bos));
-        detailTA.setText(bos.toString());
+        StringWriter sw = new StringWriter(5000);
+        e.printStackTrace(new PrintWriter(sw));
+        detailTA.setText(sw.toString());
         detailWindow.show();
         err = true;
       }
@@ -4212,9 +4213,9 @@ public class ToolsUI extends JPanel {
             panel.showInfo(f);
 
           } catch (Exception ioe) {
-            ByteArrayOutputStream bos = new ByteArrayOutputStream(10000);
-            ioe.printStackTrace(new PrintStream(bos));
-            detailTA.setText(bos.toString());
+            StringWriter sw = new StringWriter(5000);
+            ioe.printStackTrace(new PrintWriter(sw));
+            detailTA.setText(sw.toString());
             detailWindow.show();
             return;
           }
@@ -4231,7 +4232,6 @@ public class ToolsUI extends JPanel {
       String command = (String) o;
       boolean err = false;
 
-      ByteArrayOutputStream bos = new ByteArrayOutputStream(10000);
       try {
         panel.setNcStream(command);
 
@@ -4240,8 +4240,9 @@ public class ToolsUI extends JPanel {
         err = true;
 
       } catch (Exception e) {
-        e.printStackTrace(new PrintStream(bos));
-        detailTA.setText(bos.toString());
+        StringWriter sw = new StringWriter(5000);
+        e.printStackTrace(new PrintWriter(sw));
+        detailTA.setText(sw.toString());
         detailWindow.show();
         err = true;
       }
@@ -4276,9 +4277,9 @@ public class ToolsUI extends JPanel {
             panel.showInfo(f);
 
           } catch (Exception ioe) {
-            ByteArrayOutputStream bos = new ByteArrayOutputStream(10000);
-            ioe.printStackTrace(new PrintStream(bos));
-            detailTA.setText(bos.toString());
+            StringWriter sw = new StringWriter(5000);
+            ioe.printStackTrace(new PrintWriter(sw));
+            detailTA.setText(sw.toString());
             detailWindow.show();
             return;
           }
@@ -4295,7 +4296,6 @@ public class ToolsUI extends JPanel {
       String command = (String) o;
       boolean err = false;
 
-      ByteArrayOutputStream bos = new ByteArrayOutputStream(10000);
       try {
         panel.setNcStreamFile(command);
 
@@ -4304,8 +4304,9 @@ public class ToolsUI extends JPanel {
         err = true;
 
       } catch (Exception e) {
-        e.printStackTrace(new PrintStream(bos));
-        detailTA.setText(bos.toString());
+        StringWriter sw = new StringWriter(5000);
+        e.printStackTrace(new PrintWriter(sw));
+        detailTA.setText(sw.toString());
         detailWindow.show();
         err = true;
       }
@@ -4696,9 +4697,9 @@ public class ToolsUI extends JPanel {
           try {
             table.showInfo(f);
           } catch (IOException e1) {
-            ByteArrayOutputStream bos = new ByteArrayOutputStream(5000);
-            e1.printStackTrace(new PrintStream(bos));
-            f.format("%s", bos.toString());
+            StringWriter sw = new StringWriter(5000);
+            e1.printStackTrace(new PrintWriter(sw));
+            f.format("%s", sw.toString());
           }
           detailTA.setText(f.toString());
           detailTA.gotoTop();
@@ -4722,9 +4723,9 @@ public class ToolsUI extends JPanel {
             table.showDataset();
 
           } catch (IOException e1) {
-            ByteArrayOutputStream bos = new ByteArrayOutputStream(5000);
-            e1.printStackTrace(new PrintStream(bos));
-            detailTA.setText(bos.toString());
+            StringWriter sw = new StringWriter(5000);
+            e1.printStackTrace(new PrintWriter(sw));
+            detailTA.setText(sw.toString());
             detailTA.gotoTop();
             detailWindow.show();
           }
@@ -4749,10 +4750,9 @@ public class ToolsUI extends JPanel {
         return true;
 
       } catch (Exception ioe) {
-        ByteArrayOutputStream bos = new ByteArrayOutputStream(10000);
-        ioe.printStackTrace();
-        ioe.printStackTrace(new PrintStream(bos));
-        detailTA.setText(bos.toString());
+        StringWriter sw = new StringWriter(5000);
+        ioe.printStackTrace(new PrintWriter(sw));
+        detailTA.setText(sw.toString());
         detailTA.gotoTop();
         detailWindow.show();
       }
@@ -4786,9 +4786,9 @@ public class ToolsUI extends JPanel {
           try {
             table.showInfo(f);
           } catch (IOException e1) {
-            ByteArrayOutputStream bos = new ByteArrayOutputStream(5000);
-            e1.printStackTrace(new PrintStream(bos));
-            f.format("%s", bos.toString());
+            StringWriter sw = new StringWriter(5000);
+            e1.printStackTrace(new PrintWriter(sw));
+            f.format("%s", sw.toString());
           }
           detailTA.setText(f.toString());
           detailTA.gotoTop();
@@ -4805,9 +4805,9 @@ public class ToolsUI extends JPanel {
 
           } catch (Exception e1) {
             Formatter f = new Formatter();
-            ByteArrayOutputStream bos = new ByteArrayOutputStream(5000);
-            e1.printStackTrace(new PrintStream(bos));
-            f.format("%s", bos.toString());
+            StringWriter sw = new StringWriter(5000);
+            e1.printStackTrace(new PrintWriter(sw));
+            f.format("%s", sw.toString());
             detailTA.setText(f.toString());
             detailTA.gotoTop();
             detailWindow.show();
@@ -4827,10 +4827,9 @@ public class ToolsUI extends JPanel {
         return true;
 
       } catch (Exception ioe) {
-        ByteArrayOutputStream bos = new ByteArrayOutputStream(10000);
-        ioe.printStackTrace();
-        ioe.printStackTrace(new PrintStream(bos));
-        detailTA.setText(bos.toString());
+        StringWriter sw = new StringWriter(5000);
+        ioe.printStackTrace(new PrintWriter(sw));
+        detailTA.setText(sw.toString());
         detailTA.gotoTop();
         detailWindow.show();
       }
@@ -4921,7 +4920,6 @@ public class ToolsUI extends JPanel {
       boolean err = false;
 
       NetcdfDataset newds;
-      ByteArrayOutputStream bos = new ByteArrayOutputStream(10000);
       try {
         newds = NetcdfDataset.openDataset(command, true, null);
         if (newds == null) {
@@ -4937,8 +4935,9 @@ public class ToolsUI extends JPanel {
 
       } catch (Throwable ioe) {
         ioe.printStackTrace();
-        ioe.printStackTrace(new PrintStream(bos));
-        detailTA.setText(bos.toString());
+        StringWriter sw = new StringWriter(5000);
+        ioe.printStackTrace(new PrintWriter(sw));
+        detailTA.setText(sw.toString());
         detailWindow.show();
         err = true;
       }
@@ -5058,7 +5057,6 @@ public class ToolsUI extends JPanel {
       boolean err = false;
 
       NetcdfDataset newds;
-      ByteArrayOutputStream bos = new ByteArrayOutputStream(10000);
       try {
         newds = NetcdfDataset.openDataset(command, true, null);
         if (newds == null) {
@@ -5074,8 +5072,9 @@ public class ToolsUI extends JPanel {
 
       } catch (Throwable ioe) {
         ioe.printStackTrace();
-        ioe.printStackTrace(new PrintStream(bos));
-        detailTA.setText(bos.toString());
+        StringWriter sw = new StringWriter(5000);
+        ioe.printStackTrace(new PrintWriter(sw));
+        detailTA.setText(sw.toString());
         detailWindow.show();
         err = true;
       }
@@ -5170,7 +5169,6 @@ public class ToolsUI extends JPanel {
       boolean err = false;
 
       NetcdfDataset newds;
-      ByteArrayOutputStream bos = new ByteArrayOutputStream(10000);
       try {
         newds = NetcdfDataset.openDataset(command, true, null);
         if (newds == null) {
@@ -5193,8 +5191,9 @@ public class ToolsUI extends JPanel {
         err = true;
 
       } catch (IOException ioe) {
-        ioe.printStackTrace(new PrintStream(bos));
-        detailTA.setText(bos.toString());
+        StringWriter sw = new StringWriter(5000);
+        ioe.printStackTrace(new PrintWriter(sw));
+        detailTA.setText(sw.toString());
         detailWindow.show();
         err = true;
       }
@@ -5295,9 +5294,9 @@ public class ToolsUI extends JPanel {
           setDataset(ncnew);
 
       } catch (Exception ioe) {
-        ByteArrayOutputStream bos = new ByteArrayOutputStream(10000);
-        ioe.printStackTrace(new PrintStream(bos));
-        detailTA.setText(bos.toString());
+        StringWriter sw = new StringWriter(5000);
+        ioe.printStackTrace(new PrintWriter(sw));
+        detailTA.setText(sw.toString());
         detailWindow.show();
         err = true;
       }
@@ -5370,9 +5369,9 @@ public class ToolsUI extends JPanel {
           setDataset(ncnew);
 
       } catch (Exception ioe) {
-        ByteArrayOutputStream bos = new ByteArrayOutputStream(10000);
-        ioe.printStackTrace(new PrintStream(bos));
-        detailTA.setText(bos.toString());
+        StringWriter sw = new StringWriter(5000);
+        ioe.printStackTrace(new PrintWriter(sw));
+        detailTA.setText(sw.toString());
         detailWindow.show();
         err = true;
       }
@@ -5491,9 +5490,9 @@ public class ToolsUI extends JPanel {
           try {
             table.showCollection(f);
           } catch (Exception e1) {
-            ByteArrayOutputStream bos = new ByteArrayOutputStream(5000);
-            e1.printStackTrace(new PrintStream(bos));
-            f.format("%s", bos.toString());
+            StringWriter sw = new StringWriter(5000);
+            e1.printStackTrace(new PrintWriter(sw));
+            f.format("%s", sw.toString());
           }
           detailTA.setText(f.toString());
           detailTA.gotoTop();
@@ -5513,10 +5512,9 @@ public class ToolsUI extends JPanel {
         return true;
 
       } catch (Exception ioe) {
-        ByteArrayOutputStream bos = new ByteArrayOutputStream(10000);
-        ioe.printStackTrace();
-        ioe.printStackTrace(new PrintStream(bos));
-        detailTA.setText(bos.toString());
+        StringWriter sw = new StringWriter(5000);
+        ioe.printStackTrace(new PrintWriter(sw));
+        detailTA.setText(sw.toString());
         detailTA.gotoTop();
         detailWindow.show();
       }
@@ -5560,10 +5558,10 @@ public class ToolsUI extends JPanel {
         return true;
 
       } catch (Exception ioe) {
-        ByteArrayOutputStream bos = new ByteArrayOutputStream(10000);
         ioe.printStackTrace();
-        ioe.printStackTrace(new PrintStream(bos));
-        detailTA.setText(bos.toString());
+        StringWriter sw = new StringWriter(5000);
+        ioe.printStackTrace(new PrintWriter(sw));
+        detailTA.setText(sw.toString());
         detailTA.gotoTop();
         detailWindow.show();
       }
@@ -5651,9 +5649,9 @@ public class ToolsUI extends JPanel {
             detailTA.setText(f.toString());
 
           } catch (IOException ioe) {
-            ByteArrayOutputStream bos = new ByteArrayOutputStream(5000);
-            ioe.printStackTrace(new PrintStream(bos));
-            detailTA.setText(bos.toString());
+            StringWriter sw = new StringWriter(5000);
+            ioe.printStackTrace(new PrintWriter(sw));
+            detailTA.setText(sw.toString());
           }
 
           detailTA.gotoTop();
@@ -5690,7 +5688,6 @@ public class ToolsUI extends JPanel {
       detailTA.clear();
 
       Formatter log = new Formatter();
-      ByteArrayOutputStream bos = new ByteArrayOutputStream(10000);
       try {
         FeatureDataset featureDataset = FeatureDatasetFactoryManager.open(type, location, null, log);
         if (featureDataset == null) {
@@ -5713,10 +5710,10 @@ public class ToolsUI extends JPanel {
         return false;
 
       } catch (Throwable e) {
-        e.printStackTrace();
-        e.printStackTrace(new PrintStream(bos));
+        StringWriter sw = new StringWriter(5000);
+        e.printStackTrace(new PrintWriter(sw));
         detailTA.setText(log.toString());
-        detailTA.appendLine(bos.toString());
+        detailTA.setText(sw.toString());
         detailWindow.show();
 
         JOptionPane.showMessageDialog(this, e.getMessage());
@@ -5733,8 +5730,6 @@ public class ToolsUI extends JPanel {
       }
       detailTA.clear();
 
-      Formatter log = new Formatter();
-      ByteArrayOutputStream bos = new ByteArrayOutputStream(10000);
       try {
         pfDataset = pfd;
         pfViewer.setDataset(pfDataset);
@@ -5742,9 +5737,9 @@ public class ToolsUI extends JPanel {
         return true;
 
       } catch (Throwable e) {
-        e.printStackTrace(new PrintStream(bos));
-        detailTA.setText(log.toString());
-        detailTA.appendLine(bos.toString());
+        StringWriter sw = new StringWriter(5000);
+        e.printStackTrace(new PrintWriter(sw));
+        detailTA.setText(sw.toString());
         detailWindow.show();
 
         JOptionPane.showMessageDialog(this, e.getMessage());
@@ -5836,8 +5831,8 @@ public class ToolsUI extends JPanel {
     }
 
     void save() {
-      //super.save();
-      //radialViewer.save();
+      super.save();
+      radialViewer.save();
     }
 
     boolean setStationRadialDataset(String location) {
@@ -5850,7 +5845,6 @@ public class ToolsUI extends JPanel {
       }
 
       //StringBuilder log = new StringBuilder();
-      ByteArrayOutputStream bos = new ByteArrayOutputStream(10000);
       try {
         ThreddsDataFactory.Result result = threddsDataFactory.openFeatureDataset(FeatureType.STATION_RADIAL, location, null);
         if (result.fatalError) {
@@ -5862,9 +5856,10 @@ public class ToolsUI extends JPanel {
         return true;
 
       } catch (Exception e) {
-        e.printStackTrace(new PrintStream(bos));
+        StringWriter sw = new StringWriter(5000);
+        e.printStackTrace(new PrintWriter(sw));
         detailTA.setText(log.toString());
-        detailTA.appendLine(bos.toString());
+        detailTA.appendLine(sw.toString());
         detailWindow.show();
 
         JOptionPane.showMessageDialog(this, e.getMessage());
@@ -5985,15 +5980,15 @@ public class ToolsUI extends JPanel {
     boolean process(Object o) {
       String command = (String) o;
 
-      ByteArrayOutputStream bos = new ByteArrayOutputStream(10000);
       try {
         if (null != command)
           imagePanel.setImageFromUrl(command);
 
       } catch (Exception ioe) {
         ioe.printStackTrace();
-        ioe.printStackTrace(new PrintStream(bos));
-        detailTA.setText(bos.toString());
+        StringWriter sw = new StringWriter(5000);
+        ioe.printStackTrace(new PrintWriter(sw));
+        detailTA.setText(sw.toString());
         detailWindow.show();
         return false;
       }
@@ -6121,9 +6116,9 @@ public class ToolsUI extends JPanel {
         return;
 
       } catch (Exception e) {
-        ByteArrayOutputStream bos = new ByteArrayOutputStream(10000);
-        e.printStackTrace(new PrintStream(bos));
-        errMsg = bos.toString();
+        StringWriter sw = new StringWriter(5000);
+        e.printStackTrace(new PrintWriter(sw));
+        errMsg = sw.toString();
         ex = e;
         success = false;
         done = true;
