@@ -873,7 +873,7 @@ public class Grib2CollectionPanel extends JPanel {
     compare(bean1.gr.getGDSsection(), bean2.gr.getGDSsection(), f);
   }
 
-  private void compare(Grib2SectionGridDefinition gdss1, Grib2SectionGridDefinition gdss2, Formatter f) {
+  static public  void compare(Grib2SectionGridDefinition gdss1, Grib2SectionGridDefinition gdss2, Formatter f) {
     f.format("1 GribGDS hash = %s%n", gdss1.getGDS().hashCode());
     f.format("2 GribGDS hash = %s%n", gdss2.getGDS().hashCode());
 
@@ -900,14 +900,14 @@ public class Grib2CollectionPanel extends JPanel {
   }
 
 
-  private void compare(Grib2SectionProductDefinition pds1, Grib2SectionProductDefinition pds2, Formatter f) {
+  static public void compare(Grib2SectionProductDefinition pds1, Grib2SectionProductDefinition pds2, Formatter f) {
     f.format("%nCompare Pds%n");
     byte[] raw1 = pds1.getRawBytes();
     byte[] raw2 = pds2.getRawBytes();
     Misc.compare(raw1, raw2, f);
   }
 
-  void compareData(Grib2RecordBean bean1, Grib2RecordBean bean2, Formatter f) {
+  static public void compareData(Grib2RecordBean bean1, Grib2RecordBean bean2, Formatter f) {
     float[] data1 = null, data2 = null;
     try {
       data1 = bean1.readData();
@@ -920,7 +920,7 @@ public class Grib2CollectionPanel extends JPanel {
     Misc.compare(data1, data2, f);
   }
 
-  void showData(Grib2RecordBean bean1, Formatter f) {
+  static public void showData(Grib2RecordBean bean1, Formatter f) {
     float[] data;
     try {
       data = bean1.readData();
@@ -1184,7 +1184,7 @@ public class Grib2CollectionPanel extends JPanel {
 
     public String toProcessedString() {
       Formatter f = new Formatter();
-      showProcessedPds(gr, pds, discipline, f);
+      showProcessedPds(cust, pds, discipline, f);
       return f.toString();
     }
 
@@ -1334,7 +1334,6 @@ public class Grib2CollectionPanel extends JPanel {
     showRawWithTemplate("4." + template, raw, f, cust);
   }
 
-
   static private void showRawWithTemplate(String key, byte[] raw, Formatter f, Grib2Customizer cust) {
     if (gribTemplates == null)
       try {
@@ -1351,8 +1350,7 @@ public class Grib2CollectionPanel extends JPanel {
       gt.showInfo(cust, raw, f);
   }
 
-  ////////////////////////////////////////////////////////
-  private void showProcessedPds(Grib2Record gr, Grib2Pds pds, int discipline, Formatter f) {
+  static public void showProcessedPds(Grib2Customizer cust, Grib2Pds pds, int discipline, Formatter f) {
     int template = pds.getTemplateNumber();
     f.format(" Product Template %3d = %s%n", template, cust.getTableValue("4.0", template));
     f.format(" Discipline %3d     = %s%n", discipline, cust.getTableValue("0.0", discipline));
@@ -1377,6 +1375,8 @@ public class Grib2CollectionPanel extends JPanel {
     f.format("%n Level Name (from table 4.5) = %3s %n", cust.getTableValue("4.5", pds.getLevelType1()));
     f.format(" Gen Process Ttype (from table 4.3) = %3s %n", cust.getTableValue("4.3", pds.getGenProcessType()));
   }
+
+  ////////////////////////////////////////////////////////
 
   public class Grib2RecordBean {
     Grib2Record gr;

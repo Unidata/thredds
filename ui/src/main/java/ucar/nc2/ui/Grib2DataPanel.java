@@ -41,14 +41,12 @@ import ucar.nc2.grib.collection.Grib2CollectionBuilder;
 import ucar.nc2.grib.grib2.*;
 import ucar.nc2.grib.grib2.table.Grib2Customizer;
 import ucar.nc2.grib.grib2.table.NcepLocalTables;
-import ucar.nc2.grib.grib2.table.WmoTemplateTable;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.ui.widget.FileManager;
 import ucar.nc2.ui.widget.*;
 import ucar.nc2.ui.widget.PopupMenu;
 import ucar.nc2.util.IO;
 import ucar.nc2.util.Misc;
-import ucar.nc2.wmo.CommonCodeTable;
 
 import ucar.unidata.geoloc.LatLonPoint;
 import ucar.util.prefs.PreferencesExt;
@@ -78,7 +76,6 @@ import java.util.zip.Deflater;
  * @since Sep 7, 2012
  */
 public class Grib2DataPanel extends JPanel {
-  static private Map<String, WmoTemplateTable> gribTemplates = null;
   static private final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(Grib2DataPanel.class);
 
   private PreferencesExt prefs;
@@ -112,7 +109,7 @@ public class Grib2DataPanel extends JPanel {
         Grib2ParameterBean pb = (Grib2ParameterBean) param2BeanTable.getSelectedBean();
         if (pb != null) {
           Formatter f = new Formatter();
-          showPdsTemplate(pb.gr.getPDSsection(), f, cust);
+          Grib2CollectionPanel.showPdsTemplate(pb.gr.getPDSsection(), f, cust);
           infoPopup2.setText(f.toString());
           infoPopup2.gotoTop();
           infoWindow2.show();
@@ -167,7 +164,7 @@ public class Grib2DataPanel extends JPanel {
         if (bean != null) {
           Formatter f = new Formatter();
           try {
-            showCompleteGribRecord(f, fileList.get(bean.gr.getFile()).getPath(), bean.gr, cust);
+            Grib2CollectionPanel.showCompleteGribRecord(f, fileList.get(bean.gr.getFile()).getPath(), bean.gr, cust);
           } catch (IOException ioe) {
             ByteArrayOutputStream bos = new ByteArrayOutputStream(10000);
             ioe.printStackTrace(new PrintStream(bos));
@@ -355,8 +352,8 @@ public class Grib2DataPanel extends JPanel {
       return;
     }
 
-    Map<Integer, Grib2ParameterBean> pdsSet = new HashMap<Integer, Grib2ParameterBean>();
-    Map<Integer, Grib2SectionGridDefinition> gdsSet = new HashMap<Integer, Grib2SectionGridDefinition>();
+    Map<Integer, Grib2ParameterBean> pdsSet = new HashMap<>();
+    Map<Integer, Grib2SectionGridDefinition> gdsSet = new HashMap<>();
 
     java.util.List<Grib2ParameterBean> params = new ArrayList<>();
 
@@ -457,12 +454,12 @@ public class Grib2DataPanel extends JPanel {
     }
 
     // divided by group
-    Map<Integer, Set<Integer>> groups = new HashMap<Integer, Set<Integer>>();
+    Map<Integer, Set<Integer>> groups = new HashMap<>();
     for (Object o : param2BeanTable.getBeans()) {
       Grib2ParameterBean p = (Grib2ParameterBean) o;
       Set<Integer> group = groups.get(p.getGDS());
       if (group == null) {
-        group = new TreeSet<Integer>();
+        group = new TreeSet<>();
         groups.put(p.getGDS(), group);
       }
       for (Grib2RecordBean r : p.getRecordBeans())
@@ -516,12 +513,12 @@ public class Grib2DataPanel extends JPanel {
   private void checkDuplicates(Formatter f) {
 
     // how unique are the pds ?
-    Set<Long> pdsMap = new HashSet<Long>();
+    Set<Long> pdsMap = new HashSet<>();
     int dups = 0;
     int count = 0;
 
     // do all records have the same runtime ?
-    Map<CalendarDate, DateCount> dateMap = new HashMap<CalendarDate, DateCount>();
+    Map<CalendarDate, DateCount> dateMap = new HashMap<>();
 
     List<Grib2ParameterBean> params = param2BeanTable.getBeans();
     for (Grib2ParameterBean param : params) {
@@ -546,7 +543,7 @@ public class Grib2DataPanel extends JPanel {
 
     f.format("PDS duplicates = %d / %d%n%n", dups, count);
 
-    List<DateCount> dcList = new ArrayList<DateCount>(dateMap.values());
+    List<DateCount> dcList = new ArrayList<>(dateMap.values());
     Collections.sort(dcList);
 
     f.format("Run Dates%n");
@@ -982,7 +979,7 @@ public class Grib2DataPanel extends JPanel {
       pds = r.getPDSsection().getPDS();
       id = r.getId();
       discipline = r.getDiscipline();
-      records = new ArrayList<Grib2RecordBean>();
+      records = new ArrayList<>();
       //gdsKey = r.getGDSsection().calcCRC();
     }
 
@@ -1020,13 +1017,13 @@ public class Grib2DataPanel extends JPanel {
 
     public String toString() {
       Formatter f = new Formatter();
-      showPdsTemplate(gr.getPDSsection(), f, cust);
+      Grib2CollectionPanel.showPdsTemplate(gr.getPDSsection(), f, cust);
       return f.toString();
     }
 
     public String toProcessedString() {
       Formatter f = new Formatter();
-      showProcessedPds(gr, pds, discipline, f);
+      Grib2CollectionPanel.showProcessedPds(cust, pds, discipline, f);
       return f.toString();
     }
 
@@ -1086,143 +1083,7 @@ public class Grib2DataPanel extends JPanel {
 
   }
 
-  ////////////////////////////////////////////////////
-
-  static void showBytes(Formatter f, byte[] buff) {
-    for (byte b : buff) {
-      int ub = (b < 0) ? b + 256 : b;
-      if (b >= 32 && b < 127)
-        f.format("%s", (char) ub);
-      else
-        f.format("(%d)", ub);
-    }
-  }
-
-  static public void showCompleteGribRecord(Formatter f, String path, Grib2Record gr, Grib2Customizer cust) throws IOException {
-    f.format("File=%d %s %n", gr.getFile(), path);
-    f.format("Header=\"");
-    showBytes(f, gr.getHeader());
-    f.format("\"%n%n");
-    int d = gr.getDiscipline();
-    f.format("Grib2IndicatorSection%n");
-    f.format(" Discipline = (%d) %s%n", d, cust.getTableValue("0.0", d));
-    f.format(" Length     = %d%n", gr.getIs().getMessageLength());
-
-    Grib2SectionIdentification id = gr.getId();
-    f.format("%nGrib2IdentificationSection%n");
-    f.format(" Center        = (%d) %s%n", id.getCenter_id(), CommonCodeTable.getCenterName(id.getCenter_id(), 2));
-    f.format(" SubCenter     = (%d) %s%n", id.getSubcenter_id(), cust.getSubCenterName(id.getCenter_id(), id.getSubcenter_id()));
-    f.format(" Master Table  = %d%n", id.getMaster_table_version());
-    f.format(" Local Table   = %d%n", id.getLocal_table_version());
-    f.format(" RefTimeSignif = %d (%s)%n", id.getSignificanceOfRT(), cust.getTableValue("1.2", id.getSignificanceOfRT()));
-    f.format(" RefTime       = %s%n", id.getReferenceDate());
-    f.format(" RefTime Fields = %d-%d-%d %d:%d:%d%n", id.getYear(), id.getMonth(), id.getDay(), id.getHour(), id.getMinute(), id.getSecond());
-    f.format(" ProductionStatus      = %d (%s)%n", id.getProductionStatus(), cust.getTableValue("1.3", id.getProductionStatus()));
-    f.format(" TypeOfProcessedData   = %d (%s)%n", id.getTypeOfProcessedData(), cust.getTableValue("1.4", id.getTypeOfProcessedData()));
-
-    if (gr.hasLocalUseSection()) {
-      byte[] lus = gr.getLocalUseSection().getRawBytes();
-      f.format("%nLocal Use Section (grib section 2)%n");
-      /* try {
-       f.format(" String= %s%n", new String(lus, 0, lus.length, "UTF-8"));
-     } catch (UnsupportedEncodingException e) {
-       e.printStackTrace();
-     } */
-      f.format("bytes (len=%d) =", lus.length);
-      Misc.showBytes(lus, f);
-      f.format("%n");
-    }
-
-    Grib2SectionGridDefinition gds = gr.getGDSsection();
-    Grib2Gds ggds = gds.getGDS();
-    f.format("%nGrib2GridDefinitionSection hash=%d crc=%d%n", ggds.hashCode(), gds.calcCRC());
-    f.format(" Length             = %d%n", gds.getLength());
-    f.format(" Source  (3.0)      = %d (%s) %n", gds.getSource(), cust.getTableValue("3.0", gds.getSource()));
-    f.format(" Npts               = %d%n", gds.getNumberPoints());
-    f.format(" Template (3.1)     = %d%n", gds.getGDSTemplateNumber());
-    showGdsTemplate(gds, f, cust);
-
-    Grib2SectionProductDefinition pdss = gr.getPDSsection();
-    f.format("%nGrib2ProductDefinitionSection%n");
-    Grib2Pds pds = pdss.getPDS();
-    if (pds.isTimeInterval()) {
-      TimeCoord.TinvDate intv = cust.getForecastTimeInterval(gr);
-      if (intv != null) f.format(" Interval     = %s%n", intv);
-    }
-    showPdsTemplate(pdss, f, cust);
-    if (pds.getExtraCoordinatesCount() > 0) {
-      float[] coords = pds.getExtraCoordinates();
-      f.format("Hybrid Coordinates (%d) %n  ", coords.length);
-      for (float fc : coords) f.format("%10.5f ", fc);
-      f.format("%n%n");
-    }
-
-    Grib2SectionDataRepresentation drs = gr.getDataRepresentationSection();
-    f.format("%nGrib2SectionDataRepresentation%n");
-    f.format("  Template           = %d (%s) %n", drs.getDataTemplate(), cust.getTableValue("5.0", drs.getDataTemplate()));
-    f.format("  NPoints            = %d%n", drs.getDataPoints());
-
-    Grib2SectionData ds = gr.getDataSection();
-    f.format("%nGrib2SectionData%n");
-    f.format("  Starting Pos       = %d %n", ds.getStartingPosition());
-    f.format("  Data Length        = %d%n", ds.getMsgLength());
-  }
-
-  static private void showGdsTemplate(Grib2SectionGridDefinition gds, Formatter f, Grib2Customizer cust) {
-    int template = gds.getGDSTemplateNumber();
-    byte[] raw = gds.getRawBytes();
-    showRawWithTemplate("3." + template, raw, f, cust);
-  }
-
-  static private void showPdsTemplate(Grib2SectionProductDefinition pdss, Formatter f, Grib2Customizer cust) {
-    int template = pdss.getPDSTemplateNumber();
-    byte[] raw = pdss.getRawBytes();
-    showRawWithTemplate("4." + template, raw, f, cust);
-  }
-
-
-  static private void showRawWithTemplate(String key, byte[] raw, Formatter f, Grib2Customizer cust) {
-    if (gribTemplates == null)
-      try {
-        gribTemplates = WmoTemplateTable.getWmoStandard().map;
-      } catch (IOException e) {
-        f.format("Read template failed = %s%n", e.getMessage());
-        return;
-      }
-
-    WmoTemplateTable gt = gribTemplates.get(key);
-    if (gt == null)
-      f.format("Cant find template %s%n", key);
-    else
-      gt.showInfo(cust, raw, f);
-  }
-
   ////////////////////////////////////////////////////////
-  private void showProcessedPds(Grib2Record gr, Grib2Pds pds, int discipline, Formatter f) {
-    int template = pds.getTemplateNumber();
-    f.format(" Product Template %3d = %s%n", template, cust.getTableValue("4.0", template));
-    f.format(" Discipline %3d     = %s%n", discipline, cust.getTableValue("0.0", discipline));
-    f.format(" Category %3d       = %s%n", pds.getParameterCategory(), cust.getCategory(discipline, pds.getParameterCategory()));
-    Grib2Customizer.Parameter entry = cust.getParameter(discipline, pds.getParameterCategory(), pds.getParameterNumber());
-    if (entry != null) {
-      f.format(" Parameter Name     = %3d %s %n", pds.getParameterNumber(), entry.getName());
-      f.format(" Parameter Units    = %s %n", entry.getUnit());
-    } else {
-      f.format(" Unknown Parameter  = %d-%d-%d %n", discipline, pds.getParameterCategory(), pds.getParameterNumber());
-      cust.getParameter(discipline, pds.getParameterCategory(), pds.getParameterNumber()); // debug
-    }
-    f.format(" Parameter Table  = %s%n", cust.getTablePath(discipline, pds.getParameterCategory(), pds.getParameterNumber()));
-
-    int tgp = pds.getGenProcessType();
-    f.format(" Generating Process Type = %3d %s %n", tgp, cust.getTableValue("4.3", tgp));
-    f.format(" Forecast Offset    = %3d %n", pds.getForecastTime());
-    f.format(" First Surface Type = %3d %s %n", pds.getLevelType1(), cust.getLevelNameShort(pds.getLevelType1()));
-    f.format(" First Surface value= %3f %n", pds.getLevelValue1());
-    f.format(" Second Surface Type= %3d %s %n", pds.getLevelType2(), cust.getLevelNameShort(pds.getLevelType2()));
-    f.format(" Second Surface val = %3f %n", pds.getLevelValue2());
-    f.format("%n Level Name (from table 4.5) = %3s %n", cust.getTableValue("4.5", pds.getLevelType1()));
-    f.format(" Gen Process Ttype (from table 4.3) = %3s %n", cust.getTableValue("4.3", pds.getGenProcessType()));
-  }
 
   public class Grib2RecordBean {
     Grib2Record gr;
@@ -1373,72 +1234,6 @@ public class Grib2DataPanel extends JPanel {
       return new ucar.unidata.io.RandomAccessFile(mfile.getPath(), "r");
     }
 
-
   }
 
-  public class Gds2Bean implements Comparable<Gds2Bean> {
-    Grib2SectionGridDefinition gdss;
-    Grib2Gds gds;
-
-    // no-arg constructor
-
-    public Gds2Bean() {
-    }
-
-    public Gds2Bean(Grib2SectionGridDefinition m) {
-      this.gdss = m;
-      gds = gdss.getGDS();
-    }
-
-    public int getGDShash() {
-      return gds.hashCode();
-    }
-
-    public int getTemplate() {
-      return gdss.getGDSTemplateNumber();
-    }
-
-    public String getGridName() {
-      return cust.getTableValue("3.1", gdss.getGDSTemplateNumber());
-    }
-
-    public String getGroupName() {
-      return getGridName() + "-" + getNy() + "X" + getNx();
-    }
-
-    public int getNPoints() {
-      return gdss.getNumberPoints();
-    }
-
-    public int getNx() {
-      return gds.getNx();
-    }
-
-    public int getNy() {
-      return gds.getNy();
-    }
-
-    public String getScanMode() {
-      return Long.toBinaryString(gds.getScanMode());
-    }
-
-    @Override
-    public String toString() {
-      return getGridName() + " " + getTemplate() + " " + getNx() + " X " + getNy();
-    }
-
-    public void toRawGdsString(Formatter f) {
-      byte[] bytes = gds.getRawBytes();
-      int count = 1;
-      for (byte b : bytes) {
-        short s = DataType.unsignedByteToShort(b);
-        f.format(" %d : %d%n", count++, s);
-      }
-    }
-
-    @Override
-    public int compareTo(Gds2Bean o) {
-      return getGroupName().compareTo(o.getGroupName());
-    }
-  }
 }

@@ -119,8 +119,7 @@
   </ol>
   <p>Here are examples using NcML:</p>
   <blockquote>
-    <pre>  &lt;gribConfig&gt;<br/><strong>1)</strong> &lt;intvFilter excludeZero=&quot;true&quot;/&gt;<br/><strong>2)</strong> &lt;intvFilter intvLength=&quot;3&quot;&gt;<br/>     &lt;variable id=&quot;0-1-8&quot;/&gt;<br/>     &lt;variable id=&quot;0-1-10&quot;/&gt;<br/>   &lt;/intvFilter&gt;<br/> &lt;/gribConfig&gt;
-  </pre>
+    <pre>  &lt;gribConfig&gt;<br/><strong>1)</strong> &lt;intvFilter excludeZero=&quot;true&quot;/&gt;<br/><strong>2)</strong> &lt;intvFilter intvLength=&quot;3&quot;&gt;<br/>     &lt;variable id=&quot;0-1-8&quot;/&gt;<br/>     &lt;variable id=&quot;0-1-10&quot;/&gt;<br/>   &lt;/intvFilter&gt;<br/> &lt;/gribConfig&gt;</pre>
   </blockquote>
   <p>This example says to ignore any 0 length time intervals. One sees these in NCEP model output, apparently they are initialization records. </p>
   <p>This example also says that for variables 0-1-8 and 0-1-10, only include records with time interval length = 3. This will simplify those variables so that they only contain only 3 hour intervals, instead of a mixture of intervals.</p>
@@ -367,7 +366,6 @@
         corresponding hashcodes. If you confirm that they are, in fact, the same GDS, then you can fix this problem, for example:</p>
       <pre>&lt;gribConfig&gt;
    &lt;gdsHash from=&quot;1450218978&quot; to=&quot;1450192070&quot;/&gt;
-
 &lt;/gribConfig&gt;</pre>
       <p>This changes those variables using GDS hashcode =&quot;1450218978&quot; to use &quot;1450192070&quot;, which then eliminates the spurious group in the
         resulting ncx file. Note that for this to work, you must first delete the ncx file so it will get recreated when the file is read. After that, you can
@@ -393,8 +391,7 @@
       <p><strong>4.1 useGenType</strong>: GRIB-2 only. Control whether generating type (octet 12) is used. Default is false.</p>
       <pre> &lt;pdsHash&gt;
    &lt;useGenType&gt;true&lt;/useGenType&gt;
- &lt;/pdsHash&gt;
-      </pre>
+ &lt;/pdsHash&gt;  </pre>
       <p><strong>4.2 useTableVersion</strong>: GRIB-1 only. Control whether table version is used. Default is true.</p>
       <pre> &lt;pdsHash&gt;
    &lt;<strong>useTableVersion</strong>&gt;false&lt;/<strong>useTableVersion</strong>&gt;

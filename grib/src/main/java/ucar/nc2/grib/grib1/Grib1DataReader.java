@@ -203,49 +203,4 @@ value R, the binary scale factor E and the decimal scale factor D by means of th
     }
   }
 
-  // for debugging
-  public void showDataInfo(RandomAccessFile raf, Formatter f) throws IOException {
-    raf.seek(startPos); // go to the data section
-
-    // octets 1-3 (section length)
-    int msgLength = GribNumbers.uint3(raf);
-    f.format("   msgLength = %d%n", msgLength);
-
-    /*
-    Code table 11 – Flag
-    Bit No. Value Meaning
-     1 0 Grid-point data
-       1 Spherical harmonic coefficients
-     2 0 Simple packing
-       1 Complex or second-order packing
-     3 0 Floating point values (in the original data) are represented
-       1 Integer values (in the original data) are represented
-     4 0 No additional flags at octet 14
-       1 Octet 14 contains additional flag bits
-     */
-
-    // octet 4, 1st half (packing flag)
-    int flag = raf.read();
-    f.format("    ----flag = %s%n", Long.toHexString(flag));
-    f.format("        data = %s%n", (flag & GribNumbers.bitmask[0]) == 0 ? "grid point" : "Spherical harmonic coefficients");
-    f.format("     packing = %s%n", (flag & GribNumbers.bitmask[1]) == 0 ? "simple" : "Complex / second order");
-    f.format("        type = %s%n", (flag & GribNumbers.bitmask[2]) == 0 ? "float" : "int");
-    f.format("        more = %s%n", (flag & GribNumbers.bitmask[3]) == 0 ? "false" : "true");
-
-    // Y × 10^D = R + X × 2^E
-    // octets 5-6 (binary scale factor)
-    int binscale = GribNumbers.int2(raf);
-    f.format("scale factor = %d%n", binscale);
-
-    // octets 7-10 (reference point = minimum value)
-    float refvalue = GribNumbers.float4(raf);
-    f.format("reference value = %f%n", refvalue);
-
-    // octet 11 (number of bits per value)
-    int numbits = raf.read();
-    f.format("      nbits = %d%n", numbits);
-  }
-
-
-
 }

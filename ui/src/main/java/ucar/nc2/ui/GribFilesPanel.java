@@ -1,33 +1,34 @@
 /*
- * Copyright (c) 1998 - 2011. University Corporation for Atmospheric Research/Unidata
- * Portions of this software were developed by the Unidata Program at the
- * University Corporation for Atmospheric Research.
+ * Copyright 1998-2014 University Corporation for Atmospheric Research/Unidata
  *
- * Access and use of this software shall impose the following obligations
- * and understandings on the user. The user is granted the right, without
- * any fee or cost, to use, copy, modify, alter, enhance and distribute
- * this software, and any derivative works thereof, and its supporting
- * documentation for any purpose whatsoever, provided that this entire
- * notice appears in all copies of the software, derivative works and
- * supporting documentation.  Further, UCAR requests that the user credit
- * UCAR/Unidata in any publications that result from the use of this
- * software or in any product that includes this software. The names UCAR
- * and/or Unidata, however, may not be used in any advertising or publicity
- * to endorse or promote any products or commercial entity unless specific
- * written permission is obtained from UCAR/Unidata. The user also
- * understands that UCAR/Unidata is not obligated to provide the user with
- * any support, consulting, training or assistance of any kind with regard
- * to the use, operation and performance of this software nor to provide
- * the user with any updates, revisions, new versions or "bug fixes."
+ *   Portions of this software were developed by the Unidata Program at the
+ *   University Corporation for Atmospheric Research.
  *
- * THIS SOFTWARE IS PROVIDED BY UCAR/UNIDATA "AS IS" AND ANY EXPRESS OR
- * IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
- * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
- * DISCLAIMED. IN NO EVENT SHALL UCAR/UNIDATA BE LIABLE FOR ANY SPECIAL,
- * INDIRECT OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING
- * FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT,
- * NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
- * WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
+ *   Access and use of this software shall impose the following obligations
+ *   and understandings on the user. The user is granted the right, without
+ *   any fee or cost, to use, copy, modify, alter, enhance and distribute
+ *   this software, and any derivative works thereof, and its supporting
+ *   documentation for any purpose whatsoever, provided that this entire
+ *   notice appears in all copies of the software, derivative works and
+ *   supporting documentation.  Further, UCAR requests that the user credit
+ *   UCAR/Unidata in any publications that result from the use of this
+ *   software or in any product that includes this software. The names UCAR
+ *   and/or Unidata, however, may not be used in any advertising or publicity
+ *   to endorse or promote any products or commercial entity unless specific
+ *   written permission is obtained from UCAR/Unidata. The user also
+ *   understands that UCAR/Unidata is not obligated to provide the user with
+ *   any support, consulting, training or assistance of any kind with regard
+ *   to the use, operation and performance of this software nor to provide
+ *   the user with any updates, revisions, new versions or "bug fixes."
+ *
+ *   THIS SOFTWARE IS PROVIDED BY UCAR/UNIDATA "AS IS" AND ANY EXPRESS OR
+ *   IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ *   WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ *   DISCLAIMED. IN NO EVENT SHALL UCAR/UNIDATA BE LIABLE FOR ANY SPECIAL,
+ *   INDIRECT OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING
+ *   FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT,
+ *   NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
+ *   WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
 package ucar.nc2.ui;
@@ -70,7 +71,7 @@ public class GribFilesPanel extends JPanel {
   private PreferencesExt prefs;
 
   private BeanTable grib1Table, grib2Table, collectionTable;
-  private JSplitPane split, split2;
+  private JSplitPane split2;
 
   private TextHistoryPane infoPopup;
   private IndependentWindow infoWindow;
@@ -105,7 +106,7 @@ public class GribFilesPanel extends JPanel {
     varPopup.addAction("Read Files", new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
         List list = collectionTable.getSelectedBeans();
-        readFiles(list);
+        readFiles((List<CollectionBean>) list);
       }
     });
 
@@ -119,11 +120,11 @@ public class GribFilesPanel extends JPanel {
 
     grib1Table = new BeanTable(Grib1Bean.class, (PreferencesExt) prefs.node("Grib1Bean"), false);
     varPopup = new PopupMenu(grib1Table.getJTable(), "Options");
-    varPopup.addAction("Open in Grib-Raw", new AbstractAction() {
+    varPopup.addAction("Open in Grib1-Collection", new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
         Grib1Bean pb = (Grib1Bean) grib1Table.getSelectedBean();
         if (pb == null) return;
-        GribFilesPanel.this.firePropertyChange("openGrib1Raw", null, pb.m.getPath());
+        GribFilesPanel.this.firePropertyChange("openGrib1Collection", null, pb.m.getPath());
       }
     });
 
@@ -174,7 +175,6 @@ public class GribFilesPanel extends JPanel {
     grib2Table.saveState(false);
     collectionTable.saveState(false);
     prefs.putBeanObject("InfoWindowBounds", infoWindow.getBounds());
-    if (split != null) prefs.putInt("splitPos", split.getDividerLocation());
     if (split2 != null) prefs.putInt("splitPos2", split2.getDividerLocation());
   }
 
@@ -195,7 +195,7 @@ public class GribFilesPanel extends JPanel {
   ///////////////////////////////////////////////
   private static final KMPMatch matcher = new KMPMatch("GRIB".getBytes());
 
-  private List<CollectionBean> collections = new ArrayList<CollectionBean>();
+  private List<CollectionBean> collections = new ArrayList<>();
 
   public void setCollection(String spec) throws IOException {
     collections.add(new CollectionBean(spec));
@@ -203,7 +203,7 @@ public class GribFilesPanel extends JPanel {
   }
 
   private void readFiles(List<CollectionBean> beans) {
-    List<Object> files = new ArrayList<Object>();
+    List<Object> files = new ArrayList<>();
     for (CollectionBean bean : beans) {
       for (MFile mfile : bean.fileList) {
         String path = mfile.getPath();
@@ -218,9 +218,7 @@ public class GribFilesPanel extends JPanel {
 
   private Object getGribBean(MFile ff) {
     String path = ff.getPath();
-    RandomAccessFile raf = null;
-    try {
-      raf = new ucar.unidata.io.RandomAccessFile(path, "r");
+    try (RandomAccessFile raf= new ucar.unidata.io.RandomAccessFile(path, "r")) {
       raf.order(ucar.unidata.io.RandomAccessFile.BIG_ENDIAN);
       raf.seek(0);
 
@@ -239,12 +237,8 @@ public class GribFilesPanel extends JPanel {
       System.out.printf("Failed on %s%n", path);
       ioe.printStackTrace();
 
-    } finally {
-      if (raf != null) try {
-        raf.close();
-      } catch (IOException e) {
-      }
     }
+
     return null;
  }
 
@@ -371,7 +365,7 @@ public class GribFilesPanel extends JPanel {
           index.makeIndex(m.getPath(), null);
         }
 
-        Map<Long, Grib2SectionGridDefinition> gdsSet = new HashMap<Long, Grib2SectionGridDefinition>();
+        Map<Long, Grib2SectionGridDefinition> gdsSet = new HashMap<>();
         for (Grib2SectionGridDefinition gds : index.getGds()) {
           if (gdsSet.get(gds.calcCRC()) == null)
             gdsSet.put(gds.calcCRC(), gds);

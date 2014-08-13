@@ -121,9 +121,80 @@ public class Grib1SectionBinaryData {
     return GribNumbers.float4(raf);
   }
 
-  public void show(RandomAccessFile raf, Formatter f) {
 
+  public class BinaryDataInfo {
+    public int msgLength;
+    public int flag;
+    public int binscale;
+    public  float refvalue;
+    public int numbits;
+
+    public int getGridPoint() {
+      return (flag & GribNumbers.bitmask[0]);
+    }
+
+    public int getPacking() {
+      return (flag & GribNumbers.bitmask[1]);
+    }
+
+    public int getDataType() {
+      return (flag & GribNumbers.bitmask[2]);
+    }
+
+    public boolean hasMore() {
+      return (flag & GribNumbers.bitmask[3]) != 0;
+    }
+
+    public String getGridPointS() {
+      return getGridPoint() == 0 ? "grid point" : "Spherical harmonic coefficients";
+    }
+
+    public String getPackingS() {
+      return getPacking() == 0 ? "simple" : "Complex / second order";
+    }
+
+    public String getDataTypeS() {
+      return getDataType() == 0 ? "float" : "int";
+    }
   }
+
+    // for debugging
+  public BinaryDataInfo getBinaryDataInfo(RandomAccessFile raf) throws IOException {
+    raf.seek(startingPosition); // go to the data section
+
+    BinaryDataInfo info = new BinaryDataInfo();
+
+    info.msgLength = GribNumbers.uint3(raf);    // // octets 1-3 (section length)
+
+    /*
+    Code table 11 – Flag
+    Bit No. Value Meaning
+     1 0 Grid-point data
+       1 Spherical harmonic coefficients
+     2 0 Simple packing
+       1 Complex or second-order packing
+     3 0 Floating point values (in the original data) are represented
+       1 Integer values (in the original data) are represented
+     4 0 No additional flags at octet 14
+       1 Octet 14 contains additional flag bits
+     */
+
+    // octet 4, 1st half (packing flag)
+    info.flag = raf.read();
+
+    // Y × 10^D = R + X × 2^E
+    // octets 5-6 (E = binary scale factor)
+    info.binscale = GribNumbers.int2(raf);
+
+    // octets 7-10 (R = reference point = minimum value)
+    info.refvalue = GribNumbers.float4(raf);
+
+    // octet 11 (number of bits per value)
+    info.numbits = raf.read();
+    return info;
+  }
+
+
 
 
 }
