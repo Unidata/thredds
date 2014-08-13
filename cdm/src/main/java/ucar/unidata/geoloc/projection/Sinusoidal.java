@@ -229,6 +229,7 @@ public class Sinusoidal extends ProjectionImpl {
      *
      * @return the parameters as a String
      */
+    @Override
     public String paramsToString() {
         return toString();
     }
@@ -240,6 +241,7 @@ public class Sinusoidal extends ProjectionImpl {
      * @param pt2 the line goes between these two points
      * @return false if there is no seam
      */
+    @Override
     public boolean crossSeam(ProjectionPoint pt1, ProjectionPoint pt2) {
         // either point is infinite
         if (ProjectionPointImpl.isInfinite(pt1) || ProjectionPointImpl.isInfinite(pt2)) {
@@ -259,6 +261,7 @@ public class Sinusoidal extends ProjectionImpl {
      * @param result the object to write to
      * @return the given result
      */
+    @Override
     public ProjectionPoint latLonToProj(LatLonPoint latLon, ProjectionPointImpl result) {
         double deltaLon_d = LatLonPointImpl.range180(latLon.getLongitude() - centMeridian);
         double fromLat_r = Math.toRadians(latLon.getLatitude());
@@ -277,23 +280,27 @@ public class Sinusoidal extends ProjectionImpl {
      * @param result the object to write to
      * @return LatLonPoint the lat/lon coordinates
      */
+    @Override
     public LatLonPoint projToLatLon(ProjectionPoint world, LatLonPointImpl result) {
         double fromX = world.getX() - falseEasting;
         double fromY = world.getY() - falseNorthing;
 
         double toLat_r = fromY / earthRadius;
-        double toLon_r = Math.toRadians(centMeridian);
-        if (!Misc.closeEnough(toLat_r, Math.PI / 2, 1e-10)) {
-            toLon_r += fromX / (earthRadius * Math.cos(toLat_r));
+        double toLon_r;
+
+        if (Misc.closeEnough(Math.abs(toLat_r), PI_OVER_2, 1e-10)) {
+            toLat_r = toLat_r < 0 ? -PI_OVER_2 : +PI_OVER_2;
+            toLon_r = Math.toRadians(centMeridian);  // if lat == +- pi/2, set lon = centMeridian (Snyder 248)
+        } else if (Math.abs(toLat_r) < PI_OVER_2) {
+            toLon_r = Math.toRadians(centMeridian) + fromX / (earthRadius * Math.cos(toLat_r));
+        } else {
+            return INVALID;  // Projection point is off the earth.
         }
 
-        if (Misc.closeEnough(toLon_r, Math.PI, 1e-10)) {
-            toLon_r = Math.PI;
-        }
-
-        // Longitudes less than -pi or greater than +pi are off the earth.
-        if (Math.abs(toLon_r) > Math.PI) {
-            return INVALID;
+        if (Misc.closeEnough(Math.abs(toLon_r), PI, 1e-10)) {
+            toLon_r = toLon_r < 0 ? -PI : +PI;
+        } else if (Math.abs(toLon_r) > PI) {
+            return INVALID;  // Projection point is off the earth.
         }
 
         result.setLatitude(Math.toDegrees(toLat_r));
@@ -316,66 +323,16 @@ public class Sinusoidal extends ProjectionImpl {
 
     @Override
     public LatLonRect projToLatLonBB(ProjectionRect boundingBoxProj) {
-//        ProjectionPoint lowerLeftProj  = boundingBoxProj.getLowerLeftPoint();
-//        ProjectionPoint lowerRightProj = boundingBoxProj.getLowerRightPoint();
-//        ProjectionPoint upperLeftProj  = boundingBoxProj.getUpperLeftPoint();
-//        ProjectionPoint upperRightProj = boundingBoxProj.getUpperRightPoint();
-//
-//        // We need to find which projection points can be converted into valid lat/lon points.
-//        List<ProjectionPoint> goodPoints = new LinkedList<>();
-//
-//        LatLonPoint lowerLeftLatLon  = projToLatLon(lowerLeftProj);
-//        if (lowerLeftLatLon != INVALID) {
-//            goodPoints.add(lowerLeftProj);
-//        }
-//
-//        LatLonPoint lowerRightLatLon = projToLatLon(lowerRightProj);
-//        if (lowerRightLatLon != INVALID) {
-//            goodPoints.add(lowerRightProj);
-//        }
-//
-//        LatLonPoint upperLeftLatLon  = projToLatLon(upperLeftProj);
-//        if (upperLeftLatLon != INVALID) {
-//            goodPoints.add(upperLeftProj);
-//        }
-//
-//        LatLonPoint upperRightLatLon = projToLatLon(upperRightProj);
-//        if (upperRightLatLon != INVALID) {
-//            goodPoints.add(upperRightProj);
-//        }
-//
-//
-//        if (goodPoints.size() >= 3) {
-//            // Do nothing; we have enough good points to make a bounding box.
-//        } else if (goodPoints.size() == 2) {
-//            if (lowerLeftLatLon != INVALID && lowerRightLatLon != INVALID) {
-//
-//            } else if (upperLeftLatLon != INVALID && upperRightLatLon != INVALID) {
-//
-//            } else if (lowerLeftLatLon != INVALID && upperLeftLatLon != INVALID) {
-//
-//            } else if (lowerRightLatLon != INVALID && upperRightLatLon != INVALID) {
-//
-//            }
-//        } else if (goodPoints.size() == 1) {
-//
-//        } else {
-//            // We cannot create a lat/lon bounding box from the supplied proj coords.
-//            // LOOK: Is it a good idea to return null here? Maybe we need the concept of an "invalid bounding box"?
-//            return null;
-//        }
+        ProjectionPoint lowerLeftProj  = boundingBoxProj.getLowerLeftPoint();
+        ProjectionPoint lowerRightProj = boundingBoxProj.getLowerRightPoint();
+        ProjectionPoint upperLeftProj  = boundingBoxProj.getUpperLeftPoint();
+        ProjectionPoint upperRightProj = boundingBoxProj.getUpperRightPoint();
 
+        // We need to find which projection points can be converted into valid lat/lon points.
+        List<ProjectionPoint> goodPoints = new LinkedList<>();
 
-
-        // Convert the 4 corners of bounding box to lat/lon. These are in degrees, as is centMeridian.
-        LatLonPoint lowerLeftLatLon  = projToLatLon(boundingBoxProj.getLowerLeftPoint());
-        LatLonPoint lowerRightLatLon = projToLatLon(boundingBoxProj.getLowerRightPoint());
-        LatLonPoint upperLeftLatLon  = projToLatLon(boundingBoxProj.getUpperLeftPoint());
-        LatLonPoint upperRightLatLon = projToLatLon(boundingBoxProj.getUpperRightPoint());
-
-        List<LatLonPoint> goodPoints = new LinkedList<>();
-        for (LatLonPoint point : Arrays.asList(lowerLeftLatLon, lowerRightLatLon, upperLeftLatLon, upperRightLatLon)) {
-            if (point != INVALID) {
+        for (ProjectionPoint point : Arrays.asList(lowerLeftProj, lowerRightProj, upperLeftProj, upperRightProj)) {
+            if (projToLatLon(point) != INVALID) {
                 goodPoints.add(point);
             }
         }
@@ -383,52 +340,51 @@ public class Sinusoidal extends ProjectionImpl {
         if (goodPoints.size() >= 3) {
             // Do nothing; we have enough good points to make a bounding box.
         } else if (goodPoints.size() == 2) {
-            if (lowerLeftLatLon != INVALID && lowerRightLatLon != INVALID) {
-                if (lowerLeftLatLon.getLongitude() <= centMeridian && lowerRightLatLon.getLongitude() >= centMeridian) {
-                    // The lower corners straddle the central meridian, so we know that the maximum latitude of the
-                    // bounding box will be 90 degrees.
-                    goodPoints.add(new LatLonPointImpl(90, 0));  // The longitude doesn't matter.
-                } else {
-                    // We have the 2 lower corners of the bounding box.
-                    // We need to extend it to the edge of the earth (lon == pi).
-                    double lon_rad = Math.PI;  // Both upperLeftLatLon and upperRightLatLon will have this lon.
-
-                    double lowerLeftProjX = boundingBoxProj.getLowerLeftPoint().getX();
-                    double upperLeftLat_rad = calcLat_rad(lon_rad, lowerLeftProjX);  // In radians
-                    upperLeftLatLon = new LatLonPointImpl(Math.toDegrees(upperLeftLat_rad), Math.toDegrees(lon_rad));
-                    goodPoints.add(upperLeftLatLon);
-
-                    double lowerRightProjX = boundingBoxProj.getLowerRightPoint().getX();
-                    double upperRightLat_rad = calcLat_rad(lon_rad, lowerRightProjX);
-                    upperRightLatLon = new LatLonPointImpl(Math.toDegrees(upperRightLat_rad), Math.toDegrees(lon_rad));
-                    goodPoints.add(upperRightLatLon);
-                }
-            } else if (upperLeftLatLon != INVALID && upperRightLatLon != INVALID) {
-                if (upperLeftLatLon.getLongitude() <= centMeridian && upperRightLatLon.getLongitude() >= centMeridian) {
-                    // The upper corners straddle the central meridian, so we know that the minimum latitude of the
-                    // bounding box will be -90 degrees.
-                    goodPoints.add(new LatLonPointImpl(-90, 0));  // The longitude doesn't matter.
-                } else {
-                    // We have the 2 upper corners of the bounding box.
-                    // We need to extend it to the edge of the earth (lon == -pi).
-                    double lon = Math.PI;  // Both lowerLeftLatLon and lowerRightLatLon will have this lon.
-                }
+            if (projToLatLon(lowerLeftProj) != INVALID && projToLatLon(lowerRightProj) != INVALID) {
+                // We need upperLeftProj and upperRightProj.
+                goodPoints.add(new ProjectionPointImpl(lowerLeftProj.getX(), calcMaxYAt(lowerLeftProj.getX())));
+                goodPoints.add(new ProjectionPointImpl(lowerRightProj.getX(), calcMaxYAt(lowerRightProj.getX())));
+            } else if (projToLatLon(upperLeftProj) != INVALID && projToLatLon(upperRightProj) != INVALID) {
+                // We need lowerLeftProj and lowerRightProj.
+                goodPoints.add(new ProjectionPointImpl(upperLeftProj.getX(), calcMinYAt(upperLeftProj.getX())));
+                goodPoints.add(new ProjectionPointImpl(upperRightProj.getX(), calcMinYAt(upperRightProj.getX())));
+            } else if (projToLatLon(lowerLeftProj) != INVALID && projToLatLon(upperLeftProj) != INVALID) {
+                // We need lowerRightProj and upperRightProj.
+                goodPoints.add(new ProjectionPointImpl(calcMaxXAt(lowerLeftProj.getY()), lowerLeftProj.getY()));
+                goodPoints.add(new ProjectionPointImpl(calcMaxXAt(upperLeftProj.getY()), upperLeftProj.getY()));
+            } else if (projToLatLon(lowerRightProj) != INVALID && projToLatLon(upperRightProj) != INVALID) {
+                // We need lowerLeftProj and upperLeftProj.
+                goodPoints.add(new ProjectionPointImpl(calcMinXAt(lowerRightProj.getY()), lowerRightProj.getY()));
+                goodPoints.add(new ProjectionPointImpl(calcMinXAt(upperRightProj.getY()), upperRightProj.getY()));
+            } else {
+                throw new AssertionError("CAN'T HAPPEN: We checked all possible pairings of good points." +
+                        "Two good points on opposite corners is impossible.");
             }
         } else if (goodPoints.size() == 1) {
-
+            if (projToLatLon(lowerLeftProj) != INVALID) {
+                // We need upperLeftProj and lowerRightProj.
+                goodPoints.add(new ProjectionPointImpl(lowerLeftProj.getX(), calcMaxYAt(lowerLeftProj.getX())));
+                goodPoints.add(new ProjectionPointImpl(calcMaxXAt(lowerLeftProj.getY()), lowerLeftProj.getY()));
+            } else if (projToLatLon(lowerRightProj) != INVALID) {
+                // We need upperRightProj and lowerLeftProj.
+                goodPoints.add(new ProjectionPointImpl(lowerRightProj.getX(), calcMaxYAt(lowerRightProj.getX())));
+                goodPoints.add(new ProjectionPointImpl(calcMinXAt(lowerRightProj.getY()), lowerRightProj.getY()));
+            } else if (projToLatLon(upperLeftProj) != INVALID) {
+                // We need lowerLeftProj and upperRightProj.
+                goodPoints.add(new ProjectionPointImpl(upperLeftProj.getX(), calcMinYAt(upperLeftProj.getX())));
+                goodPoints.add(new ProjectionPointImpl(calcMaxXAt(upperLeftProj.getY()), upperLeftProj.getY()));
+            } else if (projToLatLon(upperRightProj) != INVALID) {
+                // We need lowerRightProj and upperleftProj.
+                goodPoints.add(new ProjectionPointImpl(upperRightProj.getX(), calcMinYAt(upperRightProj.getX())));
+                goodPoints.add(new ProjectionPointImpl(calcMinXAt(upperRightProj.getY()), upperRightProj.getY()));
+            } else {
+                throw new AssertionError("CAN'T HAPPEN: We checked all points. One of them should have been valid.");
+            }
         } else {
-            // We cannot create a lat/lon bounding box from the supplied proj coords.
-            // LOOK: Is it a good idea to return null here? Maybe we need the concept of an "invalid bounding box"?
-            return null;
+            throw new IllegalArgumentException("The bounding box doesn't intercept the earth: " + boundingBoxProj);
         }
 
-        return null;
-    }
-
-    private double calcLat_rad(double lon_rad, double x) {
-        // This formula comes from solving formula 30-1 for phi. See Snyder p 247.
-        double deltaLon_r = lon_rad - Math.toRadians(centMeridian);
-        return Math.acos(x / (earthRadius * deltaLon_r));
+        return makeLatLonRect(goodPoints);
     }
 
 
@@ -437,23 +393,21 @@ public class Sinusoidal extends ProjectionImpl {
      *
      * @param x0  defines a line that intersects the earth, in the projection coordinate system.
      * @return the minimum and maximum y-coords along the line {@code x = x0} that are still "on the earth".
-     * @throws java.lang.IllegalArgumentException  if the line {@code x = x0} does not intersect the earth.
+     * @throws IllegalArgumentException  if the line {@code x = x0} does not intersect the earth.
      */
-    public double[] calcMinAndMaxYsAt(double x0) {
-        LatLonPoint middleLatLon_d = new LatLonPointImpl(0, 0);
-        ProjectionPoint middleProj = latLonToProj(middleLatLon_d);
-
-        if (projToLatLon(x0, middleProj.getY()).equals(INVALID)) {
+    public double[] calcMinAndMaxYsAt(double x0) throws IllegalArgumentException {
+        if (projToLatLon(x0, falseNorthing) == INVALID) {
             throw new IllegalArgumentException("The line x = x0 does not intersect the earth. x0 = " + x0);
         }
 
-        double limitLon_r = (x0 < middleProj.getX()) ? -Math.PI : Math.PI;
+        double x0natural = x0 - falseEasting;
+        double limitLon_r = (x0natural < 0) ? -PI : +PI;
         double deltaLon_r = limitLon_r - Math.toRadians(centMeridian);
 
         // This formula comes from solving 30-1 for phi, and then plugging it into 30-2. See Snyder, p 247.
-        double minY = -earthRadius * Math.acos(x0 / (earthRadius * deltaLon_r));
-        double maxY = +earthRadius * Math.acos(x0 / (earthRadius * deltaLon_r));
-        return new double[] { minY, maxY };
+        double minY = -earthRadius * Math.acos(x0natural / (earthRadius * deltaLon_r));
+        double maxY = +earthRadius * Math.acos(x0natural / (earthRadius * deltaLon_r));
+        return new double[] { minY + falseNorthing, maxY + falseNorthing };
     }
 
     /**
@@ -461,24 +415,61 @@ public class Sinusoidal extends ProjectionImpl {
      *
      * @param y0 defines a line that intersects the earth, in the projection coordinate system.
      * @return the minimum and maximum x-coords along the line {@code y = y0} that are still "on the earth".
-     * @throws java.lang.IllegalArgumentException if the line {@code y = y0} does not intersect the earth.
+     * @throws IllegalArgumentException if the line {@code y = y0} does not intersect the earth.
      */
-    public double[] calcMinAndMaxXsAt(double y0) {
-        LatLonPoint middleLatLon_d = new LatLonPointImpl(0, 0);
-        ProjectionPoint middleProj = latLonToProj(middleLatLon_d);
-
-        if (projToLatLon(middleProj.getX(), y0).equals(INVALID)) {
+    public double[] calcMinAndMaxXsAt(double y0) throws IllegalArgumentException {
+        if (projToLatLon(falseEasting, y0) == INVALID) {
             throw new IllegalArgumentException("The line y = y0 does not intersect the earth. y0 = " + y0);
         }
 
-        double minX = calcXat(y0, -Math.PI);
-        double maxX = calcXat(y0, +Math.PI);
+        double minX = calcXat(y0, -PI);
+        double maxX = calcXat(y0, +PI);
+
         return new double[] { minX, maxX };
     }
 
     private double calcXat(double y0, double lon_r) {
-        // This formula comes from plugging 30-6 into 30-1. See Snyder, p 247-248.
+        double y0natural = y0 - falseNorthing;
         double deltaLon_r = lon_r - Math.toRadians(centMeridian);
-        return earthRadius * deltaLon_r * Math.cos(y0 / earthRadius);
+
+        // This formula comes from plugging 30-6 into 30-1. See Snyder, p 247-248.
+        double x = earthRadius * deltaLon_r * Math.cos(y0natural / earthRadius);
+
+        return x + falseEasting;
+    }
+
+    private double calcMinYAt(double x0) throws IllegalArgumentException {
+        return calcMinAndMaxYsAt(x0)[0];
+    }
+
+    private double calcMaxYAt(double x0) throws IllegalArgumentException {
+        return calcMinAndMaxYsAt(x0)[1];
+    }
+
+    private double calcMinXAt(double y0) throws IllegalArgumentException {
+        return calcMinAndMaxXsAt(y0)[0];
+    }
+
+    private double calcMaxXAt(double y0) throws IllegalArgumentException {
+        return calcMinAndMaxXsAt(y0)[1];
+    }
+
+    private LatLonRect makeLatLonRect(List<ProjectionPoint> projPoints) {
+        double minLat = Double.MAX_VALUE;
+        double minLon = Double.MAX_VALUE;
+        double maxLat = Double.MIN_VALUE;
+        double maxLon = Double.MIN_VALUE;
+
+        for (ProjectionPoint projPoint : projPoints) {
+            LatLonPoint latLonPoint = projToLatLon(projPoint);
+            assert latLonPoint != INVALID : "We should have filtered out bad points and added good ones. WTF?";
+
+            minLat = Math.min(minLat, latLonPoint.getLatitude());
+            minLon = Math.min(minLon, latLonPoint.getLongitude());
+            maxLat = Math.max(maxLat, latLonPoint.getLatitude());
+            maxLon = Math.max(maxLon, latLonPoint.getLongitude());
+        }
+
+        return new LatLonRect(new LatLonPointImpl(minLat, minLon), new LatLonPointImpl(maxLat, maxLon));
     }
 }
