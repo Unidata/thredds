@@ -72,8 +72,7 @@ abstract public class DapNode
             this.sort = DapSort.ATOMICVARIABLE;
         else if(this instanceof DapSequence)  //must precede structure because seq subclass struct
                 this.sort = DapSort.SEQUENCE;
-        else if(this instanceof DapStructure
-            || this instanceof DapStructure)
+        else if(this instanceof DapStructure)
             this.sort = DapSort.STRUCTURE;
         else if(this instanceof DapOtherXML)
             this.sort = DapSort.OTHERXML;
@@ -360,7 +359,7 @@ abstract public class DapNode
     computefqn()
     {
         List<DapNode> path = getPath();
-        String fqn = "";
+        StringBuilder fqn = new StringBuilder();
         DapNode parent = path.get(0);
         for(int i = 1;i < path.size();i++) {// start past the root dataset
             DapNode current = path.get(i);
@@ -368,12 +367,14 @@ abstract public class DapNode
             switch (parent.getSort()) {
             case DATASET:
             case GROUP:
-                fqn = fqn + '/' + current.getEscapedShortName();
+                fqn.append('/');
+                fqn.append(current.getEscapedShortName());
                 break;
             // These use '.'
             case STRUCTURE:
             case ENUMERATION:
-                fqn = fqn + '.' + current.getEscapedShortName();
+                fqn.append('.');
+                fqn.append(current.getEscapedShortName());
                 break;
             // Others should never happen
             default:
@@ -381,7 +382,7 @@ abstract public class DapNode
             }
             parent = current;
         }
-        return fqn;
+        return fqn.toString();
     }
 
     //////////////////////////////////////////////////

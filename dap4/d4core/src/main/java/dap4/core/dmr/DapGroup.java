@@ -49,7 +49,7 @@ public class DapGroup extends DapNode implements DapDecl
 
     public void
     setDecls(List<? extends DapNode> decls)
-            throws DapException
+        throws DapException
     {
         decls.clear();
         groups.clear();
@@ -67,7 +67,7 @@ public class DapGroup extends DapNode implements DapDecl
 
     public void
     addDecl(DapNode newdecl)
-            throws DapException
+        throws DapException
     {
         DapSort newsort = newdecl.getSort();
         String newname = newdecl.getShortName();
@@ -75,7 +75,7 @@ public class DapGroup extends DapNode implements DapDecl
         if(newsort != DapSort.DIMENSION || newname != null) {
             for(DapNode decl : decls) {
                 if(newsort == decl.getSort()
-                        && newname.equals(decl.getShortName()))
+                    && newname.equals(decl.getShortName()))
                     throw new DapException("DapGroup: attempt to add duplicate decl: " + newname);
             }
         } else { // Anonymous
@@ -253,14 +253,17 @@ public class DapGroup extends DapNode implements DapDecl
      */
     public DapNode
     findByFQN(String fqn, DapSort sort)
-            throws DapException
+        throws DapException
     {
-        return findByFQN(fqn, EnumSet.of(sort)).get(0);
+        List<DapNode> nodes = findByFQN(fqn, EnumSet.of(sort));
+        if(nodes == null || nodes.size() == 0)
+            throw new DapException("No such sort:" + sort);
+        return nodes.get(0);
     }
 
     public List<DapNode>
     findByFQN(String fqn, EnumSet<DapSort> sortset)
-            throws DapException
+        throws DapException
     {
         fqn = fqn.trim();
         if(fqn == null)

@@ -20,7 +20,7 @@ public enum ChecksumMode
         switch (ckm) {
         case DMR:  return rqm == RequestMode.DMR;
         case DAP: return rqm == RequestMode.DAP;
-        case ALL: return rqm == RequestMode.DMR || rqm == RequestMode.DMR;
+        case ALL: return rqm == RequestMode.DMR || rqm == RequestMode.DAP;
         }
         return false;
     }

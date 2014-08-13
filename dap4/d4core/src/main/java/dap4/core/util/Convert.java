@@ -17,14 +17,14 @@ import java.net.URL;
  * The Java type system is also
  * involved because neither DAP nor
  * CDM have perfect mappings to Java.
- * 
+ * <p/>
  * In any case, this means that we have to
  * use switches that operate on DAP X CDM
  * atomic types and this is really ugly.
- * 
- *      * Special note about DAP4 char: this is treated
- *      * as equivalent to Byte, so it does not appear here.
- *      * Note also, this may turn out to be a really bad idea.
+ * <p/>
+ * * Special note about DAP4 char: this is treated
+ * * as equivalent to Byte, so it does not appear here.
+ * * Note also, this may turn out to be a really bad idea.
  */
 
 public abstract class Convert
@@ -77,26 +77,32 @@ public abstract class Convert
      * Given a DapAttribute basetype
      * convert it to avoid losing information.
      * This primarily alters unsigned types
+     *
      * @param basetype the basetype of the DapAttribute
      * @return the upcast DapType
      */
     static public DapType
     upcastType(DapType basetype)
     {
-	switch (basetype.getAtomicType()) {
-	case UInt8:  return DapType.INT16;
-	case UInt16: return DapType.INT32;
-	case UInt32: return DapType.INT64;
-	default: break;
-	}
-	return basetype;
+        switch (basetype.getAtomicType()) {
+        case UInt8:
+            return DapType.INT16;
+        case UInt16:
+            return DapType.INT32;
+        case UInt32:
+            return DapType.INT64;
+        default:
+            break;
+        }
+        return basetype;
     }
 
     /**
      * Given an value from a DapAttribute,
      * convert it to avoid losing information.
      * This primarily alters unsigned types
-     * @param o the object to upcast
+     *
+     * @param o       the object to upcast
      * @param srctype the basetype of the DapAttribute
      * @return the upcast value
      */
@@ -110,23 +116,25 @@ public abstract class Convert
             throw new ConversionException("Unexpected value type: " + o.getClass());
         switch (srcatomtype) {
         case UInt8:
-            long lvalue = ((Byte)o).longValue();
-	        lvalue &= 0xFFL;
-            result = new Short((short)lvalue);
+            long lvalue = ((Byte) o).longValue();
+            lvalue &= 0xFFL;
+            result = new Short((short) lvalue);
             break;
         case UInt16:
             lvalue = ((Short) o).longValue();
-	        lvalue &= 0xFFFFL;
-            result = new Integer((int)lvalue);
+            lvalue &= 0xFFFFL;
+            result = new Integer((int) lvalue);
             break;
         case UInt32:
             lvalue = ((Integer) o).longValue();
-	        lvalue &= 0xFFFFFFFFL;
+            lvalue &= 0xFFFFFFFFL;
             result = new Long(lvalue);
             break;
         case Structure:
             throw new ConversionException("Cannot convert struct");// illegal
-	    default: result = o; break;
+        default:
+            result = o;
+            break;
         }
         return result;
     }
@@ -210,78 +218,115 @@ public abstract class Convert
             return convert(dsttype, ((DapEnum) srctype).getBaseType(), value);
         assert (!srcatomtype.isEnumType());
 
-	// presage
-	long lvalue = 0;
-	double dvalue = 0.0;
-	if(srcatomtype.isNumericType())
-	    lvalue = Convert.longValue(srctype,value);
-	else if(srcatomtype.isFloatType())
-	    dvalue = Convert.doubleValue(srctype,value);
+        // presage
+        long lvalue = 0;
+        double dvalue = 0.0;
+        if(srcatomtype.isNumericType())
+            lvalue = Convert.longValue(srctype, value);
+        else if(srcatomtype.isFloatType())
+            dvalue = Convert.doubleValue(srctype, value);
 
-	boolean fail = false;
-	switch (dstatomtype) {
-	case Char:
-	    if(!srcatomtype.isNumericType()) {fail=true; break;}
-	    lvalue &= 0xFFL;
- 	    result = Character.valueOf((char)lvalue);
-	    break;
-	case UInt8:
-	    if(!srcatomtype.isNumericType()) {fail=true; break;}
-	    lvalue &= 0xFFL;
- 	    result = Byte.valueOf((byte)lvalue);
-	    break;
-	case Int8:
-	    if(!srcatomtype.isNumericType()) {fail=true; break;}
- 	    result = Byte.valueOf((byte)lvalue);
-	    break;
-	case UInt16:
-	    if(!srcatomtype.isNumericType()) {fail=true; break;}
-	    lvalue &= 0xFFFFL;
- 	    result = Short.valueOf((short)lvalue);
-	    break;
-	case Int16:
-	    if(!srcatomtype.isNumericType()) {fail=true; break;}
- 	    result = Short.valueOf((short)lvalue);
-	    break;
-	case UInt32:
-	    if(!srcatomtype.isNumericType()) {fail=true; break;}
-	    lvalue &= 0xFFFFL;
- 	    result = Integer.valueOf((int)lvalue);
-	    break;
-	case Int32:
-	    if(!srcatomtype.isNumericType()) {fail=true; break;}
- 	    result = Integer.valueOf((int)lvalue);
-	    break;
-	case Int64:
-	case UInt64:
-	    if(!srcatomtype.isNumericType()) {fail=true; break;}
- 	    result = Long.valueOf(lvalue);
-	    break;
+        boolean fail = false;
+        switch (dstatomtype) {
+        case Char:
+            if(!srcatomtype.isNumericType()) {
+                fail = true;
+                break;
+            }
+            lvalue &= 0xFFL;
+            result = Character.valueOf((char) lvalue);
+            break;
+        case UInt8:
+            if(!srcatomtype.isNumericType()) {
+                fail = true;
+                break;
+            }
+            lvalue &= 0xFFL;
+            result = Byte.valueOf((byte) lvalue);
+            break;
+        case Int8:
+            if(!srcatomtype.isNumericType()) {
+                fail = true;
+                break;
+            }
+            result = Byte.valueOf((byte) lvalue);
+            break;
+        case UInt16:
+            if(!srcatomtype.isNumericType()) {
+                fail = true;
+                break;
+            }
+            lvalue &= 0xFFFFL;
+            result = Short.valueOf((short) lvalue);
+            break;
+        case Int16:
+            if(!srcatomtype.isNumericType()) {
+                fail = true;
+                break;
+            }
+            result = Short.valueOf((short) lvalue);
+            break;
+        case UInt32:
+            if(!srcatomtype.isNumericType()) {
+                fail = true;
+                break;
+            }
+            lvalue &= 0xFFFFL;
+            result = Integer.valueOf((int) lvalue);
+            break;
+        case Int32:
+            if(!srcatomtype.isNumericType()) {
+                fail = true;
+                break;
+            }
+            result = Integer.valueOf((int) lvalue);
+            break;
+        case Int64:
+        case UInt64:
+            if(!srcatomtype.isNumericType()) {
+                fail = true;
+                break;
+            }
+            result = Long.valueOf(lvalue);
+            break;
 
-	case Float32:
-	    if(!srcatomtype.isNumericType()) {fail=true; break;}
-	    result = Float.valueOf((float)dvalue);
-	    break;	    
-	case Float64:
-	    if(!srcatomtype.isNumericType()) {fail=true; break;}
-	    result = Double.valueOf(dvalue);
-	    break;	    
+        case Float32:
+            if(!srcatomtype.isNumericType()) {
+                fail = true;
+                break;
+            }
+            result = Float.valueOf((float) dvalue);
+            break;
+        case Float64:
+            if(!srcatomtype.isNumericType()) {
+                fail = true;
+                break;
+            }
+            result = Double.valueOf(dvalue);
+            break;
 
-	case String:
-	case URL:
-	    if(srcatomtype == AtomicType.Opaque) {
-	    } else
-	        result = value.toString();
-	    break;
+        case String:
+        case URL:
+            if(srcatomtype == AtomicType.Opaque) {
+            } else
+                result = value.toString();
+            break;
 
         case Opaque:
-	    if(srcatomtype != AtomicType.Opaque) {fail=true; break;}
-	    result = value;
+            if(srcatomtype != AtomicType.Opaque) {
+                fail = true;
+                break;
+            }
+            result = value;
             break;
 
         case Enum:
-	    if(!srcatomtype.isIntegerType()) {fail=true; break;}
+            if(!srcatomtype.isIntegerType()) {
+                fail = true;
+                break;
+            }
             // Check that the src value matches one of the dst enum consts
+            //Coverity[FB.BC_UNCONFIRMED_CAST]
             DapEnum en = (DapEnum) dsttype;
             if(en.lookup(lvalue) == null)
                 throw new ConversionException("Enum constant failure");
@@ -307,9 +352,9 @@ public abstract class Convert
      * @param value   The object to convert; it is an instance of
      *                Long or Double
      * @return converted value as a long.
-     *         but is guaranteed to be in the proper range for dsttype.
+     * but is guaranteed to be in the proper range for dsttype.
      * @throws ConversionException if cannot convert
-     *                                      (including out of range)
+     *                             (including out of range)
      */
 
     static public long
@@ -322,14 +367,18 @@ public abstract class Convert
         assert (!srctype.isEnumType());
 
         if(srcatomtype.isCharType())
-	        return ((long)((Character)value).charValue()) & 0xFFL;
+            //Coverity[FB.BC_UNCONFIRMED_CAST]
+            return ((long) ((Character) value).charValue()) & 0xFFL;
         else if(srcatomtype.isIntegerType())
-	        return ((Number)value).longValue();
+            //Coverity[FB.BC_UNCONFIRMED_CAST]
+            return ((Number) value).longValue();
         else if(srcatomtype == AtomicType.Float32)
-            return ((Float)value).longValue();
+            //Coverity[FB.BC_UNCONFIRMED_CAST]
+            return ((Float) value).longValue();
         else if(srcatomtype == AtomicType.Float64)
-            return ((Double)value).longValue();
-	else
+            //Coverity[FB.BC_UNCONFIRMED_CAST]
+            return ((Double) value).longValue();
+        else
             throw new ConversionException(
                 String.format("Cannot convert: %s -> long", srcatomtype));
     }
@@ -342,9 +391,9 @@ public abstract class Convert
      * @param srctype Assumed type of the value; must be a numeric type
      * @param value   The object to convert
      * @return converted value as a double
-     *         but is guaranteed to be in the proper range for dsttype.
+     * but is guaranteed to be in the proper range for dsttype.
      * @throws ConversionException if cannot convert
-     *                                      (including out of range)
+     *                             (including out of range)
      */
 
     static public double
@@ -353,12 +402,13 @@ public abstract class Convert
         AtomicType srcatomtype = srctype.getAtomicType();
 
         if(srcatomtype.isEnumType())
+            //Coverity[FB.BC_UNCONFIRMED_CAST]
             return doubleValue(((DapEnum) srctype).getBaseType(), value);
         assert (!srcatomtype.isEnumType());
 
         double dvalue = 0;
         if(srcatomtype == AtomicType.UInt64) {
-            BigInteger bi = toBigInteger(((Long)value));
+            BigInteger bi = toBigInteger(((Long) value));
             BigDecimal bd = new BigDecimal(bi);
             dvalue = bd.doubleValue();
         } else if(srcatomtype.isIntegerType() || srcatomtype.isCharType()) {
@@ -380,14 +430,15 @@ public abstract class Convert
      * but to properly process them,
      * it is necessary to convert them
      * to a correct form of BigInteger
+     *
      * @param l The long value
      * @return A proper non-negative BigInteger
      */
     static public BigInteger toBigInteger(long l)
     {
-	    BigInteger bi = BigInteger.valueOf(l);
+        BigInteger bi = BigInteger.valueOf(l);
         bi = bi.and(DapUtil.BIG_UMASK64);
-	    return bi;
+        return bi;
     }
 
 
@@ -472,29 +523,33 @@ public abstract class Convert
     fromString(String value, DapType dsttype)
     {
         if(value == null) return value;
-	    assert (dsttype != null);
+        assert (dsttype != null);
         AtomicType atomtype = dsttype.getAtomicType();
         long lvalue = 0;
         if(atomtype.isIntegerType() || atomtype.isCharType()) {
             BigInteger bi = BigInteger.ZERO;
             try {
                 bi = new BigInteger(value);
-		        lvalue = bi.longValue(); // should get the bits right
+                lvalue = bi.longValue(); // should get the bits right
             } catch (NumberFormatException nfe) {
                 throw new ConversionException("Expected integer value: " + value);
             }
             // Force into range
-            lvalue = forceRange(atomtype,lvalue);
+            lvalue = forceRange(atomtype, lvalue);
             switch (atomtype) {
-            case UInt8: case Int8:
-                return Byte.valueOf((byte)lvalue);
-            case UInt16: case Int16:
-                return Short.valueOf((short)lvalue);
-            case UInt64: case Int64:
+            case UInt8:
+            case Int8:
+                return Byte.valueOf((byte) lvalue);
+            case UInt16:
+            case Int16:
+                return Short.valueOf((short) lvalue);
+            case UInt64:
+            case Int64:
                 return Long.valueOf(lvalue);
             case Char:
-                return Character.valueOf((char)lvalue);
-            default: assert false;
+                return Character.valueOf((char) lvalue);
+            default:
+                assert false;
             }
         } else if(atomtype.isFloatType()) {
             double d = 0;
@@ -508,15 +563,15 @@ public abstract class Convert
                 return new Float(d);
             case Float64:
                 return new Double(d);
-            default: assert false;
+            default:
+                assert false;
             }
         } else if(atomtype.isStringType()) {
             if(atomtype == AtomicType.URL) {
                 // See if this parses as a URL/URI
                 value = value.trim();
-                URL url = null;
                 try {
-                    url = new URL((String) value);
+                    new URL((String) value);   // purely want side effect of syntax checking
                 } catch (MalformedURLException mue) {
                     throw new ConversionException("Illegal URL value: " + value);
                 }
@@ -529,6 +584,7 @@ public abstract class Convert
                 throw new ConversionException("Illegal opaque value: " + value);
             opaque = opaque.substring(2, opaque.length());
             int len = opaque.length();
+            assert (len >= 0);
             if(len % 2 == 1) {
                 len++;
                 opaque = opaque + '0';
@@ -547,12 +603,13 @@ public abstract class Convert
             // Note that for this, we use the string as
             // an enum constant name to look for.
             String name = value.trim();
+            //Coverity[FB.BC_UNCONFIRMED_CAST]
             Long Lvalue = ((DapEnum) dsttype).lookup(name);
             if(Lvalue == null)
                 throw new ConversionException("Illegal enum constant value: " + name);
             return Lvalue;
         }
-         throw new ConversionException("Internal error");
+        throw new ConversionException("Internal error");
     }
 
 
@@ -580,52 +637,77 @@ public abstract class Convert
         // Do some preliminary conversions
         charornum = true;
         if(srcatomtype.isCharType())
-            lvalue = ((Character)value).charValue();
+            lvalue = ((Character) value).charValue();
         else if(srcatomtype.isNumericType())
-            lvalue = ((Number)value).longValue();
+            lvalue = ((Number) value).longValue();
         else if(srcatomtype == AtomicType.UInt64)
-            lvalue = ((BigInteger)value).longValue();
+            lvalue = ((BigInteger) value).longValue();
         else
             charornum = false;
 
         switch (srcatomtype) {
         case Char:
         case UInt8:
-            if(!charornum) {fail=true;break;}
+            if(!charornum) {
+                fail = true;
+                break;
+            }
             lvalue &= 0xFFL;
-            buf.append("'" + ((char)lvalue) + "'");
+            buf.append("'" + ((char) lvalue) + "'");
             break;
         case Int8:
-	        if(!charornum) {fail=true;break;}
+            if(!charornum) {
+                fail = true;
+                break;
+            }
             buf.append(Long.toString(lvalue));
             break;
         case Int16:
-	        if(!charornum) {fail=true;break;}
-            buf.append(Short.toString((short)lvalue));
+            if(!charornum) {
+                fail = true;
+                break;
+            }
+            buf.append(Short.toString((short) lvalue));
             break;
         case UInt16:
-	        if(!charornum) {fail=true;break;}
+            if(!charornum) {
+                fail = true;
+                break;
+            }
             buf.append(Long.toString((lvalue & 0xFFFFL)));
             break;
         case Int32:
-	        if(!charornum) {fail=true;break;}
+            if(!charornum) {
+                fail = true;
+                break;
+            }
             buf.append(Integer.toString((int) lvalue));
             break;
         case UInt32:
-	        if(!charornum) {fail=true;break;}
+            if(!charornum) {
+                fail = true;
+                break;
+            }
             buf.append(Long.toString((lvalue & 0xFFFFFFFFL)));
             break;
         case Int64:
-	        if(!charornum) {fail=true;break;}
+            if(!charornum) {
+                fail = true;
+                break;
+            }
             buf.append(Long.toString(lvalue));
             break;
         case UInt64:
-	        if(!charornum) {fail=true;break;}
+            if(!charornum) {
+                fail = true;
+                break;
+            }
             BigInteger bi = toBigInteger(lvalue);
             bi = bi.and(DapUtil.BIG_UMASK64);
             buf.append(bi.toString());
             break;
         case Enum:
+            //Coverity[FB.BC_UNCONFIRMED_CAST]
             DapEnum en = (DapEnum) srctype;
             String name = en.lookup(lvalue);
             if(name == null) name = "?";

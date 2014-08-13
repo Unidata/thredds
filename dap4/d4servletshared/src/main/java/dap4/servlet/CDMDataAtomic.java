@@ -28,7 +28,6 @@ public class CDMDataAtomic extends AbstractDataVariable
     protected DapType basetype = null;
     protected AtomicType atomtype = null;
 
-    protected Variable cdmvar = null;
     protected Array data = null;
 
     //////////////////////////////////////////////////
@@ -42,7 +41,6 @@ public class CDMDataAtomic extends AbstractDataVariable
         this.atomtype = this.basetype.getPrimitiveType();
         this.product = DapUtil.dimProduct(template.getDimensions());
         this.dsp = dsp;
-        this.cdmvar = (Variable)dsp.getCDMNode(template);
         this.data = array;
     }
 

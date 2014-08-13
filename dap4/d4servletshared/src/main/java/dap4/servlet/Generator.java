@@ -83,9 +83,7 @@ public class Generator extends DapSerializer
 
     protected Value values = null; // Value generator
     protected ByteArrayOutputStream stream = null;
-    protected byte[] serialization = null;
     protected ChunkWriter cw = null;
-    protected CEConstraint ce = null;
     protected boolean withdmr = true;
     protected DapDataset dmr = null;
 
@@ -225,6 +223,7 @@ public class Generator extends DapSerializer
                 System.err.flush();
             }
             try {
+                assert(writer != null);
                 writer.writeObject(basetype, value);
             } catch (IOException ioe) {
                 throw new DapException(ioe);

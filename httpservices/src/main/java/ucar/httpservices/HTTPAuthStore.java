@@ -131,7 +131,7 @@ public class HTTPAuthStore implements Serializable
         }
     }
 
-    //Coverity(FB.SE_COMPARATOR_SHOULD_BE_SERIALIZABLE)
+    //Coverity[FB.SE_COMPARATOR_SHOULD_BE_SERIALIZABLE]
     static protected class Compare implements Comparator<Entry>
     {
 

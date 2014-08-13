@@ -235,6 +235,7 @@ abstract public class CDMUtil
         case UInt32:
             return DataType.ENUM4;
         case Enum:
+            //Coverity[FB.BC_UNCONFIRMED_CAST]
             return enumtypefor(((DapEnum)dt).getBaseType());
         default:
             break;
@@ -312,6 +313,7 @@ abstract public class CDMUtil
         case Opaque:
             return DataType.OPAQUE;
         case Enum:
+            //Coverity[FB.BC_UNCONFIRMED_CAST]
             DapEnum dapenum = (DapEnum) daptype;
             switch (dapenum.getBaseType().getAtomicType()) {
             case Char:
@@ -591,8 +593,6 @@ abstract public class CDMUtil
     extractVector(D4DataAtomic dataset, long index, long count, long offset)
         throws DataException
     {
-        int i;
-        int icount = (int) count;
         Object vector = createVector(dataset.getType().getPrimitiveType(),count);
         try {
             dataset.read(index, count, vector, offset);
@@ -1038,6 +1038,7 @@ abstract public class CDMUtil
                     }
                     bresult[i] = (byte) fsrc[i];
                 }
+                break;
             case Int16: //Float32->Int16
                 result = (shresult = new short[len]);
                 for(i = 0;i < len;i++) shresult[i] = (short) fsrc[i];

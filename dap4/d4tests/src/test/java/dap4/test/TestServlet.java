@@ -183,7 +183,7 @@ public class TestServlet extends DapTestCommon
     chooseTestcases()
     {
         if(false) {
-            chosentests = locate("test_atomic_array.syn");
+            chosentests = locate("test_atomic_types.syn");
         } else {
             for(ServletTest tc : alltestcases) {
                 chosentests.add(tc);

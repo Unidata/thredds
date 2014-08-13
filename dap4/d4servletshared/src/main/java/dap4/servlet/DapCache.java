@@ -42,10 +42,10 @@ abstract public class DapCache
 
     static public synchronized DSP
     open(String path)
-            throws IOException
+        throws IOException
     {
         int lrusize = lru.size();
-        for(int i = lrusize - 1; i >= 0; i--) {
+        for(int i = lrusize - 1;i >= 0;i--) {
             DSP dsp = lru.get(i);
             String dsppath = dsp.getPath();
             if(dsppath.equals(path)) {
@@ -68,14 +68,13 @@ abstract public class DapCache
         return dsp;
     }
 
-    static public void flush() // for testing
+    static synchronized public void flush() // for testing
+        throws Exception
     {
         while(lru.size() > 0) {
-            try {
-                DSP dsp = lru.get(0);
-                CEConstraint.release(dsp.getDMR());
-                dsp.close();
-            } catch (Exception e) {/*ignore*/}
+            DSP dsp = lru.get(0);
+            CEConstraint.release(dsp.getDMR());
+            dsp.close();
             lru.remove(0);
         }
     }

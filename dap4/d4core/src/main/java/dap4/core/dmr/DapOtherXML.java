@@ -17,8 +17,6 @@ public class DapOtherXML extends DapAttribute
     //////////////////////////////////////////////////
     // Instance Variables
 
-    protected List<String> namespaceList = new ArrayList<String>();
-
     protected DapXML root = null;
 
     //////////////////////////////////////////////////

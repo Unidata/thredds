@@ -280,8 +280,6 @@ public class ChunkWriter extends OutputStream
         // There is data left to write.
         verifystate(); // are we in a state supporting data write?
 
-        int buffersize = chunk.position();
-
         // Force out the current chunk (might be empty)
         // but do not close the underlying output stream
         state = State.DATA; // pretend

@@ -30,7 +30,7 @@ public class Dap4Parser extends Dap4ParserBody
 
     protected ErrorResponse errorresponse = null;
 
-    protected Stack<DapNode> scopestack = new Stack<DapNode>();
+    protected Deque<DapNode> scopestack = new ArrayDeque<DapNode>();
 
     protected DapDataset root = null; // of the parse
 
@@ -123,8 +123,9 @@ public class Dap4Parser extends Dap4ParserBody
     DapNode
     searchScope(DapSort... sort)
     {
-        for(int i = scopestack.size() - 1;i >= 0;i--) {
-            DapNode node = scopestack.get(i);
+        Iterator it = scopestack.iterator();
+        while(it.hasNext()) {
+            DapNode node = (DapNode) it.next();
             for(int j = 0;j < sort.length;j++) {
                 if(node.getSort() == sort[j])
                     return node;
@@ -297,7 +298,6 @@ public class Dap4Parser extends Dap4ParserBody
     createvalue(SaxEvent value, DapAttribute parent)
         throws DapException
     {
-        DapType basetype = parent.getBaseType();
         List<String> textlist = null;
         if(value.eventtype == SaxEventType.CHARACTERS) {
             textlist = ParseUtil.collectValues(value.text);
@@ -305,9 +305,10 @@ public class Dap4Parser extends Dap4ParserBody
             textlist = new ArrayList<String>();
             textlist.add(value.value);
         }
-        for(String v : textlist) {
-            parent.addValue(v);
-        }
+        if(textlist != null)
+            for(String v : textlist) {
+                parent.addValue(v);
+            }
     }
 
     DapAttribute
@@ -409,7 +410,7 @@ public class Dap4Parser extends Dap4ParserBody
         assert (scopestack.peek().getSort() == DapSort.DATASET);
         this.root.sort();
         scopestack.pop();
-        if(!scopestack.empty())
+        if(!scopestack.isEmpty())
             throw new ParseException("Dataset: nested dataset");
         this.root.finish();
     }
@@ -749,14 +750,10 @@ public class Dap4Parser extends Dap4ParserBody
     void leavevariable()
         throws ParseException
     {
-        try {
-            DapVariable var = getVariableScope();
+            //DapVariable var = getVariableScope();
             //if(isdatadmr)
             //    validateVar(var);
             scopestack.pop();
-        } catch (DapException de) {
-            throw new ParseException(de);
-        }
     }
 
     void

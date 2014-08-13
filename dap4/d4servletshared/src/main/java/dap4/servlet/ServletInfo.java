@@ -57,8 +57,6 @@ public class ServletInfo
         this.servletname = this.servletconfig.getServletName();
         // See if we can get the absolute path of our resource directory
         if(this.servletconfig != null) {
-            Set<String> x1 = servletcontext.getResourcePaths("/");
-            String x2 = servletcontext.getRealPath("/WEB-INF");
             this.resourcedir = servletcontext.getRealPath("/WEB-INF/" + RESOURCEDIRNAME);
             this.resourcedir = DapUtil.canonicalpath(this.resourcedir);
         } else

@@ -147,12 +147,7 @@ public class DapXML extends DapNode
 
     public DapXML getParent()
     {
-        return (DapXML) getParent();
-    }
-
-    public void setParent(DapXML parent)
-    {
-        setParent(parent);
+        return (DapXML) super.getParent();
     }
 
     public List<DapXML> getElements()

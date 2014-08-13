@@ -125,15 +125,16 @@ abstract public class DapVariable extends DapNode implements DapDecl
     public String
     toString()
     {
-        String s = super.toString();
+        StringBuilder s = new StringBuilder();
+        s.append(super.toString());
         for(int i = 0;i < getRank();i++) {
             DapDimension dim = dimensions.get(i);
             if(dim == null) // should never happen
-                s = s + "(null)";
+                s.append("(null)");
             else
-                s = s + String.format("(%d)", dim.getSize());
+                s.append(String.format("(%d)", dim.getSize()));
         }
-        return s;
+        return s.toString();
     }
 
     abstract public boolean isLeaf();

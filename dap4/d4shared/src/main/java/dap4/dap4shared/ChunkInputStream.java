@@ -122,7 +122,9 @@ public class ChunkInputStream extends InputStream
                     throw new DapException("Malformed chunk count");
                 // Read the DMR databuffer
                 dmr8 = new byte[this.chunksize];
-                read(dmr8, 0, this.chunksize);
+                int red = read(dmr8, 0, this.chunksize);
+                if(red < this.chunksize)
+                    throw new DapException("Short chunk");
             } else
                 assert false : "Internal error";
 
@@ -176,7 +178,8 @@ public class ChunkInputStream extends InputStream
         // Read the error body databuffer
         byte[] bytes = new byte[this.chunksize];
         try {
-            read(bytes, 0, this.chunksize);
+            if(read(bytes, 0, this.chunksize) < this.chunksize)
+                throw new ErrorException("Short chunk");
         } catch (IOException ioe) {
             throw new ErrorException(ioe);
         }

@@ -214,8 +214,7 @@ public class HTTPSession implements AutoCloseable
 
         static public synchronized void setRetries(int retries)
         {
-            if(retries > 0)
-                RetryHandler.setRetries(retries);
+            RetryHandler.retries = retries;
         }
 
         static public synchronized boolean getVerbose()
@@ -512,30 +511,30 @@ public class HTTPSession implements AutoCloseable
     static public String
     getUrlAsString(String url) throws HTTPException
     {
-	try (
-        HTTPSession session = HTTPFactory.newSession(url);
-        HTTPMethod m = HTTPFactory.Get(session);) {
-        int status = m.execute();
-        String content = null;
-        if(status == 200) {
-            content = m.getResponseAsString();
+        try (
+            HTTPSession session = HTTPFactory.newSession(url);
+            HTTPMethod m = HTTPFactory.Get(session);) {
+            int status = m.execute();
+            String content = null;
+            if(status == 200) {
+                content = m.getResponseAsString();
+            }
+            return content;
         }
-        return content;
-	}
     }
 
     static public int
     putUrlAsString(String content, String url) throws HTTPException
     {
-        HTTPMethod m = HTTPFactory.Put(url);
+        int status = 0;
         try {
-            m.setRequestContent(new StringEntity(content, "application/text", "UTF-8"));
-	    //Coverity(RESOURCE_LEAK)
+            try (HTTPMethod m = HTTPFactory.Put(url);) {
+                m.setRequestContent(new StringEntity(content, "application/text", "UTF-8"));
+                status = m.execute();
+            }
         } catch (UnsupportedEncodingException uee) {
             throw new HTTPException(uee);
         }
-        int status = m.execute();
-        m.close();
         return status;
     }
 
@@ -656,9 +655,9 @@ public class HTTPSession implements AutoCloseable
         }
         this.legalurl = url;
         try {
-	    synchronized(this) {
+            synchronized (this) {
                 sessionClient = new DefaultHttpClient(connmgr);
-	    }
+            }
             if(TESTING) HTTPSession.track(this);
             setInterceptors();
         } catch (Exception e) {
@@ -954,12 +953,12 @@ public class HTTPSession implements AutoCloseable
         rq.setPrint(print);
         rs.setPrint(print);
         /* remove any previous */
-        for(int i=reqintercepts.size()-1;i>=0;i--) {
+        for(int i = reqintercepts.size() - 1;i >= 0;i--) {
             HttpRequestInterceptor hr = reqintercepts.get(i);
             if(hr instanceof HTTPUtil.InterceptCommon)
                 reqintercepts.remove(i);
         }
-        for(int i=rspintercepts.size()-1;i>=0;i--) {
+        for(int i = rspintercepts.size() - 1;i >= 0;i--) {
             HttpResponseInterceptor hr = rspintercepts.get(i);
             if(hr instanceof HTTPUtil.InterceptCommon)
                 rspintercepts.remove(i);

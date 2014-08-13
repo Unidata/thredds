@@ -168,7 +168,6 @@ public class CDMCompiler
             throws DapException
     {
         DapAtomicVariable atomvar = (DapAtomicVariable) d4var.getTemplate();
-        DapType daptype = atomvar.getBaseType();
         CDMArrayAtomic array = new CDMArrayAtomic(this.dsp, this.cdmroot, (D4DataAtomic) d4var);
         return array;
     }
@@ -217,6 +216,7 @@ public class CDMCompiler
     {
         DapStructure dapstruct = (DapStructure) d4var.getTemplate();
         List<DapDimension> dimset = dapstruct.getDimensions();
+        long dimproduct;
         if(dimset == null || dimset.size() == 0) {// scalar
             assert (d4var.getSort() == DataSort.STRUCTURE);
             D4DataStructure d4struct = (D4DataStructure) d4var;
@@ -224,10 +224,11 @@ public class CDMCompiler
             D4DataCompoundArray dca = new D4DataCompoundArray(this.dsp, dapstruct);
             dca.addElement(d4struct);
             d4var = dca;
-        }
+            dimproduct = 1;
+        } else
+            dimproduct = DapUtil.dimProduct(dimset);
         assert (d4var.getSort() == DataSort.COMPOUNDARRAY);
         D4DataCompoundArray d4array = (D4DataCompoundArray) d4var;
-        long dimproduct = DapUtil.dimProduct(dimset);
         CDMArrayStructure arraystruct
                 = new CDMArrayStructure(this.dsp, this.cdmroot, d4array);
         try {
@@ -291,7 +292,6 @@ public class CDMCompiler
     compileSequenceArray(D4DataVariable d4var)
             throws DapException
     {
-        DapSequence dapseq = (DapSequence) d4var.getTemplate();
         Array array = null;
 
         if(d4var.getSort() == DataSort.SEQUENCE) {// scalar
