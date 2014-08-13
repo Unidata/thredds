@@ -17,7 +17,6 @@ public class D4DataAtomic extends D4DataVariable implements DataAtomic
     //////////////////////////////////////////////////
     // Instance variables
 
-    protected D4DSP dsp = null;
     protected long product = 0; // dimension cross product; 0 => undefined
     protected DapType basetype = null;
     protected AtomicType atomictype = null;
@@ -26,6 +25,7 @@ public class D4DataAtomic extends D4DataVariable implements DataAtomic
     protected long varelementsize = 0;
     protected boolean isbytestring = false;
     // Following two fields only defined if isbytestring is true
+    //Coverity[FB.URF_UNREAD_PUBLIC_OR_PROTECTED_FIELD]
     protected long totalbytestringsize = 0;  // total space used by the bytestrings
     protected int[] bytestrings = null; // List of the absolute start offsets of
     // an array of e.g. opaque,  or string atomictypes.
@@ -201,7 +201,7 @@ public class D4DataAtomic extends D4DataVariable implements DataAtomic
         //long elemsize = AtomicType.getSize(atomtype);
         long elemsize = this.varelementsize;
         //long localoffset = this.varoffset + (elemsize * start);
-        long extent = elemsize * count;
+        //long extent = elemsize * count;
         // If this is a fixed size type, then we can immediately
         // position the buffer
         /*if(atomtype.isFixedSize() && !atomtype.isEnumType()) {

@@ -26,8 +26,6 @@ public class RandomValue extends Value
 
     protected Random random = new Random(SEED);
 
-    protected boolean asciionly = true;
-
     //////////////////////////////////////////////////
     // Constructor(s)
 
@@ -38,11 +36,6 @@ public class RandomValue extends Value
     //////////////////////////////////////////////////
     // Accessors
     
-    public void setASCII(boolean tf)
-    {
-	    asciionly = tf;
-    }
-
     //////////////////////////////////////////////////
     // IValue Interface
 
@@ -93,6 +86,7 @@ public class RandomValue extends Value
             value = ByteBuffer.wrap(bytes);// order is irrelevant
 	    break;
         case Enum:
+            //Coverity[FB.BC_UNCONFIRMED_CAST]
             value = nextEnum(((DapEnum) basetype));
 	    break;
         default:
@@ -119,7 +113,6 @@ public class RandomValue extends Value
         if(!atomtype.isIntegerType())
             throw new DapException("Unexpected type: " + basetype);
         boolean unsigned = atomtype.isUnsigned();
-        int bits = 8 * Dap4Util.daptypeSize(atomtype);
         switch (atomtype) {
         case Int8:
             return Byte.valueOf((byte) (random.nextInt(1 << 8) - (1 << 7)));

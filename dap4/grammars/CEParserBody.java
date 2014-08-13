@@ -1,4 +1,4 @@
-/* A Bison parser, made by GNU Bison 3.0.2.  */
+/* A Bison parser, made by GNU Bison 3.0.  */
 
 /* Skeleton implementation for Bison LALR(1) parsers in Java
 
@@ -53,7 +53,7 @@ import dap4.ce.CEAST;
 abstract class CEParserBody
 {
     /** Version number for the Bison executable that generated this parser.  */
-  public static final String bisonVersion = "3.0.2";
+  public static final String bisonVersion = "3.0";
 
   /** Name of the skeleton that generated this parser.  */
   public static final String bisonSkeleton = "lalr1.java";
@@ -304,19 +304,6 @@ abstract class CEParserBody
     return yyerrstatus_ == 0;
   }
 
-  /** Compute post-reduction state.
-   * @param yystate   the current state
-   * @param yysym     the nonterminal to push on the stack
-   */
-  private int yy_lr_goto_state_ (int yystate, int yysym)
-  {
-    int yyr = yypgoto_[yysym - yyntokens_] + yystate;
-    if (0 <= yyr && yyr <= yylast_ && yycheck_[yyr] == yystate)
-      return yytable_[yyr];
-    else
-      return yydefgoto_[yysym - yyntokens_];
-  }
-
   private int yyaction (int yyn, YYStack yystack, int yylen) throws ParseException
   {
     Object yyval;
@@ -339,307 +326,307 @@ abstract class CEParserBody
       {
           case 2:
   if (yyn == 2)
-    /* "ce.y":103  */ /* lalr1.java:489  */
+    /* "ce.y":103  */ /* lalr1.java:476  */
     {yyval=constraint(((CEAST.NodeList)(yystack.valueAt (2-(2)))));};
   break;
     
 
   case 5:
   if (yyn == 5)
-    /* "ce.y":113  */ /* lalr1.java:489  */
+    /* "ce.y":113  */ /* lalr1.java:476  */
     {yyval=nodelist(null,((CEAST)(yystack.valueAt (1-(1)))));};
   break;
     
 
   case 6:
   if (yyn == 6)
-    /* "ce.y":115  */ /* lalr1.java:489  */
+    /* "ce.y":115  */ /* lalr1.java:476  */
     {yyval=nodelist(((CEAST.NodeList)(yystack.valueAt (3-(1)))),((CEAST)(yystack.valueAt (3-(3)))));};
   break;
     
 
   case 9:
   if (yyn == 9)
-    /* "ce.y":133  */ /* lalr1.java:489  */
+    /* "ce.y":133  */ /* lalr1.java:476  */
     {yyval=projection(((CEAST)(yystack.valueAt (1-(1)))));};
   break;
     
 
   case 10:
   if (yyn == 10)
-    /* "ce.y":138  */ /* lalr1.java:489  */
+    /* "ce.y":138  */ /* lalr1.java:476  */
     {yyval=segmenttree(null,((CEAST)(yystack.valueAt (1-(1)))));};
   break;
     
 
   case 11:
   if (yyn == 11)
-    /* "ce.y":140  */ /* lalr1.java:489  */
+    /* "ce.y":140  */ /* lalr1.java:476  */
     {yyval=segmenttree(((CEAST)(yystack.valueAt (3-(1)))),((CEAST)(yystack.valueAt (3-(3)))));};
   break;
     
 
   case 12:
   if (yyn == 12)
-    /* "ce.y":142  */ /* lalr1.java:489  */
+    /* "ce.y":142  */ /* lalr1.java:476  */
     {yyval=segmenttree(((CEAST)(yystack.valueAt (5-(1)))),((CEAST.NodeList)(yystack.valueAt (5-(4)))));};
   break;
     
 
   case 13:
   if (yyn == 13)
-    /* "ce.y":144  */ /* lalr1.java:489  */
+    /* "ce.y":144  */ /* lalr1.java:476  */
     {yyval=segmenttree(((CEAST)(yystack.valueAt (4-(1)))),((CEAST.NodeList)(yystack.valueAt (4-(3)))));};
   break;
     
 
   case 14:
   if (yyn == 14)
-    /* "ce.y":149  */ /* lalr1.java:489  */
+    /* "ce.y":149  */ /* lalr1.java:476  */
     {yyval=nodelist(null,((CEAST)(yystack.valueAt (1-(1)))));};
   break;
     
 
   case 15:
   if (yyn == 15)
-    /* "ce.y":151  */ /* lalr1.java:489  */
+    /* "ce.y":151  */ /* lalr1.java:476  */
     {yyval=nodelist(((CEAST.NodeList)(yystack.valueAt (3-(1)))),((CEAST)(yystack.valueAt (3-(3)))));};
   break;
     
 
   case 16:
   if (yyn == 16)
-    /* "ce.y":156  */ /* lalr1.java:489  */
+    /* "ce.y":156  */ /* lalr1.java:476  */
     {yyval=segment(((String)(yystack.valueAt (1-(1)))),null);};
   break;
     
 
   case 17:
   if (yyn == 17)
-    /* "ce.y":158  */ /* lalr1.java:489  */
+    /* "ce.y":158  */ /* lalr1.java:476  */
     {yyval=segment(((String)(yystack.valueAt (2-(1)))),((CEAST.SliceList)(yystack.valueAt (2-(2)))));};
   break;
     
 
   case 18:
   if (yyn == 18)
-    /* "ce.y":163  */ /* lalr1.java:489  */
+    /* "ce.y":163  */ /* lalr1.java:476  */
     {yyval=slicelist(null,((Slice)(yystack.valueAt (1-(1)))));};
   break;
     
 
   case 19:
   if (yyn == 19)
-    /* "ce.y":165  */ /* lalr1.java:489  */
+    /* "ce.y":165  */ /* lalr1.java:476  */
     {yyval=slicelist(((CEAST.SliceList)(yystack.valueAt (2-(1)))),((Slice)(yystack.valueAt (2-(2)))));};
   break;
     
 
   case 20:
   if (yyn == 20)
-    /* "ce.y":170  */ /* lalr1.java:489  */
+    /* "ce.y":170  */ /* lalr1.java:476  */
     {yyval=slice(null);};
   break;
     
 
   case 21:
   if (yyn == 21)
-    /* "ce.y":172  */ /* lalr1.java:489  */
+    /* "ce.y":172  */ /* lalr1.java:476  */
     {yyval=slice(((CEAST.SliceList)(yystack.valueAt (3-(2)))));};
   break;
     
 
   case 22:
   if (yyn == 22)
-    /* "ce.y":177  */ /* lalr1.java:489  */
+    /* "ce.y":177  */ /* lalr1.java:476  */
     {yyval=slicelist(null,((Slice)(yystack.valueAt (1-(1)))));};
   break;
     
 
   case 23:
   if (yyn == 23)
-    /* "ce.y":179  */ /* lalr1.java:489  */
+    /* "ce.y":179  */ /* lalr1.java:476  */
     {yyval=slicelist(((CEAST.SliceList)(yystack.valueAt (3-(1)))),((Slice)(yystack.valueAt (3-(3)))));};
   break;
     
 
   case 24:
   if (yyn == 24)
-    /* "ce.y":184  */ /* lalr1.java:489  */
+    /* "ce.y":184  */ /* lalr1.java:476  */
     {yyval=subslice(1,((String)(yystack.valueAt (1-(1)))),null,null);};
   break;
     
 
   case 25:
   if (yyn == 25)
-    /* "ce.y":186  */ /* lalr1.java:489  */
+    /* "ce.y":186  */ /* lalr1.java:476  */
     {yyval=subslice(2,((String)(yystack.valueAt (3-(1)))),((String)(yystack.valueAt (3-(3)))),null);};
   break;
     
 
   case 26:
   if (yyn == 26)
-    /* "ce.y":188  */ /* lalr1.java:489  */
+    /* "ce.y":188  */ /* lalr1.java:476  */
     {yyval=subslice(3,((String)(yystack.valueAt (5-(1)))),((String)(yystack.valueAt (5-(5)))),((String)(yystack.valueAt (5-(3)))));};
   break;
     
 
   case 27:
   if (yyn == 27)
-    /* "ce.y":190  */ /* lalr1.java:489  */
+    /* "ce.y":190  */ /* lalr1.java:476  */
     {yyval=subslice(4,((String)(yystack.valueAt (2-(1)))),null,null);};
   break;
     
 
   case 28:
   if (yyn == 28)
-    /* "ce.y":192  */ /* lalr1.java:489  */
+    /* "ce.y":192  */ /* lalr1.java:476  */
     {yyval=subslice(5,((String)(yystack.valueAt (4-(1)))),null,((String)(yystack.valueAt (4-(3)))));};
   break;
     
 
   case 30:
   if (yyn == 30)
-    /* "ce.y":203  */ /* lalr1.java:489  */
+    /* "ce.y":203  */ /* lalr1.java:476  */
     {yyval=selection(((CEAST)(yystack.valueAt (3-(1)))),((CEAST)(yystack.valueAt (3-(3)))));};
   break;
     
 
   case 32:
   if (yyn == 32)
-    /* "ce.y":209  */ /* lalr1.java:489  */
+    /* "ce.y":209  */ /* lalr1.java:476  */
     {yyval=logicalAnd(((CEAST)(yystack.valueAt (3-(1)))),((CEAST)(yystack.valueAt (3-(3)))));};
   break;
     
 
   case 33:
   if (yyn == 33)
-    /* "ce.y":211  */ /* lalr1.java:489  */
+    /* "ce.y":211  */ /* lalr1.java:476  */
     {yyval=logicalNot(((CEAST)(yystack.valueAt (2-(2)))));};
   break;
     
 
   case 34:
   if (yyn == 34)
-    /* "ce.y":216  */ /* lalr1.java:489  */
+    /* "ce.y":216  */ /* lalr1.java:476  */
     {yyval=predicate(((CEAST.Operator)(yystack.valueAt (3-(2)))),((CEAST)(yystack.valueAt (3-(1)))),((CEAST)(yystack.valueAt (3-(3)))));};
   break;
     
 
   case 35:
   if (yyn == 35)
-    /* "ce.y":218  */ /* lalr1.java:489  */
+    /* "ce.y":218  */ /* lalr1.java:476  */
     {yyval=predicaterange(((CEAST.Operator)(yystack.valueAt (5-(2)))),((CEAST.Operator)(yystack.valueAt (5-(4)))),((CEAST)(yystack.valueAt (5-(1)))),((CEAST)(yystack.valueAt (5-(3)))),((CEAST)(yystack.valueAt (5-(5)))));};
   break;
     
 
   case 36:
   if (yyn == 36)
-    /* "ce.y":220  */ /* lalr1.java:489  */
+    /* "ce.y":220  */ /* lalr1.java:476  */
     {yyval=predicate(((CEAST.Operator)(yystack.valueAt (3-(2)))),((CEAST)(yystack.valueAt (3-(1)))),((CEAST)(yystack.valueAt (3-(3)))));};
   break;
     
 
   case 37:
   if (yyn == 37)
-    /* "ce.y":224  */ /* lalr1.java:489  */
+    /* "ce.y":224  */ /* lalr1.java:476  */
     {yyval=CEAST.Operator.LE;};
   break;
     
 
   case 38:
   if (yyn == 38)
-    /* "ce.y":225  */ /* lalr1.java:489  */
+    /* "ce.y":225  */ /* lalr1.java:476  */
     {yyval=CEAST.Operator.GE;};
   break;
     
 
   case 39:
   if (yyn == 39)
-    /* "ce.y":226  */ /* lalr1.java:489  */
+    /* "ce.y":226  */ /* lalr1.java:476  */
     {yyval=CEAST.Operator.LT;};
   break;
     
 
   case 40:
   if (yyn == 40)
-    /* "ce.y":227  */ /* lalr1.java:489  */
+    /* "ce.y":227  */ /* lalr1.java:476  */
     {yyval=CEAST.Operator.GT;};
   break;
     
 
   case 41:
   if (yyn == 41)
-    /* "ce.y":231  */ /* lalr1.java:489  */
+    /* "ce.y":231  */ /* lalr1.java:476  */
     {yyval=CEAST.Operator.EQ;};
   break;
     
 
   case 42:
   if (yyn == 42)
-    /* "ce.y":232  */ /* lalr1.java:489  */
+    /* "ce.y":232  */ /* lalr1.java:476  */
     {yyval=CEAST.Operator.NEQ;};
   break;
     
 
   case 43:
   if (yyn == 43)
-    /* "ce.y":233  */ /* lalr1.java:489  */
+    /* "ce.y":233  */ /* lalr1.java:476  */
     {yyval=CEAST.Operator.REQ;};
   break;
     
 
   case 46:
   if (yyn == 46)
-    /* "ce.y":239  */ /* lalr1.java:489  */
+    /* "ce.y":239  */ /* lalr1.java:476  */
     {yyval=((CEAST)(yystack.valueAt (3-(2))));};
   break;
     
 
   case 47:
   if (yyn == 47)
-    /* "ce.y":245  */ /* lalr1.java:489  */
+    /* "ce.y":245  */ /* lalr1.java:476  */
     {yyval=null; dimredef(((String)(yystack.valueAt (3-(1)))),((Slice)(yystack.valueAt (3-(3)))));};
   break;
     
 
   case 48:
   if (yyn == 48)
-    /* "ce.y":249  */ /* lalr1.java:489  */
+    /* "ce.y":249  */ /* lalr1.java:476  */
     {yyval=fieldname(((String)(yystack.valueAt (1-(1)))));};
   break;
     
 
   case 49:
   if (yyn == 49)
-    /* "ce.y":253  */ /* lalr1.java:489  */
+    /* "ce.y":253  */ /* lalr1.java:476  */
     {yyval=constant(CEAST.Constant.STRING,((String)(yystack.valueAt (1-(1)))));};
   break;
     
 
   case 50:
   if (yyn == 50)
-    /* "ce.y":254  */ /* lalr1.java:489  */
+    /* "ce.y":254  */ /* lalr1.java:476  */
     {yyval=constant(CEAST.Constant.LONG,((String)(yystack.valueAt (1-(1)))));};
   break;
     
 
   case 51:
   if (yyn == 51)
-    /* "ce.y":255  */ /* lalr1.java:489  */
+    /* "ce.y":255  */ /* lalr1.java:476  */
     {yyval=constant(CEAST.Constant.DOUBLE,((String)(yystack.valueAt (1-(1)))));};
   break;
     
 
   case 52:
   if (yyn == 52)
-    /* "ce.y":256  */ /* lalr1.java:489  */
+    /* "ce.y":256  */ /* lalr1.java:476  */
     {yyval=constant(CEAST.Constant.BOOLEAN,((String)(yystack.valueAt (1-(1)))));};
   break;
     
 
 
-/* "CEParserBody.java":643  */ /* lalr1.java:489  */
+/* "CEParserBody.java":630  */ /* lalr1.java:476  */
         default: break;
       }
 
@@ -649,7 +636,14 @@ abstract class CEParserBody
     yylen = 0;
 
     /* Shift the result of the reduction.  */
-    int yystate = yy_lr_goto_state_ (yystack.stateAt (0), yyr1_[yyn]);
+    yyn = yyr1_[yyn];
+    int yystate = yypgoto_[yyn - yyntokens_] + yystack.stateAt (0);
+    if (0 <= yystate && yystate <= yylast_
+        && yycheck_[yystate] == yystack.stateAt (0))
+      yystate = yytable_[yystate];
+    else
+      yystate = yydefgoto_[yyn - yyntokens_];
+
     yystack.push (yystate, yyval);
     return YYNEWSTATE;
   }
@@ -1317,13 +1311,13 @@ private static final byte yycheck_[] = yycheck_init();
 
 /* User implementation code.  */
 /* Unqualified %code blocks.  */
-/* "ce.y":24  */ /* lalr1.java:1066  */
+/* "ce.y":24  */ /* lalr1.java:1060  */
 
 
     // Provide accessors for the parser lexer
     Lexer getLexer() {return this.yylexer;}
     void setLexer(Lexer lexer) {this.yylexer = lexer;}
-/* "ce.y":31  */ /* lalr1.java:1066  */
+/* "ce.y":31  */ /* lalr1.java:1060  */
 // Abstract Parser actions
 
 abstract CEAST constraint(CEAST.NodeList clauses) throws ParseException;
@@ -1346,7 +1340,7 @@ abstract CEAST.NodeList nodelist(CEAST.NodeList list, CEAST ast);
 abstract CEAST.SliceList slicelist(CEAST.SliceList list, Slice slice);
 
 
-/* "CEParserBody.java":1350  */ /* lalr1.java:1066  */
+/* "CEParserBody.java":1344  */ /* lalr1.java:1060  */
 
 }
 

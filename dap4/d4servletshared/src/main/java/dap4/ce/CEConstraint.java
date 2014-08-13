@@ -100,7 +100,6 @@ public class CEConstraint implements Constraint
 
     static protected class Segment
     {
-        CEConstraint parent;
         DapVariable var;
         List<Slice> slices; // projection slices for this variable
         List<DapDimension> dimset; // dimensions for the variable; including
@@ -121,11 +120,11 @@ public class CEConstraint implements Constraint
         }
 
         void setSlices(List<Slice> slices)
-                throws DapException
+            throws DapException
         {
             this.slices = slices;
             // Make sure they are finished
-            for(Slice sl: slices)
+            for(Slice sl : slices)
                 sl.finish();
         }
 
@@ -161,7 +160,7 @@ public class CEConstraint implements Constraint
          * @throws DapException
          */
         public ReferenceIterator(CEConstraint ce)
-                throws DapException
+            throws DapException
         {
             list.addAll(ce.dimrefs);
             list.addAll(ce.enums);
@@ -223,7 +222,7 @@ public class CEConstraint implements Constraint
                     this.current = data.readRecord(this.recno);
                     this.recno++;
                     return true;
-                } else for(; recno < nrecords; recno++) {
+                } else for(;recno < nrecords;recno++) {
                     this.current = data.readRecord(this.recno);
                     if(ce.matches(this.seq, this.current, filter))
                         return true;
@@ -276,7 +275,7 @@ public class CEConstraint implements Constraint
 
     static protected Object
     fieldValue(DapSequence seq, DataRecord record, String field)
-            throws DapException
+        throws DapException
     {
         DapVariable dapv = seq.findByName(field);
         if(dapv == null)
@@ -286,19 +285,21 @@ public class CEConstraint implements Constraint
         if(dapv.getRank() > 0)
             throw new DapException("Non-scalar variable in filter: " + field);
         DataAtomic da = (DataAtomic) (record.readfield(field));
+        if(da == null)
+            throw new DapException("No such field: "+field);
         return da.read(0);
     }
 
     static protected int
     compare(Object lvalue, Object rvalue)
-            throws DapException
+        throws DapException
     {
         if(lvalue instanceof String && rvalue instanceof String)
             return ((String) lvalue).compareTo((String) rvalue);
         if(lvalue instanceof Boolean && rvalue instanceof Boolean)
             return compare((Boolean) lvalue ? 1 : 0, (Boolean) rvalue ? 1 : 0);
         if(lvalue instanceof Double || lvalue instanceof Float
-                || rvalue instanceof Double || rvalue instanceof Float) {
+            || rvalue instanceof Double || rvalue instanceof Float) {
             double d1 = ((Number) lvalue).doubleValue();
             double d2 = ((Number) lvalue).doubleValue();
             return Double.compare(d1, d2);
@@ -323,7 +324,7 @@ public class CEConstraint implements Constraint
      */
     protected Object
     eval(DapSequence seq, DataRecord record, CEAST expr)
-            throws DapException
+        throws DapException
     {
         switch (expr.sort) {
 
@@ -334,25 +335,28 @@ public class CEConstraint implements Constraint
             return fieldValue(seq, record, expr.name);
 
         case EXPR:
-            Object lhs = (expr.lhs == null ? null : eval(seq, record, expr.lhs));
+            Object lhs = eval(seq, record, expr.lhs);
             Object rhs = (expr.rhs == null ? null : eval(seq, record, expr.rhs));
-            switch (expr.op) {
-            case LT:
-                return compare(lhs, rhs) < 0;
-            case LE:
-                return compare(lhs, rhs) <= 0;
-            case GT:
-                return compare(lhs, rhs) > 0;
-            case GE:
-                return compare(lhs, rhs) >= 0;
-            case EQ:
-                return lhs.equals(rhs);
-            case NEQ:
-                return !lhs.equals(rhs);
-            case REQ:
-                return lhs.toString().matches(rhs.toString());
-            case AND:
-                return ((Boolean) lhs) && ((Boolean) rhs);
+            if(rhs != null)
+                switch (expr.op) {
+                case LT:
+                    return compare(lhs, rhs) < 0;
+                case LE:
+                    return compare(lhs, rhs) <= 0;
+                case GT:
+                    return compare(lhs, rhs) > 0;
+                case GE:
+                    return compare(lhs, rhs) >= 0;
+                case EQ:
+                    return lhs.equals(rhs);
+                case NEQ:
+                    return !lhs.equals(rhs);
+                case REQ:
+                    return lhs.toString().matches(rhs.toString());
+                case AND:
+                    return ((Boolean) lhs) && ((Boolean) rhs);
+                }
+            else switch (expr.op) {
             case NOT:
                 return !((Boolean) lhs);
             }
@@ -438,7 +442,7 @@ public class CEConstraint implements Constraint
     }
 
     public void addVariable(DapVariable var, List<Slice> slices)
-            throws DapException
+        throws DapException
     {
         if(findVariableIndex(var) < 0) {
             Segment segment = new Segment(var);
@@ -491,7 +495,7 @@ public class CEConstraint implements Constraint
     {
         StringBuilder buf = new StringBuilder();
         boolean first = true;
-        for(int i = 0; i < segments.size(); i++) {
+        for(int i = 0;i < segments.size();i++) {
             Segment seg = segments.get(i);
             if(!seg.var.isTopLevel())
                 continue;
@@ -513,7 +517,7 @@ public class CEConstraint implements Constraint
      */
     public CEConstraint
     finish()
-            throws DapException
+        throws DapException
     {
         if(!finished) {
             finished = true;
@@ -535,7 +539,7 @@ public class CEConstraint implements Constraint
     {
         StringBuilder buf = new StringBuilder();
         boolean first = true;
-        for(int i = 0; i < segments.size(); i++) {
+        for(int i = 0;i < segments.size();i++) {
             Segment seg = segments.get(i);
             if(!seg.var.isTopLevel())
                 continue;
@@ -560,12 +564,14 @@ public class CEConstraint implements Constraint
             buf.append(seg.var.getFQN());
         else
             buf.append(seg.var.getShortName());
+        List<DapDimension> dimset = seg.var.getDimensions();
         // Add any slices
         List<Slice> slices = seg.slices;
-        List<DapDimension> dimset = seg.var.getDimensions();
-        if(slices != null)
+        if(slices == null)
+            dimset = new ArrayList<DapDimension>();
+        else
             assert dimset.size() == slices.size();
-        for(int i = 0; i < dimset.size(); i++) {
+        for(int i = 0;i < dimset.size();i++) {
             Slice slice = slices.get(i);
             DapDimension dim = dimset.get(i);
             try {
@@ -578,7 +584,7 @@ public class CEConstraint implements Constraint
             return;
         // If structure and all fields are in the view, then done
         if(seg.var.getSort() == DapSort.STRUCTURE
-                || seg.var.getSort() == DapSort.SEQUENCE) {
+            || seg.var.getSort() == DapSort.SEQUENCE) {
             if(!isWholeCompound((DapStructure) seg.var)) {
                 // Need to insert {...} and recurse
                 buf.append(LBRACE);
@@ -593,7 +599,7 @@ public class CEConstraint implements Constraint
                 buf.append(RBRACE);
             }
             if(seg.var.getSort() == DapSort.SEQUENCE
-                    && seg.filter != null) {
+                && seg.filter != null) {
                 buf.append("|");
                 buf.append(seg.filter.toString());
             }
@@ -654,7 +660,7 @@ public class CEConstraint implements Constraint
 
     public ReferenceIterator
     referenceIterator()
-            throws DapException
+        throws DapException
     {
         return new ReferenceIterator(this);
     }
@@ -680,12 +686,12 @@ public class CEConstraint implements Constraint
 
     public Odometer
     projectionIterator(DapVariable var)
-            throws DapException
+        throws DapException
     {
         Segment seg = findSegment(var);
         if(seg == null)
             return null;
-        return Odometer.factory(seg.slices, seg.dimset,false);
+        return Odometer.factory(seg.slices, seg.dimset, false);
     }
 
     //////////////////////////////////////////////////
@@ -703,7 +709,7 @@ public class CEConstraint implements Constraint
      * @returns true if the filter matches the record
      */
     public boolean match(DapSequence seq, DataRecord rec)
-            throws DapException
+        throws DapException
     {
         Segment sseq = findSegment(seq);
         if(sseq == null)
@@ -726,7 +732,7 @@ public class CEConstraint implements Constraint
      */
     protected boolean
     matches(DapSequence seq, DataRecord rec, CEAST filter)
-            throws DapException
+        throws DapException
     {
         Object value = eval(seq, rec, filter);
         return ((Boolean) value);
@@ -748,10 +754,12 @@ public class CEConstraint implements Constraint
 
     public FilterIterator
     filterIterator(DapSequence dapseq, DataSequence dataseq)
-            throws DapException
+        throws DapException
     {
         // Locate the filter for this sequence
         Segment seg = findSegment(dapseq);
+        if(seg == null)
+            return null;
         return new FilterIterator(this, dapseq, dataseq, seg.filter);
     }
 
@@ -762,7 +770,7 @@ public class CEConstraint implements Constraint
     /* Search the set of variables */
     protected int findVariableIndex(DapVariable var)
     {
-        for(int i = 0; i < variables.size(); i++) {
+        for(int i = 0;i < variables.size();i++) {
             if(variables.get(i) == var)
                 return i;
         }
@@ -771,7 +779,7 @@ public class CEConstraint implements Constraint
 
     protected Segment findSegment(DapVariable var)
     {
-        for(int i = 0; i < segments.size(); i++) {
+        for(int i = 0;i < segments.size();i++) {
             if(segments.get(i).var == var)
                 return segments.get(i);
         }
@@ -790,7 +798,7 @@ public class CEConstraint implements Constraint
         // Create a queue of unprocessed leaf compounds
         Queue<DapVariable> queue = new ArrayDeque<DapVariable>();
 
-        for(int i = 0; i < variables.size(); i++) {
+        for(int i = 0;i < variables.size();i++) {
             DapVariable var = variables.get(i);
             if(!var.isTopLevel())
                 continue;
@@ -832,7 +840,7 @@ public class CEConstraint implements Constraint
     {
         // Create a set of contracted compounds
         Set<DapStructure> contracted = new HashSet<>();
-        for(int i = 0; i < variables.size(); i++) {
+        for(int i = 0;i < variables.size();i++) {
             DapVariable var = variables.get(i);
             if(var.isTopLevel()) {
                 if(var.getSort() == DapSort.STRUCTURE || var.getSort() == DapSort.SEQUENCE) {
@@ -862,7 +870,7 @@ public class CEConstraint implements Constraint
             if(findVariableIndex(field) < 0)
                 break; // this compound cannot be contracted
             if((field.getSort() == DapSort.STRUCTURE || field.getSort() == DapSort.SEQUENCE)
-                    && !contracted.contains((DapStructure) field)) {
+                && !contracted.contains((DapStructure) field)) {
                 if(!contractR((DapStructure) field, contracted))
                     break; // this compound cannot be contracted
             }
@@ -971,7 +979,7 @@ public class CEConstraint implements Constraint
      */
     protected void
     computedimensions()
-            throws DapException
+        throws DapException
     {
         // Build the redefmap
         for(DapDimension key : redefslice.keySet()) {
@@ -982,7 +990,7 @@ public class CEConstraint implements Constraint
         }
 
         // Process each variable
-        for(int i = 0; i < segments.size(); i++) {
+        for(int i = 0;i < segments.size();i++) {
             Segment seg = segments.get(i);
             if(seg.var.getRank() == 0)
                 continue;
@@ -998,7 +1006,7 @@ public class CEConstraint implements Constraint
                 slices.add(new Slice().setConstrained(false));
             }
             assert (slices != null && slices.size() == orig.size());
-            for(int j = 0; j < slices.size(); j++) {
+            for(int j = 0;j < slices.size();j++) {
                 Slice slice = slices.get(j);
                 DapDimension dim0 = orig.get(j);
                 DapDimension newdim = redef.get(dim0);
@@ -1033,7 +1041,7 @@ public class CEConstraint implements Constraint
      */
     protected void computeenums()
     {
-        for(int i = 0; i < variables.size(); i++) {
+        for(int i = 0;i < variables.size();i++) {
             DapVariable var = variables.get(i);
             if(var.getSort() != DapSort.ATOMICVARIABLE)
                 continue;
@@ -1052,7 +1060,7 @@ public class CEConstraint implements Constraint
     protected void computegroups()
     {
         // 1. variables
-        for(int i = 0; i < variables.size(); i++) {
+        for(int i = 0;i < variables.size();i++) {
             DapVariable var = variables.get(i);
             List<DapGroup> path = var.getGroupPath();
             for(DapGroup group : path) {

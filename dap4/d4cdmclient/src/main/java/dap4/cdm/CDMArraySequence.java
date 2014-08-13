@@ -288,8 +288,8 @@ public class CDMArraySequence extends ArraySequence implements CDMArray
     @Override
     public StructureData getStructureData(int index)
     {
-        if(super.sdata == null
-                || index < 0 || index >= this.nrecords)
+        assert(super.sdata != null);
+        if(index < 0 || index >= this.nrecords)
             throw new IllegalArgumentException(index + " >= " + super.sdata.length);
         assert (super.sdata[index] != null);
         return super.sdata[index];

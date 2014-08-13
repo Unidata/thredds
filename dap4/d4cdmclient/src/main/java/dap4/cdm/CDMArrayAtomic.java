@@ -49,8 +49,6 @@ public class CDMArrayAtomic extends Array implements CDMArray
     // an array of e.g. opaque,  or string atomictypes.
     // The value is the offset of object's count.
 
-    protected boolean usevardim = false;
-
     //////////////////////////////////////////////////
     // Constructor(s)
 

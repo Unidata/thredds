@@ -26,6 +26,7 @@ public class CDMDataStructure extends AbstractDataVariable implements DataStruct
 
     protected CDMDSP dsp = null;
     protected CDMDataCompoundArray parent;
+    //Coverity[FB.URF_UNREAD_PUBLIC_OR_PROTECTED_FIELD]
     protected long recno;
     protected byte[] checksum = null;
     protected DapStructure dapstruct = null;
@@ -42,6 +43,7 @@ public class CDMDataStructure extends AbstractDataVariable implements DataStruct
         super(dap);
         this.dsp = dsp;
         this.parent = cdv;
+        //Coverity[FB.URF_UNREAD_PUBLIC_OR_PROTECTED_FIELD]
         this.recno = recno;
         this.dapstruct = dap;
         // Locate our Structuredata from our parent

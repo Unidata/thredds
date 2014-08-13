@@ -348,6 +348,11 @@ public class Slice
                 && other.getStride() == getStride();
     }
 
+    @Override
+    public int hashCode()
+    {
+        return (int)(getFirst()<<20 | getLast()<<10 | getStride());
+    }
 
     @Override
     public String toString()

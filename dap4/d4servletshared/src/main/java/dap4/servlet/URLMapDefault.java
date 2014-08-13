@@ -60,16 +60,17 @@ public class URLMapDefault implements URLMap
     public void load(String filepath)
             throws IOException
     {
-        InputStream is = new FileInputStream(filepath);
-        String content = DapUtil.readtextfile(is);
-        String[] lines = content.split("[\n]");
+        String[] lines;
+        try (InputStream is = new FileInputStream(filepath);) {
+            String content = DapUtil.readtextfile(is);
+            lines = content.split("[\n]");
+        }
         for(String line : lines) {
             String[] pieces = line.split("[=]");
             if(pieces.length != 2)
                 throw new IOException("File: " + filepath + "; malformed line: " + line);
             addEntry(pieces[0], pieces[1]);
         }
-        is.close();
     }
 
     //////////////////////////////////////////////////

@@ -173,6 +173,8 @@ public class DSPToCDM
                 cdmbasetype = CDMUtil.enumtypefor(basetype);
             else
                 cdmbasetype =  CDMUtil.daptype2cdmtype(basetype);
+            if(cdmbasetype == null)
+                throw new DapException("Unknown basetype:"+basetype);
             cdmvar.setDataType(cdmbasetype);
             cdmvar.setUnsigned(basetype.isUnsigned());
             if(basetype.isEnumType()) {
@@ -266,14 +268,12 @@ public class DSPToCDM
         throws DapException
     {
         Dimension cdmdim = null;
-        if(dim.isShared()) {
+        if(dim.isShared())
             cdmdim = (Dimension) nodemap.get(dim);
-            if(cdmdim == null)
-                throw new DapException("Unknown dimension: " + dim.getFQN());
-        } else {// anonymous
+        else // anonymous
             cdmdim = new Dimension(null, (int) dim.getSize(), false, false, false);
-
-        }
+        if(cdmdim == null)
+            throw new DapException("Unknown dimension: " + dim.getFQN());
         return cdmdim;
     }
 
@@ -363,6 +363,7 @@ public class DSPToCDM
                 DapAttribute subattr = dapattr.getAttributes().get(key);
                 cdmattr = createAttribute(prefix, subattr, nodemap);
             }
+            break;
         case OTHERXML:
             cdmvalues = new ArrayList();
             cdmvalues.add("OtherXML");

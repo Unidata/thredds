@@ -17,8 +17,6 @@ public class DapAttributeSet extends DapAttribute
     //////////////////////////////////////////////////
     // Instance Variables
 
-    List<String> namespaceList = new ArrayList<String>();
-
     //////////////////////////////////////////////////
     // Constructors
 

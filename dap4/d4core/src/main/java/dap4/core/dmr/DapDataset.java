@@ -288,13 +288,15 @@ public class DapDataset extends DapGroup
                 fieldname = Escape.backslashUnescape(structpath.get(i));
                 DapNode field = currentstruct.findByName(fieldname);
                 if(field == null)
-                    throw new DapException("No such field: " + field.getFQN());
+                    throw new DapException("No such field: " + fieldname);
                 if(field.getSort() != DapSort.STRUCTURE)
                     break;
                 currentstruct = (DapStructure) field;
             }
             fieldname = Escape.backslashUnescape(structpath.get(structpath.size() - 1));
             DapNode field = currentstruct.findByName(fieldname);
+            if(field == null)
+                throw new DapException("No such field: " + fieldname);
             if(sortset.contains(field.getSort()))
                 matches.add(field);
         }
@@ -336,9 +338,8 @@ public class DapDataset extends DapGroup
             // attributes, dimensions, enums, variables, groups
             DapGroup group = (DapGroup) node;
             attrs = group.getAttributes();
-            Set<String> names = attrs.keySet();
-            for(String name : names) {
-                sortR(attrs.get(name), sortlist);
+            for(Map.Entry<String,DapAttribute> entry : attrs.entrySet()) {
+                sortR(entry.getValue(), sortlist);
             }
             List<DapDimension> dims = group.getDimensions();
             if(dims != null)

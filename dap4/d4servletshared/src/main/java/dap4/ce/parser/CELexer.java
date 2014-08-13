@@ -136,7 +136,7 @@ class CELexer implements CEParser.Lexer
 
     TextStream text = null;
     int charno = 0;
-    int lineno = 0; // not currently used
+    //int lineno = 0; // not currently used
     StringBuilder yytext = null;
 
     //////////////////////////////////////////////////

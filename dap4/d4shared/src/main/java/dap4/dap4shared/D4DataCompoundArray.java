@@ -16,7 +16,6 @@ public class D4DataCompoundArray extends D4DataVariable implements DataCompoundA
     //////////////////////////////////////////////////
     // Instance variables
 
-    D4DSP dsp = null;
     long position = 0;
     DapVariable dapvar = null;
 

@@ -52,6 +52,42 @@ public class MultiSlice extends Slice
 
     //////////////////////////////////////////////////
 
+    /**
+     * Compare two slices for equality
+     *
+     * @param o the other slice to compare with
+     * @return true if this and other are the same, false otherwise
+     */
+    @Override
+    public boolean equals(Object o)
+    {
+        if(o == this) return true;
+        if(o == null) return false;
+        if(o instanceof Slice) try {
+            List<Slice> tmp = new ArrayList<Slice>();
+            tmp.add((Slice)o);
+            o = new MultiSlice(tmp);
+        } catch (DapException de) {
+            throw new IllegalArgumentException();
+        }
+        if(!(o instanceof MultiSlice)) return false;
+        Slice other = (Slice) o;
+        return other.getFirst() == getFirst()
+            && other.getLast() == getLast()
+            && other.getStride() == getStride();
+    }
+
+    @Override
+    public int hashCode()
+    {
+        long accum = 0;
+        for(int i=0;i<slices.size();i++) {
+            Slice s = slices.get(i);
+            accum += s.hashCode() * i;
+        }
+        return (int) accum;
+    }
+
     public String
     toString()
     {

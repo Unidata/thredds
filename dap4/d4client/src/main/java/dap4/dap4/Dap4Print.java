@@ -57,7 +57,6 @@ public class Dap4Print
         // Local copies of the command line options
         String path = null;
         String outputfile = null;
-        boolean allvars = false;
         List<String> vars = new ArrayList<String>();
     }
 
@@ -347,8 +346,9 @@ public class Dap4Print
         if(attributes.size() == 0) {
             return;
         }
-        for(String key : attributes.keySet()) {
-            DapAttribute attr = attributes.get(key);
+        for(Map.Entry<String, DapAttribute> entry : attributes.entrySet()) {
+            DapAttribute attr = entry.getValue();
+            String key = entry.getKey();
             assert (attr != null);
             switch (attr.getSort()) {
             case ATTRIBUTE:
@@ -463,7 +463,11 @@ public class Dap4Print
         printer.marginPrintln("<data>");
         List<DapVariable> topvars = dmr.getTopVariables();
         for(int i = 0;i < topvars.size();i++) {
-            printVariable(this.data.getVariableData(topvars.get(i)));
+            DapVariable top = topvars.get(i);
+            DataVariable dv = this.data.getVariableData(top);
+            if(dv == null)
+                throw new DataException("Variable has no data:"+top);
+            printVariable(dv);
         }
         printer.setIndent(0);
         printer.marginPrintln("</data>");
@@ -611,9 +615,9 @@ public class Dap4Print
             } else
                 return String.format("%d", lvalue);
         case Float32:
-            return String.format("%f", ((Float) value).floatValue());
+            return String.format("%f", ((Float) value));
         case Float64:
-            return String.format("%f", ((Double) value).doubleValue());
+            return String.format("%f", ((Double) value));
         case Char:
             return "'" + ((Character) value).toString() + "'";
         case String:
@@ -621,15 +625,16 @@ public class Dap4Print
             return "\"" + ((String) value) + "\"";
         case Opaque:
             ByteBuffer opaque = (ByteBuffer) value;
-            String s = "0x";
+            StringBuilder s = new StringBuilder();
+            s.append("0x");
             for(int i = 0;i < opaque.limit();i++) {
                 byte b = opaque.get(i);
                 char c = hexchar((b >> 4) & 0xF);
-                s += c;
+                s.append(c);
                 c = hexchar((b) & 0xF);
-                s += c;
+                s.append(c);
             }
-            return s;
+            return s.toString();
         case Enum:
             return valueString(value, ((DapEnum) basetype).getBaseType());
         default:
