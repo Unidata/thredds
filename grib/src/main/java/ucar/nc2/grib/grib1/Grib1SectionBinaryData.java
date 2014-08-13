@@ -111,14 +111,12 @@ public class Grib1SectionBinaryData {
   }
 
   /////////////////////
-  public int getNBits(RandomAccessFile raf) throws IOException {
-    raf.seek(startingPosition + 10); // go to the data section
-    return raf.read();
-  }
 
-  public float getRefValue(RandomAccessFile raf) throws IOException {
-    raf.seek(startingPosition + 6); // go to the data section
-    return GribNumbers.float4(raf);
+  public byte[] getBytes(RandomAccessFile raf) throws IOException {
+    raf.seek(startingPosition); // go to the data section
+    byte[] data = new byte[length];
+    raf.readFully(data);
+    return data;
   }
 
 
