@@ -23,7 +23,7 @@ import java.nio.ByteOrder;
 import java.nio.charset.Charset;
 
 @NotThreadSafe
-public class DapServlet extends javax.servlet.http.HttpServlet
+abstract public class DapServlet extends javax.servlet.http.HttpServlet
 {
 
     //////////////////////////////////////////////////
@@ -59,7 +59,7 @@ public class DapServlet extends javax.servlet.http.HttpServlet
 
     transient protected DapDSR dsrbuilder = new DapDSR();
 
-    transient protected ServletInfo svcinfo = null;
+    transient protected ServletInfo svcinfo;
 
     //////////////////////////////////////////////////
     // Constructor(s)
@@ -82,7 +82,7 @@ public class DapServlet extends javax.servlet.http.HttpServlet
 
     @Override
     public void init()
-        throws ServletException
+            throws ServletException
     {
         super.init();
         DapLog.info(getClass().getName() + " initialization start");
@@ -106,7 +106,7 @@ public class DapServlet extends javax.servlet.http.HttpServlet
 
     public void  // Make public so TestServlet can access
     doGet(HttpServletRequest req, HttpServletResponse resp)
-        throws ServletException, IOException
+            throws ServletException, IOException
     {
         DapLog.debug("doGet(): User-Agent = " + req.getHeader("User-Agent"));
         String url = req.getRequestURL().toString();
@@ -154,7 +154,7 @@ public class DapServlet extends javax.servlet.http.HttpServlet
                 RequestMode mode = drq.getMode();
                 if(mode == null)
                     throw new DapException("Unrecognized request extension")
-                        .setCode(HttpServletResponse.SC_BAD_REQUEST);
+                            .setCode(HttpServletResponse.SC_BAD_REQUEST);
                 switch (mode) {
                 case DMR:
                     doDMR(drq);
@@ -167,7 +167,7 @@ public class DapServlet extends javax.servlet.http.HttpServlet
                     break;
                 default:
                     throw new DapException("Unrecognized request extension")
-                        .setCode(HttpServletResponse.SC_BAD_REQUEST);
+                            .setCode(HttpServletResponse.SC_BAD_REQUEST);
                 }
             }
 
@@ -204,7 +204,7 @@ public class DapServlet extends javax.servlet.http.HttpServlet
 
     protected void
     doCapabilities(DapRequest drq)
-        throws IOException
+            throws IOException
     {
         throw new IOException("Unsupported operation: get capabilities");
     }
@@ -220,15 +220,15 @@ public class DapServlet extends javax.servlet.http.HttpServlet
 
     protected void
     doFavicon(DapRequest drq)
-        throws IOException
+            throws IOException
     {
         String favfile = getResourceFile(drq, false);
         if(favfile != null) {
-            FileInputStream fav = new FileInputStream(favfile);
-            byte[] content = DapUtil.readbinaryfile(fav);
-            fav.close();
-            OutputStream out = drq.getOutputStream();
-            out.write(content);
+            try (FileInputStream fav = new FileInputStream(favfile);) {
+                byte[] content = DapUtil.readbinaryfile(fav);
+                OutputStream out = drq.getOutputStream();
+                out.write(content);
+            }
         }
     }
 
@@ -240,7 +240,7 @@ public class DapServlet extends javax.servlet.http.HttpServlet
 
     protected void
     doDSR(DapRequest drq)
-        throws IOException
+            throws IOException
     {
         try {
             String dsr = dsrbuilder.generate(drq.getURL());
@@ -252,7 +252,7 @@ public class DapServlet extends javax.servlet.http.HttpServlet
             cw.close();
         } catch (IOException ioe) {
             throw new DapException("DSR generation error", ioe)
-                .setCode(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+                    .setCode(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -264,7 +264,7 @@ public class DapServlet extends javax.servlet.http.HttpServlet
 
     protected void
     doDMR(DapRequest drq)
-        throws IOException
+            throws IOException
     {
 
         String datasetpath = getResourceFile(drq, false);
@@ -311,7 +311,7 @@ public class DapServlet extends javax.servlet.http.HttpServlet
 
     protected void
     doData(DapRequest drq)
-        throws IOException
+            throws IOException
     {
         String datasetpath = getResourceFile(drq, false); // dataset path is relative to resource path
         DSP dsp = DapCache.open(datasetpath);
@@ -357,7 +357,7 @@ public class DapServlet extends javax.servlet.http.HttpServlet
 
     protected void
     addCommonHeaders(DapRequest drq)
-        throws IOException
+            throws IOException
     {
         // Add relevant headers
         ResponseFormat format = drq.getFormat();
@@ -402,13 +402,13 @@ public class DapServlet extends javax.servlet.http.HttpServlet
      * @param rq  A Servlet request object
      * @param rsp A Servlet response object
      * @return the union of the
-     * servlet request and servlet response arguments
-     * from the servlet engine.
+     *         servlet request and servlet response arguments
+     *         from the servlet engine.
      */
 
     protected DapRequest
     getRequestState(ServletInfo info, HttpServletRequest rq, HttpServletResponse rsp)
-        throws IOException
+            throws IOException
     {
         return new DapRequest(info, rq, rsp);
     }
@@ -423,7 +423,7 @@ public class DapServlet extends javax.servlet.http.HttpServlet
 
     protected String
     getResourceFile(DapRequest drq, boolean isdir)
-        throws IOException
+            throws IOException
     {
         // Using context information, we need to
         // construct a file path to the specified dataset
@@ -441,15 +441,15 @@ public class DapServlet extends javax.servlet.http.HttpServlet
         File dataset = new File(datasetfilepath);
         if(!dataset.exists())
             throw new DapException("Requested file does not exist: " + datasetfilepath)
-                .setCode(HttpServletResponse.SC_NOT_FOUND);
+                    .setCode(HttpServletResponse.SC_NOT_FOUND);
 
         if(!dataset.canRead())
             throw new DapException("Requested file not readable: " + datasetfilepath)
-                .setCode(HttpServletResponse.SC_FORBIDDEN);
+                    .setCode(HttpServletResponse.SC_FORBIDDEN);
 
         if(isdir && !dataset.isDirectory())
             throw new DapException("Requested file not a directory: " + datasetfilepath)
-                .setCode(HttpServletResponse.SC_FORBIDDEN);
+                    .setCode(HttpServletResponse.SC_FORBIDDEN);
         return datasetfilepath;
     }
 
@@ -472,7 +472,7 @@ public class DapServlet extends javax.servlet.http.HttpServlet
      */
     protected void
     senderror(DapRequest drq, int httpcode, Throwable t)
-        throws IOException
+            throws IOException
     {
         if(httpcode == 0) httpcode = HttpServletResponse.SC_BAD_REQUEST;
         ErrorResponse err = new ErrorResponse();
@@ -494,7 +494,7 @@ public class DapServlet extends javax.servlet.http.HttpServlet
      */
     protected CEConstraint
     buildconstraint(DapRequest drq, String sce, DapDataset dmr)
-        throws IOException
+            throws IOException
     {
         // Process any constraint
         if(sce == null || sce.length() == 0)

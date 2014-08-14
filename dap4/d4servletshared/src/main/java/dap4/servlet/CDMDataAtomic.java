@@ -21,6 +21,7 @@ public class CDMDataAtomic extends AbstractDataVariable
     //////////////////////////////////////////////////
     // Instance variables
 
+    //COVERITY[FB.URF_UNREAD_PUBLIC_OR_PROTECTED_FIELD]
     protected CDMDSP dsp = null;
 
     protected long product = 0; // dimension cross product; 0 => undefined; scalar=>1
@@ -75,6 +76,8 @@ public class CDMDataAtomic extends AbstractDataVariable
         // really do not know its true datatype. So, as a rule,
         // we will rely on this.basetype.
         DataType datatype = CDMUtil.daptype2cdmtype(this.basetype);
+        if(datatype == null)
+            throw new DataException("Unknown basetype: "+this.basetype);
         Class elementclass = CDMUtil.cdmElementClass(datatype);
         if(elementclass == null)
             throw new DataException("Attempt to read non-atomic value of type: " + datatype);

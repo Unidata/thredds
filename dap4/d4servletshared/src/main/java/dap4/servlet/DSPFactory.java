@@ -137,7 +137,7 @@ abstract public class DSPFactory
             }
 
         }
-        return null;
+        throw new IllegalArgumentException("Cannot open "+path);
     }
 
 } // DSPFactory
