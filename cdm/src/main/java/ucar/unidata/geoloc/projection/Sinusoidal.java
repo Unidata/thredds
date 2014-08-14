@@ -37,7 +37,6 @@ import ucar.nc2.constants.CDM;
 import ucar.nc2.constants.CF;
 import ucar.nc2.util.Misc;
 import ucar.unidata.geoloc.*;
-import ucar.unidata.geoloc.projection.sat.BoundingBoxHelper;
 
 import java.util.Arrays;
 import java.util.LinkedList;
@@ -54,7 +53,7 @@ import static ucar.unidata.geoloc.LatLonPointImmutable.INVALID;
  */
 
 public class Sinusoidal extends ProjectionImpl {
-    private final double earthRadius, maxR, maxR2;
+    private final double earthRadius;
     private double centMeridian; // central Meridian in degrees
     private double falseEasting, falseNorthing;
 
@@ -89,8 +88,6 @@ public class Sinusoidal extends ProjectionImpl {
         this.falseEasting = false_easting;
         this.falseNorthing = false_northing;
         this.earthRadius = radius;
-        this.maxR2 = 2 * earthRadius * earthRadius;  // LOOK ??
-        this.maxR = Math.sqrt(maxR2);
 
         addParameter(CF.GRID_MAPPING_NAME, CF.SINUSOIDAL);
         addParameter(CF.LONGITUDE_OF_CENTRAL_MERIDIAN, centMeridian);
@@ -308,19 +305,6 @@ public class Sinusoidal extends ProjectionImpl {
         return result;
     }
 
-    /**
-     * Create a ProjectionRect from the given LatLonRect.
-     * Handles lat/lon points that do not intersect the projection panel.
-     *
-     * @param rect the LatLonRect
-     * @return ProjectionRect, or null if no part of the LatLonRect intersects the projection plane
-     */
-    @Override
-    public ProjectionRect latLonToProjBB(LatLonRect rect) {
-        BoundingBoxHelper bbhelper = new BoundingBoxHelper(this, maxR);
-        return bbhelper.latLonToProjBB(rect);
-    }
-
     @Override
     public LatLonRect projToLatLonBB(ProjectionRect boundingBoxProj) {
         ProjectionPoint lowerLeftProj  = boundingBoxProj.getLowerLeftPoint();
@@ -341,19 +325,19 @@ public class Sinusoidal extends ProjectionImpl {
             // Do nothing; we have enough good points to make a bounding box.
         } else if (goodPoints.size() == 2) {
             if (projToLatLon(lowerLeftProj) != INVALID && projToLatLon(lowerRightProj) != INVALID) {
-                // We need upperLeftProj and upperRightProj.
+                // Valid bottom: need upperLeftProj and upperRightProj.
                 goodPoints.add(new ProjectionPointImpl(lowerLeftProj.getX(), calcMaxYAt(lowerLeftProj.getX())));
                 goodPoints.add(new ProjectionPointImpl(lowerRightProj.getX(), calcMaxYAt(lowerRightProj.getX())));
             } else if (projToLatLon(upperLeftProj) != INVALID && projToLatLon(upperRightProj) != INVALID) {
-                // We need lowerLeftProj and lowerRightProj.
+                // Valid top: need lowerLeftProj and lowerRightProj.
                 goodPoints.add(new ProjectionPointImpl(upperLeftProj.getX(), calcMinYAt(upperLeftProj.getX())));
                 goodPoints.add(new ProjectionPointImpl(upperRightProj.getX(), calcMinYAt(upperRightProj.getX())));
             } else if (projToLatLon(lowerLeftProj) != INVALID && projToLatLon(upperLeftProj) != INVALID) {
-                // We need lowerRightProj and upperRightProj.
+                // Valid left: need lowerRightProj and upperRightProj.
                 goodPoints.add(new ProjectionPointImpl(calcMaxXAt(lowerLeftProj.getY()), lowerLeftProj.getY()));
                 goodPoints.add(new ProjectionPointImpl(calcMaxXAt(upperLeftProj.getY()), upperLeftProj.getY()));
             } else if (projToLatLon(lowerRightProj) != INVALID && projToLatLon(upperRightProj) != INVALID) {
-                // We need lowerLeftProj and upperLeftProj.
+                // Valid right: need lowerLeftProj and upperLeftProj.
                 goodPoints.add(new ProjectionPointImpl(calcMinXAt(lowerRightProj.getY()), lowerRightProj.getY()));
                 goodPoints.add(new ProjectionPointImpl(calcMinXAt(upperRightProj.getY()), upperRightProj.getY()));
             } else {
@@ -362,19 +346,19 @@ public class Sinusoidal extends ProjectionImpl {
             }
         } else if (goodPoints.size() == 1) {
             if (projToLatLon(lowerLeftProj) != INVALID) {
-                // We need upperLeftProj and lowerRightProj.
+                // Valid lower-left: need upperLeftProj and lowerRightProj.
                 goodPoints.add(new ProjectionPointImpl(lowerLeftProj.getX(), calcMaxYAt(lowerLeftProj.getX())));
                 goodPoints.add(new ProjectionPointImpl(calcMaxXAt(lowerLeftProj.getY()), lowerLeftProj.getY()));
             } else if (projToLatLon(lowerRightProj) != INVALID) {
-                // We need upperRightProj and lowerLeftProj.
+                // Valid lower-right: need upperRightProj and lowerLeftProj.
                 goodPoints.add(new ProjectionPointImpl(lowerRightProj.getX(), calcMaxYAt(lowerRightProj.getX())));
                 goodPoints.add(new ProjectionPointImpl(calcMinXAt(lowerRightProj.getY()), lowerRightProj.getY()));
             } else if (projToLatLon(upperLeftProj) != INVALID) {
-                // We need lowerLeftProj and upperRightProj.
+                // Valid upper-left: need lowerLeftProj and upperRightProj.
                 goodPoints.add(new ProjectionPointImpl(upperLeftProj.getX(), calcMinYAt(upperLeftProj.getX())));
                 goodPoints.add(new ProjectionPointImpl(calcMaxXAt(upperLeftProj.getY()), upperLeftProj.getY()));
             } else if (projToLatLon(upperRightProj) != INVALID) {
-                // We need lowerRightProj and upperleftProj.
+                // Valid upper-right: need lowerRightProj and upperleftProj.
                 goodPoints.add(new ProjectionPointImpl(upperRightProj.getX(), calcMinYAt(upperRightProj.getX())));
                 goodPoints.add(new ProjectionPointImpl(calcMinXAt(upperRightProj.getY()), upperRightProj.getY()));
             } else {
@@ -387,6 +371,49 @@ public class Sinusoidal extends ProjectionImpl {
         return makeLatLonRect(goodPoints);
     }
 
+    /**
+     * Calculates the minimum y-coord along the line {@code x = x0} that is still "on the earth".
+     *
+     * @param x0 defines a line that intersects the earth, in the projection coordinate system.
+     * @return the minimum y-coord along the line {@code x = x0} that is still "on the earth".
+     * @throws IllegalArgumentException if the line {@code x = x0} does not intersect the earth.
+     */
+    public double calcMinYAt(double x0) throws IllegalArgumentException {
+        return calcMinAndMaxYsAt(x0)[0];
+    }
+
+    /**
+     * Calculates the maximum y-coord along the line {@code x = x0} that is still "on the earth".
+     *
+     * @param x0 defines a line that intersects the earth, in the projection coordinate system.
+     * @return the maximum y-coord along the line {@code x = x0} that is still "on the earth".
+     * @throws IllegalArgumentException if the line {@code x = x0} does not intersect the earth.
+     */
+    public double calcMaxYAt(double x0) throws IllegalArgumentException {
+        return calcMinAndMaxYsAt(x0)[1];
+    }
+
+    /**
+     * Calculates the minimum x-coord along the line {@code y = y0} that is still "on the earth".
+     *
+     * @param y0 defines a line that intersects the earth, in the projection coordinate system.
+     * @return the minimum x-coord along the line {@code y = y0} that is still "on the earth".
+     * @throws IllegalArgumentException if the line {@code y = y0} does not intersect the earth.
+     */
+    public double calcMinXAt(double y0) throws IllegalArgumentException {
+        return calcMinAndMaxXsAt(y0)[0];
+    }
+
+    /**
+     * Calculates the maximum x-coord along the line {@code y = y0} that is still "on the earth".
+     *
+     * @param y0 defines a line that intersects the earth, in the projection coordinate system.
+     * @return the maximum x-coord along the line {@code y = y0} that is still "on the earth".
+     * @throws IllegalArgumentException if the line {@code y = y0} does not intersect the earth.
+     */
+    public double calcMaxXAt(double y0) throws IllegalArgumentException {
+        return calcMinAndMaxXsAt(y0)[1];
+    }
 
     /**
      * Calculates the minimum and maximum y-coords along the line {@code x = x0} that are still "on the earth".
@@ -436,22 +463,6 @@ public class Sinusoidal extends ProjectionImpl {
         double x = earthRadius * deltaLon_r * Math.cos(y0natural / earthRadius);
 
         return x + falseEasting;
-    }
-
-    private double calcMinYAt(double x0) throws IllegalArgumentException {
-        return calcMinAndMaxYsAt(x0)[0];
-    }
-
-    private double calcMaxYAt(double x0) throws IllegalArgumentException {
-        return calcMinAndMaxYsAt(x0)[1];
-    }
-
-    private double calcMinXAt(double y0) throws IllegalArgumentException {
-        return calcMinAndMaxXsAt(y0)[0];
-    }
-
-    private double calcMaxXAt(double y0) throws IllegalArgumentException {
-        return calcMinAndMaxXsAt(y0)[1];
     }
 
     private LatLonRect makeLatLonRect(List<ProjectionPoint> projPoints) {

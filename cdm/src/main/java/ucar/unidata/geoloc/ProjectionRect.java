@@ -54,6 +54,16 @@ public class ProjectionRect implements java.io.Serializable {
   }
 
   /**
+   * Construct a MapArea from any two opposite corner points.
+   *
+   * @param corner1  a corner.
+   * @param corner2  the opposite corner.
+   */
+  public ProjectionRect(ProjectionPoint corner1, ProjectionPoint corner2) {
+    this(corner1.getX(), corner1.getY(), corner2.getX(), corner2.getY());
+  }
+
+  /**
    * Copy Constructor
    *
    * @param r rectangle to copy
