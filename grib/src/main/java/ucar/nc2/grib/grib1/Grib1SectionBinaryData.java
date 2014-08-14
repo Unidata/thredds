@@ -120,7 +120,7 @@ public class Grib1SectionBinaryData {
   }
 
 
-  public class BinaryDataInfo {
+  public static class BinaryDataInfo {
     public int msgLength;
     public int flag;
     public int binscale;

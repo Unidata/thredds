@@ -780,7 +780,7 @@ public abstract class Field {
         if (value2 != null)
           value =  value2;
       }
-      if ((value == null) || !(value instanceof Date)) return null;
+      if ((value == null) || !(value instanceof java.util.Date)) return null;
       java.util.Date valueAsDate = (java.util.Date) value;
       return new java.util.Date(valueAsDate.getTime());
     }

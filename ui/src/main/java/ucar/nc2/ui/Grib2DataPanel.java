@@ -1027,12 +1027,10 @@ public class Grib2DataPanel extends JPanel {
       return f.toString();
     }
 
-    private float nbits = -1;
-    private float avgbits;
-    private float compress;
-    public float getNBits() {
+    public String getNBits() {
       calcBits();
-      return nbits;
+      if (minBits == maxBits) return Integer.toString(minBits);
+      return minBits+"-"+maxBits;
     }
 
     public float getAvgBits() {
@@ -1045,7 +1043,30 @@ public class Grib2DataPanel extends JPanel {
       return compress;
     }
 
+    private int minBits, maxBits;
+    private float nbits = -1;
+    private float avgbits;
+    private float compress;
     private void calcBits() {
+      if (nbits >= 0) return;
+      nbits = 0;
+      int count = 0;
+      minBits = Integer.MAX_VALUE;
+      for (Grib2RecordBean bean : records) {
+        minBits = Math.min(minBits, bean.getNBits());
+        maxBits = Math.max(maxBits, bean.getNBits());
+        nbits += bean.getNBits();
+        avgbits += bean.getAvgBits();
+        count++;
+      }
+      compress = nbits / avgbits;
+      if (count > 0) {
+        nbits /= count;
+        avgbits /= count;
+      }
+    }
+
+    private void calcBits2() {
       if (nbits >= 0) return;
       nbits = 0;
       int count = 0;

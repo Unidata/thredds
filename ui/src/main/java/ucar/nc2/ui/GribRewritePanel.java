@@ -396,7 +396,8 @@ public class GribRewritePanel extends JPanel {
     }
 
     public double getRatio() {
-      return nc4Size / (double) f.length();
+      long size = f.length();
+      return (size == 0) ? 0 : nc4Size / (double) size;
     }
 
     public long countCdmData2D(NetcdfDataset ncd) throws IOException {

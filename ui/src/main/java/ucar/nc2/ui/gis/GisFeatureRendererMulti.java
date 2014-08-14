@@ -428,7 +428,7 @@ feats:while (featList.hasNext()) {
       }
     }
 
-    avgD = (avgD/total_pts);
+    avgD = total_pts == 0 ? 0 : (avgD/total_pts);
     if (Debug.isSet("GisFeature/MapResolution")) {
       System.out.println("Map.resolution: total_feats = "+ total_feats);
       System.out.println(" total_parts = "+ total_parts);

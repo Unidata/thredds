@@ -131,7 +131,7 @@ public class Grib2ReportPanel extends ReportPanel {
       double r = ((double) zipSize) / orgSize;
       f.format("  org=%d zip=%d ratio=%f%n", orgSize, zipSize, r);
     }
-    double r = ((double) totalZip) / totalOrg;
+    double r = totalOrg != 0 ? ((double) totalZip) / totalOrg : 0;
     f.format("  org=%d zip=%d ratio=%f%n", totalOrg, totalZip, r);
 
     nbitsC.show(f);

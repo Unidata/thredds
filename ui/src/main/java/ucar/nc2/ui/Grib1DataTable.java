@@ -340,7 +340,7 @@ public class Grib1DataTable extends JPanel {
   }
 
   private MCollection scanCollection(String spec, Formatter f) {
-    MCollection dc;
+    MCollection dc = null;
     try {
       dc = CollectionAbstract.open(spec, spec, null, f);
       fileList = (List<MFile>) Misc.getList(dc.getFilesSorted());
@@ -350,6 +350,7 @@ public class Grib1DataTable extends JPanel {
       StringWriter sw = new StringWriter(5000);
       e.printStackTrace(new PrintWriter(sw));
       f.format(sw.toString());
+      if (dc != null) dc.close();
       return null;
     }
   }
@@ -412,7 +413,7 @@ public class Grib1DataTable extends JPanel {
     //checkRuntimes(f);
   }
 
-  private class DateCount implements Comparable<DateCount> {
+  private static class DateCount implements Comparable<DateCount> {
     CalendarDate d;
     int count;
 
@@ -866,8 +867,10 @@ public class Grib1DataTable extends JPanel {
         count++;
       }
       compress = nbits / avgbits;
-      nbits /= count;
-      avgbits /= count;
+      if (count > 0) {
+        nbits /= count;
+        avgbits /= count;
+      }
     }
 
   }

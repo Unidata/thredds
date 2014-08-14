@@ -256,8 +256,9 @@ public class CatalogChooser extends JPanel {
             try {
               java.net.URI uri = ref.getParentCatalog().resolveUri(href);
               setCurrentURL(uri.toString());
+            } catch (URISyntaxException ee) {
+              throw new RuntimeException(ee);
             }
-            catch (Exception ee) {}
           }
           else if (ds.getParent() == null) { // top
             setCurrentURL(tree.getCatalogURL());

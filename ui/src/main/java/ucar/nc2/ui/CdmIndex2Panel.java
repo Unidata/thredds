@@ -627,7 +627,7 @@ public class CdmIndex2Panel extends JPanel {
         avgDensity += vi.density;
         nvars++;
       }
-      avgDensity /= nvars;
+      if (nvars != 0) avgDensity /= nvars;
       density = (total == 0) ? 0 : ((float) nrecords) / total;
     }
 
