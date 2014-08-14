@@ -60,7 +60,7 @@ public class EmbeddedTable {
   private final RandomAccessFile raf;
   private final BufrIdentificationSection ids;
 
-  private List<Message> messages = new ArrayList<Message>();
+  private List<Message> messages = new ArrayList<>();
   private boolean tableRead = false;
   private TableB b;
   private TableD d;
@@ -86,10 +86,7 @@ public class EmbeddedTable {
     Sequence obs = construct.getObsStructure();
     seq2 = (Structure) obs.findVariable("seq2");
     seq3 = (Structure) obs.findVariable("seq3");
-    if (seq3 == null)
-      System.out.println("HEY");
-    else
-      seq4 = (Structure) seq3.findVariable("seq4");
+    seq4 = (Structure) seq3.findVariable("seq4");
 
     // read all the messages
     ArrayStructure data;
@@ -128,7 +125,9 @@ public class EmbeddedTable {
   }
 
   private void addTableEntryB(StructureData sdata) throws IOException {
-    String name = "", units = null, f = null, x = null, y = null, signScale = null, scaleS = null, signRef = null, refS = null, widthS = null;
+    String name = "", units = null, signScale = null, signRef = null;
+    int scale = 0, refVal = 0, width = 0;
+    short x1 = 0, y1 = 0;
     List<StructureMembers.Member> members = sdata.getMembers();
     List<Variable> vars = seq2.getVariables();
     for (int i=0; i<vars.size(); i++) {
@@ -138,58 +137,57 @@ public class EmbeddedTable {
       if (showB) System.out.printf("%s == %s%n" ,v, data);
 
       Attribute att = v.findAttribute(BufrIosp2.fxyAttName);
-      if (att.getStringValue().equals("0-0-10"))
-        f = sdata.getScalarString(m);
-      else if (att.getStringValue().equals("0-0-11"))
-        x = sdata.getScalarString(m);
-      else if (att.getStringValue().equals("0-0-12"))
-        y = sdata.getScalarString(m);
-      else if (att.getStringValue().equals("0-0-13"))
+      if (att.getStringValue().equals("0-0-10")) {
+        sdata.getScalarString(m);
+      } else if (att.getStringValue().equals("0-0-11")) {
+        String x = sdata.getScalarString(m);
+        x1 = Short.parseShort(x.trim());
+      } else if (att.getStringValue().equals("0-0-12")) {
+        String y = sdata.getScalarString(m);
+        y1 = Short.parseShort(y.trim());
+      } else if (att.getStringValue().equals("0-0-13")) {
         name = sdata.getScalarString(m);
-      else if (att.getStringValue().equals("0-0-14"))
+      } else if (att.getStringValue().equals("0-0-14")) {
         name += sdata.getScalarString(m);  // append both lines
-      else if (att.getStringValue().equals("0-0-15"))
+      } else if (att.getStringValue().equals("0-0-15")) {
         units = sdata.getScalarString(m);
-      else if (att.getStringValue().equals("0-0-16"))
+        units = WmoXmlReader.cleanUnit(units.trim());
+      } else if (att.getStringValue().equals("0-0-16")) {
         signScale = sdata.getScalarString(m).trim();
-      else if (att.getStringValue().equals("0-0-17"))
-        scaleS = sdata.getScalarString(m);
-      else if (att.getStringValue().equals("0-0-18"))
+      } else if (att.getStringValue().equals("0-0-17")) {
+        String scaleS = sdata.getScalarString(m);
+        scale = Integer.parseInt(scaleS.trim());
+      } else if (att.getStringValue().equals("0-0-18")) {
         signRef = sdata.getScalarString(m).trim();
-      else if (att.getStringValue().equals("0-0-19"))
-        refS = sdata.getScalarString(m);
-      else if (att.getStringValue().equals("0-0-20"))
-        widthS = sdata.getScalarString(m);
+      } else if (att.getStringValue().equals("0-0-19")) {
+        String refS = sdata.getScalarString(m);
+        refVal = Integer.parseInt(refS.trim());
+      } else if (att.getStringValue().equals("0-0-20")) {
+        String widthS = sdata.getScalarString(m);
+        width = Integer.parseInt(widthS.trim());
+      }
     }
     if (showB) System.out.printf("%n");
 
-    // split name and description from appendended line 1 and 2
+    // split name and description from appended line 1 and 2
     String desc = null;
     name = name.trim();
     int pos = name.indexOf(' ');
     if (pos > 0) {
       desc = Util.cleanName(name.substring(pos + 1));
-      name = name.substring(0,pos);
-      name= Util.cleanName(name);
+      name = name.substring(0, pos);
+      name = Util.cleanName(name);
     }
-
-    units = WmoXmlReader.cleanUnit(units.trim());
-    int scale = Integer.parseInt(scaleS.trim());
-    int refVal = Integer.parseInt(refS.trim());
-    int width = Integer.parseInt(widthS.trim());
-    short x1 = Short.parseShort(x.trim());
-    short y1 = Short.parseShort(y.trim());
 
     if ("-".equals(signScale)) scale = -1 * scale;
     if ("-".equals(signRef)) refVal = -1 * refVal;
-
-
 
     b.addDescriptor(x1, y1, scale, refVal, width, name, units, desc);
   }
 
   private void addTableEntryD(StructureData sdata) throws IOException {
-    String f = null, x = null, y = null, name = null;
+    String name = null;
+    short x1 = 0, y1 = 0;
     List<Short> dds = null;
 
     List<StructureMembers.Member> members = sdata.getMembers();
@@ -205,28 +203,28 @@ public class EmbeddedTable {
       Attribute att = v.findAttribute(BufrIosp2.fxyAttName);
       if (att != null) {
         if (showD) System.out.printf("%s == %s%n" ,v, sdata.getScalarString(m));
-        if (att.getStringValue().equals("0-0-10"))
-          f = sdata.getScalarString(m);
-        else if (att.getStringValue().equals("0-0-11"))
-          x = sdata.getScalarString(m);
-        else if (att.getStringValue().equals("0-0-12"))
-          y = sdata.getScalarString(m);
-        else if (att.getStringValue().equals("2-5-64"))
+        if (att.getStringValue().equals("0-0-10")) {
+          sdata.getScalarString(m);
+        } else if (att.getStringValue().equals("0-0-11")) {
+          String x = sdata.getScalarString(m);
+          x1 = Short.parseShort(x.trim());
+        } else if (att.getStringValue().equals("0-0-12")) {
+          String y = sdata.getScalarString(m);
+          y1 = Short.parseShort(y.trim());
+        } else if (att.getStringValue().equals("2-5-64")) {
           name = sdata.getScalarString(m);
+        }
       }
     }
     if (showD) System.out.printf("%n");
 
-    short f1 = Short.parseShort(f.trim());
-    short x1 = Short.parseShort(x.trim());
-    short y1 = Short.parseShort(y.trim());
     name = Util.cleanName(name);
 
     d.addDescriptor(x1, y1, name, dds);
   }
 
   private List<Short> getDescriptors(ArraySequence seqdata) throws IOException {
-    List<Short> list = new ArrayList<Short>();
+    List<Short> list = new ArrayList<>();
     String fxyS = null;
     List<Variable> vars = seq4.getVariables();
 
