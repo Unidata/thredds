@@ -35,6 +35,10 @@ package ucar.nc2.writer;
 
 import ucar.nc2.grib.grib1.Grib1RecordScanner;
 import ucar.nc2.grib.grib1.Grib1SectionBinaryData;
+import ucar.nc2.grib.grib2.Grib2Drs;
+import ucar.nc2.grib.grib2.Grib2RecordScanner;
+import ucar.nc2.grib.grib2.Grib2SectionData;
+import ucar.nc2.grib.grib2.Grib2SectionDataRepresentation;
 import ucar.unidata.io.RandomAccessFile;
 import ucar.unidata.test.util.TestDir;
 
@@ -56,13 +60,51 @@ public class TestGribCompressByBit {
   static int deflate_level = 3;
   static PrintStream detailOut;
   static PrintStream summaryOut;
-  //static long totalIn, totalOut, totalRecords;
+  static final boolean debug = false;
 
   int npoints;
   int nrecords = 0;
   float totDeflate;
   float totOrg;
   float totalBytesIn;
+
+  private int doGrib2(String filename)  {
+    try (RandomAccessFile raf = new RandomAccessFile(filename, "r")) {
+      Grib2RecordScanner reader = new Grib2RecordScanner(raf);
+      while (reader.hasNext()) {
+        ucar.nc2.grib.grib2.Grib2Record gr = reader.next();
+
+        Grib2SectionData dataSection = gr.getDataSection();
+        int gribMsgLength = dataSection.getMsgLength();
+
+        Grib2SectionDataRepresentation drss = gr.getDataRepresentationSection();
+        int template = drss.getDataTemplate();
+        if (template != 40) continue; // skip all but JPEG-2000
+
+        Grib2Drs gdrs = drss.getDrs(raf);
+        int nBits = gdrs.getNBits();
+
+
+        float[] data = gr.readData(raf);
+        int compressDeflate = deflate(data); // run it through the deflator
+        if (npoints == 0) npoints = data.length;
+
+         // deflate the original (packed) data
+        int compressOrg = 1; // deflate(dataSection.getBytes(raf)); // run it through the deflator
+
+        // results
+        if (detailOut != null) detailOut.printf("%d, %d, %d, %d, %d%n", nBits, data.length, gribMsgLength, compressDeflate, compressOrg);
+        if (debug) System.out.printf("%d, %d, %d, %d, %d%n", nBits, data.length, gribMsgLength, compressDeflate, compressOrg);
+        nrecords++;
+        totalBytesIn += gribMsgLength;
+        totDeflate += compressDeflate;
+        totOrg += compressOrg;
+      }
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
+    return nrecords;
+  }
 
   private int doGrib1(String filename)  {
     try (RandomAccessFile raf = new RandomAccessFile(filename, "r")) {
@@ -121,9 +163,11 @@ public class TestGribCompressByBit {
 
   private static class CompressByBit implements TestDir.Act {
     boolean showDetail;
+    boolean isGrib1;
 
-    private CompressByBit(boolean showDetail) {
+    private CompressByBit(boolean showDetail, boolean isGrib1) {
       this.showDetail = showDetail;
+      this.isGrib1 = isGrib1;
     }
 
     public int doAct(String filename) throws IOException {
@@ -134,7 +178,11 @@ public class TestGribCompressByBit {
       }
 
       TestGribCompressByBit compressByBit = new TestGribCompressByBit();
-      compressByBit.doGrib1(filename);
+      if (isGrib1)
+        compressByBit.doGrib1(filename);
+      else
+        compressByBit.doGrib2(filename);
+
 
       summaryOut.printf("%s, %d, %d, %f, %f, %f%n", filename, compressByBit.npoints, compressByBit.nrecords, compressByBit.totalBytesIn/compressByBit.nrecords,
               compressByBit.totDeflate/compressByBit.nrecords, compressByBit.totOrg/compressByBit.nrecords);
@@ -152,30 +200,28 @@ public class TestGribCompressByBit {
     summaryOut.printf("file, npoints, nrecords, avgGribSize, avgDeflate, avgOrg%n");
    }
 
-  public static void main3(String[] args) throws IOException {
-    outDir = new File("G:/write3/");
+  public static void main(String[] args) throws IOException {
+    outDir = new File("G:/grib2nc/grib2/");
     summaryOut = new PrintStream(new File(outDir, "summary.csv"));
     writeSummaryHeader();
 
     try {
-      //String filename = "Q:/cdmUnitTest/tds/ncep/NAM_CONUS_20km_noaaport_20100602_0000.grib1";
-      String filename = "Q:/cdmUnitTest/tds/ncep/GFS_Hawaii_160km_20100428_0000.grib1";
-      TestGribCompressByBit compressByBit = new TestGribCompressByBit();
-      compressByBit.doGrib1(filename);
+      CompressByBit test = new CompressByBit(true, false);
+      test.doAct("Q:/cdmUnitTest/tds/ncep/GFS_Global_0p5deg_20100913_0000.grib2");
 
     } finally {
       summaryOut.close();
     }
   }
 
-  public static void main(String[] args) throws IOException {
-    outDir = new File("G:/write3/");
+  public static void main2(String[] args) throws IOException {
+    outDir = new File("G:/grib2nc/grib2/");
     summaryOut = new PrintStream(new File(outDir, "summary.csv"));
     writeSummaryHeader();
 
     try {
       String dirName = "Q:/cdmUnitTest/tds/ncep/";
-      TestDir.actOnAll(dirName, new TestDir.FileFilterFromSuffixes("grib1"), new CompressByBit(true), false);
+      TestDir.actOnAll(dirName, new TestDir.FileFilterFromSuffixes("grib2"), new CompressByBit(true, false), false);
 
     } finally {
       summaryOut.close();
