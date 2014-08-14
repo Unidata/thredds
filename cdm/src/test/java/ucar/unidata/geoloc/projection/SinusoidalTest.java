@@ -20,8 +20,8 @@ public class SinusoidalTest {
         // The map area of the dataset. The upper-right corner is "off the earth", which is causing trouble when
         // converting from projection coords to lat/lon.
         double minX = 7783.190324950472;
-        double maxX = 8895.140844616471;
         double minY = 6672.166430716527;
+        double maxX = 8895.140844616471;
         double maxY = 7784.116950383528;
 
         Sinusoidal proj = new Sinusoidal();
@@ -37,9 +37,27 @@ public class SinusoidalTest {
 
 
     @Test
-    public void projToLatLonBB1() {
+    public void projToLatLonBbValidBottom() {
+        // Values come from visual inspection in ToolsUI->Grid Viewer
+        // Lower left:  2889 3336  -> 30.004 N 30.011E
+        // Lower right: 10055 3336 -> 30.004 N 104.42E
+        // Upper left:  2889 9084  -> 81.697 N 179.98E
+        ProjectionPoint lowerLeftProj  = new ProjectionPointImpl(2889, 3336);
+        ProjectionPoint upperRightProj = new ProjectionPointImpl(10055, 10000);
 
+        Sinusoidal proj = new Sinusoidal();
+        ProjectionRect projBB = new ProjectionRect(lowerLeftProj, upperRightProj);
+        LatLonRect latLonBB = proj.projToLatLonBB(projBB);
+        System.out.println(latLonBB);
+
+        Assert.assertEquals(30.011, latLonBB.getLonMin(), 0.1);
+        Assert.assertEquals(180.0,  latLonBB.getLonMax(), 0.1);
+        Assert.assertEquals(30.004, latLonBB.getLatMin(), 0.1);
+        Assert.assertEquals(81.697, latLonBB.getLatMax(), 0.1);
     }
+
+
+
 
 
     @Test

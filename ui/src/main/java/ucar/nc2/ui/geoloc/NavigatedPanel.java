@@ -696,10 +696,13 @@ public class NavigatedPanel extends JPanel {
       return;
 
     sbuff.setLength(0);
-    sbuff.append(workL.toString());
+
     if (ucar.util.prefs.ui.Debug.isSet("projection/showPosition")) {
-      sbuff.append(" "+workW);
+      sbuff.append(workW + " -> ");
     }
+
+    sbuff.append(workL.toString(5));
+
     if (hasReference) {
         Bearing.calculateBearing(refLatLon, workL, workB);
         sbuff.append("  (");
