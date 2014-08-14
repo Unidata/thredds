@@ -48,7 +48,6 @@ public class SinusoidalTest {
         Sinusoidal proj = new Sinusoidal();
         ProjectionRect projBB = new ProjectionRect(lowerLeftProj, upperRightProj);
         LatLonRect latLonBB = proj.projToLatLonBB(projBB);
-        System.out.println(latLonBB);
 
         Assert.assertEquals(30.011, latLonBB.getLonMin(), 0.1);
         Assert.assertEquals(180.0,  latLonBB.getLonMax(), 0.1);
@@ -56,8 +55,70 @@ public class SinusoidalTest {
         Assert.assertEquals(81.697, latLonBB.getLatMax(), 0.1);
     }
 
+    @Test
+    public void projToLatLonBbValidTop() {
+        // Values come from visual inspection in ToolsUI->Grid Viewer
+        // Upper left:  -9070 -2780 -> 25.002S 90.004W
+        // Upper right: -3603 -2780 -> 25.002S 35.761W
+        // Lower right: -3603 -8854 -> 79.627S 179.99W
+        ProjectionPoint upperLeft  = new ProjectionPointImpl(-9070, -2780);
+        ProjectionPoint lowerRight = new ProjectionPointImpl(-3603, -10000);
+
+        Sinusoidal proj = new Sinusoidal();
+        ProjectionRect projBB = new ProjectionRect(upperLeft, lowerRight);
+        LatLonRect latLonBB = proj.projToLatLonBB(projBB);
+
+        Assert.assertEquals(-180.0,  latLonBB.getLonMin(), 0.1);
+        Assert.assertEquals(-35.761, latLonBB.getLonMax(), 0.1);
+        Assert.assertEquals(-79.627, latLonBB.getLatMin(), 0.1);
+        Assert.assertEquals(-25.002, latLonBB.getLatMax(), 0.1);
+    }
+
+    @Test
+    public void projToLatLonBbValidLeft() {
+        // Values come from visual inspection in ToolsUI->Grid Viewer
+        // Upper left:  14480 -2228 -> 20.037S 138.62E
+        // Lower left:  14480 -4361 -> 39.224S 168.10E
+        // Upper right: 18803 -2228 -> 20.037S 179.99E
+        ProjectionPoint upperLeft  = new ProjectionPointImpl(14480, -2228);
+        ProjectionPoint lowerRight = new ProjectionPointImpl(20000, -4361);
+
+        Sinusoidal proj = new Sinusoidal();
+        ProjectionRect projBB = new ProjectionRect(upperLeft, lowerRight);
+        LatLonRect latLonBB = proj.projToLatLonBB(projBB);
+
+        Assert.assertEquals(138.62,  latLonBB.getLonMin(), 0.1);
+        Assert.assertEquals(180.0 ,  latLonBB.getLonMax(), 0.1);
+        Assert.assertEquals(-39.224, latLonBB.getLatMin(), 0.1);
+        Assert.assertEquals(-20.037, latLonBB.getLatMax(), 0.1);
+    }
+
+    @Test
+    public void projToLatLonBbValidRight() {
+        // Values come from visual inspection in ToolsUI->Grid Viewer
+        // Lower right: -9370 4446  -> 39.985N 109.99W
+        // Upper right: -9370 6278  -> 56.465N 152.54W
+        // Lower left:  -15334 4446 -> 39.985N 179.99W
+        ProjectionPoint lowerRight = new ProjectionPointImpl(-9370,  4446);
+        ProjectionPoint upperLeft  = new ProjectionPointImpl(-17500, 6278);
+
+        Sinusoidal proj = new Sinusoidal();
+        ProjectionRect projBB = new ProjectionRect(upperLeft, lowerRight);
+        LatLonRect latLonBB = proj.projToLatLonBB(projBB);
+
+        Assert.assertEquals(-180.0,  latLonBB.getLonMin(), 0.1);
+        Assert.assertEquals(-109.99, latLonBB.getLonMax(), 0.1);
+        Assert.assertEquals(39.985,  latLonBB.getLatMin(), 0.1);
+        Assert.assertEquals(56.465,  latLonBB.getLatMax(), 0.1);
+    }
 
 
+    // Add test for when ll and lr straddle prime meridian. Max lat should be -+90.
+    // Can we test that with Projection.crossSeam()? Why are some of the implementations so funky?
+
+    // Add tests for the 4 cases of 1 good point.
+
+    // Add test for a projBB that's completely off the earth.
 
 
     @Test

@@ -466,10 +466,10 @@ public class Sinusoidal extends ProjectionImpl {
     }
 
     private LatLonRect makeLatLonRect(List<ProjectionPoint> projPoints) {
-        double minLat = Double.MAX_VALUE;
-        double minLon = Double.MAX_VALUE;
-        double maxLat = Double.MIN_VALUE;
-        double maxLon = Double.MIN_VALUE;
+        double minLat = +Double.MAX_VALUE;
+        double minLon = +Double.MAX_VALUE;
+        double maxLat = -Double.MAX_VALUE;
+        double maxLon = -Double.MAX_VALUE;
 
         for (ProjectionPoint projPoint : projPoints) {
             LatLonPoint latLonPoint = projToLatLon(projPoint);
