@@ -224,10 +224,6 @@ public class PolyconicProjection extends ProjectionImpl {
     return out;
   }
 
-  public boolean hasInverse() {
-    return true;
-  }
-
   private void initialize() {
     if (!spherical) {
       en = MapMath.enfn(es);
@@ -240,13 +236,48 @@ public class PolyconicProjection extends ProjectionImpl {
     }
   }
 
-  /**
+  //   public PolyconicProjection(double lat0, double lon0, double falseEasting, double falseNorthing, Earth ellipsoid) {
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) return true;
+    if (o == null || getClass() != o.getClass()) return false;
+
+    PolyconicProjection that = (PolyconicProjection) o;
+
+    if (Double.compare(that.falseEasting, falseEasting) != 0) return false;
+    if (Double.compare(that.falseNorthing, falseNorthing) != 0) return false;
+    if (Double.compare(that.projectionLatitude, projectionLatitude) != 0) return false;
+    if (Double.compare(that.projectionLongitude, projectionLongitude) != 0) return false;
+    if (!ellipsoid.equals(that.ellipsoid)) return false;
+
+    return true;
+  }
+
+  @Override
+  public int hashCode() {
+    int result;
+    long temp;
+    temp = Double.doubleToLongBits(projectionLatitude);
+    result = (int) (temp ^ (temp >>> 32));
+    temp = Double.doubleToLongBits(projectionLongitude);
+    result = 31 * result + (int) (temp ^ (temp >>> 32));
+    result = 31 * result + ellipsoid.hashCode();
+    temp = Double.doubleToLongBits(falseEasting);
+    result = 31 * result + (int) (temp ^ (temp >>> 32));
+    temp = Double.doubleToLongBits(falseNorthing);
+    result = 31 * result + (int) (temp ^ (temp >>> 32));
+    return result;
+  }
+
+
+
+  /*
    * Check for equality with the Object in question
    *
    * @param proj object to check
    * @return true if they are equal
-   */
-  @Override
+   *
   public boolean equals(Object proj) {
     if (!(proj instanceof PolyconicProjection))
       return false;
@@ -258,7 +289,7 @@ public class PolyconicProjection extends ProjectionImpl {
     return ((this.getOriginLatitude() == oo.getOriginLatitude())
           && (this.getOriginLongitude() == oo.getOriginLongitude())
           && this.ellipsoid.equals(oo.getEarth()));
-  }
+  }  */
 
   //Beans properties
   public Earth getEarth() {

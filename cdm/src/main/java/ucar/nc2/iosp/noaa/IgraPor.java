@@ -403,7 +403,6 @@ public class IgraPor extends AbstractIOServiceProvider {
 
   private class StationData extends StructureDataRegexp {
     StructureMembers members;
-    Matcher matcher;          // matcher on the station ascii
 
     StationData(StructureMembers members, Matcher matcher) {
       super(members, matcher);

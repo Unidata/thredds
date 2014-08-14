@@ -39,6 +39,7 @@ import ucar.nc2.constants.CDM;
 import ucar.nc2.constants.CF;
 import ucar.nc2.constants._Coordinate;
 import ucar.nc2.constants.AxisType;
+import ucar.nc2.time.*;
 import ucar.nc2.units.SimpleUnit;
 import ucar.nc2.util.CancelTask;
 import ucar.nc2.dataset.*;
@@ -65,12 +66,12 @@ import java.util.*;
 
 public class WRFConvention extends CoordSysBuilder {
 
-  static private java.text.SimpleDateFormat dateFormat;
+  // static private java.text.SimpleDateFormat dateFormat;
 
-  static {
-    dateFormat = new java.text.SimpleDateFormat("yyyy-MM-dd_HH:mm:ss");
-    dateFormat.setTimeZone(java.util.TimeZone.getTimeZone("GMT"));
-  }
+ // static {
+ //   dateFormat = new java.text.SimpleDateFormat("yyyy-MM-dd_HH:mm:ss");
+ //   dateFormat.setTimeZone(java.util.TimeZone.getTimeZone("GMT"));
+  //}
 
   public static boolean isMine(NetcdfFile ncfile) {
     if (null == ncfile.findDimension("south_north")) return false;
@@ -576,19 +577,19 @@ map_proj =  1: Lambert Conformal
       while (iter.hasNext()) {
         String dateS = iter.next();
         try {
-          Date d = dateFormat.parse(dateS);
-          values.set(count++, (double) d.getTime() / 1000);
+          CalendarDate cd = CalendarDateFormatter.isoStringToCalendarDate(null, dateS);
+          values.set(count++, (double) cd.getMillis() / 1000);
 
-        } catch (java.text.ParseException e) {
+        } catch (IllegalArgumentException e) {
           parseInfo.format("ERROR: cant parse Time string = <%s> err= %s%n", dateS, e.getMessage());
 
           // one more try
           String startAtt = ds.findAttValueIgnoreCase(null, "START_DATE", null);
           if ((nt == 1) && (null != startAtt)) {
             try {
-              Date d = dateFormat.parse(startAtt);
-              values.set(0, (double) d.getTime() / 1000);
-            } catch (java.text.ParseException e2) {
+              CalendarDate cd = CalendarDateFormatter.isoStringToCalendarDate(null, startAtt);
+              values.set(0, (double) cd.getMillis() / 1000);
+            } catch (IllegalArgumentException e2) {
               parseInfo.format("ERROR: cant parse global attribute START_DATE = <%s> err=%s%n", startAtt, e2.getMessage());
             }
           }
@@ -599,9 +600,9 @@ map_proj =  1: Lambert Conformal
       while (iter.hasNext()) {
         String dateS = (String) iter.next();
         try {
-          Date d = dateFormat.parse(dateS);
-          values.set(count++, (double) d.getTime() / 1000);
-        } catch (java.text.ParseException e) {
+          CalendarDate cd = CalendarDateFormatter.isoStringToCalendarDate(null, dateS);
+          values.set(count++, (double) cd.getMillis() / 1000);
+        } catch (IllegalArgumentException e) {
           parseInfo.format("ERROR: cant parse Time string = %s%n", dateS);
         }
       }
