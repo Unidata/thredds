@@ -125,7 +125,7 @@ public class EmbeddedTable {
   }
 
   private void addTableEntryB(StructureData sdata) throws IOException {
-    String name = "", units = null, signScale = null, signRef = null;
+    String name = "", units = "", signScale = null, signRef = null;
     int scale = 0, refVal = 0, width = 0;
     short x1 = 0, y1 = 0;
     List<StructureMembers.Member> members = sdata.getMembers();
@@ -245,8 +245,10 @@ public class EmbeddedTable {
       }
       if (showD) System.out.printf("%n");
 
-      short id = Descriptor.getFxy2(fxyS);
-      list.add(id);
+      if (fxyS != null) {
+          short id = Descriptor.getFxy2(fxyS);
+          list.add(id);
+      }
     }
     return list;
   }
