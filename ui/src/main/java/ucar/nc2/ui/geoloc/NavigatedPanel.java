@@ -189,6 +189,7 @@ public class NavigatedPanel extends JPanel {
     // listen for mouse events
     addMouseListener(new myMouseListener());
     addMouseMotionListener(new myMouseMotionListener());
+    addMouseWheelListener(new myMouseWheelListener());
 
     // catch resize events
     addComponentListener(new ComponentAdapter() {
@@ -760,7 +761,7 @@ public class NavigatedPanel extends JPanel {
     */
 
   private class myMouseListener extends MouseAdapter {
-
+    @Override
     public void mouseClicked( MouseEvent e) {
       // pick event
       if (isReferenceMode) {
@@ -777,6 +778,7 @@ public class NavigatedPanel extends JPanel {
       }
     }
 
+    @Override
     public void mousePressed( MouseEvent e) {
       if (!changeable)
         return;
@@ -839,6 +841,7 @@ public class NavigatedPanel extends JPanel {
       if (debugEvent) System.out.println( "mousePressed "+startx+" "+starty);
     }
 
+    @Override
     public void mouseReleased( MouseEvent e) {
       if (!changeable)
         return;
@@ -893,6 +896,7 @@ public class NavigatedPanel extends JPanel {
 
   // mouseMotionListener
   private class myMouseMotionListener implements MouseMotionListener {
+    @Override
     public void mouseDragged( MouseEvent e) {
       if (!changeable)
         return;
@@ -920,8 +924,26 @@ public class NavigatedPanel extends JPanel {
       //redrawLater(100); // schedule redraw in 100 msecs
     }
 
+    @Override
     public void mouseMoved( MouseEvent e) {
       showStatus(e.getX(), e.getY());
+    }
+  }
+
+  private class myMouseWheelListener extends MouseAdapter {
+    @Override
+    public void mouseWheelMoved(MouseWheelEvent e) {
+      if (e.getWheelRotation() < 0) {
+        for (int rotation = e.getWheelRotation(); rotation < 0; ++rotation) {
+          navigate.zoomIn();
+          drawG();
+        }
+      } else {
+        for (int rotation = e.getWheelRotation(); rotation > 0; --rotation) {
+          navigate.zoomOut();
+          drawG();
+        }
+      }
     }
   }
 
