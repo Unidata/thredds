@@ -85,6 +85,7 @@ public class DMRPrint
             throws IOException
     {
         CEConstraint ce = CEConstraint.getUniversal(dataset);
+        assert(ce != null);
         printDMR(ce,dataset);
     }
 

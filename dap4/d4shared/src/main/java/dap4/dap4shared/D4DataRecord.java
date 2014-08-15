@@ -23,7 +23,6 @@ public class D4DataRecord extends D4DataVariable implements DataRecord
 
     protected D4DataSequence parent = null;
     protected int recno = 0;
-    protected D4DSP dsp = null;
     D4DataVariable[] fields;
 
     //////////////////////////////////////////////////

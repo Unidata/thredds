@@ -49,6 +49,8 @@ import java.util.List;
  */
 public class Rewrite {
 
+  static final boolean NETCDF4 = true;
+
   NetcdfFile ncIn;
   NetcdfFileWriter ncOut;
   NetcdfFileWriter.Version version;
@@ -175,18 +177,18 @@ public class Rewrite {
       System.out.printf("shape = %d, ", new Section(shape).computeSize()/1000);
       System.out.printf("newshape = %d, ", new Section(newshape).computeSize()/1000);
 
-      nt = shape[0];
+      this.nt = shape[0];
       Section s = new Section(shape);
       long totalSize = s.computeSize();
-      chunksize = (int)(totalSize / nt);
-      System.out.printf("chunksize = %d (Kb)%n", chunksize/1000);
+      this.chunksize = (int)(totalSize / nt);
+      System.out.printf("chunksize = %d (Kb)%n", this.chunksize/1000);
 
       this.shape = shape;
       this.newshape = newshape;
-      this.result = Array.factory(dataType, newshape);
+      this.result = Array.factory(dataType, this.newshape);
 
       // get view of result as a 2d array (any..., nt);
-      int[] reshape = new int[] {chunksize, nt};
+      int[] reshape = new int[] {this.chunksize, this.nt};
       this.work = this.result.reshapeNoCopy(reshape);
     }
 
@@ -239,14 +241,13 @@ public class Rewrite {
     // Nc4Iosp.setLibraryAndPath("C:\\netcdfc\\netCDF 4.3.0-rc4\\bin", "netcdf");
 
     long start = System.nanoTime();
-    boolean netcdf4 = true;
     String datasetIn = "E:/ncep/NAM_Firewxnest_20111231_1800.grib2";
     String datasetOut = "E:/ncep/NAM_Firewxnest_20111231_1800.invert.nc4";
 
     NetcdfFile ncfileIn = ucar.nc2.dataset.NetcdfDataset.openFile(datasetIn, null);
     System.out.printf("Read from %s write to %s%n", datasetIn, datasetOut);
 
-    NetcdfFileWriter.Version version = netcdf4 ? NetcdfFileWriter.Version.netcdf4 : NetcdfFileWriter.Version.netcdf3;
+    NetcdfFileWriter.Version version = NETCDF4 ? NetcdfFileWriter.Version.netcdf4 : NetcdfFileWriter.Version.netcdf3;
 
     // LOOK need to set chunksize  probably (y, x, z, t) = (n, n, nz, nt), choose n so chunksize = 1 M or so?.
     // so (time2=37, isobaric3=46, y=589, x=523) -> (time2=37, isobay=589, x=523, 46, 37)
@@ -257,6 +258,8 @@ public class Rewrite {
 
     File oldFile = new File(datasetIn);
     File newFile = new File(datasetOut);
+    if(oldFile.length() == 0)
+        throw new ArithmeticException("Divide by zero");
     double r =  (double) newFile.length() / oldFile.length();
 
     double took = (double) (System.nanoTime() - start) / 1000 / 1000 / 1000;

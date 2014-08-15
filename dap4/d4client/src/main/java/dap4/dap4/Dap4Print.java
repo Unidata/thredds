@@ -55,9 +55,10 @@ public class Dap4Print
     static class CommandlineOptions
     {
         // Local copies of the command line options
-        String path = null;
-        String outputfile = null;
-        List<String> vars = new ArrayList<String>();
+        public String path = null;
+        public String outputfile = null;
+        //Coverity[FB.URF_UNREAD_FIELD]
+        public List<String> vars = new ArrayList<String>();
     }
 
     //////////////////////////////////////////////////

@@ -363,9 +363,9 @@ public abstract class Convert
         AtomicType srcatomtype = srctype.getAtomicType();
 
         if(srcatomtype.isEnumType())
+            //Coverity[FB.BC_UNCONFIRMED_CAST]
             return longValue(((DapEnum) srctype).getBaseType(), value);
         assert (!srctype.isEnumType());
-
         if(srcatomtype.isCharType())
             //Coverity[FB.BC_UNCONFIRMED_CAST]
             return ((long) ((Character) value).charValue()) & 0xFFL;

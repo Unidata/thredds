@@ -191,8 +191,10 @@ public class HTTPSession implements AutoCloseable
             if(getVerbose()) {
                 HTTPSession.log.debug(String.format("Retry: count=%d exception=%s", executionCount, exception.toString()));
             }
-            if(executionCount >= retries)
-                return false;
+            synchronized (HTTPSession.class) {
+                if(executionCount >= retries)
+                    return false;
+            }
             if((exception instanceof InterruptedIOException) // Timeout
                 || (exception instanceof UnknownHostException)
                 || (exception instanceof ConnectException) // connection refused
@@ -655,7 +657,7 @@ public class HTTPSession implements AutoCloseable
         }
         this.legalurl = url;
         try {
-            synchronized (this) {
+            synchronized (HTTPSession.class) {
                 sessionClient = new DefaultHttpClient(connmgr);
             }
             if(TESTING) HTTPSession.track(this);

@@ -128,6 +128,7 @@ abstract public class Dap4Actions extends Dap4EventHandler
     createxmlelement(SaxEvent open, XMLAttributeMap map, DapNode parent)
         throws DapException
     {
+        assert(parent != null);
         DapXML node = (DapXML) newNode(open.name, DapSort.XML);
         node.setNodeType(DapXML.NodeType.ELEMENT);
         if(parent.getSort() == DapSort.OTHERXML) {
