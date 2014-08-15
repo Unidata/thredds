@@ -25,13 +25,9 @@ install:
 script:
   - cd cdm && mvn test ${MAVEN_OPTS}
   - cd ../udunits && mvn test ${MAVEN_OPTS}
-  - cd ../ui && mvn test ${MAVEN_OPTS}
+#  - cd ../ui && mvn test ${MAVEN_OPTS}
   - cd ../waterml && mvn test ${MAVEN_OPTS}
   - cd ../dap4/d4tests && mvn test ${MAVEN_OPTS}
-
-matrix:
-  allow_failures:
-    - jdk: oraclejdk8
 
 cache:
   directories:
