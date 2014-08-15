@@ -396,6 +396,9 @@ public class DIFWriter {
     if (null != (access = ds.getAccess(ServiceType.OPENDAP))) {
       rootElem.addContent( makeRelatedURL("GET DATA", "OPENDAP DATA", access.getStandardUrlName()));
     }
+    if (null != (access = ds.getAccess(ServiceType.DAP4))) {
+      rootElem.addContent( makeRelatedURL("GET DATA", "DAP4 DATA", access.getStandardUrlName()));
+    }
 
     rootElem.addContent(new Element("Metadata_Name", defNS).addContent("CEOS IDN DIF"));
     rootElem.addContent(new Element("Metadata_Version", defNS).addContent("9.4"));

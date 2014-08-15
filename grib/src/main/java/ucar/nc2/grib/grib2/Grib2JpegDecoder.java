@@ -414,20 +414,21 @@ public class Grib2JpegDecoder {
       decSpec = hd.getDecoderSpecs();
 
       // Report information
+      StringBuffer info = new StringBuffer(nCompCod +
+              " component(s) in codestream, " + nTiles + " tile(s)\n");
       if (verbose) {
-        String info = nCompCod + " component(s) in codestream, " + nTiles +
-                " tile(s)\n";
-        info += "Image dimension: ";
+
+        info.append("Image dimension: ");
         for (int c = 0; c < nCompCod; c++) {
-          info += hi.siz.getCompImgWidth(c) + "x" +
-                  hi.siz.getCompImgHeight(c) + " ";
+          info.append(hi.siz.getCompImgWidth(c) + "x" +
+                      hi.siz.getCompImgHeight(c) + " ");
         }
 
         if (nTiles != 1) {
-          info += "\nNom. Tile dim. (in canvas): " +
-                  hi.siz.xtsiz + "x" + hi.siz.ytsiz;
+          info.append("\nNom. Tile dim. (in canvas): " +
+                      hi.siz.xtsiz + "x" + hi.siz.ytsiz);
         }
-        System.out.println("[INFO]: " + info);
+        System.out.println("[INFO]: " + info.toString());
       }
       if (pl.getBooleanParameter("cdstr_info")) {
         System.out.println("[INFO]: Main header:\n" +
@@ -1089,7 +1090,7 @@ public class Grib2JpegDecoder {
         public String toString() {
             return "ImgWriterArray: WxH = " + w + "x" + h + ", Component = " +
                     c + ", Bit-depth = " + bitDepth + ", signed = " + isSigned +
-                    "\nUnderlying RandomAccessFile:\n" + db.data.toString();
+                    "\n";
         }
     } // end ImgWriterArray
 

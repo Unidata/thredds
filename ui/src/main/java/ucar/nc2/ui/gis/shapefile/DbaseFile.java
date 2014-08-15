@@ -41,7 +41,7 @@ import java.net.URL;
  * @author Kirk Waters, NOAA Coastal Services Center, 1997.
  * @author Russ Rew, modified to restrict access to read-only
  */
-public class DbaseFile extends Object {
+public class DbaseFile {
 
   static public int DBASEIII = 0;
   static public int DBASEIV = 1;
@@ -82,10 +82,6 @@ public class DbaseFile extends Object {
       stream = url.openStream();
     } catch (java.net.MalformedURLException e) {
       stream = new FileInputStream(spec);
-      if (stream == null) {
-        System.out.println("Got a null trying to open " + spec);
-        throw new java.io.IOException("Failed to open stream");
-      }
     }
   }
 
@@ -119,7 +115,7 @@ public class DbaseFile extends Object {
       ds = new DataInputStream(bs);
       /* read the header as one block of bytes*/
       Header = new byte[32];
-      ds.read(Header);
+      ds.readFully(Header);
       //System.out.println("dbase header is " + Header);
       if (Header[0] == '<') { //looks like html coming back to us!
         close(ds);
@@ -138,7 +134,7 @@ public class DbaseFile extends Object {
       /* have to figure how many there are from
       * the header size.  Should be nbytesheader/32 -1
       */
-      nfields = (int) (nbytesheader / 32) - 1;
+      nfields = (nbytesheader / 32) - 1;
       if (nfields < 1) {
         System.out.println("nfields = " + nfields);
         System.out.println("nbytesheader = " +
@@ -193,15 +189,8 @@ public class DbaseFile extends Object {
     } catch (java.io.IOException e) {
       close(s);
       return -1;
-    }
-    /*
-      catch(java.net.UnknownServiceException e){
-      return -1;
-      }
-    */ finally {
-      if (s != null) {
-        close(s);
-      }
+    } finally {
+      close(s);
     }
     return 0;
   }
@@ -211,6 +200,7 @@ public class DbaseFile extends Object {
     try {
       d.close();
     } catch (java.io.IOException e) {
+      System.out.printf("filed to close %s%n", e);
     }
   }
 
@@ -405,8 +395,8 @@ public class DbaseFile extends Object {
           }
         }
       } catch (IOException e) {
-        System.out.println(e);
-        System.exit(-1);
+        e.printStackTrace();
+        break;
       }
     }
   }

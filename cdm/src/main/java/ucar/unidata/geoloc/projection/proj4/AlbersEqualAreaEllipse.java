@@ -195,13 +195,52 @@ public class AlbersEqualAreaEllipse extends ProjectionImpl {
 		}
 	}
 
-  /**
+  //   public AlbersEqualAreaEllipse(double lat0, double lon0, double par1, double par2, double falseEasting, double falseNorthing, Earth earth) {
+
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) return true;
+    if (o == null || getClass() != o.getClass()) return false;
+
+    AlbersEqualAreaEllipse that = (AlbersEqualAreaEllipse) o;
+
+    if (Double.compare(that.falseEasting, falseEasting) != 0) return false;
+    if (Double.compare(that.falseNorthing, falseNorthing) != 0) return false;
+    if (Double.compare(that.lat0deg, lat0deg) != 0) return false;
+    if (Double.compare(that.lon0deg, lon0deg) != 0) return false;
+    if (Double.compare(that.par1deg, par1deg) != 0) return false;
+    if (Double.compare(that.par2deg, par2deg) != 0) return false;
+    return earth.equals(that.earth);
+  }
+
+  @Override
+  public int hashCode() {
+    int result;
+    long temp;
+    temp = Double.doubleToLongBits(lat0deg);
+    result = (int) (temp ^ (temp >>> 32));
+    temp = Double.doubleToLongBits(lon0deg);
+    result = 31 * result + (int) (temp ^ (temp >>> 32));
+    temp = Double.doubleToLongBits(par1deg);
+    result = 31 * result + (int) (temp ^ (temp >>> 32));
+    temp = Double.doubleToLongBits(par2deg);
+    result = 31 * result + (int) (temp ^ (temp >>> 32));
+    temp = Double.doubleToLongBits(falseEasting);
+    result = 31 * result + (int) (temp ^ (temp >>> 32));
+    temp = Double.doubleToLongBits(falseNorthing);
+    result = 31 * result + (int) (temp ^ (temp >>> 32));
+    result = 31 * result + earth.hashCode();
+    return result;
+  }
+
+  /*
    * Check for equality with the Object in question
    *
    * @param proj object to check
    * @return true if they are equal
-   */
-  public boolean equals(Object proj) {
+   *
+  public boolean equals2(Object proj) {
     if (!(proj instanceof AlbersEqualAreaEllipse)) {
       return false;
     }
@@ -215,7 +254,7 @@ public class AlbersEqualAreaEllipse extends ProjectionImpl {
           && (this.getOriginLat() == oo.getOriginLat())
           && (this.getOriginLon() == oo.getOriginLon())
           && this.earth.equals(oo.earth));
-  }
+  } */
 
   // bean properties
 

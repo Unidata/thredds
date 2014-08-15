@@ -101,14 +101,17 @@ public class ProjectionAdapter extends ProjectionImpl {
     return proj.paramsToString();
   }
 
-  /**
-   * Check for equality with the object in question
-   *
-   * @param p object in question
-   * @return true if the represent the same projection
-   */
-  public boolean equals(Object p) {
-    return proj.equals(p);
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) return true;
+    if (o == null || getClass() != o.getClass()) return false;
+    ProjectionAdapter that = (ProjectionAdapter) o;
+    return proj.equals(that.proj);
+  }
+
+  @Override
+  public int hashCode() {
+    return proj.hashCode();
   }
 
   /**

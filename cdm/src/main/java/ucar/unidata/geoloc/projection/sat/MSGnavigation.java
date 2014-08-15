@@ -398,7 +398,43 @@ public class MSGnavigation extends ProjectionImpl {
   }
 
   @Override
-  public boolean equals(Object proj) {
+  public boolean equals(Object o) {
+    if (this == o) return true;
+    if (o == null || getClass() != o.getClass()) return false;
+
+    MSGnavigation that = (MSGnavigation) o;
+
+    if (Double.compare(that.lat0, lat0) != 0) return false;
+    if (Double.compare(that.lon0, lon0) != 0) return false;
+    if (Double.compare(that.major_axis, major_axis) != 0) return false;
+    if (Double.compare(that.minor_axis, minor_axis) != 0) return false;
+    if (Double.compare(that.sat_height, sat_height) != 0) return false;
+    if (Double.compare(that.scale_x, scale_x) != 0) return false;
+    return Double.compare(that.scale_y, scale_y) == 0;
+  }
+
+  @Override
+  public int hashCode() {
+    int result;
+    long temp;
+    temp = Double.doubleToLongBits(lat0);
+    result = (int) (temp ^ (temp >>> 32));
+    temp = Double.doubleToLongBits(lon0);
+    result = 31 * result + (int) (temp ^ (temp >>> 32));
+    temp = Double.doubleToLongBits(major_axis);
+    result = 31 * result + (int) (temp ^ (temp >>> 32));
+    temp = Double.doubleToLongBits(minor_axis);
+    result = 31 * result + (int) (temp ^ (temp >>> 32));
+    temp = Double.doubleToLongBits(sat_height);
+    result = 31 * result + (int) (temp ^ (temp >>> 32));
+    temp = Double.doubleToLongBits(scale_x);
+    result = 31 * result + (int) (temp ^ (temp >>> 32));
+    temp = Double.doubleToLongBits(scale_y);
+    result = 31 * result + (int) (temp ^ (temp >>> 32));
+    return result;
+  }
+
+  /* public boolean equals2(Object proj) {
       if (this == proj) return true;
       if (proj == null || getClass() != proj.getClass()) return false;
 
@@ -409,7 +445,7 @@ public class MSGnavigation extends ProjectionImpl {
       if (defaultMapArea != null && !that.defaultMapArea.equals(defaultMapArea)) return false;
 
       return proj instanceof MSGnavigation;
-  }
+  }  */
 
   /**
    * Create a ProjectionRect from the given LatLonRect.

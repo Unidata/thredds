@@ -100,8 +100,7 @@ public class LambertConformalConicEllipse extends ProjectionImpl {
    * @param earth shape of the earth
    * @throws IllegalArgumentException if lat0, par1, par2 = +/-90 deg
    */
-  public LambertConformalConicEllipse(double lat0, double lon0, double par1, double par2,
-                                      double falseEasting, double falseNorthing, Earth earth) {
+  public LambertConformalConicEllipse(double lat0, double lon0, double par1, double par2, double falseEasting, double falseNorthing, Earth earth) {
 
     super("LambertConformalConicEllipse", false);
 
@@ -238,14 +237,54 @@ public class LambertConformalConicEllipse extends ProjectionImpl {
     //System.out.println("LC = " +pt);
   }  */
 
+  //   public LambertConformalConicEllipse(double lat0, double lon0, double par1, double par2, double falseEasting, double falseNorthing, Earth earth) {
 
-  /**
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) return true;
+    if (o == null || getClass() != o.getClass()) return false;
+
+    LambertConformalConicEllipse that = (LambertConformalConicEllipse) o;
+
+    if (Double.compare(that.falseEasting, falseEasting) != 0) return false;
+    if (Double.compare(that.falseNorthing, falseNorthing) != 0) return false;
+    if (Double.compare(that.lat0rad, lat0rad) != 0) return false;
+    if (Double.compare(that.lon0rad, lon0rad) != 0) return false;
+    if (Double.compare(that.par1rad, par1rad) != 0) return false;
+    if (Double.compare(that.par2rad, par2rad) != 0) return false;
+    if (!earth.equals(that.earth)) return false;
+
+    return true;
+  }
+
+  @Override
+  public int hashCode() {
+    int result;
+    long temp;
+    temp = Double.doubleToLongBits(lat0rad);
+    result = (int) (temp ^ (temp >>> 32));
+    temp = Double.doubleToLongBits(lon0rad);
+    result = 31 * result + (int) (temp ^ (temp >>> 32));
+    temp = Double.doubleToLongBits(par1rad);
+    result = 31 * result + (int) (temp ^ (temp >>> 32));
+    temp = Double.doubleToLongBits(par2rad);
+    result = 31 * result + (int) (temp ^ (temp >>> 32));
+    temp = Double.doubleToLongBits(falseEasting);
+    result = 31 * result + (int) (temp ^ (temp >>> 32));
+    temp = Double.doubleToLongBits(falseNorthing);
+    result = 31 * result + (int) (temp ^ (temp >>> 32));
+    result = 31 * result + earth.hashCode();
+    return result;
+  }
+
+  /*
    * Check for equality with the Object in question
    *
    * @param proj object to check
    * @return true if they are equal
-   */
-  public boolean equals(Object proj) {
+   *
+  public boolean equals2(Object proj) {
     if (!(proj instanceof LambertConformalConicEllipse))
       return false;
 
@@ -258,7 +297,7 @@ public class LambertConformalConicEllipse extends ProjectionImpl {
             && (this.getOriginLat() == oo.getOriginLat())
             && (this.getOriginLon() == oo.getOriginLon())
             && this.earth.equals(oo.earth));
-  }
+  }  */
 
   // bean properties
 

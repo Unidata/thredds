@@ -228,13 +228,15 @@ public class BufrConfig {
     try {
       MessageScanner scanner = new MessageScanner(raf);
       Message protoMessage = scanner.getFirstDataMessage();
+      if (protoMessage == null) throw new IOException("No message found!");
+
       messHash = protoMessage.hashCode();
       standardFields = StandardFields.extract(protoMessage);
       rootConverter = new FieldConverter(protoMessage.ids.getCenterId(), protoMessage.getRootDataDescriptor());
 
        if (standardFields.hasStation()) {
          hasStations = true;
-         map = new HashMap<String, BufrStation>(1000);
+         map = new HashMap<>(1000);
        }
       featureType = guessFeatureType(standardFields);
       hasDate = standardFields.hasTime();
@@ -272,9 +274,6 @@ public class BufrConfig {
   }
 
   /////////////////////////////////////////////////////////////////////////////////////
-
-  static private class FakeNetcdfFile extends NetcdfFile {
-  }
 
   private CalendarDate today = CalendarDate.present();
   private void processSeq(StructureDataIterator sdataIter, FieldConverter parent, boolean isTop) throws IOException {
@@ -447,14 +446,12 @@ public class BufrConfig {
     int max = 0;
     boolean isSeq;
 
-    private FieldConverter() {}
-
     private FieldConverter(int center, DataDescriptor dds) {
       this.dds = dds;
       this.type = StandardFields.findField(center, dds.getFxyName());
 
       if (dds.getSubKeys() != null) {
-        this.flds = new ArrayList<FieldConverter>(dds.getSubKeys().size());
+        this.flds = new ArrayList<>(dds.getSubKeys().size());
         for (DataDescriptor subdds : dds.getSubKeys()) {
           FieldConverter subfld = new FieldConverter(center, subdds);
           flds.add(subfld);
@@ -535,13 +532,6 @@ public class BufrConfig {
           return child;
       }
       return null;
-    }
-
-    void showChildren() {
-      for (FieldConverter child : flds) {
-        String name = child.dds.getName();
-        System.out.printf("'%s'%n",name );
-      }
     }
 
     FieldConverter findChildByFxyName(String fxyName) {

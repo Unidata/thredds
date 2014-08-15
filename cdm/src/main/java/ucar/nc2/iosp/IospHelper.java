@@ -108,7 +108,7 @@ public class IospHelper {
         Layout.Chunk chunk = layout.next();
         raf.order(byteOrder);
         raf.seek(chunk.getSrcPos());
-        raf.read(pa, (int) chunk.getDestElem(), chunk.getNelems());
+        raf.readFully(pa, (int) chunk.getDestElem(), chunk.getNelems());
       }
       //return (convertChar && dataType == DataType.CHAR) ? convertByteToChar(pa) : pa;
       if (convertChar && dataType == DataType.CHAR) return convertByteToChar(pa);

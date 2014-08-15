@@ -44,7 +44,7 @@ import java.io.IOException;
  * @author caron
  * @since 4/1/11
  */
-public class Grib2Drs {
+public abstract class Grib2Drs {
 
   public static Grib2Drs factory(int template, RandomAccessFile raf) throws IOException {
     switch (template) {
@@ -63,9 +63,7 @@ public class Grib2Drs {
     }
   }
 
-  public int getNBits() {
-    return -1;
-  }
+  public abstract int getNBits();
 
   public int getNGroups() {
     return 1;

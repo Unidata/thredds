@@ -237,16 +237,17 @@ public class RotatedPole extends ProjectionImpl {
      return Math.abs(pt1.getX() - pt2.getX()) > 270.0;
   }
 
-  public boolean equals(Object proj) {
-    if (!(proj instanceof RotatedPole)) {
-      return false;
-    }
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) return true;
+    if (o == null || getClass() != o.getClass()) return false;
+    RotatedPole that = (RotatedPole) o;
+    return northPole.equals(that.northPole);
+  }
 
-    RotatedPole oo = (RotatedPole) proj;
-    if ((this.getDefaultMapArea() == null) != (oo.defaultMapArea == null)) return false; // common case is that these are null
-    if (this.getDefaultMapArea() != null && !this.defaultMapArea.equals(oo.defaultMapArea)) return false;
-
-    return this.getNorthPole().equals(oo.getNorthPole());
+  @Override
+  public int hashCode() {
+    return northPole.hashCode();
   }
 
 }

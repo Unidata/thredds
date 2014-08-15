@@ -176,8 +176,7 @@ public class NOWRadheader {
         int    pos     = 0;
 
         raf.seek(pos);
-
-        int rc = raf.read(b);
+        raf.readFully(b);
 
         return b;
     }

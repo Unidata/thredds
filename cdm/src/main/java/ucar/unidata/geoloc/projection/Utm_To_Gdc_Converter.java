@@ -199,38 +199,18 @@ class Utm_To_Gdc_Converter {
     polx5b = -128.0 * polx8a;
   }
 
-  /**
-   * _more_
-   *
-   * @return _more_
-   */
   public double getA() {
     return A;
   }
 
-  /**
-   * _more_
-   *
-   * @return _more_
-   */
   public double getF() {
     return F;
   }
 
-  /**
-   * _more_
-   *
-   * @return _more_
-   */
   public int getZone() {
     return zone;
   }
 
-  /**
-   * _more_
-   *
-   * @return _more_
-   */
   public boolean isNorth() {
     return hemisphere_north;
   }

@@ -558,13 +558,9 @@ public class JTreeTableSorted extends JPanel {
     public void hideColumn() {
       //System.out.println("hideColumn "+id);
       TableColumnModel tcm = table.getColumnModel();
-      try {
-        int idx = tcm.getColumnIndex(id);
-        tc = tcm.getColumn(idx);
-        tcm.removeColumn(tc);
-      } catch (Exception e) {
-        //System.out.println("hideColumn didnt find"+id);
-      }
+      int idx = tcm.getColumnIndex(id);
+      tc = tcm.getColumn(idx);
+      tcm.removeColumn(tc);
     }
   }
 
