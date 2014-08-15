@@ -2073,7 +2073,6 @@ public class ToolsUI extends JPanel {
       }
 
       Object spiObject = null;
-      ByteArrayOutputStream bos = new ByteArrayOutputStream(10000);
       try {
         ds = NetcdfDataset.openDataset(command, true, -1, null, spiObject);
         if (ds == null) {

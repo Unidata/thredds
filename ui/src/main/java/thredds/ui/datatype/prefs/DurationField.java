@@ -116,12 +116,8 @@ public class DurationField extends ucar.util.prefs.ui.Field {
   }
 
   protected void setStoreValue(Object value) {
-    if (storeData != null) {
-      if (value == null)
-        storeData.putObject(name, value); // LOOK null ok ??
-      else
-        storeData.putObject(name, value); // TimeDurations are immutable
-    }
+    if (storeData != null)
+      storeData.putObject(name, value); // TimeDurations are immutable
   }
 
   protected Object getStoreValue(Object defValue) {

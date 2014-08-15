@@ -340,7 +340,7 @@ public class Grib1DataTable extends JPanel {
   }
 
   private MCollection scanCollection(String spec, Formatter f) {
-    MCollection dc;
+    MCollection dc = null;
     try {
       dc = CollectionAbstract.open(spec, spec, null, f);
       fileList = (List<MFile>) Misc.getList(dc.getFilesSorted());
@@ -350,6 +350,7 @@ public class Grib1DataTable extends JPanel {
       StringWriter sw = new StringWriter(5000);
       e.printStackTrace(new PrintWriter(sw));
       f.format(sw.toString());
+      if (dc != null) dc.close();
       return null;
     }
   }
@@ -395,10 +396,12 @@ public class Grib1DataTable extends JPanel {
     Map<Integer, Set<Integer>> groups = new HashMap<>();
     for (Object o : param1BeanTable.getBeans()) {
       Grib1ParameterBean p = (Grib1ParameterBean) o;
-      Set<Integer> group = groups.get(p.getGDS());
+      int gdsHash = p.gr.getGDSsection().getGDS().hashCode();
+
+      Set<Integer> group = groups.get(gdsHash);
       if (group == null) {
         group = new TreeSet<>();
-        groups.put(p.getGDS(), group);
+        groups.put(gdsHash, group);
       }
       for (Grib1RecordBean r : p.getRecordBeans())
         group.add(r.gr.getFile());
@@ -410,7 +413,7 @@ public class Grib1DataTable extends JPanel {
     //checkRuntimes(f);
   }
 
-  private class DateCount implements Comparable<DateCount> {
+  private static class DateCount implements Comparable<DateCount> {
     CalendarDate d;
     int count;
 
@@ -784,12 +787,21 @@ public class Grib1DataTable extends JPanel {
       return records;
     }
 
+
+    public String getName() {
+      if (param == null) return null;
+      return Grib1Iosp.makeVariableName(cust, pds);
+    }
+
+    public String getUnit() {
+      return (param == null) ? null : param.getUnit();
+    }
+
     public int getParamNo() {
       return pds.getParameterNumber();
     }
 
-
-    public int getN() {
+    public int getNRecords() {
       return records.size();
     }
 
@@ -802,18 +814,22 @@ public class Grib1DataTable extends JPanel {
       return plevel.getNameShort();
     }
 
-    public int getGDS() {
-      return gr.getGDSsection().getGDS().hashCode();
-    }
-
-    private int minBits, maxBits;
-    private float nbits = -1;
-    private float avgbits;
-    private float compress;
     public String getNBits() {
       calcBits();
       if (minBits == maxBits) return Integer.toString(minBits);
       return minBits+"-"+maxBits;
+    }
+
+    public String getBinScale() {
+      calcBits();
+      if (minBinscale == maxBinscale) return Integer.toString(minBinscale);
+      return minBinscale+","+maxBinscale;
+    }
+
+    public String getDecScale() {
+      calcBits();
+      if (minDecscale == maxDecscale) return Integer.toString(minDecscale);
+      return minDecscale+","+maxDecscale;
     }
 
     public float getAvgBits() {
@@ -826,40 +842,35 @@ public class Grib1DataTable extends JPanel {
       return compress;
     }
 
+    private int minBits, maxBits;
+    private int minBinscale, maxBinscale;
+    private int minDecscale, maxDecscale;
+    private float nbits = -1;
+    private float avgbits;
+    private float compress;
     private void calcBits() {
       if (nbits >= 0) return;
       nbits = 0;
       int count = 0;
       minBits = Integer.MAX_VALUE;
+      minBinscale = Integer.MAX_VALUE;
+      minDecscale = Integer.MAX_VALUE;
       for (Grib1RecordBean bean : records) {
         minBits = Math.min(minBits, bean.getNBits());
         maxBits = Math.max(maxBits, bean.getNBits());
+        minBinscale = Math.min(minBinscale, bean.getBinScale());
+        maxBinscale = Math.max(maxBinscale, bean.getBinScale());
+        minDecscale = Math.min(minDecscale, bean.getDecimalScale());
+        maxDecscale = Math.max(maxDecscale, bean.getDecimalScale());
         nbits += bean.getNBits();
         avgbits += bean.getAvgBits();
         count++;
       }
       compress = nbits / avgbits;
-      nbits /= count;
-      avgbits /= count;
-    }
-
-    ///////////////
-
-    public String getName() {
-      if (param == null) return null;
-      return Grib1Iosp.makeVariableName(cust, pds);
-    }
-
-    public String getUnit() {
-      return (param == null) ? null : param.getUnit();
-    }
-
-    public final String getCenter() {
-      return pds.getCenter() + "/" + pds.getSubCenter();
-    }
-
-    public final int getTable() {
-      return pds.getTableVersion();
+      if (count > 0) {
+        nbits /= count;
+        avgbits /= count;
+      }
     }
 
   }
@@ -943,6 +954,14 @@ public class Grib1DataTable extends JPanel {
 
     public int getDataLength() {
       return info.msgLength;
+    }
+
+    public int getBinScale() {
+      return info.binscale;
+    }
+
+    public int getDecimalScale() {
+      return pds.getDecimalScale();
     }
 
     public float getAvgBits() {

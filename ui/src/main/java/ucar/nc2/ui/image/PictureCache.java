@@ -74,9 +74,7 @@ public class PictureCache  {
 		     	String removeElement = (String) e.nextElement();
 		     	Tools.log ("PictureCache.remove: " + removeElement );
 			pictureCache.remove( removeElement );
-		} 
-		System.gc();
-		//reportCache();
+		}
 	}
 		
 

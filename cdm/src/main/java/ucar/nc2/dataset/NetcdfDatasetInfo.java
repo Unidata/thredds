@@ -305,9 +305,10 @@ public class NetcdfDatasetInfo implements AutoCloseable {
   public static void main(String args[]) throws IOException {
     String url = "C:/data/badmodels/RUC_CONUS_80km_20051211_1900.nc";
 
-    NetcdfDatasetInfo info = new NetcdfDatasetInfo(url);
-    String infoString = info.writeXML();
-    System.out.println(infoString);
+    try (NetcdfDatasetInfo info = new NetcdfDatasetInfo(url)) {
+      String infoString = info.writeXML();
+      System.out.println(infoString);
+    }
   }
 
 }

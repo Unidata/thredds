@@ -141,8 +141,9 @@ public class Debug {
   static public void removeAll() {
     try {
       removeAll(store, false);
+    } catch (BackingStoreException ex) {
+      throw new RuntimeException(ex);
     }
-    catch (BackingStoreException ex) { }
   }
 
   static private void removeAll(Preferences prefs, boolean delete) throws BackingStoreException {

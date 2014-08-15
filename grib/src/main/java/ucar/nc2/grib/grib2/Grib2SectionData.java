@@ -77,4 +77,11 @@ public class Grib2SectionData {
   public int getMsgLength() {
     return msgLength;
   }
+
+  public byte[] getBytes(RandomAccessFile raf) throws IOException {
+    raf.seek(startingPosition); // go to the data section
+    byte[] data = new byte[msgLength];
+    raf.readFully(data);
+    return data;
+  }
 }

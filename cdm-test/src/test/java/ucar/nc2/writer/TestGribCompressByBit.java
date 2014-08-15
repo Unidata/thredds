@@ -35,6 +35,10 @@ package ucar.nc2.writer;
 
 import ucar.nc2.grib.grib1.Grib1RecordScanner;
 import ucar.nc2.grib.grib1.Grib1SectionBinaryData;
+import ucar.nc2.grib.grib2.Grib2Drs;
+import ucar.nc2.grib.grib2.Grib2RecordScanner;
+import ucar.nc2.grib.grib2.Grib2SectionData;
+import ucar.nc2.grib.grib2.Grib2SectionDataRepresentation;
 import ucar.unidata.io.RandomAccessFile;
 import ucar.unidata.test.util.TestDir;
 
@@ -52,14 +56,57 @@ import java.util.zip.Deflater;
  * @since 8/12/2014
  */
 public class TestGribCompressByBit {
+  static File outDir;
   static int deflate_level = 3;
-  static String dirOut;
-  static String csvOut;
-  static PrintStream fw;
-  static long totalIn, totalOut, totalRecords;
+  static PrintStream detailOut;
+  static PrintStream summaryOut;
+  static final boolean debug = false;
+
+  int npoints;
+  int nrecords = 0;
+  float totDeflate;
+  float totOrg;
+  float totalBytesIn;
+
+  private int doGrib2(String filename)  {
+    try (RandomAccessFile raf = new RandomAccessFile(filename, "r")) {
+      Grib2RecordScanner reader = new Grib2RecordScanner(raf);
+      while (reader.hasNext()) {
+        ucar.nc2.grib.grib2.Grib2Record gr = reader.next();
+
+        Grib2SectionData dataSection = gr.getDataSection();
+        int gribMsgLength = dataSection.getMsgLength();
+
+        Grib2SectionDataRepresentation drss = gr.getDataRepresentationSection();
+        int template = drss.getDataTemplate();
+        if (template != 40) continue; // skip all but JPEG-2000
+
+        Grib2Drs gdrs = drss.getDrs(raf);
+        int nBits = gdrs.getNBits();
+
+
+        float[] data = gr.readData(raf);
+        int compressDeflate = deflate(data); // run it through the deflator
+        if (npoints == 0) npoints = data.length;
+
+         // deflate the original (packed) data
+        int compressOrg = 1; // deflate(dataSection.getBytes(raf)); // run it through the deflator
+
+        // results
+        if (detailOut != null) detailOut.printf("%d, %d, %d, %d, %d%n", nBits, data.length, gribMsgLength, compressDeflate, compressOrg);
+        if (debug) System.out.printf("%d, %d, %d, %d, %d%n", nBits, data.length, gribMsgLength, compressDeflate, compressOrg);
+        nrecords++;
+        totalBytesIn += gribMsgLength;
+        totDeflate += compressDeflate;
+        totOrg += compressOrg;
+      }
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
+    return nrecords;
+  }
 
   private int doGrib1(String filename)  {
-    int count = 0;
     try (RandomAccessFile raf = new RandomAccessFile(filename, "r")) {
       Grib1RecordScanner reader = new Grib1RecordScanner(raf);
       while (reader.hasNext()) {
@@ -69,19 +116,24 @@ public class TestGribCompressByBit {
         Grib1SectionBinaryData.BinaryDataInfo info = dataSection.getBinaryDataInfo(raf);
 
         float[] data = gr.readData(raf);
-        int compressBytes = deflate(data); // run it through the deflator
-        float r = ((float) compressBytes) / info.msgLength;
+        int compressDeflate = deflate(data); // run it through the deflator
+        if (npoints == 0) npoints = data.length;
 
-        fw.printf("%d, %d, %d, %d, %f%n", info.numbits, data.length, info.msgLength, compressBytes, r);
-        System.out.printf("%d, %d, %d, %d, %f%n", info.numbits, data.length, info.msgLength, compressBytes, r);
-        count++;
-        totalIn += info.msgLength;
-        totalOut += compressBytes;
+         // deflate the original (bit-packed) data
+        int compressOrg = deflate(dataSection.getBytes(raf)); // run it through the deflator
+
+        // results
+        if (detailOut != null) detailOut.printf("%d, %d, %d, %d, %d%n", info.numbits, data.length, info.msgLength, compressDeflate, compressOrg);
+        //System.out.printf("%d, %d, %d, %d, %f, %d%n", info.numbits, data.length, info.msgLength, compressBytes, r, compressOrg);
+        nrecords++;
+        totalBytesIn += info.msgLength;
+        totDeflate += compressDeflate;
+        totOrg += compressOrg;
       }
     } catch (IOException e) {
       e.printStackTrace();
     }
-    return count;
+    return nrecords;
   }
 
   private int deflate(float[] data) {
@@ -98,59 +150,101 @@ public class TestGribCompressByBit {
     return compressedDataLength;
   }
 
+  private int deflate(byte[] data) {
+    Deflater compresser = new Deflater(deflate_level);
+    compresser.setInput(data);
+    compresser.finish();
+
+    byte[] output = new byte[data.length * 2];
+    int compressedDataLength = compresser.deflate(output);
+    compresser.end();
+    return compressedDataLength;
+  }
+
   private static class CompressByBit implements TestDir.Act {
+    boolean showDetail;
+    boolean isGrib1;
+
+    private CompressByBit(boolean showDetail, boolean isGrib1) {
+      this.showDetail = showDetail;
+      this.isGrib1 = isGrib1;
+    }
 
     public int doAct(String filename) throws IOException {
+      if (showDetail) {
+        File f = new File(filename);
+        detailOut = new PrintStream(new File(outDir, f.getName()+".csv"));
+        detailOut.printf("nbits, npoints, grib, deflate, deflateOrg%n");
+      }
 
       TestGribCompressByBit compressByBit = new TestGribCompressByBit();
-      totalRecords += compressByBit.doGrib1(filename);
+      if (isGrib1)
+        compressByBit.doGrib1(filename);
+      else
+        compressByBit.doGrib2(filename);
 
-      fw.flush();
+
+      summaryOut.printf("%s, %d, %d, %f, %f, %f%n", filename, compressByBit.npoints, compressByBit.nrecords, compressByBit.totalBytesIn/compressByBit.nrecords,
+              compressByBit.totDeflate/compressByBit.nrecords, compressByBit.totOrg/compressByBit.nrecords);
+      summaryOut.flush();
+
+      if (detailOut != null) {
+        detailOut.close();
+      }
 
       return 1;
     }
   }
 
-  static  void  writeHeader() throws FileNotFoundException {
-     File outDir = new File(dirOut);
-     fw = new PrintStream(new File(outDir, csvOut));
-     fw.printf("nbits, npoints, grib, deflate, ratio%n");
+  static void writeSummaryHeader() throws FileNotFoundException {
+    summaryOut.printf("file, npoints, nrecords, avgGribSize, avgDeflate, avgOrg%n");
    }
 
-  public static void main2(String[] args) throws IOException {
-    dirOut = "G:/write/";
-    csvOut = "results.grib.csv";
-    writeHeader();
+  public static void main(String[] args) throws IOException {
+    outDir = new File("G:/grib2nc/grib2/");
+    summaryOut = new PrintStream(new File(outDir, "summary.csv"));
+    writeSummaryHeader();
 
     try {
-      String dirName = "Q:/cdmUnitTest/tds/ncep/";
-      TestDir.actOnAll(dirName, new TestDir.FileFilterFromSuffixes("grib1"), new CompressByBit(), false);
-      System.out.printf("%ntotalRecords = %d%n", totalRecords);
+      CompressByBit test = new CompressByBit(true, false);
+      test.doAct("Q:/cdmUnitTest/tds/ncep/GFS_Global_0p5deg_20100913_0000.grib2");
 
     } finally {
-      fw.close();
+      summaryOut.close();
     }
   }
 
-  public static void main(String[] args) throws IOException {
-    dirOut = "G:/write3/";
-    csvOut = "results.grib.csv";
-    writeHeader();
+  public static void main2(String[] args) throws IOException {
+    outDir = new File("G:/grib2nc/grib2/");
+    summaryOut = new PrintStream(new File(outDir, "summary.csv"));
+    writeSummaryHeader();
 
     try {
-      String filename = "Q:/cdmUnitTest/tds/ncep/NAM_CONUS_20km_noaaport_20100602_0000.grib1";
-      TestGribCompressByBit compressByBit = new TestGribCompressByBit();
-      totalRecords += compressByBit.doGrib1(filename);
-      System.out.printf("%ntotalRecords = %d%n", totalRecords);
-      System.out.printf("totalIn = %d%n", totalIn);
-      System.out.printf("totalOut = %d%n", totalOut);
-
-      double r = ((double) totalOut) / totalIn;
-      System.out.printf("ratio = %f%n", r);
+      String dirName = "Q:/cdmUnitTest/tds/ncep/";
+      TestDir.actOnAll(dirName, new TestDir.FileFilterFromSuffixes("grib2"), new CompressByBit(true, false), false);
 
     } finally {
-      fw.close();
+      summaryOut.close();
     }
   }
 
 }
+
+/*
+
+GFS_Alaska_191km_20100913_0000.grib1
+GFS_CONUS_191km_20100519_1800.grib1
+GFS_CONUS_80km_20100513_0600.grib1
+GFS_CONUS_95km_20100506_0600.grib1
+GFS_Hawaii_160km_20100428_0000.grib1
+GFS_N_Hemisphere_381km_20100516_0600.grib1
+GFS_Puerto_Rico_191km_20100515_0000.grib1
+NAM_Alaska_22km_20100504_0000.grib1
+NAM_Alaska_45km_noaaport_20100525_1200.grib1
+NAM_Alaska_95km_20100502_0000.grib1
+NAM_CONUS_20km_noaaport_20100602_0000.grib1
+NAM_CONUS_80km_20100508_1200.grib1
+RUC2_CONUS_40km_20100515_0200.grib1
+RUC2_CONUS_40km_20100914_1200.grib1
+RUC_CONUS_80km_20100430_0000.grib1
+ */

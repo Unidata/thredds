@@ -177,8 +177,9 @@ public class BufrIdentificationSection {
 
       int n = length - 17;
       localUse = new byte[n];
-      raf.read(localUse);
-
+      int nRead = raf.read(localUse);
+      if (nRead != localUse.length)
+          throw new IOException("Error reading BUFR local use field.");
     } else {  // BUFR Edition 4 and above are slightly different
       if (length < 22) throw new IOException("Invalid BUFR message");
 
@@ -221,7 +222,9 @@ public class BufrIdentificationSection {
 
       int n = length - 22;
       localUse = new byte[n];
-      raf.read(localUse);
+      int nRead = raf.read(localUse);
+      if (nRead != localUse.length)
+          throw new IOException("Error reading BUFR local use field.");
     }
 
     // skip optional section, but store position so can read if caller wants it
@@ -309,14 +312,17 @@ public class BufrIdentificationSection {
     return localUse;
   }
 
-  public final byte[] getOptionalSection(RandomAccessFile raf) throws IOException {
+  public final byte[] getOptiondsalSection(RandomAccessFile raf) throws
+          IOException {
     if (!hasOptionalSection) return null;
 
     byte[] optionalSection = new byte[optionalSectionLen - 4];
     raf.seek(optionalSectionPos);
-    raf.read(optionalSection);
+    int nRead = raf.read(optionalSection);
+    if (nRead != optionalSection.length)
+        log.warn("Error reading optional section -- expected " +
+                optionalSection.length + " but read " + nRead);
     return optionalSection;
   }
-
 
 }

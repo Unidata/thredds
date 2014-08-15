@@ -318,17 +318,24 @@ public class LatLonPointImpl implements LatLonPoint, java.io.Serializable {
    * @param pt point to check
    * @return true if this represents the same point as pt
    */
-
   public boolean equals(LatLonPoint pt) {
     boolean lonOk = closeEnough(pt.getLongitude(), this.lon);
     if (!lonOk) {
-      lonOk = closeEnough(lonNormal360(pt.getLongitude()),
-          lonNormal360(this.lon));
+      lonOk = closeEnough(lonNormal360(pt.getLongitude()), lonNormal360(this.lon));
     }
-
     return lonOk && closeEnough(pt.getLatitude(), this.lat);
   }
 
+  @Override
+  public int hashCode() {
+    int result;
+    long temp;
+    temp = Double.doubleToLongBits(lat);
+    result = (int) (temp ^ (temp >>> 32));
+    temp = Double.doubleToLongBits(lon);
+    result = 31 * result + (int) (temp ^ (temp >>> 32));
+    return result;
+  }
 
   /**
    * Check to see if the values are close enough.

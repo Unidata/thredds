@@ -33,6 +33,7 @@
 package ucar.nc2.ui;
 
 import thredds.inventory.*;
+import ucar.nc2.constants.CDM;
 import ucar.nc2.grib.GdsHorizCoordSys;
 import ucar.nc2.grib.GribStatType;
 import ucar.nc2.grib.GribUtils;
@@ -622,7 +623,7 @@ public class Grib1CollectionPanel extends JPanel {
 
   static public void showCompleteRecord(Grib1Customizer cust, Grib1Record gr, String filename, Formatter f) {
     f.format("File = %s%n", filename);
-    f.format("Header = %s%n", new String(gr.getHeader()));
+    f.format("Header = %s%n", new String(gr.getHeader(), CDM.utf8Charset));
     f.format("Total length of GRIB message = %d%n", gr.getIs().getMessageLength());
     Grib1SectionProductDefinition pds = gr.getPDSsection();
     f.format("PDS len=%d%n", pds.getLength());
@@ -875,7 +876,7 @@ public class Grib1CollectionPanel extends JPanel {
       gds = gdss.getGDS();
     }
 
-    public long getHash() {
+    public int getHash() {
       return gds.hashCode();
     }
 

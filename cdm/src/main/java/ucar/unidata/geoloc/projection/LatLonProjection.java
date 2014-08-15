@@ -36,10 +36,6 @@ import ucar.nc2.constants.CF;
 import ucar.unidata.geoloc.*;
 
 import ucar.unidata.util.Format;
-import ucar.unidata.util.Parameter;
-
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * This is the "fake" identity projection where world coord = latlon coord.
@@ -117,19 +113,31 @@ public class LatLonProjection extends ProjectionImpl {
   /**
    * See if this projection equals the object in question
    *
-   * @param p object in question
+   * @param o object in question
    * @return true if it is a LatLonProjection and covers the same area
    */
-  public boolean equals(Object p) {
-    if (!(p instanceof LatLonProjection)) {
-      return false;
-    }
-    LatLonProjection that = (LatLonProjection) p;
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) return true;
+    if (o == null || getClass() != o.getClass()) return false;
+
+    LatLonProjection that = (LatLonProjection) o;
     if ((defaultMapArea == null) != (that.defaultMapArea == null)) return false; // common case is that these are null
     if (defaultMapArea != null && !that.defaultMapArea.equals(defaultMapArea)) return false;
 
-    return (Double.doubleToLongBits(that.centerLon)
-         == Double.doubleToLongBits(this.centerLon));
+    return Double.compare(that.centerLon, centerLon) == 0;
+  }
+
+  @Override
+  public int hashCode() {
+    int result;
+    long temp;
+    temp = Double.doubleToLongBits(centerLon);
+    result = (int) (temp ^ (temp >>> 32));
+    if (defaultMapArea != null)
+      result = 31 * result + defaultMapArea.hashCode();
+    return result;
   }
 
   /**
@@ -139,8 +147,7 @@ public class LatLonProjection extends ProjectionImpl {
    * @param result the object to write to
    * @return the given result
    */
-  public ProjectionPoint latLonToProj(LatLonPoint latlon,
-                                      ProjectionPointImpl result) {
+  public ProjectionPoint latLonToProj(LatLonPoint latlon, ProjectionPointImpl result) {
     result.setLocation(LatLonPointImpl.lonNormal(latlon.getLongitude(),
         centerLon), latlon.getLatitude());
     return result;
@@ -154,8 +161,7 @@ public class LatLonProjection extends ProjectionImpl {
    * @param result the object to write to
    * @return LatLonPoint convert to these lat/lon coordinates
    */
-  public LatLonPoint projToLatLon(ProjectionPoint world,
-                                  LatLonPointImpl result) {
+  public LatLonPoint projToLatLon(ProjectionPoint world, LatLonPointImpl result) {
     result.setLongitude(world.getX());
     result.setLatitude(world.getY());
     return result;
@@ -334,17 +340,15 @@ public class LatLonProjection extends ProjectionImpl {
         latlonR.getUpperRightPoint().getLongitude(),
         centerLon);
 
+    ProjectionRect[] rects = new ProjectionRect[2];
     if (lon0 < lon1) {
-      projR1.setRect(lon0, lat0, width, height);
-      rects[0] = projR1;
+      rects[0].setRect(lon0, lat0, width, height);
       rects[1] = null;
+
     } else {
       double y = centerLon + 180 - lon0;
-
-      projR1.setRect(lon0, lat0, y, height);
-      projR2.setRect(lon1 - width + y, lat0, width - y, height);
-      rects[0] = projR1;
-      rects[1] = projR2;
+      rects[0].setRect(lon0, lat0, y, height);
+      rects[1].setRect(lon1 - width + y, lat0, width - y, height);
     }
 
     return rects;
@@ -364,17 +368,17 @@ public class LatLonProjection extends ProjectionImpl {
   /**
    * projection rect 1
    */
-  private ProjectionRect projR1 = new ProjectionRect();
+  //private ProjectionRect projR1 = new ProjectionRect();
 
   /**
    * projection rect 1
    */
-  private ProjectionRect projR2 = new ProjectionRect();
+  //private ProjectionRect projR2 = new ProjectionRect();
 
   /**
    * array fo rects
    */
-  private ProjectionRect rects[] = new ProjectionRect[2];
+  //private ProjectionRect rects[] = new ProjectionRect[2];
 
   /**
    * Create a latlon rectangle and split it into the equivalent
@@ -389,8 +393,7 @@ public class LatLonProjection extends ProjectionImpl {
    * @return 1 or 2 ProjectionRect. If it doesnt cross the seam,
    *         the second rectangle is null.
    */
-  public ProjectionRect[] latLonToProjRect(double lat0, double lon0,
-                                           double lat1, double lon1) {
+  public ProjectionRect[] latLonToProjRect(double lat0, double lon0, double lat1, double lon1) {
 
     double height = Math.abs(lat1 - lat0);
     lat0 = Math.min(lat1, lat0);
@@ -401,66 +404,19 @@ public class LatLonProjection extends ProjectionImpl {
     lon0 = LatLonPointImpl.lonNormal(lon0, centerLon);
     lon1 = LatLonPointImpl.lonNormal(lon1, centerLon);
 
+    ProjectionRect[] rects = new ProjectionRect[2];
     if (width >= 360.0) {
-      projR1.setRect(centerLon - 180.0, lat0, 360.0, height);
-      rects[0] = projR1;
+      rects[0].setRect(centerLon - 180.0, lat0, 360.0, height);
       rects[1] = null;
     } else if (lon0 < lon1) {
-      projR1.setRect(lon0, lat0, width, height);
-      rects[0] = projR1;
+      rects[0].setRect(lon0, lat0, width, height);
       rects[1] = null;
     } else {
       double y = centerLon + 180 - lon0;
-      projR1.setRect(lon0, lat0, y, height);
-      projR2.setRect(lon1 - width + y, lat0, width - y, height);
-      rects[0] = projR1;
-      rects[1] = projR2;
+      rects[0].setRect(lon0, lat0, y, height);
+      rects[1].setRect(lon1 - width + y, lat0, width - y, height);
     }
     return rects;
   }
 
 }
-
-/*
- *  Change History:
- *  $Log: LatLonProjection.java,v $
- *  Revision 1.31  2006/11/18 19:03:22  dmurray
- *  jindent
- *
- *  Revision 1.30  2006/11/16 00:17:02  caron
- *  add FlatEarth projection (used by Nids grids)
- *
- *  Revision 1.29  2006/08/18 17:07:39  dmurray
- *  fix a problem with the projToLatLon and latlonToProj methods that
- *  take arrays.  They were assuming that from and to were different, but
- *  the could be the same to save on memory.
- *
- *  Revision 1.28  2005/05/13 18:29:18  jeffmc
- *  Clean up the odd copyright symbols
- *
- *  Revision 1.27  2005/05/13 12:26:51  jeffmc
- *  Some mods
- *
- *  Revision 1.26  2005/05/13 11:14:10  jeffmc
- *  Snapshot
- *
- *  Revision 1.25  2004/09/22 21:19:52  caron
- *  use Parameter, not Attribute; remove nc2 dependencies
- *
- *  Revision 1.24  2004/07/30 17:22:20  dmurray
- *  Jindent and doclint
- *
- *  Revision 1.23  2004/02/27 21:21:40  jeffmc
- *  Lots of javadoc warning fixes
- *
- *  Revision 1.22  2004/01/29 17:35:00  jeffmc
- *  A big sweeping checkin after a big sweeping reformatting
- *  using the new jindent.
- *
- *  jindent adds in javadoc templates and reformats existing javadocs. In the new javadoc
- *  templates there is a '_more_' to remind us to fill these in.
- *
- *  Revision 1.21  2003/07/12 23:08:59  caron
- *  add cvs headers, trailers
- *
- */
