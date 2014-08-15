@@ -32,6 +32,7 @@
  */
 package ucar.unidata.geoloc;
 
+import com.google.common.math.DoubleMath;
 import ucar.unidata.util.Format;
 
 import java.io.*;
@@ -290,6 +291,19 @@ public class ProjectionRect implements java.io.Serializable {
       double x2 = Math.min(src1.getMaxX(), src2.getMaxX());
       double y2 = Math.min(src1.getMaxY(), src2.getMaxY());
       dest.setRect(x1, y1, x2 - x1, y2 - y1);
+  }
+
+  /**
+   * Returns {@code true} if this bounding box contains {@code point}.
+   *
+   * @param point a point in projection coordinates.
+   * @return {@code true} if this bounding box contains {@code point}.
+   */
+  public boolean contains(ProjectionPoint point) {
+    return DoubleMath.fuzzyCompare(point.getX(), getMinX(), 1e-6) >= 0 &&
+           DoubleMath.fuzzyCompare(point.getX(), getMaxX(), 1e-6) <= 0 &&
+           DoubleMath.fuzzyCompare(point.getY(), getMinY(), 1e-6) >= 0 &&
+           DoubleMath.fuzzyCompare(point.getY(), getMaxY(), 1e-6) <= 0;
   }
 
   /////////////////////////////////////////////////////

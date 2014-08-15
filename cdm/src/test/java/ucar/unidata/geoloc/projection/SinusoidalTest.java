@@ -37,7 +37,7 @@ public class SinusoidalTest {
 
     @Test  // Reproduces issue from ETO-719860
     public void projToLatLonBB_validBottom() {
-        // Bottom 2 corners of bounding box are on the earth. Box intercepts earth's edge at 2 places.
+        // Bottom 2 corners of bounding box are on the earth. Box intersects earth's edge at 2 places.
         //
         // These values come from the dataset referenced in ETO-719860.
         double minX = 7783.190324950472;
@@ -58,7 +58,7 @@ public class SinusoidalTest {
 
     @Test
     public void projToLatLonBB_validTop() {
-        // Top 2 corners of bounding box are on the earth. Box intercepts earth's edge at 2 places.
+        // Top 2 corners of bounding box are on the earth. Box intersects earth's edge at 2 places.
         //
         // Values come from visual inspection in ToolsUI->Grid Viewer
         // Upper left:  -9070 -2780 -> 25.002S 90.004W
@@ -80,7 +80,7 @@ public class SinusoidalTest {
 
     @Test
     public void projToLatLonBB_validLeft() {
-        // Left 2 corners of bounding box are on the earth. Box intercepts earth's edge at 2 places.
+        // Left 2 corners of bounding box are on the earth. Box intersects earth's edge at 2 places.
         //
         // Values come from visual inspection in ToolsUI->Grid Viewer
         // Upper left:  14480 -2228 -> 20.037S 138.62E
@@ -102,7 +102,7 @@ public class SinusoidalTest {
 
     @Test
     public void projToLatLonBB_validRight() {
-        // Right 2 corners of bounding box are on the earth. Box intercepts earth's edge at 2 places.
+        // Right 2 corners of bounding box are on the earth. Box intersects earth's edge at 2 places.
         //
         // Values come from visual inspection in ToolsUI->Grid Viewer
         // Lower right: -9370 4446  -> 39.985N 109.99W
@@ -148,7 +148,7 @@ public class SinusoidalTest {
     }
 
     @Test
-    public void projToLatLonBB_onlyIntercepts() {
+    public void projToLatLonBB_onlyintersects() {
         // Same bounding box as projToLatLonBB_partiallyValidTop(), but the left and right sides have been
         // extended completely off the earth. None of its corners are on the earth, but it intersects it at 4 places.
         ProjectionPoint lowerLeft  = new ProjectionPointImpl(-13000, 8342);
@@ -182,7 +182,7 @@ public class SinusoidalTest {
     }
 
     @Test
-    public void projToLatLonBB_onlyInterceptsAndPole() {
+    public void projToLatLonBB_onlyintersectsAndPole() {
         // Same bounding box as projToLatLonBB_partiallyValidTop(), but the left, right, and top sides have been
         // extended completely off the earth. None of its corners are on the earth, but it intersects it at 2 places
         // and includes the north pole.
@@ -230,5 +230,21 @@ public class SinusoidalTest {
         Sinusoidal proj = new Sinusoidal();
         ProjectionRect projBB = new ProjectionRect(upperLeft, lowerRight);
         proj.projToLatLonBB(projBB);  // Throws IllegalArgumentException.
+    }
+
+    @Test
+    public void projToLatLonBB_everything() {
+        // The bounding box includes the entire earth.
+        ProjectionPoint lowerLeft  = new ProjectionPointImpl(-30000, -30000);
+        ProjectionPoint upperRight = new ProjectionPointImpl(30000,  30000);
+
+        Sinusoidal proj = new Sinusoidal();
+        ProjectionRect projBB = new ProjectionRect(lowerLeft, upperRight);
+        LatLonRect latLonBB = proj.projToLatLonBB(projBB);
+
+        Assert.assertEquals(-180.0, latLonBB.getLonMin(), 0.1);
+        Assert.assertEquals(180.0,  latLonBB.getLonMax(), 0.1);
+        Assert.assertEquals(-90.0,  latLonBB.getLatMin(), 0.1);
+        Assert.assertEquals(90.0,   latLonBB.getLatMax(), 0.1);
     }
 }

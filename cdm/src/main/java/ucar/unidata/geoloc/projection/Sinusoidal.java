@@ -33,12 +33,12 @@
 
 package ucar.unidata.geoloc.projection;
 
+import com.google.common.math.DoubleMath;
 import ucar.nc2.constants.CDM;
 import ucar.nc2.constants.CF;
 import ucar.nc2.util.Misc;
 import ucar.unidata.geoloc.*;
 
-import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -306,69 +306,140 @@ public class Sinusoidal extends ProjectionImpl {
     }
 
     @Override
-    public LatLonRect projToLatLonBB(ProjectionRect boundingBoxProj) {
-        ProjectionPoint lowerLeftProj  = boundingBoxProj.getLowerLeftPoint();
-        ProjectionPoint lowerRightProj = boundingBoxProj.getLowerRightPoint();
-        ProjectionPoint upperLeftProj  = boundingBoxProj.getUpperLeftPoint();
-        ProjectionPoint upperRightProj = boundingBoxProj.getUpperRightPoint();
-
-        // We need to find which projection points can be converted into valid lat/lon points.
+    public LatLonRect projToLatLonBB(ProjectionRect projBB) {
         List<ProjectionPoint> goodPoints = new LinkedList<>();
 
-        for (ProjectionPoint point : Arrays.asList(lowerLeftProj, lowerRightProj, upperLeftProj, upperRightProj)) {
-            if (projToLatLon(point) != INVALID) {
-                goodPoints.add(point);
-            }
+        ProjectionPoint northPole = latLonToProj(new LatLonPointImpl(90, 0));
+        if (projBB.contains(northPole)) {
+            goodPoints.add(northPole);
         }
 
-        if (goodPoints.size() >= 3) {
-            // Do nothing; we have enough good points to make a bounding box.
-        } else if (goodPoints.size() == 2) {
-            if (projToLatLon(lowerLeftProj) != INVALID && projToLatLon(lowerRightProj) != INVALID) {
-                // Valid bottom: need upperLeftProj and upperRightProj.
-                goodPoints.add(new ProjectionPointImpl(lowerLeftProj.getX(), calcMaxYAt(lowerLeftProj.getX())));
-                goodPoints.add(new ProjectionPointImpl(lowerRightProj.getX(), calcMaxYAt(lowerRightProj.getX())));
-            } else if (projToLatLon(upperLeftProj) != INVALID && projToLatLon(upperRightProj) != INVALID) {
-                // Valid top: need lowerLeftProj and lowerRightProj.
-                goodPoints.add(new ProjectionPointImpl(upperLeftProj.getX(), calcMinYAt(upperLeftProj.getX())));
-                goodPoints.add(new ProjectionPointImpl(upperRightProj.getX(), calcMinYAt(upperRightProj.getX())));
-            } else if (projToLatLon(lowerLeftProj) != INVALID && projToLatLon(upperLeftProj) != INVALID) {
-                // Valid left: need lowerRightProj and upperRightProj.
-                goodPoints.add(new ProjectionPointImpl(calcMaxXAt(lowerLeftProj.getY()), lowerLeftProj.getY()));
-                goodPoints.add(new ProjectionPointImpl(calcMaxXAt(upperLeftProj.getY()), upperLeftProj.getY()));
-            } else if (projToLatLon(lowerRightProj) != INVALID && projToLatLon(upperRightProj) != INVALID) {
-                // Valid right: need lowerLeftProj and upperLeftProj.
-                goodPoints.add(new ProjectionPointImpl(calcMinXAt(lowerRightProj.getY()), lowerRightProj.getY()));
-                goodPoints.add(new ProjectionPointImpl(calcMinXAt(upperRightProj.getY()), upperRightProj.getY()));
-            } else {
-                throw new AssertionError("CAN'T HAPPEN: We checked all possible pairings of good points." +
-                        "Two good points on opposite corners is impossible.");
-            }
-        } else if (goodPoints.size() == 1) {
-            if (projToLatLon(lowerLeftProj) != INVALID) {
-                // Valid lower-left: need upperLeftProj and lowerRightProj.
-                goodPoints.add(new ProjectionPointImpl(lowerLeftProj.getX(), calcMaxYAt(lowerLeftProj.getX())));
-                goodPoints.add(new ProjectionPointImpl(calcMaxXAt(lowerLeftProj.getY()), lowerLeftProj.getY()));
-            } else if (projToLatLon(lowerRightProj) != INVALID) {
-                // Valid lower-right: need upperRightProj and lowerLeftProj.
-                goodPoints.add(new ProjectionPointImpl(lowerRightProj.getX(), calcMaxYAt(lowerRightProj.getX())));
-                goodPoints.add(new ProjectionPointImpl(calcMinXAt(lowerRightProj.getY()), lowerRightProj.getY()));
-            } else if (projToLatLon(upperLeftProj) != INVALID) {
-                // Valid upper-left: need lowerLeftProj and upperRightProj.
-                goodPoints.add(new ProjectionPointImpl(upperLeftProj.getX(), calcMinYAt(upperLeftProj.getX())));
-                goodPoints.add(new ProjectionPointImpl(calcMaxXAt(upperLeftProj.getY()), upperLeftProj.getY()));
-            } else if (projToLatLon(upperRightProj) != INVALID) {
-                // Valid upper-right: need lowerRightProj and upperleftProj.
-                goodPoints.add(new ProjectionPointImpl(upperRightProj.getX(), calcMinYAt(upperRightProj.getX())));
-                goodPoints.add(new ProjectionPointImpl(calcMinXAt(upperRightProj.getY()), upperRightProj.getY()));
-            } else {
-                throw new AssertionError("CAN'T HAPPEN: We checked all points. One of them should have been valid.");
-            }
-        } else {
-            throw new IllegalArgumentException("The bounding box doesn't intercept the earth: " + boundingBoxProj);
+        ProjectionPoint southPole = latLonToProj(new LatLonPointImpl(-90, 0));
+        if (projBB.contains(southPole)) {
+            goodPoints.add(southPole);
         }
+
+        if (goodPoints.size() == 2) {  // projBB contains both north and south poles, and thus, the entire earth.
+            return new LatLonRect(new LatLonPointImpl(-90, -180), new LatLonPointImpl(90, 180));
+        }
+
+
+//        ProjectionPoint lowerLeftProj  = projBB.getLowerLeftPoint();
+//        ProjectionPoint lowerRightProj = projBB.getLowerRightPoint();
+//        ProjectionPoint upperLeftProj  = projBB.getUpperLeftPoint();
+//        ProjectionPoint upperRightProj = projBB.getUpperRightPoint();
+//
+//        for (ProjectionPoint point : Arrays.asList(lowerLeftProj, lowerRightProj, upperLeftProj, upperRightProj)) {
+//            if (projToLatLon(point) != INVALID) {
+//                goodPoints.add(point);
+//            }
+//        }
+
+        goodPoints.addAll(getMapEdgeIntercepts(projBB));
+
+//        if (goodPoints.size() >= 3) {
+//            // Do nothing; we have enough good points to make a bounding box.
+//        } else if (goodPoints.size() == 2) {
+//            if (projToLatLon(lowerLeftProj) != INVALID && projToLatLon(lowerRightProj) != INVALID) {
+//                // Valid bottom: need upperLeftProj and upperRightProj.
+//                goodPoints.add(new ProjectionPointImpl(lowerLeftProj.getX(), calcMaxYAt(lowerLeftProj.getX())));
+//                goodPoints.add(new ProjectionPointImpl(lowerRightProj.getX(), calcMaxYAt(lowerRightProj.getX())));
+//            } else if (projToLatLon(upperLeftProj) != INVALID && projToLatLon(upperRightProj) != INVALID) {
+//                // Valid top: need lowerLeftProj and lowerRightProj.
+//                goodPoints.add(new ProjectionPointImpl(upperLeftProj.getX(), calcMinYAt(upperLeftProj.getX())));
+//                goodPoints.add(new ProjectionPointImpl(upperRightProj.getX(), calcMinYAt(upperRightProj.getX())));
+//            } else if (projToLatLon(lowerLeftProj) != INVALID && projToLatLon(upperLeftProj) != INVALID) {
+//                // Valid left: need lowerRightProj and upperRightProj.
+//                goodPoints.add(new ProjectionPointImpl(calcMaxXAt(lowerLeftProj.getY()), lowerLeftProj.getY()));
+//                goodPoints.add(new ProjectionPointImpl(calcMaxXAt(upperLeftProj.getY()), upperLeftProj.getY()));
+//            } else if (projToLatLon(lowerRightProj) != INVALID && projToLatLon(upperRightProj) != INVALID) {
+//                // Valid right: need lowerLeftProj and upperLeftProj.
+//                goodPoints.add(new ProjectionPointImpl(calcMinXAt(lowerRightProj.getY()), lowerRightProj.getY()));
+//                goodPoints.add(new ProjectionPointImpl(calcMinXAt(upperRightProj.getY()), upperRightProj.getY()));
+//            } else {
+//                throw new AssertionError("CAN'T HAPPEN: We checked all possible pairings of good points." +
+//                        "Two good points on opposite corners is impossible.");
+//            }
+//        } else if (goodPoints.size() == 1) {
+//            if (projToLatLon(lowerLeftProj) != INVALID) {
+//                // Valid lower-left: need upperLeftProj and lowerRightProj.
+//                goodPoints.add(new ProjectionPointImpl(lowerLeftProj.getX(), calcMaxYAt(lowerLeftProj.getX())));
+//                goodPoints.add(new ProjectionPointImpl(calcMaxXAt(lowerLeftProj.getY()), lowerLeftProj.getY()));
+//            } else if (projToLatLon(lowerRightProj) != INVALID) {
+//                // Valid lower-right: need upperRightProj and lowerLeftProj.
+//                goodPoints.add(new ProjectionPointImpl(lowerRightProj.getX(), calcMaxYAt(lowerRightProj.getX())));
+//                goodPoints.add(new ProjectionPointImpl(calcMinXAt(lowerRightProj.getY()), lowerRightProj.getY()));
+//            } else if (projToLatLon(upperLeftProj) != INVALID) {
+//                // Valid upper-left: need lowerLeftProj and upperRightProj.
+//                goodPoints.add(new ProjectionPointImpl(upperLeftProj.getX(), calcMinYAt(upperLeftProj.getX())));
+//                goodPoints.add(new ProjectionPointImpl(calcMaxXAt(upperLeftProj.getY()), upperLeftProj.getY()));
+//            } else if (projToLatLon(upperRightProj) != INVALID) {
+//                // Valid upper-right: need lowerRightProj and upperleftProj.
+//                goodPoints.add(new ProjectionPointImpl(upperRightProj.getX(), calcMinYAt(upperRightProj.getX())));
+//                goodPoints.add(new ProjectionPointImpl(calcMinXAt(upperRightProj.getY()), upperRightProj.getY()));
+//            } else {
+//                throw new AssertionError("CAN'T HAPPEN: We checked all points. One of them should have been valid.");
+//            }
+//        } else {
+//            throw new IllegalArgumentException("The bounding box doesn't intercept the earth: " + projBB);
+//        }
 
         return makeLatLonRect(goodPoints);
+    }
+
+    public List<ProjectionPoint> getMapEdgeIntercepts(ProjectionRect projBB) {
+        List<ProjectionPoint> intercepts = new LinkedList<>();
+
+        for (ProjectionPoint topIntercept : getMapEdgeInterceptsAtY(projBB.getUpperRightPoint().getY())) {
+            if (pointIsBetween(topIntercept, projBB.getUpperLeftPoint(), projBB.getUpperRightPoint())) {
+                intercepts.add(topIntercept);
+            }
+        }
+
+        for (ProjectionPoint rightIntercept : getMapEdgeInterceptsAtX(projBB.getUpperRightPoint().getX())) {
+            if (pointIsBetween(rightIntercept, projBB.getUpperRightPoint(), projBB.getLowerRightPoint())) {
+                intercepts.add(rightIntercept);
+            }
+        }
+
+        for (ProjectionPoint bottomIntercept : getMapEdgeInterceptsAtY(projBB.getLowerLeftPoint().getY())) {
+            if (pointIsBetween(bottomIntercept, projBB.getLowerLeftPoint(), projBB.getLowerRightPoint())) {
+                intercepts.add(bottomIntercept);
+            }
+        }
+
+        for (ProjectionPoint leftIntercept : getMapEdgeInterceptsAtX(projBB.getLowerLeftPoint().getX())) {
+            if (pointIsBetween(leftIntercept, projBB.getLowerLeftPoint(), projBB.getUpperLeftPoint())) {
+                intercepts.add(leftIntercept);
+            }
+        }
+
+        return intercepts;
+    }
+
+    private boolean pointIsBetween(ProjectionPoint point, ProjectionPoint linePoint1, ProjectionPoint linePoint2) {
+        if (linePoint1.getX() == linePoint2.getX()) {  // No fuzzy comparison necessary.
+            assert point.getX() == linePoint1.getX() : "point should have the same X as the line.";
+
+            double minY = Math.min(linePoint1.getY(), linePoint2.getY());
+            double maxY = Math.min(linePoint1.getY(), linePoint2.getY());
+
+            // Returns true if point.getY() is in the range [minY, maxY], with fuzzy math.
+            return DoubleMath.fuzzyCompare(minY, point.getY(), TOLERANCE) <= 0 &&
+                   DoubleMath.fuzzyCompare(point.getY(), maxY, TOLERANCE) <= 0;
+        } else if (linePoint1.getY() == linePoint2.getY()) {  // No fuzzy comparison necessary.
+            assert point.getY() == linePoint1.getY() : "point should have the same Y as the line.";
+
+            double minX = Math.min(linePoint1.getX(), linePoint2.getX());
+            double maxX = Math.min(linePoint1.getX(), linePoint2.getX());
+
+            // Returns true if point.getX() is in the range [minX, maxX], with fuzzy math.
+            return DoubleMath.fuzzyCompare(minX, point.getX(), TOLERANCE) <= 0 &&
+                   DoubleMath.fuzzyCompare(point.getX(), maxX, TOLERANCE) <= 0;
+        } else {
+            throw new AssertionError("CAN'T HAPPEN: linePoint1 and linePoint2 are corners on the same side of a " +
+                    "bounding box; they must have *identical* x or y values.");
+        }
     }
 
     /**
@@ -379,7 +450,7 @@ public class Sinusoidal extends ProjectionImpl {
      * @throws IllegalArgumentException if the line {@code x = x0} does not intersect the earth.
      */
     public double calcMinYAt(double x0) throws IllegalArgumentException {
-        return calcMinAndMaxYsAt(x0)[0];
+        return getLimitYsAt(x0)[0];
     }
 
     /**
@@ -390,7 +461,7 @@ public class Sinusoidal extends ProjectionImpl {
      * @throws IllegalArgumentException if the line {@code x = x0} does not intersect the earth.
      */
     public double calcMaxYAt(double x0) throws IllegalArgumentException {
-        return calcMinAndMaxYsAt(x0)[1];
+        return getLimitYsAt(x0)[1];
     }
 
     /**
@@ -401,7 +472,7 @@ public class Sinusoidal extends ProjectionImpl {
      * @throws IllegalArgumentException if the line {@code y = y0} does not intersect the earth.
      */
     public double calcMinXAt(double y0) throws IllegalArgumentException {
-        return calcMinAndMaxXsAt(y0)[0];
+        return getLimitXsAt(y0)[0];
     }
 
     /**
@@ -412,7 +483,40 @@ public class Sinusoidal extends ProjectionImpl {
      * @throws IllegalArgumentException if the line {@code y = y0} does not intersect the earth.
      */
     public double calcMaxXAt(double y0) throws IllegalArgumentException {
-        return calcMinAndMaxXsAt(y0)[1];
+        return getLimitXsAt(y0)[1];
+    }
+
+    public List<ProjectionPoint> getMapEdgeInterceptsAtX(double x0) {
+        List<ProjectionPoint> mapEdgeIntercepts = new LinkedList<>();
+        if (projToLatLon(x0, falseNorthing) == INVALID) {  // The line {@code x = x0} does not intersect the earth.
+            return mapEdgeIntercepts;  // Empty list.
+        }
+
+        double x0natural = x0 - falseEasting;
+        double limitLon_r = (x0natural < 0) ? -PI : +PI;
+        double deltaLon_r = limitLon_r - Math.toRadians(centMeridian);
+
+        // This formula comes from solving 30-1 for phi, and then plugging it into 30-2. See Snyder, p 247.
+        double minY = -earthRadius * Math.acos(x0natural / (earthRadius * deltaLon_r));
+        double maxY = +earthRadius * Math.acos(x0natural / (earthRadius * deltaLon_r));
+
+        mapEdgeIntercepts.add(new ProjectionPointImpl(x0, minY + falseNorthing));
+        mapEdgeIntercepts.add(new ProjectionPointImpl(x0, maxY + falseNorthing));
+        return mapEdgeIntercepts;
+    }
+
+    public List<ProjectionPoint> getMapEdgeInterceptsAtY(double y0) {
+        List<ProjectionPoint> mapEdgeIntercepts = new LinkedList<>();
+        if (projToLatLon(falseEasting, y0) == INVALID) {  // The line {@code y = y0} does not intersect the earth.
+            return mapEdgeIntercepts;  // Empty list.
+        }
+
+        double minX = calcXat(y0, -PI);
+        double maxX = calcXat(y0, +PI);
+
+        mapEdgeIntercepts.add(new ProjectionPointImpl(minX, y0));
+        mapEdgeIntercepts.add(new ProjectionPointImpl(maxX, y0));
+        return mapEdgeIntercepts;
     }
 
     /**
@@ -422,9 +526,9 @@ public class Sinusoidal extends ProjectionImpl {
      * @return the minimum and maximum y-coords along the line {@code x = x0} that are still "on the earth".
      * @throws IllegalArgumentException  if the line {@code x = x0} does not intersect the earth.
      */
-    public double[] calcMinAndMaxYsAt(double x0) throws IllegalArgumentException {
+    public double[] getLimitYsAt(double x0) throws IllegalArgumentException {
         if (projToLatLon(x0, falseNorthing) == INVALID) {
-            throw new IllegalArgumentException("The line x = x0 does not intersect the earth. x0 = " + x0);
+            throw new IllegalArgumentException("mapEdgeIntercepts. x0 = " + x0);
         }
 
         double x0natural = x0 - falseEasting;
@@ -444,7 +548,7 @@ public class Sinusoidal extends ProjectionImpl {
      * @return the minimum and maximum x-coords along the line {@code y = y0} that are still "on the earth".
      * @throws IllegalArgumentException if the line {@code y = y0} does not intersect the earth.
      */
-    public double[] calcMinAndMaxXsAt(double y0) throws IllegalArgumentException {
+    public double[] getLimitXsAt(double y0) throws IllegalArgumentException {
         if (projToLatLon(falseEasting, y0) == INVALID) {
             throw new IllegalArgumentException("The line y = y0 does not intersect the earth. y0 = " + y0);
         }
@@ -466,6 +570,8 @@ public class Sinusoidal extends ProjectionImpl {
     }
 
     private LatLonRect makeLatLonRect(List<ProjectionPoint> projPoints) {
+        // FIXME: What is projPoints is empty? Can we return some kind of empty/invalid LatLonRect?
+
         double minLat = +Double.MAX_VALUE;
         double minLon = +Double.MAX_VALUE;
         double maxLat = -Double.MAX_VALUE;
