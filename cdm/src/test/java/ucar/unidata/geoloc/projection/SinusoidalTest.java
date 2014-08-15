@@ -15,29 +15,29 @@ public class SinusoidalTest {
 
     @Test
     public void projToLatLonBB_typical() {
-        // All 4 corners of the bounding box are on the earth.
+        // All 4 corners of the bounding box are on the map.
         //
         // Values come from visual inspection in ToolsUI->Grid Viewer
         // Upper left:  -2201 1111  -> 10.0N 20.1W
         // Upper right: 2982  111   -> 10.0N 27.23E
         // Lower left:  -2201 -4446 -> 40.0S 25.84W
         // Lower right: 2982  -4446 -> 40.0S 35.0E
-        ProjectionPoint upperLeft = new ProjectionPointImpl(-2201, 1111);
-        ProjectionPoint lowerRight = new ProjectionPointImpl(2982, -4446);
+        ProjectionPoint upperLeft  = new ProjectionPointImpl(-2201, 1111);
+        ProjectionPoint lowerRight = new ProjectionPointImpl(2982,  -4446);
 
         Sinusoidal proj = new Sinusoidal();
         ProjectionRect projBB = new ProjectionRect(upperLeft, lowerRight);
         LatLonRect latLonBB = proj.projToLatLonBB(projBB);
 
         Assert.assertEquals(-25.84, latLonBB.getLonMin(), 0.1);
-        Assert.assertEquals(35.0, latLonBB.getLonMax(), 0.1);
-        Assert.assertEquals(-40.0, latLonBB.getLatMin(), 0.1);
-        Assert.assertEquals(10.0, latLonBB.getLatMax(), 0.1);
+        Assert.assertEquals(35.0,   latLonBB.getLonMax(), 0.1);
+        Assert.assertEquals(-40.0,  latLonBB.getLatMin(), 0.1);
+        Assert.assertEquals(10.0,   latLonBB.getLatMax(), 0.1);
     }
 
     @Test  // Reproduces issue from ETO-719860
     public void projToLatLonBB_validBottom() {
-        // Bottom 2 corners of bounding box are on the earth. Box intersects earth's edge at 2 places.
+        // Bottom 2 corners of bounding box are on the map. Box intersects map edge at 2 places.
         //
         // These values come from the dataset referenced in ETO-719860.
         double minX = 7783.190324950472;
@@ -52,13 +52,13 @@ public class SinusoidalTest {
         // Values come from visual inspection in ToolsUI->Grid Viewer
         Assert.assertEquals(140.0, latLonBB.getLonMin(), 0.1);
         Assert.assertEquals(180.0, latLonBB.getLonMax(), 0.1);
-        Assert.assertEquals(60.0, latLonBB.getLatMin(), 0.1);
+        Assert.assertEquals(60.0,  latLonBB.getLatMin(), 0.1);
         Assert.assertEquals(67.11, latLonBB.getLatMax(), 0.1);
     }
 
     @Test
     public void projToLatLonBB_validTop() {
-        // Top 2 corners of bounding box are on the earth. Box intersects earth's edge at 2 places.
+        // Top 2 corners of bounding box are on the map. Box intersects map edge at 2 places.
         //
         // Values come from visual inspection in ToolsUI->Grid Viewer
         // Upper left:  -9070 -2780 -> 25.002S 90.004W
@@ -80,7 +80,7 @@ public class SinusoidalTest {
 
     @Test
     public void projToLatLonBB_validLeft() {
-        // Left 2 corners of bounding box are on the earth. Box intersects earth's edge at 2 places.
+        // Left 2 corners of bounding box are on the map. Box intersects map edge at 2 places.
         //
         // Values come from visual inspection in ToolsUI->Grid Viewer
         // Upper left:  14480 -2228 -> 20.037S 138.62E
@@ -102,7 +102,7 @@ public class SinusoidalTest {
 
     @Test
     public void projToLatLonBB_validRight() {
-        // Right 2 corners of bounding box are on the earth. Box intersects earth's edge at 2 places.
+        // Right 2 corners of bounding box are on the map. Box intersects map edge at 2 places.
         //
         // Values come from visual inspection in ToolsUI->Grid Viewer
         // Lower right: -9370 4446  -> 39.985N 109.99W
@@ -124,8 +124,8 @@ public class SinusoidalTest {
 
     @Test
     public void projToLatLonBB_partiallyValidTop() {
-        // The bottom corners are on the earth, the top corners are not. However, the line formed by the top corners
-        // intersects the earth. As a result, the bounding box intersects the earth's edge at 4 places.
+        // The bottom corners are on the map, the top corners are not. However, the line formed by the top corners
+        // intersects the map. As a result, the bounding box intersects the map edge at 4 places.
         //
         // Values come from visual inspection in ToolsUI->Grid Viewer
         // Lower left : -4166 8342 -> 75.0N 145.0W
@@ -150,9 +150,9 @@ public class SinusoidalTest {
     @Test
     public void projToLatLonBB_onlyintersects() {
         // Same bounding box as projToLatLonBB_partiallyValidTop(), but the left and right sides have been
-        // extended completely off the earth. None of its corners are on the earth, but it intersects it at 4 places.
+        // extended completely off the map. None of its corners are on the map, but it intersects the edge at 4 places.
         ProjectionPoint lowerLeft  = new ProjectionPointImpl(-13000, 8342);
-        ProjectionPoint upperRight = new ProjectionPointImpl(15000, 9451);
+        ProjectionPoint upperRight = new ProjectionPointImpl(15000,  9451);
 
         Sinusoidal proj = new Sinusoidal();
         ProjectionRect projBB = new ProjectionRect(lowerLeft, upperRight);
@@ -167,9 +167,9 @@ public class SinusoidalTest {
     @Test
     public void projToLatLonBB_includesNorthPole() {
         // Same bouding box as projToLatLonBB_partiallyValidTop(), but the top was extended past 90°N.
-        // It intersects the earth at 2 places and includes the north pole.
+        // It intersects the map edge at 2 places and includes the north pole.
         ProjectionPoint lowerLeft  = new ProjectionPointImpl(-4166, 8342);
-        ProjectionPoint upperRight = new ProjectionPointImpl(4021, 11111);
+        ProjectionPoint upperRight = new ProjectionPointImpl(4021,  11111);
 
         Sinusoidal proj = new Sinusoidal();
         ProjectionRect projBB = new ProjectionRect(lowerLeft, upperRight);
@@ -184,10 +184,10 @@ public class SinusoidalTest {
     @Test
     public void projToLatLonBB_onlyintersectsAndPole() {
         // Same bounding box as projToLatLonBB_partiallyValidTop(), but the left, right, and top sides have been
-        // extended completely off the earth. None of its corners are on the earth, but it intersects it at 2 places
+        // extended completely off the map. None of its corners are on the map, but it intersects the edge at 2 places
         // and includes the north pole.
         ProjectionPoint lowerLeft  = new ProjectionPointImpl(-13000, 8342);
-        ProjectionPoint upperRight = new ProjectionPointImpl(15000, 11111);
+        ProjectionPoint upperRight = new ProjectionPointImpl(15000,  11111);
 
         Sinusoidal proj = new Sinusoidal();
         ProjectionRect projBB = new ProjectionRect(lowerLeft, upperRight);
@@ -201,8 +201,8 @@ public class SinusoidalTest {
 
     @Test
     public void projToLatLonBB_poleAndOneCorner() {
-        // The bounding box includes the south pole and only 1 corner is on the earth.
-        // It intersects the the earth's edges at 2 places.
+        // The bounding box includes the south pole and only 1 corner is on the map.
+        // It intersects the the map edge at 2 places.
         //
         // Values come from visual inspection in ToolsUI->Grid Viewer
         // Upper left:  -1388 -6673 -> 60.0S 25.0W
@@ -217,24 +217,26 @@ public class SinusoidalTest {
 
         Assert.assertEquals(-180.0, latLonBB.getLonMin(), 0.1);
         Assert.assertEquals(180.0,  latLonBB.getLonMax(), 0.1);
-        Assert.assertEquals(60.0,   latLonBB.getLatMin(), 0.1);
-        Assert.assertEquals(90.0,   latLonBB.getLatMax(), 0.1);
+        Assert.assertEquals(-90.0,  latLonBB.getLatMin(), 0.1);
+        Assert.assertEquals(-60.0,  latLonBB.getLatMax(), 0.1);
     }
 
-    @Test(expected = IllegalArgumentException.class)
-    public void projToLatLonBB_completelyOffTheEarth() {
-        // None of the corners are on the earth and none of the sides intersect its edge.
+    @Test
+    public void projToLatLonBB_completelyOffTheMap() {
+        // None of the corners are on the map and none of the sides intersect its edge.
         ProjectionPoint upperLeft  = new ProjectionPointImpl(10000, -7000);
-        ProjectionPoint lowerRight = new ProjectionPointImpl(3000,  3000);
+        ProjectionPoint lowerRight = new ProjectionPointImpl(13000, -10000);
 
         Sinusoidal proj = new Sinusoidal();
         ProjectionRect projBB = new ProjectionRect(upperLeft, lowerRight);
-        proj.projToLatLonBB(projBB);  // Throws IllegalArgumentException.
+        LatLonRect latLonBB = proj.projToLatLonBB(projBB);
+
+        Assert.assertEquals(LatLonRect.INVALID, latLonBB);
     }
 
     @Test
     public void projToLatLonBB_everything() {
-        // The bounding box includes the entire earth.
+        // The bounding box includes the entire map.
         ProjectionPoint lowerLeft  = new ProjectionPointImpl(-30000, -30000);
         ProjectionPoint upperRight = new ProjectionPointImpl(30000,  30000);
 
