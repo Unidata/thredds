@@ -355,7 +355,7 @@ them on a map.
    */
   public static void main(String arg[]) {
     UtmProjection utm = new UtmProjection(17, true);
-    LatLonPointImpl ll = utm.projToLatLon(577.8000000000001, 2951.8);
+    LatLonPoint ll = utm.projToLatLon(577.8000000000001, 2951.8);
     System.out.printf("%15.12f %15.12f%n", ll.getLatitude(), ll.getLongitude());
     assert Misc.closeEnough(ll.getLongitude(), -80.21802662821469, 1.0e-8);
     assert Misc.closeEnough(ll.getLatitude(), 26.685132668190793, 1.0e-8);

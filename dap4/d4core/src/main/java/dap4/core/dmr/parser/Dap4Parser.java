@@ -407,7 +407,7 @@ public class Dap4Parser extends Dap4ParserBody
         throws ParseException
     {
         if(debug) report("leavedataset");
-        assert (scopestack.peek().getSort() == DapSort.DATASET);
+        assert (scopestack.peek() != null && scopestack.peek().getSort() == DapSort.DATASET);
         this.root.sort();
         scopestack.pop();
         if(!scopestack.isEmpty())

@@ -49,9 +49,11 @@ public class TestWrite extends TestCase {
     InvCatalogImpl cat = TestCatalogAll.open( filename, true);
 
     // create a file and write it out
-    //File tmpDir = new File(TestAll.tmpDir);
-    //tmpDir.mkdir();
-    String fileOutName = TestCatalogAll.tmpDir+filename+".tmp";
+    File tmpDir = new File(TestCatalogAll.tmpDir);
+    if (!tmpDir.exists())
+      tmpDir.mkdir();
+
+    String fileOutName = TestCatalogAll.tmpDir + filename + ".tmp";
     System.out.println(" output filename= "+fileOutName);
     try {
       OutputStream out = new BufferedOutputStream( new FileOutputStream( fileOutName));

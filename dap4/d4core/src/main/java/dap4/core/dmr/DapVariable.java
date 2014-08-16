@@ -80,7 +80,7 @@ abstract public class DapVariable extends DapNode implements DapDecl
     {
         if(this.dimensions == null
             || i < 0 || i >= this.dimensions.size())
-            return null;
+            throw new IllegalArgumentException("Illegal index: "+i);
         return this.dimensions.get(i);
     }
 

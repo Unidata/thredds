@@ -726,7 +726,7 @@ public class AlbersEqualArea extends ProjectionImpl {
     AlbersEqualArea a = new AlbersEqualArea(23, -96, 29.5, 45.5);
     System.out.printf("name=%s%n", a.getName());
     System.out.println("ll = 35N 75W");
-    ProjectionPointImpl p = a.latLonToProj(35, -75);
+    ProjectionPoint p = a.latLonToProj(35, -75);
     System.out.println("proj point = " + p);
     LatLonPoint ll = a.projToLatLon(p);
     System.out.println("ll = " + ll);

@@ -125,7 +125,7 @@ public class MessageCompressedDataReader {
     setIterators(ama);
 
     // map dkey to Member recursively
-    HashMap<DataDescriptor, StructureMembers.Member> map = new HashMap<DataDescriptor, StructureMembers.Member>(100);
+    HashMap<DataDescriptor, StructureMembers.Member> map = new HashMap<>(100);
     associateMessage2Members(ama.getStructureMembers(), m.getRootDataDescriptor(), map);
 
     readData(m, raf, f, new Request(ama, map, null));
@@ -147,7 +147,7 @@ public class MessageCompressedDataReader {
     // map dkey to Member recursively
     HashMap<DataDescriptor, StructureMembers.Member> map = null;
     if (ama != null) {
-      map = new HashMap<DataDescriptor, StructureMembers.Member>(2*ama.getMembers().size());
+      map = new HashMap<>(2*ama.getMembers().size());
       associateMessage2Members(ama.getStructureMembers(), m.getRootDataDescriptor(), map);
     }
 

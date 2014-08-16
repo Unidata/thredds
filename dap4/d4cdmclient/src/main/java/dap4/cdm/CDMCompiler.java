@@ -167,7 +167,6 @@ public class CDMCompiler
     compileAtomicVar(DataVariable d4var)
             throws DapException
     {
-        DapAtomicVariable atomvar = (DapAtomicVariable) d4var.getTemplate();
         CDMArrayAtomic array = new CDMArrayAtomic(this.dsp, this.cdmroot, (D4DataAtomic) d4var);
         return array;
     }

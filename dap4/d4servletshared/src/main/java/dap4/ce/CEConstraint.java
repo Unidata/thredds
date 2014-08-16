@@ -262,7 +262,7 @@ public class CEConstraint implements Constraint
                 u = new Universal(dmr);
                 universals.put(dmr, u);
             } catch (DapException de) {
-                u = null;
+                throw new IllegalArgumentException("DapDataSet has no universal");
             }
         }
         return u;

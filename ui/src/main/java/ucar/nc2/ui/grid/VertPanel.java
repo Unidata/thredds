@@ -32,15 +32,18 @@
  */
 package ucar.nc2.ui.grid;
 
-import ucar.nc2.ui.widget.ScaledPanel;
-import ucar.unidata.geoloc.*;
-import ucar.nc2.dataset.*;
+import ucar.nc2.dataset.CoordinateAxis;
+import ucar.nc2.dataset.CoordinateAxis1D;
 import ucar.nc2.dt.GridCoordSystem;
-
 import ucar.nc2.ui.event.ActionSourceListener;
+import ucar.nc2.ui.widget.ScaledPanel;
+import ucar.unidata.geoloc.LatLonPoint;
+import ucar.unidata.geoloc.LatLonPointImpl;
+import ucar.unidata.geoloc.Projection;
+import ucar.unidata.geoloc.ProjectionImpl;
 
-import java.awt.*;
 import javax.swing.*;
+import java.awt.*;
 
 /**
  *  2D Vertical "slice" drawing widget.
@@ -174,7 +177,7 @@ public class VertPanel extends JPanel {
   }
 
   private String getYstr(double xvalue, double yvalue) {
-    LatLonPointImpl lpt = ((ProjectionImpl)proj).projToLatLon(xvalue, yvalue);
+    LatLonPoint lpt = ((ProjectionImpl)proj).projToLatLon(xvalue, yvalue);
     return LatLonPointImpl.latToString(lpt.getLatitude(), 3);
   }
 

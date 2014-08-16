@@ -21,6 +21,7 @@ public class SaxEvent
     //public String publicid = null;
     //public String systemid = null;
 
+    //Coverity[FB.URF_UNREAD_PUBLIC_OR_PROTECTED_FIELD]
     public Locator locator = null;
 
     public SaxEvent()

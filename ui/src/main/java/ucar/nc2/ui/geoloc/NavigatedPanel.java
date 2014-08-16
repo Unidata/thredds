@@ -35,19 +35,23 @@ package ucar.nc2.ui.geoloc;
 import ucar.nc2.ui.widget.BAMutil;
 import ucar.nc2.util.ListenerManager;
 import ucar.unidata.geoloc.*;
-import ucar.unidata.geoloc.projection.*;
-
+import ucar.unidata.geoloc.projection.LatLonProjection;
 import ucar.unidata.util.Format;
 import ucar.util.prefs.ui.Debug;
 
+import javax.swing.*;
 import java.awt.*;
-import java.awt.geom.*;
-import java.awt.datatransfer.*;
+import java.awt.datatransfer.DataFlavor;
+import java.awt.datatransfer.Transferable;
+import java.awt.datatransfer.UnsupportedFlavorException;
 import java.awt.dnd.*;
 import java.awt.event.*;
-import java.awt.image.*;
-import java.io.*;
-import javax.swing.*;
+import java.awt.geom.AffineTransform;
+import java.awt.geom.Point2D;
+import java.awt.geom.Rectangle2D;
+import java.awt.image.BufferedImage;
+import java.awt.image.ImageObserver;
+import java.io.IOException;
 
 /**
  * Implements a "navigated" JPanel within which a user can zoom and pan.
@@ -185,6 +189,7 @@ public class NavigatedPanel extends JPanel {
     // listen for mouse events
     addMouseListener(new myMouseListener());
     addMouseMotionListener(new myMouseMotionListener());
+    addMouseWheelListener(new myMouseWheelListener());
 
     // catch resize events
     addComponentListener(new ComponentAdapter() {
@@ -358,7 +363,7 @@ public class NavigatedPanel extends JPanel {
 
   /** set the center point of the MapArea */
   public void setLatLonCenterMapArea( double lat, double lon) {
-    ProjectionPointImpl center = project.latLonToProj(lat, lon);
+    ProjectionPoint center = project.latLonToProj(lat, lon);
 
     ProjectionRect ma = getMapArea();
     ma.setX( center.getX() - ma.getWidth()/2);
@@ -692,10 +697,13 @@ public class NavigatedPanel extends JPanel {
       return;
 
     sbuff.setLength(0);
-    sbuff.append(workL.toString());
+
     if (ucar.util.prefs.ui.Debug.isSet("projection/showPosition")) {
-      sbuff.append(" "+workW);
+      sbuff.append(workW + " -> ");
     }
+
+    sbuff.append(workL.toString(5));
+
     if (hasReference) {
         Bearing.calculateBearing(refLatLon, workL, workB);
         sbuff.append("  (");
@@ -753,7 +761,7 @@ public class NavigatedPanel extends JPanel {
     */
 
   private class myMouseListener extends MouseAdapter {
-
+    @Override
     public void mouseClicked( MouseEvent e) {
       // pick event
       if (isReferenceMode) {
@@ -770,6 +778,7 @@ public class NavigatedPanel extends JPanel {
       }
     }
 
+    @Override
     public void mousePressed( MouseEvent e) {
       if (!changeable)
         return;
@@ -832,6 +841,7 @@ public class NavigatedPanel extends JPanel {
       if (debugEvent) System.out.println( "mousePressed "+startx+" "+starty);
     }
 
+    @Override
     public void mouseReleased( MouseEvent e) {
       if (!changeable)
         return;
@@ -886,6 +896,7 @@ public class NavigatedPanel extends JPanel {
 
   // mouseMotionListener
   private class myMouseMotionListener implements MouseMotionListener {
+    @Override
     public void mouseDragged( MouseEvent e) {
       if (!changeable)
         return;
@@ -913,8 +924,26 @@ public class NavigatedPanel extends JPanel {
       //redrawLater(100); // schedule redraw in 100 msecs
     }
 
+    @Override
     public void mouseMoved( MouseEvent e) {
       showStatus(e.getX(), e.getY());
+    }
+  }
+
+  private class myMouseWheelListener extends MouseAdapter {
+    @Override
+    public void mouseWheelMoved(MouseWheelEvent e) {
+      if (e.getWheelRotation() < 0) {
+        for (int rotation = e.getWheelRotation(); rotation < 0; ++rotation) {
+          navigate.zoomIn();
+          drawG();
+        }
+      } else {
+        for (int rotation = e.getWheelRotation(); rotation > 0; --rotation) {
+          navigate.zoomOut();
+          drawG();
+        }
+      }
     }
   }
 

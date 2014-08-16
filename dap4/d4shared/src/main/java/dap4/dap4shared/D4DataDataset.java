@@ -14,6 +14,11 @@ public class D4DataDataset extends AbstractData implements DataDataset
 {
 
     //////////////////////////////////////////////////
+    // Constants
+
+    static final public long serialVersionUID = 1L;
+
+    //////////////////////////////////////////////////
     // Instance variables
 
     //Coverity[FB.URF_UNREAD_FIELD]

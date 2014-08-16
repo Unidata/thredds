@@ -46,7 +46,6 @@ import java.util.StringTokenizer;
  * @author John Caron
  */
 public class LatLonRect {
-
   /**
    * Inverse of LatLon.toString().
    * @param s "ll: 63.45S 180.0W+ ur: 74.65N 180.0E"
@@ -64,6 +63,7 @@ public class LatLonRect {
     init(new LatLonPointImpl(lat, lon), deltaLat, deltaLon);
   } */
 
+  public static LatLonRect INVALID = new LatLonRect(LatLonPointImmutable.INVALID, LatLonPointImmutable.INVALID);
 
   /**
    * upper right corner

@@ -198,9 +198,8 @@ public class CodeFlagTables {
         }
 
         // SNo,FXY,CodeFigure,enDescription1,enDescription2,enDescription3
-        int fldidx = 0;
+        int fldidx = 1; // start at 1 to skip sno
         try {
-          int sno = Integer.parseInt(flds[fldidx++].trim());
           int xy = Integer.parseInt(flds[fldidx++].trim());
           int no = -1;
           try {

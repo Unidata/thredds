@@ -376,8 +376,8 @@ public class DapDataset extends DapGroup
             var = (DapVariable) node;
             attrs = var.getAttributes();
             if(attrs != null)
-                for(String name : attrs.keySet()) {
-                    sortR(attrs.get(name), sortlist);
+                for(Map.Entry<String,DapAttribute> entry : attrs.entrySet()) {
+                    sortR(entry.getValue(), sortlist);
                 }
             List<DapMap> maps = var.getMaps();
             if(maps != null)

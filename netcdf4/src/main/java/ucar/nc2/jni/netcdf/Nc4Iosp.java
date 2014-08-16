@@ -134,16 +134,17 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
    * @return true if we set jna.library.path
    */
   static private String defaultNetcdf4Library() {
-    String pathlist = null;
+    StringBuilder pathlist = new StringBuilder();
     for (String path : DEFAULTNETCDF4PATH) {
       File f = new File(path);
       if (f.exists() && f.canRead()) {
-        pathlist = (pathlist == null ? "" : pathlist + File.pathSeparator);
-        pathlist = pathlist + path;
+        if(pathlist.length() > 0)
+            pathlist.append(File.pathSeparator);
+        pathlist.append(path);
         break;
       }
     }
-    return pathlist;
+    return pathlist.length() == 0 ? null : pathlist.toString();
   }
 
   /**
@@ -707,6 +708,7 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
         IndexIterator iter = intArray.getIndexIterator();
         for (int i = 0; i < len; i++) {
           //System.out.print(" len=" + vlen[i].len + "; p= " + vlen[i].p + ";");
+          //Coverity[FB.UWF_UNWRITTEN_PUBLIC_OR_PROTECTED_FIELD]
           int[] ba = vlen[i].p.getIntArray(0, vlen[i].len);
           for (int aBa : ba) {
             //System.out.print(" " + ba[j]);
@@ -720,6 +722,7 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
         Array fArray = Array.factory(DataType.FLOAT, new int[]{count});
         iter = fArray.getIndexIterator();
         for (int i = 0; i < len; i++) {
+          //Coverity[FB.NP_UNWRITTEN_PUBLIC_OR_PROTECTED_FIELD]
           float[] ba = vlen[i].p.getFloatArray(0, vlen[i].len);
           for (float aBa : ba) iter.setFloatNext(aBa);
         }
@@ -969,6 +972,7 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
       String dimList = makeDimList(g4.grpid, ndimsp.getValue(), dimids);
       UserType utype = userTypes.get(typeid);
       if (utype != null) {
+        //Coverity[FB.URF_UNREAD_FIELD]
         vinfo.utype = utype;
         if (utype.typeClass == Nc4prototypes.NC_VLEN)  // LOOK ??
           dimList = dimList + " *";
@@ -1023,7 +1027,7 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
       v = s;
       if (utype.flds == null)
         utype.readFields();
-
+      //Coverity[FORWARD_NULL]
       for (Field f : utype.flds) {
         s.addMemberVariable(f.makeMemberVariable(g, s));
       }
@@ -1086,7 +1090,7 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
 
   //////////////////////////////////////////////////////////////////////////
 
-  private class Vinfo {
+  static private class Vinfo {
     final Group4 g4;
     int varid, typeid;
     UserType utype; // may be null
@@ -1098,7 +1102,7 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
     }
   }
 
-  private class Group4 {
+  static private class Group4 {
     final int grpid;
     final Group g;
     final Group4 parent;
@@ -1110,7 +1114,8 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
       this.parent = parent;
     }
   }
-
+  // Cannot be static because it references non-static parent class memebers
+  //Coverity[FB.SIC_INNER_SHOULD_BE_STATIC]
   private class UserType {
     int grpid;
     int typeid;
@@ -1224,6 +1229,8 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
   }
 
   // encapsolate the fields in a compound type
+  // Cannot be static because it references non-static parent class members
+  //Coverity[FB.SIC_INNER_SHOULD_BE_STATIC]
   private class Field {
     int grpid;
     int typeid; // containing structure
@@ -1432,7 +1439,6 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
     if (ret != 0)
       throw new IOException(ret + ": " + nc4.nc_strerror(ret));
     int nmembers = numMembers.getValue().intValue();
-    String name = makeString(nameb);
 
     //System.out.printf(" type=%d name=%s baseType=%d baseType=%d numMembers=%d %n ",
     //    xtype, name, baseType.getValue(), baseSize.getValue().longValue(), nmembers);
@@ -1911,6 +1917,7 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
       case Nc4prototypes.NC_INT:
         for (int i = 0; i < len; i++) {
           int slen = vlen[i].len;
+          //Coverity[FB.NP_UNWRITTEN_PUBLIC_OR_PROTECTED_FIELD]
           int[] ba = vlen[i].p.getIntArray(0, slen);
           data[i] = Array.factory(DataType.INT, new int[]{slen}, ba);
         }
@@ -1919,6 +1926,7 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
       case Nc4prototypes.NC_SHORT:
         for (int i = 0; i < len; i++) {
           int slen = vlen[i].len;
+          //Coverity[FB.NP_UNWRITTEN_PUBLIC_OR_PROTECTED_FIELD]
           short[] ba = vlen[i].p.getShortArray(0, slen);
           data[i] = Array.factory(DataType.SHORT, new int[]{slen}, ba);
         }
@@ -1926,6 +1934,7 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
       case Nc4prototypes.NC_FLOAT:
         for (int i = 0; i < len; i++) {
           int slen = vlen[i].len;
+          //Coverity[FB.NP_UNWRITTEN_PUBLIC_OR_PROTECTED_FIELD]
           float[] ba = vlen[i].p.getFloatArray(0, slen);
           data[i] = Array.factory(DataType.FLOAT, new int[]{slen}, ba);
         }
@@ -2054,6 +2063,8 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
     return f.toString();
   }
 
+  // Cannot be static because it references non-stati parent class members
+  //Coverity[FB.SIC_INNER_SHOULD_BE_STATIC]
   private static class ConvertedType {
     DataType dt;
     boolean isUnsigned;
@@ -2873,8 +2884,11 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
 
     // write the data
     // int ret = nc4.nc_put_var(grpid, varid, bbuff);
-    int ret = nc4.nc_put_vara(grpid, varid, origin, shape, bbuff.array());
-    // int ret = nc4.nc_put_vars(grpid, varid, origin, shape, stride, bbuff);
+    int ret;
+    if(section.isStrided())
+      ret = nc4.nc_put_vars(grpid, varid, origin, shape, stride, bbuff.array());
+    else
+      ret = nc4.nc_put_vara(grpid, varid, origin, shape, bbuff.array());
     if (ret != 0)
       throw new IOException(errMessage("nc_put_vars", ret, grpid, varid));
   }

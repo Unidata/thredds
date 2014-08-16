@@ -588,7 +588,7 @@ public class Orthographic extends ProjectionImpl {
    */
   public static void main(String[] args) {
     Orthographic a = new Orthographic(40, -100);
-    ProjectionPointImpl p = a.latLonToProj(30, -110);
+    ProjectionPoint p = a.latLonToProj(30, -110);
     System.out.println("proj point = " + p);
     LatLonPoint ll = a.projToLatLon(p);
     System.out.println("ll = " + ll);

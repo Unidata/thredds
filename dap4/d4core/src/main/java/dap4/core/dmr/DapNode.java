@@ -67,8 +67,7 @@ abstract public class DapNode
     {
         // Use Instanceof to figure out the sort
         // Because of subclass relationships, order is important
-        if(this instanceof DapAtomicVariable
-            || this instanceof DapAtomicVariable)
+        if(this instanceof DapAtomicVariable)
             this.sort = DapSort.ATOMICVARIABLE;
         else if(this instanceof DapSequence)  //must precede structure because seq subclass struct
                 this.sort = DapSort.SEQUENCE;
