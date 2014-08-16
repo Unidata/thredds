@@ -35,6 +35,7 @@ package ucar.atd.dorade;
 
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.PrintStream;
 
 /**
  * A dumper for DORADE radar data
@@ -80,7 +81,8 @@ public class DoradeAsciiDump {
       }
 
       try (FileOutputStream out = new FileOutputStream(destFile)) {
-        out.write(sb.toString().getBytes());
+        PrintStream ps = new PrintStream(out);
+        ps.append(sb.toString());
         out.flush();
       }
     }

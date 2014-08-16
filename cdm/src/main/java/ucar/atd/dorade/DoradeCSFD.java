@@ -30,9 +30,11 @@
  *   NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
  *   WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
  */
+
 package ucar.atd.dorade;
 
 import java.io.RandomAccessFile;
+import java.util.Formatter;
 
 class DoradeCSFD extends DoradeCELV {
 
@@ -94,14 +96,11 @@ class DoradeCSFD extends DoradeCELV {
   }
 
   public String toString() {
-    String s = "CSFD\n";
-    s += "  number of segments: " + nSegments;
+    Formatter f = new Formatter();
+    f.format("CSFD  number of segments= %d", nSegments);
     for (int seg = 0; seg < nSegments; seg++) {
-      s += "\n";
-      s += "  segment " + seg + "\n";
-      s += "    # of cells: " + segNCells[seg] + "\n";
-      s += "    cell spacing: " + segCellSpacing[seg] + " m";
+      f.format("  segment=%d # of cells=%d cell spacing=%f%n", seg, segNCells[seg], segCellSpacing[seg]);
     }
-    return s;
+    return f.toString();
   }
 }

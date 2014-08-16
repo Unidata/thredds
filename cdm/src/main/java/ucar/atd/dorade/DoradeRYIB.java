@@ -30,6 +30,7 @@
  *   NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
  *   WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
  */
+
 package ucar.atd.dorade;
 
 import java.io.RandomAccessFile;
@@ -45,11 +46,9 @@ class DoradeRYIB extends DoradeDescriptor {
   private float lastPeakPower; // kW
   private float scanRate; // deg/s
   private int rayStatus; // 0 normal, 1 transition, 2 bad
-  private DoradeVOLD myVOLD;
 
   public DoradeRYIB(RandomAccessFile file, boolean littleEndianData, DoradeVOLD vold) throws DescriptorException {
     byte[] data = readDescriptor(file, littleEndianData, "RYIB");
-    myVOLD = vold;
 
     //
     // unpack
@@ -73,7 +72,7 @@ class DoradeRYIB extends DoradeDescriptor {
     // a complete time here?  Julian day without the year is useless!
     // GRRR...
     //
-    Date volumeTime = myVOLD.getVolumeTime();
+    Date volumeTime = vold.getVolumeTime();
     Calendar volumeCalendar = Calendar.getInstance(TZ_UTC);
     volumeCalendar.setTime(volumeTime);
 

@@ -276,9 +276,9 @@ public interface RadialDatasetSweep extends ucar.nc2.dt.TypedDataset, ucar.nc2.f
    * A Type of RadialSweep.
    */
   static public final class Type {
+    private static java.util.List<Type> members = new java.util.ArrayList<>(20);
     public final static Type NONE = new Type("");
 
-    private static java.util.List<Type> members = new java.util.ArrayList<Type>(20);
     private String name;
 
     private Type(String s) {

@@ -30,7 +30,10 @@
  *   NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
  *   WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
  */
+
 package ucar.atd.dorade;
+
+import ucar.nc2.constants.CDM;
 
 import java.io.RandomAccessFile;
 
@@ -45,7 +48,7 @@ class DoradeRDAT extends DoradeDescriptor {
     //
     // unpack
     //
-    paramName = new String(data, 8, 8).trim();
+    paramName = new String(data, 8, 8, CDM.utf8Charset).trim();
     paramData = new byte[data.length - 16];
     System.arraycopy(data, 16, paramData, 0, data.length - 16);
 
@@ -89,7 +92,7 @@ class DoradeRDAT extends DoradeDescriptor {
       if (file.read(nameBytes) == -1)
         throw new DescriptorException("unexpected EOF");
       file.seek(filepos);
-      return new String(nameBytes).trim();
+      return new String(nameBytes, CDM.utf8Charset).trim();
 
     } catch (Exception ex) {
       throw new DescriptorException(ex);

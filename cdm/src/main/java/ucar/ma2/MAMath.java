@@ -694,7 +694,6 @@ public class MAMath {
    */
   public static class ScaleOffset {
     public double scale, offset;
-    public boolean isUnsigned;
 
     public ScaleOffset(double scale, double offset) {
       this.scale = scale;

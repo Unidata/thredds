@@ -826,12 +826,6 @@ public class CoordSysBuilder implements CoordSysBuilderIF {
     }
   }
 
-  private class VarProcessSorter implements Comparator<VarProcess> {
-    public int compare(VarProcess o1, VarProcess o2) {
-      return o2.v.getRank() - o1.v.getRank();
-    }
-  }
-
   /**
    * If a variable still doesnt have a coordinate system, use hueristics to try to find one that was probably
    * forgotten.

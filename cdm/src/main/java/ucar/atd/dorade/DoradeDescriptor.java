@@ -30,14 +30,16 @@
  *   NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
  *   WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
  */
+
 package ucar.atd.dorade;
 
+import ucar.nc2.constants.CDM;
 import ucar.nc2.time.CalendarDateFormatter;
 
+import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.io.ByteArrayInputStream;
 import java.io.DataInputStream;
-import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.TimeZone;
 import java.util.HashMap;
@@ -107,7 +109,7 @@ abstract class DoradeDescriptor {
       //
       byte[] header = new byte[8];
       file.readFully(header);
-      descName = new String(header, 0, 4);
+      descName = new String(header, 0, 4, CDM.utf8Charset);
       int size = grabInt(header, 4);
 
       //
@@ -175,8 +177,9 @@ abstract class DoradeDescriptor {
       if (file.read(nameBytes) == -1)
         return null;  // EOF
       file.seek(filepos);
-      return new String(nameBytes);
-    } catch (Exception ex) {
+      return new String(nameBytes, CDM.utf8Charset);
+
+    } catch (IOException ex) {
       throw new DescriptorException(ex);
     }
   }
@@ -274,7 +277,7 @@ abstract class DoradeDescriptor {
         src[0] = bytes[offset + 3];
         src[1] = bytes[offset + 2];
         src[2] = bytes[offset + 1];
-        src[3] = bytes[offset + 0];
+        src[3] = bytes[offset];
         offset = 0;
       } else {
         src = bytes;
@@ -307,7 +310,7 @@ abstract class DoradeDescriptor {
         src[4] = bytes[offset + 3];
         src[5] = bytes[offset + 2];
         src[6] = bytes[offset + 1];
-        src[7] = bytes[offset + 0];
+        src[7] = bytes[offset];
         offset = 0;
       } else {
         src = bytes;

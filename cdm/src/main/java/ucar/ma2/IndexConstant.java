@@ -114,7 +114,7 @@ public class IndexConstant extends Index {
     return new IteratorConstant(size, maa);
   }
 
-  private class IteratorConstant implements IndexIterator {
+  private static class IteratorConstant implements IndexIterator {
 
     private int currElement = -1;
     private final Array maa;

@@ -145,9 +145,9 @@ public class H5header {
   //Map<Integer, DataObjectFacade> dimIds = null; // if isNetcdf4 and all dimension scales have _Netcdf4Dimid attribute
 
   private H5Group rootGroup;
-  private Map<String, DataObjectFacade> symlinkMap = new HashMap<String, DataObjectFacade>(200);
-  private Map<Long, DataObject> addressMap = new HashMap<Long, DataObject>(200);
-  private Map<Long, GlobalHeap> heapMap = new HashMap<Long, GlobalHeap>();
+  private Map<String, DataObjectFacade> symlinkMap = new HashMap<>(200);
+  private Map<Long, DataObject> addressMap = new HashMap<>(200);
+  private Map<Long, GlobalHeap> heapMap = new HashMap<>();
   private java.text.SimpleDateFormat hdfDateParser;
 
   private java.io.PrintStream debugOut = System.out;
@@ -172,7 +172,7 @@ public class H5header {
       debugOut = debugPS;
 
     long actualSize = raf.length();
-    memTracker = new MemTracker(actualSize);
+    memTracker = new MemTracker(actualSize);  // LOOK WTF ??
 
     // find the superblock - no limits on how far in
     boolean ok = false;
@@ -189,7 +189,7 @@ public class H5header {
       filePos = (filePos == 0) ? 512 : 2 * filePos;
     }
     if (!ok) throw new IOException("Not a netCDF4/HDF5 file ");
-    if (debug1) debugOut.println("H5header 0pened file to read:'" + raf.getLocation() + "' size= " + actualSize);
+    if (debug1) debugOut.println("H5header opened file to read:'" + raf.getLocation() + "' size= " + actualSize);
     // now we are positioned right after the header
 
     // header information is in le byte order
@@ -221,7 +221,11 @@ public class H5header {
      for (DataObject ob : addressMap.values())
        System.out.println("  " + ob.name + " address= " + ob.address + " filePos= " + getFileOffset(ob.address));
    } */
-    if (debugTracker) memTracker.report();
+    if (debugTracker) {
+      Formatter f= new Formatter();
+      memTracker.report(f);
+      debugOut.println(f.toString());
+    }
   }
 
   private void readSuperBlock1(long superblockStart, byte versionSB) throws IOException {
@@ -841,7 +845,7 @@ public class H5header {
   }
 
   private List<MessageAttribute> filterAttributes(List<MessageAttribute> attList) {
-    List<MessageAttribute> result = new ArrayList<MessageAttribute>(attList.size());
+    List<MessageAttribute> result = new ArrayList<>(attList.size());
     for (MessageAttribute matt : attList) {
       if (matt.name.equals(Nc4.NETCDF4_COORDINATES) || matt.name.equals(Nc4.NETCDF4_DIMID) || matt.name.equals(Nc4.NETCDF4_STRICT)) {
         isNetcdf4 = true;
@@ -1403,10 +1407,10 @@ public class H5header {
     }
 
     if (vinfo.isChunked) {// make the data btree, but entries are not read in
-      vinfo.btree = new DataBTree(this, dataAddress, v.getShape(), vinfo.storageSize);
+      vinfo.btree = new DataBTree(this, dataAddress, v.getShape(), vinfo.storageSize, memTracker);
 
       if (vinfo.isChunked) {  // add an attribute describing the chunk size
-        List<Integer> chunksize = new ArrayList<Integer>();
+        List<Integer> chunksize = new ArrayList<>();
         for (int i = 0; i < vinfo.storageSize.length - 1; i++)  // skip last one - its the element size
           chunksize.add(vinfo.storageSize[i]);
         v.addAttribute(new Attribute(CDM.CHUNK_SIZES, chunksize));
@@ -2391,7 +2395,7 @@ public class H5header {
         return;
 
       BTree2 btree = new BTree2(H5header.this, who, btreeAddress);
-      FractalHeap fractalHeap = new FractalHeap(H5header.this, who, attInfo.fractalHeapAddress);
+      FractalHeap fractalHeap = new FractalHeap(H5header.this, who, attInfo.fractalHeapAddress, memTracker);
 
       for (BTree2.Entry2 e : btree.entryList) {
         byte[] heapId = null;
@@ -2950,7 +2954,7 @@ public class H5header {
       if (fractalHeapAddress > 0) {
         try {
           f.format("%n%n");
-          FractalHeap fractalHeap = new FractalHeap(H5header.this, "", fractalHeapAddress);
+          FractalHeap fractalHeap = new FractalHeap(H5header.this, "", fractalHeapAddress, memTracker);
           fractalHeap.showDetails(f);
         } catch (IOException e) {
           e.printStackTrace();
@@ -3802,7 +3806,7 @@ public class H5header {
       long btreeAddress = (v2BtreeAddressCreationOrder > 0) ? v2BtreeAddressCreationOrder : v2BtreeAddress;
       if ((fractalHeapAddress > 0) && (btreeAddress > 0)) {
         try {
-          FractalHeap fractalHeap = new FractalHeap(H5header.this, "", fractalHeapAddress);
+          FractalHeap fractalHeap = new FractalHeap(H5header.this, "", fractalHeapAddress, memTracker);
           fractalHeap.showDetails(f);
 
           f.format(" Btree:%n");
@@ -3961,7 +3965,7 @@ public class H5header {
     if (debug1) debugOut.println("\n--> GroupNew read <" + group.displayName + ">");
 
     if (groupNewMessage.fractalHeapAddress >= 0) {
-      FractalHeap fractalHeap = new FractalHeap(H5header.this, group.displayName, groupNewMessage.fractalHeapAddress);
+      FractalHeap fractalHeap = new FractalHeap(H5header.this, group.displayName, groupNewMessage.fractalHeapAddress, memTracker);
 
       long btreeAddress = (groupNewMessage.v2BtreeAddressCreationOrder >= 0) ?
               groupNewMessage.v2BtreeAddressCreationOrder : groupNewMessage.v2BtreeAddress;
@@ -3970,7 +3974,7 @@ public class H5header {
       // read in btree and all entries
       BTree2 btree = new BTree2(H5header.this, group.displayName, btreeAddress);
       for (BTree2.Entry2 e : btree.entryList) {
-        byte[] heapId = null;
+        byte[] heapId;
         switch (btree.btreeType) {
           case 5:
             heapId = ((BTree2.Record5) e.record).heapId;
@@ -4055,7 +4059,7 @@ public class H5header {
   private class GroupBTree {
     protected String owner;
     protected int wantType = 0;
-    private List<SymbolTableEntry> sentries = new ArrayList<SymbolTableEntry>(); // list of type SymbolTableEntry
+    private List<SymbolTableEntry> sentries = new ArrayList<>(); // list of type SymbolTableEntry
 
     // for DataBTree
     GroupBTree(String owner) {
@@ -4065,7 +4069,7 @@ public class H5header {
     GroupBTree(String owner, long address) throws IOException {
       this.owner = owner;
 
-      List<Entry> entryList = new ArrayList<Entry>();
+      List<Entry> entryList = new ArrayList<>();
       readAllEntries(address, entryList);
 
       // now convert the entries to SymbolTableEntry
@@ -4108,7 +4112,7 @@ public class H5header {
                 " rightAddress=" + rightAddress + " " + Long.toHexString(rightAddress));
 
       // read all entries in this Btree "Node"
-      List<Entry> myEntries = new ArrayList<Entry>();
+      List<Entry> myEntries = new ArrayList<>();
       for (int i = 0; i < nentries; i++) {
         myEntries.add(new Entry());
       }
@@ -4140,7 +4144,7 @@ public class H5header {
       long address;
       byte version;
       short nentries;
-      List<SymbolTableEntry> symbols = new ArrayList<SymbolTableEntry>(); // SymbolTableEntry
+      List<SymbolTableEntry> symbols = new ArrayList<>(); // SymbolTableEntry
 
       GroupNode(long address) throws IOException {
         this.address = address;
@@ -4300,7 +4304,7 @@ public class H5header {
   Array getHeapDataArray(HeapIdentifier heapId, DataType dataType, int endian) throws IOException, InvalidRangeException {
     GlobalHeap.HeapObject ho = heapId.getHeapObject();
     if (ho == null) {
-      throw new InvalidRangeException("Illegal Heap address = " + ho);
+      throw new InvalidRangeException("Illegal Heap address, HeapObject = " + heapId);
     }
     if (debugHeap) debugOut.println(" HeapObject= " + ho);
     if (endian >= 0) raf.order(endian);
@@ -4383,7 +4387,7 @@ public class H5header {
 
   // debug - hdf5Table
   public List<DataObject> getDataObjects() {
-    ArrayList<DataObject> result = new ArrayList<DataObject>(addressMap.values());
+    ArrayList<DataObject> result = new ArrayList<>(addressMap.values());
     Collections.sort(result, new java.util.Comparator<DataObject>() {
       public int compare(DataObject o1, DataObject o2) {
         // return (int) (o1.address - o2.address);
@@ -4512,7 +4516,7 @@ There is _no_ datatype information stored for these kind of selections currently
   private class GlobalHeap {
     byte version;
     int sizeBytes;
-    List<HeapObject> hos = new ArrayList<HeapObject>();
+    List<HeapObject> hos = new ArrayList<>();
     HeapObject freeSpace = null;
 
     GlobalHeap(long address) throws IOException {
@@ -4840,70 +4844,10 @@ There is _no_ datatype information stored for these kind of selections currently
   }
 
   public void close() {
-    if (debugTracker) memTracker.report();
-  }
-
-  private class MemTracker {
-    private List<Mem> memList = new ArrayList<Mem>();
-    private StringBuilder sbuff = new StringBuilder();
-
-    private long fileSize;
-
-    MemTracker(long fileSize) {
-      this.fileSize = fileSize;
-    }
-
-    void add(String name, long start, long end) {
-      memList.add(new Mem(name, start, end));
-    }
-
-    void addByLen(String name, long start, long size) {
-      memList.add(new Mem(name, start, start + size));
-    }
-
-    void report() {
-      debugOut.println("Memory used file size= " + fileSize);
-      debugOut.println("  start    end   size   name");
-      Collections.sort(memList);
-      Mem prev = null;
-      for (Mem m : memList) {
-        if ((prev != null) && (m.start > prev.end))
-          doOne('+', prev.end, m.start, m.start - prev.end, "HOLE");
-        char c = ((prev != null) && (prev.end != m.start)) ? '*' : ' ';
-        doOne(c, m.start, m.end, m.end - m.start, m.name);
-        prev = m;
-      }
-      debugOut.println();
-    }
-
-    private void doOne(char c, long start, long end, long size, String name) {
-      sbuff.setLength(0);
-      sbuff.append(c);
-      sbuff.append(ucar.unidata.util.Format.l(start, 6));
-      sbuff.append(" ");
-      sbuff.append(ucar.unidata.util.Format.l(end, 6));
-      sbuff.append(" ");
-      sbuff.append(ucar.unidata.util.Format.l(size, 6));
-      sbuff.append(" ");
-      sbuff.append(name);
-      debugOut.println(sbuff.toString());
-    }
-
-    class Mem implements Comparable {
-      public String name;
-      public long start, end;
-
-      Mem(String name, long start, long end) {
-        this.name = name;
-        this.start = start;
-        this.end = end;
-      }
-
-      public int compareTo(Object o1) {
-        Mem m = (Mem) o1;
-        return (int) (start - m.start);
-      }
-
+    if (debugTracker) {
+      Formatter f= new Formatter();
+      memTracker.report(f);
+      debugOut.println(f.toString());
     }
   }
 

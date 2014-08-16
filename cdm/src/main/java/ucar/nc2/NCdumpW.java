@@ -45,7 +45,6 @@ import java.math.BigInteger;
 import java.util.StringTokenizer;
 import java.util.List;
 import java.util.Formatter;
-import java.nio.charset.Charset;
 import java.nio.ByteBuffer;
 
 /**
@@ -721,7 +720,7 @@ public class NCdumpW {
   }
 
   static public void printArray(Array ma) {
-    PrintWriter out = new PrintWriter(System.out);
+    PrintWriter out = new PrintWriter( new OutputStreamWriter(System.out, CDM.utf8Charset));
     printArray(ma, out);
     out.flush();
   }

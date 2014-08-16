@@ -30,7 +30,10 @@
  *   NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
  *   WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
  */
+
 package ucar.atd.dorade;
+
+import ucar.nc2.constants.CDM;
 
 import java.io.RandomAccessFile;
 
@@ -95,9 +98,9 @@ public class DoradePARM extends DoradeDescriptor {
         //
         // unpack
         //
-        paramName = new String(data, 8, 8).trim();
-        paramDescription = new String(data, 16, 40).trim();
-        unitName = new String(data, 56, 8).trim();
+        paramName = new String(data, 8, 8, CDM.utf8Charset).trim();
+        paramDescription = new String(data, 16, 40, CDM.utf8Charset).trim();
+        unitName = new String(data, 56, 8, CDM.utf8Charset).trim();
         usedPRTs = grabShort(data, 64);
         usedFrequencies = grabShort(data, 66);
         rcvrBandwidth = grabFloat(data, 68);
@@ -105,7 +108,7 @@ public class DoradePARM extends DoradeDescriptor {
         polarization = grabShort(data, 74);
         nSamples = grabShort(data, 76);
         binaryFormat = grabShort(data, 78);
-        thresholdParamName = new String(data, 80, 8).trim();
+        thresholdParamName = new String(data, 80, 8, CDM.utf8Charset).trim();
         thresholdValue = grabFloat(data, 88);
         scale = grabFloat(data, 92);
         bias = grabFloat(data, 96);

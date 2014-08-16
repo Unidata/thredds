@@ -33,9 +33,12 @@
 
 package ucar.nc2.dataset.conv;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import ucar.ma2.Array;
 import ucar.ma2.ArrayObject;
 import ucar.ma2.DataType;
+import ucar.ma2.InvalidRangeException;
 import ucar.nc2.*;
 import ucar.nc2.constants.CF;
 import ucar.nc2.dataset.*;
@@ -49,6 +52,7 @@ import ucar.unidata.geoloc.projection.LambertConformal;
 import ucar.unidata.geoloc.projection.TransverseMercator;
 import ucar.unidata.geoloc.projection.Stereographic;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.StringTokenizer;
@@ -60,6 +64,8 @@ import java.util.StringTokenizer;
  * @since Dec 17, 2008
  */
 public class DefaultConvention extends CoordSysBuilder {
+  static private final Logger logger = LoggerFactory.getLogger(DefaultConvention.class);
+
     protected ProjectionCT projCT = null;
 
     public DefaultConvention() {
@@ -235,7 +241,8 @@ public class DefaultConvention extends CoordSysBuilder {
             if (CalendarDate.parseISOformat(null, firstStringValue) != null) // valid iso date string
               return AxisType.Time;
           }
-        } catch (Exception e) {
+        } catch (IOException | InvalidRangeException e) {
+          logger.warn("time string error", e);
         }
       }
 

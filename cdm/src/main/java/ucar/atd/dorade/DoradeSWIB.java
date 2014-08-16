@@ -30,7 +30,10 @@
  *   NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
  *   WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
  */
+
 package ucar.atd.dorade;
+
+import ucar.nc2.constants.CDM;
 
 import java.io.RandomAccessFile;
 import java.util.Date;
@@ -49,19 +52,17 @@ class DoradeSWIB extends DoradeDescriptor {
   private long[] rayDataOffsets;
   private DoradeRYIB[] myRYIBs;
   private DoradeASIB[] myASIBs;
-  private DoradeVOLD myVOLD;
 
   private float[] azimuths = null;
   private float[] elevations = null;
 
   public DoradeSWIB(RandomAccessFile file, boolean littleEndianData, DoradeVOLD vold) throws DescriptorException {
     byte[] data = readDescriptor(file, littleEndianData, "SWIB");
-    myVOLD = vold;
 
     //
     // unpack
     //
-    comment = new String(data, 8, 8).trim();
+    comment = new String(data, 8, 8, CDM.utf8Charset).trim();
     sweepNumber = grabInt(data, 16);
     nRays = grabInt(data, 20);
     startAngle = grabFloat(data, 24);
@@ -83,7 +84,7 @@ class DoradeSWIB extends DoradeDescriptor {
     rayDataOffsets = new long[nRays];
     boolean haveASIBs = false;
     for (int i = 0; i < nRays; i++) {
-      myRYIBs[i] = new DoradeRYIB(file, littleEndianData, myVOLD);
+      myRYIBs[i] = new DoradeRYIB(file, littleEndianData, vold);
       try {
         rayDataOffsets[i] = file.getFilePointer();
       } catch (java.io.IOException ex) {

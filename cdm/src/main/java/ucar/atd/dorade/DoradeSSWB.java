@@ -30,14 +30,17 @@
  *   NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
  *   WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
  */
+
 package ucar.atd.dorade;
+
+import ucar.nc2.constants.CDM;
 
 import java.io.RandomAccessFile;
 import java.util.Date;
 
 class DoradeSSWB extends DoradeDescriptor {
 
-    private class KeyTable {
+    private static class KeyTable {
         public int offset;
         public int size;
         public int type;
@@ -107,7 +110,7 @@ class DoradeSSWB extends DoradeDescriptor {
             nKeyTables = 0;
             keyTables = null;
         } else {
-            radarName = new String(data, 36, 8).trim();
+            radarName = new String(data, 36, 8, CDM.utf8Charset).trim();
 
             //
             // AUUGGGGGHHHHHH!  Everything after this is sometimes offset

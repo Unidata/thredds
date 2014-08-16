@@ -120,7 +120,7 @@ public class Misc {
    */
   public static boolean closeEnough( float v1, float v2) {
     if (v1 == v2) return true;
-    double diff = (v2 == 0.0) ? Math.abs(v1-v2) :  Math.abs(v1/v2-1);
+    double diff = (v2 == 0.0) ? Math.abs(v1) :  Math.abs(v1/v2-1);
     return diff < maxReletiveError;
   }
 

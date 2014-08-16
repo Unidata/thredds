@@ -1,6 +1,5 @@
 package ucar.nc2.iosp.hdf5;
 
-import ucar.nc2.constants.CDM;
 import ucar.unidata.io.RandomAccessFile;
 import ucar.unidata.util.SpecialMathFunction;
 
@@ -16,6 +15,7 @@ import java.util.List;
  * @since 6/27/12
  */
 public class FractalHeap {
+  static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(FractalHeap.class);
 
     // level 1E "Fractal Heap" used for both Global and Local heaps in 1.8.0+
   /*
@@ -63,16 +63,12 @@ Where startingBlockSize is from the header, ie the same for all indirect blocks.
 
 */
 
-  static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(FractalHeap.class);
 
   private java.io.PrintStream debugOut = System.out;
-  private boolean debugDetail, debugFractalHeap, debugPos;
+  static boolean debugDetail, debugFractalHeap, debugPos;
 
-  public void setMemTracker(MemTracker memTracker) {
-    this.memTracker = memTracker;
-  }
-
-  private MemTracker memTracker;
+  private final H5header h5;
+  private final RandomAccessFile raf;
 
   int version;
   short heapIdLen;
@@ -98,10 +94,9 @@ Where startingBlockSize is from the header, ie the same for all indirect blocks.
 
   DoublingTable doublingTable;
 
-  H5header h5;
-  RandomAccessFile raf;
 
-  FractalHeap(H5header h5, String forWho, long address) throws IOException {
+
+  FractalHeap(H5header h5, String forWho, long address, MemTracker memTracker) throws IOException {
     this.h5 = h5;
     this.raf = h5.raf;
 
@@ -247,7 +242,7 @@ Where startingBlockSize is from the header, ie the same for all indirect blocks.
       this.startingBlockSize = startingBlockSize;
       this.managedSpace = managedSpace;
       this.maxDirectBlockSize = maxDirectBlockSize;
-      this.blockList = new ArrayList<DataBlock>(tableWidth * currentNumRows);
+      this.blockList = new ArrayList<>(tableWidth * currentNumRows);
     }
 
     private int calcNrows(long max) {
@@ -331,13 +326,13 @@ Where startingBlockSize is from the header, ie the same for all indirect blocks.
 
     void add(DataBlock dblock) {
       if (directBlocks == null)
-        directBlocks = new ArrayList<DataBlock>();
+        directBlocks = new ArrayList<>();
       directBlocks.add(dblock);
     }
 
     void add(IndirectBlock iblock) {
       if (indirectBlocks == null)
-        indirectBlocks = new ArrayList<IndirectBlock>();
+        indirectBlocks = new ArrayList<>();
       indirectBlocks.add(iblock);
     }
 
