@@ -28,6 +28,7 @@ public class CDMDataCompoundArray extends AbstractDataVariable implements DataCo
     // Instance variables
 
     protected CDMDSP dsp = null;
+    //Coverity[FB.URF_UNREAD_PUBLIC_OR_PROTECTED_FIELD]
     protected Variable cdmvar = null;
     protected DataCompound[] instances = null;
     protected ArrayStructure array = null;

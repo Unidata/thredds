@@ -212,7 +212,8 @@ public class HttpDSP extends D4DSP
             return method.getResponseAsStream();
 
         } catch (Exception e) {
-            method.close();
+            if(method != null)
+                method.close();
             throw new DapException(e);
         }
     }

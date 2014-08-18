@@ -57,8 +57,6 @@ public class Dap4Print
         // Local copies of the command line options
         public String path = null;
         public String outputfile = null;
-        //Coverity[FB.URF_UNREAD_FIELD]
-        public List<String> vars = new ArrayList<String>();
     }
 
     //////////////////////////////////////////////////

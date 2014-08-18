@@ -21,9 +21,11 @@ public class D4DataRecord extends D4DataVariable implements DataRecord
     //////////////////////////////////////////////////
     // Instance variables
 
+    //Coverity[FB.URF_UNREAD_PUBLIC_OR_PROTECTED_FIELD]
     protected D4DataSequence parent = null;
+    //Coverity[FB.URF_UNREAD_PUBLIC_OR_PROTECTED_FIELD]
     protected int recno = 0;
-    D4DataVariable[] fields;
+    protected D4DataVariable[] fields;
 
     //////////////////////////////////////////////////
     // Constructors

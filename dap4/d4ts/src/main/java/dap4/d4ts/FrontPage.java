@@ -181,13 +181,13 @@ public class FrontPage
     static final String HTML_FOOTER = "<hr>\n</html>\n";
 
     static final String HTML_FORMAT =
-            "<tr>\n"
-                    + "<td halign='right'><b>%s:</b></td>\n"
-                    + "<td halign='center'><a href='%s.dmr.txt'> DMR (TEXT) </a></div></td>\n"
-                    + "<td halign='center'><a href='%s.dmr'> DMR (XML) </a></div></td>\n"
-                    + "<td halign='center'><a href='%s.dap'> DAP </a></div></td>\n"
-                    + "<td halign='center'><a href='%s.dsr'> DSR </a></div></td>\n"
-                    + "</tr>\n";
+            "<tr>%n"
+                    + "<td halign='right'><b>%s:</b></td>%n"
+                    + "<td halign='center'><a href='%s.dmr.txt'> DMR (TEXT) </a></div></td>%n"
+                    + "<td halign='center'><a href='%s.dmr'> DMR (XML) </a></div></td>%n"
+                    + "<td halign='center'><a href='%s.dap'> DAP </a></div></td>%n"
+                    + "<td halign='center'><a href='%s.dsr'> DSR </a></div></td>%n"
+                    + "</tr>%n";
 }
 
 

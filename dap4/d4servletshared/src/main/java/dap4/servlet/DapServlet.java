@@ -122,13 +122,15 @@ abstract public class DapServlet extends javax.servlet.http.HttpServlet
 
         try {
             URI uri = new URI(url);
-            if(svcinfo != null && !uri.getPath().startsWith("/" + svcinfo.getServletname()))
+            if(!uri.getPath().startsWith("/" + svcinfo.getServletname()))
                 return;
         } catch (URISyntaxException use) {
             return;
         }
 
-        this.svcinfo.setServer(url);
+        synchronized (this) {
+            this.svcinfo.setServer(url);
+        }
         String query = req.getQueryString();
         DapLog.debug("doGet(): url = " + url + (query == null || query.length() == 0 ? "" : "?" + query));
 

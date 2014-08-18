@@ -191,7 +191,7 @@ public class HTTPSession implements AutoCloseable
             if(getVerbose()) {
                 HTTPSession.log.debug(String.format("Retry: count=%d exception=%s", executionCount, exception.toString()));
             }
-            synchronized (HTTPSession.class) {
+            synchronized (RetryHandler.class) {
                 if(executionCount >= retries)
                     return false;
             }
