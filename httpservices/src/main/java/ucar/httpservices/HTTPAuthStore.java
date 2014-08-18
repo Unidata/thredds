@@ -186,8 +186,7 @@ public class HTTPAuthStore implements Serializable
     // Class variables
 
     static public boolean TESTING = false;
-    static public HTTPAuthStore DEFAULTS = null;
-
+    static public HTTPAuthStore DEFAULTS = new HTTPAuthStore(true);
 
     //////////////////////////////////////////////////
     // Instance variables
@@ -206,10 +205,6 @@ public class HTTPAuthStore implements Serializable
 
     public HTTPAuthStore(boolean isdefault)
     {
-        synchronized (HTTPAuthStore.class) {
-            if(DEFAULTS == null)
-                DEFAULTS = new HTTPAuthStore(true);
-        }
         this.isdefault = isdefault;
         if(!isdefault) this.defaults = HTTPAuthStore.DEFAULTS;
 
