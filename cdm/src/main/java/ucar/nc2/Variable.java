@@ -73,12 +73,12 @@ public class Variable extends CDMNode implements VariableIF, ProxyReader, Attrib
       if (!xg.isRoot()) {
         // Get the list of parent groups
         List<Group> path = Group.collectPath(xg);
-        StringBuilder dapname = new StringBuilder();
+        Formatter dapname = new Formatter();
         for (int i = 1; i < path.size(); i++) {   // start at 1 to skip root group
           Group g = path.get(i);
-          dapname.append("/" + g.getShortName());
+          dapname.format("/%s", g.getShortName());
         }
-        dapname.append("/" + name);
+        dapname.format("/%s", name);
         name = dapname.toString();
       }
     }
@@ -104,7 +104,7 @@ public class Variable extends CDMNode implements VariableIF, ProxyReader, Attrib
   protected boolean isVariableLength = false;
   protected boolean isMetadata = false;
 
-  protected Cache cache = new Cache();
+  protected Cache cache = new Cache();           // cache cannot be null
   protected int sizeToCache = -1; // bytes
 
   protected ProxyReader proxyReader = this;
@@ -633,8 +633,8 @@ public class Variable extends CDMNode implements VariableIF, ProxyReader, Attrib
     if (origin == null)
       return read(new Section(shape));
 
-    if (shape == null) // LOOK not very useful, origin must be 0 to be valid
-      return read(new Section(origin, shape));
+    if (shape == null)
+      return read(new Section(origin, this.shape));
 
     return read(new Section(origin, shape));
   }
@@ -804,7 +804,7 @@ public class Variable extends CDMNode implements VariableIF, ProxyReader, Attrib
   }
 
   protected Array getScalarData() throws IOException {
-    Array scalarData = (cache != null && cache.data != null) ? cache.data : read();
+    Array scalarData = (cache.data != null) ? cache.data : read();
     scalarData = scalarData.reduce();
 
     if ((scalarData.getRank() == 0) || ((scalarData.getRank() == 1) && dataType == DataType.CHAR))
@@ -821,7 +821,7 @@ public class Variable extends CDMNode implements VariableIF, ProxyReader, Attrib
   protected Array _read() throws IOException {
     // caching overrides the proxyReader
     // check if already cached
-    if (cache != null && cache.data != null) {
+    if (cache.data != null) {
       if (debugCaching) System.out.println("got data from cache " + getFullName());
       return cache.data.copy();
     }
@@ -1630,7 +1630,7 @@ public class Variable extends CDMNode implements VariableIF, ProxyReader, Attrib
    * @return true if data is read and cached
    */
   public boolean hasCachedData() {
-    return (cache != null) && (null != cache.data);
+    return (null != cache.data);
   }
 
   // this indirection allows us to share the cache among the variable's sections and copies

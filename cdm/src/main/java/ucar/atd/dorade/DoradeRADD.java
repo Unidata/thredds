@@ -30,9 +30,14 @@
  *   NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
  *   WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
  */
+
 package ucar.atd.dorade;
 
+import ucar.nc2.constants.CDM;
+import ucar.nc2.util.Misc;
+
 import java.io.*;
+import java.util.Arrays;
 
 class DoradeRADD extends DoradeDescriptor {
 
@@ -182,7 +187,7 @@ class DoradeRADD extends DoradeDescriptor {
     //
     // unpack
     //
-    radarName = new String(data, 8, 8).trim();
+    radarName = new String(data, 8, 8, CDM.utf8Charset).trim();
     radarConstant = grabFloat(data, 16);
     peakPower = grabFloat(data, 20);
     noisePower = grabFloat(data, 24);
@@ -264,39 +269,44 @@ class DoradeRADD extends DoradeDescriptor {
     }
   }
 
-
+  @Override
   public String toString() {
-    String s = "RADD\n";
-    s += "  radar name: " + radarName + "\n";
-    s += "  radar constant: " + radarConstant + "\n";
-    s += "  peak power: " + peakPower + "\n";
-    s += "  noise power: " + noisePower + "\n";
-    s += "  receiver gain: " + rcvrGain + "\n";
-    s += "  antenna gain: " + antennaGain + "\n";
-    s += "  system gain: " + systemGain + "\n";
-    s += "  beam width: " + hBeamWidth + "(H), " + vBeamWidth + "(V)\n";
-    s += "  radar type: " + radarTypes[radarTypeNdx].getName() + "\n";
-    s += "  scan mode: " + scanMode + "\n";
-    s += "  rotation velocity: " + rotVelocity + "\n";
-    s += "  scan params: " + scanParam0 + ", " + scanParam1 + "\n";
-    s += "  number of parameters: " + nParams + "\n";
-    s += "  additional descriptors: " + nAdditionalDescriptors + "\n";
-    s += "  compression scheme: " + compressionScheme + "\n";
-    s += "  data reduction method: " + dataReductionMethod + "\n";
-    s += "  reduction bounds: " + reductionBound0 + ", " +
-            reductionBound1 + "\n";
-    s += "  location: " + longitude + "/" + latitude + " @ " + altitude +
-            " km (MSL)\n";
-    s += "  unambiguous velocity: " + unambiguousVelocity + "\n";
-    s += "  unambiguous range: " + unambiguousRange + "\n";
-    s += "  frequencies: ";
-    for (int i = 0; i < nFrequencies; i++)
-      s += frequencies[i] + " ";
-    s += "\n";
-    s += "  PRTs: ";
-    for (int i = 0; i < nPRTs; i++)
-      s += PRTs[i] + " ";
-    return s;
+    final StringBuilder sb = new StringBuilder("DoradeRADD{");
+    sb.append("radarName='").append(radarName).append('\'');
+    sb.append(", radarConstant=").append(radarConstant);
+    sb.append(", peakPower=").append(peakPower);
+    sb.append(", noisePower=").append(noisePower);
+    sb.append(", rcvrGain=").append(rcvrGain);
+    sb.append(", antennaGain=").append(antennaGain);
+    sb.append(", systemGain=").append(systemGain);
+    sb.append(", hBeamWidth=").append(hBeamWidth);
+    sb.append(", vBeamWidth=").append(vBeamWidth);
+    sb.append(", radarTypeNdx=").append(radarTypeNdx);
+    sb.append(", scanMode=").append(scanMode);
+    sb.append(", rotVelocity=").append(rotVelocity);
+    sb.append(", scanParam0=").append(scanParam0);
+    sb.append(", scanParam1=").append(scanParam1);
+    sb.append(", nParams=").append(nParams);
+    sb.append(", nAdditionalDescriptors=").append(nAdditionalDescriptors);
+    sb.append(", compressionScheme=").append(compressionScheme);
+    sb.append(", dataReductionMethod=").append(dataReductionMethod);
+    sb.append(", reductionBound0=").append(reductionBound0);
+    sb.append(", reductionBound1=").append(reductionBound1);
+    sb.append(", longitude=").append(longitude);
+    sb.append(", latitude=").append(latitude);
+    sb.append(", altitude=").append(altitude);
+    sb.append(", unambiguousVelocity=").append(unambiguousVelocity);
+    sb.append(", unambiguousRange=").append(unambiguousRange);
+    sb.append(", nFrequencies=").append(nFrequencies);
+    sb.append(", nPRTs=").append(nPRTs);
+    sb.append(", frequencies=").append(Arrays.toString(frequencies));
+    sb.append(", PRTs=").append(Arrays.toString(PRTs));
+    sb.append(", myPARMs=").append(Arrays.toString(myPARMs));
+    sb.append(", myCELV=").append(myCELV);
+    sb.append(", myCFAC=").append(myCFAC);
+    sb.append(", nCells=").append(nCells);
+    sb.append('}');
+    return sb.toString();
   }
 
   /**
@@ -388,8 +398,7 @@ class DoradeRADD extends DoradeDescriptor {
     //
     for (int i = 2; i < cellRanges.length; i++) {
       float space = cellRanges[i] - cellRanges[i - 1];
-      if ((space != cellSpacing) &&
-              (Math.abs(space / cellSpacing - 1.0) > 0.01)) {
+      if (!Misc.closeEnough(space, cellSpacing) && (Math.abs(space / cellSpacing - 1.0) > 0.01)) {
         throw new DescriptorException("variable cell spacing");
       }
     }

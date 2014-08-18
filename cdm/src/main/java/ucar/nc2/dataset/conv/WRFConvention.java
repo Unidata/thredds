@@ -50,6 +50,7 @@ import ucar.unidata.geoloc.projection.*;
 import ucar.unidata.util.StringUtil2;
 
 import java.io.IOException;
+import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.util.*;
 
@@ -716,7 +717,7 @@ map_proj =  1: Lambert Conformal
     while (ii.hasNext()) {
       ii.setDoubleCurrent(Math.toDegrees(ii.getDoubleNext()));
     }
-    PrintWriter pw = new PrintWriter(System.out);
+    PrintWriter pw = new PrintWriter( new OutputStreamWriter(System.out, CDM.utf8Charset));
     NCdumpW.printArray(glatData, "GLAT", pw, null);
 
     Variable glon = ncd.findVariable("GLON");

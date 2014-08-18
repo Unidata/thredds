@@ -1545,7 +1545,7 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
   }
 
   // sort by coord sys, then name
-  private class VariableComparator implements java.util.Comparator {
+  private static class VariableComparator implements java.util.Comparator {
     public int compare(Object o1, Object o2) {
       VariableEnhanced v1 = (VariableEnhanced) o1;
       VariableEnhanced v2 = (VariableEnhanced) o2;

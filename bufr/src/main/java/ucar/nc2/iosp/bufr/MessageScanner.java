@@ -32,6 +32,7 @@
  */
 package ucar.nc2.iosp.bufr;
 
+import ucar.nc2.constants.CDM;
 import ucar.unidata.io.RandomAccessFile;
 import ucar.unidata.io.KMPMatch;
 
@@ -45,10 +46,11 @@ import java.nio.channels.WritableByteChannel;
  * @since May 9, 2008
  */
 public class MessageScanner {
-  static public final int MAX_MESSAGE_SIZE = 500 * 1000; // GTS allows up to 500 Kb messages (ref?)
+//  static public final int MAX_MESSAGE_SIZE = 500 * 1000; // GTS allows up to 500 Kb messages (ref?)
   static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(MessageScanner.class);
 
-  static private final KMPMatch matcher = new KMPMatch("BUFR".getBytes());
+  static private final KMPMatch matcher = new KMPMatch(
+          "BUFR".getBytes(CDM.utf8Charset));
 
   /**
    * is this a valid BUFR file.
@@ -64,8 +66,7 @@ public class MessageScanner {
     BufrIndicatorSection is = new BufrIndicatorSection(raf);
     if (is.getBufrEdition() > 4) return false;
     // if(is.getBufrLength() > MAX_MESSAGE_SIZE) return false;
-    if (is.getBufrLength() > raf.length()) return false;
-    return true;
+    return !(is.getBufrLength() > raf.length());
   }
 
   /////////////////////////////////
@@ -121,7 +122,12 @@ public class MessageScanner {
       header = new byte[sizeHeader];
       startPos = stop-sizeHeader;
       raf.seek(startPos);
-      raf.read(header);
+      int nRead = raf.read(header);
+      if (nRead != header.length) {
+          log.warn("Unable to read full BUFR header. Got " + nRead +
+                  " but expected " + header.length);
+          return false;
+      }
     }
     if (debug && countMsgs % 100 == 0) System.out.printf("%d ", countMsgs);
     return more;
@@ -250,7 +256,7 @@ public class MessageScanner {
       if (b >= 32 && b < 127)
         bb[count++] = b;
     }
-    return new String(bb, 0, count);
+    return new String(bb, 0, count, CDM.utf8Charset);
   }
 
   public long writeCurrentMessage( WritableByteChannel out) throws IOException {

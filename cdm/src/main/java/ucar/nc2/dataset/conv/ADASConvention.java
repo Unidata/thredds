@@ -124,8 +124,8 @@ public class ADASConvention extends CoordSysBuilder {
       parseInfo.format("ERROR: unknown projection type = %s%n", projName);
     }
 
-    if (debugProj) {
-      if (proj != null) System.out.println(" using LC " + proj.paramsToString());
+    if (debugProj && (proj != null)) {
+      System.out.println(" using LC " + proj.paramsToString());
       double lat_check = findAttributeDouble(ds, "CTRLAT", Double.NaN);
       double lon_check = findAttributeDouble(ds, "CTRLON", Double.NaN);
 

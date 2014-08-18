@@ -30,7 +30,10 @@
  *   NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
  *   WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
  */
+
 package ucar.atd.dorade;
+
+import ucar.nc2.constants.CDM;
 
 import java.io.RandomAccessFile;
 import java.util.Calendar;
@@ -62,7 +65,7 @@ class DoradeVOLD extends DoradeDescriptor {
         volNumber = grabShort(data, 10);
         maxRecLen = grabInt(data, 12);
 
-        projectName = new String(data, 16, 20).trim();
+        projectName = new String(data, 16, 20, CDM.utf8Charset).trim();
 
         Calendar calendar = Calendar.getInstance(TZ_UTC);
 

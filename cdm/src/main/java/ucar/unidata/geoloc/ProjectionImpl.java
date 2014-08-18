@@ -364,8 +364,8 @@ public abstract class ProjectionImpl implements Projection, java.io.Serializable
    * @param lon longitude of point to convert
    * @return ProjectionPointImpl convert to these projection coordinates
    */
-  public ProjectionPointImpl latLonToProj(double lat, double lon) {
-    return (ProjectionPointImpl) latLonToProj(new LatLonPointImpl(lat, lon));
+  public ProjectionPoint latLonToProj(double lat, double lon) {
+    return latLonToProj(new LatLonPointImpl(lat, lon));
   }
 
   /**
@@ -376,8 +376,8 @@ public abstract class ProjectionImpl implements Projection, java.io.Serializable
    * @param y y value to convert
    * @return LatLonPointImpl convert to these lat/lon coordinates
    */
-  public LatLonPointImpl projToLatLon(double x, double y) {
-    return (LatLonPointImpl) projToLatLon(new ProjectionPointImpl(x, y));
+  public LatLonPoint projToLatLon(double x, double y) {
+    return projToLatLon(new ProjectionPointImpl(x, y));
   }
 
   ///////////////////////////////////////////////////////////////////////////////////

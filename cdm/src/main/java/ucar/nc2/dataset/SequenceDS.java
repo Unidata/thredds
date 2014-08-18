@@ -58,7 +58,7 @@ public class SequenceDS extends StructureDS {
     return new StructureDataConverter(this, orgSeq.getStructureIterator(bufferSize));
   }
 
-  private class StructureDataConverter implements StructureDataIterator {
+  private static class StructureDataConverter implements StructureDataIterator {
     private StructureDataIterator orgIter;
     private SequenceDS newStruct;
     private int count = 0;

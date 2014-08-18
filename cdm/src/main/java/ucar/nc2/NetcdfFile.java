@@ -32,6 +32,7 @@
  */
 package ucar.nc2;
 
+import ucar.nc2.constants.CDM;
 import ucar.nc2.iosp.AbstractIOServiceProvider;
 import ucar.nc2.util.Indent;
 import ucar.nc2.util.EscapeStrings;
@@ -1293,7 +1294,7 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable, AutoClosea
    * @param strict if true, make it stricly CDL, otherwise, add a little extra info
    */
   public void writeCDL(OutputStream out, boolean strict) {
-    PrintWriter pw = new PrintWriter(new OutputStreamWriter(out));
+    PrintWriter pw = new PrintWriter(new OutputStreamWriter(out, CDM.utf8Charset));
     toStringStart(pw, strict);
     toStringEnd(pw);
     pw.flush();
@@ -1351,7 +1352,7 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable, AutoClosea
    * @see NCdumpW#writeNcML
    */
   public void writeNcML(java.io.OutputStream os, String uri) throws IOException {
-    NCdumpW.writeNcML(this, new OutputStreamWriter(os), false, uri);
+    NCdumpW.writeNcML(this, new OutputStreamWriter(os, CDM.utf8Charset), false, uri);
   }
 
   /**

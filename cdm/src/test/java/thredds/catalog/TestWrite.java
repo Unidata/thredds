@@ -49,10 +49,28 @@ public class TestWrite extends TestCase {
     InvCatalogImpl cat = TestCatalogAll.open( filename, true);
 
     // create a file and write it out
-    //File tmpDir = new File(TestAll.tmpDir);
-    //tmpDir.mkdir();
-    String fileOutName = TestCatalogAll.tmpDir+filename+".tmp";
+    File tmpDir = new File(TestCatalogAll.tmpDir);
+    if (!tmpDir.exists())
+      tmpDir.mkdir();
+
+    String fileOutName = TestCatalogAll.tmpDir + filename + ".tmp";
     System.out.println(" output filename= "+fileOutName);
+
+    File tmpFile = new File(fileOutName);
+    boolean ret;
+    if (tmpFile.exists()) {
+        System.out.println("output file exists!");
+        if (tmpFile.isDirectory()) {
+            System.out.println("output file is directory!");
+            ret = tmpFile.delete();
+            if (!ret) System.out.println("error deleting directory");
+        } else if (!tmpFile.canWrite()) {
+            System.out.println("cannot write to output file");
+            ret = tmpFile.setWritable(true);
+            if (!ret) System.out.println("error making file writable");
+        }
+    }
+
     try {
       OutputStream out = new BufferedOutputStream( new FileOutputStream( fileOutName));
       cat.writeXML( out);

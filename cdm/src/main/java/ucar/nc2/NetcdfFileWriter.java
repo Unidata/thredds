@@ -120,11 +120,11 @@ public class NetcdfFileWriter {
    * @throws java.io.IOException on I/O error
    */
   static public NetcdfFileWriter openExisting(String location) throws IOException {
-    return new NetcdfFileWriter(null, null, null, location, true, null); // dont know the version yet
+    return new NetcdfFileWriter(null, location, true, null); // dont know the version yet
   }
 
   static public NetcdfFileWriter createNew(Version version, String location) throws IOException {
-    return new NetcdfFileWriter(version, null, null, location, false, null);
+    return new NetcdfFileWriter(version, location, false, null);
   }
 
   /**
@@ -137,7 +137,7 @@ public class NetcdfFileWriter {
    * @throws IOException on I/O error
    */
   static public NetcdfFileWriter createNew(Version version, String location, Nc4Chunking chunker) throws IOException {
-    return new NetcdfFileWriter(version, null, null, location, false, chunker);
+    return new NetcdfFileWriter(version, location, false, chunker);
   }
 
   ////////////////////////////////////////////////////////////////////////////////
@@ -160,33 +160,36 @@ public class NetcdfFileWriter {
    * Open an existing or create a new Netcdf file
    *
    * @param version which kind of file to write, if null, use netcdf3 (isExisting= false) else open file and figure out the version
-   * @param iospw      IO service provider to use, if null use standard defined by version
-   * @param raf        Random access file to use, may be null if iospw is, otherwise must be opened read/write
    * @param location   open a new file at this location
    * @param isExisting true if file already exists
    * @param chunker    used only for netcdf4, or null for used only for netcdf4, or null for default chunking algorithm
    * @throws IOException on I/O error
    */
-  protected NetcdfFileWriter(Version version, IOServiceProviderWriter iospw, ucar.unidata.io.RandomAccessFile raf,
-                             String location, boolean isExisting, Nc4Chunking chunker) throws IOException {
+  protected NetcdfFileWriter(Version version, String location, boolean isExisting, Nc4Chunking chunker) throws IOException {
 
+    ucar.unidata.io.RandomAccessFile raf = null;
     if (isExisting) {
-      if (raf == null)
-        raf = new ucar.unidata.io.RandomAccessFile(location, "rw");
+      raf = new ucar.unidata.io.RandomAccessFile(location, "rw");
 
-      if (H5header.isValidFile(raf)) {
-        if (version != null && !version.isNetdf4format())
-          throw new IllegalArgumentException(location + " must be netcdf-4 file");
-        else version = Version.netcdf4;
+      try {
+        if (H5header.isValidFile(raf)) {
+          if (version != null && !version.isNetdf4format())
+            throw new IllegalArgumentException(location + " must be netcdf-4 file");
+          else version = Version.netcdf4;
 
-      } else if (N3header.isValidFile(raf)) {
-        if (version != null && version.isNetdf4format())
-          throw new IllegalArgumentException(location + " must be netcdf-3 file");
-        else version = Version.netcdf3;
+        } else if (N3header.isValidFile(raf)) {
+          if (version != null && (version != Version.netcdf3))
+            throw new IllegalArgumentException(location + " must be netcdf-3 file");
+          else version = Version.netcdf3;
 
-      } else {
+        } else {
+          raf.close();
+          throw new IllegalArgumentException(location + " must be netcdf-3 or netcdf-4 file");
+        }
+
+      } catch (IOException ioe) {
         raf.close();
-        throw new IllegalArgumentException(location + " must be netcdf-3 or netcdf-4 file");
+        throw ioe;
       }
 
     } else {
@@ -197,28 +200,24 @@ public class NetcdfFileWriter {
     this.version = version;
     this.location = location;
 
-    if (iospw == null) {
-      if (version.useJniIosp()) {
-        IOServiceProviderWriter spi;
-        try {
-          //  Nc4Iosp.setLibraryAndPath(path, name);
-          Class iospClass = this.getClass().getClassLoader().loadClass("ucar.nc2.jni.netcdf.Nc4Iosp");
-          Constructor<IOServiceProviderWriter> ctor = iospClass.getConstructor(Version.class);
-          spi = ctor.newInstance(version);
+    if (version.useJniIosp()) {
+      IOServiceProviderWriter spi;
+      try {
+        //  Nc4Iosp.setLibraryAndPath(path, name);
+        Class iospClass = this.getClass().getClassLoader().loadClass("ucar.nc2.jni.netcdf.Nc4Iosp");
+        Constructor<IOServiceProviderWriter> ctor = iospClass.getConstructor(Version.class);
+        spi = ctor.newInstance(version);
 
-          Method method = iospClass.getMethod("setChunker", Nc4Chunking.class);
-          method.invoke(spi, chunker);
-        } catch (Throwable e) {
-          throw new IllegalArgumentException("ucar.nc2.jni.netcdf.Nc4Iosp failed, cannot use version " + version, e);
-        }
-        spiw = spi;
-      } else {
-        spiw = new N3raf();
+        Method method = iospClass.getMethod("setChunker", Nc4Chunking.class);
+        method.invoke(spi, chunker);
+      } catch (Throwable e) {
+        throw new IllegalArgumentException("ucar.nc2.jni.netcdf.Nc4Iosp failed, cannot use version " + version, e);
       }
-
+      spiw = spi;
     } else {
-      spiw = iospw;
+      spiw = new N3raf();
     }
+
 
     this.ncfile = new NetcdfFile(spiw, location);  // package private
     if (isExisting)

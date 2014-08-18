@@ -456,12 +456,10 @@ public class NUWGConvention extends CoordSysBuilder {
     }
   }
 
-  private class NavInfoList extends ArrayList<NavInfo> {
+  private static class NavInfoList extends ArrayList<NavInfo> {
 
     public NavInfo findInfo( String name) {
-      Iterator iter = iterator();
-      while (iter.hasNext()) {
-        NavInfo nav = (NavInfo) iter.next();
+      for (NavInfo nav : this) {
         if (name.equalsIgnoreCase(nav.getName()))
           return nav;
       }
