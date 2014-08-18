@@ -50,14 +50,8 @@ import java.util.*;
  * @since 8/10/11
  */
 public class WmoXmlReader {
-  static private org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(WmoXmlReader.class);
-
   public enum Version {
     BUFR_14_1_0, BUFR_14_2_0, BUFR_15_1_1, BUFR_16_0_0, BUFR_WMO;
-
-    String getResourceName() {
-      return "/resources/grib/wmo/" + this.name() + "_codeflag_E.xml";
-    }
 
     String[] getElemNamesB() {
       if (this == BUFR_14_1_0) {
@@ -233,7 +227,7 @@ public class WmoXmlReader {
         y = xy % 1000;
 
       } catch (NumberFormatException e) {
-        System.out.printf(" key %s name '%s' has bad scale='%s'%n", fxy, name, s);
+        System.out.printf(" key %s name '%s' fails parsing %n", fxy, name);
       }
 
       try {

@@ -72,7 +72,8 @@ public class TestWrite extends TestCase {
     }
 
     try {
-      OutputStream out = new BufferedOutputStream( new FileOutputStream( fileOutName));
+      OutputStream out = new BufferedOutputStream(
+              new FileOutputStream(tmpFile));
       cat.writeXML( out);
       out.close();
     } catch (IOException ioe) {
