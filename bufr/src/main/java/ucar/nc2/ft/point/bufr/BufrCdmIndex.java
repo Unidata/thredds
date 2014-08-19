@@ -41,6 +41,7 @@ import ucar.unidata.io.RandomAccessFile;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.charset.Charset;
 import java.util.*;
 
 /**
@@ -247,7 +248,7 @@ public class BufrCdmIndex {
       raf.seek(0);
 
       //// header message
-      if (!NcStream.readAndTest(raf, MAGIC_START.getBytes())) {
+      if (!NcStream.readAndTest(raf, MAGIC_START.getBytes(Charset.forName("UTF-8")))) {
         log.error("BufrCdmIndex {}: invalid index", raf.getLocation());
         return false;
       }

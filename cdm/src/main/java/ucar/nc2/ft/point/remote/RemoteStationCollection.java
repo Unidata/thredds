@@ -53,7 +53,7 @@ public class RemoteStationCollection extends StationTimeSeriesCollectionImpl {
       NcStream.readFully(in, b);
       PointStreamProto.StationList stationsp = PointStreamProto.StationList.parseFrom(b);
       for (ucar.nc2.ft.point.remote.PointStreamProto.Station sp : stationsp.getStationsList()) {
-        Station s = new StationImpl(sp.getId(), sp.getDesc(), sp.getWmoId(), sp.getLat(), sp.getLon(), sp.getAlt());
+//        Station s = new StationImpl(sp.getId(), sp.getDesc(), sp.getWmoId(), sp.getLat(), sp.getLon(), sp.getAlt());
         stationHelper.addStation(new RemoteStationFeatureImpl(null, null));    // LOOK WRONG
       }
       return stationHelper;
@@ -61,6 +61,7 @@ public class RemoteStationCollection extends StationTimeSeriesCollectionImpl {
   }
 
   // note this assumes that a PointFeature is-a StationPointFeature
+  @Override
   public Station getStation(PointFeature feature) throws IOException {
     StationPointFeature stationFeature = (StationPointFeature) feature; // LOOK probably will fail here
     return stationFeature.getStation();
@@ -74,7 +75,7 @@ public class RemoteStationCollection extends StationTimeSeriesCollectionImpl {
   @Override
   public StationTimeSeriesFeatureCollection subset(List<Station> stations) throws IOException {
     if (stations == null) return this;
-    List<StationFeature> subset = getStationHelper().getStationFeatures(stations);
+//    List<StationFeature> subset = getStationHelper().getStationFeatures(stations);
     return new RemoteStationCollectionSubset(this, null, null); // LOOK WRONG
   }
 
@@ -93,7 +94,7 @@ public class RemoteStationCollection extends StationTimeSeriesCollectionImpl {
   }
 
   private class QueryByStationList implements QueryMaker {
-
+    @Override
     public String makeQuery() {
       StringBuilder query = new StringBuilder("stns=");
       for (Station s : getStationHelper().getStations()) {
@@ -179,6 +180,7 @@ public class RemoteStationCollection extends StationTimeSeriesCollectionImpl {
     }
 
     // an iterator over the observations for this station
+    @Override
     public PointFeatureIterator getPointFeatureIterator(int bufferSize) throws IOException {
       String query = PointDatasetRemote.makeQuery("stn=" + s.getName(), null, dateRange);
 
@@ -211,5 +213,4 @@ public class RemoteStationCollection extends StationTimeSeriesCollectionImpl {
       }
     }
   }
-
 }

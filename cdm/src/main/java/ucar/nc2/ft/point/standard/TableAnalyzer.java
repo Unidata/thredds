@@ -33,22 +33,25 @@
 
 package ucar.nc2.ft.point.standard;
 
-import ucar.nc2.*;
-import ucar.nc2.constants.CDM;
-import ucar.nc2.ft.FeatureDatasetFactoryManager;
-import ucar.nc2.ft.point.standard.plug.*;
-import ucar.nc2.dataset.*;
-import ucar.nc2.constants.FeatureType;
-import ucar.nc2.constants.AxisType;
-
-import java.util.*;
-import java.io.IOException;
-import java.lang.reflect.Method;
-
-import org.jdom2.output.XMLOutputter;
-import org.jdom2.output.Format;
 import org.jdom2.Document;
 import org.jdom2.Element;
+import org.jdom2.output.Format;
+import org.jdom2.output.XMLOutputter;
+import ucar.nc2.Dimension;
+import ucar.nc2.NetcdfFile;
+import ucar.nc2.Structure;
+import ucar.nc2.Variable;
+import ucar.nc2.constants.AxisType;
+import ucar.nc2.constants.CDM;
+import ucar.nc2.constants.FeatureType;
+import ucar.nc2.dataset.CoordinateAxis;
+import ucar.nc2.dataset.NetcdfDataset;
+import ucar.nc2.ft.FeatureDatasetFactoryManager;
+import ucar.nc2.ft.point.standard.plug.*;
+
+import java.io.IOException;
+import java.lang.reflect.Method;
+import java.util.*;
 
 /**
  * Analyzes the coordinate systems of a dataset to try to identify the Feature Type and the
@@ -605,7 +608,7 @@ public class TableAnalyzer {
 
   public void getDetailInfo(java.util.Formatter sf) {
     sf.format("-----------------------------------------------------%nTableAnalyzer on Dataset %s%n", ds.getLocation());
-    if (tc != null) sf.format(" TableAnalyser = %s%n", tc.getClass().getName());
+    sf.format(" TableAnalyser = %s%n", getName());
     showNestedTables(sf);
     String errlogS = errlog.toString();
     if (errlogS.length() > 0)
@@ -624,7 +627,7 @@ public class TableAnalyzer {
   private void writeConfigXML(java.util.Formatter sf) throws IOException {
     if (configResult != null) {
         PointConfigXML tcx = new PointConfigXML();
-        tcx.writeConfigXML(configResult, tc.getClass().getName(), sf);
+        tcx.writeConfigXML(configResult, getName(), sf);
         return;
     }
     XMLOutputter fmt = new XMLOutputter( Format.getPrettyFormat());
@@ -638,8 +641,7 @@ public class TableAnalyzer {
     Element rootElem = new Element("featureDataset");
     Document doc = new Document(rootElem);
     rootElem.setAttribute("location", ds.getLocation());
-    if (tc != null)
-      rootElem.addContent( new Element("analyser").setAttribute("class", tc.getClass().getName()));
+    rootElem.addContent( new Element("analyser").setAttribute("class", getName()));
     if (ft != null)
       rootElem.setAttribute("featureType", ft.toString());
 

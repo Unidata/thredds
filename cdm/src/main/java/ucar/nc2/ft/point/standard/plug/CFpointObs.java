@@ -609,7 +609,7 @@ public class CFpointObs extends TableConfigurerImpl {
 
   /////////////////////////////////////////////////////////////////////
 
-  protected class EncodingInfo {
+  protected static class EncodingInfo {
     Encoding encoding;
     VariableDS lat, lon, alt, time;
     Dimension parentDim, childDim, grandChildDim;
@@ -1270,7 +1270,7 @@ public class CFpointObs extends TableConfigurerImpl {
     tableConfig.featureType = ftype;
 
     if (info.encoding != Encoding.single) {
-      tableConfig.dimName = info.parentDim.getShortName();
+      tableConfig.dimName = name;
       Structure parent = info.parentStruct;
       if (parent == null) {
         switch (info.encoding) {
@@ -1305,7 +1305,7 @@ public class CFpointObs extends TableConfigurerImpl {
     tableConfig.featureType = ftype;
 
     if (info.encoding != Encoding.single) {
-      tableConfig.dimName = info.parentDim.getShortName();
+      tableConfig.dimName = name;
       makeStructureInfo(tableConfig, ds, null, info.parentDim);
     }
 

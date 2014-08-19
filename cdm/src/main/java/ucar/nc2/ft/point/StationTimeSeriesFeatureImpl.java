@@ -70,10 +70,12 @@ public abstract class StationTimeSeriesFeatureImpl extends PointCollectionImpl i
     setBoundingBox( new LatLonRect(s.getLatLon(), .0001, .0001));
   }
 
+  @Override
   public String getWmoId() {
     return s.getWmoId();
   }
 
+  @Override
   public int size() {
     return npts;
   }
@@ -82,30 +84,37 @@ public abstract class StationTimeSeriesFeatureImpl extends PointCollectionImpl i
     this.npts = npts;
   }
 
+  @Override
   public String getName() {
     return s.getName();
   }
 
+  @Override
   public String getDescription() {
     return s.getDescription();
   }
 
+  @Override
   public double getLatitude() {
     return s.getLatitude();
   }
 
+  @Override
   public double getLongitude() {
     return s.getLongitude();
   }
 
+  @Override
   public double getAltitude() {
     return s.getAltitude();
   }
 
+  @Override
   public LatLonPoint getLatLon() {
     return s.getLatLon();
   }
 
+  @Override
   public boolean isMissing() {
     return Double.isNaN(getLatitude()) || Double.isNaN(getLongitude());
   }
@@ -115,6 +124,7 @@ public abstract class StationTimeSeriesFeatureImpl extends PointCollectionImpl i
     return FeatureType.STATION;
   }
 
+  @Override
   public DateUnit getTimeUnit() {
       return timeUnit;
   }
@@ -128,21 +138,42 @@ public abstract class StationTimeSeriesFeatureImpl extends PointCollectionImpl i
         '}';
   }
 
+  @Override
   public StationTimeSeriesFeature subset(CalendarDateRange dateRange) throws IOException {
     if (dateRange == null) return this;
     return new StationFeatureSubset(this, dateRange);
   }
 
+  @Override
   public StationTimeSeriesFeature subset(DateRange dateRange) throws IOException {
     if (dateRange == null) return this;
     return new StationFeatureSubset(this, CalendarDateRange.of(dateRange));
   }
 
+  @Override
   public int compareTo(Station so) {
     return name.compareTo( so.getName());
   }
 
-  private class StationFeatureSubset extends StationTimeSeriesFeatureImpl {
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) {
+      return true;
+    }
+    if (!(o instanceof StationTimeSeriesFeatureImpl)) {
+      return false;
+    }
+
+    StationTimeSeriesFeatureImpl that = (StationTimeSeriesFeatureImpl) o;
+    return name.equals(that.name);
+  }
+
+  @Override
+  public int hashCode() {
+    return name.hashCode();
+  }
+
+  private static class StationFeatureSubset extends StationTimeSeriesFeatureImpl {
     StationTimeSeriesFeatureImpl from;
 
     StationFeatureSubset(StationTimeSeriesFeatureImpl from, CalendarDateRange filter_date) {
@@ -156,6 +187,7 @@ public abstract class StationTimeSeriesFeatureImpl extends PointCollectionImpl i
       }
     }
 
+    @Override
     public PointFeatureIterator getPointFeatureIterator(int bufferSize) throws IOException {
       return new PointIteratorFiltered(from.getPointFeatureIterator(bufferSize), null, this.dateRange);
     }
@@ -164,6 +196,5 @@ public abstract class StationTimeSeriesFeatureImpl extends PointCollectionImpl i
      public StructureData getFeatureData() throws IOException {
        return from.getFeatureData();
      }
-
   }
 }

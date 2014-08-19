@@ -183,7 +183,7 @@ public class Madis extends TableConfigurerImpl  {
     return null;
   }
 
-  protected class VNames {
+  protected static class VNames {
     String lat, lon, elev, obsTime, nominalTime;
     String stnId, stnDesc;
   }

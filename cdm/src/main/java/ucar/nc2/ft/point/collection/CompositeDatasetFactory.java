@@ -105,7 +105,6 @@ public class CompositeDatasetFactory {
   }
 
   private static class CompositePointDataset extends PointDatasetImpl implements UpdateableCollection  {
-    private TimedCollection datasets;
     private FeatureCollection pfc;
     private List<Attribute> globalAttributes;
 
@@ -116,7 +115,6 @@ public class CompositeDatasetFactory {
       setPointFeatureCollection(pfc);
 
       this.pfc = pfc;
-      this.datasets = datasets;
       this.dateRange = datasets.getDateRange();
 
       if (datasets.getDateRange() != null)
