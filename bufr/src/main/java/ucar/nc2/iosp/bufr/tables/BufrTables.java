@@ -1298,7 +1298,8 @@ public class BufrTables {
    */
   static private void readEcmwfTableD(InputStream ios, TableD t) throws IOException {
 
-    BufferedReader dataIS = new BufferedReader(new InputStreamReader(ios));
+    BufferedReader dataIS = new BufferedReader(new InputStreamReader(ios,
+            CDM.utf8Charset));
 
     TableD.Descriptor currDesc = null;
 

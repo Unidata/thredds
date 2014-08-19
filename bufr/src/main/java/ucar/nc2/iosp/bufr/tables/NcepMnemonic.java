@@ -63,7 +63,6 @@ public class NcepMnemonic {
   /**
    * Pattern to get 3 integers from beginning of line.
    */
-  private static final Pattern ints0123 = Pattern.compile("^(0|1|2|3)");
   private static final Pattern ints6 = Pattern.compile("^\\d{6}");
 
   private static final int XlocalCutoff = 48;
@@ -199,9 +198,6 @@ public class NcepMnemonic {
         }
 
         String fxy = number.get(key);
-        String F = fxy.substring(0, 1);
-        if (F.equals("A"))
-          F = "3";
         String X = removeLeading0(fxy.substring(1, 3));
         String Y = removeLeading0(fxy.substring(3));
         // these are in latest tables
@@ -277,7 +273,6 @@ public class NcepMnemonic {
             continue;
           } else if (number.containsKey(m.group(1).trim())) { // add descriptor to tableB
             String fxy = number.get(m.group(1).trim());
-            String F = fxy.substring(0, 1);
             String X = fxy.substring(1, 3);
             String Y = fxy.substring(3);
             String mnu = m.group(1).trim();
