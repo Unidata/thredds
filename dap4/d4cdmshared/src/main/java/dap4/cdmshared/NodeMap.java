@@ -46,18 +46,18 @@ public class NodeMap
     public NodeMap() {};
 
     //////////////////////////////////////////////////
-    // Override the node's hashCode for subclasses of CDMNode.
-
-    int localhash(CDMNode node) {return ((Object)node).hashCode();}
-
-    //////////////////////////////////////////////////
     // Accessors
 
-    public DapNode get(CDMNode node) {return dapmap.get(localhash(node));}
+    public DapNode get(CDMNode cdmnode)
+    {
+        cdmnode = CDMNode.unwrap(cdmnode);
+        int lh = cdmnode.localhash();
+        return dapmap.get(lh);
+    }
 
     public CDMNode get(DapNode node) {return cdmmap.get(node);}
 
-    public boolean containsKey(CDMNode node) {return dapmap.containsKey(localhash(node));}
+    public boolean containsKey(CDMNode node) {return dapmap.containsKey(node.localhash());}
 
     public boolean containsKey(DapNode node) {return cdmmap.containsKey(node);}
 
@@ -70,7 +70,9 @@ public class NodeMap
     public void put(DapNode dapnode, CDMNode cdmnode)
     {
         assert(dapnode != null && cdmnode != null);
-        dapmap.put(localhash(cdmnode),dapnode);
+        cdmnode = CDMNode.unwrap(cdmnode);
+        int lh = cdmnode.localhash();
+        dapmap.put(lh,dapnode);
         cdmmap.put(dapnode,cdmnode);
     }
 
@@ -83,7 +85,8 @@ public class NodeMap
     public void remove(DapNode dapnode, CDMNode cdmnode)
     {
         assert(dapnode != null && cdmnode != null);
-        dapmap.remove(localhash(cdmnode));
+        cdmnode = CDMNode.unwrap(cdmnode);
+        dapmap.remove(cdmnode.localhash());
         cdmmap.remove(dapnode);
     }
 
