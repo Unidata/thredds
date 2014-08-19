@@ -31,6 +31,7 @@
  */
 package ucar.nc2.ft.point.collection;
 
+import com.google.common.base.Preconditions;
 import thredds.inventory.TimedCollection;
 import ucar.ma2.StructureData;
 import ucar.nc2.Attribute;
@@ -59,36 +60,30 @@ public class CompositeStationCollection extends StationTimeSeriesCollectionImpl 
   protected List<VariableSimpleIF> dataVariables;
   protected List<Attribute> globalAttributes;
 
-  protected CompositeStationCollection(String name, DateUnit timeUnit, String altUnits, TimedCollection dataCollection,
-                                       List<StationFeature> stns, List<VariableSimpleIF> dataVariables) throws IOException {
+  protected CompositeStationCollection(
+          String name, DateUnit timeUnit, String altUnits, TimedCollection dataCollection) throws IOException {
     super(name, timeUnit, altUnits);
     this.dataCollection = dataCollection;
     TimedCollection.Dataset td = dataCollection.getPrototype();
     if (td == null)
       throw new RuntimeException("No datasets in the collection");
-
-    if ((stns != null) && (stns.size() > 0)) {
-      stationHelper = new StationHelper();
-      for (StationFeature s : stns)
-        stationHelper.addStation(new CompositeStationFeature(s, timeUnit, altUnits, s.getFeatureData(), this.dataCollection));
-    }
-
-    this.dataVariables = dataVariables;
   }
 
   @Override
-  protected StationHelper initStationHelper() {
+  protected StationHelper createStationHelper() throws IOException {
     TimedCollection.Dataset td = dataCollection.getPrototype();
     if (td == null)
       throw new RuntimeException("No datasets in the collection");
 
     Formatter errlog = new Formatter();
-    try (FeatureDatasetPoint openDataset = (FeatureDatasetPoint) FeatureDatasetFactoryManager.open(FeatureType.STATION, td.getLocation(), null, errlog)) {
+    try (FeatureDatasetPoint openDataset = (FeatureDatasetPoint) FeatureDatasetFactoryManager.open(
+            FeatureType.STATION, td.getLocation(), null, errlog)) {
+      StationHelper stationHelper = new StationHelper();
 
       List<FeatureCollection> fcList = openDataset.getPointFeatureCollectionList();
       StationTimeSeriesCollectionImpl openCollection = (StationTimeSeriesCollectionImpl) fcList.get(0);
       List<Station> stns = openCollection.getStations();
-      stationHelper = new StationHelper();
+
       for (Station s : stns) {
         StationTimeSeriesFeature stnFeature = openCollection.getStationFeature(s);
         stationHelper.addStation(new CompositeStationFeature(s, timeUnit, altUnits, stnFeature.getFeatureData(), this.dataCollection));
@@ -96,21 +91,18 @@ public class CompositeStationCollection extends StationTimeSeriesCollectionImpl 
 
       dataVariables = openDataset.getDataVariables();
       globalAttributes = openDataset.getGlobalAttributes();
-      return stationHelper;
 
-    } catch (Exception ioe) {
-      throw new RuntimeException(td.getLocation(), ioe);
+      return stationHelper;
     }
   }
 
   public List<VariableSimpleIF> getDataVariables() {
-    if (dataVariables == null) initStationHelper();
-
+    getStationHelper();  // dataVariables gets initialized when stationHelper does. Bit of a kludge.
     return dataVariables;
   }
 
   public List<Attribute> getGlobalAttributes() {
-    if (globalAttributes == null) initStationHelper();
+    getStationHelper();  // globalAttributes gets initialized when stationHelper does. Bit of a kludge.
     return globalAttributes;
   }
 
@@ -124,21 +116,27 @@ public class CompositeStationCollection extends StationTimeSeriesCollectionImpl 
 
   @Override
   public StationTimeSeriesFeatureCollection subset(List<Station> stations) throws IOException {
-    if (stations == null) return this;
-    List<StationFeature> subset = stationHelper.getStationFeatures(stations);
-    return new CompositeStationCollection(getName(), getTimeUnit(), getAltUnits(), dataCollection, subset, dataVariables);
+    if (stations == null) {
+      return this;
+    } else {
+      List<StationFeature> subset = getStationHelper().getStationFeatures(stations);
+      return new CompositeStationCollectionSubset(this, subset);
+    }
   }
 
   @Override
   public StationTimeSeriesFeatureCollection subset(ucar.unidata.geoloc.LatLonRect boundingBox) throws IOException {
-    if (boundingBox == null) return this;
-    List<StationFeature> subset = stationHelper.getStationFeatures(boundingBox);
-    return new CompositeStationCollection(getName(), getTimeUnit(), getAltUnits(), dataCollection, subset, dataVariables);
+    if (boundingBox == null) {
+      return this;
+    } else {
+      List<StationFeature> subset = getStationHelper().getStationFeatures(boundingBox);
+      return new CompositeStationCollectionSubset(this, subset);
+    }
   }
 
   @Override
   public StationTimeSeriesFeature getStationFeature(Station s) throws IOException {
-    StationFeature stnFeature = stationHelper.getStationFeature(s);
+    StationFeature stnFeature = getStationHelper().getStationFeature(s);
     return new CompositeStationFeature(stnFeature, timeUnit, altUnits, stnFeature.getFeatureData(), dataCollection);
   }
 
@@ -156,6 +154,34 @@ public class CompositeStationCollection extends StationTimeSeriesCollectionImpl 
     return new CompositeStationCollectionFlattened(getName(), getTimeUnit(), getAltUnits(), stations, dateRange, varList, subsetCollection);
   }
 
+
+  private static class CompositeStationCollectionSubset extends CompositeStationCollection {
+    private final CompositeStationCollection from;
+    private final List<StationFeature> stationFeats;
+
+    private CompositeStationCollectionSubset(CompositeStationCollection from, List<StationFeature> stationFeats)
+            throws IOException {
+      super(from.getName(), from.getTimeUnit(), from.getAltUnits(), from.dataCollection);
+      this.from = Preconditions.checkNotNull(from, "from == null");
+
+      Preconditions.checkArgument(stationFeats != null && !stationFeats.isEmpty(),
+              "stationFeats == null || stationFeats.isEmpty(): %s", stationFeats);
+      this.stationFeats = stationFeats;
+    }
+
+    @Override
+    protected StationHelper createStationHelper() throws IOException {
+      StationHelper stationHelper = new StationHelper();
+
+      for (StationFeature stationFeat : this.stationFeats) {
+        stationHelper.addStation(new CompositeStationFeature(
+                stationFeat, timeUnit, altUnits, stationFeat.getFeatureData(), from.dataCollection));
+      }
+
+      return stationHelper;
+    }
+  }
+
   //////////////////////////////////////////////////////////
   // the iterator over StationTimeSeriesFeature objects
   // problematic - since each station will independently iterate over the datasets.
@@ -166,7 +192,7 @@ public class CompositeStationCollection extends StationTimeSeriesCollectionImpl 
 
     // an anonymous class iterating over the stations
     return new PointFeatureCollectionIterator() {
-      Iterator<Station> stationIter = stationHelper.getStations().iterator();
+      Iterator<Station> stationIter = getStationHelper().getStations().iterator();
 
       @Override
       public boolean hasNext() throws IOException {

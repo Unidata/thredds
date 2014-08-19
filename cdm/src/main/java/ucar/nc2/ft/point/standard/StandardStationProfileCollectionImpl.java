@@ -33,18 +33,18 @@
 
 package ucar.nc2.ft.point.standard;
 
-import ucar.nc2.ft.point.*;
-import ucar.nc2.ft.*;
-import ucar.nc2.units.DateUnit;
 import ucar.ma2.StructureData;
 import ucar.ma2.StructureDataIterator;
+import ucar.nc2.ft.*;
+import ucar.nc2.ft.point.*;
+import ucar.nc2.units.DateUnit;
 import ucar.unidata.geoloc.Station;
 
 import java.io.IOException;
-import java.util.Iterator;
-import java.util.Date;
-import java.util.List;
 import java.util.ArrayList;
+import java.util.Date;
+import java.util.Iterator;
+import java.util.List;
 
 /**
  * Object Heirarchy:
@@ -66,23 +66,20 @@ public class StandardStationProfileCollectionImpl extends StationProfileCollecti
   }
 
   @Override
-  protected StationHelper initStationHelper() {
+  protected StationHelper createStationHelper() throws IOException {
+    StationHelper stationHelper = new StationHelper();
+    StructureDataIterator siter = ft.getStationDataIterator(-1);
     try {
-      stationHelper = new StationHelper();
-      StructureDataIterator siter = ft.getStationDataIterator(-1);
-      try {
-        while (siter.hasNext()) {
-          StructureData stationData = siter.next();
-          StationFeature s = makeStation(stationData, siter.getCurrentRecno());
-          if (s != null)
-            stationHelper.addStation(s);
-        }
-      } finally {
-        siter.finish();
+      while (siter.hasNext()) {
+        StructureData stationData = siter.next();
+        StationFeature s = makeStation(stationData, siter.getCurrentRecno());
+        if (s != null)
+          stationHelper.addStation(s);
       }
-    } catch (IOException ioe) {
-      throw new RuntimeException(ioe);
+    } finally {
+      siter.finish();
     }
+
     return stationHelper;
   }
 
@@ -260,7 +257,7 @@ public class StandardStationProfileCollectionImpl extends StationProfileCollecti
     }
   }
 
-  private class StandardProfileFeatureIterator extends StandardPointFeatureIterator {
+  private static class StandardProfileFeatureIterator extends StandardPointFeatureIterator {
 
     StandardProfileFeatureIterator(NestedTable ft, DateUnit timeUnit, StructureDataIterator structIter, Cursor cursor) throws IOException {
       super(ft, timeUnit, structIter, cursor);
@@ -273,5 +270,4 @@ public class StandardStationProfileCollectionImpl extends StationProfileCollecti
       return ft.isAltMissing(this.cursor);
     }
   }
-
 }
