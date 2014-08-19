@@ -635,7 +635,7 @@ public class BufrTables {
           String units = "";
           line = dataIS.readLine();
           if (line != null)
-              WmoXmlReader.cleanUnit(line);
+              units = WmoXmlReader.cleanUnit(line);
 
           int scale = 0, refVal = 0, width = 0;
           line = dataIS.readLine();
