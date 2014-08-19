@@ -35,7 +35,10 @@ package ucar.nc2.ft.point.bufr;
 
 import org.jdom2.Element;
 import ucar.ma2.*;
-import ucar.nc2.*;
+import ucar.nc2.Attribute;
+import ucar.nc2.Structure;
+import ucar.nc2.Variable;
+import ucar.nc2.VariableSimpleIF;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dataset.SequenceDS;
@@ -52,7 +55,6 @@ import ucar.nc2.util.CancelTask;
 import ucar.nc2.util.Indent;
 import ucar.unidata.geoloc.EarthLocation;
 import ucar.unidata.geoloc.LatLonRect;
-import ucar.unidata.geoloc.Station;
 
 import java.io.File;
 import java.io.IOException;
@@ -189,12 +191,10 @@ public class BufrFeatureDatasetFactory implements FeatureDatasetFactory {
       }
 
       @Override
-      protected StationHelper initStationHelper() {
-        if (stationHelper == null) {
-          stationHelper = new StationHelper();
-          for (BufrCdmIndexProto.Station s : index.stations)
-            stationHelper.addStation(new BufrStation(s));
-        }
+      protected StationHelper createStationHelper() throws IOException {
+        StationHelper stationHelper = new StationHelper();
+        for (BufrCdmIndexProto.Station s : index.stations)
+          stationHelper.addStation(new BufrStation(s));
 
         return stationHelper;
       }
@@ -216,8 +216,6 @@ public class BufrFeatureDatasetFactory implements FeatureDatasetFactory {
 
         // iterates over the records for this station
         public class BufrStationIterator extends PointIteratorFromStructureData {
-          int countRecords = 0;
-
           public BufrStationIterator(StructureDataIterator structIter, PointFeatureIterator.Filter filter) throws IOException {
             super(structIter, filter);
           }
@@ -268,8 +266,8 @@ public class BufrFeatureDatasetFactory implements FeatureDatasetFactory {
           super("BufrPointFeatureCollection", bufrDateUnits, bufrAltUnits);
           setBoundingBox(boundingBox);
           setCalendarDateRange(dateRange);
-          initStationHelper();
-          stationsWanted = stationHelper.subset(boundingBox);
+          createStationHelper();
+          stationsWanted = getStationHelper().subset(boundingBox);
           if (dateRange != null) filter = new PointIteratorAbstract.Filter(null, dateRange);
         }
 
@@ -333,7 +331,7 @@ public class BufrFeatureDatasetFactory implements FeatureDatasetFactory {
     }
   }
 
-  private class Action {
+  private static class Action {
     BufrCdmIndexProto.FldAction what;
     private Action(BufrCdmIndexProto.FldAction what) {
       this.what = what;

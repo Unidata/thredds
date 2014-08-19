@@ -48,45 +48,59 @@ import java.io.IOException;
  * @since Mar 20, 2008
  */
 public abstract class StationProfileCollectionImpl extends MultipleNestedPointCollectionImpl implements StationProfileFeatureCollection {
-
-  protected StationHelper stationHelper;
+  private volatile StationHelper stationHelper;
   protected NestedPointFeatureCollectionIterator localIterator;
 
   public StationProfileCollectionImpl(String name, DateUnit timeUnit, String altUnits) {
     super( name, timeUnit, altUnits, FeatureType.STATION_PROFILE);
   }
 
-  protected abstract StationHelper initStationHelper(); // allow station helper to be defered initialization
+  // Double-check idiom for lazy initialization of instance fields. See Effective Java 2nd Ed, p. 283.
+  protected StationHelper getStationHelper() {
+    if (stationHelper == null) {
+      synchronized (this) {
+        if (stationHelper == null) {
+          try {
+            stationHelper = createStationHelper();
+          } catch (IOException e) {
+            // The methods that will call getStationHelper() aren't declared to throw IOException, so we must
+            // wrap it in an unchecked exception.
+            throw new RuntimeException(e);
+          }
+        }
+      }
+    }
+
+    assert stationHelper != null : "We screwed this up.";
+    return stationHelper;
+  }
+
+  // Allow StationHelper to be lazily initialized.
+  protected abstract StationHelper createStationHelper() throws IOException;
 
   @Override
   public List<StationFeature> getStationFeatures() throws IOException {
-    if (stationHelper == null) stationHelper = initStationHelper();
-    return stationHelper.getStationFeatures();
+    return getStationHelper().getStationFeatures();
   }
 
   public List<Station> getStations() {
-    if (stationHelper == null) stationHelper = initStationHelper();
-    return stationHelper.getStations();
+    return getStationHelper().getStations();
   }
 
   public List<Station> getStations(List<String> stnNames) {
-    if (stationHelper == null) stationHelper = initStationHelper();
-    return stationHelper.getStations(stnNames);
+    return getStationHelper().getStations(stnNames);
   }
 
   public List<Station> getStations(LatLonRect boundingBox) throws IOException {
-    if (stationHelper == null) stationHelper = initStationHelper();
-    return stationHelper.getStations(boundingBox);
+    return getStationHelper().getStations(boundingBox);
   }
 
   public Station getStation(String name) {
-    if (stationHelper == null) stationHelper = initStationHelper();
-    return stationHelper.getStation(name);
+    return getStationHelper().getStation(name);
   }
 
   public LatLonRect getBoundingBox() {
-    if (stationHelper == null) stationHelper = initStationHelper();
-    return stationHelper.getBoundingBox();
+    return getStationHelper().getBoundingBox();
   }
 
   public StationProfileCollectionImpl subset(List<Station> stations) throws IOException {
@@ -123,19 +137,20 @@ public abstract class StationProfileCollectionImpl extends MultipleNestedPointCo
     return name.compareTo( so.getName());
   }
 
-    // LOOK subset by filtering on the stations, but it would be easier if we could get the StationFeature from the Station
-  private class StationProfileFeatureCollectionSubset extends StationProfileCollectionImpl {
-    StationProfileCollectionImpl from;
+  // LOOK subset by filtering on the stations, but it would be easier if we could get the StationFeature from the Station
+  private static class StationProfileFeatureCollectionSubset extends StationProfileCollectionImpl {
+    private final StationProfileCollectionImpl from;
+    private final List<Station> stations;
 
     StationProfileFeatureCollectionSubset(StationProfileCollectionImpl from, List<Station> stations) throws IOException {
       super( from.getName(), from.getTimeUnit(), from.getAltUnits());
       this.from = from;
-      if (stationHelper == null) initStationHelper();
-      stationHelper = stationHelper.subset(stations);
+      this.stations = stations;
     }
 
-      // already done
-    protected StationHelper initStationHelper() { return stationHelper; }
+    protected StationHelper createStationHelper() throws IOException {
+      return from.getStationHelper().subset(stations);
+    }
 
     // use this only if it is multiply nested
     public NestedPointFeatureCollectionIterator getNestedPointFeatureCollectionIterator(int bufferSize) throws IOException {
@@ -143,12 +158,10 @@ public abstract class StationProfileCollectionImpl extends MultipleNestedPointCo
     }
 
     private class Filter implements NestedPointFeatureCollectionIterator.Filter {
-
       public boolean filter(NestedPointFeatureCollection pointFeatureCollection) {
         StationProfileFeature stationFeature = (StationProfileFeature) pointFeatureCollection;
-        return stationHelper.getStation(stationFeature.getName()) != null;
+        return getStationHelper().getStation(stationFeature.getName()) != null;
       }
     }
   }
-
 }

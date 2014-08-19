@@ -38,9 +38,10 @@ public class RemoteStationCollection extends StationTimeSeriesCollectionImpl {
    * initialize the stationHelper.
    */
   @Override
-  protected StationHelper initStationHelper() {
+  protected StationHelper createStationHelper() throws IOException {
     // read in all the stations with the "stations" query
-    stationHelper = new StationHelper();
+    StationHelper stationHelper = new StationHelper();
+
     try (InputStream in = CdmRemote.sendQuery(uri, "req=stations")) {
       PointStream.MessageType mtype = PointStream.readMagic(in);
       if (mtype != PointStream.MessageType.StationList) {
@@ -56,23 +57,7 @@ public class RemoteStationCollection extends StationTimeSeriesCollectionImpl {
         stationHelper.addStation(new RemoteStationFeatureImpl(null, null));    // LOOK WRONG
       }
       return stationHelper;
-
-    } catch (IOException ioe) {
-      throw new RuntimeException(ioe);
     }
-  }
-
-  /**
-   * Constructor for a subset. defer station list.
-   *
-   * @param uri cdmremote endpoint
-   * @param sh  station Helper subset or null.
-   */
-  protected RemoteStationCollection(String uri, DateUnit timeUnit, String altUnits, StationHelper sh) {
-    super(uri, timeUnit, altUnits);
-    this.uri = uri;
-    this.stationHelper = sh;
-    this.restrictedList = (sh != null);
   }
 
   // note this assumes that a PointFeature is-a StationPointFeature
@@ -89,14 +74,14 @@ public class RemoteStationCollection extends StationTimeSeriesCollectionImpl {
   @Override
   public StationTimeSeriesFeatureCollection subset(List<Station> stations) throws IOException {
     if (stations == null) return this;
-    List<StationFeature> subset = stationHelper.getStationFeatures(stations);
-    return new RemoteStationCollectionSubset(this, null, null, null); // LOOK WRONG
+    List<StationFeature> subset = getStationHelper().getStationFeatures(stations);
+    return new RemoteStationCollectionSubset(this, null, null); // LOOK WRONG
   }
 
   @Override
   public StationTimeSeriesFeatureCollection subset(ucar.unidata.geoloc.LatLonRect boundingBox) throws IOException {
     if (boundingBox == null) return this;
-    return new RemoteStationCollectionSubset(this, null, boundingBox, null);
+    return new RemoteStationCollectionSubset(this, boundingBox, null);
   }
 
   // NestedPointFeatureCollection
@@ -111,7 +96,7 @@ public class RemoteStationCollection extends StationTimeSeriesCollectionImpl {
 
     public String makeQuery() {
       StringBuilder query = new StringBuilder("stns=");
-      for (Station s : stationHelper.getStations()) {
+      for (Station s : getStationHelper().getStations()) {
         query.append(s.getName());
         query.append(",");
       }
@@ -122,11 +107,12 @@ public class RemoteStationCollection extends StationTimeSeriesCollectionImpl {
   //////////////////////////////////////////////////////////////////////////////
 
 
-  private class RemoteStationCollectionSubset extends RemoteStationCollection {
+  private static class RemoteStationCollectionSubset extends RemoteStationCollection {
     RemoteStationCollection from;
 
-    RemoteStationCollectionSubset(RemoteStationCollection from, StationHelper sh, LatLonRect filter_bb, CalendarDateRange filter_date) throws IOException {
-      super(from.uri, from.getTimeUnit(), from.getAltUnits(), sh);
+    RemoteStationCollectionSubset(RemoteStationCollection from, LatLonRect filter_bb,
+            CalendarDateRange filter_date) throws IOException {
+      super(from.uri, from.getTimeUnit(), from.getAltUnits());
       this.from = from;
 
       if (filter_bb == null)
@@ -142,18 +128,12 @@ public class RemoteStationCollection extends StationTimeSeriesCollectionImpl {
     }
 
     @Override
-    protected StationHelper initStationHelper() {
-      from.initStationHelper();
-      this.stationHelper = new StationHelper();
-      try {
-        this.stationHelper.setStations(this.stationHelper.getStationFeatures(boundingBoxSubset));
-        return stationHelper;
-
-      } catch (IOException e) {
-        throw new RuntimeException(e);
-      }
+    protected StationHelper createStationHelper() throws IOException {
+      List<StationFeature> stations = from.getStationHelper().getStationFeatures(boundingBoxSubset);
+      StationHelper stationHelper = new StationHelper();
+      stationHelper.setStations(stations);
+      return stationHelper;
     }
-
 
     @Override
     public Station getStation(PointFeature feature) throws IOException {
