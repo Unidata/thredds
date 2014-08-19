@@ -33,6 +33,7 @@
 
 package ucar.nc2.iosp.bufr.writer;
 
+import ucar.nc2.constants.CDM;
 import ucar.nc2.iosp.bufr.BufrTableLookup;
 import ucar.nc2.iosp.bufr.Message;
 import ucar.nc2.time.CalendarDate;
@@ -56,11 +57,11 @@ public class MessageDispatchDDS {
   private File dispatchDir;
   private String inputFilenameOut;
 
-  private Set<Integer> badHashSet = new HashSet<Integer>(200);
-  private Map<String, Integer> nameMap = new HashMap<String, Integer>(200);
-  private Map<Integer, MessType> typeMap = new HashMap<Integer, MessType>(200);
-  private Map<String, MessageWriter> writers = new HashMap<String, MessageWriter>(100);
-  private List<Message> bufrTableMessages = new ArrayList<Message>();
+  private Set<Integer> badHashSet = new HashSet<>(200);
+  private Map<String, Integer> nameMap = new HashMap<>(200);
+  private Map<Integer, MessType> typeMap = new HashMap<>(200);
+  private Map<String, MessageWriter> writers = new HashMap<>(100);
+  private List<Message> bufrTableMessages = new ArrayList<>();
 
   int total_msgs = 0;
   int match = 0;
@@ -118,7 +119,8 @@ public class MessageDispatchDDS {
     if (configFilename != null) {
       File inputFile = new File(configFilename);
       if (inputFile.exists()) {
-        try (BufferedReader dataIS = new BufferedReader(new InputStreamReader(new FileInputStream(inputFile)))) {
+        try (BufferedReader dataIS = new BufferedReader(new InputStreamReader(
+                new FileInputStream(inputFile), CDM.utf8Charset))) {
           while (true) {
             String line = dataIS.readLine();
             if (line == null) break;
@@ -142,7 +144,7 @@ public class MessageDispatchDDS {
   }
 
   void resetBufrTableMessages() {
-    bufrTableMessages = new ArrayList<Message>();
+    bufrTableMessages = new ArrayList<>();
   }
 
   void dispatch(Message m) throws IOException {
@@ -206,7 +208,7 @@ public class MessageDispatchDDS {
       if (!badHashSet.contains(m.hashCode())) { // only write one kind of each bad message
         badHashSet.add(m.hashCode());
         try {
-          badWbc.write(ByteBuffer.wrap(m.getHeader().getBytes()));
+          badWbc.write(ByteBuffer.wrap(m.getHeader().getBytes(CDM.utf8Charset)));
           badWbc.write(ByteBuffer.wrap(m.getRawBytes()));
 
         } catch (IOException e) {
@@ -226,7 +228,7 @@ public class MessageDispatchDDS {
 
     try {
       if (m.getHeader() != null)
-        wbc.write(ByteBuffer.wrap(m.getHeader().getBytes()));
+        wbc.write(ByteBuffer.wrap(m.getHeader().getBytes(CDM.utf8Charset)));
       wbc.write(ByteBuffer.wrap(m.getRawBytes()));
     } catch (IOException e) {
       e.printStackTrace();
@@ -263,9 +265,9 @@ public class MessageDispatchDDS {
 
     if ((inputFilenameOut != null)) {
       try (FileOutputStream cout = new FileOutputStream(inputFilenameOut)) {
-        Formatter cfg = new Formatter(cout);
+        Formatter cfg = new Formatter(cout, CDM.utf8Charset.name());
         cfg.format("#    hash, filename, wmo, index, nmess, nobs, kBytes, complete, bitsOk, nbad, center, table, edition, category%n");
-        List<MessType> mtypes = new ArrayList<MessType>(typeMap.values());
+        List<MessType> mtypes = new ArrayList<>(typeMap.values());
         Collections.sort(mtypes, new MessTypeSorter());
         for (MessType mtype : mtypes) {
           if (mtype.proto == null) {

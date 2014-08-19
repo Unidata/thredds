@@ -34,7 +34,6 @@ package ucar.nc2.iosp.bufr.tables;
 
 import ucar.nc2.constants.CDM;
 import ucar.nc2.iosp.bufr.Descriptor;
-import ucar.nc2.iosp.bufr.BufrIdentificationSection;
 import ucar.nc2.iosp.bufr.MessageScanner;
 import ucar.nc2.iosp.bufr.TableLookup;
 import ucar.nc2.util.TableParser;
@@ -511,7 +510,7 @@ public class BufrTables {
       int pos1 = line.indexOf('"');
       if (pos1 >= 0) {
         int pos2 = line.indexOf('"', pos1 + 1);
-        StringBuffer sb = new StringBuffer(line);
+        StringBuilder sb = new StringBuilder(line);
         for (int i = pos1; i < pos2; i++)
           if (sb.charAt(i) == ',') sb.setCharAt(i, ' ');
         line = sb.toString();
@@ -635,7 +634,7 @@ public class BufrTables {
           String units = "";
           line = dataIS.readLine();
           if (line != null)
-              WmoXmlReader.cleanUnit(line);
+              units = WmoXmlReader.cleanUnit(line);
 
           int scale = 0, refVal = 0, width = 0;
           line = dataIS.readLine();
@@ -762,9 +761,8 @@ public class BufrTables {
         continue;
       }
 
-      int fldidx = 0;
+      int fldidx = 1; // skip classId
       try {
-        int classId = Integer.parseInt(flds[fldidx++].trim());
         int x = Integer.parseInt(flds[fldidx++].trim());
         int y = Integer.parseInt(flds[fldidx++].trim());
         String name = StringUtil2.remove(flds[fldidx++], '"');
@@ -788,7 +786,6 @@ public class BufrTables {
    001041 ABSOLUTE PLATFORM VELOCITY - FIRST COMPONENT (SEE NOTE 6)        M/S                        5  -1073741824  31 M/S                       5        10
   */
   static private TableB readEcmwfTableB(InputStream ios, TableB b) throws IOException {
-    int count = 0;
     List<TableParser.Record> recs = TableParser.readTable(ios, "4i,7i,72,97,102i,114i,119i", 50000);
     for (TableParser.Record record : recs) {
       if (record.nfields() < 7) {
@@ -1105,7 +1102,7 @@ public class BufrTables {
       int pos1 = line.indexOf('"');
       if (pos1 >= 0) {
         int pos2 = line.indexOf('"', pos1 + 1);
-        StringBuffer sb = new StringBuffer(line);
+        StringBuilder sb = new StringBuilder(line);
         for (int i = pos1; i < pos2; i++)
           if (sb.charAt(i) == ',') sb.setCharAt(i, ' ');
         line = sb.toString();
@@ -1117,10 +1114,8 @@ public class BufrTables {
         continue;
       }
 
-      int fldidx = 0;
+      int fldidx = 2; // skip sno and cat
       try {
-        int sno = Integer.parseInt(flds[fldidx++]);
-        int cat = Integer.parseInt(flds[fldidx++]);
         int seq = Integer.parseInt(flds[fldidx++]);
         String seqName = flds[fldidx++];
         String featno = flds[fldidx++].trim();
@@ -1128,7 +1123,6 @@ public class BufrTables {
           if (showReadErrs) System.out.printf("%d no FXY2 specified; line == %s%n", count, line);
           continue;
         }
-        String featName = (flds.length > 5) ? flds[fldidx++] : "n/a";
 
         if (currSeqno != seq) {
           int y = seq % 1000;
@@ -1146,7 +1140,11 @@ public class BufrTables {
         int f = w / 100;
 
         int fxy = (f << 14) + (x << 8) + y;
-        currDesc.addFeature((short) fxy);
+        if (currDesc != null) {
+            currDesc.addFeature((short) fxy);
+        } else {
+            log.error("Trying to add feature to null desc!");
+        }
 
       } catch (Exception e) {
         if (showReadErrs) System.out.printf("%d %d BAD line == %s : %s%n", count, fldidx, line, e.getMessage());
@@ -1192,7 +1190,7 @@ public class BufrTables {
           seqName = StringUtil2.remove(seqName, "()");
         }
 
-        List<Short> seq = new ArrayList<Short>();
+        List<Short> seq = new ArrayList<>();
         // look for descriptors within sequence terminated by -1
         while (true) {
           line = dataIS.readLine();
@@ -1265,7 +1263,7 @@ public class BufrTables {
           short x = Short.parseShort(clean(xyflds[1]));
           short y = Short.parseShort(clean(xyflds[2]));
           String seqName = (flds.length > 3) ? flds[3].trim() : "";
-          currDesc = t.addDescriptor((short) x, (short) y, seqName, new ArrayList<Short>());
+          currDesc = t.addDescriptor(x, y, seqName, new ArrayList<Short>());
           //System.out.printf("Add seq %s = %d %d %s %n", fxys, x, y, seqName);
         } else if (currDesc != null) {
           fxys = StringUtil2.remove(flds[1], '>');

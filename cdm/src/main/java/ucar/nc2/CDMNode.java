@@ -315,7 +315,7 @@ public abstract class CDMNode
         Variable inner = (Variable) node;
         for(;;) {
             if(inner instanceof VariableDS) {
-                VariableDS vds = (VariableDS) node;
+                VariableDS vds = (VariableDS) inner;
                 inner = vds.getOriginalVariable();
                 if(inner == null)
                     throw new IllegalArgumentException("VariableDS has no core Variable");

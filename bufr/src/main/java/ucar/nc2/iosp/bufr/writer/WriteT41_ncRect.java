@@ -40,8 +40,6 @@ import ucar.ma2.*;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.Map;
-import java.util.HashMap;
 import java.util.ArrayList;
 
 /**
@@ -76,13 +74,11 @@ public class WriteT41_ncRect {
 
       // global dimensions
       Dimension recordDim = null;
-      Map<String, Dimension> dimHash = new HashMap<String, Dimension>();
       for (Dimension oldD : bufr.getDimensions()) {
         String useName = N3iosp.makeValidNetcdfObjectName(oldD.getShortName());
         boolean isRecord = useName.equals("record");
         Dimension newD = ncfile.addDimension(useName, isRecord ? 0 : oldD.getLength(),
                 oldD.isShared(), isRecord, oldD.isVariableLength());
-        dimHash.put(newD.getShortName(), newD);
         if (isRecord) recordDim = newD;
         if (debug) System.out.println("add dim= " + newD);
       }
@@ -95,7 +91,7 @@ public class WriteT41_ncRect {
         String varName = N3iosp.makeValidNetcdfObjectName(oldVar.getShortName());
         DataType newType = oldVar.getDataType();
 
-        List<Dimension> newDims = new ArrayList<Dimension>();
+        List<Dimension> newDims = new ArrayList<>();
         newDims.add(recordDim);
         for (Dimension dim : oldVar.getDimensions()) {
           newDims.add(ncfile.addDimension(oldVar.getShortName() + "_strlen", dim.getLength()));
@@ -128,7 +124,7 @@ public class WriteT41_ncRect {
           String varName = N3iosp.makeValidNetcdfObjectName(seqVar.getShortName());
           DataType newType = seqVar.getDataType();
 
-          List<Dimension> newDims = new ArrayList<Dimension>();
+          List<Dimension> newDims = new ArrayList<>();
           newDims.add(recordDim);
           newDims.add(seqD);
           for (Dimension dim : seqVar.getDimensions()) {
@@ -183,15 +179,18 @@ public class WriteT41_ncRect {
     } finally {
       iter.finish();
     }
-    double avg = total / count;
-    int wasted = count * max - total;
-    double wp = (double) wasted / (count * max);
-    System.out.println(" Max = " + max + " avg = " + avg + " wasted = " + wasted + " %= " + wp);
+    if (count > 0 && max > 0) {
+      double avg = (double) total / count;
+      int wasted = count * max - total;
+      double wp = (double) wasted / (count * max);
+      System.out.println(" Max = " + max + " avg = " + avg + " wasted = " +
+              wasted + " %= " + wp);
+    } else {
+      System.out.println(" T41_ncFlat - countSeq called on empty recordStruct" +
+              " max = " + max + " count = " + count);
+    }
     return max;
   }
-
-
-  static private long maxSize = 1000 * 1000; // 1 MByte
 
   private double copyVarData(NetcdfFile bufr, NetcdfFileWriteable ncfile, Structure recordStruct) throws IOException, InvalidRangeException {
     int nrecs = (int) recordStruct.getSize();
@@ -217,8 +216,7 @@ public class WriteT41_ncRect {
                 int[] newShape = new int[data.getRank() + 2];
                 newShape[0] = 1;
                 newShape[1] = 1;
-                for (int i = 0; i < data.getRank(); i++)
-                  newShape[i + 1] = shape[i];
+                System.arraycopy(shape, 0, newShape, 1, data.getRank());
 
                 int[] origin = new int[data.getRank() + 2];
                 origin[0] = count;
@@ -238,8 +236,7 @@ public class WriteT41_ncRect {
           int[] shape = data.getShape();
           int[] newShape = new int[data.getRank() + 1];
           newShape[0] = 1;
-          for (int i = 0; i < data.getRank(); i++)
-            newShape[i + 1] = shape[i];
+          System.arraycopy(shape, 0, newShape, 1, data.getRank());
 
           int[] origin = new int[data.getRank() + 1];
           origin[0] = count;
@@ -257,66 +254,4 @@ public class WriteT41_ncRect {
 
     return total;
   }
-
-  private void copyAll(NetcdfFileWriteable ncfile, Variable oldVar) throws IOException {
-    String newName = N3iosp.makeValidNetcdfObjectName(oldVar.getShortName());
-
-    Array data = oldVar.read();
-    try {
-      if (oldVar.getDataType() == DataType.STRING) {
-        data = convertToChar(ncfile.findVariable(newName), data);
-      }
-      if (data.getSize() > 0)  // zero when record dimension = 0
-        ncfile.write(newName, data);
-
-    } catch (InvalidRangeException e) {
-      e.printStackTrace();
-      throw new IOException(e.getMessage() + " for Variable " + oldVar.getFullName());
-    }
-  }
-
-  private void copySome(NetcdfFileWriteable ncfile, Variable oldVar, int nelems) throws IOException {
-    String newName = N3iosp.makeValidNetcdfObjectName(oldVar.getShortName());
-
-    int[] shape = oldVar.getShape();
-    int[] origin = new int[oldVar.getRank()];
-    int size = shape[0];
-
-    for (int i = 0; i < size; i += nelems) {
-      origin[0] = i;
-      int left = size - i;
-      shape[0] = Math.min(nelems, left);
-
-      Array data;
-      try {
-        data = oldVar.read(origin, shape);
-        if (oldVar.getDataType() == DataType.STRING) {
-          data = convertToChar(ncfile.findVariable(newName), data);
-        }
-        if (data.getSize() > 0) {// zero when record dimension = 0
-          ncfile.write(newName, origin, data);
-          if (debug) System.out.println("write " + data.getSize() + " bytes");
-        }
-
-      } catch (InvalidRangeException e) {
-        e.printStackTrace();
-        throw new IOException(e.getMessage());
-      }
-    }
-  }
-
-  private Array convertToChar(Variable newVar, Array oldData) {
-    ArrayChar newData = (ArrayChar) Array.factory(DataType.CHAR, newVar.getShape());
-    Index ima = newData.getIndex();
-    IndexIterator ii = oldData.getIndexIterator();
-    while (ii.hasNext()) {
-      String s = (String) ii.getObjectNext();
-      int[] c = ii.getCurrentCounter();
-      for (int i = 0; i < c.length; i++)
-        ima.setDim(i, c[i]);
-      newData.setString(ima, s);
-    }
-    return newData;
-  }
-
 }
