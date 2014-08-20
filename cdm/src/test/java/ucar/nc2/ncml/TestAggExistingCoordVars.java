@@ -45,7 +45,7 @@ import java.io.StringReader;
 import java.util.Date;
 
 /** Test NcML AggExisting ways to define coordinate variable values
- * @see "http://www.unidata.ucar.edu/software/netcdf/ncml/v2.2/Aggregation.html#JoinExistingTypes"
+ * @see "http://www.unidata.ucar.edu/software/netcdf/ncml/Aggregation.html#JoinExistingTypes"
  **/
 
 public class TestAggExistingCoordVars extends TestCase {
