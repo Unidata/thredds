@@ -38,6 +38,9 @@ import java.util.prefs.*;
 import java.io.*;
 
 public class TestExtPrefs  {
+  static {
+      System.setProperty("java.util.prefs.PreferencesFactory", "ucar.util.prefs.PreferencesExtFactory");
+  }
 
   public static void main(String args[]) {
     //System.getProperty("ucar.util.prefs.PreferencesExtFactory");

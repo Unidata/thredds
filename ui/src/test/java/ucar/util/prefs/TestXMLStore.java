@@ -41,6 +41,10 @@ import java.util.prefs.Preferences;
 
 public class TestXMLStore {
 
+  static {
+      System.setProperty("java.util.prefs.PreferencesFactory", "ucar.util.prefs.PreferencesExtFactory");
+  }
+
   private boolean debug = false;
   private String storeFile = TestAllPrefs.dir+"TestXMLStore.xml";
   private String storeFile2 = TestAllPrefs.dir+"TestXMLStore2.xml";

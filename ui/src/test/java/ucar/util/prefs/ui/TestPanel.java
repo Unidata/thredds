@@ -45,6 +45,9 @@ import javax.swing.*;
 public class TestPanel {
   //private Field.Text ef;
   //private boolean enabled = true;
+  static {
+      System.setProperty("java.util.prefs.PreferencesFactory", "ucar.util.prefs.PreferencesExtFactory");
+  }
   static private XMLStore xstore;
   static private PreferencesExt store;
 

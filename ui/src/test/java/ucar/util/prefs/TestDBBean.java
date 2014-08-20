@@ -41,6 +41,9 @@ import java.util.*;
 
 /** simulate a bean that might look like a DB row, say 20 fields */
 public class TestDBBean {
+  static {
+    System.setProperty("java.util.prefs.PreferencesFactory", "ucar.util.prefs.PreferencesExtFactory");
+  }
 
   public static void main(String args[]) {
     //System.getProperty("ucar.util.prefs.PreferencesExtFactory");
