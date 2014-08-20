@@ -38,6 +38,7 @@ package ucar.nc2.iosp.bufr.tables;
  * @version 1.0
  */
 
+import ucar.nc2.constants.CDM;
 import ucar.nc2.iosp.bufr.*;
 import ucar.nc2.util.IO;
 import ucar.unidata.util.StringUtil2;
@@ -90,7 +91,8 @@ public class NcepMnemonic {
     HashMap<String, String> mnseq = new HashMap<>();
 
     try {
-      BufferedReader dataIS = new BufferedReader(new InputStreamReader(ios));
+      BufferedReader dataIS = new BufferedReader(new InputStreamReader(ios,
+              CDM.utf8Charset));
 
       // read  mnemonic table
       Matcher m;
@@ -152,8 +154,8 @@ public class NcepMnemonic {
       }
 
       // create sequences, replacing mnemonics with numbers
-      for (String key : mnseq.keySet()) {
-        String seq = mnseq.get(key);
+      for (Map.Entry<String, String> ent : mnseq.entrySet()) {
+        String seq = ent.getValue();
         seq = seq.replaceAll("\\<", "1-1-0 0-31-0 ");
         seq = seq.replaceAll("\\>", "");
         seq = seq.replaceAll("\\{", "1-1-0 0-31-1 ");
@@ -197,7 +199,7 @@ public class NcepMnemonic {
           list.add(Descriptor.getFxy(F + "-" + X + "-" + Y));
         }
 
-        String fxy = number.get(key);
+        String fxy = number.get(ent.getKey());
         String X = removeLeading0(fxy.substring(1, 3));
         String Y = removeLeading0(fxy.substring(3));
         // these are in latest tables
@@ -208,7 +210,7 @@ public class NcepMnemonic {
         short seqX = Short.parseShort(X.trim());
         short seqY = Short.parseShort(Y.trim());
 
-        tables.d.addDescriptor(seqX, seqY, key, list);
+        tables.d.addDescriptor(seqX, seqY, ent.getKey(), list);
         //short id = Descriptor.getFxy(key);
         //sequences.put(Short.valueOf(id), tableD);
       }
@@ -327,7 +329,8 @@ public class NcepMnemonic {
   private static void readSubCategories(String fileIn, PrintStream out, String token) throws IOException {
     System.out.printf("%s%n", fileIn);
     try (FileInputStream in = new  FileInputStream(fileIn)) {
-      BufferedReader dataIS = new BufferedReader(new InputStreamReader(in));
+      BufferedReader dataIS = new BufferedReader(new InputStreamReader(in,
+              CDM.utf8Charset));
       while (true) {
         String line = dataIS.readLine();
         if (line == null) break;
@@ -365,8 +368,8 @@ public class NcepMnemonic {
   }
 
   public static void main(String args[]) throws IOException {
-    String fileOut = "C:/dev/github/thredds/bufr/src/main/resources/resources/bufrTables/local/ncep/DataSubCategories.csv";
-    try (PrintStream pout = new PrintStream(fileOut)) {
+    String fileOut = "resource:/resources/bufrTables/local/ncep/DataSubCategories.csv";
+    try (PrintStream pout = new PrintStream(fileOut, CDM.utf8Charset.name())) {
       readSubCategories("C:/dev/github/thredds/bufr/src/main/sources/ncep/bufrtab.000.txt", pout, "MSG TYPE ");
       readSubCategories("C:/dev/github/thredds/bufr/src/main/sources/ncep/bufrtab.001.txt", pout, "MESSAGE TYPE ");
       readSubCategories("C:/dev/github/thredds/bufr/src/main/sources/ncep/bufrtab.002.txt", pout, "MSG TYPE ");

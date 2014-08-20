@@ -36,6 +36,7 @@ package ucar.nc2.iosp.bufr.writer;
 import com.lexicalscope.jewel.cli.CliFactory;
 import com.lexicalscope.jewel.cli.HelpRequestedException;
 import com.lexicalscope.jewel.cli.Option;
+import ucar.nc2.constants.CDM;
 import ucar.nc2.iosp.bufr.*;
 import ucar.unidata.io.InMemoryRandomAccessFile;
 import ucar.unidata.io.RandomAccessFile;
@@ -45,7 +46,6 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Formatter;
-import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * Reads BUFR files and splits them into separate files based on Message.hashCode()
@@ -55,7 +55,8 @@ import java.util.concurrent.atomic.AtomicInteger;
  */
 public class BufrSplitter {
   private static final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(BufrSplitter.class);
-  private static final ucar.unidata.io.KMPMatch matcher = new ucar.unidata.io.KMPMatch("BUFR".getBytes());
+  private static final ucar.unidata.io.KMPMatch matcher = new ucar.unidata.io
+          .KMPMatch(new byte[]{'B', 'U', 'F', 'R'});
 
   File dirOut;
   MessageDispatchDDS dispatcher;
@@ -89,7 +90,6 @@ public class BufrSplitter {
   //////////////////////////////////////////////////////
   // Step 1 - read and extract a Bufr Message
 
-  private static AtomicInteger seqId = new AtomicInteger();
   int total_msgs = 0;
   int bad_msgs = 0;
 
@@ -106,8 +106,8 @@ public class BufrSplitter {
 
   /**
    *
-   * @param b
-   * @param is
+   * @param b buffer of input data
+   * @param is InputStream to read
    * @return pos in the buffer we got to
    * @throws IOException
    */
@@ -182,17 +182,15 @@ public class BufrSplitter {
   ///////////////////////////////////////////////////////////////////////////////////////////////////////
   // extract and parse a BUFR message so that we know its DDS type
 
-  private class MessageTask {
+  private static class MessageTask {
     byte[] mess;
     int len, have;
-    int id;
     String header;
 
     MessageTask(int messlen) {
       this.len = messlen;
       this.mess = new byte[messlen];
       this.have = 0;
-      this.id = seqId.getAndIncrement();
     }
 
     void extractHeader(int startScan, int messagePos, Buffer buff) {
@@ -217,7 +215,7 @@ public class BufrSplitter {
         if (b >= 32 && b < 127) // ascii only
           bb[count++] = b;
       }
-      header = new String(bb, 0, count);
+      header = new String(bb, 0, count, CDM.utf8Charset);
     }
 
   }
@@ -347,12 +345,6 @@ public class BufrSplitter {
      @Option(helpRequest = true)
      boolean getHelp();
    }
-
-  void printOptions(Options opt) {
-    System.out.printf("Options are ok:%n");
-    System.out.printf(" fileSpec= %s%n", opt.getFileSpec());
-    System.out.printf(" dirOut= %s%n", opt.getDirOut());
-  }
 
   public static void main(String[] args) {
     try {

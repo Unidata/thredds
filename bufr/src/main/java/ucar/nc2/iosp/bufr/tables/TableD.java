@@ -86,7 +86,7 @@ public class TableD {
     }
   }
 
-  public class Descriptor implements Comparable<Descriptor> {
+  public static class Descriptor implements Comparable<Descriptor> {
     private short x, y;
     private String name;
     private List<Short> seq;

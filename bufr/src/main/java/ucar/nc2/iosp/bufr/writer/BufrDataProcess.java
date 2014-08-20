@@ -33,6 +33,7 @@
 
 package ucar.nc2.iosp.bufr.writer;
 
+import ucar.nc2.constants.CDM;
 import ucar.nc2.iosp.bufr.Message;
 import ucar.nc2.iosp.bufr.BufrIosp2;
 import ucar.nc2.iosp.bufr.MessageScanner;
@@ -81,8 +82,10 @@ public class BufrDataProcess {
     System.out.println("---------------Reading directory " + dir.getPath());
     File[] allFiles = dir.listFiles();
 
+    if (allFiles == null)
+        throw new IOException("Error reading " + dir.getPath());
+
     for (File f : allFiles) {
-      String name = f.getAbsolutePath();
       if (f.isDirectory())
         continue;
       if ((ff == null) || ff.accept(f)) {
@@ -99,7 +102,7 @@ public class BufrDataProcess {
   }
 
   int processOneFile(String filename, OutputStream os, Counter gtotal) throws IOException {
-    out = new PrintStream(os);
+    out = new PrintStream(os, false, CDM.utf8Charset.name());
     if (showFile) out.format("Process %s%n", filename);
     indent.setIndentLevel(0);
     int nmess;
@@ -229,7 +232,7 @@ public class BufrDataProcess {
   }
 
   private boolean isMissingUnsigned(Variable v, Array mdata, int bitWidth) {
-    long val = 0;
+    long val;
     switch (v.getDataType()) {
       case ENUM1:
       case BYTE:
@@ -252,7 +255,7 @@ public class BufrDataProcess {
     return result;
   }
 
-  private class Counter {
+  private static class Counter {
     int nvals;
     int nmiss;
 

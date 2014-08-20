@@ -147,9 +147,9 @@ public class Bufr2Xml {
       staxWriter.writeCharacters(indent.toString());
       staxWriter.writeEndElement();
 
-    } catch (Exception e) {
+    } catch (IOException|XMLStreamException e) {
       e.printStackTrace();
-      throw new RuntimeException(e.getMessage());
+      throw new RuntimeException(e);
     }
   }
 
@@ -310,7 +310,6 @@ public class Bufr2Xml {
 
     //String filename = "C:/temp/cache/uniqueMessages.bufr";
     String filename = "C:/data/formats/bufr/uniqueExamples.bufr";
-    Message message = null;
     int size = 0;
     int count = 0;
 
@@ -318,8 +317,9 @@ public class Bufr2Xml {
          OutputStream out = new FileOutputStream("C:/data/formats/bufr/uniqueE/" + count + ".xml")) {
       MessageScanner scan = new MessageScanner(raf);
       while (scan.hasNext()) {
-        message = scan.next();
-        if (!message.isTablesComplete() || !message.isBitCountOk()) continue;
+        Message message = scan.next();
+        if (message == null || !message.isTablesComplete() ||
+                !message.isBitCountOk()) continue;
         byte[] mbytes = scan.getMessageBytesFromLast(message);
         NetcdfFile ncfile = NetcdfFile.openInMemory("test", mbytes, "ucar.nc2.iosp.bufr.BufrIosp");
         NetcdfDataset ncd = new NetcdfDataset(ncfile);
