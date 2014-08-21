@@ -165,7 +165,7 @@ public class TestGribCompressByBit {
     return compressedDataLength;
   }
 
-  private int deflateShave(float[] data, int bitN) {
+  /* private int deflateShave(float[] data, int bitN) {
     int bitMask = Grib2NetcdfWriter.getBitMask(bitN+1);
     Deflater compresser = new Deflater(deflate_level);
     ByteBuffer bb = ByteBuffer.allocate(data.length * 4);
@@ -179,7 +179,7 @@ public class TestGribCompressByBit {
     int compressedDataLength = compresser.deflate(output);
     compresser.end();
     return compressedDataLength;
-  }
+  } */
 
   private int compressWithBzip2(float[] data) {
     ByteBuffer bb = ByteBuffer.allocate(data.length * 4);

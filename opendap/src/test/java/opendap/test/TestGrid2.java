@@ -91,7 +91,7 @@ public class TestGrid2 extends UnitTestCommon
             pass = false;
         }
 
-        assertTrue("TestGrid2: cannot find dataset", pass);
+        assertTrue("TestGrid2: cannot find dataset ="+url, pass);
 
         System.out.println("url: " + url);
 

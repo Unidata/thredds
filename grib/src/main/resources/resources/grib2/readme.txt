@@ -402,3 +402,6 @@ download
 
   Total=538 same=496 sameIgnoreCase=503 dif=35 unknown=0 new=7
 
+8/2014  caron
+  - downloaded and added WMO tables 13.0.1
+

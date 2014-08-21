@@ -22,16 +22,18 @@
 01/14/2012 remove resources/grib1/ncep/*.tab (wgrib formatted tables)
  - regenerate with NcepHtmlScraper, however there are hand corrections to add units, etc
 
-05/16/2013 screen scrape http://www.nco.ncep.noaa.gov/pmb/docs/on388/
+05/16/2013 caron
+    screen scrape http://www.nco.ncep.noaa.gov/pmb/docs/on388/
   - use program ucar.nc2.grib.grib1.tables.NcepHtmlScraper
   - table 3, table(s) 2 and table A
 
-07/31/2013
+07/31/2013  caron
   - NcepHtmlScraper had bug in table3, where the description was incorrect. regenerate.
     why didnt we notice this, for NCEP special level handling.
 
-03/04/2014
-  - Tables provided by users at NASA (Hiroko Kato, David M. Mocko, Hualan Rui, Fan Fang, Beaudoing) who assure us that they are the only tables and that they have never changed.
+03/04/2014  lansing
+  - Tables provided by users at NASA (Hiroko Kato, David M. Mocko, Hualan Rui, Fan Fang, Beaudoing) who assure us that they are the only tables and that
+  they have never changed.
     See TDS-511 or e-support VNI-792787 for history.  Tables are located in /share/testdata/support/VNI-792787/DefinitiveTablesFromNASAPeople
     7:4:130
     7:12:130
@@ -44,4 +46,7 @@
     Adding to the confusion is that the above provided documentation refers to "File A" data and "File B" data, with some notes
     suggesting that these different data files use the "same" parameter tables with slightly different units/parameter descriptions/etc.
 
-
+08/21/2014 caron
+  - AFAICT, GLDAS and NLDAS files -> ncepGrib1-7-4-130, ncepGrib1-7-12-130, ncepGrib1-7-138-130
+  - seems likely that nasa has hijacked center/subcenter/version (?)
+  - add original files to sources/nasa

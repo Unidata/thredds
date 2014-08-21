@@ -69,30 +69,44 @@ public class Grib2NetcdfWriter implements AutoCloseable {
         Grib2Record gr = scanner.next();
         float[] data = gr.readData(raf);
         for (int i=0; i<data.length; i++) {
-          data[i] = bitShave(data[i]);
+          data[i] = bitShave(data[i], mask11);
           if (i % 10 == 0)
             System.out.println();
         }
       }
     }
-
   }
 
-  private int mask23 = 0xffffffff;
-  private int mask19 = 0xfffffff0;
-  private int mask15 = 0xffffff00;
-  private int mask11 = 0xfffff000;
-  private int mask07 = 0xffff0000;
-  private int mask03 = 0xfff00000;
-  private int mask00 = 0xff800000;
-  private float bitShave(float value) {
+  static public int getBitMask(int bitN) {
+    if (bitN >= 23) return allOnes;
+    return allOnes << 23-bitN;
+  }
+
+  static private int allOnes = 0xffffffff;
+  static private int mask23 = 0xffffffff;
+  static private int mask19 = 0xfffffff0;
+  static private int mask15 = 0xffffff00;
+  static private int mask11 = 0xfffff000;
+  static private int mask07 = 0xffff0000;
+  static private int mask03 = 0xfff00000;
+  static private int mask00 = 0xff800000;
+
+  // set all the bits=0 in bitMask to 0,
+
+  /**
+   * Shave n bits off the float
+   * @param value    original floating point
+   * @param bitMask  bitMask from getBitMask()
+   * @return modified float
+   */
+  static public float bitShave(float value, int bitMask) {
     if (Float.isNaN(value)) return value;   // ??
 
     int bits = Float.floatToRawIntBits(value);
-    int shave = bits & mask11;
-    // System.out.printf("0x%s -> 0x%s, ", Long.toHexString(bits), Long.toHexString(shave));
+    int shave = bits & bitMask;
+    //System.out.printf("0x%s -> 0x%s : ", Integer.toBinaryString(bits), Integer.toBinaryString(shave));
     float result = Float.intBitsToFloat(shave);
-    //System.out.printf("%f -> %f, ", value, result);
+    //System.out.printf("%f -> %f %n", value, result);
     return result;
   }
 
@@ -102,7 +116,7 @@ public class Grib2NetcdfWriter implements AutoCloseable {
     writer.close();
   }
 
-  public static void main(String[] args) {
+  public static void main2(String[] args) {
     String fileIn = "Q:/cdmUnitTest/formats/grib2/ds.mint.bin";
     String fileOut = "C:/tmp/ds.mint.bin";
 
@@ -113,6 +127,11 @@ public class Grib2NetcdfWriter implements AutoCloseable {
       e.printStackTrace();
     }
 
+  }
+
+  public static void main(String[] args) {
+    for (int i=0; i<24; i++)
+      System.out.printf("%d == %8d == 0x%s == 0x%s%n", i, getBitMask(i), Integer.toHexString(getBitMask(i)), Integer.toBinaryString(getBitMask(i)));
   }
 
 }

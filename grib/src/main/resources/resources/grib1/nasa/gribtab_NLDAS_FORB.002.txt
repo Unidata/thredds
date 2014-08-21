@@ -1,0 +1,11 @@
+-1:7:12:130
+001:PRES:Pressure [Pa]
+007:HGT:Geopotential height [gpm]
+011:TMP:Temperature [K]
+033:UGRD:u-component of wind [m/s]
+034:VGRD:v-component of wind [m/s]
+051:SPFH:Specific humidity [kg/kg]
+061:APCP:Total precipitation [kg/m^2]
+063:ACPCP:Convective precipitation [kg/m^2]
+179:ACOND:Aerodynamic conductance [m/s]
+204:DSWRF:Downward shortwave radiation flux [W/m^2]
