@@ -230,7 +230,7 @@ public class StandardFields {
 
   public static class StandardFieldsFromStructure {
 
-    private class Field {
+    private static class Field {
       TypeAndOrder tao;
       String memberName;
       String valueS;

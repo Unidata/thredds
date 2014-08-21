@@ -251,9 +251,9 @@ public class CodeFlagTables {
     init2(tableMap2);
 
     System.out.printf("Compare 1 with 2%n");
-    for (Short key : tableMap1.keySet()) {
-      CodeFlagTables t = tableMap1.get(key);
-      CodeFlagTables t2 = tableMap2.get(key);
+    for (Map.Entry<Short, CodeFlagTables> ent : tableMap1.entrySet()) {
+      CodeFlagTables t = ent.getValue();
+      CodeFlagTables t2 = tableMap2.get(ent.getKey());
       if (t2 == null)
         System.out.printf(" NOT FOUND in 2: %s (%d)%n", t.fxy(), t.fxy);
       else {
@@ -269,9 +269,9 @@ public class CodeFlagTables {
     }
 
     System.out.printf("Compare 2 with 1%n");
-    for (Short key : tableMap2.keySet()) {
-      CodeFlagTables t = tableMap2.get(key);
-      CodeFlagTables t1 = tableMap1.get(key);
+    for (Map.Entry<Short, CodeFlagTables> ent : tableMap2.entrySet()) {
+      CodeFlagTables t = ent.getValue();
+      CodeFlagTables t1 = tableMap1.get(ent.getKey());
       if (t1 == null)
         System.out.printf(" NOT FOUND in 1: %s (%d)%n", t.fxy(), t.fxy);
       else {

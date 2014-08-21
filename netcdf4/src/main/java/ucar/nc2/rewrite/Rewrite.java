@@ -258,9 +258,10 @@ public class Rewrite {
 
     File oldFile = new File(datasetIn);
     File newFile = new File(datasetOut);
-    if(oldFile.length() == 0)
+    long oldlen = oldFile.length();
+    if(oldlen == 0)
         throw new ArithmeticException("Divide by zero");
-    double r =  (double) newFile.length() / oldFile.length();
+    double r =  ((double) newFile.length()) / ((double)oldlen);
 
     double took = (double) (System.nanoTime() - start) / 1000 / 1000 / 1000;
     System.out.printf("that took %f secs %n", took);

@@ -116,9 +116,12 @@ public class WriterCFStationProfileCollection extends CFPointWriter {
     }
 
     Integer stnIndex = stationIndexMap.get(spf.getName());
-    if (stnIndex == null)
+    if (stnIndex == null) {
       System.out.printf("BAD station %s%n", spf.getName());
-    writeProfileData(stnIndex, profile, count);
+    } else {
+      writeProfileData(stnIndex, profile, count);
+    }
+
     return count;
   }
 

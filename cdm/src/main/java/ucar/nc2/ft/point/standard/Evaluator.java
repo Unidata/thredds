@@ -50,8 +50,7 @@ import java.util.Formatter;
  * @author caron
  * @since Apr 23, 2008
  */
-public class Evaluator {
-
+public abstract class Evaluator {
   public static class VarAtt {
     public Variable var;
     public Attribute att;
@@ -318,22 +317,6 @@ public class Evaluator {
     return (d == null) ? null : d.getShortName();
   }
 
-  /////////////////////////////////
-  private String constant;
-  private Variable v;
 
-  Evaluator(Variable v) {
-    this.v = v;
-  }
-
-  Evaluator(String constant) {
-    this.constant = constant;
-  }
-
-  public String getValue() {
-    if (constant != null)
-      return constant;
-    return null; // ??
-  }
-
+  private Evaluator() { }  // Private ctor to ensure non-instantiability.
 }

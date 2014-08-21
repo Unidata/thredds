@@ -186,11 +186,9 @@ public class HTTPAuthStore implements Serializable
     // Class variables
 
     static public boolean TESTING = false;
-    static public HTTPAuthStore DEFAULTS;
+    //Coverity[FB.SI_INSTANCE_BEFORE_FINALS_ASSIGNED]
+    static public HTTPAuthStore DEFAULTS = new HTTPAuthStore(true);
 
-    static {
-        DEFAULTS = new HTTPAuthStore(true);
-    }
     //////////////////////////////////////////////////
     // Instance variables
 

@@ -47,30 +47,48 @@ import java.io.IOException;
 
 /**
  * Abstract superclass for implementations of StationFeatureCollection.
- * Subclass must supply initStationHelper, may need to override getPointFeatureCollectionIterator().
+ * Subclass must supply createStationHelper, may need to override getPointFeatureCollectionIterator().
  *
  * @author caron
  * @since Feb 5, 2008
  */
 public abstract class StationTimeSeriesCollectionImpl extends OneNestedPointCollectionImpl implements StationTimeSeriesFeatureCollection {
-
-  protected StationHelper stationHelper;
+  private volatile StationHelper stationHelper;
   protected PointFeatureCollectionIterator localIterator;
 
   public StationTimeSeriesCollectionImpl(String name, DateUnit timeUnit, String altUnits) {
     super(name, timeUnit, altUnits, FeatureType.STATION);
   }
 
-  protected abstract StationHelper initStationHelper(); // allow station helper to use deferred initialization
+  // Double-check idiom for lazy initialization of instance fields. See Effective Java 2nd Ed, p. 283.
+  protected StationHelper getStationHelper() {
+    if (stationHelper == null) {
+      synchronized (this) {
+        if (stationHelper == null) {
+          try {
+            stationHelper = createStationHelper();
+          } catch (IOException e) {
+            // The methods that will call getStationHelper() aren't declared to throw IOException, so we must
+            // wrap it in an unchecked exception.
+            throw new RuntimeException(e);
+          }
+        }
+      }
+    }
+
+    assert stationHelper != null : "We screwed this up.";
+    return stationHelper;
+  }
+
+  // Allow StationHelper to be lazily initialized.
+  protected abstract StationHelper createStationHelper() throws IOException;
 
   // note this assumes that a Station is-a PointFeatureCollection
   // subclasses must override if thats not true
   // note that subset() may have made a subset of stationHelper
   public PointFeatureCollectionIterator getPointFeatureCollectionIterator(int bufferSize) throws IOException {
-    initStationHelper();
-
     return new PointFeatureCollectionIterator() {  // an anonymous class iterating over the stations
-      Iterator<StationFeature> stationIter = stationHelper.getStationFeatures().iterator();
+      Iterator<StationFeature> stationIter = getStationHelper().getStationFeatures().iterator();
 
       public boolean hasNext() throws IOException {
         return stationIter.hasNext();
@@ -91,8 +109,7 @@ public abstract class StationTimeSeriesCollectionImpl extends OneNestedPointColl
 
   // note this assumes that a Station is-a StationTimeSeriesFeature
   public StationTimeSeriesFeature getStationFeature(Station s) throws IOException {
-    if (stationHelper == null) initStationHelper();
-    return (StationTimeSeriesFeature) stationHelper.getStationFeature(s);  // subclasses nust override if not true
+    return (StationTimeSeriesFeature) getStationHelper().getStationFeature(s);  // subclasses nust override if not true
   }
 
   // note this assumes that a PointFeature is-a StationPointFeature
@@ -103,18 +120,15 @@ public abstract class StationTimeSeriesCollectionImpl extends OneNestedPointColl
 
   @Override
   public List<StationFeature> getStationFeatures() throws IOException {
-    if (stationHelper == null) initStationHelper();
-    return stationHelper.getStationFeatures();
+    return getStationHelper().getStationFeatures();
   }
 
   public List<StationFeature> getStationFeatures( List<String> stnNames) {
-    if (stationHelper == null) initStationHelper();
-    return stationHelper.getStationFeaturesFromNames(stnNames);
+    return getStationHelper().getStationFeaturesFromNames(stnNames);
   }
 
   public List<StationFeature> getStationFeatures( ucar.unidata.geoloc.LatLonRect boundingBox) throws IOException {
-    if (stationHelper == null) initStationHelper();
-    return stationHelper.getStationFeatures(boundingBox);
+    return getStationHelper().getStationFeatures(boundingBox);
   }
 
   // might want to preserve the bb instead of the station list
@@ -125,8 +139,8 @@ public abstract class StationTimeSeriesCollectionImpl extends OneNestedPointColl
   // might need to override for efficiency
   public StationTimeSeriesFeatureCollection subset(List<Station> stations) throws IOException {
     if (stations == null) return this;
-    if (stationHelper == null) initStationHelper();
-    List<StationFeature> stationsFeatures = stationHelper.getStationFeatures(stations);
+
+    List<StationFeature> stationsFeatures = getStationHelper().getStationFeatures(stations);
     return new StationTimeSeriesCollectionSubset(this, stationsFeatures);
   }
 
@@ -138,16 +152,16 @@ public abstract class StationTimeSeriesCollectionImpl extends OneNestedPointColl
   public PointFeatureCollection flatten(List<String> stationNames, CalendarDateRange dateRange, List<VariableSimpleIF> varList) throws IOException {
     if ((stationNames == null) || (stationNames.size() == 0))
       return new StationTimeSeriesCollectionFlattened(this, dateRange);
-    initStationHelper();
-    List<StationFeature> subsetStations = stationHelper.getStationFeaturesFromNames(stationNames);
+
+    List<StationFeature> subsetStations = getStationHelper().getStationFeaturesFromNames(stationNames);
     return new StationTimeSeriesCollectionFlattened(new StationTimeSeriesCollectionSubset(this, subsetStations), dateRange);
   }
 
   public PointFeatureCollection flatten(LatLonRect boundingBox, CalendarDateRange dateRange) throws IOException {
     if (boundingBox == null)
       return new StationTimeSeriesCollectionFlattened(this, dateRange);
-    if (stationHelper == null) initStationHelper();
-    List<StationFeature> subsetStations = stationHelper.getStationFeatures(boundingBox);
+
+    List<StationFeature> subsetStations = getStationHelper().getStationFeatures(boundingBox);
     return new StationTimeSeriesCollectionFlattened(new StationTimeSeriesCollectionSubset(this, subsetStations), dateRange);
   }
 
@@ -155,21 +169,24 @@ public abstract class StationTimeSeriesCollectionImpl extends OneNestedPointColl
     return flatten(stations, CalendarDateRange.of(dateRange), varList);
   }
 
-  private class StationTimeSeriesCollectionSubset extends StationTimeSeriesCollectionImpl {
-    StationTimeSeriesCollectionImpl from; // probably not needed
+  private static class StationTimeSeriesCollectionSubset extends StationTimeSeriesCollectionImpl {
+    private final List<StationFeature> stations;
 
     StationTimeSeriesCollectionSubset(StationTimeSeriesCollectionImpl from, List<StationFeature> stations) {
       super(from.getName(), from.getTimeUnit(), from.getAltUnits());
-      this.from = from;
-      this.stationHelper = new StationHelper();
-      this.stationHelper.setStations(stations);
+      this.stations = stations;
     }
 
-    protected StationHelper initStationHelper() { return this.stationHelper; }
+    @Override
+    protected StationHelper createStationHelper() throws IOException {
+      StationHelper stationHelper = new StationHelper();
+      stationHelper.setStations(stations);
+      return stationHelper;
+    }
 
     @Override
     public List<StationFeature> getStationFeatures() throws IOException {
-      return stationHelper.getStationFeatures();
+      return getStationHelper().getStationFeatures();
     }
 
     /* dont think this is needed
@@ -196,32 +213,27 @@ public abstract class StationTimeSeriesCollectionImpl extends OneNestedPointColl
 
   @Override
   public List<Station> getStations() {
-    if (stationHelper == null) stationHelper = initStationHelper();
-    return stationHelper.getStations();
+    return getStationHelper().getStations();
   }
 
   @Override
   public List<Station> getStations(List<String> stnNames) {
-    if (stationHelper == null) stationHelper = initStationHelper();
-    return stationHelper.getStations(stnNames);
+    return getStationHelper().getStations(stnNames);
   }
 
   @Override
   public List<Station> getStations(LatLonRect boundingBox) throws IOException {
-    if (stationHelper == null) stationHelper = initStationHelper();
-    return stationHelper.getStations(boundingBox);
+    return getStationHelper().getStations(boundingBox);
   }
 
   @Override
   public Station getStation(String name) {
-    if (stationHelper == null) stationHelper = initStationHelper();
-    return stationHelper.getStation(name);
+    return getStationHelper().getStation(name);
   }
 
   @Override
   public LatLonRect getBoundingBox() {
-    if (stationHelper == null) stationHelper = initStationHelper();
-    return stationHelper.getBoundingBox();
+    return getStationHelper().getBoundingBox();
   }
 
   @Override
@@ -250,5 +262,4 @@ public abstract class StationTimeSeriesCollectionImpl extends OneNestedPointColl
   public void resetIteration() throws IOException {
     localIterator = getPointFeatureCollectionIterator(-1);
   }
-
 }

@@ -149,7 +149,7 @@ public class StandardTrajectoryCollectionImpl extends OneNestedPointCollectionIm
   }
 
   ///////////////////////////////////////
-  private class StandardTrajectoryCollectionSubset extends StandardTrajectoryCollectionImpl {
+  private static class StandardTrajectoryCollectionSubset extends StandardTrajectoryCollectionImpl {
     TrajectoryFeatureCollection from;
     LatLonRect boundingBox;
 

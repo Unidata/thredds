@@ -121,11 +121,8 @@ class RemotePointCollection extends PointCollectionImpl implements QueryMaker {
 
 
   private class PointFeatureCollectionSubset extends RemotePointCollection {
-    PointCollectionImpl from;
-
     PointFeatureCollectionSubset(RemotePointCollection from, LatLonRect filter_bb, CalendarDateRange filter_date) throws IOException {
       super(from.uri, RemotePointCollection.this.getTimeUnit(), RemotePointCollection.this.getAltUnits(), null);
-      this.from = from;
 
       if (filter_bb == null)
         this.boundingBox = from.getBoundingBox();
@@ -139,7 +136,6 @@ class RemotePointCollection extends PointCollectionImpl implements QueryMaker {
       }
     }
   }
-
 }
 
 

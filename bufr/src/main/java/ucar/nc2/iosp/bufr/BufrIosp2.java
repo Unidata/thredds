@@ -161,7 +161,6 @@ public class BufrIosp2 extends AbstractIOServiceProvider {
   private class SeqIter implements StructureDataIterator {
     StructureDataIterator currIter;
     int recnum = 0;
-    int bufferSize = -1;
 
     SeqIter() {
       reset();
@@ -237,7 +236,7 @@ public class BufrIosp2 extends AbstractIOServiceProvider {
 
     @Override
     public void setBufferSize(int bufferSize) {
-      this.bufferSize = bufferSize;
+      log.warn("Calling setBufferSize() on BUFR does nothing!");
     }
 
     @Override

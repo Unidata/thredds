@@ -41,6 +41,7 @@ import java.nio.channels.WritableByteChannel;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import ucar.nc2.constants.CDM;
 import ucar.nc2.iosp.bufr.Message;
 
 /**
@@ -57,8 +58,6 @@ public class MessageWriter { // implements Callable<IndexerTask> {
 
   private final WritableByteChannel wbc;
   private final FileOutputStream fos;
-  private final String name;
-  private final short fileno;
 
   private final AtomicBoolean isScheduled = new AtomicBoolean(false);
   private long lastModified;
@@ -71,10 +70,8 @@ public class MessageWriter { // implements Callable<IndexerTask> {
    * @throws IOException
    */
   MessageWriter(File file, short fileno, List<Message> bufrTableMessages) throws IOException {
-    this.fileno = fileno;
     fos = new FileOutputStream(file, true); // append
     wbc = fos.getChannel();
-    name = file.getPath();
 
     for (Message m : bufrTableMessages)
       write(m);
@@ -82,7 +79,7 @@ public class MessageWriter { // implements Callable<IndexerTask> {
 
 
   public void write(Message m) throws IOException {
-    wbc.write(ByteBuffer.wrap(m.getHeader().getBytes()));
+    wbc.write(ByteBuffer.wrap(m.getHeader().getBytes(CDM.utf8Charset)));
     wbc.write(ByteBuffer.wrap(m.getRawBytes()));
     lastModified = System.currentTimeMillis();
     isScheduled.getAndSet(false);
@@ -92,9 +89,7 @@ public class MessageWriter { // implements Callable<IndexerTask> {
   public long getLastModified() { return lastModified; }
 
   void close() throws IOException {
-    if (wbc != null)
       wbc.close();
-    if (fos != null)
       fos.close();
   }
 

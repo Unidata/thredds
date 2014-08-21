@@ -175,7 +175,7 @@ public abstract class PointCollectionImpl implements PointFeatureCollection {
 
   // for subsetting, the best we can do in general is to filter the original iterator.
   // subclasses may do something better
-  protected class PointCollectionSubset extends PointCollectionImpl {
+  protected static class PointCollectionSubset extends PointCollectionImpl {
     protected PointCollectionImpl from;
 
     public PointCollectionSubset(PointCollectionImpl from, LatLonRect filter_bb, CalendarDateRange filter_date) {

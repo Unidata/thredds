@@ -215,7 +215,7 @@ public class StandardSectionCollectionImpl extends SectionCollectionImpl {
     }
   }
 
-  private class StandardSectionProfileFeatureIterator extends StandardPointFeatureIterator {
+  private static class StandardSectionProfileFeatureIterator extends StandardPointFeatureIterator {
 
     StandardSectionProfileFeatureIterator(NestedTable ft, DateUnit timeUnit, StructureDataIterator structIter, Cursor cursor) throws IOException {
       super(ft, timeUnit, structIter, cursor);

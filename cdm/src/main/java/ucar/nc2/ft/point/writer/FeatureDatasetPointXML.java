@@ -271,7 +271,7 @@ public class FeatureDatasetPointXML {
 
     String beginS = timeSpan.getChildText("begin");
     String endS = timeSpan.getChildText("end");
-    String resS = timeSpan.getChildText("resolution");
+//    String resS = timeSpan.getChildText("resolution");
     if ((beginS == null) || (endS == null)) return null;
 
     try {
@@ -352,10 +352,12 @@ public class FeatureDatasetPointXML {
       }
     }
 
+    @Override
     public String getName() {
       return name;
     }
 
+    @Override
     public String getFullName() {
       return name;
     }
@@ -412,6 +414,24 @@ public class FeatureDatasetPointXML {
     @Override
     public int compareTo(VariableSimpleIF o) {
       return name.compareTo(o.getShortName()); // ??
+    }
+
+    @Override
+    public boolean equals(Object o) {
+      if (this == o) {
+        return true;
+      }
+      if (o == null || getClass() != o.getClass()) {
+        return false;
+      }
+
+      VariableSimple that = (VariableSimple) o;
+      return name.equals(that.name);
+    }
+
+    @Override
+    public int hashCode() {
+      return name.hashCode();
     }
   }
 

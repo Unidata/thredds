@@ -393,7 +393,7 @@ public class NestedTable {
 
   /////////////////////////////////////////////////////////////////////////
   // a constant coordinate variable
-  private class CoordVarConstant extends CoordVarExtractor {
+  private static class CoordVarConstant extends CoordVarExtractor {
     String units, value;
 
     CoordVarConstant(String name, String units, String value) {

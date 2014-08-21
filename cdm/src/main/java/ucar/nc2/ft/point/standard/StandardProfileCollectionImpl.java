@@ -189,7 +189,7 @@ public class StandardProfileCollectionImpl extends OneNestedPointCollectionImpl 
     }
   }
 
-  private class StandardProfileCollectionSubset extends StandardProfileCollectionImpl {
+  private static class StandardProfileCollectionSubset extends StandardProfileCollectionImpl {
     StandardProfileCollectionImpl from;
      LatLonRect boundingBox;
 

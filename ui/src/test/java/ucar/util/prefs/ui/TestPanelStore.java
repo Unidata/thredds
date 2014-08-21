@@ -43,6 +43,10 @@ import java.util.*;
 import javax.swing.*;
 
 public class TestPanelStore extends TestCase {
+  static {
+      System.setProperty("java.util.prefs.PreferencesFactory", "ucar.util.prefs.PreferencesExtFactory");
+  }
+
   static private XMLStore xstore;
   static private PreferencesExt store;
 

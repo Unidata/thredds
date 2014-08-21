@@ -34,16 +34,15 @@ package ucar.nc2.ft.point.collection;
 import thredds.inventory.MCollection;
 import thredds.inventory.TimedCollection;
 import ucar.nc2.Attribute;
+import ucar.nc2.VariableSimpleIF;
+import ucar.nc2.constants.FeatureType;
 import ucar.nc2.ft.*;
 import ucar.nc2.ft.point.PointDatasetImpl;
-import ucar.nc2.constants.FeatureType;
 import ucar.nc2.time.CalendarDateRange;
-import ucar.nc2.VariableSimpleIF;
-import ucar.nc2.units.DateUnit;
 import ucar.unidata.geoloc.LatLonRect;
 
-import java.io.IOException;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.Formatter;
 import java.util.List;
 
@@ -92,7 +91,8 @@ public class CompositeDatasetFactory {
           break;
         case STATION:
           NestedPointFeatureCollection firstNpc = (NestedPointFeatureCollection) first;
-          CompositeStationCollection sfc = new CompositeStationCollection(dcm.getCollectionName(), firstNpc.getTimeUnit(), firstNpc.getAltUnits(), collection, null, null);
+          CompositeStationCollection sfc = new CompositeStationCollection(
+                  dcm.getCollectionName(), firstNpc.getTimeUnit(), firstNpc.getAltUnits(), collection);
           //bb = sfc.getBoundingBox();
           fc = sfc;
           break;
@@ -105,7 +105,6 @@ public class CompositeDatasetFactory {
   }
 
   private static class CompositePointDataset extends PointDatasetImpl implements UpdateableCollection  {
-    private TimedCollection datasets;
     private FeatureCollection pfc;
     private List<Attribute> globalAttributes;
 
@@ -116,7 +115,6 @@ public class CompositeDatasetFactory {
       setPointFeatureCollection(pfc);
 
       this.pfc = pfc;
-      this.datasets = datasets;
       this.dateRange = datasets.getDateRange();
 
       if (datasets.getDateRange() != null)

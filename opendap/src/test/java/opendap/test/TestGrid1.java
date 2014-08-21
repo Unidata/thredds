@@ -111,7 +111,8 @@ public class TestGrid1 extends UnitTestCommon
 
             if(prop_diff) { //compare with baseline
                 // Read the baseline file(s)
-                String diffs = compare("TestGrid1", BASELINE, data);
+                String diffs = compare("TestGrid1", "netcdf " + url + BASELINE,
+                        data);
                 if(diffs != null)
                     pass = false;
             }
@@ -122,29 +123,29 @@ public class TestGrid1 extends UnitTestCommon
     }
 
     static protected final String BASELINE =
-     "netcdf dods://localhost:8080/thredds/dodsC/testAll/testgrid1.nc {"
-    +"dimensions:"
-    +"lat = 2;"
-    +"lon = 2;"
-    +"variables:"
-    +"double var(lat=2, lon=2);"
-    +":_CoordinateAxes = \"lat lon \";"
-    +"float lat(lat=2);"
-    +":_CoordinateAxisType = \"Lat\";"
-    +"float lon(lon=2);"
-    +":_CoordinateAxisType = \"Lon\";"
-    +"// global attributes:"
-    +":_CoordSysBuilder = \"ucar.nc2.dataset.conv.DefaultConvention\";"
-    +"data:"
-    +"var ="
-    +"{"
-    +"{0.0, 1.0},"
-    +"{2.0, 3.0}"
-    +"}"
-    +"lat ="
-    +"{17.0, 23.0}"
-    +"lon ="
-    +"{-15.0, -1.0}"
-    +"}"
+     " {\n"
+    +"dimensions:\n"
+    +"lat = 2;\n"
+    +"lon = 2;\n"
+    +"variables:\n"
+    +"double var(lat=2, lon=2);\n"
+    +":_CoordinateAxes = \"lat lon \";\n"
+    +"float lat(lat=2);\n"
+    +":_CoordinateAxisType = \"Lat\";\n"
+    +"float lon(lon=2);\n"
+    +":_CoordinateAxisType = \"Lon\";\n"
+    +"// global attributes:\n"
+    +":_CoordSysBuilder = \"ucar.nc2.dataset.conv.DefaultConvention\";\n"
+    +"data:\n"
+    +"var =\n"
+    +"{\n"
+    +"{0.0, 1.0},\n"
+    +"{2.0, 3.0}\n"
+    +"}\n"
+    +"lat =\n"
+    +"{17.0, 23.0}\n"
+    +"lon =\n"
+    +"{-15.0, -1.0}\n"
+    +"}\n"
     ;
 }

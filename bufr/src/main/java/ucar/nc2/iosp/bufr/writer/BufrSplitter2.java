@@ -34,7 +34,6 @@
 package ucar.nc2.iosp.bufr.writer;
 
 import ucar.nc2.iosp.bufr.*;
-import ucar.unidata.io.MMapRandomAccessFile;
 import ucar.unidata.io.RandomAccessFile;
 
 import java.io.File;
@@ -49,9 +48,6 @@ import java.util.Formatter;
  * @since 8/26/13
  */
 public class BufrSplitter2 {
-    private static final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(BufrSplitter2.class);
-    private static final ucar.unidata.io.KMPMatch matcher = new ucar.unidata.io.KMPMatch("BUFR".getBytes());
-
     File dirOut;
     MessageDispatchDDS dispatcher;
     Formatter out;

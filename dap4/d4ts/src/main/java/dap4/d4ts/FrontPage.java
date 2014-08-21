@@ -173,7 +173,7 @@ public class FrontPage
 
     static final String HTML_HEADER1 = "<h1>DAP4 Test Files</h1>\n";
     static final String HTML_HEADER2 = "<h2>http://" + dap4TestServer + "/d4ts/</h2>\n<hr>\n";
-    static final String HTML_HEADER3 = "<h3>%s Based Test Files</h3>\n";
+    static final String HTML_HEADER3 = "<h3>%s Based Test Files</h3>%n";
 
     static final String TABLE_HEADER = "<table>\n";
     static final String TABLE_FOOTER = "</table>\n";
@@ -181,13 +181,13 @@ public class FrontPage
     static final String HTML_FOOTER = "<hr>\n</html>\n";
 
     static final String HTML_FORMAT =
-            "<tr>\n"
-                    + "<td halign='right'><b>%s:</b></td>\n"
-                    + "<td halign='center'><a href='%s.dmr.txt'> DMR (TEXT) </a></div></td>\n"
-                    + "<td halign='center'><a href='%s.dmr'> DMR (XML) </a></div></td>\n"
-                    + "<td halign='center'><a href='%s.dap'> DAP </a></div></td>\n"
-                    + "<td halign='center'><a href='%s.dsr'> DSR </a></div></td>\n"
-                    + "</tr>\n";
+            "<tr>%n"
+                    + "<td halign='right'><b>%s:</b></td>%n"
+                    + "<td halign='center'><a href='%s.dmr.txt'> DMR (TEXT) </a></div></td>%n"
+                    + "<td halign='center'><a href='%s.dmr'> DMR (XML) </a></div></td>%n"
+                    + "<td halign='center'><a href='%s.dap'> DAP </a></div></td>%n"
+                    + "<td halign='center'><a href='%s.dsr'> DSR </a></div></td>%n"
+                    + "</tr>%n";
 }
 
 

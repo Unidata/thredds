@@ -25,7 +25,7 @@
   <p>You can wrap the original dataset in <a href="http://www.unidata.ucar.edu/software/netcdf/ncml/">NcML</a>. The NcML file must have the suffix &quot;.ncml&quot;,
     and it becomes the &quot;in&quot; file: </p>
   <pre>java -Xmx512m -classpath netcdfAll-&lt;version&gt;.jar ucar.nc2.dataset.NetcdfDataset -in myfile.ncml -out out.nc</pre>
-  For <a href="http://www.unidata.ucar.edu/software/netcdf/ncml/v2.2/Cookbook.html#remove">example</a> use the &lt;remove&gt; element to remove variables that
+  For <a href="http://www.unidata.ucar.edu/software/netcdf/ncml/Cookbook.html#remove">example</a> use the &lt;remove&gt; element to remove variables that
   you don't want to save:
   <pre>&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;<br/>&lt;netcdf xmlns=&quot;http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2&quot; location=&quot;/data/file.grib2&quot;&gt;<br/>  &lt;remove name=&quot;bad1&quot; type=&quot;variable&quot; /&gt;<br/>  &lt;remove name=&quot;bad2&quot; type=&quot;variable&quot; /&gt;<br/>&lt;/netcdf&gt;</pre>
 

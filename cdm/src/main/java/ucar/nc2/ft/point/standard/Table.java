@@ -1048,13 +1048,12 @@ public abstract class Table {
 
       StructureMembers members = parentStruct.getStructureMembers();
       StructureMembers.Member m = members.findMember(nestedTableName);
-      if (m == null)
+
+      if (m == null) {
         System.out.println("HEY");
-      // members.hideMember(m); // LOOK ??
-      if (m.getDataType() == DataType.SEQUENCE) {
+      } else if (m.getDataType() == DataType.SEQUENCE) {
         ArraySequence seq = parentStruct.getArraySequence(m);
         return seq.getStructureDataIterator();
-
       } else if (m.getDataType() == DataType.STRUCTURE) {
         ArrayStructure as = parentStruct.getArrayStructure(m);
         return as.getStructureDataIterator();
@@ -1147,7 +1146,7 @@ public abstract class Table {
     }
   }
 
-  private class StructureDataTop extends StructureDataW {
+  private static class StructureDataTop extends StructureDataW {
 
     public StructureDataTop() {
       super(new StructureMembers("top"));

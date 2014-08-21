@@ -39,7 +39,10 @@ import ucar.util.prefs.PreferencesExt;
 import ucar.util.prefs.XMLStore;
 
 public class TestDebug extends TestCase {
-  private static PreferencesExt store = new PreferencesExt(null,"");
+  static {
+      System.setProperty("java.util.prefs.PreferencesFactory", "ucar.util.prefs.PreferencesExtFactory");
+  }
+  private static PreferencesExt store;
   private static XMLStore xstore;
 
   public TestDebug( String name) {

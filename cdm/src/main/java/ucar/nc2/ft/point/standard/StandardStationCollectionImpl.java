@@ -78,23 +78,20 @@ public class StandardStationCollectionImpl extends StationTimeSeriesCollectionIm
   }
 
   @Override
-  protected StationHelper initStationHelper() {
-    try {
-      stationHelper = new StationHelper();
+  protected StationHelper createStationHelper() throws IOException {
+    StationHelper stationHelper = new StationHelper();
 
-      StructureDataIterator siter = ft.getStationDataIterator(-1);
-      try {
-        while (siter.hasNext()) {
-          StructureData stationData = siter.next();
-          StationTimeSeriesFeature s = makeStation(stationData, siter.getCurrentRecno());
-          if (s != null)
-            stationHelper.addStation(s);
+    StructureDataIterator siter = ft.getStationDataIterator(-1);
+    try {
+      while (siter.hasNext()) {
+        StructureData stationData = siter.next();
+        StationTimeSeriesFeature s = makeStation(stationData, siter.getCurrentRecno());
+        if (s != null) {
+          stationHelper.addStation(s);
         }
-      } finally {
-        siter.finish();
       }
-    } catch (IOException ioe) {
-      throw new RuntimeException(ioe);
+    } finally {
+      siter.finish();
     }
 
     return stationHelper;
@@ -131,7 +128,5 @@ public class StandardStationCollectionImpl extends StationTimeSeriesCollectionIm
     public StructureData getFeatureData() {
       return stationData;
     }
-
   }
-
 }

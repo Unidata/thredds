@@ -40,6 +40,9 @@ import ucar.util.prefs.XMLStore;
 import java.beans.*;
 
 public class TestField {
+  static {
+      System.setProperty("java.util.prefs.PreferencesFactory", "ucar.util.prefs.PreferencesExtFactory");
+  }
   static private XMLStore xstore;
   static private PreferencesExt store;
 
