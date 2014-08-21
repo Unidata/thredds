@@ -119,15 +119,15 @@ public class TestCFGridWriter2 {
       System.out.printf("subset size with date range = %d%n", subsetSize);
       assertTrue(subsetSize < totalSize);
 
-      String varName = "Temperature_surface";
+      String varName = "CGusfc";
       List<String> gridList = new ArrayList<>();
       gridList.add(varName);
 
       totalSize = CFGridWriter2.makeSizeEstimate(gds, gridList, null, null, 1, null, null, 1, true);
       subsetSize = CFGridWriter2.makeSizeEstimate(gds, gridList, null, null, 1, null, dateRange, 1, true);
 
-      System.out.printf("total size Temp only  = %d%n", totalSize);
-      System.out.printf("subset size Temp with date range = %d%n", subsetSize);
+      System.out.printf("total size CGusfc only  = %d%n", totalSize);
+      System.out.printf("subset size CGusfc with date range = %d%n", subsetSize);
       assertTrue(subsetSize < totalSize);
     }
   }
