@@ -341,11 +341,11 @@ public class LatLonProjection extends ProjectionImpl {
         centerLon);
 
     ProjectionRect[] rects = new ProjectionRect[2];
+    rects[0] = new ProjectionRect();
     if (lon0 < lon1) {
       rects[0].setRect(lon0, lat0, width, height);
-      rects[1] = null;
-
     } else {
+      rects[1] = new ProjectionRect();
       double y = centerLon + 180 - lon0;
       rects[0].setRect(lon0, lat0, y, height);
       rects[1].setRect(lon1 - width + y, lat0, width - y, height);
