@@ -130,14 +130,6 @@
       <scope>compile</scope>
     </dependency>
 
-    <!-- dependency>
-      <groupId>org.apache.commons</groupId>
-      <artifactId>commons-compress</artifactId>
-      <version>1.4.1</version>
-      <type>jar</type>
-      <scope>compile</scope>
-    </dependency -->
-
     <dependency>
       <groupId>edu.ucar</groupId>
       <artifactId>cdm</artifactId>

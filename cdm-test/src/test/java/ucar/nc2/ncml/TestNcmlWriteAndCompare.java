@@ -48,8 +48,9 @@ public class TestNcmlWriteAndCompare {
   public static List<Object[]> getTestParameters() {
     String datadir = TestDir.cdmUnitTestDir;
 
-    List<Object[]> result = new ArrayList<Object[]>(500);
+    List<Object[]> result = new ArrayList<>(500);
 
+    //result.add(new Object[]{datadir + "formats/netcdf4/tst/test_enum_type.nc", false});
     result.add(new Object[]{datadir + "conventions/atd-radar/rgg.20020411.000000.lel.ll.nc", false});
     result.add(new Object[]{datadir + "conventions/atd-radar/SPOL_3Volumes.nc", false});
     result.add(new Object[]{datadir + "conventions/awips/19981109_1200.nc", false});
@@ -81,7 +82,7 @@ public class TestNcmlWriteAndCompare {
 
       } catch (IOException e) {
         e.printStackTrace();
-      }
+      }   // */
 
     return result;
   }
@@ -217,8 +218,7 @@ public class TestNcmlWriteAndCompare {
     @Override
     public boolean varDataTypeCheckOk(Variable v) {
       if (v.getDataType() == DataType.CHAR) return false;    // temp workaround
-      if (v.getDataType() == DataType.STRING) return false;
-      return true;
+      return v.getDataType() != DataType.STRING;
     }
   }
 

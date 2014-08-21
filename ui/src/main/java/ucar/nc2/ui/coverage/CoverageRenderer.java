@@ -56,11 +56,11 @@ public class CoverageRenderer {
   private LatLonProjection projectll;       // special handling for LatLonProjection
 
   // working objects to minimize excessive gc
-  private LatLonPointImpl ptL1 = new LatLonPointImpl();
-  private LatLonPointImpl ptL2 = new LatLonPointImpl();
-  private ProjectionPointImpl ptP1 = new ProjectionPointImpl();
-  private ProjectionPointImpl ptP2 = new ProjectionPointImpl();
-  private ProjectionRect[] rects = new ProjectionRect[2];
+  //private LatLonPointImpl ptL1 = new LatLonPointImpl();
+  //private LatLonPointImpl ptL2 = new LatLonPointImpl();
+  // private ProjectionPointImpl ptP1 = new ProjectionPointImpl();
+  //private ProjectionPointImpl ptP2 = new ProjectionPointImpl();
+  //private ProjectionRect[] rects = new ProjectionRect[2];
 
   private final boolean debugHorizDraw = false, debugSeam = false, debugLatLon = false, debugMiss = false;
   private boolean debugPathShape = false, debugArrayShape = false, debugPts = false;
@@ -70,7 +70,7 @@ public class CoverageRenderer {
    */
   public CoverageRenderer(PreferencesExt store) {
     this.store = store;
-    rects[0] = new ProjectionRect();
+    //rects[0] = new ProjectionRect();
   }
 
   ///// bean properties
@@ -1022,6 +1022,8 @@ onePixel = 0;  */
     ProjectionPoint pt = drawProjection.latLonToProj(llp);
     if (debugPts) System.out.println("** moveTo = " + pt.getX() + " " + pt.getY());
     gpRun.moveTo((float) pt.getX(), (float) pt.getY());
+
+    ProjectionPointImpl ptP1 = new ProjectionPointImpl();
     ptP1.setLocation(pt);
 
     for (int e = x1 + 1; e <= x2 + 1; e++) {

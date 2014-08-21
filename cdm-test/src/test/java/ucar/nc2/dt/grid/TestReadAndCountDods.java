@@ -127,8 +127,8 @@ public class TestReadAndCountDods {
 
     // flipping 59, 15, 17, 13,  and 59, 15, 18, 13,
     TestReadandCount.doOne(base,"catalog/grib/NCEP/NAM/Alaska_11km/files/latest.xml", 59, 15, 18, 13);
-    // flipping between 154, 34, 36, 31 and 154, 33, 35, 31
-    TestReadandCount.doOne(base,"catalog/grib/NCEP/NAM/Alaska_45km/conduit/files/latest.xml", 154, -1, -1, 31);
+    // flipping between 154, 34, 36, 31 and 154, 33, 35, 31 OR 156, 34, 37, 31
+    TestReadandCount.doOne(base,"catalog/grib/NCEP/NAM/Alaska_45km/conduit/files/latest.xml", 156, -1, -1, 31);
     TestReadandCount.doOne(base,"catalog/grib/NCEP/NAM/CONUS_12km/files/latest.xml", 59, 15, 17, 13);
     TestReadandCount.doOne(base,"catalog/grib/NCEP/NAM/CONUS_40km/conduit/files/latest.xml", 176, 29, 31, 25);
     TestReadandCount.doOne(base,"catalog/grib/NCEP/NAM/Polar_90km/files/latest.xml", 133, 28, 30, 25);

@@ -611,20 +611,4 @@ public class Structure extends Variable {
     buf.format("%n");
   }
 
-  @Override
-  public boolean equals(Object o) {
-    if (this == o) return true;
-    if (o == null || getClass() != o.getClass()) return false;
-    if (!super.equals(o)) return false;
-
-    Structure structure = (Structure) o;
-    return members.equals(structure.members);
-  }
-
-  @Override
-  public int hashCode() {
-    int result = super.hashCode();
-    result = 31 * result + members.hashCode();
-    return result;
-  }
 }

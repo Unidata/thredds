@@ -1,34 +1,34 @@
 /*
- * Copyright 1998-2009 University Corporation for Atmospheric Research/Unidata
+ * Copyright 1998-2014 University Corporation for Atmospheric Research/Unidata
  *
- * Portions of this software were developed by the Unidata Program at the
- * University Corporation for Atmospheric Research.
+ *   Portions of this software were developed by the Unidata Program at the
+ *   University Corporation for Atmospheric Research.
  *
- * Access and use of this software shall impose the following obligations
- * and understandings on the user. The user is granted the right, without
- * any fee or cost, to use, copy, modify, alter, enhance and distribute
- * this software, and any derivative works thereof, and its supporting
- * documentation for any purpose whatsoever, provided that this entire
- * notice appears in all copies of the software, derivative works and
- * supporting documentation.  Further, UCAR requests that the user credit
- * UCAR/Unidata in any publications that result from the use of this
- * software or in any product that includes this software. The names UCAR
- * and/or Unidata, however, may not be used in any advertising or publicity
- * to endorse or promote any products or commercial entity unless specific
- * written permission is obtained from UCAR/Unidata. The user also
- * understands that UCAR/Unidata is not obligated to provide the user with
- * any support, consulting, training or assistance of any kind with regard
- * to the use, operation and performance of this software nor to provide
- * the user with any updates, revisions, new versions or "bug fixes."
+ *   Access and use of this software shall impose the following obligations
+ *   and understandings on the user. The user is granted the right, without
+ *   any fee or cost, to use, copy, modify, alter, enhance and distribute
+ *   this software, and any derivative works thereof, and its supporting
+ *   documentation for any purpose whatsoever, provided that this entire
+ *   notice appears in all copies of the software, derivative works and
+ *   supporting documentation.  Further, UCAR requests that the user credit
+ *   UCAR/Unidata in any publications that result from the use of this
+ *   software or in any product that includes this software. The names UCAR
+ *   and/or Unidata, however, may not be used in any advertising or publicity
+ *   to endorse or promote any products or commercial entity unless specific
+ *   written permission is obtained from UCAR/Unidata. The user also
+ *   understands that UCAR/Unidata is not obligated to provide the user with
+ *   any support, consulting, training or assistance of any kind with regard
+ *   to the use, operation and performance of this software nor to provide
+ *   the user with any updates, revisions, new versions or "bug fixes."
  *
- * THIS SOFTWARE IS PROVIDED BY UCAR/UNIDATA "AS IS" AND ANY EXPRESS OR
- * IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
- * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
- * DISCLAIMED. IN NO EVENT SHALL UCAR/UNIDATA BE LIABLE FOR ANY SPECIAL,
- * INDIRECT OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING
- * FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT,
- * NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
- * WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
+ *   THIS SOFTWARE IS PROVIDED BY UCAR/UNIDATA "AS IS" AND ANY EXPRESS OR
+ *   IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ *   WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ *   DISCLAIMED. IN NO EVENT SHALL UCAR/UNIDATA BE LIABLE FOR ANY SPECIAL,
+ *   INDIRECT OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING
+ *   FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT,
+ *   NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
+ *   WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 package ucar.nc2.ncml;
 
@@ -631,14 +631,14 @@ public class NcMLReader {
 
     String sep = s.getAttributeValue("separator");
     if ((sep == null) && (dtype == DataType.STRING)) {
-      List<String> list = new ArrayList<String>();
+      List<String> list = new ArrayList<>();
       list.add(valString);
       return Array.makeArray(dtype, list);
     }
 
     if (sep == null) sep = " "; // default whitespace separated
 
-    List<String> stringValues = new ArrayList<String>();
+    List<String> stringValues = new ArrayList<>();
     StringTokenizer tokn = new StringTokenizer(valString, sep);
     while (tokn.hasMoreTokens())
       stringValues.add(tokn.nextToken());
@@ -758,7 +758,7 @@ public class NcMLReader {
     String typeS = etdElem.getAttributeValue("type");
     DataType baseType = (typeS == null) ? DataType.ENUM1 : DataType.getType(typeS);
 
-    Map<Integer, String> map = new HashMap<Integer, String>(100);
+    Map<Integer, String> map = new HashMap<>(100);
     for (Element e : etdElem.getChildren("enum", ncNS)) {
       String key = e.getAttributeValue("key");
       String value = e.getTextNormalize();
@@ -964,9 +964,6 @@ public class NcMLReader {
       if (refv instanceof Structure) {
         v = new StructureDS(ds, g, null, name, (Structure) refv);
         v.setDimensions(shape);
-      } else if (refv instanceof Sequence) {
-          v = new StructureDS(ds, g, null, name, (Structure) refv);
-          v.setDimensions(shape);
        } else {
         v = new VariableDS(g, null, name, refv);
         v.setDataType(dtype);
@@ -1094,7 +1091,7 @@ public class NcMLReader {
         return;
       }
       String[] dims = StringUtil2.splitString(dimName);
-      List<Dimension> dimList = new ArrayList<Dimension>();
+      List<Dimension> dimList = new ArrayList<>();
       for (String s : dims) {
         int idx = v.findDimensionIndex(s);
         if (idx < 0) {
@@ -1549,29 +1546,33 @@ public class NcMLReader {
 
   private void cmdRemove(Group g, String type, String name) {
     boolean err = false;
-    if (type.equals("dimension")) {
-      Dimension dim = g.findDimension(name);
-      if (dim != null) {
-        g.remove(dim);
-        if (debugCmd) System.out.println("CMD remove " + type + " " + name);
-      } else
-        err = true;
+    switch (type) {
+      case "dimension":
+        Dimension dim = g.findDimension(name);
+        if (dim != null) {
+          g.remove(dim);
+          if (debugCmd) System.out.println("CMD remove " + type + " " + name);
+        } else
+          err = true;
 
-    } else if (type.equals("variable")) {
-      Variable v = g.findVariable(name);
-      if (v != null) {
-        g.remove(v);
-        if (debugCmd) System.out.println("CMD remove " + type + " " + name);
-      } else
-        err = true;
+        break;
+      case "variable":
+        Variable v = g.findVariable(name);
+        if (v != null) {
+          g.remove(v);
+          if (debugCmd) System.out.println("CMD remove " + type + " " + name);
+        } else
+          err = true;
 
-    } else if (type.equals("attribute")) {
-      ucar.nc2.Attribute a = g.findAttribute(name);
-      if (a != null) {
-        g.remove(a);
-        if (debugCmd) System.out.println("CMD remove " + type + " " + name);
-      } else
-        err = true;
+        break;
+      case "attribute":
+        Attribute a = g.findAttribute(name);
+        if (a != null) {
+          g.remove(a);
+          if (debugCmd) System.out.println("CMD remove " + type + " " + name);
+        } else
+          err = true;
+        break;
     }
 
     if (err) {

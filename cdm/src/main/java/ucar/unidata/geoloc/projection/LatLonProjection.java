@@ -340,7 +340,7 @@ public class LatLonProjection extends ProjectionImpl {
         latlonR.getUpperRightPoint().getLongitude(),
         centerLon);
 
-    ProjectionRect[] rects = new ProjectionRect[2];
+    ProjectionRect[] rects = new ProjectionRect[] {new ProjectionRect(), new ProjectionRect()};
     if (lon0 < lon1) {
       rects[0].setRect(lon0, lat0, width, height);
       rects[1] = null;

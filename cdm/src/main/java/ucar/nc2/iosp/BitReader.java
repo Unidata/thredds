@@ -208,10 +208,7 @@ public class BitReader {
 
   public static boolean getBit(long decimal, int N) {
     int constant = 1 << (N - 1);
-    if ((decimal & constant) > 0) {
-      return true;
-    }
-    return false;
+    return (decimal & constant) > 0;
   }
 
 }
