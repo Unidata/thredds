@@ -303,7 +303,7 @@ public class N3header {
     // check for streaming file - numrecs must be calculated
     if (isStreaming) {
       long recordSpace = actualSize - recStart;
-      numrecs = (int) (recordSpace / recsize);
+      numrecs = recsize == 0 ? 0 : (int) (recordSpace / recsize);
       if (debugStreaming)
         System.out.println(" isStreaming recordSpace=" + recordSpace + " numrecs=" + numrecs +
           " has extra bytes = " + (recordSpace % recsize));

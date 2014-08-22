@@ -52,8 +52,8 @@ public class H5diag {
 
     File raf = new File(ncfile.getLocation());
     f.format(" file size    = %d%n", raf.length());
-
-    f.format(" overhead     = %f%n", ((float) raf.length()/totalSize.storage));
+    float overhead = totalSize.storage == 0 ? 0 : ((float) raf.length()/totalSize.storage);
+    f.format(" overhead     = %f%n", overhead);
   }
 
   public void showCompress(Variable v, H5header.Vinfo vinfo, Size total, Formatter f) throws IOException {
