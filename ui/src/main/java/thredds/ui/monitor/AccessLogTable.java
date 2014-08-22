@@ -346,10 +346,11 @@ public class AccessLogTable extends JPanel {
     if (restrict != null && (restrict.size() != n)) {
       f.format("%nRestricted logs n=%d%n", restrict.size());
     }
-    if (accessLogFiles != null)
-      f.format("%nFiles used%n");
-    for (LogLocalManager.FileDateRange fdr : accessLogFiles) {
-      f.format(" %s [%s,%s]%n", fdr.f.getName(), fdr.start, fdr.end);
+    if (accessLogFiles != null) {
+        f.format("%nFiles used%n");
+        for (LogLocalManager.FileDateRange fdr : accessLogFiles) {
+            f.format(" %s [%s,%s]%n", fdr.f.getName(), fdr.start, fdr.end);
+        }
     }
   }
 
@@ -394,7 +395,7 @@ public class AccessLogTable extends JPanel {
 
   ////////////////////////////////////////////////////////
 
-  class MyClosure implements LogReader.Closure {
+  static class MyClosure implements LogReader.Closure {
     ArrayList<LogReader.Log> logs;
 
     MyClosure(ArrayList<LogReader.Log> logs) {
@@ -429,7 +430,7 @@ public class AccessLogTable extends JPanel {
       return count;
     }
 
-    ArrayList<LogReader.Log> logs = new ArrayList<LogReader.Log>(100);
+    ArrayList<LogReader.Log> logs = new ArrayList<>(100);
     String name;
     long msecs;
     long bytes;
@@ -651,55 +652,6 @@ public class AccessLogTable extends JPanel {
 
   //////////////////
 
-  private void showTimeSeries(java.util.List<LogReader.Log> logs) {
-    // 09/Apr/2009:16:38:28 -0600
-    SimpleDateFormat df = new SimpleDateFormat("dd/MMM/yyyy:HH:mm:ss Z");
-    SimpleDateFormat dfo = new SimpleDateFormat("yyyy/MMM/dd HH:mm:ss");
-
-    TimeSeries bytesSentData = new TimeSeries("Bytes Sent", Minute.class);
-    TimeSeries timeTookData = new TimeSeries("Average Latency", Minute.class);
-    TimeSeries nreqData = new TimeSeries("Number of Requests", Minute.class);
-
-    long period = 1000 * 60 * 5; // 5 min
-    long current = 0;
-    long bytes = 0;
-    long timeTook = 0;
-    long count = 0;
-    try {
-      for (LogReader.Log log : logs) {
-        Date d = df.parse(log.getDate());
-        long msecs = d.getTime();
-        if (msecs - current > period) {
-          if (current > 0) {
-            addPoint(bytesSentData, timeTookData, nreqData, new Date(current), bytes, count, timeTook);
-          }
-          bytes = 0;
-          count = 0;
-          timeTook = 0;
-          current = msecs;
-        }
-        bytes += log.getBytes();
-        timeTook += log.getMsecs();
-        count++;
-      }
-      addPoint(bytesSentData, timeTookData, nreqData, new Date(current), bytes, count, timeTook);
-
-    } catch (ParseException e) {
-      e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-    }
-
-
-    Chart c1 = new Chart("Bytes Sent", "5 min average", "Mbytes/sec", bytesSentData);
-    Chart c2 = new Chart("Average Latency", "5 min average", "Millisecs", timeTookData);
-    Chart c3 = new Chart("Number of Requests/sec", "5 min average", "", nreqData);
-
-    timeSeriesPanel.removeAll();
-    timeSeriesPanel.add(c1);
-    timeSeriesPanel.add(c2);
-    timeSeriesPanel.add(c3);
-
-  }
-
   // construct the TImeSeries plot for the list of logs passed in
 
   private void showTimeSeriesAll(java.util.List<LogReader.Log> logs) {
@@ -738,7 +690,8 @@ public class AccessLogTable extends JPanel {
       timeTook += log.getMsecs();
       count++;
     }
-    addPoint(bytesSentData, timeTookData, nreqData, new Date(current), bytes, count, timeTook);
+    if (count > 0)
+        addPoint(bytesSentData, timeTookData, nreqData, new Date(current), bytes, count, timeTook);
     total_count += count;
     System.out.printf("showTimeSeriesAll: total_count = %d logs = %d%n", total_count, logs.size());
 
@@ -766,7 +719,7 @@ public class AccessLogTable extends JPanel {
   }
 
   static private void test(String ip) {
-    StringBuffer sbuff = new StringBuffer();
+    StringBuilder sbuff = new StringBuilder();
     String[] p = ip.split("\\.");
     for (int i = p.length - 1; i >= 0; i--) {
       sbuff.append(p[i]);

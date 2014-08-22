@@ -111,10 +111,9 @@ public class Chart extends JPanel {
       TimeSeries close = new TimeSeries("Close Price", Day.class);
       TimeSeries high = new TimeSeries("High", Day.class);
       TimeSeries low = new TimeSeries("Low", Day.class);
-      TimeSeries volume = new TimeSeries("Volume", Day.class);
 
       try (BufferedReader br = new BufferedReader(new FileReader(filename))) {
-        String key = br.readLine();
+        br.readLine(); // read key
         String line = br.readLine();
         while (line != null && !line.startsWith("<!--")) {
           StringTokenizer st = new StringTokenizer(line, ",", false);
@@ -156,7 +155,7 @@ public class Chart extends JPanel {
         this.add(new ChartPanel(openCloseChart));
         this.add(new ChartPanel(highLowChart));
         this.add(new ChartPanel(highLowDifChart));
-      } catch (Exception e) {
+      } catch (IOException e) {
         e.printStackTrace();
       }
   }

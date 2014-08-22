@@ -32,6 +32,7 @@
  */
 package ucar.nc2.iosp.bufr.tables;
 
+import org.jdom2.JDOMException;
 import org.jdom2.input.SAXBuilder;
 import org.jdom2.Element;
 import ucar.nc2.iosp.bufr.Descriptor;
@@ -156,7 +157,7 @@ public class CodeFlagTables {
         ct.addValue((short) code, value);
       }
 
-    } catch (Exception e) {
+    } catch (IOException|JDOMException e) {
       log.error("Can't read BUFR code table " + filename, e);
     }
   }
@@ -201,14 +202,14 @@ public class CodeFlagTables {
         int fldidx = 1; // start at 1 to skip sno
         try {
           int xy = Integer.parseInt(flds[fldidx++].trim());
-          int no = -1;
+          int no;
           try {
             no = Integer.parseInt(flds[fldidx++].trim());
-          } catch (Exception e) {
+          } catch (NumberFormatException e) {
             if (showReadErrs) System.out.printf("%d skip == %s%n", count, line);
             continue;
           }
-          String name = StringUtil2.remove(flds[fldidx++], '"');
+          String name = StringUtil2.remove(flds[fldidx], '"');
           String nameLow = name.toLowerCase();
           if (nameLow.startsWith("reserved")) continue;
           if (nameLow.startsWith("not used")) continue;
@@ -225,14 +226,13 @@ public class CodeFlagTables {
           }
           ct.addValue((short) no, name);
 
-        } catch (Exception e) {
+        } catch (NumberFormatException e) {
           if (showReadErrs) System.out.printf("%d %d BAD line == %s%n", count, fldidx, line);
         }
       }
 
-    } catch (Exception e) {
+    } catch (IOException e) {
       log.error("Can't read BUFR code table " + filename, e);
-
     } finally {
       if (dataIS != null)
         try {
