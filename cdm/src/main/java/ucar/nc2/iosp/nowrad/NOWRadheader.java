@@ -917,7 +917,7 @@ public class NOWRadheader {
     }
 
     // variable info for reading/writing
-    class Vinfo {
+    static class Vinfo {
         long    hoff;        // header offset
         boolean isRadial;    // is it a radial variable?
         int     xt;

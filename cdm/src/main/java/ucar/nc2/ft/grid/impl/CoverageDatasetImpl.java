@@ -32,7 +32,7 @@ public class CoverageDatasetImpl implements CoverageDataset {
   private NetcdfDataset ds;
   private CoverageCS.Type type;
   private List<Coverage> coverages;
-  private List<CoverageSet> coverageSets = new ArrayList<CoverageSet>();
+  private List<CoverageSet> coverageSets = new ArrayList<>();
 
   public CoverageDatasetImpl(NetcdfDataset ds, Formatter parseInfo) {
     this.ds = ds;
@@ -192,7 +192,7 @@ public class CoverageDatasetImpl implements CoverageDataset {
 
   @Override
   public List<VariableSimpleIF> getDataVariables() {
-    List<VariableSimpleIF> datav = new ArrayList<VariableSimpleIF>(coverages.size());
+    List<VariableSimpleIF> datav = new ArrayList<>(coverages.size());
     for (Coverage c : coverages) datav.add(c);
     return datav;
   }
@@ -255,9 +255,9 @@ public class CoverageDatasetImpl implements CoverageDataset {
     return getCalendarDateEnd().toDate();
   }
 
-  private class CoverageSetImpl implements CoverageSet {
+  private static class CoverageSetImpl implements CoverageSet {
     CoverageCS ccs;
-    List<Coverage> coverages = new ArrayList<Coverage>();
+    List<Coverage> coverages = new ArrayList<>();
 
     CoverageSetImpl(CoverageCS ccs) {
       this.ccs = ccs;

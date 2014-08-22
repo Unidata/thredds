@@ -106,7 +106,7 @@ public class SwathDatasetFactory implements FeatureDatasetFactory {
   }
 
   // fake
-  private class SwathDataset extends FeatureDatasetImpl {
+  private static class SwathDataset extends FeatureDatasetImpl {
     SwathDataset(NetcdfDataset ncd) {
       super(ncd);
     }

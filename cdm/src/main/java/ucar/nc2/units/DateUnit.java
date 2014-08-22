@@ -222,8 +222,8 @@ public class DateUnit { // extends SimpleUnit {
    * @return value in units of this base unit.
    */
   public double makeValue(Date date) {
-    double secs = date.getTime() / 1000;
-    double origin_secs =  getDateOrigin().getTime() / 1000;
+    double secs = date.getTime() / 1000.0;
+    double origin_secs =  getDateOrigin().getTime() / 1000.0;
     double diff = secs - origin_secs;
 
    try {

@@ -169,7 +169,7 @@ public class UnidataTdsDataPathRemapper {
         return map;
     }
 
-    private class Remapper {
+    private static class Remapper {
         String oldUrl, newUrl; // newName exists when theres only one
         List<UrlRemapperBean> newUrls = new ArrayList<>();
         HashMap<String, UrlRemapperBean> newUrlMap = new HashMap<>();

@@ -45,7 +45,6 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
 import java.util.ArrayList;
 import java.util.Formatter;
 import java.util.List;
@@ -172,7 +171,7 @@ public class NcStreamIosp extends AbstractIOServiceProvider {
     }
   }     */
 
-  private class DataStorage {
+  private static class DataStorage {
     int size;
     long filePos;
     Section section;
@@ -342,7 +341,7 @@ public class NcStreamIosp extends AbstractIOServiceProvider {
       if (ncm != null) ncm.add(new NcsMess(pos, psize, dproto));
       List<DataStorage> storage = (List<DataStorage>) v.getSPobject(); // LOOK should be an in memory Rtree using section
       if (storage == null) {
-        storage = new ArrayList<DataStorage>();
+        storage = new ArrayList<>();
         v.setSPobject(storage);
       }
 

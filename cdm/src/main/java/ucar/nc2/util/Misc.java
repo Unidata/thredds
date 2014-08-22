@@ -79,6 +79,7 @@ public class Misc {
     return Math.abs(pd);
   }
 
+  private static final boolean show = false;  // debug
 
   /**
    * Check if numbers are equal with tolerance
@@ -88,7 +89,6 @@ public class Misc {
    * @return true if within tolerance
    */
   public static boolean closeEnough( double v1, double v2, double tol) {
-    boolean show = false;
     if (show) {
       double d1 = Math.abs(v1-v2);
       double d3 = Math.abs(v1/v2);

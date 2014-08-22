@@ -74,8 +74,10 @@ public class DIFWriter {
     this.messBuffer = mess;
 
     File dir = new File(fileDir);
-    if (!dir.exists())
-      dir.mkdirs();
+    if (!dir.exists()) {
+      boolean ret = dir.mkdirs();
+      assert ret;
+    }
 
     CatalogCrawler.Listener listener = new CatalogCrawler.Listener() {
       public void getDataset(InvDataset ds, Object context) {

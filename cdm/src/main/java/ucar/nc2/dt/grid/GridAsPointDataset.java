@@ -261,14 +261,14 @@ public class GridAsPointDataset {
 	  
 	  return p;
   }
-  
+
   private int findTimeIndexForCalendarDate(GridCoordSystem gcs, CalendarDate date){	  
 	  
 	  CoordinateAxis1DTime timeAxis = gcs.getTimeAxis1D();	  
 	  return timeAxis.findTimeIndexFromCalendarDate(date);
   }
 
-  public class Point {
+  public static class Point {
     public double lat,lon,z,ens,dataValue;
   }
 

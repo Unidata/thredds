@@ -298,7 +298,7 @@ public class NcStreamReader {
   }
 
   // need to have access to protected methods  ??
-  private class NetcdfFileStream extends NetcdfFile {
+  private static class NetcdfFileStream extends NetcdfFile {
 
   }
 }

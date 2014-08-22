@@ -535,7 +535,7 @@ public class NmcObsLegacy extends AbstractIOServiceProvider {
     // System.out.println("\nnreports= " + reports.size() + " nstations= " + stations.size());
   }
 
-  private class Station implements Comparable<Station> {
+  private static class Station implements Comparable<Station> {
     String name;
     Report r;
     int nreports;
@@ -614,10 +614,7 @@ public class NmcObsLegacy extends AbstractIOServiceProvider {
         return reportLen < 30000;
 
       } catch (Exception e) {
-        System.out.println("BAD reportId=" + new String(reportId));
-        System.out.println("ReportId start at " + filePos);
-        e.printStackTrace();
-        return false;
+        throw new IOException("BAD reportId=" + new String(reportId, CDM.utf8Charset) + " starts at " + filePos);
       }
     }
 

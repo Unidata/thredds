@@ -624,7 +624,7 @@ public class GridDatasetInfo {
 	}
 
 	// sort by domain size, then name
-	private class GridSetComparator implements Comparator<GridDataset.Gridset> {
+	private static class GridSetComparator implements Comparator<GridDataset.Gridset> {
 
 		public int compare(GridDataset.Gridset gridset1, GridDataset.Gridset gridset2) {
 			GridCoordSystem cs1 = gridset1.getGeoCoordSystem();

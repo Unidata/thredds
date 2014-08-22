@@ -56,8 +56,10 @@ public class DCWriter {
 
   public void writeItems( String fileDir) {
     File dir = new File(fileDir);
-    if (!dir.exists())
-      dir.mkdirs();
+    if (!dir.exists()) {
+      boolean ret = dir.mkdirs();
+      assert ret;
+    }
 
     for (InvDataset dataset :  cat.getDatasets()) {
       doDataset(dataset, fileDir);

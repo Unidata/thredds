@@ -508,7 +508,7 @@ public class StructureDS extends ucar.nc2.Structure implements VariableEnhanced 
 
   /////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-  private class SequenceConverter extends ArraySequence {
+  private static class SequenceConverter extends ArraySequence {
     StructureDS orgStruct;
     ArraySequence orgSeq;
 

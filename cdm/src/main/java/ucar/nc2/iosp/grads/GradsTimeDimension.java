@@ -210,11 +210,11 @@ public class GradsTimeDimension extends GradsDimension {
         initialTime = makeTimeStruct(calendar);
         //System.out.println("initial time = " + initialTime);
         int calInc = calIncs[incIndex];
+        double hours =  (double) 1000 * 60 * 60;
         for (int i = 1; i < getSize(); i++) {
             calendar.add(calInc, inc);
             // subtract from origin, convert to hours
-            double offset = (calendar.getTime().getTime() - d.getTime())
-                            / (1000 * 60 * 60);  //millis in an hour
+            double offset = (calendar.getTime().getTime() - d.getTime()) / hours;  //millis in an hour
             vals[i] = offset;
         }
         return vals;

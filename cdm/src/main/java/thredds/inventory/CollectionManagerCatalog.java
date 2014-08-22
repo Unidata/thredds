@@ -126,7 +126,7 @@ public class CollectionManagerCatalog extends CollectionManagerAbstract implemen
     return mfiles == null ? new ArrayList<MFile>() : mfiles;
   }
 
-  private class MFileRemote implements MFile {
+  private static class MFileRemote implements MFile {
     private Object info;
     private final InvAccess access;
     private Date lastModified;

@@ -492,7 +492,7 @@ public class EscapeStrings
     {
         for (char c : (alphaNumeric + " !\"#$%&'()*+,-./:;<=>?@[\\]^_`{|}~").toCharArray()) {
             String encoded = EscapeStrings.escapeOGC("" + c);
-            System.err.printf("|%c|=|%s|\n", c, encoded);
+            System.err.printf("|%c|=|%s|%n", c, encoded);
         }
     }
 

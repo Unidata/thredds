@@ -152,12 +152,12 @@ public class Nc4ChunkingDefault extends Nc4ChunkingStrategy {
 
     // distribute needFactor amongst the n unlimited dimensions
     int need;
-    if ( countUnlimitedDims == 1) need = needFactor;
+    if ( countUnlimitedDims <= 1) need = needFactor;
     else if ( countUnlimitedDims == 2) need = (int) Math.sqrt(needFactor);
     else if ( countUnlimitedDims == 3) need = (int) Math.cbrt(needFactor);
     else {
       // nth root?? hmm roundoff !!
-      need = (int)  Math.pow(needFactor, 1 / countUnlimitedDims);
+      need = (int)  Math.pow(needFactor, 1.0 / countUnlimitedDims);
     }
 
     int[] result = new int[shape.length];

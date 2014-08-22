@@ -202,7 +202,7 @@ public class IndexChunkerTiled {
     }
   }
 
-  private class Dim {
+  private static class Dim {
     Range data;       // Range we got
     Range want;       // Range we want
     Range intersect;  // Range we want
