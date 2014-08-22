@@ -219,13 +219,12 @@ public class Grib2Record {
   public float[] readData(RandomAccessFile raf) throws IOException {
     Grib2Gds gds = gdss.getGDS();
 
-    Grib2DataReader reader = new Grib2DataReader(drs.getDataTemplate(), gdss.getNumberPoints(), drs.getDataPoints(),
+    Grib2DataReader2 reader = new Grib2DataReader2(drs.getDataTemplate(), gdss.getNumberPoints(), drs.getDataPoints(),
             getScanMode(), gds.getNxRaw(), dataSection.getStartingPosition(), dataSection.getMsgLength());
 
-    byte[] bitmap = bms.getBitmap(raf);
     Grib2Drs gdrs = drs.getDrs(raf);
 
-    float[] data = reader.getData(raf, bitmap, gdrs);
+    float[] data = reader.getData(raf, bms, gdrs);
 
     if (gds.isThin())
       data = QuasiRegular.convertQuasiGrid(data, gds.getNptsInLine(), gds.getNxRaw(), gds.getNyRaw());
@@ -237,13 +236,12 @@ public class Grib2Record {
   public Grib2Drs.Type40 readDataTest(RandomAccessFile raf) throws IOException {
     Grib2Gds gds = gdss.getGDS();
 
-    Grib2DataReader reader = new Grib2DataReader(drs.getDataTemplate(), gdss.getNumberPoints(), drs.getDataPoints(),
+    Grib2DataReader2 reader = new Grib2DataReader2(drs.getDataTemplate(), gdss.getNumberPoints(), drs.getDataPoints(),
             getScanMode(), gds.getNxRaw(), dataSection.getStartingPosition(), dataSection.getMsgLength());
 
-    byte[] bitmap = bms.getBitmap(raf);
     Grib2Drs gdrs = drs.getDrs(raf);
     if (gdrs instanceof Grib2Drs.Type40) {
-      reader.getData(raf, bitmap, gdrs);
+      reader.getData(raf, bms, gdrs);
       return (Grib2Drs.Type40) gdrs;
     }
     return null;
@@ -264,13 +262,12 @@ public class Grib2Record {
     Grib2SectionData dataSection = new Grib2SectionData(raf);
 
     Grib2Gds gds = gdss.getGDS();
-    Grib2DataReader reader = new Grib2DataReader(drs.getDataTemplate(), gdss.getNumberPoints(), drs.getDataPoints(),
+    Grib2DataReader2 reader = new Grib2DataReader2(drs.getDataTemplate(), gdss.getNumberPoints(), drs.getDataPoints(),
             getScanMode(), gds.getNxRaw(), dataSection.getStartingPosition(), dataSection.getMsgLength());
 
-    byte[] bitmap = bms.getBitmap(raf);
     Grib2Drs gdrs = drs.getDrs(raf);
 
-    float[] data = reader.getData(raf, bitmap, gdrs);
+    float[] data = reader.getData(raf, bms, gdrs);
 
     if (gds.isThin())
       data = QuasiRegular.convertQuasiGrid(data, gds.getNptsInLine(), gds.getNxRaw(), gds.getNyRaw());
@@ -302,15 +299,14 @@ public class Grib2Record {
     if (bmsPos > 0)
       bms = Grib2SectionBitMap.factory(raf, bmsPos);
 
-    Grib2DataReader reader = new Grib2DataReader(drs.getDataTemplate(), gdsNumberPoints, drs.getDataPoints(),
+    Grib2DataReader2 reader = new Grib2DataReader2(drs.getDataTemplate(), gdsNumberPoints, drs.getDataPoints(),
             scanMode, nx, dataSection.getStartingPosition(), dataSection.getMsgLength());
 
-    byte[] bitmap = bms.getBitmap(raf);
     Grib2Drs gdrs = drs.getDrs(raf);
 
     //return reader.getData(raf, bitmap, gdrs);
 
-    float[] data = reader.getData(raf, bitmap, gdrs);
+    float[] data = reader.getData(raf, bms, gdrs);
 
     if (nptsInLine != null)
       data = QuasiRegular.convertQuasiGrid(data, nptsInLine, nx, ny);

@@ -60,7 +60,7 @@ public class FslLocalTables extends NcepLocalTables {
   private static final String hrrrTable = "resources/grib2/noaa_gsd/Fsl-hrrr.csv";
   private static final String fimTable = "resources/grib2/noaa_gsd/fim.gribtable";
   //private static final String tableName2 = "resources/grib2/local/Fsl-hrrr2.csv";
-  private static final boolean debug = true;
+  private static final boolean debug = false;
 
   static FslLocalTables localFactory(int subCenter, int masterVersion, int localVersion, int genProcessId) {
     return new FslLocalTables(subCenter, masterVersion, localVersion, genProcessId);
