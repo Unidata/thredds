@@ -835,7 +835,7 @@ public class Ghcnm extends AbstractIOServiceProvider {
         }
         currStn = s;
       }
-      currStn.dataCount++;
+      if (currStn != null) currStn.dataCount++;
     }
     //System.out.printf("ok stns=%s data=%d%n", stnCount, totalCount);
 

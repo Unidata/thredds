@@ -195,7 +195,7 @@ public class CatalogExtractor implements CatalogCrawler.Listener {
       boolean ok = true; // ucar.nc2.iosp.nexrad2.TestNexrad2.testCoordSystem( ncd);
       out.println("  **Open " + ds.getDataType() + " " + ncd.getLocation() + " (" + ds.getName() + ") " + took + " msecs");
       if (verbose)
-        System.out.println("  **Open " + ds.getDataType() + " " + ncd.getLocation() + " (" + ds.getName() + ") " + took + " msecs; ok=" + ok);
+        System.out.println("  **Open " + ds.getDataType() + " " + ncd.getLocation() + " (" + ds.getName() + ") " + took + " msecs");
 
     } catch (Throwable e) {
       countNoOpen++;
@@ -323,7 +323,7 @@ public class CatalogExtractor implements CatalogCrawler.Listener {
           out.println("  BoundingBox == GLOBAL");
 
         } else {
-          StringBuffer buff = new StringBuffer();
+          StringBuilder buff = new StringBuilder();
           LatLonPointImpl ll = llbb.getLowerLeftPoint();
           LatLonPointImpl ur = llbb.getUpperRightPoint();
           buff.append(Double.toString(ll.getLongitude()));
@@ -346,9 +346,8 @@ public class CatalogExtractor implements CatalogCrawler.Listener {
         long ntimes = taxis.getSize();
         try {
           TimeUnit tUnit = taxis.getTimeResolution();
-          // dateRange = new DateRange(dateRange2, "1 hour"); // LOOK WTF?
-          out.println("  DateRange == " + "start= " + dateRange.getStart() + " end= " + dateRange.getEnd() +
-              " duration= " + dateRange.getDurationInSecs() + " ntimes = " + ntimes + " data resolution = " + tUnit);
+          if (dateRange != null)
+            out.printf("  DateRange == %s duration = %d secs; ntimes = %d  data resolution = %s%n", dateRange, dateRange.getDurationInSecs(), ntimes, tUnit);
         } catch (Exception e) {
           e.printStackTrace();
         }

@@ -76,12 +76,10 @@ public class InvDatasetImpl extends InvDataset {
   private String alias;
   private double size = 0.0;
 
-  private List<InvAccess> accessLocal = new ArrayList<InvAccess>();
-  private List<InvService> servicesLocal = new ArrayList<InvService>();
-  protected ThreddsMetadata tm = new ThreddsMetadata(false); // all local metadata kept here. This may include
-  // inheritable InvMetadata
+  private List<InvAccess> accessLocal = new ArrayList<>();
+  private List<InvService> servicesLocal = new ArrayList<>();
+  protected ThreddsMetadata tm = new ThreddsMetadata(false); // all local metadata kept here. This may include inheritable InvMetadata
   protected ThreddsMetadata tmi = new ThreddsMetadata(true); // local inheritable metadata (canonicalization)
-  //protected ThreddsMetadata tmi6 = new ThreddsMetadata(true); // local catalog 0.6 inheritable metadata
   protected org.jdom2.Element ncmlElement;
 
   // validation
@@ -130,26 +128,25 @@ public class InvDatasetImpl extends InvDataset {
 
     gc = null;
     tc = null;
-    docs = new ArrayList<InvDocumentation>();
-    metadata = new ArrayList<InvMetadata>();
-    properties = new ArrayList<InvProperty>();
+    docs = new ArrayList<>();
+    metadata = new ArrayList<>();
+    properties = new ArrayList<>();
 
-    creators = new ArrayList<ThreddsMetadata.Source>();
-    contributors = new ArrayList<ThreddsMetadata.Contributor>();
-    dates = new ArrayList<DateType>();
-    keywords = new ArrayList<ThreddsMetadata.Vocab>();
-    projects = new ArrayList<ThreddsMetadata.Vocab>();
-    publishers = new ArrayList<ThreddsMetadata.Source>();
-    variables = new ArrayList<ThreddsMetadata.Variables>();
+    creators = new ArrayList<>();
+    contributors = new ArrayList<>();
+    dates = new ArrayList<>();
+    keywords = new ArrayList<>();
+    projects = new ArrayList<>();
+    publishers = new ArrayList<>();
+    variables = new ArrayList<>();
 
     canonicalize(); // canonicalize thredds metadata
     transfer2PublicMetadata(tm, true); // add local metadata
     transfer2PublicMetadata(tmi, true); // add local inherited metadata
-    //transfer2PublicMetadata(tmi6, true); // add local inherited metadata (cat 6 only)
     transferInheritable2PublicMetadata((InvDatasetImpl) getParent()); // add inheritable metadata from parents
 
     // build the expanded access list
-    access = new ArrayList<InvAccess>();
+    access = new ArrayList<>();
 
     // add access element if urlPath is specified
     if ((urlPath != null) && (getServiceDefault() != null)) {
@@ -356,18 +353,18 @@ public class InvDatasetImpl extends InvDataset {
 
   /**
    * Put metadata into canonical form.
-   * All non-inherited thredds metadata put into dataset.
-   * All inherited thredds metaddata put into single metadata element, pointed to by getLocalMetadataInherited.
+   * All non-inherited thredds metadata put into single metadata element, pointed to by getLocalMetadata().
+   * All inherited thredds metadata put into single metadata element, pointed to by getLocalMetadataInherited().
    * This is needed to do reliable editing.
    */
   protected void canonicalize() {
     List<InvMetadata> whatsLeft = new ArrayList<>();
+    List<InvMetadata> original = new ArrayList<>(tm.metadata); // get copy of metadata
+    tm.metadata = new ArrayList<>();
 
     // transfer all non-inherited thredds metadata to tm
     // transfer all inherited thredds metadata to tmi
-    Iterator iter = tm.metadata.iterator();
-    while (iter.hasNext()) {
-      InvMetadata m = (InvMetadata) iter.next();
+    for (InvMetadata m : original) {
       if (m.isThreddsMetadata() && !m.isInherited() && !m.hasXlink()) {
         ThreddsMetadata nested = m.getThreddsMetadata();
         tm.add(nested, false);
@@ -381,7 +378,8 @@ public class InvDatasetImpl extends InvDataset {
       }
     }
 
-    tm.metadata = whatsLeft;
+    // non ThreddsMetadata goes into tm
+    tm.metadata.addAll(whatsLeft);
   }
 
   /**
@@ -420,8 +418,8 @@ public class InvDatasetImpl extends InvDataset {
     // steal everything
     this.tm = new ThreddsMetadata(from.getLocalMetadata());
     this.tmi = new ThreddsMetadata(from.getLocalMetadataInheritable());
-    this.accessLocal = new ArrayList<InvAccess>(from.getAccessLocal());
-    this.servicesLocal = new ArrayList<InvService>(from.getServicesLocal());
+    this.accessLocal = new ArrayList<>(from.getAccessLocal());
+    this.servicesLocal = new ArrayList<>(from.getServicesLocal());
 
     this.harvest = from.harvest;
     this.collectionType = from.collectionType;
@@ -847,8 +845,8 @@ public class InvDatasetImpl extends InvDataset {
    * @param s list of services.
    */
   public void setServicesLocal(java.util.List<InvService> s) {
-    this.services = new ArrayList<InvService>();
-    this.servicesLocal = new ArrayList<InvService>();
+    this.services = new ArrayList<>();
+    this.servicesLocal = new ArrayList<>();
 
     for (InvService elem : s) {
       addService(elem);
@@ -956,7 +954,7 @@ public class InvDatasetImpl extends InvDataset {
   }
 
   public void setUserProperty(Object key, Object value) {
-    if (userMap == null) userMap = new HashMap<Object, Object>();
+    if (userMap == null) userMap = new HashMap<>();
     userMap.put(key, value);
   }
 
@@ -1328,7 +1326,7 @@ public class InvDatasetImpl extends InvDataset {
     }
 
     java.util.List<InvProperty> propsOrg = ds.getProperties();
-    java.util.List<InvProperty> props = new ArrayList<InvProperty>(ds.getProperties().size());
+    java.util.List<InvProperty> props = new ArrayList<>(ds.getProperties().size());
     for (InvProperty p : propsOrg)  {
       if (!p.getName().startsWith("viewer"))  // eliminate the viewer properties from the html view
         props.add(p);

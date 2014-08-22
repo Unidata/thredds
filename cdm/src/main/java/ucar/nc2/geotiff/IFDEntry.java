@@ -46,7 +46,7 @@ class IFDEntry implements Comparable {
   protected double[] valueD;
   protected String valueS;
 
-  protected ArrayList geokeys = null;
+  protected List<GeoKey> geokeys = null;
 
   IFDEntry( Tag tag, FieldType type) {
     this.tag = tag;
@@ -82,7 +82,7 @@ class IFDEntry implements Comparable {
   }
   public IFDEntry setValue( int[] v) {
     this.count = v.length;
-    value = (int[]) v.clone();
+    value = v.clone();
     return this;
   }
 
@@ -95,7 +95,7 @@ class IFDEntry implements Comparable {
 
   public IFDEntry setValue( double[] v) {
     this.count = v.length;
-    valueD = (double[]) v.clone();
+    valueD = v.clone();
     return this;
   }
 
@@ -107,7 +107,7 @@ class IFDEntry implements Comparable {
 
   public void addGeoKey( GeoKey geokey) {
     if (geokeys == null)
-      geokeys = new ArrayList();
+      geokeys = new ArrayList<>();
     geokeys.add( geokey);
   }
 
@@ -115,41 +115,32 @@ class IFDEntry implements Comparable {
     return tag.compareTo( ((IFDEntry)o).tag);
   }
 
+
+  @Override
   public String toString() {
-    StringBuilder sbuf  = new StringBuilder();
-    sbuf.append(" tag = "+tag);
-    sbuf.append(" type = "+type);
-    sbuf.append(" count = "+count);
-    sbuf.append(" values = ");
+    final StringBuilder sb = new StringBuilder("IFDEntry{");
+    sb.append("tag=").append(tag);
+    sb.append(", type=").append(type);
+    sb.append(", count=").append(count);
 
-    if (type == FieldType.ASCII) {
-      sbuf.append(valueS);
+    if ((type == FieldType.DOUBLE) || (type == FieldType.FLOAT))
+      sb.append(", valueD=").append(Arrays.toString(valueD));
 
-    } else if (type == FieldType.RATIONAL) {
-      for (int i=0; i<2; i+=2) {
-        if (i > 1) sbuf.append(", ");
-        sbuf.append(value[i]+"/"+value[i+1]);
-      }
+    else if (type == FieldType.ASCII)
+      sb.append(", valueS='").append(valueS).append('\'');
 
-    } else if ((type == FieldType.DOUBLE) || (type == FieldType.FLOAT)) {
-       for (int i=0; i<count; i++)
-        sbuf.append(valueD[i]+" ");
-
-    } else {
-       int n= Math.min(count, 30);
-       for (int i=0; i<n; i++)
-        sbuf.append(value[i]+" ");
-    }
-
-    if (geokeys != null) {
-      sbuf.append("\n");
-      for (int i=0; i<geokeys.size(); i++) {
-        GeoKey elem = (GeoKey) geokeys.get(i);
-        sbuf.append("        "+elem+"\n");
+    else if (type == FieldType.RATIONAL) {
+      for (int i = 0; i < 2; i += 2) {
+        if (i > 1) sb.append(", ");
+        sb.append(value[i]).append("/").append(value[i + 1]);
       }
     }
+    else
+      sb.append(", value=").append(Arrays.toString(value));
 
-    return sbuf.toString();
+    sb.append(", geokeys=").append(geokeys);
+    sb.append('}');
+    return sb.toString();
   }
 
 }

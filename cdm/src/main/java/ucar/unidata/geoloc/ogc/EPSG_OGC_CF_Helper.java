@@ -167,6 +167,7 @@ public class EPSG_OGC_CF_Helper {
   }
 
   private static String projToString(Projection proj) {
+    if (proj == null) return "null";
     StringBuilder sb = new StringBuilder();
     sb.append(proj.getName())
             .append(" [").append(proj.getClassName())

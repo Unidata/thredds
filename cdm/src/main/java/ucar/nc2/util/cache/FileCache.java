@@ -91,7 +91,7 @@ public class FileCache {
   /**
    * You must call shutdown() to shut down the background threads in order to get a clean process shutdown.
    */
-  static public void shutdown() {
+  public static synchronized void shutdown() {
     if (exec != null)
       exec.shutdown();
     exec = null;
@@ -101,6 +101,7 @@ public class FileCache {
 
   private String name;
   private final int softLimit, minElements, hardLimit;
+  private final boolean wantsCleanup;
 
   private final ConcurrentHashMap<Object, CacheElement> cache; // unique files (by key, often = filename)
   private final ConcurrentHashMap<FileCacheable, CacheElement.CacheFile> files; // list of all files in the cache
@@ -150,15 +151,19 @@ public class FileCache {
     this.softLimit = softLimit;
     this.hardLimit = hardLimit;
 
-    cache = new ConcurrentHashMap<Object, CacheElement>(2 * softLimit, 0.75f, 8);
-    files = new ConcurrentHashMap<FileCacheable, CacheElement.CacheFile>(4 * softLimit, 0.75f, 8);
+    cache = new ConcurrentHashMap<>(2 * softLimit, 0.75f, 8);
+    files = new ConcurrentHashMap<>(4 * softLimit, 0.75f, 8);
+    wantsCleanup = period > 0;
 
-    if (period > 0) {
-      if (exec == null)
-        exec = Executors.newSingleThreadScheduledExecutor();
-      exec.scheduleAtFixedRate(new CleanupTask(), period, period, TimeUnit.SECONDS);
+    if (wantsCleanup) {
+      getExec().scheduleAtFixedRate(new CleanupTask(), period, period, TimeUnit.SECONDS);
       cacheLog.debug("FileCache " + name + " cleanup every " + period + " secs");
     }
+  }
+
+  private static synchronized ScheduledExecutorService getExec() {
+    if (exec == null) exec = Executors.newSingleThreadScheduledExecutor();
+    return exec;
   }
 
   /**
@@ -264,7 +269,7 @@ public class FileCache {
           needHard = true;
           hasScheduled.getAndSet(true); // tell other threads not to schedule another cleanup
 
-        } else if ((count > softLimit) && (exec != null)) { // && (softLimit > 0)) {
+        } else if ((count > softLimit) && wantsCleanup) { // && (softLimit > 0)) {
           hasScheduled.getAndSet(true); // tell other threads not to schedule another cleanup
           needSoft = true;
         }
@@ -277,7 +282,7 @@ public class FileCache {
       cleanup(hardLimit);
 
     } else if (needSoft) {
-      exec.schedule(new CleanupTask(), 100, TimeUnit.MILLISECONDS); // immediate cleanup in 100 msec
+      getExec().schedule(new CleanupTask(), 100, TimeUnit.MILLISECONDS); // immediate cleanup in 100 msec
       if (debugCleanup) System.out.println("CleanupTask scheduled due to soft limit time=" + new Date());
     }
 
@@ -347,7 +352,7 @@ public class FileCache {
 
   /**
    * Remove all instances of object from the cache
-   * @param hashKey
+   * @param hashKey the object
    */
   public void remove(Object hashKey) {
      if (disabled.get()) return;
@@ -459,7 +464,7 @@ public class FileCache {
    * @param force if true, remove them even if they are currently locked.
    */
   public synchronized void clearCache(boolean force) {
-    List<CacheElement.CacheFile> deleteList = new ArrayList<CacheElement.CacheFile>(2 * cache.size());
+    List<CacheElement.CacheFile> deleteList = new ArrayList<>(2 * cache.size());
 
     if (force) {
       cache.clear(); // deletes everything from the cache
@@ -515,7 +520,7 @@ public class FileCache {
    * @param format add to this
    */
   public void showCache(Formatter format) {
-    ArrayList<CacheElement.CacheFile> allFiles = new ArrayList<CacheElement.CacheFile>(files.size());
+    ArrayList<CacheElement.CacheFile> allFiles = new ArrayList<>(files.size());
     for (CacheElement elem : cache.values()) {
       synchronized (elem) {
         allFiles.addAll(elem.list);
@@ -532,7 +537,7 @@ public class FileCache {
   }
 
   public List<String> showCache() {
-    ArrayList<CacheElement.CacheFile> allFiles = new ArrayList<CacheElement.CacheFile>(files.size());
+    List<CacheElement.CacheFile> allFiles = new ArrayList<>(files.size());
     for (CacheElement elem : cache.values()) {
       synchronized (elem) {
         allFiles.addAll(elem.list);
@@ -540,7 +545,7 @@ public class FileCache {
     }
     Collections.sort(allFiles); // sort so oldest are on top
 
-    ArrayList<String> result = new ArrayList<String>(allFiles.size());
+    List<String> result = new ArrayList<>(allFiles.size());
     for (CacheElement.CacheFile file : allFiles) {
       result.add(file.toString());
     }
@@ -584,7 +589,7 @@ public class FileCache {
       cleanups.incrementAndGet();
 
       // add unlocked files to the all list
-      ArrayList<CacheElement.CacheFile> allFiles = new ArrayList<CacheElement.CacheFile>(size + 10);
+      List<CacheElement.CacheFile> allFiles = new ArrayList<>(size + 10);
       for (CacheElement.CacheFile file : files.values()) {
         if (!file.isLocked.get()) allFiles.add(file);
       }
@@ -593,7 +598,7 @@ public class FileCache {
       // take oldest ones and put on delete list
       int need2delete = size - minElements;
       int minDelete = size - maxElements;
-      ArrayList<CacheElement.CacheFile> deleteList = new ArrayList<CacheElement.CacheFile>(need2delete);
+      List<CacheElement.CacheFile> deleteList = new ArrayList<>(need2delete);
 
       int count = 0;
       Iterator<CacheElement.CacheFile> iter = allFiles.iterator();
@@ -649,7 +654,7 @@ public class FileCache {
   // not private for testing
   class CacheElement {
     @GuardedBy("this")
-    final List<CacheFile> list = new LinkedList<CacheFile>(); // may have multiple copies of the same file opened
+    final List<CacheFile> list = new LinkedList<>(); // may have multiple copies of the same file opened
     final Object hashKey;
 
     CacheElement(FileCacheable ncfile, Object hashKey) {

@@ -364,6 +364,7 @@ public class CoordinateAxis1D extends CoordinateAxis {
       throw new UnsupportedOperationException("CoordinateAxis1D.getBound1() on non-numeric");
     if (!wasBoundsDone) makeBounds();
     if (bound1 == null) makeBoundsFromEdges();
+    assert bound1 != null;
     return bound1.clone();
   }
 
@@ -380,6 +381,7 @@ public class CoordinateAxis1D extends CoordinateAxis {
       throw new UnsupportedOperationException("CoordinateAxis1D.getBound2() on non-numeric");
     if (!wasBoundsDone) makeBounds();
     if (bound2 == null) makeBoundsFromEdges();
+    assert bound2 != null;
     return bound2.clone();
   }
 

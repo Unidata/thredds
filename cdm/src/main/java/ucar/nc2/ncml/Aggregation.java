@@ -224,7 +224,7 @@ public abstract class Aggregation {
     if (dateFormatMark != null) {
       isDate = true;
       if (type == Type.joinExisting) type = Type.joinExistingOne; // tricky
-      DateExtractor dateExtractor = (dateFormatMark == null) ? null : new DateExtractorFromName(dateFormatMark, true);
+      DateExtractor dateExtractor = new DateExtractorFromName(dateFormatMark, true);
       datasetManager.setDateExtractor(dateExtractor);
     }
  }
@@ -693,8 +693,6 @@ public abstract class Aggregation {
           return null;
 
         Variable v = findVariable(ncd, mainv);
-        if ((mainv == null) || (v == null))
-          System.out.println("HEY (mainv == null)");
         if (debugRead)
           System.out.printf("Agg.read %s from %s in %s%n", mainv.getNameAndDimensions(), v.getNameAndDimensions(), getLocation());
         return v.read();

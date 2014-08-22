@@ -254,7 +254,7 @@ public class HybridSigmaPressure extends VerticalTransformImpl {
   
   private double computeP0() throws IOException{
 	  
-	  if(p0Var == null) return 1.0; //Has AP variable
+	  if (p0Var == null) return 1.0; //Has AP variable
 	  
 	  double p0 = p0Var.readScalarDouble(); 
 	  

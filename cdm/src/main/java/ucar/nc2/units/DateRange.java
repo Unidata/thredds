@@ -374,11 +374,13 @@ public class DateRange {
         duration = new TimeDuration(chooseResolution(secs));
       } catch (ParseException e) {
         // cant happen
+        throw new RuntimeException(e);
       }
     }
 
     if (resolution == null) {
       duration.setValueInSeconds(secs);
+
     } else {
       // make it a multiple of resolution
       double resSecs = resolution.getValueInSeconds();

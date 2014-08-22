@@ -42,6 +42,23 @@
 Array.makeArray(DataType dtype, int npts, double start, double incr);
 Array.makeArray(DataType dtype, List&lt;String&gt; stringValues);</pre>
 </blockquote>
+<p><strong>Q: When processing Array data, how do you avoid  if-then-else blocks (or switch statements) going through every type (float, long, double, byte, short, etc.) ?</strong><a name="array_switching" id="array_switching"></a></p>
+<p>Theres no way around switching on primitive type. However, you can safely widen anything to <em>double</em> (except type <em>long</em> may lose precision). So if you have an Array that you know is numeric, you can do:</p>
+<pre> public double[] getArrayAsDoubles(Array a) {
+   assert a.getDataType().isNumeric();
+   double[] result = new double[(int) a.getSize()];
+
+   IndexIterator iterA = a.getIndexIterator();
+   int count = 0;
+   while (iterA.hasNext())
+     result[count++] = iterA.getDoubleNext();
+
+   return result;
+ }</pre>
+<p>this is equivilent to casting the actual values as doubles. The &quot;switching on primitive type&quot; is being done by Java's polymorphism, that is, because the class Array has subtypes for each primitive type.</p>
+<p>Note that this flattens the Array into a 1D primitive array. Another way to do the same thing, which may be more efficient, and is certainly more concise:</p>
+<pre>assert a.getDataType().isNumeric();
+double[] result = (double []) a.get1DJavaArray(double.class);</pre>
 <h2><a name="Caching" id="Caching"></a>Caching</h2>
 
 <p><strong>Q: How do I use NetcdfFile object caching</strong>?</p>

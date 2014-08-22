@@ -136,11 +136,7 @@ public class NOWRadiosp extends AbstractIOServiceProvider {
     List<Range> ranges = section.getRanges();
 
     vinfo = (NOWRadheader.Vinfo) v2.getSPobject();
-
-    try {
-      vdata = headerParser.getData((int) vinfo.hoff);
-    } catch (Exception e) {
-    }
+    vdata = headerParser.getData((int) vinfo.hoff);
 
     bos = ByteBuffer.wrap(vdata);
     data = readOneScanData(bos, vinfo, v2.getShortName());

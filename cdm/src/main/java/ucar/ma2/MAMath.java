@@ -319,7 +319,6 @@ public class MAMath {
       iterR.setLongNext(iterA.getLongNext());
   }
 
-
   /**
    * copy array a to array result as integers
    * The values from the arrays a are converted to integer (if needed),

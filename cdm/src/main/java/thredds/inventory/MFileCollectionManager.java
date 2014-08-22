@@ -32,6 +32,7 @@
 
 package thredds.inventory;
 
+import net.jcip.annotations.GuardedBy;
 import net.jcip.annotations.ThreadSafe;
 import thredds.featurecollection.FeatureCollectionConfig;
 import ucar.nc2.time.CalendarDate;
@@ -96,7 +97,10 @@ public class MFileCollectionManager extends CollectionManagerAbstract {
 
   // this can change = keep under lock
   private Map<String, MFile> map; // current map of MFile in the collection
+
+  @GuardedBy("this")
   private long lastScanned;       // last time scanned
+  @GuardedBy("this")
   private AtomicLong lastChanged = new AtomicLong(); // last time the set of files changed
 
   private MFileCollectionManager(String collectionName, String collectionSpec, String olderThan, Formatter errlog) {
@@ -282,12 +286,12 @@ public class MFileCollectionManager extends CollectionManagerAbstract {
   }
 
   @Override
-  public long getLastScanned() {
+  public synchronized long getLastScanned() {
     return lastScanned;
   }
 
   @Override
-  public long getLastChanged() {
+  public synchronized long getLastChanged() {
     return lastChanged.get();
   }
 
@@ -319,7 +323,7 @@ public class MFileCollectionManager extends CollectionManagerAbstract {
     }
 
     Date now = new Date();
-    Date lastCheckedDate = new Date(lastScanned);
+    Date lastCheckedDate = new Date(getLastScanned());
     Date need = recheck.add(lastCheckedDate);
     if (now.before(need)) {
       logger.debug("{}: scan not needed, last scanned={}, now={}", collectionName, lastCheckedDate, now);

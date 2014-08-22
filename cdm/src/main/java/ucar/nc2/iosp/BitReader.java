@@ -114,11 +114,13 @@ public class BitReader {
   /**
    * Read the next nb bits and return an Unsigned Long .
    *
-   * @param nb the number of bits to convert to int, must be <= 64.
+   * @param nb the number of bits to convert to int, must be 0 <= nb <= 64.
    * @return result
    * @throws java.io.IOException on read error
    */
   public long bits2UInt(int nb) throws IOException {
+    assert nb <= 64;
+    assert nb >= 0;
 
     long result = 0;
     int bitsLeft = nb;
@@ -127,13 +129,13 @@ public class BitReader {
 
       // we ran out of bits - fetch the next byte...
       if (bitPos == 0) {
-        bitBuf = myNextByte();
+        bitBuf = nextByte();
         bitPos = BIT_LENGTH;
       }
 
       // -- retrieve bit from current byte ----------
       // how many bits to read from the current byte
-      int size = min(bitsLeft, bitPos);
+      int size = Math.min(bitsLeft, bitPos);
       // move my part to start
       int myBits = bitBuf >> (bitPos - size);
       // mask-off sign-extending
@@ -144,6 +146,8 @@ public class BitReader {
       // -- put bit to result ----------------------
       // where to place myBits inside of result
       int shift = bitsLeft - size;
+      assert shift >= 0;
+
       // put it there
       result |= myBits << shift;
 
@@ -151,11 +155,9 @@ public class BitReader {
       // update information on what we consumed
       bitsLeft -= size;
       bitPos -= size;
-
     }
 
     return result;
-
   }
 
   /**
@@ -182,24 +184,12 @@ public class BitReader {
 
   }
 
-  private byte myNextByte() throws IOException {
+  private byte nextByte() throws IOException {
     if (raf != null) {
       return (byte) raf.read();
     } else {
       return data[dataPos++];
     }
-  }
-
-  private int nextByte() throws IOException {
-    if (raf != null) {
-      return raf.read();
-    } else {
-      return data[dataPos++];
-    }
-  }
-
-  private static int min(int a, int b) {
-    return a > b ? b : a;
   }
 
   public static long setBit(long decimal, int N, boolean value) {
