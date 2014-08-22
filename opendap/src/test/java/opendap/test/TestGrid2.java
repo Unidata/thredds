@@ -72,6 +72,7 @@ public class TestGrid2 extends UnitTestCommon
         setSystemProperties();
     }
 
+    @Ignore
     public void testGrid2()
             throws Exception
     {
