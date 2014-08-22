@@ -17,7 +17,7 @@ import ucar.util.prefs.ui.*;
  */
 public class ManageForm extends JPanel {
 
-  public class Data {
+  public static class Data {
     public String server;
     public boolean wantAccess, wantServlet, wantRoots, useHttps;
 

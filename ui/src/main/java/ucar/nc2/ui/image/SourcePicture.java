@@ -556,7 +556,8 @@ public class SourcePicture implements Cloneable {
 			Tools.log( "imageComplete" );
 		}
 		public void imageProgress( ImageReader source, float percentageDone ) {
-			notifySourceLoadProgressListeners ( LOADING_PROGRESS, (new Float(percentageDone)).intValue() );
+			notifySourceLoadProgressListeners ( LOADING_PROGRESS,
+                    (int) percentageDone);
 			Tools.log( "imageProgress: " + percentageFormatter.format( percentageDone ) + "%");
 		}
 		public void imageStarted( ImageReader source, int imageIndex ) {
