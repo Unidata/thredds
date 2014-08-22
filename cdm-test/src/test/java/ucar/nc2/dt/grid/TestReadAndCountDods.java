@@ -48,6 +48,7 @@ public class TestReadAndCountDods {
   public static List<Object[]> getTestParameters() {
     List<Object[]> result = new ArrayList<>();
 
+    // Grib files, one from each model
     result.add(new Object[]{"catalog/grib/NCEP/DGEX/CONUS_12km/files/latest.xml", 23, 11, 13, 8});
     // Geopotential_height_surface put out 6 and 18Z, ngrids osc between 22 and 23
     result.add(new Object[]{"catalog/grib/NCEP/DGEX/Alaska_12km/files/latest.xml", -1, 11, 13, 8});
@@ -68,10 +69,12 @@ public class TestReadAndCountDods {
 
     // flipping 59, 15, 17, 13,  and 59, 15, 18, 13,
     result.add(new Object[]{"catalog/grib/NCEP/NAM/Alaska_11km/files/latest.xml", 59, 15, 18, 13});
-    // flipping between 154, 34, 36, 31 and 154, 33, 35, 31
-    result.add(new Object[]{"catalog/grib/NCEP/NAM/Alaska_45km/conduit/files/latest.xml", 154, -1, -1, 31});
+    // flipping between 154, 34, 36, 31 and 154, 33, 35, 31, and 156, 34, 37, 31
+    result.add(new Object[]{"catalog/grib/NCEP/NAM/Alaska_45km/conduit/files/latest.xml", -1, -1, -1, 31});
     result.add(new Object[]{"catalog/grib/NCEP/NAM/CONUS_12km/files/latest.xml", 59, 15, 17, 13});
-    result.add(new Object[]{"catalog/grib/NCEP/NAM/CONUS_40km/conduit/files/latest.xml", 176, 29, 31, 25});
+
+    // flipping between  176, 29, 31, 25 and 178, 29, 32, 25
+    result.add(new Object[]{"catalog/grib/NCEP/NAM/CONUS_40km/conduit/files/latest.xml", -1, 29, -1, 25});
     result.add(new Object[]{"catalog/grib/NCEP/NAM/Polar_90km/files/latest.xml", 133, 28, 30, 25});
     result.add(new Object[]{"catalog/grib/NCEP/NAM/Polar_90km/files/latest.xml", 133, 28, 30, 25});
 
@@ -103,47 +106,6 @@ public class TestReadAndCountDods {
   @org.junit.Test
   public void readAndCount() throws Exception {
     TestReadandCount.doOne(base, name, ngrids, ncoordSys, ncoordAxes, nVertCooordAxes);
-  }
-
-  // Grib files, one from each model
-  public void testRead() throws Exception {
-    TestReadandCount.doOne(base,"catalog/grib/NCEP/DGEX/CONUS_12km/files/latest.xml", 23, 11, 13, 8);
-    // Geopotential_height_surface put out 6 and 18Z, ngrids osc between 22 and 23
-    TestReadandCount.doOne(base,"catalog/grib/NCEP/DGEX/Alaska_12km/files/latest.xml", -1, 11, 13, 8);
-
-    TestReadandCount.doOne(base,"catalog/grib/NCEP/GEFS/Global_1p0deg_Ensemble/members/files/latest.xml", 35, 11, 13, 6);
-    TestReadandCount.doOne(base,"grib/NCEP/GEFS/Global_1p0deg_Ensemble/derived/files/latest.xml", 70, 11, 12, 6);
-
-    // 133, 26, 27, 21 vs 133, 31, 29, 21
-    TestReadandCount.doOne(base,"catalog/grib/NCEP/GFS/Global_0p5deg/files/latest.xml", 133, -1, -1, 21);
-    TestReadandCount.doOne(base,"catalog/grib/NCEP/GFS/Global_onedeg/files/latest.xml", 133, 26, 27, 21);
-    TestReadandCount.doOne(base,"catalog/grib/NCEP/GFS/Global_2p5deg/files/latest.xml", 133, 24, 25, 21);
-    // flipping between 23, 9, 11, 6 and 23, 12, 14, 6
-    TestReadandCount.doOne(base,"catalog/grib/NCEP/GFS/N_Hemisphere_381km/files/latest.xml", 23, -1, -1, 6);
-    // flipping between 50, 14, 15, 8 and  50, 11, 13, 8
-    TestReadandCount.doOne(base,"catalog/grib/NCEP/GFS/Pacific_40km/files/latest.xml", 50, -1, -1, 8);
-    TestReadandCount.doOne(base,"catalog/grib/NCEP/GFS/Puerto_Rico_0p5deg/files/latest.xml", 50, 11, 13, 8);
-    TestReadandCount.doOne(base,"catalog/grib/NCEP/GFS/CONUS_80km/files/latest.xml", 31, 12, 15, 8);
-
-    // flipping 59, 15, 17, 13,  and 59, 15, 18, 13,
-    TestReadandCount.doOne(base,"catalog/grib/NCEP/NAM/Alaska_11km/files/latest.xml", 59, 15, 18, 13);
-    // flipping between 154, 34, 36, 31 and 154, 33, 35, 31 OR 156, 34, 37, 31
-    TestReadandCount.doOne(base,"catalog/grib/NCEP/NAM/Alaska_45km/conduit/files/latest.xml", 156, -1, -1, 31);
-    TestReadandCount.doOne(base,"catalog/grib/NCEP/NAM/CONUS_12km/files/latest.xml", 59, 15, 17, 13);
-    TestReadandCount.doOne(base,"catalog/grib/NCEP/NAM/CONUS_40km/conduit/files/latest.xml", 176, 29, 31, 25);
-    TestReadandCount.doOne(base,"catalog/grib/NCEP/NAM/Polar_90km/files/latest.xml", 133, 28, 30, 25);
-    TestReadandCount.doOne(base,"catalog/grib/NCEP/NAM/Polar_90km/files/latest.xml", 133, 28, 30, 25);
-
-    TestReadandCount.doOne(base,"catalog/grib/NCEP/NAM/Alaska_22km/files/latest.xml", 25, 8, 10, 6);
-    TestReadandCount.doOne(base,"catalog/grib/NCEP/NAM/Alaska_45km/noaaport/files/latest.xml", 21, 6, 8, 4);
-    // flipping between 29, 12, 14, 9, and 29, 15, 15, 9
-    TestReadandCount.doOne(base,"catalog/grib/NCEP/NAM/Alaska_95km/files/latest.xml", 29, -1, -1, 9);
-    TestReadandCount.doOne(base,"catalog/grib/NCEP/NAM/CONUS_20km/noaaport/files/latest.xml", 33, 9, 11, 7);
-    TestReadandCount.doOne(base,"catalog/grib/NCEP/NAM/CONUS_80km/files/latest.xml", 41, 11, 13, 8);
-
-    TestReadandCount.doOne(base,"catalog/grib/NCEP/RAP/CONUS_13km/files/latest.xml", 53, 12, 14, 9);
-    TestReadandCount.doOne(base,"catalog/grib/NCEP/RAP/CONUS_20km/files/latest.xml", 89, 18, 20, 14);
-    TestReadandCount.doOne(base,"catalog/grib/NCEP/RAP/CONUS_40km/files/latest.xml", 89, 18, 20, 14);
   }
 
   public void utestProblem() throws Exception {
