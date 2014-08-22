@@ -406,7 +406,7 @@ public abstract class AggregationOuterDimension extends Aggregation implements P
     }
   }
 
-  private class Result {
+  private static class Result {
     Array data;
     int index;
 

@@ -188,7 +188,7 @@ public class IndexChunker {
     }
   }
 
-  private class Dim {
+  private static class Dim {
     long stride;    // number of elements
     long maxSize;   // number of elements - must be a long since we may merge
     Range want;    // desired Range

@@ -43,7 +43,7 @@ class MemTracker {
     f.format("%n");
   }
 
-  class Mem implements Comparable {
+  static class Mem implements Comparable {
     public String name;
     public long start, end;
 

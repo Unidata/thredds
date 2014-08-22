@@ -220,7 +220,7 @@ public class ControllerOS7 implements MController {
      public boolean accept(Path path);
   }
 
-  private class MyFilter2 implements DirectoryStream.Filter<Path> {
+  private static class MyFilter2 implements DirectoryStream.Filter<Path> {
     PathFilter pathFilter;
 
     private MyFilter2(PathFilter pathFilter) {

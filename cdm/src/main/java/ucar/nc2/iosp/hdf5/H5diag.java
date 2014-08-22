@@ -20,7 +20,7 @@ public class H5diag {
     this.iosp = iosp;
   }
 
-  private class Size {
+  private static class Size {
     long storage;
     long nominal;
     int count;

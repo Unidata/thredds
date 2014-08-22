@@ -352,7 +352,7 @@ Where startingBlockSize is from the header, ie the same for all indirect blocks.
     }
   }
 
-  private class DataBlock {
+  private static class DataBlock {
     long address;
     long sizeFilteredDirectBlock;
     int filterMask;

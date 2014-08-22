@@ -180,7 +180,7 @@ public class ControllerOS implements MController {
     Iterator<MFile> currIter;
 
     MFileIteratorAll(File top) {
-      traverse = new LinkedList<Traversal>();
+      traverse = new LinkedList<>();
       currTraversal = new Traversal(top);
     }
 
@@ -232,7 +232,7 @@ public class ControllerOS implements MController {
   }
 
  // traversal of one directory
-  private class Traversal {
+  private static class Traversal {
     File dir; // top directory
     List<File> fileList;  // list of files
     Iterator<File> subdirIterator;  // list of subdirs
@@ -246,19 +246,21 @@ public class ControllerOS implements MController {
       if (dir.listFiles() == null) return;
 
       if (logger.isTraceEnabled()) logger.trace("List Directory "+dir);
-      List<File> subdirList = new ArrayList<File>();
-      for (File f : dir.listFiles()) {  /// 1
-        if (f == null) {
-          logger.warn("  NULL FILE "+f+" in directory "+dir);
-          continue;
-        }
-        if (logger.isTraceEnabled()) logger.trace("  File "+f);
+      List<File> subdirList = new ArrayList<>();
+      File[] files = dir.listFiles();
+      if (files != null)
+        for (File f : files) {  /// 1
+          if (f == null) {
+            logger.warn("  NULL FILE in directory "+dir);
+            continue;
+          }
+          if (logger.isTraceEnabled()) logger.trace("  File "+f);
 
-        if (f.isDirectory())
-          subdirList.add(f);
-        else
-          fileList.add(f);
-      }
+          if (f.isDirectory())
+            subdirList.add(f);
+          else
+            fileList.add(f);
+        }
 
       if (subdirList.size() > 0)
         this.subdirIterator = subdirList.iterator();

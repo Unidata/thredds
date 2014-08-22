@@ -454,7 +454,7 @@ public class XMLEntityResolver implements org.xml.sax.EntityResolver {
 
   }
 
-  private class MyInputSource extends org.xml.sax.InputSource {
+  private static class MyInputSource extends org.xml.sax.InputSource {
     MyInputSource( String entity) {
       setCharacterStream(new StringReader(entity));
     }

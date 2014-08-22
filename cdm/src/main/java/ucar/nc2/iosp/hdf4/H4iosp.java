@@ -383,7 +383,7 @@ public class H4iosp extends AbstractIOServiceProvider {
     } // */
   }
 
-  private class H4ChunkIterator implements LayoutTiled.DataChunkIterator {
+  private static class H4ChunkIterator implements LayoutTiled.DataChunkIterator {
     List<H4header.DataChunk> chunks;
     int chunkNo;
 

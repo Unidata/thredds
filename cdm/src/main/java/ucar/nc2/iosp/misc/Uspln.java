@@ -819,25 +819,5 @@ public class Uspln extends AbstractLightningIOSP {
 
   }
 
-  /**
-   * Class to hold index information
-   */
-  private class IospData {
-
-    /**
-     * the variable number
-     */
-    int varno;
-
-    /**
-     * Create a holder for the variable number
-     *
-     * @param varno the number
-     */
-    IospData(int varno) {
-      this.varno = varno;
-    }
-  }
-
 }
 

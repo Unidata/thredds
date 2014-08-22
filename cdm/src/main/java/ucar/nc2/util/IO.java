@@ -399,14 +399,16 @@ public class IO {
     if (!fromDir.exists())
       return;
     if (!toDir.exists())
-      toDir.mkdirs();
+      assert toDir.mkdirs();
 
-    for (File f : fromDir.listFiles()) {
-      if (f.isDirectory())
-        copyDirTree(f.getAbsolutePath(), toDir.getAbsolutePath() + "/" + f.getName());
-      else
-        copyFile(f.getAbsolutePath(), toDir.getAbsolutePath() + "/" + f.getName());
-    }
+    File[] files = fromDir.listFiles();
+    if (files != null)
+      for (File f : files) {
+        if (f.isDirectory())
+          copyDirTree(f.getAbsolutePath(), toDir.getAbsolutePath() + "/" + f.getName());
+        else
+          copyFile(f.getAbsolutePath(), toDir.getAbsolutePath() + "/" + f.getName());
+      }
   }
 
   /**

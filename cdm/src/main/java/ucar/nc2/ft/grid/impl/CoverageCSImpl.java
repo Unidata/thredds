@@ -203,12 +203,10 @@ public class CoverageCSImpl implements CoverageCS {
 
   ///////////////////
 
-
   @Override
   public Subset makeSubsetFromLatLonRect(LatLonRect llbb) throws InvalidRangeException {
     return null;  //To change body of implemented methods use File | Settings | File Templates.
   }
-
 
 
   @Override
@@ -218,7 +216,7 @@ public class CoverageCSImpl implements CoverageCS {
 
 
 
-  class SubsetImpl implements Subset {
+  static class SubsetImpl implements Subset {
     int level = -1;
     int time = -1;
 

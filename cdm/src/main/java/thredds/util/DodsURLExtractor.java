@@ -195,7 +195,7 @@ public class DodsURLExtractor {
 
   } // Callerbacker
 
-  private class ParserGetter extends HTMLEditorKit {
+  private static class ParserGetter extends HTMLEditorKit {
     // purely to make this method public
     public HTMLEditorKit.Parser getParser() {
       return super.getParser();

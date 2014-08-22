@@ -1415,7 +1415,7 @@ public class H4header {
     return sbuff.toString();
   }
 
-  class DataChunk {
+  static class DataChunk {
     int origin[];
     TagData data;
 

@@ -644,22 +644,12 @@ class UtmCoordinateConversion {
 
   }
 
-  private class LatZones {
-    private char[] letters = {'A', 'C', 'D', 'E', 'F', 'G', 'H', 'J', 'K',
-            'L', 'M', 'N', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Z'};
-
-    private int[] degrees = {-90, -84, -72, -64, -56, -48, -40, -32, -24, -16,
-            -8, 0, 8, 16, 24, 32, 40, 48, 56, 64, 72, 84};
-
-    private char[] negLetters = {'A', 'C', 'D', 'E', 'F', 'G', 'H', 'J', 'K',
-            'L', 'M'};
-
-    private int[] negDegrees = {-90, -84, -72, -64, -56, -48, -40, -32, -24,
-            -16, -8};
-
-    private char[] posLetters = {'N', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W',
-            'X', 'Z'};
-
+  private static class LatZones {
+    private char[] letters = {'A', 'C', 'D', 'E', 'F', 'G', 'H', 'J', 'K', 'L', 'M', 'N', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Z'};
+    private int[] degrees = {-90, -84, -72, -64, -56, -48, -40, -32, -24, -16, -8, 0, 8, 16, 24, 32, 40, 48, 56, 64, 72, 84};
+    private char[] negLetters = {'A', 'C', 'D', 'E', 'F', 'G', 'H', 'J', 'K', 'L', 'M'};
+    private int[] negDegrees = {-90, -84, -72, -64, -56, -48, -40, -32, -24, -16, -8};
+    private char[] posLetters = {'N', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Z'};
     private int[] posDegrees = {0, 8, 16, 24, 32, 40, 48, 56, 64, 72, 84};
 
     private int arrayLength = 22;

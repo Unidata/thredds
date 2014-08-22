@@ -53,7 +53,7 @@ public class DirectoryBuilder {
 
   //////////////////////////////////////////////////////////////////////////////////////////////
 
-  private final boolean debug = false;
+  private static final boolean debug = false;
   private final String topCollectionName;  // collection name
   private final String partitionName;      // partition name
   private final Path dir;                  // the directory

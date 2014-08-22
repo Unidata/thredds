@@ -32,7 +32,6 @@
  */
 package ucar.nc2.util;
 
-import ucar.nc2.util.EscapeStrings;
 import ucar.unidata.util.StringUtil2;
 
 import java.io.*;
@@ -203,7 +202,8 @@ public class DiskCache {
       // now comes the tricky part to make sure we can open and write to it
       try {
         if ( ! simulateUnwritableDir && f.createNewFile()) {
-          f.delete();
+          boolean ret = f.delete();
+          assert ret;
           return f;
         }
       } catch (IOException e) {
@@ -361,8 +361,10 @@ public class DiskCache {
   static void make(String filename) throws IOException {
     File want = DiskCache.getCacheFile(filename);
     System.out.println("make=" + want.getPath() + "; exists = " + want.exists());
-    if (!want.exists())
-      want.createNewFile();
+    if (!want.exists()) {
+      boolean ret = want.createNewFile();
+      assert ret;
+    }
     System.out.println(" canRead= " + want.canRead() + " canWrite = " + want.canWrite() + " lastMod = " + new Date(want.lastModified()));
     System.out.println(" original=" + filename);
   }

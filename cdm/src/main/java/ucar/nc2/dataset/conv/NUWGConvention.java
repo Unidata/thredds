@@ -387,7 +387,7 @@ public class NUWGConvention extends CoordSysBuilder {
     // return v.getName().equalsIgnoreCase("fhg") ? "up" : "down";
   }
 
-  private class NavComparator implements java.util.Comparator<NavInfo> {
+  private static class NavComparator implements java.util.Comparator<NavInfo> {
     public int compare(NavInfo n1, NavInfo n2) {
       return n1.getName().compareTo( n2.getName());
     }

@@ -157,7 +157,7 @@ public class Nc4ChunkingDefault extends Nc4ChunkingStrategy {
     else if ( countUnlimitedDims == 3) need = (int) Math.cbrt(needFactor);
     else {
       // nth root?? hmm roundoff !!
-      need = (int)  Math.pow(needFactor, 1 / countUnlimitedDims);
+      need = (int)  Math.pow(needFactor, 1.0 / countUnlimitedDims);
     }
 
     int[] result = new int[shape.length];

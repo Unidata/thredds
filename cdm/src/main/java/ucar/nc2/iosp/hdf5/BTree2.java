@@ -85,7 +85,7 @@ public class BTree2 {
   }
 
   // these are part of the level 1A data structure, type = 0
-  class Entry2 {
+  static class Entry2 {
     long childAddress, nrecords, totNrecords;
     Object record;
   }

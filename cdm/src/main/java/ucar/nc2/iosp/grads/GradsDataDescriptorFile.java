@@ -1031,7 +1031,7 @@ public class GradsDataDescriptorFile {
   /**
    * Class to handle the CHSUB parameters
    */
-  protected class Chsub {
+  protected static class Chsub {
 
     /**
      * start time index (0 based)

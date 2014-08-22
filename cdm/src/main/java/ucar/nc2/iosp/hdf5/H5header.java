@@ -2031,7 +2031,7 @@ public class H5header {
     return null;
   }
 
-  public class TypeInfo {
+  public static class TypeInfo {
     int hdfType, byteSize;
     DataType dataType;
     int endian = -1;   // 1 = RandomAccessFile.LITTLE_ENDIAN || 0 = RandomAccessFile.BIG_ENDIAN
