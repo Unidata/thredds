@@ -112,13 +112,11 @@ public class H5header {
   static public boolean isValidFile(ucar.unidata.io.RandomAccessFile raf) throws IOException {
     long filePos = 0;
     long size = raf.length();
-    byte[] b = new byte[8];
 
     // search forward for the header
     while ((filePos < size) && (filePos < maxHeaderPos)) {
       raf.seek(filePos);
-      raf.readFully(b);
-      String magic = new String(b, CDM.utf8Charset);
+      String magic = raf.readString(8);
       if (magic.equals(hdf5magic))
         return true;
       filePos = (filePos == 0) ? 512 : 2 * filePos;
@@ -177,11 +175,9 @@ public class H5header {
     // find the superblock - no limits on how far in
     boolean ok = false;
     long filePos = 0;
-    byte[] b = new byte[8];
     while ((filePos < actualSize)) {
       raf.seek(filePos);
-      raf.readFully(b);
-      String magic = new String(b);
+      String magic = raf.readString(8);
       if (magic.equals(hdf5magic)) {
         ok = true;
         break;
@@ -2331,9 +2327,7 @@ public class H5header {
 
       } else { // level 2A2 (first part, before the messages)
         // first byte was already read
-        byte[] name = new byte[3];
-        raf.readFully(name);
-        String magic = new String(name, CDM.utf8Charset);
+        String magic = raf.readString(3);
         if (!magic.equals("HDR"))
           throw new IllegalStateException("DataObject doesnt start with OHDR");
 
@@ -3913,9 +3907,7 @@ public class H5header {
     String datemod;
 
     void read() throws IOException {
-      byte[] s = new byte[14];
-      raf.readFully(s);
-      datemod = new String(s, CDM.utf8Charset);
+      datemod = raf.readString(14);
       if (debug1) debugOut.println("   MessageLastModifiedOld=" + datemod);
     }
 
@@ -4088,9 +4080,7 @@ public class H5header {
       raf.seek(getFileOffset(address));
       if (debugGroupBtree) debugOut.println("\n--> GroupBTree read tree at position=" + raf.getFilePointer());
 
-      byte[] name = new byte[4];
-      raf.readFully(name);
-      String magic = new String(name, CDM.utf8Charset);
+      String magic = raf.readString(4);
       if (!magic.equals("TREE"))
         throw new IllegalStateException("BtreeGroup doesnt start with TREE");
 
@@ -4153,9 +4143,7 @@ public class H5header {
         if (debugDetail) debugOut.println("--Group Node position=" + raf.getFilePointer());
 
         // header
-        byte[] sig = new byte[4];
-        raf.readFully(sig);
-        String magic = new String(sig, CDM.utf8Charset);
+        String magic = raf.readString(4);
         if (!magic.equals("SNOD"))
           throw new IllegalStateException(magic + " should equal SNOD");
 
@@ -4525,9 +4513,7 @@ There is _no_ datatype information stored for these kind of selections currently
       raf.seek(getFileOffset(address));
 
       // header
-      byte[] heapname = new byte[4];
-      raf.readFully(heapname);
-      String magic = new String(heapname, CDM.utf8Charset);
+      String magic = raf.readString(4);
       if (!magic.equals("GCOL"))
         throw new IllegalStateException(magic + " should equal GCOL");
 
@@ -4607,9 +4593,7 @@ There is _no_ datatype information stored for these kind of selections currently
       if (debugDetail) debugOut.println("-- readLocalHeap position=" + raf.getFilePointer());
 
       // header
-      byte[] heapname = new byte[4];
-      raf.readFully(heapname);
-      String magic = new String(heapname, CDM.utf8Charset);
+      String magic = raf.readString(4);
       if (!magic.equals("HEAP"))
         throw new IllegalStateException(magic + " should equal HEAP");
 
@@ -4669,10 +4653,9 @@ There is _no_ datatype information stored for these kind of selections currently
     while (raf.readByte() != 0) count++;
 
     raf.seek(filePos);
-    byte[] s = new byte[count];
-    raf.readFully(s);
+    String result = raf.readString(count);
     raf.readByte(); // skip the zero byte! nn
-    return new String(s, CDM.utf8Charset); // all Strings are UTF-8 unicode
+    return result;
   }
 
   /**
@@ -4708,9 +4691,7 @@ There is _no_ datatype information stored for these kind of selections currently
    * @throws java.io.IOException on io error
    */
   private String readStringFixedLength(int size) throws IOException {
-    byte[] s = new byte[size];
-    raf.readFully(s);
-    return new String(s, CDM.utf8Charset); // all Strings are UTF-8 unicode
+    return raf.readString(size);
   }
 
   long readLength() throws IOException {

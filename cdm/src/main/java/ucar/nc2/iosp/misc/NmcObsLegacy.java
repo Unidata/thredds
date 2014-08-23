@@ -60,8 +60,8 @@ public class NmcObsLegacy extends AbstractIOServiceProvider {
   private NetcdfFile ncfile;
   //private Structure reportVar;
 
-  private List<Station> stations = new ArrayList<Station>();
-  private List<Report> reports = new ArrayList<Report>();
+  private List<Station> stations = new ArrayList<>();
+  private List<Report> reports = new ArrayList<>();
   //private Map<String, List<Report>> map = new HashMap<String, List<Report>>();
   //private List<String> stations;
 
@@ -88,11 +88,11 @@ public class NmcObsLegacy extends AbstractIOServiceProvider {
       if (h[i] != (byte) 'X') return false;
 
     try {
-      short hour = Short.parseShort(new String(h, 0, 2));
-      short minute = Short.parseShort(new String(h, 2, 2));
-      short year = Short.parseShort(new String(h, 4, 2));
-      short month = Short.parseShort(new String(h, 6, 2));
-      short day = Short.parseShort(new String(h, 8, 2));
+      short hour = Short.parseShort(new String(h, 0, 2, CDM.utf8Charset));
+      short minute = Short.parseShort(new String(h, 2, 2, CDM.utf8Charset));
+      short year = Short.parseShort(new String(h, 4, 2, CDM.utf8Charset));
+      short month = Short.parseShort(new String(h, 6, 2, CDM.utf8Charset));
+      short day = Short.parseShort(new String(h, 8, 2, CDM.utf8Charset));
 
       if ((hour < 0) || (hour > 24)) return false;
       if ((minute < 0) || (minute > 60)) return false;
@@ -565,7 +565,7 @@ public class NmcObsLegacy extends AbstractIOServiceProvider {
 
       filePos = raf.getFilePointer();
       byte[] reportId = raf.readBytes(40);
-      String latS = new String(reportId, 0, 5);
+      String latS = new String(reportId, 0, 5, CDM.utf8Charset);
 
       if (latS.equals("END R")) {
         raf.skipBytes(-40);
@@ -573,7 +573,7 @@ public class NmcObsLegacy extends AbstractIOServiceProvider {
 
         filePos = raf.getFilePointer();
         reportId = raf.readBytes(40);
-        latS = new String(reportId, 0, 5);
+        latS = new String(reportId, 0, 5, CDM.utf8Charset);
       }
       if (latS.equals("ENDOF")) {
         raf.skipBytes(-40);
@@ -581,21 +581,21 @@ public class NmcObsLegacy extends AbstractIOServiceProvider {
 
         filePos = raf.getFilePointer();
         reportId = raf.readBytes(40);
-        latS = new String(reportId, 0, 5);
+        latS = new String(reportId, 0, 5, CDM.utf8Charset);
       }
 
       //System.out.println("ReportId start at " + start);
       try {
         lat = (float) (.01 * Float.parseFloat(latS));
-        lon = (float) (360.0 - .01 * Float.parseFloat(new String(reportId, 5, 5)));
+        lon = (float) (360.0 - .01 * Float.parseFloat(new String(reportId, 5, 5, CDM.utf8Charset)));
 
-        stationId = new String(reportId, 10, 6);
-        obsTime = Short.parseShort(new String(reportId, 16, 4));
+        stationId = new String(reportId, 10, 6, CDM.utf8Charset);
+        obsTime = Short.parseShort(new String(reportId, 16, 4, CDM.utf8Charset));
         System.arraycopy(reportId, 20, reserved, 0, 7);
-        reportType = Short.parseShort(new String(reportId, 27, 3));
-        elevMeters = Float.parseFloat(new String(reportId, 30, 5));
-        instType = Short.parseShort(new String(reportId, 35, 2));
-        reportLen = 10 * Integer.parseInt(new String(reportId, 37, 3));
+        reportType = Short.parseShort(new String(reportId, 27, 3, CDM.utf8Charset));
+        elevMeters = Float.parseFloat(new String(reportId, 30, 5, CDM.utf8Charset));
+        instType = Short.parseShort(new String(reportId, 35, 2, CDM.utf8Charset));
+        reportLen = 10 * Integer.parseInt(new String(reportId, 37, 3, CDM.utf8Charset));
 
         cal.setTime(refDate);
         int hour = cal.get(Calendar.HOUR_OF_DAY);
@@ -621,7 +621,7 @@ public class NmcObsLegacy extends AbstractIOServiceProvider {
     public String toString() {
       return "Report " + " stationId=" + stationId + " lat=" + lat + " lon=" + lon +
               " obsTime=" + obsTime + " date= " + dateFormatter.toDateTimeStringISO(date) +
-              " reportType=" + reportType + " elevMeters=" + elevMeters + " instType=" + instType + " reserved=" + new String(reserved) +
+              " reportType=" + reportType + " elevMeters=" + elevMeters + " instType=" + instType + " reserved=" + new String(reserved, CDM.utf8Charset) +
               " start=" + filePos + " reportLen=" + reportLen;
     }
 
@@ -632,7 +632,7 @@ public class NmcObsLegacy extends AbstractIOServiceProvider {
 
       raf.seek(filePos + 40);
       byte[] b = raf.readBytes(reportLen - 40);
-      if (showData) System.out.println("\n" + new String(b));
+      if (showData) System.out.println("\n" + new String(b, CDM.utf8Charset));
       if (showData) System.out.println(this);
 
       int offset = 0;
@@ -649,7 +649,7 @@ public class NmcObsLegacy extends AbstractIOServiceProvider {
     void show(RandomAccessFile raf) throws IOException {
       raf.seek(filePos);
       byte[] b = raf.readBytes(40);
-      System.out.println(new String(b));
+      System.out.println(new String(b, CDM.utf8Charset));
     }
 
     void loadIndexData(ByteBuffer bb) throws IOException {
@@ -752,9 +752,9 @@ public class NmcObsLegacy extends AbstractIOServiceProvider {
 
     int read(byte[] b, int offset) throws IOException {
 
-      code = Integer.parseInt(new String(b, offset, 2));
-      next = Integer.parseInt(new String(b, offset + 2, 3));
-      nlevels = Integer.parseInt(new String(b, offset + 5, 2));
+      code = Integer.parseInt(new String(b, offset, 2, CDM.utf8Charset));
+      next = Integer.parseInt(new String(b, offset + 2, 3, CDM.utf8Charset));
+      nlevels = Integer.parseInt(new String(b, offset + 5, 2, CDM.utf8Charset));
       nbytes = readIntWithOverflow(b, offset + 7, 3);
       if (showData) System.out.println("\n" + this);
 
@@ -850,7 +850,7 @@ public class NmcObsLegacy extends AbstractIOServiceProvider {
 
   private int readIntWithOverflow(byte[] b, int offset, int len) {
 
-    String s = new String(b, offset, len);
+    String s = new String(b, offset, len, CDM.utf8Charset);
     try {
       return Integer.parseInt(s);
     } catch (Exception e) {
@@ -888,17 +888,17 @@ public class NmcObsLegacy extends AbstractIOServiceProvider {
 
     Cat01(byte[] b, int offset, int level) throws IOException {
       press = mandPressureLevel[level];
-      geopot = Float.parseFloat(new String(b, offset, 5));
-      temp = .1f * Float.parseFloat(new String(b, offset + 5, 4));
-      dewp = .1f * Float.parseFloat(new String(b, offset + 9, 3));
-      windDir = Short.parseShort(new String(b, offset + 12, 3));
-      windSpeed = Short.parseShort(new String(b, offset + 15, 3));
+      geopot = Float.parseFloat(new String(b, offset, 5, CDM.utf8Charset));
+      temp = .1f * Float.parseFloat(new String(b, offset + 5, 4, CDM.utf8Charset));
+      dewp = .1f * Float.parseFloat(new String(b, offset + 9, 3, CDM.utf8Charset));
+      windDir = Short.parseShort(new String(b, offset + 12, 3, CDM.utf8Charset));
+      windSpeed = Short.parseShort(new String(b, offset + 15, 3, CDM.utf8Charset));
       System.arraycopy(b, offset + 18, quality, 0, 4);
     }
 
     public String toString() {
       return "Cat01: press= " + press + " geopot=" + geopot + " temp= " + temp + " dewp=" + dewp + " windDir=" + windDir +
-              " windSpeed=" + windSpeed + " qs=" + new String(quality);
+              " windSpeed=" + windSpeed + " qs=" + new String(quality, CDM.utf8Charset);
     }
 
     Structure makeStructure(Structure parent) throws InvalidRangeException {
@@ -977,11 +977,11 @@ public class NmcObsLegacy extends AbstractIOServiceProvider {
     String qs;
 
     Cat02(byte[] b, int offset) throws IOException {
-      press = .1f * Float.parseFloat(new String(b, offset, 5));
-      temp = .1f * Float.parseFloat(new String(b, offset + 5, 4));
-      dewp = .1f * Float.parseFloat(new String(b, offset + 9, 3));
+      press = .1f * Float.parseFloat(new String(b, offset, 5, CDM.utf8Charset));
+      temp = .1f * Float.parseFloat(new String(b, offset + 5, 4, CDM.utf8Charset));
+      dewp = .1f * Float.parseFloat(new String(b, offset + 9, 3, CDM.utf8Charset));
       System.arraycopy(b, offset + 12, quality, 0, 3);
-      qs = new String(quality);
+      qs = new String(quality, CDM.utf8Charset);
     }
 
     public String toString() {
@@ -1042,12 +1042,12 @@ public class NmcObsLegacy extends AbstractIOServiceProvider {
     String qs;
 
     Cat03(byte[] b, int offset) throws IOException {
-      press = .1f * Float.parseFloat(new String(b, offset, 5));
-      windDir = Short.parseShort(new String(b, offset + 5, 3));
-      windSpeed = Short.parseShort(new String(b, offset + 8, 3));
+      press = .1f * Float.parseFloat(new String(b, offset, 5, CDM.utf8Charset));
+      windDir = Short.parseShort(new String(b, offset + 5, 3, CDM.utf8Charset));
+      windSpeed = Short.parseShort(new String(b, offset + 8, 3, CDM.utf8Charset));
       quality = new byte[2];
       System.arraycopy(b, offset + 11, quality, 0, 2);
-      qs = new String(quality);
+      qs = new String(quality, CDM.utf8Charset);
     }
 
     public String toString() {
@@ -1106,12 +1106,12 @@ public class NmcObsLegacy extends AbstractIOServiceProvider {
     String qs;
 
     Cat04(byte[] b, int offset) throws IOException {
-      geopot = Float.parseFloat(new String(b, offset, 5));
-      windDir = Short.parseShort(new String(b, offset + 5, 3));
-      windSpeed = Short.parseShort(new String(b, offset + 8, 3));
+      geopot = Float.parseFloat(new String(b, offset, 5, CDM.utf8Charset));
+      windDir = Short.parseShort(new String(b, offset + 5, 3, CDM.utf8Charset));
+      windSpeed = Short.parseShort(new String(b, offset + 8, 3, CDM.utf8Charset));
       quality = new byte[2];
       System.arraycopy(b, offset + 11, quality, 0, 2);
-      qs = new String(quality);
+      qs = new String(quality, CDM.utf8Charset);
     }
 
     public String toString() {
@@ -1169,14 +1169,14 @@ public class NmcObsLegacy extends AbstractIOServiceProvider {
     String qs;
 
     Cat05(byte[] b, int offset) throws IOException {
-      press = .1f * Float.parseFloat(new String(b, offset, 5));
-      temp = .1f * Float.parseFloat(new String(b, offset + 5, 4));
-      dewp = .1f * Float.parseFloat(new String(b, offset + 9, 3));
-      windDir = Short.parseShort(new String(b, offset + 12, 3));
-      windSpeed = Short.parseShort(new String(b, offset + 15, 3));
+      press = .1f * Float.parseFloat(new String(b, offset, 5, CDM.utf8Charset));
+      temp = .1f * Float.parseFloat(new String(b, offset + 5, 4, CDM.utf8Charset));
+      dewp = .1f * Float.parseFloat(new String(b, offset + 9, 3, CDM.utf8Charset));
+      windDir = Short.parseShort(new String(b, offset + 12, 3, CDM.utf8Charset));
+      windSpeed = Short.parseShort(new String(b, offset + 15, 3, CDM.utf8Charset));
       quality = new byte[4];
       System.arraycopy(b, offset + 18, quality, 0, 4);
-      qs = new String(quality);
+      qs = new String(quality, CDM.utf8Charset);
     }
 
     public String toString() {
@@ -1253,11 +1253,11 @@ public class NmcObsLegacy extends AbstractIOServiceProvider {
     String qs;
 
     Cat07(byte[] b, int offset) throws IOException {
-      press = .1f * Float.parseFloat(new String(b, offset, 5));
-      percentClouds = Short.parseShort(new String(b, offset + 5, 3));
+      press = .1f * Float.parseFloat(new String(b, offset, 5, CDM.utf8Charset));
+      percentClouds = Short.parseShort(new String(b, offset + 5, 3, CDM.utf8Charset));
       quality = new byte[2];
       System.arraycopy(b, offset + 8, quality, 0, 2);
-      qs = new String(quality);
+      qs = new String(quality, CDM.utf8Charset);
     }
 
     public String toString() {
@@ -1307,11 +1307,11 @@ public class NmcObsLegacy extends AbstractIOServiceProvider {
     String qs;
 
     Cat08(byte[] b, int offset) throws IOException {
-      data = Integer.parseInt(new String(b, offset, 5));
-      table101code = Short.parseShort(new String(b, offset + 5, 3));
+      data = Integer.parseInt(new String(b, offset, 5, CDM.utf8Charset));
+      table101code = Short.parseShort(new String(b, offset + 5, 3, CDM.utf8Charset));
       quality = new byte[2];
       System.arraycopy(b, offset + 8, quality, 0, 2);
-      qs = new String(quality);
+      qs = new String(quality, CDM.utf8Charset);
     }
 
     public String toString() {
@@ -1368,14 +1368,14 @@ public class NmcObsLegacy extends AbstractIOServiceProvider {
     byte[] cloudCh = new byte[2];
 
     Cat51(byte[] b, int offset) throws IOException {
-      pressSeaLevel = Float.parseFloat(new String(b, offset, 5));
-      pressStation = Float.parseFloat(new String(b, offset + 5, 5));
-      windDir = Short.parseShort(new String(b, offset + 10, 3));
-      windSpeed = Short.parseShort(new String(b, offset + 13, 3));
-      temp = .1f * Float.parseFloat(new String(b, offset + 16, 4));
-      dewp = .1f * Float.parseFloat(new String(b, offset + 20, 3));
-      maxTemp = .1f * Float.parseFloat(new String(b, offset + 23, 4));
-      minTemp = .1f * Float.parseFloat(new String(b, offset + 27, 4));
+      pressSeaLevel = Float.parseFloat(new String(b, offset, 5, CDM.utf8Charset));
+      pressStation = Float.parseFloat(new String(b, offset + 5, 5, CDM.utf8Charset));
+      windDir = Short.parseShort(new String(b, offset + 10, 3, CDM.utf8Charset));
+      windSpeed = Short.parseShort(new String(b, offset + 13, 3, CDM.utf8Charset));
+      temp = .1f * Float.parseFloat(new String(b, offset + 16, 4, CDM.utf8Charset));
+      dewp = .1f * Float.parseFloat(new String(b, offset + 20, 3, CDM.utf8Charset));
+      maxTemp = .1f * Float.parseFloat(new String(b, offset + 23, 4, CDM.utf8Charset));
+      minTemp = .1f * Float.parseFloat(new String(b, offset + 27, 4, CDM.utf8Charset));
       System.arraycopy(b, offset + 31, quality, 0, 4);
 
       pastWeatherW2 = b[offset + 35];
@@ -1389,12 +1389,12 @@ public class NmcObsLegacy extends AbstractIOServiceProvider {
       System.arraycopy(b, offset + 52, cloudCm, 0, 2);
       System.arraycopy(b, offset + 54, cloudCh, 0, 2);
       pressureTendencyChar = b[offset + 56];
-      pressureTendency = .1f * Float.parseFloat(new String(b, offset + 57, 3));
+      pressureTendency = .1f * Float.parseFloat(new String(b, offset + 57, 3, CDM.utf8Charset));
     }
 
     public String toString() {
       return "Cat51: press= " + press + " geopot=" + geopot + " temp= " + temp + " dewp=" + dewp + " windDir=" + windDir +
-              " windSpeed=" + windSpeed + " qs=" + new String(quality) + " pressureTendency=" + pressureTendency;
+              " windSpeed=" + windSpeed + " qs=" + new String(quality, CDM.utf8Charset) + " pressureTendency=" + pressureTendency;
     }
 
     Structure makeStructure(Structure parent) throws InvalidRangeException {
@@ -1584,21 +1584,21 @@ public class NmcObsLegacy extends AbstractIOServiceProvider {
     byte[] shipSpeed = new byte[2];
 
     Cat52(byte[] b, int offset) throws IOException {
-      precip6hours = .01f * Float.parseFloat(new String(b, offset, 4));
-      snowDepth = Short.parseShort(new String(b, offset + 4, 3));
-      precip24hours = .01f * Float.parseFloat(new String(b, offset + 7, 4));
+      precip6hours = .01f * Float.parseFloat(new String(b, offset, 4, CDM.utf8Charset));
+      snowDepth = Short.parseShort(new String(b, offset + 4, 3, CDM.utf8Charset));
+      precip24hours = .01f * Float.parseFloat(new String(b, offset + 7, 4, CDM.utf8Charset));
       precipDuration = b[offset + 11];
-      wavePeriod = Short.parseShort(new String(b, offset + 12, 2));
-      waveHeight = Short.parseShort(new String(b, offset + 14, 2));
+      wavePeriod = Short.parseShort(new String(b, offset + 12, 2, CDM.utf8Charset));
+      waveHeight = Short.parseShort(new String(b, offset + 14, 2, CDM.utf8Charset));
       System.arraycopy(b, offset + 16, waveDirection, 0, 2);
-      waveSwellPeriod = Short.parseShort(new String(b, offset + 18, 2));
-      waveSwellHeight = Short.parseShort(new String(b, offset + 20, 2));
-      sst = .1f * Float.parseFloat(new String(b, offset + 22, 4));
+      waveSwellPeriod = Short.parseShort(new String(b, offset + 18, 2, CDM.utf8Charset));
+      waveSwellHeight = Short.parseShort(new String(b, offset + 20, 2, CDM.utf8Charset));
+      sst = .1f * Float.parseFloat(new String(b, offset + 22, 4, CDM.utf8Charset));
       System.arraycopy(b, offset + 26, special, 0, 2);
       System.arraycopy(b, offset + 28, special2, 0, 2);
       shipCourse = b[offset + 30];
       System.arraycopy(b, offset + 31, shipSpeed, 0, 2);
-      waterEquiv = .001f * Float.parseFloat(new String(b, offset + 33, 7));
+      waterEquiv = .001f * Float.parseFloat(new String(b, offset + 33, 7, CDM.utf8Charset));
     }
 
     void loadStructureData(ByteBuffer bb) {
@@ -1740,9 +1740,9 @@ public class NmcObsLegacy extends AbstractIOServiceProvider {
     if (showSkip) System.out.print(" endRecord start at " + raf.getFilePointer());
 
     int skipped = 0;
-    String endRecord = new String(raf.readBytes(10));
+    String endRecord = raf.readString(10); // new String(raf.readBytes(10), CDM.utf8Charset);
     while (endRecord.equals("END RECORD")) {
-      endRecord = new String(raf.readBytes(10));
+      endRecord = raf.readString(10); // new String(raf.readBytes(10));
       skipped++;
     }
     if (showSkip) System.out.println(" last 10 chars= " + endRecord + " skipped= " + skipped);
@@ -1752,9 +1752,9 @@ public class NmcObsLegacy extends AbstractIOServiceProvider {
   private boolean endFile(RandomAccessFile raf) throws IOException {
     if (showSkip) System.out.println(" endFile start at " + raf.getFilePointer());
 
-    String endRecord = new String(raf.readBytes(10));
+    String endRecord = raf.readString(10); // new String(raf.readBytes(10));
     while (endRecord.equals("ENDOF FILE")) {
-      endRecord = new String(raf.readBytes(10));
+      endRecord = raf.readString(10); // new String(raf.readBytes(10));
     }
 
     try {
@@ -1788,9 +1788,9 @@ public class NmcObsLegacy extends AbstractIOServiceProvider {
     cal.clear();
     cal.set(fullyear, month - 1, day, hour, minute);
     refDate = cal.getTime();
-    refString = new String(h, 0, 10);
+    refString = new String(h, 0, 10, CDM.utf8Charset);
 
-    if (showHeader) System.out.println("\nhead=" + new String(h) +
+    if (showHeader) System.out.println("\nhead=" + new String(h, CDM.utf8Charset) +
             " date= " + dateFormatter.toDateTimeString(refDate));
 
     int b, count = 0;

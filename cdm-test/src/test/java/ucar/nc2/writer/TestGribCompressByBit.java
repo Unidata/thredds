@@ -63,6 +63,7 @@ public class TestGribCompressByBit {
   static PrintStream summaryOut;
   static final boolean debug = true;
 
+  int count = 0;
   int npoints;
   int nrecords = 0;
   float totalBytesIn;
@@ -99,15 +100,17 @@ public class TestGribCompressByBit {
         // deflate bit shaved data
         // int compressShave = deflateShave(data, nBits); // run it through the deflator
 
-        int compressBzip2 = compressWithBzip2(data); // run it through the bzip2
+        int compressBzip2 = 1; // compressWithBzip2(data); // run it through the bzip2
 
         // deflate bit shaved data
-        int compressXY = compressWithXY(data); // run it through the XY xompressor
+        int compressXY = 1; // compressWithXY(data); // run it through the XY xompressor
 
 
         // results
         if (detailOut != null) detailOut.printf("%d, %d, %d, %d, %d, %d%n", nBits, data.length, gribMsgLength, compressDeflate, compressBzip2, compressXY);
-        if (debug) System.out.printf("%d, %d, %d, %d, %d, %d%n", nBits, data.length, gribMsgLength, compressDeflate, compressBzip2, compressXY);
+        if (debug && count % 100 == 0) System.out.printf("%d, %d, %d, %d, %d, %d%n", nBits, data.length, gribMsgLength, compressDeflate, compressBzip2, compressXY);
+        count++;
+
         nrecords++;
         totalBytesIn += gribMsgLength;
         totDeflate += compressDeflate;

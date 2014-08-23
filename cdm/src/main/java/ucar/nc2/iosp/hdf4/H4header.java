@@ -55,7 +55,7 @@ public class H4header {
   static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(H4header.class);
 
   static private final byte[] head = {0x0e, 0x03, 0x13, 0x01};
-  static private final String shead = new String(head);
+  static private final String shead = new String(head, CDM.utf8Charset);
   static private final long maxHeaderPos = 500000; // header's gotta be within this
 
   static boolean isValidFile(ucar.unidata.io.RandomAccessFile raf) throws IOException {

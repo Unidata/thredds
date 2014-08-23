@@ -35,6 +35,7 @@ package ucar.nc2.iosp.dmsp;
 
 import ucar.nc2.Attribute;
 import ucar.nc2.Dimension;
+import ucar.nc2.constants.CDM;
 import ucar.nc2.constants._Coordinate;
 
 import java.io.IOException;
@@ -358,8 +359,8 @@ public class DMSPHeader
     this.headerSizeInBytes = raFile.length() > this.headerSizeInBytesGuess ?
                              this.headerSizeInBytesGuess : (int) raFile.length();
     byte[] b = new byte[this.headerSizeInBytes];
-    if ( raFile.read( b ) != this.headerSizeInBytes ) throw new IOException( "Invalid DMSP file: could not read first " + this.headerSizeInBytes + " bytes.");
-    String fullHeader = new String( b );
+    if ( raFile.read(b) != this.headerSizeInBytes ) throw new IOException( "Invalid DMSP file: could not read first " + this.headerSizeInBytes + " bytes.");
+    String fullHeader = new String( b, CDM.utf8Charset);
     // Make sure header starts with the proper item.
     if ( ! fullHeader.startsWith( HeaderInfoTitle.FILE_ID.toString() ) )
     {

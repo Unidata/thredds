@@ -42,6 +42,8 @@ import ucar.ma2.ArrayChar;
 
 import java.io.IOException;
 import java.io.ByteArrayOutputStream;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -123,9 +125,9 @@ public class HdfEos {
     f.format("raw = %n%s%n", smeta);
     ODLparser parser = new ODLparser();
     parser.parseFromString(smeta); // now we have the ODL in JDOM elements
-    ByteArrayOutputStream bos = new ByteArrayOutputStream(1000 * 1000);
-    parser.showDoc(bos);
-    f.format("parsed = %n%s%n", bos.toString());
+    StringWriter sw = new StringWriter(5000);
+    parser.showDoc(new PrintWriter(sw));
+    f.format("parsed = %n%s%n", sw.toString());
     return true;
   }
 

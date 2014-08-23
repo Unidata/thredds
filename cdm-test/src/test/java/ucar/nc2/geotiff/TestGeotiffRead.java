@@ -43,6 +43,7 @@ import ucar.unidata.test.util.TestDir;
 
 import java.io.FileFilter;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.List;
@@ -78,7 +79,7 @@ public class TestGeotiffRead {
 
     try (GeoTiff geotiff = new GeoTiff(filename)) {
       geotiff.read();
-      geotiff.showInfo(System.out);
+      geotiff.showInfo(new PrintWriter(System.out));
 
       IFDEntry tileOffsetTag = geotiff.findTag(Tag.TileOffsets);
       if (tileOffsetTag != null) {

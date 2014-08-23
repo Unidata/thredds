@@ -32,6 +32,8 @@
  */
 package ucar.nc2.geotiff;
 
+import ucar.nc2.constants.CDM;
+
 import java.nio.*;
 import java.nio.channels.*;
 import java.io.*;
@@ -384,7 +386,7 @@ public class GeoTiff implements AutoCloseable {
   }
 
   private int writeSValue(ByteBuffer buffer, IFDEntry ifd) {
-    buffer.put(ifd.valueS.getBytes());
+    buffer.put(ifd.valueS.getBytes(CDM.utf8Charset));
     int size = ifd.valueS.length();
     if ((size % 2) == 1) size++;
     return size;
@@ -602,7 +604,7 @@ public class GeoTiff implements AutoCloseable {
   private String readSValue(ByteBuffer buffer, IFDEntry ifd) {
     byte[] dst = new byte[ifd.count];
     buffer.get(dst);
-    return new String(dst);
+    return new String(dst, CDM.utf8Charset);
   }
 
   private void printBytes(PrintStream ps, String head, ByteBuffer buffer, int n) {
@@ -677,7 +679,7 @@ public class GeoTiff implements AutoCloseable {
   /**
    * Write the geotiff Tag information to out.
    */
-  public void showInfo(PrintStream out) {
+  public void showInfo(PrintWriter out) {
     out.println("Geotiff file= " + filename);
     for (int i = 0; i < tags.size(); i++) {
       IFDEntry ifd = tags.get(i);
@@ -689,9 +691,9 @@ public class GeoTiff implements AutoCloseable {
    * Write the geotiff Tag information to a String.
    */
   public String showInfo() {
-    ByteArrayOutputStream bout = new ByteArrayOutputStream(10000);
-    showInfo(new PrintStream(bout));
-    return bout.toString();
+    StringWriter sw = new StringWriter(5000);
+    showInfo(new PrintWriter(sw));
+    return sw.toString();
   }
 
 

@@ -34,13 +34,11 @@
 package ucar.nc2.iosp.grads;
 
 
+import ucar.nc2.constants.CDM;
 import ucar.unidata.io.KMPMatch;
 import ucar.unidata.io.RandomAccessFile;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
+import java.io.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -391,12 +389,12 @@ public class GradsDataDescriptorFile {
 
     long start2 = System.currentTimeMillis();
 
-    variableList = new ArrayList<GradsVariable>();
-    dimList = new ArrayList<GradsDimension>();
-    attrList = new ArrayList<GradsAttribute>();
+    variableList = new ArrayList<>();
+    dimList = new ArrayList<>();
+    attrList = new ArrayList<>();
 
     // not using raf - opened file again
-    try (BufferedReader r = new BufferedReader(new FileReader(ddFile))) {
+    try (BufferedReader r = new BufferedReader(new InputStreamReader(new FileInputStream(ddFile), CDM.utf8Charset))) {
       boolean inVarSection = false;
       boolean inEnsSection = false;
       String line;
@@ -720,7 +718,7 @@ public class GradsDataDescriptorFile {
   public int[] getTimeStepsPerFile(String filename) {
     if (chsubs != null) {
       for (Chsub ch : chsubs) {
-        if (filename.indexOf(ch.subString) >= 0) {
+        if (filename.contains(ch.subString)) {
           return new int[]{ch.numTimes, ch.startTimeIndex};
         }
       }
@@ -843,7 +841,7 @@ public class GradsDataDescriptorFile {
    * @return a String representation of this object
    */
   public String toString() {
-    StringBuffer buf = new StringBuffer();
+    StringBuilder buf = new StringBuilder();
     buf.append("Parsed: ");
     buf.append(ddFile);
     buf.append("\n");
@@ -906,24 +904,22 @@ public class GradsDataDescriptorFile {
    */
   private List<String> getFileNames() throws IOException {
     if (fileNames == null) {
-      fileNames = new ArrayList<String>();
+      fileNames = new ArrayList<>();
       timeStepsPerFile = tDim.getSize();
       if (!isTemplate()) {  // single file
         fileNames.add(getFullPath(getDataFile()));
       } else {               // figure out template type
         long start = System.currentTimeMillis();
-        List<String> fileSet = new ArrayList<String>();
+        List<String> fileSet = new ArrayList<>();
         String template = getDataFile();
         if (GradsTimeDimension.hasTimeTemplate(template)) {
-          if (template.indexOf(
-                  GradsEnsembleDimension.ENS_TEMPLATE_ID) >= 0) {
+          if (template.contains(GradsEnsembleDimension.ENS_TEMPLATE_ID)) {
             templateType = ENS_TIME_TEMPLATE;
           } else {
             templateType = TIME_TEMPLATE;
           }
         } else {  // not time - either ens or chsub
-          if (template.indexOf(
-                  GradsEnsembleDimension.ENS_TEMPLATE_ID) >= 0) {
+          if (template.contains(GradsEnsembleDimension.ENS_TEMPLATE_ID)) {
             templateType = ENS_TEMPLATE;
           } else {
             templateType = TIME_TEMPLATE;
@@ -1023,7 +1019,7 @@ public class GradsDataDescriptorFile {
    */
   private void addChsub(Chsub sub) {
     if (chsubs == null) {
-      chsubs = new ArrayList<Chsub>();
+      chsubs = new ArrayList<>();
     }
     chsubs.add(sub);
   }
