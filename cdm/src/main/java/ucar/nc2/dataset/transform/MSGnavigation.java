@@ -68,7 +68,7 @@ public class MSGnavigation extends AbstractCoordTransBuilder {
       double scale_y = readAttributeDouble( ctv, ucar.unidata.geoloc.projection.sat.MSGnavigation.SCALE_Y, Double.NaN);
 
       //ProjectionImpl proj = new ucar.unidata.geoloc.projection.sat.MSGnavigation(lat0, lon0, major_axis, minor_axis, height, scale_x, scale_y);
-      ProjectionImpl proj = new ucar.unidata.geoloc.projection.sat.MSGnavigation(lat0, lon0, minor_axis, major_axis, height, scale_x, scale_y);  // LOOK WTF?
+      ProjectionImpl proj = new ucar.unidata.geoloc.projection.sat.MSGnavigation(lat0, lon0, major_axis, minor_axis, height, scale_x, scale_y);  // LOOK WTF?
       return new ProjectionCT(ctv.getShortName(), "FGDC", proj);
     }
 

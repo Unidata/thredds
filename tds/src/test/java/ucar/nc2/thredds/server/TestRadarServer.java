@@ -5,16 +5,10 @@ import ucar.nc2.util.IO;
 import java.io.File;
 import java.io.IOException;
 
-/**
- * Created by IntelliJ IDEA.
- * User: Robb
- * Date: Feb 14, 2010
- * Time: 4:22:20 PM
- */
 public class TestRadarServer {
-  //static String server = "http://motherlode.ucar.edu:8081";
-  static String server = "http://localhost:8080/";
-  static String pathStart = "/thredds/radarServer/";
+  // static String server = "http://localhost:8081/";
+  static String server = "http://thredds-dev.unidata.ucar.edu/";
+  static String pathStart = "thredds/radarServer/";
   static String[] requests = {
       "catalog.xml",
       "nexrad/level2/catalog.xml",
@@ -30,21 +24,17 @@ public class TestRadarServer {
 
 
   public static void main(String args[]) {
-    String outputDir;
-    File where = new File("C:/data/RadarServer/");
-    if (where.exists()) {
-      outputDir = where.getPath();
-    } else {
-      outputDir = "/local/robb/data/radar/RadarServer/";
-    }
-    System.out.println("Copy inventory files to " + outputDir);
+    File where = new File("C:/temp/RadarServer/");
+    where.mkdirs();
+    System.out.println("Copy inventory files to " + where);
     for (int i = 0; i < requests.length; i++) {
-      File file = new File(outputDir + i + ".xml");
+      File file = new File(where, i + ".xml");
+      String fullPath = server + pathStart + requests[i];
       try {
-        IO.readURLtoFileWithExceptions(server + pathStart + requests[i], file);
-        System.out.println("Copied " + requests[i] + " to " + file.getName());
+        IO.readURLtoFileWithExceptions(fullPath, file);
+        System.out.printf("Copied %s to %s%n", fullPath, file.getName());
       } catch (IOException ioe) {
-        System.out.println("Failed " + requests[i]);
+        System.out.printf("Failed %s err=%s%n", fullPath, ioe.getMessage());
       }
     }
   }

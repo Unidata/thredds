@@ -34,7 +34,6 @@ package ucar.nc2.grib.grib2;
 
 import ucar.jpeg.jj2000.j2k.decoder.Grib2JpegDecoder;
 import ucar.nc2.grib.GribNumbers;
-import ucar.nc2.grib.QuasiRegular;
 import ucar.nc2.iosp.BitReader;
 import ucar.unidata.io.RandomAccessFile;
 
@@ -180,10 +179,15 @@ public class Grib2DataReader {
     int mvm = gdrs.missingValueManagement;
     float mv = getMissingValue(gdrs);
 
+    float DD = (float) java.lang.Math.pow((double) 10, (double) gdrs.decimalScaleFactor);
+    float R = gdrs.referenceValue;
+    float EE = (float) java.lang.Math.pow( 2.0, (double) gdrs.binaryScaleFactor);
+    float ref_val = R / DD;
+
     int NG = gdrs.numberOfGroups;
     if (NG == 0) {
       float[] data = new float[totalNPoints];
-      for (int i = 0; i < totalNPoints; i++) data[i] = mv;
+      for (int i = 0; i < totalNPoints; i++) data[i] = ref_val;
       return data;
     }
 
@@ -220,11 +224,6 @@ public class Grib2DataReader {
       L[i] = ref + (int) reader.bits2UInt(nb) * len_inc;
     L[NG - 1] = gdrs.lengthLastGroup; // enter Length of Last Group
 
-    int D = gdrs.decimalScaleFactor;
-    float DD = (float) java.lang.Math.pow((double) 10, (double) D);
-    float R = gdrs.referenceValue;
-    int E = gdrs.binaryScaleFactor;
-    float EE = (float) java.lang.Math.pow((double) 2.0, (double) E);
 
     float[] data = new float[totalNPoints];
 
@@ -285,6 +284,11 @@ public class Grib2DataReader {
     int mvm = gdrs.missingValueManagement;
     float mv = getMissingValue(gdrs);
 
+    float DD = (float) java.lang.Math.pow((double) 10, (double) gdrs.decimalScaleFactor);
+    float R = gdrs.referenceValue;
+    float EE = (float) java.lang.Math.pow( 2.0, (double) gdrs.binaryScaleFactor);
+    float ref_val = R / DD;
+
     BitReader reader = new BitReader(raf, startPos+5);
 
     int ival1 = 0;
@@ -326,7 +330,7 @@ public class Grib2DataReader {
     if (NG == 0) {
       float[] data = new float[totalNPoints];
       for (int i = 0; i < totalNPoints; i++)
-        data[i] = mv;
+        data[i] = ref_val;
       return data;
     }
 
@@ -402,12 +406,6 @@ public class Grib2DataReader {
         return data;
       }
     }
-
-    int D = gdrs.decimalScaleFactor;
-    float DD = (float) java.lang.Math.pow((double) 10, (double) D);
-    float R = gdrs.referenceValue;
-    int E = gdrs.binaryScaleFactor;
-    float EE = (float) java.lang.Math.pow((double) 2.0, (double) E);
 
     float[] data = new float[totalNPoints];
 
