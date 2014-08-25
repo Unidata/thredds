@@ -91,8 +91,8 @@ public class TestGribCompressByBit {
         int nBits = gdrs.getNBits();
 
         float[] data = gr.readData(raf);
-        int compressDeflate = deflate(data); // run it through the deflator
         if (npoints == 0) npoints = data.length;
+        int compressDeflate = 1; // deflate(data); // run it through the deflator
 
          // deflate the original (packed) data
         //int compressOrg = 1; // deflate(dataSection.getBytes(raf)); // run it through the deflator
@@ -100,7 +100,7 @@ public class TestGribCompressByBit {
         // deflate bit shaved data
         // int compressShave = deflateShave(data, nBits); // run it through the deflator
 
-        int compressBzip2 = 1; // compressWithBzip2(data); // run it through the bzip2
+        int compressBzip2 = compressWithBzip2(data); // run it through the bzip2
 
         // deflate bit shaved data
         int compressXY = 1; // compressWithXY(data); // run it through the XY xompressor
@@ -252,6 +252,7 @@ public class TestGribCompressByBit {
         detailOut = new PrintStream(new File(outDir, f.getName()+".csv"));
         detailOut.printf("nbits, npoints, grib, deflate, bzip2, xy%n");
       }
+      long start = System.currentTimeMillis();
 
       TestGribCompressByBit compressByBit = new TestGribCompressByBit();
       if (isGrib1)
@@ -262,8 +263,9 @@ public class TestGribCompressByBit {
       if (compressByBit.npoints == 0)
         return 0;
 
-      summaryOut.printf("%s, %d, %d, %f, %f, %f, %f%n", filename, compressByBit.npoints, compressByBit.nrecords, compressByBit.totalBytesIn/compressByBit.nrecords,
-              compressByBit.totDeflate/compressByBit.nrecords, compressByBit.totBzip2/compressByBit.nrecords, compressByBit.totXY/compressByBit.nrecords);
+      long took = System.currentTimeMillis() - start;
+      summaryOut.printf("%s, %d, %d, %f, %f, %f, %d%n", filename, compressByBit.npoints, compressByBit.nrecords, compressByBit.totalBytesIn/compressByBit.nrecords,
+              compressByBit.totDeflate/compressByBit.nrecords, compressByBit.totBzip2/compressByBit.nrecords, took);
       summaryOut.flush();
 
       if (detailOut != null) {
@@ -275,7 +277,7 @@ public class TestGribCompressByBit {
   }
 
   static void writeSummaryHeader() throws FileNotFoundException {
-    summaryOut.printf("file, npoints, nrecords, avgGribSize, avgDeflate, avgBzip, avgXY%n");
+    summaryOut.printf("file, npoints, nrecords, avgGribSize, avgDeflate, avgBzip, msecs%n");
    }
 
   public static void main2(String[] args) throws IOException {
@@ -293,7 +295,7 @@ public class TestGribCompressByBit {
   }
 
   public static void main(String[] args) throws IOException {
-    outDir = new File("G:/grib2nc/grib2/");
+    outDir = new File("G:/grib2nc/bzip2/");
     summaryOut = new PrintStream(new File(outDir, "summary.csv"));
     writeSummaryHeader();
 

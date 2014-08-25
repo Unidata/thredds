@@ -1133,7 +1133,7 @@ public abstract class Grib2Pds {
 
     Grib2Pds30(byte[] input) throws IOException {
       super(input);
-      log.warn("Product Definition Template 4.30 is deprecated in favor of 4.31 (WMO Manual on Codes");
+      log.debug("Product Definition Template 4.30 is deprecated in favor of 4.31 (WMO Manual on Codes");
     }
 
     // LOOK - could put this into a dummy superclass in case others need

@@ -172,10 +172,10 @@ public class TestSubset {
     ProjectionImpl p = gcs.getProjection();
     ProjectionRect prect = p.latLonToProjBB(bbox); // must override default implementation
     System.out.printf("%s -> %s %n", bbox, prect);
-    assert Misc.closeEnough(prect.getMinX(), -2120.3375);
-    assert Misc.closeEnough(prect.getWidth(), 4279.2196);
-    assert Misc.closeEnough(prect.getMinY(), -1809.0359);
-    assert Misc.closeEnough(prect.getHeight(), 3338.2484);
+    assert Misc.closeEnough(prect.getMinX(), -2129.5688);
+    assert Misc.closeEnough(prect.getWidth(), 4297.8453);
+    assert Misc.closeEnough(prect.getMinY(), -1793.0041);
+    assert Misc.closeEnough(prect.getHeight(), 3308.3885);
 
     LatLonRect bb2 = p.projToLatLonBB(prect);
     System.out.printf("%s -> %s %n", prect, bb2);
@@ -185,9 +185,9 @@ public class TestSubset {
     Array data = grid_section.readDataSlice(-1, -1, -1, -1);
     assert data.getRank() == 3;
     int[] shape = data.getShape();
-    assert shape[0] == 1 : data.getShape()[0];
-    assert shape[1] == 366 : data.getShape()[1];
-    assert shape[2] == 476 : data.getShape()[2];
+    assert shape[0] == 1 : shape[0]+" should be 1";
+    assert shape[1] == 363 : shape[1]+" should be 363";
+    assert shape[2] == 479 : shape[2]+" should be 479";
 
     dataset.close();
   }
