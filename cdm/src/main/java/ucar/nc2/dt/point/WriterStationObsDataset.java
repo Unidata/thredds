@@ -49,6 +49,7 @@ import java.io.*;
 /**
  * Write StationObsDataset in Unidata Station Obs Convention.
  *
+ * @deprecated
  * @author caron
  */
 public class WriterStationObsDataset {

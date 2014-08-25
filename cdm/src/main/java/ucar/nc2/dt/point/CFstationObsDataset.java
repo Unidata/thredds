@@ -50,6 +50,7 @@ import java.text.ParseException;
  * This handles station datasets in "Unidata Observation Dataset v1.0"
  * Read StationObsDataset in "CF" experimental point/ungridded convention.
  *
+ * @deprecated
  * @author caron
  */
 

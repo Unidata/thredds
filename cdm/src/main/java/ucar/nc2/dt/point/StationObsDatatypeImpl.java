@@ -38,6 +38,7 @@ import ucar.nc2.dt.StationObsDatatype;
  * Abstract superclass for implemenation of StationObsDatatype.
  * Concrete subclass must implement getData();
  *
+ * @deprecated
  * @author caron
  */
 

@@ -49,6 +49,7 @@ import java.io.IOException;
  *
  * This assumes that calling getData( Station s) is reletively cheap, ie that theres no cheaper filtering to do.
  *
+ * @deprecated
  * @author caron
  */
 public class StationDatasetHelper {

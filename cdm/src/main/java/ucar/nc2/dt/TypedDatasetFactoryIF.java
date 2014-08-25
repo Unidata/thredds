@@ -41,6 +41,7 @@ import java.io.IOException;
 /**
  * Interface for factories that wrap a NetcdfDataset with a subclass of TypedDataset
  *
+ * @deprecated
  * @author caron
  */
 public interface TypedDatasetFactoryIF {

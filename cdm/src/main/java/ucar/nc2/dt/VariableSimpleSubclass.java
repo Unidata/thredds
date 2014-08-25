@@ -42,6 +42,7 @@ import java.util.List;
 
 /**
  * Adapt a VariableSimpleIF into another VariableSimpleIF, so it can be subclassed.
+ * @deprecated
  * @author caron
  */
 

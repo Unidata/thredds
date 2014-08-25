@@ -49,6 +49,7 @@ import java.text.ParseException;
  * This handles station datasets in "Unidata Observation Dataset v1.0" implemented as linked or contiguous lists.
  * For "multidimensional Structures" use UnidataStationObsMultidimDataset
  *
+ * @deprecated
  * @author caron
  */
 

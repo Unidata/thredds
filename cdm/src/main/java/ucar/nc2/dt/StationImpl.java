@@ -41,6 +41,7 @@ import java.io.IOException;
 /**
  * Implementation of Station
  *
+ * @deprecated
  * @author caron
  */
 

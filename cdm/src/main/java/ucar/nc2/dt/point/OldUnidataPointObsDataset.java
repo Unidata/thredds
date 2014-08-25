@@ -56,6 +56,7 @@ import java.io.IOException;
  * Since there is no other way to find what the stations are, or to find what data belongs to what
  *  station, we read through the entire dataset when starting.
  *
+ * @deprecated
  * @author caron
  * @version $Revision: 51 $ $Date: 2006-07-12 17:13:13Z $
  */

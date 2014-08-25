@@ -44,6 +44,7 @@ import java.util.*;
 /**
  * Superclass for implementations of TypedDataset.
  *
+ * @deprecated
  * @author John Caron
  */
 

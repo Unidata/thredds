@@ -44,6 +44,7 @@ import java.util.List;
  * The observations are ordered in time (in other words, the time dimension must
  * increase monotonically along the trajectory).
  *
+ * @deprecated
  * @author caron
  */
 public interface TrajectoryObsDatatype {

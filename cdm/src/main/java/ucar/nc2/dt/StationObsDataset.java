@@ -34,6 +34,7 @@ package ucar.nc2.dt;
 
 /** A collection of Stations with StationObsDatatype data.
  * All getData() methods return List of StationObsDatatype.
+ * @deprecated
  * @author caron
  */
 public interface StationObsDataset extends ucar.nc2.dt.PointObsDataset, ucar.nc2.dt.StationCollection {

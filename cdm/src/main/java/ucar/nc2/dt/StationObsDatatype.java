@@ -35,6 +35,7 @@ package ucar.nc2.dt;
 /**
  * A collection of observations at one time and at one station ( = named location)
  *
+ * @deprecated
  * @author caron
  */
 public interface StationObsDatatype extends ucar.nc2.dt.PointObsDatatype, Comparable {

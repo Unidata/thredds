@@ -54,6 +54,7 @@ import java.util.*;
  *  this is being corrected.
  * </ol>
  *
+ * @deprecated
  * @author caron
  */
 

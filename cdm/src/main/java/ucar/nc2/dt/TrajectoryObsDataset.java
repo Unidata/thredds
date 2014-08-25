@@ -48,6 +48,7 @@ import java.util.List;
     }
    </pre>
  *
+ * @deprecated
  * @author caron
  */
 public interface TrajectoryObsDataset extends ucar.nc2.dt.TypedDataset {

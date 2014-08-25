@@ -51,6 +51,7 @@ import java.io.*;
 /**
  * Write ProfileObsDataset in Unidata Obs Convention.
  *
+ * @deprecated
  * @author caron
  */
 public class WriterProfileObsDataset {

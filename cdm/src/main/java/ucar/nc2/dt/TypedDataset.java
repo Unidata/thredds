@@ -45,6 +45,7 @@ import java.util.*;
  * Its subtypes define type-specific information.
  * Implementations may or may not have a NetcdfFile underneath.
  *
+ * @deprecated
  * @author caron
  */
 

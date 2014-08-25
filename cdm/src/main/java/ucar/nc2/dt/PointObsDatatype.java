@@ -37,6 +37,7 @@ import java.util.Date;
 /**
  * A collection of observations at one time and location.
  *
+ * @deprecated
  * @author caron
  */
 public interface PointObsDatatype {

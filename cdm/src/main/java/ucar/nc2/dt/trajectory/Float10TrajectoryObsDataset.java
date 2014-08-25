@@ -98,6 +98,7 @@ netcdf U:/testdata2/trajectory/buoy/testfloat10.nc {
  *       (compatible with "m").</li>
  * </ul>
  *
+ * @deprecated
  * @author edavis
  * @since Feb 22, 2005T5:37:14 PM
  */

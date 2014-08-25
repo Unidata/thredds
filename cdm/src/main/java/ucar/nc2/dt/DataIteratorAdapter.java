@@ -38,6 +38,7 @@ import java.io.IOException;
 
 /**
  * make an Iterator into a DataIterator
+ * @deprecated
  */
 public class DataIteratorAdapter implements DataIterator {
     private Iterator iter;

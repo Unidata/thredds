@@ -51,6 +51,7 @@ import java.io.*;
  * Write StationObsDataset in "CF" experimental point/ungridded convention.
  * Also experiment with streaming netcdf.
  *
+ * @deprecated
  * @author caron
  */
 public class WriterCFStationObsDataset {

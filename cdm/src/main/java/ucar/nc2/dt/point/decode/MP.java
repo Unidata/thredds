@@ -36,7 +36,7 @@ package ucar.nc2.dt.point.decode;
  *
  *  Author Robb Kambic
  *  Date  3/4/07
- *
+ * @deprecated
  */
 
 import java.util.regex.Pattern;

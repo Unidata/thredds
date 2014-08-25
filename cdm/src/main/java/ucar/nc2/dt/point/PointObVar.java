@@ -40,6 +40,7 @@ import ucar.nc2.VariableSimpleIF;
 /**
  * Point Data Variables for CFPointWriter
  *
+ * @deprecated
  * @author caron
  * @since Oct 22, 2008
  */

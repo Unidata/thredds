@@ -49,6 +49,7 @@ import thredds.catalog.*;
 /**
  * Class Description.
  *
+ * @deprecated
  * @author caron
  */
 public class MadisPointObsDataset extends PointObsDatasetImpl  implements TypedDatasetFactoryIF {

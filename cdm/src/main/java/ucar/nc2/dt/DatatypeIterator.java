@@ -40,6 +40,7 @@ import java.io.IOException;
 /**
  * An abstract implementation for iterating over datatypes, such as PointObsDatatype, etc.
  *
+ * @deprecated
  * @author caron
  */
 public abstract class DatatypeIterator implements DataIterator {

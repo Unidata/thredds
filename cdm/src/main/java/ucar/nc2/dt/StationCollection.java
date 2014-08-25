@@ -41,6 +41,7 @@ import java.util.List;
  * User can subset by stations, bounding box and by date range.
  * Underlying data can be of any type, but all points have the same type.
  *
+ * @deprecated
  * @author caron
  */
 public interface StationCollection extends PointCollection {

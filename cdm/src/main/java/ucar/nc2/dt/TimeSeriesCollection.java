@@ -34,6 +34,7 @@ package ucar.nc2.dt;
 
 /** A collection of data in a time series.
  * Underlying data can be of any type.
+ * @deprecated
  * @author caron
  */
 public interface TimeSeriesCollection {

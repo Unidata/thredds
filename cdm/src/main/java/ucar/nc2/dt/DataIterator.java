@@ -35,6 +35,7 @@ package ucar.nc2.dt;
 
 /**
  * Just like java.util.Iterator, but may throw IOException on nextData() call.
+ * @deprecated
  * @author caron
  */
 public interface DataIterator extends java.util.Iterator {
