@@ -60,6 +60,8 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.io.IOException;
+import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -109,9 +111,9 @@ public class QueryChooser extends JPanel {
 
   // state
   private QueryCapability qc;
-  private ArrayList choosers = new ArrayList();
+  private ArrayList<Chooser> choosers = new ArrayList<>();
   private boolean returnsCatalog = true;
-  private ArrayList extraButtons = new ArrayList();
+  private ArrayList<AbstractButton> extraButtons = new ArrayList<>();
 
   private boolean debugLayout = false, debugNested = false;
 
@@ -212,7 +214,7 @@ public class QueryChooser extends JPanel {
    * @throws java.net.MalformedURLException : if urlString is malformed.
    * @throws java.io.IOException            : error reading qc
    */
-  public void setDqcUrl(String urlString) throws java.net.MalformedURLException, java.io.IOException {
+  public void setDqcUrl(String urlString) throws java.io.IOException {
     qc = dqcFactory.readXML(urlString);
     if (qc.hasFatalError()) {
       javax.swing.JOptionPane.showMessageDialog(this, "Fatal dqc errors= \n" + qc.getErrorMessages());
@@ -220,7 +222,7 @@ public class QueryChooser extends JPanel {
     }
 
     try {
-      choosers = new ArrayList();
+      choosers = new ArrayList<>();
       buildUI();
     } catch (Exception e) {
       e.printStackTrace();
@@ -238,8 +240,7 @@ public class QueryChooser extends JPanel {
     mapChooser = null;
 
     ArrayList selectors = qc.getAllUniqueSelectors();
-    for (int i = 0; i < selectors.size(); i++)
-      addSelector((Selector) selectors.get(i));
+    for (Object selector : selectors) addSelector((Selector) selector);
 
     // action buttons
     buttPanel = new JPanel();
@@ -252,8 +253,8 @@ public class QueryChooser extends JPanel {
     });
 
     // extra buttons
-    for (int i = 0; i < extraButtons.size(); i++)
-      buttPanel.add((AbstractButton) extraButtons.get(i));
+    for (AbstractButton extraButton : extraButtons)
+      buttPanel.add(extraButton);
 
     // standard layout
     JPanel dqcPanel = new JPanel(new BorderLayout());
@@ -540,8 +541,7 @@ public class QueryChooser extends JPanel {
 
     // look through all the choosers, make sure all required ones are done
     Chooser need = null;
-    for (int i = 0; i < choosers.size(); i++) {
-      Chooser c = (Chooser) choosers.get(i);
+    for (Chooser c : choosers) {
       if (!c.hasChoice() && c.isRequired()) {
         need = c;
         break;
@@ -558,8 +558,7 @@ public class QueryChooser extends JPanel {
     String queryString = qc.getQuery().getUriResolved().toString();
     StringBuffer queryb = new StringBuffer();
     queryb.append(queryString);
-    for (int i = 0; i < choosers.size(); i++) {
-      Chooser c = (Chooser) choosers.get(i);
+    for (Chooser c : choosers) {
       if (!c.hasChoice()) continue;
 
       Selector s = c.getSelector();
@@ -669,7 +668,6 @@ public class QueryChooser extends JPanel {
   // choose from list of Choice elements
   private class ChooserList extends Chooser {
     JList jlist;
-    boolean loaded = false;
 
     ChooserList(Selector sel, ArrayList choices) {
       super(sel);
@@ -687,7 +685,6 @@ public class QueryChooser extends JPanel {
 
           if (null == jlist.getSelectedValue()) return;
           Choice currentChoice = (thredds.catalog.query.Choice) jlist.getSelectedValue();
-          if (null == currentChoice) return;
 
           // deal with nested lists
           if ((currentChoice instanceof ListChoice) &&
@@ -695,8 +692,8 @@ public class QueryChooser extends JPanel {
 
             ListChoice listChoice = (ListChoice) currentChoice;
             ArrayList selectors = listChoice.getNestedSelectors();
-            for (int i = 0; i < selectors.size(); i++) {
-              SelectList sl = (SelectList) selectors.get(i);
+            for (Object selector1 : selectors) {
+              SelectList sl = (SelectList) selector1;
               loadNested(sl);
             }
           }
@@ -722,11 +719,10 @@ public class QueryChooser extends JPanel {
     }
 
     Chooser findChooser(String id) {
-      for (int i = 0; i < choosers.size(); i++) {
-        Chooser c = (Chooser) choosers.get(i);
-        if (id.equals(c.getId()))
-          return c;
-      }
+        for (Chooser c : choosers) {
+            if (id.equals(c.getId()))
+                return c;
+        }
       return null;
     }
 
@@ -805,14 +801,13 @@ public class QueryChooser extends JPanel {
 
     boolean hasChoice() { return !jlist.isSelectionEmpty(); }
 
-    ArrayList getChoices() {
-      ArrayList choices = new ArrayList();
-      Object[] values = jlist.getSelectedValues();
-      for (int i = 0; i < values.length; i++) {
-        Choice c = (Choice) values[i];
-        choices.add("{value}");
-        choices.add(c.getValue());
-      }
+    ArrayList<String> getChoices() {
+      ArrayList<String> choices = new ArrayList<>();
+        for (Object value : jlist.getSelectedValues()) {
+            Choice c = (Choice) value;
+            choices.add("{value}");
+            choices.add(c.getValue());
+        }
       return choices;
     }
 
@@ -838,8 +833,8 @@ public class QueryChooser extends JPanel {
 
     boolean hasChoice() { return currentChoice != null; }
 
-    ArrayList getChoices() {
-      ArrayList choices = new ArrayList();
+    ArrayList<String> getChoices() {
+      ArrayList<String> choices = new ArrayList<>();
       if (currentChoice != null) {
         choices.add("{value}");
         choices.add(currentChoice.s.getValue());
@@ -858,9 +853,9 @@ public class QueryChooser extends JPanel {
 
     boolean hasChoice() { return geoChooser.getGeoSelection() != null; }
 
-    ArrayList getChoices() {
+    ArrayList<String> getChoices() {
       LatLonRect llbb = geoChooser.getGeoSelectionLL();
-      ArrayList choices = new ArrayList();
+      ArrayList<String> choices = new ArrayList<>();
       if (llbb != null) {
         LatLonPoint llpoint = llbb.getLowerLeftPoint();
 
@@ -891,8 +886,8 @@ public class QueryChooser extends JPanel {
 
     boolean hasChoice() { return true; }
 
-    ArrayList getChoices() {
-      ArrayList choices = new ArrayList();
+    ArrayList<String> getChoices() {
+      ArrayList<String> choices = new ArrayList<>();
       if (isPoint) {
         choices.add("{point}");
         choices.add(range.getMinSelectedString());
@@ -918,10 +913,10 @@ public class QueryChooser extends JPanel {
 
     boolean hasChoice() { return rds.isEnabled(); }
 
-    ArrayList getChoices() {
+    ArrayList<String> getChoices() {
       DateRange selected = rds.getDateRange();
       if (selected == null) selected = rds.getDateRange(); // LOOK force acceptence, should bail out
-      ArrayList choices = new ArrayList();
+      ArrayList<String> choices = new ArrayList<>();
       if (isPoint) {
         choices.add("{point}");
         choices.add(selected.getStart().toString());
@@ -937,7 +932,7 @@ public class QueryChooser extends JPanel {
     }
   }
 
-  private class DqcStation implements Station {
+  private static class DqcStation implements Station {
     thredds.catalog.query.Station s;
 
     DqcStation(thredds.catalog.query.Station s) {
@@ -1065,7 +1060,7 @@ public class QueryChooser extends JPanel {
     try {
       qcs.setDqcUrl("file:///C:/dev/thredds/catalog/test/data/dqc/exampleDqc.xml");
       // qcs.setDqcUrl("file:///C:/dev/thredds/catalog/test/data/dqc/dqc.JplQuikScat.xml");
-    } catch (Exception e) {
+    } catch (IOException e) {
       try {
         JOptionPane.showMessageDialog(null, null, e.getMessage(),
             JOptionPane.ERROR_MESSAGE);

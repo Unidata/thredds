@@ -280,10 +280,11 @@ public class CatalogChooser extends JPanel {
           String datasetURL = (String) e.getNewValue();
           if (debugEvents) System.out.println("***datasetURL= " + datasetURL);
           InvDataset dataset = tree.getSelectedDataset();
-
-          InvAccess access = dataset.findAccess( datasetURL);
-          firePropertyChangeEvent( new PropertyChangeEvent(this, "InvAccess", null, access));
-
+          if (dataset != null) {
+            InvAccess access = dataset.findAccess(datasetURL);
+            firePropertyChangeEvent(new PropertyChangeEvent(this,
+                    "InvAccess", null, access));
+          }
         } else if (e.getPropertyName().equals("catrefURL")) {
           String urlString = (String) e.getNewValue();
           if (debugEvents) System.out.println("***catrefURL= " + urlString);

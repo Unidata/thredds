@@ -84,10 +84,7 @@ import java.util.Enumeration;
  */
 
 public class CatalogTreeView extends JPanel implements CatalogSetCallback {
-  private boolean validate = true;
   private InvCatalogImpl catalog;
-
-  private boolean eventsOK = true;
 
     // state
   private DatasetFilter filter = null;
@@ -288,7 +285,7 @@ public class CatalogTreeView extends JPanel implements CatalogSetCallback {
    * @return the corresponding TreePath.
    */
   TreePath makeTreePath(TreeNode node) {
-    ArrayList<TreeNode> path = new ArrayList<TreeNode>();
+    ArrayList<TreeNode> path = new ArrayList<>();
     path.add( node);
     TreeNode parent = node.getParent();
     while (parent != null) {
@@ -320,7 +317,7 @@ public class CatalogTreeView extends JPanel implements CatalogSetCallback {
     while (e.hasMoreElements()) {
       InvCatalogTreeNode child = (InvCatalogTreeNode) e.nextElement();
       //System.out.printf(" child %s%n", child);
-      open( (InvCatalogTreeNode) child, includeCatref);
+      open(child, includeCatref);
     }
   }
 
@@ -335,7 +332,8 @@ public class CatalogTreeView extends JPanel implements CatalogSetCallback {
       if (!catref.isRead()) {
         if (openCatalogReferences && (openDatasetScans || !isDatasetScan)) {
           InvCatalogTreeNode tnode = getSelectedNode();
-          tnode.readCatref();
+          if (tnode != null)
+            tnode.readCatref();
         }
       }
     }
@@ -436,15 +434,8 @@ public class CatalogTreeView extends JPanel implements CatalogSetCallback {
 
     // display tree
     // this sends TreeNode events
-    try {
-      model = new InvCatalogTreeModel( (InvDatasetImpl) catalog.getDataset());
-      tree.setModel( model);
-    } catch (Exception e) {
-      e.printStackTrace();
-      javax.swing.JOptionPane.showMessageDialog(this, e.getMessage());
-      tree.setModel(new DefaultTreeModel(new DefaultMutableTreeNode(null, false)));
-      return;
-    }
+    model = new InvCatalogTreeModel(catalog.getDataset());
+    tree.setModel( model);
 
       // debug
     if (false) {
@@ -466,8 +457,6 @@ public class CatalogTreeView extends JPanel implements CatalogSetCallback {
 
     // send catalog event
     firePropertyChangeEvent(new PropertyChangeEvent(this, "Catalog", null, catalogName));
-
-    return;
   }
 
   // debug
@@ -515,7 +504,7 @@ public class CatalogTreeView extends JPanel implements CatalogSetCallback {
 
     public TreeNode getChildAt(int index) {
      if (debugTree) System.out.println("getChildAt="+ds.getName()+" "+index);
-     return (TreeNode) children.get(index);
+     return children.get(index);
     }
 
     public int getChildCount() {
@@ -537,7 +526,7 @@ public class CatalogTreeView extends JPanel implements CatalogSetCallback {
         }
 
         if (debugRef) System.out.println("getChildCount on ds="+ds.getName()+" ");
-        children = new ArrayList<InvCatalogTreeNode>();
+        children = new ArrayList<>();
         for (InvDataset nested : ds.getDatasets())
           children.add( new InvCatalogTreeNode( this, (InvDatasetImpl) nested));
       }
@@ -571,7 +560,7 @@ public class CatalogTreeView extends JPanel implements CatalogSetCallback {
     public String toString() { return ds.getName(); }
 
     public void setCatalog(InvCatalogImpl catalog) {
-      children = new ArrayList<InvCatalogTreeNode>();
+      children = new ArrayList<>();
       java.util.List datasets = ds.getDatasets();
       int[] childIndices = new int[ datasets.size()];
       for (int count = 0; count < datasets.size(); count++) {
@@ -594,7 +583,8 @@ public class CatalogTreeView extends JPanel implements CatalogSetCallback {
 
 
   // this is to get the inline documentation into a tooltip
-  private class MyTreeCellRenderer extends javax.swing.tree.DefaultTreeCellRenderer {
+  private static class MyTreeCellRenderer
+          extends javax.swing.tree.DefaultTreeCellRenderer {
     ImageIcon refIcon, refReadIcon, gridIcon, imageIcon, dqcIcon, dsScanIcon;
 
     public MyTreeCellRenderer() {
@@ -644,7 +634,7 @@ public class CatalogTreeView extends JPanel implements CatalogSetCallback {
 
     private String makeDocs( java.util.List<InvDocumentation> docs) {
       if (docs == null) return null;
-      StringBuffer sbuff = new StringBuffer(1000);
+      StringBuilder sbuff = new StringBuilder(1000);
       for (InvDocumentation doc : docs) {
         sbuff.append( doc.getInlineContent());
       }

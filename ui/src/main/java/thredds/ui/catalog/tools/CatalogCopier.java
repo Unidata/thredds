@@ -28,8 +28,6 @@ import java.util.regex.Pattern;
  * @since Dec 14, 2010
  */
 public class CatalogCopier extends JPanel {
-  private final static String FRAME_SIZE = "FrameSize";
-
   private CatalogChooser catalogChooser;
   private TextHistoryPane resultText;
   private JSplitPane splitV;
@@ -48,7 +46,6 @@ public class CatalogCopier extends JPanel {
    * @param parent parent component
    */
   public CatalogCopier(PreferencesExt prefs, Component parent) {
-
     this.prefs = prefs;
     this.parent = parent;
 
@@ -119,7 +116,7 @@ public class CatalogCopier extends JPanel {
 
     resultText.clear();
     resultText.appendLine("Read catalog="+curr+" with filter=" +regexp);
-    crawler.crawlDirectDatasets((InvDatasetImpl) curr, null, null, pattern, false);
+    crawler.crawlDirectDatasets(curr, null, null, pattern, false);
     resultText.gotoTop();
 
     filterCB.addItem(regexp);
@@ -130,15 +127,17 @@ public class CatalogCopier extends JPanel {
   private void doFilter( String regexp) {
     Pattern pattern = (regexp == null) ? null : Pattern.compile(regexp);
     InvDataset curr = catalogChooser.getSelectedDataset();
-    CatalogCrawler crawler = new CatalogCrawler( CatalogCrawler.USE_ALL_DIRECT, false, new FilterListener(null));
+    if (curr != null) {
+      CatalogCrawler crawler = new CatalogCrawler(CatalogCrawler.USE_ALL_DIRECT, false, new FilterListener(null));
 
-    count = 0;
-    resultText.clear();
-    resultText.appendLine("Read catalog="+curr+" with filter=" +regexp);
-    crawler.crawlDirectDatasets((InvDatasetImpl) curr, null, null, pattern, false);
-    resultText.appendLine("count = "+count);
-    resultText.gotoTop();
-    filterCB.addItem(regexp);
+      count = 0;
+      resultText.clear();
+      resultText.appendLine("Read catalog=" + curr + " with filter=" + regexp);
+      crawler.crawlDirectDatasets(curr, null, null, pattern, false);
+      resultText.appendLine("count = " + count);
+      resultText.gotoTop();
+      filterCB.addItem(regexp);
+    }
   }
 
   private class FilterListener implements CatalogCrawler.Listener {
@@ -167,7 +166,7 @@ public class CatalogCopier extends JPanel {
           System.out.printf("%s copyOk=%s%n", inv.getStandardUrlName(), copyOk);
           resultText.appendLine(inv.getStandardUrlName()+" copyOk="+copyOk);
         } else {
-          if (ok) System.out.printf("%s match=%s%n", (ok?"ok ":"no "), inv.getStandardUrlName());
+          if (ok) System.out.printf("ok match=%s%n", inv.getStandardUrlName());
           resultText.appendLine((ok?"ok ":"no ")+inv.getStandardUrlName());
         }
         if (ok) count++;
