@@ -41,7 +41,7 @@ import java.util.List;
  * User can subset by bounding box and by date range.
  * Underlying data can be of any type, but all points have the same type.
  *
- * @deprecated use ucar.nc2.ft.*
+ * @deprecated
  * @author caron
  */
 public interface PointCollection {

@@ -50,6 +50,10 @@ import java.io.InputStream;
 import java.io.FileInputStream;
 import java.io.IOException;
 
+/**
+ * @deprecated
+ */
+
 public class MetarParseReport {
 
     /**
