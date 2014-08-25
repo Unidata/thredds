@@ -33,6 +33,7 @@
 
 package thredds.logs;
 
+import ucar.nc2.constants.CDM;
 import ucar.unidata.util.StringUtil2;
 
 import java.io.BufferedReader;
@@ -222,7 +223,7 @@ public class LogReader {
    * @param ff files must pass this filter (may be null)
    * @param closure send each Log to this closure
    * @param logf filter out these Logs (may be null)
-   * @param stat accumulate statitistics (may be null)
+   * @param stat accumulate statistics (may be null)
    * @throws IOException on read error
    */
   public void readAll(File dir, FileFilter ff, Closure closure, LogFilter logf, Stats stat) throws IOException {
@@ -231,13 +232,11 @@ public class LogReader {
       System.out.printf("Dir has no files= %s%n", dir);
       return;
     }
-    List list = Arrays.asList(files);
+    List<File> list = Arrays.asList(files);
     Collections.sort(list);
 
-    for (int i = 0; i < list.size(); i++) {
-      File f = (File) list.get(i);
+    for (File f : list) {
       if ((ff != null) && !ff.accept(f)) continue;
-
       if (f.isDirectory())
         readAll(f, ff, closure, logf, stat);
       else
@@ -250,14 +249,15 @@ public class LogReader {
    * @param file file to read
    * @param closure send each Log to this closure
    * @param logf filter out these Logs (may be null)
-   * @param stat accumulate statitistics (may be null)
+   * @param stat accumulate statistics (may be null)
    * @throws IOException on read error
    */
   public void scanLogFile(File file, Closure closure, LogFilter logf, Stats stat) throws IOException {
     try (InputStream ios = new FileInputStream(file)) {
       System.out.printf("-----Reading %s %n", file.getPath());
 
-      BufferedReader dataIS = new BufferedReader(new InputStreamReader(ios), 40 * 1000);
+      BufferedReader dataIS = new BufferedReader(new InputStreamReader(ios,
+              CDM.utf8Charset), 40 * 1000);
       int total = 0;
       int count = 0;
       while ((maxLines < 0) || (count < maxLines)) {

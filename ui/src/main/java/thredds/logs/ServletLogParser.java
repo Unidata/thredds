@@ -136,8 +136,6 @@ public class ServletLogParser implements LogReader.LogParser {
   static private final Pattern startPattern = Pattern.compile("^Remote host: ([^-]+) - Request: \"(\\w+) (.*) (.*)");
   static private final Pattern commonPattern = Pattern.compile("^(\\d+-\\d+-\\d+T\\d+:\\d+:\\d+\\.\\d+ -\\d+) \\[(.*)]\\[(.*)] (\\w+)[\\s]+- ([^-]+) - (.*)");
 
-  int count = 0, limit = 10;
-
   /*
   Difficult thing is to return the extra line assocated with the previous good log
   We do this by not returning until we get a match on the next log. We have to rewind.
@@ -176,7 +174,7 @@ public class ServletLogParser implements LogReader.LogParser {
           log.where = m.group(5);
 
           String rest = m.group(6);
-          if (rest.indexOf("Request Completed") >= 0) {
+          if (rest.contains("Request Completed")) {
             int pos = rest.indexOf("Request Completed");
             Matcher m2 = donePattern.matcher(rest.substring(pos));
             if (m2.matches()) {
@@ -191,7 +189,7 @@ public class ServletLogParser implements LogReader.LogParser {
               log.addExtra(rest);
             }
 
-          } else if (rest.indexOf("Remote host") >= 0) {
+          } else if (rest.contains("Remote host")) {
             int pos = rest.indexOf("Remote host");
             Matcher m2 = startPattern.matcher(rest.substring(pos));
             if (m2.matches()) {

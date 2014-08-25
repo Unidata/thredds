@@ -92,7 +92,6 @@ public class CatalogEnhancer extends JPanel {
   // data
   private ArrayList daList = new ArrayList();
   private ArrayList dsList = new ArrayList();
-  private InvCatalogImpl currentCatalog = null;
   private DatasetBean currentBean = null;
 
   private DIFWriter difWriter = new DIFWriter();
@@ -170,7 +169,7 @@ public class CatalogEnhancer extends JPanel {
     dsTable.addListSelectionListener( new ListSelectionListener() {
       public void valueChanged(ListSelectionEvent e) {
         DatasetBean bean = (DatasetBean) dsTable.getSelectedBean();
-        InvDatasetImpl selectedDataset = (InvDatasetImpl) bean.dataset();
+        InvDatasetImpl selectedDataset = bean.dataset();
         catalogChooser.setSelectedDataset( selectedDataset);
       }
     });
@@ -248,7 +247,6 @@ public class CatalogEnhancer extends JPanel {
       public void actionPerformed(ActionEvent evt) {
         InvCatalogImpl cat = (InvCatalogImpl) catalogChooser.getCurrentCatalog();
         if (cat == null) return;
-        String catURL = catalogChooser.getCurrentURL();
         try {
           sourcePane.setCatalog(cat.getBaseURI().toString(), cat);
         } catch (IOException ioe) {
@@ -487,33 +485,32 @@ public class CatalogEnhancer extends JPanel {
     int count = 0;
 
     public void run() {
-      Iterator iter = getDatasetAccessBeans().iterator();
-      while (iter.hasNext()) {
-        AccessBean bean = (AccessBean) iter.next();
+      for (Object o : getDatasetAccessBeans()) {
+        AccessBean bean = (AccessBean) o;
         String urlOK = bean.getUrlOk();
         if (urlOK.length() > 0) continue; // already been checked
         if (cancel) break;
 
         InvAccess access = bean.access();
-        if (debugCheckUrl) System.out.print("Try to open "+access.getStandardUrlName());
-        String status = checkURL( makeURL(access));
-        if (debugCheckUrl) System.out.println(" "+status);
+        if (debugCheckUrl)
+          System.out.print("Try to open " + access.getStandardUrlName());
+        String status = checkURL(makeURL(access));
+        if (debugCheckUrl) System.out.println(" " + status);
         count++;
 
-        bean.setUrlOk( status);
+        bean.setUrlOk(status);
       }
-     success = !cancel && !isError();
-     done = true;    // do last!
-    }
+    success = !cancel && !isError();
+    done = true;    // do last!
+  }
 
     public String getNote() { return count +" URLs out of "+taskLength; }
     public int getProgress() { return count; }
 
     public int getTaskLength() {
       taskLength = 0;
-      Iterator iter = getDatasetAccessBeans().iterator();
-      while (iter.hasNext()) {
-        AccessBean bean = (AccessBean) iter.next();
+      for (Object o : getDatasetAccessBeans()) {
+        AccessBean bean = (AccessBean) o;
         if (bean.getUrlOk().length() > 0) continue; // already been checked
         taskLength += bean.dataset().getAccess().size();
       }
@@ -522,7 +519,7 @@ public class CatalogEnhancer extends JPanel {
   }
 
   private String checkURL( String urlString) {
-    URL url = null;
+    URL url;
     try {
       url = new URL( urlString);
     } catch ( MalformedURLException e) {
@@ -558,54 +555,28 @@ public class CatalogEnhancer extends JPanel {
     /** list of CatalogBean.DatasetBean */
     public ArrayList getDatasetBeans() { return dsList; }
 
-    private void addDatasets(InvDatasetImpl ds) {
-      addDataset( ds);
-
-      // skip unread catalogRef
-      if (ds instanceof InvCatalogRef) {
-        InvCatalogRef catRef = (InvCatalogRef) ds;
-        if (!catRef.isRead()) return;
-      }
-
-      if (ds.hasAccess()) {
-        Iterator iter = ds.getAccess().iterator();
-        while (iter.hasNext())
-          daList.add( new AccessBean( (InvAccess) iter.next()));
-      }
-
-      // recurse
-      java.util.List dlist = ds.getDatasets();
-      for (int i=0; i<dlist.size(); i++) {
-        InvDatasetImpl dds = (InvDatasetImpl) dlist.get(i);
-        addDatasets( dds);
-      }
-    }
-
     public void addDataset(InvDatasetImpl ds) {
       DatasetBean bean = new DatasetBean( ds);
       dsTable.addBean( bean);
     }
 
     public void addDatasetAccess(InvDatasetImpl ds) {
-      Iterator iter = ds.getAccess().iterator();
-      while (iter.hasNext()) {
-        AccessBean beana = new AccessBean( (InvAccess) iter.next());
-        daTable.addBean( beana);
+      for (Object o : ds.getAccess()) {
+        AccessBean beana = new AccessBean((InvAccess)o);
+        daTable.addBean(beana);
       }
     }
 
     public DatasetBean findDatasetBean( InvDataset ds) {
-      Iterator iter = dsList.iterator();
-      while (iter.hasNext()) {
-        DatasetBean item = (DatasetBean) iter.next();
+      for (Object aDsList : dsList) {
+        DatasetBean item = (DatasetBean) aDsList;
         if (item.dataset() == ds) return item;
       }
       return null;
     }
     public AccessBean findAccessBean( InvDataset ds) {
-      Iterator iter = daList.iterator();
-      while (iter.hasNext()) {
-        AccessBean item = (AccessBean) iter.next();
+      for (Object aDaList : daList) {
+        AccessBean item = (AccessBean) aDaList;
         if (item.dataset() == ds) return item;
       }
       return null;
@@ -613,9 +584,8 @@ public class CatalogEnhancer extends JPanel {
 
 
     public AccessBean findOrAddBean( InvAccess access) {
-      Iterator iter = daList.iterator();
-      while (iter.hasNext()) {
-        AccessBean item = (AccessBean) iter.next();
+      for (Object aDaList : daList) {
+        AccessBean item = (AccessBean) aDaList;
         if (item.access == access) return item;
       }
       AccessBean newBean = new AccessBean( access);
@@ -679,11 +649,8 @@ public class CatalogEnhancer extends JPanel {
 
       private thredds.catalog.InvAccess access;
       private String name, url, URLok = "";
-      private FeatureType dataType;
       private DataFormatType dataFormatType;
       private ServiceType serviceType;
-      private int ngrids, readTime;
-      private boolean hasBoundingBox, hasTimeRange, hasStandardQuantities;
 
       // no-arg constructor
       public AccessBean() {}

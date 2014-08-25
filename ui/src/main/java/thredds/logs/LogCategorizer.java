@@ -302,14 +302,14 @@ public class LogCategorizer {
 
   //////////////////////////////////////////////////////////////////
 
-  class MyLogFilter implements LogReader.LogFilter {
+  static class MyLogFilter implements LogReader.LogFilter {
 
     public boolean pass(LogReader.Log log) {
       return (log.returnCode == 200) && log.path.startsWith(prefix);
     }
   }
 
-  class MyFF implements FileFilter {
+  static class MyFF implements FileFilter {
 
     public boolean accept(File f) {
       String name = f.getName();
@@ -317,65 +317,65 @@ public class LogCategorizer {
     }
   }
 
-  int datasetReq = 0;
-  int unknownReq = 0;
-  int latestReq = 0;
-
-  class MyClosure implements LogReader.Closure {
-
-    public void process(LogReader.Log log) {
-      String path = log.path.substring(prefix.length());
-
-      int len = 0;
-      if (path.endsWith("/catalog.xml")) {
-        len = "/catalog.xml".length();
-
-      } else if (path.endsWith("/catalog.html")) {
-        len = "/catalog.html".length();
-
-      } else if (path.endsWith("/latest.xml")) {
-        latestReq++;
-        len = "/latest.xml".length();
-
-      } else if (path.endsWith("/latest.html")) {
-        latestReq++;
-        len = "/latest.html".length();
-
-      } else if (path.contains("catalog.html?dataset=")) {
-        //System.out.printf("Dataset request=%s %n", log.path);
-        datasetReq++;
-        return;
-
-      } else if (path.contains("latest.html?dataset=")) {
-        //System.out.printf("Latest request=%s %n", log.path);
-        datasetReq++;
-        return;
-
-      } else {
-        // System.out.printf("Unknown request=%s %n", log.path);
-        unknownReq++;
-        return;
-      }
-
-      PathMatcher.Match match = pathMatcher.match(path);
-      if (match == null) {
-        System.out.printf("No root for path %s %n", path);
-        return;
-      }
-
-      String remaining = path.substring(match.root.length(), path.length() - len);
-      if (remaining.startsWith("/"))
-        remaining = remaining.substring(1);
-
-      /* String dirName = match.dir + remaining;
-      CacheDirectory mdir = manager.get(dirName, true);
-      if (mdir == null)
-        if (show) System.out.printf("Dir %s from path %s doesnt exist%n", dirName, log.path);
-        else if (show)
-          System.out.printf("Dir %s from path %s ok%n", dirName, log.path); */
-    }
-
-  }
+//  int datasetReq = 0;
+//  int unknownReq = 0;
+//  int latestReq = 0;
+//
+//  class MyClosure implements LogReader.Closure {
+//
+//    public void process(LogReader.Log log) {
+//      String path = log.path.substring(prefix.length());
+//
+//      int len = 0;
+//      if (path.endsWith("/catalog.xml")) {
+//        len = "/catalog.xml".length();
+//
+//      } else if (path.endsWith("/catalog.html")) {
+//        len = "/catalog.html".length();
+//
+//      } else if (path.endsWith("/latest.xml")) {
+//        latestReq++;
+//        len = "/latest.xml".length();
+//
+//      } else if (path.endsWith("/latest.html")) {
+//        latestReq++;
+//        len = "/latest.html".length();
+//
+//      } else if (path.contains("catalog.html?dataset=")) {
+//        //System.out.printf("Dataset request=%s %n", log.path);
+//        datasetReq++;
+//        return;
+//
+//      } else if (path.contains("latest.html?dataset=")) {
+//        //System.out.printf("Latest request=%s %n", log.path);
+//        datasetReq++;
+//        return;
+//
+//      } else {
+//        // System.out.printf("Unknown request=%s %n", log.path);
+//        unknownReq++;
+//        return;
+//      }
+//
+//      PathMatcher.Match match = pathMatcher.match(path);
+//      if (match == null) {
+//        System.out.printf("No root for path %s %n", path);
+//        return;
+//      }
+//
+//      String remaining = path.substring(match.root.length(), path.length() - len);
+//      if (remaining.startsWith("/"))
+//        remaining = remaining.substring(1);
+//
+//      /* String dirName = match.dir + remaining;
+//      CacheDirectory mdir = manager.get(dirName, true);
+//      if (mdir == null)
+//        if (show) System.out.printf("Dir %s from path %s doesnt exist%n", dirName, log.path);
+//        else if (show)
+//          System.out.printf("Dir %s from path %s ok%n", dirName, log.path); */
+//    }
+//
+//  }
 
   //////////////////////////////////////////////////////
 
