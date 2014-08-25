@@ -33,6 +33,8 @@
 
 package thredds.catalog;
 
+import ucar.nc2.constants.CDM;
+
 import java.io.*;
 import java.net.URL;
 import java.net.URI;
@@ -145,7 +147,7 @@ public class InvDocumentation {
     }
     is.close();
 
-    content = os.toString();
+    content = new String(os.toByteArray(), CDM.utf8Charset);
     return content;
   }
 

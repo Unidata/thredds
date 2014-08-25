@@ -359,8 +359,8 @@ public abstract class AggregationOuterDimension extends Aggregation implements P
         int n = nestedDatasets.size();
         for (int i = 0; i < n; ++i) {
           Result r = completionService.take().get();
-          r.data = MAMath.convert(r.data, dtype); // just in case it need to be converted
           if (r != null) {
+            r.data = MAMath.convert(r.data, dtype); // just in case it needs to be converted
             int size = (int) r.data.getSize();
             Array.arraycopy(r.data, 0, allData, size * r.index, size);
           }

@@ -38,6 +38,7 @@ import org.jdom2.output.XMLOutputter;
 import org.jdom2.output.Format;
 
 import java.io.IOException;
+import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.util.StringTokenizer;
 
@@ -125,7 +126,7 @@ public class ODLparser {
       }
     }
 
-    if (show) showDoc(new PrintWriter(System.out));
+    if (show) showDoc(new PrintWriter( new OutputStreamWriter(System.out)));
     return rootElem;
   }
 

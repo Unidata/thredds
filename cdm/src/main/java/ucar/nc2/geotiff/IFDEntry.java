@@ -32,6 +32,9 @@
  */
 package ucar.nc2.geotiff;
 
+import ucar.nc2.constants.CDM;
+
+import java.io.*;
 import java.util.*;
 
 /**
@@ -131,7 +134,7 @@ class IFDEntry implements Comparable {
 
     else if (type == FieldType.RATIONAL) {
       for (int i = 0; i < 2; i += 2) {
-        if (i > 1) sb.append(", ");
+        if (i > 0) sb.append(", ");
         sb.append(value[i]).append("/").append(value[i + 1]);
       }
     }

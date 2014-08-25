@@ -34,6 +34,7 @@ package thredds.catalog.dl;
 
 import thredds.catalog.*;
 import thredds.catalog.crawl.CatalogCrawler;
+import ucar.nc2.constants.CDM;
 import ucar.nc2.units.DateRange;
 import ucar.nc2.units.DateType;
 
@@ -92,7 +93,7 @@ public class DIFWriter {
     CatalogCrawler crawler = new CatalogCrawler( CatalogCrawler.USE_ALL, true, listener);
     crawler.crawl(cat, null, ps, null);
     mess.append("\n*********************\n");
-    mess.append(bis.toString());
+    mess.append(new String(bis.toByteArray(), CDM.utf8Charset));
   }
 
   /**

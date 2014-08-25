@@ -102,7 +102,7 @@ public class ControllerOS implements MController {
   ////////////////////////////////////////////////////////////
 
   // handles filtering and removing/including subdirectories
-  private class FilteredIterator implements Iterator<MFile> {
+  private static class FilteredIterator implements Iterator<MFile> {
     private Iterator<MFile> orgIter;
     private CollectionConfig mc;
     private boolean wantDirs;
@@ -142,7 +142,7 @@ public class ControllerOS implements MController {
   }
 
   // returns everything in the current directory
-  private class MFileIterator implements Iterator<MFile> {
+  private static class MFileIterator implements Iterator<MFile> {
     List<File> files;
     int count = 0;
 
@@ -174,7 +174,7 @@ public class ControllerOS implements MController {
   }
 
   // recursively scans everything in the directory and in subdirectories, depth first (leaves before subdirs)
-  private class MFileIteratorAll implements Iterator<MFile> {
+  private static class MFileIteratorAll implements Iterator<MFile> {
     Queue<Traversal> traverse;
     Traversal currTraversal;
     Iterator<MFile> currIter;

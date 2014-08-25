@@ -40,6 +40,7 @@ import java.io.*;
 import java.net.*;
 import java.util.*;
 
+import ucar.nc2.constants.CDM;
 import ucar.nc2.util.IO;
 import thredds.util.PathAliasReplacement;
 import thredds.catalog.parser.jdom.InvCatalogFactory10;
@@ -614,7 +615,7 @@ public class InvCatalogFactory {
   public String writeXML(InvCatalogImpl catalog) throws IOException {
     ByteArrayOutputStream os = new ByteArrayOutputStream(10000);
     writeXML(catalog, os, false);
-    return os.toString();
+    return new String(os.toByteArray(), CDM.utf8Charset);
   }
 
   /*

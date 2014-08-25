@@ -33,8 +33,11 @@
  */
 package thredds.catalog.dl;
 
+import ucar.nc2.constants.CDM;
+
 import java.util.HashMap;
 import java.io.*;
+import java.util.Map;
 
 /**
  * read in GRIB-2 to DIF csv file
@@ -50,7 +53,7 @@ public class Grib2toDIF implements VocabTranslator {
     return singleton;
   }
 
-  private HashMap hash = new HashMap();
+  private Map<String, String> hash = new HashMap<>();
   private int maxLines = 1000;
   private boolean debug = false;
 
@@ -66,10 +69,9 @@ public class Grib2toDIF implements VocabTranslator {
         throw new IOException("Cant find resource= "+resourceName);
     }
 
-    BufferedReader dataIS = new BufferedReader(new InputStreamReader(ios));
+    BufferedReader dataIS = new BufferedReader(new InputStreamReader(ios, CDM.utf8Charset));
 
     String discipline = null, category = null, param = null;
-
     int maxTokens = 8;
     String[] tokens = new String[maxTokens];
 
@@ -126,7 +128,7 @@ public class Grib2toDIF implements VocabTranslator {
 
 
   public String translate(String from) {
-    return (String) hash.get(from);
+    return hash.get(from);
   }
 
   public static void main(String args[]) throws IOException {

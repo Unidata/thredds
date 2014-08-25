@@ -79,7 +79,7 @@ class DoradeVOLD extends DoradeDescriptor {
         calendar.set(year, month - 1, day, hour, minute, second);
         dataTime = calendar.getTime();
 
-        flightId = new String(data, 48, 8).trim();
+        flightId = new String(data, 48, 8, CDM.utf8Charset).trim();
         facilityName = new String(data, 56, 8).trim();
 
         year = grabShort(data, 64);

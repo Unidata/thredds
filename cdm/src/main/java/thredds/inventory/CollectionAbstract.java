@@ -194,8 +194,8 @@ public abstract class CollectionAbstract implements MCollection {
       CalendarDate cd1 = extractRunDateWithError(m1);
       CalendarDate cd2 = extractRunDateWithError(m2);
       if ((cd1 == null) || (cd2 == null)) {
-        cd1 = extractRunDateWithError(m1);  //debug
-        cd2 = extractRunDateWithError(m2);
+        //cd1 = extractRunDateWithError(m1);  //debug
+        //cd2 = extractRunDateWithError(m2);
         throw new IllegalStateException();
       }
       return cd1.compareTo(cd2);

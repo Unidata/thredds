@@ -33,7 +33,10 @@
  */
 package thredds.catalog.dl;
 
+import ucar.nc2.constants.CDM;
+
 import java.util.HashMap;
+import java.util.Map;
 import java.util.StringTokenizer;
 import java.io.InputStream;
 import java.io.IOException;
@@ -54,7 +57,7 @@ public class Grib1toDIF implements VocabTranslator {
     return singleton;
   }
 
-  private HashMap hash = new HashMap();
+  private Map<String, String> hash = new HashMap<>();
   private int maxLines = 1000;
 
   private Grib1toDIF() throws IOException {
@@ -64,7 +67,7 @@ public class Grib1toDIF implements VocabTranslator {
     if (ios == null)
       throw new IOException("Cant find resource= "+resourceName);
 
-    BufferedReader dataIS = new BufferedReader(new InputStreamReader(ios));
+    BufferedReader dataIS = new BufferedReader(new InputStreamReader(ios, CDM.utf8Charset));
     int count = 0;
     while (count < maxLines) {
       String line = dataIS.readLine();
@@ -89,6 +92,6 @@ public class Grib1toDIF implements VocabTranslator {
   public String translate(String fromId) {
     int pos = fromId.lastIndexOf(","); // the last number is the
     String paramNo = fromId.substring(pos+1).trim();
-    return (String) hash.get(paramNo);
+    return hash.get(paramNo);
   }
 }

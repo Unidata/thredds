@@ -88,7 +88,7 @@ public class ControllerOS7 implements MController {
 
   ////////////////////////////////////////////////////////////
 
-  private class CollectionFilter implements DirectoryStream.Filter<Path> {
+  private static class CollectionFilter implements DirectoryStream.Filter<Path> {
     CollectionConfig mc; // LOOK not used yet
 
     private CollectionFilter(CollectionConfig mc) {
@@ -102,7 +102,7 @@ public class ControllerOS7 implements MController {
   }
 
   // returns everything in the current directory
-  private class MFileIterator implements Iterator<MFile> {
+  private static class MFileIterator implements Iterator<MFile> {
     Iterator<Path> dirStream;
 
     MFileIterator(Path dir, DirectoryStream.Filter<Path> filter) throws IOException {
@@ -189,7 +189,7 @@ public class ControllerOS7 implements MController {
     }
   }
 
-  private static void walkFileTree() throws IOException {
+  /* private static void walkFileTree() throws IOException {
     Path dir = Paths.get("B:/ndfd/");
 
     long start = System.currentTimeMillis();
@@ -204,7 +204,7 @@ public class ControllerOS7 implements MController {
   /////////////////////////////////////////////////////////////
 
 
-  private class MyFilter implements DirectoryStream.Filter<Path> {
+  private static class MyFilter implements DirectoryStream.Filter<Path> {
     @Override
     public boolean accept(Path entry) throws IOException {
       return !entry.endsWith(".gbx9") && !entry.endsWith(".ncx");
@@ -220,7 +220,7 @@ public class ControllerOS7 implements MController {
      public boolean accept(Path path);
   }
 
-  private static class MyFilter2 implements DirectoryStream.Filter<Path> {
+  /* private static class MyFilter2 implements DirectoryStream.Filter<Path> {
     PathFilter pathFilter;
 
     private MyFilter2(PathFilter pathFilter) {
@@ -285,7 +285,7 @@ public class ControllerOS7 implements MController {
     }
   }
 
-  private static void dirStream() throws IOException {
+  /* private static void dirStream() throws IOException {
     Path dir = Paths.get("B:/ndfd/");
 
     long start = System.currentTimeMillis();
@@ -310,6 +310,6 @@ public class ControllerOS7 implements MController {
     //Path rel2 =  firstPath.relativize(currentBasePath);
     Path res =  currentBasePath.resolve(firstPath);
     System.out.printf("res=%s%n", res);
-  }
+  }  */
 
 }

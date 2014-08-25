@@ -42,6 +42,7 @@ import java.lang.reflect.*;
 import java.io.*;
 import java.util.*;
 
+import ucar.nc2.constants.CDM;
 import ucar.nc2.util.IO;
 
 /**
@@ -289,7 +290,7 @@ public class XMLEntityResolver implements org.xml.sax.EntityResolver {
       ByteArrayOutputStream sbuff = new ByteArrayOutputStream(3000);
       if (is != null) {
         IO.copy(is, sbuff);
-        entity = sbuff.toString();
+        entity = new String(sbuff.toByteArray(), CDM.utf8Charset);
         if (debugEntityResolution) System.out.println(" *** entity "+entityName+" mapped to local resource at "+resourceName);
 
       } else if (urlName != null) { // otherwise, get from network

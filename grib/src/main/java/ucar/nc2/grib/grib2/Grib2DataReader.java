@@ -113,9 +113,8 @@ public class Grib2DataReader {
         throw new UnsupportedOperationException("Unsupported DRS type = " + dataTemplate);
     }
 
-    //int scanMode = gds.getGds().getScanMode();
-    //int nx = gds.getGds().getNx();  // needs some smarts for different type Grids
-    scanningModeCheck(data, scanMode, nx);
+    if (data != null)
+      scanningModeCheck(data, scanMode, nx);
 
     return data;
   }

@@ -369,7 +369,7 @@ public class NcepMnemonic {
 
   public static void main(String args[]) throws IOException {
     String fileOut = "resource:/resources/bufrTables/local/ncep/DataSubCategories.csv";
-    try (PrintStream pout = new PrintStream(fileOut, CDM.utf8Charset.name())) {
+    try (PrintStream pout = new PrintStream(fileOut, CDM.UTF8)) {
       readSubCategories("C:/dev/github/thredds/bufr/src/main/sources/ncep/bufrtab.000.txt", pout, "MSG TYPE ");
       readSubCategories("C:/dev/github/thredds/bufr/src/main/sources/ncep/bufrtab.001.txt", pout, "MESSAGE TYPE ");
       readSubCategories("C:/dev/github/thredds/bufr/src/main/sources/ncep/bufrtab.002.txt", pout, "MSG TYPE ");
