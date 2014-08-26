@@ -35,6 +35,10 @@ package ucar.nc2.ncml;
 import java.io.IOException;
 import java.io.StringReader;
 import java.io.File;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -57,6 +61,7 @@ public class TestOffAggUpdating {
   String dir = TestDir.cdmUnitTestDir + "agg/updating";
   String location = dir + "agg/updating.ncml";
   File dirFile = new File(dir);
+  String extraFile = dir + "/extra.nc";
 
   String ncml =
           "<?xml version='1.0' encoding='UTF-8'?>\n" +
@@ -83,14 +88,14 @@ public class TestOffAggUpdating {
   @Test
   public void testUpdateSync() throws IOException, InvalidRangeException, InterruptedException {
      // make sure that the extra file is not in the agg
-    removeExtraFile();
+    move(extraFile);
 
     // open the agg
     NetcdfFile ncfile = NcMLReader.readNcML(new StringReader(ncml), location, null);
     check(ncfile, 12);
 
     // now make sure that the extra file is  in the agg
-    addExtraFile();
+    moveBack(extraFile);
 
     // reread
     ncfile.syncExtend();
@@ -102,14 +107,14 @@ public class TestOffAggUpdating {
   @Test
   public void testUpdateLastModified() throws IOException, InvalidRangeException, InterruptedException {
      // make sure that the extra file is not in the agg
-    removeExtraFile();
+    move(extraFile);
 
     // open the agg
     NetcdfFile ncfile = NcMLReader.readNcML(new StringReader(ncml), location, null);
     long start = ncfile.getLastModified();
 
     // now make sure that the extra file is  in the agg
-    addExtraFile();
+    moveBack(extraFile);
 
     // reread
     long end = ncfile.getLastModified();
@@ -125,44 +130,21 @@ public class TestOffAggUpdating {
   @Test
   public void testUpdateCache() throws IOException, InvalidRangeException, InterruptedException {
      // make sure that the extra file is not in the agg
-    removeExtraFile();
+    move(extraFile);
 
     // open the agg
     NetcdfFile ncfile = NetcdfDataset.acquireDataset(new NcmlStringFileFactory(), location, null, -1, null, null);
 
     check(ncfile, 12);
 
-    // now make sure that the extra file is  in the agg
-    addExtraFile();
+    // now make sure that the extra file is in the agg
+    moveBack(extraFile);
 
     // reread
     ncfile.syncExtend();
     check(ncfile, 18);
 
     ncfile.close();
-  }
-
-
-  private void removeExtraFile() throws IOException {
-    for (File f : dirFile.listFiles()) {
-      if (f.getName().equals("extra.nc")) {
-        if (!f.renameTo(new File(dirFile, "extra.wait"))) {
-          System.out.printf("Rename fails on %s.extra.nc %n", dirFile);
-        }
-        break;
-      }
-    }
-  }
-
-  private void addExtraFile() throws IOException {
-    // now make sure that the extra file is  in the agg
-    for (File f : dirFile.listFiles()) {
-      if (f.getName().equals("extra.wait")) {
-        if (!f.renameTo(new File(dirFile, "extra.nc")))
-          System.out.println(" rename fails on " + f.getPath());
-        break;
-      }
-    }
   }
 
   private void check(NetcdfFile ncfile, int n) throws IOException, InvalidRangeException {
@@ -182,6 +164,23 @@ public class TestOffAggUpdating {
     public FileCacheable open(String location, int buffer_size, CancelTask cancelTask, Object iospMessage) throws IOException {
       return NcMLReader.readNcML(new StringReader(ncml), location, null);
     }
+  }
+
+  public static boolean move(String filename) throws IOException {
+    Path src = Paths.get(filename);
+    if (!Files.exists(src)) return false;
+    Path dest = Paths.get(filename+".save");
+    Files.move(src, dest, StandardCopyOption.REPLACE_EXISTING);
+    return true;
+  }
+
+
+  public static boolean moveBack(String filename) throws IOException {
+    Path src = Paths.get(filename+".save");
+    if (!Files.exists(src)) return false;
+    Path dest = Paths.get(filename);
+    Files.move(src, dest, StandardCopyOption.REPLACE_EXISTING);
+    return true;
   }
 }
 
