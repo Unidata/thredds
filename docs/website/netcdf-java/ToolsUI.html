@@ -1,0 +1,65 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+    <title>ToolsUI</title>
+</head>
+<body>
+<h1>ToolsUI</h1>
+
+<h2>Running ToolsUI</h2>
+<h3>Download and run locally</h3>
+
+<p>You can download the toolsUI.jar from:</p>
+<ul>
+    <li>the <a href="/downloads/netcdf/index.jsp">netCDF Download page</a>, or</li>
+    <li>the <a href="documentation.htm">netCDF-Java documentation page</a></li>
+</ul>
+
+<p>You can then run the ToolsUI application using a command similar to this:</p>
+
+<code>java -Xmx1g -jar toolsUI.jar</code>
+
+<h3>ToolsUI Using Java WebStart</h3>
+
+<p>Coming back soon!</p>
+
+<h2>Check that netCDF-Java can open your dataset</h2>
+
+<p>The netCDF-Java library can read data from a wide range of scientific data formats
+    (more details <a href="reference/formats/FileTypes.html">here</a>). To check that
+    your dataset can be read by netCDF-Java, use the "Viewer" tab in ToolsUI. Either
+    cut-and-paste a URL or file path into the "dataset" field or click on the folder
+    icon and select a file. (If you cut-and-paste, you will need to hit "Enter" to open
+    the dataset.)
+</p>
+<p>If the dataset can be opened, you will see the dimensions, variables, and other
+    details listed in the ToolsUI window. E.g.,</p>
+
+<img src="ToolsUI_Viewer.png">
+
+<h2>Check that netCDF-Java recognizes your dataset as gridded data</h2>
+
+<p>The netCDF-Java library can recognize various kinds of gridded datasets (e.g.,
+    a netCDF-CF compliant gridded file or GRIB data). To check that your dataset is
+    recognized as gridded data, use the "FeatureType -> Gridded" tab in ToolsUI. Either
+    cut-and-paste a URL or file path into the "dataset" field or click on the folder
+    icon and select a file. (If you cut-and-paste, you will need to hit "Enter" to open
+    the dataset.)
+</p>
+
+<p>If the dataset is recognized as containing gridded data, the ToolsUI window will
+    show three tables containing (from the top table down) gridded fields, coordinate
+    systems, and axes. E.g.,</p>
+
+<img src="ToolsUI_FeatureType-Grid.png">
+
+<hr WIDTH="100%">
+
+<address>
+    <img src="nc.gif" width="64" height="64" border="0" alt="">
+    This document is maintained by Unidata and was last updated August 2014.
+    Send comments to <a href="mailto:support-netcdf-java@unidata.ucar.edu">NetCDF-Java support</a>.
+</address>
+
+
+</body>
