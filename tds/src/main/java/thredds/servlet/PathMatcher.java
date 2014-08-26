@@ -79,7 +79,7 @@ public class PathMatcher {
 
   /**
    * Find the longest match.
-   * @param path find object with longeth match where path.startsWith( key)
+   * @param path find object with longest match where path.startsWith( key)
    * @return the value whose key is the longest that matches path, or null if none
    */
   public Object match( String path) {
@@ -94,7 +94,7 @@ public class PathMatcher {
     for (String key : tail.keySet()) {
       if (path.startsWith(key))
         return treeMap.get(key);
-      // terminate when theres no match at all.
+      // terminate when there's no match at all.
       if (StringUtil2.match(path, key) == 0)
         break;
     }
@@ -102,7 +102,7 @@ public class PathMatcher {
     return null;
   }
 
-  private class PathComparator implements Comparator<String> {
+  private static class PathComparator implements Comparator<String> {
     public int compare(String s1, String s2) {
       int compare = s2.compareTo( s1); // reverse sort
       if (debug) System.out.println(" compare "+s1+" to "+s2+" = "+compare);
