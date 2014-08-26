@@ -110,7 +110,7 @@ public class DatasetEditor extends JPanel {
   private static final String CONTRIBUTORS = "contributors";
   private static final String DOCUMENTATION = "documentationLinks";
 
-  private static final ArrayList inherit_types = new ArrayList();
+  private static final ArrayList<String> inherit_types = new ArrayList<>();
   private static final String LOCAL = "Local";
   private static final String INHERITABLE = "Local, Inheritable";
   private static final String INHERITED = "Inherited";
@@ -125,13 +125,11 @@ public class DatasetEditor extends JPanel {
 
   private Field gc_type, tc_type;
   private Field.BeanTableField variablesFld, creatorsFld, publishersFld, projectsFld, keywordsFld, datesFld, contributorsFld, docsFld;
-  private ArrayList tables = new ArrayList();
 
   private RangeDateSelector dateRangeSelector;
   private JButton extractGCButton, extractVButton;
 
   private PrefPanel metadataPP, dscanPP;
-  private IndependentWindow dscanWindow;
   private JButton exampleButton;
 
   private InvDatasetImpl dataset, leafDataset;
@@ -243,9 +241,9 @@ pp.addComponent(geoPanel, 0, row++, "left, center"); */
     metadataPP.addEmptyRow(row++, 10);
 
     JTabbedPane tabPane = new JTabbedPane();
-    metadataPP.addComponent( tabPane, 0, row++, "8,1");
+    metadataPP.addComponent( tabPane, 0, row, "8,1");
 
-    tables = new ArrayList();
+    ArrayList<Field.BeanTableField> tables = new ArrayList<>();
 
     tabPane.addTab( "Variables", makeVariablesPanel());
     tables.add( variablesFld);
@@ -279,8 +277,7 @@ pp.addComponent(geoPanel, 0, row++, "left, center"); */
     tabPane.addTab( "Documentation", docsFld.getEditComponent());
     tables.add( docsFld);
 
-    for (int i = 0; i < tables.size(); i++)
-      addPopups( (Field.BeanTableField) tables.get(i));
+    for (Field.BeanTableField table : tables) addPopups(table);
 
     metadataPP.finish(false);
 
@@ -319,7 +316,7 @@ pp.addComponent(geoPanel, 0, row++, "left, center"); */
         exampleButton.setText( (leaf == null) ? "ERR" : leaf.getName());
       }
     });
-    dscanPP.addComponent(exampleButton, 0, row++, null);
+    dscanPP.addComponent(exampleButton, 0, row, null);
 
     //dscanPP.addTextField(DSCAN_TC_MATCH, "Dataset Name Match", "", 0, row++, null);
     //dscanPP.addTextField(DSCAN_TC_SUBS, "Substituton Pattern", "$1-$2-$3T$4:00:00", 0, row++, null);
@@ -327,7 +324,8 @@ pp.addComponent(geoPanel, 0, row++, "left, center"); */
 
     dscanPP.finish(false);
 
-    dscanWindow = new IndependentWindow( "DatasetScan options", BAMutil.getImage( "thredds"), dscanPP);
+    IndependentWindow dscanWindow = new IndependentWindow( "DatasetScan " +
+            "options", BAMutil.getImage( "thredds"), dscanPP);
     dscanWindow.setBounds(new Rectangle(150, 50, 700, 300));
   }
 
@@ -507,9 +505,10 @@ pp.addComponent(geoPanel, 0, row++, "left, center"); */
   }
 
   private void setVariables(Field.BeanTableField beanTableField) {
-    List variableLists = dataset.getLocalMetadata().getVariables();
+    List<ThreddsMetadata.Variables> variableLists = dataset.getLocalMetadata()
+              .getVariables();
     if ((variableLists != null) && (variableLists.size() > 0)) {
-     ThreddsMetadata.Variables vars = (ThreddsMetadata.Variables) variableLists.get(0);
+     ThreddsMetadata.Variables vars = variableLists.get(0);
      beanTableField.setValue(vars.getVariableList());
      setMode(beanTableField, 0);
      return;
@@ -517,7 +516,7 @@ pp.addComponent(geoPanel, 0, row++, "left, center"); */
 
     variableLists = dataset.getLocalMetadataInheritable().getVariables();
     if ((variableLists != null) && (variableLists.size() > 0)) {
-     ThreddsMetadata.Variables vars = (ThreddsMetadata.Variables) variableLists.get(0);
+     ThreddsMetadata.Variables vars = variableLists.get(0);
      beanTableField.setValue(vars.getVariableList());
      setMode(beanTableField, 1);
      return;
@@ -525,9 +524,9 @@ pp.addComponent(geoPanel, 0, row++, "left, center"); */
 
     variableLists = dataset.getVariables();
     if ((variableLists != null) && (variableLists.size() > 0)) {
-      ThreddsMetadata.Variables vars = (ThreddsMetadata.Variables) variableLists.get(0);
+      ThreddsMetadata.Variables vars = variableLists.get(0);
       beanTableField.setValue(vars.getVariableList());
-      setMode(beanTableField, (vars == null || vars.getVariableList().size() == 0) ? 1 : 2);
+      setMode(beanTableField, vars.getVariableList().size() == 0 ? 1 : 2);
       return;
     }
 
@@ -595,7 +594,7 @@ pp.addComponent(geoPanel, 0, row++, "left, center"); */
 
   private int getMode(String want_mode) {
     for (int i = 0; i < inherit_types.size(); i++) {
-      String mode = (String) inherit_types.get(i);
+      String mode = inherit_types.get(i);
       if (mode.equals(want_mode)) return i;
     }
     return -1;
@@ -773,7 +772,7 @@ pp.addComponent(geoPanel, 0, row++, "left, center"); */
       leafDataset = findLeafDataset( dataset);
 
     if (leafDataset != null) {
-      ThreddsMetadata.GeospatialCoverage gc = null;
+      ThreddsMetadata.GeospatialCoverage gc;
       try {
         gc = MetadataExtractor.extractGeospatial( leafDataset);
       } catch (IOException e) {
@@ -789,7 +788,7 @@ pp.addComponent(geoPanel, 0, row++, "left, center"); */
       leafDataset = findLeafDataset(dataset);
     if (leafDataset == null) return;
 
-    ThreddsMetadata.Variables vars = null;
+    ThreddsMetadata.Variables vars;
     try {
       vars = MetadataExtractor.extractVariables(leafDataset);
     } catch (IOException e) {
@@ -798,10 +797,10 @@ pp.addComponent(geoPanel, 0, row++, "left, center"); */
 
     if (vars != null) {
       ThreddsMetadata tm = dataset.getLocalMetadataInheritable();
-      List varsList = tm.getVariables();
+      List<ThreddsMetadata.Variables> varsList = tm.getVariables();
       boolean replaced = false;
       for (int i = 0; i < varsList.size(); i++) {
-        ThreddsMetadata.Variables vs = (ThreddsMetadata.Variables) varsList.get(i);
+        ThreddsMetadata.Variables vs = varsList.get(i);
         if (vs.getVocabulary().equals(vars.getVocabulary())) {
           varsList.set(i, vars); // replace
           replaced = true;
@@ -813,7 +812,6 @@ pp.addComponent(geoPanel, 0, row++, "left, center"); */
 
       variablesFld.setValue(vars.getVariableList());
       setMode(variablesFld, 1);
-      return;
     }
   }
 

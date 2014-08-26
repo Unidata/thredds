@@ -35,6 +35,7 @@ package thredds.ui.catalog.tools;
 import thredds.catalog.*;
 import thredds.catalog.crawl.CatalogExtractor;
 import thredds.ui.catalog.CatalogTreeView;
+import ucar.nc2.constants.CDM;
 import ucar.nc2.ui.widget.*;
 import ucar.nc2.ui.widget.PopupMenu;
 import ucar.nc2.util.IO;
@@ -50,6 +51,7 @@ import java.awt.event.ActionListener;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.PrintStream;
+import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URISyntaxException;
 
@@ -68,7 +70,6 @@ public class TDServerConfigurator extends JPanel {
   static private final String SPLIT_POS = "SplitPos";
 
   private PreferencesExt prefs;
-  private Component myParent;
 
   // ui
   private ComboBox catalogCB;
@@ -107,22 +108,19 @@ public class TDServerConfigurator extends JPanel {
     catSource.addActionListener( new ActionListener() {
       public void actionPerformed(ActionEvent evt) {
         // String catalogPath = (String) catalogCB.getSelectedItem();
-        InvCatalogImpl cat = (InvCatalogImpl) catTree.getCatalog();
+        InvCatalogImpl cat = catTree.getCatalog();
         ByteArrayOutputStream os = new ByteArrayOutputStream(60*1000);
         try {
-          cat.writeXML (os, true);
-        } catch (IOException e1) {
-          e1.printStackTrace();
-        }
-        sourcePane.setText(os.toString());
-        sourceWindow.show();
+          cat.writeXML(os, true);
+          sourcePane.setText(os.toString(CDM.utf8Charset.name()));
+          sourceWindow.show();
 
-        if (debugSave) {
-          try {
-            IO.writeToFile(os.toString(), "C:/dev/netcdf-java-2.2/test/serverConfig/start.xml");
-          } catch (IOException e) {
-            e.printStackTrace();
+          if (debugSave) {
+              IO.writeToFile(os.toString(CDM.utf8Charset.name()),
+                      "C:/dev/netcdf-java-2.2/test/serverConfig/start.xml");
           }
+        } catch (IOException e1) {
+            e1.printStackTrace();
         }
       }
     });
@@ -132,7 +130,7 @@ public class TDServerConfigurator extends JPanel {
       public void actionPerformed(ActionEvent evt) {
         if (!datasetEditor.accept()) return;
 
-        InvCatalogImpl cat = (InvCatalogImpl) catTree.getCatalog();
+        InvCatalogImpl cat = catTree.getCatalog();
         if (cat == null) return;
 
         try {
@@ -145,8 +143,9 @@ public class TDServerConfigurator extends JPanel {
         if (debugSave) {
           try {
             ByteArrayOutputStream os = new ByteArrayOutputStream(60*1000);
-            cat.writeXML (os, true);
-            IO.writeToFile(os.toString(), "C:/dev/netcdf-java-2.2/test/serverConfig/end.xml");
+            cat.writeXML(os, true);
+            IO.writeToFile(os.toString(CDM.utf8Charset.name()),
+                    "C:/dev/netcdf-java-2.2/test/serverConfig/end.xml");
           } catch (IOException e1) {
             e1.printStackTrace();
           }
@@ -160,10 +159,15 @@ public class TDServerConfigurator extends JPanel {
         InvDataset ds = datasetEditor.getExtractedDataset();
         if (ds == null) return;
 
-        ByteArrayOutputStream os = new ByteArrayOutputStream(60*1000);
-        PrintStream out = new PrintStream(os);
-        extractor.extractTypedDatasetInfo(out, ds);
-        extractPane.setText(os.toString());
+        try {
+            ByteArrayOutputStream os = new ByteArrayOutputStream(60 * 1000);
+            PrintStream out = new PrintStream(os, false, CDM.utf8Charset.name());
+
+            extractor.extractTypedDatasetInfo(out, ds);
+            extractPane.setText(os.toString(CDM.utf8Charset.name()));
+        } catch (UnsupportedEncodingException ex) {
+            ex.printStackTrace();
+        }
         extractWindow.show();
       }
     });
@@ -190,7 +194,7 @@ public class TDServerConfigurator extends JPanel {
           InvCatalogImpl cat = catTree.getCatalog();
           setCatalogURL(); // munge BaseURL
           catalogCB.addItem( e.getNewValue());
-          InvDatasetImpl top = (InvDatasetImpl) cat.getDataset();
+          InvDatasetImpl top = cat.getDataset();
           if (top != null)
             catTree.setSelectedDataset( top);
 
@@ -370,7 +374,7 @@ public class TDServerConfigurator extends JPanel {
   }
 
   private void setCatalogURL() {
-    InvCatalogImpl cat = (InvCatalogImpl) catTree.getCatalog();
+    InvCatalogImpl cat = catTree.getCatalog();
     URI baseURI = cat.getBaseURI();
     String uri = baseURI.toString();
     String uriNew = StringUtil2.remove(uri, "content/");

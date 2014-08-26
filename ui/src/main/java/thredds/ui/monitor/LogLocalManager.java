@@ -113,8 +113,10 @@ public class LogLocalManager {
       }
     }
 
-    List<FileDateRange> list = new ArrayList<FileDateRange>();
-    for (File f : localDir.listFiles()) {
+    List<FileDateRange> list = new ArrayList<>();
+    File[] files = localDir.listFiles();
+    if (files == null) return new ArrayList<>(0);
+    for (File f : files) {
       if (f.isDirectory()) continue;
       if (f.getName().endsWith(".zip")) continue;
       list.add(new FileDateRange(f));
