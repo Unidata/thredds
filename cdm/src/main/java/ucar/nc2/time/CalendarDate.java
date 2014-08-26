@@ -17,6 +17,12 @@ import org.joda.time.chrono.ZonedChronology;
  */
 @Immutable
 public class CalendarDate implements Comparable<CalendarDate> {
+  public static final double MILLISECS_IN_SECOND = 1000;
+  public static final double MILLISECS_IN_MINUTE = MILLISECS_IN_SECOND * 60;
+  public static final double MILLISECS_IN_HOUR = MILLISECS_IN_MINUTE * 60;
+  public static final double MILLISECS_IN_DAY = MILLISECS_IN_HOUR * 24;
+  public static final double MILLISECS_IN_YEAR = 3.15569259747E10;
+  public static final double MILLISECS_IN_MONTH = MILLISECS_IN_YEAR / 12;
 
   /**
    * Get a CalendarDate representing the present moment
@@ -240,19 +246,19 @@ public class CalendarDate implements Comparable<CalendarDate> {
   public CalendarDate add(double value, CalendarPeriod.Field unit) {
     switch (unit) {
       case Millisec:
-        return new CalendarDate(cal, dateTime.plus( (long) value ));
+        return new CalendarDate(cal, dateTime.plus( Math.round(value) ));
       case Second:
-        return new CalendarDate(cal, dateTime.plus( (long) (value * 1000) ));
+        return new CalendarDate(cal, dateTime.plus(  Math.round(value * MILLISECS_IN_SECOND) ));
       case Minute:
-        return new CalendarDate(cal, dateTime.plus( (long) (value * 60  * 1000) ));
+        return new CalendarDate(cal, dateTime.plus(  Math.round(value * MILLISECS_IN_MINUTE) ));
       case Hour:
-        return new CalendarDate(cal, dateTime.plus( (long) (value * 60 * 60  * 1000) ));
+        return new CalendarDate(cal, dateTime.plus(  Math.round(value * MILLISECS_IN_HOUR) ));
       case Day:
-        return new CalendarDate(cal, dateTime.plus( (long) (value * 86400  * 1000) ));
+        return new CalendarDate(cal, dateTime.plus(  Math.round(value * MILLISECS_IN_DAY) ));
       case Month: // LOOK should we throw warning ?
-        return new CalendarDate(cal, dateTime.plus( (long) (value * 2629743.831225  * 1000) ));
+        return new CalendarDate(cal, dateTime.plus(  Math.round(value * MILLISECS_IN_MONTH) ));
       case Year:  // LOOK should we throw warning ?
-        return new CalendarDate(cal, dateTime.plus( (long) (value * 3.15569259747E10) )); // millisecs!
+        return new CalendarDate(cal, dateTime.plus(  Math.round(value * MILLISECS_IN_YEAR) ));
     }
     throw new UnsupportedOperationException("period units = "+unit);
   }
