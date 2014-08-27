@@ -78,7 +78,7 @@ public class BufrReportPanel extends ReportPanel {
     }
   }
 
-  private class TrackMessageTypes {
+  private static class TrackMessageTypes {
     HashMap<Message, Count> map = new HashMap<Message, Count>();
 
     void add(Message m) {

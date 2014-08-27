@@ -138,7 +138,7 @@ public class BufrFeatureDatasetFactory implements FeatureDatasetFactory {
     }
   }
 
-  private class BufrStationDataset extends PointDatasetImpl {
+  private static class BufrStationDataset extends PointDatasetImpl {
     private Munge munger;
     private BufrCdmIndex index;
     private SequenceDS obs;
