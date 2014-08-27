@@ -84,7 +84,7 @@ public final class SortedTable extends Dictionary implements java.io.Serializabl
     /**
      * Returns an enumeration of the values in this table.
      */
-    public Enumeration elements() {
+    public synchronized Enumeration elements() {
         return elements.elements();
     }
 
@@ -173,7 +173,7 @@ public final class SortedTable extends Dictionary implements java.io.Serializabl
      opendap.dap.DDS.checkSemantics()
      @return A Vector containing the elements in this SortedTable.
      */
-    public Vector getElementVector() {
+    public synchronized Vector getElementVector() {
         return elements;
   }
 }

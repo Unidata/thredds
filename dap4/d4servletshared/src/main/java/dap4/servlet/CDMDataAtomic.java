@@ -14,6 +14,8 @@ import ucar.ma2.Array;
 import ucar.ma2.DataType;
 import ucar.nc2.Variable;
 
+import java.util.List;
+
 
 public class CDMDataAtomic extends AbstractDataVariable
                            implements DataAtomic
@@ -68,10 +70,11 @@ public class CDMDataAtomic extends AbstractDataVariable
 
     @Override
     public void
-    read(long start, long count, Object data, long offset)
+    read(List<Slice> slices, Object data, long offset)
+    //read(long start, long count, Object data, long offset)
         throws DataException
     {
-        Array content = (Array)this.data;
+        Array array = (Array)this.data;
         // If content.getDataType returns object, then we
         // really do not know its true datatype. So, as a rule,
         // we will rely on this.basetype.
@@ -81,14 +84,16 @@ public class CDMDataAtomic extends AbstractDataVariable
         Class elementclass = CDMUtil.cdmElementClass(datatype);
         if(elementclass == null)
             throw new DataException("Attempt to read non-atomic value of type: " + datatype);
-        Object vector = content.get1DJavaArray(elementclass);
+        Object content = array.get1DJavaArray(elementclass); // not very efficient
         try {
-            System.arraycopy(vector, (int)start, data, (int)offset, (int)count);
-        } catch (IndexOutOfBoundsException iobe) {
-            throw new DataException(String.format("Index out of bounds: start=%d count=%d",
-                start, count));
-        } catch (ArrayStoreException ase) {
-            throw new DataException("Type mismatch asking for: " + datatype);
+            Odometer odom = Odometer.factory(slices, ((DapVariable) this.getTemplate()).getDimensions(), false);
+            while(odom.hasNext()) {
+                long index = odom.next();
+                System.arraycopy(content, (int)index, data, (int)offset, 1);
+                offset++;
+            }
+        } catch (DapException de) {
+            throw new DataException(de);
         }
 /*
     switch (datatype) {

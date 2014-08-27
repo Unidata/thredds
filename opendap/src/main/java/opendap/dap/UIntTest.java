@@ -118,27 +118,24 @@ class UIntTest {
         DAPNode.log.debug("Converted int to long: " + l);
         l = l & 0xFFFFFFFFL;
         DAPNode.log.debug("And'd with 0xFFFFFFFFL (represented as a long in memory): " + l);
-
-
     }
-
 
     static public void main(String args[]) throws Exception {
 
         UIntTest b = new UIntTest();
         File f = new File("UIntTest.bin");
-        FileOutputStream fp = new FileOutputStream(f);
-        DataOutputStream sink = new DataOutputStream(fp);
-
-        b.sendIt(sink);
-        sink.close();
-
-        FileInputStream ifp = new FileInputStream(f);
-        DataInputStream source = new DataInputStream(ifp);
-
-        b.getIt(source);
-        source.close();
-
+        try (
+            FileOutputStream fp = new FileOutputStream(f);
+            DataOutputStream sink = new DataOutputStream(fp);
+        ) {
+            b.sendIt(sink);
+        }
+        try (
+            FileInputStream ifp = new FileInputStream(f);
+            DataInputStream source = new DataInputStream(ifp);
+        ) {
+            b.getIt(source);
+        }
     }
 
 }

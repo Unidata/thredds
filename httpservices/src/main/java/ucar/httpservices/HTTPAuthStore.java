@@ -69,7 +69,7 @@ public class HTTPAuthStore implements Serializable
     //////////////////////////////////////////////////////////////////////////
 
     static public org.slf4j.Logger log
-        = org.slf4j.LoggerFactory.getLogger(HTTPSession.class);
+            = org.slf4j.LoggerFactory.getLogger(HTTPSession.class);
 
 
     //////////////////////////////////////////////////
@@ -81,8 +81,8 @@ public class HTTPAuthStore implements Serializable
 
     //////////////////////////////////////////////////
     // Type Decls
-
-    static public class Entry implements Serializable
+    //Note: this class has a natural ordering that is inconsistent with equals.
+    static public class Entry implements Serializable, Comparable<Entry>
     {
         public String principal;
         public AuthScope scope;
@@ -102,7 +102,7 @@ public class HTTPAuthStore implements Serializable
         }
 
         private void writeObject(ObjectOutputStream oos)
-            throws IOException
+                throws IOException
         {
             oos.writeObject(principal);
             HTTPAuthScope.serializeScope(scope, oos);
@@ -113,7 +113,7 @@ public class HTTPAuthStore implements Serializable
         }
 
         private void readObject(ObjectInputStream ois)
-            throws IOException, ClassNotFoundException
+                throws IOException, ClassNotFoundException
         {
             try {
                 this.principal = (String) ois.readObject();
@@ -129,17 +129,13 @@ public class HTTPAuthStore implements Serializable
                 throw new IOException(e);
             }
         }
-    }
 
-    //Coverity[FB.SE_COMPARATOR_SHOULD_BE_SERIALIZABLE]
-    static protected class Compare implements Comparator<Entry>
-    {
-
-        public int compare(Entry e1, Entry e2)
+        public int compareTo(Entry e2)
         {
+            Entry e1 = this;
             // assert e1.scope equivalent e2.scope
             if(e1 == null || e2 == null
-                || e1.scope == null || e2.scope == null)
+                    || e1.scope == null || e2.scope == null)
                 throw new NullPointerException();
             String p1 = e1.principal;
             String p2 = e2.principal;
@@ -147,12 +143,6 @@ public class HTTPAuthStore implements Serializable
                 return 0;
             return p1.compareTo(p2);
         }
-
-        public boolean equals(Object obj)
-        {
-            return (obj == this);     // never used
-        }
-
     }
 
     //////////////////////////////////////////////////
@@ -252,7 +242,7 @@ public class HTTPAuthStore implements Serializable
 
     synchronized public CredentialsProvider
     insert(String principal, AuthScope scope, CredentialsProvider provider)
-        throws HTTPException
+            throws HTTPException
     {
         return insert(new Entry(principal, scope, provider));
     }
@@ -263,7 +253,7 @@ public class HTTPAuthStore implements Serializable
      */
     synchronized public CredentialsProvider
     insert(Entry entry)
-        throws HTTPException
+            throws HTTPException
     {
         Entry found = null;
 
@@ -295,7 +285,7 @@ public class HTTPAuthStore implements Serializable
 
     synchronized public Entry
     remove(Entry entry)
-        throws HTTPException
+            throws HTTPException
     {
         Entry found = null;
 
@@ -355,7 +345,7 @@ public class HTTPAuthStore implements Serializable
                 matches.add(e);
         }
 
-        Collections.sort(matches, new Compare());
+        Collections.sort(matches);
         return matches;
     }
 
@@ -422,17 +412,17 @@ public class HTTPAuthStore implements Serializable
 
     public void
     print(PrintStream p)
-        throws IOException
+            throws IOException
     {
-        print(new PrintWriter(new OutputStreamWriter(p,Escape.utf8Charset), true));
+        print(new PrintWriter(new OutputStreamWriter(p, Escape.utf8Charset), true));
     }
 
     public void
     print(PrintWriter p)
-        throws IOException
+            throws IOException
     {
         List<Entry> elist = getAllRows();
-        for(int i = 0;i < elist.size();i++) {
+        for(int i = 0; i < elist.size(); i++) {
             Entry e = elist.get(i);
             p.printf("[%02d] %s%n", i, e.toString());
         }
@@ -444,7 +434,7 @@ public class HTTPAuthStore implements Serializable
 
     synchronized public void
     serialize(OutputStream ostream, String password)
-        throws HTTPException
+            throws HTTPException
     {
         try {
 
@@ -480,7 +470,7 @@ public class HTTPAuthStore implements Serializable
 
     synchronized public void
     deserialize(InputStream istream, String password)
-        throws HTTPException
+            throws HTTPException
     {
         ObjectInputStream ois = null;
         try {
@@ -498,7 +488,7 @@ public class HTTPAuthStore implements Serializable
 
     static public ObjectInputStream  // public to allow testing
     openobjectstream(InputStream istream, String password)
-        throws HTTPException
+            throws HTTPException
     {
         try {
             // Create Key
@@ -523,7 +513,7 @@ public class HTTPAuthStore implements Serializable
 
     static public HTTPAuthStore    // public to allow testing
     getDeserializedStore(ObjectInputStream ois)
-        throws HTTPException
+            throws HTTPException
     {
         List<Entry> entries = getDeserializedEntries(ois);
         HTTPAuthStore store = new HTTPAuthStore();
@@ -533,12 +523,12 @@ public class HTTPAuthStore implements Serializable
 
     static protected List<Entry>    // public to allow testing
     getDeserializedEntries(ObjectInputStream ois)
-        throws HTTPException
+            throws HTTPException
     {
         try {
             List<Entry> entries = new ArrayList<Entry>();
             int count = ois.readInt();
-            for(int i = 0;i < count;i++) {
+            for(int i = 0; i < count; i++) {
                 Entry e = (Entry) ois.readObject();
                 entries.add(e);
             }

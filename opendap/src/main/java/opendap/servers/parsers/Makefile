@@ -5,7 +5,7 @@
 all:: CeParser.java
 
 clean::
-	rm -f CeParser.java
+	rm -f CeParser.java CeParser.output ce.y
 
 CeParser.java:: ce.y
 	bison -v -t -L java -pCe ce.y -o CeParser.java

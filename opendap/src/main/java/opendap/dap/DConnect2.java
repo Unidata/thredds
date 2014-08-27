@@ -863,10 +863,11 @@ public class DConnect2
         return command.dds;
     }
 
-    private class DataDDSCommand implements Command
+    static private class DataDDSCommand implements Command
     {
         DataDDS dds = null;
         StatusUI statusUI;
+        //Coverity[FB.URF_UNREAD_FIELD]
         String url = null;
 
         DataDDSCommand(DataDDS dds, StatusUI statusUI)

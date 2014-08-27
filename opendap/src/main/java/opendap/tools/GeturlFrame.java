@@ -236,7 +236,7 @@ public class GeturlFrame extends Frame {
         }
     }
 
-    private class WindowClosedListener extends WindowAdapter {
+    static private class WindowClosedListener extends WindowAdapter {
         GeturlFrame myFrame;
 
         WindowClosedListener(GeturlFrame myFrame) {

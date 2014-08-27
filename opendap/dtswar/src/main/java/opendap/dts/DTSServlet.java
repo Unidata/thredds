@@ -1450,7 +1450,7 @@ public class DTSServlet extends AbstractServlet
             for(int i = 0;i < n;i++) {
                 ReqState rs = (ReqState) prArr.get(i);
                 RequestDebug reqD = (RequestDebug) rs.getUserObject();
-                if((rs != null) && !reqD.done) {
+                if(!reqD.done) {
                     preqs += "<pre>-----------------------\n";
                     preqs += "Request[" + reqD.reqno + "](" + reqD.threadDesc + ") is pending.\n";
                     preqs += rs.toString();
@@ -1719,7 +1719,7 @@ public class DTSServlet extends AbstractServlet
           doGetSystemProps(rs);
         } else if(isDebug) {
           doDebug(rs);  */
-                } else if(requestSuffix.equals("") || requestSuffix == null) {
+                } else if(requestSuffix == null || requestSuffix.equals("")) {
                     badURL(request, response);
                 } else {
                     badURL(request, response);
@@ -1837,7 +1837,7 @@ public class DTSServlet extends AbstractServlet
 
     private ArrayList prArr = null;
 
-    private class RequestDebug
+    static private class RequestDebug
     {
         long reqno;
         String threadDesc;

@@ -135,32 +135,10 @@ public class DapSerializer
                 slices = ce.getConstrainedSlices(dapvar);
                 if(slices == null)
                     throw new DataException("Unknown variable: " + dapvar.getFQN());
-                boolean contig = DapUtil.isContiguous(slices);
-                Odometer odom = Odometer.factory(slices, dapvar.getDimensions(),contig);
-                long count = odom.totalSize();
-                if(odom.isContiguous()) {
-                    Object vector = Dap4Util.createVector(basetype.getPrimitiveType(), count);
-                    List<Slice> pieces = odom.getContiguous();
-                    assert pieces.size() > 0;
-                    long offset = 0;
-                    while(odom.hasNext()) {
-                        long index = odom.next();
-                        for(int i = 0; i < pieces.size(); i++) {
-                            Slice piece = pieces.get(i);
-                            long thiscount = piece.getCount();
-                            long start = index + piece.getFirst();
-                            dav.read(start, thiscount, vector, offset);
-                            offset += thiscount;
-                        }
-                    }
-                    dst.writeArray(basetype, vector);
-                } else { // read one by one
-                    while(odom.hasNext()) {
-                        long index = odom.next();
-                        Object value = dav.read(index);
-                        dst.writeObject(basetype, value);
-                    }
-                }
+                long count = DapUtil.sliceProduct(slices);
+                Object vector = Dap4Util.createVector(basetype.getPrimitiveType(), count);
+                dav.read(slices,vector,0);
+                dst.writeArray(basetype, vector);
             }
         } catch (IOException ioe) {
             throw new DataException(ioe);

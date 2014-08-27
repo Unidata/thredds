@@ -32,6 +32,7 @@
  */
 package ucar.nc2.dods;
 
+import net.jcip.annotations.NotThreadSafe;
 import ucar.nc2.constants.CF;
 import ucar.nc2.util.EscapeStrings;
 import ucar.ma2.*;
@@ -57,7 +58,7 @@ import java.nio.channels.WritableByteChannel;
  * @author caron
  * @see ucar.nc2.NetcdfFile
  */
-
+@NotThreadSafe
 public class DODSNetcdfFile extends ucar.nc2.NetcdfFile
 {
     // temporary flag to control usegroup changes
@@ -533,10 +534,12 @@ public class DODSNetcdfFile extends ucar.nc2.NetcdfFile
         }
 
         // loop over attribute tables, collect global attributes
-        java.util.Enumeration tableNames = das.getNames();
+        Enumeration tableNames = das.getNames();
         while (tableNames.hasMoreElements()) {
             String tableName = (String) tableNames.nextElement();
             AttributeTable attTable = das.getAttributeTableN(tableName);
+            if(attTable == null)
+                continue; // should probably never happen
 
             /* if (tableName.equals("NC_GLOBAL") || tableName.equals("HDF_GLOBAL")) {
         java.util.Enumeration attNames = attTable.getNames();
@@ -551,7 +554,7 @@ public class DODSNetcdfFile extends ucar.nc2.NetcdfFile
           } else */
 
             if (tableName.equals("DODS_EXTRA")) {
-                java.util.Enumeration attNames = attTable.getNames();
+                Enumeration attNames = attTable.getNames();
                 while (attNames.hasMoreElements()) {
                     String attName = (String) attNames.nextElement();
                     if (attName.equals("Unlimited_Dimension")) {
@@ -563,7 +566,7 @@ public class DODSNetcdfFile extends ucar.nc2.NetcdfFile
                 }
 
             } else if (tableName.equals("EXTRA_DIMENSION")) {
-                java.util.Enumeration attNames = attTable.getNames();
+                Enumeration attNames = attTable.getNames();
                 while (attNames.hasMoreElements()) {
                     String attName = (String) attNames.nextElement();
                     opendap.dap.Attribute att = attTable.getAttribute(attName);
@@ -739,7 +742,7 @@ if(OLDGROUPCODE) {
         // fixup
         if (pieces.prefix != null && pieces.prefix.length() == 0) pieces.prefix = null;
         if (pieces.var != null && pieces.var.length() == 0) pieces.var = null;
-        if (pieces.name != null && pieces.name.length() == 0) pieces.name = null;
+        if (pieces.name.length() == 0) pieces.name = null;
         return pieces;
     }
 
@@ -1482,8 +1485,10 @@ if(OLDGROUPCODE) {
 
         if (!CE.startsWith("?"))
             CE = "?" + CE;
-        DataDDS data = dodsConnection.getData(CE, null);
-
+        DataDDS data;
+        synchronized(this) {
+            data = dodsConnection.getData(CE, null);
+        }
         if (debugTime)
             System.out.println("DODSNetcdfFile.readDataDDSfromServer took = " + (System.currentTimeMillis() - start) / 1000.0);
 

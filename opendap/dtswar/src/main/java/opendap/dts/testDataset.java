@@ -38,8 +38,6 @@
 /////////////////////////////////////////////////////////////////////////////
 
 
-
-
 package opendap.dts;
 
 import java.io.*;
@@ -65,12 +63,14 @@ import opendap.util.Debug;
  */
 
 
-public class testDataset implements GuardedDataset {
+public class testDataset implements GuardedDataset
+{
 
 
     private ReqState rs;
 
-    public testDataset(ReqState rs) {
+    public testDataset(ReqState rs)
+    {
         this.rs = rs;
     }
 
@@ -78,11 +78,13 @@ public class testDataset implements GuardedDataset {
     private Exception DDSfailure;
 
 
-  public void release() {
-  } // noop
+    public void release()
+    {
+    } // noop
 
-  public void close() {
-  } // noop
+    public void close()
+    {
+    } // noop
 
 
     /**
@@ -102,7 +104,8 @@ public class testDataset implements GuardedDataset {
      * @see opendap.servers.ServerDDS
      * @see test_ServerFactory
      */
-    public ServerDDS getDDS() throws DAP2Exception, ParseException {
+    public ServerDDS getDDS() throws DAP2Exception, ParseException
+    {
 
         ServerDDS myDDS = null;
         DataInputStream dds_source = null;
@@ -116,7 +119,7 @@ public class testDataset implements GuardedDataset {
             // requested dataset.
             dds_source = openCachedDDX(rs);
 
-            if (dds_source != null) { // Did it work?
+            if(dds_source != null) { // Did it work?
 
                 // Then parse the DDX
                 myDDS.parseXML(dds_source, true);
@@ -128,7 +131,7 @@ public class testDataset implements GuardedDataset {
                 // requested dataset.
                 dds_source = openCachedDDS(rs);
 
-                if (dds_source != null) { // Did it work?
+                if(dds_source != null) { // Did it work?
 
                     // Then parse the DDS
                     myDDS.parse(dds_source);
@@ -140,15 +143,15 @@ public class testDataset implements GuardedDataset {
 
                 } else { // Ok, no DDS. It's a bum reference.
                     throw new DAP2Exception(opendap.dap.DAP2Exception.CANNOT_READ_FILE,
-                            "Cannot find a DDX or DDS file that matches the Dataset you have requested.\n" +
-                                    getClass().getName() + ".openCachedDDX() said: " + DDXfailure.getMessage() + "\n" +
-                                    getClass().getName() + ".openCachedDDS() said: " + DDSfailure.getMessage() + "\n");
+                        "Cannot find a DDX or DDS file that matches the Dataset you have requested.\n" +
+                            getClass().getName() + ".openCachedDDX() said: " + DDXfailure.getMessage() + "\n" +
+                            getClass().getName() + ".openCachedDDS() said: " + DDSfailure.getMessage() + "\n");
                 }
             }
 
         } finally {
             try {
-                if (dds_source != null)
+                if(dds_source != null)
                     dds_source.close();
             } catch (IOException ioe) {
                 throw new DAP2Exception(opendap.dap.DAP2Exception.UNKNOWN_ERROR, ioe.getMessage());
@@ -180,14 +183,15 @@ public class testDataset implements GuardedDataset {
      * @param rs The <code>ReqState</code> object for this
      *           invocation of the servlet.
      * @return An open <code>DataInputStream</code> from which the DDX can
-     *         be read.
+     * be read.
      * @see ReqState
      */
-    public DataInputStream openCachedDDX(ReqState rs) {
+    public DataInputStream openCachedDDX(ReqState rs)
+    {
 
 
         String cacheDir = rs.getDDXCache(rs.getRootPath());
-        if (Debug.isSet("probeRequest")) {
+        if(Debug.isSet("probeRequest")) {
             DTSServlet.log.debug("DDXCache: " + cacheDir);
             DTSServlet.log.debug("Attempting to open: '" + cacheDir + rs.getDataSet() + "'");
         }
@@ -229,15 +233,16 @@ public class testDataset implements GuardedDataset {
      * @param rs The <code>ReqState</code> object for this
      *           invocation of the servlet.
      * @return An open <code>DataInputStream</code> from which the DDS can
-     *         be read.
+     * be read.
      * @see ReqState
      */
-    public DataInputStream openCachedDDS(ReqState rs) {
+    public DataInputStream openCachedDDS(ReqState rs)
+    {
 
 
         String cacheDir = rs.getDDSCache(rs.getRootPath());
 
-        if (Debug.isSet("probeRequest")) {
+        if(Debug.isSet("probeRequest")) {
             DTSServlet.log.debug("DDSCache: " + cacheDir);
             DTSServlet.log.debug("Attempting to open: '" + cacheDir + rs.getDataSet() + "'");
         }
@@ -265,7 +270,8 @@ public class testDataset implements GuardedDataset {
     /**
      * ***********************************************************************
      */
-    private ServerDDS getMyDDS() {
+    private ServerDDS getMyDDS()
+    {
 
         ServerDDS myDDS = null;
 
@@ -305,17 +311,13 @@ public class testDataset implements GuardedDataset {
      * @return The DAS object for the data set specified in the parameter <code>dataSet</code>
      * @see opendap.dap.DAS
      */
-    public DAS getDAS() throws DAP2Exception, ParseException {
+    public DAS getDAS() throws DAP2Exception, ParseException
+    {
 
         DAS myDAS = null;
         boolean gotDDX = false;
         boolean gotDDS = false;
         boolean gotDAS = false;
-        // Try to get an open an InputStream that contains the DDX for the
-        // requested dataset.
-        DataInputStream dds_source = null;
-        DataInputStream is = null;
-
         ServerDDS myDDS = getMyDDS();
 
         /*
@@ -332,32 +334,36 @@ public class testDataset implements GuardedDataset {
 
         } else   // Ok, no DDX
         */
-        {
-
-            // Try to get an open an InputStream that contains the DDS for the
-            // requested DAS.
-            dds_source = openCachedDDS(rs);
-
-            if (dds_source != null) { // Did it work?
-                // Then parse the DDS
-                if((gotDDS = myDDS.parse(dds_source))) {
-                    //myDDS.setBlobURL(rs.getDodsBlobURL());
-                    DTSServlet.log.debug("Got DDS.");
+        try {
+            try (
+                // Try to get an open an InputStream that
+                // contains the DDS for the requested DAS.
+                DataInputStream dds_source = openCachedDDS(rs);
+            ) {
+                if(dds_source != null) { // Did it work?
+                    // Then parse the DDS
+                    if((gotDDS = myDDS.parse(dds_source))) {
+                        //myDDS.setBlobURL(rs.getDodsBlobURL());
+                        DTSServlet.log.debug("Got DDS.");
+                    }
                 }
-                try {dds_source.close(); } catch(IOException ioe) {};
-
             }
-            DTSServlet.log.debug("-------------");
-            myDAS = new DAS();
+        } catch (IOException ioe) {
+            throw new DAP2Exception(ioe);
+        }
+        DTSServlet.log.debug("-------------");
 
-            try {
-                is = openCachedDAS(rs);
-
-                if((gotDAS = myDAS.parse(is)))  {
+        myDAS = new DAS();
+        try {
+            // Try to get an open an InputStream that contains the DDX for the
+            // requested dataset.
+            try (
+                DataInputStream is = openCachedDAS(rs);
+            ) {
+                if((gotDAS = myDAS.parse(is))) {
                     DTSServlet.log.debug("Got DAS");
                 }
-
-                if (gotDAS && gotDDS) {
+                if(gotDAS && gotDDS) {
 //                    DTSServlet.log.debug("-------------");
 //                    myDAS.print(System.out);
 //                    DTSServlet.log.debug("-------------");
@@ -368,40 +374,31 @@ public class testDataset implements GuardedDataset {
 //                    myDAS.print(System.out);
 //                    DTSServlet.log.debug("-------------");
                 }
-
-            } catch (FileNotFoundException fnfe) { // Ok, no DAS. It's a bum reference.
-                // This is no big deal. We just trap it and return an
-                // empty DAS object.
-
-                if (gotDDS)
-                    myDAS = myDDS.getDAS();
-                gotDAS = false;
-            } finally {
-                try {
-                    if (is != null) is.close();
-                } catch (IOException ioe) {
-
-                    throw new DAP2Exception(opendap.dap.DAP2Exception.UNKNOWN_ERROR, ioe.getMessage());
-                }
             }
-
+        } catch (FileNotFoundException fnfe) { // Ok, no DAS. It's a bum reference.
+            // This is no big deal. We just trap it and return an
+            // empty DAS object.
+            if(gotDDS)
+                myDAS = myDDS.getDAS();
+            gotDAS = false;
+        } catch (IOException ioe) {
+            throw new DAP2Exception(ioe);
         }
-
-        if (gotDAS) {
-            if (gotDDX)
+        if(gotDAS) {
+            if(gotDDX)
                 DTSServlet.log.debug("Got DAS from DDX for dataset: " + rs.getDataSet());
-            else if (gotDDS)
+            else if(gotDDS)
                 DTSServlet.log.debug("Got DAS, popped it into a DDS, and got back a complete DAS for dataset: " + rs.getDataSet());
             else
                 DTSServlet.log.debug("Successfully opened and parsed DAS cache for dataset: " + rs.getDataSet());
-        } else if (gotDDS)
+        } else if(gotDDS)
             DTSServlet.log.debug("No DAS! Got a DDS, and sent a complete (but empty) DAS for dataset: " + rs.getDataSet());
         else
             DTSServlet.log.debug("No DAS or DDS present for dataset: " + rs.getDataSet());
 
         return (myDAS);
-
     }
+
     /***************************************************************************/
 
 
@@ -423,16 +420,17 @@ public class testDataset implements GuardedDataset {
      * @param rs The <code>ReqState</code> object for this
      *           invocation of the servlet.
      * @return An open <code>DataInputStream</code> from which the DAS can
-     *         be read.
+     * be read.
      * @throws FileNotFoundException
      * @see ReqState
      */
-    public DataInputStream openCachedDAS(ReqState rs) throws FileNotFoundException {
+    public DataInputStream openCachedDAS(ReqState rs) throws FileNotFoundException
+    {
 
 
         String cacheDir = rs.getDASCache(rs.getRootPath());
 
-        if (Debug.isSet("probeRequest")) {
+        if(Debug.isSet("probeRequest")) {
             DTSServlet.log.debug("DASCache: " + cacheDir);
             DTSServlet.log.debug("Attempting to open: '" + cacheDir + rs.getDataSet() + "'");
         }

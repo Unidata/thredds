@@ -124,21 +124,17 @@ public class asciiStructure extends DStructure implements toASCII {
 
     public String toASCIIFlatName(String rootName) {
 
-        String s = "";
+        StringBuilder s = new StringBuilder();
         boolean firstPass = true;
         Enumeration e = getVariables();
         while (e.hasMoreElements()) {
             toASCII ta = (toASCII) e.nextElement();
-
             if (!firstPass)
-                s += ", ";
-            s += ta.toASCIIFlatName(rootName);
-
+                s.append(", ");
+            s.append(ta.toASCIIFlatName(rootName));
             firstPass = false;
         }
-
-
-        return (s);
+        return (s.toString());
     }
 
 

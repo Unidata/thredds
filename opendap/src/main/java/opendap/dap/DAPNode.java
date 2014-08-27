@@ -224,7 +224,6 @@ public class DAPNode implements Cloneable, Serializable
    static public class CloneMap
    {
        Map<DAPNode,DAPNode> nodes = new HashMap<DAPNode,DAPNode>(); // map base object to clone
-       DAPNode root = null; // initial cloned object
    }
 
         /**
@@ -237,7 +236,6 @@ public class DAPNode implements Cloneable, Serializable
     public Object clone() {
         try {
   	        CloneMap map = new CloneMap();
-            map.root = this;
             map.nodes.put(NULLNODE,NULLNODE);
 	        return cloneDAG(map);
         } catch (CloneNotSupportedException e) {

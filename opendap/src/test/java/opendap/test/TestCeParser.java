@@ -36,6 +36,7 @@ package opendap.test;
 import opendap.dap.*;
 import opendap.dap.parsers.*;
 import opendap.servers.*;
+import opendap.servers.parsers.CeParser;
 import org.junit.Test;
 import ucar.nc2.util.UnitTestCommon;
 //import opendap.dts.*;
@@ -48,14 +49,16 @@ import java.io.*;
 
 public class TestCeParser extends UnitTestCommon
 {
+  static final boolean DEBUGPARSER = false;
+
   static boolean generate = true;
 
   // Constraint list produced by GenerateConstraints.java
   static final String[] xconstraints = {
-          //"&g.a!=101"
+          //"v1&g.a[0][0][2]={sq.f3[2][2][0],37.0}&st.f1[0]!=101"
   };
   static final String[] xexpected = {
-    "&g.a!=101"
+    "v1&g.a[0][0][2]={sq.f3[2][2][0],37.0}&st.f1[0]!=101"
   };
 
   static final String[] constraints = {
@@ -301,7 +304,6 @@ public class TestCeParser extends UnitTestCommon
                   + "} TestCeParser;\n";
 
   //////////////////////////////////////////////////
-  boolean debug = false;
 
   // Control the generation of constraint strings
   int NPROJECTIONS = 3;  // 0..NPROJECTIONS-1
@@ -530,6 +532,7 @@ public class TestCeParser extends UnitTestCommon
       String expected = (generate ? null : expectlist[i]);
       System.out.flush();
       try {
+	    CeParser.DEBUG = DEBUGPARSER;
         CEEvaluator ceEval = new CEEvaluator(sdds);
         ceEval.parseConstraint(constraint, null);
         StringWriter ss = new StringWriter();
@@ -554,13 +557,7 @@ public class TestCeParser extends UnitTestCommon
       }
       if (!generate && !pass) break;
     }
-    if (!generate) assertTrue("TestCeParser", pass);
-  }
-
-  public static void main(String args[]) throws Exception {
-    TestCeParser ce = new TestCeParser();
-    ce.setUp();
-    ce.testCeParser();
+    assertTrue("TestCeParser", pass || generate);
   }
 
 }

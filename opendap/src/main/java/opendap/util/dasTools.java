@@ -149,19 +149,23 @@ public class dasTools {
         if (bt instanceof DArray) {
 
             DArray a = (DArray) bt;
-            String type = "Array of " +
-                    fancyTypeName(a.getPrimitiveVector().getTemplate()) +
-                    "s ";
+            StringBuilder type = new StringBuilder();
+            type.append("Array of ");
+            type.append(fancyTypeName(a.getPrimitiveVector().getTemplate()));
+            type.append("s ");
 
             Enumeration e = a.getDimensions();
             while (e.hasMoreElements()) {
                 DArrayDimension dad = (DArrayDimension) e.nextElement();
-
-                type += "[" + dad.getEncodedName() + " = 0.." + (dad.getSize() - 1) + "]";
+                type.append("[");
+                type.append(dad.getEncodedName());
+                type.append(" = 0..");
+                type.append(dad.getSize() - 1);
+                type.append("]");
 
             }
-            type += "\n";
-            return (type);
+            type.append("\n");
+            return (type.toString());
         }
 
 

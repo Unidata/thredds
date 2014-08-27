@@ -296,7 +296,7 @@ class Celex implements Lexer, ExprParserConstants
             System.out.printf("TOKEN = |%s|\n", lval);
             break;
         default:
-            System.out.printf("TOKEN = |%c|\n", (char) token);
+            System.out.printf("TOKEN = |%c|%n", (char) token);
             break;
         }
         System.err.flush();
@@ -361,7 +361,7 @@ class Celex implements Lexer, ExprParserConstants
         } catch (IOException ioe) {
         }
         ;
-        System.out.printf("Lex error: %s; charno: %d: %s^%s\n", msg, charno, yytext, nextline);
+        System.out.printf("Lex error: %s; charno: %d: %s^%s%n", msg, charno, yytext, nextline);
     }
 
     void removetrailingblanks()
