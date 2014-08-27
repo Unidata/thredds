@@ -38,11 +38,15 @@ import ucar.nc2.ui.geoloc.PickEvent;
 import ucar.nc2.ui.geoloc.PickEventListener;
 import ucar.nc2.util.ListenerManager;
 
+import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
-import java.awt.geom.*;
-import java.awt.image.*;
-import javax.swing.*;
+import java.awt.geom.AffineTransform;
+import java.awt.geom.NoninvertibleTransformException;
+import java.awt.geom.Point2D;
+import java.awt.geom.Rectangle2D;
+import java.awt.image.BufferedImage;
+import java.awt.image.ImageObserver;
 
 /* A simple version of NavigatedPanel.
  * Allows drawing on it in scaled (world) coordinates.
@@ -251,7 +255,8 @@ public class ScaledPanel extends JPanel {
 
   // necessary for g.drawImage()
 
-  private class MyImageObserver implements ImageObserver {
+  private static class MyImageObserver implements ImageObserver {
+    @Override
     public boolean imageUpdate(Image image, int flags, int x, int y, int width, int height) {
       return true;
     }

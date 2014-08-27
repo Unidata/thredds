@@ -33,26 +33,24 @@
 
 package ucar.util.prefs;
 
-import java.beans.XMLEncoder;
-import java.beans.XMLDecoder;
-import java.beans.ExceptionListener;
-
 import org.jdom2.Document;
 import org.jdom2.Element;
 import org.jdom2.JDOMException;
 import org.jdom2.input.SAXBuilder;
 import org.jdom2.output.Format;
 import org.jdom2.output.XMLOutputter;
-import org.xml.sax.*;
-import ucar.nc2.util.IO;
+import org.xml.sax.Attributes;
+import org.xml.sax.SAXException;
 import ucar.nc2.util.Indent;
 
-import javax.xml.parsers.SAXParserFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
-
+import javax.xml.parsers.SAXParserFactory;
+import java.beans.ExceptionListener;
+import java.beans.XMLDecoder;
+import java.beans.XMLEncoder;
 import java.io.*;
-import java.util.*;
+import java.util.Stack;
 
 /**
  *  This implements an XML-based backing store for PreferencesExt.
@@ -754,7 +752,7 @@ public class XMLStore {
 
 
   //private final int DIE = 0; // 97;
-  private class OutputMunger extends java.io.BufferedOutputStream {
+  private static class OutputMunger extends java.io.BufferedOutputStream {
     boolean done = false;
     boolean bean = false;
     int countNL = 0;

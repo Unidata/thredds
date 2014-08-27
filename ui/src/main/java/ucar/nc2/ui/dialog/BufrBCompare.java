@@ -36,17 +36,18 @@
 
 package ucar.nc2.ui.dialog;
 
-import java.awt.*;
-import java.awt.event.*;
 import javax.swing.*;
-import javax.swing.border.*;
+import javax.swing.border.EmptyBorder;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
 /**
  * @author John Caron
  */
 public class BufrBCompare extends JDialog {
 
-  public class Data {
+  public static class Data {
     public String name;
     public boolean compareNames, compareUnits;
 

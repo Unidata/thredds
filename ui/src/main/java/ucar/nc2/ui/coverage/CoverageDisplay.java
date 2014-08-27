@@ -1340,7 +1340,7 @@ public class CoverageDisplay extends JPanel {
     }
   }
 
-  private class Chooser {
+  private static class Chooser {
     Chooser(String name, SuperComboBox field, boolean want) {
       this.name = name;
       this.field = field;
@@ -1423,7 +1423,7 @@ public class CoverageDisplay extends JPanel {
   }
 
   // loop control for SuperComboBox
-  private class LoopControlAction extends AbstractAction {
+  private static class LoopControlAction extends AbstractAction {
     SuperComboBox scbox;
 
     LoopControlAction(SuperComboBox cbox) {

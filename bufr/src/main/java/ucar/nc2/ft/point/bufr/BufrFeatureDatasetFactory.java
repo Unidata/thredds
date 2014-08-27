@@ -338,7 +338,7 @@ public class BufrFeatureDatasetFactory implements FeatureDatasetFactory {
     }
   }
 
-  private class Munge {
+  private static class Munge {
     String sdataName;
     boolean needed;
     protected Map<String, Action> actions = new HashMap<>(32);

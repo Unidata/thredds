@@ -45,7 +45,7 @@ import java.io.*;
  * Starts up a server socket on the given port, and listens for messages sent to it.
  * Sends the contents of the message to anyone who is registered as a listener.
  */
-public class SocketMessage {
+public final class SocketMessage {
   static private final boolean debug = false, throwAway = false;
   static private boolean raw = false;
 

@@ -634,7 +634,7 @@ public class DatasetWriter extends JPanel {
 
   ////////////////////////////////////////////////////////////
 
-  public class BeanChunker implements Nc4Chunking {
+  public static class BeanChunker implements Nc4Chunking {
     Map<String, VariableBean> map;
     int deflate;
     boolean shuffle;

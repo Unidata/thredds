@@ -108,7 +108,14 @@ public class ImprovedFileChooser extends JFileChooser {
 
         JComponent componentWithPopupMenu = SwingUtils.getDescendantOfType(
                 JComponent.class, fileChooser, "ComponentPopupMenu", SwingUtils.NOT_NULL);
+        if (componentWithPopupMenu == null) {
+            return null;
+        }
+
         JPopupMenu popupMenu = componentWithPopupMenu.getComponentPopupMenu();
+        if (popupMenu == null) {
+            return null;
+        }
 
         for (JMenuItem menuItem : getAllMenuItems(popupMenu)) {
             if (menuItem.getText().equals("Details")) {
@@ -120,7 +127,7 @@ public class ImprovedFileChooser extends JFileChooser {
     }
 
     private static List<JMenuItem> getAllMenuItems(JPopupMenu popupMenu) {
-        List<JMenuItem> menuItems = new LinkedList<JMenuItem>();
+        List<JMenuItem> menuItems = new LinkedList<>();
         getAllMenuItems(popupMenu, menuItems);
         return menuItems;
     }

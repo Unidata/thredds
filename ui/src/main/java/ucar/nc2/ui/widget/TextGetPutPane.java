@@ -33,22 +33,26 @@
 
 package ucar.nc2.ui.widget;
 
-import thredds.catalog.*;
-//import thredds.catalog.query.*;
-
+import thredds.catalog.InvCatalogFactory;
+import thredds.catalog.InvCatalogImpl;
 import ucar.nc2.constants.CDM;
-import ucar.nc2.util.net.HttpClientManager;
 import ucar.nc2.util.IO;
+import ucar.nc2.util.net.HttpClientManager;
 import ucar.util.prefs.PreferencesExt;
-
-import java.awt.*;
-import java.awt.event.*;
-import java.io.*;
-import java.net.*;
-import java.util.*;
 
 import javax.swing.*;
 import javax.swing.event.EventListenerList;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.util.ArrayList;
+
+//import thredds.catalog.query.*;
 
 /**
  * A text widget that does get and put to a web URL.
@@ -318,7 +322,7 @@ public class TextGetPutPane extends TextHistoryPane {
       ta.setText(text);
     }
 
-  private class GetContentsTask extends ProgressMonitorTask {
+  private static class GetContentsTask extends ProgressMonitorTask {
     String urlString;
     String contents;
 

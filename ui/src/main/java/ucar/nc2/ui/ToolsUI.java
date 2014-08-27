@@ -5331,7 +5331,7 @@ public class ToolsUI extends JPanel {
 
   }
 
-  private class MyNetcdfFile extends NetcdfFile {
+  private static class MyNetcdfFile extends NetcdfFile {
      private MyNetcdfFile(Nc4Iosp iosp, String location) {
        super();
        spi = iosp;
@@ -6091,7 +6091,7 @@ public class ToolsUI extends JPanel {
     public void run(Object o) throws IOException;
   }
 
-  private class GetDataTask extends ProgressMonitorTask implements ucar.nc2.util.CancelTask {
+  private static class GetDataTask extends ProgressMonitorTask implements ucar.nc2.util.CancelTask {
     GetDataRunnable getData;
     Object o;
     String name, errMsg = null;
@@ -6161,7 +6161,8 @@ public class ToolsUI extends JPanel {
 ///////////////////////////////////////////////////////////////////////////////
 // Dynamic proxy for Debug
 
-  private class DebugProxyHandler implements java.lang.reflect.InvocationHandler {
+  private static class DebugProxyHandler implements java.lang.reflect.InvocationHandler {
+    @Override
     public Object invoke(Object proxy, java.lang.reflect.Method method, Object[] args) throws Throwable {
       if (method.getName().equals("toString"))
         return super.toString();

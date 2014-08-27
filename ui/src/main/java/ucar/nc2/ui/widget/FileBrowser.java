@@ -4,17 +4,24 @@ import ucar.nc2.ui.event.ActionValueEvent;
 import ucar.nc2.ui.event.ActionValueListener;
 import ucar.nc2.util.ListenerManager;
 
-import java.awt.*;
-import java.awt.event.*;
 import javax.swing.*;
-import javax.swing.event.*;
-import javax.swing.tree.*;
-import javax.swing.table.*;
 import javax.swing.border.EmptyBorder;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
+import javax.swing.event.TreeSelectionEvent;
+import javax.swing.event.TreeSelectionListener;
 import javax.swing.filechooser.FileSystemView;
+import javax.swing.table.AbstractTableModel;
+import javax.swing.table.TableColumn;
+import javax.swing.tree.DefaultMutableTreeNode;
+import javax.swing.tree.DefaultTreeCellRenderer;
+import javax.swing.tree.DefaultTreeModel;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.io.File;
 import java.util.Date;
 import java.util.List;
-import java.io.File;
 
 /**
  * A basic File Browser.  Requires 1.6+ for the Desktop & SwingWorker
@@ -490,7 +497,7 @@ public class FileBrowser extends JPanel {
   /**
    * A TableModel to hold File[].
    */
-  class FileTableModel extends AbstractTableModel {
+  private static class FileTableModel extends AbstractTableModel {
 
     private static final long serialVersionUID = -6101682212645378856L;
 
@@ -589,7 +596,7 @@ public class FileBrowser extends JPanel {
   /**
    * A TreeCellRenderer for a File.
    */
-  class FileTreeCellRenderer extends DefaultTreeCellRenderer {
+  private static class FileTreeCellRenderer extends DefaultTreeCellRenderer {
 
     private static final long serialVersionUID = -7799441088157759804L;
 

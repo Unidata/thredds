@@ -32,13 +32,9 @@
  */
 package ucar.nc2.ui.widget;
 
+import javax.swing.event.EventListenerList;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
-import java.io.IOException;
-import javax.swing.*;
-import javax.swing.event.EventListenerList;
 
 /**
  * This wraps a javax.swing.ProgressMonitor, which allows tasks to be canceled.
@@ -210,59 +206,4 @@ public class ProgressMonitor {
     timer = new javax.swing.Timer(1000, watcher); // every second
     timer.start();
   }
-
-  /////////////////////////////////////////////////////////////////////////////////////////////
-
-  static volatile boolean ok = false;  // LOOK must be declared volatile !!
-  public static void main(String args[]) throws IOException {
-    final JButton butt = new JButton("accept");
-
-    JFrame frame = new JFrame("Test");
-    frame.addWindowListener(new WindowAdapter() {
-      public void windowClosing(WindowEvent e) {
-        System.exit(0);
-      }
-    });
-
-    ProgressMonitorTask task = new ProgressMonitorTask() {
-
-      @Override
-      public void run() {
-        try {
-          while (true) {
-            if (ok)
-              break;
-          }
-          this.success = true;
-          System.out.println("task done");
-
-        } finally {
-          this.done = true;    // do last!
-        }
-        System.out.println("task exit");
-      }
-    };
-
-    ProgressMonitor fm = new ProgressMonitor(task);
-    fm.start(frame, "Test", 100);
-
-    butt.addActionListener(new AbstractAction() {
-      public void actionPerformed(ActionEvent e) {
-        System.out.println("butt accept");
-        ok = true;
-      }
-    });
-
-    JPanel main = new JPanel();
-    //main.add(frame);
-    main.add(butt);
-
-    frame.getContentPane().add(main);
-    // cb.setPreferredSize(new java.awt.Dimension(500, 200));
-
-    frame.pack();
-    frame.setLocation(300, 300);
-    frame.setVisible(true);
-  }
-
 }

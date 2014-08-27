@@ -38,20 +38,20 @@ package ucar.nc2.ui.dialog;
 
 import ucar.nc2.ft.fmrc.Fmrc;
 import ucar.nc2.time.CalendarDate;
-import ucar.nc2.units.DateFormatter;
 
-import java.awt.*;
-import java.awt.event.*;
-import java.io.IOException;
 import javax.swing.*;
-import javax.swing.border.*;
+import javax.swing.border.EmptyBorder;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.io.IOException;
 
 /**
  * @author unknown
  */
 public class Fmrc2Dialog extends JDialog {
 
-  public class Data {
+  public static class Data {
     public String type;
     public Object param;
     public String where;

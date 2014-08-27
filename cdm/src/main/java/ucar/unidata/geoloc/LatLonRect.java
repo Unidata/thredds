@@ -32,6 +32,7 @@
  */
 package ucar.unidata.geoloc;
 
+import com.google.common.base.Preconditions;
 import ucar.unidata.util.Format;
 
 import java.util.StringTokenizer;
@@ -467,6 +468,8 @@ public class LatLonRect {
    * @param r rectangle to include
    */
   public void extend(LatLonRect r) {
+    Preconditions.checkNotNull(r);
+
     // lat is easy
     double latMin = r.getLatMin();
     double latMax = r.getLatMax();

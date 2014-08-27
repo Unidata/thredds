@@ -32,35 +32,36 @@
  */
 package ucar.nc2.ui.grid;
 
-import thredds.catalog.*;
-import ucar.nc2.ui.geoloc.ProjectionManager;
-import ucar.nc2.ui.gis.MapBean;
-import ucar.nc2.ui.geoloc.NavigatedPanel;
-import ucar.nc2.ui.util.Renderer;
-
-import ucar.nc2.dataset.*;
-
-import ucar.nc2.dt.GridDatatype;
+import thredds.catalog.InvDataset;
+import thredds.catalog.InvDatasetImpl;
+import thredds.catalog.ServiceType;
+import ucar.nc2.constants.FeatureType;
+import ucar.nc2.dataset.CoordinateAxis1D;
+import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dt.GridCoordSystem;
 import ucar.nc2.dt.GridDataset;
+import ucar.nc2.dt.GridDatatype;
+import ucar.nc2.ui.geoloc.NavigatedPanel;
+import ucar.nc2.ui.geoloc.ProjectionManager;
+import ucar.nc2.ui.gis.MapBean;
+import ucar.nc2.ui.util.Renderer;
 import ucar.nc2.ui.widget.*;
 import ucar.nc2.ui.widget.PopupMenu;
 import ucar.nc2.ui.widget.ProgressMonitor;
 import ucar.nc2.util.NamedObject;
-import ucar.nc2.constants.FeatureType;
-
 import ucar.unidata.geoloc.ProjectionImpl;
 import ucar.util.prefs.PreferencesExt;
 
+import javax.swing.*;
+import javax.swing.border.EtchedBorder;
 import java.awt.*;
-import java.awt.event.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.beans.PropertyChangeListener;
 import java.io.IOException;
-import java.util.List;
 import java.util.ArrayList;
 import java.util.Formatter;
-import java.beans.PropertyChangeListener;
-import javax.swing.*;
-import javax.swing.border.*;
+import java.util.List;
 
 /**
  * This is the thredds Data Viewer application User Interface for Grids.
@@ -800,7 +801,7 @@ public class GridUI extends JPanel {
     }
   }
 
-  private class Chooser {
+  private static class Chooser {
     Chooser(String name, SuperComboBox field, boolean want){
       this.name = name;
       this.field = field;
@@ -882,7 +883,7 @@ public class GridUI extends JPanel {
     toolMenu.add(zoomMenu);
   }
 
-  private class LoopControlAction extends AbstractAction {
+  private static class LoopControlAction extends AbstractAction {
     SuperComboBox scbox;
     LoopControlAction( SuperComboBox cbox) {
       this.scbox = cbox;

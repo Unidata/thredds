@@ -33,23 +33,26 @@
 
 package ucar.nc2.ft.point.remote;
 
+import com.google.protobuf.ByteString;
+import com.google.protobuf.InvalidProtocolBufferException;
+import ucar.ma2.ArrayStructureBB;
+import ucar.ma2.StructureData;
+import ucar.ma2.StructureDataDeep;
+import ucar.ma2.StructureMembers;
 import ucar.nc2.ft.PointFeature;
 import ucar.nc2.ft.point.PointFeatureImpl;
-import ucar.nc2.units.DateUnit;
 import ucar.nc2.stream.NcStream;
+import ucar.nc2.units.DateUnit;
 import ucar.unidata.geoloc.EarthLocation;
 import ucar.unidata.geoloc.EarthLocationImpl;
 import ucar.unidata.geoloc.Station;
-import ucar.ma2.*;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.ByteBuffer;
+import java.util.Arrays;
 import java.util.List;
-
-import com.google.protobuf.ByteString;
-import com.google.protobuf.InvalidProtocolBufferException;
 
 /**
  * Defines the point stream format, along with pointStream.proto.
@@ -167,7 +170,7 @@ public class PointStream {
         if (ho instanceof String)
           builder.addSdata((String) ho);
         else if (ho instanceof String[])
-          builder.addSdata((String) ho);  // LOOK cast != instance
+          builder.addAllSdata(Arrays.asList((String[]) ho));
         else
           throw new IllegalStateException("illegal object on heap = "+ho);
       }

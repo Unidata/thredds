@@ -630,8 +630,15 @@ public class DirectoryPartitionViewer extends JPanel {
 
       PopupMenu varPopup = new PopupMenu(tree, "Options");
       varPopup.addAction("Make Index(es)", new AbstractAction() {
+        @Override
         public void actionPerformed(ActionEvent e) {
-          for (TreePath path : tree.getSelectionPaths()) {
+          TreePath[] selectionPaths = tree.getSelectionPaths();
+          // JTree.getSelectionPaths() returns null instead of an empty array. Dumb.
+          if (selectionPaths == null) {
+            selectionPaths = new TreePath[0];
+          }
+
+          for (TreePath path : selectionPaths) {
             DefaultMutableTreeNode node = (DefaultMutableTreeNode) path.getLastPathComponent();
             cmdMakeIndex( (NodeInfo) node.getUserObject());
           }
@@ -815,11 +822,12 @@ public class DirectoryPartitionViewer extends JPanel {
      * Update the File details view with the details of this File.
      */
     private void setFileDetails(NodeInfo node) {
-      BasicFileAttributes attr = null;
+      BasicFileAttributes attr;
       try {
         attr = Files.readAttributes(node.dir, BasicFileAttributes.class);
       } catch (IOException e) {
-        e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+        logger.warn("An I/O error occurred.", e);
+        return;
       }
 
       nodeName.setIcon(attr.isDirectory() ? dirIcon : fileIcon);
@@ -1082,7 +1090,7 @@ public class DirectoryPartitionViewer extends JPanel {
     }
   }
 
-  private class RangeTracker {
+  private static class RangeTracker {
     int min, max;
 
     RangeTracker(int value) {

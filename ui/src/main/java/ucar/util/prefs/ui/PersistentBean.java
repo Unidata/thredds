@@ -265,7 +265,7 @@ public class PersistentBean implements PersistenceManager {
   }
 
   // helper class
-  private class ProxyProp {
+  private static class ProxyProp {
     private PropertyDescriptor prop;
     private BeanMap nested;
     private String childrenName;

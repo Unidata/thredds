@@ -948,7 +948,7 @@ public class NavigatedPanel extends JPanel {
   }
 
   // necessary for g.drawImage()
-  private class myImageObserver implements ImageObserver {
+  private static class myImageObserver implements ImageObserver {
     public boolean imageUpdate(Image image, int flags, int x, int y, int width, int height) {
       return true;
     }

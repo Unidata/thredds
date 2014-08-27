@@ -35,19 +35,20 @@ package ucar.nc2.ui.table;
 import ucar.nc2.ui.event.UIChangeEvent;
 import ucar.nc2.ui.event.UIChangeListener;
 import ucar.nc2.ui.widget.BAMutil;
-import ucar.nc2.util.ListenerManager;
 import ucar.nc2.ui.widget.PopupMenu;
+import ucar.nc2.util.ListenerManager;
 import ucar.nc2.util.NamedObject;
 
+import javax.swing.*;
+import javax.swing.border.BevelBorder;
+import javax.swing.event.ListSelectionListener;
+import javax.swing.table.*;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 import java.util.Iterator;
-
-import java.awt.*;
-import java.awt.event.*;
-import javax.swing.*;
-import javax.swing.border.*;
-import javax.swing.event.*;
-import javax.swing.table.*;  // LOOK
 
   /**
     JTableSorted adds sorting functionality to a JTable.
@@ -552,7 +553,7 @@ public class JTableSorted extends JPanel {
     }
   }
 
-  private class SortList implements java.util.Comparator {
+  private static class SortList implements java.util.Comparator {
     private int col;
     private boolean reverse;
 
@@ -571,7 +572,7 @@ public class JTableSorted extends JPanel {
   }
 
   // add tooltips
-  private class MyTableCellRenderer extends javax.swing.table.DefaultTableCellRenderer {
+  private static class MyTableCellRenderer extends javax.swing.table.DefaultTableCellRenderer {
 
     public Component getTableCellRendererComponent( JTable table, Object value, boolean isSelected,
         boolean hasFocus, int row, int column) {
@@ -592,7 +593,7 @@ public class JTableSorted extends JPanel {
   }
 
     // add tooltips
-  private class MyJTable extends javax.swing.JTable {
+  private static class MyJTable extends javax.swing.JTable {
 
     public Point getToolTipLocation(MouseEvent e) {
       // System.out.println(" JTable getToolTipLocation "+e.getPoint());

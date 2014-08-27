@@ -32,33 +32,44 @@
  */
 package ucar.nc2.ui.grid;
 
+import ucar.ma2.Array;
+import ucar.nc2.dataset.CoordinateAxis1D;
+import ucar.nc2.dataset.CoordinateAxis1DTime;
+import ucar.nc2.dataset.NetcdfDataset;
+import ucar.nc2.dt.GridCoordSystem;
+import ucar.nc2.dt.GridDataset;
+import ucar.nc2.dt.GridDatatype;
+import ucar.nc2.dt.grid.GridDatasetInfo;
+import ucar.nc2.ncml.NcMLWriter;
 import ucar.nc2.ui.event.ActionCoordinator;
 import ucar.nc2.ui.event.ActionSourceListener;
 import ucar.nc2.ui.event.ActionValueEvent;
 import ucar.nc2.ui.geoloc.*;
-import ucar.ma2.Array;
-import ucar.nc2.dataset.*;
-import ucar.nc2.dt.*;
-import ucar.nc2.dt.GridDataset;
-import ucar.nc2.dt.grid.*;
 import ucar.nc2.ui.util.Renderer;
-import ucar.nc2.ui.widget.*;
-import ucar.unidata.geoloc.*;
-
+import ucar.nc2.ui.widget.BAMutil;
+import ucar.nc2.ui.widget.ScaledPanel;
 import ucar.nc2.util.NamedObject;
-import ucar.nc2.ncml.NcMLWriter;
+import ucar.unidata.geoloc.ProjectionImpl;
+import ucar.unidata.geoloc.ProjectionPointImpl;
+import ucar.unidata.geoloc.ProjectionRect;
 import ucar.util.prefs.PreferencesExt;
 import ucar.util.prefs.ui.Debug;
 
-import java.awt.*;
-import java.awt.event.*;
-import java.awt.geom.*;
-import java.io.*;
-import java.util.*;
-import java.util.List;
 import javax.swing.*;
-import javax.swing.event.ChangeListener;
 import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
+import java.awt.geom.AffineTransform;
+import java.awt.geom.Point2D;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * The controller manages the interactions between GRID data and renderers.
@@ -395,7 +406,11 @@ public class GridController {
             GridCoordSystem gcs = currentField.getCoordinateSystem();
             if (gcs != null) {
               CoordinateAxis1DTime taxis = gcs.getTimeAxisForRun(runtime);
-              timeNames = taxis.getNames();
+              if (taxis != null) {
+                timeNames = taxis.getNames();
+              } else {
+                timeNames = Collections.emptyList();
+              }
             }
             ui.timeChooser.setCollection(timeNames.iterator(), true);
             if (currentTime >= timeNames.size())

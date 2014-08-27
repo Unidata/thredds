@@ -653,7 +653,7 @@ public class EsriShapefile {
   public class EsriNull extends EsriFeature {
   }
 
-  class EsriPart implements GisPart {
+  private static class EsriPart implements GisPart {
     private int numPoints = 0;
     private double[] x;
     private double[] y;
