@@ -97,7 +97,6 @@ public class D4DataAtomic extends D4DataVariable implements DataAtomic
             } catch (DapException de) {
                 throw new DataException(de);
             }
-            long total = odom.totalSize();
             long localoffset = offset;
             if(odom.isContiguous()) {
                 List<Slice> pieces = odom.getContiguous();

@@ -143,6 +143,14 @@ public class HTTPAuthStore implements Serializable
                 return 0;
             return p1.compareTo(p2);
         }
+
+        public boolean
+        equals(Object o)
+        {
+            if(!(o instanceof Entry))
+                return false;
+            return (compareTo((Entry)o) == 0);
+        }
     }
 
     //////////////////////////////////////////////////
