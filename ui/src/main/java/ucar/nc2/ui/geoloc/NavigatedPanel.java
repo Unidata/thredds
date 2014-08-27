@@ -168,15 +168,16 @@ public class NavigatedPanel extends JPanel {
 
   //debug
   private int repaintCount = 0;
-  private final boolean debugDraw = false, debugEvent = false, debugThread = false,
-      debugStatus = false;
-  private final boolean debugTime = false, debugPrinting = false, debugBB = false,
-      debugZoom = false;
-  private final boolean debugBounds = false, debugSelection = false, debugNewProjection = false;
+  private static final boolean debugDraw = false, debugEvent = false,
+            debugThread = false, debugStatus = false;
+  private static final boolean debugTime = false, debugPrinting = false,
+            debugBB = false, debugZoom = false;
+  private static final boolean debugBounds = false, debugSelection = false,
+            debugNewProjection = false;
 
   /** The constructor. */
   public NavigatedPanel() {
-    setDoubleBuffered(false); // we do our own dubble buffer
+    setDoubleBuffered(false); // we do our own double buffer
 
     // default navigation and projection
     navigate = new Navigation(this);

@@ -101,8 +101,7 @@ public abstract class ReportPanel extends JPanel {
   MCollection getCollection(String spec, Formatter f) {
     try {
       return CollectionAbstract.open(spec, spec, null, f);
-
-    } catch (Exception e) {
+    } catch (IOException e) {
       ByteArrayOutputStream bos = new ByteArrayOutputStream(10000);
       e.printStackTrace(new PrintStream(bos));
       reportPane.setText(bos.toString());
