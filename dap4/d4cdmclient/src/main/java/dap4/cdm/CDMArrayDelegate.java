@@ -2,11 +2,16 @@
    See the LICENSE file for more information.
 */
 
-package   dap4.cdm;
+package dap4.cdm;
 
+import dap4.cdmshared.CDMUtil;
 import dap4.core.dmr.*;
+import dap4.core.util.DapException;
 import dap4.dap4shared.DSP;
 import dap4.dap4shared.D4DSP;
+import ucar.ma2.Range;
+
+import java.util.List;
 
 /**
  * Since we can't use AbstractCDMArray,
@@ -38,10 +43,40 @@ class CDMArrayDelegate implements CDMArray
 	this.primitivetype = this.basetype.getPrimitiveType();
     */
 
-    @Override public DSP getDSP() {return this.dsp;}
-    @Override public CDMDataset getRoot() {return this.root;}
-    @Override public DapVariable getTemplate() {return this.template;}
-    @Override public long getByteSize() {return this.bytesize;}
-    @Override public DapType getBaseType() {return this.basetype;}
-    @Override public AtomicType getPrimitiveType() {return this.primitivetype;}
+    @Override
+    public DSP getDSP()
+    {
+        return this.dsp;
+    }
+
+    @Override
+    public CDMDataset getRoot()
+    {
+        return this.root;
+    }
+
+    @Override
+    public DapVariable getTemplate()
+    {
+        return this.template;
+    }
+
+    @Override
+    public long getByteSize()
+    {
+        return this.bytesize;
+    }
+
+    @Override
+    public DapType getBaseType()
+    {
+        return this.basetype;
+    }
+
+    @Override
+    public AtomicType getPrimitiveType()
+    {
+        return this.primitivetype;
+    }
+
 }

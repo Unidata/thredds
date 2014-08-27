@@ -41,6 +41,7 @@
 package opendap.servlet;
 
 import java.io.*;
+import java.nio.charset.Charset;
 import java.util.*;
 
 import opendap.dap.*;
@@ -58,6 +59,8 @@ import opendap.dap.parsers.ParseException;
  */
 
 public class GetInfoHandler {
+
+    static final Charset UTF8 = Charset.forName("UTF-8");
 
     private static final boolean _Debug = false;
 
@@ -174,34 +177,34 @@ public class GetInfoHandler {
      */
     public String loadOverrideDoc(String infoDir, String dataSet) throws DAP2Exception {
 
-        String userDoc = "";
+        StringBuilder userDoc = new StringBuilder();
         String overrideFile = dataSet + ".ovr";
 
         //Try to open and read the override file for this dataset.
         try {
             File fin = new File(infoDir + overrideFile);
+            try (
             BufferedReader svIn = new BufferedReader(new InputStreamReader(new FileInputStream(fin)));
-
-            boolean done = false;
-
-            while (!done) {
-                String line = svIn.readLine();
-                if (line == null) {
-                    done = true;
-                } else {
-                    userDoc += line + "\n";
+            ) {
+                boolean done = false;
+                while(!done) {
+                    String line = svIn.readLine();
+                    if(line == null) {
+                        done = true;
+                    } else {
+                        userDoc.append(line);
+                        userDoc.append("\n");
+                    }
                 }
             }
-            svIn.close();
-
         } catch (FileNotFoundException fnfe) {
-            userDoc += "<h2>No Could Not Open Override Document.</h2><hr>";
+            userDoc.append("<h2>No Could Not Open Override Document.</h2><hr>");
             return (null);
         } catch (IOException ioe) {
             throw(new DAP2Exception(opendap.dap.DAP2Exception.UNKNOWN_ERROR, ioe.getMessage()));
         }
 
-        return (userDoc);
+        return (userDoc.toString());
     }
     /***************************************************************************/
 
@@ -212,60 +215,60 @@ public class GetInfoHandler {
 
     private String get_user_supplied_docs(String serverName, String dataSet) throws DAP2Exception {
 
-        String userDoc = "";
+        StringBuilder userDoc = new StringBuilder();
 
         //Try to open and read the Dataset specific information file.
         try {
             File fin = new File(infoDir + dataSet + ".html");
-            BufferedReader svIn = new BufferedReader(new InputStreamReader(new FileInputStream(fin)));
-
-            boolean done = false;
-
-            while (!done) {
-                String line = svIn.readLine();
-                if (line == null) {
-                    done = true;
-                } else {
-                    userDoc += line + "\n";
+            try (FileInputStream fis = new FileInputStream(fin);
+                BufferedReader svIn = new BufferedReader(new InputStreamReader(fis,UTF8));
+            ) {
+                boolean done = false;
+                while(!done) {
+                    String line = svIn.readLine();
+                    if(line == null) {
+                        done = true;
+                    } else {
+                        userDoc.append(line);
+                        userDoc.append("\n");
+                    }
                 }
             }
-            svIn.close();
-
         } catch (FileNotFoundException fnfe) {
-            userDoc += "<h2>No Dataset Specific Information Available.</h2><hr>";
+            userDoc.append("<h2>No Dataset Specific Information Available.</h2><hr>");
         } catch (IOException ioe) {
             throw(new DAP2Exception(opendap.dap.DAP2Exception.UNKNOWN_ERROR, ioe.getMessage()));
         }
 
-        userDoc += "<hr>\n";
+        userDoc.append("<hr>\n");
 
         //Try to open and read the server specific information file.
         try {
             String serverFile = infoDir + serverName + ".html";
             if (_Debug) System.out.println("Server Info File: " + serverFile);
             File fin = new File(serverFile);
-            BufferedReader svIn = new BufferedReader(new InputStreamReader(new FileInputStream(fin)));
+            try (BufferedReader svIn = new BufferedReader(new InputStreamReader(new FileInputStream(fin),UTF8));) {
 
-            boolean done = false;
+                boolean done = false;
 
-            while (!done) {
-                String line = svIn.readLine();
-                if (line == null) {
-                    done = true;
-                } else {
-                    userDoc += line + "\n";
+                while(!done) {
+                    String line = svIn.readLine();
+                    if(line == null) {
+                        done = true;
+                    } else {
+                        userDoc.append(line);
+                        userDoc.append("\n");
+                    }
                 }
             }
-            svIn.close();
 
         } catch (FileNotFoundException fnfe) {
-            userDoc += "<h2>No Server Specific Information Available.</h2><hr>";
+            userDoc.append("<h2>No Server Specific Information Available.</h2><hr>");
         } catch (IOException ioe) {
             throw(new DAP2Exception(opendap.dap.DAP2Exception.UNKNOWN_ERROR, ioe.getMessage()));
         }
 
-
-        return (userDoc);
+        return (userDoc.toString());
     }
     //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
@@ -274,16 +277,14 @@ public class GetInfoHandler {
     private String buildGlobalAttributes(DAS das, ServerDDS dds) {
 
         boolean found = false;
-        String ga;
+        StringBuilder ga = new StringBuilder();
 
-        ga = "<h3>Dataset Information</h3>\n<table>\n";
-
+        ga.append("<h3>Dataset Information</h3>\n<table>\n");
 
         Enumeration edas = das.getNames();
 
         while (edas.hasMoreElements()) {
             String name = (String) edas.nextElement();
-
 
             if (!dasTools.nameInKillFile(name) &&
                     (dasTools.nameIsGlobal(name) || !dasTools.nameInDDS(name, dds))) {
@@ -298,17 +299,18 @@ public class GetInfoHandler {
 
                         found = true;
 
-                        ga += "\n<tr><td align=right valign=top><b>";
-                        ga += aName + "</b>:</td>\n";
-                        ga += "<td align=left>";
+                        ga.append("\n<tr><td align=right valign=top><b>");
+                        ga.append(aName + "</b>:</td>\n");
+                        ga.append("<td align=left>");
 
                         Enumeration es = a.getValues();
                         while (es.hasMoreElements()) {
                             String val = (String) es.nextElement();
-                            ga += val + "<br>";
+                            ga.append(val);
+                            ga.append("<br>");
                         }
 
-                        ga += "</td></tr>\n";
+                        ga.append("</td></tr>\n");
 
                     }
                 } catch (NoSuchAttributeException nsae) {
@@ -316,12 +318,12 @@ public class GetInfoHandler {
 
             }
         }
-        ga += "</table>\n<p>\n";
+        ga.append("</table>\n<p>\n");
 
         if (!found)
-            ga = "";
+            ga.setLength(0);
 
-        return (ga);
+        return (ga.toString());
     }
 
 
@@ -329,7 +331,8 @@ public class GetInfoHandler {
     private String buildVariableSummaries(DAS das, ServerDDS dds) {
 
 
-        String vs = "<h3>Variables in this Dataset</h3>\n<table>\n";
+        StringBuilder vs = new StringBuilder();
+        vs.append("<h3>Variables in this Dataset</h3>\n<table>\n");
 
         Enumeration e = dds.getVariables();
 
@@ -337,23 +340,22 @@ public class GetInfoHandler {
 
             BaseType bt = (BaseType) e.nextElement();
 
-            vs += "<tr>";
+            vs.append("<tr>");
 
-            vs += summarizeVariable(bt, das);
+            vs.append(summarizeVariable(bt, das));
 
-            vs += "</tr>";
+            vs.append("</tr>");
 
         }
 
-        vs += "</table>\n<p>\n";
-        ;
+        vs.append("</table>\n<p>\n");
 
-
-        return (vs);
+        return (vs.toString());
     }
 
 
-    private String summarizeAttributes(AttributeTable attr, String vOut) {
+    private String summarizeAttributes(AttributeTable attr)  {
+        StringBuilder vOut = new StringBuilder();
 
         if (attr != null) {
 
@@ -361,67 +363,67 @@ public class GetInfoHandler {
             while (e.hasMoreElements()) {
                 String name = (String) e.nextElement();
 
-
                 Attribute a = attr.getAttribute(name);
                 if (a != null) {
-
                     if (a.isContainer()) {
-
-                        vOut += "<li> <b> " + name + ": </b> </li>\n";
-                        vOut += "<ul>\n";
+                        vOut.append("<li> <b> ");
+                        vOut.append(name);
+                        vOut.append(": </b> </li>\n");
+                        vOut.append("<ul>\n");
 
                         try {
-                            vOut += summarizeAttributes(a.getContainer(), "");
+                            vOut.append(summarizeAttributes(a.getContainer()));
                         } catch (NoSuchAttributeException nase) {
                         }
 
-                        vOut += "</ul>\n";
+                        vOut.append("</ul>\n");
 
                     } else {
-                        vOut += "<li> <b> " + name + ": </b> ";
+                        vOut.append("<li> <b> ");
+                        vOut.append(name);
+                        vOut.append(": </b> ");
                         try {
                             Enumeration es = a.getValues();
                             while (es.hasMoreElements()) {
                                 String val = (String) es.nextElement();
-                                vOut += val;
+                                vOut.append(val);
                                 if (es.hasMoreElements())
-                                    vOut += ", ";
+                                    vOut.append(", ");
                             }
                         } catch (NoSuchAttributeException nase) {
                         }
-                        vOut += " </li>\n";
+                        vOut.append(" </li>\n");
                     }
 
                 }
             }
         }
 
-        return (vOut);
+        return (vOut.toString());
 
     }
 
 
     private String summarizeVariable(BaseType bt, DAS das) {
 
-        String vOut;
+        StringBuilder vOut = new StringBuilder();
 
-        vOut = "<td align=right valign=top><b>" + bt.getEncodedName();
-        vOut += "</b>:</td>\n";
-        vOut += "<td align=left valign=top>" + dasTools.fancyTypeName(bt);
-
+        vOut.append("<td align=right valign=top><b>");
+        vOut.append(bt.getEncodedName());
+        vOut.append("</b>:</td>\n");
+        vOut.append("<td align=left valign=top>");
+        vOut.append(dasTools.fancyTypeName(bt));
 
         try {
             AttributeTable attr = das.getAttributeTable(bt.getEncodedName());
 
             // This will display the DAS variables (attributes) as a bulleted list.
-            String s = "";
-            vOut += "\n<ul>\n";
-            vOut += summarizeAttributes(attr, s);
-            vOut += "\n</ul>\n";
-
+            vOut.append("\n<ul>\n");
+            vOut.append(summarizeAttributes(attr));
+            vOut.append("\n</ul>\n");
 
             if (bt instanceof DConstructor) {
-                vOut += "<table>\n";
+                vOut.append("<table>\n");
 
                 DConstructor dc = (DConstructor) bt;
 
@@ -429,15 +431,14 @@ public class GetInfoHandler {
 
                 while (e.hasMoreElements()) {
                     BaseType bt2 = (BaseType) e.nextElement();
-                    vOut += "<tr>\n";
-                    vOut += summarizeVariable(bt2, das);
-                    vOut += "</tr>\n";
+                    vOut.append("<tr>\n");
+                    vOut.append(summarizeVariable(bt2, das));
+                    vOut.append("</tr>\n");
                 }
-                vOut += "</table>\n";
+                vOut.append("</table>\n");
 
 
             } else if (bt instanceof DVector) {
-
 
                 DVector da = (DVector) bt;
                 PrimitiveVector pv = da.getPrimitiveVector();
@@ -447,19 +448,16 @@ public class GetInfoHandler {
 
                     if (bt2 instanceof DArray || bt2 instanceof DString) {
                     } else {
-
-                        vOut += "<table>\n";
-                        vOut += "<tr>\n";
-                        vOut += summarizeVariable(bt2, das);
-                        vOut += "</tr>\n";
-                        vOut += "</table>\n";
+                        vOut.append("<table>\n");
+                        vOut.append("<tr>\n");
+                        vOut.append(summarizeVariable(bt2, das));
+                        vOut.append("</tr>\n");
+                        vOut.append("</table>\n");
                     }
                 }
 
-
             } else {
 /*
-
                 In the C++ code the types are all checked here, and if an unknown
                 type is recieved then an exception is thrown. I think it's not
                 needed... James?
@@ -474,16 +472,16 @@ public class GetInfoHandler {
 
                 // While fixing another problem I decided that this should be
                 // moved to the ed of the method...
-                //vOut += "</td>\n";
+                //vOut.append("</td>\n";
             }
         } catch (NoSuchAttributeException nsae) {
         }
 
         // While fixing another problem I decided that this should be
         // here to close the opening tag <td> from the top of this method.
-        vOut += "</td>\n";
+        vOut.append("</td>\n");
 
-        return (vOut);
+        return (vOut.toString());
 
     }
 

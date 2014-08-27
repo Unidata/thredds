@@ -113,42 +113,42 @@ public class asciiArray extends DArray implements toASCII {
 
     public String toASCIIFlatName(String rootName) {
 
-        String s = "";
+        StringBuilder s = new StringBuilder();
         if (rootName != null) {
-            s = rootName + "." + getEncodedName();
+            s.append(rootName);
+            s.append(".");
+            s.append(getEncodedName());
         } else {
-            s = getEncodedName();
+            s.append(getEncodedName());
         }
-
 
         String s2 = "";
         PrimitiveVector pv = getPrimitiveVector();
-
         if (pv instanceof BaseTypePrimitiveVector) {
-
             BaseType bt = ((BaseTypePrimitiveVector) pv).getValue(0);
-
             if (bt instanceof DString) {
-
                 int dims = numDimensions();
                 int i = 0;
                 for (Enumeration e = getDimensions(); e.hasMoreElements();) {
                     DArrayDimension d = (DArrayDimension) e.nextElement();
-                    s += "[" + d.getSize() + "]";
+                    s.append("[");
+                    s.append(d.getSize());
+                    s.append("]");
                 }
-                s2 = s;
+                s2 = s.toString();
             } else {
-                s2 = ((toASCII) bt).toASCIIFlatName(s);
+                s2 = ((toASCII) bt).toASCIIFlatName(s.toString());
             }
-
         } else {
             int dims = numDimensions();
             int i = 0;
             for (Enumeration e = getDimensions(); e.hasMoreElements();) {
                 DArrayDimension d = (DArrayDimension) e.nextElement();
-                s += "[" + d.getSize() + "]";
+                s.append("[");
+                s.append(d.getSize());
+                s.append("]");
             }
-            s2 = s;
+            s2 = s.toString();
         }
         return (s2);
     }
@@ -222,13 +222,16 @@ public class asciiArray extends DArray implements toASCII {
             return index;
         } else {
             for (int i = 0; i < shape[offset]; i++) {
-                String s = label + "[" + i + "]";
+                StringBuilder s = new StringBuilder();
+                s.append(label);
+                s.append("[");
+                s.append(i);
+                s.append("]");
                 if ((dims - 1) == 1)
-                    s += ", ";
-                index = asciiArray(os, addName, s, index, dims - 1, shape, offset + 1);
+                    s.append(", ");
+                index = asciiArray(os, addName, s.toString(), index, dims - 1, shape, offset + 1);
             }
             return index;
-
         }
     }
 

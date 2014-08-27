@@ -1362,7 +1362,7 @@ public abstract class AbstractServlet extends javax.servlet.http.HttpServlet {
       for (int i = 0; i < n; i++) {
         ReqState rs = (ReqState) prArr.get(i);
         RequestDebug reqD = (RequestDebug) rs.getUserObject();
-        if ((rs != null) && !reqD.done) {
+        if(!reqD.done) {
           preqs += "<pre>-----------------------\n";
           preqs += "Request[" + reqD.reqno + "](" + reqD.threadDesc + ") is pending.\n";
           preqs += rs.toString();
@@ -1763,7 +1763,7 @@ public abstract class AbstractServlet extends javax.servlet.http.HttpServlet {
   // debug
   private ArrayList prArr = null;
 
-  private class RequestDebug {
+  static private class RequestDebug {
     long reqno;
     String threadDesc;
     boolean done = false;

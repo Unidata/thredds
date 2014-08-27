@@ -345,10 +345,8 @@ public class AsciiWriter {
                     if (!firstPass)
                         s.append(", ");
                     firstPass = false;
-
                     s.append(toASCIIFlatName(ta, rootName));
                 }
-                break;
             }
 
         } else if (data instanceof DConstructor) {
@@ -362,7 +360,6 @@ public class AsciiWriter {
                 if (!firstPass)
                     s.append(", ");
                 firstPass = false;
-
                 s.append(toASCIIFlatName(ta, rootName));
             }
         }

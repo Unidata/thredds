@@ -13,8 +13,8 @@ import java.io.IOException;
 
 public interface DSP
 {
-    /* Unfortunately, Java does not (yet, sigh!) allow including
-       static methods in an interface.
+    /* Unfortunately, Java does not (yet, sigh!, as of java 7) allow
+       including static methods in an interface.
        As with IOSPs, we need a quick match function to indicate
        that this DSP is likely to be able to process this file.
      */

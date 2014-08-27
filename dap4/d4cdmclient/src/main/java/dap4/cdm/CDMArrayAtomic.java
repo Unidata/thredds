@@ -11,6 +11,7 @@ import dap4.dap4shared.*;
 import ucar.ma2.*;
 
 import java.io.IOException;
+import java.util.List;
 
 /**
  * CDMArrayAtomic wraps a D4DataAtomic object to present
@@ -79,7 +80,7 @@ public class CDMArrayAtomic extends Array implements CDMArray
     }
 
     //////////////////////////////////////////////////
-    // CDMArry Interface
+    // CDMArray Interface
 
     @Override
     public DSP getDSP()

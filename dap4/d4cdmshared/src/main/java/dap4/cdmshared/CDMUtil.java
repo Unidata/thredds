@@ -31,12 +31,13 @@ abstract public class CDMUtil
 
     /**
      * Convert a list of ucar.ma2.Range to a list of Slice
+     * More or less the inverst of create CDMRanges
      *
      * @param rangelist the set of ucar.ma2.Range
      * @result the equivalent list of Slice
      */
     static public List<Slice>
-    rangeConvert(List<Range> rangelist)
+    createSlices(List<Range> rangelist)
         throws DapException
     {
         List<Slice> slices = new ArrayList<Slice>(rangelist.size());
@@ -589,6 +590,7 @@ abstract public class CDMUtil
      * @return resulting array of values as an object
      */
 
+    /*
     static public Object
     extractVector(D4DataAtomic dataset, long index, long count, long offset)
         throws DataException
@@ -601,6 +603,7 @@ abstract public class CDMUtil
         }
         return vector;
     }
+    */
 
     /**
      * Convert an array of one type of values to another type
@@ -1314,4 +1317,36 @@ abstract public class CDMUtil
     }   */
 
 
+    static public List<Range>
+    dimsetToRanges(List<DapDimension> dimset)
+        throws DapException
+    {
+        if(dimset == null)
+             return null;
+        List<Range> ranges = new ArrayList<>();
+        for(int i=0;i<dimset.size();i++) {
+            DapDimension dim = dimset.get(i);
+            try {
+                Range r = new Range(dim.getShortName(), 0, (int) dim.getSize() - 1, 1);
+                ranges.add(r);
+            } catch(InvalidRangeException ire) {
+                throw new DapException(ire);
+            }
+        }
+        return ranges;
+    }
+
+    static public List<Slice>
+    shapeToSlices(int[] shape)
+        throws DapException
+    {
+        if(shape == null)
+            return null;
+        List<Slice> slices = new ArrayList<>(shape.length);
+        for(int i=0;i<shape.length;i++) {
+            Slice sl = new Slice(0,shape[i]-1,1);
+            slices.add(sl);
+        }
+        return slices;
+    }
 }

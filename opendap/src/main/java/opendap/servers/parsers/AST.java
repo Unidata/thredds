@@ -24,12 +24,30 @@ abstract public class AST
 
     opendap.servers.parsers.AST root = null;
 
-    void setRoot(opendap.servers.parsers.AST root) {this.root = root;}
+    void setRoot(opendap.servers.parsers.AST root)
+    {
+        this.root = root;
+    }
 
-    CEEvaluator getCeEval() {return root.ceEval;}
-    ClauseFactory getClauseFactory() {return root.clauseFactory;}
-    BaseTypeFactory getFactory() {return root.factory;}
-    ServerDDS getSdds() {return root.sdds;}
+    CEEvaluator getCeEval()
+    {
+        return root.ceEval;
+    }
+
+    ClauseFactory getClauseFactory()
+    {
+        return root.clauseFactory;
+    }
+
+    BaseTypeFactory getFactory()
+    {
+        return root.factory;
+    }
+
+    ServerDDS getSdds()
+    {
+        return root.sdds;
+    }
 
 
     public AST(List<AST> nodes)
@@ -41,31 +59,38 @@ abstract public class AST
 
     /* Only call on the root node */
     public void init(CEEvaluator ceEval,
-	                    BaseTypeFactory factory,
-			    ClauseFactory clauseFactory,
-			    ServerDDS sdds,
-			    List<AST> nodes)
+                     BaseTypeFactory factory,
+                     ClauseFactory clauseFactory,
+                     ServerDDS sdds,
+                     List<AST> nodes)
     {
         this.ceEval = ceEval;
         this.clauseFactory = clauseFactory;
         this.factory = factory;
         this.sdds = sdds;
-	    this.root = this;
-	    for(AST node: nodes) node.setRoot(this);
+        this.root = this;
+        for(AST node : nodes) node.setRoot(this);
     }
 
     // abstract public String toString();
 
     Clause translate()
-	throws DAP2ServerSideException, DAP2Exception, NoSuchFunctionException, NoSuchVariableException
-	{return null;} // translate returns a subclause
-    Stack collect(Stack components)// collect returns a stack of variables
-	throws DAP2ServerSideException, DAP2Exception, NoSuchFunctionException, NoSuchVariableException
-	{return null;}
+        throws DAP2ServerSideException, DAP2Exception, NoSuchFunctionException, NoSuchVariableException
+    {
+        return null;
+    } // translate returns a subclause
 
-        void walk() // walk operates by side effect
-	throws DAP2ServerSideException, DAP2Exception, NoSuchFunctionException, NoSuchVariableException
-	{return;}
+    Stack collect(Stack components)// collect returns a stack of variables
+        throws DAP2ServerSideException, DAP2Exception, NoSuchFunctionException, NoSuchVariableException
+    {
+        return null;
+    }
+
+    void walk() // walk operates by side effect
+        throws DAP2ServerSideException, DAP2Exception, NoSuchFunctionException, NoSuchVariableException
+    {
+        return;
+    }
 
 
 } // class AST
@@ -75,7 +100,10 @@ class ASTconstraint extends AST
     List<ASTprojection> projections = null;
     List<ASTclause> selections = null;
 
-    public ASTconstraint(List<AST> nodes) {super(nodes);}
+    public ASTconstraint(List<AST> nodes)
+    {
+        super(nodes);
+    }
 
 /*
     public String toString()
@@ -98,17 +126,18 @@ class ASTconstraint extends AST
 */
 
     public void walkConstraint()
-	throws DAP2ServerSideException, DAP2Exception
+        throws DAP2ServerSideException, DAP2Exception
     {
         if(projections != null)
-            for(ASTprojection proj: projections) {
-           proj.walk(ceEval);
-        } else
-	        getCeEval().markAll(true);
-            if(selections != null)
-                for(ASTclause cl: selections) {
-            getCeEval().appendClause(cl.translate());
-        }
+            for(ASTprojection proj : projections) {
+                proj.walk(ceEval);
+            }
+        else
+            getCeEval().markAll(true);
+        if(selections != null)
+            for(ASTclause cl : selections) {
+                getCeEval().appendClause(cl.translate());
+            }
     }
 }
 
@@ -117,7 +146,10 @@ class ASTprojection extends AST
     ASTvar var = null;
     ASTfcn fcn = null;
 
-    public ASTprojection(List<AST> nodes) {super(nodes);}
+    public ASTprojection(List<AST> nodes)
+    {
+        super(nodes);
+    }
 
 /*
     public String toString()
@@ -130,17 +162,17 @@ class ASTprojection extends AST
 */
 
     void walk(CEEvaluator ceEval)
-	throws DAP2ServerSideException, DAP2Exception,
-	       NoSuchFunctionException, NoSuchVariableException
+        throws DAP2ServerSideException, DAP2Exception,
+        NoSuchFunctionException, NoSuchVariableException
     {
         if(fcn != null) {
-	    SubClause subclause = fcn.translate();
-	    getCeEval().appendClause(subclause);
-	} else {
-	    Stack components = new Stack();
-	    components = var.collect(components);
-        markStackedVariables(components);
-	}
+            SubClause subclause = fcn.translate();
+            getCeEval().appendClause(subclause);
+        } else {
+            Stack components = new Stack();
+            components = var.collect(components);
+            markStackedVariables(components);
+        }
     }
 
 
@@ -152,21 +184,22 @@ class ASTprojection extends AST
      * that is part of the projection will be on the stack, too.
      */
 
-     /**
-      * CEEValuator.markstackedvariables()
-      * automatically marks all fields of a constructor as projected.
-      * This causes problems with printDecl, which automatically recurses
-      * on it fields. This means that constructor fields end up printed twice.
-      * The original code, with the bad cloning, did not do this for some reason.
-      * The solution taken here is mark which nodes were marked by constructor
-      * recursion and which were marked directly. This info is then used in
-      * printDecl to properly print the fields once and only once.
-      */
-    private void markStackedVariables(Stack s) {
+    /**
+     * CEEValuator.markstackedvariables()
+     * automatically marks all fields of a constructor as projected.
+     * This causes problems with printDecl, which automatically recurses
+     * on it fields. This means that constructor fields end up printed twice.
+     * The original code, with the bad cloning, did not do this for some reason.
+     * The solution taken here is mark which nodes were marked by constructor
+     * recursion and which were marked directly. This info is then used in
+     * printDecl to properly print the fields once and only once.
+     */
+    private void markStackedVariables(Stack s)
+    {
         // Reverse the stack.
         Stack bts = new Stack();
         // LogStream.err.println("Variables to be marked:");
-        while (!s.empty()) {
+        while(!s.empty()) {
             //LogStream.err.println(((BaseType)s.peek()).getName());
             bts.push(s.pop());
         }
@@ -179,15 +212,15 @@ class ASTprojection extends AST
         // into S) but X, Y and Z's projection remain clear. In this example,
         // X's projection is set by the code that follows the while loop.
         // 1/28/2000 jhrg
-        while (bts.size() > 1) {
-            DAPNode dn = (DAPNode)bts.pop();
-            ServerMethods ct = (ServerMethods)dn;
+        while(bts.size() > 1) {
+            DAPNode dn = (DAPNode) bts.pop();
+            ServerMethods ct = (ServerMethods) dn;
             ct.setProject(true, false);
             //LogStream.err.println("mark singleton: " + dn.getName());
         }
-        DAPNode dn = (DAPNode)bts.pop();
+        DAPNode dn = (DAPNode) bts.pop();
         // For the last element, project the entire variable.
-        ServerMethods bt = (ServerMethods)dn;
+        ServerMethods bt = (ServerMethods) dn;
         bt.setProject(true, true);
         //LogStream.err.println("mark all: " + dn.getName()); LogStream.err.flush();
     }
@@ -200,7 +233,10 @@ class ASTfcn extends ASTvalue
     String fcnname = null;
     List<ASTvalue> args = null;
 
-    public ASTfcn(List<AST> nodes) {super(nodes);}
+    public ASTfcn(List<AST> nodes)
+    {
+        super(nodes);
+    }
 
 /*
     public String toString()
@@ -220,16 +256,16 @@ class ASTfcn extends ASTvalue
 */
 
     SubClause translate()
-	throws DAP2ServerSideException, DAP2Exception,
-	       NoSuchFunctionException, NoSuchVariableException
+        throws DAP2ServerSideException, DAP2Exception,
+        NoSuchFunctionException, NoSuchVariableException
     {
         SubClause subclause = null;
-        Vector<SubClause> cvtargs= new Vector<SubClause>();
+        Vector<SubClause> cvtargs = new Vector<SubClause>();
         if(args != null)
-            for(ASTvalue arg: args)
+            for(ASTvalue arg : args)
                 cvtargs.addElement(arg.translate());
-        subclause = getClauseFactory().newBTFunctionClause(fcnname,cvtargs);
-	return subclause;
+        subclause = getClauseFactory().newBTFunctionClause(fcnname, cvtargs);
+        return subclause;
     }
 
 }
@@ -238,7 +274,10 @@ class ASTvar extends ASTvalue
 {
     List<ASTsegment> segments = new ArrayList<ASTsegment>();
 
-    public ASTvar(List<AST> nodes) {super(nodes);}
+    public ASTvar(List<AST> nodes)
+    {
+        super(nodes);
+    }
 
 /*
     public String toString()
@@ -254,13 +293,13 @@ class ASTvar extends ASTvalue
 */
 
     Stack collect(Stack components)
-	throws DAP2ServerSideException, DAP2Exception,
-	       NoSuchFunctionException, NoSuchVariableException
+        throws DAP2ServerSideException, DAP2Exception,
+        NoSuchFunctionException, NoSuchVariableException
     {
-        for(ASTsegment segment: segments) {
-	    components = segment.collect(components);
-	}
-	return components;
+        for(ASTsegment segment : segments) {
+            components = segment.collect(components);
+        }
+        return components;
     }
 
 }
@@ -270,7 +309,10 @@ class ASTsegment extends AST
     String name = null;    // must be DAP decoded
     List<ASTslice> slices = new ArrayList<ASTslice>();
 
-    public ASTsegment(List<AST> nodes) {super(nodes);}
+    public ASTsegment(List<AST> nodes)
+    {
+        super(nodes);
+    }
 
 /*
     public String toString()
@@ -286,44 +328,44 @@ class ASTsegment extends AST
 */
 
     Stack collect(Stack components)
-	throws DAP2ServerSideException, DAP2Exception,
-	       NoSuchFunctionException, NoSuchVariableException
+        throws DAP2ServerSideException, DAP2Exception,
+        NoSuchFunctionException, NoSuchVariableException
     {
         BaseType bt = null;
         ServerArrayMethods sam = null;
-        components = getSdds().search(name,components);
+        components = getSdds().search(name, components);
         if(slices != null && slices.size() > 0) {
             try {
-                bt = (BaseType)components.peek();
+                bt = (BaseType) components.peek();
             } catch (ClassCastException cce) {
-                    String msg = "Attempt to treat the variable `" + name
-                                 + "' as if it is an array.";
-                    throw new DAP2Exception(DAP2Exception.MALFORMED_EXPR, msg);
+                String msg = "Attempt to treat the variable `" + name
+                    + "' as if it is an array.";
+                throw new DAP2Exception(DAP2Exception.MALFORMED_EXPR, msg);
             }
             if(bt instanceof DGrid) {// project the grid and the coordinate variable
                 DGrid grid = ((DGrid) bt);
                 bt = grid.getArray();
-                sam = (ServerArrayMethods)bt;
-                for(int i=0;i<slices.size();i++) {
+                sam = (ServerArrayMethods) bt;
+                for(int i = 0;i < slices.size();i++) {
                     ASTslice slice = slices.get(i);
-		            slice.walk(sam,i);
+                    slice.walk(sam, i);
                 }
                 // walk the coordinate variables also
-                for(int i=0;i<slices.size();i++) {
+                for(int i = 0;i < slices.size();i++) {
                     ASTslice slice = slices.get(i);
-                    bt = grid.getVar(i+1);
-                    sam = (ServerArrayMethods)bt;
-		            slice.walk(sam,0);
+                    bt = grid.getVar(i + 1);
+                    sam = (ServerArrayMethods) bt;
+                    slice.walk(sam, 0);
                 }
             } else if(bt instanceof ServerArrayMethods) {
-                sam = (ServerArrayMethods)bt;
-                for(int i=0;i<slices.size();i++) {
+                sam = (ServerArrayMethods) bt;
+                for(int i = 0;i < slices.size();i++) {
                     ASTslice slice = slices.get(i);
-		            slice.walk(sam,i);
+                    slice.walk(sam, i);
                 }
-	        }
+            }
         }
-	    return components;
+        return components;
     }
 
 }
@@ -334,7 +376,10 @@ class ASTslice extends AST
     long stop = 0;
     long stride = 1;
 
-    public ASTslice(List<AST> nodes) {super(nodes);}
+    public ASTslice(List<AST> nodes)
+    {
+        super(nodes);
+    }
 
 /*
     public String toString()
@@ -350,9 +395,9 @@ class ASTslice extends AST
 */
 
     void walk(ServerArrayMethods sam, int index)
-	throws InvalidDimensionException,SBHException
+        throws InvalidDimensionException, SBHException
     {
-        sam.setProjection(index,(int)start,(int)stride,(int)stop);
+        sam.setProjection(index, (int) start, (int) stride, (int) stop);
     }
 }
 
@@ -362,7 +407,10 @@ class ASTvalue extends AST
     ASTvar var = null; // tag == VAR
     ASTfcn fcn = null; // tag == FUNCTION
 
-    public ASTvalue(List<AST> nodes) {super(nodes);}
+    public ASTvalue(List<AST> nodes)
+    {
+        super(nodes);
+    }
 
 /*
     public String toString()
@@ -381,20 +429,20 @@ class ASTvalue extends AST
 */
 
     SubClause translate()
-	throws DAP2ServerSideException, DAP2Exception,
-	       NoSuchFunctionException, NoSuchVariableException
+        throws DAP2ServerSideException, DAP2Exception,
+        NoSuchFunctionException, NoSuchVariableException
     {
         SubClause subclause = null;
-	if(constant != null) {
-	   subclause =  constant.translate();
-	} else if(var != null) {
-	    Stack components = new Stack();
-	    components = var.collect(components);
-	    subclause = getClauseFactory().newValueClause((BaseType)components.pop(), false);
-	} else if(fcn != null) {
-	    subclause = fcn.translate();
-	} else
-	    assert (false);
+        if(constant != null) {
+            subclause = constant.translate();
+        } else if(var != null) {
+            Stack components = new Stack();
+            components = var.collect(components);
+            subclause = getClauseFactory().newValueClause((BaseType) components.pop(), false);
+        } else if(fcn != null) {
+            subclause = fcn.translate();
+        } else
+            assert (false);
         return subclause;
     }
 }
@@ -406,7 +454,10 @@ class ASTconstant extends ASTvalue
     long intvalue = 0; // tag == INTCONST
     double floatvalue = 0.0; // tag == FLOATCONST
 
-    public ASTconstant(List<AST> nodes) {super(nodes);}
+    public ASTconstant(List<AST> nodes)
+    {
+        super(nodes);
+    }
 
 /*
     public String toString()
@@ -430,34 +481,37 @@ class ASTconstant extends ASTvalue
 */
 
     SubClause translate()
-	throws DAP2ServerSideException, DAP2Exception,
-	       NoSuchFunctionException, NoSuchVariableException
+        throws DAP2ServerSideException, DAP2Exception,
+        NoSuchFunctionException, NoSuchVariableException
     {
         SubClause subclause = null;
         switch (tag) {
         case ExprParserConstants.INTCONST: {
-            String s = String.format("%d",intvalue);
+            String s = String.format("%d", intvalue);
             DInt32 i = getFactory().newDInt32(s);
-            i.setValue((int)intvalue);
-            ((ServerMethods)i).setRead(true);
-            ((ServerMethods)i).setProject(true);
-            subclause = getClauseFactory().newValueClause(i,false);
-        } break;
+            i.setValue((int) intvalue);
+            ((ServerMethods) i).setRead(true);
+            ((ServerMethods) i).setProject(true);
+            subclause = getClauseFactory().newValueClause(i, false);
+        }
+        break;
         case ExprParserConstants.FLOATCONST: {
-            String s = String.format("%.1f",floatvalue);
+            String s = String.format("%.1f", floatvalue);
             DFloat64 f = getFactory().newDFloat64(s);
             f.setValue(floatvalue);
-            subclause = getClauseFactory().newValueClause(f,false);
-        } break;
+            subclause = getClauseFactory().newValueClause(f, false);
+        }
+        break;
         case ExprParserConstants.STRINGCONST: {
             DString s = getFactory().newDString(text);
             s.setValue(text);
-            ((ServerMethods)s).setRead(true);
-            ((ServerMethods)s).setProject(true);
-            subclause = getClauseFactory().newValueClause(s,false);
-        } break;
+            ((ServerMethods) s).setRead(true);
+            ((ServerMethods) s).setProject(true);
+            subclause = getClauseFactory().newValueClause(s, false);
+        }
+        break;
         default:
-            assert(false);
+            assert (false);
         }
         return subclause;
     }
@@ -470,7 +524,10 @@ class ASTclause extends AST
     List<ASTvalue> rhs = null;
     ASTfcn boolfcn = null;
 
-    public ASTclause(List<AST> nodes) {super(nodes);}
+    public ASTclause(List<AST> nodes)
+    {
+        super(nodes);
+    }
 
 /*
     public String toString()
@@ -495,19 +552,19 @@ class ASTclause extends AST
 */
 
     public Clause translate()
-	throws DAP2ServerSideException, DAP2Exception,
-	       NoSuchFunctionException, NoSuchVariableException
+        throws DAP2ServerSideException, DAP2Exception,
+        NoSuchFunctionException, NoSuchVariableException
     {
-	Clause clause = null;
-	if(boolfcn != null)
-	    clause = boolfcn.translate();
-	else {
-	    Vector<SubClause> cvtrhs = new Vector<SubClause>();
-	    for(ASTvalue v: rhs) cvtrhs.addElement(v.translate());
+        Clause clause = null;
+        if(boolfcn != null)
+            clause = boolfcn.translate();
+        else {
+            Vector<SubClause> cvtrhs = new Vector<SubClause>();
+            for(ASTvalue v : rhs) cvtrhs.addElement(v.translate());
             SubClause lhsclause = lhs.translate();
-	    clause = getClauseFactory().newRelOpClause(operator, lhsclause, cvtrhs);
-	}
-	return clause;
+            clause = getClauseFactory().newRelOpClause(operator, lhsclause, cvtrhs);
+        }
+        return clause;
     }
 
 /*

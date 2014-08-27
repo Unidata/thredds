@@ -137,9 +137,9 @@ value:
 
 constant:
 	  number
-	    {$$=constant(parsestate,$1,SCAN_NUMBERCONST);}
+	    {$$=constant(parsestate,$1,Lexer.SCAN_NUMBERCONST);}
 	| string
-	    {$$=constant(parsestate,$1,SCAN_STRINGCONST);}
+	    {$$=constant(parsestate,$1,Lexer.SCAN_STRINGCONST);}
 	;
 
 var:

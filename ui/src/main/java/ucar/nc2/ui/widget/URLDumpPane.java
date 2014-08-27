@@ -342,7 +342,7 @@ public class URLDumpPane extends TextHistoryPane {
 
         String charset = m.getResponseCharSet();
         if (charset == null) charset = CDM.UTF8;
-        String contents = null;
+        String contents;
 
         // check for deflate and gzip compression
         Header h = m.getResponseHeader("content-encoding");
@@ -374,7 +374,7 @@ public class URLDumpPane extends TextHistoryPane {
       } else if (cmd == Command.OPTIONS)
         printSet("AllowedMethods = ", m.getAllowedMethods());
 
-    } catch (Exception e) {
+    } catch (IOException e) {
       StringWriter sw = new StringWriter(5000);
       e.printStackTrace(new PrintWriter(sw));
       appendLine(sw.toString());
@@ -384,10 +384,9 @@ public class URLDumpPane extends TextHistoryPane {
   private void printHeaders(String title, Header[] heads) {
     if (heads == null) return;
     appendLine(title);
-    for (int i = 0; i < heads.length; i++) {
-      Header head = heads[i];
-      append("  " + head.toString() +"\n");
-    }
+      for (Header head : heads) {
+          append("  " + head.toString() + "\n");
+      }
   }
 
   private void printSet(String title, Set<String> en) {
@@ -461,7 +460,6 @@ public class URLDumpPane extends TextHistoryPane {
     }
     catch (IOException e) {
       e.printStackTrace();
-      System.err.println(e);
     }
   }
 
@@ -641,6 +639,7 @@ public class URLDumpPane extends TextHistoryPane {
           main.save();
           xstore.save();
         } catch (IOException ioe) {
+          ioe.printStackTrace();
         }
         System.exit(0);
       }

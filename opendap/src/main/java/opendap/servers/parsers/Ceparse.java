@@ -10,8 +10,6 @@ import opendap.servers.*;
 import opendap.dap.parsers.*;
 import ucar.nc2.util.EscapeStrings;
 
-import static opendap.servers.parsers.CeParser.*;
-
 import java.util.*;
 
 /**
@@ -365,11 +363,11 @@ public abstract class Ceparse implements ExprParserConstants
     {
         ASTconstant value = new ASTconstant(astnodeset);
         switch (tag) {
-        case SCAN_STRINGCONST:
+        case CeParser.Lexer.SCAN_STRINGCONST:
             value.text = (String) path;
             value.tag = STRINGCONST;
             break;
-        case SCAN_NUMBERCONST:
+        case CeParser.Lexer.SCAN_NUMBERCONST:
             try {
                 value.intvalue = Long.parseLong((String) path);
                 value.tag = INTCONST;
@@ -378,7 +376,7 @@ public abstract class Ceparse implements ExprParserConstants
                     value.floatvalue = Float.parseFloat((String) path);
                     value.tag = FLOATCONST;
                 } catch (NumberFormatException nfe2) {
-                    throw new ParseException("Illegal integer constant");
+                    throw new ParseException("Illegal float constant");
                 }
             }
             break;

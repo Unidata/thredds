@@ -43,9 +43,9 @@ package opendap.servers;
 import java.util.*;
 import java.io.*;
 
-import opendap.servers.parsers.CeParser;
 import opendap.dap.*;
 import opendap.dap.parsers.*;
+import opendap.servers.parsers.CeParser;
 import opendap.servlet.ReqState;
 import opendap.util.Debug;
 
@@ -186,9 +186,9 @@ public class CEEvaluator {
 	
 	try {
         CeParser.constraint_expression(this,
-                _dds.getFactory(),
-                clauseFactory,
-                constraint, urlencoded);
+            _dds.getFactory(),
+            clauseFactory,
+            constraint, urlencoded);
 	} catch (ConstraintException ce) {
 	    // convert to a DAP2Exception
         ce.printStackTrace();
@@ -284,7 +284,7 @@ public class CEEvaluator {
      * @param sink     A pointer to the output buffer for the data.
      * @param specialO An <code>Object</code> passed by the server. This is typically used by server implementations
      *                 to deliver needed functionaliy or information to the read methods of each <code>BaseType</code>.
-     * @see #parseConstraint(String)
+     * @see #parseConstraint
      * @see ServerMethods#serialize(String, DataOutputStream,
      *      CEEvaluator, Object) ServerMethods.serialize()
      */

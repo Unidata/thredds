@@ -141,7 +141,6 @@ public class CDMArrayStructure extends ArrayStructure implements CDMArray
         return this.primitivetype;
     }
 
-
     //////////////////////////////////////////////////
     // Accessors
 
@@ -304,14 +303,18 @@ public class CDMArrayStructure extends ArrayStructure implements CDMArray
 
     public double[] getJavaArrayDouble(int recnum, StructureMembers.Member m)
     {
-        D4DataAtomic data = getAtomicArray(recnum, m).getData();
-        DapType atype = data.getType();
-        long count = atype.getSize();
+        CDMArrayAtomic array = getAtomicArray(recnum, m);
+        if(!array.getBaseType().isNumericType())
+            throw new IllegalArgumentException("Cannot convert non-numeric type");
+        D4DataAtomic data = array.getData();
+        DapType atomtype = data.getType();
+        long nelems = data.getCount();
         try {
-            Object vector = Dap4Util.createVector(atype.getPrimitiveType(), count);
-            data.read(0, count, vector, 0);
-            return (double[]) Dap4Util.convertVector(DapType.FLOAT64, atype, vector);
-        } catch (DataException de) {
+            Object vector = Dap4Util.createVector(atomtype.getPrimitiveType(), nelems);
+            List<Slice> slices = CDMUtil.shapeToSlices(m.getShape());
+            data.read(slices, vector, 0);
+            return (double[]) Dap4Util.convertVector(DapType.FLOAT64, atomtype, vector);
+        } catch (DapException de) {
             throw new UnsupportedOperationException(de);
         }
     }
@@ -324,9 +327,10 @@ public class CDMArrayStructure extends ArrayStructure implements CDMArray
         long count = atype.getSize();
         try {
             Object vector = Dap4Util.createVector(atype.getPrimitiveType(), count);
-            data.read(0, count, vector, 0);
+            List<Slice> slices = CDMUtil.shapeToSlices(m.getShape());
+            data.read(slices, vector, 0);
             return (float[]) Dap4Util.convertVector(DapType.FLOAT32, atype, vector);
-        } catch (DataException de) {
+        } catch (DapException de) {
             throw new UnsupportedOperationException(de);
         }
     }
@@ -339,9 +343,10 @@ public class CDMArrayStructure extends ArrayStructure implements CDMArray
         long count = atype.getSize();
         try {
             Object vector = Dap4Util.createVector(atype.getPrimitiveType(), count);
-            data.read(0, count, vector, 0);
+            List<Slice> slices = CDMUtil.shapeToSlices(m.getShape());
+            data.read(slices, vector, 0);
             return (byte[]) Dap4Util.convertVector(DapType.INT8, atype, vector);
-        } catch (DataException de) {
+        } catch (DapException de) {
             throw new UnsupportedOperationException(de);
         }
     }
@@ -354,9 +359,10 @@ public class CDMArrayStructure extends ArrayStructure implements CDMArray
         long count = atype.getSize();
         try {
             Object vector = Dap4Util.createVector(atype.getPrimitiveType(), count);
-            data.read(0, count, vector, 0);
+            List<Slice> slices = CDMUtil.shapeToSlices(m.getShape());
+            data.read(slices, vector, 0);
             return (short[]) Dap4Util.convertVector(DapType.INT16, atype, vector);
-        } catch (DataException de) {
+        } catch (DapException de) {
             throw new UnsupportedOperationException(de);
         }
     }
@@ -369,9 +375,10 @@ public class CDMArrayStructure extends ArrayStructure implements CDMArray
         long count = atype.getSize();
         try {
             Object vector = Dap4Util.createVector(atype.getPrimitiveType(), count);
-            data.read(0, count, vector, 0);
+            List<Slice> slices = CDMUtil.shapeToSlices(m.getShape());
+            data.read(slices, vector, 0);
             return (int[]) Dap4Util.convertVector(DapType.INT32, atype, vector);
-        } catch (DataException de) {
+        } catch (DapException de) {
             throw new UnsupportedOperationException(de);
         }
     }
@@ -384,9 +391,10 @@ public class CDMArrayStructure extends ArrayStructure implements CDMArray
         long count = atype.getSize();
         try {
             Object vector = Dap4Util.createVector(atype.getPrimitiveType(), count);
-            data.read(0, count, vector, 0);
+            List<Slice> slices = CDMUtil.shapeToSlices(m.getShape());
+            data.read(slices, vector, 0);
             return (long[]) Dap4Util.convertVector(DapType.INT64, atype, vector);
-        } catch (DataException de) {
+        } catch (DapException de) {
             throw new UnsupportedOperationException(de);
         }
     }
@@ -399,9 +407,10 @@ public class CDMArrayStructure extends ArrayStructure implements CDMArray
         long count = atype.getSize();
         try {
             Object vector = Dap4Util.createVector(atype.getPrimitiveType(), count);
-            data.read(0, count, vector, 0);
+            List<Slice> slices = CDMUtil.shapeToSlices(m.getShape());
+            data.read(slices, vector, 0);
             return (char[]) Dap4Util.convertVector(DapType.CHAR, atype, vector);
-        } catch (DataException de) {
+        } catch (DapException de) {
             throw new UnsupportedOperationException(de);
         }
     }
@@ -414,9 +423,10 @@ public class CDMArrayStructure extends ArrayStructure implements CDMArray
         long count = atype.getSize();
         try {
             Object vector = Dap4Util.createVector(atype.getPrimitiveType(), count);
-            data.read(0, count, vector, 0);
+            List<Slice> slices = CDMUtil.shapeToSlices(m.getShape());
+            data.read(slices, vector, 0);
             return (String[]) Dap4Util.convertVector(DapType.STRING, atype, vector);
-        } catch (DataException de) {
+        } catch (DapException de) {
             throw new UnsupportedOperationException(de);
         }
     }
@@ -429,9 +439,10 @@ public class CDMArrayStructure extends ArrayStructure implements CDMArray
         long count = atype.getSize();
         try {
             Object vector = Dap4Util.createVector(atype.getPrimitiveType(), count);
-            data.read(0, count, vector, 0);
+            List<Slice> slices = CDMUtil.shapeToSlices(m.getShape());
+            data.read(slices, vector, 0);
             return (ByteBuffer[]) Dap4Util.convertVector(DapType.OPAQUE, atype, vector);
-        } catch (DataException de) {
+        } catch (DapException de) {
             throw new UnsupportedOperationException(de);
         }
     }

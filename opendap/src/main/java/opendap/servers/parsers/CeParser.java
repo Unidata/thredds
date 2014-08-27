@@ -1,19 +1,19 @@
-/* A Bison parser, made by GNU Bison 2.4.2.  */
+/* A Bison parser, made by GNU Bison 3.0.  */
 
 /* Skeleton implementation for Bison LALR(1) parsers in Java
-   
-      Copyright (C) 2007-2010 Free Software Foundation, Inc.
-   
+
+   Copyright (C) 2007-2013 Free Software Foundation, Inc.
+
    This program is free software: you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
    the Free Software Foundation, either version 3 of the License, or
    (at your option) any later version.
-   
+
    This program is distributed in the hope that it will be useful,
    but WITHOUT ANY WARRANTY; without even the implied warranty of
    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
    GNU General Public License for more details.
-   
+
    You should have received a copy of the GNU General Public License
    along with this program.  If not, see <http://www.gnu.org/licenses/>.  */
 
@@ -26,17 +26,18 @@
    special exception, which will cause the skeleton and the resulting
    Bison output files to be licensed under the GNU General Public
    License without this special exception.
-   
+
    This special exception was added by the Free Software Foundation in
    version 2.2 of Bison.  */
 
 package opendap.servers.parsers;
 /* First part of user declarations.  */
 
-/* "%code imports" blocks.  */
+/* "CeParser.java":37  */ /* lalr1.java:91  */
 
-/* Line 33 of lalr1.java  */
-/* Line 12 of "ce.y"  */
+/* "CeParser.java":39  */ /* lalr1.java:92  */
+/* "%code imports" blocks.  */
+/* "ce.y":12  */ /* lalr1.java:93  */
 
 import opendap.dap.*;
 import opendap.dap.parsers.*;
@@ -44,10 +45,7 @@ import opendap.servers.*;
 import java.io.*;
 import java.util.*;
 
-
-
-/* Line 33 of lalr1.java  */
-/* Line 51 of "CeParser.java"  */
+/* "CeParser.java":49  */ /* lalr1.java:93  */
 
 /**
  * A Bison parser, automatically generated from <tt>ce.y</tt>.
@@ -57,27 +55,29 @@ import java.util.*;
 public class CeParser extends Ceparse
 {
     /** Version number for the Bison executable that generated this parser.  */
-  public static final String bisonVersion = "2.4.2";
+  public static final String bisonVersion = "3.0";
 
   /** Name of the skeleton that generated this parser.  */
   public static final String bisonSkeleton = "lalr1.java";
 
 
-  /** True if verbose error messages are enabled.  */
-  public boolean errorVerbose = true;
+  /**
+   * True if verbose error messages are enabled.
+   */
+  private boolean yyErrorVerbose = true;
 
+  /**
+   * Return whether verbose error messages are enabled.
+   */
+  public final boolean getErrorVerbose() { return yyErrorVerbose; }
 
+  /**
+   * Set the verbosity of error messages.
+   * @param verbose True to request verbose error messages.
+   */
+  public final void setErrorVerbose(boolean verbose)
+  { yyErrorVerbose = verbose; }
 
-  /** Token returned by the scanner to signal the end of its input.  */
-  public static final int EOF = 0;
-
-/* Tokens.  */
-  /** Token number, to be returned by the scanner.  */
-  public static final int SCAN_WORD = 258;
-  /** Token number, to be returned by the scanner.  */
-  public static final int SCAN_STRINGCONST = 259;
-  /** Token number, to be returned by the scanner.  */
-  public static final int SCAN_NUMBERCONST = 260;
 
 
 
@@ -88,18 +88,32 @@ public class CeParser extends Ceparse
    * parser <tt>CeParser</tt>.
    */
   public interface Lexer {
+    /** Token returned by the scanner to signal the end of its input.  */
+    public static final int EOF = 0;
+
+/* Tokens.  */
+    /** Token number,to be returned by the scanner.  */
+    static final int SCAN_WORD = 258;
+    /** Token number,to be returned by the scanner.  */
+    static final int SCAN_STRINGCONST = 259;
+    /** Token number,to be returned by the scanner.  */
+    static final int SCAN_NUMBERCONST = 260;
+
+
     
 
     /**
      * Method to retrieve the semantic value of the last scanned token.
-     * @return the semantic value of the last scanned token.  */
+     * @return the semantic value of the last scanned token.
+     */
     Object getLVal ();
 
     /**
      * Entry point for the scanner.  Returns the token identifier corresponding
      * to the next token and prepares to return the semantic value
      * of the token.
-     * @return the token identifier corresponding to the next token. */
+     * @return the token identifier corresponding to the next token.
+     */
     int yylex () throws ParseException;
 
     /**
@@ -107,11 +121,14 @@ public class CeParser extends Ceparse
      * in a user-defined way.
      *
      * 
-     * @param s The string for the error message.  */
-     void yyerror (String s);
+     * @param msg The string for the error message.
+     */
+     void yyerror (String msg);
   }
 
-  /** The object doing lexical analysis for us.  */
+  /**
+   * The object doing lexical analysis for us.
+   */
   private Lexer yylexer;
   
   
@@ -122,7 +139,9 @@ public class CeParser extends Ceparse
    * Instantiates the Bison-generated parser.
    * @param yylexer The scanner that will supply tokens to the parser.
    */
-  public CeParser (Lexer yylexer) {
+  public CeParser (Lexer yylexer) 
+  {
+    
     this.yylexer = yylexer;
     
   }
@@ -156,14 +175,16 @@ public class CeParser extends Ceparse
    */
   public final void setDebugLevel(int level) { yydebug = level; }
 
-  private final int yylex () throws ParseException {
-    return yylexer.yylex ();
-  }
-  protected final void yyerror (String s) {
-    yylexer.yyerror (s);
+  /**
+   * Print an error message via the lexer.
+   *
+   * @param msg The error message.
+   */
+  public final void yyerror (String msg)
+  {
+    yylexer.yyerror (msg);
   }
 
-  
 
   protected final void yycdebug (String s) {
     if (yydebug > 0)
@@ -178,21 +199,21 @@ public class CeParser extends Ceparse
     public int size = 16;
     public int height = -1;
 
-    public final void push (int state, Object value			    ) {
+    public final void push (int state, Object value                            ) {
       height++;
       if (size == height)
         {
-	  int[] newStateStack = new int[size * 2];
-	  System.arraycopy (stateStack, 0, newStateStack, 0, height);
-	  stateStack = newStateStack;
-	  
+          int[] newStateStack = new int[size * 2];
+          System.arraycopy (stateStack, 0, newStateStack, 0, height);
+          stateStack = newStateStack;
+          
 
-	  Object[] newValueStack = new Object[size * 2];
-	  System.arraycopy (valueStack, 0, newValueStack, 0, height);
-	  valueStack = newValueStack;
+          Object[] newValueStack = new Object[size * 2];
+          System.arraycopy (valueStack, 0, newValueStack, 0, height);
+          valueStack = newValueStack;
 
-	  size *= 2;
-	}
+          size *= 2;
+        }
 
       stateStack[height] = state;
       
@@ -200,13 +221,13 @@ public class CeParser extends Ceparse
     }
 
     public final void pop () {
-      height--;
+      pop (1);
     }
 
     public final void pop (int num) {
       // Avoid memory leaks... garbage collection is a white lie!
       if (num > 0) {
-	java.util.Arrays.fill (valueStack, height - num + 1, height, null);
+        java.util.Arrays.fill (valueStack, height - num + 1, height + 1, null);
         
       }
       height -= num;
@@ -225,10 +246,10 @@ public class CeParser extends Ceparse
     {
       out.print ("Stack now");
 
-      for (int i = 0; i < height; i++)
+      for (int i = 0; i <= height; i++)
         {
-	  out.print (' ');
-	  out.print (stateStack[i]);
+          out.print (' ');
+          out.print (stateStack[i]);
         }
       out.println ();
     }
@@ -236,37 +257,44 @@ public class CeParser extends Ceparse
 
   /**
    * Returned by a Bison action in order to stop the parsing process and
-   * return success (<tt>true</tt>).  */
+   * return success (<tt>true</tt>).
+   */
   public static final int YYACCEPT = 0;
 
   /**
    * Returned by a Bison action in order to stop the parsing process and
-   * return failure (<tt>false</tt>).  */
+   * return failure (<tt>false</tt>).
+   */
   public static final int YYABORT = 1;
+
+
 
   /**
    * Returned by a Bison action in order to start error recovery without
-   * printing an error message.  */
+   * printing an error message.
+   */
   public static final int YYERROR = 2;
 
   /**
-   * Returned by a Bison action in order to print an error message and start
-   * error recovery.  Formally deprecated in Bison 2.4.2's NEWS entry, where
-   * a plan to phase it out is discussed.  */
-  public static final int YYFAIL = 3;
-
+   * Internal return codes that are not supported for user semantic
+   * actions.
+   */
+  private static final int YYERRLAB = 3;
   private static final int YYNEWSTATE = 4;
   private static final int YYDEFAULT = 5;
   private static final int YYREDUCE = 6;
   private static final int YYERRLAB1 = 7;
   private static final int YYRETURN = 8;
 
+
   private int yyerrstatus_ = 0;
+
 
   /**
    * Return whether error recovery is being done.  In this state, the parser
    * reads token until it reaches a known state, and then restarts normal
-   * operation.  */
+   * operation.
+   */
   public final boolean recovering ()
   {
     return yyerrstatus_ == 0;
@@ -278,7 +306,7 @@ public class CeParser extends Ceparse
     
 
     /* If YYLEN is nonzero, implement the default value of the action:
-       `$$ = $1'.  Otherwise, use the top of the stack.
+       '$$ = $1'.  Otherwise, use the top of the stack.
 
        Otherwise, the following line sets YYVAL to garbage.
        This behavior is undocumented and Bison
@@ -292,479 +320,373 @@ public class CeParser extends Ceparse
 
     switch (yyn)
       {
-	  case 8:
+          case 8:
   if (yyn == 8)
-    
-/* Line 354 of lalr1.java  */
-/* Line 101 of "ce.y"  */
+    /* "ce.y":101  */ /* lalr1.java:476  */
     {projections(parsestate,((yystack.valueAt (1-(1)))));};
   break;
     
 
   case 9:
   if (yyn == 9)
-    
-/* Line 354 of lalr1.java  */
-/* Line 106 of "ce.y"  */
+    /* "ce.y":106  */ /* lalr1.java:476  */
     {selections(parsestate,((yystack.valueAt (1-(1)))));};
   break;
     
 
   case 10:
   if (yyn == 10)
-    
-/* Line 354 of lalr1.java  */
-/* Line 112 of "ce.y"  */
+    /* "ce.y":112  */ /* lalr1.java:476  */
     {yyval=projectionlist(parsestate,(Object)null,((yystack.valueAt (1-(1)))));};
   break;
     
 
   case 11:
   if (yyn == 11)
-    
-/* Line 354 of lalr1.java  */
-/* Line 114 of "ce.y"  */
+    /* "ce.y":114  */ /* lalr1.java:476  */
     {yyval=projectionlist(parsestate,((yystack.valueAt (3-(1)))),((yystack.valueAt (3-(3)))));};
   break;
     
 
   case 12:
   if (yyn == 12)
-    
-/* Line 354 of lalr1.java  */
-/* Line 120 of "ce.y"  */
+    /* "ce.y":120  */ /* lalr1.java:476  */
     {yyval=projection(parsestate,((yystack.valueAt (1-(1)))));};
   break;
     
 
   case 13:
   if (yyn == 13)
-    
-/* Line 354 of lalr1.java  */
-/* Line 122 of "ce.y"  */
+    /* "ce.y":122  */ /* lalr1.java:476  */
     {yyval=((yystack.valueAt (1-(1))));};
   break;
     
 
   case 14:
   if (yyn == 14)
-    
-/* Line 354 of lalr1.java  */
-/* Line 127 of "ce.y"  */
+    /* "ce.y":127  */ /* lalr1.java:476  */
     {yyval=function(parsestate,((yystack.valueAt (3-(1)))),null);};
   break;
     
 
   case 15:
   if (yyn == 15)
-    
-/* Line 354 of lalr1.java  */
-/* Line 129 of "ce.y"  */
+    /* "ce.y":129  */ /* lalr1.java:476  */
     {yyval=function(parsestate,((yystack.valueAt (4-(1)))),((yystack.valueAt (4-(3)))));};
   break;
     
 
   case 16:
   if (yyn == 16)
-    
-/* Line 354 of lalr1.java  */
-/* Line 135 of "ce.y"  */
+    /* "ce.y":135  */ /* lalr1.java:476  */
     {yyval=segmentlist(parsestate,null,((yystack.valueAt (1-(1)))));};
   break;
     
 
   case 17:
   if (yyn == 17)
-    
-/* Line 354 of lalr1.java  */
-/* Line 137 of "ce.y"  */
+    /* "ce.y":137  */ /* lalr1.java:476  */
     {yyval=segmentlist(parsestate,((yystack.valueAt (3-(1)))),((yystack.valueAt (3-(3)))));};
   break;
     
 
   case 18:
   if (yyn == 18)
-    
-/* Line 354 of lalr1.java  */
-/* Line 143 of "ce.y"  */
+    /* "ce.y":143  */ /* lalr1.java:476  */
     {yyval=segment(parsestate,((yystack.valueAt (1-(1)))),null);};
   break;
     
 
   case 19:
   if (yyn == 19)
-    
-/* Line 354 of lalr1.java  */
-/* Line 145 of "ce.y"  */
+    /* "ce.y":145  */ /* lalr1.java:476  */
     {yyval=segment(parsestate,((yystack.valueAt (2-(1)))),((yystack.valueAt (2-(2)))));};
   break;
     
 
   case 20:
   if (yyn == 20)
-    
-/* Line 354 of lalr1.java  */
-/* Line 151 of "ce.y"  */
+    /* "ce.y":151  */ /* lalr1.java:476  */
     {yyval=rangelist(parsestate,null,((yystack.valueAt (1-(1)))));};
   break;
     
 
   case 21:
   if (yyn == 21)
-    
-/* Line 354 of lalr1.java  */
-/* Line 153 of "ce.y"  */
+    /* "ce.y":153  */ /* lalr1.java:476  */
     {yyval=rangelist(parsestate,((yystack.valueAt (2-(1)))),((yystack.valueAt (2-(2)))));};
   break;
     
 
   case 22:
   if (yyn == 22)
-    
-/* Line 354 of lalr1.java  */
-/* Line 159 of "ce.y"  */
+    /* "ce.y":159  */ /* lalr1.java:476  */
     {yyval=range(parsestate,((yystack.valueAt (1-(1)))),null,null);};
   break;
     
 
   case 23:
   if (yyn == 23)
-    
-/* Line 354 of lalr1.java  */
-/* Line 161 of "ce.y"  */
+    /* "ce.y":161  */ /* lalr1.java:476  */
     {yyval=range(parsestate,((yystack.valueAt (5-(2)))),null,((yystack.valueAt (5-(4)))));};
   break;
     
 
   case 24:
   if (yyn == 24)
-    
-/* Line 354 of lalr1.java  */
-/* Line 163 of "ce.y"  */
+    /* "ce.y":163  */ /* lalr1.java:476  */
     {yyval=range(parsestate,((yystack.valueAt (7-(2)))),((yystack.valueAt (7-(4)))),((yystack.valueAt (7-(6)))));};
   break;
     
 
   case 25:
   if (yyn == 25)
-    
-/* Line 354 of lalr1.java  */
-/* Line 167 of "ce.y"  */
+    /* "ce.y":167  */ /* lalr1.java:476  */
     {yyval = range1(parsestate,((yystack.valueAt (3-(2)))));};
   break;
     
 
   case 26:
   if (yyn == 26)
-    
-/* Line 354 of lalr1.java  */
-/* Line 174 of "ce.y"  */
+    /* "ce.y":174  */ /* lalr1.java:476  */
     {yyval=clauselist(parsestate,null,((yystack.valueAt (1-(1)))));};
   break;
     
 
   case 27:
   if (yyn == 27)
-    
-/* Line 354 of lalr1.java  */
-/* Line 176 of "ce.y"  */
+    /* "ce.y":176  */ /* lalr1.java:476  */
     {yyval=clauselist(parsestate,((yystack.valueAt (2-(1)))),((yystack.valueAt (2-(2)))));};
   break;
     
 
   case 28:
   if (yyn == 28)
-    
-/* Line 354 of lalr1.java  */
-/* Line 182 of "ce.y"  */
+    /* "ce.y":182  */ /* lalr1.java:476  */
     {yyval=sel_clause(parsestate,1,((yystack.valueAt (6-(2)))),((yystack.valueAt (6-(3)))),((yystack.valueAt (6-(5)))));};
   break;
     
 
   case 29:
   if (yyn == 29)
-    
-/* Line 354 of lalr1.java  */
-/* Line 184 of "ce.y"  */
+    /* "ce.y":184  */ /* lalr1.java:476  */
     {yyval=sel_clause(parsestate,2,((yystack.valueAt (4-(2)))),((yystack.valueAt (4-(3)))),((yystack.valueAt (4-(4)))));};
   break;
     
 
   case 30:
   if (yyn == 30)
-    
-/* Line 354 of lalr1.java  */
-/* Line 186 of "ce.y"  */
+    /* "ce.y":186  */ /* lalr1.java:476  */
     {yyval=((yystack.valueAt (2-(1))));};
   break;
     
 
   case 31:
   if (yyn == 31)
-    
-/* Line 354 of lalr1.java  */
-/* Line 191 of "ce.y"  */
+    /* "ce.y":191  */ /* lalr1.java:476  */
     {yyval=value_list(parsestate,null,((yystack.valueAt (1-(1)))));};
   break;
     
 
   case 32:
   if (yyn == 32)
-    
-/* Line 354 of lalr1.java  */
-/* Line 193 of "ce.y"  */
+    /* "ce.y":193  */ /* lalr1.java:476  */
     {yyval=value_list(parsestate,((yystack.valueAt (3-(1)))),((yystack.valueAt (3-(3)))));};
   break;
     
 
   case 33:
   if (yyn == 33)
-    
-/* Line 354 of lalr1.java  */
-/* Line 198 of "ce.y"  */
+    /* "ce.y":198  */ /* lalr1.java:476  */
     {yyval=value(parsestate,((yystack.valueAt (1-(1)))));};
   break;
     
 
   case 34:
   if (yyn == 34)
-    
-/* Line 354 of lalr1.java  */
-/* Line 200 of "ce.y"  */
+    /* "ce.y":200  */ /* lalr1.java:476  */
     {yyval=value(parsestate,((yystack.valueAt (1-(1)))));};
   break;
     
 
   case 35:
   if (yyn == 35)
-    
-/* Line 354 of lalr1.java  */
-/* Line 202 of "ce.y"  */
+    /* "ce.y":202  */ /* lalr1.java:476  */
     {yyval=value(parsestate,((yystack.valueAt (1-(1)))));};
   break;
     
 
   case 36:
   if (yyn == 36)
-    
-/* Line 354 of lalr1.java  */
-/* Line 207 of "ce.y"  */
-    {yyval=constant(parsestate,((yystack.valueAt (1-(1)))),SCAN_NUMBERCONST);};
+    /* "ce.y":207  */ /* lalr1.java:476  */
+    {yyval=constant(parsestate,((yystack.valueAt (1-(1)))),Lexer.SCAN_NUMBERCONST);};
   break;
     
 
   case 37:
   if (yyn == 37)
-    
-/* Line 354 of lalr1.java  */
-/* Line 209 of "ce.y"  */
-    {yyval=constant(parsestate,((yystack.valueAt (1-(1)))),SCAN_STRINGCONST);};
+    /* "ce.y":209  */ /* lalr1.java:476  */
+    {yyval=constant(parsestate,((yystack.valueAt (1-(1)))),Lexer.SCAN_STRINGCONST);};
   break;
     
 
   case 38:
   if (yyn == 38)
-    
-/* Line 354 of lalr1.java  */
-/* Line 214 of "ce.y"  */
+    /* "ce.y":214  */ /* lalr1.java:476  */
     {yyval=var(parsestate,((yystack.valueAt (1-(1)))));};
   break;
     
 
   case 39:
   if (yyn == 39)
-    
-/* Line 354 of lalr1.java  */
-/* Line 223 of "ce.y"  */
+    /* "ce.y":223  */ /* lalr1.java:476  */
     {yyval=indexpath(parsestate,null,((yystack.valueAt (1-(1)))));};
   break;
     
 
   case 40:
   if (yyn == 40)
-    
-/* Line 354 of lalr1.java  */
-/* Line 225 of "ce.y"  */
+    /* "ce.y":225  */ /* lalr1.java:476  */
     {yyval=indexpath(parsestate,((yystack.valueAt (3-(1)))),((yystack.valueAt (3-(3)))));};
   break;
     
 
   case 41:
   if (yyn == 41)
-    
-/* Line 354 of lalr1.java  */
-/* Line 230 of "ce.y"  */
+    /* "ce.y":230  */ /* lalr1.java:476  */
     {yyval=index(parsestate,((yystack.valueAt (1-(1)))),null);};
   break;
     
 
   case 42:
   if (yyn == 42)
-    
-/* Line 354 of lalr1.java  */
-/* Line 232 of "ce.y"  */
+    /* "ce.y":232  */ /* lalr1.java:476  */
     {yyval=index(parsestate,((yystack.valueAt (2-(1)))),((yystack.valueAt (2-(2)))));};
   break;
     
 
   case 43:
   if (yyn == 43)
-    
-/* Line 354 of lalr1.java  */
-/* Line 238 of "ce.y"  */
+    /* "ce.y":238  */ /* lalr1.java:476  */
     {yyval=array_indices(parsestate,null,((yystack.valueAt (1-(1)))));};
   break;
     
 
   case 44:
   if (yyn == 44)
-    
-/* Line 354 of lalr1.java  */
-/* Line 240 of "ce.y"  */
+    /* "ce.y":240  */ /* lalr1.java:476  */
     {yyval=array_indices(parsestate,((yystack.valueAt (2-(1)))),((yystack.valueAt (2-(2)))));};
   break;
     
 
   case 45:
   if (yyn == 45)
-    
-/* Line 354 of lalr1.java  */
-/* Line 245 of "ce.y"  */
+    /* "ce.y":245  */ /* lalr1.java:476  */
     {yyval=function(parsestate,((yystack.valueAt (3-(1)))),null);};
   break;
     
 
   case 46:
   if (yyn == 46)
-    
-/* Line 354 of lalr1.java  */
-/* Line 247 of "ce.y"  */
+    /* "ce.y":247  */ /* lalr1.java:476  */
     {yyval=function(parsestate,((yystack.valueAt (4-(1)))),((yystack.valueAt (4-(3)))));};
   break;
     
 
   case 47:
   if (yyn == 47)
-    
-/* Line 354 of lalr1.java  */
-/* Line 252 of "ce.y"  */
+    /* "ce.y":252  */ /* lalr1.java:476  */
     {yyval=arg_list(parsestate,null,((yystack.valueAt (1-(1)))));};
   break;
     
 
   case 48:
   if (yyn == 48)
-    
-/* Line 354 of lalr1.java  */
-/* Line 254 of "ce.y"  */
+    /* "ce.y":254  */ /* lalr1.java:476  */
     {yyval=arg_list(parsestate,((yystack.valueAt (3-(1)))),((yystack.valueAt (3-(3)))));};
   break;
     
 
   case 49:
   if (yyn == 49)
-    
-/* Line 354 of lalr1.java  */
-/* Line 259 of "ce.y"  */
+    /* "ce.y":259  */ /* lalr1.java:476  */
     {yyval=new Integer(EQUAL);};
   break;
     
 
   case 50:
   if (yyn == 50)
-    
-/* Line 354 of lalr1.java  */
-/* Line 260 of "ce.y"  */
+    /* "ce.y":260  */ /* lalr1.java:476  */
     {yyval=new Integer(GREATER);};
   break;
     
 
   case 51:
   if (yyn == 51)
-    
-/* Line 354 of lalr1.java  */
-/* Line 261 of "ce.y"  */
+    /* "ce.y":261  */ /* lalr1.java:476  */
     {yyval=new Integer(LESS);};
   break;
     
 
   case 52:
   if (yyn == 52)
-    
-/* Line 354 of lalr1.java  */
-/* Line 262 of "ce.y"  */
+    /* "ce.y":262  */ /* lalr1.java:476  */
     {yyval=new Integer(NOT_EQUAL);};
   break;
     
 
   case 53:
   if (yyn == 53)
-    
-/* Line 354 of lalr1.java  */
-/* Line 263 of "ce.y"  */
+    /* "ce.y":263  */ /* lalr1.java:476  */
     {yyval=new Integer(GREATER_EQL);};
   break;
     
 
   case 54:
   if (yyn == 54)
-    
-/* Line 354 of lalr1.java  */
-/* Line 264 of "ce.y"  */
+    /* "ce.y":264  */ /* lalr1.java:476  */
     {yyval=new Integer(LESS_EQL);};
   break;
     
 
   case 55:
   if (yyn == 55)
-    
-/* Line 354 of lalr1.java  */
-/* Line 265 of "ce.y"  */
+    /* "ce.y":265  */ /* lalr1.java:476  */
     {yyval=new Integer(REGEXP);};
   break;
     
 
   case 56:
   if (yyn == 56)
-    
-/* Line 354 of lalr1.java  */
-/* Line 269 of "ce.y"  */
+    /* "ce.y":269  */ /* lalr1.java:476  */
     {yyval = ((yystack.valueAt (1-(1))));};
   break;
     
 
   case 57:
   if (yyn == 57)
-    
-/* Line 354 of lalr1.java  */
-/* Line 273 of "ce.y"  */
+    /* "ce.y":273  */ /* lalr1.java:476  */
     {yyval=unescapeDAPName(((yystack.valueAt (1-(1)))));};
   break;
     
 
   case 58:
   if (yyn == 58)
-    
-/* Line 354 of lalr1.java  */
-/* Line 277 of "ce.y"  */
+    /* "ce.y":277  */ /* lalr1.java:476  */
     {yyval = ((yystack.valueAt (1-(1))));};
   break;
     
 
   case 59:
   if (yyn == 59)
-    
-/* Line 354 of lalr1.java  */
-/* Line 281 of "ce.y"  */
+    /* "ce.y":281  */ /* lalr1.java:476  */
     {yyval = ((yystack.valueAt (1-(1))));};
   break;
     
 
 
-
-/* Line 354 of lalr1.java  */
-/* Line 767 of "CeParser.java"  */
-	default: break;
+/* "CeParser.java":689  */ /* lalr1.java:476  */
+        default: break;
       }
 
     yy_symbol_print ("-> $$ =", yyr1_[yyn], yyval);
@@ -776,7 +698,7 @@ public class CeParser extends Ceparse
     yyn = yyr1_[yyn];
     int yystate = yypgoto_[yyn - yyntokens_] + yystack.stateAt (0);
     if (0 <= yystate && yystate <= yylast_
-	&& yycheck_[yystate] == yystack.stateAt (0))
+        && yycheck_[yystate] == yystack.stateAt (0))
       yystate = yytable_[yystate];
     else
       yystate = yydefgoto_[yyn - yyntokens_];
@@ -784,6 +706,7 @@ public class CeParser extends Ceparse
     yystack.push (yystate, yyval);
     return YYNEWSTATE;
   }
+
 
   /* Return YYSTR after stripping away unnecessary quotes and
      backslashes, so that it's suitable for yyerror.  The heuristic is
@@ -803,7 +726,7 @@ public class CeParser extends Ceparse
               break strip_quotes;
 
             case '\\':
-	      if (yystr.charAt(++i) != '\\')
+              if (yystr.charAt(++i) != '\\')
                 break strip_quotes;
               /* Fall through.  */
             default:
@@ -820,18 +743,20 @@ public class CeParser extends Ceparse
     return yystr;
   }
 
+
   /*--------------------------------.
   | Print this symbol on YYOUTPUT.  |
   `--------------------------------*/
 
   private void yy_symbol_print (String s, int yytype,
-			         Object yyvaluep				 )
+                                 Object yyvaluep                                 )
   {
     if (yydebug > 0)
     yycdebug (s + (yytype < yyntokens_ ? " token " : " nterm ")
-	      + yytname_[yytype] + " ("
-	      + (yyvaluep == null ? "(null)" : yyvaluep.toString ()) + ")");
+              + yytname_[yytype] + " ("
+              + (yyvaluep == null ? "(null)" : yyvaluep.toString ()) + ")");
   }
+
 
   /**
    * Parse input from the scanner that was specified at object construction
@@ -840,9 +765,13 @@ public class CeParser extends Ceparse
    * @return <tt>true</tt> if the parsing succeeds.  Note that this does not
    *          imply that there were no syntax errors.
    */
-  public boolean parse () throws ParseException, ParseException
+   public boolean parse () throws ParseException, ParseException
+
   {
-    /// Lookahead and lookahead in internal form.
+    
+
+
+    /* Lookahead and lookahead in internal form.  */
     int yychar = yyempty_;
     int yytoken = 0;
 
@@ -850,31 +779,29 @@ public class CeParser extends Ceparse
     int yyn = 0;
     int yylen = 0;
     int yystate = 0;
-
     YYStack yystack = new YYStack ();
+    int label = YYNEWSTATE;
 
     /* Error handling.  */
     int yynerrs_ = 0;
     
 
-    /// Semantic value of the lookahead.
+    /* Semantic value of the lookahead.  */
     Object yylval = null;
-
-    int yyresult;
 
     yycdebug ("Starting parse\n");
     yyerrstatus_ = 0;
 
-
     /* Initialize the stack.  */
-    yystack.push (yystate, yylval);
+    yystack.push (yystate, yylval );
 
-    int label = YYNEWSTATE;
+
+
     for (;;)
       switch (label)
       {
         /* New state.  Unlike in the C/C++ skeletons, the state is already
-	   pushed when we come here.  */
+           pushed when we come here.  */
       case YYNEWSTATE:
         yycdebug ("Entering state " + yystate + "\n");
         if (yydebug > 0)
@@ -886,32 +813,34 @@ public class CeParser extends Ceparse
 
         /* Take a decision.  First try without lookahead.  */
         yyn = yypact_[yystate];
-        if (yyn == yypact_ninf_)
+        if (yy_pact_value_is_default_ (yyn))
           {
             label = YYDEFAULT;
-	    break;
+            break;
           }
 
         /* Read a lookahead token.  */
         if (yychar == yyempty_)
           {
-	    yycdebug ("Reading a token: ");
-	    yychar = yylex ();
-            
+
+
+            yycdebug ("Reading a token: ");
+            yychar = yylexer.yylex ();
             yylval = yylexer.getLVal ();
+
           }
 
         /* Convert token to internal form.  */
-        if (yychar <= EOF)
+        if (yychar <= Lexer.EOF)
           {
-	    yychar = yytoken = EOF;
-	    yycdebug ("Now at end of input.\n");
+            yychar = yytoken = Lexer.EOF;
+            yycdebug ("Now at end of input.\n");
           }
         else
           {
-	    yytoken = yytranslate_ (yychar);
-	    yy_symbol_print ("Next token is", yytoken,
-			     yylval);
+            yytoken = yytranslate_ (yychar);
+            yy_symbol_print ("Next token is", yytoken,
+                             yylval);
           }
 
         /* If the proper action on seeing token YYTOKEN is to reduce or to
@@ -923,20 +852,20 @@ public class CeParser extends Ceparse
         /* <= 0 means reduce or error.  */
         else if ((yyn = yytable_[yyn]) <= 0)
           {
-	    if (yyn == 0 || yyn == yytable_ninf_)
-	      label = YYFAIL;
-	    else
-	      {
-	        yyn = -yyn;
-	        label = YYREDUCE;
-	      }
+            if (yy_table_value_is_error_ (yyn))
+              label = YYERRLAB;
+            else
+              {
+                yyn = -yyn;
+                label = YYREDUCE;
+              }
           }
 
         else
           {
             /* Shift the lookahead token.  */
-	    yy_symbol_print ("Shifting", yytoken,
-			     yylval);
+            yy_symbol_print ("Shifting", yytoken,
+                             yylval);
 
             /* Discard the token being shifted.  */
             yychar = yyempty_;
@@ -958,7 +887,7 @@ public class CeParser extends Ceparse
       case YYDEFAULT:
         yyn = yydefact_[yystate];
         if (yyn == 0)
-          label = YYFAIL;
+          label = YYERRLAB;
         else
           label = YYREDUCE;
         break;
@@ -969,34 +898,36 @@ public class CeParser extends Ceparse
       case YYREDUCE:
         yylen = yyr2_[yyn];
         label = yyaction (yyn, yystack, yylen);
-	yystate = yystack.stateAt (0);
+        yystate = yystack.stateAt (0);
         break;
 
       /*------------------------------------.
       | yyerrlab -- here on detecting error |
       `------------------------------------*/
-      case YYFAIL:
+      case YYERRLAB:
         /* If not already recovering from an error, report this error.  */
         if (yyerrstatus_ == 0)
           {
-	    ++yynerrs_;
-	    yyerror (yysyntax_error (yystate, yytoken));
+            ++yynerrs_;
+            if (yychar == yyempty_)
+              yytoken = yyempty_;
+            yyerror (yysyntax_error (yystate, yytoken));
           }
 
         
         if (yyerrstatus_ == 3)
           {
-	    /* If just tried and failed to reuse lookahead token after an
-	     error, discard it.  */
+        /* If just tried and failed to reuse lookahead token after an
+         error, discard it.  */
 
-	    if (yychar <= EOF)
-	      {
-	      /* Return failure if at end of input.  */
-	      if (yychar == EOF)
-	        return false;
-	      }
-	    else
-	      yychar = yyempty_;
+        if (yychar <= Lexer.EOF)
+          {
+          /* Return failure if at end of input.  */
+          if (yychar == Lexer.EOF)
+            return false;
+          }
+        else
+            yychar = yyempty_;
           }
 
         /* Else will try to reuse lookahead token after shifting the error
@@ -1004,9 +935,9 @@ public class CeParser extends Ceparse
         label = YYERRLAB1;
         break;
 
-      /*---------------------------------------------------.
+      /*-------------------------------------------------.
       | errorlab -- error raised explicitly by YYERROR.  |
-      `---------------------------------------------------*/
+      `-------------------------------------------------*/
       case YYERROR:
 
         
@@ -1022,41 +953,46 @@ public class CeParser extends Ceparse
       | yyerrlab1 -- common code for both syntax error and YYERROR.  |
       `-------------------------------------------------------------*/
       case YYERRLAB1:
-        yyerrstatus_ = 3;	/* Each real token shifted decrements this.  */
+        yyerrstatus_ = 3;       /* Each real token shifted decrements this.  */
 
         for (;;)
           {
-	    yyn = yypact_[yystate];
-	    if (yyn != yypact_ninf_)
-	      {
-	        yyn += yyterror_;
-	        if (0 <= yyn && yyn <= yylast_ && yycheck_[yyn] == yyterror_)
-	          {
-	            yyn = yytable_[yyn];
-	            if (0 < yyn)
-		      break;
-	          }
-	      }
+            yyn = yypact_[yystate];
+            if (!yy_pact_value_is_default_ (yyn))
+              {
+                yyn += yyterror_;
+                if (0 <= yyn && yyn <= yylast_ && yycheck_[yyn] == yyterror_)
+                  {
+                    yyn = yytable_[yyn];
+                    if (0 < yyn)
+                      break;
+                  }
+              }
 
-	    /* Pop the current state because it cannot handle the error token.  */
-	    if (yystack.height == 1)
-	      return false;
+            /* Pop the current state because it cannot handle the
+             * error token.  */
+            if (yystack.height == 0)
+              return false;
 
-	    
-	    yystack.pop ();
-	    yystate = yystack.stateAt (0);
-	    if (yydebug > 0)
-	      yystack.print (yyDebugStream);
+            
+            yystack.pop ();
+            yystate = yystack.stateAt (0);
+            if (yydebug > 0)
+              yystack.print (yyDebugStream);
           }
 
-	
+        if (label == YYABORT)
+            /* Leave the switch.  */
+            break;
+
+
 
         /* Shift the error token.  */
         yy_symbol_print ("Shifting", yystos_[yyn],
-			 yylval);
+                         yylval);
 
         yystate = yyn;
-	yystack.push (yyn, yylval);
+        yystack.push (yyn, yylval);
         label = YYNEWSTATE;
         break;
 
@@ -1068,58 +1004,114 @@ public class CeParser extends Ceparse
       case YYABORT:
         return false;
       }
-  }
+}
+
+
+
 
   // Generate an error message.
   private String yysyntax_error (int yystate, int tok)
   {
-    if (errorVerbose)
+    if (yyErrorVerbose)
       {
-        int yyn = yypact_[yystate];
-        if (yypact_ninf_ < yyn && yyn <= yylast_)
+        /* There are many possibilities here to consider:
+           - If this state is a consistent state with a default action,
+             then the only way this function was invoked is if the
+             default action is an error action.  In that case, don't
+             check for expected tokens because there are none.
+           - The only way there can be no lookahead present (in tok) is
+             if this state is a consistent state with a default action.
+             Thus, detecting the absence of a lookahead is sufficient to
+             determine that there is no unexpected or expected token to
+             report.  In that case, just report a simple "syntax error".
+           - Don't assume there isn't a lookahead just because this
+             state is a consistent state with a default action.  There
+             might have been a previous inconsistent state, consistent
+             state with a non-default action, or user semantic action
+             that manipulated yychar.  (However, yychar is currently out
+             of scope during semantic actions.)
+           - Of course, the expected token list depends on states to
+             have correct lookahead information, and it depends on the
+             parser not to perform extra reductions after fetching a
+             lookahead from the scanner and before detecting a syntax
+             error.  Thus, state merging (from LALR or IELR) and default
+             reductions corrupt the expected token list.  However, the
+             list is correct for canonical LR with one exception: it
+             will still contain any token that will not be accepted due
+             to an error action in a later state.
+        */
+        if (tok != yyempty_)
           {
-	    StringBuffer res;
-
-	    /* Start YYX at -YYN if negative to avoid negative indexes in
-	       YYCHECK.  */
-	    int yyxbegin = yyn < 0 ? -yyn : 0;
-
-	    /* Stay within bounds of both yycheck and yytname.  */
-	    int yychecklim = yylast_ - yyn + 1;
-	    int yyxend = yychecklim < yyntokens_ ? yychecklim : yyntokens_;
-	    int count = 0;
-	    for (int x = yyxbegin; x < yyxend; ++x)
-	      if (yycheck_[x + yyn] == x && x != yyterror_)
-	        ++count;
-
-	    // FIXME: This method of building the message is not compatible
-	    // with internationalization.
-	    res = new StringBuffer ("syntax error, unexpected ");
-	    res.append (yytnamerr_ (yytname_[tok]));
-	    if (count < 5)
-	      {
-	        count = 0;
-	        for (int x = yyxbegin; x < yyxend; ++x)
-	          if (yycheck_[x + yyn] == x && x != yyterror_)
-		    {
-		      res.append (count++ == 0 ? ", expecting " : " or ");
-		      res.append (yytnamerr_ (yytname_[x]));
-		    }
-	      }
-	    return res.toString ();
+            /* FIXME: This method of building the message is not compatible
+               with internationalization.  */
+            StringBuffer res =
+              new StringBuffer ("syntax error, unexpected ");
+            res.append (yytnamerr_ (yytname_[tok]));
+            int yyn = yypact_[yystate];
+            if (!yy_pact_value_is_default_ (yyn))
+              {
+                /* Start YYX at -YYN if negative to avoid negative
+                   indexes in YYCHECK.  In other words, skip the first
+                   -YYN actions for this state because they are default
+                   actions.  */
+                int yyxbegin = yyn < 0 ? -yyn : 0;
+                /* Stay within bounds of both yycheck and yytname.  */
+                int yychecklim = yylast_ - yyn + 1;
+                int yyxend = yychecklim < yyntokens_ ? yychecklim : yyntokens_;
+                int count = 0;
+                for (int x = yyxbegin; x < yyxend; ++x)
+                  if (yycheck_[x + yyn] == x && x != yyterror_
+                      && !yy_table_value_is_error_ (yytable_[x + yyn]))
+                    ++count;
+                if (count < 5)
+                  {
+                    count = 0;
+                    for (int x = yyxbegin; x < yyxend; ++x)
+                      if (yycheck_[x + yyn] == x && x != yyterror_
+                          && !yy_table_value_is_error_ (yytable_[x + yyn]))
+                        {
+                          res.append (count++ == 0 ? ", expecting " : " or ");
+                          res.append (yytnamerr_ (yytname_[x]));
+                        }
+                  }
+              }
+            return res.toString ();
           }
       }
 
     return "syntax error";
   }
 
+  /**
+   * Whether the given <code>yypact_</code> value indicates a defaulted state.
+   * @param yyvalue   the value to check
+   */
+  private static boolean yy_pact_value_is_default_ (int yyvalue)
+  {
+    return yyvalue == yypact_ninf_;
+  }
+
+  /**
+   * Whether the given <code>yytable_</code>
+   * value indicates a syntax error.
+   * @param yyvalue the value to check
+   */
+  private static boolean yy_table_value_is_error_ (int yyvalue)
+  {
+    return yyvalue == yytable_ninf_;
+  }
+
+  private static final byte yypact_ninf_ = -35;
+  private static final byte yytable_ninf_ = -57;
 
   /* YYPACT[STATE-NUM] -- Index in YYTABLE of the portion describing
-     STATE-NUM.  */
-  private static final byte yypact_ninf_ = -35;
-  private static final byte yypact_[] =
+   STATE-NUM.  */
+  private static final byte yypact_[] = yypact_init();
+  private static final byte[] yypact_init()
   {
-         8,   -35,    15,     4,   -35,   -35,    51,    -5,   -35,    10,
+    return new byte[]
+    {
+       8,   -35,    15,     4,   -35,   -35,    51,    -5,   -35,    10,
      -35,   -35,    11,   -35,    -5,   -35,    21,    41,   -35,   -35,
      -35,    27,   -35,   -35,    13,   -35,   -35,    29,    42,   -35,
      -35,   -35,    39,    39,   -35,    23,    57,    40,   -35,   -35,
@@ -1128,14 +1120,18 @@ public class CeParser extends Ceparse
      -35,   -35,   -35,    51,   -35,   -35,    59,     5,    64,    55,
      -35,    51,   -35,    57,   -35,     9,   -35,     6,    66,    48,
       51,   -35,    57,   -35,   -35,    65,   -35
-  };
+    };
+  }
 
-  /* YYDEFACT[S] -- default rule to reduce with in state S when YYTABLE
-     doesn't specify something else to do.  Zero means the default is an
-     error.  */
-  private static final byte yydefact_[] =
+/* YYDEFACT[STATE-NUM] -- Default reduction number in state STATE-NUM.
+   Performed when YYTABLE does not specify something else to do.  Zero
+   means the default is an error.  */
+  private static final byte yydefact_[] = yydefact_init();
+  private static final byte[] yydefact_init()
   {
-         7,     6,     0,     0,     1,    57,     0,     2,     3,     8,
+    return new byte[]
+    {
+       7,     6,     0,     0,     1,    57,     0,     2,     3,     8,
       10,    13,    12,    16,     9,    26,     0,    18,    59,    58,
       34,     0,    35,    33,    38,    39,    30,     0,    41,    36,
       37,     4,     0,     0,    27,     0,     0,    19,    20,    22,
@@ -1144,33 +1140,42 @@ public class CeParser extends Ceparse
       53,    54,    52,     0,    29,    40,    41,    14,     0,     0,
       44,     0,    15,     0,    25,     0,    31,    15,    32,     0,
        0,    28,     0,    23,    32,     0,    24
-  };
+    };
+  }
 
-  /* YYPGOTO[NTERM-NUM].  */
-  private static final byte yypgoto_[] =
+/* YYPGOTO[NTERM-NUM].  */
+  private static final byte yypgoto_[] = yypgoto_init();
+  private static final byte[] yypgoto_init()
   {
-       -35,   -35,   -35,   -35,    69,   -35,    45,     1,   -35,    47,
+    return new byte[]
+    {
+     -35,   -35,   -35,   -35,    69,   -35,    45,     1,   -35,    47,
      -35,    44,   -25,   -35,    68,    16,    -6,   -35,   -35,   -35,
       38,   -35,   -35,    53,   -35,    78,    -2,   -34,   -35
-  };
+    };
+  }
 
-  /* YYDEFGOTO[NTERM-NUM].  */
-  private static final byte
-  yydefgoto_[] =
+/* YYDEFGOTO[NTERM-NUM].  */
+  private static final byte yydefgoto_[] = yydefgoto_init();
+  private static final byte[] yydefgoto_init()
   {
-        -1,     2,     3,     7,     8,     9,    10,    20,    12,    13,
+    return new byte[]
+    {
+      -1,     2,     3,     7,     8,     9,    10,    20,    12,    13,
       37,    38,    39,    14,    15,    54,    55,    22,    23,    24,
       25,    49,    26,    56,    44,    16,    28,    29,    30
-  };
+    };
+  }
 
-  /* YYTABLE[YYPACT[STATE-NUM]].  What to do in state STATE-NUM.  If
-     positive, shift that token.  If negative, reduce the rule which
-     number is the opposite.  If zero, do what YYDEFACT says.  */
-  private static final byte yytable_ninf_ = -57;
-  private static final byte
-  yytable_[] =
+/* YYTABLE[YYPACT[STATE-NUM]] -- What to do in state STATE-NUM.  If
+   positive, shift that token.  If negative, reduce the rule whose
+   number is the opposite.  If YYTABLE_NINF, syntax error.  */
+  private static final byte yytable_[] = yytable_init();
+  private static final byte[] yytable_init()
   {
-        21,    17,    57,    48,    11,   -45,   -46,     5,    -5,     6,
+    return new byte[]
+    {
+      21,    17,    57,    48,    11,   -45,   -46,     5,    -5,     6,
        5,    18,    19,    69,     1,     4,    80,    32,     6,   -45,
      -46,    33,    63,    45,    70,    81,     5,    18,    19,    35,
       17,    52,    53,    11,     5,    18,    19,    46,    64,    79,
@@ -1180,13 +1185,15 @@ public class CeParser extends Ceparse
       47,   -47,    72,    77,    84,   -48,    31,    50,    86,    75,
       51,    58,    34,    65,    27,     0,     0,     0,     0,     0,
        0,     0,     0,     0,     0,     0,     0,     0,     0,    68
-  };
+    };
+  }
 
-  /* YYCHECK.  */
-  private static final byte
-  yycheck_[] =
+private static final byte yycheck_[] = yycheck_init();
+  private static final byte[] yycheck_init()
   {
-         6,     3,    36,    28,     3,     0,     0,     3,     0,    14,
+    return new byte[]
+    {
+       6,     3,    36,    28,     3,     0,     0,     3,     0,    14,
        3,     4,     5,    47,     6,     0,     7,     7,    14,    14,
       14,    10,    15,    10,    49,    16,     3,     4,     5,     8,
       32,    33,     9,    32,     3,     4,     5,     8,    44,    73,
@@ -1196,14 +1203,17 @@ public class CeParser extends Ceparse
       11,     9,     9,     9,    80,     9,     7,    32,    13,    63,
       33,    37,    14,    45,     6,    -1,    -1,    -1,    -1,    -1,
       -1,    -1,    -1,    -1,    -1,    -1,    -1,    -1,    -1,    46
-  };
+    };
+  }
 
-  /* STOS_[STATE-NUM] -- The (internal number of the) accessing
-     symbol of state STATE-NUM.  */
-  private static final byte
-  yystos_[] =
+/* YYSTOS[STATE-NUM] -- The (internal number of the) accessing
+   symbol of state STATE-NUM.  */
+  private static final byte yystos_[] = yystos_init();
+  private static final byte[] yystos_init()
   {
-         0,     6,    23,    24,     0,     3,    14,    25,    26,    27,
+    return new byte[]
+    {
+       0,     6,    23,    24,     0,     3,    14,    25,    26,    27,
       28,    29,    30,    31,    35,    36,    47,    48,     4,     5,
       29,    38,    39,    40,    41,    42,    44,    47,    48,    49,
       50,    26,     7,    10,    36,     8,    11,    32,    33,    34,
@@ -1212,47 +1222,60 @@ public class CeParser extends Ceparse
       17,    17,    17,    15,    38,    42,    48,     9,    45,    49,
       34,     7,     9,    12,    13,    37,    38,     9,    38,    49,
        7,    16,    12,    13,    38,    49,    13
-  };
+    };
+  }
 
-  /* TOKEN_NUMBER_[YYLEX-NUM] -- Internal symbol number corresponding
-     to YYLEX-NUM.  */
-  private static final short
-  yytoken_number_[] =
+/* YYR1[YYN] -- Symbol number of symbol that rule YYN derives.  */
+  private static final byte yyr1_[] = yyr1_init();
+  private static final byte[] yyr1_init()
   {
-         0,   256,   257,   258,   259,   260,    63,    44,    40,    41,
-      46,    91,    58,    93,    38,   123,   125,    61,    62,    60,
-      33,   126
-  };
-
-  /* YYR1[YYN] -- Symbol number of symbol that rule YYN derives.  */
-  private static final byte
-  yyr1_[] =
-  {
-         0,    22,    23,    23,    23,    23,    24,    24,    25,    26,
+    return new byte[]
+    {
+       0,    22,    23,    23,    23,    23,    24,    24,    25,    26,
       27,    27,    28,    28,    29,    29,    30,    30,    31,    31,
       32,    32,    33,    33,    33,    34,    35,    35,    36,    36,
       36,    37,    37,    38,    38,    38,    39,    39,    40,    41,
       41,    42,    42,    43,    43,    44,    44,    45,    45,    46,
       46,    46,    46,    46,    46,    46,    47,    48,    49,    50
-  };
+    };
+  }
 
-  /* YYR2[YYN] -- Number of symbols composing right hand side of rule YYN.  */
-  private static final byte
-  yyr2_[] =
+/* YYR2[YYN] -- Number of symbols on the right hand side of rule YYN.  */
+  private static final byte yyr2_[] = yyr2_init();
+  private static final byte[] yyr2_init()
   {
-         0,     2,     2,     2,     3,     0,     1,     0,     1,     1,
+    return new byte[]
+    {
+       0,     2,     2,     2,     3,     0,     1,     0,     1,     1,
        1,     3,     1,     1,     3,     4,     1,     3,     1,     2,
        1,     2,     1,     5,     7,     3,     1,     2,     6,     4,
        2,     1,     3,     1,     1,     1,     1,     1,     1,     1,
        3,     1,     2,     1,     2,     3,     4,     1,     3,     1,
        1,     1,     2,     2,     2,     2,     1,     1,     1,     1
-  };
+    };
+  }
+
+  /* YYTOKEN_NUMBER[YYLEX-NUM] -- Internal symbol number corresponding
+      to YYLEX-NUM.  */
+  private static final short yytoken_number_[] = yytoken_number_init();
+  private static final short[] yytoken_number_init()
+  {
+    return new short[]
+    {
+       0,   256,   257,   258,   259,   260,    63,    44,    40,    41,
+      46,    91,    58,    93,    38,   123,   125,    61,    62,    60,
+      33,   126
+    };
+  }
 
   /* YYTNAME[SYMBOL-NUM] -- String name of the symbol SYMBOL-NUM.
      First, the terminals, then, starting at \a yyntokens_, nonterminals.  */
-  private static final String yytname_[] =
+  private static final String yytname_[] = yytname_init();
+  private static final String[] yytname_init()
   {
-    "$end", "error", "$undefined", "SCAN_WORD", "SCAN_STRINGCONST",
+    return new String[]
+    {
+  "$end", "error", "$undefined", "SCAN_WORD", "SCAN_STRINGCONST",
   "SCAN_NUMBERCONST", "'?'", "','", "'('", "')'", "'.'", "'['", "':'",
   "']'", "'&'", "'{'", "'}'", "'='", "'>'", "'<'", "'!'", "'~'", "$accept",
   "constraints", "optquestionmark", "projections", "selections",
@@ -1261,53 +1284,24 @@ public class CeParser extends Ceparse
   "value", "constant", "var", "indexpath", "index", "array_indices",
   "boolfunction", "arg_list", "rel_op", "ident", "word", "number",
   "string", null
-  };
-
-  /* YYRHS -- A `-1'-separated list of the rules' RHS.  */
-  private static final byte yyrhs_[] =
-  {
-        23,     0,    -1,    24,    25,    -1,    24,    26,    -1,    24,
-      25,    26,    -1,    -1,     6,    -1,    -1,    27,    -1,    35,
-      -1,    28,    -1,    27,     7,    28,    -1,    30,    -1,    29,
-      -1,    47,     8,     9,    -1,    47,     8,    45,     9,    -1,
-      31,    -1,    30,    10,    31,    -1,    48,    -1,    48,    32,
-      -1,    33,    -1,    32,    33,    -1,    34,    -1,    11,    49,
-      12,    49,    13,    -1,    11,    49,    12,    49,    12,    49,
-      13,    -1,    11,    49,    13,    -1,    36,    -1,    35,    36,
-      -1,    14,    38,    46,    15,    37,    16,    -1,    14,    38,
-      46,    38,    -1,    14,    44,    -1,    38,    -1,    37,     7,
-      38,    -1,    40,    -1,    29,    -1,    39,    -1,    49,    -1,
-      50,    -1,    41,    -1,    42,    -1,    41,    10,    42,    -1,
-      48,    -1,    48,    43,    -1,    34,    -1,    43,    34,    -1,
-      47,     8,     9,    -1,    47,     8,    45,     9,    -1,    38,
-      -1,    37,     7,    38,    -1,    17,    -1,    18,    -1,    19,
-      -1,    20,    17,    -1,    18,    17,    -1,    19,    17,    -1,
-      17,    21,    -1,    48,    -1,     3,    -1,     5,    -1,     4,
-      -1
-  };
-
-  /* YYPRHS[YYN] -- Index of the first RHS symbol of rule number YYN in
-     YYRHS.  */
-  private static final short yyprhs_[] =
-  {
-         0,     0,     3,     6,     9,    13,    14,    16,    17,    19,
-      21,    23,    27,    29,    31,    35,    40,    42,    46,    48,
-      51,    53,    56,    58,    64,    72,    76,    78,    81,    88,
-      93,    96,    98,   102,   104,   106,   108,   110,   112,   114,
-     116,   120,   122,   125,   127,   130,   134,   139,   141,   145,
-     147,   149,   151,   154,   157,   160,   163,   165,   167,   169
-  };
+    };
+  }
 
   /* YYRLINE[YYN] -- Source line where rule number YYN was defined.  */
-  private static final short yyrline_[] =
+  private static final short yyrline_[] = yyrline_init();
+  private static final short[] yyrline_init()
   {
-         0,    91,    91,    92,    93,    94,    97,    97,   101,   106,
+    return new short[]
+    {
+       0,    91,    91,    92,    93,    94,    97,    97,   101,   106,
      111,   113,   119,   121,   126,   128,   134,   136,   142,   144,
      150,   152,   158,   160,   162,   166,   173,   175,   181,   183,
      185,   190,   192,   197,   199,   201,   206,   208,   213,   222,
      224,   229,   231,   237,   239,   244,   246,   251,   253,   259,
      260,   261,   262,   263,   264,   265,   268,   272,   276,   280
-  };
+    };
+  }
+
 
   // Report on the debug stream that the rule yyrule is going to be reduced.
   private void yy_reduce_print (int yyrule, YYStack yystack)
@@ -1319,19 +1313,22 @@ public class CeParser extends Ceparse
     int yynrhs = yyr2_[yyrule];
     /* Print the symbols being reduced, and their result.  */
     yycdebug ("Reducing stack by rule " + (yyrule - 1)
-	      + " (line " + yylno + "), ");
+              + " (line " + yylno + "), ");
 
     /* The symbols being reduced.  */
     for (int yyi = 0; yyi < yynrhs; yyi++)
       yy_symbol_print ("   $" + (yyi + 1) + " =",
-		       yyrhs_[yyprhs_[yyrule] + yyi],
-		       ((yystack.valueAt (yynrhs-(yyi + 1)))));
+                       yystos_[yystack.stateAt(yynrhs - (yyi + 1))],
+                       ((yystack.valueAt (yynrhs-(yyi + 1)))));
   }
 
   /* YYTRANSLATE(YYLEX) -- Bison symbol number corresponding to YYLEX.  */
-  private static final byte yytranslate_table_[] =
+  private static final byte yytranslate_table_[] = yytranslate_table_init();
+  private static final byte[] yytranslate_table_init()
   {
-         0,     2,     2,     2,     2,     2,     2,     2,     2,     2,
+    return new byte[]
+    {
+       0,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,    20,     2,     2,     2,     2,    14,     2,
@@ -1358,7 +1355,8 @@ public class CeParser extends Ceparse
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     1,     2,     3,     4,
        5
-  };
+    };
+  }
 
   private static final byte yytranslate_ (int t)
   {
@@ -1381,12 +1379,10 @@ public class CeParser extends Ceparse
 
 /* User implementation code.  */
 /* Unqualified %code blocks.  */
-
-/* Line 876 of lalr1.java  */
-/* Line 20 of "ce.y"  */
+/* "ce.y":20  */ /* lalr1.java:1060  */
 
  
-    private List<AST> nodeset = null;
+    static public boolean DEBUG = false;
 
     /**
      * Instantiates the Bison-generated parser.
@@ -1399,6 +1395,8 @@ public class CeParser extends Ceparse
 	this.yylexer = new Celex(this);
 	super.lexstate = (Celex)this.yylexer;
 	this.yyDebugStream = System.out;
+	if(DEBUG)
+	    setDebugLevel(1);
     }
 
 
@@ -1423,14 +1421,14 @@ public class CeParser extends Ceparse
 					 )
             throws DAP2Exception, ParseException
     {
-        CeParser parser = new CeParser(factory);
-        parser.setURL(url);
-        parser.setConstraint(constraint);
+	CeParser parser = new CeParser(factory);
+	parser.setURL(url);
+	parser.setConstraint(constraint);
         ServerDDS sdds = ceEval.getDDS();
         if(!parser.parse(constraint)) return false;
         ASTconstraint root = (ASTconstraint)parser.getAST();
-        root.init(ceEval,factory,clauseFactory,sdds,parser.getASTnodeset());
-        root.walkConstraint();
+	root.init(ceEval,factory,clauseFactory,sdds,parser.getASTnodeset());
+	root.walkConstraint();
         return true;
     }
 
@@ -1443,15 +1441,9 @@ public class CeParser extends Ceparse
     public String getConstraint() {return lexstate.constraint;}
 
 
-
-
-/* Line 876 of lalr1.java  */
-/* Line 1452 of "CeParser.java"  */
+/* "CeParser.java":1445  */ /* lalr1.java:1060  */
 
 }
 
-
-/* Line 880 of lalr1.java  */
-/* Line 284 of "ce.y"  */
-
+/* "ce.y":284  */ /* lalr1.java:1064  */
 

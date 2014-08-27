@@ -18,14 +18,34 @@ Note that is is NOT used for SCALARS.
 
 public interface DataCompoundArray extends DataVariable
 {
-    public DataSort getElementSort(); // return SEQUENCE or STRUCTURE
+    /**
+     * Get the element sort; currently returns only DataSort.{SEQUENCE,STRUCTURE}
+      * @return sort
+     */
+    public DataSort getElementSort();
 
-    public long getCount(); // dimension cross-product
+    /**
+     * Get the total number of elements in the variable array.
+     * A scalar is treated as a one element array.
+     *
+     * @return 1 if the variable is scalar, else the product
+     *         of the dimensions of the variable.
+     */
+    public long getCount();
 
-    // Provide a constrained read of multiple values at once.
+    /**
+     *  Read multiple values at once.
+     *  The returned value (parameter "data") is some form of array of DataCompound objects.
+     *
+     *  @param constraint slices constraining what is to be returned.
+     *  @param data the array into which the values are returned
+     */
     public void read(List<Slice> constraint, DataCompound[] data) throws DataException;
 
-    // Provide a read of a single value at a given offset in a dimensioned variable.
+    /**
+     *  Provide a read of a single value at a given index in a variable.
+     *  @param index of the value to read.
+     */
     public DataCompound read(long index) throws DataException;
 
 }

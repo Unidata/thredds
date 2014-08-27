@@ -41,6 +41,7 @@ import ucar.nc2.NCdumpW;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.NetcdfFileWriter;
 import ucar.nc2.Variable;
+import ucar.nc2.constants.CDM;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.dataset.CoordSysBuilder;
 import ucar.nc2.dataset.NetcdfDataset;
@@ -6095,7 +6096,6 @@ public class ToolsUI extends JPanel {
     GetDataRunnable getData;
     Object o;
     String name, errMsg = null;
-    Exception ex;
 
     GetDataTask(GetDataRunnable getData, String name, Object o) {
       this.getData = getData;
@@ -6118,7 +6118,6 @@ public class ToolsUI extends JPanel {
         StringWriter sw = new StringWriter(5000);
         e.printStackTrace(new PrintWriter(sw));
         errMsg = sw.toString();
-        ex = e;
         success = false;
         done = true;
         return;
@@ -6250,7 +6249,8 @@ public class ToolsUI extends JPanel {
     String version;
     try (InputStream is = ucar.nc2.ui.util.Resource.getFileResource("/README")) {
       if (is == null) return "4.5.0";
-      BufferedReader dataIS = new BufferedReader(new InputStreamReader(is));
+      BufferedReader dataIS = new BufferedReader(new InputStreamReader(is,
+              CDM.utf8Charset));
       StringBuilder sbuff = new StringBuilder();
       for (int i = 0; i < 3; i++) {
         sbuff.append(dataIS.readLine());

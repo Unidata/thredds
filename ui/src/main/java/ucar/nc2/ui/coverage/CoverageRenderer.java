@@ -42,7 +42,7 @@ public class CoverageRenderer {
   private Coverage stridedGrid = null;
 
   // data stuff
-  private Array dataH, dataV;
+  private Array dataH;
   private int wantLevel = -1, wantSlice = -1, wantTime = -1, horizStride = 1;   // for next draw()
   private int wantRunTime = -1, wantEnsemble = -1;
   private int lastLevel = -1, lastTime = -1, lastSlice = -1, lastStride = -1;   // last data read
@@ -50,7 +50,6 @@ public class CoverageRenderer {
   private Coverage lastGrid = null;
 
   // drawing optimization
-  private boolean colorScaleChanged = true, dataVolumeChanged = true;
   private boolean useModeForProjections = false; // use colorMode optimization for different projections
   private boolean sameProjection = false;
   private LatLonProjection projectll;       // special handling for LatLonProjection
@@ -87,7 +86,6 @@ public class CoverageRenderer {
    */
   public void setColorScale(ColorScale cs) {
     this.cs = cs;
-    colorScaleChanged = true;
   }
 
   /**
@@ -98,7 +96,6 @@ public class CoverageRenderer {
   public void setDataMinMaxType(ColorScale.MinMaxType type) {
     if (type != dataMinMaxType) {
       dataMinMaxType = type;
-      colorScaleChanged = true;
     }
   }
 
@@ -319,8 +316,6 @@ public class CoverageRenderer {
       }
     }
   } */
-
-  private int[] valueIndex = new int[2];
 
   /*
    * Get the (y,z) position from the vertical view coordinates.
@@ -597,9 +592,6 @@ public class CoverageRenderer {
       cs.setMinMax(minmax.min, minmax.max);
       cs.setGeoGrid(stridedGrid);
     }
-
-    dataVolumeChanged = false;
-    colorScaleChanged = false;
   }
 
   /*
@@ -713,8 +705,6 @@ public class CoverageRenderer {
   }
 
   private void drawGridHoriz(java.awt.Graphics2D g, Array data) {
-    int count = 0;
-
     CoverageCS geocs = stridedGrid.getCoordinateSystem();
     CoordinateAxis xaxis = geocs.getXHorizAxis();
     CoordinateAxis yaxis = geocs.getYHorizAxis();
@@ -769,8 +759,6 @@ public class CoverageRenderer {
   }
 
   private void drawGridLines(java.awt.Graphics2D g) {
-    int count = 0;
-
     CoverageCS geocs = stridedGrid.getCoordinateSystem();
     CoordinateAxis xaxis = geocs.getXHorizAxis();
     CoordinateAxis yaxis = geocs.getYHorizAxis();
@@ -814,51 +802,6 @@ public class CoverageRenderer {
       g.draw(gp);
     }
 
-  }
-
-
-  private void drawGridHorizRotated(java.awt.Graphics2D g, Array data, CoordinateAxis2D xaxis2D, CoordinateAxis2D yaxis2D) {
-    ArrayDouble.D2 edgex = CoordinateAxis2D.makeXEdgesRotated(xaxis2D.getMidpoints());
-    ArrayDouble.D2 edgey = CoordinateAxis2D.makeYEdgesRotated(yaxis2D.getMidpoints());
-
-    Index ima = data.getIndex();
-    GeneralPath gp = new GeneralPath(GeneralPath.WIND_EVEN_ODD, 5);
-
-    int[] shape = xaxis2D.getShape(); // should both be the same
-    int ny = shape[0];
-    int nx = shape[1];
-
-    // even y
-    for (int y = 0; y < ny - 1; y += 2) {
-      for (int x = 0; x < nx - 1; x++) {
-        gp.reset();
-        gp.moveTo((float) edgex.get(y, x), (float) edgey.get(y, x));
-        gp.lineTo((float) edgex.get(y + 1, x), (float) edgey.get(y + 1, x));
-        gp.lineTo((float) edgex.get(y + 2, x), (float) edgey.get(y + 2, x));
-        gp.lineTo((float) edgex.get(y + 1, x + 1), (float) edgey.get(y + 1, x + 1));
-
-        double val = data.getDouble(ima.set(y, x));   // ordering LOOK
-        int colorIndex = cs.getIndexFromValue(val);
-        g.setColor(cs.getColor(colorIndex));
-        g.fill(gp);
-      }
-    }
-
-    // odd y
-    for (int y = 1; y < ny - 1; y += 2) {
-      for (int x = 0; x < nx - 1; x++) {
-        gp.reset();
-        gp.moveTo((float) edgex.get(y, x + 1), (float) edgey.get(y, x + 1));
-        gp.lineTo((float) edgex.get(y + 1, x), (float) edgey.get(y + 1, x));
-        gp.lineTo((float) edgex.get(y + 2, x + 1), (float) edgey.get(y + 2, x + 1));
-        gp.lineTo((float) edgex.get(y + 1, x + 1), (float) edgey.get(y + 1, x + 1));
-
-        double val = data.getDouble(ima.set(y, x));   // ordering LOOK
-        int colorIndex = cs.getIndexFromValue(val);
-        g.setColor(cs.getColor(colorIndex));
-        g.fill(gp);
-      }
-    }
   }
 
   /* draw using GeneralPath shape
@@ -910,14 +853,13 @@ onePixel = 0;  */
     }
 
     // find the most common color and fill the entire area with it
-    int modeColor = cs.getHistMax();
     cs.resetHist();
     IndexIterator iiter = data.getIndexIterator();
     while (iiter.hasNext()) {
       double val = iiter.getDoubleNext();
       cs.getIndexFromValue(val);                // accum in histogram
     }
-    modeColor = cs.getHistMax();
+    int modeColor = cs.getHistMax();
     if (debugMiss) System.out.println("mode = " + modeColor + " sameProj= " + sameProjection);
 
     if (sameProjection) {
@@ -934,7 +876,7 @@ onePixel = 0;  */
     for (int y = 0; y < ny; y++) {
       double ybeg = yaxis1D.getCoordEdge(y);
       double yend = yaxis1D.getCoordEdge(y + 1);
-      int thisColor = 0, lastColor = 0;
+      int thisColor, lastColor = 0;
       int run = 0;
       int xbeg = 0;
 
@@ -1077,22 +1019,6 @@ onePixel = 0;  */
     }
 
     return count;
-  }
-
-  private void drawXORline(Graphics2D g, double x1, double y1, double x2, double y2) {
-    gpRun.reset();
-    gpRun.moveTo((float) x1, (float) y1);
-    gpRun.lineTo((float) x2, (float) y2);
-
-    //g.setXORMode(Color.black);
-    g.setColor(Color.black);
-
-    if (Double.isInfinite(x1) || Double.isInfinite(x2) || Double.isInfinite(y1) ||
-            Double.isInfinite(y2))
-      return;
-
-    g.draw(gpRun);
-    //g.setPaintMode();
   }
 
 /*  private int drawPathShape(Graphics2D g, int color, CoordinateAxis xaxis, CoordinateAxis yaxis) {

@@ -5,8 +5,10 @@
 package dap4.core.data;
 
 import dap4.core.dmr.DapType;
+import dap4.core.util.Slice;
 
 import java.io.IOException;
+import java.util.List;
 
 /**
 DataAtomic represents a non-container object.
@@ -14,15 +16,30 @@ DataAtomic represents a non-container object.
 
 public interface DataAtomic extends DataVariable
 {
+    /**
+     * Get the type of this atomic variable
+     * @return  the type
+     */
     public DapType getType();
 
-    public long getCount(); // dimension cross-product
-
-    public long getElementSize(); // size of a single element in bytes; 0 => undefined
+    /**
+     * Get the total number of elements in the atomic array.
+     * A scalar is treated as a one element array.
+     *
+     * @return 1 if the variable is scalar, else the product
+     *         of the dimensions of the variable.
+     */
+    public long getCount(); // dimension product
 
     /**
-     * Read of multiple values at once.
-     *  The returned value (parametere "data") is some form of java array (e.g. int[]).
+     * Get the s ize of a single element in bytes; 0 => undefined
+     * @return  size
+     */
+    public long getElementSize();
+
+    /**
+     *  Read of multiple values at once.
+     *  The returned value (parameter "data") is some form of java array (e.g. int[]).
      *  The type depends on the value of getType().
      *  Note that implementations of this interface are free to provide
      *  alternate read methods that return values in e.g. a java.nio.Buffer.
@@ -32,13 +49,21 @@ public interface DataAtomic extends DataVariable
      *  will be returned.
      *  For opaque data, the result is ByteBuffer[].
      *
-     *  @param start the first value to read
+     * @param constraint the set of slices defining which values to return
+     * @param data the array into which the values are returned
+     * @param offset the offset into data into which to read
+     */
+    public void read(List<Slice> constraint, Object data, long offset) throws DataException;
+
+    /*
+       *  @param start the first value to read
      *  @param count the number of values to read; |data| must >= (offset+count)
      *  @param data the array into which the values are returned
      *  @param offset the offset into data into which to read
-     */
 
     public void read(long start, long count, Object data, long offset) throws DataException;
+     */
+
 
     /**
      *  Provide a read of a single value at a given offset in a (possibly dimensioned)
