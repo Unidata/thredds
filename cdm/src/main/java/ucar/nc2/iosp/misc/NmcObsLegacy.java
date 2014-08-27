@@ -613,7 +613,7 @@ public class NmcObsLegacy extends AbstractIOServiceProvider {
         raf.skipBytes(reportLen - 40);
         return reportLen < 30000;
 
-      } catch (Exception e) {
+      } catch (IOException e) {
         throw new IOException("BAD reportId=" + new String(reportId, CDM.utf8Charset) + " starts at " + filePos);
       }
     }

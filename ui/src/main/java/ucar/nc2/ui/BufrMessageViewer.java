@@ -836,7 +836,7 @@ public class BufrMessageViewer extends JPanel {
           iter.finish();
         }
         setReadOk(true);
-      } catch (Exception e) {
+      } catch (IOException e) {
         setReadOk(false);
       }
     }
