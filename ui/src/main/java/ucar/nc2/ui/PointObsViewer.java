@@ -33,6 +33,7 @@
 
 package ucar.nc2.ui;
 
+import ucar.nc2.constants.CDM;
 import ucar.nc2.dt.*;
 import ucar.nc2.ui.point.StationRegionDateChooser;
 import ucar.nc2.ui.widget.BAMutil;
@@ -111,21 +112,25 @@ public class PointObsViewer extends JPanel {
         // is the date window showing ?
         DateRange dateRange = chooser.getDateRange();
         boolean useDate = (null != dateRange);
-        // if (!useDate) return;
-
-        Date startDate = dateRange.getStart().getDate();
-        Date endDate = dateRange.getEnd().getDate();
-        if (debugQuery) System.out.println("date range=" + dateRange);
 
         LatLonRect geoRegion = chooser.getGeoSelectionLL();
+        if (geoRegion == null) return;
         if (debugQuery) System.out.println("geoRegion=" + geoRegion);
 
         // fetch the requested dobs
         try {
-          List obsList = useDate ? pds.getData(geoRegion, startDate, endDate) : pds.getData(geoRegion);
+          List obsList;
+          if (useDate) {
+            Date startDate = dateRange.getStart().getDate();
+            Date endDate = dateRange.getEnd().getDate();
+            if (debugQuery) System.out.println("date range=" + dateRange);
+            obsList = pds.getData(geoRegion, startDate, endDate);
+          } else {
+            obsList = pds.getData(geoRegion);
+          }
           if (debugQuery) System.out.println("obsList=" + obsList.size());
-          setObservations(obsList);
-
+          if (obsList != null)
+            setObservations(obsList);
         } catch (IOException e1) {
           e1.printStackTrace();
         }
@@ -209,7 +214,7 @@ public class PointObsViewer extends JPanel {
    */
   public void setObservations(List obsList) {
 
-    List<ucar.unidata.geoloc.Station> pointBeans = new ArrayList<ucar.unidata.geoloc.Station>();
+    List<ucar.unidata.geoloc.Station> pointBeans = new ArrayList<>();
     for (int i = 0; i < obsList.size(); i++) {
       PointObsDatatype pob = (PointObsDatatype) obsList.get(i);
       pointBeans.add(new PointObsBean(i, pob));
@@ -234,14 +239,18 @@ public class PointObsViewer extends JPanel {
   private void showData(PointObsDatatype pobs) {
     ByteArrayOutputStream bos = new ByteArrayOutputStream(10000);
     try {
-      StructureData sd = pobs.getData();
-      NCdumpW.printStructureData(new PrintWriter(bos), sd);
-    } catch (IOException e) {
-      e.printStackTrace(new PrintStream(bos));
-    }
+      try {
+        StructureData sd = pobs.getData();
+        NCdumpW.printStructureData(new PrintWriter(bos), sd);
+      } catch (IOException e) {
+        e.printStackTrace(new PrintStream(bos, false, CDM.utf8Charset.name()));
+      }
 
-    dumpTA.setText(bos.toString());
-    dumpWindow.setVisible(true);
+      dumpTA.setText(bos.toString(CDM.utf8Charset.name()));
+      dumpWindow.setVisible(true);
+    } catch (UnsupportedEncodingException e) {
+      e.printStackTrace();
+    }
   }
 
   static public String hiddenProperties() {

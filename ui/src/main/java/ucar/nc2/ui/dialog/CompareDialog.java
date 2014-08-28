@@ -38,10 +38,11 @@ package ucar.nc2.ui.dialog;
 
 import ucar.nc2.ui.widget.FileManager;
 
-import java.awt.*;
-import java.awt.event.*;
 import javax.swing.*;
-import javax.swing.border.*;
+import javax.swing.border.EmptyBorder;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
 /**
  * @author John Caron
@@ -49,7 +50,7 @@ import javax.swing.border.*;
 public class CompareDialog extends JDialog {
   public enum HowMuch {All, varOnly}
 
-  public class Data {
+  public static class Data {
     public HowMuch howMuch;
     public String name;
     public boolean showCompare, showDetails, readData;

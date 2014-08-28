@@ -166,7 +166,7 @@ public class CdmIndexReportPanel extends ReportPanel {
 
   ///////////////////////////////////////////////
 
-  private class VarInfo implements Comparable<VarInfo> {
+  private static class VarInfo implements Comparable<VarInfo> {
     int hash;
     String name;
     int count = 0;

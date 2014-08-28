@@ -32,8 +32,9 @@
 
 package ucar.nc2.ui;
 
-import thredds.inventory.*;
+import thredds.inventory.CollectionAbstract;
 import thredds.inventory.MCollection;
+import thredds.inventory.MFile;
 import ucar.ma2.DataType;
 import ucar.nc2.grib.*;
 import ucar.nc2.grib.collection.Grib2CollectionBuilder;
@@ -42,12 +43,10 @@ import ucar.nc2.grib.grib2.table.Grib2Customizer;
 import ucar.nc2.grib.grib2.table.NcepLocalTables;
 import ucar.nc2.grib.grib2.table.WmoTemplateTable;
 import ucar.nc2.time.CalendarDate;
-import ucar.nc2.ui.widget.FileManager;
 import ucar.nc2.ui.widget.*;
 import ucar.nc2.ui.widget.PopupMenu;
 import ucar.nc2.util.Misc;
 import ucar.nc2.wmo.CommonCodeTable;
-
 import ucar.unidata.geoloc.LatLonPoint;
 import ucar.util.prefs.PreferencesExt;
 import ucar.util.prefs.ui.BeanTable;
@@ -55,10 +54,6 @@ import ucar.util.prefs.ui.BeanTable;
 import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
-
-import ucar.nc2.ui.widget.IndependentWindow;
-import ucar.nc2.ui.widget.BAMutil;
-
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -683,7 +678,7 @@ public class Grib2CollectionPanel extends JPanel {
     f.format("%ndone%n");
   }
 
-  private class DateCount implements Comparable<DateCount> {
+  private static class DateCount implements Comparable<DateCount> {
     CalendarDate d;
     int count;
 
@@ -1579,7 +1574,7 @@ public class Grib2CollectionPanel extends JPanel {
 
   }
 
-  class PdsBeanInfo extends SimpleBeanInfo {
+  private static class PdsBeanInfo extends SimpleBeanInfo {
     PropertyDescriptor[] properties;
 
     PdsBeanInfo(Grib2Pds pds) {

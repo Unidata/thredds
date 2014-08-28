@@ -35,6 +35,7 @@ package ucar.nc2.ui.geoloc;
 import java.awt.*;
 import java.beans.*;
 import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 
@@ -91,8 +92,6 @@ public class ProjectionManager {
           "ucar.unidata.geoloc.projection.proj4.TransverseMercatorProjection",
   };
 
-  private ProjectionImpl current;
-  private JFrame parent;
   private PreferencesExt store;
   private boolean eventsOK = false;
 
@@ -187,20 +186,14 @@ public class ProjectionManager {
 
   private void init() {
     dialog = new NewProjectionDialog(owner);
-    ArrayList<Object> ps = new ArrayList<Object>();
+    ArrayList<Object> ps = new ArrayList<>();
     for (String p : types)
       try {
         ps.add(new ProjectionClass(p));
-      } catch (ClassNotFoundException e) {
-        e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-      } catch (IntrospectionException e) {
+      } catch (ClassNotFoundException | IntrospectionException e) {
         e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
       }
     dialog.setProjectionManager(this, ps);
-  }
-
-  void apply() {
-
   }
 
   /*
@@ -411,7 +404,7 @@ public class ProjectionManager {
     Class projClass;
     ProjectionImpl projInstance;
     String name;
-    java.util.List<ProjectionParam> paramList = new ArrayList<ProjectionParam>();
+    java.util.List<ProjectionParam> paramList = new ArrayList<>();
 
     public String toString() {
       return name;
@@ -530,10 +523,6 @@ public class ProjectionManager {
       this.tf = tf;
     }
 
-    JTextField getTextField() {
-      return tf;
-    }
-
     private void putParamIntoDialog(ProjectionClass projClass, Projection proj) {
       Double value;
       try {
@@ -541,7 +530,7 @@ public class ProjectionManager {
         value = (Double) reader.invoke(proj, voidObjectArg);
         if (debugBeans) System.out.println("Projection putParamIntoDialog value " + value);
 
-      } catch (Exception ee) {
+      } catch (IllegalAccessException | InvocationTargetException ee) {
         log.error("putParamIntoDialog failed  invoking read {} class {}", name, projClass);
         return;
       }
@@ -558,7 +547,7 @@ public class ProjectionManager {
         if (debugBeans) System.out.println("Projection setProjFromDialog invoke writer on " + name);
         writer.invoke(proj, args);
 
-      } catch (Exception ee) {
+      } catch (IllegalAccessException | InvocationTargetException ee) {
         log.error("ProjectionManager: setProjParams failed  invoking write {} class {}", name, projClass);
       }
     }

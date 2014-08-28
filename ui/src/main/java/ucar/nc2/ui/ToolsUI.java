@@ -41,6 +41,7 @@ import ucar.nc2.NCdumpW;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.NetcdfFileWriter;
 import ucar.nc2.Variable;
+import ucar.nc2.constants.CDM;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.dataset.CoordSysBuilder;
 import ucar.nc2.dataset.NetcdfDataset;
@@ -5331,7 +5332,7 @@ public class ToolsUI extends JPanel {
 
   }
 
-  private class MyNetcdfFile extends NetcdfFile {
+  private static class MyNetcdfFile extends NetcdfFile {
      private MyNetcdfFile(Nc4Iosp iosp, String location) {
        super();
        spi = iosp;
@@ -6091,11 +6092,10 @@ public class ToolsUI extends JPanel {
     public void run(Object o) throws IOException;
   }
 
-  private class GetDataTask extends ProgressMonitorTask implements ucar.nc2.util.CancelTask {
+  private static class GetDataTask extends ProgressMonitorTask implements ucar.nc2.util.CancelTask {
     GetDataRunnable getData;
     Object o;
     String name, errMsg = null;
-    Exception ex;
 
     GetDataTask(GetDataRunnable getData, String name, Object o) {
       this.getData = getData;
@@ -6118,7 +6118,6 @@ public class ToolsUI extends JPanel {
         StringWriter sw = new StringWriter(5000);
         e.printStackTrace(new PrintWriter(sw));
         errMsg = sw.toString();
-        ex = e;
         success = false;
         done = true;
         return;
@@ -6161,7 +6160,8 @@ public class ToolsUI extends JPanel {
 ///////////////////////////////////////////////////////////////////////////////
 // Dynamic proxy for Debug
 
-  private class DebugProxyHandler implements java.lang.reflect.InvocationHandler {
+  private static class DebugProxyHandler implements java.lang.reflect.InvocationHandler {
+    @Override
     public Object invoke(Object proxy, java.lang.reflect.Method method, Object[] args) throws Throwable {
       if (method.getName().equals("toString"))
         return super.toString();
@@ -6249,7 +6249,8 @@ public class ToolsUI extends JPanel {
     String version;
     try (InputStream is = ucar.nc2.ui.util.Resource.getFileResource("/README")) {
       if (is == null) return "4.5.0";
-      BufferedReader dataIS = new BufferedReader(new InputStreamReader(is));
+      BufferedReader dataIS = new BufferedReader(new InputStreamReader(is,
+              CDM.utf8Charset));
       StringBuilder sbuff = new StringBuilder();
       for (int i = 0; i < 3; i++) {
         sbuff.append(dataIS.readLine());

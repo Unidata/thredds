@@ -33,42 +33,41 @@
 
 package ucar.nc2.ui;
 
+import ucar.ma2.StructureData;
+import ucar.ma2.StructureDataIterator;
+import ucar.nc2.NetcdfFile;
+import ucar.nc2.Structure;
+import ucar.nc2.Variable;
+import ucar.nc2.dataset.SequenceDS;
 import ucar.nc2.ft.point.bufr.BufrCdmIndex;
 import ucar.nc2.ft.point.bufr.BufrCdmIndexProto;
 import ucar.nc2.ft.point.bufr.StandardFields;
-import ucar.nc2.iosp.bufr.BufrConfig;
 import ucar.nc2.iosp.IOServiceProvider;
-import ucar.nc2.time.CalendarDate;
-import ucar.nc2.ui.widget.PopupMenu;
-import ucar.nc2.util.CancelTask;
-//import ucar.util.GoogleDiff;
-import ucar.util.prefs.PreferencesExt;
-import ucar.util.prefs.ui.BeanTable;
-import ucar.unidata.io.RandomAccessFile;
 import ucar.nc2.iosp.bufr.*;
 import ucar.nc2.iosp.bufr.writer.Bufr2Xml;
-import ucar.nc2.dataset.SequenceDS;
-import ucar.nc2.*;
-import ucar.ma2.StructureDataIterator;
-import ucar.ma2.StructureData;
+import ucar.nc2.time.CalendarDate;
+import ucar.nc2.ui.widget.*;
+import ucar.nc2.ui.widget.PopupMenu;
+import ucar.nc2.util.CancelTask;
+import ucar.unidata.io.RandomAccessFile;
+import ucar.util.prefs.PreferencesExt;
+import ucar.util.prefs.ui.BeanTable;
 
 import javax.swing.*;
-import javax.swing.event.ListSelectionListener;
 import javax.swing.event.ListSelectionEvent;
-
-import ucar.nc2.ui.widget.TextHistoryPane;
-import ucar.nc2.ui.widget.IndependentWindow;
-import ucar.nc2.ui.widget.BAMutil;
-import ucar.nc2.ui.widget.FileManager;
-
-import java.awt.event.ActionEvent;
+import javax.swing.event.ListSelectionListener;
 import java.awt.*;
+import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.*;
-import java.util.*;
-import java.util.List;
 import java.nio.ByteBuffer;
 import java.nio.channels.WritableByteChannel;
+import java.util.ArrayList;
+import java.util.Formatter;
+import java.util.HashMap;
+import java.util.List;
+
+//import ucar.util.GoogleDiff;
 
 /**
  * ToolsUI/Iosp/Bufr
@@ -495,7 +494,9 @@ public class BufrMessageViewer extends JPanel {
         if (header != null) {
           header = header.split(" ")[0];
         } else {
-          header = Integer.toString(Math.abs(m.hashCode()));
+          // header is the non-negative hash code of m. Note that using Math.abs() for this operation is a bug:
+          // http://findbugs.blogspot.com/2006/09/is-mathabs-broken.html
+          header = Integer.toString(m.hashCode() & Integer.MAX_VALUE);
         }
 
         File file = new File(dirName + "/" + header + ".bufr");
@@ -670,7 +671,7 @@ public class BufrMessageViewer extends JPanel {
     return ncfile;
   }
 
-  private class BufrNetcdf extends NetcdfFile {
+  private static class BufrNetcdf extends NetcdfFile {
     protected BufrNetcdf(IOServiceProvider spi, String location) throws IOException {
       super(spi, location);
     }
@@ -835,7 +836,7 @@ public class BufrMessageViewer extends JPanel {
           iter.finish();
         }
         setReadOk(true);
-      } catch (Exception e) {
+      } catch (IOException e) {
         setReadOk(false);
       }
     }

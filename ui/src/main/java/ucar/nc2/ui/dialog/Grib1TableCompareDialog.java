@@ -38,12 +38,11 @@ package ucar.nc2.ui.dialog;
 
 import ucar.nc2.ui.Grib1TablesViewer;
 
-import java.awt.*;
-import java.awt.event.*;
 import javax.swing.*;
-import javax.swing.GroupLayout;
-import javax.swing.LayoutStyle;
-import javax.swing.border.*;
+import javax.swing.border.EmptyBorder;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
 /**
  * @author John Caron
@@ -52,7 +51,7 @@ public class Grib1TableCompareDialog extends JDialog {
   Grib1TablesViewer.TableBean table1bean;
   Grib1TablesViewer.TableBean table2bean;
 
-  public class Data {
+  public static class Data {
     public Grib1TablesViewer.TableBean table1bean;
     public Grib1TablesViewer.TableBean table2bean;
     public boolean compareNames, compareUnits, compareDesc, showMissing, cleanUnits, udunits;

@@ -34,10 +34,9 @@
 
 package ucar.util.prefs.ui;
 
+import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
-import javax.swing.*;
-import javax.swing.event.*;
 
 /**
  * Wraps a field to make it resizeable by the user. Should be package private.
@@ -323,7 +322,7 @@ class FieldResizable extends Field {
   }   // RubberbandRectangle
 
   // debug
-  class MyPanel extends JPanel {
+  private static class MyPanel extends JPanel {
 
     public void setPreferredSize(Dimension preferredSize) {
       //System.out.println("MyPanel: setPreferredSize = "+preferredSize);

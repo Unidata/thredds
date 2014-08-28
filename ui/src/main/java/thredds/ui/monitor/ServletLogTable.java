@@ -382,7 +382,7 @@ public class ServletLogTable extends JPanel {
     public boolean pass(Merge log);
   }
 
-  class DateFilter implements MergeFilter {
+  private static class DateFilter implements MergeFilter {
     long start, end;
     MergeFilter chain;
 
@@ -443,7 +443,7 @@ public class ServletLogTable extends JPanel {
   }
 
 
-  class MyClosure implements LogReader.Closure {
+  private static class MyClosure implements LogReader.Closure {
     ArrayList<ServletLogParser.ServletLog> logs;
 
     MyClosure(ArrayList<ServletLogParser.ServletLog> logs) {

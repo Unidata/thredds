@@ -38,16 +38,22 @@ import thredds.ui.datatype.prefs.DurationField;
 import ucar.nc2.ui.event.ActionSourceListener;
 import ucar.nc2.ui.event.ActionValueEvent;
 import ucar.nc2.ui.event.ActionValueListener;
-
-import ucar.util.prefs.ui.*;
 import ucar.nc2.units.*;
+import ucar.util.prefs.ui.Field;
+import ucar.util.prefs.ui.FieldValidator;
+import ucar.util.prefs.ui.PrefPanel;
 
-import java.awt.*;
-import java.awt.event.*;
 import javax.swing.*;
-import javax.swing.border.*;
-import javax.swing.event.*;
-import java.beans.*;
+import javax.swing.border.Border;
+import javax.swing.border.LineBorder;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.util.Date;
 
 /**
@@ -445,7 +451,7 @@ public class RangeDateSelector extends JPanel implements FieldValidator {
     /** remove ActionValueListener listener */
   public void removeActionValueListener( ActionValueListener l) { actionSource.removeActionValueListener(l); }
 
-  private class Scale {
+  private static class Scale {
     private double min; // secs
     private double scale;  // pixels / secs
 

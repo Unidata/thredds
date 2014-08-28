@@ -68,7 +68,8 @@ import java.util.*;
  * @version $Revision: 15901 $
  */
 
-public class iniFile {
+public class iniFile
+{
 
     private boolean Debug = false;
 
@@ -84,7 +85,8 @@ public class iniFile {
     /**
      * We don't want this to get used so we made it protected...
      */
-    protected iniFile() {
+    protected iniFile()
+    {
     }
     //************************************************************************
 
@@ -98,7 +100,8 @@ public class iniFile {
      *
      * @param fname A <code>String</code> containing the name of the .ini file.
      */
-    public iniFile(String fname) {
+    public iniFile(String fname)
+    {
 
         this(null, fname, false);
 
@@ -115,7 +118,8 @@ public class iniFile {
      * @param path  A <code>String</code> containing the path to the .ini file.
      * @param fname A <code>String</code> containing the name of the .ini file.
      */
-    public iniFile(String path, String fname) {
+    public iniFile(String path, String fname)
+    {
 
 
         this(path, fname, false);
@@ -133,12 +137,13 @@ public class iniFile {
      * @param fname A <code>String</code> containing the name of the .ini file.
      * @param dbg   A <code>boolean</code> that toggles debugging output.
      */
-    public iniFile(String path, String fname, boolean dbg) {
+    public iniFile(String path, String fname, boolean dbg)
+    {
 
 
         Debug = dbg;
 
-        if (path == null)
+        if(path == null)
             path = System.getProperty("user.home");
 
 
@@ -152,7 +157,7 @@ public class iniFile {
         sectionProperties = null;
         parseFile();
 
-        if (sectionNames == null)
+        if(sectionNames == null)
             System.err.println(errMsg);
 
 
@@ -167,7 +172,8 @@ public class iniFile {
      * returns A <code>String</code> containing the name of the .ini file
      * that was opened a parsed when this object was instantiated.
      */
-    public String getFileName() {
+    public String getFileName()
+    {
         return (iniFile);
     }
     //************************************************************************
@@ -177,80 +183,79 @@ public class iniFile {
      * **********************************************************************
      * Parse the .ini file indicated by the <code>private String iniFile</code>.
      */
-    private void parseFile() {
-
+    private void parseFile()
+    {
 
         try {
-            BufferedReader fp = new BufferedReader(new InputStreamReader(new FileInputStream(iniFile)));
+            try (
+                BufferedReader fp = new BufferedReader(new InputStreamReader(new FileInputStream(iniFile)));
+            ) {
+                boolean done = false;
+                while(!done) {
 
-            boolean done = false;
-            while (!done) {
+                    String thisLine = fp.readLine().trim();
 
-                String thisLine = fp.readLine().trim();
+                    if(thisLine != null) {
+                        if(Debug) System.out.println("Read: \"" + thisLine + "\"");
 
-                if (thisLine != null) {
-                    if (Debug) System.out.println("Read: \"" + thisLine + "\"");
+                        if(thisLine.startsWith(";") || thisLine.equalsIgnoreCase("")) {
+                            // Do nothing, it's a comment
+                            if(Debug) System.out.println("Ignoring comment or blank line...");
+                        } else {
+                            int cindx = thisLine.indexOf(";");
 
-                    if (thisLine.startsWith(";") || thisLine.equalsIgnoreCase("")) {
-                        // Do nothing, it's a comment
-                        if (Debug) System.out.println("Ignoring comment or blank line...");
-                    } else {
-                        int cindx = thisLine.indexOf(";");
+                            if(cindx > 0)
+                                thisLine = thisLine.substring(0, cindx).trim();
 
-                        if (cindx > 0)
-                            thisLine = thisLine.substring(0, cindx).trim();
-
-                        if (Debug) System.out.println("Comments removed: \"" + thisLine + "\"");
-
-
-                        if (thisLine.startsWith("[") && thisLine.endsWith("]")) {
-
-                            String sname = thisLine.substring(1, thisLine.length() - 1).trim();
-
-                            if (Debug) System.out.println("Found Section Name: " + sname);
-
-                            if (sectionNames == null)
-                                sectionNames = new Vector();
-
-                            sectionNames.add(sname);
-
-                            if (sectionProperties == null)
-                                sectionProperties = new Vector();
-
-                            sectionProperties.add(new Vector());
+                            if(Debug) System.out.println("Comments removed: \"" + thisLine + "\"");
 
 
-                        } else if (sectionNames != null && sectionProperties != null) {
-                            int eqidx = thisLine.indexOf("=");
+                            if(thisLine.startsWith("[") && thisLine.endsWith("]")) {
 
-                            if (eqidx != -1) {
-                                String pair[] = new String[2];
-                                pair[0] = thisLine.substring(0, eqidx).trim();
-                                pair[1] = thisLine.substring(eqidx + 1, thisLine.length()).trim();
+                                String sname = thisLine.substring(1, thisLine.length() - 1).trim();
 
-                                if (Debug)
-                                    System.out.println("pair[0]: \"" + pair[0] + "\"   pair[1]: \"" + pair[1] + "\"");
+                                if(Debug) System.out.println("Found Section Name: " + sname);
 
-                                // Add the pair to the current property list, which is the
-                                // last element in the sectionProperties vector.
-                                ((Vector) sectionProperties.lastElement()).add(pair);
+                                if(sectionNames == null)
+                                    sectionNames = new Vector();
+
+                                sectionNames.add(sname);
+
+                                if(sectionProperties == null)
+                                    sectionProperties = new Vector();
+
+                                sectionProperties.add(new Vector());
+
+
+                            } else if(sectionNames != null && sectionProperties != null) {
+                                int eqidx = thisLine.indexOf("=");
+
+                                if(eqidx != -1) {
+                                    String pair[] = new String[2];
+                                    pair[0] = thisLine.substring(0, eqidx).trim();
+                                    pair[1] = thisLine.substring(eqidx + 1, thisLine.length()).trim();
+
+                                    if(Debug)
+                                        System.out.println("pair[0]: \"" + pair[0] + "\"   pair[1]: \"" + pair[1] + "\"");
+
+                                    // Add the pair to the current property list, which is the
+                                    // last element in the sectionProperties vector.
+                                    ((Vector) sectionProperties.lastElement()).add(pair);
+                                }
                             }
                         }
+                    } else {
+                        done = true;
                     }
-                } else {
-                    done = true;
                 }
             }
-            fp.close();
-        }
-        catch (FileNotFoundException e) {
+        } catch (FileNotFoundException e) {
             System.err.println("Could Not Find ini File: \"" + iniFile + "\"");
-        }
-        catch (IOException e) {
+        } catch (IOException e) {
             System.err.println("Could Not Read ini File: \"" + iniFile + "\"");
         }
-
     }
+
     //************************************************************************
 
 
@@ -261,12 +266,13 @@ public class iniFile {
      * @param sectionName A <code>String</code> containing the name of the
      *                    section whose property list is desired.
      * @return An enumeration of the properties in the <code>sectionName</code>
-     *         Returns <code>null</code> if the section name doesn't exist or there are
-     *         no properties for the section.
+     * Returns <code>null</code> if the section name doesn't exist or there are
+     * no properties for the section.
      */
-    public Enumeration getPropList(String sectionName) {
+    public Enumeration getPropList(String sectionName)
+    {
 
-        if (sectionNames == null) {
+        if(sectionNames == null) {
             System.err.println(errMsg);
             return (null);
         }
@@ -276,15 +282,15 @@ public class iniFile {
         Enumeration e = sectionNames.elements();
 
         boolean done = false;
-        while (!done && e.hasMoreElements()) {
+        while(!done && e.hasMoreElements()) {
             String thisName = (String) e.nextElement();
-            if (sectionName.equalsIgnoreCase(thisName))
+            if(sectionName.equalsIgnoreCase(thisName))
                 done = true;
             else
                 sectionIndex++;
         }
 
-        if (!done)
+        if(!done)
             return (null);
 
         return (((Vector) sectionProperties.elementAt(sectionIndex)).elements());
@@ -299,12 +305,13 @@ public class iniFile {
      *
      * @param propertyName The name of the desired property.
      * @return A <code>String</code> containing the value of property of the
-     *         passed property name. Returns null if the property name doesn't exist
-     *         or is not set.
+     * passed property name. Returns null if the property name doesn't exist
+     * or is not set.
      */
-    public String getProperty(String propertyName) {
+    public String getProperty(String propertyName)
+    {
 
-        if (currentSection < 0) {
+        if(currentSection < 0) {
             String msg = "You must use the setSection() method before you can use getProperty().";
             System.err.println(msg);
             return (msg);
@@ -313,15 +320,15 @@ public class iniFile {
 
         Enumeration e = ((Vector) sectionProperties.elementAt(currentSection)).elements();
         boolean done = false;
-        while (!done && e.hasMoreElements()) {
+        while(!done && e.hasMoreElements()) {
 
             pair = (String[]) e.nextElement();
 
-            if (pair[0].equalsIgnoreCase(propertyName))
+            if(pair[0].equalsIgnoreCase(propertyName))
                 done = true;
         }
 
-        if (done)
+        if(done)
             return (pair[1]);
 
 
@@ -337,9 +344,10 @@ public class iniFile {
      *
      * @return An enumeration of the sections in iniFile
      */
-    public Enumeration getSectionList() {
+    public Enumeration getSectionList()
+    {
 
-        if (sectionNames == null)
+        if(sectionNames == null)
             return (null);
 
         return (sectionNames.elements());
@@ -354,16 +362,17 @@ public class iniFile {
      *
      * @param ps The <code>PrintStream</code> to which to print.
      */
-    public void printProps(PrintStream ps) {
+    public void printProps(PrintStream ps)
+    {
 
 
         Enumeration se = getSectionList();
 
-        if (se == null) {
+        if(se == null) {
             ps.println(errMsg);
         } else {
 
-            while (se.hasMoreElements()) {
+            while(se.hasMoreElements()) {
 
                 String sname = (String) se.nextElement();
 
@@ -373,7 +382,7 @@ public class iniFile {
 
                 Enumeration pe = getPropList(sname);
 
-                while (pe.hasMoreElements()) {
+                while(pe.hasMoreElements()) {
 
                     String pair[] = (String[]) pe.nextElement();
 
@@ -399,11 +408,12 @@ public class iniFile {
      * @param sectionName A <code>String</code> containing the name of the
      *                    section that is desired.
      * @return true if the section exists and the operation was successful,
-     *         false otherwise.
+     * false otherwise.
      */
-    public boolean setSection(String sectionName) {
+    public boolean setSection(String sectionName)
+    {
 
-        if (sectionNames == null) {
+        if(sectionNames == null) {
             System.err.println(errMsg);
             return (false);
         }
@@ -413,15 +423,15 @@ public class iniFile {
         Enumeration e = sectionNames.elements();
 
         boolean done = false;
-        while (!done && e.hasMoreElements()) {
+        while(!done && e.hasMoreElements()) {
             String thisName = (String) e.nextElement();
-            if (sectionName.equalsIgnoreCase(thisName))
+            if(sectionName.equalsIgnoreCase(thisName))
                 done = true;
             else
                 sectionIndex++;
         }
 
-        if (!done)
+        if(!done)
             return (false);
 
         currentSection = sectionIndex;
@@ -432,31 +442,31 @@ public class iniFile {
 
 
     /**
-     *
      * @param args
      */
-    public static void main(String args[]) {
+    public static void main(String args[])
+    {
         boolean dbgFlag = true;
         iniFile inf = null;
 
         switch (args.length) {
-            case 1:
-                inf = new iniFile(null, args[0], dbgFlag);
-                break;
+        case 1:
+            inf = new iniFile(null, args[0], dbgFlag);
+            break;
 
-            case 2:
-                inf = new iniFile(args[0], args[1], dbgFlag);
-                break;
+        case 2:
+            inf = new iniFile(args[0], args[1], dbgFlag);
+            break;
 
-            case 3:
-                if (args[2].equalsIgnoreCase("false"))
-                    dbgFlag = false;
-                inf = new iniFile(args[0], args[1], dbgFlag);
-                break;
+        case 3:
+            if(args[2].equalsIgnoreCase("false"))
+                dbgFlag = false;
+            inf = new iniFile(args[0], args[1], dbgFlag);
+            break;
 
-            default:
-                System.err.println("Usage: test_iniFile [path] filename.ini [false]");
-                System.exit(1);
+        default:
+            System.err.println("Usage: test_iniFile [path] filename.ini [false]");
+            System.exit(1);
         }
 
 
@@ -464,26 +474,6 @@ public class iniFile {
 
 
     }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 }

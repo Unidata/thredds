@@ -33,24 +33,34 @@
 
 package ucar.nc2.ui.widget;
 
-import org.apache.http.entity.StringEntity;
-import ucar.httpservices.*;
 import org.apache.http.Header;
+import org.apache.http.entity.StringEntity;
+import ucar.httpservices.HTTPException;
+import ucar.httpservices.HTTPFactory;
+import ucar.httpservices.HTTPMethod;
+import ucar.httpservices.HTTPSession;
 import ucar.nc2.constants.CDM;
 import ucar.nc2.util.IO;
 import ucar.unidata.util.Urlencoded;
-import ucar.util.prefs.*;
-import ucar.util.prefs.ui.*;
+import ucar.util.prefs.PreferencesExt;
+import ucar.util.prefs.XMLStore;
+import ucar.util.prefs.ui.ComboBox;
 
+import javax.swing.*;
 import java.awt.*;
-import java.awt.event.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.io.*;
-import java.net.*;
-import java.util.*;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.InflaterInputStream;
-import javax.swing.*;
 
 
 /**
@@ -332,7 +342,7 @@ public class URLDumpPane extends TextHistoryPane {
 
         String charset = m.getResponseCharSet();
         if (charset == null) charset = CDM.UTF8;
-        String contents = null;
+        String contents;
 
         // check for deflate and gzip compression
         Header h = m.getResponseHeader("content-encoding");
@@ -364,7 +374,7 @@ public class URLDumpPane extends TextHistoryPane {
       } else if (cmd == Command.OPTIONS)
         printSet("AllowedMethods = ", m.getAllowedMethods());
 
-    } catch (Exception e) {
+    } catch (IOException e) {
       StringWriter sw = new StringWriter(5000);
       e.printStackTrace(new PrintWriter(sw));
       appendLine(sw.toString());
@@ -374,10 +384,9 @@ public class URLDumpPane extends TextHistoryPane {
   private void printHeaders(String title, Header[] heads) {
     if (heads == null) return;
     appendLine(title);
-    for (int i = 0; i < heads.length; i++) {
-      Header head = heads[i];
-      append("  " + head.toString() +"\n");
-    }
+      for (Header head : heads) {
+          append("  " + head.toString() + "\n");
+      }
   }
 
   private void printSet(String title, Set<String> en) {
@@ -451,7 +460,6 @@ public class URLDumpPane extends TextHistoryPane {
     }
     catch (IOException e) {
       e.printStackTrace();
-      System.err.println(e);
     }
   }
 
@@ -598,7 +606,7 @@ public class URLDumpPane extends TextHistoryPane {
     }
   } */
 
-  private class GetContentsTask extends ProgressMonitorTask {
+  private static class GetContentsTask extends ProgressMonitorTask {
     String urlString;
     String contents;
 
@@ -631,6 +639,7 @@ public class URLDumpPane extends TextHistoryPane {
           main.save();
           xstore.save();
         } catch (IOException ioe) {
+          ioe.printStackTrace();
         }
         System.exit(0);
       }

@@ -130,8 +130,7 @@ public class CdmrFeaturePanel extends JPanel {
           case Data:
             mess.obj = NcStreamProto.Data.parseFrom(m);
             mess.dlen = NcStream.readVInt(is);
-            is.skip(mess.dlen);
-            total += mess.dlen;
+            total += is.skip(mess.dlen);
             break;
           case Error:
             mess.obj = NcStreamProto.Error.parseFrom(m);
@@ -157,7 +156,7 @@ public class CdmrFeaturePanel extends JPanel {
     System.out.printf(" nmess = %d nbytes=%d%n", messages.size(), total);
   }
   
-  class Mess {
+  private static class Mess {
     PointStream.MessageType magic;
     int vlen;
     int dlen;

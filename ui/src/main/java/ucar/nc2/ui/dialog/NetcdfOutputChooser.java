@@ -4,16 +4,18 @@
 
 package ucar.nc2.ui.dialog;
 
-import java.awt.event.*;
-
 import ucar.nc2.NetcdfFileWriter;
-import ucar.nc2.write.Nc4Chunking;
 import ucar.nc2.util.ListenerManager;
+import ucar.nc2.write.Nc4Chunking;
 
+import javax.swing.*;
+import javax.swing.border.EmptyBorder;
+import javax.swing.border.TitledBorder;
 import java.awt.*;
 import java.awt.event.ActionEvent;
-import javax.swing.*;
-import javax.swing.border.*;
+import java.awt.event.ActionListener;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
 
 /**
  * @author John Caron
@@ -49,7 +51,7 @@ public class NetcdfOutputChooser extends JDialog {
     outputFilename.setText(location);
   }
 
-  public class Data {
+  public static class Data {
     public String outputFilename;
     public NetcdfFileWriter.Version version;
     public Nc4Chunking.Strategy chunkerType;

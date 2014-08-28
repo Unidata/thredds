@@ -476,6 +476,11 @@ public class CdmIndex2Panel extends JPanel {
       }
     });
 
+    if (files == null) {
+      // File.listFiles() returns null instead of throwing an exception. Dumb.
+      throw new RuntimeException(String.format("Either an I/O error occurred, or \"%s\" is not a directory.", dir));
+    }
+
     int total = 0;
     for (File file : files) {
       RandomAccessFile raf = new RandomAccessFile(file.getPath(), "r");

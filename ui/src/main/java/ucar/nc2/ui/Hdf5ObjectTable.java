@@ -251,7 +251,7 @@ public class Hdf5ObjectTable extends JPanel {
     H5header.setDebugFlags( new ucar.nc2.util.DebugFlagsImpl());
   }
 
-  private class MyNetcdfFile extends NetcdfFile {
+  private static class MyNetcdfFile extends NetcdfFile {
     private MyNetcdfFile(H5iosp iosp, String location) {
       super();
       spi = iosp;

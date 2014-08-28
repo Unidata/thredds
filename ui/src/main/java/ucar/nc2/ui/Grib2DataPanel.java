@@ -42,12 +42,10 @@ import ucar.nc2.grib.grib2.*;
 import ucar.nc2.grib.grib2.table.Grib2Customizer;
 import ucar.nc2.grib.grib2.table.NcepLocalTables;
 import ucar.nc2.time.CalendarDate;
-import ucar.nc2.ui.widget.FileManager;
 import ucar.nc2.ui.widget.*;
 import ucar.nc2.ui.widget.PopupMenu;
 import ucar.nc2.util.IO;
 import ucar.nc2.util.Misc;
-
 import ucar.unidata.geoloc.LatLonPoint;
 import ucar.util.prefs.PreferencesExt;
 import ucar.util.prefs.ui.BeanTable;
@@ -55,10 +53,6 @@ import ucar.util.prefs.ui.BeanTable;
 import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
-
-import ucar.nc2.ui.widget.IndependentWindow;
-import ucar.nc2.ui.widget.BAMutil;
-
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.io.*;
@@ -472,7 +466,7 @@ public class Grib2DataPanel extends JPanel {
     //checkRuntimes(f);
   }
 
-  private class DateCount implements Comparable<DateCount> {
+  private static class DateCount implements Comparable<DateCount> {
     CalendarDate d;
     int count;
 

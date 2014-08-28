@@ -879,7 +879,7 @@ public class PrefPanel extends JPanel {
 
   // helper class to use jgoodies form to do layout.
   // Each field gets one of these
-  private class LayoutComponent {
+  private static class LayoutComponent {
     Object comp;
     String constraint;
     int row, col;

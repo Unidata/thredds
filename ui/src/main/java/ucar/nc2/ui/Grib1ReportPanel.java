@@ -556,7 +556,7 @@ public class Grib1ReportPanel extends ReportPanel {
 
   }
 
-  private class VarName {
+  private static class VarName {
     String dataset;
     String oldVar;
     String newVar;
@@ -586,7 +586,7 @@ public class Grib1ReportPanel extends ReportPanel {
     return null;
   }
 
-  private class GridMatch implements Comparable<GridMatch> {
+  private static class GridMatch implements Comparable<GridMatch> {
     GridDatatype grid;
     GridMatch match;
     boolean isNew;

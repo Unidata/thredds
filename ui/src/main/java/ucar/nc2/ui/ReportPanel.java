@@ -101,8 +101,7 @@ public abstract class ReportPanel extends JPanel {
   MCollection getCollection(String spec, Formatter f) {
     try {
       return CollectionAbstract.open(spec, spec, null, f);
-
-    } catch (Exception e) {
+    } catch (IOException e) {
       ByteArrayOutputStream bos = new ByteArrayOutputStream(10000);
       e.printStackTrace(new PrintStream(bos));
       reportPane.setText(bos.toString());
@@ -113,7 +112,7 @@ public abstract class ReportPanel extends JPanel {
   ///////////////////////////////////////////////
 
   // a counter whose keys are ints
-  protected class Counter {
+  protected static class Counter {
     Map<Integer, Integer> set = new HashMap<>();
     String name;
 
@@ -156,7 +155,7 @@ public abstract class ReportPanel extends JPanel {
 
 
   // a counter whose keys are strings
-  protected class CounterS {
+  protected static class CounterS {
     Map<String, Integer> set = new HashMap<String, Integer>();
     String name;
 

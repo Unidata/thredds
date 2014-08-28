@@ -40,15 +40,17 @@ import ucar.nc2.ui.table.JTableSorted;
 import ucar.nc2.ui.table.TableRow;
 import ucar.nc2.ui.table.TableRowAbstract;
 import ucar.nc2.util.NamedObject;
+import ucar.util.prefs.ui.Field;
+import ucar.util.prefs.ui.PrefPanel;
 
-import ucar.util.prefs.ui.*;
-
+import javax.swing.*;
+import javax.swing.border.EtchedBorder;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 import java.awt.*;
 import java.awt.event.*;
-import javax.swing.*;
-import javax.swing.border.*;
-import javax.swing.event.*;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Iterator;
 
 /**
  * SuperComboBox is a complete rewrite of JComboBox;
@@ -403,14 +405,14 @@ public class SuperComboBox extends JPanel {
   }
 
 
-  private class SimpleRow extends TableRowAbstract {
+  private static class SimpleRow extends TableRowAbstract {
     Object o;
     SimpleRow( Object o){ this.o = o; }
     public Object getValueAt( int col) { return o; }
     public Object getUserObject() { return o; }
   }
 
-  private class NamedObjectRow extends TableRowAbstract implements NamedObject {
+  private static class NamedObjectRow extends TableRowAbstract implements NamedObject {
     NamedObject o;
     NamedObjectRow( NamedObject o){ this.o = o; }
     public Object getValueAt( int col) { return this; }
@@ -421,7 +423,7 @@ public class SuperComboBox extends JPanel {
     public String toString() { return getName(); }
   }
 
-  private class GeoGridRow extends TableRowAbstract implements NamedObject {
+  private static class GeoGridRow extends TableRowAbstract implements NamedObject {
     NamedObject o;
     GeoGridRow(NamedObject o){ this.o = o; }
     public Object getValueAt( int col) { return this; }

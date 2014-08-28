@@ -33,17 +33,17 @@
 package ucar.nc2.ui.grid;
 
 import ucar.nc2.Dimension;
+import ucar.nc2.dt.GridDatatype;
 import ucar.nc2.ui.event.ActionSourceListener;
 import ucar.nc2.ui.event.ActionValueEvent;
 import ucar.nc2.ui.table.JTableSorted;
 import ucar.nc2.ui.table.TableRowAbstract;
-import ucar.nc2.dt.GridDatatype;
-
-import java.util.ArrayList;
-import java.util.Formatter;
 
 import javax.swing.*;
-import javax.swing.event.*;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
+import java.util.ArrayList;
+import java.util.Formatter;
 
 /**
  * Put the fields of a GridDatatype dataset in a JTable.
@@ -122,7 +122,7 @@ public class GridTable {
   /// inner classes
 
   private static String[] colName = {"Name", "Dimensions", "Units", "Long Name"};
-  private class Row extends TableRowAbstract {
+  private static class Row extends TableRowAbstract {
     GridDatatype gg;
     String dims;
 

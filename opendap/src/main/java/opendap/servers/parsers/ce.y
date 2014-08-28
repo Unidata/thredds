@@ -5,9 +5,9 @@
 
 %define public
 %define package "opendap.servers.parsers"
-%define extends "Ceparse"
-%define throws "ParseException"
-%define lex_throws "ParseException"
+%define extends {Ceparse}
+%define throws {ParseException}
+%define lex_throws {ParseException}
 
 %code imports {
 import opendap.dap.*;
@@ -19,7 +19,7 @@ import java.util.*;
 
 %code {
  
-    private List<AST> nodeset = null;
+    static public boolean DEBUG = false;
 
     /**
      * Instantiates the Bison-generated parser.
@@ -32,6 +32,8 @@ import java.util.*;
 	this.yylexer = new Celex(this);
 	super.lexstate = (Celex)this.yylexer;
 	this.yyDebugStream = System.out;
+	if(DEBUG)
+	    setDebugLevel(1);
     }
 
 
@@ -202,9 +204,9 @@ value:
 
 constant:
 	  number
-	    {$$=constant(parsestate,$1,SCAN_NUMBERCONST);}
+	    {$$=constant(parsestate,$1,Lexer.SCAN_NUMBERCONST);}
 	| string
-	    {$$=constant(parsestate,$1,SCAN_STRINGCONST);}
+	    {$$=constant(parsestate,$1,Lexer.SCAN_STRINGCONST);}
 	;
 
 var:

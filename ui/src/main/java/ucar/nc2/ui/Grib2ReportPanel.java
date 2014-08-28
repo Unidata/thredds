@@ -2,14 +2,15 @@ package ucar.nc2.ui;
 
 import org.itadaki.bzip2.BZip2OutputStream;
 import org.itadaki.bzip2.BitOutputStream;
-import org.jdom2.output.XMLOutputter;
-import org.jdom2.output.Format;
 import org.jdom2.Document;
 import org.jdom2.Element;
-
+import org.jdom2.output.Format;
+import org.jdom2.output.XMLOutputter;
 import thredds.featurecollection.FeatureCollectionConfig;
-import thredds.inventory.*;
+import thredds.inventory.CollectionAbstract;
+import thredds.inventory.CollectionUpdateType;
 import thredds.inventory.MCollection;
+import thredds.inventory.MFile;
 import ucar.nc2.Attribute;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.dataset.CoordinateAxis1D;
@@ -17,23 +18,20 @@ import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dt.GridCoordSystem;
 import ucar.nc2.dt.GridDatatype;
 import ucar.nc2.dt.grid.GridDataset;
+import ucar.nc2.grib.GribStatType;
+import ucar.nc2.grib.GribVariableRenamer;
 import ucar.nc2.grib.collection.GribCdmIndex;
 import ucar.nc2.grib.collection.GribCollection;
 import ucar.nc2.grib.collection.GribIosp;
-import ucar.nc2.grib.GribStatType;
-import ucar.nc2.grib.GribVariableRenamer;
 import ucar.nc2.grib.grib2.*;
-import ucar.nc2.grib.grib2.Grib2Pds;
 import ucar.nc2.grib.grib2.table.Grib2Customizer;
 import ucar.nc2.grib.grib2.table.WmoCodeTable;
 import ucar.nc2.util.Misc;
 import ucar.unidata.io.RandomAccessFile;
 import ucar.util.prefs.PreferencesExt;
 
-import javax.swing.*;
 import java.io.*;
 import java.util.*;
-import java.util.List;
 
 /**
  * Run through collections of Grib 2 files and make reports
@@ -400,7 +398,7 @@ public class Grib2ReportPanel extends ReportPanel {
     }
   }
 
-  private class GdsList {
+  private static class GdsList {
     Grib2Gds gds;
     java.util.List<FileCount> fileList = new ArrayList<FileCount>();
 
@@ -416,7 +414,7 @@ public class Grib2ReportPanel extends ReportPanel {
 
   }
 
-  private class FileCount {
+  private static class FileCount {
     private FileCount(MFile f, int countGds) {
       this.f = f;
       this.countGds = countGds;
@@ -937,7 +935,7 @@ public class Grib2ReportPanel extends ReportPanel {
         double len = cust.getForecastTimeIntervalSizeInHours(pds);
         TinvLength.count((int) len);
         int[] intv = cust.getForecastTimeIntervalOffset(gr);
-        if ((intv[0] == 0) && (intv[1] == 0)) {
+        if (intv != null && (intv[0] == 0) && (intv[1] == 0)) {
           f.format("  TimeInterval [0,0] = %s file=%s%n  ", getId(gr), mf.getName());
         }
       }
@@ -1213,7 +1211,7 @@ public class Grib2ReportPanel extends ReportPanel {
     return null;
   }
 
-  private class VarName {
+  private static class VarName {
     String dataset;
     String oldVar;
     String newVar;
@@ -1227,7 +1225,7 @@ public class Grib2ReportPanel extends ReportPanel {
     }
   }
 
-  private class GridMatch implements Comparable<GridMatch> {
+  private static class GridMatch implements Comparable<GridMatch> {
     GridDatatype grid;
     GridMatch match;
     boolean isNew;

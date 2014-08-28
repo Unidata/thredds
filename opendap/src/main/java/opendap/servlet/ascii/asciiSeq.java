@@ -148,7 +148,7 @@ public class asciiSeq extends DSequence implements toASCII {
 
     public String toASCIIFlatName(String rootName) {
 
-        String s = "";
+        StringBuilder s = new StringBuilder();
         boolean firstPass = true;
         for (Enumeration e1 = allValues.elements(); e1.hasMoreElements();) {
             // get next instance vector
@@ -156,15 +156,14 @@ public class asciiSeq extends DSequence implements toASCII {
             for (Enumeration e2 = v.elements(); e2.hasMoreElements();) {
                 // get next instance variable
                 toASCII ta = (toASCII) e2.nextElement();
-
                 if (!firstPass)
-                    s += ", ";
-                s += ta.toASCIIFlatName(rootName);
+                    s.append(", ");
+                s.append(ta.toASCIIFlatName(rootName));
                 firstPass = false;
             }
             break;
         }
-        return (s);
+        return s.toString();
     }
 
 }

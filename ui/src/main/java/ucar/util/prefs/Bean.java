@@ -168,20 +168,26 @@ class Bean {
     }
 
     void readProperties(Object bean, org.xml.sax.Attributes atts) {
-      Iterator iter = properties.values().iterator();
-      while (iter.hasNext()) {
-        PropertyDescriptor pds = (PropertyDescriptor) iter.next();
+      for (Object o1 : properties.values()) {
+        PropertyDescriptor pds = (PropertyDescriptor) o1;
         Method setter = pds.getWriteMethod();
+        if (setter == null) {
+          continue;
+        }
+
         try {
-          String sArg = atts.getValue( pds.getName());
+          String sArg = atts.getValue(pds.getName());
           Object arg = getArgument(pds.getPropertyType(), sArg);
-          if (debugBean) System.out.println( " property set "+pds.getName()+"="+sArg+" == "+arg);
-          if (arg == null) return;
+          if (debugBean) {
+            System.out.println(" property set " + pds.getName() + "=" + sArg + " == " + arg);
+          }
+          if (arg == null) {
+            return;
+          }
           args[0] = arg;
-          setter.invoke( bean, args);
-        } catch (NumberFormatException e) {
-        } catch (InvocationTargetException e) {
-        } catch (IllegalAccessException e) {
+          setter.invoke(bean, args);
+        } catch (NumberFormatException | InvocationTargetException | IllegalAccessException e) {
+          e.printStackTrace();
         }
       }
     }

@@ -1,6 +1,5 @@
 package ucar.nc2.ui;
 
-import thredds.inventory.CollectionManager;
 import thredds.inventory.MCollection;
 import thredds.inventory.MFile;
 import ucar.nc2.iosp.bufr.Message;
@@ -9,8 +8,6 @@ import ucar.nc2.iosp.bufr.writer.BufrSplitter2;
 import ucar.unidata.io.RandomAccessFile;
 import ucar.util.prefs.PreferencesExt;
 
-import javax.swing.*;
-import java.io.File;
 import java.io.IOException;
 import java.util.*;
 
@@ -72,7 +69,7 @@ public class BufrReportPanel extends ReportPanel {
     show(all, f);
   }
 
-  private class Count {
+  private static class Count {
     int nmess = 1;
     int nobs = 0;
 
@@ -81,7 +78,7 @@ public class BufrReportPanel extends ReportPanel {
     }
   }
 
-  private class TrackMessageTypes {
+  private static class TrackMessageTypes {
     HashMap<Message, Count> map = new HashMap<Message, Count>();
 
     void add(Message m) {
@@ -127,11 +124,9 @@ public class BufrReportPanel extends ReportPanel {
   private void show(TrackMessageTypes track, Formatter f) throws IOException {
     List<Message> mess = new ArrayList<Message>(track.map.keySet());
     Collections.sort(mess, new Comparator<Message>() {
+      @Override
       public int compare(Message o1, Message o2) {
         return o1.getLookup().getCategoryNo().compareTo(o2.getLookup().getCategoryNo());
-      }
-      public boolean equals(Object obj) {
-        return false;
       }
     });
 

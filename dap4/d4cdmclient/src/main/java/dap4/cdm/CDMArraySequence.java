@@ -10,6 +10,7 @@ import dap4.core.dmr.*;
 import dap4.core.util.*;
 import dap4.dap4shared.*;
 import ucar.ma2.*;
+import ucar.nc2.Dimension;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
@@ -46,8 +47,8 @@ import java.util.List;
 public class CDMArraySequence extends ArraySequence implements CDMArray
 {
 
-//////////////////////////////////////////////////
-// Type decls
+    //////////////////////////////////////////////////
+    // Type decls
 
     static public class SDI implements StructureDataIterator
     {
@@ -218,6 +219,7 @@ public class CDMArraySequence extends ArraySequence implements CDMArray
     {
         return bytesize;
     }
+
     //////////////////////////////////////////////////
 
     public String toString()

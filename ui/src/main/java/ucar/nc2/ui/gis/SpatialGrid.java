@@ -287,7 +287,7 @@ public class SpatialGrid {
   }
 
     // inner class
-  private class GridCell {
+  private static class GridCell {
     boolean used = false;
     Rectangle2D objectBB = null;
     Object o = null;

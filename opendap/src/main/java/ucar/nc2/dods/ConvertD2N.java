@@ -244,7 +244,6 @@ public class ConvertD2N {
     StructureMembers members = new StructureMembers( dataV.getNetcdfShortName());
     for (DodsV dodsV : dataV.children) {
       StructureMembers.Member m = members.addMember(dodsV.getNetcdfShortName(), null, null, dodsV.getDataType(), dodsV.getShape());
-
       Array data;
       if ((dodsV.bt instanceof DStructure) || (dodsV.bt instanceof DGrid)) {
         data = makeArrayStructure(dodsV);

@@ -335,7 +335,7 @@ public class DatasetTreeView extends JPanel {
     }
   }
 
-  private class DimensionNode implements javax.swing.tree.TreeNode {
+  private static class DimensionNode implements javax.swing.tree.TreeNode {
     private Dimension d;
     private TreeNode parent;
 
@@ -364,7 +364,7 @@ public class DatasetTreeView extends JPanel {
 
 
   // this is to get different icons
-  private class MyTreeCellRenderer extends javax.swing.tree.DefaultTreeCellRenderer {
+  private static class MyTreeCellRenderer extends javax.swing.tree.DefaultTreeCellRenderer {
     ImageIcon structIcon, dimIcon;
     String tooltipText = null;
 

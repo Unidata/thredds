@@ -33,23 +33,24 @@
 
 package ucar.nc2.ui;
 
+import ucar.nc2.NetcdfFile;
+import ucar.nc2.iosp.hdf4.H4header;
+import ucar.nc2.iosp.hdf4.H4iosp;
 import ucar.nc2.ui.widget.IndependentWindow;
+import ucar.nc2.ui.widget.TextHistoryPane;
+import ucar.unidata.io.RandomAccessFile;
 import ucar.util.prefs.PreferencesExt;
 import ucar.util.prefs.ui.BeanTable;
-import ucar.unidata.io.RandomAccessFile;
-import ucar.nc2.NetcdfFile;
-import ucar.nc2.iosp.hdf4.H4iosp;
-import ucar.nc2.iosp.hdf4.H4header;
 
 import javax.swing.*;
-import javax.swing.event.ListSelectionListener;
 import javax.swing.event.ListSelectionEvent;
-
-import ucar.nc2.ui.widget.TextHistoryPane;
-
+import javax.swing.event.ListSelectionListener;
 import java.awt.*;
-import java.io.*;
-import java.util.*;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.PrintStream;
+import java.util.ArrayList;
+import java.util.Formatter;
 
 /**
  * ToolsUI/Iosp/Hdf4
@@ -181,7 +182,7 @@ public class Hdf4Table extends JPanel {
   }
 
   // need  acccess to protected constructor: iosp.open(raf, ncfile, null);
-  private class MyNetcdfFile extends NetcdfFile {
+  private static class MyNetcdfFile extends NetcdfFile {
     public MyNetcdfFile(H4iosp iosp) {
        this.spi = iosp; // iosp must be set during open
     }

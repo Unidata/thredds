@@ -4,6 +4,8 @@
  */
 package gov.noaa.pfel.erddap.util;
 
+import ucar.nc2.constants.CDM;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -50,9 +52,10 @@ public class StringArray {
      * @throws IOException  if an I/O error occurs
      */
     public static StringArray fromInputStream(InputStream inputStream, String charset) throws IOException {
-        InputStreamReader isr = charset == null || charset.length() == 0 ?
-                new InputStreamReader(inputStream) :
-                new InputStreamReader(inputStream, charset);
+        if (charset == null || charset.isEmpty()) {
+            charset = CDM.UTF8;
+        }
+        InputStreamReader isr = new InputStreamReader(inputStream, charset);
         BufferedReader bufferedReader = new BufferedReader(isr);
 
         StringArray sa = new StringArray();

@@ -271,11 +271,16 @@ public class GribRewritePanel extends JPanel {
   private void scanDirectory(File dir, boolean subdirs, java.util.List<FileBean> result, Formatter errlog) {
     if ((dir.getName().equals("exclude")) || (dir.getName().equals("problem")))return;
 
-    // get list of files
+    File[] gribFilesInDir = dir.listFiles(new FileFilterFromSuffixes("grib1 grib2"));
+    if (gribFilesInDir == null) {
+      // File.listFiles() returns null instead of throwing an exception. Dumb.
+      throw new RuntimeException(String.format("Either an I/O error occurred, or \"%s\" is not a directory.", dir));
+    }
+
     List<File> files = new ArrayList<>();
-    for (File f : dir.listFiles(new FileFilterFromSuffixes("grib1 grib2"))) {
-      if (!f.isDirectory()) {
-        files.add(f);
+    for (File gribFile : gribFilesInDir) {
+      if (!gribFile.isDirectory()) {
+        files.add(gribFile);
       }
     }
 

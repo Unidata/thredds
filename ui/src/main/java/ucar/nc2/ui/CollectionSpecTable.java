@@ -272,7 +272,11 @@ public class CollectionSpecTable extends JPanel {
 
     public String getDate() {
       CalendarDate cd = dcm.extractDate(mfile);
-      return cd.toString();
+      if (cd != null) {
+        return cd.toString();
+      } else {
+        return "Unknown";
+      }
     }
   }
 }

@@ -291,7 +291,7 @@ feats:while (featList.hasNext()) {
   } // FeatureSet inner class
 
     // these are derived Features based on a mimimum distance between points
-  private class FeatureMD extends AbstractGisFeature {
+  private static class FeatureMD extends AbstractGisFeature {
     private ArrayList parts = new ArrayList();
     private int total_pts = 0;
     private double minDist;

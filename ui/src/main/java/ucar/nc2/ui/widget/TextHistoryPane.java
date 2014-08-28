@@ -34,12 +34,19 @@ package ucar.nc2.ui.widget;
 
 import ucar.nc2.util.IO;
 
-import java.awt.*;
-import java.awt.event.*;
-import java.awt.print.*;
-import java.io.*;
-import java.util.StringTokenizer;
 import javax.swing.*;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.MouseEvent;
+import java.awt.print.PageFormat;
+import java.awt.print.Printable;
+import java.awt.print.PrinterException;
+import java.awt.print.PrinterJob;
+import java.io.File;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.io.StringWriter;
+import java.util.StringTokenizer;
 
 /**
  * TextHistoryPane
@@ -289,7 +296,7 @@ public class TextHistoryPane extends JPanel {
     return new IW( title, this);
   }
 
-  private class IW extends IndependentWindow {
+  private static class IW extends IndependentWindow {
     private IW( String title, TextHistoryPane ta) {
       super(title, BAMutil.getImage( "thredds"), ta);
       setSize(700,700);

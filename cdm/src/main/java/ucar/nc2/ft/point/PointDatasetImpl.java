@@ -127,10 +127,11 @@ public class PointDatasetImpl extends FeatureDatasetImpl implements FeatureDatas
 
         StationTimeSeriesFeatureCollection sc = (StationTimeSeriesFeatureCollection) fc;
         if (this.boundingBox == null) {
-          if (bb == null)
+          if (bb == null) {
             bb = sc.getBoundingBox();
-          else
+          } else if (sc.getBoundingBox() != null) {
             bb.extend(sc.getBoundingBox());
+          }
         }
 
         if (dateRange == null) {

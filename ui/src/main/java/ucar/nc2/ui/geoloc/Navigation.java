@@ -61,7 +61,6 @@ public class Navigation  {
   private boolean mapAreaIsSet = false;         // cant initialize until screen size is known
   private boolean screenSizeIsSet = false;      // and initial bounding box is known
   private ZoomStack zoom = new ZoomStack();
-  private ListenerManager lm; // manage NewMapAreaListener's
 
   private static boolean debug = false, debugZoom = false, debugTransform = false;
   private static boolean debugRecalc = false;
@@ -256,7 +255,7 @@ public class Navigation  {
 
     pix_x0 -= startx+width/2 - pwidth/2;
     pix_y0 -= starty+height/2 - pheight/2;
-    zoom((double)pwidth/width);
+    zoom(pwidth / width);
   }
 
   public void zoomIn(double x, double y) {
@@ -348,7 +347,7 @@ public class Navigation  {
   }
 
   // keep stack of previous zooms
-  // this should propably be made into a circular buffer
+  // this should probably be made into a circular buffer
   private class ZoomStack extends java.util.ArrayList {
     private int current = -1;
     ZoomStack() {
