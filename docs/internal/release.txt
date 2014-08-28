@@ -1,9 +1,5 @@
 Making a release for CDM/TDS with jenkins
-12/18/2012
-edited 8/1/2013
-edited 11/25/2013
-edited 11/26/2013
-edited 05/28/2013
+last edited 08/26/2014
 
 1. Jenkins
   - Go to Jenkin project's configuration page
@@ -44,12 +40,17 @@ edited 05/28/2013
      ln -s {release} current
 
 6. build cdm locally
+    git fetch
     git checkout "v{release}"
     cd {github/thredds}
     mvn clean install
 
+7a. put ncIdv onto conan ftp
+   cd  /web/ftp/pub/netcdf-java/v{version}
+   wget https://artifacts.unidata.ucar.edu/content/repositories/unidata-releases/edu/ucar/ncIdv/4.3.23/ncIdv-4.3.23.jar
+
 7. put ncIdv, netcdfAll, toolsUI onto conan ftp
-    cp {github/thredds}/ncIdv/target/ncIdv-{release}.jar to /web/ftp/pub/netcdf-java/v{version}
+    cp {github/thredds}/ncIdv/target/ncIdv-{release}.jar to /web/ftp/pub/netcdf-java/v{version}        (could do it this way instead of 7a)
     cp {github/thredds}/ui/target/netcdfAll-{release}.jar to /web/ftp/pub/netcdf-java/v{version}
     cp {github/thredds}/ui/target/toolsUI-{release}.jar to /web/ftp/pub/netcdf-java/v{version}
 

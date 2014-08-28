@@ -404,7 +404,7 @@ public class LatLonProjection extends ProjectionImpl {
     lon0 = LatLonPointImpl.lonNormal(lon0, centerLon);
     lon1 = LatLonPointImpl.lonNormal(lon1, centerLon);
 
-    ProjectionRect[] rects = new ProjectionRect[2];
+    ProjectionRect[] rects = new ProjectionRect[] {new ProjectionRect(), new ProjectionRect()};
     if (width >= 360.0) {
       rects[0].setRect(centerLon - 180.0, lat0, 360.0, height);
       rects[1] = null;
