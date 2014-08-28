@@ -294,7 +294,7 @@ public class NmcObsLegacy extends AbstractIOServiceProvider {
     return obs_pos;
   }
 
-  private class Vinfo {
+  private static class Vinfo {
     int offset;
 
     Vinfo(int offset) {
@@ -302,7 +302,7 @@ public class NmcObsLegacy extends AbstractIOServiceProvider {
     }
   }
 
-  private class StructureCode {
+  private static class StructureCode {
     Structure s;
     int code;
 

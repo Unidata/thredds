@@ -554,7 +554,7 @@ public class FmrcInvLite implements java.io.Serializable {
   }
 
   // represents 1 time coord in a 2d time matrix, point or interval
-  private class TimeInv implements Comparable<TimeInv> {
+  private static class TimeInv implements Comparable<TimeInv> {
     int runIdx;
     int timeIdx;
     double offset; // hours since base or hours since run time

@@ -472,7 +472,7 @@ public class FmrcInv {
   } // end UberGrid
 
   // immutable after UberGrid.finish() is called.
-  private class HourGroup {
+  private static class HourGroup {
     final int hour;
     final List<FmrInv.GridVariable> runs = new ArrayList<FmrInv.GridVariable>();
     private TimeCoord expected;

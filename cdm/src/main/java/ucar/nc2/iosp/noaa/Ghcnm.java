@@ -740,7 +740,7 @@ public class Ghcnm extends AbstractIOServiceProvider {
     return v;
   }
 
-  private class Vinfo {
+  private static class Vinfo {
     RandomAccessFile raf;
     StructureMembers sm;
     int nelems = -1;

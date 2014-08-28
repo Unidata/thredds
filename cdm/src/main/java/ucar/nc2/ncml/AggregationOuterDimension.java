@@ -387,7 +387,7 @@ public abstract class AggregationOuterDimension extends Aggregation implements P
     return allData;
   }
 
-  private class ReaderTask implements Callable<Result> {
+  private static class ReaderTask implements Callable<Result> {
     Dataset ds;
     Variable mainv;
     CancelTask cancelTask;

@@ -537,7 +537,7 @@ class UtmCoordinateConversion {
 
   }
 
-  private class Digraphs {
+  private static class Digraphs {
     private Map digraph1 = new Hashtable();
 
     private Map digraph2 = new Hashtable();

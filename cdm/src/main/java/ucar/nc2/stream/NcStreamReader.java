@@ -94,7 +94,7 @@ public class NcStreamReader {
 
   }
 
-  class DataResult {
+  static class DataResult {
     String varNameFullEsc;
     Section section;
     Array data;

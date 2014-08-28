@@ -380,7 +380,7 @@ public class GridDatasetInfo {
 	}
 
 	// sort by time, then vert, then name
-	private class GridComparator implements Comparator<GridDatatype> {
+	private static class GridComparator implements Comparator<GridDatatype> {
 
 		// Returns a -1, 0, 1 if the first argument is less than, equal to, or greater than the second.
 		public int compare(GridDatatype grid1, GridDatatype grid2) {

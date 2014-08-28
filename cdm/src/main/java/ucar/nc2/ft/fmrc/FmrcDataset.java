@@ -102,7 +102,7 @@ class FmrcDataset {
   //private List<String> protoList; // the list of datasets in the proto that have proxy reader, so these need to exist. not implemented yet
 
   // allow to build a new state while old state can still be safely used
-  private class State {
+  private static class State {
     NetcdfDataset proto; // once built, the proto doesnt change until setInventory is called with forceProto = true
     FmrcInvLite lite; // lightweight version of the FmrcInv
 
@@ -1037,7 +1037,7 @@ class FmrcDataset {
     return timeVar;
   }
 
-  private class Vstate1D {
+  private static class Vstate1D {
     FmrcInvLite.Gridset.Grid gridLite;
     TimeInventory timeInv;
 
