@@ -24,9 +24,6 @@ import java.awt.geom.Rectangle2D;
  * @since 12/27/12
  */
 public class CoverageRenderer {
-
-  private PreferencesExt store;
-
   // draw state
   private boolean drawGrid = true;
   private boolean drawGridLines = true;
@@ -61,14 +58,13 @@ public class CoverageRenderer {
   //private ProjectionPointImpl ptP2 = new ProjectionPointImpl();
   //private ProjectionRect[] rects = new ProjectionRect[2];
 
-  private final boolean debugHorizDraw = false, debugSeam = false, debugLatLon = false, debugMiss = false;
+  private static final boolean debugHorizDraw = false, debugSeam = false, debugLatLon = false, debugMiss = false;
   private boolean debugPathShape = false, debugArrayShape = false, debugPts = false;
 
   /**
    * constructor
    */
   public CoverageRenderer(PreferencesExt store) {
-    this.store = store;
     //rects[0] = new ProjectionRect();
   }
 
