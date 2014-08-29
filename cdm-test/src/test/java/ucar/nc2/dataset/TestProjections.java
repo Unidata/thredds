@@ -33,330 +33,190 @@
 
 package ucar.nc2.dataset;
 
-import junit.framework.TestCase;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
 import ucar.ma2.InvalidRangeException;
 import ucar.nc2.Variable;
 import ucar.nc2.constants.CF;
-import ucar.nc2.dt.GridCoordSystem;
-import ucar.nc2.dt.grid.GridDataset;
-import ucar.nc2.util.Misc;
 import ucar.unidata.geoloc.*;
 import ucar.unidata.geoloc.projection.*;
 import ucar.unidata.geoloc.projection.proj4.CylindricalEqualAreaProjection;
 import ucar.unidata.geoloc.projection.proj4.EquidistantAzimuthalProjection;
+import ucar.unidata.geoloc.projection.sat.Geostationary;
 import ucar.unidata.geoloc.projection.sat.MSGnavigation;
 import ucar.unidata.test.util.TestDir;
 import ucar.unidata.util.Parameter;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Formatter;
-import java.util.List;
+import java.util.*;
 
 /**
  * test projections
  *
  * @author caron
  */
-public class TestProjections extends TestCase {
-  private String testDir= TestDir.cdmUnitTestDir + "transforms/";
+@RunWith(Parameterized.class)
+public class TestProjections {
+  private static String testDir= TestDir.cdmUnitTestDir + "transforms/";
+  private static LatLonPointImpl testPoint = new LatLonPointImpl(0, 145.0);
 
-  public void testProjections() throws IOException, InvalidRangeException {
-    Projection p;
+  @Parameterized.Parameters
+  public static Collection<Object[]> data() {
+    Object[][] data = new Object[][]{
 
-    p = test(testDir + "Sigma_LC.nc",
-        "Lambert_Conformal",
-        "Temperature",
-        LambertConformal.class);
+            {testDir + "Sigma_LC.nc", "Lambert_Conformal", "Temperature", LambertConformal.class, null},
 
-    p = test(testDir + "LambertAzimuth.nc",
-        "grid_mapping0",
-        "VIL",
-        LambertAzimuthalEqualArea.class);
+            {testDir + "LambertAzimuth.nc", "grid_mapping0", "VIL", LambertAzimuthalEqualArea.class, null},
 
-    p = test(testDir+ "PolarStereographic.nc",
-        "Polar_Stereographic",
-        "D2_O3",
-        Stereographic.class);
+            {testDir + "PolarStereographic.nc", "Polar_Stereographic", "D2_O3", Stereographic.class, null},
 
-    p = test(testDir+ "Polar_Stereographic2.nc",
-        null,
-        "dpd-Surface0",
-        Stereographic.class);
+            {testDir + "Polar_Stereographic2.nc", null, "dpd-Surface0", Stereographic.class, null},
 
-    p = test(testDir+ "Base_month.nc",
-        null,
-        "D2_SO4",
-        Stereographic.class);
+            {testDir + "Base_month.nc", null, "D2_SO4", Stereographic.class, null},
 
-    p = test(testDir+ "Mercator.grib1",
-        "Mercator_Projection",
-        "Temperature_isobaric",
-        Mercator.class);
+            {testDir + "Mercator.grib1", "Mercator_Projection", "Temperature_isobaric", Mercator.class, null},
 
-    p = test(testDir+ "Eumetsat.VerticalPerspective.grb",
-        "SpaceViewPerspective_Projection",
-        "Pixel_scene_type",
-        MSGnavigation.class);
-  }
+            {testDir + "Eumetsat.VerticalPerspective.grb", "SpaceViewPerspective_Projection", "Pixel_scene_type", MSGnavigation.class, testPoint},
 
-  public void testProjectionsHdfEos() throws IOException, InvalidRangeException {
+            {TestDir.cdmUnitTestDir + "formats/hdf4/eos/modis/MOD13Q1.A2012321.h00v08.005.2012339011757.hdf",
+                    "MODIS_Grid_16DAY_250m_500m_VI/Data_Fields/Projection",
+                    "MODIS_Grid_16DAY_250m_500m_VI/Data_Fields/250m_16_days_NDVI",
+                    Sinusoidal.class, testPoint},
 
-    test(TestDir.cdmUnitTestDir + "formats/hdf4/eos/modis/MOD13Q1.A2012321.h00v08.005.2012339011757.hdf",
-        "MODIS_Grid_16DAY_250m_500m_VI/Data_Fields/Projection",
-        "MODIS_Grid_16DAY_250m_500m_VI/Data_Fields/250m_16_days_NDVI",
-        Sinusoidal.class);
-  }
+            {testDir + "heiko/topo_stere_sphere.nc",
+                    "projection_stere",
+                    "air_temperature_2m",
+                    Stereographic.class, null},
 
-  public void testProjectionsHeiko() throws IOException, InvalidRangeException {
-    Projection p;
-    String dir = testDir + "heiko/";
+            {testDir + "heiko/topo_stere_WGS.nc",
+                    "projection_stere",
+                    "air_temperature_2m",
+                    ucar.unidata.geoloc.projection.proj4.StereographicAzimuthalProjection.class, null},
 
-    p = test(dir+ "topo_stere_sphere.nc",
-        "projection_stere",
-        "air_temperature_2m",
-        Stereographic.class);
+            {testDir + "heiko/topo_utm_sphere.nc",
+                    "projection_tmerc",
+                    "air_temperature_2m",
+                    ucar.unidata.geoloc.projection.TransverseMercator.class, null},
 
-    p = test(dir+ "topo_stere_WGS.nc",
-        "projection_stere",
-        "air_temperature_2m",
-        ucar.unidata.geoloc.projection.proj4.StereographicAzimuthalProjection.class);
+            {testDir + "heiko/topo_utm_WGS.nc",
+                    "projection_tmerc",
+                    "air_temperature_2m",
+                    ucar.unidata.geoloc.projection.proj4.TransverseMercatorProjection.class, null},
 
-    p = test(dir+ "topo_utm_sphere.nc",
-        "projection_tmerc",
-        "air_temperature_2m",
-        ucar.unidata.geoloc.projection.TransverseMercator.class);
+            {testDir + "rotatedPole/snow.DMI.ecctrl.ncml",
+                    "rotated_pole",
+                    "snow",
+                    RotatedPole.class, null},
 
-    p = test(dir+ "topo_utm_WGS.nc",
-        "projection_tmerc",
-        "air_temperature_2m",
-        ucar.unidata.geoloc.projection.proj4.TransverseMercatorProjection.class);
-    
-    p = test(testDir+ "rotatedPole/snow.DMI.ecctrl.ncml",
-            "rotated_pole",
-            "snow",
-            RotatedPole.class);
-  }
+            {testDir + "melb-small_LCEA.nc",
+                    "lambert_cylindrical_equal_area",
+                    "Band1",
+                    CylindricalEqualAreaProjection.class, testPoint},
 
-  public void testLCEA() throws IOException, InvalidRangeException {
-    ProjectionImpl p = (ProjectionImpl) test(testDir + "melb-small_LCEA.nc",
-        "lambert_cylindrical_equal_area",
-        "Band1",
-         CylindricalEqualAreaProjection.class);
+            {testDir + "melb-small_AZE.nc",
+                    "azimuthal_equidistant",
+                    "Band1",
+                    EquidistantAzimuthalProjection.class, new LatLonPointImpl(-37, 145.0)},
 
-    LatLonPointImpl llpt = new LatLonPointImpl(0, 145.0);
-    ProjectionPoint pt = p.latLonToProj(llpt);
-    System.out.printf("%s -> %s%n", llpt, pt);
-  }
+            //  :sweep_angle_axis = "x";
+            // :longitude_of_projection_origin = -75.0; covers western hemisphere
+            {testDir + "geostationary/IT_ABI-L2-CMIPF-M3C16_G16_s2005155201500_e2005155203700_c2014058132255.nc",
+                    "goes_imager_projection",
+                    "CMI",
+                    Geostationary.class, new LatLonPointImpl(-37, -45.0)},
 
-  public void testAZE() throws IOException, InvalidRangeException {
-    ProjectionImpl p = (ProjectionImpl) test(testDir + "melb-small_AZE.nc",
-        "azimuthal_equidistant",
-        "Band1",
-         EquidistantAzimuthalProjection.class);
+    };
 
-    LatLonPointImpl llpt = new LatLonPointImpl(-37, 145.0);
-    ProjectionPoint pt = p.latLonToProj(llpt);
-    System.out.printf("%s -> %s%n", llpt, pt);
+    return Arrays.asList(data);
   }
 
 
-  private Projection test(String filename, String ctvName, String varName, Class projClass) throws IOException, InvalidRangeException {
+  String filename;
+  String ctvName;
+  String varName;
+  Class projClass;
+  LatLonPointImpl testPt;
+
+  public TestProjections(String filename, String ctvName, String varName, Class projClass, LatLonPointImpl testPt) {
+    this.filename = filename;
+    this.ctvName = ctvName;
+    this.varName = varName;
+    this.projClass = projClass;
+    this.testPt = testPt;
+  }
+
+  @Test
+  public void testOneProjection() throws IOException, InvalidRangeException {
     System.out.printf("Open= %s%n", filename);
-    NetcdfDataset ncd = ucar.nc2.dataset.NetcdfDataset.openDataset(filename);
+    try (NetcdfDataset ncd = ucar.nc2.dataset.NetcdfDataset.openDataset(filename)) {
 
-    Variable ctv = null;
-    if (ctvName != null) {
-      ctv = ncd.findVariable(ctvName);
-      assert ctv != null;
-      System.out.println(" dump of ctv = \n" + ctv);
-    }
-
-    VariableDS v = (VariableDS) ncd.findVariable(varName);
-    assert v != null;
-
-    List<CoordinateSystem> cList = v.getCoordinateSystems();
-    assert cList != null;
-    assert cList.size() == 1;
-    CoordinateSystem csys = cList.get(0);
-
-    List<CoordinateTransform> pList = new ArrayList<CoordinateTransform>();
-    List<CoordinateTransform> tList = csys.getCoordinateTransforms();
-    assert tList != null;
-    for (int i = 0; i < tList.size(); i++) {
-      CoordinateTransform ct = tList.get(i);
-      if (ct.getTransformType() == TransformType.Projection)
-        pList.add(ct);
-    }
-    assert pList.size() == 1;
-    CoordinateTransform ct = pList.get(0);
-    assert ct.getTransformType() == TransformType.Projection;
-    assert ct instanceof ProjectionCT;
-
-    ProjectionCT vct = (ProjectionCT) ct;
-    Projection proj = vct.getProjection();
-    assert proj != null;
-    assert projClass.isInstance(proj) : proj.getClass().getName();
-
-    if (projClass != RotatedPole.class) {
-      boolean found = false;
-      double radius = 0.0;
-      for (Parameter p : proj.getProjectionParameters()) {
-        if (p.getName().equals(CF.EARTH_RADIUS)) {
-          found = true;
-          radius = p.getNumericValue();
-        }
-        if (p.getName().equals(CF.SEMI_MAJOR_AXIS)) {
-          found = true;
-          radius = p.getNumericValue();
-        }
+      Variable ctv = null;
+      if (ctvName != null) {
+        ctv = ncd.findVariable(ctvName);
+        assert ctv != null;
+        System.out.println(" dump of ctv = \n" + ctv);
       }
 
-      assert found;
-      assert (radius > 10000) : radius; // meters
-    }
+      VariableDS v = (VariableDS) ncd.findVariable(varName);
+      assert v != null;
 
-    VariableDS ctvSyn = CoordTransBuilder.makeDummyTransformVariable(ncd, ct);
-    System.out.println(" dump of equivilent ctv = \n" + ctvSyn);
+      List<CoordinateSystem> cList = v.getCoordinateSystems();
+      assert cList != null;
+      assert cList.size() == 1;
+      CoordinateSystem csys = cList.get(0);
 
-    if (ctv != null) {
-      Formatter f = new Formatter(System.out);
-      ucar.unidata.test.util.CompareNetcdf.checkContains(ctv.getAttributes(), ctvSyn.getAttributes(), f);
-    }
-
-    ncd.close();
-    return proj;
-  }
-
-
-  ////////////////////////////////////////////////////////////////////////////
-
-  public void testCoordinates() throws IOException, InvalidRangeException {
-    testCoordinates(testDir+ "stereographic/foster.grib2", 26.023346, 251.023136 - 360.0, 41.527360, 270.784605 - 360.0);  // testPSscaleFactor
-    testCoordinates(testDir+ "melb-small_M-1SP.nc", -36.940012, 145.845218, -36.918406, 145.909746);  // testMercatorScaleFactor
-    testCoordinates(testDir+ "rotatedPole/snow.DMI.ecctrl.ncml", 28.690059, -3.831161, 68.988028, 57.076276);              // rotated Pole
-    testCoordinates(testDir+ "rotatedPole/DMI-HIRHAM5_ERAIN_DM_AMMA-50km_1989-1990_as.nc", -19.8, -35.64, 35.2, 35.2);   //
-  }
-
-  private void testCoordinates(String filename, double startLat, double startLon, double endLat, double endLon) throws IOException, InvalidRangeException {
-    System.out.printf("%n***Open %s%n", filename);
-    NetcdfDataset ncd = NetcdfDataset.openDataset(filename);
-    GridDataset gds = new GridDataset(ncd);
-    GridCoordSystem gsys = null;
-    ProjectionImpl p = null;
-
-    for (ucar.nc2.dt.GridDataset.Gridset g : gds.getGridsets()) {
-      gsys = g.getGeoCoordSystem();
-      for (CoordinateTransform t : gsys.getCoordinateTransforms()) {
-        if (t instanceof ProjectionCT) {
-          p = ((ProjectionCT)t).getProjection();
-          break;
-        }
+      List<CoordinateTransform> pList = new ArrayList<>();
+      List<CoordinateTransform> tList = csys.getCoordinateTransforms();
+      assert tList != null;
+      for (CoordinateTransform ct : tList) {
+        if (ct.getTransformType() == TransformType.Projection)
+          pList.add(ct);
       }
-    }
-    assert p != null;
+      assert pList.size() == 1;
+      CoordinateTransform ct = pList.get(0);
+      assert ct.getTransformType() == TransformType.Projection;
+      assert ct instanceof ProjectionCT;
 
-    CoordinateAxis1D xaxis = (CoordinateAxis1D) gsys.getXHorizAxis();
-    CoordinateAxis1D yaxis =  (CoordinateAxis1D) gsys.getYHorizAxis();
-    p.projToLatLon(xaxis.getCoordValue(0), yaxis.getCoordValue(0)  );
-    LatLonPoint start1 =  p.projToLatLon(xaxis.getCoordValue(0), yaxis.getCoordValue(0));
-    LatLonPoint start2 =  p.projToLatLon(xaxis.getCoordValue((int)xaxis.getSize()-1), yaxis.getCoordValue((int)yaxis.getSize()-1));
-    System.out.printf( "start = %f %f%n", start1.getLatitude(), start1.getLongitude());
-    System.out.printf( "end = %f %f%n", start2.getLatitude(), start2.getLongitude());
+      ProjectionCT vct = (ProjectionCT) ct;
+      Projection proj = vct.getProjection();
+      assert proj != null;
+      assert projClass.isInstance(proj) : proj.getClass().getName();
 
-    assert Misc.closeEnough(start1.getLatitude(), startLat) : Misc.howClose(start1.getLatitude(), startLat);
-    assert Misc.closeEnough(start1.getLongitude(), startLon) : Misc.howClose(start1.getLongitude(), startLon);
-
-    assert Misc.closeEnough(start2.getLatitude(), endLat,  2.0E-4) :  Misc.howClose(start2.getLatitude(), endLat);
-    assert Misc.closeEnough(start2.getLongitude(),endLon, 2.0E-4) : Misc.howClose(start2.getLongitude(), endLon);
-
-    ncd.close();
-  }
-
-  public void testPSscaleFactor() throws IOException {
-    String filename = testDir+ "stereographic/foster.grib2";
-    NetcdfDataset ncd = NetcdfDataset.openDataset(filename);
-    GridDataset gds = new GridDataset(ncd);
-    GridCoordSystem gsys = null;
-    ProjectionImpl p = null;
-
-    for (ucar.nc2.dt.GridDataset.Gridset g : gds.getGridsets()) {
-      gsys = g.getGeoCoordSystem();
-      for (CoordinateTransform t : gsys.getCoordinateTransforms()) {
-        if (t instanceof ProjectionCT) {
-          p = ((ProjectionCT)t).getProjection();
-          break;
+      if (projClass != RotatedPole.class) {
+        boolean found = false;
+        double radius = 0.0;
+        for (Parameter p : proj.getProjectionParameters()) {
+          if (p.getName().equals(CF.EARTH_RADIUS)) {
+            found = true;
+            radius = p.getNumericValue();
+          }
+          if (p.getName().equals(CF.SEMI_MAJOR_AXIS)) {
+            found = true;
+            radius = p.getNumericValue();
+          }
         }
+
+        assert found;
+        assert (radius > 10000) : radius; // meters
       }
-    }
 
-    CoordinateAxis1D xaxis = (CoordinateAxis1D) gsys.getXHorizAxis();
-    CoordinateAxis1D yaxis =  (CoordinateAxis1D) gsys.getYHorizAxis();
-    p.projToLatLon(xaxis.getCoordValue(0), yaxis.getCoordValue(0)  );
-    LatLonPoint start1 =  p.projToLatLon(xaxis.getCoordValue(0), yaxis.getCoordValue(0));
-    LatLonPoint start2 =  p.projToLatLon(xaxis.getCoordValue((int)xaxis.getSize()-1), yaxis.getCoordValue((int)yaxis.getSize()-1));
-    System.out.printf( "start = %f %f%n", start1.getLatitude(), start1.getLongitude());
-    System.out.printf( "end = %f %f%n", start2.getLatitude(), start2.getLongitude());
-    
-    /*
-    wgrib2 /data/laps/lapsprd/gr2/102711000.gr2 -ijlat 358 353 -d 1
-      1:0:(358,353),lon=270.784605,lat=41.527360,val=216.094
+      VariableDS ctvSyn = CoordTransBuilder.makeDummyTransformVariable(ncd, ct);
+      System.out.println(" dump of equivilent ctv = \n" + ctvSyn);
 
-    wgrib2 /data/laps/lapsprd/gr2/102711000.gr2 -grid -d 11:0:grid_template=20:
-	    polar stereographic grid: (358 x 353) input WE|EW:SN output WE:SN res 8
-	    North pole lat1 26.023346 lon1 251.023136 latD 34.183360 lonV 259.280944 dx 5000.000000 m dy 5000.000000 m
-     */
-
-    assert Misc.closeEnough(start1.getLatitude(), 26.023346) : Misc.howClose(start1.getLatitude(), 26.023346);
-    assert Misc.closeEnough(start1.getLongitude(), 251.023136 - 360.0) : Misc.howClose(start1.getLongitude(), 251.023136- 360.0);
-
-    assert Misc.closeEnough(start2.getLatitude(), 41.527360,  2.0E-4) :  Misc.howClose(start2.getLatitude(), 41.527360);
-    assert Misc.closeEnough(start2.getLongitude(), 270.784605 - 360.0, 2.0E-4) : Misc.howClose(start2.getLongitude(), 270.784605- 360.0);
-
-    ncd.close();
-  }
-
-  public void testMercatorScaleFactor() throws IOException {
-    String filename = testDir+ "melb-small_M-1SP.nc";
-    NetcdfDataset ncd = NetcdfDataset.openDataset(filename);
-    GridDataset gds = new GridDataset(ncd);
-    GridCoordSystem gsys = null;
-    ProjectionImpl p = null;
-
-    for (ucar.nc2.dt.GridDataset.Gridset g : gds.getGridsets()) {
-      gsys = g.getGeoCoordSystem();
-      for (CoordinateTransform t : gsys.getCoordinateTransforms()) {
-        if (t instanceof ProjectionCT) {
-          p = ((ProjectionCT)t).getProjection();
-          break;
-        }
+      if (ctv != null) {
+        Formatter f = new Formatter(System.out);
+        ucar.unidata.test.util.CompareNetcdf.checkContains(ctv.getAttributes(), ctvSyn.getAttributes(), f);
       }
+
+      if (testPt != null) {
+        ProjectionPoint pt =  proj.latLonToProj(testPt, new ProjectionPointImpl());
+        assert pt != null;
+        assert !Double.isNaN( pt.getX());
+        assert !Double.isNaN(pt.getY());
+      }
+
     }
-
-    CoordinateAxis1D xaxis = (CoordinateAxis1D) gsys.getXHorizAxis();
-    CoordinateAxis1D yaxis =  (CoordinateAxis1D) gsys.getYHorizAxis();
-    p.projToLatLon(xaxis.getCoordValue(0), yaxis.getCoordValue(0)  );
-    LatLonPoint start1 =  p.projToLatLon(xaxis.getCoordValue(0), yaxis.getCoordValue(0));
-    LatLonPoint end =  p.projToLatLon(xaxis.getCoordValue((int)xaxis.getSize()-1), yaxis.getCoordValue((int)yaxis.getSize()-1));
-    System.out.printf( "start = %f %f%n", start1.getLatitude(), start1.getLongitude());
-    System.out.printf( "end = %f %f%n", end.getLatitude(), end.getLongitude());
-
-    /*
-    wgrib2 /data/laps/lapsprd/gr2/102711000.gr2 -ijlat 358 353 -d 1
-      1:0:(358,353),lon=270.784605,lat=41.527360,val=216.094
-
-    wgrib2 /data/laps/lapsprd/gr2/102711000.gr2 -grid -d 11:0:grid_template=20:
-	    polar stereographic grid: (358 x 353) input WE|EW:SN output WE:SN res 8
-	    North pole lat1 26.023346 lon1 251.023136 latD 34.183360 lonV 259.280944 dx 5000.000000 m dy 5000.000000 m
-     */
-
-    assert Misc.closeEnough(start1.getLatitude(), -36.940012) : start1.getLatitude();
-    assert Misc.closeEnough(start1.getLongitude(), 145.845218) : start1.getLongitude();
-
-    assert Misc.closeEnough(end.getLatitude(), -36.918406) :  end.getLatitude();
-    assert Misc.closeEnough(end.getLongitude(), 145.909746) : end.getLongitude();
-
-    ncd.close();
   }
 
 }

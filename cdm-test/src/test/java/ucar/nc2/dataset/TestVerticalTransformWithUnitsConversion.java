@@ -65,7 +65,7 @@ import ucar.unidata.test.util.TestDir;
  * @author mhermida
  *
  */
-@RunWith(value = Parameterized.class)
+@RunWith(Parameterized.class)
 public class TestVerticalTransformWithUnitsConversion {
 	
 	private String sameUnitsFile;

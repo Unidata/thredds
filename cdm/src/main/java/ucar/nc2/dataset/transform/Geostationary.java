@@ -92,7 +92,8 @@ public class Geostationary extends AbstractCoordTransBuilder {
     public CoordinateTransform makeCoordinateTransform(NetcdfDataset ds, Variable ctv) {
       readStandardParams(ds, ctv);
 
-      double height = readAttributeDouble( ctv, CF.PERSPECTIVE_POINT_HEIGHT, Double.NaN);
+      double subLonDegrees = readAttributeDouble( ctv, CF.LONGITUDE_OF_PROJECTION_ORIGIN, -75.0);
+      double height = readAttributeDouble( ctv, CF.PERSPECTIVE_POINT_HEIGHT, Double.NaN);         // LOOK NOT USED ??
       String sweep_angle = readAttribute( ctv, CF.SWEEP_ANGLE_AXIS, null);
       String fixed_angle = readAttribute( ctv, CF.FIXED_ANGLE_AXIS, null);
 
@@ -104,7 +105,7 @@ public class Geostationary extends AbstractCoordTransBuilder {
       else
         isSweepX =  fixed_angle.equals("y");
 
-      ProjectionImpl proj = null; // new ucar.unidata.geoloc.projection.sat.Geostationary(lat0, lon0, height, false_easting, false_northing, isSweepX, earth);
+      ProjectionImpl proj = new ucar.unidata.geoloc.projection.sat.Geostationary(subLonDegrees, isSweepX);
       return new ProjectionCT(ctv.getShortName(), "FGDC", proj);
     }
 

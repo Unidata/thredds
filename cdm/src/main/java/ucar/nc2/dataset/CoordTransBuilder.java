@@ -68,6 +68,7 @@ public class CoordTransBuilder {
     registerTransformMaybe("mcidas_area", "ucar.nc2.iosp.mcidas.McIDASAreaTransformBuilder"); // optional - needs visad.jar
     registerTransform(CF.MERCATOR, Mercator.class);
     registerTransform("MSGnavigation", MSGnavigation.class);
+    registerTransform("geostationary", Geostationary.class);
     registerTransform(CF.ORTHOGRAPHIC, Orthographic.class);
     registerTransform(CF.POLAR_STEREOGRAPHIC, PolarStereographic.class);
     registerTransform("polyconic", PolyconicProjection.class); // ghansham@sac.isro.gov.in 1/8/2012

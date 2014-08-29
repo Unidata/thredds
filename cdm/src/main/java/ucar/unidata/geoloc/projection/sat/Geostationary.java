@@ -1,5 +1,8 @@
 package ucar.unidata.geoloc.projection.sat;
 
+import ucar.nc2.constants.CF;
+import ucar.unidata.geoloc.*;
+
 /**
  * Describe: https://cf-pcmdi.llnl.gov/trac/ticket/72
  * Accepted for CF-1.7
@@ -38,5 +41,118 @@ package ucar.unidata.geoloc.projection.sat;
  * @author caron
  * @since 12/5/13
  */
-public class Geostationary {
+
+public class Geostationary extends ProjectionImpl {
+  private static final String NAME = "geostationary";
+  GEOSTransform navigation = null;
+
+  public Geostationary() {
+    super(NAME, false);
+    navigation = new GEOSTransform();
+    makePP();
+  }
+
+  public Geostationary(double subLonDegrees) {
+    super(NAME, false);
+    navigation = new GEOSTransform(subLonDegrees, GEOSTransform.GOES);
+    makePP();
+  }
+
+  public Geostationary(double subLonDegrees, boolean isSweepX) {
+    super(NAME, false);
+
+    String scanGeometry = GEOSTransform.GOES;
+    if (!isSweepX) {
+      scanGeometry = GEOSTransform.GEOS;
+    }
+
+    navigation = new GEOSTransform(subLonDegrees, scanGeometry);
+    makePP();
+  }
+
+  public Geostationary(double subLonDegrees, String sweepAngleAxis) {
+    super(NAME, false);
+    String scanGeometry = GEOSTransform.GOES;
+
+    if (sweepAngleAxis.equals("x")) {
+       scanGeometry = GEOSTransform.GOES;
+    }
+    else if (sweepAngleAxis.equals("y")) {
+       scanGeometry = GEOSTransform.GEOS;
+    }
+
+    navigation = new GEOSTransform(subLonDegrees, scanGeometry);
+    makePP();
+  }
+
+  private void makePP() {
+    addParameter(CF.GRID_MAPPING_NAME, NAME);
+    addParameter(CF.LONGITUDE_OF_PROJECTION_ORIGIN, navigation.sub_lon_degrees);
+    // addParameter(CF.PERSPECTIVE_POINT_HEIGHT, navigation.sub_lon_degrees);   LOOK NOT USED ??
+    addParameter(CF.SWEEP_ANGLE_AXIS, navigation.scan_geom.equals(GEOSTransform.GOES) ? "x" : "y");
+    addParameter(CF.SEMI_MAJOR_AXIS, navigation.r_eq * 1000.0);
+    addParameter(CF.SEMI_MINOR_AXIS, navigation.r_pol * 1000.0);
+  }
+
+  /**
+   * copy constructor - avoid clone !!
+   */
+  @Override
+  public ProjectionImpl constructCopy() {
+    return new Geostationary(navigation.sub_lon_degrees, navigation.scan_geom);
+  }
+
+  @Override
+  public String paramsToString() {
+    return "";
+  }
+
+  @Override
+  public ProjectionPoint latLonToProj(LatLonPoint latlon, ProjectionPointImpl destPoint) {
+    double[] satCoords = navigation.earthToSat(latlon.getLongitude(), latlon.getLatitude());
+    destPoint.setLocation(satCoords[0], satCoords[1]);
+    return destPoint;
+  }
+
+  @Override
+  public LatLonPoint projToLatLon(ProjectionPoint ppt, LatLonPointImpl destPoint) {
+    double[] lonlat = navigation.satToEarth(ppt.getX(), ppt.getY());
+    destPoint.setLongitude(lonlat[0]);
+    destPoint.setLatitude(lonlat[1]);
+    return destPoint;
+  }
+
+  @Override
+  public boolean crossSeam(ProjectionPoint pt1, ProjectionPoint pt2) {
+    // either point is infinite
+    if (ProjectionPointImpl.isInfinite(pt1) || ProjectionPointImpl.isInfinite(pt2))
+      return true;
+
+    // opposite signed X values, larger then 100 km
+    return (pt1.getX() * pt2.getX() < 0) && (Math.abs(pt1.getX() - pt2.getX()) > 100);
+  }
+
+  @Override
+  public boolean equals(Object proj) {
+    if (!(proj instanceof Geostationary)) {
+      return false;
+    }
+    Geostationary gp = (Geostationary)proj;
+    if (!(this.navigation.equals(gp.navigation))) return false;
+    if (!(this.getDefaultMapArea().equals(gp.getDefaultMapArea()))) return false;
+    return true;
+  }
+
+  /**
+   * Create a ProjectionRect from the given LatLonRect.
+   * Handles lat/lon points that do not intersect the projection panel.
+   * LOOK NEEDS OVERRIDDING
+   * @param rect the LatLonRect
+   * @return ProjectionRect, or null if no part of the LatLonRect intersects the projection plane
+   */
+  @Override
+  public ProjectionRect latLonToProjBB(LatLonRect rect) {
+    return super.latLonToProjBB(rect);
+  }
+
 }
