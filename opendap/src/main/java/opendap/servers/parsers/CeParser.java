@@ -1,4 +1,4 @@
-/* A Bison parser, made by GNU Bison 3.0.  */
+/* A Bison parser, made by GNU Bison 3.0.2.  */
 
 /* Skeleton implementation for Bison LALR(1) parsers in Java
 
@@ -55,7 +55,7 @@ import java.util.*;
 public class CeParser extends Ceparse
 {
     /** Version number for the Bison executable that generated this parser.  */
-  public static final String bisonVersion = "3.0";
+  public static final String bisonVersion = "3.0.2";
 
   /** Name of the skeleton that generated this parser.  */
   public static final String bisonSkeleton = "lalr1.java";
@@ -300,6 +300,19 @@ public class CeParser extends Ceparse
     return yyerrstatus_ == 0;
   }
 
+  /** Compute post-reduction state.
+   * @param yystate   the current state
+   * @param yysym     the nonterminal to push on the stack
+   */
+  private int yy_lr_goto_state_ (int yystate, int yysym)
+  {
+    int yyr = yypgoto_[yysym - yyntokens_] + yystate;
+    if (0 <= yyr && yyr <= yylast_ && yycheck_[yyr] == yystate)
+      return yytable_[yyr];
+    else
+      return yydefgoto_[yysym - yyntokens_];
+  }
+
   private int yyaction (int yyn, YYStack yystack, int yylen) throws ParseException
   {
     Object yyval;
@@ -322,370 +335,370 @@ public class CeParser extends Ceparse
       {
           case 8:
   if (yyn == 8)
-    /* "ce.y":101  */ /* lalr1.java:476  */
+    /* "ce.y":101  */ /* lalr1.java:489  */
     {projections(parsestate,((yystack.valueAt (1-(1)))));};
   break;
     
 
   case 9:
   if (yyn == 9)
-    /* "ce.y":106  */ /* lalr1.java:476  */
+    /* "ce.y":106  */ /* lalr1.java:489  */
     {selections(parsestate,((yystack.valueAt (1-(1)))));};
   break;
     
 
   case 10:
   if (yyn == 10)
-    /* "ce.y":112  */ /* lalr1.java:476  */
+    /* "ce.y":112  */ /* lalr1.java:489  */
     {yyval=projectionlist(parsestate,(Object)null,((yystack.valueAt (1-(1)))));};
   break;
     
 
   case 11:
   if (yyn == 11)
-    /* "ce.y":114  */ /* lalr1.java:476  */
+    /* "ce.y":114  */ /* lalr1.java:489  */
     {yyval=projectionlist(parsestate,((yystack.valueAt (3-(1)))),((yystack.valueAt (3-(3)))));};
   break;
     
 
   case 12:
   if (yyn == 12)
-    /* "ce.y":120  */ /* lalr1.java:476  */
+    /* "ce.y":120  */ /* lalr1.java:489  */
     {yyval=projection(parsestate,((yystack.valueAt (1-(1)))));};
   break;
     
 
   case 13:
   if (yyn == 13)
-    /* "ce.y":122  */ /* lalr1.java:476  */
+    /* "ce.y":122  */ /* lalr1.java:489  */
     {yyval=((yystack.valueAt (1-(1))));};
   break;
     
 
   case 14:
   if (yyn == 14)
-    /* "ce.y":127  */ /* lalr1.java:476  */
+    /* "ce.y":127  */ /* lalr1.java:489  */
     {yyval=function(parsestate,((yystack.valueAt (3-(1)))),null);};
   break;
     
 
   case 15:
   if (yyn == 15)
-    /* "ce.y":129  */ /* lalr1.java:476  */
+    /* "ce.y":129  */ /* lalr1.java:489  */
     {yyval=function(parsestate,((yystack.valueAt (4-(1)))),((yystack.valueAt (4-(3)))));};
   break;
     
 
   case 16:
   if (yyn == 16)
-    /* "ce.y":135  */ /* lalr1.java:476  */
+    /* "ce.y":135  */ /* lalr1.java:489  */
     {yyval=segmentlist(parsestate,null,((yystack.valueAt (1-(1)))));};
   break;
     
 
   case 17:
   if (yyn == 17)
-    /* "ce.y":137  */ /* lalr1.java:476  */
+    /* "ce.y":137  */ /* lalr1.java:489  */
     {yyval=segmentlist(parsestate,((yystack.valueAt (3-(1)))),((yystack.valueAt (3-(3)))));};
   break;
     
 
   case 18:
   if (yyn == 18)
-    /* "ce.y":143  */ /* lalr1.java:476  */
+    /* "ce.y":143  */ /* lalr1.java:489  */
     {yyval=segment(parsestate,((yystack.valueAt (1-(1)))),null);};
   break;
     
 
   case 19:
   if (yyn == 19)
-    /* "ce.y":145  */ /* lalr1.java:476  */
+    /* "ce.y":145  */ /* lalr1.java:489  */
     {yyval=segment(parsestate,((yystack.valueAt (2-(1)))),((yystack.valueAt (2-(2)))));};
   break;
     
 
   case 20:
   if (yyn == 20)
-    /* "ce.y":151  */ /* lalr1.java:476  */
+    /* "ce.y":151  */ /* lalr1.java:489  */
     {yyval=rangelist(parsestate,null,((yystack.valueAt (1-(1)))));};
   break;
     
 
   case 21:
   if (yyn == 21)
-    /* "ce.y":153  */ /* lalr1.java:476  */
+    /* "ce.y":153  */ /* lalr1.java:489  */
     {yyval=rangelist(parsestate,((yystack.valueAt (2-(1)))),((yystack.valueAt (2-(2)))));};
   break;
     
 
   case 22:
   if (yyn == 22)
-    /* "ce.y":159  */ /* lalr1.java:476  */
+    /* "ce.y":159  */ /* lalr1.java:489  */
     {yyval=range(parsestate,((yystack.valueAt (1-(1)))),null,null);};
   break;
     
 
   case 23:
   if (yyn == 23)
-    /* "ce.y":161  */ /* lalr1.java:476  */
+    /* "ce.y":161  */ /* lalr1.java:489  */
     {yyval=range(parsestate,((yystack.valueAt (5-(2)))),null,((yystack.valueAt (5-(4)))));};
   break;
     
 
   case 24:
   if (yyn == 24)
-    /* "ce.y":163  */ /* lalr1.java:476  */
+    /* "ce.y":163  */ /* lalr1.java:489  */
     {yyval=range(parsestate,((yystack.valueAt (7-(2)))),((yystack.valueAt (7-(4)))),((yystack.valueAt (7-(6)))));};
   break;
     
 
   case 25:
   if (yyn == 25)
-    /* "ce.y":167  */ /* lalr1.java:476  */
+    /* "ce.y":167  */ /* lalr1.java:489  */
     {yyval = range1(parsestate,((yystack.valueAt (3-(2)))));};
   break;
     
 
   case 26:
   if (yyn == 26)
-    /* "ce.y":174  */ /* lalr1.java:476  */
+    /* "ce.y":174  */ /* lalr1.java:489  */
     {yyval=clauselist(parsestate,null,((yystack.valueAt (1-(1)))));};
   break;
     
 
   case 27:
   if (yyn == 27)
-    /* "ce.y":176  */ /* lalr1.java:476  */
+    /* "ce.y":176  */ /* lalr1.java:489  */
     {yyval=clauselist(parsestate,((yystack.valueAt (2-(1)))),((yystack.valueAt (2-(2)))));};
   break;
     
 
   case 28:
   if (yyn == 28)
-    /* "ce.y":182  */ /* lalr1.java:476  */
+    /* "ce.y":182  */ /* lalr1.java:489  */
     {yyval=sel_clause(parsestate,1,((yystack.valueAt (6-(2)))),((yystack.valueAt (6-(3)))),((yystack.valueAt (6-(5)))));};
   break;
     
 
   case 29:
   if (yyn == 29)
-    /* "ce.y":184  */ /* lalr1.java:476  */
+    /* "ce.y":184  */ /* lalr1.java:489  */
     {yyval=sel_clause(parsestate,2,((yystack.valueAt (4-(2)))),((yystack.valueAt (4-(3)))),((yystack.valueAt (4-(4)))));};
   break;
     
 
   case 30:
   if (yyn == 30)
-    /* "ce.y":186  */ /* lalr1.java:476  */
+    /* "ce.y":186  */ /* lalr1.java:489  */
     {yyval=((yystack.valueAt (2-(1))));};
   break;
     
 
   case 31:
   if (yyn == 31)
-    /* "ce.y":191  */ /* lalr1.java:476  */
+    /* "ce.y":191  */ /* lalr1.java:489  */
     {yyval=value_list(parsestate,null,((yystack.valueAt (1-(1)))));};
   break;
     
 
   case 32:
   if (yyn == 32)
-    /* "ce.y":193  */ /* lalr1.java:476  */
+    /* "ce.y":193  */ /* lalr1.java:489  */
     {yyval=value_list(parsestate,((yystack.valueAt (3-(1)))),((yystack.valueAt (3-(3)))));};
   break;
     
 
   case 33:
   if (yyn == 33)
-    /* "ce.y":198  */ /* lalr1.java:476  */
+    /* "ce.y":198  */ /* lalr1.java:489  */
     {yyval=value(parsestate,((yystack.valueAt (1-(1)))));};
   break;
     
 
   case 34:
   if (yyn == 34)
-    /* "ce.y":200  */ /* lalr1.java:476  */
+    /* "ce.y":200  */ /* lalr1.java:489  */
     {yyval=value(parsestate,((yystack.valueAt (1-(1)))));};
   break;
     
 
   case 35:
   if (yyn == 35)
-    /* "ce.y":202  */ /* lalr1.java:476  */
+    /* "ce.y":202  */ /* lalr1.java:489  */
     {yyval=value(parsestate,((yystack.valueAt (1-(1)))));};
   break;
     
 
   case 36:
   if (yyn == 36)
-    /* "ce.y":207  */ /* lalr1.java:476  */
+    /* "ce.y":207  */ /* lalr1.java:489  */
     {yyval=constant(parsestate,((yystack.valueAt (1-(1)))),Lexer.SCAN_NUMBERCONST);};
   break;
     
 
   case 37:
   if (yyn == 37)
-    /* "ce.y":209  */ /* lalr1.java:476  */
+    /* "ce.y":209  */ /* lalr1.java:489  */
     {yyval=constant(parsestate,((yystack.valueAt (1-(1)))),Lexer.SCAN_STRINGCONST);};
   break;
     
 
   case 38:
   if (yyn == 38)
-    /* "ce.y":214  */ /* lalr1.java:476  */
+    /* "ce.y":214  */ /* lalr1.java:489  */
     {yyval=var(parsestate,((yystack.valueAt (1-(1)))));};
   break;
     
 
   case 39:
   if (yyn == 39)
-    /* "ce.y":223  */ /* lalr1.java:476  */
+    /* "ce.y":223  */ /* lalr1.java:489  */
     {yyval=indexpath(parsestate,null,((yystack.valueAt (1-(1)))));};
   break;
     
 
   case 40:
   if (yyn == 40)
-    /* "ce.y":225  */ /* lalr1.java:476  */
+    /* "ce.y":225  */ /* lalr1.java:489  */
     {yyval=indexpath(parsestate,((yystack.valueAt (3-(1)))),((yystack.valueAt (3-(3)))));};
   break;
     
 
   case 41:
   if (yyn == 41)
-    /* "ce.y":230  */ /* lalr1.java:476  */
+    /* "ce.y":230  */ /* lalr1.java:489  */
     {yyval=index(parsestate,((yystack.valueAt (1-(1)))),null);};
   break;
     
 
   case 42:
   if (yyn == 42)
-    /* "ce.y":232  */ /* lalr1.java:476  */
+    /* "ce.y":232  */ /* lalr1.java:489  */
     {yyval=index(parsestate,((yystack.valueAt (2-(1)))),((yystack.valueAt (2-(2)))));};
   break;
     
 
   case 43:
   if (yyn == 43)
-    /* "ce.y":238  */ /* lalr1.java:476  */
+    /* "ce.y":238  */ /* lalr1.java:489  */
     {yyval=array_indices(parsestate,null,((yystack.valueAt (1-(1)))));};
   break;
     
 
   case 44:
   if (yyn == 44)
-    /* "ce.y":240  */ /* lalr1.java:476  */
+    /* "ce.y":240  */ /* lalr1.java:489  */
     {yyval=array_indices(parsestate,((yystack.valueAt (2-(1)))),((yystack.valueAt (2-(2)))));};
   break;
     
 
   case 45:
   if (yyn == 45)
-    /* "ce.y":245  */ /* lalr1.java:476  */
+    /* "ce.y":245  */ /* lalr1.java:489  */
     {yyval=function(parsestate,((yystack.valueAt (3-(1)))),null);};
   break;
     
 
   case 46:
   if (yyn == 46)
-    /* "ce.y":247  */ /* lalr1.java:476  */
+    /* "ce.y":247  */ /* lalr1.java:489  */
     {yyval=function(parsestate,((yystack.valueAt (4-(1)))),((yystack.valueAt (4-(3)))));};
   break;
     
 
   case 47:
   if (yyn == 47)
-    /* "ce.y":252  */ /* lalr1.java:476  */
+    /* "ce.y":252  */ /* lalr1.java:489  */
     {yyval=arg_list(parsestate,null,((yystack.valueAt (1-(1)))));};
   break;
     
 
   case 48:
   if (yyn == 48)
-    /* "ce.y":254  */ /* lalr1.java:476  */
+    /* "ce.y":254  */ /* lalr1.java:489  */
     {yyval=arg_list(parsestate,((yystack.valueAt (3-(1)))),((yystack.valueAt (3-(3)))));};
   break;
     
 
   case 49:
   if (yyn == 49)
-    /* "ce.y":259  */ /* lalr1.java:476  */
+    /* "ce.y":259  */ /* lalr1.java:489  */
     {yyval=new Integer(EQUAL);};
   break;
     
 
   case 50:
   if (yyn == 50)
-    /* "ce.y":260  */ /* lalr1.java:476  */
+    /* "ce.y":260  */ /* lalr1.java:489  */
     {yyval=new Integer(GREATER);};
   break;
     
 
   case 51:
   if (yyn == 51)
-    /* "ce.y":261  */ /* lalr1.java:476  */
+    /* "ce.y":261  */ /* lalr1.java:489  */
     {yyval=new Integer(LESS);};
   break;
     
 
   case 52:
   if (yyn == 52)
-    /* "ce.y":262  */ /* lalr1.java:476  */
+    /* "ce.y":262  */ /* lalr1.java:489  */
     {yyval=new Integer(NOT_EQUAL);};
   break;
     
 
   case 53:
   if (yyn == 53)
-    /* "ce.y":263  */ /* lalr1.java:476  */
+    /* "ce.y":263  */ /* lalr1.java:489  */
     {yyval=new Integer(GREATER_EQL);};
   break;
     
 
   case 54:
   if (yyn == 54)
-    /* "ce.y":264  */ /* lalr1.java:476  */
+    /* "ce.y":264  */ /* lalr1.java:489  */
     {yyval=new Integer(LESS_EQL);};
   break;
     
 
   case 55:
   if (yyn == 55)
-    /* "ce.y":265  */ /* lalr1.java:476  */
+    /* "ce.y":265  */ /* lalr1.java:489  */
     {yyval=new Integer(REGEXP);};
   break;
     
 
   case 56:
   if (yyn == 56)
-    /* "ce.y":269  */ /* lalr1.java:476  */
+    /* "ce.y":269  */ /* lalr1.java:489  */
     {yyval = ((yystack.valueAt (1-(1))));};
   break;
     
 
   case 57:
   if (yyn == 57)
-    /* "ce.y":273  */ /* lalr1.java:476  */
+    /* "ce.y":273  */ /* lalr1.java:489  */
     {yyval=unescapeDAPName(((yystack.valueAt (1-(1)))));};
   break;
     
 
   case 58:
   if (yyn == 58)
-    /* "ce.y":277  */ /* lalr1.java:476  */
+    /* "ce.y":277  */ /* lalr1.java:489  */
     {yyval = ((yystack.valueAt (1-(1))));};
   break;
     
 
   case 59:
   if (yyn == 59)
-    /* "ce.y":281  */ /* lalr1.java:476  */
+    /* "ce.y":281  */ /* lalr1.java:489  */
     {yyval = ((yystack.valueAt (1-(1))));};
   break;
     
 
 
-/* "CeParser.java":689  */ /* lalr1.java:476  */
+/* "CeParser.java":702  */ /* lalr1.java:489  */
         default: break;
       }
 
@@ -695,14 +708,7 @@ public class CeParser extends Ceparse
     yylen = 0;
 
     /* Shift the result of the reduction.  */
-    yyn = yyr1_[yyn];
-    int yystate = yypgoto_[yyn - yyntokens_] + yystack.stateAt (0);
-    if (0 <= yystate && yystate <= yylast_
-        && yycheck_[yystate] == yystack.stateAt (0))
-      yystate = yytable_[yystate];
-    else
-      yystate = yydefgoto_[yyn - yyntokens_];
-
+    int yystate = yy_lr_goto_state_ (yystack.stateAt (0), yyr1_[yyn]);
     yystack.push (yystate, yyval);
     return YYNEWSTATE;
   }
@@ -1379,7 +1385,7 @@ private static final byte yycheck_[] = yycheck_init();
 
 /* User implementation code.  */
 /* Unqualified %code blocks.  */
-/* "ce.y":20  */ /* lalr1.java:1060  */
+/* "ce.y":20  */ /* lalr1.java:1066  */
 
  
     static public boolean DEBUG = false;
@@ -1441,9 +1447,9 @@ private static final byte yycheck_[] = yycheck_init();
     public String getConstraint() {return lexstate.constraint;}
 
 
-/* "CeParser.java":1445  */ /* lalr1.java:1060  */
+/* "CeParser.java":1451  */ /* lalr1.java:1066  */
 
 }
 
-/* "ce.y":284  */ /* lalr1.java:1064  */
+/* "ce.y":284  */ /* lalr1.java:1070  */
 

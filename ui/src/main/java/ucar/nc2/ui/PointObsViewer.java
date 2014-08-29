@@ -128,9 +128,10 @@ public class PointObsViewer extends JPanel {
           } else {
             obsList = pds.getData(geoRegion);
           }
-          if (debugQuery) System.out.println("obsList=" + obsList.size());
-          if (obsList != null)
+          if (obsList != null) {
+            if (debugQuery) System.out.println("obsList=" + obsList.size());
             setObservations(obsList);
+          }
         } catch (IOException e1) {
           e1.printStackTrace();
         }
