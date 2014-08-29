@@ -233,6 +233,18 @@ public class Grib2Record {
   }
 
   // debugging - do not use
+  public int[] readRawData(RandomAccessFile raf) throws IOException {
+    Grib2Gds gds = gdss.getGDS();
+
+    Grib2DataReader2 reader = new Grib2DataReader2(drs.getDataTemplate(), gdss.getNumberPoints(), drs.getDataPoints(),
+            getScanMode(), gds.getNxRaw(), dataSection.getStartingPosition(), dataSection.getMsgLength());
+
+    Grib2Drs gdrs = drs.getDrs(raf);
+
+    return reader.getRawData(raf, bms, gdrs);
+  }
+
+  // debugging - do not use
   public Grib2Drs.Type40 readDataTest(RandomAccessFile raf) throws IOException {
     Grib2Gds gds = gdss.getGDS();
 

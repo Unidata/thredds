@@ -670,7 +670,7 @@ public class Grib2DataReader {
         //argv[ 3 ] = "-Rno_roi" ;
         //argv[ 4 ] = "-cdstr_info" ;
         //argv[ 5 ] = "-verbose" ;
-        g2j = new Grib2JpegDecoder(argv);
+        g2j = new Grib2JpegDecoder(nb, false);
         // how jpeg2000.jar use to decode, used raf
         //g2j.decode(raf, length - 5);
         // jpeg-1.0.jar added method to have the data read first
@@ -686,22 +686,25 @@ public class Grib2DataReader {
         for (int i = 0; i < dataNPoints; i++)
           data[i] = R;
       } else if (bitmap == null) {
-        if (g2j.data.length != dataNPoints) {
+        int[] idata = g2j.getGdata();
+
+        if (idata.length != dataNPoints) {
           return null;
         }
         for (int i = 0; i < dataNPoints; i++) {
           // Y * 10^D = R + (X1 + X2) * 2^E ; // regulation 92.9.4
           //Y = (R + ( 0 + X2) * EE)/DD ;
-          data[i] = (R + g2j.data[i] * EE) / DD;
+          data[i] = (R + idata[i] * EE) / DD;
         }
       } else {  // use bitmap
         for (int i = 0, j = 0; i < totalNPoints; i++) {
+          int[] idata = g2j.getGdata();
           if ((bitmap[i / 8] & GribNumbers.bitmask[i % 8]) != 0) {
-            if (j >= g2j.data.length) {
-              System.out.printf("HEY jj2000 data count %d < bitmask count %d, i=%d, totalNPoints=%d%n", g2j.data.length, j, i, totalNPoints);
+            if (j >= idata.length) {
+              System.out.printf("HEY jj2000 data count %d < bitmask count %d, i=%d, totalNPoints=%d%n", idata.length, j, i, totalNPoints);
               break;
             }
-            int indata = g2j.data[j];
+            int indata = idata[j];
             data[i] = (R + indata * EE) / DD;
             j++;
           } else {

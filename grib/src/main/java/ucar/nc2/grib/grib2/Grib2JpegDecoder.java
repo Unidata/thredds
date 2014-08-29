@@ -1,3 +1,35 @@
+/*
+ * Copyright 1998-2014 University Corporation for Atmospheric Research/Unidata
+ *
+ *   Portions of this software were developed by the Unidata Program at the
+ *   University Corporation for Atmospheric Research.
+ *
+ *   Access and use of this software shall impose the following obligations
+ *   and understandings on the user. The user is granted the right, without
+ *   any fee or cost, to use, copy, modify, alter, enhance and distribute
+ *   this software, and any derivative works thereof, and its supporting
+ *   documentation for any purpose whatsoever, provided that this entire
+ *   notice appears in all copies of the software, derivative works and
+ *   supporting documentation.  Further, UCAR requests that the user credit
+ *   UCAR/Unidata in any publications that result from the use of this
+ *   software or in any product that includes this software. The names UCAR
+ *   and/or Unidata, however, may not be used in any advertising or publicity
+ *   to endorse or promote any products or commercial entity unless specific
+ *   written permission is obtained from UCAR/Unidata. The user also
+ *   understands that UCAR/Unidata is not obligated to provide the user with
+ *   any support, consulting, training or assistance of any kind with regard
+ *   to the use, operation and performance of this software nor to provide
+ *   the user with any updates, revisions, new versions or "bug fixes."
+ *
+ *   THIS SOFTWARE IS PROVIDED BY UCAR/UNIDATA "AS IS" AND ANY EXPRESS OR
+ *   IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ *   WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ *   DISCLAIMED. IN NO EVENT SHALL UCAR/UNIDATA BE LIABLE FOR ANY SPECIAL,
+ *   INDIRECT OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING
+ *   FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT,
+ *   NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
+ *   WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
+ */
 package ucar.nc2.grib.grib2;
 
 import jj2000.j2k.quantization.dequantizer.*;
@@ -16,6 +48,8 @@ import jj2000.j2k.io.*;
 
 import colorspace.*;
 import icc.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.*;
 import java.io.IOException;
@@ -23,42 +57,16 @@ import java.io.EOFException;
 import java.io.ByteArrayInputStream;
 
 /**
- * This class is the main class of JJ2000's decoder. It instantiates all
- * objects and performs the decoding operations. It then writes the image to
- * an array for use in Grib2 getData routines
- * <p/>
- * <p>First the decoder should be initialized with a ParameterList object
- * given through the constructor. The when the run() method is invoked and the
- * decoder executes. The exit code of the class can be obtained with the
- * getExitCode() method, after the constructor and after the run method. A
- * non-zero value indicates that an error has occurred.</p>
- * <p/>
- * <p>The decoding chain corresponds to the following sequence of modules:</p>
- * <p/>
- * <ul>
- * <li>BitstreamReaderAgent</li>
- * <li>EntropyDecoder</li>
- * <li>ROIDeScaler</li>
- * <li>Dequantizer</li>
- * <li>InverseWT</li>
- * <li>ImgDataConverter</li>
- * <li>EnumratedColorSpaceMapper, SyccColorSpaceMapper or ICCProfiler</li>
- * <li>ComponentDemixer (if needed)</li>
- * <li>ImgDataAdapter (if ComponentDemixer is needed)</li>
- * <li>ImgWriter</li>
- * <li>BlkImgDataSrcImageProducer</li>
- * </ul>
- * <p/>
- * <p>The 2 last modules cannot be used at the same time and corresponds
- * respectively to the writing of decoded image into a file or the graphical
- * display of this same image.</p>
- * <p/>
- * <p>The behaviour of each module may be modified according to the current
- * tile-component. All the specifications are kept in modules extending
- * ModuleSpec and accessible through an instance of DecoderSpecs class.</p>
+ * Adaptation of jj2000.j2k.decoder.Decoder, in order to read input stream from memory.
  *
+ * @author robb kambic
+ * @author caron  rewritten Aug 2014
  */
 public class Grib2JpegDecoder {
+  static private final Logger logger = LoggerFactory.getLogger(Grib2JpegDecoder.class);
+
+  private boolean debug;
+  private int rate;
 
   /**
    * Return the packBytes ie number bytes / number 1,2 or 4
@@ -66,13 +74,7 @@ public class Grib2JpegDecoder {
   private int packBytes;
 
   /**
-   * the decoded image data
-   */
-  public int[] data;
-
-  /**
-   * Parses the inputstream to analyze the box structure of the JP2
-   * file.
+   * Parses the inputstream to analyze the box structure of the JP2 file.
    */
   private ColorSpace csMap = null;
 
@@ -87,141 +89,6 @@ public class Grib2JpegDecoder {
   private ParameterList pl;
 
   /**
-   * The default parameter list (with modules arguments)
-   */
-  private ParameterList defpl;
-
-  /**
-   * Information contained in the codestream's headers
-   */
-  private HeaderInfo hi;
-
-  /**
-   * The valid list of options prefixes
-   */
-  private final static char vprfxs[] = {BitstreamReaderAgent.OPT_PREFIX,
-          EntropyDecoder.OPT_PREFIX,
-          ROIDeScaler.OPT_PREFIX,
-          Dequantizer.OPT_PREFIX,
-          InvCompTransf.OPT_PREFIX,
-          HeaderDecoder.OPT_PREFIX,
-          ColorSpaceMapper.OPT_PREFIX
-  };
-
-  /**
-   * The parameter information for this class
-   */
-  private final static String[][] pinfo = {
-          {"u", "[on|off]",
-                  "Prints usage information. " +
-                          "If specified all other arguments (except 'v') are ignored", "off"},
-          {"v", "[on|off]",
-                  "Prints version and copyright information", "off"},
-          {"verbose", "[on|off]",
-                  "Prints information about the decoded codestream", "on"},
-          {"pfile", "<filename>",
-                  "Loads the arguments from the specified file. Arguments that are " +
-                          "specified on the command line override the ones from the file.\n" +
-                          "The arguments file is a simple text file with one argument per " +
-                          "line of the following form:\n" +
-                          "  <argument name>=<argument value>\n" +
-                          "If the argument is of boolean type (i.e. its presence turns a " +
-                          "feature on), then the 'on' value turns it on, while the 'off' " +
-                          "value turns it off. The argument name does not include the '-' " +
-                          "or '+' character. Long lines can be broken into several lines " +
-                          "by terminating them with '\\'. Lines starting with '#' are " +
-                          "considered as comments. This option is not recursive: any 'pfile' " +
-                          "argument appearing in the file is ignored.", null},
-          {"res", "<resolution level index>",
-                  "The resolution level at which to reconstruct the image " +
-                          " (0 means the lowest available resolution whereas the maximum " +
-                          "resolution level corresponds to the original image resolution). " +
-                          "If the given index" +
-                          " is greater than the number of available resolution levels of the " +
-                          "compressed image, the image is reconstructed at its highest " +
-                          "resolution (among all tile-components). Note that this option" +
-                          " affects only the inverse wavelet transform and not the number " +
-                          " of bytes read by the codestream parser: this number of bytes " +
-                          "depends only on options '-nbytes' or '-rate'.", null},
-          {"i", "<filename or url>",
-                  "The file containing the JPEG 2000 compressed data. This can be " +
-                          "either a JPEG 2000 codestream or a JP2 file containing a " +
-                          "JPEG 2000 " +
-                          "codestream. In the latter case the first codestream in the file " +
-                          "will be decoded. If an URL is specified (e.g., http://...) " +
-                          "the data will be downloaded and cached in memory before decoding. " +
-                          "This is intended for easy use in applets, but it is not a very " +
-                          "efficient way of decoding network served data.", null},
-          {"o", "<filename>",
-                  "This is the name of the file to which the decompressed image " +
-                          "is written. If no output filename is given, the image is " +
-                          "displayed on the screen. " +
-                          "Output file format is PGX by default. If the extension" +
-                          " is '.pgm' then a PGM file is written as output, however this is " +
-                          "only permitted if the component bitdepth does not exceed 8. If " +
-                          "the extension is '.ppm' then a PPM file is written, however this " +
-                          "is only permitted if there are 3 components and none of them has " +
-                          "a bitdepth of more than 8. If there is more than 1 component, " +
-                          "suffices '-1', '-2', '-3', ... are added to the file name, just " +
-                          "before the extension, except for PPM files where all three " +
-                          "components are written to the same file.", null},
-          {"rate", "<decoding rate in bpp>",
-                  "Specifies the decoding rate in bits per pixel (bpp) where the " +
-                          "number of pixels is related to the image's original size (Note:" +
-                          " this number is not affected by the '-res' option). If it is equal" +
-                          "to -1, the whole codestream is decoded. " +
-                          "The codestream is either parsed (default) or truncated depending " +
-                          "the command line option '-parsing'. To specify the decoding " +
-                          "rate in bytes, use '-nbytes' options instead.", "-1"},
-          {"nbytes", "<decoding rate in bytes>",
-                  "Specifies the decoding rate in bytes. " +
-                          "The codestream is either parsed (default) or truncated depending " +
-                          "the command line option '-parsing'. To specify the decoding " +
-                          "rate in bits per pixel, use '-rate' options instead.", "-1"},
-          {"parsing", null,
-                  "Enable or not the parsing mode when decoding rate is specified " +
-                          "('-nbytes' or '-rate' options). If it is false, the codestream " +
-                          "is decoded as if it were truncated to the given rate. If it is " +
-                          "true, the decoder creates, truncates and decodes a virtual layer" +
-                          " progressive codestream with the same truncation points in each " +
-                          "code-block.", "on"},
-          {"ncb_quit", "<max number of code blocks>",
-                  "Use the ncb and lbody quit conditions. If state information is " +
-                          "found for more code blocks than is indicated with this option, " +
-                          "the decoder " +
-                          "will decode using only information found before that point. " +
-                          "Using this otion implies that the 'rate' or 'nbyte' parameter " +
-                          "is used to indicate the lbody parameter which is the number of " +
-                          "packet body bytes the decoder will decode.", "-1"},
-          {"l_quit", "<max number of layers>",
-                  "Specifies the maximum number of layers to decode for any code-" +
-                          "block", "-1"},
-          {"m_quit", "<max number of bit planes>",
-                  "Specifies the maximum number of bit planes to decode for any code" +
-                          "-block", "-1"},
-          {"poc_quit", null,
-                  "Specifies the whether the decoder should only decode code-blocks " +
-                          "included in the first progression order.", "off"},
-          {"one_tp", null,
-                  "Specifies whether the decoder should only decode the first " +
-                          "tile part of each tile.", "off"},
-          {"comp_transf", null,
-                  "Specifies whether the component transform indicated in the " +
-                          "codestream should be used.", "on"},
-          {"debug", null,
-                  "Print debugging messages when an error is encountered.", "off"},
-          {"cdstr_info", null,
-                  "Display information about the codestream. This information is: " +
-                          "\n- Marker segments value in main and tile-part headers," +
-                          "\n- Tile-part length and position within the code-stream.", "off"},
-          {"nocolorspace", null,
-                  "Ignore any colorspace information in the image.", "off"},
-          {"colorspace_debug", null,
-                  "Print debugging messages when an error is encountered in the" +
-                          " colorspace module.", "off"}
-  };
-
-  /**
    * Instantiates a decoder object, width the 'argv' command
    * line arguments. It also initializes the default parameters. If the
    * argument list is empty an IllegalArgumentException is thrown. If an
@@ -231,11 +98,25 @@ public class Grib2JpegDecoder {
    * @throws IllegalArgumentException If 'argv' is empty
    * @see Grib2JpegDecoder#getExitCode
    */
-  public Grib2JpegDecoder(String argv[]) {
+  public Grib2JpegDecoder(int nbits, boolean debug) {
+    this.rate = nbits;
+    this.debug = debug;
+
+    // not sure if these are needed in the bowels of jj2000
+    String[] argv = new String[6];
+    argv[0] = "-rate";
+    argv[1] = Integer.toString(nbits);
+    argv[2] = "-verbose";
+    argv[3] = "off";
+    argv[4] = "-debug" ;
+    argv[5] = "on" ;
 
     // Initialize default parameters
     //System.err.println("calling Grib2JpegDecoder with argv argument");
-    defpl = new ParameterList();
+    /*
+    The default parameter list (with modules arguments)
+   */
+    ParameterList defpl = new ParameterList();
     String[][] param = Grib2JpegDecoder.getAllParameters();
 
     for (int i = param.length - 1; i >= 0; i--) {
@@ -254,9 +135,7 @@ public class Grib2JpegDecoder {
     try {
       pl.parseArgs(argv);
     } catch (StringFormatException e) {
-      System.err.println("An error occured while parsing the " +
-              "arguments:\n" + e.getMessage());
-      return;
+      System.err.println("An error occurred while parsing the arguments:\n" + e.getMessage());
     }
   } // end Grib2JpegDecoder constructor
 
@@ -270,21 +149,6 @@ public class Grib2JpegDecoder {
     return exitCode;
   }
 
-  /**
-   * Returns the parameters that are used in this class. It returns a 2D
-   * String array. Each of the 1D arrays is for a different option, and they
-   * have 3 elements. The first element is the option name, the second one
-   * is the synopsis and the third one is a long description of what the
-   * parameter is. The synopsis or description may be 'null', in which case
-   * it is assumed that there is no synopsis or description of the option,
-   * respectively.
-   *
-   * @return the options name, their synopsis and their explanation.
-   */
-  public static String[][] getParameterInfo() {
-    return pinfo;
-  }
-
   private boolean hasSignedProblem = false;
   public boolean hasSignedProblem() {
     return hasSignedProblem;
@@ -296,20 +160,18 @@ public class Grib2JpegDecoder {
    *
    * @see #getExitCode
    */
-  public void decode(byte buf[]) {
-    int dataSize = buf.length;
-    boolean verbose;
+  public void decode(byte buf[]) throws IOException {
+    // int dataSize = buf.length;
+    boolean verbose = false;
     int res; // resolution level to reconstruct
-    RandomAccessIO in;
     FileFormatReader ff;
-    BitstreamReaderAgent breader;
     HeaderDecoder hd;
     EntropyDecoder entdec;
     ROIDeScaler roids;
     Dequantizer deq;
     InverseWT invWT;
     InvCompTransf ictransf;
-    ImgWriter imwriter[];
+    //ImgWriter imwriter[];
     ImgDataConverter converter;
     DecoderSpecs decSpec;
     BlkImgDataSrc palettized;
@@ -319,65 +181,11 @@ public class Grib2JpegDecoder {
     int i;
     int depth[];
 
-    int rate = pl.getIntParameter("rate");
-
     try {
 
-      // **** Usage and version ****
-      try {
-        // Do we print version information?
-        if (pl.getBooleanParameter("v")) {
-          printVersionAndCopyright();
-        }
-        // Do we print usage information?
-        if (pl.getParameter("u").equals("on")) {
-          printUsage();
-          return; // When printing usage => exit
-        }
-        // Do we print info ?
-        verbose = pl.getBooleanParameter("verbose");
-      } catch (StringFormatException e) {
-        error("An error occurred while parsing the arguments:\n" +
-                e.getMessage(), 1);
-        if (pl.getParameter("debug").equals("on")) {
-          e.printStackTrace();
-        } else {
-          error("Use '-debug' option for more details", 2);
-        }
-        return;
-      } catch (NumberFormatException e) {
-        error("An error occurred while parsing the arguments:\n" +
-                e.getMessage(), 1);
-        if (pl.getParameter("debug").equals("on")) {
-          e.printStackTrace();
-        } else {
-          error("Use '-debug' option for more details", 2);
-        }
-        return;
-      }
-
-      // **** Check parameters ****
-      try {
-        pl.checkList(vprfxs, pl.toNameArray(pinfo));
-      } catch (IllegalArgumentException e) {
-        error(e.getMessage(), 2);
-        if (pl.getParameter("debug").equals("on")) {
-          e.printStackTrace();
-        } else {
-          error("Use '-debug' option for more details", 2);
-        }
-        return;
-      }
-
-      // create a byte buf from raf for ISRandomAccessIO
-      //System.out.println("raf processing Grib2JpegDecoder");
-
-      //byte buf[] = new byte[ dataSize ];
-      //raf.read( buf );
+      // create a ByteArrayInputStream from byte array for ISRandomAccessIO
       ByteArrayInputStream bais = new ByteArrayInputStream(buf);
-
-      in = new ISRandomAccessIO(bais, dataSize, 1, dataSize);
-
+      RandomAccessIO in = new ISRandomAccessIO(bais, buf.length, 1, buf.length);
 
       // **** File Format ****
       // If the codestream is wrapped in the jp2 fileformat, Read the
@@ -386,7 +194,7 @@ public class Grib2JpegDecoder {
       ff.readFileFormat();
       if (ff.JP2FFUsed) {
         in.seek(ff.getFirstCodeStreamPos());
-        //System.out.println("ff.JP2FFUsed is used");
+        System.out.println("ff.JP2FFUsed is used");  // LOOK probably not
       }
 
       // +----------------------------+
@@ -395,45 +203,20 @@ public class Grib2JpegDecoder {
 
       // **** Header decoder ****
       // Instantiate header decoder and read main header
-      hi = new HeaderInfo();
+      /*
+    Information contained in the codestream's headers
+   */
+      HeaderInfo hi = new HeaderInfo();
       try {
         hd = new HeaderDecoder(in, pl, hi);
       } catch (EOFException e) {
-        error("Codestream too short or bad header, " +
-                "unable to decode.", 2);
-        if (pl.getParameter("debug").equals("on")) {
-          e.printStackTrace();
-        } else {
-          error("Use '-debug' option for more details", 2);
-        }
-        return;
+        error("Codestream too short or bad header, unable to decode.", 2, e);
+        throw e;
       }
 
       int nCompCod = hd.getNumComps();
       int nTiles = hi.siz.getNumTiles();
       decSpec = hd.getDecoderSpecs();
-
-      // Report information
-      StringBuffer info = new StringBuffer(nCompCod +
-              " component(s) in codestream, " + nTiles + " tile(s)\n");
-      if (verbose) {
-
-        info.append("Image dimension: ");
-        for (int c = 0; c < nCompCod; c++) {
-          info.append(hi.siz.getCompImgWidth(c) + "x" +
-                      hi.siz.getCompImgHeight(c) + " ");
-        }
-
-        if (nTiles != 1) {
-          info.append("\nNom. Tile dim. (in canvas): " +
-                      hi.siz.xtsiz + "x" + hi.siz.ytsiz);
-        }
-        System.out.println("[INFO]: " + info.toString());
-      }
-      if (pl.getBooleanParameter("cdstr_info")) {
-        System.out.println("[INFO]: Main header:\n" +
-                hi.toStringMainHeader());
-      }
 
       // Get demixed bitdepths
       depth = new int[nCompCod];
@@ -442,31 +225,7 @@ public class Grib2JpegDecoder {
       }
 
       // **** Bit stream reader ****
-      try {
-        breader = BitstreamReaderAgent.
-                createInstance(in, hd, pl, decSpec,
-                        pl.getBooleanParameter("cdstr_info"), hi);
-      } catch (IOException e) {
-        error("Error while reading bit stream header or parsing " +
-                "packets" + ((e.getMessage() != null) ?
-                (":\n" + e.getMessage()) : ""), 4);
-        if (pl.getParameter("debug").equals("on")) {
-          e.printStackTrace();
-        } else {
-          error("Use '-debug' option for more details", 2);
-        }
-        return;
-      } catch (IllegalArgumentException e) {
-        error("Cannot instantiate bit stream reader" +
-                ((e.getMessage() != null) ?
-                        (":\n" + e.getMessage()) : ""), 2);
-        if (pl.getParameter("debug").equals("on")) {
-          e.printStackTrace();
-        } else {
-          error("Use '-debug' option for more details", 2);
-        }
-        return;
-      }
+      BitstreamReaderAgent breader = BitstreamReaderAgent.createInstance(in, hd, pl, decSpec, false, hi);
 
       // **** Entropy decoder ****
       try {
@@ -474,12 +233,7 @@ public class Grib2JpegDecoder {
       } catch (IllegalArgumentException e) {
         error("Cannot instantiate entropy decoder" +
                 ((e.getMessage() != null) ?
-                        (":\n" + e.getMessage()) : ""), 2);
-        if (pl.getParameter("debug").equals("on")) {
-          e.printStackTrace();
-        } else {
-          error("Use '-debug' option for more details", 2);
-        }
+                        (":\n" + e.getMessage()) : ""), 2, e);
         return;
       }
 
@@ -489,12 +243,7 @@ public class Grib2JpegDecoder {
       } catch (IllegalArgumentException e) {
         error("Cannot instantiate roi de-scaler." +
                 ((e.getMessage() != null) ?
-                        (":\n" + e.getMessage()) : ""), 2);
-        if (pl.getParameter("debug").equals("on")) {
-          e.printStackTrace();
-        } else {
-          error("Use '-debug' option for more details", 2);
-        }
+                        (":\n" + e.getMessage()) : ""), 2, e);
         return;
       }
 
@@ -504,12 +253,7 @@ public class Grib2JpegDecoder {
       } catch (IllegalArgumentException e) {
         error("Cannot instantiate dequantizer" +
                 ((e.getMessage() != null) ?
-                        (":\n" + e.getMessage()) : ""), 2);
-        if (pl.getParameter("debug").equals("on")) {
-          e.printStackTrace();
-        } else {
-          error("Use '-debug' option for more details", 2);
-        }
+                        (":\n" + e.getMessage()) : ""), 2, e);
         return;
       }
 
@@ -520,12 +264,7 @@ public class Grib2JpegDecoder {
       } catch (IllegalArgumentException e) {
         error("Cannot instantiate inverse wavelet transform" +
                 ((e.getMessage() != null) ?
-                        (":\n" + e.getMessage()) : ""), 2);
-        if (pl.getParameter("debug").equals("on")) {
-          e.printStackTrace();
-        } else {
-          error("Use '-debug' option for more details", 2);
-        }
+                        (":\n" + e.getMessage()) : ""), 2, e);
         return;
       }
 
@@ -549,13 +288,6 @@ public class Grib2JpegDecoder {
                   createPalettizedColorSpaceMapper(resampled, csMap);
           color = hd.createColorSpaceMapper(palettized, csMap);
 
-          if (csMap.debugging()) {
-            System.out.println("[ERROR]: " + csMap);
-            System.out.println("[ERROR]: " + channels);
-            System.out.println("[ERROR]: " + resampled);
-            System.out.println("[ERROR]: " + palettized);
-            System.out.println("[ERROR]: " + color);
-          }
         } catch (IllegalArgumentException e) {
           error("Could not instantiate ICC profiler" +
                   ((e.getMessage() != null) ?
@@ -580,27 +312,13 @@ public class Grib2JpegDecoder {
 
       int nCompImg = decodedImage.getNumComps();
 
-      // **** Report info ****
-      int mrl = decSpec.dls.getMin();
-      if (verbose) {
-        if (mrl != res) {
-          System.out.println("Reconstructing resolution " + res + " on " +
-                  mrl + " (" + breader.getImgWidth(res) + "x" +
-                  breader.getImgHeight(res) + ")");
-        }
-        if (rate != -1) {
-          System.out.println("Target rate = "
-                  + breader.getTargetRate() + " bpp (" +
-                  breader.getTargetNbytes() + " bytes)");
-        }
-      }
-
       // code to get data
       // **** Decode and write/display result ****
 
-      imwriter = new ImgWriter[nCompImg];
+      ImgWriter[] imwriter = new ImgWriter[nCompImg];
+
       // Now write the image to the array (decodes as needed)
-      boolean isSigned = false;
+      boolean isSigned;
       for (i = 0; i < imwriter.length; i++) {
         try {
           if (csMap != null) {
@@ -613,13 +331,10 @@ public class Grib2JpegDecoder {
             //System.out.println( "csMap==null" );
           }
         } catch (IOException e) {
-          if (pl.getParameter("debug").equals("on")) {
-            e.printStackTrace();
-          } else {
-            error("Use '-debug' option for more details", 2);
-          }
+          if (debug) e.printStackTrace();
           return;
         }
+
         try {
           imwriter[i].writeAll(); // write data to array
           ImgWriterArray iwa = (ImgWriterArray) imwriter[i];
@@ -637,11 +352,7 @@ public class Grib2JpegDecoder {
           }
           packBytes = iwa.getPackBytes();
         } catch (IOException e) {
-          if (pl.getParameter("debug").equals("on")) {
-            e.printStackTrace();
-          } else {
-            error("Use '-debug' option for more details", 2);
-          }
+          if (debug) e.printStackTrace();
           return;
         }
       } // end for(i=0; i<imwriter.length; i++)
@@ -659,32 +370,17 @@ public class Grib2JpegDecoder {
         }
 
         if (pl.getIntParameter("ncb_quit") == -1) {
-          System.out.println("Actual bit rate = " + bitrate +
-                  " bpp (i.e. " + numBytes + " bytes)");
+          System.out.println("Actual bit rate = " + bitrate + " bpp (i.e. " + numBytes + " bytes)");
         } else {
-          System.out.println(
-                  "Number of packet body bytes read = " + numBytes);
+          System.out.println("Number of packet body bytes read = " + numBytes);
         }
       }
 
     } catch (IllegalArgumentException e) {
       error(e.getMessage(), 2);
-      if (pl.getParameter("debug").equals("on"))
-        e.printStackTrace();
-      return;
-    } catch (Error e) {
-      if (e.getMessage() != null) {
-        error(e.getMessage(), 2);
-      } else {
-        error("An error has occured during decoding.", 2);
-      }
+      if (debug) e.printStackTrace();
 
-      if (pl.getParameter("debug").equals("on")) {
-        e.printStackTrace();
-      } else {
-        error("Use '-debug' option for more details", 2);
-      }
-      return;
+
     } catch (RuntimeException e) {
       if (e.getMessage() != null) {
         error("An uncaught runtime exception has occurred:\n" +
@@ -692,55 +388,23 @@ public class Grib2JpegDecoder {
       } else {
         error("An uncaught runtime exception has occurred.", 2);
       }
-      if (pl.getParameter("debug").equals("on")) {
-        e.printStackTrace();
-      } else {
-        error("Use '-debug' option for more details", 2);
-      }
-      return;
+      if (debug) e.printStackTrace();
+
     } catch (Throwable e) {
       error("An uncaught exception has occurred.", 2);
-      if (pl.getParameter("debug").equals("on")) {
-        e.printStackTrace();
-      } else {
-        error("Use '-debug' option for more details", 2);
-      }
-      return;
+      if (debug) e.printStackTrace();
     }
   } // end decode
 
-  /**
-   * Prints the error message 'msg' to standard err, prepending "ERROR" to
-   * it, and sets the exitCode to 'code'. An exit code different than 0
-   * indicates that there where problems.
-   *
-   * @param msg  The error message
-   * @param code The exit code to set
-   */
   private void error(String msg, int code) {
     exitCode = code;
-    System.out.println(msg);
+    logger.debug(msg);
   }
 
-  /**
-   * Prints the error message 'msg' to standard err, prepending
-   * "ERROR" to it, and sets the exitCode to 'code'. An exit code
-   * different than 0 indicates that there where problems. Either
-   * the stacktrace or a "details" message is output depending on
-   * the data of the "debug" parameter.
-   *
-   * @param msg  The error message
-   * @param code The exit code to set
-   * @param ex   The exception associated with the call
-   */
   private void error(String msg, int code, Throwable ex) {
     exitCode = code;
-    System.out.println(msg);
-    if (pl.getParameter("debug").equals("on")) {
-      ex.printStackTrace();
-    } else {
-      error("Use '-debug' option for more details", 2);
-    }
+    logger.debug(msg);
+    if (debug) ex.printStackTrace();
   }
 
   /**
@@ -756,24 +420,7 @@ public class Grib2JpegDecoder {
   public int[] getGdata() {
     return data;
   }
-
-  /**
-   * Return the information found in the COM marker segments encountered in
-   * the decoded codestream.
-   */
-  public String[] getCOMInfo() {
-    if (hi == null) { // The codestream has not been read yet
-      return null;
-    }
-
-    int nCOMMarkers = hi.getNumCOM();
-    Enumeration com = hi.com.elements();
-    String[] infoCOM = new String[nCOMMarkers];
-    for (int i = 0; i < nCOMMarkers; i++) {
-      infoCOM[i] = com.nextElement().toString();
-    }
-    return infoCOM;
-  }
+  private int[] data;
 
   /**
    * Returns all the parameters used in the decoding chain. It calls
@@ -781,97 +428,40 @@ public class Grib2JpegDecoder {
    * parameter and 4 columns).
    *
    * @return All decoding parameters
-   * @see #getParameterInfo
    */
   public static String[][] getAllParameters() {
-    Vector vec = new Vector();
+    List<String[]> vec = new ArrayList<>();
     int i;
 
     String[][] str = BitstreamReaderAgent.getParameterInfo();
-    if (str != null) for (i = str.length - 1; i >= 0; i--) vec.addElement(str[i]);
+    if (str != null) for (i = str.length - 1; i >= 0; i--) vec.add(str[i]);
 
     str = EntropyDecoder.getParameterInfo();
-    if (str != null) for (i = str.length - 1; i >= 0; i--) vec.addElement(str[i]);
+    if (str != null) for (i = str.length - 1; i >= 0; i--) vec.add(str[i]);
 
     str = ROIDeScaler.getParameterInfo();
-    if (str != null) for (i = str.length - 1; i >= 0; i--) vec.addElement(str[i]);
+    if (str != null) for (i = str.length - 1; i >= 0; i--) vec.add(str[i]);
 
     str = Dequantizer.getParameterInfo();
-    if (str != null) for (i = str.length - 1; i >= 0; i--) vec.addElement(str[i]);
+    if (str != null) for (i = str.length - 1; i >= 0; i--) vec.add(str[i]);
 
     str = InvCompTransf.getParameterInfo();
-    if (str != null) for (i = str.length - 1; i >= 0; i--) vec.addElement(str[i]);
+    if (str != null) for (i = str.length - 1; i >= 0; i--) vec.add(str[i]);
 
     str = HeaderDecoder.getParameterInfo();
-    if (str != null) for (i = str.length - 1; i >= 0; i--) vec.addElement(str[i]);
+    if (str != null) for (i = str.length - 1; i >= 0; i--) vec.add(str[i]);
 
     str = ICCProfiler.getParameterInfo();
-    if (str != null) for (i = str.length - 1; i >= 0; i--) vec.addElement(str[i]);
+    if (str != null) for (i = str.length - 1; i >= 0; i--) vec.add(str[i]);
 
-    str = getParameterInfo();
-    if (str != null) for (i = str.length - 1; i >= 0; i--) vec.addElement(str[i]);
+    str = jj2000.j2k.decoder.Decoder.getParameterInfo();
+    if (str != null) for (i = str.length - 1; i >= 0; i--) vec.add(str[i]);
 
-    str = new String[vec.size()][4];
-    if (str != null) for (i = str.length - 1; i >= 0; i--)
-      str[i] = (String[]) vec.elementAt(i);
+    String[][] result = new String[vec.size()][];
+    for (i = vec.size() - 1; i >= 0; i--)  // fill it backwards
+      result[i] = vec.get(i);
 
-    return str;
-  }
-
-  /**
-   * Prints version and copyright information to the logging facility
-   */
-  private void printVersionAndCopyright() {
-    System.out.println("JJ2000's JPEG 2000 Grib2JpegDecoder\n");
-  }
-
-  /**
-   * Prints the usage information to stdout. The usage information is
-   * written for all modules in the decoder.
-   */
-  private void printUsage() {
-    System.out.println("Usage:");
-    System.out.println("Grib2JpegDecoder args...\n");
-    System.out.println("The exit code of the decoder is non-zero " +
-            "if an error occurs.");
-    System.out.println("The following arguments are recongnized:\n");
-
-    // Print decoding options
-    printParamInfo(getAllParameters());
-  }
-
-  /**
-   * Prints the parameters in 'pinfo' to the provided output, 'out', showing
-   * the existing defaults. The message is printed to the logging facility
-   * returned by FacilityManager.getMsgLogger(). The 'pinfo' argument is a
-   * 2D String array. The first dimension contains String arrays, 1 for each
-   * parameter. Each of these arrays has 3 elements, the first element is
-   * the parameter name, the second element is the synopsis for the
-   * parameter and the third one is a long description of the parameter. If
-   * the synopsis or description is 'null' then no synopsis or description
-   * is printed, respectively. If there is a default value for a parameter
-   * it is also printed.
-   *
-   * @param pinfo The parameter information to write.
-   */
-  private void printParamInfo(String pinfo[][]) {
-    String defval;
-
-    for (int i = 0; i < pinfo.length; i++) {
-      defval = defpl.getParameter(pinfo[i][0]);
-      if (defval != null) { // There is a default value
-        System.out.println("-" + pinfo[i][0] +
-                ((pinfo[i][1] != null) ? " " + pinfo[i][1] + " " : " ") +
-                "(default = " + defval + ")");
-      } else { // There is no default value
-        System.out.println("-" + pinfo[i][0] +
-                ((pinfo[i][1] != null) ? " " + pinfo[i][1] : ""));
-      }
-      // Is there an explanatory message?
-      if (pinfo[i][2] != null) {
-        System.out.println(pinfo[i][2]);
-      }
-    }
+    return result;
   }
 
     /**
@@ -951,8 +541,7 @@ public class Grib2JpegDecoder {
 
             bitDepth = src.getNomRangeBits(this.c);
             if ((bitDepth <= 0) || (bitDepth > 31)) {
-                throw new IOException("Array supports only bit-depth between " +
-                        "1 and 31");
+                throw new IOException("Array supports only bit-depth between 1 and 31");
             }
             if (bitDepth <= 8) {
                 packBytes = 1;
@@ -1060,17 +649,16 @@ public class Grib2JpegDecoder {
         }
 
         /**
-         * The pack length of one sample (in bytes, according to the output
-         * bit-depth
+         * The pack length of one sample (in bytes, according to the output bit-depth
          */
         public int getPackBytes() {
             return packBytes;
         }
 
         /**
-         * the jpeg data decoded into a array
+         * the jpeg data decoded into an int array
          *
-         * @return a byte[]
+         * @return a int[]
          */
         public int[] getGdata() {
             //return gdata;

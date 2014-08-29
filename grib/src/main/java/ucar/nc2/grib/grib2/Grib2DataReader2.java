@@ -122,6 +122,24 @@ public class Grib2DataReader2 {
     return data;
   }
 
+  public int[] getRawData(RandomAccessFile raf, Grib2SectionBitMap bitmapSection, Grib2Drs gdrs) throws IOException {
+    this.bitmap = bitmapSection.getBitmap(raf);
+    this.bitmapIndicator = bitmapSection.getBitMapIndicator();
+
+    if (bitmap != null) { // is bitmap ok ?
+      if (bitmap.length * 8 < totalNPoints) { // gdsNumberPoints == nx * ny ??
+        log.warn("Bitmap section length = {} != grid length {} ({},{})", bitmap.length, totalNPoints, nx, totalNPoints/nx);
+        throw new IllegalStateException("Bitmap section length!= grid length");
+      }
+    }
+
+    raf.seek(startPos+5); // skip past first 5 bytes in data section, now ready to read
+
+    if (dataTemplate != 40) return null;
+
+    return getData40raw(raf, (Grib2Drs.Type40) gdrs);
+  }
+
   static private final boolean staticMissingValueInUse = true;
   static private final float staticMissingValue = Float.NaN;
 
@@ -700,71 +718,82 @@ public class Grib2DataReader2 {
     float R = gdrs.referenceValue;
     int E = gdrs.binaryScaleFactor;
     float EE = (float) java.lang.Math.pow( 2.0, (double) E);
+    float ref_val = R / DD;
 
     Grib2JpegDecoder g2j = null;
-    try {
+    // try {
       if (nb != 0) {  // there's data to decode
-        String[] argv = new String[6];
-        argv[0] = "-rate";
-        argv[1] = Integer.toString(nb);
-        argv[2] = "-verbose";
-        argv[3] = "off";
-        argv[4] = "-debug" ;
-        argv[5] = "on" ;
-        //argv[ 2 ] = "-nocolorspace" ;
-        //argv[ 3 ] = "-Rno_roi" ;
-        //argv[ 4 ] = "-cdstr_info" ;
-        //argv[ 5 ] = "-verbose" ;
-        g2j = new Grib2JpegDecoder(argv);
-        // how jpeg2000.jar use to decode, used raf
-        //g2j.decode(raf, length - 5);
-        // jpeg-1.0.jar added method to have the data read first
+        g2j = new Grib2JpegDecoder(nb, false);
         byte[] buf = new byte[dataLength - 5];
         raf.readFully(buf);
         g2j.decode(buf);
         gdrs.hasSignedProblem = g2j.hasSignedProblem();
       }
 
-      float[] data = new float[totalNPoints];
+      float[] result = new float[totalNPoints];
 
-      if (nb == 0) {  // no data to decoded, set to reference or  MissingValue
+      // no data to decode, set to reference value
+      if (nb == 0) {
         for (int i = 0; i < dataNPoints; i++)
-          data[i] = R;
-      } else if (bitmap == null) {
-        if (g2j.data.length != dataNPoints) {
+          result[i] = ref_val;
+        return result;
+      }
+
+      int[] idata = g2j.getGdata();
+      if (bitmap == null) { // must be one decoded value in idata for every expected data point
+        if (idata.length != dataNPoints) {
+          log.debug("Number of points in the data record {} != {} expected from GDS", idata.length, dataNPoints);
           return null;
         }
+
         for (int i = 0; i < dataNPoints; i++) {
           // Y * 10^D = R + (X1 + X2) * 2^E ; // regulation 92.9.4
-          //Y = (R + ( 0 + X2) * EE)/DD ;
-          data[i] = (R + g2j.data[i] * EE) / DD;
+          // Y = (R + ( 0 + X2) * EE)/DD ;
+          result[i] = (R + idata[i] * EE) / DD;
         }
-      } else {  // use bitmap
+        return result;
+
+      } else {  // use bitmap to skip missing values
         for (int i = 0, j = 0; i < totalNPoints; i++) {
           if ((bitmap[i / 8] & GribNumbers.bitmask[i % 8]) != 0) {
-            if (j >= g2j.data.length) {
-              System.out.printf("HEY jj2000 data count %d < bitmask count %d, i=%d, totalNPoints=%d%n", g2j.data.length, j, i, totalNPoints);
+            if (j >= idata.length) {
+              System.out.printf("HEY jj2000 data count %d < bitmask count %d, i=%d, totalNPoints=%d%n", idata.length, j, i, totalNPoints);
               break;
             }
-            int indata = g2j.data[j];
-            data[i] = (R + indata * EE) / DD;
+            int indata = idata[j];
+            result[i] = (R + indata * EE) / DD;
             j++;
           } else {
-            data[i] = staticMissingValue;  // LOOK ??
+            result[i] = staticMissingValue;
           }
         }
       }
-      return data;
+      return result;
 
-    } catch (NullPointerException npe) {
+    /* } catch (NullPointerException npe) {
 
-      log.error("Grib2DataSection.jpeg2000Unpacking: bit rate too small nb =" + nb + " for file" + raf.getLocation());
+      log.error("Grib2DataReader2.jpeg2000Unpacking: bit rate too small nb =" + nb + " for file" + raf.getLocation());
       float[] data = new float[dataNPoints];
       for (int i = 0; i < dataNPoints; i++) {
         data[i] = staticMissingValue;  // LOOK ??
       }
       return data;
-    }
+    } */
+  }
+
+    // Grid point data - JPEG 2000 code stream format
+  public int[] getData40raw(RandomAccessFile raf, Grib2Drs.Type40 gdrs) throws IOException {
+    int nb = gdrs.numberOfBits;
+    if (nb == 0) return null;
+
+    Grib2JpegDecoder g2j = null;
+    g2j = new Grib2JpegDecoder(nb, false);
+    byte[] buf = new byte[dataLength - 5];
+    raf.readFully(buf);
+    g2j.decode(buf);
+    gdrs.hasSignedProblem = g2j.hasSignedProblem();
+
+    return g2j.getGdata();
   }
 
     // by jkaehler@meteomatics.com
