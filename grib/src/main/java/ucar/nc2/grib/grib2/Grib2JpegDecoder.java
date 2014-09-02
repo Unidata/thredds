@@ -57,7 +57,7 @@ import java.io.EOFException;
 import java.io.ByteArrayInputStream;
 
 /**
- * Adaptation of jj2000.j2k.decoder.Decoder, in order to read input stream from memory.
+ * Adaptation of jj2000.j2k.decoder.Decoder, in order to read input from memory.
  *
  * @author robb kambic
  * @author caron  rewritten Aug 2014
@@ -415,7 +415,7 @@ public class Grib2JpegDecoder {
   }
 
   /**
-   * Return the decoded image as byte array
+   * Return the "raw" decoded data as an int array
    */
   public int[] getGdata() {
     return data;

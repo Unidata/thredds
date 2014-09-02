@@ -1027,6 +1027,18 @@ public class Grib2DataPanel extends JPanel {
       return minBits+"-"+maxBits;
     }
 
+    public String getScale() {
+      calcBits();
+      Formatter f= new Formatter();
+      if (minScale == Double.MAX_VALUE)
+        f.format("N/A");
+      if (Misc.closeEnough(minScale, maxScale))
+        f.format("%g",minScale);
+      else
+        f.format("(%g,%g)",minScale,maxScale);
+      return f.toString();
+    }
+
     public float getAvgBits() {
       calcBits();
       return avgbits;
@@ -1037,6 +1049,7 @@ public class Grib2DataPanel extends JPanel {
       return compress;
     }
 
+    private double minScale, maxScale;
     private int minBits, maxBits;
     private float nbits = -1;
     private float avgbits;
@@ -1045,10 +1058,16 @@ public class Grib2DataPanel extends JPanel {
       if (nbits >= 0) return;
       nbits = 0;
       int count = 0;
+      minScale = Float.MAX_VALUE;
+      maxScale = -Float.MAX_VALUE;
       minBits = Integer.MAX_VALUE;
       for (Grib2RecordBean bean : records) {
         minBits = Math.min(minBits, bean.getNBits());
         maxBits = Math.max(maxBits, bean.getNBits());
+        if (0 != bean.getNBits()) {
+          minScale = Math.min(minScale, bean.getScale());
+          maxScale = Math.max(maxScale, bean.getScale());
+        }
         nbits += bean.getNBits();
         avgbits += bean.getAvgBits();
         count++;
@@ -1131,9 +1150,7 @@ public class Grib2DataPanel extends JPanel {
       maximum = minimum +  scale * maxPacked;
     }
 
-    public String getHeader() {
-      return Grib2Utils.cleanupHeader(gr.getHeader());
-    }
+   // public String getHeader() { return Grib2Utils.cleanupHeader(gr.getHeader()); }
 
     public int getDrsTemplate() {
       return gr.getDataRepresentationSection().getDataTemplate();
@@ -1181,9 +1198,11 @@ public class Grib2DataPanel extends JPanel {
       return scale;
     }
 
-   /*  public int getDrsHash() {
-      return drs.hashCode();
-    }  */
+    public String getPrecision() {
+      Formatter f= new Formatter();
+      f.format("%.5g", scale/2);
+      return f.toString();
+    }
 
     public int getBitMap() {
       return gr.getBitmapSection().getBitMapIndicator();
@@ -1200,7 +1219,7 @@ public class Grib2DataPanel extends JPanel {
 
     public final int getTime() {
       return pds.getForecastTime();
-    }
+    }  */
 
     public String getLevel() {
       int v1 = pds.getLevelType1();
@@ -1209,7 +1228,7 @@ public class Grib2DataPanel extends JPanel {
       if (v2 == 255) return "" + pds.getLevelValue1();
       if (v1 != v2) return pds.getLevelValue1() + "-" + pds.getLevelValue2() + " level2 type= " + v2;
       return pds.getLevelValue1() + "-" + pds.getLevelValue2();
-    }   */
+    }
 
     public void toRawPdsString(Formatter f) {
       byte[] bytes = gr.getPDSsection().getRawBytes();
