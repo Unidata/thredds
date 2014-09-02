@@ -46,6 +46,10 @@ public class Grib2SectionDataRepresentation {
     this.dataTemplate = dataTemplate;
   }
 
+  /*
+  Number of data points where one or more values are specified in Section 7 when a bit map
+  is present, total number of data points when a bit map is absent.
+   */
   public int getDataPoints() {
     return dataPoints;
   }

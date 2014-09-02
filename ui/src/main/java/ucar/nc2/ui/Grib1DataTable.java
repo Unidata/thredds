@@ -37,6 +37,7 @@ import thredds.inventory.CollectionAbstract;
 import thredds.inventory.MCollection;
 import thredds.inventory.MFile;
 import ucar.ma2.DataType;
+import ucar.nc2.grib.GribData;
 import ucar.nc2.grib.collection.Grib1CollectionBuilder;
 import ucar.nc2.grib.collection.Grib1Iosp;
 import ucar.nc2.grib.grib1.*;
@@ -44,7 +45,6 @@ import ucar.nc2.grib.grib1.tables.Grib1Customizer;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.ui.widget.*;
 import ucar.nc2.ui.widget.PopupMenu;
-import ucar.nc2.util.IO;
 import ucar.nc2.util.Misc;
 import ucar.util.prefs.PreferencesExt;
 import ucar.util.prefs.ui.BeanTable;
@@ -55,12 +55,9 @@ import javax.swing.event.ListSelectionListener;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.io.*;
-import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
-import java.nio.ShortBuffer;
 import java.util.*;
 import java.util.List;
-import java.util.zip.Deflater;
 
 /**
  * Describe
@@ -188,7 +185,20 @@ public class Grib1DataTable extends JPanel {
         Grib1RecordBean bean = (Grib1RecordBean) record1BeanTable.getSelectedBean();
         if (bean != null) {
           Formatter f = new Formatter();
-          showData(bean, f);
+          showData(bean, true, f);
+          infoPopup2.setText(f.toString());
+          infoPopup2.gotoTop();
+          infoWindow2.show();
+        }
+      }
+    });
+
+    varPopup.addAction("Show Data MAx/Min", new AbstractAction() {
+      public void actionPerformed(ActionEvent e) {
+        Grib1RecordBean bean = (Grib1RecordBean) record1BeanTable.getSelectedBean();
+        if (bean != null) {
+          Formatter f = new Formatter();
+          showData(bean, false, f);
           infoPopup2.setText(f.toString());
           infoPopup2.gotoTop();
           infoWindow2.show();
@@ -226,7 +236,7 @@ public class Grib1DataTable extends JPanel {
         Grib1RecordBean bean = (Grib1RecordBean) record1BeanTable.getSelectedBean();
         if (bean != null) {
           Formatter f = new Formatter();
-          calcData(bean, f);
+          GribData.calcScaleOffset(bean, f);
           infoPopup2.setText(f.toString());
           infoPopup2.gotoTop();
           infoWindow2.show();
@@ -576,7 +586,7 @@ public class Grib1DataTable extends JPanel {
     Grib1CollectionPanel.compare(bean1.gr.getGDSsection(), bean2.gr.getGDSsection(), f);
   }
 
-  private void showData(Grib1RecordBean bean1, Formatter f) {
+  private void showData(Grib1RecordBean bean1, boolean showData, Formatter f) {
     float[] data;
     try {
       data = bean1.readData();
@@ -585,8 +595,17 @@ public class Grib1DataTable extends JPanel {
       return;
     }
 
-    for (float fd : data)
-      f.format("%f%n", fd);
+
+    float max = Float.MAX_VALUE;
+    float min = -Float.MAX_VALUE;
+    for (float fd : data) {
+      if (showData) f.format("%f%n", fd);
+      if (Float.isNaN(fd)) continue;
+      max = Math.max(fd, max);
+      min = Math.max(fd, min);
+    }
+    f.format("max = %f%n", max);
+    f.format("min = %f%n", min);
   }
 
   void showBitmap(Grib1RecordBean bean1, Formatter f) throws IOException {
@@ -619,140 +638,6 @@ public class Grib1DataTable extends JPanel {
     f.format("bitmap size = %d%n", 8 * count);
   }
 
-  void calcData(Grib1RecordBean bean1, Formatter f) {
-    float[] data;
-    try {
-      data = bean1.readData();
-    } catch (IOException e) {
-      f.format("IOException %s", e.getMessage());
-      return;
-    }
-
-    // calc scale/offset
-
-    int nbits = bean1.getNBits();
-    //int width = (2 << nbits) - 1;
-    int width2 = (2 << (nbits-1)) - 1;
-    f.format(" nbits = %d%n", nbits);
-    //f.format(" width = %d (0x%s) %n", width, Long.toHexString(width));
-    f.format(" width = %d (0x%s) %n", width2, Long.toHexString(width2));
-
-    float dataMin = Float.MAX_VALUE;
-    float dataMax = -Float.MAX_VALUE;
-    for (float fd : data) {
-      dataMin = Math.min(dataMin, fd);
-      dataMax = Math.max(dataMax, fd);
-    }
-    f.format(" dataMin = %f%n", dataMin);
-    f.format(" dataMax = %f%n", dataMax);
-    f.format(" range = %f%n", (dataMax - dataMin));
-
-    // scale_factor =(dataMax - dataMin) / (2^n - 1)
-    // add_offset = dataMin + 2^(n-1) * scale_factor
-
-    float scale_factor = (dataMax - dataMin) / width2;
-    float add_offset = dataMin + width2 * scale_factor / 2;
-
-    f.format(" scale_factor = %f%n", scale_factor);
-    f.format(" add_offset = %f%n", add_offset);
-
-    // unpacked_data_value = packed_data_value * scale_factor + add_offset
-    // packed_data_value = nint((unpacked_data_value - add_offset) / scale_factor)
-
-    int n = data.length;
-
-    ByteBuffer bb = ByteBuffer.allocate(2*n);
-    ShortBuffer sb = bb.asShortBuffer();
-    float diffMax = -Float.MAX_VALUE;
-    float diffTotal = 0;
-    float diffTotal2 = 0;
-    for (float fd : data) {
-      short packed_data = (short) Math.round((fd - add_offset) / scale_factor);
-      float unpacked_data = packed_data * scale_factor + add_offset;
-      float diff = Math.abs(fd-unpacked_data);
-      if (diff > 100)
-        f.format("   org=%f, packed_data=%d unpacked=%f diff = %f%n",fd, packed_data, unpacked_data, diff);
-
-      diffMax = Math.max(diffMax, diff);
-      diffTotal += diff;
-      diffTotal2 += diff*diff;
-      sb.put(packed_data);
-    }
-
-    f.format("%n max_diff = %f%n", diffMax);
-    f.format(" avg_diff = %f%n", diffTotal/data.length);
-
-    // Math.sqrt( sumsq/n - avg * avg)
-    float mean = diffTotal/n;
-    float var = (diffTotal2/n - mean * mean);
-    f.format(" std_diff = %f%n", Math.sqrt(var));
-
-    f.format("%nCompression%n");
-    f.format(" number of values = %d%n", n);
-    f.format(" uncompressed as floats = %d%n", n*4);
-    f.format(" uncompressed packed = %d%n", n*nbits/8);
-    f.format(" grib compressed = %d%n",  bean1.getDataLength());
-
-    f.format("%ndeflate%n");
-    Deflater deflater = new Deflater();
-    deflater.setInput(bb.array());
-    deflater.finish();
-    int compressedSize = deflater.deflate(new byte[10*n]);
-    deflater.end();
-
-    f.format(" compressedSize = %d%n", compressedSize);
-    f.format(" compressedRatio = %f%n", (float) compressedSize / (n*nbits/8));
-    f.format(" ratio with grib = %f%n", (float) compressedSize / bean1.getDataLength());
-
-    try {
-      f.format("%nbzip2%n");
-      ByteArrayOutputStream out = new ByteArrayOutputStream(2*compressedSize);
-      org.itadaki.bzip2.BZip2OutputStream zipper = new org.itadaki.bzip2.BZip2OutputStream(out);
-      InputStream fin = new ByteArrayInputStream(bb.array());
-      IO.copy(fin, zipper);
-      zipper.close();
-      compressedSize = out.size();
-      f.format(" compressedSize = %d%n", compressedSize);
-      f.format(" compressedRatio = %f%n", (float) compressedSize / (n*nbits/8));
-      f.format(" ratio with grib = %f%n", (float) compressedSize / bean1.getDataLength());
-
-    } catch (IOException ioe) {
-      ioe.printStackTrace();
-    }
-
-    /* try {
-      f.format("%nbzip2%n");
-      ByteArrayOutputStream out = new ByteArrayOutputStream(2*compressedSize);
-      BZip2CompressorOutputStream zipper = new BZip2CompressorOutputStream(out);
-      InputStream fin = new ByteArrayInputStream(bb.array());
-      IO.copy(fin, zipper);
-      zipper.close();
-      compressedSize = out.size();
-      f.format(" compressedSize = %d%n", compressedSize);
-      f.format(" compressedRatio = %f%n", (float) compressedSize / (n*nbits/8));
-      f.format(" ratio with grib = %f%n", (float) compressedSize / bean1.getDataLength());
-
-    } catch (IOException ioe) {
-      ioe.printStackTrace();
-    }
-
-    try {
-      f.format("%nLZMA2%n");
-      ByteArrayOutputStream out = new ByteArrayOutputStream(2*compressedSize);
-      XZCompressorOutputStream zipper = new XZCompressorOutputStream(out);
-      InputStream fin = new ByteArrayInputStream(bb.array());
-      IO.copy(fin, zipper);
-      zipper.close();
-      compressedSize = out.size();
-      f.format(" compressedSize = %d%n", compressedSize);
-      f.format(" compressedRatio = %f%n", (float) compressedSize / (n*nbits/8));
-      f.format(" ratio with grib = %f%n", (float) compressedSize / bean1.getDataLength());
-
-    } catch (IOException ioe) {
-      ioe.printStackTrace();
-    } */
-
-  }
 
   ////////////////////////////////////////////////////////////////////////////
 
@@ -887,16 +772,16 @@ public class Grib1DataTable extends JPanel {
     }
   }
 
-  public class Grib1RecordBean {
+  public class Grib1RecordBean implements GribData.Bean {
     Grib1Record gr;
     Grib1SectionGridDefinition gds;
     Grib1SectionProductDefinition pds;
     Grib1ParamLevel plevel;
     Grib1ParamTime ptime;
-    Grib1SectionBinaryData.BinaryDataInfo info;
+    GribData.Info info;
     Grib1Gds gdss;
 
-    // no-arg constructor
+    double minimum, maximum, scale;
 
     public Grib1RecordBean() {
     }
@@ -909,7 +794,14 @@ public class Grib1DataTable extends JPanel {
       plevel = cust.getParamLevel(pds);
       ptime = pds.getParamTime(cust);
 
-      info = gr.getDataSection().getBinaryDataInfo(raf);
+      info = gr.getBinaryDataInfo(raf);
+
+      double pow10 =  Math.pow(10.0, -getDecimalScale());        // 1/10^D
+      minimum = (float) (pow10 * info.referenceValue);    // R / 10^D
+      scale = (float) (pow10 * Math.pow(2.0, getBinScale()));  // 2^E / 10^D
+
+      double maxPacked = Math.pow(2.0, getNBits()) - 1;
+      maximum = minimum +  scale * maxPacked;
     }
 
     public String getTimeCoord() {
@@ -927,10 +819,6 @@ public class Grib1DataTable extends JPanel {
       return Float.toString(plevel.getValue1());
     }
 
-    public long getMsgLength() {
-      return gr.getIs().getMessageLength();
-    }
-
     public long getPos() {
       return gr.getDataSection().getStartingPosition();
     }
@@ -939,7 +827,7 @@ public class Grib1DataTable extends JPanel {
       return gr.getFile();
     }
 
-    float[] readData() throws IOException {
+    public float[] readData() throws IOException {
       int fileno = gr.getFile();
       MFile mfile = fileList.get(fileno);
       try (ucar.unidata.io.RandomAccessFile raf = new ucar.unidata.io.RandomAccessFile(mfile.getPath(), "r")) {
@@ -949,19 +837,31 @@ public class Grib1DataTable extends JPanel {
     }
 
     public int getNBits() {
-      return info.numbits;
+      return info.numberOfBits;
     }
 
     public int getDataLength() {
-      return info.msgLength;
+      return info.dataLength;
     }
 
     public int getBinScale() {
-      return info.binscale;
+      return info.binaryScaleFactor;
     }
 
     public int getDecimalScale() {
-      return pds.getDecimalScale();
+      return info.decimalScaleFactor;
+    }
+
+    public double getMinimum() {
+      return minimum;
+    }
+
+    public double getMaximum() {
+      return maximum;
+    }
+
+    public double getScale() {
+      return scale;
     }
 
     public float getAvgBits() {
@@ -988,4 +888,29 @@ public class Grib1DataTable extends JPanel {
       return new ucar.unidata.io.RandomAccessFile(mfile.getPath(), "r");
     }
   }
+
+  public static void main(String arg[]) {
+    float add_offset = 143.988f;
+    float scale_factor = 0.000614654f;
+    float fd = 339.029f;
+
+    System.out.printf("res = %f%n", scale_factor / 2);
+
+    int packed_data = Math.round((fd - add_offset) / scale_factor);   // nint((unpacked_data_value - add_offset) / scale_factor)
+    float unpacked_data = packed_data * scale_factor + add_offset;
+    float diff = Math.abs(fd-unpacked_data);
+    System.out.printf("***   org=%f, packed_data=%d unpacked=%f diff = %f%n",fd, packed_data, unpacked_data, diff);
+
+    packed_data++;
+    unpacked_data = packed_data * scale_factor + add_offset;
+    diff = Math.abs(fd-unpacked_data);
+    System.out.printf("***   org=%f, packed_data+1=%d unpacked=%f diff = %f%n",fd, packed_data, unpacked_data, diff);
+
+    packed_data -=2;
+    unpacked_data = packed_data * scale_factor + add_offset;
+    diff = Math.abs(fd-unpacked_data);
+    System.out.printf("***   org=%f, packed_data-1=%d unpacked=%f diff = %f%n",fd, packed_data, unpacked_data, diff);
+
+  }
+
 }

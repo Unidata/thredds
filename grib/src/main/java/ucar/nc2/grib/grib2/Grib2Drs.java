@@ -33,6 +33,7 @@
 
 package ucar.nc2.grib.grib2;
 
+import ucar.nc2.grib.GribData;
 import ucar.nc2.grib.GribNumbers;
 import ucar.nc2.iosp.BitReader;
 import ucar.unidata.io.RandomAccessFile;
@@ -63,8 +64,8 @@ public abstract class Grib2Drs {
     }
   }
 
-  public abstract int getNBits();
-
+      // for debugging
+  abstract GribData.Info getBinaryDataInfo(RandomAccessFile raf) throws IOException;
   public int getNGroups() {
     return 1;
   }
@@ -106,9 +107,16 @@ public abstract class Grib2Drs {
       this.originalType = raf.read();
     }
 
-    @Override
-    public int getNBits() {
-      return numberOfBits;
+    public GribData.Info getBinaryDataInfo(RandomAccessFile raf) throws IOException {
+
+      GribData.Info info = new GribData.Info();
+      info.referenceValue = this.referenceValue;
+      info.binaryScaleFactor = this.binaryScaleFactor;
+      info.decimalScaleFactor = this.decimalScaleFactor;
+      info.numberOfBits = this.numberOfBits;
+      info.originalType = this.originalType;
+
+     return info;
     }
 
     @Override
@@ -451,10 +459,18 @@ public abstract class Grib2Drs {
 	      this.section7 = raf.read();
 	    }
 
-	    @Override
-	    public int getNBits() {
-	      return numberOfBits;
-	    }
+      @Override
+      public GribData.Info getBinaryDataInfo(RandomAccessFile raf) throws IOException {
+
+        GribData.Info info = new GribData.Info();
+        info.referenceValue = this.referenceValue;
+        info.binaryScaleFactor = this.binaryScaleFactor;
+        info.decimalScaleFactor = this.decimalScaleFactor;
+        info.numberOfBits = this.numberOfBits;
+        // info.originalType = this.originalType;  dunno
+
+       return info;
+      }
 
 	    @Override
 	    public String toString() {

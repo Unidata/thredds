@@ -1,14 +1,12 @@
 package ucar.nc2.grib.grib2;
 
+import ucar.nc2.grib.GribData;
 import ucar.nc2.grib.QuasiRegular;
 import ucar.nc2.time.CalendarDate;
 import ucar.unidata.io.RandomAccessFile;
 import ucar.unidata.util.StringUtil2;
 
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.PrintStream;
-import java.util.Arrays;
 import java.util.Formatter;
 
 /**
@@ -25,7 +23,7 @@ public class Grib2Record {
   private Grib2SectionLocalUse lus; // local use section
   private Grib2SectionGridDefinition gdss;
   private Grib2SectionProductDefinition pdss;
-  private Grib2SectionDataRepresentation drs;
+  private Grib2SectionDataRepresentation drss;
   private Grib2SectionBitMap bms;
   private Grib2SectionData dataSection;
 
@@ -66,7 +64,7 @@ public class Grib2Record {
     this.lus = lus;
     this.gdss = gdss;
     this.pdss = pdss;
-    this.drs = drs;
+    this.drss = drs;
     this.bms = bms;
     this.dataSection = dataSection;
     this.bmsReplaced = bmsReplaced;
@@ -86,7 +84,7 @@ public class Grib2Record {
     this.lus = from.lus;
     this.gdss = from.gdss;
     this.pdss = from.pdss;
-    this.drs = from.drs;
+    this.drss = from.drss;
     this.bms = from.bms;
     this.dataSection = from.dataSection;
     this.repeat = from.repeat;
@@ -123,7 +121,7 @@ public class Grib2Record {
   }
 
   public Grib2SectionDataRepresentation getDataRepresentationSection() {
-    return drs;
+    return drss;
   }
 
   public Grib2SectionBitMap getBitmapSection() {
@@ -181,7 +179,7 @@ public class Grib2Record {
   }
 
   public void setDrs(Grib2SectionDataRepresentation drs) {
-    this.drs = drs;
+    this.drss = drs;
   }
 
   public void setBms(Grib2SectionBitMap bms, boolean replaced) {
@@ -219,10 +217,10 @@ public class Grib2Record {
   public float[] readData(RandomAccessFile raf) throws IOException {
     Grib2Gds gds = gdss.getGDS();
 
-    Grib2DataReader2 reader = new Grib2DataReader2(drs.getDataTemplate(), gdss.getNumberPoints(), drs.getDataPoints(),
+    Grib2DataReader2 reader = new Grib2DataReader2(drss.getDataTemplate(), gdss.getNumberPoints(), drss.getDataPoints(),
             getScanMode(), gds.getNxRaw(), dataSection.getStartingPosition(), dataSection.getMsgLength());
 
-    Grib2Drs gdrs = drs.getDrs(raf);
+    Grib2Drs gdrs = drss.getDrs(raf);
 
     float[] data = reader.getData(raf, bms, gdrs);
 
@@ -236,10 +234,10 @@ public class Grib2Record {
   public int[] readRawData(RandomAccessFile raf) throws IOException {
     Grib2Gds gds = gdss.getGDS();
 
-    Grib2DataReader2 reader = new Grib2DataReader2(drs.getDataTemplate(), gdss.getNumberPoints(), drs.getDataPoints(),
+    Grib2DataReader2 reader = new Grib2DataReader2(drss.getDataTemplate(), gdss.getNumberPoints(), drss.getDataPoints(),
             getScanMode(), gds.getNxRaw(), dataSection.getStartingPosition(), dataSection.getMsgLength());
 
-    Grib2Drs gdrs = drs.getDrs(raf);
+    Grib2Drs gdrs = drss.getDrs(raf);
 
     return reader.getRawData(raf, bms, gdrs);
   }
@@ -248,10 +246,10 @@ public class Grib2Record {
   public Grib2Drs.Type40 readDataTest(RandomAccessFile raf) throws IOException {
     Grib2Gds gds = gdss.getGDS();
 
-    Grib2DataReader2 reader = new Grib2DataReader2(drs.getDataTemplate(), gdss.getNumberPoints(), drs.getDataPoints(),
+    Grib2DataReader2 reader = new Grib2DataReader2(drss.getDataTemplate(), gdss.getNumberPoints(), drss.getDataPoints(),
             getScanMode(), gds.getNxRaw(), dataSection.getStartingPosition(), dataSection.getMsgLength());
 
-    Grib2Drs gdrs = drs.getDrs(raf);
+    Grib2Drs gdrs = drss.getDrs(raf);
     if (gdrs instanceof Grib2Drs.Type40) {
       reader.getData(raf, bms, gdrs);
       return (Grib2Drs.Type40) gdrs;
@@ -360,6 +358,12 @@ public class Grib2Record {
       return;
     }
 
+  }
+
+  public GribData.Info getBinaryDataInfo(RandomAccessFile raf) throws IOException {
+    GribData.Info info = this.drss.getDrs(raf).getBinaryDataInfo(raf);
+    info.dataLength = this.dataSection.getMsgLength();
+    return info;
   }
 
 }

@@ -33,11 +33,11 @@
 package ucar.nc2.grib.grib1;
 
 import net.jcip.annotations.Immutable;
+import ucar.nc2.grib.GribData;
 import ucar.nc2.grib.GribNumbers;
 import ucar.unidata.io.RandomAccessFile;
 
 import java.io.IOException;
-import java.util.Formatter;
 
 /**
  * The Binary Data Section for GRIB-1 files
@@ -157,12 +157,12 @@ public class Grib1SectionBinaryData {
   }
 
     // for debugging
-  public BinaryDataInfo getBinaryDataInfo(RandomAccessFile raf) throws IOException {
+  GribData.Info getBinaryDataInfo(RandomAccessFile raf) throws IOException {
     raf.seek(startingPosition); // go to the data section
 
-    BinaryDataInfo info = new BinaryDataInfo();
+    GribData.Info info = new GribData.Info();
 
-    info.msgLength = GribNumbers.uint3(raf);    // // octets 1-3 (section length)
+    info.dataLength = GribNumbers.uint3(raf);    // // octets 1-3 (section length)
 
     /*
     Code table 11 – Flag
@@ -182,13 +182,14 @@ public class Grib1SectionBinaryData {
 
     // Y × 10^D = R + X × 2^E
     // octets 5-6 (E = binary scale factor)
-    info.binscale = GribNumbers.int2(raf);
+    info.binaryScaleFactor = GribNumbers.int2(raf);
 
     // octets 7-10 (R = reference point = minimum value)
-    info.refvalue = GribNumbers.float4(raf);
+    info.referenceValue = GribNumbers.float4(raf);
 
     // octet 11 (number of bits per value)
-    info.numbits = raf.read();
+    info.numberOfBits = raf.read();
+
     return info;
   }
 

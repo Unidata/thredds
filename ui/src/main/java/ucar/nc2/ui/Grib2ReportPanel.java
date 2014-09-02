@@ -18,6 +18,7 @@ import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dt.GridCoordSystem;
 import ucar.nc2.dt.GridDatatype;
 import ucar.nc2.dt.grid.GridDataset;
+import ucar.nc2.grib.GribData;
 import ucar.nc2.grib.GribStatType;
 import ucar.nc2.grib.GribVariableRenamer;
 import ucar.nc2.grib.collection.GribCdmIndex;
@@ -190,7 +191,8 @@ public class Grib2ReportPanel extends ReportPanel {
     Grib2Drs drs = drss.getDrs(raf);
 
     // calc scale/offset
-    int nbits = drs.getNBits();
+    GribData.Info info = gr.getBinaryDataInfo(raf);
+    int nbits = info.numberOfBits;
     nbitsC.count(nbits);
 
     int width = (2 << (nbits-1)) - 1;
@@ -809,8 +811,8 @@ public class Grib2ReportPanel extends ReportPanel {
     //Grib2SectionBitMap bms = gr.getBitmapSection();
     bitmapRepeat.count(gr.repeat);
 
-    Grib2Drs gdrs = drss.getDrs(raf);
-    nbitsC.count(gdrs.getNBits());
+    GribData.Info info = gr.getBinaryDataInfo(raf);
+    nbitsC.count(info.numberOfBits);
 
     if (extra && template == 40) {  // expensive
       Grib2Drs.Type40 drs40 = gr.readDataTest(raf);
@@ -822,8 +824,6 @@ public class Grib2ReportPanel extends ReportPanel {
       }
     }
   }
-
-
 
   ///////////////////////////////////////////////
 

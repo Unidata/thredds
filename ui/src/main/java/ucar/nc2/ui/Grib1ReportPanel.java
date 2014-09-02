@@ -43,6 +43,7 @@ import ucar.nc2.NetcdfFile;
 import ucar.nc2.dataset.CoordinateAxis1D;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dt.GridCoordSystem;
+import ucar.nc2.grib.GribData;
 import ucar.nc2.grib.collection.GribIosp;
 import ucar.nc2.grib.GribVariableRenamer;
 import ucar.nc2.grib.grib1.*;
@@ -348,10 +349,9 @@ public class Grib1ReportPanel extends ReportPanel {
 
         Grib1SectionProductDefinition pds = gr.getPDSsection();
         decimals.count(pds.getDecimalScale());
-        Grib1SectionBinaryData dataSection = gr.getDataSection();
-        Grib1SectionBinaryData.BinaryDataInfo info = dataSection.getBinaryDataInfo(raf);
-        binScale.count(info.binscale);
-        nbits.count(info.numbits);
+        GribData.Info info = gr.getBinaryDataInfo(raf);
+        binScale.count(info.binaryScaleFactor);
+        nbits.count(info.numberOfBits);
         gridType.count(info.getGridPoint());
         packing.count(info.getPacking());
         dataType.count(info.getDataType());

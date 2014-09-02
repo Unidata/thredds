@@ -33,6 +33,7 @@
 
 package ucar.nc2.grib.grib1;
 
+import ucar.nc2.grib.GribData;
 import ucar.nc2.grib.QuasiRegular;
 import ucar.nc2.time.CalendarDate;
 import ucar.unidata.io.RandomAccessFile;
@@ -167,8 +168,8 @@ public class Grib1Record {
     f.format("          Npts = %d%n", gds.getNpts());
     f.format("        isThin = %s%n", gdss.isThin());
 
-    Grib1SectionBinaryData.BinaryDataInfo info = dataSection.getBinaryDataInfo(raf);
-    f.format("   msgLength = %d%n", info.msgLength);
+    GribData.Info info = getBinaryDataInfo(raf);
+    f.format("   dataLength = %d%n", info.dataLength);
 
     // octet 4, 1st half (packing flag)
     f.format("    ----flag = %s%n", Long.toHexString(info.flag));
@@ -176,9 +177,10 @@ public class Grib1Record {
     f.format("     packing = %s%n", info.getPackingS());
     f.format("        type = %s%n", info.getDataTypeS());
     f.format("        more = %s%n", info.hasMore());
-    f.format("scale factor = %d%n", info.binscale);
-    f.format("reference value = %f%n", info.refvalue);
-    f.format("      nbits = %d%n", info.numbits);
+    f.format("    binscale = %d%n", info.binaryScaleFactor);
+    f.format("    decscale = %d%n", info.decimalScaleFactor);
+    f.format("reference value = %f%n", info.referenceValue);
+    f.format("      nbits = %d%n", info.numberOfBits);
   }
 
   /**
@@ -217,4 +219,10 @@ public class Grib1Record {
 
     return reader.getData(raf, bitmap);
   } */
+
+  public GribData.Info getBinaryDataInfo(RandomAccessFile raf) throws IOException {
+    GribData.Info info = dataSection.getBinaryDataInfo(raf);
+    info.decimalScaleFactor = pdss.getDecimalScale();
+    return info;
+  }
 }

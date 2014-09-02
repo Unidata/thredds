@@ -243,7 +243,7 @@ public class Grib2DataPanel extends JPanel {
         Grib2RecordBean bean = (Grib2RecordBean) record2BeanTable.getSelectedBean();
         if (bean != null) {
           Formatter f = new Formatter();
-          calcData(bean, f);
+          GribData.calcScaleOffset(bean, f);
           infoPopup2.setText(f.toString());
           infoPopup2.gotoTop();
           infoWindow2.show();
@@ -747,7 +747,7 @@ public class Grib2DataPanel extends JPanel {
     f.format("bitmap size = %d%n", 8 * count);
   }
 
-  void calcData(Grib2RecordBean bean1, Formatter f) {
+  /* void calcData(Grib2RecordBean bean1, Formatter f) {
     float[] data;
     try {
       data = bean1.readData();
@@ -878,9 +878,9 @@ public class Grib2DataPanel extends JPanel {
 
     } catch (IOException ioe) {
       ioe.printStackTrace();
-    } */
+    }
 
-  }
+  }  */
 
 
 
@@ -1100,12 +1100,15 @@ public class Grib2DataPanel extends JPanel {
 
   ////////////////////////////////////////////////////////
 
-  public class Grib2RecordBean {
+  public class Grib2RecordBean implements GribData.Bean {
     Grib2Record gr;
     Grib2Pds pds;
     Grib2Drs drs;
     Grib2SectionData dataSection;
     long drsLength;
+
+    GribData.Info info;
+    double minimum, maximum, scale;
 
     public Grib2RecordBean() {
     }
@@ -1117,6 +1120,15 @@ public class Grib2DataPanel extends JPanel {
       this.drs = drss.getDrs(raf);
       this.drsLength = drss.getLength(raf);
       this.dataSection = gr.getDataSection();
+
+      info = gr.getBinaryDataInfo(raf);
+
+      double pow10 =  Math.pow(10.0, -getDecimalScale());        // 1/10^D
+      minimum = (float) (pow10 * info.referenceValue);          // R / 10^D
+      scale = (float) (pow10 * Math.pow(2.0, getBinScale()));  // 2^E / 10^D
+
+      double maxPacked = Math.pow(2.0, getNBits()) - 1;
+      maximum = minimum +  scale * maxPacked;
     }
 
     public String getHeader() {
@@ -1131,22 +1143,6 @@ public class Grib2DataPanel extends JPanel {
       return gr.getDataRepresentationSection().getDataPoints();
     }
 
-    public long getDrsLength() {
-      return drsLength;
-    }
-
-    public int getDataLength() {
-      return dataSection.getMsgLength();
-    }
-
-    public long getDataStart() {
-      return dataSection.getStartingPosition();
-    }
-
-    public int getNBits() {
-      return drs.getNBits();
-    }
-
     public int getNGroups() {
       return drs.getNGroups();
     }
@@ -1157,9 +1153,37 @@ public class Grib2DataPanel extends JPanel {
       return len * 8 / n;
     }
 
-    public int getDrsHash() {
-      return drs.hashCode();
+    public int getNBits() {
+      return info.numberOfBits;
     }
+
+    public int getDataLength() {
+      return info.dataLength;
+    }
+
+    public int getBinScale() {
+      return info.binaryScaleFactor;
+    }
+
+    public int getDecimalScale() {
+      return info.decimalScaleFactor;
+    }
+
+    public double getMinimum() {
+      return minimum;
+    }
+
+    public double getMaximum() {
+      return maximum;
+    }
+
+    public double getScale() {
+      return scale;
+    }
+
+   /*  public int getDrsHash() {
+      return drs.hashCode();
+    }  */
 
     public int getBitMap() {
       return gr.getBitmapSection().getBitMapIndicator();
@@ -1169,7 +1193,7 @@ public class Grib2DataPanel extends JPanel {
       return gr.isBmsReplaced();
     }
 
-    public final String getFile() {
+  /*  public final String getFile() {
       int fno = gr.getFile();
       return fileList.get(fno).getName();
     }
@@ -1185,7 +1209,7 @@ public class Grib2DataPanel extends JPanel {
       if (v2 == 255) return "" + pds.getLevelValue1();
       if (v1 != v2) return pds.getLevelValue1() + "-" + pds.getLevelValue2() + " level2 type= " + v2;
       return pds.getLevelValue1() + "-" + pds.getLevelValue2();
-    }
+    }   */
 
     public void toRawPdsString(Formatter f) {
       byte[] bytes = gr.getPDSsection().getRawBytes();
@@ -1232,7 +1256,7 @@ public class Grib2DataPanel extends JPanel {
       return f.toString();
     }
 
-    float[] readData() throws IOException {
+    public float[] readData() throws IOException {
       ucar.unidata.io.RandomAccessFile raf = getRaf();
       try {
         raf.order(ucar.unidata.io.RandomAccessFile.BIG_ENDIAN);
