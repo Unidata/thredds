@@ -98,6 +98,34 @@ public class GEOSTransform {
      init(subLonDegrees, scan_geom, geoid);
    }
 
+   public GEOSTransform(double subLonDegrees, 
+                        double perspective_point_height, 
+                        double semi_minor_axis, 
+                        double semi_major_axis,
+                        double inverse_flattening, 
+                        String sweep_angle_axis) 
+   {
+      Geoid geoid;
+      if (Double.isNaN(inverse_flattening)) {
+         geoid = new Geoid(semi_minor_axis, semi_major_axis);
+      }
+      else {
+         geoid = new Geoid(semi_minor_axis, semi_major_axis, inverse_flattening);
+      }
+
+      init(subLonDegrees, scan_geom, geoid, perspective_point_height);
+   }
+
+   public GEOSTransform(double subLonDegrees,
+                        double perspective_point_height,
+                        double semi_minor_axis,
+                        double semi_major_axis,
+                        String sweep_angle_axis)
+   {
+      Geoid geoid = new Geoid(semi_minor_axis, semi_major_axis);
+      init(subLonDegrees, scan_geom, geoid, perspective_point_height);
+   }
+
    private void init(double subLonDegrees, String scan_geom, Geoid geoid) {
      this.sub_lon_degrees = subLonDegrees;
      this.sub_lon = sub_lon_degrees*DEG_TO_RAD;
@@ -118,6 +146,23 @@ public class GEOSTransform {
 
      d = h*h - r_eq*r_eq;
    }
+
+   private void init(double subLonDegrees, String scan_geom, Geoid geoid, double perspective_point_height) {
+     this.sub_lon_degrees = subLonDegrees;
+     this.sub_lon = sub_lon_degrees*DEG_TO_RAD;
+     this.scan_geom = scan_geom;
+
+     r_pol = geoid.r_pol;
+     r_eq  = geoid.r_eq;
+     f     = geoid.f;
+     invf  = geoid.invf;
+     fp    = 1.0/((1.0-f)*(1.0-f));
+
+     h = perspective_point_height + r_eq;
+
+     d = h*h - r_eq*r_eq;
+   }
+
 
   /**
    * Transform geographic Earth coordinates to satellite view angle coordinate system
@@ -337,12 +382,20 @@ public class GEOSTransform {
        public Geoid() {
        }
 
-       public Geoid(double r_pol, double r_eq, double f) {
+       public Geoid(double r_pol, double r_eq, double invf) {
           this.r_pol = r_pol;
           this.r_eq = r_eq;
-          this.f = f;
+          this.invf = invf;
+          this.f = 1.0/invf;
+       }
+
+       public Geoid(double r_pol, double r_eq) {
+          this.r_pol = r_pol;
+          this.r_eq = r_eq;
+          this.f = (r_eq - r_pol)/r_eq;
           this.invf = 1.0/f;
        }
+ 
    }
 
    class GeoidWGS84 extends Geoid {
