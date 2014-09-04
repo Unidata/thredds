@@ -75,6 +75,51 @@ public class TestAggExisting {
   }
 
   @Test
+  public void testNcmlDatasetNoProtocolInFilename() throws IOException, InvalidRangeException {
+    String filename = "./"+TestNcML.topDir + "aggExisting.xml";
+
+    NetcdfFile ncfile = NetcdfDataset.openDataset( filename, true, null);
+    System.out.println(" TestNcmlAggExisting.open "+ filename);
+
+    testDimensions(ncfile);
+    testCoordVar(ncfile);
+    testAggCoordVar(ncfile);
+    testReadData(ncfile);
+    testReadSlice(ncfile);
+    ncfile.close();
+  }
+
+  @Test
+  public void testNcmlDatasetNoProtocolInNcml() throws IOException, InvalidRangeException {
+    String filename = "file:./"+TestNcML.topDir + "aggExisting6.xml";
+
+    NetcdfFile ncfile = NetcdfDataset.openDataset( filename, true, null);
+    System.out.println(" TestNcmlAggExisting.open "+ filename);
+
+    testDimensions(ncfile);
+    testCoordVar(ncfile);
+    testAggCoordVar(ncfile);
+    testReadData(ncfile);
+    testReadSlice(ncfile);
+    ncfile.close();
+  }
+
+  @Test
+  public void testNcmlDatasetNoProtocolInFilenameOrNcml() throws IOException, InvalidRangeException {
+    String filename = "./"+TestNcML.topDir + "aggExisting6.xml";
+
+    NetcdfFile ncfile = NetcdfDataset.openDataset( filename, true, null);
+    System.out.println(" TestNcmlAggExisting.open "+ filename);
+
+    testDimensions(ncfile);
+    testCoordVar(ncfile);
+    testAggCoordVar(ncfile);
+    testReadData(ncfile);
+    testReadSlice(ncfile);
+    ncfile.close();
+  }
+
+  @Test
   public void testNcmlDatasetWcoords() throws IOException, InvalidRangeException {
     String filename = "file:./"+TestNcML.topDir + "aggExistingWcoords.xml";
 
