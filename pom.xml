@@ -581,7 +581,13 @@
         <version>${com.google.guava.version}</version>
       </dependency>
 
-      <!-- UI -->
+      <dependency>
+        <groupId>edu.ucar</groupId>
+        <artifactId>jj2000</artifactId>
+        <version>${edu.ucar.jj2000.version}</version>
+      </dependency>
+
+        <!-- UI -->
       <dependency>
         <groupId>org.jfree</groupId>
         <artifactId>jcommon</artifactId>
@@ -985,7 +991,7 @@
 	<!-- Dependency versions -->
     <visad.version>2.0-20130124</visad.version>
     <edu.wisc.version>2011-08-22</edu.wisc.version>
-	  <uk.ac.rdg.resc.version>1.0.tds.4.4.0</uk.ac.rdg.resc.version>
+	<uk.ac.rdg.resc.version>1.0.tds.4.4.0</uk.ac.rdg.resc.version>
 	  
     <org.geotoolkit.version>3.21</org.geotoolkit.version>
     <eds.threddsIso.version>2.3.1</eds.threddsIso.version>
@@ -1030,7 +1036,7 @@
     <saxon.version>8.7</saxon.version>
     <jna.groupId>net.java.dev.jna</jna.groupId>
     <jna.version>4.0.0</jna.version>
-
+    <edu.ucar.jj2000.version>5.2</edu.ucar.jj2000.version>
     <!-- Plugins versions -->
     <maven-antrun-plugin.version>1.7</maven-antrun-plugin.version>
     <maven-assembly-plugin.version>2.4</maven-assembly-plugin.version>
