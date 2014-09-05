@@ -105,7 +105,6 @@ public class Grib1SectionBinaryData {
   public long getStartingPosition() {
     return startingPosition;
   }
-
   public int getLength() {
     return length;
   }
@@ -117,43 +116,6 @@ public class Grib1SectionBinaryData {
     byte[] data = new byte[length];
     raf.readFully(data);
     return data;
-  }
-
-
-  public static class BinaryDataInfo {
-    public int msgLength;
-    public int flag;
-    public int binscale;
-    public  float refvalue;
-    public int numbits;
-
-    public int getGridPoint() {
-      return (flag & GribNumbers.bitmask[0]);
-    }
-
-    public int getPacking() {
-      return (flag & GribNumbers.bitmask[1]);
-    }
-
-    public int getDataType() {
-      return (flag & GribNumbers.bitmask[2]);
-    }
-
-    public boolean hasMore() {
-      return (flag & GribNumbers.bitmask[3]) != 0;
-    }
-
-    public String getGridPointS() {
-      return getGridPoint() == 0 ? "grid point" : "Spherical harmonic coefficients";
-    }
-
-    public String getPackingS() {
-      return getPacking() == 0 ? "simple" : "Complex / second order";
-    }
-
-    public String getDataTypeS() {
-      return getDataType() == 0 ? "float" : "int";
-    }
   }
 
     // for debugging

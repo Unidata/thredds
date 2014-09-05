@@ -44,7 +44,6 @@ import ucar.nc2.grib.grib2.table.NcepLocalTables;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.ui.widget.*;
 import ucar.nc2.ui.widget.PopupMenu;
-import ucar.nc2.util.IO;
 import ucar.nc2.util.Misc;
 import ucar.unidata.geoloc.LatLonPoint;
 import ucar.util.prefs.PreferencesExt;
@@ -56,12 +55,9 @@ import javax.swing.event.ListSelectionListener;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.io.*;
-import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
-import java.nio.ShortBuffer;
 import java.util.*;
 import java.util.List;
-import java.util.zip.Deflater;
 
 /**
  * Grib2 data reading
@@ -387,7 +383,7 @@ public class Grib2DataPanel extends JPanel {
       int id = Grib2CollectionBuilder.cdmVariableHash(cust, gr, 0, false, false, logger);
       Grib2ParameterBean bean = pdsSet.get(id);
       if (bean == null) {
-        bean = new Grib2ParameterBean(gr);
+        bean = new Grib2ParameterBean(gr, id);
         pdsSet.put(id, bean);
         params.add(bean);
       }
@@ -430,7 +426,7 @@ public class Grib2DataPanel extends JPanel {
     return true;
   }     */
 
-  public void showCollection(Formatter f) {
+  public void showInfo(Formatter f) {
     if (dcm == null) {
       if (spec == null) return;
       dcm = scanCollection(spec, f);
@@ -447,19 +443,20 @@ public class Grib2DataPanel extends JPanel {
       e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
     }
 
-    // divided by group
-    Map<Integer, Set<Integer>> groups = new HashMap<>();
+    // show nrecords, data size
+    int nrecords = 0;
+    long dataSize = 0;
     for (Object o : param2BeanTable.getBeans()) {
       Grib2ParameterBean p = (Grib2ParameterBean) o;
-      Set<Integer> group = groups.get(p.getGDS());
-      if (group == null) {
-        group = new TreeSet<>();
-        groups.put(p.getGDS(), group);
+      for (Grib2RecordBean r : p.getRecordBeans()) {
+        nrecords++;
+        dataSize += r.getDataLength();
       }
-      for (Grib2RecordBean r : p.getRecordBeans())
-        group.add(r.gr.getFile());
     }
+    f.format("nrecords = %d, gribMsgSizes = %d", nrecords, dataSize);
   }
+
+  ////////////////////////////////////////////////////////
 
   public void checkProblems(Formatter f) {
     checkDuplicates(f);
@@ -548,6 +545,8 @@ public class Grib2DataPanel extends JPanel {
     }
     f.format("total records = %d%n", total);
   }
+
+  //////////////////////////////
 
   private void writeToFile(List beans) {
 
@@ -744,7 +743,8 @@ public class Grib2DataPanel extends JPanel {
         f.format("%n");
     }
     f.format("%n%n#bits on = %d%n", bits);
-    f.format("bitmap size = %d%n", 8 * count);
+    f.format("total nbits = %d%n", 8 * count);
+    f.format("bitmap nbytes = %d%n", bitmap.length);
   }
 
   /* void calcData(Grib2RecordBean bean1, Formatter f) {
@@ -959,15 +959,16 @@ public class Grib2DataPanel extends JPanel {
     Grib2Pds pds;
     List<Grib2RecordBean> records;
     int discipline;
-    //long gdsKey;
+    int cdmHash;
 
     // no-arg constructor
 
     public Grib2ParameterBean() {
     }
 
-    public Grib2ParameterBean(Grib2Record r) throws IOException {
+    public Grib2ParameterBean(Grib2Record r, int cdmHash) throws IOException {
       this.gr = r;
+      this.cdmHash = cdmHash;
 
       // long refTime = r.getId().getReferenceDate().getMillis();
       pds = r.getPDSsection().getPDS();
@@ -975,6 +976,10 @@ public class Grib2DataPanel extends JPanel {
       discipline = r.getDiscipline();
       records = new ArrayList<>();
       //gdsKey = r.getGDSsection().calcCRC();
+    }
+
+    public String getCdmHash() {
+      return Integer.toHexString(cdmHash);
     }
 
     void addRecord(Grib2Record r, ucar.unidata.io.RandomAccessFile raf) throws IOException {
@@ -1174,7 +1179,7 @@ public class Grib2DataPanel extends JPanel {
       return info.numberOfBits;
     }
 
-    public int getDataLength() {
+    public long getDataLength() {
       return info.dataLength;
     }
 
@@ -1212,14 +1217,17 @@ public class Grib2DataPanel extends JPanel {
       return gr.isBmsReplaced();
     }
 
-  /*  public final String getFile() {
-      int fno = gr.getFile();
-      return fileList.get(fno).getName();
+    public long getStartPos() {
+      return gr.getIs().getStartPos();
+    }
+
+    public String getHeader() {
+      return Grib2Utils.cleanupHeader(gr.getHeader());
     }
 
     public final int getTime() {
       return pds.getForecastTime();
-    }  */
+    }
 
     public String getLevel() {
       int v1 = pds.getLevelType1();

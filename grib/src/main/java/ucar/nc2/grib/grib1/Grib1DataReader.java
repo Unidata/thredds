@@ -75,7 +75,7 @@ value R, the binary scale factor E and the decimal scale factor D by means of th
   private final int decimalScale;
   private final int scanMode;
   private final int nx, ny;
-  private final int nPts;
+  private final int nPts;           // number of points from GDS
   private final long startPos;
 
   /**
@@ -146,7 +146,7 @@ value R, the binary scale factor E and the decimal scale factor D by means of th
         if (nx != -1 && ny != -1) {
           values = new float[nx * ny];
         } else {
-          values = new float[((msgLength - 11) * 8 - unusedbits) / numbits];
+          values = new float[((msgLength - 11) * 8 - unusedbits) / numbits];  // WTF ??
         }
         BitReader reader = new BitReader(raf, startPos+11);
         for (int i = 0; i < values.length; i++) {

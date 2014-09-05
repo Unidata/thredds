@@ -77,6 +77,11 @@ public class Grib2SectionBitMap {
     this.bitMapIndicator = bitMapIndicator;
   }
 
+  int getLength(RandomAccessFile raf) throws IOException {
+    raf.seek(startingPosition);
+    return GribNumbers.int4(raf);
+  }
+
   /*
   Code Table Code table 6.0 - Bit map indicator (6.0)
       0: A bit map applies to this product and is specified in this Section

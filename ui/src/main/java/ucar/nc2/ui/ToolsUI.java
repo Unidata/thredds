@@ -2840,8 +2840,20 @@ public class ToolsUI extends JPanel {
         }
       });
 
-      AbstractButton infoButton = BAMutil.makeButtcon("Information", "Check Problems", false);
+      AbstractButton infoButton = BAMutil.makeButtcon("Information", "Show Info", false);
       infoButton.addActionListener(new ActionListener() {
+        public void actionPerformed(ActionEvent e) {
+          Formatter f = new Formatter();
+          gribTable.showInfo(f);
+          detailTA.setText(f.toString());
+          detailTA.gotoTop();
+          detailWindow.show();
+        }
+      });
+      buttPanel.add(infoButton);
+
+      AbstractButton checkButton = BAMutil.makeButtcon("Information", "Check Problems", false);
+      checkButton.addActionListener(new ActionListener() {
         public void actionPerformed(ActionEvent e) {
           Formatter f = new Formatter();
           gribTable.checkProblems(f);
@@ -2850,7 +2862,7 @@ public class ToolsUI extends JPanel {
           detailWindow.show();
         }
       });
-      buttPanel.add(infoButton);
+      buttPanel.add(checkButton);
     }
 
     void setCollection(String collection) {

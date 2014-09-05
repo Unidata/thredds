@@ -46,7 +46,7 @@ import java.util.*;
 public class Misc {
 
   //private static double maxAbsoluteError = 1.0e-6;
-  private static double maxReletiveError = 1.0e-6;
+  public static final double maxReletiveError = 1.0e-6;
 
   /*  http://www.cygnus-software.com/papers/comparingfloats/comparingfloats.htm
   public static boolean closeEnough( double v1, double v2) {
@@ -108,6 +108,7 @@ public class Misc {
    */
   public static boolean closeEnough( double v1, double v2) {
     if (v1 == v2) return true;
+    if (Double.isNaN(v1) && Double.isNaN(v2)) return true;
     double diff = (v2 == 0.0) ? Math.abs(v1-v2) :  Math.abs(v1/v2-1);
     return diff < maxReletiveError;
   }
@@ -120,6 +121,7 @@ public class Misc {
    */
   public static boolean closeEnough( float v1, float v2) {
     if (v1 == v2) return true;
+    if (Float.isNaN(v1) && Float.isNaN(v2)) return true;
     double diff = (v2 == 0.0) ? Math.abs(v1) :  Math.abs(v1/v2-1);
     return diff < maxReletiveError;
   }
@@ -235,8 +237,8 @@ public class Misc {
     return testdataDirPath;
   }
 
-  static public void compare(byte[] raw1, byte[] raw2, Formatter f) {
-    if (raw1 == null || raw2 == null) return;
+  static public boolean compare(byte[] raw1, byte[] raw2, Formatter f) {
+    if (raw1 == null || raw2 == null) return false;
 
     if (raw1.length != raw2.length) {
       f.format("length 1= %3d != length 2=%3d%n", raw1.length, raw2.length);
@@ -251,6 +253,7 @@ public class Misc {
       }
     }
     f.format("tested %d bytes  diff = %d %n", len, ndiff);
+    return ndiff == 0 && (raw1.length == raw2.length);
   }
 
   static public void compare(float[] raw1, float[] raw2, Formatter f) {

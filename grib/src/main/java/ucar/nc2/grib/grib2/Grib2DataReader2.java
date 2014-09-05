@@ -62,7 +62,7 @@ public class Grib2DataReader2 {
 
   private final int dataTemplate;
   private final int totalNPoints; // gds: number of points
-  private final int dataNPoints; // drs: number of data points where one or more values are specified in Section 7 when a bit map is presen
+  private final int dataNPoints; // drs: number of data points where one or more values are specified in Section 7 when a bit map is present
   private final int scanMode;
   private final int nx;
   private final long startPos;
@@ -785,15 +785,42 @@ public class Grib2DataReader2 {
   public int[] getData40raw(RandomAccessFile raf, Grib2Drs.Type40 gdrs) throws IOException {
     int nb = gdrs.numberOfBits;
     if (nb == 0) return null;
+    int missing_value = (2 << nb - 1) - 1;       // all ones - reserved for missing value
 
-    Grib2JpegDecoder g2j = null;
+    Grib2JpegDecoder g2j;
     g2j = new Grib2JpegDecoder(nb, false);
     byte[] buf = new byte[dataLength - 5];
     raf.readFully(buf);
     g2j.decode(buf);
     gdrs.hasSignedProblem = g2j.hasSignedProblem();
 
-    return g2j.getGdata();
+    int[] idata = g2j.getGdata();
+
+    if (bitmap == null) { // must be one decoded value in idata for every expected data point
+      if (idata.length != totalNPoints) {
+        log.debug("Number of points in the data record {} != {} expected from GDS", idata.length, totalNPoints);
+        return null;
+      }
+      return idata;
+
+    } else {  // use bitmap to skip missing values
+      int[] result = new int[totalNPoints];
+
+      for (int i = 0, j = 0; i < totalNPoints; i++) {
+        if ((bitmap[i / 8] & GribNumbers.bitmask[i % 8]) != 0) {
+          if (j >= idata.length) {
+            System.out.printf("HEY jj2000 data count %d < bitmask count %d, i=%d, totalNPoints=%d%n", idata.length, j, i, totalNPoints);
+            break;
+          }
+          result[i] = idata[j];
+          j++;
+        } else {
+          result[i] = missing_value;
+        }
+      }
+      return result;
+    }
+
   }
 
     // by jkaehler@meteomatics.com

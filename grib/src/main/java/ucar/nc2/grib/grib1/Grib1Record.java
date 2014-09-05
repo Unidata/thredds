@@ -223,6 +223,8 @@ public class Grib1Record {
   public GribData.Info getBinaryDataInfo(RandomAccessFile raf) throws IOException {
     GribData.Info info = dataSection.getBinaryDataInfo(raf);
     info.decimalScaleFactor = pdss.getDecimalScale();
+    info.bitmapLength = (bitmap == null) ? 0 : bitmap.getLength(raf);
+    info.ndataPoints = gdss.getGDS().getNpts();
     return info;
   }
 }

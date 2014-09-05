@@ -39,17 +39,23 @@ import org.apache.commons.compress.compressors.bzip2.BZip2CompressorOutputStream
 import org.tukaani.xz.LZMA2Options;
 import org.tukaani.xz.XZInputStream;
 import org.tukaani.xz.XZOutputStream;
-import ucar.ma2.DataType;
 import ucar.nc2.grib.GribData;
+import ucar.nc2.grib.collection.Grib2CollectionBuilder;
+import ucar.nc2.grib.grib2.Grib2Record;
 import ucar.nc2.grib.grib2.Grib2RecordScanner;
 import ucar.nc2.grib.grib2.Grib2SectionData;
 import ucar.nc2.grib.grib2.Grib2SectionDataRepresentation;
+import ucar.nc2.grib.grib2.table.Grib2Customizer;
+import ucar.nc2.grib.writer.Grib2NetcdfWriter;
 import ucar.nc2.util.IO;
+import ucar.nc2.util.Misc;
 import ucar.unidata.io.RandomAccessFile;
 import ucar.unidata.test.util.TestDir;
 
 import java.io.*;
+import java.nio.ByteBuffer;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Formatter;
 import java.util.List;
 import java.util.zip.Deflater;
@@ -63,18 +69,27 @@ import java.util.zip.Inflater;
  */
 public class TestGribCompressByBit {
 
-  static enum Algo {deflate, bzip2, bzip2T, bzipScaled, xy, zip7}
+  static enum Action {floats, floatShaved, rawInts}
+  static enum ExtraAction {entropyB, entropyI}
+  static enum Algorithm {deflate, bzip2, bzip2T, bzipScaled, xy, zip7}
 
   static File outDir;
   static int deflate_level = 3;
   static PrintStream detailOut;
   static PrintStream summaryOut;
-  static final int showEvery = 1000;
+  static final int showEvery = 100;
 
   List<CompressAlgo> runAlg = new ArrayList<>();
+  Action action;
+  boolean doEntropy, doEntropyI;
 
-  TestGribCompressByBit(Algo... wantAlgs) {
-    for (Algo want : wantAlgs) {
+  TestGribCompressByBit(Action act, ExtraAction[] aa, Algorithm... wantAlgs) {
+    this.action = act;
+    List<ExtraAction> extra = Arrays.asList(aa);
+    doEntropy = extra.contains(ExtraAction.entropyB);
+    doEntropyI = extra.contains(ExtraAction.entropyI);
+
+    for (Algorithm want : wantAlgs) {
       switch (want) {
         case deflate: runAlg.add( new JavaDeflate()); break;
         case bzip2: runAlg.add( new ApacheBzip2()); break;
@@ -90,24 +105,26 @@ public class TestGribCompressByBit {
   int nfiles = 0;
   int tot_nrecords = 0;
   double file_gribsize;
+  long file_gribread;
 
   void reset() {
+    file_gribsize = 0.0;
     for (CompressAlgo alg : runAlg) alg.reset();
   }
 
-  private int doGrib2(String filename, boolean doInts) {
+  private int doGrib2(boolean showDetail, String filename) {
+    reset();
     int nrecords = 0;
     int npoints = 0;
     long start = System.nanoTime();
-    file_gribsize = 0.0;
 
     try (RandomAccessFile raf = new RandomAccessFile(filename, "r")) {
       Grib2RecordScanner reader = new Grib2RecordScanner(raf);
       while (reader.hasNext()) {
         ucar.nc2.grib.grib2.Grib2Record gr = reader.next();
+        long gribMsgLength = gr.getIs().getMessageLength();
 
         Grib2SectionData dataSection = gr.getDataSection();
-        int gribMsgLength = dataSection.getMsgLength();
 
         Grib2SectionDataRepresentation drss = gr.getDataRepresentationSection();
         int template = drss.getDataTemplate();
@@ -121,28 +138,44 @@ public class TestGribCompressByBit {
         float[] fdata = gr.readData(raf);
         long end2 = System.nanoTime();
         long gribReadTime = end2 - start2; // LOOK this include IO, can we just test uncompress ??
-        if (npoints == 0) npoints = fdata.length;
+        if (npoints == 0) {
+          npoints = fdata.length;
+          makeDetailHeader(showDetail, filename, action, fdata.length);
+        }
 
-        int[] rawData = gr.readRawData(raf);
-        byte[] bdata = doInts ? GribData.convertToBytes(rawData) : GribData.convertToBytes(fdata);
+        int[] rawData = null;
+        byte[] bdata;
+        if (action == Action.rawInts) {
+          rawData = gr.readRawData(raf);
+          assert rawData.length == npoints;
+          bdata = GribData.convertToBytes(rawData);
+        } else if (action == Action.floatShaved) {
+            bdata = shaveToBytes(fdata, nBits);
+        } else {
+          bdata = GribData.convertToBytes(fdata);
+        }
 
-        detailReport(nBits, fdata.length, gribMsgLength, gribReadTime, new Bean(info, fdata), bdata, rawData);
+        // (int nbits, int dataPoints, int gribMsgLength, long gribReadTime, Bean bean, byte[] bdata, int[] rawData, Grib2Record gr) throws IOException {
+
+        makeDetailReport(nBits, info.ndataPoints, info.bitmapLength, gribMsgLength, gribReadTime, new Bean(info, fdata), bdata, rawData, gr);
 
         nrecords++;
         tot_nrecords++;
         file_gribsize += gribMsgLength;
+        file_gribread += gribReadTime;
       }
     } catch (IOException e) {
       e.printStackTrace();
     }
 
-    summaryReport(filename, start, npoints, nrecords);
+    if (nrecords > 0)
+      summaryReport(filename, npoints, nrecords);
 
     nfiles++;
     return nrecords;
   }
 
-  private void makeDetailHeader(boolean showDetail, String filename) throws FileNotFoundException {
+  private void makeDetailHeader(boolean showDetail, String filename, Action action, int npoints) throws FileNotFoundException {
     if (showDetail) {
       File f = new File(filename);
       detailOut = new PrintStream(new File(outDir, f.getName() + ".csv"));
@@ -151,15 +184,22 @@ public class TestGribCompressByBit {
 
     Formatter f = new Formatter();
 
-    // first header has the algo names
-    f.format(",,,,,,");
+    // first header
+    f.format("%s,%s,%d%n", filename, action, npoints);
+
+    // second header has the algo names
+    f.format(",,,,,");
+    if (doEntropyI) f.format(", ");
+    if (doEntropy) f.format(", ");
     for (CompressAlgo alg : runAlg) {
       f.format("%s,,,,", alg.getAlgo());
     }
     f.format("%n");
 
     // second header
-    f.format("%s, %s, %s, %s, %s, %s, ", "nbits", "npoints", "gribMsgLength", "gribRead", "entropyI", "entropyB");
+    f.format("%s, %s, %s, %s, %s, ", "nbits", "dataPoints", "bitmapLength", "gribMsgLength", "gribReadTime");
+    if (doEntropyI) f.format("%s, ", "entropyI");
+    if (doEntropy) f.format("%s, ", "entropyB");
     for (CompressAlgo alg : runAlg) {
       f.format("%s, %s, %s, %s, ", "compressSize", "ratio", "compressMsecs", "uncompressMsecs");
     }
@@ -170,12 +210,16 @@ public class TestGribCompressByBit {
     System.out.printf("%s", f.toString());
   }
 
-  private void detailReport(int nbits, int npoints, int gribMsgLength, long gribReadTime, GribData.Bean bean, byte[] bdata, int[] rawData) throws IOException {
+  private void makeDetailReport(int nbits, int dataPoints, int bitmapLength, long gribMsgLength, long gribReadTime, Bean bean, byte[] bdata, int[] rawData, Grib2Record gr) throws IOException {
     Formatter f = new Formatter();
 
-    double entropyI = GribData.entropy(nbits, rawData);
-    double entropyB = GribData.entropy(bdata);
-    f.format("%d, %d, %d, %d, %f, %f, ", nbits, npoints, gribMsgLength, gribReadTime/1000/1000, entropyI, entropyB);
+    double entropyI = doEntropyI && rawData != null ? GribData.entropy(nbits, rawData) : 0.0;
+    if (Double.isNaN(entropyI)) showData(gr, bean, rawData);  // debug
+
+    double entropyB = doEntropy ? GribData.entropy(bdata) : 0.0;
+    f.format("%d, %d, %d, %d, %d, ", nbits, dataPoints, bitmapLength, gribMsgLength, gribReadTime/1000/1000);
+    if (doEntropyI) f.format("%f, ", entropyI);
+    if (doEntropy) f.format("%f, ", entropyB);
 
     for (CompressAlgo alg : runAlg) {
       if (alg instanceof ScaleAndOffset)
@@ -189,36 +233,60 @@ public class TestGribCompressByBit {
 
     // results
     if (detailOut != null) detailOut.printf("%s", f.toString());
-    if (tot_nrecords % showEvery == 0) System.out.printf("%s", f.toString());
+    if (tot_nrecords % showEvery == 0) {
+      long snap = System.nanoTime();
+      long took = (prev == 0) ? 0 : (snap - prev)/showEvery/1000/1000;
+      System.out.printf("%d msecs/record == %s", took, f.toString());
+      prev = snap;
+    }
+  }
+  private long prev = 0;
+
+  private void showData(Grib2Record gr, Bean bean, int[] rawData) throws IOException {
+    Grib2Customizer cust = Grib2Customizer.factory(gr);
+    int id = Grib2CollectionBuilder.cdmVariableHash(cust, gr, 0, false, false, null);
+    System.out.printf("Grib2 record cdmHash=%d (0x%s) pos=%d%n", id, Integer.toHexString(id), gr.getIs().getStartPos());
+
+    float[] fdata = bean.readData();
+    for (int i=0; i<rawData.length; i++) {
+      float convert = bean.info.convert(rawData[i]);
+      if (!Misc.closeEnough(convert, fdata[i]))
+        System.out.printf("%d %d %f (%f)%n", i, rawData[i], fdata[i], convert);
+      if (rawData[i] < 0) {
+        System.out.printf("*** %d %d %f (%f)%n", i, rawData[i], fdata[i], bean.info.convert(rawData[i]));
+      }
+    }
   }
 
   private void makeSummaryHeader() {
     Formatter f = new Formatter();
 
-    // first header has the algo names
+    // first header
+    f.format("%s%n", action);
+
+    // second header has the algo names
     f.format(",,,,,");
     for (CompressAlgo alg : runAlg) {
       f.format("%s,,,,", alg.getAlgo());
     }
     f.format("%n");
 
-    // second header
-    f.format("%s, %s, %s, %s, %s, ", "file", "npoints", "nrecords", "gribFileSize", "took secs");
+    // third header
+    f.format("%s, %s, %s, %s, %s, ", "file", "npoints", "nrecords", "gribFileSize", "avg Grib read");
     for (CompressAlgo alg : runAlg) {
       f.format("%s, %s, %s, %s, ", "compressSize", "ratio", "avg compress msecs", "avg uncompress msecs");
     }
-    f.format("%n");;
+    f.format("%n");
 
     // results
     if (summaryOut != null) summaryOut.printf("%s", f.toString());
-    reset();
   }
 
-  private void summaryReport(String filename, long start, int npoints, int nrecords) {
-    double took = ((double)System.nanoTime() - start) * 1.0e-9;
+  private void summaryReport(String filename, int npoints, int nrecords) {
+    // double took = ((double)System.nanoTime() - start) * 1.0e-9;
 
     Formatter f = new Formatter();
-    f.format("%s, %d, %d, %f, %f, ", filename, npoints, nrecords, file_gribsize, took);
+    f.format("%s, %d, %d, %f, %f, ", filename, npoints, nrecords, file_gribsize, ((float) file_gribread) / nrecords);
 
     for (CompressAlgo alg : runAlg) {
       double ratio = ((double) alg.tot_size) / file_gribsize;
@@ -261,7 +329,7 @@ public class TestGribCompressByBit {
     }
 
     @Override
-    public int getDataLength() {
+    public long getDataLength() {
       return info.dataLength;
     }
 
@@ -296,7 +364,7 @@ public class TestGribCompressByBit {
     long nsecsCompress, nsecsUncompress;
     int orgSize, compressSize, uncompressSize;
 
-    int tot_size;
+    long tot_size;
     long tot_compressTime, tot_uncompressTime;
 
     void test(byte[] orgBytes) throws IOException {
@@ -313,9 +381,13 @@ public class TestGribCompressByBit {
       end = System.nanoTime();
       nsecsUncompress = end - start;
       uncompressSize = uncompressedBytes.length;
-      if (uncompressSize != orgSize) {
+      /* if (uncompressSize != orgSize) {
         System.out.printf("HEY %s %d != %d%n", getAlgo(), uncompressSize, orgSize);
-      }
+      } /* else {
+        Formatter f = new Formatter();
+        if (!Misc.compare(orgBytes, uncompressedBytes, f))
+          System.out.printf("%s%n", f);
+      } */
 
       tot_size += compressSize;
       tot_compressTime += nsecsCompress;
@@ -333,11 +405,11 @@ public class TestGribCompressByBit {
       nsecsCompress = end - start;
       compressSize = compressedBytes.length;
 
-      //start = end;
-      //byte[] uncompressedBytes = uncompress(compressedBytes);
-      //end = System.nanoTime();
-      nsecsUncompress = 0;
-      uncompressSize = 0;
+      start = end;
+      byte[] uncompressedBytes = uncompress(compressedBytes);
+      end = System.nanoTime();
+      nsecsUncompress = end - start;
+      uncompressSize = uncompressedBytes.length;
 
       tot_size += compressSize;
       tot_compressTime += nsecsCompress;
@@ -355,12 +427,12 @@ public class TestGribCompressByBit {
 
     abstract byte[] uncompress(byte[] data) throws IOException;
 
-    abstract Algo getAlgo();
+    abstract Algorithm getAlgo();
   }
 
   class JavaDeflate extends CompressAlgo {
-    Algo getAlgo() {
-      return Algo.deflate;
+    Algorithm getAlgo() {
+      return Algorithm.deflate;
     }
 
     byte[] compress(byte[] data) {
@@ -400,25 +472,46 @@ public class TestGribCompressByBit {
 
   }
 
-    /* private int deflateShave(float[] data, int bitN) {
-    int bitMask = Grib2NetcdfWriter.getBitMask(bitN+1);
-    Deflater compresser = new Deflater(deflate_level);
+  public static byte[] shaveToBytes(float[] data, int bits) {
+    int bitMask = Grib2NetcdfWriter.getBitMask(bits + 1);
     ByteBuffer bb = ByteBuffer.allocate(data.length * 4);
     for (float d : data)
       bb.putFloat(Grib2NetcdfWriter.bitShave(d, bitMask));
+    return bb.array();
+  }
 
-    compresser.setInput(bb.array());
-    compresser.finish();
+  public static byte[] shavePrecision(float[] org_data, int bits) {
+    double expectedPrecision = Math.pow(2.0, -(bits+1));
 
-    byte[] output = new byte[data.length * 4];
-    int compressedDataLength = compresser.deflate(output);
-    compresser.end();
-    return compressedDataLength;
-  } */
+    int bitMask = Grib2NetcdfWriter.getBitMask(bits + 1);
+    ByteBuffer bb = ByteBuffer.allocate(org_data.length * 4);
+    for (float d : org_data)
+      bb.putFloat(Grib2NetcdfWriter.bitShave(d, bitMask));
+
+    int count = 0;
+    float[] result = new float[org_data.length];
+    bb.flip();
+    float max_diff = - Float.MAX_VALUE;
+    float max_pdiff = - Float.MAX_VALUE;
+    for (float d : org_data) {
+      float shaved = bb.getFloat();
+      result[count++] = shaved;
+      float diff = Math.abs(d - shaved);
+      float pdiff = (d != 0.0) ? diff / d : 0.0f;
+      max_diff = Math.max(max_diff, diff);
+      max_pdiff = Math.max(max_pdiff, pdiff);
+    }
+    if (max_pdiff != 0.0) {
+      if (max_pdiff < expectedPrecision / 2 || max_pdiff > expectedPrecision)
+        System.out.printf("nbits=%d diff=%f pdiff=%g expect=%g%n", bits, max_diff, max_pdiff, expectedPrecision);
+    }
+
+    return bb.array();
+  }
 
   class ApacheBzip2 extends CompressAlgo {
-    Algo getAlgo() {
-      return Algo.bzip2;
+    Algorithm getAlgo() {
+      return Algorithm.bzip2;
     }
 
     byte[] compress(byte[] bdata) {
@@ -453,9 +546,10 @@ public class TestGribCompressByBit {
      }
   }
 
+  private static byte[] buffer = new byte [524288];  // LOOK optimize
   class ItadakiBzip2 extends CompressAlgo {
-    Algo getAlgo() {
-      return Algo.bzip2T;
+    Algorithm getAlgo() {
+      return Algorithm.bzip2T;
     }
 
     byte[] compress(byte[] bdata) throws IOException {
@@ -477,9 +571,8 @@ public class TestGribCompressByBit {
        ByteArrayInputStream in = new ByteArrayInputStream(bdata);
        try (org.itadaki.bzip2.BZip2InputStream bzIn = new org.itadaki.bzip2.BZip2InputStream(in, false)) {
          int bytesRead;
-         byte[] decoded = new byte [524288];
-         while ((bytesRead = bzIn.read (decoded)) != -1) {
-           out.write (decoded, 0, bytesRead) ;
+         while ((bytesRead = bzIn.read (buffer)) != -1) {
+           out.write (buffer, 0, bytesRead) ;
          }
          out.close();
 
@@ -499,9 +592,11 @@ public class TestGribCompressByBit {
     }
     @Override
     byte[] uncompress(byte[] data) throws IOException {
-      return new byte[0];
+      float[] result = GribData.uncompressScaled(data);
+      return GribData.convertToBytes(result);
     }
-    Algo getAlgo() { return Algo.bzipScaled; }
+
+    Algorithm getAlgo() { return Algorithm.bzipScaled; }
 
     byte[] compress(GribData.Bean bean) throws IOException {
       return GribData.compressScaled(bean); // LOOK could seperate from compression and try different ones
@@ -509,8 +604,8 @@ public class TestGribCompressByBit {
   }
 
   class TukaaniLZMA2 extends CompressAlgo {
-    Algo getAlgo() {
-      return Algo.xy;
+    Algorithm getAlgo() {
+      return Algorithm.xy;
     }
 
     byte[] compress(byte[] bdata) throws IOException {
@@ -546,8 +641,8 @@ public class TestGribCompressByBit {
   }
 
   class Zip7 extends CompressAlgo {
-    Algo getAlgo() {
-      return Algo.zip7;
+    Algorithm getAlgo() {
+      return Algorithm.zip7;
     }
 
     byte[] compress(byte[] bdata) throws IOException {
@@ -649,17 +744,14 @@ public class TestGribCompressByBit {
   private static class CompressReportAction implements TestDir.Act {
     TestGribCompressByBit compressByBit;
     boolean showDetail;
-    boolean doInts;
 
-    private CompressReportAction(TestGribCompressByBit compressByBit, boolean showDetail, boolean doInts) {
+    private CompressReportAction(TestGribCompressByBit compressByBit, boolean showDetail) {
       this.compressByBit = compressByBit;
       this.showDetail = showDetail;
-      this.doInts = doInts;
     }
 
     public int doAct(String filename) throws IOException {
-      compressByBit.makeDetailHeader(showDetail, filename);
-      compressByBit.doGrib2(filename, doInts);
+      compressByBit.doGrib2(showDetail, filename);
 
       if (detailOut != null)
         detailOut.close();
@@ -670,14 +762,15 @@ public class TestGribCompressByBit {
 
 
   public static void main2(String[] args) throws IOException {
-    outDir = new File("G:/grib2nc/compressInts/");
+    outDir = new File("E:/grib2nc/test2/");
     outDir.mkdirs();
     summaryOut = new PrintStream(new File(outDir, "summary.csv"));
 
     try {
-      TestGribCompressByBit compressByBit = new TestGribCompressByBit( Algo.deflate, Algo.bzip2, Algo.bzip2T, Algo.xy, Algo.zip7);
-      CompressReportAction test = new CompressReportAction(compressByBit, true, true);
-      test.doAct("Q:\\cdmUnitTest\\tds\\ncep\\NAM_CONUS_20km_surface_20100913_0000.grib2");
+      ExtraAction[] extras = new ExtraAction[]{};
+      TestGribCompressByBit compressByBit = new TestGribCompressByBit( Action.rawInts, extras, Algorithm.deflate, Algorithm.bzip2, Algorithm.bzip2T, Algorithm.xy, Algorithm.zip7);
+      CompressReportAction test = new CompressReportAction(compressByBit, true);
+      test.doAct("Q:\\cdmUnitTest\\tds\\ncep\\WW3_Coastal_US_West_Coast_20140804_1800.grib2");
 
     } finally {
       summaryOut.close();
@@ -685,18 +778,29 @@ public class TestGribCompressByBit {
   }
 
   public static void main(String[] args) throws IOException {
-    outDir = new File("G:/grib2nc/compressAllFiles/");
+    outDir = new File("E:/grib2nc/all-ints/");
     outDir.mkdirs();
     summaryOut = new PrintStream(new File(outDir, "summary.csv"));
 
     try {
-      TestGribCompressByBit compressByBit = new TestGribCompressByBit( Algo.bzip2T);
-      CompressReportAction test = new CompressReportAction(compressByBit, true, true);
+      ExtraAction[] extras = new ExtraAction[]{};
+      TestGribCompressByBit compressByBit = new TestGribCompressByBit( Action.rawInts, extras, Algorithm.deflate, Algorithm.bzip2T, Algorithm.zip7);
+      CompressReportAction test = new CompressReportAction(compressByBit, true);
       String dirName = "Q:/cdmUnitTest/tds/ncep/";
-      TestDir.actOnAll(dirName, new TestDir.FileFilterFromSuffixes("grib2"), test);
+      TestDir.actOnAll(dirName, new MyFileFilter(), test);
 
     } finally {
       summaryOut.close();
+    }
+  }
+
+  private static class MyFileFilter implements FileFilter {
+
+    @Override
+    public boolean accept(File pathname) {
+      String name = pathname.getName();
+      if (name.contains("GEFS_Global_1p0deg_Ensemble")) return false; // too big
+      return name.endsWith(".grib2");
     }
   }
 

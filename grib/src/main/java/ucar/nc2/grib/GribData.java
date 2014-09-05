@@ -58,7 +58,7 @@ public class GribData {
 
     public int getNBits();
 
-    public int getDataLength();
+    public long getDataLength();
 
     public int getBinScale();
 
@@ -73,33 +73,57 @@ public class GribData {
   }
 
   public static class Info {
-    public int dataLength;
+    public int bitmapLength;     // length of the bitmap section if any
+    public long dataLength;       // length of the data section
+    public int ndataPoints;      // for Grib1, gds.getNumberPoints; for GRIB2, n data points stored
     public float referenceValue;
     public int binaryScaleFactor, decimalScaleFactor, numberOfBits;
     public int originalType;  // code table 5.1
 
-     // GRIB-1 only
+    // GRIB-1 only
     public int flag;
+
     public int getGridPoint() {
       return (flag & GribNumbers.bitmask[0]);
     }
+
     public int getPacking() {
       return (flag & GribNumbers.bitmask[1]);
     }
+
     public int getDataType() {
       return (flag & GribNumbers.bitmask[2]);
     }
+
     public boolean hasMore() {
       return (flag & GribNumbers.bitmask[3]) != 0;
     }
+
     public String getGridPointS() {
       return getGridPoint() == 0 ? "grid point" : "Spherical harmonic coefficients";
     }
+
     public String getPackingS() {
       return getPacking() == 0 ? "simple" : "Complex / second order";
     }
+
     public String getDataTypeS() {
       return getDataType() == 0 ? "float" : "int";
+    }
+
+    private float DD, EE;
+    private int missing_value;
+    private boolean init = false;
+    public float convert(int val) {
+      if (!init) {
+        DD = (float) java.lang.Math.pow((double) 10, decimalScaleFactor);
+        EE = (float) java.lang.Math.pow( 2.0, binaryScaleFactor);
+        missing_value = (2 << numberOfBits - 1) - 1;       // all ones - reserved for missing value
+        init = true;
+      }
+
+      if (val == missing_value) return Float.NaN;
+      return (referenceValue + val * EE) / DD;
     }
   }
 
@@ -118,7 +142,7 @@ public class GribData {
     // http://www.unidata.ucar.edu/software/netcdf/docs/BestPractices.html
     int nbits = bean1.getNBits();
     int width = (2 << nbits - 1) - 2;                // unsigned
-    int missing_value =  (2 << nbits - 1) - 1;       // all ones - reserved for missing value
+    int missing_value = (2 << nbits - 1) - 1;       // all ones - reserved for missing value
 
     // int width2 = (2 << (nbits-1)) - 1;  // signed
     f.format(" nbits = %d%n", nbits);
@@ -205,7 +229,7 @@ public class GribData {
     deflater.end();
     f.format(" compressedSize = %d%n", compressedSize);
     f.format(" ratio floats / size = %f%n", (float) (npoints * 4) / compressedSize);
-    f.format(" ratio packed bits / size = %f%n", (float) packedBitsLen / compressedSize );
+    f.format(" ratio packed bits / size = %f%n", (float) packedBitsLen / compressedSize);
     f.format(" ratio size / grib = %f%n", (float) compressedSize / bean1.getDataLength());
 
     /////////////////////////////////////////////////////////
@@ -218,7 +242,7 @@ public class GribData {
 
     f.format(" compressedSize = %d%n", compressedSize);
     f.format(" ratio floats / size = %f%n", (float) (npoints * 4) / compressedSize);
-    f.format(" ratio packed bits / size = %f%n", (float) packedBitsLen / compressedSize );
+    f.format(" ratio packed bits / size = %f%n", (float) packedBitsLen / compressedSize);
     f.format(" ratio size / grib = %f%n", (float) compressedSize / bean1.getDataLength());
 
     //////////////////////////////////////////////////////////////
@@ -231,7 +255,7 @@ public class GribData {
       compressedSize = out.size();
       f.format(" compressedSize = %d%n", compressedSize);
       f.format(" ratio floats / size = %f%n", (float) (npoints * 4) / compressedSize);
-      f.format(" ratio packed bits / size = %f%n", (float) packedBitsLen / compressedSize );
+      f.format(" ratio packed bits / size = %f%n", (float) packedBitsLen / compressedSize);
       f.format(" ratio size / grib = %f%n", (float) compressedSize / bean1.getDataLength());
 
     } catch (IOException ioe) {
@@ -248,7 +272,7 @@ public class GribData {
       compressedSize = out.size();
       f.format(" compressedSize = %d%n", compressedSize);
       f.format(" ratio floats / size = %f%n", (float) (npoints * 4) / compressedSize);
-      f.format(" ratio packed bits / size = %f%n", (float) packedBitsLen / compressedSize );
+      f.format(" ratio packed bits / size = %f%n", (float) packedBitsLen / compressedSize);
       f.format(" ratio size / grib = %f%n", (float) compressedSize / bean1.getDataLength());
 
     } catch (IOException ioe) {
@@ -258,8 +282,8 @@ public class GribData {
     return scaledData;
   }
 
- static public byte[] compressScaled(GribData.Bean bean) throws IOException {
-   float[] data = bean.readData();
+  static public byte[] compressScaled(GribData.Bean bean) throws IOException {
+    float[] data = bean.readData();
     int npoints = data.length;
 
     // we always use unsigned packed
@@ -267,7 +291,7 @@ public class GribData {
     // http://www.unidata.ucar.edu/software/netcdf/docs/BestPractices.html
     int nbits = bean.getNBits();
     int width = (2 << nbits - 1) - 2;                // unsigned
-    int missing_value =  (2 << nbits - 1) - 1;       // all ones - reserved for missing value
+    int missing_value = (2 << nbits - 1) - 1;       // all ones - reserved for missing value
 
     float dataMin = Float.MAX_VALUE;
     float dataMax = -Float.MAX_VALUE;
@@ -287,19 +311,24 @@ public class GribData {
     // unpacked_data_value = packed_data_value * scale_factor + add_offset
     // packed_data_value = nint((unpacked_data_value - add_offset) / scale_factor)
 
-    ByteBuffer bb = ByteBuffer.allocate(4 * npoints);
-    IntBuffer intBuffer = bb.asIntBuffer();
+    ByteBuffer bb = ByteBuffer.allocate(4 * npoints + 24);
+    bb.putDouble(scale_factor);
+    bb.putDouble(add_offset);
+
+    bb.putInt(nbits);
+    bb.putInt(npoints);
+
     for (float fd : data) {
       if (Float.isNaN(fd)) {
-        intBuffer.put(missing_value);
-        continue;
+        bb.putInt(missing_value);
+      } else {
+        int packed_data = (int) Math.round((fd - add_offset) / scale_factor);   // nint((unpacked_data_value - add_offset) / scale_factor)
+        bb.putInt(packed_data);
       }
-      int packed_data = (int) Math.round((fd - add_offset) / scale_factor);   // nint((unpacked_data_value - add_offset) / scale_factor)
-      intBuffer.put(packed_data);
     }
 
     byte[] scaledData = bb.array();
-    try (ByteArrayOutputStream out = new ByteArrayOutputStream(4 * npoints)) {
+    try (ByteArrayOutputStream out = new ByteArrayOutputStream(4 * npoints + 24)) {
       org.itadaki.bzip2.BZip2OutputStream zipper = new org.itadaki.bzip2.BZip2OutputStream(out);
       InputStream fin = new ByteArrayInputStream(scaledData);
       IO.copy(fin, zipper);
@@ -312,6 +341,46 @@ public class GribData {
     }
   }
 
+  private static byte[] buffer = new byte[524288];  // LOOK optimize
+
+  static public float[] uncompressScaled(byte[] bdata) throws IOException {
+    int outLength = Math.max(20 * bdata.length, 8000);
+    ByteArrayOutputStream out = new ByteArrayOutputStream(outLength);
+    ByteArrayInputStream in = new ByteArrayInputStream(bdata);
+    try (org.itadaki.bzip2.BZip2InputStream bzIn = new org.itadaki.bzip2.BZip2InputStream(in, false)) {
+      int bytesRead;
+      while ((bytesRead = bzIn.read(buffer)) != -1) {
+        out.write(buffer, 0, bytesRead);
+      }
+      out.close();
+
+    } catch (Exception e) {
+      e.printStackTrace();
+      return null;
+    }
+
+    ByteBuffer bb = ByteBuffer.wrap(out.toByteArray());
+    double scale_factor = bb.getDouble();
+    double add_offset = bb.getDouble();
+
+    int nbits = bb.getInt();
+    int npoints = bb.getInt();
+    int missing_value = (2 << nbits - 1) - 1;       // all ones - reserved for missing value
+
+    // unpacked_data_value = packed_data_value * scale_factor + add_offset
+    // packed_data_value = nint((unpacked_data_value - add_offset) / scale_factor)
+
+    float[] result = new float[npoints];
+    int count = 0;
+    while (bb.hasRemaining()) {
+      int packed_data = bb.getInt();
+      if (packed_data == missing_value) result[count++] = Float.NaN;
+      else result[count++] = (float) (scale_factor * packed_data + add_offset);
+    }
+
+    return result;
+  }
+
 
   public static byte[] convertToBytes(float[] data) {
     ByteBuffer bb = ByteBuffer.allocate(data.length * 4);
@@ -321,7 +390,7 @@ public class GribData {
 
   static public byte[] convertToBytes(int[] data) {
     ByteBuffer bb = ByteBuffer.allocate(data.length * 4);
-    for (int val : data)  bb.putInt(val);
+    for (int val : data) bb.putInt(val);
     return bb.array();
   }
 
@@ -329,13 +398,15 @@ public class GribData {
     int[] p = new int[256];
 
     // count occurrences
-    for (byte b : data)
-      p[DataType.unsignedByteToShort(b)]++;
+    for (byte b : data) {
+      short s = DataType.unsignedByteToShort(b);
+      p[s]++;
+    }
 
     double n = data.length;
     double iln2 = 1.0 / Math.log(2.0);
     double sum = 0.0;
-    for (int i=0; i<256; i++) {
+    for (int i = 0; i < 256; i++) {
       if (p[i] == 0) continue;
       double prob = ((double) p[i]) / n;
       sum += Math.log(prob) * prob * iln2;
@@ -351,17 +422,21 @@ public class GribData {
     int[] p = new int[n];
 
     // count occurrences
+    int count = 0;
     for (int b : data) {
-      if (b > n-1)
-        System.out.printf("BAD %d max=%d%n", b, n-1);
-      else
+      if (b < 0 || b > n - 1) {
+        //System.out.printf("BAD %d at index %d; max=%d%n", b, count, n - 1);
+        // just skip return Double.NaN;
+      } else {
         p[b]++;
+      }
+      count++;
     }
 
     double len = data.length;
     double iln2 = 1.0 / Math.log(2.0);
     double sum = 0.0;
-    for (int i=0; i<n; i++) {
+    for (int i = 0; i < n; i++) {
       if (p[i] == 0) continue;
       double prob = ((double) p[i]) / len;
       sum += Math.log(prob) * prob * iln2;

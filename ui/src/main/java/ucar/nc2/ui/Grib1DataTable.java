@@ -840,7 +840,7 @@ public class Grib1DataTable extends JPanel {
       return info.numberOfBits;
     }
 
-    public int getDataLength() {
+    public long getDataLength() {
       return info.dataLength;
     }
 

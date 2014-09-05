@@ -108,4 +108,9 @@ public class Grib1SectionBitMap {
     return bitmap;  */
   }
 
+  int getLength(RandomAccessFile raf) throws IOException {
+    raf.seek(startingPosition);
+    return GribNumbers.uint3(raf);
+  }
+
 }
