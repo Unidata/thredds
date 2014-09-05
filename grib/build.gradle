@@ -7,5 +7,7 @@ jar {
 dependencies {
   compile project(':cdm')
   compile 'org.jsoup:jsoup:1.6.1'
+  compile 'edu.ucar:jj2000:5.2'
+  compile 'org.itadaki:bzip2:0.9.1'
   testCompile project(':cdm').sourceSets.test.output
 }

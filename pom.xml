@@ -587,6 +587,12 @@
         <version>${edu.ucar.jj2000.version}</version>
       </dependency>
 
+      <dependency>
+        <groupId>org.itadaki</groupId>
+        <artifactId>bzip2</artifactId>
+        <version>${org.itadaki.bzip2.version}</version>
+      </dependency>
+
         <!-- UI -->
       <dependency>
         <groupId>org.jfree</groupId>
@@ -1037,6 +1043,8 @@
     <jna.groupId>net.java.dev.jna</jna.groupId>
     <jna.version>4.0.0</jna.version>
     <edu.ucar.jj2000.version>5.2</edu.ucar.jj2000.version>
+    <org.itadaki.bzip2.version>0.9.1</org.itadaki.bzip2.version>
+
     <!-- Plugins versions -->
     <maven-antrun-plugin.version>1.7</maven-antrun-plugin.version>
     <maven-assembly-plugin.version>2.4</maven-assembly-plugin.version>
