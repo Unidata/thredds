@@ -12,8 +12,9 @@ import ucar.unidata.geoloc.*;
      latitude_of_projection_origin
      longitude_of_projection_origin
      perspective_point_height
-     false_easting
-     false_northing
+     semi_minor_axis
+     semi_major_axis
+     inverse_flattening
      sweep_angle_axis
      fixed_angle_axis
 
@@ -37,6 +38,11 @@ import ucar.unidata.geoloc.*;
 
  The "fixed_angle_axis" attribute indicates which axis the instrument is fixed. The values are opposite to "sweep_angle_axis". Only one of those two attributes are
  mandatory.
+
+ latitude_of_projection_origin will be taken as zero (at the Equator).
+
+ inverse_flattening may be specified independent of the semi_minor/major axes (GRS80). If left unspecified it will be computed
+ from semi_minor/major_axis values.
  *
  * @author caron
  * @since 12/5/13
@@ -45,6 +51,23 @@ import ucar.unidata.geoloc.*;
 public class Geostationary extends ProjectionImpl {
   private static final String NAME = "geostationary";
   GEOSTransform navigation = null;
+
+  public Geostationary(double subLonDegrees, double perspective_point_height, double semi_minor_axis,
+            double semi_major_axis, double inv_flattening, boolean isSweepX) {
+    super(NAME, false);
+
+    String scanGeometry = GEOSTransform.GOES;
+    if (!isSweepX) {
+      scanGeometry = GEOSTransform.GEOS;
+    }
+
+    /* Must assume incoming distances are SI units, so convert 'm' -> 'km' for GEOSTransform */
+    perspective_point_height /= 1000.0;
+    semi_minor_axis /= 1000.0;
+    semi_major_axis /= 1000.0;
+
+    navigation = new GEOSTransform(subLonDegrees, perspective_point_height, semi_minor_axis, semi_major_axis, inv_flattening, scanGeometry);
+  }
 
   public Geostationary() {
     super(NAME, false);
