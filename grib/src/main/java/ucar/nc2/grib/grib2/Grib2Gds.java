@@ -470,7 +470,7 @@ Template 3.0 (Grid definition template 3.0 - latitude/longitude (or equidistant 
       double Lo2 = lo2;
       if (Lo2 < lo1) Lo2 += 360;
       LatLonPointImpl startLL = new LatLonPointImpl(la1, lo1);
-      LatLonPointImpl endLL = new LatLonPointImpl(la2, lo2);
+      LatLonPointImpl endLL = new LatLonPointImpl(la2, Lo2);
 
       f.format("%s testProjection%n", getClass().getName());
       f.format("  start at latlon= %s%n", startLL);
@@ -600,7 +600,6 @@ Template 3.10 (Grid definition template 3.10 - Mercator)
   public static class Mercator extends Grib2Gds {
     public float la1, lo1, la2, lo2, lad, orient, dX, dY;
     public int flags;
-    protected int lastOctet;
 
     Mercator(byte[] data) {
       super(data, 10);
@@ -673,7 +672,7 @@ Template 3.10 (Grid definition template 3.10 - Mercator)
       double Lo2 = lo2;
       if (Lo2 < lo1) Lo2 += 360;
       LatLonPointImpl startLL = new LatLonPointImpl(la1, lo1);
-      LatLonPointImpl endLL = new LatLonPointImpl(la2, lo2);
+      LatLonPointImpl endLL = new LatLonPointImpl(la2, Lo2);
 
       f.format("%s testProjection%n", getClass().getName());
       f.format("  start at latlon= %s%n", startLL);
@@ -1464,6 +1463,7 @@ Template 3.90 (Grid definition template 3.90 - space view perspective or orthogr
 
   }
 
+  /*
   ///////////////////////////////////////////////
   static void check(int a, int b) {
     System.out.printf("%d, %d : ", a, b);
@@ -1478,6 +1478,6 @@ Template 3.90 (Grid definition template 3.90 - space view perspective or orthogr
     double scale = (1.0 + Math.sin(Math.toRadians(lad))) / 2;
     double scale2 = (1.0 + lads) / 2;
     System.out.println("HEY");
-  }
+  }  */
 
 }

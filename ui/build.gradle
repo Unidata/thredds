@@ -118,7 +118,7 @@ task releaseWebstart << {
       {
           println " " + file
           ant.signjar( destDir: webstartWorkingDir, jar: file, alias: keystoreAlias, keystore: keystore, storepass: keystorePassword,
-                       preservelastmodified: "true" )
+                       preservelastmodified: "true", force:"true")
       }
 
       copy {

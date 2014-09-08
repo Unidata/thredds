@@ -157,12 +157,12 @@ public abstract class GribCollectionBuilder {
     return ok;
   }
 
-  public interface Group {
+  static public interface Group {
     CalendarDate getRuntime();
     CoordinateRuntime getCoordinateRuntime();
   }
 
-  protected class GroupAndRuntime {
+  static protected class GroupAndRuntime {
     int gdsHash;
     long runtime;
 

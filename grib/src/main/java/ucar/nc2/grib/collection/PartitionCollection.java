@@ -98,7 +98,7 @@ public abstract class PartitionCollection extends GribCollection {
 
   //////////////////////////////////////////////////////////////////////
 
-  class PartitionForVariable2D {
+  static class PartitionForVariable2D {
     int partno, groupno, varno, flag;
     public int ndups, nrecords, missing;
     public float density;

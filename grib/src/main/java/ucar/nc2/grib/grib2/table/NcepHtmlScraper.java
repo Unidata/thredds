@@ -57,11 +57,11 @@ import java.util.List;
  */
 public class NcepHtmlScraper  {
   //String dirOut = "C:\\dev\\github\\thredds\\grib\\src\\main\\sources\\ncep\\temp\\";
-  String dirOut = "C:/tmp/ncep/";
+  private static final String dirOut = "C:/tmp/ncep/";
 
-  private boolean debugParam = false;
-  private boolean debug = false;
-  private boolean show = false;
+  static private final boolean debugParam = false;
+  static private final boolean debug = false;
+  static private final boolean show = false;
 
 
   //////////////////////////////////////////////////////////////////
@@ -139,7 +139,7 @@ public class NcepHtmlScraper  {
     writeCodeTableXml(filename, title, url, tableName, stuff);
   }
 
-    private class Code {
+  private static class Code {
     int no;
     String desc;
 
@@ -263,7 +263,7 @@ public class NcepHtmlScraper  {
     writeParamTableXml(filename, title, url, filename, stuff);
   }
 
-  private class Param {
+  private static class Param {
     int pnum;
     String desc, unit, name;
 

@@ -437,9 +437,9 @@ public abstract class GribIosp extends AbstractIOServiceProvider {
     v.setCachedData(Array.factory(DataType.DOUBLE, new int[]{n}, data));
   }
 
-  private enum Time2DinfoType {off, intv, bounds}
+  static private enum Time2DinfoType {off, intv, bounds}
 
-  private class Time2Dinfo {
+  static private class Time2Dinfo {
     Time2DinfoType which;
     CoordinateTime2D time2D;
     boolean is2Dtime;
@@ -919,7 +919,7 @@ public abstract class GribIosp extends AbstractIOServiceProvider {
     }
   }
 
-  private interface DataReceiverIF {
+  static private interface DataReceiverIF {
     void addData(float[] data, int resultIndex, int nx) throws IOException;
 
     Array getArray();
@@ -961,7 +961,7 @@ public abstract class GribIosp extends AbstractIOServiceProvider {
     }
   }
 
-  private class ChannelReceiver implements DataReceiverIF {
+  private static class ChannelReceiver implements DataReceiverIF {
     private WritableByteChannel channel;
     private DataOutputStream outStream;
     private Range yRange, xRange;

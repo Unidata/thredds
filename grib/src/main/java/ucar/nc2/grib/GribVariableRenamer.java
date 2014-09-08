@@ -365,7 +365,7 @@ public class GribVariableRenamer {
     return map;
   }
   @Deprecated
-  private class Renamer {
+  private static class Renamer {
     String oldName, newName; // newName exists when theres only one
     List<VariableRenamerBean> newVars = new ArrayList<VariableRenamerBean>();
     HashMap<String, VariableRenamerBean> newVarsMap = new HashMap<String, VariableRenamerBean>();

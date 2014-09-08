@@ -217,7 +217,7 @@ public class Grib1CollectionBuilder extends GribCollectionBuilder {
     return writer.writeIndex(name, indexFileInCache, masterRuntime, groups2, files);
   }
 
-  public class VariableBag implements Comparable<VariableBag> {
+  public static class VariableBag implements Comparable<VariableBag> {
     Grib1Record first;
     int cdmHash;
 
