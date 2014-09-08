@@ -225,6 +225,7 @@ public class Grib1Record {
     info.decimalScaleFactor = pdss.getDecimalScale();
     info.bitmapLength = (bitmap == null) ? 0 : bitmap.getLength(raf);
     info.ndataPoints = gdss.getGDS().getNpts();
+    info.msgLength = is.getMessageLength();
     return info;
   }
 }

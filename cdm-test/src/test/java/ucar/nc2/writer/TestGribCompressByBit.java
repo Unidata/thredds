@@ -43,7 +43,6 @@ import ucar.nc2.grib.GribData;
 import ucar.nc2.grib.collection.Grib2CollectionBuilder;
 import ucar.nc2.grib.grib2.Grib2Record;
 import ucar.nc2.grib.grib2.Grib2RecordScanner;
-import ucar.nc2.grib.grib2.Grib2SectionData;
 import ucar.nc2.grib.grib2.Grib2SectionDataRepresentation;
 import ucar.nc2.grib.grib2.table.Grib2Customizer;
 import ucar.nc2.grib.writer.Grib2NetcdfWriter;
@@ -108,6 +107,7 @@ public class TestGribCompressByBit {
   long file_gribread;
 
   void reset() {
+    file_gribread = 0;
     file_gribsize = 0.0;
     for (CompressAlgo alg : runAlg) alg.reset();
   }
@@ -116,15 +116,11 @@ public class TestGribCompressByBit {
     reset();
     int nrecords = 0;
     int npoints = 0;
-    long start = System.nanoTime();
 
     try (RandomAccessFile raf = new RandomAccessFile(filename, "r")) {
       Grib2RecordScanner reader = new Grib2RecordScanner(raf);
       while (reader.hasNext()) {
         ucar.nc2.grib.grib2.Grib2Record gr = reader.next();
-        long gribMsgLength = gr.getIs().getMessageLength();
-
-        Grib2SectionData dataSection = gr.getDataSection();
 
         Grib2SectionDataRepresentation drss = gr.getDataRepresentationSection();
         int template = drss.getDataTemplate();
@@ -157,11 +153,11 @@ public class TestGribCompressByBit {
 
         // (int nbits, int dataPoints, int gribMsgLength, long gribReadTime, Bean bean, byte[] bdata, int[] rawData, Grib2Record gr) throws IOException {
 
-        makeDetailReport(nBits, info.ndataPoints, info.bitmapLength, gribMsgLength, gribReadTime, new Bean(info, fdata), bdata, rawData, gr);
+        makeDetailReport(nBits, info.ndataPoints, info.bitmapLength, info.msgLength, gribReadTime, new Bean(info, fdata), bdata, rawData, gr);
 
         nrecords++;
         tot_nrecords++;
-        file_gribsize += gribMsgLength;
+        file_gribsize += info.msgLength;
         file_gribread += gribReadTime;
       }
     } catch (IOException e) {
@@ -332,6 +328,11 @@ public class TestGribCompressByBit {
     public long getDataLength() {
       return info.dataLength;
     }
+
+    @Override
+    public long getGribMsgLength()  {
+          return info.msgLength;
+        }
 
     @Override
     public int getBinScale() {
@@ -507,6 +508,25 @@ public class TestGribCompressByBit {
     }
 
     return bb.array();
+  }
+
+  public static void checkShavedPrecision(float[] org, int bits) {
+    double expectedPrecision = Math.pow(2.0, -bits);
+    float max_pdiff = - Float.MAX_VALUE;
+    int bitMask = Grib2NetcdfWriter.getBitMask(bits);
+    for (int i=0; i<org.length; i++) {
+      float d = org[i];
+      float shaved = Grib2NetcdfWriter.bitShave(org[i], bitMask);
+      float diff = Math.abs(d - shaved);
+      float pdiff = (d != 0.0) ? diff / d : 0.0f;
+      assert pdiff < expectedPrecision;
+      max_pdiff = Math.max(max_pdiff, pdiff);
+    }
+
+    if (max_pdiff != 0.0) {   // usually max precision lies between 1/2^N and 1/2^(N+1)
+      if (max_pdiff < expectedPrecision / 2 || max_pdiff > expectedPrecision)
+        System.out.printf("nbits=%d max_pdiff=%g expect=%g%n", bits, max_pdiff, expectedPrecision);
+    }
   }
 
   class ApacheBzip2 extends CompressAlgo {
@@ -761,14 +781,14 @@ public class TestGribCompressByBit {
   }
 
 
-  public static void main2(String[] args) throws IOException {
-    outDir = new File("E:/grib2nc/test2/");
+  public static void main(String[] args) throws IOException {
+    outDir = new File("E:/grib2nc/test/");
     outDir.mkdirs();
     summaryOut = new PrintStream(new File(outDir, "summary.csv"));
 
     try {
       ExtraAction[] extras = new ExtraAction[]{};
-      TestGribCompressByBit compressByBit = new TestGribCompressByBit( Action.rawInts, extras, Algorithm.deflate, Algorithm.bzip2, Algorithm.bzip2T, Algorithm.xy, Algorithm.zip7);
+      TestGribCompressByBit compressByBit = new TestGribCompressByBit( Action.rawInts, extras, Algorithm.deflate, Algorithm.bzip2T, Algorithm.zip7);
       CompressReportAction test = new CompressReportAction(compressByBit, true);
       test.doAct("Q:\\cdmUnitTest\\tds\\ncep\\WW3_Coastal_US_West_Coast_20140804_1800.grib2");
 
@@ -777,7 +797,7 @@ public class TestGribCompressByBit {
     }
   }
 
-  public static void main(String[] args) throws IOException {
+  public static void main2(String[] args) throws IOException {
     outDir = new File("E:/grib2nc/all-ints/");
     outDir.mkdirs();
     summaryOut = new PrintStream(new File(outDir, "summary.csv"));

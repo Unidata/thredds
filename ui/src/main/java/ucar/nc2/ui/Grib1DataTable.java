@@ -844,6 +844,11 @@ public class Grib1DataTable extends JPanel {
       return info.dataLength;
     }
 
+    @Override
+    public long getGribMsgLength() {
+      return info.msgLength;
+          }
+
     public int getBinScale() {
       return info.binaryScaleFactor;
     }

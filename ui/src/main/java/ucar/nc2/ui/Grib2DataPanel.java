@@ -446,14 +446,16 @@ public class Grib2DataPanel extends JPanel {
     // show nrecords, data size
     int nrecords = 0;
     long dataSize = 0;
+    long msgSize = 0;
     for (Object o : param2BeanTable.getBeans()) {
       Grib2ParameterBean p = (Grib2ParameterBean) o;
       for (Grib2RecordBean r : p.getRecordBeans()) {
         nrecords++;
         dataSize += r.getDataLength();
+        msgSize += r.getGribMsgLength();
       }
     }
-    f.format("nrecords = %d, gribMsgSizes = %d", nrecords, dataSize);
+    f.format("nrecords = %d, total grib data size = %d, total grib msg sizes = %d", nrecords, dataSize, msgSize);
   }
 
   ////////////////////////////////////////////////////////
@@ -1177,6 +1179,10 @@ public class Grib2DataPanel extends JPanel {
 
     public int getNBits() {
       return info.numberOfBits;
+    }
+
+    public long getGribMsgLength() {
+      return info.msgLength;
     }
 
     public long getDataLength() {
