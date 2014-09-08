@@ -363,7 +363,8 @@ public class Grib2Record {
   public GribData.Info getBinaryDataInfo(RandomAccessFile raf) throws IOException {
     GribData.Info info = this.drss.getDrs(raf).getBinaryDataInfo(raf);
     info.bitmapLength = (bms == null) ? 0 : bms.getLength(raf);
-    info.dataLength = drss.getLength(raf);
+    info.msgLength = is.getMessageLength();
+    info.dataLength = dataSection.getMsgLength();
     info.ndataPoints = drss.getDataPoints();
     return info;
   }
