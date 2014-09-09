@@ -745,8 +745,8 @@ public class Grib1DataTable extends JPanel {
         maxBits = Math.max(maxBits, bean.getNBits());
         minBinscale = Math.min(minBinscale, bean.getBinScale());
         maxBinscale = Math.max(maxBinscale, bean.getBinScale());
-        minDecscale = Math.min(minDecscale, bean.getDecimalScale());
-        maxDecscale = Math.max(maxDecscale, bean.getDecimalScale());
+        minDecscale = Math.min(minDecscale, bean.getDecScale());
+        maxDecscale = Math.max(maxDecscale, bean.getDecScale());
         nbits += bean.getNBits();
         avgbits += bean.getAvgBits();
         count++;
@@ -796,7 +796,7 @@ public class Grib1DataTable extends JPanel {
 
       info = gr.getBinaryDataInfo(raf);
 
-      double pow10 =  Math.pow(10.0, -getDecimalScale());        // 1/10^D
+      double pow10 =  Math.pow(10.0, -getDecScale());        // 1/10^D
       minimum = (float) (pow10 * info.referenceValue);    // R / 10^D
       scale = (float) (pow10 * Math.pow(2.0, getBinScale()));  // 2^E / 10^D
 
@@ -845,7 +845,7 @@ public class Grib1DataTable extends JPanel {
     }
 
     @Override
-    public long getGribMsgLength() {
+    public long getMsgLength() {
       return info.msgLength;
           }
 
@@ -853,7 +853,7 @@ public class Grib1DataTable extends JPanel {
       return info.binaryScaleFactor;
     }
 
-    public int getDecimalScale() {
+    public int getDecScale() {
       return info.decimalScaleFactor;
     }
 

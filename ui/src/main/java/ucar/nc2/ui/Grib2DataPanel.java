@@ -452,7 +452,7 @@ public class Grib2DataPanel extends JPanel {
       for (Grib2RecordBean r : p.getRecordBeans()) {
         nrecords++;
         dataSize += r.getDataLength();
-        msgSize += r.getGribMsgLength();
+        msgSize += r.getMsgLength();
       }
     }
     f.format("nrecords = %d, total grib data size = %d, total grib msg sizes = %d", nrecords, dataSize, msgSize);
@@ -1149,7 +1149,7 @@ public class Grib2DataPanel extends JPanel {
 
       info = gr.getBinaryDataInfo(raf);
 
-      double pow10 =  Math.pow(10.0, -getDecimalScale());        // 1/10^D
+      double pow10 =  Math.pow(10.0, -getDecScale());        // 1/10^D
       minimum = (float) (pow10 * info.referenceValue);          // R / 10^D
       scale = (float) (pow10 * Math.pow(2.0, getBinScale()));  // 2^E / 10^D
 
@@ -1181,7 +1181,7 @@ public class Grib2DataPanel extends JPanel {
       return info.numberOfBits;
     }
 
-    public long getGribMsgLength() {
+    public long getMsgLength() {
       return info.msgLength;
     }
 
@@ -1193,7 +1193,7 @@ public class Grib2DataPanel extends JPanel {
       return info.binaryScaleFactor;
     }
 
-    public int getDecimalScale() {
+    public int getDecScale() {
       return info.decimalScaleFactor;
     }
 

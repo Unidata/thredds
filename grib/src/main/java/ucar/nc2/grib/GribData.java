@@ -60,11 +60,11 @@ public class GribData {
 
     public long getDataLength();
 
-    public long getGribMsgLength();
+    public long getMsgLength();
 
     public int getBinScale();
 
-    public int getDecimalScale();
+    public int getDecScale();
 
     public double getMinimum();
 
@@ -219,7 +219,7 @@ public class GribData {
     int packedBitsLen = npoints * nbits / 8;
     f.format(" uncompressed packed bits = %d%n", packedBitsLen);
     f.format(" grib data length = %d%n", bean1.getDataLength());
-    f.format(" grib msg length = %d%n", bean1.getGribMsgLength());
+    f.format(" grib msg length = %d%n", bean1.getMsgLength());
 
     byte[] bdata = convertToBytes(data);
     byte[] scaledData = bb.array();
@@ -234,7 +234,7 @@ public class GribData {
     f.format(" compressedSize = %d%n", compressedSize);
     f.format(" ratio floats / size = %f%n", (float) (npoints * 4) / compressedSize);
     f.format(" ratio packed bits / size = %f%n", (float) packedBitsLen / compressedSize);
-    f.format(" ratio size / grib = %f%n", (float) compressedSize / bean1.getGribMsgLength());
+    f.format(" ratio size / grib = %f%n", (float) compressedSize / bean1.getMsgLength());
 
     /////////////////////////////////////////////////////////
     f.format("%ndeflate (scaled ints)%n");
@@ -247,7 +247,7 @@ public class GribData {
     f.format(" compressedSize = %d%n", compressedSize);
     f.format(" ratio floats / size = %f%n", (float) (npoints * 4) / compressedSize);
     f.format(" ratio packed bits / size = %f%n", (float) packedBitsLen / compressedSize);
-    f.format(" ratio size / grib = %f%n", (float) compressedSize / bean1.getGribMsgLength());
+    f.format(" ratio size / grib = %f%n", (float) compressedSize / bean1.getMsgLength());
 
     //////////////////////////////////////////////////////////////
     f.format("%nbzip2 (floats)%n");
@@ -260,7 +260,7 @@ public class GribData {
       f.format(" compressedSize = %d%n", compressedSize);
       f.format(" ratio floats / size = %f%n", (float) (npoints * 4) / compressedSize);
       f.format(" ratio packed bits / size = %f%n", (float) packedBitsLen / compressedSize);
-      f.format(" ratio size / grib = %f%n", (float) compressedSize / bean1.getGribMsgLength());
+      f.format(" ratio size / grib = %f%n", (float) compressedSize / bean1.getMsgLength());
 
     } catch (IOException ioe) {
       ioe.printStackTrace();
@@ -277,7 +277,7 @@ public class GribData {
       f.format(" compressedSize = %d%n", compressedSize);
       f.format(" ratio floats / size = %f%n", (float) (npoints * 4) / compressedSize);
       f.format(" ratio packed bits / size = %f%n", (float) packedBitsLen / compressedSize);
-      f.format(" ratio size / grib = %f%n", (float) compressedSize / bean1.getGribMsgLength());
+      f.format(" ratio size / grib = %f%n", (float) compressedSize / bean1.getMsgLength());
 
     } catch (IOException ioe) {
       ioe.printStackTrace();
