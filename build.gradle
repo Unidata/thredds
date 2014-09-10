@@ -7,15 +7,18 @@ subprojects {
 
   repositories {
     mavenLocal()
-    maven {
-        url "https://artifacts.unidata.ucar.edu/content/groups/unidata/"
-    }
     mavenCentral()
+    maven {
+      url "https://artifacts.unidata.ucar.edu/content/repositories/unidata"
+    }
+    maven {
+      url "https://artifacts.unidata.ucar.edu/content/repositories/unidata-3rdparty/"
+    }
   }
 
   ext {
     jfreechartVersion = "1.0.14"
-    junitVersion = "4.8.2"
+    junitVersion = "4.11"
     log4jVersion = "2.0-rc1"
     servletVersion = "3.0.1"
     slf4jVersion = "1.7.5"
@@ -51,5 +54,5 @@ subprojects {
 }
 
 task wrapper(type: Wrapper) {
-    gradleVersion = '1.8'
+    gradleVersion = '2.1'
 }

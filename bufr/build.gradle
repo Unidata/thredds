@@ -14,7 +14,7 @@ sourceSets {
 
 dependencies {
   compile project(':cdm')
-  //compile ('com.lexicalscope.jewelcli:jewelcli:0.8.5')
+  compile ('com.lexicalscope.jewelcli:jewelcli:0.8.5')
   testCompile project(':cdm').sourceSets.test.output
 }
 
