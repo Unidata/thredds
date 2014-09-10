@@ -51,6 +51,10 @@ subprojects {
     // testCompile project(':cdm').sourceSets.test.classes
     testCompile group: 'junit', name: 'junit', version: junitVersion
   }
+
+  javadoc {
+    options.encoding = "UTF-8"
+  }
 }
 
 task wrapper(type: Wrapper) {
