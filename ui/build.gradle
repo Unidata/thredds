@@ -198,7 +198,40 @@ task showDependencies << {
    }
 }
 
+task taskFoo << {
+    File origJarFile = new File("C:\\Users\\cwardgar\\.m2\\repository\\org\\apache\\xmlbeans\\xmlbeans\\2.6.0\\xmlbeans-2.6.0.jar")
+    File destDir = new File("C:/Users/cwardgar/Desktop")
 
+    rejarExcludingDups origJarFile, destDir
+}
 
+void rejarExcludingDups(File origJarFile, File destDir) {
+//    zipTree(origJarFile).each { println "$it" }
+//    println "Deleting $destDir"
+//    destDir.deleteDir();
 
+//    copy {
+//        from zipTree(origJarFile)
+//        into destDir
+//    }
 
+    jar {
+        from zipTree(origJarFile)
+        from new File(destDir, "Subway.xlsx")
+//        into(new File(destDir, "blah.jar"))
+        println source.files
+
+        destinationDir = destDir
+        archiveName = "foozle.jar"
+    }
+}
+
+task rejar(type: Jar) {
+    println "Rejar-ing"
+    File origJarFile = new File("C:\\Users\\cwardgar\\.m2\\repository\\org\\apache\\xmlbeans\\xmlbeans\\2.6.0\\xmlbeans-2.6.0.jar")
+    File destDir = new File("C:/Users/cwardgar/Desktop")
+
+    from zipTree(origJarFile)
+    destinationDir = destDir
+    archiveName = "foozle.jar"
+}
