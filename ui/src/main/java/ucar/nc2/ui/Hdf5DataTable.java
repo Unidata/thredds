@@ -224,18 +224,18 @@ public class Hdf5DataTable extends JPanel {
     }
 
     f.format("%n");
-    f.format(" total bytes   = %,d%n", totalVars);
-    f.format(" total storage = %,d%n", totalStorage);
+    f.format(" total uncompressed  = %,d%n", totalVars);
+    f.format(" total data storage  = %,d%n", totalStorage);
 
     File raf = new File(location);
-    f.format("  file size    = %,d%n", raf.length());
+    f.format("        file size    = %,d%n", raf.length());
 
     float ratio = (totalStorage == 0) ? 0 : ((float) raf.length()) / totalStorage;
-    f.format("  overhead     = %f%n", ratio);
+    f.format("        overhead     = %f%n", ratio);
 
     ratio = (totalStorage == 0) ? 0 : ((float) totalVars) / totalStorage;
-    f.format("   compression = %f%n", ratio);
-    f.format("   nchunks     = %d%n", totalCount);
+    f.format("         compression = %f%n", ratio);
+    f.format("   # data chunks     = %d%n", totalCount);
 
     infoTA.setText(f.toString());
   }

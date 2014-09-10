@@ -34,6 +34,7 @@
 package ucar.nc2.ui;
 
 import ucar.ma2.Array;
+import ucar.ma2.InvalidRangeException;
 import ucar.nc2.*;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.stream.NcStreamWriter;
@@ -56,6 +57,7 @@ import java.awt.event.ActionListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.*;
+import java.nio.channels.WritableByteChannel;
 import java.util.ArrayList;
 import java.util.Formatter;
 import java.util.List;
@@ -409,6 +411,11 @@ public class DatasetViewer extends JPanel {
           dumpData(table);
         }
       });
+      csPopup.addAction("Write binary Data to file", "Write", new AbstractAction() {
+        public void actionPerformed(ActionEvent e) {
+          writeData(table);
+        }
+      });
       if (level == 0) {
         csPopup.addAction("Data Table", new AbstractAction() {
           public void actionPerformed(ActionEvent e) {
@@ -555,6 +562,21 @@ public class DatasetViewer extends JPanel {
     }
 
     dumpWindow.show();
+  }
+
+  private void writeData(BeanTable from) {
+    Variable v = getCurrentVariable(from);
+    if (v == null) return;
+    String name = "C:/temp/file.bin";
+    try (FileOutputStream stream = new FileOutputStream(name)) {
+      WritableByteChannel channel = stream.getChannel();
+      v.readToByteChannel(v.getShapeAsSection(), channel);
+      System.out.printf("Write ok to %s%n", name);
+
+    } catch (InvalidRangeException | IOException e) {
+      e.printStackTrace();
+    }
+
   }
 
   /* private void showMissingData(BeanTable from) {
