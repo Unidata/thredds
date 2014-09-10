@@ -14,7 +14,7 @@
   </security>
 
   <resources>
-    <j2se version="1.6+" max-heap-size="1024m"/>
+    <j2se version="1.7+" max-heap-size="1024m"/>
     <jar href="netcdfUI.jar"/>
     <extension name="netcdfUI Extra" href="netCDFtoolsExtraJars.jnlp"/>
   </resources>
