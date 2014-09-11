@@ -1229,7 +1229,6 @@ if(OLDGROUPCODE) {
             } else { // see if shared
                 if (RC.getUseGroups()) {
                     if (name.indexOf('/') >= 0) {// place dimension in proper group
-                        int index = name.indexOf('/');
                         group = group.makeRelativeGroup(this, name, true);
                         // change our name
                         name = name.substring(name.lastIndexOf('/') + 1);

@@ -1110,9 +1110,7 @@ public class ServletUtil {
     out.println("<BODY><H1>Session Snoop</H1>");
 
     // Display the hit count for this page
-    out.println("You've visited this page " + count +
-        ((!(count.intValue() != 1)) ? " time." : " times."));
-
+    out.println("You've visited this page " + count + ((count == 1) ? " time." : " times."));
     out.println("<P>");
 
     out.println("<H3>Here is your saved session data:</H3>");
