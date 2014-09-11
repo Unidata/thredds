@@ -68,14 +68,12 @@ public class BufrTableDViewer extends JPanel {
   private PreferencesExt prefs;
 
   private BeanTable ddsTable, variantTable;
-  private JSplitPane split, split2;
+  private JSplitPane split;
 
-  private TextHistoryPane compareTA, infoTA2;
-  private IndependentWindow infoWindow, infoWindow2;
+  private TextHistoryPane compareTA;
+  private IndependentWindow infoWindow;
 
   private TableD currTable;
-
-  private boolean skipNames = false, skipUnits = false;
 
   public BufrTableDViewer(final PreferencesExt prefs, JPanel buttPanel) {
     this.prefs = prefs;
@@ -91,7 +89,7 @@ public class BufrTableDViewer extends JPanel {
     variantTable = new BeanTable(DdsBean.class, (PreferencesExt) prefs.node("VariantBean"), false);
     variantTable.addListSelectionListener(new ListSelectionListener() {
       public void valueChanged(ListSelectionEvent e) {
-        DdsBean csb = (DdsBean) variantTable.getSelectedBean();
+        variantTable.getSelectedBean();
       }
     });
 
@@ -140,9 +138,9 @@ public class BufrTableDViewer extends JPanel {
           infoWindow.setVisible(true);
 
         } catch (Throwable ioe) {
-          ByteArrayOutputStream bos = new ByteArrayOutputStream(10000);
-          ioe.printStackTrace(new PrintStream(bos));
-          compareTA.setText(bos.toString());
+          StringWriter sw = new StringWriter(10000);
+          ioe.printStackTrace(new PrintWriter(sw));
+          compareTA.setText(sw.toString());
           compareTA.gotoTop();
           infoWindow.setVisible(true);
           ioe.printStackTrace();
@@ -198,9 +196,9 @@ public class BufrTableDViewer extends JPanel {
     int pos = filename.lastIndexOf("/");
     String src = (pos > 0) ? filename.substring(pos + 1) : filename;
 
-    List<TableD.Descriptor> listDesc = new ArrayList<TableD.Descriptor>(tableD.getDescriptors());
+    List<TableD.Descriptor> listDesc = new ArrayList<>(tableD.getDescriptors());
     Collections.sort(listDesc);
-    List<DdsBean> dds = new ArrayList<DdsBean>(listDesc.size());
+    List<DdsBean> dds = new ArrayList<>(listDesc.size());
     for (TableD.Descriptor d : listDesc) {
       dds.add(new DdsBean(src, d));
     }
@@ -213,7 +211,7 @@ public class BufrTableDViewer extends JPanel {
 
     out.format("Compare Table D%n %s %n %s %n", t1.getName(), t2.getName());
     boolean err = false;
-    List<TableD.Descriptor> listDesc = new ArrayList<TableD.Descriptor>(t1.getDescriptors());
+    List<TableD.Descriptor> listDesc = new ArrayList<>(t1.getDescriptors());
     Collections.sort(listDesc);
     for (Object bean : currBeans) {
       DdsBean dbean = (DdsBean) bean;
@@ -276,7 +274,7 @@ public class BufrTableDViewer extends JPanel {
   private void showUsed() throws IOException {
     String rootDir = Misc.getTestdataDirPath();
     String dataDir = "cdmUnitTest/formats/bufr/";
-    usedDds = new HashMap<Short, List<String>>(3000);
+    usedDds = new HashMap<>(3000);
 
     scanFileForDds(rootDir + dataDir + "uniqueIDD.bufr");
     scanFileForDds(rootDir + dataDir + "uniqueExamples.bufr");
@@ -305,7 +303,7 @@ public class BufrTableDViewer extends JPanel {
 
       List<String> list = usedDds.get(key);
       if (list == null) {
-        list = new ArrayList<String>();
+        list = new ArrayList<>();
         usedDds.put(key, list);
       }
       if (!list.contains(src))
@@ -377,15 +375,15 @@ public class BufrTableDViewer extends JPanel {
       return;
     }
 
-    if (allVariants == null) allVariants = new HashMap<Short, List<DdsBean>>();
-    if (variantKeys == null) variantKeys = new HashSet<String>();
+    if (allVariants == null) allVariants = new HashMap<>();
+    if (variantKeys == null) variantKeys = new HashSet<>();
     if (variantKeys.contains(key)) return; // dont add again
 
-    List<TableD.Descriptor> listDesc = new ArrayList<TableD.Descriptor>(table.getDescriptors());
+    List<TableD.Descriptor> listDesc = new ArrayList<>(table.getDescriptors());
     for (TableD.Descriptor d : listDesc) {
       List<DdsBean> list = allVariants.get(d.getId());
       if (list == null) {
-        list = new ArrayList<DdsBean>(10);
+        list = new ArrayList<>(10);
         allVariants.put(d.getId(), list);
       }
       list.add(new DdsBean(key, d));
@@ -395,7 +393,7 @@ public class BufrTableDViewer extends JPanel {
   private void showVariants(DdsBean bean) {
     if (!standardVariantsLoaded) loadStandardVariants();
     List<DdsBean> all = allVariants.get(bean.dds.getId());
-    List<DdsBean> dds = new ArrayList<DdsBean>(10);
+    List<DdsBean> dds = new ArrayList<>(10);
     dds.add(bean);
     if (all != null) dds.addAll(all);
     variantTable.setBeans(dds);
@@ -407,10 +405,6 @@ public class BufrTableDViewer extends JPanel {
     TableD.Descriptor dds;
     String source;
     String diff;
-
-    // no-arg constructor
-    public DdsBean() {
-    }
 
     // create from a dataset
     public DdsBean(String source, TableD.Descriptor dds) {

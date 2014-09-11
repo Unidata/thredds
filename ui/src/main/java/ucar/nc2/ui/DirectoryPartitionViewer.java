@@ -270,37 +270,7 @@ public class DirectoryPartitionViewer extends JPanel {
     name = StringUtil2.removeFromEnd(name, "-");
     this.collectionName = name;
 
-    setDirectory(parentFile );
-  }
-
-  private void readMFiles(String name) {
-    Path path = Paths.get(name);
-    GribCdmIndex reader = new GribCdmIndex(logger);
-    List<MFile> result = new ArrayList<>();
-
-    try {
-      boolean ok = reader.readMFiles(path, result);
-      for (MFile mfile : result)
-        System.out.printf("%s%n", mfile);
-
-    } catch (IOException e) {
-      e.printStackTrace();
-      logger.info("Error opening ncx2 file ", e);
-    }
-  }
-
-  private void moveCdmIndexFile(NodeInfo indexFile) throws IOException {
-    GribCollection gc = null;
-    try {
-      boolean ok = GribCdmIndex.moveCdmIndex(indexFile.dir.toString(), logger);
-      Formatter f = new Formatter();
-      f.format("moved success=%s", ok);
-      infoTA.setText(f.toString());
-      infoTA.gotoTop();
-      infoWindow.show();
-    } finally {
-      if (gc != null) gc.close();
-    }
+    setDirectory(parentFile);
   }
 
   /* private void moveCdmIndexAll(NodeInfo indexFile) {
@@ -746,17 +716,6 @@ public class DirectoryPartitionViewer extends JPanel {
       });
       toolBar.add(makeIndexButt); */
 
-    }
-
-    private void showThrowable(Throwable t) {
-      t.printStackTrace();
-      JOptionPane.showMessageDialog(
-              DirectoryPartitionViewer.this,
-              t.toString(),
-              t.getMessage(),
-              JOptionPane.ERROR_MESSAGE
-      );
-      repaint();
     }
 
     /**

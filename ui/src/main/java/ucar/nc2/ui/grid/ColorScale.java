@@ -204,11 +204,10 @@ public class ColorScale implements Cloneable, java.io.Serializable {
    * @param c array of colors.
    */
   public ColorScale(String name, Color [] c) {
-    this.name = new String(name);
+    this.name = name;
     this.ncolors = c.length;
     colors = new Color[ ncolors];
-    for (int i = 0; i < ncolors; i++)
-      colors[i] = c[i];
+    System.arraycopy(c, 0, colors, 0, ncolors);
 
     constructTransient();
   }
@@ -293,8 +292,7 @@ public class ColorScale implements Cloneable, java.io.Serializable {
     if (n != ncolors) {
       colors = new Color[n];
       int prevn = Math.min(ncolors, n);
-      for (int i = 0; i < prevn; i++)
-        colors[i] = useColors[i];
+      System.arraycopy(useColors, 0, colors, 0, prevn);
       for (int i = ncolors; i < n; i++)
         colors[i] = Color.white;
 
@@ -465,15 +463,13 @@ public class ColorScale implements Cloneable, java.io.Serializable {
   // this is for editing a colorscale
   private void editModeBegin() {
     Color [] editColors = new Color[ ncolors];
-    for (int i = 0; i < ncolors; i++)
-      editColors[i] = colors[i];
+    System.arraycopy(colors, 0, editColors, 0, ncolors);
     useColors = editColors;
   }
 
   private void editModeEnd(boolean accept) {
     if (accept) {
-      for (int i = 0; i < ncolors; i++)
-        colors[i] = useColors[i];
+      System.arraycopy(useColors, 0, colors, 0, ncolors);
     }
     useColors = colors;
   }
@@ -483,18 +479,13 @@ public class ColorScale implements Cloneable, java.io.Serializable {
       useColors[i] = c;
   }
 
-  private Color [] getColors() {
-    return colors;
-  }
-
   /* private void set( ColorScale cs) {
    set(cs.getColors());
  } */
   private void setColors(Color[] c) {
     ncolors = c.length;
     colors = new Color[ ncolors];
-    for (int i = 0; i < ncolors; i++)
-      colors[i] = c[i];
+    System.arraycopy(c, 0, colors, 0, ncolors);
     edge = new double[ ncolors];
     hist = new int[ ncolors + 1];
     useColors = colors;        // ??
@@ -502,7 +493,7 @@ public class ColorScale implements Cloneable, java.io.Serializable {
 
   // serialization
   private void readObject(ObjectInputStream s) throws IOException, ClassNotFoundException {
-    int readVer = s.readInt();
+    s.readInt();
     this.name = s.readUTF();
     this.colors = (Color[]) s.readObject();
     this.ncolors = colors.length;
@@ -523,7 +514,6 @@ public class ColorScale implements Cloneable, java.io.Serializable {
 
     private int size = 50;
     private ColorScale cs;
-    private JDialog dialog;
     private JLabel unitLabel = new JLabel("unit", SwingConstants.CENTER);
     private JPanel lpanel;
 
