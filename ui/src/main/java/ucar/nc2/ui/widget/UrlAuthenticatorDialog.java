@@ -75,7 +75,9 @@ public class UrlAuthenticatorDialog extends Authenticator implements Credentials
     passwF = pp.addPasswordField("password", "Password", "");
     pp.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent e) {
-        pwa = new UsernamePasswordCredentials(userF.getText(), new String(passwF.getPassword()));
+        char[] pw = passwF.getPassword();
+        if (pw == null) return;
+        pwa = new UsernamePasswordCredentials(userF.getText(), new String(pw));
         dialog.setVisible( false);
       }
     });

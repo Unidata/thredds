@@ -102,7 +102,7 @@ public class GridVariable {
   /**
    * list of records that make up this variable
    */
-  private List<GridRecord> records = new ArrayList<GridRecord>();  // GridRecord
+  private List<GridRecord> records = new ArrayList<>();  // GridRecord
 
   /**
    * number of levels
@@ -426,12 +426,14 @@ public class GridVariable {
 
     // add attributes
     GridParameter param = lookup.getParameter(firstRecord);
+    if (param == null) return null;
+
     String unit = param.getUnit();
     if (unit == null) unit = "";
     v.addAttribute(new Attribute("units", unit));
 
     v.addAttribute(new Attribute("long_name", makeLongName()));
-    v.addAttribute(new Attribute("missing_value", new Float(lookup.getFirstMissingValue())));
+    v.addAttribute(new Attribute("missing_value", lookup.getFirstMissingValue()));
     if (!hcs.isLatLon()) {
       if (GridServiceProvider.addLatLon)
         v.addAttribute(new Attribute("coordinates", "lat lon"));
@@ -649,6 +651,8 @@ public class GridVariable {
   protected String makeLongName() {
     Formatter f = new Formatter();
     GridParameter param = lookup.getParameter(firstRecord);
+    if (param == null) return null;
+
     f.format("%s", param.getDescription());
 
     String levelName = makeLevelName(firstRecord, lookup);

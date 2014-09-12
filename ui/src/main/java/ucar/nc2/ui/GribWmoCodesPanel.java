@@ -32,12 +32,10 @@ public class GribWmoCodesPanel extends JPanel {
   private PreferencesExt prefs;
 
   private BeanTable codeTable, entryTable;
-  private JSplitPane split, split2;
+  private JSplitPane split;
 
   private TextHistoryPane compareTA;
   private IndependentWindow infoWindow;
-
-  private FileManager fileChooser;
 
   public GribWmoCodesPanel(final PreferencesExt prefs, JPanel buttPanel) {
     this.prefs = prefs;
@@ -123,7 +121,7 @@ public class GribWmoCodesPanel extends JPanel {
     try {
       WmoCodeTable.WmoTables wmo = WmoCodeTable.readGribCodes(v);
       List<WmoCodeTable> codes = wmo.list;
-      List<CodeTableBean> dds = new ArrayList<CodeTableBean>(codes.size());
+      List<CodeTableBean> dds = new ArrayList<>(codes.size());
       for (WmoCodeTable code : codes) {
         dds.add(new CodeTableBean(code));
       }
@@ -142,11 +140,10 @@ public class GribWmoCodesPanel extends JPanel {
     //prefs.putBeanObject("InfoWindowBounds2", infoWindow2.getBounds());
     prefs.putInt("splitPos", split.getDividerLocation());
     //prefs.putInt("splitPos2", split2.getDividerLocation());
-    if (fileChooser != null) fileChooser.save();
   }
 
   public void setEntries(WmoCodeTable codeTable) {
-    List<EntryBean> beans = new ArrayList<EntryBean>(codeTable.entries.size());
+    List<EntryBean> beans = new ArrayList<>(codeTable.entries.size());
     for (WmoCodeTable.TableEntry d : codeTable.entries) {
       beans.add(new EntryBean(d));
     }
@@ -157,7 +154,7 @@ public class GribWmoCodesPanel extends JPanel {
     int total = 0;
     int dups = 0;
 
-    HashMap<String, WmoCodeTable.TableEntry> paramSet = new HashMap<String, WmoCodeTable.TableEntry>();
+    Map<String, WmoCodeTable.TableEntry> paramSet = new HashMap<>();
     Formatter f = new Formatter();
     f.format("WMO parameter table %s%n", currTable);
     f.format("%nDuplicates Names%n");
@@ -361,7 +358,6 @@ public class GribWmoCodesPanel extends JPanel {
     int nsame = 0;
     int nsameIgn = 0;
     int ndiff = 0;
-    int unknownCount = 0;
 
     String dirName = "Q:/cdmUnitTest/tds/ncep";
 
@@ -373,7 +369,7 @@ public class GribWmoCodesPanel extends JPanel {
     }
 
     File[] allFiles = allDir.listFiles();
-    List<File> flist = Arrays.asList(allFiles);
+    List<File> flist = (allFiles == null) ? new ArrayList<File>(0) : Arrays.asList(allFiles);
     Collections.sort(flist);
 
     for (File f : flist) {
@@ -382,9 +378,7 @@ public class GribWmoCodesPanel extends JPanel {
       if (!name.endsWith(".grib2")) continue;
       fm.format("Check file %s%n", name);
 
-      GridDataset ncfile = null;
-      try {
-        ncfile = GridDataset.open(name);
+      try (GridDataset ncfile= GridDataset.open(name)) {
         for (GridDatatype dt : ncfile.getGrids()) {
           String currName = dt.getShortName();
           Attribute att = dt.findAttributeIgnoreCase("Grib2_Parameter");
@@ -426,10 +420,8 @@ public class GribWmoCodesPanel extends JPanel {
         }
 
       } catch (Exception e) {
-        fm.format("Error on %s = %s%n", ncfile.getLocation(), e.getMessage());
+        fm.format("Error on %s = %s%n", name, e.getMessage());
 
-      } finally {
-        if (ncfile != null) ncfile.close();
       }
     }
 

@@ -247,13 +247,14 @@ public class CoverageDatasetImpl implements CoverageDataset {
 
   @Override
   public Date getStartDate() {
-    return getCalendarDateStart().toDate();
+    CalendarDate cdate = getCalendarDateStart();
+    return (cdate == null) ? null : cdate.toDate();
   }
 
   @Override
   public Date getEndDate() {
-    return getCalendarDateEnd().toDate();
-  }
+    CalendarDate cdate = getCalendarDateEnd();
+    return (cdate == null) ? null : cdate.toDate();  }
 
   private static class CoverageSetImpl implements CoverageSet {
     CoverageCS ccs;

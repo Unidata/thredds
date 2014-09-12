@@ -45,14 +45,14 @@ import java.io.InputStream;
 import java.util.*;
 
 /**
- * Read NCEP parameter table. inner class Table for each discipline, category
+ * Read NCEP parameter tables. inner class Table for each discipline, category
  *
  * @author caron
  * @since 1/9/12
  */
 class NcepLocalParams {
   static private final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(NcepLocalParams.class);
-  private static final boolean debugOpen = true;
+  private static final boolean debugOpen = false;
   private static final boolean debug = false;
 
   private Map<Integer, Table> tableMap = new HashMap<>(30);

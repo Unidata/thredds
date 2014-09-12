@@ -194,15 +194,4 @@ public class PrefixDBImpl implements PrefixDB, Serializable {
 		return nameSet.iterator();
 	}
 
-	/**
-	 * Tests this class.
-	 */
-	public static void main(final String[] args) throws Exception {
-		final PrefixDB db = new PrefixDBImpl();
-		db.addName("mega", 1e6);
-		System.out.println("mega=" + db.getPrefixByName("mega").getValue());
-		db.addSymbol("m", 1e-3);
-		System.out.println("m=" + db.getPrefixBySymbol("m").getValue());
-		System.out.println("1e-3=" + db.getPrefixByValue(1e-3).getID());
-	}
 }

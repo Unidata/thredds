@@ -513,7 +513,7 @@ public class CoordSysTable extends JPanel {
     prefs.putBeanObject("InfoWindowBounds", infoWindow.getBounds());
     prefs.putInt("splitPos", split.getDividerLocation());
     prefs.putInt("splitPos2", split2.getDividerLocation());
-    if (infoWindow != null) prefs.putBeanObject("InfoWindowBounds", infoWindow.getBounds());
+    prefs.putBeanObject("InfoWindowBounds", infoWindow.getBounds());
     if (attWindow != null) prefs.putBeanObject("AttWindowBounds", attWindow.getBounds());
   }
 

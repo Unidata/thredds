@@ -1301,8 +1301,10 @@ public class Grib2CollectionPanel extends JPanel {
     showPdsTemplate(pdss, f, cust);
     if (pds.getExtraCoordinatesCount() > 0) {
       float[] coords = pds.getExtraCoordinates();
-      f.format("Hybrid Coordinates (%d) %n  ", coords.length);
-      for (float fc : coords) f.format("%10.5f ", fc);
+      if (coords != null) {
+        f.format("Hybrid Coordinates (%d) %n  ", coords.length);
+        for (float fc : coords) f.format("%10.5f ", fc);
+      }
       f.format("%n%n");
     }
 

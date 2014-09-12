@@ -662,6 +662,8 @@ public class BeanTable extends JPanel {
       String hiddenProperties = "";
       for (MethodDescriptor md : mds) {
         Method m = md.getMethod();
+        assert m != null;
+
         if (m.getName().equals("hiddenProperties")) {
           try {
             hiddenProperties = (String) m.invoke(null, (Object[]) null);

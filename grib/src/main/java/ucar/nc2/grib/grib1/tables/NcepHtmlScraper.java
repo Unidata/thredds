@@ -184,6 +184,7 @@ public class NcepHtmlScraper {
     Document doc = Jsoup.parse(new URL(source), 10 * 1000);
 
     Element table = doc.select("table").first();
+    if (table == null) return;
     List<Stuff> stuff = new ArrayList<>();
     Elements rows = table.select("tr");
     for (Element row : rows) {
@@ -202,7 +203,6 @@ public class NcepHtmlScraper {
           String desc = StringUtil2.cleanup(cols.get(1).text()).trim();
           if (desc.startsWith("Reserved")) {
             System.out.printf("*** Skip Reserved %s%n", row.text());
-            continue;
           } else {
             System.out.printf("%d == %s%n", pnum, desc);
             stuff.add(new Stuff(pnum, desc));
@@ -267,6 +267,8 @@ public class NcepHtmlScraper {
       System.out.printf("%d == %s%n=%n", count++, e.text());
 
     Element body = doc.select("body").first();
+    if (body == null) return;
+
     Elements tables = body.select("table");
     for (int i = 0; i < tableVersions.length; i++) {
       if (tableVersions[i] == 0) continue;

@@ -189,6 +189,8 @@ public class ViewerServiceImpl implements ViewerService {
 
 		public String getViewerLinkHtml(InvDatasetImpl ds, HttpServletRequest req) {
 			InvAccess access = getOpendapAccess(ds);
+      if (access == null)
+   				return null;
 
 			URI dataURI = access.getStandardUri();
       if (dataURI == null) {

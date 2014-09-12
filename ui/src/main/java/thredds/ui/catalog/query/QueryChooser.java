@@ -913,9 +913,9 @@ public class QueryChooser extends JPanel {
     boolean hasChoice() { return rds.isEnabled(); }
 
     ArrayList<String> getChoices() {
-      DateRange selected = rds.getDateRange();
-      if (selected == null) selected = rds.getDateRange(); // LOOK force acceptence, should bail out
       ArrayList<String> choices = new ArrayList<>();
+      DateRange selected = rds.getDateRange();
+      if (selected == null) return choices; // selected = rds.getDateRange(); // LOOK force acceptance, should bail out
       if (isPoint) {
         choices.add("{point}");
         choices.add(selected.getStart().toString());

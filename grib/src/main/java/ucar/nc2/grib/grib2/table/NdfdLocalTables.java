@@ -35,8 +35,6 @@ package ucar.nc2.grib.grib2.table;
 
 import ucar.nc2.grib.grib2.Grib2Parameter;
 
-import java.util.*;
-
 /**
  * Ndfd local tables
  * @see "http://graphical.weather.gov/docs/grib_design.html"
@@ -44,8 +42,8 @@ import java.util.*;
 
 public class NdfdLocalTables extends LocalTables {
 
-  NdfdLocalTables(int center, int subCenter, int masterVersion, int localVersion) {
-    super(center, subCenter, masterVersion, localVersion);
+  NdfdLocalTables(int center, int subCenter, int masterVersion, int localVersion, int genProcessId) {
+    super(center, subCenter, masterVersion, localVersion, genProcessId);
     init();
   }
 

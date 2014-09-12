@@ -49,8 +49,8 @@ public abstract class LocalTables extends Grib2Customizer {
   //////////////////////////////////////////////////////////////////////
   protected Map<Integer, Grib2Parameter> local = new HashMap<>(100);  // subclass must set
 
-  LocalTables(int center, int subCenter, int masterVersion, int localVersion) {
-    super(center, subCenter, masterVersion, localVersion);
+  LocalTables(int center, int subCenter, int masterVersion, int localVersion, int genProcessId) {
+    super(center, subCenter, masterVersion, localVersion, genProcessId);
   }
 
   @Override

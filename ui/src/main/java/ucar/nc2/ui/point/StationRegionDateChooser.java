@@ -391,13 +391,14 @@ public class StationRegionDateChooser extends NPController {
   }
 
   /**
-   * Looks for the station with givemn id. If found, makes it current. Redraws.
+   * Looks for the station with given id. If found, makes it current. Redraws.
    *
    * @param id must match stationIF.getID().
    */
   public void setSelectedStation(String id) {
     stnRender.setSelectedStation(id);
     selectedStation = stnRender.getSelectedStation();
+    assert selectedStation != null;
     np.setLatLonCenterMapArea(selectedStation.getLatitude(), selectedStation.getLongitude());
     redraw();
   }

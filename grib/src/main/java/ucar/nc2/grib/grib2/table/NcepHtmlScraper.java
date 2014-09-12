@@ -204,6 +204,8 @@ public class NcepHtmlScraper  {
     // System.out.printf("%s%n", title);
 
     Element table = doc.select("table").first();
+    assert table != null;
+
     List<Param> stuff = new ArrayList<>();
     Elements rows = table.select("tr");
     for (Element row : rows) {

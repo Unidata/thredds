@@ -171,6 +171,8 @@ public class WmoTemplateTable implements Comparable<WmoTemplateTable> {
 
       Map<String, WmoTemplateTable> map = new HashMap<>();
       String[] elems = version.getElemNames();
+      assert elems != null;
+      assert elems.length > 3;
 
       Element root = doc.getRootElement();
       List<Element> featList = root.getChildren(elems[0]); // 0 = main element

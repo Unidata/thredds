@@ -1079,6 +1079,7 @@ public final class DataRootHandler implements InitializingBean {
       throw new IllegalArgumentException("Not a proxy dataset resolver path <" + path + ">.");
 
     InvDatasetScan scan = this.getMatchingScan(path);
+    if (scan == null) return null;
 
     // Call the matching InvDatasetScan to make the proxy dataset resolver catalog.
     //noinspection UnnecessaryLocalVariable

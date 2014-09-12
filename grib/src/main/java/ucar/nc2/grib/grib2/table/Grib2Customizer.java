@@ -69,26 +69,25 @@ public class Grib2Customizer implements ucar.nc2.grib.GribTables, TimeUnitConver
     if (cust != null) return cust;
 
     if ((center == 7) && (masterVersion == 13) && (localVersion == 13)) {
-      NcepLocalTables result = new NcepLocalTables(center, subCenter, masterVersion, localVersion, genProcessId, "resources/grib2/ncep/v13.0.0/");
-      return result;
+      return new NcepLocalTables(center, subCenter, masterVersion, localVersion, genProcessId, "resources/grib2/ncep/v13.0.0/");
 
     } else if ((center == 7) || (center == 9) || (center == 54)) { // canadian met
       cust = new NcepLocalTables(center, subCenter, masterVersion, localVersion, genProcessId, null);
 
-    } else if (center == 59 && localVersion == 0) { // FSL-2
+    } else if (center == 59 && genProcessId == 125) { // FSL HRRR
       cust = FslLocalTables.localFactory(subCenter, masterVersion, localVersion, genProcessId);
 
-    } else if (center == 59) { // FSL
+    } else if (center == 59  && genProcessId == 116) { // FSL FIM
       cust = FslLocalTables.localFactory(subCenter, masterVersion, localVersion, genProcessId);
 
     } else if ((center == 8) && ((subCenter == 0) || (subCenter == -9999))){ // NDFD
-       cust = new NdfdLocalTables(center, subCenter, masterVersion, localVersion);
+       cust = new NdfdLocalTables(center, subCenter, masterVersion, localVersion, genProcessId);
 
     } else if (center == 40) {  // KMA
-       cust = new KmaLocalTables(center, subCenter, masterVersion, localVersion);
+       cust = new KmaLocalTables(center, subCenter, masterVersion, localVersion, genProcessId);
 
     } else {
-      cust = new Grib2Customizer(center, subCenter, masterVersion, localVersion);
+      cust = new Grib2Customizer(center, subCenter, masterVersion, localVersion, genProcessId);
     }
 
     tables.put(id, cust);   // note that we use id, so same Grib2Customizer may be mapped to multiple id's (eg match on -1)
@@ -145,8 +144,8 @@ public class Grib2Customizer implements ucar.nc2.grib.GribTables, TimeUnitConver
     result.add(new GribTableId("KMA",40,-1,-1,-1,-1));
     // result.add(new GribTableId("DSS",7,-1,2,1)); // ??
     // result.add(new GribTableId("FSL2",59,-1,-1,0)); // fake
-    result.add(new GribTableId("GSD_HRRR",59,0,-1,-1, 125));
-    result.add(new GribTableId("GSD_FIM",59, 1,-1,-1, 116));
+    result.add(new GribTableId("GSD_HRRR",59, -1,-1,-1, 125));
+    result.add(new GribTableId("GSD_FIM",59, -1,-1,-1, 116));
     return result;
   }
 
@@ -159,13 +158,14 @@ public class Grib2Customizer implements ucar.nc2.grib.GribTables, TimeUnitConver
   }
 
   ///////////////////////////////////////////////////////////////
-  protected final int center, subCenter, masterVersion, localVersion;
+  protected final int center, subCenter, masterVersion, localVersion, genProcessId;
 
-  protected Grib2Customizer(int center, int subCenter, int masterVersion, int localVersion) {
+  protected Grib2Customizer(int center, int subCenter, int masterVersion, int localVersion, int genProcessId) {
     this.center = center;
     this.subCenter = subCenter;
     this.masterVersion = masterVersion;
     this.localVersion = localVersion;
+    this.genProcessId = genProcessId;
   }
 
   public GribTableId getGribTableId() {
@@ -496,11 +496,6 @@ Code Table Code table 4.7 - Derived forecast (4.7)
   @Override
   public VertCoord.VertUnit getVertUnit(int code) {
     return Grib2Utils.getLevelUnit(code);
-  }
-
-  @Override
-  public int addVariableHash(Object gribRecord) {
-    return 0;
   }
 
   /////////////////////////////////////////////

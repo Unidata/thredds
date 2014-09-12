@@ -118,6 +118,8 @@ public class MultipleAxisChart extends JPanel {
     XYPlot plot = (XYPlot) chart.getPlot();
     for (int i=0; i<axisNum; i++) {
       XYItemRenderer renderer = plot.getRenderer(i);
+      if (renderer == null) continue;
+
       renderer.setSeriesPaint(0, colors[i]);
 
       ValueAxis axis = plot.getRangeAxis(i);

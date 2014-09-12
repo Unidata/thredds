@@ -129,12 +129,12 @@ public class URLExtracter {
 
     // workaround for HTMLEditorKit.Parser, cant deal with "content-encoding"
   private InputStream filterTag(InputStream in) throws IOException {
-    DataInputStream dins = new DataInputStream( in);
     ByteArrayOutputStream bos = new ByteArrayOutputStream(10000);
 
     DataInputStream din =  new DataInputStream(new BufferedInputStream(in));
     while (din.available() > 0) {
       String line = din.readLine();
+      if (line == null) continue;
       String lline = line.toLowerCase();
       if (0 <= lline.indexOf("<meta "))  // skip meta tags
         continue;

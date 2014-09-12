@@ -60,54 +60,26 @@ import ucar.unidata.util.Parameter;
 
 public final class FysatHeader {
 
-  private boolean debug = false;
-  private boolean debugPos = false;
-  private boolean debugString = false;
-  private boolean debugHeaderSize = false;
-  private RandomAccessFile raf;
-  private ucar.nc2.NetcdfFile ncfile;
-  //private PrintStream out = System.out;
+  private static final boolean debug = false;
   static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(FysatHeader.class);
-  int numrecs = 0; // number of records written
-  int recsize = 0; // size of each record (padded)
-
-  int recStart = 0; // where the record data starts
 
   int FY_AWX_PIB_LEN = 40;   // FY Satellite AWX product indentification block
-//  int FY_AWX_LEN ;  // FY Satellite AWX product description block
-//  int FY_AWX_HED_LEN ;  // FY Satellite AWX product header 
 
 
   double DEG_TO_RAD = 0.017453292;
-  double EARTH_RAD_KMETERS = 6371.200;
-  byte Z_DEFLATED = 8;
-  byte DEF_WBITS = 15;
-  private long actualSize;
-  private long calcSize;
   private int Z_type = 0;
 
   private AwxFileFirstHeader firstHeader;
   private AwxFileSecondHeader secondHeader;
 
-  public boolean isValidFile(ucar.unidata.io.RandomAccessFile raf) {
-    // first check the size of file
-    try {
-      this.actualSize = raf.length();
-    }
-    catch (IOException e) {
-      return (false);
-    }
+  public boolean isValidFile(ucar.unidata.io.RandomAccessFile raf) throws IOException {
+
     //  second check the file name
     if (!((raf.getLocation().endsWith(".AWX") || raf.getLocation().endsWith(".awx")))) {
       return false;
     }
     // more serious checking
-    try {
-      return this.readPIB(raf);// not FY Satellite AWX product file
-    }
-    catch (IOException e) {
-      return (false);
-    }
+    return this.readPIB(raf);// not FY Satellite AWX product file
   }
 
   /**
@@ -119,8 +91,6 @@ public final class FysatHeader {
   boolean readPIB(RandomAccessFile raf) throws IOException {
 
     this.firstHeader = new AwxFileFirstHeader();
-
-    this.raf = raf;
 
     int pos = 0;
     raf.seek(pos);
@@ -181,24 +151,17 @@ public final class FysatHeader {
   }
 
   void read(RandomAccessFile raf, NetcdfFile ncfile) throws IOException {
-    this.raf = raf;
-    this.ncfile = ncfile;
-
 
     if ((this.firstHeader == null) && (this.secondHeader == null)) {
       readPIB(raf);
     }
 
-    // if (out != null) this.out = out;
-    actualSize = raf.length();
-
-
     Attribute att;
 //    Attribute att = new Attribute( "Conventions", "AWX");
-//    this.ncfile.addAttribute(null, att);	
+//    ncfile.addAttribute(null, att);	
 
     att = new Attribute("version", this.firstHeader.version);
-    this.ncfile.addAttribute(null, att);
+    ncfile.addAttribute(null, att);
 
     String vname;
 
@@ -211,7 +174,7 @@ public final class FysatHeader {
         AwxFileGeoSatelliteSecondHeader geoSatelliteSecondHeader = (AwxFileGeoSatelliteSecondHeader) this.secondHeader;
 
         att = new Attribute("satellite_name", geoSatelliteSecondHeader.satelliteName);
-        this.ncfile.addAttribute(null, att);
+        ncfile.addAttribute(null, att);
 
         DateFormat dformat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
         dformat.setTimeZone(java.util.TimeZone.getTimeZone("GMT"));
@@ -223,7 +186,7 @@ public final class FysatHeader {
                 geoSatelliteSecondHeader.minute);
         cal.setTimeZone(java.util.TimeZone.getTimeZone("GMT"));
         String dstring = dformat.format(cal.getTime());
-        this.ncfile.addAttribute(null, new Attribute("time_coverage", dstring));
+        ncfile.addAttribute(null, new Attribute("time_coverage", dstring));
         int nz = 1;
         Dimension dimT = new Dimension("time", nz, true, false, false);
         ncfile.addDimension(null, dimT);
@@ -244,11 +207,11 @@ public final class FysatHeader {
         //  Get dimensions
         Integer ni = (int) geoSatelliteSecondHeader.widthOfImage;
         att = new Attribute("NX", ni);
-        this.ncfile.addAttribute(null, att);
+        ncfile.addAttribute(null, att);
 
         ni = (int) geoSatelliteSecondHeader.heightOfImage;
         att = new Attribute("NY", ni);
-        this.ncfile.addAttribute(null, att);
+        ncfile.addAttribute(null, att);
 
         vname = getGeoSatelliteProductName(geoSatelliteSecondHeader.channel);
         if (vname == null)
@@ -261,7 +224,7 @@ public final class FysatHeader {
         double dxKm = 0.0, dyKm = 0.0;
         short nv = geoSatelliteSecondHeader.flagOfProjection;
         att = new Attribute("ProjIndex", nv);
-        this.ncfile.addAttribute(null, att);
+        ncfile.addAttribute(null, att);
         int proj = nv;
         if (proj == 2) {
           att = new Attribute("ProjName", "MERCATOR");
@@ -271,6 +234,7 @@ public final class FysatHeader {
           dxKm = geoSatelliteSecondHeader.horizontalResolution;
           dyKm = geoSatelliteSecondHeader.verticalResolution;
           projection = new Mercator(lon0, par);
+
         } else if (proj == 1) {
           att = new Attribute("ProjName", "LAMBERT_CONFORNAL");
           double lat0 = geoSatelliteSecondHeader.centerLatitudeOfProjection;
@@ -280,6 +244,7 @@ public final class FysatHeader {
           dxKm = geoSatelliteSecondHeader.horizontalResolution / 100;
           dyKm = geoSatelliteSecondHeader.verticalResolution / 100;
           projection = new LambertConformal(lat0, lon0, par1, par2);
+
         } else if (proj == 3) {
           att = new Attribute("ProjName", "POLARSTEREOGRAPHIC");
           double latt = geoSatelliteSecondHeader.centerLatitudeOfProjection;
@@ -288,11 +253,12 @@ public final class FysatHeader {
           dxKm = geoSatelliteSecondHeader.horizontalResolution;
           dyKm = geoSatelliteSecondHeader.verticalResolution;
           projection = new Stereographic(90.0, lont, scale);
+
         } else if (proj == 4) {
           att = new Attribute("ProjName", "LatLonProjection");
           projection = new LatLonProjection();
         }
-        this.ncfile.addAttribute(null, att);
+        ncfile.addAttribute(null, att);
 
         // coordinate transform variable
         if (proj != 4) {
@@ -302,25 +268,16 @@ public final class FysatHeader {
 
         // deal with projection
 
-
-        this.ncfile.addAttribute(null, new Attribute("channel", geoSatelliteSecondHeader.channel));
-
-        this.ncfile.addAttribute(null, new Attribute("geospatial_lat_min", new Float(geoSatelliteSecondHeader.latitudeOfSouth)));
-        this.ncfile.addAttribute(null, new Attribute("geospatial_lat_max", new Float(geoSatelliteSecondHeader.latitudeOfNorth)));
-        this.ncfile.addAttribute(null, new Attribute("geospatial_lon_min", new Float(geoSatelliteSecondHeader.longitudeOfWest)));
-        this.ncfile.addAttribute(null, new Attribute("geospatial_lon_max", new Float(geoSatelliteSecondHeader.longitudeOfEast)));
-        this.ncfile.addAttribute(null, new Attribute("geospatial_vertical_min", new Float(0.0)));
-        this.ncfile.addAttribute(null, new Attribute("geospatial_vertical_max", new Float(0.0)));
-
-
-        this.ncfile.addAttribute(null, new Attribute("sample_ratio", geoSatelliteSecondHeader.sampleRatio));
-
-
-        att = new Attribute("horizontal_resolution", geoSatelliteSecondHeader.horizontalResolution);
-        this.ncfile.addAttribute(null, att);
-        att = new Attribute("vertical_resolution", geoSatelliteSecondHeader.verticalResolution);
-        this.ncfile.addAttribute(null, att);
-
+        ncfile.addAttribute(null, new Attribute("channel", geoSatelliteSecondHeader.channel));
+        ncfile.addAttribute(null, new Attribute("geospatial_lat_min", geoSatelliteSecondHeader.latitudeOfSouth));
+        ncfile.addAttribute(null, new Attribute("geospatial_lat_max", geoSatelliteSecondHeader.latitudeOfNorth));
+        ncfile.addAttribute(null, new Attribute("geospatial_lon_min", geoSatelliteSecondHeader.longitudeOfWest));
+        ncfile.addAttribute(null, new Attribute("geospatial_lon_max", geoSatelliteSecondHeader.longitudeOfEast));
+        ncfile.addAttribute(null, new Attribute("geospatial_vertical_min", new Float(0.0)));
+        ncfile.addAttribute(null, new Attribute("geospatial_vertical_max", new Float(0.0)));
+        ncfile.addAttribute(null, new Attribute("sample_ratio", geoSatelliteSecondHeader.sampleRatio));
+        ncfile.addAttribute(null, new Attribute("horizontal_resolution", geoSatelliteSecondHeader.horizontalResolution));
+        ncfile.addAttribute(null, new Attribute("vertical_resolution", geoSatelliteSecondHeader.verticalResolution));
 
         // only one data variable per awx file
 
@@ -355,7 +312,7 @@ public final class FysatHeader {
 
         int byteAmountofData = 1;
         velems = dimX.getLength() * dimY.getLength() * byteAmountofData;
-        ArrayList dims = new ArrayList();
+        List<Dimension> dims = new ArrayList<>();
         dims.add(dimT);
         dims.add(dimY);
         dims.add(dimX);
@@ -378,9 +335,6 @@ public final class FysatHeader {
             var.setDataType(DataType.INT);
             dataType = DataType.INT.getPrimitiveClassType();
             break;
-          default:
-            System.out.println("Unsupported Grid Procuct Dataset!");
-            throw new UnsupportedDatasetException("Unsupported Grid Procuct Dataset");
 
         }
 
@@ -393,9 +347,9 @@ public final class FysatHeader {
         //     var.addAttribute( new Attribute("scale_factor", new Byte((byte)(1))));
         //     var.addAttribute( new Attribute("add_offset", new Byte((byte)(0))));
         //  } else {
-        var.addAttribute(new Attribute("_missing_value", new Short((short) -1)));
-        var.addAttribute(new Attribute(CDM.SCALE_FACTOR, new Short((short) (1))));
-        var.addAttribute(new Attribute(CDM.ADD_OFFSET, new Short((short) (0))));
+        var.addAttribute(new Attribute("_missing_value", (short) -1));
+        var.addAttribute(new Attribute(CDM.SCALE_FACTOR, (short) (1)));
+        var.addAttribute(new Attribute(CDM.ADD_OFFSET, (short) (0)));
         //  }
 
         // size and beginning data position in file
@@ -551,17 +505,17 @@ public final class FysatHeader {
 
 
         att = new Attribute("satellite_name", gridprocuctSecondHeader.satelliteName);
-        this.ncfile.addAttribute(null, att);
+        ncfile.addAttribute(null, att);
 
         att = new Attribute("grid_feature", gridprocuctSecondHeader.gridFeature);
-        this.ncfile.addAttribute(null, att);
+        ncfile.addAttribute(null, att);
 
         att = new Attribute("byte_amount_of_data", gridprocuctSecondHeader.byteAmountofData);
-        this.ncfile.addAttribute(null, att);
+        ncfile.addAttribute(null, att);
 
         att = new Attribute("data_scale", gridprocuctSecondHeader.dataScale);
-        this.ncfile.addAttribute(null, att);
-        this.ncfile.addAttribute(null, new Attribute(CF.FEATURE_TYPE, FeatureType.GRID.toString()));
+        ncfile.addAttribute(null, att);
+        ncfile.addAttribute(null, new Attribute(CF.FEATURE_TYPE, FeatureType.GRID.toString()));
 
         DateFormat dformat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
         dformat.setTimeZone(java.util.TimeZone.getTimeZone("GMT"));
@@ -573,7 +527,7 @@ public final class FysatHeader {
                 gridprocuctSecondHeader.startMinute, 0);
         cal.setTimeZone(java.util.TimeZone.getTimeZone("GMT"));
         String dstring = dformat.format(cal.getTime());
-        this.ncfile.addAttribute(null, new Attribute("time_coverage_start", dstring));
+        ncfile.addAttribute(null, new Attribute("time_coverage_start", dstring));
         int nz = 1;
         Dimension dimT = new Dimension("time", nz, true, false, false);
         ncfile.addDimension(null, dimT);
@@ -600,24 +554,24 @@ public final class FysatHeader {
                 gridprocuctSecondHeader.endHour,
                 gridprocuctSecondHeader.endMinute, 0);
         dstring = dformat.format(cal.getTime());
-        this.ncfile.addAttribute(null, new Attribute("time_coverage_end", dstring));
+        ncfile.addAttribute(null, new Attribute("time_coverage_end", dstring));
 
 
         //  Get dimensions
-        Integer ni = new Integer(gridprocuctSecondHeader.amountofHorizontalSpacing);
+        Integer ni = (int) gridprocuctSecondHeader.amountofHorizontalSpacing;
         att = new Attribute("NX", ni);
-        this.ncfile.addAttribute(null, att);
+        ncfile.addAttribute(null, att);
 
-        ni = new Integer(gridprocuctSecondHeader.amountofVerticalSpacing);
+        ni = (int) gridprocuctSecondHeader.amountofVerticalSpacing;
         att = new Attribute("NY", ni);
-        this.ncfile.addAttribute(null, att);
+        ncfile.addAttribute(null, att);
 
 
         // set projection attribute
         // ? which projection
         Byte nv = 0;
         att = new Attribute("ProjIndex", nv);
-        this.ncfile.addAttribute(null, att);
+        ncfile.addAttribute(null, att);
         int proj = nv.intValue();
         if (proj == 1) {
           att = new Attribute("ProjName", "MERCATOR");
@@ -626,7 +580,7 @@ public final class FysatHeader {
         } else if (proj == 5) {
           att = new Attribute("ProjName", "POLARSTEREOGRAPGIC");
         }
-        this.ncfile.addAttribute(null, att);
+        ncfile.addAttribute(null, att);
 
 
         ProjectionImpl projection = null;
@@ -636,22 +590,22 @@ public final class FysatHeader {
         // System.out.println("unimplemented projection");
 
 
-        this.ncfile.addAttribute(null, new Attribute("geospatial_lat_min", new Float(gridprocuctSecondHeader.rightBottomLat)));
-        this.ncfile.addAttribute(null, new Attribute("geospatial_lat_max", new Float(gridprocuctSecondHeader.leftTopLat)));
-        this.ncfile.addAttribute(null, new Attribute("geospatial_lon_min", new Float(gridprocuctSecondHeader.leftTopLon)));
-        this.ncfile.addAttribute(null, new Attribute("geospatial_lon_max", new Float(gridprocuctSecondHeader.rightBottomLon)));
-        this.ncfile.addAttribute(null, new Attribute("geospatial_vertical_min", new Float(0.0)));
-        this.ncfile.addAttribute(null, new Attribute("geospatial_vertical_max", new Float(0.0)));
+        ncfile.addAttribute(null, new Attribute("geospatial_lat_min", gridprocuctSecondHeader.rightBottomLat));
+        ncfile.addAttribute(null, new Attribute("geospatial_lat_max", gridprocuctSecondHeader.leftTopLat));
+        ncfile.addAttribute(null, new Attribute("geospatial_lon_min", gridprocuctSecondHeader.leftTopLon));
+        ncfile.addAttribute(null, new Attribute("geospatial_lon_max", gridprocuctSecondHeader.rightBottomLon));
+        ncfile.addAttribute(null, new Attribute("geospatial_vertical_min", new Float(0.0)));
+        ncfile.addAttribute(null, new Attribute("geospatial_vertical_max", new Float(0.0)));
 
-        this.ncfile.addAttribute(null, new Attribute("spacing_unit", gridprocuctSecondHeader.getSpacingUnit()));
-        this.ncfile.addAttribute(null, new Attribute("horizontal_spacing", gridprocuctSecondHeader.horizontalSpacing));
-        this.ncfile.addAttribute(null, new Attribute("vertical_spacing", gridprocuctSecondHeader.verticalSpacing));
-        this.ncfile.addAttribute(null, new Attribute("amount_of_horizontal_spacing", gridprocuctSecondHeader.amountofHorizontalSpacing));
-        this.ncfile.addAttribute(null, new Attribute("amount_of_vertical_spacing", gridprocuctSecondHeader.amountofVerticalSpacing));
+        ncfile.addAttribute(null, new Attribute("spacing_unit", gridprocuctSecondHeader.getSpacingUnit()));
+        ncfile.addAttribute(null, new Attribute("horizontal_spacing", gridprocuctSecondHeader.horizontalSpacing));
+        ncfile.addAttribute(null, new Attribute("vertical_spacing", gridprocuctSecondHeader.verticalSpacing));
+        ncfile.addAttribute(null, new Attribute("amount_of_horizontal_spacing", gridprocuctSecondHeader.amountofHorizontalSpacing));
+        ncfile.addAttribute(null, new Attribute("amount_of_vertical_spacing", gridprocuctSecondHeader.amountofVerticalSpacing));
 
 
         //		    att = new Attribute( "imageResolution", nv);
-        //		    this.ncfile.addAttribute(null, att);
+        //		    ncfile.addAttribute(null, att);
 
         // only one data variable per awx file
         vname = getGridProductName(gridprocuctSecondHeader.gridFeature);
@@ -681,7 +635,7 @@ public final class FysatHeader {
         ncfile.addDimension(null, dimX);
 
         velems = dimX.getLength() * dimY.getLength() * gridprocuctSecondHeader.byteAmountofData;
-        ArrayList dims = new ArrayList();
+        List<Dimension> dims = new ArrayList<>();
         dims.add(dimT);
         dims.add(dimY);
         dims.add(dimX);
@@ -717,11 +671,11 @@ public final class FysatHeader {
 
 
         if (var.getDataType() == DataType.BYTE) {
-          var.addAttribute(new Attribute("_missing_value", new Byte((byte) -1)));
+          var.addAttribute(new Attribute("_missing_value", (byte) -1));
           var.addAttribute(new Attribute(CDM.ADD_OFFSET, (short) gridprocuctSecondHeader.dataBaseValue));
           var.addAttribute(new Attribute(CDM.SCALE_FACTOR, (short) gridprocuctSecondHeader.dataBaseValue));
         } else {
-          var.addAttribute(new Attribute("_missing_value", new Short((short) -1)));
+          var.addAttribute(new Attribute("_missing_value", (short) -1));
           var.addAttribute(new Attribute(CDM.ADD_OFFSET, (short) gridprocuctSecondHeader.dataBaseValue));
           var.addAttribute(new Attribute(CDM.SCALE_FACTOR, (short) gridprocuctSecondHeader.dataScale));
         }

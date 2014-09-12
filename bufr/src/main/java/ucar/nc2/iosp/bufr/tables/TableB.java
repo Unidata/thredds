@@ -85,7 +85,7 @@ public class TableB {
     out.format("Table B %s %n", name);
     for (Short key : sortKeys) {
       Descriptor dd = getDescriptor(key);
-      dd.show(out);
+      if (dd != null) dd.show(out);
       out.format("%n");
     }
   }

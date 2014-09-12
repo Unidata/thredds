@@ -64,6 +64,8 @@ public class Godiva2Viewer implements Viewer {
     public String getViewerLinkHtml(InvDatasetImpl ds, HttpServletRequest req)
     {
       InvAccess access = ds.getAccess(ServiceType.WMS);
+      if (access == null) return null;
+
       URI dataURI = access.getStandardUri();
       if (dataURI == null) {
         logger.warn("Godiva2Viewer access URL failed on {}", ds.getName());

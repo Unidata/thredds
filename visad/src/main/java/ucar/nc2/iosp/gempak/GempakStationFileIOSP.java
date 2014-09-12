@@ -394,6 +394,8 @@ public abstract class GempakStationFileIOSP extends AbstractIOServiceProvider {
         } else {
           varArray = get1DArray(v.getDataType(), numStations);
         }
+        assert varArray != null;
+
         int index = 0;
         String varname = v.getFullName();
         for (GempakStation stn : stations) {

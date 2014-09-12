@@ -56,9 +56,9 @@ import java.util.Map;
  */
 public class FslLocalTables extends NcepLocalTables {
   public static final int center_id = 59;
-  private static final String hrrrTable = "resources/grib2/noaa_gsd/Fsl-hrrr.csv";
+  // private static final String hrrrTable = "resources/grib2/noaa_gsd/Fsl-hrrr.csv";
   private static final String fimTable = "resources/grib2/noaa_gsd/fim.gribtable";
-  //private static final String tableName2 = "resources/grib2/local/Fsl-hrrr2.csv";
+  private static final String hrrrTable = "resources/grib2/noaa_gsd/Fsl-hrrr2.csv";
   private static final boolean debug = false;
 
   static FslLocalTables localFactory(int subCenter, int masterVersion, int localVersion, int genProcessId) {
@@ -244,7 +244,6 @@ ozone mixing ratio - b                                      154   109           
 
 
   private Map<Integer, Grib2Parameter> readFim(String resourcePath, Formatter f) {
-    boolean header = true;
     Map<Integer, Grib2Parameter> result = new HashMap<>(100);
 
     ClassLoader cl = getClass().getClassLoader();
@@ -259,7 +258,7 @@ ozone mixing ratio - b                                      154   109           
         String abbrev = (String) record.get(4);
         String units = (String) record.get(5);
 
-        if (debug) System.out.printf("%s == %3d %3d %-20s %-20s%n", desc, param, ztype, abbrev, units);
+        if (debug) f.format("%s == %3d %3d %-20s %-20s%n", desc, param, ztype, abbrev, units);
 
         Grib2Parameter gp = new Grib2Parameter(0, 0, param, abbrev, units, null, desc);
         result.put(makeHash(0, 0, param), gp);

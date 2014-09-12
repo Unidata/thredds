@@ -50,8 +50,8 @@ public class KmaLocalTables extends LocalTables {
   private static final String tableName = "resources/grib2/local/kma-ver5.txt";
   private static boolean debug = false;
 
-  KmaLocalTables(int center, int subCenter, int masterVersion, int localVersion) {
-    super(center, subCenter, masterVersion, localVersion);
+  KmaLocalTables(int center, int subCenter, int masterVersion, int localVersion, int genProcessId) {
+    super(center, subCenter, masterVersion, localVersion, genProcessId);
     initLocalTable();
   }
 
@@ -101,7 +101,7 @@ U_COMPNT_OF_WIND_AFTER_TIMESTEP                   56           0          65    
 */
 
   public static void main(String arg[]) {
-    KmaLocalTables t = new KmaLocalTables(40,0,0,0);
+    KmaLocalTables t = new KmaLocalTables(40,0,0,0, -1);
   }
 
 }

@@ -32,8 +32,6 @@
 
 package ucar.nc2.grib;
 
-import ucar.nc2.grib.grib2.Grib2Record;
-
 /**
  * Abstraction of GribTable for Grib Collections.
  * Still figuring out what the minimal need is
@@ -51,7 +49,7 @@ public interface GribTables {
 
   VertCoord.VertUnit getVertUnit(int code);
 
-  int addVariableHash(Object gribRecord);
+  // int addVariableHash(Object gribRecord);
 
   public static interface Parameter {
     public int getDiscipline();

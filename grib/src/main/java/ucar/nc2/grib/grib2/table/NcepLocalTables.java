@@ -70,7 +70,7 @@ public class NcepLocalTables extends LocalTables {
   protected final NcepLocalParams params;
 
   NcepLocalTables(int center, int subCenter, int masterVersion, int localVersion, int genProcessId, String resourcePath) {
-    super(center, subCenter, masterVersion, localVersion);
+    super(center, subCenter, masterVersion, localVersion, genProcessId);
     this.genProcessId = genProcessId;
     this.resourcePath = resourcePath == null ? defaultResourcePath : resourcePath;
     this.params =  new NcepLocalParams(this.resourcePath);

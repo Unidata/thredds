@@ -37,7 +37,6 @@ import ucar.ma2.Array;
 import ucar.nc2.NCdumpW;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.Variable;
-import ucar.nc2.constants.CDM;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.ncml.Aggregation;
 import ucar.nc2.ui.widget.BAMutil;
