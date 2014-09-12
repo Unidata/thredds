@@ -61,7 +61,7 @@ public class Fysatiosp extends AbstractIOServiceProvider {
 
   protected boolean debug = false;
 
-  public boolean isValidFile(ucar.unidata.io.RandomAccessFile raf) {
+  public boolean isValidFile(ucar.unidata.io.RandomAccessFile raf) throws IOException {
     FysatHeader localHeader = new FysatHeader();
     return (localHeader.isValidFile(raf));
   }
