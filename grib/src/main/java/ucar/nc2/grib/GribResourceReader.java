@@ -51,7 +51,6 @@ import java.util.regex.*;
 
 public class GribResourceReader {
 
-
   /**
    * Get the input stream to the given resource
    *

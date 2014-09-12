@@ -34,7 +34,6 @@
 package ucar.nc2.grib.grib2.table;
 
 import ucar.nc2.grib.grib2.Grib2Parameter;
-import ucar.nc2.iosp.nexrad2.Level2VolumeScan;
 import ucar.nc2.util.TableParser;
 
 import java.io.BufferedReader;
@@ -70,7 +69,7 @@ public class FslLocalTables extends NcepLocalTables {
   private Grib2Table tableDef;
 
   private FslLocalTables(int subCenter, int masterVersion, int localVersion, int genProcessId) {
-    super(center_id, subCenter, masterVersion, localVersion, genProcessId);
+    super(center_id, subCenter, masterVersion, localVersion, genProcessId, null);   // default resource path
     tableDef = genProcessId == 125 ? new Grib2Table(hrrrTable, Grib2Table.Type.test) : new Grib2Table(fimTable, Grib2Table.Type.test);
     initLocalTable(null);
   }

@@ -411,7 +411,7 @@ public class DatasetViewer extends JPanel {
           dumpData(table);
         }
       });
-      csPopup.addAction("Write binary Data to file", "Write", new AbstractAction() {
+      csPopup.addAction("Write binary Data to file", new AbstractAction() {
         public void actionPerformed(ActionEvent e) {
           writeData(table);
         }

@@ -63,20 +63,27 @@ import java.util.jar.JarFile;
  */
 public class NcepLocalTables extends LocalTables {
   static private final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(NcepLocalTables.class);
+  static private final String defaultResourcePath = "resources/grib2/ncep/";
 
   protected final int genProcessId;
-  NcepLocalTables(int center, int subCenter, int masterVersion, int localVersion, int genProcessId) {
+  protected final String resourcePath;
+  protected final NcepLocalParams params;
+
+  NcepLocalTables(int center, int subCenter, int masterVersion, int localVersion, int genProcessId, String resourcePath) {
     super(center, subCenter, masterVersion, localVersion);
     this.genProcessId = genProcessId;
+    this.resourcePath = resourcePath == null ? defaultResourcePath : resourcePath;
+    this.params =  new NcepLocalParams(this.resourcePath);
     initCodes();
   }
 
   @Override
   public String getTablePath(int discipline, int category, int number) {
     if ((category <= 191) && (number <= 191)) return super.getTablePath(discipline, category, number);
-    return NcepLocalParams.getTablePath(discipline, category);
+    return params.getTablePath(discipline, category);
   }
 
+  // stuff Robb took from Jeff McW; I dont understand it  9/11/2014
   //public  File[] getResourceListing(Class clazz, String path) {
   // URL dirURL = clazz.getClassLoader().getResource(path);
   //  try {
@@ -92,7 +99,8 @@ public class NcepLocalTables extends LocalTables {
   //  return null;
   //}
 
-  private String[] getResourceListing(Class clazz, String path) throws URISyntaxException, IOException {
+  private String[] getResourceListing(String path) throws URISyntaxException, IOException {
+    Class clazz = this.getClass();
     URL dirURL = clazz.getClassLoader().getResource(path);
     if (dirURL != null && dirURL.getProtocol().equals("file")) {
       return new File(dirURL.toURI()).list();
@@ -135,17 +143,16 @@ public class NcepLocalTables extends LocalTables {
   @Override
   public List<GribTables.Parameter> getParameters() {
     List<GribTables.Parameter> allParams = new ArrayList<>(3000);
-    String path = "resources/grib2/ncep/";
     try {
-      String[] fileNames = getResourceListing(ucar.nc2.grib.GribNumbers.class, path);
+      String[] fileNames = getResourceListing(resourcePath);
       for (String fileName : fileNames) {
         File f = new File(fileName);
         if (f.isDirectory()) continue;
         if (!f.getName().contains("Table4.2.")) continue;
         if (!f.getName().endsWith(".xml")) continue;
         try {
-          NcepLocalParams params = NcepLocalParams.factory(path + f.getPath());
-          allParams.addAll(params.getParameters());
+          NcepLocalParams.Table table = params.factory(resourcePath + f.getPath());
+          allParams.addAll(table.getParameters());
         } catch (Exception e) {
           System.out.printf("Error reading wmo tables = %s%n", e.getMessage());
         }
@@ -276,7 +283,7 @@ public class NcepLocalTables extends LocalTables {
     // if (makeHash(discipline, category, number) == makeHash(0, 19, 242))
     //   return getParameter(0, 1, 242);
 
-    Grib2Parameter plocal = NcepLocalParams.getParameter(discipline, category, number);
+    Grib2Parameter plocal = params.getParameter(discipline, category, number);
 
     if ((category <= 191) && (number <= 191)) {
       GribTables.Parameter pwmo = WmoCodeTable.getParameterEntry(discipline, category, number);
@@ -291,6 +298,11 @@ public class NcepLocalTables extends LocalTables {
 
     return plocal;
   }
+
+  @Override
+  public GribTables.Parameter getParameterRaw(int discipline, int category, int number) {
+     return params.getParameter(discipline, category, number);
+   }
 
   @Override
   public String getTableValue(String tableName, int code) {
@@ -482,7 +494,7 @@ public class NcepLocalTables extends LocalTables {
 
   // public so can be called from Grib2
   private Map<Integer, String> initTable410() {
-    String path = "resources/grib2/ncep/Table4.10.xml";
+    String path = resourcePath + "Table4.10.xml";
     try (InputStream is = GribResourceReader.getInputStream(path)) {
       if (is == null) {
         logger.error("Cant find = " + path);
@@ -527,7 +539,7 @@ public class NcepLocalTables extends LocalTables {
 
   @Override
   public String getCategory(int discipline, int category) {
-    String catName = NcepLocalParams.getCategory(discipline, category);
+    String catName = params.getCategory(discipline, category);
     if (catName != null) return catName;
     return super.getCategory(discipline, category);
   }

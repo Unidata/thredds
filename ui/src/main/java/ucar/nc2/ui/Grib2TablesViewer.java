@@ -32,9 +32,9 @@
 
 package ucar.nc2.ui;
 
+import ucar.nc2.grib.GribTables;
 import ucar.nc2.grib.grib2.table.Grib2Customizer;
 import ucar.nc2.grib.grib2.table.WmoCodeTable;
-import ucar.nc2.ui.dialog.Grib1TableDialog;
 import ucar.nc2.ui.widget.BAMutil;
 import ucar.nc2.ui.widget.IndependentWindow;
 import ucar.nc2.ui.widget.PopupMenu;
@@ -63,12 +63,11 @@ public class Grib2TablesViewer extends JPanel {
   private PreferencesExt prefs;
 
   private BeanTable gribTable, entryTable;
-  private JSplitPane split, split2;
+  private JSplitPane split;
 
   private TextHistoryPane infoTA;
   private IndependentWindow infoWindow;
 
-  private Grib1TableDialog dialog;
   private Grib2Customizer.GribTableId current;
 
   public Grib2TablesViewer(final PreferencesExt prefs, JPanel buttPanel) {
@@ -134,7 +133,7 @@ public class Grib2TablesViewer extends JPanel {
 
     try {
       java.util.List<Grib2Customizer.GribTableId> tables = Grib2Customizer.getTableIds();
-      java.util.List<TableBean> beans = new ArrayList<TableBean>(tables.size());
+      java.util.List<TableBean> beans = new ArrayList<>(tables.size());
       for (Grib2Customizer.GribTableId t : tables) {
         beans.add(new TableBean(t));
       }
@@ -158,10 +157,10 @@ public class Grib2TablesViewer extends JPanel {
 
   private void setEntries(Grib2Customizer.GribTableId tableId) {
     Grib2Customizer gt = Grib2Customizer.factory(tableId.center, tableId.subCenter, tableId.masterVersion, tableId.localVersion, tableId.genProcessId);
-    List params = gt.getParameters();
-    java.util.List<EntryBean> beans = new ArrayList<EntryBean>(params.size());
-    for (Object p : params) {
-      beans.add(new EntryBean((Grib2Customizer.Parameter) p));
+    List<GribTables.Parameter> params = gt.getParameters();
+    java.util.List<EntryBean> beans = new ArrayList<>(params.size());
+    for (GribTables.Parameter p : params) {
+      beans.add(new EntryBean( p));
     }
     entryTable.setBeans(beans);
     current = tableId;
@@ -233,7 +232,7 @@ public class Grib2TablesViewer extends JPanel {
 
     Formatter f = new Formatter();
 
-    f.format("Table 1 = %s (%s)%n", id1.name, t1.getTablePath(0, 192,192)); // local
+    f.format("Table 1 = %s (%s)%n", id1.name, t1.getTablePath(0, 192,192)); // local  // WTF ??
     f.format("Table 2 = %s (%s)%n", id2.name, t2.getTablePath(0, 192,192)); // local
 
     int extra = 0;
@@ -257,16 +256,16 @@ public class Grib2TablesViewer extends JPanel {
     f.format("%nConflicts=%d extra=%d%n%n", conflict, extra);
 
     extra = 0;
-    f.format("Table 2 : %n");
+    f.format("Table 2 has the following not in Table 1:%n");
     for (Object t : t2.getParameters()) {
       Grib2Customizer.Parameter p2 = (Grib2Customizer.Parameter) t;
-      Grib2Customizer.Parameter  p1 = t2.getParameterRaw(p2.getDiscipline(), p2.getCategory(), p2.getNumber());
+      Grib2Customizer.Parameter  p1 = t1.getParameterRaw(p2.getDiscipline(), p2.getCategory(), p2.getNumber());
       if (p1 == null) {
         extra++;
-        f.format(" Missing %s in table 1%n", p2);
+        f.format(" %s%n", p2);
       }
     }
-    f.format("%nextra=%d%n%n", extra);
+    f.format("%ntotal extra=%d%n%n", extra);
 
     infoTA.setText(f.toString());
     infoWindow.show();

@@ -42,6 +42,7 @@ import org.jsoup.nodes.Node;
 import org.jsoup.select.Elements;
 import ucar.unidata.util.StringUtil2;
 
+import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.URL;
@@ -318,7 +319,11 @@ public class NcepHtmlScraper  {
     if (show) System.out.printf("%s%n", f);
   }
 
+  // C:\dev\github\thredds\grib\src\main\resources\resources\grib2\ncep
+
   public static void main(String[] args) throws IOException {
+    File dir = new File(dirOut);
+    dir.mkdirs();
     NcepHtmlScraper scraper = new NcepHtmlScraper();
     scraper.parseTopDoc();
   }
