@@ -42,7 +42,7 @@ public class CoverageRenderer {
   private Array dataH;
   private int wantLevel = -1, wantSlice = -1, wantTime = -1, horizStride = 1;   // for next draw()
   private int wantRunTime = -1, wantEnsemble = -1;
-  private int lastLevel = -1, lastTime = -1, lastSlice = -1, lastStride = -1;   // last data read
+  private int lastLevel = -1, lastTime = -1, lastStride = -1;   // last data read
   private int lastRunTime = -1, lastEnsemble = -1;   // last data read
   private Coverage lastGrid = null;
 

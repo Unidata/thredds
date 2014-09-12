@@ -210,9 +210,9 @@ public class AggTable extends JPanel {
       }
       if (org != null) org.close();
     } catch (Throwable t) {
-      ByteArrayOutputStream bos = new ByteArrayOutputStream(10000);
-      t.printStackTrace(new PrintStream(bos));
-      f.format(bos.toString());
+      StringWriter sw = new StringWriter(10000);
+      t.printStackTrace(new PrintWriter(sw));
+      f.format(sw.toString());
     }
   }
 
