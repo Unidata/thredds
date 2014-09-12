@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<parameterMap>
+  <table>Table4.2.3.1</table>
+  <title>Quantitative</title>
+  <source>http://www.nco.ncep.noaa.gov/pmb/docs/grib2/grib2_table4-2-3-1.shtml</source>
+  <parameter code="0">
+    <shortName>ESTP</shortName>
+    <description>Estimated Precipitation</description>
+    <units>kg m-2</units>
+  </parameter>
+  <parameter code="1">
+    <shortName>IRRATE</shortName>
+    <description>Instantaneous Rain Rate</description>
+    <units>kg m-2 s-1</units>
+  </parameter>
+  <parameter code="2">
+    <shortName>CTOPH</shortName>
+    <description>Cloud Top Height</description>
+    <units>m</units>
+  </parameter>
+  <parameter code="3">
+    <shortName>CTOPHQI</shortName>
+    <description>Cloud Top Height Quality Indicator</description>
+    <units>Code table 4.219</units>
+  </parameter>
+  <parameter code="4">
+    <shortName>ESTUGRD</shortName>
+    <description>Estimated u-Component of Wind</description>
+    <units>m s-1</units>
+  </parameter>
+  <parameter code="5">
+    <shortName>ESTVGRD</shortName>
+    <description>Estimated v-Component of Wind</description>
+    <units>m s-1</units>
+  </parameter>
+  <parameter code="6">
+    <shortName>NPIXU</shortName>
+    <description>Number Of Pixels Used</description>
+    <units>Numeric</units>
+  </parameter>
+  <parameter code="7">
+    <shortName>SOLZA</shortName>
+    <description>Solar Zenith Angle</description>
+    <units />
+  </parameter>
+  <parameter code="8">
+    <shortName>RAZA</shortName>
+    <description>Relative Azimuth Angle</description>
+    <units />
+  </parameter>
+  <parameter code="9">
+    <shortName>RFL06</shortName>
+    <description>Reflectance in 0.6 Micron Channel</description>
+    <units>%</units>
+  </parameter>
+  <parameter code="10">
+    <shortName>RFL08</shortName>
+    <description>Reflectance in 0.8 Micron Channel</description>
+    <units>%</units>
+  </parameter>
+  <parameter code="11">
+    <shortName>RFL16</shortName>
+    <description>Reflectance in 1.6 Micron Channel</description>
+    <units>%</units>
+  </parameter>
+  <parameter code="12">
+    <shortName>RFL39</shortName>
+    <description>Reflectance in 3.9 Micron Channel</description>
+    <units>%</units>
+  </parameter>
+  <parameter code="13">
+    <shortName>ATMDIV</shortName>
+    <description>Atmospheric Divergence</description>
+    <units>s-1</units>
+  </parameter>
+  <parameter code="14">
+    <shortName>CBTMP</shortName>
+    <description>Cloudy Brightness Temperature</description>
+    <units>K</units>
+  </parameter>
+  <parameter code="15">
+    <shortName>CSBTMP</shortName>
+    <description>Clear Sky Brightness Temperature</description>
+    <units>K</units>
+  </parameter>
+  <parameter code="16">
+    <shortName>CLDRAD</shortName>
+    <description>Cloudy Radiance (with respect to wave number)</description>
+    <units>W m-1 sr-1</units>
+  </parameter>
+  <parameter code="17">
+    <shortName>CSKYRAD</shortName>
+    <description>Clear Sky Radiance (with respect to wave number)</description>
+    <units>W m-1 sr-1</units>
+  </parameter>
+  <parameter code="19">
+    <shortName>WINDS</shortName>
+    <description>Wind Speed</description>
+    <units>m s-1</units>
+  </parameter>
+  <parameter code="20">
+    <shortName>AOT06</shortName>
+    <description>Aerosol Optical Thickness at 0.635 m</description>
+    <units />
+  </parameter>
+  <parameter code="21">
+    <shortName>AOT08</shortName>
+    <description>Aerosol Optical Thickness at 0.810 m</description>
+    <units />
+  </parameter>
+  <parameter code="22">
+    <shortName>AOT16</shortName>
+    <description>Aerosol Optical Thickness at 1.640 m</description>
+    <units />
+  </parameter>
+  <parameter code="23">
+    <shortName>ANGCOE</shortName>
+    <description>Angstrom Coefficient</description>
+    <units />
+  </parameter>
+  <parameter code="192">
+    <shortName>USCT</shortName>
+    <description>Scatterometer Estimated U Wind Component</description>
+    <units>m s-1</units>
+  </parameter>
+  <parameter code="193">
+    <shortName>VSCT</shortName>
+    <description>Scatterometer Estimated V Wind Component</description>
+    <units>m s-1</units>
+  </parameter>
+  <parameter code="194">
+    <shortName>SWQI</shortName>
+    <description>Scatterometer Wind Quality</description>
+    <units />
+  </parameter>
+</parameterMap>

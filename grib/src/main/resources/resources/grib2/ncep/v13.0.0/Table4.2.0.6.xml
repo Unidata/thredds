@@ -1,0 +1,236 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<parameterMap>
+  <table>Table4.2.0.6</table>
+  <title>Cloud</title>
+  <source>http://www.nco.ncep.noaa.gov/pmb/docs/grib2/grib2_table4-2-0-6.shtml</source>
+  <parameter code="0">
+    <shortName>CICE</shortName>
+    <description>Cloud Ice</description>
+    <units>kg m-2</units>
+  </parameter>
+  <parameter code="1">
+    <shortName>TCDC</shortName>
+    <description>Total Cloud Cover</description>
+    <units>%</units>
+  </parameter>
+  <parameter code="2">
+    <shortName>CDCON</shortName>
+    <description>Convective Cloud Cover</description>
+    <units>%</units>
+  </parameter>
+  <parameter code="3">
+    <shortName>LCDC</shortName>
+    <description>Low Cloud Cover</description>
+    <units>%</units>
+  </parameter>
+  <parameter code="4">
+    <shortName>MCDC</shortName>
+    <description>Medium Cloud Cover</description>
+    <units>%</units>
+  </parameter>
+  <parameter code="5">
+    <shortName>HCDC</shortName>
+    <description>High Cloud Cover</description>
+    <units>%</units>
+  </parameter>
+  <parameter code="6">
+    <shortName>CWAT</shortName>
+    <description>Cloud Water</description>
+    <units>kg m-2</units>
+  </parameter>
+  <parameter code="7">
+    <shortName>CDCA</shortName>
+    <description>Cloud Amount</description>
+    <units>%</units>
+  </parameter>
+  <parameter code="8">
+    <shortName>CDCT</shortName>
+    <description>Cloud Type</description>
+    <units>See Table 4.203</units>
+  </parameter>
+  <parameter code="9">
+    <shortName>TMAXT</shortName>
+    <description>Thunderstorm Maximum Tops</description>
+    <units>m</units>
+  </parameter>
+  <parameter code="10">
+    <shortName>THUNC</shortName>
+    <description>Thunderstorm Coverage</description>
+    <units>See Table 4.204</units>
+  </parameter>
+  <parameter code="11">
+    <shortName>CDCB</shortName>
+    <description>Cloud Base</description>
+    <units>m</units>
+  </parameter>
+  <parameter code="12">
+    <shortName>CDCT</shortName>
+    <description>Cloud Top</description>
+    <units>m</units>
+  </parameter>
+  <parameter code="13">
+    <shortName>CEIL</shortName>
+    <description>Ceiling</description>
+    <units>m</units>
+  </parameter>
+  <parameter code="14">
+    <shortName>CDLYR</shortName>
+    <description>Non-Convective Cloud Cover</description>
+    <units>%</units>
+  </parameter>
+  <parameter code="15">
+    <shortName>CWORK</shortName>
+    <description>Cloud Work Function</description>
+    <units>J kg-1</units>
+  </parameter>
+  <parameter code="16">
+    <shortName>CUEFI</shortName>
+    <description>Convective Cloud Efficiency</description>
+    <units>Proportion</units>
+  </parameter>
+  <parameter code="17">
+    <shortName>TCOND</shortName>
+    <description>Total Condensate *</description>
+    <units>kg kg-1</units>
+  </parameter>
+  <parameter code="18">
+    <shortName>TCOLW</shortName>
+    <description>Total Column-Integrated Cloud Water *</description>
+    <units>kg m-2</units>
+  </parameter>
+  <parameter code="19">
+    <shortName>TCOLI</shortName>
+    <description>Total Column-Integrated Cloud Ice *</description>
+    <units>kg m-2</units>
+  </parameter>
+  <parameter code="20">
+    <shortName>TCOLC</shortName>
+    <description>Total Column-Integrated Condensate *</description>
+    <units>kg m-2</units>
+  </parameter>
+  <parameter code="21">
+    <shortName>FICE</shortName>
+    <description>Ice fraction of total condensate</description>
+    <units>Proportion</units>
+  </parameter>
+  <parameter code="22">
+    <shortName>CDCC</shortName>
+    <description>Cloud Cover</description>
+    <units>%</units>
+  </parameter>
+  <parameter code="23">
+    <shortName>CDCIMR</shortName>
+    <description>Cloud Ice Mixing Ratio *</description>
+    <units>kg kg-1</units>
+  </parameter>
+  <parameter code="24">
+    <shortName>SUNS</shortName>
+    <description>Sunshine</description>
+    <units>Numeric</units>
+  </parameter>
+  <parameter code="25">
+    <shortName>CBHE</shortName>
+    <description>Horizontal Extent of Cumulonimbus (CB)</description>
+    <units>%</units>
+  </parameter>
+  <parameter code="26">
+    <shortName>HCONCB</shortName>
+    <description>Height of Convective Cloud Base</description>
+    <units>m</units>
+  </parameter>
+  <parameter code="27">
+    <shortName>HCONCT</shortName>
+    <description>Height of Convective Cloud Top</description>
+    <units>m</units>
+  </parameter>
+  <parameter code="28">
+    <shortName>NCONCD</shortName>
+    <description>Number Concentration of Cloud Droplets</description>
+    <units>kg-1</units>
+  </parameter>
+  <parameter code="29">
+    <shortName>NCCICE</shortName>
+    <description>Number Concentration of Cloud Ice</description>
+    <units>kg-1</units>
+  </parameter>
+  <parameter code="30">
+    <shortName>NDENCD</shortName>
+    <description>Number Density of Cloud Droplets</description>
+    <units>m-3</units>
+  </parameter>
+  <parameter code="31">
+    <shortName>NDCICE</shortName>
+    <description>Number Density of Cloud Ice</description>
+    <units>m-3</units>
+  </parameter>
+  <parameter code="32">
+    <shortName>FRACCC</shortName>
+    <description>Fraction of Cloud Cover</description>
+    <units>Numeric</units>
+  </parameter>
+  <parameter code="33">
+    <shortName>SUNSD</shortName>
+    <description>Sunshine Duration</description>
+    <units>s</units>
+  </parameter>
+  <parameter code="34">
+    <shortName>SLWTC</shortName>
+    <description>Surface Long Wave Effective Total Cloudiness</description>
+    <units>Numeric</units>
+  </parameter>
+  <parameter code="35">
+    <shortName>SSWTC</shortName>
+    <description>Surface Short Wave Effective Total Cloudiness</description>
+    <units>Numeric</units>
+  </parameter>
+  <parameter code="192">
+    <shortName>CDLYR</shortName>
+    <description>Non-Convective Cloud Cover</description>
+    <units>%</units>
+  </parameter>
+  <parameter code="193">
+    <shortName>CWORK</shortName>
+    <description>Cloud Work Function</description>
+    <units>J kg-1</units>
+  </parameter>
+  <parameter code="194">
+    <shortName>CUEFI</shortName>
+    <description>Convective Cloud Efficiency</description>
+    <units>non-dim</units>
+  </parameter>
+  <parameter code="195">
+    <shortName>TCOND</shortName>
+    <description>Total Condensate</description>
+    <units>kg kg-1</units>
+  </parameter>
+  <parameter code="196">
+    <shortName>TCOLW</shortName>
+    <description>Total Column-Integrated Cloud Water</description>
+    <units>kg m-2</units>
+  </parameter>
+  <parameter code="197">
+    <shortName>TCOLI</shortName>
+    <description>Total Column-Integrated Cloud Ice</description>
+    <units>kg m-2</units>
+  </parameter>
+  <parameter code="198">
+    <shortName>TCOLC</shortName>
+    <description>Total Column-Integrated Condensate</description>
+    <units>kg m-2</units>
+  </parameter>
+  <parameter code="199">
+    <shortName>FICE</shortName>
+    <description>Ice fraction of total condensate</description>
+    <units>non-dim</units>
+  </parameter>
+  <parameter code="200">
+    <shortName>MFLUX</shortName>
+    <description>Convective Cloud Mass Flux</description>
+    <units>Pa s-1</units>
+  </parameter>
+  <parameter code="201">
+    <shortName>SUNSD</shortName>
+    <description>Sunshine Duration</description>
+    <units>s</units>
+  </parameter>
+</parameterMap>

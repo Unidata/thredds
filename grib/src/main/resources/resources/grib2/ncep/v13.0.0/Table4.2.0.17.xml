@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<parameterMap>
+  <table>Table4.2.0.17</table>
+  <title>Electrodynamics</title>
+  <source>http://www.nco.ncep.noaa.gov/pmb/docs/grib2/grib2_table4-2-0-17.shtml</source>
+  <parameter code="0">
+    <shortName>LTNGSD</shortName>
+    <description>Lightning Strike Density</description>
+    <units>m-2 s-1</units>
+  </parameter>
+  <parameter code="192">
+    <shortName>LTNG</shortName>
+    <description>Lightning</description>
+    <units>non-dim</units>
+  </parameter>
+</parameterMap>

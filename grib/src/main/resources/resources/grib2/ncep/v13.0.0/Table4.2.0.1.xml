@@ -1,0 +1,641 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<parameterMap>
+  <table>Table4.2.0.1</table>
+  <title>Moisture</title>
+  <source>http://www.nco.ncep.noaa.gov/pmb/docs/grib2/grib2_table4-2-0-1.shtml</source>
+  <parameter code="0">
+    <shortName>SPFH</shortName>
+    <description>Specific Humidity</description>
+    <units>kg kg-1</units>
+  </parameter>
+  <parameter code="1">
+    <shortName>RH</shortName>
+    <description>Relative Humidity</description>
+    <units>%</units>
+  </parameter>
+  <parameter code="2">
+    <shortName>MIXR</shortName>
+    <description>Humidity Mixing Ratio</description>
+    <units>kg kg-1</units>
+  </parameter>
+  <parameter code="3">
+    <shortName>PWAT</shortName>
+    <description>Precipitable Water</description>
+    <units>kg m-2</units>
+  </parameter>
+  <parameter code="4">
+    <shortName>VAPP</shortName>
+    <description>Vapour Pressure</description>
+    <units>Pa</units>
+  </parameter>
+  <parameter code="5">
+    <shortName>SATD</shortName>
+    <description>Saturation Deficit</description>
+    <units>Pa</units>
+  </parameter>
+  <parameter code="6">
+    <shortName>EVP</shortName>
+    <description>Evaporation</description>
+    <units>kg m-2</units>
+  </parameter>
+  <parameter code="7">
+    <shortName>PRATE</shortName>
+    <description>Precipitation Rate *</description>
+    <units>kg m-2 s-1</units>
+  </parameter>
+  <parameter code="8">
+    <shortName>APCP</shortName>
+    <description>Total Precipitation ***</description>
+    <units>kg m-2</units>
+  </parameter>
+  <parameter code="9">
+    <shortName>NCPCP</shortName>
+    <description>Large-Scale Precipitation (non-convective) ***</description>
+    <units>kg m-2</units>
+  </parameter>
+  <parameter code="10">
+    <shortName>ACPCP</shortName>
+    <description>Convective Precipitation ***</description>
+    <units>kg m-2</units>
+  </parameter>
+  <parameter code="11">
+    <shortName>SNOD</shortName>
+    <description>Snow Depth</description>
+    <units>m</units>
+  </parameter>
+  <parameter code="12">
+    <shortName>SRWEQ</shortName>
+    <description>Snowfall Rate Water Equivalent *</description>
+    <units>kg m-2 s-1</units>
+  </parameter>
+  <parameter code="13">
+    <shortName>WEASD</shortName>
+    <description>Water Equivalent of Accumulated Snow Depth ***</description>
+    <units>kg m-2</units>
+  </parameter>
+  <parameter code="14">
+    <shortName>SNOC</shortName>
+    <description>Convective Snow ***</description>
+    <units>kg m-2</units>
+  </parameter>
+  <parameter code="15">
+    <shortName>SNOL</shortName>
+    <description>Large-Scale Snow ***</description>
+    <units>kg m-2</units>
+  </parameter>
+  <parameter code="16">
+    <shortName>SNOM</shortName>
+    <description>Snow Melt</description>
+    <units>kg m-2</units>
+  </parameter>
+  <parameter code="17">
+    <shortName>SNOAG</shortName>
+    <description>Snow Age</description>
+    <units>day</units>
+  </parameter>
+  <parameter code="18">
+    <shortName>ABSH</shortName>
+    <description>Absolute Humidity</description>
+    <units>kg m-3</units>
+  </parameter>
+  <parameter code="19">
+    <shortName>PTYPE</shortName>
+    <description>Precipitation Type</description>
+    <units>See Table 4.201</units>
+  </parameter>
+  <parameter code="20">
+    <shortName>ILIQW</shortName>
+    <description>Integrated Liquid Water</description>
+    <units>kg m-2</units>
+  </parameter>
+  <parameter code="21">
+    <shortName>TCOND</shortName>
+    <description>Condensate</description>
+    <units>kg kg-1</units>
+  </parameter>
+  <parameter code="22">
+    <shortName>CLWMR</shortName>
+    <description>Cloud Mixing Ratio</description>
+    <units>kg kg-1</units>
+  </parameter>
+  <parameter code="23">
+    <shortName>ICMR</shortName>
+    <description>Ice Water Mixing Ratio</description>
+    <units>kg kg-1</units>
+  </parameter>
+  <parameter code="24">
+    <shortName>RWMR</shortName>
+    <description>Rain Mixing Ratio</description>
+    <units>kg kg-1</units>
+  </parameter>
+  <parameter code="25">
+    <shortName>SNMR</shortName>
+    <description>Snow Mixing Ratio</description>
+    <units>kg kg-1</units>
+  </parameter>
+  <parameter code="26">
+    <shortName>MCONV</shortName>
+    <description>Horizontal Moisture Convergence</description>
+    <units>kg kg-1 s-1</units>
+  </parameter>
+  <parameter code="27">
+    <shortName>MAXRH</shortName>
+    <description>Maximum Relative Humidity *</description>
+    <units>%</units>
+  </parameter>
+  <parameter code="28">
+    <shortName>MAXAH</shortName>
+    <description>Maximum Absolute Humidity *</description>
+    <units>kg m-3</units>
+  </parameter>
+  <parameter code="29">
+    <shortName>ASNOW</shortName>
+    <description>Total Snowfall ***</description>
+    <units>m</units>
+  </parameter>
+  <parameter code="30">
+    <shortName>PWCAT</shortName>
+    <description>Precipitable Water Category</description>
+    <units>See Table 4.202</units>
+  </parameter>
+  <parameter code="31">
+    <shortName>HAIL</shortName>
+    <description>Hail</description>
+    <units>m</units>
+  </parameter>
+  <parameter code="32">
+    <shortName>GRLE</shortName>
+    <description>Graupel</description>
+    <units>kg kg-1</units>
+  </parameter>
+  <parameter code="33">
+    <shortName>CRAIN</shortName>
+    <description>Categorical Rain</description>
+    <units>Code table 4.222</units>
+  </parameter>
+  <parameter code="34">
+    <shortName>CFRZR</shortName>
+    <description>Categorical Freezing Rain</description>
+    <units>Code table 4.222</units>
+  </parameter>
+  <parameter code="35">
+    <shortName>CICEP</shortName>
+    <description>Categorical Ice Pellets</description>
+    <units>Code table 4.222</units>
+  </parameter>
+  <parameter code="36">
+    <shortName>CSNOW</shortName>
+    <description>Categorical Snow</description>
+    <units>Code table 4.222</units>
+  </parameter>
+  <parameter code="37">
+    <shortName>CPRAT</shortName>
+    <description>Convective Precipitation Rate</description>
+    <units>kg m-2 s-1</units>
+  </parameter>
+  <parameter code="38">
+    <shortName>MCONV</shortName>
+    <description>Horizontal Moisture Divergence</description>
+    <units>kg kg-1 s-1</units>
+  </parameter>
+  <parameter code="39">
+    <shortName>CPOFP</shortName>
+    <description>Percent frozen precipitation</description>
+    <units>%</units>
+  </parameter>
+  <parameter code="40">
+    <shortName>PEVAP</shortName>
+    <description>Potential Evaporation</description>
+    <units>kg m-2</units>
+  </parameter>
+  <parameter code="41">
+    <shortName>PEVPR</shortName>
+    <description>Potential Evaporation Rate</description>
+    <units>W m-2</units>
+  </parameter>
+  <parameter code="42">
+    <shortName>SNOWC</shortName>
+    <description>Snow Cover</description>
+    <units>%</units>
+  </parameter>
+  <parameter code="43">
+    <shortName>FRAIN</shortName>
+    <description>Rain Fraction of Total Cloud Water</description>
+    <units>Proportion</units>
+  </parameter>
+  <parameter code="44">
+    <shortName>RIME</shortName>
+    <description>Rime Factor</description>
+    <units>Numeric</units>
+  </parameter>
+  <parameter code="45">
+    <shortName>TCOLR</shortName>
+    <description>Total Column Integrated Rain</description>
+    <units>kg m-2</units>
+  </parameter>
+  <parameter code="46">
+    <shortName>TCOLS</shortName>
+    <description>Total Column Integrated Snow</description>
+    <units>kg m-2</units>
+  </parameter>
+  <parameter code="47">
+    <shortName>LSWP</shortName>
+    <description>Large Scale Water Precipitation (Non-Convective) ***</description>
+    <units>kg m-2</units>
+  </parameter>
+  <parameter code="48">
+    <shortName>CWP</shortName>
+    <description>Convective Water Precipitation ***</description>
+    <units>kg m-2</units>
+  </parameter>
+  <parameter code="49">
+    <shortName>TWATP</shortName>
+    <description>Total Water Precipitation ***</description>
+    <units>kg m-2</units>
+  </parameter>
+  <parameter code="50">
+    <shortName>TSNOWP</shortName>
+    <description>Total Snow Precipitation ***</description>
+    <units>kg m-2</units>
+  </parameter>
+  <parameter code="51">
+    <shortName>TCWAT</shortName>
+    <description>Total Column Water (Vertically integrated total water (vapour+cloud water/ice)</description>
+    <units>kg m-2</units>
+  </parameter>
+  <parameter code="52">
+    <shortName>TPRATE</shortName>
+    <description>Total Precipitation Rate **</description>
+    <units>kg m-2 s-1</units>
+  </parameter>
+  <parameter code="53">
+    <shortName>TSRWE</shortName>
+    <description>Total Snowfall Rate Water Equivalent **</description>
+    <units>kg m-2 s-1</units>
+  </parameter>
+  <parameter code="54">
+    <shortName>LSPRATE</shortName>
+    <description>Large Scale Precipitation Rate</description>
+    <units>kg m-2 s-1</units>
+  </parameter>
+  <parameter code="55">
+    <shortName>CSRWE</shortName>
+    <description>Convective Snowfall Rate Water Equivalent</description>
+    <units>kg m-2 s-1</units>
+  </parameter>
+  <parameter code="56">
+    <shortName>LSSRWE</shortName>
+    <description>Large Scale Snowfall Rate Water Equivalent</description>
+    <units>kg m-2 s-1</units>
+  </parameter>
+  <parameter code="57">
+    <shortName>TSRATE</shortName>
+    <description>Total Snowfall Rate</description>
+    <units>m s-1</units>
+  </parameter>
+  <parameter code="58">
+    <shortName>CSRATE</shortName>
+    <description>Convective Snowfall Rate</description>
+    <units>m s-1</units>
+  </parameter>
+  <parameter code="59">
+    <shortName>LSSRATE</shortName>
+    <description>Large Scale Snowfall Rate</description>
+    <units>m s-1</units>
+  </parameter>
+  <parameter code="60">
+    <shortName>SDWE</shortName>
+    <description>Snow Depth Water Equivalent</description>
+    <units>kg m-2</units>
+  </parameter>
+  <parameter code="61">
+    <shortName>SDEN</shortName>
+    <description>Snow Density</description>
+    <units>kg m-3</units>
+  </parameter>
+  <parameter code="62">
+    <shortName>SEVAP</shortName>
+    <description>Snow Evaporation</description>
+    <units>kg m-2</units>
+  </parameter>
+  <parameter code="64">
+    <shortName>TCIWV</shortName>
+    <description>Total Column Integrated Water Vapour</description>
+    <units>kg m-2</units>
+  </parameter>
+  <parameter code="65">
+    <shortName>RPRATE</shortName>
+    <description>Rain Precipitation Rate</description>
+    <units>kg m-2 s-1</units>
+  </parameter>
+  <parameter code="66">
+    <shortName>SPRATE</shortName>
+    <description>Snow Precipitation Rate</description>
+    <units>kg m-2 s-1</units>
+  </parameter>
+  <parameter code="67">
+    <shortName>FPRATE</shortName>
+    <description>Freezing Rain Precipitation Rate</description>
+    <units>kg m-2 s-1</units>
+  </parameter>
+  <parameter code="68">
+    <shortName>IPRATE</shortName>
+    <description>Ice Pellets Precipitation Rate</description>
+    <units>kg m-2 s-1</units>
+  </parameter>
+  <parameter code="69">
+    <shortName>TCOLW</shortName>
+    <description>Total Column Integrate Cloud Water</description>
+    <units>kg m-2</units>
+  </parameter>
+  <parameter code="70">
+    <shortName>TCOLI</shortName>
+    <description>Total Column Integrate Cloud Ice</description>
+    <units>kg m-2</units>
+  </parameter>
+  <parameter code="71">
+    <shortName>HAILMXR</shortName>
+    <description>Hail Mixing Ratio</description>
+    <units>kg kg-1</units>
+  </parameter>
+  <parameter code="72">
+    <shortName>TCOLH</shortName>
+    <description>Total Column Integrate Hail</description>
+    <units>kg m-2</units>
+  </parameter>
+  <parameter code="73">
+    <shortName>HAILPR</shortName>
+    <description>Hail Prepitation Rate</description>
+    <units>kg m-2 s-1</units>
+  </parameter>
+  <parameter code="74">
+    <shortName>TCOLG</shortName>
+    <description>Total Column Integrate Graupel</description>
+    <units>kg m-2</units>
+  </parameter>
+  <parameter code="75">
+    <shortName>GPRATE</shortName>
+    <description>Graupel (Snow Pellets) Prepitation Rate</description>
+    <units>kg m-2 s-1</units>
+  </parameter>
+  <parameter code="76">
+    <shortName>CRRATE</shortName>
+    <description>Convective Rain Rate</description>
+    <units>kg m-2 s-1</units>
+  </parameter>
+  <parameter code="77">
+    <shortName>LSRRATE</shortName>
+    <description>Large Scale Rain Rate</description>
+    <units>kg m-2 s-1</units>
+  </parameter>
+  <parameter code="78">
+    <shortName>TCOLWA</shortName>
+    <description>Total Column Integrate Water (All components including precipitation)</description>
+    <units>kg m-2</units>
+  </parameter>
+  <parameter code="79">
+    <shortName>EVARATE</shortName>
+    <description>Evaporation Rate</description>
+    <units>kg m-2 s-1</units>
+  </parameter>
+  <parameter code="80">
+    <shortName>TOTCON</shortName>
+    <description>Total Condensatea</description>
+    <units>kg kg-1</units>
+  </parameter>
+  <parameter code="81">
+    <shortName>TCICON</shortName>
+    <description>Total Column-Integrate Condensate</description>
+    <units>kg m-2</units>
+  </parameter>
+  <parameter code="82">
+    <shortName>CIMIXR</shortName>
+    <description>Cloud Ice Mixing Ratio</description>
+    <units>kg kg-1</units>
+  </parameter>
+  <parameter code="83">
+    <shortName>SCLLWC</shortName>
+    <description>Specific Cloud Liquid Water Content</description>
+    <units>kg kg-1</units>
+  </parameter>
+  <parameter code="84">
+    <shortName>SCLIWC</shortName>
+    <description>Specific Cloud Ice Water Content</description>
+    <units>kg kg-1</units>
+  </parameter>
+  <parameter code="85">
+    <shortName>SRAINW</shortName>
+    <description>Specific Rain Water Content</description>
+    <units>kg kg-1</units>
+  </parameter>
+  <parameter code="86">
+    <shortName>SSNOWW</shortName>
+    <description>Specific Snow Water Content</description>
+    <units>kg kg-1</units>
+  </parameter>
+  <parameter code="90">
+    <shortName>TKMFLX</shortName>
+    <description>Total Kinematic Moisture Flux</description>
+    <units>kg kg-1 m s-1</units>
+  </parameter>
+  <parameter code="91">
+    <shortName>UKMFLX</shortName>
+    <description>U-component (zonal) Kinematic Moisture Flux</description>
+    <units>kg kg-1 m s-1</units>
+  </parameter>
+  <parameter code="92">
+    <shortName>VKMFLX</shortName>
+    <description>V-component (meridional) Kinematic Moisture Flux</description>
+    <units>kg kg-1 m s-1</units>
+  </parameter>
+  <parameter code="192">
+    <shortName>CRAIN</shortName>
+    <description>Categorical Rain</description>
+    <units>Code table 4.222</units>
+  </parameter>
+  <parameter code="193">
+    <shortName>CFRZR</shortName>
+    <description>Categorical Freezing Rain</description>
+    <units>Code table 4.222</units>
+  </parameter>
+  <parameter code="194">
+    <shortName>CICEP</shortName>
+    <description>Categorical Ice Pellets</description>
+    <units>Code table 4.222</units>
+  </parameter>
+  <parameter code="195">
+    <shortName>CSNOW</shortName>
+    <description>Categorical Snow</description>
+    <units>Code table 4.222</units>
+  </parameter>
+  <parameter code="196">
+    <shortName>CPRAT</shortName>
+    <description>Convective Precipitation Rate</description>
+    <units>kg m-2 s-1</units>
+  </parameter>
+  <parameter code="197">
+    <shortName>MCONV</shortName>
+    <description>Horizontal Moisture Divergence</description>
+    <units>kg kg-1 s-1</units>
+  </parameter>
+  <parameter code="198">
+    <shortName>MINRH</shortName>
+    <description>Minimum Relative Humidity</description>
+    <units>%</units>
+  </parameter>
+  <parameter code="199">
+    <shortName>PEVAP</shortName>
+    <description>Potential Evaporation</description>
+    <units>kg m-2</units>
+  </parameter>
+  <parameter code="200">
+    <shortName>PEVPR</shortName>
+    <description>Potential Evaporation Rate</description>
+    <units>W m-2</units>
+  </parameter>
+  <parameter code="201">
+    <shortName>SNOWC</shortName>
+    <description>Snow Cover</description>
+    <units>%</units>
+  </parameter>
+  <parameter code="202">
+    <shortName>FRAIN</shortName>
+    <description>Rain Fraction of Total Liquid Water</description>
+    <units>non-dim</units>
+  </parameter>
+  <parameter code="203">
+    <shortName>RIME</shortName>
+    <description>Rime Factor</description>
+    <units>non-dim</units>
+  </parameter>
+  <parameter code="204">
+    <shortName>TCOLR</shortName>
+    <description>Total Column Integrated Rain</description>
+    <units>kg m-2</units>
+  </parameter>
+  <parameter code="205">
+    <shortName>TCOLS</shortName>
+    <description>Total Column Integrated Snow</description>
+    <units>kg m-2</units>
+  </parameter>
+  <parameter code="206">
+    <shortName>TIPD</shortName>
+    <description>Total Icing Potential Diagnostic</description>
+    <units>non-dim</units>
+  </parameter>
+  <parameter code="207">
+    <shortName>NCIP</shortName>
+    <description>Number concentration for ice particles</description>
+    <units>non-dim</units>
+  </parameter>
+  <parameter code="208">
+    <shortName>SNOT</shortName>
+    <description>Snow temperature</description>
+    <units>K</units>
+  </parameter>
+  <parameter code="209">
+    <shortName>TCLSW</shortName>
+    <description>Total column-integrated supercooled liquid water</description>
+    <units>kg m-2</units>
+  </parameter>
+  <parameter code="210">
+    <shortName>TCOLM</shortName>
+    <description>Total column-integrated melting ice</description>
+    <units>kg m-2</units>
+  </parameter>
+  <parameter code="211">
+    <shortName>EMNP</shortName>
+    <description>Evaporation - Precipitation</description>
+    <units>cm/day</units>
+  </parameter>
+  <parameter code="212">
+    <shortName>SBSNO</shortName>
+    <description>Sublimation (evaporation from snow)</description>
+    <units>W m-2</units>
+  </parameter>
+  <parameter code="213">
+    <shortName>CNVMR</shortName>
+    <description>Deep Convective Moistening Rate</description>
+    <units>kg kg-1 s-1</units>
+  </parameter>
+  <parameter code="214">
+    <shortName>SHAMR</shortName>
+    <description>Shallow Convective Moistening Rate</description>
+    <units>kg kg-1 s-1</units>
+  </parameter>
+  <parameter code="215">
+    <shortName>VDFMR</shortName>
+    <description>Vertical Diffusion Moistening Rate</description>
+    <units>kg kg-1 s-1</units>
+  </parameter>
+  <parameter code="216">
+    <shortName>CONDP</shortName>
+    <description>Condensation Pressure of Parcali Lifted From Indicate Surface</description>
+    <units>Pa</units>
+  </parameter>
+  <parameter code="217">
+    <shortName>LRGMR</shortName>
+    <description>Large scale moistening rate</description>
+    <units>kg kg-1 s-1</units>
+  </parameter>
+  <parameter code="218">
+    <shortName>QZ0</shortName>
+    <description>Specific humidity at top of viscous sublayer</description>
+    <units>kg kg-1</units>
+  </parameter>
+  <parameter code="219">
+    <shortName>QMAX</shortName>
+    <description>Maximum specific humidity at 2m</description>
+    <units>kg kg-1</units>
+  </parameter>
+  <parameter code="220">
+    <shortName>QMIN</shortName>
+    <description>Minimum specific humidity at 2m</description>
+    <units>kg kg-1</units>
+  </parameter>
+  <parameter code="221">
+    <shortName>ARAIN</shortName>
+    <description>Liquid precipitation (Rainfall)</description>
+    <units>kg m-2</units>
+  </parameter>
+  <parameter code="222">
+    <shortName>SNOWT</shortName>
+    <description>Snow temperature, depth-avg</description>
+    <units>K</units>
+  </parameter>
+  <parameter code="223">
+    <shortName>APCPN</shortName>
+    <description>Total precipitation (nearest grid point)</description>
+    <units>kg m-2</units>
+  </parameter>
+  <parameter code="224">
+    <shortName>ACPCPN</shortName>
+    <description>Convective precipitation (nearest grid point)</description>
+    <units>kg m-2</units>
+  </parameter>
+  <parameter code="225">
+    <shortName>FRZR</shortName>
+    <description>Freezing Rain</description>
+    <units>kg m-2</units>
+  </parameter>
+  <parameter code="226">
+    <shortName>PWTHER</shortName>
+    <description>Predominant Weather (see Note 1)</description>
+    <units>Numeric</units>
+  </parameter>
+  <parameter code="227">
+    <shortName>FROZR</shortName>
+    <description>Frozen Rain</description>
+    <units>kg m-2</units>
+  </parameter>
+  <parameter code="241">
+    <shortName>TSNOW</shortName>
+    <description>Total Snow</description>
+    <units>kg m-2</units>
+  </parameter>
+  <parameter code="242">
+    <shortName>RHPW</shortName>
+    <description>Relative Humidity with Respect to Precipitable Water</description>
+    <units>%</units>
+  </parameter>
+</parameterMap>

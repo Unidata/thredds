@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<codeTable>
+  <table>Table 4.234</table>
+  <title>Canopy Cover Fraction</title>
+  <source>http://www.nco.ncep.noaa.gov/pmb/docs/grib2/grib2_table4-234.shtml</source>
+  <parameter code="1">
+    <description>Crops, mixed farming</description>
+  </parameter>
+  <parameter code="2">
+    <description>Short grass</description>
+  </parameter>
+  <parameter code="3">
+    <description>Evergreen needleleaf trees</description>
+  </parameter>
+  <parameter code="4">
+    <description>Deciduous needleleaf trees</description>
+  </parameter>
+  <parameter code="5">
+    <description>Deciduous broadleaf trees</description>
+  </parameter>
+  <parameter code="6">
+    <description>Evergreen broadleaf trees</description>
+  </parameter>
+  <parameter code="7">
+    <description>Tall grass</description>
+  </parameter>
+  <parameter code="8">
+    <description>Desert</description>
+  </parameter>
+  <parameter code="9">
+    <description>Tundra</description>
+  </parameter>
+  <parameter code="10">
+    <description>Irrigated corps</description>
+  </parameter>
+  <parameter code="11">
+    <description>Semidesert</description>
+  </parameter>
+  <parameter code="12">
+    <description>Ice caps and glaciers</description>
+  </parameter>
+  <parameter code="13">
+    <description>Bogs and marshes</description>
+  </parameter>
+  <parameter code="14">
+    <description>Inland water</description>
+  </parameter>
+  <parameter code="15">
+    <description>Ocean</description>
+  </parameter>
+  <parameter code="16">
+    <description>Evergreen shrubs</description>
+  </parameter>
+  <parameter code="17">
+    <description>Deciduous shrubs</description>
+  </parameter>
+  <parameter code="18">
+    <description>Mixed forest</description>
+  </parameter>
+  <parameter code="19">
+    <description>Interrupted forest</description>
+  </parameter>
+  <parameter code="20">
+    <description>Water and land mixtures</description>
+  </parameter>
+  <parameter code="255">
+    <description>Missing</description>
+  </parameter>
+</codeTable>

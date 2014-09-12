@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<codeTable>
+  <table>Table 4.7</table>
+  <title>Derived Forecast</title>
+  <source>http://www.nco.ncep.noaa.gov/pmb/docs/grib2/grib2_table4-7.shtml</source>
+  <parameter code="0">
+    <description>Unweighted Mean of All Members</description>
+  </parameter>
+  <parameter code="1">
+    <description>Weighted Mean of All Members</description>
+  </parameter>
+  <parameter code="2">
+    <description>Standard Deviation with respect to Cluster Mean</description>
+  </parameter>
+  <parameter code="3">
+    <description>Standard Deviation with respect to Cluster Mean, Normalized</description>
+  </parameter>
+  <parameter code="4">
+    <description>Spread of All Members</description>
+  </parameter>
+  <parameter code="5">
+    <description>Large Anomaly Index of All Members (see Note 1)</description>
+  </parameter>
+  <parameter code="6">
+    <description>Unweighted Mean of the Cluster Members</description>
+  </parameter>
+  <parameter code="7">
+    <description>Interquartile Range (Range between the 25th and 75th quantile)</description>
+  </parameter>
+  <parameter code="8">
+    <description>Minimum Of All Ensemble Members (see Note 2)</description>
+  </parameter>
+  <parameter code="9">
+    <description>Maximum Of All Ensemble Members (see Note 2)</description>
+  </parameter>
+  <parameter code="192">
+    <description>Unweighted Mode of All Members</description>
+  </parameter>
+  <parameter code="193">
+    <description>Percentile value (10%) of All Members</description>
+  </parameter>
+  <parameter code="194">
+    <description>Percentile value (50%) of All Members</description>
+  </parameter>
+  <parameter code="195">
+    <description>Percentile value (90%) of All Members</description>
+  </parameter>
+  <parameter code="196">
+    <description>Statistically decided weights for each ensemble member</description>
+  </parameter>
+  <parameter code="197">
+    <description>Climate Percentile (percentile values from climate distribution)</description>
+  </parameter>
+  <parameter code="255">
+    <description>Missing</description>
+  </parameter>
+</codeTable>

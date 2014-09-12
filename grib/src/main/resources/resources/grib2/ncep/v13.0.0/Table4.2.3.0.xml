@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<parameterMap>
+  <table>Table4.2.3.0</table>
+  <title>Image format</title>
+  <source>http://www.nco.ncep.noaa.gov/pmb/docs/grib2/grib2_table4-2-3-0.shtml</source>
+  <parameter code="0">
+    <shortName>SRAD</shortName>
+    <description>Scaled Radiance</description>
+    <units>Numeric</units>
+  </parameter>
+  <parameter code="1">
+    <shortName>SALBEDO</shortName>
+    <description>Scaled Albedo</description>
+    <units>Numeric</units>
+  </parameter>
+  <parameter code="2">
+    <shortName>SBTMP</shortName>
+    <description>Scaled Brightness Temperature</description>
+    <units>Numeric</units>
+  </parameter>
+  <parameter code="3">
+    <shortName>SPWAT</shortName>
+    <description>Scaled Precipitable Water</description>
+    <units>Numeric</units>
+  </parameter>
+  <parameter code="4">
+    <shortName>SLFTI</shortName>
+    <description>Scaled Lifted Index</description>
+    <units>Numeric</units>
+  </parameter>
+  <parameter code="5">
+    <shortName>SCTPRES</shortName>
+    <description>Scaled Cloud Top Pressure</description>
+    <units>Numeric</units>
+  </parameter>
+  <parameter code="6">
+    <shortName>SSTMP</shortName>
+    <description>Scaled Skin Temperature</description>
+    <units>Numeric</units>
+  </parameter>
+  <parameter code="7">
+    <shortName>CLOUDM</shortName>
+    <description>Cloud Mask</description>
+    <units>See Table 4.217</units>
+  </parameter>
+  <parameter code="8">
+    <shortName>PIXST</shortName>
+    <description>Pixel scene type</description>
+    <units>See Table 4.218</units>
+  </parameter>
+  <parameter code="9">
+    <shortName>FIREDI</shortName>
+    <description>Fire Detection Indicator</description>
+    <units>See Table 4.223</units>
+  </parameter>
+</parameterMap>

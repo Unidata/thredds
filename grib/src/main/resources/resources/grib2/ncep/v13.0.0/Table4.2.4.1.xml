@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<parameterMap>
+  <table>Table4.2.4.1</table>
+  <title>Momentum</title>
+  <source>http://www.nco.ncep.noaa.gov/pmb/docs/grib2/grib2_table4-2-4-1.shtml</source>
+  <parameter code="0">
+    <shortName>SPEED</shortName>
+    <description>Velocity Magnitude (Speed)</description>
+    <units>m s-1</units>
+  </parameter>
+  <parameter code="1">
+    <shortName>VEL1</shortName>
+    <description>1st Vector Component of Velocity (Coordinate system dependent)</description>
+    <units>m s-1</units>
+  </parameter>
+  <parameter code="2">
+    <shortName>VEL2</shortName>
+    <description>2nd Vector Component of Velocity (Coordinate system dependent)</description>
+    <units>m s-1</units>
+  </parameter>
+  <parameter code="3">
+    <shortName>VEL3</shortName>
+    <description>3rd Vector Component of Velocity (Coordinate system dependent)</description>
+    <units>m s-1</units>
+  </parameter>
+</parameterMap>

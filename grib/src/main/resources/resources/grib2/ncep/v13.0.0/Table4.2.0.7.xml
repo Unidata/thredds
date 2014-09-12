@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<parameterMap>
+  <table>Table4.2.0.7</table>
+  <title>Thermodynamic stability indices</title>
+  <source>http://www.nco.ncep.noaa.gov/pmb/docs/grib2/grib2_table4-2-0-7.shtml</source>
+  <parameter code="0">
+    <shortName>PLI</shortName>
+    <description>Parcel Lifted Index (to 500 hPa)</description>
+    <units>K</units>
+  </parameter>
+  <parameter code="1">
+    <shortName>BLI</shortName>
+    <description>Best Lifted Index (to 500 hPa)</description>
+    <units>K</units>
+  </parameter>
+  <parameter code="2">
+    <shortName>KX</shortName>
+    <description>K Index</description>
+    <units>K</units>
+  </parameter>
+  <parameter code="3">
+    <shortName>KOX</shortName>
+    <description>KO Index</description>
+    <units>K</units>
+  </parameter>
+  <parameter code="4">
+    <shortName>TOTALX</shortName>
+    <description>Total Totals Index</description>
+    <units>K</units>
+  </parameter>
+  <parameter code="5">
+    <shortName>SX</shortName>
+    <description>Sweat Index</description>
+    <units>Numeric</units>
+  </parameter>
+  <parameter code="6">
+    <shortName>CAPE</shortName>
+    <description>Convective Available Potential Energy</description>
+    <units>J kg-1</units>
+  </parameter>
+  <parameter code="7">
+    <shortName>CIN</shortName>
+    <description>Convective Inhibition</description>
+    <units>J kg-1</units>
+  </parameter>
+  <parameter code="8">
+    <shortName>HLCY</shortName>
+    <description>Storm Relative Helicity</description>
+    <units>m2 s-2</units>
+  </parameter>
+  <parameter code="9">
+    <shortName>EHLX</shortName>
+    <description>Energy Helicity Index</description>
+    <units>Numeric</units>
+  </parameter>
+  <parameter code="10">
+    <shortName>LFT X</shortName>
+    <description>Surface Lifted Index</description>
+    <units>K</units>
+  </parameter>
+  <parameter code="11">
+    <shortName>4LFTX</shortName>
+    <description>Best (4 layer) Lifted Index</description>
+    <units>K</units>
+  </parameter>
+  <parameter code="12">
+    <shortName>RI</shortName>
+    <description>Richardson Number</description>
+    <units>Numeric</units>
+  </parameter>
+  <parameter code="13">
+    <shortName>SHWINX</shortName>
+    <description>Showalter Index</description>
+    <units>K</units>
+  </parameter>
+  <parameter code="15">
+    <shortName>UPHL</shortName>
+    <description>Updraft Helicity</description>
+    <units>m2 s-2</units>
+  </parameter>
+  <parameter code="192">
+    <shortName>LFT X</shortName>
+    <description>Surface Lifted Index</description>
+    <units>K</units>
+  </parameter>
+  <parameter code="193">
+    <shortName>4LFTX</shortName>
+    <description>Best (4 layer) Lifted Index</description>
+    <units>K</units>
+  </parameter>
+  <parameter code="194">
+    <shortName>RI</shortName>
+    <description>Richardson Number</description>
+    <units>Numeric</units>
+  </parameter>
+  <parameter code="195">
+    <shortName>CWDI</shortName>
+    <description>Convective Weather Detection Index</description>
+    <units />
+  </parameter>
+  <parameter code="196">
+    <shortName>UVI</shortName>
+    <description>Ultra Violet Index</description>
+    <units>W m-2</units>
+  </parameter>
+  <parameter code="197">
+    <shortName>UPHL</shortName>
+    <description>Updraft Helicity</description>
+    <units>m2 s-2</units>
+  </parameter>
+  <parameter code="198">
+    <shortName>LAI</shortName>
+    <description>Leaf Area Index</description>
+    <units>Numeric</units>
+  </parameter>
+  <parameter code="199">
+    <shortName>MXUPHL</shortName>
+    <description>Hourly Maximum of Updraft Helicity over Layer 2km to 5 km AGL</description>
+    <units>m2 s-2</units>
+  </parameter>
+</parameterMap>

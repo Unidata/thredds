@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<parameterMap>
+  <table>Table4.2.1.1</table>
+  <title>Hydrology Probabilities</title>
+  <source>http://www.nco.ncep.noaa.gov/pmb/docs/grib2/grib2_table4-2-1-1.shtml</source>
+  <parameter code="0">
+    <shortName>CPPOP</shortName>
+    <description>Conditional percent precipitation amount fractile for an overall period (encoded as an accumulation)</description>
+    <units>kg m-2</units>
+  </parameter>
+  <parameter code="1">
+    <shortName>PPOSP</shortName>
+    <description>Percent Precipitation in a sub-period of an overall period (encoded as a percent accumulation over the sub-period)</description>
+    <units>%</units>
+  </parameter>
+  <parameter code="2">
+    <shortName>POP</shortName>
+    <description>Probability of 0.01 inch of precipitation (POP)</description>
+    <units>%</units>
+  </parameter>
+  <parameter code="192">
+    <shortName>CPOZP</shortName>
+    <description>Probability of Freezing Precipitation</description>
+    <units>%</units>
+  </parameter>
+  <parameter code="193">
+    <shortName>CPOFP</shortName>
+    <description>Percent of Frozen Precipitation</description>
+    <units>%</units>
+  </parameter>
+  <parameter code="194">
+    <shortName>PPFFG</shortName>
+    <description>Probability of precipitation exceeding flash flood guidance values</description>
+    <units>%</units>
+  </parameter>
+  <parameter code="195">
+    <shortName>CWR</shortName>
+    <description>Probability of Wetting Rain, exceeding in 0.10" in a given time period</description>
+    <units>%</units>
+  </parameter>
+</parameterMap>

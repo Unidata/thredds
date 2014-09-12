@@ -1,0 +1,236 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<parameterMap>
+  <table>Table4.2.3.192</table>
+  <title>Forecast Satellite Imagery</title>
+  <source>http://www.nco.ncep.noaa.gov/pmb/docs/grib2/grib2_table4-2-3-192.shtml</source>
+  <parameter code="0">
+    <shortName>SBT122</shortName>
+    <description>Simulated Brightness Temperature for GOES 12, Channel 2</description>
+    <units>K</units>
+  </parameter>
+  <parameter code="1">
+    <shortName>SBT123</shortName>
+    <description>Simulated Brightness Temperature for GOES 12, Channel 3</description>
+    <units>K</units>
+  </parameter>
+  <parameter code="2">
+    <shortName>SBT124</shortName>
+    <description>Simulated Brightness Temperature for GOES 12, Channel 4</description>
+    <units>K</units>
+  </parameter>
+  <parameter code="3">
+    <shortName>SBT126</shortName>
+    <description>Simulated Brightness Temperature for GOES 12, Channel 6</description>
+    <units>K</units>
+  </parameter>
+  <parameter code="4">
+    <shortName>SBC123</shortName>
+    <description>Simulated Brightness Counts for GOES 12, Channel 3</description>
+    <units>Byte</units>
+  </parameter>
+  <parameter code="5">
+    <shortName>SBC124</shortName>
+    <description>Simulated Brightness Counts for GOES 12, Channel 4</description>
+    <units>Byte</units>
+  </parameter>
+  <parameter code="6">
+    <shortName>SBT112</shortName>
+    <description>Simulated Brightness Temperature for GOES 11, Channel 2</description>
+    <units>K</units>
+  </parameter>
+  <parameter code="7">
+    <shortName>SBT113</shortName>
+    <description>Simulated Brightness Temperature for GOES 11, Channel 3</description>
+    <units>K</units>
+  </parameter>
+  <parameter code="8">
+    <shortName>SBT114</shortName>
+    <description>Simulated Brightness Temperature for GOES 11, Channel 4</description>
+    <units>K</units>
+  </parameter>
+  <parameter code="9">
+    <shortName>SBT115</shortName>
+    <description>Simulated Brightness Temperature for GOES 11, Channel 5</description>
+    <units>K</units>
+  </parameter>
+  <parameter code="10">
+    <shortName>AMSRE9</shortName>
+    <description>Simulated Brightness Temperature for AMSRE on Aqua, Channel 9</description>
+    <units>K</units>
+  </parameter>
+  <parameter code="11">
+    <shortName>AMSRE10</shortName>
+    <description>Simulated Brightness Temperature for AMSRE on Aqua, Channel 10</description>
+    <units>K</units>
+  </parameter>
+  <parameter code="12">
+    <shortName>AMSRE11</shortName>
+    <description>Simulated Brightness Temperature for AMSRE on Aqua, Channel 11</description>
+    <units>K</units>
+  </parameter>
+  <parameter code="13">
+    <shortName>AMSRE12</shortName>
+    <description>Simulated Brightness Temperature for AMSRE on Aqua, Channel 12</description>
+    <units>K</units>
+  </parameter>
+  <parameter code="14">
+    <shortName>SRFA161</shortName>
+    <description>Simulated Reflectance Factor for ABI GOES-16, Band-1</description>
+    <units />
+  </parameter>
+  <parameter code="15">
+    <shortName>SRFA162</shortName>
+    <description>Simulated Reflectance Factor for ABI GOES-16, Band-2</description>
+    <units />
+  </parameter>
+  <parameter code="16">
+    <shortName>SRFA163</shortName>
+    <description>Simulated Reflectance Factor for ABI GOES-16, Band-3</description>
+    <units />
+  </parameter>
+  <parameter code="17">
+    <shortName>SRFA164</shortName>
+    <description>Simulated Reflectance Factor for ABI GOES-16, Band-4</description>
+    <units />
+  </parameter>
+  <parameter code="18">
+    <shortName>SRFA165</shortName>
+    <description>Simulated Reflectance Factor for ABI GOES-16, Band-5</description>
+    <units />
+  </parameter>
+  <parameter code="19">
+    <shortName>SRFA166</shortName>
+    <description>Simulated Reflectance Factor for ABI GOES-16, Band-6</description>
+    <units />
+  </parameter>
+  <parameter code="20">
+    <shortName>SBTA167</shortName>
+    <description>Simulated Brightness Temperature for ABI GOES-16, Band-7</description>
+    <units>K</units>
+  </parameter>
+  <parameter code="21">
+    <shortName>SBTA168</shortName>
+    <description>Simulated Brightness Temperature for ABI GOES-16, Band-8</description>
+    <units>K</units>
+  </parameter>
+  <parameter code="22">
+    <shortName>SBTA169</shortName>
+    <description>Simulated Brightness Temperature for ABI GOES-16, Band-9</description>
+    <units>K</units>
+  </parameter>
+  <parameter code="23">
+    <shortName>SBTA1610</shortName>
+    <description>Simulated Brightness Temperature for ABI GOES-16, Band-10</description>
+    <units>K</units>
+  </parameter>
+  <parameter code="24">
+    <shortName>SBTA1611</shortName>
+    <description>Simulated Brightness Temperature for ABI GOES-16, Band-11</description>
+    <units>K</units>
+  </parameter>
+  <parameter code="25">
+    <shortName>SBTA1612</shortName>
+    <description>Simulated Brightness Temperature for ABI GOES-16, Band-12</description>
+    <units>K</units>
+  </parameter>
+  <parameter code="26">
+    <shortName>SBTA1613</shortName>
+    <description>Simulated Brightness Temperature for ABI GOES-16, Band-13</description>
+    <units>K</units>
+  </parameter>
+  <parameter code="27">
+    <shortName>SBTA1614</shortName>
+    <description>Simulated Brightness Temperature for ABI GOES-16, Band-14</description>
+    <units>K</units>
+  </parameter>
+  <parameter code="28">
+    <shortName>SBTA1615</shortName>
+    <description>Simulated Brightness Temperature for ABI GOES-16, Band-15</description>
+    <units>K</units>
+  </parameter>
+  <parameter code="29">
+    <shortName>SBTA1616</shortName>
+    <description>Simulated Brightness Temperature for ABI GOES-16, Band-16</description>
+    <units>K</units>
+  </parameter>
+  <parameter code="30">
+    <shortName>SRFA171</shortName>
+    <description>Simulated Reflectance Factor for ABI GOES-17, Band-1</description>
+    <units />
+  </parameter>
+  <parameter code="31">
+    <shortName>SRFA172</shortName>
+    <description>Simulated Reflectance Factor for ABI GOES-17, Band-2</description>
+    <units />
+  </parameter>
+  <parameter code="32">
+    <shortName>SRFA173</shortName>
+    <description>Simulated Reflectance Factor for ABI GOES-17, Band-3</description>
+    <units />
+  </parameter>
+  <parameter code="33">
+    <shortName>SRFA174</shortName>
+    <description>Simulated Reflectance Factor for ABI GOES-17, Band-4</description>
+    <units />
+  </parameter>
+  <parameter code="34">
+    <shortName>SRFA175</shortName>
+    <description>Simulated Reflectance Factor for ABI GOES-17, Band-5</description>
+    <units />
+  </parameter>
+  <parameter code="35">
+    <shortName>SRFA176</shortName>
+    <description>Simulated Reflectance Factor for ABI GOES-17, Band-6</description>
+    <units />
+  </parameter>
+  <parameter code="36">
+    <shortName>SBTA177</shortName>
+    <description>Simulated Brightness Temperature for ABI GOES-17, Band-7</description>
+    <units>K</units>
+  </parameter>
+  <parameter code="37">
+    <shortName>SBTA178</shortName>
+    <description>Simulated Brightness Temperature for ABI GOES-17, Band-8</description>
+    <units>K</units>
+  </parameter>
+  <parameter code="38">
+    <shortName>SBTA179</shortName>
+    <description>Simulated Brightness Temperature for ABI GOES-17, Band-9</description>
+    <units>K</units>
+  </parameter>
+  <parameter code="39">
+    <shortName>SBTA1710</shortName>
+    <description>Simulated Brightness Temperature for ABI GOES-17, Band-10</description>
+    <units>K</units>
+  </parameter>
+  <parameter code="40">
+    <shortName>SBTA1711</shortName>
+    <description>Simulated Brightness Temperature for ABI GOES-17, Band-11</description>
+    <units>K</units>
+  </parameter>
+  <parameter code="41">
+    <shortName>SBTA1712</shortName>
+    <description>Simulated Brightness Temperature for ABI GOES-17, Band-12</description>
+    <units>K</units>
+  </parameter>
+  <parameter code="42">
+    <shortName>SBTA1713</shortName>
+    <description>Simulated Brightness Temperature for ABI GOES-17, Band-13</description>
+    <units>K</units>
+  </parameter>
+  <parameter code="43">
+    <shortName>SBTA1714</shortName>
+    <description>Simulated Brightness Temperature for ABI GOES-17, Band-14</description>
+    <units>K</units>
+  </parameter>
+  <parameter code="44">
+    <shortName>SBTA1715</shortName>
+    <description>Simulated Brightness Temperature for ABI GOES-17, Band-15</description>
+    <units>K</units>
+  </parameter>
+  <parameter code="45">
+    <shortName>SBTA1716</shortName>
+    <description>Simulated Brightness Temperature for ABI GOES-17, Band-16</description>
+    <units>K</units>
+  </parameter>
+</parameterMap>

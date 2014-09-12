@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<codeTable>
+  <table>Table 4.202</table>
+  <title>Precipitable Water Category</title>
+  <source>http://www.nco.ncep.noaa.gov/pmb/docs/grib2/grib2_table4-202.shtml</source>
+  <parameter code="255">
+    <description>Missing</description>
+  </parameter>
+</codeTable>

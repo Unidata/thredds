@@ -1,0 +1,181 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<parameterMap>
+  <table>Table4.2.0.0</table>
+  <title>Temperature</title>
+  <source>http://www.nco.ncep.noaa.gov/pmb/docs/grib2/grib2_table4-2-0-0.shtml</source>
+  <parameter code="0">
+    <shortName>TMP</shortName>
+    <description>Temperature</description>
+    <units>K</units>
+  </parameter>
+  <parameter code="1">
+    <shortName>VTMP</shortName>
+    <description>Virtual Temperature</description>
+    <units>K</units>
+  </parameter>
+  <parameter code="2">
+    <shortName>POT</shortName>
+    <description>Potential Temperature</description>
+    <units>K</units>
+  </parameter>
+  <parameter code="3">
+    <shortName>EPOT</shortName>
+    <description>Pseudo-Adiabatic Potential Temperature (or Equivalent Potential Temperature)</description>
+    <units>K</units>
+  </parameter>
+  <parameter code="4">
+    <shortName>TMAX</shortName>
+    <description>Maximum Temperature*</description>
+    <units>K</units>
+  </parameter>
+  <parameter code="5">
+    <shortName>TMIN</shortName>
+    <description>Minimum Temperature*</description>
+    <units>K</units>
+  </parameter>
+  <parameter code="6">
+    <shortName>DPT</shortName>
+    <description>Dew Point Temperature</description>
+    <units>K</units>
+  </parameter>
+  <parameter code="7">
+    <shortName>DEPR</shortName>
+    <description>Dew Point Depression (or Deficit)</description>
+    <units>K</units>
+  </parameter>
+  <parameter code="8">
+    <shortName>LAPR</shortName>
+    <description>Lapse Rate</description>
+    <units>K m-1</units>
+  </parameter>
+  <parameter code="9">
+    <shortName>TMPA</shortName>
+    <description>Temperature Anomaly</description>
+    <units>K</units>
+  </parameter>
+  <parameter code="10">
+    <shortName>LHTFL</shortName>
+    <description>Latent Heat Net Flux</description>
+    <units>W m-2</units>
+  </parameter>
+  <parameter code="11">
+    <shortName>SHTFL</shortName>
+    <description>Sensible Heat Net Flux</description>
+    <units>W m-2</units>
+  </parameter>
+  <parameter code="12">
+    <shortName>HEATX</shortName>
+    <description>Heat Index</description>
+    <units>K</units>
+  </parameter>
+  <parameter code="13">
+    <shortName>WCF</shortName>
+    <description>Wind Chill Factor</description>
+    <units>K</units>
+  </parameter>
+  <parameter code="14">
+    <shortName>MINDPD</shortName>
+    <description>Minimum Dew Point Depression*</description>
+    <units>K</units>
+  </parameter>
+  <parameter code="15">
+    <shortName>VPTMP</shortName>
+    <description>Virtual Potential Temperature</description>
+    <units>K</units>
+  </parameter>
+  <parameter code="16">
+    <shortName>SNOHF</shortName>
+    <description>Snow Phase Change Heat Flux</description>
+    <units>W m-2</units>
+  </parameter>
+  <parameter code="17">
+    <shortName>SKINT</shortName>
+    <description>Skin Temperature</description>
+    <units>K</units>
+  </parameter>
+  <parameter code="18">
+    <shortName>SNOT</shortName>
+    <description>Snow Temperature (top of snow)</description>
+    <units>K</units>
+  </parameter>
+  <parameter code="19">
+    <shortName>TTCHT</shortName>
+    <description>Turbulent Transfer Coefficient for Heat</description>
+    <units>Numeric</units>
+  </parameter>
+  <parameter code="20">
+    <shortName>TDCHT</shortName>
+    <description>Turbulent Diffusion Coefficient for Heat</description>
+    <units>m2s-1</units>
+  </parameter>
+  <parameter code="21">
+    <shortName>APTMP</shortName>
+    <description>Apparent Temperature **</description>
+    <units>K</units>
+  </parameter>
+  <parameter code="192">
+    <shortName>SNOHF</shortName>
+    <description>Snow Phase Change Heat Flux</description>
+    <units>W m-2</units>
+  </parameter>
+  <parameter code="193">
+    <shortName>TTRAD</shortName>
+    <description>Temperature Tendency by All Radiation</description>
+    <units>K s-1</units>
+  </parameter>
+  <parameter code="194">
+    <shortName>REV</shortName>
+    <description>Relative Error Variance</description>
+    <units />
+  </parameter>
+  <parameter code="195">
+    <shortName>LRGHR</shortName>
+    <description>Large Scale Condensate Heating Rate</description>
+    <units>K s-1</units>
+  </parameter>
+  <parameter code="196">
+    <shortName>CNVHR</shortName>
+    <description>Deep Convective Heating Rate</description>
+    <units>K s-1</units>
+  </parameter>
+  <parameter code="197">
+    <shortName>THFLX</shortName>
+    <description>Total Downward Heat Flux at Surface</description>
+    <units>W m-2</units>
+  </parameter>
+  <parameter code="198">
+    <shortName>TTDIA</shortName>
+    <description>Temperature Tendency by All Physics</description>
+    <units>K s-1</units>
+  </parameter>
+  <parameter code="199">
+    <shortName>TTPHY</shortName>
+    <description>Temperature Tendency by Non-radiation Physics</description>
+    <units>K s-1</units>
+  </parameter>
+  <parameter code="200">
+    <shortName>TSD1D</shortName>
+    <description>Standard Dev. of IR Temp. over 1x1 deg. area</description>
+    <units>K</units>
+  </parameter>
+  <parameter code="201">
+    <shortName>SHAHR</shortName>
+    <description>Shallow Convective Heating Rate</description>
+    <units>K s-1</units>
+  </parameter>
+  <parameter code="202">
+    <shortName>VDFHR</shortName>
+    <description>Vertical Diffusion Heating rate</description>
+    <units>K s-1</units>
+  </parameter>
+  <parameter code="203">
+    <shortName>THZ0</shortName>
+    <description>Potential Temperature at Top of Viscous Sublayer</description>
+    <units>K</units>
+  </parameter>
+  <parameter code="204">
+    <shortName>TCHP</shortName>
+    <description>Tropical Cyclone Heat Potential</description>
+    <units>Jm-2K</units>
+  </parameter>
+</parameterMap>

@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<parameterMap>
+  <table>Table4.2.0.13</table>
+  <title>Aerosols</title>
+  <source>http://www.nco.ncep.noaa.gov/pmb/docs/grib2/grib2_table4-2-0-13.shtml</source>
+  <parameter code="0">
+    <shortName>AEROT</shortName>
+    <description>Aerosol Type</description>
+    <units>See Table 4.205</units>
+  </parameter>
+  <parameter code="192">
+    <shortName>PMTC</shortName>
+    <description>Particulate matter (coarse)</description>
+    <units>g m-3</units>
+  </parameter>
+  <parameter code="193">
+    <shortName>PMTF</shortName>
+    <description>Particulate matter (fine)</description>
+    <units>g m-3</units>
+  </parameter>
+  <parameter code="194">
+    <shortName>LPMTF</shortName>
+    <description>Particulate matter (fine)</description>
+    <units>log10 (g m-3)</units>
+  </parameter>
+  <parameter code="195">
+    <shortName>LIPMF</shortName>
+    <description>Integrated column particulate matter (fine)</description>
+    <units>log10 (g m-3)</units>
+  </parameter>
+</parameterMap>

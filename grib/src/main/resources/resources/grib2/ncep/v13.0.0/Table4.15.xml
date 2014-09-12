@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<codeTable>
+  <table>Table 4.15</table>
+  <title>Type of Spatial Processing used to arrive at given</title>
+  <source>http://www.nco.ncep.noaa.gov/pmb/docs/grib2/grib2_table4-15.shtml</source>
+  <parameter code="0">
+    <description>Data is calculated directly from the source grid with no interpolation (see note 1)</description>
+  </parameter>
+  <parameter code="1">
+    <description>Bilinear interpolation using the 4 source grid grid-point values surrounding the nominal grid-point</description>
+  </parameter>
+  <parameter code="2">
+    <description>Bicubic interpolation using the 4 source grid grid-point values surrounding the nominal grid-point</description>
+  </parameter>
+  <parameter code="3">
+    <description>Using the value from the source grid grid-point which is nearest to the nominal grid-point</description>
+  </parameter>
+  <parameter code="4">
+    <description>Budget interpolation using the 4 source grid grid-point values surrounding the nominal grid-point (see note 2)</description>
+  </parameter>
+  <parameter code="5">
+    <description>Spectral interpolation using the 4 source grid grid-point values surrounding the nominal grid-point</description>
+  </parameter>
+  <parameter code="6">
+    <description>Neighbor-budget interpolation using the 4 source grid grid-point values surrounding the nominal grid-point (see note 3)</description>
+  </parameter>
+  <parameter code="255">
+    <description>Missing</description>
+  </parameter>
+</codeTable>

@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<codeTable>
+  <table>Table 4.3</table>
+  <title>Type of Generating Process</title>
+  <source>http://www.nco.ncep.noaa.gov/pmb/docs/grib2/grib2_table4-3.shtml</source>
+  <parameter code="0">
+    <description>Analysis</description>
+  </parameter>
+  <parameter code="1">
+    <description>Initialization</description>
+  </parameter>
+  <parameter code="2">
+    <description>Forecast</description>
+  </parameter>
+  <parameter code="3">
+    <description>Bias Corrected Forecast</description>
+  </parameter>
+  <parameter code="4">
+    <description>Ensemble Forecast</description>
+  </parameter>
+  <parameter code="5">
+    <description>Probability Forecast</description>
+  </parameter>
+  <parameter code="6">
+    <description>Forecast Error</description>
+  </parameter>
+  <parameter code="7">
+    <description>Analysis Error</description>
+  </parameter>
+  <parameter code="8">
+    <description>Observation</description>
+  </parameter>
+  <parameter code="9">
+    <description>Climatological</description>
+  </parameter>
+  <parameter code="10">
+    <description>Probability-Weighted Forecast</description>
+  </parameter>
+  <parameter code="11">
+    <description>Bias-Corrected Ensemble Forecast</description>
+  </parameter>
+  <parameter code="12">
+    <description>Post-processed Analysis (See Note)</description>
+  </parameter>
+  <parameter code="13">
+    <description>Post-processed Forecast (See Note)</description>
+  </parameter>
+  <parameter code="14">
+    <description>Nowcast</description>
+  </parameter>
+  <parameter code="15">
+    <description>Hindcast</description>
+  </parameter>
+  <parameter code="192">
+    <description>Forecast Confidence Indicator</description>
+  </parameter>
+  <parameter code="255">
+    <description>Missing</description>
+  </parameter>
+</codeTable>

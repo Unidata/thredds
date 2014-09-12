@@ -1,0 +1,316 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<parameterMap>
+  <table>Table4.2.0.19</table>
+  <title>Physical atmospheric Properties</title>
+  <source>http://www.nco.ncep.noaa.gov/pmb/docs/grib2/grib2_table4-2-0-19.shtml</source>
+  <parameter code="0">
+    <shortName>VIS</shortName>
+    <description>Visibility</description>
+    <units>m</units>
+  </parameter>
+  <parameter code="1">
+    <shortName>ALBDO</shortName>
+    <description>Albedo</description>
+    <units>%</units>
+  </parameter>
+  <parameter code="2">
+    <shortName>TSTM</shortName>
+    <description>Thunderstorm Probability</description>
+    <units>%</units>
+  </parameter>
+  <parameter code="3">
+    <shortName>MIXHT</shortName>
+    <description>Mixed Layer Depth</description>
+    <units>m</units>
+  </parameter>
+  <parameter code="4">
+    <shortName>VOLASH</shortName>
+    <description>Volcanic Ash</description>
+    <units>See Table 4.206</units>
+  </parameter>
+  <parameter code="5">
+    <shortName>ICIT</shortName>
+    <description>Icing Top</description>
+    <units>m</units>
+  </parameter>
+  <parameter code="6">
+    <shortName>ICIB</shortName>
+    <description>Icing Base</description>
+    <units>m</units>
+  </parameter>
+  <parameter code="7">
+    <shortName>ICI</shortName>
+    <description>Icing</description>
+    <units>See Table 4.207</units>
+  </parameter>
+  <parameter code="8">
+    <shortName>TURBT</shortName>
+    <description>Turbulence Top</description>
+    <units>m</units>
+  </parameter>
+  <parameter code="9">
+    <shortName>TURBB</shortName>
+    <description>Turbulence Base</description>
+    <units>m</units>
+  </parameter>
+  <parameter code="10">
+    <shortName>TURB</shortName>
+    <description>Turbulence</description>
+    <units>See Table 4.208</units>
+  </parameter>
+  <parameter code="11">
+    <shortName>TKE</shortName>
+    <description>Turbulent Kinetic Energy</description>
+    <units>J kg-1</units>
+  </parameter>
+  <parameter code="12">
+    <shortName>PBLREG</shortName>
+    <description>Planetary Boundary Layer Regime</description>
+    <units>See Table 4.209</units>
+  </parameter>
+  <parameter code="13">
+    <shortName>CONTI</shortName>
+    <description>Contrail Intensity</description>
+    <units>See Table 4.210</units>
+  </parameter>
+  <parameter code="14">
+    <shortName>CONTET</shortName>
+    <description>Contrail Engine Type</description>
+    <units>See Table 4.211</units>
+  </parameter>
+  <parameter code="15">
+    <shortName>CONTT</shortName>
+    <description>Contrail Top</description>
+    <units>m</units>
+  </parameter>
+  <parameter code="16">
+    <shortName>CONTB</shortName>
+    <description>Contrail Base</description>
+    <units>m</units>
+  </parameter>
+  <parameter code="17">
+    <shortName>MXSALB</shortName>
+    <description>Maximum Snow Albedosee Note 1</description>
+    <units>%</units>
+  </parameter>
+  <parameter code="18">
+    <shortName>SNFALB</shortName>
+    <description>Snow-Free Albedo</description>
+    <units>%</units>
+  </parameter>
+  <parameter code="19">
+    <shortName>SALBD</shortName>
+    <description>Snow Albedo</description>
+    <units>%</units>
+  </parameter>
+  <parameter code="20">
+    <shortName>ICIP</shortName>
+    <description>Icing</description>
+    <units>%</units>
+  </parameter>
+  <parameter code="21">
+    <shortName>CTP</shortName>
+    <description>In-Cloud Turbulence</description>
+    <units>%</units>
+  </parameter>
+  <parameter code="22">
+    <shortName>CAT</shortName>
+    <description>Clear Air Turbulence (CAT)</description>
+    <units>%</units>
+  </parameter>
+  <parameter code="23">
+    <shortName>SLDP</shortName>
+    <description>Supercooled Large Droplet Probabilitysee Note 2</description>
+    <units>%</units>
+  </parameter>
+  <parameter code="24">
+    <shortName>CONTKE</shortName>
+    <description>Convective Turbulent Kinetic Energy</description>
+    <units>J kg-1</units>
+  </parameter>
+  <parameter code="25">
+    <shortName>WIWW</shortName>
+    <description>Weather</description>
+    <units>See Table 4.225</units>
+  </parameter>
+  <parameter code="26">
+    <shortName>CONVO</shortName>
+    <description>Convective Outlook</description>
+    <units>See Table 4.224</units>
+  </parameter>
+  <parameter code="27">
+    <shortName>ICESC</shortName>
+    <description>Icing Scenario</description>
+    <units>See Table 4.227</units>
+  </parameter>
+  <parameter code="192">
+    <shortName>MXSALB</shortName>
+    <description>Maximum Snow Albedo</description>
+    <units>%</units>
+  </parameter>
+  <parameter code="193">
+    <shortName>SNFALB</shortName>
+    <description>Snow-Free Albedo</description>
+    <units>%</units>
+  </parameter>
+  <parameter code="194">
+    <shortName>SRCONO</shortName>
+    <description>Slight risk convective outlook</description>
+    <units>categorical</units>
+  </parameter>
+  <parameter code="195">
+    <shortName>MRCONO</shortName>
+    <description>Moderate risk convective outlook</description>
+    <units>categorical</units>
+  </parameter>
+  <parameter code="196">
+    <shortName>HRCONO</shortName>
+    <description>High risk convective outlook</description>
+    <units>categorical</units>
+  </parameter>
+  <parameter code="197">
+    <shortName>TORPROB</shortName>
+    <description>Tornado probability</description>
+    <units>%</units>
+  </parameter>
+  <parameter code="198">
+    <shortName>HAILPROB</shortName>
+    <description>Hail probability</description>
+    <units>%</units>
+  </parameter>
+  <parameter code="199">
+    <shortName>WINDPROB</shortName>
+    <description>Wind probability</description>
+    <units>%</units>
+  </parameter>
+  <parameter code="200">
+    <shortName>STORPROB</shortName>
+    <description>Significant Tornado probability</description>
+    <units>%</units>
+  </parameter>
+  <parameter code="201">
+    <shortName>SHAILPRO</shortName>
+    <description>Significant Hail probability</description>
+    <units>%</units>
+  </parameter>
+  <parameter code="202">
+    <shortName>SWINDPRO</shortName>
+    <description>Significant Wind probability</description>
+    <units>%</units>
+  </parameter>
+  <parameter code="203">
+    <shortName>TSTMC</shortName>
+    <description>Categorical Thunderstorm</description>
+    <units>Code table 4.222</units>
+  </parameter>
+  <parameter code="204">
+    <shortName>MIXLY</shortName>
+    <description>Number of mixed layers next to surface</description>
+    <units>integer</units>
+  </parameter>
+  <parameter code="205">
+    <shortName>FLGHT</shortName>
+    <description>Flight Category</description>
+    <units />
+  </parameter>
+  <parameter code="206">
+    <shortName>CICEL</shortName>
+    <description>Confidence - Ceiling</description>
+    <units />
+  </parameter>
+  <parameter code="207">
+    <shortName>CIVIS</shortName>
+    <description>Confidence - Visibility</description>
+    <units />
+  </parameter>
+  <parameter code="208">
+    <shortName>CIFLT</shortName>
+    <description>Confidence - Flight Category</description>
+    <units />
+  </parameter>
+  <parameter code="209">
+    <shortName>LAVNI</shortName>
+    <description>Low-Level aviation interest</description>
+    <units />
+  </parameter>
+  <parameter code="210">
+    <shortName>HAVNI</shortName>
+    <description>High-Level aviation interest</description>
+    <units />
+  </parameter>
+  <parameter code="211">
+    <shortName>SBSALB</shortName>
+    <description>Visible, Black Sky Albedo</description>
+    <units>%</units>
+  </parameter>
+  <parameter code="212">
+    <shortName>SWSALB</shortName>
+    <description>Visible, White Sky Albedo</description>
+    <units>%</units>
+  </parameter>
+  <parameter code="213">
+    <shortName>NBSALB</shortName>
+    <description>Near IR, Black Sky Albedo</description>
+    <units>%</units>
+  </parameter>
+  <parameter code="214">
+    <shortName>NWSALB</shortName>
+    <description>Near IR, White Sky Albedo</description>
+    <units>%</units>
+  </parameter>
+  <parameter code="215">
+    <shortName>PRSVR</shortName>
+    <description>Total Probability of Severe Thunderstorms (Days 2,3)</description>
+    <units>%</units>
+  </parameter>
+  <parameter code="216">
+    <shortName>PRSIGSVR</shortName>
+    <description>Total Probability of Extreme Severe Thunderstorms (Days 2,3)</description>
+    <units>%</units>
+  </parameter>
+  <parameter code="217">
+    <shortName>SIPD</shortName>
+    <description>Supercooled Large Droplet (SLD) Icingsee Note 2</description>
+    <units>See Table 4.207</units>
+  </parameter>
+  <parameter code="218">
+    <shortName>EPSR</shortName>
+    <description>Radiative emissivity</description>
+    <units />
+  </parameter>
+  <parameter code="219">
+    <shortName>TPFI</shortName>
+    <description>Turbulence Potential Forecast Index</description>
+    <units />
+  </parameter>
+  <parameter code="220">
+    <shortName>SVRTS</shortName>
+    <description>Categorical Severe Thunderstorm</description>
+    <units>Code table 4.222</units>
+  </parameter>
+  <parameter code="221">
+    <shortName>PROCON</shortName>
+    <description>Probability of Convection</description>
+    <units>%</units>
+  </parameter>
+  <parameter code="222">
+    <shortName>CONVP</shortName>
+    <description>Convection Potential</description>
+    <units>Code table 4.222</units>
+  </parameter>
+  <parameter code="232">
+    <shortName>VAFTD</shortName>
+    <description>Volcanic Ash Forecast Transport and Dispersion</description>
+    <units>log10 (kg m-3)</units>
+  </parameter>
+  <parameter code="233">
+    <shortName>ICPRB</shortName>
+    <description>Icing probability</description>
+    <units>non-dim</units>
+  </parameter>
+  <parameter code="234">
+    <shortName>ICSEV</shortName>
+    <description>Icing severity</description>
+    <units>non-dim</units>
+  </parameter>
+</parameterMap>

@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<codeTable>
+  <table>Table 4.212</table>
+  <title>Land Use</title>
+  <source>http://www.nco.ncep.noaa.gov/pmb/docs/grib2/grib2_table4-212.shtml</source>
+  <parameter code="1">
+    <description>Urban Land</description>
+  </parameter>
+  <parameter code="2">
+    <description>Agricultural</description>
+  </parameter>
+  <parameter code="3">
+    <description>Range Land</description>
+  </parameter>
+  <parameter code="4">
+    <description>Deciduous Forest</description>
+  </parameter>
+  <parameter code="5">
+    <description>Coniferous Forest</description>
+  </parameter>
+  <parameter code="6">
+    <description>Forest/Wetland</description>
+  </parameter>
+  <parameter code="7">
+    <description>Water</description>
+  </parameter>
+  <parameter code="8">
+    <description>Wetlands</description>
+  </parameter>
+  <parameter code="9">
+    <description>Desert</description>
+  </parameter>
+  <parameter code="10">
+    <description>Tundra</description>
+  </parameter>
+  <parameter code="11">
+    <description>Ice</description>
+  </parameter>
+  <parameter code="12">
+    <description>Tropical Forest</description>
+  </parameter>
+  <parameter code="13">
+    <description>Savannah</description>
+  </parameter>
+  <parameter code="255">
+    <description>Missing</description>
+  </parameter>
+</codeTable>

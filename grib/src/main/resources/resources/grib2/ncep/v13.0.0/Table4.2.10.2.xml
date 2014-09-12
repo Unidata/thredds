@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<parameterMap>
+  <table>Table4.2.10.2</table>
+  <title>Ice</title>
+  <source>http://www.nco.ncep.noaa.gov/pmb/docs/grib2/grib2_table4-2-10-2.shtml</source>
+  <parameter code="0">
+    <shortName>ICEC</shortName>
+    <description>Ice Cover</description>
+    <units>Proportion</units>
+  </parameter>
+  <parameter code="1">
+    <shortName>ICETK</shortName>
+    <description>Ice Thickness</description>
+    <units>m</units>
+  </parameter>
+  <parameter code="2">
+    <shortName>DICED</shortName>
+    <description>Direction of Ice Drift</description>
+    <units>degree True</units>
+  </parameter>
+  <parameter code="3">
+    <shortName>SICED</shortName>
+    <description>Speed of Ice Drift</description>
+    <units>m s-1</units>
+  </parameter>
+  <parameter code="4">
+    <shortName>UICE</shortName>
+    <description>U-Component of Ice Drift</description>
+    <units>m s-1</units>
+  </parameter>
+  <parameter code="5">
+    <shortName>VICE</shortName>
+    <description>V-Component of Ice Drift</description>
+    <units>m s-1</units>
+  </parameter>
+  <parameter code="6">
+    <shortName>ICEG</shortName>
+    <description>Ice Growth Rate</description>
+    <units>m s-1</units>
+  </parameter>
+  <parameter code="7">
+    <shortName>ICED</shortName>
+    <description>Ice Divergence</description>
+    <units>s-1</units>
+  </parameter>
+  <parameter code="8">
+    <shortName>ICETMP</shortName>
+    <description>Ice Temperature</description>
+    <units>K</units>
+  </parameter>
+  <parameter code="9">
+    <shortName>ICEPRS</shortName>
+    <description>Ice Internal Pressure</description>
+    <units>Pa m</units>
+  </parameter>
+  <parameter code="10">
+    <shortName>ZVCICEP</shortName>
+    <description>Zonal Vector Component of Vertically Integrated Ice Internal Pressure</description>
+    <units>Pa m</units>
+  </parameter>
+  <parameter code="11">
+    <shortName>MVCICEP</shortName>
+    <description>Meridional Vector Component of Vertically Integrated Ice Internal Pressure</description>
+    <units>Pa m</units>
+  </parameter>
+  <parameter code="12">
+    <shortName>CICES</shortName>
+    <description>Compressive Ice Strength</description>
+    <units>N m-1</units>
+  </parameter>
+</parameterMap>

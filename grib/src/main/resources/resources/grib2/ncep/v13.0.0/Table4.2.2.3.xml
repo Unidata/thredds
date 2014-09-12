@@ -1,0 +1,181 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<parameterMap>
+  <table>Table4.2.2.3</table>
+  <title>Soil</title>
+  <source>http://www.nco.ncep.noaa.gov/pmb/docs/grib2/grib2_table4-2-2-3.shtml</source>
+  <parameter code="0">
+    <shortName>SOTYP</shortName>
+    <description>Soil Type</description>
+    <units>See Table 4.213</units>
+  </parameter>
+  <parameter code="1">
+    <shortName>UPLST</shortName>
+    <description>Upper Layer Soil Temperature*</description>
+    <units>K</units>
+  </parameter>
+  <parameter code="2">
+    <shortName>UPLSM</shortName>
+    <description>Upper Layer Soil Moisture*</description>
+    <units>kg m-3</units>
+  </parameter>
+  <parameter code="3">
+    <shortName>LOWLSM</shortName>
+    <description>Lower Layer Soil Moisture*</description>
+    <units>kg m-3</units>
+  </parameter>
+  <parameter code="4">
+    <shortName>BOTLST</shortName>
+    <description>Bottom Layer Soil Temperature*</description>
+    <units>K</units>
+  </parameter>
+  <parameter code="5">
+    <shortName>SOILL</shortName>
+    <description>Liquid Volumetric Soil Moisture (non-frozen)**</description>
+    <units>Proportion</units>
+  </parameter>
+  <parameter code="6">
+    <shortName>RLYRS</shortName>
+    <description>Number of Soil Layers in Root Zone</description>
+    <units>Numeric</units>
+  </parameter>
+  <parameter code="7">
+    <shortName>SMREF</shortName>
+    <description>Transpiration Stress-onset (soil moisture)**</description>
+    <units>Proportion</units>
+  </parameter>
+  <parameter code="8">
+    <shortName>SMDRY</shortName>
+    <description>Direct Evaporation Cease (soil moisture)**</description>
+    <units>Proportion</units>
+  </parameter>
+  <parameter code="9">
+    <shortName>POROS</shortName>
+    <description>Soil Porosity**</description>
+    <units>Proportion</units>
+  </parameter>
+  <parameter code="10">
+    <shortName>LIQVSM</shortName>
+    <description>Liquid Volumetric Soil Moisture (Non-Frozen)</description>
+    <units>m3 m-3</units>
+  </parameter>
+  <parameter code="11">
+    <shortName>VOLTSO</shortName>
+    <description>Volumetric Transpiration Stree-Onset(Soil Moisture)</description>
+    <units>m3 m-3</units>
+  </parameter>
+  <parameter code="12">
+    <shortName>TRANSO</shortName>
+    <description>Transpiration Stree-Onset(Soil Moisture)</description>
+    <units>kg m-3</units>
+  </parameter>
+  <parameter code="13">
+    <shortName>VOLDEC</shortName>
+    <description>Volumetric Direct Evaporation Cease(Soil Moisture)</description>
+    <units>m3 m-3</units>
+  </parameter>
+  <parameter code="14">
+    <shortName>DIREC</shortName>
+    <description>Direct Evaporation Cease(Soil Moisture)</description>
+    <units>kg m-3</units>
+  </parameter>
+  <parameter code="15">
+    <shortName>SOILP</shortName>
+    <description>Soil Porosity</description>
+    <units>m3 m-3</units>
+  </parameter>
+  <parameter code="16">
+    <shortName>VSOSM</shortName>
+    <description>Volumetric Saturation Of Soil Moisture</description>
+    <units>m3 m-3</units>
+  </parameter>
+  <parameter code="17">
+    <shortName>SATOSM</shortName>
+    <description>Saturation Of Soil Moisture</description>
+    <units>kg m-3</units>
+  </parameter>
+  <parameter code="18">
+    <shortName>SOILTMP</shortName>
+    <description>Soil Temperature</description>
+    <units>K</units>
+  </parameter>
+  <parameter code="19">
+    <shortName>SOILMOI</shortName>
+    <description>Soil Moisture</description>
+    <units>kg m-3</units>
+  </parameter>
+  <parameter code="20">
+    <shortName>CISOILM</shortName>
+    <description>Column-Integrated Soil Moisture</description>
+    <units>kg m-2</units>
+  </parameter>
+  <parameter code="21">
+    <shortName>SOILICE</shortName>
+    <description>Soil Ice</description>
+    <units>kg m-3</units>
+  </parameter>
+  <parameter code="22">
+    <shortName>CISICE</shortName>
+    <description>Column-Integrated Soil Ice</description>
+    <units>kg m-2</units>
+  </parameter>
+  <parameter code="192">
+    <shortName>SOILL</shortName>
+    <description>Liquid Volumetric Soil Moisture (non Frozen)</description>
+    <units>Proportion</units>
+  </parameter>
+  <parameter code="193">
+    <shortName>RLYRS</shortName>
+    <description>Number of Soil Layers in Root Zone</description>
+    <units>non-dim</units>
+  </parameter>
+  <parameter code="194">
+    <shortName>SLTYP</shortName>
+    <description>Surface Slope Type</description>
+    <units>Index</units>
+  </parameter>
+  <parameter code="195">
+    <shortName>SMREF</shortName>
+    <description>Transpiration Stress-onset (soil moisture)</description>
+    <units>Proportion</units>
+  </parameter>
+  <parameter code="196">
+    <shortName>SMDRY</shortName>
+    <description>Direct Evaporation Cease (soil moisture)</description>
+    <units>Proportion</units>
+  </parameter>
+  <parameter code="197">
+    <shortName>POROS</shortName>
+    <description>Soil Porosity</description>
+    <units>Proportion</units>
+  </parameter>
+  <parameter code="198">
+    <shortName>EVBS</shortName>
+    <description>Direct Evaporation from Bare Soil</description>
+    <units>W m-2</units>
+  </parameter>
+  <parameter code="199">
+    <shortName>LSPA</shortName>
+    <description>Land Surface Precipitation Accumulation</description>
+    <units>kg m-2</units>
+  </parameter>
+  <parameter code="200">
+    <shortName>BARET</shortName>
+    <description>Bare Soil Surface Skin temperature</description>
+    <units>K</units>
+  </parameter>
+  <parameter code="201">
+    <shortName>AVSFT</shortName>
+    <description>Average Surface Skin Temperature</description>
+    <units>K</units>
+  </parameter>
+  <parameter code="202">
+    <shortName>RADT</shortName>
+    <description>Effective Radiative Skin Temperature</description>
+    <units>K</units>
+  </parameter>
+  <parameter code="203">
+    <shortName>FLDCP</shortName>
+    <description>Field Capacity</description>
+    <units>Fraction</units>
+  </parameter>
+</parameterMap>

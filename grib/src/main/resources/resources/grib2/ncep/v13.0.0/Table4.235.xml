@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<codeTable>
+  <table>Table 4.235</table>
+  <title>WaveGenerated Wave Spectral Description</title>
+  <source>http://www.nco.ncep.noaa.gov/pmb/docs/grib2/grib2_table4-235.shtml</source>
+  <parameter code="0">
+    <description>Total Wave Spectrum (combined wind waves and swell)</description>
+  </parameter>
+  <parameter code="1">
+    <description>Generalized Partition</description>
+  </parameter>
+  <parameter code="255">
+    <description>Missing</description>
+  </parameter>
+</codeTable>

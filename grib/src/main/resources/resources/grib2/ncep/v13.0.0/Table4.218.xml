@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<codeTable>
+  <table>Table 4.218</table>
+  <title>Pixel Scene Type</title>
+  <source>http://www.nco.ncep.noaa.gov/pmb/docs/grib2/grib2_table4-218.shtml</source>
+  <parameter code="0">
+    <description>No Scene Identified</description>
+  </parameter>
+  <parameter code="1">
+    <description>Green Needle-Leafed Forest</description>
+  </parameter>
+  <parameter code="2">
+    <description>Green Broad-Leafed Forest</description>
+  </parameter>
+  <parameter code="3">
+    <description>Deciduous Needle-Leafed Forest</description>
+  </parameter>
+  <parameter code="4">
+    <description>Deciduous Broad-Leafed Forest</description>
+  </parameter>
+  <parameter code="5">
+    <description>Deciduous Mixed Forest</description>
+  </parameter>
+  <parameter code="6">
+    <description>Closed Shrub-Land</description>
+  </parameter>
+  <parameter code="7">
+    <description>Open Shrub-Land</description>
+  </parameter>
+  <parameter code="8">
+    <description>Woody Savannah</description>
+  </parameter>
+  <parameter code="9">
+    <description>Savannah</description>
+  </parameter>
+  <parameter code="10">
+    <description>Grassland</description>
+  </parameter>
+  <parameter code="11">
+    <description>Permanent Wetland</description>
+  </parameter>
+  <parameter code="12">
+    <description>Cropland</description>
+  </parameter>
+  <parameter code="13">
+    <description>Urban</description>
+  </parameter>
+  <parameter code="14">
+    <description>Vegetation / Crops</description>
+  </parameter>
+  <parameter code="15">
+    <description>Permanent Snow / Ice</description>
+  </parameter>
+  <parameter code="16">
+    <description>Barren Desert</description>
+  </parameter>
+  <parameter code="17">
+    <description>Water Bodies</description>
+  </parameter>
+  <parameter code="18">
+    <description>Tundra</description>
+  </parameter>
+  <parameter code="97">
+    <description>Snow / Ice on Land</description>
+  </parameter>
+  <parameter code="98">
+    <description>Snow / Ice on Water</description>
+  </parameter>
+  <parameter code="99">
+    <description>Sun-Glint</description>
+  </parameter>
+  <parameter code="100">
+    <description>General Cloud</description>
+  </parameter>
+  <parameter code="101">
+    <description>Low Cloud / Fog / Stratus</description>
+  </parameter>
+  <parameter code="102">
+    <description>Low Cloud / Stratocumulus</description>
+  </parameter>
+  <parameter code="103">
+    <description>Low Cloud / Unknown Type</description>
+  </parameter>
+  <parameter code="104">
+    <description>Medium Cloud / Nimbostratus</description>
+  </parameter>
+  <parameter code="105">
+    <description>Medium Cloud / Altostratus</description>
+  </parameter>
+  <parameter code="106">
+    <description>Medium Cloud / Unknown Type</description>
+  </parameter>
+  <parameter code="107">
+    <description>High Cloud / Cumulus</description>
+  </parameter>
+  <parameter code="108">
+    <description>High Cloud / Cirrus</description>
+  </parameter>
+  <parameter code="109">
+    <description>High Cloud / Unknown Type</description>
+  </parameter>
+  <parameter code="110">
+    <description>Unknown Cloud Type</description>
+  </parameter>
+  <parameter code="255">
+    <description>Missing</description>
+  </parameter>
+</codeTable>

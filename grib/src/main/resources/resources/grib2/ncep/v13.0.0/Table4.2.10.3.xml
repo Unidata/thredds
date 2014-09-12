@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<parameterMap>
+  <table>Table4.2.10.3</table>
+  <title>Surface Properties</title>
+  <source>http://www.nco.ncep.noaa.gov/pmb/docs/grib2/grib2_table4-2-10-3.shtml</source>
+  <parameter code="0">
+    <shortName>WTMP</shortName>
+    <description>Water Temperature</description>
+    <units>K</units>
+  </parameter>
+  <parameter code="1">
+    <shortName>DSLM</shortName>
+    <description>Deviation of Sea Level from Mean</description>
+    <units>m</units>
+  </parameter>
+  <parameter code="192">
+    <shortName>SURGE</shortName>
+    <description>Hurricane Storm Surge</description>
+    <units>m</units>
+  </parameter>
+  <parameter code="193">
+    <shortName>ETSRG</shortName>
+    <description>Extra Tropical Storm Surge</description>
+    <units>m</units>
+  </parameter>
+  <parameter code="194">
+    <shortName>ELEV</shortName>
+    <description>Ocean Surface Elevation Relative to Geoid</description>
+    <units>m</units>
+  </parameter>
+  <parameter code="195">
+    <shortName>SSHG</shortName>
+    <description>Sea Surface Height Relative to Geoid</description>
+    <units>m</units>
+  </parameter>
+  <parameter code="196">
+    <shortName>P2OMLT</shortName>
+    <description>Ocean Mixed Layer Potential Density (Reference 2000m)</description>
+    <units>kg m-3</units>
+  </parameter>
+  <parameter code="197">
+    <shortName>AOHFLX</shortName>
+    <description>Net Air-Ocean Heat Flux</description>
+    <units>W m-2</units>
+  </parameter>
+  <parameter code="198">
+    <shortName>ASHFL</shortName>
+    <description>Assimilative Heat Flux</description>
+    <units>W m-2</units>
+  </parameter>
+  <parameter code="199">
+    <shortName>SSTT</shortName>
+    <description>Surface Temperature Trend</description>
+    <units>degree per day</units>
+  </parameter>
+  <parameter code="200">
+    <shortName>SSST</shortName>
+    <description>Surface Salinity Trend</description>
+    <units>psu per day</units>
+  </parameter>
+  <parameter code="201">
+    <shortName>KENG</shortName>
+    <description>Kinetic Energy</description>
+    <units>J kg-1</units>
+  </parameter>
+  <parameter code="202">
+    <shortName>SLTFL</shortName>
+    <description>Salt Flux</description>
+    <units>kg m-2s-1</units>
+  </parameter>
+  <parameter code="242">
+    <shortName>TCSRG20</shortName>
+    <description>20% Tropical Cyclone Storm Surge Exceedance</description>
+    <units>m</units>
+  </parameter>
+  <parameter code="243">
+    <shortName>TCSRG30</shortName>
+    <description>30% Tropical Cyclone Storm Surge Exceedance</description>
+    <units>m</units>
+  </parameter>
+  <parameter code="244">
+    <shortName>TCSRG40</shortName>
+    <description>40% Tropical Cyclone Storm Surge Exceedance</description>
+    <units>m</units>
+  </parameter>
+  <parameter code="245">
+    <shortName>TCSRG50</shortName>
+    <description>50% Tropical Cyclone Storm Surge Exceedance</description>
+    <units>m</units>
+  </parameter>
+  <parameter code="246">
+    <shortName>TCSRG60</shortName>
+    <description>60% Tropical Cyclone Storm Surge Exceedance</description>
+    <units>m</units>
+  </parameter>
+  <parameter code="247">
+    <shortName>TCSRG70</shortName>
+    <description>70% Tropical Cyclone Storm Surge Exceedance</description>
+    <units>m</units>
+  </parameter>
+  <parameter code="248">
+    <shortName>TCSRG80</shortName>
+    <description>80% Tropical Cyclone Storm Surge Exceedance</description>
+    <units>m</units>
+  </parameter>
+  <parameter code="249">
+    <shortName>TCSRG90</shortName>
+    <description>90% Tropical Cyclone Storm Surge Exceedance</description>
+    <units>m</units>
+  </parameter>
+  <parameter code="250">
+    <shortName>ETCWL</shortName>
+    <description>Extra Tropical Storm Surge Combined Surge and Tide</description>
+    <units>m</units>
+  </parameter>
+</parameterMap>

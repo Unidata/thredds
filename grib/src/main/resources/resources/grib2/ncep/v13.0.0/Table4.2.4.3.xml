@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<parameterMap>
+  <table>Table4.2.4.3</table>
+  <title>Electric and Magnetic Fields</title>
+  <source>http://www.nco.ncep.noaa.gov/pmb/docs/grib2/grib2_table4-2-4-3.shtml</source>
+  <parameter code="0">
+    <shortName>BTOT</shortName>
+    <description>Magnetic Field Magnitude</description>
+    <units>T</units>
+  </parameter>
+  <parameter code="1">
+    <shortName>BVEC1</shortName>
+    <description>1st Vector Component of Magnetic Field</description>
+    <units>T</units>
+  </parameter>
+  <parameter code="2">
+    <shortName>BVEC2</shortName>
+    <description>2nd Vector Component of Magnetic Field</description>
+    <units>T</units>
+  </parameter>
+  <parameter code="3">
+    <shortName>BVEC3</shortName>
+    <description>3rd Vector Component of Magnetic Field</description>
+    <units>T</units>
+  </parameter>
+  <parameter code="4">
+    <shortName>ETOT</shortName>
+    <description>Electric Field Magnitude</description>
+    <units>V m-1</units>
+  </parameter>
+  <parameter code="5">
+    <shortName>EVEC1</shortName>
+    <description>1st Vector Component of Electric Field</description>
+    <units>V m-1</units>
+  </parameter>
+  <parameter code="6">
+    <shortName>EVEC2</shortName>
+    <description>2nd Vector Component of Electric Field</description>
+    <units>V m-1</units>
+  </parameter>
+  <parameter code="7">
+    <shortName>EVEC3</shortName>
+    <description>3rd Vector Component of Electric Field</description>
+    <units>V m-1</units>
+  </parameter>
+</parameterMap>
