@@ -268,9 +268,9 @@ public class DatasetViewer extends JPanel {
       infoWindow.show();
 
     } catch (Throwable ioe) {
-      ByteArrayOutputStream bos = new ByteArrayOutputStream(10000);
-      ioe.printStackTrace(new PrintStream(bos));
-      infoTA.setText(bos.toString());
+      StringWriter sw = new StringWriter(10000);
+      ioe.printStackTrace(new PrintWriter(sw));
+      infoTA.setText(sw.toString());
       infoTA.gotoTop();
       infoWindow.show();
 
@@ -279,7 +279,9 @@ public class DatasetViewer extends JPanel {
         try {
           compareFile.close();
         }
-        catch (Exception eek) { }
+        catch (Exception eek) {
+            eek.printStackTrace();
+        }
     }
   }
 
@@ -764,10 +766,6 @@ public class DatasetViewer extends JPanel {
     // static public String editableProperties() { return "title include logging freq"; }
     private Variable vs;
     private String name, dimensions, desc, units, dataType, shape;
-    private String coordSys;
-
-    // no-arg constructor
-    public VariableBean() {}
 
     // create from a dataset
     public VariableBean( Variable vs) {
@@ -852,9 +850,6 @@ public class DatasetViewer extends JPanel {
 
   public class AttributeBean {
     private Attribute att;
-
-    // no-arg constructor
-    public AttributeBean() {}
 
     // create from a dataset
     public AttributeBean( Attribute att) {

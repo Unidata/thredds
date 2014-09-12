@@ -140,12 +140,9 @@ public class Vis5DIosp extends AbstractIOServiceProvider {
      */
     public boolean isValidFile(RandomAccessFile raf) throws IOException {
         // quick test
-        raf.order(raf.BIG_ENDIAN);
+        raf.order(RandomAccessFile.BIG_ENDIAN);
         raf.seek(0);
-        int    n = V5D.length();
-        byte[] b = new byte[n];
-        raf.read(b);
-        String got = new String(b);
+        String got = raf.readString(V5D.length());
         if (got.equals(V5D)) {
             return true;
         } else {  // more rigorous test

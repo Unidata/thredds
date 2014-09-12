@@ -1871,7 +1871,7 @@ public class V5DStruct {
         case TAG_VERSION:
           V5Dassert(length == 10);
           byte[] b = new byte[10];
-          f.read(b, 0, 10);
+          f.readFully(b);
           int index = 10;
           for (int q=0; q<10; q++) {
             if (b[q] == 0) {
@@ -2467,20 +2467,9 @@ public class V5DStruct {
   */
   boolean v5dCreateFile(String filename) throws IOException {
     RandomAccessFile fd = new RandomAccessFile(filename, "rw");
-
-    if (fd == null) {
-      System.err.println("Error in v5dCreateFile: open failed");
-      FileDesc = null;
-      Mode = 0;
-      return false;
-    }
-    else {
-      // ok
-      FileDesc = fd;
-      Mode = 'w';
-      // write header and return status
-      return write_v5d_header();
-    }
+    FileDesc = fd;
+    Mode = 'w';
+    return write_v5d_header();  // write header and return status
   }
 
   /** Write a compressed grid to a v5d file.

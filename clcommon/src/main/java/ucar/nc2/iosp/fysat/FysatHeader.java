@@ -151,7 +151,7 @@ public final class FysatHeader {
     // skip the fills of the first record
     //  raf.seek(FY_AWX_PIB_LEN + this.firstHeader.fillSectionLength);
     buf = new byte[this.firstHeader.secondHeaderLength];
-    raf.read(buf);
+    raf.readFully(buf);
     byteBuffer = new EndianByteBuffer(buf, this.firstHeader.byteOrder);
     switch (this.firstHeader.typeOfProduct) {
       case AwxFileFirstHeader.AWX_PRODUCT_TYPE_UNDEFINED:

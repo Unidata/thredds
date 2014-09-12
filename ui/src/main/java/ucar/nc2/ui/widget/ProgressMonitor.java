@@ -156,7 +156,7 @@ public class ProgressMonitor {
    * @param taskName         display name of task
    * @param progressMaxCount maximum number of Progress indicator
    */
-  public synchronized void start(java.awt.Component top, String taskName, int progressMaxCount) {
+  public void start(java.awt.Component top, String taskName, int progressMaxCount) {
     // create ProgressMonitor
     pm = new javax.swing.ProgressMonitor(top, taskName, "", 0, progressMaxCount);
     pm.setMillisToDecideToPopup(millisToDecideToPopup);

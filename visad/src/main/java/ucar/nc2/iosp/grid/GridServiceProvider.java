@@ -202,21 +202,6 @@ public abstract class GridServiceProvider extends AbstractIOServiceProvider {
   }
 
   /**
-   * Get the detail information
-   *
-   * @return the detail info
-   */
-  @Override
-  public String getDetailInfo() {
-    return ""; // parseInfo.toString();
-  }
-
-  @Override
-  public Object sendIospMessage(Object special) {
-    return super.sendIospMessage(special);
-  }
-
-  /**
    * Read the data for the variable
    *
    * @param v2      Variable to read

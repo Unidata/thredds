@@ -589,10 +589,6 @@ public abstract class Grib2Pds {
       return readTimeIntervals(getNumberTimeRanges(), 50);
     }
 
-    public int getStatisticalProcessType() {
-      return super.getStatisticalProcessType();
-    }
-
     @Override
     public int templateLength() {
       return 49 + getNumberTimeRanges() * 12;
@@ -700,10 +696,6 @@ public abstract class Grib2Pds {
 
     public TimeInterval[] getTimeIntervals() {
       return readTimeIntervals(getNumberTimeRanges(), 49);
-    }
-
-    public int getStatisticalProcessType() {
-      return super.getStatisticalProcessType();
     }
 
     @Override
@@ -924,10 +916,6 @@ public abstract class Grib2Pds {
       return readTimeIntervals(getNumberTimeRanges(), 60);
     }
 
-    public int getStatisticalProcessType() {
-      return super.getStatisticalProcessType();
-    }
-
     @Override
     public int templateLength() {
       return 59 + getNumberTimeRanges() * 12;
@@ -997,10 +985,6 @@ public abstract class Grib2Pds {
     @Override
     public TimeInterval[] getTimeIntervals() {
       return readTimeIntervals(getNumberTimeRanges(), 47);
-    }
-
-    public int getStatisticalProcessType() {
-      return super.getStatisticalProcessType();
     }
 
     @Override
@@ -1102,10 +1086,6 @@ public abstract class Grib2Pds {
 
     public TimeInterval[] getTimeIntervals() {
       return readTimeIntervals(getNumberTimeRanges(), 48);
-    }
-
-    public int getStatisticalProcessType() {
-      return super.getStatisticalProcessType();
     }
 
     @Override

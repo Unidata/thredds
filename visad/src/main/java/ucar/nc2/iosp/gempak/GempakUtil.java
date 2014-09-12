@@ -106,7 +106,7 @@ public final class GempakUtil {
 
         //Check for the blank time which may be found.
 
-        if ((intdtf[0] == 0) && (intdtf[2] == 0) && (intdtf[2] == 0)) {
+        if ((intdtf[0] == 0) && (intdtf[1] == 0) && (intdtf[2] == 0)) {
             return gdattim;
         }
 
@@ -214,9 +214,7 @@ public final class GempakUtil {
         String dattim;
         String date, time;
 
-        dattim = "";
-
-        //   Put array values into variables.                                
+        //   Put array values into variables.
 
         int iyear  = idtarr[0];
         int imonth = idtarr[1];
@@ -317,7 +315,7 @@ public final class GempakUtil {
         bval[0] = (byte) ((value & 0xff000000) >>> 24);
         bval[1] = (byte) ((value & 0x00ff0000) >>> 16);
         bval[2] = (byte) ((value & 0x0000ff00) >>> 8);
-        bval[3] = (byte) ((value & 0x000000ff) >>> 0);
+        bval[3] = (byte) ((value & 0x000000ff));
         return new String(bval);
     }
 
@@ -330,9 +328,9 @@ public final class GempakUtil {
      */
     public static String ST_ITOC(int[] values) {
         StringBuilder sb = new StringBuilder();
-        for (int i = 0; i < values.length; i++) {
-            sb.append(ST_ITOC(values[i]));
-        }
+      for (int value : values) {
+        sb.append(ST_ITOC(value));
+      }
         return sb.toString();
     }
 
