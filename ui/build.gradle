@@ -1,141 +1,147 @@
 apply plugin: 'shadow'
-import com.github.jengelman.gradle.plugins.shadow.transformers.AppendingTransformer
 
-sourceSets {
-    main {
-        java {
-            srcDir 'src/java'
-            exclude 'thredds/ui/catalog/search/**'   // eliminate lucene
-       }
-   }
-}
+import com.github.jengelman.gradle.plugins.shadow.transformers.AppendingTransformer
+import org.codehaus.groovy.runtime.NioGroovyMethods
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory
+
+import java.util.jar.JarEntry
+import java.util.jar.JarFile
+import java.util.jar.JarOutputStream
 
 dependencies {
-  compile project(':cdm')
-  compile project(':clcommon')
-  compile project(':bufr')
-  compile project(':grib')
-  compile project(':netcdf4')
-  compile (project(':opendap'))  { // eliminate servlet
-      transitive = false
+    compile project(':cdm')
+    compile project(':clcommon')
+    compile project(':bufr')
+    compile project(':grib')
+    compile project(':netcdf4')
+    compile(project(':opendap')) { // eliminate servlet
+        transitive = false
     }
-  compile (project(':visad')) {   // eliminate original visad.jar
-    transitive = false
-  }
-  compile project(':waterml')
-  compile ('com.jgoodies:forms:1.0.7')
-  compile (group: 'org.jfree', name: 'jfreechart', version: jfreechartVersion) {
-    exclude group: 'com.lowagie'
-  }
-  compile ('org.bounce:bounce:0.14')
-  compile ('org.imgscalr:imgscalr-lib:4.2')
-  compile ('org.itadaki:bzip2:0.9.1')
-  compile ('net.sf.ehcache:ehcache:1.6.2')
-  compile ('org.apache.commons:commons-lang3:3.1')
+    compile(project(':visad')) {   // eliminate original visad.jar
+        transitive = false
+    }
+    compile project(':waterml')
+    compile('com.jgoodies:forms:1.0.7')
+    compile(group: 'org.jfree', name: 'jfreechart', version: jfreechartVersion) {
+        exclude group: 'com.lowagie'
+    }
+    compile('org.bounce:bounce:0.14')
+    compile('org.imgscalr:imgscalr-lib:4.2')
+    compile('org.itadaki:bzip2:0.9.1')
+    compile('net.sf.ehcache:ehcache:1.6.2')
+    compile('org.apache.commons:commons-lang3:3.1')
 
-  compile (group: 'org.springframework', name: 'spring-core', version:springVersion) {
-    transitive = false  // commons-logging
-  }
-  compile group: 'org.springframework', name: 'spring-context', version:springVersion
+    compile(group: 'org.springframework', name: 'spring-core', version: springVersion) {
+        transitive = false  // commons-logging
+    }
+    compile group: 'org.springframework', name: 'spring-context', version: springVersion
 
-  testCompile project(':cdm').sourceSets.test.output
-  runtime group: 'org.slf4j', name: 'slf4j-jdk14', version: slf4jVersion
+    testCompile project(':cdm').sourceSets.test.output
+    runtime group: 'org.slf4j', name: 'slf4j-jdk14', version: slf4jVersion
 }
 
 jar {
-  manifest {
-    attributes 'Implementation-Title': 'toolsUI'
-  }
+    manifest {
+        attributes 'Implementation-Title': 'toolsUI'
+    }
 }
 
 //////////////////////////////////////////////////////////
 
 ext {
-  toolsUIjar = 'toolsUI-'+version+'.jar'
-  webstartWorkingDir = "build/signed"
-  if ( project.hasProperty( "webdir")) {
-    webstartDir = webdir + "webstart"
-  }
+    toolsUIjar = 'toolsUI-' + version + '.jar'
+    webstartWorkingDir = "build/signed"
+    if (project.hasProperty("webdir")) {
+        webstartDir = webdir + "webstart"
+    }
+
+    jarsContainingDuplicateEntries = [ 'xmlbeans-2.6.0.jar' ]
 }
 
 shadow {
-  outputFile = file("${destinationDir }/${toolsUIjar}")
-  stats = true
+    outputFile = file("${destinationDir}/${toolsUIjar}")
+    stats = true
 
-  exclude 'AUTHORS'    // crap from other packages
-  exclude 'DATE'
-  exclude 'LICENCE'
-  exclude 'LICENSE'
-  exclude 'NOTICE'
-  exclude '*.txt'
-  exclude '*.xml'
-  exclude 'META-INF/DEPENDENCIES'
-  exclude 'META-INF/LICENSE'
-  exclude 'META-INF/NOTICE'
-  exclude 'META-INF/*.DSA'
-  exclude 'META-INF/*.RSA'
-  exclude 'META-INF/*.txt'
-  exclude 'META-INF/*.xml'
+    exclude 'AUTHORS'    // crap from other packages
+    exclude 'DATE'
+    exclude 'LICENCE'
+    exclude 'LICENSE'
+    exclude 'NOTICE'
+    exclude '*.txt'
+    exclude '*.xml'
+    exclude 'META-INF/DEPENDENCIES'
+    exclude 'META-INF/LICENSE'
+    exclude 'META-INF/NOTICE'
+    exclude 'META-INF/*.DSA'
+    exclude 'META-INF/*.RSA'
+    exclude 'META-INF/*.txt'
+    exclude 'META-INF/*.xml'
 
-  artifactSet {
-      exclude 'commons-logging:commons-logging:*'
-  }
-
-  jar {
-    manifest {
-      attributes 'Main-Class': 'ucar.nc2.ui.ToolsUI'
+    artifactSet {
+        exclude 'commons-logging:commons-logging:*'
     }
-  }
 
-  transformer(AppendingTransformer) {
-      resource = 'META-INF/spring.handlers'
-   }
-   transformer(AppendingTransformer) {
-      resource = 'META-INF/spring.schemas'
-   }
+    jar {
+        manifest {
+            attributes 'Main-Class': 'ucar.nc2.ui.ToolsUI'
+        }
+    }
+
+    transformer(AppendingTransformer) {
+        resource = 'META-INF/spring.handlers'
+    }
+    transformer(AppendingTransformer) {
+        resource = 'META-INF/spring.schemas'
+    }
 }
 
-task releaseWebstart << {
-  if ( project.hasProperty( "webdir") && project.hasProperty( "keystore")
-          && project.hasProperty( "keystoreAlias") && project.hasProperty( "keystorePassword") )
-  {
-      ant.delete( dir: webstartWorkingDir )
-      ant.mkdir( dir: webstartWorkingDir )
+task releaseWebstart(dependsOn: jar) << {
+    if (project.hasProperty("webdir") && project.hasProperty("keystore")
+            && project.hasProperty("keystoreAlias") && project.hasProperty("keystorePassword")) {
+        ant.delete(dir: webstartWorkingDir)
+        ant.mkdir(dir: webstartWorkingDir)
 
-      copy {
-          println "copyJnlp"
-          from 'netCDFtools.jnlp'
-          from 'netCDFtoolsExtraJars.jnlp'
-          into webstartWorkingDir
-      }
+        copy {
+            println "copyJnlp"
+            from 'netCDFtools.jnlp'
+            from 'netCDFtoolsExtraJars.jnlp'
+            into webstartWorkingDir
+        }
 
-      println "signjar"
-      println "keystore= "+keystore
-      ant.signjar( jar: "build/libs/ui-" + version + ".jar", signedjar: webstartWorkingDir + "/netcdfUI.jar",
-                   alias: keystoreAlias, keystore: keystore, storepass: keystorePassword,
-                   preservelastmodified: "true" )
-      for ( file in configurations.runtime.resolve() )
-      {
-          println " " + file
-          ant.signjar( destDir: webstartWorkingDir, jar: file, alias: keystoreAlias, keystore: keystore, storepass: keystorePassword,
-                       preservelastmodified: "true", force:"true")
-      }
+        println "signjar:"
+        println "\twebdir = $webdir"
+        println "\tkeystore = $keystore"
+        println "\tkeystoreAlias = $keystoreAlias"
+        println "\tkeystorePassword = $keystorePassword"
 
-      copy {
-          println "copy2web"
-          from( webstartWorkingDir )
-          rename { String fileName ->
-              pos = fileName.lastIndexOf( '-' );
-              fileName2 = ( pos >= 0 ) ? fileName.substring( 0, pos ) + ".jar" : fileName
-              println " " + fileName + " -> " + fileName2
-              fileName2
-          }
-          into webstartDir
-      }
-  } else {
-      println "Several properties (\"webdir\", \"keystore\", \"keystoreAlias\", \"keystorePassword\" )\n"
-      + "must be defined to run \"releaseWebstart\" task."
-  }
+        ant.signjar(jar: "build/libs/ui-" + version + ".jar", signedjar: webstartWorkingDir + "/netcdfUI.jar",
+                alias: keystoreAlias, keystore: keystore, storepass: keystorePassword,
+                preservelastmodified: "true")
+
+        for (file in configurations.runtime.resolve()) {
+            if (jarsContainingDuplicateEntries.contains(file.name)) {
+                println "$file contains duplicate entries. Rejarring."
+
+                File rejarredFile = new File(temporaryDir, file.name)
+                rejar file, rejarredFile
+                file = rejarredFile
+            }
+
+            println "Signing $file"
+            ant.signjar(destDir: webstartWorkingDir, jar: file, alias: keystoreAlias, keystore: keystore,
+                    storepass: keystorePassword, preservelastmodified: true, verbose: true)
+        }
+
+        copy {
+            println "copy2web"
+            from( webstartWorkingDir )
+            into webstartDir
+        }
+    } else {
+        println "Several properties (\"webdir\", \"keystore\", \"keystoreAlias\", \"keystorePassword\" )\n"
+        +"must be defined to run \"releaseWebstart\" task."
+    }
 }
 
 /* following properties should be in gradle.properties:
@@ -145,60 +151,103 @@ task releaseWebstart << {
    webdir:parent of conan content directory
    ftpdir:ftp directory
  */
-task releaseCdm(dependsOn: ['shadow', 'releaseWebstart']) << {
-  if (  project.hasProperty( "ftpdir") ) {
-      println "copy " + toolsUIjar + " to " + ftpdir
-      copy { // does not give error message
-        from 'build/libs/' + toolsUIjar
-        into ftpdir
-      }
-  } else {
-      println "Property \"ftpdir\" must be defined to run \"releaseCdm\" task."
-  }
+task releaseCdm(dependsOn: releaseWebstart) << {
+    if (project.hasProperty("ftpdir")) {
+        println "copy " + toolsUIjar + " to " + ftpdir
+        copy { // does not give error message
+            from 'build/libs/' + toolsUIjar
+            into ftpdir
+        }
+    } else {
+        println "Property \"ftpdir\" must be defined to run \"releaseCdm\" task."
+    }
 }
 
 ///////////////////////////////////////////////////////
 
 javadoc {
-  title = 'All javadoc for netcdf-java version ' + version
-  source = fileTree(dir: '../bufr/src/main/java', include: '**/*.java')
-  source = source.plus(fileTree(dir: '../cdm/src/main/java', include: '**/*.java'))
-  source = source.plus(fileTree(dir: '../clcommon/src/main/java', include: '**/*.java'))
-  source = source.plus(fileTree(dir: '../grib/src/main/java', include: '**/*.java'))
-  source = source.plus(fileTree(dir: '../httpservices/src/main/java', include: '**/*.java'))
-  source = source.plus(fileTree(dir: '../netcdf4/src/main/java', include: '**/*.java'))
-  source = source.plus(fileTree(dir: '../opendap/src/main/java', include: '**/*.java'))
-  source = source.plus(fileTree(dir: '../udunits/src/main/java', include: '**/*.java'))
-  source = source.plus(fileTree(dir: '../ui/src/main/java', include: '**/*.java'))
-  source = source.plus(fileTree(dir: '../visad/src/main/java', include: '**/*.java'))
+    title = 'All javadoc for netcdf-java version ' + version
+    source = fileTree(dir: '../bufr/src/main/java', include: '**/*.java')
+    source = source.plus(fileTree(dir: '../cdm/src/main/java', include: '**/*.java'))
+    source = source.plus(fileTree(dir: '../clcommon/src/main/java', include: '**/*.java'))
+    source = source.plus(fileTree(dir: '../grib/src/main/java', include: '**/*.java'))
+    source = source.plus(fileTree(dir: '../httpservices/src/main/java', include: '**/*.java'))
+    source = source.plus(fileTree(dir: '../netcdf4/src/main/java', include: '**/*.java'))
+    source = source.plus(fileTree(dir: '../opendap/src/main/java', include: '**/*.java'))
+    source = source.plus(fileTree(dir: '../udunits/src/main/java', include: '**/*.java'))
+    source = source.plus(fileTree(dir: '../ui/src/main/java', include: '**/*.java'))
+    source = source.plus(fileTree(dir: '../visad/src/main/java', include: '**/*.java'))
+    source = source.plus(fileTree(dir: '../waterml/src/main/java', include: '**/*.java'))
 }
 
 task releaseDocs(dependsOn: javadoc) << {
-  if ( project.hasProperty( "webdir")) {
-    releaseDir = webdir + "javadocAll"
+    if (project.hasProperty("webdir")) {
+        def releaseDir = webdir + "javadocAll"
 
-    ant.delete(dir: releaseDir)
-    ant.mkdir(dir: releaseDir)
+        ant.delete(dir: releaseDir)
+        ant.mkdir(dir: releaseDir)
 
-    copy {
-      println "copyDocs to " + releaseDir
-      from("build/docs/javadoc")
-      into releaseDir
+        copy {
+            println "copyDocs to " + releaseDir
+            from("build/docs/javadoc")
+            into releaseDir
+        }
+    } else {
+        println "Property \"webdir\" must be defined to run \"releaseDocs\" task."
     }
-  } else {
-      println "Property \"webdir\" must be defined to run \"releaseDocs\" task."
-  }
 }
 
 ///////////////////////////////////////////////////////
 
 task showDependencies << {
-  for (file in configurations.runtime.resolve()) {
-     println " " + file
-   }
+    for (file in configurations.runtime.resolve()) {
+        println " " + file
+    }
 }
 
 
+/**
+ * Creates a new JAR file at {@code destJarFile} containing the contents of {@code origJarFile}. Any duplicate
+ * entries in {@code origJarFile} will be excluded from {@code destJarFile}.
+ *
+ * @param origJarFile the original JAR file.
+ * @param destJarFile the destination JAR file.
+ */
+def rejar(File origJarFile, File destJarFile) {
+    JarFile origJar = new JarFile(origJarFile);
 
+    NioGroovyMethods.withCloseable(origJar) {
+        JarOutputStream jarOutStream = new JarOutputStream(
+                new BufferedOutputStream(new FileOutputStream(destJarFile)))
 
+        NioGroovyMethods.withCloseable(jarOutStream) {
+            Set<String> entriesWritten = new HashSet<>();
 
+            for (JarEntry origJarEntry : origJar.entries()) {
+                if (entriesWritten.add(origJarEntry.getName())) {
+                    writeEntry(origJar, origJarEntry, jarOutStream)
+                } else {
+                    logger.debug("Skipping duplicate entry: $origJarEntry.name")
+                }
+            }
+        }
+    }
+}
+
+def writeEntry(JarFile jar, JarEntry jarEntry, JarOutputStream jarOutStream) {
+    try {
+        jarOutStream.putNextEntry(jarEntry);
+        InputStream jarEntryInputStream = jar.getInputStream(jarEntry)
+
+        NioGroovyMethods.withCloseable(jarEntryInputStream) {
+            byte[] buffer = new byte[8192];
+            int bytesRead;
+
+            while ((bytesRead = jarEntryInputStream.read(buffer)) != -1) {
+                jarOutStream.write(buffer, 0, bytesRead)
+            }
+        }
+    } finally {
+        jarOutStream.closeEntry();
+    }
+}
