@@ -96,7 +96,7 @@ public class Grib1ParamTableReader {
     this.center_id = center_id;
     this.subcenter_id = subcenter_id;
     this.version = version;
-    this.path =  path;
+    this.path = StringUtil2.replace(path, "\\", "/");
     File f = new File(path);
     this.name =  f.getName();
   }

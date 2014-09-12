@@ -1,60 +1,64 @@
 subprojects {
-  apply plugin: 'java'
+    apply plugin: 'java'
 
-  sourceCompatibility = 1.7
-  version = '4.5.3'
-  compileJava.options.encoding = 'UTF-8'
+    sourceCompatibility = 1.7
+    targetCompatibility = 1.7
+    version = '4.5.3'
 
-  repositories {
-    mavenLocal()
-    mavenCentral()
-    maven {
-      url "https://artifacts.unidata.ucar.edu/content/repositories/unidata"
+    compileJava.options.encoding = 'UTF-8'
+    javadoc.options.encoding = 'UTF-8'
+
+    // Unlike Maven, Gradle places CLASS files and resources in different directories by default.
+    // This is a problem for IntelliJ: when running an application from the IDE, it expects everything to be in the
+    // same directory. To fix, we're configuring resources to be copied to the same directory as CLASS files.
+    processResources.destinationDir = compileJava.destinationDir
+
+    repositories {
+        mavenLocal()
+        mavenCentral()
+        maven {
+            url "https://artifacts.unidata.ucar.edu/content/repositories/unidata"
+        }
+        maven {
+            url "https://artifacts.unidata.ucar.edu/content/repositories/unidata-3rdparty/"
+        }
     }
-    maven {
-      url "https://artifacts.unidata.ucar.edu/content/repositories/unidata-3rdparty/"
+
+    ext {
+        jfreechartVersion = "1.0.14"
+        junitVersion = "4.11"
+        log4jVersion = "2.0-rc1"
+        servletVersion = "3.0.1"
+        slf4jVersion = "1.7.5"
+        springVersion = "3.2.3.RELEASE"
     }
-  }
 
-  ext {
-    jfreechartVersion = "1.0.14"
-    junitVersion = "4.11"
-    log4jVersion = "2.0-rc1"
-    servletVersion = "3.0.1"
-    slf4jVersion = "1.7.5"
-    springVersion = "3.2.3.RELEASE"
-  }
-
-  buildscript {
-      repositories {
-          jcenter()
-      }
-      dependencies {
-          classpath 'com.github.jengelman.gradle.plugins:shadow:0.8'
-      }
-  }
-
-  jar {
-    manifest {
-      attributes 'Implementation-Version': version,
-              'Implementation-Vendor': 'UCAR/Unidata',
-              'Implementation-Vendor-Id': 'edu.ucar',
-              'Built-On': new Date(),
-              'Build-Jdk': System.properties['java.version'],
-              'Codebase': 'http://www.unidata.ucar.edu/software/thredds/',
-              'Permissions': 'all-permissions',
-              'Trusted-Only': 'true'
+    buildscript {
+        repositories {
+            jcenter()
+        }
+        dependencies {
+            classpath 'com.github.jengelman.gradle.plugins:shadow:0.8'
+        }
     }
-  }
 
-  dependencies {
-    // testCompile project(':cdm').sourceSets.test.classes
-    testCompile group: 'junit', name: 'junit', version: junitVersion
-  }
+    jar {
+        manifest {
+            attributes 'Implementation-Version': version,
+                    'Implementation-Vendor': 'UCAR/Unidata',
+                    'Implementation-Vendor-Id': 'edu.ucar',
+                    'Built-On': new Date(),
+                    'Build-Jdk': System.properties['java.version'],
+                    'Codebase': 'http://www.unidata.ucar.edu/software/thredds/',
+                    'Permissions': 'all-permissions',
+                    'Trusted-Only': 'true'
+        }
+    }
 
-  javadoc {
-    options.encoding = "UTF-8"
-  }
+    dependencies {
+        // testCompile project(':cdm').sourceSets.test.classes
+        testCompile group: 'junit', name: 'junit', version: junitVersion
+    }
 }
 
 task wrapper(type: Wrapper) {

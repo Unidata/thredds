@@ -9,15 +9,6 @@ import java.util.jar.JarEntry
 import java.util.jar.JarFile
 import java.util.jar.JarOutputStream
 
-sourceSets {
-    main {
-        java {
-            srcDir 'src/java'
-            exclude 'thredds/ui/catalog/search/**'   // eliminate lucene
-        }
-    }
-}
-
 dependencies {
     compile project(':cdm')
     compile project(':clcommon')
