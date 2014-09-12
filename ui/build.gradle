@@ -96,7 +96,7 @@ shadow {
     }
 }
 
-task releaseWebstart(/*dependsOn: shadowJar*/) << {
+task releaseWebstart(dependsOn: jar) << {
     if (project.hasProperty("webdir") && project.hasProperty("keystore")
             && project.hasProperty("keystoreAlias") && project.hasProperty("keystorePassword")) {
         ant.delete(dir: webstartWorkingDir)
@@ -177,11 +177,12 @@ javadoc {
     source = source.plus(fileTree(dir: '../udunits/src/main/java', include: '**/*.java'))
     source = source.plus(fileTree(dir: '../ui/src/main/java', include: '**/*.java'))
     source = source.plus(fileTree(dir: '../visad/src/main/java', include: '**/*.java'))
+    source = source.plus(fileTree(dir: '../waterml/src/main/java', include: '**/*.java'))
 }
 
 task releaseDocs(dependsOn: javadoc) << {
     if (project.hasProperty("webdir")) {
-        releaseDir = webdir + "javadocAll"
+        def releaseDir = webdir + "javadocAll"
 
         ant.delete(dir: releaseDir)
         ant.mkdir(dir: releaseDir)

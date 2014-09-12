@@ -66,7 +66,7 @@ javadoc {
 }
 
 task releaseDocs(dependsOn: javadoc) << {
-  releaseDir = webdir + "javadoc"
+  def releaseDir = webdir + "javadoc"
 
   ant.delete(dir: releaseDir)
   ant.mkdir(dir: releaseDir)
