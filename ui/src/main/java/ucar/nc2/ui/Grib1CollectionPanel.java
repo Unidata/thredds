@@ -243,7 +243,6 @@ public class Grib1CollectionPanel extends JPanel {
 
     varPopup.addAction("Show GDS", new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
-        ByteArrayOutputStream os = new ByteArrayOutputStream();
         List list = gds1Table.getSelectedBeans();
         Formatter f = new Formatter();
         for (Object bo : list) {
@@ -310,12 +309,12 @@ public class Grib1CollectionPanel extends JPanel {
     }
 
     // divided by group
-    Map<Integer, Set<Integer>> groups = new HashMap<Integer, Set<Integer>>();
+    Map<Integer, Set<Integer>> groups = new HashMap<>();
     for (Object o : param1BeanTable.getBeans()) {
       ParameterBean p = (ParameterBean) o;
       Set<Integer> group = groups.get(p.getGds());
       if (group == null) {
-        group = new TreeSet<Integer>();
+        group = new TreeSet<>();
         groups.put(p.getGds(), group);
       }
       for (RecordBean r : p.getRecordBeans())
@@ -327,11 +326,9 @@ public class Grib1CollectionPanel extends JPanel {
       Set<Integer> group = groups.get(gds.getHash());
       f.format("%nGroup %s %n", gds.getGridName());
       if (group == null) continue;
-      Iterator<Integer> iter = group.iterator();
-      while (iter.hasNext()) {
-        int fileno = iter.next();
-        f.format(" %d = %s%n", fileno, fileList.get(fileno).getPath());
-      }
+        for (Integer fileno : group) {
+          f.format(" %d = %s%n", fileno, fileList.get(fileno).getPath());
+        }
       f.format("%n");
     }
   }
@@ -344,7 +341,7 @@ public class Grib1CollectionPanel extends JPanel {
    </gribConfig> */
   public void generateGdsXml(Formatter f) {
     f.format("<gribConfig>%n");
-    List<Object> gdss = new ArrayList<Object>(gds1Table.getBeans());
+    List<Object> gdss = gds1Table.getBeans();
     Collections.sort(gdss, new Comparator<Object>() {
       public int compare(Object o1, Object o2) {
         int h1 = ((Gds1Bean) o1).gds.hashCode();
@@ -357,7 +354,6 @@ public class Grib1CollectionPanel extends JPanel {
 
     for (Object bean : gdss) {
       Gds1Bean gbean = (Gds1Bean)bean;
-      gbean.gds.hashCode();
       f.format("  <gdsName hash='%d' groupName='%s'/>%n", gbean.gds.hashCode(), gbean.getGridName());
     }
     f.format("</gribConfig>%n");
@@ -431,7 +427,7 @@ public class Grib1CollectionPanel extends JPanel {
   }
 
   private void compareData(RecordBean bean1, RecordBean bean2, Formatter f) {
-    float[] data1 = null, data2 = null;
+    float[] data1, data2;
     try {
       data1 = bean1.readData();
       data2 = bean2.readData();
@@ -471,11 +467,11 @@ public class Grib1CollectionPanel extends JPanel {
       return;
     }
 
-    Map<Integer, ParameterBean> pdsSet = new HashMap<Integer, ParameterBean>();
-    Map<Integer, Grib1SectionGridDefinition> gdsSet = new HashMap<Integer, Grib1SectionGridDefinition>();
+    Map<Integer, ParameterBean> pdsSet = new HashMap<>();
+    Map<Integer, Grib1SectionGridDefinition> gdsSet = new HashMap<>();
 
-    java.util.List<ParameterBean> params = new ArrayList<ParameterBean>();
-    java.util.List<Gds1Bean> gdsList = new ArrayList<Gds1Bean>();
+    java.util.List<ParameterBean> params = new ArrayList<>();
+    java.util.List<Gds1Bean> gdsList = new ArrayList<>();
 
     this.cust = null; // LOOK reset for each file (?)
     int fileno = 0;
@@ -500,9 +496,9 @@ public class Grib1CollectionPanel extends JPanel {
       return dc;
 
     } catch (Exception e) {
-      ByteArrayOutputStream bos = new ByteArrayOutputStream(10000);
-      e.printStackTrace(new PrintStream(bos));
-      f.format("%s", bos.toString());
+      StringWriter sw = new StringWriter(10000);
+      e.printStackTrace(new PrintWriter(sw));
+      f.format("%s", sw.toString());
       if (dc != null) dc.close();
       return null;
     }
@@ -553,9 +549,9 @@ public class Grib1CollectionPanel extends JPanel {
     add(split, BorderLayout.CENTER);
     revalidate();
 
-    Map<Long, Grib1SectionGridDefinition> gdsSet = new HashMap<Long, Grib1SectionGridDefinition>();
-    Map<Integer, ParameterBean> pdsSet = new HashMap<Integer, ParameterBean>();
-    java.util.List<ParameterBean> products = new ArrayList<ParameterBean>();
+    Map<Long, Grib1SectionGridDefinition> gdsSet = new HashMap<>();
+    Map<Integer, ParameterBean> pdsSet = new HashMap<>();
+    java.util.List<ParameterBean> products = new ArrayList<>();
 
     raf.order(ucar.unidata.io.RandomAccessFile.BIG_ENDIAN);
     raf.seek(0);
@@ -587,7 +583,7 @@ public class Grib1CollectionPanel extends JPanel {
     record1BeanTable.setBeans(new ArrayList());
     System.out.printf("GribRawPanel products = %d records = %d%n", products.size(), count);
 
-    java.util.List<Gds1Bean> gdsList = new ArrayList<Gds1Bean>();
+    java.util.List<Gds1Bean> gdsList = new ArrayList<>();
     for (Grib1SectionGridDefinition gds : gdsSet.values()) {
       gdsList.add(new Gds1Bean(gds));
     }

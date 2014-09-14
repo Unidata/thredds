@@ -192,8 +192,8 @@ public class Grib2CollectionPanel extends JPanel {
       public void actionPerformed(ActionEvent e) {
         Formatter f = new Formatter();
         List list = gds2Table.getSelectedBeans();
-        for (int i = 0; i < list.size(); i++) {
-          Gds2Bean bean = (Gds2Bean) list.get(i);
+        for (Object aList : list) {
+          Gds2Bean bean = (Gds2Bean) aList;
           bean.toRawGdsString(f);
         }
         infoPopup.setText(f.toString());
@@ -206,7 +206,7 @@ public class Grib2CollectionPanel extends JPanel {
       public void actionPerformed(ActionEvent e) {
         Gds2Bean want = (Gds2Bean) gds2Table.getSelectedBean();
         if (want == null) return;
-        SortedSet<Integer> files = new TreeSet<Integer>();
+        SortedSet<Integer> files = new TreeSet<>();
 
         for (Object o : param2BeanTable.getBeans()) {
           Grib2ParameterBean p = (Grib2ParameterBean) o;
@@ -217,9 +217,7 @@ public class Grib2CollectionPanel extends JPanel {
         }
 
         Formatter f = new Formatter();
-        Iterator<Integer> iter = files.iterator();
-        while (iter.hasNext()) {
-          int fileno = iter.next();
+        for (Integer fileno : files) {
           f.format(" %d = %s%n", fileno, fileList.get(fileno).getPath());
         }
         infoPopup2.setText(f.toString());
@@ -232,7 +230,7 @@ public class Grib2CollectionPanel extends JPanel {
       public void actionPerformed(ActionEvent e) {
         Gds2Bean want = (Gds2Bean) gds2Table.getSelectedBean();
         if (want == null) return;
-        java.util.List<Grib2ParameterBean> params = new ArrayList<Grib2ParameterBean>();
+        java.util.List<Grib2ParameterBean> params = new ArrayList<>();
         for (Object o : param2BeanTable.getBeans()) {
           Grib2ParameterBean p = (Grib2ParameterBean) o;
           if (p.getGDS() == want.getGDShash())
@@ -297,9 +295,9 @@ public class Grib2CollectionPanel extends JPanel {
           try {
             showCompleteGribRecord(f, fileList.get(bean.gr.getFile()).getPath(), bean.gr, cust);
           } catch (IOException ioe) {
-            ByteArrayOutputStream bos = new ByteArrayOutputStream(10000);
-            ioe.printStackTrace(new PrintStream(bos));
-            f.format("%s", bos.toString());
+            StringWriter sw = new StringWriter(10000);
+            ioe.printStackTrace(new PrintWriter(sw));
+            f.format("%s", sw.toString());
           }
           infoPopup.setText(f.toString());
           infoPopup.gotoTop();
@@ -341,8 +339,8 @@ public class Grib2CollectionPanel extends JPanel {
       public void actionPerformed(ActionEvent e) {
         Formatter f = new Formatter();
         List list = record2BeanTable.getSelectedBeans();
-        for (int i = 0; i < list.size(); i++) {
-          Grib2RecordBean bean = (Grib2RecordBean) list.get(i);
+        for (Object aList : list) {
+          Grib2RecordBean bean = (Grib2RecordBean) aList;
           bean.toRawPdsString(f);
         }
         infoPopup.setText(f.toString());
@@ -355,8 +353,8 @@ public class Grib2CollectionPanel extends JPanel {
       public void actionPerformed(ActionEvent e) {
         Formatter f = new Formatter();
         List list = record2BeanTable.getSelectedBeans();
-        for (int i = 0; i < list.size(); i++) {
-          Grib2RecordBean bean = (Grib2RecordBean) list.get(i);
+        for (Object aList : list) {
+          Grib2RecordBean bean = (Grib2RecordBean) aList;
           bean.toRawLUString(f);
         }
         infoPopup.setText(f.toString());
@@ -461,7 +459,6 @@ public class Grib2CollectionPanel extends JPanel {
 
     for (Object bean : gdss) {
       Gds2Bean gbean = (Gds2Bean)bean;
-      gbean.gds.hashCode();
       f.format("  <gdsName hash='%d' groupName='%s'/>%n", gbean.gds.hashCode(), gbean.getGroupName());
     }
     f.format("</gribConfig>%n");
@@ -479,11 +476,11 @@ public class Grib2CollectionPanel extends JPanel {
       return;
     }
 
-    Map<Integer, Grib2ParameterBean> pdsSet = new HashMap<Integer, Grib2ParameterBean>();
-    Map<Integer, Grib2SectionGridDefinition> gdsSet = new HashMap<Integer, Grib2SectionGridDefinition>();
+    Map<Integer, Grib2ParameterBean> pdsSet = new HashMap<>();
+    Map<Integer, Grib2SectionGridDefinition> gdsSet = new HashMap<>();
 
-    java.util.List<Grib2ParameterBean> params = new ArrayList<Grib2ParameterBean>();
-    java.util.List<Gds2Bean> gdsList = new ArrayList<Gds2Bean>();
+    java.util.List<Grib2ParameterBean> params = new ArrayList<>();
+    java.util.List<Gds2Bean> gdsList = new ArrayList<>();
 
     int fileno = 0;
     for (MFile mfile : fileList) {
@@ -541,9 +538,9 @@ public class Grib2CollectionPanel extends JPanel {
       return dc;
 
     } catch (Exception e) {
-      ByteArrayOutputStream bos = new ByteArrayOutputStream(10000);
-      e.printStackTrace(new PrintStream(bos));
-      f.format("%s", bos.toString());
+      StringWriter sw = new StringWriter(10000);
+      e.printStackTrace(new PrintWriter(sw));
+      f.format("%s", sw.toString());
       return null;
     }
   }
@@ -588,12 +585,12 @@ public class Grib2CollectionPanel extends JPanel {
     }
 
     // divided by group
-    Map<Integer, Set<Integer>> groups = new HashMap<Integer, Set<Integer>>();
+    Map<Integer, Set<Integer>> groups = new HashMap<>();
     for (Object o : param2BeanTable.getBeans()) {
       Grib2ParameterBean p = (Grib2ParameterBean) o;
       Set<Integer> group = groups.get(p.getGDS());
       if (group == null) {
-        group = new TreeSet<Integer>();
+        group = new TreeSet<>();
         groups.put(p.getGDS(), group);
       }
       for (Grib2RecordBean r : p.getRecordBeans())
@@ -605,9 +602,7 @@ public class Grib2CollectionPanel extends JPanel {
       Set<Integer> group = groups.get(gds.getGDShash());
       f.format("%nGroup %s %n", gds.getGroupName());
       if (group == null) continue;
-      Iterator<Integer> iter = group.iterator();
-      while (iter.hasNext()) {
-        int fileno = iter.next();
+      for (Integer fileno : group) {
         f.format(" %d = %s%n", fileno, fileList.get(fileno).getPath());
       }
       f.format("%n");
@@ -616,8 +611,8 @@ public class Grib2CollectionPanel extends JPanel {
 
   public void showGDSuse(Formatter f) {
 
-    Map<Integer, Gds2Bean> gdsMap = new HashMap<Integer, Gds2Bean>();
-    Map<Integer, Set<Integer>> fileMap = new HashMap<Integer, Set<Integer>>();
+    Map<Integer, Gds2Bean> gdsMap = new HashMap<>();
+    Map<Integer, Set<Integer>> fileMap = new HashMap<>();
     List<Gds2Bean> beans = gds2Table.getBeans();
     for (Gds2Bean gdsBean : beans) {
       fileMap.put(gdsBean.getGDShash(), new TreeSet<Integer>());
@@ -633,11 +628,11 @@ public class Grib2CollectionPanel extends JPanel {
         files.add(r.gr.getFile());
     }
 
-    for (Integer key : fileMap.keySet()) {
-      Gds2Bean gds = gdsMap.get(key);
-      Set<Integer> files = fileMap.get(key);
+    for (Map.Entry<Integer, Set<Integer>> ent : fileMap.entrySet()) {
+      Gds2Bean gds = gdsMap.get(ent.getKey());
+      Set<Integer> files = ent.getValue();
       Iterator<Integer> iter = files.iterator();
-      f.format("%nGDS %d == %s%n", key, gds);
+      f.format("%nGDS %d == %s%n", ent.getKey(), gds);
       while (iter.hasNext()) {
         int fileno = iter.next();
         f.format(" %3d = %s%n", fileno, fileList.get(fileno).getPath());
@@ -646,11 +641,11 @@ public class Grib2CollectionPanel extends JPanel {
 
 
     f.format("%n%n");
-    for (Integer key : fileMap.keySet()) {
-      Gds2Bean gds = gdsMap.get(key);
-      Set<Integer> files = fileMap.get(key);
+    for (Map.Entry<Integer, Set<Integer>> ent : fileMap.entrySet()) {
+      Gds2Bean gds = gdsMap.get(ent.getKey());
+      Set<Integer> files = ent.getValue();
       Iterator<Integer> iter = files.iterator();
-      f.format("%nGDS %d == %s%n", key, gds);
+      f.format("%nGDS %d == %s%n", ent.getKey(), gds);
       while (iter.hasNext()) {
         int fileno = iter.next();
         f.format(" %3d = %s%n", fileno, fileList.get(fileno).getPath());
@@ -719,12 +714,12 @@ public class Grib2CollectionPanel extends JPanel {
   private void checkDuplicates(Formatter f) {
 
     // how unique are the pds ?
-    Set<Long> pdsMap = new HashSet<Long>();
+    Set<Long> pdsMap = new HashSet<>();
     int dups = 0;
     int count = 0;
 
     // do all records have the same runtime ?
-    Map<CalendarDate, DateCount> dateMap = new HashMap<CalendarDate, DateCount>();
+    Map<CalendarDate, DateCount> dateMap = new HashMap<>();
 
     List<Grib2ParameterBean> params = param2BeanTable.getBeans();
     for (Grib2ParameterBean param : params) {
@@ -749,7 +744,7 @@ public class Grib2CollectionPanel extends JPanel {
 
     f.format("PDS duplicates = %d / %d%n%n", dups, count);
 
-    List<DateCount> dcList = new ArrayList<DateCount>(dateMap.values());
+    List<DateCount> dcList = new ArrayList<>(dateMap.values());
     Collections.sort(dcList);
 
     f.format("Run Dates%n");

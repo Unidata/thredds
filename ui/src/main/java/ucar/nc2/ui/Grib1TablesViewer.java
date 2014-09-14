@@ -74,7 +74,7 @@ public class Grib1TablesViewer extends JPanel {
   private PreferencesExt prefs;
 
   private BeanTable codeTable, entryTable;
-  private JSplitPane split, split2;
+  private JSplitPane split;
 
   private TextHistoryPane infoTA;
   private IndependentWindow infoWindow;
@@ -153,7 +153,7 @@ public class Grib1TablesViewer extends JPanel {
     entryTable = new BeanTable(EntryBean.class, (PreferencesExt) prefs.node("EntryBean"), false);
     entryTable.addListSelectionListener(new ListSelectionListener() {
       public void valueChanged(ListSelectionEvent e) {
-        EntryBean csb = (EntryBean) entryTable.getSelectedBean();
+        entryTable.getSelectedBean();
       }
     });
 
@@ -192,7 +192,7 @@ public class Grib1TablesViewer extends JPanel {
 
     try {
       List<Grib1ParamTableReader> tables = Grib1ParamTables.getStandardParameterTables();
-      java.util.List<TableBean> beans = new ArrayList<TableBean>(tables.size());
+      java.util.List<TableBean> beans = new ArrayList<>(tables.size());
       for (Grib1ParamTableReader t : tables) {
         beans.add(new TableBean(t));
       }
@@ -241,10 +241,10 @@ public class Grib1TablesViewer extends JPanel {
       map = table.getParameters();
     }
 
-    ArrayList<Integer> params = new ArrayList<Integer>();
+    ArrayList<Integer> params = new ArrayList<>();
     params.addAll(map.keySet());
     Collections.sort(params);
-    java.util.List<EntryBean> beans = new ArrayList<EntryBean>(params.size());
+    java.util.List<EntryBean> beans = new ArrayList<>(params.size());
     for (Integer key : params) {
       beans.add(new EntryBean( map.get(key)));
     }
@@ -293,7 +293,7 @@ public class Grib1TablesViewer extends JPanel {
     out.format("Compare%n %s%n %s%n", t1.toString(), t2.toString());
     Map<Integer, Grib1Parameter> h1 = t1.getParameters();
     Map<Integer, Grib1Parameter> h2 = t2.getParameters();
-    List<Integer> keys = new ArrayList<Integer>(h1.keySet());
+    List<Integer> keys = new ArrayList<>(h1.keySet());
     Collections.sort(keys);
 
     for (Integer key : keys) {
@@ -335,7 +335,7 @@ public class Grib1TablesViewer extends JPanel {
 
     if (data.showMissing) {
       out.format("%n***Check if entries are missing in first table%n");
-      keys = new ArrayList<Integer>(h2.keySet());
+      keys = new ArrayList<>(h2.keySet());
       Collections.sort(keys);
       for (Integer key : keys) {
         Grib1Parameter d1 = h1.get(key);
@@ -357,7 +357,7 @@ public class Grib1TablesViewer extends JPanel {
   private void compareAll(Grib1ParamTableReader t1, Grib1TableCompareDialog.Data data, Formatter out) {
     out.format("Compare All non-local Tables%s%n", t1.toString());
     Map<Integer, Grib1Parameter> h1 = t1.getParameters();
-    List<Integer> keys = new ArrayList<Integer>(h1.keySet());
+    List<Integer> keys = new ArrayList<>(h1.keySet());
     Collections.sort(keys);
 
     for (Integer key : keys) {

@@ -555,7 +555,7 @@ public class Fmrc2Panel extends JPanel {
     FmrcInv.UberGrid ugrid = bean.grid;
     FmrcInvLite.Gridset gset = lite.findGridset(ugrid.getName());
     if (gset == null) {
-        out.format("showGridInv(): ti is null!");
+        out.format("showGridInv(): gset is null!");
         infoTA.setText(out.toString());
         infoWindow.show();
         return;
@@ -623,12 +623,16 @@ public class Fmrc2Panel extends JPanel {
     FmrcInvLite.Gridset.Grid grid = lite.findGrid(ugrid.getName());
     int ntimes = ti.getTimeLength(gset);
     out.format("%nInventory%n");
-    for (int i=0; i<ntimes; i++) {
-      TimeInventory.Instance ins = ti.getInstance( grid, i);
-      if (ins != null)
-        out.format(" %3d: %3d, %s%n", i, ins.getDatasetIndex(), ins.getDatasetLocation());
-      else
-        out.format(" %3d: MISSING%n", i);
+    if (grid != null) {
+      for (int i = 0; i < ntimes; i++) {
+        TimeInventory.Instance ins = ti.getInstance(grid, i);
+        if (ins != null)
+          out.format(" %3d: %3d, %s%n", i, ins.getDatasetIndex(), ins.getDatasetLocation());
+        else
+          out.format(" %3d: MISSING%n", i);
+      }
+    } else {
+        out.format("showGridInv(): grid is null!");
     }
 
     infoTA.setText(out.toString());
