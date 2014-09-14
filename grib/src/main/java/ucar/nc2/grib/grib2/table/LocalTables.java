@@ -61,7 +61,7 @@ public abstract class LocalTables extends Grib2Customizer {
     return result;
   }
 
-  private static class ParameterSort implements Comparator<Parameter> {
+  protected static class ParameterSort implements Comparator<Parameter> {
     public int compare(Parameter p1, Parameter p2) {
       int c = p1.getDiscipline() - p2.getDiscipline();
       if (c != 0) return c;

@@ -77,8 +77,8 @@ public class Grib2Customizer implements ucar.nc2.grib.GribTables, TimeUnitConver
     } else if (center == 59 && genProcessId == 125) { // FSL HRRR
       cust = FslLocalTables.localFactory(subCenter, masterVersion, localVersion, genProcessId);
 
-    } else if (center == 59  && genProcessId == 116) { // FSL FIM
-      cust = FslLocalTables.localFactory(subCenter, masterVersion, localVersion, genProcessId);
+    /* } else if (center == 59  && genProcessId == 116) { // FSL FIM
+      // cust = FslLocalTables.localFactory(subCenter, masterVersion, localVersion, genProcessId); */
 
     } else if ((center == 8) && ((subCenter == 0) || (subCenter == -9999))){ // NDFD
        cust = new NdfdLocalTables(center, subCenter, masterVersion, localVersion, genProcessId);

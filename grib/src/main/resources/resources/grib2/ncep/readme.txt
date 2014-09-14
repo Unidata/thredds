@@ -813,3 +813,8 @@ Conflicts=0 extra=3 udunits=0
    //   return getParameter(0, 1, 242);
 
  but likely some older files will now be wrong. yeah for GRIB!
+
+
+09/10/2014 caron
+
+ screen scraped NCEP again. Havent yet integerated, put into ncep/v13.0.0 to compare with old.

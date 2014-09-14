@@ -33,6 +33,7 @@
 
 package ucar.nc2.grib.grib2.table;
 
+import ucar.nc2.grib.GribTables;
 import ucar.nc2.grib.grib2.Grib2Parameter;
 import ucar.nc2.util.TableParser;
 
@@ -40,10 +41,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.util.Formatter;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * FSL/GSD (center 59)
@@ -59,7 +57,7 @@ public class FslLocalTables extends NcepLocalTables {
   // private static final String hrrrTable = "resources/grib2/noaa_gsd/Fsl-hrrr.csv";
   private static final String fimTable = "resources/grib2/noaa_gsd/fim.gribtable";
   private static final String hrrrTable = "resources/grib2/noaa_gsd/Fsl-hrrr2.csv";
-  private static final boolean debug = false;
+  //private static final boolean debug = true;
 
   static FslLocalTables localFactory(int subCenter, int masterVersion, int localVersion, int genProcessId) {
     return new FslLocalTables(subCenter, masterVersion, localVersion, genProcessId);
@@ -78,6 +76,15 @@ public class FslLocalTables extends NcepLocalTables {
   public String getTablePath(int discipline, int category, int number) {
     if ((category <= 191) && (number <= 191)) return super.getTablePath(discipline, category, number);
     return tableDef.path;
+  }
+
+  // must override since we are subclassing NcepLocalTables
+  @Override
+  public List<GribTables.Parameter> getParameters() {
+    List<GribTables.Parameter> result = new ArrayList<>();
+    for (Grib2Parameter p : local.values()) result.add(p);
+    Collections.sort(result, new ParameterSort());
+    return result;
   }
 
   // LOOK  maybe combine grib1, grib2 and bufr ??
@@ -196,14 +203,14 @@ public class FslLocalTables extends NcepLocalTables {
         String FieldType = flds[7].trim();
         String Description = flds[8].trim();
         String Units = flds[9].trim();
-        if (debug) System.out.printf("%3s %3d %3d %3d %3d %-10s %-25s %-30s %-100s %-20s%n", recordNumber,	tableNumber,	disciplineNumber,	categoryNumber,	parameterNumber,
-                WGrib2Name,	NCLName, FieldType, Description, Units);
+        if (f != null) f.format("%3s %3d %3d %3d %3d %-10s %-25s %-30s %-100s %-20s%n", recordNumber, tableNumber, disciplineNumber, categoryNumber, parameterNumber,
+                WGrib2Name, NCLName, FieldType, Description, Units);
 
         String name = !WGrib2Name.equals("var") ? WGrib2Name : FieldType;
         Grib2Parameter s = new Grib2Parameter(disciplineNumber, categoryNumber, parameterNumber, name, Units, null, Description);
         s.desc = Description;
         result.put(makeHash(disciplineNumber, categoryNumber, parameterNumber), s);
-        if (debug) System.out.printf(" %s%n", s);
+        if (f != null) f.format(" %s%n", s);
           if (categoryNumber > 191 || parameterNumber > 191) {
           Grib2Parameter dup = names.get(s.getName());
           if (dup != null && f != null) {
@@ -242,7 +249,7 @@ ozone mixing ratio - b                                      154   109           
 
    */
 
-
+  // this doesnt work - its a GRIB1 table
   private Map<Integer, Grib2Parameter> readFim(String resourcePath, Formatter f) {
     Map<Integer, Grib2Parameter> result = new HashMap<>(100);
 
@@ -250,15 +257,16 @@ ozone mixing ratio - b                                      154   109           
     try (InputStream is = cl.getResourceAsStream(resourcePath)) {
       if (is == null) throw new IllegalStateException("Cant find " + resourcePath);
 
+      if (f != null) f.format("%50s == %s, %s, %-20s, %-20s%n", "desc", "param", "ztype", "abbrev", "units");
       List<TableParser.Record> recs = TableParser.readTable(is, "56,63i,68i,93,102,112", 50000);
       for (TableParser.Record record : recs) {
-        String desc = (String) record.get(0);
+        String desc = ((String) record.get(0)).trim();
         int param =  (Integer) record.get(1);
         int ztype =  (Integer) record.get(2);
-        String abbrev = (String) record.get(4);
-        String units = (String) record.get(5);
+        String abbrev = ((String) record.get(4)).trim();
+        String units = ((String) record.get(5)).trim();
 
-        if (debug) f.format("%s == %3d %3d %-20s %-20s%n", desc, param, ztype, abbrev, units);
+        if (f != null) f.format("%50s == %3d, %3d, %-20s, %-20s%n", desc, param, ztype, abbrev, units);
 
         Grib2Parameter gp = new Grib2Parameter(0, 0, param, abbrev, units, null, desc);
         result.put(makeHash(0, 0, param), gp);
