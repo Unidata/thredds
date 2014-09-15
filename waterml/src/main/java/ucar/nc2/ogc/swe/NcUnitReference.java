@@ -1,6 +1,6 @@
 package ucar.nc2.ogc.swe;
 
-import gov.noaa.pfel.erddap.util.EDUnits;
+import ucar.nc2.ogc.erddap.util.ErddapEDUnits;
 import net.opengis.swe.x20.UnitReference;
 import ucar.nc2.VariableSimpleIF;
 
@@ -17,7 +17,7 @@ public class NcUnitReference {
             return null;
         }
 
-        String ucum = EDUnits.udunitsToUcum(udunits);
+        String ucum = ErddapEDUnits.udunitsToUcum(udunits);
         uom.setCode(ucum);
 
         return uom;
