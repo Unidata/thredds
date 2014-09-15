@@ -782,15 +782,15 @@ public class TestGribCompressByBit {
 
 
   public static void main(String[] args) throws IOException {
-    outDir = new File("E:/grib2nc/test/");
+    outDir = new File("E:/grib2nc/ecmwf/");
     outDir.mkdirs();
     summaryOut = new PrintStream(new File(outDir, "summary.csv"));
 
     try {
       ExtraAction[] extras = new ExtraAction[]{};
-      TestGribCompressByBit compressByBit = new TestGribCompressByBit( Action.rawInts, extras, Algorithm.deflate, Algorithm.bzip2T, Algorithm.zip7);
+      TestGribCompressByBit compressByBit = new TestGribCompressByBit( Action.floats, extras, Algorithm.deflate, Algorithm.bzip2T, Algorithm.zip7);
       CompressReportAction test = new CompressReportAction(compressByBit, true);
-      test.doAct("Q:\\cdmUnitTest\\tds\\ncep\\WW3_Coastal_US_West_Coast_20140804_1800.grib2");
+      test.doAct("C:/tmp/oper.ml.grib2");
 
     } finally {
       summaryOut.close();
