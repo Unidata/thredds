@@ -1109,8 +1109,8 @@ public class Grib2CollectionPanel extends JPanel {
       return pds.getLevelType1();
     }
 
-    public int getGenType() {
-      return pds.getGenProcessType();
+    public int getGenProcess() {
+      return pds.getGenProcessId();
     }
 
     public String getLevelName() {

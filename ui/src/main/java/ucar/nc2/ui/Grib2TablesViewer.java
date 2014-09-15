@@ -206,7 +206,7 @@ public class Grib2TablesViewer extends JPanel {
       if (wmo == null) {
         extra++;
         f.format(" NEW %s%n", p);
-        WmoCodeTable.TableEntry wmo3 = WmoCodeTable.getParameterEntry(p.getDiscipline(), p.getCategory(), p.getNumber());
+        // WmoCodeTable.TableEntry wmo3 = WmoCodeTable.getParameterEntry(p.getDiscipline(), p.getCategory(), p.getNumber());
 
       } else if (!p.getName().equals( wmo.getName()) || !p.getUnit().equals( wmo.getUnit())) {
         boolean nameDiffer = !p.getName().equals( wmo.getName());
@@ -235,25 +235,32 @@ public class Grib2TablesViewer extends JPanel {
     f.format("Table 1 = %s (%s)%n", id1.name, t1.getTablePath(0, 192,192)); // local  // WTF ??
     f.format("Table 2 = %s (%s)%n", id2.name, t2.getTablePath(0, 192,192)); // local
 
-    int extra = 0;
     int conflict = 0;
     f.format("Table 1 : %n");
+    for (Object t : t1.getParameters()) {
+      Grib2Customizer.Parameter p1 = (Grib2Customizer.Parameter) t;
+      Grib2Customizer.Parameter  p2 = t2.getParameterRaw(p1.getDiscipline(), p1.getCategory(), p1.getNumber());
+      if (p1.getName() == null || p1.getUnit() == null) {
+        f.format(" Missing name or unit in table 1 param=%s%n", p1);
+      } else if (p2 != null && (!p1.getName().equals( p2.getName()) || !p1.getUnit().equals( p2.getUnit()) ||
+                (p1.getAbbrev() != null && !p1.getAbbrev().equals( p2.getAbbrev())))) {
+        f.format("  t1=%10s %40s %15s  %15s %s%n", p1.getId(), p1.getName(), p1.getUnit(), p1.getAbbrev(), p1.getDescription());
+        f.format("  t2=%10s %40s %15s  %15s %s%n%n", p2.getId(), p2.getName(), p2.getUnit(), p2.getAbbrev(), p2.getDescription());
+        conflict++;
+      }
+    }
+    f.format("%nConflicts=%d%n%n", conflict);
+
+    int extra = 0;
     for (Object t : t1.getParameters()) {
       Grib2Customizer.Parameter p1 = (Grib2Customizer.Parameter) t;
       Grib2Customizer.Parameter  p2 = t2.getParameterRaw(p1.getDiscipline(), p1.getCategory(), p1.getNumber());
       if (p2 == null) {
         extra++;
         f.format(" Missing %s in table 2%n", p1);
-      } else if (p1.getName() == null || p1.getUnit() == null) {
-        f.format(" Missing name or unit in table 1 param=%s%n", p1);
-      } else if (!p1.getName().equals( p2.getName()) || !p1.getUnit().equals( p2.getUnit()) ||
-                (p1.getAbbrev() != null && !p1.getAbbrev().equals( p2.getAbbrev()))) {
-        f.format("  t1=%10s %40s %15s  %15s %s%n", p1.getId(), p1.getName(), p1.getUnit(), p1.getAbbrev(), p1.getDescription());
-        f.format("  t2=%10s %40s %15s  %15s %s%n%n", p2.getId(), p2.getName(), p2.getUnit(), p2.getAbbrev(), p2.getDescription());
-        conflict++;
       }
     }
-    f.format("%nConflicts=%d extra=%d%n%n", conflict, extra);
+    f.format("%nextra=%d%n%n", extra);
 
     extra = 0;
     f.format("Table 2 has the following not in Table 1:%n");
@@ -324,7 +331,7 @@ public class Grib2TablesViewer extends JPanel {
   }
 
   public class EntryBean {
-    Grib2Customizer.Parameter param;
+    GribTables.Parameter param;
 
     // no-arg constructor
     public EntryBean() {

@@ -42,8 +42,10 @@ import ucar.nc2.grib.grib2.Grib2Parameter;
 
 public class NdfdLocalTables extends LocalTables {
 
-  NdfdLocalTables(int center, int subCenter, int masterVersion, int localVersion, int genProcessId) {
-    super(center, subCenter, masterVersion, localVersion, genProcessId);
+  NdfdLocalTables(Grib2Table grib2Table) {
+    super(grib2Table);
+    if (grib2Table.getPath() == null)
+      grib2Table.setPath(this.getClass().getName());
     init();
   }
 

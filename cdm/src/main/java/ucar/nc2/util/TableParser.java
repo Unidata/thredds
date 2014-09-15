@@ -131,7 +131,7 @@ public class TableParser {
    * Reads an input stream, containing lines of ascii in fixed width format.
    * Breaks each line into a set of Fields (space or comma delimited) which may be String, integer or double.
    *
-   * @param ios      the input stream
+   * @param ios      the input stream, will be closed
    * @param format   describe format of each line.
    * @param maxLines maximum number of lines to parse, set to < 0 to read all
    * @return List of TableParser.Record
@@ -139,9 +139,13 @@ public class TableParser {
    * @throws NumberFormatException on parse number error
    */
   static public List<Record> readTable(InputStream ios, String format, int maxLines) throws IOException, NumberFormatException {
-    TableParser parser = new TableParser(format);
-    List<Record> result = parser.readAllRecords(ios, maxLines);
-    ios.close();
+    List<Record> result;
+    try {
+      TableParser parser = new TableParser(format);
+      result = parser.readAllRecords(ios, maxLines);
+    } finally {
+      ios.close();
+    }
     return result;
   }
 
@@ -168,12 +172,9 @@ public class TableParser {
     }
   }
 
-  public Field getField(int fldno) {
-    return fields.get(fldno);
-  }
-
-  public int getNumberOfFields() {
-    return fields.size();
+  private String comment = "#";
+  public void setComment(String comment) {
+    this.comment = comment;
   }
 
   public List<Record> readAllRecords(InputStream ios, int maxLines) throws IOException, NumberFormatException {
@@ -185,7 +186,7 @@ public class TableParser {
     while ((maxLines < 0) || (count < maxLines)) {
       String line = dataIS.readLine();
       if (line == null) break;
-      if (line.startsWith("#")) continue;
+      if (line.startsWith(comment)) continue;
       if (line.trim().length() == 0) continue;
       if (debug) System.out.printf("%s%n", line);
       Record r = Record.make(line, fields);
@@ -197,19 +198,19 @@ public class TableParser {
     return records;
   }
 
-  public Record readRecord(String line) throws IOException, NumberFormatException {
-      if (line == null) return null;
-      if (line.startsWith("#")) return null;
-      if (line.trim().length() == 0) return null;
-      //System.out.printf("%s%n", line);
-      return Record.make(line, fields);
+  public Field getField(int fldno) {
+    return fields.get(fldno);
+  }
+
+  public int getNumberOfFields() {
+    return fields.size();
   }
 
 
   /**
    * Describes one field in the record.
    */
-  public class Field {
+  public static class Field {
     int start, end;
     Class type;
 
@@ -281,7 +282,7 @@ public class TableParser {
     return fld;
   }
 
-  public class DerivedField extends Field {
+  public static class DerivedField extends Field {
     Field from;
     Transform transform;
 

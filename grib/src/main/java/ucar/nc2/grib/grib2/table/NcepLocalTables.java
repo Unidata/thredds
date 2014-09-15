@@ -65,15 +65,13 @@ public class NcepLocalTables extends LocalTables {
   static private final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(NcepLocalTables.class);
   static private final String defaultResourcePath = "resources/grib2/ncep/";
 
-  protected final int genProcessId;
-  protected final String resourcePath;
   protected final NcepLocalParams params;
 
-  NcepLocalTables(int center, int subCenter, int masterVersion, int localVersion, int genProcessId, String resourcePath) {
-    super(center, subCenter, masterVersion, localVersion, genProcessId);
-    this.genProcessId = genProcessId;
-    this.resourcePath = resourcePath == null ? defaultResourcePath : resourcePath;
-    this.params =  new NcepLocalParams(this.resourcePath);
+  NcepLocalTables(Grib2Table grib2Table) {
+    super(grib2Table);
+    if (grib2Table.getPath() == null)
+      grib2Table.setPath(defaultResourcePath);
+    this.params =  new NcepLocalParams(grib2Table.getPath());
     initCodes();
   }
 
@@ -144,14 +142,14 @@ public class NcepLocalTables extends LocalTables {
   public List<GribTables.Parameter> getParameters() {
     List<GribTables.Parameter> allParams = new ArrayList<>(3000);
     try {
-      String[] fileNames = getResourceListing(resourcePath);
+      String[] fileNames = getResourceListing(grib2Table.getPath());
       for (String fileName : fileNames) {
         File f = new File(fileName);
         if (f.isDirectory()) continue;
         if (!f.getName().contains("Table4.2.")) continue;
         if (!f.getName().endsWith(".xml")) continue;
         try {
-          NcepLocalParams.Table table = params.factory(resourcePath + f.getPath());
+          NcepLocalParams.Table table = params.factory(grib2Table.getPath() + f.getPath());
           allParams.addAll(table.getParameters());
         } catch (Exception e) {
           System.out.printf("Error reading wmo tables = %s%n", e.getMessage());
@@ -494,7 +492,7 @@ public class NcepLocalTables extends LocalTables {
 
   // public so can be called from Grib2
   private Map<Integer, String> initTable410() {
-    String path = resourcePath + "Table4.10.xml";
+    String path = grib2Table.getPath() + "Table4.10.xml";
     try (InputStream is = GribResourceReader.getInputStream(path)) {
       if (is == null) {
         logger.error("Cant find = " + path);

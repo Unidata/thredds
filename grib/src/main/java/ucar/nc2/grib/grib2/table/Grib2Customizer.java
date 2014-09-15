@@ -69,87 +69,67 @@ public class Grib2Customizer implements ucar.nc2.grib.GribTables, TimeUnitConver
     if (cust != null) return cust;
 
     if ((center == 7) && (masterVersion == 13) && (localVersion == 13)) {
-      return new NcepLocalTables(center, subCenter, masterVersion, localVersion, genProcessId, "resources/grib2/ncep/v13.0.0/");
+      Grib2Table grib2Table = new Grib2Table("NCEP", center, subCenter, masterVersion, localVersion, genProcessId, "resources/grib2/ncep/v13.0.0/", Grib2Table.Type.ncep);
+      return new NcepLocalTables(grib2Table);
 
-    } else if ((center == 7) || (center == 9) || (center == 54)) { // canadian met
-      cust = new NcepLocalTables(center, subCenter, masterVersion, localVersion, genProcessId, null);
+    } else if ((center == 7) || (center == 9) || (center == 54)) { // default ncep table; ncep, nws, canadian met
+      Grib2Table grib2Table = new Grib2Table("NCEP", center, subCenter, masterVersion, localVersion, genProcessId, null, Grib2Table.Type.ncep);
+      cust = new NcepLocalTables(grib2Table);
 
     } else if (center == 59 && genProcessId == 125) { // FSL HRRR
-      cust = FslLocalTables.localFactory(subCenter, masterVersion, localVersion, genProcessId);
+      Grib2Table grib2Table = new Grib2Table("GSD_HRRR", center, subCenter, masterVersion, localVersion, genProcessId, null, Grib2Table.Type.gsd);
+      cust = new FslLocalTables(grib2Table);
 
     /* } else if (center == 59  && genProcessId == 116) { // FSL FIM
       // cust = FslLocalTables.localFactory(subCenter, masterVersion, localVersion, genProcessId); */
 
     } else if ((center == 8) && ((subCenter == 0) || (subCenter == -9999))){ // NDFD
-       cust = new NdfdLocalTables(center, subCenter, masterVersion, localVersion, genProcessId);
+       Grib2Table grib2Table = new Grib2Table("NDFD", center, subCenter, masterVersion, localVersion, genProcessId, null, Grib2Table.Type.ndfd);
+       cust = new NdfdLocalTables(grib2Table);
 
     } else if (center == 40) {  // KMA
-       cust = new KmaLocalTables(center, subCenter, masterVersion, localVersion, genProcessId);
+      Grib2Table grib2Table = new Grib2Table("KMA", center, subCenter, masterVersion, localVersion, genProcessId, null, Grib2Table.Type.kma);
+       cust = new KmaLocalTables(grib2Table);
 
     } else {
-      cust = new Grib2Customizer(center, subCenter, masterVersion, localVersion, genProcessId);
+      Grib2Table grib2Table = new Grib2Table("WMO", center, subCenter, masterVersion, localVersion, genProcessId, null, Grib2Table.Type.wmo);
+      cust = new Grib2Customizer(grib2Table);
     }
 
     tables.put(id, cust);   // note that we use id, so same Grib2Customizer may be mapped to multiple id's (eg match on -1)
     return cust;
   }
 
-  static public class GribTableId {
-    public final String name;
-    public final int center, subCenter, masterVersion, localVersion, genProcessId;
-
-    GribTableId(String name, int center, int subCenter, int masterVersion, int localVersion, int genProcessId) {
-      this.name = name;
-      this.center = center;
-      this.subCenter = subCenter;
-      this.masterVersion = masterVersion;
-      this.localVersion = localVersion;
-      this.genProcessId = genProcessId;
+  static public Grib2Customizer factory(Grib2Table grib2Table) {
+    switch (grib2Table.type) {
+      case wmo: return new Grib2Customizer(grib2Table);
+      case dss: return new DssLocalTables(grib2Table);
+      case gempak: return new GempakLocalTables(grib2Table);
+      case gsd: return new FslLocalTables(grib2Table);
+      case kma: return new KmaLocalTables(grib2Table);
+      case ncep: return new NcepLocalTables(grib2Table);
+      case ndfd: return new NdfdLocalTables(grib2Table);
     }
-
-    @Override
-    public boolean equals(Object o) {
-      if (this == o) return true;
-      if (o == null || getClass() != o.getClass()) return false;
-
-      GribTableId that = (GribTableId) o;
-
-      if (center != that.center) return false;
-      if (genProcessId != that.genProcessId) return false;
-      if (localVersion != that.localVersion) return false;
-      if (masterVersion != that.masterVersion) return false;
-      if (subCenter != that.subCenter) return false;
-
-      return true;
-    }
-
-    @Override
-    public int hashCode() {
-      int result = center;
-      result = 31 * result + subCenter;
-      result = 31 * result + masterVersion;
-      result = 31 * result + localVersion;
-      result = 31 * result + genProcessId;
-      return result;
-    }
+    return null;
   }
+
 
   // debugging
-  static public List<GribTableId> getTableIds() {
-    List<GribTableId> result = new ArrayList<>();
-    result.add(new GribTableId("WMO",0,-1,-1,-1,-1));
-    result.add(new GribTableId("NCEP",7,-1,-1,-1,-1));
-    result.add(new GribTableId("NCEP",7,-1,13,13,-1));
-    result.add(new GribTableId("NDFD",8,0,-1,-1,-1));
-    result.add(new GribTableId("KMA",40,-1,-1,-1,-1));
-    // result.add(new GribTableId("DSS",7,-1,2,1)); // ??
-    // result.add(new GribTableId("FSL2",59,-1,-1,0)); // fake
-    result.add(new GribTableId("GSD_HRRR",59, -1,-1,-1, 125));
-    result.add(new GribTableId("GSD_FIM",59, -1,-1,-1, 116));
-    return result;
-  }
+  static public List<Grib2Table> getTables() {
+     List<Grib2Table> result = new ArrayList<>();
+     result.add(new Grib2Table("WMO", 0,-1,-1,-1,-1, WmoCodeTable.standard.getResourceName(), Grib2Table.Type.wmo));
+     result.add(new Grib2Table("NCEP",7,-1,-1,-1,-1, null, Grib2Table.Type.ncep));
+     result.add(new Grib2Table("NCEP",7,-1,13,13,-1, "resources/grib2/ncep/v13.0.0/", Grib2Table.Type.ncep));
+     result.add(new Grib2Table("NDFD",8,0,-1,-1,-1, null, Grib2Table.Type.ndfd));
+     result.add(new Grib2Table("KMA",40,-1,-1,-1,-1, null, Grib2Table.Type.kma));
+     result.add(new Grib2Table("DSS",7, 0, 0, 0, -1, null, Grib2Table.Type.dss)); // ??
+     result.add(new Grib2Table("GSD_HRRR",59, -1,-1,-1, 125, null, Grib2Table.Type.gsd));
+     result.add(new Grib2Table("GEMPAK",59, -1,-1,-1, 125, "C:\\dev\\github\\thredds\\grib\\src\\main\\sources\\gempak\\g2varsfsl1.tbl", Grib2Table.Type.gempak));
+     //result.add(new GribTableId("GSD_FIM",59, -1,-1,-1, 116));
+     return result;
+   }
 
-  static public int makeHash(int discipline, int category, int number) {
+   static public int makeHash(int discipline, int category, int number) {
     return (discipline << 16) + (category << 8) + number;
   }
 
@@ -158,18 +138,10 @@ public class Grib2Customizer implements ucar.nc2.grib.GribTables, TimeUnitConver
   }
 
   ///////////////////////////////////////////////////////////////
-  protected final int center, subCenter, masterVersion, localVersion, genProcessId;
+  protected final Grib2Table grib2Table;
 
-  protected Grib2Customizer(int center, int subCenter, int masterVersion, int localVersion, int genProcessId) {
-    this.center = center;
-    this.subCenter = subCenter;
-    this.masterVersion = masterVersion;
-    this.localVersion = localVersion;
-    this.genProcessId = genProcessId;
-  }
-
-  public GribTableId getGribTableId() {
-    return new GribTableId("WMO",0,-1,-1,-1,-1);
+  protected Grib2Customizer(Grib2Table grib2Table) {
+    this.grib2Table = grib2Table;
   }
 
   public String getVariableName(Grib2Record gr) {
@@ -534,5 +506,68 @@ Code Table Code table 4.7 - Derived forecast (4.7)
     Grib2Customizer cust = factory(0, 0, 0, 0, 0);
     String c = cust.getCategory(0, 14);
     System.out.printf("%s%n", c);
+  }
+
+  //////////////////////////
+  // replace with Grib2Table
+
+  static public class GribTableId {
+    public final String name;
+    public final int center, subCenter, masterVersion, localVersion, genProcessId;
+
+    GribTableId(String name, int center, int subCenter, int masterVersion, int localVersion, int genProcessId) {
+      this.name = name;
+      this.center = center;
+      this.subCenter = subCenter;
+      this.masterVersion = masterVersion;
+      this.localVersion = localVersion;
+      this.genProcessId = genProcessId;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+      if (this == o) return true;
+      if (o == null || getClass() != o.getClass()) return false;
+
+      GribTableId that = (GribTableId) o;
+
+      if (center != that.center) return false;
+      if (genProcessId != that.genProcessId) return false;
+      if (localVersion != that.localVersion) return false;
+      if (masterVersion != that.masterVersion) return false;
+      if (subCenter != that.subCenter) return false;
+
+      return true;
+    }
+
+    @Override
+    public int hashCode() {
+      int result = center;
+      result = 31 * result + subCenter;
+      result = 31 * result + masterVersion;
+      result = 31 * result + localVersion;
+      result = 31 * result + genProcessId;
+      return result;
+    }
+  }
+
+  // debugging
+  static public List<GribTableId> getTableIds() {
+    List<GribTableId> result = new ArrayList<>();
+    result.add(new GribTableId("WMO",0,-1,-1,-1,-1));
+    result.add(new GribTableId("NCEP",7,-1,-1,-1,-1));
+    result.add(new GribTableId("NCEP",7,-1,13,13,-1));
+    result.add(new GribTableId("NDFD",8,0,-1,-1,-1));
+    result.add(new GribTableId("KMA",40,-1,-1,-1,-1));
+    // result.add(new GribTableId("DSS",7,-1,2,1)); // ??
+    // result.add(new GribTableId("FSL2",59,-1,-1,0)); // fake
+    result.add(new GribTableId("GSD_HRRR",59, -1,-1,-1, 125));
+    //result.add(new GribTableId("GSD_FIM",59, -1,-1,-1, 116));
+    return result;
+  }
+
+
+  public GribTableId getGribTableId() {
+    return new GribTableId("WMO",0,-1,-1,-1,-1);
   }
 }

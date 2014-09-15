@@ -34,19 +34,65 @@
 package ucar.nc2.grib.grib2.table;
 
 /**
- * Describe
+ * Seperate the table from the GRIB2Customiser
  *
  * @author caron
  * @since 8/1/2014
  */
 public class Grib2Table {
-  static public enum Type { test}
-    String path;
-    Type type;
+  static public enum Type { wmo, dss, gempak, gsd, kma, ncep, ndfd}
 
-    public Grib2Table(String path, Type type) {
-      this.path = path;
-      this.type = type;
-    }
+  public final String name;
+  public final Type type;
+  public final int center, subCenter, masterVersion, localVersion, genProcessId;
+  private String path;
+
+  Grib2Table(String name, int center, int subCenter, int masterVersion, int localVersion, int genProcessId, String path, Type type) {
+    this.name = name;
+    this.path = path;
+    this.type = type;
+
+    this.center = center;
+    this.subCenter = subCenter;
+    this.masterVersion = masterVersion;
+    this.localVersion = localVersion;
+    this.genProcessId = genProcessId;
+  }
+
+  public String getPath() {
+    return path;
+  }
+
+  public void setPath(String path) {
+    this.path = path;
+  }
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) return true;
+    if (o == null || getClass() != o.getClass()) return false;
+
+    Grib2Table that = (Grib2Table) o;
+
+    if (center != that.center) return false;
+    if (genProcessId != that.genProcessId) return false;
+    if (localVersion != that.localVersion) return false;
+    if (masterVersion != that.masterVersion) return false;
+    if (subCenter != that.subCenter) return false;
+
+    return true;
+  }
+
+  @Override
+  public int hashCode() {
+    int result = center;
+    result = 31 * result + subCenter;
+    result = 31 * result + masterVersion;
+    result = 31 * result + localVersion;
+    result = 31 * result + genProcessId;
+    return result;
+  }
+
+
 
 }

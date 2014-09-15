@@ -72,6 +72,7 @@ import ucar.nc2.ui.coverage.CoverageTable;
 import ucar.nc2.ui.dialog.DiskCache2Form;
 import ucar.nc2.ui.gis.shapefile.ShapeFileBean;
 import ucar.nc2.ui.gis.worldmap.WorldMapBean;
+import ucar.nc2.ui.grib.Grib2TableViewer2;
 import ucar.nc2.ui.grid.GeoGridTable;
 import ucar.nc2.ui.grid.GridUI;
 import ucar.nc2.ui.image.ImageViewPanel;
@@ -3652,11 +3653,11 @@ public class ToolsUI extends JPanel {
   /////////////////////////////////////////////////////////////////////
 
   private class Grib2TablePanel extends OpPanel {
-    Grib2TablesViewer codeTable;
+    Grib2TableViewer2 codeTable;
 
     Grib2TablePanel(PreferencesExt p) {
       super(p, "table:", false, false);
-      codeTable = new Grib2TablesViewer(prefs, buttPanel);
+      codeTable = new Grib2TableViewer2(prefs, buttPanel);
       add(codeTable, BorderLayout.CENTER);
     }
 
