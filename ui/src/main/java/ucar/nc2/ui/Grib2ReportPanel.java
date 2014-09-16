@@ -188,7 +188,7 @@ public class Grib2ReportPanel extends ReportPanel {
     float[] data = gr.readData(raf);
 
     Grib2SectionDataRepresentation drss = gr.getDataRepresentationSection();
-    Grib2Drs drs = drss.getDrs(raf);
+    drss.getDrs(raf);
 
     // calc scale/offset
     GribData.Info info = gr.getBinaryDataInfo(raf);
@@ -216,7 +216,6 @@ public class Grib2ReportPanel extends ReportPanel {
     //float add_offset = dataMin + width2 * scale_factor / 2;
 
     float scale_factor =(dataMax - dataMin) / (width - 2);
-    float interval = Math.abs(1/scale_factor);
     float add_offset = dataMin - scale_factor;
 
     //f.format(" scale_factor = %f%n", scale_factor);
@@ -228,7 +227,6 @@ public class Grib2ReportPanel extends ReportPanel {
     BZip2OutputStream zipper = new BZip2OutputStream(out);
     BitOutputStream bitOut = new BitOutputStream(zipper);
     float diffMax = -Float.MAX_VALUE;
-    int count = 0;
     for (float fd : data) {
       int packed_data = Math.round((fd - add_offset) / scale_factor);
       bitOut.writeBits(nbits, packed_data);
@@ -366,7 +364,7 @@ public class Grib2ReportPanel extends ReportPanel {
   private void doUniqueGds(Formatter f, MCollection dcm, boolean useIndex) throws IOException {
     f.format("Show Unique GDS%n");
 
-    Map<Integer, GdsList> gdsSet = new HashMap<Integer, GdsList>();
+    Map<Integer, GdsList> gdsSet = new HashMap<>();
     for (MFile mfile : dcm.getFilesSorted()) {
       f.format(" %s%n", mfile.getPath());
       doUniqueGds(mfile, gdsSet, f);
@@ -402,7 +400,7 @@ public class Grib2ReportPanel extends ReportPanel {
 
   private static class GdsList {
     Grib2Gds gds;
-    java.util.List<FileCount> fileList = new ArrayList<FileCount>();
+    java.util.List<FileCount> fileList = new ArrayList<>();
 
     private GdsList(Grib2Gds gds) {
       this.gds = gds;
@@ -442,7 +440,7 @@ public class Grib2ReportPanel extends ReportPanel {
   }
 
   private void doDuplicatePds(Formatter f, MFile mfile) throws IOException {
-    Set<Long> pdsMap = new HashSet<Long>();
+    Set<Long> pdsMap = new HashSet<>();
     int dups = 0;
     int count = 0;
 
@@ -1026,8 +1024,8 @@ public class Grib2ReportPanel extends ReportPanel {
   private void doRename(Formatter f, MCollection dcm, boolean useIndex) throws IOException {
     f.format("CHECK Grib-2 Names: Old vs New for collection %s%n", dcm.getCollectionName());
 
-    List<VarName> varNames = new ArrayList<VarName>(3000);
-    Map<String, List<String>> gridsAll = new HashMap<String, List<String>>(1000); // old -> list<new>
+    List<VarName> varNames = new ArrayList<>(3000);
+    Map<String, List<String>> gridsAll = new HashMap<>(1000); // old -> list<new>
     int countExactMatch = 0;
     int countExactMatchIg = 0;
     int countOldVars = 0;
@@ -1038,7 +1036,7 @@ public class Grib2ReportPanel extends ReportPanel {
       Map<Integer, GridMatch> gridsOld = getGridsOld(mfile, f);
 
       // look for exact match on name
-      Set<String> namesNew = new HashSet<String>(gridsNew.size());
+      Set<String> namesNew = new HashSet<>(gridsNew.size());
       for (GridMatch gm : gridsNew.values())
         namesNew.add(gm.grid.getFullName());
       for (GridMatch gm : gridsOld.values()) {
@@ -1068,7 +1066,7 @@ public class Grib2ReportPanel extends ReportPanel {
 
       // print out match
       f.format("%n");
-      List<GridMatch> listNew = new ArrayList<GridMatch>(gridsNew.values());
+      List<GridMatch> listNew = new ArrayList<>(gridsNew.values());
       Collections.sort(listNew);
       for (GridMatch gm : listNew) {
         f.format(" %s%n", gm.grid.findAttributeIgnoreCase(GribIosp.VARIABLE_ID_ATTNAME));
@@ -1085,14 +1083,14 @@ public class Grib2ReportPanel extends ReportPanel {
 
       // print out missing
       f.format("%nMISSING MATCHES IN NEW%n");
-      List<GridMatch> list = new ArrayList<GridMatch>(gridsNew.values());
+      List<GridMatch> list = new ArrayList<>(gridsNew.values());
       Collections.sort(list);
       for (GridMatch gm : list) {
         if (gm.match == null)
           f.format(" %s (%s) == %s%n", gm.grid.getFullName(), gm.show(), gm.grid.getDescription());
       }
       f.format("%nMISSING MATCHES IN OLD%n");
-      List<GridMatch> listOld = new ArrayList<GridMatch>(gridsOld.values());
+      List<GridMatch> listOld = new ArrayList<>(gridsOld.values());
       Collections.sort(listOld);
       for (GridMatch gm : listOld) {
         if (gm.match == null)
@@ -1104,7 +1102,7 @@ public class Grib2ReportPanel extends ReportPanel {
         String key = gmOld.grid.getShortName();
         List<String> newGrids = gridsAll.get(key);
         if (newGrids == null) {
-          newGrids = new ArrayList<String>();
+          newGrids = new ArrayList<>();
           gridsAll.put(key, newGrids);
         }
         if (gmOld.match != null) {
@@ -1128,7 +1126,7 @@ public class Grib2ReportPanel extends ReportPanel {
 
     // show old -> new mapping
     f.format("%nOLD -> NEW MAPPINGS%n");
-    List<String> keys = new ArrayList<String>(gridsAll.keySet());
+    List<String> keys = new ArrayList<>(gridsAll.keySet());
     int total = keys.size();
     int dups = 0;
     Collections.sort(keys);
@@ -1425,7 +1423,7 @@ public class Grib2ReportPanel extends ReportPanel {
   }
 
   private Map<Integer, GridMatch> getGridsNew(MFile ff, Formatter f) throws IOException {
-    Map<Integer, GridMatch> grids = new HashMap<Integer, GridMatch>(100);
+    Map<Integer, GridMatch> grids = new HashMap<>(100);
     GridDataset ncfile = null;
     try {
       ncfile = GridDataset.open(ff.getPath());
@@ -1444,7 +1442,7 @@ public class Grib2ReportPanel extends ReportPanel {
   }
 
   private Map<Integer, GridMatch> getGridsOld(MFile ff, Formatter f) throws IOException {
-    Map<Integer, GridMatch> grids = new HashMap<Integer, GridMatch>(100);
+    Map<Integer, GridMatch> grids = new HashMap<>(100);
     NetcdfFile ncfile = null;
     try {
       ncfile = NetcdfFile.open(ff.getPath(), "ucar.nc2.iosp.grib.GribServiceProvider", -1, null, null);

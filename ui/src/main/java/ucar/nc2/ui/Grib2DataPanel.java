@@ -156,9 +156,9 @@ public class Grib2DataPanel extends JPanel {
           try {
             Grib2CollectionPanel.showCompleteGribRecord(f, fileList.get(bean.gr.getFile()).getPath(), bean.gr, cust);
           } catch (IOException ioe) {
-            ByteArrayOutputStream bos = new ByteArrayOutputStream(10000);
-            ioe.printStackTrace(new PrintStream(bos));
-            f.format("%s", bos.toString());
+            StringWriter sw = new StringWriter(10000);
+            ioe.printStackTrace(new PrintWriter(sw));
+            f.format("%s", sw.toString());
           }
           infoPopup.setText(f.toString());
           infoPopup.gotoTop();
@@ -392,13 +392,10 @@ public class Grib2DataPanel extends JPanel {
   }
 
   private MCollection scanCollection(String spec, Formatter f) {
-    MCollection dc;
-    try {
-      dc = CollectionAbstract.open(spec, spec, null, f);
+    try (MCollection dc = CollectionAbstract.open(spec, spec, null, f)) {
       fileList = (List<MFile>) Misc.getList(dc.getFilesSorted());
       return dc;
-
-    } catch (Exception e) {
+    } catch (IOException e) {
       StringWriter sw = new StringWriter(5000);
       e.printStackTrace(new PrintWriter(sw));
       f.format(sw.toString());
@@ -1085,21 +1082,6 @@ public class Grib2DataPanel extends JPanel {
         avgbits /= count;
       }
     }
-
-    private void calcBits2() {
-      if (nbits >= 0) return;
-      nbits = 0;
-      int count = 0;
-      for (Grib2RecordBean bean : records) {
-        nbits += bean.getNBits();
-        avgbits += bean.getAvgBits();
-        count++;
-      }
-      compress = nbits / avgbits;
-      nbits /= count;
-      avgbits /= count;
-    }
-
 
     ///////////////
 
