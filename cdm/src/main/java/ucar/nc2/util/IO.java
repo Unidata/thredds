@@ -34,15 +34,16 @@
 package ucar.nc2.util;
 
 import ucar.nc2.constants.CDM;
-import ucar.nc2.util.EscapeStrings;
-import ucar.unidata.util.StringUtil2;
 
 import java.io.*;
-import java.net.*;
-import java.util.*;
-import java.util.zip.GZIPInputStream;
-import java.nio.channels.FileChannel;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.nio.ByteBuffer;
+import java.nio.channels.FileChannel;
+import java.util.List;
+import java.util.Map;
+import java.util.zip.GZIPInputStream;
 
 /**
  * Input/Output utilities.
@@ -396,10 +397,15 @@ public class IO {
   static public void copyDirTree(String fromDirName, String toDirName) throws IOException {
     File fromDir = new File(fromDirName);
     File toDir = new File(toDirName);
+
     if (!fromDir.exists())
       return;
-    if (!toDir.exists())
-      assert toDir.mkdirs();
+
+    if (!toDir.exists()) {
+      if (!toDir.mkdirs()) {
+        throw new IOException("Could not create directory: " + toDir);
+      }
+    }
 
     File[] files = fromDir.listFiles();
     if (files != null)

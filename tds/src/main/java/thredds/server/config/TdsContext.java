@@ -86,10 +86,7 @@ import java.util.*;
  */
 @Component("tdsContext")
 public final class TdsContext implements ServletContextAware, InitializingBean, DisposableBean {
-
-//  ToDo Once Log4j config is called by Spring listener instead of ours, use this logger instead of System.out.println.
-//  private org.slf4j.Logger logServerStartup =
-//          org.slf4j.LoggerFactory.getLogger( "serverStartup" );
+  private final Logger logServerStartup = LoggerFactory.getLogger("serverStartup");
 
   private String webappName;
   private String contextPath;
@@ -162,7 +159,6 @@ public final class TdsContext implements ServletContextAware, InitializingBean, 
   private TdsContext() {
   }
 
-  private Logger logServerStartup = LoggerFactory.getLogger("serverStartup");
 
   public void setWebappVersion(String verFull) {
     this.webappVersion = verFull;
@@ -248,7 +244,6 @@ public final class TdsContext implements ServletContextAware, InitializingBean, 
 
 
   public void afterPropertiesSet() {
-
     // ToDo Instead of stdout, use servletContext.log( "...") [NOTE: it writes to localhost.*.log rather than catalina.out].
     if (servletContext == null)
       throw new IllegalArgumentException("ServletContext must not be null.");
@@ -272,7 +267,6 @@ public final class TdsContext implements ServletContextAware, InitializingBean, 
     String rootPath = servletContext.getRealPath("/");
     if (rootPath == null) {
       String msg = "Webapp [" + this.webappName + "] must run with exploded deployment directory (not from .war).";
-      //System.out.println( "ERROR - TdsContext.init(): " + msg );
       logServerStartup.error("TdsContext.init(): " + msg);
       throw new IllegalStateException(msg);
     }
@@ -289,7 +283,6 @@ public final class TdsContext implements ServletContextAware, InitializingBean, 
 
     this.webinfPath = this.rootDirectory + "/WEB-INF";
 
-
     // set the tomcat logging directory
     try {
       String base = System.getProperty("catalina.base");
@@ -297,19 +290,16 @@ public final class TdsContext implements ServletContextAware, InitializingBean, 
         this.tomcatLogDir = new File(base, "logs").getCanonicalFile();
         if (!this.tomcatLogDir.exists()) {
           String msg = "'catalina.base' directory not found";
-          //System.out.println( "WARN - TdsContext.init(): " + msg );
           logServerStartup.error("TdsContext.init(): " + msg);
         }
       } else {
         String msg = "'catalina.base' property not found - probably not a tomcat server";
-        //System.out.println( "WARN - TdsContext.init(): " + msg );
         logServerStartup.warn("TdsContext.init(): " + msg);
       }
 
     } catch (IOException e) {
       String msg = "tomcatLogDir could not be created";
-      System.out.println("WARN - TdsContext.init(): " + msg);
-      //logServerStartup.error( "TdsContext.init(): " + msg );
+      logServerStartup.error( "TdsContext.init(): " + msg );
     }
 
     // Set the content directory and source.
@@ -321,23 +311,8 @@ public final class TdsContext implements ServletContextAware, InitializingBean, 
         this.contentDirectory = new File(contentRootDir, this.contentPath);
       else {
         String msg = "Content root directory [" + this.contentRootPath + "] not a directory.";
-        System.out.println("ERROR - TdsContext.init(): " + msg);
-        //logServerStartup.error( "TdsContext.init(): " + msg );
+        logServerStartup.error( "TdsContext.init(): " + msg );
         throw new IllegalStateException(msg);
-      }
-    }
-
-    // If we're deploying for the first time, try to copy startup content directory.
-    if (isFirstDeployment(contentDirectory)) {
-      try {
-        logServerStartup.info("Initial TDS deployment. Copying conents of {} to {}.",
-                this.startupContentDirectory.getPath(), this.contentDirectory.getPath());
-        IO.copyDirTree(this.startupContentDirectory.getPath(), this.contentDirectory.getPath());
-      } catch (IOException e) {
-        String tmpMsg = "Content directory does not exist and could not be created";
-        System.out.println("ERROR - TdsContext.init(): " + tmpMsg + " [" + this.contentDirectory.getAbsolutePath() + "].");
-        //logServerStartup.error( "TdsContext.init(): " + tmpMsg + " [" + this.contentDirectory.getAbsolutePath() + "]" );
-        throw new IllegalStateException(tmpMsg);
       }
     }
 
@@ -347,17 +322,61 @@ public final class TdsContext implements ServletContextAware, InitializingBean, 
       this.contentDirectory = this.contentDirSource.getRootDirectory();
     } else {
       String tmpMsg = "Content directory not a directory";
-      System.out.println("ERROR - TdsContext.init(): " + tmpMsg + " [" + this.contentDirectory.getAbsolutePath() + "].");
-      //logServerStartup.error( "TdsContext.init(): " + tmpMsg + " [" + this.contentDirectory.getAbsolutePath() + "]" );
+      logServerStartup.error( "TdsContext.init(): " + tmpMsg + " [" + this.contentDirectory.getAbsolutePath() + "]" );
       throw new IllegalStateException(tmpMsg);
     }
     ServletUtil.setContentPath(this.contentDirSource.getRootDirectoryPath());
+
+    //////////////////////////////////// Copy default startup files, if necessary ////////////////////////////////////
+
+    try {
+      File catalogFile = new File(contentDirectory, "catalog.xml");
+      if (!catalogFile.exists()) {
+        File defaultCatalogFile = new File(startupContentDirectory, "catalog.xml");
+        logServerStartup.info("TdsContext.init(): Copying default catalog file from {}.", defaultCatalogFile);
+        IO.copyFile(defaultCatalogFile, catalogFile);
+
+        File enhancedCatalogFile = new File(contentDirectory, "enhancedCatalog.xml");
+        File defaultEnhancedCatalogFile = new File(startupContentDirectory, "enhancedCatalog.xml");
+        logServerStartup.info("TdsContext.init(): Copying default enhanced catalog file from {}.", defaultEnhancedCatalogFile);
+        IO.copyFile(defaultEnhancedCatalogFile, enhancedCatalogFile);
+
+        File dataDir = new File(new File(contentDirectory, "public"), "testdata");
+        File defaultDataDir = new File(new File(startupContentDirectory, "public"), "testdata");
+        logServerStartup.info("TdsContext.init(): Copying default testdata directory from {}.", defaultDataDir);
+        IO.copyDirTree(defaultDataDir.getCanonicalPath(), dataDir.getCanonicalPath());
+      }
+
+      File threddsConfigFile = new File(contentDirectory, "threddsConfig.xml");
+      if (!threddsConfigFile.exists()) {
+        File defaultThreddsConfigFile = new File(startupContentDirectory, "threddsConfig.xml");
+        logServerStartup.info("TdsContext.init(): Copying default THREDDS config file from {}.", defaultThreddsConfigFile);
+        IO.copyFile(defaultThreddsConfigFile, threddsConfigFile);
+      }
+
+      File wmsConfigXmlFile = new File(contentDirectory, "wmsConfig.xml");
+      if (!wmsConfigXmlFile.exists()) {
+        File defaultWmsConfigXmlFile = new File(startupContentDirectory, "wmsConfig.xml");
+        logServerStartup.info("TdsContext.init(): Copying default WMS config file from {}.", defaultWmsConfigXmlFile);
+        IO.copyFile(defaultWmsConfigXmlFile, wmsConfigXmlFile);
+
+        File wmsConfigDtdFile = new File(contentDirectory, "wmsConfig.dtd");
+        File defaultWmsConfigDtdFile = new File(startupContentDirectory, "wmsConfig.dtd");
+        logServerStartup.info("TdsContext.init(): Copying default WMS config DTD from {}.", defaultWmsConfigDtdFile);
+        IO.copyFile(defaultWmsConfigDtdFile, wmsConfigDtdFile);
+      }
+    } catch (IOException e) {
+      String message = String.format("Could not copy default startup files to %s.", contentDirectory);
+      logServerStartup.error("TdsContext.init(): " + message);
+      throw new IllegalStateException(message, e);
+    }
+
+    //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     File logDir = new File(this.contentDirectory, "logs");
     if (!logDir.exists()) {
       if (!logDir.mkdirs()) {
         String msg = "Couldn't create TDS log directory [" + logDir.getPath() + "].";
-        //System.out.println( "ERROR - TdsContext.init(): " + msg);
         logServerStartup.error("TdsContext.init(): " + msg);
         throw new IllegalStateException(msg);
       }
@@ -393,7 +412,6 @@ public final class TdsContext implements ServletContextAware, InitializingBean, 
     if (!publicContentDirectory.exists()) {
       if (!publicContentDirectory.mkdirs()) {
         String msg = "Couldn't create TDS public directory [" + publicContentDirectory.getPath() + "].";
-        //System.out.println( "ERROR - TdsContext.init(): " + msg);
         logServerStartup.error("TdsContext.init(): " + msg);
         throw new IllegalStateException(msg);
       }
@@ -417,7 +435,6 @@ public final class TdsContext implements ServletContextAware, InitializingBean, 
           chain.add(new BasicDescendantFileSource(StringUtils.cleanPath(curContentRoot)));
         } catch (IllegalArgumentException e) {
           String msg = "Couldn't add content root [" + curContentRoot + "]: " + e.getMessage();
-          //System.out.println( "WARN - TdsContext.init(): " + msg );
           logServerStartup.warn("TdsContext.init(): " + msg, e);
         }
       }
