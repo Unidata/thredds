@@ -63,7 +63,7 @@ public class GribWmoCodesPanel extends JPanel {
     entryTable = new BeanTable(EntryBean.class, (PreferencesExt) prefs.node("EntryBean"), false);
     entryTable.addListSelectionListener(new ListSelectionListener() {
       public void valueChanged(ListSelectionEvent e) {
-        EntryBean csb = (EntryBean) entryTable.getSelectedBean();
+        entryTable.getSelectedBean();
       }
     });
 
@@ -419,9 +419,8 @@ public class GribWmoCodesPanel extends JPanel {
           }
         }
 
-      } catch (Exception e) {
+      } catch (IOException e) {
         fm.format("Error on %s = %s%n", name, e.getMessage());
-
       }
     }
 
