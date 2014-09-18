@@ -81,6 +81,9 @@ public abstract class Grib2Gds {
       case 40:
         result = new GaussLatLon(data);
         break;
+      case 50:  // Spherical Harmonic Coefficients
+        result = new GdsSpherical(data, template);
+        break;
       case 90:
         result = new SpaceViewPerspective(data);
         break;
@@ -113,6 +116,10 @@ public abstract class Grib2Gds {
   private int nx, ny;         // raw
   protected int[] nptsInLine; // thin grids, else null
   protected int lastOctet;
+
+  protected Grib2Gds(byte[] data) {
+    this.data = data;
+  }
 
   protected Grib2Gds(byte[] data, int template) {
     this.data = data;

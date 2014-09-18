@@ -366,6 +366,8 @@ public class Grib2Record {
     info.msgLength = is.getMessageLength();
     info.dataLength = dataSection.getMsgLength();
     info.ndataPoints = drss.getDataPoints();
+    Grib2Gds gds = gdss.getGDS();
+    info.nPoints = gds.getNx() * gds.getNy();
     return info;
   }
 

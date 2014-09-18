@@ -231,7 +231,8 @@ public abstract class Field {
   protected boolean validate( StringBuffer buff) {
     if (!_validate(buff)) return false;
     Object editValue = getEditValue();
-    assert editValue != null;
+    if (editValue == null)
+      return false;
 
     for (FieldValidator v : validators) {
       if (!v.validate(this, editValue, buff)) return false;

@@ -76,9 +76,10 @@ public class GribData {
 
   public static class Info {
     public int bitmapLength;     // length of the bitmap section if any
-    public long msgLength;       // length of the data section
+    public long msgLength;       // length of the entire GRIB message
     public long dataLength;       // length of the data section
     public int ndataPoints;      // for Grib1, gds.getNumberPoints; for GRIB2, n data points stored
+    public int nPoints;         //  number of points in the GRID
     public float referenceValue;
     public int binaryScaleFactor, decimalScaleFactor, numberOfBits;
     public int originalType;  // code table 5.1

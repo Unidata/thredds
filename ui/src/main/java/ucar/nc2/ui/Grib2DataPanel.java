@@ -1164,8 +1164,12 @@ public class Grib2DataPanel extends JPanel {
     }
 
     public int getNDataPoints() {
-      return gr.getDataRepresentationSection().getDataPoints();
+      return info.ndataPoints;
     }
+
+    public int getNPoints() {
+       return info.nPoints;
+     }
 
     public int getNGroups() {
       return drs.getNGroups();
