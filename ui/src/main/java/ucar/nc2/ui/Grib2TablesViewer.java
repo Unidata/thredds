@@ -96,7 +96,7 @@ public class Grib2TablesViewer extends JPanel {
     entryTable = new BeanTable(EntryBean.class, (PreferencesExt) prefs.node("EntryBean"), false);
     entryTable.addListSelectionListener(new ListSelectionListener() {
       public void valueChanged(ListSelectionEvent e) {
-        EntryBean csb = (EntryBean) entryTable.getSelectedBean();
+        entryTable.getSelectedBean();
       }
     });
 

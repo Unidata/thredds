@@ -2,7 +2,7 @@
  * See the MIT/X-like license in LICENSE.txt.
  * For more information visit www.cohort.com or contact info@cohort.com.
  */
-package gov.noaa.pfel.erddap.util;
+package ucar.nc2.ogc.erddap.util;
 
 import ucar.nc2.constants.CDM;
 
@@ -20,7 +20,7 @@ import java.io.InputStreamReader;
  *
  * <p>This class uses "" to represent a missing value (NaN).
  */
-public class StringArray {
+public class ErddapStringArray {
     /** The number of active values (which may be different from the array's capacity). */
     protected int size = 0;
 
@@ -36,7 +36,7 @@ public class StringArray {
     /**
      * A constructor for a capacity of 8 elements. The initial 'size' will be 0.
      */
-    public StringArray() {
+    public ErddapStringArray() {
         array = new String[8];
     }
 
@@ -51,14 +51,14 @@ public class StringArray {
      * @return  a StringArray created from the stream.
      * @throws IOException  if an I/O error occurs
      */
-    public static StringArray fromInputStream(InputStream inputStream, String charset) throws IOException {
+    public static ErddapStringArray fromInputStream(InputStream inputStream, String charset) throws IOException {
         if (charset == null || charset.isEmpty()) {
             charset = CDM.UTF8;
         }
         InputStreamReader isr = new InputStreamReader(inputStream, charset);
         BufferedReader bufferedReader = new BufferedReader(isr);
 
-        StringArray sa = new StringArray();
+        ErddapStringArray sa = new ErddapStringArray();
         for (String s; (s = bufferedReader.readLine()) != null; ) {
             sa.add(s);
         }
@@ -98,7 +98,7 @@ public class StringArray {
     public void ensureCapacity(long minCapacity) {
         if (array.length < minCapacity) {
             //ensure minCapacity is < Integer.MAX_VALUE
-            Math2.ensureArraySizeOkay(minCapacity, "StringArray");
+            ErddapMath2.ensureArraySizeOkay(minCapacity, "StringArray");
 
             //caller may know exact number needed, so don't double above 2x current size
             int newCapacity = (int)Math.min(Integer.MAX_VALUE - 1, array.length + (long)array.length); 
@@ -118,7 +118,7 @@ public class StringArray {
      */
     public String get(int index) {
         if (index >= size)
-            throw new IllegalArgumentException(String2.ERROR + " in StringArray.get: index (" + 
+            throw new IllegalArgumentException(ErddapString2.ERROR + " in StringArray.get: index (" +
                 index + ") >= size (" + size + ").");
         return array[index];
     }

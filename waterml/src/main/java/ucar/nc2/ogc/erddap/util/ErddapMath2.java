@@ -2,7 +2,7 @@
  * See the MIT/X-like license in LICENSE.txt.
  * For more information visit www.cohort.com or contact info@cohort.com.
  */
-package gov.noaa.pfel.erddap.util;
+package ucar.nc2.ogc.erddap.util;
 
 import java.text.MessageFormat;
 
@@ -13,7 +13,7 @@ import java.text.MessageFormat;
  * <LI> Many provide additional protection from run-time errors.
  * </UL>
  */
-public class Math2 {
+public class ErddapMath2 {
     /**
      * These are *not* final so EDStatic can replace them with translated Strings.
      * These are MessageFormat-style strings, so any single quote ' must be escaped as ''.

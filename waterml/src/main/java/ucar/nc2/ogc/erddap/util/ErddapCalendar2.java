@@ -2,7 +2,7 @@
  * See the MIT/X-like license in LICENSE.txt.
  * For more information visit www.cohort.com or contact info@cohort.com.
  */
-package gov.noaa.pfel.erddap.util;
+package ucar.nc2.ogc.erddap.util;
 
 import java.util.Calendar;
 import java.util.GregorianCalendar;
@@ -52,7 +52,7 @@ import java.util.TimeZone;
  * and 2 BC is calendar2Year -1 (or -0001).
  *
  */
-public class Calendar2 {
+public class ErddapCalendar2 {
     //useful static variables
     public final static int YEAR        = Calendar.YEAR;
     public final static int MILLISECOND = Calendar.MILLISECOND;
@@ -79,7 +79,7 @@ public class Calendar2 {
      * @throws Exception if trouble (tsUnits is null or invalid)
      */
     public static double[] getTimeBaseAndFactor(String tsUnits) throws Exception {
-        String errorInMethod = String2.ERROR + " in Calendar2.getTimeBaseAndFactor(" + tsUnits + "):\n";
+        String errorInMethod = ErddapString2.ERROR + " in Calendar2.getTimeBaseAndFactor(" + tsUnits + "):\n";
 
         if (tsUnits == null) {
             throw new NullPointerException(errorInMethod + "tsUnits must be non-null.");
@@ -147,7 +147,7 @@ public class Calendar2 {
             units.equals("years")) return 360 * SECONDS_PER_DAY;
 
         throw new RuntimeException(
-                String2.ERROR + " in Calendar2.factorToGetSeconds: units=\"" + units + "\" is invalid.");
+                ErddapString2.ERROR + " in Calendar2.factorToGetSeconds: units=\"" + units + "\" is invalid.");
     }
 
     /**
@@ -180,7 +180,7 @@ public class Calendar2 {
             s = "";
         s = s.trim();
         int sLength = s.length();
-        if (sLength < 1 || !(s.charAt(0) == '-' || String2.isDigit(s.charAt(0)))) {
+        if (sLength < 1 || !(s.charAt(0) == '-' || ErddapString2.isDigit(s.charAt(0)))) {
             resultsN[0] = Integer.MAX_VALUE;
             return;  
         }
@@ -199,17 +199,17 @@ public class Calendar2 {
                     if (po2 < sLength && s.charAt(po2) == '-') po2++; 
                     else {resultsN[0] = Integer.MAX_VALUE; return; }
                 }
-                while (po2 < sLength && String2.isDigit(s.charAt(po2))) po2++; //digit
+                while (po2 < sLength && ErddapString2.isDigit(s.charAt(po2))) po2++; //digit
 
                 //if no number, return; we're done
                 if (po2 == po1)
                     return;
                 if (part > 0 && separatorN[part - 1] == '.') {
-                    resultsN[part] = Math2.roundToInt(1000 * 
-                        String2.parseDouble("0." + s.substring(po1, po2)));
+                    resultsN[part] = ErddapMath2.roundToInt(1000 *
+                            ErddapString2.parseDouble("0." + s.substring(po1, po2)));
                     //String2.log("  millis=" + resultsN[part]);
                 } else {
-                    resultsN[part] = String2.parseInt(s.substring(po1, po2));
+                    resultsN[part] = ErddapString2.parseInt(s.substring(po1, po2));
                 }
 
                 //if invalid number, return trouble
@@ -243,7 +243,7 @@ public class Calendar2 {
                     //if current part is ':' or '.' and not matched, try to skip forward to '±'
                     if ((separatorN[part] == ':' || separatorN[part] == '.') && 
                         part < nParts - 1) {
-                        int pmPart = String2.indexOf(separatorN, '±', part + 1);
+                        int pmPart = ErddapString2.indexOf(separatorN, '±', part + 1);
                         if (pmPart >= 0) {
                             //String2.log("  jump to +/-");
                             part = pmPart; 
@@ -303,11 +303,11 @@ public class Calendar2 {
         boolean negative = s.startsWith("-");
         if (negative) 
             s = s.substring(1);
-        if (s.length() < 1 || !String2.isDigit(s.charAt(0)))
+        if (s.length() < 1 || !ErddapString2.isDigit(s.charAt(0)))
             throw new RuntimeException(
-                    String2.ERROR + " in parseISODateTime: for first character of dateTime='" + s + "' isn't a digit!");
+                    ErddapString2.ERROR + " in parseISODateTime: for first character of dateTime='" + s + "' isn't a digit!");
         if (gc == null)
-            throw new RuntimeException(String2.ERROR + " in parseISODateTime: gc is null!");
+            throw new RuntimeException(ErddapString2.ERROR + " in parseISODateTime: gc is null!");
 
         //default ymdhmsmom     year is the only required value
         int ymdhmsmom[] = {Integer.MAX_VALUE, 1, 1, 0, 0, 0, 0, 0, 0};
@@ -324,14 +324,14 @@ public class Calendar2 {
         }
 
         //if e.g., 1970-01-01 00:00:00 0:00, change ' ' to '+' (first ' '->'+' is irrelevant)
-        s = String2.replaceAll(s, ' ', '+');
+        s = ErddapString2.replaceAll(s, ' ', '+');
 
         //separators (\u0000=any non-digit)
         char separator[] = {'-','-','\u0000',':',':','.','±', ':', '\u0000'};
         parseN(s, separator, ymdhmsmom);
         if (ymdhmsmom[0] == Integer.MAX_VALUE)
             throw new RuntimeException(
-                    String2.ERROR + " in parseISODateTime: dateTime='" + s + "' has an invalid format!");
+                    ErddapString2.ERROR + " in parseISODateTime: dateTime='" + s + "' has an invalid format!");
 
         //do time zone adjustment
         //String2.log("#7=" + ymdhmsmom[7] + " #8=" + ymdhmsmom[8]);

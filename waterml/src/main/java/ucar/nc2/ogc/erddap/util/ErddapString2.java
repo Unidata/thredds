@@ -2,13 +2,13 @@
  * See the MIT/X-like license in LICENSE.txt.
  * For more information visit www.cohort.com or contact info@cohort.com.
  */
-package gov.noaa.pfel.erddap.util;
+package ucar.nc2.ogc.erddap.util;
 
 /**
  * A class with static String methods that add to native String methods.
  * All are static methods. 
  */
-public class String2 {
+public class ErddapString2 {
     /**
      * ERROR is a constant so that it will be consistent, so that one can
      * search for it in output files.
@@ -129,7 +129,7 @@ public class String2 {
             //But now, latest version of Java is fixed.
             //if (isDoubleTrouble(s)) return 0;  
 
-            return Math2.roundToInt(Double.parseDouble(s));
+            return ErddapMath2.roundToInt(Double.parseDouble(s));
         } catch (Exception e) {
             return Integer.MAX_VALUE;
         }
@@ -217,7 +217,7 @@ public class String2 {
         if (d == 0)
             return new int[]{0, 0};
 
-        if (!Math2.isFinite(d))
+        if (!ErddapMath2.isFinite(d))
             return new int[]{1, Integer.MAX_VALUE};
 
         String s = "" + d; //-12.0 or 6.6260755E-24

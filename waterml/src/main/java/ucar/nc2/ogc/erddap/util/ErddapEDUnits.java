@@ -2,7 +2,7 @@
  * EDUnits Copyright 2009, NOAA.
  * See the LICENSE.txt file in this file's directory.
  */
-package gov.noaa.pfel.erddap.util;
+package ucar.nc2.ogc.erddap.util;
 
 import com.google.common.math.DoubleMath;
 
@@ -14,7 +14,7 @@ import java.util.HashMap;
 /**
  * This class has static methods to convert units from one standard to another.
  */
-public class EDUnits {
+public class ErddapEDUnits {
 
     /**
      * UDUNITS and UCUM support metric prefixes.
@@ -46,8 +46,8 @@ public class EDUnits {
     private static final HashMap<String, String> ucHashMap;
 
     static {
-        try (   InputStream udunitsToUcumStream = EDUnits.class.getResourceAsStream("UdunitsToUcum.properties");
-                InputStream ucumToUdunitsStream = EDUnits.class.getResourceAsStream("UcumToUdunits.properties")) {
+        try (   InputStream udunitsToUcumStream = ErddapEDUnits.class.getResourceAsStream("UdunitsToUcum.properties");
+                InputStream ucumToUdunitsStream = ErddapEDUnits.class.getResourceAsStream("UcumToUdunits.properties")) {
             udHashMap = getHashMapStringString(udunitsToUcumStream, "ISO-8859-1");
             ucHashMap = getHashMapStringString(ucumToUdunitsStream, "ISO-8859-1");
         } catch (IOException e) {
@@ -94,7 +94,7 @@ public class EDUnits {
         if (sincePo > 0) {
             try {
                 //test if really appropriate
-                double baf[] = Calendar2.getTimeBaseAndFactor(udunits); //throws exception if trouble
+                double baf[] = ErddapCalendar2.getTimeBaseAndFactor(udunits); //throws exception if trouble
 
                 //use 'factor', since it is more forgiving than udunitsToUcum converter
                 String u;
@@ -102,15 +102,15 @@ public class EDUnits {
                     u = "ms";
                 } else if (baf[1] == 1) {
                     u = "s";
-                } else if (baf[1] == Calendar2.SECONDS_PER_MINUTE) {
+                } else if (baf[1] == ErddapCalendar2.SECONDS_PER_MINUTE) {
                     u = "min";
-                } else if (baf[1] == Calendar2.SECONDS_PER_HOUR) {
+                } else if (baf[1] == ErddapCalendar2.SECONDS_PER_HOUR) {
                     u = "h";
-                } else if (baf[1] == Calendar2.SECONDS_PER_DAY) {
+                } else if (baf[1] == ErddapCalendar2.SECONDS_PER_DAY) {
                     u = "d";
-                } else if (baf[1] == 30 * Calendar2.SECONDS_PER_DAY) {  // mo_j ?
+                } else if (baf[1] == 30 * ErddapCalendar2.SECONDS_PER_DAY) {  // mo_j ?
                     u = "mo";
-                } else if (baf[1] == 360 * Calendar2.SECONDS_PER_DAY) {  // a_j ?
+                } else if (baf[1] == 360 * ErddapCalendar2.SECONDS_PER_DAY) {  // a_j ?
                     u = "a";
                 } else {
                     u = udunitsToUcum(udunits.substring(0, sincePo)); //shouldn't happen, but weeks? microsec?
@@ -135,7 +135,7 @@ public class EDUnits {
                 int po2 = po + 1;
                 while (po2 < udLength &&
                         (isUdunitsLetter(udunits.charAt(po2)) || udunits.charAt(po2) == '_' ||
-                                String2.isDigit(udunits.charAt(po2)))) {
+                                ErddapString2.isDigit(udunits.charAt(po2)))) {
                     po2++;
                 }
                 String tUdunits = udunits.substring(po, po2);
@@ -145,7 +145,7 @@ public class EDUnits {
                 //if it ends in digits, treat as exponent
                 //find contiguous digits at end
                 int firstDigit = tUdunits.length();
-                while (firstDigit >= 1 && String2.isDigit(tUdunits.charAt(firstDigit - 1))) {
+                while (firstDigit >= 1 && ErddapString2.isDigit(tUdunits.charAt(firstDigit - 1))) {
                     firstDigit--;
                 }
                 String exponent = tUdunits.substring(firstDigit);
@@ -175,19 +175,19 @@ public class EDUnits {
             }
 
             //number
-            if (ch == '-' || String2.isDigit(ch)) {
+            if (ch == '-' || ErddapString2.isDigit(ch)) {
                 //find contiguous digits
                 int po2 = po + 1;
-                while (po2 < udLength && String2.isDigit(udunits.charAt(po2))) {
+                while (po2 < udLength && ErddapString2.isDigit(udunits.charAt(po2))) {
                     po2++;
                 }
 
                 //decimal place + digit (not just .=multiplication)
                 boolean hasDot = false;
-                if (po2 < udLength - 1 && udunits.charAt(po2) == '.' && String2.isDigit(udunits.charAt(po2 + 1))) {
+                if (po2 < udLength - 1 && udunits.charAt(po2) == '.' && ErddapString2.isDigit(udunits.charAt(po2 + 1))) {
                     hasDot = true;
                     po2 += 2;
-                    while (po2 < udLength && String2.isDigit(udunits.charAt(po2))) {
+                    while (po2 < udLength && ErddapString2.isDigit(udunits.charAt(po2))) {
                         po2++;
                     }
                 }
@@ -195,10 +195,10 @@ public class EDUnits {
                 //exponent?     e-  or e{digit}
                 boolean hasE = false;
                 if (po2 < udLength - 1 && Character.toLowerCase(udunits.charAt(po2)) == 'e' &&
-                        (udunits.charAt(po2 + 1) == '-' || String2.isDigit(udunits.charAt(po2 + 1)))) {
+                        (udunits.charAt(po2 + 1) == '-' || ErddapString2.isDigit(udunits.charAt(po2 + 1)))) {
                     hasE = true;
                     po2 += 2;
-                    while (po2 < udLength && String2.isDigit(udunits.charAt(po2))) {
+                    while (po2 < udLength && ErddapString2.isDigit(udunits.charAt(po2))) {
                         po2++;
                     }
                 }
@@ -207,7 +207,7 @@ public class EDUnits {
 
                 //convert floating point to rational number
                 if (hasDot || hasE) {
-                    int rational[] = String2.toRational(String2.parseDouble(num));
+                    int rational[] = ErddapString2.toRational(ErddapString2.parseDouble(num));
                     if (rational[1] == Integer.MAX_VALUE) {
                         ucum.append(num); //ignore the trouble !!! ???
                     } else if (rational[1] == 0) //includes {0, 0}
@@ -284,7 +284,7 @@ public class EDUnits {
     }
 
     private static boolean isUdunitsLetter(char ch) {
-        return String2.isLetter(ch) || ch == 'µ' || ch == '°';
+        return ErddapString2.isLetter(ch) || ch == 'µ' || ch == '°';
     }
 
     /**
@@ -402,7 +402,7 @@ public class EDUnits {
                 int po2 = po + 1;
                 while (po2 < ucLength &&
                         (isUcumLetter(ucum.charAt(po2)) || ucum.charAt(po2) == '_' ||
-                                String2.isDigit(ucum.charAt(po2)))) {
+                                ErddapString2.isDigit(ucum.charAt(po2)))) {
                     po2++;
                 }
                 String tUcum = ucum.substring(po, po2);
@@ -412,7 +412,7 @@ public class EDUnits {
                 //if it ends in digits, treat as exponent
                 //find contiguous digits at end
                 int firstDigit = tUcum.length();
-                while (firstDigit >= 1 && String2.isDigit(tUcum.charAt(firstDigit - 1))) {
+                while (firstDigit >= 1 && ErddapString2.isDigit(tUcum.charAt(firstDigit - 1))) {
                     firstDigit--;
                 }
                 String exponent = tUcum.substring(firstDigit);
@@ -442,18 +442,18 @@ public class EDUnits {
             }
 
             //number
-            if (ch == '-' || String2.isDigit(ch)) {
+            if (ch == '-' || ErddapString2.isDigit(ch)) {
                 //find contiguous digits
                 int po2 = po + 1;
-                while (po2 < ucLength && String2.isDigit(ucum.charAt(po2))) {
+                while (po2 < ucLength && ErddapString2.isDigit(ucum.charAt(po2))) {
                     po2++;
                 }
 
                 // ^-  or ^{digit}
                 if (po2 < ucLength - 1 && Character.toLowerCase(ucum.charAt(po2)) == '^' &&
-                        (ucum.charAt(po2 + 1) == '-' || String2.isDigit(ucum.charAt(po2 + 1)))) {
+                        (ucum.charAt(po2 + 1) == '-' || ErddapString2.isDigit(ucum.charAt(po2 + 1)))) {
                     po2 += 2;
-                    while (po2 < ucLength && String2.isDigit(ucum.charAt(po2))) {
+                    while (po2 < ucLength && ErddapString2.isDigit(ucum.charAt(po2))) {
                         po2++;
                     }
                 }
@@ -498,7 +498,7 @@ public class EDUnits {
     }
 
     private static boolean isUcumLetter(char ch) {
-        return String2.isLetter(ch) ||
+        return ErddapString2.isLetter(ch) ||
                 ch == '[' || ch == ']' ||
                 ch == '{' || ch == '}' ||
                 ch == 'µ' || ch == '\'';
@@ -580,7 +580,7 @@ public class EDUnits {
     public static HashMap<String, String> getHashMapStringString(InputStream inputStream, String charset)
             throws IOException {
         HashMap<String, String> ht = new HashMap<>();
-        StringArray sa = StringArray.fromInputStream(inputStream, charset);
+        ErddapStringArray sa = ErddapStringArray.fromInputStream(inputStream, charset);
         int n = sa.size();
         int i = 0;
         while (i < n) {

@@ -1,4 +1,4 @@
-package gov.noaa.pfel.erddap.util;
+package ucar.nc2.ogc.erddap.util;
 
 import org.junit.Assert;
 import org.junit.Test;
@@ -6,7 +6,7 @@ import org.junit.Test;
 /**
  * Created by cwardgar on 2014/03/12.
  */
-public class EDUnitsTest {
+public class ErddapEDUnitsTest {
     /**
      * This tests udunitsToUcum.
      * The most likely bugs are:
@@ -707,12 +707,12 @@ public class EDUnitsTest {
     }
 
     private static void testUdunitsToUcum(String udunits, String expectedUcum) {
-        String actualUcum = EDUnits.udunitsToUcum(udunits);
+        String actualUcum = ErddapEDUnits.udunitsToUcum(udunits);
         Assert.assertEquals(expectedUcum, actualUcum);
     }
 
     private static void testUcumToUdunits(String ucum, String expectedUdunits) {
-        String actualUdunits = EDUnits.ucumToUdunits(ucum);
+        String actualUdunits = ErddapEDUnits.ucumToUdunits(ucum);
         Assert.assertEquals(expectedUdunits, actualUdunits);
     }
 }
