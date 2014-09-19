@@ -33,6 +33,7 @@
 
 package ucar.nc2.grib.grib1;
 
+import ucar.ma2.DataType;
 import ucar.nc2.grib.GribData;
 import ucar.nc2.grib.QuasiRegular;
 import ucar.nc2.time.CalendarDate;
@@ -224,8 +225,29 @@ public class Grib1Record {
     GribData.Info info = dataSection.getBinaryDataInfo(raf);
     info.decimalScaleFactor = pdss.getDecimalScale();
     info.bitmapLength = (bitmap == null) ? 0 : bitmap.getLength(raf);
-    info.ndataPoints = gdss.getGDS().getNpts();
+    info.nPoints = gdss.getGDS().getNpts();
     info.msgLength = is.getMessageLength();
+
+    if (bitmap == null) {
+      info.ndataPoints = info.nPoints;
+    } else {
+      int bits = 0;   // have to count the bits to see how many data values are stored
+      byte[] bm = bitmap.getBitmap(raf);
+      for (byte b : bm) {
+         short s = DataType.unsignedByteToShort(b);
+         bits += Long.bitCount(s);
+       }
+      info.ndataPoints = bits;
+    }
+
     return info;
+  }
+
+    // debugging - do not use
+  public int[] readRawData(RandomAccessFile raf) throws IOException {
+    Grib1Gds gds = gdss.getGDS();
+    Grib1DataReader reader = new Grib1DataReader(pdss.getDecimalScale(), gds.getScanMode(), gds.getNx(), gds.getNy(), gds.getNpts(), dataSection.getStartingPosition());
+    byte[] bm = (bitmap == null) ? null : bitmap.getBitmap(raf);
+    return reader.getDataRaw(raf, bm);
   }
 }

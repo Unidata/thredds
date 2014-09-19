@@ -219,7 +219,7 @@ public abstract class Field {
     setEditValue(newValue);
   }
 
-  private List<FieldValidator> validators = new ArrayList<FieldValidator>();
+  private List<FieldValidator> validators = new ArrayList<>();
 
   /**
    * Add a validator to this field.
@@ -231,7 +231,8 @@ public abstract class Field {
   protected boolean validate( StringBuffer buff) {
     if (!_validate(buff)) return false;
     Object editValue = getEditValue();
-    assert editValue != null;
+    if (editValue == null)
+      return false;
 
     for (FieldValidator v : validators) {
       if (!v.validate(this, editValue, buff)) return false;
@@ -1103,8 +1104,6 @@ public abstract class Field {
    */
   static public class TextCombo extends Field {
     protected ComboBox combo;
-    private boolean eventsOK = true;
-    private boolean debugCombo = false;
 
     /** Constructor.
      *  @param fldName name of the field, must be unique within the store.
@@ -1152,9 +1151,7 @@ public abstract class Field {
     /** set value of editComponent, must be a List */
     protected void setEditValue(Object value) {
       if (value == null) return;
-      eventsOK = false;
       combo.setItemList( (java.util.List) value);
-      eventsOK = true;
     }
 
     /** Get value from Store, will be an ArrayList or null */

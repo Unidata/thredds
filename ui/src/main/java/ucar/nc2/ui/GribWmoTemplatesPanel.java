@@ -2,7 +2,6 @@ package ucar.nc2.ui;
 
 import ucar.nc2.grib.grib2.table.WmoTemplateTable;
 import ucar.nc2.ui.widget.BAMutil;
-import ucar.nc2.ui.widget.FileManager;
 import ucar.nc2.ui.widget.IndependentWindow;
 import ucar.nc2.ui.widget.TextHistoryPane;
 import ucar.util.prefs.PreferencesExt;
@@ -26,12 +25,10 @@ public class GribWmoTemplatesPanel extends JPanel {
   private PreferencesExt prefs;
 
   private BeanTable codeTable, entryTable;
-  private JSplitPane split, split2;
+  private JSplitPane split;
 
   private TextHistoryPane compareTA;
   private IndependentWindow infoWindow;
-
-  private FileManager fileChooser;
 
   public GribWmoTemplatesPanel(final PreferencesExt prefs, JPanel buttPanel) {
     this.prefs = prefs;
@@ -47,7 +44,7 @@ public class GribWmoTemplatesPanel extends JPanel {
     entryTable = new BeanTable(EntryBean.class, (PreferencesExt) prefs.node("EntryBean"), false);
     entryTable.addListSelectionListener(new ListSelectionListener() {
       public void valueChanged(ListSelectionEvent e) {
-        EntryBean csb = (EntryBean) entryTable.getSelectedBean();
+        entryTable.getSelectedBean();
       }
     });
 
@@ -96,14 +93,13 @@ public class GribWmoTemplatesPanel extends JPanel {
     //prefs.putBeanObject("InfoWindowBounds2", infoWindow2.getBounds());
     prefs.putInt("splitPos", split.getDividerLocation());
     //prefs.putInt("splitPos2", split2.getDividerLocation());
-    if (fileChooser != null) fileChooser.save();
   }
 
   public void setTable(WmoTemplateTable.Version v) {
     try {
       WmoTemplateTable.GribTemplates wmo = WmoTemplateTable.readXml(v);
       List<WmoTemplateTable> codes = wmo.list;
-      List<CodeBean> dds = new ArrayList<CodeBean>(codes.size());
+      List<CodeBean> dds = new ArrayList<>(codes.size());
       for (WmoTemplateTable code : codes) {
         dds.add(new CodeBean(code));
       }
@@ -117,7 +113,7 @@ public class GribWmoTemplatesPanel extends JPanel {
 
 
   public void setEntries(WmoTemplateTable template) {
-    java.util.List<EntryBean> beans = new ArrayList<EntryBean>(template.flds.size());
+    java.util.List<EntryBean> beans = new ArrayList<>(template.flds.size());
     for (WmoTemplateTable.Field d : template.flds) {
       beans.add(new EntryBean(d));
     }

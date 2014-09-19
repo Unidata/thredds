@@ -34,6 +34,7 @@
 package ucar.nc2.writer;
 
 import ucar.nc2.grib.GribData;
+import ucar.nc2.grib.grib1.Grib1RecordScanner;
 import ucar.nc2.grib.grib2.Grib2RecordScanner;
 import ucar.nc2.grib.grib2.Grib2SectionDataRepresentation;
 import ucar.unidata.io.RandomAccessFile;
@@ -58,13 +59,13 @@ public class TestGribSize {
     makeSummaryHeader();
   }
 
-  private int doGrib2(boolean showDetail, String filename) {
-    int nrecords = 0;
-    int nDataPoints = 0;
+  private long doGrib2(boolean showDetail, String filename) {
+    long nrecords = 0;
+    long nDataPoints = 0;
+    long nPoints = 0;
     long msgSize = 0;
     long dataSize = 0;
     long bitmapSize = 0;
-    long readTime = 0;
     long start = System.nanoTime();
 
     File f = new File(filename);
@@ -75,9 +76,9 @@ public class TestGribSize {
       while (reader.hasNext()) {
         ucar.nc2.grib.grib2.Grib2Record gr = reader.next();
 
-        Grib2SectionDataRepresentation drss = gr.getDataRepresentationSection();
-        int template = drss.getDataTemplate();
-        if (template != 40) continue; // skip all but JPEG-2000
+        //Grib2SectionDataRepresentation drss = gr.getDataRepresentationSection();
+        //int template = drss.getDataTemplate();
+        // if (template != 40) continue; // skip all but JPEG-2000
 
         GribData.Info info = gr.getBinaryDataInfo(raf);
         int nBits = info.numberOfBits;
@@ -93,6 +94,54 @@ public class TestGribSize {
         dataSize += info.dataLength;
         bitmapSize += info.bitmapLength;
         nDataPoints += info.ndataPoints;
+        nPoints += info.nPoints;
+        //readTime += gribReadTime;
+
+        if (nrecords % 1000 == 0) System.out.printf("%d nsecs / record%n", gribReadTime/1000);
+      }
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
+
+    if (nrecords > 0)
+      summaryReport(filename, 2, fileSize, nPoints, nDataPoints, nrecords, msgSize, dataSize, bitmapSize);
+
+    return nrecords;
+  }
+
+  private long doGrib1(boolean showDetail, String filename) {
+    long nrecords = 0;
+    long nDataPoints = 0;
+    long nPoints = 0;
+    long msgSize = 0;
+    long dataSize = 0;
+    long bitmapSize = 0;
+    long readTime = 0;
+    long start = System.nanoTime();
+
+    File f = new File(filename);
+    long fileSize = f.length();
+
+    try (RandomAccessFile raf = new RandomAccessFile(filename, "r")) {
+      Grib1RecordScanner reader = new Grib1RecordScanner(raf);
+      while (reader.hasNext()) {
+        ucar.nc2.grib.grib1.Grib1Record gr = reader.next();
+
+        GribData.Info info = gr.getBinaryDataInfo(raf);
+        int nBits = info.numberOfBits;
+        if (nBits == 0) continue; // skip constant fields
+
+        //float[] fdata = gr.readData(raf);
+        long end = System.nanoTime();
+        long gribReadTime = end - start;
+        start = end;
+
+        nrecords++;
+        msgSize += info.msgLength;
+        dataSize += info.dataLength;
+        bitmapSize += info.bitmapLength;
+        nDataPoints += info.ndataPoints;
+        nPoints += info.nPoints;
         readTime += gribReadTime;
 
         if (nrecords % 1000 == 0) System.out.printf("%d nsecs / record%n", gribReadTime/1000);
@@ -102,7 +151,7 @@ public class TestGribSize {
     }
 
     if (nrecords > 0)
-      summaryReport(filename, fileSize, nDataPoints, nrecords, readTime, msgSize, dataSize, bitmapSize);
+      summaryReport(filename, 1, fileSize, nPoints, nDataPoints, nrecords, msgSize, dataSize, bitmapSize);
 
     return nrecords;
   }
@@ -110,20 +159,21 @@ public class TestGribSize {
   private void makeSummaryHeader() {
     Formatter f = new Formatter();
 
-    f.format("%s, %s, %s, %s, %s, %s, %s, %s, %s, %s%n", "file", "fileSize", "nDataPoints", "nrecords", "readTime", "gribFileSize", "dataSize", "bitMapSize", "ratio", "dataR");
+    f.format("%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s%n", "file", "edition", "fileSize", "nPoints", "nDataPoints", "nrecords", "gribFileSize", "dataSize", "bitMapSize", "ratio", "dataR", "float size", "float/grib");
 
     System.out.printf("%s%n", f.toString());
     if (summaryOut != null) summaryOut.printf("%s", f.toString());
   }
 
-  private void summaryReport(String filename, long fileSize, int nDataPoints, int nrecords, long readTime, long msgSize, long dataSize, long bitmapSize) {
+  private void summaryReport(String filename, int edition, long fileSize, long nPoints, long nDataPoints, long nrecords, long msgSize, long dataSize, long bitmapSize) {
     // double took = ((double)System.nanoTime() - start) * 1.0e-9;
 
     Formatter f = new Formatter();
-    long readTimeMsecs = readTime / 1000 / 1000;
     double ratio = ((double)(dataSize+bitmapSize)) / msgSize;
     double dataR = ((double)(dataSize)) / msgSize;
-    f.format("%s, %d, %d, %d, %d, %d, %d, %d, %f, %f%n", filename, fileSize, nDataPoints, nrecords, readTimeMsecs, msgSize, dataSize, bitmapSize, ratio, dataR);
+    long floatSize = nPoints * 4;
+    double floatRatio = ((double)floatSize) / fileSize;
+    f.format("%s, %d, %d, %d, %d, %d, %d, %d, %d, %f, %f, %d, %f%n", filename, edition, fileSize, nPoints, nDataPoints, nrecords, msgSize, dataSize, bitmapSize, ratio, dataR, floatSize, floatRatio);
 
     System.out.printf("%s%n", f.toString());
     summaryOut.printf("%s", f.toString());
@@ -141,14 +191,17 @@ public class TestGribSize {
     }
 
     public int doAct(String filename) throws IOException {
-      readSizes.doGrib2(showDetail, filename);
+      if (filename.endsWith("grib2"))
+        readSizes.doGrib2(showDetail, filename);
+      else
+        readSizes.doGrib1(showDetail, filename);
       return 1;
     }
   }
 
 
-  public static void main2(String[] args) throws IOException {
-    outDir = new File("E:/grib2nc/size/");
+  public static void main(String[] args) throws IOException {
+    outDir = new File("E:/grib2nc/size2/");
     outDir.mkdirs();
     summaryOut = new PrintStream(new File(outDir, "summary.csv"));
 
@@ -163,7 +216,7 @@ public class TestGribSize {
     }
   }
 
-  public static void main(String[] args) throws IOException {
+  public static void main2(String[] args) throws IOException {
     outDir = new File("E:/grib2nc/size/");
     outDir.mkdirs();
     summaryOut = new PrintStream(new File(outDir, "size.csv"));
@@ -183,8 +236,8 @@ public class TestGribSize {
     @Override
     public boolean accept(File pathname) {
       String name = pathname.getName();
-      if (name.contains("GEFS_Global_1p0deg_Ensemble")) return false; // too big
-      return name.endsWith(".grib2");
+      // if (name.contains("GEFS_Global_1p0deg_Ensemble")) return false; // too big
+      return name.endsWith(".grib1") || name.endsWith(".grib2");
     }
   }
 

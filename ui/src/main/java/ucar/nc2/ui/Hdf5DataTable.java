@@ -51,10 +51,7 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import java.awt.*;
 import java.awt.event.ActionEvent;
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.IOException;
-import java.io.PrintStream;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.Formatter;
 
@@ -68,7 +65,7 @@ public class Hdf5DataTable extends JPanel {
   private PreferencesExt prefs;
 
   private ucar.util.prefs.ui.BeanTable objectTable;
-  private JSplitPane splitH, split, split2;
+  private JSplitPane splitH;
 
   private TextHistoryPane infoTA;
 
@@ -172,18 +169,16 @@ public class Hdf5DataTable extends JPanel {
     closeOpenFiles();
 
     this.location = raf.getLocation();
-    long start = System.nanoTime();
-    java.util.List<VarBean> beanList = new ArrayList<VarBean>();
+    java.util.List<VarBean> beanList = new ArrayList<>();
 
     iosp = new H5iosp();
     NetcdfFile ncfile = new MyNetcdfFile(iosp, location);
     try {
       iosp.open(raf, ncfile, null);
     } catch (Throwable t) {
-      ByteArrayOutputStream bos = new ByteArrayOutputStream(20000);
-      PrintStream s = new PrintStream(bos);
-      t.printStackTrace(s);
-      infoTA.setText(bos.toString());
+      StringWriter sw = new StringWriter(20000);
+      t.printStackTrace(new PrintWriter(sw));
+      infoTA.setText(sw.toString());
     }
 
     for (Variable v : ncfile.getVariables()) {
@@ -280,7 +275,6 @@ public class Hdf5DataTable extends JPanel {
       f.format("%n  nrows = %d totalElems=%d avg=%f%n", countRows, countElems, avg);
     } catch (IOException e) {
       e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-      return;
     }
   }
 

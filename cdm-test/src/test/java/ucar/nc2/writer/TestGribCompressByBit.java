@@ -41,6 +41,7 @@ import org.tukaani.xz.XZInputStream;
 import org.tukaani.xz.XZOutputStream;
 import ucar.nc2.grib.GribData;
 import ucar.nc2.grib.collection.Grib2CollectionBuilder;
+import ucar.nc2.grib.grib1.Grib1RecordScanner;
 import ucar.nc2.grib.grib2.Grib2Record;
 import ucar.nc2.grib.grib2.Grib2RecordScanner;
 import ucar.nc2.grib.grib2.Grib2SectionDataRepresentation;
@@ -143,7 +144,7 @@ public class TestGribCompressByBit {
         byte[] bdata;
         if (action == Action.rawInts) {
           rawData = gr.readRawData(raf);
-          assert rawData.length == npoints;
+          // assert rawData.length == npoints;
           bdata = GribData.convertToBytes(rawData);
         } else if (action == Action.floatShaved) {
             bdata = shaveToBytes(fdata, nBits);
@@ -154,6 +155,64 @@ public class TestGribCompressByBit {
         // (int nbits, int dataPoints, int gribMsgLength, long gribReadTime, Bean bean, byte[] bdata, int[] rawData, Grib2Record gr) throws IOException {
 
         makeDetailReport(nBits, info.ndataPoints, info.bitmapLength, info.msgLength, gribReadTime, new Bean(info, fdata), bdata, rawData, gr);
+
+        nrecords++;
+        tot_nrecords++;
+        file_gribsize += info.msgLength;
+        file_gribread += gribReadTime;
+      }
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
+
+    if (nrecords > 0)
+      summaryReport(filename, npoints, nrecords);
+
+    nfiles++;
+    return nrecords;
+  }
+
+  private int doGrib1(boolean showDetail, String filename) {
+    reset();
+    int nrecords = 0;
+    int npoints = 0;
+
+    try (RandomAccessFile raf = new RandomAccessFile(filename, "r")) {
+      Grib1RecordScanner reader = new Grib1RecordScanner(raf);
+      while (reader.hasNext()) {
+        ucar.nc2.grib.grib1.Grib1Record gr = reader.next();
+
+        //Grib2SectionDataRepresentation drss = gr.getDataRepresentationSection();
+        //int template = drss.getDataTemplate();
+        //if (template != 40) continue; // skip all but JPEG-2000
+
+        GribData.Info info = gr.getBinaryDataInfo(raf);
+        int nBits = info.numberOfBits;
+        if (nBits == 0) continue; // skip constant fields
+
+        long start2 = System.nanoTime();
+        float[] fdata = gr.readData(raf);
+        long end2 = System.nanoTime();
+        long gribReadTime = end2 - start2; // LOOK this include IO, can we just test uncompress ??
+        if (npoints == 0) {
+          npoints = fdata.length;
+          makeDetailHeader(showDetail, filename, action, fdata.length);
+        }
+
+        int[] rawData = null;
+        byte[] bdata;
+        if (action == Action.rawInts) {
+          rawData = gr.readRawData(raf);
+          bdata = GribData.convertToBytes(rawData);
+        } else if (action == Action.floatShaved) {
+            bdata = shaveToBytes(fdata, nBits);
+        } else {
+          bdata = GribData.convertToBytes(fdata);
+        }
+
+        // (int nbits, int dataPoints, int gribMsgLength, long gribReadTime, Bean bean, byte[] bdata, int[] rawData, Grib2Record gr) throws IOException {
+
+        makeDetailReport(nBits, info.ndataPoints, info.bitmapLength, info.msgLength, gribReadTime, new Bean(info, fdata), bdata, rawData, null);
 
         nrecords++;
         tot_nrecords++;
@@ -206,11 +265,11 @@ public class TestGribCompressByBit {
     System.out.printf("%s", f.toString());
   }
 
-  private void makeDetailReport(int nbits, int dataPoints, int bitmapLength, long gribMsgLength, long gribReadTime, Bean bean, byte[] bdata, int[] rawData, Grib2Record gr) throws IOException {
+  private void makeDetailReport(int nbits, int dataPoints, int bitmapLength, long gribMsgLength, long gribReadTime, Bean bean, byte[] bdata, int[] rawData, Grib2Record gr2) throws IOException {
     Formatter f = new Formatter();
 
     double entropyI = doEntropyI && rawData != null ? GribData.entropy(nbits, rawData) : 0.0;
-    if (Double.isNaN(entropyI)) showData(gr, bean, rawData);  // debug
+    if (gr2 != null && Double.isNaN(entropyI)) showData(gr2, bean, rawData);  // debug
 
     double entropyB = doEntropy ? GribData.entropy(bdata) : 0.0;
     f.format("%d, %d, %d, %d, %d, ", nbits, dataPoints, bitmapLength, gribMsgLength, gribReadTime/1000/1000);
@@ -482,7 +541,7 @@ public class TestGribCompressByBit {
   }
 
   public static byte[] shavePrecision(float[] org_data, int bits) {
-    double expectedPrecision = Math.pow(2.0, -(bits+1));
+    double expectedPrecision = Math.pow(2.0, -(bits + 1));
 
     int bitMask = Grib2NetcdfWriter.getBitMask(bits + 1);
     ByteBuffer bb = ByteBuffer.allocate(org_data.length * 4);
@@ -771,7 +830,10 @@ public class TestGribCompressByBit {
     }
 
     public int doAct(String filename) throws IOException {
-      compressByBit.doGrib2(showDetail, filename);
+      if (filename.endsWith("grib1"))
+        compressByBit.doGrib1(showDetail, filename);
+      else
+        compressByBit.doGrib2(showDetail, filename);
 
       if (detailOut != null)
         detailOut.close();
@@ -782,7 +844,7 @@ public class TestGribCompressByBit {
 
 
   public static void main(String[] args) throws IOException {
-    outDir = new File("E:/grib2nc/test/");
+    outDir = new File("E:/grib2nc/ecmwf-ints/");
     outDir.mkdirs();
     summaryOut = new PrintStream(new File(outDir, "summary.csv"));
 
@@ -790,7 +852,7 @@ public class TestGribCompressByBit {
       ExtraAction[] extras = new ExtraAction[]{};
       TestGribCompressByBit compressByBit = new TestGribCompressByBit( Action.rawInts, extras, Algorithm.deflate, Algorithm.bzip2T, Algorithm.zip7);
       CompressReportAction test = new CompressReportAction(compressByBit, true);
-      test.doAct("Q:\\cdmUnitTest\\tds\\ncep\\WW3_Coastal_US_West_Coast_20140804_1800.grib2");
+      test.doAct("E:/work/ecmwf/oper.sfc.grib1");
 
     } finally {
       summaryOut.close();

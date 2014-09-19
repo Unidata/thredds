@@ -65,8 +65,8 @@ public class Grib1ParamTables {
   static private final Object lock = new Object();
   static private int standardTablesStart = 0; // heres where the standard tables start - keep track so user additions can go first
 
-  static private final Lookup standardLookup;
-  static private final Grib1ParamTableReader defaultTable;
+  static private Lookup standardLookup;
+  static private Grib1ParamTableReader defaultTable;
 
   static {
     try {
@@ -82,8 +82,8 @@ public class Grib1ParamTables {
       standardLookup.tables = new CopyOnWriteArrayList<>(standardLookup.tables); // in case user adds tables
       defaultTable = standardLookup.getParameterTable(0, -1, -1); // user cannot override default
 
-    } catch (IOException ioe) {
-      throw new RuntimeException(ioe);
+    } catch (Throwable t) {
+      logger.warn("Grib1ParamTables init failed: ", t);
     }
   }
 

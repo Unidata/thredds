@@ -46,9 +46,7 @@ import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import java.awt.*;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.PrintStream;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.Formatter;
 
@@ -155,18 +153,16 @@ public class Hdf4Table extends JPanel {
     closeOpenFiles();
 
     this.location = raf.getLocation();
-    long start = System.nanoTime();
-    java.util.List<TagBean> beanList = new ArrayList<TagBean>();
+    java.util.List<TagBean> beanList = new ArrayList<>();
 
     iosp = new H4iosp();
     NetcdfFile ncfile = new MyNetcdfFile(iosp);
     try {
       iosp.open(raf, ncfile, null);
     } catch (Throwable t) {
-      ByteArrayOutputStream bos = new ByteArrayOutputStream(20000);
-      PrintStream s = new PrintStream(bos);
-      t.printStackTrace(s);
-      dumpTA.setText( bos.toString());      
+      StringWriter sw = new StringWriter(20000);
+      t.printStackTrace(new PrintWriter(sw));
+      dumpTA.setText(sw.toString());
     }
 
     header = (H4header) iosp.sendIospMessage("header");

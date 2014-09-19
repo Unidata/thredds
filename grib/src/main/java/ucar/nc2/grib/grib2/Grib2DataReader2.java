@@ -137,6 +137,7 @@ public class Grib2DataReader2 {
 
     if (dataTemplate != 40) return null;
 
+    // LOOK jpeg2k only
     return getData40raw(raf, (Grib2Drs.Type40) gdrs);
   }
 
