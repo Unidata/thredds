@@ -33,13 +33,9 @@
 package ucar.nc2.ui.geoloc;
 
 import javax.swing.*;
-import java.util.ArrayList;
 
 public class ProjectionParamPanel extends JPanel {
-    ProjectionManager.ProjectionClass projClass;
-    String name;
-    java.util.List<ProjectionManager.ProjectionParam> paramList = new ArrayList<ProjectionManager.ProjectionParam>();
-    boolean debug = true;
+    String name = "ProjectionParamPanel";
 
     public String toString() {
       return name;

@@ -221,7 +221,6 @@ feats:while (featList.hasNext()) {
     ProjectionImpl project = null;
     ArrayList shapeList = null;
     boolean newProjection = true;
-    double centerLon = 0.0;
 
     FeatureSet(List featureList, double minDist) {
       this.featureList = featureList;
@@ -234,16 +233,12 @@ feats:while (featList.hasNext()) {
 
       if (project.isLatLon()) {   // why?
         LatLonProjection llproj = (LatLonProjection) project;
-        centerLon = llproj.getCenterLon();
       }
     }
 
     Iterator getShapes() { return shapeList.iterator(); }
 
     void createFeatures() {
-      ProjectionPointImpl thisW = new ProjectionPointImpl();
-      ProjectionPointImpl lastW = new ProjectionPointImpl();
-
       featureList = new ArrayList();
 
       Iterator iter = GisFeatureRendererMulti.this.getFeatures().iterator();   // this is the original, full resolution set

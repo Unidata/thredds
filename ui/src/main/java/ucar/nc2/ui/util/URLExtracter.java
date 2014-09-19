@@ -49,9 +49,7 @@ public class URLExtracter {
   private boolean wantURLS = false;
   private boolean isTitle;
 
-  private StringBuffer textBuffer;
   private boolean debug = false,  debugIMG = false;
-  private boolean dump = true;
 
   public URLExtracter() {
     ParserGetter kit = new ParserGetter();
