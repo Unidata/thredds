@@ -189,6 +189,8 @@ public class Variable extends CDMNode implements VariableIF, ProxyReader, Attrib
       g = ncfile.getRootGroup();
       super.setParentGroup(g);
     }
+
+    assert g != null;
     return g;
   }
 

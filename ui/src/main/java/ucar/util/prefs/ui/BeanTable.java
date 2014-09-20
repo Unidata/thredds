@@ -619,7 +619,7 @@ public class BeanTable extends JPanel {
     protected TableBeanModel(Class beanClass) {
 
       // get bean info
-      BeanInfo info = null;
+      BeanInfo info;
       try {
         if (!beanClass.isInterface())
           info = Introspector.getBeanInfo(beanClass, Object.class);
@@ -627,6 +627,7 @@ public class BeanTable extends JPanel {
           info = Introspector.getBeanInfo(beanClass);  // allows interfaces to be beans
       } catch (IntrospectionException e) {
         e.printStackTrace();
+        return;
       }
 
       if (debugBean)
@@ -637,7 +638,7 @@ public class BeanTable extends JPanel {
       MethodDescriptor[] mds = info.getMethodDescriptors();
       for (MethodDescriptor md : mds) {
         Method m = md.getMethod();
-        if (m.getName().equals("editableProperties")) {
+        if (m != null && m.getName().equals("editableProperties")) {
           try {
             editableProperties = (String) m.invoke(null, (Object[]) null);  // try static
             if (debugBean) System.out.println(" static editableProperties: " + editableProperties);

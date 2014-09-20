@@ -615,8 +615,11 @@ public class ServletLogTable extends JPanel {
       last = log;
       current.add(log, miscList);
     }
-    current.finish(last, undoneList);
-    completeMerge.addAll(current.mergeList);
+
+    if (current != null) {
+      current.finish(last, undoneList);
+      completeMerge.addAll(current.mergeList);
+    }
 
     uptimeTable.setBeans(uptimeList);
     undoneTable.setBeans(undoneList);

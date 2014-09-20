@@ -248,7 +248,12 @@ public class GribFilesPanel extends JPanel {
       first = reader.next();
       break;
     }
-    return new Grib1Bean(mf, first);
+
+    if (first == null) {
+      return null;
+    } else {
+      return new Grib1Bean(mf, first);
+    }
   }
 
   ////////////////////////////////////////////////////////////////////////////

@@ -32,20 +32,23 @@
  */
 package ucar.nc2.ui.image;
 
-import java.awt.*;
-import java.awt.event.*;
-import java.awt.image.*;
-import java.net.URL;
-import java.net.MalformedURLException;
-import java.io.File;
-import java.util.Random;
-import javax.swing.*;
-import javax.swing.event.*;
-
+import ucar.nc2.dt.GridDatatype;
 import ucar.nc2.dt.image.image.ImageDatasetFactory;
 import ucar.nc2.dt.image.image.ImageFactoryRandom;
-import ucar.nc2.dt.GridDatatype;
 import ucar.nc2.ui.widget.BAMutil;
+
+import javax.swing.*;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.util.Random;
 
 /**
  *  *
@@ -206,16 +209,16 @@ public class ImageViewPanel extends JPanel {
      this.location = location;
 
      if (location.startsWith("http")) {
-       URL url = null;
+       URL url;
        try {
          url = new URL( location);
        } catch (MalformedURLException e) {
          e.printStackTrace();
+         return false;
        }
 
        // uses ImageIO.createImageInputStream()
        pixPane.setPicture( url, "legendParam", 0.0);
-
      } else {
 
       try {
