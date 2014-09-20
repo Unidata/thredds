@@ -294,13 +294,13 @@ public class PersistentBean implements PersistenceManager {
     private Map<String,PropertyDescriptor> properties = new LinkedHashMap<String,PropertyDescriptor>();
 
     PropertyMap( Class beanClass) {
-
       // get bean info
-      BeanInfo info = null;
+      BeanInfo info;
       try {
         info = Introspector.getBeanInfo(beanClass, Object.class);
       } catch (IntrospectionException e) {
         e.printStackTrace();
+        return;
       }
 
       if (debugBeanParser)

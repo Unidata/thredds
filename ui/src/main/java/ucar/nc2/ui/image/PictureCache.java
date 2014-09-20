@@ -12,7 +12,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 The license is in gpl.txt.
 See http://www.gnu.org/copyleft/gpl.html for the details.
 */
-        package ucar.nc2.ui.image;
+package ucar.nc2.ui.image;
 
 import java.util.*;
 import java.net.*;
@@ -169,7 +169,7 @@ public class PictureCache  {
 	/** 
 	 *  clears out all images in the cache. Important after OutOfMemoryErrors
 	 */
-	public static void clear() {
+	public static synchronized void clear() {
 		Tools.log("PictureCache.clear: Zapping entire cache");
 		pictureCache.clear();
 	}
@@ -178,7 +178,7 @@ public class PictureCache  {
 	/**
 	 *  method to inspect the cache
 	 */
-	public static void reportCache() {
+	public static synchronized void reportCache() {
 		Tools.log("   PictureCache.reportCache: cache contains: " 
 			+ Integer.toString( pictureCache.size() )
 			+ " max: " 

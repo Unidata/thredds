@@ -7,10 +7,7 @@ import ucar.util.prefs.PreferencesExt;
 
 import javax.swing.*;
 import java.awt.*;
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.IOException;
-import java.io.PrintStream;
+import java.io.*;
 import java.util.*;
 
 /**
@@ -66,9 +63,9 @@ public abstract class ReportPanel extends JPanel {
       reportPane.gotoTop();
 
     } catch (IOException ioe) {
-      ByteArrayOutputStream bos = new ByteArrayOutputStream(50000);
-      ioe.printStackTrace(new PrintStream(bos));
-      f.format(bos.toString());
+      StringWriter sw = new StringWriter(50000);
+      ioe.printStackTrace(new PrintWriter(sw));
+      f.format(sw.toString());
       ioe.printStackTrace();
     }
   }
@@ -102,9 +99,9 @@ public abstract class ReportPanel extends JPanel {
     try {
       return CollectionAbstract.open(spec, spec, null, f);
     } catch (IOException e) {
-      ByteArrayOutputStream bos = new ByteArrayOutputStream(10000);
-      e.printStackTrace(new PrintStream(bos));
-      reportPane.setText(bos.toString());
+      StringWriter sw = new StringWriter(10000);
+      e.printStackTrace(new PrintWriter(sw));
+      reportPane.setText(sw.toString());
       return null;
     }
   }
@@ -144,7 +141,7 @@ public abstract class ReportPanel extends JPanel {
 
     void show(Formatter f) {
       f.format("%n%s%n", name);
-      java.util.List<Integer> list = new ArrayList<Integer>(set.keySet());
+      java.util.List<Integer> list = new ArrayList<>(set.keySet());
       Collections.sort(list);
       for (int template : list) {
         int count = set.get(template);
@@ -156,7 +153,7 @@ public abstract class ReportPanel extends JPanel {
 
   // a counter whose keys are strings
   protected static class CounterS {
-    Map<String, Integer> set = new HashMap<String, Integer>();
+    Map<String, Integer> set = new HashMap<>();
     String name;
 
     CounterS(String name) {
@@ -173,7 +170,7 @@ public abstract class ReportPanel extends JPanel {
 
     void show(Formatter f) {
       f.format("%n%s%n", name);
-      java.util.List<String> list = new ArrayList<String>(set.keySet());
+      java.util.List<String> list = new ArrayList<>(set.keySet());
       Collections.sort(list);
       for (String key : list) {
         int count = set.get(key);

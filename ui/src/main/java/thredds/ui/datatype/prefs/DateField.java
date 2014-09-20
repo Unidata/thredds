@@ -34,13 +34,12 @@
 package thredds.ui.datatype.prefs;
 
 import ucar.nc2.ui.widget.MultilineTooltip;
-import ucar.nc2.units.*;
-
+import ucar.nc2.units.DateType;
 import ucar.util.prefs.PersistenceManager;
 import ucar.util.prefs.ui.FldInputVerifier;
 
 import javax.swing.*;
-import javax.swing.text.*;
+import javax.swing.text.JTextComponent;
 
 /**
  * Input field for thredds.datatype.DateType, part of ucar.util.prefs.ui.
@@ -65,6 +64,7 @@ public class DateField extends ucar.util.prefs.ui.Field {
     super(name, label, storeData);
     validValue = getStoreValue(defValue);
     tf = new JTextField() {
+      @Override
       public JToolTip createToolTip() {
         return new MultilineTooltip();
       }
@@ -79,6 +79,7 @@ public class DateField extends ucar.util.prefs.ui.Field {
   }
 
   // return the editing JComponent
+  @Override
   public JComponent getEditComponent() {
     return tf;
   }
@@ -86,6 +87,7 @@ public class DateField extends ucar.util.prefs.ui.Field {
   /**
    * See if edit value is valid, put error message in buff.
    */
+  @Override
   protected boolean _validate(StringBuffer buff) {
     try {
       new DateType(tf.getText(), null, null);
@@ -97,6 +99,7 @@ public class DateField extends ucar.util.prefs.ui.Field {
   }
 
   // get current value from editComponent
+  @Override
   protected Object getEditValue() {
     try {
       return new DateType(tf.getText(), null, null);
@@ -111,6 +114,7 @@ public class DateField extends ucar.util.prefs.ui.Field {
   }
 
   // set current value of editComponent
+  @Override
   protected void setEditValue(Object value) {
     if (value == null)
       tf.setText("");
@@ -118,15 +122,15 @@ public class DateField extends ucar.util.prefs.ui.Field {
       tf.setText(value.toString());
   }
 
+  @Override
   protected void setStoreValue(Object value) {
     if (storeData != null) {
-      if (value == null)
-        storeData.putObject(name, value); // LOOK ??
-      else
+      if (value != null)
         storeData.putObject(name, new DateType((DateType) value));
     }
   }
 
+  @Override
   protected Object getStoreValue(Object defValue) {
     Object value = defValue;
     if (storeData != null) {

@@ -61,7 +61,6 @@ import java.awt.event.WindowEvent;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.IOException;
-import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -408,7 +407,7 @@ public class QueryChooser extends JPanel {
         wrappedStations.add(new DqcStation((thredds.catalog.query.Station) stations.get(i)));
       }
       mapChooser.setStations(wrappedStations);
-      choosers.add(new ChooserStation(selectStation));
+      choosers.add(new ChooserStation(selectStation, mapChooser));
 
       // layout
       if (need2add) {
@@ -817,8 +816,9 @@ public class QueryChooser extends JPanel {
     StationRegionDateChooser mapChooser;
     DqcStation currentChoice;
 
-    ChooserStation(SelectStation sel) {
+    ChooserStation(SelectStation sel, StationRegionDateChooser mapChooser) {
       super(sel);
+      this.mapChooser = mapChooser;
 
       mapChooser.addPropertyChangeListener(new PropertyChangeListener() {
         public void propertyChange(java.beans.PropertyChangeEvent e) {

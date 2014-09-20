@@ -162,7 +162,7 @@ public class Grib2JpegDecoder {
    */
   public void decode(byte buf[]) throws IOException {
     // int dataSize = buf.length;
-    boolean verbose = false;
+    final boolean verbose = false;
     int res; // resolution level to reconstruct
     FileFormatReader ff;
     HeaderDecoder hd;
@@ -215,7 +215,6 @@ public class Grib2JpegDecoder {
       }
 
       int nCompCod = hd.getNumComps();
-      int nTiles = hi.siz.getNumTiles();
       decSpec = hd.getDecoderSpecs();
 
       // Get demixed bitdepths

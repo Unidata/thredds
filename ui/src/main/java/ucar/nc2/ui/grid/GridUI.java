@@ -74,7 +74,6 @@ public class GridUI extends JPanel {
 
   //private TopLevel topLevel;
   private PreferencesExt store;
-  private JFrame parent;
   private FileManager fileChooser;
 
   // Package private access
@@ -171,7 +170,7 @@ public class GridUI extends JPanel {
       controller.finishInit();
 
           // other components
-      geotiffFileChooser = new FileManager( parent);
+      geotiffFileChooser = new FileManager(null);
       geotiffFileChooser.setCurrentDirectory( store.get(GEOTIFF_FILECHOOSER_DEFAULTDIR, "."));
 
     } catch (Exception e) {
@@ -664,7 +663,7 @@ public class GridUI extends JPanel {
     if (null != projManager)
       return projManager;
 
-    projManager = new ProjectionManager(parent, store);
+    projManager = new ProjectionManager(null, store);
     projManager.addPropertyChangeListener(  new java.beans.PropertyChangeListener() {
       public void propertyChange( java.beans.PropertyChangeEvent e) {
         if (e.getPropertyName().equals("ProjectionImpl")) {

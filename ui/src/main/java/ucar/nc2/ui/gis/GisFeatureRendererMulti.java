@@ -95,14 +95,14 @@ public abstract class GisFeatureRendererMulti extends GisFeatureRenderer {
   protected Iterator getShapes(java.awt.Graphics2D g, AffineTransform normal2device) {
     long startTime = System.currentTimeMillis();
 
-    if (featSetList == null)
+    if (featSetList == null) {
       initFeatSetList();
+      assert !featSetList.isEmpty();
+    }
 
     // which featureSet should we ue?
-    FeatureSet fs = null;
-    if (featSetList.size() == 1) {
-      fs = (FeatureSet) featSetList.get(0);
-    } else {
+    FeatureSet fs = (FeatureSet) featSetList.get(0);
+    if (featSetList.size() > 1) {
         // compute scale
       double scale = 1.0;
       try {
@@ -119,8 +119,8 @@ public abstract class GisFeatureRendererMulti extends GisFeatureRenderer {
       if (!displayProject.isLatLon())
         scale *= 111.0;  // km/deg
       double minD = Double.MAX_VALUE;
-      for (int i=0; i<featSetList.size(); i++) {
-        FeatureSet tryfs = (FeatureSet) featSetList.get(i);
+      for (Object aFeatSetList : featSetList) {
+        FeatureSet tryfs = (FeatureSet) aFeatSetList;
         double d = Math.abs(scale * tryfs.minDist - pixelMatch);  // we want min features ~ 2 pixels
         if (d < minD) {
           minD = d;
@@ -221,7 +221,6 @@ feats:while (featList.hasNext()) {
     ProjectionImpl project = null;
     ArrayList shapeList = null;
     boolean newProjection = true;
-    double centerLon = 0.0;
 
     FeatureSet(List featureList, double minDist) {
       this.featureList = featureList;
@@ -234,16 +233,12 @@ feats:while (featList.hasNext()) {
 
       if (project.isLatLon()) {   // why?
         LatLonProjection llproj = (LatLonProjection) project;
-        centerLon = llproj.getCenterLon();
       }
     }
 
     Iterator getShapes() { return shapeList.iterator(); }
 
     void createFeatures() {
-      ProjectionPointImpl thisW = new ProjectionPointImpl();
-      ProjectionPointImpl lastW = new ProjectionPointImpl();
-
       featureList = new ArrayList();
 
       Iterator iter = GisFeatureRendererMulti.this.getFeatures().iterator();   // this is the original, full resolution set

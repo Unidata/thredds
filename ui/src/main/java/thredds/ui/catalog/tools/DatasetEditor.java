@@ -725,12 +725,12 @@ pp.addComponent(geoPanel, 0, row++, "left, center"); */
     Field fld = pp.getField(name);
     Object newValue = fld.getValue();
 
-    //if (newValue == null) return; // LOOK remove from store ??
+    if (newValue == null) return; // LOOK remove from store ??
 
     // if it matches whats already stored (inherited or not), dont need to store it
     Object oldValue = bean.getObject( name);
     if (newValue == oldValue) return;
-    if ((newValue != null) && newValue.equals(oldValue))
+    if (newValue.equals(oldValue))
       return;
 
     // otherwise store it

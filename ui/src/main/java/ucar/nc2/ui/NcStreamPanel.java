@@ -60,7 +60,7 @@ public class NcStreamPanel extends JPanel {
   private PreferencesExt prefs;
 
   private BeanTable messTable;
-  private JSplitPane split, split2;
+  private JSplitPane split;
 
   private TextHistoryPane infoTA, infoPopup2, infoPopup3;
   private IndependentWindow infoWindow2, infoWindow3;
@@ -104,17 +104,16 @@ public class NcStreamPanel extends JPanel {
 
     setLayout(new BorderLayout());
 
-    split2 = new JSplitPane(JSplitPane.VERTICAL_SPLIT, false, messTable, infoTA);
-    split2.setDividerLocation(prefs.getInt("splitPos2", 800));
+    split = new JSplitPane(JSplitPane.VERTICAL_SPLIT, false, messTable, infoTA);
+    split.setDividerLocation(prefs.getInt("splitPos", 800));
 
-    add(split2, BorderLayout.CENTER);
+    add(split, BorderLayout.CENTER);
   }
 
   public void save() {
     messTable.saveState(false);
     //prefs.putBeanObject("InfoWindowBounds3", infoWindow3.getBounds());
     if (split != null) prefs.putInt("splitPos", split.getDividerLocation());
-    if (split2 != null) prefs.putInt("splitPos2", split2.getDividerLocation());
   }
 
   public void closeOpenFiles() throws IOException {

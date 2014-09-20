@@ -316,23 +316,23 @@ public class StructureTable extends JPanel {
     String filename = fileChooser.chooseFilename();
     if (filename == null) return;
     try {
-      PrintStream ps = new PrintStream(new FileOutputStream(new File(filename)));
+      PrintWriter pw = new PrintWriter(new File(filename));
 
       TableModel model = jtable.getModel();
       for (int col = 0; col < model.getColumnCount(); col++) {
-        if (col > 0) ps.print(",");
-        ps.print(model.getColumnName(col));
+        if (col > 0) pw.print(",");
+        pw.print(model.getColumnName(col));
       }
-      ps.println();
+      pw.println();
 
       for (int row = 0; row < model.getRowCount(); row++) {
         for (int col = 0; col < model.getColumnCount(); col++) {
-          if (col > 0) ps.print(",");
-          ps.print(model.getValueAt(row, col).toString());
+          if (col > 0) pw.print(",");
+          pw.print(model.getValueAt(row, col).toString());
         }
-        ps.println();
+        pw.println();
       }
-      ps.close();
+      pw.close();
       JOptionPane.showMessageDialog(this, "File successfully written");
     } catch (IOException ioe) {
       JOptionPane.showMessageDialog(this, "ERROR: " + ioe.getMessage());
@@ -345,14 +345,14 @@ public class StructureTable extends JPanel {
     StructureData sd = getSelectedStructureData();
     if (sd == null) return;
 
-    ByteArrayOutputStream bos = new ByteArrayOutputStream(10000);
+    StringWriter sw = new StringWriter(10000);
     try {
-      NCdumpW.printStructureData(new PrintWriter(bos), sd);
+      NCdumpW.printStructureData(new PrintWriter(sw), sd);
     } catch (IOException e) {
       String mess = e.getMessage();
-      bos.write(mess.getBytes(), 0, mess.length());
+      sw.write(mess);
     }
-    dumpTA.setText(bos.toString());
+    dumpTA.setText(sw.toString());
     dumpWindow.setVisible(true);
   }
 

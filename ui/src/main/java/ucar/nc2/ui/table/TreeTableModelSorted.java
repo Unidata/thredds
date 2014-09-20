@@ -305,7 +305,6 @@ public class TreeTableModelSorted extends TreeTableModelAbstract {
       ret = (col == 0) ? "root2 " : "";
     else if (node instanceof SortNode) {
       SortNode snode = (SortNode) node;
-      TableRow row = (TableRow) rowList.get(snode.start);
       ret = getValueAt(snode.row, col);
     } else if (node instanceof TableRow) {
       ret = getValueAt((TableRow) node, col);

@@ -84,10 +84,10 @@ class DbaseFieldDesc {
   }
 
   private int read_dbase3(DataInputStream in) {
-    double ver = 1.02;
+    double ver;
     try {
       String os = System.getProperty("java.version");
-      ver = Double.valueOf(os).doubleValue();
+      ver = Double.valueOf(os);
     } catch (NumberFormatException e) {
       ver = 1.02;
     }

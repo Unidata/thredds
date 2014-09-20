@@ -55,9 +55,7 @@ import ucar.util.prefs.ui.BeanTable;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.PrintStream;
+import java.io.*;
 import java.util.*;
 import java.util.List;
 
@@ -193,7 +191,8 @@ public class GribFilesPanel extends JPanel {
   }
 
   ///////////////////////////////////////////////
-  private static final KMPMatch matcher = new KMPMatch("GRIB".getBytes());
+  private static final KMPMatch matcher = new KMPMatch(new byte[]
+          {'G', 'R', 'I', 'B'});
 
   private List<CollectionBean> collections = new ArrayList<>();
 
@@ -249,7 +248,12 @@ public class GribFilesPanel extends JPanel {
       first = reader.next();
       break;
     }
-    return new Grib1Bean(mf, first);
+
+    if (first == null) {
+      return null;
+    } else {
+      return new Grib1Bean(mf, first);
+    }
   }
 
   ////////////////////////////////////////////////////////////////////////////
@@ -272,9 +276,9 @@ public class GribFilesPanel extends JPanel {
         fileList = dc.getFilesSorted();
 
       } catch (Exception e) {
-        ByteArrayOutputStream bos = new ByteArrayOutputStream(10000);
-        e.printStackTrace(new PrintStream(bos));
-        f.format("%s", bos.toString());
+        StringWriter sw = new StringWriter(10000);
+        e.printStackTrace(new PrintWriter(sw));
+        f.format("%s", sw.toString());
         javax.swing.JOptionPane.showMessageDialog(null, "Collection is null");
       }
     }
@@ -430,9 +434,9 @@ public class GribFilesPanel extends JPanel {
         Grib2CollectionPanel.showCompleteGribRecord(f, m.getPath(), first, tables);
       } catch (IOException e) {
         e.printStackTrace();
-        ByteArrayOutputStream bos = new ByteArrayOutputStream(10000);
-        e.printStackTrace(new PrintStream(bos));
-        f.format("%s", bos.toString());
+        StringWriter sw = new StringWriter(10000);
+        e.printStackTrace(new PrintWriter(sw));
+        f.format("%s", sw.toString());
       }
     }
 

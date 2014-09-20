@@ -140,8 +140,7 @@ public class DatasetTreeView extends JPanel {
     // construct chain of groups
     List<Group> gchain = new ArrayList<>();
     Group gp = vp.getParentGroup();
-    if (gp == null)
-      System.out.println("set an alarm");
+
     gchain.add( gp);
     while (gp.getParentGroup() != null) {
       gp = gp.getParentGroup();
