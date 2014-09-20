@@ -876,7 +876,7 @@ public class Grib1CollectionPanel extends JPanel {
       return gds.hashCode();
     }
 
-    public int getGridNo() {
+    public int getTemplate() {
       return gdss.getGridTemplate();
     }
 

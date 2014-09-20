@@ -4595,82 +4595,6 @@ public class ToolsUI extends JPanel {
 
   }  */
 
-  /* the old Fmrc Impl stuff
-  private class FmrcImplPanel extends OpPanel {
-    FmrcImpl fmrc;
-    FmrcTable table;
-
-    FmrcImplPanel(PreferencesExt dbPrefs) {
-      super(dbPrefs, "dataset:", true, false);
-      table = new FmrcTable(prefs);
-      table.addPropertyChangeListener(new java.beans.PropertyChangeListener() {
-        public void propertyChange(java.beans.PropertyChangeEvent e) {
-          if (e.getPropertyName().equals("openNetcdfFile")) {
-            NetcdfDataset dataset = (NetcdfDataset) e.getNewValue();
-            openNetcdfFile(dataset);
-          } else if (e.getPropertyName().equals("openCoordSystems")) {
-            NetcdfDataset dataset = (NetcdfDataset) e.getNewValue();
-            openCoordSystems(dataset);
-          } else if (e.getPropertyName().equals("openGridDataset")) {
-            NetcdfDataset dataset = (NetcdfDataset) e.getNewValue();
-            openGridDataset(dataset);
-          }
-        }
-      });
-      add(table, BorderLayout.CENTER);
-
-      AbstractButton infoButton = BAMutil.makeButtcon("Information", "Detail Info", false);
-      infoButton.addActionListener(new ActionListener() {
-        public void actionPerformed(ActionEvent e) {
-          if (fmrc != null) {
-            Formatter f = new Formatter();
-            try {
-              fmrc.dump(f);
-            } catch (IOException ioe) {
-              ByteArrayOutputStream bos = new ByteArrayOutputStream(10000);
-              ioe.printStackTrace();
-              ioe.printStackTrace(new PrintStream(bos));
-              // ta.setText( datasetFactory.getErrorMessages());
-              ta.appendLine(bos.toString());
-            }
-            detailTA.setText(f.toString());
-            detailTA.gotoTop();
-            detailWindow.show();
-          }
-        }
-      });
-      buttPanel.add(infoButton);
-    }
-
-    boolean process(Object o) {
-      String command = (String) o;
-      if (command == null) return false;
-
-      if (fmrc != null) {
-        try {
-          fmrc.close();
-        } catch (IOException ioe) {
-        }
-      }
-
-      try {
-        fmrc = new FmrcImpl(command);
-        table.setFmrc(fmrc);
-        return true;
-
-      } catch (Exception ioe) {
-        ByteArrayOutputStream bos = new ByteArrayOutputStream(10000);
-        ioe.printStackTrace();
-        ioe.printStackTrace(new PrintStream(bos));
-        detailTA.setText(bos.toString());
-        detailTA.gotoTop();
-        detailWindow.show();
-      }
-
-      return false;
-    }
-  }  */
-
   // new ucar.nc2.ft.fmrc stuff
   private class FmrcPanel extends OpPanel {
     Fmrc2Panel table;
@@ -4729,7 +4653,7 @@ public class ToolsUI extends JPanel {
       });
       buttPanel.add(collectionButton);
 
-      AbstractButton viewButton = BAMutil.makeButtcon("Dump", "Show in Netcdf Viewer", false);
+      AbstractButton viewButton = BAMutil.makeButtcon("Dump", "Show Dataset", false);
       viewButton.addActionListener(new ActionListener() {
         public void actionPerformed(ActionEvent e) {
           try {

@@ -54,7 +54,7 @@ import java.util.*;
 @Immutable
 public class Grib2Customizer implements ucar.nc2.grib.GribTables, TimeUnitConverter {
   static private final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(Grib2Pds.class);
-  static private Map<GribTableId,Grib2Customizer> tables = new HashMap<>(); // wmoTables, ncepTables, ndfdTables, kmaTables, fslTables, fslTables2;  // major lame
+  static private Map<GribTableId,Grib2Customizer> tables = new HashMap<>();
 
   static public Grib2Customizer factory(Grib2Record gr) throws IOException {
     Grib2SectionIdentification ids = gr.getId();
@@ -89,7 +89,7 @@ public class Grib2Customizer implements ucar.nc2.grib.GribTables, TimeUnitConver
 
     } else if (center == 40) {  // KMA
       Grib2Table grib2Table = new Grib2Table("KMA", center, subCenter, masterVersion, localVersion, genProcessId, null, Grib2Table.Type.kma);
-       cust = new KmaLocalTables(grib2Table);
+      cust = new KmaLocalTables(grib2Table);
 
     } else {
       Grib2Table grib2Table = new Grib2Table("WMO", center, subCenter, masterVersion, localVersion, genProcessId, null, Grib2Table.Type.wmo);

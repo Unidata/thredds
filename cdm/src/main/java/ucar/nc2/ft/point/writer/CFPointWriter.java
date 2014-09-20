@@ -611,7 +611,8 @@ public abstract class CFPointWriter implements AutoCloseable {
 
       List<Attribute> atts = oldVar.getAttributes();
       for (Attribute att : atts) {
-        if (!reservedVariableAtts.contains(att.getShortName()))
+        String attName = att.getShortName();
+        if (!reservedVariableAtts.contains(attName) && !attName.startsWith("_Coordinate"))
           newVar.addAttribute(att);
       }
 
