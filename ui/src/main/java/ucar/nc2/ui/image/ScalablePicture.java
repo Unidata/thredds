@@ -18,10 +18,8 @@ package ucar.nc2.ui.image;
 import org.imgscalr.Scalr;
 
 import java.util.*;
-import javax.swing.*;
 import java.awt.*;
 import java.awt.image.*;
-import java.awt.geom.AffineTransform;
 import javax.imageio.*;
 import javax.imageio.stream.*;
 import javax.imageio.plugins.jpeg.*;
@@ -85,12 +83,6 @@ public class ScalablePicture implements SourcePictureListener {
    * variable to compose te status message
    */
   private String pictureStatusMessage;
-
-  /**
-   * if true means that the image should be scaled so that it fits inside
-   * a given dimension (TargetSize). If false the ScaleFactor should be used.
-   */
-  private boolean scaleToSize;
 
   /**
    * variable to record the size of the box that the scaled image must fit into.
@@ -431,7 +423,6 @@ public class ScalablePicture implements SourcePictureListener {
    * Example: Original is 3000 x 2000 --> Scale Factor 0.10  --> Target Picutre is 300 x 200
    */
   public void setScaleFactor(double newFactor) {
-    scaleToSize = false;
     TargetSize = null;
     ScaleFactor = newFactor;
   }
@@ -442,7 +433,6 @@ public class ScalablePicture implements SourcePictureListener {
    * so that the image fits either by height or by width into the indicated dimension.
    */
   public void setScaleSize(Dimension newSize) {
-    scaleToSize = true;
     TargetSize = newSize;
   }
 

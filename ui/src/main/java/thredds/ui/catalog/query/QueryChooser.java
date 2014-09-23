@@ -813,12 +813,10 @@ public class QueryChooser extends JPanel {
   } // ChooserList
 
   private class ChooserStation extends Chooser {
-    StationRegionDateChooser mapChooser;
     DqcStation currentChoice;
 
     ChooserStation(SelectStation sel, StationRegionDateChooser mapChooser) {
       super(sel);
-      this.mapChooser = mapChooser;
 
       mapChooser.addPropertyChangeListener(new PropertyChangeListener() {
         public void propertyChange(java.beans.PropertyChangeEvent e) {
