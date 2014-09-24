@@ -43,8 +43,6 @@ import java.awt.*;
 
 
 public class MultilineTooltip extends JToolTip {
-
-  String tipText;
   JComponent component;
 
   public MultilineTooltip() {
@@ -79,7 +77,6 @@ public class MultilineTooltip extends JToolTip {
 
 class MultiLineToolTipUI extends BasicToolTipUI {
   static ucar.nc2.ui.widget.MultiLineToolTipUI sharedInstance = new ucar.nc2.ui.widget.MultiLineToolTipUI();
-  Font smallFont;
   static JToolTip tip;
   protected CellRendererPane rendererPane;
 

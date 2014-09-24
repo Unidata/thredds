@@ -695,7 +695,6 @@ public class SuperComboBox extends JPanel {
 
     private void start(boolean forward) {
       this.forward = forward;
-      startTime = System.currentTimeMillis();
       eventOK = false;
       immediateMode = true;
       stopped = false;
