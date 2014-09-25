@@ -143,12 +143,11 @@ public class NOWRadheader {
         raf.seek(pos);
 
         int readLen = 35;
-        int rc      = 0;
 
         // Read in the contents of the NEXRAD Level III product head
         byte[] b = new byte[readLen];
 
-        rc = raf.read(b);
+        int rc = raf.read(b);
 
         if (rc != readLen) {
             return 0;
@@ -160,8 +159,7 @@ public class NOWRadheader {
             return 0;
         }
 
-        int    hsize = b[3];
-        String pidd  = new String(b, 15, 5);
+        String pidd  = new String(b, 15, 5, CDM.utf8Charset);
 
         if (pidd.contains("NOWRA") || pidd.contains("USRAD") || pidd.contains("NEX")) {
             return 1;
@@ -213,11 +211,9 @@ public class NOWRadheader {
         }
 
         int    hsize   = b[3];
-        String product = new String(b, 15, 8);
-        int    imgres  = b[4 + hsize];
+        String product = new String(b, 15, 8, CDM.utf8Charset);
 
         // image lines
-        String head = new String(b);
         //byte[] bt   = new byte[] { (byte) 0xF0, (byte) 0x0A };
         int    t1 = 0  ;
         int ii = 0;
@@ -260,7 +256,6 @@ public class NOWRadheader {
         // if(convertunsignedByte2Short(b[18+hsize]) != 0xF0 ||
         // convertunsignedByte2Short(b[19+hsize]) != 0x03 )
         // return;
-        String ss  = new String(b, t1 + 2, 20);
         int    off = 0;
 
         if (product.contains("USRADHF")) {
@@ -293,7 +288,6 @@ public class NOWRadheader {
         sdf.applyPattern("yyyy/MM/dd HH:mm");
 
         Date   date = sdf.parse(year + "/" + month + "/" + dd + " " + hr + ":" + min);
-        String ot   = new String(b, t1 + 40, 45);
 
         //bt = new byte[] { (byte) 0xF0, (byte) 0x0b };
         t1 = 0;
@@ -310,13 +304,11 @@ public class NOWRadheader {
         // if( convertunsignedByte2Short(b[101 + hsize]) != 0xF0 ||
         // convertunsignedByte2Short(b[102 + hsize]) != 0x0b )
         // return;
-        ProjectionImpl projection = null;
         if (product.contains("NOWRAD")) {
-            ot = new String(b, t1 + 2, 68);
+            String ot = new String(b, t1 + 2, 68);
 
             //List<String> toks = StringUtil.split(ot, " ", true, true);
             String[] toks = StringUtil2.splitString(ot);
-            String       pj   = toks[0];
             double       nav1 = Math.toDegrees(Double.parseDouble(toks[1]));    // lon
             double       nav2 = Math.toDegrees(Double.parseDouble(toks[2]));    // lat
             double       nav3 = Math.toDegrees(Double.parseDouble(toks[3]));
@@ -348,18 +340,15 @@ public class NOWRadheader {
             // data struct
             nowrad(hoffset, rlat1, rlon1, rlat2, rlon2, (float) nav4, (float) nav5, date);
         } else if (product.contains("USRADHF")) {
-            ot = new String(b, t1 + 2, 107);
+            String ot = new String(b, t1 + 2, 107);
 
             String[] toks = StringUtil2.splitString(ot);
-            String       pj   = toks[0];
             double       nav1 = Math.toDegrees(Double.parseDouble(toks[1]));    // standard lat 1
             double       nav2 = Math.toDegrees(Double.parseDouble(toks[2]));    // standard lat 2
             double       nav3 = Math.toDegrees(Double.parseDouble(toks[3]));    // lat. center of proj
             double       nav4 = Math.toDegrees(Double.parseDouble(toks[4]));    // lon. center of proj
             double       nav5 = Math.toDegrees(Double.parseDouble(toks[5]));    // upper left lat
             double       nav6 = Math.toDegrees(Double.parseDouble(toks[6]));    // upper left lon
-            double       nav7 = Math.toDegrees(Double.parseDouble(toks[7]));    // lat sp
-            double       nav8 = Math.toDegrees(Double.parseDouble(toks[8]));    // lon sp
 
             /* List<String> toks = StringUtil.split(ot, " ", true, true);
             String       pj   = toks.get(0);
@@ -468,7 +457,7 @@ public class NOWRadheader {
         v.addAttribute(new Attribute(CDM.UNITS, cunit));
         v.addAttribute( new Attribute(CDM.SCALE_FACTOR, new Float((5.0f))));
         v.addAttribute(new Attribute(CDM.MISSING_VALUE, 0));
-        v.setSPobject(new Vinfo(numX, numY, hoff, false));
+        v.setSPobject(new Vinfo(numX, numY, hoff));
         v.addAttribute(new Attribute(_Coordinate.Axes, coordinates));
 
         // create coordinate variables
@@ -489,7 +478,6 @@ public class NOWRadheader {
 
         ProjectionPointImpl ptul = (ProjectionPointImpl) projection.latLonToProj(new LatLonPointImpl(ullat, ullon));
         ProjectionPointImpl ptlr = (ProjectionPointImpl) projection.latLonToProj(new LatLonPointImpl(lrlat, lrlon));
-        ProjectionPointImpl ptc = (ProjectionPointImpl) projection.latLonToProj(new LatLonPointImpl(clat, clon));
         double startX = ptul.getX();
         double startY = ptlr.getY();
         double dx = (ptlr.getX() - ptul.getX())/(numX-1);
@@ -600,7 +588,7 @@ public class NOWRadheader {
         v.addAttribute( new Attribute(CDM.SCALE_FACTOR, new Float((5.0f))));
         v.addAttribute(new Attribute(CDM.MISSING_VALUE, 0));
         v.addAttribute(new Attribute(CDM.UNITS, cunit));
-        v.setSPobject(new Vinfo(numX, numY, hoff, false));
+        v.setSPobject(new Vinfo(numX, numY, hoff));
         v.addAttribute(new Attribute(_Coordinate.Axes, coordinates));
 
         // create coordinate variables
@@ -919,15 +907,13 @@ public class NOWRadheader {
     // variable info for reading/writing
     static class Vinfo {
         long    hoff;        // header offset
-        boolean isRadial;    // is it a radial variable?
         int     xt;
         int     yt;
 
-        Vinfo(int xt, int yt, long hoff, boolean isRadial) {
+        Vinfo(int xt, int yt, long hoff) {
             this.xt       = xt;
             this.yt       = yt;
             this.hoff     = hoff;
-            this.isRadial = isRadial;
         }
     }
 }

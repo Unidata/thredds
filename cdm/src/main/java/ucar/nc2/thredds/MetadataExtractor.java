@@ -195,8 +195,6 @@ public class MetadataExtractor {
 
   static public ThreddsMetadata.Variables extractVariables(thredds.catalog.DataFormatType fileFormat, GridDataset gridDataset) {
     if ((fileFormat != null) && (fileFormat.equals(DataFormatType.GRIB1) || fileFormat.equals(DataFormatType.GRIB2))) {
-      boolean isGrib1 = fileFormat.equals(DataFormatType.GRIB1);
-      boolean isGrib2 = fileFormat.equals(DataFormatType.GRIB2);
       ThreddsMetadata.Variables vars = new ThreddsMetadata.Variables(fileFormat.toString());
       for (GridDatatype grid : gridDataset.getGrids()) {
         ThreddsMetadata.Variable v = new ThreddsMetadata.Variable();

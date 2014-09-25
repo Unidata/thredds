@@ -247,11 +247,11 @@ public class ThreddsDataFactory {
     // special handling for DQC
     InvAccess qc = invDataset.getAccess(ServiceType.QC);
     if (qc != null) {
-      String dqc_location = qc.getStandardUrlName();
 
       if (result.featureType == FeatureType.STATION) {
 
         /* DqcFactory dqcFactory = new DqcFactory(true);
+        String dqc_location = qc.getStandardUrlName();
         QueryCapability dqc = dqcFactory.readXML(dqc_location);
         if (dqc.hasFatalError()) {
           result.errLog.append(dqc.getErrorMessages());
