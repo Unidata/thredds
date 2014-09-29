@@ -209,7 +209,7 @@ de-referencing the catalogRefs, and simplifying:
 1) &lt;gribConfig&gt;<br/>          &lt;gdsHash from=&quot;-752078894&quot; to=&quot;1193085709&quot;/&gt;<br/>          &lt;gdsName hash='-1960629519' groupName='KTUA:Arkansas-Red River RFC'/&gt;<br/>          &lt;gdsName hash='-1819879011' groupName='KFWR:West Gulf RFC'/&gt;<br/>          &lt;gdsName hash='-1571856555' groupName='KORN:Lower Mississippi RFC'/&gt;<br/>          &lt;gdsName hash='-1491065322' groupName='KKRF:Missouri Basin RFC'/&gt;<br/>          &lt;gdsName hash='-1017807718' groupName='TSJU:San Juan PR WFO'/&gt;<br/>          &lt;gdsName hash='-1003775954' groupName='NCEP-QPE National Mosaic'/&gt;<br/>          &lt;gdsName hash='-529497359' groupName='KRHA:Middle Atlantic RFC'/&gt;<br/>          &lt;gdsName hash='289752153' groupName='KRSA:California-Nevada RFC-6hr'/&gt;<br/>          &lt;gdsName hash='424971237' groupName='KRSA:California-Nevada RFC-1hr'/&gt;<br/>          &lt;gdsName hash='511861653' groupName='KTIR:Ohio Basin RFC'/&gt;<br/>          &lt;gdsName hash='880498701' groupName='KPTR:Northwest RFC'/&gt;<br/>          &lt;gdsName hash='1123818409' groupName='KTAR:Northeast RFC'/&gt;<br/>          &lt;gdsName hash='1174418106' groupName='KNES-National Satellite Analysis'/&gt;<br/>          &lt;gdsName hash='1193085709' groupName='KMSR:North Central RFC'/&gt;<br/>          &lt;gdsName hash='1464276934' groupName='KSTR:Colorado Basin RFC'/&gt;<br/>          &lt;gdsName hash='1815048381' groupName='KALR:Southeast RFC'/&gt;<br/>   &lt;/gribConfig&gt;<br/>
  &lt;/featureCollection&gt;</pre>
 <ol>
-  <li>This dataset has many different groups, and we are using a &lt;gribConfig&gt; element to name them (see <a href="#gribConfig">below</a> for details).</li>
+  <li>This dataset has many different groups, and we are using a &lt;gribConfig&gt; element to name them (see <a href="GribConfig.html">below</a> for details).</li>
 </ol>
 <h3>Resulting Datasets:</h3>
 
@@ -289,11 +289,11 @@ Note that the groups are sorted by name, and that there is no overall collection
 <ol>
   <li>Partition the files by which directory they are in (the files must be time partitioned by the directories)</li>
   <li>One still needs a date extractor from the filename, even when using a directory partition.</li>
-  <li>Minor errors in GRIB coding can create spurious differernces in the GDS. Here we correct one such problem (see <a href="#gribConfig">below</a> for
+  <li>Minor errors in GRIB coding can create spurious differernces in the GDS. Here we correct one such problem (see <a href="GribConfig.html">below</a> for
     details).
   </li>
   <li>Group renaming as in example 2</li>
-  <li>Exclude GRIB records that have a time coordinate interval of (0,0) (see <a href="#gribConfig">below</a> for details).</li>
+  <li>Exclude GRIB records that have a time coordinate interval of (0,0) (see <a href="GribConfig.html">below</a> for details).</li>
 </ol>
 <h3>Resulting Datasets:</h3>
 

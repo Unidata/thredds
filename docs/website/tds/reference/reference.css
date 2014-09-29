@@ -30,7 +30,7 @@ h1 {
     font-size: 20pt;
     padding: 15px 0px 10px 150px;
     margin: 10px 0px 50px 0px;
-    background: transparent url('images/unidataLogo.png') no-repeat 0px 0px;
+    background: transparent url('../images/unidataLogo.png') no-repeat 0px 0px;
 }
 
 #section {
@@ -60,7 +60,7 @@ h1 {
 }
 
 #section #subsection.exercise {
-    background: #EFEFEF url('images/exercise.gif') no-repeat 0px 0px;
+    background: #EFEFEF url('../images/exercise.gif') no-repeat 0px 0px;
     border: 3px solid #00B2EE;
     padding: 20px 15px 10px 100px;
     margin: -20px 30px 30px 30px;
@@ -97,7 +97,7 @@ h1 {
 }
 
 #section #subsection.exercise .exercise_question {
-    background: transparent url('images/question.gif') no-repeat 10px 0px;
+    background: transparent url('../images/question.gif') no-repeat 10px 0px;
     padding: 20px 15px 10px 50px;
     margin: 0px 0px 0px 0px;
 
@@ -146,7 +146,7 @@ pre {
     padding: 2px 0px 2px 25px;
     margin: 10px 0px 0px 0px;
     font-size: 12pt;
-    background: transparent url('images/check.gif') no-repeat 0px 0px;
+    background: transparent url('../images/check.gif') no-repeat 0px 0px;
 }
 
 #section #subsection ol {
@@ -216,11 +216,11 @@ pre {
 }
 
 .troubleshooting {
-    background: transparent url('images/troubleshooting.gif') no-repeat 0px 0px;
+    background: transparent url('../images/troubleshooting.gif') no-repeat 0px 0px;
 }
 
 .question {
-    background: transparent url('images/question.gif') no-repeat 10px 0px;
+    background: transparent url('../images/question.gif') no-repeat 10px 0px;
 }
 
 #section #subsection #note {
@@ -259,15 +259,15 @@ pre {
 }
 
 .info {
-    background: #EFEFEF url('images/info.gif') no-repeat 10px 5px;
+    background: #EFEFEF url('../images/info.gif') no-repeat 10px 5px;
 }
 
 .reminder {
-    background: #EFEFEF url('images/reminder.gif') no-repeat 10px 5px;
+    background: #EFEFEF url('../images/reminder.gif') no-repeat 10px 5px;
 }
 
 .ahead {
-    background: #EFEFEF url('images/bulb.gif') no-repeat 10px 5px;
+    background: #EFEFEF url('../images/bulb.gif') no-repeat 10px 5px;
 }
 
 table {
