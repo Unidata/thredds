@@ -877,6 +877,18 @@ public class Grib1DataTable extends JPanel {
        return info.nPoints;
      }
 
+    public String getDataType() {
+      return info.getDataTypeS() ;
+    }
+
+    public String getGridPoint() {
+      return info.getGridPointS() ;
+    }
+
+    public String getPacking() {
+      return info.getPackingS() ;
+    }
+
     public float getAvgBits() {
       float len = getDataLength();
       int n = gdss.getNx() * gdss.getNy();

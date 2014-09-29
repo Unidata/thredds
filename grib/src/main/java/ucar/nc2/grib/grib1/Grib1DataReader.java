@@ -97,12 +97,12 @@ value R, the binary scale factor E and the decimal scale factor D by means of th
     int msgLength = GribNumbers.uint3(raf);
 
     // octet 4, 1st half (packing flag)
-    int unusedbits = raf.read();
-    if ((unusedbits & 192) != 0) {
+    int flag = raf.read();
+    if ((flag & 192) != 0) {
       logger.error("Grib1BinaryDataSection: (octet 4, 1st half) not grid point data and simple packing for {}", raf.getLocation());
       throw new IllegalStateException("Grib1BinaryDataSection: (octet 4, 1st half) not grid point data and simple packing ");
     }
-    unusedbits = unusedbits & 15;
+    int unusedbits = flag & 15;
 
     // octets 5-6 (binary scale factor)
     int binscale = GribNumbers.int2(raf);

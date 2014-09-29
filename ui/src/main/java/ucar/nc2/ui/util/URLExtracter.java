@@ -47,7 +47,6 @@ public class URLExtracter {
   private URL baseURL;
 
   private boolean wantURLS = false;
-  private boolean isTitle;
 
   private boolean debug = false,  debugIMG = false;
 
@@ -116,7 +115,6 @@ public class URLExtracter {
 
     public void handleStartTag(HTML.Tag tag, MutableAttributeSet attributes, int position) {
       if (debug) System.out.println(" handleStartTag="+tag);
-      isTitle = (tag == HTML.Tag.TITLE);
 
       if (wantURLS && tag == HTML.Tag.A)
         extractHREF( attributes);
@@ -124,13 +122,10 @@ public class URLExtracter {
         extractIMG( attributes);
     }
 
-    public void handleEndTag(HTML.Tag tag, int position) {
-      isTitle = false;
-    }
+    public void handleEndTag(HTML.Tag tag, int position) {}
 
     public void handleSimpleTag(HTML.Tag tag, MutableAttributeSet attributes, int position) {
       if (debug) System.out.println(" handleSimpleTag="+tag);
-      isTitle = false; // (tag == HTML.Tag.TITLE); // ??
 
       //System.out.println(" "+tag);
       if (wantURLS && tag == HTML.Tag.A)

@@ -421,7 +421,7 @@ public class NOWRadiosp extends AbstractIOServiceProvider {
     ucar.nc2.Variable v = ncf.findVariable("BaseReflectivity");
     int[] origin = {0, 0};
     int[] shape = {300, 36};
-    ArrayByte data = (ArrayByte) v.read(origin, shape);
+    v.read(origin, shape);
 
     ncf.close();
   }

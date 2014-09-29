@@ -33,7 +33,6 @@
 
 package ucar.nc2.ui;
 
-import ucar.ma2.Array;
 import ucar.ma2.InvalidRangeException;
 import ucar.nc2.*;
 import ucar.nc2.dt.image.image.ImageArrayAdapter;
@@ -239,8 +238,8 @@ public class NCdumpPane extends TextHistoryPane {
     }
 
     public void run() {
-      ByteArrayOutputStream bos = new ByteArrayOutputStream(100000);
-      PrintStream ps = new PrintStream(bos);
+      StringWriter sw = new StringWriter(100000);
+      PrintWriter ps = new PrintWriter(sw);
       try {
         data = ds.readSection(command);
 
@@ -251,8 +250,8 @@ public class NCdumpPane extends TextHistoryPane {
 
       } catch (Exception e) {
         e.printStackTrace();
-        e.printStackTrace( new PrintStream(bos));
-        contents = bos.toString();
+        e.printStackTrace(new PrintWriter(sw));
+        contents = sw.toString();
 
         setError(e.getMessage());
         done = true;
@@ -261,7 +260,7 @@ public class NCdumpPane extends TextHistoryPane {
 
       if (cancel)
         ps.println("\n***Cancelled by User");
-      contents = bos.toString();
+      contents = sw.toString();
 
       success = !cancel;
       done = true;
@@ -281,9 +280,9 @@ public class NCdumpPane extends TextHistoryPane {
 
       } catch (Exception e) {
         e.printStackTrace();
-        ByteArrayOutputStream bos = new ByteArrayOutputStream(100000);
-        e.printStackTrace( new PrintStream(bos));
-        contents = bos.toString();
+        StringWriter sw = new StringWriter(100000);
+        e.printStackTrace(new PrintWriter(sw));
+        contents = sw.toString();
 
         setError(e.getMessage());
         done = true;

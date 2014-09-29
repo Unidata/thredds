@@ -54,11 +54,6 @@ import ucar.unidata.util.Parameter;
 import ucar.unidata.util.StringUtil2;
 
 import java.io.IOException;
-import java.nio.ByteBuffer;
-import java.nio.CharBuffer;
-import java.nio.charset.Charset;
-import java.nio.charset.CharsetDecoder;
-import java.nio.charset.CoderResult;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -83,10 +78,8 @@ public class NOWRadheader {
     static public String            mons[]       = {
         "JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"
     };
-    final private static boolean    useStationDB = false;    // use station db for loactions
     static private org.slf4j.Logger log          = org.slf4j.LoggerFactory.getLogger(NOWRadheader.class);
     DateFormatter                   formatter    = new DateFormatter();
-    private boolean                 isR          = false;
 
     // private PrintStream out = System.out;
     // private Vinfo myInfo;
@@ -95,7 +88,6 @@ public class NOWRadheader {
 
     // message header block
     // production dessciption block
-    private boolean                          noHeader;
     private int                              numX;
     private int                              numY;
     private ucar.unidata.io.RandomAccessFile raf;
@@ -143,12 +135,11 @@ public class NOWRadheader {
         raf.seek(pos);
 
         int readLen = 35;
-        int rc      = 0;
 
         // Read in the contents of the NEXRAD Level III product head
         byte[] b = new byte[readLen];
 
-        rc = raf.read(b);
+        int rc = raf.read(b);
 
         if (rc != readLen) {
             return 0;
@@ -160,8 +151,7 @@ public class NOWRadheader {
             return 0;
         }
 
-        int    hsize = b[3];
-        String pidd  = new String(b, 15, 5);
+        String pidd  = new String(b, 15, 5, CDM.utf8Charset);
 
         if (pidd.contains("NOWRA") || pidd.contains("USRAD") || pidd.contains("NEX")) {
             return 1;
@@ -195,7 +185,7 @@ public class NOWRadheader {
         this.raf = raf;
 
         int rc;    /* function return status */
-        int hoffset = 0;
+        int hoffset;
         int readLen = 250;
 
         this.ncfile = ncfile;
@@ -213,11 +203,9 @@ public class NOWRadheader {
         }
 
         int    hsize   = b[3];
-        String product = new String(b, 15, 8);
-        int    imgres  = b[4 + hsize];
+        String product = new String(b, 15, 8, CDM.utf8Charset);
 
         // image lines
-        String head = new String(b);
         //byte[] bt   = new byte[] { (byte) 0xF0, (byte) 0x0A };
         int    t1 = 0  ;
         int ii = 0;
@@ -234,11 +222,11 @@ public class NOWRadheader {
         // if(convertunsignedByte2Short(b[6+hsize]) != 0xF0 ||
         // convertunsignedByte2Short(b[7+hsize]) != 0x0A )
         // return;
-        String lstr = trim(new String(b, t1 + 2, 4));
+        String lstr = trim(new String(b, t1 + 2, 4, CDM.utf8Charset));
 
         numY = Integer.parseInt(lstr);
 
-        String estr = trim(new String(b, t1 + 6, 5));
+        String estr = trim(new String(b, t1 + 6, 5, CDM.utf8Charset));
 
         numX = Integer.parseInt(estr);
         //bt   = new byte[] { (byte) 0xF0, (byte) 0x03 };
@@ -260,7 +248,6 @@ public class NOWRadheader {
         // if(convertunsignedByte2Short(b[18+hsize]) != 0xF0 ||
         // convertunsignedByte2Short(b[19+hsize]) != 0x03 )
         // return;
-        String ss  = new String(b, t1 + 2, 20);
         int    off = 0;
 
         if (product.contains("USRADHF")) {
@@ -268,23 +255,23 @@ public class NOWRadheader {
         }
 
         // Image time, HHMMSS.  The time will be in the form HH:MM, so look :
-        String ts = new String(b, t1 + 22 + off, 2);
+        String ts = new String(b, t1 + 22 + off, 2, CDM.utf8Charset);
         int    hr = Integer.parseInt(ts);
 
-        ts = new String(b, t1 + 25 + off, 2);
+        ts = new String(b, t1 + 25 + off, 2, CDM.utf8Charset);
 
         int min = Integer.parseInt(ts);
 
-        ts = new String(b, t1 + 28 + off, 2);
+        ts = new String(b, t1 + 28 + off, 2, CDM.utf8Charset);
 
         int dd = Integer.parseInt(ts);
 
-        ts = new String(b, t1 + 31 + off, 3);
+        ts = new String(b, t1 + 31 + off, 3, CDM.utf8Charset);
 
         String mon   = ts;
         int    month = getMonth(mon);
 
-        ts = new String(b, t1 + 35 + off, 2);
+        ts = new String(b, t1 + 35 + off, 2, CDM.utf8Charset);
 
         int              year = Integer.parseInt(ts);
         SimpleDateFormat sdf  = new SimpleDateFormat();
@@ -293,7 +280,6 @@ public class NOWRadheader {
         sdf.applyPattern("yyyy/MM/dd HH:mm");
 
         Date   date = sdf.parse(year + "/" + month + "/" + dd + " " + hr + ":" + min);
-        String ot   = new String(b, t1 + 40, 45);
 
         //bt = new byte[] { (byte) 0xF0, (byte) 0x0b };
         t1 = 0;
@@ -310,13 +296,11 @@ public class NOWRadheader {
         // if( convertunsignedByte2Short(b[101 + hsize]) != 0xF0 ||
         // convertunsignedByte2Short(b[102 + hsize]) != 0x0b )
         // return;
-        ProjectionImpl projection = null;
         if (product.contains("NOWRAD")) {
-            ot = new String(b, t1 + 2, 68);
+            String ot = new String(b, t1 + 2, 68, CDM.utf8Charset);
 
             //List<String> toks = StringUtil.split(ot, " ", true, true);
             String[] toks = StringUtil2.splitString(ot);
-            String       pj   = toks[0];
             double       nav1 = Math.toDegrees(Double.parseDouble(toks[1]));    // lon
             double       nav2 = Math.toDegrees(Double.parseDouble(toks[2]));    // lat
             double       nav3 = Math.toDegrees(Double.parseDouble(toks[3]));
@@ -348,18 +332,15 @@ public class NOWRadheader {
             // data struct
             nowrad(hoffset, rlat1, rlon1, rlat2, rlon2, (float) nav4, (float) nav5, date);
         } else if (product.contains("USRADHF")) {
-            ot = new String(b, t1 + 2, 107);
+            String ot = new String(b, t1 + 2, 107, CDM.utf8Charset);
 
             String[] toks = StringUtil2.splitString(ot);
-            String       pj   = toks[0];
             double       nav1 = Math.toDegrees(Double.parseDouble(toks[1]));    // standard lat 1
             double       nav2 = Math.toDegrees(Double.parseDouble(toks[2]));    // standard lat 2
             double       nav3 = Math.toDegrees(Double.parseDouble(toks[3]));    // lat. center of proj
             double       nav4 = Math.toDegrees(Double.parseDouble(toks[4]));    // lon. center of proj
             double       nav5 = Math.toDegrees(Double.parseDouble(toks[5]));    // upper left lat
             double       nav6 = Math.toDegrees(Double.parseDouble(toks[6]));    // upper left lon
-            double       nav7 = Math.toDegrees(Double.parseDouble(toks[7]));    // lat sp
-            double       nav8 = Math.toDegrees(Double.parseDouble(toks[8]));    // lon sp
 
             /* List<String> toks = StringUtil.split(ot, " ", true, true);
             String       pj   = toks.get(0);
@@ -422,7 +403,7 @@ public class NOWRadheader {
     }
 
     ProjectionImpl  nowradL(int hoff, float lat1, float lat2, float clat, float clon, float lat, float lon, Date dd) {
-        ArrayList dims = new ArrayList();
+        List<Dimension> dims = new ArrayList<>();
         Dimension dimT = new Dimension("time", 1, true, false, false);
 
         ncfile.addDimension(null, dimT);
@@ -466,9 +447,9 @@ public class NOWRadheader {
         ncfile.addVariable(null, v);
         v.addAttribute(new Attribute(CDM.LONG_NAME, ctitle));
         v.addAttribute(new Attribute(CDM.UNITS, cunit));
-        v.addAttribute( new Attribute(CDM.SCALE_FACTOR, new Float((5.0f))));
+        v.addAttribute(new Attribute(CDM.SCALE_FACTOR, 5.0f));
         v.addAttribute(new Attribute(CDM.MISSING_VALUE, 0));
-        v.setSPobject(new Vinfo(numX, numY, hoff, false));
+        v.setSPobject(new Vinfo(numX, numY, hoff));
         v.addAttribute(new Attribute(_Coordinate.Axes, coordinates));
 
         // create coordinate variables
@@ -489,7 +470,6 @@ public class NOWRadheader {
 
         ProjectionPointImpl ptul = (ProjectionPointImpl) projection.latLonToProj(new LatLonPointImpl(ullat, ullon));
         ProjectionPointImpl ptlr = (ProjectionPointImpl) projection.latLonToProj(new LatLonPointImpl(lrlat, lrlon));
-        ProjectionPointImpl ptc = (ProjectionPointImpl) projection.latLonToProj(new LatLonPointImpl(clat, clon));
         double startX = ptul.getX();
         double startY = ptlr.getY();
         double dx = (ptlr.getX() - ptul.getX())/(numX-1);
@@ -528,11 +508,9 @@ public class NOWRadheader {
         ct.setDataType(DataType.CHAR);
         ct.setDimensions("");
 
-        List params = projection.getProjectionParameters();
+        List<Parameter> params = projection.getProjectionParameters();
 
-        for (int i = 0; i < params.size(); i++) {
-            Parameter p = (Parameter) params.get(i);
-
+        for (Parameter p : params) {
             ct.addAttribute(new Attribute(p));
         }
 
@@ -554,7 +532,7 @@ public class NOWRadheader {
      * @return  soff -- not used
      */
     ProjectionImpl  nowrad(int hoff, float rlat1, float rlon1, float rlat2, float rlon2, float dlat, float dlon, Date dd) {
-        ArrayList dims = new ArrayList();
+        List<Dimension> dims = new ArrayList<>();
         Dimension dimT = new Dimension("time", 1, true, false, false);
 
         ncfile.addDimension(null, dimT);
@@ -597,10 +575,10 @@ public class NOWRadheader {
         v.setDimensions(dims);
         ncfile.addVariable(null, v);
         v.addAttribute(new Attribute(CDM.LONG_NAME, ctitle));
-        v.addAttribute( new Attribute(CDM.SCALE_FACTOR, new Float((5.0f))));
+        v.addAttribute(new Attribute(CDM.SCALE_FACTOR, 5.0f));
         v.addAttribute(new Attribute(CDM.MISSING_VALUE, 0));
         v.addAttribute(new Attribute(CDM.UNITS, cunit));
-        v.setSPobject(new Vinfo(numX, numY, hoff, false));
+        v.setSPobject(new Vinfo(numX, numY, hoff));
         v.addAttribute(new Attribute(_Coordinate.Axes, coordinates));
 
         // create coordinate variables
@@ -674,53 +652,45 @@ public class NOWRadheader {
      *  parsing the product information into netcdf dataset
      */
     void setProductInfo(String prod, Date dd) {
-        int    radial  = 0;
         String summary = null;
 
         if (prod.contains("NOWRADHF")) {
-            radial  = 0;
             cmemo   = "NOWRAD  Base Reflectivity at Tilt 1";
             ctitle  = "BREF: Base Reflectivity [dBZ]";
             cunit   = "dBZ";
             cname   = "Reflectivity";
             summary = "NOWRAD Product";
         } else if (prod.contains("USRADHF")) {
-            radial  = 0;
             cmemo   = "NOWRAD  Base Reflectivity at Tilt 1";
             ctitle  = "BREF: Base Reflectivity [dBZ]";
             cunit   = "dBZ";
             cname   = "Reflectivity";
             summary = "NOWRAD Product";
         } else if (prod.contains("NEXET")) {
-            radial  = 0;
             cmemo   = "NOWRAD Echo Tops";
             ctitle  = "Echo Tops Composite";
             cunit   = "K FT";
             cname   = "EchoTopsComposite";
             summary = "NOWRAD Product";
         } else if (prod.contains("NEXLL")) {
-            radial  = 0;
             cmemo   = "NOWRAD Layer Comp. Reflectivity - Low";
             ctitle  = "LayerReflectivityLow";
             cunit   = "dBZ";
             cname   = "Reflectivity";
             summary = "NOWRAD Product";
         } else if (prod.contains("NEXLM")) {
-            radial  = 0;
             cmemo   = "NOWRAD Layer Comp. Reflectivity - Mid";
             ctitle  = "LayerReflectivityMid";
             cunit   = "dBZ";
             cname   = "Reflectivity";
             summary = "NOWRAD Product";
         } else if (prod.contains("NEXLH")) {
-            radial  = 0;
             cmemo   = "NOWRAD Layer Comp. Reflectivity - High";
             ctitle  = "LayerReflectivityHigh";
             cunit   = "dBZ";
             cname   = "ReflectivityHigh";
             summary = "NOWRAD Product";
         } else if (prod.contains("NEXVI")) {
-            radial  = 0;
             cmemo   = "NOWRAD ";
             ctitle  = "Vert. Integrated Liquid Water";
             cunit   = "Knots";
@@ -783,66 +753,6 @@ public class NOWRadheader {
         } else {
             return ((a & 0xff) << 24) + ((b & 0xff) << 16) + ((c & 0xff) << 8) + ((d & 0xff));
         }
-    }
-
-    /**
-     * get unsigned integer from byte array
-     * @param b
-     * @param num
-     * @return   unsign integer
-     */
-    int getUInt(byte[] b, int num) {
-        int base = 1;
-        int i;
-        int word = 0;
-        int bv[] = new int[num];
-
-        for (i = 0; i < num; i++) {
-            bv[i] = convertunsignedByte2Short(b[i]);
-        }
-
-        /*
-         * Calculate the integer value of the byte sequence
-         */
-        for (i = num - 1; i >= 0; i--) {
-            word += base * bv[i];
-            base *= 256;
-        }
-
-        return word;
-    }
-
-    /**
-     * get signed integer from bytes
-     * @param b
-     * @param num
-     * @return
-     */
-    int getInt(byte[] b, int num) {
-        int base = 1;
-        int i;
-        int word = 0;
-        int bv[] = new int[num];
-
-        for (i = 0; i < num; i++) {
-            bv[i] = convertunsignedByte2Short(b[i]);
-        }
-
-        if (bv[0] > 127) {
-            bv[0] -= 128;
-            base  = -1;
-        }
-
-        /*
-         * Calculate the integer value of the byte sequence
-         */
-
-        for (i = num - 1; i >= 0; i--) {
-            word += base * bv[i];
-            base *= 256;
-        }
-
-        return word;
     }
 
     /**
@@ -919,15 +829,13 @@ public class NOWRadheader {
     // variable info for reading/writing
     static class Vinfo {
         long    hoff;        // header offset
-        boolean isRadial;    // is it a radial variable?
         int     xt;
         int     yt;
 
-        Vinfo(int xt, int yt, long hoff, boolean isRadial) {
+        Vinfo(int xt, int yt, long hoff) {
             this.xt       = xt;
             this.yt       = yt;
             this.hoff     = hoff;
-            this.isRadial = isRadial;
         }
     }
 }

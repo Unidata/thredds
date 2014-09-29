@@ -546,7 +546,6 @@ public class SuperComboBox extends JPanel {
     private AbstractAction loopAct, helpAct;
     private boolean stopped, forward, first = true, continuous = true, less = true;
     private int step = 1, start = -1;
-    private long startTime;
 
     LoopControl () {
       loopPanel = new JPanel();
@@ -695,7 +694,6 @@ public class SuperComboBox extends JPanel {
 
     private void start(boolean forward) {
       this.forward = forward;
-      startTime = System.currentTimeMillis();
       eventOK = false;
       immediateMode = true;
       stopped = false;

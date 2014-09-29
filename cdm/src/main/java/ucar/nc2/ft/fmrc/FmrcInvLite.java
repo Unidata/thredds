@@ -336,7 +336,7 @@ public class FmrcInvLite implements java.io.Serializable {
     }
 
     private List<TimeInv> makeBest(FeatureCollectionConfig.BestDataset bd) {
-      Map<TimeCoord.Tinv, TimeInv> map = new HashMap<TimeCoord.Tinv, TimeInv>();
+      Map<TimeCoord.Tinv, TimeInv> map = new HashMap<>();
 
       for (int run = 0; run < nruns; run++) {
         for (int time = 0; time < noffsets; time++) {

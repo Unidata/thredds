@@ -74,6 +74,39 @@ public class GribData {
 
   }
 
+  /*
+  Code table 11 – Flag
+  Bit No. Value Meaning
+  1 0 Grid-point data
+    1 Spherical harmonic coefficients
+  2 0 Simple packing
+    1 Complex or second-order packing
+  3 0 Floating point values (in the original data) are represented
+    1 Integer values (in the original data) are represented
+  4 0 No additional flags at octet 14
+    1 Octet 14 contains additional flag bits
+  The following gives the meaning of the bits in octet 14 ONLY if bit 4 is set to 1. Otherwise octet 14 contains
+  regular binary data.
+  Bit No. Value Meaning
+  5 Reserved – set to zero
+  6 0 Single datum at each grid point
+  1 Matrix of values at each grid point
+  7 0 No secondary bit-maps
+  1 Secondary bit-maps present
+  8 0 Second-order values constant width
+  1 Second-order values different widths
+  9–12 Reserved for future use
+  Notes:
+  (1) Bit 4 shall be set to 1 to indicate that bits 5 to 12 are contained in octet 14 of the Binary data section.
+  (2) Bit 3 shall be set to 1 to indicate that the data represented are integer values; where integer values are
+  represented, any reference values, if not zero, should be rounded to integer before being applied.
+  (3) Where secondary bit-maps are present in the data (used in association with second-order packing and, optionally,
+  with a matrix of values at each point), this shall be indicated by setting bit 7 to 1.
+  (4) The indicated meaning of bit 6 shall be retained in anticipation of the future reintroduction of a system to define a
+  matrix of values at each grid point.
+  ____________
+   */
+
   public static class Info {
     public int bitmapLength;     // length of the bitmap section if any
     public long msgLength;       // length of the entire GRIB message
