@@ -13,7 +13,8 @@ import java.util.Enumeration;
 /**
  * Displays a popup menu containing several options to configure the appearance of a JTable.
  *
- * Created by cwardgar on 1/7/14.
+ * @author cwardgar
+ * @since 2014/01/07
  */
 public class TableAppearanceAction extends AbstractAction {
     private static final Logger logger = LoggerFactory.getLogger(TableAppearanceAction.class);
@@ -51,6 +52,9 @@ public class TableAppearanceAction extends AbstractAction {
         JPopupMenu popupMenu = new JPopupMenu(getValue(NAME).toString());
         popupMenu.add(new ResizeColumnWidthsAction());
         popupMenu.addSeparator();
+        popupMenu.add(new ShowAllColumnsAction());
+        popupMenu.add(new HideAllColumnsAction());
+        popupMenu.addSeparator();
 
         Enumeration<TableColumn> allTableColumns = getTableColumnModel().getColumns(false);
         while (allTableColumns.hasMoreElements()) {
@@ -78,6 +82,38 @@ public class TableAppearanceAction extends AbstractAction {
 
         @Override public void actionPerformed(ActionEvent e) {
             ColumnWidthsResizer.resize(table);
+        }
+    }
+
+    private class ShowAllColumnsAction extends AbstractAction {
+        private ShowAllColumnsAction() {
+            putValue(NAME, "Show all columns");
+            putValue(SHORT_DESCRIPTION, "Show all columns in the table.");
+        }
+
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            Enumeration<TableColumn> allTableColumns = getTableColumnModel().getColumns(false);
+            while (allTableColumns.hasMoreElements()) {
+                TableColumn tableColumn = allTableColumns.nextElement();
+                getTableColumnModel().setColumnVisible(tableColumn, true);
+            }
+        }
+    }
+
+    private class HideAllColumnsAction extends AbstractAction {
+        private HideAllColumnsAction() {
+            putValue(NAME, "Hide all columns");
+            putValue(SHORT_DESCRIPTION, "Hide all columns in the table.");
+        }
+
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            Enumeration<TableColumn> allTableColumns = getTableColumnModel().getColumns(false);
+            while (allTableColumns.hasMoreElements()) {
+                TableColumn tableColumn = allTableColumns.nextElement();
+                getTableColumnModel().setColumnVisible(tableColumn, false);
+            }
         }
     }
 
