@@ -464,29 +464,6 @@ public final class TdsContext implements ServletContextAware, InitializingBean, 
   }
 
   /**
-   * Tries to determine whether we're deploying for the first time. We used to simply be able to check for the
-   * presence of {@code contentDirectory}. But now we're using log4j, which runs <b>before</b> TDS init and creates a
-   * directory at {@code contentDirectory/logs}. So now, to determine whether we're deploying for the first time,
-   * we have to check whether "logs/" is the ONLY file currently in {@code contentDirectory}.
-   *
-   * @param contentDirectory the TDS content directory.
-   * @return  {@code true} if we're <i>probably</i> deploying for the first time.
-   */
-  private static boolean isFirstDeployment(File contentDirectory) {
-    if (!contentDirectory.exists()) {
-      return true;
-    }
-
-    File[] contents = contentDirectory.listFiles();
-    if (contents.length != 1) {
-      return false;
-    }
-
-    File content = contents[0];
-    return content.isDirectory() && content.getName().equals("logs");
-  }
-
-  /**
    * Return the name of the webapp as given by the display-name element in web.xml.
    *
    * @return the name of the webapp as given by the display-name element in web.xml.
