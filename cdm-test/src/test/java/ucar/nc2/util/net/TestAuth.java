@@ -186,7 +186,7 @@ public class TestAuth extends UnitTestCommon
     testSSH() throws Exception
     {
         String[] sshurls = {
-            "https://" + TestDir.remoteTestServer + "/dts/b31.dds"
+            "https://" + TestDir.dap2TestServer + "/dts/b31.dds"
         };
 
         System.out.println("*** Testing: Simple Https");
@@ -218,12 +218,12 @@ public class TestAuth extends UnitTestCommon
     }
 
     protected AuthDataBasic[] basictests = {
-        new AuthDataBasic("http://" + TestDir.remoteTestServer + "/thredds/restricted/basicAuth",
+        new AuthDataBasic("http://" + TestDir.threddsTestServer + "/thredds/restricted/basicAuth",
             "remoteUser", "remotePassword"),
     };
 
     protected AuthDataBasic[] redirecttests = {
-        new AuthDataBasic("http://" + TestDir.remoteTestServer + "/thredds/dodsC/restrict/testData.nc.dds",
+        new AuthDataBasic("http://" + TestDir.threddsTestServer + "/thredds/dodsC/restrict/testData.nc.dds",
             "tiggUser", "tigge"),
     };
 
@@ -455,7 +455,7 @@ public class TestAuth extends UnitTestCommon
         String server;
         String path;
         if(remote) {
-            server = TestDir.remoteTestServer;
+            server = TestDir.dap2TestServer;
             path = "/dts/b31.dds";
         } else {
             server = "localhost:8843";

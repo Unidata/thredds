@@ -30,48 +30,16 @@ public class DapTestCommon extends TestCase
     // Look for these to verify we have found the thredds root
     static final String[] DEFAULTSUBDIRS = new String[]{"httpservices", "cdm", "tds", "opendap", "dap4"};
 
-    static public final String FILESERVER = "dap4:file://localhost:8080";
+    static public final String FILESERVER = "file://localhost:8080";
 
     // NetcdfDataset enhancement to use: need only coord systems
     static Set<NetcdfDataset.Enhance> ENHANCEMENT = EnumSet.of(NetcdfDataset.Enhance.CoordSystems);
 
     static public final String CONSTRAINTTAG = "dap4.ce";
 
-    // System properties
-    protected boolean prop_ascii = true;
-    protected boolean prop_diff = true;
-    protected boolean prop_baseline = false;
-    protected boolean prop_visual = false;
-    protected boolean prop_debug = DEBUG;
-    protected boolean prop_generate = true;
-    protected String prop_controls = null;
-
-    //////////////////////////////////////////////////
     // Static variables
 
     static public org.slf4j.Logger log;
-
-    // Define a tree pattern to recognize the root.
-    static protected String threddsroot = null;
-    static protected String dap4root = null;
-    static protected String d4tsServer = null;
-
-    static {
-        // Compute the root path
-        threddsroot = locateThreddsRoot();
-        if(threddsroot != null)
-            dap4root = threddsroot + "/" + DEFAULTTREEROOT;
-        // Compute the set of SOURCES
-        d4tsServer = TestDir.dap4TestServer;
-    }
-
-    //////////////////////////////////////////////////
-    // static methods
-
-    static public String getDAP4Root()
-    {
-        return dap4root;
-    }
 
     // Walk around the directory structure to locate
     // the path to the thredds root (which may not
@@ -151,8 +119,21 @@ public class DapTestCommon extends TestCase
     }
 
     //////////////////////////////////////////////////
-    // Instance databuffer
+    // Instance variables
 
+    // System properties
+    protected boolean prop_ascii = true;
+    protected boolean prop_diff = true;
+    protected boolean prop_baseline = false;
+    protected boolean prop_visual = false;
+    protected boolean prop_debug = DEBUG;
+    protected boolean prop_generate = true;
+    protected String prop_controls = null;
+
+    // Define a tree pattern to recognize the root.
+    protected String threddsroot = null;
+    protected String dap4root = null;
+    protected String d4tsServer = null;
     protected String title = "Testing";
 
     public DapTestCommon()
@@ -165,6 +146,26 @@ public class DapTestCommon extends TestCase
         super(name);
         this.title = name;
         setSystemProperties();
+        initPaths();
+    }
+
+    protected void
+    initPaths()
+    {
+        // Compute the root path
+        this.threddsroot = locateThreddsRoot();
+        if(this.threddsroot != null)
+            this.dap4root = this.threddsroot + "/" + DEFAULTTREEROOT;
+        // Compute the set of SOURCES
+        this.d4tsServer = TestDir.dap4TestServer;
+        if(DEBUG) {
+            System.err.println("DapTestCommon: d4tsServer=" + d4tsServer);
+        }
+    }
+
+    public String getDAP4Root()
+    {
+        return dap4root;
     }
 
     public void setTitle(String title)
@@ -182,7 +183,9 @@ public class DapTestCommon extends TestCase
     writefile(String path, String content)
             throws IOException
     {
-        FileWriter out = new FileWriter(path);
+        File f = new File(path);
+        if(f.exists()) f.delete();
+        FileWriter out = new FileWriter(f);
         out.write(content);
         out.close();
     }
@@ -192,7 +195,9 @@ public class DapTestCommon extends TestCase
     writefile(String path, byte[] content)
             throws IOException
     {
-        FileOutputStream out = new FileOutputStream(path);
+        File f = new File(path);
+        if(f.exists()) f.delete();
+        FileOutputStream out = new FileOutputStream(f);
         out.write(content);
         out.close();
     }
@@ -202,6 +207,10 @@ public class DapTestCommon extends TestCase
             throws IOException
     {
         StringBuilder buf = new StringBuilder();
+        File xx = new File(filename);
+        if(!xx.canRead()) {
+            int x = 0;
+        }
         FileReader file = new FileReader(filename);
         BufferedReader rdr = new BufferedReader(file);
         String line;
@@ -303,12 +312,13 @@ public class DapTestCommon extends TestCase
     findServer(String path)
             throws DapException
     {
-        if(d4tsServer.startsWith("file")) {
+        if(d4tsServer.startsWith("file:")) {
             d4tsServer = FILESERVER + "/" + path;
         } else {
             String svc = "http://" + d4tsServer + "/d4ts";
             if(!checkServer(svc))
                 throw new DapException("D4TS Server not reachable: " + svc);
+            // Since we will be accessing it thru NetcdfDataset, we need to change the schema.
             d4tsServer = "dap4://" + d4tsServer + "/d4ts";
         }
     }

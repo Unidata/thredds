@@ -7,4 +7,5 @@ netcdf test_opaque.nc {
   :_CoordSysBuilder = "ucar.nc2.dataset.conv.DefaultConvention";
  data:
 vo1 =  0x0123456789abcdef;
+
 }

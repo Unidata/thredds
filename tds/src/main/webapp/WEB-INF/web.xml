@@ -116,7 +116,7 @@
   </filter-mapping>
   <filter-mapping>
     <filter-name>RequestQueryFilterAllowAngleBrackets</filter-name>
-    <servlet-name>Dap4</servlet-name>
+    <servlet-name>dap4</servlet-name>
   </filter-mapping>
 
   <!--
@@ -136,7 +136,7 @@
   </filter-mapping>
   <filter-mapping>
     <filter-name>CookieFilter</filter-name>
-    <servlet-name>Dap4</servlet-name>
+    <servlet-name>dap4</servlet-name>
   </filter-mapping>
 
   <!--
@@ -237,8 +237,8 @@
   <!-- NetCDF/Dap4 server -->
   <servlet>
     <display-name>Dap4 Server</display-name>
-    <servlet-name>Dap4</servlet-name>
-    <servlet-class>dap4.dap4servlet.Dap4Servlet</servlet-class>
+    <servlet-name>dap4</servlet-name>
+    <servlet-class>thredds.server.dap4.Dap4Servlet</servlet-class>
     <load-on-startup>3</load-on-startup>
   </servlet>
 
@@ -392,7 +392,7 @@
   </servlet-mapping>
 
   <servlet-mapping>
-    <servlet-name>Dap4</servlet-name>
+    <servlet-name>dap4</servlet-name>
     <url-pattern>/dap4/*</url-pattern>
   </servlet-mapping>
 

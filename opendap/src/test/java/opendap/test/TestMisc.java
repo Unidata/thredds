@@ -67,7 +67,7 @@ public class TestMisc extends UnitTestCommon
     {
         setTitle("DAP Misc tests");
         // Check if we are running against remote or localhost, or what.
-        testserver = TestDir.remoteTestServer;
+        testserver = TestDir.dap2TestServer;
         definetestcases();
     }
 
