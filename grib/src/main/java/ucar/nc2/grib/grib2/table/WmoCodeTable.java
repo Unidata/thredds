@@ -54,8 +54,8 @@ public class WmoCodeTable implements Comparable<WmoCodeTable> {
   static public final Version standard = Version.GRIB2_13_0_1;
 
   public enum Version {
-    // GRIB2_8_0_0, GRIB2_7_0_0, GRIB2_6_0_1, GRIB2_5_2_0;
-    GRIB2_13_0_1, GRIB2_10_0_1, GRIB2_8_0_0;
+    // GRIB2_10_0_1, GRIB2_8_0_0, GRIB2_7_0_0, GRIB2_6_0_1, GRIB2_5_2_0;
+    GRIB2_13_0_1;
 
     String getResourceName() {
       return "/resources/grib2/wmo/" + this.name() + "_CodeFlag_en.xml";
@@ -71,15 +71,15 @@ public class WmoCodeTable implements Comparable<WmoCodeTable> {
       } else if (this == GRIB2_7_0_0) {
         return new String[]{"Exp_CodeFlag_E", "Title_E", "SubTitle_E", "MeaningParameterDescription_E", "UnitComments_E"};
 
-      } else */
-
-      if (this == GRIB2_8_0_0) {
+      } else if (this == GRIB2_8_0_0) {
         return new String[]{"GRIB2_8_0_0_CodeFlag_en", "Title_en", "SubTitle_en", "MeaningParameterDescription_en", "UnitComments_en"};
 
       } else if (this == GRIB2_10_0_1) {
         return new String[]{"GRIB2_10_0_1_CodeFlag_en", "Title_en", "SubTitle_en", "MeaningParameterDescription_en", "UnitComments_en"};
 
-      }  else if (this == GRIB2_13_0_1) {
+      }  else */
+
+      if (this == GRIB2_13_0_1) {
         return new String[]{"GRIB2_13_0_1_CodeFlag_en", "Title_en", "SubTitle_en", "MeaningParameterDescription_en", "UnitComments_en"};
       }
 
@@ -703,23 +703,4 @@ public class WmoCodeTable implements Comparable<WmoCodeTable> {
     }
   }
 
-
-  public static void main(String arg[]) throws IOException {
-    //GribTables gt52 = readGribCodes(Version.GRIB2_5_2_0);
-    //showTable(gt52.list);
-    //showDiffFromCurrent(gt52.list);
-
-    //WmoTables gt61 = readGribCodes(Version.GRIB2_8_0_0);
-    //showTable(gt61.list);
-    //showDiff(gt52, gt61, true);
-    //System.out.printf("%n");
-    //showDiff(gt61, gt52, false);
-
-    WmoCodeTable table = new WmoCodeTable();
-    table.isParameter = true;
-    String name = "Probability of 0.01 inch of precipitation (POP)";
-    TableEntry te = table.add("1", "1-1-1", name, "", "");
-    System.out.printf("%s%n", te);
-
-  }
 }

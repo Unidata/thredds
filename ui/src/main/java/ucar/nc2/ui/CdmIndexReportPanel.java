@@ -41,6 +41,7 @@ import ucar.coord.SparseArray;
 import ucar.nc2.grib.collection.GribCdmIndex;
 import ucar.nc2.grib.collection.GribCollection;
 import ucar.nc2.grib.collection.PartitionCollection;
+import ucar.nc2.ui.grib.Grib2ReportPanel;
 import ucar.nc2.util.CloseableIterator;
 import ucar.nc2.util.Indent;
 import ucar.unidata.io.RandomAccessFile;

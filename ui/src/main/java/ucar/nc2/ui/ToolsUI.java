@@ -72,7 +72,7 @@ import ucar.nc2.ui.coverage.CoverageTable;
 import ucar.nc2.ui.dialog.DiskCache2Form;
 import ucar.nc2.ui.gis.shapefile.ShapeFileBean;
 import ucar.nc2.ui.gis.worldmap.WorldMapBean;
-import ucar.nc2.ui.grib.Grib2TableViewer2;
+import ucar.nc2.ui.grib.*;
 import ucar.nc2.ui.grid.GeoGridTable;
 import ucar.nc2.ui.grid.GridUI;
 import ucar.nc2.ui.image.ImageViewPanel;
@@ -2532,14 +2532,14 @@ public class ToolsUI extends JPanel {
 
   /////////////////////////////////////////////////////////////////////
   private class GribFilesPanel extends OpPanel {
-    ucar.nc2.ui.GribFilesPanel gribTable;
+    ucar.nc2.ui.grib.GribFilesPanel gribTable;
 
     void closeOpenFiles() throws IOException {
     }
 
     GribFilesPanel(PreferencesExt p) {
       super(p, "collection:", true, false);
-      gribTable = new ucar.nc2.ui.GribFilesPanel(prefs);
+      gribTable = new ucar.nc2.ui.grib.GribFilesPanel(prefs);
       add(gribTable, BorderLayout.CENTER);
       gribTable.addPropertyChangeListener(new java.beans.PropertyChangeListener() {
         public void propertyChange(java.beans.PropertyChangeEvent e) {
@@ -2596,7 +2596,7 @@ public class ToolsUI extends JPanel {
   /////////////////////////////////////////////////////////////////////
   // GRIB2
   private class Grib2CollectionPanel extends OpPanel {
-    ucar.nc2.ui.Grib2CollectionPanel gribTable;
+    ucar.nc2.ui.grib.Grib2CollectionPanel gribTable;
 
     void closeOpenFiles() throws IOException {
       gribTable.closeOpenFiles();
@@ -2604,7 +2604,7 @@ public class ToolsUI extends JPanel {
 
     Grib2CollectionPanel(PreferencesExt p) {
       super(p, "collection:", true, false);
-      gribTable = new ucar.nc2.ui.Grib2CollectionPanel(prefs, buttPanel);
+      gribTable = new ucar.nc2.ui.grib.Grib2CollectionPanel(prefs, buttPanel);
       add(gribTable, BorderLayout.CENTER);
 
       gribTable.addPropertyChangeListener(new java.beans.PropertyChangeListener() {
@@ -2822,14 +2822,14 @@ public class ToolsUI extends JPanel {
 
   /////////////////////////////////////////////////////////////////////
   private class Grib2DataPanel extends OpPanel {
-    ucar.nc2.ui.Grib2DataPanel gribTable;
+    ucar.nc2.ui.grib.Grib2DataPanel gribTable;
 
     void closeOpenFiles() throws IOException {
     }
 
     Grib2DataPanel(PreferencesExt p) {
       super(p, "collection:", true, false);
-      gribTable = new ucar.nc2.ui.Grib2DataPanel(prefs);
+      gribTable = new ucar.nc2.ui.grib.Grib2DataPanel(prefs);
       add(gribTable, BorderLayout.CENTER);
 
       gribTable.addPropertyChangeListener(new java.beans.PropertyChangeListener() {
@@ -2904,14 +2904,14 @@ public class ToolsUI extends JPanel {
 
     /////////////////////////////////////////////////////////////////////
   private class Grib1DataPanel extends OpPanel {
-    ucar.nc2.ui.Grib1DataTable gribTable;
+    Grib1DataTable gribTable;
 
     void closeOpenFiles() throws IOException {
     }
 
       Grib1DataPanel(PreferencesExt p) {
       super(p, "collection:", true, false);
-      gribTable = new ucar.nc2.ui.Grib1DataTable(prefs);
+      gribTable = new Grib1DataTable(prefs);
       add(gribTable, BorderLayout.CENTER);
 
       gribTable.addPropertyChangeListener(new java.beans.PropertyChangeListener() {
@@ -3125,7 +3125,7 @@ public class ToolsUI extends JPanel {
 
  /////////////////////////////////////////////////////////////////////
   private class GribIndexPanel extends OpPanel {
-    ucar.nc2.ui.GribIndexPanel gribTable;
+    ucar.nc2.ui.grib.GribIndexPanel gribTable;
 
     void closeOpenFiles() throws IOException {
       gribTable.closeOpenFiles();
@@ -3133,7 +3133,7 @@ public class ToolsUI extends JPanel {
 
    GribIndexPanel(PreferencesExt p) {
       super(p, "index file:", true, false);
-      gribTable = new ucar.nc2.ui.GribIndexPanel(prefs, buttPanel);
+      gribTable = new ucar.nc2.ui.grib.GribIndexPanel(prefs, buttPanel);
       add(gribTable, BorderLayout.CENTER);
     }
 
@@ -3171,14 +3171,14 @@ public class ToolsUI extends JPanel {
   // raw grib access - dont go through the IOSP
   private class Grib1CollectionPanel extends OpPanel {
     //ucar.unidata.io.RandomAccessFile raf = null;
-    ucar.nc2.ui.Grib1CollectionPanel gribTable;
+    ucar.nc2.ui.grib.Grib1CollectionPanel gribTable;
 
     void closeOpenFiles() throws IOException {
     }
 
     Grib1CollectionPanel(PreferencesExt p) {
       super(p, "collection:", true, false);
-      gribTable = new ucar.nc2.ui.Grib1CollectionPanel(buttPanel, prefs);
+      gribTable = new ucar.nc2.ui.grib.Grib1CollectionPanel(buttPanel, prefs);
       add(gribTable, BorderLayout.CENTER);
 
       AbstractButton showButt = BAMutil.makeButtcon("Information", "Show Collection", false);
@@ -3341,7 +3341,7 @@ public class ToolsUI extends JPanel {
   }
 
   /* private class Grib2ReportPanel extends OpPanel {
-    ucar.nc2.ui.Grib2ReportPanel gribReport;
+    ucar.nc2.ui.grib.Grib2ReportPanel gribReport;
     boolean useIndex = true;
     boolean eachFile = false;
     boolean extra = false;
@@ -3349,10 +3349,10 @@ public class ToolsUI extends JPanel {
 
     Grib2ReportPanel(PreferencesExt p) {
       super(p, "collection:", true, false);
-      gribReport = new ucar.nc2.ui.Grib2ReportPanel(prefs, buttPanel);
+      gribReport = new ucar.nc2.ui.grib.Grib2ReportPanel(prefs, buttPanel);
       add(gribReport, BorderLayout.CENTER);
 
-      reports = new JComboBox(ucar.nc2.ui.Grib2ReportPanel.Report.values());
+      reports = new JComboBox(ucar.nc2.ui.grib.Grib2ReportPanel.Report.values());
       buttPanel.add(reports);
 
       AbstractAction useIndexButt = new AbstractAction() {
@@ -3407,7 +3407,7 @@ public class ToolsUI extends JPanel {
 
       ByteArrayOutputStream bos = new ByteArrayOutputStream(10000);
       try {
-        gribReport.doReport(command, useIndex, eachFile, extra, (ucar.nc2.ui.Grib2ReportPanel.Report) reports.getSelectedItem());
+        gribReport.doReport(command, useIndex, eachFile, extra, (ucar.nc2.ui.grib.Grib2ReportPanel.Report) reports.getSelectedItem());
 
       } catch (IOException ioe) {
         JOptionPane.showMessageDialog(null, "Grib2ReportPanel cant open " + command + "\n" + ioe.getMessage());
@@ -3434,16 +3434,16 @@ public class ToolsUI extends JPanel {
   /////////////////////////////////////////////////////////////////////
 
   /* private class Grib1ReportPanel extends OpPanel {
-    ucar.nc2.ui.Grib1ReportPanel gribReport;
+    ucar.nc2.ui.grib.Grib1ReportPanel gribReport;
     boolean useIndex = true;
     JComboBox reports;
 
     Grib1ReportPanel(PreferencesExt p) {
       super(p, "collection:", true, false);
-      gribReport = new ucar.nc2.ui.Grib1ReportPanel(prefs, buttPanel);
+      gribReport = new ucar.nc2.ui.grib.Grib1ReportPanel(prefs, buttPanel);
       add(gribReport, BorderLayout.CENTER);
 
-      reports = new JComboBox(ucar.nc2.ui.Grib1ReportPanel.Report.values());
+      reports = new JComboBox(ucar.nc2.ui.grib.Grib1ReportPanel.Report.values());
       buttPanel.add(reports);
 
       AbstractAction useIndexButt = new AbstractAction() {
@@ -3475,7 +3475,7 @@ public class ToolsUI extends JPanel {
 
       ByteArrayOutputStream bos = new ByteArrayOutputStream(10000);
       try {
-        gribReport.doReport(command, useIndex, (ucar.nc2.ui.Grib1ReportPanel.Report) reports.getSelectedItem());
+        gribReport.doReport(command, useIndex, (ucar.nc2.ui.grib.Grib1ReportPanel.Report) reports.getSelectedItem());
 
       } catch (IOException ioe) {
         JOptionPane.showMessageDialog(null, "Grib2ReportPanel cant open " + command + "\n" + ioe.getMessage());
@@ -3677,11 +3677,11 @@ public class ToolsUI extends JPanel {
   /////////////////////////////////////////////////////////////////////
 
   private class GribRenamePanel extends OpPanel {
-    ucar.nc2.ui.GribRenamePanel panel;
+    ucar.nc2.ui.grib.GribRenamePanel panel;
 
     GribRenamePanel(PreferencesExt p) {
       super(p, "matchNcepName: ", true, false, false);
-      panel = new ucar.nc2.ui.GribRenamePanel(prefs, buttPanel);
+      panel = new ucar.nc2.ui.grib.GribRenamePanel(prefs, buttPanel);
       add(panel, BorderLayout.CENTER);
     }
 
@@ -3701,13 +3701,13 @@ public class ToolsUI extends JPanel {
 
     /////////////////////////////////////////////////////////////////////
   private class GribRewritePanel extends OpPanel {
-    ucar.nc2.ui.GribRewritePanel ftTable;
+    ucar.nc2.ui.grib.GribRewritePanel ftTable;
     final FileManager dirChooser;
 
       GribRewritePanel(PreferencesExt prefs) {
       super(prefs, "dir:", false, false);
       dirChooser = new FileManager(parentFrame, null, null, (PreferencesExt) prefs.node("FeatureScanFileManager"));
-      ftTable = new ucar.nc2.ui.GribRewritePanel(prefs, buttPanel);
+      ftTable = new ucar.nc2.ui.grib.GribRewritePanel(prefs, buttPanel);
       add(ftTable, BorderLayout.CENTER);
 
       ftTable.addPropertyChangeListener(new java.beans.PropertyChangeListener() {

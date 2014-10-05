@@ -36,7 +36,7 @@
 
 package ucar.nc2.ui.dialog;
 
-import ucar.nc2.ui.Grib1TablesViewer;
+import ucar.nc2.ui.grib.Grib1TablesViewer;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;

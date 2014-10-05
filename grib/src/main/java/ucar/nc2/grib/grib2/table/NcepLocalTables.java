@@ -63,8 +63,16 @@ import java.util.jar.JarFile;
  */
 public class NcepLocalTables extends LocalTables {
   static private final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(NcepLocalTables.class);
-  static private final String defaultResourcePath = "resources/grib2/ncep/";
+  static private final String oldResourcePath = "resources/grib2/ncep/";       // not sure what version this is, assume 13 overrides all
+  static private final String defaultResourcePath = "resources/grib2/ncep/v13.0.0/";
+  private static NcepLocalTables single;
 
+  public static Grib2Customizer getCust(Grib2Table table) {
+    if (single == null) single = new NcepLocalTables(table);
+    return single;
+  }
+
+  ////////////////////////////////////////////////////////////////////////////////////
   protected final NcepLocalParams params;
 
   NcepLocalTables(Grib2Table grib2Table) {
@@ -649,41 +657,6 @@ Updated again on 3/26/2008
       this.key = key;
       this.local = local;
       this.org = org;
-    }
-  }
-
-  public static void main(String arg[]) {
-    Map<Integer, CompTable> map = new HashMap<>(500);
-
-    //NcepLocalTables tables = new NcepLocalTables(0, 0, 0, 0, 0);
-    NcepLocalParamsOld ncepOld = new NcepLocalParamsOld();
-
-    for (int key : ncepOld.local.keySet()) {
-      Grib2Customizer.Parameter p = ncepOld.local.get(key);
-      map.put(key, new CompTable(key, p, null));
-    }
-
-    NcepLocalParamsVeryOld.init();
-    Map<String, Grib2Parameter> org = NcepLocalParamsVeryOld.getParamMap();
-    for (String skey : org.keySet()) {
-      Grib2Parameter p = org.get(skey);
-      int key = makeHash(p.discipline, p.category, p.number);
-      CompTable ct = map.get(key);
-      if (ct == null) {
-        map.put(key, new CompTable(key, null, p));
-      } else {
-        ct.org = p;
-      }
-    }
-
-    System.out.printf("NcepLocalTables%nNcepLocalParamsOld%n%n");
-    ArrayList<Integer> keys = new ArrayList<>();
-    for (int key : map.keySet()) keys.add(key);
-    Collections.sort(keys);
-    for (int key : keys) {
-      CompTable ct = map.get(key);
-      System.out.printf("%s%n", ct.local);
-      System.out.printf("%s%n%n", ct.org);
     }
   }
 

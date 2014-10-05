@@ -285,12 +285,14 @@ public class Grib2TableViewer2 extends JPanel {
 
   public class TableBean implements Comparable<TableBean> {
     Grib2Table table;
+    Grib2Table.Id id;
 
     public TableBean() {
     }
 
     public TableBean(Grib2Table table) {
       this.table = table;
+      this.id = table.getId();
     }
 
     public String getName() {
@@ -298,23 +300,23 @@ public class Grib2TableViewer2 extends JPanel {
     }
 
     public int getCenter_id() {
-      return table.center;
+      return id.center;
     }
 
     public int getSubcenter_id() {
-      return table.subCenter;
+      return id.subCenter;
     }
 
     public int getVersionNumber() {
-      return table.masterVersion;
+      return id.masterVersion;
     }
 
     public int getLocalVersion() {
-      return table.localVersion;
+      return id.localVersion;
     }
 
     public int getGenProcessId() {
-       return table.genProcessId;
+       return id.genProcessId;
      }
 
     public String getPath() {
