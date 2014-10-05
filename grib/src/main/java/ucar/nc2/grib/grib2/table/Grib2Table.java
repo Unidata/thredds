@@ -82,20 +82,23 @@ public class Grib2Table {
           int master = Integer.parseInt(flds[fldidx++].trim());
           int local = Integer.parseInt(flds[fldidx++].trim());
           int genProcess = Integer.parseInt(flds[fldidx++].trim());
-          String typeName = StringUtil2.remove(flds[fldidx++], '"');
-          String name = StringUtil2.remove(flds[fldidx++], '"');
-          String resource = (flds.length > 6) ? StringUtil2.remove(flds[fldidx++], '"') : null;
+          String typeName = StringUtil2.remove(flds[fldidx++].trim(), '"');
+          String name = StringUtil2.remove(flds[fldidx++].trim(), '"');
+          String resource = (flds.length > 7) ? StringUtil2.remove(flds[fldidx++].trim(), '"') : null;
           Type type = Type.valueOf(typeName);
           Grib2Table table = new Grib2Table(name, center, subcenter, master, local, genProcess, resource, type);
           result.add(table);
 
         } catch (Exception e) {
-          System.out.printf("%d %d BAD line == %s%n", count, fldidx, line);
+          System.out.printf("%d %d BAD line == %s : %s%n", count, fldidx, line, e.getMessage());
         }
       }
     } catch (IOException e) {
       e.printStackTrace();
     }
+
+    standardTable = new Grib2Table("WMO", 0,-1,-1,-1,-1, WmoCodeTable.standard.getResourceName(), Grib2Table.Type.wmo);
+    result.add(standardTable);
     return result;
   }
 
@@ -108,15 +111,13 @@ public class Grib2Table {
       if (table.id.match(id)) return table;
     }
 
-    if (standardTable == null)
-      standardTable = new Grib2Table("WMO", 0,-1,-1,-1,-1, WmoCodeTable.standard.getResourceName(), Grib2Table.Type.wmo);
-
     return standardTable;
   }
 
   static public List<Grib2Table> getTables() {
     if (tables == null)
       tables = init();
+
     return tables;
   }
 
