@@ -335,8 +335,9 @@ public class WmoCodeTable implements Comparable<WmoCodeTable> {
   }
 
   private TableEntry add(String line, String code, String meaning, String unit, String status) {
-   TableEntry te = new TableEntry(line, code, meaning, unit, status);
-    entries.add(te);
+    TableEntry te = new TableEntry(line, code, meaning, unit, status);
+    boolean isRange = (te.start != te.stop);
+    if (!isRange) entries.add(te);
     return te;
   }
 
