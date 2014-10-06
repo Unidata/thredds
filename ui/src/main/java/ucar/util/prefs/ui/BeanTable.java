@@ -208,6 +208,9 @@ public class BeanTable extends JPanel {
     scrollPane.setCorner(JScrollPane.UPPER_RIGHT_CORNER, cornerButton);
     scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
 
+    // This keeps the corner button visible even when the table is empty (or all columns are hidden).
+    scrollPane.setColumnHeaderView(new JViewport());
+    scrollPane.getColumnHeader().setPreferredSize(jtable.getTableHeader().getPreferredSize());
 
     // UI
     setLayout(new BorderLayout());

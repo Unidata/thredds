@@ -162,7 +162,6 @@ public class TestServlet extends DapTestCommon
         throws Exception
     {
         super(name);
-        setSystemProperties();
         if(prop_ascii)
             Generator.setASCII(true);
 
@@ -183,7 +182,8 @@ public class TestServlet extends DapTestCommon
     chooseTestcases()
     {
         if(false) {
-            chosentests = locate("test_struct_type.nc");
+            chosentests = locate("test_atomic_types.nc");
+            prop_visual = true;
         } else {
             for(ServletTest tc : alltestcases) {
                 chosentests.add(tc);
@@ -842,7 +842,7 @@ public class TestServlet extends DapTestCommon
         else if(!genpath.canWrite())
             return report("Directory not writeable: " + genpath.toString());
         // Clear the generate directory, but of files only
-        clearDir(genpath, false);
+        //clearDir(genpath, false);
         return true;
     }
 

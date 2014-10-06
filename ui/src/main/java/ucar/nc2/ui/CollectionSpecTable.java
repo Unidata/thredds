@@ -46,6 +46,8 @@ import javax.swing.*;
 import java.awt.*;
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.Formatter;
 import java.util.List;
@@ -193,8 +195,8 @@ public class CollectionSpecTable extends JPanel {
     return dcm != null;
   }
 
-  private final String SPEC = "spec='";
-  private final String DFM = "dateFormatMark='";
+  private static final String SPEC = "spec='";
+  private static final String DFM = "dateFormatMark='";
   private MFileCollectionManager setCollectionElement(String elem, Formatter f) throws Exception {
     String spec = null;
     int pos1 = elem.indexOf(SPEC);
@@ -237,30 +239,28 @@ public class CollectionSpecTable extends JPanel {
   }
 
   private MFileCollectionManager scanCollection(String spec, Formatter f) {
-    MFileCollectionManager dc = null;
+    MFileCollectionManager dc;
     try {
       dc = MFileCollectionManager.open(spec, spec, null, f);
       dc.scan(false);
       fileList = (List<MFile>) Misc.getList(dc.getFilesSorted());
 
-      List<Bean> beans = new ArrayList<Bean>();
+      List<Bean> beans = new ArrayList<>();
       for (MFile mfile : fileList)
         beans.add(new Bean(mfile));
       ftTable.setBeans(beans);
       return dc;
 
     } catch (Exception e) {
-      ByteArrayOutputStream bos = new ByteArrayOutputStream(10000);
-      e.printStackTrace(new PrintStream(bos));
-      f.format("Exception %s", bos.toString());
+      StringWriter sw = new StringWriter(10000);
+      e.printStackTrace(new PrintWriter(sw));
+      f.format("Exception %s", sw.toString());
       return null;
     }
   }
 
   public class Bean {
     MFile mfile;
-
-    Bean() {}
 
     Bean(MFile mfile) {
       this.mfile = mfile;

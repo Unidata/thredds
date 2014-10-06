@@ -216,8 +216,7 @@ public class GEOSTransform {
    public double[] satToEarth(double x, double y) {
 
      if (scan_geom.equals(GOES)) { // convert from GOES to GEOS for transfrom below
-        double[] lambda_theta_geos = new double[2];
-        lambda_theta_geos = GOES_to_GEOS(x, y);
+        double[] lambda_theta_geos = GOES_to_GEOS(x, y);
         x = lambda_theta_geos[0];
         y = lambda_theta_geos[1];
      }
@@ -322,8 +321,7 @@ public class GEOSTransform {
    */
    public double[] earthToFGF(double geographic_lon, double geographic_lat, double scale_x, double offset_x, double scale_y, double offset_y) {
      double[] xy = earthToSat(geographic_lon, geographic_lat);
-     double[] fgf = SatToFGF(xy[0], xy[1], scale_x, offset_x, scale_y, offset_y);
-     return fgf;
+     return SatToFGF(xy[0], xy[1], scale_x, offset_x, scale_y, offset_y);
    }
 
   /**

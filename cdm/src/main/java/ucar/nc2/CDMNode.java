@@ -317,13 +317,17 @@ public abstract class CDMNode
             if(inner instanceof VariableDS) {
                 VariableDS vds = (VariableDS) inner;
                 inner = vds.getOriginalVariable();
-                if(inner == null)
-                    throw new IllegalArgumentException("VariableDS has no core Variable");
+                if(inner == null)  {
+                    inner = vds;
+                    break;
+                }
             } else if(inner instanceof StructureDS) {
                 StructureDS sds = (StructureDS) inner;
                 inner = sds.getOriginalVariable();
-                if(inner == null)
-                    throw new IllegalArgumentException("StructureDS has no core Structure");
+                if(inner == null) {
+                    inner = sds;
+                    break;
+                }
             } else break; // base case we have straight Variable or Stucture
         }
         return inner;

@@ -287,17 +287,6 @@
       </dependency>
       <dependency>
         <groupId>${project.groupId}</groupId>
-        <artifactId>d4servlet</artifactId>
-        <version>${project.version}</version>
-        <exclusions>
-          <exclusion>
-            <groupId>javax.servlet</groupId>
-            <artifactId>servlet-api</artifactId>
-          </exclusion>
-        </exclusions>
-      </dependency>
-      <dependency>
-        <groupId>${project.groupId}</groupId>
         <artifactId>d4core</artifactId>
         <version>${project.version}</version>
       </dependency>
@@ -972,7 +961,6 @@
     <module>dap4/d4cdmshared</module>
     <module>dap4/d4cdmclient</module>
     <module>dap4/d4servletshared</module>
-    <module>dap4/d4servlet</module>
     <module>dap4/d4ts</module>
     <module>dap4/d4tests</module>
     <module>dap4/d4tswar</module>

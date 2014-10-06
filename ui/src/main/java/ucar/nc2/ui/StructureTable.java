@@ -37,6 +37,7 @@ import ucar.ma2.*;
 import ucar.nc2.NCdumpW;
 import ucar.nc2.Structure;
 import ucar.nc2.Variable;
+import ucar.nc2.constants.CDM;
 import ucar.nc2.ft.PointFeature;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time.CalendarDateFormatter;
@@ -266,6 +267,10 @@ public class StructureTable extends JPanel {
     scrollPane.setCorner(JScrollPane.UPPER_RIGHT_CORNER, cornerButton);
     scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
 
+    // This keeps the corner button visible even when the table is empty (or all columns are hidden).
+    scrollPane.setColumnHeaderView(new JViewport());
+    scrollPane.getColumnHeader().setPreferredSize(jtable.getTableHeader().getPreferredSize());
+
     add(scrollPane, BorderLayout.CENTER);
 
     revalidate();
@@ -316,7 +321,8 @@ public class StructureTable extends JPanel {
     String filename = fileChooser.chooseFilename();
     if (filename == null) return;
     try {
-      PrintWriter pw = new PrintWriter(new File(filename));
+      PrintWriter pw = new PrintWriter(new File(filename),
+              CDM.utf8Charset.name());
 
       TableModel model = jtable.getModel();
       for (int col = 0; col < model.getColumnCount(); col++) {

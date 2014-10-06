@@ -666,9 +666,9 @@ public class Grib2CollectionPanel extends JPanel {
       bean.gr.check(raf, f);
 
     } catch (IOException ioe) {
-       ByteArrayOutputStream bos = new ByteArrayOutputStream(10000);
-       ioe.printStackTrace(new PrintStream(bos));
-       f.format("%n%s%n", bos.toString());
+       StringWriter sw = new StringWriter(10000);
+       ioe.printStackTrace(new PrintWriter(sw));
+       f.format("%n%s%n", sw.toString());
     }
     f.format("%ndone%n");
   }

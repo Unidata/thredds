@@ -1,5 +1,6 @@
 package ucar.nc2.ui.grib;
 
+import ucar.nc2.constants.CDM;
 import ucar.nc2.grib.*;
 import ucar.nc2.grib.grib1.Grib1Index;
 import ucar.nc2.grib.grib1.Grib1Record;
@@ -31,7 +32,6 @@ public class GribIndexPanel extends JPanel {
   private PreferencesExt prefs;
 
   private BeanTable recordTable;
-  private JSplitPane split, split2, split3;
 
   private TextHistoryPane infoPopup, detailTA;
   private IndependentWindow infoWindow, detailWindow;
@@ -132,7 +132,8 @@ public class GribIndexPanel extends JPanel {
 
     try (RandomAccessFile raf = new RandomAccessFile(indexFile, "r")) {
       raf.seek(0);
-      String magic = raf.readString(Grib2Index.MAGIC_START.getBytes().length);
+      String magic = raf.readString(Grib2Index.MAGIC_START
+              .getBytes(CDM.utf8Charset).length);
       if (magic.equals(Grib2Index.MAGIC_START)) {
         readIndex2(indexFile);
       } else if (magic.equals(Grib1Index.MAGIC_START)) {
@@ -150,7 +151,7 @@ public class GribIndexPanel extends JPanel {
     Grib1Index g1idx =  new Grib1Index();
     g1idx.readIndex(filename, 0, thredds.inventory.CollectionUpdateType.nocheck);
 
-    java.util.List<RecordBean> records = new ArrayList<RecordBean>();
+    java.util.List<RecordBean> records = new ArrayList<>();
      for (Grib1Record gr : g1idx.getRecords())
        records.add(new RecordBean(gr));
      recordTable.setBeans(records);
@@ -163,7 +164,7 @@ public class GribIndexPanel extends JPanel {
     Grib2Index g2idx =  new Grib2Index();
     g2idx.readIndex(filename, 0, thredds.inventory.CollectionUpdateType.nocheck);
 
-    java.util.List<RecordBean> records = new ArrayList<RecordBean>();
+    java.util.List<RecordBean> records = new ArrayList<>();
      for (Grib2Record gr : g2idx.getRecords())
        records.add(new RecordBean(gr));
      recordTable.setBeans(records);

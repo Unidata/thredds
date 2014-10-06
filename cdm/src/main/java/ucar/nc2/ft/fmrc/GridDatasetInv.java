@@ -433,21 +433,6 @@ public class GridDatasetInv {
     return null;
   }
 
-  private EnsCoord getEnsCoordinate(CoordinateAxis1D axis) {
-    for (EnsCoord ec : eaxes) {
-      if (ec.getName().equals(axis.getFullName())) return ec;
-    }
-
-    EnsCoord want = new EnsCoord(axis, null); // NOT YET
-    for (EnsCoord ec : eaxes) {
-      if ((ec.equalsData(want))) return ec;
-    }
-
-    // its a new one
-    eaxes.add(want);
-    return want;
-  }
-
   //////////////////////////////////////////////////////////////
 
   /**

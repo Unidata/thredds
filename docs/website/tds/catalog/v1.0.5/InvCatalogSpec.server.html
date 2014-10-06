@@ -37,7 +37,7 @@
 <h3>Related resources:<br/>
 </h3>
 <ul>
-  <li><a href="../v1.0.2/InvCatalogSpec.html">Client catalog specification</a></li>
+  <li><a href="../InvCatalogSpec.html">Client catalog specification</a></li>
   <li><a href="http://www.unidata.ucar.edu/schemas/thredds/InvCatalog.1.0.5.xsd">XML Schema version 1.0.5</a><br/>
   </li>
 </ul>
@@ -100,7 +100,7 @@
 </p>
 
 <p>A <em>datasetScan</em> element is in the dataset substitutionGroup, so it can
-  be used wherever a <em><a href="../v1.0.2/InvCatalogSpec.html#dataset">dataset</a></em><a href="../v1.0.2/InvCatalogSpec.html"> element</a> can be used. It is
+  be used wherever a <em><a href="../InvCatalogSpec.html#dataset">dataset</a></em><a href="../InvCatalogSpec.html"> element</a> can be used. It is
   an extension of a
   DatasetType, so any of dataset's nested elements and attributes can be
   used in it. This allows you to add enhanced metadata to a datasetScan.
@@ -343,7 +343,7 @@ So, when cataloged, this dataset would end up as something like this:<br/>
    &lt;/xsd:complexContent&gt;
   &lt;/xsd:complexType&gt;
  &lt;/xsd:element&gt;</pre>
-<p>A featureCollection is a <a href="../v1.0.2/InvCatalogSpec.html#dataset">dataset</a>, and so can contain all the elements and attributes of a dataset, in
+<p>A featureCollection is a <a href="../InvCatalogSpec.html#dataset">dataset</a>, and so can contain all the elements and attributes of a dataset, in
   addition to the ones listed above.</p>
 
 <p>Example:</p>
@@ -546,7 +546,7 @@ So, when cataloged, this dataset would end up as something like this:<br/>
    &lt;/xsd:union&gt;
  &lt;/xsd:simpleType&gt;</pre>
 <p>The <strong><em>gribConfig</em></strong> element is used only for featureType=&quot;GRIB&quot;. See
-  <a href="../../reference/collections/GribCollections.html#gribConfig">here</a> for details.</p>
+  <a href="../../reference/collections/GribConfig.html">here</a> for details.</p>
 
 <p>Example:</p>
 <pre> &lt;gribConfig datasetTypes=&quot;Best LatestFile Files&quot;&gt;

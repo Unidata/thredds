@@ -167,18 +167,27 @@ abstract public class CDMUtil
      */
     static public Variable unwrap(Variable var)
     {
-        for(;;) {
+/*        for(;;) {
             if(var instanceof VariableDS) {
                 VariableDS vds = (VariableDS) var;
                 var = vds.getOriginalVariable();
-                if(var == null) break;
+                if(var == null) {
+                    var = vds;
+                    break;
+                }
             } else if(var instanceof StructureDS) {
                 StructureDS sds = (StructureDS) var;
                 var = sds.getOriginalVariable();
-                if(var == null) break;
-            } else break;
+                if(var == null) {
+                    var = sds;
+                    break;
+                }
+            } else
+                break;
         }
         return var;
+        */
+        return (Variable)CDMNode.unwrap(var);
     }
 
     /**
@@ -1277,11 +1286,9 @@ abstract public class CDMUtil
 
     /**
      * Convert a Section + variable to a constraint
-     *
-     * @param v       Leaf variable of interest
-     * @param section the sequence of ranges
-     */
-    /*static public View
+
+
+    static public View
     sectionToView(CDMDSP dsp, Variable v, Section section)
         throws DapException
     {
