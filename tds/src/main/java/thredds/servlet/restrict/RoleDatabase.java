@@ -81,7 +81,7 @@ public class RoleDatabase implements RoleSource {
 
   }
 
-  private class User {
+  static private class User {
     String name;
     ArrayList<String> roles = new ArrayList<>();
     User( String name) {

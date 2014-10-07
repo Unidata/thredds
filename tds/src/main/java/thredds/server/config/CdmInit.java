@@ -302,7 +302,7 @@ public class CdmInit implements InitializingBean,  DisposableBean{
     MDC.clear();
   }
 
-  private class CacheScourTask extends TimerTask {
+  static private class CacheScourTask extends TimerTask {
     long maxBytes;
 
     CacheScourTask(long maxBytes) {

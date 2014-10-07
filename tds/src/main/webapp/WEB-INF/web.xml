@@ -526,7 +526,7 @@
     <web-resource-collection>
       <web-resource-name>restricted access datasets</web-resource-name>
       <url-pattern>/restrictedAccess/*</url-pattern>
-      <http-method>GET</http-method>
+      <!-- http-method>GET</http-method -->
     </web-resource-collection>
     <auth-constraint>
       <role-name>restrictedDatasetUser</role-name>

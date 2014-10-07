@@ -596,7 +596,7 @@ public class GempakSoundingIOSP extends GempakStationFileIOSP {
    *
    * @author Unidata Development Team
    */
-  private class SequenceIterator implements StructureDataIterator {
+  static private class SequenceIterator implements StructureDataIterator {
 
     /**
      * the number of records

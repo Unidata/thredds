@@ -98,7 +98,7 @@ class NcepLocalParams {
 
   ////////////////////////////////////////////////////
   // one table for the discipline, category
-  class Table {
+  static class Table {
 
     private String title;
     private String source;

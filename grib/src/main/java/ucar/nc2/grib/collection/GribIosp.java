@@ -925,7 +925,7 @@ public abstract class GribIosp extends AbstractIOServiceProvider {
     Array getArray();
   }
 
-  private class DataReceiver implements DataReceiverIF {
+  static private class DataReceiver implements DataReceiverIF {
     private Array dataArray;
     private Range yRange, xRange;
     private int horizSize;

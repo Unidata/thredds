@@ -705,7 +705,7 @@ public class StationWriter {
     void act(PointFeature pf, StructureData sdata) throws IOException;
   }
 
-  private class Limit {
+  static private class Limit {
     int count;   // how many scanned
     int limit = Integer.MAX_VALUE; // max matches
     int matches; // how want matched
