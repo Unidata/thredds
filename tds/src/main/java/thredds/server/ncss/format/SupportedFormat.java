@@ -54,7 +54,7 @@ public enum SupportedFormat {
 	JSON("json", false, ContentType.json.toString(), "json", "geojson"),
 	WKT("wkt", false, ContentType.text.toString(), "wkt"),
 
-    WATERML2("waterml2", true, ContentType.xml.toString(), "waterml2");
+  WATERML2("waterml2", true, ContentType.xml.toString(), "waterml2");
 	
 	/*
 	 * First alias is used as content-type in the http headers

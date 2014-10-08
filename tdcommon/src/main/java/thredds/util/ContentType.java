@@ -41,7 +41,7 @@ package thredds.util;
  */
 public enum ContentType {
   binary("application/octet-stream", null),
-  csv("text/csv", "UTF-8"),
+  csv("text/plain", "UTF-8"),
   html("text/html", "UTF-8"),
   jnlp("application/x-java-jnlp-file", null),
   json("application/json", null),

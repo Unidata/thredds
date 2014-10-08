@@ -435,7 +435,7 @@ class CSVPointDataWriter implements PointDataWriter  {
 						printWriter.print(point.getLongitude());
             printWriter.print("," );
 					}
-					printWriter.print(grid);
+					printWriter.print( gap.getMissingValue(grid));
 					if(itVars.hasNext()) printWriter.print(",");
 				}					
 				contVars++;
