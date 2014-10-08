@@ -172,16 +172,11 @@
 
           <xsd:attribute name="path" type="xsd:string" use="required"/>
           <xsd:attribute name="location" type="xsd:string"/>
-          <xsd:attribute name="dirLocation" type="xsd:string"/>
-          <!-- deprecated : use location attribute -->
-          <xsd:attribute name="filter" type="xsd:string"/>
-          <!-- deprecated : use filter element -->
-          <xsd:attribute name="addDatasetSize" type="xsd:boolean"/>
-          <!-- deprecated : use enhance/addDatasetSize element -->
-          <xsd:attribute name="addLatest" type="xsd:boolean"/>
-          <!-- deprecated : use addLatest element -->
-          <xsd:attribute name="addId" type="xsd:boolean"/>
-          <!-- deprecated : use addID element -->
+          <xsd:attribute name="dirLocation" type="xsd:string"/> <!-- deprecated : use location attribute -->
+          <xsd:attribute name="filter" type="xsd:string"/> <!-- deprecated : use filter element -->
+          <xsd:attribute name="addDatasetSize" type="xsd:boolean"/> <!-- deprecated : use enhance/addDatasetSize element -->
+          <xsd:attribute name="addLatest" type="xsd:boolean"/> <!-- deprecated : use addLatest element -->
+          <xsd:attribute name="addId" type="xsd:boolean"/> <!-- deprecated : use addID element -->
         </xsd:extension>
       </xsd:complexContent>
     </xsd:complexType>

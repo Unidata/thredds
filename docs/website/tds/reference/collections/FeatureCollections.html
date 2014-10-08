@@ -103,7 +103,7 @@ that can be used inside of a <strong>dataset</strong> element can be used inside
 
 <p>A <strong>featureCollection</strong> is a kind of <strong>dataset</strong> element, and so can contain the same elements and attributes of that element.
   Following is the XML Schema definition, which shows only the elements and attributes that are particular to a featureCollection:</p>
-<pre>  &lt;xsd:element name=&quot;featureCollection&quot; substitutionGroup=&quot;dataset&quot;&gt;<br/>    &lt;xsd:complexType&gt;<br/>      &lt;xsd:complexContent&gt;<br/>        &lt;xsd:extension base=&quot;DatasetType&quot;&gt;<br/>          &lt;xsd:sequence&gt;<br/>            &lt;xsd:element type=&quot;collectionType&quot; name=&quot;collection&quot;/&gt;<br/>            &lt;xsd:element type=&quot;updateType&quot; name=&quot;update&quot; minOccurs=&quot;0&quot;/&gt;<br/>            &lt;xsd:element type=&quot;updateType&quot; name=&quot;tdm&quot; minOccurs=&quot;0&quot;/&gt;<br />            &lt;xsd:element type=&quot;manageType&quot; name=&quot;manage&quot; minOccurs=&quot;0&quot;/&gt;<br/>            &lt;xsd:element type=&quot;protoDatasetType&quot; name=&quot;protoDataset&quot; minOccurs=&quot;0&quot;/&gt;
+<pre>  &lt;xsd:element name=&quot;featureCollection&quot; substitutionGroup=&quot;dataset&quot;&gt;<br/>    &lt;xsd:complexType&gt;<br/>      &lt;xsd:complexContent&gt;<br/>        &lt;xsd:extension base=&quot;DatasetType&quot;&gt;<br/>          &lt;xsd:sequence&gt;<br/>            &lt;xsd:element type=&quot;collectionType&quot; name=&quot;collection&quot;/&gt;<br/>            &lt;xsd:element type=&quot;updateType&quot; name=&quot;update&quot; minOccurs=&quot;0&quot;/&gt;<br/>            &lt;xsd:element type=&quot;updateType&quot; name=&quot;tdm&quot; minOccurs=&quot;0&quot;/&gt;<br/>            &lt;xsd:element type=&quot;protoDatasetType&quot; name=&quot;protoDataset&quot; minOccurs=&quot;0&quot;/&gt;
             &lt;xsd:element type=&quot;fmrcConfigType&quot; name=&quot;fmrcConfig&quot; minOccurs=&quot;0&quot;/&gt;<br/>            &lt;xsd:element type=&quot;pointConfigType&quot; name=&quot;pointConfig&quot; minOccurs=&quot;0&quot;/&gt;<br/>            &lt;xsd:element type=&quot;gribConfigType&quot; name=&quot;gribConfig&quot; minOccurs=&quot;0&quot;/&gt;<br/>            &lt;xsd:element ref=&quot;ncml:netcdf&quot; minOccurs=&quot;0&quot;/&gt;<br/>          &lt;/xsd:sequence&gt;<br/>          &lt;xsd:attribute name=&quot;featureType&quot; type=&quot;featureTypeChoice&quot; use=&quot;required&quot;/&gt;<br/>          &lt;xsd:attribute name=&quot;path&quot; type=&quot;xsd:string&quot; use=&quot;required&quot;/&gt;<br/>        &lt;/xsd:extension&gt;<br/>      &lt;/xsd:complexContent&gt;<br/>    &lt;/xsd:complexType&gt;<br/>  &lt;/xsd:element&gt;</pre>
 Here is an example
 <strong>featureCollection</strong> as you might put it into a TDS catalog: 
@@ -314,20 +314,6 @@ The XML Schema definition for the update element:
     </ol>
   </li>
 </ol>
-<h3>manage element (ONLY FOR TDM)</h3>
-
-<p>This instructs the TDM to manage your collection by deleting files that are older than a certain time.</p>
-<pre>&lt;manage deleteAfter<strong></strong>=&quot;30 days&quot;<strong> </strong><strong>check</strong>=&quot;cron expr&quot; /&gt;
-</pre>
-<blockquote>
-  <p> where: </p>
-  <ol>
-    <li><strong>deleteAfter</strong>: delete files older than this amount</li>
-    <li><strong>check</strong>: &quot;cron expr&quot; uses a <a href="http://www.quartz-scheduler.org/docs/tutorials/crontrigger.html">cron expression</a> to
-      specify when the collection should be checked for old files.
-    </li>
-  </ol>
-</blockquote>
 <hr/>
 <h2><a name="changing" id="changing"></a>Static vs. changing datasets</h2>
 

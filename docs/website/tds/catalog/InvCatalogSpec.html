@@ -1,17 +1,14 @@
 <!DOCTYPE html PUBLIC "-//w3c//dtd html 4.0 transitional//en">
 <html>
 <head>
-
   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
-  <link rel="stylesheet" href="../tds.css" type="text/css">
   <link href="../tds.css" rel="stylesheet" type="text/css"/>
   <title>Catalog Spec 1.0.2</title>
 </head>
 <body>
 <h1><img alt="THREDDS" src="../THREDDSlogo.jpg" height="54" width="67"> Dataset Inventory Catalog Specification</h1>
 <address>
-  last update: 9 December 2009
-  <br>
+  last update: October 2014<br>
   Comments to <a href="mailto:thredds@unidata.ucar.edu">THREDDS mailgroup</a>
 </address>
 <hr>
@@ -81,19 +78,8 @@
   </li>
 
   <li><a href="v1.0.2/Changes.html">Changes</a> since version 1.0.1.</li>
-  <li><a href="InvCatalogServerSpec.html">Server-side THREDDS InvCatalog specification</a></li>
-</ul>
-
-<p><strong>Changes from version 1.0.1:</strong></p>
-
-<ul>
-
-
-  <li>Change default value of catalog@version to "1.0.2".</li>
-  <li>Add vocabulary_id attribute to variable element.<br>
-  </li>
-  <li>Update variableNameVocabulary enumeration: remove "GRIB" and add "GRIB-1" and "GRIB-2".<br>
-  </li>
+  <li><a href="InvCatalogServerSpec.html">Server-side catalog specification</a><br>
+</li>
 </ul>
 
 <hr>
@@ -102,17 +88,17 @@
 
 <h3><em>catalog</em><a name="catalog"></a> element</h3>
 
-<pre>&lt;xsd:element name="catalog"&gt;  <br>  &lt;xsd:complexType&gt;<br>    &lt;xsd:sequence&gt;<br>      &lt;xsd:element ref="service" minOccurs="0" maxOccurs="unbounded"/&gt;<br>      &lt;xsd:element ref="property" minOccurs="0" maxOccurs="unbounded" /&gt;<br>      &lt;xsd:element ref="dataset" minOccurs="1" maxOccurs="unbounded" /&gt;<br>    &lt;/xsd:sequence&gt;<br><br>    &lt;xsd:attribute name="name" type="xsd:string" /&gt;<br>    &lt;xsd:attribute name="expires" type="dateType"/&gt; <br>    &lt;xsd:attribute name="version" type="xsd:token" default="1.0.1" /&gt; <br>  &lt;/xsd:complexType&gt; <br>&lt;/xsd:element&gt;<br></pre>
+<pre>&lt;xsd:element name="catalog"&gt;  <br>  &lt;xsd:complexType&gt;<br>    &lt;xsd:sequence&gt;<br>      &lt;xsd:element ref="service" minOccurs="0" maxOccurs="unbounded"/&gt;<br>      &lt;xsd:element ref="property" minOccurs="0" maxOccurs="unbounded" /&gt;<br>      &lt;xsd:element ref="dataset" minOccurs="1" maxOccurs="unbounded" /&gt;<br>    &lt;/xsd:sequence&gt;<br><br>    &lt;xsd:attribute name="name" type="xsd:string" /&gt;<br>    &lt;xsd:attribute name="expires" type="dateType"/&gt; <br>    &lt;xsd:attribute name="version" type="xsd:token" default="1.0.2" /&gt; <br>  &lt;/xsd:complexType&gt; <br>&lt;/xsd:element&gt;</pre>
 
 <p>The <em>catalog</em> element is the top-level element. It may contain zero
-  or more <em><a href="#service">service</a></em> elements followed by zero
-  or more <em><a href="#property">property</a></em> elements followed by one or
-  more <em><a href="#dataset">dataset</a></em> elements (actually any element in the dataset substitution group: dataset or catalogRef). The optional catalog
+  or more <em><a href="#service">service</a></em> elements, followed by zero
+  or more <em><a href="#datasetRoot">datasetRoot</a></em> elements,  followed by zero
+  or more <em><a href="#property">property</a></em> elements, followed by one or
+  more <em><a href="#dataset">dataset</a></em> elements (actually any element in the dataset substitution group). The optional catalog
   <em>name</em> will be displayed to a user. The <em>expires</em><a name="expires"></a>
-  element tells clients until when this catalog is accurate, so they can cache
+  element tells clients until when this catalog should be reread, so they can cache
   the catalog information. The value of the <em>version</em> attribute indicates the version of the InvCatalog specification to which the catalog conforms. The
-  <em>version</em> attribute is optional and to indicate conformance with this specification should be set to "1.0.1".<br>
-</p>
+  <em>version</em> attribute is optional and to indicate conformance with this specification should be set to "1.0.2".</p>
 
 <p>Example of simplest useful catalog. Note that to provide access to a dataset you need at least one service element. </p>
 
@@ -120,8 +106,7 @@
 
 <h3><em>service</em><a name="service"></a> element</h3>
 
-<pre>&lt;xsd:element name="service"&gt;<br> &lt;xsd:complexType&gt;<br>  &lt;xsd:sequence&gt;<br>    &lt;xsd:element ref="property" minOccurs="0" maxOccurs="unbounded" /&gt;<br>    &lt;xsd:element ref="service" minOccurs="0" maxOccurs="unbounded" /&gt;<br>    &lt;xsd:element ref="datasetRoot" minOccurs="0" maxOccurs="unbounded"/&gt; &lt;!-- see <a href="v1.0.2/InvCatalogSpec.server.html">Server-side
-  InvCat doc</a> --&gt;<br>  &lt;/xsd:sequence&gt;<br><br>  &lt;xsd:attribute name="name" type="xsd:string" use="required" /&gt;<br>  &lt;xsd:attribute name="base" type="xsd:string" use="required" /&gt;<br>  &lt;xsd:attribute name="serviceType" type="serviceTypes" use="required" /&gt;<br>  &lt;xsd:attribute name="desc" type="xsd:string"/&gt;<br>  &lt;xsd:attribute name="suffix" type="xsd:string" /&gt;<br> &lt;/xsd:complexType&gt;<br>&lt;/xsd:element&gt;</pre>
+<pre>&lt;xsd:element name="service"&gt;<br> &lt;xsd:complexType&gt;<br>  &lt;xsd:sequence&gt;<br>    &lt;xsd:element ref="property" minOccurs="0" maxOccurs="unbounded" /&gt;<br>    &lt;xsd:element ref="service" minOccurs="0" maxOccurs="unbounded" /&gt;<br>  &lt;/xsd:sequence&gt;<br><br>  &lt;xsd:attribute name="name" type="xsd:string" use="required" /&gt;<br>  &lt;xsd:attribute name="base" type="xsd:string" use="required" /&gt;<br>  &lt;xsd:attribute name="serviceType" type="serviceTypes" use="required" /&gt;<br>  &lt;xsd:attribute name="desc" type="xsd:string"/&gt;<br>  &lt;xsd:attribute name="suffix" type="xsd:string" /&gt;<br> &lt;/xsd:complexType&gt;<br>&lt;/xsd:element&gt;</pre>
 
 <p>A <em>service</em> element represents a data access service and allows basic data access information to be factored out of <em>dataset</em> and <em>access</em>
   elements.</p>The <em>name</em>
@@ -152,12 +137,11 @@ must have a <em>serviceType</em> attribute whose value is one of the <em><a href
 
 <p>Example:
 </p>
-<pre> &lt;service name="mcidasServer" serviceType="ADDE" base="http://thredds.ucar.edu/thredds/adde/" /&gt;<br></pre>
+<pre> &lt;service name="mcidasServer" serviceType="ADDE" base="http://thredds.ucar.edu/thredds/adde/" /&gt;</pre>
 
 Example with service base URL relative to catalog URL (see <a href="#constructingURLs">constructing
   URLS</a> for how the resolved URL is created):
-<pre> &lt;service name="this" serviceType="DODS" base="dods/" /&gt; <br></pre>
-
+<pre> &lt;service name="this" serviceType="DODS" base="dods/" /&gt;</pre>
 <h3><a id="dataset"></a><em>dataset</em> element</h3>
 
 <pre>&lt;xsd:element name="dataset" type="DatasetType" /&gt;<br>&lt;xsd:complexType name="DatasetType"&gt;<br>  &lt;xsd:sequence&gt;<br>    &lt;xsd:group ref="threddsMetadataGroup" minOccurs="0" maxOccurs="unbounded" /&gt;<br><br>    &lt;xsd:element ref="access" minOccurs="0" maxOccurs="unbounded"/&gt;<br>    &lt;xsd:element ref="ncml:netcdf" minOccurs="0"/&gt;<br>    &lt;xsd:element ref="dataset" minOccurs="0" maxOccurs="unbounded"/&gt;<br>  &lt;/xsd:sequence&gt;<br><br>  &lt;xsd:attribute name="name" type="xsd:string" use="required"/&gt;<br>  &lt;xsd:attribute name="alias" type="xsd:token"/&gt;<br>  &lt;xsd:attribute name="authority" type="xsd:string"/&gt; &lt;!-- deprecated : use element --&gt;<br>  &lt;xsd:attribute name="collectionType" type="collectionTypes"/&gt;<br>  &lt;xsd:attribute name="dataType" type="dataTypes"/&gt; &lt;!-- deprecated : use element --&gt;<br>  &lt;xsd:attribute name="harvest" type="xsd:boolean"/&gt;<br>  &lt;xsd:attribute name="ID" type="xsd:token"/&gt;<br>  &lt;xsd:attribute name="resourceControl" type="xsd:string"/&gt;<br>      <br>  &lt;xsd:attribute name="serviceName" type="xsd:string" /&gt; &lt;!-- deprecated : use element --&gt; <br>  &lt;xsd:attribute name="urlPath" type="xsd:token" /&gt;<br>&lt;/xsd:complexType&gt;</pre>
@@ -218,12 +202,12 @@ elements, or use a <a href="#compoundService">compound service</a>.
 
 <p>Examples:</p>
 
-<pre>&lt;dataset name="DC8 flight 1999-11-19" urlPath="SOLVE_DC8_19991119.nc"&gt;<br>  &lt;serviceName&gt;agg&lt;/serviceName&gt;<br>&lt;/dataset&gt;<br><br>&lt;dataset ID="SOLVE_DC8_19991119" name="DC8 flight 1999-11-19, 1 min merge"&gt;<br>  &lt;metadata xlink:href="http://dataportal.ucar.edu/metadata/tracep_dc8_1min_05"/&gt;<br>  &lt;access serviceName="disk" urlPath="SOLVE_DC8_19991119.nc"/&gt;<br>&lt;/dataset&gt;<br></pre>
+<pre>&lt;dataset name="DC8 flight 1999-11-19" urlPath="SOLVE_DC8_19991119.nc"&gt;<br>  &lt;serviceName&gt;agg&lt;/serviceName&gt;<br>&lt;/dataset&gt;<br><br>&lt;dataset ID="SOLVE_DC8_19991119" name="DC8 flight 1999-11-19, 1 min merge"&gt;<br>  &lt;metadata xlink:href="http://dataportal.ucar.edu/metadata/tracep_dc8_1min_05"/&gt;<br>  &lt;access serviceName="disk" urlPath="SOLVE_DC8_19991119.nc"/&gt;<br>&lt;/dataset&gt;</pre>
 
 <p> An example using an alias; in this case the dataset referred to logically
   replaces the alias dataset.</p>
 
-<pre>&lt;dataset name="Station Data"&gt; <br>  &lt;dataset name="Metar data" urlPath="cgi-bin/MetarServer.pl?format=qc" /&gt;<br>  &lt;dataset name="Level 3 Radar data" urlPath="cgi-bin/RadarServer.pl?format=qc" /&gt; <br>  &lt;dataset name="Alias to SOLVE dataset" alias="SOLVE_DC8_19991119"/&gt;<br>&lt;/dataset&gt;<br><br></pre>
+<pre>&lt;dataset name="Station Data"&gt; <br>  &lt;dataset name="Metar data" urlPath="cgi-bin/MetarServer.pl?format=qc" /&gt;<br>  &lt;dataset name="Level 3 Radar data" urlPath="cgi-bin/RadarServer.pl?format=qc" /&gt; <br>  &lt;dataset name="Alias to SOLVE dataset" alias="SOLVE_DC8_19991119"/&gt;<br>&lt;/dataset&gt;</pre>
 
 <h3><a id="access"></a><em>access</em> element</h3>
 
@@ -249,7 +233,7 @@ elements, or use a <a href="#compoundService">compound service</a>.
 
 <p>Example:
 </p>
-<pre>&lt;access serviceName="ftpServer" urlPath="SOLVE_DC8_19991119.nc" dataFormat="NetCDF" /&gt;<br></pre>
+<pre>&lt;access serviceName="ftpServer" urlPath="SOLVE_DC8_19991119.nc" dataFormat="NetCDF" /&gt;</pre>
 <h3><em>catalogRef</em><a name="catalogRef"></a> element</h3>
 
 <pre>&lt;xsd:element name="catalogRef" substitutionGroup="dataset"&gt;<br>  &lt;xsd:complexType&gt;<br>    &lt;xsd:complexContent&gt;<br>      &lt;xsd:extension base="DatasetType"&gt;<br>        &lt;xsd:attributeGroup ref="XLink"/&gt;<br>      &lt;/xsd:extension&gt;<br>    &lt;/xsd:complexContent&gt;<br>  &lt;/xsd:complexType&gt;<br>&lt;/xsd:element&gt;</pre>
@@ -336,8 +320,7 @@ elements, or use a <a href="#compoundService">compound service</a>.
   element specifies a lat/lon bounding box for the data. The <em><a name="timeCoverage"></a><a href="#timeCoverageType">timeCoverage</a></em>
   element specifies the range of dates that the dataset covers. The <em><a name="variables"></a><a href="#variablesType">variables</a></em>
   element specifies the names of variables contained in the datasets, and ways
-  to map the names to standard vocabularies.<br>
-</p>
+  to map the names to standard vocabularies.</p>
 
 <p>The <a name="dataType_descrip"></a><em>dataType</em> element is used
   to indicate the high-level semantic type of the dataset (e.g., grid,
@@ -355,8 +338,7 @@ elements, or use a <a href="#compoundService">compound service</a>.
 
 
 <p>Including any of these elements in a metadata element with its <em>inherit</em>
-  attribute set to "true" means that they apply to the containing dataset and any nested datasets.<br>
-</p>
+  attribute set to "true" means that they apply to the containing dataset and any nested datasets.</p>
 
 <p>If your intention is to enable THREDDS to write entries into a Digital Library, you should to be aware of <a href="DL.html">how elements are mapped to
   Digital Libraries</a>. For example, you will probably want to add a <em>documentation</em> element with type <em>summary<a name="summary"></a></em> as its
@@ -372,7 +354,7 @@ elements, or use a <a href="#compoundService">compound service</a>.
 
 <h3><em>documentation</em><a id="documentationType"></a> Type</h3>
 
-<pre>&lt;xsd:complexType name="documentationType" mixed="true"&gt;<br>  &lt;xsd:sequence&gt;<br>    &lt;xsd:any namespace="http://www.w3.org/1999/xhtml" minOccurs="0" maxOccurs="unbounded" <br>		  processContents="strict"/&gt;<br>  &lt;/xsd:sequence&gt;<br>      <br>  &lt;xsd:attribute name="type" type="documentationEnumTypes"/&gt;<br>  &lt;xsd:attributeGroup ref="XLink" /&gt;<br>&lt;/xsd:complexType&gt;<br></pre>
+<pre>&lt;xsd:complexType name="documentationType" mixed="true"&gt;<br>  &lt;xsd:sequence&gt;<br>    &lt;xsd:any namespace="http://www.w3.org/1999/xhtml" minOccurs="0" maxOccurs="unbounded" <br>		  processContents="strict"/&gt;<br>  &lt;/xsd:sequence&gt;<br>      <br>  &lt;xsd:attribute name="type" type="documentationEnumTypes"/&gt;<br>  &lt;xsd:attributeGroup ref="XLink" /&gt;<br>&lt;/xsd:complexType&gt;</pre>
 
 <p>The <em>documentation </em>element may contain arbitrary
   plain text content, or XHTML.We call this kind of content "human
@@ -732,13 +714,11 @@ elements, or use a <a href="#compoundService">compound service</a>.
 <pre>&lt;xsd:simpleType name="documentationEnumTypes"&gt;<br> &lt;xsd:union memberTypes="xsd:token"&gt;<br>  &lt;xsd:simpleType&gt;<br>   &lt;xsd:restriction base="xsd:token"&gt;<br>     &lt;xsd:enumeration value="funding"/&gt;<br>     &lt;xsd:enumeration value="history"/&gt;<br>     &lt;xsd:enumeration value="processing_level"/&gt;<br>     &lt;xsd:enumeration value="rights"/&gt;<br>     &lt;xsd:enumeration value="summary"/&gt;<br>   &lt;/xsd:restriction&gt;<br>  &lt;/xsd:simpleType&gt;<br> &lt;/xsd:union&gt;<br>&lt;/xsd:simpleType&gt;</pre>
 
 
-<p>The documentation type enumeration defines a basic set of types used by the <a href="#documentation">documentation</a> element.<br>
-</p>
+<p>The documentation type enumeration defines a basic set of types used by the <a href="#documentation">documentation</a> element.</p>
 
 <p>This set of values is not exclusive so other values are allowed.
   Alternate values must be strings that do not contain end-of-line
-  characters or tabs (they must be of the <a href="http://www.w3.org/TR/2004/REC-xmlschema-2-20041028/datatypes.html#token">xsd:token</a> data type).<br>
-</p>
+  characters or tabs (they must be of the <a href="http://www.w3.org/TR/2004/REC-xmlschema-2-20041028/datatypes.html#token">xsd:token</a> data type).</p>
 
 <h3>metadata types<a name="metadataType"></a></h3>
 
@@ -746,8 +726,7 @@ elements, or use a <a href="#compoundService">compound service</a>.
 <pre>  &lt;xsd:simpleType name="metadataTypeEnum"&gt;<br>    &lt;xsd:union memberTypes="xsd:token"&gt;<br>      &lt;xsd:simpleType&gt;<br>        &lt;xsd:restriction base="xsd:token"&gt;<br>          &lt;xsd:enumeration value="THREDDS"/&gt;<br>          &lt;xsd:enumeration value="ADN"/&gt;<br>          &lt;xsd:enumeration value="Aggregation"/&gt;<br>          &lt;xsd:enumeration value="CatalogGenConfig"/&gt;<br>          &lt;xsd:enumeration value="DublinCore"/&gt;<br>          &lt;xsd:enumeration value="DIF"/&gt;<br>          &lt;xsd:enumeration value="FGDC"/&gt;<br>          &lt;xsd:enumeration value="LAS"/&gt;<br>          &lt;xsd:enumeration value="ESG"/&gt;<br>        &lt;xsd:enumeration value="Other"/&gt;<br>      &lt;/xsd:restriction&gt;<br>     &lt;/xsd:simpleType&gt;<br>   &lt;/xsd:union&gt;<br>  &lt;/xsd:simpleType&gt;</pre>
 
 
-<p>The metadata type enumeration defines a basic set of types used by the <a href="#metadata">metadata</a> element.<br>
-</p>
+<p>The metadata type enumeration defines a basic set of types used by the <a href="#metadata">metadata</a> element.</p>
 
 <p>This set of values is not exclusive so other values are allowed.
   Alternate values must be strings that do not contain end-of-line
@@ -816,13 +795,11 @@ elements, or use a <a href="#compoundService">compound service</a>.
   controlled variable <a href="http://gcmd.gsfc.nasa.gov/User/difguide/parameters.html">classification scheme</a>. The World Meteorological Organization's
   <a href="http://dss.ucar.edu/docs/formats/grib/gribdoc/">GRIB (version 1)</a> data file format defines a set of standard parameters.</p>
 
-<p>You can also use another vocabulary name; send it to us and we will add it to this list.<br>
-</p>
+<p>You can also use another vocabulary name; send it to us and we will add it to this list.</p>
 <hr style="width: 100%; height: 2px;">
 <h3><a name="Dataset_Access_Methods"></a>Dataset Access Methods</h3>
 
-<p>There are two ways a dataset's access methods can be specified:<br>
-</p>
+<p>There are two ways a dataset's access methods can be specified:</p>
 
 <ol>
   <li>A <em>dataset</em> element may include a <em>urlPath</em> attribute. The value of the <em>urlPath</em> attribute along with the <em>dataset</em> element's
@@ -841,15 +818,13 @@ elements, or use a <a href="#compoundService">compound service</a>.
 </p>
 
 <p>How a dataset access URL is constructed from the <em>service</em> element and <em>urlPath</em> attribute is discussed in the following section,
-  "<a href="#constructingURLs">Constructing Dataset Access URLs</a>".<br>
-</p>
+  "<a href="#constructingURLs">Constructing Dataset Access URLs</a>".</p>
 <h4><a name="Precedence_for_a_Datasets_Default"></a>Precedence for a Dataset's "Default" Service</h4>
 
 <p>There are a number of ways a <em>service</em> element can be referenced by a <em>dataset</em>.
   When multiple references come into play for a given dataset, the
   following is the precedence for deciding on the default service to use
-  with access methods:<br>
-</p>
+  with access methods:</p>
 
 <ol>
   <li>A child <em>serviceName</em> element (XPath:&nbsp;"<code>./serviceName</code>").</li>
@@ -861,56 +836,42 @@ elements, or use a <a href="#compoundService">compound service</a>.
   </li>
 </ol>
 
-<p>The <em>service</em> with the highest precedence is the "default" service for that <em>dataset</em> element.<br>
-</p>
-<h4>Examples<br>
-</h4>
+<p>The <em>service</em> with the highest precedence is the "default" service for that <em>dataset</em> element.</p>
+<h4>Examples</h4>
 
 <p>1) A <em>dataset</em> element has a <em>urlPath</em> attribute and inherits a
   <em>serviceName</em> element from a parent/ancestor dataset. This is probably
   the most common case as many catalogs will contain datasets that all
-  refer to one service.<br>
-</p>
+  refer to one service.</p>
 
 <pre>&lt;dataset name="collection of data"&gt;<br>  &lt;metadata inherited="true"&gt;<br>    &lt;serviceName&gt;myservice&lt;/serviceName&gt;<br>  &lt;/metadata&gt;<br>  &lt;dataset name="my dataset" urlPath="myData.nc" /&gt;<br>  &lt;dataset name="our dataset" urlPath="ourData.nc" /&gt;<br>  &lt;dataset name="their dataset" urlPath="theirData.nc" /&gt;<br>  ...<br>&lt;/dataset&gt;<br></pre>
 
-<p>2) A <em>dataset</em> element has a <em>urlPath</em> attribute and directly contains a <em>serviceName</em> element.<br>
-</p>
+<p>2) A <em>dataset</em> element has a <em>urlPath</em> attribute and directly contains a <em>serviceName</em> element.</p>
 
 <pre>&lt;dataset name="my dataset" urlPath="myData.nc"&gt;<br>  &lt;serviceName&gt;myservice&lt;/serviceName&gt;<br>&lt;/dataset&gt;<br></pre>
 
-<p>3) A <em>dataset</em> element contains a child <em>access</em> element. Example:<br>
-</p>
+<p>3) A <em>dataset</em> element contains a child <em>access</em> element. Example:</p>
 
 <pre>&lt;dataset name="my dataset"&gt;<br>  &lt;access serviceName="myservice" urlPath="myData.nc" /&gt;<br>&lt;/dataset&gt;<br></pre>
 
-<p>There are several ways for a dataset to have more than one access method:<br>
-</p>
+<p>There are several ways for a dataset to have more than one access method:</p>
 
 <p>4) An access method can reference a <a href="#compoundService">compound service</a>. More on access methods and compound service
-  <a href="#Access_Methods_and_Compound_Services_">below</a>.<br>
-</p>
+  <a href="#Access_Methods_and_Compound_Services_">below</a>.</p>
 
-<p>5) A dataset can contain multiple access elements. Example:<br>
-</p>
+<p>5) A dataset can contain multiple access elements. Example:</p>
 
 <pre>&lt;dataset name="my dataset"&gt;<br>  &lt;access serviceName="myservice" urlPath="myData.nc" /&gt;<br>  &lt;access serviceName="ftpservice" urlPath="mine/myData.nc" /&gt;<br>&lt;/dataset&gt;<br></pre>
-<h4><a name="Access_Methods_and_Compound_Services_"></a>Access Methods and Compound Services<br>
-</h4>
+<h4><a name="Access_Methods_and_Compound_Services_"></a>Access Methods and Compound Services</h4>
 
 <p>Any <a href="#compoundService">compound service</a> (i.e., any <em>service</em> element of type "Compound") used in the construction of
   access methods results in one access method for each non-"Compound",
-  nested service.<br>
-</p>
+  nested service.</p>
 
-<p>For example:<br>
-</p>
+<p>For example:</p>
 <pre style="margin-left: 40px;">&lt;service name="all" serviceType="Compound" base="" &gt;<br>  &lt;service name="odap" serviceType="OPENDAP" base="/thredds/dodsC/" /&gt;<br>  &lt;service name="wcs" serviceType="WCS" base="/thredds/wcs/" /&gt;<br>&lt;/service&gt;<br>&lt;dataset name="cool data" urlPath="cool/data.nc"&gt;<br>  &lt;serviceName&gt;all&lt;/serviceName&gt;<br>&lt;/dataset&gt;<br></pre>
 <p>results in two access methods for "cool data"; one using the "odap" <em>service</em> element and the other using the "wcs" <em>service</em> element, both
-  using the <em>urlPath</em> attribute value "cool/data.nc"<br>
-</p>
-
-<h3><em></em></h3>
+  using the <em>urlPath</em> attribute value "cool/data.nc"</p>
 <hr size="2" width="100%">
 <h3><em></em>Constructing URLs<a name="constructingURLs"></a></h3>
 
@@ -1108,15 +1069,14 @@ elements, or use a <a href="#compoundService">compound service</a>.
     up or down as z increases.
   </li>
 </ul>
-
-<hr>
-<p><a name="changes"></a>Change history.</p>
-
-<p>July 12, 2013: remove deprecated elements in catalog and dataset.</p>
-
-<p>April 11, 2005: Add version 1.0.1 changes.</p>
-
-<p>July 07, 2004: Clarify the relation of dateType to ISO 8601. </p>
+<hr width="100%">
+<address>
+<img alt="THREDDS" src="../thread.png" height="108" width="110">This document is maintained by Unidata and was
+  last updated November, 2012. Send comments to <a href="mailto:support-thredds@unidata.ucar.edu">THREDDS
+  support</a>.
+</address>
+<p></p>
+<p>&nbsp;</p>
 
 </body>
 </html>
