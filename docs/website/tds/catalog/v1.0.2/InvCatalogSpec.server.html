@@ -289,8 +289,7 @@ So, when cataloged, this dataset would end up as something like this:<br>
 
 <p>The <em>addProxies</em> element<strong></strong> provides a place for
   describing proxy datasets to be added to each collection
-  dataset under a datasetScan.<br>
-</p>
+  dataset under a datasetScan.</p>
 
 <p>Currently, two types of proxy datasets
   are supported. They are both intended to proxy the "latest" dataset in
@@ -304,17 +303,15 @@ So, when cataloged, this dataset would end up as something like this:<br>
   or bottom of the list of dataset in this collection. Default behavior
   in the TDS if any these attributes are missing is to name the dataset
   "latest.xml", reference the "latest" service, and place the dataset at
-  the top of the collection.<br>
-</p>
+  the top of the collection.</p>
 
 <p>The second type of proxy dataset, specified by the <em>latestComplete</em>
   element, is the same as the simple latest except that it will exclude
   any dataset that was last modified within the number of minutes
   specified by the <em>lastModifedLimit</em> attribute. It must contain all the attributes allowed in the <em>simpleLatest</em> element plus the <em>lastModifiedLimit</em>
-  attribute.<br>
-</p>
+  attribute.</p>
 
-<p>An example is available in the <a href="/projects/THREDDS/tech/reference/DatasetScan.html#Adding_Proxy_Datasets">TDS datasetsScan documentation</a>.</p>
+<p>An example is available in the <a href="../../reference/DatasetScan.html#Adding_Proxy_Datasets">TDS datasetsScan documentation</a>.</p>
 
 <h3><a name="addTimeCoverage_Element"></a>addTimeCoverage Element<br>
 </h3>
@@ -357,7 +354,7 @@ So, when cataloged, this dataset would end up as something like this:<br>
 <p>The addDatasetSize element indicates that file size metadata in the form of a <em>dataSize</em> element should be added to all atomic datasets.<br>
 </p>
 
-<p>An example is available in the <a href="/projects/THREDDS/tech/reference/DatasetScan.html#Adding_Dataset_Size_Information">TDS datasetsScan documentation</a>.
+<p>An example is available in the <a href="../../reference/DatasetScan.html#Adding_Dataset_Size_Information">TDS datasetsScan documentation</a>.
 </p>
 
 <p>

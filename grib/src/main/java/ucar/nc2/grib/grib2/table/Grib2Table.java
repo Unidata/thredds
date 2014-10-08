@@ -191,10 +191,10 @@ public class Grib2Table {
 
     boolean match(Id id) {
       if (id.center != center) return false; // must match center
-      if (id.subCenter != -1 && id.subCenter != subCenter) return false;
-      if (id.masterVersion != -1 && id.masterVersion != masterVersion) return false;
-      if (id.localVersion != -1 && id.localVersion != localVersion) return false;
-      if (id.genProcessId != -1 && id.genProcessId != genProcessId) return false;
+      if (subCenter != -1 && id.subCenter != subCenter) return false;
+      if (masterVersion != -1 && id.masterVersion != masterVersion) return false;
+      if (localVersion != -1 && id.localVersion != localVersion) return false;
+      if (genProcessId != -1 && id.genProcessId != genProcessId) return false;
       return true;
     }
 

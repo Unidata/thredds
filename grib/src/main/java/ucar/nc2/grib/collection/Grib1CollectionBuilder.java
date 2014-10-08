@@ -77,7 +77,7 @@ public class Grib1CollectionBuilder extends GribCollectionBuilder {
     FeatureCollectionConfig config = (FeatureCollectionConfig) dcm.getAuxInfo(FeatureCollectionConfig.AUX_CONFIG);
     gribConfig = config.gribConfig;
     Map<String, Boolean> pdsConfig = config.gribConfig.pdsHash;
-    useTableVersion = assignValue(pdsConfig, "useTableVersion", true);
+    useTableVersion = assignValue(pdsConfig, "useTableVersion", false);
     intvMerge = assignValue(pdsConfig, "intvMerge", true);
     useCenter = assignValue(pdsConfig, "useCenter", true);
     useGenType = assignValue(pdsConfig, "useGenType", false);
@@ -381,7 +381,7 @@ public class Grib1CollectionBuilder extends GribCollectionBuilder {
     if (cust.isLayer(pdss.getLevelType())) result += result * 37 + 1;
 
     result += result * 37 + pdss.getParameterNumber();
-    if (useTableVersion)
+    if (useTableVersion)  // LOOK must make a different variable name
       result += result * 37 + pdss.getTableVersion();
 
     Grib1ParamTime ptime = pdss.getParamTime(cust);

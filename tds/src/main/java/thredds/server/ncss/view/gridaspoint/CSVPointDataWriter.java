@@ -443,7 +443,7 @@ class CSVPointDataWriter implements PointDataWriter  {
 			allDone = true;
 		}catch(IOException ioe){
 			Log.error("Error reading data", ioe);
-		}	
+		}
 		printWriter.println();	
 		return allDone;
 

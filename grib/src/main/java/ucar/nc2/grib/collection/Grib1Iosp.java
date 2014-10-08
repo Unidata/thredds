@@ -189,6 +189,8 @@ public class Grib1Iosp extends GribIosp {
         f.format("%s", GribUtils.makeNameFromDescription(param.getDescription()));
     }
 
+    // LOOK we need to capture the config params like useTableVersion, to create unique names.
+
     if (levelType != GribNumbers.UNDEFINED) { // satellite data doesnt have a level
       f.format("_%s", cust.getLevelNameShort(levelType)); // code table 3
       if (isLayer) f.format("_layer");
