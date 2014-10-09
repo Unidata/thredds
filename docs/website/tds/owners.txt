@@ -1,4 +1,58 @@
-Oct 2013 /c/dev/github/thredds/docs/website/tds/reference (target-4.4.0)
+Oct 2014 /c/dev/github/thredds/docs/website/tds/reference 
+
+caron    	AccessLog.html
+*    		CatalogConfiguration.html	// kinda sucks, should be tutorial?	
+caron    	CatalogService.html
+            ChecklistReference.html	
+*    		ConfigWithTdsProperties.html	// is this true?
+caron    	DatasetScan.html
+caron    	DatasetSource.html
+caron    	DigitalLibraries.html
+caron    	DirectoryLocations.html	
+caron    	DLexport.html
+caron    	HTTPsecurityChallenge.html
+caron    	JavaOptsSummary.html
+			ncISO.html
+caron    	NetcdfSubsetServiceConfigure.html
+caron    	NetcdfSubsetServiceReference.html
+caron    	Performance.html
+caron    	PluggableRestrictedAccess.html
+caron    	RecommendedUpgradeProcessForTDS.html
+*    		RemoteManagement.html		// kinda sucks, should be tutorial?	
+caron    	RestrictedAccess.html
+*    		RunningMultipleTDS.html		// is this true?
+caron    	ServerInfo.html
+caron    	Services.html
+caron    	ServletLog.html
+*    		TDSarchictecture.ppt		// update
+caron    	ThreddsConfigXMLFile.html	
+*    		TomcatBehindProxyServer.html // review, esp "Changing the TDS Context Path"
+caron    	TomcatSecurity.html
+caron    	Viewers.html
+caron    	WCS.html
+caron    	WMS.html
+
+sarms    	tdsUrlMaps.xml
+
+collections
+	CollectionSpecification.html
+	FCvsAgg.html					// get rid of
+	FeatureCollections.html
+	FmrcCollection.html
+	GribCollectionInternal.html
+	GribCollections.html
+	GribConfig.html
+	LargeCollections.html			// get rid of
+	PointFeatures.html
+	SimpleDateFormat.html
+	TDM.html
+	
+radarServer
+	RadarLevel2SubsetService.html
+	RadarLevel3SubsetService.html
+
+
+==================================================================================Oct 2013 /c/dev/github/thredds/docs/website/tds/reference (target-4.4.0)
 
 caron    	AccessLog.html
 *    		CatalogConfiguration.html	// kinda sucks, should be tutorial?	
