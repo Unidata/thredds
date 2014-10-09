@@ -31,8 +31,6 @@
   <li><a href="#ToolsUI">Using ToolsUI to view catalogs</a></li>
 </ul>
 <hr>
-<p>&nbsp;</p>
-
 <h2><a name="Basics"></a>Basics</h2>
 
 <p>Here's an example of a simple catalog:</p>
@@ -237,15 +235,7 @@
     <pre style="margin-left: 40px;">http://my.server/thredds/dodsC/test/example3.nc</pre>
   </li>
 </ol>
-<p>More information is available on <a href="../reference/NetcdfSubsetServiceConfigure.html">constructing
-  access URLs</a>.</p>
-
-<p>&nbsp;</p>
-<hr>
-<h2><a name="Advanced"></a>Advanced Topics</h2>
-
 <h3>Compound <code>service</code> Elements - Serving Datasets with Multiple Methods</h3>
-
 <p>Datasets can be made available through more than one access
   method by defining and then referencing a <strong>compound</strong> <code>service</code> element. The following:<br>
 </p>
@@ -269,9 +259,10 @@
 <p>Note:</p>
 <ul>
   <li>The catalog specification provides a <a href="../catalog/InvCatalogSpec.html#serviceTypes">list of recognized service types</a>.</li>
-  <li>The service names must be unique in each catalog.</li>
+  <li>The service names must be unique in each catalog</li>
 </ul>
-<p>&nbsp;</p>
+<hr>
+<h2><a name="Advanced"></a>Advanced Topics</h2>
 
 <h3>XML Namespaces and Validation</h3>
 
@@ -321,7 +312,6 @@
 <p>You will want to study the <a href="../catalog/InvCatalogSpec.html">annotated schema</a>, and the
   <a href="http://www.unidata.ucar.edu/schemas/thredds/InvCatalog.1.0.2.xsd">schema document </a>itself.</p>
 
-<h3>&nbsp;</h3>
 <hr WIDTH="100%">
 <h2><a name="ToolsUI"></a>Using ToolsUI to view catalogs</h2>
 
@@ -331,14 +321,11 @@
   <em>(note that this is an XML document, not an HTML page!</em>). The catalog will be displayed in a tree widget on the left, and the selected dataset will be
   shown on the right, for example: </p>
 
-<p><img src="images/fileIcon.jpg" width="1270" height="833"></p>
+<p><img src="images/TUIthreddsTab.png" width="1345" height="949"></p>
 
 <p>Once you get your catalog working in a TDS, you can enter the TDS URL directly, and view the datasets with the <strong>Open</strong> buttons. </p>
 
-<p>&nbsp;</p>
-<hr width="100%">
-<address><img alt="THREDDS" src="../images/thread.png" height="108" width="110">This document is maintained by Unidata staff.
-  Please send comments to <a href="mailto:support-thredds@unidata.ucar.edu">THREDDS support</a>.
+<address>
 </address>
 
 </body>

@@ -21,43 +21,37 @@
   <li>THREDDS <a href="catalog/index.html">Dataset Inventory Catalogs</a>
     are used to provide virtual directories of available data and their
     associated metadata. These catalogs can be generated dynamically or
-    statically.
-  </li>
+    statically.  </li>
   <li>The <a href="../netcdf-java/documentation.htm">Netcdf-Java/CDM library</a>
     reads NetCDF, OpenDAP, and HDF5 datasets, as well as other binary
     formats such as GRIB and NEXRAD into a Common Data Model (CDM),
     essentially an (extended) netCDF view of the data. Datasets that can be
-    read through the Netcdf-Java library are called <em>CDM datasets</em>.
-  </li>
+    read through the Netcdf-Java library are called <em>CDM datasets</em>.  </li>
   <li>TDS can use the <a href="../netcdf-java/ncml/index.htm">NetCDF Markup Language</a> (NcML) to modify and create virtual aggregations of
-    CDM datasets.
-  </li>
+    CDM datasets.  </li>
   <li>An integrated server provides <a href="http://www.opendap.org/">OPeNDAP</a> access to any CDM dataset. OPeNDAP is a widely used, subsetting data access
-    method extending the HTTP protocol.
-  </li>
+    method extending the HTTP protocol.  </li>
   <li>An integrated server provides bulk file access through the HTTP protocol.</li>
   <li>An integrated server provides data access through the <a href="http://www.opengeospatial.org/standards/wcs">OpenGIS Consortium (OGC) Web Coverage Service
-    (WCS</a>) protocol, for any "gridded" dataset whose coordinate system information is complete.
-  </li>
+    (WCS</a>) protocol, for any "gridded" dataset whose coordinate system information is complete.  </li>
   <li>An integrated server provides data access through the <a href="http://www.opengeospatial.org/standards/wms">OpenGIS Consortium (OGC) Web Map Service
     (WMS</a>)
     protocol, for any "gridded" dataset whose coordinate system information
     is complete. This software was developed by Jon Blower (University of
     Reading (UK) E-Science Center) as part of the <a href="http://behemoth.nerc-essc.ac.uk/ncWMS/godiva2.html">ESSC Web Map Service for environmental data</a>
-    (aka Godiva2).
-  </li>
+    (aka Godiva2).  </li>
   <li>The integrated <a href="reference/ncISO.html">ncISO server</a> provides automated metadata analysis and ISO metadata generation.</li>
+  <li>The integrated <a href="reference/NetcdfSubsetServiceReference.html">NetCDF Subset Service</a> allows subsetting certain CDM datasets in coordinate space, using a REST API. Gridded data subsets can be returned in <a href="http://cfconventions.org/">CF-compliant</a> netCDF-3 or netCDF-4. Point data subsets can be returned in CSV, XML, or <a href="http://cfconventions.org/Data/cf-conventions/cf-conventions-1.6/build/cf-conventions.html#discrete-sampling-geometries">CF-DSG</a> netCDF files.</li>
 </ol>
-<p>The THREDDS Data Server is implemented in 100% Java, and is
+<p>The THREDDS Data Server is implemented in 100% Java*, and is
   contained in a single war file, which allows very easy installation
   into a <a href="http://en.wikipedia.org/wiki/Servlet_container">servlet container</a>
-  such as the open-source <a href="http://jakarta.apache.org/tomcat/">Tomcat</a>
+  such as the open-source <a href="http://tomcat.apache.org/">Tomcat</a>
   web server. Configuration is made as simple and as automatic as
   possible, and we have made the server as secure as possible. The
   library is freely available and the source code is released under the
-  (MIT-style) netCDF library <a href="http://www.unidata.ucar.edu/software/netcdf/copyright.html">license</a>.
-</p>
-
+  (MIT-style) netCDF library <a href="http://www.unidata.ucar.edu/software/netcdf/copyright.html">license</a>. </p>
+<p>*Writing to netCDF-4 files is supported through the netCDF C library only.</p>
 <p>Much of the realtime data available over the Unidata <a href="http://www.unidata.ucar.edu/software/idd/index.html">Internet Data Distribution</a> (IDD) is
   available through a THREDDS Data Server hosted at Unidata on <a href="http://thredds.ucar.edu/thredds/">thredds.ucar.edu</a>.
   You are welcome to browse and access these meteorological datasets. If
@@ -65,7 +59,7 @@
 
 <h2>System Requirements</h2>
 <ul>
-  <li><a href="http://www.oracle.com/technetwork/java/index.html">Java</a> version 7</li>
+  <li><a href="http://www.oracle.com/technetwork/java/javase/overview/index.html">Java</a> version 7</li>
   <li> <a href="http://tomcat.apache.org/">Tomcat</a> version 7.</li>
   <li><strong>Be sure to keep up with the latest versions of Java and Tomcat for security fixes. This is required for publically accessible servers!</strong>
   </li>
@@ -79,8 +73,7 @@
     (<a href="ftp://ftp.unidata.ucar.edu/pub/thredds/4.5/current/thredds.war.sha1">SHA1</a>)]
     [<a href="https://github.com/Unidata/thredds">source on GitHub</a>]
     [<a href="https://artifacts.unidata.ucar.edu/content/repositories/unidata-releases/edu/ucar/tds/">artifacts in Unitdata's maven repository</a>] </li>
-  <li>The THREDDS Data Manager (TDM)  <a href="ftp://ftp.unidata.ucar.edu/pub/thredds/4.5/current/tds-4.5.war">tds.wpwd</a></li>
-  <li><a href="ftp://ftp.unidata.ucar.edu/pub/thredds/4.5/current/tds-4.5.war">ar</a></li>
+  <li>The THREDDS Data Manager (TDM)  <a href="ftp://ftp.unidata.ucar.edu/pub/thredds/4.5/current/tds-4.5.war">tds.w</a><a href="ftp://ftp.unidata.ucar.edu/pub/thredds/4.5/current/tds-4.5.war">ar</a></li>
   <li>Documentation:
     <ul>
       <li><a href="reference/index.html">Reference</a></li>
@@ -148,7 +141,7 @@
 </ul>
 <hr width="100%">
 <address>
-  <img src="thread.png" alt="THREDDS" height="101" width="101">This document was last updated May 2014
+  <img src="thread.png" alt="THREDDS" height="101" width="101">This document was last updated October 2014
 </address>
 </body>
 </html>
