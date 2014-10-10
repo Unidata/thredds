@@ -73,7 +73,7 @@
     <li><a href="http://www.unidata.ucar.edu/schemas/thredds/InvCatalog.1.0.xsd">Version 1.0</a></li>
   </ul>
 
-  <li><a href="DL.html">Writing metadata for Digital Libraries</a></li>
+  <li><a href="../reference/DigitalLibraries.html">Writing metadata for Digital Libraries</a></li>
   <li>Read catalogs using the InvCatalog Java API in the <a href="http://www.unidata.ucar.edu/software/netcdf-java/">netCDF-Java library</a>.<br>
   </li>
 
@@ -92,7 +92,7 @@
 
 <p>The <em>catalog</em> element is the top-level element. It may contain zero
   or more <em><a href="#service">service</a></em> elements, followed by zero
-  or more <em><a href="#datasetRoot">datasetRoot</a></em> elements,  followed by zero
+  or more <em><a href="InvCatalogServerSpec.html#datasetRoot_Element">datasetRoot</a></em> elements,  followed by zero
   or more <em><a href="#property">property</a></em> elements, followed by one or
   more <em><a href="#dataset">dataset</a></em> elements (actually any element in the dataset substitution group). The optional catalog
   <em>name</em> will be displayed to a user. The <em>expires</em><a name="expires"></a>
@@ -340,8 +340,7 @@ elements, or use a <a href="#compoundService">compound service</a>.
 <p>Including any of these elements in a metadata element with its <em>inherit</em>
   attribute set to "true" means that they apply to the containing dataset and any nested datasets.</p>
 
-<p>If your intention is to enable THREDDS to write entries into a Digital Library, you should to be aware of <a href="DL.html">how elements are mapped to
-  Digital Libraries</a>. For example, you will probably want to add a <em>documentation</em> element with type <em>summary<a name="summary"></a></em> as its
+<p>If your intention is to enable THREDDS to write entries into a Digital Library, you should to be aware of <a href="../reference/DigitalLibraries.html">how elements are mapped to Digital Libraries</a>. For example, you will probably want to add a <em>documentation</em> element with type <em>summary<a name="summary"></a></em> as its
   content will be the description of the dataset in the DL entry. Another documentation element you may need has type <em>rights<a name="rights"></a></em> which
   specifies what restrictions there are on the dataset usage.</p>
 
@@ -1072,7 +1071,7 @@ elements, or use a <a href="#compoundService">compound service</a>.
 <hr width="100%">
 <address>
 <img alt="THREDDS" src="../thread.png" height="108" width="110">This document is maintained by Unidata and was
-  last updated November, 2012. Send comments to <a href="mailto:support-thredds@unidata.ucar.edu">THREDDS
+  last updated October 2014. Send comments to <a href="mailto:support-thredds@unidata.ucar.edu">THREDDS
   support</a>.
 </address>
 <p></p>

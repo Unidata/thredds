@@ -33,7 +33,7 @@
 <h3>Related resources:<br/>
 </h3>
 <ul>
-  <li><a href="../InvCatalogSpec.html">Client catalog specification</a></li>
+  <li><a href="../../tds/catalog/InvCatalogServerSpec.html">Client catalog specification</a></li>
   <li><a href="http://www.unidata.ucar.edu/schemas/thredds/InvCatalog.1.0.6.xsd">XML Schema</a><br/>
   </li>
 </ul>
@@ -103,7 +103,7 @@
 </p>
 
 <p>A <em>datasetScan</em> element is in the dataset substitutionGroup, so it can
-  be used wherever a <em><a href="../InvCatalogSpec.html#dataset">dataset</a></em><a href="../InvCatalogSpec.html"> element</a> can be used. It is
+  be used wherever a <em><a href="InvCatalogSpec.html#dataset">dataset</a></em> element can be used. It is
   an extension of a
   DatasetType, so any of dataset's nested elements and attributes can be
   used in it. This allows you to add enhanced metadata to a datasetScan.
@@ -169,7 +169,7 @@
 <pre>&lt;datasetScan name=&quot;GRIB2 Data&quot; path=&quot;grib2&quot; location=&quot;C:/data/grib2/&quot; &gt;<br/>  &lt;dataFormat&gt;GRIB-2&lt;/dataFormat&gt;<br/>  &lt;filter&gt;<br/>    &lt;include wildcard=&quot;*.wmo&quot; /&gt;<br/>  &lt;/filter&gt;<br/>&lt;/datasetScan &gt;<br/></pre>
 results in:<br/>
 <pre>&lt;catalog ...&gt;<br/>  &lt;service name=&quot;myserv&quot; ... /&gt;<br/>  &lt;dataset name=&quot;GRIB2 Data&quot;&gt;<br/>    &lt;metadata inherited=&quot;true&quot;&gt;&lt;serviceName&gt;myserv&lt;/serviceName&gt;&lt;/metadata&gt;<br/>    &lt;dataset name=&quot;data1.wmo&quot; urlPath=&quot;data1.wmo&quot; /&gt;<br/>    &lt;dataset name=&quot;data2.wmo&quot; urlPath=&quot;data2.wmo&quot; /&gt;<br/>  &lt;/dataset&gt;<br/>&lt;/catalog&gt;<br/></pre>
-<p>More examples are available in the <a href="../../reference/DatasetScan.html#Including_Only_the_Desired_Files">TDS datasetsScan documentation</a>.<br/>
+<p>More examples are available in the <a href="../reference/DatasetScan.html#Including_Only_the_Desired_Files">TDS datasetsScan documentation</a>.<br/>
 </p>
 
 <h3><a name="addID_Element" id="addID_Element"></a>addID Element<br/>
@@ -278,7 +278,7 @@ So, when cataloged, this dataset would end up as something like this:<br/>
   attribute.<br/>
 </p>
 
-<p>An example is available in the <a href="../../reference/DatasetScan.html#Adding_Proxy_Datasets">TDS datasetsScan documentation</a>.</p>
+<p>An example is available in the <a href="../reference/DatasetScan.html#Adding_Proxy_Datasets">TDS datasetsScan documentation</a>.</p>
 
 <h3><a name="addTimeCoverage_Element" id="addTimeCoverage_Element"></a>addTimeCoverage Element<br/>
 </h3>
@@ -313,7 +313,7 @@ So, when cataloged, this dataset would end up as something like this:<br/>
 <p>The addDatasetSize element indicates that file size metadata in the form of a <em>dataSize</em> element should be added to all atomic datasets.<br/>
 </p>
 
-<p>An example is available in the <a href="../../reference/DatasetScan.html#Adding_Dataset_Size_Information">TDS datasetsScan documentation</a>.</p>
+<p>An example is available in the <a href="../reference/DatasetScan.html#Adding_Dataset_Size_Information">TDS datasetsScan documentation</a>.</p>
 <hr/>
 <h2>Index<a name="index" id="index"></a></h2>
 <ul>
