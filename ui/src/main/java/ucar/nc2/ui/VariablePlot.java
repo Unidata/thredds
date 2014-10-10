@@ -97,7 +97,6 @@ public class VariablePlot extends JPanel {
     else
       chartPanel.setBounds(new Rectangle(300, 300, 600, 600));
 
-
     XYPlot plot = chart.getXYPlot();
 
     plot.setBackgroundPaint(Color.white);
@@ -139,6 +138,10 @@ public class VariablePlot extends JPanel {
 
   public void setDataset(NetcdfFile ncFile) {
     file = ncFile;
+  }
+  public void autoScale() {
+	chart.getXYPlot().getRangeAxis().setAutoRange(true);
+	chart.getXYPlot().getDomainAxis().setAutoRange(true);
   }
 
   public void clear() {
