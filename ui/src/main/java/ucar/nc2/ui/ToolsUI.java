@@ -321,7 +321,7 @@ public class ToolsUI extends JPanel {
 
     // nested tab - feature collection
     fcTabPane.addTab("DirectoryPartition", new JLabel("DirectoryPartition"));
-    fcTabPane.addTab("PartitionReport", new JLabel("PartitionReport"));
+    // fcTabPane.addTab("PartitionReport", new JLabel("PartitionReport"));
     fcTabPane.addTab("CollectionSpec", new JLabel("CollectionSpec"));
     addListeners(fcTabPane);
 

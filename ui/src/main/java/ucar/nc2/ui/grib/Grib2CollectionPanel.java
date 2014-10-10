@@ -656,7 +656,7 @@ public class Grib2CollectionPanel extends JPanel {
 
   public void checkProblems(Formatter f) {
     checkDuplicates(f);
-    //checkRuntimes(f);
+    checkLocalParams(f);
   }
 
   public void check(Grib2RecordBean bean, Formatter f) {
@@ -754,6 +754,18 @@ public class Grib2CollectionPanel extends JPanel {
       total += dc.count;
     }
     f.format("total records = %d%n", total);
+  }
+
+  private void checkLocalParams(Formatter f) {
+
+    f.format("%nLocal Parameters%n");
+    List<Grib2ParameterBean> params = param2BeanTable.getBeans();
+    for (Grib2ParameterBean pbean : params) {
+      GribTables.Parameter p = pbean.getParameter();
+      if (Grib2Customizer.isLocal(p)) {
+        f.format("   %s%n", p);
+      }
+    }
   }
 
   private void writeToFile(List beans) {
@@ -1095,6 +1107,10 @@ public class Grib2CollectionPanel extends JPanel {
 
     public String getParamNo() {
       return discipline + "-" + pds.getParameterCategory() + "-" + pds.getParameterNumber();
+    }
+
+    GribTables.Parameter getParameter() {
+      return cust.getParameter(gr.getDiscipline(), gr.getPDS().getParameterCategory(), gr.getPDS().getParameterNumber());
     }
 
     public int getPDS() {
