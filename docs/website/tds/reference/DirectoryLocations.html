@@ -40,10 +40,10 @@ drwxr-xr-x   7 tomcat   tomcat       512 Nov  1 18:33 webapps/
 drwxr-xr-x   3 tomcat   tomcat       512 Aug  9 19:38 work/</pre>
 <h3><a name="moveLocation"></a> Using tds.content.root.path to change the location of the configuration directory</h3>
 <ul>
-  <li>You may set the "tds.content.root.path"
+  <li>You <em><strong>must</strong></em> set the "tds.content.root.path"
     Java system property. For instance, by adding the following to JAVA_OPTS in your startup
     script:
-    <pre>-Dtds.content.root.path=/some/absolute/path</pre>
+      <pre>-Dtds.content.root.path=/some/absolute/path</pre>
     <p>the TDS will use or create (if they don't already exist) the configuration files in:</p>
     <pre>/some/absolute/path/thredds</pre>
   </li>
@@ -103,8 +103,7 @@ Typically you will only be adding and modifying catalogs and configuration files
 <hr width="100%">
 <address>
   <img alt="THREDDS" src="../thread.png" height="108" width="110">
-  This document is maintained by Unidata and was last updated October 2013.
-  Send comments to
+  This document is maintained by Unidata . Send comments to
   <a href="mailto:support-thredds@unidata.ucar.edu">THREDDS support</a>.
 </address>
 
