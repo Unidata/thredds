@@ -705,11 +705,11 @@ public class GribCdmIndex implements IndexReader {
       GribCollectionType type = getType(raf);
       if (type == GribCollectionType.Partition1 || type == GribCollectionType.Partition2) {
         if (openIndex(raf, logger)) {
-          String dirName = gribCollectionIndex.getTopDir();
+          String topDir = gribCollectionIndex.getTopDir();
           int n = gribCollectionIndex.getMfilesCount(); // partition index files stored in MFiles
           for (int i = 0; i < n; i++) {
             GribCollectionProto.MFile mfilep = gribCollectionIndex.getMfiles(i);
-            callback.addChild(dirName, mfilep.getFilename(), mfilep.getLastModified());
+            callback.addChild(topDir, mfilep.getFilename(), mfilep.getLastModified());
           }
           return true;
         }

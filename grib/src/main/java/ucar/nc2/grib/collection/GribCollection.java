@@ -421,7 +421,6 @@ public abstract class GribCollection implements FileCacheable, AutoCloseable {
     this.directory = directory;
   }
 
-
   /////////////////////////////////////////////
 
   // LOOK could use this in iosp
@@ -470,6 +469,13 @@ public abstract class GribCollection implements FileCacheable, AutoCloseable {
     } else {
       return new RandomAccessFile(location, "r");
     }
+  }
+
+  // debugging
+  public String getDataFilename(int fileno) throws IOException {
+    // absolute location
+    MFile mfile = fileMap.get(fileno);
+    return mfile.getPath();
   }
 
   //////////////////////////////////////////////////////////////////////////////////////////////////

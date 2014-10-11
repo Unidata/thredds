@@ -871,6 +871,12 @@ public abstract class GribIosp extends AbstractIOServiceProvider {
       if (r != 0) return r;
       return Misc.compare(dataPos, o.dataPos);
     }
+
+        // debugging
+    public void show(GribCollection gribCollection) throws IOException {
+      String dataFilename = gribCollection.getFilename( fileno);
+      System.out.printf(" fileno=%d filename=%s datapos=%d%n", fileno, dataFilename, dataPos);
+    }
   }
 
   protected class DataReader {
@@ -897,6 +903,14 @@ public abstract class GribIosp extends AbstractIOServiceProvider {
       RandomAccessFile rafData = null;
       try {
         for (DataRecord dr : records) {
+          if (debugIndexOnly) {
+            dr.show(gribCollection);
+            GdsHorizCoordSys hcs = dr.hcs;
+            float[] data = new float[hcs.nx * hcs.ny];        // all zeroes
+            dataReceiver.addData(data, dr.resultIndex, hcs.nx);
+            continue;
+          }
+
           if (dr.fileno != currFile) {
             if (rafData != null) rafData.close();
             rafData = gribCollection.getDataRaf(dr.fileno);
@@ -1048,6 +1062,14 @@ public abstract class GribIosp extends AbstractIOServiceProvider {
       try {
 
         for (PartitionCollection.DataRecord dr : records) {
+          if (debugIndexOnly) {
+            dr.show();
+            GdsHorizCoordSys hcs = dr.hcs;
+            float[] data = new float[hcs.nx * hcs.ny];        // all zeroes
+            dataReceiver.addData(data, dr.resultIndex, hcs.nx);
+            continue;
+          }
+
           if ((rafData == null) || !dr.usesSameFile(lastRecord)) {
             if (rafData != null) rafData.close();
             rafData = dr.usePartition.getRaf(dr.partno, dr.fileno);

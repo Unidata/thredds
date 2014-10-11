@@ -2,7 +2,7 @@ Oct 2014  docs/website/tds/reference
 
 r       	AccessLog.html                      // jenn check
 r    		CatalogConfiguration.html	        // christian check, merge into tutorial?
-r       	CatalogService.html                 // john check, merge into tutorial?
+r       	CatalogService.html                 // john check, merge into Services?
 r           ChecklistReference.html             // ok
 r    		ConfigWithTdsProperties.html	    // ethan check
 r       	DatasetScan.html                    // ryan check

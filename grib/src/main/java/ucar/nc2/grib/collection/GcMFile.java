@@ -89,7 +89,7 @@ public class GcMFile implements thredds.inventory.MFile {
 
   @Override
   public long getLength() {
-    return 0;  //To change body of implemented methods use File | Settings | File Templates.
+    return 0;
   }
 
   @Override
@@ -115,12 +115,12 @@ public class GcMFile implements thredds.inventory.MFile {
 
   @Override
   public Object getAuxInfo() {
-    return null;  //To change body of implemented methods use File | Settings | File Templates.
+    return null;
   }
 
   @Override
   public void setAuxInfo(Object info) {
-    //To change body of implemented methods use File | Settings | File Templates.
+
   }
 
   public File getDirectory() {

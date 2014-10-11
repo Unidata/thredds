@@ -1,7 +1,5 @@
 package thredds.inventory.partition;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import thredds.featurecollection.FeatureCollectionConfig;
 import thredds.inventory.*;
 import thredds.inventory.MCollection;

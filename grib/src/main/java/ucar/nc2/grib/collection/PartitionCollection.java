@@ -472,6 +472,12 @@ public abstract class PartitionCollection extends GribCollection {
       return true;
     }
 
+    // debugging
+    public void show() throws IOException {
+      String dataFilename = usePartition.getFilename(partno, fileno);
+      System.out.printf(" partno=%d fileno=%d filename=%s datapos=%d%n", partno, fileno, dataFilename, dataPos);
+    }
+
   }
 
   //////////////////////////////////////////////////////////////////////////////////////////
@@ -762,6 +768,7 @@ public abstract class PartitionCollection extends GribCollection {
     super.showIndex(f);
 
     int count = 0;
+    f.format("isPartitionOfPartitions=%s%n", isPartitionOfPartitions);
     f.format("Partitions%n");
     for (Partition p :  getPartitions())
       f.format("%d:  %s%n", count++, p);
@@ -789,6 +796,14 @@ public abstract class PartitionCollection extends GribCollection {
     Partition part = getPartition(partno);
     try (GribCollection gc = part.getGribCollection()) {  // LOOK this closes the GC.ncx2
       return gc.getDataRaf(fileno);
+    }
+  }
+
+  // debugging
+  public String getFilename(int partno, int fileno) throws IOException {
+    Partition part = getPartition(partno);
+    try (GribCollection gc = part.getGribCollection()) {  // LOOK this closes the GC.ncx2
+      return gc.getFilename(fileno);
     }
   }
 
