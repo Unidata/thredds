@@ -35,6 +35,7 @@
 
 package ucar.nc2.grib.collection;
 
+import org.jdom2.Element;
 import org.slf4j.Logger;
 import thredds.featurecollection.FeatureCollectionConfig;
 import thredds.featurecollection.FeatureCollectionType;
@@ -782,11 +783,28 @@ public class GribCdmIndex implements IndexReader {
     }
   }
 
+
+  public static void main2(String[] args) throws IOException {
+    org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger("test");
+    PartitionManager partition = new PartitionManagerFromIndexDirectory("NCDC-gfs4_all", new FeatureCollectionConfig(), new File("B:/ncdc/gfs4_all/"),  logger);
+    Grib1PartitionBuilder builder = new Grib1PartitionBuilder("NCDC-gfs4_all", new File(partition.getRoot()), partition, logger);
+    builder.createPartitionedIndex(CollectionUpdateType.nocheck, CollectionUpdateType.never, new Formatter());
+  }
+
   public static void main(String[] args) throws IOException {
     org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger("test");
-    PartitionManager partition = new PartitionManagerFromIndexDirectory("NAM-Polar_90km", new FeatureCollectionConfig(), new File("B:/lead/NAM-Polar_90km/"),  logger);
-    Grib1PartitionBuilder builder = new Grib1PartitionBuilder("NAM_Polar_90km", new File(partition.getRoot()), partition, logger);
-    builder.createPartitionedIndex(CollectionUpdateType.nocheck, CollectionUpdateType.never, new Formatter());
+    Formatter errlog = new Formatter();
+
+    // String name, String path, FeatureCollectionType fcType, String spec, String dateFormatMark, String olderThan, String timePartition, String useIndexOnlyS, Element innerNcml
+    FeatureCollectionConfig config = new FeatureCollectionConfig();
+
+    // String name, FeatureCollectionConfig config, File directory, org.slf4j.Logger logger
+    PartitionManager dcm = new PartitionManagerFromIndexDirectory("test", config, new File("B:/ncdc/gfs4_all/"),logger);
+    dcm.putAuxInfo(FeatureCollectionConfig.AUX_CONFIG, config);
+
+    // boolean isGrib1, MCollection dcm, CollectionUpdateType updateType, Formatter errlog, org.slf4j.Logger logger
+    GribCdmIndex.openGribCollectionFromMCollection(false, dcm, CollectionUpdateType.always, errlog, logger);
+    System.out.printf("errlog = %s%n", errlog);
   }
 
 }
