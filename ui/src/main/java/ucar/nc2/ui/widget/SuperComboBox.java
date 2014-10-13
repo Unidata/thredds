@@ -650,7 +650,7 @@ public class SuperComboBox extends JPanel {
 
       ifPanel = new PrefPanel("loopControl", null);
       stepIF = ifPanel.addIntField("step", "step", 1);
-      startIF = ifPanel.addTextField("start", "start", "    ");
+      startIF = ifPanel.addTextField("start", "start", "    0");
       ifPanel.finish(false);
     }
 

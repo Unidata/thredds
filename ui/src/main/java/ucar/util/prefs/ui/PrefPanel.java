@@ -203,7 +203,7 @@ public class PrefPanel extends JPanel {
    *  ActionEvent to any listeners.
    */
   public boolean accept() {
-    StringBuffer buff = new StringBuffer();
+    StringBuffer buff = new StringBuffer("Invalid field value ");
     boolean ok = true;
     for (Object o : flds.values())
       ok &= ((Field) o).accept(buff);

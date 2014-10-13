@@ -793,18 +793,22 @@ public class GribCdmIndex implements IndexReader {
 
   public static void main(String[] args) throws IOException {
     org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger("test");
-    Formatter errlog = new Formatter();
+
+    /*
+       <featureCollection name="DGEX-CONUS_12km" featureType="GRIB" harvest="true" path="grib/NCEP/DGEX/CONUS_12km">
+                  <collection spec="F:/data/grib/idd/dgex/  /.*grib2$"
+                    dateFormatMark="#DGEX_CONUS_12km_#yyyyMMdd_HHmm"
+                    timePartition="directory"
+                    olderThan="5 min"/>
+     */
 
     // String name, String path, FeatureCollectionType fcType, String spec, String dateFormatMark, String olderThan, String timePartition, String useIndexOnlyS, Element innerNcml
-    FeatureCollectionConfig config = new FeatureCollectionConfig();
-
-    // String name, FeatureCollectionConfig config, File directory, org.slf4j.Logger logger
-    PartitionManager dcm = new PartitionManagerFromIndexDirectory("test", config, new File("B:/ncdc/gfs4_all/"),logger);
-    dcm.putAuxInfo(FeatureCollectionConfig.AUX_CONFIG, config);
+    FeatureCollectionConfig config = new FeatureCollectionConfig("DGEX-test", "grib/NCEP/DGEX/CONUS_12km", FeatureCollectionType.GRIB2,
+            "F:/data/grib/idd/dgex/**/.*grib2$", "#DGEX_CONUS_12km_#yyyyMMdd_HHmm", null, "directory", null, null);
 
     // boolean isGrib1, MCollection dcm, CollectionUpdateType updateType, Formatter errlog, org.slf4j.Logger logger
-    GribCdmIndex.openGribCollectionFromMCollection(false, dcm, CollectionUpdateType.always, errlog, logger);
-    System.out.printf("errlog = %s%n", errlog);
+    boolean changed = GribCdmIndex.updateGribCollection(config, CollectionUpdateType.always, logger);
+    System.out.printf("changed = %s%n", changed);
   }
 
 }

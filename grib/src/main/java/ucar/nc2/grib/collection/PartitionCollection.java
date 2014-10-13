@@ -375,14 +375,15 @@ public abstract class PartitionCollection extends GribCollection {
           CoordinateTimeAbstract wholeCoord1Dtime = (CoordinateTimeAbstract) wholeCoord1D;
           Object wholeVal = wholeCoord1D.getValue(idx);
           resultIdx = compCoord2D.matchTimeCoordinate(runtimeIdxPart, wholeVal, wholeCoord1Dtime.getRefDate());
-          if (resultIdx < 0) {
+          if (resultIdx < 0)
             resultIdx = compCoord2D.matchTimeCoordinate(runtimeIdxPart, wholeVal, wholeCoord1Dtime.getRefDate()); // debug
-          }
         } else {
           resultIdx = matchCoordinate(wholeCoord1D, idx, compCoord);
+          if (resultIdx < 0)
+            resultIdx = matchCoordinate(wholeCoord1D, idx, compCoord); // debug
         }
         if (resultIdx < 0) {
-          logger.info("Couldnt match coordinates for variable {}", compVindex2D);
+          logger.info("Couldnt match coordinates ({}) for variable {}", Misc.showInts(wholeIndex), compVindex2D.toStringShort());
           return null;
         }
         result[countDim + 1] = resultIdx;
