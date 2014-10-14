@@ -35,7 +35,6 @@ package ucar.nc2.iosp.grib;
 import org.junit.Test;
 import ucar.ma2.Array;
 import ucar.nc2.Dimension;
-import ucar.nc2.TestAll;
 import ucar.nc2.dt.GridDatatype;
 import ucar.nc2.dt.grid.GridDataset;
 import ucar.nc2.grib.collection.GribIosp;
@@ -70,7 +69,7 @@ public class TestGribCollections {
     RandomAccessFile.setDebugLeaks(true);
     GribIosp.setDebugFlags(new DebugFlagsImpl("Grib/indexOnly"));
     Count count = read(TestDir.cdmUnitTestDir + "ncss/GFS/Global_onedeg/GFS_Global_onedeg-Global_onedeg.ncx2");
-    TestAll.checkLeaks();
+    TestDir.checkLeaks();
 
     assert count.nread == 94352;
     assert count.nmiss == 0;
@@ -82,7 +81,7 @@ public class TestGribCollections {
     RandomAccessFile.setDebugLeaks(true);
     GribIosp.setDebugFlags(new DebugFlagsImpl("Grib/indexOnly"));
     Count count = read(TestDir.cdmUnitTestDir + "ncss/GFS/CONUS_80km/GFS_CONUS_80km_20120227_1200.grib1.ncx2");
-    TestAll.checkLeaks();
+    TestDir.checkLeaks();
 
     assert count.nread == 7116;
     assert count.nmiss == 200;
@@ -94,7 +93,7 @@ public class TestGribCollections {
     RandomAccessFile.setDebugLeaks(true);
     GribIosp.setDebugFlags(new DebugFlagsImpl("Grib/indexOnly"));
     Count count = read(TestDir.cdmUnitTestDir + "ncss/GFS/CONUS_80km/GFS_CONUS_80km-CONUS_80km.ncx2");
-    TestAll.checkLeaks();
+    TestDir.checkLeaks();
 
     assert count.nread == 81340;
     assert count.nmiss == 1801;
@@ -110,7 +109,7 @@ public class TestGribCollections {
       assert gdt != null;
       TestGribCollections.Count count = TestGribCollections.read(gdt);
       System.out.printf("%n%50s == %d/%d%n", "total", count.nmiss, count.nread);
-      TestAll.checkLeaks();
+      TestDir.checkLeaks();
 
       assert count.nread == 1440;
       assert count.nmiss == 631;
