@@ -87,52 +87,6 @@
 <!-- end section -->
 
 
-<div id="section">
-  <h2><a name="metadata">THREDDS Metadata</a></h2>
-
-
-  <h3>Linking to Metadata</h3>
-  <pre>&lt;metadata xlink:title="some good metadata" xlink:href="http://my.server/md/data1.xml" /&gt;</pre>
-
-  <h3>Linking to Human Readable Metadata</h3>
-  <pre>&lt;description xlink:title="My Data" xlink:href="http://my.server/md/data1.html" /&gt;</pre>
-
-  <h3>Inherited Metadata</h3>
-<pre>
-...
-    &lt;dataset name="TDS Tutorial: example inherited metadata"&gt;
-        &lt;metadata inherited="true"&gt;
-            &lt;serviceName&gt;odap&lt;/serviceName&gt;
-            &lt;description&gt;Really great data.&lt;/description&gt;
-            &lt;keyword&gt;Ocean&lt;/keyword&gt;
-            &lt;keyword&gt;Temperature&lt;/keyword&gt;
-            &lt;creator&gt;Ethan&lt;/creator&gt;
-            &lt;publisher&gt;Ethan&lt;/publisher&gt;
-            &lt;date type="created"&gt;2008-10-30T14:22&lt;/date&gt;
-      <span style="font-weight: bold;">1)    &lt;dataFormat&gt;netCDF&lt;/dataFormat&gt;</span>
-        &lt;/metadata&gt;
-
-        &lt;dataset name="TDS Tutorial: example data 1" urlPath="test/example1.nc" /&gt;
-        &lt;dataset name="TDS Tutorial: example data 2" urlPath="test/example2.nc" /&gt;
-        &lt;dataset name="TDS Tutorial: example data 3" urlPath="test/example3.nc" /&gt;
-        &lt;dataset name="TDS Tutorial: example data 4" urlPath="test/example4.grib2"&gt;
-      <span style="font-weight: bold;">2)    &lt;dataFormat&gt;GRIB-2&lt;/dataFormat&gt;</span>
-        &lt;/dataset&gt;
-
-    &lt;/dataset&gt;
-...
-</pre>
-
-  <div id="expanded" class="troubleshooting">
-    <h4>Notes:</h4>
-
-    <p><strong>1)</strong> Child datasets inherit the netCDF dataFormat element</p>
-
-    <p><strong>2)</strong> This child's inherited metadata is overridden.</p>
-  </div>
-</div>
-<!-- end section -->
-
 
 <div id="section">
   <h2><a name="requirements">TDS Requirements for the <code>service</code> Elements</a></h2>
@@ -190,6 +144,52 @@
 </div>
 <!-- end section -->
 
+
+<div id="section">
+  <h2><a name="metadata">THREDDS Metadata</a></h2>
+
+
+  <h3>Linking to Metadata</h3>
+  <pre>&lt;metadata xlink:title="some good metadata" xlink:href="http://my.server/md/data1.xml" /&gt;</pre>
+
+  <h3>Linking to Human Readable Metadata</h3>
+  <pre>&lt;description xlink:title="My Data" xlink:href="http://my.server/md/data1.html" /&gt;</pre>
+
+  <h3>Inherited Metadata</h3>
+<pre>
+...
+    &lt;dataset name="TDS Tutorial: example inherited metadata"&gt;
+        &lt;metadata inherited="true"&gt;
+            &lt;serviceName&gt;odap&lt;/serviceName&gt;
+            &lt;description&gt;Really great data.&lt;/description&gt;
+            &lt;keyword&gt;Ocean&lt;/keyword&gt;
+            &lt;keyword&gt;Temperature&lt;/keyword&gt;
+            &lt;creator&gt;Ethan&lt;/creator&gt;
+            &lt;publisher&gt;Ethan&lt;/publisher&gt;
+            &lt;date type="created"&gt;2008-10-30T14:22&lt;/date&gt;
+      <span style="font-weight: bold;">1)    &lt;dataFormat&gt;netCDF&lt;/dataFormat&gt;</span>
+        &lt;/metadata&gt;
+
+        &lt;dataset name="TDS Tutorial: example data 1" urlPath="test/example1.nc" /&gt;
+        &lt;dataset name="TDS Tutorial: example data 2" urlPath="test/example2.nc" /&gt;
+        &lt;dataset name="TDS Tutorial: example data 3" urlPath="test/example3.nc" /&gt;
+        &lt;dataset name="TDS Tutorial: example data 4" urlPath="test/example4.grib2"&gt;
+      <span style="font-weight: bold;">2)    &lt;dataFormat&gt;GRIB-2&lt;/dataFormat&gt;</span>
+        &lt;/dataset&gt;
+
+    &lt;/dataset&gt;
+...
+</pre>
+
+  <div id="expanded" class="troubleshooting">
+    <h4>Notes:</h4>
+
+    <p><strong>1)</strong> Child datasets inherit the netCDF dataFormat element</p>
+
+    <p><strong>2)</strong> This child's inherited metadata is overridden.</p>
+  </div>
+</div>
+<!-- end section -->
 
 <div id="section">
 <h2><a name="config">TDS Configuration Catalogs and Metadata</a></h2>
@@ -622,16 +622,6 @@ Error {
              path="nam_12km" location="/machine/tds/data/ldm/nam_12km"&gt;</pre>
 
   <p>and for the data file 2008110406f018.grib2, the value of the dataset ID would be "NAM_12km/2008110406f018.grib2". </p>
-
-
-  <h3>Dataset Size Information</h3>
-
-  <p>As of TDS 4.2.8, file size metadata is added to all atomic datasets, for instance:</p>
-  <pre>&lt;dataSize units="Kbytes"&gt;6.08&lt;/dataSize&gt;</pre>
-
-  <p>Prior to TDS 4.2.8, file size metadata was not added unless an <code>addDatasetSize</code> element was added to a <code>datasetScan</code> element, e.g.:
-  </p>
-  <pre>&lt;addDatasetSize /&gt;</pre>
 
   <h3><a name="Naming_Datasets"></a>Naming Datasets</h3>
 
