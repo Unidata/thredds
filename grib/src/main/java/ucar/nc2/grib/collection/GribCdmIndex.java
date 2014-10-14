@@ -803,11 +803,23 @@ public class GribCdmIndex implements IndexReader {
      */
 
     // String name, String path, FeatureCollectionType fcType, String spec, String dateFormatMark, String olderThan, String timePartition, String useIndexOnlyS, Element innerNcml
-    FeatureCollectionConfig config = new FeatureCollectionConfig("DGEX-test", "grib/NCEP/DGEX/CONUS_12km", FeatureCollectionType.GRIB2,
-            "F:/data/grib/idd/dgex/**/.*grib2$", "#DGEX_CONUS_12km_#yyyyMMdd_HHmm", null, "directory", null, null);
+    //FeatureCollectionConfig config = new FeatureCollectionConfig("DGEX-test", "grib/NCEP/DGEX/CONUS_12km", FeatureCollectionType.GRIB2,
+    //        "Q:/cdmUnitTest/gribCollections/dgex/**/.*grib2$", "#DGEX_CONUS_12km_#yyyyMMdd_HHmm", null, "directory", null, null);
+
+  //  FeatureCollectionConfig config = new FeatureCollectionConfig("GFS_CONUS_80km", "grib/NCEP/GFS/CONUS_80km", FeatureCollectionType.GRIB1,
+  //          "Q:/cdmUnitTest/ncss/GFS/CONUS_80km/GFS_CONUS_80km_#yyyyMMdd_HHmm#.grib1", null, null, "file", null, null);
+
+    FeatureCollectionConfig config = new FeatureCollectionConfig("ds083.2_Aggregation", "ds083.2/Aggregation", FeatureCollectionType.GRIB1,
+            "Q:/cdmUnitTest/gribCollections/rdavm/ds083.2/grib1/**/.*grib1", "#fnl_#yyyyMMdd_HH_mm", null, "directory", null, null);
+    /*
+    <pdsHash>
+       <useTableVersion>false</useTableVersion>
+     </pdsHash>
+     */
+    config.gribConfig.pdsHash.put("useTableVersion", false);
 
     // boolean isGrib1, MCollection dcm, CollectionUpdateType updateType, Formatter errlog, org.slf4j.Logger logger
-    boolean changed = GribCdmIndex.updateGribCollection(config, CollectionUpdateType.always, logger);
+    boolean changed = GribCdmIndex.updateGribCollection(config, CollectionUpdateType.test, logger);
     System.out.printf("changed = %s%n", changed);
   }
 

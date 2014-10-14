@@ -34,19 +34,22 @@ package ucar.nc2.iosp.grib;
 
 import org.junit.Test;
 import ucar.ma2.Array;
-import ucar.ma2.IndexIterator;
 import ucar.nc2.Dimension;
-import ucar.nc2.Group;
-import ucar.nc2.NetcdfFile;
-import ucar.nc2.Variable;
+import ucar.nc2.TestAll;
 import ucar.nc2.dt.GridDatatype;
 import ucar.nc2.dt.grid.GridDataset;
+import ucar.nc2.grib.collection.GribIosp;
+import ucar.nc2.util.DebugFlagsImpl;
+import ucar.unidata.io.RandomAccessFile;
 import ucar.unidata.test.util.TestDir;
 
 import java.io.IOException;
 
 /**
- * Description
+ * Look for missing data in Grib Collections.
+ *
+ * Indicates that coordinates are not matching, because DGEX_CONUS is dense (hass data for each coordinate).
+ * Note that not all grib collections will be dense.
  *
  * @author John
  * @since 10/13/2014
@@ -54,55 +57,128 @@ import java.io.IOException;
 public class TestGribCollections {
 
   @Test
-  public void testGC() throws IOException {
-    read("F:/data/grib/idd/dgex/20131204/DGEX-test-20131204-20131204-060000.ncx2");
+  public void testGC_Grib2() throws IOException {
+    GribIosp.setDebugFlags(new DebugFlagsImpl("Grib/indexOnly"));
+    Count count = read(TestDir.cdmUnitTestDir + "ncss/GFS/Global_onedeg/GFS_Global_onedeg_20120911_1200.grib2.ncx2");
+
+    assert count.nread == 23229;
+    assert count.nmiss == 0;
+  }
+
+  @Test
+  public void testPofG_Grib2() throws IOException {
+    RandomAccessFile.setDebugLeaks(true);
+    GribIosp.setDebugFlags(new DebugFlagsImpl("Grib/indexOnly"));
+    Count count = read(TestDir.cdmUnitTestDir + "ncss/GFS/Global_onedeg/GFS_Global_onedeg-Global_onedeg.ncx2");
+    TestAll.checkLeaks();
+
+    assert count.nread == 94352;
+    assert count.nmiss == 0;
+  }
+
+  //// ncss/GFS/CONUS_80km/GFS_CONUS_80km-CONUS_80km.ncx2 has lots of missing records
+  @Test
+  public void testGC_Grib1() throws IOException {
+    RandomAccessFile.setDebugLeaks(true);
+    GribIosp.setDebugFlags(new DebugFlagsImpl("Grib/indexOnly"));
+    Count count = read(TestDir.cdmUnitTestDir + "ncss/GFS/CONUS_80km/GFS_CONUS_80km_20120227_1200.grib1.ncx2");
+    TestAll.checkLeaks();
+
+    assert count.nread == 7116;
+    assert count.nmiss == 200;
   }
 
 
-  private void read(String filename) throws IOException {
-    System.out.println("\n\nReading File " + filename);
-    try (GridDataset gds = GridDataset.open(filename)) {
-      for (GridDatatype gdt: gds.getGrids()) {
-        Dimension rtDim = gdt.getRunTimeDimension();
-        Dimension tDim = gdt.getTimeDimension();
-        Dimension zDim = gdt.getZDimension();
+  @Test
+  public void testPofG_Grib1() throws IOException {
+    RandomAccessFile.setDebugLeaks(true);
+    GribIosp.setDebugFlags(new DebugFlagsImpl("Grib/indexOnly"));
+    Count count = read(TestDir.cdmUnitTestDir + "ncss/GFS/CONUS_80km/GFS_CONUS_80km-CONUS_80km.ncx2");
+    TestAll.checkLeaks();
 
-        Count count = new Count();
-        if (rtDim != null) {
-          for (int rt=0; rt<rtDim.getLength(); rt++)
-            read(gdt, count, rt, tDim, zDim);
-        } else {
-          read(gdt, count, -1, tDim, zDim);
-        }
-        System.out.printf("%50s == %d/%d%n", gdt.getFullName(), count.nmiss, count.nread);
-      }
+    assert count.nread == 81340;
+    assert count.nmiss == 1801;
+  }
+
+  @Test
+  public void problem() throws IOException {
+    RandomAccessFile.setDebugLeaks(true);
+    GribIosp.setDebugFlags(new DebugFlagsImpl("Grib/indexOnly Grib/indexOnlyShow"));
+    String filename = "ncss/GFS/CONUS_80km/GFS_CONUS_80km-CONUS_80km.ncx2";
+    try (GridDataset gds = GridDataset.open(TestDir.cdmUnitTestDir + filename)) {
+      GridDatatype gdt = gds.findGridByName("TwoD/Absolute_vorticity_isobaric");
+      assert gdt != null;
+      TestGribCollections.Count count = TestGribCollections.read(gdt);
+      System.out.printf("%n%50s == %d/%d%n", "total", count.nmiss, count.nread);
+      TestAll.checkLeaks();
+
+      assert count.nread == 1440;
+      assert count.nmiss == 631;
     }
   }
 
-  private void read(GridDatatype gdt, Count count, int rtIndex, Dimension timeDim, Dimension zDim) throws IOException {
+  ///////////////////////////////////////////////////////////////
+
+  public static Count read(String filename) throws IOException {
+    long start = System.currentTimeMillis();
+    System.out.println("\n\nReading File " + filename);
+    Count allCount = new Count();
+    try (GridDataset gds = GridDataset.open(filename)) {
+      for (GridDatatype gdt: gds.getGrids()) {
+        Count count = read(gdt);
+        System.out.printf("%80s == %d/%d%n", gdt.getFullName(), count.nmiss, count.nread);
+        allCount.add(count);
+      }
+      long took = System.currentTimeMillis() - start;
+      float r = ((float) took) / allCount.nread;
+      System.out.printf("%n%80s == %d/%d%n", "total", allCount.nmiss, allCount.nread);
+      System.out.printf("%n   that took %d secs total, %f msecs per record%n", took/1000, r);
+      return allCount;
+    }
+  }
+
+  public static Count read(GridDatatype gdt) throws IOException {
+    Dimension rtDim = gdt.getRunTimeDimension();
+    Dimension tDim = gdt.getTimeDimension();
+    Dimension zDim = gdt.getZDimension();
+
+    Count count = new Count();
+    if (rtDim != null) {
+      for (int rt=0; rt<rtDim.getLength(); rt++)
+        read(gdt, count, rt, tDim, zDim);
+    } else {
+      read(gdt, count, -1, tDim, zDim);
+    }
+    return count;
+  }
+
+  private static void read(GridDatatype gdt, Count count, int rtIndex, Dimension timeDim, Dimension zDim) throws IOException {
     if (timeDim != null) {
       for (int t=0; t<timeDim.getLength(); t++)
         read(gdt, count, rtIndex, t, zDim);
     } else {
-      read(gdt, count, -1, -1, -1);
+      read(gdt, count, rtIndex, -1, zDim);
     }
   }
 
 
-  private void read(GridDatatype gdt, Count count, int rtIndex, int tIndex, Dimension zDim) throws IOException {
+  private static void read(GridDatatype gdt, Count count, int rtIndex, int tIndex, Dimension zDim) throws IOException {
     if (zDim != null) {
-      for (int y=0; y<zDim.getLength(); y++)
-        read(gdt, count, rtIndex, tIndex, y);
+      for (int z=0; z<zDim.getLength(); z++)
+        read(gdt, count, rtIndex, tIndex, z);
     } else {
-      read(gdt, count, -1, -1, -1);
+      read(gdt, count, rtIndex, tIndex, -1);
     }
   }
 
-  private void read(GridDatatype gdt, Count count, int rtIndex, int tIndex, int zIndex) throws IOException {
+  private static void read(GridDatatype gdt, Count count, int rtIndex, int tIndex, int zIndex) throws IOException {
     // int rt_index, int e_index, int t_index, int z_index, int y_index, int x_index
     Array data = gdt.readDataSlice(rtIndex, -1, tIndex, zIndex, 10, 10);
-    if (data.getSize() != 1)
+    if (data.getSize() != 1 || data.getRank() != 0) {
       System.out.printf("%s size=%d rank=%d%n", gdt.getFullName(), data.getSize(), data.getRank());
+      gdt.readDataSlice(rtIndex, -1, tIndex, zIndex, 10, 10); // debug
+    }
+
     assert data.getSize() == 1 : gdt.getFullName() +" size = "+data.getSize();
     boolean ok = data.hasNext();
     assert ok;
@@ -113,8 +189,13 @@ public class TestGribCollections {
     count.nread++;
   }
 
-  private class Count {
+  static public class Count {
     int nread;
     int nmiss;
+
+    void add(Count c) {
+      nread += c.nread;
+      nmiss += c.nmiss;
+    }
   }
 }

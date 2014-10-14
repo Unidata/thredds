@@ -71,13 +71,15 @@ import java.util.Formatter;
 public abstract class GribIosp extends AbstractIOServiceProvider {
   static public final String VARIABLE_ID_ATTNAME = "Grib_Variable_Id";
   static public final String GRIB_VALID_TIME = "GRIB forecast or observation time";
-  static boolean debugRead = false;
+  static public boolean debugRead = false;
   static boolean debugIndexOnly = false;  // we are running with only index files, no data
+  static boolean debugIndexOnlyShow = false;  // debugIndexOnly must be true; show record fetch
   static private final boolean debug = false, debugTime = false, debugName = false;
 
   static public void setDebugFlags(ucar.nc2.util.DebugFlags debugFlag) {
     debugRead = debugFlag.isSet("Grib/showRead");
     debugIndexOnly = debugFlag.isSet("Grib/indexOnly");
+    debugIndexOnlyShow = debugFlag.isSet("Grib/indexOnlyShow");
   }
 
   ///////////////////////////////////////////////////////////////////////////////////
@@ -904,7 +906,7 @@ public abstract class GribIosp extends AbstractIOServiceProvider {
       try {
         for (DataRecord dr : records) {
           if (debugIndexOnly) {
-            dr.show(gribCollection);
+            if (debugIndexOnlyShow) dr.show(gribCollection);
             GdsHorizCoordSys hcs = dr.hcs;
             float[] data = new float[hcs.nx * hcs.ny];        // all zeroes
             dataReceiver.addData(data, dr.resultIndex, hcs.nx);
@@ -1063,7 +1065,7 @@ public abstract class GribIosp extends AbstractIOServiceProvider {
 
         for (PartitionCollection.DataRecord dr : records) {
           if (debugIndexOnly) {
-            dr.show();
+            if (debugIndexOnlyShow) dr.show();
             GdsHorizCoordSys hcs = dr.hcs;
             float[] data = new float[hcs.nx * hcs.ny];        // all zeroes
             dataReceiver.addData(data, dr.resultIndex, hcs.nx);

@@ -649,7 +649,7 @@ public abstract class GribCollection implements FileCacheable, AutoCloseable {
     List<Coordinate> coords;      // shared coordinates
     int[] filenose;               // key for GC.fileMap
     Map<Integer, GribCollection.VariableIndex> varMap;
-    boolean isTwod = true;
+    boolean isTwod = true;        // true for GC and twoD; so should be called "reference" dataset or something
 
     GroupGC() {
       this.variList = new ArrayList<>();
@@ -773,7 +773,15 @@ public abstract class GribCollection implements FileCacheable, AutoCloseable {
       f.format("Group %s (%d) isTwoD=%s%n", horizCoordSys.getId(), getGdsHash(), isTwod);
       f.format(" nfiles %d%n", filenose == null ? 0 : filenose.length);
       f.format(" hcs = %s%n", horizCoordSys.hcs);
+    }
 
+    @Override
+    public String toString() {
+      final StringBuilder sb = new StringBuilder("GroupGC{");
+      sb.append(GribCollection.this.getName());
+      sb.append(" isTwoD=").append(isTwod);
+      sb.append('}');
+      return sb.toString();
     }
   }
 
@@ -801,7 +809,8 @@ public abstract class GribCollection implements FileCacheable, AutoCloseable {
 
     // partition only
     TwoDTimeInventory twot;  // twoD only
-    int[] time2runtime;      // oneD only: for each timeIndex, which runtime coordinate does it use? 1-based so 0 = missing
+    int[] time2runtime;      // oneD only: for each timeIndex, which runtime coordinate does it use? 1-based so 0 = missing;
+                             // index into the corresponding 2D variable's runtime coordinate
 
     // derived from pds
     public final int category, parameter, levelType, intvType, ensDerivedType, probType;
@@ -1043,6 +1052,15 @@ public abstract class GribCollection implements FileCacheable, AutoCloseable {
       if (intvName != null && intvName.length() > 0) sb.format(" intv=%s", intvName);
       if (probabilityName != null && probabilityName.length() > 0) sb.format(" prob=%s", probabilityName);
       sb.format(" cdmHash=%d}", cdmHash);
+      return sb.toString();
+    }
+
+    public String toStringFrom() {
+      Formatter sb = new Formatter();
+      sb.format("Variable {%d-%d-%d", discipline, category, parameter);
+      sb.format(", levelType=%d", levelType);
+      sb.format(", intvType=%d", intvType);
+      sb.format(", group=%s}", group);
       return sb.toString();
     }
 
