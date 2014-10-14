@@ -315,10 +315,10 @@ where:
 </pre>
 
 <p>We recommend that you include in the <code>threddsConfig.xml</code> file only the options you want to change. Here is the description of the
-  various options: </p>
+  various options:</p>
   
 <ol>
-  <li><strong>allow</strong>: a value of "true" enables the NetCDF Subset Service service.</li>
+  <li><strong>allow</strong>: a value of "true" enables the NetCDF Subset Service.</li>
   <li><strong>dir</strong>: the working directory for creating files for download (see <a href="#Cache_Locations">choosing a cache directory</a>). If not
     otherwise set, the TDS will use the <strong>${tomcat_home}/content/thredds/cache/ncss/</strong> directory. We recommend that you do not specify a <strong>NetcdfSubsetService.dir</strong> element, and use the default.
   </li>
@@ -334,8 +334,7 @@ where:
 
 <h3><a name="ncISO" id="ncISO">ncISO Service</a></h3>
 
-<p>By default the ncISO services are disabled in the TDS. They can be enabled by including the following in the
-  <code>threddsConfig.xml</code> file:</p>
+<p>By default the ncISO services are disabled in the TDS. They can be enabled by including the following in the <code>threddsConfig.xml</code> file:</p>
 
 <pre>
 &lt;NCISO&gt;
@@ -345,7 +344,7 @@ where:
 &lt;/NCISO&gt;
 </pre>
 
-<p>Each of the allow elements above enables the corresponding ncISO service (NCML, UDDC, and ISO).
+<p>Each of the <strong>allow</strong> elements above enables the corresponding ncISO service (NCML, UDDC, and ISO).
   The ncISO services are described in more detail on the <a href="ncISO.html">ncISO page</a>.
 </p>
 <hr>
@@ -360,7 +359,7 @@ where:
   &lt;/RollingFileAppender&gt;
 &lt;/FeatureCollection&gt;
 </pre>
-<p>Feature Collection logs are placed in <strong>content/thredds/logs/fc.&lt;collectionName&gt;.log</strong>. These are programatically added, so cannot be configured in log4j2.xml. By default, each Feature Collection will rollover at 1 MB, and 5 files will be kept. Messages at the level of INFO and above will be enabled. You can change those settings here (note that your changes will apply to all Feature Collections).</p>
+<p>Feature Collection logs are placed in <strong>${tomcat_home}/content/thredds/logs/fc.&lt;collectionName&gt;.log</strong>. These are programatically added and therefore cannot be configured in log4j2.xml. By default, each Feature Collection will rollover at 1 MB, and 5 files will be kept. Messages at the level of INFO and above will be enabled. You can change those settings here (note that your changes will apply to all Feature Collections).</p>
 <h3><a name="netcdfCLibrary" id="netcdfCLibrary">NetCDF-4 C library loading</a></h3>
 <pre>
 &lt;Netcdf4Clibrary&gt;
@@ -372,7 +371,7 @@ where:
   version 4.2.1 or above, compiled and available on your system, along with all supporting libraries (hdf5 etc). The
   <a href="http://www.unidata.ucar.edu/software/netcdf-java/reference/netcdf4Clibrary.html">details</a> of this differ for each operating system.</p>
 
-<p align="justify">For TDS users, we recommend setting the library path and name in <em>threddsConfig.xml </em>as in the above example.</p>
+<p align="justify">For TDS users, we recommend setting the library path and name in <code>threddsConfig.xml</code> as in the above example.</p>
 
 <h3><a name="runtime">NetCDF-Java runtime Loading</a></h3>
 <pre>
@@ -385,9 +384,9 @@ where:
   &lt;table type="GRIB2" filename="/home/rkambic/grib/tables/grib2userparameters"/&gt;
 &lt;/nj22Config&gt;
 </pre>
-<p>These elements allow you to specify <a href="http://www.unidata.ucar.edu/software/netcdf-java/reference/RuntimeLoading.html">Runtime parameters </a> for the
+<p>These elements allow you to specify <a href="http://www.unidata.ucar.edu/software/netcdf-java/reference/RuntimeLoading.html">runtime parameters</a> for the
   Netcdf-Java library from the threddsConfig file. See the Netcdf-Java
-  <a href="http://www.unidata.ucar.edu/software/netcdf-java/tutorial/index.html">tutorial</a> for an overview. </p>
+  <a href="http://www.unidata.ucar.edu/software/netcdf-java/tutorial/index.html">tutorial</a> for an overview.</p>
 <h3><a name="Aggregation">Aggregation</a></h3>
 <pre>
 &lt;Aggregation&gt;
@@ -400,7 +399,7 @@ where:
 <hr>
 <h2><a name="Cache_Locations">Disk Caching and temporary files</a></h2>
 
-<p>The various cache directory locations are now by default are all under <strong>{tomcat_home}/content/thredds/ :</strong></p>
+<p>The various cache directory locations are all under <strong>{tomcat_home}/content/thredds/</strong> by default:</p>
 <blockquote>
   <table width="937" border="1">
     <tr>
@@ -426,7 +425,7 @@ where:
     <tr>
       <td>DiskCache.dir</td>
       <td><strong>cache/cdm/</strong></td>
-      <td><p>only used when non-writeable data directory or <strong>alwaysUse</strong> = true, puts CDM indexes, decompressed files, etc. into this directory
+      <td><p>only used when non-writeable data directory or <strong>alwaysUse</strong> = true; puts CDM indexes, decompressed files, etc. into this directory
       </p></td>
     </tr>
     <tr>
@@ -495,7 +494,7 @@ ln -s /data/thredds/content content</pre>
   runs. To turn off scouring, set the scour time to 0 (eg &quot;0 secs&quot;).</p>
 
 <p>If not otherwise set, the TDS will use the <strong>${tomcat_home}/content/thredds/cache/cdm</strong> directory. We recommend that you use this default, by
-  not specifying the DiskCache.dir.</p>
+  not specifying the <strong>DiskCache.dir</strong> element.</p>
 
 <h3><a name="AggregationCache">Aggregation Cache</a></h3>
 
@@ -512,12 +511,11 @@ ln -s /data/thredds/content content</pre>
   <strong>${tomcat_home}/content/thredds/cache/agg/</strong> directory. We recommend that you use this default, by not specifying a
   <strong>AggregationCache</strong>.<strong>dir</strong> element.</p>
 
-<p>Every <strong>scour</strong> amount of time, any item that hasnt been changed since <em>maxAge</em> time will be deleted. Set scour to -1 to not scour if you
-  have aggregations that never change. Otherwise, make <strong>maxAge</strong> longer than the longest time between changes. Basically, you dont want to remove
+<p>Every <strong>scour</strong> amount of time, any item that hasnt been changed since <em>maxAge</em> time will be deleted. If you
+  have aggregations that never change, set <strong>scour</strong> to &quot;-1&quot; to disable the operation. Otherwise, make <strong>maxAge</strong> longer than the longest time between changes. Basically, you don't want to remove
   active aggregations.</p>
 
-<p>This
-  cache information is intended to be permanent, it stores coordinate
+<p>This cache information is intended to be permanent; it stores coordinate
   information from each file in the aggregation, so that the file does
   not have to be opened each time the dataset is opened. If you have
   large <strong>joinExisting</strong> aggregations, there will be a very
@@ -550,7 +548,7 @@ ln -s /data/thredds/content content</pre>
       the file permissions of the Tomcat user. </p>
   </li>
   <li>
-    <p>The policy must be set to one of <em>oneDirectory</em> or <em>nestedDirectory (default)</em>. The <em>oneDirectory</em> will put all index files into the
+    <p>The policy must be set to one of <em>oneDirectory</em> or <em>nestedDirectory </em> (the default). <em>oneDirectory</em> will put all index files into the
       same directory, while <em>nestedDirectory</em> will preserve the directory structure of the index files. Use <em>nestedDirectory</em> for large
       collections of grib files.</p>
   </li>
