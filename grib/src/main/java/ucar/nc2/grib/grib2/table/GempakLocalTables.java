@@ -57,6 +57,12 @@ import java.util.Map;
 public class GempakLocalTables extends LocalTables {
 
   private static boolean debug = false;
+  private static GempakLocalTables single;
+
+  public static GempakLocalTables getCust(Grib2Table table) {
+    if (single == null) single = new GempakLocalTables(table);
+    return single;
+  }
 
   GempakLocalTables(Grib2Table grib2Table) {
     super(grib2Table);

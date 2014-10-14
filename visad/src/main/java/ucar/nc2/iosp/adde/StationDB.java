@@ -164,7 +164,7 @@ public class StationDB {
     return stations;
   }
 
-  public class Station extends ucar.unidata.geoloc.StationImpl {
+  static public class Station extends ucar.unidata.geoloc.StationImpl {
     String idn, id, name, type, state, country, desc;
     //double lat, lon, elev;
 

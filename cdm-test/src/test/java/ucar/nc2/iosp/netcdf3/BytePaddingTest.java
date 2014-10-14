@@ -30,8 +30,8 @@ public class BytePaddingTest
   public void checkReadOfFileWrittenWithIncorrectPaddingOfOneDimByteArrayOnlyRecordVar()
           throws IOException, InvalidRangeException
   {
-    File testDataDir = new File( TestDir.cdmLocalTestDataDir, "ucar/nc2/iosp/netcdf3");
-    File testFile = new File( testDataDir, "byteArrayRecordVarPaddingTest-bad.nc" );
+    //File testDataDir = new File( TestDir.cdmLocalTestDataDir, "ucar/nc2/iosp/netcdf3");
+    File testFile = new File( TestDir.cdmLocalTestDataDir, "byteArrayRecordVarPaddingTest-bad.nc" );
     assertTrue( testFile.exists());
     assertTrue( testFile.canRead());
 

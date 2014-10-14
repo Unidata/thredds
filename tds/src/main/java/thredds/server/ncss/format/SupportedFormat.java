@@ -41,7 +41,7 @@ import java.util.List;
 
 public enum SupportedFormat {
 	
-	CSV_STREAM("csv", true, ContentType.csv.toString(), "csv" ),
+	CSV_STREAM("csv", true, ContentType.csv.toString(), "csv", "text/csv"),
 	CSV_FILE("csv_file", false,  ContentType.csv.toString(), "csv_file"  ),
 	
 	XML_STREAM("xml", true, ContentType.xml.toString(), "xml"),
@@ -54,7 +54,7 @@ public enum SupportedFormat {
 	JSON("json", false, ContentType.json.toString(), "json", "geojson"),
 	WKT("wkt", false, ContentType.text.toString(), "wkt"),
 
-    WATERML2("waterml2", true, ContentType.xml.toString(), "waterml2");
+  WATERML2("waterml2", true, ContentType.xml.toString(), "waterml2");
 	
 	/*
 	 * First alias is used as content-type in the http headers

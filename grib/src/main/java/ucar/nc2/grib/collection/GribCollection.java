@@ -147,6 +147,7 @@ public abstract class GribCollection implements FileCacheable, AutoCloseable {
 
   /**
    * This is only used for the top level GribCollection.
+   *
    * @param config use this FeatureCollectionConfig
    * @return index File
    */
@@ -183,22 +184,23 @@ public abstract class GribCollection implements FileCacheable, AutoCloseable {
 
   static public String makeName(String collectionName, CalendarDate runtime) {
     String nameNoBlanks = StringUtil2.replace(collectionName, ' ', "_");
-    return nameNoBlanks+"-"+cf.toString(runtime);
+    return nameNoBlanks + "-" + cf.toString(runtime);
   }
 
   static public String makeNameFromIndexFilename(String idxPathname) {
     idxPathname = StringUtil2.replace(idxPathname, '\\', "/");
     int pos = idxPathname.lastIndexOf('/');
-    String idxFilename = (pos < 0) ? idxPathname : idxPathname.substring(pos+1);
+    String idxFilename = (pos < 0) ? idxPathname : idxPathname.substring(pos + 1);
     assert idxFilename.endsWith(CollectionAbstract.NCX_SUFFIX);
     return idxFilename.substring(0, idxFilename.length() - CollectionAbstract.NCX_SUFFIX.length());
   }
 
   /**
-    * Get index file, may be in cache directory, may not exist
-    * @param path full path of index file
-    * @return File, possibly in cache
-    */
+   * Get index file, may be in cache directory, may not exist
+   *
+   * @param path full path of index file
+   * @return File, possibly in cache
+   */
   static public File getFileInCache(String path) {
     return getDiskCache2().getFile(path); // diskCache manages where the index file lives
   }
@@ -272,6 +274,7 @@ public abstract class GribCollection implements FileCacheable, AutoCloseable {
   /**
    * The files that comprise the colelction.
    * Actual paths, including the grib cache if used.
+   *
    * @return list of filename.
    */
   public List<String> getFilenames() {
@@ -418,7 +421,6 @@ public abstract class GribCollection implements FileCacheable, AutoCloseable {
     this.directory = directory;
   }
 
-
   /////////////////////////////////////////////
 
   // LOOK could use this in iosp
@@ -426,9 +428,10 @@ public abstract class GribCollection implements FileCacheable, AutoCloseable {
 
   // stuff for InvDatasetFcGrib
   public abstract ucar.nc2.dataset.NetcdfDataset getNetcdfDataset(Dataset ds, GroupGC group, String filename,
-                                                         FeatureCollectionConfig gribConfig, Formatter errlog, org.slf4j.Logger logger) throws IOException;
+                                                                  FeatureCollectionConfig gribConfig, Formatter errlog, org.slf4j.Logger logger) throws IOException;
+
   public abstract ucar.nc2.dt.grid.GridDataset getGridDataset(Dataset ds, GroupGC group, String filename,
-                                                     FeatureCollectionConfig gribConfig, Formatter errlog, org.slf4j.Logger logger) throws IOException;
+                                                              FeatureCollectionConfig gribConfig, Formatter errlog, org.slf4j.Logger logger) throws IOException;
 
   //////////////////////////////////////////////////////////////////////////////////////////////////
   // stuff for Iosp
@@ -466,6 +469,13 @@ public abstract class GribCollection implements FileCacheable, AutoCloseable {
     } else {
       return new RandomAccessFile(location, "r");
     }
+  }
+
+  // debugging
+  public String getDataFilename(int fileno) throws IOException {
+    // absolute location
+    MFile mfile = fileMap.get(fileno);
+    return mfile.getPath();
   }
 
   //////////////////////////////////////////////////////////////////////////////////////////////////
@@ -531,10 +541,10 @@ public abstract class GribCollection implements FileCacheable, AutoCloseable {
     }
 
     public int getGroupsSize() {
-       return groups.size();
-     }
+      return groups.size();
+    }
 
-     public Type getType() {
+    public Type getType() {
       return type;
     }
 
@@ -760,13 +770,15 @@ public abstract class GribCollection implements FileCacheable, AutoCloseable {
     }
 
     public void show(Formatter f) {
-       f.format("Group %s (%d) isTwoD=%s%n", horizCoordSys.getId(), getGdsHash(), isTwod);
-       f.format(" nfiles %d%n", filenose == null ? 0 : filenose.length);
-     }
+      f.format("Group %s (%d) isTwoD=%s%n", horizCoordSys.getId(), getGdsHash(), isTwod);
+      f.format(" nfiles %d%n", filenose == null ? 0 : filenose.length);
+      f.format(" hcs = %s%n", horizCoordSys.hcs);
+
+    }
   }
 
   public GribCollection.VariableIndex makeVariableIndex(GroupGC g, int cdmHash, int discipline, GribTables customizer,
-           byte[] rawPds, List<Integer> index, long recordsPos, int recordsLen) {
+                                                        byte[] rawPds, List<Integer> index, long recordsPos, int recordsLen) {
     return new VariableIndex(g, discipline, customizer, rawPds, cdmHash, index, recordsPos, recordsLen);
   }
 
@@ -806,7 +818,7 @@ public abstract class GribCollection implements FileCacheable, AutoCloseable {
     List<Coordinate> coords;
 
     private VariableIndex(GroupGC g, int discipline, GribTables customizer, byte[] rawPds,
-                         int cdmHash, List<Integer> index, long recordsPos, int recordsLen) {
+                          int cdmHash, List<Integer> index, long recordsPos, int recordsLen) {
       this.group = g;
       this.discipline = discipline;
       this.rawPds = rawPds;
@@ -841,12 +853,12 @@ public abstract class GribCollection implements FileCacheable, AutoCloseable {
 
       } else {
         Grib2SectionProductDefinition pdss = new Grib2SectionProductDefinition(rawPds);
-         Grib2Pds pds = null;
-         try {
-           pds = pdss.getPDS();
-         } catch (IOException e) {
-           throw new RuntimeException(e);
-         }
+        Grib2Pds pds = null;
+        try {
+          pds = pdss.getPDS();
+        } catch (IOException e) {
+          throw new RuntimeException(e);
+        }
         this.tableVersion = -1;
 
         // quantities that are stored in the pds
@@ -859,7 +871,7 @@ public abstract class GribCollection implements FileCacheable, AutoCloseable {
         if (pds.isEnsembleDerived()) {
           Grib2Pds.PdsEnsembleDerived pdsDerived = (Grib2Pds.PdsEnsembleDerived) pds;
           ensDerivedType = pdsDerived.getDerivedForecastType(); // derived type (table 4.7)
-        }  else {
+        } else {
           this.ensDerivedType = -1;
         }
 
@@ -913,7 +925,7 @@ public abstract class GribCollection implements FileCacheable, AutoCloseable {
       Coordinate ctP = getCoordinate(Coordinate.Type.time);
       if (ctP == null) ctP = getCoordinate(Coordinate.Type.timeIntv);
       if (ctP == null) ctP = getCoordinate(Coordinate.Type.time2D);
-      return  (CoordinateTimeAbstract) ctP;
+      return (CoordinateTimeAbstract) ctP;
     }
 
     public Coordinate getCoordinate(Coordinate.Type want) {
@@ -1162,7 +1174,7 @@ public abstract class GribCollection implements FileCacheable, AutoCloseable {
       f.format("Files empty%n");
     } else {
       f.format("Files (%d)%n", fileMap.size());
-      for (int index : fileMap.keySet())  {
+      for (int index : fileMap.keySet()) {
         f.format("  %d: %s%n", index, fileMap.get(index));
       }
       f.format("%n");

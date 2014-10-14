@@ -28,13 +28,12 @@ public class TestConstraints extends DapTestCommon
     static final String TESTINPUTDIR = TESTDATADIR + "/testinput";
 
     static final String alpha = "abcdefghijklmnopqrstuvwxyz"
-        + "abcdefghijklmnopqrstuvwxyz".toUpperCase();
+            + "abcdefghijklmnopqrstuvwxyz".toUpperCase();
 
     static class ClientTest
     {
         static String root = null;
         static String server = null;
-        static int counter = 0;
 
         String title;
         String dataset;
@@ -43,24 +42,24 @@ public class TestConstraints extends DapTestCommon
         String constraint;
         int id;
 
-        ClientTest(String dataset, String constraint)
+        ClientTest(int id, String dataset, String constraint)
         {
             if(constraint != null && constraint.length() == 0)
                 constraint = null;
             this.title = dataset + (constraint == null ? "" : "?" + constraint);
             this.dataset = dataset;
-            this.id = ++counter;
+            this.id = id;
             this.testinputpath
-                = root + "/" + TESTINPUTDIR + "/" + dataset;
+                    = root + "/" + TESTINPUTDIR + "/" + dataset;
             this.baselinepath
-                = root + "/" + BASELINEDIR + "/" + dataset + "." + String.valueOf(this.id);
+                    = root + "/" + BASELINEDIR + "/" + dataset + "." + String.valueOf(this.id) + ".ncdump";
             this.constraint = constraint;
         }
 
         String makeurl()
         {
             String url = url = server + "/" + dataset;
-            if(constraint != null) url += "?"+ DapTestCommon.CONSTRAINTTAG+"=" + constraint;
+            if(constraint != null) url += "?" + DapTestCommon.CONSTRAINTTAG + "=" + constraint;
             return url;
         }
 
@@ -70,7 +69,7 @@ public class TestConstraints extends DapTestCommon
             buf.append(dataset);
             buf.append("{");
             if(constraint != null)
-                buf.append("?"+ DapTestCommon.CONSTRAINTTAG+"=" + constraint);
+                buf.append("?" + DapTestCommon.CONSTRAINTTAG + "=" + constraint);
             return buf.toString();
         }
     }
@@ -92,22 +91,21 @@ public class TestConstraints extends DapTestCommon
     // Constructor(s)
 
     public TestConstraints()
-        throws Exception
+            throws Exception
     {
         this("TestConstraints");
     }
 
     public TestConstraints(String name)
-        throws Exception
+            throws Exception
     {
         this(name, null);
     }
 
     public TestConstraints(String name, String[] argv)
-        throws Exception
+            throws Exception
     {
         super(name);
-        setSystemProperties();
         this.root = getDAP4Root();
         if(this.root == null)
             throw new Exception("dap4 root cannot be located");
@@ -116,7 +114,7 @@ public class TestConstraints extends DapTestCommon
         } else if(this.root.charAt(0) != '/')
             this.root = "/" + this.root;
         this.datasetpath = this.root + "/" + TESTINPUTDIR;
-	findServer(this.datasetpath);
+        findServer(this.datasetpath);
         this.sourceurl = d4tsServer;
         System.out.println("Using source url " + this.sourceurl);
         defineAllTestcases(this.root, this.sourceurl);
@@ -129,11 +127,12 @@ public class TestConstraints extends DapTestCommon
     void
     chooseTestcases()
     {
-        if(true) {
-            chosentests = locate("test_struct_array.nc");
+        if(false) {
+            chosentests.add(locate1(8));
         } else {
-            for(ClientTest tc : alltestcases)
+            for(ClientTest tc : alltestcases) {
                 chosentests.add(tc);
+            }
         }
     }
 
@@ -143,21 +142,21 @@ public class TestConstraints extends DapTestCommon
         ClientTest.root = root;
         ClientTest.server = server;
         //alltestcases.add(new ClientTest("test_one_vararray.nc", null));
-        alltestcases.add(new ClientTest("test_one_vararray.nc", "t"));
-        alltestcases.add(new ClientTest("test_one_vararray.nc", "t[1]"));
-        // alltestcases.add(new ClientTest("test_enum_array.nc", null));
-        alltestcases.add(new ClientTest("test_enum_array.nc", "primary_cloud[1:2:4]"));
-        //alltestcases.add(new ClientTest("test_atomic_array.nc", null));
-        alltestcases.add(new ClientTest("test_atomic_array.nc", "vu8[1][0:2:2];vd[1];vs[1][0];vo[0][1]"));
-        //alltestcases.add(new ClientTest("test_struct_array.nc", null));
-        alltestcases.add(new ClientTest("test_struct_array.nc", "s[0:2:3][0:1]"));
+        alltestcases.add(new ClientTest(1, "test_one_vararray.nc", "t"));
+        alltestcases.add(new ClientTest(2, "test_one_vararray.nc", "t[1]"));
+        // alltestcases.add(new ClientTest(3,"test_enum_array.nc", null));
+        alltestcases.add(new ClientTest(4, "test_enum_array.nc", "primary_cloud[1:2:4]"));
+        //alltestcases.add(new ClientTest(5,"test_atomic_array.nc", null));
+        alltestcases.add(new ClientTest(6, "test_atomic_array.nc", "vu8[1][0:2:2];vd[1];vs[1][0];vo[0][1]"));
+        //alltestcases.add(new ClientTest(7,"test_struct_array.nc", null));
+        alltestcases.add(new ClientTest(8, "test_struct_array.nc", "s[0:2:3][0:1]"));
     }
 
     //////////////////////////////////////////////////
     // Junit test method
 
     public void testConstraints()
-        throws Exception
+            throws Exception
     {
         for(ClientTest testcase : chosentests) {
             if(!doOneTest(testcase)) {
@@ -170,7 +169,7 @@ public class TestConstraints extends DapTestCommon
     // Primary test method
     boolean
     doOneTest(ClientTest testcase)
-        throws Exception
+            throws Exception
     {
         boolean pass = true;
         int testcounter = 0;
@@ -180,7 +179,7 @@ public class TestConstraints extends DapTestCommon
         String url = testcase.makeurl();
         NetcdfDataset ncfile = null;
         try {
-	    ncfile = openDataset(url);
+            ncfile = openDataset(url);
         } catch (Exception e) {
             throw e;
         }
@@ -265,6 +264,18 @@ public class TestConstraints extends DapTestCommon
 
     //////////////////////////////////////////////////
     // Utility methods
+
+    // Locate the test cases with given index
+    ClientTest
+    locate1(int index)
+    {
+        List<ClientTest> results = new ArrayList<ClientTest>();
+        for(ClientTest ct : this.alltestcases) {
+            if(ct.id == index)
+                return ct;
+        }
+        return null;
+    }
 
     // Locate the test cases with given prefix
     ClientTest

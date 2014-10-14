@@ -1,0 +1,62 @@
+##   #!/bin/sh
+exit # make it not runnable
+SVC="localhost"
+
+PWD="changeit"
+SDN="CN=$SVC, OU=Unidata, O=UCAR, L=Boulder, ST=Colorado, C=US"
+CDN="CN=Client, OU=Unidata, O=UCAR, L=Boulder, ST=Colorado, C=US"
+
+rm -f *.jks *.cer *.p12 *.pem tmp*
+
+# Create a server keystore containing key and cert
+keytool -genkey -keyalg RSA -alias tomcat -keystore server.jks -storepass $PWD -validity 360 -dname "$SDN" -keypass $PWD
+
+# Create a client keystore containing key and cert
+keytool -genkey -keyalg RSA -alias client -keystore client.jks -storepass $PWD -validity 360 -dname "$CDN" -keypass $PWD
+ 
+# Export the client cert
+keytool -exportcert -alias client -keystore client.jks -storepass $PWD -file clientcert.cer
+
+# Use client key+cert store as the client key store for java clients
+cp client.jks clientkey.jks
+
+# Create a server truststore containing client cert
+cp emptykeystore servertrust.jks
+keytool -importcert -trustcacerts -alias tomcat \
+        -keystore servertrust.jks -storepass $PWD \
+        -noprompt \
+        -file clientcert.cer
+
+# Generate clientkey.pem and clientcert.pem for use with C curl-based clients
+# 1. convert clientcert.cer to clientcert.pem
+openssl x509 -inform der -in clientcert.cer -out clientcert.pem
+
+# 2. Convert client .jks to pk12 format
+keytool -importkeystore -srckeystore client.jks -destkeystore client.p12 -srcstoretype JKS -deststoretype PKCS12 -srcstorepass $PWD -deststorepass $PWD -srcalias client -destalias client -srckeypass $PWD -destkeypass $PWD -noprompt
+
+# 3. Export the client key in pem format
+openssl pkcs12 -in client.p12 -out clientkey.pem -nodes -nocerts -password pass:$PWD
+
+# Install the tomcat key and trust stores
+rm -f "c:/tools/tomcat6/conf/keystore.jks"
+rm -f "c:/tools/tomcat6/conf/truststore.jks"
+cp ./server.jks "c:/tools/tomcat6/conf/keystore.jks"
+cp ./servertrust.jks "c:/tools/tomcat6/conf/truststore.jks"
+fi
+
+exit
+
+# Here is the tomcat server.xml connector
+<Connector port="8843" protocol="HTTP/1.1"
+ SSLEnabled="true"
+ scheme="https"
+ secure="true"
+ sslProtocol="TLS"
+ clientAuth="true"
+ SSLVerifyClient="required"
+ keystoreFile="c:/tools/tomcat6/conf/keystore.jks"
+ keystorePass="changeit"
+ truststoreFile="c:/tools/tomcat6/conf/truststore.jks"
+ truststorePass="changeit"
+/>
+

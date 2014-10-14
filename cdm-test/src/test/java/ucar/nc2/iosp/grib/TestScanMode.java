@@ -35,7 +35,7 @@ public class TestScanMode {
     System.out.printf("x,y=%d,%d%n", result[0], result[1]);
 
     // should be non NAN
-    Array data = grid.readDataSlice(0, 0, 714,1779);
+    Array data = grid.readDataSlice(0, 0, 714, 1779);
     NCdumpW.printArray(data);
 
     Index ima = data.getIndex();

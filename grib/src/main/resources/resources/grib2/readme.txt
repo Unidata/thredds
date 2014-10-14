@@ -405,3 +405,7 @@ download
 8/2014  caron
   - downloaded and added WMO tables 13.0.1
 
+10/6/2014 caron
+  - refactor grib2 tables
+  - use standardTableMap.txt
+

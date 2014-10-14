@@ -35,29 +35,11 @@
   <li><a name="noteManagerUrl"></a>https://server:port/manager/html/</li>
   <li><a name="noteStopStart"></a>
     One reason to stop-and-restart Tomcat, besides cleaning up log files (some of which Tomcat
-    keeps open), is to avoid the PermGen memory error mentioned here:
-    <blockquote>
-      http://www.unidata.ucar.edu/projects/THREDDS/tech/tds4.2/tutorial/BasicTomcatAndTDSSecurity.html
-    </blockquote>
-  </li>
+  keeps open), is to avoid the PermGen memory error mentioned <a href="../tutorial/BasicTomcatAndTDSSecurity.html">here</a>  </li>
   <li><a name="noteLogCleanup"></a> The Tomcat and TDS log files we clean up when upgrading:
     <ul>
-      <li>In <samp>${TOMCAT_HOME}/logs</samp>
-        <ul>
-          <li><samp>catalina.out</samp></li>
-          <li><samp>catalina.&lt;yyyy-mm-dd&gt;.log</samp></li>
-          <li><samp>localhost.&lt;yyyy-mm-dd&gt;.log</samp></li>
-          <li><samp>manager.&lt;yyyy-mm-dd&gt;.log</samp></li>
-        </ul>
-      </li>
-      <li>In <samp>${TOMCAT_HOME}/content/thredds/logs</samp>
-        <ul>
-          <li><samp>serverStartup.log</samp></li>
-          <li><samp>catalogInit.log</samp></li>
-          <li><samp>featureCollectionScan.log</samp></li>
-          <li><samp>cache.log*</samp></li>
-        </ul>
-      </li>
+      <li>In <samp>${TOMCAT_HOME}/logs</samp>/*      </li>
+      <li>In <samp>${TOMCAT_HOME}/content/thredds/logs</samp>/*      </li>
     </ul>
     Where <samp>${TOMCAT_HOME}</samp> is the directory in which Tomcat is installed.
   </li>
@@ -66,7 +48,7 @@
 <hr width="100%">
 <address>
   <img src="../thread.png" alt="THREDDS" height="108" width="110">
-  This document is maintained by Unidata and was last updated Sep 2012. Send comments to
+  This document is maintained by Unidata. Send comments to
   <a href="mailto:support-thredds@unidata.ucar.edu">THREDDS support</a>.
 </address>
 </body>

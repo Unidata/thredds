@@ -375,14 +375,15 @@ public abstract class PartitionCollection extends GribCollection {
           CoordinateTimeAbstract wholeCoord1Dtime = (CoordinateTimeAbstract) wholeCoord1D;
           Object wholeVal = wholeCoord1D.getValue(idx);
           resultIdx = compCoord2D.matchTimeCoordinate(runtimeIdxPart, wholeVal, wholeCoord1Dtime.getRefDate());
-          if (resultIdx < 0) {
+          if (resultIdx < 0)
             resultIdx = compCoord2D.matchTimeCoordinate(runtimeIdxPart, wholeVal, wholeCoord1Dtime.getRefDate()); // debug
-          }
         } else {
           resultIdx = matchCoordinate(wholeCoord1D, idx, compCoord);
+          if (resultIdx < 0)
+            resultIdx = matchCoordinate(wholeCoord1D, idx, compCoord); // debug
         }
         if (resultIdx < 0) {
-          logger.info("Couldnt match coordinates for variable {}", compVindex2D);
+          logger.info("Couldnt match coordinates ({}) for variable {}", Misc.showInts(wholeIndex), compVindex2D.toStringShort());
           return null;
         }
         result[countDim + 1] = resultIdx;
@@ -470,6 +471,12 @@ public abstract class PartitionCollection extends GribCollection {
       r = Misc.compare(fileno, o.fileno);
       if (r != 0) return false;
       return true;
+    }
+
+    // debugging
+    public void show() throws IOException {
+      String dataFilename = usePartition.getFilename(partno, fileno);
+      System.out.printf(" partno=%d fileno=%d filename=%s datapos=%d%n", partno, fileno, dataFilename, dataPos);
     }
 
   }
@@ -762,6 +769,7 @@ public abstract class PartitionCollection extends GribCollection {
     super.showIndex(f);
 
     int count = 0;
+    f.format("isPartitionOfPartitions=%s%n", isPartitionOfPartitions);
     f.format("Partitions%n");
     for (Partition p :  getPartitions())
       f.format("%d:  %s%n", count++, p);
@@ -789,6 +797,14 @@ public abstract class PartitionCollection extends GribCollection {
     Partition part = getPartition(partno);
     try (GribCollection gc = part.getGribCollection()) {  // LOOK this closes the GC.ncx2
       return gc.getDataRaf(fileno);
+    }
+  }
+
+  // debugging
+  public String getFilename(int partno, int fileno) throws IOException {
+    Partition part = getPartition(partno);
+    try (GribCollection gc = part.getGribCollection()) {  // LOOK this closes the GC.ncx2
+      return gc.getFilename(fileno);
     }
   }
 

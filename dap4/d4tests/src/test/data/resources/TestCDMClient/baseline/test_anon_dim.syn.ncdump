@@ -1,6 +1,6 @@
 netcdf test_anon_dim.syn {
   variables:
-    int vu32(=6);
+    int vu32(6);
       :_DAP4_Checksum_CRC32 = "0x1021c213";
 
   // global attributes:

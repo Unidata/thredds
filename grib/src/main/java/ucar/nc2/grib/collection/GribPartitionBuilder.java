@@ -49,6 +49,7 @@ import ucar.unidata.util.Parameter;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Path;
 import java.util.*;
 
 /**
@@ -569,13 +570,16 @@ public abstract class GribPartitionBuilder  {
 
       GribCollectionProto.GribCollection.Builder indexBuilder = GribCollectionProto.GribCollection.newBuilder();
       indexBuilder.setName(pc.getName());
-      indexBuilder.setTopDir(pc.getDirectory().getPath()); // LOOK
+      Path topDir = pc.getDirectory().toPath();
+      indexBuilder.setTopDir(topDir.toString());
 
       // mfiles are the partition indexes
       int count = 0;
       for (PartitionCollection.Partition part : pc.partitions) {
         GribCollectionProto.MFile.Builder b = GribCollectionProto.MFile.newBuilder();
-        b.setFilename(part.getFilename());
+        Path partPath = new File(part.getDirectory(), part.getFilename()).toPath();
+        Path pathRelative = topDir.relativize(partPath);
+        b.setFilename(pathRelative.toString()); // reletive to topDir
         b.setLastModified(part.getLastModified());
         b.setIndex(count++);
         indexBuilder.addMfiles(b.build());

@@ -49,8 +49,14 @@ import java.util.*;
 public class KmaLocalTables extends LocalTables {
   private static final String tablePath = "resources/grib2/local/kma-ver5.txt";
   private static boolean debug = false;
+  private static KmaLocalTables single;
 
-  KmaLocalTables(Grib2Table grib2Table) {
+  public static KmaLocalTables getCust(Grib2Table table) {
+    if (single == null) single = new KmaLocalTables(table);
+    return single;
+  }
+
+  private KmaLocalTables(Grib2Table grib2Table) {
     super(grib2Table);
     grib2Table.setPath(tablePath);
     initLocalTable();

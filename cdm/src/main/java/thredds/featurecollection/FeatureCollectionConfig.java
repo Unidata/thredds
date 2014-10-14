@@ -125,7 +125,7 @@ public class FeatureCollectionConfig {
   @Override
   public String toString() {
     Formatter f = new Formatter();
-    f.format("name ='%s' type='%s'%n", name, type);
+    f.format("FeatureCollectionConfig name ='%s' type='%s'%n", name, type);
     f.format("  spec='%s'%n", spec);
     if (dateFormatMark != null)
       f.format("  dateFormatMark ='%s'%n", dateFormatMark);

@@ -35,6 +35,7 @@
 
 package ucar.nc2.grib.collection;
 
+import org.jdom2.Element;
 import org.slf4j.Logger;
 import thredds.featurecollection.FeatureCollectionConfig;
 import thredds.featurecollection.FeatureCollectionType;
@@ -705,11 +706,11 @@ public class GribCdmIndex implements IndexReader {
       GribCollectionType type = getType(raf);
       if (type == GribCollectionType.Partition1 || type == GribCollectionType.Partition2) {
         if (openIndex(raf, logger)) {
-          String dirName = gribCollectionIndex.getTopDir();
+          String topDir = gribCollectionIndex.getTopDir();
           int n = gribCollectionIndex.getMfilesCount(); // partition index files stored in MFiles
           for (int i = 0; i < n; i++) {
             GribCollectionProto.MFile mfilep = gribCollectionIndex.getMfiles(i);
-            callback.addChild(dirName, mfilep.getFilename(), mfilep.getLastModified());
+            callback.addChild(topDir, mfilep.getFilename(), mfilep.getLastModified());
           }
           return true;
         }
@@ -782,11 +783,32 @@ public class GribCdmIndex implements IndexReader {
     }
   }
 
+
+  public static void main2(String[] args) throws IOException {
+    org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger("test");
+    PartitionManager partition = new PartitionManagerFromIndexDirectory("NCDC-gfs4_all", new FeatureCollectionConfig(), new File("B:/ncdc/gfs4_all/"),  logger);
+    Grib1PartitionBuilder builder = new Grib1PartitionBuilder("NCDC-gfs4_all", new File(partition.getRoot()), partition, logger);
+    builder.createPartitionedIndex(CollectionUpdateType.nocheck, CollectionUpdateType.never, new Formatter());
+  }
+
   public static void main(String[] args) throws IOException {
     org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger("test");
-    PartitionManager partition = new PartitionManagerFromIndexDirectory("NAM-Polar_90km", new FeatureCollectionConfig(), new File("B:/lead/NAM-Polar_90km/"),  logger);
-    Grib1PartitionBuilder builder = new Grib1PartitionBuilder("NAM_Polar_90km", new File(partition.getRoot()), partition, logger);
-    builder.createPartitionedIndex(CollectionUpdateType.nocheck, CollectionUpdateType.never, new Formatter());
+
+    /*
+       <featureCollection name="DGEX-CONUS_12km" featureType="GRIB" harvest="true" path="grib/NCEP/DGEX/CONUS_12km">
+                  <collection spec="F:/data/grib/idd/dgex/  /.*grib2$"
+                    dateFormatMark="#DGEX_CONUS_12km_#yyyyMMdd_HHmm"
+                    timePartition="directory"
+                    olderThan="5 min"/>
+     */
+
+    // String name, String path, FeatureCollectionType fcType, String spec, String dateFormatMark, String olderThan, String timePartition, String useIndexOnlyS, Element innerNcml
+    FeatureCollectionConfig config = new FeatureCollectionConfig("DGEX-test", "grib/NCEP/DGEX/CONUS_12km", FeatureCollectionType.GRIB2,
+            "F:/data/grib/idd/dgex/**/.*grib2$", "#DGEX_CONUS_12km_#yyyyMMdd_HHmm", null, "directory", null, null);
+
+    // boolean isGrib1, MCollection dcm, CollectionUpdateType updateType, Formatter errlog, org.slf4j.Logger logger
+    boolean changed = GribCdmIndex.updateGribCollection(config, CollectionUpdateType.always, logger);
+    System.out.printf("changed = %s%n", changed);
   }
 
 }

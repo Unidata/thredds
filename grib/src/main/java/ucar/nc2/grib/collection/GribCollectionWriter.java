@@ -42,7 +42,9 @@ import ucar.nc2.grib.TimeCoord;
 import ucar.nc2.grib.VertCoord;
 import ucar.nc2.time.CalendarDate;
 
+import java.io.File;
 import java.io.IOException;
+import java.util.List;
 
 /**
  * Common superclass for writing Grib ncx2 files
@@ -182,6 +184,5 @@ public class GribCollectionWriter {
 
     return b.build();
   }
-
 
 }

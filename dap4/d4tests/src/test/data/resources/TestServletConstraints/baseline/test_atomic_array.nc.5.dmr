@@ -7,6 +7,9 @@
     <UInt8 name="vu8">
         <Dim size="1"/>
         <Dim size="2"/>
+        <Attribute name="_FillValue" type="UInt8">
+            <Value value="255"/>
+        </Attribute>
     </UInt8>
     <Float64 name="vd">
         <Dim size="1"/>

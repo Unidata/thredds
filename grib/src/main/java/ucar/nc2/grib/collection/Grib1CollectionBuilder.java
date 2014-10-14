@@ -381,7 +381,7 @@ public class Grib1CollectionBuilder extends GribCollectionBuilder {
     if (cust.isLayer(pdss.getLevelType())) result += result * 37 + 1;
 
     result += result * 37 + pdss.getParameterNumber();
-    if (useTableVersion)
+    if (useTableVersion)  // LOOK must make a different variable name
       result += result * 37 + pdss.getTableVersion();
 
     Grib1ParamTime ptime = pdss.getParamTime(cust);

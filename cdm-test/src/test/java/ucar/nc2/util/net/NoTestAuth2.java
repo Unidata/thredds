@@ -52,7 +52,7 @@ public class NoTestAuth2 extends UnitTestCommon
       public Data(String u,CredentialsProvider p) {this.url=u; this.provider=p;}
   }
     protected Data[] cases = new Data[] {
-      new Data("http://"+ TestDir.remoteTestServer+"/thredds/dodsC/restrict/testdata/testData.nc.html",
+      new Data("http://"+ TestDir.threddsTestServer+"/thredds/dodsC/restrict/testdata/testData.nc.html",
                new CredentialsProvider() {
                    public Credentials getCredentials(AuthScope scope) //AuthScheme sch, String h, int p, boolean pr)
                    {
@@ -65,7 +65,7 @@ public class NoTestAuth2 extends UnitTestCommon
                    public void setCredentials(AuthScope scope, Credentials creds) {}
                    public void clear() {}
                }),
-      new Data("https://"+TestDir.remoteTestServer+"/dts/b31.dds",null),
+      new Data("https://"+TestDir.dap2TestServer+"/dts/b31.dds",null),
     };
 
 

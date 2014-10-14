@@ -63,7 +63,6 @@ public class TestParserDMR extends DapTestCommon
     public TestParserDMR(String name)
     {
         super(name);
-        setSystemProperties();
         setControls();
         defineTestCases();
         chooseTestcases();

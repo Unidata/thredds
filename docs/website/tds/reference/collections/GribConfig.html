@@ -9,7 +9,8 @@
 <body>
 <h1>GRIB Collection Configuration</h1>
 <hr/>
-<p>There are a number of ways that the user can intervene in the processing of GRIB Collections, all of them controlled by <strong>&lt;gribConfig&gt;</strong> elements in the TDS configuration catalogs or in NcML. Its important to understand when these elements are applied and when index files need to be regenerated. As of version 4.5, there are two stages of processing. </p>
+<p>There are a number of ways that the user can intervene in the processing of GRIB Collections, all of them controlled by <strong>&lt;gribConfig&gt;</strong> elements in the TDS configuration catalogs or in NcML. Its important to understand when these elements are applied and when index files need to be regenerated. </p>
+<p>As of version 4.5, there are two stages of processing. </p>
 <p>The first stage creates GribCollections, which are collections of GRIB records stored in one or more files. Grib Collections try to make all of the records in the collection available to the user by creating a dataset with two time dimensions, a reference time and a forecast time. At this stage, errors in encoding the GDS (horizontal coordinate system) can be fixed. Since distinct GDS will generate separate Groups in the CDM object model, fixing errors here will prevent spurious extra groups from being created. Also, one can control how the GRIB records are collected into Variables.</p>
 <h2>Configuration of the GribCollection</h2>
 <h3><strong><a name="gdsHash" id="gdsHash"></a>gdsHash</strong>: Fix errors in GDS encoding</h3>

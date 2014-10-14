@@ -722,7 +722,7 @@ public class Vis5DIosp extends AbstractIOServiceProvider {
     /**
      * Get all the information about a Vis5D file
      */
-    public class Vis5DLookup implements GridTableLookup {
+    static public class Vis5DLookup implements GridTableLookup {
 
         /**
          *

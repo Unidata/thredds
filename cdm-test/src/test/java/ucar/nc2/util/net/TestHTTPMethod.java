@@ -48,7 +48,7 @@ public class TestHTTPMethod extends UnitTestCommon
     //////////////////////////////////////////////////
     // Constants
 
-    protected final String baseurl = "http://"+ TestDir.remoteTestServer+"/dts";
+    protected final String baseurl = "http://"+ TestDir.dap2TestServer+"/dts";
     static String relativebaseline = "/cdm/src/test/data/ucar/nc2/util/net";
 
     static final String testcase = "test.01.dds";

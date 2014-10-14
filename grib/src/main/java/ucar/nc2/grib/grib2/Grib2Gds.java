@@ -81,7 +81,7 @@ public abstract class Grib2Gds {
       case 40:
         result = new GaussLatLon(data);
         break;
-      case 50:  // Spherical Harmonic Coefficients
+      case 50:  // Spherical Harmonic Coefficients BOGUS
         result = new GdsSpherical(data, template);
         break;
       case 90:
@@ -550,7 +550,7 @@ Template 3.1 (Grid definition template 3.1 - rotated latitude/longitude (or equi
       // LatLonPoint startLL = proj.projToLatLon(new ProjectionPointImpl(lo1, la1));
       //double startx = startLL.getLongitude();
       //double starty = startLL.getLatitude();
-      return new GdsHorizCoordSys(getNameShort(), template, 0, scanMode, proj, lo1, deltaLon, la1, deltaLat,
+      return new GdsHorizCoordSys(getNameShort(), template, getOctet4(7), scanMode, proj, lo1, deltaLon, la1, deltaLat,
               getNxRaw(), getNyRaw(), getNptsInLine());
     }
 

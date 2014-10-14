@@ -17,19 +17,31 @@
 <ol>
   <li>Create a dedicated user and group for running Tomcat who does not have root privileges.</li>
   <li>As this user, download and install the<a href="http://tomcat.apache.org/download-70.cgi"> latest version of Tomcat 7</a></li>
-   <li>In <strong>${tomcat_home}/bin</strong> create a setenv.sh shell script, and set the values of <strong>JAVA_HOME, JAVA_OPTS </strong>and<strong> CATALINA_BASE</strong>:
-      <pre>
-      #!/bin/sh
-      JAVA_HOME="/usr/local/tds/jdk1.7.0_60"  
-      export JAVA_HOME
+   <li>In <strong>${tomcat_home}/bin</strong> create a <strong>setenv.sh</strong> shell script, and set the values of <strong>JAVA_HOME, </strong>and<strong> CATALINA_BASE and CONTENT_ROOT</strong>. These each have to be customized to your installation. For example:
+     <pre>
+#!/bin/sh
+JAVA_HOME="/usr/local/tds/jdk1.7.0_60"  
+export JAVA_HOME
           
-      CATALINA_BASE=&quot;/usr/local/tds/apache-tomcat-7.0.42&quot;  
-      export CATALINA_BASE
-          
-      JAVA_OPTS="-Xmx4g -Xms512m -server -Djava.awt.headless=true -Djava.util.prefs.systemRoot=$CATALINA_BASE/content/thredds/javaUtilPrefs"  
-      export JAVA_OPTS</pre>
-    </li>
+CATALINA_BASE=&quot;/usr/local/tds/apache-tomcat-7.0.42&quot;  
+export CATALINA_BASE
 
+CONTENT_ROOT= &quot;-Dtds.content.root.path=/opt/tds-live/content&quot;</pre>
+Also in <strong>setenv.sh, </strong>set <strong>CATALINA_OPTS</strong>, for example:
+<pre>
+# modify these if you wish, or use as is
+NORMAL="-Xmx4g -Xms512m -server&quot;
+MAX_PERM_GEN=&quot;-XX:MaxPermSize=256m&quot;
+
+# just use these as specified
+HEADLESS="-Djava.awt.headless=true"
+JAVA_PREFS="-Djava.util.prefs.systemRoot=$CATALINA_HOME/content/thredds/javaUtilPrefs -Djava.util.prefs.userRoot=$CATALINA_HOME/content/thredds/javaUtilPrefs"
+
+CATALINA_OPTS="$NORMAL $CONTENT_ROOT $MAX_PERM_GEN $HEADLESS $JAVA_PREFS"
+export CATALINA_OPTS</pre> 
+
+(You can use JAVA_OPTS instead of CATALINA_OPTS, but JAVA_OPTS is used for any Java program, and CATALINA_OPTS is only used by Tomcat.)<br/>
+  </li>
   <li>Purchase a real certificate from a <a href="http://en.wikipedia.org/wiki/Certificate_authority">certificate authority</a>, so users are not confused and
       question the legitimacy of your web site.
     <!-- (Otherwise, <a href="BasicTomcatAndTDSSecurity.html#createCert">create a self-signed certificate</a>).-->
@@ -61,7 +73,7 @@
 <h3>TDS Install</h3>
 <ol>
   <li><a href="../tutorial/GettingStarted.html#deploying">Download</a> the latest thredds.war file, and put it into <strong>${tomcat_home}/webapps</strong>.</li>
-  <li>Start/restart Tomcat so that it has a chance to create initial files in <strong>${tomcat_home}/content/thredds</strong>.</li>
+  <li>Start/restart Tomcat so that it has a chance to create initial files in <strong>${tomcat_home}/content/thredds</strong> (optional).</li>
   <li>Modify <strong>${tomcat_home}/content/thredds/catalog.xml</strong> for your site, as in this <a href="../tutorial/BasicConfigCatalogs.html#exampleCatalog">example</a>. </li>
   <li>Modify  <strong>${tomcat_home}/content/thredds/threddsConfig.xml</strong> for your site in the following manner:</li>
   <ul>

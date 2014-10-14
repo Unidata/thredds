@@ -33,6 +33,7 @@
 
 package thredds.server.cdmvalidator;
 
+import com.coverity.security.Escape;
 import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.fileupload.FileUploadException;
 import org.apache.commons.fileupload.disk.DiskFileItem;
@@ -80,9 +81,7 @@ public class CdmValidatorController extends AbstractController {
     this.cdmValidatorContext = cdmValidatorContext;
   }
 
-  protected ModelAndView handleRequestInternal(HttpServletRequest request,
-                                               HttpServletResponse response)
-          throws Exception {
+  protected ModelAndView handleRequestInternal(HttpServletRequest request, HttpServletResponse response) throws Exception {
     log.info("handleRequestInternal(): " + UsageLog.setupRequestContext(request));
 
     // Get the request path.
@@ -249,8 +248,8 @@ public class CdmValidatorController extends AbstractController {
 
     if ((username == null) || (username.length() == 0))
       username = "none";
-    username = StringUtil2.filter(username, "_");
-    String filename = item.getName();
+    username = Escape.html(StringUtil2.filter(username, "_"));
+    String filename = Escape.html(item.getName());
     filename = StringUtil2.replace(filename, "/", "-");
     filename = StringUtil2.filter(filename, ".-_");
 
@@ -279,7 +278,7 @@ public class CdmValidatorController extends AbstractController {
 
   private int showValidatorResults(HttpServletResponse res, String location, boolean wantXml) throws Exception {
 
-    try (NetcdfDatasetInfo info = new NetcdfDatasetInfo( location)) {
+    try (NetcdfDatasetInfo info = new NetcdfDatasetInfo(location)) {
 
       String infoString;
 

@@ -34,6 +34,7 @@ public class DapRequest
     protected HttpServletResponse response = null;
     protected String url = null;  // without any query  and as with any modified dataset path
     protected String servletpath = null;
+    protected String contextpath = null;
     protected String datasetpath = null;   // everything after the servletpath
     protected String querystring = null;
     protected String server = null; // scheme + host + port
@@ -97,6 +98,7 @@ public class DapRequest
         this.url = request.getRequestURL().toString();// does not include query
         this.querystring = request.getQueryString();
         this.servletpath = DapUtil.absolutize(request.getServletPath());
+        this.contextpath = DapUtil.nullify(request.getContextPath());
         this.datasetpath = request.getPathInfo();
         this.datasetpath = DapUtil.canonicalpath(this.datasetpath);
         this.datasetpath = DapUtil.absolutize(this.datasetpath);
@@ -133,6 +135,19 @@ public class DapRequest
             buf.append(port);
         }
         this.server = buf.toString();
+
+/*
+        if(this.dataSetName == null) {
+            if(servletpath != null) {
+                // use servlet path
+		if(cxtpath!= null && servletpath.startsWith(cxtpath)) {
+		    this.dataSetName = servletpath.substring(cxtpath.length());
+		} else {
+		    this.dataSetName = servletpath;
+		}
+	    }
+        }
+*/
 
         this.mode = null;
         if(this.datasetpath == null) {
@@ -193,7 +208,7 @@ public class DapRequest
             }
         }
 
-        DapLog.debug("DapRequest: resourcedir=" + getResourcePath());
+        DapLog.debug("DapRequest: realrootdir=" + getRealPath(""));
         DapLog.debug("DapRequest: extension=" + (this.mode == null ? "null" : this.mode.extension()));
         DapLog.debug("DapRequest: servletpath=" + this.servletpath);
         DapLog.debug("DapRequest: datasetpath=" + this.datasetpath);
@@ -277,9 +292,9 @@ public class DapRequest
      *
      * @return the absolute path for the /WEB-INF/resources directory
      */
-    public String getResourcePath()
+    public String getRealPath(String virtual)
     {
-        return this.svcinfo.getResourcePath();
+        return this.svcinfo.getRealPath(virtual);
     }
 
 }

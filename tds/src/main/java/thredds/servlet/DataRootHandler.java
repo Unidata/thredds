@@ -739,14 +739,14 @@ public final class DataRootHandler implements InitializingBean {
 
   ////////////////////////////////////////////////////////////////////////////////////////
 
-  public class DataRootMatch {
+  static public class DataRootMatch {
     String rootPath;     // this is the matching part of the URL
     String remaining;   // this is the part of the URL that didnt match
     String dirLocation;   // this is the directory that should be substituted for the rootPath
     DataRoot dataRoot;  // this is the directory that should be substituted for the rootPath
   }
 
-  public class DataRoot {
+  static public class DataRoot {
     private String path;         // match this path
     private String dirLocation;  // to this directory
     private InvDatasetScan scan; // the InvDatasetScan that created this (may be null)

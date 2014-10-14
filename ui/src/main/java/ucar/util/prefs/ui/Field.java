@@ -250,7 +250,10 @@ public abstract class Field {
    *  Return false if invalid format, add error message to buff if not null.
    */
    protected boolean accept(StringBuffer buff){
-     if (!validate(buff)) return false;
+     if (!validate(buff)) {
+       validate(buff);
+       return false;
+     }
      if (acceptIfDifferent( getEditValue())) {
       setStoreValue( validValue);
       sendEvent();

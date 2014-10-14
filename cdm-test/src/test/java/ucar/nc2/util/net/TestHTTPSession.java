@@ -51,7 +51,7 @@ public class TestHTTPSession extends UnitTestCommon
     //////////////////////////////////////////////////
     // Constants
 
-    protected final String TESTURL1 = "http://" + TestDir.remoteTestServer + "/dts/test.01.dds";
+    protected final String TESTURL1 = "http://" + TestDir.dap2TestServer + "/dts/test.01.dds";
     static final String GLOBALAGENT = "TestUserAgent123global";
     static final String SESSIONAGENT = "TestUserAgent123session";
 

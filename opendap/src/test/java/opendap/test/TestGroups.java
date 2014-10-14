@@ -68,7 +68,7 @@ public class TestGroups extends UnitTestCommon
     {
         super("DAP Group tests");
         // Check if user specified server.
-        testserver = TestDir.remoteTestServer;
+        testserver = TestDir.dap2TestServer;
         definetestcases();
     }
 

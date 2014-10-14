@@ -339,7 +339,7 @@ public class AreaReader {
     public static boolean isValidFile(RandomAccessFile raf) {
         String fileName = raf.getLocation();
         try {
-            AreaFile af = new AreaFile(fileName);
+            AreaFile af = new AreaFile(fileName);  // LOOK opening again not ok for isValidFile
             af.close();
             return true;
         } catch (AreaFileException e) {

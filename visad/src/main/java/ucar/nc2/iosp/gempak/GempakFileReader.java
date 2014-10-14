@@ -1768,7 +1768,7 @@ public class GempakFileReader implements GempakConstants {
    *
    * @author Unidata Development Team
    */
-  public class RData {
+  static public class RData {
 
     /**
      * the header

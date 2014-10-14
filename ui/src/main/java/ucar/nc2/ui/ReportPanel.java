@@ -109,19 +109,19 @@ public abstract class ReportPanel extends JPanel {
   ///////////////////////////////////////////////
 
   // a counter whose keys are ints
-  protected static class Counter {
-    Map<Integer, Integer> set = new HashMap<>();
-    String name;
+  public static class Counter {
+    public Map<Integer, Integer> set = new HashMap<>();
+    public String name;
 
-    Counter(String name) {
+    public Counter(String name) {
       this.name = name;
     }
 
-    void reset() {
+    public void reset() {
       set = new HashMap<>();
     }
 
-    void count(int value) {
+    public void count(int value) {
       Integer count = set.get(value);
       if (count == null)
         set.put(value, 1);
@@ -129,7 +129,7 @@ public abstract class ReportPanel extends JPanel {
         set.put(value, count + 1);
     }
 
-    void add(Counter sub) {
+    public void add(Counter sub) {
       for (int key : sub.set.keySet()) {
         Integer value = sub.set.get(key);
         Integer count = this.set.get(key);
@@ -139,7 +139,7 @@ public abstract class ReportPanel extends JPanel {
       }
     }
 
-    void show(Formatter f) {
+    public void show(Formatter f) {
       f.format("%n%s%n", name);
       java.util.List<Integer> list = new ArrayList<>(set.keySet());
       Collections.sort(list);
@@ -152,15 +152,15 @@ public abstract class ReportPanel extends JPanel {
 
 
   // a counter whose keys are strings
-  protected static class CounterS {
-    Map<String, Integer> set = new HashMap<>();
-    String name;
+  public static class CounterS {
+    public Map<String, Integer> set = new HashMap<>();
+    public String name;
 
-    CounterS(String name) {
+    public  CounterS(String name) {
       this.name = name;
     }
 
-    void count(String value) {
+    public void count(String value) {
       Integer count = set.get(value);
       if (count == null)
         set.put(value, 1);
@@ -168,7 +168,7 @@ public abstract class ReportPanel extends JPanel {
         set.put(value, count + 1);
     }
 
-    void show(Formatter f) {
+    public void show(Formatter f) {
       f.format("%n%s%n", name);
       java.util.List<String> list = new ArrayList<>(set.keySet());
       Collections.sort(list);

@@ -368,29 +368,10 @@ de-referencing the catalogRefs, and simplifying:
     <td>path/<em>files</em>/filename</td>
   </tr>
 </table>
-<p>&nbsp;</p>
-<hr width="100%"/>
-<h3>Notes</h3>
-<p>&nbsp;</p>
-<p>directory - any changes requires complete reread of all files in directory. with files, only files that change need to be reread.</p>
-<h4>GribCollections</h4>
-<p>TwoD: Reference time and forecast time. This allows all grib records to be accessed by the user. no filtering.</p>
-<p>Best: should it be caclulated? optionally? isnt needed in file partition, since only one reference time in the collection.</p>
-<p>gdsHash</p>
-<h4>PartitionCollection</h4>
-<p>partition=&quot;file&quot;. All records with the same reference time are in a single file. Each file is made into a GribCollection. All the files in a directory are made into a PartitionCollection.</p>
-<p>partition=&quot;directory&quot;. All records in all files in a directory are made into a GribCollection. All nested directories are combined into a PartitionCollection. Directories can be arbitrarily nested. Only partitions that change need to be reindexed. Existing indexes are reused when possible. This is the way to handle very large collections.</p>
-<h4>intvFilter</h4>
-<p>only being applied to  partitions; gc.twoD is unfiltered</p>
-<p>xsd</p>
-<p> &lt;xsd:element name=&quot;useGenType&quot; minOccurs=&quot;0&quot; maxOccurs=&quot;1&quot;/&gt; now in pdsHash</p>
-<h4>scanMode</h4>
-<p>could change between records. means we have to read the GDS and retrieve. so must reread entire record, not just drs.</p>
-<p>grib2 data read does not handle -y scanmode. expects that y coord will be flipped.</p>
 <hr width="100%"/>
 <address>
   <img src="../../thread.png" alt="" width="76" height="67"/> This document is maintained by <a href="mailto:caron@unidata.ucar.edu">John Caron</a>
-  and was last updated Jan 2014
+  and was last updated Oct 2014
 </address>
 </body>
 </html>

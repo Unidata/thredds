@@ -117,7 +117,6 @@ public class TestSerial extends DapTestCommon
         throws Exception
     {
         super(name);
-        setSystemProperties();
         this.root = getDAP4Root();
         if(this.root == null)
             throw new Exception("dap4 root cannot be located");
