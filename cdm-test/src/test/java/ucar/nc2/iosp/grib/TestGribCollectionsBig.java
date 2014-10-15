@@ -65,7 +65,7 @@ public class TestGribCollectionsBig {
     assert count.nmiss == 0;
   }
 
-  @Test
+  //@Test
   public void testPofP() throws IOException {
     GribIosp.setDebugFlags(new DebugFlagsImpl("Grib/indexOnly"));
     TestGribCollections.Count count = TestGribCollections.read(TestDir.cdmUnitTestDir + "gribCollections/rdavm/ds083.2/grib1/2008/ds083.2_Aggregation-2008.ncx2");
@@ -73,7 +73,7 @@ public class TestGribCollectionsBig {
     assert count.nmiss == 0;
   }
 
-  @Test
+  //@Test
   public void testPofPofP() throws IOException {
     GribIosp.setDebugFlags(new DebugFlagsImpl("Grib/indexOnly"));
     TestGribCollections.Count count = TestGribCollections.read(TestDir.cdmUnitTestDir + "gribCollections/rdavm/ds083.2/grib1/ds083.2_Aggregation-grib1.ncx2");

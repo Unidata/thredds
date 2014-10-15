@@ -207,13 +207,14 @@ public class TestDir {
 
   static public void checkLeaks() {
     if (RandomAccessFile.getOpenFiles().size() > 0) {
-      System.out.println("RandomAccessFile still open:");
+      System.out.printf("RandomAccessFile still open:%n");
       for (String filename : RandomAccessFile.getOpenFiles()) {
-        System.out.println(" open= " + filename);
+        System.out.printf(" open= %s%n", filename);
       }
     } else {
-      System.out.println(" no leaks");
+      System.out.printf(" no leaks%n");
     }
+    System.out.printf("RandomAccessFile count open: %d%n", RandomAccessFile.getOpenFileCount());
   }
 
 
