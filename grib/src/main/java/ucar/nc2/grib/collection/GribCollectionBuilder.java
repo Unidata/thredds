@@ -92,10 +92,10 @@ public abstract class GribCollectionBuilder {
 
     if (ff == CollectionUpdateType.nocheck) return false;
 
-    return needsUpdate(collectionIndexFile);
+    return needsUpdate(ff, collectionIndexFile);
   }
 
-  private boolean needsUpdate(File collectionIndexFile) throws IOException {
+  private boolean needsUpdate(CollectionUpdateType ff, File collectionIndexFile) throws IOException {
     long collectionLastModified = collectionIndexFile.lastModified();
     Set<String> newFileSet = new HashSet<>();
 
@@ -108,7 +108,9 @@ public abstract class GribCollectionBuilder {
       }
     }
 
-    // now see if any files were deleted
+    if (ff == CollectionUpdateType.testIndexOnly) return false;
+
+    // now see if any files were deleted, by reading the index and comparing to the files there
     GribCdmIndex reader = new GribCdmIndex(logger);
     List<MFile> oldFiles = new ArrayList<>();
     reader.readMFiles(collectionIndexFile.toPath(), oldFiles);

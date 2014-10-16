@@ -29,7 +29,7 @@ export CATALINA_BASE
 JAVA_HOME=&quot;/opt/jdk&quot;
 export JAVA_HOME
 #
-<strong>CONTENT_ROOT=-Dtds.content.root.path=/data/thredds/tds-dev/content</strong>
+<strong>CONTENT_ROOT=&quot;-Dtds.content.root.path=/data/thredds/tds-dev/content&quot;</strong>
 NORMAL=&quot;-d64 -Xmx4090m -Xms512m -server&quot;
 MAX_PERM_GEN=&quot;-XX:MaxPermSize=256m&quot;
 HEADLESS=&quot;-Djava.awt.headless=true&quot;
@@ -41,7 +41,13 @@ export JAVA_OPTS
 </blockquote>
 </li>
   <p><strong>Troubleshooting</strong>: </p>
-  <p>If the content root is not correctly set, you will see a message like: &quot;<strong>SEVERE: Error listenerStart</strong>&quot; in <strong>{tomcat}/logs/catalina.out</strong> and &quot;<strong>Error creating bean with name 'tdsContext'</strong>&quot; in  <strong>{$tomcat}/logs/localhost.log.</strong></p>
+  <p>Don't leave a space after the =</p>
+  <pre><strong> CONTENT_ROOT=&quot;-Dtds.content.root.path=/data/thredds/tds-dev/content&quot;</strong>
+
+not
+
+<strong> CONTENT_ROOT= &quot;-Dtds.content.root.path=/data/thredds/tds-dev/content&quot;</strong></pre>
+  <p>If the content root is not correctly set, you will see a message like: &quot;<strong>SEVERE: Error listenerStart</strong>&quot; in <strong>{tomcat}/logs/catalina.out</strong> and &quot;<strong>Error creating bean with name 'tdsContext'</strong>&quot;<strong>, </strong>and<strong> &quot;Content directory not a directory&quot;</strong> in  <strong>{$tomcat}/logs/localhost.log.</strong><strong></strong></p>
   <p>By default, the content root is set to <strong>&quot;../content&quot;</strong> relative to where tomcat is started. Since this directory varies and is not standard across servlet containers, you should always explicitly set <strong>-Dtds.content.root.path</strong>.</p>
   <p>We recommend that you use an absolute path, like <strong>/opt/tomcat/content</strong>, instead of a reletive path like <strong>&quot;../content&quot;</strong>.</p>
   <p>Note  that your catalogs are  under <strong>${tomcat}</strong><strong>/content/thredds</strong> but  <strong>tds.content.root.path</strong> does not include the <strong>thredds</strong> subdirectory.</p>

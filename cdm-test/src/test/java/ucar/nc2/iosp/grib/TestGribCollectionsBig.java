@@ -49,8 +49,8 @@ import java.io.IOException;
  * @since 10/13/2014
  */
 public class TestGribCollectionsBig {
- // String topdir =  TestDir.cdmUnitTestDir + "gribCollections/rdavm";
-  String topdir =  "B:/rdavm";
+  String topdir =  TestDir.cdmUnitTestDir + "gribCollections/rdavm";
+  // String topdir =  "B:/rdavm";
 
   @Test
   public void testGC() throws IOException {
