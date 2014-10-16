@@ -11,8 +11,7 @@ import dap4.dap4shared.XURI;
 
 import java.io.*;
 import java.net.URISyntaxException;
-import java.util.SortedMap;
-import java.util.TreeMap;
+import java.util.*;
 
 import dap4.servlet.URLMap.Result;
 
@@ -102,10 +101,30 @@ public class URLMapDefault implements URLMap
     longestmatch(SortedMap<String, String> map, String prefix)
     {
         Result result = new Result();
+        List<String> matches = new ArrayList<>();
+        for(Map.Entry<String, String> entry : map.entrySet()) {
+            if(prefix.startsWith(entry.getKey()))
+                matches.add(entry.getKey());
+        }
+        String longestmatch = null;
+        if(map.get(prefix) != null)
+            longestmatch = prefix;
+        for(int i = 0; i < matches.size(); i++) {
+            String candidate = matches.get(i);
+            if(prefix.startsWith(candidate)) {
+                if(longestmatch == null || candidate.length() > longestmatch.length())
+                    longestmatch = candidate;
+            }
+        }
+        if(longestmatch != null)
+            result.prefix = map.get(longestmatch);
+        else
+            return null;
+
+        /*
         // lastKey returns everything less than path, but
         // we need less-or-equal, so we have to do a separate
         // check for exact match
-        String longestmatch = prefix;
         result.prefix = map.get(prefix);
         if(result.prefix == null) {
             SortedMap<String, String> submap = map.headMap(prefix);
@@ -113,8 +132,12 @@ public class URLMapDefault implements URLMap
                 return null; // prefix is not here in any form
             longestmatch = submap.lastKey();
             result.prefix = (String) submap.get(longestmatch);
-        }
-        result.suffix = prefix.substring(longestmatch.length(), prefix.length());
+        } */
+        result.suffix = prefix.substring(longestmatch.length());
+        if(result.prefix.endsWith("/"))
+            result.prefix = result.prefix.substring(0,result.prefix.length()-1);
+        if(result.suffix.startsWith("/"))
+            result.suffix = result.suffix.substring(1);
         return result;
     }
 

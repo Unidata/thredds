@@ -83,7 +83,7 @@ public class TestHTTPMethod extends UnitTestCommon
         HTTPMethod method = null;
 
         String url = baseurl + "/" + testcase;
-        String baseline = threddsRoot + relativebaseline + "/" + testcase;
+        String baseline = getThreddsroot() + relativebaseline + "/" + testcase;
 
         System.out.println("*** Testing: HTTPMethod");
         System.out.println("*** URL: " + url);
@@ -113,7 +113,7 @@ public class TestHTTPMethod extends UnitTestCommon
         HTTPMethod method = null;
 
         String url = baseurl + "/" + testcase;
-        String baseline = threddsRoot + relativebaseline + "/" + testcase;
+        String baseline = getThreddsroot() + relativebaseline + "/" + testcase;
 
         System.out.println("*** Testing: HTTPMethod");
         System.out.println("*** URL: " + url);

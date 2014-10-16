@@ -42,171 +42,178 @@ import java.io.*;
 
 abstract public class TestFiles extends UnitTestCommon
 {
-  // Following are with respect to threddsRoot
-  static final String TESTSUFFIX = "opendap/src/test/data";
-  static final String RESULTSUFFIX = "opendap/target/results";
+    // Following are with respect to threddsRoot
+    static final String TESTSUFFIX = "opendap/src/test/data";
+    static final String RESULTSUFFIX = "opendap/target/results";
 
-  // With respect to TESTSUFFIX
-  static final String TESTDATA1DIR = "testdata1";
-  static final String BASELINE1DIR = "baseline1";
+    // With respect to TESTSUFFIX
+    static final String TESTDATA1DIR = "testdata1";
+    static final String BASELINE1DIR = "baseline1";
 
-  static enum TestPart {
-    DAS, DDS, DATADDS;
-  }
+    static enum TestPart
+    {
+        DAS, DDS, DATADDS;
+    }
 
-  // List all the base names from testdata1
-  static String partext(TestPart part) {
-    switch (part) {
-      case DAS:
-        return ".das";
-      case DDS:
+    // List all the base names from testdata1
+    static String partext(TestPart part)
+    {
+        switch (part) {
+        case DAS:
+            return ".das";
+        case DDS:
+            return ".dds";
+        case DATADDS:
+            return ".dods";
+        default:
+            break;
+        }
         return ".dds";
-      case DATADDS:
-        return ".dods";
-      default:
-        break;
-    }
-    return ".dds";
-  }
-
-  static String
-  accessTestData(String testprefix, String basename, TestPart part) throws Exception {
-    String fname = testprefix + "/" + basename + partext(part);
-
-    String result = null;
-    try {
-      File f = new File(fname);
-      if (!f.canRead()) return null;
-      FileReader fr = new FileReader(fname);
-      StringBuffer cbuf = new StringBuffer();
-      int c;
-      while ((c = fr.read()) != -1) cbuf.append((char) c);
-      return cbuf.toString();
-    } catch (Exception e) {
-      System.err.println("File io failure: " + e.toString());
-      e.printStackTrace();
-      throw e;
     }
 
-  }
+    static String
+    accessTestData(String testprefix, String basename, TestPart part) throws Exception
+    {
+        String fname = testprefix + "/" + basename + partext(part);
+
+        String result = null;
+        try {
+            File f = new File(fname);
+            if(!f.canRead()) return null;
+            FileReader fr = new FileReader(fname);
+            StringBuffer cbuf = new StringBuffer();
+            int c;
+            while((c = fr.read()) != -1) {
+                cbuf.append((char) c);
+            }
+            return cbuf.toString();
+        } catch (Exception e) {
+            System.err.println("File io failure: " + e.toString());
+            e.printStackTrace();
+            throw e;
+        }
+
+    }
 
 
-  String testdir = null;
-  String baselinedir = null;
-  String resultsdir = null;
-  String test = null;
-  String testname = null;
-
-  public TestFiles() {
     String testdir = null;
     String baselinedir = null;
     String resultsdir = null;
+    String test = null;
+    String testname = null;
 
-    testdir = threddsRoot + "/" + TESTSUFFIX + "/" + TESTDATA1DIR;
-    baselinedir = threddsRoot + "/" + TESTSUFFIX + "/" + BASELINE1DIR;
-    resultsdir = threddsRoot + "/" + RESULTSUFFIX;
+    public TestFiles()
+    {
+        String testdir = null;
+        String baselinedir = null;
+        String resultsdir = null;
+        String threddsRoot = getThreddsroot();
 
-    File tmp = new File(testdir);
-    if (!tmp.exists()) {
-      System.err.println("Cannot locate testdata1 directory; path does not exist: " + tmp.getAbsolutePath());
-      System.exit(1);
+        testdir = threddsRoot + "/" + TESTSUFFIX + "/" + TESTDATA1DIR;
+        baselinedir = threddsRoot + "/" + TESTSUFFIX + "/" + BASELINE1DIR;
+        resultsdir = threddsRoot + "/" + RESULTSUFFIX;
+
+        File tmp = new File(testdir);
+        if(!tmp.exists()) {
+            System.err.println("Cannot locate testdata1 directory; path does not exist: " + tmp.getAbsolutePath());
+            System.exit(1);
+        }
+        tmp = new File(baselinedir);
+        if(!tmp.exists()) {
+            System.err.println("Cannot locate baseline1 directory; path does not exist: " + tmp.getAbsolutePath());
+            System.exit(1);
+        }
+        tmp = new File(resultsdir);
+        try {
+            // wipe out the results dir
+            if(tmp.exists()) {
+                clearDir(tmp, true);
+                tmp.delete();
+            }
+            tmp.mkdirs(); // make sure it exists
+        } catch (Exception e) {
+            System.err.println("Cannot create: " + tmp.getAbsolutePath());
+            System.exit(1);
+        }
+        if(!tmp.canWrite()) {
+            System.err.println("Cannot write results directory: " + tmp.getAbsolutePath());
+            System.exit(1);
+        }
+        this.testdir = testdir;
+        this.baselinedir = baselinedir;
+        this.resultsdir = resultsdir;
     }
-    tmp = new File(baselinedir);
-    if (!tmp.exists()) {
-      System.err.println("Cannot locate baseline1 directory; path does not exist: " + tmp.getAbsolutePath());
-      System.exit(1);
-    }
-    tmp = new File(resultsdir);
-    try {
-      // wipe out the results dir
-      if (tmp.exists()) {
-        clearDir(tmp, true);
-        tmp.delete();
-      }
-      tmp.mkdirs(); // make sure it exists
-    } catch (Exception e) {
-      System.err.println("Cannot create: " + tmp.getAbsolutePath());
-      System.exit(1);
-    }
-    if (!tmp.canWrite()) {
-      System.err.println("Cannot write results directory: " + tmp.getAbsolutePath());
-      System.exit(1);
-    }
-    this.testdir = testdir;
-    this.baselinedir = baselinedir;
-    this.resultsdir = resultsdir;
-  }
 
-  //////////////////////////////////////////////////
-  // Define the test data basenames
-  //////////////////////////////////////////////////
+    //////////////////////////////////////////////////
+    // Define the test data basenames
+    //////////////////////////////////////////////////
 
-  static String[] dastestfiles = {
-          "123.nc", "123bears.nc", "bears.nc", "1990-S1700101.HDF.WVC_Lat", "1998-6-avhrr.dat", "D1",
-          "Drifters", "EOSDB", "NestedSeq", "NestedSeq2", "OverideExample",
-          "SimpleDrdsExample", "b31", "b31a", "ber-2002-10-01.nc",
-          "ceopL2AIRS2-2.nc", "ceopL2AIRS2.nc", "ingrid", "nestedDAS",
-          "pbug0001b", "synth1", "synth3", "synth4", "synth5",
-          "test.01", "test.02", "test.03", "test.04", "test.05",
-          "test.06", "test.06a", "test.07", "test.07a", "test.21",
-          "test.22", "test.23", "test.31", "test.32", "test.50",
-          "test.53", "test.55", "test.56", "test.57", "test.66",
-          "test.67", "test.68", "test.69", "test.PointFile", "test.SwathFile",
-          "test.an1", "test.dfp1", "test.dfr1", "test.dfr2", "test.dfr3",
-          "test.gr1", "test.gr2", "test.gr3", "test.gr4", "test.gr5",
-          "test.sds1", "test.sds2", "test.sds3", "test.sds4", "test.sds5",
-          "test.sds6", "test.sds7", "test.vs1", "test.vs2", "test.vs3",
-          "test.vs4", "test.vs5", "test1", "test2", "test3",
-          "whoi"
-  };
+    static String[] dastestfiles = {
+            "123.nc", "123bears.nc", "bears.nc", "1990-S1700101.HDF.WVC_Lat", "1998-6-avhrr.dat", "D1",
+            "Drifters", "EOSDB", "NestedSeq", "NestedSeq2", "OverideExample",
+            "SimpleDrdsExample", "b31", "b31a", "ber-2002-10-01.nc",
+            "ceopL2AIRS2-2.nc", "ceopL2AIRS2.nc", "ingrid", "nestedDAS",
+            "pbug0001b", "synth1", "synth3", "synth4", "synth5",
+            "test.01", "test.02", "test.03", "test.04", "test.05",
+            "test.06", "test.06a", "test.07", "test.07a", "test.21",
+            "test.22", "test.23", "test.31", "test.32", "test.50",
+            "test.53", "test.55", "test.56", "test.57", "test.66",
+            "test.67", "test.68", "test.69", "test.PointFile", "test.SwathFile",
+            "test.an1", "test.dfp1", "test.dfr1", "test.dfr2", "test.dfr3",
+            "test.gr1", "test.gr2", "test.gr3", "test.gr4", "test.gr5",
+            "test.sds1", "test.sds2", "test.sds3", "test.sds4", "test.sds5",
+            "test.sds6", "test.sds7", "test.vs1", "test.vs2", "test.vs3",
+            "test.vs4", "test.vs5", "test1", "test2", "test3",
+            "whoi"
+    };
 
 
-  static String[] ddstestfiles = {
-          "123.nc", "123bears.nc", "bears.nc", "1990-S1700101.HDF.WVC_Lat", "1998-6-avhrr.dat", "D1",
-          "Drifters", "EOSDB", "NestedSeq", "NestedSeq2", "OverideExample",
-          "SimpleDrdsExample", "b31", "b31a", "ber-2002-10-01.nc",
-          "ce.test.01.1", "ce.test.02.1", "ce.test.03.1", "ce.test.04.1",
-          "ce.test.05.1", "ce.test.06.1", "ce.test.07.1", "ce.test.07.2", "ceopL2AIRS2-2.nc",
-          "ceopL2AIRS2.nc", "ingrid", "nestedDAS", "pbug0001b", "synth1",
-          "synth2", "synth3", "synth4", "synth5", "synth6",
-          "test.01", "test.02", "test.03", "test.04", "test.05",
-          "test.06", "test.06a", "test.07", "test.07a", "test.21",
-          "test.22", "test.23", "test.31", "test.32", "test.50",
-          "test.53", "test.55", "test.56", "test.57", "test.66",
-          "test.67", "test.68", "test.69", "test.PointFile", "test.SwathFile",
-          "test.an1", "test.dfp1", "test.dfr1", "test.dfr2", "test.dfr3",
-          "test.gr1", "test.gr2", "test.gr3", "test.gr4", "test.gr5",
-          "test.sds1", "test.sds2", "test.sds3", "test.sds4", "test.sds5",
-          "test.sds6", "test.sds7", "test.vs1", "test.vs2", "test.vs3",
-          "test.vs4", "test.vs5", "test1", "test2", "test3",
-          "test4", "whoi"
-  };
+    static String[] ddstestfiles = {
+            "123.nc", "123bears.nc", "bears.nc", "1990-S1700101.HDF.WVC_Lat", "1998-6-avhrr.dat", "D1",
+            "Drifters", "EOSDB", "NestedSeq", "NestedSeq2", "OverideExample",
+            "SimpleDrdsExample", "b31", "b31a", "ber-2002-10-01.nc",
+            "ce.test.01.1", "ce.test.02.1", "ce.test.03.1", "ce.test.04.1",
+            "ce.test.05.1", "ce.test.06.1", "ce.test.07.1", "ce.test.07.2", "ceopL2AIRS2-2.nc",
+            "ceopL2AIRS2.nc", "ingrid", "nestedDAS", "pbug0001b", "synth1",
+            "synth2", "synth3", "synth4", "synth5", "synth6",
+            "test.01", "test.02", "test.03", "test.04", "test.05",
+            "test.06", "test.06a", "test.07", "test.07a", "test.21",
+            "test.22", "test.23", "test.31", "test.32", "test.50",
+            "test.53", "test.55", "test.56", "test.57", "test.66",
+            "test.67", "test.68", "test.69", "test.PointFile", "test.SwathFile",
+            "test.an1", "test.dfp1", "test.dfr1", "test.dfr2", "test.dfr3",
+            "test.gr1", "test.gr2", "test.gr3", "test.gr4", "test.gr5",
+            "test.sds1", "test.sds2", "test.sds3", "test.sds4", "test.sds5",
+            "test.sds6", "test.sds7", "test.vs1", "test.vs2", "test.vs3",
+            "test.vs4", "test.vs5", "test1", "test2", "test3",
+            "test4", "whoi"
+    };
 
 
-  static String[] errtestfiles = {
-          "test1"
-  };
+    static String[] errtestfiles = {
+            "test1"
+    };
 
 
-  // define the xfails
-  static String[] dasxfails = {
-  };
+    // define the xfails
+    static String[] dasxfails = {
+    };
 
-  static String[] ddsxfails = {
-  };
+    static String[] ddsxfails = {
+    };
 
-  static String[] errxfails = {
-  };
+    static String[] errxfails = {
+    };
 
-  ////////////////////
-  static String[] xtestfiles = {
-  };
+    ////////////////////
+    static String[] xtestfiles = {
+    };
 
-  static String[][] specialtests = {
-          {".das",
-                  "http://dods.mbari.org/cgi-bin/nph-nc/data/ssdsdata/deployments/m1/200810",
-                  "OS_M1_20081008_TS.nc"
-          }
-  };
+    static String[][] specialtests = {
+            {".das",
+                    "http://dods.mbari.org/cgi-bin/nph-nc/data/ssdsdata/deployments/m1/200810",
+                    "OS_M1_20081008_TS.nc"
+            }
+    };
 
 }

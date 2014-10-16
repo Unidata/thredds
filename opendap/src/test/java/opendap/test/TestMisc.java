@@ -74,6 +74,7 @@ public class TestMisc extends UnitTestCommon
     void
     definetestcases()
     {
+        String threddsRoot = getThreddsroot();
         testcases = new ArrayList<Testcase>();
         if(false) { // use this arm for debugging individual cases
             testcases.add(new Testcase("TestDODSArrayPrimitiveExample",
