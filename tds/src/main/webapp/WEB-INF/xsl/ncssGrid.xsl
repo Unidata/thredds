@@ -6,17 +6,19 @@
     <xsl:param name="tdsContext"></xsl:param>
     <xsl:param name="gridWKT"></xsl:param>
 
-
     <!-- Sets the paths that depends on the tdsContext -->
     <xsl:variable name="cssMainPath">
         <xsl:value-of select="concat($tdsContext,'/style/ncss/main.css')"></xsl:value-of>
     </xsl:variable>
+
     <xsl:variable name="cssLayoutPath">
         <xsl:value-of select="concat($tdsContext,'/style/ncss/layout.css')"></xsl:value-of>
     </xsl:variable>
+
     <xsl:variable name="cssFormPath">
         <xsl:value-of select="concat($tdsContext,'/style/ncss/form.css')"></xsl:value-of>
     </xsl:variable>
+
     <xsl:variable name="logoPath">
         <xsl:value-of select="concat($tdsContext,'/unidataLogo.gif')"></xsl:value-of>
     </xsl:variable>
@@ -25,9 +27,7 @@
         <xsl:value-of select="concat($tdsContext,'/js/lib/OpenLayers-2.12/theme/default/style.css')"></xsl:value-of>
     </xsl:variable>
 
-
     <xsl:template match="/">
-
         <xsl:variable name="hasTimeAxis">
             <xsl:value-of select="count(/gridForm/timeSet/time)"/>
         </xsl:variable>
@@ -70,16 +70,7 @@
                     </xsl:attribute>
                 </xsl:element>
 
-                <!-- script type="text/javascript">
-                    function Ncss.buildAccessUrl() {
-                        var req = $("form").serialize();
-                        var serverUrl = document.URL.split("/thredds/")[0];
-                        var dataUrl = serverUrl + $("#datasetPath")[0].innerHTML;
-                        $("#urlBuilder").val( dataUrl + "?" + req);
-                    }
-                </script -->
                 <script type="text/javascript">
-
                     var context = '<xsl:value-of select="$tdsContext"></xsl:value-of>';
                     var gridWKT = '<xsl:value-of select="$gridWKT"></xsl:value-of>';
 
@@ -87,43 +78,42 @@
 
                     Ncss.debug = true;
 
-                    Ncss.log = function(message){
-                    if(Ncss.debug){
-                    console.log(message);
-                    }
+                    Ncss.log = function(message) {
+                        if(Ncss.debug) {
+                            console.log(message);
+                        }
                     };
 
                     //Dynamic load of the javascript files
-                    (function(){
-
+                    (function() {
                     //jQuery
-                    var headTag = document.getElementsByTagName("head")[0];
-                    var jQueryfile = document.createElement('script');
-                    jQueryfile.setAttribute("type", "text/javascript");
-                    jQueryfile.setAttribute("src",
-                    context+"/js/lib/jquery-1.7.2.min.js");
-                    headTag.appendChild(jQueryfile);
+                        var headTag = document.getElementsByTagName("head")[0];
+                        var jQueryfile = document.createElement('script');
+                        jQueryfile.setAttribute("type", "text/javascript");
+                        jQueryfile.setAttribute("src",
+                        context+"/js/lib/jquery-1.7.2.min.js");
+                        headTag.appendChild(jQueryfile);
 
-                    //OpenLayers.js
-                    var olfile = document.createElement('script');
-                    olfile.setAttribute("type", "text/javascript");
-                    olfile.setAttribute("src",
-                    context+"/js/lib/OpenLayers-2.12/OpenLayers.js");
-                    headTag.appendChild(olfile);
+                        //OpenLayers.js
+                        var olfile = document.createElement('script');
+                        olfile.setAttribute("type", "text/javascript");
+                        olfile.setAttribute("src",
+                        context+"/js/lib/OpenLayers-2.12/OpenLayers.js");
+                        headTag.appendChild(olfile);
 
-                    //ncssApp.js
-                    var ncssAppfile = document.createElement('script');
-                    ncssAppfile.setAttribute("type", "text/javascript");
-                    ncssAppfile.setAttribute("src", context+"/js/ncss/ncssApp.js");
-                    var headTag = document.getElementsByTagName("head")[0];
-                    headTag.appendChild(ncssAppfile);
+                        //ncssApp.js
+                        var ncssAppfile = document.createElement('script');
+                        ncssAppfile.setAttribute("type", "text/javascript");
+                        ncssAppfile.setAttribute("src", context+"/js/ncss/ncssApp.js");
+                        var headTag = document.getElementsByTagName("head")[0];
+                        headTag.appendChild(ncssAppfile);
 
-                    //form.js
-                    var jsfile = document.createElement('script');
-                    jsfile.setAttribute("type", "text/javascript");
-                    jsfile.setAttribute("src", context+"/js/ncss/gridDatasetForm.js");
-                    var headTag = document.getElementsByTagName("head")[0];
-                    headTag.appendChild(jsfile);
+                        //form.js
+                        var jsfile = document.createElement('script');
+                        jsfile.setAttribute("type", "text/javascript");
+                        jsfile.setAttribute("src", context+"/js/ncss/gridDatasetForm.js");
+                        var headTag = document.getElementsByTagName("head")[0];
+                        headTag.appendChild(jsfile);
                     })();
                 </script>
             </head>
@@ -160,7 +150,7 @@
                                 <xsl:value-of select="gridForm/@location"/>
                             </span>
                             (
-                            <a href="dataset.xml">Gridded Dataset Description</a>
+                            <a href="dataset.xml">Dataset Description</a>
                             )
                         </h2>
                         <h3>
@@ -172,7 +162,6 @@
                     </div>
 
                     <form id="form" method="GET" action="{gridForm/attribute::location}">
-                        <!-- table border="0" cellpadding="4" cellspacing="2" -->
                         <table class="simple">
                             <tr valign="top">
                                 <td class="leftCol">
@@ -329,8 +318,6 @@
 
                                             <!-- coordinate subsetting -->
                                             <div id="coordinateSubset" class="hidden absoluteTopLeft borderLightGrey">
-                                                <!-- input type="radio" name="coordinateSubset" value="bb" checked="checked"
-                                                    / -->
                                                 <span class="bold">Bounding Box (projection coordinates):</span>
                                                 <div class="top">
                                                     <span>maxy</span>
@@ -491,7 +478,7 @@
                             <tr>
                                 <td colspan="2" class="center">
                                     <h3>NCSS Request URL:</h3>
-                                    <pre id="urlBuilder" />
+                                    <pre id="urlBuilder"/>
                                 </td>
                             </tr>
                             <tr>
@@ -504,15 +491,14 @@
                     </form>
                     <hr/>
                 </div>
+
                 <!-- Footer -->
                 <h3>
                     <a href="http://www.unidata.ucar.edu/software/thredds/current/tds/reference/NetcdfSubsetServiceReference.html">
                         NetCDF Subset Service Documentation
                     </a>
                 </h3>
-
             </body>
         </html>
-
     </xsl:template>
 </xsl:stylesheet>
