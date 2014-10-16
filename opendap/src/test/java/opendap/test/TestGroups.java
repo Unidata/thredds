@@ -75,6 +75,7 @@ public class TestGroups extends UnitTestCommon
     void
     definetestcases()
     {
+        String threddsRoot = getThreddsroot();
         testcases = new ArrayList<Testcase>();
         if(false) {// use this arm to do debugging
             testcases.add(new Testcase("External user provided group example",

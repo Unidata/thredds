@@ -87,6 +87,7 @@ public class Dap4Servlet extends DapServlet
         pw.flush();
     }
 
+    @Override
     protected String
     getResourcePath(DapRequest drq)
             throws IOException
@@ -96,7 +97,7 @@ public class Dap4Servlet extends DapServlet
         String datasetpath = drq.getDataset();
         if(datasetpath.startsWith("/"))
             datasetpath = datasetpath.substring(1);
-        datasetpath = DatasetHandler.getNetcdfFilePath(drq.getRequest(),datasetpath);
+        datasetpath = DatasetHandler.getNetcdfFilePath(drq.getRequest(), datasetpath);
         return datasetpath;
     }
 
