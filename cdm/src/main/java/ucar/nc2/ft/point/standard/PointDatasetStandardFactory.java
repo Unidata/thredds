@@ -114,7 +114,6 @@ public class PointDatasetStandardFactory implements FeatureDatasetFactory {
     if (analyser == null)
       return null;
 
-    errlog.format("%s%n", analyser.getErrlog());
     if (!analyser.featureTypeOk(wantFeatureType, errlog)) {
       return null;
     }
