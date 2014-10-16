@@ -83,6 +83,7 @@ public class RandomAccessFile implements DataInput, DataOutput, FileCacheable, A
   static protected Set<String> allFiles = new HashSet<>();
   static protected List<String> openFiles = Collections.synchronizedList(new ArrayList<String>());
   static private AtomicLong count_openFiles = new AtomicLong();
+  static private AtomicInteger maxOpenFiles = new AtomicInteger();
   static private AtomicInteger debug_nseeks = new AtomicInteger();
   static private AtomicLong debug_nbytes = new AtomicLong();
 
@@ -119,6 +120,10 @@ public class RandomAccessFile implements DataInput, DataOutput, FileCacheable, A
 
   static public long getOpenFileCount() {
     return count_openFiles.get();
+  }
+
+  static public int getMaxOpenFileCount() {
+    return maxOpenFiles.get();
   }
 
   /**
@@ -287,8 +292,12 @@ public class RandomAccessFile implements DataInput, DataOutput, FileCacheable, A
 
     if (debugLeaks) {
       openFiles.add(location);
+      int max = Math.max(openFiles.size(), maxOpenFiles.get());
+      maxOpenFiles.set(max);
       count_openFiles.getAndIncrement();
       if (showOpen) System.out.println("  open " + location);
+      if (openFiles.size() > 1000)
+        System.out.println("HEY");
     }
   }
 

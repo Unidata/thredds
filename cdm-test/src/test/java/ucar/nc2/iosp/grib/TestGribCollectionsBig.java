@@ -35,6 +35,7 @@ package ucar.nc2.iosp.grib;
 import org.junit.Test;
 import ucar.nc2.grib.collection.GribIosp;
 import ucar.nc2.util.DebugFlagsImpl;
+import ucar.unidata.io.RandomAccessFile;
 import ucar.unidata.test.util.TestDir;
 
 import java.io.IOException;
@@ -48,35 +49,49 @@ import java.io.IOException;
  * @since 10/13/2014
  */
 public class TestGribCollectionsBig {
+ // String topdir =  TestDir.cdmUnitTestDir + "gribCollections/rdavm";
+  String topdir =  "B:/rdavm";
 
   @Test
   public void testGC() throws IOException {
+    RandomAccessFile.setDebugLeaks(true);
     GribIosp.setDebugFlags(new DebugFlagsImpl("Grib/indexOnly"));
-    TestGribCollections.Count count = TestGribCollections.read(TestDir.cdmUnitTestDir + "gribCollections/rdavm/ds083.2/grib1/2008/2008.10/fnl_20081003_18_00.grib1.ncx2");
+    TestGribCollections.Count count = TestGribCollections.read(topdir + "/ds083.2/grib1/2008/2008.10/fnl_20081003_18_00.grib1.ncx2");
+    TestDir.checkLeaks();
+
     assert count.nread == 286;
     assert count.nmiss == 0;
   }
 
   @Test
   public void testPofG() throws IOException {
+    RandomAccessFile.setDebugLeaks(true);
     GribIosp.setDebugFlags(new DebugFlagsImpl("Grib/indexOnly"));
-    TestGribCollections.Count count = TestGribCollections.read(TestDir.cdmUnitTestDir + "gribCollections/rdavm/ds083.2/grib1/2008/2008.10/ds083.2_Aggregation-2008.10.ncx2");
+    TestGribCollections.Count count = TestGribCollections.read(topdir + "/ds083.2/grib1/2008/2008.10/ds083.2_Aggregation-2008.10.ncx2");
+    TestDir.checkLeaks();
+
     assert count.nread == 70928;
     assert count.nmiss == 0;
   }
 
   //@Test
   public void testPofP() throws IOException {
+    RandomAccessFile.setDebugLeaks(true);
     GribIosp.setDebugFlags(new DebugFlagsImpl("Grib/indexOnly"));
-    TestGribCollections.Count count = TestGribCollections.read(TestDir.cdmUnitTestDir + "gribCollections/rdavm/ds083.2/grib1/2008/ds083.2_Aggregation-2008.ncx2");
+    TestGribCollections.Count count = TestGribCollections.read(topdir + "/ds083.2/grib1/2008/ds083.2_Aggregation-2008.ncx2");
+    TestDir.checkLeaks();
+
     assert count.nread > 70000;
     assert count.nmiss == 0;
   }
 
   //@Test
   public void testPofPofP() throws IOException {
+    RandomAccessFile.setDebugLeaks(true);
     GribIosp.setDebugFlags(new DebugFlagsImpl("Grib/indexOnly"));
-    TestGribCollections.Count count = TestGribCollections.read(TestDir.cdmUnitTestDir + "gribCollections/rdavm/ds083.2/grib1/ds083.2_Aggregation-grib1.ncx2");
+    TestGribCollections.Count count = TestGribCollections.read(topdir + "/ds083.2/grib1/ds083.2_Aggregation-grib1.ncx2");
+    TestDir.checkLeaks();
+
     assert count.nread > 70000;
     assert count.nmiss == 0;
   }

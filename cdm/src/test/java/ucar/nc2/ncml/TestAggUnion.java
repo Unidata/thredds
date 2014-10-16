@@ -137,8 +137,7 @@ netcdf C:/dev/tds/thredds/cdm/src/test/data/ncml/nc/example2.nc {
 }
  */
 
-public class TestAggUnion  extends TestCase
-{
+public class TestAggUnion extends TestCase {
 
   public TestAggUnion(String name) {
     super(name);

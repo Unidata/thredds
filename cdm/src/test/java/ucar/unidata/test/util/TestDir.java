@@ -214,7 +214,7 @@ public class TestDir {
     } else {
       System.out.printf(" no leaks%n");
     }
-    System.out.printf("RandomAccessFile count open: %d%n", RandomAccessFile.getOpenFileCount());
+    System.out.printf("RandomAccessFile count open: %d, max=%d%n", RandomAccessFile.getOpenFileCount(), RandomAccessFile.getMaxOpenFileCount());
   }
 
 

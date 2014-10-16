@@ -141,8 +141,10 @@ public class MFileCollectionManager extends CollectionManagerAbstract {
 
     scanList.add(new CollectionConfig(sp.getRootDir(), sp.getRootDir(), sp.wantSubdirs(), filters, null));
 
-    this.recheck = makeRecheck(config.updateConfig.recheckAfter);
-    protoChoice = config.protoConfig.choice;
+    if (config.updateConfig != null)
+      this.recheck = makeRecheck(config.updateConfig.recheckAfter);
+    if (config.protoConfig != null)
+      protoChoice = config.protoConfig.choice;
 
     // static means never rescan on checkState; let it be externally triggered.
     if ((config.updateConfig.recheckAfter == null) && (config.updateConfig.rescan == null) &&  (config.updateConfig.deleteAfter == null))

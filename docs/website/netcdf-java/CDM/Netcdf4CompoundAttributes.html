@@ -8,29 +8,30 @@
 
 <body>
 <h1>NetCDF-4 Compound Attributes</h1>
-<p><em>last changed 10/14/2014</em></p>
+<p><em>last changed 10/15/2014</em></p>
 <p>NetCDF4 / HDF5 does not support attributes on fields in Compound types. These are proposed Conventions to support attributes on individual fields in a Compound type. </p>
 <p>Consider an example of a compound variable in NetCDF-4, using CDL:</p>
 <pre>netcdf point.nc4 {
  types:
   compound record_t {
-   double time ;
-   double latitude ;
-   double longitude ;
-   byte data ;
-   float z ;
-   }; // record_t
+    double time ;
+    double latitude ;
+    double longitude ;
+    byte data ;
+    float z ;
+  }
  
  dimensions:
    obs = UNLIMITED ; // (5 currently)
  
  variables:
-  record_t record(obs) ;
+   record_t record(obs) ;
 }</pre>
 <p>We would like to add any number of attributes of arbitrary type to the fields of this compound type. For example (in CDM), suppose we want to add the following attributes:</p>
 <pre>netcdf point.nc {
   dimensions:
     time= 5;
+
   variables:
    Structure {
     int lon;
@@ -54,7 +55,7 @@
 
 }</pre>
 <h3><strong><a name="Arbitrary" id="Arbitrary"></a>Arbitrary field attributes Proposal</strong></h3>
-<p>The &quot;Arbitrary field attributes&quot; proposal is to add a compound attribute named &quot;<em>_field_atts&quot;</em> to the compound variable, with one field for each attribute on any of the fields. Example:</p>
+<p>The &quot;Arbitrary field attributes&quot; proposal is to add a compound attribute named &quot;<em>_field_atts&quot;</em> to the compound variable, with one field for each attribute on any of the fields. Example in CDL:</p>
 <pre>
 netcdf point.nc4 {
  types:
@@ -66,18 +67,18 @@ netcdf point.nc4 {
     float z ;
   }; 
   compound _record_field_atts_t {
-    char time\:units(30) ;;
-    char latitude\:units(13) ;
-    char latitude\:long_name(16) ;
-    char longitude\:units(12) ;
-    char longitude\:long_name(17) ;
-    char data\:units(7) ;
-    char data\:long_name(16) ;
-    char data\:coordinates(23) ;
+    string time\:units;
+    string latitude\:units;
+    string latitude\:long_name ;
+    string longitude\:units;
+    string longitude\:long_name;
+    string data\:units;
+    string data\:long_name;
+    string data\:coordinates;
     float data\:calibration(3) ;
-    char z\:units(2) ;
-    char z\:long_name(27) ;
-    char z\:positive(2) ;
+    string z\:units;
+    string z\:long_name;
+    string z\:positive;
   }; 
 
 dimensions:
@@ -94,12 +95,10 @@ variables:
 </pre>
 <p><strong>Notes</strong>:</p>
 <ol>
-  <li>By idiom, the compound type is named<em> &quot;_&lt;structure name&gt;_field_atts_t&quot;</em>, however it may be named anything.</li>
+  <li>The compound attribute type must be named<em> &quot;_&lt;compound name&gt;_field_atts_t&quot;</em>, where <em>&lt;compound name&gt;</em> is the name of the variable's compound type. This prevents possible conflicts with other compound attributes.</li>
   <li>The compound attribute  must be named &quot;<em>_field_atts</em>&quot;.</li>
   <li>The fields of the compound atttribute must be named<em> &quot;&lt;field name&gt;:&lt;attribute_name&gt;&quot;</em>, using the colon &quot;:&quot; as a delimiter. The CDL escapes the &quot;:&quot;, but the backslash is not part of the name.</li>
-  <li>The example shows the string valued attributes being stored as char arrays, but  better to use the String data type.</li>
   <li>Only one compound attribute per compound variable can be added, which contains any number of attributes for the individual fields.</li>
-  <li>The type of the field must be a 1D primitive type.</li>
 </ol>
 <h3><a name="Natural" id="Natural"></a>Natural field attributes proposal</h3>
 <p>An important use case is to add missing values to a compound type. In this case, there is no need to add a separate compound type, and in practice would be confusing. Example:</p>
@@ -107,7 +106,7 @@ variables:
   compound wind_vector_t {
     float eastward ;
     float northward ;
-    }
+  }
 dimensions:
     station = 53434 ;
 variables:
@@ -117,64 +116,8 @@ variables:
 <ol>
   <li>The type of the compound attribute must be the same as the type of the variable.</li>
   <li>The name of the compound attribute is the name of the attribute to be distributed to the members.</li>
-  <li>All fields of the compound attribute must be given a value.</li>
   <li>Any number of attributes for a compound variable can be added using this convention. The type of the attribute for a field is always the same  as the field itself.</li>
 </ol>
-<h3>&nbsp;</h3>
-<h3><a name="Alternate" id="Alternate"></a>Alternate Proposal
-</h3>
-<p>From <a href="http://www.unidata.ucar.edu/software/netcdf/papers/nc4_conventions.html#Convention_for_Assigning_Attri">Developing Conventions for NetCDF-4</a> :</p>
-    <blockquote>
-      <p>
-        The enhanced data model does not support assigning
-        attributes directly to individual fields of a compound
-        type. However, it is
-        possible to assign compound type attributes to a variable of
-        compound type. This leads to a natural convention for
-        associating the values of fields of a compound type attribute with
-        fields of a variable of compound type that have the same
-        name. An example should help to make this clearer:
-      </p>
-    <pre class="code">
-types: 
-  compound wind_vector_t { 
-	float eastward ; 
-	float northward ; 
-  } 
-      
-  compound wind_vector_string_atts_t { 
-	string eastward ; 
-	string northward ; 
-  } 
-  
-dimensions: 
-  station = 5 ; 
-
-variables: 
-  wind_vector_t wind(station) ; 
-    wind_vector_string_atts_t  wind:units      = {"m/s", "m/s"} ; 
-	wind_vector_t              wind:_FillValue = {-9999, -9999} ; 
-    
-data: 
-  wind = {0, 0}, {10, 20}, {20, 10}, {15, 15}, {20, -5.5}; 
-    </pre>    
-      <p>
-        Note that the order of field names in the above compound types are
-        not what determines the assignment of units. Rather the
-        identity of field names maps the value of the field
-        <samp>eastward</samp> of string type in the variable
-        attribute <samp>units</samp> to be associated with the
-        variable field <samp>eastward</samp> of type float in
-        the <samp>wind</samp> variable.
-      </p>
-      <p>
-        As can be seen in the above example, use of this convention
-        for assigning attribute values to members of compound types can
-        lead to additional types and type names. However, the type defined for
-        the units attribute is suitable for any attribute with members
-        of string type, such as units.
-    </p>
-    </blockquote>
 
 <h3>Summary</h3>
 <p>We propose to allow adding attributes to fields in a compound type, using both the &quot;<strong>Arbitrary field attributes</strong>&quot; and the &quot;<strong>Natural field attributes</strong>&quot; conventions. Both require no changes to the existing NetCDF / HDF file format or APIs. Both are conventions on how libraries and applications should understand certain compound attributes.</p>

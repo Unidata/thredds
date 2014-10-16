@@ -87,8 +87,8 @@ public class FeatureCollectionConfig {
   public FeatureCollectionType type;
   public PartitionType ptype = PartitionType.none;
   public String name, path, spec, dateFormatMark, olderThan;
-  public UpdateConfig tdmConfig;
-  public UpdateConfig updateConfig;
+  public UpdateConfig tdmConfig = new UpdateConfig();
+  public UpdateConfig updateConfig = new UpdateConfig();
   public ProtoConfig protoConfig = new ProtoConfig();
   public FmrcConfig fmrcConfig = new FmrcConfig();
   public PointConfig pointConfig = new PointConfig();

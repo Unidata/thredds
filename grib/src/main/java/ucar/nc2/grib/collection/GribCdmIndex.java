@@ -35,7 +35,6 @@
 
 package ucar.nc2.grib.collection;
 
-import org.jdom2.Element;
 import org.slf4j.Logger;
 import thredds.featurecollection.FeatureCollectionConfig;
 import thredds.featurecollection.FeatureCollectionType;
@@ -733,7 +732,7 @@ public class GribCdmIndex implements IndexReader {
     if (debug) System.out.printf("GribCdmIndex.readMFiles %s%n", indexFile);
     try (RandomAccessFile raf = new RandomAccessFile(indexFile.toString(), "r")) {
       GribCollectionType type = getType(raf);
-      if (type == GribCollectionType.GRIB1 || type == GribCollectionType.GRIB2) {
+      //if (type == GribCollectionType.GRIB1 || type == GribCollectionType.GRIB2) {
         if (openIndex(raf, logger)) {
           File protoDir = new File(gribCollectionIndex.getTopDir());
           int n = gribCollectionIndex.getMfilesCount();
@@ -743,9 +742,9 @@ public class GribCdmIndex implements IndexReader {
           }
         }
         return true;
-      }
+      //}
     }
-    return false;
+    //return false;
   }
 
   private boolean openIndex(RandomAccessFile indexRaf, Logger logger) {

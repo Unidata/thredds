@@ -37,6 +37,7 @@ import ucar.nc2.dt.GridDatatype;
 import ucar.nc2.dt.grid.GridDataset;
 import ucar.nc2.grib.collection.GribIosp;
 import ucar.nc2.util.DebugFlagsImpl;
+import ucar.unidata.io.RandomAccessFile;
 import ucar.unidata.test.util.TestDir;
 
 import java.io.IOException;
@@ -77,8 +78,10 @@ public class TestGribCollectionsDense {
 
   @Test
   public void testPofP() throws IOException {
+    RandomAccessFile.setDebugLeaks(true);
     GribIosp.setDebugFlags(new DebugFlagsImpl("Grib/indexOnly"));
     TestGribCollections.Count count = TestGribCollections.read(TestDir.cdmUnitTestDir + "gribCollections/dgex/DGEX-test-dgex.ncx2");
+    TestDir.checkLeaks();
     assert count.nread == 5384;
     assert count.nmiss == 0;
   }
