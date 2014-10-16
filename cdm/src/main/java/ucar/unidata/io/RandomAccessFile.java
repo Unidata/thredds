@@ -40,7 +40,6 @@ import ucar.nc2.util.cache.FileCacheable;
 
 import java.io.*;
 import java.nio.ByteOrder;
-import java.nio.charset.Charset;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
@@ -81,10 +80,15 @@ public class RandomAccessFile implements DataInput, DataOutput, FileCacheable, A
   // debug leaks - keep track of open files
   static protected boolean debugLeaks = false;
   static protected boolean debugAccess = false;
-  static protected Set<String> allFiles = new HashSet<String>();
+  static protected Set<String> allFiles = new HashSet<>();
   static protected List<String> openFiles = Collections.synchronizedList(new ArrayList<String>());
+  static private AtomicLong count_openFiles = new AtomicLong();
+  static private AtomicInteger maxOpenFiles = new AtomicInteger();
   static private AtomicInteger debug_nseeks = new AtomicInteger();
   static private AtomicLong debug_nbytes = new AtomicLong();
+
+  static protected boolean showOpen = false;
+  static protected boolean showRead = false;
 
   /**
    * Debugging, do not use.
@@ -101,6 +105,7 @@ public class RandomAccessFile implements DataInput, DataOutput, FileCacheable, A
    * @param b set true to track java.io.RandomAccessFile
    */
   static public void setDebugLeaks(boolean b) {
+    if (!debugLeaks && b) count_openFiles.set(0);
     debugLeaks = b;
   }
 
@@ -111,6 +116,14 @@ public class RandomAccessFile implements DataInput, DataOutput, FileCacheable, A
    */
   static public List<String> getOpenFiles() {
     return openFiles;
+  }
+
+  static public long getOpenFileCount() {
+    return count_openFiles.get();
+  }
+
+  static public int getMaxOpenFileCount() {
+    return maxOpenFiles.get();
   }
 
   /**
@@ -156,9 +169,6 @@ public class RandomAccessFile implements DataInput, DataOutput, FileCacheable, A
   static public long getDebugNbytes() {
     return (debug_nbytes == null) ? 0 : debug_nbytes.longValue();
   }
-
-  static protected boolean showOpen = false;
-  static protected boolean showRead = false;
 
   /**
    * The default buffer size, in bytes.
@@ -282,7 +292,12 @@ public class RandomAccessFile implements DataInput, DataOutput, FileCacheable, A
 
     if (debugLeaks) {
       openFiles.add(location);
+      int max = Math.max(openFiles.size(), maxOpenFiles.get());
+      maxOpenFiles.set(max);
+      count_openFiles.getAndIncrement();
       if (showOpen) System.out.println("  open " + location);
+      if (openFiles.size() > 1000)
+        System.out.println("HEY");
     }
   }
 

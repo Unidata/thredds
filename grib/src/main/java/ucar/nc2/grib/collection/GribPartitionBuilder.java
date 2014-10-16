@@ -39,6 +39,7 @@ import com.google.protobuf.ByteString;
 import thredds.featurecollection.FeatureCollectionConfig;
 import thredds.inventory.CollectionUpdateType;
 import thredds.inventory.MCollection;
+import thredds.inventory.MFile;
 import thredds.inventory.partition.PartitionManager;
 import ucar.coord.*;
 import ucar.ma2.Section;
@@ -46,6 +47,7 @@ import ucar.nc2.constants.CDM;
 import ucar.nc2.stream.NcStream;
 import ucar.unidata.io.RandomAccessFile;
 import ucar.unidata.util.Parameter;
+import ucar.unidata.util.StringUtil2;
 
 import java.io.File;
 import java.io.IOException;
@@ -76,26 +78,49 @@ public abstract class GribPartitionBuilder  {
     this.logger = logger;
   }
 
+  // LOOK need an option to only look at last partition or something
   public boolean updateNeeded(CollectionUpdateType ff) throws IOException {
     if (ff == CollectionUpdateType.never) return false;
     if (ff == CollectionUpdateType.always) return true;
 
-    File idx = GribCollection.getFileInCache(partitionManager.getIndexFilename());
-    if (!idx.exists()) return true;
+    File collectionIndexFile = GribCollection.getFileInCache(partitionManager.getIndexFilename());
+    if (!collectionIndexFile.exists()) return true;
 
     if (ff == CollectionUpdateType.nocheck) return false;
 
-    return needsUpdate(idx.lastModified());
+    return needsUpdate(collectionIndexFile);
   }
 
-  private boolean needsUpdate(long collectionLastModified) throws IOException {
+  private boolean needsUpdate(File collectionIndexFile) throws IOException {
+    long collectionLastModified = collectionIndexFile.lastModified();
+    Set<String> newFileSet = new HashSet<>();
     for (MCollection dcm : partitionManager.makePartitions(CollectionUpdateType.test)) {
-      File idxFile = GribCollection.getFileInCache(dcm.getIndexFilename());
-      if (!idxFile.exists())
+      String partitionIndexFilename = StringUtil2.replace(dcm.getIndexFilename(), '\\', "/");
+      File partitionIndexFile = GribCollection.getFileInCache(partitionIndexFilename);
+      if (!partitionIndexFile.exists())                                 // make sure each partition has an index
         return true;
-      if (collectionLastModified < idxFile.lastModified())
+      if (collectionLastModified < partitionIndexFile.lastModified())  // and the partition index is earlier than the collection index
         return true;
+      newFileSet.add(partitionIndexFilename);
     }
+
+    // now see if any files were deleted
+    GribCdmIndex reader = new GribCdmIndex(logger);
+    List<MFile> oldFiles = new ArrayList<>();
+    reader.readMFiles(collectionIndexFile.toPath(), oldFiles);
+    Set<String> oldFileSet = new HashSet<>();
+    for (MFile oldFile : oldFiles) {
+      if (!newFileSet.contains(oldFile.getPath()))
+        return true;  // got deleted - must recreate the index
+      oldFileSet.add(oldFile.getPath());
+    }
+
+    // now see if any files were added
+    for (String newFilename : newFileSet) {
+      if (!oldFileSet.contains(newFilename))
+        return true;  // got added - must recreate the index
+    }
+
     return false;
   }
 
@@ -571,7 +596,8 @@ public abstract class GribPartitionBuilder  {
       GribCollectionProto.GribCollection.Builder indexBuilder = GribCollectionProto.GribCollection.newBuilder();
       indexBuilder.setName(pc.getName());
       Path topDir = pc.getDirectory().toPath();
-      indexBuilder.setTopDir(topDir.toString());
+      String pathS = StringUtil2.replace(topDir.toString(), '\\', "/");
+      indexBuilder.setTopDir(pathS);
 
       // mfiles are the partition indexes
       int count = 0;
@@ -579,7 +605,8 @@ public abstract class GribPartitionBuilder  {
         GribCollectionProto.MFile.Builder b = GribCollectionProto.MFile.newBuilder();
         Path partPath = new File(part.getDirectory(), part.getFilename()).toPath();
         Path pathRelative = topDir.relativize(partPath);
-        b.setFilename(pathRelative.toString()); // reletive to topDir
+        String pathRS = StringUtil2.replace(pathRelative.toString(), '\\', "/");
+        b.setFilename(pathRS); // reletive to topDir
         b.setLastModified(part.getLastModified());
         b.setIndex(count++);
         indexBuilder.addMfiles(b.build());

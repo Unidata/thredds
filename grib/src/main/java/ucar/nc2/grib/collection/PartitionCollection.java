@@ -59,7 +59,7 @@ import java.io.IOException;
 import java.util.*;
 
 /**
- * Collection of GribCollections or other PartionCollections, partitioned by reference time.
+ * Collection of GribCollections or other PartitionCollections, partitioned by reference time.
  *
  * @author John
  * @since 12/7/13
@@ -236,11 +236,11 @@ public abstract class PartitionCollection extends GribCollection {
      */
     DataRecord getDataRecord(int[] indexWanted) throws IOException {
 
-      if (GribIosp.debugRead) System.out.printf("%nPartitionCollection debugRead index wanted = (%s) on %s isTwod=%s%n", Misc.showInts(indexWanted), indexFilename, group.isTwod);
+      if (GribIosp.debugRead) System.out.printf("%nPartitionCollection.getDataRecord index wanted = (%s) on %s isTwod=%s%n", Misc.showInts(indexWanted), indexFilename, group.isTwod);
 
       // find the runtime index
       int firstIndex = indexWanted[0];
-      int runIdx = group.isTwod ? firstIndex : time2runtime[firstIndex] - 1; // time2runtime is oneD
+      int runIdx = group.isTwod ? firstIndex : time2runtime[firstIndex] - 1; // time2runtime is for oneD
       if (GribIosp.debugRead && !group.isTwod) System.out.printf("  firstIndex = %d time2runtime[firstIndex]=%d %n", firstIndex, runIdx);
       if (runIdx < 0) {
         return null; // LOOK why is this possible?
@@ -256,9 +256,10 @@ public abstract class PartitionCollection extends GribCollection {
         return null; // missing
       }
 
-      // find the vi in that partition
+      // find the 2D vi in that partition
       GribCollection.VariableIndex compVindex2D = getVindex2D(partno); // the 2D component variable in the partno partition
       if (compVindex2D == null) return null; // missing
+      if (GribIosp.debugRead) System.out.printf("  compVindex2D = %s%n", compVindex2D.toStringFrom());
 
       if (isPartitionOfPartitions) {
         VariableIndexPartitioned compVindex2Dp = (VariableIndexPartitioned) compVindex2D;
@@ -269,6 +270,10 @@ public abstract class PartitionCollection extends GribCollection {
       int[] sourceIndex = group.isTwod ? translateIndex2D(indexWanted, compVindex2D) : translateIndex1D(indexWanted, compVindex2D);
       if (sourceIndex == null) return null; // missing
       GribCollection.Record record = compVindex2D.getSparseArray().getContent(sourceIndex);
+      if (record == null) {
+        return null;
+        // compVindex2D.getSparseArray().getContent(sourceIndex); // debug
+      }
 
       if (GribIosp.debugRead) System.out.printf("  result success: partno=%d fileno=%d %n", partno, record.fileno);
       return new DataRecord(PartitionCollection.this, partno, compVindex2D.group.getGdsHorizCoordSys(), record.fileno, record.pos, record.bmsPos, record.scanMode);
@@ -285,11 +290,11 @@ public abstract class PartitionCollection extends GribCollection {
       if (group.isTwod) {
         // corresponding index into compVindex2Dp
         int[] indexWantedP = translateIndex2D(indexWanted, compVindex2Dp);
-        if (GribIosp.debugRead) System.out.printf("  getDataRecordPofP= %s %n", Misc.showInts(indexWantedP));
+        if (GribIosp.debugRead) System.out.printf("  (2D) getDataRecordPofP= %s %n", Misc.showInts(indexWantedP));
         return compVindex2Dp.getDataRecord(indexWantedP);
       } else {
         int[] indexWantedP = translateIndex1D(indexWanted, compVindex2Dp);
-        if (GribIosp.debugRead) System.out.printf("  getDataRecordPofP= %s %n", Misc.showInts(indexWantedP));
+        if (GribIosp.debugRead) System.out.printf("  (1D) getDataRecordPofP= %s %n", Misc.showInts(indexWantedP));
         if (indexWantedP == null) return null;
         return compVindex2Dp.getDataRecord(indexWantedP);
       }
@@ -315,7 +320,7 @@ public abstract class PartitionCollection extends GribCollection {
      */
     private GribCollection.VariableIndex getVindex2D(int partno) throws IOException {
       // at this point, we need to instantiate the Partition and the vindex.records
-
+      // the 2D vip for this variable
       VariableIndexPartitioned vip =  isPartitionOfPartitions ?
         (PartitionCollection.VariableIndexPartitioned) getVariable2DByHash(group.horizCoordSys, cdmHash) :
         this;
@@ -343,10 +348,14 @@ public abstract class PartitionCollection extends GribCollection {
       }  // LOOK opening the file here, and then again to read the data. partition cache helps i guess but we could do better i think.
     }
 
+    /*
+
+     */
+
 
     /**
      * translate index in VariableIndexPartitioned to corresponding index in one of its component VariableIndex
-     * by matching coordinate values
+     * by matching coordinate values. The 1D (Best) case.
      *
      * @param wholeIndex index in VariableIndexPartitioned
      * @param compVindex2D     component 2D VariableIndex
@@ -357,7 +366,7 @@ public abstract class PartitionCollection extends GribCollection {
 
       // figure out the runtime
       int timeIdx = wholeIndex[0];
-      int runtimeIdxWhole = time2runtime[timeIdx] - 1;  // 1-based
+      int runtimeIdxWhole = time2runtime[timeIdx] - 1;  // 1-based; runtime Index into master runtime
       int runtimeIdxPart = matchCoordinate(getCoordinate(0), runtimeIdxWhole, compVindex2D.getCoordinate(0));
       if (runtimeIdxPart < 0)
         return null;
@@ -377,6 +386,7 @@ public abstract class PartitionCollection extends GribCollection {
           resultIdx = compCoord2D.matchTimeCoordinate(runtimeIdxPart, wholeVal, wholeCoord1Dtime.getRefDate());
           if (resultIdx < 0)
             resultIdx = compCoord2D.matchTimeCoordinate(runtimeIdxPart, wholeVal, wholeCoord1Dtime.getRefDate()); // debug
+
         } else {
           resultIdx = matchCoordinate(wholeCoord1D, idx, compCoord);
           if (resultIdx < 0)
@@ -411,7 +421,8 @@ public abstract class PartitionCollection extends GribCollection {
         if (GribIosp.debugRead) System.out.printf("  translateIndex2D[runIdx=%d, timeIdx=%d] in componentVar coords = (%s,%s) %n",
                 wholeIndex[0], wholeIndex[1], (want == null) ? "null" : want.getRun(), want);
         if (want == null) return null;
-        compTime2D.getIndex(want, result); // sets the first 2 indices - run and time
+        if (!compTime2D.getIndex(want, result)) // sets the first 2 indices - run and time
+          return null; // missing data
         countDim = 2;
       }
 
@@ -476,7 +487,7 @@ public abstract class PartitionCollection extends GribCollection {
     // debugging
     public void show() throws IOException {
       String dataFilename = usePartition.getFilename(partno, fileno);
-      System.out.printf(" partno=%d fileno=%d filename=%s datapos=%d%n", partno, fileno, dataFilename, dataPos);
+      System.out.printf(" **DataReader partno=%d fileno=%d filename=%s datapos=%d%n", partno, fileno, dataFilename, dataPos);
     }
 
   }

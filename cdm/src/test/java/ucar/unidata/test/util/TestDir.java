@@ -4,6 +4,7 @@ import ucar.ma2.InvalidRangeException;
 import ucar.ma2.Section;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.Variable;
+import ucar.unidata.io.RandomAccessFile;
 
 import java.io.File;
 import java.io.FileFilter;
@@ -202,6 +203,18 @@ public class TestDir {
 
   public static NetcdfFile openFileLocal( String filename) {
     return open( TestDir.cdmLocalTestDataDir +filename);
+  }
+
+  static public void checkLeaks() {
+    if (RandomAccessFile.getOpenFiles().size() > 0) {
+      System.out.printf("RandomAccessFile still open:%n");
+      for (String filename : RandomAccessFile.getOpenFiles()) {
+        System.out.printf(" open= %s%n", filename);
+      }
+    } else {
+      System.out.printf(" no leaks%n");
+    }
+    System.out.printf("RandomAccessFile count open: %d, max=%d%n", RandomAccessFile.getOpenFileCount(), RandomAccessFile.getMaxOpenFileCount());
   }
 
 

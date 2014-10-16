@@ -31,6 +31,11 @@ public class CoordinateTimeIntv extends CoordinateTimeAbstract implements Coordi
     this.timeIntervals = Collections.unmodifiableList(timeIntervals);
   }
 
+  CoordinateTimeIntv(CoordinateTimeIntv org, CalendarDate refDate) {
+    super(org.code, org.timeUnit, refDate);
+    this.timeIntervals = org.getTimeIntervals();
+  }
+
   public List<TimeCoord.Tinv> getTimeIntervals() {
     return timeIntervals;
   }
