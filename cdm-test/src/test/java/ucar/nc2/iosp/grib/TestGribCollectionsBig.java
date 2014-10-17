@@ -32,6 +32,8 @@
 
 package ucar.nc2.iosp.grib;
 
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import ucar.nc2.grib.collection.GribIosp;
 import ucar.nc2.util.DebugFlagsImpl;
@@ -49,13 +51,22 @@ import java.io.IOException;
  * @since 10/13/2014
  */
 public class TestGribCollectionsBig {
- // String topdir =  TestDir.cdmUnitTestDir + "gribCollections/rdavm";
-  String topdir =  "B:/rdavm";
+  String topdir =  TestDir.cdmUnitTestDir + "gribCollections/rdavm";
+  // String topdir =  "B:/rdavm";
+
+  @BeforeClass
+  static public void before() {
+    GribIosp.setDebugFlags(new DebugFlagsImpl("Grib/indexOnly"));
+  }
+
+  @AfterClass
+  static public void after() {
+    GribIosp.setDebugFlags(new DebugFlagsImpl(""));
+  }
 
   @Test
   public void testGC() throws IOException {
     RandomAccessFile.setDebugLeaks(true);
-    GribIosp.setDebugFlags(new DebugFlagsImpl("Grib/indexOnly"));
     TestGribCollections.Count count = TestGribCollections.read(topdir + "/ds083.2/grib1/2008/2008.10/fnl_20081003_18_00.grib1.ncx2");
     TestDir.checkLeaks();
 
@@ -66,7 +77,6 @@ public class TestGribCollectionsBig {
   @Test
   public void testPofG() throws IOException {
     RandomAccessFile.setDebugLeaks(true);
-    GribIosp.setDebugFlags(new DebugFlagsImpl("Grib/indexOnly"));
     TestGribCollections.Count count = TestGribCollections.read(topdir + "/ds083.2/grib1/2008/2008.10/ds083.2_Aggregation-2008.10.ncx2");
     TestDir.checkLeaks();
 
@@ -77,7 +87,6 @@ public class TestGribCollectionsBig {
   //@Test
   public void testPofP() throws IOException {
     RandomAccessFile.setDebugLeaks(true);
-    GribIosp.setDebugFlags(new DebugFlagsImpl("Grib/indexOnly"));
     TestGribCollections.Count count = TestGribCollections.read(topdir + "/ds083.2/grib1/2008/ds083.2_Aggregation-2008.ncx2");
     TestDir.checkLeaks();
 
@@ -88,7 +97,6 @@ public class TestGribCollectionsBig {
   //@Test
   public void testPofPofP() throws IOException {
     RandomAccessFile.setDebugLeaks(true);
-    GribIosp.setDebugFlags(new DebugFlagsImpl("Grib/indexOnly"));
     TestGribCollections.Count count = TestGribCollections.read(topdir + "/ds083.2/grib1/ds083.2_Aggregation-grib1.ncx2");
     TestDir.checkLeaks();
 

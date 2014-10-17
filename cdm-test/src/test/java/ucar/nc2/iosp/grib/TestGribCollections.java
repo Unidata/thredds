@@ -32,6 +32,8 @@
 
 package ucar.nc2.iosp.grib;
 
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import ucar.ma2.Array;
 import ucar.nc2.Dimension;
@@ -55,9 +57,18 @@ import java.io.IOException;
  */
 public class TestGribCollections {
 
+  @BeforeClass
+  static public void before() {
+    GribIosp.setDebugFlags(new DebugFlagsImpl("Grib/indexOnly"));
+  }
+
+  @AfterClass
+  static public void after() {
+    GribIosp.setDebugFlags(new DebugFlagsImpl(""));
+  }
+
   @Test
   public void testGC_Grib2() throws IOException {
-    GribIosp.setDebugFlags(new DebugFlagsImpl("Grib/indexOnly"));
     Count count = read(TestDir.cdmUnitTestDir + "ncss/GFS/Global_onedeg/GFS_Global_onedeg_20120911_1200.grib2.ncx2");
 
     assert count.nread == 23229;
@@ -67,7 +78,6 @@ public class TestGribCollections {
   @Test
   public void testPofG_Grib2() throws IOException {
     RandomAccessFile.setDebugLeaks(true);
-    GribIosp.setDebugFlags(new DebugFlagsImpl("Grib/indexOnly"));
     Count count = read(TestDir.cdmUnitTestDir + "ncss/GFS/Global_onedeg/GFS_Global_onedeg-Global_onedeg.ncx2");
     TestDir.checkLeaks();
 
@@ -79,7 +89,6 @@ public class TestGribCollections {
   @Test
   public void testGC_Grib1() throws IOException {
     RandomAccessFile.setDebugLeaks(true);
-    GribIosp.setDebugFlags(new DebugFlagsImpl("Grib/indexOnly"));
     Count count = read(TestDir.cdmUnitTestDir + "ncss/GFS/CONUS_80km/GFS_CONUS_80km_20120227_1200.grib1.ncx2");
     TestDir.checkLeaks();
 
@@ -91,7 +100,6 @@ public class TestGribCollections {
   @Test
   public void testPofG_Grib1() throws IOException {
     RandomAccessFile.setDebugLeaks(true);
-    GribIosp.setDebugFlags(new DebugFlagsImpl("Grib/indexOnly"));
     Count count = read(TestDir.cdmUnitTestDir + "ncss/GFS/CONUS_80km/GFS_CONUS_80km-CONUS_80km.ncx2");
     TestDir.checkLeaks();
 
@@ -102,7 +110,7 @@ public class TestGribCollections {
   @Test
   public void problem() throws IOException {
     RandomAccessFile.setDebugLeaks(true);
-    GribIosp.setDebugFlags(new DebugFlagsImpl("Grib/indexOnly Grib/indexOnlyShow"));
+    GribIosp.setDebugFlags(new DebugFlagsImpl("Grib/indexOnlyShow"));
     String filename = "ncss/GFS/CONUS_80km/GFS_CONUS_80km-CONUS_80km.ncx2";
     try (GridDataset gds = GridDataset.open(TestDir.cdmUnitTestDir + filename)) {
       GridDatatype gdt = gds.findGridByName("TwoD/Absolute_vorticity_isobaric");

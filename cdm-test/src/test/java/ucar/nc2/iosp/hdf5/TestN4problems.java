@@ -35,6 +35,7 @@
 
 package ucar.nc2.iosp.hdf5;
 
+import org.junit.AfterClass;
 import org.junit.Test;
 import ucar.ma2.Array;
 import ucar.ma2.InvalidRangeException;
@@ -44,6 +45,7 @@ import ucar.nc2.Variable;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dt.GridDatatype;
 import ucar.nc2.dt.grid.GridDataset;
+import ucar.nc2.util.DebugFlagsImpl;
 
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -56,10 +58,15 @@ import java.io.PrintWriter;
  */
 public class TestN4problems {
 
+  @AfterClass
+  static public void after() {
+    H5header.setDebugFlags(new DebugFlagsImpl(""));  // make sure debug flags are off
+  }
+
     // margolis@ucar.edu
   // I really don't think this is a problem with your code
   // may be bug in HDF5 1.8.4-patch1
-  // @Test
+  //@Test
   public void testTiling() throws IOException {
     // Global Heap 1t 13059 runs out with no heap id = 0
     String filename = TestN4reading.testDir+"tiling.nc4";

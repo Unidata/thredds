@@ -33,6 +33,9 @@
 
 package ucar.nc2.iosp.hdf4;
 
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
+import org.junit.Test;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.Variable;
 
@@ -40,19 +43,22 @@ import java.io.IOException;
 import java.io.File;
 
 import junit.framework.TestCase;
+import ucar.nc2.util.DebugFlagsImpl;
 import ucar.unidata.test.util.TestDir;
 
 /**
- * Class Description.
+ * Read all hdf4 files in cdmUnitTestDir + "formats/hdf4/"
  *
  * @author caron
  */
-public class TestH4readAll extends TestCase {
+public class TestH4readAll {
 
-  public TestH4readAll(String name) {
-    super(name);
+  @AfterClass
+  static public void after() {
+    H4header.setDebugFlags(new DebugFlagsImpl(""));  // make sure debug flags are off
   }
 
+  @Test
   public void testReadAll() throws IOException {
     //readandCountAllInDir(testDir, null);
     int count = 0;
