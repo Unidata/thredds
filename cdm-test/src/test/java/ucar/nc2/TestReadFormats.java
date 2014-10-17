@@ -58,6 +58,15 @@ public class TestReadFormats {
     assert countFail == 0 : "Failed = "+countFail;
   }
 
+  @Test
+  public void problem() throws IOException {
+    openAllInDir(TestDir.cdmUnitTestDir + "/formats/grib1", new MyFileFilter());
+    int countExclude = countTotal - countGood - countFail;
+    System.out.printf("Good=%d Fail=%d Exclude=%d%n", countGood, countFail, countExclude);
+    for (String f : failFiles) System.out.printf("  %s%n", f);
+    assert countFail == 0 : "Failed = "+countFail;
+  }
+
   // these are fairly complete hdf4 files from nsidc
   public void utestHdf4() throws IOException {
     openAllInDir("F:/data/formats/hdf4", new MyFileFilter());

@@ -17,33 +17,31 @@
     following: </p>
 
 <pre>
-&lt;service name="<strong>all</strong>" serviceType="Compound" base="" &gt;
-    &lt;service name="odap" serviceType="OpenDAP" base="/thredds/dodsC/" /&gt;
-    &lt;service name="wcs" serviceType="WCS" base="/thredds/wcs/" /&gt;
+&lt;service name="<strong>all</strong>" base="" serviceType="Compound" &gt;
+    &lt;service name="odap" serviceType="OPeNDAP" base="/thredds/dodsC/" /&gt;
+    &lt;service name="http" serviceType="FileServer" base="/thredds/fileServer/" /&gt;
 &lt;/service&gt;
 </pre>
 
   <p>defines a compound service named "all" which contains two nested services. Any dataset that reference the compound service will have two access methods.
     For instance: </p>
 
-<pre>
-&lt;dataset name="cool data" urlPath="so/cool/data.nc" &gt;
-    &lt;serviceName&gt;<strong>all</strong>&lt;/serviceName&gt;
-&lt;/dataset&gt;
-</pre>
+  <pre>
+&lt;datasetRoot path="precip" location="/share/tdsWorkshop/data/precip" /&gt;
+&lt;dataset name="Precip Data" ID="precipdata" urlPath="precip/nws_precip_conus_20130909.nc" dataType="Grid" serviceName="all" /&gt;</pre>
 
   <p>would result in these two access URLs:</p>
 
-  <pre><code>/thredds/dodsC/so/cool/data.nc</code></pre>
-  <pre><code>/thredds/wcs/so/cool/data.nc</code></pre>
+  <pre><code>/thredds/dodsC/precip/nws_precip_conus_20130909.nc
+/thredds/fileServer/precip/nws_precip_conus_20130909.nc</code></pre>
 
   <p>Note: The contained services can still be referenced independently. For instance:</p>
 
-  <pre>&lt;dataset name="more cool data" urlPath="more/cool/data.nc" &gt;<br>    &lt;serviceName&gt;odap&lt;/serviceName&gt;<br>&lt;/dataset&gt;</pre>
+  <pre>&lt;dataset name="More Precip Data" ID="precipdata2" urlPath="precip/nws_precip_conus_20130910.nc" dataType="Grid" serviceName="odap" /&gt;</pre>
 
   <p>results in a single access URL:</p>
 
-  <pre><code>/thredds/dodsC/more/cool/data.nc</code></pre>
+  <pre><code>/thredds/dodsC/precip/nws_precip_conus_20130910.nc</code></pre>
 
   <div id="note" class="info">
     <h4>Unique Service Names</h4>
@@ -55,6 +53,21 @@
     </ol>
   </div>
 
+  <p>Using compound services allow maintaining groups of services across datasets, rather than needing to maintain individual lists with each dataset. For instance,
+  we can add the DAP4 service to the above <code>all</code> service:</p>
+
+<pre>...
+&lt;service name="<strong>all</strong>" base="" serviceType="Compound" &gt;
+    &lt;service name="odap" serviceType="OpenDAP" base="/thredds/dodsC/" /&gt;
+    &lt;service name="dap4" serviceType="DAP4" base="/thredds/dap4/" /&gt;
+    &lt;service name="http" serviceType="FileServer" base="/thredds/fileServer/" /&gt;
+&lt;/service&gt;
+...</pre>
+
+  <p>This would then add an additional access URL for DAP4:</p>
+
+  <pre><code>/thredds/dap4/precip/nws_precip_conus_20130909.nc</code></pre>
+
   <h3>Unique Names Required for each <code>service</code> Element in a Catalog</h3>
 
   <p>Service names are used by datasets to reference the <code>service</code> element that represents the available service(s) for that dataset. So that the
@@ -63,6 +76,7 @@
   <p>Here's an example:</p>
 
 <pre>
+...
 &lt;service name="any" serviceType="Compound" base="" &gt;
     &lt;service name="<strong>service1</strong>" serviceType="OpenDAP" base="/thredds/dodsC/" /&gt;
     &lt;service name="<strong>service2</strong>" serviceType="HTTPServer" base="/thredds/fileServer/" /&gt;
@@ -73,6 +87,7 @@
     &lt;service name="service3" serviceType="WMS" base="/thredds/wms/" /&gt;
     &lt;service name="service4" serviceType="HTTPServer" base="/thredds/fileServer/" /&gt;
 &lt;/service&gt;
+...
 </pre>
   <div id="expanded" class="troubleshooting">
     <h4>Notes:</h4>
@@ -131,7 +146,7 @@
     <ol>
       <li>Open the netCDF-Java ToolsUI application [<a href="http://www.unidata.ucar.edu/software/netcdf-java/v4.3/webstart/netCDFtools.jnlp">webstart</a>].
       </li>
-      <li>In the "FeatureTypes" - "Grids" tab, browse to the <code>/machine/tds/data/ldm/nam_12km</code> directory and open a dataset file.</li>
+      <li>In the "FeatureTypes" - "Grids" tab, browse to the <code>/machine/tds/data/nam_12km</code> directory and open a dataset file.</li>
       <li>If variables are listed in the top section of the window, the netCDF-Java library has recognized the dataset as gridded data.</li>
     </ol>
     <p><strong>Note</strong>: While you have ToolsUI open, take a look at the "Viewer" tab and the "THREDDS" tab</p>

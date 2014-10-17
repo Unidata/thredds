@@ -136,7 +136,7 @@ public class TestSources extends UnitTestCommon
     public TestSources()
     {
         setup();
-        opendapdir = threddsRoot + "/opendap";
+        opendapdir = getThreddsroot() + "/opendap";
         testprefix = opendapdir + "/" + TESTSUFFIX;
         testdir = testprefix + "/" + TESTDATA1DIR;
     }

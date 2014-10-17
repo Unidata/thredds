@@ -288,13 +288,27 @@ public class DapRequest
     }
 
     /**
-     * Return the absolute path for the /WEB-INF/resources directory
+     * Return the absolute path for the /resources directory
      *
-     * @return the absolute path for the /WEB-INF/resources directory
+     * @return the absolute path for the /resources directory
      */
     public String getRealPath(String virtual)
     {
         return this.svcinfo.getRealPath(virtual);
     }
 
+    /**
+     * Return the path info from the request url past the servlet name
+     *
+     * @return the path
+     */
+    public String getPathInfo()
+    {
+        String path = this.request.getPathInfo();
+        if(path == null)
+            path = "";
+        return path;
+    }
+
 }
+

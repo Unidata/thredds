@@ -88,10 +88,10 @@ public abstract class GribPartitionBuilder  {
 
     if (ff == CollectionUpdateType.nocheck) return false;
 
-    return needsUpdate(collectionIndexFile);
+    return needsUpdate(ff, collectionIndexFile);
   }
 
-  private boolean needsUpdate(File collectionIndexFile) throws IOException {
+  private boolean needsUpdate(CollectionUpdateType ff, File collectionIndexFile) throws IOException {
     long collectionLastModified = collectionIndexFile.lastModified();
     Set<String> newFileSet = new HashSet<>();
     for (MCollection dcm : partitionManager.makePartitions(CollectionUpdateType.test)) {
@@ -103,6 +103,8 @@ public abstract class GribPartitionBuilder  {
         return true;
       newFileSet.add(partitionIndexFilename);
     }
+
+    if (ff == CollectionUpdateType.testIndexOnly) return false;
 
     // now see if any files were deleted
     GribCdmIndex reader = new GribCdmIndex(logger);
