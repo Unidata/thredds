@@ -63,9 +63,9 @@
 
   <h3>3:00 (John) Advanced TDS Configuration</h3>
   <ul>
-    <li><a href="../reference/ThreddsConfigXMLFile.html#Caching">Caching</a></li>
+    <li><a href="../reference/ThreddsConfigXMLFile.html#Cache_Locations">Caching</a></li>
     <li>Catalog specification: <a href="../catalog/InvCatalogSpec.html">client</a>
-      <a href="../catalog/v1.0.5/InvCatalogSpec.server.html">server</a></li>
+      <a href="../catalog/InvCatalogServerSpec.html">server</a></li>
     <li>Example catalogs from thredds.ucar.edu
       <ul>
         <li><a href="files/catalog.xml">catalog.xml</a></li>
@@ -130,7 +130,7 @@
 <!-- end section -->
 
 <div id="section">
-  <h2><a name="DayTwo">24 OCtober 2014: Advanced Uses of TDS, Clients and Tools</a></h2>
+  <h2><a name="DayTwo">24 October 2014: Advanced Uses of TDS, Clients and Tools</a></h2>
 
   <h3>8:00 Coffee and continental breakfast</h3>
 
@@ -145,16 +145,20 @@
   <ul>
     <li><a href="http://www.google.com/search?btnG=1&pws=0&q=log+analyzers">Log analyzers</a></li>
     <li><a href="http://tomcat.apache.org/tomcat-7.0-doc/manager-howto.html">Tomcat manager application</a></li>
-    <li>Browser-based HTTP header viewers</li>
-    <ul>
-      <li><a href="http://www.youtube.com/watch?v=tKD50_zvZoo">Live HTTP Headers</a> (Firefox Add-On)</li>
-      <li><a href="https://developers.google.com/chrome-developer-tools/docs/network#http_headers">DevTools</a> (Chrome)</li>
-    </ul>
-    <li>JVM monitoring tools</li>
-    <ul>
-      <li><a href="http://visualvm.java.net/api-quickstart.html">VisualVM</a></li>
-      <li><a href="http://www.youtube.com/watch?v=Xy0tsT-GD68">JConsole</a></li>
-    </ul>
+    <li>
+      Browser-based HTTP header viewers
+      <ul>
+        <li><a href="http://www.youtube.com/watch?v=tKD50_zvZoo">Live HTTP Headers</a> (Firefox Add-On)</li>
+        <li><a href="https://developers.google.com/chrome-developer-tools/docs/network#http_headers">DevTools</a> (Chrome)</li>
+      </ul>
+    </li>
+    <li>
+      JVM monitoring tools
+      <ul>
+        <li><a href="http://visualvm.java.net/api-quickstart.html">VisualVM</a></li>
+        <li><a href="http://www.youtube.com/watch?v=Xy0tsT-GD68">JConsole</a></li>
+      </ul>
+    </li>
   </ul>
 
   <h3>9:00 (John) Monitoring and Debugging (part 2)</h3>
@@ -195,7 +199,7 @@
   </ul>
   <h3>1:30 (John) Feature Collections</h3>
   <ul>
-    <li><a href="GribFeatureCollectionTutorial.html">GRIB Feature Collection Tutorial</a></li>
+    <li><a href="GRIBFeatureCollectionTutorial.html">GRIB Feature Collection Tutorial</a></li>
     <li><a href="FmrcFeatureCollectionsTutorial.html">FMRC Tutorial</a></li>
     <li><a href="../reference/collections/FeatureCollections.html">Feature Collections</a></li>
     <li><a href="../reference/collections/PointFeatures.html">Point Collections</a></li>
@@ -219,18 +223,18 @@
   <h3>9:30 (Jenn) <a href="Security.html">Production Server Overview</a></h3>
   <p>Best practices and recommendations on securing a production TDS/Tomcat server.</p>
   <ul>
-    <li><a a href="Security.html#why">Why Is Security Important?</a></li>
-    <li><a a href="Security.html#versions">Keeping Software Versions Up-To-Date</a></li>
-    <li><a a href="Security.html#install">Tomcat Process User/Group and $CATALINA_HOME Permissions</a></li>
-    <li><a a href="Security.html#unused">Removing Unused Web Applications</a></li>
-    <li><a a href="Security.html#digested">Using Digested Passwords</a></li>
-    <li><a a href="Security.html#ssl">Enabling SSL Encryption</a></li>
-    <li><a a href="Security.html#manager">Securing the Tomcat <code>manager</code> Application</a></li>
-    <li><a a href="Security.html#ports">Blocking Non-Essential Port Access At The Firewall</a></li>
-    <li><a a href="Security.html#access">Restricting Access To The TDS By Remote IP Address Or Host</a></li>
-    <li><a a href="Security.html#proxy">Reverse Proxy</a></li>
-    <li><a a href="Security.html#jvm">Running Tomcat with a Security Manager</a></li>
-    <li><a a href="Security.html#shutdown">Protecting the Tomcat <code>SHUTDOWN</code> Port</a></li>
+    <li><a href="Security.html#why">Why Is Security Important?</a></li>
+    <li><a href="Security.html#versions">Keeping Software Versions Up-To-Date</a></li>
+    <li><a href="Security.html#install">Tomcat Process User/Group and $CATALINA_HOME Permissions</a></li>
+    <li><a href="Security.html#unused">Removing Unused Web Applications</a></li>
+    <li><a href="Security.html#digested">Using Digested Passwords</a></li>
+    <li><a href="Security.html#ssl">Enabling SSL Encryption</a></li>
+    <li><a href="Security.html#manager">Securing the Tomcat <code>manager</code> Application</a></li>
+    <li><a href="Security.html#ports">Blocking Non-Essential Port Access At The Firewall</a></li>
+    <li><a href="Security.html#access">Restricting Access To The TDS By Remote IP Address Or Host</a></li>
+    <li><a href="Security.html#proxy">Reverse Proxy</a></li>
+    <li><a href="Security.html#jvm">Running Tomcat with a Security Manager</a></li>
+    <li><a href="Security.html#shutdown">Protecting the Tomcat <code>SHUTDOWN</code> Port</a></li>
   </ul>
   <h3>10:00 (John) A basic checklist for TDS installation, upgrades and maintenance:</h3>
   <ul>
