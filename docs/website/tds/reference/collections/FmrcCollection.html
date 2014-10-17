@@ -87,6 +87,27 @@
     <li>times and variables can be spread out among files.</li>
   </ul>
 </blockquote>
+<hr />
+<h4>Example 3: With NcML elements:</h4>
+<pre>&lt;featureCollection name=&quot;NCEP-NAM-Alaska_11km&quot; featureType=&quot;FMRC&quot; harvest=&quot;true&quot; path=&quot;grib/NCEP/NAM/Alaska_11km&quot;&gt;
+  &lt;collection spec=&quot;/data/ldm/pub/native/grid/NCEP/NAM/Alaska_11km/Alaska_11km_#yyyyMMdd_HHmm#.nc$&quot; olderThan=&quot;5 min&quot;/&gt;
+  &lt;update startup=&quot;true&quot; rescan=&quot;0 5 3 * * ? *&quot; /&gt;
+1)&lt;protoDataset choice=&quot;Penultimate&quot; change=&quot;0 2 3 * * ? *&quot; &gt;
+    &lt;netcdf xmlns=&quot;http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2&quot;&gt;
+      &lt;variable name=&quot;humidity&quot; /&gt;
+        &lt;attribute name=&quot;coordinates&quot; value=&quot;time1 height x y&quot;/&gt;
+      &lt;/variable&gt;
+    &lt;/netcdf&gt;
+  &lt;/protoDataset&gt;  
+  &lt;fmrcConfig datasetTypes=&quot;TwoD Best Latest&quot; /&gt;
+2)&lt;netcdf xmlns=&quot;http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2&quot;&gt;
+    &lt;attribute name=&quot;Conventions&quot; value=&quot;CF-1.6&quot;/&gt;
+  &lt;/netcdf&gt;
+&lt;/featureCollection&gt;</pre>
+<ol>
+  <li></li>
+</ol>
+<p>&nbsp;</p>
 <hr/>
 <h2>Conversion of &lt;datasetFmrc&gt; to &lt;featureCollection&gt;</h2>
 

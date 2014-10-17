@@ -148,19 +148,29 @@ public class Grib1Record {
 
   // isolate dependencies here - in case we have a "minimal I/O" mode where not all fields are available
   public float[] readData(RandomAccessFile raf) throws IOException {
+    return readData(raf, true);
+  }
+
+  // dont convertQuasiGrid
+  public float[] readDataRaw(RandomAccessFile raf) throws IOException {
+    return readData(raf, false);
+  }
+
+  // isolate dependencies here - in case we have a "minimal I/O" mode where not all fields are available
+  private  float[] readData(RandomAccessFile raf, boolean convertThin) throws IOException {
     Grib1Gds gds = gdss.getGDS();
     Grib1DataReader reader = new Grib1DataReader(pdss.getDecimalScale(), gds.getScanMode(), gds.getNx(), gds.getNy(), gds.getNpts(), dataSection.getStartingPosition());
     byte[] bm = (bitmap == null) ? null : bitmap.getBitmap(raf);
     float[] data = reader.getData(raf, bm);
 
-    if (gdss.isThin()) {
+    if (convertThin && gdss.isThin()) {
       data = QuasiRegular.convertQuasiGrid(data, gds.getNptsInLine(), gds.getNxRaw(), gds.getNyRaw() );
     }
 
     return data;
   }
 
-  public void showDataInfo(RandomAccessFile raf, Formatter f) throws IOException {
+ public void showDataInfo(RandomAccessFile raf, Formatter f) throws IOException {
     Grib1Gds gds = gdss.getGDS();
     f.format(" decimal scale = %d%n", pdss.getDecimalScale());
     f.format("     scan mode = %d%n", gds.getScanMode());

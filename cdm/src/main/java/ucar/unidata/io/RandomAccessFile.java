@@ -105,7 +105,8 @@ public class RandomAccessFile implements DataInput, DataOutput, FileCacheable, A
    * @param b set true to track java.io.RandomAccessFile
    */
   static public void setDebugLeaks(boolean b) {
-    if (!debugLeaks && b) count_openFiles.set(0);
+    count_openFiles.set(0);
+    maxOpenFiles.set(0);
     debugLeaks = b;
   }
 

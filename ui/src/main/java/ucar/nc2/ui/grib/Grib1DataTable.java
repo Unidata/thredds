@@ -185,7 +185,7 @@ public class Grib1DataTable extends JPanel {
         Grib1RecordBean bean = (Grib1RecordBean) record1BeanTable.getSelectedBean();
         if (bean != null) {
           Formatter f = new Formatter();
-          showData(bean, true, f);
+          showData(bean, true, false, f);
           infoPopup2.setText(f.toString());
           infoPopup2.gotoTop();
           infoWindow2.show();
@@ -193,18 +193,33 @@ public class Grib1DataTable extends JPanel {
       }
     });
 
-    varPopup.addAction("Show Data MAx/Min", new AbstractAction() {
+    varPopup.addAction("Show Data Max/Min", new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
         Grib1RecordBean bean = (Grib1RecordBean) record1BeanTable.getSelectedBean();
         if (bean != null) {
           Formatter f = new Formatter();
-          showData(bean, false, f);
+          showData(bean, false, false, f);
           infoPopup2.setText(f.toString());
           infoPopup2.gotoTop();
           infoWindow2.show();
         }
       }
     });
+
+    varPopup.addAction("Show Data Raw", new AbstractAction() {
+      public void actionPerformed(ActionEvent e) {
+        Grib1RecordBean bean = (Grib1RecordBean) record1BeanTable.getSelectedBean();
+        if (bean != null) {
+          Formatter f = new Formatter();
+          showData(bean, true, true, f);
+          infoPopup2.setText(f.toString());
+          infoPopup2.gotoTop();
+          infoWindow2.show();
+        }
+      }
+    });
+
+
 
     varPopup.addAction("Extract GribRecord to File", new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
@@ -586,23 +601,23 @@ public class Grib1DataTable extends JPanel {
     Grib1CollectionPanel.compare(bean1.gr.getGDSsection(), bean2.gr.getGDSsection(), f);
   }
 
-  private void showData(Grib1RecordBean bean1, boolean showData, Formatter f) {
+  private void showData(Grib1RecordBean bean1, boolean showData, boolean readRaw, Formatter f) {
     float[] data;
     try {
-      data = bean1.readData();
+      data = bean1.readData(readRaw);
     } catch (IOException e) {
       f.format("IOException %s", e.getMessage());
       return;
     }
 
 
-    float max = Float.MAX_VALUE;
-    float min = -Float.MAX_VALUE;
+    float max = -Float.MAX_VALUE;
+    float min = Float.MAX_VALUE;
     for (float fd : data) {
       if (showData) f.format("%f%n", fd);
       if (Float.isNaN(fd)) continue;
       max = Math.max(fd, max);
-      min = Math.max(fd, min);
+      min = Math.min(fd, min);
     }
     f.format("max = %f%n", max);
     f.format("min = %f%n", min);
@@ -828,11 +843,15 @@ public class Grib1DataTable extends JPanel {
     }
 
     public float[] readData() throws IOException {
+        return readData(false);
+    }
+
+    public float[] readData(boolean readRaw) throws IOException {
       int fileno = gr.getFile();
       MFile mfile = fileList.get(fileno);
       try (ucar.unidata.io.RandomAccessFile raf = new ucar.unidata.io.RandomAccessFile(mfile.getPath(), "r")) {
         raf.order(ucar.unidata.io.RandomAccessFile.BIG_ENDIAN);
-        return gr.readData(raf);
+        return readRaw ? gr.readDataRaw(raf) : gr.readData(raf);
       }
     }
 

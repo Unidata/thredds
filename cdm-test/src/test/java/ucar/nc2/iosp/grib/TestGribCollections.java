@@ -77,6 +77,7 @@ public class TestGribCollections {
 
   @Test
   public void testPofG_Grib2() throws IOException {
+    GribIosp.setDebugFlags(new DebugFlagsImpl("Grib/indexOnly"));
     RandomAccessFile.setDebugLeaks(true);
     Count count = read(TestDir.cdmUnitTestDir + "ncss/GFS/Global_onedeg/GFS_Global_onedeg-Global_onedeg.ncx2");
     TestDir.checkLeaks();
@@ -107,7 +108,7 @@ public class TestGribCollections {
     assert count.nmiss == 1801;
   }
 
-  @Test
+  // @Test
   public void problem() throws IOException {
     RandomAccessFile.setDebugLeaks(true);
     GribIosp.setDebugFlags(new DebugFlagsImpl("Grib/indexOnlyShow"));
