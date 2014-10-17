@@ -44,7 +44,8 @@ public class TestHTTP  {
 
   @Test
   public void testNC2() throws IOException {
-    NetcdfFile ncfile = NetcdfFile.open("http://remotetest.unidata.ucar.edu/thredds/fileServer/public/dataset/testdata/mydata1.nc");
+    //NetcdfFile ncfile = NetcdfFile.open("http://remotetest.unidata.ucar.edu/thredds/fileServer/public/dataset/testdata/mydata1.nc");
+    NetcdfFile ncfile = NetcdfFile.open("http://remotetest.unidata.ucar.edu/thredds/fileServer/testdata/mydata1.nc");
     assert ncfile != null;
 
     assert(null != ncfile.findDimension("lat"));
