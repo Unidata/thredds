@@ -108,8 +108,8 @@ public class TestGribMisc {
       int[] origin = {0, 38, 281};
       int[] shape = {1, 1, 2};
       Array vals = v.read(origin, shape);
-      assert Misc.closeEnough(vals.getFloat(0), 0.0);
-      assert Misc.closeEnough(vals.getFloat(1), 1.0);
+      assert Misc.closeEnough(vals.getFloat(0), 0.0) : vals.getFloat(0);
+      assert Misc.closeEnough(vals.getFloat(1), 1.0) : vals.getFloat(1);
     }
   }
 

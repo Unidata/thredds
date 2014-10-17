@@ -122,6 +122,7 @@ not
   <li>CDM
     <ul>
       <li>add Albers Equal Area projection</li>
+      <li>add Geostationary projection (Tom Rink SSEC)</li>
       <li>CFPointWriter refactored, can write to netCDF-4</li>
       <li>CFGridWriter2 replaces CFGridWriter</li>
     </ul>
@@ -167,8 +168,8 @@ not
   <li>We are now using <strong>log4j2</strong>. The configuration file is in <strong>{tomcat}/webapps/thredds//WEB-INF/classes/log4j2.xml</strong>. See <a href="http://logging.apache.org/log4j/2.x/">http://logging.apache.org/log4j/2.x/</a></li>
   <li> Most services have been converted to <a href="http://docs.spring.io/spring/docs/3.0.x/reference/mvc.html">annotated Spring controllers</a>. Documentation on adding your own service is coming soon.</li>
   <li>Point dataset unit tests upgraded to CF 1.6.</li>
-  <li>    Unit testing framework now complete; 2500+ unit tests.</li>
-  <li>Covarity defects actively being eliminated.</li>
+  <li>    Unit testing framework now complete; 2700+ unit tests.</li>
+  <li><a href="https://scan.coverity.com/projects/388?tab=overview">Covarity</a> static analysis now being done. 3000+ defects eliminated, about 1000 to go.</li>
   <li>Code being converted to use Java 7 constructs, eg try-with-resources, generics.</li>
 </ul>
 <p>&nbsp;</p>
@@ -176,7 +177,7 @@ not
 
 <address>
   <img src="thread.png" alt="TDS" height="108" width="110">This document is maintained by Unidata and was
-  last updated Aug 2014. Send comments to <a href="mailto:support-thredds@unidata.ucar.edu">THREDDS
+  last updated Oct 2014. Send comments to <a href="mailto:support-thredds@unidata.ucar.edu">THREDDS
   support</a>.
 </address>
 
