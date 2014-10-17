@@ -62,10 +62,9 @@ public class TestGrid1 extends UnitTestCommon
     static final protected String DATASET = "testgrid1.nc";
 
     static final protected String URLPATH_REMOTE =
-            //"/thredds/dodsC/testdods/"+DATASET;
-            "/thredds/dodsC/testAll/"+DATASET;
+            "/thredds/dodsC/testdods/"+DATASET;
     static final protected String URLPATH_LOCAL =
-            "/thredds/dodsC/testAll/"+DATASET;
+            "/thredds/dodsC/testdods/"+DATASET;
 
     protected String testserver = null;
 
