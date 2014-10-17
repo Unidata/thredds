@@ -53,6 +53,7 @@ import java.util.List;
 public class TestN4reading {
   public static String testDir = TestDir.cdmUnitTestDir + "formats/netcdf4/";
 
+
   @Test
   public void testGodivaFindsDataHole() throws IOException, InvalidRangeException {
     // this pattern of reads from godiva is finding a data hole - missing data where therre shouldnt be any

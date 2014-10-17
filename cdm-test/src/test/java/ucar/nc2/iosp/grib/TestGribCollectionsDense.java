@@ -32,6 +32,8 @@
 
 package ucar.nc2.iosp.grib;
 
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import ucar.nc2.dt.GridDatatype;
 import ucar.nc2.dt.grid.GridDataset;
@@ -53,16 +55,24 @@ import java.io.IOException;
  */
 public class TestGribCollectionsDense {
 
+  @BeforeClass
+  static public void before() {
+    GribIosp.setDebugFlags(new DebugFlagsImpl("Grib/indexOnly"));
+  }
+
+  @AfterClass
+  static public void after() {
+    GribIosp.setDebugFlags(new DebugFlagsImpl(""));
+  }
+
   @Test
   public void testLeaf() throws IOException {
-    GribIosp.setDebugFlags(new DebugFlagsImpl("Grib/indexOnly"));
     TestGribCollections.Count count = TestGribCollections.read(TestDir.cdmUnitTestDir + "gribCollections/dgex/20141011/DGEX_CONUS_12km_20141011_0600.grib2");
     assert count.nread == 1009;
     assert count.nmiss == 0;  }
 
   @Test
   public void testGC() throws IOException {
-    GribIosp.setDebugFlags(new DebugFlagsImpl("Grib/indexOnly"));
     TestGribCollections.Count count = TestGribCollections.read(TestDir.cdmUnitTestDir + "gribCollections/dgex/20141011/DGEX-test-20141011-20141011-060000.ncx2");
     assert count.nread == 1009;
     assert count.nmiss == 0;
@@ -70,7 +80,6 @@ public class TestGribCollectionsDense {
 
   @Test
   public void testPofG() throws IOException {
-    GribIosp.setDebugFlags(new DebugFlagsImpl("Grib/indexOnly"));
     TestGribCollections.Count count = TestGribCollections.read(TestDir.cdmUnitTestDir + "gribCollections/dgex/20141011/DGEX-test-20141011.ncx2");
     assert count.nread == 3140;
     assert count.nmiss == 0;
@@ -79,7 +88,6 @@ public class TestGribCollectionsDense {
   @Test
   public void testPofP() throws IOException {
     RandomAccessFile.setDebugLeaks(true);
-    GribIosp.setDebugFlags(new DebugFlagsImpl("Grib/indexOnly"));
     TestGribCollections.Count count = TestGribCollections.read(TestDir.cdmUnitTestDir + "gribCollections/dgex/DGEX-test-dgex.ncx2");
     TestDir.checkLeaks();
     assert count.nread == 5384;
@@ -88,7 +96,7 @@ public class TestGribCollectionsDense {
 
   @Test
   public void problem() throws IOException {
-    GribIosp.setDebugFlags(new DebugFlagsImpl("Grib/indexOnly Grib/indexOnlyShow"));
+    GribIosp.setDebugFlags(new DebugFlagsImpl("Grib/indexOnlyShow"));
     String filename = "/gribCollections/dgex/DGEX-test-dgex.ncx2";
     //String filename = "/gribCollections/dgex/20141011/DGEX-test-20141011.ncx2";
     try (GridDataset gds = GridDataset.open(TestDir.cdmUnitTestDir + filename)) {

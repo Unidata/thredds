@@ -32,40 +32,46 @@
  */
 package ucar.nc2.iosp.hdf5;
 
-import junit.framework.*;
-
 import java.io.*;
 
+import org.junit.*;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.Variable;
 import ucar.nc2.NCdump;
 import ucar.ma2.Section;
 import ucar.ma2.InvalidRangeException;
 import ucar.ma2.Array;
+import ucar.nc2.util.DebugFlagsImpl;
 import ucar.unidata.test.util.TestDir;
 
-/** Test nc2 read JUnit framework. */
+/**
+ * Read all hdf4 files in cdmUnitTestDir + "formats/hdf5/"
+ * *
+ */
 
-public class TestH5read extends TestCase {
-  public TestH5read( String name) {
-    super(name);
+public class TestH5read {
+
+  @AfterClass
+  static public void after() {
+    H5header.setDebugFlags(new DebugFlagsImpl(""));  // make sure debug flags are off
   }
 
   String testDir = TestDir.cdmUnitTestDir + "formats/hdf5/";
 
 
- public void testH5data() throws IOException {
-   H5header.setDebugFlags(new ucar.nc2.util.DebugFlagsImpl(""));
+  @org.junit.Test
+  public void testH5data() throws IOException {
+    H5header.setDebugFlags(new ucar.nc2.util.DebugFlagsImpl(""));
 
-   //TestAll.readAllDir (TestH5.testDir, new FileFilter() {
-   TestDir.readAllDir (testDir, new FileFilter() {
+    //TestAll.readAllDir (TestH5.testDir, new FileFilter() {
+    TestDir.readAllDir(testDir, new FileFilter() {
       public boolean accept(File file) {
         String name = file.getPath();
         return (name.endsWith(".h5") || name.endsWith(".H5") || name.endsWith(".he5") || name.endsWith(".nc"));
       }
     });
 
- }
+  }
 
   public void problemV() throws IOException {
     H5header.setDebugFlags(new ucar.nc2.util.DebugFlagsImpl("H5header/header"));
@@ -76,21 +82,20 @@ public class TestH5read extends TestCase {
     System.out.println("\n**** testReadNetcdf4 done\n\n" + ncfile);
     NCdump.printArray(data, "primary_cloud", System.out, null);
     ncfile.close();
-    H5header.setDebugFlags( new ucar.nc2.util.DebugFlagsImpl());
   }
 
   public void utestProblem() {
     //H5header.setDebugFlags(new ucar.nc2.util.DebugFlagsImpl("H5header/header"));
     //readAllData( "C:\\data\\testdata2\\hdf5\\samples\\opaque.h5");
-    readAllData( testDir +"compressCompoundBarrowdale.h5");
+    readAllData(testDir + "compressCompoundBarrowdale.h5");
   }
 
   public static void readAllDir(String dirName) {
-    System.out.println("---------------Reading directory "+dirName);
-    File allDir = new File( dirName);
+    System.out.println("---------------Reading directory " + dirName);
+    File allDir = new File(dirName);
     File[] allFiles = allDir.listFiles();
     if (null == allFiles) {
-      System.out.println("---------------INVALID "+dirName);
+      System.out.println("---------------INVALID " + dirName);
       return;
     }
 
@@ -108,8 +113,8 @@ public class TestH5read extends TestCase {
 
   }
 
-  static public void readAllData( String filename) {
-    System.out.println("\n------Reading filename "+filename);
+  static public void readAllData(String filename) {
+    System.out.println("\n------Reading filename " + filename);
     try {
       NetcdfFile ncfile = TestH5.open(filename);
       //System.out.println("\n"+ncfile);
@@ -132,6 +137,7 @@ public class TestH5read extends TestCase {
   }
 
   static int max_size = 1000 * 1000 * 10;
+
   static Section makeSubset(Variable v) throws InvalidRangeException {
     int[] shape = v.getShape();
     shape[0] = 1;
@@ -139,15 +145,6 @@ public class TestH5read extends TestCase {
     long size = s.computeSize();
     shape[0] = (int) Math.max(1, max_size / size);
     return new Section(shape);
-  }
-
-
-
-  public static void main(String[] args) {
-    TestH5read test = new TestH5read("fake");
-    //test.readAllData( "c:/data/hdf5/msg/test.h5");
-    //test.readAllData( "c:/data/hdf5/HIRDLS/HIRDLS2_v0.3.1-aIrix-c3_2003d106.h5");
-    test.readAllDir( "c:/data/hdf5/HIRDLS");
   }
 
 }
