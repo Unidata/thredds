@@ -38,6 +38,7 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dt.grid.GridDataset;
+import ucar.unidata.test.util.TestDir;
 
 import java.io.IOException;
 import java.util.*;
@@ -54,10 +55,10 @@ public class TestHttpOpen {
   @Parameterized.Parameters
   public static Collection testUrls() {
       Object[][] data = new Object[][]{
-              {"http://remotetest.unidata.ucar.edu//thredds/fileServer/public/dataset/testdata/2004050412_eta_211.nc"},
-              {"http://remotetest.unidata.ucar.edu//thredds/fileServer/public/dataset/testdata/2004050400_eta_211.nc"},
-              {"http://remotetest.unidata.ucar.edu//thredds/fileServer/public/dataset/testdata/2004050312_eta_211.nc"},
-              {"http://remotetest.unidata.ucar.edu//thredds/fileServer/public/dataset/testdata/2004050300_eta_211.nc"},
+              {"http://"+ TestDir.threddsTestServer+"//thredds/fileServer/public/dataset/testdata/2004050412_eta_211.nc"},
+              {"http://"+TestDir.threddsTestServer+"//thredds/fileServer/public/dataset/testdata/2004050400_eta_211.nc"},
+              {"http://"+TestDir.threddsTestServer+"//thredds/fileServer/public/dataset/testdata/2004050312_eta_211.nc"},
+              {"http://"+TestDir.threddsTestServer+".//thredds/fileServer/public/dataset/testdata/2004050300_eta_211.nc"},
       };
       return Arrays.asList(data);
   }

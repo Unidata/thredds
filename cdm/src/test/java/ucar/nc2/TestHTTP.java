@@ -35,6 +35,7 @@ package ucar.nc2;
 import org.junit.Test;
 import ucar.ma2.*;
 import ucar.nc2.util.Misc;
+import ucar.unidata.test.util.TestDir;
 
 import java.io.IOException;
 
@@ -44,8 +45,7 @@ public class TestHTTP  {
 
   @Test
   public void testNC2() throws IOException {
-    //NetcdfFile ncfile = NetcdfFile.open("http://remotetest.unidata.ucar.edu/thredds/fileServer/public/dataset/testdata/mydata1.nc");
-    NetcdfFile ncfile = NetcdfFile.open("http://remotetest.unidata.ucar.edu/thredds/fileServer/testdata/mydata1.nc");
+    NetcdfFile ncfile = NetcdfFile.open("http://"+ TestDir.threddsTestServer + "/thredds/fileServer/testdata/mydata1.nc");
     assert ncfile != null;
 
     assert(null != ncfile.findDimension("lat"));
