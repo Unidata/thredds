@@ -180,12 +180,12 @@ public class Grib1DataTable extends JPanel {
       }
     });
 
-    varPopup.addAction("Show Data", new AbstractAction() {
+    varPopup.addAction("Show Data Cubic Interpolation", new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
         Grib1RecordBean bean = (Grib1RecordBean) record1BeanTable.getSelectedBean();
         if (bean != null) {
           Formatter f = new Formatter();
-          showData(bean, true, false, f);
+          showData(bean, true, GribData.InterpolationMethod.cubic, f);
           infoPopup2.setText(f.toString());
           infoPopup2.gotoTop();
           infoWindow2.show();
@@ -198,7 +198,7 @@ public class Grib1DataTable extends JPanel {
         Grib1RecordBean bean = (Grib1RecordBean) record1BeanTable.getSelectedBean();
         if (bean != null) {
           Formatter f = new Formatter();
-          showData(bean, false, false, f);
+          showData(bean, false, GribData.InterpolationMethod.none, f);
           infoPopup2.setText(f.toString());
           infoPopup2.gotoTop();
           infoWindow2.show();
@@ -211,7 +211,7 @@ public class Grib1DataTable extends JPanel {
         Grib1RecordBean bean = (Grib1RecordBean) record1BeanTable.getSelectedBean();
         if (bean != null) {
           Formatter f = new Formatter();
-          showData(bean, true, true, f);
+          showData(bean, true, GribData.InterpolationMethod.none, f);
           infoPopup2.setText(f.toString());
           infoPopup2.gotoTop();
           infoWindow2.show();
@@ -219,7 +219,18 @@ public class Grib1DataTable extends JPanel {
       }
     });
 
-
+    varPopup.addAction("Show Data Linear Interpretation", new AbstractAction() {
+      public void actionPerformed(ActionEvent e) {
+        Grib1RecordBean bean = (Grib1RecordBean) record1BeanTable.getSelectedBean();
+        if (bean != null) {
+          Formatter f = new Formatter();
+          showData(bean, true, GribData.InterpolationMethod.none, f);
+          infoPopup2.setText(f.toString());
+          infoPopup2.gotoTop();
+          infoWindow2.show();
+        }
+      }
+    });
 
     varPopup.addAction("Extract GribRecord to File", new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
@@ -601,10 +612,10 @@ public class Grib1DataTable extends JPanel {
     Grib1CollectionPanel.compare(bean1.gr.getGDSsection(), bean2.gr.getGDSsection(), f);
   }
 
-  private void showData(Grib1RecordBean bean1, boolean showData, boolean readRaw, Formatter f) {
+  private void showData(Grib1RecordBean bean1, boolean showData, GribData.InterpolationMethod method, Formatter f) {
     float[] data;
     try {
-      data = bean1.readData(readRaw);
+      data = bean1.readData(method);
     } catch (IOException e) {
       f.format("IOException %s", e.getMessage());
       return;
@@ -812,7 +823,7 @@ public class Grib1DataTable extends JPanel {
       info = gr.getBinaryDataInfo(raf);
 
       double pow10 =  Math.pow(10.0, -getDecScale());        // 1/10^D
-      minimum = (float) (pow10 * info.referenceValue);    // R / 10^D
+      minimum = (float) (pow10 * info.referenceValue);      // R / 10^D
       scale = (float) (pow10 * Math.pow(2.0, getBinScale()));  // 2^E / 10^D
 
       double maxPacked = Math.pow(2.0, getNBits()) - 1;
@@ -843,15 +854,15 @@ public class Grib1DataTable extends JPanel {
     }
 
     public float[] readData() throws IOException {
-        return readData(false);
+        return readData(GribData.getInterpolationMethod()); // use default interpolation
     }
 
-    public float[] readData(boolean readRaw) throws IOException {
+    public float[] readData(GribData.InterpolationMethod method) throws IOException {
       int fileno = gr.getFile();
       MFile mfile = fileList.get(fileno);
       try (ucar.unidata.io.RandomAccessFile raf = new ucar.unidata.io.RandomAccessFile(mfile.getPath(), "r")) {
         raf.order(ucar.unidata.io.RandomAccessFile.BIG_ENDIAN);
-        return readRaw ? gr.readDataRaw(raf) : gr.readData(raf);
+        return gr.readDataRaw(raf, method);              // use interpolation passed in
       }
     }
 
