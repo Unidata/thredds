@@ -87,27 +87,6 @@
     <li>times and variables can be spread out among files.</li>
   </ul>
 </blockquote>
-<hr />
-<h4>Example 3: With NcML elements:</h4>
-<pre>&lt;featureCollection name=&quot;NCEP-NAM-Alaska_11km&quot; featureType=&quot;FMRC&quot; harvest=&quot;true&quot; path=&quot;grib/NCEP/NAM/Alaska_11km&quot;&gt;
-  &lt;collection spec=&quot;/data/ldm/pub/native/grid/NCEP/NAM/Alaska_11km/Alaska_11km_#yyyyMMdd_HHmm#.nc$&quot; olderThan=&quot;5 min&quot;/&gt;
-  &lt;update startup=&quot;true&quot; rescan=&quot;0 5 3 * * ? *&quot; /&gt;
-1)&lt;protoDataset choice=&quot;Penultimate&quot; change=&quot;0 2 3 * * ? *&quot; &gt;
-    &lt;netcdf xmlns=&quot;http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2&quot;&gt;
-      &lt;variable name=&quot;humidity&quot; /&gt;
-        &lt;attribute name=&quot;coordinates&quot; value=&quot;time1 height x y&quot;/&gt;
-      &lt;/variable&gt;
-    &lt;/netcdf&gt;
-  &lt;/protoDataset&gt;  
-  &lt;fmrcConfig datasetTypes=&quot;TwoD Best Latest&quot; /&gt;
-2)&lt;netcdf xmlns=&quot;http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2&quot;&gt;
-    &lt;attribute name=&quot;Conventions&quot; value=&quot;CF-1.6&quot;/&gt;
-  &lt;/netcdf&gt;
-&lt;/featureCollection&gt;</pre>
-<ol>
-  <li></li>
-</ol>
-<p>&nbsp;</p>
 <hr/>
 <h2>Conversion of &lt;datasetFmrc&gt; to &lt;featureCollection&gt;</h2>
 
@@ -212,7 +191,7 @@
 <p>Generally, datasets can be broken up by forecast time and/or variable, and the code automatically figures out what everything is. However, one cannot put
   output from multiple runs in the same file; that is, all the variables in a file are assumed to have a single run time. </p>
 
-<p>The ToolsUI FMRC tab (4.2) allows you to view internal strurctures of an FMRC.</p>
+<p>The ToolsUI FMRC tab allows you to view internal strurctures of an FMRC.</p>
 
 <h3>Opening an FMRC </h3>
 
@@ -260,7 +239,7 @@
 <hr width="100%"/>
 <address>
   <img src="../../thread.png" alt="" width="76" height="67"/> This document is maintained by <a href="mailto:caron@unidata.ucar.edu">John Caron</a>
-  and was last updated October 2012.
+  and was last updated October 2014.
 </address>
 </body>
 </html>

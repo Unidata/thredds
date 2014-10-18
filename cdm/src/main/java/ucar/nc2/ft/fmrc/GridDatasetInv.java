@@ -167,14 +167,14 @@ public class GridDatasetInv {
       if (runTimeString != null) {
         this.runDate = DateUnit.parseCalendarDate(runTimeString);
          if (this.runDate == null) {
-           log.warn("GridDatasetInv rundate not ISO date string (%s) file=%s", runTimeString, location);
+           log.warn("GridDatasetInv rundate not ISO date string ({}) file={}", runTimeString, location);
            //throw new IllegalArgumentException(_Coordinate.ModelRunDate + " must be ISO date string " + runTime);
          }
       }
 
       if (this.runDate == null) {
         this.runDate = gds.getCalendarDateStart(); // LOOK not really right
-        log.warn("GridDatasetInv using gds.getStartDate() for run date =%s", runTimeString, location);
+        log.warn("GridDatasetInv using gds.getStartDate() for run date = {}", runTimeString, location);
         //log.error("GridDatasetInv missing rundate in file=" + location);
         //throw new IllegalArgumentException("File must have " + _Coordinate.ModelBaseDate + " or " + _Coordinate.ModelRunDate + " attribute ");
       }
