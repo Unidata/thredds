@@ -94,7 +94,7 @@ public class TestGribCollectionsDense {
     assert count.nmiss == 0;
   }
 
-  @Test
+  // @Test
   public void problem() throws IOException {
     GribIosp.setDebugFlags(new DebugFlagsImpl("Grib/indexOnlyShow"));
     String filename = "/gribCollections/dgex/DGEX-test-dgex.ncx2";
