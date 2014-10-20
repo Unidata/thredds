@@ -210,8 +210,11 @@ public class FeatureCollectionConfig {
         rewriteS = rewriteS.toLowerCase();
         if (rewriteS.equalsIgnoreCase("true"))
           this.updateType = CollectionUpdateType.test;
-        else
+        else try {
           this.updateType = CollectionUpdateType.valueOf(rewriteS);
+        } catch (Throwable t) {
+          log.error("Bad updateType= {} in {}", rewriteS);
+        }
 
         // user has placed an update/tdm element in the catalog
         userDefined = true;

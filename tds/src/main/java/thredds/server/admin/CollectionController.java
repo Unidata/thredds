@@ -182,7 +182,11 @@ public class CollectionController  {
     CollectionUpdateType type = null;
     if (path.equals("/"+COLLECTION+"/"+TRIGGER)) {
       String triggerType = req.getParameter(TRIGGER);
-      type = CollectionUpdateType.valueOf(triggerType);
+      try {
+        type = CollectionUpdateType.valueOf(triggerType);
+      } catch (Throwable t) {
+        ;  // noop
+      }
       if (type == null) {
         res.setStatus(HttpServletResponse.SC_BAD_REQUEST);
         pw.printf(" TRIGGER Type %s not legal%n", Escape.html(triggerType));

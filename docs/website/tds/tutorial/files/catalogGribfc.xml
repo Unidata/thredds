@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<catalog name="Test GribCollections"
+         xmlns="http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0"
+         xmlns:xlink="http://www.w3.org/1999/xlink">
+
+  <service name="all" serviceType="Compound" base="">
+    <service name="ncdods" serviceType="OPENDAP" base="/thredds/dodsC/"/>
+    <service name="HTTPServer" serviceType="HTTPServer" base="/thredds/fileServer/"/>
+    <service name="wcs" serviceType="WCS" base="/thredds/wcs/"/>
+    <service name="wms" serviceType="WMS" base="/thredds/wms/"/>
+    <service name="ncss" serviceType="NetcdfSubset" base="/thredds/ncss/grid/"/>
+    <service name="cdmremote" serviceType="CdmRemote" base="/thredds/cdmremote/"/>
+    <service name="ncml" serviceType="NCML" base="/thredds/ncml/"/>
+    <service name="uddc" serviceType="UDDC" base="/thredds/uddc/"/>
+    <service name="iso" serviceType="ISO" base="/thredds/iso/"/>
+  </service>
+  
+  <featureCollection name="FNL" featureType="GRIB" path="gribfc/LocalFNLCollection">
+    <metadata inherited="true">
+      <dataFormat>GRIB-1</dataFormat>
+      <serviceName>all</serviceName>
+      <documentation type="summary">LOCAL FNL's TO TEST TIME PARTITION</documentation>
+    </metadata>
+
+    <collection name="LOCAL_FNL"
+                spec="/work/tds/tutorial/fnl/**/fnl_.*_00_c$"
+                timePartition="1 month"
+                dateFormatMark="#fnl_#yyyyMMdd_HH" />
+
+    <update startup="true"/>
+  </featureCollection>
+
+  <featureCollection name="ECMWF Data" featureType="GRIB" path="gribfc/ecmwf">
+    <metadata inherited="true">
+      <dataFormat>GRIB-1</dataFormat>
+      <serviceName>all</serviceName>
+    </metadata>
+    <collection name="ECMWF_GNERA" spec="/work/tds/tutorial/ecmwf/ECMWF_GNERA_d000..20121001" dateFormatMark="#.#yyyyMMdd"/>
+    <gribConfig datasetTypes="Best LatestFile Files">
+      <gdsName hash="1562665966" groupName="domain1"/>
+      <gdsName hash="-104750013" groupName="domain2"/>
+    </gribConfig>
+  </featureCollection>
+
+  <featureCollection name="NDFD-CONUS_5km_conduit" featureType="GRIB" path="gribfc/ndfd">
+    <metadata inherited="true">
+      <dataFormat>GRIB-2</dataFormat>
+    </metadata>
+    <collection spec="/work/tds/tutorial/ndfd/.*grib2$" dateFormatMark="#NDFD_CONUS_5km_conduit_#yyyyMMdd_HHmm" />
+    <gribConfig>
+      <gdsHash from="-2121584860" to="28944332"/>
+    </gribConfig>
+  </featureCollection>
+
+  
+</catalog>
