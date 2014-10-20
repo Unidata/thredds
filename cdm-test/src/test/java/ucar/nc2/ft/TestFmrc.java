@@ -85,7 +85,7 @@ public class TestFmrc {
       doOne(TestDir.cdmUnitTestDir + "ncml/AggFmrcGribRunseq.ncml", 13, 5, 8, 2, "Temperature_height_above_ground", 4, 29, 35);
       doOne(TestDir.cdmUnitTestDir + "ncml/AggFmrcGrib.ncml", 54, 19, 20, 12, "Temperature_height_above_ground", 8, 29, 72);
       doOne(TestDir.cdmUnitTestDir + "ncml/AggFmrcNonuniform.ncml", 48, 12, 17, 6, "Temperature_height_above_ground", 3, 9, 9);
-      doOne(TestDir.cdmUnitTestDir + "ncml/AggForecastModel.ncml", 41, 6, 10, 4, "u", 15, 11, 37);     //*/
+      doOne(TestDir.cdmUnitTestDir + "ncml/AggForecastModel.ncml", 41, 6, 10, 4, "u", 15, 11, 39);     //*/
 
       // fmrcSingle
       // doOne(TestDir.cdmLocalTestDataDir + "ncml/offsite/aggFmrcScan2.ncml", 158, 27, 28, 23, "Temperature", 2, 3,  6);

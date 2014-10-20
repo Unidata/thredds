@@ -62,7 +62,7 @@ public class TestGrid2 extends UnitTestCommon
     static final protected String URLPATH_REMOTE =
             "/thredds/dodsC/testdods/" + DATASET;
     static final protected String URLPATH_LOCAL =
-            "/thredds/dodsC/testAll/" + DATASET;
+            "/thredds/dodsC/testdods/" + DATASET;
 
     protected String testserver = null;
 
@@ -154,7 +154,7 @@ public class TestGrid2 extends UnitTestCommon
     }
 
     static protected final String BASELINE =
-            "netcdf dods://localhost:8080/thredds/dodsC/testAll/testgrid2.nc {\n"
+            "netcdf dods://localhost:8080/thredds/dodsC/testdods/testgrid2.nc {\n"
                     + "  dimensions:\n"
                     + "    time = 2;\n"
                     + "  variables:\n"

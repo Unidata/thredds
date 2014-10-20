@@ -56,6 +56,7 @@ import ucar.nc2.ft.FeatureDatasetPoint;
 import ucar.nc2.ft.grid.CoverageDataset;
 import ucar.nc2.ft.point.PointDatasetImpl;
 import ucar.nc2.geotiff.GeoTiff;
+import ucar.nc2.grib.GribData;
 import ucar.nc2.grib.collection.GribCollection;
 import ucar.nc2.grib.grib1.tables.Grib1ParamTables;
 import ucar.nc2.grib.grib2.table.WmoCodeTable;
@@ -1004,6 +1005,17 @@ public class ToolsUI extends JPanel {
     boolean strictMode = Grib1ParamTables.isStrict();
     a.putValue(BAMutil.STATE, strictMode);
     BAMutil.setActionPropertiesToggle(a, null, "GRIB1 strict", strictMode, 'S', -1);
+    BAMutil.addActionToMenu(subMenu, a);
+
+    a = new AbstractAction() {
+      public void actionPerformed(ActionEvent e) {
+        Boolean state = (Boolean) getValue(BAMutil.STATE);
+        GribData.setInterpolationMethod( state ? GribData.InterpolationMethod.cubic : GribData.InterpolationMethod.linear);
+      }
+    };
+    boolean useCubic = GribData.getInterpolationMethod() == GribData.InterpolationMethod.cubic;
+    a.putValue(BAMutil.STATE, useCubic);
+    BAMutil.setActionPropertiesToggle(a, null, "Use Cubic Interpolation on Thin Grids", useCubic, 'I', -1);
     BAMutil.addActionToMenu(subMenu, a);
 
     /////////////////////////////////////

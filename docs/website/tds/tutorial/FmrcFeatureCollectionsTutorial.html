@@ -63,7 +63,7 @@
        &lt;documentation type=&quot;summary&quot;&gt;Example BOM&lt;/documentation&gt;
      &lt;/metadata&gt;
  
-4)   &lt;collection spec=&quot;/machine/tds/workshop/bom/**/ocean_fc_#yyyMMdd#.*\.nc$&quot; /&gt;
+4)   &lt;collection spec=&quot;/machine/tds/workshop/bom/**/ocean_fc_#yyyyMMdd#.*\.nc$&quot; /&gt;
    &lt;/featureCollection&gt;
   &lt;/dataset&gt;
 &lt;/catalog&gt;</pre>
@@ -146,7 +146,7 @@
                   name=&quot;GFS_Global_2p5deg&quot;
 <strong>1)</strong>                recheckAfter=&quot;15 min&quot;
 <strong>2)</strong>                olderThan=&quot;5 min&quot;/&gt;
-<strong>3)</strong>    &lt;update startup=&quot;true&quot; rescan=&quot;0 5 3 * * ? *&quot; trigger=&quot;allow&quot;/&gt;
+<strong>3)</strong>    &lt;update startup=&quot;test&quot; rescan=&quot;0 5 3 * * ? *&quot; trigger=&quot;allow&quot;/&gt;
 <strong>4)</strong>    &lt;protoDataset choice=&quot;Penultimate&quot; change=&quot;0 2 3 * * ? *&quot; /&gt;
 <strong>5)</strong>    &lt;fmrcConfig datasetTypes=&quot;TwoD Best Runs ConstantForecasts ConstantOffsets Files&quot; /&gt;
 

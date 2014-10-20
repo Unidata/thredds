@@ -185,7 +185,7 @@ public class FeatureCollectionConfig {
 
   // <update startup="nocheck" rescan="cron expr" trigger="allow" append="true"/>
   static public class UpdateConfig {
-    public String recheckAfter;       // LOOK remove ??
+    public String recheckAfter;       // used by non-GRIB FC
     public String rescan;
     public boolean triggerOk = true;
     public boolean userDefined = false;

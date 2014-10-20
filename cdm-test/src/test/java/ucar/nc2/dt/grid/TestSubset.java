@@ -325,9 +325,9 @@ public class TestSubset {
     assert null != gcs;
     assert grid.getRank() == 4;
 
+    // x and y stride 10
     GeoGrid grid_section = grid.subset(null, null, null, 1, 10, 10);
-
-    Array data = grid_section.readDataSlice(0, -1, -1, -1);
+    Array data = grid_section.readDataSlice(0, -1, -1, -1);      // get first time slice
     assert data.getRank() == 3;
     // assert data.getShape()[0] == 6 : data.getShape()[0];
     assert data.getShape()[1] == 43 : data.getShape()[1];

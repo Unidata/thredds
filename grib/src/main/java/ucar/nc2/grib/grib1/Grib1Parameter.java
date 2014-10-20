@@ -59,7 +59,7 @@ public class Grib1Parameter implements GribTables.Parameter {
     this.number = number;
     this.name = setName(name);
     this.description = setDescription(description);
-    this.unit = setUnit(unit);
+    this.unit = unit; // setUnit(unit);
     this.cfName = null;
   }
 
@@ -68,7 +68,7 @@ public class Grib1Parameter implements GribTables.Parameter {
     this.number = number;
     this.name = setName(name);
     this.description = setDescription(description);
-    this.unit = setUnit(unit);
+    this.unit = unit; // setUnit(unit);
     this.cfName = cf_name;
   }
 

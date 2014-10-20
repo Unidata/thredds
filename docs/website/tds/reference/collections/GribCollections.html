@@ -57,18 +57,18 @@
        &lt;/documentation&gt;
      &lt;/metadata&gt;
 4)   &lt;collection spec=&quot;/data/ldm/pub/native/grid/NCEP/GFS/Puerto_Rico_191km/.*grib1$&quot;&gt;
-5)   &lt;tdm rewrite=&quot;test&quot; rescan=&quot;0 0/15 * * * ? *&quot; trigger=&quot;allow&quot;/&gt;
-6)   &lt;gribConfig datasetTypes=&quot;TwoD Latest Best&quot; /&gt;
+5)   &lt;update startup=&quot;never&quot; trigger=&quot;allow&quot;/&gt;
+6)   &lt;tdm rewrite=&quot;test&quot; rescan=&quot;0 0/15 * * * ? *&quot; trigger=&quot;allow&quot;/&gt;
+7)   &lt;gribConfig datasetTypes=&quot;TwoD Latest Best&quot; /&gt;
    &lt;/featureCollection&gt;</pre>
 <ol>
   <li>A featureCollection must have a <em>name, a featureType</em> and a <em>path</em> (do <strong>not</strong> set an <em>ID</em> attribute<em>)</em>. It's best to make the name short but descriptive, and it must be unique across all collections on your TDS.
   Note that the <strong>featureType</strong> attribute must now equal <em>GRIB1</em> or <em>GRIB2</em>, not plain <em>GRIB</em>.</li>
   <li>A featureCollection is an InvDataset, so it can contain any elements an InvDataset can contain. It must have or inherit a default service.</li>
-  <li>The collection must consist of either GRIB-1 or GRIB-2 files. You no longer need set the dataFormat element to indicate which, as it is specified in the featureType.</li>
+  <li>The collection must consist of either GRIB-1 or GRIB-2 files. You no longer need set the dataFormat element to indicate which, as it is specified in the featureType, and will be added automatically.</li>
   <li>The <a href="CollectionSpecification.html">collection specification</a> defines the collection of files that are in this dataset.</li>
-  <li>The collection of files change, and this <em>update</em> element says to rescan it on TDS startup and every 15 minutes, as well as allow manual triggers
-    for updating.
-  </li>
+  <li>This <em>update</em> element tells the TDS to use the existing indices, and to rrread them only when an external trigger is sent. This is the default behavior as of 4.5.4.</li>
+  <li><a href="GribConfig.html"></a>The collection of files change, and this <em>tdm</em> element tells the TDM to test every 15 minutes if the collection has changed, and to rewrite the indices and and send a trigger to the TDS when it has changed.</li>
   <li><a href="GribConfig.html">GRIB specific configuration</a>. </li>
 </ol>
 <h3>Resulting Datasets:</h3>
@@ -113,19 +113,18 @@ or, simplifying:
 <hr/>
 <h2>Example 2 (Time Partition):</h2>
 
-<p>For very large datasets, use a time partition for efficiency. Currently we are using the rule of thumb (on Unidata's thredds server) that when the number
-  of GRIB records in the collection exceeds 3 million, we time partition the dataset. </p>
+<p>For  large datasets, use a time partition for efficiency. Example:</p>
 <pre>&lt;featureCollection name=&quot;NAM-Polar90&quot; featureType=&quot;GRIB&quot; path=&quot;grib/NCEP/NAM/Polar90&quot;&gt;
    &lt;metadata inherited=&quot;true&quot;&gt;
      &lt;dataFormat&gt;GRIB-2&lt;/dataFormat&gt;
    &lt;/metadata&gt;
    &lt;collection spec=&quot;G:/mlode/polar90/.*grib2$&quot;
-1)     timePartition=&quot;1 day&quot;
+1)     timePartition=&quot;file&quot;
 2)     dateFormatMark=&quot;#NAM_Polar_90km_#yyyyMMdd_HHmm&quot; /&gt;
 3) &lt;update startup=&quot;true&quot; trigger=&quot;allow&quot;/&gt;
 &lt;/featureCollection&gt;</pre>
 <ol>
-  <li>The collection is divided into partitions, based on the date of the file. In this case, each day becomes a seperate partition.</li>
+  <li>The collection is divided into partitions. In this case, each file becomes a seperate partition. In order to use this, each file must contain GRIB records from a single runtime.</li>
   <li>The starting time of the partition must be encoded into the filename. One must define a date extractor in the <a href="CollectionSpecification.html">collection
     specification</a>, or by using a dateFormatMark, as in this example.
   </li>
