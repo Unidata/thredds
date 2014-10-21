@@ -300,25 +300,6 @@
 <div id="section">
 <h2><a name="config">TDS Configuration Catalogs</a></h2>
 
-<h3><a name="rootCatalogs">TDS Root Catalog</a></h3>
-
-<p>At startup, the TDS reads the root catalog from:</p>
-<pre>&lt;tds.content.root.path&gt;/thredds/catalog.xml</pre>
-<p> The value of <pre>tds.content.root.path</pre> is usually given as a command line option to Java. The default location is:</p>
-<pre>${tomcat_home}/content/</pre>
-<p>TDS also recursively reads all configuration catalogs that are linked to the root through a relative <code>catalogRef</code> element . The resulting tree of catalogs are used
-  as the top-level catalogs served by the TDS. In the case of our distributed root catalog, the tree looks like:</p>
-<pre>catalog.xml<br>    |<br>    |-- enhancedCatalog.xml</pre>
-<p>The tree of configuration catalogs can be as deeply nested as desired.</p>
-
-<h3>Additional Root Catalogs</h3>
-
-<p>Additional root configuration catalogs can be defined in </p>
-<pre>&lt;tds.content.root.path&gt;/thredds/<strong>threddsConfig.xml</strong> </pre>
-<p>file. For instance, to add a test catalog add the following line:</p>
-<pre>&lt;catalogRoot&gt;myTestCatalog.xml&lt;/catalogRoot&gt;<br></pre>
-<p>Each additional root configuration catalog can be the root of another tree of configuration catalogs.</p>
-
 <h3>Tools to Manage Configuration Catalogs </h3>
 
 <p>First, the TDS catalog initialization log</p>
