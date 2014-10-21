@@ -89,13 +89,6 @@
 
             This path begins with a slash, so it will be <em>resolved</em> against the <em>server root</em>:
 
-            <div id="note" class="info">
-                <h4>Catalog-relative paths</h4>
-
-                <p>When a base path does <strong>not</strong> start with a slash, it is resolved against the URL of the
-                    catalog. Such paths are called <em>catalog-relative</em>.</p>
-            </div>
-
             <pre>http://hostname:port                <em>// server root</em></pre>
 
             <p>Paths like these, with a leading slash, are called <em>root-relative</em>.</p>
@@ -419,7 +412,7 @@ http://hostname:port/thredds/dodsC/sage/20061031.nc
     <div id="note" class="info">
         <h4>Reference documentation</h4>
 
-        <p>The schema document referenced in the example can be found
+        <p>The schema referenced in the example can be found
             <a href="http://www.unidata.ucar.edu/schemas/thredds/InvCatalog.1.0.6.xsd">here</a>.
             However, you'll probably want to study the
             <a href="../catalog/InvCatalogSpec.html">catalog specification</a>
