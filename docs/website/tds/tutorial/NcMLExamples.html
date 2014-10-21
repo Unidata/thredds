@@ -18,18 +18,18 @@ file that resides on disk; the file in the second example will live on our local
   <div id="expanded" class="exercise">
     <h3>Example 1: Local WRF output</h3>
     <ol>
-      <li><p>In the ToolsUI "Viewer" tab, open <code>/machine/tds/data/ncmlExamples/simpleNcmlOne/wrfout_d01_2000-01-25_00--00--00</code> Note that the model
+      <li><p>In the ToolsUI "Viewer" tab, open <code>/machine/tds/data/ncmlExamples/simpleNcmlOne/wrfout_d01_2005-08-27_00_00_00</code> Note that the model
         output are on an <a href="http://mitgcm.org/sealion/online_documents/node45.html">Arakawa C grid</a>, so we have 'regular' and 'stag' dimensions.</p>
       </li>
       <li><p>Open the following link in your browser: <a href="http://www.unidata.ucar.edu/blogs/developer/en/entry/wrf_goes_cf">WRF goes CF</a></p>
       </li>
-      <li><p>In ToolsUI "NcML" tab, open <code>/machine/tds/data/ncmlExamples/simpleNcmlOne/wrfout_d01_2000-01-25_00--00--00</code>, and save a copy of the
+      <li><p>In ToolsUI "NcML" tab, open <code>/machine/tds/data/ncmlExamples/simpleNcmlOne/wrfout_d01_2005-08-27_00_00_00</code>, and save a copy of the
         resulting NcML.</p>
       </li>
       <li><p>We will not be changing any of the dimensions or global attributes, so remove them from the NcML. Also, many of the variable attribues will not be
         changed, so they can be removed as well (e.g. FieldType, MemoryOrder, description,...).</p>
       </li>
-      <li><p>Some variables (notably 2D) have an atribute called 'coordinates', while others do not. See
+      <li><p>Some variables (notably 2D) have an attribute called 'coordinates', while others do not. See
         <a href="http://www.unidata.ucar.edu/blogs/developer/en/entry/wrf_goes_cf_two">WRF Goes CF - Part Two</a> on which variables need them and go ahead and
         add a few.</p>
       </li>
