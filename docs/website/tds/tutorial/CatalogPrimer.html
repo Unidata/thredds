@@ -15,7 +15,7 @@
     <div id="note" class="info">
         <h4>Reference documentation</h4>
 
-        <p>The <a href="../catalog/InvCatalogSpec.html">annotated schema</a> is the best complete description of THREDDS
+        <p>The <a href="../catalog/InvCatalogSpec.html">catalog specification</a> is the best complete description of THREDDS
             catalogs.</p>
     </div>
 
@@ -43,13 +43,17 @@
 <div id="section">
     <h2><a name="Basics">Basics</a></h2>
 
-    <p>Here's an example of a simple catalog:</p>
+    <p>THREDDS catalogs collect, organize, and describe accessible datasets. They provide a hierarchical structure for
+        organizing the datasets as well as an access method (URL) and a human-understandable name for each dataset.
+        Further descriptive information about each dataset can also be added.</p>
+
+    <p>Here's an example of a very simple catalog:</p>
 
 <pre>
 1) &lt;?xml version="1.0" ?&gt;
 2) &lt;<strong>catalog</strong> <strong>xmlns</strong>="http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0" &gt;
-3)   &lt;<strong>service</strong> name="<strong>odap</strong>" serviceType="<strong>OpenDAP</strong>" base="<strong>/thredds/dodsC/</strong>" /&gt;
-4)   &lt;<strong>dataset</strong> name="SAGE III Ozone 2006-10-31" serviceName="<strong>odap</strong>" urlPath="<strong>sage/20061031.nc</strong>"/&gt;
+3)   &lt;<strong>service</strong> name="<strong>odap</strong>" serviceType="<strong>OpenDAP</strong>" base="/thredds/dodsC/" /&gt;
+4)   &lt;<strong>dataset</strong> name="<strong>SAGE III Ozone 2006-10-31</strong>" serviceName="<strong>odap</strong>" urlPath="sage/20061031.nc"/&gt;
 5) &lt;/<strong>catalog</strong>&gt;
 </pre>
 
@@ -60,15 +64,12 @@
         <li>This is the root element of the XML, the <code>catalog</code> element. It must declare the <em>thredds
             catalog namespace</em> with the <code>xmlns</code> attribute exactly as shown.
         </li>
-        <li>This declares a <em>service</em> with name <code>odap</code>.
-            It is a OpenDAP service whose dataset URLs all start with <code>/thredds/dodsC/</code>. This is what is
-            called a <em>relative URL</em>, and is <em>resolved</em> against the catalog URL. If the catalog URL is, for example,
-            <code>http://thredds.ucar.edu/thredds/Sage/catalog.html,</code> then the service base will resolve to
-            <code>http://thredds.ucar.edu/thredds/dodsC/</code>.
+        <li>This declares a <em>service</em> named <code>odap</code> that will serve data via the OpenDAP protocol.
+            Many other data access services come bundled with THREDDS.
         </li>
-        <li>This declares a <code>dataset</code> whose name is <em>SAGE III Ozone 2006-10-31</em>. It
-            references the <code>odap</code> service, and its access URL will be
-            <code>http://thredds.ucar.edu/thredds/dodsC/<strong>sage/20061031.nc</strong></code>.
+        <li>This declares a <em>dataset</em> named <code>SAGE III Ozone 2006-10-31</code>. It references the
+            <code>odap</code> service, meaning that it will be served via OpenDAP. The URL to access the dataset will
+            be discussed in the <a href="#Constructing_an_access_URL">following section</a>.
         </li>
         <li>This closes the <code>catalog</code> element.</li>
     </ol>
@@ -193,7 +194,7 @@ http://hostname:port/thredds/dodsC/sage/20061031.nc
         <h4>Reference documentation</h4>
 
         <p>A complete listing of available properties can be found in the
-            <a href="../catalog/InvCatalogSpec.html#dataset">annotated schema</a>.</p>
+            <a href="../catalog/InvCatalogSpec.html#dataset">catalog specification</a>.</p>
     </div>
 
     <p>So far, we've used the <code>name</code>, <code>serviceName</code>, and <code>urlPath</code> attributes
@@ -224,11 +225,19 @@ http://hostname:port/thredds/dodsC/sage/20061031.nc
 &lt;/dataset&gt;
 </pre>
 
+    <div id="note" class="info">
+        <h4>Reference documentation</h4>
+
+        <p>A complete listing of necessary attributes can be found
+            <a href="../reference/DLexport.html">here</a>.</p>
+    </div>
+
+    <h3>Exporting THREDDS datasets to digital libraries</h3>
+
     <p>The <code>harvest</code> attribute indicates that the dataset is at the
         right level of granularity to be exported to digital libraries or other discovery services.
         Elements such as <code>summary</code>, <code>rights</code>, and <code>publisher</code>
-        are needed in order to create valid entries for these services. For
-        more details, see <a href="../reference/DLexport.html">Exporting THREDDS Datasets to Digital Libraries.</a></p>
+        are needed in order to create valid entries for these services.</p>
 
 <pre>
 &lt;dataset name="SAGE III Ozone Loss Experiment" <strong>harvest="true"</strong>&gt;
@@ -293,39 +302,53 @@ http://hostname:port/thredds/dodsC/sage/20061031.nc
 
     <p>It is very useful to break up large catalogs into pieces and separately
         maintain each piece. One way to do this is to build each piece as a separate
-        and logically complete catalog, then create a master catalog using catalog references:</p>
+        and logically-complete catalog, then create a master catalog using <em>catalog references</em>:</p>
 
 <pre>
   &lt;?xml version="1.0" encoding="UTF-8"?&gt;
   &lt;catalog xmlns="http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0" name="Top Catalog"
 1)    <strong>xmlns:xlink="http://www.w3.org/1999/xlink"</strong>&gt;
 2)  &lt;dataset name="Realtime data from IDD"&gt;
-3)    &lt;<strong>catalogRef</strong> <strong>xlink:href</strong>="idd/models.xml" <strong>xlink:title</strong>="NCEP Model Data" name="" /&gt;
+3)    &lt;<strong>catalogRef</strong> <strong>xlink:href</strong>="idd/models.xml" <strong>xlink:title</strong>="NCEP Model Data" <strong>name</strong>="" /&gt;
       &lt;<strong>catalogRef</strong> xlink:href="idd/radars.xml" xlink:title="NEXRAD Radar" name="" /&gt;
       &lt;<strong>catalogRef</strong> xlink:href="idd/obsData.xml" xlink:title="Station Data" name="" /&gt;
       &lt;<strong>catalogRef</strong> xlink:href="idd/satellite.xml" xlink:title="Satellite Data" name="" /&gt;
     &lt;/dataset&gt;
+
+4)  &lt;<strong>catalogRef</strong> xlink:title="Far Away University catalog" xlink:href="http://www.farAway.edu/thredds/catalog.xml" /&gt;
   &lt;/catalog&gt;
 </pre>
 
     <ol>
         <li>We declare the <strong>xlink namespace</strong> in the catalog element.</li>
-        <li>The <em>collection</em> (or <em>container</em>) dataset logically contains the <code>catalogRefs</code>,
+        <li>The <em>collection</em> (or <em>container</em>) dataset logically contains the <code>catalogRef</code>s,
             which are thought of as nested datasets whose contents are the contents of the external catalog.
         </li>
         <li>Here are several <code>catalogRef</code> elements, each with a link to an external catalog,
             using the <code>xlink:href</code> attribute.
-            The <code>xlink:title</code> is used as the name of the dataset. We need a name attribute (in order to
-            validate, for obscure reasons), but it is
+            The <code>xlink:title</code> is used as the name of the dataset. We need a <code>name</code> attribute
+            (in order to validate, for obscure reasons), but it is
             ignored. The <code>xlink:href</code> attributes are relative URLS and are resolved against the catalog
-            URL. If the catalog URL is, for example, <code>http://thredds.ucar.edu/thredds/data/catalog.xml</code>,
-            then the resolved URL of the first catalogRef will be <code>http://thredds.ucar.edu/thredds/data/idd/models.xml</code>.
+            URL. For example, if the catalog URL is:
+            <pre>http://thredds.ucar.edu/thredds/data/<strong>catalog.xml</strong></pre>
+            then the resolved URL of the first <code>catalogRef</code> will be:
+            <pre>http://thredds.ucar.edu/thredds/data/<strong>idd/models.xml</strong></pre>
+        </li>
+        <li><code>catalogRef</code>s needn't point to local catalogs only; this one points to a remote one at
+            Far Away University.
         </li>
     </ol>
 </div>
 
 <div id="section">
     <h2><a name="Compound_service_elements">Compound <code>service</code> elements</a></h2>
+
+    <div id="note" class="info">
+        <h4>Reference documentation</h4>
+
+        <p>A complete listing of recognized service types can be found in the
+            <a href="../catalog/InvCatalogSpec.html#serviceTypes">catalog specification</a>.</p>
+    </div>
 
     <p>Datasets can be made available through more than one access
         method by defining and then referencing a <strong>compound</strong> <code>service</code> element. The following:
@@ -349,7 +372,7 @@ http://hostname:port/thredds/dodsC/sage/20061031.nc
 &lt;/dataset&gt;
 </pre>
 
-    <p>would result in these two access URLs, open for OpenDAP access and one for WCS access:<br></p>
+    <p>would result in these two access URLs, one for OpenDAP access and one for WCS access:<br></p>
 
     <pre>/thredds/dodsC/so/cool/data.nc</pre>
 
@@ -366,50 +389,23 @@ http://hostname:port/thredds/dodsC/sage/20061031.nc
     <p>results in a single access URL:</p>
 
     <pre>/thredds/dodsC/more/cool/data.nc</pre>
-
-    Note:
-    <ul>
-        <li>The catalog specification provides a <a href="../catalog/InvCatalogSpec.html#serviceTypes">list of
-            recognized
-            service types</a>.
-        </li>
-        <li>The service names must be unique in each catalog</li>
-    </ul>
 </div>
 
 <div id="section">
     <h2><a name="XML_validation">XML validation</a></h2>
 
-    <p>If you use elements from other namespaces, you must declare those namespaces
-        in the catalog element. Currently there are two other namespaces THREDDS libraries
-        will recognize, <strong>Dublin Core</strong>, and <strong>XLink</strong>, whose
-        namespaces look like:</p>
-
-<pre>
-&lt;catalog name="MyName" xmlns="http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0"
-    <strong>xmlns:dc="http://purl.org/dc/elements/1.1/"</strong>
-    <strong>xmlns:xlink="http://www.w3.org/1999/xlink"</strong> &gt;
-</pre>
-
-    <p>Its not obvious, but namespaces are not web addresses, they are just strings
-        that need to be copied exactly as you see them here.</p>
-
     <p>As catalogs get more complicated, you should check that you haven't made any
-        errors. There are three parts to checking: </p>
+        errors. There are three components to checking: </p>
+
     <ol>
         <li>Is the XML well-formed?</li>
         <li>Is it valid against the catalog schema?</li>
         <li>Does it have everything it needs to be read by a THREDDS client?</li>
     </ol>
-    <p>You can use a THREDDS validation service, such as <a
-            href="http://motherlode.ucar.edu:8080/thredds/remoteCatalogValidation.html">this
-        one</a> to check all three of these. </p>
 
-    <p>You can check <em>well-formedness</em> using online tools like <a href="http://www.xmlvalidation.com/">this</a>.
-        If
-        you also want
-        to check <em>validity</em> in those tools, you will need to declare the catalog
-        schema location like this:</p>
+    <p>You can check <em>well-formedness</em> using online tools like <a href="http://www.xmlvalidation.com/">this one</a>.
+        If you also want to check <em>validity</em> in those tools, you will need to declare the catalog
+        schema location like so:</p>
 
 <pre>
 &lt;catalog name="MyName" xmlns="http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0"
@@ -420,20 +416,28 @@ http://hostname:port/thredds/dodsC/sage/20061031.nc
 &lt;/catalog&gt;
 </pre>
 
+    <div id="note" class="info">
+        <h4>Reference documentation</h4>
+
+        <p>The schema document referenced in the example can be found
+            <a href="http://www.unidata.ucar.edu/schemas/thredds/InvCatalog.1.0.6.xsd">here</a>.
+            However, you'll probably want to study the
+            <a href="../catalog/InvCatalogSpec.html">catalog specification</a>
+            instead, as it is much more digestable.</p>
+    </div>
+
     <ol>
-        <li>This line declares the schema-instance namespace. Just copy it exactly as
-            you see it here.
+        <li>This line declares the schema-instance namespace. Just copy it exactly as you see it here.
         </li>
         <li> This line tells your XML validation tool where to find the THREDDS XML schema document.
             Just copy it exactly as you see it here.
         </li>
     </ol>
-    <p>The THREDDS validation service, as well as the catalog
-        library, knows where the schemas are located, so you only need to add these
-        2 lines if you want to do your own validation.</p>
 
-    <p>You will want to study the <a href="../catalog/InvCatalogSpec.html">annotated schema</a>, and the
-        <a href="http://www.unidata.ucar.edu/schemas/thredds/InvCatalog.1.0.6.xsd">schema document </a>itself.</p>
+    <p>Or, you can simply use the
+        <a href="http://thredds.ucar.edu/thredds/remoteCatalogValidation.html">THREDDS Catalog Validation service</a>
+        to check all three components at once. This service already knows where the schemas are located, so it's not
+        necessary to add that information to the catalog; you only need it if you want to do your own validation.</p>
 </div>
 
 <div id="section">

@@ -59,7 +59,6 @@ r		    AdditionalSecurityConfiguration.html    // consolidate in reference ??
 -christian	BasicThreddsConfig_xml.html
 -jenn		BasicTomcatAndTDSSecurity.html
 -christian 	CatalogPrimer.html
--christian 	CatalogPrimerW.html             // christian check, merge into CatalogPrimer?
 -sean		Checklist.html                  // sean check, merge into reference?
 ryan	    ConfigCatalogs.html
 caron		FmrcFeatureCollectionsTutorial.html
