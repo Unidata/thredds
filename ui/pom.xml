@@ -51,6 +51,23 @@
       <groupId>edu.ucar</groupId>
       <artifactId>waterml</artifactId>
     </dependency>
+    <!-- DAP4 Dependencies (technically forward) -->
+    <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>d4core</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>d4shared</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>d4cdmshared</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>d4cdmclient</artifactId>
+    </dependency>
 
     <dependency>
       <groupId>net.sf.ehcache</groupId>
