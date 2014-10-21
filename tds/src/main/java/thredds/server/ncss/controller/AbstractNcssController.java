@@ -32,14 +32,6 @@
  */
 package thredds.server.ncss.controller;
 
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.util.List;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpHeaders;
@@ -49,8 +41,14 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.annotation.ExceptionHandler;
-
 import thredds.server.ncss.exception.NcssException;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.util.List;
 
 /**
  * @author mhermida
@@ -150,7 +148,9 @@ public class AbstractNcssController {
 		return servletCachePath;
 	}
 
-  private static final String[] endings = new String[] {"/dataset.xml", "/dataset.html", "/pointDataset.html", "/pointDataset.xml", "/datasetBoundaries.xml"};
+  private static final String[] endings = new String[] { "/dataset.xml", "/dataset.html", "/pointDataset.html",
+          "/pointDataset.xml", "/datasetBoundaries.xml", "/station.xml"
+  };
   public static String getDatasetPath(HttpServletRequest req) {
     return getDatasetPath( req.getServletPath());
   }
