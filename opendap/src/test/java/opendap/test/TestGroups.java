@@ -68,13 +68,14 @@ public class TestGroups extends UnitTestCommon
     {
         super("DAP Group tests");
         // Check if user specified server.
-        testserver = TestDir.remoteTestServer;
+        testserver = TestDir.dap2TestServer;
         definetestcases();
     }
 
     void
     definetestcases()
     {
+        String threddsRoot = getThreddsroot();
         testcases = new ArrayList<Testcase>();
         if(false) {// use this arm to do debugging
             testcases.add(new Testcase("External user provided group example",

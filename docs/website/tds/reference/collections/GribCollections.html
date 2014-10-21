@@ -57,18 +57,18 @@
        &lt;/documentation&gt;
      &lt;/metadata&gt;
 4)   &lt;collection spec=&quot;/data/ldm/pub/native/grid/NCEP/GFS/Puerto_Rico_191km/.*grib1$&quot;&gt;
-5)   &lt;tdm rewrite=&quot;test&quot; rescan=&quot;0 0/15 * * * ? *&quot; trigger=&quot;allow&quot;/&gt;
-6)   &lt;gribConfig datasetTypes=&quot;TwoD Latest Best&quot; /&gt;
+5)   &lt;update startup=&quot;never&quot; trigger=&quot;allow&quot;/&gt;
+6)   &lt;tdm rewrite=&quot;test&quot; rescan=&quot;0 0/15 * * * ? *&quot; trigger=&quot;allow&quot;/&gt;
+7)   &lt;gribConfig datasetTypes=&quot;TwoD Latest Best&quot; /&gt;
    &lt;/featureCollection&gt;</pre>
 <ol>
   <li>A featureCollection must have a <em>name, a featureType</em> and a <em>path</em> (do <strong>not</strong> set an <em>ID</em> attribute<em>)</em>. It's best to make the name short but descriptive, and it must be unique across all collections on your TDS.
   Note that the <strong>featureType</strong> attribute must now equal <em>GRIB1</em> or <em>GRIB2</em>, not plain <em>GRIB</em>.</li>
   <li>A featureCollection is an InvDataset, so it can contain any elements an InvDataset can contain. It must have or inherit a default service.</li>
-  <li>The collection must consist of either GRIB-1 or GRIB-2 files. You no longer need set the dataFormat element to indicate which, as it is specified in the featureType.</li>
+  <li>The collection must consist of either GRIB-1 or GRIB-2 files. You no longer need set the dataFormat element to indicate which, as it is specified in the featureType, and will be added automatically.</li>
   <li>The <a href="CollectionSpecification.html">collection specification</a> defines the collection of files that are in this dataset.</li>
-  <li>The collection of files change, and this <em>update</em> element says to rescan it on TDS startup and every 15 minutes, as well as allow manual triggers
-    for updating.
-  </li>
+  <li>This <em>update</em> element tells the TDS to use the existing indices, and to rrread them only when an external trigger is sent. This is the default behavior as of 4.5.4.</li>
+  <li><a href="GribConfig.html"></a>The collection of files change, and this <em>tdm</em> element tells the TDM to test every 15 minutes if the collection has changed, and to rewrite the indices and and send a trigger to the TDS when it has changed.</li>
   <li><a href="GribConfig.html">GRIB specific configuration</a>. </li>
 </ol>
 <h3>Resulting Datasets:</h3>
@@ -113,19 +113,18 @@ or, simplifying:
 <hr/>
 <h2>Example 2 (Time Partition):</h2>
 
-<p>For very large datasets, use a time partition for efficiency. Currently we are using the rule of thumb (on Unidata's thredds server) that when the number
-  of GRIB records in the collection exceeds 3 million, we time partition the dataset. </p>
+<p>For  large datasets, use a time partition for efficiency. Example:</p>
 <pre>&lt;featureCollection name=&quot;NAM-Polar90&quot; featureType=&quot;GRIB&quot; path=&quot;grib/NCEP/NAM/Polar90&quot;&gt;
    &lt;metadata inherited=&quot;true&quot;&gt;
      &lt;dataFormat&gt;GRIB-2&lt;/dataFormat&gt;
    &lt;/metadata&gt;
    &lt;collection spec=&quot;G:/mlode/polar90/.*grib2$&quot;
-1)     timePartition=&quot;1 day&quot;
+1)     timePartition=&quot;file&quot;
 2)     dateFormatMark=&quot;#NAM_Polar_90km_#yyyyMMdd_HHmm&quot; /&gt;
 3) &lt;update startup=&quot;true&quot; trigger=&quot;allow&quot;/&gt;
 &lt;/featureCollection&gt;</pre>
 <ol>
-  <li>The collection is divided into partitions, based on the date of the file. In this case, each day becomes a seperate partition.</li>
+  <li>The collection is divided into partitions. In this case, each file becomes a seperate partition. In order to use this, each file must contain GRIB records from a single runtime.</li>
   <li>The starting time of the partition must be encoded into the filename. One must define a date extractor in the <a href="CollectionSpecification.html">collection
     specification</a>, or by using a dateFormatMark, as in this example.
   </li>
@@ -209,7 +208,7 @@ de-referencing the catalogRefs, and simplifying:
 1) &lt;gribConfig&gt;<br/>          &lt;gdsHash from=&quot;-752078894&quot; to=&quot;1193085709&quot;/&gt;<br/>          &lt;gdsName hash='-1960629519' groupName='KTUA:Arkansas-Red River RFC'/&gt;<br/>          &lt;gdsName hash='-1819879011' groupName='KFWR:West Gulf RFC'/&gt;<br/>          &lt;gdsName hash='-1571856555' groupName='KORN:Lower Mississippi RFC'/&gt;<br/>          &lt;gdsName hash='-1491065322' groupName='KKRF:Missouri Basin RFC'/&gt;<br/>          &lt;gdsName hash='-1017807718' groupName='TSJU:San Juan PR WFO'/&gt;<br/>          &lt;gdsName hash='-1003775954' groupName='NCEP-QPE National Mosaic'/&gt;<br/>          &lt;gdsName hash='-529497359' groupName='KRHA:Middle Atlantic RFC'/&gt;<br/>          &lt;gdsName hash='289752153' groupName='KRSA:California-Nevada RFC-6hr'/&gt;<br/>          &lt;gdsName hash='424971237' groupName='KRSA:California-Nevada RFC-1hr'/&gt;<br/>          &lt;gdsName hash='511861653' groupName='KTIR:Ohio Basin RFC'/&gt;<br/>          &lt;gdsName hash='880498701' groupName='KPTR:Northwest RFC'/&gt;<br/>          &lt;gdsName hash='1123818409' groupName='KTAR:Northeast RFC'/&gt;<br/>          &lt;gdsName hash='1174418106' groupName='KNES-National Satellite Analysis'/&gt;<br/>          &lt;gdsName hash='1193085709' groupName='KMSR:North Central RFC'/&gt;<br/>          &lt;gdsName hash='1464276934' groupName='KSTR:Colorado Basin RFC'/&gt;<br/>          &lt;gdsName hash='1815048381' groupName='KALR:Southeast RFC'/&gt;<br/>   &lt;/gribConfig&gt;<br/>
  &lt;/featureCollection&gt;</pre>
 <ol>
-  <li>This dataset has many different groups, and we are using a &lt;gribConfig&gt; element to name them (see <a href="#gribConfig">below</a> for details).</li>
+  <li>This dataset has many different groups, and we are using a &lt;gribConfig&gt; element to name them (see <a href="GribConfig.html">below</a> for details).</li>
 </ol>
 <h3>Resulting Datasets:</h3>
 
@@ -289,11 +288,11 @@ Note that the groups are sorted by name, and that there is no overall collection
 <ol>
   <li>Partition the files by which directory they are in (the files must be time partitioned by the directories)</li>
   <li>One still needs a date extractor from the filename, even when using a directory partition.</li>
-  <li>Minor errors in GRIB coding can create spurious differernces in the GDS. Here we correct one such problem (see <a href="#gribConfig">below</a> for
+  <li>Minor errors in GRIB coding can create spurious differernces in the GDS. Here we correct one such problem (see <a href="GribConfig.html">below</a> for
     details).
   </li>
   <li>Group renaming as in example 2</li>
-  <li>Exclude GRIB records that have a time coordinate interval of (0,0) (see <a href="#gribConfig">below</a> for details).</li>
+  <li>Exclude GRIB records that have a time coordinate interval of (0,0) (see <a href="GribConfig.html">below</a> for details).</li>
 </ol>
 <h3>Resulting Datasets:</h3>
 
@@ -368,29 +367,10 @@ de-referencing the catalogRefs, and simplifying:
     <td>path/<em>files</em>/filename</td>
   </tr>
 </table>
-<p>&nbsp;</p>
-<hr width="100%"/>
-<h3>Notes</h3>
-<p>&nbsp;</p>
-<p>directory - any changes requires complete reread of all files in directory. with files, only files that change need to be reread.</p>
-<h4>GribCollections</h4>
-<p>TwoD: Reference time and forecast time. This allows all grib records to be accessed by the user. no filtering.</p>
-<p>Best: should it be caclulated? optionally? isnt needed in file partition, since only one reference time in the collection.</p>
-<p>gdsHash</p>
-<h4>PartitionCollection</h4>
-<p>partition=&quot;file&quot;. All records with the same reference time are in a single file. Each file is made into a GribCollection. All the files in a directory are made into a PartitionCollection.</p>
-<p>partition=&quot;directory&quot;. All records in all files in a directory are made into a GribCollection. All nested directories are combined into a PartitionCollection. Directories can be arbitrarily nested. Only partitions that change need to be reindexed. Existing indexes are reused when possible. This is the way to handle very large collections.</p>
-<h4>intvFilter</h4>
-<p>only being applied to  partitions; gc.twoD is unfiltered</p>
-<p>xsd</p>
-<p> &lt;xsd:element name=&quot;useGenType&quot; minOccurs=&quot;0&quot; maxOccurs=&quot;1&quot;/&gt; now in pdsHash</p>
-<h4>scanMode</h4>
-<p>could change between records. means we have to read the GDS and retrieve. so must reread entire record, not just drs.</p>
-<p>grib2 data read does not handle -y scanmode. expects that y coord will be flipped.</p>
 <hr width="100%"/>
 <address>
   <img src="../../thread.png" alt="" width="76" height="67"/> This document is maintained by <a href="mailto:caron@unidata.ucar.edu">John Caron</a>
-  and was last updated Jan 2014
+  and was last updated Oct 2014
 </address>
 </body>
 </html>

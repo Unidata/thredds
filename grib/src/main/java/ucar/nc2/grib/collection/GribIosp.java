@@ -71,13 +71,15 @@ import java.util.Formatter;
 public abstract class GribIosp extends AbstractIOServiceProvider {
   static public final String VARIABLE_ID_ATTNAME = "Grib_Variable_Id";
   static public final String GRIB_VALID_TIME = "GRIB forecast or observation time";
-  static boolean debugRead = false;
+  static public boolean debugRead = false;
   static boolean debugIndexOnly = false;  // we are running with only index files, no data
+  static boolean debugIndexOnlyShow = false;  // debugIndexOnly must be true; show record fetch
   static private final boolean debug = false, debugTime = false, debugName = false;
 
   static public void setDebugFlags(ucar.nc2.util.DebugFlags debugFlag) {
     debugRead = debugFlag.isSet("Grib/showRead");
     debugIndexOnly = debugFlag.isSet("Grib/indexOnly");
+    debugIndexOnlyShow = debugFlag.isSet("Grib/indexOnlyShow");
   }
 
   ///////////////////////////////////////////////////////////////////////////////////
@@ -178,7 +180,7 @@ public abstract class GribIosp extends AbstractIOServiceProvider {
 
     } else if (gribCollection == null) { // may have been set in the constructor
 
-      this.gribCollection = GribCdmIndex.makeGribCollectionFromRaf(raf, config, CollectionUpdateType.test, logger);
+      this.gribCollection = GribCdmIndex.makeGribCollectionFromRaf(raf, config, CollectionUpdateType.testIndexOnly, logger);
       if (gribCollection == null)
         throw new IllegalStateException("Not a GRIB data file or ncx2 file " + raf.getLocation());
 
@@ -871,6 +873,12 @@ public abstract class GribIosp extends AbstractIOServiceProvider {
       if (r != 0) return r;
       return Misc.compare(dataPos, o.dataPos);
     }
+
+        // debugging
+    public void show(GribCollection gribCollection) throws IOException {
+      String dataFilename = gribCollection.getFilename( fileno);
+      System.out.printf(" fileno=%d filename=%s datapos=%d%n", fileno, dataFilename, dataPos);
+    }
   }
 
   protected class DataReader {
@@ -897,6 +905,14 @@ public abstract class GribIosp extends AbstractIOServiceProvider {
       RandomAccessFile rafData = null;
       try {
         for (DataRecord dr : records) {
+          if (debugIndexOnly) {
+            if (debugIndexOnlyShow) dr.show(gribCollection);
+            GdsHorizCoordSys hcs = dr.hcs;
+            float[] data = new float[hcs.nx * hcs.ny];        // all zeroes
+            dataReceiver.addData(data, dr.resultIndex, hcs.nx);
+            continue;
+          }
+
           if (dr.fileno != currFile) {
             if (rafData != null) rafData.close();
             rafData = gribCollection.getDataRaf(dr.fileno);
@@ -925,7 +941,7 @@ public abstract class GribIosp extends AbstractIOServiceProvider {
     Array getArray();
   }
 
-  private class DataReceiver implements DataReceiverIF {
+  static private class DataReceiver implements DataReceiverIF {
     private Array dataArray;
     private Range yRange, xRange;
     private int horizSize;
@@ -1048,6 +1064,14 @@ public abstract class GribIosp extends AbstractIOServiceProvider {
       try {
 
         for (PartitionCollection.DataRecord dr : records) {
+          if (debugIndexOnly) {
+            if (debugIndexOnlyShow) dr.show();
+            GdsHorizCoordSys hcs = dr.hcs;
+            float[] data = new float[hcs.nx * hcs.ny];        // all zeroes
+            dataReceiver.addData(data, dr.resultIndex, hcs.nx);
+            continue;
+          }
+
           if ((rafData == null) || !dr.usesSameFile(lastRecord)) {
             if (rafData != null) rafData.close();
             rafData = dr.usePartition.getRaf(dr.partno, dr.fileno);

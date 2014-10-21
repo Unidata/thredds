@@ -84,7 +84,6 @@ public class TestParserCE extends DapTestCommon
     public TestParserCE(String name)
     {
         super(name);
-        setSystemProperties();
         try {
             defineAllTestCases();
             chooseTestcases();

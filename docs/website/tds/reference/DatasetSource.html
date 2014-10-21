@@ -22,8 +22,7 @@
 
 </strong>public boolean <strong>isMine</strong>( HttpServletRequest req);<br><strong>
 </strong>public NetcdfFile <strong>getNetcdfFile</strong>( HttpServletRequest req, HttpServletResponse res) throws IOException;
-}
-</pre>
+}</pre>
 <p>The implementor of <strong>DatasetSource</strong> must quickly determine if it can service the request by returning true or false from the
   <strong>isMine</strong> method. If true, then it must be able to return a NetcdfFile from the <strong>getNetcdfFile</strong>(). Any caching or performance
   optimizations must be handled by the <strong>DatasetSource</strong> implementor. It is usually important for performance reasons to cache the NetcdfFile
@@ -81,13 +80,13 @@
 </pre>
 <h2>Adding to the Thredds Configuration Catalog</h2>
 
-<p>In the above example, <strong>ExampleDataSource</strong> will &quot;claim&quot; any request whose path starts with <em><strong>/special/</strong></em>. In
+<p>In the above example, <strong>DatasetSourceExample</strong> will &quot;claim&quot; any request whose path starts with <em><strong>/special/</strong></em>. In
   the Thredds Configuration Catalog, you will add datasets which have that path. A simple example: </p>
  <pre> &lt;service name="<strong>thisDODS</strong>" serviceType="OpenDAP" base="/thredds/dodsC/" /&gt;
  &lt;dataset name="Test ExampleDataSource" ID="testDataset" serviceName="thisDODS" <strong>urlPath="special/my/testData.foo"</strong> /&gt;
 </pre>
 <p>The dataset will have a URL of <strong>http://server:port/thredds/dodsC/special/my/testData.foo</strong>. Its path will be
-  <strong>/special/my/testData.foo</strong>, so <strong>ExampleDataSource</strong> will claim it, and will be required to return a <strong>NetcdfFile</strong>
+  <strong>/special/my/testData.foo</strong>, so <strong>DatasetSourceExample</strong> will claim it, and will be required to return a <strong>NetcdfFile</strong>
   object. </p>
 
 <p>The value that you put into urlPath will be used by TDS clients. You can use anything you want, as long as your DatasetSource recognizes the path and
@@ -97,8 +96,8 @@
 <strong><br>
 </strong>
 <address>
-  <img src="../thread.png" width="110" height="108">This document is maintained by <a href="mailto:caron@unidata.ucar.edu">John Caron</a> and was last
-  updated Feb 2011
+  <img src="../thread.png" width="110" height="108">This document  was last
+  updated Oct 2014
 </address>
 <p>&nbsp;</p>
 </body>

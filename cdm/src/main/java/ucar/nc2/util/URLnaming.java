@@ -33,6 +33,8 @@
 package ucar.nc2.util;
 
 
+import ucar.unidata.util.StringUtil2;
+
 import javax.print.URIException;
 import java.io.UnsupportedEncodingException;
 import java.net.*;
@@ -189,6 +191,7 @@ public class URLnaming {
       if ((relativeUri.length() > 0) && (relativeUri.charAt(0) == '/'))
         return relativeUri;
 
+      baseUri = StringUtil2.substitute(baseUri, "\\", "/"); // assumes forward slash
       int pos = baseUri.lastIndexOf('/');
       if (pos > 0) {
         return baseUri.substring(0, pos + 1) + relativeUri;

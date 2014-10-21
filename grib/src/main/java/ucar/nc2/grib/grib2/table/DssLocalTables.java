@@ -52,8 +52,14 @@ import java.util.Formatter;
 public class DssLocalTables extends LocalTables {
   private static final String tableName = "resources/grib2/local/cfsr.txt";
   private static boolean debug = false;
+  private static DssLocalTables single;
 
-  DssLocalTables(Grib2Table grib2Table) {
+  public static DssLocalTables getCust(Grib2Table table) {
+    if (single == null) single = new DssLocalTables(table);
+    return single;
+  }
+
+  private DssLocalTables(Grib2Table grib2Table) {
     super(grib2Table);
     if (grib2Table.getPath() == null)
       grib2Table.setPath(tableName);

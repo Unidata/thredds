@@ -225,6 +225,30 @@ public class DatasetHandler {
     return ncfile;
   }
 
+  static public String
+  getNetcdfFilePath(HttpServletRequest req, /*HttpServletResponse res,*/ String reqPath) throws IOException {
+    if (log.isDebugEnabled()) log.debug("DatasetHandler wants " + reqPath);
+    if (debugResourceControl) System.out.println("getNetcdfFile = " + ServletUtil.getRequest(req));
+
+    if (reqPath == null)
+      return null;
+    
+    if (reqPath.startsWith("/"))
+      reqPath = reqPath.substring(1);
+
+    // look for a match
+    DataRootHandler.DataRootMatch match = DataRootHandler.getInstance().findDataRootMatch(reqPath);
+
+    String fullpath;
+    if(match != null)
+	    fullpath = match.dirLocation + match.remaining;
+    else {
+      File file = DataRootHandler.getInstance().getCrawlableDatasetAsFile(reqPath);
+      fullpath = file.getAbsolutePath();
+    }
+    return fullpath;
+  }
+
   static public InvDatasetFeatureCollection getFeatureCollection(HttpServletRequest req, HttpServletResponse res) throws IOException {
 	  return getFeatureCollection(req, res, TdsPathUtils.extractPath(req, null));
   }

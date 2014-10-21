@@ -356,7 +356,7 @@ public class AddeStationObsDataset extends StationObsDatasetImpl {
     return stationHelper.getStationObs(boundingBox, startTime, endTime, cancel);
   }
 
-  private class AddeTypedDataVariable implements ucar.nc2.VariableSimpleIF {
+  static private class AddeTypedDataVariable implements ucar.nc2.VariableSimpleIF {
     String name, units;
     DataType dt;
 

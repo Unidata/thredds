@@ -9,17 +9,17 @@
 <body>
 <h1>TDS Catalogs</h1>
 <hr>
-<p>TDS is configured with <em>configuration catalogs</em> that live in the directory <strong>${tomcat_home}/content/thredds/ </strong>and its subdirectories.
+<p>TDS is configured with <em>configuration catalogs</em> that live in the directory <strong>${tomcat_home}/content/thredds/</strong> and its subdirectories.
   These  contain  information needed only on the server, which
   is removed when the TDS sends the <em>client catalog</em> to the requester. </p>
 
 <h3>Configuration Catalogs</h3>
 
-<p>The <em>default root catalog</em> is <strong>${tomcat_home}/content/thredds/catalog.xml. </strong>It may reference other configuration catalogs using the
+<p>The <em>default root catalog</em> is <strong>${tomcat_home}/content/thredds/catalog.xml</strong>. It may reference other configuration catalogs using the
   <strong>catalogRef</strong>
   element. These catalogs can also contain catalogRef elements, etc. If
   you want to serve other catalogs that are not linked to the root
-  catalog, then <a href="../tutorial/ConfigCatalogs.html#rootCatalogs">declare them</a> in <strong>${tomcat_home}/content/thredds/threddsConfig.xml. </strong>The
+  catalog, then <a href="../tutorial/ConfigCatalogs.html#rootCatalogs">declare them</a> in <strong>${tomcat_home}/content/thredds/threddsConfig.xml</strong>. The
   set of configuration catalogs is found by traversing all the root catalogs. This is the set of <em>configuration catalogs</em>, aka <em>static catalogs</em>.
 </p>
 

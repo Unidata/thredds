@@ -30,15 +30,12 @@ public class TestServlet extends DapTestCommon
     //////////////////////////////////////////////////
     // Constants
 
-    static protected String DATADIR = "d4tests/src/test/data"; // relative to dap4 root
-    static protected String TESTDATADIR = DATADIR + "/resources";
-    static protected String BASELINEDIR = DATADIR + "/resources/TestServlet/baseline";
-    static protected String TESTINPUTDIR = DATADIR + "/resources/testfiles";
-
-    static protected String GENERATEDIR = TESTDATADIR + "/TestCDMClient/testinput";
+    static protected final String TESTINPUTDIR = "/testfiles";
+    static protected final String BASELINEDIR =  "/TestServlet/baseline";
+    static protected final String GENERATEDIR =  "/TestCDMClient/testinput";
 
     // constants for Fake Request
-    static protected String FAKEURLPREFIX = "http://localhost:8080/d4ts";
+    static protected final String FAKEURLPREFIX = "http://localhost:8080/d4ts";
 
     static protected final BigInteger MASK = new BigInteger("FFFFFFFFFFFFFFFF", 16);
 
@@ -50,7 +47,17 @@ public class TestServlet extends DapTestCommon
 
     static protected class ServletTest
     {
-        static String root = null;
+        static String inputroot = null;
+        static String baselineroot = null;
+        static String generateroot = null;
+
+        static public void
+        setRoots(String input, String baseline, String generate)
+        {
+            inputroot = input;
+            baselineroot = baseline;
+            generateroot = generate;
+        }
 
         String title;
         String dataset;
@@ -84,11 +91,11 @@ public class TestServlet extends DapTestCommon
             this.xfail = xfail;
             this.checksumming = checksumming;
             this.testinputpath
-                = root + "/" + TESTINPUTDIR + "/" + dataset;
+                = this.inputroot + "/" + dataset;
             this.baselinepath
-                = root + "/" + BASELINEDIR + "/" + dataset;
+                = this.baselineroot + "/" + dataset;
             this.generatepath
-                = root + "/" + GENERATEDIR + "/" + dataset;
+                = this.generateroot + "/" + dataset;
         }
 
         String makeurl(RequestMode ext)
@@ -139,41 +146,28 @@ public class TestServlet extends DapTestCommon
 
     protected List<ServletTest> chosentests = new ArrayList<ServletTest>();
 
-    protected String datasetpath = null;
-
-    protected String root = null;
 
     //////////////////////////////////////////////////
     // Constructor(s)
 
     public TestServlet()
-        throws Exception
     {
         this("TestServlet");
     }
 
     public TestServlet(String name)
-        throws Exception
     {
         this(name, null);
     }
 
     public TestServlet(String name, String[] argv)
-        throws Exception
     {
         super(name);
-        setSystemProperties();
         if(prop_ascii)
             Generator.setASCII(true);
-
-        this.root = getDAP4Root();
-        if(this.root == null)
-            throw new Exception("dap4 root not found");
-
-        this.datasetpath = this.root + "/" + DATADIR;
-        defineAllTestcases(this.root);
+        ServletTest.setRoots(getResourceDir() + "/" + TESTINPUTDIR, getResourceDir() + BASELINEDIR, getResourceDir() + GENERATEDIR);
+        defineAllTestcases();
         chooseTestcases();
-        generatesetup();
     }
 
     //////////////////////////////////////////////////
@@ -183,7 +177,8 @@ public class TestServlet extends DapTestCommon
     chooseTestcases()
     {
         if(false) {
-            chosentests = locate("test_struct_type.nc");
+            chosentests = locate("test_sequence_1.syn");
+            prop_visual = true;
         } else {
             for(ServletTest tc : alltestcases) {
                 chosentests.add(tc);
@@ -192,9 +187,8 @@ public class TestServlet extends DapTestCommon
     }
 
     protected void
-    defineAllTestcases(String root)
+    defineAllTestcases()
     {
-        ServletTest.root = root;
         this.alltestcases.add(
             new ServletTest("test_sequence_1.syn", "dmr,dap", true,  //0
                 // S4
@@ -713,7 +707,7 @@ public class TestServlet extends DapTestCommon
         boolean pass = true;
 
         // Create request and response objects
-        FakeServlet servlet = new FakeServlet(this.datasetpath);
+        FakeServlet servlet = new FakeServlet(this.webapproot);
         FakeServletRequest req = new FakeServletRequest(testcase.makeurl(RequestMode.DMR), servlet);
         FakeServletResponse resp = new FakeServletResponse();
         servlet.init();
@@ -757,7 +751,7 @@ public class TestServlet extends DapTestCommon
         RequestMode ext = RequestMode.DAP;
 
         // Create request and response objects
-        FakeServlet servlet = new FakeServlet(this.datasetpath);
+        FakeServlet servlet = new FakeServlet(this.webapproot);
         String methodurl = testcase.makeurl(RequestMode.DAP);
         FakeServletRequest req = new FakeServletRequest(methodurl, servlet);
         FakeServletResponse resp = new FakeServletResponse();
@@ -827,13 +821,13 @@ public class TestServlet extends DapTestCommon
 
     //////////////////////////////////////////////////
     // Utility methods
-
+    /*
     boolean
     generatesetup()
     {
         if(!prop_generate)
             return false;
-        File genpath = new File(root + "/" + GENERATEDIR);
+        File genpath = new File(this.root + "/" + GENERATEDIR);
         if(!genpath.exists()) {// create generate dir if it does not exist
             if(!genpath.mkdirs())
                 return report("Cannot create: " + genpath.toString());
@@ -842,9 +836,10 @@ public class TestServlet extends DapTestCommon
         else if(!genpath.canWrite())
             return report("Directory not writeable: " + genpath.toString());
         // Clear the generate directory, but of files only
-        clearDir(genpath, false);
+        //clearDir(genpath, false);
         return true;
     }
+    */
 
     boolean
     report(String msg)

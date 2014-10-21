@@ -34,9 +34,6 @@ package ucar.unidata.geoloc.projection.sat;
 import ucar.nc2.constants.CF;
 import ucar.unidata.geoloc.*;
 
-import java.util.List;
-import java.util.ArrayList;
-
 /**
  * Port Eumetsat MSG_navigation.c to java.
  * from http://www.eumetsat.int/idcplg?IdcService=GET_FILE&dDocName=zip_tools_msg_nav_c&RevisionSelectionMethod=LatestReleased
@@ -377,13 +374,13 @@ public class MSGnavigation extends ProjectionImpl {
 
   @Override
   public ProjectionPoint latLonToProj(LatLonPoint latlon, ProjectionPointImpl destPoint) {
-    int status = geocoord2pixcoord(latlon.getLatitude(), latlon.getLongitude(), destPoint);
+    geocoord2pixcoord(latlon.getLatitude(), latlon.getLongitude(), destPoint);
     return destPoint;
   }
 
   @Override
   public LatLonPoint projToLatLon(ProjectionPoint ppt, LatLonPointImpl destPoint) {
-    int status = pixcoord2geocoord(ppt.getX(), ppt.getY(), destPoint);
+    pixcoord2geocoord(ppt.getX(), ppt.getY(), destPoint);
     return destPoint;
   }
 

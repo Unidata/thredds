@@ -97,16 +97,42 @@
 
 <p>WMS uses a number of graphics packages. In some situations, WMS can run into an X Server bug
   that can cause Tomcat to crash. This can be avoided by telling the code there is no display
-  device. Details on how to do this can be found in the
-  "<a href="JavaOptsSummary.html#headless">Summary of JAVA_OPTS</a>" page.
+  device. You may see error messages like the following:
 
+<pre>
+"java.lang.NoClassDefFoundError: Could not initialize class sun.awt.X11GraphicsEnvironment"
+</pre>
+<p> To avoid this situation,
+  the graphics code needs to be told that there is no graphics console available. This can be done by
+  setting the <code>java.awt.headless</code> system property to <code>true</code> which can be done
+  using JAVA_OPTS: </p>
+<pre>
+JAVA_OPTS="-Xmx1024m -Xms256m -server <strong>-Djava.awt.headless=true</strong>"
+export JAVA_OPT
+</pre>
+<p>What the option means:</p>
+<ul>
+  <li><strong>-Djava.awt.headless=true</strong> sets the value of the <code>java.awt.headless</code> system property to true. Setting this system property to true prevent graphics rendering code
+    from assuming that a graphics console exists. </li>
+</ul>
+<p> More on using the headless mode in Java SE <a href="http://java.sun.com/developer/technicalArticles/J2SE/Desktop/headless/">here</a>. </p>
 <h2>Add a JVM Option to Avoid java.util.prefs Problem Storing System Preferences</h2>
 
-<p>Some libraries used by WMS use the java.util.prefs package and there are some known issues
-  that can crop up with storing system preferences. This problem can be avoided by setting another
-  JVM option. Details on adding the needed JVM option can be found on the
-  "<a href="JavaOptsSummary.html#javaUtilPrefs">Summary of JAVA_OPTS</a>" page. More information
-  on the issue can be found on the <a href="../faq.html#javaUtilPrefs">TDS FAQ page</a>.
+<p>Some libraries that WMS depends on use the java.util.prefs package and there are some known issues
+  that can crop up with storing system preferences. This problem can be avoided by setting the <code>java.util.prefs.systemRoot</code> system property to point to a directory in which the TDS
+  can write. <strong>The given directory must exist and must contain a directory named "<code>.systemPrefs</code>"
+    which must be writable by the user under which Tomcat is run.</strong>
+
+<pre>
+JAVA_OPTS="-Xmx1024m -Xms256m -server <strong>-Djava.util.prefs.systemRoot=$CATALINA_HOME/content/thredds/javaUtilPrefs</strong>"
+export JAVA_OPT</pre>
+<p>What the option means:</p>
+<ul>
+  <li><strong>-Djava.util.prefs.systemRoot=&lt;directory&gt;</strong> sets the value of the <code>java.util.prefs.systemRoot</code> system property to the given directory. The java.util.prefs
+    code will use the given directory to persist the system (as opposed to user) preferences. </li>
+</ul>
+<p> More information on the issue can be found on the <a href="../faq.html#javaUtilPrefs">TDS FAQ page</a>.
+  
 
 <h2><a name="servingRemoteData"></a>Serving Remote Datasets</h2>
 
@@ -151,7 +177,7 @@ http://servername:8080/thredds/wms?<strong>dataset=http://las.pfeg.noaa.gov/cgi-
 <hr width="100%">
 <address>
   <img src="../thread.png" alt="THREDDS" height="108" width="110">
-  This document is maintained by Unidata and was last updated June 2009. Send comments to
+  This document is maintained by Unidata. Send comments to
   <a href="mailto:support-thredds@unidata.ucar.edu">THREDDS support</a>.
 </address>
 

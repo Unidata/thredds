@@ -577,9 +577,12 @@ public class NCdumpW {
   private static void printByteBuffer(PrintWriter out, ByteBuffer bb, Indent indent) {
     out.print(indent + "0x");
     int last = bb.limit() - 1;
-    for (int i = 0; i <= last; i++) {
-      out.printf("%02x", bb.get(i));
-    }
+    if(last < 0)
+        out.printf("00");
+    else
+        for (int i = 0; i <= last; i++) {
+          out.printf("%02x", bb.get(i));
+        }
   }
 
   static void printStringArray(PrintWriter out, Array ma, Indent indent, ucar.nc2.util.CancelTask ct) {

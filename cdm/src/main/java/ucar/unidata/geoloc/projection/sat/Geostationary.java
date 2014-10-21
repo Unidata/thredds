@@ -66,7 +66,9 @@ public class Geostationary extends ProjectionImpl {
     semi_minor_axis /= 1000.0;
     semi_major_axis /= 1000.0;
 
+    // double subLonDegrees, double perspective_point_height, double semi_minor_axis, double semi_major_axis, double inverse_flattening, String sweep_angle_axis
     navigation = new GEOSTransform(subLonDegrees, perspective_point_height, semi_minor_axis, semi_major_axis, inv_flattening, scanGeometry);
+    makePP();
   }
 
   public Geostationary() {

@@ -36,6 +36,7 @@
 package ucar.coord;
 
 import ucar.nc2.grib.TimeCoord;
+import ucar.nc2.grib.collection.GribIosp;
 import ucar.nc2.grib.grib1.Grib1Record;
 import ucar.nc2.grib.grib1.tables.Grib1Customizer;
 import ucar.nc2.grib.grib2.Grib2Record;
@@ -99,7 +100,7 @@ public class CoordinateTime2D extends CoordinateTimeAbstract implements Coordina
     this.vals = vals;
   }
 
-  // orthogonal - all times are the same
+  // orthogonal - all offsets are the same
   public CoordinateTime2D(int code, CalendarPeriod timeUnit, CoordinateRuntime runtime, CoordinateTimeAbstract otime, List<Coordinate> times) {
     super(code, timeUnit, runtime.getFirstDate());
 
@@ -352,7 +353,9 @@ public class CoordinateTime2D extends CoordinateTimeAbstract implements Coordina
   ////////////////////////////////////////////////
 
   public CoordinateTimeAbstract getTimeCoordinate(int runIdx) {
-    if (isOrthogonal) return otime;
+    if (isOrthogonal)
+      return factory(otime, getRefDate(runIdx));  // LOOK problem is cant use time.getRefDate(), must use time2D.getRefDate(runIdx) !!
+
     if (isRegular) {
       CalendarDate ref = getRefDate(runIdx);
       int hour = ref.getHourOfDay();
@@ -363,6 +366,14 @@ public class CoordinateTime2D extends CoordinateTimeAbstract implements Coordina
 
   public CalendarDate getRefDate(int runIdx) {
     return runtime.getDate(runIdx);
+  }
+
+  private CoordinateTimeAbstract factory(CoordinateTimeAbstract org, CalendarDate refDate) {
+    if (isTimeInterval) {
+      return new CoordinateTimeIntv((CoordinateTimeIntv) org, refDate);
+    } else {
+      return new CoordinateTime((CoordinateTime)org, refDate);
+    }
   }
 
   /**
@@ -393,7 +404,7 @@ public class CoordinateTime2D extends CoordinateTimeAbstract implements Coordina
    * @param want        find time coordinate that matches
    * @param wholeIndex  return index here
    */
-  public void getIndex(Time2D want, int[] wholeIndex) {
+  public boolean getIndex(Time2D want, int[] wholeIndex) {
     int runIdx = runtime.getIndex(want.run);
     CoordinateTimeAbstract time = getTimeCoordinate(runIdx);
     wholeIndex[0] = runIdx;
@@ -402,6 +413,7 @@ public class CoordinateTime2D extends CoordinateTimeAbstract implements Coordina
     } else {
       wholeIndex[1] = time.getIndex(want.time);
     }
+    return (wholeIndex[0] >= 0)  && (wholeIndex[1] >= 0);
   }
 
   /**
@@ -413,7 +425,7 @@ public class CoordinateTime2D extends CoordinateTimeAbstract implements Coordina
    */
   public int matchTimeCoordinate(int runIdx, Object value, CalendarDate refDateOfValue) {
     CoordinateTimeAbstract time = getTimeCoordinate(runIdx);
-    int offset = timeUnit.getOffset(time.getRefDate(), refDateOfValue);
+    int offset = timeUnit.getOffset(getRefDate(runIdx), refDateOfValue);
 
     Object valueWithOffset;
     if (isTimeInterval) {
@@ -424,6 +436,8 @@ public class CoordinateTime2D extends CoordinateTimeAbstract implements Coordina
       valueWithOffset = val + offset;
     }
     int result = time.getIndex(valueWithOffset);
+    if (GribIosp.debugRead) System.out.printf("  matchTimeCoordinate value wanted = (%s) valueWithOffset=%s result=%d %n", value, valueWithOffset, result);
+
     return result;
   }
 

@@ -287,17 +287,6 @@
       </dependency>
       <dependency>
         <groupId>${project.groupId}</groupId>
-        <artifactId>d4servlet</artifactId>
-        <version>${project.version}</version>
-        <exclusions>
-          <exclusion>
-            <groupId>javax.servlet</groupId>
-            <artifactId>servlet-api</artifactId>
-          </exclusion>
-        </exclusions>
-      </dependency>
-      <dependency>
-        <groupId>${project.groupId}</groupId>
         <artifactId>d4core</artifactId>
         <version>${project.version}</version>
       </dependency>
@@ -972,7 +961,6 @@
     <module>dap4/d4cdmshared</module>
     <module>dap4/d4cdmclient</module>
     <module>dap4/d4servletshared</module>
-    <module>dap4/d4servlet</module>
     <module>dap4/d4ts</module>
     <module>dap4/d4tests</module>
     <module>dap4/d4tswar</module>
@@ -997,7 +985,7 @@
 	<!-- Dependency versions -->
     <visad.version>2.0-20130124</visad.version>
     <edu.wisc.version>2011-08-22</edu.wisc.version>
-	<uk.ac.rdg.resc.version>1.0.tds.4.4.0</uk.ac.rdg.resc.version>
+	  <uk.ac.rdg.resc.version>1.0.tds.4.4.0</uk.ac.rdg.resc.version>
 	  
     <org.geotoolkit.version>3.21</org.geotoolkit.version>
     <eds.threddsIso.version>2.3.1</eds.threddsIso.version>

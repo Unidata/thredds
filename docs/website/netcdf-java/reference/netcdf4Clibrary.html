@@ -17,12 +17,12 @@
   name.<a name="pass" id="pass"></a></p>
 <ul>
   <li>For TDS users, we recommend setting the library path and name in
-    <em><a href="http://www.unidata.ucar.edu/projects/THREDDS/tech/tds4.3/reference/ThreddsConfigXMLFile.html#netcdfCLibrary">threddsConfig.xml.</a></em></li>
+    <em><a href="../../tds/reference/ThreddsConfigXMLFile.html#netcdfCLibrary">threddsConfig.xml.</a></em></li>
   <li>For stand-alone CDM library use, you can 
     <ol>
       <li>put the  library path in LD_LIBRARY_PATH (unix) or PATH (windows)</li>
       <li>set a system property on the startup line: <strong>-Djna.library.path=<em>/path/to/library</em></strong></li>
-      <li>set the library path and name in the <em><a href="http://www.unidata.ucar.edu/software/netcdf-java/reference/RuntimeLoading.html#XML">RuntimeConfiguration</a></em> file</li>
+      <li>set the library path and name in the <em><a href="RuntimeLoading.html#XML">RuntimeConfiguration</a></em> file</li>
       <li>directly call <strong>ucar.nc2.jni.netcdf.Nc4Iosp.setLibraryAndPath</strong>()</li>
     </ol>
   </li>
@@ -42,7 +42,7 @@
 <h2>Windows</h2>
 <ol>
   <li>We strongly recommend using the 64-bit Windows version and a 64-bit JVM (Java Virtual Machine).</li>
-  <li>Get the pre-built windows binaries from <a href="http://www.unidata.ucar.edu/software/netcdf/win_netcdf/">here. </a> (Power users are welcome to build
+  <li>Get the pre-built windows binaries from <a href="http://www.unidata.ucar.edu/software/netcdf/win_netcdf/">here</a>. (Power users are welcome to build
     them - but Java needs DLLs to load).
   </li>
   <li>Run the install.exe file, which puts everything from the <em>bin</em> and <em>deps</em> directories into a standard directory, which should be accesible
@@ -140,7 +140,7 @@ Nc4Chunking chunker = Nc4Chunking factory(Nc4Chunking.Strategy.standard, int def
 </blockquote>
 <hr width="100%"/>
 <address>
-  <img src="../nc.gif" alt="" width="64" height="64"/> This document was last updated May 2014
+  <img src="../nc.gif" alt="" width="64" height="64"/> This document was last updated October 2014
 </address>
 </body>
 </html>

@@ -1,14 +1,17 @@
 # resources\grib2\standardTableMap.txt
-# center subcenter  local table
+# center; subcenter; master; local; genProcess; Grib2Table.Type; resource name (opt)
 #
-# center 7, 9 and 54 (canandian met) all use ncep tables
-7;     -1; -1;    NcepLocalTables.class
-9;     -1; -1;    NcepLocalTables.class
-54;    -1; -1;    NcepLocalTables.class
+# center 7 (ncep), 9 (usnws) and 54 (canandian met) all use ncep tables
+7;     -1; -1; -1; -1;    ncep; ncep
+9;     -1; -1; -1; -1;    ncep; usnws
+54;    -1; -1; -1; -1;    ncep; canadian met
+#
+# FSL HRRR
+59;    -1; -1; -1; 125;   gsd; fsl hrrr
 #
 # center 8, subcenter 0 and -9999 use ndfd table
-8;      0; -1;    NdfdLocalTables.class
-8;  -9999; -1;    NdfdLocalTables.class
+8;      0; -1; -1; -1;    ndfd; ndfd
+8;  -9999; -1; -1; -1;    ndfd; ndfd
 #
 # center 40 (KMA)
-40;     -1; -1;    KmaLocalTables.class
+40;     -1; -1; -1; -1;   kma; korea met

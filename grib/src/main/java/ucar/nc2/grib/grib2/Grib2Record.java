@@ -225,7 +225,7 @@ public class Grib2Record {
     float[] data = reader.getData(raf, bms, gdrs);
 
     if (gds.isThin())
-      data = QuasiRegular.convertQuasiGrid(data, gds.getNptsInLine(), gds.getNxRaw(), gds.getNyRaw());
+      data = QuasiRegular.convertQuasiGrid(data, gds.getNptsInLine(), gds.getNxRaw(), gds.getNyRaw(), GribData.getInterpolationMethod());
 
     return data;
   }
@@ -280,7 +280,7 @@ public class Grib2Record {
     float[] data = reader.getData(raf, bms, gdrs);
 
     if (gds.isThin())
-      data = QuasiRegular.convertQuasiGrid(data, gds.getNptsInLine(), gds.getNxRaw(), gds.getNyRaw());
+      data = QuasiRegular.convertQuasiGrid(data, gds.getNptsInLine(), gds.getNxRaw(), gds.getNyRaw(), GribData.getInterpolationMethod());
 
     return data;
   }
@@ -319,7 +319,7 @@ public class Grib2Record {
     float[] data = reader.getData(raf, bms, gdrs);
 
     if (nptsInLine != null)
-      data = QuasiRegular.convertQuasiGrid(data, nptsInLine, nx, ny);
+      data = QuasiRegular.convertQuasiGrid(data, nptsInLine, nx, ny, GribData.getInterpolationMethod());
 
     return data;
   }

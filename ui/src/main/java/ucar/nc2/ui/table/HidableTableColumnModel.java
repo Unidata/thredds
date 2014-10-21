@@ -29,7 +29,7 @@ public class HidableTableColumnModel extends DefaultTableColumnModel implements 
     private TableModel model;
 
     /** Array of TableColumn objects in this model. Holds all column objects, regardless of their visibility. */
-    protected Vector<TableColumn> allTableColumns = new Vector<TableColumn>();
+    protected Vector<TableColumn> allTableColumns = new Vector<>();
 
     public HidableTableColumnModel(TableModel model) {
         createColumnsFromModel(model);
@@ -46,6 +46,10 @@ public class HidableTableColumnModel extends DefaultTableColumnModel implements 
      */
     // listeners will receive columnAdded()/columnRemoved() event
     public void setColumnVisible(TableColumn column, boolean visible) {
+        if (isColumnVisible(column) == visible) {
+            return;  // Visibility status did not change.
+        }
+
         if (!visible) {
             super.removeColumn(column);
         } else {
@@ -93,6 +97,7 @@ public class HidableTableColumnModel extends DefaultTableColumnModel implements 
      * @throws IllegalArgumentException if <code>column</code> is <code>null</code>
      * @see #removeColumn
      */
+    @Override
     public void addColumn(TableColumn column) {
         allTableColumns.addElement(column);
         super.addColumn(column);
@@ -106,6 +111,7 @@ public class HidableTableColumnModel extends DefaultTableColumnModel implements 
      * @param column the column to be added
      * @see #addColumn
      */
+    @Override
     public void removeColumn(TableColumn column) {
         int allColumnsIndex = allTableColumns.indexOf(column);
         if (allColumnsIndex != -1) {
@@ -125,6 +131,7 @@ public class HidableTableColumnModel extends DefaultTableColumnModel implements 
      * @param    oldIndex            index of column to be moved
      * @param    newIndex            new index of the column
      */
+    @Override
     public void moveColumn(int oldIndex, int newIndex) {
         if ((oldIndex < 0) || (oldIndex >= getColumnCount()) ||
                 (newIndex < 0) || (newIndex >= getColumnCount()))

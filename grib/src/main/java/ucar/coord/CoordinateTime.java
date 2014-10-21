@@ -33,6 +33,11 @@ public class CoordinateTime extends CoordinateTimeAbstract implements Coordinate
     this.offsetSorted = Collections.unmodifiableList(offsetSorted);
   }
 
+  CoordinateTime(CoordinateTime org, CalendarDate refDate) {
+    super(org.code, org.timeUnit, refDate);
+    this.offsetSorted = org.getOffsetSorted();
+  }
+
   public List<Integer> getOffsetSorted() {
     return offsetSorted;
   }

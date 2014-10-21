@@ -44,16 +44,6 @@ import ucar.unidata.util.StringUtil2;
 
 public class GridParameter {
 
-  static public String cleanupDescription(String desc) {
-    if (desc == null) return null;
-    int pos = desc.indexOf("(see");
-    if (pos > 0) desc = desc.substring(0,pos);
-
-    StringBuilder sb = new StringBuilder(desc.trim());
-    StringUtil2.remove(sb, ".;,=[]()/*");
-    return sb.toString().trim();
-  }
-
   protected int number;
   protected String name;
   protected String description;
@@ -74,7 +64,7 @@ public class GridParameter {
     setUnit(unit);
   }
 
-  // unkown param
+  // unknown param
   public GridParameter(int center, int subcenter, int version, int number) {
     this.number = number;
     name = "undefined";

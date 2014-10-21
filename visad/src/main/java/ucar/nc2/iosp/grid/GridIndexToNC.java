@@ -526,7 +526,7 @@ public class GridIndexToNC {
     }
   }
 
-  private class CompareGridVariableByNumberVertLevels implements Comparator {
+  static private class CompareGridVariableByNumberVertLevels implements Comparator {
 
     /**
      * Compare the two lists of names

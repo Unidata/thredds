@@ -55,18 +55,30 @@ import java.util.*;
 public class FslLocalTables extends NcepLocalTables {
   public static final int center_id = 59;
   // private static final String hrrrTable = "resources/grib2/noaa_gsd/Fsl-hrrr.csv";
-  private static final String fimTable = "resources/grib2/noaa_gsd/fim.gribtable";
+  private static final String fimTable = "resources/grib2/noaa_gsd/fim.gribtable";   // look not used right now
   private static final String hrrrTable = "resources/grib2/noaa_gsd/Fsl-hrrr2.csv";
-  //private static final boolean debug = true;
+  private static Map<String, FslLocalTables> tables = new HashMap<>();
 
+  // not a singleton
+  public static FslLocalTables getCust(Grib2Table table) {
+    FslLocalTables cust = tables.get(getPath(table));
+    if (cust != null) return cust;
+    cust = new FslLocalTables(table);
+    tables.put(table.getPath(), cust);
+    return cust;
+  }
 
-  public FslLocalTables(Grib2Table grib2Table) {
+  static private String getPath(Grib2Table grib2Table) {
+    if (grib2Table.getId().genProcessId == 125)
+      return fimTable;
+    else
+      return hrrrTable;
+  }
+
+  private FslLocalTables(Grib2Table grib2Table) {
     super(grib2Table);   // default resource path
-    if (grib2Table.genProcessId == 125)
-      grib2Table.setPath(hrrrTable);
-    Formatter f= new Formatter();
-    initLocalTable(f);
-    System.out.printf("%s%n", f);
+    grib2Table.setPath(getPath(grib2Table));
+    initLocalTable(null);
   }
 
   @Override

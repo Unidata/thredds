@@ -1083,7 +1083,7 @@ public class InvDatasetImpl extends InvDataset {
           if ((stype == ServiceType.OPENDAP) || (stype == ServiceType.DODS))
             fullUrlString = fullUrlString + ".html";
           else if (stype == ServiceType.DAP4)
-            fullUrlString = fullUrlString + ".dmr";
+            fullUrlString = fullUrlString + ".dmr.xml";
           else if (stype == ServiceType.WCS)
             fullUrlString = fullUrlString + "?service=WCS&version=1.0.0&request=GetCapabilities";
           else if (stype == ServiceType.WMS)

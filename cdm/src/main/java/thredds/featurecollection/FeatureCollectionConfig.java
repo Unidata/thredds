@@ -87,8 +87,8 @@ public class FeatureCollectionConfig {
   public FeatureCollectionType type;
   public PartitionType ptype = PartitionType.none;
   public String name, path, spec, dateFormatMark, olderThan;
-  public UpdateConfig tdmConfig;
-  public UpdateConfig updateConfig;
+  public UpdateConfig tdmConfig = new UpdateConfig();
+  public UpdateConfig updateConfig = new UpdateConfig();
   public ProtoConfig protoConfig = new ProtoConfig();
   public FmrcConfig fmrcConfig = new FmrcConfig();
   public PointConfig pointConfig = new PointConfig();
@@ -125,7 +125,7 @@ public class FeatureCollectionConfig {
   @Override
   public String toString() {
     Formatter f = new Formatter();
-    f.format("name ='%s' type='%s'%n", name, type);
+    f.format("FeatureCollectionConfig name ='%s' type='%s'%n", name, type);
     f.format("  spec='%s'%n", spec);
     if (dateFormatMark != null)
       f.format("  dateFormatMark ='%s'%n", dateFormatMark);
@@ -185,7 +185,7 @@ public class FeatureCollectionConfig {
 
   // <update startup="nocheck" rescan="cron expr" trigger="allow" append="true"/>
   static public class UpdateConfig {
-    public String recheckAfter;       // LOOK remove ??
+    public String recheckAfter;       // used by non-GRIB FC
     public String rescan;
     public boolean triggerOk = true;
     public boolean userDefined = false;
@@ -210,8 +210,11 @@ public class FeatureCollectionConfig {
         rewriteS = rewriteS.toLowerCase();
         if (rewriteS.equalsIgnoreCase("true"))
           this.updateType = CollectionUpdateType.test;
-        else
+        else try {
           this.updateType = CollectionUpdateType.valueOf(rewriteS);
+        } catch (Throwable t) {
+          log.error("Bad updateType= {} in {}", rewriteS);
+        }
 
         // user has placed an update/tdm element in the catalog
         userDefined = true;

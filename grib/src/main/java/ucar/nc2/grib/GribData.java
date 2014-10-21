@@ -52,6 +52,20 @@ import java.util.zip.Deflater;
  */
 public class GribData {
 
+  public static enum InterpolationMethod {none, cubic, linear}
+
+
+  private static GribData.InterpolationMethod useInterpolationMethod = GribData.InterpolationMethod.linear; // default
+
+  public static GribData.InterpolationMethod getInterpolationMethod() {
+    return useInterpolationMethod;
+  }
+
+  public static void setInterpolationMethod(GribData.InterpolationMethod interpolationMethod) {
+    useInterpolationMethod = interpolationMethod;
+  }
+
+
   public interface Bean {
 
     public float[] readData() throws IOException;

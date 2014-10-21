@@ -66,45 +66,53 @@
   <p>The main TDS configuration catalog is at <code>${tomcat_home}/content/thredds/catalog.xml</code>.
     We ship a simple test catalog:</p>
 
-  <!-- catalog.xml updated 2012-11-05 by Sean Arms -->
+  <!-- catalog.xml updated 2014/10/16 by cwardgar -->
 <pre>
-&lt;?xml version="1.0" encoding="UTF-8"?&gt;
-&lt;catalog name="THREDDS Server Default Catalog : You must change this to fit your server!"
-        xmlns="http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0"
-        xmlns:xlink="http://www.w3.org/1999/xlink"&gt;
+&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
+&lt;catalog name=&quot;THREDDS Server Default Catalog : You must change this to fit your server!&quot;
+    xmlns=&quot;http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0&quot;
+    xmlns:xlink=&quot;http://www.w3.org/1999/xlink&quot;
+    xmlns:xsi=&quot;http://www.w3.org/2001/XMLSchema-instance&quot;
+    xsi:schemaLocation=&quot;http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0
+      http://www.unidata.ucar.edu/schemas/thredds/InvCatalog.1.0.6.xsd&quot;&gt;
 
-  &lt;service name="all" base="" serviceType="compound"&gt;
-    &lt;service name="odap" serviceType="OpenDAP" base="/thredds/dodsC/" /&gt;
-    &lt;service name="http" serviceType="HTTPServer" base="/thredds/fileServer/" /&gt;
-    &lt;!--service name="wcs" serviceType="WCS" base="/thredds/wcs/" /--&gt;
-    &lt;!--service name="wms" serviceType="WMS" base="/thredds/wms/" /--&gt;
-    &lt;!--service name="ncss" serviceType="NetcdfSubset" base="/thredds/ncss/" /--&gt;
+  &lt;service name=&quot;all&quot; base=&quot;&quot; serviceType=&quot;compound&quot;&gt;
+    &lt;service name=&quot;odap&quot; serviceType=&quot;OpenDAP&quot; base=&quot;/thredds/dodsC/&quot; /&gt;
+    &lt;service name=&quot;dap4&quot; serviceType=&quot;DAP4&quot; base=&quot;/thredds/dap4/&quot; /&gt;
+    &lt;service name=&quot;http&quot; serviceType=&quot;HTTPServer&quot; base=&quot;/thredds/fileServer/&quot; /&gt;
+    &lt;!--service name=&quot;wcs&quot; serviceType=&quot;WCS&quot; base=&quot;/thredds/wcs/&quot; /--&gt;
+    &lt;!--service name=&quot;wms&quot; serviceType=&quot;WMS&quot; base=&quot;/thredds/wms/&quot; /--&gt;
+    &lt;!--service name=&quot;ncss&quot; serviceType=&quot;NetcdfSubset&quot; base=&quot;/thredds/ncss/&quot; /--&gt;
   &lt;/service&gt;
+  
+  &lt;service name=&quot;dap&quot; base=&quot;&quot; serviceType=&quot;compound&quot;&gt;
+    &lt;service name=&quot;odap&quot; serviceType=&quot;OpenDAP&quot; base=&quot;/thredds/dodsC/&quot; /&gt;
+    &lt;service name=&quot;dap4&quot; serviceType=&quot;DAP4&quot; base=&quot;/thredds/dap4/&quot; /&gt;
+  &lt;/service&gt;
+  
+  &lt;datasetRoot path=&quot;test&quot; location=&quot;content/testdata/&quot; /&gt;
+  
+  &lt;dataset name=&quot;Test Single Dataset&quot; ID=&quot;testDataset&quot;
+      serviceName=&quot;dap&quot;  urlPath=&quot;test/testData.nc&quot; dataType=&quot;Grid&quot;/&gt;
+  
+  &lt;dataset name=&quot;Test Single Dataset 2&quot; ID=&quot;testDataset2&quot;
+      serviceName=&quot;odap&quot; urlPath=&quot;test/testData2.grib2&quot; dataType=&quot;Grid&quot;/&gt;
 
-  &lt;datasetRoot path="test" location="content/testdata/" /&gt;
-
-  &lt;dataset name="Test Single Dataset" ID="testDataset" serviceName="odap"
-           urlPath="test/testData.nc" dataType="Grid"/&gt;
-
-  &lt;dataset name="Test Single Dataset 2" ID="testDataset2" serviceName="odap" urlPath="test/testData2.grib2" dataType="Grid"/&gt;
-
-  &lt;datasetScan name="Test all files in a directory" ID="testDatasetScan" path="testAll" location="content/testdata"&gt;
-
-    &lt;metadata inherited="true"&gt;
+  &lt;datasetScan name=&quot;Test all files in a directory&quot; ID=&quot;testDatasetScan&quot;
+      path=&quot;testAll&quot; location=&quot;content/testdata&quot;&gt;
+    &lt;metadata inherited=&quot;true&quot;&gt;
       &lt;serviceName&gt;all&lt;/serviceName&gt;
       &lt;dataType&gt;Grid&lt;/dataType&gt;
     &lt;/metadata&gt;
-
+    
     &lt;filter&gt;
-      &lt;include wildcard="*eta_211.nc"/&gt;
+      &lt;include wildcard=&quot;*eta_211.nc&quot;/&gt;
+      &lt;include wildcard=&quot;testgrid*.nc&quot;/&gt;
     &lt;/filter&gt;
-
   &lt;/datasetScan&gt;
-
-  &lt;catalogRef xlink:title="Test Enhanced Catalog" xlink:href="enhancedCatalog.xml" name=""/&gt;
-
-&lt;/catalog&gt;
-</pre>
+  
+  &lt;catalogRef xlink:title=&quot;Test Enhanced Catalog&quot; xlink:href=&quot;enhancedCatalog.xml&quot; name=&quot;&quot;/&gt;
+&lt;/catalog&gt;</pre>
 
   <p>When the TDS starts, this main configuration catalog is read as are all catalogs in the catalog tree defined by <code>catalogRef</code> elements. The TDS
     gathers configuration information on what datasets it should serve from the <code>datasetRoot</code> and <code>datasetScan</code> elements.</p>

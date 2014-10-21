@@ -1,4 +1,0 @@
-   <runtimeConfig>
-     <ioServiceProvider  class="ucar.nc2.iosp.misc.UspLightning2"/>
-     <coordTransBuilder name="WRFEta" type="vertical" class="ucar.nc2.dataset.transform.WRFEtaTransformBuilder"/>
-   </runtimeConfig>

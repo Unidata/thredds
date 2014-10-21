@@ -32,6 +32,8 @@
  */
 package ucar.nc2.iosp.hdf5;
 
+import org.junit.AfterClass;
+import org.junit.Test;
 import ucar.ma2.InvalidRangeException;
 import ucar.ma2.Array;
 import ucar.nc2.NetcdfFile;
@@ -40,21 +42,28 @@ import ucar.nc2.NCdump;
 
 import java.io.IOException;
 
-import junit.framework.TestCase;
+import ucar.nc2.util.DebugFlagsImpl;
 import ucar.unidata.test.util.TestDir;
 
 /**
  * @author caron
  * @since Jul 18, 2007
  */
-public class TestH5npoess extends TestCase {
+public class TestH5npoess {
 
+  @AfterClass
+  static public void after() {
+    H5header.setDebugFlags(new DebugFlagsImpl(""));  // make sure debug flags are off
+  }
+
+  @Test
   public void test1() throws InvalidRangeException, IOException {
     H5header.setDebugFlags( new ucar.nc2.util.DebugFlagsImpl("H5header/header"));
     TestH5read.readAllData(TestDir.cdmUnitTestDir +"formats/hdf5/npoess/ExampleFiles/AVAFO_NPP_d2003125_t10109_e101038_b9_c2005829155458_devl_Tst.h5");
     H5header.setDebugFlags( new ucar.nc2.util.DebugFlagsImpl());
   }
 
+  @Test
   public void test2() throws InvalidRangeException, IOException {
     //H5header.setDebugFlags( new ucar.nc2.util.DebugFlagsImpl("H5header/header"));
     NetcdfFile ncfile = TestH5.openH5("npoess/ExampleFiles/AVAFO_NPP_d2003125_t10109_e101038_b9_c2005829155458_devl_Tst.h5");
@@ -63,6 +72,7 @@ public class TestH5npoess extends TestCase {
     NCdump.printArray(data, "data", System.out, null);
   }
 
+  @Test
   public void test3() throws InvalidRangeException, IOException {
     H5header.setDebugFlags( new ucar.nc2.util.DebugFlagsImpl("H5header/reference"));
     NetcdfFile ncfile = TestH5.openH5("npoess/ExampleFiles/GDNBF-VNCCO_NPP_d2003125_t101038_e10116_b9_c2005829162517_dev.h5");

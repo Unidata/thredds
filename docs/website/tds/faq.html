@@ -74,6 +74,7 @@
   <li><a href="#controlWebCrawlers">How can I control whether I want Web crawlers to access my server?</a></li>
   <li><a href="#removeServletAutodeploy">How do I remove Servlet Autodeploy?</a></li>
   <li><a href="#howRemovePort8009">How do I remove port 8009 when using tomcat in standalone mode?</a></li>
+  <li><a name="SizeLimitExceededException">Manager fails to upload new thredds.war with SizeLimitExceededException</a></li>
 </ul>
 
 <hr width="100%">
@@ -163,7 +164,7 @@
 <p><strong>Q:<a name="CatalogURLs"></a> How do I construct the URLs I find in a THREDDS Catalog? </strong><br>
 </p>
 
-<p>A: Heres the general idea in the <a href="tutorial/BasicConfig.html">tutorial</a> and the
+<p>A: Heres the general idea in the <a href="tutorial/BasicConfigCatalogs.html">tutorial</a> and the
   <a href="http://www.unidata.ucar.edu/projects/THREDDS/tech/catalog/v1.0.2/InvCatalogSpec.html#constructingURLs">reference</a> docs. If you are using the CDM
   library, you can call </p>
 <pre>InvAccess.getUrlPath()</pre>
@@ -628,14 +629,25 @@ deny="18\.83\.0\.150,128\.100\.34\.99,128\.117\.140\..*"
    ...
   &lt;/Host&gt;</pre>
 </blockquote>
-
 <hr width="50%" align="left">
-
 <h4>Q: <a name="howRemovePort8009">How do I remove port 8009 when using tomcat in standalone mode?</a></h4>
 <blockquote>
   <p>Unless you are using Tomcat with the Apache server, comment out this line in <strong>server.xml:</strong></p>
-    <pre>  &lt;Connector port="8009" enableLookups="false" redirectPort="8443" protocol="AJP/1.3" /&gt;<br>
+  <pre>  &lt;Connector port="8009" enableLookups="false" redirectPort="8443" protocol="AJP/1.3" /&gt;<br>
     </pre>
+</blockquote>
+<p></p>
+<hr width="50%" align="left">
+<h4>Q: <a name="SizeLimitExceededException">Manager fails to upload new thredds.war with SizeLimitExceededException</a></h4>
+<blockquote>
+  <p>This happens when you are using the Tomcat manager app to upload a new war file that is too large. Message looks like:</p>
+<pre>FAIL - Deploy Upload Failed, Exception: org.apache.tomcat.util.http.fileupload.FileUploadBase$SizeLimitExceededException: the request was rejected 
+because its size (57150447) exceeds the configured maximum (52428800)</pre>
+  <p>Solution:</p>
+  <ul>
+    <li>Go to the web.xml of the manager application (for instance it could be under /tomcat7/webapps/manager/WEB-INF/web.xml.</li>
+    <li>Increase the max-file-size and max-request-size:</li>
+  </ul>
 </blockquote>
 
 <hr>
@@ -649,7 +661,7 @@ deny="18\.83\.0\.150,128\.100\.34\.99,128\.117\.140\..*"
 <hr>
 <address>
   <img src="thread.png" alt="THREDDS" height="108" width="110">
-  This document is maintained by Unidata and was last updated May 2013.
+  This document is maintained by Unidata and was last updated Oct 2014.
   Send comments to <a href="mailto:support-thredds@unidata.ucar.edu">THREDDS support</a>.
 </address>
 </body>

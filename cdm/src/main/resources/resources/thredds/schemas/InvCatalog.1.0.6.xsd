@@ -82,8 +82,7 @@
       <xsd:sequence>
         <xsd:element ref="property" minOccurs="0" maxOccurs="unbounded"/>
         <xsd:element ref="service" minOccurs="0" maxOccurs="unbounded"/>
-        <xsd:element ref="datasetRoot" minOccurs="0" maxOccurs="unbounded"/>
-        <!-- deprecated -->
+        <xsd:element ref="datasetRoot" minOccurs="0" maxOccurs="unbounded"/> <!-- deprecated -->
       </xsd:sequence>
       <xsd:attribute name="name" type="xsd:string" use="required"/>
       <xsd:attribute name="base" type="xsd:string" use="required"/>
@@ -98,8 +97,7 @@
   <xsd:element name="dataset" type="DatasetType"/>
   <xsd:complexType name="DatasetType">
     <xsd:sequence>
-      <xsd:element ref="service" minOccurs="0" maxOccurs="unbounded"/>
-      <!-- deprecated -->
+      <xsd:element ref="service" minOccurs="0" maxOccurs="unbounded"/> <!-- deprecated -->
 
       <xsd:group ref="threddsMetadataGroup" minOccurs="0" maxOccurs="unbounded"/>
 
@@ -110,17 +108,14 @@
 
     <xsd:attribute name="name" type="xsd:string" use="required"/>
     <xsd:attribute name="alias" type="xsd:token"/>
-    <xsd:attribute name="authority" type="xsd:string"/>
-    <!-- deprecated : use element -->
+    <xsd:attribute name="authority" type="xsd:string"/>   <!-- deprecated : use element -->
     <xsd:attribute name="collectionType" type="collectionTypes"/>
-    <xsd:attribute name="dataType" type="dataTypes"/>
-    <!-- deprecated : use element -->
+    <xsd:attribute name="dataType" type="dataTypes"/>    <!-- deprecated : use element -->
     <xsd:attribute name="harvest" type="xsd:boolean"/>
     <xsd:attribute name="ID" type="xsd:token"/>
     <xsd:attribute name="restrictAccess" type="xsd:string"/>
 
-    <xsd:attribute name="serviceName" type="xsd:string"/>
-    <!-- deprecated : use element -->
+    <xsd:attribute name="serviceName" type="xsd:string"/>   <!-- deprecated : use element -->
     <xsd:attribute name="urlPath" type="xsd:token"/>
 
   </xsd:complexType>
@@ -177,16 +172,11 @@
 
           <xsd:attribute name="path" type="xsd:string" use="required"/>
           <xsd:attribute name="location" type="xsd:string"/>
-          <xsd:attribute name="dirLocation" type="xsd:string"/>
-          <!-- deprecated : use location attribute -->
-          <xsd:attribute name="filter" type="xsd:string"/>
-          <!-- deprecated : use filter element -->
-          <xsd:attribute name="addDatasetSize" type="xsd:boolean"/>
-          <!-- deprecated : use enhance/addDatasetSize element -->
-          <xsd:attribute name="addLatest" type="xsd:boolean"/>
-          <!-- deprecated : use addLatest element -->
-          <xsd:attribute name="addId" type="xsd:boolean"/>
-          <!-- deprecated : use addID element -->
+          <xsd:attribute name="dirLocation" type="xsd:string"/> <!-- deprecated : use location attribute -->
+          <xsd:attribute name="filter" type="xsd:string"/> <!-- deprecated : use filter element -->
+          <xsd:attribute name="addDatasetSize" type="xsd:boolean"/> <!-- deprecated : use enhance/addDatasetSize element -->
+          <xsd:attribute name="addLatest" type="xsd:boolean"/> <!-- deprecated : use addLatest element -->
+          <xsd:attribute name="addId" type="xsd:boolean"/> <!-- deprecated : use addID element -->
         </xsd:extension>
       </xsd:complexContent>
     </xsd:complexType>

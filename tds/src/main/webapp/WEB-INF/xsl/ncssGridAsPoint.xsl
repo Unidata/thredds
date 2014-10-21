@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version="2.0">
-
-    <xsl:output method="html"/>
+    <xsl:output method="html" encoding="utf-8" indent="yes"/>
 
     <!-- Gets the tds context as a xslt parameter -->
     <xsl:param name="tdsContext"></xsl:param>
@@ -11,21 +10,24 @@
     <xsl:variable name="cssMainPath">
         <xsl:value-of select="concat($tdsContext,'/style/ncss/main.css')"></xsl:value-of>
     </xsl:variable>
+
     <xsl:variable name="cssLayoutPath">
         <xsl:value-of select="concat($tdsContext,'/style/ncss/layout.css')"></xsl:value-of>
     </xsl:variable>
+
     <xsl:variable name="cssFormPath">
         <xsl:value-of select="concat($tdsContext,'/style/ncss/form.css')"></xsl:value-of>
     </xsl:variable>
+
     <xsl:variable name="olcssPath">
         <xsl:value-of select="concat($tdsContext,'/js/lib/OpenLayers-2.12/theme/default/style.css')"></xsl:value-of>
     </xsl:variable>
+
     <xsl:variable name="logoPath">
         <xsl:value-of select="concat($tdsContext,'/unidataLogo.gif')"></xsl:value-of>
     </xsl:variable>
 
     <xsl:template match="/">
-
         <xsl:variable name="hasTimeAxis">
             <xsl:value-of select="count(/gridForm/timeSet/time)"/>
         </xsl:variable>
@@ -70,7 +72,6 @@
 
 
                 <script type="text/javascript">
-
                     var context = '<xsl:value-of select="$tdsContext"></xsl:value-of>';
                     var gridWKT = '<xsl:value-of select="$gridWKT"></xsl:value-of>';
 
@@ -78,49 +79,45 @@
 
                     Ncss.debug = true;
 
-                    Ncss.log = function(message){
-                    if(Ncss.debug){
-                    console.log(message);
-                    }
+                    Ncss.log = function(message) {
+                        if (Ncss.debug) {
+                            console.log(message);
+                        }
                     };
 
                     //Dynamic load of the javascript files
                     (function(){
+                        //jQuery
+                        var headTag = document.getElementsByTagName("head")[0];
+                        var jQueryfile = document.createElement('script');
+                        jQueryfile.setAttribute("type", "text/javascript");
+                        jQueryfile.setAttribute("src", context+"/js/lib/jquery-1.7.2.min.js");
+                        headTag.appendChild(jQueryfile);
 
-                    //jQuery
-                    var headTag = document.getElementsByTagName("head")[0];
-                    var jQueryfile = document.createElement('script');
-                    jQueryfile.setAttribute("type", "text/javascript");
-                    jQueryfile.setAttribute("src", context+"/js/lib/jquery-1.7.2.min.js");
-                    headTag.appendChild(jQueryfile);
+                        //OpenLayers.js
+                        var olfile = document.createElement('script');
+                        olfile.setAttribute("type", "text/javascript");
+                        olfile.setAttribute("src",
+                        context+"/js/lib/OpenLayers-2.12/OpenLayers.js");
+                        headTag.appendChild(olfile);
 
-                    //OpenLayers.js
-                    var olfile = document.createElement('script');
-                    olfile.setAttribute("type", "text/javascript");
-                    olfile.setAttribute("src",
-                    context+"/js/lib/OpenLayers-2.12/OpenLayers.js");
-                    headTag.appendChild(olfile);
+                        //ncssApp.js
+                        var jsfile = document.createElement('script');
+                        jsfile.setAttribute("type", "text/javascript");
+                        jsfile.setAttribute("src", context+"/js/ncss/ncssApp.js");
+                        var headTag = document.getElementsByTagName("head")[0];
+                        headTag.appendChild(jsfile);
 
-                    //ncssApp.js
-                    var jsfile = document.createElement('script');
-                    jsfile.setAttribute("type", "text/javascript");
-                    jsfile.setAttribute("src", context+"/js/ncss/ncssApp.js");
-                    var headTag = document.getElementsByTagName("head")[0];
-                    headTag.appendChild(jsfile);
-
-                    //gridAsPointForm.js
-                    var jsfile = document.createElement('script');
-                    jsfile.setAttribute("type", "text/javascript");
-                    jsfile.setAttribute("src", context+"/js/ncss/gridAsPointForm.js");
-                    var headTag = document.getElementsByTagName("head")[0];
-                    headTag.appendChild(jsfile);
+                        //gridAsPointForm.js
+                        var jsfile = document.createElement('script');
+                        jsfile.setAttribute("type", "text/javascript");
+                        jsfile.setAttribute("src", context+"/js/ncss/gridAsPointForm.js");
+                        var headTag = document.getElementsByTagName("head")[0];
+                        headTag.appendChild(jsfile);
                     })();
-
-
                 </script>
-
-
             </head>
+
             <body onload="Ncss.initGridAsPoint()">
                 <!-- Header -->
                 <div id="header">
@@ -382,6 +379,5 @@
                 </h3>
             </body>
         </html>
-
     </xsl:template>
 </xsl:stylesheet>

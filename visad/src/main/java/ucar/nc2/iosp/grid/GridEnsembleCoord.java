@@ -45,7 +45,7 @@ public abstract class GridEnsembleCoord {
   protected List<EnsCoord> ensCoords;
   protected int seq = 0;
 
-  protected class EnsCoord implements Comparable<EnsCoord> {
+  static protected class EnsCoord implements Comparable<EnsCoord> {
     public int number, type;
 
     public EnsCoord(int number, int type) {

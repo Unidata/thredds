@@ -182,10 +182,14 @@ public class CollectionController  {
     CollectionUpdateType type = null;
     if (path.equals("/"+COLLECTION+"/"+TRIGGER)) {
       String triggerType = req.getParameter(TRIGGER);
-      type = CollectionUpdateType.valueOf(triggerType);
+      try {
+        type = CollectionUpdateType.valueOf(triggerType);
+      } catch (Throwable t) {
+        ;  // noop
+      }
       if (type == null) {
         res.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-        pw.printf(" TRIGGER Type %s not legal%n", triggerType);
+        pw.printf(" TRIGGER Type %s not legal%n", Escape.html(triggerType));
         pw.flush();
         return null;
       }
@@ -200,7 +204,7 @@ public class CollectionController  {
       return null;
     }
 
-    pw.printf("<h3>Collection Name %s</h3>%n", collectName);
+    pw.printf("<h3>Collection Name %s</h3>%n", Escape.html(collectName));
 
     if (type != null) {
       if (!fc.getConfig().isTrigggerOk()) {
@@ -282,7 +286,7 @@ public class CollectionController  {
       if (null == contents) {
         res.setContentType(ContentType.html.getContentHeader());
         PrintWriter pw = res.getWriter();
-        pw.println("<p/> Cant find filename="+fileName+" in collection = "+ Escape.html(collectName));
+        pw.println("<p/> Cant find filename="+Escape.html(fileName)+" in collection = "+ Escape.html(collectName));
       }  else {
         res.setContentType(ContentType.xml.getContentHeader());
         PrintWriter pw = res.getWriter();
@@ -299,7 +303,7 @@ public class CollectionController  {
       res.setContentType(ContentType.html.getContentHeader());
       PrintWriter pw = res.getWriter();
 
-      pw.println("Files for collection = "+collectName+"");
+      pw.println("Files for collection = "+Escape.html(collectName)+"");
 
       // allow delete
       String deleteUrl = tdsContext.getContextPath() + FMRC_PATH + "?"+COLLECTION+"="+ecollectName+"&"+CMD+"=delete";

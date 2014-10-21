@@ -32,9 +32,13 @@
  */
 package ucar.nc2.dods;
 
-import junit.framework.*;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
+
 import ucar.ma2.*;
 import ucar.nc2.*;
+import ucar.nc2.iosp.hdf5.H5header;
 import ucar.nc2.util.DebugFlagsImpl;
 
 import java.io.*;
@@ -56,26 +60,24 @@ import java.io.*;
  * } ArrayOfStructures;
  */
 
-public class TestDODSArrayOfStructure extends TestCase {
-  private boolean debug = false;
-
-  public TestDODSArrayOfStructure(String name) {
-    super(name);
-  }
-
+public class TestDODSArrayOfStructure  {
   private DODSNetcdfFile dodsfile;
 
-  protected void setUp() throws Exception {
+  @After
+  public void after() throws IOException {
+    dodsfile.close();
+    H5header.setDebugFlags(new DebugFlagsImpl(""));  // make sure debug flags are off
+  }
+
+  @Before
+  public void setUp() throws Exception {
     DODSNetcdfFile.setPreload(false);
     dodsfile = TestDODSRead.open("test.50");
     DODSNetcdfFile.setPreload(true);
     DODSNetcdfFile.setDebugFlags(new DebugFlagsImpl("DODS/serverCall"));
   }
 
-  protected void tearDown() throws Exception {
-    dodsfile.close();
-  }
-
+  @Test
   public void testScalarReadByte() throws IOException {
     Variable v = null;
     Array a = null;
@@ -101,6 +103,7 @@ public class TestDODSArrayOfStructure extends TestCase {
     assert (valb == 0);
   }
 
+  @Test
   public void testReadScalarMemberVariable() throws IOException {
 
     Variable v = dodsfile.findVariable("types.i32");
@@ -127,6 +130,7 @@ public class TestDODSArrayOfStructure extends TestCase {
     assert a0.get(0).equals("This is a data test string (pass 0).");
   }
 
+  @Test
   public void testReadArrayOfStructs() throws IOException, InvalidRangeException {
     Variable v = dodsfile.findVariable("types");
     assert v != null;
@@ -146,6 +150,7 @@ public class TestDODSArrayOfStructure extends TestCase {
     }
   }
 
+  @Test
   public void testRead1DArrayOfStructs() throws IOException, InvalidRangeException {
     Variable v = dodsfile.findVariable("types");
     assert v != null;
@@ -162,6 +167,7 @@ public class TestDODSArrayOfStructure extends TestCase {
     }
   }
 
+  @Test
   public void testReadIteratorArrayOfStructs() throws IOException, InvalidRangeException {
     Variable v = dodsfile.findVariable("types");
     assert v != null;
