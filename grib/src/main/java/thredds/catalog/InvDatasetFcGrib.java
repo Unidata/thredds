@@ -165,7 +165,7 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
   private InvCatalogImpl makeCatalogFromCollection(URI catURI, String parentName, GribCollection fromGc) throws IOException { // }, URISyntaxException {
     InvCatalogImpl parentCatalog = (InvCatalogImpl) getParentCatalog();
     InvCatalogImpl result = new InvCatalogImpl(fromGc.getName(), parentCatalog.getVersion(), catURI);  // LOOK is catURL right ??
-    result.addService(orgService);
+    // result.addService(orgService);
     result.addService(virtualService);
 
     InvDatasetImpl ds = makeDatasetFromCollection(parentName, fromGc);
@@ -189,7 +189,7 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
     String tpath = getPath()+"/"+COLLECTION;
     ThreddsMetadata tmi = result.getLocalMetadataInheritable();
     tmi.addVariableMapLink(makeMetadataLink(tpath, VARIABLES));
-    tmi.setServiceName(virtualService.getName());
+    tmi.setServiceName(Virtual_Services);
 
     String pathStart = parentName == null ? getPath() :  getPath() + "/"+parentName;
 
@@ -205,7 +205,7 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
           String path = pathStart + "/" + TWOD_DATASET;
           twoD.setUrlPath(path);
           //twoD.setID(path);
-          twoD.tmi.addDocumentation("summary", "Two time dimensions: reference and forecast; full access to all GRIB records");
+          twoD.tm.addDocumentation("summary", "Two time dimensions: reference and forecast; full access to all GRIB records");
           twoD.tmi.addVariableMapLink(makeMetadataLink(path, VARIABLES));
           twoD.tmi.setTimeCoverage(extractCalendarDateRange(groups));
           result.addDataset(twoD);
@@ -222,7 +222,7 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
           InvDatasetImpl best = new InvDatasetImpl(this, getDatasetNameBest(fromGc.getName()));
           String path = pathStart + "/" + BEST_DATASET;
           best.setUrlPath(path);
-          best.tmi.addDocumentation("summary", "Single time dimension: for each forecast time, use GRIB record with smallest offset from reference time");
+          best.tm.addDocumentation("summary", "Single time dimension: for each forecast time, use GRIB record with smallest offset from reference time");
           best.tmi.addVariableMapLink(makeMetadataLink(path, VARIABLES));
           best.tmi.setTimeCoverage(extractCalendarDateRange(groups));
           result.addDataset(best);
@@ -233,7 +233,7 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
       }
 
       if (ds.getType() == GribCollection.Type.GC) {
-        tmi.setServiceName(orgService.getName());  // LOOK kludge - assume GC is the same as a file (!)
+        tmi.setServiceName(Virtual_Services);
 
         CoordinateRuntime runCoord = fromGc.getMasterRuntime();
         assert runCoord.getSize() == 1;
@@ -242,7 +242,7 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
         result.setUrlPath(path);
 
         Iterable<GribCollection.GroupGC> groups = ds.getGroups();
-        result.tmi.addDocumentation("summary", "Single reference time Grib Collection");
+        result.tm.addDocumentation("summary", "Single reference time Grib Collection");
         result.tmi.addDocumentation("Reference Time", runtime.toString());
         result.tmi.addVariableMapLink(makeMetadataLink(path, VARIABLES));
         result.tmi.setTimeCoverage(extractCalendarDateRange(groups));
@@ -338,7 +338,7 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
     result = new InvCatalogRef(parent, dname, buildCatalogServiceHref(dpath));
     result.setID(dpath);
     result.setUrlPath(dpath);
-    result.setServiceName(orgService.getName());
+    result.setServiceName(Virtual_Services);
 
     //result.tmi.setGeospatialCoverage(extractGeospatial(group));
     //result.tmi.setTimeCoverage(group.getCalendarDateRange());
