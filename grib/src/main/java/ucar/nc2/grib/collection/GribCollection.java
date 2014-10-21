@@ -157,15 +157,15 @@ public abstract class GribCollection implements FileCacheable, AutoCloseable {
 
     String name = StringUtil2.replace(config.name, '\\', "/");
 
-    String cname = null;
-    switch (config.ptype) {
+    String cname = DirectoryCollection.makeCollectionName(name, Paths.get(specp.getRootDir()));
+    /* switch (config.ptype) {
       case file:
       case directory:
         cname = DirectoryCollection.makeCollectionName(name, Paths.get(specp.getRootDir()));
         break;
       case none:
-        cname = !specp.wantSubdirs() ? name : DirectoryCollection.makeCollectionName(name, Paths.get(specp.getRootDir()));  // LOOK ??
-    }
+        cname = !specp.wantSubdirs() ? name : DirectoryCollection.makeCollectionName(name, Paths.get(specp.getRootDir()));
+    }  */
 
     return makeIndexFile(cname, new File(specp.getRootDir()));
   }

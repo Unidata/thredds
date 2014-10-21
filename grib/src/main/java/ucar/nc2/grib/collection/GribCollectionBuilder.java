@@ -45,7 +45,6 @@ import thredds.inventory.partition.PartitionManagerFromIndexList;
 import ucar.coord.CoordinateRuntime;
 import ucar.nc2.grib.GribIndex;
 import ucar.nc2.time.CalendarDate;
-import ucar.nc2.time.CalendarPeriod;
 import ucar.nc2.util.CloseableIterator;
 import ucar.unidata.util.StringUtil2;
 
