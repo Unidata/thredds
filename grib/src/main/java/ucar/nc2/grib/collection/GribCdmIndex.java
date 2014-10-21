@@ -467,7 +467,7 @@ public class GribCdmIndex implements IndexReader {
   static public GribCollection openGribCollection(FeatureCollectionConfig config, CollectionUpdateType updateType, Logger logger) throws IOException {
 
     // update if needed
-    updateGribCollection(config, updateType, logger);
+    boolean didit = updateGribCollection(config, updateType, logger);
 
     File idxFile = GribCollection.makeTopIndexFileFromConfig(config);
     return openCdmIndex(idxFile.getPath(), config, true, logger);
