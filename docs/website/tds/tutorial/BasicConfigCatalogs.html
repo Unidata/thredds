@@ -9,7 +9,7 @@
 <h1>THREDDS Configuration Catalogs</h1>
 
 <div id="section">
-  <h2><a name="ConfigLayout">TDS Configuration Directory Layout</a></h2>
+  <h2><a name="ConfigLayout">TDS Configuration Directory</a></h2>
 
   <div id="note" class="info">
     <h4>Location of the TDS Configuration Directory</h4>
@@ -18,14 +18,24 @@
       <a href="../reference/DirectoryLocations.html">TDS Configuration Directory section</a> of the TDS Reference for more information.</p>
   </div>
 
-  <p>All TDS configuration information is stored in the TDS configuration directory. Its default location is <code>${tomcat_home}/content/thredds</code> and it
-    is created and populated with default files the first time the TDS is deployed. It is persistent even when a TDS installation is upgraded or re-deployed.
-    All your configuration, modifications, and additions should be made in this directory. Do not place files containing passwords or anything else with
-    security issues in this directory. Typically you will only be adding and modifying catalogs and configuration files.</p>
+  <h3>Location</h3>
+
+  <p>All TDS configuration information is stored in the TDS configuration directory. The location of the directory is
+  controlled by the <code>tds.content.root.path</code> Java system property. The default location is
+  <code>${tomcat_home}/content/</code>, however we strongly recommend that you explicitly set this value in your Tomcat
+  startup script.</p>
+
+  <h3>Layout</h3>
+
+  <p>The configuration directory is created and populated with default files the first time the TDS is deployed. It is
+    persistent even when a TDS installation is upgraded or re-deployed. All your configuration, modifications, and
+    additions should be made in this directory. Do not place files containing passwords or anything else with
+    security issues in this directory. Typically you will only be adding and modifying catalogs and configuration files.
+  </p>
 
   <p>For now, we will focus on the following subset of the content directory:</p>
   <ul>
-    <li><code>${tomcat_home}/</code><code>content/thredds/</code>
+    <li><code>&lt;tds.content.root.path&gt;/thredds/</code>
       <ul>
         <li><code>catalog.xml </code> - the main TDS configuration catalog
           (root catalog for TDS configuration)
@@ -63,7 +73,7 @@
 
   <h3><a name="exampleCatalog"></a>TDS Root Catalog</h3>
 
-  <p>The main TDS configuration catalog is at <code>${tomcat_home}/content/thredds/catalog.xml</code>.
+  <p>The main TDS configuration catalog is at <code>&lt;tds.content.root.path&gt;/thredds/catalog.xml</code>.
     We ship a simple test catalog:</p>
 
   <!-- catalog.xml updated 2014/10/16 by cwardgar -->
@@ -111,11 +121,28 @@
     &lt;/filter&gt;
   &lt;/datasetScan&gt;
   
-  &lt;catalogRef xlink:title=&quot;Test Enhanced Catalog&quot; xlink:href=&quot;enhancedCatalog.xml&quot; name=&quot;&quot;/&gt;
+  &lt;<strong>catalogRef</strong> xlink:title=&quot;Test Enhanced Catalog&quot; xlink:href=&quot;<strong>enhancedCatalog.xml</strong>&quot; name=&quot;&quot;/&gt;
 &lt;/catalog&gt;</pre>
 
-  <p>When the TDS starts, this main configuration catalog is read as are all catalogs in the catalog tree defined by <code>catalogRef</code> elements. The TDS
-    gathers configuration information on what datasets it should serve from the <code>datasetRoot</code> and <code>datasetScan</code> elements.</p>
+  <p>When the TDS starts, this root configuration catalog is read, as are all catalogs in the catalog tree defined by
+    <code>catalogRef</code> elements. The resulting tree of catalogs are used
+    as the top-level catalogs served by the TDS. In the case of our test catalog, the tree looks like:</p>
+
+  <pre>catalog.xml<br>    |<br>    |-- enhancedCatalog.xml</pre>
+
+  <p>The tree of configuration catalogs can be as deeply nested as desired.</p>
+
+  <h3>Additional Root Catalogs</h3>
+
+  <p>Additional root configuration catalogs can be defined in </p>
+
+  <pre>&lt;tds.content.root.path&gt;/thredds/<strong>threddsConfig.xml</strong> </pre>
+
+  <p>file. For instance, to add a test catalog add the following line:</p>
+
+  <pre>&lt;catalogRoot&gt;myTestCatalog.xml&lt;/catalogRoot&gt;<br></pre>
+
+  <p>Each additional root configuration catalog can be the root of another tree of configuration catalogs.</p>
 </div>
 
 <div id="section">
@@ -256,7 +283,7 @@ fsl  madis  nam_12km  suomi
       </li>
       <li>Edit the main TDS configuration catalog:
 <pre>
-<strong>$</strong> cd ${tomcat_home}/content/thredds
+<strong>$</strong> cd &lt;tds.content.root.path&gt;/thredds
 <strong>$</strong> vi catalog.xml         <var>// Use the editor of your choice</var>
 </pre>
       </li>
@@ -294,13 +321,13 @@ fsl  madis  nam_12km  suomi
     <ol>
       <li>Take a look at the catalogInit.log:
 <pre>
-<strong>$</strong> cd ${tomcat_home}/content/thredds/logs
+<strong>$</strong> cd &lt;tds.content.root.path&gt;/thredds/logs
 <strong>$</strong> more catalogInit.log
 </pre>
       </li>
       <li>Take a look at the threddsServlet.log:
 <pre>
-<strong>$</strong> cd ${tomcat_home}/content/thredds/logs
+<strong>$</strong> cd &lt;tds.content.root.path&gt;/thredds/logs
 <strong>$</strong> more threddsServlet.log
 </pre>
       </li>
