@@ -11,9 +11,9 @@
     <div id="note" class="info">
      <h4>For more information</h4>
      <ul>
-      <li><a href="http://www.unidata.ucar.edu/projects/THREDDS/tech/tds4.3/reference/collections/CollectionSpecification.html">Collection specification</a></li>
-      <li><a href="http://www.unidata.ucar.edu/projects/THREDDS/tech/tds4.3/reference/collections/FeatureCollections.html">Feature Collections Reference </a></li>
-      <li><a href="http://www.unidata.ucar.edu/projects/THREDDS/tech/tds4.3/reference/collections/GribCollections.html">GRIB Collection Reference</a></li>
+      <li><a href="../reference/collections/CollectionSpecification.html">Collection specification</a></li>
+      <li><a href="../reference/collections/FeatureCollections.html">Feature Collections Reference </a></li>
+      <li><a href="../reference/collections/GribCollections.html">GRIB Collection Reference</a></li>
      </ul>
     </div>
     <p>The featureCollection element is a way to tell the TDS to serve collections of <a href="http://www.unidata.ucar.edu/software/netcdf-java/reference/FeatureDatasets/Overview.html">CDM Feature Datasets</a>. Currently this is used mostly for <a href="http://www.unidata.ucar.edu/software/netcdf-java/tutorial/GridDatatype.html">gridded data</a> whose time and spatial coordinates are recognized by the CDM software stack. In this tutorial, we will work with featureCollection for collections of GRIB files.</p>
@@ -41,7 +41,7 @@
       <li>All the metadata contained here will be inherited by the contained datasets. </li>
       <li>You must define a dataFormat element with contenet GRIB-1 or GRIB-2.</li>
       <li>All services are defined in a compound service type called all.</li>
-      <li>The collection of files is defined, using a <a href="http://www.unidata.ucar.edu/projects/THREDDS/tech/tds4.3/reference/collections/CollectionSpecification.html">collection specification string</a>. Subdirectories of<strong> /machine/tds/tutorial/fnl</strong> will be scanned for files with names that match the regular expression <strong>fnl_.*_00_c$</strong></li>
+      <li>The collection of files is defined, using a <a href="../reference/collections/CollectionSpecification.html">collection specification string</a>. Subdirectories of<strong> /machine/tds/tutorial/fnl</strong> will be scanned for files with names that match the regular expression <strong>fnl_.*_00_c$</strong></li>
       <li>The collection will be split into a time partition by month.</li>
       <li>A date will be extracted from the filename by matching the characters after<strong> fnl_</strong> with <strong>yyyyMMdd_HH</strong>. An example filename is<strong> fnl_20100104_12_00_c</strong>, so the date will be year <strong>2010</strong>, month <strong>01</strong>, day <strong>04</strong> and hour <strong>12</strong>.</li>
       <li>Read in the collection when the TDS starts up.</li>
@@ -58,12 +58,12 @@
     
   <div id="expanded" class="exercise">
     <h3>GRIB Feature Collection with multiple GDS</h3>
-     <p>The second feature collection in <a href="http://www.unidata.ucar.edu/projects/THREDDS/tech/tds4.3/tutorial/files/catalogGribfc.xml">catalogGribfc.xml</a> has:</p>
+     <p>The second feature collection in <a href="files/catalogGribfc.xml">catalogGribfc.xml</a> has:</p>
 
      <pre>1)&lt;featureCollection name="ECMWF Data" featureType="GRIB" path="gribfc/ecmwf"&gt;<br>    &lt;metadata inherited="true"&gt;<br>      &lt;dataFormat&gt;GRIB-1&lt;/dataFormat&gt;<br>      &lt;serviceName&gt;all&lt;/serviceName&gt;<br>    &lt;/metadata&gt;<br>2)  &lt;collection name="ECMWF_GNERA" spec="<strong>/machine/tds/tutorial/ecmwf/ECMWF_GNERA_d000..20121001$</strong>" dateFormatMark="#.#yyyyMMdd"/&gt;<br>3)  &lt;gribConfig&gt;<br>      <strong>&lt;gdsName hash='1562665966' groupName='domain1'/&gt;<br>     &lt;gdsName hash='-104750013' groupName='domain2'/&gt;</strong><br>    &lt;/gribConfig&gt;<br>  &lt;/featureCollection&gt;</pre>
     <ol>
       <li>A THREDDS featureCollection is defined, of type GRIB. All contained datasets will all have a <em>path</em> starting with <strong>gribfc/ecmwf</strong>.</li>
-      <li>The collection of files is defined, using a <a href="http://www.unidata.ucar.edu/projects/THREDDS/tech/tds4.3/reference/collections/CollectionSpecification.html">collection specification string</a>. Subdirectories of<strong> /machine/tds/tutorial/ecmwf</strong> will be scanned for files with names that match the regular expression <strong>ECMWF_GNERA_d000..20121001</strong>$<strong>. </strong> A date will be extracted from the filename by matching the characters after<strong> the "." </strong> with <strong>yyyyMMdd</strong>. An example filename is<strong> ECMWF_GNERA_d0001.20121001</strong>, so the date will be year <strong>2012</strong>, month <strong>10</strong>, day <strong>01</strong>.</li>
+      <li>The collection of files is defined, using a <a href="../reference/collections/CollectionSpecification.html">collection specification string</a>. Subdirectories of<strong> /machine/tds/tutorial/ecmwf</strong> will be scanned for files with names that match the regular expression <strong>ECMWF_GNERA_d000..20121001</strong>$<strong>. </strong> A date will be extracted from the filename by matching the characters after<strong> the "." </strong> with <strong>yyyyMMdd</strong>. An example filename is<strong> ECMWF_GNERA_d0001.20121001</strong>, so the date will be year <strong>2012</strong>, month <strong>10</strong>, day <strong>01</strong>.</li>
       <li>A  configuration element that is specific to GRIB collections. In this case we are changing the name of the group by matching the GDS hash code. </li>
       </ol>
      
@@ -77,7 +77,7 @@
   
     <div id="expanded" class="exercise">
     <h3>GRIB Feature Collection with spurious GDS</h3>
-     <p>The third feature collection in <a href="http://www.unidata.ucar.edu/projects/THREDDS/tech/tds4.3/tutorial/files/catalogGribfc.xml">catalogGribfc.xml</a> has:</p>
+     <p>The third feature collection in <a href="files/catalogGribfc.xml">catalogGribfc.xml</a> has:</p>
 
      <pre>1)&lt;featureCollection name="NDFD-CONUS_5km_conduit" featureType="GRIB" path="gribfc/ndfd"&gt;<br>    &lt;metadata inherited="true"&gt;<br>2)    &lt;dataFormat&gt;GRIB-2&lt;/dataFormat&gt;<br>    &lt;/metadata&gt;<br>3)  &lt;collection spec="<strong>/machine/tds/tutorial/ndfd/.*grib2$</strong>" dateFormatMark="#NDFD_CONUS_5km_conduit_#yyyyMMdd_HHmm" /&gt;<br>4)  &lt;gribConfig&gt;<br>      <strong>&lt;gdsHash from="-2121584860" to="28944332"/&gt;</strong><br>    &lt;/gribConfig&gt;<br>  &lt;/featureCollection&gt;<br>  &lt;/featureCollection&gt;</pre>
      <ol>
@@ -92,8 +92,5 @@
      <p><img src="./images/gribfc21.png" width="438" height="450"></p>
      <p>This compares the x and y coordinates of the two GDS. These are displaced by <strong>-.367 </strong>and<strong> .300 km</strong>, respectively. If you open this dataset up in the coordinate system tab, you will see that the x,y grid spacing is 5 km. Its possible that some of these variables are displaced 3/10 km, and its possible that there is a error in generating these GRIB records, and that in fact all of the variables should be on the same grid. If the latter, then the gdsConfig element in the TDS config catalog above will fix the problem.</p>
     </div>
-      
-
-  
-      <p class="notice">This document is maintained by Unidata.  Send comments to <a href="mailto:support-thredds@unidata.ucar.edu">THREDDS support</a>. &nbsp; Last updated: July 24, 2013</p><ul id="breadcrumbs" "=""><li><a href="http://www.unidata.ucar.edu/projects/THREDDS/tech/tutorial/workshop2013.html">2013 TDS Workshop Home</a></li><li>GRIB Feature Collection</li></ul></div> <!-- end container -->
+ 
 </body></html>
