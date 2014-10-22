@@ -201,11 +201,51 @@ Note the use of .xml extension.
 </ol>
 </div>
 
+<div id="section">
+<h2><a name="URLS">DAP2 Constraints</a></h2>
+<p>
+<ul>
+<li> DAP2 provides a <em><strong>constraint</strong></em>
+notation for requesting parts of a dataset. The constraint is contained in the
+query part of a URL
+<p>
+<li> Request a single variable in of a dataset. (Note change of dataset)
+<pre>
+<a href="http://remotetest.unidata.ucar.edu/thredds/dodsC/testdods/testgrid2.nc.asc?var">http://remotetest.unidata.ucar.edu/thredds/dodsC/testdods/testgrid2.nc.asc?var</a>
+dods://remotetest.unidata.ucar.edu/thredds/dodsC/testdods/testgrid2.nc?var
+</pre>
+<p>
+<li> Request a single value from each of two variables.
+<pre>
+<a href="http://remotetest.unidata.ucar.edu/thredds/dodsC/testdods/testgrid2.nc.asc?time[1],var[1][0]">http://remotetest.unidata.ucar.edu/thredds/dodsC/testdods/testgrid2.nc.asc?time[1],var[1][0]</a>
+dods://remotetest.unidata.ucar.edu/thredds/dodsC/testdods/testgrid2.nc?time[1],var[1][0]
+</pre>
+<p>
+<li>The forms of a <em><strong>slice</strong></em> constraint are:
+<ul>
+<li> [start-index:stride:last-index] (most general)
+<li> [start-index:last-index] (stride == 1)
+<li> [start-index] (last-index == start-index)
+<pre>
+</ul>
+</div>
+
+<div id="section">
+<h2><a name="URLS">DAP$ Constraints</a></h2>
+<p>
+<ul>
+<li> DAP4 has a constraint notation that is a superset of the DAP2 notation.
+The insertion into a URL looks somewhat different.
+<p>
+<li> Request a single value from a variable.
+<pre>
+<a href="http://remotetest.unidata.ucar.edu/thredds/dap4/testdods/testgrid2.nc.dmr.xml?dap4.ce=time[1]">http://remotetest.unidata.ucar.edu/thredds/dap4/testdods/testgrid2.nc.dmr.xml?dap4.ce=&quot;time[1]&quot;</a>
+dap4://remotetest.unidata.ucar.edu/thredds/dap4/testdods/testgrid2.nc?dap4.ce=&quot;time[1]&quot;
+</pre>
+<p>
+<li>The details can be found in the DAP4 specification.
+</ul>
+</div>
 
 </body>
 </html>
-
-
-
-
-
