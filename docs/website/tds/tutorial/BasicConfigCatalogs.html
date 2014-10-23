@@ -169,7 +169,7 @@
   <h3><code>datasetRoot</code> Element</h3>
 
   <p>Each <code>datasetRoot</code> element defines a single mapping between a URL base path and a directory. The URL base path so defined can then be used in
-    accessible datasets for files under the mapped directory. For instance, if you have a directory <code>/my/data/testdata</code> that contains:</p>
+    accessible datasets for files under the mapped directory. For instance, you have a directory <code>/machine/tds/data/my/test</code> that contains:</p>
 
 <pre>
 afile.nc
@@ -186,7 +186,7 @@ grib/
 ...
 &lt;service name="odap" serviceType="OpenDAP" base="/thredds/dodsC/" /&gt;
 
-&lt;datasetRoot path="<strong>my/test</strong>" location="/my/data/testdata/" /&gt;    &lt;!-- <strong>1</strong> --&gt;
+&lt;datasetRoot path="<strong>my/test</strong>" location="/machine/tds/data/my/test" /&gt;    &lt;!-- <strong>1</strong> --&gt;
 
 &lt;dataset name="A Test Dataset" ID="testDataset" urlPath="<strong>my/test</strong>/testData.nc" &gt;    &lt;!-- <strong>2</strong> --&gt;
   &lt;serviceName&gt;odap&lt;/serviceName&gt;
@@ -198,7 +198,7 @@ grib/
 ...
 </pre>
 
-  <p>The datasetRoot element above (1) maps the "<code>my/test</code>" path to the "<code>/my/data/testdata/</code>" directory. The URLs to access the datasets
+  <p>The datasetRoot element above (1) maps the "<code>my/test</code>" path to the "<code>/machine/tds/data/my/test/</code>" directory. The URLs to access the datasets
     (2 &amp; 3) are</p>
 
 <pre>
@@ -207,7 +207,7 @@ http://hostname:port/thredds/dodsC/<strong>my/test</strong>/grib/data1.grib2
 </pre>
 
   <p>When the server receives a request for one of the above URLs, it uses the URL path to look for a matching dataset root. In this case it finds the mapping
-    provided by the datasetRoot element above and looks in the <code>/my/data/testdata</code> directory for the file.</p>
+    provided by the datasetRoot element above and looks in the <code>/machine/tds/data/my/test</code> directory for the file.</p>
 
   <p>The client catalog that results from this catalog is the same as the above without the datasetRoot element.</p>
 
@@ -222,7 +222,7 @@ http://hostname:port/thredds/dodsC/<strong>my/test</strong>/grib/data1.grib2
 &lt;service name="odap" serviceType="OpenDAP" base="/thredds/dodsC/" /&gt;
 
 &lt;datasetScan name="Test all files in a directory" ID="testDatasetScan"
-    path="<strong>my/test/all</strong>" location="/my/data/testdata"&gt;
+    path="<strong>my/test/all</strong>" location="/machine/tds/data/my/test"&gt;
   &lt;metadata inherited="true"&gt;
     &lt;serviceName&gt;odap&lt;/serviceName&gt;
   &lt;/metadata&gt;
@@ -279,11 +279,12 @@ http://hostname:port/thredds/dodsC/<strong>my/test</strong>/grib/data1.grib2
       <li>Take a look at the data (note: the filenames may be different):
 
 <pre>
-<strong>$</strong> ls /machine/tds/data/ldm
-fsl  madis  nam_12km  suomi
-<strong>$</strong> ls /machine/tds/data/ldm/nam_12km
-201307211800.grib2  201307220600.grib2  201307221800.grib2  201307230600.grib2
-201307220000.grib2  201307221200.grib2  201307230000.grib2  201307231200.grib2
+$ ls /machine/tds/data
+fc  gfs  grib  my  nam_12km  ncmlExamples  ncss  ocean  precip  sage
+$ ls /machine/tds/data/nam_12km/
+NAM_CONUS_12km_20141010_0000.grib2
+NAM_CONUS_12km_20141010_0600.grib2
+...
 </pre>
 
       </li>
@@ -296,7 +297,7 @@ fsl  madis  nam_12km  suomi
       <li>And add a <code>datasetScan</code> element for the NAM data:
 <pre>
 &lt;datasetScan name="<strong>NCEP NAM 12km</strong>" ID="<strong>NAM_12km</strong>"
-             path="<strong>nam_12km</strong>" location="<strong>/machine/tds/data/ldm/nam_12km</strong>"&gt;
+             path="<strong>nam_12km</strong>" location="<strong>/machine/tds/data/nam_12km</strong>"&gt;
   &lt;metadata inherited="true"&gt;
     &lt;serviceName&gt;odap&lt;/serviceName&gt;
   &lt;/metadata&gt;
