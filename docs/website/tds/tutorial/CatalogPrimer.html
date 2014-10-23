@@ -50,11 +50,11 @@
     <p>Here's an example of a very simple catalog:</p>
 
 <pre>
-1) &lt;?xml version="1.0" ?&gt;
-2) &lt;<strong>catalog</strong> <strong>xmlns</strong>="http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0" &gt;
-3)   &lt;<strong>service</strong> name="<strong>odap</strong>" serviceType="<strong>OpenDAP</strong>" base="/thredds/dodsC/" /&gt;
-4)   &lt;<strong>dataset</strong> name="<strong>SAGE III Ozone 2006-10-31</strong>" serviceName="<strong>odap</strong>" urlPath="sage/20061031.nc"/&gt;
-5) &lt;/<strong>catalog</strong>&gt;
+&lt;?xml version="1.0" ?&gt;    &lt;!-- <strong>1</strong> --&gt;
+&lt;<strong>catalog</strong> <strong>xmlns</strong>="http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0" &gt;    &lt;!-- <strong>2</strong> --&gt;
+  &lt;<strong>service</strong> name="<strong>odap</strong>" serviceType="<strong>OpenDAP</strong>" base="/thredds/dodsC/" /&gt;    &lt;!-- <strong>3</strong> --&gt;
+  &lt;<strong>dataset</strong> name="<strong>SAGE III Ozone 2006-10-31</strong>" serviceName="<strong>odap</strong>" urlPath="sage/20061031.nc" ID="20061031.nc"/&gt;    &lt;!-- <strong>4</strong> --&gt;
+&lt;/<strong>catalog</strong>&gt;    &lt;!-- <strong>5</strong> --&gt;
 </pre>
 
     <p>with this line-by-line explanation:</p>
@@ -82,7 +82,7 @@
 
     <ol>
         <li>Find the service name referenced by the dataset:
-            <pre>&lt;dataset name="SAGE III Ozone 2006-10-31" serviceName="<strong>odap</strong>" urlPath="sage/20061031.nc"/&gt;</pre>
+            <pre>&lt;dataset name="SAGE III Ozone 2006-10-31" serviceName="<strong>odap</strong>" urlPath="sage/20061031.nc" ID="20061031.nc"/&gt;</pre>
         </li>
         <li>For the service with that name, get the <em>base path</em> attribute:
             <pre>&lt;service name="odap" serviceType="OpenDAP" base="<strong>/thredds/dodsC/</strong>" /&gt;</pre>
@@ -101,7 +101,7 @@ serviceBaseUrl = serverURL + serviceBasePath = <strong>http://hostname:port/thre
 </pre>
         </li>
         <li>Find the <em>URL path</em> referenced by the dataset:
-            <pre>&lt;dataset name="SAGE III Ozone 2006-10-31" serviceName="odap" urlPath="<strong>sage/20061031.nc</strong>"/&gt;</pre>
+            <pre>&lt;dataset name="SAGE III Ozone 2006-10-31" serviceName="odap" urlPath="<strong>sage/20061031.nc</strong>" ID="20061031.nc"/&gt;</pre>
         </li>
         <li>Append the <em>dataset URL path</em> to the <em>service base URL</em> to get the
             <strong><em>dataset access URL</em></strong>:
@@ -129,16 +129,16 @@ http://hostname:port/thredds/dodsC/sage/20061031.nc
         nested datasets:</p>
 
 <pre>
-  &lt;?xml version="1.0" ?&gt;
-  &lt;catalog xmlns="http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0" &gt;
-    &lt;service name="odap" serviceType="OpenDAP"  base="/thredds/dodsC/" /&gt;
+&lt;?xml version="1.0" ?&gt;
+&lt;catalog xmlns="http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0" &gt;
+  &lt;service name="odap" serviceType="OpenDAP"  base="/thredds/dodsC/" /&gt;
 
-1)  &lt;<strong>dataset</strong> name="SAGE III Ozone Loss Experiment" &gt;
-2)    &lt;dataset name="January Averages" serviceName="odap" urlPath="sage/avg/jan.nc"/&gt;
-2)    &lt;dataset name="February Averages" serviceName="odap" urlPath="sage/avg/feb.nc"/&gt;
-2)    &lt;dataset name="March Averages" serviceName="odap" urlPath="sage/avg/mar.nc"/&gt;
-3)  &lt;/<strong>dataset</strong>&gt;
-  &lt;/catalog&gt;
+  &lt;<strong>dataset</strong> name="SAGE III Ozone Loss Experiment" ID="Sage III"&gt;    &lt;!-- <strong>1</strong> --&gt;
+    &lt;dataset name="January Averages" serviceName="odap" urlPath="sage/avg/jan.nc" ID="jan.nc"/&gt;    &lt;!-- <strong>2</strong> --&gt;
+    &lt;dataset name="February Averages" serviceName="odap" urlPath="sage/avg/feb.nc" ID="feb.nc"/&gt;    &lt;!-- <strong>2</strong> --&gt;
+    &lt;dataset name="March Averages" serviceName="odap" urlPath="sage/avg/mar.nc" ID="mar.nc"/&gt;    &lt;!-- <strong>2</strong> --&gt;
+  &lt;/<strong>dataset</strong>&gt;    &lt;!-- <strong>3</strong> --&gt;
+&lt;/catalog&gt;
 </pre>
 
     <ol>
@@ -158,24 +158,22 @@ http://hostname:port/thredds/dodsC/sage/20061031.nc
 <pre>
 &lt;?xml version="1.0" ?&gt;
 &lt;catalog name="Example" xmlns="http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0" &gt;
- &lt;service name="odap" serviceType="OpenDAP"  base="/thredds/dodsC/" /&gt;
+  &lt;service name="odap" serviceType="OpenDAP"  base="/thredds/dodsC/" /&gt;
 
- &lt;dataset name="SAGE III Ozone Loss Experiment" &gt;
+  &lt;dataset name="SAGE III Ozone Loss Experiment" ID="Sage III"&gt;
+    &lt;dataset name="Monthly Averages"&gt;
+      &lt;dataset name="January Averages" serviceName="odap" urlPath="sage/avg/jan.nc" ID="jan.nc"/&gt;
+      &lt;dataset name="February Averages" serviceName="odap" urlPath="sage/avg/feb.nc" ID="feb.nc"/&gt;
+      &lt;dataset name="March Averages" serviceName="odap" urlPath="sage/avg/mar.nc" ID="mar.nc"/&gt;
+    &lt;/dataset&gt;
 
-  &lt;dataset name="Monthly Averages" &gt;
-   &lt;dataset name="January Averages" serviceName="odap" urlPath="sage/avg/jan.nc"/&gt;
-   &lt;dataset name="February Averages" serviceName="odap" urlPath="sage/avg/feb.nc"/&gt;
-   &lt;dataset name="March Averages" serviceName="odap" urlPath="sage/avg/mar.nc"/&gt;
+    &lt;dataset name="Daily Flight Data" ID="Daily Flight"&gt;
+      &lt;dataset name="January"&gt;
+        &lt;dataset name="Jan 1, 2001" serviceName="odap" urlPath="sage/daily/20010101.nc" ID="20010101.nc"/&gt;
+        &lt;dataset name="Jan 2, 2001" serviceName="odap" urlPath="sage/daily/20010102.nc" ID="20010102.nc"/&gt;
+      &lt;/dataset&gt;
+    &lt;/dataset&gt;
   &lt;/dataset&gt;
-
-  &lt;dataset name="Daily Flight Data" &gt;
-   &lt;dataset name="January"&gt;
-     &lt;dataset name="Jan 1, 2001" serviceName="odap" urlPath="sage/daily/20010101.nc"/&gt;
-     &lt;dataset name="Jan 2, 2001" serviceName="odap" urlPath="sage/daily/20010102.nc"/&gt;
-   &lt;/dataset&gt;
-  &lt;/dataset&gt;
-
- &lt;/dataset&gt;
 &lt;/catalog&gt;
 </pre>
 </div>
@@ -205,13 +203,16 @@ http://hostname:port/thredds/dodsC/sage/20061031.nc
             (e.g. <code>NetCDF</code>, <code>GRIB-2</code>, <code>NcML</code>, etc).
             This information is used by data access protocols like OpenDAP and HTTP.</li>
         <li>The combination of the naming <code>authority</code> and the <code>ID</code> attributes should form a
-            globally-unique identifier for a dataset.</li>
+            globally-unique identifier for a dataset. In the TDS, it is especially important to add the <code>ID</code>
+            attribute to your datasets.</li>
     </ul>
 
 <pre>
-&lt;dataset name=&quot;SAGE III Ozone Loss Experiment&quot; <strong>collectionType=&quot;TimeSeries&quot;</strong>&gt;
+&lt;service name="odap" serviceType="OpenDAP" base="/thredds/dodsC/"/&gt;
+
+&lt;dataset name=&quot;SAGE III Ozone Loss Experiment&quot; ID="Sage III" <strong>collectionType=&quot;TimeSeries&quot;</strong>&gt;
   &lt;dataset name="January Averages" serviceName="odap" urlPath="sage/avg/jan.nc"
-      <strong>authority="unidata.ucar.edu" ID="sage-20938483"</strong>&gt;
+      <strong>ID="jan.nc" authority="unidata.ucar.edu"</strong>&gt;
     &lt;<strong>dataType</strong>&gt;Trajectory&lt;/<strong>dataType</strong>&gt;
     &lt;<strong>dataFormatType</strong>&gt;NetCDF&lt;/<strong>dataFormatType</strong>&gt;
   &lt;/dataset&gt;
@@ -233,7 +234,7 @@ http://hostname:port/thredds/dodsC/sage/20061031.nc
         are needed in order to create valid entries for these services.</p>
 
 <pre>
-&lt;dataset name="SAGE III Ozone Loss Experiment" <strong>harvest="true"</strong>&gt;
+&lt;dataset name="SAGE III Ozone Loss Experiment" ID="Sage III" <strong>harvest="true"</strong>&gt;
   &lt;<strong>contributor</strong> role="data manager"&gt;John Smith&lt;/contributor&gt;
   &lt;<strong>keyword</strong>&gt;Atmospheric Chemistry&lt;/keyword&gt;
   &lt;<strong>publisher</strong>&gt;
@@ -251,10 +252,12 @@ http://hostname:port/thredds/dodsC/sage/20061031.nc
     properties. For example:</p>
 
 <pre>
-&lt;dataset name="SAGE III Ozone Loss Experiment"&gt;
-  &lt;dataset name="January Averages" urlPath="sage/avg/jan.nc" serviceName="odap" dataType="Trajectory" dataFormatType="NetCDF"/&gt;
-  &lt;dataset name="February Averages" urlPath="sage/avg/feb.nc" serviceName="odap" dataType="Trajectory" dataFormatType="NetCDF"/&gt;
-  &lt;dataset name="March Averages" urlPath="sage/avg/mar.nc" serviceName="odap" dataType="Trajectory" dataFormatType="NetCDF"/&gt;
+&lt;service name="odap" serviceType="OpenDAP" base="/thredds/dodsC/"/&gt;
+
+&lt;dataset name="SAGE III Ozone Loss Experiment" ID="Sage III"&gt;
+  &lt;dataset name="January Averages" urlPath="sage/avg/jan.nc" ID="jan.nc" serviceName="odap" authority="unidata.ucar.edu" dataFormatType="NetCDF"/&gt;
+  &lt;dataset name="February Averages" urlPath="sage/avg/feb.nc" ID="feb.nc" serviceName="odap" authority="unidata.ucar.edu" dataFormatType="NetCDF"/&gt;
+  &lt;dataset name="March Averages" urlPath="sage/avg/mar.nc" ID="mar.nc" serviceName="odap" authority="unidata.ucar.edu" dataFormatType="NetCDF"/&gt;
 &lt;/dataset>
 </pre>
 
@@ -262,17 +265,19 @@ http://hostname:port/thredds/dodsC/sage/20061031.nc
         element to factor out common information:</p>
 
 <pre>
-  &lt;<strong>dataset</strong> name="SAGE III Ozone Loss Experiment"&gt;
-1)  &lt;<strong>metadata inherited="true"</strong>&gt;
-2)    &lt;serviceName&gt;odap&lt;/serviceName&gt;
-2)    &lt;dataType&gt;Trajectory&lt;/dataType&gt;
-2)    &lt;dataFormatType&gt;NetCDF&lt;/dataFormatType&gt;
-    &lt;<strong>/metadata</strong>&gt;
+&lt;service name="odap" serviceType="OpenDAP" base="/thredds/dodsC/"/&gt;
 
-3)  &lt;dataset name="January Averages" urlPath="sage/avg/jan.nc"/&gt;
-3)  &lt;dataset name="February Averages" urlPath="sage/avg/feb.nc"/&gt;
-4)  &lt;dataset name="Global Averages" urlPath="sage/global.nc" <strong>dataType="Grid"</strong>/&gt;
-  &lt;/<strong>dataset</strong>&gt;
+&lt;dataset name="SAGE III Ozone Loss Experiment" ID="Sage III"&gt;
+  &lt;<strong>metadata inherited="true"</strong>&gt;    &lt;!-- <strong>1</strong> --&gt;
+    &lt;serviceName&gt;odap&lt;/serviceName&gt;    &lt;!-- <strong>2</strong> --&gt;
+    &lt;authority&gt;unidata.ucar.edu&lt;/authority&gt;    &lt;!-- <strong>2</strong> --&gt;
+    &lt;dataFormatType&gt;NetCDF&lt;/dataFormatType&gt;    &lt;!-- <strong>2</strong> --&gt;
+  &lt;<strong>/metadata</strong>&gt;
+
+  &lt;dataset name="January Averages" urlPath="sage/avg/jan.nc" ID="jan.nc"/&gt;    &lt;!-- <strong>3</strong> --&gt;
+  &lt;dataset name="February Averages" urlPath="sage/avg/feb.nc" ID="feb.nc"/&gt;    &lt;!-- <strong>3</strong> --&gt;
+  &lt;dataset name="Global Averages" urlPath="sage/global.nc" ID="global.nc" <strong>authority="fluffycats.com"</strong>/&gt;    &lt;!-- <strong>4</strong> --&gt;
+&lt;/dataset&gt;
 </pre>
 
     <ol>
@@ -280,12 +285,12 @@ http://hostname:port/thredds/dodsC/sage/20061031.nc
             the information inside the metadata element applies to the current dataset
             and all nested datasets.
         </li>
-        <li>The <code>serviceName</code>, <code>dataType</code>, and <code>dataFormatType</code>
+        <li>The <code>serviceName</code>, <code>authority</code>, and <code>dataFormatType</code>
             are declared as elements.
         </li>
         <li>These datasets use all the metadata values declared in the parent dataset.</li>
         <li>This dataset uses 2 out of 3 of the metadata values declared in the parent dataset; it overrides
-            <code>dataType</code>.
+            <code>authority</code>.
         </li>
     </ol>
 </div>
@@ -298,18 +303,18 @@ http://hostname:port/thredds/dodsC/sage/20061031.nc
         and logically-complete catalog, then create a master catalog using <em>catalog references</em>:</p>
 
 <pre>
-  &lt;?xml version="1.0" encoding="UTF-8"?&gt;
-  &lt;catalog xmlns="http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0" name="Top Catalog"
-1)    <strong>xmlns:xlink="http://www.w3.org/1999/xlink"</strong>&gt;
-2)  &lt;dataset name="Realtime data from IDD"&gt;
-3)    &lt;<strong>catalogRef</strong> <strong>xlink:href</strong>="idd/models.xml" <strong>xlink:title</strong>="NCEP Model Data" <strong>name</strong>="" /&gt;
-      &lt;<strong>catalogRef</strong> xlink:href="idd/radars.xml" xlink:title="NEXRAD Radar" name="" /&gt;
-      &lt;<strong>catalogRef</strong> xlink:href="idd/obsData.xml" xlink:title="Station Data" name="" /&gt;
-      &lt;<strong>catalogRef</strong> xlink:href="idd/satellite.xml" xlink:title="Satellite Data" name="" /&gt;
-    &lt;/dataset&gt;
+&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+&lt;catalog xmlns="http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0" name="Top Catalog"
+    <strong>xmlns:xlink="http://www.w3.org/1999/xlink"</strong>&gt;    &lt;!-- <strong>1</strong> --&gt;
+  &lt;dataset name="Realtime data from IDD" ID="IDD"&gt;    &lt;!-- <strong>2</strong> --&gt;
+    &lt;<strong>catalogRef</strong> <strong>xlink:href</strong>="idd/models.xml" <strong>xlink:title</strong>="NCEP Model Data" <strong>name</strong>="" /&gt;    &lt;!-- <strong>3</strong> --&gt;
+    &lt;<strong>catalogRef</strong> xlink:href="idd/radars.xml" xlink:title="NEXRAD Radar" name="" /&gt;
+    &lt;<strong>catalogRef</strong> xlink:href="idd/obsData.xml" xlink:title="Station Data" name="" /&gt;
+    &lt;<strong>catalogRef</strong> xlink:href="idd/satellite.xml" xlink:title="Satellite Data" name="" /&gt;
+  &lt;/dataset&gt;
 
-4)  &lt;<strong>catalogRef</strong> xlink:title="Far Away University catalog" xlink:href="http://www.farAway.edu/thredds/catalog.xml" /&gt;
-  &lt;/catalog&gt;
+  &lt;<strong>catalogRef</strong> xlink:title="Far Away University catalog" xlink:href="http://www.farAway.edu/thredds/catalog.xml" /&gt;    &lt;!-- <strong>4</strong> --&gt;
+&lt;/catalog&gt;
 </pre>
 
     <ol>
@@ -360,28 +365,28 @@ http://hostname:port/thredds/dodsC/sage/20061031.nc
     </p>
 
 <pre>
-&lt;dataset name="cool data" urlPath="so/cool/data.nc" &gt;
+&lt;dataset name="SAGE III Ozone 2006-10-31" urlPath="sage/20061031.nc" ID="20061031.nc"/&gt;
   &lt;serviceName&gt;<strong>all</strong>&lt;/serviceName&gt;
 &lt;/dataset&gt;
 </pre>
 
     <p>would result in these two access URLs, one for OpenDAP access and one for WCS access:<br></p>
 
-    <pre>/thredds/dodsC/so/cool/data.nc</pre>
+    <pre>/thredds/dodsC/sage/20061031.nc</pre>
 
-    <pre>/thredds/wcs/so/cool/data.nc</pre>
+    <pre>/thredds/wcs/sage/20061031.nc</pre>
 
     <p>Note: the contained services can still be referenced independently. For instance:</p>
 
 <pre>
-&lt;dataset name="more cool data" urlPath="more/cool/data.nc" &gt;
+&lt;dataset name="Global Averages" urlPath="sage/global.nc" ID="global.nc"/&gt;
   &lt;serviceName&gt;odap&lt;/serviceName&gt;
 &lt;/dataset&gt;
 </pre>
 
     <p>results in a single access URL:</p>
 
-    <pre>/thredds/dodsC/more/cool/data.nc</pre>
+    <pre>/thredds/dodsC/sage/global.nc</pre>
 </div>
 
 <div id="section">
@@ -401,10 +406,10 @@ http://hostname:port/thredds/dodsC/sage/20061031.nc
         schema location like so:</p>
 
 <pre>
-&lt;catalog name="MyName" xmlns="http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0"
-1)  <strong>xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"</strong>
-2)  <strong>xsi:schemaLocation="http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0
-    http://www.unidata.ucar.edu/schemas/thredds/InvCatalog.1.0.6.xsd"</strong> &gt;
+&lt;catalog name="Validation" xmlns="http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0"
+    <strong>xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"</strong>
+    <strong>xsi:schemaLocation="http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0</strong>
+    <strong>http://www.unidata.ucar.edu/schemas/thredds/InvCatalog.1.0.6.xsd"</strong>&gt;
   ...
 &lt;/catalog&gt;
 </pre>
@@ -419,13 +424,13 @@ http://hostname:port/thredds/dodsC/sage/20061031.nc
             instead, as it is much more digestable.</p>
     </div>
 
-    <ol>
-        <li>This line declares the schema-instance namespace. Just copy it exactly as you see it here.
+    <ul>
+        <li>The first bolded line declares the schema-instance namespace. Just copy it exactly as you see it here.
         </li>
-        <li> This line tells your XML validation tool where to find the THREDDS XML schema document.
-            Just copy it exactly as you see it here.
+        <li>The next two bolded lines tell your XML validation tool where to find the THREDDS XML schema document.
+            Just copy them exactly as you see them here.
         </li>
-    </ol>
+    </ul>
 
     <p>Or, you can simply use the
         <a href="http://thredds.ucar.edu/thredds/remoteCatalogValidation.html">THREDDS Catalog Validation service</a>

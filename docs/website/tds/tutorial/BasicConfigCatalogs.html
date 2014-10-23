@@ -184,16 +184,17 @@ grib/
 
 <pre>
 ...
-      &lt;service name="odap" serviceType="OpenDAP" base="/thredds/dodsC/" /&gt;
+&lt;service name="odap" serviceType="OpenDAP" base="/thredds/dodsC/" /&gt;
 
-<strong>1)</strong>    &lt;datasetRoot path="<strong>my/test</strong>" location="/my/data/testdata/" /&gt;
+&lt;datasetRoot path="<strong>my/test</strong>" location="/my/data/testdata/" /&gt;    &lt;!-- <strong>1</strong> --&gt;
 
-<strong>2)</strong>    &lt;dataset name="A Test Dataset" ID="testDataset" urlPath="<strong>my/test</strong>/testData.nc" &gt;
-        &lt;serviceName&gt;odap&lt;/serviceName&gt;
-      &lt;/dataset&gt;
-<strong>3)</strong>    &lt;dataset name="A Test Dataset 2" ID="testDataset2" urlPath="<strong>my/test</strong>/grib/data1.grib2" &gt;
-        &lt;serviceName&gt;odap&lt;/serviceName&gt;
-      &lt;/dataset&gt;
+&lt;dataset name="A Test Dataset" ID="testDataset" urlPath="<strong>my/test</strong>/testData.nc" &gt;    &lt;!-- <strong>2</strong> --&gt;
+  &lt;serviceName&gt;odap&lt;/serviceName&gt;
+&lt;/dataset&gt;
+
+&lt;dataset name="A Test Dataset 2" ID="testDataset2" urlPath="<strong>my/test</strong>/grib/data1.grib2" &gt;    &lt;!-- <strong>3</strong> --&gt;
+  &lt;serviceName&gt;odap&lt;/serviceName&gt;
+&lt;/dataset&gt;
 ...
 </pre>
 
@@ -218,46 +219,51 @@ http://hostname:port/thredds/dodsC/<strong>my/test</strong>/grib/data1.grib2
 
 <pre>
 ...
-      &lt;service name="odap" serviceType="OpenDAP" base="/thredds/dodsC/" /&gt;
+&lt;service name="odap" serviceType="OpenDAP" base="/thredds/dodsC/" /&gt;
 
-      &lt;datasetScan name="Test all files in a directory" ID="testDatasetScan"
-                   path="<strong>my/test/all</strong>" location="/my/data/testdata"&gt;
-        &lt;metadata inherited="true"&gt;
-          &lt;serviceName&gt;odap&lt;/serviceName&gt;
-        &lt;/metadata&gt;
-      &lt;/datasetScan&gt;
-...</pre>
+&lt;datasetScan name="Test all files in a directory" ID="testDatasetScan"
+    path="<strong>my/test/all</strong>" location="/my/data/testdata"&gt;
+  &lt;metadata inherited="true"&gt;
+    &lt;serviceName&gt;odap&lt;/serviceName&gt;
+  &lt;/metadata&gt;
+&lt;/datasetScan&gt;
+...
+</pre>
 
   <p>In the client view of a configuration catalog,&nbsp;<code>datasetScan</code> elements are converted to&nbsp;<code>catalogRef</code> elements. So, the
     resulting client view of this catalog looks like:</p>
 
-<pre>...
-      &lt;service name="odap" serviceType="OpenDAP" base="/thredds/dodsC/" /&gt;
+<pre>
+...
+&lt;service name="odap" serviceType="OpenDAP" base="/thredds/dodsC/" /&gt;
 
-      &lt;catalogRef xlink:title="Test all files in a directory" ID="testDatasetScan"
-                  xlink:href="/thredds/catalog/<strong>my/test/all</strong>/catalog.xml" name="" /&gt;
-...</pre>
+&lt;catalogRef xlink:title="Test all files in a directory" ID="testDatasetScan"
+    xlink:href="/thredds/catalog/<strong>my/test/all</strong>/catalog.xml" name="" /&gt;
+...
+</pre>
 
   <p>The generation of the catalog referenced by the <code>catalogRef</code> element is deferred until a request is made for that catalog. When the catalog is
     requested the location directory is scanned, directories are represented as <code>catalogRef</code> elements and files are represented as
     <code>dataset</code> elements. The scanning of each subdirectory is deferred until a request is made for the corresponding catalog. The catalog referenced
     above would look like:</p>
 
-<pre>...
-      &lt;service name="odap" serviceType="OpenDAP" base="/thredds/dodsC/" /&gt;
+<pre>
+...
+&lt;service name="odap" serviceType="OpenDAP" base="/thredds/dodsC/" /&gt;
 
-      &lt;dataset name="Test all files in a directory" ID="testDatasetScan" &gt;
-        &lt;metadata inherited="true"&gt;
+&lt;dataset name="Test all files in a directory" ID="testDatasetScan" &gt;
+  &lt;metadata inherited="true"&gt;
           &lt;serviceName&gt;odap&lt;/serviceName&gt;
-        &lt;/metadata&gt;
-        &lt;dataset name="afile.nc" ID="testDatasetScan/afile.nc" urlPath="<strong>my/test/all</strong>/afile.nc"&gt;
-        &lt;dataset name="testData.nc" ID="testDatasetScan/testData.nc" 
-                 urlPath="<strong>my/test/all</strong>/testData.nc"&gt;
-        &lt;dataset name="junk.nc" ID="testDatasetScan/junk.nc" urlPath="<strong>my/test/all</strong>/junk.nc"&gt;
+  &lt;/metadata&gt;
 
-        &lt;catalogRef xlink:title="grib" ID="testDatasetScan/grib" name=""
-                      xlink:href="/thredds/catalog/<code>my/test/all</code>/grib/catalog.xml" /&gt;
-      &lt;/dataset&gt;
+  &lt;dataset name="afile.nc" ID="testDatasetScan/afile.nc" urlPath="<strong>my/test/all</strong>/afile.nc" /&gt;
+  &lt;dataset name="testData.nc" ID="testDatasetScan/testData.nc"
+      urlPath="<strong>my/test/all</strong>/testData.nc" /&gt;
+  &lt;dataset name="junk.nc" ID="testDatasetScan/junk.nc" urlPath="<strong>my/test/all</strong>/junk.nc" /&gt;
+
+  &lt;catalogRef xlink:title="grib" ID="testDatasetScan/grib" name=""
+      xlink:href="/thredds/catalog/<strong>my/test/all</strong>/grib/catalog.xml" /&gt;
+&lt;/dataset&gt;
 ...
 </pre>
 
