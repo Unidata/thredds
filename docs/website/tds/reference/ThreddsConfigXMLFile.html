@@ -55,7 +55,7 @@
     <ul>
       <li><a href="#DiskCache">CDM Disk cache</a></li>
       <li><a href="#AggregationCache">Aggregation Cache </a></li>
-      <li><a href="#GribIndexWriting">Grib Index writing</a></li>
+      <li><a href="#GribIndexWriting">Grib Index redirection</a></li>
     </ul>
   </li>
   <li>Object caching
@@ -522,7 +522,7 @@ ln -s /data/thredds/content content</pre>
   pronounced difference with and without this cache. </p>
 
 <p>The cache information is updated based on the <strong>recheckEvery</strong> field in the <strong>joinExisting</strong> aggregation element.</p>
-<h3><a name="GribIndexWriting" id="GribIndexWriting">GRIB Index writing</a></h3>
+<h3><a name="GribIndexWriting" id="GribIndexWriting">GRIB Index redirection</a></h3>
 
 <p><em>since version 4.3.15</em></p>
 <pre>
@@ -538,11 +538,11 @@ ln -s /data/thredds/content content</pre>
 <p>These elements control where Grib index files are written. </p>
 <ol>
   <li>
-    <p>If <strong>alwaysUse</strong> is true, grib index files will always be written to the <em>cache directory</em> specified by <strong>dir</strong>
-      (<a href="#Cache_Locations">choosing a cache directory</a>). If <strong>neverUse</strong> is true, the cache will never be used. If neither is set, the TDS will try to write grib indexes to the same
+    <p>If <strong>alwaysUse</strong> is true, grib index files will always be written to the <em>index directory</em> specified by <strong>dir</strong>
+      (<a href="#Cache_Locations">choosing a cache directory</a>). If <strong>neverUse</strong> is true, the index directory will never be used. If neither is set, the TDS will try to write grib indexes to the same
       directory as the
       original file, and if the TDS doesnt have write permission it will then
-      write the files to the cache directory. Write permission will be
+      write the files to the index directory. Write permission will be
       determined by what rights the <em>Tomcat user</em> has (the user that
       starts up Tomcat). For security reasons, you want to carefully limit
       the file permissions of the Tomcat user. </p>
@@ -550,14 +550,16 @@ ln -s /data/thredds/content content</pre>
   <li>
     <p>The policy must be set to one of <em>oneDirectory</em> or <em>nestedDirectory </em> (the default). <em>oneDirectory</em> will put all index files into the
       same directory, while <em>nestedDirectory</em> will preserve the directory structure of the index files. Use <em>nestedDirectory</em> for large
-      collections of grib files.</p>
+      collections of  files.</p>
   </li>
-  <li>Every <strong>scour</strong> amount of time, the largest items in the cache will be deleted, until the directory has less than <strong>maxSize</strong>
-    bytes. Note that the directory will sometimes exceed <strong>maxSize</strong>, and will only be knocked back to <strong>maxSize</strong> when the scour
-    thread runs. To turn off scouring, set the scour time to 0 (eg &quot;0 hours&quot;).
-    Default is to not scour.
-  </li>
+  <li>Every <strong>scour</strong> amount of time, any files in the cache that are older than <strong>maxAge</strong> will be removed. To turn off scouring, set the scour time to 0 (eg &quot;0 hours&quot;), or leave out the &lt;scour&gt; element. Typically you do <strong>not</strong> want to scour the indices.</li>
 </ol>
+<p>Managing the GRIB indices is an important task, and can be difficult if the files are changing, as in a rolling archive, or for very large collections. There are two typical ways to do this:</p>
+<ol>
+  <li>For rolling archives, allow the indices to be written in the same directory as the data files by specifying <em>&lt;neverUse&gt;true&lt;/neverUse&gt;</em> or by not using a <em>&lt;neverUse&gt;</em> or <em>&lt;alwaysUse&gt;</em> element (which uses the default behavior). When you delete the data files, delete the corresponding indices. (The TDM will eventually handle the task of mainintaining a rolling archive by deleting files).</li>
+  <li>If you need to keep the index files separate from your data files, set <em>&lt;alwaysUse&gt;true&lt;/alwaysUse&gt;</em>, and use <em>&lt;policy&gt;nestedDirectory&lt;/policy&gt;</em>. There is currently no way to specify different cache directories for different datasets. All GRIB indices, both <strong>gbx9</strong> and <strong>ncx2</strong>, are kept in the same cache.</li>
+</ol>
+<p>A good rule of thumb is that the index files will need disk space between 500 and 1000 times smaller than the size of the grib data files. So a 1 Terabyte collection of GRIB data will need up to 2 GB of indices.</p>
 <hr style="width: 100%; height: 2px;">
 <h2>Object Caching</h2>
 

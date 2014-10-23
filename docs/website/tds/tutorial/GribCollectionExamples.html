@@ -4,12 +4,13 @@
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <title>GRIB Collection Examples</title>
   <link rel="stylesheet" href="tutorial2.css" type="text/css"/>
+  <script type="text/javascript" src="workshopNav.js"></script>
 </head>
 
 <body>
 <h1>Grib Collections</h1>
-<p>A GRIB Collection is a collection of files that have GRIB records in them. Each file will have a grib index (gbx9) file generated for it. Once generated, never have to redo.</p>
-<p>Each logical collection has a CDM index (ncx2) file. All the records for a single runtime comprise a logical collection, called a RC. </p>
+<p>A GRIB Collection is a collection of files that have GRIB records in them. Each file will have a grib index (<em>gbx9</em>) file generated for it. Once generated, gbx9 files never have to be redone.</p>
+<p>Each logical collection has a CDM index (<em>ncx2</em>) file. All the records for a single runtime comprise a logical collection, called a RC. </p>
 <h3>case 1. {collection} has single runtime </h3>
 <pre>&lt;dataset name=&quot;GRIB Collection Example for tutorial (single runtime)&quot; serviceName=&quot;gribServices&quot; &gt;
  &lt;featureCollection name=&quot;Ismoro Single Runtime&quot; featureType=&quot;GRIB1&quot; harvest=&quot;true&quot; path=&quot;Grib/srt&quot;&gt;

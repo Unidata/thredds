@@ -28,7 +28,7 @@
       <xsd:attribute name="base" type="xsd:anyURI"/>
       <xsd:attribute name="name" type="xsd:string"/>
       <xsd:attribute name="expires" type="dateType"/>
-      <xsd:attribute name="version" type="xsd:token" default="1.0.2"/>
+      <xsd:attribute name="version" type="xsd:token" default="1.0.7"/>
     </xsd:complexType>
 
     <!-- Enforce dataset ID references:
@@ -343,6 +343,7 @@
 
   <xsd:complexType name="updateType">
     <xsd:attribute name="startup" type="xsd:string"/>
+    <xsd:attribute name="recheckAfter" type="xsd:string"/>
     <xsd:attribute name="rescan" type="xsd:token"/>
     <xsd:attribute name="rewrite" type="xsd:string"/>
     <xsd:attribute name="trigger" type="xsd:token"/>
@@ -353,10 +354,7 @@
       <xsd:element ref="manage" minOccurs="0"/>
     </xsd:sequence>
     <xsd:attribute name="rewrite" type="xsd:string"/>
-    <xsd:attribute name="recheckAfter" type="xsd:string"/>
     <xsd:attribute name="rescan" type="xsd:token"/>
-    <xsd:attribute name="trigger" type="xsd:token"/>
-    <xsd:attribute name="deleteAfter" type="xsd:string"/>
   </xsd:complexType>
 
   <xsd:element name="manage">
