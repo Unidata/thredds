@@ -1,4 +1,3 @@
-// $Id: UnitFormatManager.java 64 2006-07-12 22:30:50Z edavis $
 /*
  * Copyright 1998-2009 University Corporation for Atmospheric Research/Unidata
  *
@@ -39,7 +38,6 @@ import java.io.Serializable;
  * Provides support for managing a default UnitFormat.
  * 
  * @author Steven R. Emmerson
- * @version $Id: UnitFormatManager.java 64 2006-07-12 22:30:50Z edavis $
  */
 public final class UnitFormatManager implements Serializable {
 	private static final long	serialVersionUID	= 1L;
@@ -55,13 +53,9 @@ public final class UnitFormatManager implements Serializable {
 	 * 
 	 * @return An instance of the default unit format.
 	 */
-	public static final UnitFormat instance() {
+	public static synchronized UnitFormat instance() {
 		if (instance == null) {
-			synchronized (UnitFormatManager.class) {
-				if (instance == null) {
-					instance = StandardUnitFormat.instance();
-				}
-			}
+	    instance = StandardUnitFormat.instance();
 		}
 		return instance;
 	}
@@ -70,10 +64,9 @@ public final class UnitFormatManager implements Serializable {
 	 * Sets the instance of the default unit format. You'd better know what
 	 * you're doing if you call this method.
 	 * 
-	 * @param instance
-	 *            An instance of the new, default unit format.
+	 * @param instance An instance of the new, default unit format.
 	 */
-	public static final synchronized void setInstance(final UnitFormat instance) {
+	public static synchronized void setInstance(final UnitFormat instance) {
 		UnitFormatManager.instance = instance;
 	}
 }

@@ -123,9 +123,16 @@ public class TestH5 {
     Array data = v.read();
     System.out.printf("%s%n", NCdumpW.toString(data, "offset data", null));
     Index ii = data.getIndex();
-    assert (data.getDouble(ii.set(3,2)) == 12.0);
+    assert (data.getDouble(ii.set(3, 2)) == 12.0);
 
     ncfile.close();
+  }
+
+  @org.junit.Test
+  public void testGroupHardLinks() throws IOException {
+    try (NetcdfFile ncfile = NetcdfFile.open("E:/work/mcwhirter/h5ex_g_traverse.h5")) {
+      System.out.printf("%s%n", ncfile);
+    }
   }
 
 }

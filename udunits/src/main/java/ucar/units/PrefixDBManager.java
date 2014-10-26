@@ -1,4 +1,3 @@
-// $Id: PrefixDBManager.java 64 2006-07-12 22:30:50Z edavis $
 /*
  * Copyright 1998-2009 University Corporation for Atmospheric Research/Unidata
  *
@@ -39,7 +38,6 @@ import java.io.Serializable;
  * Provides support for managing a database of unit prefixes.
  * 
  * @author Steven R. Emmerson
- * @version $Id: PrefixDBManager.java 64 2006-07-12 22:30:50Z edavis $
  */
 public final class PrefixDBManager implements Serializable {
 	private static final long	serialVersionUID	= 1L;
@@ -55,13 +53,9 @@ public final class PrefixDBManager implements Serializable {
 	 * @throws PrefixDBException
 	 *             The current prefix database couldn't be created.
 	 */
-	public static final PrefixDB instance() throws PrefixDBException {
+	public static synchronized PrefixDB instance() throws PrefixDBException {
 		if (instance == null) {
-			synchronized (PrefixDBManager.class) {
-				if (instance == null) {
 					instance = StandardPrefixDB.instance();
-				}
-			}
 		}
 		return instance;
 	}
@@ -72,7 +66,7 @@ public final class PrefixDBManager implements Serializable {
 	 * @param instance
 	 *            The prefix database to be made the current one.
 	 */
-	public static final synchronized void setInstance(final PrefixDB instance) {
+	public static synchronized void setInstance(final PrefixDB instance) {
 		PrefixDBManager.instance = instance;
 	}
 }

@@ -1064,18 +1064,15 @@ public abstract class GribCollection implements FileCacheable, AutoCloseable {
       return sb.toString();
     }
 
-    public void readRecords() throws IOException {
+    public synchronized void readRecords() throws IOException {
       if (this.sa != null) return;
 
       if (recordsLen == 0) return;
       byte[] b = new byte[recordsLen];
 
       if (indexRaf != null) {
-        // synchronize to protect the raf, and records[]
-        synchronized (indexRaf) {
-          indexRaf.seek(recordsPos);
-          indexRaf.readFully(b);
-        }
+        indexRaf.seek(recordsPos);
+        indexRaf.readFully(b);
       } else {
         String idxPath = getIndexFilepathInCache();
         try (RandomAccessFile raf = new RandomAccessFile(idxPath, "r")) {  // try-with-close
@@ -1092,32 +1089,29 @@ public abstract class GribCollection implements FileCacheable, AutoCloseable {
         repeated Record records = 4;  // List<Record>
       }
      */
-      // synchronize to protect records[]
-      synchronized (this) {
-        GribCollectionProto.SparseArray proto = GribCollectionProto.SparseArray.parseFrom(b);
-        int cdmHash = proto.getCdmHash();
-        if (cdmHash != this.cdmHash)
-          throw new IllegalStateException("Corrupted index");
+      GribCollectionProto.SparseArray proto = GribCollectionProto.SparseArray.parseFrom(b);
+      int cdmHash = proto.getCdmHash();
+      if (cdmHash != this.cdmHash)
+        throw new IllegalStateException("Corrupted index");
 
-        int nsizes = proto.getSizeCount();
-        int[] size = new int[nsizes];
-        for (int i = 0; i < nsizes; i++)
-          size[i] = proto.getSize(i);
+      int nsizes = proto.getSizeCount();
+      int[] size = new int[nsizes];
+      for (int i = 0; i < nsizes; i++)
+        size[i] = proto.getSize(i);
 
-        int ntrack = proto.getTrackCount();
-        int[] track = new int[ntrack];
-        for (int i = 0; i < ntrack; i++)
-          track[i] = proto.getTrack(i);
+      int ntrack = proto.getTrackCount();
+      int[] track = new int[ntrack];
+      for (int i = 0; i < ntrack; i++)
+        track[i] = proto.getTrack(i);
 
-        int n = proto.getRecordsCount();
-        List<Record> records = new ArrayList<>(n);
-        for (int i = 0; i < n; i++) {
-          GribCollectionProto.Record pr = proto.getRecords(i);
-          records.add(new Record(pr.getFileno(), pr.getPos(), pr.getBmsPos(), pr.getScanMode()));
-        }
-
-        this.sa = new SparseArray<>(size, track, records);
+      int n = proto.getRecordsCount();
+      List<Record> records = new ArrayList<>(n);
+      for (int i = 0; i < n; i++) {
+        GribCollectionProto.Record pr = proto.getRecords(i);
+        records.add(new Record(pr.getFileno(), pr.getPos(), pr.getBmsPos(), pr.getScanMode()));
       }
+
+      this.sa = new SparseArray<>(size, track, records);
     }
 
     @Override
