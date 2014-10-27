@@ -81,9 +81,9 @@ public class H5header {
   // debugging
   static private boolean debugEnum = false, debugVlen = false;
   static private boolean debug1 = false, debugDetail = false, debugPos = false, debugHeap = false, debugV = false;
-  static private boolean debugGroupBtree = false, debugDataBtree = false, debugDataChunk = false, debugBtree2 = false;
-  static private boolean debugContinueMessage = false, debugTracker = false, debugSoftLink = false, debugSymbolTable = false;
-  static private boolean warnings = false, debugReference = false, debugRegionReference = false, debugCreationOrder = false, debugFractalHeap = false;
+  static private boolean debugGroupBtree = false, debugDataBtree = false, debugBtree2 = false;
+  static private boolean debugContinueMessage = false, debugTracker = false, debugSoftLink = false, debugHardLink = false, debugSymbolTable = false;
+  static private boolean warnings = false, debugReference = false, debugRegionReference = false, debugCreationOrder = false, debugStructure = false;
   static private boolean debugDimensionScales = false;
 
   static public void setDebugFlags(ucar.nc2.util.DebugFlags debugFlag) {
@@ -92,16 +92,16 @@ public class H5header {
     debugContinueMessage = debugFlag.isSet("H5header/continueMessage");
     debugDetail = debugFlag.isSet("H5header/headerDetails");
     debugDataBtree = debugFlag.isSet("H5header/dataBtree");
-    debugDataChunk = debugFlag.isSet("H5header/dataChunk");
     debugGroupBtree = debugFlag.isSet("H5header/groupBtree");
-    debugFractalHeap = debugFlag.isSet("H5header/fractalHeap");
     debugHeap = debugFlag.isSet("H5header/Heap");
     debugPos = debugFlag.isSet("H5header/filePos");
     debugReference = debugFlag.isSet("H5header/reference");
     debugSoftLink = debugFlag.isSet("H5header/softLink");
+    debugHardLink = debugFlag.isSet("H5header/hardLink");
     debugSymbolTable = debugFlag.isSet("H5header/symbolTable");
     debugTracker = debugFlag.isSet("H5header/memTracker");
     debugV = debugFlag.isSet("H5header/Variable");
+    debugStructure = debugFlag.isSet("H5header/structure");
   }
 
   static private final byte[] head = {(byte) 0x89, 'H', 'D', 'F', '\r', '\n', 0x1a, '\n'};
@@ -205,7 +205,7 @@ public class H5header {
       throw new IOException("Unknown superblock version= " + versionSB);
     }
 
-    // now look for symbolic links
+    // now look for symbolic links LOOK this doesnt work; probably remove 10/27/14 jc
     replaceSymbolicLinks(rootGroup);
 
     // recursively run through all the dataObjects and add them to the ncfile
@@ -401,8 +401,7 @@ public class H5header {
   // construct netcdf objects
 
   private boolean makeNetcdfGroup(ucar.nc2.Group ncGroup, H5Group h5group) throws IOException {
-    boolean allHaveSharedDimensions = true;
-    if (h5group == null) return allHaveSharedDimensions; // ??
+    // if (h5group == null) return true; // ??
 
   /* 6/21/2013 new algorithm for dimensions.
     1. find all objects with all CLASS = "DIMENSION_SCALE", make into a dimension. use shape(0) as length. keep in order
@@ -455,6 +454,8 @@ public class H5header {
       }
     } */
 
+    boolean allHaveSharedDimensions = true;
+
     // 3. use DIMENSION_LIST to assign dimensions to other variables.
     for (DataObjectFacade facade : h5group.nestedObjects) {
       if (facade.isVariable)
@@ -467,11 +468,13 @@ public class H5header {
     for (DataObjectFacade facadeNested : h5group.nestedObjects) {
 
       if (facadeNested.isGroup) {
+        H5Group h5groupNested = new H5Group(facadeNested);
+        if (facadeNested.group == null) // hard link with cycle
+          continue;                     // just skip it
         ucar.nc2.Group nestedGroup = new ucar.nc2.Group(ncfile, ncGroup, facadeNested.name);
         ncGroup.addGroup(nestedGroup);
-        if (debug1) debugOut.println("--made Group " + nestedGroup.getFullName() + " add to " + ncGroup.getFullName());
-        H5Group h5groupNested = new H5Group(facadeNested);
         allHaveSharedDimensions &= makeNetcdfGroup(nestedGroup, h5groupNested);
+        if (debug1) debugOut.println("--made Group " + nestedGroup.getFullName() + " add to " + ncGroup.getFullName());
 
       } else if (facadeNested.isVariable) {
         if (debugReference && facadeNested.dobj.mdt.type == 7) debugOut.println(facadeNested);
@@ -932,7 +935,7 @@ public class H5header {
         return new Attribute(matt.name, dtype, vinfo.typeInfo.unsigned);
     }
 
-    Array attData = null;
+    Array attData;
     try {
       attData = readAttributeData(matt, vinfo, dtype);
       attData.setUnsigned(matt.mdt.unsigned);
@@ -962,7 +965,6 @@ public class H5header {
 
   // read attribute values without creating a Variable
   private Array readAttributeData(H5header.MessageAttribute matt, H5header.Vinfo vinfo, DataType dataType) throws IOException, InvalidRangeException {
-    boolean debugStructure = false;
     int[] shape = matt.mds.dimLength;
 
     // Structures
@@ -976,8 +978,8 @@ public class H5header {
         //DataType dt = getNCtype(h5sm.mdt.type, h5sm.mdt.byteSize);
         //StructureMembers.Member m = sm.addMember(h5sm.name, null, null, dt, new int[] {1});
 
-        DataType dt = null;
-        int[] dim = null;
+        DataType dt;
+        int[] dim;
         switch (h5sm.mdt.type) {
           case 9:  // STRING
             dt = DataType.STRING;
@@ -1106,7 +1108,7 @@ public class H5header {
 
     Layout layout = new LayoutRegular(matt.dataPos, elemSize, shape, new Section(shape));
     Object data = h5iosp.readDataPrimitive(layout, dataType, shape, null, endian, false);
-    Array dataArray = null;
+    Array dataArray;
 
     if ((dataType == DataType.CHAR)) {
       if (vinfo.mdt.byteSize > 1) { // chop back into pieces
@@ -2139,7 +2141,7 @@ public class H5header {
 
       } else if (warnings) { // we dont know what it is
         debugOut.println("WARNING Unknown DataObjectFacade = " + this);
-        return;
+        // return;
       }
 
     }
@@ -2169,9 +2171,9 @@ public class H5header {
     H5Group parent;
     String name, displayName;
     DataObjectFacade facade;
-    List<DataObjectFacade> nestedObjects = new ArrayList<DataObjectFacade>(); // nested data objects
-    Map<String, Dimension> dimMap = new HashMap<String, Dimension>();
-    List<Dimension> dimList = new ArrayList<Dimension>(); // need to track dimension order
+    List<DataObjectFacade> nestedObjects = new ArrayList<>(); // nested data objects
+    Map<String, Dimension> dimMap = new HashMap<>();
+    List<Dimension> dimList = new ArrayList<>(); // need to track dimension order
 
     // "Data Object Header" Level 2A
     // read a Data Object Header
@@ -2182,18 +2184,19 @@ public class H5header {
       this.name = facade.name;
       displayName = (name.length() == 0) ? "root" : name;
 
-      // if has a "group message", then its an old group
+      // if has a "group message", then its an "old group"
       if (facade.dobj.groupMessage != null) {
         // check for hard links
-        // debugOut.println("HO look for group address = "+groupMessage.btreeAddress);
-        /* if (null != (group = hashGroups.get(groupMessage.btreeAddress))) {
-          debugOut.println("WARNING hard link to group = " + group.getName());
-          if (parent.isChildOf(group)) {
-            debugOut.println("ERROR hard link to group create a loop = " + group.getName());
-            group = null;
+        if (debugHardLink) debugOut.println("HO look for group address = "+facade.dobj.groupMessage.btreeAddress);
+        if (null != (facade.group = hashGroups.get(facade.dobj.groupMessage.btreeAddress))) {
+          if (debugHardLink) debugOut.println("WARNING hard link to group = " + facade.group.getName());
+          if (parent.isChildOf(facade.group)) {
+            if (debugHardLink) debugOut.println("ERROR hard link to group create a loop = " + facade.group.getName());
+            log.debug("Remove hard link to group that creates a loop = " + facade.group.getName());
+            facade.group = null;
             return;
           }
-        } */
+        }
 
         // read the group, and its contained data objects.
         readGroupOld(this, facade.dobj.groupMessage.btreeAddress, facade.dobj.groupMessage.nameHeapAddress);
@@ -2219,6 +2222,11 @@ public class H5header {
       if (parent == that) return true;
       return parent.isChildOf(that);
     }
+
+    @Override
+    public String toString() {
+      return displayName;
+    }
   }
 
   //////////////////////////////////////////////////////////////
@@ -2238,7 +2246,7 @@ public class H5header {
     }
 
     public List<HeaderMessage> getMessages() {
-      List<HeaderMessage> result = new ArrayList<HeaderMessage>(100);
+      List<HeaderMessage> result = new ArrayList<>(100);
       for (HeaderMessage m : messages)
         if (!(m.messData instanceof MessageAttribute))
           result.add(m);
@@ -2256,8 +2264,8 @@ public class H5header {
 
     long address; // aka object id : obviously unique
     String who;   // may be null, may not be unique
-    List<HeaderMessage> messages = new ArrayList<HeaderMessage>();
-    List<MessageAttribute> attributes = new ArrayList<MessageAttribute>();
+    List<HeaderMessage> messages = new ArrayList<>();
+    List<MessageAttribute> attributes = new ArrayList<>();
 
     // need to look for these
     MessageGroup groupMessage = null;
@@ -2392,7 +2400,7 @@ public class H5header {
       FractalHeap fractalHeap = new FractalHeap(H5header.this, who, attInfo.fractalHeapAddress, memTracker);
 
       for (BTree2.Entry2 e : btree.entryList) {
-        byte[] heapId = null;
+        byte[] heapId;
         switch (btree.btreeType) {
           case 8:
             heapId = ((BTree2.Record8) e.record).heapId;
@@ -2515,7 +2523,7 @@ public class H5header {
   // type safe enum
   static public class MessageType {
     private static int MAX_MESSAGE = 23;
-    private static java.util.Map<String, MessageType> hash = new java.util.HashMap<String, MessageType>(10);
+    private static java.util.Map<String, MessageType> hash = new java.util.HashMap<>(10);
     private static MessageType[] mess = new MessageType[MAX_MESSAGE];
 
     public final static MessageType NIL = new MessageType("NIL", 0);
@@ -2933,7 +2941,6 @@ public class H5header {
 
   // Message Type 2 "New Group" or "Link Info" (version 2)
   private class MessageGroupNew implements Named {
-    byte version, flags;
     long maxCreationIndex = -2, fractalHeapAddress, v2BtreeAddress, v2BtreeAddressCreationOrder = -2;
 
     public String toString() {
@@ -3226,7 +3233,7 @@ public class H5header {
       } else if (type == 6) { // compound
         int nmembers = makeUnsignedIntFromBytes(flags[1], flags[0]);
         if (debug1) debugOut.println("   --type 6(compound): nmembers=" + nmembers);
-        members = new ArrayList<StructureMember>();
+        members = new ArrayList<>();
         for (int i = 0; i < nmembers; i++) {
           members.add(new StructureMember(version, byteSize));
         }
@@ -3773,7 +3780,7 @@ public class H5header {
 
   // Message Type 21/0x15 "Attribute Info" (version 2)
   private class MessageAttributeInfo implements Named {
-    byte version, flags;
+    byte flags;
     short maxCreationIndex = -1;
     long fractalHeapAddress = -2, v2BtreeAddress = -2, v2BtreeAddressCreationOrder = -2;
 
@@ -3808,7 +3815,7 @@ public class H5header {
 
           BTree2 btree = new BTree2(H5header.this, "", btreeAddress);
           for (BTree2.Entry2 e : btree.entryList) {
-            byte[] heapId = null;
+            byte[] heapId;
             switch (btree.btreeType) {
               case 8:
                 heapId = ((BTree2.Record8) e.record).heapId;
@@ -4022,9 +4029,10 @@ public class H5header {
     if (debug1) debugOut.println("<-- end GroupNew read <" + group.displayName + ">");
   }
 
+  private Map<Long, H5Group> hashGroups = new HashMap<>();
   private void readGroupOld(H5Group group, long btreeAddress, long nameHeapAddress) throws IOException {
     // track by address for hard links
-    //hashGroups.put(btreeAddress, this);
+    hashGroups.put(btreeAddress, group);
 
     if (debug1) debugOut.println("\n--> GroupOld read <" + group.displayName + ">");
     LocalHeap nameHeap = new LocalHeap(group, nameHeapAddress);
@@ -4505,7 +4513,6 @@ There is _no_ datatype information stored for these kind of selections currently
     byte version;
     int sizeBytes;
     List<HeapObject> hos = new ArrayList<>();
-    HeapObject freeSpace = null;
 
     GlobalHeap(long address) throws IOException {
       // header information is in le byte order
