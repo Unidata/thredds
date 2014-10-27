@@ -156,7 +156,6 @@ public class TestH5ReadAndCount {
   String filename;
   int ndims, nvars, ngatts, natts, nstructFields, ngroups;
 
-
   public TestH5ReadAndCount(String filename, int ndims, int nvars, int ngatts, int natts, int nstructFields, int ngroups) {
     this.filename = filename;
     this.ndims = ndims;
