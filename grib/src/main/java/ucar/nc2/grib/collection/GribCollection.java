@@ -310,7 +310,7 @@ public abstract class GribCollection implements FileCacheable, AutoCloseable {
       if (ds.getType() == Type.GC) return ds;
       if (ds.getType() == Type.TwoD) return ds;
     }
-    return null;
+    throw new IllegalStateException("GC.getDatasetCanonical failed on="+name);
   }
 
   public HorizCoordSys getHorizCS(int index) {
@@ -981,7 +981,7 @@ public abstract class GribCollection implements FileCacheable, AutoCloseable {
       return intvName;
     }
 
-    public SparseArray<Record> getSparseArray() {
+    public synchronized SparseArray<Record> getSparseArray() {
       return sa;
     }
 

@@ -780,7 +780,7 @@ public class OpendapServlet extends AbstractServlet {
     long size = computeSize(dds, isAscii);
     //System.err.printf("total (constrained) size=%s\n", size);
     log.debug("total (constrained) size={}", size);
-    double dsize = size / (1000 * 1000);
+    double dsize = size / (1000.0 * 1000.0);
     double maxSize = isAscii ? ascLimit : binLimit; // Mbytes
     if (dsize > maxSize) {
       log.info("Reject request size = {} Mbytes", dsize);

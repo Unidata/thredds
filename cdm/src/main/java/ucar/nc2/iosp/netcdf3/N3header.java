@@ -304,9 +304,10 @@ public class N3header {
     if (isStreaming) {
       long recordSpace = actualSize - recStart;
       numrecs = recsize == 0 ? 0 : (int) (recordSpace / recsize);
-      if (debugStreaming)
-        System.out.println(" isStreaming recordSpace=" + recordSpace + " numrecs=" + numrecs +
-          " has extra bytes = " + (recordSpace % recsize));
+      if (debugStreaming) {
+        long extra = recsize == 0 ? 0 : recordSpace % recsize;
+        System.out.println(" isStreaming recordSpace=" + recordSpace + " numrecs=" + numrecs + " has extra bytes = " + extra);
+      }
 
       // set it in the unlimited dimension, all of the record variables
       if (udim != null) {

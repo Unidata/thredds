@@ -372,6 +372,7 @@ public class ThreddsMetadata {
    * @param cdc set CalendarDateRange to this
    */
   public void setTimeCoverage(CalendarDateRange cdc) {
+    if (cdc == null) return;
     this.timeCoverage = cdc.toDateRange();
   }
 

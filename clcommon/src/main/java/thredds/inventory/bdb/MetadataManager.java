@@ -178,7 +178,7 @@ public class MetadataManager implements StoreKeyValue {
     }
   }
 
-  static public String getCacheLocation() {
+  static public synchronized String getCacheLocation() {
     return root;
   }
 

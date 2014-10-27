@@ -141,14 +141,16 @@ public class MFileCollectionManager extends CollectionManagerAbstract {
 
     scanList.add(new CollectionConfig(sp.getRootDir(), sp.getRootDir(), sp.wantSubdirs(), filters, null));
 
-    if (config.updateConfig != null)
-      this.recheck = makeRecheck(config.updateConfig.recheckAfter);
     if (config.protoConfig != null)
       protoChoice = config.protoConfig.choice;
 
-    // static means never rescan on checkState; let it be externally triggered.
-    if ((config.updateConfig.recheckAfter == null) && (config.updateConfig.rescan == null) &&  (config.updateConfig.deleteAfter == null))
-      setStatic(true);
+    if (config.updateConfig != null) {
+      this.recheck = makeRecheck(config.updateConfig.recheckAfter);
+
+      // static means never rescan on checkState; let it be externally triggered.
+      if ((config.updateConfig.recheckAfter == null) && (config.updateConfig.rescan == null) && (config.updateConfig.deleteAfter == null))
+        setStatic(true);
+    }
 
     if (this.auxInfo == null) this.auxInfo = new HashMap<>(10);
     this.auxInfo.put(FeatureCollectionConfig.AUX_CONFIG, config);
