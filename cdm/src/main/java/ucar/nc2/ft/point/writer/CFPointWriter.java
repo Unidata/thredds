@@ -32,6 +32,8 @@
 
 package ucar.nc2.ft.point.writer;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import ucar.ma2.*;
 import ucar.nc2.*;
 import ucar.nc2.constants.*;
@@ -58,6 +60,8 @@ import java.util.*;
  * @since 4/11/12
  */
 public abstract class CFPointWriter implements AutoCloseable {
+  static private final Logger logger = LoggerFactory.getLogger(CFPointWriter.class);
+
   public static final String recordName = "obs";
   public static final String recordDimName = "obs";
   public static final String latName = "latitude";
@@ -607,6 +611,10 @@ public abstract class CFPointWriter implements AutoCloseable {
 
        } else {
          newVar = writer.addVariable(null, oldVar.getShortName(), oldVar.getDataType(), dims);
+         if (newVar == null) {
+           logger.warn("Variable already exists ="+oldVar.getShortName());
+           continue;
+         }
        }
 
       List<Attribute> atts = oldVar.getAttributes();

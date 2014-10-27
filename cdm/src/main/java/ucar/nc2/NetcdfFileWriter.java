@@ -507,9 +507,12 @@ public class NetcdfFileWriter {
    * @param dataType  type of underlying element
    * @param dims      list of Dimensions for the variable in the new file, must already have been added.
    *                  Use a list of length 0 for a scalar variable.
-   * @return the Variable that has been added
+   * @return the Variable that has been added, or null if a Variable with shortName already exists in the group
    */
   public Variable addVariable(Group g, String shortName, DataType dataType, List<Dimension> dims) {
+    if (g == null) g = ncfile.getRootGroup();
+    Variable oldVar = g.findVariable(shortName);
+    if (oldVar != null) return null;
     return addVariable(g, null, shortName, dataType, dims);
   }
 
