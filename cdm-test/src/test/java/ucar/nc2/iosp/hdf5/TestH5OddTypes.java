@@ -41,6 +41,7 @@ import ucar.ma2.Section;
 import ucar.nc2.*;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.util.DebugFlagsImpl;
+import ucar.unidata.test.util.TestDir;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
@@ -135,7 +136,7 @@ public class TestH5OddTypes {
 
   public void testCompoundString() throws InvalidRangeException, IOException {
     H5header.setDebugFlags( new ucar.nc2.util.DebugFlagsImpl("H5header/header"));
-    TestH5read.readAllData(TestH5.testDir + "support/cstr.h5");
+    TestDir.readAll(TestH5.testDir + "support/cstr.h5");
     H5header.setDebugFlags( new ucar.nc2.util.DebugFlagsImpl());
   }
 

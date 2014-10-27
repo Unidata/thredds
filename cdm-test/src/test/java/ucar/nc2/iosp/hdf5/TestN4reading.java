@@ -35,9 +35,6 @@ package ucar.nc2.iosp.hdf5;
 import org.junit.Test;
 import ucar.ma2.*;
 import ucar.nc2.*;
-import ucar.nc2.dataset.NetcdfDataset;
-import ucar.nc2.dt.GridDatatype;
-import ucar.nc2.dt.grid.GridDataset;
 import ucar.nc2.iosp.netcdf3.N3iosp;
 import ucar.nc2.util.Misc;
 import ucar.unidata.test.util.TestDir;
@@ -47,7 +44,7 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * Test netcdf-4 reading
+ * Test netcdf-4 reading of misc files
  */
 
 public class TestN4reading {
@@ -74,18 +71,18 @@ public class TestN4reading {
 
     // Global Heap 1t 13059 runs out with no heap id = 0
     String filename = testDir+"hiig_forec_20140208.nc";
-    NetcdfFile ncfile = NetcdfFile.open(filename);
-    Variable v = ncfile.findVariable("temp");
-    for (Section sect : sections) {
-      Array data =  v.read(sect);
-      if (0 < countMissing(data)) {
-        Array data2 =  v.read(sect);
-        countMissing(data2);
-        assert false;
+    try (NetcdfFile ncfile = NetcdfFile.open(filename)) {
+      Variable v = ncfile.findVariable("temp");
+      for (Section sect : sections) {
+        Array data = v.read(sect);
+        if (0 < countMissing(data)) {
+          Array data2 = v.read(sect);
+          countMissing(data2);
+          assert false;
+        }
       }
+      System.out.printf("**** testGodivaFindsDataHole read ok on %s%n", ncfile.getLocation());
     }
-    System.out.printf("**** testGodivaFindsDataHole read ok on %s%n", ncfile.getLocation());
-    ncfile.close();
   }
 
   private int countMissing(Array data) {
@@ -105,58 +102,52 @@ public class TestN4reading {
   public void testMultiDimscale() throws IOException {
     // Global Heap 1t 13059 runs out with no heap id = 0
     String filename = testDir+"multiDimscale.nc4";
-    NetcdfFile ncfile = NetcdfFile.open(filename);
-    Variable v = ncfile.findVariable("siglev");
-    v.read();
-    v = ncfile.findVariable("siglay");
-    v.read();
-    System.out.println("\n**** testMultiDimScale read ok\n\n" + ncfile);
-    ncfile.close();
+    try (NetcdfFile ncfile = NetcdfFile.open(filename)) {
+      Variable v = ncfile.findVariable("siglev");
+      v.read();
+      v = ncfile.findVariable("siglay");
+      v.read();
+      System.out.println("\n**** testMultiDimScale read ok\n\n" + ncfile);
+    }
   }
 
   @Test
   public void testGlobalHeapOverun() throws IOException {
     // Global Heap 1t 13059 runs out with no heap id = 0
     String filename = testDir+"globalHeapOverrun.nc4";
-    NetcdfFile ncfile = NetcdfFile.open(filename);
-    System.out.println("\n**** testGlobalHeapOverun done\n\n" + ncfile);
-    List<Variable> vars = ncfile.getVariables();
-    Collections.sort(vars);
-    for (Variable v : vars) System.out.println(" "+v.getFullName());
-    System.out.println("nvars = " + ncfile.getVariables().size());
-    ncfile.close();
+    try (NetcdfFile ncfile = NetcdfFile.open(filename)) {
+      System.out.println("\n**** testGlobalHeapOverun done\n\n" + ncfile);
+      List<Variable> vars = ncfile.getVariables();
+      Collections.sort(vars);
+      for (Variable v : vars) System.out.println(" " + v.getFullName());
+      System.out.println("nvars = " + ncfile.getVariables().size());
+    }
   }
 
   @Test
   public void testEnums() throws IOException {
     //H5header.setDebugFlags(new ucar.nc2.util.DebugFlagsImpl("H5header/header"));
     String filename = testDir+"tst/tst_enums.nc";
-    NetcdfFile ncfile = NetcdfFile.open(filename);
-    System.out.println("\n**** testReadNetcdf4 done\n\n" + ncfile);
-    List<Variable> vars = ncfile.getVariables();
-    Collections.sort(vars);
-    for (Variable v : vars) System.out.println(" "+v.getFullName());
-    System.out.println("nvars = " + ncfile.getVariables().size());
-    ncfile.close();
+    try (NetcdfFile ncfile = NetcdfFile.open(filename)) {
+      System.out.println("\n**** testReadNetcdf4 done\n\n" + ncfile);
+      List<Variable> vars = ncfile.getVariables();
+      Collections.sort(vars);
+      for (Variable v : vars) System.out.println(" " + v.getFullName());
+      System.out.println("nvars = " + ncfile.getVariables().size());
+    }
   }
 
-  @Test
-  public void testReadAll() throws IOException {
-    TestDir.readAllDir(testDir+"nc4", null);
-    TestDir.readAllDir(testDir+"nc4-classic", null);
-    TestDir.readAllDir(testDir+"files", null);
-  }
 
   @Test
   public void testVlenStrings() throws IOException {
     //H5header.setDebugFlags(new ucar.nc2.util.DebugFlagsImpl("H5header/header"));
     String filename = testDir+"tst/tst_strings.nc";
-    NetcdfFile ncfile = NetcdfFile.open(filename);
-    System.out.println("\n**** testReadNetcdf4 done\n\n" + ncfile);
-    Variable v = ncfile.findVariable("measure_for_measure_var");
-    Array data = v.read();
-    NCdumpW.printArray(data, "measure_for_measure_var", new PrintWriter(System.out), null);
-    ncfile.close();
+    try (NetcdfFile ncfile = NetcdfFile.open(filename)) {
+      System.out.println("\n**** testReadNetcdf4 done\n\n" + ncfile);
+      Variable v = ncfile.findVariable("measure_for_measure_var");
+      Array data = v.read();
+      NCdumpW.printArray(data, "measure_for_measure_var", new PrintWriter(System.out), null);
+    }
   }
 
   @Test
@@ -164,51 +155,49 @@ public class TestN4reading {
     //H5header.setDebugFlags(new ucar.nc2.util.DebugFlagsImpl("H5header/header"));
     //String filename = "C:/data/work/bruno/fpsc_d1wave_24-11.nc";
     String filename = testDir+"vlen/fpcs_1dwave_2.nc";
-    NetcdfFile ncfile = NetcdfFile.open(filename);
-    System.out.println("\n**** testReadNetcdf4 done\n\n" + ncfile);
-    Variable v = ncfile.findVariable("levels");
-    Array data = v.read();
-    NCdumpW.printArray(data, "read()",  new PrintWriter( System.out), null);
+    try (NetcdfFile ncfile = NetcdfFile.open(filename)) {
+      System.out.println("\n**** testReadNetcdf4 done\n\n" + ncfile);
+      Variable v = ncfile.findVariable("levels");
+      Array data = v.read();
+      NCdumpW.printArray(data, "read()", new PrintWriter(System.out), null);
 
-    int  count = 0;
-    while (data.hasNext()) {
-      Array as = (Array) data.next();
-      NCdumpW.printArray(as, " "+count,  new PrintWriter( System.out), null);
-      count++;
+      int count = 0;
+      while (data.hasNext()) {
+        Array as = (Array) data.next();
+        NCdumpW.printArray(as, " " + count, new PrintWriter(System.out), null);
+        count++;
+      }
+
+      // try subset
+      data = v.read("0:9:2, :");
+      NCdumpW.printArray(data, "read(0:9:2,:)", new PrintWriter(System.out), null);
+
+      data = v.read(new Section().appendRange(0, 9, 2).appendRange(null));
+      NCdumpW.printArray(data, "read(Section)", new PrintWriter(System.out), null);
+
+      // fail
+      //int[] origin = new int[] {0, 0};
+      //int[] size = new int[] {3, -1};
+      //data = v.read(origin, size);
+
+      // from bruno
+      int initialIndex = 5;
+      int finalIndex = 5;
+      data = v.read(initialIndex + ":" + finalIndex + ",:");
+      //NCdumpW.printArray(data, "read()",  new PrintWriter(System.out), null);
+
+      System.out.println("Size: " + data.getSize());
+      System.out.println("Data: " + data);
+      System.out.println("Class: " + data.getClass().getName());
+      // loop over outer dimension
+
+      int x = 0;
+      while (data.hasNext()) {
+        Array as = (Array) data.next(); // inner variable length array of short
+        System.out.println("Shape: " + new Section(as.getShape()));
+        System.out.println(as);
+      }
     }
-
-    // try subset
-    data = v.read("0:9:2, :");
-    NCdumpW.printArray(data, "read(0:9:2,:)",  new PrintWriter( System.out), null);
-
-    data = v.read(new Section().appendRange(0,9,2).appendRange(null));
-    NCdumpW.printArray(data, "read(Section)",  new PrintWriter( System.out), null);
-
-    // fail
-    //int[] origin = new int[] {0, 0};
-    //int[] size = new int[] {3, -1};
-    //data = v.read(origin, size);
-
-    // from bruno
-    int initialIndex = 5;
-    int finalIndex = 5;
-    data = v.read(initialIndex + ":" + finalIndex + ",:");
-    //NCdumpW.printArray(data, "read()",  new PrintWriter(System.out), null);
-
-    System.out.println("Size: " + data.getSize());
-    System.out.println("Data: " + data);
-    System.out.println("Class: " + data.getClass().getName());
-    // loop over outer dimension
-
-    int x = 0;
-    while (data.hasNext()) {
-      Array as = (Array) data.next(); // inner variable length array of short
-      System.out.println("Shape: " + new Section(as.getShape()));
-      System.out.println(as);
-    }
-
-
-    ncfile.close();
   }
 
   /*
@@ -229,22 +218,22 @@ public class TestN4reading {
   @Test
   public void testNestedStructure() throws java.io.IOException, InvalidRangeException {
     String filename = testDir+"testNestedStructure.nc";
-    NetcdfFile ncfile = NetcdfFile.open(filename);
+    try (NetcdfFile ncfile = NetcdfFile.open(filename)) {
 
-    Variable dset = ncfile.findVariable("x");
-    assert (null != ncfile.findVariable("x"));
-    assert (dset.getDataType() == DataType.STRUCTURE);
-    assert (dset.getRank() == 0);
-    assert (dset.getSize() == 1);
+      Variable dset = ncfile.findVariable("x");
+      assert (null != ncfile.findVariable("x"));
+      assert (dset.getDataType() == DataType.STRUCTURE);
+      assert (dset.getRank() == 0);
+      assert (dset.getSize() == 1);
 
-    ArrayStructure data = (ArrayStructure) dset.read();
-    StructureMembers.Member m = data.getStructureMembers().findMember("field2");
-    assert m != null;
-    assert (m.getDataType() == DataType.STRUCTURE);
+      ArrayStructure data = (ArrayStructure) dset.read();
+      StructureMembers.Member m = data.getStructureMembers().findMember("field2");
+      assert m != null;
+      assert (m.getDataType() == DataType.STRUCTURE);
 
-    System.out.println( NCdumpW.toString(data, "", null));
+      System.out.println(NCdumpW.toString(data, "", null));
 
-    ncfile.close();
+    }
     System.out.println("*** testNestedStructure ok");
   }
 
@@ -252,68 +241,68 @@ public class TestN4reading {
   public void testStrings() throws IOException {
     //H5header.setDebugFlags(new ucar.nc2.util.DebugFlagsImpl("H5header/header"));
     String filename = testDir+"files/nc_test_netcdf4.nc4";
-    NetcdfFile ncfile = NetcdfFile.open(filename);
-    System.out.println("\n**** testReadNetcdf4 done\n\n" + ncfile);
-    Variable v = ncfile.findVariable("d");
-    String attValue = ncfile.findAttValueIgnoreCase(v, "c", null);
-    String s = Misc.showBytes(attValue.getBytes());
-    System.out.println(" d:c= ("+attValue+") = "+s);
-    //Array data = v.read();
-    //NCdumpW.printArray(data, "cr", System.out, null);
-    ncfile.close();
+    try (NetcdfFile ncfile = NetcdfFile.open(filename)) {
+      System.out.println("\n**** testReadNetcdf4 done\n\n" + ncfile);
+      Variable v = ncfile.findVariable("d");
+      String attValue = ncfile.findAttValueIgnoreCase(v, "c", null);
+      String s = Misc.showBytes(attValue.getBytes());
+      System.out.println(" d:c= (" + attValue + ") = " + s);
+      //Array data = v.read();
+      //NCdumpW.printArray(data, "cr", System.out, null);
+    }
   }
 
   @Test
   public void testAttStruct() throws IOException {
-    NetcdfFile ncfile = NetcdfFile.open(TestN4reading.testDir + "attributeStruct.nc");
-    Variable v = ncfile.findVariable("observations");
-    assert v != null;
-    assert v instanceof Structure;
+    try (NetcdfFile ncfile = NetcdfFile.open(TestN4reading.testDir + "attributeStruct.nc")) {
+      Variable v = ncfile.findVariable("observations");
+      assert v != null;
+      assert v instanceof Structure;
 
-    Structure s = (Structure) v;
-    Variable v2 = s.findVariable("tempMin");
-    assert v2 != null;
-    assert v2.getDataType() == DataType.FLOAT;
+      Structure s = (Structure) v;
+      Variable v2 = s.findVariable("tempMin");
+      assert v2 != null;
+      assert v2.getDataType() == DataType.FLOAT;
 
-    assert null != v2.findAttribute("units");
-    assert null != v2.findAttribute("coordinates");
+      assert null != v2.findAttribute("units");
+      assert null != v2.findAttribute("coordinates");
 
-    Attribute att =  v2.findAttribute("units");
-    assert att.getStringValue().equals("degF");
+      Attribute att = v2.findAttribute("units");
+      assert att.getStringValue().equals("degF");
 
-    ncfile.close();
+    }
   }
 
   @Test
   public void testAttStruct2() throws IOException {
-    NetcdfFile ncfile = NetcdfFile.open(TestN4reading.testDir + "compound-attribute-test.nc");
-    Variable v = ncfile.findVariable("compound_test");
-    assert v != null;
-    assert v instanceof Structure;
+    try (NetcdfFile ncfile = NetcdfFile.open(TestN4reading.testDir + "compound-attribute-test.nc")) {
+      Variable v = ncfile.findVariable("compound_test");
+      assert v != null;
+      assert v instanceof Structure;
 
-    Structure s = (Structure) v;
-    Variable v2 = s.findVariable("field0");
-    assert v2 != null;
-    assert v2.getDataType() == DataType.FLOAT;
+      Structure s = (Structure) v;
+      Variable v2 = s.findVariable("field0");
+      assert v2 != null;
+      assert v2.getDataType() == DataType.FLOAT;
 
-    Attribute att =  v2.findAttribute("att_primitive_test");
-    assert !att.isString();
-    assert att.getNumericValue().floatValue() == 1.0;
+      Attribute att = v2.findAttribute("att_primitive_test");
+      assert !att.isString();
+      assert att.getNumericValue().floatValue() == 1.0;
 
-    att =  v2.findAttribute("att_string_test");
-    assert att.getStringValue().equals("string for field 0");
+      att = v2.findAttribute("att_string_test");
+      assert att.getStringValue().equals("string for field 0");
 
-    att =  v2.findAttribute("att_char_array_test");
-    assert att.getStringValue().equals("a");
+      att = v2.findAttribute("att_char_array_test");
+      assert att.getStringValue().equals("a");
 
-    ncfile.close();
+    }
   }
 
   @Test
   public void testEmptyAtts() throws IOException {
-    NetcdfFile ncfile = NetcdfFile.open(TestN4reading.testDir + "testEmptyAtts.nc");
-    System.out.printf("%s%n", ncfile);
-    ncfile.close();
+    try (NetcdfFile ncfile = NetcdfFile.open(TestN4reading.testDir + "testEmptyAtts.nc")) {
+      System.out.printf("%s%n", ncfile);
+    }
   }
 
   @Test

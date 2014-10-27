@@ -40,6 +40,8 @@ import ucar.nc2.Variable;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.unidata.test.util.TestDir;
 
+import java.io.File;
+import java.io.FileFilter;
 import java.io.IOException;
 
 /**
@@ -95,6 +97,14 @@ public class TestH5 {
     }
   }
 
+  public static class H5FileFilter implements FileFilter {
+    public boolean accept(File file) {
+      String name = file.getPath();
+      return (name.endsWith(".h5") || name.endsWith(".H5") || name.endsWith(".he5") || name.endsWith(".nc"));
+    }
+  }
+
+  //////////////////////////////////////////////////////////////////////////
 
   // file that is offset 2048 bytes - NPP!
   @org.junit.Test

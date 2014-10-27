@@ -74,8 +74,8 @@ public class Misc {
     return Math.abs((d1-d2)/d1) < 1.0e-5;
   } */
 
-  static public double howClose( double d1, double d2) {
-    double pd = (d1-d2)/d1;
+  static public double howClose(double d1, double d2) {
+    double pd = (d1 - d2) / d1;
     return Math.abs(pd);
   }
 
@@ -83,59 +83,50 @@ public class Misc {
 
   /**
    * Check if numbers are equal with tolerance
-   * @param v1 first floating point number
-   * @param v2 second floating point number
+   *
+   * @param v1  first floating point number
+   * @param v2  second floating point number
    * @param tol reletive tolerence
    * @return true if within tolerance
    */
-  public static boolean closeEnough( double v1, double v2, double tol) {
+  public static boolean closeEnough(double v1, double v2, double tol) {
     if (show) {
-      double d1 = Math.abs(v1-v2);
-      double d3 = Math.abs(v1/v2);
-      double d2 = Math.abs((v1/v2)-1);
-      System.out.println("v1= "+v1+" v2="+v2+" diff="+d1+" abs(v1/v2)="+d3+" abs(v1/v2-1)="+d2);
+      double d1 = Math.abs(v1 - v2);
+      double d3 = Math.abs(v1 / v2);
+      double d2 = Math.abs((v1 / v2) - 1);
+      System.out.println("v1= " + v1 + " v2=" + v2 + " diff=" + d1 + " abs(v1/v2)=" + d3 + " abs(v1/v2-1)=" + d2);
     }
 
-    double diff = (v2 == 0.0) ? Math.abs(v1-v2) : Math.abs(v1/v2-1);
+    double diff = (v2 == 0.0) ? Math.abs(v1 - v2) : Math.abs(v1 / v2 - 1);
     return diff < tol;
   }
 
   /**
    * Check if numbers are equal with default tolerance
+   *
    * @param v1 first floating point number
    * @param v2 second floating point number
    * @return true if within tolerance
    */
-  public static boolean closeEnough( double v1, double v2) {
+  public static boolean closeEnough(double v1, double v2) {
     if (v1 == v2) return true;
     if (Double.isNaN(v1) && Double.isNaN(v2)) return true;
-    double diff = (v2 == 0.0) ? Math.abs(v1-v2) :  Math.abs(v1/v2-1);
+    double diff = (v2 == 0.0) ? Math.abs(v1 - v2) : Math.abs(v1 / v2 - 1);
     return diff < maxReletiveError;
   }
 
   /**
    * Check if numbers are equal with default tolerance
+   *
    * @param v1 first floating point number
    * @param v2 second floating point number
    * @return true if within tolerance
    */
-  public static boolean closeEnough( float v1, float v2) {
+  public static boolean closeEnough(float v1, float v2) {
     if (v1 == v2) return true;
     if (Float.isNaN(v1) && Float.isNaN(v2)) return true;
-    double diff = (v2 == 0.0) ? Math.abs(v1) :  Math.abs(v1/v2-1);
+    double diff = (v2 == 0.0) ? Math.abs(v1) : Math.abs(v1 / v2 - 1);
     return diff < maxReletiveError;
-  }
-
-  /** test */
-  public static void main(String args[]) {
-    long val1 = -1;
-    long val2 = 234872309;
-    int val3 = 2348;
-    int val4 = 32;
-    Formatter f = new Formatter(System.out);
-    f.format("  address            dataPos            offset size%n");
-    f.format("  %#-18x %#-18x %5d  %4d%n", val1, val2, val3, val4);
-
   }
 
   /* private void printBytes(int n, Formatter fout) throws IOException {
@@ -189,7 +180,7 @@ public class Misc {
 
   static public int getSize(Iterable ii) {
     if (ii instanceof Collection)
-      return ((Collection)ii).size();
+      return ((Collection) ii).size();
     int count = 0;
     for (Object i : ii) count++;
     return count;
@@ -274,45 +265,58 @@ public class Misc {
 
   // from Java7
   public static int compare(int x, int y) {
-      return (x < y) ? -1 : ((x == y) ? 0 : 1);
+    return (x < y) ? -1 : ((x == y) ? 0 : 1);
   }
 
   public static int compare(long x, long y) {
-      return (x < y) ? -1 : ((x == y) ? 0 : 1);
+    return (x < y) ? -1 : ((x == y) ? 0 : 1);
   }
 
-    /**
-     *  Return the set of leading protocols for a url; may be more than one.
-     * @param url  the url whose protocols to return
-     * @return list of leading protocols without the trailing :
-     */
-    static public List<String>
-    getProtocols(String url)
-    {
-        // break off any leading protocols;
-        // there may be more than one.
-        // Watch out for Windows paths starting with a drive letter.
-        // Each protocol does not have trailing :
+  /**
+   * Return the set of leading protocols for a url; may be more than one.
+   *
+   * @param url the url whose protocols to return
+   * @return list of leading protocols without the trailing :
+   */
+  static public List<String> getProtocols(String url) {
+    // break off any leading protocols;
+    // there may be more than one.
+    // Watch out for Windows paths starting with a drive letter.
+    // Each protocol does not have trailing :
 
-        List<String> allprotocols = new ArrayList<>(); // all leading protocols upto path or host
+    List<String> allprotocols = new ArrayList<>(); // all leading protocols upto path or host
 
-        // Note, we cannot use split because of the context sensitivity
-        StringBuilder buf = new StringBuilder(url);
-        for(;;) {
-            int index = buf.indexOf(":");
-            if(index < 0) break; // no more protocols
-            String protocol = buf.substring(0,index);
-            // Check for windows drive letter
-            if(index == 1 //=>|protocol| == 1
-                && "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
-                    .indexOf(buf.charAt(0)) >= 0) break;
-            allprotocols.add(protocol);
-            buf.delete(0,index+1); // remove the leading protocol
-            if(buf.indexOf("/") == 0)
-                break; // anything after this is not a protocol
-        }
-        return allprotocols;
+    // Note, we cannot use split because of the context sensitivity
+    StringBuilder buf = new StringBuilder(url);
+    for (; ; ) {
+      int index = buf.indexOf(":");
+      if (index < 0) break; // no more protocols
+      String protocol = buf.substring(0, index);
+      // Check for windows drive letter
+      if (index == 1 //=>|protocol| == 1
+              && "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
+              .indexOf(buf.charAt(0)) >= 0) break;
+      allprotocols.add(protocol);
+      buf.delete(0, index + 1); // remove the leading protocol
+      if (buf.indexOf("/") == 0)
+        break; // anything after this is not a protocol
     }
+    return allprotocols;
+  }
+
+  /**
+   * test
+   */
+  public static void main(String args[]) {
+    long val1 = -1;
+    long val2 = 234872309;
+    int val3 = 2348;
+    int val4 = 32;
+    Formatter f = new Formatter(System.out);
+    f.format("  address            dataPos            offset size%n");
+    f.format("  %#-18x %#-18x %5d  %4d%n", val1, val2, val3, val4);
+
+  }
 
 
 }
