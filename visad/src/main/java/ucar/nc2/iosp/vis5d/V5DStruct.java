@@ -1331,15 +1331,15 @@ public class V5DStruct {
     maxnl = 0;
     for (vr=0; vr<NumVars; vr++) {
       if (LowLev[vr] < 0) {
-        logger.warn("Low level cannot be negative for var " + VarName[vr] + ": " + LowLev[vr]);
+        logger.warn("Low level cannot be negative for var {} : {}", VarName[vr], LowLev[vr]);
         valid = false;
       }
       if (Nl[vr] < 1) {
-        logger.warn("Too few levels for var " + VarName[vr] + ": " + Nl[vr] + " (1 is minimum)");
+        logger.warn("Too few levels for var {} : {}  (1 is minimum)", VarName[vr],Nl[vr] + " (1 is minimum)");
         valid = false;
       }
       if (Nl[vr] + LowLev[vr] > MAXLEVELS) {
-        logger.warn("Too many levels for var " + VarName[vr] + ": " + (Nl[vr] + LowLev[vr]) + " (" + MAXLEVELS + " is maximum)");
+        logger.warn("Too many levels for var {} : {} ({} is maximum)", VarName[vr], (Nl[vr] + LowLev[vr]), MAXLEVELS);
         valid = false;
       }
       if (Nl[vr] + LowLev[vr] > maxnl) {

@@ -32,12 +32,12 @@
  */
 package ucar.nc2.iosp.hdf5;
 
+import org.junit.Test;
 import ucar.ma2.*;
 import ucar.nc2.*;
 
 import java.io.IOException;
 
-import junit.framework.TestCase;
 import ucar.nc2.util.TestSubsettingUtils;
 import ucar.unidata.test.util.TestDir;
 
@@ -45,15 +45,11 @@ import ucar.unidata.test.util.TestDir;
  * @author caron
  * @since Jan 1, 2008
  */
-public class TestH5subset extends TestCase {
+public class TestH5subset {
+  static private String dirName = TestH5.testDir;
 
-  public TestH5subset(String name) {
-    super(name);
-  }
-
-  private String dirName = TestH5.testDir;
-
- public void testSubsetting() throws IOException, InvalidRangeException {
+  @Test
+  public void testSubsetting() throws IOException, InvalidRangeException {
     int ntrials = 3;
 
     // H5tiledLayoutBB
@@ -86,49 +82,62 @@ public class TestH5subset extends TestCase {
     TestSubsettingUtils.subsetVariables(dirName + "HIRDLS/HIRPROF-Aura73p_b038_2000d275.he5", "HDFEOS/SWATHS/HIRDLS/Data_Fields/7\\.10MicronAerosolExtinction", 1);
   }
 
-  private void testVariableSubset(String filename, String varName, Section s) throws InvalidRangeException, IOException {
+  private void TestH5subset(String filename, String varName, Section s) throws InvalidRangeException, IOException {
+  }
+
+  String filename, varName;
+  Section s;
+
+  public TestH5subset(String filename, String varName, Section s) {
+    this.filename = filename;
+    this.varName = varName;
+    this.s = s;
+  }
+
+  @Test
+  private void test() throws IOException, InvalidRangeException {
     System.out.printf("%ntestVariableSubset=%s,%s%n",filename,varName);
 
-    NetcdfFile ncfile = NetcdfFile.open(filename);
+    try (NetcdfFile ncfile = NetcdfFile.open(filename)) {
 
-    Variable v = ncfile.findVariable(varName);
-    assert (null != v);
-    int[] shape = v.getShape();
+      Variable v = ncfile.findVariable(varName);
+      assert (null != v);
+      int[] shape = v.getShape();
 
-    // read entire array
-    Array fullData;
-    try {
-      fullData = v.read();
-    } catch (IOException e) {
-      System.err.println("ERROR reading file");
-      assert (false);
-      return;
+      // read entire array
+      Array fullData;
+      try {
+        fullData = v.read();
+      } catch (IOException e) {
+        System.err.println("ERROR reading file");
+        assert (false);
+        return;
+      }
+
+      int[] dataShape = fullData.getShape();
+      assert dataShape.length == shape.length;
+      for (int i = 0; i < shape.length; i++)
+        assert dataShape[i] == shape[i];
+      System.out.println("  Entire dataset   =" + v.getShapeAsSection());
+      System.out.println("  Test read section=" + s);
+
+      // read section
+      Array sdata = v.read(s);
+      assert sdata.getRank() == s.getRank();
+      int[] sshape = sdata.getShape();
+      for (int i = 0; i < sshape.length; i++)
+        assert sshape[i] == s.getShape(i);
+
+      // compare with logical section
+      Array Asection = fullData.sectionNoReduce(s.getRanges());
+      int[] ashape = Asection.getShape();
+      assert (ashape.length == sdata.getRank());
+      for (int i = 0; i < ashape.length; i++)
+        assert sshape[i] == ashape[i];
+
+      ucar.unidata.test.util.CompareNetcdf.compareData(sdata, Asection);
+
     }
-
-    int[] dataShape = fullData.getShape();
-    assert dataShape.length == shape.length;
-    for (int i = 0; i < shape.length; i++)
-      assert dataShape[i] == shape[i];
-    System.out.println("  Entire dataset   ="+v.getShapeAsSection());
-    System.out.println("  Test read section="+s);
-
-    // read section
-    Array sdata = v.read(s);
-    assert sdata.getRank() == s.getRank();
-    int[] sshape = sdata.getShape();
-    for (int i = 0; i < sshape.length; i++)
-      assert sshape[i] == s.getShape(i);
-
-    // compare with logical section
-    Array Asection = fullData.sectionNoReduce(s.getRanges());
-    int[] ashape = Asection.getShape();
-    assert (ashape.length == sdata.getRank());
-    for (int i = 0; i < ashape.length; i++)
-      assert sshape[i] == ashape[i];
-
-    ucar.unidata.test.util.CompareNetcdf.compareData(sdata, Asection);
-
-    ncfile.close();
   }
 
 

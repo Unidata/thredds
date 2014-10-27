@@ -762,9 +762,10 @@ public class Grib2CollectionPanel extends JPanel {
     List<Grib2ParameterBean> params = param2BeanTable.getBeans();
     for (Grib2ParameterBean pbean : params) {
       GribTables.Parameter p = pbean.getParameter();
-      if (Grib2Customizer.isLocal(p)) {
+      if (p == null)
+        f.format("   null parameter for %s%n", pbean);
+      else if (Grib2Customizer.isLocal(p))
         f.format("   %s%n", p);
-      }
     }
   }
 

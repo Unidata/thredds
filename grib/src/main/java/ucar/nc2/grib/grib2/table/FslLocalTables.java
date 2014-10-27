@@ -192,6 +192,7 @@ public class FslLocalTables extends NcepLocalTables {
 
       while (true) {
         String line = br.readLine();
+        if (line == null) break;
         if (line.startsWith("Record")) break;
       }
 

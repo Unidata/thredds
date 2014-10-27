@@ -261,6 +261,24 @@ public class TestDir {
     return actOnAll( dirName, ff, act, true);
   }
 
+  public static int actOnAllParameterized(String dirName, FileFilter ff, Collection<Object[]> filenames) throws IOException {
+    return actOnAll( dirName, ff, new ListAction(filenames), true);
+  }
+
+  static class ListAction implements Act {
+    Collection<Object[]> filenames;
+
+    ListAction(Collection<Object[]> filenames) {
+      this.filenames = filenames;
+    }
+
+    @Override
+    public int doAct(String filename) throws IOException {
+      filenames.add( new Object[] {filename} );
+      return 0;
+    }
+  }
+
   /**
    * @param dirName recurse into this directory
    * @param ff for files that pass this filter, may be null

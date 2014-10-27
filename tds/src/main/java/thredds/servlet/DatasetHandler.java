@@ -225,8 +225,7 @@ public class DatasetHandler {
     return ncfile;
   }
 
-  static public String
-  getNetcdfFilePath(HttpServletRequest req, /*HttpServletResponse res,*/ String reqPath) throws IOException {
+  static public String getNetcdfFilePath(HttpServletRequest req, /*HttpServletResponse res,*/ String reqPath) throws IOException {
     if (log.isDebugEnabled()) log.debug("DatasetHandler wants " + reqPath);
     if (debugResourceControl) System.out.println("getNetcdfFile = " + ServletUtil.getRequest(req));
 
@@ -239,12 +238,13 @@ public class DatasetHandler {
     // look for a match
     DataRootHandler.DataRootMatch match = DataRootHandler.getInstance().findDataRootMatch(reqPath);
 
-    String fullpath;
+    String fullpath = null;
     if(match != null)
 	    fullpath = match.dirLocation + match.remaining;
     else {
       File file = DataRootHandler.getInstance().getCrawlableDatasetAsFile(reqPath);
-      fullpath = file.getAbsolutePath();
+      if (file != null)
+        fullpath = file.getAbsolutePath();
     }
     return fullpath;
   }

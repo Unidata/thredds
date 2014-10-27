@@ -460,14 +460,14 @@ public class McIDASAreaProjection extends ucar.unidata.geoloc.ProjectionImpl {
     System.out.println("proj point = " + pp);
     llp = proj.projToLatLon(pp);
     System.out.println("reverse llp = " + llp);
-    double[][] latlons = new double[][]{
-            {45}, {-105}
-    };
+
+    double[][] latlons = new double[][]{{45}, {-105}};
     double[][] linele = proj.latLonToProj(latlons);
-    System.out.println("proj point = " + linele[0][0] + ","
-            + linele[1][0]);
     double[][] outll = proj.projToLatLon(linele);
-    System.out.println("proj point = " + outll[0][0] + "," + outll[1][0]);
+    if (linele != null && outll != null) {
+      System.out.println("proj point = " + linele[0][0] + "," + linele[1][0]);
+      System.out.println("proj point = " + outll[0][0] + "," + outll[1][0]);
+    }
   }
 
   /**

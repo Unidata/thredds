@@ -305,8 +305,9 @@ public class ViewerServiceImpl implements ViewerService {
 			String sname = "{url}";
 			if ((org.contains(sname)) && (access.size() > 0)) {
 				InvAccess acc = access.get(0); // just use the first one
-				return StringUtil2.substitute(org, sname, acc.getStandardUri()
-						.toString());
+        URI uri = acc.getStandardUri();
+        if (uri != null)
+				  return StringUtil2.substitute(org, sname, uri.toString());
 			}
 
 			return org;

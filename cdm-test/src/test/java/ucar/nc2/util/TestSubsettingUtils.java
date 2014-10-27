@@ -11,7 +11,7 @@ import java.io.IOException;
 import java.util.Random;
 
 /**
- * Describe
+ * Utilities to read and subset data
  *
  * @author caron
  * @since 3/25/12
@@ -22,51 +22,52 @@ public class TestSubsettingUtils {
     //varName = NetcdfFile.makeValidCdmObjectName(varName);
     System.out.println("testVariableSubset="+filename+","+varName);
 
-    NetcdfFile ncfile = NetcdfFile.open(filename);
+    try (NetcdfFile ncfile = NetcdfFile.open(filename)) {
 
-    Variable v = ncfile.findVariable(varName);
-    if (v == null) {
-      System.out.printf("Cant Find %s%n", varName);
-      for (Variable v2 : ncfile.getVariables())
-        System.out.printf("  %s%n", v2.getFullName());
+      Variable v = ncfile.findVariable(varName);
+      if (v == null) {
+        System.out.printf("Cant Find %s%n", varName);
+        for (Variable v2 : ncfile.getVariables())
+          System.out.printf("  %s%n", v2.getFullName());
+      }
+      assert (null != v);
+      int[] shape = v.getShape();
+
+      // read entire array
+      Array A;
+      try {
+        A = v.read();
+      } catch (IOException e) {
+        System.err.println("ERROR reading file");
+        assert (false);
+        return;
+      }
+
+      int[] dataShape = A.getShape();
+      assert dataShape.length == shape.length;
+      for (int i = 0; i < shape.length; i++)
+        assert dataShape[i] == shape[i];
+      Section all = v.getShapeAsSection();
+      System.out.println("  Entire dataset=" + all);
+
+      for (int k = 0; k < ntrials; k++) {
+        // create a random subset, read and compare
+        subsetVariable(v, randomSubset(all, 1), A);
+        subsetVariable(v, randomSubset(all, 2), A);
+        subsetVariable(v, randomSubset(all, 3), A);
+      }
+
     }
-    assert (null != v);
-    int[] shape = v.getShape();
-
-    // read entire array
-    Array A;
-    try {
-      A = v.read();
-    } catch (IOException e) {
-      System.err.println("ERROR reading file");
-      assert (false);
-      return;
-    }
-
-    int[] dataShape = A.getShape();
-    assert dataShape.length == shape.length;
-    for (int i = 0; i < shape.length; i++)
-      assert dataShape[i] == shape[i];
-    Section all = v.getShapeAsSection();
-    System.out.println("  Entire dataset="+all);
-
-    for (int k = 0; k < ntrials; k++) {
-      // create a random subset, read and compare
-      subsetVariable(v, randomSubset(all, 1), A);
-      subsetVariable(v, randomSubset(all, 2), A);
-      subsetVariable(v, randomSubset(all, 3), A);
-    }
-
-    ncfile.close();
   }
 
    public static void subsetVariables(String filename, String varName, Section s) throws InvalidRangeException, IOException {
     System.out.println("testVariableSubset="+filename+","+varName);
 
-    NetcdfFile ncfile = NetcdfFile.open(filename);
-    Variable v = ncfile.findVariable(varName);
-    assert (null != v);
-     subsetVariable(v, s, v.read());
+    try (NetcdfFile ncfile = NetcdfFile.open(filename)) {
+      Variable v = ncfile.findVariable(varName);
+      assert (null != v);
+      subsetVariable(v, s, v.read());
+    }
   }
 
   public static void subsetVariable(Variable v, Section s, Array fullData) throws IOException, InvalidRangeException {

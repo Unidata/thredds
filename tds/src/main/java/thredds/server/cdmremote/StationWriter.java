@@ -266,7 +266,7 @@ public class StationWriter {
       long timeToScan = 0; // ??
       if (timeToScan > 0) {
         long writeTime = took - timeToScan;
-        double mps = 1000 * counter.matches / writeTime;
+        double mps = 1000.0 * counter.matches / writeTime;
         System.out.println("  writeTime = " + writeTime + " msecs; write messages/sec = " + mps);
       }
     }

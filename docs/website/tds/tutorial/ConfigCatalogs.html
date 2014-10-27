@@ -27,8 +27,9 @@
     For instance: </p>
 
   <pre>
-&lt;datasetRoot path="precip" location="/share/tdsWorkshop/data/precip" /&gt;
-&lt;dataset name="Precip Data" ID="precipdata" urlPath="precip/nws_precip_conus_20130909.nc" dataType="Grid" serviceName="all" /&gt;</pre>
+&lt;datasetRoot path="precip" location="/machine/tds/data/precip" /&gt;
+&lt;dataset name="Precip Data" ID="precipdata" urlPath="precip/nws_precip_conus_20130909.nc"
+    dataType="Grid" serviceName="all" /&gt;</pre>
 
   <p>would result in these two access URLs:</p>
 
@@ -37,7 +38,8 @@
 
   <p>Note: The contained services can still be referenced independently. For instance:</p>
 
-  <pre>&lt;dataset name="More Precip Data" ID="precipdata2" urlPath="precip/nws_precip_conus_20130910.nc" dataType="Grid" serviceName="odap" /&gt;</pre>
+  <pre>&lt;dataset name="More Precip Data" ID="precipdata2" urlPath="precip/nws_precip_conus_20130910.nc"
+    dataType="Grid" serviceName="odap" /&gt;</pre>
 
   <p>results in a single access URL:</p>
 
@@ -454,7 +456,7 @@ OCEAN_Global_5x2p5deg_20141012_0000.nc  OCEAN_Global_5x2p5deg_20141014_1200.nc</
              path="<strong>gfs</strong>" location="<strong>/machine/tds/data/gfs</strong>"&gt;
 
     &lt;metadata inherited="true"&gt;
-        &lt;serviceName&gt;thisDODS&lt;/serviceName&gt;
+        &lt;serviceName&gt;all&lt;/serviceName&gt;
     &lt;/metadata&gt;<br>
 &lt;/datasetScan&gt;
 </pre>
