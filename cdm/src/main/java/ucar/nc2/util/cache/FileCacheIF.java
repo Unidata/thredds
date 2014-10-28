@@ -31,25 +31,32 @@
  *   WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-package thredds.monitor;
+package ucar.nc2.util.cache;
 
-import ucar.nc2.dataset.NetcdfDataset;
+import ucar.nc2.util.CancelTask;
 
+import java.io.IOException;
+import java.util.Formatter;
 import java.util.List;
-import java.util.ArrayList;
 
 /**
- * Class Description.
+ * An interface to a FileCache
  *
  * @author caron
- * @since Jan 13, 2009
+ * @since 10/28/2014
  */
-public class NetcdfFileCacheMonitorImpl implements NetcdfFileCacheMonitor {
+public interface FileCacheIF {
 
-  public List<String> getCachedFiles() {
-    ucar.nc2.util.cache.FileCacheIF fc = NetcdfDataset.getNetcdfFileCache();
-    if (fc == null) return new ArrayList<>();
+  public void enable();
+  public void disable();
 
-    return fc.showCache();
-  }
+  public FileCacheable acquire(FileFactory factory, String location) throws IOException;
+  public FileCacheable acquire(FileFactory factory, Object hashKey, String location, int buffer_size, CancelTask cancelTask, Object spiObject) throws IOException;
+
+  public void release(FileCacheable ncfile) throws IOException;
+  public void clearCache(boolean force);
+
+  // debugging
+  public void showCache(Formatter format);
+  public List<String> showCache();
 }

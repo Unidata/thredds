@@ -707,7 +707,7 @@ public class ToolsUI extends JPanel {
       public void actionPerformed(ActionEvent e) {
         Formatter f = new Formatter();
         f.format("NetcdfFileCache contents%n");
-        ucar.nc2.util.cache.FileCache cache = NetcdfDataset.getNetcdfFileCache();
+        ucar.nc2.util.cache.FileCacheIF cache = NetcdfDataset.getNetcdfFileCache();
         if (null != cache)
           cache.showCache(f);
         viewerPanel.detailTA.setText(f.toString());
@@ -719,7 +719,7 @@ public class ToolsUI extends JPanel {
 
     AbstractAction clearCacheAction = new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
-        ucar.nc2.util.cache.FileCache cache = NetcdfDataset.getNetcdfFileCache();
+        ucar.nc2.util.cache.FileCacheIF cache = NetcdfDataset.getNetcdfFileCache();
         if (cache != null)
           cache.clearCache(true);
       }
@@ -733,13 +733,13 @@ public class ToolsUI extends JPanel {
         if (state == isCacheInit) return;
         isCacheInit = state;
         if (isCacheInit) {
-          ucar.nc2.util.cache.FileCache cache = NetcdfDataset.getNetcdfFileCache();
+          ucar.nc2.util.cache.FileCacheIF cache = NetcdfDataset.getNetcdfFileCache();
           if (cache != null)
             cache.enable();
           else
             NetcdfDataset.initNetcdfFileCache(10, 20, 10 * 60);
         } else {
-          ucar.nc2.util.cache.FileCache cache = NetcdfDataset.getNetcdfFileCache();
+          ucar.nc2.util.cache.FileCacheIF cache = NetcdfDataset.getNetcdfFileCache();
           if (cache != null) cache.disable();
         }
       }
@@ -6251,7 +6251,7 @@ public class ToolsUI extends JPanel {
     }
 
     done = true; // on some systems, still get a window close event
-    ucar.nc2.util.cache.FileCache cache = NetcdfDataset.getNetcdfFileCache();
+    ucar.nc2.util.cache.FileCacheIF cache = NetcdfDataset.getNetcdfFileCache();
     if (cache != null)
       cache.clearCache(true);
     FileCache.shutdown(); // shutdown threads

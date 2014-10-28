@@ -35,7 +35,7 @@ package ucar.unidata.io;
 
 import net.jcip.annotations.NotThreadSafe;
 import ucar.nc2.constants.CDM;
-import ucar.nc2.util.cache.FileCache;
+import ucar.nc2.util.cache.FileCacheIF;
 import ucar.nc2.util.cache.FileCacheable;
 
 import java.io.*;
@@ -80,7 +80,7 @@ public class RandomAccessFile implements DataInput, DataOutput, FileCacheable, A
   // debug leaks - keep track of open files
   static protected boolean debugLeaks = false;
   static protected boolean debugAccess = false;
-  static protected Set<String> allFiles = new HashSet<>();
+  static protected Set<String> allFiles = null;
   static protected List<String> openFiles = Collections.synchronizedList(new ArrayList<String>());
   static private AtomicLong count_openFiles = new AtomicLong();
   static private AtomicInteger maxOpenFiles = new AtomicInteger();
@@ -101,12 +101,15 @@ public class RandomAccessFile implements DataInput, DataOutput, FileCacheable, A
 
   /**
    * Debugging, do not use.
-   *
+   * Set counters to zero, set
    * @param b set true to track java.io.RandomAccessFile
    */
   static public void setDebugLeaks(boolean b) {
-    count_openFiles.set(0);
-    maxOpenFiles.set(0);
+    if (b) {
+      count_openFiles.set(0);
+      maxOpenFiles.set(0);
+      allFiles = new HashSet<>(1000);
+    }
     debugLeaks = b;
   }
 
@@ -133,8 +136,8 @@ public class RandomAccessFile implements DataInput, DataOutput, FileCacheable, A
    * @return list of all files used.
    */
   static public List<String> getAllFiles() {
-    List<String> result = new ArrayList<>();
     if (null == allFiles) return null;
+    List<String> result = new ArrayList<>();
     result.addAll(allFiles);
     Collections.sort(result);
     return result;
@@ -182,7 +185,7 @@ public class RandomAccessFile implements DataInput, DataOutput, FileCacheable, A
    * File location
    */
   protected String location;
-  protected FileCache fileCache = null;
+  protected FileCacheIF fileCache = null;
 
   /**
    * The underlying java.io.RandomAccessFile.
@@ -288,6 +291,7 @@ public class RandomAccessFile implements DataInput, DataOutput, FileCacheable, A
     }
 
     this.file = new java.io.RandomAccessFile(location, mode);
+
     this.readonly = mode.equals("r");
     init(bufferSize);
 
@@ -396,7 +400,7 @@ public class RandomAccessFile implements DataInput, DataOutput, FileCacheable, A
   }
 
   @Override
-  public void setFileCache(FileCache fileCache) {
+  public void setFileCache(FileCacheIF fileCache) {
     this.fileCache = fileCache;
   }
 

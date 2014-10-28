@@ -60,7 +60,7 @@ import ucar.nc2.dt.GridDatatype;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time.CalendarDateRange;
 import ucar.nc2.units.DateRange;
-import ucar.nc2.util.cache.FileCache;
+import ucar.nc2.util.cache.FileCacheIF;
 import ucar.unidata.geoloc.LatLonRect;
 
 /**
@@ -524,10 +524,10 @@ public class GridDataset implements ucar.nc2.dt.GridDataset, ucar.nc2.ft.Feature
     return (ds != null) ? ds.getLastModified() : 0;
   }
 
-  protected FileCache fileCache;
+  protected FileCacheIF fileCache;
 
   @Override
-  public synchronized void setFileCache(FileCache fileCache) {
+  public synchronized void setFileCache(FileCacheIF fileCache) {
     this.fileCache = fileCache;
   }
 

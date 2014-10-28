@@ -39,12 +39,16 @@ import ucar.ma2.Array;
 import ucar.nc2.Dimension;
 import ucar.nc2.dt.GridDatatype;
 import ucar.nc2.dt.grid.GridDataset;
+import ucar.nc2.grib.collection.GribCollection;
 import ucar.nc2.grib.collection.GribIosp;
+import ucar.nc2.grib.collection.PartitionCollection;
 import ucar.nc2.util.DebugFlagsImpl;
+import ucar.nc2.util.cache.FileCache;
 import ucar.unidata.io.RandomAccessFile;
 import ucar.unidata.test.util.TestDir;
 
 import java.io.IOException;
+import java.util.Formatter;
 
 /**
  * Look for missing data in Grib Collections.
@@ -60,11 +64,17 @@ public class TestGribCollections {
   @BeforeClass
   static public void before() {
     GribIosp.setDebugFlags(new DebugFlagsImpl("Grib/indexOnly"));
+    PartitionCollection.initPartitionCache(10, 100, -1);
+    GribCollection.initDataRafCache(11, 100, -1);
   }
 
   @AfterClass
   static public void after() {
     GribIosp.setDebugFlags(new DebugFlagsImpl(""));
+    Formatter out = new Formatter(System.out);
+    PartitionCollection.getPartitionCache().showCache(out);
+    GribCollection.getDataRafCache().showCache(out);
+    FileCache.shutdown();
   }
 
   @Test
@@ -77,7 +87,6 @@ public class TestGribCollections {
 
   @Test
   public void testPofG_Grib2() throws IOException {
-    GribIosp.setDebugFlags(new DebugFlagsImpl("Grib/indexOnly"));
     RandomAccessFile.setDebugLeaks(true);
     Count count = read(TestDir.cdmUnitTestDir + "ncss/GFS/Global_onedeg/GFS_Global_onedeg-Global_onedeg.ncx2");
     TestDir.checkLeaks();
@@ -109,9 +118,10 @@ public class TestGribCollections {
   }
 
   // @Test
-  public void problem() throws IOException {
+  // RandomAccessFile gets opened 1441 times (!) for PofGC
+  public void openFileProblem() throws IOException {
     RandomAccessFile.setDebugLeaks(true);
-    GribIosp.setDebugFlags(new DebugFlagsImpl("Grib/indexOnlyShow"));
+    // GribIosp.setDebugFlags(new DebugFlagsImpl("Grib/indexOnly Grib/indexOnlyShow"));
     String filename = "ncss/GFS/CONUS_80km/GFS_CONUS_80km-CONUS_80km.ncx2";
     try (GridDataset gds = GridDataset.open(TestDir.cdmUnitTestDir + filename)) {
       GridDatatype gdt = gds.findGridByName("TwoD/Absolute_vorticity_isobaric");
@@ -127,7 +137,7 @@ public class TestGribCollections {
 
   ///////////////////////////////////////////////////////////////
 
-  public static Count read(String filename) throws IOException {
+  public static Count read(String filename) {
     long start = System.currentTimeMillis();
     System.out.println("\n\nReading File " + filename);
     Count allCount = new Count();
@@ -141,8 +151,14 @@ public class TestGribCollections {
       float r = ((float) took) / allCount.nread;
       System.out.printf("%n%80s == %d/%d%n", "total", allCount.nmiss, allCount.nread);
       System.out.printf("%n   that took %d secs total, %f msecs per record%n", took/1000, r);
-      return allCount;
+
+    } catch (IOException ioe) {
+      System.out.printf("%s%n", ioe);
+      Formatter out = new Formatter(System.out);
+      PartitionCollection.getPartitionCache().showCache(out);
     }
+
+    return allCount;
   }
 
   public static Count read(GridDatatype gdt) throws IOException {

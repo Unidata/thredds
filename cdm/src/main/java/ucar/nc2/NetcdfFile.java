@@ -833,7 +833,7 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable, AutoClosea
   //protected boolean unlocked = false; // in the cache and locked - detect unguarded access to this file
   private boolean immutable = false;
 
-  protected ucar.nc2.util.cache.FileCache cache;
+  protected ucar.nc2.util.cache.FileCacheIF cache;
   protected IOServiceProvider spi;
 
   // "global view" is derived from the group information.
@@ -886,7 +886,7 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable, AutoClosea
    * Public by accident.
    * Optional file caching.
    */
-  public void setFileCache(ucar.nc2.util.cache.FileCache cache) {
+  public void setFileCache(ucar.nc2.util.cache.FileCacheIF cache) {
     this.cache = cache;
   }
 

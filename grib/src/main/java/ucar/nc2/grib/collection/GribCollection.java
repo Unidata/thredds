@@ -58,6 +58,7 @@ import ucar.nc2.time.CalendarDateRange;
 import ucar.nc2.util.CancelTask;
 import ucar.nc2.util.DiskCache2;
 import ucar.nc2.util.cache.FileCache;
+import ucar.nc2.util.cache.FileCacheIF;
 import ucar.nc2.util.cache.FileCacheable;
 import ucar.nc2.util.cache.FileFactory;
 import ucar.unidata.io.RandomAccessFile;
@@ -88,14 +89,14 @@ public abstract class GribCollection implements FileCacheable, AutoCloseable {
 
   //////////////////////////////////////////////////////////
   // object cache for data files - these are opened only as raf, not netcdfFile
-  private static FileCache dataRafCache;
+  private static FileCacheIF dataRafCache;
   private static DiskCache2 diskCache;
 
   static public void initDataRafCache(int minElementsInMemory, int maxElementsInMemory, int period) {
     dataRafCache = new ucar.nc2.util.cache.FileCache("GribCollectionDataRafCache ", minElementsInMemory, maxElementsInMemory, -1, period);
   }
 
-  static public FileCache getDataRafCache() {
+  static public FileCacheIF getDataRafCache() {
     return dataRafCache;
   }
 
@@ -234,7 +235,7 @@ public abstract class GribCollection implements FileCacheable, AutoCloseable {
   // not stored
   private Map<String, MFile> filenameMap;
   protected RandomAccessFile indexRaf; // this is the raf of the index (ncx) file, synchronize any access to it
-  protected FileCache objCache = null;  // optional object cache - used in the TDS
+  protected FileCacheIF objCache = null;  // optional object cache - used in the TDS
   protected String indexFilename;  // temp storage for debugging
 
   protected GribCollection(String name, File directory, FeatureCollectionConfig config, boolean isGrib1) {
@@ -465,7 +466,7 @@ public abstract class GribCollection implements FileCacheable, AutoCloseable {
 
   private RandomAccessFile getDataRaf(String location) throws IOException {
     if (dataRafCache != null) {
-      return (RandomAccessFile) dataRafCache.acquire(dataRafFactory, location, null);
+      return (RandomAccessFile) dataRafCache.acquire(dataRafFactory, location);
     } else {
       return new RandomAccessFile(location, "r");
     }
@@ -507,7 +508,7 @@ public abstract class GribCollection implements FileCacheable, AutoCloseable {
   }
 
   @Override
-  public void setFileCache(FileCache fileCache) {
+  public void setFileCache(FileCacheIF fileCache) {
     this.objCache = fileCache;
   }
 

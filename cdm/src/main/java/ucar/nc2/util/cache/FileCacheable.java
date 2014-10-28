@@ -76,5 +76,5 @@ public interface FileCacheable {
    *
    * @param fileCache must store this, use it on close as above.
    */
-  public void setFileCache( FileCache fileCache);
+  public void setFileCache( FileCacheIF fileCache);
 }

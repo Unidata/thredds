@@ -47,6 +47,7 @@ import ucar.nc2.time.CalendarPeriod;
 import ucar.nc2.util.CancelTask;
 import ucar.nc2.util.Misc;
 import ucar.nc2.util.cache.FileCache;
+import ucar.nc2.util.cache.FileCacheIF;
 import ucar.nc2.util.cache.FileCacheable;
 import ucar.nc2.util.cache.FileFactory;
 import ucar.coord.Coordinate;
@@ -72,7 +73,11 @@ public abstract class PartitionCollection extends GribCollection {
     partitionCache = new ucar.nc2.util.cache.FileCache("TimePartitionCache", minElementsInMemory, maxElementsInMemory, -1, period);
   }
 
-  static public FileCache getPartitionCache() {
+  static public void initPartitionCache(int minElementsInMemory, int softLimit, int hardLimit, int period) {
+    partitionCache = new ucar.nc2.util.cache.FileCache("TimePartitionCache", minElementsInMemory, softLimit, hardLimit, period);
+  }
+
+  static public FileCacheIF getPartitionCache() {
     return partitionCache;
   }
 
