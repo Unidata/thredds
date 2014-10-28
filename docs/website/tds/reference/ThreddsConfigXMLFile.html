@@ -9,18 +9,20 @@
 <h1>TDS Configuration file</h1>
 
 <hr>
-<p>The TDS configuration file <strong>${tomcat_home}/content/thredds/threddsConfig.xml</strong> allows the TDS administrator to control the behavior of the TDS.
-  This is the complete reference document for TDS version 4.4.</p>
+<p>The TDS configuration file <code>${tomcat_home}/content/thredds/threddsConfig.xml</code> allows the TDS
+    administrator to control the behavior of the TDS.
+  This is the complete reference document for TDS version 4.5.</p>
 
 <p>In general, you do not have to change any of these parameters, since the TDS will
   use default settings. If you do change any of these, you must restart the thredds
   webapp (e.g., through the tomcat manager application) for them to take effect. The
-  exception is that the <strong>catalogRoot</strong> elements will be reread by
+  exception is that the <code>catalogRoot</code> elements will be reread by
   doing a <strong>Debug/Reinit</strong>, if you have remote management enabled.</p>
 
-<p>Here is an annotated example<a href="threddsConfig.xml.txt"> threddsConfig.xml</a>.</p>
+<p>Here is an annotated example <a href="threddsConfig.xml.txt">threddsConfig.xml</a>.</p>
 <hr style="width: 100%; height: 2px;">
 <p><strong>Contents</strong></p>
+
 <ul>
   <li>TDS global configuration options
     <ul>
@@ -68,6 +70,7 @@
     </li>
   </ul>
 </ul>
+
 <hr style="width: 100%; height: 2px;">
 <h2>TDS global configuration options </h2>
 
@@ -107,20 +110,24 @@
   <li>the headers of all generated HTML pages (they contain the names and logos of the server and host institution)
   </li>
   <li>the Server section of the WMS GetCapabilities response</li>
-  <li>the server information documents (see the <a href="ServerInfo.html">ServerInfo page</a>)</li>
+  <li>the server information documents (<a href="#Server_Info_Docs">see below</a>)</li>
   <li>the Server section of the WCS GetCapabilities response</li>
   <li>all generated THREDDS catalogs that don't override this information</li>
 </ul>
 
-<p>Some of the information provided in the <code>serverInformation</code> element
-  supersedes information in the <code>htmlSetup</code> element (described below).
-  The superseded information is listed as deprecated in the description of the
-  <code>htmlSetup</code> element below.</p>
+<p>NOTE: The best way to use your own logo is to put it in the <code>${tomcat_home}/content/thredds/public/</code>
+    directory, and specify it in <em>serverInformation</em> as <code>/thredds/&lt;name&gt;</code>, e.g.:</p>
+<pre>&lt;logoUrl&gt;/thredds/yourIcon.gif&lt;/logoUrl&gt;</pre>
 
-<p>NOTE: The best way to use your own logo is to put it in the <strong>${tomcat_home}/content/thredds/public/ </strong>directory, and specify it in <em>serverInformation</em> as<strong> /thredds/&lt;name&gt;</strong>, eg:</p>
-<pre>
-&lt;logoUrl&gt;/thredds/yourIcon.gif&lt;/logoUrl&gt;
-</pre>
+<h4><a name="Server_Info_Docs">Server Information Documents</a></h4>
+
+<p>The TDS supports the following requests for server information:</p>
+<ul>
+    <li><code>/thredds/serverInfo.html</code> (<a href="images/ServerInfo_html.png">sample response</a>)</li>
+    <li><code>/thredds/serverInfo.xml</code> (<a href="files/serverInfo.xml">sample response</a>)</li>
+    <li><code>/thredds/serverVersion.txt</code> (<a href="files/serverVersion.txt">sample response</a>)</li>
+</ul>
+
 <h3><a name="Generated_HTML_Pages">Generated HTML Pages</a></h3>
 
 <p>In the <code>htmlSetup</code> element, you can configure which CSS
