@@ -20,7 +20,6 @@ r       	RecommendedUpgradeProcessForTDS.html// ok
 r    		RemoteManagement.html		        // john check, merge into tutorial?
 r       	RestrictedAccess.html               // ok
 r    		RunningMultipleTDS.html		        // jenn check
-r       	ServerInfo.html                     // christian check, merge into tutorial?
 r       	Services.html                       // ethan check
 r       	ServletLog.html                     // ok
 *    		TDSarchictecture.ppt		        // john check
