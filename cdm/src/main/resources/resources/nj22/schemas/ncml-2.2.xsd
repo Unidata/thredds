@@ -141,7 +141,7 @@
 
   <!-- XML encoding of enum typedef object -->
  <xsd:element name="enumTypedef">
-    <xsd:complexType>
+   <xsd:complexType mixed="true">
       <xsd:sequence>
         <xsd:element name="enum" minOccurs="1" maxOccurs="unbounded">
           <xsd:complexType mixed="true">
