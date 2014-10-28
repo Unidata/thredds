@@ -66,7 +66,6 @@ public class TestH4readAndCount {
     result.add(new Object[]{testDir + "MI1B2T_B56_O003734_AN_05.hdf", 8, 4, 2, 4, 0, 0});
     result.add(new Object[]{testDir + "TOVS_BROWSE_MONTHLY_AM_B861001.E861031_NF.HDF", 0, 3, 5, 9, 0, 0});
     result.add(new Object[]{testDir + "MYD021KM.A2008349.1800.005.2009329084841.hdf", 20, 41, 54, 179, 14, 3});
-    result.add(new Object[]{testDir + "MI1B2T_B54_O003734_AN_05.hdf", 8, 4, 2, 4, 0, 0});
 
 // ---------------Reading directory C:\data\hdf4\eos
     result.add(new Object[]{testDir + "eos/amsua/amsua16_2008.001_37503_0001_0108_GC.eos", 2, 19, 23, 23, 0, 4});
