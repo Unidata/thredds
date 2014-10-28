@@ -80,7 +80,7 @@ public class TestH4subset {
     result.add(new Object[]{TestH4readAndCount.testDir + "ncidc/MOD10A1.A2008001.h23v15.005.2008003161138.hdf", "MOD_Grid_Snow_500m/Data_Fields/Fractional_Snow_Cover", nt}); // */
 
      // LayoutBBTiled (chunked and compressed)
-    result.add(new Object[]{TestH4readAndCount.testDir + "eos/misr/MISR_AM1_GP_GMP_P040_O003734_05", "GeometricParameters/Data_Fields/CaZenith", nt});
+    result.add(new Object[]{TestH4readAndCount.testDir + "eos/misr/MISR_AM1_GP_GMP_P040_O003734_05.eos", "GeometricParameters/Data_Fields/CaZenith", nt});
     result.add(new Object[]{TestH4readAndCount.testDir + "ncidc/MOD02HKM.A2007016.0245.005.2007312120020.hdf", "MODIS_SWATH_Type_L1B/Data_Fields/EV_500_RefSB_Uncert_Indexes", nt});
 
     return result;

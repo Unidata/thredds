@@ -189,7 +189,7 @@
 
   <xsd:element name="logicalReduce">
      <xsd:complexType>
-       <xsd:attribute name="dimName" type="xsd:string" use="required"/>
+       <xsd:attribute name="dimNames" type="xsd:string" use="required"/>
      </xsd:complexType>
    </xsd:element>
 

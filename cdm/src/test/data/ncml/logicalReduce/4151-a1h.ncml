@@ -30,8 +30,8 @@
   </variable>
 
   <variable name="u_1205" shape="time depth lat lon" type="float">
-    <logicalReduce dimNames="depth lat lon" />
     <attribute name="coordinates" value="time depth lat lon" />
+    <logicalReduce dimNames="depth lat lon" />
   </variable>
   
   <variable name="v_1206" shape="time depth lat lon" type="float">

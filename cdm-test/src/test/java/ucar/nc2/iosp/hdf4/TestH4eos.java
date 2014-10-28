@@ -56,51 +56,14 @@ public class TestH4eos {
 
   static public String testDir = TestDir.cdmUnitTestDir + "formats/hdf4/eos/";
 
-  @Test
-  public void testUnsigned() throws IOException, InvalidRangeException {
-    String filename = testDir + "MOD021KM.A2004328.1735.004.2004329164007.hdf";
-    try (NetcdfFile ncfile = NetcdfFile.open(filename)) {
-      String vname = "MODIS_SWATH_Type_L1B/Data_Fields/EV_250_Aggr1km_RefSB";
-      Variable v = ncfile.findVariable(vname);
-      assert v != null : filename + " " + vname;
-
-      Array data = v.read();
-      System.out.printf(" sum =          %f%n", MAMath.sumDouble(data));
-
-      double sum2 = 0;
-      double sum3 = 0;
-      int[] varShape = v.getShape();
-      int[] origin = new int[3];
-      int[] size = new int[]{1, varShape[1], varShape[2]};
-      for (int i = 0; i < varShape[0]; i++) {
-        origin[0] = i;
-        Array data2D = v.read(origin, size);
-
-        double sum = MAMath.sumDouble(data2D);
-        System.out.printf("  %d sum3D =        %f%n", i, sum);
-        sum2 += sum;
-
-//      assert data2D.getRank() == 2;
-        sum = MAMath.sumDouble(data2D.reduce(0));
-        System.out.printf("  %d sum2D =        %f%n", i, sum);
-        sum3 += sum;
-
-        ucar.unidata.test.util.CompareNetcdf.compareData(data2D, data2D.reduce(0));
-      }
-      System.out.printf(" sum2D =        %f%n", sum2);
-      System.out.printf(" sum2D.reduce = %f%n", sum3);
-      assert sum2 == sum3;
-    }
-  }
-
   // test the coordSysBuilder - check if grid exists
   @Test
   public void testModis() throws IOException, InvalidRangeException {
     // GEO (lat//lon)
-    testGridExists(testDir + "eos/modis/MOD17A3.C5.1.GEO.2000.hdf", "MOD_Grid_MOD17A3/Data_Fields/Npp_0\\.05deg");
+    testGridExists(testDir + "modis/MOD17A3.C5.1.GEO.2000.hdf", "MOD_Grid_MOD17A3/Data_Fields/Npp_0\\.05deg");
 
     // SINUSOIDAL
-    testGridExists(testDir + "eos/modis/MOD13Q1.A2012321.h00v08.005.2012339011757.hdf", "MODIS_Grid_16DAY_250m_500m_VI/Data_Fields/250m_16_days_NIR_reflectance");
+    testGridExists(testDir + "modis/MOD13Q1.A2012321.h00v08.005.2012339011757.hdf", "MODIS_Grid_16DAY_250m_500m_VI/Data_Fields/250m_16_days_NIR_reflectance");
 
   }
 
