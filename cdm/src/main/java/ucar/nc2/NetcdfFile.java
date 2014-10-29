@@ -1511,6 +1511,7 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable, AutoClosea
 
   /**
    * Open an existing netcdf file, passing in the iosp and the raf.
+   * Use NetcdfFileSubclass to access this constructor
    *
    * @param spi        use this IOServiceProvider instance
    * @param raf        read from this RandomAccessFile
@@ -1575,6 +1576,7 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable, AutoClosea
 
   /**
    * Open an existing netcdf file (read only) , but dont do nuttin else
+   * Use NetcdfFileSubclass to access this constructor
    *
    * @param spi      use this IOServiceProvider instance
    * @param location location of data
@@ -1586,6 +1588,7 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable, AutoClosea
 
   /**
    * For subclass construction. Call finish() when completed construction.
+   * Use NetcdfFileSubclass to access this constructor
    */
   protected NetcdfFile() {
   }

@@ -81,7 +81,7 @@ public class EmbeddedTable {
   private void read2() throws IOException {
     Message proto = messages.get(0);
     BufrConfig config = BufrConfig.openFromMessage(raf, proto, null);
-    Construct2 construct = new Construct2(proto, config, new FakeNetcdfFile());
+    Construct2 construct = new Construct2(proto, config, new NetcdfFileSubclass());
 
     Sequence obs = construct.getObsStructure();
     seq2 = (Structure) obs.findVariable("seq2");
@@ -262,6 +262,4 @@ public class EmbeddedTable {
     return tlookup;
   }
 
-  static private class FakeNetcdfFile extends NetcdfFile {
-  }
 }

@@ -1218,13 +1218,5 @@ public abstract class GribCollection implements FileCacheable, AutoCloseable {
     return new GroupGC();
   }
 
-  // must override NetcdfFile to pass in the iosp
-  // used by the subclasses of GribCollection
-  static protected class NetcdfFileGC extends NetcdfFile {
-    public NetcdfFileGC(IOServiceProvider spi, RandomAccessFile raf, String location, CancelTask cancelTask) throws IOException {
-      super(spi, raf, location, cancelTask);
-    }
-  }
-
 }
 

@@ -127,18 +127,10 @@ public class TestNc4IospReading {
 
   private NetcdfFile openJni(String location) throws IOException {
     Nc4Iosp iosp = new Nc4Iosp(NetcdfFileWriter.Version.netcdf4);
-    NetcdfFile ncfile = new MyNetcdfFile(iosp, location);
+    NetcdfFile ncfile = new NetcdfFileSubclass(iosp, location);
     RandomAccessFile raf = new RandomAccessFile(location, "r");
     iosp.open(raf, ncfile, null);
     return ncfile;
-  }
-
-  private class MyNetcdfFile extends NetcdfFile {
-    private MyNetcdfFile(Nc4Iosp iosp, String location) {
-      super();
-      spi = iosp;
-      this.location = location;
-    }
   }
 
 }

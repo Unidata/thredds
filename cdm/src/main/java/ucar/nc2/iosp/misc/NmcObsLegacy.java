@@ -1800,19 +1800,13 @@ public class NmcObsLegacy extends AbstractIOServiceProvider {
     raf.skipBytes(-1); // go back one
   }
 
-  static class MyNetcdfFile extends NetcdfFile {
-    MyNetcdfFile(NmcObsLegacy iosp) {
-      this.spi = iosp;
-    }
-  }
-
   static public void main(String args[]) throws IOException, InvalidRangeException {
     String filename = "C:/data/cadis/tempting";
     //String filename = "C:/data/cadis/Y94179";
     //String filename = "C:/data/cadis/Y94132";
     NmcObsLegacy iosp = new NmcObsLegacy();
     RandomAccessFile raf = new RandomAccessFile(filename, "r");
-    NetcdfFile ncfile = new MyNetcdfFile(iosp);
+    NetcdfFile ncfile = new NetcdfFileSubclass(iosp, filename);
     ncfile.setLocation(filename);
     iosp.open(raf, ncfile, null);
     System.out.println("\n" + ncfile);

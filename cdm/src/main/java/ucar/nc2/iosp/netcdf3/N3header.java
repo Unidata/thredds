@@ -1100,28 +1100,5 @@ public class N3header {
     throw new IllegalArgumentException("no such attribute " + want);
   }
 
-  ///////////////////////////
-  private static void dump(String filename) throws IOException {
-    System.out.printf("Dump %s%n", filename);
-    try (RandomAccessFile raf = new RandomAccessFile(filename, "r")) {
-      NetcdfFile ncfile = new MyNetcdfFile();
-
-      // its a netcdf-3 file
-      raf.order(RandomAccessFile.BIG_ENDIAN);
-      N3header headerParser = new N3header();
-
-      headerParser.read(raf, ncfile, new Formatter(System.out));
-    }
-  }
-
-  private static class MyNetcdfFile extends NetcdfFile {
-  }
-
-  public static void main(String[] args) throws IOException {
-    dump("D:/work/csiro/testWrite.nc");
-    /* dump("D:/work/csiro/russ/sixCells.nc");
-    System.out.printf("--------------------------%n");
-    dump("D:/work/csiro/russ/sixCellsc.nc"); */
-  }
 
 }

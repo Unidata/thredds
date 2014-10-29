@@ -135,33 +135,4 @@ public class AreaServiceProvider extends AbstractIOServiceProvider {
         }
     }
 
-    /**
-     * Test this.
-     *
-     * @param args [0] input file name [0] output file name
-     *
-     * @throws IOException  problem reading the file
-     */
-    public static void main(String[] args) throws IOException {
-        IOServiceProvider areaiosp = new AreaServiceProvider();
-        RandomAccessFile  rf     = new RandomAccessFile(args[0], "r", 2048);
-        NetcdfFile ncfile = new MakeNetcdfFile(areaiosp, rf, args[0], null);
-        if (args.length > 1) {
-            ucar.nc2.FileWriter.writeToFile(ncfile, args[1]);
-        }
-    }
-
-  /**
-     * TODO:  generalize this
-     * static class for testing
-     */
-    protected static class MakeNetcdfFile extends NetcdfFile {
-
-        MakeNetcdfFile(IOServiceProvider spi, RandomAccessFile raf,
-                       String location, CancelTask cancelTask)
-                throws IOException {
-            super(spi, raf, location, cancelTask);
-        }
-    }
-
 }

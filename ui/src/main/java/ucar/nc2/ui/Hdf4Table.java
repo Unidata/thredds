@@ -34,6 +34,7 @@
 package ucar.nc2.ui;
 
 import ucar.nc2.NetcdfFile;
+import ucar.nc2.NetcdfFileSubclass;
 import ucar.nc2.iosp.hdf4.H4header;
 import ucar.nc2.iosp.hdf4.H4iosp;
 import ucar.nc2.ui.widget.IndependentWindow;
@@ -156,7 +157,7 @@ public class Hdf4Table extends JPanel {
     java.util.List<TagBean> beanList = new ArrayList<>();
 
     iosp = new H4iosp();
-    NetcdfFile ncfile = new MyNetcdfFile(iosp);
+    NetcdfFile ncfile = new NetcdfFileSubclass(iosp, location);
     try {
       iosp.open(raf, ncfile, null);
     } catch (Throwable t) {
@@ -175,13 +176,6 @@ public class Hdf4Table extends JPanel {
 
   public void getEosInfo(Formatter f) throws IOException {
     header.getEosInfo(f);
-  }
-
-  // need  acccess to protected constructor: iosp.open(raf, ncfile, null);
-  private static class MyNetcdfFile extends NetcdfFile {
-    public MyNetcdfFile(H4iosp iosp) {
-       this.spi = iosp; // iosp must be set during open
-    }
   }
 
   public class TagBean {

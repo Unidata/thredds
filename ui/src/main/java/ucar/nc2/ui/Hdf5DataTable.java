@@ -35,6 +35,7 @@ package ucar.nc2.ui;
 
 import ucar.ma2.Array;
 import ucar.nc2.NetcdfFile;
+import ucar.nc2.NetcdfFileSubclass;
 import ucar.nc2.Variable;
 import ucar.nc2.iosp.hdf5.H5diag;
 import ucar.nc2.iosp.hdf5.H5header;
@@ -172,7 +173,7 @@ public class Hdf5DataTable extends JPanel {
     java.util.List<VarBean> beanList = new ArrayList<>();
 
     iosp = new H5iosp();
-    NetcdfFile ncfile = new MyNetcdfFile(iosp, location);
+    NetcdfFile ncfile = new NetcdfFileSubclass(iosp, location);
     try {
       iosp.open(raf, ncfile, null);
     } catch (Throwable t) {
@@ -186,14 +187,6 @@ public class Hdf5DataTable extends JPanel {
     }
 
     objectTable.setBeans(beanList);
-  }
-
-  private static class MyNetcdfFile extends NetcdfFile {
-    private MyNetcdfFile(H5iosp iosp, String location) {
-      super();
-      spi = iosp;
-      this.location = location;
-    }
   }
 
   public void showInfo(Formatter f) throws IOException {

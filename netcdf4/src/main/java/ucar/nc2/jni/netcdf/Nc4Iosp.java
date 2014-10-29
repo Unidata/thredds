@@ -3213,33 +3213,4 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
      return (NativeLong.SIZE == (Integer.SIZE/8) ? buf.getInt(pos) : buf.getLong(pos));
   }
 
-/////////////////////////////////////////////////////////////////////////
-
-  private static class MyNetcdfFile extends NetcdfFile {
-    MyNetcdfFile(IOServiceProvider spi) {
-      this.spi = spi;
-    }
-
-  }
-
-  public NetcdfFile open(String location) throws Exception {
-    MyNetcdfFile ncfile = new MyNetcdfFile(this);
-    ncfile.setLocation(location);
-    try {
-      open(null, ncfile, null);
-    } catch (Exception e) {
-      close(); // make sure that the file gets closed
-      throw e;
-    }
-    return ncfile;
-  }
-
-  public static void main(String args[]) throws Exception {
-    Nc4Iosp iosp = new Nc4Iosp(NetcdfFileWriter.Version.netcdf4);
-
-    String loc4 = "Q:/cdmUnitTest/formats/netcdf4/testNestedStructure.nc";
-    NetcdfFile ncfile = iosp.open(loc4);
-    System.out.println("" + ncfile);
-  }
-
 }

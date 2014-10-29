@@ -282,7 +282,7 @@ public class WriterCFPointDataset {
     ncfileOut.stream.close();
   }
 
-  private class NetcdfFileStream extends NetcdfFile {
+  private class NetcdfFileStream extends NetcdfFileSubclass {
     N3outputStreamWriter swriter;
     DataOutputStream stream;
 

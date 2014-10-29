@@ -37,10 +37,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 import thredds.featurecollection.FeatureCollectionConfig;
 import thredds.inventory.bdb.MetadataManager;
-import ucar.nc2.NCdumpW;
-import ucar.nc2.NetcdfFile;
-import ucar.nc2.NetcdfFileWriter;
-import ucar.nc2.Variable;
+import ucar.nc2.*;
 import ucar.nc2.constants.CDM;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.dataset.CoordSysBuilder;
@@ -100,6 +97,7 @@ import javax.swing.event.ChangeListener;
 import javax.swing.event.MenuEvent;
 import javax.swing.event.MenuListener;
 import java.awt.*;
+import java.awt.Dimension;
 import java.awt.event.*;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
@@ -5233,7 +5231,7 @@ public class ToolsUI extends JPanel {
       try {
         if (jni) {
           Nc4Iosp iosp = new Nc4Iosp(NetcdfFileWriter.Version.netcdf4);
-          ncnew = new MyNetcdfFile(iosp, location);
+          ncnew = new NetcdfFileSubclass(iosp, location);
           ucar.unidata.io.RandomAccessFile raf = new ucar.unidata.io.RandomAccessFile(location, "r");
           iosp.open(raf, ncnew, null);
         } else {
@@ -5280,14 +5278,6 @@ public class ToolsUI extends JPanel {
     }
 
   }
-
-  private static class MyNetcdfFile extends NetcdfFile {
-     private MyNetcdfFile(Nc4Iosp iosp, String location) {
-       super();
-       spi = iosp;
-       this.location = location;
-     }
-   }
 
   ///////////////////////////////////////////////////////////
   private class DatasetWriterPanel extends OpPanel {
