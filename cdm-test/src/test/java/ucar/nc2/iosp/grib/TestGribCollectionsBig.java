@@ -73,6 +73,8 @@ public class TestGribCollectionsBig {
     PartitionCollection.getPartitionCache().clearCache(false);
     FileCache.shutdown();
     TestDir.checkLeaks();
+    System.out.printf("countGC=%d%n", GribCollection.countGC);
+    System.out.printf("countPC=%d%n", PartitionCollection.countPC);
   }
 
   @Test

@@ -82,8 +82,8 @@ import ucar.nc2.util.CancelTask;
 
 @ThreadSafe
 public class FileCache implements FileCacheIF {
-  static private final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(FileCache.class);
-  static private final org.slf4j.Logger cacheLog = org.slf4j.LoggerFactory.getLogger("cacheLogger");
+  static protected final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(FileCache.class);
+  static protected final org.slf4j.Logger cacheLog = org.slf4j.LoggerFactory.getLogger("cacheLogger");
   static private ScheduledExecutorService exec;
   static boolean debug = false;
   static boolean debugPrint = false;
@@ -100,19 +100,20 @@ public class FileCache implements FileCacheIF {
 
   /////////////////////////////////////////////////////////////////////////////////////////
 
-  private String name;
-  private final int softLimit, minElements, hardLimit, period;
-  private final boolean wantsCleanup;
+  protected String name;
+  protected final int softLimit, minElements, hardLimit, period;
 
-  private final ConcurrentHashMap<Object, CacheElement> cache; // unique files (by key, often = filename)
-  private final ConcurrentHashMap<FileCacheable, CacheElement.CacheFile> files; // list of all files in the cache
-  private final AtomicBoolean hasScheduled = new AtomicBoolean(false); // a cleanup is scheduled
+  private final boolean wantsCleanup;
   private final AtomicBoolean disabled = new AtomicBoolean(false);  // cache is disabled
+  protected final AtomicBoolean hasScheduled = new AtomicBoolean(false); // a cleanup is scheduled
+
+  protected final ConcurrentHashMap<Object, CacheElement> cache; // unique files (by key, often = filename)
+  protected final ConcurrentHashMap<FileCacheable, CacheElement.CacheFile> files; // list of all files in the cache
 
   // debugging and stats
-  private final AtomicInteger cleanups = new AtomicInteger();  // how many cleanups
-  private final AtomicInteger hits = new AtomicInteger();
-  private final AtomicInteger miss = new AtomicInteger();
+  protected final AtomicInteger cleanups = new AtomicInteger();  // how many cleanups
+  protected final AtomicInteger hits = new AtomicInteger();
+  protected final AtomicInteger miss = new AtomicInteger();
 
   /**
    * Constructor.
@@ -210,7 +211,7 @@ public class FileCache implements FileCacheIF {
    * Acquire a FileCacheable from the cache, and lock it so no one else can use it.
    * If not already in cache, open it the FileFactory, and put in cache.
    * <p/>
-   * Call FileCacheable.close() when done, (rather than FileCach.release() directly) and the file is then released instead of closed.
+   * App should  call FileCacheable.close() when done, and the file is then released instead of closed.
    * <p/>
    * If cache size goes over maxElement, then immediately (actually in 100 msec) schedule a cleanup in a background thread.
    * This means that the cache should never get much larger than maxElement, unless you have them all locked.
@@ -220,7 +221,7 @@ public class FileCache implements FileCacheIF {
    * @param location    file location, may also used as the cache name, will be passed to the NetcdfFileFactory
    * @param buffer_size RandomAccessFile buffer size, if <= 0, use default size
    * @param cancelTask  user can cancel, ok to be null.
-   * @param spiObject   sent to iosp.setSpecial() if not null
+   * @param spiObject   passed to the factory if object needs to be recreated
    * @return FileCacheable corresponding to location.
    * @throws IOException on error
    */
@@ -586,7 +587,6 @@ public class FileCache implements FileCacheIF {
    * We have to synchronize because of clearCache()
    */
   synchronized void cleanup(int maxElements) {
-    if (disabled.get()) return;
 
     try {
       /* int size = counter.get();
@@ -745,6 +745,7 @@ public class FileCache implements FileCacheIF {
 
   private class CleanupTask implements Runnable {
     public void run() {
+      if (disabled.get()) return;
       cleanup(softLimit);
     }
   }

@@ -37,6 +37,10 @@ import java.io.IOException;
 
 /**
  * Interface for files that can be stored in FileCache.
+ * Requirements:
+ *   1. hashCode() must return Object.hashCode()
+ *   2. close() must call cache.release(this) if cache is not null.
+ *   3. must be able to detect changes in underlying object, and indicate whether it has changed.
  *
  * @author caron
  * @since Jun 2, 2008
@@ -44,27 +48,27 @@ import java.io.IOException;
 public interface FileCacheable {
 
   /**
-   * The location of the FileCacheable.
+   * The location of the FileCacheable. This must be sufficient for FileFactory.factory() to create the FileCacheable object
    * @return location
    */
   public String getLocation();
 
   /**
    * Close the FileCacheable, release all resources.
-   * Also must honor contract with setFileCache().
+   * Must call cache.release(this) if cache is not null.
    * @throws IOException on io error
    */
   public void close() throws IOException;
 
   /**
-   * Get last modified date of underlying file. If changed, will be discarded from cache.
-   * If aggregation, will return time of last scan where something changed.
+   * Get last modified date of underlying file(s).
+   * If changed since it was stored in the cache, it will be closed and recreated with FileFactory
    * @return a sequence number (typically file date), 0 if cannot change
    */
   public long getLastModified();
 
   /**
-   * If the FileCache is set, the FileCacheable object must store it and call FileCache.release() on FileCacheable.close():
+   * If the FileCache is not null, FileCacheable.close() must call FileCache.release()
   <pre>
   public synchronized void close() throws java.io.IOException {
     if (cache != null) {

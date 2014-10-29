@@ -67,7 +67,7 @@ import java.util.*;
  */
 public abstract class PartitionCollection extends GribCollection {
   // object cache for index files - these are opened only as GribCollection
-  private static FileCache partitionCache;
+  private static FileCacheIF partitionCache;
 
   static public void initPartitionCache(int minElementsInMemory, int maxElementsInMemory, int period) {
     partitionCache = new ucar.nc2.util.cache.FileCache("TimePartitionCache", minElementsInMemory, maxElementsInMemory, -1, period);
@@ -653,11 +653,14 @@ public abstract class PartitionCollection extends GribCollection {
 
   int[] run2part;   // masterRuntime.length; which partition to use for masterRuntime i
 
+  public static int countPC;
+
   protected PartitionCollection(String name, File directory, FeatureCollectionConfig config, boolean isGrib1, org.slf4j.Logger logger) {
     super(name, directory, config, isGrib1);
     this.logger = logger;
     this.partitions = new ArrayList<>();
     this.datasets = new ArrayList<>();
+    countPC++;
   }
 
   public VariableIndex getVariable2DByHash(HorizCoordSys hcs, int cdmHash) {

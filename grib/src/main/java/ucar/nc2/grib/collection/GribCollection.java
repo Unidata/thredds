@@ -238,7 +238,10 @@ public abstract class GribCollection implements FileCacheable, AutoCloseable {
   protected FileCacheIF objCache = null;  // optional object cache - used in the TDS
   protected String indexFilename;  // temp storage for debugging
 
+  public static int countGC;
+
   protected GribCollection(String name, File directory, FeatureCollectionConfig config, boolean isGrib1) {
+    countGC++;
     this.name = name;
     this.directory = directory;
     this.config = config;
