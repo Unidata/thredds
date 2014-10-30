@@ -66,27 +66,30 @@ public class TestH5npoess {
   @Test
   public void test2() throws InvalidRangeException, IOException {
     //H5header.setDebugFlags( new ucar.nc2.util.DebugFlagsImpl("H5header/header"));
-    NetcdfFile ncfile = TestH5.openH5("npoess/ExampleFiles/AVAFO_NPP_d2003125_t10109_e101038_b9_c2005829155458_devl_Tst.h5");
-    Variable dset = ncfile.findVariable("Data_Products/VIIRS-AF-EDR/VIIRS-AF-EDR_Gran_0");
-    Array data = dset.read();
-    NCdump.printArray(data, "data", System.out, null);
+    try (NetcdfFile ncfile = TestH5.openH5("npoess/ExampleFiles/AVAFO_NPP_d2003125_t10109_e101038_b9_c2005829155458_devl_Tst.h5")) {
+      Variable dset = ncfile.findVariable("Data_Products/VIIRS-AF-EDR/VIIRS-AF-EDR_Gran_0");
+      Array data = dset.read();
+      NCdump.printArray(data, "data", System.out, null);
+    }
   }
 
   @Test
   public void test3() throws InvalidRangeException, IOException {
     H5header.setDebugFlags( new ucar.nc2.util.DebugFlagsImpl("H5header/reference"));
-    NetcdfFile ncfile = TestH5.openH5("npoess/ExampleFiles/GDNBF-VNCCO_NPP_d2003125_t101038_e10116_b9_c2005829162517_dev.h5");
-    Variable dset = ncfile.findVariable("Data_Products/VIIRS-DNB-FGEO/VIIRS-DNB-FGEO_Aggr");
-    assert(null != dset );
+    try (NetcdfFile ncfile = TestH5.openH5("npoess/ExampleFiles/GDNBF-VNCCO_NPP_d2003125_t101038_e10116_b9_c2005829162517_dev.h5")) {
+      Variable dset = ncfile.findVariable("Data_Products/VIIRS-DNB-FGEO/VIIRS-DNB-FGEO_Aggr");
+      assert (null != dset);
+    }
   }
 
   public void problem() throws InvalidRangeException, IOException {
     H5header.setDebugFlags( new ucar.nc2.util.DebugFlagsImpl("H5header/header"));
-    NetcdfFile ncfile = TestH5.open("C:/data/HDF5Files/CrIMSS - CrIS - ATMS/ATMS/ATMS_SCIENCE_RDR/RASCI_npp_d20030125_t104457_e104505_b00016_c20061210190242_den_SWC.h5");
-    Variable dset = ncfile.findVariable("Data_Products/ATMS-SCIENCE-RDR/ATMS-SCIENCE-RDR_Aggr");
-    assert (null != dset );
-    Array data = dset.read();
-    NCdump.printArray(data, dset.getFullName(), System.out, null);
+    try (NetcdfFile ncfile = TestH5.open("C:/data/HDF5Files/CrIMSS - CrIS - ATMS/ATMS/ATMS_SCIENCE_RDR/RASCI_npp_d20030125_t104457_e104505_b00016_c20061210190242_den_SWC.h5")) {
+      Variable dset = ncfile.findVariable("Data_Products/ATMS-SCIENCE-RDR/ATMS-SCIENCE-RDR_Aggr");
+      assert (null != dset);
+      Array data = dset.read();
+      NCdump.printArray(data, dset.getFullName(), System.out, null);
+    }
     H5header.setDebugFlags( new ucar.nc2.util.DebugFlagsImpl());
   }
 

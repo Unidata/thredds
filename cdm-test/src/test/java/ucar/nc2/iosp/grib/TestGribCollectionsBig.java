@@ -105,6 +105,7 @@ public class TestGribCollectionsBig {
     // TestDir.checkLeaks();
 
     // jenkins:  that took 496 secs total, 0.592712 msecs per record
+    // that took 581 secs total, 0.694249 msecs per record (total == 0/837408) (cache size 500)
     assert count.nread == 837408;
     assert count.nmiss == 0;
   }
@@ -115,7 +116,8 @@ public class TestGribCollectionsBig {
     TestGribCollections.Count count = TestGribCollections.read(topdir + "/ds083.2/grib1/ds083.2_Aggregation-grib1.ncx2");
     TestDir.checkLeaks();
 
-    assert count.nread > 70000;
+    // that took 1312 secs total, 0.784602 msecs per record (total == 0/1672528) (cache size 500)
+    assert count.nread == 1672528;
     assert count.nmiss == 0;
   }
 }
