@@ -290,7 +290,21 @@ public class RandomAccessFile implements DataInput, DataOutput, FileCacheable, A
       allFiles.add(location);
     }
 
-    this.file = new java.io.RandomAccessFile(location, mode);
+    try {
+      this.file = new java.io.RandomAccessFile(location, mode);
+    } catch (IOException ioe) {
+      if (ioe.getMessage().equals("Too many open files")) {
+        System.out.printf("RandomAccessFile %s%n", ioe);
+        try {
+          Thread.currentThread().sleep(100);
+        } catch (InterruptedException e) {
+          e.printStackTrace();
+        }
+        this.file = new java.io.RandomAccessFile(location, mode); // Windows having troublke keeping up ??
+      } else {
+        throw ioe;
+      }
+    }
 
     this.readonly = mode.equals("r");
     init(bufferSize);

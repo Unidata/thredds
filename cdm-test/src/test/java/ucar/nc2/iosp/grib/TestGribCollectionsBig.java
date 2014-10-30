@@ -61,7 +61,7 @@ public class TestGribCollectionsBig {
   @BeforeClass
   static public void before() {
     GribIosp.setDebugFlags(new DebugFlagsImpl("Grib/indexOnly"));
-    PartitionCollection.initPartitionCache(50, 100, 150, -1);
+    PartitionCollection.initPartitionCache(500, 600, 650, -1);
     GribCollection.initDataRafCache(11, 50, -1);
   }
 
@@ -93,6 +93,7 @@ public class TestGribCollectionsBig {
     TestGribCollections.Count count = TestGribCollections.read(topdir + "/ds083.2/grib1/2008/2008.10/ds083.2_Aggregation-2008.10.ncx2");
     //TestDir.checkLeaks();
 
+    // jenkins: that took 18 secs total, 0.261603 msecs per record
     assert count.nread == 70928;
     assert count.nmiss == 0;
   }
@@ -103,11 +104,12 @@ public class TestGribCollectionsBig {
     TestGribCollections.Count count = TestGribCollections.read(topdir + "/ds083.2/grib1/2008/ds083.2_Aggregation-2008.ncx2");
     // TestDir.checkLeaks();
 
-    //assert count.nread > 70000;
-    //assert count.nmiss == 0;
+    // jenkins:  that took 496 secs total, 0.592712 msecs per record
+    assert count.nread == 837408;
+    assert count.nmiss == 0;
   }
 
-  //@Test
+  @Test
   public void testPofPofP() throws IOException {
     RandomAccessFile.setDebugLeaks(true);
     TestGribCollections.Count count = TestGribCollections.read(topdir + "/ds083.2/grib1/ds083.2_Aggregation-grib1.ncx2");
