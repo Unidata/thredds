@@ -522,6 +522,7 @@ class ASTclause extends AST
     int operator = 0; // See ExprParsefConstants
     ASTvalue lhs = null;
     List<ASTvalue> rhs = null;
+    // Coverity[FB.UWF_NULL_FIELD]
     ASTfcn boolfcn = null;
 
     public ASTclause(List<AST> nodes)
