@@ -43,6 +43,7 @@ import java.io.IOException;
 
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.util.CancelTask;
+import ucar.nc2.util.Misc;
 
 /**
  * Keep cache of open FileCacheable objects, for example NetcdfFile.
@@ -85,6 +86,7 @@ public class FileCache implements FileCacheIF {
   static protected final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(FileCache.class);
   static protected final org.slf4j.Logger cacheLog = org.slf4j.LoggerFactory.getLogger("cacheLogger");
   static private ScheduledExecutorService exec;
+  static boolean trackAll = true;
   static boolean debug = false;
   static boolean debugPrint = false;
   static boolean debugCleanup = false;
@@ -114,6 +116,7 @@ public class FileCache implements FileCacheIF {
   protected final AtomicInteger cleanups = new AtomicInteger();  // how many cleanups
   protected final AtomicInteger hits = new AtomicInteger();
   protected final AtomicInteger miss = new AtomicInteger();
+  protected Map<Object, Tracker> track;
 
   /**
    * Constructor.
@@ -163,6 +166,10 @@ public class FileCache implements FileCacheIF {
       if (cacheLog.isDebugEnabled())
         cacheLog.debug("FileCache " + name + " cleanup every " + period + " secs");
     }
+
+    if (trackAll)
+      track = new ConcurrentHashMap<>(5000);
+
   }
 
   private static synchronized ScheduledExecutorService getExec() {
@@ -231,6 +238,12 @@ public class FileCache implements FileCacheIF {
 
     if (null == hashKey) hashKey = location;
     if (null == hashKey) throw new IllegalArgumentException();
+
+    if (trackAll) {
+      Tracker t = track.get(hashKey);
+      if (t == null) track.put(hashKey, new Tracker(hashKey, 1));
+      else t.count++;
+    }
 
     FileCacheable ncfile = acquireCacheOnly(hashKey);
     if (ncfile != null) {
@@ -577,6 +590,55 @@ public class FileCache implements FileCacheIF {
    */
   public void showStats(Formatter format) {
     format.format("  hits= %d miss= %d nfiles= %d elems= %d%n", hits.get(), miss.get(), files.size(), cache.values().size());
+  }
+
+  public void showTracking(Formatter format) {
+    if (track == null) return;
+    List<Tracker> all = new ArrayList<>(track.size());
+    for (Tracker val : track.values()) all.add(val);
+    Collections.sort(all);
+    int count = 0;
+    int countAll = 0;
+    format.format("   seq  accum   count  file%n");
+    for (Tracker t : all) {
+      count++;
+      countAll += t.count;
+      format.format("%6d  %6d : %5d %s%n", count, countAll, t.count, t.key);
+    }
+    format.format("%n");
+  }
+
+  public void resetTracking() {
+    track = new ConcurrentHashMap<>(5000);
+  }
+
+  private class Tracker implements Comparable<Tracker> {
+    Object key;
+    int count;
+
+    private Tracker(Object key, int count) {
+      this.key = key;
+      this.count = count;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+      if (this == o) return true;
+      if (o == null || getClass() != o.getClass()) return false;
+      Tracker tracker = (Tracker) o;
+      if (!key.equals(tracker.key)) return false;
+      return true;
+    }
+
+    @Override
+    public int hashCode() {
+      return key.hashCode();
+    }
+
+    @Override
+    public int compareTo(Tracker o) {
+      return Misc.compare(count, o.count);
+    }
   }
 
   /**

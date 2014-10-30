@@ -62,15 +62,16 @@ public class TestGribCollectionsBig {
   static public void before() {
     GribIosp.setDebugFlags(new DebugFlagsImpl("Grib/indexOnly"));
     PartitionCollection.initPartitionCache(500, 600, 650, -1);
-    GribCollection.initDataRafCache(11, 50, -1);
   }
 
   @AfterClass
   static public void after() {
-    GribIosp.setDebugFlags(new DebugFlagsImpl(""));
+    GribIosp.setDebugFlags(new DebugFlagsImpl());
     Formatter out = new Formatter(System.out);
-    PartitionCollection.getPartitionCache().showCache(out);
-    PartitionCollection.getPartitionCache().clearCache(false);
+    FileCache cache = (FileCache) PartitionCollection.getPartitionCache();
+    cache.showCache(out);
+    cache.showTracking(out);
+    cache.clearCache(false);
     FileCache.shutdown();
     TestDir.checkLeaks();
     System.out.printf("countGC=%d%n", GribCollection.countGC);
@@ -81,7 +82,7 @@ public class TestGribCollectionsBig {
   public void testGC() throws IOException {
     RandomAccessFile.setDebugLeaks(true);
     TestGribCollections.Count count = TestGribCollections.read(topdir + "/ds083.2/grib1/2008/2008.10/fnl_20081003_18_00.grib1.ncx2");
-    //TestDir.checkLeaks();
+    TestDir.checkLeaks();
 
     assert count.nread == 286;
     assert count.nmiss == 0;
@@ -91,7 +92,7 @@ public class TestGribCollectionsBig {
   public void testPofG() throws IOException {
     RandomAccessFile.setDebugLeaks(true);
     TestGribCollections.Count count = TestGribCollections.read(topdir + "/ds083.2/grib1/2008/2008.10/ds083.2_Aggregation-2008.10.ncx2");
-    //TestDir.checkLeaks();
+    TestDir.checkLeaks();
 
     // jenkins: that took 18 secs total, 0.261603 msecs per record
     assert count.nread == 70928;
@@ -102,7 +103,7 @@ public class TestGribCollectionsBig {
   public void testPofP() throws IOException {
     RandomAccessFile.setDebugLeaks(true);
     TestGribCollections.Count count = TestGribCollections.read(topdir + "/ds083.2/grib1/2008/ds083.2_Aggregation-2008.ncx2");
-    // TestDir.checkLeaks();
+    TestDir.checkLeaks();
 
     // jenkins:  that took 496 secs total, 0.592712 msecs per record
     // that took 581 secs total, 0.694249 msecs per record (total == 0/837408) (cache size 500)
