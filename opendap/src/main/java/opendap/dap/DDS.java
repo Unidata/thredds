@@ -1252,7 +1252,7 @@ public class DDS extends DStructure
      */
     public final void print(OutputStream os)
     {
-        PrintWriter pw = new PrintWriter(new BufferedWriter(new OutputStreamWriter(os)));
+        PrintWriter pw = new PrintWriter(new BufferedWriter(new OutputStreamWriter(os,Util.UTF8)));
         print(pw);
         pw.flush();
     }
@@ -1918,8 +1918,10 @@ public class DDS extends DStructure
 
         pw.println("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
 
-        pw.println("<Dataset name=\"" +
-                DDSXMLParser.normalizeToXML(getEncodedName()) + "\"");
+        pw.print("<Dataset");
+        if(getEncodedName() != null)
+            pw.print("name=\"" + DDSXMLParser.normalizeToXML(getEncodedName()) + "\"");
+        pw.println();
         pw.println("xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"");
         pw.println("xmlns=\"" + opendapNameSpace + "\"");
         pw.print("xsi:schemaLocation=\"");

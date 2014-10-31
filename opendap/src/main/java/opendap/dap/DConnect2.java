@@ -314,6 +314,7 @@ public class DConnect2
             command.process(is);
 
         } catch (Exception e) {
+            Util.check(e);
             e.printStackTrace();
             throw new DAP2Exception(e);
 
@@ -847,10 +848,10 @@ public class DConnect2
     public DataDDS getData(String CE, StatusUI statusUI, BaseTypeFactory btf) throws MalformedURLException, IOException,
         ParseException, DDSException, DAP2Exception
     {
-
+        if(CE != null && CE.trim().length() == 0) CE = null;
         DataDDS dds = new DataDDS(ver, btf);
         DataDDSCommand command = new DataDDSCommand(dds, statusUI);
-        command.setURL(urlString + "?" + CE);
+        command.setURL(urlString + (CE == null ? "" : "?" + CE));
         if(filePath != null) { // url is file:
             File dodspath = new File(filePath + ".dods");
             // See if the dods file exists
@@ -861,7 +862,7 @@ public class DConnect2
         } else if(stream != null) {
             command.process(stream);
         } else {
-            String urls = urlString + ".dods" + (getCompleteCE(CE));
+            String urls = urlString + ".dods" + (CE != null ? "" : getCompleteCE(CE));
             openConnection(urls, command);
         }
         return command.dds;

@@ -609,12 +609,11 @@ public abstract class Dapparse
 
     String unescapeAttributeString(String s)
     {
-        String news = "";
-        for(char c: s.toCharArray()) {
-            if(c == '\\') continue;
-            news += c;
+        StringBuilder news = new StringBuilder(s);
+        for(int i=news.length()-1;i>=0;i--) {
+            if(news.charAt(i) == '\\') news.deleteCharAt(i);
         }
-        return news;
+        return news.toString();
     }
 
     // Because we fixed this in dap.y (name: rule),

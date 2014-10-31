@@ -230,12 +230,6 @@ public class DTSServlet extends AbstractServlet
 
     private String ServerVersion = "DODS/3.2";
 
-
-    /**
-     * Support compressions or not
-     */
-    protected boolean allowDeflate = true;
-
     /**
      * Debugging
      */
@@ -1446,20 +1440,24 @@ public class DTSServlet extends AbstractServlet
         if(track) {
             int n = prArr.size();
             int pending = 0;
-            String preqs = "";
+            StringBuilder preqs = new StringBuilder();
             for(int i = 0;i < n;i++) {
                 ReqState rs = (ReqState) prArr.get(i);
                 RequestDebug reqD = (RequestDebug) rs.getUserObject();
                 if(!reqD.done) {
-                    preqs += "<pre>-----------------------\n";
-                    preqs += "Request[" + reqD.reqno + "](" + reqD.threadDesc + ") is pending.\n";
-                    preqs += rs.toString();
-                    preqs += "</pre>";
+                    preqs.append("<pre>-----------------------\n");
+                    preqs.append("Request[");
+                    preqs.append(reqD.reqno);
+                    preqs.append("](");
+                    preqs.append(reqD.threadDesc);
+                    preqs.append(") is pending.\n");
+                    preqs.append(rs.toString());
+                    preqs.append("</pre>");
                     pending++;
                 }
             }
             os.println("<h2>" + pending + " Pending Request(s)</h2>");
-            os.println(preqs);
+            os.println(preqs.toString());
         }
     }
 

@@ -40,6 +40,8 @@
 
 package opendap.servlet;
 
+import opendap.dap.Util;
+
 import java.io.*;
 
 /**
@@ -48,7 +50,7 @@ import java.io.*;
 
 public class Logx {
 
-    static private PrintStream logger = null;
+    static private PrintWriter logger = null;
     static private ByteArrayOutputStream buff = null;
 
     static public void println(String s) {
@@ -72,7 +74,7 @@ public class Logx {
 
     static public void reset() {
         buff = new ByteArrayOutputStream();
-        logger = new PrintStream(buff);
+        logger = new PrintWriter(new OutputStreamWriter(buff, Util.UTF8));
     }
 
     static public boolean isOn() {

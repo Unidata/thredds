@@ -607,7 +607,12 @@ public class DGrid extends DConstructor implements ClientIO {
                 valid = !mapArray.isProject();
             }
 
-            }  catch(Exception e) {valid=false; break;}
+            }  catch(Exception e) {
+                Util.check(e);
+                valid=false;
+                break;
+            }
+
 
         }
 

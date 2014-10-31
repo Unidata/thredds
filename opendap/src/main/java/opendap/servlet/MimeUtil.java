@@ -39,7 +39,10 @@
 
 package opendap.servlet;
 
+import opendap.dap.Util;
+
 import java.io.*;
+import java.nio.charset.Charset;
 
 /**
  * Writes  MIME type headers to the passed streams.
@@ -75,11 +78,12 @@ public class MimeUtil {
 
     public static void setMimeText(OutputStream os, int desc, String version,
                                    int enc) {
-        PrintStream ps = new PrintStream(os);
+        PrintWriter ps = new PrintWriter(new OutputStreamWriter(os,Charset.forName("UTF-8")));
+
         setMimeText(ps, desc, version, enc);
     }
 
-    public static void setMimeText(PrintStream ps, int desc, String version,
+    public static void setMimeText(PrintWriter ps, int desc, String version,
                                    int enc) {
         ps.println("HTTP/1.0 200 OK");
         ps.println("XDODS-Server: " + version);
@@ -94,11 +98,11 @@ public class MimeUtil {
 
     public static void setMimeBinary(OutputStream os, int desc, String version,
                                      int enc) {
-        PrintStream ps = new PrintStream(os);
+        PrintWriter ps = new PrintWriter(new OutputStreamWriter(os, Util.UTF8));
         setMimeBinary(ps, desc, version, enc);
     }
 
-    public static void setMimeBinary(PrintStream ps, int desc, String version,
+    public static void setMimeBinary(PrintWriter ps, int desc, String version,
                                      int enc) {
         ps.println("HTTP/1.0 200 OK");
         ps.println("XDODS-Server: " + version);
@@ -113,11 +117,11 @@ public class MimeUtil {
 
     public static void setMimeError(OutputStream os, int code, String reason,
                                     String version) {
-        PrintStream ps = new PrintStream(os);
+        PrintWriter ps = new PrintWriter(new OutputStreamWriter(os,Charset.forName("UTF-8")));
         setMimeError(ps, code, reason, version);
     }
 
-    public static void setMimeError(PrintStream ps, int code, String reason,
+    public static void setMimeError(PrintWriter ps, int code, String reason,
                                     String version) {
         ps.println("HTTP/1.0 " + code + " " + reason);
         ps.println("XDODS-Server: " + version);
