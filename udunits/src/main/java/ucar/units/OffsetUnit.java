@@ -64,7 +64,7 @@ public final class OffsetUnit extends UnitImpl implements DerivableUnit {
      * 
      * @serial
      */
-    private DerivedUnit       _derivedUnit;
+    private final DerivedUnit       _derivedUnit;
 
     /**
      * Constructs from a reference unit and an offset.
@@ -102,6 +102,7 @@ public final class OffsetUnit extends UnitImpl implements DerivableUnit {
             _unit = ((OffsetUnit) unit)._unit;
             _offset = ((OffsetUnit) unit)._offset + offset;
         }
+      _derivedUnit = _unit.getDerivedUnit();
     }
 
     static Unit getInstance(final Unit unit, final double origin) {
@@ -237,9 +238,6 @@ public final class OffsetUnit extends UnitImpl implements DerivableUnit {
      * @return The derived unit that is convertible with this unit.
      */
     public DerivedUnit getDerivedUnit() {
-        if (_derivedUnit == null) {
-            _derivedUnit = getUnit().getDerivedUnit();
-        }
         return _derivedUnit;
     }
 

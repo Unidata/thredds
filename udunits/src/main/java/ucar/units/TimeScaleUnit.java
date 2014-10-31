@@ -54,7 +54,7 @@ public final class TimeScaleUnit extends UnitImpl {
    *
    * @serial
    */
-  static DateTimeFormatter df_units = DateTimeFormat.forPattern("yyyy-MM-dd HH:mm:ss.SSS 'UTC'").withZoneUTC(); // joda-time
+  static final DateTimeFormatter df_units = DateTimeFormat.forPattern("yyyy-MM-dd HH:mm:ss.SSS 'UTC'").withZoneUTC(); // joda-time
 
   /**
    * The second unit.

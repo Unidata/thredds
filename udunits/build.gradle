@@ -1,3 +1,8 @@
+dependencies {
+  compile 'joda-time:joda-time:2.2'
+  compile 'net.jcip:jcip-annotations:1.0'
+}
+
 jar {
     manifest {
         attributes 'Implementation-Title': 'udunits'

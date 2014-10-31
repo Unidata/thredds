@@ -32,6 +32,8 @@
  */
 package ucar.units;
 
+import net.jcip.annotations.Immutable;
+
 import java.util.SortedMap;
 import java.util.TreeMap;
 
@@ -40,6 +42,7 @@ import java.util.TreeMap;
  * 
  * @author Steven R. Emmerson
  */
+@Immutable
 public class BaseUnit extends DerivedUnitImpl implements Base {
     private static final long                              serialVersionUID = 1L;
 

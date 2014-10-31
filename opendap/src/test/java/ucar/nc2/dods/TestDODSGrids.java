@@ -57,7 +57,7 @@ public class TestDODSGrids {
     checkVariable(v);
 
     assert(null != (v = dodsfile.findVariable("FourD")));
-    assert v instanceof DODSGrid;;
+    assert v instanceof DODSGrid;
     checkVariable2(v);
   }
 

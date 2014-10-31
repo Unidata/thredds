@@ -32,6 +32,8 @@
  */
 package ucar.units;
 
+import net.jcip.annotations.Immutable;
+
 import java.io.Serializable;
 import java.util.Date;
 
@@ -40,6 +42,7 @@ import java.util.Date;
  * 
  * @author Steven R. Emmerson
  */
+@Immutable
 public abstract class UnitImpl implements Unit, Serializable {
     private static final long serialVersionUID = 1L;
     /**

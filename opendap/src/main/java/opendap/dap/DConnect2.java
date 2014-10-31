@@ -857,12 +857,14 @@ public class DConnect2
             // See if the dods file exists
             if(dodspath.canRead()) {
       /* WARNING: any constraints are ignored in reading the file */
-                command.process(new FileInputStream(dodspath));
+              try (FileInputStream is = new FileInputStream(dodspath) ) {
+                command.process(is);
+              }
             }
         } else if(stream != null) {
             command.process(stream);
         } else {
-            String urls = urlString + ".dods" + (CE != null ? "" : getCompleteCE(CE));
+            String urls = urlString + ".dods" + (CE == null ? "" : getCompleteCE(CE));
             openConnection(urls, command);
         }
         return command.dds;

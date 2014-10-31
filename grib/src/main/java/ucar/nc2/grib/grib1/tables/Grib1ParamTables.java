@@ -134,8 +134,8 @@ public class Grib1ParamTables {
 
     Grib1ParamTableReader table;
     if (paramTablePath != null) {
+      if (localTableHash == null) localTableHash = new HashMap<>();
       synchronized (localTableHash) {
-        if (localTableHash == null) localTableHash = new HashMap<>();
         table = localTableHash.get(paramTablePath);
         if (table == null) {
           table = new Grib1ParamTableReader(paramTablePath);

@@ -32,6 +32,8 @@
  */
 package ucar.units;
 
+import net.jcip.annotations.Immutable;
+
 /**
  * Provides support for a unit that is a mutiplicative factor of a reference
  * unit.
@@ -40,6 +42,7 @@ package ucar.units;
  * 
  * @author Steven R. Emmerson
  */
+@Immutable
 public final class ScaledUnit extends UnitImpl implements DerivableUnit {
     private static final long serialVersionUID = 1L;
 

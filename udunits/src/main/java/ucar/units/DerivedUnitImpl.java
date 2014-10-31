@@ -32,13 +32,15 @@
  */
 package ucar.units;
 
+import net.jcip.annotations.Immutable;
+
 /**
  * Provides support for a concrete implementation of derived units.
  * 
  * @author Steven R. Emmerson
  */
-public class DerivedUnitImpl extends UnitImpl implements DerivedUnit,
-        DerivableUnit {
+// @Immutable
+public class DerivedUnitImpl extends UnitImpl implements DerivedUnit, DerivableUnit {
     private static final long           serialVersionUID = 1L;
 
     /**
@@ -51,7 +53,7 @@ public class DerivedUnitImpl extends UnitImpl implements DerivedUnit,
      * 
      * @serial
      */
-    private/* final */UnitDimension     dimension;
+    private /* final */ UnitDimension     dimension;
 
     /**
      * Constructs a dimensionless derived unit from nothing.
