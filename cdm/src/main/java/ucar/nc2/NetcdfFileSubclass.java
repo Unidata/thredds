@@ -34,6 +34,8 @@
 package ucar.nc2;
 
 import ucar.nc2.iosp.IOServiceProvider;
+import ucar.nc2.util.CancelTask;
+import ucar.unidata.io.RandomAccessFile;
 
 import java.io.IOException;
 
@@ -56,11 +58,16 @@ public class NetcdfFileSubclass extends NetcdfFile {
     this.location = location;
   }
 
+  public NetcdfFileSubclass(IOServiceProvider spi, RandomAccessFile raf, String location, CancelTask cancelTask) throws IOException {
+    super(spi, raf, location, cancelTask);
+  }
 
   public NetcdfFileSubclass(String iospClassName, Object iospParam, String location, int buffer_size, ucar.nc2.util.CancelTask cancelTask)
           throws IOException, IllegalAccessException, ClassNotFoundException, InstantiationException {
 
     super(iospClassName, iospParam, location, buffer_size, cancelTask);
   }
+
+
 
 }

@@ -1807,7 +1807,6 @@ public class NmcObsLegacy extends AbstractIOServiceProvider {
     NmcObsLegacy iosp = new NmcObsLegacy();
     RandomAccessFile raf = new RandomAccessFile(filename, "r");
     NetcdfFile ncfile = new NetcdfFileSubclass(iosp, filename);
-    ncfile.setLocation(filename);
     iosp.open(raf, ncfile, null);
     System.out.println("\n" + ncfile);
 

@@ -1440,6 +1440,7 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable, AutoClosea
   /**
    * Open an existing netcdf file (read only), using the specified iosp.
    * The ClassLoader for the NetcdfFile class is used.
+   * Use NetcdfFileSubclass to access this constructor
    *
    * @param iospClassName the name of the class implementing IOServiceProvider
    * @param iospParam     parameter to pass to the IOSP (before open is called)

@@ -596,8 +596,7 @@ public class H5iosp extends AbstractIOServiceProvider {
 
     if (message.toString().equals("headerEmpty")) {
       NetcdfFile ncfile = new NetcdfFileSubclass();
-      H5header headerEmpty = new H5header(raf, ncfile, this);
-      return headerEmpty;
+      return new H5header(raf, ncfile, this);
     }
 
     return super.sendIospMessage(message);
