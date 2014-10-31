@@ -325,7 +325,7 @@ public class CollectionController  {
         monitor.deleteCollection(collectName);
         pw.println("<p/>deleted");
       } catch (Exception e) {
-        pw.println("<pre>delete failed on collection = "+collectName);
+        pw.println("<pre>delete failed on collection = "+Escape.html(collectName));
         e.printStackTrace(pw);
         pw.println("</pre>");
       }

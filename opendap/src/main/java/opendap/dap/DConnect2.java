@@ -513,8 +513,10 @@ public class DConnect2
         if(filePath != null) { // url was file:
             File daspath = new File(filePath + ".das");
             // See if the das file exists
-            if(daspath.canRead()) {
-                command.process(new FileInputStream(daspath));
+            if (daspath.canRead()) {
+              try (FileInputStream is = new FileInputStream(daspath) ) {
+                command.process(is);
+              }
             }
         } else if(stream != null) {
             command.process(stream);
@@ -576,8 +578,10 @@ public class DConnect2
     {
         DDSCommand command = new DDSCommand();
         command.setURL(CE == null || CE.length() == 0 ? urlString : urlString + "?" + CE);
-        if(filePath != null) {
-            command.process(new FileInputStream(filePath + ".dds"));
+        if (filePath != null) {
+          try (FileInputStream is = new FileInputStream(filePath + ".dds") ) {
+            command.process(is);
+          }
         } else if(stream != null) {
             command.process(stream);
         } else { // must be a remote url

@@ -463,7 +463,7 @@
     <web-resource-collection>
       <web-resource-name>sensitive read access</web-resource-name>
       <url-pattern>/admin/*</url-pattern>
-      <http-method>GET</http-method>
+      <!-- http-method>GET</http-method -->
     </web-resource-collection>
     <auth-constraint>
       <role-name>tdsConfig</role-name>
@@ -477,7 +477,7 @@
     <web-resource-collection>
       <web-resource-name>allow feature collection rescan to be triggered externally</web-resource-name>
       <url-pattern>/admin/collection/trigger</url-pattern>
-      <http-method>GET</http-method>
+      <!-- http-method>GET</http-method -->
     </web-resource-collection>
     <auth-constraint>
       <role-name>tdsTrigger</role-name>
@@ -495,7 +495,7 @@
     <web-resource-collection>
       <web-resource-name>sensitive read access</web-resource-name>
       <url-pattern>/admin/log/*</url-pattern>
-      <http-method>GET</http-method>
+      <!-- http-method>GET</http-method -->
     </web-resource-collection>
     <auth-constraint>
       <role-name>tdsMonitor</role-name>

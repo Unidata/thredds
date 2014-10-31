@@ -165,14 +165,14 @@ public class BufrTables {
 
   private static List<String> lookups = null;
 
-  static public void addLookupFile(String filename) throws FileNotFoundException {
+  static public synchronized void addLookupFile(String filename) throws FileNotFoundException {
     if (lookups == null) lookups = new ArrayList<>();
     File f = new File(filename);
     if (!f.exists()) throw new FileNotFoundException(filename + " not found");
     lookups.add(filename);
   }
 
-  static private void readLookupTable() {
+  static private synchronized void readLookupTable() {
     tables = new ArrayList<>();
     if (lookups != null) {
       lookups.add(canonicalLookup);
@@ -397,7 +397,7 @@ public class BufrTables {
 
   static private TableB latestWmoB;
 
-  static public TableB getWmoTableBlatest() {
+  static public synchronized TableB getWmoTableBlatest() {
     if (latestWmoB == null) {
       try {
         latestWmoB = getWmoTableB(latestVersion);
@@ -867,7 +867,7 @@ public class BufrTables {
 
   static private TableD latestWmoD;
 
-  static public TableD getWmoTableDlatest() {
+  static public synchronized TableD getWmoTableDlatest() {
     if (latestWmoD == null) {
       try {
         latestWmoD = getWmoTableD(latestVersion);

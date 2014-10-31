@@ -217,7 +217,7 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable, AutoClosea
     }
 
     ////////////////////////////////////////////////////////////////////////////////
-    // iosps below here are a bit slow in isValidFile() eg needing an exception thrown
+    // iosps below here are possibly slow in isValidFile() eg needing an exception thrown
     // so they are relegated to the end
     try {
       registerIOProvider("ucar.nc2.iosp.dmsp.DMSPiosp");

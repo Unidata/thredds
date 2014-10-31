@@ -134,13 +134,15 @@ public class Grib1ParamTables {
 
     Grib1ParamTableReader table;
     if (paramTablePath != null) {
-      if (localTableHash == null) localTableHash = new HashMap<>();
-      table = localTableHash.get(paramTablePath);
-      if (table == null) {
-        table = new Grib1ParamTableReader(paramTablePath);
-        localTableHash.put(paramTablePath, table);
+      synchronized (localTableHash) {
+        if (localTableHash == null) localTableHash = new HashMap<>();
+        table = localTableHash.get(paramTablePath);
+        if (table == null) {
+          table = new Grib1ParamTableReader(paramTablePath);
+          localTableHash.put(paramTablePath, table);
+        }
+        result.override = table;
       }
-      result.override = table;
     }
 
     if (lookupTablePath != null) {
