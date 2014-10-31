@@ -239,18 +239,20 @@ public class FileCache implements FileCacheIF {
     if (null == hashKey) hashKey = location;
     if (null == hashKey) throw new IllegalArgumentException();
 
+    Tracker t = null;
     if (trackAll) {
-      Tracker t = track.get(hashKey);
-      if (t == null) track.put(hashKey, new Tracker(hashKey, 1));
-      else t.count++;
+      t = track.get(hashKey);
+      if (t == null) track.put(hashKey, new Tracker(hashKey, 0, 0));
     }
 
     FileCacheable ncfile = acquireCacheOnly(hashKey);
     if (ncfile != null) {
       hits.incrementAndGet();
+      if (t != null) t.hit++;
       return ncfile;
     }
     miss.incrementAndGet();
+    if (t != null) t.miss++;
 
     // open the file
     ncfile = factory.open(location, buffer_size, cancelTask, spiObject);
@@ -599,11 +601,11 @@ public class FileCache implements FileCacheIF {
     Collections.sort(all);
     int count = 0;
     int countAll = 0;
-    format.format("   seq  accum   count  file%n");
+    format.format("   seq  accum   hit   miss  file%n");
     for (Tracker t : all) {
       count++;
-      countAll += t.count;
-      format.format("%6d  %6d : %5d %s%n", count, countAll, t.count, t.key);
+      countAll += t.hit + t.miss;
+      format.format("%6d  %6d : %5d %5d %s%n", count, countAll, t.hit, t.miss, t.key);
     }
     format.format("%n");
   }
@@ -614,11 +616,12 @@ public class FileCache implements FileCacheIF {
 
   private class Tracker implements Comparable<Tracker> {
     Object key;
-    int count;
+    int hit, miss;
 
-    private Tracker(Object key, int count) {
+    private Tracker(Object key, int hit, int miss) {
       this.key = key;
-      this.count = count;
+      this.hit = hit;
+      this.miss = miss;
     }
 
     @Override
@@ -637,7 +640,7 @@ public class FileCache implements FileCacheIF {
 
     @Override
     public int compareTo(Tracker o) {
-      return Misc.compare(count, o.count);
+      return Misc.compare(hit+miss, o.hit+o.miss);
     }
   }
 
