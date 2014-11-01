@@ -45,6 +45,7 @@ import java.util.*;
  * The purpose of this class is to read in the files from ECMWFs gribapi software and
  * create useful grib 1 tables for the CDM. Note that the intent is to process these
  * local concept files as minimally as possible. Only run this from the git directory.
+ * This is run offline
  */
 public class EcmwfLocalConcepts {
     // super hash map keys

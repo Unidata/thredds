@@ -43,12 +43,14 @@ import ucar.nc2.grib.VertCoord;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 /**
  * NCEP overrides of GRIB tables
+ * LOOK: Why not a singleton?
  *
  * @author caron
  * @since 1/13/12
@@ -57,7 +59,7 @@ public class NcepTables extends Grib1Customizer {
   static private final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(NcepTables.class);
 
   private static Map<Integer, String> genProcessMap;  // shared by all instances
-  private static HashMap<Integer, GribLevelType> levelTypesMap;  // shared by all instances
+  private static Map<Integer, GribLevelType> levelTypesMap;  // shared by all instances
 
   NcepTables(Grib1ParamTables tables) {
     super(7, tables);
@@ -171,8 +173,10 @@ public class NcepTables extends Grib1Customizer {
 
   @Override
   public String getGeneratingProcessName(int genProcess) {
-    if (genProcessMap == null) genProcessMap = getNcepGenProcess();
+    if (genProcessMap == null)
+        genProcessMap = getNcepGenProcess();
     if (genProcessMap == null) return null;
+
     return genProcessMap.get(genProcess);
   }
 
@@ -199,7 +203,7 @@ public class NcepTables extends Grib1Customizer {
         result.put(code, desc);
       }
 
-      return result;  // all at once - thread safe
+      return Collections.unmodifiableMap(result);  // all at once - thread safe
 
     } catch (IOException ioe) {
       logger.error("Cant read NCEP Table 1 = " + path, ioe);
@@ -257,8 +261,12 @@ public class NcepTables extends Grib1Customizer {
   private GribLevelType getLevelType(int code) {
     if (code < 129)
       return null; // LOOK dont let NCEP override standard tables (??) looks like a conflict with level code 210 (!)
-    if (levelTypesMap == null)
-      levelTypesMap = readTable3("resources/grib1/ncep/ncepTable3.xml");
+
+    if (levelTypesMap == null) {
+      synchronized (NcepTables.class) {
+        levelTypesMap = readTable3("resources/grib1/ncep/ncepTable3.xml");
+      }
+    }
     if (levelTypesMap == null)
       return null;
 

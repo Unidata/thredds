@@ -42,8 +42,10 @@ import ucar.nc2.grib.VertCoord;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * FNMOC local tables
@@ -54,8 +56,8 @@ import java.util.List;
 public class FnmocTables extends Grib1Customizer {
   static private final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(FnmocTables.class);
 
-  private static HashMap<Integer, GribLevelType> levelTypesMap;  // shared by all instances
-  private static HashMap<Integer, String> genProcessMap;  // shared by all instances
+  private static Map<Integer, GribLevelType> levelTypesMap;  // shared by all instances
+  private static Map<Integer, String> genProcessMap;  // shared by all instances
 
   FnmocTables(Grib1ParamTables tables) {
     super(58, tables);
@@ -65,7 +67,8 @@ public class FnmocTables extends Grib1Customizer {
 
   @Override
   public String getGeneratingProcessName(int genProcess) {
-    if (genProcessMap == null) readGenProcess("resources/grib1/fnmoc/US058MMTA-ALPdoc.pntabs-prodname-masterModelTableOrdered.GRIB1.TblA.xml");
+    if (genProcessMap == null)
+      genProcessMap = readGenProcess("resources/grib1/fnmoc/US058MMTA-ALPdoc.pntabs-prodname-masterModelTableOrdered.GRIB1.TblA.xml");
     if (genProcessMap == null) return null;
     return genProcessMap.get(genProcess);
   }
@@ -89,18 +92,18 @@ public class FnmocTables extends Grib1Customizer {
       <status>current</status>
     </entry>
    */
-  private void readGenProcess(String path) {
+  private Map<Integer, String> readGenProcess(String path) {
     try (InputStream is =  GribResourceReader.getInputStream(path)) {
       if (is == null) {
         logger.error("Cant find FNMOC gen process table = " + path);
-        return;
+        return null;
       }
 
       SAXBuilder builder = new SAXBuilder();
       org.jdom2.Document doc = builder.build(is);
       Element root = doc.getRootElement();
 
-      HashMap<Integer, String> result = new HashMap<>(200);
+      Map<Integer, String> result = new HashMap<>(200);
       Element fnmocTable = root.getChild("fnmocTable");
       List<Element> params = fnmocTable.getChildren("entry");
       for (Element elem1 : params) {
@@ -109,15 +112,16 @@ public class FnmocTables extends Grib1Customizer {
         result.put(code, desc);
       }
 
-      genProcessMap = result;  // all at once - thread safe
+      return Collections.unmodifiableMap(result);  // all at once - thread safe
 
     } catch (IOException ioe) {
       logger.error("Cant read FNMOC Table 1 = " + path, ioe);
 
     } catch (JDOMException e) {
       logger.error("Cant parse FNMOC Table 1 = " + path, e);
-
     }
+
+    return null;
   }
 
 

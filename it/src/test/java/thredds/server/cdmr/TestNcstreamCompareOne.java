@@ -36,6 +36,7 @@
 package thredds.server.cdmr;
 
 import org.junit.Test;
+import thredds.TestWithLocalServer;
 import ucar.unidata.util.StringUtil2;
 
 import java.io.IOException;
@@ -53,7 +54,7 @@ public class TestNcstreamCompareOne {
   // http://localhost:8081/thredds/cdmremote/scanCdmUnitTests/formats/grib2/SingleRecordNbits0.grib2?req=header
      String problemFile = TestNcstreamCompareWithFiles.contentRoot + "/grib2/SingleRecordNbits0.grib2";
      String name = StringUtil2.substitute(problemFile.substring(TestNcstreamCompareWithFiles.contentRoot.length()), "\\", "/");
-     String remote = TestNcstreamCompareWithFiles.urlPath + name;
+     String remote = TestWithLocalServer.server + TestNcstreamCompareWithFiles.urlPath + name;
     TestNcstreamCompareWithFiles.compareDatasets(problemFile, remote);
    }
 }

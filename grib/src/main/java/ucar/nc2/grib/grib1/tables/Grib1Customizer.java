@@ -43,8 +43,10 @@ import ucar.nc2.wmo.CommonCodeTable;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Interprets grib1 info in a way that may be customized.
@@ -200,7 +202,7 @@ public class Grib1Customizer implements GribTables {
 
   ////////////////////////////////////////////////////////////////////////
 
-  private HashMap<Integer, GribLevelType> wmoTable3;
+  static private Map<Integer, GribLevelType> wmoTable3;  // shared by all instances
 
   private GribLevelType getLevelType(int code) {
     if (wmoTable3 == null)
@@ -214,7 +216,7 @@ public class Grib1Customizer implements GribTables {
     return result;
   }
 
-  protected HashMap<Integer, GribLevelType> readTable3(String path) {
+  protected Map<Integer, GribLevelType> readTable3(String path) {
     try (InputStream is =  GribResourceReader.getInputStream(path)) {
       if (is == null) {
         logger.error("Cant find Table 3 = " + path);
@@ -225,7 +227,7 @@ public class Grib1Customizer implements GribTables {
       org.jdom2.Document doc = builder.build(is);
       Element root = doc.getRootElement();
 
-      HashMap<Integer, GribLevelType> result = new HashMap<Integer, GribLevelType>(200);
+      Map<Integer, GribLevelType> result = new HashMap<Integer, GribLevelType>(200);
       List<Element> params = root.getChildren("parameter");
       for (Element elem1 : params) {
         int code = Integer.parseInt(elem1.getAttributeValue("code"));
@@ -239,7 +241,7 @@ public class Grib1Customizer implements GribTables {
         result.put(code, lt);
       }
 
-      return result;  // all at once - thread safe
+      return Collections.unmodifiableMap(result);  // all at once - thread safe
 
     } catch (IOException ioe) {
       logger.error("Cant read NcepLevelTypes = " + path, ioe);
@@ -248,7 +250,6 @@ public class Grib1Customizer implements GribTables {
     } catch (JDOMException e) {
       logger.error("Cant parse NcepLevelTypes = " + path, e);
       return null;
-
     }
   }
 

@@ -27,7 +27,7 @@ import ucar.unidata.util.StringUtil2;
 @RunWith(Parameterized.class)
 public class TestNcstreamCompareWithFiles {
   static String contentRoot = TestDir.cdmUnitTestDir + "formats";
-  static String urlPath = TestWithLocalServer.server + "cdmremote/scanCdmUnitTests/formats";
+  static String urlPath = "cdmremote/scanCdmUnitTests/formats";
 
   static int total, success;
 

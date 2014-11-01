@@ -61,7 +61,7 @@ public class TestGribCollectionsBig {
   @BeforeClass
   static public void before() {
     GribIosp.setDebugFlags(new DebugFlagsImpl("Grib/indexOnly"));
-    PartitionCollection.initPartitionCache(50, 100, 120, -1);
+    PartitionCollection.initPartitionCache(50, 700, -1, -1);
   }
 
   @AfterClass
@@ -115,7 +115,7 @@ public class TestGribCollectionsBig {
 
     } catch (Throwable t) {
       t.printStackTrace();
-      TestDir.checkLeaks();
+      // TestDir.checkLeaks();
     }
 
   }

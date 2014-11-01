@@ -33,8 +33,9 @@
 
 package ucar.nc2.util.cache;
 
-import net.jcip.annotations.GuardedBy;
 import net.jcip.annotations.ThreadSafe;
+import ucar.nc2.time.CalendarDate;
+import ucar.nc2.time.CalendarDateFormatter;
 import ucar.nc2.util.CancelTask;
 import ucar.nc2.util.Misc;
 
@@ -96,9 +97,12 @@ public class FileCacheARC implements FileCacheIF {
 
   private final AtomicBoolean disabled = new AtomicBoolean(false);  // cache is disabled
 
-  protected final ConcurrentSkipListMap<CacheElement, CacheElement> shadowCache; // sorted list, to make insert, delete fast
-  protected final ConcurrentHashMap<Object, CacheElement> cache;           // list of all unique files in the cache, keyed by hashKey, typically filename
-  protected final ConcurrentHashMap<FileCacheable, CacheElement.CacheFile> files; // list of all files in the cache. perhaps not needed later
+  protected final ConcurrentSkipListMap<CacheElement, CacheElement> shadowCache; // this is used to decide which file to release
+                                                                                 // this can be biggger than the cache, eg ARC uses 2c, where c = cache size
+  protected final ConcurrentHashMap<Object, CacheElement> cache;                // collection of all unique files in the cache, keyed by hashKey, typically filename
+                                                                                // cache has open file handle / object in memory
+  protected final ConcurrentHashMap<Integer, CacheElement.CacheFile> files;     // collection of all files in the cache, keyed by FileCacheable hashcode (object id)
+                                                                                // this is needed for release
 
   // debugging and global stats
   protected final AtomicInteger hits = new AtomicInteger();
@@ -294,7 +298,7 @@ public class FileCacheARC implements FileCacheIF {
 
     int size = cacheSize.getAndIncrement();
     if (size > softLimit) {
-      removeFromCache(softLimit - size);
+      removeFromCache(size - softLimit);
     }
   }
 
@@ -325,7 +329,8 @@ public class FileCacheARC implements FileCacheIF {
     }
 
     // find it in the file cache
-    CacheElement.CacheFile file = files.get(ncfile); // using hashCode of the FileCacheable
+    int hashcode = System.identityHashCode(ncfile);    // using Object hashCode of the FileCacheable
+    CacheElement.CacheFile file = files.get(hashcode);
     if (file != null) {
       if (!file.isLocked.get()) {
         Exception e = new Exception("Stack trace");
@@ -362,11 +367,13 @@ public class FileCacheARC implements FileCacheIF {
       this.lastAccessed.set(System.currentTimeMillis());
       this.countAccessed.incrementAndGet();
 
+      int hashcode = System.identityHashCode(ncfile);    // using Object hashCode of the FileCacheable
       if (debug) {
-        if (files.get(ncfile) != null)
+        if (files.get(hashcode) != null)
           cacheLog.error("files (2) already has " + hashKey + " " + name);
       }
-      files.put(ncfile, file);
+
+      files.put(hashcode, file);
       if (cacheLog.isDebugEnabled()) cacheLog.debug("CacheElement add to cache " + hashKey + " " + name);
       return file;
     }
@@ -418,7 +425,8 @@ public class FileCacheARC implements FileCacheIF {
        }
 
       void remove() {
-        if (null == files.remove(ncfile))
+        int hashcode = System.identityHashCode(ncfile);    // using Object hashCode of the FileCacheable
+        if (null == files.remove(hashcode))
           cacheLog.warn("FileCache {} could not remove {} from files", name, ncfile.getLocation());
         if (!list.remove(this))
           cacheLog.warn("FileCache {} could not remove {} from list", name, ncfile.getLocation());
@@ -494,7 +502,8 @@ public class FileCacheARC implements FileCacheIF {
     if (ncfile == null) return "";
 
     // find it in the file cache
-    CacheElement.CacheFile file = files.get(ncfile);
+    int hashcode = System.identityHashCode(ncfile);
+    CacheElement.CacheFile file = files.get(hashcode);
     if (file != null) {
       return "File is in cache= " + file;
     }
@@ -578,7 +587,8 @@ public class FileCacheARC implements FileCacheIF {
     format.format("isLocked  accesses lastAccess                   location %n");
     for (CacheElement.CacheFile file : allFiles) {
       String loc = file.ncfile != null ? file.ncfile.getLocation() : "null";
-      format.format("%8s %9d %s %s %n", file.isLocked, file.getCountAccessed(), new Date(file.getLastAccessed()), loc);
+      CalendarDate cd = CalendarDate.of(file.getLastAccessed());
+      format.format("%8s %9d %s %s %n", file.isLocked, file.getCountAccessed(), CalendarDateFormatter.toTimeUnits(cd), loc);
     }
     showStats(format);
   }
@@ -614,9 +624,10 @@ public class FileCacheARC implements FileCacheIF {
     if (track == null) return;
     List<Tracker> all = new ArrayList<>(track.size());
     for (Tracker val : track.values()) all.add(val);
-    Collections.sort(all);
+    Collections.sort(all);       // LOOK what should we sort by ??
     int count = 0;
     int countAll = 0;
+    format.format("%nTrack of all files in FileCacheARC%n");
     format.format("   seq  accum   hit   miss  file%n");
     for (Tracker t : all) {
       count++;
@@ -643,8 +654,7 @@ public class FileCacheARC implements FileCacheIF {
       if (this == o) return true;
       if (o == null || getClass() != o.getClass()) return false;
       Tracker tracker = (Tracker) o;
-      if (!key.equals(tracker.key)) return false;
-      return true;
+      return key.equals(tracker.key);   // maybe == ?? LOOK
     }
 
     @Override
