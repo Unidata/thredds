@@ -32,7 +32,7 @@ public class TestNcstreamCompareWithFiles {
   static int total, success;
 
   @AfterClass
-  static void show() {
+  static public void show() {
     System.out.printf("success = %d/%d %n", success, total);
   }
 
