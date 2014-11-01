@@ -46,7 +46,6 @@ import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time.CalendarPeriod;
 import ucar.nc2.util.CancelTask;
 import ucar.nc2.util.Misc;
-import ucar.nc2.util.cache.FileCache;
 import ucar.nc2.util.cache.FileCacheIF;
 import ucar.nc2.util.cache.FileCacheable;
 import ucar.nc2.util.cache.FileFactory;
@@ -103,10 +102,11 @@ public abstract class PartitionCollection extends GribCollection {
 
   //////////////////////////////////////////////////////////////////////
 
+  // LOOK: should go back to int[] arrays, to save memory. basically 16*n, where n=4.8M with 700 file cache. 76M out of 214M.
   static class PartitionForVariable2D {
-    int partno, groupno, varno, flag;
-    public int ndups, nrecords, missing;
-    public float density;
+    int partno, groupno, varno; // , flag;     // what the hell is the flag used for ?
+    //public int ndups, nrecords, missing;  // optional debugging - remove ? or factor out ??
+    //public float density;                 // optional
   }
 
   public class VariableIndexPartitioned extends GribCollection.VariableIndex {
@@ -117,16 +117,15 @@ public abstract class PartitionCollection extends GribCollection {
       partList = new ArrayList<>(nparts);
     }
 
-    public void addPartition(int partno, int groupno, int varno, int flag, int ndups, int nrecords,
-                             int missing, float density) {
+    public void addPartition(int partno, int groupno, int varno) { // }, int flag, int ndups, int nrecords, int missing, float density) {
 
       PartitionForVariable2D partVar = new PartitionForVariable2D();
       partVar.partno = partno;
       partVar.groupno = groupno;
       partVar.varno = varno;
-      partVar.flag = flag;
+      //partVar.flag = flag;
 
-      // track stats in this PartVar
+      /* track stats in this PartVar
       partVar.density = density;
       partVar.ndups = ndups;
       partVar.missing = missing;
@@ -135,17 +134,17 @@ public abstract class PartitionCollection extends GribCollection {
       // keep overall stats for this variable
       this.ndups += partVar.ndups;
       this.missing += partVar.missing;
-      this.nrecords += partVar.nrecords;
+      this.nrecords += partVar.nrecords;  */
 
       this.partList.add(partVar);
     }
 
-    public void addPartition(int partno, int groupno, int varno, int flag, VariableIndex vi) {
-      addPartition(partno, groupno, varno, flag, vi.ndups, vi.nrecords, vi.missing, vi.density);
-    }
+    /* public void addPartition(int partno, int groupno, int varno) { // , int flag, VariableIndex vi) {
+      addPartition(partno, groupno, varno); // , flag, vi.ndups, vi.nrecords, vi.missing, vi.density);
+    } */
 
     public void addPartition(PartitionForVariable2D pv) {
-      addPartition(pv.partno, pv.groupno, pv.varno, pv.flag, pv.ndups, pv.nrecords, pv.missing, pv.density);
+      addPartition(pv.partno, pv.groupno, pv.varno); // , pv.flag, pv.ndups, pv.nrecords, pv.missing, pv.density);
     }
 
     public Iterable<PartitionForVariable2D> getPartitionsForVariable() {
@@ -170,20 +169,21 @@ public abstract class PartitionCollection extends GribCollection {
       for (PartitionForVariable2D partVar : partList)
         sb.format("%d,", partVar.varno);
       sb.format("%n flags=");
-      for (PartitionForVariable2D partVar : partList)
-        sb.format("%d,", partVar.flag);
+      //for (PartitionForVariable2D partVar : partList)
+      //  sb.format("%d,", partVar.flag);
       sb.format("%n");
       int count = 0;
       sb.format("     %7s %3s %3s %6s %3s%n", "N", "dups", "Miss", "density", "partition");
-      int totalN = 0, totalDups = 0, totalMiss = 0;
+      // int totalN = 0, totalDups = 0, totalMiss = 0;
       for (PartitionForVariable2D partVar : partList) {
         Partition part = partitions.get(partVar.partno);
-        sb.format("   %2d: %7d %3d %3d   %6.2f   %d %s%n", count++, partVar.nrecords, partVar.ndups, partVar.missing, partVar.density, partVar.partno, part.getFilename());
-        totalN += partVar.nrecords;
-        totalDups += partVar.ndups;
-        totalMiss += partVar.missing;
+        sb.format("   %2d: %7d %s%n", count++, partVar.partno, part.getFilename());
+        //sb.format("   %2d: %7d %3d %3d   %6.2f   %d %s%n", count++, partVar.nrecords, partVar.ndups, partVar.missing, partVar.density, partVar.partno, part.getFilename());
+        //totalN += partVar.nrecords;
+        //totalDups += partVar.ndups;
+        //totalMiss += partVar.missing;
       }
-      sb.format("total: %4d %3d %3d %n", totalN, totalDups, totalMiss);
+      //sb.format("total: %4d %3d %3d %n", totalN, totalDups, totalMiss);
       sb.format("%n");
       sb.format("totalSize = %4d density=%6.2f%n", this.totalSize, this.density);
 
