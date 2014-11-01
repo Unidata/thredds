@@ -86,7 +86,7 @@ public class FileCache implements FileCacheIF {
   static protected final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(FileCache.class);
   static protected final org.slf4j.Logger cacheLog = org.slf4j.LoggerFactory.getLogger("cacheLogger");
   static private ScheduledExecutorService exec;
-  static boolean trackAll = true;
+  static boolean trackAll = false;
   static boolean debug = false;
   static boolean debugPrint = false;
   static boolean debugCleanup = false;
@@ -116,7 +116,7 @@ public class FileCache implements FileCacheIF {
   protected final AtomicInteger cleanups = new AtomicInteger();  // how many cleanups
   protected final AtomicInteger hits = new AtomicInteger();
   protected final AtomicInteger miss = new AtomicInteger();
-  protected Map<Object, Tracker> track;
+  protected ConcurrentHashMap<Object, Tracker> track;
 
   /**
    * Constructor.
@@ -241,8 +241,9 @@ public class FileCache implements FileCacheIF {
 
     Tracker t = null;
     if (trackAll) {
-      t = track.get(hashKey);
-      if (t == null) track.put(hashKey, new Tracker(hashKey, 0, 0));
+      t = new Tracker(hashKey);
+      Tracker prev = track.putIfAbsent(hashKey, t);
+      if (prev != null) t = prev;
     }
 
     FileCacheable ncfile = acquireCacheOnly(hashKey);
@@ -269,7 +270,7 @@ public class FileCache implements FileCacheIF {
     if (disabled.get()) return ncfile;
 
     // see if cache element already exists
-    // must synchronize to avoid race condition with other puts; gets are ok
+    // cant use putIfAbsent, because we cant create the CacheElement until we know if doesnt exist
     CacheElement elem;
     synchronized (cache) {
       elem = cache.get(hashKey);
@@ -618,10 +619,8 @@ public class FileCache implements FileCacheIF {
     Object key;
     int hit, miss;
 
-    private Tracker(Object key, int hit, int miss) {
+    private Tracker(Object key) {
       this.key = key;
-      this.hit = hit;
-      this.miss = miss;
     }
 
     @Override

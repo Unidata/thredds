@@ -36,12 +36,14 @@ package ucar.nc2.util.cache;
 import net.jcip.annotations.GuardedBy;
 import net.jcip.annotations.ThreadSafe;
 import ucar.nc2.util.CancelTask;
+import ucar.nc2.util.Misc;
 
 import java.io.IOException;
 import java.util.*;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicLong;
 
 /**
  * Keep cache of open FileCacheable objects, for example NetcdfFile.
@@ -83,9 +85,9 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class FileCacheARC implements FileCacheIF {
   static protected final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(FileCache.class);
   static protected final org.slf4j.Logger cacheLog = org.slf4j.LoggerFactory.getLogger("cacheLogger");
-  static private ScheduledExecutorService exec;
   static boolean debug = false;
   static boolean debugPrint = false;
+  static boolean trackAll = true;
 
   /////////////////////////////////////////////////////////////////////////////////////////
 
@@ -94,12 +96,14 @@ public class FileCacheARC implements FileCacheIF {
 
   private final AtomicBoolean disabled = new AtomicBoolean(false);  // cache is disabled
 
-  protected final ConcurrentHashMap<Object, CacheElement> cache; // unique files (by key, often = filename)
-  protected final ConcurrentHashMap<FileCacheable, CacheElement.CacheFile> files; // list of all files in the cache
+  protected final ConcurrentSkipListMap<CacheElement, CacheElement> shadowCache; // sorted list, to make insert, delete fast
+  protected final ConcurrentHashMap<Object, CacheElement> cache;           // list of all unique files in the cache, keyed by hashKey, typically filename
+  protected final ConcurrentHashMap<FileCacheable, CacheElement.CacheFile> files; // list of all files in the cache. perhaps not needed later
 
   // debugging and global stats
   protected final AtomicInteger hits = new AtomicInteger();
   protected final AtomicInteger miss = new AtomicInteger();
+  protected ConcurrentHashMap<Object, Tracker> track;
 
   /**
    * Constructor.
@@ -117,8 +121,12 @@ public class FileCacheARC implements FileCacheIF {
     this.hardLimit = hardLimit;
     this.period = period;
 
+    shadowCache = new ConcurrentSkipListMap<>(new CacheElementComparator());
     cache = new ConcurrentHashMap<>(2 * softLimit, 0.75f, 8);
     files = new ConcurrentHashMap<>(4 * softLimit, 0.75f, 8);
+
+    if (trackAll)
+      track = new ConcurrentHashMap<>(5000);
   }
 
   /**
@@ -178,12 +186,21 @@ public class FileCacheARC implements FileCacheIF {
     if (null == hashKey) hashKey = location;
     if (null == hashKey) throw new IllegalArgumentException();
 
+    Tracker t = null;
+    if (trackAll) {
+      t = new Tracker(hashKey);
+      Tracker prev = track.putIfAbsent(hashKey, t);
+      if (prev != null) t = prev;
+    }
+
     FileCacheable ncfile = acquireCacheOnly(hashKey);
     if (ncfile != null) {
       hits.incrementAndGet();
+      if (t != null) t.hit++;
       return ncfile;
     }
     miss.incrementAndGet();
+    if (t != null) t.miss++;
 
     // open the file
     ncfile = factory.open(location, buffer_size, cancelTask, spiObject);
@@ -214,7 +231,7 @@ public class FileCacheARC implements FileCacheIF {
     if (disabled.get()) return null;
 
     // see if its in the cache
-    CacheElement wantCacheElem = getFromCache(hashKey);
+    CacheElement wantCacheElem  = cache.get(hashKey);
     if (wantCacheElem == null) return null;  // not found in cache
 
     CacheElement.CacheFile want = null;
@@ -229,36 +246,33 @@ public class FileCacheARC implements FileCacheIF {
     // check if modified, remove if so
     if (want.ncfile != null) {
       long lastModified = want.ncfile.getLastModified();
-      boolean changed = lastModified != want.lastModified;
-      if (changed) {
+      if (lastModified != wantCacheElem.lastModified.get()) { // underlying file was modified
         if (cacheLog.isDebugEnabled())
           cacheLog.debug("FileCache " + name + ": acquire from cache " + hashKey + " " + want.ncfile.getLocation() + " was changed; discard");
 
         expireFromCache(wantCacheElem);
+        return null;
       }
     }
 
+    updateInCache(wantCacheElem);
     return want.ncfile;
   }
 
-  private AtomicInteger cacheSize = new AtomicInteger();
+  // get CacheElement specified by hashKey. If found, update lastUsed in shadowCache.
+  private CacheElement updateInCache(CacheElement elem) {
 
-  private void addToCache(Object hashKey, FileCacheable ncfile) {
-    CacheElement elem = cache.get(hashKey);                  // see if cache element already exists
-    if (elem == null)
-      cache.put(hashKey, new CacheElement(ncfile, hashKey)); // new element
-    else
-      elem.addFile(ncfile);                                 // add to existing list
-
-    int size = cacheSize.getAndIncrement();
-    if (size > softLimit) {
-      removeFromCache(softLimit - size);
+    CacheElement shadowElem = shadowCache.remove(elem);
+    if (shadowElem != null) {
+      assert elem == shadowElem;
     }
+
+    elem.updateAccessed();
+    shadowCache.replace(elem, elem); // faster if we could just insert at the top of the list. maybe we need to use LinkedList ?
+    return elem;
   }
 
-  private CacheElement getFromCache(Object hashKey) {
-    return cache.get(hashKey);
-  }
+  private AtomicInteger cacheSize = new AtomicInteger();
 
   private void expireFromCache(CacheElement elem) {
     for (CacheElement.CacheFile cacheFile : elem.list) {
@@ -266,10 +280,31 @@ public class FileCacheARC implements FileCacheIF {
       cacheSize.getAndDecrement();
     }
     cache.remove(elem.hashKey);
+    shadowCache.remove(elem);
+  }
+
+
+  private void addToCache(Object hashKey, FileCacheable ncfile) {
+    CacheElement newCacheElem = new CacheElement(hashKey);
+    CacheElement previous = cache.putIfAbsent(hashKey, newCacheElem); // add new element if doesnt exist
+    CacheElement elem = (previous != null) ? previous : newCacheElem;  // use previous if it exists
+
+    elem.addFile(ncfile);                                 // add to existing list
+    shadowCache.put(newCacheElem, newCacheElem);
+
+    int size = cacheSize.getAndIncrement();
+    if (size > softLimit) {
+      removeFromCache(softLimit - size);
+    }
   }
 
   private void removeFromCache(int count) {
-    //return cache.get(hashKey);
+    int done = 0;
+    while (count > done) {
+      CacheElement elem = shadowCache.lastKey();
+      done += elem.list.size();
+      expireFromCache(elem);
+    }
   }
 
   /**
@@ -296,8 +331,8 @@ public class FileCacheARC implements FileCacheIF {
         Exception e = new Exception("Stack trace");
         cacheLog.warn("FileCache " + name + " release " + ncfile.getLocation() + " not locked; hash= "+ncfile.hashCode(), e);
       }
-      file.lastAccessed = System.currentTimeMillis();
-      file.countAccessed++;
+      //file.lastAccessed = System.currentTimeMillis();
+      //file.countAccessed++;
       file.isLocked.set(false);
       if (cacheLog.isDebugEnabled()) cacheLog.debug("FileCache " + name + " release " + ncfile.getLocation()+"; hash= "+ncfile.hashCode());
       if (debugPrint) System.out.println("  FileCache " + name + " release " + ncfile.getLocation());
@@ -308,55 +343,79 @@ public class FileCacheARC implements FileCacheIF {
 
   // not private for testing
   class CacheElement {
-    @GuardedBy("this")
-    final List<CacheFile> list = new CopyOnWriteArrayList<>(); // may have multiple copies of the same file opened.
     final Object hashKey;
+    final List<CacheFile> list = new CopyOnWriteArrayList<>(); // may have multiple copies of the same file opened.
 
-    CacheElement(FileCacheable ncfile, Object hashKey) {
+    final AtomicLong lastModified = new AtomicLong();
+    final AtomicLong  lastAccessed = new AtomicLong();
+    final AtomicInteger countAccessed = new AtomicInteger();
+
+    CacheElement(Object hashKey) {
       this.hashKey = hashKey;
-      CacheFile file = new CacheFile(ncfile);
-      list.add(file);
-      if (debug) {
-        if (files.get(ncfile) != null)
-          cacheLog.error("files already has " + hashKey + " " + name);
-      }
-      files.put(ncfile, file);
-      if (cacheLog.isDebugEnabled()) cacheLog.debug("CacheElement add to cache " + hashKey + " " + name);
     }
 
     CacheFile addFile(FileCacheable ncfile) {
       CacheFile file = new CacheFile(ncfile);
       list.add(file);
 
+      this.lastModified.set(ncfile.getLastModified());
+      this.lastAccessed.set(System.currentTimeMillis());
+      this.countAccessed.incrementAndGet();
+
       if (debug) {
         if (files.get(ncfile) != null)
           cacheLog.error("files (2) already has " + hashKey + " " + name);
       }
       files.put(ncfile, file);
+      if (cacheLog.isDebugEnabled()) cacheLog.debug("CacheElement add to cache " + hashKey + " " + name);
       return file;
     }
 
+    public long getLastAccessed() {
+      return lastAccessed.get();
+    }
+
+    public void updateAccessed() {
+      lastAccessed.set(System.currentTimeMillis());
+      this.countAccessed.incrementAndGet();
+    }
+
     public String toString() {
-      return hashKey + " count=" + list.size();
+      return hashKey + " count=" + list.size()+ " countAccessed=" + countAccessed + " lastAccessed=" + new Date(getLastAccessed());
+    }
+
+    @Override
+    public boolean equals(Object o) {
+      if (this == o) return true;
+      if (o == null || getClass() != o.getClass()) return false;
+      CacheElement that = (CacheElement) o;
+      return hashKey.equals(that.hashKey);
+    }
+
+    @Override
+    public int hashCode() {
+      return hashKey.hashCode();
     }
 
     class CacheFile implements Comparable<CacheFile> {
       FileCacheable ncfile; // actually final, but we null it out for gc
       final AtomicBoolean isLocked = new AtomicBoolean(true);
-      int countAccessed = 1;
-      long lastModified = 0;
-      long lastAccessed = 0;
 
       private CacheFile(FileCacheable ncfile) {
         this.ncfile = ncfile;
-        this.lastModified = ncfile.getLastModified();
-        this.lastAccessed = System.currentTimeMillis();
-
         ncfile.setFileCache(FileCacheARC.this);
 
         if (cacheLog.isDebugEnabled()) cacheLog.debug("FileCache " + name + " add to cache " + hashKey);
         if (debugPrint) System.out.println("  FileCache " + name + " add to cache " + hashKey);
       }
+
+      public long getLastAccessed() {
+        return lastAccessed.get();
+      }
+
+      public int getCountAccessed() {
+         return countAccessed.get();
+       }
 
       void remove() {
         if (null == files.remove(ncfile))
@@ -381,21 +440,19 @@ public class FileCacheARC implements FileCacheIF {
       }
 
       public String toString() {
-        return isLocked + " " + countAccessed + " " + new Date(lastAccessed) + " " + ncfile.getLocation();
+        return isLocked + " " + ncfile.getLocation();
       }
 
       public int compareTo(CacheFile o) {
-        return (int) (lastAccessed - o.lastAccessed);
+        return Misc.compare(lastAccessed.get(), o.getLastAccessed());
       }
     }
   }
 
-
-  private class MyComparator implements Comparator<CacheElement> {
-
+  private class CacheElementComparator implements Comparator<CacheElement> {
     @Override
     public int compare(CacheElement o1, CacheElement o2) {
-      return 0;
+      return Misc.compare(o1.getLastAccessed(), o2.getLastAccessed());
     }
   }
 
@@ -489,6 +546,8 @@ public class FileCacheARC implements FileCacheIF {
         cacheLog.warn("FileCache " + name + " force close locked file= " + file);
       //counter.decrementAndGet();
 
+      if (file.ncfile == null) continue;
+
       try {
         file.ncfile.setFileCache(null);
         file.ncfile.close();
@@ -519,7 +578,7 @@ public class FileCacheARC implements FileCacheIF {
     format.format("isLocked  accesses lastAccess                   location %n");
     for (CacheElement.CacheFile file : allFiles) {
       String loc = file.ncfile != null ? file.ncfile.getLocation() : "null";
-      format.format("%8s %9d %s %s %n", file.isLocked, file.countAccessed, new Date(file.lastAccessed), loc);
+      format.format("%8s %9d %s %s %n", file.isLocked, file.getCountAccessed(), new Date(file.getLastAccessed()), loc);
     }
     showStats(format);
   }
@@ -547,5 +606,55 @@ public class FileCacheARC implements FileCacheIF {
    */
   public void showStats(Formatter format) {
     format.format("  hits= %d miss= %d nfiles= %d elems= %d%n", hits.get(), miss.get(), files.size(), cache.values().size());
+  }
+
+  ///////////////////////////////////////////////////////////////
+
+  public void showTracking(Formatter format) {
+    if (track == null) return;
+    List<Tracker> all = new ArrayList<>(track.size());
+    for (Tracker val : track.values()) all.add(val);
+    Collections.sort(all);
+    int count = 0;
+    int countAll = 0;
+    format.format("   seq  accum   hit   miss  file%n");
+    for (Tracker t : all) {
+      count++;
+      countAll += t.hit + t.miss;
+      format.format("%6d  %6d : %5d %5d %s%n", count, countAll, t.hit, t.miss, t.key);
+    }
+    format.format("%n");
+  }
+
+  public void resetTracking() {
+    track = new ConcurrentHashMap<>(5000);
+  }
+
+  private class Tracker implements Comparable<Tracker> {
+    Object key;
+    int hit, miss;
+
+    private Tracker(Object key) {
+      this.key = key;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+      if (this == o) return true;
+      if (o == null || getClass() != o.getClass()) return false;
+      Tracker tracker = (Tracker) o;
+      if (!key.equals(tracker.key)) return false;
+      return true;
+    }
+
+    @Override
+    public int hashCode() {
+      return key.hashCode();
+    }
+
+    @Override
+    public int compareTo(Tracker o) {
+      return Misc.compare(hit + miss, o.hit + o.miss);
+    }
   }
 }
