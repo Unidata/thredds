@@ -39,6 +39,7 @@ import ucar.nc2.NetcdfFile;
 import ucar.nc2.NetcdfFileSubclass;
 import ucar.nc2.Structure;
 import ucar.nc2.Variable;
+import ucar.nc2.constants.CDM;
 import ucar.nc2.dataset.SequenceDS;
 import ucar.nc2.ft.point.bufr.BufrCdmIndex;
 import ucar.nc2.ft.point.bufr.BufrCdmIndexProto;
@@ -368,7 +369,7 @@ public class BufrMessageViewer extends JPanel {
           WritableByteChannel wbc = fos.getChannel();
           String headerS = mb.m.getHeader();
           if (headerS != null)
-            wbc.write(ByteBuffer.wrap(headerS.getBytes()));
+            wbc.write(ByteBuffer.wrap(headerS.getBytes(CDM.utf8Charset)));
 
           byte[] raw = scan.getMessageBytes(mb.m);
           wbc.write(ByteBuffer.wrap(raw));
@@ -503,7 +504,7 @@ public class BufrMessageViewer extends JPanel {
              WritableByteChannel wbc = fos.getChannel()) {
           String headerS = m.getHeader();
           if (headerS != null)
-            wbc.write(ByteBuffer.wrap(headerS.getBytes()));
+            wbc.write(ByteBuffer.wrap(headerS.getBytes(CDM.utf8Charset)));
           byte[] raw = scan.getMessageBytes(m);
           wbc.write(ByteBuffer.wrap(raw));
         }

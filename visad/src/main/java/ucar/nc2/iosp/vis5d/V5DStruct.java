@@ -41,6 +41,7 @@ package ucar.nc2.iosp.vis5d;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import ucar.nc2.constants.CDM;
 import visad.data.BadFormException;
 // original V5DStruct uses ucar.unidata.netcdf.RandomAccessFile
 import ucar.unidata.io.RandomAccessFile;
@@ -2330,7 +2331,7 @@ public class V5DStruct {
 
     // File Version
     if (!write_tag(TAG_VERSION, 10, newfile)) return false;
-    f.write(FILE_VERSION.getBytes(), 0, 10);
+    f.write(FILE_VERSION.getBytes(CDM.utf8Charset), 0, 10);
 
     // Number of timesteps
     if (!write_tag(TAG_NUMTIMES, 4, newfile)) return false;

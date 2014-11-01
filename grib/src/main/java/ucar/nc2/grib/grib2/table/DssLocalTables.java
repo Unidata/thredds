@@ -33,6 +33,7 @@
 
 package ucar.nc2.grib.grib2.table;
 
+import ucar.nc2.constants.CDM;
 import ucar.nc2.grib.grib2.Grib2Parameter;
 import ucar.unidata.util.StringUtil2;
 
@@ -77,7 +78,7 @@ public class DssLocalTables extends LocalTables {
     ClassLoader cl = this.getClass().getClassLoader();
     try (InputStream is = cl.getResourceAsStream(tableName)) {
       if (is == null) throw new IllegalStateException("Cant find " + tableName);
-      BufferedReader br = new BufferedReader(new InputStreamReader(is));
+      BufferedReader br = new BufferedReader(new InputStreamReader(is, CDM.utf8Charset));
 
       while (true) {
         String line = br.readLine();

@@ -34,6 +34,7 @@
 package ucar.nc2;
 
 import ucar.ma2.*;
+import ucar.nc2.constants.CDM;
 import ucar.nc2.util.CancelTask;
 import ucar.nc2.util.URLnaming;
 import ucar.nc2.util.Indent;
@@ -109,7 +110,7 @@ public class NCdump {
     if (stoke.hasMoreTokens())
       filename = stoke.nextToken();
     else {
-      out.write( usage.getBytes());
+      out.write( usage.getBytes(CDM.utf8Charset));
       return false;
     }
 
@@ -124,7 +125,7 @@ public class NCdump {
 
     } catch (java.io.FileNotFoundException e) {
       String mess = "file not found= "+filename;
-      out.write( mess.getBytes());
+      out.write( mess.getBytes(CDM.utf8Charset));
       return false;
 
     } finally {
@@ -156,7 +157,7 @@ public class NCdump {
       while (stoke.hasMoreTokens()) {
         String toke = stoke.nextToken();
          if (toke.equalsIgnoreCase("-help")) {
-          out.write( usage.getBytes());
+          out.write( usage.getBytes(CDM.utf8Charset));
           out.write( '\n');
           return true;
         }
@@ -201,7 +202,7 @@ public class NCdump {
 
     } catch (java.io.FileNotFoundException e) {
       String mess = "file not found= "+fileName;
-      out.write( mess.getBytes());
+      out.write( mess.getBytes(CDM.utf8Charset));
       return false;
 
     } finally {

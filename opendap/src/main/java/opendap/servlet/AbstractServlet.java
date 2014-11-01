@@ -52,6 +52,7 @@ import opendap.dap.parsers.ParseException;
 import opendap.util.Debug;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import ucar.nc2.constants.CDM;
 import ucar.nc2.util.EscapeStrings;
 
 /**
@@ -838,7 +839,7 @@ public abstract class AbstractServlet extends javax.servlet.http.HttpServlet {
       // Send the Data delimiter back to the client
       //pw.println("Data:"); // JCARON CHANGED
       pw.flush();
-      bOut.write("\nData:\n".getBytes()); // JCARON CHANGED
+      bOut.write("\nData:\n".getBytes(CDM.utf8Charset)); // JCARON CHANGED
       bOut.flush();
 
       // Send the binary data back to the client

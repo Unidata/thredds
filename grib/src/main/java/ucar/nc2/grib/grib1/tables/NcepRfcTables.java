@@ -33,6 +33,7 @@
 
 package ucar.nc2.grib.grib1.tables;
 
+import ucar.nc2.constants.CDM;
 import ucar.nc2.grib.GribResourceReader;
 import ucar.unidata.util.StringUtil2;
 
@@ -124,7 +125,7 @@ public class NcepRfcTables extends NcepTables {
 
       if (is == null) return;
 
-      BufferedReader br = new BufferedReader(new InputStreamReader(is));
+      BufferedReader br = new BufferedReader(new InputStreamReader(is, CDM.utf8Charset));
 
       // rdg - added the 0 line length check to cover the case of blank lines at
       //       the end of the parameter table file.

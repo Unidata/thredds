@@ -58,7 +58,7 @@ public class BtXmlView extends AbstractView {
     res.setContentLength(infoString.length());
 
     OutputStream out = res.getOutputStream();
-    out.write(infoString.getBytes());
+    out.write(infoString.getBytes(CDM.utf8Charset));
     out.flush();
   }
 

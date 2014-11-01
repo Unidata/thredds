@@ -40,6 +40,7 @@ import ucar.nc2.grib.collection.GribIosp;
 import ucar.nc2.grib.collection.PartitionCollection;
 import ucar.nc2.util.DebugFlagsImpl;
 import ucar.nc2.util.cache.FileCache;
+import ucar.nc2.util.cache.FileCacheIF;
 import ucar.unidata.io.RandomAccessFile;
 import ucar.unidata.test.util.TestDir;
 
@@ -56,19 +57,20 @@ import java.util.Formatter;
  */
 public class TestGribCollectionsBig {
   String topdir =  TestDir.cdmUnitTestDir + "gribCollections/rdavm";
-  // String topdir =
 
   @BeforeClass
   static public void before() {
     GribIosp.setDebugFlags(new DebugFlagsImpl("Grib/indexOnly"));
-    PartitionCollection.initPartitionCache(500, 600, 650, -1);
+    PartitionCollection.initPartitionCache(50, 100, 120, -1);
   }
 
   @AfterClass
   static public void after() {
     GribIosp.setDebugFlags(new DebugFlagsImpl());
+    FileCacheIF cache = PartitionCollection.getPartitionCache();
+    if (cache == null) return;
+
     Formatter out = new Formatter(System.out);
-    FileCache cache = (FileCache) PartitionCollection.getPartitionCache();
     cache.showCache(out);
     cache.showTracking(out);
     cache.clearCache(false);
@@ -102,13 +104,20 @@ public class TestGribCollectionsBig {
   @Test
   public void testPofP() throws IOException {
     RandomAccessFile.setDebugLeaks(true);
-    TestGribCollections.Count count = TestGribCollections.read(topdir + "/ds083.2/grib1/2008/ds083.2_Aggregation-2008.ncx2");
-    TestDir.checkLeaks();
+    try {
+      TestGribCollections.Count count = TestGribCollections.read(topdir + "/ds083.2/grib1/2008/ds083.2_Aggregation-2008.ncx2");
+      TestDir.checkLeaks();
 
-    // jenkins:  that took 496 secs total, 0.592712 msecs per record
-    // that took 581 secs total, 0.694249 msecs per record (total == 0/837408) (cache size 500)
-    assert count.nread == 837408;
-    assert count.nmiss == 0;
+      // jenkins:  that took 496 secs total, 0.592712 msecs per record
+      // that took 581 secs total, 0.694249 msecs per record (total == 0/837408) (cache size 500)
+      assert count.nread == 837408;
+      assert count.nmiss == 0;
+
+    } catch (Throwable t) {
+      t.printStackTrace();
+      TestDir.checkLeaks();
+    }
+
   }
 
   @Test

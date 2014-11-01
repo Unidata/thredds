@@ -120,7 +120,7 @@ public class Grib1Index extends GribIndex {
 
     try {
       //// check header is ok
-      if (!NcStream.readAndTest(fin, MAGIC_START.getBytes())) {
+      if (!NcStream.readAndTest(fin, MAGIC_START.getBytes(CDM.utf8Charset))) {
         logger.info("Bad magic number of grib index, on file" + idxFile);
         return false;
       }

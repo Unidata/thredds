@@ -236,7 +236,7 @@ public class TimeStationObs {
     Action act = new Action() {
       public void act(StructureData sdata) throws IOException {
         String report = sdata.getScalarString("report");
-        fout.write(report.getBytes());
+        fout.write(report.getBytes(CDM.utf8Charset));
         fout.write((int) '\n');
       }
     };

@@ -39,6 +39,7 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
+import ucar.nc2.constants.CDM;
 import ucar.nc2.grib.GribLevelType;
 import ucar.unidata.util.StringUtil2;
 
@@ -129,7 +130,7 @@ public class NcepHtmlScraper {
      String x = fmt.outputString(doc);
 
      try (FileOutputStream fout = new FileOutputStream(dirOut + filename)) {
-       fout.write(x.getBytes());
+       fout.write(x.getBytes(CDM.utf8Charset));
      }
 
      if (show) System.out.printf("%s%n", x);
@@ -244,7 +245,7 @@ public class NcepHtmlScraper {
     String x = fmt.outputString(doc);
 
     try (FileOutputStream fout = new FileOutputStream(dirOut + filename)) {
-      fout.write(x.getBytes());
+      fout.write(x.getBytes(CDM.utf8Charset));
     }
 
     if (show) System.out.printf("%s%n", x);
@@ -349,7 +350,7 @@ public class NcepHtmlScraper {
     String x = fmt.outputString(doc);
 
     try (FileOutputStream fout = new FileOutputStream(dirOut + filename)) {
-      fout.write(x.getBytes());
+      fout.write(x.getBytes(CDM.utf8Charset));
     }
 
     if (show) System.out.printf("%s%n", x);
@@ -363,7 +364,7 @@ public class NcepHtmlScraper {
       f.format("%3d:%s:%s [%s]%n", p.pnum, p.name, p.desc, p.unit); // 1:PRES:Pressure [Pa]
 
     try (FileOutputStream fout = new FileOutputStream(dirOut + filename)) {
-      fout.write(f.toString().getBytes());
+      fout.write(f.toString().getBytes(CDM.utf8Charset));
     }
 
     if (show) System.out.printf("%s%n", f);

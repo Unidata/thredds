@@ -38,6 +38,7 @@ import ucar.nc2.*;
 import ucar.ma2.DataType;
 import ucar.ma2.ArrayChar;
 import ucar.ma2.InvalidRangeException;
+import ucar.nc2.constants.CDM;
 
 import java.io.*;
 import java.nio.charset.Charset;
@@ -160,7 +161,7 @@ public class TestUnicode {
 
     System.out.println(line);
     System.out.println(showBytes(b));
-    System.out.println(showBytes(line.getBytes()));
+    System.out.println(showBytes(line.getBytes(CDM.utf8Charset)));
   }
 
   static void write(String s, String charset) throws IOException {
@@ -202,7 +203,7 @@ public class TestUnicode {
     while (null != (line = in.readLine())) {
       System.out.println("Line "+count++);
       System.out.println(line);
-      System.out.println(showBytes(line.getBytes()));
+      System.out.println(showBytes(line.getBytes(CDM.utf8Charset)));
     }
     in.close();
   }
@@ -215,7 +216,7 @@ public class TestUnicode {
     while (null != (line = in.readLine())) {
       System.out.println("ULine "+count++);
       System.out.println(line);
-      System.out.println(showBytes(line.getBytes()));
+      System.out.println(showBytes(line.getBytes(CDM.utf8Charset)));
     }
     in.close();
   }

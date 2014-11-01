@@ -38,6 +38,7 @@ package ucar.nc2.grib.collection;
 import com.google.protobuf.ExtensionRegistry;
 import thredds.inventory.MFile;
 import ucar.coord.*;
+import ucar.nc2.constants.CDM;
 import ucar.nc2.grib.*;
 import ucar.nc2.stream.NcStream;
 import ucar.nc2.time.CalendarDate;
@@ -83,9 +84,9 @@ public abstract class GribCollectionBuilderFromIndex {
       raf.seek(0);
 
       //// header message
-      if (!NcStream.readAndTest(raf, getMagicStart().getBytes())) {
+      if (!NcStream.readAndTest(raf, getMagicStart().getBytes(CDM.utf8Charset))) {
         raf.seek(0);
-        NcStream.readAndTest(raf, getMagicStart().getBytes()); // debug
+        NcStream.readAndTest(raf, getMagicStart().getBytes(CDM.utf8Charset)); // debug
         logger.warn("GribCollectionBuilderFromIndex {}: invalid index raf={}", gc.getName(), raf.getLocation());
         throw new IllegalStateException();   // temp debug
         // return false;

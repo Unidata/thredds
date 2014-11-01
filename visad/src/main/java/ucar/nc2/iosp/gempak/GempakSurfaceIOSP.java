@@ -346,7 +346,7 @@ public class GempakSurfaceIOSP extends GempakStationFileIOSP {
             temp = StringUtil2.padRight(stn.getWFO2(), 4);
           }
           if (temp != null) {
-            buf.put(temp.getBytes());
+            buf.put(temp.getBytes(CDM.utf8Charset));
           }
         }
         if (members.findMember(TIME_VAR) != null) {

@@ -89,7 +89,7 @@ public final class Grib2Input {
   /**
    * Used to find the first occurrence of GRIB in data.
    */
-  private static final KMPMatch matcher = new KMPMatch("GRIB".getBytes());
+  private static final KMPMatch matcher = new KMPMatch("GRIB".getBytes(CDM.utf8Charset));
 
   /**
    * stores record sections: header, is, id, gds, pds, drs, bms and

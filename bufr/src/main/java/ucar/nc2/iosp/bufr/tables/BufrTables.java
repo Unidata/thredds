@@ -380,8 +380,8 @@ public class BufrTables {
       }
 
       // cache 
-      tablesB.put(tc.tableBname, t.b);
-      tablesD.put(tc.tableBname, t.d);
+      tablesB.put(tc.tableBname, t.b);  // assume we would get the same table in any thread, so race condition is ok
+      tablesD.put(tc.tableBname, t.d);  // assume we would get the same table in any thread, so race condition is ok
       return t;
     }
 
@@ -489,7 +489,7 @@ public class BufrTables {
       }
     }
 
-    if (b != null) tablesB.put(location, b);
+    if (b != null) tablesB.put(location, b); // assume we would get the same table in any thread, so race condition is ok
     return b;
   }
 
@@ -933,7 +933,7 @@ public class BufrTables {
       }
     }
 
-    if (d != null) tablesD.put(location, d);
+    if (d != null) tablesD.put(location, d); // assume we would get the same table in any thread, so race condition is ok
     return d;
   }
 

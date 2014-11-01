@@ -35,6 +35,7 @@ package ucar.nc2.grib.grib1.tables;
 
 import net.jcip.annotations.Immutable;
 
+import ucar.nc2.constants.CDM;
 import ucar.nc2.grib.GribResourceReader;
 import ucar.nc2.grib.grib1.Grib1Parameter;
 import ucar.nc2.grib.grib1.Grib1Record;
@@ -285,7 +286,7 @@ public class Grib1ParamTables {
         return false;
 
       File parent = new File(lookupFile).getParentFile();
-      InputStreamReader isr = new InputStreamReader(is);
+      InputStreamReader isr = new InputStreamReader(is, CDM.utf8Charset);
       BufferedReader br = new BufferedReader(isr);
 
       String line;
@@ -347,7 +348,7 @@ public class Grib1ParamTables {
         return defaultTable;
       }
 
-      tableMap.put(key, table);
+      tableMap.put(key, table); // assume we would get the same table in any thread, so race condition is ok
       return table;
     }
 
