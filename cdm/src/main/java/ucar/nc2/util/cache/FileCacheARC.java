@@ -268,7 +268,7 @@ public class FileCacheARC implements FileCacheIF {
 
     CacheElement shadowElem = shadowCache.remove(elem);
     if (shadowElem != null) {
-      assert elem == shadowElem;
+      assert elem == shadowElem : elem +" != " + shadowElem;
     }
 
     elem.updateAccessed();

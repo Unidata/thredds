@@ -69,11 +69,11 @@ public abstract class PartitionCollection extends GribCollection {
   private static FileCacheIF partitionCache;
 
   static public void initPartitionCache(int minElementsInMemory, int maxElementsInMemory, int period) {
-    partitionCache = new ucar.nc2.util.cache.FileCacheARC("TimePartitionCache", minElementsInMemory, maxElementsInMemory, -1, period);
+    partitionCache = new ucar.nc2.util.cache.FileCache("TimePartitionCache", minElementsInMemory, maxElementsInMemory, -1, period);
   }
 
   static public void initPartitionCache(int minElementsInMemory, int softLimit, int hardLimit, int period) {
-    partitionCache = new ucar.nc2.util.cache.FileCacheARC("TimePartitionCache", minElementsInMemory, softLimit, hardLimit, period);
+    partitionCache = new ucar.nc2.util.cache.FileCache("TimePartitionCache", minElementsInMemory, softLimit, hardLimit, period);
   }
 
   static public FileCacheIF getPartitionCache() {
