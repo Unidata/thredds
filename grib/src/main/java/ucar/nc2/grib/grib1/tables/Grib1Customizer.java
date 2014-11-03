@@ -216,7 +216,7 @@ public class Grib1Customizer implements GribTables {
     return result;
   }
 
-  protected Map<Integer, GribLevelType> readTable3(String path) {
+  protected synchronized Map<Integer, GribLevelType> readTable3(String path) {
     try (InputStream is =  GribResourceReader.getInputStream(path)) {
       if (is == null) {
         logger.error("Cant find Table 3 = " + path);

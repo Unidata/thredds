@@ -921,7 +921,7 @@ public abstract class GribIosp extends AbstractIOServiceProvider {
 
           if (dr.dataPos == GribCollection.MISSING_RECORD) continue;
 
-          if (debugRead) { // for validation
+          if (debugRead && rafData != null) { // for validation
             show(rafData, dr.dataPos);
           }
 

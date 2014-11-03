@@ -43,13 +43,13 @@ import javax.swing.*;
 
 // Import the JFreeChart classes
 import org.jfree.chart.*;
-import org.jfree.chart.title.LegendTitle;
 import org.jfree.chart.axis.*;
 import org.jfree.chart.plot.*;
 import org.jfree.chart.renderer.xy.*;
 import org.jfree.data.time.*;
 import org.jfree.ui.*;
 import org.jfree.util.UnitType;
+import ucar.nc2.constants.CDM;
 
 /**
  * Class Description.
@@ -106,7 +106,9 @@ public class Chart extends JPanel {
       TimeSeries high = new TimeSeries("High", Day.class);
       TimeSeries low = new TimeSeries("Low", Day.class);
 
-      try (BufferedReader br = new BufferedReader(new FileReader(filename))) {
+      try (FileInputStream fin = new FileInputStream(filename)) {
+        BufferedReader br = new BufferedReader(new InputStreamReader(fin, CDM.utf8Charset));
+
         br.readLine(); // read key
         String line = br.readLine();
         while (line != null && !line.startsWith("<!--")) {
@@ -149,6 +151,7 @@ public class Chart extends JPanel {
         this.add(new ChartPanel(openCloseChart));
         this.add(new ChartPanel(highLowChart));
         this.add(new ChartPanel(highLowDifChart));
+
       } catch (IOException e) {
         e.printStackTrace();
       }

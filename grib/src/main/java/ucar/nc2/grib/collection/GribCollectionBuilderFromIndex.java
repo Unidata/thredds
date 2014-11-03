@@ -369,6 +369,8 @@ message Coord {
         List<CalendarDate> dates = new ArrayList<>(pc.getMsecsCount());
         for (Long msec : pc.getMsecsList())
           dates.add(CalendarDate.of(msec));
+        if (unit == null)
+          throw new IllegalStateException("Null units");
         CalendarDateUnit cdUnit = CalendarDateUnit.of(null, unit);
         return new CoordinateRuntime(dates, cdUnit.getTimeUnit());
 
@@ -377,7 +379,9 @@ message Coord {
         for (float val : pc.getValuesList())
           offs.add((int) val);
         CalendarDate refDate = CalendarDate.of(pc.getMsecs(0));
-        CalendarPeriod timeUnit = (unit == null) ? null : CalendarPeriod.of(unit);
+        if (unit == null)
+           throw new IllegalStateException("Null units");
+        CalendarPeriod timeUnit = CalendarPeriod.of(unit);
         return new CoordinateTime(code, timeUnit, refDate, offs);
 
       case timeIntv:
@@ -388,14 +392,18 @@ message Coord {
           tinvs.add(new TimeCoord.Tinv(val1, val2));
         }
         refDate = CalendarDate.of(pc.getMsecs(0));
-        CalendarPeriod timeUnit2 = (unit == null) ? null : CalendarPeriod.of(unit);
+        if (unit == null)
+           throw new IllegalStateException("Null units");
+        CalendarPeriod timeUnit2 = CalendarPeriod.of(unit);
         return new CoordinateTimeIntv(code, timeUnit2, refDate, tinvs);
 
       case time2D:
         dates = new ArrayList<>(pc.getMsecsCount());
         for (Long msec : pc.getMsecsList())
           dates.add(CalendarDate.of(msec));
-        CalendarPeriod timeUnit3 = (unit == null) ? null : CalendarPeriod.of(unit);
+        if (unit == null)
+           throw new IllegalStateException("Null units");
+        CalendarPeriod timeUnit3 = CalendarPeriod.of(unit);
         CoordinateRuntime runtime = new CoordinateRuntime(dates, timeUnit3);
 
         List<Coordinate> times = new ArrayList<>(pc.getTimesCount());

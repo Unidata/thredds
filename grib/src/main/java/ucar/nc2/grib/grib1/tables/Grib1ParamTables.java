@@ -119,7 +119,7 @@ public class Grib1ParamTables {
   }
 
   //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-  private static Map<String, Grib1ParamTableReader> localTableHash;
+  private static final Map<String, Grib1ParamTableReader> localTableHash = new ConcurrentHashMap<>();
 
   /**
    * Get a Grib1ParamTables object, optionally specifying a parameter table or lookup table specific to this dataset.
@@ -135,13 +135,10 @@ public class Grib1ParamTables {
 
     Grib1ParamTableReader table;
     if (paramTablePath != null) {
-      if (localTableHash == null) localTableHash = new HashMap<>();
-      synchronized (localTableHash) {
-        table = localTableHash.get(paramTablePath);
-        if (table == null) {
-          table = new Grib1ParamTableReader(paramTablePath);
-          localTableHash.put(paramTablePath, table);
-        }
+      table = localTableHash.get(paramTablePath);
+      if (table == null) {
+        table = new Grib1ParamTableReader(paramTablePath);
+        localTableHash.put(paramTablePath, table);
         result.override = table;
       }
     }

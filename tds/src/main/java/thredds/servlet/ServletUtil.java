@@ -800,10 +800,9 @@ public class ServletUtil {
       String message = t.getMessage();
       if (message == null) message = "NULL message " + t.getClass().getName();
       if (Debug.isSet("trustedMode")) { // security issue: only show stack if trusted
-        ByteArrayOutputStream bs = new ByteArrayOutputStream();
-        PrintStream ps = new PrintStream(bs);
-        t.printStackTrace(ps);
-        message = new String(bs.toByteArray(), CDM.utf8Charset);
+        StringWriter sw = new StringWriter(10000);
+        t.printStackTrace(new PrintWriter(sw));
+        message = sw.toString();
       }
       log.error("handleException", t);
       t.printStackTrace(); // debugging - log.error not showing stack trace !!   

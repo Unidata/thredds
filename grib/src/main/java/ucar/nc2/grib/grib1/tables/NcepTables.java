@@ -262,11 +262,8 @@ public class NcepTables extends Grib1Customizer {
     if (code < 129)
       return null; // LOOK dont let NCEP override standard tables (??) looks like a conflict with level code 210 (!)
 
-    if (levelTypesMap == null) {
-      synchronized (NcepTables.class) {
-        levelTypesMap = readTable3("resources/grib1/ncep/ncepTable3.xml");
-      }
-    }
+    if (levelTypesMap == null)
+      levelTypesMap = readTable3("resources/grib1/ncep/ncepTable3.xml");
     if (levelTypesMap == null)
       return null;
 

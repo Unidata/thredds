@@ -107,7 +107,7 @@ public class Grib1CollectionBuilder extends GribCollectionBuilder {
     FeatureCollectionConfig config = (FeatureCollectionConfig) dcm.getAuxInfo(FeatureCollectionConfig.AUX_CONFIG);
     //Map<Integer, Integer> gdsConvert = config.gribConfig.gdsHash;
     Map<String, Boolean> pdsConvert = config.gribConfig.pdsHash;
-    FeatureCollectionConfig.GribIntvFilter intvMap = (config != null) ?  config.gribConfig.intvFilter : null;
+    FeatureCollectionConfig.GribIntvFilter intvMap = config.gribConfig.intvFilter;
 
     // place each record into its group
     int totalRecords = 0;
