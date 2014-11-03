@@ -55,14 +55,12 @@
   <li><a href="#rh5SymLinksAndContent">Why does the TDS fail to deploy in the Tomcat provided with RedHat 5 or 6?</a></li>
   <li>What does this error mean:
     <ul>
-      <li><a href="#listenerStart">SEVERE: Error listenerStart</a>
-      </li>
+      <li><a href="#listenerStart">SEVERE: Error listenerStart</a></li>
+        <li><a href="#log4jAppender">log4j:ERROR Attempted to append to closed appender named [foobar]</a></li>
+        <li><a href="#javaUtilPrefs">Couldn't flush system prefs: java.util.prefs.BackingStoreException:
+            /etc/.java/.systemPrefs/org create failed</a></li>
     </ul>
   </li>
-  <ul>
-    <li><a href="#log4jAppender">log4j:ERROR Attempted to append to closed appender named [foobar]</a></li>
-    <li><a href="#log4jAppender">Couldn't flush system prefs: java.util.prefs.BackingStoreException: /etc/.java/.systemPrefs/org create failed</a></li>
-  </ul>
 </ul>
 <h2>Tomcat</h2>
 <ul>
@@ -74,7 +72,7 @@
   <li><a href="#controlWebCrawlers">How can I control whether I want Web crawlers to access my server?</a></li>
   <li><a href="#removeServletAutodeploy">How do I remove Servlet Autodeploy?</a></li>
   <li><a href="#howRemovePort8009">How do I remove port 8009 when using tomcat in standalone mode?</a></li>
-  <li><a name="SizeLimitExceededException">Manager fails to upload new thredds.war with SizeLimitExceededException</a></li>
+  <li><a href="#SizeLimitExceededException">Manager fails to upload new thredds.war with SizeLimitExceededException</a></li>
 </ul>
 
 <hr width="100%">
@@ -132,13 +130,15 @@
 <p>A: In order to configure your maven project correctly, you need to edit your pom.xml file to reflect the location of Unidata's repository. To do this, you
   need to add the following pom snippet to your pom.xml file:</p>
 
-&lt;distributionManagement&gt;<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&lt;repository&gt;<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;id&gt;unidata-releases&lt;/id&gt;<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;name>UNIDATA Releases&lt;/name&gt;<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;url&gt;https://artifacts.unidata.ucar.edu/content/repositories/unidata-releases/&lt;/url&gt;<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&lt;/repository&gt;<br>
-&lt;/distributionManagement&gt;<br>
+<pre>
+&lt;distributionManagement&gt;
+&nbsp;&nbsp;&nbsp;&nbsp;&lt;repository&gt;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;id&gt;unidata-releases&lt;/id&gt;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;name>UNIDATA Releases&lt;/name&gt;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;url&gt;https://artifacts.unidata.ucar.edu/content/repositories/unidata-releases/&lt;/url&gt;
+&nbsp;&nbsp;&nbsp;&nbsp;&lt;/repository&gt;
+&lt;/distributionManagement&gt;
+</pre>
 
 <p>
   Alternatively, you can configure your settings.xml file to reflect the repository location. Information on doing either is located here:
