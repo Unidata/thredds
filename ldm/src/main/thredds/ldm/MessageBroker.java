@@ -70,7 +70,7 @@ import ucar.unidata.io.InMemoryRandomAccessFile;
  * @since Aug 8, 2008
  */
 public class MessageBroker {
-  private static final ucar.unidata.io.KMPMatch matcher = new ucar.unidata.io.KMPMatch("BUFR".getBytes());
+  private static final ucar.unidata.io.KMPMatch matcher = new ucar.unidata.io.KMPMatch("BUFR".getBytes(CDM.utf8Charset));
   private static final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(MessageBroker.class);
 
   private ExecutorService executor;

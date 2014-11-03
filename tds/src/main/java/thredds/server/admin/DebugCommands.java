@@ -44,7 +44,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import ucar.nc2.grib.collection.GribCollection;
 import ucar.nc2.grib.collection.PartitionCollection;
-import ucar.nc2.util.cache.FileCache;
+import ucar.nc2.util.cache.FileCacheIF;
 import ucar.unidata.io.RandomAccessFile;
 
 /**
@@ -79,7 +79,7 @@ public class DebugCommands {
       public void doAction(DebugController.Event e) {
         Formatter f = new Formatter(e.pw);
 
-        FileCache fc = NetcdfDataset.getNetcdfFileCache();
+        FileCacheIF fc = NetcdfDataset.getNetcdfFileCache();
         if (fc == null) f.format("NetcdfDatasetFileCache : turned off%n");
         else {
           f.format("%n%n");
@@ -173,7 +173,7 @@ public class DebugCommands {
 
     act = new DebugController.Action("disableHttpCache", "Disable HTTP Cache") {
        public void doAction(DebugController.Event e) {
-         FileCache fc = ServletUtil.getFileCache();
+         FileCacheIF fc = ServletUtil.getFileCache();
          if (fc != null) fc.disable();
          ServletUtil.setFileCache(null);
          e.pw.println("  Disable HTTP Cache ok");
@@ -183,7 +183,7 @@ public class DebugCommands {
 
     act = new DebugController.Action("forceRAFCache", "Force clear HTTP File Cache") {
       public void doAction(DebugController.Event e) {
-        FileCache fc = ServletUtil.getFileCache();
+        FileCacheIF fc = ServletUtil.getFileCache();
          if (fc != null) fc.clearCache(true);
         e.pw.println("  RAF FileCache force clearCache done ");
       }

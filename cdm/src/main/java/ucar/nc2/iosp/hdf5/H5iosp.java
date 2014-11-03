@@ -66,7 +66,6 @@ public class H5iosp extends AbstractIOServiceProvider {
   static boolean debugHeap = false;
   static boolean debugFilter = false;
   static boolean debugRead = false;
-  static boolean debugString = false;
   static boolean debugFilterIndexer = false;
   static boolean debugChunkIndexer = false;
   static boolean debugVlen = false;
@@ -571,7 +570,7 @@ public class H5iosp extends AbstractIOServiceProvider {
     Formatter f = new Formatter();
     ByteArrayOutputStream ff = new ByteArrayOutputStream(100 * 1000);
     try {
-      NetcdfFile ncfile = new FakeNetcdfFile();
+      NetcdfFile ncfile = new NetcdfFileSubclass();
       H5header detailParser = new H5header(raf, ncfile, this);
       detailParser.read(new PrintStream(ff));
       f.format("%s",super.getDetailInfo());
@@ -585,9 +584,6 @@ public class H5iosp extends AbstractIOServiceProvider {
     return f.toString();
   }
 
-  static private class FakeNetcdfFile extends NetcdfFile {
-  }
-
   // debug
   public Object sendIospMessage(Object message) {
     if (message.toString().equals(IOSP_MESSAGE_INCLUDE_ORIGINAL_ATTRIBUTES)) {
@@ -599,9 +595,8 @@ public class H5iosp extends AbstractIOServiceProvider {
       return headerParser;
 
     if (message.toString().equals("headerEmpty")) {
-      NetcdfFile ncfile = new FakeNetcdfFile();
-      H5header headerEmpty = new H5header(raf, ncfile, this);
-      return headerEmpty;
+      NetcdfFile ncfile = new NetcdfFileSubclass();
+      return new H5header(raf, ncfile, this);
     }
 
     return super.sendIospMessage(message);

@@ -77,7 +77,6 @@ public class TestMiscIosp {
        assert Arrays.equals(data.getShape(), new int[]{1, 91, 181});
      }
 
-
    }
 
   @Test
@@ -117,8 +116,6 @@ public class TestMiscIosp {
     try (ucar.nc2.NetcdfFile ncf = ucar.nc2.NetcdfFile.open(fileIn)) {
       System.out.printf("%s%n", ncf);
     }
-
-
   }
 
 

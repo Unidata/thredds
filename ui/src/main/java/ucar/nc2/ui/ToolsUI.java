@@ -37,10 +37,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 import thredds.featurecollection.FeatureCollectionConfig;
 import thredds.inventory.bdb.MetadataManager;
-import ucar.nc2.NCdumpW;
-import ucar.nc2.NetcdfFile;
-import ucar.nc2.NetcdfFileWriter;
-import ucar.nc2.Variable;
+import ucar.nc2.*;
 import ucar.nc2.constants.CDM;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.dataset.CoordSysBuilder;
@@ -100,6 +97,7 @@ import javax.swing.event.ChangeListener;
 import javax.swing.event.MenuEvent;
 import javax.swing.event.MenuListener;
 import java.awt.*;
+import java.awt.Dimension;
 import java.awt.event.*;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
@@ -707,7 +705,7 @@ public class ToolsUI extends JPanel {
       public void actionPerformed(ActionEvent e) {
         Formatter f = new Formatter();
         f.format("NetcdfFileCache contents%n");
-        ucar.nc2.util.cache.FileCache cache = NetcdfDataset.getNetcdfFileCache();
+        ucar.nc2.util.cache.FileCacheIF cache = NetcdfDataset.getNetcdfFileCache();
         if (null != cache)
           cache.showCache(f);
         viewerPanel.detailTA.setText(f.toString());
@@ -719,7 +717,7 @@ public class ToolsUI extends JPanel {
 
     AbstractAction clearCacheAction = new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
-        ucar.nc2.util.cache.FileCache cache = NetcdfDataset.getNetcdfFileCache();
+        ucar.nc2.util.cache.FileCacheIF cache = NetcdfDataset.getNetcdfFileCache();
         if (cache != null)
           cache.clearCache(true);
       }
@@ -733,13 +731,13 @@ public class ToolsUI extends JPanel {
         if (state == isCacheInit) return;
         isCacheInit = state;
         if (isCacheInit) {
-          ucar.nc2.util.cache.FileCache cache = NetcdfDataset.getNetcdfFileCache();
+          ucar.nc2.util.cache.FileCacheIF cache = NetcdfDataset.getNetcdfFileCache();
           if (cache != null)
             cache.enable();
           else
             NetcdfDataset.initNetcdfFileCache(10, 20, 10 * 60);
         } else {
-          ucar.nc2.util.cache.FileCache cache = NetcdfDataset.getNetcdfFileCache();
+          ucar.nc2.util.cache.FileCacheIF cache = NetcdfDataset.getNetcdfFileCache();
           if (cache != null) cache.disable();
         }
       }
@@ -5233,7 +5231,7 @@ public class ToolsUI extends JPanel {
       try {
         if (jni) {
           Nc4Iosp iosp = new Nc4Iosp(NetcdfFileWriter.Version.netcdf4);
-          ncnew = new MyNetcdfFile(iosp, location);
+          ncnew = new NetcdfFileSubclass(iosp, location);
           ucar.unidata.io.RandomAccessFile raf = new ucar.unidata.io.RandomAccessFile(location, "r");
           iosp.open(raf, ncnew, null);
         } else {
@@ -5280,14 +5278,6 @@ public class ToolsUI extends JPanel {
     }
 
   }
-
-  private static class MyNetcdfFile extends NetcdfFile {
-     private MyNetcdfFile(Nc4Iosp iosp, String location) {
-       super();
-       spi = iosp;
-       this.location = location;
-     }
-   }
 
   ///////////////////////////////////////////////////////////
   private class DatasetWriterPanel extends OpPanel {
@@ -6198,8 +6188,7 @@ public class ToolsUI extends JPanel {
     String version;
     try (InputStream is = ucar.nc2.ui.util.Resource.getFileResource("/README")) {
       if (is == null) return "4.5.0";
-      BufferedReader dataIS = new BufferedReader(new InputStreamReader(is,
-              CDM.utf8Charset));
+      BufferedReader dataIS = new BufferedReader(new InputStreamReader(is, CDM.utf8Charset));
       StringBuilder sbuff = new StringBuilder();
       for (int i = 0; i < 3; i++) {
         sbuff.append(dataIS.readLine());
@@ -6251,7 +6240,7 @@ public class ToolsUI extends JPanel {
     }
 
     done = true; // on some systems, still get a window close event
-    ucar.nc2.util.cache.FileCache cache = NetcdfDataset.getNetcdfFileCache();
+    ucar.nc2.util.cache.FileCacheIF cache = NetcdfDataset.getNetcdfFileCache();
     if (cache != null)
       cache.clearCache(true);
     FileCache.shutdown(); // shutdown threads

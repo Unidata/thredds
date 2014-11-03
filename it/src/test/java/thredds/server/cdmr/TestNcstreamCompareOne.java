@@ -35,73 +35,26 @@
 
 package thredds.server.cdmr;
 
-import org.junit.Assert;
 import org.junit.Test;
 import thredds.TestWithLocalServer;
-import ucar.nc2.Attribute;
-import ucar.nc2.NetcdfFile;
-import ucar.nc2.Variable;
-import ucar.nc2.constants._Coordinate;
-import ucar.nc2.dataset.NetcdfDataset;
-import ucar.nc2.stream.CdmRemote;
-import ucar.nc2.util.CompareNetcdf2;
-import ucar.unidata.test.util.TestDir;
 import ucar.unidata.util.StringUtil2;
 
 import java.io.IOException;
-import java.util.Formatter;
 
 /**
- * Test a single file compare to cdmremote
+ * Test a single file; compare to cdmremote
  *
  * @author caron
  * @since 10/21/13
  */
 public class TestNcstreamCompareOne {
-  static String contentRoot = TestDir.cdmUnitTestDir + "formats";
-  static String urlPath = TestWithLocalServer.server + "cdmremote/scanCdmUnitTests/formats";
 
   @Test
    public void problem() throws IOException {
-     String problemFile = contentRoot + "/gempak/19580807_upa.gem";
-     String name = StringUtil2.substitute(problemFile.substring(contentRoot.length()), "\\", "/");
-     String remote = urlPath + name;
-     compareDatasets(problemFile, remote);
-   }
-
-   private void compareDatasets(String local, String remote) throws IOException {
-     NetcdfFile ncfile = null, ncremote = null;
-     try {
-       ncfile = NetcdfDataset.openFile(local, null);
-       ncremote = new CdmRemote(remote);
-
-       Formatter f = new Formatter();
-       CompareNetcdf2 mind = new CompareNetcdf2(f, false, false, false);
-       boolean ok = mind.compare(ncfile, ncremote, new NcstreamObjFilter(), false, false, false);
-       if (!ok) {
-         System.out.printf("--Compare %s to %s%n", local, remote);
-         System.out.printf("  %s%n", f);
-       }
-       Assert.assertTrue(local + " != " + remote, ok);
-     } finally {
-       if (ncfile != null) ncfile.close();
-       if (ncremote != null) ncremote.close();
-     }
-   }
-
-   private class NcstreamObjFilter implements CompareNetcdf2.ObjFilter {
-
-     @Override
-     public boolean attCheckOk(Variable v, Attribute att) {
-       // if (v != null && v.isMemberOfStructure()) return false;
-       String name = att.getShortName();
-
-       if (name.equals(_Coordinate.Axes)) return false;
-
-       return true;
-     }
-
-     @Override public boolean varDataTypeCheckOk(Variable v) { return true; }
-
+  // http://localhost:8081/thredds/cdmremote/scanCdmUnitTests/formats/grib2/SingleRecordNbits0.grib2?req=header
+     String problemFile = TestNcstreamCompareWithFiles.contentRoot + "/grib2/SingleRecordNbits0.grib2";
+     String name = StringUtil2.substitute(problemFile.substring(TestNcstreamCompareWithFiles.contentRoot.length()), "\\", "/");
+     String remote = TestWithLocalServer.server + TestNcstreamCompareWithFiles.urlPath + name;
+    TestNcstreamCompareWithFiles.compareDatasets(problemFile, remote);
    }
 }

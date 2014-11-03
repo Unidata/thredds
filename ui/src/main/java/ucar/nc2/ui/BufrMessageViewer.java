@@ -36,13 +36,14 @@ package ucar.nc2.ui;
 import ucar.ma2.StructureData;
 import ucar.ma2.StructureDataIterator;
 import ucar.nc2.NetcdfFile;
+import ucar.nc2.NetcdfFileSubclass;
 import ucar.nc2.Structure;
 import ucar.nc2.Variable;
+import ucar.nc2.constants.CDM;
 import ucar.nc2.dataset.SequenceDS;
 import ucar.nc2.ft.point.bufr.BufrCdmIndex;
 import ucar.nc2.ft.point.bufr.BufrCdmIndexProto;
 import ucar.nc2.ft.point.bufr.StandardFields;
-import ucar.nc2.iosp.IOServiceProvider;
 import ucar.nc2.iosp.bufr.*;
 import ucar.nc2.iosp.bufr.writer.Bufr2Xml;
 import ucar.nc2.time.CalendarDate;
@@ -368,7 +369,7 @@ public class BufrMessageViewer extends JPanel {
           WritableByteChannel wbc = fos.getChannel();
           String headerS = mb.m.getHeader();
           if (headerS != null)
-            wbc.write(ByteBuffer.wrap(headerS.getBytes()));
+            wbc.write(ByteBuffer.wrap(headerS.getBytes(CDM.utf8Charset)));
 
           byte[] raw = scan.getMessageBytes(mb.m);
           wbc.write(ByteBuffer.wrap(raw));
@@ -503,7 +504,7 @@ public class BufrMessageViewer extends JPanel {
              WritableByteChannel wbc = fos.getChannel()) {
           String headerS = m.getHeader();
           if (headerS != null)
-            wbc.write(ByteBuffer.wrap(headerS.getBytes()));
+            wbc.write(ByteBuffer.wrap(headerS.getBytes(CDM.utf8Charset)));
           byte[] raw = scan.getMessageBytes(m);
           wbc.write(ByteBuffer.wrap(raw));
         }
@@ -658,22 +659,16 @@ public class BufrMessageViewer extends JPanel {
 
   private NetcdfFile makeBufrMessageAsDataset(Message m) throws IOException {
     BufrIosp2 iosp = new BufrIosp2();
-    BufrNetcdf ncfile = new BufrNetcdf(iosp, raf.getLocation());
+    NetcdfFileSubclass ncfile = new NetcdfFileSubclass(iosp, raf.getLocation());
     iosp.open(raf, ncfile, m);
     return ncfile;
   }
 
   private NetcdfFile makeBufrDataset() throws IOException {
     BufrIosp2 iosp = new BufrIosp2();
-    BufrNetcdf ncfile = new BufrNetcdf(iosp, raf.getLocation());
+    NetcdfFileSubclass ncfile = new NetcdfFileSubclass(iosp, raf.getLocation());
     iosp.open(raf, ncfile, (CancelTask) null);
     return ncfile;
-  }
-
-  private static class BufrNetcdf extends NetcdfFile {
-    protected BufrNetcdf(IOServiceProvider spi, String location) throws IOException {
-      super(spi, location);
-    }
   }
 
   private int setDataDescriptors(java.util.List<DdsBean> beanList, DataDescriptor dds, int seqno) {

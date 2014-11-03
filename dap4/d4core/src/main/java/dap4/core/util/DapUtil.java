@@ -603,5 +603,16 @@ abstract public class DapUtil // Should only contain static methods
         }
         return true;
     }
+
+
+    /**
+     * Re-throw run-time exceptions
+     */
+    static public void checkruntime(Exception e)
+    {
+	if(e instanceof RuntimeException)
+	    throw (RuntimeException)e;
+    }
+
 } // class DapUtil
 

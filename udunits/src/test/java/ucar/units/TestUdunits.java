@@ -129,4 +129,15 @@ public class TestUdunits {
     TimeScaleUnit tunit = new TimeScaleUnit(TimeScaleUnit.SECOND, calendar.getTime());
     System.out.printf("%s%n",tunit );
   }
+
+  @Test
+  public void testUnknownUnit() throws Exception  {
+    final UnknownUnit unit1 = UnknownUnit.create("a");
+    assert unit1.equals(unit1) : "unit1.equals(unit1)=" + unit1.equals(unit1);
+    assert !unit1.isDimensionless() : "UnknownUnit.isDimensionless()=" + unit1.isDimensionless();
+    UnknownUnit unit2 = UnknownUnit.create("b");
+    assert !unit1.equals(unit2): "unit1.equals(unit2)="+unit1.equals(unit2);
+    unit2 = UnknownUnit.create("A");
+    assert unit1.equals(unit2): "unit_a.equals(unit_A))="+unit1.equals(unit2);
+  }
 }

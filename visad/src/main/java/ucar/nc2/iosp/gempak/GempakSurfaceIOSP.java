@@ -346,7 +346,7 @@ public class GempakSurfaceIOSP extends GempakStationFileIOSP {
             temp = StringUtil2.padRight(stn.getWFO2(), 4);
           }
           if (temp != null) {
-            buf.put(temp.getBytes());
+            buf.put(temp.getBytes(CDM.utf8Charset));
           }
         }
         if (members.findMember(TIME_VAR) != null) {
@@ -383,45 +383,6 @@ public class GempakSurfaceIOSP extends GempakStationFileIOSP {
       //Trace.call2("GEMPAKSIOSP: readShipData");
     }
     return array;
-  }
-
-  /**
-   * Test this.
-   *
-   * @param args file name
-   * @throws IOException problem reading the file
-   */
-  public static void main(String[] args) throws IOException {
-    IOServiceProvider mciosp = new GempakSurfaceIOSP();
-    RandomAccessFile rf = new RandomAccessFile(args[0], "r", 2048);
-    NetcdfFile ncfile = new MakeNetcdfFile(mciosp, rf, args[0], null);
-    if (args.length > 1) {
-      ucar.nc2.FileWriter.writeToFile(ncfile, args[1]);
-    } else {
-      System.out.println(ncfile);
-    }
-  }
-
-  /**
-   * TODO:  generalize this
-   * static class for testing
-   */
-  protected static class MakeNetcdfFile extends NetcdfFile {
-
-    /**
-     * Ctor
-     *
-     * @param spi        IOServiceProvider
-     * @param raf        RandomAccessFile
-     * @param location   location of file?
-     * @param cancelTask CancelTask
-     * @throws IOException problem opening the file
-     */
-    MakeNetcdfFile(IOServiceProvider spi, RandomAccessFile raf,
-                   String location, CancelTask cancelTask)
-            throws IOException {
-      super(spi, raf, location, cancelTask);
-    }
   }
 
   /**

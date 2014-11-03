@@ -296,9 +296,9 @@ public abstract class GribPartitionBuilder  {
         // for each variable in this Partition, add reference to it in the vip
         for (int varIdx = 0; varIdx < group.variList.size(); varIdx++) {
           GribCollection.VariableIndex vi = group.variList.get(varIdx);
-          int flag = 0;
+          //int flag = 0;
           PartitionCollection.VariableIndexPartitioned vip = (PartitionCollection.VariableIndexPartitioned) resultGroup.findVariableByHash(vi.cdmHash);
-          vip.addPartition(partno, groupIdx, varIdx, flag, vi);
+          vip.addPartition(partno, groupIdx, varIdx); // , flag, vi);
         } // loop over variable
       } // loop over partition
 
@@ -813,11 +813,11 @@ public abstract class GribPartitionBuilder  {
     pb.setPartno(pvar.partno);
     pb.setGroupno(pvar.groupno);
     pb.setVarno(pvar.varno);
-    pb.setFlag(pvar.flag);
-    pb.setNdups(pvar.ndups);
+    pb.setFlag(0); // ignored
+    /* pb.setNdups(pvar.ndups);
     pb.setNrecords(pvar.nrecords);
     pb.setMissing(pvar.missing);
-    pb.setDensity(pvar.density);
+    pb.setDensity(pvar.density);  */
 
     return pb.build();
   }

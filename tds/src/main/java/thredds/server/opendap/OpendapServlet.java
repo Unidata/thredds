@@ -54,6 +54,7 @@ import thredds.servlet.filter.CookieFilter;
 import ucar.ma2.DataType;
 import ucar.ma2.Range;
 import ucar.ma2.Section;
+import ucar.nc2.constants.CDM;
 import ucar.nc2.dods.DODSNetcdfFile;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.util.EscapeStrings;
@@ -526,7 +527,7 @@ public class OpendapServlet extends AbstractServlet {
 
       // Send the Data delimiter back to the client
       pw.flush();
-      bOut.write("\nData:\n".getBytes());
+      bOut.write("\nData:\n".getBytes(CDM.utf8Charset));
       bOut.flush();
 
       // Send the binary data back to the client
@@ -788,6 +789,8 @@ public class OpendapServlet extends AbstractServlet {
     }
   }
 
+  private static final boolean debugSize = true;
+
   // Recursively compute size of the dds to be returned
   // Note that the dds may be empty (e-support ZTH-269982)
   private long computeSize(DConstructor ctor, boolean isAscii) throws Exception {
@@ -807,6 +810,9 @@ public class OpendapServlet extends AbstractServlet {
         projectedcount++;
       } else {
         othersize += fieldsize;
+      }
+      if (debugSize) {
+        System.out.printf("computeSize %s fieldsize=%d projectsize=%d othersize=%d %n", field.getLongName(), fieldsize, projectsize, othersize);
       }
     }
     // Cases to consider:

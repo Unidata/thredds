@@ -33,6 +33,7 @@
 package ucar.nc2.ui;
 
 import ucar.nc2.NetcdfFile;
+import ucar.nc2.NetcdfFileSubclass;
 import ucar.nc2.stream.NcStreamIosp;
 import ucar.nc2.ui.widget.BAMutil;
 import ucar.nc2.ui.widget.IndependentWindow;
@@ -139,7 +140,7 @@ public class NcStreamPanel extends JPanel {
     closeOpenFiles();
 
     java.util.List<MessBean> messages = new ArrayList<MessBean>();
-    ncd = new MyNetcdfFile();
+    ncd = new NetcdfFileSubclass();
     iosp = new NcStreamIosp();
     try {
       raf = new RandomAccessFile(filename, "r");
@@ -155,10 +156,6 @@ public class NcStreamPanel extends JPanel {
 
     messTable.setBeans(messages);
     //System.out.printf("mess = %d%n", messages.size());
-  }
-
-
-  static private class MyNetcdfFile extends NetcdfFile {
   }
 
   public class MessBean {

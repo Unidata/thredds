@@ -61,39 +61,39 @@ public class TestH5OddTypes {
   @Test
   public void testOpaque() throws InvalidRangeException, IOException {
     H5header.setDebugFlags(new ucar.nc2.util.DebugFlagsImpl("H5header/header"));
-    NetcdfFile ncfile = TestH5.openH5("samples/opaque.h5");
-    System.out.println( "\n"+ncfile);
-    Variable v2 = ncfile.findVariable("Opaque");
-    assert v2 != null;
+    try (NetcdfFile ncfile = TestH5.openH5("samples/opaque.h5")) {
+      System.out.println("\n" + ncfile);
+      Variable v2 = ncfile.findVariable("Opaque");
+      assert v2 != null;
 
-    Array data = v2.read();
-    assert data.getElementType() == ByteBuffer.class : data.getElementType();
-    System.out.println( "data size= "+new Section(data.getShape()));
-    System.out.printf("Opaque data = %s%n", NCdumpW.toString(data));
+      Array data = v2.read();
+      assert data.getElementType() == ByteBuffer.class : data.getElementType();
+      System.out.println("data size= " + new Section(data.getShape()));
+      System.out.printf("Opaque data = %s%n", NCdumpW.toString(data));
 
-    Array odata = v2.read(new Section("1:20"));
-    assert odata.getElementType() == ByteBuffer.class;
-    assert odata.getSize() == 20;
-    ncfile.close();
-    H5header.setDebugFlags( new ucar.nc2.util.DebugFlagsImpl());
+      Array odata = v2.read(new Section("1:20"));
+      assert odata.getElementType() == ByteBuffer.class;
+      assert odata.getSize() == 20;
+    }
+    H5header.setDebugFlags(new DebugFlagsImpl(""));
   }
 
   @Test
   public void testEnum() throws InvalidRangeException, IOException {
-    NetcdfFile ncfile = TestH5.openH5("support/enum.h5");
-    Variable v2 = ncfile.findVariable("enum");
-    assert v2 != null;
+    try (NetcdfFile ncfile = TestH5.openH5("support/enum.h5")) {
+      Variable v2 = ncfile.findVariable("enum");
+      assert v2 != null;
 
-    Array data = v2.read();
-    assert data.getElementType() == int.class;
+      Array data = v2.read();
+      assert data.getElementType() == int.class;
 
-    NetcdfDataset ncd = TestH5.openH5dataset("support/enum.h5");
-    v2 = ncd.findVariable("enum");
-    assert v2 != null;
+      NetcdfDataset ncd = TestH5.openH5dataset("support/enum.h5");
+      v2 = ncd.findVariable("enum");
+      assert v2 != null;
 
-    data = v2.read();
-    assert data.getElementType() == String.class;
-    ncfile.close();
+      data = v2.read();
+      assert data.getElementType() == String.class;
+    }
   }
 
   /* public void testTime() throws IOException {
@@ -112,8 +112,9 @@ public class TestH5OddTypes {
   @Test
   public void testBitfield() throws InvalidRangeException, IOException {
     H5header.setDebugFlags(new ucar.nc2.util.DebugFlagsImpl("H5header/header"));
-    NetcdfFile ncfile = TestH5.openH5("samples/bitfield.h5");
-    ncfile.close();
+    try (NetcdfFile ncfile = TestH5.openH5("samples/bitfield.h5")) {
+
+    }
     H5header.setDebugFlags( new ucar.nc2.util.DebugFlagsImpl());
   }
 
@@ -121,19 +122,20 @@ public class TestH5OddTypes {
   @Test
   public void testVlenStrings() throws InvalidRangeException, IOException {
     H5header.setDebugFlags(new ucar.nc2.util.DebugFlagsImpl("H5header/header"));
-    NetcdfFile ncfile = TestH5.openH5("support/vlstra.h5");
-    System.out.println( "\n**** testReadNetcdf4 done\n\n"+ncfile);
-    ncfile.close();
+    try (NetcdfFile ncfile = TestH5.openH5("support/vlstra.h5")) {
+      System.out.println("\n**** testReadNetcdf4 done\n\n" + ncfile);
+    }
     H5header.setDebugFlags( new ucar.nc2.util.DebugFlagsImpl());
   }
 
   @Test
    public void testAttString() throws InvalidRangeException, IOException {
     //H5header.setDebugFlags( new ucar.nc2.util.DebugFlagsImpl("H5header/header"));
-    NetcdfFile ncfile = TestH5.openH5("support/attstr.h5");
-     ncfile.close();
+    try (NetcdfFile ncfile = TestH5.openH5("support/attstr.h5")) {
+    }
   }
 
+  @Test
   public void testCompoundString() throws InvalidRangeException, IOException {
     H5header.setDebugFlags( new ucar.nc2.util.DebugFlagsImpl("H5header/header"));
     TestDir.readAll(TestH5.testDir + "support/cstr.h5");
@@ -143,13 +145,13 @@ public class TestH5OddTypes {
   @Test
   public void testCompoundEnum() throws IOException {
     H5header.setDebugFlags(new ucar.nc2.util.DebugFlagsImpl("H5header/header"));
-    NetcdfFile ncfile = TestH5.openH5("support/cenum.h5");
-    Variable v = ncfile.findVariable("enum");
-    Array data = v.read();
-    System.out.printf("enum data = %s%n", NCdumpW.toString(data));
-    System.out.println( "\n**** testReadNetcdf4 done\n\n"+ncfile);
-    ncfile.close();
-    H5header.setDebugFlags( new ucar.nc2.util.DebugFlagsImpl());
+    try (NetcdfFile ncfile = TestH5.openH5("support/cenum.h5")) {
+      Variable v = ncfile.findVariable("enum");
+      Array data = v.read();
+      System.out.printf("enum data = %s%n", NCdumpW.toString(data));
+      System.out.println("\n**** testReadNetcdf4 done\n\n" + ncfile);
+    }
+    H5header.setDebugFlags(new DebugFlagsImpl(""));
   }
 
   @Test
@@ -157,9 +159,9 @@ public class TestH5OddTypes {
     H5header.setDebugFlags( new ucar.nc2.util.DebugFlagsImpl("H5header/header"));
 
     // bitfields, opaque
-    NetcdfFile ncfile = TestH5.openH5("support/bitop.h5");
-    System.out.println( "\n"+ncfile);
-    ncfile.close();
+    try (NetcdfFile ncfile = TestH5.openH5("support/bitop.h5")) {
+      System.out.println("\n" + ncfile);
+    }
     H5header.setDebugFlags( new ucar.nc2.util.DebugFlagsImpl());
   }
 

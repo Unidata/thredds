@@ -314,6 +314,7 @@ public class DConnect2
             command.process(is);
 
         } catch (Exception e) {
+            Util.check(e);
             e.printStackTrace();
             throw new DAP2Exception(e);
 
@@ -513,8 +514,10 @@ public class DConnect2
         if(filePath != null) { // url was file:
             File daspath = new File(filePath + ".das");
             // See if the das file exists
-            if(daspath.canRead()) {
-                command.process(new FileInputStream(daspath));
+            if (daspath.canRead()) {
+              try (FileInputStream is = new FileInputStream(daspath) ) {
+                command.process(is);
+              }
             }
         } else if(stream != null) {
             command.process(stream);
@@ -576,8 +579,10 @@ public class DConnect2
     {
         DDSCommand command = new DDSCommand();
         command.setURL(CE == null || CE.length() == 0 ? urlString : urlString + "?" + CE);
-        if(filePath != null) {
-            command.process(new FileInputStream(filePath + ".dds"));
+        if (filePath != null) {
+          try (FileInputStream is = new FileInputStream(filePath + ".dds") ) {
+            command.process(is);
+          }
         } else if(stream != null) {
             command.process(stream);
         } else { // must be a remote url
@@ -843,21 +848,23 @@ public class DConnect2
     public DataDDS getData(String CE, StatusUI statusUI, BaseTypeFactory btf) throws MalformedURLException, IOException,
         ParseException, DDSException, DAP2Exception
     {
-
+        if(CE != null && CE.trim().length() == 0) CE = null;
         DataDDS dds = new DataDDS(ver, btf);
         DataDDSCommand command = new DataDDSCommand(dds, statusUI);
-        command.setURL(urlString + "?" + CE);
+        command.setURL(urlString + (CE == null ? "" : "?" + CE));
         if(filePath != null) { // url is file:
             File dodspath = new File(filePath + ".dods");
             // See if the dods file exists
             if(dodspath.canRead()) {
       /* WARNING: any constraints are ignored in reading the file */
-                command.process(new FileInputStream(dodspath));
+              try (FileInputStream is = new FileInputStream(dodspath) ) {
+                command.process(is);
+              }
             }
         } else if(stream != null) {
             command.process(stream);
         } else {
-            String urls = urlString + ".dods" + (getCompleteCE(CE));
+            String urls = urlString + ".dods" + (CE == null ? "" : getCompleteCE(CE));
             openConnection(urls, command);
         }
         return command.dds;

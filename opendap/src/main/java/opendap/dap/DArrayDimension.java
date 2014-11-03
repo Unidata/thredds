@@ -79,8 +79,8 @@ public final class DArrayDimension extends DAPNode
     };
 
     // Define two slices for each dimension
-    private Slice decl = null; // as defined in the original declaration
-    private Slice projection = null; // as defined in any projection of this dimension
+    transient private Slice decl = null; // as defined in the original declaration
+    transient private Slice projection = null; // as defined in any projection of this dimension
     private DArray container = null;
 
     /**

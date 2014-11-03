@@ -40,6 +40,7 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.nodes.Node;
 import org.jsoup.select.Elements;
+import ucar.nc2.constants.CDM;
 import ucar.unidata.util.StringUtil2;
 
 import java.io.File;
@@ -169,7 +170,7 @@ public class NcepHtmlScraper  {
     String x = fmt.outputString(doc);
 
     try (FileOutputStream fout = new FileOutputStream(dirOut + filename+".xml")) {
-      fout.write(x.getBytes());
+      fout.write(x.getBytes(CDM.utf8Charset));
     }
 
     if (show) System.out.printf("%s%n", x);
@@ -301,7 +302,7 @@ public class NcepHtmlScraper  {
     String x = fmt.outputString(doc);
 
     try (FileOutputStream fout = new FileOutputStream(dirOut + filename+".xml")) {
-      fout.write(x.getBytes());
+      fout.write(x.getBytes(CDM.utf8Charset));
     }
 
     if (show) System.out.printf("%s%n", x);
@@ -315,7 +316,7 @@ public class NcepHtmlScraper  {
       f.format("%3d:%s:%s [%s]%n", p.pnum, p.name, p.desc, p.unit); // 1:PRES:Pressure [Pa]
 
     FileOutputStream fout = new FileOutputStream(dirOut + filename);
-    fout.write(f.toString().getBytes());
+    fout.write(f.toString().getBytes(CDM.utf8Charset));
     fout.close();
 
     if (show) System.out.printf("%s%n", f);

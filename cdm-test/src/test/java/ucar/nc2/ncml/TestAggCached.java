@@ -6,6 +6,7 @@ import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.ft.FeatureDataset;
 import ucar.nc2.util.CompareNetcdf2;
 import ucar.nc2.util.cache.FileCache;
+import ucar.nc2.util.cache.FileCacheIF;
 import ucar.unidata.test.util.TestDir;
 
 import java.io.IOException;
@@ -42,7 +43,7 @@ public class TestAggCached {
       System.out.printf("==========%n");
     }
 
-    FileCache cache = NetcdfDataset.getNetcdfFileCache();
+    FileCacheIF cache = NetcdfDataset.getNetcdfFileCache();
     cache.showCache();
     assert ok;
   }
@@ -97,7 +98,7 @@ public class TestAggCached {
       nc1.close();
     }
 
-    FileCache cache = NetcdfDataset.getNetcdfFileCache();
+    FileCacheIF cache = NetcdfDataset.getNetcdfFileCache();
     cache.showCache();
   }
 

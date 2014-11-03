@@ -45,7 +45,6 @@ import java.util.regex.Pattern;
 import java.util.regex.Matcher;
 import java.io.*;
 import java.net.URL;
-import java.nio.charset.Charset;
 
 import org.jdom2.input.SAXBuilder;
 import org.jdom2.Element;
@@ -165,14 +164,14 @@ public class BufrTables {
 
   private static List<String> lookups = null;
 
-  static public void addLookupFile(String filename) throws FileNotFoundException {
+  static public synchronized void addLookupFile(String filename) throws FileNotFoundException {
     if (lookups == null) lookups = new ArrayList<>();
     File f = new File(filename);
     if (!f.exists()) throw new FileNotFoundException(filename + " not found");
     lookups.add(filename);
   }
 
-  static private void readLookupTable() {
+  static private synchronized void readLookupTable() {
     tables = new ArrayList<>();
     if (lookups != null) {
       lookups.add(canonicalLookup);
@@ -187,7 +186,7 @@ public class BufrTables {
   static private void readLookupTable(String filename) {
 
     try(InputStream ios = openStream(filename)) {
-      BufferedReader dataIS = new BufferedReader(new InputStreamReader(ios, Charset.forName("UTF8")));
+      BufferedReader dataIS = new BufferedReader(new InputStreamReader(ios, CDM.utf8Charset));
       int count = 0;
       while (true) {
         String line = dataIS.readLine();
@@ -380,8 +379,8 @@ public class BufrTables {
       }
 
       // cache 
-      tablesB.put(tc.tableBname, t.b);
-      tablesD.put(tc.tableBname, t.d);
+      tablesB.put(tc.tableBname, t.b);  // assume we would get the same table in any thread, so race condition is ok
+      tablesD.put(tc.tableBname, t.d);  // assume we would get the same table in any thread, so race condition is ok
       return t;
     }
 
@@ -397,7 +396,7 @@ public class BufrTables {
 
   static private TableB latestWmoB;
 
-  static public TableB getWmoTableBlatest() {
+  static public synchronized TableB getWmoTableBlatest() {
     if (latestWmoB == null) {
       try {
         latestWmoB = getWmoTableB(latestVersion);
@@ -489,12 +488,12 @@ public class BufrTables {
       }
     }
 
-    if (b != null) tablesB.put(location, b);
+    if (b != null) tablesB.put(location, b); // assume we would get the same table in any thread, so race condition is ok
     return b;
   }
 
   static private void readWmoCsvTableB(InputStream ios, TableB b) throws IOException {
-    BufferedReader dataIS = new BufferedReader(new InputStreamReader(ios, Charset.forName("UTF8")));
+    BufferedReader dataIS = new BufferedReader(new InputStreamReader(ios, CDM.utf8Charset));
     int count = 0;
     while (true) {
       String line = dataIS.readLine();
@@ -571,8 +570,7 @@ public class BufrTables {
   // tables are in mel-bufr format
   static private TableB readMelbufrTableB(InputStream ios, TableB b) throws IOException {
 
-    BufferedReader dataIS = new BufferedReader(new InputStreamReader(ios,
-            CDM.utf8Charset));
+    BufferedReader dataIS = new BufferedReader(new InputStreamReader(ios, CDM.utf8Charset));
 
     // read table B looking for descriptors
     while (true) {
@@ -608,8 +606,7 @@ public class BufrTables {
 
   static private TableB readCypherTableB(InputStream ios, TableB b) throws IOException {
     boolean startMode = false;
-    BufferedReader dataIS = new BufferedReader(new InputStreamReader(ios,
-            CDM.utf8Charset));
+    BufferedReader dataIS = new BufferedReader(new InputStreamReader(ios, CDM.utf8Charset));
     while (true) {
       String line = dataIS.readLine();
       if (line == null) break;
@@ -662,8 +659,7 @@ public class BufrTables {
   // 0	0	1	0	0	24	CCITT_IA5	Table A: entry
   static private TableB readMeltabTableB(InputStream ios, TableB b) throws IOException {
 
-    BufferedReader dataIS = new BufferedReader(new InputStreamReader(ios,
-            CDM.utf8Charset));
+    BufferedReader dataIS = new BufferedReader(new InputStreamReader(ios, CDM.utf8Charset));
 
     // read table B looking for descriptors
     while (true) {
@@ -693,8 +689,7 @@ public class BufrTables {
   // F-XX-YYY |SCALE| REFERENCE   | BIT |      UNIT      | MNEMONIC ;DESC ;  ELEMENT NAME
   static private TableB readNcepTableB(InputStream ios, TableB b) throws IOException {
 
-    BufferedReader dataIS = new BufferedReader(new InputStreamReader(ios,
-            CDM.utf8Charset));
+    BufferedReader dataIS = new BufferedReader(new InputStreamReader(ios, CDM.utf8Charset));
 
     dataIS.readLine(); // throw first line away
 
@@ -747,7 +742,7 @@ public class BufrTables {
 0;21;036;Radar rainfall intensity;mm*h-1;2;0;16
    */
   static private void readOperaTableB(InputStream ios, TableB b) throws IOException {
-    BufferedReader dataIS = new BufferedReader(new InputStreamReader(ios, Charset.forName("UTF8")));
+    BufferedReader dataIS = new BufferedReader(new InputStreamReader(ios, CDM.utf8Charset));
     int count = 0;
     while (true) {
       String line = dataIS.readLine();
@@ -867,7 +862,7 @@ public class BufrTables {
 
   static private TableD latestWmoD;
 
-  static public TableD getWmoTableDlatest() {
+  static public synchronized TableD getWmoTableDlatest() {
     if (latestWmoD == null) {
       try {
         latestWmoD = getWmoTableD(latestVersion);
@@ -933,7 +928,7 @@ public class BufrTables {
       }
     }
 
-    if (d != null) tablesD.put(location, d);
+    if (d != null) tablesD.put(location, d); // assume we would get the same table in any thread, so race condition is ok
     return d;
   }
 
@@ -971,8 +966,7 @@ public class BufrTables {
     TableD.Descriptor currDesc = null;
     boolean startMode = false;
 
-    BufferedReader dataIS = new BufferedReader(new InputStreamReader(ios,
-            CDM.utf8Charset));
+    BufferedReader dataIS = new BufferedReader(new InputStreamReader(ios, CDM.utf8Charset));
     while (true) {
       String line = dataIS.readLine();
       if (line == null) break;
@@ -1041,8 +1035,7 @@ public class BufrTables {
   */
   static private void readOperaTableD(InputStream ios, TableD t) throws IOException {
 
-    BufferedReader dataIS = new BufferedReader(new InputStreamReader(ios,
-            CDM.utf8Charset));
+    BufferedReader dataIS = new BufferedReader(new InputStreamReader(ios, CDM.utf8Charset));
 
     TableD.Descriptor currDesc = null;
 
@@ -1157,8 +1150,7 @@ public class BufrTables {
 
   static private void readMelbufrTableD(InputStream ios, TableD t) throws IOException {
 
-    BufferedReader dataIS = new BufferedReader(new InputStreamReader(ios,
-            CDM.utf8Charset));
+    BufferedReader dataIS = new BufferedReader(new InputStreamReader(ios, CDM.utf8Charset));
     int count = 0;
 
     // read table D to store sequences and their descriptors
@@ -1238,8 +1230,7 @@ public class BufrTables {
     */
   static private void readNcepTableD(InputStream ios, TableD t) throws IOException {
 
-    BufferedReader dataIS = new BufferedReader(new InputStreamReader(ios,
-            CDM.utf8Charset));
+    BufferedReader dataIS = new BufferedReader(new InputStreamReader(ios, CDM.utf8Charset));
 
     dataIS.readLine(); // throw first line away
 
@@ -1296,8 +1287,7 @@ public class BufrTables {
    */
   static private void readEcmwfTableD(InputStream ios, TableD t) throws IOException {
 
-    BufferedReader dataIS = new BufferedReader(new InputStreamReader(ios,
-            CDM.utf8Charset));
+    BufferedReader dataIS = new BufferedReader(new InputStreamReader(ios, CDM.utf8Charset));
 
     TableD.Descriptor currDesc = null;
 

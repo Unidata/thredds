@@ -283,6 +283,8 @@ public abstract class CFPointWriter implements AutoCloseable {
       spf.resetIteration();
       while (spf.hasNext()) {
         ProfileFeature pf = spf.next();
+        if (pf.getTime() == null)
+          continue;  // assume this means its a "incomplete multidimensional"
 
         count += cfWriter.writeProfile(spf, pf);
         if (debug && count % 100 == 0) System.out.printf("%d ", count);
@@ -330,6 +332,8 @@ public abstract class CFPointWriter implements AutoCloseable {
       spf.resetIteration();
       while (spf.hasNext()) {
         ProfileFeature pf = spf.next();
+        if (pf.getTime() == null)
+          continue;  // assume this means its a "incomplete multidimensional"
 
         count += cfWriter.writeProfile(spf, pf);
         if (debug && count % 100 == 0) System.out.printf("%d ", count);

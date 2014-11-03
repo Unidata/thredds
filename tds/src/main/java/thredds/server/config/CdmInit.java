@@ -291,7 +291,7 @@ public class CdmInit implements InitializingBean,  DisposableBean{
   //should be called when tomcat exits
   public void destroy() throws Exception {
     if (timer != null) timer.cancel();
-    FileCache.shutdown();
+    FileCache.shutdown();              // this handles all instances of FileCache
     if (aggCache != null) aggCache.exit();
     if (gribCache != null) gribCache.exit();
     if (cdmrCache != null) cdmrCache.exit();

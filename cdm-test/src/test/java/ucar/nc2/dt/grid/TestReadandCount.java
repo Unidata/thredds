@@ -34,6 +34,7 @@ package ucar.nc2.dt.grid;
 
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
+import ucar.nc2.constants.CDM;
 import ucar.nc2.dataset.CoordinateAxis;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.constants.AxisType;
@@ -275,7 +276,7 @@ public class TestReadandCount {
         "    <netcdf location=\"file:G:/work/jasmin/GMTCO_npp_d20120120_t0531354_e0532596_b01189_c20120120115420527613_noaa_ops.h5\" />\n" +
         "  </aggregation>\n" +
         "</netcdf>";
-    NetcdfDataset aggregatedDataset = NcMLReader.readNcML( new ByteArrayInputStream(ncml.getBytes()), null );
+    NetcdfDataset aggregatedDataset = NcMLReader.readNcML( new ByteArrayInputStream(ncml.getBytes(CDM.utf8Charset)), null );
     GridDataset emptyDataset = new GridDataset( aggregatedDataset );
     System.out.printf("empty= %s%n", emptyDataset.getGrids().size());
 

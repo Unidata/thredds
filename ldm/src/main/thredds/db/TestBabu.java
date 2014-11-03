@@ -64,11 +64,11 @@ public class TestBabu {
       String report = sdata.getScalarString("report");
 
       bb.clear();
-      byte[] stnb = stn.getBytes();
+      byte[] stnb = stn.getBytes(CDM.utf8Charset);
       bb.put(stnb, 0, 4);
       bb.putInt(time);
       byte[] key = bb.array();
-      closure.process(key, report.getBytes());
+      closure.process(key, report.getBytes(CDM.utf8Charset));
       count++;
     }
     return count;
@@ -210,7 +210,7 @@ public class TestBabu {
   void find(BabuDB db, String prefix) {
     try {
       System.out.printf(" key=%s%n", prefix);
-      Iterator<Map.Entry<byte[], byte[]>> it = db.directPrefixLookup(dbname, 0, prefix.getBytes());
+      Iterator<Map.Entry<byte[], byte[]>> it = db.directPrefixLookup(dbname, 0, prefix.getBytes(CDM.utf8Charset));
       while (it.hasNext()) {
         Map.Entry<byte[], byte[]> keyValuePair = it.next();
         ByteBuffer bb = ByteBuffer.wrap(keyValuePair.getKey());

@@ -35,6 +35,7 @@ package ucar.nc2.grib.grib1.tables;
 
 import net.jcip.annotations.Immutable;
 
+import ucar.nc2.constants.CDM;
 import ucar.nc2.grib.GribResourceReader;
 import ucar.nc2.grib.grib1.Grib1Parameter;
 import ucar.nc2.grib.grib1.Grib1Record;
@@ -118,7 +119,7 @@ public class Grib1ParamTables {
   }
 
   //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-  private static Map<String, Grib1ParamTableReader> localTableHash;
+  private static final Map<String, Grib1ParamTableReader> localTableHash = new ConcurrentHashMap<>();
 
   /**
    * Get a Grib1ParamTables object, optionally specifying a parameter table or lookup table specific to this dataset.
@@ -134,13 +135,12 @@ public class Grib1ParamTables {
 
     Grib1ParamTableReader table;
     if (paramTablePath != null) {
-      if (localTableHash == null) localTableHash = new HashMap<>();
       table = localTableHash.get(paramTablePath);
       if (table == null) {
         table = new Grib1ParamTableReader(paramTablePath);
         localTableHash.put(paramTablePath, table);
+        result.override = table;
       }
-      result.override = table;
     }
 
     if (lookupTablePath != null) {
@@ -283,7 +283,7 @@ public class Grib1ParamTables {
         return false;
 
       File parent = new File(lookupFile).getParentFile();
-      InputStreamReader isr = new InputStreamReader(is);
+      InputStreamReader isr = new InputStreamReader(is, CDM.utf8Charset);
       BufferedReader br = new BufferedReader(isr);
 
       String line;
@@ -345,7 +345,7 @@ public class Grib1ParamTables {
         return defaultTable;
       }
 
-      tableMap.put(key, table);
+      tableMap.put(key, table); // assume we would get the same table in any thread, so race condition is ok
       return table;
     }
 

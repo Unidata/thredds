@@ -45,8 +45,8 @@ import java.io.IOException;
 import thredds.servlet.Debug;
 import thredds.servlet.ServletUtil;
 import ucar.nc2.util.CancelTask;
-import ucar.nc2.util.cache.FileCache;
 import ucar.nc2.util.IO;
+import ucar.nc2.util.cache.FileCacheIF;
 import ucar.nc2.util.cache.FileCacheable;
 import ucar.nc2.util.cache.FileFactory;
 import ucar.unidata.io.RandomAccessFile;
@@ -79,8 +79,8 @@ public class FileView extends AbstractView {
     }
   };
 
-  private FileCache fileCacheRaf;
-  public void setFileCacheRaf( FileCache fileCacheRaf) { this.fileCacheRaf = fileCacheRaf; }
+  private FileCacheIF fileCacheRaf;
+  public void setFileCacheRaf( FileCacheIF fileCacheRaf) { this.fileCacheRaf = fileCacheRaf; }
 
   public void init() {
     if ( this.fileCacheRaf == null )
@@ -223,7 +223,7 @@ public class FileView extends AbstractView {
         RandomAccessFile craf = null;
         try
         {
-          craf = (RandomAccessFile) fileCacheRaf.acquire( fileFactory, filename, null);
+          craf = (RandomAccessFile) fileCacheRaf.acquire( fileFactory, filename);
           IO.copyRafB( craf, startPos, contentLength, res.getOutputStream(), new byte[60000] );
           return;
         }

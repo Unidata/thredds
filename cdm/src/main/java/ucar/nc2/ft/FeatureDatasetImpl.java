@@ -39,8 +39,8 @@ import ucar.nc2.NetcdfFile;
 import ucar.nc2.Attribute;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time.CalendarDateRange;
-import ucar.nc2.util.cache.FileCache;
 import ucar.nc2.units.DateRange;
+import ucar.nc2.util.cache.FileCacheIF;
 import ucar.unidata.geoloc.LatLonRect;
 
 import java.util.*;
@@ -58,6 +58,7 @@ public abstract class FeatureDatasetImpl implements FeatureDataset {
   protected Formatter parseInfo = new Formatter();
   protected CalendarDateRange dateRange;
   protected LatLonRect boundingBox;
+  protected FileCacheIF fileCache;
 
   // for subsetting
   protected FeatureDatasetImpl(FeatureDatasetImpl from) {
@@ -230,10 +231,8 @@ public abstract class FeatureDatasetImpl implements FeatureDataset {
     return (ncfile != null) ? ncfile.getLastModified() : 0;
   }
 
-  protected FileCache fileCache;
-
   @Override
-  public synchronized void setFileCache(FileCache fileCache) {
+  public synchronized void setFileCache(FileCacheIF fileCache) {
     this.fileCache = fileCache;
   }
 

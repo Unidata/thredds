@@ -41,6 +41,7 @@
 package opendap.dap;
 
 import opendap.dap.parsers.ParseException;
+import ucar.nc2.constants.CDM;
 
 import java.io.*;
 import java.util.Enumeration;
@@ -241,7 +242,7 @@ public class DataDDS extends DDS {
         print(pw);
         // pw.println("Data:");  // JCARON CHANGED
         pw.flush();
-        bufferedOS.write("\nData:\n".getBytes()); // JCARON CHANGED
+        bufferedOS.write("\nData:\n".getBytes(CDM.utf8Charset)); // JCARON CHANGED
         bufferedOS.flush();
 
         // Use a DataOutputStream for serialize

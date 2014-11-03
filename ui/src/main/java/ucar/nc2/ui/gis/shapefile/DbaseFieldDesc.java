@@ -32,6 +32,8 @@
  */
 package ucar.nc2.ui.gis.shapefile;
 
+import ucar.nc2.constants.CDM;
+
 import java.io.DataInputStream;
 
 /**
@@ -72,7 +74,7 @@ class DbaseFieldDesc {
       Header[i] = (byte) ' ';
     }
     // put the name into the header
-    byte[] headerName = Name.getBytes();
+    byte[] headerName = Name.getBytes(CDM.utf8Charset);
     System.arraycopy(headerName, 0, Header, 0, headerName.length);
 
     Header[11] = Type;

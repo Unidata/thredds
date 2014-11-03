@@ -248,7 +248,7 @@ public class BufrCdmIndex {
       raf.seek(0);
 
       //// header message
-      if (!NcStream.readAndTest(raf, MAGIC_START.getBytes(Charset.forName("UTF-8")))) {
+      if (!NcStream.readAndTest(raf, MAGIC_START.getBytes(CDM.utf8Charset))) {
         log.error("BufrCdmIndex {}: invalid index", raf.getLocation());
         return false;
       }

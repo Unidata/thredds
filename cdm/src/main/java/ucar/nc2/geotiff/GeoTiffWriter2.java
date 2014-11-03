@@ -602,7 +602,8 @@ public class GeoTiffWriter2 extends GeotiffWriter {
             }
           }
           if (tempPixelSum > 0) {
-            interpolatedArray.setFloat(curIndex, tempPixelSum / numNeighborHasValue);
+            float val =  numNeighborHasValue == 0 ? 0 : tempPixelSum / numNeighborHasValue;
+            interpolatedArray.setFloat(curIndex, val);
           }
         } else {
           interpolatedArray.setFloat(curIndex, curValue);

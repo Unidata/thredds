@@ -40,10 +40,10 @@ import org.jdom2.input.SAXBuilder;
 import ucar.nc2.grib.GribResourceReader;
 import ucar.nc2.grib.grib1.*;
 import ucar.nc2.ncml.NcMLReader;
-import ucar.nc2.wmo.Util;
 import ucar.unidata.util.StringUtil2;
 
 import java.io.*;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -277,7 +277,7 @@ TBLE2 cptec_254_params[] = {
         if (debug) System.out.printf(" %s%n", parameter);
       }
 
-      parameters = result; // all at once - thread safe
+      parameters =  Collections.unmodifiableMap(result);  // all at once - thread safe
       return true;
 
     } catch (IOException ioError) {
@@ -384,7 +384,7 @@ TBLE2 cptec_254_params[] = {
         if (debug) System.out.printf(" %s%n", parameter);
       }
 
-      parameters = result; // all at once - thread safe
+      parameters =  Collections.unmodifiableMap(result);  // all at once - thread safe
       return true;
 
     } catch (IOException ioError) {
@@ -480,7 +480,8 @@ TBLE2 cptec_254_params[] = {
         result.put(parameter.getNumber(), parameter);
         if (debug) System.out.printf(" %s%n", parameter);
       }
-      parameters = result; // all at once - thread safe
+
+      parameters =  Collections.unmodifiableMap(result);  // all at once - thread safe
       return true;
     } catch (IOException ioError) {
       logger.warn("An error occurred in Grib1ParamTable while trying to open the parameter table for "
@@ -511,7 +512,7 @@ TBLE2 cptec_254_params[] = {
   }
 
   private interface XmlTableParser {
-    HashMap<Integer, Grib1Parameter> parseXml(Element root);
+    Map<Integer, Grib1Parameter> parseXml(Element root);
   }
 
   private class DssParser implements XmlTableParser {
@@ -528,8 +529,8 @@ TBLE2 cptec_254_params[] = {
      <units>m</units>
      </parameter>
      */
-    public HashMap<Integer, Grib1Parameter> parseXml(Element root) {
-      HashMap<Integer, Grib1Parameter> result = new HashMap<>();
+    public Map<Integer, Grib1Parameter> parseXml(Element root) {
+      Map<Integer, Grib1Parameter> result = new HashMap<>();
       List<Element> params = root.getChildren("parameter", ns);
       for (Element elem1 : params) {
         int code = Integer.parseInt(elem1.getAttributeValue("code"));
@@ -544,7 +545,7 @@ TBLE2 cptec_254_params[] = {
         result.put(parameter.getNumber(), parameter);
         if (debug) System.out.printf(" %s%n", parameter);
       }
-      return result;
+      return Collections.unmodifiableMap(result);  // all at once - thread safe
     }
   }
 
@@ -624,7 +625,7 @@ TBLE2 cptec_254_params[] = {
         if (debug) System.out.printf(" %s%n", parameter);
       }
 
-      parameters = result; // all at once - thread safe
+      parameters =  Collections.unmodifiableMap(result);  // all at once - thread safe
       return true;
 
     } catch (IOException ioError) {
@@ -676,7 +677,7 @@ TBLE2 cptec_254_params[] = {
           System.out.println(parameter.getNumber() + " " + parameter.getDescription() + " " + parameter.getUnit());
       }
 
-      this.parameters = params; // thread safe
+      parameters =  Collections.unmodifiableMap(params);  // all at once - thread safe
       return true;
 
     } catch (IOException ioError) {
@@ -689,6 +690,7 @@ TBLE2 cptec_254_params[] = {
   static public void main(String[] args) throws IOException {
     String dirS = "C:\\dev\\github\\thredds\\grib\\src\\main\\resources\\resources\\grib1\\ncl";
     File dir = new File(dirS);
+    if (dir.listFiles() == null) return;
     for (File f : dir.listFiles()) {
       if (!f.getName().endsWith(".h")) continue;
       Grib1ParamTableReader table = new Grib1ParamTableReader(f.getPath());

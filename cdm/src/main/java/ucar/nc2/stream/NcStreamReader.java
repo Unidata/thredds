@@ -33,6 +33,7 @@
 package ucar.nc2.stream;
 
 import ucar.nc2.NetcdfFile;
+import ucar.nc2.NetcdfFileSubclass;
 import ucar.nc2.Structure;
 import ucar.ma2.*;
 
@@ -286,7 +287,7 @@ public class NcStreamReader {
 
   public NetcdfFile proto2nc(NcStreamProto.Header proto, NetcdfFile ncfile) throws InvalidProtocolBufferException {
     if (ncfile == null)
-      ncfile = new NetcdfFileStream(); // not used i think
+      ncfile = new NetcdfFileSubclass(); // not used i think
     ncfile.setLocation(proto.getLocation());
     if (proto.hasId()) ncfile.setId(proto.getId());
     if (proto.hasTitle()) ncfile.setTitle(proto.getTitle());
@@ -297,8 +298,4 @@ public class NcStreamReader {
     return ncfile;
   }
 
-  // need to have access to protected methods  ??
-  private static class NetcdfFileStream extends NetcdfFile {
-
-  }
 }

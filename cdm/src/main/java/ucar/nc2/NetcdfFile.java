@@ -217,7 +217,7 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable, AutoClosea
     }
 
     ////////////////////////////////////////////////////////////////////////////////
-    // iosps below here are a bit slow in isValidFile() eg needing an exception thrown
+    // iosps below here are possibly slow in isValidFile() eg needing an exception thrown
     // so they are relegated to the end
     try {
       registerIOProvider("ucar.nc2.iosp.dmsp.DMSPiosp");
@@ -833,7 +833,7 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable, AutoClosea
   //protected boolean unlocked = false; // in the cache and locked - detect unguarded access to this file
   private boolean immutable = false;
 
-  protected ucar.nc2.util.cache.FileCache cache;
+  protected ucar.nc2.util.cache.FileCacheIF cache;
   protected IOServiceProvider spi;
 
   // "global view" is derived from the group information.
@@ -886,7 +886,7 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable, AutoClosea
    * Public by accident.
    * Optional file caching.
    */
-  public void setFileCache(ucar.nc2.util.cache.FileCache cache) {
+  public void setFileCache(ucar.nc2.util.cache.FileCacheIF cache) {
     this.cache = cache;
   }
 
@@ -1440,6 +1440,7 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable, AutoClosea
   /**
    * Open an existing netcdf file (read only), using the specified iosp.
    * The ClassLoader for the NetcdfFile class is used.
+   * Use NetcdfFileSubclass to access this constructor
    *
    * @param iospClassName the name of the class implementing IOServiceProvider
    * @param iospParam     parameter to pass to the IOSP (before open is called)
@@ -1511,6 +1512,7 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable, AutoClosea
 
   /**
    * Open an existing netcdf file, passing in the iosp and the raf.
+   * Use NetcdfFileSubclass to access this constructor
    *
    * @param spi        use this IOServiceProvider instance
    * @param raf        read from this RandomAccessFile
@@ -1575,6 +1577,7 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable, AutoClosea
 
   /**
    * Open an existing netcdf file (read only) , but dont do nuttin else
+   * Use NetcdfFileSubclass to access this constructor
    *
    * @param spi      use this IOServiceProvider instance
    * @param location location of data
@@ -1586,6 +1589,7 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable, AutoClosea
 
   /**
    * For subclass construction. Call finish() when completed construction.
+   * Use NetcdfFileSubclass to access this constructor
    */
   protected NetcdfFile() {
   }

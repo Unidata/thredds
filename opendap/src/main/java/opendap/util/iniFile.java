@@ -41,6 +41,7 @@
 package opendap.util;
 
 import java.io.*;
+import java.nio.charset.Charset;
 import java.util.*;
 
 
@@ -188,13 +189,13 @@ public class iniFile
 
         try {
             try (
-                BufferedReader fp = new BufferedReader(new InputStreamReader(new FileInputStream(iniFile)));
+                BufferedReader fp = new BufferedReader(new InputStreamReader(new FileInputStream(iniFile), Charset.forName("UTF-8")));
             ) {
                 boolean done = false;
                 while(!done) {
-
-                    String thisLine = fp.readLine().trim();
-
+                    String thisLine = fp.readLine();
+		            if(thisLine != null && thisLine.trim().length() == 0)
+			            thisLine = null;
                     if(thisLine != null) {
                         if(Debug) System.out.println("Read: \"" + thisLine + "\"");
 
@@ -289,10 +290,8 @@ public class iniFile
             else
                 sectionIndex++;
         }
-
         if(!done)
             return (null);
-
         return (((Vector) sectionProperties.elementAt(sectionIndex)).elements());
 
     }
@@ -373,25 +372,15 @@ public class iniFile
         } else {
 
             while(se.hasMoreElements()) {
-
                 String sname = (String) se.nextElement();
-
                 setSection(sname);
-
                 ps.println("[" + sname + "]");
-
                 Enumeration pe = getPropList(sname);
-
-                while(pe.hasMoreElements()) {
-
+                while(pe != null && pe.hasMoreElements()) {
                     String pair[] = (String[]) pe.nextElement();
-
                     String prop = pair[0];
-
                     String valu = getProperty(prop);
-
                     ps.println("    \"" + prop + "\" = \"" + valu + "\"");
-
                 }
             }
         }

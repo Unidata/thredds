@@ -15,7 +15,7 @@ import ucar.nc2.ft.grid.CoverageDataset;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time.CalendarDateRange;
 import ucar.nc2.units.DateRange;
-import ucar.nc2.util.cache.FileCache;
+import ucar.nc2.util.cache.FileCacheIF;
 import ucar.unidata.geoloc.LatLonRect;
 
 import java.io.IOException;
@@ -226,7 +226,7 @@ public class CoverageDatasetImpl implements CoverageDataset {
   }
 
   @Override
-  public void setFileCache(FileCache fileCache) {
+  public void setFileCache(FileCacheIF fileCache) {
     ds.setFileCache(fileCache);
   }
 

@@ -54,50 +54,51 @@ public class TestGribEnsembles {
 
     String filename = TestDir.cdmUnitTestDir + "ft/grid/ensemble/jitka/MOEASURGEENS20100709060002.grib";
     System.out.printf("Open %s%n", filename);
-    NetcdfFile datafile = NetcdfFile.open(filename);
-    NetcdfDataset netcdfDataset = new NetcdfDataset(datafile);
-    GridDataset gridDataset = new GridDataset(netcdfDataset);
+    try (NetcdfFile datafile = NetcdfFile.open(filename)) {
+      NetcdfDataset netcdfDataset = new NetcdfDataset(datafile);
+      GridDataset gridDataset = new GridDataset(netcdfDataset);
 
-    String variableName = "VAR_10-3-192_L1";
+      String variableName = "VAR_10-3-192_L1";
 
-    GridDatatype gridDatatype = gridDataset.findGridDatatypeByAttribute(GribIosp.VARIABLE_ID_ATTNAME, variableName);
-    assertNotNull(gridDatatype);
+      GridDatatype gridDatatype = gridDataset.findGridDatatypeByAttribute(GribIosp.VARIABLE_ID_ATTNAME, variableName);
+      assertNotNull(gridDatatype);
 
-    Dimension rtDimension = gridDatatype.getRunTimeDimension();
-    Dimension ensDimension = gridDatatype.getEnsembleDimension();
-    Dimension timeDimension = gridDatatype.getTimeDimension();
-    Dimension xDimension = gridDatatype.getXDimension();
-    Dimension yDimension = gridDatatype.getYDimension();
-    Dimension zDimension = gridDatatype.getZDimension();
+      Dimension rtDimension = gridDatatype.getRunTimeDimension();
+      Dimension ensDimension = gridDatatype.getEnsembleDimension();
+      Dimension timeDimension = gridDatatype.getTimeDimension();
+      Dimension xDimension = gridDatatype.getXDimension();
+      Dimension yDimension = gridDatatype.getYDimension();
+      Dimension zDimension = gridDatatype.getZDimension();
 
-    assertNull(rtDimension);
-    assertNotNull(ensDimension);
-    assertNotNull(timeDimension);
-    assertNotNull(xDimension);
-    assertNotNull(yDimension);
-    assertNull(zDimension);
+      assertNull(rtDimension);
+      assertNotNull(ensDimension);
+      assertNotNull(timeDimension);
+      assertNotNull(xDimension);
+      assertNotNull(yDimension);
+      assertNull(zDimension);
 
-    // test ordering
-    int rtIndex = gridDatatype.getRunTimeDimensionIndex();
-    int ensIndex = gridDatatype.getEnsembleDimensionIndex();
-    int timeIndex = gridDatatype.getTimeDimensionIndex();
-    int yIndex = gridDatatype.getYDimensionIndex();
-    int xIndex = gridDatatype.getXDimensionIndex();
-    int zIndex = gridDatatype.getZDimensionIndex();
+      // test ordering
+      int rtIndex = gridDatatype.getRunTimeDimensionIndex();
+      int ensIndex = gridDatatype.getEnsembleDimensionIndex();
+      int timeIndex = gridDatatype.getTimeDimensionIndex();
+      int yIndex = gridDatatype.getYDimensionIndex();
+      int xIndex = gridDatatype.getXDimensionIndex();
+      int zIndex = gridDatatype.getZDimensionIndex();
 
-    assertEquals(-1, rtIndex);
-    assertEquals(0, ensIndex);
-    assertEquals(1, timeIndex);
-    assertEquals(2, yIndex);
-    assertEquals(3, xIndex);
-    assertEquals(-1, zIndex);
+      assertEquals(-1, rtIndex);
+      assertEquals(0, ensIndex);
+      assertEquals(1, timeIndex);
+      assertEquals(2, yIndex);
+      assertEquals(3, xIndex);
+      assertEquals(-1, zIndex);
 
-    Dimension ensDim = gridDatatype.getDimension(ensIndex); //ensIndex = 0
-    assertEquals(1, ensDim.getLength());
-    assertEquals("ens", ensDim.getShortName());
+      Dimension ensDim = gridDatatype.getDimension(ensIndex); //ensIndex = 0
+      assertEquals(1, ensDim.getLength());
+      assertEquals("ens", ensDim.getShortName());
 
-    Variable variable = gridDatatype.getVariable().getOriginalVariable();
-    ensDim = variable.getDimension(ensIndex); //ensIndex = 0
+      Variable variable = gridDatatype.getVariable().getOriginalVariable();
+      ensDim = variable.getDimension(ensIndex); //ensIndex = 0
+    }
 
   }
 
@@ -107,27 +108,28 @@ public class TestGribEnsembles {
     String filename = TestDir.cdmUnitTestDir + "ft/grid/ensemble/jitka/ECME_RIZ_201201101200_00600_GB";
     System.out.printf("Open %s%n", filename);
 
-    NetcdfFile datafile = NetcdfFile.open(filename);
-    NetcdfDataset netcdfDataset = new NetcdfDataset(datafile);
-    GridDataset gridDataset = new GridDataset(netcdfDataset);
+    try (NetcdfFile datafile = NetcdfFile.open(filename)) {
+      NetcdfDataset netcdfDataset = new NetcdfDataset(datafile);
+      GridDataset gridDataset = new GridDataset(netcdfDataset);
 
-    String requiredName = "Total_precipitation_surface";
-    GridDatatype gridDatatype = gridDataset.findGridDatatype(requiredName);
-    assertNotNull(gridDatatype);
-    assertEquals(requiredName, gridDatatype.getFullName());
+      String requiredName = "Total_precipitation_surface";
+      GridDatatype gridDatatype = gridDataset.findGridDatatype(requiredName);
+      assertNotNull(gridDatatype);
+      assertEquals(requiredName, gridDatatype.getFullName());
 
-    Dimension ensDimension = gridDatatype.getEnsembleDimension();
-    assertNotNull(ensDimension); //fails in 4.3 , null returned
-    assertEquals(51, ensDimension.getLength()); // is 2 in 4.2, however it should be 51 (incl. control forecast)
+      Dimension ensDimension = gridDatatype.getEnsembleDimension();
+      assertNotNull(ensDimension); //fails in 4.3 , null returned
+      assertEquals(51, ensDimension.getLength()); // is 2 in 4.2, however it should be 51 (incl. control forecast)
 
-    Dimension timeDimension = gridDatatype.getTimeDimension();
-    assertEquals(1, timeDimension.getLength()); //ok in both versions
+      Dimension timeDimension = gridDatatype.getTimeDimension();
+      assertEquals(1, timeDimension.getLength()); //ok in both versions
 
-    Dimension xDimension = gridDatatype.getXDimension();
-    assertEquals(31, xDimension.getLength()); //ok in both versions
+      Dimension xDimension = gridDatatype.getXDimension();
+      assertEquals(31, xDimension.getLength()); //ok in both versions
 
-    Dimension yDimension = gridDatatype.getYDimension();
-    assertEquals(21, yDimension.getLength()); //ok in both versions
+      Dimension yDimension = gridDatatype.getYDimension();
+      assertEquals(21, yDimension.getLength()); //ok in both versions
+    }
   }
 
 }

@@ -42,6 +42,7 @@ import thredds.filesystem.MFileOS;
 import thredds.inventory.*;
 import thredds.inventory.filter.StreamFilter;
 import thredds.inventory.partition.*;
+import ucar.nc2.constants.CDM;
 import ucar.nc2.grib.grib1.Grib1RecordScanner;
 import ucar.nc2.grib.grib2.Grib2RecordScanner;
 import ucar.nc2.stream.NcStream;
@@ -75,7 +76,7 @@ public class GribCdmIndex implements IndexReader {
     String magic;
 
     raf.seek(0);
-    byte[] b = new byte[Grib2CollectionWriter.MAGIC_START.getBytes().length];   // they are all the same
+    byte[] b = new byte[Grib2CollectionWriter.MAGIC_START.getBytes(CDM.utf8Charset).length];   // they are all the same
     raf.readFully(b);
     magic = new String(b);
 
@@ -753,7 +754,7 @@ public class GribCdmIndex implements IndexReader {
       indexRaf.seek(0);
 
       //// header message
-      magic = new byte[Grib2CollectionWriter.MAGIC_START.getBytes().length];   // they are all the same
+      magic = new byte[Grib2CollectionWriter.MAGIC_START.getBytes(CDM.utf8Charset).length];   // they are all the same
       indexRaf.readFully(magic);
 
       version = indexRaf.readInt();

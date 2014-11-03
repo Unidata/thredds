@@ -344,7 +344,7 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
    *
    * @return File Cache or null if not enabled.
    */
-  static public ucar.nc2.util.cache.FileCache getNetcdfFileCache() {
+  static public ucar.nc2.util.cache.FileCacheIF getNetcdfFileCache() {
     return fileCache;
   }
 

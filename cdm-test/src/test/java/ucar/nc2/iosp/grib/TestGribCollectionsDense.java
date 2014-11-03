@@ -37,17 +37,21 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import ucar.nc2.dt.GridDatatype;
 import ucar.nc2.dt.grid.GridDataset;
+import ucar.nc2.grib.collection.GribCollection;
 import ucar.nc2.grib.collection.GribIosp;
+import ucar.nc2.grib.collection.PartitionCollection;
 import ucar.nc2.util.DebugFlagsImpl;
+import ucar.nc2.util.cache.FileCache;
 import ucar.unidata.io.RandomAccessFile;
 import ucar.unidata.test.util.TestDir;
 
 import java.io.IOException;
+import java.util.Formatter;
 
 /**
  * Look for missing data in Grib Collections.
  *
- * Indicates that coordinates are not matching, because DGEX_CONUS is dense (hass data for each coordinate).
+ * Indicates that coordinates are not matching, because DGEX_CONUS is dense (has data for each coordinate).
  * Note that not all grib collections will be dense.
  *
  * @author John
@@ -58,11 +62,17 @@ public class TestGribCollectionsDense {
   @BeforeClass
   static public void before() {
     GribIosp.setDebugFlags(new DebugFlagsImpl("Grib/indexOnly"));
+    PartitionCollection.initPartitionCache(10, 100, -1);
+    GribCollection.initDataRafCache(11, 100, -1);
   }
 
   @AfterClass
   static public void after() {
     GribIosp.setDebugFlags(new DebugFlagsImpl(""));
+    Formatter out = new Formatter(System.out);
+    PartitionCollection.getPartitionCache().showCache(out);
+    GribCollection.getDataRafCache().showCache(out);
+    FileCache.shutdown();
   }
 
   @Test
@@ -96,7 +106,6 @@ public class TestGribCollectionsDense {
 
   // @Test
   public void problem() throws IOException {
-    GribIosp.setDebugFlags(new DebugFlagsImpl("Grib/indexOnlyShow"));
     String filename = "/gribCollections/dgex/DGEX-test-dgex.ncx2";
     //String filename = "/gribCollections/dgex/20141011/DGEX-test-20141011.ncx2";
     try (GridDataset gds = GridDataset.open(TestDir.cdmUnitTestDir + filename)) {

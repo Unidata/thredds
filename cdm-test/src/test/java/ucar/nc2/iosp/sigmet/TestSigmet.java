@@ -42,7 +42,9 @@ public class TestSigmet {
     @Test
     public void testOpen() throws IOException
     {
-        NetcdfFile nc = NetcdfFile.open(filename);
+        try (NetcdfFile nc = NetcdfFile.open(filename)) {
+
+        }
     }
 
 }

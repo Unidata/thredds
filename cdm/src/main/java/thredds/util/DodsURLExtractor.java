@@ -35,6 +35,8 @@
 
 package thredds.util;
 
+import ucar.nc2.constants.CDM;
+
 import javax.swing.text.AttributeSet;
 import javax.swing.text.MutableAttributeSet;
 import javax.swing.text.html.HTML;
@@ -114,10 +116,10 @@ public class DodsURLExtractor {
     String line = buffIn.readLine();
     while (line != null) {
       String lline = line.toLowerCase();
-      if (0 <= lline.indexOf("<meta "))  // skip meta tags
+      if (lline.contains("<meta "))  // skip meta tags
         continue;
       //System.out.println("--"+line);
-      bos.write(line.getBytes());
+      bos.write(line.getBytes(CDM.utf8Charset));
       line = buffIn.readLine();
     }
     buffIn.close();

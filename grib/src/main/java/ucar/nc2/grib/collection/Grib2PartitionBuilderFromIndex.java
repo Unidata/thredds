@@ -38,7 +38,6 @@ package ucar.nc2.grib.collection;
 import thredds.featurecollection.FeatureCollectionConfig;
 import ucar.unidata.io.RandomAccessFile;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.List;
 
@@ -122,8 +121,7 @@ public class Grib2PartitionBuilderFromIndex extends Grib2CollectionBuilderFromIn
     vip.nrecords = vi.nrecords;  */
 
     for (PartitionCollectionProto.PartitionVariable pv : pvList) {
-      vip.addPartition(pv.getPartno(), pv.getGroupno(), pv.getVarno(), pv.getFlag(), pv.getNdups(),
-              pv.getNrecords(), pv.getMissing(), pv.getDensity());
+      vip.addPartition(pv.getPartno(), pv.getGroupno(), pv.getVarno()); // , pv.getFlag(), pv.getNdups(), pv.getNrecords(), pv.getMissing(), pv.getDensity());
     }
 
     return vip;

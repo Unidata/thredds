@@ -35,6 +35,7 @@ package ucar.nc2.iosp.hdf5;
 import org.junit.Test;
 import ucar.ma2.*;
 import ucar.nc2.*;
+import ucar.nc2.constants.CDM;
 import ucar.nc2.iosp.netcdf3.N3iosp;
 import ucar.nc2.util.Misc;
 import ucar.unidata.test.util.TestDir;
@@ -245,7 +246,7 @@ public class TestN4reading {
       System.out.println("\n**** testReadNetcdf4 done\n\n" + ncfile);
       Variable v = ncfile.findVariable("d");
       String attValue = ncfile.findAttValueIgnoreCase(v, "c", null);
-      String s = Misc.showBytes(attValue.getBytes());
+      String s = Misc.showBytes(attValue.getBytes(CDM.utf8Charset));
       System.out.println(" d:c= (" + attValue + ") = " + s);
       //Array data = v.read();
       //NCdumpW.printArray(data, "cr", System.out, null);

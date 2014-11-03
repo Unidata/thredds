@@ -52,6 +52,7 @@ import opendap.dap.parsers.ParseException;
 import opendap.util.Debug;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import ucar.nc2.constants.CDM;
 import ucar.nc2.util.EscapeStrings;
 
 /**
@@ -188,12 +189,12 @@ public abstract class AbstractServlet extends javax.servlet.http.HttpServlet {
      * Keep a copy of the servlet config
      */
     private ServletConfig servletConfig = null;
-    
+
     /**
      * Keep a copy of the servlet context
      */
     private ServletContext servletContext = null;
-    
+
     /**
      * path to the root of the servlet in tomcat webapps directory
      */
@@ -268,7 +269,7 @@ public abstract class AbstractServlet extends javax.servlet.http.HttpServlet {
       while (toker.hasMoreTokens())
         Debug.set(toker.nextToken(), true);
     }
-      
+
     servletConfig = this.getServletConfig();
     servletContext = servletConfig.getServletContext();
     rootpath = servletContext.getRealPath("/");
@@ -412,9 +413,6 @@ public abstract class AbstractServlet extends javax.servlet.http.HttpServlet {
    * @param rs The <code>ReqState</code> for the client.
    */
   public void anyExceptionHandler(Throwable e, ReqState rs) {
-    if(rs == null) {
-        int x=1;
-    }
     HttpServletResponse response = rs.getResponse();
     try {
       log.error("DODServlet ERROR (anyExceptionHandler): " + e);
@@ -841,7 +839,7 @@ public abstract class AbstractServlet extends javax.servlet.http.HttpServlet {
       // Send the Data delimiter back to the client
       //pw.println("Data:"); // JCARON CHANGED
       pw.flush();
-      bOut.write("\nData:\n".getBytes()); // JCARON CHANGED
+      bOut.write("\nData:\n".getBytes(CDM.utf8Charset)); // JCARON CHANGED
       bOut.flush();
 
       // Send the binary data back to the client
@@ -1358,20 +1356,24 @@ public abstract class AbstractServlet extends javax.servlet.http.HttpServlet {
     if (track) {
       int n = prArr.size();
       int pending = 0;
-      String preqs = "";
+      StringBuilder preqs = new StringBuilder();
       for (int i = 0; i < n; i++) {
         ReqState rs = (ReqState) prArr.get(i);
         RequestDebug reqD = (RequestDebug) rs.getUserObject();
         if(!reqD.done) {
-          preqs += "<pre>-----------------------\n";
-          preqs += "Request[" + reqD.reqno + "](" + reqD.threadDesc + ") is pending.\n";
-          preqs += rs.toString();
-          preqs += "</pre>";
+          preqs.append("<pre>-----------------------\n");
+          preqs.append("Request[");
+          preqs.append(reqD.reqno);
+          preqs.append("](");
+          preqs.append(reqD.threadDesc);
+          preqs.append(") is pending.\n");
+          preqs.append(rs.toString());
+          preqs.append("</pre>");
           pending++;
         }
       }
       os.println("<h2>" + pending + " Pending Request(s)</h2>");
-      os.println(preqs);
+      os.println(preqs.toString());
     }
   }
 
@@ -1559,13 +1561,14 @@ public abstract class AbstractServlet extends javax.servlet.http.HttpServlet {
     ReqState rs = null;
     RequestDebug reqD = null;
     try {
-      if (Debug.isSet("probeRequest")) {
-        probeRequest(System.out, rs);
-      }
 
       rs = getRequestState(request, response);
       if (rs != null) {
-        String ds = rs.getDataSet();
+          if (Debug.isSet("probeRequest")) {
+              probeRequest(System.out, rs);
+          }
+
+          String ds = rs.getDataSet();
         String suff = rs.getRequestSuffix();
         isDebug = ((ds != null) && ds.equals("debug") && (suff != null) && suff.equals(""));
       }

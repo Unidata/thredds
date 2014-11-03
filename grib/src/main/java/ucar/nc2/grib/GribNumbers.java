@@ -270,10 +270,10 @@ public final class GribNumbers {
     int h = raf.read();
 
     return (1 - ((a & 128) >> 6))
-            * ((a & 127) << 56 | b << 48 | c << 40 | d << 32 | e << 24
+            * ((long)(a & 127) << 56 | (long) b << 48 | (long) c << 40 | (long) d << 32 | e << 24
             | f << 16 | g << 8 | h);
 
-  }  // end int8
+  }
 
   /**
    * Is the bit set in this octet
