@@ -131,13 +131,13 @@
   need to add the following pom snippet to your pom.xml file:</p>
 
 <pre>
-&lt;distributionManagement&gt;
-&nbsp;&nbsp;&nbsp;&nbsp;&lt;repository&gt;
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;id&gt;unidata-releases&lt;/id&gt;
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;name>UNIDATA Releases&lt;/name&gt;
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;url&gt;https://artifacts.unidata.ucar.edu/content/repositories/unidata-releases/&lt;/url&gt;
-&nbsp;&nbsp;&nbsp;&nbsp;&lt;/repository&gt;
-&lt;/distributionManagement&gt;
+&lt;repositories&gt;
+    &lt;repository&gt;
+        &lt;id&gt;unidata-releases&lt;/id&gt;
+        &lt;name>UNIDATA Releases&lt;/name&gt;
+        &lt;url&gt;https://artifacts.unidata.ucar.edu/content/repositories/unidata-releases/&lt;/url&gt;
+    &lt;/repository&gt;
+&lt;/repositories&gt;
 </pre>
 
 <p>
@@ -145,7 +145,7 @@
 
 <p>
 
-  &nbsp;&nbsp;<a href="http://maven.apache.org/pom.html#Repositories">Maven Repository information</a>
+    <a href="http://maven.apache.org/pom.html#Repositories">Maven Repository information</a>
 
 <p>
 
@@ -153,7 +153,7 @@
 
 <p>
 
-  &nbsp;&nbsp;<a href="http://maven.apache.org/settings.html">Maven Settings information</a>
+    <a href="http://maven.apache.org/settings.html">Maven Settings information</a>
 
 <p>
 
@@ -355,7 +355,7 @@ mkdir javaUtilPrefs/.usermPrefs
   catalog is unchanged? When do referenced catalogs get scanned?</strong></p>
 <blockquote>
   <p> The TDS reads in all the config catalogs at startup. It caches all of them, and uses the "expires" attribute on the catalog to decide if/when it needs to
-    re-read a catalog.&nbsp; It must read all catalogs, including catalogRefs, because it has to know what the possible dataset URLs are, and there is no
+    re-read a catalog.  It must read all catalogs, including catalogRefs, because it has to know what the possible dataset URLs are, and there is no
     contract that a client has to read a catalog before accessing the dataset. </p>
 </blockquote>
 
