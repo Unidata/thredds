@@ -159,6 +159,14 @@ public class Misc {
     return f.toString();
   }
 
+  static public void showInts(int[] inta, Formatter f) {
+    if (inta == null) {
+      f.format("null");
+      return;
+    }
+    for (int i : inta) f.format("%d, ", i);
+  }
+
   static public String showBytes(byte[] buff) {
     StringBuilder sbuff = new StringBuilder();
     for (int i = 0; i < buff.length; i++) {

@@ -42,6 +42,7 @@ import ucar.nc2.grib.collection.GribIosp;
 import ucar.nc2.grib.collection.PartitionCollection;
 import ucar.nc2.util.DebugFlagsImpl;
 import ucar.nc2.util.cache.FileCache;
+import ucar.nc2.util.cache.FileCacheIF;
 import ucar.unidata.io.RandomAccessFile;
 import ucar.unidata.test.util.TestDir;
 
@@ -60,20 +61,32 @@ import java.util.Formatter;
 public class TestGribCollectionsDense {
 
   @BeforeClass
-  static public void before() {
-    GribIosp.setDebugFlags(new DebugFlagsImpl("Grib/indexOnly"));
-    PartitionCollection.initPartitionCache(10, 100, -1);
-    GribCollection.initDataRafCache(11, 100, -1);
-  }
+   static public void before() {
+     RandomAccessFile.setDebugLeaks(true);
+     GribIosp.setDebugFlags(new DebugFlagsImpl("Grib/indexOnly"));
+     PartitionCollection.initPartitionCache(50, 700, -1, -1);
+     GribCollection.initDataRafCache(11, 100, -1);
+   }
 
-  @AfterClass
-  static public void after() {
-    GribIosp.setDebugFlags(new DebugFlagsImpl(""));
-    Formatter out = new Formatter(System.out);
-    PartitionCollection.getPartitionCache().showCache(out);
-    GribCollection.getDataRafCache().showCache(out);
-    FileCache.shutdown();
-  }
+   @AfterClass
+   static public void after() {
+     GribIosp.setDebugFlags(new DebugFlagsImpl());
+     FileCacheIF cache = PartitionCollection.getPartitionCache();
+     if (cache == null) return;
+
+     Formatter out = new Formatter(System.out);
+     cache.showCache(out);
+     cache.showTracking(out);
+     cache.clearCache(false);
+     GribCollection.getDataRafCache().showCache(out);
+     TestDir.checkLeaks();
+
+     System.out.printf("countGC=%d%n", GribCollection.countGC);
+     System.out.printf("countPC=%d%n", PartitionCollection.countPC);
+
+     FileCache.shutdown();
+     RandomAccessFile.setDebugLeaks(false);
+   }
 
   @Test
   public void testLeaf() throws IOException {

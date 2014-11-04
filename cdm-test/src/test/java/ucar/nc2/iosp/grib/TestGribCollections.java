@@ -44,6 +44,7 @@ import ucar.nc2.grib.collection.GribIosp;
 import ucar.nc2.grib.collection.PartitionCollection;
 import ucar.nc2.util.DebugFlagsImpl;
 import ucar.nc2.util.cache.FileCache;
+import ucar.nc2.util.cache.FileCacheIF;
 import ucar.unidata.io.RandomAccessFile;
 import ucar.unidata.test.util.TestDir;
 
@@ -62,20 +63,32 @@ import java.util.Formatter;
 public class TestGribCollections {
 
   @BeforeClass
-  static public void before() {
-    GribIosp.setDebugFlags(new DebugFlagsImpl("Grib/indexOnly"));
-    PartitionCollection.initPartitionCache(10, 100, -1);
-    GribCollection.initDataRafCache(11, 100, -1);
-  }
+   static public void before() {
+     RandomAccessFile.setDebugLeaks(true);
+     // GribIosp.setDebugFlags(new DebugFlagsImpl("Grib/indexOnly"));
+     PartitionCollection.initPartitionCache(50, 700, -1, -1);
+     GribCollection.initDataRafCache(11, 100, -1);
+   }
 
-  @AfterClass
-  static public void after() {
-    GribIosp.setDebugFlags(new DebugFlagsImpl(""));
-    Formatter out = new Formatter(System.out);
-    PartitionCollection.getPartitionCache().showCache(out);
-    GribCollection.getDataRafCache().showCache(out);
-    FileCache.shutdown();
-  }
+   @AfterClass
+   static public void after() {
+     GribIosp.setDebugFlags(new DebugFlagsImpl());
+     FileCacheIF cache = PartitionCollection.getPartitionCache();
+     if (cache == null) return;
+
+     Formatter out = new Formatter(System.out);
+     cache.showCache(out);
+     cache.showTracking(out);
+     cache.clearCache(false);
+     GribCollection.getDataRafCache().showCache(out);
+     TestDir.checkLeaks();
+
+     System.out.printf("countGC=%d%n", GribCollection.countGC);
+     System.out.printf("countPC=%d%n", PartitionCollection.countPC);
+
+     FileCache.shutdown();
+     RandomAccessFile.setDebugLeaks(false);
+   }
 
   @Test
   public void testGC_Grib2() throws IOException {
@@ -87,9 +100,7 @@ public class TestGribCollections {
 
   @Test
   public void testPofG_Grib2() throws IOException {
-    RandomAccessFile.setDebugLeaks(true);
     Count count = read(TestDir.cdmUnitTestDir + "ncss/GFS/Global_onedeg/GFS_Global_onedeg-Global_onedeg.ncx2");
-    TestDir.checkLeaks();
 
     assert count.nread == 94352;
     assert count.nmiss == 0;
@@ -98,29 +109,24 @@ public class TestGribCollections {
   //// ncss/GFS/CONUS_80km/GFS_CONUS_80km-CONUS_80km.ncx2 has lots of missing records
   @Test
   public void testGC_Grib1() throws IOException {
-    RandomAccessFile.setDebugLeaks(true);
     Count count = read(TestDir.cdmUnitTestDir + "ncss/GFS/CONUS_80km/GFS_CONUS_80km_20120227_1200.grib1.ncx2");
-    TestDir.checkLeaks();
 
     assert count.nread == 7116;
     assert count.nmiss == 200;
   }
 
-
   @Test
   public void testPofG_Grib1() throws IOException {
-    RandomAccessFile.setDebugLeaks(true);
     Count count = read(TestDir.cdmUnitTestDir + "ncss/GFS/CONUS_80km/GFS_CONUS_80km-CONUS_80km.ncx2");
-    TestDir.checkLeaks();
 
     assert count.nread == 81340;
     assert count.nmiss == 1801;
   }
 
-  // @Test
+  @Test
   // RandomAccessFile gets opened 1441 times (!) for PofGC
   public void openFileProblem() throws IOException {
-    RandomAccessFile.setDebugLeaks(true);
+    long start = System.currentTimeMillis();
     // GribIosp.setDebugFlags(new DebugFlagsImpl("Grib/indexOnly Grib/indexOnlyShow"));
     String filename = "ncss/GFS/CONUS_80km/GFS_CONUS_80km-CONUS_80km.ncx2";
     try (GridDataset gds = GridDataset.open(TestDir.cdmUnitTestDir + filename)) {
@@ -128,10 +134,12 @@ public class TestGribCollections {
       assert gdt != null;
       TestGribCollections.Count count = TestGribCollections.read(gdt);
       System.out.printf("%n%50s == %d/%d%n", "total", count.nmiss, count.nread);
-      TestDir.checkLeaks();
 
       assert count.nread == 1440;
       assert count.nmiss == 631;
+      long took = System.currentTimeMillis() - start;
+      float r = ((float) took) / count.nread;
+      System.out.printf("%n   that took %d secs total, %f msecs per record%n", took / 1000, r);
     }
   }
 

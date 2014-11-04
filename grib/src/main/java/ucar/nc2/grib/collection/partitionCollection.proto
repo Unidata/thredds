@@ -4,7 +4,7 @@ option java_package = "ucar.nc2.grib.collection";
 option java_outer_classname = "PartitionCollectionProto";
 
 ///////////////////////////////////////////////////////////////////////////
-message PartitionVariable {
+message PartitionVariable {          // change to int arrays in Variable to save space
   required uint32 groupno = 1;
   required uint32 varno = 2;
   required uint32 flag = 3;

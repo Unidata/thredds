@@ -50,6 +50,7 @@ import ucar.nc2.util.cache.FileCacheIF;
 import ucar.nc2.util.cache.FileCacheable;
 import ucar.nc2.util.cache.FileFactory;
 import ucar.coord.Coordinate;
+import ucar.nc2.util.cache.SmartArrayInt;
 import ucar.unidata.io.RandomAccessFile;
 import ucar.unidata.util.StringUtil2;
 
@@ -69,18 +70,18 @@ public abstract class PartitionCollection extends GribCollection {
   private static FileCacheIF partitionCache;
 
   static public void initPartitionCache(int minElementsInMemory, int maxElementsInMemory, int period) {
-    partitionCache = new ucar.nc2.util.cache.FileCache("TimePartitionCache", minElementsInMemory, maxElementsInMemory, -1, period);
+    partitionCache = new ucar.nc2.util.cache.FileCacheARC("TimePartitionCache", minElementsInMemory, maxElementsInMemory, -1, period);
   }
 
   static public void initPartitionCache(int minElementsInMemory, int softLimit, int hardLimit, int period) {
-    partitionCache = new ucar.nc2.util.cache.FileCache("TimePartitionCache", minElementsInMemory, softLimit, hardLimit, period);
+    partitionCache = new ucar.nc2.util.cache.FileCacheARC("TimePartitionCache", minElementsInMemory, softLimit, hardLimit, period);
   }
 
   static public FileCacheIF getPartitionCache() {
     return partitionCache;
   }
 
-  static public void disableNetcdfFileCache() {
+  static public void disablePartitionCache() {
     if (null != partitionCache) partitionCache.disable();
     partitionCache = null;
   }
@@ -102,27 +103,74 @@ public abstract class PartitionCollection extends GribCollection {
 
   //////////////////////////////////////////////////////////////////////
 
-  // LOOK: should go back to int[] arrays, to save memory. basically 16*n, where n=4.8M with 700 file cache. 76M out of 214M.
   static class PartitionForVariable2D {
     int partno, groupno, varno; // , flag;     // what the hell is the flag used for ?
     //public int ndups, nrecords, missing;  // optional debugging - remove ? or factor out ??
     //public float density;                 // optional
+
+
+    PartitionForVariable2D(int partno, int groupno, int varno) {
+      this.partno = partno;
+      this.groupno = groupno;
+      this.varno = varno;
+    }
   }
 
   public class VariableIndexPartitioned extends GribCollection.VariableIndex {
-    private List<PartitionForVariable2D> partList; // must not change order - really ??
+    int nparts;
+    SmartArrayInt partnoSA;
+    SmartArrayInt groupnoSA;
+    SmartArrayInt varnoSA;
+
+    // transient
+    private List<PartitionForVariable2D> partList; // used only when creating, then discarded in finish LOOK can we put into Builder ??
 
     VariableIndexPartitioned(GroupGC g, VariableIndex other, int nparts) {
       super(g, other);
-      partList = new ArrayList<>(nparts);
+      this.nparts = nparts;
     }
 
-    public void addPartition(int partno, int groupno, int varno) { // }, int flag, int ndups, int nrecords, int missing, float density) {
+    public void setPartitions(List<PartitionCollectionProto.PartitionVariable> pvList) {
+      int[] partno = new int[nparts];
+      int[] groupno = new int[nparts];
+      int[] varno = new int[nparts];
+      int count = 0;
+      for (PartitionCollectionProto.PartitionVariable part : pvList) {
+        partno[count] = part.getPartno();
+        groupno[count] = part.getGroupno();
+        varno[count] = part.getVarno();
+        count++;
+      }
+      this.partnoSA =  new SmartArrayInt(partno);
+      this.groupnoSA =  new SmartArrayInt(groupno);
+      this.varnoSA =  new SmartArrayInt(varno);
 
-      PartitionForVariable2D partVar = new PartitionForVariable2D();
-      partVar.partno = partno;
-      partVar.groupno = groupno;
-      partVar.varno = varno;
+      partList = null; // GC
+    }
+
+    public void finish() {
+      int[] partno = new int[nparts];
+      int[] groupno = new int[nparts];
+      int[] varno = new int[nparts];
+      int count = 0;
+      for (PartitionForVariable2D part : partList) {
+        partno[count] = part.partno;
+        groupno[count] = part.groupno;
+        varno[count] = part.varno;
+        count++;
+      }
+      this.partnoSA =  new SmartArrayInt(partno);
+      this.groupnoSA =  new SmartArrayInt(groupno);
+      this.varnoSA =  new SmartArrayInt(varno);
+
+      partList = null; // GC
+    }
+
+    // only used by PartitionBuilder, not PartitionBuilderFromIndex
+    public void addPartition(int partno, int groupno, int varno) { // }, int flag, int ndups, int nrecords, int missing, float density) {
+      if (partList == null) partList = new ArrayList<>(nparts);
+
+      partList.add( new PartitionForVariable2D(partno, groupno, varno));
       //partVar.flag = flag;
 
       /* track stats in this PartVar
@@ -136,23 +184,23 @@ public abstract class PartitionCollection extends GribCollection {
       this.missing += partVar.missing;
       this.nrecords += partVar.nrecords;  */
 
-      this.partList.add(partVar);
+      // this.partList.add(partVar);
     }
 
     /* public void addPartition(int partno, int groupno, int varno) { // , int flag, VariableIndex vi) {
       addPartition(partno, groupno, varno); // , flag, vi.ndups, vi.nrecords, vi.missing, vi.density);
     } */
 
-    public void addPartition(PartitionForVariable2D pv) {
-      addPartition(pv.partno, pv.groupno, pv.varno); // , pv.flag, pv.ndups, pv.nrecords, pv.missing, pv.density);
-    }
+   // public void addPartition(PartitionForVariable2D pv) {
+   //   addPartition(pv.partno, pv.groupno, pv.varno); // , pv.flag, pv.ndups, pv.nrecords, pv.missing, pv.density);
+   // }
 
-    public Iterable<PartitionForVariable2D> getPartitionsForVariable() {
-      return partList;
-    }
+    //public Iterable<PartitionForVariable2D> getPartitionsForVariable() {
+   //   return partList;
+   // }
 
-    public PartitionForVariable2D getPartitionsForVariable(int idx) {
-      return partList.get(idx);
+    public PartitionForVariable2D getPartitionForVariable2D(int idx) {
+      return new PartitionForVariable2D(partnoSA.get(idx), groupnoSA.get(idx), varnoSA.get(idx));
     }
 
     @Override
@@ -160,24 +208,22 @@ public abstract class PartitionCollection extends GribCollection {
       Formatter sb = new Formatter();
       sb.format("VariableIndexPartitioned%n");
       sb.format(" partno=");
-      for (PartitionForVariable2D partVar : partList)
-        sb.format("%d,", partVar.partno);
+      this.partnoSA.show(sb);
       sb.format("%n groupno=");
-      for (PartitionForVariable2D partVar : partList)
-        sb.format("%d,", partVar.groupno);
+      this.groupnoSA.show(sb);
       sb.format("%n varno=");
-      for (PartitionForVariable2D partVar : partList)
-        sb.format("%d,", partVar.varno);
-      sb.format("%n flags=");
+      this.varnoSA.show(sb);
+      //sb.format("%n flags=");
       //for (PartitionForVariable2D partVar : partList)
       //  sb.format("%d,", partVar.flag);
       sb.format("%n");
       int count = 0;
       sb.format("     %7s %3s %3s %6s %3s%n", "N", "dups", "Miss", "density", "partition");
       // int totalN = 0, totalDups = 0, totalMiss = 0;
-      for (PartitionForVariable2D partVar : partList) {
-        Partition part = partitions.get(partVar.partno);
-        sb.format("   %2d: %7d %s%n", count++, partVar.partno, part.getFilename());
+      for (int i=0; i<nparts; i++) {
+        int partWant = this.partnoSA.get(i);
+        Partition part = partitions.get(partWant);
+        sb.format("   %2d: %7d %s%n", count++, partWant, part.getFilename());
         //sb.format("   %2d: %7d %3d %3d   %6.2f   %d %s%n", count++, partVar.nrecords, partVar.ndups, partVar.missing, partVar.density, partVar.partno, part.getFilename());
         //totalN += partVar.nrecords;
         //totalDups += partVar.ndups;
@@ -330,14 +376,11 @@ public abstract class PartitionCollection extends GribCollection {
         (PartitionCollection.VariableIndexPartitioned) getVariable2DByHash(group.horizCoordSys, cdmHash) :
         this;
 
-      PartitionForVariable2D partVar = null;
-      for (PartitionForVariable2D pvar : vip.partList)  { // LOOK linear search
-        if (pvar.partno == partno) {
-          partVar = pvar;
-          break;
-        }
-      }
-      if (partVar == null) {
+      PartitionForVariable2D partVar;
+      int idx = vip.partnoSA.findIdx(partno);
+      if (idx >= 0 && idx < vip.nparts)
+        partVar = vip.getPartitionForVariable2D(idx);
+      else {
         if (GribIosp.debugRead) System.out.printf("  cant find partition=%d in vip=%s%n", partno, vip);
         return null;
       }
@@ -562,8 +605,10 @@ public abstract class PartitionCollection extends GribCollection {
       File file = new File(directory, filename);
       File existingFile = GribCollection.getExistingFileOrCache( file.getPath());
       if (existingFile == null) {
-        GribCollection.getExistingFileOrCache( file.getPath());  // debug
-        return null;
+        // try reletive to index file
+        existingFile = new File(getIndexParentFile(), filename);
+        if (existingFile == null) return null;
+        if (!existingFile.exists()) return null;
       }
       return existingFile.getPath();
     }
@@ -720,16 +765,16 @@ public abstract class PartitionCollection extends GribCollection {
    * @param nparts size of partition list
    * @return a new VariableIndexPartitioned
    */
-  public VariableIndexPartitioned makeVariableIndexPartitioned(GroupGC group,
-                                                               GribCollection.VariableIndex from, int nparts) {
+  public VariableIndexPartitioned makeVariableIndexPartitioned(GroupGC group, GribCollection.VariableIndex from, int nparts) {
     VariableIndexPartitioned vip = new VariableIndexPartitioned(group, from, nparts);
     group.addVariable(vip);
 
     if (from instanceof VariableIndexPartitioned && !isPartitionOfPartitions) {
-      VariableIndexPartitioned fromp = (VariableIndexPartitioned) from;
-      for (PartitionForVariable2D pv : fromp.partList)
-        vip.addPartition(pv);
+      VariableIndexPartitioned vipFrom = (VariableIndexPartitioned) from;
+      for (int i=0; i<vipFrom.nparts; i++)
+        vip.addPartition(vipFrom.partnoSA.get(i), vipFrom.groupnoSA.get(i), vipFrom.varnoSA.get(i)); // LOOK we dont know if vipFrom has been finished
     }
+
     return vip;
   }
 
@@ -828,7 +873,7 @@ public abstract class PartitionCollection extends GribCollection {
   }
 
   /* public void close() throws java.io.IOException {
-    assert (objCache == null); LOOK WHY ??
+    assert (objCache == null);
     super.close();
   }  */
 

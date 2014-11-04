@@ -212,7 +212,7 @@ public abstract class GribPartitionBuilder  {
           varMap.put(vi.cdmHash, vi); // this will use the last one found
       }
       for (GribCollection.VariableIndex vi : varMap.values()) {
-        // convert each VariableIndex to VariableIndexPartitioned in result. note not using canon
+        // convert each VariableIndex to VariableIndexPartitioned in result. note not using canon vi, but last one found
         result.makeVariableIndexPartitioned(resultGroup, vi, npart); // this adds to resultGroup
       }
     }
@@ -310,6 +310,9 @@ public abstract class GribPartitionBuilder  {
 
       // for each variable, create union of coordinates across the partitions
       for (GribCollection.VariableIndex viResult : resultGroup.variList) {
+        PartitionCollection.VariableIndexPartitioned vip = (PartitionCollection.VariableIndexPartitioned) viResult;
+        vip.finish(); // create the SA, remove list LOOK, could do it differently
+
         // loop over partitions, make union coordinate; also time filter the intervals
         CoordinateUnionizer unionizer = new CoordinateUnionizer(viResult.getVarid(), intvMap);
         for (int partno = 0; partno < npart; partno++) {
@@ -787,8 +790,8 @@ public abstract class GribPartitionBuilder  {
 
         // extensions
     List<PartitionCollectionProto.PartitionVariable> pvarList = new ArrayList<>();
-    for (PartitionCollection.PartitionForVariable2D pvar : vp.getPartitionsForVariable())
-      pvarList.add(writePartitionVariableProto(pvar));
+    for (int i=0; i<vp.nparts; i++) // PartitionCollection.PartitionForVariable2D pvar : vp.getPartitionForVariable2D())
+      pvarList.add(writePartitionVariableProto(vp.partnoSA.get(i), vp.groupnoSA.get(i), vp.varnoSA.get(i)));  // LOOK finished ??
     b.setExtension(PartitionCollectionProto.partition, pvarList);
 
     return b.build();
@@ -808,11 +811,11 @@ public abstract class GribPartitionBuilder  {
     optional uint32 missing = 10;
   }
    */
-  private PartitionCollectionProto.PartitionVariable writePartitionVariableProto(PartitionCollection.PartitionForVariable2D pvar) throws IOException {
+  private PartitionCollectionProto.PartitionVariable writePartitionVariableProto(int partno, int groupno, int varno) throws IOException {
     PartitionCollectionProto.PartitionVariable.Builder pb = PartitionCollectionProto.PartitionVariable.newBuilder();
-    pb.setPartno(pvar.partno);
-    pb.setGroupno(pvar.groupno);
-    pb.setVarno(pvar.varno);
+    pb.setPartno(partno);
+    pb.setGroupno(groupno);
+    pb.setVarno(varno);
     pb.setFlag(0); // ignored
     /* pb.setNdups(pvar.ndups);
     pb.setNrecords(pvar.nrecords);

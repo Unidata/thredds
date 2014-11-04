@@ -59,30 +59,35 @@ public class TestGribCollectionsBig {
   String topdir =  TestDir.cdmUnitTestDir + "gribCollections/rdavm";
 
   @BeforeClass
-  static public void before() {
-    GribIosp.setDebugFlags(new DebugFlagsImpl("Grib/indexOnly"));
-    PartitionCollection.initPartitionCache(50, 700, -1, -1);
-  }
+   static public void before() {
+     RandomAccessFile.setDebugLeaks(true);
+     GribIosp.setDebugFlags(new DebugFlagsImpl("Grib/indexOnly"));
+     PartitionCollection.initPartitionCache(50, 700, -1, -1);
+    GribCollection.initDataRafCache(11, 100, -1);
+   }
 
-  @AfterClass
-  static public void after() {
-    GribIosp.setDebugFlags(new DebugFlagsImpl());
-    FileCacheIF cache = PartitionCollection.getPartitionCache();
-    if (cache == null) return;
+   @AfterClass
+   static public void after() {
+     GribIosp.setDebugFlags(new DebugFlagsImpl());
+     FileCacheIF cache = PartitionCollection.getPartitionCache();
+     if (cache == null) return;
 
-    Formatter out = new Formatter(System.out);
-    cache.showCache(out);
-    cache.showTracking(out);
-    cache.clearCache(false);
-    FileCache.shutdown();
-    TestDir.checkLeaks();
-    System.out.printf("countGC=%d%n", GribCollection.countGC);
-    System.out.printf("countPC=%d%n", PartitionCollection.countPC);
-  }
+     Formatter out = new Formatter(System.out);
+     cache.showCache(out);
+     cache.showTracking(out);
+     cache.clearCache(false);
+     GribCollection.getDataRafCache().showCache(out);
+     TestDir.checkLeaks();
+
+     System.out.printf("countGC=%d%n", GribCollection.countGC);
+     System.out.printf("countPC=%d%n", PartitionCollection.countPC);
+
+     FileCache.shutdown();
+     RandomAccessFile.setDebugLeaks(false);
+   }
 
   @Test
   public void testGC() throws IOException {
-    RandomAccessFile.setDebugLeaks(true);
     TestGribCollections.Count count = TestGribCollections.read(topdir + "/ds083.2/grib1/2008/2008.10/fnl_20081003_18_00.grib1.ncx2");
     TestDir.checkLeaks();
 
@@ -92,7 +97,6 @@ public class TestGribCollectionsBig {
 
   @Test
   public void testPofG() throws IOException {
-    RandomAccessFile.setDebugLeaks(true);
     TestGribCollections.Count count = TestGribCollections.read(topdir + "/ds083.2/grib1/2008/2008.10/ds083.2_Aggregation-2008.10.ncx2");
     TestDir.checkLeaks();
 
@@ -103,7 +107,6 @@ public class TestGribCollectionsBig {
 
   @Test
   public void testPofP() throws IOException {
-    RandomAccessFile.setDebugLeaks(true);
     try {
       TestGribCollections.Count count = TestGribCollections.read(topdir + "/ds083.2/grib1/2008/ds083.2_Aggregation-2008.ncx2");
       TestDir.checkLeaks();

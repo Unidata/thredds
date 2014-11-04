@@ -157,7 +157,7 @@ public class DebugCommands {
 
     act = new DebugController.Action("disableTimePartitionCache", "Disable TimePartition Cache") {
        public void doAction(DebugController.Event e) {
-         PartitionCollection.disableNetcdfFileCache();
+         PartitionCollection.disablePartitionCache();
          e.pw.println("  Disable TimePartition Cache ok");
        }
      };

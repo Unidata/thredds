@@ -84,7 +84,7 @@ import java.util.concurrent.atomic.AtomicLong;
  */
 @ThreadSafe
 public class FileCacheARC implements FileCacheIF {
-  static protected final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(FileCache.class);
+  static protected final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(FileCacheARC.class);
   static protected final org.slf4j.Logger cacheLog = org.slf4j.LoggerFactory.getLogger("cacheLogger");
   static boolean debug = false;
   static boolean debugPrint = false;
@@ -209,8 +209,8 @@ public class FileCacheARC implements FileCacheIF {
     // open the file
     ncfile = factory.open(location, buffer_size, cancelTask, spiObject);
     if (cacheLog.isDebugEnabled())
-      cacheLog.debug("FileCache " + name + " acquire " + hashKey + " " + ncfile.getLocation());
-    if (debugPrint) System.out.println("  FileCache " + name + " acquire " + hashKey + " " + ncfile.getLocation());
+      cacheLog.debug("FileCacheARC " + name + " acquire " + hashKey + " " + ncfile.getLocation());
+    if (debugPrint) System.out.println("  FileCacheARC " + name + " acquire " + hashKey + " " + ncfile.getLocation());
 
     // user may have canceled
     if ((cancelTask != null) && (cancelTask.isCancel())) {
@@ -252,7 +252,7 @@ public class FileCacheARC implements FileCacheIF {
       long lastModified = want.ncfile.getLastModified();
       if (lastModified != wantCacheElem.lastModified.get()) { // underlying file was modified
         if (cacheLog.isDebugEnabled())
-          cacheLog.debug("FileCache " + name + ": acquire from cache " + hashKey + " " + want.ncfile.getLocation() + " was changed; discard");
+          cacheLog.debug("FileCacheARC " + name + ": acquire from cache " + hashKey + " " + want.ncfile.getLocation() + " was changed; discard");
 
         expireFromCache(wantCacheElem);
         return null;
@@ -265,14 +265,13 @@ public class FileCacheARC implements FileCacheIF {
 
   // get CacheElement specified by hashKey. If found, update lastUsed in shadowCache.
   private CacheElement updateInCache(CacheElement elem) {
-
-    CacheElement shadowElem = shadowCache.remove(elem);
-    if (shadowElem != null) {
-      assert elem == shadowElem : elem +" != " + shadowElem;
-    }
+    if (shadowCache.firstKey() == elem) return elem;
 
     elem.updateAccessed();
-    shadowCache.replace(elem, elem); // faster if we could just insert at the top of the list. maybe we need to use LinkedList ?
+    CacheElement prev = shadowCache.put(elem, elem); // faster if we could just insert at the top of the list. maybe we need to use LinkedList ?
+    if (prev != null && (elem != prev)) {
+      System.out.printf("elem != prev%n");
+    }
     return elem;
   }
 
@@ -334,16 +333,16 @@ public class FileCacheARC implements FileCacheIF {
     if (file != null) {
       if (!file.isLocked.get()) {
         Exception e = new Exception("Stack trace");
-        cacheLog.warn("FileCache " + name + " release " + ncfile.getLocation() + " not locked; hash= "+ncfile.hashCode(), e);
+        cacheLog.warn("FileCacheARC " + name + " release " + ncfile.getLocation() + " not locked; hash= "+ncfile.hashCode(), e);
       }
       //file.lastAccessed = System.currentTimeMillis();
       //file.countAccessed++;
       file.isLocked.set(false);
-      if (cacheLog.isDebugEnabled()) cacheLog.debug("FileCache " + name + " release " + ncfile.getLocation()+"; hash= "+ncfile.hashCode());
-      if (debugPrint) System.out.println("  FileCache " + name + " release " + ncfile.getLocation());
+      if (cacheLog.isDebugEnabled()) cacheLog.debug("FileCacheARC " + name + " release " + ncfile.getLocation()+"; hash= "+ncfile.hashCode());
+      if (debugPrint) System.out.println("  FileCacheARC " + name + " release " + ncfile.getLocation());
       return;
     }
-    throw new IOException("FileCache " + name + " release does not have file in cache = " + ncfile.getLocation());
+    throw new IOException("FileCacheARC " + name + " release does not have file in cache = " + ncfile.getLocation());
   }
 
   // not private for testing
@@ -412,8 +411,8 @@ public class FileCacheARC implements FileCacheIF {
         this.ncfile = ncfile;
         ncfile.setFileCache(FileCacheARC.this);
 
-        if (cacheLog.isDebugEnabled()) cacheLog.debug("FileCache " + name + " add to cache " + hashKey);
-        if (debugPrint) System.out.println("  FileCache " + name + " add to cache " + hashKey);
+        if (cacheLog.isDebugEnabled()) cacheLog.debug("FileCacheARC " + name + " add to cache " + hashKey);
+        if (debugPrint) System.out.println("  FileCacheARC " + name + " add to cache " + hashKey);
       }
 
       public long getLastAccessed() {
@@ -427,9 +426,9 @@ public class FileCacheARC implements FileCacheIF {
       void remove() {
         int hashcode = System.identityHashCode(ncfile);    // using Object hashCode of the FileCacheable
         if (null == files.remove(hashcode))
-          cacheLog.warn("FileCache {} could not remove {} from files", name, ncfile.getLocation());
+          cacheLog.warn("FileCacheARC {} could not remove {} from files", name, ncfile.getLocation());
         if (!list.remove(this))
-          cacheLog.warn("FileCache {} could not remove {} from list", name, ncfile.getLocation());
+          cacheLog.warn("FileCacheARC {} could not remove {} from list", name, ncfile.getLocation());
         close();
       }
 
@@ -442,8 +441,8 @@ public class FileCacheARC implements FileCacheIF {
           log.error("close failed on "+ncfile.getLocation(), e);
         }
 
-        if (cacheLog.isDebugEnabled()) cacheLog.debug("FileCache " + name + " remove " + ncfile.getLocation());
-        if (debugPrint) System.out.println("  FileCache " + name + " remove " + ncfile.getLocation());
+        if (cacheLog.isDebugEnabled()) cacheLog.debug("FileCacheARC " + name + " remove " + ncfile.getLocation());
+        if (debugPrint) System.out.println("  FileCacheARC " + name + " remove " + ncfile.getLocation());
         ncfile = null;
       }
 
@@ -552,7 +551,7 @@ public class FileCacheARC implements FileCacheIF {
     // close all files in deleteList
     for (CacheElement.CacheFile file : deleteList) {
       if (force && file.isLocked.get())
-        cacheLog.warn("FileCache " + name + " force close locked file= " + file);
+        cacheLog.warn("FileCacheARC " + name + " force close locked file= " + file);
       //counter.decrementAndGet();
 
       if (file.ncfile == null) continue;
@@ -562,11 +561,11 @@ public class FileCacheARC implements FileCacheIF {
         file.ncfile.close();
         file.ncfile = null; // help the gc
       } catch (IOException e) {
-        log.error("FileCache " + name + " close failed on " + file);
+        log.error("FileCacheARC " + name + " close failed on " + file);
       }
     }
     if (cacheLog.isDebugEnabled())
-      cacheLog.debug("*FileCache " + name + " clearCache force= " + force + " deleted= " + deleteList.size() + " left=" + files.size());
+      cacheLog.debug("*FileCacheARC " + name + " clearCache force= " + force + " deleted= " + deleteList.size() + " left=" + files.size());
     //System.out.println("\n*NetcdfFileCache.clearCache force= " + force + " deleted= " + deleteList.size() + " left=" + counter.get());
   }
 
@@ -583,7 +582,7 @@ public class FileCacheARC implements FileCacheIF {
     }
     Collections.sort(allFiles); // sort so oldest are on top
 
-    format.format("%nFileCache %s (min=%d softLimit=%d hardLimit=%d scour=%d):%n", name, minElements, softLimit, hardLimit, period);
+    format.format("%nFileCacheARC %s (min=%d softLimit=%d hardLimit=%d scour=%d):%n", name, minElements, softLimit, hardLimit, period);
     format.format("isLocked  accesses lastAccess                   location %n");
     for (CacheElement.CacheFile file : allFiles) {
       String loc = file.ncfile != null ? file.ncfile.getLocation() : "null";
@@ -615,7 +614,7 @@ public class FileCacheARC implements FileCacheIF {
    * @param format add to this
    */
   public void showStats(Formatter format) {
-    format.format("  hits= %d miss= %d nfiles= %d elems= %d%n", hits.get(), miss.get(), files.size(), cache.values().size());
+    format.format("  hits= %d miss= %d nfiles= %d elems= %d shadow=%d%n", hits.get(), miss.get(), files.size(), cache.values().size(), shadowCache.size());
   }
 
   ///////////////////////////////////////////////////////////////

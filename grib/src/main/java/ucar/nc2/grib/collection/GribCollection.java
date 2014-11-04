@@ -68,6 +68,7 @@ import ucar.unidata.util.StringUtil2;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
 
@@ -219,7 +220,6 @@ public abstract class GribCollection implements FileCacheable, AutoCloseable {
   protected /* final */ File directory;
   protected final FeatureCollectionConfig config;
   protected final boolean isGrib1;
-  //protected String indexFilename;  // not in the cache - so can derive name, directory <--> indexFilename
 
   // set by the builder
   public int version; // the ncx version
@@ -287,6 +287,12 @@ public abstract class GribCollection implements FileCacheable, AutoCloseable {
       result.add(file.getPath());
     Collections.sort(result);
     return result;
+  }
+
+  public File getIndexParentFile() {
+    Path index = Paths.get(indexRaf.getLocation());
+    Path parent = index.getParent();
+    return parent.toFile();
   }
 
   public String getFilename(int fileno) {
