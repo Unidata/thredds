@@ -105,6 +105,7 @@ public class IO {
       out.write(buffer, 0, bytesRead);
       totalBytesRead += bytesRead;
     }
+    out.flush();
     return totalBytesRead;
   }
 
@@ -214,6 +215,7 @@ public class IO {
         }
       }
     }
+    out.flush();
     return totalBytesRead;
   }
 
@@ -235,6 +237,7 @@ public class IO {
       count += bytesRead;
       if (count > n) return;
     }
+    out.flush();
   }
 
   /**
@@ -374,6 +377,7 @@ public class IO {
       out.write(buffer, 0, bytesRead);
       want -= bytesRead;
     }
+    out.flush();
     return length - want;
   }
 
@@ -816,7 +820,6 @@ public class IO {
       try (OutputStream out = c.getOutputStream()) {
         BufferedOutputStream bout = new BufferedOutputStream(out);
         IO.copy(new ByteArrayInputStream(contents.getBytes(CDM.utf8Charset)), bout);
-        out.flush();
       }
 
       int code = c.getResponseCode();

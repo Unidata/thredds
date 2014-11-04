@@ -191,7 +191,7 @@ public class DirectoryCollection extends CollectionAbstract {
   }
 
   ////////////////////////////////////////////////////////////////////////////////////////////
-  private static final boolean debug = false;
+  private static final boolean debug = true;
   // this idiom keeps the iterator from escaping, so that we can use try-with-resource, and ensure it closes. like++
   public void iterateOverMFileCollection(Visitor visit) throws IOException {
     if (debug) System.out.printf("DirectoryCollection.iterateOverMFileCollection %s ", topDir);
