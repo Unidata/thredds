@@ -33,18 +33,24 @@
 package thredds.inventory;
 
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import thredds.featurecollection.FeatureCollectionConfig;
 import thredds.featurecollection.FeatureCollectionType;
+import thredds.inventory.partition.DirectoryCollection;
+import ucar.nc2.time.CalendarDate;
 import ucar.nc2.util.Misc;
 import ucar.unidata.test.util.TestDir;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Formatter;
 import java.util.List;
 
 /**
- * Test DatasetCollectionManager
+ * Test CollectionManager implementations
  *
  * @author caron
  * @since 6/20/11
@@ -64,8 +70,10 @@ public class TestDcm {
     int count = 0;
     String[] result = new String[] {"2000-01-18T12:00:00", "2000-01-19T00:00:00", "2000-01-20T12:00:00"};
     for (MFile mfile : dcm.getFilesSorted()) {
-      System.out.printf("  %s == %s%n", mfile.getPath(), dcm.extractDate(mfile));
-      assert dcm.extractDate(mfile).toString().startsWith(result[count++]);
+      CalendarDate de = dcm.extractDate(mfile);
+      System.out.printf("  %s == %s%n", mfile.getPath(), de);
+      assert de.toString().startsWith(result[count]);
+      count++;
     }
   }
 
@@ -83,10 +91,6 @@ public class TestDcm {
     dcm.scan(true);
     fileList = (List<MFile>) Misc.getList(dcm.getFilesSorted());
     assert fileList.size() ==  2 : dcm;
-
-    for (MFile mfile : dcm.getFilesSorted()) {
-      System.out.printf("  %s == %s%n", mfile.getPath(), dcm.extractDate(mfile));
-    }
   }
 
   @Test
@@ -110,12 +114,34 @@ public class TestDcm {
     dcm.scan(true);
     List<MFile> fileList = (List<MFile>) Misc.getList(dcm.getFilesSorted());
     assert fileList.size() ==  2 : dcm;
-
-    // check date extractor
-    for (MFile mfile : dcm.getFilesSorted()) {
-      System.out.printf("  %s == %s%n", mfile.getPath(), dcm.extractDate(mfile));
-    }
   }
+
+  @Test
+  public void testOlderThanInDirectoryCollection() throws IOException {
+    //   public FeatureCollectionConfig(String name, String path, FeatureCollectionType fcType, String spec,
+   //                                  String dateFormatMark, String olderThan,
+   //                                  String timePartition, String useIndexOnlyS, Element innerNcml) {
+
+    FeatureCollectionConfig config = new FeatureCollectionConfig("testOlderThanInDirectoryCollection", "path", FeatureCollectionType.GRIB1,
+            TestDir.cdmUnitTestDir + "datasets/NDFD-CONUS-5km/.*grib2",
+            null, "10 sec", null, null, null);
+
+    Formatter errlog = new Formatter(System.out);
+    CollectionSpecParser specp = new CollectionSpecParser(config.spec, errlog);
+
+    String fileToTouch =  specp.getRootDir() + "/NDFD_CONUS_5km_20131213_1200.grib2";
+    assert touch(fileToTouch);
+
+    // count scanned files
+    // String topCollectionName, String topDirS, String olderThan, org.slf4j.Logger logger
+    Logger logger = LoggerFactory.getLogger("testOlderThanInDirectoryCollection");
+    DirectoryCollection dcm = new DirectoryCollection("topCollectionName", specp.getRootDir(), config.olderThan, logger);
+    List<String> fileList = dcm.getFilenames();
+    for (String name : fileList)
+    System.out.printf("%s%n", name);
+    assert fileList.size() ==  3 : fileList.size()+" !=  3 in "+specp.getRootDir();
+  }
+
 
   boolean touch(String who) {
     File file = new File(who);

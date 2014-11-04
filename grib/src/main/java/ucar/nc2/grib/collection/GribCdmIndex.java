@@ -239,7 +239,8 @@ public class GribCdmIndex implements IndexReader {
 
     if (config.ptype == FeatureCollectionConfig.PartitionType.none) {
 
-      CollectionAbstract dcm = specp.wantSubdirs() ? new CollectionGeneral(config.name, rootPath, logger) : new DirectoryCollection(config.name, rootPath, logger);
+      CollectionAbstract dcm = specp.wantSubdirs() ? new CollectionGeneral(config.name, rootPath, config.olderThan, logger) :
+              new DirectoryCollection(config.name, rootPath, config.olderThan, logger);
       dcm.putAuxInfo(FeatureCollectionConfig.AUX_CONFIG, config);
 
       if (specp.getFilter() != null)
@@ -365,7 +366,7 @@ public class GribCdmIndex implements IndexReader {
     Formatter errlog = new Formatter();
     CollectionSpecParser specp = new CollectionSpecParser(config.spec, errlog);
 
-    DirectoryCollection dcm = new DirectoryCollection(config.name, dirPath, logger);
+    DirectoryCollection dcm = new DirectoryCollection(config.name, dirPath, config.olderThan, logger);
     dcm.setLeaf(true);
     dcm.putAuxInfo(FeatureCollectionConfig.AUX_CONFIG, config);
     if (specp.getFilter() != null)
@@ -409,7 +410,7 @@ public class GribCdmIndex implements IndexReader {
     final Formatter errlog = new Formatter();
     CollectionSpecParser specp = new CollectionSpecParser(config.spec, errlog);
 
-    FilePartition partition = new FilePartition(config.name, dirPath, logger);
+    FilePartition partition = new FilePartition(config.name, dirPath, config.olderThan, logger);
     partition.putAuxInfo(FeatureCollectionConfig.AUX_CONFIG, config);
     if (specp.getFilter() != null)
       partition.setStreamFilter(new StreamFilter(specp.getFilter()));

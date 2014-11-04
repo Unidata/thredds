@@ -56,12 +56,14 @@ import java.util.List;
  * @since 2/7/14
  */
 public class CollectionGeneral extends CollectionAbstract {
-  private Path rootPath;
+  private final Path rootPath;
+  private final long lastModifiedTime;
 
-  public CollectionGeneral(String collectionName, Path rootPath, Logger logger) {
+  public CollectionGeneral(String collectionName, Path rootPath, String olderThan, Logger logger) {
     super(collectionName, logger);
     this.rootPath = rootPath;
     this.root = rootPath.toString();
+    this.lastModifiedTime = parseOlderThanString(olderThan);
   }
 
   @Override
@@ -96,6 +98,7 @@ public class CollectionGeneral extends CollectionAbstract {
           Path nextPath = dirStreamIterator.next();
           BasicFileAttributes attr =  Files.readAttributes(nextPath, BasicFileAttributes.class);
           if (attr.isDirectory()) continue;  // LOOK fix this
+          if (attr.lastModifiedTime().toMillis() < lastModifiedTime) continue;
           nextMFile = new MFileOS7(nextPath, attr);
 
        } catch (IOException e) {

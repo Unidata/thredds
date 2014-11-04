@@ -4,6 +4,7 @@ import thredds.featurecollection.FeatureCollectionConfig;
 import thredds.filesystem.MFileOS7;
 import thredds.inventory.partition.DirectoryCollection;
 import ucar.nc2.time.CalendarDate;
+import ucar.nc2.units.TimeDuration;
 import ucar.nc2.util.CloseableIterator;
 import ucar.unidata.util.StringUtil2;
 
@@ -34,7 +35,7 @@ public abstract class CollectionAbstract implements MCollection {
     if (collectionSpec.startsWith(CATALOG))
       return new CollectionManagerCatalog(collectionName, collectionSpec.substring(CATALOG.length()), olderThan, errlog);
     else if (collectionSpec.startsWith(DIR))
-      return new DirectoryCollection(collectionName, collectionSpec.substring(DIR.length()), null);
+      return new DirectoryCollection(collectionName, collectionSpec.substring(DIR.length()), olderThan, null);
     else if (collectionSpec.startsWith(FILE))
       return new CollectionSingleFile(MFileOS7.getExistingFile(collectionSpec.substring(FILE.length())), null);
     else if (collectionSpec.startsWith(LIST))
@@ -234,6 +235,20 @@ public abstract class CollectionAbstract implements MCollection {
       Collections.sort(list);                    // sort by name
     }
     return list;
+  }
+
+  ////////////////////////////////////////////
+
+  public long parseOlderThanString(String olderThan) {
+    if (olderThan != null) {
+      try {
+        TimeDuration tu = new TimeDuration(olderThan);
+        return (long) (1000 * tu.getValueInSeconds());
+      } catch (Exception e) {
+        logger.error(collectionName + ": Invalid time unit for olderThan = {}", olderThan);
+      }
+    }
+    return -1;
   }
 
 
