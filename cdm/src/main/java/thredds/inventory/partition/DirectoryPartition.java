@@ -75,7 +75,7 @@ public class DirectoryPartition extends CollectionAbstract implements PartitionM
     if (hasIndex)
       result = new DirectoryCollectionFromIndex(dpb, dateExtractor, indexReader, this.logger);
     else
-      result = new DirectoryCollection(topCollection, dpb.getDir(), this.logger);
+      result = new DirectoryCollection(topCollection, dpb.getDir(), config.olderThan, this.logger);
     return result;
   }
 

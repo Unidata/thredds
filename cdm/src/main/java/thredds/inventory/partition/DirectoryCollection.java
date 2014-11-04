@@ -85,17 +85,21 @@ public class DirectoryCollection extends CollectionAbstract {
 
   final String topCollection;
   final Path topDir;
+  final long lastModifiedTime;
 
-  public DirectoryCollection(String topCollectionName, Path topDir, org.slf4j.Logger logger) {
+
+  public DirectoryCollection(String topCollectionName, String topDirS, String olderThan, org.slf4j.Logger logger) {
+    this(topCollectionName, Paths.get(topDirS), olderThan, logger);
+  }
+
+  public DirectoryCollection(String topCollectionName, Path topDir, String olderThan, org.slf4j.Logger logger) {
     super(topCollectionName, logger);
     this.topCollection = cleanName(topCollectionName);
     this.topDir = topDir;
     this.collectionName = makeCollectionName(collectionName, topDir);
+    this.lastModifiedTime = parseOlderThanString(olderThan);
   }
 
-  public DirectoryCollection(String topCollectionName, String topDirS, org.slf4j.Logger logger) {
-    this(topCollectionName, Paths.get(topDirS), logger);
-  }
 
   public Path getIndexPath() {
     return DirectoryCollection.makeCollectionIndexPath(topCollection, topDir);
@@ -154,10 +158,13 @@ public class DirectoryCollection extends CollectionAbstract {
         count++;
         if (!dirStreamIterator.hasNext()) return false;
 
+        long now = System.currentTimeMillis();
         try {
           Path nextPath = dirStreamIterator.next();
           BasicFileAttributes attr =  Files.readAttributes(nextPath, BasicFileAttributes.class);
           if (attr.isDirectory()) continue;
+          long since = now - attr.lastModifiedTime().toMillis();
+          if (since < lastModifiedTime) continue;
           nextMFile = new MFileOS7(nextPath, attr);
 
        } catch (IOException e) {
@@ -184,7 +191,7 @@ public class DirectoryCollection extends CollectionAbstract {
   }
 
   ////////////////////////////////////////////////////////////////////////////////////////////
-  private static final boolean debug = false;
+  private static final boolean debug = true;
   // this idiom keeps the iterator from escaping, so that we can use try-with-resource, and ensure it closes. like++
   public void iterateOverMFileCollection(Visitor visit) throws IOException {
     if (debug) System.out.printf("DirectoryCollection.iterateOverMFileCollection %s ", topDir);

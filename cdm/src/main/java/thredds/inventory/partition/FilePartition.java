@@ -18,8 +18,8 @@ import java.util.List;
  */
 public class FilePartition extends DirectoryCollection implements PartitionManager {
 
-  public FilePartition(String topCollectionName, Path topDir, org.slf4j.Logger logger) {
-    super(topCollectionName, topDir, logger);
+  public FilePartition(String topCollectionName, Path topDir, String olderThan, org.slf4j.Logger logger) {
+    super(topCollectionName, topDir, olderThan, logger);
     this.collectionName = DirectoryCollection.makeCollectionName(topCollection, topDir);
   }
 

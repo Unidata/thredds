@@ -36,6 +36,7 @@ import org.jdom2.Element;
 import org.jdom2.Namespace;
 import thredds.inventory.CollectionUpdateType;
 import ucar.nc2.time.CalendarPeriod;
+import ucar.nc2.units.TimeDuration;
 import ucar.unidata.util.StringUtil2;
 
 import java.util.*;

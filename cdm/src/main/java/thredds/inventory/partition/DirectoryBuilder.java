@@ -43,7 +43,7 @@ public class DirectoryBuilder {
     if (hasIndex) {
       return dpart.makeChildCollection(builder);
     } else {
-      DirectoryCollection result = new DirectoryCollection(config.name, topDir, logger); // no index file
+      DirectoryCollection result = new DirectoryCollection(config.name, topDir, config.olderThan, logger); // no index file
       result.setLeaf(true);
       return result;
     }
@@ -127,7 +127,7 @@ public class DirectoryBuilder {
 
       } else { // no index file  */
         // temporary - just to scan 100 files in the directory
-        DirectoryCollection dc = new DirectoryCollection(partitionName, dir, null);
+        DirectoryCollection dc = new DirectoryCollection(partitionName, dir, null, null);
         partitionStatus = dc.isLeafDirectory() ? PartitionStatus.isLeaf : PartitionStatus.isDirectoryPartition;
       // }
     }
