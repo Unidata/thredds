@@ -34,6 +34,7 @@
 package ucar.nc2.iosp.grib;
 
 import org.junit.Test;
+import ucar.unidata.test.util.TestDir;
 
 import java.io.File;
 import java.io.IOException;
@@ -49,13 +50,13 @@ public class TestFileOpenAndClose {
 
   @Test
   public void testNFilesOpen() throws IOException {
-    File topDir = new File("Q:/cdmUnitTest/gribCollections/rdavm/ds083.2");
+    File topDir = new File(TestDir.cdmUnitTestDir + "gribCollections/rdavm/ds083.2");
     openAll(topDir);
   }
 
   @Test
   public void testNFilesOpenAndClose() throws IOException {
-    File topDir = new File("Q:/cdmUnitTest/gribCollections/rdavm/ds083.2");
+    File topDir = new File(TestDir.cdmUnitTestDir + "gribCollections/rdavm/ds083.2");
     openAndClose(topDir);
   }
 
