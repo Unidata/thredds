@@ -270,7 +270,9 @@ public class FileCacheARC implements FileCacheIF {
     elem.updateAccessed();
     CacheElement prev = shadowCache.put(elem, elem); // faster if we could just insert at the top of the list. maybe we need to use LinkedList ?
     if (prev != null && (elem != prev)) {
-      System.out.printf("elem != prev%n");
+      CacheElementComparator cc = new CacheElementComparator();
+      System.out.printf("elem != prev compare=%d%n", cc.compare(elem, prev));
+      System.out.printf("hash elem =%d prev=%d%n", elem.hashCode(), prev.hashCode());
     }
     return elem;
   }
@@ -395,7 +397,7 @@ public class FileCacheARC implements FileCacheIF {
       if (this == o) return true;
       if (o == null || getClass() != o.getClass()) return false;
       CacheElement that = (CacheElement) o;
-      return hashKey.equals(that.hashKey);
+      return that.hashCode() == hashCode();
     }
 
     @Override
