@@ -506,6 +506,8 @@ public abstract class GribPartitionBuilder  {
       for (GribCollection.VariableIndex vi2d : group2D.variList) {
         // copy vi and add to groupB
         PartitionCollection.VariableIndexPartitioned vip = result.makeVariableIndexPartitioned(groupB, vi2d, npart);
+        vip.finish();
+
         // do not remove runtime coordinate, just set isTwoD
         vip.twot = null;
 
@@ -788,7 +790,7 @@ public abstract class GribPartitionBuilder  {
         b.addTime2Runtime(idx);
     }
 
-        // extensions
+    // extensions
     List<PartitionCollectionProto.PartitionVariable> pvarList = new ArrayList<>();
     for (int i=0; i<vp.nparts; i++) // PartitionCollection.PartitionForVariable2D pvar : vp.getPartitionForVariable2D())
       pvarList.add(writePartitionVariableProto(vp.partnoSA.get(i), vp.groupnoSA.get(i), vp.varnoSA.get(i)));  // LOOK finished ??

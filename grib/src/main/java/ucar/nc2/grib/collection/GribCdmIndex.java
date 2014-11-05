@@ -733,8 +733,8 @@ public class GribCdmIndex implements IndexReader {
   public boolean readMFiles(Path indexFile, List<MFile> result) throws IOException {
     if (debug) System.out.printf("GribCdmIndex.readMFiles %s%n", indexFile);
     try (RandomAccessFile raf = new RandomAccessFile(indexFile.toString(), "r")) {
-      GribCollectionType type = getType(raf);
-      //if (type == GribCollectionType.GRIB1 || type == GribCollectionType.GRIB2) {
+        // GribCollectionType type = getType(raf);
+        // if (type == GribCollectionType.GRIB1 || type == GribCollectionType.GRIB2) {
         if (openIndex(raf, logger)) {
           File protoDir = new File(gribCollectionIndex.getTopDir());
           int n = gribCollectionIndex.getMfilesCount();
