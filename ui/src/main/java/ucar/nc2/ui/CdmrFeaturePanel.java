@@ -101,6 +101,7 @@ public class CdmrFeaturePanel extends JPanel {
         is = IO.getInputStreamFromUrl(stream);
       else
         is = new FileInputStream(stream);
+      if (is == null) return;
 
       while (true) {
         Mess mess = new Mess();

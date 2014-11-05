@@ -392,8 +392,8 @@ public final class TdsContext implements ServletContextAware, InitializingBean, 
 
     // log the latest stable and development version information
     Map<String,String> latestVersionInfo = getLatestVersionInfo();
-    for (String versionType : latestVersionInfo.keySet()) {
-      logServerStartup.info("TdsContext latest " + versionType + " version = " + latestVersionInfo.get(versionType));
+    for (Map.Entry entry : latestVersionInfo.entrySet()) {
+      logServerStartup.info("TdsContext latest " + entry.getKey() + " version = " + entry.getValue());
     }
     logServerStartup.info("TdsContext intialized logging in " + logDir.getPath());
 

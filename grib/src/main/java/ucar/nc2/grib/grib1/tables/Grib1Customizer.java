@@ -90,6 +90,11 @@ public class Grib1Customizer implements GribTables {
   protected Grib1Customizer(int center, Grib1ParamTables tables) {
     this.center = center;
     this.tables = (tables == null) ? new Grib1ParamTables() : tables;
+
+    synchronized (Grib1Customizer.class) {
+      if (wmoTable3 == null)
+        wmoTable3 = readTable3("resources/grib1/wmoTable3.xml");
+    }
   }
 
   public int getCenter() {
@@ -205,11 +210,6 @@ public class Grib1Customizer implements GribTables {
   static private Map<Integer, GribLevelType> wmoTable3;  // shared by all instances
 
   private GribLevelType getLevelType(int code) {
-    if (wmoTable3 == null)
-      wmoTable3 = readTable3("resources/grib1/wmoTable3.xml");
-    if (wmoTable3 == null)
-      return null; // fail
-
     GribLevelType result = wmoTable3.get(code);
     if (result == null)
       result = new GribLevelType(code, "unknownLayer"+code, null, "unknownLayer"+code, null, false, false);
