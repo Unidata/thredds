@@ -39,27 +39,32 @@ import ucar.nc2.util.Misc;
 import java.util.Formatter;
 
 /**
- * Describe
+ * Integer arrays that are constant or are sequential can be stored without storing all of the elements.
+ * Keeps memory requirements down in PartitionVariable
  *
  * @author caron
  * @since 11/4/2014
  */
 @Immutable
 public class SmartArrayInt {
-  private int[] raw;
-  private int start;
-  private boolean isOrdered = true;   // if elem[i] = constant + i;
-  private boolean isConstant = true;  // if elem[i] = constant
+  private final int[] raw;
+  private final int start;
+  private final boolean isOrdered;   // if elem[i] = constant + i;
+  private final boolean isConstant;  // if elem[i] = constant
 
   public SmartArrayInt(int[] raw) {
-    if (raw.length == 0) return;
-    start = raw[0];
+    if (raw.length == 0) throw new IllegalArgumentException("empty array");
+    boolean isO = true;
+    boolean isC = true;
+    this.start = raw[0];
     for (int i=0; i<raw.length; i++) {
-      if (raw[i] != start+i) isOrdered = false;
-      if (raw[i] != start) isConstant = false;
+      if (raw[i] != start+i) isO = false;
+      if (raw[i] != start) isC = false;
     }
-    if (!isOrdered && !isConstant)
-      this.raw = raw;
+
+    this.raw = (!isO && !isC) ? raw : null;
+    this.isOrdered = isO;
+    this.isConstant = isC;
   }
 
   public int get(int idx) {

@@ -255,7 +255,7 @@ public abstract class RadialDatasetSweepAdapter extends TypedDatasetImpl impleme
   }
 
   @Override
-  public void setFileCache(FileCacheIF fileCache) {
+  public synchronized void setFileCache(FileCacheIF fileCache) {
     this.fileCache = fileCache;
   }
 

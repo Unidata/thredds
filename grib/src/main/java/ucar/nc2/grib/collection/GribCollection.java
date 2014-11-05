@@ -49,15 +49,12 @@ import ucar.nc2.grib.grib2.Grib2SectionProductDefinition;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time.CalendarDateFormatter;
 import ucar.nc2.time.CalendarTimeZone;
-import ucar.nc2.NetcdfFile;
 import ucar.nc2.grib.*;
 import ucar.nc2.grib.grib2.Grib2Pds;
 import ucar.nc2.grib.grib2.Grib2Utils;
-import ucar.nc2.iosp.IOServiceProvider;
 import ucar.nc2.time.CalendarDateRange;
 import ucar.nc2.util.CancelTask;
 import ucar.nc2.util.DiskCache2;
-import ucar.nc2.util.cache.FileCache;
 import ucar.nc2.util.cache.FileCacheIF;
 import ucar.nc2.util.cache.FileCacheable;
 import ucar.nc2.util.cache.FileFactory;
@@ -492,7 +489,7 @@ public abstract class GribCollection implements FileCacheable, AutoCloseable {
   //////////////////////////////////////////////////////////////////////////////////////////////////
   // stuff for FileCacheable
 
-  public void close() throws java.io.IOException {
+  public synchronized void close() throws java.io.IOException {
     if (objCache != null) {
       objCache.release(this);
     } else if (indexRaf != null) {
@@ -518,7 +515,7 @@ public abstract class GribCollection implements FileCacheable, AutoCloseable {
   }
 
   @Override
-  public void setFileCache(FileCacheIF fileCache) {
+  public synchronized void setFileCache(FileCacheIF fileCache) {
     this.objCache = fileCache;
   }
 

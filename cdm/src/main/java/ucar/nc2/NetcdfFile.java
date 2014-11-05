@@ -886,7 +886,7 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable, AutoClosea
    * Public by accident.
    * Optional file caching.
    */
-  public void setFileCache(ucar.nc2.util.cache.FileCacheIF cache) {
+  public synchronized void setFileCache(ucar.nc2.util.cache.FileCacheIF cache) {
     this.cache = cache;
   }
 

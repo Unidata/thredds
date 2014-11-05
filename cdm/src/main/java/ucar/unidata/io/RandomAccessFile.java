@@ -364,7 +364,7 @@ public class RandomAccessFile implements DataInput, DataOutput, FileCacheable, A
    *
    * @throws IOException if an I/O error occurrs.
    */
-  public void close() throws IOException {
+  public synchronized void close() throws IOException {
     if (fileCache != null) {
       fileCache.release(this);
       return;
@@ -414,7 +414,7 @@ public class RandomAccessFile implements DataInput, DataOutput, FileCacheable, A
   }
 
   @Override
-  public void setFileCache(FileCacheIF fileCache) {
+  public synchronized void setFileCache(FileCacheIF fileCache) {
     this.fileCache = fileCache;
   }
 
