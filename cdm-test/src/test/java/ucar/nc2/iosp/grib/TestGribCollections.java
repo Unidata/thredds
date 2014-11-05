@@ -36,6 +36,9 @@ import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import ucar.ma2.Array;
+import ucar.ma2.InvalidRangeException;
+import ucar.ma2.Range;
+import ucar.ma2.Section;
 import ucar.nc2.Dimension;
 import ucar.nc2.dt.GridDatatype;
 import ucar.nc2.dt.grid.GridDataset;
@@ -49,7 +52,9 @@ import ucar.unidata.io.RandomAccessFile;
 import ucar.unidata.test.util.TestDir;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Formatter;
+import java.util.List;
 
 /**
  * Look for missing data in Grib Collections.
@@ -94,6 +99,7 @@ public class TestGribCollections {
   public void testGC_Grib2() throws IOException {
     Count count = read(TestDir.cdmUnitTestDir + "ncss/GFS/Global_onedeg/GFS_Global_onedeg_20120911_1200.grib2.ncx2");
 
+    // total == 1560/23229
     assert count.nread == 23229;
     assert count.nmiss == 0;
   }
@@ -102,6 +108,7 @@ public class TestGribCollections {
   public void testPofG_Grib2() throws IOException {
     Count count = read(TestDir.cdmUnitTestDir + "ncss/GFS/Global_onedeg/GFS_Global_onedeg-Global_onedeg.ncx2");
 
+     // total == 6391/94352
     assert count.nread == 94352;
     assert count.nmiss == 0;
   }
@@ -205,18 +212,45 @@ public class TestGribCollections {
 
   private static void read(GridDatatype gdt, Count count, int rtIndex, int tIndex, int zIndex) throws IOException {
     // int rt_index, int e_index, int t_index, int z_index, int y_index, int x_index
-    Array data = gdt.readDataSlice(rtIndex, -1, tIndex, zIndex, 10, 10);
-    if (data.getSize() != 1 || data.getRank() != 0) {
+    Array data = gdt.readDataSlice(rtIndex, -1, tIndex, zIndex, -1, -1);
+    /* if (data.getSize() != 1 || data.getRank() != 0) {
       System.out.printf("%s size=%d rank=%d%n", gdt.getFullName(), data.getSize(), data.getRank());
       gdt.readDataSlice(rtIndex, -1, tIndex, zIndex, 10, 10); // debug
-    }
+    }  */
 
-    assert data.getSize() == 1 : gdt.getFullName() +" size = "+data.getSize();
-    boolean ok = data.hasNext();
-    assert ok;
-    float val = data.nextFloat();
-    //System.out.printf("%s size=%d rank=%d val=%f%n", gdt.getFullName(), data.getSize(), data.getRank(), val);
-    if (Float.isNaN(val))
+    // subset the array by striding x,y by 100
+    Array dataSubset;
+    try {
+      Section s = new Section(data.getShape());
+      List<Range> ranges = s.getRanges();
+      int rank = ranges.size();
+      assert rank >= 2;
+      List<Range> subset = new ArrayList<>(rank);
+      for (int i=0; i<rank; i++) {
+        if (i<rank-2)
+          subset.add(ranges.get(i));
+        else {
+          Range r = ranges.get(i);
+          Range strided = new Range(r.first(), r.last(), 33);
+          subset.add(strided);
+        }
+      }
+      dataSubset = data.section(subset);
+
+    } catch (InvalidRangeException e) {
+      e.printStackTrace();
+      return;
+    }
+    // System.out.printf("data=%d subset=%d%n", data.getSize(), dataSubset.getSize());
+
+    // they all have to be missing values
+    boolean isMissing = true;
+    while (dataSubset.hasNext()) {
+      float val = dataSubset.nextFloat();
+       if (!Float.isNaN(val))
+         isMissing = false;
+    }
+    if (isMissing)
       count.nmiss++;
     count.nread++;
   }
