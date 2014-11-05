@@ -290,6 +290,7 @@ public abstract class GribCollection implements FileCacheable, AutoCloseable {
   }
 
   public File getIndexParentFile() {
+    if (indexRaf == null) return null;
     Path index = Paths.get(indexRaf.getLocation());
     Path parent = index.getParent();
     return parent.toFile();

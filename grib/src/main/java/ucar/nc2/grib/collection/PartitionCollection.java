@@ -606,8 +606,9 @@ public abstract class PartitionCollection extends GribCollection {
       File existingFile = GribCollection.getExistingFileOrCache( file.getPath());
       if (existingFile == null) {
         // try reletive to index file
-        existingFile = new File(getIndexParentFile(), filename);
-        if (existingFile == null) return null;
+        File parent = getIndexParentFile();
+        if (parent == null) return null;
+        existingFile = new File(parent, filename);
         if (!existingFile.exists()) return null;
       }
       return existingFile.getPath();
