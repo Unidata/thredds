@@ -167,6 +167,7 @@ public class Grib1Record {
       data = QuasiRegular.convertQuasiGrid(data, gds.getNptsInLine(), gds.getNxRaw(), gds.getNyRaw(), method);
     }
 
+    lastRecordRead = this;
     return data;
   }
 
@@ -208,6 +209,8 @@ public class Grib1Record {
     Grib1Record gr = new Grib1Record(raf);
     return gr.readData(raf);
   }
+
+  static public Grib1Record lastRecordRead;
 
   /*
    * Read data array: use when you want to be independent of the GribRecord

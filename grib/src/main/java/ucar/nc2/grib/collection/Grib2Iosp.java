@@ -37,6 +37,7 @@ package ucar.nc2.grib.collection;
 
 import thredds.catalog.DataFormatType;
 import ucar.coord.CoordinateTimeAbstract;
+import ucar.nc2.grib.grib1.Grib1Record;
 import ucar.nc2.grib.grib2.Grib2Index;
 import ucar.ma2.*;
 import ucar.nc2.*;
@@ -405,4 +406,16 @@ public class Grib2Iosp extends GribIosp {
             hcs.nxRaw, hcs.nyRaw, hcs.nptsInLine);
   }
 
+  private Grib2Record lastRecordRead;
+  public Object getLastRecordRead() {
+    return lastRecordRead;
+  }
+
+  public void clearLastRecordRead() {
+    lastRecordRead = null;
+  }
+
+  public Object getGribCustomizer() {
+    return cust;
+  }
 }

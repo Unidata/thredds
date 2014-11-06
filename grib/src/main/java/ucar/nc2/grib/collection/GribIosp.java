@@ -1095,5 +1095,10 @@ public abstract class GribIosp extends AbstractIOServiceProvider {
     }
   }
 
+  ///////////////////////////////////////
+  // debugging back door
+  abstract public Object getLastRecordRead();
+  abstract public void clearLastRecordRead();
+  abstract public Object getGribCustomizer();
 
 }

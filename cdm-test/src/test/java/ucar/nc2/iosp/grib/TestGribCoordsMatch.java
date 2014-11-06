@@ -1,0 +1,477 @@
+/*
+ * Copyright 1998-2014 University Corporation for Atmospheric Research/Unidata
+ *
+ *   Portions of this software were developed by the Unidata Program at the
+ *   University Corporation for Atmospheric Research.
+ *
+ *   Access and use of this software shall impose the following obligations
+ *   and understandings on the user. The user is granted the right, without
+ *   any fee or cost, to use, copy, modify, alter, enhance and distribute
+ *   this software, and any derivative works thereof, and its supporting
+ *   documentation for any purpose whatsoever, provided that this entire
+ *   notice appears in all copies of the software, derivative works and
+ *   supporting documentation.  Further, UCAR requests that the user credit
+ *   UCAR/Unidata in any publications that result from the use of this
+ *   software or in any product that includes this software. The names UCAR
+ *   and/or Unidata, however, may not be used in any advertising or publicity
+ *   to endorse or promote any products or commercial entity unless specific
+ *   written permission is obtained from UCAR/Unidata. The user also
+ *   understands that UCAR/Unidata is not obligated to provide the user with
+ *   any support, consulting, training or assistance of any kind with regard
+ *   to the use, operation and performance of this software nor to provide
+ *   the user with any updates, revisions, new versions or "bug fixes."
+ *
+ *   THIS SOFTWARE IS PROVIDED BY UCAR/UNIDATA "AS IS" AND ANY EXPRESS OR
+ *   IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ *   WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ *   DISCLAIMED. IN NO EVENT SHALL UCAR/UNIDATA BE LIABLE FOR ANY SPECIAL,
+ *   INDIRECT OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING
+ *   FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT,
+ *   NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
+ *   WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
+ */
+
+package ucar.nc2.iosp.grib;
+
+import org.junit.Test;
+import ucar.ma2.Array;
+import ucar.nc2.Dimension;
+import ucar.nc2.NetcdfFile;
+import ucar.nc2.dataset.CoordinateAxis;
+import ucar.nc2.dataset.CoordinateAxis1D;
+import ucar.nc2.dataset.CoordinateAxis1DTime;
+import ucar.nc2.dt.GridDatatype;
+import ucar.nc2.dt.grid.GridDataset;
+import ucar.nc2.dt.GridCoordSystem;
+import ucar.nc2.grib.GribStatType;
+import ucar.nc2.grib.GribUtils;
+import ucar.nc2.grib.collection.Grib1CollectionBuilder;
+import ucar.nc2.grib.collection.Grib1Iosp;
+import ucar.nc2.grib.collection.GribIosp;
+import ucar.nc2.grib.collection.PartitionCollection;
+import ucar.nc2.grib.grib1.*;
+import ucar.nc2.grib.grib1.tables.Grib1Customizer;
+import ucar.nc2.grib.grib2.Grib2Record;
+import ucar.nc2.iosp.IOServiceProvider;
+import ucar.nc2.time.CalendarDate;
+import ucar.unidata.test.util.TestDir;
+
+import java.io.IOException;
+import java.util.Formatter;
+
+/**
+ * Describe
+ *
+ * @author caron
+ * @since 11/5/2014
+ */
+public class TestGribCoordsMatch {
+
+  @Test
+  public void problem() throws IOException {
+    long start = System.currentTimeMillis();
+    // GribIosp.setDebugFlags(new DebugFlagsImpl("Grib/indexOnly Grib/indexOnlyShow"));
+    String filename = "ncss/GFS/CONUS_80km/GFS_CONUS_80km_20120227_1200.grib1.ncx2";
+    try (GridDataset gds = GridDataset.open(TestDir.cdmUnitTestDir + filename)) {
+      NetcdfFile ncfile = gds.getNetcdfFile();
+      IOServiceProvider iosp = ncfile.getIosp();
+      assert iosp instanceof GribIosp;
+      iospGrib = (GribIosp) iosp;
+
+      GridDatatype gdt = gds.findGridByName("Temperature_isobaric");
+      assert gdt != null;
+      TestGribCollections.Count count = read(gdt);
+      System.out.printf("%n%50s == %d/%d%n", "total", count.nmiss, count.nread);
+      long took = System.currentTimeMillis() - start;
+      float r = ((float) took) / count.nread;
+      System.out.printf("%n   that took %d secs total, %f msecs per record%n", took / 1000, r);
+
+      assert count.nread == 36 * 29;
+      assert count.nmiss == 7;
+      assert count.nerrs == 0;
+    }
+
+  }
+
+  @Test
+  public void testGC_Grib1() throws IOException {
+    TestGribCollections.Count count = read(TestDir.cdmUnitTestDir + "ncss/GFS/CONUS_80km/GFS_CONUS_80km_20120227_1200.grib1.ncx2");
+
+    assert count.nread == 7116;
+    assert count.nmiss == 200;
+    assert count.nerrs == 0;
+  }
+
+  // @Test
+  public void testPofG_Grib1() throws IOException {
+    TestGribCollections.Count count = read(TestDir.cdmUnitTestDir + "ncss/GFS/CONUS_80km/GFS_CONUS_80km-CONUS_80km.ncx2");
+
+    assert count.nread == 81340;
+    assert count.nmiss == 1801;
+    assert count.nerrs == 0;
+  }
+
+
+  ///////////////////////////////////////////////////////////////
+  private GribIosp iospGrib;
+
+  private TestGribCollections.Count read(String filename) {
+    long start = System.currentTimeMillis();
+    System.out.println("\n\nReading File " + filename);
+    TestGribCollections.Count allCount = new TestGribCollections.Count();
+    try (GridDataset gds = GridDataset.open(filename)) {
+      NetcdfFile ncfile = gds.getNetcdfFile();
+      IOServiceProvider iosp = ncfile.getIosp();
+      assert iosp instanceof GribIosp;
+      iospGrib = (GribIosp) iosp;
+
+      for (GridDatatype gdt: gds.getGrids()) {
+        TestGribCollections.Count count = read(gdt);
+        System.out.printf("%80s == %d/%d%n", gdt.getFullName(), count.nmiss, count.nread);
+        allCount.add(count);
+      }
+
+      long took = System.currentTimeMillis() - start;
+      float r = ((float) took) / allCount.nread;
+      System.out.printf("%n%80s == %d/%d%n", "total", allCount.nmiss, allCount.nread);
+      System.out.printf("%n   that took %d secs total, %f msecs per record%n", took/1000, r);
+
+    } catch (IOException ioe) {
+      System.out.printf("%s%n", ioe);
+      Formatter out = new Formatter(System.out);
+      PartitionCollection.getPartitionCache().showCache(out);
+    }
+
+    return allCount;
+  }
+
+  private GridCoordSystem gdc;
+  private String var_desc;
+  private Number var_param;
+  private Number var_level_type;
+
+  private CalendarDate runtimeCoord;
+
+  private TestGribCollections.Count read(GridDatatype gdt) throws IOException {
+    var_desc = gdt.findAttValueIgnoreCase("description", "");
+    var_param = gdt.findAttributeIgnoreCase("Grib1_Parameter").getNumericValue();
+    var_level_type = gdt.findAttributeIgnoreCase("Grib1_Level_Type").getNumericValue();
+
+    gdc = gdt.getCoordinateSystem();
+
+    Dimension rtDim = gdt.getRunTimeDimension();
+    Dimension tDim = gdt.getTimeDimension();
+    Dimension zDim = gdt.getZDimension();
+
+    // loop over runtime
+    TestGribCollections.Count count = new TestGribCollections.Count();
+    if (rtDim != null) {
+      CoordinateAxis1DTime rtcoord = gdc.getRunTimeAxis();
+
+      for (int rt=0; rt<rtDim.getLength(); rt++) {
+        runtimeCoord = rtcoord.getCalendarDate(rt);
+        readTime(gdt, count, rt, tDim, zDim);
+      }
+
+    } else {
+      runtimeCoord = null;
+      readTime(gdt, count, -1, tDim, zDim);
+    }
+    return count;
+  }
+
+  private boolean hasTime;
+  private double timeCoord;
+  private double[] timeBounds;
+  private boolean isTimeInterval;
+
+  private void readTime(GridDatatype gdt, TestGribCollections.Count count, int rtIndex, Dimension timeDim, Dimension zDim) throws IOException {
+    if (timeDim != null) {
+      hasTime = true;
+      CoordinateAxis tcoord = gdc.getTimeAxis();
+      if (!(tcoord instanceof CoordinateAxis1DTime)) return; // skip 2D for the moement
+      CoordinateAxis1DTime tcoord1D = (CoordinateAxis1DTime) tcoord;
+      isTimeInterval = tcoord1D.isInterval();
+
+      for (int t=0; t<timeDim.getLength(); t++) {
+        if (isTimeInterval) {
+          timeBounds = tcoord1D.getCoordEdges(t);
+        } else {
+          timeCoord = tcoord1D.getCoordValue(t);
+        }
+        readVert(gdt, count, rtIndex, t, zDim);
+      }
+
+    } else {
+      hasTime = false;
+      readVert(gdt, count, rtIndex, -1, zDim);
+    }
+  }
+
+  private boolean hasVert;
+  private double vertCoord;
+  private double[] edge;
+  private boolean isLayer;
+
+  private void readVert(GridDatatype gdt, TestGribCollections.Count count, int rtIndex, int tIndex, Dimension zDim) throws IOException {
+    if (zDim != null) {
+      hasVert = true;
+      CoordinateAxis1D zcoord = gdc.getVerticalAxis();
+      isLayer = zcoord.isInterval();
+      for (int z=0; z<zDim.getLength(); z++) {
+        if (isLayer) {
+          edge = zcoord.getCoordEdges(z);
+        } else {
+          vertCoord = zcoord.getCoordValue(z);
+        }
+        read(gdt, count, rtIndex, tIndex, z);
+      }
+    } else {
+      hasVert = false;
+      read(gdt, count, rtIndex, tIndex, -1);
+    }
+  }
+
+  private boolean show = false;
+
+  private void read(GridDatatype gdt, TestGribCollections.Count count, int rtIndex, int tIndex, int zIndex) throws IOException {
+    iospGrib.clearLastRecordRead();
+
+    Array data = gdt.readDataSlice(rtIndex, -1, tIndex, zIndex, -1, -1);
+
+    Grib1Customizer cust = (Grib1Customizer) iospGrib.getGribCustomizer();
+    Grib1Record grib1 = (Grib1Record) iospGrib.getLastRecordRead();
+    if (grib1 == null) {
+      count.nmiss++;
+      count.nread++;
+      return;
+    }
+    Record1Bean bean = new Record1Bean(cust, grib1);
+    boolean paramOk = true;
+
+    paramOk &= var_desc.equals(bean.getParamDesc());
+    paramOk &=  var_param.intValue() == bean.getParamNo();
+    paramOk &=  var_level_type.intValue() == bean.getLevelType();
+
+    boolean runtimeOk = true;
+    if (runtimeCoord != null)
+      runtimeOk &=  runtimeCoord.equals(bean.getReferenceDate());
+
+    boolean timeOk = true;
+    if (hasTime) {
+      if (isTimeInterval) {
+        timeOk &= bean.isTimeInterval();
+        int[] intv = bean.getTimeInterval();
+        timeOk &= timeBounds[0] == intv[0];
+        timeOk &= timeBounds[1] == intv[1];
+      } else {
+        timeOk &= timeCoord == bean.getTimeCoordValue();
+      }
+    }
+
+    boolean vertOk = true;
+    if (hasVert) {
+      if (isLayer) {
+        vertOk &= bean.isLayer();
+        vertOk &= edge[0] == bean.getLevelLowValue();
+        vertOk &= edge[1] == bean.getLevelHighValue();
+      } else {
+        vertOk &= vertCoord == bean.getLevelValue();
+      }
+    }
+
+    boolean ok = paramOk && runtimeOk && timeOk && vertOk;
+    if (show || !ok) {
+      System.out.printf("%s%n", bean);
+    }
+
+    if (!ok)
+      count.nerrs++;
+    count.nread++;
+  }
+
+  public class Record1Bean {
+    Grib1Customizer cust;
+    Grib1Record gr;
+    Grib1SectionGridDefinition gds;
+    Grib1SectionProductDefinition pds;
+    Grib1ParamLevel plevel;
+    Grib1ParamTime ptime;
+    Grib1Parameter param;
+    int gdsHash;
+    int cdmHash;
+
+    public Record1Bean(Grib1Customizer cust, Grib1Record r) {
+      this.cust = cust;
+      this.gr = r;
+      gds = gr.getGDSsection();
+      pds = gr.getPDSsection();
+      plevel = cust.getParamLevel(pds);
+      ptime = pds.getParamTime(cust);
+
+      param = cust.getParameter(pds.getCenter(), pds.getSubCenter(), pds.getTableVersion(), pds.getParameterNumber());
+      gdsHash = r.getGDSsection().getGDS().hashCode();
+      cdmHash =  Grib1CollectionBuilder.cdmVariableHash(cust, r, gdsHash, true, true, true);
+    }
+
+    @Override
+    public String toString() {
+      final Formatter sb = new Formatter();
+      sb.format("Record dataStart=%s%n", gr.getDataSection().getStartingPosition());
+      sb.format(" %s%n", param);
+      sb.format(" cdmHash=%d%n", cdmHash);
+      sb.format(" reftime=%s%n", getReferenceDate());
+      sb.format(" time=%s%n", getTimeCoord());
+      sb.format(" level=%s type=%s (%d)%n", getLevel(), getLevelName(), getLevelType());
+      return sb.toString();
+    }
+
+    public String getTableVersion() {
+      return pds.getCenter() + "-" + pds.getSubCenter() + "-" + pds.getTableVersion();
+    }
+
+    public final CalendarDate getReferenceDate() {
+      return pds.getReferenceDate();
+    }
+
+    public int getParamNo() {
+      return pds.getParameterNumber();
+    }
+
+    public final int getLevelType() {
+      return pds.getLevelType();
+    }
+
+    public String getParamDesc() {
+      return (param == null) ? null : param.getDescription();
+    }
+
+    public String getName() {
+      if (param == null) return null;
+      return Grib1Iosp.makeVariableName(cust, pds);
+    }
+
+    public String getUnit() {
+      return (param == null) ? null : param.getUnit();
+    }
+
+    public int getGds() {
+      return gdsHash;
+    }
+
+    public int getCdmHash() {
+      return cdmHash;
+    }
+
+    public int getGen() {
+      return pds.getGenProcess();
+    }
+
+    /* public String getSubcenter() {
+      return cust.getSubCenterName(pds.getSubCenter());
+    } */
+
+    public final String getLevelName() {
+      Grib1ParamLevel plevel = cust.getParamLevel(pds);
+      return plevel.getNameShort();
+    }
+
+    public final String getStatType() {
+      Grib1ParamTime ptime = pds.getParamTime(cust);
+      GribStatType stype = ptime.getStatType();
+      return (stype == null) ? null : stype.name();
+    }
+
+    public String getHeader() {
+      return new String(gr.getHeader()).trim();
+    }
+
+    public String getPeriod() {
+      try {
+        return GribUtils.getCalendarPeriod(pds.getTimeUnit()).toString();
+      } catch (UnsupportedOperationException e) {
+        return "Unknown Time Unit = "+ pds.getTimeUnit();
+      }
+    }
+
+    public String getTimeTypeName() {
+      return ptime.getTimeTypeName();
+    }
+
+    public int getTimeValue1() {
+      return pds.getTimeValue1();
+    }
+
+    public int getTimeValue2() {
+      return pds.getTimeValue2();
+    }
+
+    public int getTimeType() {
+      return pds.getTimeRangeIndicator();
+    }
+
+    public double getTimeCoordValue() {
+      return (double) ptime.getForecastTime();
+    }
+
+    public boolean isTimeInterval() {
+      return ptime.isInterval();
+    }
+
+    public int[] getTimeInterval() {
+       return ptime.getInterval();
+     }
+
+     public String getTimeCoord() {
+      if (ptime.isInterval()) {
+        int[] intv = ptime.getInterval();
+        return intv[0] + "-" + intv[1] + "("+ptime.getIntervalSize()+")";
+      }
+      return Integer.toString(ptime.getForecastTime());
+    }
+
+    public String getNIncludeMiss() {
+      return pds.getNincluded()+"/"+pds.getNmissing();
+    }
+
+    public int getPertNum() {
+      return pds.getPerturbationNumber();
+    }
+
+    public boolean isLayer() {
+      return cust.isLayer(pds.getLevelType());
+    }
+
+    public String getLevel() {
+      if (cust.isLayer(pds.getLevelType())) {
+        return plevel.getValue1() + "-" + plevel.getValue2();
+      }
+      return Float.toString(plevel.getValue1());
+    }
+
+    public double getLevelValue() {
+      return plevel.getValue1();
+    }
+
+    public double getLevelLowValue() {
+      return Math.min(plevel.getValue1(), plevel.getValue2());
+    }
+
+    public double getLevelHighValue() {
+      return Math.max(plevel.getValue1(), plevel.getValue2());
+    }
+
+    public long getLength() {
+      return gr.getIs().getMessageLength();
+    }
+
+    public long getPos() {
+      return gr.getDataSection().getStartingPosition();
+    }
+
+    public final int getFile() {
+      return gr.getFile();
+    }
+  }
+
+}

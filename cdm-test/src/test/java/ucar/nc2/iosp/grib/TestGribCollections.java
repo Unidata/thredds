@@ -258,10 +258,12 @@ public class TestGribCollections {
   static public class Count {
     int nread;
     int nmiss;
+    int nerrs;
 
     void add(Count c) {
       nread += c.nread;
       nmiss += c.nmiss;
+      nerrs += c.nerrs;
     }
   }
 }

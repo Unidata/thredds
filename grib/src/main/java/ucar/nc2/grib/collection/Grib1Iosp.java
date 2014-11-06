@@ -389,4 +389,17 @@ public class Grib1Iosp extends GribIosp {
     return Grib1Record.readData(rafData, dr.dataPos);
   }
 
+  public Object getLastRecordRead() {
+    return Grib1Record.lastRecordRead;
+  }
+
+  public void clearLastRecordRead() {
+    Grib1Record.lastRecordRead = null;
+  }
+
+
+  public Object getGribCustomizer() {
+    return cust;
+  }
+
 }
