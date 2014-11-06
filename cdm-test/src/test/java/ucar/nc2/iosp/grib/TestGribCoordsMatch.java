@@ -35,11 +35,10 @@ package ucar.nc2.iosp.grib;
 
 import org.junit.Test;
 import ucar.ma2.Array;
+import ucar.ma2.ArrayDouble;
 import ucar.nc2.Dimension;
 import ucar.nc2.NetcdfFile;
-import ucar.nc2.dataset.CoordinateAxis;
-import ucar.nc2.dataset.CoordinateAxis1D;
-import ucar.nc2.dataset.CoordinateAxis1DTime;
+import ucar.nc2.dataset.*;
 import ucar.nc2.dt.GridDatatype;
 import ucar.nc2.dt.grid.GridDataset;
 import ucar.nc2.dt.GridCoordSystem;
@@ -71,14 +70,14 @@ public class TestGribCoordsMatch {
   public void problem() throws IOException {
     long start = System.currentTimeMillis();
     // GribIosp.setDebugFlags(new DebugFlagsImpl("Grib/indexOnly Grib/indexOnlyShow"));
-    String filename = "ncss/GFS/CONUS_80km/GFS_CONUS_80km_20120227_1200.grib1.ncx2";
+    String filename = "ncss/GFS/CONUS_80km/GFS_CONUS_80km-CONUS_80km.ncx2";
     try (GridDataset gds = GridDataset.open(TestDir.cdmUnitTestDir + filename)) {
       NetcdfFile ncfile = gds.getNetcdfFile();
       IOServiceProvider iosp = ncfile.getIosp();
       assert iosp instanceof GribIosp;
       iospGrib = (GribIosp) iosp;
 
-      GridDatatype gdt = gds.findGridByName("Temperature_isobaric");
+      GridDatatype gdt = gds.findGridByName("TwoD/Total_precipitation_surface_Mixed_intervals_Accumulation");
       assert gdt != null;
       TestGribCollections.Count count = read(gdt);
       System.out.printf("%n%50s == %d/%d%n", "total", count.nmiss, count.nread);
@@ -86,8 +85,8 @@ public class TestGribCoordsMatch {
       float r = ((float) took) / count.nread;
       System.out.printf("%n   that took %d secs total, %f msecs per record%n", took / 1000, r);
 
-      assert count.nread == 36 * 29;
-      assert count.nmiss == 7;
+      assert count.nread == 350;
+      assert count.nmiss == 0;
       assert count.nerrs == 0;
     }
 
@@ -102,8 +101,8 @@ public class TestGribCoordsMatch {
     assert count.nerrs == 0;
   }
 
-  // @Test
-  public void testPofG_Grib1() throws IOException {
+  @Test
+  public void testPofG_Grib1() throws IOException {                //ncss/GFS/CONUS_80km/GFS_CONUS_80km-CONUS_80km.ncx2
     TestGribCollections.Count count = read(TestDir.cdmUnitTestDir + "ncss/GFS/CONUS_80km/GFS_CONUS_80km-CONUS_80km.ncx2");
 
     assert count.nread == 81340;
@@ -151,6 +150,7 @@ public class TestGribCoordsMatch {
   private Number var_level_type;
 
   private CalendarDate runtimeCoord;
+  private ArrayDouble.D3 timeCoord2DBoundsArray;
 
   private TestGribCollections.Count read(GridDatatype gdt) throws IOException {
     var_desc = gdt.findAttValueIgnoreCase("description", "");
@@ -177,6 +177,7 @@ public class TestGribCoordsMatch {
       runtimeCoord = null;
       readTime(gdt, count, -1, tDim, zDim);
     }
+    timeCoord2DBoundsArray = null;
     return count;
   }
 
@@ -184,22 +185,50 @@ public class TestGribCoordsMatch {
   private double timeCoord;
   private double[] timeBounds;
   private boolean isTimeInterval;
+  private CalendarDate timeCoordDate;
+  private CalendarDate[] timeBoundsDate; // for intervals
 
   private void readTime(GridDatatype gdt, TestGribCollections.Count count, int rtIndex, Dimension timeDim, Dimension zDim) throws IOException {
     if (timeDim != null) {
       hasTime = true;
       CoordinateAxis tcoord = gdc.getTimeAxis();
-      if (!(tcoord instanceof CoordinateAxis1DTime)) return; // skip 2D for the moement
-      CoordinateAxis1DTime tcoord1D = (CoordinateAxis1DTime) tcoord;
-      isTimeInterval = tcoord1D.isInterval();
+      isTimeInterval = tcoord.isInterval();
 
-      for (int t=0; t<timeDim.getLength(); t++) {
-        if (isTimeInterval) {
-          timeBounds = tcoord1D.getCoordEdges(t);
-        } else {
-          timeCoord = tcoord1D.getCoordValue(t);
+      if (rtIndex < 0) {
+        assert (tcoord instanceof CoordinateAxis1DTime);
+        CoordinateAxis1DTime tcoord1D = (CoordinateAxis1DTime) tcoord;
+
+        for (int t = 0; t < timeDim.getLength(); t++) {
+          if (isTimeInterval) {
+            timeBounds = tcoord1D.getCoordBounds(t);
+            timeBoundsDate = tcoord1D.getCoordBoundsDate(t);
+          } else {
+            timeCoord = tcoord1D.getCoordValue(t);
+            timeCoordDate = tcoord1D.getCalendarDate(t);
+          }
+          readVert(gdt, count, rtIndex, t, zDim);
         }
-        readVert(gdt, count, rtIndex, t, zDim);
+      } else {
+        assert (tcoord instanceof CoordinateAxis2D);
+        CoordinateAxis2D tcoord2D = (CoordinateAxis2D) tcoord;
+        CoordinateAxisTimeHelper helper = tcoord2D.getCoordinateAxisTimeHelper();
+        if (timeCoord2DBoundsArray == null)
+          timeCoord2DBoundsArray = tcoord2D.getCoordBoundsArray();
+        for (int t = 0; t < timeDim.getLength(); t++) {
+          if (isTimeInterval) {
+            timeBounds = new double[2];
+            timeBounds[0] = timeCoord2DBoundsArray.get(rtIndex, t, 0);
+            timeBounds[1] = timeCoord2DBoundsArray.get(rtIndex, t, 1);
+            timeBoundsDate = new CalendarDate[2];
+            timeBoundsDate[0] = helper.makeCalendarDateFromOffset(timeBounds[0]);
+            timeBoundsDate[1] = helper.makeCalendarDateFromOffset(timeBounds[1]);
+          } else {
+            timeCoord = tcoord2D.getCoordValue(rtIndex, t);
+            timeCoordDate = helper.makeCalendarDateFromOffset(timeCoord);
+          }
+          readVert(gdt, count, rtIndex, t, zDim);
+        }
+
       }
 
     } else {
@@ -220,21 +249,21 @@ public class TestGribCoordsMatch {
       isLayer = zcoord.isInterval();
       for (int z=0; z<zDim.getLength(); z++) {
         if (isLayer) {
-          edge = zcoord.getCoordEdges(z);
+          edge = zcoord.getCoordBounds(z);
         } else {
           vertCoord = zcoord.getCoordValue(z);
         }
-        read(gdt, count, rtIndex, tIndex, z);
+        readAndTest(gdt, count, rtIndex, tIndex, z);
       }
     } else {
       hasVert = false;
-      read(gdt, count, rtIndex, tIndex, -1);
+      readAndTest(gdt, count, rtIndex, tIndex, -1);
     }
   }
 
   private boolean show = false;
 
-  private void read(GridDatatype gdt, TestGribCollections.Count count, int rtIndex, int tIndex, int zIndex) throws IOException {
+  private void readAndTest(GridDatatype gdt, TestGribCollections.Count count, int rtIndex, int tIndex, int zIndex) throws IOException {
     iospGrib.clearLastRecordRead();
 
     Array data = gdt.readDataSlice(rtIndex, -1, tIndex, zIndex, -1, -1);
@@ -254,18 +283,28 @@ public class TestGribCoordsMatch {
     paramOk &=  var_level_type.intValue() == bean.getLevelType();
 
     boolean runtimeOk = true;
-    if (runtimeCoord != null)
-      runtimeOk &=  runtimeCoord.equals(bean.getReferenceDate());
+    CalendarDate gribDate = null;
+    if (runtimeCoord != null) {
+      gribDate = bean.getReferenceDate();
+      runtimeOk &= runtimeCoord.equals(gribDate);
+    }
 
     boolean timeOk = true;
     if (hasTime) {
       if (isTimeInterval) {
         timeOk &= bean.isTimeInterval();
-        int[] intv = bean.getTimeInterval();
-        timeOk &= timeBounds[0] == intv[0];
-        timeOk &= timeBounds[1] == intv[1];
+        // int[] intv = bean.getTimeInterval();
+        //timeOk &= timeBounds[0] == intv[0];  // true if GC
+        //timeOk &= timeBounds[1] == intv[1];  // true if GC
+        CalendarDate[] dateFromGribRecord = bean.getTimeIntervalDates();
+        timeOk &= timeBoundsDate[0].equals(dateFromGribRecord[0]);
+        timeOk &= timeBoundsDate[1].equals(dateFromGribRecord[1]);
+
       } else {
-        timeOk &= timeCoord == bean.getTimeCoordValue();
+        // timeOk &= timeCoord == bean.getTimeCoordValue();   // true if GC
+        CalendarDate dateFromGribRecord = bean.getTimeCoordDate();
+        timeOk &= timeCoordDate.equals(dateFromGribRecord);
+
       }
     }
 
@@ -412,6 +451,20 @@ public class TestGribCoordsMatch {
 
     public double getTimeCoordValue() {
       return (double) ptime.getForecastTime();
+    }
+
+    public CalendarDate getTimeCoordDate() {
+      int timeUnit = cust.convertTimeUnit( pds.getTimeUnit());
+      return GribUtils.getValidTime(pds.getReferenceDate(), timeUnit,  ptime.getForecastTime());
+    }
+
+    public CalendarDate[] getTimeIntervalDates() {
+      int[] intv = getTimeInterval();
+      int timeUnit = cust.convertTimeUnit( pds.getTimeUnit());
+      CalendarDate[] result = new CalendarDate[2];
+      result[0] = GribUtils.getValidTime(pds.getReferenceDate(), timeUnit,  intv[0]);
+      result[1] = GribUtils.getValidTime(pds.getReferenceDate(), timeUnit,  intv[1]);
+      return result;
     }
 
     public boolean isTimeInterval() {

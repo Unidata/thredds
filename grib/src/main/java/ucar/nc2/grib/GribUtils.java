@@ -32,6 +32,7 @@
 
 package ucar.nc2.grib;
 
+import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time.CalendarPeriod;
 import ucar.unidata.util.StringUtil2;
 
@@ -86,6 +87,11 @@ public class GribUtils {
       default:
         throw new UnsupportedOperationException("Unknown time unit = " + timeUnit);
     }
+  }
+
+  static public CalendarDate getValidTime(CalendarDate refDate, int timeUnit, int offset) {
+    CalendarPeriod period = GribUtils.getCalendarPeriod(timeUnit);
+    return refDate.add(period.multiply(offset));
   }
 
   static public String cleanupUnits(String unit) {

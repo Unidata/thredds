@@ -31,71 +31,34 @@
  *   WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-package ucar.nc2.util.cache;
+package ucar.nc2.dataset;
 
-import net.jcip.annotations.Immutable;
-import ucar.nc2.util.Misc;
-
-import java.util.Formatter;
+import ucar.nc2.time.Calendar;
+import ucar.nc2.time.CalendarDate;
+import ucar.nc2.time.CalendarDateFormatter;
+import ucar.nc2.time.CalendarDateUnit;
 
 /**
- * Integer arrays that are constant or are sequential can be stored without storing all of the elements.
- * Keeps memory requirements down in PartitionVariable
+ * Helper class for time coordinates
  *
  * @author caron
- * @since 11/4/2014
+ * @since 11/6/2014
  */
-@Immutable
-public class SmartArrayInt {
-  private final int[] raw;
-  private final int start;
-  private final boolean isOrdered;   // if elem[i] = constant + i;
-  private final boolean isConstant;  // if elem[i] = constant
+public class CoordinateAxisTimeHelper {
+  private final ucar.nc2.time.Calendar calendar;
+  private final CalendarDateUnit dateUnit;
 
-  public SmartArrayInt(int[] raw) {
-    if (raw.length == 0) {
-      this.start = -1;
-      this.isOrdered = false;
-      this.isConstant = true;
-      this.raw = null;
-      return;
-    }
-    boolean isO = true;
-    boolean isC = true;
-    this.start = raw[0];
-    for (int i=0; i<raw.length; i++) {
-      if (raw[i] != start+i) isO = false;
-      if (raw[i] != start) isC = false;
-    }
-
-    this.raw = (!isO && !isC) ? raw : null;
-    this.isOrdered = isO;
-    this.isConstant = isC;
+  public CoordinateAxisTimeHelper(Calendar calendar, String unitString) {
+    this.calendar = calendar;
+    this.dateUnit = CalendarDateUnit.withCalendar(calendar, unitString); // this will throw exception on failure
   }
 
-  public int get(int idx) {
-    if (isConstant) return start;
-    if (isOrdered) return start+idx;
-    return raw[idx];
-  }
+  public CalendarDate makeCalendarDateFromOffset(double offset) {
+    return dateUnit.makeCalendarDate(offset);
+}
 
-  public void show(Formatter f) {
-    if (isConstant) f.format("isConstant="+start);
-    else if (isOrdered) f.format("isOrdered start="+start);
-    else Misc.showInts(raw, f);
-  }
-
-  /**
-   * Find the index of the want value
-   * @param want  value wanted
-   * @return < 0 if not found, else the index. If duplicates, then return any match
-   */
-  public int findIdx(int want) {
-    if (isConstant) return (want == start)  ? 0 : -1;
-    if (isOrdered) return want - start;
-    for (int i=0; i<raw.length; i++)
-      if (raw[i] == want) return i;
-    return -1;
+  public CalendarDate makeCalendarDateFromOffset(String offset) {
+    return CalendarDateFormatter.isoStringToCalendarDate(calendar, offset);
   }
 
 }

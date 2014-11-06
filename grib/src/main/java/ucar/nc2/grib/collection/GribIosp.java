@@ -47,6 +47,7 @@ import ucar.nc2.*;
 import ucar.nc2.constants.*;
 import ucar.nc2.grib.*;
 import ucar.nc2.grib.grib2.Grib2Utils;
+import ucar.nc2.time.Calendar;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.util.CancelTask;
 import ucar.nc2.util.Misc;
@@ -416,11 +417,13 @@ public abstract class GribIosp extends AbstractIOServiceProvider {
     v.addAttribute(new Attribute(CDM.UNITS, rtc.getUnit()));
     v.addAttribute(new Attribute(CF.STANDARD_NAME, CF.TIME_REFERENCE));
     v.addAttribute(new Attribute(CDM.LONG_NAME, "GRIB reference time"));
+    v.addAttribute(new Attribute(CF.CALENDAR, Calendar.proleptic_gregorian.toString()));
 
     String vsName = tcName + "_ISO";
     Variable vs = ncfile.addVariable(g, new Variable(ncfile, g, null, vsName, DataType.STRING, tcName));
     vs.addAttribute(new Attribute(CDM.UNITS, "ISO8601"));
     v.addAttribute(new Attribute(CDM.LONG_NAME, "GRIB reference time"));
+    v.addAttribute(new Attribute(CF.CALENDAR, Calendar.proleptic_gregorian.toString()));
 
     // coordinate values
     String[] dataS = new String[n];
@@ -464,6 +467,7 @@ public abstract class GribIosp extends AbstractIOServiceProvider {
     v.addAttribute(new Attribute(CDM.UNITS, units));
     v.addAttribute(new Attribute(CF.STANDARD_NAME, CF.TIME));
     v.addAttribute(new Attribute(CDM.LONG_NAME, GRIB_VALID_TIME));
+    v.addAttribute(new Attribute(CF.CALENDAR, Calendar.proleptic_gregorian.toString()));
 
     // the data is not generated until asked for to same space
     if (!time2D.isTimeInterval())
@@ -552,6 +556,7 @@ public abstract class GribIosp extends AbstractIOServiceProvider {
     v.addAttribute(new Attribute(CDM.UNITS, units));
     v.addAttribute(new Attribute(CF.STANDARD_NAME, CF.TIME));
     v.addAttribute(new Attribute(CDM.LONG_NAME, GRIB_VALID_TIME));
+    v.addAttribute(new Attribute(CF.CALENDAR, Calendar.proleptic_gregorian.toString()));
 
     double[] data = new double[nruns * ntimes];
     int count = 0;
@@ -613,6 +618,7 @@ public abstract class GribIosp extends AbstractIOServiceProvider {
     v.addAttribute(new Attribute(CDM.UNITS, units));
     v.addAttribute(new Attribute(CF.STANDARD_NAME, CF.TIME));
     v.addAttribute(new Attribute(CDM.LONG_NAME, GRIB_VALID_TIME));
+    v.addAttribute(new Attribute(CF.CALENDAR, Calendar.proleptic_gregorian.toString()));
 
     double[] data = new double[ntimes];
     int count = 0;
@@ -633,6 +639,7 @@ public abstract class GribIosp extends AbstractIOServiceProvider {
     v.addAttribute(new Attribute(CDM.UNITS, units));
     v.addAttribute(new Attribute(CF.STANDARD_NAME, CF.TIME));
     v.addAttribute(new Attribute(CDM.LONG_NAME, GRIB_VALID_TIME));
+    v.addAttribute(new Attribute(CF.CALENDAR, Calendar.proleptic_gregorian.toString()));
 
     double[] data = new double[ntimes];
     int count = 0;

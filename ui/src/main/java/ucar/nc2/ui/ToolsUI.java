@@ -1488,7 +1488,7 @@ public class ToolsUI extends JPanel {
             System.out.println(" doit " + cb.getSelectedItem() + " cmd=" + e.getActionCommand() + " when=" + e.getWhen() + " class=" + OpPanel.this.getClass().getName());
 
           // eliminate multiple events from same selection
-          if (eventOK && (e.getWhen() > lastEvent + 10000)) { // not sure of units - must be nanosecs - ?? platform dependednt ??
+          if (eventOK) { //  && (e.getWhen() > lastEvent + 10000)) { // not sure of units - must be nanosecs - ?? platform dependednt ??
             doit(cb.getSelectedItem());
             lastEvent = e.getWhen();
           }

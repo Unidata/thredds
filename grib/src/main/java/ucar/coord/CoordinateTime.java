@@ -225,8 +225,7 @@ public class CoordinateTime extends CoordinateTimeAbstract implements Coordinate
         return offset;
 
       } else {
-        CalendarPeriod period = GribUtils.getCalendarPeriod(tuInRecord);
-        CalendarDate validDate = refDate.add( period.multiply(offset));
+        CalendarDate validDate = GribUtils.getValidTime(refDate, tuInRecord, offset);
         int newOffset = TimeCoord.getOffset(refDate, validDate, timeUnit);
         return newOffset;
       }
