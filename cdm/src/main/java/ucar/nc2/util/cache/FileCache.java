@@ -615,7 +615,7 @@ public class FileCache implements FileCacheIF {
     track = new ConcurrentHashMap<>(5000);
   }
 
-  private class Tracker implements Comparable<Tracker> {
+  private static class Tracker implements Comparable<Tracker> {
     Object key;
     int hit, miss;
 

@@ -111,9 +111,11 @@ public class DiskCache2 {
   /**
    * Create a cache on disk. Use default policy (CachePathPolicy.OneDirectory)
    * @param root the root directory of the cache. Must be writeable.
-   * @param reletiveToHome if the root directory is reletive to the cache home directory.
+   * @param reletiveToHome if the root directory is relative to the cache
+   *                       home directory.
    * @param persistMinutes  a file is deleted if its last modified time is greater than persistMinutes
-   * @param scourEveryMinutes how often to run the scour process. If <= 0, dont scour.
+   * @param scourEveryMinutes how often to run the scour process. If <= 0,
+   *                          don't scour.
    */
   public DiskCache2(String root, boolean reletiveToHome, int persistMinutes, int scourEveryMinutes) {
     this.persistMinutes = persistMinutes;
@@ -213,6 +215,7 @@ public class DiskCache2 {
     if (cachePathPolicy == CachePathPolicy.NestedDirectory) {
       File dir = f.getParentFile();
       boolean ret = dir.mkdirs();
+      if (!ret) cacheLog.warn("Error creating dir: " + dir);
     }
 
     return f;
@@ -411,6 +414,7 @@ public class DiskCache2 {
       File parent = file.getParentFile();
       if (!parent.exists()) {
         boolean ret = parent.mkdirs();
+        if (!ret) cacheLog.warn("Error creating parent: " + parent);
       }
     }
 

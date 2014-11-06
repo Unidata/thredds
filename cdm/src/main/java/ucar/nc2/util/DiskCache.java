@@ -165,11 +165,11 @@ public class DiskCache {
    * Get a File if it exists. If not, get a File that can be written to.
    * Use the standard policy to decide where to place it.
    * <p/>
-   * Things are a bit complicated, because in order to guarentee a file in an arbitrary
-   * location can be written to, we have to try to open it as a FileOutputStream.
-   * If we do, we dont want to open it twice, so we return a WriteableFile that contains an
-   * opened FileOutputStream.
-   * If it already exists, or we get it from cache, we dont need to open it.
+   * Things are a bit complicated, because in order to guarantee a file in
+   * an arbitrary location can be written to, we have to try to open it as a
+   * FileOutputStream. If we do, we don't want to open it twice,
+   * so we return a WriteableFile that contains an opened FileOutputStream.
+   * If it already exists, or we get it from cache, we don't need to open it.
    * <p/>
    * In any case, you must call WriteableFile.close() to make sure its closed.
    *
@@ -220,7 +220,7 @@ public class DiskCache {
    * If it does exist, set its LastModifiedDate to current time.
    *
    * @param fileLocation normal file location
-   * @return equivilent File in the cache.
+   * @return equivalent File in the cache.
    */
   static public File getCacheFile(String fileLocation) {
     File f = new File(makeCachePath(fileLocation));
@@ -248,7 +248,7 @@ public class DiskCache {
       fileLocation = fileLocation.replace('\\', '/');  // LOOK - use better normalization code  eg Spring StringUtils
       cachePath = java.net.URLEncoder.encode(fileLocation, "UTF8");
     } catch (UnsupportedEncodingException e) {
-      cachePath = java.net.URLEncoder.encode(fileLocation); // shouldnt happen
+      cachePath = java.net.URLEncoder.encode(fileLocation); // shouldn't happen
     }
 
     //String cachePath = StringUtil.replace(fileLocation, '\\', "/");
@@ -262,8 +262,7 @@ public class DiskCache {
     pw.println("Size   LastModified       Filename");
     File dir = new File(root);
     for (File file : dir.listFiles()) {
-      String org = null;
-      org = EscapeStrings.urlDecode(file.getName());
+      String org = EscapeStrings.urlDecode(file.getName());
       /*try {
         org = URLDecoder.decode(file.getName(), "UTF8");
       } catch (UnsupportedEncodingException e) {
@@ -286,8 +285,11 @@ public class DiskCache {
     for (File file : dir.listFiles()) {
       Date lastMod = new Date(file.lastModified());
       if (lastMod.before(cutoff)) {
-        file.delete();
-        if (sbuff != null) sbuff.append(" delete ").append(file).append(" (").append(lastMod).append(")\n");
+        boolean ret =file.delete();
+        if (sbuff != null) {
+            sbuff.append(" delete ").append(file).append(" (").append(lastMod).append(")\n");
+            if (!ret) sbuff.append("Error deleting ").append(file).append("\n");
+        }
       }
     }
   }
@@ -313,33 +315,34 @@ public class DiskCache {
    * @param sbuff          write results here, null is ok.
    */
   static public void cleanCache(long maxBytes, Comparator<File> fileComparator, StringBuilder sbuff) {
-    if (sbuff != null) sbuff.append("DiskCache clean maxBytes= " + maxBytes + "on dir " + root + "\n");
+    if (sbuff != null) sbuff.append("DiskCache clean maxBytes= ")
+            .append(maxBytes).append("on dir ").append(root).append("\n");
 
     File dir = new File(root);
-    File[] files = dir.listFiles();
-    List<File> fileList = Arrays.asList(files);
-    Collections.sort(fileList, fileComparator);
-
     long total = 0, total_delete = 0;
-    for (File file : fileList) {
-      if (file.length() + total > maxBytes) {
-        total_delete += file.length();
-        if (sbuff != null) sbuff.append(" delete " + file + " (" + file.length() + ")\n");
-        file.delete();
-      } else {
-        total += file.length();
-      }
+
+    File[] files = dir.listFiles();
+    if (files != null) {
+        List<File> fileList = Arrays.asList(files);
+        Collections.sort(fileList, fileComparator);
+
+        for (File file : fileList) {
+            if (file.length() + total > maxBytes) {
+                total_delete += file.length();
+                if (sbuff != null)
+                    sbuff.append(" delete ").append(file).append(" (")
+                            .append(file.length()).append(")\n");
+                if(!file.delete() && sbuff != null)
+                    sbuff.append("Error deleting ").append(file).append("\n");
+            }
+            else {
+                total += file.length();
+            }
+        }
     }
     if (sbuff != null) {
-      sbuff.append("Total bytes deleted= " + total_delete + "\n");
-      sbuff.append("Total bytes left in cache= " + total + "\n");
-    }
-  }
-
-  static private class FileSizeComparator implements Comparator<File> {
-    public int compare(File f1, File f2) {
-      // return (int) (f1.length() - f2.length());
-      return (f1.length()<f2.length() ? -1 : (f1.length()==f2.length() ? 0 : 1));  // Steve Ansari 6/3/2010
+      sbuff.append("Total bytes deleted= ").append(total_delete).append("\n");
+      sbuff.append("Total bytes left in cache= ").append(total).append("\n");
     }
   }
 
