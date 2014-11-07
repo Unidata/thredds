@@ -120,7 +120,6 @@ public class D4TSServlet extends DapServlet
     {
         // Using context information, we need to
         // construct a file path to the specified dataset
-        String urlpath = drq.getURLPath();
         String suffix = DapUtil.denullify(drq.getDataset());
         String datasetfilepath = drq.getRealPath(TESTDATADIR + DapUtil.canonicalpath(suffix));
 

@@ -456,6 +456,7 @@ public class HTTPAuthStore implements Serializable
             // Create Key
             byte deskey[] = password.getBytes(Escape.utf8Charset);
             DESKeySpec desKeySpec = new DESKeySpec(deskey);
+            //Coverity[RISKY_CRYPTO]
             SecretKeyFactory keyFactory = SecretKeyFactory.getInstance("DES");
             SecretKey secretKey = keyFactory.generateSecret(desKeySpec);
 
@@ -513,6 +514,7 @@ public class HTTPAuthStore implements Serializable
             SecretKey secretKey = keyFactory.generateSecret(desKeySpec);
 
             // Create Cipher
+            //Coverity[RISKY_CRYPTO]
             Cipher desCipher = Cipher.getInstance("DES/ECB/PKCS5Padding");
             desCipher.init(Cipher.DECRYPT_MODE, secretKey);
 

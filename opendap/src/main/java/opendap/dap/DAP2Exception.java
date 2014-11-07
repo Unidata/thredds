@@ -320,7 +320,7 @@ public class DAP2Exception extends Exception {
      * @see DAP2Exception#print(PrintWriter)
      */
     public final void print(OutputStream os) {
-        PrintWriter pw = new PrintWriter(new BufferedWriter(new OutputStreamWriter(os)));
+        PrintWriter pw = new PrintWriter(new BufferedWriter(new OutputStreamWriter(os,Util.UTF8)));
         print(pw);
         pw.flush();
     }

@@ -59,7 +59,7 @@ abstract public class AbstractDSP implements DSP
     public DSP open(String path)
             throws DapException
     {
-        return open(path, null);
+        return open(path, new DapContext());
     }
 
     @Override

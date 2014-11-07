@@ -812,7 +812,7 @@ public class DDS extends DStructure
      */
     public void printDAS(OutputStream os)
     {
-        PrintWriter pw = new PrintWriter(new BufferedWriter(new OutputStreamWriter(os)));
+        PrintWriter pw = new PrintWriter(new BufferedWriter(new OutputStreamWriter(os,Util.UTF8)));
         printDAS(pw);
         pw.flush();
     }

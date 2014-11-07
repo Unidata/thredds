@@ -175,7 +175,7 @@ public class ServerDDS extends DDS
      * @see DDS#print(PrintWriter)
      */
     public final void printConstrained(OutputStream os) {
-        PrintWriter pw = new PrintWriter(new BufferedWriter(new OutputStreamWriter(os)));
+        PrintWriter pw = new PrintWriter(new BufferedWriter(new OutputStreamWriter(os,Util.UTF8)));
         printConstrained(pw);
         pw.flush();
     }
@@ -190,7 +190,7 @@ public class ServerDDS extends DDS
      * @opendap.ddx.experimental
      */
     public final void printConstrainedXML(OutputStream os) {
-        PrintWriter pw = new PrintWriter(new BufferedWriter(new OutputStreamWriter(os)));
+        PrintWriter pw = new PrintWriter(new BufferedWriter(new OutputStreamWriter(os,Util.UTF8)));
         printConstrained(pw);
         pw.flush();
     }

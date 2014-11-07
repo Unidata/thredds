@@ -767,7 +767,7 @@ public class Attribute extends DAPNode
    * @param pad the number of spaces to indent each line.
    */
   public final void print(OutputStream os, String pad) {
-    print(new PrintWriter(new BufferedWriter(new OutputStreamWriter(os))), pad);
+    print(new PrintWriter(new BufferedWriter(new OutputStreamWriter(os,Util.UTF8))), pad);
   }
 
   /**
@@ -806,7 +806,7 @@ public class Attribute extends DAPNode
    * @opendap.ddx.experimental
    */
   public void printXML(OutputStream os, String pad) {
-    PrintWriter pw = new PrintWriter(new BufferedWriter(new OutputStreamWriter(os)));
+    PrintWriter pw = new PrintWriter(new BufferedWriter(new OutputStreamWriter(os,Util.UTF8)));
     printXML(pw, pad);
     pw.flush();
   }
