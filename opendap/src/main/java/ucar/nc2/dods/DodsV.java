@@ -283,6 +283,14 @@ class DodsV implements Comparable {
     this.elemType = bt;
   }
 
+  @Override
+  public boolean equals(Object oo) {
+    if (this == oo) return true;
+    if (oo.getClass() != this.getClass()) return false;
+    return super.equals(oo);
+  }
+
+
   public int compareTo(Object o) {
     return seq - ((DodsV) o).seq;
   }

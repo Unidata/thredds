@@ -115,7 +115,7 @@ public class GetAsciiHandler {
             if (_Debug) System.out.println(" ASC DDS: ");
             if (_Debug) dds.print(System.out);
 
-            PrintWriter pw = new PrintWriter(rs.getResponse().getOutputStream());
+            PrintWriter pw = new PrintWriter(new OutputStreamWriter(rs.getResponse().getOutputStream(), Util.UTF8));
             PrintWriter pwDebug = new PrintWriter(System.out);
 
 

@@ -852,7 +852,7 @@ if(OLDGROUPCODE) {
                     } else if (gi >= 0 && ai >= 0) {
                         String apath = arrayname.substring(0, ai);
                         String gpath = gridname.substring(0, gi);
-                        if (gpath != apath) {// choose gridpath over the array path
+                        if (!gpath.equals(apath)) {// choose gridpath over the array path
                             String arraysuffix = arrayname.substring(gi + 1, arrayname.length());
                             arrayname = gpath + "/" + arraysuffix;
                             array.getBaseType().setClearName(arrayname);

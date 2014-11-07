@@ -120,9 +120,9 @@ public class CDMDSP extends AbstractDSP
     init(NetcdfFile ncfile)
             throws DapException
     {
-        setPath(ncfile.getLocation());
         if(ncfile == null)
             throw new DapException("CDMDSP: cannot open: " + path);
+        setPath(ncfile.getLocation());
         if(this.context == null || (this.factory = (DapFactory) this.context.get(FACTORYKEY)) == null)
             this.factory = new DapFactoryDMR();
         //if(ncfile instanceof NetcdfDataset)
@@ -985,7 +985,7 @@ public class CDMDSP extends AbstractDSP
             for(int i = 0; i < bb.length; i++) {
                 bb[i] = (byte) ob[i];
             }
-            ByteBuffer buf = ByteBuffer.wrap(bb);
+            o = ByteBuffer.wrap(bb);
         } //else { // leave it unchanged
         return o;
     }

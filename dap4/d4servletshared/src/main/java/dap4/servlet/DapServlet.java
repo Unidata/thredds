@@ -277,6 +277,8 @@ abstract public class DapServlet extends javax.servlet.http.HttpServlet
     {
 
         String datasetpath = getResourcePath(drq);
+        if(datasetpath == null)
+            throw new DapException("Not such dataset: "+drq.getOriginalURL());
         DSP dsp = DapCache.open(datasetpath);
         DapDataset dmr = dsp.getDMR();
 
@@ -323,6 +325,8 @@ abstract public class DapServlet extends javax.servlet.http.HttpServlet
             throws IOException
     {
         String datasetpath = getResourcePath(drq); // dataset path is relative to resource path
+        if(datasetpath == null)
+            throw new DapException("Not such dataset: "+drq.getOriginalURL());
         DSP dsp = DapCache.open(datasetpath);
         if(dsp == null)
             throw new IOException("No such file: " + datasetpath);
