@@ -609,8 +609,10 @@ public abstract class PartitionCollection extends GribCollection {
       if (existingFile == null) {
         // try reletive to index file
         File parent = getIndexParentFile();
+        System.out.printf("try reletive file, indexRaf is null = %s%n", indexRaf);
         if (parent == null) return null;
         existingFile = new File(parent, filename);
+        System.out.printf("try reletive file = %s%n", existingFile);
         if (!existingFile.exists()) return null;
       }
       return existingFile.getPath();

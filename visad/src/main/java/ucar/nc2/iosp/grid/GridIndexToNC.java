@@ -509,7 +509,7 @@ public class GridIndexToNC {
    * @author IDV Development Team
    * @version $Revision: 1.3 $
    */
-  private class CompareGridVariableByVertName implements Comparator {
+  static private class CompareGridVariableByVertName implements Comparator {
 
     /**
      * Compare the two lists of names

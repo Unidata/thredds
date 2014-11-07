@@ -1152,7 +1152,7 @@ public class GempakFileReader implements GempakConstants {
   /**
    * Class to mimic the DMHDRS common block.
    */
-  protected class DMHeaders {
+  static protected class DMHeaders {
 
     /**
      * last valid row

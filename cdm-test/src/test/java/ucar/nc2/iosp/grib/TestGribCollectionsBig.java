@@ -63,7 +63,7 @@ public class TestGribCollectionsBig {
      RandomAccessFile.setDebugLeaks(true);
      GribIosp.setDebugFlags(new DebugFlagsImpl("Grib/indexOnly"));
      PartitionCollection.initPartitionCache(50, 700, -1, -1);
-    GribCollection.initDataRafCache(11, 100, -1);
+     GribCollection.initDataRafCache(11, 100, -1);
    }
 
    @AfterClass

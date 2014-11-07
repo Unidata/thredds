@@ -90,7 +90,7 @@ public class Grib1ReportPanel extends ReportPanel {
         doCheckLocalParams(f, dcm, useIndex);
         break;
       case scanIssues:
-        doScanIssues(f, dcm, useIndex);
+        doScanIssues(f, dcm, useIndex, eachFile, extra);
         break;
       case rename:
         doRename(f, dcm, useIndex);
@@ -99,10 +99,24 @@ public class Grib1ReportPanel extends ReportPanel {
         doCheckRename(f, dcm, useIndex);
         break;
       case showEncoding:
-        doShowEncoding(f, dcm, useIndex);
+        doShowEncoding(f, dcm);
         break;
     }
   }
+
+  private Grib1Index createIndex(MFile mf) throws IOException {
+    String path = mf.getPath();
+    Grib1Index index = new Grib1Index();
+    if (!index.readIndex(path, mf.getLastModified())) {
+      // make sure its a grib2 file
+      try (RandomAccessFile raf = new RandomAccessFile(path, "r")) {
+        if (!Grib1RecordScanner.isValidFile(raf)) return null;
+        index.makeIndex(path, raf);
+      }
+    }
+    return index;
+  }
+
 
   ///////////////////////////////////////////////
 
@@ -171,7 +185,10 @@ public class Grib1ReportPanel extends ReportPanel {
       String path = mfile.getPath();
       if (path.endsWith(".gbx8") || path.endsWith(".gbx9") || path.endsWith(".ncx")) continue;
       f.format(" %s%n", path);
-      doCheckTables(f, mfile, useIndex, tableSet, local, missing);
+      if (useIndex)
+        doCheckTablesWithIndex(f, mfile, tableSet, local, missing);
+      else
+        doCheckTablesNoIndex(f, mfile, tableSet, local, missing);
     }
 
     f.format("Check Parameter Tables%n");
@@ -180,7 +197,15 @@ public class Grib1ReportPanel extends ReportPanel {
     missing.show(f);
   }
 
-  private void doCheckTables(Formatter fm, MFile ff, boolean useIndex, CounterS tableSet, Counter local, Counter missing) throws IOException {
+  private void doCheckTablesWithIndex(Formatter mf, MFile ff, CounterS tableSet, Counter local, Counter missing) throws IOException {
+    Grib1Index index = createIndex(ff);
+    if (index == null) return;
+    for (ucar.nc2.grib.grib1.Grib1Record gr : index.getRecords()) {
+      doCheckTables(gr, tableSet, local, missing);
+    }
+  }
+
+  private void doCheckTablesNoIndex(Formatter fm, MFile ff, CounterS tableSet, Counter local, Counter missing) throws IOException {
     String path = ff.getPath();
     try (RandomAccessFile raf= new ucar.unidata.io.RandomAccessFile(path, "r")) {
 
@@ -190,17 +215,7 @@ public class Grib1ReportPanel extends ReportPanel {
       Grib1RecordScanner reader = new Grib1RecordScanner(raf);
       while (reader.hasNext()) {
         ucar.nc2.grib.grib1.Grib1Record gr = reader.next();
-        Grib1SectionProductDefinition pds = gr.getPDSsection();
-        String key = pds.getCenter() + "-" + pds.getSubCenter() + "-" + pds.getTableVersion();
-        tableSet.count(key);
-
-        if (pds.getParameterNumber() > 127)
-          local.count(pds.getParameterNumber());
-
-        Grib1ParamTableReader table = new Grib1ParamTables().getParameterTable(pds.getCenter(), pds.getSubCenter(), pds.getTableVersion());
-        if (table == null && useIndex) table = Grib1ParamTables.getDefaultTable();
-        if (table == null || null == table.getParameter(pds.getParameterNumber()))
-          missing.count(pds.getParameterNumber());
+        doCheckTables(gr, tableSet, local, missing);
       }
 
     } catch (Throwable ioe) {
@@ -211,9 +226,23 @@ public class Grib1ReportPanel extends ReportPanel {
     }
   }
 
+  private void doCheckTables(ucar.nc2.grib.grib1.Grib1Record gr, CounterS tableSet, Counter local, Counter missing) throws IOException {
+    Grib1SectionProductDefinition pds = gr.getPDSsection();
+    String key = pds.getCenter() + "-" + pds.getSubCenter() + "-" + pds.getTableVersion();
+    tableSet.count(key);
+
+    if (pds.getParameterNumber() > 127)
+      local.count(pds.getParameterNumber());
+
+    Grib1ParamTableReader table = new Grib1ParamTables().getParameterTable(pds.getCenter(), pds.getSubCenter(), pds.getTableVersion());
+    // if (table == null && useIndex) table = Grib1ParamTables.getDefaultTable();
+    if (table == null || null == table.getParameter(pds.getParameterNumber()))
+      missing.count(pds.getParameterNumber());
+  }
+
   /////////////////////////////////////////////////////////////////
 
-  private void doScanIssues(Formatter f, MCollection dcm, boolean useIndex) throws IOException {
+  private void doScanIssues(Formatter f, MCollection dcm, boolean useIndex, boolean eachFile, boolean extraInfo) throws IOException {
     Counter predefinedA = new Counter("predefined");
     Counter thinA = new Counter("thin");
     Counter timeUnitA = new Counter("timeUnit");
@@ -230,13 +259,18 @@ public class Grib1ReportPanel extends ReportPanel {
       String path = mfile.getPath();
       if (path.endsWith(".gbx8") || path.endsWith(".gbx9") || path.endsWith(".ncx")) continue;
       f.format(" %s%n", path);
-      doScanIssues(f, mfile, useIndex, predefined, thin, timeUnit, vertCoord, vertCoordInGDS);
+      if (useIndex)
+        doScanIssuesWithIndex(f, mfile, extraInfo, predefined, thin, timeUnit, vertCoord, vertCoordInGDS);
+      else
+        doScanIssuesNoIndex(f, mfile, extraInfo, predefined, thin, timeUnit, vertCoord, vertCoordInGDS);
 
-      predefined.show(f);
-      thin.show(f);
-      timeUnit.show(f);
-      vertCoord.show(f);
-      vertCoordInGDS.show(f);
+      if (eachFile) {
+        predefined.show(f);
+        thin.show(f);
+        timeUnit.show(f);
+        vertCoord.show(f);
+        vertCoordInGDS.show(f);
+      }
 
       predefinedA.add(predefined);
       thinA.add(thin);
@@ -245,7 +279,7 @@ public class Grib1ReportPanel extends ReportPanel {
       vertCoordInGDSA.add(vertCoordInGDS);
     }
 
-    f.format("SUMMARY ALL%n");
+    f.format("ScanIssues - all files%n");
     predefinedA.show(f);
     thinA.show(f);
     timeUnitA.show(f);
@@ -253,11 +287,18 @@ public class Grib1ReportPanel extends ReportPanel {
     vertCoordInGDSA.show(f);
   }
 
-  private void doScanIssues(Formatter fm, MFile ff, boolean useIndex, Counter predefined, Counter thin, Counter timeUnit,
+  private void doScanIssuesWithIndex(Formatter fm, MFile ff, boolean extraInfo, Counter predefined, Counter thin, Counter timeUnit,
                             Counter vertCoord, Counter vertCoordInGDS) throws IOException {
-    boolean showThin = true;
-    boolean showPredefined = true;
-    boolean showVert = true;
+    Grib1Index index = createIndex(ff);
+    if (index == null) return;
+    for (ucar.nc2.grib.grib1.Grib1Record gr : index.getRecords()) {
+      doScanIssues(gr, fm, ff.getPath(), extraInfo, predefined, thin, timeUnit, vertCoord, vertCoordInGDS);
+    }
+  }
+
+  private void doScanIssuesNoIndex(Formatter fm, MFile ff, boolean extraInfo, Counter predefined, Counter thin, Counter timeUnit,
+                            Counter vertCoord, Counter vertCoordInGDS) throws IOException {
+
     String path = ff.getPath();
     try (RandomAccessFile raf= new ucar.unidata.io.RandomAccessFile(path, "r")) {
       raf.order(ucar.unidata.io.RandomAccessFile.BIG_ENDIAN);
@@ -266,29 +307,7 @@ public class Grib1ReportPanel extends ReportPanel {
       Grib1RecordScanner reader = new Grib1RecordScanner(raf);
       while (reader.hasNext()) {
         ucar.nc2.grib.grib1.Grib1Record gr = reader.next();
-        Grib1SectionGridDefinition gdss = gr.getGDSsection();
-        Grib1SectionProductDefinition pds = gr.getPDSsection();
-        String key = pds.getCenter() + "-" + pds.getSubCenter() + "-" + pds.getTableVersion(); // for CounterS
-        timeUnit.count(pds.getTimeRangeIndicator());
-        vertCoord.count(pds.getLevelType());
-
-        if (gdss.isThin()) {
-          if (showThin) fm.format("  THIN= (gds=%d) %s%n", gdss.getGridTemplate(), ff.getPath());
-          thin.count(gdss.getGridTemplate());
-          showThin = false;
-        }
-
-        if (!pds.gdsExists()) {
-          if (showPredefined) fm.format("   PREDEFINED GDS= %s%n", ff.getPath());
-          predefined.count(gdss.getPredefinedGridDefinition());
-          showPredefined = false;
-        }
-
-        if (gdss.hasVerticalCoordinateParameters()) {
-          if (showVert) fm.format("   Has vertical coordinates in GDS= %s%n", ff.getPath());
-          vertCoordInGDS.count(pds.getLevelType());
-          showVert = false;
-        }
+        doScanIssues(gr, fm, path, extraInfo, predefined, thin, timeUnit, vertCoord, vertCoordInGDS);
       }
 
     } catch (Throwable ioe) {
@@ -298,9 +317,37 @@ public class Grib1ReportPanel extends ReportPanel {
     }
   }
 
+  private void doScanIssues(ucar.nc2.grib.grib1.Grib1Record gr, Formatter fm, String path, boolean extraInfo,
+                            Counter predefined, Counter thin, Counter timeUnit, Counter vertCoord, Counter vertCoordInGDS) throws IOException {
+
+
+      Grib1SectionGridDefinition gdss = gr.getGDSsection();
+      Grib1SectionProductDefinition pds = gr.getPDSsection();
+      String key = pds.getCenter() + "-" + pds.getSubCenter() + "-" + pds.getTableVersion(); // for CounterS
+      timeUnit.count(pds.getTimeRangeIndicator());
+      vertCoord.count(pds.getLevelType());
+
+      if (gdss.isThin()) {
+        if (extraInfo) fm.format("  THIN= (gds=%d) %s%n", gdss.getGridTemplate(), path);
+        thin.count(gdss.getGridTemplate());
+      }
+
+      if (!pds.gdsExists()) {
+        if (extraInfo) fm.format("   PREDEFINED GDS= %s%n", path);
+        predefined.count(gdss.getPredefinedGridDefinition());
+      }
+
+      if (gdss.hasVerticalCoordinateParameters()) {
+        if (extraInfo) fm.format("   Has vertical coordinates in GDS= %s%n", path);
+        vertCoordInGDS.count(pds.getLevelType());
+      }
+
+  }
+
+
   /////////////////////////////////////////////////////////////////
 
-  private void doShowEncoding(Formatter f, MCollection dcm, boolean useIndex) throws IOException {
+  private void doShowEncoding(Formatter f, MCollection dcm) throws IOException {
     Counter decimals = new Counter("decimalScale");
     Counter binScale = new Counter("binScale");
     Counter nbits = new Counter("nbits");
@@ -312,8 +359,8 @@ public class Grib1ReportPanel extends ReportPanel {
 
     for (MFile mfile : dcm.getFilesSorted()) {
       f.format(" %s%n", mfile.getPath());
-      //if (useIndex) doShowEncodingIndex(f, mfile, decimals); else doShowEncoding(f, mfile, decimals);
-      doShowEncoding(f, mfile, decimals, binScale, nbits, gridType, packing, dataType, hasMore, scale);
+      // need dataRaf, so cant useIndex
+      doShowEncodingNoIndex(f, mfile, decimals, binScale, nbits, gridType, packing, dataType, hasMore, scale);
     }
 
     decimals.show(f);
@@ -326,21 +373,7 @@ public class Grib1ReportPanel extends ReportPanel {
     scale.show(f);
   }
 
-  /* private void doShowEncodingIndex(Formatter fm, MFile ff, Counter decimals) throws IOException {
-    Grib1Index index = createIndex(ff, f);
-    if (index == null) return;
-
-    String path = ff.getPath();
-    RandomAccessFile raf = new RandomAccessFile(path, "r");
-
-    try {
-    for (ucar.nc2.grib.grib1.Grib1Record gr : index.getRecords()) {
-    } finally {
-    raf.close();
-    }
-  } */
-
-  private void doShowEncoding(Formatter fm, MFile ff, Counter decimals, Counter binScale, Counter nbits, Counter gridType, Counter packing, Counter dataType,
+  private void doShowEncodingNoIndex(Formatter fm, MFile ff, Counter decimals, Counter binScale, Counter nbits, Counter gridType, Counter packing, Counter dataType,
                               Counter hasMore, Counter scale) throws IOException {
     String path = ff.getPath();
     try (RandomAccessFile raf= new ucar.unidata.io.RandomAccessFile(path, "r")) {
@@ -350,7 +383,6 @@ public class Grib1ReportPanel extends ReportPanel {
       Grib1RecordScanner reader = new Grib1RecordScanner(raf);
       while (reader.hasNext()) {
         ucar.nc2.grib.grib1.Grib1Record gr = reader.next();
-
         GribData.Info info = gr.getBinaryDataInfo(raf);
         decimals.count(info.decimalScaleFactor);
         binScale.count(info.binaryScaleFactor);
