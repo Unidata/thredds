@@ -547,7 +547,7 @@ public class RandomAccessFile implements DataInput, DataOutput, FileCacheable, A
    *
    * @param minLength minimum length of the file.
    */
-  public void setMinLength(long minLength) {
+  public synchronized void setMinLength(long minLength) {
     this.minLength = minLength;
   }
 

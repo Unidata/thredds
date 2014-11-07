@@ -217,9 +217,9 @@ public class SourcePicture implements Cloneable {
 			reader.addIIOReadProgressListener( imageProgressListener );
 			reader.setInput( iis );
 			sourcePictureBufferedImage = null;
-			try {
+			// try {
 				sourcePictureBufferedImage = reader.read( 0 ); // just get the first image
-			} catch ( OutOfMemoryError e ) {
+			/* } catch ( OutOfMemoryError e ) {
 				Tools.log("SourcePicture caught an OutOfMemoryError while loading an image." );
 
 				iis.close();
@@ -240,8 +240,8 @@ public class SourcePicture implements Cloneable {
 
 				Tools.log("JPO has now run a garbage collection and finalization.");
 				return;
-			}
-			
+			} */
+
 			iis.close();
 			reader.removeIIOReadProgressListener( imageProgressListener );
 			//Tools.log("!!dispose being called!!");
@@ -324,7 +324,7 @@ public class SourcePicture implements Cloneable {
 			return false;
 		}
 			
-		if ( ! exemptionURL.equals( imageUrl ) ) {
+		if ( ! exemptionURL.toString().equals( imageUrl.toString() ) ) {
 			Tools.log ("SourcePicture.stopLoadingExcept: called with Url " + exemptionURL.toString() + " --> stopping loading of " + imageUrl.toString() );
 			stopLoading();
 			return true;

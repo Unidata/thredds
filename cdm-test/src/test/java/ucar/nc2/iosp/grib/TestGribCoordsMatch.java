@@ -53,6 +53,7 @@ import ucar.nc2.grib.grib1.tables.Grib1Customizer;
 import ucar.nc2.grib.grib2.Grib2Record;
 import ucar.nc2.iosp.IOServiceProvider;
 import ucar.nc2.time.CalendarDate;
+import ucar.unidata.io.RandomAccessFile;
 import ucar.unidata.test.util.TestDir;
 
 import java.io.IOException;
@@ -96,6 +97,7 @@ public class TestGribCoordsMatch {
   public void testGC_Grib1() throws IOException {
     TestGribCollections.Count count = read(TestDir.cdmUnitTestDir + "ncss/GFS/CONUS_80km/GFS_CONUS_80km_20120227_1200.grib1.ncx2");
 
+    System.out.printf("%n%50s == %d/%d/%d%n", "total", count.nerrs, count.nmiss, count.nread);
     assert count.nread == 7116;
     assert count.nmiss == 200;
     assert count.nerrs == 0;
@@ -105,11 +107,22 @@ public class TestGribCoordsMatch {
   public void testPofG_Grib1() throws IOException {                //ncss/GFS/CONUS_80km/GFS_CONUS_80km-CONUS_80km.ncx2
     TestGribCollections.Count count = read(TestDir.cdmUnitTestDir + "ncss/GFS/CONUS_80km/GFS_CONUS_80km-CONUS_80km.ncx2");
 
+    System.out.printf("%n%50s == %d/%d/%d%n", "total", count.nerrs, count.nmiss, count.nread);
     assert count.nread == 81340;
     assert count.nmiss == 1801;
     assert count.nerrs == 0;
   }
 
+
+  @Test
+  public void testPofP_Grib1() throws IOException {
+    TestGribCollections.Count count = read(TestDir.cdmUnitTestDir + "gribCollections/gfs_conus80/gfs_conus80-gfs_conus80.ncx2");
+
+    System.out.printf("%n%50s == %d/%d/%d%n", "total", count.nerrs, count.nmiss, count.nread);
+    assert count.nread == 51838;
+    assert count.nmiss == 1126;
+    assert count.nerrs == 0;
+  }
 
   ///////////////////////////////////////////////////////////////
   private GribIosp iospGrib;

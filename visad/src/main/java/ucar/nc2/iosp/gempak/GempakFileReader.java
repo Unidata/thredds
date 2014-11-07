@@ -42,6 +42,7 @@ import ucar.unidata.io.RandomAccessFile;
 import java.io.*;
 
 import java.util.ArrayList;
+import java.util.Formatter;
 import java.util.Iterator;
 import java.util.List;
 
@@ -1735,18 +1736,18 @@ public class GempakFileReader implements GempakConstants {
    * @return a bit string (e.g.: 01100001|11000000|10011010|10110100|)
    */
   protected static String getBits(int b) {
-    String s = "";
+    Formatter s = new Formatter();
     for (int i = 31; i >= 0; i--) {
       if ((b & (1 << i)) != 0) {
-        s = s + "1";
+        s.format("1");
       } else {
-        s = s + "0";
+        s.format("0");
       }
       if (i % 8 == 0) {
-        s = s + "|";
+        s.format("|");
       }
     }
-    return s;
+    return s.toString();
   }
 
   /**

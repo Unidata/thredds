@@ -109,11 +109,11 @@ public abstract class GribCollection implements FileCacheable, AutoCloseable {
     dataRafCache = null;
   }
 
-  static public void setDiskCache2(DiskCache2 dc) {
+  static synchronized public void setDiskCache2(DiskCache2 dc) {
     diskCache = dc;
   }
 
-  static public DiskCache2 getDiskCache2() {
+  static public synchronized DiskCache2 getDiskCache2() {
     if (diskCache == null)
       diskCache = DiskCache2.getDefault();
 

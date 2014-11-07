@@ -149,6 +149,8 @@ public abstract class PartitionCollection extends GribCollection {
     }
 
     public void finish() {
+      if (partList == null) return;  // nothing to do
+
       int[] partno = new int[nparts];
       int[] groupno = new int[nparts];
       int[] varno = new int[nparts];

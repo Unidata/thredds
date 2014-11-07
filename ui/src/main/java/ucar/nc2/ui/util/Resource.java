@@ -53,7 +53,7 @@ import javax.swing.ImageIcon;
 
 public class Resource {
 
-  static Class cl = (new Resource()).getClass();
+  static Class cl = Resource.class;
   static private boolean debug = false, debugIcon = false;
 
   /** Get a gif file, make it into an ImageIcon.

@@ -70,7 +70,7 @@ public class TestGribCollections {
   @BeforeClass
    static public void before() {
      RandomAccessFile.setDebugLeaks(true);
-     // GribIosp.setDebugFlags(new DebugFlagsImpl("Grib/indexOnly"));
+     GribIosp.setDebugFlags(new DebugFlagsImpl("Grib/indexOnly"));
      PartitionCollection.initPartitionCache(50, 700, -1, -1);
      GribCollection.initDataRafCache(11, 100, -1);
    }
@@ -128,6 +128,16 @@ public class TestGribCollections {
 
     assert count.nread == 81340;
     assert count.nmiss == 1801;
+  }
+
+  @Test
+  public void testPofP_Grib1() throws IOException {
+    Count count = read(TestDir.cdmUnitTestDir + "gribCollections/gfs_conus80/gfs_conus80-gfs_conus80.ncx2");
+
+    System.out.printf("%n%50s == %d/%d/%d%n", "total", count.nerrs, count.nmiss, count.nread);
+    assert count.nread == 51838;
+    assert count.nmiss == 1126;
+    assert count.nerrs == 0;
   }
 
   @Test

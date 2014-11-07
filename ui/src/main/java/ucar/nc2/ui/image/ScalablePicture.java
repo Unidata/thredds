@@ -195,7 +195,7 @@ public class ScalablePicture implements SourcePictureListener {
 
     boolean alreadyLoading = false;
     Tools.log("ScalablePicture.loadAndScalePictureInThread: checking if picture " + imageUrl + " is already being loaded.");
-    if ((sourcePicture != null) && (sourcePicture.getUrl().equals(imageUrl))) {
+    if ((sourcePicture != null) && (sourcePicture.getUrl().toString().equals(imageUrl.toString()))) {
       Tools.log("ScalablePicture.loadAndScalePictureInThread: the SourcePicture is already loading the sourcePictureimage");
       alreadyLoading = true;
     } else if (PictureCache.isInCache(imageUrl)) {

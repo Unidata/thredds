@@ -545,8 +545,6 @@ public class Tdm {
     } else {
       System.out.printf("%nEXIT DUE TO ERRORS");
     }
-    System.out.printf("%nEXIT");
-
   }
 
 }

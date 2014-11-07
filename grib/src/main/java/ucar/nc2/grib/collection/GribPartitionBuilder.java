@@ -791,10 +791,12 @@ public abstract class GribPartitionBuilder  {
     }
 
     // extensions
-    List<PartitionCollectionProto.PartitionVariable> pvarList = new ArrayList<>();
-    for (int i=0; i<vp.nparts; i++) // PartitionCollection.PartitionForVariable2D pvar : vp.getPartitionForVariable2D())
-      pvarList.add(writePartitionVariableProto(vp.partnoSA.get(i), vp.groupnoSA.get(i), vp.varnoSA.get(i)));  // LOOK finished ??
-    b.setExtension(PartitionCollectionProto.partition, pvarList);
+    if (vp.nparts > 0 && vp.partnoSA != null) {
+      List<PartitionCollectionProto.PartitionVariable> pvarList = new ArrayList<>();
+      for (int i = 0; i < vp.nparts; i++) // PartitionCollection.PartitionForVariable2D pvar : vp.getPartitionForVariable2D())
+        pvarList.add(writePartitionVariableProto(vp.partnoSA.get(i), vp.groupnoSA.get(i), vp.varnoSA.get(i)));  // LOOK was it finished ??
+      b.setExtension(PartitionCollectionProto.partition, pvarList);
+    }
 
     return b.build();
   }

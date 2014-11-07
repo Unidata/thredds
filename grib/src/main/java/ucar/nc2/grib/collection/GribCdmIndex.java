@@ -283,18 +283,21 @@ public class GribCdmIndex implements IndexReader {
 
     if (forceCollection == CollectionUpdateType.never) return false;  // dont do nothin
 
-    // if (forceCollection != CollectionUpdateType.always) {
-      Path idxFile = dpart.getIndexPath();
-      if (Files.exists(idxFile)) {
-        if (forceCollection == CollectionUpdateType.nocheck) return false;  // use if index exists
-
-        // otherwise read it to verify its a PC
-        try (RandomAccessFile raf = new RandomAccessFile(idxFile.toString(), "r")) {
-          GribCollectionType type = getType(raf);
-          assert type == (isGrib1 ? GribCollectionType.Partition1 : GribCollectionType.Partition2);
-        }
+    Path idxFile = dpart.getIndexPath();
+    if (Files.exists(idxFile)) {
+      if (forceCollection == CollectionUpdateType.nocheck) return false;  // use if index exists
+      boolean bad = false;
+      // otherwise read it to verify its a PC
+      try (RandomAccessFile raf = new RandomAccessFile(idxFile.toString(), "r")) {
+        GribCollectionType type = getType(raf);
+        assert type == (isGrib1 ? GribCollectionType.Partition1 : GribCollectionType.Partition2);
+      } catch (IOException ioe) {
+        // delete the file and try again
+        bad = true;
       }
-    // }
+      if (bad)
+        Files.delete(idxFile);
+    }
 
     // index does not yet exist, or we want to test if it changed
     // must scan it
