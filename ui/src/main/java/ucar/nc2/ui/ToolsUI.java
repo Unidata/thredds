@@ -1389,7 +1389,7 @@ public class ToolsUI extends JPanel {
       if ((null == message) && (ioe instanceof EOFException))
         message = "Premature End of File";
       JOptionPane.showMessageDialog(null, "NetcdfDataset.open cant open " + location + "\n" + message);
-      //if (!(ioe instanceof FileNotFoundException))
+      if (!(ioe instanceof FileNotFoundException))
         ioe.printStackTrace();
 
       ncfile = null;

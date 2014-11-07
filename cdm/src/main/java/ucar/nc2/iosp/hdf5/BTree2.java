@@ -84,6 +84,14 @@ public class BTree2 {
     }
   }
 
+  BTree2.Record1 getEntry1(int hugeObjectID) {
+    for (Entry2 entry : entryList) {
+      BTree2.Record1 record1 = (BTree2.Record1) entry.record;
+      if (record1.hugeObjectID == hugeObjectID) return record1;
+    }
+    return null;
+  }
+
   // these are part of the level 1A data structure, type = 0
   static class Entry2 {
     long childAddress, nrecords, totNrecords;

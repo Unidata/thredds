@@ -2413,11 +2413,11 @@ public class H5header {
         }
 
         // the heapId points to an Attribute Message in the fractal Heap
-        long pos = fractalHeap.getHeapId(heapId).getPos();
+        FractalHeap.DHeapId fractalHeapId = fractalHeap.getFractalHeapId(heapId);
+        long pos = fractalHeapId.getPos();
         if (pos > 0) {
-          raf.seek(pos);
           MessageAttribute attMessage = new MessageAttribute();
-          if (attMessage.read())
+          if (attMessage.read(pos))
             list.add(attMessage);
           if (debugBtree2) System.out.println("    attMessage=" + attMessage);
         }
@@ -2727,7 +2727,7 @@ public class H5header {
 
       } else if (mtype == MessageType.Attribute) { // 12
         MessageAttribute data = new MessageAttribute();
-        data.read();
+        data.read(raf.getFilePointer());
         messData = data;
 
       } else if (mtype == MessageType.Comment) { // 13
@@ -3707,7 +3707,8 @@ public class H5header {
       return name;
     }
 
-    boolean read() throws IOException {
+    boolean read(long pos) throws IOException {
+      raf.seek(pos);
       if (debugPos) debugOut.println("   *MessageAttribute start pos= " + raf.getFilePointer());
       short nameSize, typeSize, spaceSize;
       byte flags = 0;
@@ -3732,9 +3733,10 @@ public class H5header {
         nameSize = raf.readShort();
         typeSize = raf.readShort();
         spaceSize = raf.readShort();
-        log.error("bad version " + version + " at filePos " + raf.getFilePointer());
+        log.error("HDF5 MessageAttribute found bad version " + version + " at filePos " + raf.getFilePointer());
         // G:/work/galibert/IMOS_ANMN-NSW_AETVZ_20131127T230000Z_PH100_FV01_PH100-1311-Workhorse-ADCP-109.5_END-20140306T010000Z_C-20140521T053527Z.nc
-
+        // E:/work/antonio/2014_ch.nc
+        // return false;
       } else {
         log.error("bad version " + version + " at filePos " + raf.getFilePointer()); // buggery, may be HDF5 "more than 8 attributes" error
         return false;
@@ -3829,12 +3831,11 @@ public class H5header {
             }
 
             // the heapId points to an Attribute Message in the fractal Heap
-            FractalHeap.DHeapId dh = fractalHeap.getHeapId(heapId);
+            FractalHeap.DHeapId dh = fractalHeap.getFractalHeapId(heapId);
             f.format("   %2d %2d %2d %6d %4d %8d", dh.type, dh.n, dh.m, dh.offset, dh.size, dh.getPos());
             if (dh.getPos() > 0) {
-              raf.seek(dh.getPos());
               MessageAttribute attMessage = new MessageAttribute();
-              attMessage.read();
+              attMessage.read(dh.getPos());
               f.format(" %-30s", trunc(attMessage.getName(), 30));
             }
             f.format(" heapId=:");
@@ -3986,7 +3987,8 @@ public class H5header {
         }
 
         // the heapId points to a Link message in the Fractal Heap
-        long pos = fractalHeap.getHeapId(heapId).getPos();
+        FractalHeap.DHeapId fractalHeapId = fractalHeap.getFractalHeapId(heapId);
+        long pos = fractalHeapId.getPos();
         if (pos < 0) continue;
         raf.seek(pos);
         MessageLink linkMessage = new MessageLink();
