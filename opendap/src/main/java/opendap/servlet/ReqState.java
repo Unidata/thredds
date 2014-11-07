@@ -126,7 +126,6 @@ public class ReqState {
 
     private HttpServletRequest myHttpRequest;
     private HttpServletResponse response;
-    private AbstractServlet myServlet;
     private ServletConfig myServletConfig;
     private ServletContext myServletContext;
     private String rootpath;
@@ -136,7 +135,6 @@ public class ReqState {
                     AbstractServlet sv,
                     String serverClassName, String encodedurl, String encodedquery)
     {
-        this.myServlet = sv;
         this.myServletConfig = sv.getServletConfig();
         this.myServletContext = sv.getServletContext();
         this.rootpath = HTTPSession.canonicalpath(this.myServletContext.getRealPath("/"));

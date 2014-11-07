@@ -537,7 +537,7 @@ public class Attribute extends DAPNode
     try {
       short val = Short.parseShort(s);
       if (DebugValueChecking) {
-	DAPNode.log.debug("Attribute.checkShort() - string: '" + s + "'   value: " + val);
+	    DAPNode.log.debug("Attribute.checkShort() - string: '" + s + "'   value: " + val);
       }
       return true;
     }
@@ -577,9 +577,10 @@ public class Attribute extends DAPNode
    */
   private static final boolean checkInt(String s) {
     try {
+      //Coverity[FB.DLS_DEAD_LOCAL_STORE]
       int val = Integer.parseInt(s);
       if (DebugValueChecking) {
-	DAPNode.log.debug("Attribute.checkInt() - string: '" + s + "'   value: " + val);
+	    DAPNode.log.debug("Attribute.checkInt() - string: '" + s + "'   value: " + val);
       }
       return true;
     }
@@ -619,9 +620,10 @@ public class Attribute extends DAPNode
    */
   private static final boolean checkFloat(String s) {
     try {
+      //Coverity[FB.DLS_DEAD_LOCAL_STORE]=
       float val = Float.parseFloat(s);
       if (DebugValueChecking) {
-	DAPNode.log.debug("Attribute.checkFloat() - string: '" + s + "'   value: " + val);
+	    DAPNode.log.debug("Attribute.checkFloat() - string: '" + s + "'   value: " + val);
       }
       return true;
     }
@@ -641,9 +643,10 @@ public class Attribute extends DAPNode
    */
   private static final boolean checkDouble(String s) {
     try {
+      //Coverity[FB.DLS_DEAD_LOCAL_STORE]
       double val = Double.parseDouble(s);
       if (DebugValueChecking) {
-	DAPNode.log.debug("Attribute.checkDouble() - string: '" + s + "'   value: " + val);
+	    DAPNode.log.debug("Attribute.checkDouble() - string: '" + s + "'   value: " + val);
       }
       return true;
     }

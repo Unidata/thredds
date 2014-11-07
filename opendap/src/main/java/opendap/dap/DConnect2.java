@@ -333,7 +333,7 @@ public class DConnect2
                 {
                     public void process(InputStream is) throws IOException
                     {
-                        String buffer = captureStream(is);
+                        captureStream(is);
                     }
                 });
             }
@@ -622,13 +622,17 @@ public class DConnect2
     {
         String localProjString = null;
         String localSelString = null;
+        if(CE == null)
+            return "";
         //remove any leading '?'
         if(CE.startsWith("?")) CE = CE.substring(1);
         int selIndex = CE.indexOf('&');
         if(selIndex == 0) {
             localProjString = "";
+            localSelString = CE;
         } else if(selIndex > 0) {
             localSelString = CE.substring(selIndex);
+            localProjString = CE.substring(0,selIndex);
         } else {// selIndex < 0
             localProjString = CE;
             localSelString = "";

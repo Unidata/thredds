@@ -208,6 +208,8 @@ import ucar.nc2.util.EscapeStrings;
 
 public class DTSServlet extends AbstractServlet
 {
+    static final boolean debug = false;
+
     static public org.slf4j.Logger log
         = org.slf4j.LoggerFactory.getLogger(DTSServlet.class);
 
@@ -837,8 +839,10 @@ public class DTSServlet extends AbstractServlet
 
             // Finish up sending the compressed stuff, but don't
             // close the stream (who knows what the Servlet may expect!)
-            if(rs.getAcceptsCompressed())
-                ((DeflaterOutputStream) bOut).finish();
+            if(rs.getAcceptsCompressed()) {
+                bOut.flush();
+                ((DeflaterOutputStream) dOut).finish();
+            }
 
             //? if(null != dOut) dOut.finish();
             //? bOut.flush();
@@ -1114,7 +1118,6 @@ public class DTSServlet extends AbstractServlet
             rs.getResponse().setHeader("Content-Description", "dods-ascii");
             rs.getResponse().setStatus(HttpServletResponse.SC_OK);
 
-            boolean debug = false;
             if(debug)
                 log.debug("Sending OPeNDAP ASCII Data For: " + rs + "  CE: '" + rs.getConstraintExpression() + "'");
 
@@ -1717,7 +1720,7 @@ public class DTSServlet extends AbstractServlet
           doGetSystemProps(rs);
         } else if(isDebug) {
           doDebug(rs);  */
-                } else if(requestSuffix == null || requestSuffix.equals("")) {
+                } else if(requestSuffix.equals("")) {
                     badURL(request, response);
                 } else {
                     badURL(request, response);
