@@ -678,7 +678,7 @@ public abstract class CFPointWriter implements AutoCloseable {
 
     // add them
     for (Dimension d : oldDims) {
-      String dimName = getNonNullDimShortName(d);
+      String dimName = d.getShortName();
 
       if (!writer.hasDimension(null, dimName)) {
         Dimension newDim = writer.addDimension(null, dimName, d.getLength(), true, false, d.isVariableLength());
@@ -692,22 +692,12 @@ public abstract class CFPointWriter implements AutoCloseable {
 
     // find all dimensions needed by the coord variables
     for (Dimension dim : oldDims) {
-      Dimension newDim = dimMap.get(getNonNullDimShortName(dim));
-      assert newDim != null : "Oops, we screwed up: dimMap doesn't contain " + getNonNullDimShortName(dim);
+      Dimension newDim = dimMap.get(dim.getShortName());
+      assert newDim != null : "Oops, we screwed up: dimMap doesn't contain " + dim.getShortName();
       result.add( newDim);
     }
 
     return result;
-  }
-
-  // The dimensions returned by VariableSimpleAdapter.getDimensions() have null names, which doesn't work because
-  // we're creating shared dimensions. This gives a default name based on the dim's length.
-  private static String getNonNullDimShortName(Dimension dim) {
-    if (dim.getShortName() == null) {
-      return "len" + dim.getLength();
-    } else {
-      return dim.getShortName();
-    }
   }
 
   protected int writeStructureData(int recno, Structure s, StructureData sdata, Map<String, Variable> varMap) throws IOException {
