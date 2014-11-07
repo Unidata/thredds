@@ -92,7 +92,7 @@ public class GridRenderer {
   private ProjectionPointImpl ptP1 = new ProjectionPointImpl();
 
   private static final boolean debugHorizDraw = false, debugSeam = false, debugLatLon = false, debugMiss = false;
-  private static final boolean debugPathShape = false, debugArrayShape = false, debugPts = false;
+  private static boolean debugPathShape = false, debugArrayShape = false, debugPts = false;
 
   /**
    * constructor

@@ -50,7 +50,7 @@ public class CoordinateAxisTimeHelper {
 
   public CoordinateAxisTimeHelper(Calendar calendar, String unitString) {
     this.calendar = calendar;
-    this.dateUnit = CalendarDateUnit.withCalendar(calendar, unitString); // this will throw exception on failure
+    this.dateUnit = (unitString == null) ? null : CalendarDateUnit.withCalendar(calendar, unitString); // this will throw exception on failure
   }
 
   public CalendarDate makeCalendarDateFromOffset(double offset) {

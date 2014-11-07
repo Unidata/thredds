@@ -224,7 +224,7 @@ public class CoordinateAxis1DTime extends CoordinateAxis1D {
     this.orgVar = org;
     
     this.orgName = org.orgName;
-    this.helper = new CoordinateAxisTimeHelper(getCalendarFromAttribute(), getUnitsString());
+    this.helper = new CoordinateAxisTimeHelper(getCalendarFromAttribute(), null);
 
     if (org.getDataType() == DataType.CHAR)
       cdates = makeTimesFromChar(org, errMessages);
