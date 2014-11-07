@@ -1773,11 +1773,11 @@ public class NmcObsLegacy extends AbstractIOServiceProvider {
     byte[] h = raf.readBytes(60);
 
     // 12 00 070101
-    short hour = Short.parseShort(new String(h, 0, 2));
-    short minute = Short.parseShort(new String(h, 2, 2));
-    short year = Short.parseShort(new String(h, 4, 2));
-    short month = Short.parseShort(new String(h, 6, 2));
-    short day = Short.parseShort(new String(h, 8, 2));
+    short hour = Short.parseShort( new String(h, 0, 2, CDM.utf8Charset));
+    short minute = Short.parseShort(new String(h, 2, 2, CDM.utf8Charset));
+    short year = Short.parseShort(new String(h, 4, 2, CDM.utf8Charset));
+    short month = Short.parseShort(new String(h, 6, 2, CDM.utf8Charset));
+    short day = Short.parseShort(new String(h, 8, 2, CDM.utf8Charset));
 
     int fullyear = (year > 30) ? 1900 + year : 2000 + year;
 

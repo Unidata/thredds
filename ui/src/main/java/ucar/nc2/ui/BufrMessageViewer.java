@@ -45,6 +45,7 @@ import ucar.nc2.ft.point.bufr.BufrCdmIndex;
 import ucar.nc2.ft.point.bufr.BufrCdmIndexProto;
 import ucar.nc2.ft.point.bufr.StandardFields;
 import ucar.nc2.iosp.bufr.*;
+import ucar.nc2.iosp.bufr.tables.BufrTables;
 import ucar.nc2.iosp.bufr.writer.Bufr2Xml;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.ui.widget.*;
@@ -323,10 +324,10 @@ public class BufrMessageViewer extends JPanel {
           infoTA2.appendLine(out.toString());
 
         } catch (Exception ex) {
-          ByteArrayOutputStream bos = new ByteArrayOutputStream();
-          ex.printStackTrace(new PrintStream(bos));
+          StringWriter sw = new StringWriter(5000);
+          ex.printStackTrace(new PrintWriter(sw));
           infoTA2.appendLine(out.toString());
-          infoTA2.appendLine(bos.toString());
+          infoTA2.appendLine(sw.toString());
         }
 
         infoTA2.gotoTop();
@@ -552,18 +553,17 @@ public class BufrMessageViewer extends JPanel {
     String filename = fileChooser.chooseFilenameToSave(defloc + ".txt");
     if (filename == null) return;
 
-    try {
-      File file = new File(filename);
-      FileOutputStream fos = new FileOutputStream(file);
+    try (FileOutputStream out = new FileOutputStream(filename)) {
+      OutputStreamWriter fout = new OutputStreamWriter(out, CDM.utf8Charset);
+      BufferedWriter bw = new BufferedWriter(fout);
+      Formatter f = new Formatter(bw);
 
       int count = 0;
       for (Message m : map.values()) {
-        Formatter f = new Formatter(fos);
         m.dump(f);
         f.flush();
         count++;
       }
-      fos.close();
       JOptionPane.showMessageDialog(BufrMessageViewer.this, count + " successfully written to " + filename);
 
     } catch (IOException e1) {

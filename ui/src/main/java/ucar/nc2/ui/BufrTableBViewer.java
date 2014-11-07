@@ -31,6 +31,7 @@
  */
 package ucar.nc2.ui;
 
+import ucar.nc2.constants.CDM;
 import ucar.nc2.ui.dialog.BufrBCompare;
 import ucar.nc2.ui.widget.*;
 import ucar.nc2.ui.widget.PopupMenu;
@@ -188,12 +189,12 @@ public class BufrTableBViewer extends JPanel {
 
           String filename = fileChooser.chooseFilenameToSave(defloc + ".csv");
           if (filename == null) return;
-          File file = new File(filename);
-          FileOutputStream fos = new FileOutputStream(file);
-
-          Formatter out = new Formatter(fos);
-          writeDiff(BufrTables.getWmoTableB(14), currTable, out);
-          fos.close();
+          try (FileOutputStream out = new FileOutputStream(filename)) {
+            OutputStreamWriter fout = new OutputStreamWriter(out, CDM.utf8Charset);
+            BufferedWriter bw = new BufferedWriter(fout);
+            Formatter f = new Formatter(bw);
+            writeDiff(BufrTables.getWmoTableB(14), currTable, f);
+          }
           JOptionPane.showMessageDialog(BufrTableBViewer.this, filename + " successfully written");
 
         } catch (Exception ex) {
@@ -214,12 +215,12 @@ public class BufrTableBViewer extends JPanel {
 
           String filename = fileChooser.chooseFilenameToSave(defloc + ".csv");
           if (filename == null) return;
-          File file = new File(filename);
-          FileOutputStream fos = new FileOutputStream(file);
-
-          Formatter out = new Formatter(fos);
-          writeLocal(currTable, out);
-          fos.close();
+          try (FileOutputStream out = new FileOutputStream(filename)) {
+            OutputStreamWriter fout = new OutputStreamWriter(out, CDM.utf8Charset);
+            BufferedWriter bw = new BufferedWriter(fout);
+            Formatter f = new Formatter(bw);
+            writeLocal(currTable, f);
+          }
           JOptionPane.showMessageDialog(BufrTableBViewer.this, filename + " successfully written");
 
         } catch (Exception ex) {

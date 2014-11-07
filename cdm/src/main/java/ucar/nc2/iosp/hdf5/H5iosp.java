@@ -572,7 +572,7 @@ public class H5iosp extends AbstractIOServiceProvider {
     try {
       NetcdfFile ncfile = new NetcdfFileSubclass();
       H5header detailParser = new H5header(raf, ncfile, this);
-      detailParser.read(new PrintStream(ff));
+      detailParser.read(new PrintStream(ff, false, CDM.UTF8));
       f.format("%s",super.getDetailInfo());
       f.format("%s",ff.toString(CDM.UTF8));
 

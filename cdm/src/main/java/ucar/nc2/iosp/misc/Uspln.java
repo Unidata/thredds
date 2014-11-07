@@ -227,9 +227,7 @@ public class Uspln extends AbstractLightningIOSP {
       return false;
     }
 
-    byte[] b = new byte[n];
-    raf.readFully(b);
-    String got = new String(b);
+    String got = raf.readString(n);
 
     return (pMAGIC.matcher(got).find() || pMAGIC_OLD.matcher(got).find());
   }

@@ -36,6 +36,8 @@
  */
 package ucar.nc2.ui.gis.shapefile;
 
+import ucar.nc2.constants.CDM;
+
 import java.io.DataInputStream;
 
 public class DbaseData {
@@ -115,10 +117,10 @@ public class DbaseData {
     switch (desc.Type) {
       case 'C':
       case 'D':
-        character[n] = new String(field);
+        character[n] = new String(field, CDM.utf8Charset);
         break;
       case 'N':
-        numeric[n] = Double.valueOf(new String(field));
+        numeric[n] = Double.valueOf(new String(field, CDM.utf8Charset));
         break;
       case 'F':  /* binary floating point */
         if (desc.FieldLength == 4) {

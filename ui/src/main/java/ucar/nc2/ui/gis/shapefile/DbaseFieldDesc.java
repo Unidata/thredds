@@ -106,7 +106,7 @@ class DbaseFieldDesc {
     */
 
     /* requires 1.1 compiler or higher */
-    Name = new String(Header, 0, 11);
+    Name = new String(Header, 0, 11, CDM.utf8Charset);
 
     Name = Name.trim();
     Type = Header[11];
