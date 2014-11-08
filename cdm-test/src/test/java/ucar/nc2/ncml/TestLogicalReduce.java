@@ -49,7 +49,7 @@ public class TestLogicalReduce {
       assert fc.getCollectionFeatureType() == FeatureType.STATION_PROFILE;
       assert (fc instanceof StationProfileFeatureCollection);
 
-      int count = checkStationProfileFeatureCollection((StationProfileFeatureCollection) fc, true);
+      int count = checkStationProfileFeatureCollection((StationProfileFeatureCollection) fc, false);
     }
   }
 

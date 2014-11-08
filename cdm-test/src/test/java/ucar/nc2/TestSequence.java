@@ -145,7 +145,7 @@ public class TestSequence {
           try {
             while (nestedIter.hasNext()) {
               StructureData nestedData = nestedIter.next();
-              NCdumpW.printStructureData(pw, nestedData);
+              // NCdumpW.printStructureData(pw, nestedData);
               System.out.printf("%n");
             }
           } finally {

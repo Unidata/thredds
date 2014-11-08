@@ -59,5 +59,6 @@ public interface FileCacheIF {
   // debugging
   public void showTracking(Formatter format);
   public void showCache(Formatter format);
+  public void showStats(Formatter format);
   public List<String> showCache();
 }

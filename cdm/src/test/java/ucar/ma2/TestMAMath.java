@@ -212,7 +212,7 @@ public class TestMAMath extends TestCase {
     NCdumpW.printArray(datasection, "section", new PrintWriter(System.out), null);
 
     double sum = MAMath.sumDouble(datasection);
-    System.out.printf(" sum=%f%n ", sum);
+    // System.out.printf(" sum=%f%n ", sum);
     assert sum == 663.0;
   }
 

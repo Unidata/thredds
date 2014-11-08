@@ -33,7 +33,6 @@
 package ucar.nc2.util.cache;
 
 import org.junit.Test;
-import ucar.nc2.TestLocal;
 import ucar.nc2.util.CancelTask;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.NetcdfFile;
@@ -52,7 +51,7 @@ import java.util.concurrent.atomic.AtomicInteger;
  */
 public class TestFileCacheConcurrent {
 
-  FileCache cache = new FileCache(50, 100, 30);
+  FileCacheIF cache = new FileCache(50, 100, 30);
   FileFactory factory = new MyFileFactory();
 
   class MyFileFactory implements FileFactory {
@@ -61,13 +60,17 @@ public class TestFileCacheConcurrent {
     }
   }
 
+  static public void makeFileList(File dir, String suffix, List<String> result) {
+    File[] files = dir.listFiles();
+    if (files == null) {
+      assert false;
+      return;
+    }
+    for (File f : files) {
+      if (f.isDirectory() && !f.getName().equals("exclude")) {
+        makeFileList(f, suffix, result);
 
-  void loadFiles(File dir, String suffix, List<String> result) {
-    for (File f : dir.listFiles()) {
-      if (f.isDirectory() && !f.getName().equals("exclude"))
-        loadFiles(f, suffix, result);
-
-      else if (f.getPath().endsWith(suffix) && f.length() > 0) {
+      } else if (f.getPath().endsWith(suffix) && f.length() > 0) {
         //System.out.println(" open "+f.getPath());
         String want = StringUtil2.replace(f.getPath(), '\\', "/");
         result.add(want);
@@ -85,18 +88,16 @@ public class TestFileCacheConcurrent {
 
   @Test
   public void testConcurrentAccess() throws InterruptedException {
-    cache.debugCleanup = false;
-
+    System.out.printf("TestFileCacheConcurrent%n");
     // load some files into the cache
-    List<String> fileList = new ArrayList<String>(100);
-    loadFiles(new File(TestDir.cdmLocalTestDataDir), "nc", fileList);
+    List<String> fileList = new ArrayList<>(100);
+    makeFileList(new File(TestDir.cdmLocalTestDataDir), "nc", fileList);
     int nfiles = fileList.size();
     System.out.println(" loaded " + nfiles + " files");
 
     Random r = new Random();
     ArrayBlockingQueue q = new ArrayBlockingQueue(MAX_TASKS);
-    ThreadPoolExecutor pool = new ThreadPoolExecutor(CLIENT_THREADS, CLIENT_THREADS,
-        100, TimeUnit.SECONDS, q);
+    ThreadPoolExecutor pool = new ThreadPoolExecutor(CLIENT_THREADS, CLIENT_THREADS, 100, TimeUnit.SECONDS, q);
 
     int count = 0;
     while (count < 100) {
@@ -153,7 +154,7 @@ public class TestFileCacheConcurrent {
     public void run() {
       try {
         //System.out.printf("acquire %s%n", location);
-        FileCacheable fc = cache.acquire(factory, location, null);
+        FileCacheable fc = cache.acquire(factory, location);
         NetcdfFile ncfile = (NetcdfFile) fc;
         //assert ncfile.isLocked();
         assert (null != ncfile.getIosp());

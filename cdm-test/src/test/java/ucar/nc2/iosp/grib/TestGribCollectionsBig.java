@@ -123,7 +123,7 @@ public class TestGribCollectionsBig {
 
   }
 
-  @Test
+  // @Test
   public void testPofPofP() throws IOException {
     RandomAccessFile.setDebugLeaks(true);
     TestGribCollections.Count count = TestGribCollections.read(topdir + "/ds083.2/grib1/ds083.2_Aggregation-grib1.ncx2");

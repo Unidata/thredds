@@ -130,8 +130,8 @@ public class TestDir {
 
     // Use default paths if needed.
     if ( testdataDir == null ) {
-      System.out.println( "**No \"unidata.testdata.path\"property, defaulting to \"/share/testdata/\"." );
       testdataDir = "/share/testdata/";
+      System.out.printf( "**No '%s' property, defaulting to '%s'%n", testdataDirPropName, testdataDir );
     }
     // Make sure paths ends with a slash.
     testdataDir = testdataDir.replace('\\','/'); //canonical

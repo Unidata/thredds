@@ -34,7 +34,7 @@ public class TestAggCached {
       NetcdfDataset ncd = NetcdfDataset.acquireDataset(filename, null);
       NetcdfDataset ncd2 = NetcdfDataset.wrap(ncd, NetcdfDataset.getEnhanceAll());
       Formatter out = new Formatter();
-      ok &= CompareNetcdf2.compareFiles(ncd, ncd2, out, false, true, false);
+      ok &= CompareNetcdf2.compareFiles(ncd, ncd2, out, false, false, false);
       System.out.printf("----------------%nfile=%s%n%s%n", filename, out);
 
       EnumSet<NetcdfDataset.Enhance> modes =  ncd2.getEnhanceMode();
