@@ -57,6 +57,7 @@ public interface FileCacheIF {
   public void clearCache(boolean force);
 
   // debugging
+  public void resetTracking();
   public void showTracking(Formatter format);
   public void showCache(Formatter format);
   public void showStats(Formatter format);
