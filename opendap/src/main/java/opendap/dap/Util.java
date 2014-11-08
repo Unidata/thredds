@@ -128,6 +128,7 @@ public class Util {
 
         if (hi0 > lo0) {
             // Arbitrarily establishing partition element as the array midpoint */
+            //Coverity[FB.IM_AVERAGE_COMPUTATION_COULD_OVERFLOW]
             mid = a[(lo0 + hi0) / 2];
 
             // loop through the array until indices cross

@@ -1313,7 +1313,7 @@ public class DDS extends DStructure
 
         // cache the current/parent BaseType (a container)
         BaseType cacheBT = currentBT;
-
+        try {
         // Make the one we are about to search the current one.
         currentBT = bt;
 
@@ -1343,9 +1343,10 @@ public class DDS extends DStructure
                 resolveAliases(thisBT);
             }
         }
-
+        } finally {
         // Restore the previous current BaseType state.
         currentBT = cacheBT;
+        }
     }
 
 
@@ -1369,7 +1370,7 @@ public class DDS extends DStructure
         // Cache the current (parent) Attribute table. This value is
         // null if this method is call from resolveAliases(BasetType bt)
         AttributeTable cacheAT = currentAT;
-
+        try {
         // Set the current AttributeTable to the one that we are searching.
         currentAT = at;
 
@@ -1391,9 +1392,10 @@ public class DDS extends DStructure
                 resolveAliases(thisA.getContainer());
             }
         }
-
+        } finally {
         // Restore the previous currentAT state.
         currentAT = cacheAT;
+        }
 
     }
 
@@ -1685,6 +1687,7 @@ public class DDS extends DStructure
             }
 
         }
+        //Coverity[DEADCODE]
         if (Debug) {
 		DAPNode.log.debug("String: `" + field + "` normalized to: `" + sb + "`");
 	    }
@@ -1728,7 +1731,7 @@ public class DDS extends DStructure
         // make a place to put the tokens.
         Vector tokens = new Vector();
 
-
+        //Coverity[DEADCODE]
         if (Debug) {
 		DAPNode.log.debug("lastIndexOf(dot): " + field.lastIndexOf(dot) + "   lastIndex: " + lastIndex);
 	    }

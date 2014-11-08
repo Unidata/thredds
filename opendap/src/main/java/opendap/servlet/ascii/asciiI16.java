@@ -47,7 +47,7 @@ import opendap.dap.*;
 
 /**
  */
-public class asciiI16 extends DInt16 implements toASCII {
+public class    asciiI16 extends DInt16 implements toASCII {
 
     private static boolean _Debug = false;
 
@@ -83,9 +83,6 @@ public class asciiI16 extends DInt16 implements toASCII {
                         boolean addName,
                         String rootName,
                         boolean newLine) {
-
-        rootName = toASCIIAddRootName(pw, addName, rootName);
-
 
         if (addName)
             pw.print(", ");

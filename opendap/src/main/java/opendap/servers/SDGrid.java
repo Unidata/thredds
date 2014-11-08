@@ -614,6 +614,7 @@ public abstract class SDGrid extends DGrid implements ServerArrayMethods, RelOps
             e = mapVars.elements();
             while (e.hasMoreElements()) {
                 SDArray map = (SDArray) e.nextElement();
+                //Coverity[DEADCODE]
                 map.printAsMapXML(pw, pad + (isSingle ? "" : "\t"), constrained);
             }
 

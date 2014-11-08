@@ -132,6 +132,7 @@ public abstract class AbstractServlet extends javax.servlet.http.HttpServlet {
 
     //////////////////////////////////////////////////
     // Statics
+    static final boolean debug = false;
 
     // Define an overall logger for everyone to use
     // Start with a default logger, but allow an application to change it later
@@ -1030,7 +1031,6 @@ public abstract class AbstractServlet extends javax.servlet.http.HttpServlet {
       rs.getResponse().setContentType("text/plain");
       rs.getResponse().setHeader("Content-Description", "dods-ascii");
 
-      boolean debug = false;
       if (debug)
        log.debug("Sending OPeNDAP ASCII Data For: " + rs + "  CE: '" + rs.getConstraintExpression() + "'");
 

@@ -82,8 +82,6 @@ public class asciiByte extends DByte implements toASCII {
     public void toASCII(PrintWriter pw, boolean addName, String rootName, boolean newLine) {
 
 
-        rootName = toASCIIAddRootName(pw, addName, rootName);
-
         if (addName)
             pw.print(", ");
 

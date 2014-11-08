@@ -228,6 +228,7 @@ public class DAP2Exception extends Exception {
      *
      * @return the detail message of this throwable object.
      */
+    //Coverity[CALL_SUPER]
     public String getMessage() {
         return errorMessage;
     }

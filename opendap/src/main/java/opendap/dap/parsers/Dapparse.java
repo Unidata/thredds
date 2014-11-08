@@ -118,7 +118,9 @@ public abstract class Dapparse
 
         dapdebug = getDebugLevel();
         Boolean accept = parse(text);
-	return parseClass;
+        if(!accept)
+            throw new ParseException("Parser returned false");
+	    return parseClass;
     }
 
     // Call this to parse a DDS
@@ -400,7 +402,6 @@ public abstract class Dapparse
             throws ParseException
     {
         int i;
-        int rank = dimensions.size();
         /* Interface requires rebuilding the dimensions */
         for (Object o : dimensions) {
             DArrayDimension dim = (DArrayDimension) o;
@@ -504,10 +505,8 @@ public abstract class Dapparse
     dap_parse_error(Dapparse state, String fmt, Object... args)
             throws ParseException
     {
-        int len;
         lexstate.lexerror(String.format(fmt, args));
         String tmp = null;
-        len = lexstate.getInput().length();
         tmp = flatten(lexstate.getInput());
         throw new ParseException("context: " + tmp + "^");
     }

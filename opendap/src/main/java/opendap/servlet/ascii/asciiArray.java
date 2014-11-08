@@ -90,8 +90,6 @@ public class asciiArray extends DArray implements toASCII {
             System.out.println("  PrimitiveVector size = " + getPrimitiveVector().getLength());
         }
 
-        rootName = toASCIIAddRootName(pw, addName, rootName);
-
         if (addName)
             pw.print("\n");
 
@@ -103,7 +101,6 @@ public class asciiArray extends DArray implements toASCII {
             DArrayDimension d = (DArrayDimension) e.nextElement();
             shape[i++] = d.getSize();
         }
-        int totalCount = asciiArray(pw, addName, "", 0, dims, shape, 0);
 
         if (newLine)
             pw.print("\n");

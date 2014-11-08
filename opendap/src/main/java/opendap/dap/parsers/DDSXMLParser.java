@@ -308,11 +308,10 @@ public class DDSXMLParser {
 
             // Is it a container?
             if (bt instanceof DConstructor) {
-
                 // Up date the parsers state, (cache my parent)
                 DConstructor myParentDC = parentDC;
                 parentDC = (DConstructor) bt;
-
+                try {
                 // Grids are special containers, handle them
                 if (bt instanceof DGrid) {
                     parseGrid(e, indent);
@@ -322,8 +321,10 @@ public class DDSXMLParser {
                     parseBase(child, indent + "    ");
                   }
                 }
+                } finally {
                 // restore my parent
                 parentDC = myParentDC;
+                }
             } else if (bt instanceof DArray) {
                 // Array's are special, better build it if it is one
 
@@ -468,7 +469,7 @@ public class DDSXMLParser {
             // Up date the parsers state, (cache my parent)
             DConstructor myParentDC = parentDC;
             parentDC = (DConstructor) bt;
-
+            try {
             // Grids are special containers, handle them
             if (bt instanceof DGrid) {
                 parseGrid(template, indent);
@@ -478,8 +479,10 @@ public class DDSXMLParser {
                 parseBase(child, indent + "    ");
               }
             }
+            } finally {
             // restore my parent
             parentDC = myParentDC;
+            }
 
         }
 
@@ -949,6 +952,7 @@ public class DDSXMLParser {
             }
 
         }
+        //Coverity[DEADCODE]
         if (Debug) System.out.println("String: `" + s + "` normalized to: `" + sb + "`");
 
         return (sb.toString());

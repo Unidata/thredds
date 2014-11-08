@@ -85,8 +85,6 @@ public class asciiString extends DString implements toASCII {
                         String rootName,
                         boolean newLine) {
 
-        rootName = toASCIIAddRootName(pw, addName, rootName);
-
         if (addName)
             pw.print(", ");
 

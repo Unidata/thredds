@@ -80,7 +80,7 @@ public class GeturlApplet extends Applet {
 
     /** Main function to call as an application. */
     public static void main(String args[]) {
-        GeturlFrame frame = new GeturlFrame(false);
+        new GeturlFrame(false);
     }
 }
 
