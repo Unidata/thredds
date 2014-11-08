@@ -105,7 +105,7 @@ public class Grib2ReportPanel extends ReportPanel {
 
   private void doCopyCompress(Formatter f, MCollection dcm, boolean useIndex, boolean eachFile, boolean extra) throws IOException {
     f.format("Copy and Compress selected files%n");
-    Counter nbitsC = new Counter("Number of Bits");
+    CounterOfInt nbitsC = new CounterOfInt("Number of Bits");
     long totalOrg = 0;
     long totalZip = 0;
 
@@ -185,7 +185,7 @@ public class Grib2ReportPanel extends ReportPanel {
   The units attribute applies to unpacked values.
    */
 
-  private void doCopyCompress(Formatter f, ucar.nc2.grib.grib2.Grib2Record gr, RandomAccessFile raf, OutputStream out, Counter nbitsC) throws IOException {
+  private void doCopyCompress(Formatter f, ucar.nc2.grib.grib2.Grib2Record gr, RandomAccessFile raf, OutputStream out, CounterOfInt nbitsC) throws IOException {
     float[] data = gr.readData(raf);
 
     Grib2SectionDataRepresentation drss = gr.getDataRepresentationSection();
@@ -480,13 +480,13 @@ public class Grib2ReportPanel extends ReportPanel {
       f.format("problems = %d/%d%n", prob, total);
 
     } else {
-      Counter templateSet = new Counter("template");
-      Counter timeUnitSet = new Counter("timeUnit");
-      Counter levelTypeSet = new Counter("levelType");
-      Counter processType = new Counter("genProcessType");
-      Counter processId = new Counter("genProcessId");
-      Counter levelScale = new Counter("levelScale");
-      Counter ncoords = new Counter("nExtraCoords");
+      CounterOfInt templateSet = new CounterOfInt("template");
+      CounterOfInt timeUnitSet = new CounterOfInt("timeUnit");
+      CounterOfInt levelTypeSet = new CounterOfInt("levelType");
+      CounterOfInt processType = new CounterOfInt("genProcessType");
+      CounterOfInt processId = new CounterOfInt("genProcessId");
+      CounterOfInt levelScale = new CounterOfInt("levelScale");
+      CounterOfInt ncoords = new CounterOfInt("nExtraCoords");
 
       for (MFile mfile : dcm.getFilesSorted()) {
         f.format(" %s%n", mfile.getPath());
@@ -556,8 +556,8 @@ public class Grib2ReportPanel extends ReportPanel {
     }
   }
 
-  private void doPdsSummary(Formatter f, MFile mf, Counter templateSet, Counter timeUnitSet, Counter processType,
-                            Counter processId, Counter levelScale, Counter levelTypeSet, Counter ncoords) throws IOException {
+  private void doPdsSummary(Formatter f, MFile mf, CounterOfInt templateSet, CounterOfInt timeUnitSet, CounterOfInt processType,
+                            CounterOfInt processId, CounterOfInt levelScale, CounterOfInt levelTypeSet, CounterOfInt ncoords) throws IOException {
     boolean showLevel = true;
     boolean showCoords = true;
     int firstPtype = -1;
@@ -607,14 +607,14 @@ public class Grib2ReportPanel extends ReportPanel {
   private void doIdProblems(Formatter f, MCollection dcm, boolean useIndex) throws IOException {
     f.format("Look for ID Problems%n");
 
-    Counter disciplineSet = new Counter("discipline");
-    Counter masterTable = new Counter("masterTable");
-    Counter localTable = new Counter("localTable");
-    Counter centerId = new Counter("centerId");
-    Counter subcenterId = new Counter("subcenterId");
-    Counter genProcess = new Counter("genProcess");
-    Counter backProcess = new Counter("backProcess");
-    Counter sigRefProcess = new Counter("significanceOfReference");
+    CounterOfInt disciplineSet = new CounterOfInt("discipline");
+    CounterOfInt masterTable = new CounterOfInt("masterTable");
+    CounterOfInt localTable = new CounterOfInt("localTable");
+    CounterOfInt centerId = new CounterOfInt("centerId");
+    CounterOfInt subcenterId = new CounterOfInt("subcenterId");
+    CounterOfInt genProcess = new CounterOfInt("genProcess");
+    CounterOfInt backProcess = new CounterOfInt("backProcess");
+    CounterOfInt sigRefProcess = new CounterOfInt("significanceOfReference");
 
     for (MFile mfile : dcm.getFilesSorted()) {
       f.format(" %s%n", mfile.getPath());
@@ -633,8 +633,8 @@ public class Grib2ReportPanel extends ReportPanel {
   }
 
   private void doIdProblems(Formatter f, MFile mf, boolean showProblems,
-                            Counter disciplineSet, Counter masterTable, Counter localTable, Counter centerId,
-                            Counter subcenterId, Counter genProcessC, Counter backProcessC, Counter sigRefProcess) throws IOException {
+                            CounterOfInt disciplineSet, CounterOfInt masterTable, CounterOfInt localTable, CounterOfInt centerId,
+                            CounterOfInt subcenterId, CounterOfInt genProcessC, CounterOfInt backProcessC, CounterOfInt sigRefProcess) throws IOException {
     Grib2Index index = createIndex(mf, f);
     if (index == null) return;
 
@@ -728,10 +728,10 @@ public class Grib2ReportPanel extends ReportPanel {
 
   private void doDrsSummary(Formatter f, MCollection dcm, boolean useIndex, boolean eachFile, boolean extra) throws IOException {
     f.format("Show Unique DRS Templates%n");
-    Counter template = new Counter("DRS template");
-    Counter bitmapRepeat = new Counter("BMS indicator");
-    Counter prob = new Counter("DRS template 40 signed problem");
-    Counter nbitsC = new Counter("Number of Bits");
+    CounterOfInt template = new CounterOfInt("DRS template");
+    CounterOfInt bitmapRepeat = new CounterOfInt("BMS indicator");
+    CounterOfInt prob = new CounterOfInt("DRS template 40 signed problem");
+    CounterOfInt nbitsC = new CounterOfInt("Number of Bits");
 
     for (MFile mfile : dcm.getFilesSorted()) {
       if (eachFile) {
@@ -763,7 +763,7 @@ public class Grib2ReportPanel extends ReportPanel {
     }
   }
 
-  private void doDrsSummaryIndex(Formatter f, MFile mf, boolean extra, Counter templateC, Counter bitmapRepeat, Counter probC) throws IOException {
+  private void doDrsSummaryIndex(Formatter f, MFile mf, boolean extra, CounterOfInt templateC, CounterOfInt bitmapRepeat, CounterOfInt probC) throws IOException {
     Grib2Index index = createIndex(mf, f);
     if (index == null) return;
     long messageSum = 0;
@@ -798,7 +798,7 @@ public class Grib2ReportPanel extends ReportPanel {
     }
   }
 
-  private void doDrsSummaryScan(Formatter f, MFile mf, boolean extra, Counter templateC, Counter bitmapRepeat, Counter probC, Counter nbitsC) throws IOException {
+  private void doDrsSummaryScan(Formatter f, MFile mf, boolean extra, CounterOfInt templateC, CounterOfInt bitmapRepeat, CounterOfInt probC, CounterOfInt nbitsC) throws IOException {
     RandomAccessFile raf = new RandomAccessFile(mf.getPath(), "r");
     Grib2RecordScanner scan = new Grib2RecordScanner(raf);
     while (scan.hasNext()) {
@@ -808,8 +808,8 @@ public class Grib2ReportPanel extends ReportPanel {
     raf.close();
   }
 
-  private void doDrsSummary(ucar.nc2.grib.grib2.Grib2Record gr, RandomAccessFile raf, boolean extra, Counter templateC,
-                            Counter bitmapRepeat, Counter probC, Counter nbitsC) throws IOException {
+  private void doDrsSummary(ucar.nc2.grib.grib2.Grib2Record gr, RandomAccessFile raf, boolean extra, CounterOfInt templateC,
+                            CounterOfInt bitmapRepeat, CounterOfInt probC, CounterOfInt nbitsC) throws IOException {
     Grib2SectionDataRepresentation drss = gr.getDataRepresentationSection();
     int template = drss.getDataTemplate();
     templateC.count(template);
@@ -835,9 +835,9 @@ public class Grib2ReportPanel extends ReportPanel {
 
   private void doGdsSummary(Formatter f, MCollection dcm, boolean useIndex) throws IOException {
     f.format("Show Unique GDS Templates%n");
-    Counter templateSet = new Counter("template");
-    Counter scanCodeSet = new Counter("scanMode");
-    CounterS scanCodeDiff = new CounterS("scanModeDifference");
+    CounterOfInt templateSet = new CounterOfInt("template");
+    CounterOfInt scanCodeSet = new CounterOfInt("scanMode");
+    CounterOfString scanCodeDiff = new CounterOfString("scanModeDifference");
 
     for (MFile mfile : dcm.getFilesSorted()) {
       f.format(" %s%n", mfile.getPath());
@@ -849,7 +849,7 @@ public class Grib2ReportPanel extends ReportPanel {
     scanCodeDiff.show(f);
   }
 
-  private void doGdsSummary(Formatter f, MFile mf, Counter templateSet, Counter scanCodeSet, CounterS scanCodeDiff) throws IOException {
+  private void doGdsSummary(Formatter f, MFile mf, CounterOfInt templateSet, CounterOfInt scanCodeSet, CounterOfString scanCodeDiff) throws IOException {
     Grib2Index index = createIndex(mf, f);
     if (index == null) return;
 
@@ -875,12 +875,12 @@ public class Grib2ReportPanel extends ReportPanel {
   ///////////////////////////////////////////////////////////////////
 
   private void doTimeCoord(Formatter f, MCollection dcm, boolean useIndex) throws IOException {
-    Counter templateSet = new Counter("template");
-    Counter timeUnitSet = new Counter("timeUnit");
-    Counter statTypeSet = new Counter("statType");
-    Counter NTimeIntervals = new Counter("NumberTimeIntervals");
-    Counter TinvDiffer = new Counter("TimeIntervalsDiffer");
-    Counter TinvLength = new Counter("TimeIntervalsLength");
+    CounterOfInt templateSet = new CounterOfInt("template");
+    CounterOfInt timeUnitSet = new CounterOfInt("timeUnit");
+    CounterOfInt statTypeSet = new CounterOfInt("statType");
+    CounterOfInt NTimeIntervals = new CounterOfInt("NumberTimeIntervals");
+    CounterOfInt TinvDiffer = new CounterOfInt("TimeIntervalsDiffer");
+    CounterOfInt TinvLength = new CounterOfInt("TimeIntervalsLength");
 
     int count = 0;
     for (MFile mfile : dcm.getFilesSorted()) {
@@ -899,8 +899,8 @@ public class Grib2ReportPanel extends ReportPanel {
   }
 
 
-  private int doTimeCoord(Formatter f, MFile mf, Counter templateSet, Counter timeUnitSet, Counter statTypeSet, Counter NTimeIntervals,
-                          Counter TinvDiffer, Counter TinvLength) throws IOException {
+  private int doTimeCoord(Formatter f, MFile mf, CounterOfInt templateSet, CounterOfInt timeUnitSet, CounterOfInt statTypeSet, CounterOfInt NTimeIntervals,
+                          CounterOfInt TinvDiffer, CounterOfInt TinvLength) throws IOException {
     boolean showTinvDiffers = true;
     boolean showNint = true;
     boolean shutup = false;

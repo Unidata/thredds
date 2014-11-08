@@ -406,13 +406,12 @@ public class Grib2Iosp extends GribIosp {
             hcs.nxRaw, hcs.nyRaw, hcs.nptsInLine);
   }
 
-  private Grib2Record lastRecordRead;
   public Object getLastRecordRead() {
-    return lastRecordRead;
+    return Grib2Record.lastRecordRead;
   }
 
   public void clearLastRecordRead() {
-    lastRecordRead = null;
+    Grib2Record.lastRecordRead = null;
   }
 
   public Object getGribCustomizer() {
