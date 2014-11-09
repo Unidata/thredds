@@ -288,6 +288,35 @@ public class FileCacheARC implements FileCacheIF {
     shadowCache.remove(elem);
   }
 
+  /** LOOK copied from FileCache, probably wrong
+    * Remove all instances of object from the cache
+    * @param hashKey the object
+    */
+   @Override
+   public void eject(Object hashKey) {
+      if (disabled.get()) return;
+
+      // see if its in the cache
+      CacheElement wantCacheElem = cache.get(hashKey);
+      if (wantCacheElem == null) return;
+
+      synchronized (wantCacheElem) { // synch in order to traverse the list
+        for (CacheElement.CacheFile want : wantCacheElem.list) {
+           files.remove(want.ncfile);
+           want.ncfile.setFileCache(null); // unhook the caching
+           try {
+             want.ncfile.close();  // really close the file
+             log.debug("close "+want.ncfile.getLocation());
+           } catch (IOException e) {
+             log.error("close failed on "+want.ncfile.getLocation(), e);
+           }
+           want.ncfile = null;
+        }
+        wantCacheElem.list.clear();
+      }
+     cache.remove(hashKey);
+    }
+
 
   private void addToCache(Object hashKey, FileCacheable ncfile) {
     CacheElement newCacheElem = new CacheElement(hashKey);
@@ -320,13 +349,13 @@ public class FileCacheARC implements FileCacheIF {
    * @throws IOException if file not in cache.
    */
   @Override
-  public void release(FileCacheable ncfile) throws IOException {
-    if (ncfile == null) return;
+  public boolean release(FileCacheable ncfile) throws IOException {
+    if (ncfile == null) return false;
 
     if (disabled.get()) {
       ncfile.setFileCache(null); // prevent infinite loops
       ncfile.close();
-      return;
+      return false;
     }
 
     // find it in the file cache
@@ -342,9 +371,10 @@ public class FileCacheARC implements FileCacheIF {
       file.isLocked.set(false);
       if (cacheLog.isDebugEnabled()) cacheLog.debug("FileCacheARC " + name + " release " + ncfile.getLocation()+"; hash= "+ncfile.hashCode());
       if (debugPrint) System.out.println("  FileCacheARC " + name + " release " + ncfile.getLocation());
-      return;
+      return true;
     }
-    throw new IOException("FileCacheARC " + name + " release does not have file in cache = " + ncfile.getLocation());
+    return false;
+    // throw new IOException("FileCacheARC " + name + " release does not have file in cache = " + ncfile.getLocation());
   }
 
   // not private for testing

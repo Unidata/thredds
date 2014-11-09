@@ -88,67 +88,67 @@ public class Vis5DIosp extends AbstractIOServiceProvider {
   /**
    * maximum number of varaiables
    */
-  private static final int MAXVARS = 200;
+  private final static int MAXVARS = 200;
 
   /**
    * maximum number of times
    */
-  private static final int MAXTIMES = 400;
+  private final static int MAXTIMES = 400;
 
   /**
    * maximum number of rows
    */
-  private static final int MAXROWS = 400;
+  private final static int MAXROWS = 400;
 
   /**
    * maximum number of columns
    */
-  private static final int MAXCOLUMNS = 400;
+  private final static int MAXCOLUMNS = 400;
 
   /**
    * maximum number of levels
    */
-  private static final int MAXLEVELS = 400;
+  private final static int MAXLEVELS = 400;
 
   /**
    * row variable name
    */
-  private static final String ROW = "row";
+  private final static String ROW = "row";
 
   /**
    * column variable name
    */
-  private static final String COLUMN = "col";
+  private final static String COLUMN = "col";
 
   /**
    * level variable name
    */
-  private static final String LEVEL = "lev";
+  private final static String LEVEL = "lev";
 
   /**
    * time variable name
    */
-  private static final String TIME = "time";
+  private final static String TIME = "time";
 
   /**
    * latitude variable name
    */
-  private static final String LAT = "lat";
+  private final static String LAT = "lat";
 
   /**
    * longitude variable name
    */
-  private static final String LON = "lon";
+  private final static String LON = "lon";
 
   /**
    * maximum number of projection arguments
    */
-  private static final int MAXPROJARGS = MAXROWS + MAXCOLUMNS + 1;
+  private final int MAXPROJARGS = MAXROWS + MAXCOLUMNS + 1;
 
   /**
    * maximum number of projection level arguments
    */
-  private static final int MAXVERTARGS = MAXLEVELS + 1;
+  private final int MAXVERTARGS = MAXLEVELS + 1;
 
   /**
    * table of param name to units for well know params
@@ -160,12 +160,6 @@ public class Vis5DIosp extends AbstractIOServiceProvider {
    */
   private static Hashtable<Variable, Integer> varTable;
 
-  //////////////////////////////////////
-
-  /**
-   * local copy of the ncfile
-   */
-  private NetcdfFile ncfile;
 
   /**
    * Is this a valid file?
@@ -218,19 +212,14 @@ public class Vis5DIosp extends AbstractIOServiceProvider {
    * @param cancelTask task for cancelling
    * @throws IOException problem reading file
    */
-  public void open(RandomAccessFile raf, NetcdfFile ncfile,
-                   CancelTask cancelTask)
-          throws IOException {
-    long start = System.currentTimeMillis();
-    this.raf = raf;
-    this.ncfile = ncfile;
+  public void open(RandomAccessFile raf, NetcdfFile ncfile, CancelTask cancelTask) throws IOException {
+    super.open(raf, ncfile, cancelTask);
     if (unitTable == null) {
       initUnitTable();
     }
     if (v5dstruct == null) {
       makeFile(raf, ncfile, cancelTask);
     }
-    long end = System.currentTimeMillis() - start;
   }
 
   /**

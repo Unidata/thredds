@@ -72,7 +72,6 @@ public class Cinrad2IOServiceProvider extends AbstractIOServiceProvider {
     }
   }
 
-
   public boolean isValidFile( RandomAccessFile raf) {
       int data_msecs = 0;
       short data_julian_date = 0;
@@ -158,6 +157,7 @@ public class Cinrad2IOServiceProvider extends AbstractIOServiceProvider {
 
     volScan = new Cinrad2VolumeScan( raf, cancelTask); // raf may change if uncompressed
     this.raf = volScan.raf;
+    this.location = volScan.raf.getLocation();
 
     if (volScan.hasDifferentDopplarResolutions())
       throw new IllegalStateException("volScan.hasDifferentDopplarResolutions");

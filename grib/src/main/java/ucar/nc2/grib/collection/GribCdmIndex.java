@@ -111,7 +111,7 @@ public class GribCdmIndex implements IndexReader {
     GribCollection result = null;
 
     try {
-      raf = new RandomAccessFile(indexFilenameInCache, "r");
+      raf = RandomAccessFile.acquire(indexFilenameInCache);
       GribCollectionType type = getType(raf);
 
       switch (type) {
@@ -133,8 +133,8 @@ public class GribCdmIndex implements IndexReader {
 
     } catch (Throwable t) {
       logger.warn("GribCdmIndex.openCdmIndex failed on "+indexFilenameInCache, t);
-      if (raf != null) try {
-        raf.close();
+      try {
+        RandomAccessFile.eject(indexFilenameInCache);   // remove from cache in case it needs to be recreated
       } catch (IOException e) {
         e.printStackTrace();
       }
@@ -288,11 +288,12 @@ public class GribCdmIndex implements IndexReader {
       if (forceCollection == CollectionUpdateType.nocheck) return false;  // use if index exists
       boolean bad = false;
       // otherwise read it to verify its a PC
-      try (RandomAccessFile raf = new RandomAccessFile(idxFile.toString(), "r")) {
+      try (RandomAccessFile raf = RandomAccessFile.acquire(idxFile.toString())) {
         GribCollectionType type = getType(raf);
         assert type == (isGrib1 ? GribCollectionType.Partition1 : GribCollectionType.Partition2);
       } catch (IOException ioe) {
         // delete the file and try again
+        RandomAccessFile.eject(idxFile.toString());
         bad = true;
       }
       if (bad)
@@ -706,7 +707,7 @@ public class GribCdmIndex implements IndexReader {
   @Override
   public boolean readChildren(Path indexFile, AddChildCallback callback) throws IOException {
     if (debug) System.out.printf("GribCdmIndex.readChildren %s%n", indexFile);
-    try (RandomAccessFile raf = new RandomAccessFile(indexFile.toString(), "r")) {
+    try (RandomAccessFile raf = RandomAccessFile.acquire(indexFile.toString())) {
       GribCollectionType type = getType(raf);
       if (type == GribCollectionType.Partition1 || type == GribCollectionType.Partition2) {
         if (openIndex(raf, logger)) {
@@ -726,7 +727,7 @@ public class GribCdmIndex implements IndexReader {
   @Override
   public boolean isPartition(Path indexFile) throws IOException {
     if (debug) System.out.printf("GribCdmIndex.isPartition %s%n", indexFile);
-    try (RandomAccessFile raf = new RandomAccessFile(indexFile.toString(), "r")) {
+    try (RandomAccessFile raf = RandomAccessFile.acquire(indexFile.toString())) {
       GribCollectionType type = getType(raf);
       return (type == GribCollectionType.Partition1) || (type == GribCollectionType.Partition2);
     }
@@ -735,7 +736,7 @@ public class GribCdmIndex implements IndexReader {
   @Override
   public boolean readMFiles(Path indexFile, List<MFile> result) throws IOException {
     if (debug) System.out.printf("GribCdmIndex.readMFiles %s%n", indexFile);
-    try (RandomAccessFile raf = new RandomAccessFile(indexFile.toString(), "r")) {
+    try (RandomAccessFile raf = RandomAccessFile.acquire(indexFile.toString())) {
         // GribCollectionType type = getType(raf);
         // if (type == GribCollectionType.GRIB1 || type == GribCollectionType.GRIB2) {
         if (openIndex(raf, logger)) {

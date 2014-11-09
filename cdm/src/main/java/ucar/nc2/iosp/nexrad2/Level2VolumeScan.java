@@ -150,7 +150,7 @@ public class Level2VolumeScan {
       raf.skipBytes(4);
       String BZ = raf.readString(2);
       if (BZ.equals("BZ")) {
-        RandomAccessFile uraf;
+        RandomAccessFile uraf = null;
         File uncompressedFile = DiskCache.getFileStandardPolicy(raf.getLocation() + ".uncompress");
 
         if (uncompressedFile.exists() && uncompressedFile.length() > 0) {
@@ -179,12 +179,17 @@ public class Level2VolumeScan {
             if (lock != null) lock.release();
             if (fstream != null) fstream.close();
           }
-          uraf = new ucar.unidata.io.RandomAccessFile(uncompressedFile.getPath(), "r");
+          uraf = ucar.unidata.io.RandomAccessFile.acquire(uncompressedFile.getPath());
 
         } else {
-          // nope, gotta uncompress it
-          uraf = uncompress(raf, uncompressedFile.getPath());
-          if (log.isDebugEnabled()) log.debug("made uncompressed file= " + uncompressedFile.getPath());
+          try {
+            // nope, gotta uncompress it
+            uraf = uncompress(raf, uncompressedFile.getPath());
+            if (log.isDebugEnabled()) log.debug("made uncompressed file= " + uncompressedFile.getPath());
+          } catch (Throwable t) {
+            if (uraf != null) uraf.close();
+            throw t;
+          }
         }
 
         // switch to uncompressed file
@@ -791,12 +796,11 @@ public class Level2VolumeScan {
     boolean lookForHeader = false;
 
     // gotta make it
-    try (RandomAccessFile raf = new RandomAccessFile(ufilename, "r")) {
+    try (RandomAccessFile raf = RandomAccessFile.acquire(ufilename)) {
       raf.order(RandomAccessFile.BIG_ENDIAN);
       raf.seek(0);
       String test = raf.readString(8);
-      if (test.equals(Level2VolumeScan.ARCHIVE2) || test.equals
-             (Level2VolumeScan.AR2V0001)) {
+      if (test.equals(Level2VolumeScan.ARCHIVE2) || test.equals(Level2VolumeScan.AR2V0001)) {
         System.out.println("--Good header= " + test);
         raf.seek(24);
       } else {

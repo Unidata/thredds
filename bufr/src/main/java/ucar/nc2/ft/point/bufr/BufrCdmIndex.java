@@ -80,7 +80,7 @@ public class BufrCdmIndex {
 
   public static BufrCdmIndex readIndex(String indexFilename) throws IOException {
     BufrCdmIndex index =  new BufrCdmIndex();
-    try (RandomAccessFile raf = new RandomAccessFile(indexFilename, "r")) {
+    try (RandomAccessFile raf = RandomAccessFile.acquire(indexFilename)) {
        index.readIndex(raf);
     }
     return index;

@@ -67,6 +67,7 @@ import java.util.List;
  * Notes jcaron
  *  Apparently we need the control file (.ctl), which then references the data file (.dat)
  *  Dont see any test data - added to cdmUnitTest/formats/grads
+ *  Possible File leaks - remove from standard IOSP's until we can resolve this. Also need to override  release, reacquire
  *
  * @author Don Murray - CU/CIRES
  * @see "http://www.iges.org/grads/gadoc/descriptorfile.html"
@@ -756,8 +757,7 @@ public class GradsBinaryGridServiceProvider extends AbstractIOServiceProvider {
    * @return the current file
    * @throws IOException couldn't open the current file
    */
-  private RandomAccessFile getDataFile(int eIndex, int tIndex)
-          throws IOException {
+  private RandomAccessFile getDataFile(int eIndex, int tIndex) throws IOException {
 
     String dataFilePath = gradsDDF.getFileName(eIndex, tIndex);
     if (!gradsDDF.isTemplate()) {  // we only have one file
@@ -773,7 +773,7 @@ public class GradsBinaryGridServiceProvider extends AbstractIOServiceProvider {
         dataFile.close();
       }
     }
-    dataFile = new RandomAccessFile(dataFilePath, "r");
+    dataFile = RandomAccessFile.acquire(dataFilePath);
     dataFile.order(getByteOrder());
     return dataFile;
   }

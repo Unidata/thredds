@@ -90,12 +90,13 @@ public abstract class PartitionCollection extends GribCollection {
     public FileCacheable open(String location, int buffer_size, CancelTask cancelTask, Object iospMessage) throws IOException {
       RandomAccessFile raf = null;
       try {
-        raf = new RandomAccessFile(location, "r");
+        raf = RandomAccessFile.acquire(location);
         Partition p = (Partition) iospMessage;
         return GribCdmIndex.openGribCollectionFromIndexFile(raf, p.getConfig(), true, p.getLogger()); // dataOnly
       } catch (Throwable t) {
         if (raf != null)
           raf.close();
+        RandomAccessFile.eject(location);
         throw t;
       }
     }

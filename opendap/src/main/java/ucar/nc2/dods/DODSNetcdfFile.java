@@ -381,16 +381,14 @@ public class DODSNetcdfFile extends ucar.nc2.NetcdfFile
     @Override
     public synchronized void close() throws java.io.IOException
     {
-        if (null != dodsConnection)
-            dodsConnection.closeSession();
+      if (cache != null) {
+        if (cache.release(this)) return;
+      }
 
-        if (cache != null) {
-            //unlocked = true;
-            cache.release(this);
-
-        } else {
-            dodsConnection = null;
-        }
+      if (null != dodsConnection) {
+          dodsConnection.closeSession();
+          dodsConnection = null;
+      }
 
     }
 

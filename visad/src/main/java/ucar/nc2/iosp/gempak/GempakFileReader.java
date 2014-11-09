@@ -126,9 +126,8 @@ public class GempakFileReader implements GempakConstants {
    * @return RandomAccessFile
    * @throws IOException problem reading file
    */
-  public static RandomAccessFile getFile(String filename)
-          throws IOException {
-    return new RandomAccessFile(filename, "r", 2048);
+  public static RandomAccessFile getFile(String filename) throws IOException {
+    return RandomAccessFile.acquire(filename);
   }
 
   /**
@@ -139,8 +138,7 @@ public class GempakFileReader implements GempakConstants {
    * @return a GempakFileReader
    * @throws IOException problem reading file
    */
-  public static GempakFileReader getInstance(RandomAccessFile raf, boolean fullCheck)
-          throws IOException {
+  public static GempakFileReader getInstance(RandomAccessFile raf, boolean fullCheck) throws IOException {
     GempakFileReader gfr = new GempakFileReader();
     gfr.init(raf, fullCheck);
     return gfr;
@@ -271,7 +269,7 @@ public class GempakFileReader implements GempakConstants {
    *
    * @see <a href="http://lopica.sourceforge.net/os.html">http://lopica.sourceforge.net/os.html</a>
    */
-  private void setByteOrder() {
+  void setByteOrder() {
     String arch = System.getProperty("os.arch");
     if (arch.equals("x86") ||                    // Windows, Linux
             arch.equals("arm") ||                // Window CE

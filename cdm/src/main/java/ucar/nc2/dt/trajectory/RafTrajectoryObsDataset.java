@@ -126,7 +126,7 @@ public class RafTrajectoryObsDataset extends SingleTrajectoryObsDataset  impleme
 
       // Determine and set the units (base time) for the time variable.
       String baseTimeVarName = "base_time";
-      Variable baseTimeVar = ncfile.findVariable( baseTimeVarName );
+      Variable baseTimeVar = netcdfDataset.findVariable( baseTimeVarName );
       int baseTime = baseTimeVar.readScalarInt();
       Date baseTimeDate;
       if ( baseTime != 0 )
@@ -170,14 +170,14 @@ public class RafTrajectoryObsDataset extends SingleTrajectoryObsDataset  impleme
 
       DateFormatter formatter = new DateFormatter();              
       String timeUnitsString = "seconds since " + formatter.toDateTimeStringISO( baseTimeDate );
-      ncfile.findVariable( timeVarName ).addAttribute( new Attribute( "units", timeUnitsString ) );
+      netcdfDataset.findVariable( timeVarName ).addAttribute( new Attribute( "units", timeUnitsString ) );
 
       // Make sure alt units are "meters" convertible.
-      String elevVarUnitsString = ncfile.findVariable( elevVarName ).findAttribute( "units").getStringValue();
+      String elevVarUnitsString = netcdfDataset.findVariable( elevVarName ).findAttribute( "units").getStringValue();
       if ( ! SimpleUnit.isCompatible( elevVarUnitsString, "meters"))
       {
         if ( elevVarUnitsString.equals( "M"))
-          ncfile.findVariable( elevVarName ).addAttribute( new Attribute( "units", "meters"));
+          netcdfDataset.findVariable( elevVarName ).addAttribute( new Attribute( "units", "meters"));
       }
     }
     else if ( versionAtt.getStringValue().equals( "1.3" ) )
@@ -191,7 +191,7 @@ public class RafTrajectoryObsDataset extends SingleTrajectoryObsDataset  impleme
       elevVarName = "ALT";
 
       // Set dimension and variable names as indicated by global attribute "coordinates".
-      Attribute coordsAttrib = ncfile.findGlobalAttribute( "coordinates");
+      Attribute coordsAttrib = netcdfDataset.findGlobalAttribute( "coordinates");
       if ( coordsAttrib != null )
       {
         String coordsAttribValue = coordsAttrib.getStringValue();
@@ -212,22 +212,22 @@ public class RafTrajectoryObsDataset extends SingleTrajectoryObsDataset  impleme
         timeVarName = "time_offset";
       }
 
-      String varUnitsString = this.ncfile.findVariable( latVarName ).findAttributeIgnoreCase( "units" ).getStringValue();
+      String varUnitsString = this.netcdfDataset.findVariable( latVarName ).findAttributeIgnoreCase( "units" ).getStringValue();
       if ( !SimpleUnit.isCompatible( varUnitsString, "degrees_north" ) )
       {
         throw new IllegalStateException( "Latitude variable <" + latVarName + "> units not udunits compatible w/ \"degrees_north\"." );
       }
-      varUnitsString = this.ncfile.findVariable( lonVarName ).findAttributeIgnoreCase( "units" ).getStringValue();
+      varUnitsString = this.netcdfDataset.findVariable( lonVarName ).findAttributeIgnoreCase( "units" ).getStringValue();
       if ( !SimpleUnit.isCompatible( varUnitsString, "degrees_east" ) )
       {
         throw new IllegalStateException( "Longitude variable <" + lonVarName + "> units not udunits compatible w/ \"degrees_east\"." );
       }
-      varUnitsString = this.ncfile.findVariable( elevVarName ).findAttributeIgnoreCase( "units" ).getStringValue();
+      varUnitsString = this.netcdfDataset.findVariable( elevVarName ).findAttributeIgnoreCase( "units" ).getStringValue();
       if ( !SimpleUnit.isCompatible( varUnitsString, "meters" ) )
       {
         throw new IllegalStateException( "Elevation variable <" + elevVarName + "> units not udunits compatible w/ \"m\"." );
       }
-      String timeUnitsString = this.ncfile.findVariable( timeVarName ).findAttributeIgnoreCase( "units" ).getStringValue();
+      String timeUnitsString = this.netcdfDataset.findVariable( timeVarName ).findAttributeIgnoreCase( "units" ).getStringValue();
       if ( !SimpleUnit.isCompatible( timeUnitsString, "seconds since 1970-01-01 00:00:00" ) )
       {
         throw new IllegalStateException( "Time variable units <" + timeUnitsString + "> not udunits compatible w/ \"seconds since 1970-01-01 00:00:00\"." );
@@ -250,7 +250,7 @@ public class RafTrajectoryObsDataset extends SingleTrajectoryObsDataset  impleme
 
   private boolean timeVarAllZeros() throws IOException
   {
-    Variable curTimeVar = this.ncfile.getRootGroup().findVariable( timeVarName);
+    Variable curTimeVar = this.netcdfDataset.getRootGroup().findVariable( timeVarName);
     List section = new ArrayList(1);
     Array a = null;
     try

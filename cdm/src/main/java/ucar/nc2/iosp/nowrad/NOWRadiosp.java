@@ -67,7 +67,6 @@ public class NOWRadiosp extends AbstractIOServiceProvider {
 
   // private Nidsheader.Vinfo myInfo;
   protected NOWRadheader headerParser;
-  private ucar.nc2.NetcdfFile ncfile;
   private int pcode;
   protected boolean readonly;
 
@@ -103,7 +102,6 @@ public class NOWRadiosp extends AbstractIOServiceProvider {
                    ucar.nc2.util.CancelTask cancelTask)
           throws IOException {
     super.open(raf, ncfile, cancelTask);
-    ncfile = file;
     headerParser = new NOWRadheader();
 
     try {

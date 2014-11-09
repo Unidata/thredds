@@ -72,13 +72,21 @@ public interface FileCacheable {
   <pre>
   public synchronized void close() throws java.io.IOException {
     if (cache != null) {
-      cache.release(this);
-    } else {
-      reallyClose();
+      if (cache.release(this)) return;
     }
-   </pre>
+
+    reallyClose();
+  } </pre>
    *
    * @param fileCache must store this, use it on close as above.
    */
   public void setFileCache( FileCacheIF fileCache);
+
+  // release any resources like file handles
+  public void release() throws IOException;
+
+  // reacquire any resources like file handles
+  public void reacquire() throws IOException;
+
+
 }

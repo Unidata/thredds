@@ -67,6 +67,8 @@ import java.util.regex.Pattern;
  * protoc --proto_path=. --java_out=. ucar/nc2/iosp/noaa/GhcnmIndex.proto
  * </pre>
  *
+ * LOOK probable file leaks
+ *
  * @author caron
  * @since Dec 8, 2010
  */
@@ -506,6 +508,7 @@ public class Ghcnm extends AbstractIOServiceProvider {
 
   @Override
   public void open(RandomAccessFile raf, NetcdfFile ncfile, CancelTask cancelTask) throws IOException {
+    super.open(raf, ncfile, cancelTask);
     this.ncfile = ncfile;
 
     String dataFile = raf.getLocation();
@@ -523,8 +526,8 @@ public class Ghcnm extends AbstractIOServiceProvider {
       if (!stnFile.exists())
         throw new FileNotFoundException(stnFile.getPath() + " must exist");
 
-      this.raf = new RandomAccessFile(base + DAT_EXT, "r");
-      this.stnRaf = new RandomAccessFile(base + STN_EXT, "r");
+      this.raf = RandomAccessFile.acquire(base + DAT_EXT);
+      this.stnRaf = RandomAccessFile.acquire(base + STN_EXT);
       readIndex(raf.getLocation());
       raf.close();
 
@@ -536,7 +539,7 @@ public class Ghcnm extends AbstractIOServiceProvider {
       File stnFile = new File(base + STN_EXT);
       if (!stnFile.exists())
         throw new FileNotFoundException(stnFile.getPath() + " must exist");
-      this.stnRaf = new RandomAccessFile(base + STN_EXT, "r");
+      this.stnRaf = RandomAccessFile.acquire(base + STN_EXT);
     }
 
     //////////////////////////////////////////////////

@@ -39,7 +39,6 @@ import ucar.nc2.Dimension;
 import ucar.nc2.VariableSimpleIF;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.units.DateUnit;
-import ucar.nc2.units.SimpleUnit;
 import ucar.nc2.util.CancelTask;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.constants.AxisType;
@@ -155,7 +154,7 @@ public class UnidataStationObsMultidimDataset extends StationObsDatasetImpl impl
 
     // create member variables
     structureMembers = new StructureMembers("UnidataStationObsMultidimDataset_obsStructure");
-    for (Variable v : ncfile.getVariables()) {
+    for (Variable v : netcdfDataset.getVariables()) {
       if (v.getRank() < 2) continue;
       if (v.getDimension(0).equals(this.stationDim) && v.getDimension(1).equals(this.obsDim)) {
         dataVariables.add(v);
@@ -243,7 +242,7 @@ public class UnidataStationObsMultidimDataset extends StationObsDatasetImpl impl
 
   protected void setTimeUnits() {
     // need the time units
-    String timeUnitString = ncfile.findAttValueIgnoreCase(timeVar, "units", "seconds since 1970-01-01");
+    String timeUnitString = netcdfDataset.findAttValueIgnoreCase(timeVar, "units", "seconds since 1970-01-01");
     try {
       timeUnit = new DateUnit(timeUnitString);
     } catch (Exception e) {

@@ -123,7 +123,6 @@ public class H5iosp extends AbstractIOServiceProvider {
   // reading
 
   public void open(RandomAccessFile raf, ucar.nc2.NetcdfFile ncfile, ucar.nc2.util.CancelTask cancelTask) throws IOException {
-
     super.open(raf, ncfile, cancelTask);
     headerParser = new H5header(this.raf, ncfile, this);
     headerParser.read(null);
