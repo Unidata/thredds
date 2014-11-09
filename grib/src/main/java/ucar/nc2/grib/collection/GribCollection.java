@@ -53,11 +53,9 @@ import ucar.nc2.grib.*;
 import ucar.nc2.grib.grib2.Grib2Pds;
 import ucar.nc2.grib.grib2.Grib2Utils;
 import ucar.nc2.time.CalendarDateRange;
-import ucar.nc2.util.CancelTask;
 import ucar.nc2.util.DiskCache2;
 import ucar.nc2.util.cache.FileCacheIF;
 import ucar.nc2.util.cache.FileCacheable;
-import ucar.nc2.util.cache.FileFactory;
 import ucar.unidata.io.RandomAccessFile;
 import ucar.unidata.util.Parameter;
 import ucar.unidata.util.StringUtil2;
@@ -86,11 +84,23 @@ public abstract class GribCollection implements FileCacheable, AutoCloseable {
   public enum Type {GC, TwoD, Best, Analysis} // must match with GribCollectionProto.Dataset.Type
 
   //////////////////////////////////////////////////////////
-  // object cache for data files - these are opened only as raf, not netcdfFile
-  private static FileCacheIF dataRafCache;
   private static DiskCache2 diskCache;
 
-  static public void initDataRafCache(int minElementsInMemory, int maxElementsInMemory, int period) {
+  static synchronized public void setDiskCache2(DiskCache2 dc) {
+    diskCache = dc;
+  }
+
+  static synchronized public DiskCache2 getDiskCache2() {
+    if (diskCache == null)
+      diskCache = DiskCache2.getDefault();
+    return diskCache;
+  }
+
+  //////////////////////////////////////////////////////////
+  // object cache for data files - these are opened only as raf, not netcdfFile
+  // private static FileCacheIF dataRafCache;
+
+  /* static public void initDataRafCache(int minElementsInMemory, int maxElementsInMemory, int period) {
     dataRafCache = new ucar.nc2.util.cache.FileCache("GribCollectionDataRafCache ", minElementsInMemory, maxElementsInMemory, -1, period);
   }
 
@@ -107,18 +117,9 @@ public abstract class GribCollection implements FileCacheable, AutoCloseable {
   static public void disableDataRafCache() {
     if (null != dataRafCache) dataRafCache.disable();
     dataRafCache = null;
-  }
+  }   */
 
-  static synchronized public void setDiskCache2(DiskCache2 dc) {
-    diskCache = dc;
-  }
 
-  static public synchronized DiskCache2 getDiskCache2() {
-    if (diskCache == null)
-      diskCache = DiskCache2.getDefault();
-
-    return diskCache;
-  }
 
   ///////////////////////////////////////////////////////////////////
 
@@ -233,7 +234,7 @@ public abstract class GribCollection implements FileCacheable, AutoCloseable {
   private Map<String, MFile> filenameMap;
   protected RandomAccessFile indexRaf; // this is the raf of the index (ncx) file, synchronize any access to it
   protected FileCacheIF objCache = null;  // optional object cache - used in the TDS
-  protected String indexFilename;  // temp storage for debugging
+  protected String indexFilename;
 
   public static int countGC;
 
@@ -370,7 +371,7 @@ public abstract class GribCollection implements FileCacheable, AutoCloseable {
   void setIndexRaf(RandomAccessFile indexRaf) {
     this.indexRaf = indexRaf;
     if (indexRaf != null) {
-      this.indexFilename = indexRaf.getLocation(); // for debugIndexOnly
+      this.indexFilename = indexRaf.getLocation();
     }
   }
 
@@ -472,11 +473,7 @@ public abstract class GribCollection implements FileCacheable, AutoCloseable {
   }
 
   private RandomAccessFile getDataRaf(String location) throws IOException {
-    if (dataRafCache != null) {
-      return (RandomAccessFile) dataRafCache.acquire(dataRafFactory, location);
-    } else {
-      return new RandomAccessFile(location, "r");
-    }
+    return RandomAccessFile.acquire(location);
   }
 
   // debugging
@@ -491,11 +488,26 @@ public abstract class GribCollection implements FileCacheable, AutoCloseable {
 
   public synchronized void close() throws java.io.IOException {
     if (objCache != null) {
-      objCache.release(this);
-    } else if (indexRaf != null) {
+      if (objCache.release(this)) return;
+    }
+
+    if (indexRaf != null) {
       indexRaf.close();
       indexRaf = null;
     }
+  }
+
+    // release any resources like file handles
+  public void release() throws IOException {
+    if (indexRaf != null) {
+      indexRaf.close();
+      indexRaf = null;
+    }
+  }
+
+  // reacquire any resources like file handles
+  public void reacquire() throws IOException {
+    indexRaf = RandomAccessFile.acquire(indexFilename);
   }
 
   @Override
@@ -1083,7 +1095,7 @@ public abstract class GribCollection implements FileCacheable, AutoCloseable {
         indexRaf.readFully(b);
       } else {
         String idxPath = getIndexFilepathInCache();
-        try (RandomAccessFile raf = new RandomAccessFile(idxPath, "r")) {  // try-with-close
+        try (RandomAccessFile raf = RandomAccessFile.acquire(idxPath)) {
           raf.seek(recordsPos);
           raf.readFully(b);
         }

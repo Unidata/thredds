@@ -774,7 +774,7 @@ public abstract class GribIosp extends AbstractIOServiceProvider {
 
   @Override
   public void close() throws java.io.IOException {
-    if (!owned && gribCollection != null) // klugerino
+    if (!owned && gribCollection != null) // LOOK klugerino
       gribCollection.close();
     gribCollection = null;
     super.close();

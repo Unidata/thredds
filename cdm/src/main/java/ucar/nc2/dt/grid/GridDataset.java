@@ -86,7 +86,7 @@ import ucar.unidata.geoloc.LatLonRect;
  */
 
 public class GridDataset implements ucar.nc2.dt.GridDataset, ucar.nc2.ft.FeatureDataset {
-  private NetcdfDataset ds;
+  private NetcdfDataset ncd;
   private ArrayList<GeoGrid> grids = new ArrayList<>();
   private Map<String, Gridset> gridsetHash = new HashMap<>();
 
@@ -121,33 +121,33 @@ public class GridDataset implements ucar.nc2.dt.GridDataset, ucar.nc2.ft.Feature
   /**
    * Create a GridDataset from a NetcdfDataset.
    *
-   * @param ds underlying NetcdfDataset, will do Enhance.CoordSystems if not already done.
+   * @param ncd underlying NetcdfDataset, will do Enhance.CoordSystems if not already done.
    * @throws java.io.IOException on read error
    */
-  public GridDataset(NetcdfDataset ds) throws IOException {
-    this(ds, null);
+  public GridDataset(NetcdfDataset ncd) throws IOException {
+    this(ncd, null);
   }
 
   /**
    * Create a GridDataset from a NetcdfDataset.
    *
-   * @param ds underlying NetcdfDataset, will do Enhance.CoordSystems if not already done.
+   * @param ncd underlying NetcdfDataset, will do Enhance.CoordSystems if not already done.
    * @param parseInfo put parse info here, may be null
    * @throws java.io.IOException on read error
    */
-  public GridDataset(NetcdfDataset ds, Formatter parseInfo) throws IOException {
-    this.ds = ds;
+  public GridDataset(NetcdfDataset ncd, Formatter parseInfo) throws IOException {
+    this.ncd = ncd;
     // ds.enhance(EnumSet.of(NetcdfDataset.Enhance.CoordSystems));
-    Set<Enhance> enhance = ds.getEnhanceMode();
+    Set<Enhance> enhance = ncd.getEnhanceMode();
     if(enhance == null || enhance.isEmpty()) enhance = NetcdfDataset.getDefaultEnhanceMode(); 
-    ds.enhance(enhance);
+    ncd.enhance(enhance);
 
     // look for geoGrids
     if (parseInfo != null) parseInfo.format("GridDataset look for GeoGrids%n");
-    List<Variable> vars = ds.getVariables();
+    List<Variable> vars = ncd.getVariables();
     for (Variable var : vars) {
       VariableEnhanced varDS = (VariableEnhanced) var;
-      constructCoordinateSystems(ds, varDS, parseInfo);
+      constructCoordinateSystems(ncd, varDS, parseInfo);
     }
   }
 
@@ -206,27 +206,27 @@ public class GridDataset implements ucar.nc2.dt.GridDataset, ucar.nc2.ft.Feature
 
   // stuff to satisfy ucar.nc2.dt.TypedDataset
   public String getTitle() {
-    String title = ds.getTitle();
+    String title = ncd.getTitle();
     if (title == null)
-      title = ds.findAttValueIgnoreCase(null, CDM.TITLE, null);
+      title = ncd.findAttValueIgnoreCase(null, CDM.TITLE, null);
     if (title == null)
       title = getName();
     return title;
   }
 
   public String getDescription() {
-    String desc = ds.findAttValueIgnoreCase(null, "description", null);
+    String desc = ncd.findAttValueIgnoreCase(null, "description", null);
     if (desc == null)
-      desc = ds.findAttValueIgnoreCase(null, CDM.HISTORY, null);
+      desc = ncd.findAttValueIgnoreCase(null, CDM.HISTORY, null);
     return (desc == null) ? getName() : desc;
   }
 
   public String getLocation() {
-    return ds.getLocation();
+    return ncd.getLocation();
   }
 
   public String getLocationURI() {
-    return ds.getLocation();
+    return ncd.getLocation();
   }
 
   /**
@@ -278,11 +278,11 @@ public class GridDataset implements ucar.nc2.dt.GridDataset, ucar.nc2.ft.Feature
   }
 
   public List<Attribute> getGlobalAttributes() {
-    return ds.getGlobalAttributes();
+    return ncd.getGlobalAttributes();
   }
 
   public Attribute findGlobalAttributeIgnoreCase(String name) {
-    return ds.findGlobalAttributeIgnoreCase(name);
+    return ncd.findGlobalAttributeIgnoreCase(name);
   }
 
   public List<VariableSimpleIF> getDataVariables() {
@@ -295,11 +295,11 @@ public class GridDataset implements ucar.nc2.dt.GridDataset, ucar.nc2.ft.Feature
   }
 
   public VariableSimpleIF getDataVariable(String shortName) {
-    return ds.getRootGroup().findVariable(shortName);
+    return ncd.getRootGroup().findVariable(shortName);
   }
 
   public NetcdfFile getNetcdfFile() {
-    return ds;
+    return ncd;
   }
 
   private void addGeoGrid(VariableDS varDS, GridCoordSys gcs, Formatter parseInfo) {
@@ -321,7 +321,7 @@ public class GridDataset implements ucar.nc2.dt.GridDataset, ucar.nc2.ft.Feature
    * @return the name of the dataset
    */
   public String getName() {
-    String loc = ds.getLocation();
+    String loc = ncd.getLocation();
     int pos = loc.lastIndexOf('/');
     if (pos < 0)
       pos = loc.lastIndexOf('\\');
@@ -332,7 +332,7 @@ public class GridDataset implements ucar.nc2.dt.GridDataset, ucar.nc2.ft.Feature
    * @return the underlying NetcdfDataset
    */
   public NetcdfDataset getNetcdfDataset() {
-    return ds;
+    return ncd;
   }
 
   /**
@@ -405,13 +405,13 @@ public class GridDataset implements ucar.nc2.dt.GridDataset, ucar.nc2.ft.Feature
   public void getDetailInfo(Formatter buff) {
     getInfo(buff);
     buff.format("%n%n----------------------------------------------------%n");
-    try (NetcdfDatasetInfo info = new NetcdfDatasetInfo( ds)) {
+    try (NetcdfDatasetInfo info = new NetcdfDatasetInfo(ncd)) {
       buff.format("%s", info.getParseInfo());
     } catch (IOException e) {
       buff.format("NetcdfDatasetInfo failed");
     }
     buff.format("%n%n----------------------------------------------------%n");
-    buff.format("%s", ds.toString());
+    buff.format("%s", ncd.toString());
     buff.format("%n%n----------------------------------------------------%n");
   }
 
@@ -439,7 +439,7 @@ public class GridDataset implements ucar.nc2.dt.GridDataset, ucar.nc2.ft.Feature
 
     buf.format("%nGeoReferencing Coordinate Axes%n");
     buf.format("Name__________________________Units_______________Type______Description%n");
-    for (CoordinateAxis axis : ds.getCoordinateAxes()) {
+    for (CoordinateAxis axis : ncd.getCoordinateAxes()) {
       if (axis.getAxisType() == null) continue;
       axis.getInfo(buf);
       buf.format("%n");
@@ -495,7 +495,7 @@ public class GridDataset implements ucar.nc2.dt.GridDataset, ucar.nc2.ft.Feature
   }
 
   public String getImplementationName() {
-    return ds.getConventionUsed();
+    return ncd.getConventionUsed();
   }
 
   //////////////////////////////////////////////////
@@ -504,24 +504,29 @@ public class GridDataset implements ucar.nc2.dt.GridDataset, ucar.nc2.ft.Feature
   @Override
   public synchronized void close() throws java.io.IOException {
     if (fileCache != null) {
-      fileCache.release(this);
-    } else {
-      try {
-        if (ds != null) ds.close();
-      } finally {
-        ds = null;
-      }
+      if (fileCache.release(this)) return;
     }
+
+    try {
+      if (ncd != null) ncd.close();
+    } finally {
+      ncd = null;
+      }
   }
 
-  /* @Override
-  public boolean sync() throws IOException {
-    return (ds != null) && ds.sync();
-  } */
+        // release any resources like file handles
+  public void release() throws IOException {
+    if (ncd != null) ncd.release();
+  }
+
+  // reacquire any resources like file handles
+  public void reacquire() throws IOException {
+    if (ncd != null) ncd.reacquire();
+  }
 
   @Override
   public long getLastModified() {
-    return (ds != null) ? ds.getLastModified() : 0;
+    return (ncd != null) ? ncd.getLastModified() : 0;
   }
 
   protected FileCacheIF fileCache;

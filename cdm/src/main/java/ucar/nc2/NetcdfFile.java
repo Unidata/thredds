@@ -242,11 +242,11 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable, AutoClosea
     } catch (Throwable e) {
       if (loadWarnings) log.info("Cant load class: " + e);
     }
-    try {
+    /* try {
       registerIOProvider("ucar.nc2.iosp.grads.GradsBinaryGridServiceProvider");
     } catch (Throwable e) {
       if (loadWarnings) log.info("Cant load class: " + e);
-    }
+    } */
     try {
       NetcdfFile.class.getClassLoader().loadClass("ucar.nc2.iosp.mcidas.AreaServiceProvider");
       registerIOProvider("ucar.nc2.iosp.mcidas.AreaServiceProvider");
@@ -434,6 +434,7 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable, AutoClosea
 
   /**
    * Find out if the file can be opened, but dont actually open it.
+   * Experimental.
    *
    * @param location same as open
    * @return true if can be opened
@@ -505,7 +506,7 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable, AutoClosea
 
     if (bufferSize <= 0)
       bufferSize = default_buffersize;
-    ucar.unidata.io.RandomAccessFile raf = new ucar.unidata.io.RandomAccessFile(uriString, "r", bufferSize);
+    ucar.unidata.io.RandomAccessFile raf = ucar.unidata.io.RandomAccessFile.acquire(uriString, bufferSize);
 
     NetcdfFile result = new NetcdfFile(spi, raf, location, cancelTask);
 
@@ -555,12 +556,12 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable, AutoClosea
 
       if (uncompressedFileName != null) {
         // open uncompressed file as a RandomAccessFile.
-        raf = new ucar.unidata.io.RandomAccessFile(uncompressedFileName, "r", buffer_size);
+        raf = ucar.unidata.io.RandomAccessFile.acquire(uncompressedFileName, buffer_size);
         //raf = new ucar.unidata.io.MMapRandomAccessFile(uncompressedFileName, "r");
 
       } else {
         // normal case - not compressed
-        raf = new ucar.unidata.io.RandomAccessFile(uriString, "r", buffer_size);
+        raf = ucar.unidata.io.RandomAccessFile.acquire(uriString, buffer_size);
         //raf = new ucar.unidata.io.MMapRandomAccessFile(uriString, "r");
       }
     }
@@ -830,7 +831,6 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable, AutoClosea
   ////////////////////////////////////////////////////////////////////////////////////////////////
   protected String location, id, title, cacheName;
   protected Group rootGroup = makeRootGroup();
-  //protected boolean unlocked = false; // in the cache and locked - detect unguarded access to this file
   private boolean immutable = false;
 
   protected ucar.nc2.util.cache.FileCacheIF cache;
@@ -841,23 +841,6 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable, AutoClosea
   protected List<Dimension> dimensions;
   protected List<Attribute> gattributes;
 
-  /*
-   * Is the dataset in the cache, but unlocked, and so not available for use.
-   * Detect illegal use of dataset
-   * @return true if unlocked
-   *
-  public synchronized boolean isUnlocked() {
-    return unlocked;
-  }
-
-  /*
-   * Set unlocked to true
-   * @return true if closed
-   *
-  public synchronized void setUnlocked() {
-    unlocked = true;
-  } */
-
   /**
    * Close all resources (files, sockets, etc) associated with this file.
    * If the underlying file was acquired, it will be released, otherwise closed.
@@ -867,19 +850,28 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable, AutoClosea
    */
   public synchronized void close() throws java.io.IOException {
     if (cache != null) {
-      //unlocked = true;
-      cache.release(this);
-
-    } else {
-      try {
-        if (null != spi) {
-          // log.warn("NetcdfFile.close called for ncfile="+this.hashCode()+" for iosp="+spi.hashCode());
-          spi.close();
-        }
-      } finally {
-        spi = null;
-      }
+      if (cache.release(this))
+        return;
     }
+
+    try {
+      if (null != spi) {
+        // log.warn("NetcdfFile.close called for ncfile="+this.hashCode()+" for iosp="+spi.hashCode());
+        spi.close();
+      }
+    } finally {
+      spi = null;
+    }
+  }
+
+  // optionally release any resources like file handles
+  public void release() throws IOException {
+    spi.release();
+  }
+
+  // reacquire any resources like file handles
+  public void reacquire() throws IOException {
+    spi.reacquire();
   }
 
   /**
@@ -1415,7 +1407,7 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable, AutoClosea
    */
   public NetcdfFile(String filename) throws IOException {
     this.location = filename;
-    ucar.unidata.io.RandomAccessFile raf = new ucar.unidata.io.RandomAccessFile(filename, "r");
+    ucar.unidata.io.RandomAccessFile raf = ucar.unidata.io.RandomAccessFile.acquire(filename);
     //ucar.unidata.io.RandomAccessFile raf = new ucar.unidata.io.MMapRandomAccessFile(filename, "r");
     this.spi = SPFactory.getServiceProvider();
     spi.open(raf, this, null);
@@ -2153,6 +2145,7 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable, AutoClosea
     f.format("  id= %s%n", getId());
     f.format("  fileType= %s%n", getFileTypeId());
     f.format("  fileDesc= %s%n", getFileTypeDescription());
+    f.format("  fileVersion= %s%n", getFileTypeVersion());
 
     f.format("  class= %s%n", getClass().getName());
     if (spi == null) {
@@ -2179,7 +2172,7 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable, AutoClosea
       total += vtotal;
       f.format(" %-" + maxNameLen + "s %5s %8d ", v.getShortName(), v.isCaching(), vtotal);
       if (v.hasCachedData()) {
-        Array data = null;
+        Array data;
         try {
           data = v.read();
         } catch (IOException e) {

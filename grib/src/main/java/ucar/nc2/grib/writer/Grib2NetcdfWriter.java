@@ -62,7 +62,7 @@ public class Grib2NetcdfWriter implements AutoCloseable {
 
   public void write() throws IOException {
 
-    try (RandomAccessFile raf = new RandomAccessFile(fileIn, "r")) {
+    try (RandomAccessFile raf = RandomAccessFile.acquire(fileIn)) {
 
       Grib2RecordScanner scanner = new Grib2RecordScanner(raf);
       while (scanner.hasNext()) {

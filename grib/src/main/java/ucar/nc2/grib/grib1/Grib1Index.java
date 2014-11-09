@@ -208,7 +208,7 @@ public class Grib1Index extends GribIndex {
       rootBuilder.setFilename(filename);
 
       if (dataRaf == null)  { // open if dataRaf not already open
-        raf = new RandomAccessFile(filename, "r");
+        raf = RandomAccessFile.acquire(filename);
         dataRaf = raf;
       }
 

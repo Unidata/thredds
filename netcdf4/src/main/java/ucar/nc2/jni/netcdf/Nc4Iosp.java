@@ -222,7 +222,6 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
   // Instance Variables
 
   private NetcdfFileWriter.Version version = null;  // can use c library to create these different version files
-  private NetcdfFile ncfile = null;
   private boolean fill = true;
   private int ncid = -1;        // file id
   private int format = 0;       // from nc_inq_format
@@ -284,6 +283,7 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
   }
 
   public void open(RandomAccessFile raf, NetcdfFile ncfile, CancelTask cancelTask) throws IOException {
+    super.open(raf, ncfile, cancelTask);
     _open(raf, ncfile, true);
   }
 
@@ -296,7 +296,6 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
 
     if(raf != null)
         raf.close(); // not used
-    this.ncfile = ncfile;
 
     // open
     if (debug) System.out.println("open " + ncfile.getLocation());

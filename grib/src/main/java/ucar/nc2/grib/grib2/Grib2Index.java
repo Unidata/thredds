@@ -149,14 +149,14 @@ public class Grib2Index extends GribIndex {
       String fname = proto.getFilename();
       if (debug) System.out.printf("%s for %s%n", fname, filename);
 
-      gdsList = new ArrayList<Grib2SectionGridDefinition>(proto.getGdsListCount());
+      gdsList = new ArrayList<>(proto.getGdsListCount());
       for (Grib2IndexProto.GribGdsSection pgds : proto.getGdsListList()) {
         Grib2SectionGridDefinition gds = readGds(pgds);
         gdsList.add(gds);
       }
       if (debug) System.out.printf(" read %d gds%n", gdsList.size());
 
-      records = new ArrayList<Grib2Record>(proto.getRecordsCount());
+      records = new ArrayList<>(proto.getRecordsCount());
       for (Grib2IndexProto.Grib2Record precord : proto.getRecordsList()) {
         records.add(readRecord(precord));
       }
@@ -226,7 +226,7 @@ public class Grib2Index extends GribIndex {
       fout.write(MAGIC_START.getBytes(CDM.utf8Charset));
       NcStream.writeVInt(fout, version);
 
-      Map<Long, Integer> gdsMap = new HashMap<Long, Integer>();
+      Map<Long, Integer> gdsMap = new HashMap<>();
       gdsList = new ArrayList<>();
       records = new ArrayList<>(200);
 
@@ -234,7 +234,7 @@ public class Grib2Index extends GribIndex {
       rootBuilder.setFilename(filename);
 
       if (dataRaf == null)  {
-        raf = new RandomAccessFile(filename, "r");
+        raf = RandomAccessFile.acquire(filename);
         dataRaf = raf;
       }
 

@@ -48,16 +48,10 @@ import java.util.zip.DataFormatException;
 
 public class Giniiosp extends AbstractIOServiceProvider {
 
-  protected boolean readonly;
-  private ucar.nc2.NetcdfFile ncfile;
   protected Giniheader headerParser;
 
   final static int Z_DEFLATED = 8;
   final static int DEF_WBITS = 15;
-
-  // used for writing
-  protected int fileUsed = 0; // how much of the file is written to ?
-  protected int recStart = 0; // where the record data starts
 
   protected boolean debug = false, debugSize = false, debugSPIO = false;
   protected boolean showHeaderBytes = false;
@@ -76,10 +70,9 @@ public class Giniiosp extends AbstractIOServiceProvider {
   /////////////////////////////////////////////////////////////////////////////
   // reading
 
-  public void open(ucar.unidata.io.RandomAccessFile raf, ucar.nc2.NetcdfFile file,
+  public void open(ucar.unidata.io.RandomAccessFile raf, ucar.nc2.NetcdfFile ncfile,
                    ucar.nc2.util.CancelTask cancelTask) throws IOException {
 
-    ncfile = file;
     super.open(raf, ncfile, cancelTask);
 
     headerParser = new Giniheader();

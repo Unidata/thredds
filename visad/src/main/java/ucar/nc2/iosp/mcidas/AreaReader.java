@@ -139,16 +139,16 @@ public class AreaReader {
 
 
   /**
-   * initialize with the file
+   * initialize; note that the file is reopened here
    *
-   * @param raf    the AREA file to open
+   * @param location    the AREA file to open
    * @param ncfile the netCDF file to fill out
    * @return true if successful
    * @throws AreaFileException problem opening the area file
    */
-  public boolean init(RandomAccessFile raf, NetcdfFile ncfile) throws AreaFileException {
+  public boolean init(String location, NetcdfFile ncfile) throws AreaFileException {
 
-    af = new AreaFile(raf.getLocation());
+    af = new AreaFile(location);
 
     //read metadata
     dirBlock = af.getDir();

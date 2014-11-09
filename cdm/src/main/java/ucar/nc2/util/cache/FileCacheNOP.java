@@ -45,8 +45,9 @@ public class FileCacheNOP extends FileCache {
     super("FileCacheNOP", 0, 0, 0, 0);
   }
 
-  public void release(FileCacheable ncfile) {
+  public boolean release(FileCacheable ncfile) {
     // no - op
+    return false;
   }
 
 }

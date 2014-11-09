@@ -87,7 +87,7 @@ public class BufrIosp2 extends AbstractIOServiceProvider {
 
   @Override
   public void open(RandomAccessFile raf, NetcdfFile ncfile, CancelTask cancelTask) throws IOException {
-    this.raf = raf;
+    super.open(raf, ncfile, cancelTask);
 
     scanner = new MessageScanner(raf);
     protoMessage = scanner.getFirstDataMessage();

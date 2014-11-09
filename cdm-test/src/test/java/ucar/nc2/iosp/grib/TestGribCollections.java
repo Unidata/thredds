@@ -72,7 +72,6 @@ public class TestGribCollections {
      RandomAccessFile.setDebugLeaks(true);
      GribIosp.setDebugFlags(new DebugFlagsImpl("Grib/indexOnly"));
      PartitionCollection.initPartitionCache(50, 700, -1, -1);
-     GribCollection.initDataRafCache(11, 100, -1);
      PartitionCollection.getPartitionCache().resetTracking();
    }
 
@@ -87,7 +86,7 @@ public class TestGribCollections {
      cache.showCache(out);
 
      cache.clearCache(false);
-     GribCollection.getDataRafCache().showCache(out);
+     RandomAccessFile.getGlobalFileCache().showCache(out);
      TestDir.checkLeaks();
 
      System.out.printf("            countGC=%7d%n", GribCollection.countGC);

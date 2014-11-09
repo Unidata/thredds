@@ -49,7 +49,7 @@ import java.util.*;
  */
 
 public abstract class TypedDatasetImpl implements TypedDataset {
-  protected NetcdfDataset ncfile;
+  protected NetcdfDataset netcdfDataset;
   protected String title, desc, location;
   protected Date startDate, endDate;
   protected LatLonRect boundingBox;
@@ -72,17 +72,17 @@ public abstract class TypedDatasetImpl implements TypedDataset {
   }
 
   /** Construtor when theres a NetcdfFile underneath
-   * @param ncfile adapt this NetcdfDataset
+   * @param netcdfDataset adapt this NetcdfDataset
    */
-  public TypedDatasetImpl(NetcdfDataset ncfile) {
-    this.ncfile = ncfile;
-    this.location = ncfile.getLocation();
+  public TypedDatasetImpl(NetcdfDataset netcdfDataset) {
+    this.netcdfDataset = netcdfDataset;
+    this.location = netcdfDataset.getLocation();
 
-    this.title = ncfile.getTitle();
+    this.title = netcdfDataset.getTitle();
     if (title == null)
-      title = ncfile.findAttValueIgnoreCase(null, "title", null);
+      title = netcdfDataset.findAttValueIgnoreCase(null, "title", null);
     if (desc == null)
-      desc = ncfile.findAttValueIgnoreCase(null, "description", null);
+      desc = netcdfDataset.findAttValueIgnoreCase(null, "description", null);
   }
 
   public void setTitle( String title) { this.title = title; }
@@ -104,23 +104,23 @@ public abstract class TypedDatasetImpl implements TypedDataset {
 
   /////////////////////////////////////////////////
 
-  public NetcdfFile getNetcdfFile() { return ncfile; }
+  public NetcdfFile getNetcdfFile() { return netcdfDataset; }
   public String getTitle() { return title; }
   public String getDescription() { return desc; }
   public String getLocationURI() {return location; }
   public String getLocation() {return location; }
   public List<Attribute> getGlobalAttributes() {
-    if (ncfile == null) return new ArrayList<>();
-    return ncfile.getGlobalAttributes();
+    if (netcdfDataset == null) return new ArrayList<>();
+    return netcdfDataset.getGlobalAttributes();
   }
 
   public Attribute findGlobalAttributeIgnoreCase( String name ) {
-    if (ncfile == null) return null;
-    return ncfile.findGlobalAttributeIgnoreCase( name);
+    if (netcdfDataset == null) return null;
+    return netcdfDataset.findGlobalAttributeIgnoreCase( name);
   }
 
   public void close() throws java.io.IOException {
-    if (ncfile != null) ncfile.close();
+    if (netcdfDataset != null) netcdfDataset.close();
   }
 
   public String getDetailInfo() {

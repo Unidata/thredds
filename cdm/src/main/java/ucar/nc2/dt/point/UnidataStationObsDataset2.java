@@ -148,7 +148,7 @@ public class UnidataStationObsDataset2 extends StationObsDatasetImpl implements 
   }
 
   public int getDataCount() {
-    Dimension unlimitedDim = ncfile.getUnlimitedDimension();
+    Dimension unlimitedDim = netcdfDataset.getUnlimitedDimension();
     return unlimitedDim.getLength();
   }
 

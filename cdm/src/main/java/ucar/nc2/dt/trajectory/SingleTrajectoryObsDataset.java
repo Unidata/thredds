@@ -156,15 +156,15 @@ public class SingleTrajectoryObsDataset
       throw new IllegalArgumentException( "Exception on getMetersConversionFactor() for the units of elev var <" + elevVarUnitsString + ">." );
     }
 
-    if ( this.ncfile.hasUnlimitedDimension() && this.ncfile.getUnlimitedDimension().equals( timeDim ) )
+    if ( this.netcdfDataset.hasUnlimitedDimension() && this.netcdfDataset.getUnlimitedDimension().equals( timeDim ) )
     {
-      Object result = this.ncfile.sendIospMessage(NetcdfFile.IOSP_MESSAGE_ADD_RECORD_STRUCTURE);
+      Object result = this.netcdfDataset.sendIospMessage(NetcdfFile.IOSP_MESSAGE_ADD_RECORD_STRUCTURE);
       if ((result != null) && (Boolean) result )
-        this.recordVar = (Structure) this.ncfile.getRootGroup().findVariable( "record");
+        this.recordVar = (Structure) this.netcdfDataset.getRootGroup().findVariable( "record");
       else
-        this.recordVar = new StructurePseudo( this.ncfile, null, "record", timeDim );
+        this.recordVar = new StructurePseudo( this.netcdfDataset, null, "record", timeDim );
     } else {
-      this.recordVar = new StructurePseudo( this.ncfile, null, "record", timeDim);
+      this.recordVar = new StructurePseudo( this.netcdfDataset, null, "record", timeDim);
     }
 
     // @todo HACK, HACK, HACK - remove once addRecordStructure() deals with ncd attribute changes.
@@ -176,7 +176,7 @@ public class SingleTrajectoryObsDataset
 
     trajectoryVarsMap = new HashMap();
     //for ( Iterator it = this.recordVar.getVariables().iterator(); it.hasNext(); )
-    for ( Iterator it = this.ncfile.getRootGroup().getVariables().iterator(); it.hasNext(); )
+    for ( Iterator it = this.netcdfDataset.getRootGroup().getVariables().iterator(); it.hasNext(); )
     {
       Variable curVar = (Variable) it.next();
       if ( curVar.getRank() > 0 &&
@@ -253,10 +253,10 @@ public class SingleTrajectoryObsDataset
 
   public boolean syncExtend()
   {
-    if ( ! this.ncfile.hasUnlimitedDimension()) return false;
+    if ( ! this.netcdfDataset.hasUnlimitedDimension()) return false;
     try
     {
-      if ( ! this.ncfile.syncExtend() ) return false;
+      if ( ! this.netcdfDataset.syncExtend() ) return false;
     }
     catch ( IOException e )
     {
@@ -705,7 +705,7 @@ public class SingleTrajectoryObsDataset
 
     public Array getData( Range range, String parameterName ) throws IOException, InvalidRangeException
     {
-      Variable variable = ncfile.getRootGroup().findVariable( parameterName );
+      Variable variable = netcdfDataset.getRootGroup().findVariable( parameterName );
       int varRank = variable.getRank();
       int [] varShape = variable.getShape();
       List section = new ArrayList( varRank);

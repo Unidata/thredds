@@ -35,8 +35,11 @@ package ucar.unidata.io;
 
 import net.jcip.annotations.NotThreadSafe;
 import ucar.nc2.constants.CDM;
+import ucar.nc2.util.CancelTask;
+import ucar.nc2.util.cache.FileCache;
 import ucar.nc2.util.cache.FileCacheIF;
 import ucar.nc2.util.cache.FileCacheable;
+import ucar.nc2.util.cache.FileFactory;
 
 import java.io.*;
 import java.nio.ByteOrder;
@@ -77,6 +80,9 @@ public class RandomAccessFile implements DataInput, DataOutput, FileCacheable, A
   static public final int BIG_ENDIAN = 0;
   static public final int LITTLE_ENDIAN = 1;
 
+  static protected final int defaultBufferSize = 8092;  // The default buffer size, in bytes.
+
+  ///////////////////////////////////////////////////////////////////////
   // debug leaks - keep track of open files
   static protected boolean debugLeaks = false;
   static protected boolean debugAccess = false;
@@ -174,10 +180,46 @@ public class RandomAccessFile implements DataInput, DataOutput, FileCacheable, A
     return (debug_nbytes == null) ? 0 : debug_nbytes.longValue();
   }
 
-  /**
-   * The default buffer size, in bytes.
-   */
-  protected static final int defaultBufferSize = 8092;
+
+  /////////////////////////////////////////////////////////////////////////////////////////////
+  // internal File Caching. this allows a global pool of OS files.
+  // note read only
+
+  static private final ucar.nc2.util.cache.FileFactory factory = new FileFactory() {
+    public FileCacheable open(String location, int buffer_size, CancelTask cancelTask, Object iospMessage) throws IOException {
+      RandomAccessFile result = new RandomAccessFile(location, "r", buffer_size);
+      result.cacheIsOn = true;
+      return result;
+    }
+  };
+
+  static private FileCacheIF cache = new FileCache(50, 250, 60 * 60); // default; override for higher performance, or set to null for no caching
+
+  static public void setGlobalFileCache(FileCacheIF _cache) {
+    cache = _cache;
+  }
+
+  static public FileCacheIF getGlobalFileCache() {
+    return cache;
+  }
+
+  static public RandomAccessFile acquire(String location) throws IOException {
+    if (cache == null)
+      return new RandomAccessFile(location, "r");
+    else
+      return (RandomAccessFile) cache.acquire(factory, location);
+  }
+
+  static public RandomAccessFile acquire(String location, int buffer_size) throws IOException {
+    if (cache == null)
+      return new RandomAccessFile(location, "r", buffer_size);
+    else
+      return (RandomAccessFile) cache.acquire(factory, location, location, buffer_size, null, null);
+  }
+
+  static public void eject(String location) throws IOException {
+    if (cache != null) cache.eject(location);
+  }
 
   /////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -185,7 +227,7 @@ public class RandomAccessFile implements DataInput, DataOutput, FileCacheable, A
    * File location
    */
   protected String location;
-  protected FileCacheIF fileCache = null;
+  private boolean cacheIsOn = false;
 
   /**
    * The underlying java.io.RandomAccessFile.
@@ -365,9 +407,9 @@ public class RandomAccessFile implements DataInput, DataOutput, FileCacheable, A
    * @throws IOException if an I/O error occurrs.
    */
   public synchronized void close() throws IOException {
-    if (fileCache != null) {
-      fileCache.release(this);
-      return;
+    if (cacheIsOn && cache != null) {
+      if (cache.release(this))  // return true if in the cache, otherwise was opened regular, so must be closed regular
+        return;
     }
 
     if (debugLeaks) {
@@ -378,15 +420,8 @@ public class RandomAccessFile implements DataInput, DataOutput, FileCacheable, A
     if (file == null)
       return;
 
-    // If we are writing and the buffer has been modified, flush the contents
-    // of the buffer.
+    // If we are writing and the buffer has been modified, flush the contents of the buffer.
     flush();
-
-    /*
-    if (!readonly && bufferModified) {
-      file.seek(bufferStart);
-      file.write(buffer, 0, dataSize);
-    }  */
 
     // may need to extend file, in case no fill is being used
     // may need to truncate file in case overwriting a longer file
@@ -402,20 +437,21 @@ public class RandomAccessFile implements DataInput, DataOutput, FileCacheable, A
     file = null;  // help the gc
   }
 
-  /* @Override
-  public boolean sync() throws IOException {
-    return false;
-  } */
+  @Override
+  public void release() {}  // one to one with java.io.RandomAccessFile
+
+  @Override
+  public void reacquire() {}
+
+  @Override
+  public synchronized void setFileCache(FileCacheIF fileCache) {
+    cacheIsOn = false;
+  }
 
   @Override
   public long getLastModified() {
     File file = new File(getLocation());
     return file.lastModified();
-  }
-
-  @Override
-  public synchronized void setFileCache(FileCacheIF fileCache) {
-    this.fileCache = fileCache;
   }
 
   /**

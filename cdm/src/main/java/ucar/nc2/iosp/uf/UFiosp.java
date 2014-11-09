@@ -55,7 +55,6 @@ import java.util.*;
 public class UFiosp extends AbstractIOServiceProvider {
   static private final int MISSING_INT = -9999;
   static private final float MISSING_FLOAT = Float.NaN;
-  private ucar.nc2.NetcdfFile ncfile;
   protected UFheader headerParser;
 
   public boolean isValidFile(ucar.unidata.io.RandomAccessFile raf) {
@@ -71,10 +70,9 @@ public class UFiosp extends AbstractIOServiceProvider {
     return "Universal Radar Format";
   }
 
-  public void open(ucar.unidata.io.RandomAccessFile raf, ucar.nc2.NetcdfFile file,
+  public void open(ucar.unidata.io.RandomAccessFile raf, ucar.nc2.NetcdfFile ncfile,
                    ucar.nc2.util.CancelTask cancelTask) throws IOException {
     super.open(raf, ncfile, cancelTask);
-    ncfile = file;
 
     headerParser = new UFheader();
     headerParser.read(this.raf);

@@ -110,7 +110,7 @@ public class Bufr2Xml {
 
   int scan(String filename) throws IOException {
     long start = System.nanoTime();
-    try (RandomAccessFile raf = new RandomAccessFile(filename, "r")) {
+    try (RandomAccessFile raf = RandomAccessFile.acquire(filename)) {
       out.format("\nOpen %s size = %d Kb %n", raf.getLocation(), raf.length() / 1000);
 
       MessageScanner scan = new MessageScanner(raf);

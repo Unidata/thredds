@@ -177,7 +177,7 @@ public class BufrFeatureDatasetFactory implements FeatureDatasetFactory {
         super(name, null, null);
 
         // need  the center id to match the standard fields
-        Attribute centerAtt = ncfile.findGlobalAttribute(BufrIosp2.centerId);
+        Attribute centerAtt = netcdfDataset.findGlobalAttribute(BufrIosp2.centerId);
         int center = (centerAtt == null) ? 0 : centerAtt.getNumericValue().intValue();
         this.extract = new StandardFields.StandardFieldsFromStructure(center, obs);
 

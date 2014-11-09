@@ -68,11 +68,6 @@ public abstract class GempakStationFileIOSP extends AbstractIOServiceProvider {
   private static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(GempakStationFileIOSP.class);
 
   /**
-   * The netCDF file
-   */
-  protected NetcdfFile ncfile;
-
-  /**
    * Gempak file reader
    */
   protected AbstractGempakStationFileReader gemreader;
@@ -174,7 +169,6 @@ public abstract class GempakStationFileIOSP extends AbstractIOServiceProvider {
 
     //System.out.printf("GempakSurfaceIOSP open %s (%s) %n", raf.getLocation(), Calendar.getInstance().getTime());
     super.open(raf, ncfile, cancelTask);
-    this.ncfile = ncfile;
     if (gemreader == null) {
       gemreader = makeStationReader();
     }
