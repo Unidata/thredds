@@ -70,6 +70,11 @@ public class TestCFRadial {
         Assert.assertEquals(45, var.getSweep(0).getOrigin(0).getAltitude(),
                             1e-5);
         Assert.assertEquals(0.379, var.getSweep(0).getElevation(0), 1e-6);
+
+        final int firstRads = 483;
+        Assert.assertEquals(firstRads, var.getSweep(0).getRadialNumber());
+        Assert.assertEquals(0.5109, var.getSweep(0).getElevation(firstRads - 1),
+                1e-6);
         Assert.assertEquals(0.9998, var.getSweep(1).getElevation(1), 1e-6);
     }
 }
