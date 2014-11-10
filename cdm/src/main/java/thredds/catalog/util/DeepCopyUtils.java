@@ -40,8 +40,7 @@ public class DeepCopyUtils
     for ( InvService service : services ) {
       resultCatalog.addService( DeepCopyUtils.copyService( service ) );
     }
-    List<InvService> copiedServices = resultCatalog.getServices();
-    return copiedServices;
+    return resultCatalog.getServices();
   }
 
   public static InvCatalog subsetCatalogOnDataset( InvCatalog catalog, String datasetId )
@@ -79,13 +78,12 @@ public class DeepCopyUtils
   {
     String catDocBaseUri = catalog.getUriString();
     String subsetDocBaseUriString = catDocBaseUri + "/" + ( dataset.getID() != null ? dataset.getID() : dataset.getName() );
-    URI thisDocBaseUri = ((InvCatalogImpl) catalog ).getBaseURI();
     try {
+//      URI thisDocBaseUri = ((InvCatalogImpl) catalog ).getBaseURI();
 //      String uriPath = thisDocBaseUri.getPath() + "/" + ( dataset.getID() != null ? dataset.getID() : dataset.getName() );
 //      URI subsetDocBaseUri = new URI( thisDocBaseUri.getScheme(), thisDocBaseUri.getUserInfo(), thisDocBaseUri.getHost(),
 //                                      thisDocBaseUri.getPort(), uriPath, null, null );
-      URI subsetDocBaseUri = new URI( subsetDocBaseUriString);
-      return subsetDocBaseUri;
+      return new URI( subsetDocBaseUriString);
     }
     catch ( URISyntaxException e ) {
       // This shouldn't happen. But just in case ...
@@ -104,7 +102,7 @@ public class DeepCopyUtils
     if ( dataset == null ) throw new IllegalArgumentException( "Dataset may not be null." );
     if ( availableServices == null ) throw new IllegalArgumentException( "List of available services may not be null.");
 
-    InvDatasetImpl resultDs = null;
+    InvDatasetImpl resultDs;
     // ToDo Deal with InvDatasetScan and its ilk.
     if ( dataset instanceof InvCatalogRef )
     {
@@ -156,7 +154,7 @@ public class DeepCopyUtils
       //service = copyService( access.getService() );
     }
     DataFormatType dataFormatType = access.getDataFormatType();
-    InvAccessImpl resultAccess = null;
+    InvAccessImpl resultAccess;
     if ( dataFormatType == null ) {
       resultAccess = new InvAccessImpl( parentDataset, access.getUrlPath(), service );
       resultAccess.setSize( access.getDataSize() );

@@ -38,6 +38,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import ucar.ma2.Array;
 import ucar.ma2.ArrayDouble;
+import ucar.ma2.MAMath;
 import ucar.nc2.Attribute;
 import ucar.nc2.Dimension;
 import ucar.nc2.NetcdfFile;
@@ -125,6 +126,36 @@ public class TestGrib2CoordsMatch {
     assert count.nerrs == 0;
   }
 
+  // @Test
+  // only works when we have the data - no "indexOnly" mode
+  public void openFileProblem() throws IOException {
+
+    long start = System.currentTimeMillis();
+    String filename = "B:/rdavm/ds083.2/grib1/ds083.2_Aggregation-grib1.ncx2";
+    try (GridDataset gds = GridDataset.open(filename)) {
+      GridDatatype gdt = gds.findGridByName("Best/Land_cover_land1_sea0_surface");
+      assert gdt != null;
+      gdc = gdt.getCoordinateSystem();
+      NetcdfFile ncfile = gds.getNetcdfFile();
+      IOServiceProvider iosp = ncfile.getIosp();
+      assert iosp instanceof GribIosp;
+      iospGrib = (GribIosp) iosp;
+
+      TestGribCollections.Count count = new TestGribCollections.Count();
+      int n = 1000;
+      int first = 5500;
+      readTimeRange(gdt, count, first, n);
+
+      long took = System.currentTimeMillis() - start;
+      float r = ((float) took) / n;
+      System.out.printf("%n   that took %d secs total, %d records %f msecs per record%n", took / 1000, n, r);
+
+      System.out.printf("%n%50s == %d/%d/%d%n", "total", count.nerrs, count.nmiss, count.nread);
+      //assert count.nread == 81340;
+      //assert count.nmiss == 1801;
+      //assert count.nerrs == 0;
+    }
+  }
 
   //@Test
   public void testPofP() throws IOException {
@@ -217,6 +248,26 @@ public class TestGrib2CoordsMatch {
   private boolean isTimeInterval;
   private CalendarDate timeCoordDate;
   private CalendarDate[] timeBoundsDate; // for intervals
+
+  private void readTimeRange(GridDatatype gdt, TestGribCollections.Count count, int start, int n) throws IOException {
+    hasTime = true;
+    CoordinateAxis tcoord = gdc.getTimeAxis();
+    isTimeInterval = tcoord.isInterval();
+
+      assert (tcoord instanceof CoordinateAxis1DTime);
+      CoordinateAxis1DTime tcoord1D = (CoordinateAxis1DTime) tcoord;
+
+      for (int t = start; t < start + n; t++) {
+        if (isTimeInterval) {
+          timeBounds = tcoord1D.getCoordBounds(t);
+          timeBoundsDate = tcoord1D.getCoordBoundsDate(t);
+        } else {
+          timeCoord = tcoord1D.getCoordValue(t);
+          timeCoordDate = tcoord1D.getCalendarDate(t);
+        }
+        readVert(gdt, count, -1, t, null);
+      }
+    }
 
   private void readTime(GridDatatype gdt, TestGribCollections.Count count, int rtIndex, Dimension timeDim, Dimension zDim) throws IOException {
     if (timeDim != null) {

@@ -42,6 +42,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.io.IOException;
 
 import ucar.nc2.time.CalendarDate;
+import ucar.nc2.time.CalendarDateFormatter;
 import ucar.nc2.util.CancelTask;
 import ucar.nc2.util.Misc;
 
@@ -560,10 +561,10 @@ public class FileCache implements FileCacheIF {
     Collections.sort(allFiles); // sort so oldest are on top
 
     format.format("%nFileCache %s (min=%d softLimit=%d hardLimit=%d scour=%d):%n", name, minElements, softLimit, hardLimit, period);
-    format.format("isLocked  accesses lastAccess                   location %n");
+    format.format(" isLocked  accesses lastAccess                   location %n");
     for (CacheElement.CacheFile file : allFiles) {
       String loc = file.ncfile != null ? file.ncfile.getLocation() : "null";
-      format.format("%8s %9d %s %s %n", file.isLocked, file.countAccessed, new Date(file.lastAccessed), loc);
+      format.format("%8s %9d %s == %s %n", file.isLocked, file.countAccessed, CalendarDateFormatter.toDateTimeStringISO(file.lastAccessed), loc);
     }
     showStats(format);
   }
@@ -600,19 +601,27 @@ public class FileCache implements FileCacheIF {
     List<Tracker> all = new ArrayList<>(track.size());
     for (Tracker val : track.values()) all.add(val);
     Collections.sort(all);
-    int count = 0;
+    int seq = 0;
     int countAll = 0;
-    format.format("   seq  accum   hit   miss  file%n");
+    int countHits = 0;
+    int countMiss = 0;
+    format.format("%nTracking All files in cache %s%n", name);
+    format.format("    #    accum       hit    miss  file%n");
     for (Tracker t : all) {
-      count++;
+      seq++;
       countAll += t.hit + t.miss;
-      format.format("%6d  %6d : %5d %5d %s%n", count, countAll, t.hit, t.miss, t.key);
+      countHits += t.hit;
+      countMiss += t.miss;
+      format.format("%6d  %7d : %6d %6d %s%n", seq, countAll, t.hit, t.miss, t.key);
     }
-    format.format("%n");
+    float r= ((float)countHits) / countAll;
+    format.format("  total=%7d : %6d %6d hit ratio=%f%n", countAll, countHits, countMiss, r);
   }
 
+  @Override
   public void resetTracking() {
     track = new ConcurrentHashMap<>(5000);
+    trackAll = true;
   }
 
   private static class Tracker implements Comparable<Tracker> {
@@ -769,7 +778,7 @@ public class FileCache implements FileCacheIF {
     class CacheFile implements Comparable<CacheFile> {
       FileCacheable ncfile; // actually final, but we null it out for gc
       final AtomicBoolean isLocked = new AtomicBoolean(true);
-      int countAccessed = 1;
+      int countAccessed = 0;
       long lastModified = 0;
       long lastAccessed = 0;
 
@@ -798,7 +807,7 @@ public class FileCache implements FileCacheIF {
       }
 
       public String toString() {
-        return isLocked + " " + countAccessed + " " + new Date(lastAccessed) + " " + ncfile.getLocation();
+        return isLocked + " " + countAccessed + " " + CalendarDateFormatter.toDateTimeStringISO(lastAccessed) + "   " + ncfile.getLocation();
       }
 
       public int compareTo(CacheFile o) {

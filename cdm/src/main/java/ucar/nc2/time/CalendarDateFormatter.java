@@ -80,7 +80,11 @@ public class CalendarDateFormatter {
 	  return toDateTimeStringISO( CalendarDate.of(d) );
   }
 
-  static public String toDateTimeString(CalendarDate cd) {
+  static public String toDateTimeStringISO(long millisecs) {
+ 	  return toDateTimeStringISO( CalendarDate.of(millisecs) );
+   }
+
+   static public String toDateTimeString(CalendarDate cd) {
 
 	  if(cd.getDateTime().getMillisOfSecond()==0)	  
 		  return dtf.print(cd.getDateTime());

@@ -35,10 +35,7 @@ package ucar.nc2.iosp.grib;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import ucar.ma2.Array;
-import ucar.ma2.InvalidRangeException;
-import ucar.ma2.Range;
-import ucar.ma2.Section;
+import ucar.ma2.*;
 import ucar.nc2.Dimension;
 import ucar.nc2.dt.GridDatatype;
 import ucar.nc2.dt.grid.GridDataset;
@@ -69,10 +66,14 @@ public class TestGribCollections {
 
   @BeforeClass
    static public void before() {
+     GribIosp.debugIndexOnlyCount = 0;
+     GribCollection.countGC = 0;
+     PartitionCollection.countPC = 0;
      RandomAccessFile.setDebugLeaks(true);
      GribIosp.setDebugFlags(new DebugFlagsImpl("Grib/indexOnly"));
      PartitionCollection.initPartitionCache(50, 700, -1, -1);
      GribCollection.initDataRafCache(11, 100, -1);
+     PartitionCollection.getPartitionCache().resetTracking();
    }
 
    @AfterClass
@@ -82,14 +83,17 @@ public class TestGribCollections {
      if (cache == null) return;
 
      Formatter out = new Formatter(System.out);
-     cache.showCache(out);
      cache.showTracking(out);
+     cache.showCache(out);
+
      cache.clearCache(false);
      GribCollection.getDataRafCache().showCache(out);
      TestDir.checkLeaks();
 
-     System.out.printf("countGC=%d%n", GribCollection.countGC);
-     System.out.printf("countPC=%d%n", PartitionCollection.countPC);
+     System.out.printf("            countGC=%7d%n", GribCollection.countGC);
+     System.out.printf("            countPC=%7d%n", PartitionCollection.countPC);
+     System.out.printf("debugIndexOnlyCount=%7d%n", GribIosp.debugIndexOnlyCount);
+     System.out.printf(" total files needed=%7d%n", GribCollection.countGC+PartitionCollection.countPC+GribIosp.debugIndexOnlyCount);
 
      FileCache.shutdown();
      RandomAccessFile.setDebugLeaks(false);
@@ -143,21 +147,37 @@ public class TestGribCollections {
   @Test
   // RandomAccessFile gets opened 1441 times (!) for PofGC
   public void openFileProblem() throws IOException {
-    long start = System.currentTimeMillis();
-    // GribIosp.setDebugFlags(new DebugFlagsImpl("Grib/indexOnly Grib/indexOnlyShow"));
-    String filename = "ncss/GFS/CONUS_80km/GFS_CONUS_80km-CONUS_80km.ncx2";
-    try (GridDataset gds = GridDataset.open(TestDir.cdmUnitTestDir + filename)) {
-      GridDatatype gdt = gds.findGridByName("TwoD/Absolute_vorticity_isobaric");
-      assert gdt != null;
-      TestGribCollections.Count count = TestGribCollections.read(gdt);
-      System.out.printf("%n%50s == %d/%d%n", "total", count.nmiss, count.nread);
 
-      assert count.nread == 1440;
-      assert count.nmiss == 631;
+    long start = System.currentTimeMillis();
+    String filename = "B:/rdavm/ds083.2/grib1/ds083.2_Aggregation-grib1.ncx2";
+    try (GridDataset gds = GridDataset.open(filename)) {
+      GridDatatype gdt = gds.findGridByName("Best/Land_cover_land1_sea0_surface");
+      assert gdt != null;
+
+      int n = 1000;
+      int first = 5500;
+      double sum = 0;
+      for (int time=first; time < first+n; time++) {
+        Array data = gdt.readDataSlice(0, -0, time, 0, -1, -1);
+        sum += MAMath.sumDouble(data);
+      }
+      System.out.printf("sum = %s%n", sum);
+
       long took = System.currentTimeMillis() - start;
-      float r = ((float) took) / count.nread;
-      System.out.printf("%n   that took %d secs total, %f msecs per record%n", took / 1000, r);
+      float r = ((float) took) / n;
+      System.out.printf("%n   that took %d secs total, %d records %f msecs per record%n", took / 1000, n, r);
     }
+  }
+
+    // @Test
+  public void testPofPofP() throws IOException {
+    RandomAccessFile.setDebugLeaks(true);
+    TestGribCollections.Count count = TestGribCollections.read("B:/rdavm/ds083.2/grib1/ds083.2_Aggregation-grib1.ncx2");
+    TestDir.checkLeaks();
+
+    // that took 1312 secs total, 0.784602 msecs per record (total == 0/1672528) (cache size 500)
+    assert count.nread == 1672528;
+    assert count.nmiss == 0;
   }
 
   ///////////////////////////////////////////////////////////////
