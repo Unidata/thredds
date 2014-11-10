@@ -56,12 +56,19 @@ public class CoordinateRuntime implements Coordinate {
     return result;
   }
 
+  @Override
   public int getSize() {
     return runtimeSorted.size();
   }
 
+  @Override
   public Type getType() {
     return Type.runtime;
+  }
+
+  @Override
+  public int estMemorySize() {
+    return 616 + getSize() * (48);
   }
 
   @Override

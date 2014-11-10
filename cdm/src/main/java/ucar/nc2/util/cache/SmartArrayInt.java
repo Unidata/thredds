@@ -51,8 +51,10 @@ public class SmartArrayInt {
   private final int start;
   private final boolean isOrdered;   // if elem[i] = constant + i;
   private final boolean isConstant;  // if elem[i] = constant
+  private final int n;
 
   public SmartArrayInt(int[] raw) {
+    this.n = raw.length;
     if (raw.length == 0) {
       this.start = -1;
       this.isOrdered = false;
@@ -77,6 +79,10 @@ public class SmartArrayInt {
     if (isConstant) return start;
     if (isOrdered) return start+idx;
     return raw[idx];
+  }
+
+  public int getN() {
+    return n;
   }
 
   public void show(Formatter f) {

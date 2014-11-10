@@ -172,38 +172,15 @@ public abstract class PartitionCollection extends GribCollection {
     // only used by PartitionBuilder, not PartitionBuilderFromIndex
     public void addPartition(int partno, int groupno, int varno) { // }, int flag, int ndups, int nrecords, int missing, float density) {
       if (partList == null) partList = new ArrayList<>(nparts);
-
-      partList.add( new PartitionForVariable2D(partno, groupno, varno));
-      //partVar.flag = flag;
-
-      /* track stats in this PartVar
-      partVar.density = density;
-      partVar.ndups = ndups;
-      partVar.missing = missing;
-      partVar.nrecords = nrecords;
-
-      // keep overall stats for this variable
-      this.ndups += partVar.ndups;
-      this.missing += partVar.missing;
-      this.nrecords += partVar.nrecords;  */
-
-      // this.partList.add(partVar);
+      partList.add(new PartitionForVariable2D(partno, groupno, varno));
     }
-
-    /* public void addPartition(int partno, int groupno, int varno) { // , int flag, VariableIndex vi) {
-      addPartition(partno, groupno, varno); // , flag, vi.ndups, vi.nrecords, vi.missing, vi.density);
-    } */
-
-   // public void addPartition(PartitionForVariable2D pv) {
-   //   addPartition(pv.partno, pv.groupno, pv.varno); // , pv.flag, pv.ndups, pv.nrecords, pv.missing, pv.density);
-   // }
-
-    //public Iterable<PartitionForVariable2D> getPartitionsForVariable() {
-   //   return partList;
-   // }
 
     public PartitionForVariable2D getPartitionForVariable2D(int idx) {
       return new PartitionForVariable2D(partnoSA.get(idx), groupnoSA.get(idx), varnoSA.get(idx));
+    }
+
+    public int getNparts() {
+      return nparts;
     }
 
     @Override
@@ -255,7 +232,8 @@ public abstract class PartitionCollection extends GribCollection {
 
         f.format("time2runtime: %n");
         int count = 0;
-        for (int idx : time2runtime) {
+        for (int i=0; i<time2runtime.getN(); i++) {
+          int idx = time2runtime.get(i);
           if (idx == 0) {
             f.format(" %2d: MISSING%n", count);
             count++;
@@ -294,7 +272,8 @@ public abstract class PartitionCollection extends GribCollection {
 
       // find the runtime index
       int firstIndex = indexWanted[0];
-      int runIdx = group.isTwod ? firstIndex : time2runtime[firstIndex] - 1; // time2runtime is for oneD
+      int runTimeIdx = time2runtime.get(firstIndex);
+      int runIdx = group.isTwod ? firstIndex : runTimeIdx - 1; // time2runtime is for oneD
       if (GribIosp.debugRead && !group.isTwod) System.out.printf("  firstIndex = %d time2runtime[firstIndex]=%d %n", firstIndex, runIdx);
       if (runIdx < 0) {
         return null; // LOOK why is this possible?
@@ -417,7 +396,7 @@ public abstract class PartitionCollection extends GribCollection {
 
       // figure out the runtime
       int timeIdx = wholeIndex[0];
-      int runtimeIdxWhole = time2runtime[timeIdx] - 1;  // 1-based; runtime Index into master runtime
+      int runtimeIdxWhole = time2runtime.get(timeIdx) - 1;  // 1-based; runtime Index into master runtime
       int runtimeIdxPart = matchCoordinate(getCoordinate(0), runtimeIdxWhole, compVindex2D.getCoordinate(0));
       if (runtimeIdxPart < 0)
         return null;

@@ -56,6 +56,7 @@ import ucar.nc2.time.CalendarDateRange;
 import ucar.nc2.util.DiskCache2;
 import ucar.nc2.util.cache.FileCacheIF;
 import ucar.nc2.util.cache.FileCacheable;
+import ucar.nc2.util.cache.SmartArrayInt;
 import ucar.unidata.io.RandomAccessFile;
 import ucar.unidata.util.Parameter;
 import ucar.unidata.util.StringUtil2;
@@ -78,6 +79,7 @@ import java.util.*;
  *   - sparse arrays are read in as requested, synch on GC
  *   - index file - make thread safe
  *   - data file managed externally, so thread safe
+ *
  * @author John
  * @since 12/1/13
  */
@@ -819,8 +821,8 @@ public abstract class GribCollection implements FileCacheable, AutoCloseable {
     private SparseArray<Record> sa;   // for GC only; lazily read; same array shape as variable, minus x and y
 
     // partition only
-    TwoDTimeInventory twot;  // twoD only
-    int[] time2runtime;      // oneD only: for each timeIndex, which runtime coordinate does it use? 1-based so 0 = missing;
+    TwoDTimeInventory twot;  // twoD only  LOOK is this needed except when building ?? LOOK can we move to Partition ??
+    SmartArrayInt time2runtime; // oneD only: for each timeIndex, which runtime coordinate does it use? 1-based so 0 = missing;
                              // index into the corresponding 2D variable's runtime coordinate
 
     // derived from pds
@@ -1050,7 +1052,8 @@ public abstract class GribCollection implements FileCacheable, AutoCloseable {
       if (time2runtime == null) sb.append("time2runtime is null");
       else {
         sb.append("time2runtime=");
-        for (int idx : time2runtime) sb.append(idx).append(",");
+        for (int idx=0; idx < time2runtime.getN(); idx++)
+          sb.append(time2runtime.get(idx)).append(",");
       }
       return sb.toString();
     }
@@ -1172,6 +1175,7 @@ public abstract class GribCollection implements FileCacheable, AutoCloseable {
       sb.append("fileno=").append(fileno);
       sb.append(", pos=").append(pos);
       sb.append(", bmsPos=").append(bmsPos);
+      sb.append(", scanMode=").append(scanMode);
       sb.append('}');
       return sb.toString();
     }

@@ -98,7 +98,7 @@ public class CoordinateTime2D extends CoordinateTimeAbstract implements Coordina
     assert nruns == times.size();
 
     makeOffsets(times);
-    this.vals = Collections.unmodifiableList(vals);
+    this.vals = (vals == null) ? null : Collections.unmodifiableList(vals);
   }
 
   // orthogonal - all offsets are the same
@@ -106,7 +106,7 @@ public class CoordinateTime2D extends CoordinateTimeAbstract implements Coordina
     super(code, timeUnit, runtime.getFirstDate());
 
     this.runtime = runtime;
-    this.times = Collections.unmodifiableList(times);    // need these for makeBest
+    this.times = (times == null) ? null : Collections.unmodifiableList(times);    // need these for makeBest
 
     this.otime = otime;
     this.isOrthogonal = true;
@@ -267,6 +267,11 @@ public class CoordinateTime2D extends CoordinateTimeAbstract implements Coordina
   @Override
   public int getSize() {
     return (vals == null) ? 0 : vals.size();
+  }
+
+  @Override
+  public int estMemorySize() {
+    return 864 + nruns * (48+4)  + ntimes * 24;  // nruns * (calendar date + integer)  + ntimes + integer)
   }
 
   @Override

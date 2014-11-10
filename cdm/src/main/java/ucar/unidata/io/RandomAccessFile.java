@@ -327,6 +327,7 @@ public class RandomAccessFile implements DataInput, DataOutput, FileCacheable, A
    * @throws IOException on open error
    */
   public RandomAccessFile(String location, String mode, int bufferSize) throws IOException {
+    if (bufferSize < 0) bufferSize = defaultBufferSize;
     this.location = location;
     if (debugLeaks) {
       allFiles.add(location);

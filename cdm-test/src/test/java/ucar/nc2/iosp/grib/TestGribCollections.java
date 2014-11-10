@@ -143,7 +143,7 @@ public class TestGribCollections {
     assert count.nerrs == 0;
   }
 
-  @Test
+  // @Test
   // RandomAccessFile gets opened 1441 times (!) for PofGC
   public void openFileProblem() throws IOException {
 

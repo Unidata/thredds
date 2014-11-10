@@ -45,6 +45,7 @@ import ucar.coord.*;
 import ucar.ma2.Section;
 import ucar.nc2.constants.CDM;
 import ucar.nc2.stream.NcStream;
+import ucar.nc2.util.cache.SmartArrayInt;
 import ucar.unidata.io.RandomAccessFile;
 import ucar.unidata.util.Parameter;
 import ucar.unidata.util.StringUtil2;
@@ -515,7 +516,7 @@ public abstract class GribPartitionBuilder  {
         if (timeIdx >= 0) {
           CoordinateTime2D time2d = (CoordinateTime2D) group2D.coords.get(timeIdx);
           CoordinateTimeAbstract timeBest = (CoordinateTimeAbstract) groupB.coords.get(timeIdx);
-          vip.time2runtime = time2d.makeTime2RuntimeMap(timeBest, ((PartitionCollection.VariableIndexPartitioned) vi2d).twot);
+          vip.time2runtime = new SmartArrayInt(time2d.makeTime2RuntimeMap(timeBest, ((PartitionCollection.VariableIndexPartitioned) vi2d).twot));
           continue;
         }
 
@@ -523,7 +524,7 @@ public abstract class GribPartitionBuilder  {
         if (timeIdx >= 0) {
           CoordinateTime time2d = (CoordinateTime) group2D.coords.get(timeIdx);
           CoordinateTime timeBest = (CoordinateTime) groupB.coords.get(timeIdx); // LOOK do we know these have same index ??
-          vip.time2runtime = time2d.makeTime2RuntimeMap(runOffset, timeBest, ((PartitionCollection.VariableIndexPartitioned) vi2d).twot);
+          vip.time2runtime = new SmartArrayInt(time2d.makeTime2RuntimeMap(runOffset, timeBest, ((PartitionCollection.VariableIndexPartitioned) vi2d).twot));
           continue;
         }
 
@@ -531,7 +532,7 @@ public abstract class GribPartitionBuilder  {
         if (timeIdx >= 0) {
           CoordinateTimeIntv time2d = (CoordinateTimeIntv) group2D.coords.get(timeIdx);
           CoordinateTimeIntv timeBest = (CoordinateTimeIntv) groupB.coords.get(timeIdx);
-          vip.time2runtime = time2d.makeTime2RuntimeMap(runOffset, timeBest, ((PartitionCollection.VariableIndexPartitioned) vi2d).twot);
+          vip.time2runtime = new SmartArrayInt(time2d.makeTime2RuntimeMap(runOffset, timeBest, ((PartitionCollection.VariableIndexPartitioned) vi2d).twot));
           continue;
         }
       }
@@ -786,8 +787,8 @@ public abstract class GribPartitionBuilder  {
     }
 
     if (vp.time2runtime != null) { // only for 1D
-      for (int idx : vp.time2runtime)
-        b.addTime2Runtime(idx);
+      for (int idx=0; idx < vp.time2runtime.getN(); idx++)
+        b.addTime2Runtime(vp.time2runtime.get(idx));
     }
 
     // extensions

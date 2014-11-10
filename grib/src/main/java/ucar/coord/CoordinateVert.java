@@ -11,6 +11,7 @@ import ucar.nc2.grib.grib2.Grib2Pds;
 import ucar.nc2.grib.grib2.Grib2Record;
 import ucar.nc2.grib.grib2.Grib2Utils;
 import ucar.nc2.util.Indent;
+import ucar.nc2.util.Misc;
 
 import java.util.*;
 
@@ -56,12 +57,19 @@ public class CoordinateVert implements Coordinate {
     return levelSorted.get(idx);
   }
 
+  @Override
   public int getSize() {
     return levelSorted.size();
   }
 
+  @Override
   public Type getType() {
     return Type.vert;
+  }
+
+  @Override
+  public int estMemorySize() {
+    return 160 + getSize() * ( 40 + Misc.referenceSize);
   }
 
   @Override
