@@ -172,17 +172,7 @@ public class DODSStructure extends ucar.nc2.Structure implements DODSNode
       }
   }
 
-  /**
-   * Instances which have same content are equal.
-   */
-  @Override
-  public boolean equals(Object oo) {
-    if (this == oo) return true;
-    if (oo.getClass() != this.getClass()) return false;
-    return super.equals(oo);
-  }
-
-  //////////////////////////////////////////////////
+  ////////////////////////////////////////////
   // DODSNode Interface
   //Coverity[FB.UUF_UNUSED_PUBLIC_OR_PROTECTED_FIELD]
   String dodsName = null;

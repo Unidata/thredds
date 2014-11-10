@@ -127,16 +127,6 @@ public class DODSAttribute extends ucar.nc2.Attribute
     return StringUtil2.substitute(value, substAttributeStrings, escapeAttributeStrings);
   }
 
-  /**
-   * Instances which have same content are equal.
-   */
-  @Override
-  public boolean equals(Object oo) {
-    if (this == oo) return true;
-    if (oo.getClass() != this.getClass()) return false;
-    return super.equals(oo);
-  }
-
   //////////////////////////////////////////////////
   // DODSNode Interface
   String dodsName = null;
