@@ -46,7 +46,6 @@ public class Query {
   private String base;
   private URI uriResolved;
   private String construct;
-  private StringBuffer log = new StringBuffer();
 
    /**
     * Construct from fields in XML catalog.
@@ -70,10 +69,6 @@ public class Query {
   }
 
   //////////////////////////////////////////////////////////////////////////////
-
-  boolean validate(StringBuffer out, boolean show) {
-    return true;
-  }
 
    public boolean equals(Object o) {
      if (this == o) return true;

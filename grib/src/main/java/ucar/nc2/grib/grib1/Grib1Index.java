@@ -116,9 +116,7 @@ public class Grib1Index extends GribIndex {
     long idxModified = idxFile.lastModified();
     if ((force != CollectionUpdateType.nocheck) && (idxModified < gribLastModified)) return false; // force new index if file was updated
 
-    FileInputStream fin = new FileInputStream(idxFile);
-
-    try {
+    try (FileInputStream fin = new FileInputStream(idxFile)) {
       //// check header is ok
       if (!NcStream.readAndTest(fin, MAGIC_START.getBytes(CDM.utf8Charset))) {
         logger.info("Bad magic number of grib index, on file" + idxFile);
@@ -167,8 +165,6 @@ public class Grib1Index extends GribIndex {
       logger.error("GribIndex failed on " + filename, e);
       return false;
 
-    } finally {
-      fin.close();
     }
 
     return true;
@@ -197,9 +193,9 @@ public class Grib1Index extends GribIndex {
   public boolean makeIndex(String filename, RandomAccessFile dataRaf) throws IOException {
     File idxFile = GribCollection.getFileInCache(filename + GBX9_IDX);
     File idxFileTmp = GribCollection.getFileInCache(filename + GBX9_IDX+".tmp");
-    FileOutputStream fout = new FileOutputStream(idxFileTmp);
     RandomAccessFile raf = null;
-    try {
+
+    try (FileOutputStream fout = new FileOutputStream(idxFileTmp)) {
       //// header message
       fout.write(MAGIC_START.getBytes(CDM.utf8Charset));
       NcStream.writeVInt(fout, version);
@@ -211,7 +207,7 @@ public class Grib1Index extends GribIndex {
       Grib1IndexProto.Grib1Index.Builder rootBuilder = Grib1IndexProto.Grib1Index.newBuilder();
       rootBuilder.setFilename(filename);
 
-      if (dataRaf == null)  {
+      if (dataRaf == null)  { // open if dataRaf not already open
         raf = new RandomAccessFile(filename, "r");
         dataRaf = raf;
       }
@@ -243,8 +239,7 @@ public class Grib1Index extends GribIndex {
       return true;
 
     } finally {
-      fout.close();
-      if (raf != null) raf.close();
+      if (raf != null) raf.close();   // only close if it was opened here
 
             // now switch
       boolean deleteOk = !idxFile.exists() || idxFile.delete();

@@ -89,9 +89,9 @@ public class TestGeotiffRead {
         System.out.println("tileOffset =" + tileOffset + " tileSize=" + tileSize);
         ByteBuffer buffer = geotiff.testReadData(tileOffset, tileSize);
 
-        for (int i = 0; i < tileSize / 4; i++) {
-          System.out.println(i + ": " + buffer.getFloat());
-        }
+       // for (int i = 0; i < tileSize / 4; i++) {
+       //   System.out.println(i + ": " + buffer.getFloat());
+       // }
 
       } else {
         IFDEntry stripOffsetTag = geotiff.findTag(Tag.StripOffsets);
@@ -103,9 +103,9 @@ public class TestGeotiffRead {
           System.out.println("stripOffset =" + stripOffset + " stripSize=" + stripSize);
           ByteBuffer buffer = geotiff.testReadData(stripOffset, stripSize);
 
-          for (int i = 0; i < stripSize / 4; i++) {
-            System.out.println(i + ": " + buffer.getFloat());
-          }
+          //for (int i = 0; i < stripSize / 4; i++) {
+          //  System.out.println(i + ": " + buffer.getFloat());
+          //}
         }
       }
     }

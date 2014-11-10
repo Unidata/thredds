@@ -36,11 +36,7 @@ package thredds.server.cdmremote;
 import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 
 import javax.servlet.http.HttpServletResponse;
 import javax.xml.stream.XMLOutputFactory;
@@ -439,8 +435,8 @@ public class StationWriter {
       }
     }
 
-    for (String name : map.keySet()) {
-      StationDataTracker track = map.get(name);
+    for (Map.Entry<String, StationDataTracker> entry : map.entrySet()) {
+      StationDataTracker track = entry.getValue();
       a.act(track.sobs, track.sobs.getData());
       limit.matches++;
 

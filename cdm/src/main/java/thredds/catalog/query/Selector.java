@@ -46,7 +46,6 @@ import java.util.*;
  */
 
 public abstract class Selector {
-  protected ArrayList children = new ArrayList();
   protected List compound; // List<Selector> : only one is operable
   protected boolean isUsed; //
 
@@ -69,8 +68,8 @@ public abstract class Selector {
     this.title = title;
     this.id = id;
     this.template = template;
-    this.required = (required == null) ? true : !required.equals("false");
-    this.multiple = (multiple == null) ? false : multiple.equals("true");
+    this.required = (required == null) || !required.equals("false");
+    this.multiple = (multiple != null) && multiple.equals("true");
   }
 
   public void setDescription( InvDocumentation desc) { this.desc = desc; }
@@ -87,12 +86,12 @@ public abstract class Selector {
 
   public boolean isRequired() { return required; }
   public void setRequired( String required) {
-     this.required = (required == null) ? true : !required.equals("false");
+     this.required = (required == null) || !required.equals("false");
   }
 
   public boolean isMultiple() { return multiple; }
   public void setMultiple( String multiple) {
-    this.multiple = (multiple == null) ? false : multiple.equals("true");
+    this.multiple = (multiple != null) && multiple.equals("true");
   }
   public String getSelectType() { return multiple ? "multiple" : "single"; }
 
@@ -103,9 +102,8 @@ public abstract class Selector {
   public void setUsed (boolean isUsed) {
     this.isUsed = isUsed;
     if (isUsed && compound != null) {
-      Iterator iter = compound.iterator();
-      while (iter.hasNext()) {
-        Selector s = (Selector) iter.next();
+      for (Object aCompound : compound) {
+        Selector s = (Selector) aCompound;
         if (s != this)
           s.setUsed(false);
       }

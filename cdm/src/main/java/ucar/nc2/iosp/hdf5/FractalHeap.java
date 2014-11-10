@@ -270,7 +270,9 @@ Where startingBlockSize is from the header, ie the same for all indirect blocks.
                 assert btreeHugeObjects.btreeType == subtype;
               }
               BTree2.Record1 record1 = btreeHugeObjects.getEntry1(offset);
+              if (record1 == null) throw new RuntimeException("Cant find DHeapId="+offset);
               return record1.hugeObjectAddress;
+
             case 3:
             case 4:
               return offset;     // guess

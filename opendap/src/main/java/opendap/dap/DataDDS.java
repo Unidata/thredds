@@ -196,7 +196,7 @@ public class DataDDS extends DDS {
      * @param os the <code>OutputStream</code> to use.
      */
     public final void printVal(OutputStream os) {
-        PrintWriter pw = new PrintWriter(new BufferedWriter(new OutputStreamWriter(os)));
+        PrintWriter pw = new PrintWriter(new BufferedWriter(new OutputStreamWriter(os,Util.UTF8)));
         printVal(pw);
         pw.flush();
     }
@@ -215,7 +215,7 @@ public class DataDDS extends DDS {
             throws IOException {
         // First, print headers
         if (headers) {
-            PrintWriter pw = new PrintWriter(new OutputStreamWriter(os));
+            PrintWriter pw = new PrintWriter(new OutputStreamWriter(os,Util.UTF8));
             pw.println("HTTP/1.0 200 OK");
             pw.println("XDAP: " + ServerVersion.DAP2_PROTOCOL_VERSION);
             pw.println("XDODS-Server: DODS/" + ServerVersion.DAP2_PROTOCOL_VERSION);

@@ -71,10 +71,12 @@ public class DescribeCoverage extends WcsRequest {
     if (this.coverages.size() < 1)
       throw new IllegalArgumentException("Coverage list must contain at least one ID <" + this.coverages.size() + ">.");
 
-    String badCovIds = "";
+    StringBuilder badCovIds = new StringBuilder();
     for (String curCov : coverages) {
-      if (!this.getDataset().isAvailableCoverageName(curCov))
-        badCovIds += (badCovIds.length() > 0 ? ", " : "") + curCov;
+      if (!this.getDataset().isAvailableCoverageName(curCov)) {
+        if (badCovIds.length() > 0) badCovIds.append(", ");
+        badCovIds.append(curCov);
+      }
     }
     if (badCovIds.length() > 0)
       throw new IllegalArgumentException("Coverage ID list contains one or more unknown IDs <" + badCovIds + ">.");

@@ -83,8 +83,6 @@ public class asciiF32 extends DFloat32 implements toASCII {
                         String rootName,
                         boolean newLine) {
 
-        rootName = toASCIIAddRootName(pw, addName, rootName);
-
         if (addName)
             pw.print(", ");
 

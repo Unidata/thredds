@@ -40,14 +40,12 @@
 
 package opendap.servlet;
 
+import opendap.dap.Util;
 import opendap.dap.parsers.ParseException;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.PrintWriter;
+import java.io.*;
 
 /**
  * Default handler for OPeNDAP directory requests. This class is used
@@ -83,7 +81,7 @@ public class GetDirHandler {
 
         try {
 
-            PrintWriter pw = new PrintWriter(rs.getResponse().getOutputStream());
+            PrintWriter pw = new PrintWriter(new OutputStreamWriter(rs.getResponse().getOutputStream(), Util.UTF8));
 
             String thisServer = rs.getRequest().getRequestURL().toString();
             pw.println("<html>");

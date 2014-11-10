@@ -259,16 +259,16 @@ public class DAS extends AttributeTable
 
     private void resolveAliases(AttributeTable at) throws MalformedAliasException, UnresolvedAliasException, NoSuchAttributeException
     {
-
         // Cache the current (parent) Attribute table. This value is
         // null if this method is called from parse();
         AttributeTable cacheAT = currentAT;
+        try {
 
         // Set the current AttributeTable to the one that we are searching.
         currentAT = at;
 
         if (Debug.isSet("DAS")) {
-		DAPNode.log.debug("DAS.resolveAliases(at=" + at + ")");
+		    DAPNode.log.debug("DAS.resolveAliases(at=" + at + ")");
 	    }
 
         //getall of the Attributes from the table.
@@ -299,9 +299,10 @@ public class DAS extends AttributeTable
 
             }
         }
-
+    } finally {
         // Restore the previous currentAT state.
         currentAT = cacheAT;
+}
 
     }
 

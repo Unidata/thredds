@@ -119,7 +119,7 @@ public class TestDir {
           userThreddsProps.load( new FileInputStream( userThreddsPropsFile ) );
         }
         catch ( IOException e ) {
-          System.out.println( "**Failed loading user THREDDS property file: " + e.getMessage() );
+          System.err.println( "**Failed loading user THREDDS property file: " + e.getMessage() );
         }
         if ( userThreddsProps != null && ! userThreddsProps.isEmpty() ) {
           if ( testdataDir == null )
@@ -130,8 +130,8 @@ public class TestDir {
 
     // Use default paths if needed.
     if ( testdataDir == null ) {
-      System.out.println( "**No \"unidata.testdata.path\"property, defaulting to \"/share/testdata/\"." );
       testdataDir = "/share/testdata/";
+      System.err.printf( "**No '%s' property, defaulting to '%s'%n", testdataDirPropName, testdataDir );
     }
     // Make sure paths ends with a slash.
     testdataDir = testdataDir.replace('\\','/'); //canonical
@@ -141,14 +141,14 @@ public class TestDir {
     cdmUnitTestDir = testdataDir + "cdmUnitTest/";
 
     File file = new File( cdmUnitTestDir );
-    if ( ! file.exists() || !file.isDirectory() ) {
-      System.out.println( "**WARN: Non-existence of Level 3 test data directory [" + file.getAbsolutePath() + "]." );
+    if ( !file.exists() || !file.isDirectory() ) {
+      System.err.println( "**WARN: Non-existence of Level 3 test data directory [" + file.getAbsolutePath() + "]." );
     }
 
     File tmpDataDir = new File(temporaryLocalDataDir);
     if ( ! tmpDataDir.exists() ) {
       if ( ! tmpDataDir.mkdirs() ) {
-        System.out.println( "**ERROR: Could not create temporary data dir <" + tmpDataDir.getAbsolutePath() + ">." );
+        System.err.println( "**ERROR: Could not create temporary data dir <" + tmpDataDir.getAbsolutePath() + ">." );
       }
     }
 
@@ -212,9 +212,9 @@ public class TestDir {
         System.out.printf(" open= %s%n", filename);
       }
     } else {
-      System.out.printf(" no leaks%n");
+      System.out.printf("RandomAccessFile: no leaks%n");
     }
-    System.out.printf("RandomAccessFile count open: %d, max=%d%n", RandomAccessFile.getOpenFileCount(), RandomAccessFile.getMaxOpenFileCount());
+    System.out.printf("RandomAccessFile: count open=%d, max=%d%n", RandomAccessFile.getOpenFileCount(), RandomAccessFile.getMaxOpenFileCount());
   }
 
 

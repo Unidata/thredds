@@ -68,7 +68,7 @@ import java.util.*;
 public class Grib1ReportPanel extends ReportPanel {
 
   public static enum Report {
-    checkTables, showLocalParams, scanIssues, rename, checkRename, showEncoding// , localUseSection, uniqueGds, duplicatePds, drsSummary, gdsTemplate, pdsSummary, idProblems
+    checkTables, showLocalParams, summary, rename, checkRename, showEncoding// , localUseSection, uniqueGds, duplicatePds, drsSummary, gdsTemplate, pdsSummary, idProblems
   }
 
   public Grib1ReportPanel(PreferencesExt prefs) {
@@ -89,8 +89,8 @@ public class Grib1ReportPanel extends ReportPanel {
       case showLocalParams:
         doCheckLocalParams(f, dcm, useIndex);
         break;
-      case scanIssues:
-        doScanIssues(f, dcm, useIndex);
+      case summary:
+        doScanIssues(f, dcm, useIndex, eachFile, extra);
         break;
       case rename:
         doRename(f, dcm, useIndex);
@@ -99,10 +99,24 @@ public class Grib1ReportPanel extends ReportPanel {
         doCheckRename(f, dcm, useIndex);
         break;
       case showEncoding:
-        doShowEncoding(f, dcm, useIndex);
+        doShowEncoding(f, dcm);
         break;
     }
   }
+
+  private Grib1Index createIndex(MFile mf) throws IOException {
+    String path = mf.getPath();
+    Grib1Index index = new Grib1Index();
+    if (!index.readIndex(path, mf.getLastModified())) {
+      // make sure its a grib2 file
+      try (RandomAccessFile raf = new RandomAccessFile(path, "r")) {
+        if (!Grib1RecordScanner.isValidFile(raf)) return null;
+        index.makeIndex(path, raf);
+      }
+    }
+    return index;
+  }
+
 
   ///////////////////////////////////////////////
 
@@ -163,26 +177,36 @@ public class Grib1ReportPanel extends ReportPanel {
   /////////////////////////////////////////////////////////////////
 
   private void doCheckTables(Formatter f, MCollection dcm, boolean useIndex) throws IOException {
-    CounterS tableSet = new CounterS("tableVersion");
-    Counter local = new Counter("local");
-    Counter missing = new Counter("missing");
+    Counters counters = new Counters();
+    counters.add(new CounterOfString("tableVersion"));
+    counters.add(new CounterOfInt("local"));
+    counters.add(new CounterOfInt("missing"));
 
     for (MFile mfile : dcm.getFilesSorted()) {
       String path = mfile.getPath();
       if (path.endsWith(".gbx8") || path.endsWith(".gbx9") || path.endsWith(".ncx")) continue;
       f.format(" %s%n", path);
-      doCheckTables(f, mfile, useIndex, tableSet, local, missing);
+      if (useIndex)
+        doCheckTablesWithIndex(f, mfile, counters);
+      else
+        doCheckTablesNoIndex(f, mfile, counters);
     }
 
     f.format("Check Parameter Tables%n");
-    tableSet.show(f);
-    local.show(f);
-    missing.show(f);
+    counters.show(f);
   }
 
-  private void doCheckTables(Formatter fm, MFile ff, boolean useIndex, CounterS tableSet, Counter local, Counter missing) throws IOException {
+  private void doCheckTablesWithIndex(Formatter mf, MFile ff,Counters counters) throws IOException {
+    Grib1Index index = createIndex(ff);
+    if (index == null) return;
+    for (ucar.nc2.grib.grib1.Grib1Record gr : index.getRecords()) {
+      doCheckTables(gr, counters);
+    }
+  }
+
+  private void doCheckTablesNoIndex(Formatter fm, MFile ff, Counters counters) throws IOException {
     String path = ff.getPath();
-    try (RandomAccessFile raf= new ucar.unidata.io.RandomAccessFile(path, "r")) {
+    try (RandomAccessFile raf = new ucar.unidata.io.RandomAccessFile(path, "r")) {
 
       raf.order(ucar.unidata.io.RandomAccessFile.BIG_ENDIAN);
       raf.seek(0);
@@ -190,17 +214,7 @@ public class Grib1ReportPanel extends ReportPanel {
       Grib1RecordScanner reader = new Grib1RecordScanner(raf);
       while (reader.hasNext()) {
         ucar.nc2.grib.grib1.Grib1Record gr = reader.next();
-        Grib1SectionProductDefinition pds = gr.getPDSsection();
-        String key = pds.getCenter() + "-" + pds.getSubCenter() + "-" + pds.getTableVersion();
-        tableSet.count(key);
-
-        if (pds.getParameterNumber() > 127)
-          local.count(pds.getParameterNumber());
-
-        Grib1ParamTableReader table = new Grib1ParamTables().getParameterTable(pds.getCenter(), pds.getSubCenter(), pds.getTableVersion());
-        if (table == null && useIndex) table = Grib1ParamTables.getDefaultTable();
-        if (table == null || null == table.getParameter(pds.getParameterNumber()))
-          missing.count(pds.getParameterNumber());
+        doCheckTables(gr, counters);
       }
 
     } catch (Throwable ioe) {
@@ -211,84 +225,74 @@ public class Grib1ReportPanel extends ReportPanel {
     }
   }
 
+  private void doCheckTables(ucar.nc2.grib.grib1.Grib1Record gr, Counters counters) throws IOException {
+    Grib1SectionProductDefinition pds = gr.getPDSsection();
+    String key = pds.getCenter() + "-" + pds.getSubCenter() + "-" + pds.getTableVersion();
+    counters.countS("tableVersion", key);
+
+    if (pds.getParameterNumber() > 127)
+      counters.count("local", pds.getParameterNumber());
+
+    Grib1ParamTableReader table = new Grib1ParamTables().getParameterTable(pds.getCenter(), pds.getSubCenter(), pds.getTableVersion());
+    // if (table == null && useIndex) table = Grib1ParamTables.getDefaultTable();
+    if (table == null || null == table.getParameter(pds.getParameterNumber()))
+      counters.count("missing", pds.getParameterNumber());
+  }
+
   /////////////////////////////////////////////////////////////////
 
-  private void doScanIssues(Formatter f, MCollection dcm, boolean useIndex) throws IOException {
-    Counter predefinedA = new Counter("predefined");
-    Counter thinA = new Counter("thin");
-    Counter timeUnitA = new Counter("timeUnit");
-    Counter vertCoordA = new Counter("vertCoord");
-    Counter vertCoordInGDSA = new Counter("vertCoordInGDS");
+  private void doScanIssues(Formatter f, MCollection dcm, boolean useIndex, boolean eachFile, boolean extraInfo) throws IOException {
+    Counters countersAll = new Counters();
+    countersAll.add(new CounterOfString("referenceDate"));
+    countersAll.add(new CounterOfString("table version"));
+    countersAll.add(new CounterOfInt("param"));
+    countersAll.add(new CounterOfInt("timeUnit"));
+    countersAll.add(new CounterOfInt("vertCoord"));
+    countersAll.add(new CounterOfInt("vertCoordInGDS"));
+    countersAll.add(new CounterOfInt("predefined"));
+    countersAll.add(new CounterOfInt("thin"));
 
     for (MFile mfile : dcm.getFilesSorted()) {
-      Counter predefined = new Counter("predefined");
-      Counter thin = new Counter("thin");
-      Counter timeUnit = new Counter("timeUnit");
-      Counter vertCoord = new Counter("vertCoord");
-      Counter vertCoordInGDS = new Counter("vertCoordInGDS");
+      Counters countersOneFile = countersAll.makeSubCounters();
 
       String path = mfile.getPath();
       if (path.endsWith(".gbx8") || path.endsWith(".gbx9") || path.endsWith(".ncx")) continue;
       f.format(" %s%n", path);
-      doScanIssues(f, mfile, useIndex, predefined, thin, timeUnit, vertCoord, vertCoordInGDS);
+      if (useIndex)
+        doScanIssuesWithIndex(f, mfile, extraInfo, countersOneFile);
+      else
+        doScanIssuesNoIndex(f, mfile, extraInfo, countersOneFile);
 
-      predefined.show(f);
-      thin.show(f);
-      timeUnit.show(f);
-      vertCoord.show(f);
-      vertCoordInGDS.show(f);
+      if (eachFile) {
+        countersOneFile.show(f);
+      }
 
-      predefinedA.add(predefined);
-      thinA.add(thin);
-      timeUnitA.add(timeUnit);
-      vertCoordA.add(vertCoord);
-      vertCoordInGDSA.add(vertCoordInGDS);
+      countersAll.addTo(countersOneFile);
     }
 
-    f.format("SUMMARY ALL%n");
-    predefinedA.show(f);
-    thinA.show(f);
-    timeUnitA.show(f);
-    vertCoordA.show(f);
-    vertCoordInGDSA.show(f);
+    f.format("ScanIssues - all files%n");
+    countersAll.show(f);
   }
 
-  private void doScanIssues(Formatter fm, MFile ff, boolean useIndex, Counter predefined, Counter thin, Counter timeUnit,
-                            Counter vertCoord, Counter vertCoordInGDS) throws IOException {
-    boolean showThin = true;
-    boolean showPredefined = true;
-    boolean showVert = true;
+  private void doScanIssuesWithIndex(Formatter fm, MFile ff, boolean extraInfo, Counters counters) throws IOException {
+    Grib1Index index = createIndex(ff);
+    if (index == null) return;
+    for (ucar.nc2.grib.grib1.Grib1Record gr : index.getRecords()) {
+      doScanIssues(gr, fm, ff.getPath(), extraInfo, counters);
+    }
+  }
+
+  private void doScanIssuesNoIndex(Formatter fm, MFile ff, boolean extraInfo, Counters counters) throws IOException {
+
     String path = ff.getPath();
-    try (RandomAccessFile raf= new ucar.unidata.io.RandomAccessFile(path, "r")) {
+    try (RandomAccessFile raf = new ucar.unidata.io.RandomAccessFile(path, "r")) {
       raf.order(ucar.unidata.io.RandomAccessFile.BIG_ENDIAN);
       raf.seek(0);
 
       Grib1RecordScanner reader = new Grib1RecordScanner(raf);
       while (reader.hasNext()) {
         ucar.nc2.grib.grib1.Grib1Record gr = reader.next();
-        Grib1SectionGridDefinition gdss = gr.getGDSsection();
-        Grib1SectionProductDefinition pds = gr.getPDSsection();
-        String key = pds.getCenter() + "-" + pds.getSubCenter() + "-" + pds.getTableVersion(); // for CounterS
-        timeUnit.count(pds.getTimeRangeIndicator());
-        vertCoord.count(pds.getLevelType());
-
-        if (gdss.isThin()) {
-          if (showThin) fm.format("  THIN= (gds=%d) %s%n", gdss.getGridTemplate(), ff.getPath());
-          thin.count(gdss.getGridTemplate());
-          showThin = false;
-        }
-
-        if (!pds.gdsExists()) {
-          if (showPredefined) fm.format("   PREDEFINED GDS= %s%n", ff.getPath());
-          predefined.count(gdss.getPredefinedGridDefinition());
-          showPredefined = false;
-        }
-
-        if (gdss.hasVerticalCoordinateParameters()) {
-          if (showVert) fm.format("   Has vertical coordinates in GDS= %s%n", ff.getPath());
-          vertCoordInGDS.count(pds.getLevelType());
-          showVert = false;
-        }
+        doScanIssues(gr, fm, path, extraInfo, counters);
       }
 
     } catch (Throwable ioe) {
@@ -298,72 +302,79 @@ public class Grib1ReportPanel extends ReportPanel {
     }
   }
 
+  private void doScanIssues(ucar.nc2.grib.grib1.Grib1Record gr, Formatter fm, String path, boolean extraInfo, Counters counters) throws IOException {
+
+    Grib1SectionGridDefinition gdss = gr.getGDSsection();
+    Grib1SectionProductDefinition pds = gr.getPDSsection();
+    String table = pds.getCenter() + "-" + pds.getSubCenter() + "-" + pds.getTableVersion();
+    counters.countS("table version", table);
+    counters.count("param", pds.getParameterNumber());
+    counters.count("timeUnit", pds.getTimeRangeIndicator());
+    counters.count("vertCoord", pds.getLevelType());
+    counters.countS("referenceDate", pds.getReferenceDate().toString());
+
+    if (gdss.isThin()) {
+      if (extraInfo) fm.format("  THIN= (gds=%d) %s%n", gdss.getGridTemplate(), path);
+      counters.count("thin", gdss.getGridTemplate());
+    }
+
+    if (!pds.gdsExists()) {
+      if (extraInfo) fm.format("   PREDEFINED GDS= %s%n", path);
+      counters.count("predefined", gdss.getPredefinedGridDefinition());
+    }
+
+    if (gdss.hasVerticalCoordinateParameters()) {
+      if (extraInfo) fm.format("   Has vertical coordinates in GDS= %s%n", path);
+      counters.count("vertCoordInGDS", pds.getLevelType());
+    }
+
+  }
+
+
   /////////////////////////////////////////////////////////////////
 
-  private void doShowEncoding(Formatter f, MCollection dcm, boolean useIndex) throws IOException {
-    Counter decimals = new Counter("decimalScale");
-    Counter binScale = new Counter("binScale");
-    Counter nbits = new Counter("nbits");
-    Counter gridType = new Counter("gridType");
-    Counter packing = new Counter("packing");
-    Counter dataType = new Counter("dataType");
-    Counter hasMore = new Counter("hasMore");
-    Counter scale = new Counter("mixed scaling");
+  private void doShowEncoding(Formatter f, MCollection dcm) throws IOException {
+    Counters countersAll = new Counters();
+    countersAll.add(new CounterOfInt("decimalScale"));
+    countersAll.add(new CounterOfInt("binScale"));
+    countersAll.add(new CounterOfInt("nbits"));
+    countersAll.add(new CounterOfInt("gridType"));
+    countersAll.add(new CounterOfInt("packing"));
+    countersAll.add(new CounterOfInt("dataType"));
+    countersAll.add(new CounterOfInt("hasMore"));
+    countersAll.add(new CounterOfInt("mixed scaling"));
 
     for (MFile mfile : dcm.getFilesSorted()) {
       f.format(" %s%n", mfile.getPath());
-      //if (useIndex) doShowEncodingIndex(f, mfile, decimals); else doShowEncoding(f, mfile, decimals);
-      doShowEncoding(f, mfile, decimals, binScale, nbits, gridType, packing, dataType, hasMore, scale);
+      // need dataRaf, so cant useIndex
+      doShowEncodingNoIndex(f, mfile, countersAll);
     }
 
-    decimals.show(f);
-    binScale.show(f);
-    nbits.show(f);
-    gridType.show(f);
-    packing.show(f);
-    dataType.show(f);
-    hasMore.show(f);
-    scale.show(f);
+    countersAll.show(f);
   }
 
-  /* private void doShowEncodingIndex(Formatter fm, MFile ff, Counter decimals) throws IOException {
-    Grib1Index index = createIndex(ff, f);
-    if (index == null) return;
-
+  private void doShowEncodingNoIndex(Formatter fm, MFile ff, Counters counters) throws IOException {
     String path = ff.getPath();
-    RandomAccessFile raf = new RandomAccessFile(path, "r");
-
-    try {
-    for (ucar.nc2.grib.grib1.Grib1Record gr : index.getRecords()) {
-    } finally {
-    raf.close();
-    }
-  } */
-
-  private void doShowEncoding(Formatter fm, MFile ff, Counter decimals, Counter binScale, Counter nbits, Counter gridType, Counter packing, Counter dataType,
-                              Counter hasMore, Counter scale) throws IOException {
-    String path = ff.getPath();
-    try (RandomAccessFile raf= new ucar.unidata.io.RandomAccessFile(path, "r")) {
+    try (RandomAccessFile raf = new ucar.unidata.io.RandomAccessFile(path, "r")) {
       raf.order(ucar.unidata.io.RandomAccessFile.BIG_ENDIAN);
       raf.seek(0);
 
       Grib1RecordScanner reader = new Grib1RecordScanner(raf);
       while (reader.hasNext()) {
         ucar.nc2.grib.grib1.Grib1Record gr = reader.next();
-
         GribData.Info info = gr.getBinaryDataInfo(raf);
-        decimals.count(info.decimalScaleFactor);
-        binScale.count(info.binaryScaleFactor);
-        nbits.count(info.numberOfBits);
-        gridType.count(info.getGridPoint());
-        packing.count(info.getPacking());
-        dataType.count(info.getDataType());
-        hasMore.count(info.hasMore() ? 1 : 0);
+        counters.count("decimals", info.decimalScaleFactor);
+        counters.count("binScale", info.binaryScaleFactor);
+        counters.count("nbits", info.numberOfBits);
+        counters.count("gridType", info.getGridPoint());
+        counters.count("packing", info.getPacking());
+        counters.count("dataType", info.getDataType());
+        counters.count("hasMore", info.hasMore() ? 1 : 0);
 
         if (info.binaryScaleFactor != 0 && info.decimalScaleFactor != 0) {
-          scale.count(1);
+          counters.count("scale", 1);
         } else {
-          scale.count(0);
+          counters.count("scale", 0);
         }
       }
 
@@ -391,7 +402,7 @@ public class Grib1ReportPanel extends ReportPanel {
         NetcdfDataset ncdOld = new NetcdfDataset(ncfileOld);
         GridDataset gridOld = new GridDataset(ncdOld);
 
-        try (GridDataset gdsNew = GridDataset.open(mfile.getPath())){
+        try (GridDataset gdsNew = GridDataset.open(mfile.getPath())) {
 
           for (GridDatatype grid : gridOld.getGrids()) {
             // if (useIndex) {
@@ -432,18 +443,18 @@ public class Grib1ReportPanel extends ReportPanel {
     f.format("Fail=%d multiple=%d ok=%d%n", fail, multiple, ok);
   }
 
-    ///////////////////////////////////////////////////////////////////////////////////
+  ///////////////////////////////////////////////////////////////////////////////////
 
   private void doRename(Formatter f, MCollection dcm, boolean useIndex) throws IOException {
     f.format("CHECK Grib-1 Names: Old vs New for collection %s%n", dcm.getCollectionName());
 
     List<VarName> varNames = new ArrayList<>(3000);
-    Map<String,List<String>> gridsAll = new HashMap<>(1000); // old -> list<new>
+    Map<String, List<String>> gridsAll = new HashMap<>(1000); // old -> list<new>
 
     for (MFile mfile : dcm.getFilesSorted()) {
       f.format("%n%s%n", mfile.getPath());
-      Map<Integer,GridMatch> gridsNew = getGridsNew(mfile, f);
-      Map<Integer,GridMatch> gridsOld = getGridsOld(mfile, f);
+      Map<Integer, GridMatch> gridsNew = getGridsNew(mfile, f);
+      Map<Integer, GridMatch> gridsOld = getGridsOld(mfile, f);
 
       // look for exact match
       for (GridMatch gm : gridsNew.values()) {
@@ -493,17 +504,17 @@ public class Grib1ReportPanel extends ReportPanel {
       }
 
       // add to gridsAll
-       for (GridMatch gmOld : listOld) {
-         String key = gmOld.grid.getFullName();
-         List<String> newGrids = gridsAll.get(key);
-         if (newGrids == null) {
-           newGrids = new ArrayList<>();
-           gridsAll.put(key, newGrids);
-         }
-         if (gmOld.match != null) {
-           String keyNew = gmOld.match.grid.getFullName()+" == "+gmOld.match.grid.getDescription();
-           if (!newGrids.contains(keyNew)) newGrids.add(keyNew);
-         }
+      for (GridMatch gmOld : listOld) {
+        String key = gmOld.grid.getFullName();
+        List<String> newGrids = gridsAll.get(key);
+        if (newGrids == null) {
+          newGrids = new ArrayList<>();
+          gridsAll.put(key, newGrids);
+        }
+        if (gmOld.match != null) {
+          String keyNew = gmOld.match.grid.getFullName() + " == " + gmOld.match.grid.getDescription();
+          if (!newGrids.contains(keyNew)) newGrids.add(keyNew);
+        }
       }
 
       // add matches to VarNames
@@ -535,7 +546,7 @@ public class Grib1ReportPanel extends ReportPanel {
     }
     f.format("Number with more than one map=%d total=%d%n", dups, total);
 
-        // old -> new mapping xml table
+    // old -> new mapping xml table
     if (!useIndex) {
       Element rootElem = new Element("gribVarMap");
       Document doc = new Document(rootElem);
@@ -644,7 +655,7 @@ public class Grib1ReportPanel extends ReportPanel {
         if (att != null) {
           String pname = att.getStringValue();
           int pos = pname.indexOf('_');
-          pname = pname.substring(pos+1);
+          pname = pname.substring(pos + 1);
           probLimit = (int) (1000.0 * Double.parseDouble(pname));
         }
 
@@ -708,8 +719,8 @@ public class Grib1ReportPanel extends ReportPanel {
     public boolean altMatch(GridMatch gridMatch) {
       if (!altMatchNoProb(gridMatch)) return false;
 
-      if (probLimit/1000 == gridMatch.probLimit) return true;
-      if (probLimit == gridMatch.probLimit/1000) return true;
+      if (probLimit / 1000 == gridMatch.probLimit) return true;
+      if (probLimit == gridMatch.probLimit / 1000) return true;
 
       return false;
     }
@@ -754,19 +765,19 @@ public class Grib1ReportPanel extends ReportPanel {
 
     String show() {
       Formatter f = new Formatter();
-      f.format("%d-%d-%d-", param[0],param[1],param[2]);
+      f.format("%d-%d-%d-", param[0], param[1], param[2]);
       f.format("%d", level);
       if (isLayer) f.format("_layer");
-      if (interval >= 0) f.format("_intv%d",interval);
-      if (prob >= 0) f.format("_prob%d_%d",prob,probLimit);
-      if (ens >= 0) f.format("_ens%d",ens);
+      if (interval >= 0) f.format("_intv%d", interval);
+      if (prob >= 0) f.format("_prob%d_%d", prob, probLimit);
+      if (ens >= 0) f.format("_ens%d", ens);
       if (isError) f.format("_error");
       return f.toString();
     }
   }
 
-  private Map<Integer,GridMatch> getGridsNew(MFile ff, Formatter f) throws IOException {
-    Map<Integer,GridMatch> grids = new HashMap<>(100);
+  private Map<Integer, GridMatch> getGridsNew(MFile ff, Formatter f) throws IOException {
+    Map<Integer, GridMatch> grids = new HashMap<>(100);
     GridDataset ncfile = null;
     try {
       ncfile = GridDataset.open(ff.getPath());
@@ -784,8 +795,8 @@ public class Grib1ReportPanel extends ReportPanel {
     return grids;
   }
 
-  private Map<Integer,GridMatch> getGridsOld(MFile ff, Formatter f) throws IOException {
-    Map<Integer,GridMatch> grids = new HashMap<>(100);
+  private Map<Integer, GridMatch> getGridsOld(MFile ff, Formatter f) throws IOException {
+    Map<Integer, GridMatch> grids = new HashMap<>(100);
     NetcdfFile ncfile = null;
     try {
       ncfile = NetcdfFile.open(ff.getPath(), "ucar.nc2.iosp.grib.GribServiceProvider", -1, null, null);

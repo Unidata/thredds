@@ -591,7 +591,7 @@ public class OpendapServlet extends AbstractServlet {
       ds = getDataset(rs);
       if (null == ds) return;
 
-      PrintStream pw = new PrintStream(response.getOutputStream());
+      PrintWriter pw = new PrintWriter(new OutputStreamWriter(response.getOutputStream(),Util.UTF8));
       response.setHeader("XDODS-Server", getServerVersion());
       response.setContentType("text/html");
       response.setHeader("Content-Description", "dods-description");

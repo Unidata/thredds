@@ -368,6 +368,7 @@ public class DArray extends DVector
      * @param constrained
      * @opendap.ddx.experimental
      */
+    //Coverity[CALL_SUPER]
     public void printXML(PrintWriter pw, String pad, boolean constrained) {
 
         pw.print(pad + "<Array");
@@ -433,6 +434,7 @@ public class DArray extends DVector
 
         PrimitiveVector pv = getPrimitiveVector();
         // *** Nathan, can we get rid of this 'if?' 05/15/03 jhrg
+        //Coverity[IDENTICAL_BRANCHES]
         if (pv instanceof BaseTypePrimitiveVector) {
             bt = pv.getTemplate();
         } else {

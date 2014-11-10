@@ -124,6 +124,20 @@ public class Section {
   }
 
   /**
+   * Create Section from a variable length list of Ranges
+   *
+   * @param ranges the list
+   */
+  public Section(Range... ranges) {
+    list = new ArrayList<>();
+    for (Range r : ranges) {
+      list.add(r);
+      if (r == Range.VLEN)
+        isvariablelength = true;
+    }
+  }
+
+  /**
    * Copy Constructor.
    * Returned copy is mutable
    *

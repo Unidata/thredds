@@ -229,7 +229,7 @@ class Celex implements Lexer, ExprParserConstants
                     removetrailingblanks();
                     /* If this looks like a number, then treat it as such.*/
                     try {
-                        Double number = new Double(yytext.toString());
+                        new Double(yytext.toString());
                         isnumber = true;
                     } catch (NumberFormatException nfe) {
                         isnumber = false;

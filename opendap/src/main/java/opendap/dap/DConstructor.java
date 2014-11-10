@@ -170,6 +170,7 @@ abstract public class DConstructor extends BaseType {
      * Attributes) will be printed.
      * @opendap.ddx.experimental
      */
+    //Coverity[CALL_SUPER]
     public void printXML(PrintWriter pw, String pad, boolean constrained) {
 
         Enumeration e = getAttributeNames();

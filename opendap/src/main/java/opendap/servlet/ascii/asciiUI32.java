@@ -84,8 +84,6 @@ public class asciiUI32 extends DUInt32 implements toASCII {
                         String rootName,
                         boolean newLine) {
 
-        rootName = toASCIIAddRootName(pw, addName, rootName);
-
         if (addName)
             pw.print(", ");
 

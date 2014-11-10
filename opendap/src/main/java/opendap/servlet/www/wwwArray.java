@@ -167,7 +167,6 @@ public class wwwArray extends DArray implements BrowserForm {
                         + "</b><br>\n\n"
         );
 
-        int dims = numDimensions();
         int dimSize;
         int i = 0;
         String dimName;

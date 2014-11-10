@@ -227,6 +227,7 @@ public class Grib2Record {
     if (gds.isThin())
       data = QuasiRegular.convertQuasiGrid(data, gds.getNptsInLine(), gds.getNxRaw(), gds.getNyRaw(), GribData.getInterpolationMethod());
 
+    lastRecordRead = this;
     return data;
   }
 
@@ -282,6 +283,7 @@ public class Grib2Record {
     if (gds.isThin())
       data = QuasiRegular.convertQuasiGrid(data, gds.getNptsInLine(), gds.getNxRaw(), gds.getNyRaw(), GribData.getInterpolationMethod());
 
+    lastRecordRead = this;
     return data;
   }
 
@@ -321,6 +323,8 @@ public class Grib2Record {
     if (nptsInLine != null)
       data = QuasiRegular.convertQuasiGrid(data, nptsInLine, nx, ny, GribData.getInterpolationMethod());
 
+    if (getlastRecordRead)
+      lastRecordRead = Grib2RecordScanner.findRecordByDrspos(raf, drsPos);
     return data;
   }
 
@@ -355,7 +359,6 @@ public class Grib2Record {
 
     if (dataEnd > endPos) {
       f.format("GRIB data section (start=%d len=%d) end=%d > message end=%d for %s%n", dataStart, dataLen, dataEnd, endPos, raf.getLocation());
-      return;
     }
 
   }
@@ -370,5 +373,9 @@ public class Grib2Record {
     info.nPoints = gds.getNx() * gds.getNy();
     return info;
   }
+
+  // debugging do not use
+  public static boolean getlastRecordRead;
+  public static Grib2Record lastRecordRead;
 
 }

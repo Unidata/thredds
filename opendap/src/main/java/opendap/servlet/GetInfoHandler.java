@@ -108,7 +108,7 @@ public class GetInfoHandler {
      * @see GuardedDataset
      * @see ReqState
      */
-    public void sendINFO(PrintStream pw, GuardedDataset gds, ReqState rs) throws DAP2Exception, ParseException {
+    public void sendINFO(PrintWriter pw, GuardedDataset gds, ReqState rs) throws DAP2Exception, ParseException {
 
         if (_Debug) System.out.println("opendap.servlet.GetInfoHandler.sendINFO() reached.");
 

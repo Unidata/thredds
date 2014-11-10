@@ -83,7 +83,6 @@ public class asciiUI16 extends DUInt16 implements toASCII {
                         String rootName,
                         boolean newLine) {
 
-        rootName = toASCIIAddRootName(pw, addName, rootName);
 
         if (addName)
             pw.print(", ");

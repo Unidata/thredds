@@ -210,6 +210,7 @@ public class Grib1Record {
     return gr.readData(raf);
   }
 
+  // debugging, do not use
   static public Grib1Record lastRecordRead;
 
   /*

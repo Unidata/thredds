@@ -532,7 +532,7 @@ public class GempakSoundingIOSP extends GempakStationFileIOSP {
    *
    * @author Unidata Development Team
    */
-  class EmptyStructureDataIterator implements StructureDataIterator {
+  static class EmptyStructureDataIterator implements StructureDataIterator {
 
     /**
      * Do we have more?

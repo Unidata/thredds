@@ -48,7 +48,6 @@ import ucar.unidata.util.StringUtil2;
  * @author caron
  */
 
-@Immutable
 public class DODSAttribute extends ucar.nc2.Attribute
 {
 
@@ -127,7 +126,6 @@ public class DODSAttribute extends ucar.nc2.Attribute
   private String unescapeAttributeStringValues( String value) {
     return StringUtil2.substitute(value, substAttributeStrings, escapeAttributeStrings);
   }
-
 
   //////////////////////////////////////////////////
   // DODSNode Interface

@@ -122,6 +122,8 @@ public abstract class Dap2Parse
 
         dapdebug = getDebugLevel();
         Boolean accept = parse(text);
+        if(!accept)
+            throw new ParseException("Dap2 Parser returned false");
         return parseClass;
     }
 
@@ -407,7 +409,6 @@ public abstract class Dap2Parse
             throws ParseException
     {
         int i;
-        int rank = dimensions.size();
         /* Interface requires rebuilding the dimensions */
         for(Object o : dimensions) {
             DArrayDimension dim = (DArrayDimension) o;
@@ -521,10 +522,8 @@ public abstract class Dap2Parse
     dap_parse_error(Dap2Parse state, String fmt, Object... args)
             throws ParseException
     {
-        int len;
         lexstate.lexerror(String.format(fmt, args));
         String tmp = null;
-        len = lexstate.getInput().length();
         tmp = flatten(lexstate.getInput());
         throw new ParseException("context: " + tmp + "^");
     }
@@ -627,12 +626,12 @@ public abstract class Dap2Parse
 
     String unescapeAttributeString(String s)
     {
-        String news = "";
+        StringBuilder news = new StringBuilder();
         for(char c : s.toCharArray()) {
             if(c == '\\') continue;
-            news += c;
+            news.append(c);
         }
-        return news;
+        return news.toString();
     }
 
     // Because we fixed this in dap.y (name: rule),

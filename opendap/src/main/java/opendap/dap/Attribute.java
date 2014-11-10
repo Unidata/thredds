@@ -537,7 +537,7 @@ public class Attribute extends DAPNode
     try {
       short val = Short.parseShort(s);
       if (DebugValueChecking) {
-	DAPNode.log.debug("Attribute.checkShort() - string: '" + s + "'   value: " + val);
+	    DAPNode.log.debug("Attribute.checkShort() - string: '" + s + "'   value: " + val);
       }
       return true;
     }
@@ -577,9 +577,10 @@ public class Attribute extends DAPNode
    */
   private static final boolean checkInt(String s) {
     try {
+      //Coverity[FB.DLS_DEAD_LOCAL_STORE]
       int val = Integer.parseInt(s);
       if (DebugValueChecking) {
-	DAPNode.log.debug("Attribute.checkInt() - string: '" + s + "'   value: " + val);
+	    DAPNode.log.debug("Attribute.checkInt() - string: '" + s + "'   value: " + val);
       }
       return true;
     }
@@ -619,9 +620,10 @@ public class Attribute extends DAPNode
    */
   private static final boolean checkFloat(String s) {
     try {
+      //Coverity[FB.DLS_DEAD_LOCAL_STORE]=
       float val = Float.parseFloat(s);
       if (DebugValueChecking) {
-	DAPNode.log.debug("Attribute.checkFloat() - string: '" + s + "'   value: " + val);
+	    DAPNode.log.debug("Attribute.checkFloat() - string: '" + s + "'   value: " + val);
       }
       return true;
     }
@@ -641,9 +643,10 @@ public class Attribute extends DAPNode
    */
   private static final boolean checkDouble(String s) {
     try {
+      //Coverity[FB.DLS_DEAD_LOCAL_STORE]
       double val = Double.parseDouble(s);
       if (DebugValueChecking) {
-	DAPNode.log.debug("Attribute.checkDouble() - string: '" + s + "'   value: " + val);
+	    DAPNode.log.debug("Attribute.checkDouble() - string: '" + s + "'   value: " + val);
       }
       return true;
     }
@@ -767,7 +770,7 @@ public class Attribute extends DAPNode
    * @param pad the number of spaces to indent each line.
    */
   public final void print(OutputStream os, String pad) {
-    print(new PrintWriter(new BufferedWriter(new OutputStreamWriter(os))), pad);
+    print(new PrintWriter(new BufferedWriter(new OutputStreamWriter(os,Util.UTF8))), pad);
   }
 
   /**
@@ -806,7 +809,7 @@ public class Attribute extends DAPNode
    * @opendap.ddx.experimental
    */
   public void printXML(OutputStream os, String pad) {
-    PrintWriter pw = new PrintWriter(new BufferedWriter(new OutputStreamWriter(os)));
+    PrintWriter pw = new PrintWriter(new BufferedWriter(new OutputStreamWriter(os,Util.UTF8)));
     printXML(pw, pad);
     pw.flush();
   }
