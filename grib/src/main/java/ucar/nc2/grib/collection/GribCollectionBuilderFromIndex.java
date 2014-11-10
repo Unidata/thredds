@@ -44,6 +44,7 @@ import ucar.nc2.stream.NcStream;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time.CalendarDateUnit;
 import ucar.nc2.time.CalendarPeriod;
+import ucar.nc2.util.cache.SmartArrayInt;
 import ucar.unidata.io.RandomAccessFile;
 
 import java.io.File;
@@ -480,9 +481,10 @@ message Coord {
     // 1d only
     List<Integer> time2runList = pv.getTime2RuntimeList();
     if (time2runList.size() > 0) {
-      result.time2runtime = new int[time2runList.size()];
+      int[] time2runtime = new int[time2runList.size()];
       int count = 0;
-      for (int idx : time2runList) result.time2runtime[count++] = idx;
+      for (int idx : time2runList) time2runtime[count++] = idx;
+      result.time2runtime = new SmartArrayInt(time2runtime);
     }
 
     return readVariableExtensions(group, pv, result);

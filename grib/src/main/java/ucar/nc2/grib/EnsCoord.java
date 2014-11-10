@@ -44,6 +44,7 @@ import java.util.List;
  * @author caron
  * @since 4/1/11
  */
+@Immutable
 public class EnsCoord  {
   private final List<Coord> coords;
 

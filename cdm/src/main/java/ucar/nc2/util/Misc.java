@@ -44,6 +44,8 @@ import java.util.*;
  * @author caron
  */
 public class Misc {
+  public static final int referenceSize = 4;   // estimates pointer size, in principle JVM dependent
+  public static final int objectSize = 16;   // estimates pointer size, in pronciple JVM dependent
 
   //private static double maxAbsoluteError = 1.0e-6;
   public static final double maxReletiveError = 1.0e-6;

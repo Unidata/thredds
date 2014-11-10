@@ -43,6 +43,7 @@ import ucar.nc2.grib.grib1.tables.Grib1Customizer;
 import ucar.nc2.grib.grib2.Grib2Pds;
 import ucar.nc2.grib.grib2.Grib2Record;
 import ucar.nc2.util.Indent;
+import ucar.nc2.util.Misc;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -86,10 +87,17 @@ public class CoordinateEns implements Coordinate {
     return ensSorted.get(idx);
   }
 
+  @Override
   public int getSize() {
     return ensSorted.size();
   }
 
+  @Override
+  public int estMemorySize() {
+    return 160 + getSize() * ( 8 + Misc.referenceSize);
+  }
+
+  @Override
   public Type getType() {
     return Type.ens;
   }

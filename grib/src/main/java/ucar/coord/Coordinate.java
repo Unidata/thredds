@@ -24,6 +24,7 @@ public interface Coordinate {
   Object getValue(int idx);  // get the ith value
   int getIndex(Object val);  // LOOK assumes the values are unique;
   int getSize();             // how many values ??
+  int estMemorySize();       // estimated memory size in bytes (debugging)
 
   int getCode();
   Type getType();

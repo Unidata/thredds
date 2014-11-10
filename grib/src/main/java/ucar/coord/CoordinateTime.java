@@ -15,6 +15,7 @@ import ucar.nc2.grib.grib2.Grib2Pds;
 import ucar.nc2.grib.grib2.Grib2Record;
 import ucar.nc2.time.CalendarPeriod;
 import ucar.nc2.util.Indent;
+import ucar.nc2.util.Misc;
 
 import java.util.*;
 
@@ -64,8 +65,14 @@ public class CoordinateTime extends CoordinateTimeAbstract implements Coordinate
     return offsetSorted.size();
   }
 
+  @Override
   public Type getType() {
     return Type.time;
+  }
+
+  @Override
+  public int estMemorySize() {
+    return 320 + getSize() * (16);
   }
 
   @Override

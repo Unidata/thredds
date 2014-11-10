@@ -75,6 +75,11 @@ public class TestCoordinate implements Coordinate {
   }
 
   @Override
+  public int estMemorySize() {
+    return 0;
+  }
+
+  @Override
   public int getCode() {
     return 0;  //To change body of implemented methods use File | Settings | File Templates.
   }

@@ -10,6 +10,7 @@ import ucar.nc2.ui.widget.BAMutil;
 import ucar.nc2.ui.widget.IndependentWindow;
 import ucar.nc2.ui.widget.PopupMenu;
 import ucar.nc2.ui.widget.TextHistoryPane;
+import ucar.nc2.util.Misc;
 import ucar.unidata.io.RandomAccessFile;
 import ucar.util.prefs.PreferencesExt;
 import ucar.util.prefs.ui.BeanTable;
@@ -74,11 +75,11 @@ public class CdmIndex2Panel extends JPanel {
       });
       buttPanel.add(filesButton);
 
-      AbstractButton rawButton = BAMutil.makeButtcon("Information", "Show Raw Info", false);
+      AbstractButton rawButton = BAMutil.makeButtcon("Information", "Estimate memory use", false);
       rawButton.addActionListener(new ActionListener() {
         public void actionPerformed(ActionEvent e) {
           Formatter f = new Formatter();
-          //showRawInfo(f);
+          showMemoryEst(f);
           infoTA.setText(f.toString());
           infoTA.gotoTop();
           infoWindow.show();
@@ -317,6 +318,68 @@ public class CdmIndex2Panel extends JPanel {
 
     f.format("%n");
     // showFiles(f);
+  }
+
+  public void showMemoryEst(Formatter f) {
+    if (gc == null) return;
+
+    for (GribCollection.Dataset ds : gc.getDatasets()) {
+      f.format("Dataset %s%n", ds.getType());
+      int bytesTotal = 0;
+      int bytesSATotal = 0;
+      int coordsAllTotal = 0;
+
+      for (GribCollection.GroupGC g : ds.getGroups()) {
+        f.format(" Group %s%n", g.getDescription());
+
+        int coordsTotal = 0;
+        f.format(" total  type Coordinate%n");
+        for (Coordinate vc : g.getCoordinates()) {
+          f.format(" %6d %-8s %-40s%n", vc.estMemorySize(), vc.getType(), vc.getName());
+          bytesTotal += vc.estMemorySize();
+          coordsTotal += vc.estMemorySize();
+        }
+        f.format(" %6d%n", coordsTotal);
+        f.format("%n");
+        coordsAllTotal += coordsTotal;
+
+        int count = 0;
+        for (GribCollection.VariableIndex v : g.getVariables()) {
+          VarBean bean = new VarBean(v, g);
+
+          if (v instanceof PartitionCollection.VariableIndexPartitioned) {
+            if (count == 0) f.format(" total   VariablePartitioned%n");
+
+            PartitionCollection.VariableIndexPartitioned vip = (PartitionCollection.VariableIndexPartitioned) v;
+             int nparts = vip.getNparts();
+             int memEstBytes = 368 + nparts * 4;  // very rough
+             bytesTotal += memEstBytes;
+             f.format("%6d %-50s nparts=%6d%n", memEstBytes, bean.getName(), nparts);
+
+          } else {
+            if (count == 0) f.format(" total   SA  Variable%n");
+            try {
+              v.readRecords();
+              SparseArray<GribCollection.Record> sa = v.getSparseArray();
+              int ntracks  = sa.getTotalSize();
+              int nrecords = sa.getContent().size();
+              int memEstForSA = 276 + nrecords * 40 + ntracks * 4;
+              int memEstBytes = 280 + memEstForSA;
+              f.format("%6d %6d %-50s nrecords=%6d%n", memEstBytes, memEstForSA, bean.getName(), nrecords);
+              bytesTotal += memEstBytes;
+              bytesSATotal += memEstForSA;
+
+            } catch (IOException e) {
+              e.printStackTrace();
+            }
+          }
+          count++;
+        }
+      }
+      int noSA =  bytesTotal - bytesSATotal;
+      f.format("%n total bytes=%d bytesSATotal=%d bytesNoSA=%d coordsAllTotal=%d%n", bytesTotal, bytesSATotal, noSA, coordsAllTotal);
+      f.format("%n");
+    }
   }
 
   private void compareCoords(Formatter f, Coordinate coord1, Coordinate coord2) {

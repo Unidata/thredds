@@ -57,8 +57,14 @@ public class CoordinateTimeIntv extends CoordinateTimeAbstract implements Coordi
     return Collections.binarySearch(timeIntervals, (TimeCoord.Tinv) val);
   }
 
+  @Override
   public int getSize() {
     return timeIntervals.size();
+  }
+
+  @Override
+  public int estMemorySize() {
+    return 616 + getSize() * (24);  // LOOK wrong
   }
 
   @Override
