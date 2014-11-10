@@ -20,7 +20,7 @@ public class TestSparseArray {
       track[i] = i % 11 == 0 ? 0 : 1;
     }
 
-    SparseArray sa = new SparseArray(sizes, track, null);
+    SparseArray sa = new SparseArray(sizes, track, null, 0);
 
     Formatter info = new Formatter(System.out);
     sa.showInfo(info, null);

@@ -1,5 +1,6 @@
 package ucar.coord;
 
+import net.jcip.annotations.Immutable;
 import ucar.nc2.grib.GribUtils;
 import ucar.nc2.grib.grib1.Grib1ParamTime;
 import ucar.nc2.grib.grib1.Grib1Record;
@@ -23,6 +24,7 @@ import java.util.*;
  * @author John
  * @since 11/28/13
  */
+@Immutable
 public class CoordinateTimeIntv extends CoordinateTimeAbstract implements Coordinate {
   private final List<TimeCoord.Tinv> timeIntervals;
 

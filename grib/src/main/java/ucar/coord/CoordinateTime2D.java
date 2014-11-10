@@ -35,6 +35,7 @@
 
 package ucar.coord;
 
+import net.jcip.annotations.Immutable;
 import ucar.nc2.grib.TimeCoord;
 import ucar.nc2.grib.collection.GribIosp;
 import ucar.nc2.grib.grib1.Grib1Record;
@@ -43,7 +44,6 @@ import ucar.nc2.grib.grib2.Grib2Record;
 import ucar.nc2.grib.grib2.table.Grib2Customizer;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time.CalendarDateRange;
-import ucar.nc2.time.CalendarDateUnit;
 import ucar.nc2.time.CalendarPeriod;
 import ucar.nc2.util.Indent;
 
@@ -55,6 +55,7 @@ import java.util.*;
  * @author caron
  * @since 1/22/14
  */
+@Immutable
 public class CoordinateTime2D extends CoordinateTimeAbstract implements Coordinate {
   private final CoordinateRuntime runtime;
   private final List<Coordinate> times; // time coordinates - original offsets
@@ -82,7 +83,7 @@ public class CoordinateTime2D extends CoordinateTimeAbstract implements Coordina
     super(code, timeUnit, runtime.getFirstDate());
 
     this.runtime = runtime;
-    this.times = times;
+    this.times = Collections.unmodifiableList(times);
     this.otime = null;
     this.regTimes = null;
     this.isRegular = false;
@@ -97,7 +98,7 @@ public class CoordinateTime2D extends CoordinateTimeAbstract implements Coordina
     assert nruns == times.size();
 
     makeOffsets(times);
-    this.vals = vals;
+    this.vals = Collections.unmodifiableList(vals);
   }
 
   // orthogonal - all offsets are the same
@@ -105,7 +106,7 @@ public class CoordinateTime2D extends CoordinateTimeAbstract implements Coordina
     super(code, timeUnit, runtime.getFirstDate());
 
     this.runtime = runtime;
-    this.times = times;    // need these for makeBest
+    this.times = Collections.unmodifiableList(times);    // need these for makeBest
 
     this.otime = otime;
     this.isOrthogonal = true;
@@ -126,7 +127,7 @@ public class CoordinateTime2D extends CoordinateTimeAbstract implements Coordina
     this.runtime = runtime;
     this.nruns = runtime.getSize();
 
-    this.times = times;  // need these for makeBest
+    this.times = Collections.unmodifiableList(times);    // need these for makeBest
     this.otime = null;
     this.isOrthogonal = false;
     this.isRegular = true;

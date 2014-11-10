@@ -473,8 +473,7 @@ message Coord {
     if (!dataOnly) {
       List<Integer> invCountList = pv.getInvCountList();
       if (invCountList.size() > 0) {
-        result.twot = new TwoDTimeInventory(invCountList);
-        result.twot.setSize(runtime.getSize(), ntimes);
+        result.twot = new TwoDTimeInventory(invCountList, runtime.getSize(), ntimes);
       }
     }
 

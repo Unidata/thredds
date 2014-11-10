@@ -11,7 +11,7 @@ import java.util.*;
 
 /**
  * Grib runtime coordinate
- *
+ * Effectively Immutable
  * @author caron
  * @since 11/24/13
  */
@@ -19,9 +19,9 @@ import java.util.*;
 public class CoordinateRuntime implements Coordinate {
   final List<CalendarDate> runtimeSorted;
   final CalendarDate firstDate;
-  CalendarPeriod timeUnit = CalendarPeriod.Hour;
+  final CalendarPeriod timeUnit;
+  final String periodName;
   String name = "reftime";
-  String periodName;
 
   public CoordinateRuntime(List<CalendarDate> runtimeSorted, CalendarPeriod timeUnit) {
     this.runtimeSorted = Collections.unmodifiableList(runtimeSorted);
@@ -75,6 +75,7 @@ public class CoordinateRuntime implements Coordinate {
   }
 
   public void setName(String name) {
+    if (!this.name.equals("reftime")) throw new IllegalStateException("Cant modify");
     this.name = name;
   }
 

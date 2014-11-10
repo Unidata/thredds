@@ -2,8 +2,6 @@ package ucar.coord;
 
 import thredds.featurecollection.FeatureCollectionConfig;
 import ucar.nc2.grib.TimeCoord;
-import ucar.nc2.grib.collection.*;
-//import ucar.nc2.grib.grib2.Grib2Record;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time.CalendarPeriod;
 
@@ -14,8 +12,10 @@ import java.util.*;
  * The CoordinateBuilders create unique sets of Coordinates.
  * The CoordinateND result is then the cross-product of those Coordinates.
  *
+ * This is a builder helper class, the result is obtained from List<Coordinate> finish().
+ *
  * So if theres a lot of missing records in that cross-product, we may have the variable wrong (?),
- *  or our assumption that the ddata comprises a multdim array may be wrong
+ *  or our assumption that the data comprises a multdim array may be wrong
  *
  * @author John
  * @since 12/10/13
@@ -32,7 +32,7 @@ public class CoordinateUnionizer<T> {
   }
 
   List<Coordinate> unionCoords = new ArrayList<>();
-  CoordinateND<GribCollection.Record> result;
+  // CoordinateND<GribCollection.Record> result;
 
   CoordinateBuilder runtimeBuilder ;
   CoordinateBuilder timeBuilder;
@@ -113,7 +113,7 @@ public class CoordinateUnionizer<T> {
     if (ensBuilder != null)
        unionCoords.add(ensBuilder.finish());
 
-    result = new CoordinateND<>(unionCoords);
+    // result = new CoordinateND<>(unionCoords);
     return unionCoords;
   }
 

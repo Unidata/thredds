@@ -7,6 +7,8 @@ import java.util.*;
  * to form the set of group coordinates.
  * Use object.equals() to find unique coordinates.
  *
+ *  This is a builder helper class.
+ *
  * @author John
  * @since 1/4/14
  */
@@ -183,9 +185,7 @@ public class CoordinateSharer<T> {
       completeCoords.add(coord);
     }
 
-    CoordinateND<T> result = new CoordinateND<>(completeCoords);
-    result.reindex(prev);
-    return result;
+    return new CoordinateND.Builder<T>().reindex(completeCoords, prev);
   }
 
 }

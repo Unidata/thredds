@@ -74,12 +74,16 @@ import java.util.*;
  * Handles .ncx2 files.
  * Data files are opened and managed externally.
  *
+ * Mostly Immutable
+ *   - sparse arrays are read in as requested, synch on GC
+ *   - index file - make thread safe
+ *   - data file managed externally, so thread safe
  * @author John
  * @since 12/1/13
  */
 public abstract class GribCollection implements FileCacheable, AutoCloseable {
   static private final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(GribCollection.class);
-  public static final long MISSING_RECORD = -1;
+  static public  final long MISSING_RECORD = -1;
 
   public enum Type {GC, TwoD, Best, Analysis} // must match with GribCollectionProto.Dataset.Type
 
@@ -131,7 +135,7 @@ public abstract class GribCollection implements FileCacheable, AutoCloseable {
 
       if multiple runtimes: make seperate GC for each one, make a PC that puts them together. GC name= collectionName + runtime, PC = collectionName.
       if single runtime:   GC name = collectionName
-      in both cases, the index for the collection = collectionName
+      in both cases, the index for the collection = collectionName.ncx2
 
     partition = directory
 
@@ -156,16 +160,7 @@ public abstract class GribCollection implements FileCacheable, AutoCloseable {
     CollectionSpecParser specp = new CollectionSpecParser(config.spec, errlog);
 
     String name = StringUtil2.replace(config.name, '\\', "/");
-
     String cname = DirectoryCollection.makeCollectionName(name, Paths.get(specp.getRootDir()));
-    /* switch (config.ptype) {
-      case file:
-      case directory:
-        cname = DirectoryCollection.makeCollectionName(name, Paths.get(specp.getRootDir()));
-        break;
-      case none:
-        cname = !specp.wantSubdirs() ? name : DirectoryCollection.makeCollectionName(name, Paths.get(specp.getRootDir()));
-    }  */
 
     return makeIndexFile(cname, new File(specp.getRootDir()));
   }
@@ -230,7 +225,7 @@ public abstract class GribCollection implements FileCacheable, AutoCloseable {
   protected CoordinateRuntime masterRuntime;
   protected GribTables cust;
 
-  // not stored
+  // not stored in index
   private Map<String, MFile> filenameMap;
   protected RandomAccessFile indexRaf; // this is the raf of the index (ncx) file, synchronize any access to it
   protected FileCacheIF objCache = null;  // optional object cache - used in the TDS
@@ -467,13 +462,9 @@ public abstract class GribCollection implements FileCacheable, AutoCloseable {
       throw new FileNotFoundException("data file not found = " + dataFile.getPath());
     }
 
-    RandomAccessFile want = getDataRaf(dataFile.getPath());
+    RandomAccessFile want = RandomAccessFile.acquire(dataFile.getPath());
     want.order(RandomAccessFile.BIG_ENDIAN);
     return want;
-  }
-
-  private RandomAccessFile getDataRaf(String location) throws IOException {
-    return RandomAccessFile.acquire(location);
   }
 
   // debugging
@@ -1131,7 +1122,7 @@ public abstract class GribCollection implements FileCacheable, AutoCloseable {
         records.add(new Record(pr.getFileno(), pr.getPos(), pr.getBmsPos(), pr.getScanMode()));
       }
 
-      this.sa = new SparseArray<>(size, track, records);
+      this.sa = new SparseArray<>(size, track, records, 0);
     }
 
     @Override
@@ -1159,8 +1150,9 @@ public abstract class GribCollection implements FileCacheable, AutoCloseable {
       }
       this.density = ((float) this.nrecords) / this.totalSize;
     }
-  }
+  }  // VariableIndex
 
+  @Immutable
   public static class Record {
     public final int fileno;    // which file
     public final long pos;      // offset on file where data starts
