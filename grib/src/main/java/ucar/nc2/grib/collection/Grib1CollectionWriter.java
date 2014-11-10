@@ -365,7 +365,7 @@ public class Grib1CollectionWriter extends GribCollectionWriter {
     SparseArray sa = vb.coordND.getSparseArray();
     if (sa != null) {
       b.setDensity(sa.getDensity());
-      b.setNdups(sa.getNduplicates());
+      b.setNdups(sa.getNdups());
       b.setNrecords(sa.countNotMissing());
       b.setMissing(sa.countMissing());
     }

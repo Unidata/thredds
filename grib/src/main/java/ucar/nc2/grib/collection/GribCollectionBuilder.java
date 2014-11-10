@@ -142,11 +142,6 @@ public abstract class GribCollectionBuilder {
   }
 
   public boolean createIndex(Formatter errlog) throws IOException {
-    if (dcm == null) {
-      logger.error("GribCollectionBuilder " + name + " : cannot create new index ");
-      throw new IllegalStateException();
-    }
-
     long start = System.currentTimeMillis();
 
     List<MFile> files = new ArrayList<>();

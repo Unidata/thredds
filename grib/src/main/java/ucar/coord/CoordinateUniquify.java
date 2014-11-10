@@ -105,11 +105,8 @@ public class CoordinateUniquify<T> {
        sharedCoords.add(coord);
      }
 
-     CoordinateND<T> result;
      if (needReindex) {
-       result = new CoordinateND<>(sharedCoords);
-       result.reindex(prev);
-       return result;
+       return new CoordinateND.Builder<T>().reindex(sharedCoords, prev);
 
      } else {
        return new CoordinateND<>(sharedCoords, prev.getSparseArray());

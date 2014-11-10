@@ -63,8 +63,9 @@ import java.util.*;
 import java.util.Formatter;
 
 /**
- * Grib Collection IOSP, ver2.
+ * Grib Collection IOSP, version 2.
  * Handles both collections and single GRIB files.
+ * Immutable after open() is called.
  *
  * @author caron
  * @since 4/6/11
@@ -142,7 +143,7 @@ public abstract class GribIosp extends AbstractIOServiceProvider {
   protected GribCollection.Type gtype; // only used if gHcs was set
   protected boolean isPartitioned;
   protected boolean owned; // if Iosp is owned by GribCollection; affects close()
-  protected ucar.nc2.grib.GribTables gribTable;
+  protected  ucar.nc2.grib.GribTables gribTable;
 
   public GribIosp(boolean isGrib1, org.slf4j.Logger logger) {
     this.isGrib1 = isGrib1;

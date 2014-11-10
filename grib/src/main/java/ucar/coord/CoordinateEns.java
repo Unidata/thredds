@@ -35,10 +35,8 @@
 
 package ucar.coord;
 
+import net.jcip.annotations.Immutable;
 import ucar.nc2.grib.EnsCoord;
-import ucar.nc2.grib.GribNumbers;
-import ucar.nc2.grib.VertCoord;
-import ucar.nc2.grib.grib1.Grib1ParamLevel;
 import ucar.nc2.grib.grib1.Grib1Record;
 import ucar.nc2.grib.grib1.Grib1SectionProductDefinition;
 import ucar.nc2.grib.grib1.tables.Grib1Customizer;
@@ -57,11 +55,12 @@ import java.util.List;
  * @author caron
  * @since 2/22/14
  */
+@Immutable
 public class CoordinateEns implements Coordinate {
 
   private final List<EnsCoord.Coord> ensSorted;
-  private final int code; //
-  private String name = "ens";
+  private final int code;
+  private String name ="ens";
 
   public CoordinateEns(int code, List<EnsCoord.Coord> ensSorted) {
     this.ensSorted = Collections.unmodifiableList(ensSorted);
@@ -110,6 +109,7 @@ public class CoordinateEns implements Coordinate {
   }
 
   public void setName(String name) {
+    if (!this.name.equals("ens")) throw new IllegalStateException("Cant modify");
     this.name = name;
   }
 

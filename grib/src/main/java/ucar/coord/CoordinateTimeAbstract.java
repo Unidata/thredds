@@ -35,6 +35,7 @@
 
 package ucar.coord;
 
+import net.jcip.annotations.Immutable;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time.CalendarDateRange;
 import ucar.nc2.time.CalendarPeriod;
@@ -43,17 +44,19 @@ import java.util.List;
 
 /**
  * Abstract superclass for time coordinates ( time, timeIntv, time2D)
+ * Effectively Immutable
  *
  * @author caron
  * @since 1/23/14
  */
+@Immutable
 public abstract class CoordinateTimeAbstract implements Coordinate {
   static public final String MIXED_INTERVALS = "Mixed_intervals";
 
   protected final int code;                  // unit of time (Grib1 table 4, Grib2 table 4.4), eg hour, day, month
   protected final CalendarPeriod timeUnit;   // time duration, based on code
-  protected String periodName;               // used to create the udunit
-  protected CalendarDate refDate;            // null if dense (??)
+  protected final String periodName;               // used to create the udunit
+  protected final CalendarDate refDate;            // null if dense (??)
 
   protected String name = "time";
 
@@ -89,15 +92,12 @@ public abstract class CoordinateTimeAbstract implements Coordinate {
   }
 
   public void setName(String name) {
+    if (!this.name.equals("time")) throw new IllegalStateException("Cant modify");
     this.name = name;
   }
 
   public CalendarDate getRefDate() {
     return refDate;
-  }
-
-  public void setRefDate(CalendarDate refDate) {
-    this.refDate = refDate;
   }
 
   public double getTimeUnitScale() { return timeUnit.getValue(); }

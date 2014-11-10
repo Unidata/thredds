@@ -289,34 +289,34 @@ public class Grib2CollectionBuilder extends GribCollectionBuilder {
         Grib2Pds pdsFirst = vb.first.getPDS();
         int code = cust.convertTimeUnit(pdsFirst.getTimeUnit());
         vb.timeUnit = userTimeUnit == null ? Grib2Utils.getCalendarPeriod(code) : userTimeUnit;   // so can override the code in config  "timeUnit"
-        vb.coordND = new CoordinateND<>();
+        CoordinateND.Builder<Grib2Record> coordNBuilder = new CoordinateND.Builder<>();
 
         boolean isTimeInterval = vb.first.getPDS().isTimeInterval();
         if (isDense) { // time is runtime X time coord
-          vb.coordND.addBuilder(new CoordinateRuntime.Builder2(vb.timeUnit));
+          coordNBuilder.addBuilder(new CoordinateRuntime.Builder2(vb.timeUnit));
           if (isTimeInterval)
-            vb.coordND.addBuilder(new CoordinateTimeIntv.Builder2(cust, code, vb.timeUnit, null)); // LOOK null refdate not ok
+            coordNBuilder.addBuilder(new CoordinateTimeIntv.Builder2(cust, code, vb.timeUnit, null)); // LOOK null refdate not ok
           else
-            vb.coordND.addBuilder(new CoordinateTime.Builder2(code, vb.timeUnit, null)); // LOOK null refdate not ok
+            coordNBuilder.addBuilder(new CoordinateTime.Builder2(code, vb.timeUnit, null)); // LOOK null refdate not ok
 
         } else {  // time is kept as 2D coordinate, separate list of times for each runtime
-          vb.coordND.addBuilder(new CoordinateRuntime.Builder2(vb.timeUnit));
-          vb.coordND.addBuilder(new CoordinateTime2D.Builder2(isTimeInterval, cust, vb.timeUnit, code));
+          coordNBuilder.addBuilder(new CoordinateRuntime.Builder2(vb.timeUnit));
+          coordNBuilder.addBuilder(new CoordinateTime2D.Builder2(isTimeInterval, cust, vb.timeUnit, code));
         }
 
         if (vb.first.getPDS().isEnsemble())
-          vb.coordND.addBuilder(new CoordinateEns.Builder2(0));
+          coordNBuilder.addBuilder(new CoordinateEns.Builder2(0));
 
         VertCoord.VertUnit vertUnit = Grib2Utils.getLevelUnit(pdsFirst.getLevelType1());
         if (vertUnit.isVerticalCoordinate())
-          vb.coordND.addBuilder(new CoordinateVert.Builder2(pdsFirst.getLevelType1()));
+          coordNBuilder.addBuilder(new CoordinateVert.Builder2(pdsFirst.getLevelType1()));
 
         // populate the coordinates with the inventory of data
         for (Grib2Record gr : vb.atomList)
-          vb.coordND.addRecord(gr);
+          coordNBuilder.addRecord(gr);
 
         // done, build coordinates and sparse array indicating which records to use
-        vb.coordND.finish(vb.atomList, info);
+        vb.coordND = coordNBuilder.finish(vb.atomList, info);
       }
 
       // make shared coordinates across variables
@@ -336,7 +336,7 @@ public class Grib2CollectionBuilder extends GribCollectionBuilder {
         vb.coordND = sharify.reindex(vb.coordND);
         vb.coordIndex = sharify.reindex2shared(vb.coordND.getCoordinates());
         tot_used += vb.coordND.getSparseArray().countNotMissing();
-        tot_dups += vb.coordND.getSparseArray().getNduplicates();
+        tot_dups += vb.coordND.getSparseArray().getNdups();
         total += vb.coordND.getSparseArray().getTotalSize();
        }
 
