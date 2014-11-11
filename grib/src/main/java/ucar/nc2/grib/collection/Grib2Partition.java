@@ -36,6 +36,7 @@
 package ucar.nc2.grib.collection;
 
 import thredds.featurecollection.FeatureCollectionConfig;
+import ucar.coord.CoordinateRuntime;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.NetcdfFileSubclass;
 import ucar.nc2.dataset.NetcdfDataset;
@@ -44,6 +45,7 @@ import ucar.nc2.grib.grib2.table.Grib2Customizer;
 import java.io.File;
 import java.io.IOException;
 import java.util.Formatter;
+import java.util.List;
 
 /**
  * PartitionCollection for Grib2.
@@ -51,10 +53,10 @@ import java.util.Formatter;
  * @author John
  * @since 12/7/13
  */
-public class Grib2Partition extends PartitionCollection implements AutoCloseable {
+public class Grib2Partition extends PartitionCollectionImmutable implements AutoCloseable {
 
-  public Grib2Partition(String name, File directory, FeatureCollectionConfig config, org.slf4j.Logger logger) {
-    super(name, directory, config, false, logger);
+  Grib2Partition( PartitionCollection pc) {
+    super(pc);
   }
 
   // LOOK - needs time partition collection iosp or something

@@ -65,7 +65,7 @@ import java.util.*;
  * @author John
  * @since 12/7/13
  */
-public abstract class PartitionCollection extends GribCollection {
+public class PartitionCollection extends GribCollection {
   // object cache for index files - these are opened only as GribCollection
   private static FileCacheIF partitionCache;
 
@@ -526,9 +526,9 @@ public abstract class PartitionCollection extends GribCollection {
 
   // wrapper around a GribCollection
   public class Partition implements Comparable<Partition> {
-    private final String name, directory;
-    private final String filename;
-    private long lastModified;
+    final String name, directory;
+    final String filename;
+    long lastModified;
     private boolean isBad;
 
     // temporary storage while building - do not use - must call getGribCollection()()
@@ -692,7 +692,7 @@ public abstract class PartitionCollection extends GribCollection {
     countPC++;
   }
 
-  public VariableIndex getVariable2DByHash(HorizCoordSys hcs, int cdmHash) {
+  public VariableIndex getVariable2DByHash(GribHorizCoordSystem hcs, int cdmHash) {
     GribCollection.Dataset ds2d = getDataset2D();
     if (ds2d == null) return null;
     for (GroupGC groupHcs : ds2d.getGroups())

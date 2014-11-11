@@ -632,7 +632,7 @@ public abstract class GribPartitionBuilder  {
       indexBuilder.setMasterRuntime(writer.writeCoordProto(pc.getMasterRuntime()));
 
       //gds
-      for (GribCollection.HorizCoordSys hcs : pc.horizCS)
+      for (GribHorizCoordSystem hcs : pc.horizCS)
         indexBuilder.addGds(writer.writeGdsProto(hcs));
 
       // dataset

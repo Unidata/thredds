@@ -135,15 +135,15 @@ public class Grib1Iosp extends GribIosp {
   }*/
 
   @Override
-  public String makeVariableName(GribCollection.VariableIndex vindex) {
-    return makeVariableNameFromTables(gribCollection.getCenter(), gribCollection.getSubcenter(), vindex.tableVersion, vindex.parameter,
-            vindex.levelType, vindex.isLayer, vindex.intvType, vindex.getTimeIntvName());
+  public String makeVariableName(GribCollectionImmutable.VariableIndex v) {
+    return makeVariableNameFromTables(gribCollection.getCenter(), gribCollection.getSubcenter(), v.getTableVersion(), v.getParameter(),
+            v.getLevelType(), v.isLayer(), v.getIntvType(), v.getIntvName());
   }
 
   @Override
-  public String makeVariableNameFromRecord(GribCollection.VariableIndex vindex) {
-    return makeVariableNameFromRecord(gribCollection.getCenter(), gribCollection.getSubcenter(), vindex.tableVersion, vindex.parameter,
-            vindex.levelType, vindex.isLayer, vindex.intvType, vindex.getTimeIntvName());
+  public String makeVariableNameFromRecord(GribCollectionImmutable.VariableIndex v) {
+    return makeVariableNameFromRecord(gribCollection.getCenter(), gribCollection.getSubcenter(),  v.getTableVersion(), v.getParameter(),
+                v.getLevelType(), v.isLayer(), v.getIntvType(), v.getIntvName());
   }
 
   private String makeVariableNameFromRecord(int center, int subcenter, int tableVersion, int paramNo,
@@ -215,14 +215,13 @@ public class Grib1Iosp extends GribIosp {
   }
 
   @Override
-  protected String makeVariableLongName(GribCollection.VariableIndex vindex) {
-    return makeVariableLongName(gribCollection.getCenter(), gribCollection.getSubcenter(), vindex.tableVersion, vindex.parameter,
-                vindex.levelType, vindex.intvType, vindex.getTimeIntvName(), vindex.isLayer, vindex.probabilityName);
+  public String makeVariableLongName(GribCollectionImmutable.VariableIndex v) {
+    return makeVariableLongName(gribCollection.getCenter(), gribCollection.getSubcenter(), v.getTableVersion(), v.getParameter(),
+            v.getLevelType(), v.isLayer(), v.getIntvType(), v.getIntvName(), v.getProbabilityName());
   }
 
-
-  public String makeVariableLongName(int center, int subcenter, int version, int paramNo,
-                                     int levelType, int intvType, String intvName, boolean isLayer, String probabilityName) {
+  public String makeVariableLongName(int center, int subcenter, int version, int paramNo, int levelType, boolean isLayer, int intvType,
+                                     String intvName, String probabilityName) {
     Formatter f = new Formatter();
 
     boolean isProb = (probabilityName != null && probabilityName.length() > 0);
@@ -250,8 +249,8 @@ public class Grib1Iosp extends GribIosp {
   }
 
   @Override
-  protected String makeVariableUnits(GribCollection.VariableIndex vindex) {
-    return makeVariableUnits(gribCollection.getCenter(), gribCollection.getSubcenter(), vindex.tableVersion, vindex.parameter);
+  protected String makeVariableUnits(GribCollectionImmutable.VariableIndex vindex) {
+    return makeVariableUnits(gribCollection.getCenter(), gribCollection.getSubcenter(), vindex.getTableVersion(), vindex.getParameter());
   }
 
   public String makeVariableUnits(int center, int subcenter, int version, int paramNo) {
@@ -289,14 +288,14 @@ public class Grib1Iosp extends GribIosp {
     super(true, logger);
   }
 
-  public Grib1Iosp(GribCollection.GroupGC gHcs, GribCollection.Type gtype) {
+  public Grib1Iosp(GribCollectionImmutable.GroupGC gHcs, GribCollection.Type gtype) {
     super(true, logger);
     this.gHcs = gHcs;
     this.owned = true;
     this.gtype = gtype;
   }
 
-  public Grib1Iosp(GribCollection gc) {
+  public Grib1Iosp(GribCollectionImmutable gc) {
     super(true, logger);
     this.gribCollection = gc;
     this.owned = true;
@@ -328,38 +327,38 @@ public class Grib1Iosp extends GribIosp {
   }
 
   @Override
-  protected GribTables.Parameter getParameter(GribCollection.VariableIndex vindex) {
-    return cust.getParameter(gribCollection.center, gribCollection.subcenter, gribCollection.version, vindex.parameter);
+  protected GribTables.Parameter getParameter(GribCollectionImmutable.VariableIndex vindex) {
+    return cust.getParameter(gribCollection.getCenter(), gribCollection.getSubcenter(), gribCollection.getVersion(), vindex.getParameter());
   }
 
   @Override
-  protected void addVariableAttributes(Variable v, GribCollection.VariableIndex vindex) {
+  protected void addVariableAttributes(Variable v, GribCollectionImmutable.VariableIndex vindex) {
 
     // Grib attributes
-    v.addAttribute(new Attribute(VARIABLE_ID_ATTNAME, makeVariableNameFromRecord(vindex)));
-    v.addAttribute(new Attribute("Grib1_Center", gribCollection.center));
-    v.addAttribute(new Attribute("Grib1_Subcenter", gribCollection.subcenter));
-    v.addAttribute(new Attribute("Grib1_TableVersion", vindex.tableVersion));
-    v.addAttribute(new Attribute("Grib1_Parameter", vindex.parameter));
-    Grib1Parameter param = cust.getParameter(gribCollection.getCenter(), gribCollection.getSubcenter(), vindex.tableVersion, vindex.parameter);
+    v.addAttribute(new Attribute(VARIABLE_ID_ATTNAME, makeVariableName(vindex)));
+    v.addAttribute(new Attribute("Grib1_Center", gribCollection.getCenter()));
+    v.addAttribute(new Attribute("Grib1_Subcenter", gribCollection.getSubcenter()));
+    v.addAttribute(new Attribute("Grib1_TableVersion", vindex.getTableVersion()));
+    v.addAttribute(new Attribute("Grib1_Parameter", vindex.getParameter()));
+    Grib1Parameter param = cust.getParameter(gribCollection.getCenter(), gribCollection.getSubcenter(), vindex.getTableVersion(), vindex.getParameter());
     if (param != null && param.getName() != null)
       v.addAttribute(new Attribute("Grib1_Parameter_Name", param.getName()));
 
-    if (vindex.levelType != GribNumbers.MISSING)
-      v.addAttribute(new Attribute("Grib1_Level_Type", vindex.levelType));
-    String ldesc = cust.getLevelDescription(vindex.levelType);
+    if (vindex.getLevelType() != GribNumbers.MISSING)
+      v.addAttribute(new Attribute("Grib1_Level_Type", vindex.getLevelType()));
+    String ldesc = cust.getLevelDescription(vindex.getLevelType());
     if (ldesc != null)
       v.addAttribute(new Attribute("Grib1_Level_Desc", ldesc));
 
 
-    String timeTypeName = cust.getTimeTypeName(vindex.intvType);
+    String timeTypeName = cust.getTimeTypeName(vindex.getIntvType());
     if ( timeTypeName != null && timeTypeName.length() != 0)
       v.addAttribute(new Attribute(CDM.TIME_INTERVAL, timeTypeName));
 
-    if (vindex.ensDerivedType >= 0)
-      v.addAttribute(new Attribute("Grib1_Ensemble_Derived_Type", vindex.ensDerivedType));
-    else if (vindex.probabilityName != null && vindex.probabilityName.length() > 0)
-      v.addAttribute(new Attribute("Grib1_Probability_Type", vindex.probabilityName));
+    if (vindex.getEnsDerivedType() >= 0)
+      v.addAttribute(new Attribute("Grib1_Ensemble_Derived_Type", vindex.getEnsDerivedType()));
+    else if (vindex.getProbabilityName() != null && vindex.getProbabilityName().length() > 0)
+      v.addAttribute(new Attribute("Grib1_Probability_Type", vindex.getProbabilityName()));
   }
 
   @Override

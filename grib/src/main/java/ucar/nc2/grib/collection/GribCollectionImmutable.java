@@ -40,6 +40,7 @@ import thredds.featurecollection.FeatureCollectionConfig;
 import thredds.inventory.MFile;
 import ucar.coord.Coordinate;
 import ucar.coord.CoordinateRuntime;
+import ucar.coord.CoordinateTimeAbstract;
 import ucar.coord.SparseArray;
 import ucar.nc2.grib.GdsHorizCoordSys;
 import ucar.nc2.grib.GribTables;
@@ -49,14 +50,16 @@ import ucar.nc2.grib.grib1.tables.Grib1Customizer;
 import ucar.nc2.grib.grib2.Grib2Pds;
 import ucar.nc2.grib.grib2.Grib2SectionProductDefinition;
 import ucar.nc2.grib.grib2.Grib2Utils;
+import ucar.nc2.time.CalendarDateRange;
 import ucar.nc2.util.cache.FileCacheIF;
+import ucar.nc2.util.cache.FileCacheable;
 import ucar.unidata.io.RandomAccessFile;
 
+import java.io.Closeable;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Describe
@@ -65,7 +68,7 @@ import java.util.Map;
  * @since 11/10/2014
  */
 @Immutable
-public class GribCollectionImmutable {
+public abstract class GribCollectionImmutable implements Closeable, FileCacheable {
   static private final Logger logger = LoggerFactory.getLogger(GribCollectionImmutable.class);
 
   ////////////////////////////////////////////////////////////////
@@ -75,41 +78,91 @@ public class GribCollectionImmutable {
   protected final boolean isGrib1;
   protected final Info info;
 
-  // protected Map<Integer, MFile> fileMap;    // all the files used in the GC; key in index in original collection, GC has subset of them
   protected final List<Dataset> datasets;
-  protected final List<GribCollection.HorizCoordSys> horizCS; // one for each unique GDS
+  protected final List<GribHorizCoordSystem> horizCS; // one for each unique GDS
   protected final CoordinateRuntime masterRuntime;
-  protected GribTables cust;
 
   // not stored in index
-  private Map<String, MFile> filenameMap;
-  protected RandomAccessFile indexRaf; // this is the raf of the index (ncx) file, synchronize any access to it
+  protected Map<Integer, MFile> fileMap;    // all the files used in the GC; key is the index in original collection, GC has subset of them
+  protected GribTables cust;
+  protected Map<String, MFile> filenameMap;
+  // protected RandomAccessFile indexRaf; // this is the raf of the index (ncx) file, synchronize any access to it
   protected FileCacheIF objCache = null;  // optional object cache - used in the TDS
   protected String indexFilename;
 
   public static int countGC;
 
-  public GribCollectionImmutable(String name, File directory, FeatureCollectionConfig config, boolean isGrib1, Info info,
-                                 List<Dataset> datasets, List<GribCollection.HorizCoordSys> horizCS, CoordinateRuntime masterRuntime) {
+  GribCollectionImmutable(GribCollection gc) {
     countGC++;
 
-    if (config == null)
-      logger.error("HEY GribCollection {} has empty config%n", name);
-    if (name == null)
-      logger.error("HEY GribCollection has null name dir={}%n", directory);
+    this.config = gc.getConfig();
+    this.name = gc.getName();
+    this.directory = gc.getDirectory();
+    this.isGrib1 = gc.isGrib1;
+    this.info = new Info(gc);
 
-    this.name = name;
-    this.directory = directory;
-    this.config = config;
-    this.isGrib1 = isGrib1;
-    this.info = info;
+    List<GribCollection.Dataset> gcDatasets = gc.getDatasets();
+    List<Dataset> work = new ArrayList<>(gcDatasets.size());
+    for (GribCollection.Dataset gcDataset : gcDatasets) {
+      work.add( new Dataset(gcDataset.getType(), gcDataset.groups));
+    }
+    this.datasets = Collections.unmodifiableList( work);
 
-    this.datasets = datasets;
-    this.horizCS = horizCS;
-    this.masterRuntime = masterRuntime;
+    this.horizCS = Collections.unmodifiableList( gc.horizCS);
+    this.masterRuntime = gc.getMasterRuntime();
   }
 
-  public class Info {
+  public List<Dataset> getDatasets() {
+    return datasets;
+  }
+
+  public Dataset getDataset(String name) {
+    for (Dataset ds : datasets)
+      if (ds.type.toString().equalsIgnoreCase(name)) return ds;
+    return null;
+  }
+
+  public String getName() {
+    return name;
+  }
+
+  public CoordinateRuntime getMasterRuntime() {
+    return masterRuntime;
+  }
+
+  public int getVersion() {
+    return info.version;
+  }
+
+  public int getCenter() {
+    return info.center;
+  }
+
+  public int getSubcenter() {
+    return info.subcenter;
+  }
+
+  public int getMaster() {
+    return info.master;
+  }
+
+  public int getLocal() {
+    return info.local;
+  }
+
+  public int getGenProcessType() {
+    return info.genProcessType;
+  }
+
+  public int getGenProcessId() {
+    return info.genProcessId;
+  }
+
+  public int getBackProcessId() {
+    return info.backProcessId;
+  }
+
+  public static class Info {
     final int version; // the ncx version
     final int center, subcenter, master, local;  // GRIB 1 uses "local" for table version
     final int genProcessType, genProcessId, backProcessId;
@@ -124,6 +177,19 @@ public class GribCollectionImmutable {
       this.genProcessId = genProcessId;
       this.backProcessId = backProcessId;
     }
+
+    public Info(GribCollection gc) {
+      this.version = gc.version;
+      this.center = gc.center;
+      this.subcenter = gc.subcenter;
+      this.master = gc.master;
+      this.local = gc.local;
+      this.genProcessType = gc.genProcessType;
+      this.genProcessId = gc.genProcessId;
+      this.backProcessId = gc.backProcessId;
+    }
+
+
   }
 
   @Immutable
@@ -131,9 +197,13 @@ public class GribCollectionImmutable {
     final GribCollection.Type type;
     final List<GroupGC> groups;  // must be kept in order, because PartitionForVariable2D has index into it
 
-    public Dataset(GribCollection.Type type, List<GroupGC> groups) {
+    public Dataset(GribCollection.Type type, List<GribCollection.GroupGC> groups) {
       this.type = type;
-      this.groups = groups;
+      List<GroupGC> work = new ArrayList<>(groups.size());
+      for (GribCollection.GroupGC gcGroup : groups) {
+        work.add( new GroupGC(gcGroup));
+      }
+      this.groups = Collections.unmodifiableList( work);
     }
 
     public Iterable<GroupGC> getGroups() {
@@ -165,88 +235,65 @@ public class GribCollectionImmutable {
     }
   }
 
-  @Immutable
-  public class HorizCoordSys { // encapsolates the gds; shared by the GroupHcs
-    private final GdsHorizCoordSys hcs;
-    private final byte[] rawGds;
-    private final int gdsHash;
-    private final String id, description;
-    private final int predefinedGridDefinition;
-
-    public HorizCoordSys(GdsHorizCoordSys hcs, byte[] rawGds, int gdsHash, String id, int predefinedGridDefinition) {
-      this.hcs = hcs;
-      this.rawGds = rawGds;
-      this.gdsHash = gdsHash;
-      this.predefinedGridDefinition = predefinedGridDefinition;
-
-      this.id = id;
-      this.description = makeDescription();
-    }
-
-    public GdsHorizCoordSys getHcs() {
-      return hcs;
-    }
-
-    public byte[] getRawGds() {
-      return rawGds;
-    }
-
-    public int getGdsHash() {
-      return gdsHash;
-    }
-
-    // unique name for Group
-    public String getId() {
-      return id;
-    }
-
-    // human readable
-    public String getDescription() {
-      return description;
-    }
-
-    public int getPredefinedGridDefinition() {
-      return predefinedGridDefinition;
-    }
-
-    private String makeDescription() {
-      // check for user defined group names
-      String result = null;
-      if (config.gribConfig.gdsNamer != null)
-        result = config.gribConfig.gdsNamer.get(gdsHash);
-      if (result != null) return result;
-
-      return hcs.makeDescription(); // default desc
-    }
-  }
-
   // this class should be immutable, because it escapes
   @Immutable
   public class GroupGC {
-    HorizCoordSys horizCoordSys;
-    List<GribCollection.VariableIndex> variList;
-    List<Coordinate> coords;      // shared coordinates
-    int[] filenose;               // key for GC.fileMap
-    Map<Integer, VariableIndex> varMap;
-    boolean isTwod = true;        // true for GC and twoD; so should be called "reference" dataset or something
+    final GribHorizCoordSystem horizCoordSys;
+    final List<GribCollectionImmutable.VariableIndex> variList;
+    final List<Coordinate> coords;      // shared coordinates
+    final int[] filenose;               // key for GC.fileMap
+    final private Map<Integer, VariableIndex> varMap;         // LOOK probably not needed
+    final boolean isTwod = true;        // true for GC and twoD; so should be called "reference" dataset or something
 
-    GroupGC() {
-      this.variList = new ArrayList<>();
-      this.coords = new ArrayList<>();
-    }
+    public GroupGC(GribCollection.GroupGC gc) {
+      this.horizCoordSys = gc.horizCoordSys;
+      this.coords = gc.coords;
+      this.filenose = gc.filenose;
+      this.varMap = new HashMap<>(gc.variList.size() * 2);
 
-    // copy constructor for PartitionBuilder
-    GroupGC(GroupGC from) {
-      this.horizCoordSys = from.horizCoordSys;     // reference
-      this.variList = new ArrayList<>(from.variList.size());
-      this.coords = new ArrayList<>(from.coords.size());
-      this.isTwod = from.isTwod;
+      List<GribCollection.VariableIndex> gcVars = gc.variList;
+      List<VariableIndex> work = new ArrayList<>(gcVars.size());
+      for (GribCollection.VariableIndex gcVar : gcVars) {
+        VariableIndex vi = new VariableIndex(this, gcVar);
+        work.add( vi);
+        varMap.put(vi.getCdmHash(), vi);
+      }
+      this.variList = Collections.unmodifiableList( work);
     }
 
     public String getId() {
       return horizCoordSys.getId();
     }
 
+    public GribCollectionImmutable getGribCollection() {
+      return GribCollectionImmutable.this;
+    }
+
+        // human readable
+    public String getDescription() {
+      return horizCoordSys.getDescription();
+    }
+
+    public GdsHorizCoordSys getGdsHorizCoordSys() {
+      return horizCoordSys.getHcs();
+    }
+
+    public CalendarDateRange makeCalendarDateRange() {
+        CalendarDateRange result = null;
+        for (Coordinate coord : coords) {
+          switch (coord.getType()) {
+            case time:
+            case timeIntv:
+            case time2D:
+              CoordinateTimeAbstract time = (CoordinateTimeAbstract) coord;
+              CalendarDateRange range = time.makeCalendarDateRange(null);
+              if (result == null) result = range;
+              else result = result.extend(range);
+          }
+        }
+
+      return result;
+    }
   }
 
   @Immutable
@@ -261,12 +308,86 @@ public class GribCollectionImmutable {
     // read in on demand
     private SparseArray<Record> sa;   // for GC only; lazily read; same array shape as variable, minus x and y
 
-    private VariableIndex(GroupGC g, VariableIndex.Info info, List<Integer> index, long recordsPos, int recordsLen) {
+    private VariableIndex(GroupGC g, GribCollection.VariableIndex gcVar) {
       this.group = g;
-      this.info = info;
-      this.coordIndex = index;
-      this.recordsPos = recordsPos;
-      this.recordsLen = recordsLen;
+      this.info = new Info(gcVar);
+      this.coordIndex = gcVar.coordIndex;
+      this.recordsPos = gcVar.recordsPos;
+      this.recordsLen = gcVar.recordsLen;
+    }
+
+    public List<Coordinate> getCoordinates() {
+      List<Coordinate> result = new ArrayList<>(coordIndex.size());
+      for (int idx : coordIndex)
+        result.add(group.coords.get(idx));
+      return result;
+    }
+
+    public Coordinate getCoordinate(Coordinate.Type want) {
+      for (int idx : coordIndex)
+        if (group.coords.get(idx).getType() == want)
+          return group.coords.get(idx);
+      return null;
+    }
+
+    public int getTableVersion() {
+      return info.tableVersion;
+    }
+
+    public int getDiscipline() {
+      return info.discipline;
+    }
+
+    public byte[] getRawPds() {
+      return info.rawPds;
+    }
+
+    public int getCdmHash() {
+      return info.cdmHash;
+    }
+
+    public int getCategory() {
+      return info.category;
+    }
+
+    public int getParameter() {
+      return info.parameter;
+    }
+
+    public int getLevelType() {
+      return info.levelType;
+    }
+
+    public int getIntvType() {
+      return info.intvType;
+    }
+
+    public int getEnsDerivedType() {
+      return info.ensDerivedType;
+    }
+
+    public int getProbType() {
+      return info.probType;
+    }
+
+    public String getIntvName() {
+      return info.intvName;
+    }
+
+    public String getProbabilityName() {
+      return info.probabilityName;
+    }
+
+    public boolean isLayer() {
+      return info.isLayer;
+    }
+
+    public boolean isEnsemble() {
+      return info.isEnsemble;
+    }
+
+    public int getGenProcessType() {
+      return info.genProcessType;
     }
 
     @Immutable
@@ -283,23 +404,22 @@ public class GribCollectionImmutable {
       final boolean isLayer, isEnsemble;
       final int genProcessType;
 
-      public Info(int tableVersion, int discipline, byte[] rawPds, int cdmHash, int category, int parameter, int levelType, int intvType, int ensDerivedType,
-                  int probType, String intvName, String probabilityName, boolean isLayer, boolean isEnsemble, int genProcessType) {
-        this.tableVersion = tableVersion;
-        this.discipline = discipline;
-        this.rawPds = rawPds;
-        this.cdmHash = cdmHash;
-        this.category = category;
-        this.parameter = parameter;
-        this.levelType = levelType;
-        this.intvType = intvType;
-        this.ensDerivedType = ensDerivedType;
-        this.probType = probType;
-        this.intvName = intvName;
-        this.probabilityName = probabilityName;
-        this.isLayer = isLayer;
-        this.isEnsemble = isEnsemble;
-        this.genProcessType = genProcessType;
+      public Info(GribCollection.VariableIndex gcVar) {
+        this.tableVersion = gcVar.tableVersion;
+        this.discipline = gcVar.discipline;
+        this.rawPds = gcVar.rawPds;
+        this.cdmHash = gcVar.cdmHash;
+        this.category = gcVar.category;
+        this.parameter = gcVar.parameter;
+        this.levelType = gcVar.levelType;
+        this.intvType = gcVar.intvType;
+        this.ensDerivedType = gcVar.ensDerivedType;
+        this.probType = gcVar.probType;
+        this.intvName = gcVar.getTimeIntvName();
+        this.probabilityName = gcVar.probabilityName;
+        this.isLayer = gcVar.isLayer;
+        this.isEnsemble = gcVar.isEnsemble;
+        this.genProcessType = gcVar.genProcessType;
       }
 
       private Info(GribTables customizer, int discipline, String intvName, byte[] rawPds, int cdmHash) {
@@ -369,6 +489,7 @@ public class GribCollectionImmutable {
           this.isEnsemble = pds.isEnsemble();
         }
       }
+
     }
 
     @Immutable
@@ -397,4 +518,131 @@ public class GribCollectionImmutable {
       }
     }
   }
+
+  ////////////////////////////
+  // File Cacheable
+
+    //////////////////////////////////////////////////////////////////////////////////////////////////
+  // stuff for FileCacheable
+
+  public synchronized void close() throws java.io.IOException {
+    if (objCache != null) {
+      if (objCache.release(this)) return;
+    }
+  }
+
+    // release any resources like file handles
+  public void release() throws IOException {
+  }
+
+  // reacquire any resources like file handles
+  public void reacquire() throws IOException {
+  }
+
+  @Override
+  public String getLocation() {
+    return getIndexFilepathInCache();
+  }
+
+  @Override
+  public long getLastModified() {
+    File indexFile = makeIndexFile(name, directory);
+    File indexFileInPath = getFileInCache(indexFile.getPath());
+    if (indexFileInPath.exists()) {
+      return indexFileInPath.lastModified();
+    }
+    return 0;
+  }
+
+  @Override
+  public synchronized void setFileCache(FileCacheIF fileCache) {
+    this.objCache = fileCache;
+  }
+
+  ///////////////
+
+  public void showIndex(Formatter f) {
+    f.format("Class (%s)%n", getClass().getName());
+    f.format("%s%n%n", toString());
+
+    for (Dataset ds : datasets) {
+      f.format("Dataset %s%n", ds.getType());
+      for (GroupGC g : ds.groups) {
+        f.format(" Group %s%n", g.horizCoordSys.getId());
+        for (VariableIndex v : g.variList) {
+          f.format("  %s%n", v);
+        }
+      }
+    }
+    if (fileMap == null) {
+      f.format("Files empty%n");
+    } else {
+      f.format("Files (%d)%n", fileMap.size());
+      for (int index : fileMap.keySet()) {
+        f.format("  %d: %s%n", index, fileMap.get(index));
+      }
+      f.format("%n");
+    }
+
+  }
+
+  ////////////////////////////////////////
+
+  /**
+   * get index filename
+   *
+   * @return index filename; may not exist; may be in disk cache
+   */
+  public String getIndexFilepathInCache() {
+    return indexFilename;
+  }
+
+  public String getFilename(int fileno) {
+    return fileMap.get(fileno).getPath();
+  }
+
+  public String getFirstFilename() {
+    return null; // fileMap.get(fileno).getPath(); LOOK
+  }
+
+  public RandomAccessFile getDataRaf(int fileno) throws IOException {
+     // absolute location
+     MFile mfile = fileMap.get(fileno);
+     String filename = mfile.getPath();
+     File dataFile = new File(filename);
+
+     // if data file does not exist, check reletive location - eg may be /upc/share instead of Q:
+     if (!dataFile.exists() && indexFilename != null) {
+       File index = new File(indexFilename);
+       File parent = index.getParentFile();
+       if (fileMap.size() == 1) {
+         dataFile = new File(parent, name); // single file case
+       } else {
+         dataFile = new File(parent, dataFile.getName()); // must be in same directory as the ncx file
+       }
+     }
+
+     // data file not here
+     if (!dataFile.exists()) {
+       throw new FileNotFoundException("data file not found = " + dataFile.getPath());
+     }
+
+     RandomAccessFile want = RandomAccessFile.acquire(dataFile.getPath());
+     want.order(RandomAccessFile.BIG_ENDIAN);
+     return want;
+   }
+
+  ///////////////////////
+
+    // LOOK could use this in iosp
+  public abstract String makeVariableName(VariableIndex vindex);
+
+  // stuff for InvDatasetFcGrib
+  public abstract ucar.nc2.dataset.NetcdfDataset getNetcdfDataset(Dataset ds, GroupGC group, String filename,
+                                                                  FeatureCollectionConfig gribConfig, Formatter errlog, org.slf4j.Logger logger) throws IOException;
+
+  public abstract ucar.nc2.dt.grid.GridDataset getGridDataset(Dataset ds, GroupGC group, String filename,
+                                                              FeatureCollectionConfig gribConfig, Formatter errlog, org.slf4j.Logger logger) throws IOException;
+
+
 }

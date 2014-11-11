@@ -54,7 +54,7 @@ import java.util.List;
  */
 public class GribCollectionWriter {
 
-  protected GribCollectionProto.Gds writeGdsProto(GribCollection.HorizCoordSys hcs) throws IOException {
+  protected GribCollectionProto.Gds writeGdsProto(GribHorizCoordSystem hcs) throws IOException {
     return writeGdsProto(hcs.getGdsHash(), hcs.getRawGds(), hcs.getNameOverride(), hcs.getPredefinedGridDefinition());
   }
 
