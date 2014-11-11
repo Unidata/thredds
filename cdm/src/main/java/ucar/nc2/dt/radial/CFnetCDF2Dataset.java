@@ -73,6 +73,8 @@ public class CFnetCDF2Dataset extends RadialDatasetSweepAdapter implements Typed
   private float[] range;
   private int[] rayStartIdx;
   private int[] rayEndIdx;
+  private int[] ray_n_gates;
+  private int[] ray_start_index;
   private int nsweeps;
 
   /////////////////////////////////////////////////
@@ -136,6 +138,14 @@ public class CFnetCDF2Dataset extends RadialDatasetSweepAdapter implements Typed
       rayEndIdx = (int[]) sidx1.read().copyTo1DJavaArray();
 
       nsweeps = ds.findDimension("sweep").getLength();
+
+      Variable var = ds.findVariable("ray_n_gates");
+      if (var != null)
+          ray_n_gates = (int[]) var.read().copyTo1DJavaArray();
+
+      var = ds.findVariable("ray_start_index");
+      if (var != null)
+          ray_start_index = (int[]) var.read().copyTo1DJavaArray();
 
       setTimeUnits();
     } catch (Exception e) {
@@ -301,8 +311,9 @@ public class CFnetCDF2Dataset extends RadialDatasetSweepAdapter implements Typed
     String vName = var.getShortName();
     int tIdx = var.findDimensionIndex("time");
     int rIdx = var.findDimensionIndex("range");
+    int ptsIdx = var.findDimensionIndex("n_points");
 
-    if ((tIdx == 0) && (rIdx == 1)) {
+    if (((tIdx == 0) && (rIdx == 1)) || (ptsIdx == 0)) {
       VariableSimpleIF v = new MyRadialVariableAdapter(vName, var.getAttributes());
       rsvar = makeRadialVariable(nds, v, var);
     }
@@ -359,6 +370,7 @@ public class CFnetCDF2Dataset extends RadialDatasetSweepAdapter implements Typed
      * _more_
      */
     String name;
+    private boolean flattened;
 
 
     /**
@@ -375,8 +387,11 @@ public class CFnetCDF2Dataset extends RadialDatasetSweepAdapter implements Typed
 
       int[] shape = v0.getShape();
       int ngates = shape[v0.getRank() - 1];
+      flattened = v0.findDimensionIndex("n_points") == 0;
 
       for (int i = 0; i < nsweeps; i++) {
+        if (flattened)
+            ngates = ray_n_gates[rayStartIdx[i]];
         sweeps.add(new CFRadial2Sweep(v0, i, ngates, rayStartIdx[i],
                 rayEndIdx[i]));
       }
@@ -442,7 +457,7 @@ public class CFnetCDF2Dataset extends RadialDatasetSweepAdapter implements Typed
       } catch (IOException e) {
         throw new IOException(e.getMessage());
       }
-      if (minRadials == radials) {
+      if (minRadials == radials || flattened) {
         return (float[]) allData.get1DJavaArray(float.class);
       } else {
 
@@ -583,12 +598,22 @@ public class CFnetCDF2Dataset extends RadialDatasetSweepAdapter implements Typed
        * @return _more_
        */
       private float[] sweepData() throws IOException {
-        int[] shape = sweepVar.getShape();
-        int[] origin = new int[2];
+        int[] origin;
+        int[] shape;
 
         // init section
-        origin[0] = startIdx;
-        shape[0] = numRays;
+        if (flattened) {
+            origin = new int[1];
+            origin[0] = ray_start_index[startIdx];
+            shape = new int[1];
+            shape[0] = ray_start_index[endIdx] + ray_n_gates[endIdx] -
+                    origin[0];
+        } else {
+            origin = new int[2];
+            origin[0] = startIdx;
+            shape = sweepVar.getShape();
+            shape[0] = numRays;
+        }
 
         try {
           Array sweepTmp = sweepVar.read(origin, shape).reduce();
@@ -622,12 +647,21 @@ public class CFnetCDF2Dataset extends RadialDatasetSweepAdapter implements Typed
        * @throws java.io.IOException _more_
        */
       public float[] rayData(int ray) throws java.io.IOException {
-        int[] shape = sweepVar.getShape();
-        int[] origin = new int[2];
+        int[] origin;
+        int[] shape;
 
         // init section
-        origin[0] = startIdx + ray;
-        shape[0] = 1;
+        if (flattened) {
+            origin = new int[1];
+            origin[0] = ray_start_index[startIdx + ray];
+            shape = new int[1];
+            shape[0] = ray_n_gates[startIdx + ray];
+        } else {
+            origin = new int[2];
+            origin[0] = startIdx + ray;
+            shape = sweepVar.getShape();
+            shape[0] = 1;
+        }
 
         try {
           Array sweepTmp = sweepVar.read(origin, shape).reduce();
