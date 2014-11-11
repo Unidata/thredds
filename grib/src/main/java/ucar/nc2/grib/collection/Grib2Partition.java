@@ -65,7 +65,7 @@ public class Grib2Partition extends PartitionCollectionImmutable implements Auto
           FeatureCollectionConfig config, Formatter errlog, org.slf4j.Logger logger) throws IOException {
 
     ucar.nc2.grib.collection.Grib2Iosp iosp = new ucar.nc2.grib.collection.Grib2Iosp(group, ds.getType());
-    NetcdfFile ncfile = new NetcdfFileSubclass(iosp, null, getIndexFilepathInCache(), null);
+    NetcdfFile ncfile = new NetcdfFileSubclass(iosp, null, getLocation(), null);
     return new NetcdfDataset(ncfile);
   }
 
@@ -74,7 +74,7 @@ public class Grib2Partition extends PartitionCollectionImmutable implements Auto
           FeatureCollectionConfig config, Formatter errlog, org.slf4j.Logger logger) throws IOException {
 
     ucar.nc2.grib.collection.Grib2Iosp iosp = new ucar.nc2.grib.collection.Grib2Iosp(group, ds.getType());
-    NetcdfFile ncfile = new NetcdfFileSubclass(iosp, null, getIndexFilepathInCache(), null);
+    NetcdfFile ncfile = new NetcdfFileSubclass(iosp, null, getLocation(), null);
     NetcdfDataset ncd = new NetcdfDataset(ncfile);
     return new ucar.nc2.dt.grid.GridDataset(ncd); // LOOK - replace with custom GridDataset??
   }

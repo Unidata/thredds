@@ -1128,7 +1128,7 @@ Template 3.40 (Grid definition template 3.40 - Gaussian latitude/longitude)
 
     public GdsHorizCoordSys makeHorizCoordSys() {
 
-      int nlats = 2 * Nparellels;
+      /* int nlats = 2 * Nparellels;
       GaussianLatitudes gaussLats = new GaussianLatitudes(nlats);
 
       int bestStartIndex = 0, bestEndIndex = 0;
@@ -1168,12 +1168,11 @@ Template 3.40 (Grid definition template 3.40 - Gaussian latitude/longitude)
         } else {
           useIndex--;
         }
-      }
+      }  */
 
       GdsHorizCoordSys coordSys = new GdsHorizCoordSys(getNameShort(), template, getOctet4(7), scanMode, new LatLonProjection(), lo1, deltaLon, 0, 0,
               getNxRaw(), getNyRaw(), getNptsInLine());
-      coordSys.gaussLats = Array.factory(DataType.FLOAT, new int[]{useNy}, data);
-      coordSys.gaussw = Array.factory(DataType.FLOAT, new int[]{useNy}, gaussw);
+      coordSys.setGaussianLats(Nparellels, la1, la2);
 
       return coordSys;
     }

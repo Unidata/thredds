@@ -77,9 +77,9 @@ import java.util.*;
 public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
   static private final String COLLECTION = "collection";
 
-  static private final String GC_DATASET = GribCollection.Type.GC.toString();
-  static private final String BEST_DATASET = GribCollection.Type.Best.toString();
-  static private final String TWOD_DATASET = GribCollection.Type.TwoD.toString();
+  static private final String GC_DATASET = GribCollectionImmutable.Type.GC.toString();
+  static private final String BEST_DATASET = GribCollectionImmutable.Type.Best.toString();
+  static private final String TWOD_DATASET = GribCollectionImmutable.Type.TwoD.toString();
 
   /////////////////////////////////////////////////////////////////////////////
   protected class StateGrib extends State {
@@ -196,7 +196,7 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
     for (GribCollectionImmutable.Dataset ds : fromGc.getDatasets()) {
       boolean isSingleGroup = ds.getGroupsSize() == 1;
 
-      if (ds.getType() == GribCollection.Type.TwoD) {
+      if (ds.getType() == GribCollectionImmutable.Type.TwoD) {
         Iterable<GribCollectionImmutable.GroupGC> groups = ds.getGroups();
         tmi.setGeospatialCoverage(extractGeospatial(groups)); // set extent from twoD dataset for all
 
@@ -215,7 +215,7 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
         }
       }
 
-      if (ds.getType() == GribCollection.Type.Best) {
+      if (ds.getType() == GribCollectionImmutable.Type.Best) {
 
         if (config.gribConfig.hasDatasetType(FeatureCollectionConfig.GribDatasetType.Best)) {
           Iterable<GribCollectionImmutable.GroupGC> groups = ds.getGroups();
@@ -232,7 +232,7 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
         }
       }
 
-      if (ds.getType() == GribCollection.Type.GC) {
+      if (ds.getType() == GribCollectionImmutable.Type.GC) {
         tmi.setServiceName(Virtual_Services);
 
         CoordinateRuntime runCoord = fromGc.getMasterRuntime();

@@ -32,6 +32,8 @@
 
 package thredds.inventory;
 
+import java.io.IOException;
+
 /**
  * An abstraction for java.io.File / java.nio.file.Path
  *
@@ -61,10 +63,17 @@ public interface MFile extends Comparable<MFile> {
   public String getPath();
 
   /**
-   * The file name is the <em>farthest</em> element from the root in the directory hierarchy.
+   * The name is the <em>farthest</em> element from the root in the directory hierarchy.
    * @return the file name
    */
   public String getName();
+
+  /**
+   * Get the parent of this
+   * @return  the parent or null
+   * @throws IOException
+   */
+  public MFile getParent() throws IOException;
 
   public int compareTo(MFile o);
 

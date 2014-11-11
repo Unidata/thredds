@@ -52,7 +52,7 @@ import java.io.IOException;
  * @author caron
  * @since 11/9/13
  */
-public class Grib2CollectionBuilderFromIndex extends GribCollectionBuilderFromIndex {
+class Grib2CollectionBuilderFromIndex extends GribCollectionBuilderFromIndex {
 
   // read in the index, index raf already open; return null on failure
   static public Grib2Collection readFromIndex(String name, RandomAccessFile raf, FeatureCollectionConfig config, boolean dataOnly, org.slf4j.Logger logger) throws IOException {
@@ -85,7 +85,7 @@ public class Grib2CollectionBuilderFromIndex extends GribCollectionBuilderFromIn
   }
 
   protected GribTables makeCustomizer() {
-    this.cust = Grib2Customizer.factory(gc.center, gc.subcenter, gc.master, gc.local, gc.getGenProcessId());
+    this.cust = Grib2Customizer.factory(gc.center, gc.subcenter, gc.master, gc.local, gc.genProcessId);
     return this.cust;
   }
 

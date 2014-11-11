@@ -52,10 +52,10 @@ import java.util.List;
  * @author caron
  * @since 2/20/14
  */
-public class GribCollectionWriter {
+class GribCollectionWriter {
 
   protected GribCollectionProto.Gds writeGdsProto(GribHorizCoordSystem hcs) throws IOException {
-    return writeGdsProto(hcs.getGdsHash(), hcs.getRawGds(), hcs.getNameOverride(), hcs.getPredefinedGridDefinition());
+    return writeGdsProto(hcs.getGdsHash(), hcs.getRawGds(), hcs.getPredefinedGridDefinition());
   }
 
     /*
@@ -65,7 +65,7 @@ public class GribCollectionWriter {
     optional string nameOverride = 3;  // only when user overrides default name
   }
    */
-  protected GribCollectionProto.Gds writeGdsProto(int gdsHash, byte[] rawGds, String nameOverride, int predefinedGridDefinition) throws IOException {
+  protected GribCollectionProto.Gds writeGdsProto(int gdsHash, byte[] rawGds, int predefinedGridDefinition) throws IOException {
     GribCollectionProto.Gds.Builder b = GribCollectionProto.Gds.newBuilder();
 
     if (predefinedGridDefinition >= 0)
@@ -74,8 +74,8 @@ public class GribCollectionWriter {
       b.setGds(ByteString.copyFrom(rawGds));
       b.setGdsHash(gdsHash);
     }
-    if (nameOverride != null)
-      b.setNameOverride(nameOverride);
+    //if (nameOverride != null)
+    //  b.setNameOverride(nameOverride);
 
     return b.build();
   }

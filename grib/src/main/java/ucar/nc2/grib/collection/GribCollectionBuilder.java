@@ -58,7 +58,7 @@ import java.util.*;
  * @author caron
  * @since 2/19/14
  */
-public abstract class GribCollectionBuilder {
+abstract class GribCollectionBuilder {
 
   protected final MCollection dcm;
   protected final org.slf4j.Logger logger;
@@ -86,7 +86,7 @@ public abstract class GribCollectionBuilder {
     if (ff == CollectionUpdateType.never) return false;
     if (ff == CollectionUpdateType.always) return true;
 
-    File collectionIndexFile = GribCollection.getFileInCache(dcm.getIndexFilename());
+    File collectionIndexFile = GribCdmIndex.getFileInCache(dcm.getIndexFilename());
     if (!collectionIndexFile.exists()) return true;
 
     if (ff == CollectionUpdateType.nocheck) return false;

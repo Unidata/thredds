@@ -47,7 +47,7 @@ import java.util.List;
  * @author caron
  * @since 2/21/14
  */
-public class Grib1PartitionBuilderFromIndex extends Grib1CollectionBuilderFromIndex {
+class Grib1PartitionBuilderFromIndex extends Grib1CollectionBuilderFromIndex {
 
   // read in the index, index raf already open; return null on failure
   static public Grib1Partition createTimePartitionFromIndex(String name, RandomAccessFile raf,
@@ -126,6 +126,6 @@ message Partition {
 }
    */
   private PartitionCollection.Partition makePartition(PartitionCollectionProto.Partition proto) {
-    return pc.addPartition(proto.getName(), proto.getFilename(), proto.getLastModified(), proto.getDirectory());
+    return pc.addPartition(proto.getName(), proto.getFilename(), proto.getLastModified(), proto.getLength(), proto.getDirectory());
   }
 }

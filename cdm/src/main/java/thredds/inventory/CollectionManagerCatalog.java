@@ -165,6 +165,11 @@ public class CollectionManagerCatalog extends CollectionManagerAbstract implemen
     }
 
     @Override
+    public MFile getParent() throws IOException {
+      return null;
+    }
+
+    @Override
     public int compareTo(MFile o) {
       return getPath().compareTo(o.getPath());
     }

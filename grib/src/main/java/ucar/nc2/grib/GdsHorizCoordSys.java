@@ -54,16 +54,17 @@ public class GdsHorizCoordSys {
   public final ucar.unidata.geoloc.ProjectionImpl proj;
   public final double startx, dx; // km
   public final double starty, dy; // km
-  public final int nx, ny;        // raw
-  public final int nxRaw, nyRaw;        // raw
+  public final int nx, ny;        // regridded
+  public final int nxRaw, nyRaw;  // raw
+  public final int[] nptsInLine; // non-null id thin grid
 
   // hmmmm
-  private int[] nptsInLine; // non-null id thin grid
   private Array gaussLats;
   private Array gaussw;
 
   public GdsHorizCoordSys(String name, int template, int gdsNumberPoints, int scanMode, ProjectionImpl proj,
                           double startx, double dx, double starty, double dy, int nxRaw, int nyRaw, int[] nptsInLine) {
+
     this.name = name;
     this.template = template;
     this.gdsNumberPoints = gdsNumberPoints; // only used by GRIB2
@@ -75,10 +76,10 @@ public class GdsHorizCoordSys {
     this.dy = dy;
     this.nxRaw = nxRaw;
     this.nyRaw = nyRaw;
+    this.nptsInLine = nptsInLine;
 
     // thin grids
     if (nptsInLine != null) {
-      this.nptsInLine = nptsInLine;
       if (nxRaw > 0) {
         nx = nxRaw;
         ny = QuasiRegular.getMax(nptsInLine);
@@ -135,23 +136,12 @@ public class GdsHorizCoordSys {
   }
 
   ////////////////////////////////////////////////
-  public Array getGaussianLats() {
-    return gaussLats;
-  }
-
-  public Array getGaussw() {
-    return gaussw;
-  }
-
-  public int[] getNptsInLine() {
-    return nptsInLine;
-  }
 
   // set gaussian weights based on nparellels
   // some wierd adjustment for la1 and la2.
   public void setGaussianLats(int nparellels, float la1, float la2) {
 
-    int nlats = (int) (2 * nparellels);
+    int nlats = (2 * nparellels);
     GaussianLatitudes gaussLats = new GaussianLatitudes(nlats);
 
     int bestStartIndex = 0, bestEndIndex = 0;
@@ -169,20 +159,20 @@ public class GdsHorizCoordSys {
         bestEndIndex = i;
       }
     }
-    if (Math.abs(bestEndIndex - bestStartIndex + 1) != ny) {
+    if (Math.abs(bestEndIndex - bestStartIndex + 1) != nyRaw) {
       //log.warn("GRIB gaussian lats: NP != NY, use NY");  // see email from Toussaint@dkrz.de datafil:
-      nlats = ny;
+      nlats = nyRaw;
       gaussLats = new GaussianLatitudes(nlats);
       bestStartIndex = 0;
-      bestEndIndex = ny - 1;
+      bestEndIndex = nyRaw - 1;
     }
     boolean goesUp = bestEndIndex > bestStartIndex;
 
     // create the data
     int useIndex = bestStartIndex;
-    float[] data = new float[ny];
-    float[] gaussw = new float[ny];
-    for (int i = 0; i < ny; i++) {
+    float[] data = new float[nyRaw];
+    float[] gaussw = new float[nyRaw];
+    for (int i = 0; i < nyRaw; i++) {
       data[i] = (float) gaussLats.latd[useIndex];
       gaussw[i] = (float) gaussLats.gaussw[useIndex];
       if (goesUp) {
@@ -192,8 +182,16 @@ public class GdsHorizCoordSys {
       }
     }
 
-    this.gaussLats = Array.factory(DataType.FLOAT, new int[]{ny}, data);
-    this.gaussw = Array.factory(DataType.FLOAT, new int[]{ny}, gaussw);
+    this.gaussLats = Array.factory(DataType.FLOAT, new int[]{nyRaw}, data);
+    this.gaussw = Array.factory(DataType.FLOAT, new int[]{nyRaw}, gaussw);
+  }
+
+  public Array getGaussianLats() {
+    return gaussLats;
+  }
+
+  public Array getGaussianWeights() {
+    return gaussw;
   }
 
   @Override

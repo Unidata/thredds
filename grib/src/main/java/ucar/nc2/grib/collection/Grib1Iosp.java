@@ -288,7 +288,7 @@ public class Grib1Iosp extends GribIosp {
     super(true, logger);
   }
 
-  public Grib1Iosp(GribCollectionImmutable.GroupGC gHcs, GribCollection.Type gtype) {
+  public Grib1Iosp(GribCollectionImmutable.GroupGC gHcs, GribCollectionImmutable.Type gtype) {
     super(true, logger);
     this.gHcs = gHcs;
     this.owned = true;

@@ -168,8 +168,8 @@ public class Grib1CollectionBuilder extends GribCollectionBuilder {
       statsAll.add(stats);
 
       // look for group name overrides
-      if (config.gribConfig.gdsNamer != null)
-        g.nameOverride = config.gribConfig.gdsNamer.get(g.gdsHash);
+      //if (config.gribConfig.gdsNamer != null)
+      //  g.nameOverride = config.gribConfig.gdsNamer.get(g.gdsHash);
     }
 
     // debugging and validation
@@ -213,7 +213,7 @@ public class Grib1CollectionBuilder extends GribCollectionBuilder {
     Grib1CollectionWriter writer = new Grib1CollectionWriter(dcm, logger);
     List<Grib1CollectionWriter.Group> groups2 = new ArrayList<>();
     for (Object g : groups) groups2.add((Grib1CollectionWriter.Group) g);
-    File indexFileInCache = GribCollection.getFileInCache(indexFilepath);
+    File indexFileInCache = GribCdmIndex.getFileInCache(indexFilepath);
     return writer.writeIndex(name, indexFileInCache, masterRuntime, groups2, files);
   }
 
