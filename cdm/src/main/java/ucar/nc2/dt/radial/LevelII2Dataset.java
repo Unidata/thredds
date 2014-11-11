@@ -182,7 +182,7 @@ public class LevelII2Dataset extends RadialDatasetSweepAdapter implements TypedD
   }
 
   public String getDataFormat() {
-    return RadialDatasetSweep.LevelII;
+    return "Level II";
   }
 
 
