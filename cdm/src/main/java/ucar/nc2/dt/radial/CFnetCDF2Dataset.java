@@ -73,6 +73,8 @@ public class CFnetCDF2Dataset extends RadialDatasetSweepAdapter implements Typed
   private float[] range;
   private int[] rayStartIdx;
   private int[] rayEndIdx;
+  private int[] ray_n_gates;
+  private int[] ray_start_index;
   private int nsweeps;
 
   /////////////////////////////////////////////////
@@ -97,11 +99,11 @@ public class CFnetCDF2Dataset extends RadialDatasetSweepAdapter implements Typed
   /**
    * Constructor.
    *
-   * @param ds must be from nexrad2 IOSP
+   * @param ds Source NetCDF dataset
    */
   public CFnetCDF2Dataset(NetcdfDataset ds) {
     this.ds = ds;
-    desc = "CF netCDF 2 radar dataset";
+    desc = "CF/Radial radar dataset";
     init();
 
     for (Variable var : ds.getVariables()) {
@@ -110,28 +112,40 @@ public class CFnetCDF2Dataset extends RadialDatasetSweepAdapter implements Typed
   }
 
   public void init() {
-    Variable t = ds.findVariable("time");
-    Variable ele = ds.findVariable("elevation");
-    Variable azi = ds.findVariable("azimuth");
-    Variable rng = ds.findVariable("range");
-    Variable sidx0 = ds.findVariable("sweep_start_ray_index");
-    Variable sidx1 = ds.findVariable("sweep_end_ray_index");
-    Variable snumber = ds.findVariable("sweep_number");
 
     setEarthLocation();
     try {
+      Variable t = ds.findVariable("time");
       Array tArray = t.read();
       time = (double[]) tArray.copyTo1DJavaArray();
+
+      Variable ele = ds.findVariable("elevation");
       Array eArray = ele.read();
       elevation = (float[]) eArray.copyTo1DJavaArray();
+
+      Variable azi = ds.findVariable("azimuth");
       Array aArray = azi.read();
       azimuth = (float[]) aArray.copyTo1DJavaArray();
+
+      Variable rng = ds.findVariable("range");
       Array rArray = rng.read();
       range = (float[]) rArray.copyTo1DJavaArray();
+
+      Variable sidx0 = ds.findVariable("sweep_start_ray_index");
       rayStartIdx = (int[]) sidx0.read().copyTo1DJavaArray();
+
+      Variable sidx1 = ds.findVariable("sweep_end_ray_index");
       rayEndIdx = (int[]) sidx1.read().copyTo1DJavaArray();
-      Array sn = snumber.read();
-      nsweeps = ((int[]) sn.copyTo1DJavaArray()).length;
+
+      nsweeps = ds.findDimension("sweep").getLength();
+
+      Variable var = ds.findVariable("ray_n_gates");
+      if (var != null)
+          ray_n_gates = (int[]) var.read().copyTo1DJavaArray();
+
+      var = ds.findVariable("ray_start_index");
+      if (var != null)
+          ray_start_index = (int[]) var.read().copyTo1DJavaArray();
 
       setTimeUnits();
     } catch (Exception e) {
@@ -278,11 +292,9 @@ public class CFnetCDF2Dataset extends RadialDatasetSweepAdapter implements Typed
   }
 
   public void clearDatasetMemory() {
-    List rvars = getDataVariables();
-    Iterator iter = rvars.iterator();
-    while (iter.hasNext()) {
-      RadialVariable radVar = (RadialVariable) iter.next();
-      radVar.clearVariableMemory();
+    for (VariableSimpleIF rvar : getDataVariables()) {
+        RadialVariable radVar = (RadialVariable) rvar;
+        radVar.clearVariableMemory();
     }
   }
 
@@ -299,8 +311,9 @@ public class CFnetCDF2Dataset extends RadialDatasetSweepAdapter implements Typed
     String vName = var.getShortName();
     int tIdx = var.findDimensionIndex("time");
     int rIdx = var.findDimensionIndex("range");
+    int ptsIdx = var.findDimensionIndex("n_points");
 
-    if ((tIdx == 0) && (rIdx == 1)) {
+    if (((tIdx == 0) && (rIdx == 1)) || (ptsIdx == 0)) {
       VariableSimpleIF v = new MyRadialVariableAdapter(vName, var.getAttributes());
       rsvar = makeRadialVariable(nds, v, var);
     }
@@ -322,7 +335,7 @@ public class CFnetCDF2Dataset extends RadialDatasetSweepAdapter implements Typed
   protected RadialVariable makeRadialVariable(NetcdfDataset nds,
                                               VariableSimpleIF v, Variable v0) {
     // this function is null in level 2
-    return new CFRadial2Variable(nds, v, v0);
+    return new CFRadial2Variable(nds, v0);
   }
 
   /**
@@ -351,38 +364,36 @@ public class CFnetCDF2Dataset extends RadialDatasetSweepAdapter implements Typed
     /**
      * _more_
      */
-    ArrayList sweeps;
+    ArrayList<CFRadial2Sweep> sweeps;
 
     /**
      * _more_
      */
     String name;
+    private boolean flattened;
 
 
     /**
      * _more_
      *
      * @param nds _more_
-     * @param v   _more_
      * @param v0  _more_
      */
-    private CFRadial2Variable(NetcdfDataset nds, VariableSimpleIF v,
-                              Variable v0) {
-      super(v.getShortName(), v0.getAttributes());
+    private CFRadial2Variable(NetcdfDataset nds, Variable v0) {
+      super(v0.getShortName(), v0.getAttributes());
 
-      sweeps = new ArrayList();
-      name = v.getShortName();
+      sweeps = new ArrayList<>();
+      name = v0.getShortName();
 
       int[] shape = v0.getShape();
-      int count = v0.getRank() - 1;
-
-      int ngates = shape[count];
-      count--;
-      int nrays = shape[count];
+      int ngates = shape[v0.getRank() - 1];
+      flattened = v0.findDimensionIndex("n_points") == 0;
 
       for (int i = 0; i < nsweeps; i++) {
-        sweeps.add(new CFRadial2Sweep(v0, i, nrays, ngates,
-                rayStartIdx[i], rayEndIdx[i]));
+        if (flattened)
+            ngates = ray_n_gates[rayStartIdx[i]];
+        sweeps.add(new CFRadial2Sweep(v0, i, ngates, rayStartIdx[i],
+                rayEndIdx[i]));
       }
     }
 
@@ -411,7 +422,7 @@ public class CFnetCDF2Dataset extends RadialDatasetSweepAdapter implements Typed
      * @return _more_
      */
     public Sweep getSweep(int sweepNo) {
-      return (Sweep) sweeps.get(sweepNo);
+      return sweeps.get(sweepNo);
     }
 
     /**
@@ -424,7 +435,7 @@ public class CFnetCDF2Dataset extends RadialDatasetSweepAdapter implements Typed
     }
 
     // a 3D array nsweep * nradials * ngates
-    // if high resolution data, it will be transfered to the same dimension
+    // if high resolution data, it will be transferred to the same dimension
 
     /**
      * _more_
@@ -434,8 +445,7 @@ public class CFnetCDF2Dataset extends RadialDatasetSweepAdapter implements Typed
      */
     public float[] readAllData() throws IOException {
       Array allData;
-      Array hrData = null;
-      Sweep spn = (Sweep) sweeps.get(0);
+      Sweep spn = sweeps.get(0);
       Variable v = spn.getsweepVar();
 
       int minRadial = getMinRadialNumber();
@@ -447,7 +457,7 @@ public class CFnetCDF2Dataset extends RadialDatasetSweepAdapter implements Typed
       } catch (IOException e) {
         throw new IOException(e.getMessage());
       }
-      if (minRadials == radials) {
+      if (minRadials == radials || flattened) {
         return (float[]) allData.get1DJavaArray(float.class);
       } else {
 
@@ -470,7 +480,7 @@ public class CFnetCDF2Dataset extends RadialDatasetSweepAdapter implements Typed
     public int getMinRadialNumber() {
       int minRadialNumber = 1000;
       for (int i = 0; i < nsweeps; i++) {
-        Sweep swp = (Sweep) this.sweeps.get(i);
+        Sweep swp = this.sweeps.get(i);
         int radialNumber = swp.getRadialNumber();
         if (radialNumber < minRadialNumber) {
           minRadialNumber = radialNumber;
@@ -520,7 +530,7 @@ public class CFnetCDF2Dataset extends RadialDatasetSweepAdapter implements Typed
       /**
        * _more_
        */
-      public int startIdx, endIdx;
+      public int startIdx, endIdx, numRays;
 
       /**
        * _more_
@@ -538,19 +548,18 @@ public class CFnetCDF2Dataset extends RadialDatasetSweepAdapter implements Typed
        *
        * @param v        _more_
        * @param sweepno  _more_
-       * @param rays     _more_
        * @param gates    _more_
        * @param startIdx _more_
        * @param endIdx   _more_
        */
-      CFRadial2Sweep(Variable v, int sweepno, int rays, int gates,
+      CFRadial2Sweep(Variable v, int sweepno, int gates,
                      int startIdx, int endIdx) {
         this.sweepVar = v;
         this.sweepno = sweepno;
         this.ngates = gates;
         this.startIdx = startIdx;
         this.endIdx = endIdx;
-
+        this.numRays = endIdx - startIdx + 1;
       }
 
       public int getStartIdx() {
@@ -589,12 +598,22 @@ public class CFnetCDF2Dataset extends RadialDatasetSweepAdapter implements Typed
        * @return _more_
        */
       private float[] sweepData() throws IOException {
-        int[] shape = sweepVar.getShape();
-        int[] origin = new int[2];
+        int[] origin;
+        int[] shape;
 
         // init section
-        origin[0] = startIdx;
-        shape[0] = endIdx - startIdx;
+        if (flattened) {
+            origin = new int[1];
+            origin[0] = ray_start_index[startIdx];
+            shape = new int[1];
+            shape[0] = ray_start_index[endIdx] + ray_n_gates[endIdx] -
+                    origin[0];
+        } else {
+            origin = new int[2];
+            origin[0] = startIdx;
+            shape = sweepVar.getShape();
+            shape[0] = numRays;
+        }
 
         try {
           Array sweepTmp = sweepVar.read(origin, shape).reduce();
@@ -628,12 +647,21 @@ public class CFnetCDF2Dataset extends RadialDatasetSweepAdapter implements Typed
        * @throws java.io.IOException _more_
        */
       public float[] rayData(int ray) throws java.io.IOException {
-        int[] shape = sweepVar.getShape();
-        int[] origin = new int[2];
+        int[] origin;
+        int[] shape;
 
         // init section
-        origin[0] = startIdx + ray;
-        shape[0] = 1;
+        if (flattened) {
+            origin = new int[1];
+            origin[0] = ray_start_index[startIdx + ray];
+            shape = new int[1];
+            shape[0] = ray_n_gates[startIdx + ray];
+        } else {
+            origin = new int[2];
+            origin[0] = startIdx + ray;
+            shape = sweepVar.getShape();
+            shape[0] = 1;
+        }
 
         try {
           Array sweepTmp = sweepVar.read(origin, shape).reduce();
@@ -650,8 +678,7 @@ public class CFnetCDF2Dataset extends RadialDatasetSweepAdapter implements Typed
       public void setMeanElevation() {
         double sum = 0.0;
         int sumSize = 0;
-        int size = endIdx - startIdx;
-        for (int i = 0; i < size; i++) {
+        for (int i = 0; i < numRays; i++) {
           if (!Double.isNaN(elevation[i])) {
             sum = sum + elevation[startIdx + i];
             sumSize++;
@@ -688,7 +715,7 @@ public class CFnetCDF2Dataset extends RadialDatasetSweepAdapter implements Typed
        * @return _more_
        */
       public int getRadialNumber() {
-        return endIdx - startIdx;
+        return numRays;
       }
 
 
@@ -745,8 +772,7 @@ public class CFnetCDF2Dataset extends RadialDatasetSweepAdapter implements Typed
       public void setMeanAzimuth() {
         double sum = 0.0;
         int sumSize = 0;
-        int size = endIdx - startIdx;
-        for (int i = 0; i < size; i++) {
+        for (int i = 0; i < numRays; i++) {
           if (!Double.isNaN(azimuth[i])) {
             sum = sum + azimuth[startIdx + i];
             sumSize++;
@@ -785,7 +811,7 @@ public class CFnetCDF2Dataset extends RadialDatasetSweepAdapter implements Typed
        * @throws IOException _more_
        */
       public float getElevation(int ray) throws IOException {
-        return (float) elevation[ray + startIdx];
+        return elevation[ray + startIdx];
       }
 
       /**
@@ -795,14 +821,9 @@ public class CFnetCDF2Dataset extends RadialDatasetSweepAdapter implements Typed
        * @throws IOException _more_
        */
       public float[] getElevation() throws IOException {
-        int size = endIdx - startIdx;
-        float[] elev = new float[size];
-
-        for (int i = startIdx; i < endIdx; i++) {
-          elev[i - startIdx] = (float) elevation[i];
-        }
+        float[] elev = new float[numRays];
+        System.arraycopy(elevation, startIdx, elev, 0, numRays);
         return elev;
-
       }
 
 
@@ -813,12 +834,8 @@ public class CFnetCDF2Dataset extends RadialDatasetSweepAdapter implements Typed
        * @throws IOException _more_
        */
       public float[] getAzimuth() throws IOException {
-        int size = endIdx - startIdx;
-        float[] azimu = new float[size];
-
-        for (int i = startIdx; i < endIdx; i++) {
-          azimu[i - startIdx] = (float) azimuth[i];
-        }
+        float[] azimu = new float[numRays];
+        System.arraycopy(azimuth, startIdx, azimu, 0, numRays);
         return azimu;
       }
 
