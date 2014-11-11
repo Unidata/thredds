@@ -51,12 +51,12 @@ import java.util.List;
 public class Grib2PartitionBuilderFromIndex extends Grib2CollectionBuilderFromIndex {
 
   // read in the index, index raf already open; return null on failure
-  static public PartitionCollection createTimePartitionFromIndex(String name, RandomAccessFile raf,
+  static public Grib2Partition createTimePartitionFromIndex(String name, RandomAccessFile raf,
            FeatureCollectionConfig config, boolean dataOnly, org.slf4j.Logger logger) throws IOException {
 
     Grib2PartitionBuilderFromIndex builder = new Grib2PartitionBuilderFromIndex(name, config, dataOnly, logger);
     if (builder.readIndex(raf))
-      return builder.pc;
+      return new Grib2Partition(builder.pc);
 
     return null;
   }
@@ -68,7 +68,7 @@ public class Grib2PartitionBuilderFromIndex extends Grib2CollectionBuilderFromIn
 
   private Grib2PartitionBuilderFromIndex(String name, FeatureCollectionConfig config, boolean dataOnly, org.slf4j.Logger logger) {
     super(name, config, dataOnly, logger);
-    this.pc = new Grib2Partition(name, null, config, logger);
+    this.pc = new PartitionCollection(name, null, config, false, logger);
     this.gc = pc;
   }
 

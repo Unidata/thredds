@@ -38,6 +38,7 @@ package ucar.nc2.grib.collection;
 import thredds.featurecollection.FeatureCollectionConfig;
 import thredds.inventory.CollectionUpdateType;
 import thredds.inventory.MFile;
+import ucar.coord.CoordinateRuntime;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.NetcdfFileSubclass;
 import ucar.nc2.dataset.NetcdfDataset;
@@ -47,6 +48,7 @@ import ucar.nc2.grib.grib1.tables.Grib1Customizer;
 import java.io.File;
 import java.io.IOException;
 import java.util.Formatter;
+import java.util.List;
 
 /**
  * Grib1 specific part of GribCollection
@@ -54,10 +56,10 @@ import java.util.Formatter;
  * @author John
  * @since 9/5/11
  */
-public class Grib1Collection extends GribCollection {
+public class Grib1Collection extends GribCollectionImmutable {
 
-  public Grib1Collection(String name, File directory, FeatureCollectionConfig config) {
-    super(name, directory, config, true);
+  Grib1Collection(GribCollection gc) {
+    super(gc);
   }
 
   @Override
@@ -71,7 +73,7 @@ public class Grib1Collection extends GribCollection {
     } else {
       MFile wantFile = findMFileByName(filename);
       if (wantFile != null) {
-        GribCollection gc = GribCdmIndex.openGribCollectionFromDataFile(true, wantFile, CollectionUpdateType.nocheck, gribConfig, errlog, logger);  // LOOK thread-safety : creating ncx
+        GribCollectionImmutable gc = GribCdmIndex.openGribCollectionFromDataFile(true, wantFile, CollectionUpdateType.nocheck, gribConfig, errlog, logger);  // LOOK thread-safety : creating ncx
         if (gc == null) return null;
 
         Grib1Iosp iosp = new Grib1Iosp(gc);
@@ -94,7 +96,7 @@ public class Grib1Collection extends GribCollection {
     } else {
       MFile wantFile = findMFileByName(filename);
       if (wantFile != null) {
-        GribCollection gc = GribCdmIndex.openGribCollectionFromDataFile(true, wantFile, CollectionUpdateType.nocheck, gribConfig, errlog, logger);  // LOOK thread-safety : creating ncx
+        GribCollectionImmutable gc = GribCdmIndex.openGribCollectionFromDataFile(true, wantFile, CollectionUpdateType.nocheck, gribConfig, errlog, logger);  // LOOK thread-safety : creating ncx
         if (gc == null) return null;
 
         Grib1Iosp iosp = new Grib1Iosp(gc);
@@ -109,7 +111,7 @@ public class Grib1Collection extends GribCollection {
   @Override
   public String makeVariableName(VariableIndex vindex) {
     Grib1Customizer cust1 = ((Grib1Customizer) cust);
-    Grib1SectionProductDefinition pdss = new Grib1SectionProductDefinition(vindex.rawPds);
+    Grib1SectionProductDefinition pdss = new Grib1SectionProductDefinition(vindex.getRawPds());
     return Grib1Iosp.makeVariableName(cust1, pdss);
   }
 

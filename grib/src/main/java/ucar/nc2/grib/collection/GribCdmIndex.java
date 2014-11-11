@@ -97,21 +97,19 @@ public class GribCdmIndex implements IndexReader {
     return GribCollectionType.none;
   }
 
-    // open GribCollection from an existing index file. caller must close; return null on failure
-  static public GribCollection openCdmIndex(String indexFilename, FeatureCollectionConfig config, boolean dataOnly, Logger logger) {
+    // open GribCollection from an existing index file. return null on failure
+  static public GribCollectionImmutable openCdmIndex(String indexFilename, FeatureCollectionConfig config, boolean dataOnly, Logger logger) {
     return openCdmIndex(indexFilename, config, dataOnly, true, logger);
   }
 
-    // open GribCollection from an existing index file. caller must close; return null on failure
-  static public GribCollection openCdmIndex(String indexFilename, FeatureCollectionConfig config, boolean dataOnly, boolean useCache, Logger logger) {
+    // open GribCollection from an existing index file. return null on failure
+  static public GribCollectionImmutable openCdmIndex(String indexFilename, FeatureCollectionConfig config, boolean dataOnly, boolean useCache, Logger logger) {
     File indexFileInCache = useCache ? GribCollection.getFileInCache(indexFilename) : new File(indexFilename);
     String indexFilenameInCache = indexFileInCache.getPath();
     String name = GribCollection.makeNameFromIndexFilename(indexFilename);
-    RandomAccessFile raf = null;
-    GribCollection result = null;
+    GribCollectionImmutable result = null;
 
-    try {
-      raf = RandomAccessFile.acquire(indexFilenameInCache);
+    try (RandomAccessFile raf = RandomAccessFile.acquire(indexFilenameInCache)) {
       GribCollectionType type = getType(raf);
 
       switch (type) {
@@ -140,11 +138,6 @@ public class GribCdmIndex implements IndexReader {
       }
     }
 
-    // clean up on failure
-    if (result == null && raf != null) {
-      try { raf.close(); } catch (IOException ioe) {}
-    }
-
     return result;
   }
 
@@ -161,7 +154,7 @@ public class GribCdmIndex implements IndexReader {
     * @return GribCollection
     * @throws IOException on io error
     */
-  static public GribCollection openGribCollectionFromMCollection(boolean isGrib1, MCollection dcm, CollectionUpdateType updateType,
+  static public GribCollectionImmutable openGribCollectionFromMCollection(boolean isGrib1, MCollection dcm, CollectionUpdateType updateType,
                                                                  Formatter errlog, org.slf4j.Logger logger) throws IOException {
 
     FeatureCollectionConfig config = (FeatureCollectionConfig) dcm.getAuxInfo(FeatureCollectionConfig.AUX_CONFIG);
@@ -470,7 +463,7 @@ public class GribCdmIndex implements IndexReader {
    * Open GribCollection from config.
    * dataOnly
    */
-  static public GribCollection openGribCollection(FeatureCollectionConfig config, CollectionUpdateType updateType, Logger logger) throws IOException {
+  static public GribCollectionImmutable openGribCollection(FeatureCollectionConfig config, CollectionUpdateType updateType, Logger logger) throws IOException {
 
     // update if needed
     boolean didit = updateGribCollection(config, updateType, logger);
@@ -585,10 +578,10 @@ public class GribCdmIndex implements IndexReader {
   ////////////////////////////////////////////////////////////////////////////////////
   // Used by IOSPs; dataOnly
 
-  public static GribCollection makeGribCollectionFromRaf(RandomAccessFile raf,
+  public static GribCollectionImmutable makeGribCollectionFromRaf(RandomAccessFile raf,
             FeatureCollectionConfig config, CollectionUpdateType updateType, org.slf4j.Logger logger) throws IOException {
 
-    GribCollection result;
+    GribCollectionImmutable result;
 
       // check if its a plain ole GRIB1/2 data file
     boolean isGrib1 = false;
@@ -621,7 +614,7 @@ public class GribCdmIndex implements IndexReader {
    * @return the resulting GribCollection
    * @throws IOException on io error
    */
-  private static GribCollection openGribCollectionFromDataFile(boolean isGrib1, RandomAccessFile dataRaf, FeatureCollectionConfig config,
+  private static GribCollectionImmutable openGribCollectionFromDataFile(boolean isGrib1, RandomAccessFile dataRaf, FeatureCollectionConfig config,
             CollectionUpdateType updateType, Formatter errlog, org.slf4j.Logger logger) throws IOException {
 
     String filename = dataRaf.getLocation();
@@ -634,7 +627,7 @@ public class GribCdmIndex implements IndexReader {
     // for InvDatasetFeatureCollection.getNetcdfDataset() and getGridDataset()
 
   // from a single file, read in the index, create if it doesnt exist; return null on failure
-  static public GribCollection openGribCollectionFromDataFile(boolean isGrib1, MFile mfile, CollectionUpdateType updateType,
+  static public GribCollectionImmutable openGribCollectionFromDataFile(boolean isGrib1, MFile mfile, CollectionUpdateType updateType,
                    FeatureCollectionConfig config, Formatter errlog, org.slf4j.Logger logger) throws IOException {
 
     MCollection dcm = new CollectionSingleFile(mfile, logger);
@@ -648,7 +641,7 @@ public class GribCdmIndex implements IndexReader {
     }
 
     // the index file should now exist, open it
-    GribCollection result = openCdmIndex( dcm.getIndexFilename(), config, true, logger);
+    GribCollectionImmutable result = openCdmIndex( dcm.getIndexFilename(), config, true, logger);
     if (result != null) return result;
 
     // if open fails, force recreate the index
@@ -666,7 +659,7 @@ public class GribCdmIndex implements IndexReader {
    * @return the resulting GribCollection, or null on failure
    * @throws IOException on io error
    */
-  public static GribCollection openGribCollectionFromIndexFile(RandomAccessFile indexRaf, FeatureCollectionConfig config,
+  public static GribCollectionImmutable openGribCollectionFromIndexFile(RandomAccessFile indexRaf, FeatureCollectionConfig config,
                                                                boolean dataOnly, org.slf4j.Logger logger) throws IOException {
 
     GribCollectionType type = getType(indexRaf);

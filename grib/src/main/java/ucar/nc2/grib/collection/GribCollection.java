@@ -69,21 +69,12 @@ import java.nio.file.Paths;
 import java.util.*;
 
 /**
- * A collection of grib files as a single logical dataset.
- * Concrete classes are for Grib1 and Grib2.
- * Note that there is no dependence on GRIB tables here.
- * Handles .ncx2 files.
- * Data files are opened and managed externally.
- *
- * Mostly Immutable
- *   - sparse arrays are read in as requested, synch on GC
- *   - index file - make thread safe
- *   - data file managed externally, so thread safe
+ * A mutable class for building.
  *
  * @author John
  * @since 12/1/13
  */
-public abstract class GribCollection implements FileCacheable, AutoCloseable {
+public class GribCollection implements FileCacheable, AutoCloseable {
   static private final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(GribCollection.class);
   static public  final long MISSING_RECORD = -1;
 
@@ -223,7 +214,7 @@ public abstract class GribCollection implements FileCacheable, AutoCloseable {
   public List<Parameter> params;          // not used
   protected Map<Integer, MFile> fileMap;    // all the files used in the GC; key in index in original collection, GC has subset of them
   protected List<Dataset> datasets;
-  protected List<HorizCoordSys> horizCS; // one for each unique GDS
+  protected List<GribHorizCoordSystem> horizCS; // one for each unique GDS
   protected CoordinateRuntime masterRuntime;
   protected GribTables cust;
 
@@ -271,7 +262,7 @@ public abstract class GribCollection implements FileCacheable, AutoCloseable {
   }
 
   /**
-   * The files that comprise the colelction.
+   * The files that comprise the collection.
    * Actual paths, including the grib cache if used.
    *
    * @return list of filename.
@@ -319,7 +310,7 @@ public abstract class GribCollection implements FileCacheable, AutoCloseable {
     throw new IllegalStateException("GC.getDatasetCanonical failed on="+name);
   }
 
-  public HorizCoordSys getHorizCS(int index) {
+  public GribHorizCoordSystem getHorizCS(int index) {
     return horizCS.get(index);
   }
 
@@ -328,23 +319,29 @@ public abstract class GribCollection implements FileCacheable, AutoCloseable {
   }
 
   protected void makeHorizCS() {
-    Map<Integer, HorizCoordSys> gdsMap = new HashMap<>();
+    Map<Integer, GribHorizCoordSystem> gdsMap = new HashMap<>();
     for (Dataset ds : datasets) {
       for (GroupGC hcs : ds.getGroups())
         gdsMap.put(hcs.getGdsHash(), hcs.horizCoordSys);
     }
 
     horizCS = new ArrayList<>();
-    for (HorizCoordSys hcs : gdsMap.values())
+    for (GribHorizCoordSystem hcs : gdsMap.values())
       horizCS.add(hcs);
   }
 
-  public int findHorizCS(HorizCoordSys hcs) {
+  public int findHorizCS(GribHorizCoordSystem hcs) {
     return horizCS.indexOf(hcs);
   }
 
   public void addHorizCoordSystem(GdsHorizCoordSys hcs, byte[] rawGds, int gdsHash, String nameOverride, int predefinedGridDefinition) {
-    horizCS.add(new HorizCoordSys(hcs, rawGds, gdsHash, nameOverride, predefinedGridDefinition));
+          // check for user defined group names
+      String desc = null;
+      if (config.gribConfig.gdsNamer != null)
+        desc = config.gribConfig.gdsNamer.get(gdsHash);
+      if (desc == null) desc = hcs.makeDescription(); // default desc
+
+    horizCS.add(new GribHorizCoordSystem(hcs, rawGds, gdsHash, nameOverride, desc, predefinedGridDefinition));
   }
 
   public MFile findMFileByName(String filename) {
@@ -426,18 +423,6 @@ public abstract class GribCollection implements FileCacheable, AutoCloseable {
   public void setDirectory(File directory) {
     this.directory = directory;
   }
-
-  /////////////////////////////////////////////
-
-  // LOOK could use this in iosp
-  public abstract String makeVariableName(VariableIndex vindex);
-
-  // stuff for InvDatasetFcGrib
-  public abstract ucar.nc2.dataset.NetcdfDataset getNetcdfDataset(Dataset ds, GroupGC group, String filename,
-                                                                  FeatureCollectionConfig gribConfig, Formatter errlog, org.slf4j.Logger logger) throws IOException;
-
-  public abstract ucar.nc2.dt.grid.GridDataset getGridDataset(Dataset ds, GroupGC group, String filename,
-                                                              FeatureCollectionConfig gribConfig, Formatter errlog, org.slf4j.Logger logger) throws IOException;
 
   //////////////////////////////////////////////////////////////////////////////////////////////////
   // stuff for Iosp
@@ -578,7 +563,7 @@ public abstract class GribCollection implements FileCacheable, AutoCloseable {
     }
   }
 
-  @Immutable
+ /*  @Immutable
   public class HorizCoordSys { // encapsolates the gds; shared by the GroupHcs
     private final GdsHorizCoordSys hcs;
     private final byte[] rawGds;
@@ -653,11 +638,11 @@ public abstract class GribCollection implements FileCacheable, AutoCloseable {
 
       return hcs.makeDescription(); // default desc
     }
-  }
+  }  */
 
   // this class should be immutable, because it escapes
   public class GroupGC implements Comparable<GroupGC> {
-    HorizCoordSys horizCoordSys;
+    GribHorizCoordSystem horizCoordSys;
     List<VariableIndex> variList;
     List<Coordinate> coords;      // shared coordinates
     int[] filenose;               // key for GC.fileMap
@@ -678,7 +663,13 @@ public abstract class GribCollection implements FileCacheable, AutoCloseable {
     }
 
     public void setHorizCoordSystem(GdsHorizCoordSys hcs, byte[] rawGds, int gdsHash, String nameOverride, int predefinedGridDefinition) {
-      horizCoordSys = new HorizCoordSys(hcs, rawGds, gdsHash, nameOverride, predefinedGridDefinition);
+           // check for user defined group names
+      String desc = null;
+      if (config.gribConfig.gdsNamer != null)
+        desc = config.gribConfig.gdsNamer.get(gdsHash);
+      if (desc == null) desc = hcs.makeDescription(); // default desc
+
+      horizCoordSys = new GribHorizCoordSystem(hcs, rawGds, gdsHash, nameOverride, desc, predefinedGridDefinition);
     }
 
     public VariableIndex addVariable(VariableIndex vi) {
@@ -785,7 +776,7 @@ public abstract class GribCollection implements FileCacheable, AutoCloseable {
     public void show(Formatter f) {
       f.format("Group %s (%d) isTwoD=%s%n", horizCoordSys.getId(), getGdsHash(), isTwod);
       f.format(" nfiles %d%n", filenose == null ? 0 : filenose.length);
-      f.format(" hcs = %s%n", horizCoordSys.hcs);
+      f.format(" hcs = %s%n", horizCoordSys.getHcs());
     }
 
     @Override

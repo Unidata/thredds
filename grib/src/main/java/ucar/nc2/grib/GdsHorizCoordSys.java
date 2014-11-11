@@ -32,6 +32,7 @@
 
 package ucar.nc2.grib;
 
+import net.jcip.annotations.Immutable;
 import ucar.ma2.Array;
 import ucar.ma2.DataType;
 import ucar.unidata.geoloc.LatLonPoint;
@@ -46,17 +47,20 @@ import ucar.unidata.util.StringUtil2;
  * @author John
  * @since 9/5/11
  */
+@Immutable
 public class GdsHorizCoordSys {
-  private String name;
-  public int template, gdsNumberPoints, scanMode;
-  public ucar.unidata.geoloc.ProjectionImpl proj;
-  public double startx, dx; // km
-  public double starty, dy; // km
-  public int nx, ny;        // raw
-  public int nxRaw, nyRaw;        // raw
-  public int[] nptsInLine; // non-null idf thin grid
-  public Array gaussLats;
-  public Array gaussw;
+  private final String name;
+  public final int template, gdsNumberPoints, scanMode;
+  public final ucar.unidata.geoloc.ProjectionImpl proj;
+  public final double startx, dx; // km
+  public final double starty, dy; // km
+  public final int nx, ny;        // raw
+  public final int nxRaw, nyRaw;        // raw
+
+  // hmmmm
+  private int[] nptsInLine; // non-null id thin grid
+  private Array gaussLats;
+  private Array gaussw;
 
   public GdsHorizCoordSys(String name, int template, int gdsNumberPoints, int scanMode, ProjectionImpl proj,
                           double startx, double dx, double starty, double dy, int nxRaw, int nyRaw, int[] nptsInLine) {
@@ -82,7 +86,7 @@ public class GdsHorizCoordSys {
         ny = nyRaw;
         nx = QuasiRegular.getMax(nptsInLine);
       } else {
-        throw new IllegalArgumentException("Quasi Grids nx,ny="+nx+","+ny);
+        throw new IllegalArgumentException("Quasi Grids nx,ny="+nxRaw+","+nyRaw);
       }
     } else {
       nx = nxRaw;
@@ -128,6 +132,19 @@ public class GdsHorizCoordSys {
     StringBuilder result = new StringBuilder(name + "_" + ny + "X" + nx+"-"+getCenterLatLon());
     StringUtil2.replace(result, ". ","p-");
     return result.toString();
+  }
+
+  ////////////////////////////////////////////////
+  public Array getGaussianLats() {
+    return gaussLats;
+  }
+
+  public Array getGaussw() {
+    return gaussw;
+  }
+
+  public int[] getNptsInLine() {
+    return nptsInLine;
   }
 
   // set gaussian weights based on nparellels

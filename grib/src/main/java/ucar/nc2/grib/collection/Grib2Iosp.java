@@ -63,94 +63,95 @@ public class Grib2Iosp extends GribIosp {
   static private final boolean debugTime = false, debugRead = false, debugName = false;
  // static private boolean useGenType = false; // LOOK dummy for now
 
-  static public String makeVariableNameFromTable(Grib2Customizer tables, GribCollection gribCollection, GribCollection.VariableIndex vindex,
-                                                 boolean useGenType) {
+  static public String makeVariableNameFromTable(Grib2Customizer tables, GribCollectionImmutable gribCollection, 
+                                                 GribCollectionImmutable.VariableIndex vindex, boolean useGenType) {
     Formatter f = new Formatter();
 
-    GribTables.Parameter param = tables.getParameter(vindex.discipline, vindex.category, vindex.parameter);
+    GribTables.Parameter param = tables.getParameter(vindex.getDiscipline(), vindex.getCategory(), vindex.getParameter());
 
     if (param == null) {
-      f.format("VAR%d-%d-%d_FROM_%d-%d-%d", vindex.discipline, vindex.category, vindex.parameter, gribCollection.getCenter(), gribCollection.getSubcenter(), vindex.tableVersion);
+      f.format("VAR%d-%d-%d_FROM_%d-%d-%d", vindex.getDiscipline(), vindex.getCategory(), vindex.getParameter(), gribCollection.getCenter(), 
+              gribCollection.getSubcenter(), vindex.getTableVersion());
     } else {
       f.format("%s", GribUtils.makeNameFromDescription(param.getName()));
     }
 
-    if (vindex.genProcessType == 6 || vindex.genProcessType == 7) {
+    if (vindex.getGenProcessType() == 6 || vindex.getGenProcessType() == 7) {
       f.format("_error");  // its an "error" type variable - add to name
 
-    } else if (useGenType && vindex.genProcessType >= 0) {
-        String genType = tables.getGeneratingProcessTypeName(vindex.genProcessType);
+    } else if (useGenType && vindex.getGenProcessType() >= 0) {
+        String genType = tables.getGeneratingProcessTypeName(vindex.getGenProcessType());
         String s = StringUtil2.substitute(genType, " ", "_");
         f.format("_%s", s);
     }
 
-    if (vindex.levelType != GribNumbers.UNDEFINED) { // satellite data doesnt have a level
-      f.format("_%s", tables.getLevelNameShort(vindex.levelType)); // vindex.levelType); // code table 4.5
-      if (vindex.isLayer) f.format("_layer");
+    if (vindex.getLevelType() != GribNumbers.UNDEFINED) { // satellite data doesnt have a level
+      f.format("_%s", tables.getLevelNameShort(vindex.getLevelType())); // vindex.getLevelType()); // code table 4.5
+      if (vindex.isLayer()) f.format("_layer");
     }
 
-    String intvName = vindex.getTimeIntvName();
+    String intvName = vindex.getIntvName();
     if (intvName != null && !intvName.isEmpty()) {
       f.format("_%s", intvName);
     }
 
-    if (vindex.intvType >= 0) {
-      String statName = tables.getStatisticNameShort(vindex.intvType);
+    if (vindex.getIntvType() >= 0) {
+      String statName = tables.getStatisticNameShort(vindex.getIntvType());
       if (statName != null) f.format("_%s", statName);
     }
 
-    if (vindex.ensDerivedType >= 0) {
-      f.format("_%s", tables.getProbabilityNameShort(vindex.ensDerivedType));
-    } else if (vindex.probabilityName != null && vindex.probabilityName.length() > 0) {
-      String s = StringUtil2.substitute(vindex.probabilityName, ".", "p");
+    if (vindex.getEnsDerivedType() >= 0) {
+      f.format("_%s", tables.getProbabilityNameShort(vindex.getEnsDerivedType()));
+    } else if (vindex.getProbabilityName() != null && vindex.getProbabilityName().length() > 0) {
+      String s = StringUtil2.substitute(vindex.getProbabilityName(), ".", "p");
       f.format("_probability_%s", s);
-    } else if (vindex.isEnsemble) {
+    } else if (vindex.isEnsemble()) {
       f.format("_ens");
     }
 
     return f.toString();
   }
 
-  static public String makeVariableLongName(Grib2Customizer cust, GribCollection.VariableIndex vindex, boolean useGenType) {
+  static public String makeVariableLongName(Grib2Customizer cust, GribCollectionImmutable.VariableIndex vindex, boolean useGenType) {
     Formatter f = new Formatter();
 
-    boolean isProb = (vindex.probabilityName != null && vindex.probabilityName.length() > 0);
+    boolean isProb = (vindex.getProbabilityName() != null && vindex.getProbabilityName().length() > 0);
     if (isProb)
       f.format("Probability ");
 
-    GribTables.Parameter gp = cust.getParameter(vindex.discipline, vindex.category, vindex.parameter);
+    GribTables.Parameter gp = cust.getParameter(vindex.getDiscipline(), vindex.getCategory(), vindex.getParameter());
     if (gp == null)
-      f.format("Unknown Parameter %d-%d-%d", vindex.discipline, vindex.category, vindex.parameter);
+      f.format("Unknown Parameter %d-%d-%d", vindex.getDiscipline(), vindex.getCategory(), vindex.getParameter());
     else
       f.format("%s", gp.getName());
 
-    if (vindex.intvType >= 0 && vindex.getTimeIntvName() != null && !vindex.getTimeIntvName().isEmpty()) {
-      String intvName = cust.getStatisticNameShort(vindex.intvType);
-      if (intvName == null || intvName.equalsIgnoreCase("Missing")) intvName = cust.getStatisticNameShort(vindex.intvType);
-      if (intvName == null) f.format(" (%s)", vindex.getTimeIntvName());
-      else f.format(" (%s %s)", vindex.getTimeIntvName(), intvName);
+    if (vindex.getIntvType() >= 0 && vindex.getIntvName() != null && !vindex.getIntvName().isEmpty()) {
+      String intvName = cust.getStatisticNameShort(vindex.getIntvType());
+      if (intvName == null || intvName.equalsIgnoreCase("Missing")) intvName = cust.getStatisticNameShort(vindex.getIntvType());
+      if (intvName == null) f.format(" (%s)", vindex.getIntvName());
+      else f.format(" (%s %s)", vindex.getIntvName(), intvName);
 
-    } else if (vindex.intvType >= 0) {
-      String intvName = cust.getStatisticNameShort(vindex.intvType);
+    } else if (vindex.getIntvType() >= 0) {
+      String intvName = cust.getStatisticNameShort(vindex.getIntvType());
       f.format(" (%s)", intvName);
     }
 
-    if (vindex.ensDerivedType >= 0)
-      f.format(" (%s)", cust.getTableValue("4.7", vindex.ensDerivedType));
+    if (vindex.getEnsDerivedType() >= 0)
+      f.format(" (%s)", cust.getTableValue("4.7", vindex.getEnsDerivedType()));
 
     else if (isProb)
-      f.format(" %s %s", vindex.probabilityName, getVindexUnits(cust, vindex)); // add data units here
+      f.format(" %s %s", vindex.getProbabilityName(), getVindexUnits(cust, vindex)); // add data units here
 
-    if (vindex.genProcessType == 6 || vindex.genProcessType == 7) {
+    if (vindex.getGenProcessType() == 6 || vindex.getGenProcessType() == 7) {
       f.format(" error");  // its an "error" type variable - add to name
 
-    } else if (useGenType && vindex.genProcessType >= 0) {
-      f.format(" %s", cust.getGeneratingProcessTypeName(vindex.genProcessType));
+    } else if (useGenType && vindex.getGenProcessType() >= 0) {
+      f.format(" %s", cust.getGeneratingProcessTypeName(vindex.getGenProcessType()));
     }
 
-    if (vindex.levelType != GribNumbers.UNDEFINED) { // satellite data doesnt have a level
-      f.format(" @ %s", cust.getTableValue("4.5", vindex.levelType));
-      if (vindex.isLayer) f.format(" layer");
+    if (vindex.getLevelType() != GribNumbers.UNDEFINED) { // satellite data doesnt have a level
+      f.format(" @ %s", cust.getTableValue("4.5", vindex.getLevelType()));
+      if (vindex.isLayer()) f.format(" layer");
     }
 
     return f.toString();
@@ -202,21 +203,21 @@ public class Grib2Iosp extends GribIosp {
       D = derived type
    */
   @Override
-  protected String makeVariableNameFromRecord(GribCollection.VariableIndex vindex) {
+  protected String makeVariableNameFromRecord(GribCollectionImmutable.VariableIndex vindex) {
     Formatter f = new Formatter();
 
-    f.format("VAR_%d-%d-%d", vindex.discipline, vindex.category, vindex.parameter);
+    f.format("VAR_%d-%d-%d", vindex.getDiscipline(), vindex.getCategory(), vindex.getParameter());
 
-    if (vindex.genProcessType == 6 || vindex.genProcessType == 7) {
+    if (vindex.getGenProcessType() == 6 || vindex.getGenProcessType() == 7) {
       f.format("_error");  // its an "error" type variable - add to name
     }
 
-    if (vindex.levelType != GribNumbers.UNDEFINED) { // satellite data doesnt have a level
-      f.format("_L%d", vindex.levelType); // code table 4.5
-      if (vindex.isLayer) f.format("_layer");
+    if (vindex.getLevelType() != GribNumbers.UNDEFINED) { // satellite data doesnt have a level
+      f.format("_L%d", vindex.getLevelType()); // code table 4.5
+      if (vindex.isLayer()) f.format("_layer");
     }
 
-    String intvName = vindex.getTimeIntvName();
+    String intvName = vindex.getIntvName();
     if (intvName != null && !intvName.isEmpty()) {
       if (intvName.equals(CoordinateTimeAbstract.MIXED_INTERVALS))
         f.format("_Imixed");
@@ -224,14 +225,14 @@ public class Grib2Iosp extends GribIosp {
         f.format("_I%s", intvName);
     }
 
-    if (vindex.intvType >= 0) {
-      f.format("_S%s", vindex.intvType);
+    if (vindex.getIntvType() >= 0) {
+      f.format("_S%s", vindex.getIntvType());
     }
 
-    if (vindex.ensDerivedType >= 0) {
-      f.format("_D%d", vindex.ensDerivedType);
-    } else if (vindex.probabilityName != null && vindex.probabilityName.length() > 0) {
-      String s = StringUtil2.substitute(vindex.probabilityName, ".", "p");
+    if (vindex.getEnsDerivedType() >= 0) {
+      f.format("_D%d", vindex.getEnsDerivedType());
+    } else if (vindex.getProbabilityName() != null && vindex.getProbabilityName().length() > 0) {
+      String s = StringUtil2.substitute(vindex.getProbabilityName(), ".", "p");
       f.format("_Prob_%s", s);
     }
 
@@ -240,27 +241,27 @@ public class Grib2Iosp extends GribIosp {
 
 
   @Override
-  protected String makeVariableName(GribCollection.VariableIndex vindex) {
+  protected String makeVariableName(GribCollectionImmutable.VariableIndex vindex) {
     return makeVariableNameFromTable(cust, gribCollection, vindex, false);  // LOOK where to get useGenType ?
   }
 
   @Override
-  protected String makeVariableLongName(GribCollection.VariableIndex vindex) {
+  protected String makeVariableLongName(GribCollectionImmutable.VariableIndex vindex) {
     return makeVariableLongName(cust, vindex, false);                       // LOOK where to get useGenType ?
   }
 
   @Override
-  protected String makeVariableUnits(GribCollection.VariableIndex vindex) {
+  protected String makeVariableUnits(GribCollectionImmutable.VariableIndex vindex) {
     return makeVariableUnits(cust, vindex);
   }
 
-  static public String makeVariableUnits(Grib2Customizer tables, GribCollection.VariableIndex vindex) {
-    if (vindex.probabilityName != null && vindex.probabilityName.length() > 0) return "%";
+  static public String makeVariableUnits(Grib2Customizer tables, GribCollectionImmutable.VariableIndex vindex) {
+    if (vindex.getProbabilityName() != null && vindex.getProbabilityName().length() > 0) return "%";
     return getVindexUnits(tables, vindex);
   }
 
-  static private String getVindexUnits(Grib2Customizer tables, GribCollection.VariableIndex vindex) {
-    GribTables.Parameter gp = tables.getParameter(vindex.discipline, vindex.category, vindex.parameter);
+  static private String getVindexUnits(Grib2Customizer tables, GribCollectionImmutable.VariableIndex vindex) {
+    GribTables.Parameter gp = tables.getParameter(vindex.getDiscipline(), vindex.getCategory(), vindex.getParameter());
     String val = (gp == null) ? "" : gp.getUnit();
     return (val == null) ? "" : val;
   }
@@ -295,7 +296,7 @@ public class Grib2Iosp extends GribIosp {
     super(false, logger);
   }
 
-  public Grib2Iosp(GribCollection.GroupGC gHcs, GribCollection.Type gtype) {
+  public Grib2Iosp(GribCollectionImmutable.GroupGC gHcs, GribCollection.Type gtype) {
     super(false, logger);
     this.gHcs = gHcs;
     this.owned = true;
@@ -303,7 +304,7 @@ public class Grib2Iosp extends GribIosp {
   }
 
   // LOOK more likely we will set an individual dataset
-  public Grib2Iosp(GribCollection gc) {
+  public Grib2Iosp(GribCollectionImmutable gc) {
     super(false, logger);
     this.gribCollection = gc;
     this.owned = true;
@@ -339,45 +340,45 @@ public class Grib2Iosp extends GribIosp {
   }
 
   @Override
-  protected GribTables.Parameter getParameter(GribCollection.VariableIndex vindex) {
-    return cust.getParameter(vindex.discipline, vindex.category, vindex.parameter);
+  protected GribTables.Parameter getParameter(GribCollectionImmutable.VariableIndex vindex) {
+    return cust.getParameter(vindex.getDiscipline(), vindex.getCategory(), vindex.getParameter());
   }
 
   @Override
-  protected void addVariableAttributes(Variable v, GribCollection.VariableIndex vindex) {
+  protected void addVariableAttributes(Variable v, GribCollectionImmutable.VariableIndex vindex) {
 
     v.addAttribute(new Attribute(VARIABLE_ID_ATTNAME, makeVariableNameFromRecord(vindex)));
-    int[] param = new int[]{vindex.discipline, vindex.category, vindex.parameter};
+    int[] param = new int[]{vindex.getDiscipline(), vindex.getCategory(), vindex.getParameter()};
     v.addAttribute(new Attribute("Grib2_Parameter", Array.factory(param)));
-    String disc = cust.getTableValue("0.0", vindex.discipline);
+    String disc = cust.getTableValue("0.0", vindex.getDiscipline());
     if (disc != null) v.addAttribute(new Attribute("Grib2_Parameter_Discipline", disc));
-    String cat = cust.getCategory(vindex.discipline, vindex.category);
+    String cat = cust.getCategory(vindex.getDiscipline(), vindex.getCategory());
     if (cat != null)
       v.addAttribute(new Attribute("Grib2_Parameter_Category", cat));
-    Grib2Customizer.Parameter entry = cust.getParameter(vindex.discipline, vindex.category, vindex.parameter);
+    Grib2Customizer.Parameter entry = cust.getParameter(vindex.getDiscipline(), vindex.getCategory(), vindex.getParameter());
     if (entry != null) v.addAttribute(new Attribute("Grib2_Parameter_Name", entry.getName()));
 
-    if (vindex.levelType != GribNumbers.MISSING) {
-      String levelTypeName = cust.getLevelName(vindex.levelType);
+    if (vindex.getLevelType() != GribNumbers.MISSING) {
+      String levelTypeName = cust.getLevelName(vindex.getLevelType());
       if (levelTypeName != null)
         v.addAttribute(new Attribute("Grib2_Level_Type", levelTypeName));
       else
-        v.addAttribute(new Attribute("Grib2_Level_Type", vindex.levelType));
+        v.addAttribute(new Attribute("Grib2_Level_Type", vindex.getLevelType()));
     }
 
-    if (vindex.ensDerivedType >= 0)
-      v.addAttribute(new Attribute("Grib2_Ensemble_Derived_Type", vindex.ensDerivedType));
-    else if (vindex.probabilityName != null && vindex.probabilityName.length() > 0) {
-      v.addAttribute(new Attribute("Grib2_Probability_Type", vindex.probType));
-      v.addAttribute(new Attribute("Grib2_Probability_Name", vindex.probabilityName));
+    if (vindex.getEnsDerivedType() >= 0)
+      v.addAttribute(new Attribute("Grib2_Ensemble_Derived_Type", vindex.getEnsDerivedType()));
+    else if (vindex.getProbabilityName() != null && vindex.getProbabilityName().length() > 0) {
+      v.addAttribute(new Attribute("Grib2_Probability_Type", vindex.getProbType()));
+      v.addAttribute(new Attribute("Grib2_Probability_Name", vindex.getProbabilityName()));
     }
 
-    if (vindex.genProcessType >= 0) {
-      String genProcessTypeName = cust.getGeneratingProcessTypeName(vindex.genProcessType);
+    if (vindex.getGenProcessType() >= 0) {
+      String genProcessTypeName = cust.getGeneratingProcessTypeName(vindex.getGenProcessType());
       if (genProcessTypeName != null)
         v.addAttribute(new Attribute("Grib2_Generating_Process_Type", genProcessTypeName));
       else
-        v.addAttribute(new Attribute("Grib2_Generating_Process_Type", vindex.genProcessType));
+        v.addAttribute(new Attribute("Grib2_Generating_Process_Type", vindex.getGenProcessType()));
     }
   }
 
@@ -403,7 +404,7 @@ public class Grib2Iosp extends GribIosp {
     GdsHorizCoordSys hcs = dr.hcs;
     int scanMode = (dr.scanMode == Grib2Index.ScanModeMissing) ? hcs.scanMode : dr.scanMode;
     return Grib2Record.readData(rafData, dr.dataPos, dr.bmsPos, hcs.gdsNumberPoints, scanMode,
-            hcs.nxRaw, hcs.nyRaw, hcs.nptsInLine);
+            hcs.nxRaw, hcs.nyRaw, hcs.getNptsInLine());
   }
 
   public Object getLastRecordRead() {

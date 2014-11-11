@@ -36,6 +36,7 @@
 package ucar.nc2.grib.collection;
 
 import thredds.featurecollection.FeatureCollectionConfig;
+import ucar.coord.CoordinateRuntime;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.NetcdfFileSubclass;
 import ucar.nc2.dataset.NetcdfDataset;
@@ -45,6 +46,7 @@ import ucar.nc2.grib.grib1.tables.Grib1Customizer;
 import java.io.File;
 import java.io.IOException;
 import java.util.Formatter;
+import java.util.List;
 
 /**
  * PartitionCollection for Grib1.
@@ -52,10 +54,10 @@ import java.util.Formatter;
  * @author caron
  * @since 2/21/14
  */
-public class Grib1Partition extends PartitionCollection implements AutoCloseable {
+public class Grib1Partition extends PartitionCollectionImmutable {
 
-  public Grib1Partition(String name, File directory, FeatureCollectionConfig config, org.slf4j.Logger logger) {
-    super(name, directory, config, true, logger);
+  Grib1Partition( PartitionCollection pc) {
+    super(pc);
   }
 
   // LOOK - needs time partition collection iosp or something
@@ -81,7 +83,7 @@ public class Grib1Partition extends PartitionCollection implements AutoCloseable
   @Override
   public String makeVariableName(VariableIndex vindex) {
     Grib1Customizer cust1 = ((Grib1Customizer) cust);
-    Grib1SectionProductDefinition pdss = new Grib1SectionProductDefinition(vindex.rawPds);
+    Grib1SectionProductDefinition pdss = new Grib1SectionProductDefinition(vindex.getRawPds());
     return Grib1Iosp.makeVariableName(cust1, pdss);
   }
 
