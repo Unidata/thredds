@@ -52,11 +52,9 @@ public class PathMatcher {
 
   public static class Match {
     public String root;
-    public String dir;
 
-    Match(String root, String dir) {
+    Match(String root) {
       this.root = root;
-      this.dir = dir;
     }
   }
 
@@ -67,10 +65,9 @@ public class PathMatcher {
   /**
    * Add an object to the collection to be searched by a String key.
    * @param root sort key
-   * @param dir add this object to the list to be searched.
    */
-  public void put(String root, String dir) {
-    treeMap.put( root, new Match(root, dir));
+  public void put(String root) {
+    treeMap.put( root, new Match(root));
   }
 
   /**
@@ -132,15 +129,15 @@ public class PathMatcher {
   static private boolean debug = false;
   static public void main( String[] args) {
     PathMatcher m = new PathMatcher();
-    m.put("/thredds/dods/test/longer", null);
-    m.put("/thredds/dods/test", null);
-    m.put("/thredds/dods/tester", null);
-    m.put("/thredds/dods/short", null);
-    m.put("/actionable", null);
-    m.put("myworld", null);
-    m.put("mynot", null);
-    m.put("ncmodels", null);
-    m.put("ncmodels/bzipped", null);
+    m.put("/thredds/dods/test/longer");
+    m.put("/thredds/dods/test");
+    m.put("/thredds/dods/tester");
+    m.put("/thredds/dods/short");
+    m.put("/actionable");
+    m.put("myworld");
+    m.put("mynot");
+    m.put("ncmodels");
+    m.put("ncmodels/bzipped");
 
 
     m.doit("nope");
@@ -153,7 +150,5 @@ public class PathMatcher {
 
     debug = true;
     m.doit("ncmodels/canonical");
-
   }
-
 }

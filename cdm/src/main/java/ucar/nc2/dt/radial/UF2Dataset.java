@@ -179,7 +179,7 @@ public class UF2Dataset extends RadialDatasetSweepAdapter implements TypedDatase
   }
 
   public String getDataFormat() {
-    return RadialDatasetSweep.UF;
+    return "Universal Format";
   }
 
 

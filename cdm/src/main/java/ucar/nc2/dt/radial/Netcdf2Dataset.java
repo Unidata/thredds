@@ -184,7 +184,7 @@ public class Netcdf2Dataset extends RadialDatasetSweepAdapter implements TypedDa
     }
 
     public String getDataFormat() {
-        return RadialDatasetSweep.LevelII;
+        return "NetCDF Level II";
     }
 
 

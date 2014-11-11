@@ -407,7 +407,7 @@ public class QueryChooser extends JPanel {
         wrappedStations.add(new DqcStation((thredds.catalog.query.Station) stations.get(i)));
       }
       mapChooser.setStations(wrappedStations);
-      choosers.add(new ChooserStation(selectStation, mapChooser));
+      choosers.add(new ChooserStation(selectStation));
 
       // layout
       if (need2add) {
@@ -816,9 +816,8 @@ public class QueryChooser extends JPanel {
     StationRegionDateChooser mapChooser;
     DqcStation currentChoice;
 
-    ChooserStation(SelectStation sel, StationRegionDateChooser mapChooser) {
+    ChooserStation(SelectStation sel) {
       super(sel);
-      this.mapChooser = mapChooser;
 
       mapChooser.addPropertyChangeListener(new PropertyChangeListener() {
         public void propertyChange(java.beans.PropertyChangeEvent e) {

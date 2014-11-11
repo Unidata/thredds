@@ -608,28 +608,6 @@ public class URLDumpPane extends TextHistoryPane {
     }
   } */
 
-  private static class GetContentsTask extends ProgressMonitorTask {
-    String urlString;
-    String contents;
-
-    GetContentsTask(String urlString) {
-      this.urlString = urlString;
-    }
-
-    public void run() {
-      try {
-        contents = IO.readURLcontentsWithException(urlString);
-      } catch (IOException e) {
-        setError(e.getMessage());
-        done = true;
-        return;
-      }
-
-      success = !cancel;
-      done = true;
-    }
-  }
-
   private static XMLStore xstore;
   private static URLDumpPane main;
 

@@ -25,6 +25,14 @@ public class TestCFRadial {
                 FeatureType.RADIAL, filename, null, buf);
     }
 
+    private RadialDatasetSweep oneDData() throws IOException
+    {
+        String filename = TestDir.cdmUnitTestDir + "conventions/cfradial/cfrad.20140608_220305.809_to_20140608_220710.630_KFTG_v348_Surveillance_SUR.nc";
+        Formatter buf = new Formatter();
+        return (RadialDatasetSweep) FeatureDatasetFactoryManager.open(
+                FeatureType.RADIAL, filename, null, buf);
+    }
+
     @Test
     public void testBasic() throws IOException
     {
@@ -70,6 +78,38 @@ public class TestCFRadial {
         Assert.assertEquals(45, var.getSweep(0).getOrigin(0).getAltitude(),
                             1e-5);
         Assert.assertEquals(0.379, var.getSweep(0).getElevation(0), 1e-6);
+
+        final int firstRads = 483;
+        Assert.assertEquals(firstRads, var.getSweep(0).getRadialNumber());
+        Assert.assertEquals(0.5109, var.getSweep(0).getElevation(firstRads - 1),
+                1e-6);
         Assert.assertEquals(0.9998, var.getSweep(1).getElevation(1), 1e-6);
+    }
+
+    @Test
+    public void testOneD() throws IOException
+    {
+        RadialDatasetSweep ds = oneDData();
+        Assert.assertEquals(FeatureType.RADIAL, ds.getFeatureType());
+        RadialDatasetSweep.RadialVariable var =
+                (RadialDatasetSweep.RadialVariable) ds.getDataVariable("REF");
+        Assert.assertEquals(14, var.getNumSweeps());
+
+        // Check getting all data
+        float[] data = var.readAllData();
+        Assert.assertEquals(6697440, data.length);
+        Assert.assertEquals(-7.5, data[0], 1e-6);
+
+        // Check getting sweep
+        data = var.getSweep(6).readData();
+        Assert.assertEquals(335520, data.length);
+        Assert.assertEquals(10.5, data[0], 1e-6);
+
+        // Check random portion of data from a sweep and ray
+        data = var.getSweep(2).readData(3);
+        Assert.assertEquals(1468, data.length);
+        Assert.assertEquals(-4.5, data[100], 1e-6);
+        Assert.assertEquals(9.0, data[101], 1e-6);
+        Assert.assertEquals(1.5, data[102], 1e-6);
     }
 }

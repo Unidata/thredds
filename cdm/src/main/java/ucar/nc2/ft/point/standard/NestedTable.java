@@ -147,7 +147,8 @@ public class NestedTable {
 
         // look for coordinates that are not part of the extras
     for (CoordinateAxis axis : ds.getCoordinateAxes()) {
-      if (!isCoordinate(axis) && !isExtra(axis))
+      if (!isCoordinate(axis) && !isExtra(axis)
+              && axis.getDimensionsAll().size() <= 1)  // Only permit 0-D and 1-D axes as extra variables.
         addExtraVariable(axis);
     }
 
@@ -185,11 +186,13 @@ public class NestedTable {
     extras.add(v);
   }
 
+  // Has v already been added to the set of extra variables?
   private boolean isExtra( Variable v) {
     if (v == null) return false;
     return extras != null && extras.contains(v);
   }
 
+  // Is v a coordinate axis for this feature type?
   private boolean isCoordinate( Variable v) {
     if (v == null) return false;
     String name = v.getShortName();
