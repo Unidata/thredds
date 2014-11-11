@@ -46,7 +46,9 @@ import ucar.nc2.constants.CDM;
 import ucar.nc2.grib.grib1.Grib1RecordScanner;
 import ucar.nc2.grib.grib2.Grib2RecordScanner;
 import ucar.nc2.stream.NcStream;
+import ucar.nc2.util.DiskCache2;
 import ucar.unidata.io.RandomAccessFile;
+import ucar.unidata.util.StringUtil2;
 
 import java.io.File;
 import java.io.IOException;
@@ -64,6 +66,65 @@ import java.util.List;
  */
 public class GribCdmIndex implements IndexReader {
   static public enum GribCollectionType {GRIB1, GRIB2, Partition1, Partition2, none}
+
+  /////////////////////////////////////////////////////////////////////////
+  private static DiskCache2 diskCache;
+
+  static synchronized public void setDiskCache2(DiskCache2 dc) {
+    diskCache = dc;
+  }
+
+  static synchronized public DiskCache2 getDiskCache2() {
+    if (diskCache == null)
+      diskCache = DiskCache2.getDefault();
+    return diskCache;
+  }
+
+  /**
+   * Get index file, may be in cache directory, may not exist
+   *
+   * @param path full path of index file
+   * @return File, possibly in cache
+   */
+  static public File getFileInCache(String path) {
+    return getDiskCache2().getFile(path);     // diskCache manages where the index file lives
+  }
+
+  static public File getExistingFileOrCache(String path) {
+    return getDiskCache2().getExistingFileOrCache(path);
+  }
+
+  /**
+   * This is only used for the top level GribCollection.
+   *
+   * @param config use this FeatureCollectionConfig
+   * @return index File
+   */
+  static public File makeTopIndexFileFromConfig(FeatureCollectionConfig config) {
+    Formatter errlog = new Formatter();
+    CollectionSpecParser specp = new CollectionSpecParser(config.spec, errlog);
+
+    String name = StringUtil2.replace(config.name, '\\', "/");
+    String cname = DirectoryCollection.makeCollectionName(name, Paths.get(specp.getRootDir()));
+
+    return makeIndexFile(cname, new File(specp.getRootDir()));
+  }
+
+  static File makeIndexFile(String collectionName, File directory) {
+    String nameNoBlanks = StringUtil2.replace(collectionName, ' ', "_");
+    return new File(directory, nameNoBlanks + CollectionAbstract.NCX_SUFFIX);
+  }
+
+
+  static public String makeNameFromIndexFilename(String idxPathname) {
+    idxPathname = StringUtil2.replace(idxPathname, '\\', "/");
+    int pos = idxPathname.lastIndexOf('/');
+    String idxFilename = (pos < 0) ? idxPathname : idxPathname.substring(pos + 1);
+    assert idxFilename.endsWith(CollectionAbstract.NCX_SUFFIX);
+    return idxFilename.substring(0, idxFilename.length() - CollectionAbstract.NCX_SUFFIX.length());
+  }
+
+  ///////////////////////////////////////////
 
   /**
    * Find out what kind of index this is
@@ -104,9 +165,9 @@ public class GribCdmIndex implements IndexReader {
 
     // open GribCollection from an existing index file. return null on failure
   static public GribCollectionImmutable openCdmIndex(String indexFilename, FeatureCollectionConfig config, boolean dataOnly, boolean useCache, Logger logger) {
-    File indexFileInCache = useCache ? GribCollection.getFileInCache(indexFilename) : new File(indexFilename);
+    File indexFileInCache = useCache ? getFileInCache(indexFilename) : new File(indexFilename);
     String indexFilenameInCache = indexFileInCache.getPath();
-    String name = GribCollection.makeNameFromIndexFilename(indexFilename);
+    String name = makeNameFromIndexFilename(indexFilename);
     GribCollectionImmutable result = null;
 
     try (RandomAccessFile raf = RandomAccessFile.acquire(indexFilenameInCache)) {
@@ -466,9 +527,9 @@ public class GribCdmIndex implements IndexReader {
   static public GribCollectionImmutable openGribCollection(FeatureCollectionConfig config, CollectionUpdateType updateType, Logger logger) throws IOException {
 
     // update if needed
-    boolean didit = updateGribCollection(config, updateType, logger);
+    updateGribCollection(config, updateType, logger);
 
-    File idxFile = GribCollection.makeTopIndexFileFromConfig(config);
+    File idxFile = makeTopIndexFileFromConfig(config);
     return openCdmIndex(idxFile.getPath(), config, true, logger);
   }
 
@@ -737,7 +798,7 @@ public class GribCdmIndex implements IndexReader {
           int n = gribCollectionIndex.getMfilesCount();
           for (int i = 0; i < n; i++) {
             GribCollectionProto.MFile mfilep = gribCollectionIndex.getMfiles(i);
-            result.add(new GcMFile(protoDir, mfilep.getFilename(), mfilep.getLastModified(), mfilep.getIndex()));
+            result.add(new GcMFile(protoDir, mfilep.getFilename(), mfilep.getLastModified(), mfilep.getLength(), mfilep.getIndex()));
           }
         }
         return true;

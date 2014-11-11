@@ -26,6 +26,7 @@ message Partition {
   required string filename = 2;   // the gribCollection.ncx2 file
   required string directory = 3;  // top directory
   optional uint64 lastModified = 4;
+  optional int64 length = 5;
 }
 
 extend GribCollection {

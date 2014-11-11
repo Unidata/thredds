@@ -140,7 +140,7 @@ public abstract class GribIosp extends AbstractIOServiceProvider {
 
   protected GribCollectionImmutable gribCollection;
   protected GribCollectionImmutable.GroupGC gHcs;
-  protected GribCollection.Type gtype; // only used if gHcs was set
+  protected GribCollectionImmutable.Type gtype; // only used if gHcs was set
   protected boolean isPartitioned;
   protected boolean owned; // if Iosp is owned by GribCollection; affects close()
   protected  ucar.nc2.grib.GribTables gribTable;
@@ -224,7 +224,7 @@ public abstract class GribIosp extends AbstractIOServiceProvider {
     ncfile.addAttribute(null, new Attribute(CDM.FILE_FORMAT, getFileTypeId()));
   }
 
-  private void addGroup(NetcdfFile ncfile, Group parent, GribCollectionImmutable.GroupGC group, GribCollection.Type gctype, boolean useGroups) {
+  private void addGroup(NetcdfFile ncfile, Group parent, GribCollectionImmutable.GroupGC group, GribCollectionImmutable.Type gctype, boolean useGroups) {
 
     Group g;
     if (useGroups) {
@@ -243,7 +243,7 @@ public abstract class GribIosp extends AbstractIOServiceProvider {
     makeGroup(ncfile, g, group, gctype);
   }
 
-  private void makeGroup(NetcdfFile ncfile, Group g, GribCollectionImmutable.GroupGC group, GribCollection.Type gctype) {
+  private void makeGroup(NetcdfFile ncfile, Group g, GribCollectionImmutable.GroupGC group, GribCollectionImmutable.Type gctype) {
     GdsHorizCoordSys hcs = group.getGdsHorizCoordSys();
     String grid_mapping = hcs.getName() + "_Projection";
 
@@ -297,7 +297,7 @@ public abstract class GribIosp extends AbstractIOServiceProvider {
       cv.setCachedData(Array.makeArray(DataType.FLOAT, hcs.ny, hcs.starty, hcs.dy));
     }
 
-    boolean is2Dtime = (gctype == GribCollection.Type.TwoD);
+    boolean is2Dtime = (gctype == GribCollectionImmutable.Type.TwoD);
     CoordinateRuntime runtime = null;
     for (Coordinate coord : group.coords) {
       Coordinate.Type ctype = coord.getType();
@@ -830,7 +830,7 @@ public abstract class GribIosp extends AbstractIOServiceProvider {
 ///////////////////////////////////////////////////////
 
   private Array readDataFromCollection(Variable v, Section section, WritableByteChannel channel) throws IOException, InvalidRangeException {
-    GribCollection.VariableIndex vindex = (GribCollection.VariableIndex) v.getSPobject();
+    GribCollectionImmutable.VariableIndex vindex = (GribCollectionImmutable.VariableIndex) v.getSPobject();
 
     // first time, read records and keep in memory
     vindex.readRecords();
@@ -881,23 +881,23 @@ public abstract class GribIosp extends AbstractIOServiceProvider {
       return Misc.compare(dataPos, o.dataPos);
     }
 
-        /* debugging
+    // debugging
     public void show(GribCollectionImmutable gribCollection) throws IOException {
       String dataFilename = gribCollection.getFilename( fileno);
       System.out.printf(" fileno=%d filename=%s datapos=%d%n", fileno, dataFilename, dataPos);
-    }   */
+    }
   }
 
   protected class DataReader {
-    GribCollection.VariableIndex vindex;
+    GribCollectionImmutable.VariableIndex vindex;
     List<DataRecord> records = new ArrayList<>();
 
-    private DataReader(GribCollection.VariableIndex vindex) {
+    private DataReader(GribCollectionImmutable.VariableIndex vindex) {
       this.vindex = vindex;
     }
 
     void addRecord(int sourceIndex, int resultIndex) {
-      GribCollection.Record record = vindex.getSparseArray().getContent(sourceIndex);
+      GribCollectionImmutable.Record record = vindex.getRecordAt(sourceIndex);
       if (debugRead) {
         System.out.printf("GribIosp debugRead sourceIndex=%d resultIndex=%d record is null=%s%n", sourceIndex, resultIndex, record == null);
       }
@@ -1018,7 +1018,7 @@ public abstract class GribIosp extends AbstractIOServiceProvider {
   //////////////////////////////////////////////////////////////////////////////////////////////
 
   private Array readDataFromPartition(Variable v, Section section, WritableByteChannel channel) throws IOException, InvalidRangeException {
-    PartitionCollection.VariableIndexPartitioned vindexP = (PartitionCollection.VariableIndexPartitioned) v.getSPobject(); // the variable in the partition collection
+    PartitionCollectionImmutable.VariableIndexPartitioned vindexP = (PartitionCollectionImmutable.VariableIndexPartitioned) v.getSPobject(); // the variable in the partition collection
 
     //boolean hasRuntime = vindexP.isTwod;
 
@@ -1035,7 +1035,7 @@ public abstract class GribIosp extends AbstractIOServiceProvider {
     while (iterWanted.hasNext()) {
       iterWanted.next(indexWanted);   // returns the vindexP index in indexWanted aaray
 
-      PartitionCollection.DataRecord record = vindexP.getDataRecord(indexWanted);
+      PartitionCollectionImmutable.DataRecord record = vindexP.getDataRecord(indexWanted);
       if (record == null) {
         if (debug || debugRead) System.out.printf("readDataFromPartition missing data%n");
         // vindexP.getDataRecord(indexWanted); // debug
@@ -1058,20 +1058,20 @@ public abstract class GribIosp extends AbstractIOServiceProvider {
   }
 
   private class DataReaderPartitioned {
-    List<PartitionCollection.DataRecord> records = new ArrayList<>();
+    List<PartitionCollectionImmutable.DataRecord> records = new ArrayList<>();
 
-    void addRecord(PartitionCollection.DataRecord dr) {
+    void addRecord(PartitionCollectionImmutable.DataRecord dr) {
       if (dr != null) records.add(dr);
     }
 
     void read(DataReceiverIF dataReceiver) throws IOException {
       Collections.sort(records);
 
-      PartitionCollection.DataRecord lastRecord = null;
+      PartitionCollectionImmutable.DataRecord lastRecord = null;
       RandomAccessFile rafData = null;
       try {
 
-        for (PartitionCollection.DataRecord dr : records) {
+        for (PartitionCollectionImmutable.DataRecord dr : records) {
           if (debugIndexOnly) {
             debugIndexOnlyCount++;
             if (debugIndexOnlyShow) dr.show();

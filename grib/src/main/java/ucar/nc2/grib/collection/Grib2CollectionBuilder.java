@@ -59,7 +59,7 @@ import java.util.*;
  * @author John
  * @since 2/5/14
  */
-public class Grib2CollectionBuilder extends GribCollectionBuilder {
+class Grib2CollectionBuilder extends GribCollectionBuilder {
   // static private final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(Grib2CollectionBuilder.class);
 
   private final boolean intvMerge;
@@ -168,8 +168,8 @@ public class Grib2CollectionBuilder extends GribCollectionBuilder {
       statsAll.add(stats);
 
       // look for group name overrides
-      if (config.gribConfig.gdsNamer != null)
-        g.nameOverride = config.gribConfig.gdsNamer.get(g.gdsHash);
+      //if (config.gribConfig.gdsNamer != null)
+      //  g.nameOverride = config.gribConfig.gdsNamer.get(g.gdsHash);
     }
 
     // debugging and validation
@@ -228,7 +228,7 @@ public class Grib2CollectionBuilder extends GribCollectionBuilder {
     Grib2CollectionWriter writer = new Grib2CollectionWriter(dcm, logger);
     List<Grib2CollectionWriter.Group> groups2 = new ArrayList<>();
     for (Object g : groups) groups2.add((Grib2CollectionWriter.Group) g);
-    File indexFileInCache = GribCollection.getFileInCache(indexFilepath);
+    File indexFileInCache = GribCdmIndex.getFileInCache(indexFilepath);
     return writer.writeIndex(name, indexFileInCache, masterRuntime, groups2, files);
   }
 

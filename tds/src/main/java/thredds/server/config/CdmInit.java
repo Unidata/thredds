@@ -46,8 +46,8 @@ import thredds.server.ncss.format.SupportedFormat;
 import thredds.servlet.ThreddsConfig;
 import thredds.util.LoggerFactorySpecial;
 import ucar.nc2.dataset.NetcdfDataset;
-import ucar.nc2.grib.collection.GribCollection;
-import ucar.nc2.grib.collection.PartitionCollection;
+import ucar.nc2.grib.collection.GribCdmIndex;
+import ucar.nc2.grib.collection.PartitionCollectionImmutable;
 import ucar.nc2.jni.netcdf.Nc4Iosp;
 import ucar.nc2.ncml.Aggregation;
 import ucar.nc2.thredds.ThreddsDataFactory;
@@ -188,7 +188,7 @@ public class CdmInit implements InitializingBean,  DisposableBean{
     gribCache.setPolicy(gribIndexPolicy);
     gribCache.setAlwaysUseCache(gribIndexAlwaysUse);
     gribCache.setNeverUseCache(gribIndexNeverUse);
-    GribCollection.setDiskCache2(gribCache);
+    GribCdmIndex.setDiskCache2(gribCache);
     startupLog.info("CdmInit: GribIndex="+gribCache);
 
     // LOOK is this used ??
@@ -273,7 +273,7 @@ public class CdmInit implements InitializingBean,  DisposableBean{
     max = ThreddsConfig.getInt("TimePartition.maxFiles", 750);
     secs = ThreddsConfig.getSeconds("TimePartition.scour", 13 * 60);
     if (max > 0) {
-      PartitionCollection.initPartitionCache(min, max, secs);
+      PartitionCollectionImmutable.initPartitionCache(min, max, secs);
       startupLog.info("CdmInit: TimePartition.initPartitionCache= ["+min+","+max+"] scour = "+secs);
     }
 

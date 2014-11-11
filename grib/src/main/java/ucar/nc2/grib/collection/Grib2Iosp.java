@@ -37,7 +37,6 @@ package ucar.nc2.grib.collection;
 
 import thredds.catalog.DataFormatType;
 import ucar.coord.CoordinateTimeAbstract;
-import ucar.nc2.grib.grib1.Grib1Record;
 import ucar.nc2.grib.grib2.Grib2Index;
 import ucar.ma2.*;
 import ucar.nc2.*;
@@ -296,7 +295,7 @@ public class Grib2Iosp extends GribIosp {
     super(false, logger);
   }
 
-  public Grib2Iosp(GribCollectionImmutable.GroupGC gHcs, GribCollection.Type gtype) {
+  public Grib2Iosp(GribCollectionImmutable.GroupGC gHcs, GribCollectionImmutable.Type gtype) {
     super(false, logger);
     this.gHcs = gHcs;
     this.owned = true;
@@ -404,7 +403,7 @@ public class Grib2Iosp extends GribIosp {
     GdsHorizCoordSys hcs = dr.hcs;
     int scanMode = (dr.scanMode == Grib2Index.ScanModeMissing) ? hcs.scanMode : dr.scanMode;
     return Grib2Record.readData(rafData, dr.dataPos, dr.bmsPos, hcs.gdsNumberPoints, scanMode,
-            hcs.nxRaw, hcs.nyRaw, hcs.getNptsInLine());
+            hcs.nxRaw, hcs.nyRaw, hcs.nptsInLine);
   }
 
   public Object getLastRecordRead() {

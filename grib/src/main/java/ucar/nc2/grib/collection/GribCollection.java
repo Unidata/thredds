@@ -38,9 +38,7 @@ package ucar.nc2.grib.collection;
 import net.jcip.annotations.Immutable;
 import thredds.featurecollection.FeatureCollectionConfig;
 import thredds.inventory.CollectionAbstract;
-import thredds.inventory.CollectionSpecParser;
 import thredds.inventory.MFile;
-import thredds.inventory.partition.DirectoryCollection;
 import ucar.coord.*;
 import ucar.nc2.grib.grib1.Grib1ParamTime;
 import ucar.nc2.grib.grib1.Grib1SectionProductDefinition;
@@ -53,9 +51,6 @@ import ucar.nc2.grib.*;
 import ucar.nc2.grib.grib2.Grib2Pds;
 import ucar.nc2.grib.grib2.Grib2Utils;
 import ucar.nc2.time.CalendarDateRange;
-import ucar.nc2.util.DiskCache2;
-import ucar.nc2.util.cache.FileCacheIF;
-import ucar.nc2.util.cache.FileCacheable;
 import ucar.nc2.util.cache.SmartArrayInt;
 import ucar.unidata.io.RandomAccessFile;
 import ucar.unidata.util.Parameter;
@@ -74,98 +69,15 @@ import java.util.*;
  * @author John
  * @since 12/1/13
  */
-public class GribCollection implements FileCacheable, AutoCloseable {
+class GribCollection implements AutoCloseable {
   static private final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(GribCollection.class);
   static public  final long MISSING_RECORD = -1;
 
-  public enum Type {GC, TwoD, Best, Analysis} // must match with GribCollectionProto.Dataset.Type
-
   //////////////////////////////////////////////////////////
-  private static DiskCache2 diskCache;
-
-  static synchronized public void setDiskCache2(DiskCache2 dc) {
-    diskCache = dc;
-  }
-
-  static synchronized public DiskCache2 getDiskCache2() {
-    if (diskCache == null)
-      diskCache = DiskCache2.getDefault();
-    return diskCache;
-  }
-
-  //////////////////////////////////////////////////////////
-  // object cache for data files - these are opened only as raf, not netcdfFile
-  // private static FileCacheIF dataRafCache;
-
-  /* static public void initDataRafCache(int minElementsInMemory, int maxElementsInMemory, int period) {
-    dataRafCache = new ucar.nc2.util.cache.FileCache("GribCollectionDataRafCache ", minElementsInMemory, maxElementsInMemory, -1, period);
-  }
-
-  static public FileCacheIF getDataRafCache() {
-    return dataRafCache;
-  }
-
-  static private final ucar.nc2.util.cache.FileFactory dataRafFactory = new FileFactory() {
-    public FileCacheable open(String location, int buffer_size, CancelTask cancelTask, Object iospMessage) throws IOException {
-      return new RandomAccessFile(location, "r");
-    }
-  };
-
-  static public void disableDataRafCache() {
-    if (null != dataRafCache) dataRafCache.disable();
-    dataRafCache = null;
-  }   */
-
-
-
-  ///////////////////////////////////////////////////////////////////
-
-  /*
-    index = gcname + ".ncx"
-    A partition divides the files into a tree of collections
-
-    partition = none
-
-      if multiple runtimes: make seperate GC for each one, make a PC that puts them together. GC name= collectionName + runtime, PC = collectionName.
-      if single runtime:   GC name = collectionName
-      in both cases, the index for the collection = collectionName.ncx2
-
-    partition = directory
-
-      use the directory tree as the partition
-      gcname = collectionName + directory
-
-    partition = file
-
-      use the directory tree and the individual files as the partition
-      gcname = collectionName = filename
-
-   */
-
-  /**
-   * This is only used for the top level GribCollection.
-   *
-   * @param config use this FeatureCollectionConfig
-   * @return index File
-   */
-  static public File makeTopIndexFileFromConfig(FeatureCollectionConfig config) {
-    Formatter errlog = new Formatter();
-    CollectionSpecParser specp = new CollectionSpecParser(config.spec, errlog);
-
-    String name = StringUtil2.replace(config.name, '\\', "/");
-    String cname = DirectoryCollection.makeCollectionName(name, Paths.get(specp.getRootDir()));
-
-    return makeIndexFile(cname, new File(specp.getRootDir()));
-  }
-
-  static File makeIndexFile(String collectionName, File directory) {
-    String nameNoBlanks = StringUtil2.replace(collectionName, ' ', "_");
-    return new File(directory, nameNoBlanks + CollectionAbstract.NCX_SUFFIX);
-  }
 
   static MFile makeIndexMFile(String collectionName, File directory) {
     String nameNoBlanks = StringUtil2.replace(collectionName, ' ', "_");
-    return new GcMFile(directory, nameNoBlanks + CollectionAbstract.NCX_SUFFIX, -1, -1);
+    return new GcMFile(directory, nameNoBlanks + CollectionAbstract.NCX_SUFFIX, -1, -1, -1); // LOOK dont know lastMod, size. can it be added later?
   }
 
   private static CalendarDateFormatter cf = new CalendarDateFormatter("yyyyMMdd-HHmmss", new CalendarTimeZone("UTC"));
@@ -173,32 +85,6 @@ public class GribCollection implements FileCacheable, AutoCloseable {
   static public String makeName(String collectionName, CalendarDate runtime) {
     String nameNoBlanks = StringUtil2.replace(collectionName, ' ', "_");
     return nameNoBlanks + "-" + cf.toString(runtime);
-  }
-
-  static public String makeNameFromIndexFilename(String idxPathname) {
-    idxPathname = StringUtil2.replace(idxPathname, '\\', "/");
-    int pos = idxPathname.lastIndexOf('/');
-    String idxFilename = (pos < 0) ? idxPathname : idxPathname.substring(pos + 1);
-    assert idxFilename.endsWith(CollectionAbstract.NCX_SUFFIX);
-    return idxFilename.substring(0, idxFilename.length() - CollectionAbstract.NCX_SUFFIX.length());
-  }
-
-  /**
-   * Get index file, may be in cache directory, may not exist
-   *
-   * @param path full path of index file
-   * @return File, possibly in cache
-   */
-  static public File getFileInCache(String path) {
-    return getDiskCache2().getFile(path); // diskCache manages where the index file lives
-  }
-
-  static public File getFileInCache(File f) {
-    return getDiskCache2().getFile(f.getPath());
-  }
-
-  static public File getExistingFileOrCache(String path) {
-    return getDiskCache2().getExistingFileOrCache(path);
   }
 
   ////////////////////////////////////////////////////////////////
@@ -221,7 +107,6 @@ public class GribCollection implements FileCacheable, AutoCloseable {
   // not stored in index
   private Map<String, MFile> filenameMap;
   protected RandomAccessFile indexRaf; // this is the raf of the index (ncx) file, synchronize any access to it
-  protected FileCacheIF objCache = null;  // optional object cache - used in the TDS
   protected String indexFilename;
 
   public static int countGC;
@@ -290,13 +175,7 @@ public class GribCollection implements FileCacheable, AutoCloseable {
     return datasets;
   }
 
-  public GribCollection.Dataset findDataset(String name) {
-    for (GribCollection.Dataset ds : datasets)
-      if (ds.type.toString().equalsIgnoreCase(name)) return ds;
-    return null;
-  }
-
-  public Dataset makeDataset(Type type) {
+  public Dataset makeDataset(GribCollectionImmutable.Type type) {
     Dataset result = new Dataset(type);
     datasets.add(result);
     return result;
@@ -304,8 +183,8 @@ public class GribCollection implements FileCacheable, AutoCloseable {
 
   public GribCollection.Dataset getDatasetCanonical() {
     for (GribCollection.Dataset ds : datasets) {
-      if (ds.getType() == Type.GC) return ds;
-      if (ds.getType() == Type.TwoD) return ds;
+      if (ds.type == GribCollectionImmutable.Type.GC) return ds;
+      if (ds.type == GribCollectionImmutable.Type.TwoD) return ds;
     }
     throw new IllegalStateException("GC.getDatasetCanonical failed on="+name);
   }
@@ -314,14 +193,10 @@ public class GribCollection implements FileCacheable, AutoCloseable {
     return horizCS.get(index);
   }
 
-  public CoordinateRuntime getMasterRuntime() {
-    return masterRuntime;
-  }
-
   protected void makeHorizCS() {
     Map<Integer, GribHorizCoordSystem> gdsMap = new HashMap<>();
     for (Dataset ds : datasets) {
-      for (GroupGC hcs : ds.getGroups())
+      for (GroupGC hcs : ds.groups)
         gdsMap.put(hcs.getGdsHash(), hcs.horizCoordSys);
     }
 
@@ -342,15 +217,6 @@ public class GribCollection implements FileCacheable, AutoCloseable {
       if (desc == null) desc = hcs.makeDescription(); // default desc
 
     horizCS.add(new GribHorizCoordSystem(hcs, rawGds, gdsHash, nameOverride, desc, predefinedGridDefinition));
-  }
-
-  public MFile findMFileByName(String filename) {
-    if (filenameMap == null) {
-      filenameMap = new HashMap<>(fileMap.size() * 2);
-      for (MFile file : fileMap.values())
-        filenameMap.put(file.getName(), file);
-    }
-    return filenameMap.get(filename);
   }
 
   public void setFileMap(Map<Integer, MFile> fileMap) {
@@ -375,48 +241,8 @@ public class GribCollection implements FileCacheable, AutoCloseable {
    * @return index filename; may not exist; may be in disk cache
    */
   public String getIndexFilepathInCache() {
-    File indexFile = makeIndexFile(name, directory);
-    return getFileInCache(indexFile.getPath()).getPath();
-  }
-
-  public List<Parameter> getParams() {
-    return params;
-  }
-
-  public int getCenter() {
-    return center;
-  }
-
-  public int getSubcenter() {
-    return subcenter;
-  }
-
-  public int getMaster() {
-    return master;
-  }
-
-  public int getLocal() {
-    return local;
-  }
-
-  public int getGenProcessType() {
-    return genProcessType;
-  }
-
-  public int getGenProcessId() {
-    return genProcessId;
-  }
-
-  public int getBackProcessId() {
-    return backProcessId;
-  }
-
-  public boolean isGrib1() {
-    return isGrib1;
-  }
-
-  public File getDirectory() {
-    return directory;
+    File indexFile = GribCdmIndex.makeIndexFile(name, directory);
+    return GribCdmIndex.getFileInCache(indexFile.getPath()).getPath();
   }
 
   // set from GribCollectionBuilderFromIndex.readFromIndex()
@@ -464,49 +290,12 @@ public class GribCollection implements FileCacheable, AutoCloseable {
   //////////////////////////////////////////////////////////////////////////////////////////////////
   // stuff for FileCacheable
 
-  public synchronized void close() throws java.io.IOException {
-    if (objCache != null) {
-      if (objCache.release(this)) return;
-    }
+  public void close() throws java.io.IOException {
 
     if (indexRaf != null) {
       indexRaf.close();
       indexRaf = null;
     }
-  }
-
-    // release any resources like file handles
-  public void release() throws IOException {
-    if (indexRaf != null) {
-      indexRaf.close();
-      indexRaf = null;
-    }
-  }
-
-  // reacquire any resources like file handles
-  public void reacquire() throws IOException {
-    indexRaf = RandomAccessFile.acquire(indexFilename);
-  }
-
-  @Override
-  public String getLocation() {
-    if (indexRaf != null) return indexRaf.getLocation();
-    return getIndexFilepathInCache();
-  }
-
-  @Override
-  public long getLastModified() {
-    File indexFile = makeIndexFile(name, directory);
-    File indexFileInPath = getFileInCache(indexFile.getPath());
-    if (indexFileInPath.exists()) {
-      return indexFileInPath.lastModified();
-    }
-    return 0;
-  }
-
-  @Override
-  public synchronized void setFileCache(FileCacheIF fileCache) {
-    this.objCache = fileCache;
   }
 
   ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -515,10 +304,10 @@ public class GribCollection implements FileCacheable, AutoCloseable {
   private Set<String> groupNames = new HashSet<>(5);
 
   public class Dataset {
-    final Type type;
+    final GribCollectionImmutable.Type type;
     List<GroupGC> groups;  // must be kept in order, because PartitionForVariable2D has index into it
 
-    public Dataset(Type type) {
+    public Dataset(GribCollectionImmutable.Type type) {
       this.type = type;
       groups = new ArrayList<>();
     }
@@ -534,20 +323,8 @@ public class GribCollection implements FileCacheable, AutoCloseable {
       return g;
     }
 
-    public Iterable<GroupGC> getGroups() {
-      return groups;
-    }
-
-    public int getGroupsSize() {
-      return groups.size();
-    }
-
-    public Type getType() {
-      return type;
-    }
-
     public boolean isTwoD() {
-      return type == Type.TwoD;
+      return type == GribCollectionImmutable.Type.TwoD;
     }
 
     public GroupGC getGroup(int index) {
@@ -555,7 +332,7 @@ public class GribCollection implements FileCacheable, AutoCloseable {
     }
 
     public GroupGC findGroupById(String id) {
-      for (GroupGC g : getGroups()) {
+      for (GroupGC g : groups) {
         if (g.getId().equals(id))
           return g;
       }
@@ -1181,7 +958,7 @@ public class GribCollection implements FileCacheable, AutoCloseable {
     //f.format("%n");
 
     for (Dataset ds : datasets) {
-      f.format("Dataset %s%n", ds.getType());
+      f.format("Dataset %s%n", ds.type);
       for (GroupGC g : ds.groups) {
         f.format(" Group %s%n", g.horizCoordSys.getId());
         for (VariableIndex v : g.variList) {

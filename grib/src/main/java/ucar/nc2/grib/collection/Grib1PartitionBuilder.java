@@ -46,7 +46,7 @@ import java.io.File;
  * @author caron
  * @since 2/21/14
  */
-public class Grib1PartitionBuilder extends GribPartitionBuilder {
+class Grib1PartitionBuilder extends GribPartitionBuilder {
   public static final String MAGIC_START = "Grib1Partition2Index";  // was Grib1Partition0Index
 
   public Grib1PartitionBuilder(String name, File directory, PartitionManager tpc, org.slf4j.Logger logger) {
@@ -55,7 +55,7 @@ public class Grib1PartitionBuilder extends GribPartitionBuilder {
     FeatureCollectionConfig config = null;
     if (tpc != null)
       config = (FeatureCollectionConfig) tpc.getAuxInfo(FeatureCollectionConfig.AUX_CONFIG);
-    this.result = new Grib1Partition(name, directory, config, logger);
+    this.result = new PartitionCollection(name, directory, config, true, logger);
   }
 
   //////////////////////////////////////////////////////////

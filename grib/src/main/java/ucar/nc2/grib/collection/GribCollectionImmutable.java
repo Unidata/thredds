@@ -62,7 +62,8 @@ import java.io.IOException;
 import java.util.*;
 
 /**
- * Describe
+ * An Immutable GribCollection, corresponds to one index (ncx) file.
+ * The index file is opened on demand.
  *
  * @author caron
  * @since 11/10/2014
@@ -70,6 +71,7 @@ import java.util.*;
 @Immutable
 public abstract class GribCollectionImmutable implements Closeable, FileCacheable {
   static private final Logger logger = LoggerFactory.getLogger(GribCollectionImmutable.class);
+  public static int countGC; // debug
 
   ////////////////////////////////////////////////////////////////
   protected final String name; // collection name; index filename must be directory/name.ncx2
@@ -82,34 +84,36 @@ public abstract class GribCollectionImmutable implements Closeable, FileCacheabl
   protected final List<GribHorizCoordSystem> horizCS; // one for each unique GDS
   protected final CoordinateRuntime masterRuntime;
 
-  // not stored in index
-  protected Map<Integer, MFile> fileMap;    // all the files used in the GC; key is the index in original collection, GC has subset of them
-  protected GribTables cust;
-  protected Map<String, MFile> filenameMap;
+  protected final Map<Integer, MFile> fileMap;    // all the files used in the GC; key is the index in original collection, GC has subset of them
+  protected final GribTables cust;
+  //protected Map<String, MFile> filenameMap;
   // protected RandomAccessFile indexRaf; // this is the raf of the index (ncx) file, synchronize any access to it
-  protected FileCacheIF objCache = null;  // optional object cache - used in the TDS
-  protected String indexFilename;
+  protected final String indexFilename;
 
-  public static int countGC;
+  protected FileCacheIF objCache = null;  // optional object cache - used in the TDS
 
   GribCollectionImmutable(GribCollection gc) {
     countGC++;
 
-    this.config = gc.getConfig();
-    this.name = gc.getName();
-    this.directory = gc.getDirectory();
+    this.config = gc.config;
+    this.name = gc.name;
+    this.directory = gc.directory;
     this.isGrib1 = gc.isGrib1;
     this.info = new Info(gc);
 
-    List<GribCollection.Dataset> gcDatasets = gc.getDatasets();
-    List<Dataset> work = new ArrayList<>(gcDatasets.size());
-    for (GribCollection.Dataset gcDataset : gcDatasets) {
-      work.add( new Dataset(gcDataset.getType(), gcDataset.groups));
+    List<Dataset> work = new ArrayList<>(gc.datasets.size());
+    for (GribCollection.Dataset gcDataset : gc.datasets) {
+      work.add( new Dataset(gcDataset.type, gcDataset.groups));
     }
     this.datasets = Collections.unmodifiableList( work);
 
     this.horizCS = Collections.unmodifiableList( gc.horizCS);
-    this.masterRuntime = gc.getMasterRuntime();
+    this.masterRuntime = gc.masterRuntime;
+    this.fileMap = gc.fileMap;
+    this.cust = gc.cust;
+
+    File indexFile = GribCdmIndex.makeIndexFile(name, directory);
+    indexFilename = indexFile.getPath();
   }
 
   public List<Dataset> getDatasets() {
@@ -162,6 +166,8 @@ public abstract class GribCollectionImmutable implements Closeable, FileCacheabl
     return info.backProcessId;
   }
 
+  public enum Type {GC, TwoD, Best, Analysis} // must match with GribCollectionProto.Dataset.Type
+
   public static class Info {
     final int version; // the ncx version
     final int center, subcenter, master, local;  // GRIB 1 uses "local" for table version
@@ -194,10 +200,10 @@ public abstract class GribCollectionImmutable implements Closeable, FileCacheabl
 
   @Immutable
   public class Dataset {
-    final GribCollection.Type type;
+    final Type type;
     final List<GroupGC> groups;  // must be kept in order, because PartitionForVariable2D has index into it
 
-    public Dataset(GribCollection.Type type, List<GribCollection.GroupGC> groups) {
+    public Dataset(Type type, List<GribCollection.GroupGC> groups) {
       this.type = type;
       List<GroupGC> work = new ArrayList<>(groups.size());
       for (GribCollection.GroupGC gcGroup : groups) {
@@ -214,12 +220,12 @@ public abstract class GribCollectionImmutable implements Closeable, FileCacheabl
       return groups.size();
     }
 
-    public GribCollection.Type getType() {
+    public Type getType() {
       return type;
     }
 
     public boolean isTwoD() {
-      return type == GribCollection.Type.TwoD;
+      return type == Type.TwoD;
     }
 
     public GroupGC getGroup(int index) {
@@ -314,6 +320,55 @@ public abstract class GribCollectionImmutable implements Closeable, FileCacheabl
       this.coordIndex = gcVar.coordIndex;
       this.recordsPos = gcVar.recordsPos;
       this.recordsLen = gcVar.recordsLen;
+    }
+
+    public synchronized void readRecords() throws IOException {
+      if (this.sa != null) return;
+
+      if (recordsLen == 0) return;
+      byte[] b = new byte[recordsLen];
+
+      try (RandomAccessFile indexRaf = RandomAccessFile.acquire(indexFilename)) {
+
+        indexRaf.seek(recordsPos);
+        indexRaf.readFully(b);
+
+        /*
+        message SparseArray {
+          required fixed32 cdmHash = 1; // which variable
+          repeated uint32 size = 2;     // multidim sizes
+          repeated uint32 track = 3;    // 1-based index into record list, 0 == missing
+          repeated Record records = 4;  // List<Record>
+        }
+       */
+        GribCollectionProto.SparseArray proto = GribCollectionProto.SparseArray.parseFrom(b);
+        int cdmHash = proto.getCdmHash();
+        if (cdmHash != info.cdmHash)
+          throw new IllegalStateException("Corrupted index");
+
+        int nsizes = proto.getSizeCount();
+        int[] size = new int[nsizes];
+        for (int i = 0; i < nsizes; i++)
+          size[i] = proto.getSize(i);
+
+        int ntrack = proto.getTrackCount();
+        int[] track = new int[ntrack];
+        for (int i = 0; i < ntrack; i++)
+          track[i] = proto.getTrack(i);
+
+        int n = proto.getRecordsCount();
+        List<Record> records = new ArrayList<>(n);
+        for (int i = 0; i < n; i++) {
+          GribCollectionProto.Record pr = proto.getRecords(i);
+          records.add(new Record(pr.getFileno(), pr.getPos(), pr.getBmsPos(), pr.getScanMode()));
+        }
+
+        this.sa = new SparseArray<>(size, track, records, 0);
+      }
+    }
+
+    public synchronized Record getRecordAt(int sourceIndex) {
+      return sa.getContent(sourceIndex);
     }
 
     public List<Coordinate> getCoordinates() {
@@ -491,31 +546,31 @@ public abstract class GribCollectionImmutable implements Closeable, FileCacheabl
       }
 
     }
+  }
 
-    @Immutable
-    public class Record {
-      public final int fileno;    // which file
-      public final long pos;      // offset on file where data starts
-      public final long bmsPos;   // if non-zero, offset where bms starts
-      public final int scanMode;  // from gds
+  @Immutable
+  public static class Record {
+    public final int fileno;    // which file
+    public final long pos;      // offset on file where data starts
+    public final long bmsPos;   // if non-zero, offset where bms starts
+    public final int scanMode;  // from gds
 
-      public Record(int fileno, long pos, long bmsPos, int scanMode) {
-        this.fileno = fileno;
-        this.pos = pos;
-        this.bmsPos = bmsPos;
-        this.scanMode = scanMode;
-      }
+    public Record(int fileno, long pos, long bmsPos, int scanMode) {
+      this.fileno = fileno;
+      this.pos = pos;
+      this.bmsPos = bmsPos;
+      this.scanMode = scanMode;
+    }
 
-      @Override
-      public String toString() {
-        final StringBuilder sb = new StringBuilder("GribCollection.Record{");
-        sb.append("fileno=").append(fileno);
-        sb.append(", pos=").append(pos);
-        sb.append(", bmsPos=").append(bmsPos);
-        sb.append(", scanMode=").append(scanMode);
-        sb.append('}');
-        return sb.toString();
-      }
+    @Override
+    public String toString() {
+      final StringBuilder sb = new StringBuilder("GribCollection.Record{");
+      sb.append("fileno=").append(fileno);
+      sb.append(", pos=").append(pos);
+      sb.append(", bmsPos=").append(bmsPos);
+      sb.append(", scanMode=").append(scanMode);
+      sb.append('}');
+      return sb.toString();
     }
   }
 
@@ -541,17 +596,13 @@ public abstract class GribCollectionImmutable implements Closeable, FileCacheabl
 
   @Override
   public String getLocation() {
-    return getIndexFilepathInCache();
+    return indexFilename;
   }
 
   @Override
   public long getLastModified() {
-    File indexFile = makeIndexFile(name, directory);
-    File indexFileInPath = getFileInCache(indexFile.getPath());
-    if (indexFileInPath.exists()) {
-      return indexFileInPath.lastModified();
-    }
-    return 0;
+    File indexFile = new File(indexFilename);
+    return indexFile.lastModified();
   }
 
   @Override
@@ -588,13 +639,9 @@ public abstract class GribCollectionImmutable implements Closeable, FileCacheabl
 
   ////////////////////////////////////////
 
-  /**
-   * get index filename
-   *
-   * @return index filename; may not exist; may be in disk cache
-   */
-  public String getIndexFilepathInCache() {
-    return indexFilename;
+  public long getIndexFileSize() {
+    File indexFile = new File(indexFilename);
+    return indexFile.length();
   }
 
   public String getFilename(int fileno) {
@@ -605,6 +652,13 @@ public abstract class GribCollectionImmutable implements Closeable, FileCacheabl
     return null; // fileMap.get(fileno).getPath(); LOOK
   }
 
+  public MFile findMFileByName(String filename) {
+    for (MFile file : fileMap.values())
+      if (file.getName().equals(filename))
+        return file;
+    return null;
+  }
+
   public RandomAccessFile getDataRaf(int fileno) throws IOException {
      // absolute location
      MFile mfile = fileMap.get(fileno);
@@ -612,13 +666,11 @@ public abstract class GribCollectionImmutable implements Closeable, FileCacheabl
      File dataFile = new File(filename);
 
      // if data file does not exist, check reletive location - eg may be /upc/share instead of Q:
-     if (!dataFile.exists() && indexFilename != null) {
-       File index = new File(indexFilename);
-       File parent = index.getParentFile();
+     if (!dataFile.exists()) {
        if (fileMap.size() == 1) {
-         dataFile = new File(parent, name); // single file case
+         dataFile = new File(directory, name); // single file case
        } else {
-         dataFile = new File(parent, dataFile.getName()); // must be in same directory as the ncx file
+         dataFile = new File(directory, dataFile.getName()); // must be in same directory as the ncx file
        }
      }
 

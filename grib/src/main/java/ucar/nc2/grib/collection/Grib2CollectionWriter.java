@@ -55,7 +55,7 @@ import java.util.*;
  * @author caron
  * @since 4/6/11
  */
-public class Grib2CollectionWriter extends GribCollectionWriter {
+class Grib2CollectionWriter extends GribCollectionWriter {
 
   public static final String MAGIC_START = "Grib2Collectio2Index";  // was Grib2CollectionIndex
   // protected static final int minVersionSingle = 1;
@@ -77,7 +77,7 @@ public class Grib2CollectionWriter extends GribCollectionWriter {
     public List<Grib2CollectionBuilder.VariableBag> gribVars;
     public List<Coordinate> coords;
     public List<Grib2Record> records = new ArrayList<>();
-    public String nameOverride;
+    // public String nameOverride;
     public Set<Integer> fileSet; // this is so we can show just the component files that are in this group
 
     Group(Grib2SectionGridDefinition gdss, int gdsHash) {
@@ -219,6 +219,7 @@ public class Grib2CollectionWriter extends GribCollectionWriter {
         GribCollectionProto.MFile.Builder b = GribCollectionProto.MFile.newBuilder();
         b.setFilename(gcmfile.getName());
         b.setLastModified(gcmfile.getLastModified());
+        b.setLength(gcmfile.getLength());
         b.setIndex(gcmfile.index);
         indexBuilder.addMfiles(b.build());
       }
@@ -228,7 +229,7 @@ public class Grib2CollectionWriter extends GribCollectionWriter {
        //gds
       for (Object go : groups) {
         Group g = (Group) go;
-        indexBuilder.addGds(writeGdsProto(g.gdsHash, g.gdss.getRawBytes(), g.nameOverride, -1));
+        indexBuilder.addGds(writeGdsProto(g.gdsHash, g.gdss.getRawBytes(), -1));
       }
 
       // the GC dataset

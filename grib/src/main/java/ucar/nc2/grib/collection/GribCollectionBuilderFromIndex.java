@@ -57,7 +57,7 @@ import java.util.*;
  * @author caron
  * @since 2/20/14
  */
-public abstract class GribCollectionBuilderFromIndex {
+abstract class GribCollectionBuilderFromIndex {
 
   protected final boolean dataOnly; // dont need the extra metadata like twot
   protected GribCollection gc;
@@ -171,7 +171,7 @@ public abstract class GribCollectionBuilderFromIndex {
       Map<Integer, MFile> fileMap = new HashMap<>(2 * n);
       for (int i = 0; i < n; i++) {
         ucar.nc2.grib.collection.GribCollectionProto.MFile mf = proto.getMfiles(i);
-        fileMap.put(mf.getIndex(), new GcMFile(protoDir, mf.getFilename(), mf.getLastModified(), mf.getIndex()));
+        fileMap.put(mf.getIndex(), new GcMFile(protoDir, mf.getFilename(), mf.getLastModified(), mf.getLength(), mf.getIndex()));
         fsize += mf.getFilename().length();
       }
       gc.setFileMap(fileMap);
@@ -219,7 +219,7 @@ message Dataset {
 }
  */
   private PartitionCollection.Dataset readDataset(GribCollectionProto.Dataset p) {
-    GribCollection.Type type = GribCollection.Type.valueOf(p.getType().toString());
+    GribCollectionImmutable.Type type = GribCollectionImmutable.Type.valueOf(p.getType().toString());
     GribCollection.Dataset ds = gc.makeDataset(type);
 
     List<GribCollection.GroupGC> groups = new ArrayList<>(p.getGroupsCount());

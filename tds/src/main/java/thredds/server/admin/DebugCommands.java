@@ -42,8 +42,7 @@ import java.io.PrintStream;
 
 import javax.servlet.http.HttpServletRequest;
 
-import ucar.nc2.grib.collection.GribCollection;
-import ucar.nc2.grib.collection.PartitionCollection;
+import ucar.nc2.grib.collection.PartitionCollectionImmutable;
 import ucar.nc2.util.cache.FileCacheIF;
 import ucar.unidata.io.RandomAccessFile;
 
@@ -94,7 +93,7 @@ public class DebugCommands {
           fc.showCache(f);
         }
 
-        fc = PartitionCollection.getPartitionCache();
+        fc = PartitionCollectionImmutable.getPartitionCache();
         if (fc == null) f.format("%nTimePartitionCache : turned off%n");
         else {
           f.format("%n%n");
@@ -110,7 +109,7 @@ public class DebugCommands {
        public void doAction(DebugController.Event e) {
          NetcdfDataset.getNetcdfFileCache().clearCache(false);
          RandomAccessFile.getGlobalFileCache().clearCache(false);
-         PartitionCollection.getPartitionCache().clearCache(false);
+         PartitionCollectionImmutable.getPartitionCache().clearCache(false);
          e.pw.println("  ClearCache ok");
        }
      };
@@ -151,7 +150,7 @@ public class DebugCommands {
 
     act = new DebugController.Action("disableTimePartitionCache", "Disable TimePartition Cache") {
        public void doAction(DebugController.Event e) {
-         PartitionCollection.disablePartitionCache();
+         PartitionCollectionImmutable.disablePartitionCache();
          e.pw.println("  Disable TimePartition Cache ok");
        }
      };
@@ -159,7 +158,7 @@ public class DebugCommands {
 
     act = new DebugController.Action("forceGCCache", "Force clear TimePartition Cache") {
       public void doAction(DebugController.Event e) {
-        PartitionCollection.getPartitionCache().clearCache(true);
+        PartitionCollectionImmutable.getPartitionCache().clearCache(true);
         e.pw.println("  TimePartition force clearCache done");
       }
     };

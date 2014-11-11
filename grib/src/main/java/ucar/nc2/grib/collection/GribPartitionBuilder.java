@@ -61,7 +61,7 @@ import java.util.*;
  * @author caron
  * @since 2/21/14
  */
-public abstract class GribPartitionBuilder  {
+abstract class GribPartitionBuilder  {
   protected static final int version = 1;
 
   ////////////////////////
@@ -84,7 +84,7 @@ public abstract class GribPartitionBuilder  {
     if (ff == CollectionUpdateType.never) return false;
     if (ff == CollectionUpdateType.always) return true;
 
-    File collectionIndexFile = GribCollection.getFileInCache(partitionManager.getIndexFilename());
+    File collectionIndexFile = GribCdmIndex.getFileInCache(partitionManager.getIndexFilename());
     if (!collectionIndexFile.exists()) return true;
 
     if (ff == CollectionUpdateType.nocheck) return false;
@@ -97,7 +97,7 @@ public abstract class GribPartitionBuilder  {
     Set<String> newFileSet = new HashSet<>();
     for (MCollection dcm : partitionManager.makePartitions(CollectionUpdateType.test)) {
       String partitionIndexFilename = StringUtil2.replace(dcm.getIndexFilename(), '\\', "/");
-      File partitionIndexFile = GribCollection.getFileInCache(partitionIndexFilename);
+      File partitionIndexFile = GribCdmIndex.getFileInCache(partitionIndexFilename);
       if (!partitionIndexFile.exists())                                 // make sure each partition has an index
         return true;
       if (collectionLastModified < partitionIndexFile.lastModified())  // and the partition index is earlier than the collection index
@@ -222,7 +222,7 @@ public abstract class GribPartitionBuilder  {
   private PartitionCollection.Dataset makeDataset2D(CollectionUpdateType forceChildren, Formatter f) throws IOException {
     FeatureCollectionConfig config = (FeatureCollectionConfig) partitionManager.getAuxInfo(FeatureCollectionConfig.AUX_CONFIG);
     FeatureCollectionConfig.GribIntvFilter intvMap = (config != null) ? config.gribConfig.intvFilter : null;
-    PartitionCollection.Dataset ds2D = result.makeDataset(GribCollection.Type.TwoD);
+    PartitionCollection.Dataset ds2D = result.makeDataset(GribCollectionImmutable.Type.TwoD);
 
     // make a list of unique groups across all partitions as well as component groups for each group
     int npart = result.getPartitionSize();
@@ -239,7 +239,7 @@ public abstract class GribPartitionBuilder  {
 
         // LOOK CLOSE GribCollection gc = tpp.makeGribCollection(forceChildren); CLOSE
         // tpp.gc = gc;
-        CoordinateRuntime partRuntime = gc.getMasterRuntime();
+        CoordinateRuntime partRuntime = gc.masterRuntime;
         runtimeAllBuilder.addAll(partRuntime);  // also make a complete set of runtimes
 
         GribCollection.Dataset ds2dp = gc.getDatasetCanonical(); // the twoD or GC dataset
@@ -268,7 +268,7 @@ public abstract class GribPartitionBuilder  {
       if (tpp.isBad()) continue;
       try (GribCollection gc = tpp.makeGribCollection(forceChildren)) {
         // LOOK CLOSE GribCollection gc = tpp.gc;
-        CoordinateRuntime partRuntime = gc.getMasterRuntime();
+        CoordinateRuntime partRuntime = gc.masterRuntime;
         for (Object val : partRuntime.getValues()) {
           int idx = result.masterRuntime.getIndex(val);
           result.run2part[idx] = partIdx;     // note that later partitions will override earlier if they have the same runtime
@@ -474,7 +474,7 @@ public abstract class GribPartitionBuilder  {
   }
 
   private void makeDatasetBest(GribCollection.Dataset ds2D, Formatter f) throws IOException {
-    GribCollection.Dataset dsa = result.makeDataset(GribCollection.Type.Best);
+    GribCollection.Dataset dsa = result.makeDataset(GribCollectionImmutable.Type.Best);
 
     int npart = result.getPartitionSize();
 
@@ -558,7 +558,7 @@ public abstract class GribPartitionBuilder  {
   GribCollectionIndex (sizeIndex bytes)
   */
   protected boolean writeIndex(PartitionCollection pc, Formatter f) throws IOException {
-    File idxFile = GribCollection.getFileInCache(partitionManager.getIndexFilename());
+    File idxFile = GribCdmIndex.getFileInCache(partitionManager.getIndexFilename());
     if (idxFile.exists()) {
       if (!idxFile.delete())
         logger.error("gc2tp cant delete " + idxFile.getPath());
@@ -603,7 +603,7 @@ public abstract class GribPartitionBuilder  {
 
       GribCollectionProto.GribCollection.Builder indexBuilder = GribCollectionProto.GribCollection.newBuilder();
       indexBuilder.setName(pc.getName());
-      Path topDir = pc.getDirectory().toPath();
+      Path topDir = pc.directory.toPath();
       String pathS = StringUtil2.replace(topDir.toString(), '\\', "/");
       indexBuilder.setTopDir(pathS);
 
@@ -616,20 +616,21 @@ public abstract class GribPartitionBuilder  {
         String pathRS = StringUtil2.replace(pathRelative.toString(), '\\', "/");
         b.setFilename(pathRS); // reletive to topDir
         b.setLastModified(part.getLastModified());
+        b.setLength(part.length);
         b.setIndex(count++);
         indexBuilder.addMfiles(b.build());
       }
 
-      indexBuilder.setCenter(pc.getCenter());
-      indexBuilder.setSubcenter(pc.getSubcenter());
-      indexBuilder.setMaster(pc.getMaster());
-      indexBuilder.setLocal(pc.getLocal());
+      indexBuilder.setCenter(pc.center);
+      indexBuilder.setSubcenter(pc.subcenter);
+      indexBuilder.setMaster(pc.master);
+      indexBuilder.setLocal(pc.local);
 
-      indexBuilder.setGenProcessId(pc.getGenProcessId());
-      indexBuilder.setGenProcessType(pc.getGenProcessType());
-      indexBuilder.setBackProcessId(pc.getBackProcessId());
+      indexBuilder.setGenProcessId(pc.genProcessId);
+      indexBuilder.setGenProcessType(pc.genProcessType);
+      indexBuilder.setBackProcessId(pc.backProcessId);
 
-      indexBuilder.setMasterRuntime(writer.writeCoordProto(pc.getMasterRuntime()));
+      indexBuilder.setMasterRuntime(writer.writeCoordProto(pc.masterRuntime));
 
       //gds
       for (GribHorizCoordSystem hcs : pc.horizCS)
@@ -672,7 +673,7 @@ public abstract class GribPartitionBuilder  {
   private GribCollectionProto.Dataset writeDatasetProto(PartitionCollection pc, PartitionCollection.Dataset ds) throws IOException {
     GribCollectionProto.Dataset.Builder b = GribCollectionProto.Dataset.newBuilder();
 
-    GribCollectionProto.Dataset.Type type = GribCollectionProto.Dataset.Type.valueOf(ds.getType().toString());
+    GribCollectionProto.Dataset.Type type = GribCollectionProto.Dataset.Type.valueOf(ds.type.toString());
     b.setType(type);
 
     for (GribCollection.GroupGC group : ds.groups)
