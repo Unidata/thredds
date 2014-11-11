@@ -151,7 +151,7 @@ public class GridController {
       cs = (ColorScale) store.getBean( ColorScaleName, null);
 
     // set up the renderers; Maps are added by addMapBean()
-    renderGrid = new GridRenderer(store);
+    renderGrid = new GridRenderer();
     renderGrid.setColorScale(cs);
     //renderWind = new WindRenderer();
 

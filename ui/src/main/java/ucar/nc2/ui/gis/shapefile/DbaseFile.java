@@ -50,13 +50,9 @@ public class DbaseFile {
 
   URL url;
   byte filetype;
-  byte updateYear;
-  byte updateMonth;
-  byte updateDay;
   int nrecords;
   int nfields;
   short nbytesheader;
-  short nbytesrecord;
   DbaseFieldDesc[] FieldDesc;
   DbaseData[] data;
   byte[] Header;
@@ -122,13 +118,9 @@ public class DbaseFile {
         return -1;
       }
       filetype = Header[0];
-      updateYear = Header[1];
-      updateMonth = Header[2];
-      updateDay = Header[3];
       /* 4 bytes for number of records is in little endian */
       nrecords = Swap.swapInt(Header, 4);
       nbytesheader = Swap.swapShort(Header, 8);
-      nbytesrecord = Swap.swapShort(Header, 10);
 
       /* read in the Field Descriptors */
       /* have to figure how many there are from

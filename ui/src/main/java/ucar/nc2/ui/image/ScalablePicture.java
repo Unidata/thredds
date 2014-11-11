@@ -17,17 +17,20 @@ package ucar.nc2.ui.image;
 
 import org.imgscalr.Scalr;
 
-import java.util.*;
-import java.awt.*;
-import java.awt.image.*;
 import javax.imageio.*;
-import javax.imageio.stream.*;
-import javax.imageio.plugins.jpeg.*;
-
-import java.io.*;
-import java.net.*;
-import java.util.Vector;
+import javax.imageio.plugins.jpeg.JPEGImageWriteParam;
+import javax.imageio.stream.ImageOutputStream;
+import java.awt.*;
+import java.awt.image.BufferedImage;
+import java.awt.image.IndexColorModel;
+import java.awt.image.RenderedImage;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.net.URL;
 import java.util.Enumeration;
+import java.util.Iterator;
+import java.util.Vector;
 
 /*
 ScalablePicture.java:  class that can load and save images
@@ -136,12 +139,6 @@ public class ScalablePicture implements SourcePictureListener {
    * the quality with which the JPG pictures shall be written. 0 means poor 1 means great.
    */
   public float jpgQuality = 0.8f;
-
-
-  /**
-   * which method to use on scaling, a fast one or a good quality one
-   */
-  public boolean fastScale = false;
 
 
   /**
@@ -665,20 +662,4 @@ public class ScalablePicture implements SourcePictureListener {
       jpgQuality = quality;
     }
   }
-
-
-  /**
-   * sets the picture into fast scaling mode
-   */
-  public void setFastScale() {
-		fastScale = true;
-	}
-	
-	/**
-   * sets the picture into quality sacling mode
-   */
-	public void setQualityScale() {
-		fastScale = false;
-	}
-
 }

@@ -84,12 +84,13 @@ public class WorldMap extends GisFeatureRenderer {
     while (true) {
       try {
         int npts = dis.readInt();
-        int minx = dis.readInt();
-        int maxx = dis.readInt();
-        int miny = dis.readInt();
-        int maxy = dis.readInt();
 
-        MapRun run = new MapRun( npts, minx, maxx, miny, maxy);
+        dis.readInt();  // minx -- not used.
+        dis.readInt();  // maxx -- not used.
+        dis.readInt();  // miny -- not used.
+        dis.readInt();  // maxy -- not used.
+
+        MapRun run = new MapRun(npts);
         for (int i=0; i<npts; i++) {
           run.wx[i] = ((double) dis.readInt()) / SECS_PER_DEG;
           run.wy[i] = ((double) dis.readInt()) / SECS_PER_DEG;
@@ -126,15 +127,10 @@ public class WorldMap extends GisFeatureRenderer {
     int npts;
     double [] wx;  // lat/lon coords
     double [] wy;
-    private int minx, miny, maxx, maxy; // ??
 
     // constructor
-    MapRun ( int npts, int minx, int maxx, int miny, int maxy) {
+    MapRun ( int npts) {
         this.npts = npts;
-        this.minx = minx;
-        this.maxx = maxx;
-        this.miny = miny;
-        this.maxy = maxy;
 
         wx = new double[npts];
         wy = new double[npts];

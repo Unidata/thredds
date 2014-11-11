@@ -170,13 +170,11 @@ public class CdmIndexReportPanel extends ReportPanel {
   ///////////////////////////////////////////////
 
   private static class VarInfo implements Comparable<VarInfo> {
-    int hash;
     String name;
     int count = 0;
     boolean ok;
 
-    private VarInfo(int hash, String name) {
-      this.hash = hash;
+    private VarInfo(String name) {
       this.name = name;
     }
 
@@ -205,7 +203,7 @@ public class CdmIndexReportPanel extends ReportPanel {
             int hash = vi.cdmHash + g.getGdsHash(); // must be both group and var
             VarInfo vinfo = varCount.get(hash);
             if (vinfo == null) {
-              vinfo = new VarInfo(hash, name);
+              vinfo = new VarInfo(name);
               varCount.put(hash, vinfo);
             }
             vinfo.count += vi.nrecords;

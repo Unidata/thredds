@@ -15,22 +15,18 @@ See http://www.gnu.org/copyleft/gpl.html for the details.
 */
 package ucar.nc2.ui.image;
 
-import java.io.*;
-import java.net.*;
-import java.awt.*;
-import java.awt.event.*;
-import java.awt.image.*;
-import java.awt.image.renderable.*;
-import java.awt.geom.AffineTransform;
-import java.awt.Point;
 import javax.swing.*;
-import javax.swing.event.*;
-import java.lang.Runtime;
-import java.util.Hashtable;
-import java.util.*;
-import java.text.*;
-import java.util.Vector;
+import javax.swing.event.MouseInputAdapter;
+import java.awt.*;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
+import java.awt.event.MouseEvent;
+import java.awt.geom.AffineTransform;
+import java.awt.image.BufferedImage;
+import java.net.URL;
+import java.text.DecimalFormat;
 import java.util.Enumeration;
+import java.util.Vector;
 
 /**
  *   The job of this extended JComponent is to load, scale and display a 
@@ -124,10 +120,7 @@ class PicturePane extends JComponent implements ScalablePictureListener {
 	/**
 	 *  class to format the scale
 	 */
-	 
 	private DecimalFormat twoDecimalFormatter = new DecimalFormat("###0.00");
-
-  private boolean pictureViewerFastScale = true; // was Settings
 
 
 	/**
@@ -147,10 +140,6 @@ class PicturePane extends JComponent implements ScalablePictureListener {
 
 
 		sclPic.addStatusListener( this );
-		if ( pictureViewerFastScale )
-			sclPic.setFastScale();
-		else
-			sclPic.setQualityScale();
 
 		this.addComponentListener(new ComponentAdapter() {
 		  public void componentResized(ComponentEvent event) {
@@ -161,8 +150,6 @@ class PicturePane extends JComponent implements ScalablePictureListener {
 
 		//twoDecimalFormatter = new DecimalFormat("###0.00");
 		setFont(infoFont);
-
-
 	}
 
 

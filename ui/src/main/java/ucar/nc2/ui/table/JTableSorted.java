@@ -656,7 +656,6 @@ public class JTableSorted extends JPanel {
   }
 
   private class ThreadHeaderRenderer extends SortedHeaderRenderer {
-    JLabel threadHead;
     JPanel sort, unsort;
 
     ThreadHeaderRenderer(int modelCol) {
