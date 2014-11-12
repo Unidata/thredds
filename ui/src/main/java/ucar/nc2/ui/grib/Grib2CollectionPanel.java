@@ -37,7 +37,7 @@ import thredds.inventory.MCollection;
 import thredds.inventory.MFile;
 import ucar.ma2.DataType;
 import ucar.nc2.grib.*;
-import ucar.nc2.grib.collection.Grib2CollectionBuilder;
+import ucar.nc2.grib.collection.Grib2Iosp;
 import ucar.nc2.grib.grib2.*;
 import ucar.nc2.grib.grib2.table.Grib2Customizer;
 import ucar.nc2.grib.grib2.table.NcepLocalTables;
@@ -518,7 +518,7 @@ public class Grib2CollectionPanel extends JPanel {
       if (cust == null)
         cust = Grib2Customizer.factory(gr);
 
-      int id = Grib2CollectionBuilder.cdmVariableHash(cust, gr, 0, false, false, logger);
+      int id = Grib2Iosp.cdmVariableHash(cust, gr, 0, false, false, logger);
 
       Grib2ParameterBean bean = pdsSet.get(id);
       if (bean == null) {

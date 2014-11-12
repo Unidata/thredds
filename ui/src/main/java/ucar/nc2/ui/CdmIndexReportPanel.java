@@ -38,9 +38,7 @@ import thredds.featurecollection.FeatureCollectionConfig;
 import thredds.inventory.*;
 import thredds.inventory.MCollection;
 import ucar.coord.SparseArray;
-import ucar.nc2.grib.collection.GribCdmIndex;
-import ucar.nc2.grib.collection.GribCollection;
-import ucar.nc2.grib.collection.PartitionCollection;
+import ucar.nc2.grib.collection.*;
 import ucar.nc2.ui.grib.Grib2ReportPanel;
 import ucar.nc2.util.CloseableIterator;
 import ucar.nc2.util.Indent;
@@ -188,25 +186,26 @@ public class CdmIndexReportPanel extends ReportPanel {
     // f.format("Dataset %s%n", indexFile.getPath());
 
     FeatureCollectionConfig config = new FeatureCollectionConfig();
-    try (GribCollection gc = GribCdmIndex.openCdmIndex(indexFile, config, false, logger)) {
+    try (GribCollectionImmutable gc = GribCdmIndex.openCdmIndex(indexFile, config, false, logger)) {
       if (gc == null)
         throw new IOException(indexFile+ " not a grib collection index file");
 
-      for (GribCollection.Dataset ds : gc.getDatasets()) {
-        if (!ds.getType().equals(GribCollection.Type.TwoD)) continue;
-        for (GribCollection.GroupGC g : ds.getGroups()) {
+      for (GribCollectionImmutable.Dataset ds : gc.getDatasets()) {
+        if (!ds.getType().equals(GribCollectionImmutable.Type.TwoD)) continue;
+        for (GribCollectionImmutable.GroupGC g : ds.getGroups()) {
           f.format(" Group %s%n", g.getDescription());
 
-          for (GribCollection.VariableIndex vi : g.getVariables()) {
+          for (GribCollectionImmutable.VariableIndex vi : g.getVariables()) {
             String name = gc.makeVariableName(vi);                    // LOOK not actually right - some are partitioned by level
-            f.format("  %7d: %s%n", vi.nrecords, name);
-            int hash = vi.cdmHash + g.getGdsHash(); // must be both group and var
+            int nrecords = vi.getNRecords();
+            f.format("  %7d: %s%n", nrecords, name);
+            int hash = vi.getCdmHash() + g.getGdsHash(); // must be both group and var
             VarInfo vinfo = varCount.get(hash);
             if (vinfo == null) {
               vinfo = new VarInfo(name);
               varCount.put(hash, vinfo);
             }
-            vinfo.count += vi.nrecords;
+            vinfo.count += nrecords;
           }
         }
       }
@@ -225,21 +224,21 @@ public class CdmIndexReportPanel extends ReportPanel {
     int totalMisplaced = 0;
 
     File parent = indexFile.getParentFile();
-    try (GribCollection gc = GribCdmIndex.openCdmIndex(indexFile.getPath(), config, false, logger)) {
+    try (GribCollectionImmutable gc = GribCdmIndex.openCdmIndex(indexFile.getPath(), config, false, logger)) {
       if (gc == null)
         throw new IOException(indexFile+ " not a grib collection index file");
 
       // see if it has any misplaced
       int countMisplaced = 0;
-      for (GribCollection.Dataset ds : gc.getDatasets()) {
-        if (ds.getType().equals(GribCollection.Type.Best)) continue;
-        for (GribCollection.GroupGC g : ds.getGroups()) {
-          for (GribCollection.VariableIndex vi : g.getVariables()) {
-            int hash = vi.cdmHash + g.getGdsHash();
+      for (GribCollectionImmutable.Dataset ds : gc.getDatasets()) {
+        if (ds.getType().equals(GribCollectionImmutable.Type.Best)) continue;
+        for (GribCollectionImmutable.GroupGC g : ds.getGroups()) {
+          for (GribCollectionImmutable.VariableIndex vi : g.getVariables()) {
+            int hash = vi.getCdmHash() + g.getGdsHash();
             VarInfo vinfo = varCount.get(hash);
             if (vinfo == null) f.format("ERROR on vi %s%n", vi);
             else{
-              if (!vinfo.ok) countMisplaced += vi.nrecords;
+              if (!vinfo.ok) countMisplaced += vi.getNRecords();
             }
           }
         }
@@ -251,11 +250,11 @@ public class CdmIndexReportPanel extends ReportPanel {
       }
 
       indent.incr();
-      if (gc instanceof PartitionCollection) {
-        PartitionCollection pc = (PartitionCollection) gc;
+      if (gc instanceof PartitionCollectionImmutable) {
+        PartitionCollectionImmutable pc = (PartitionCollectionImmutable) gc;
         boolean isPoP =  pc.isPartitionOfPartitions();
         if (showScan) f.format(" isPofP=%s%n", isPoP);
-        for (PartitionCollection.Partition partition : pc.getPartitions()) {
+        for (PartitionCollectionImmutable.Partition partition : pc.getPartitions()) {
           File partParent = new File(partition.getDirectory());
           File reparent =  new File(parent, partParent.getName());
           File nestedIndex =  isPoP ? new File(reparent, partition.getFilename()) : new File(parent, partition.getFilename()); // JMJ
@@ -273,17 +272,17 @@ public class CdmIndexReportPanel extends ReportPanel {
         f.format("%sIndex %s count=%d%n", indent, indexFile, countMisplaced);
         indent.incr();
 
-        for (GribCollection.Dataset ds : gc.getDatasets()) {
-          if (ds.getType().equals(GribCollection.Type.Best)) continue;
-          for (GribCollection.GroupGC g : ds.getGroups()) {
-            for (GribCollection.VariableIndex vi : g.getVariables()) {
-              int hash = vi.cdmHash + g.getGdsHash();
+        for (GribCollectionImmutable.Dataset ds : gc.getDatasets()) {
+          if (ds.getType().equals(GribCollectionImmutable.Type.Best)) continue;
+          for (GribCollectionImmutable.GroupGC g : ds.getGroups()) {
+            for (GribCollectionImmutable.VariableIndex vi : g.getVariables()) {
+              int hash = vi.getCdmHash() + g.getGdsHash();
               VarInfo vinfo = varCount.get(hash);
               if (!vinfo.ok) {
                 vi.readRecords();
                 if (vi.getSparseArray() != null) {
-                  SparseArray<GribCollection.Record> sa = vi.getSparseArray();
-                  for (GribCollection.Record record : sa.getContent()) {
+                  SparseArray<GribCollectionImmutable.Record> sa = vi.getSparseArray();
+                  for (GribCollectionImmutable.Record record : sa.getContent()) {
                     String filename = gc.getFilename(record.fileno);
                     f.format(">%s%s: %s at pos %d%n", indent, vinfo.name, filename, record.pos);
                     totalMisplaced++;

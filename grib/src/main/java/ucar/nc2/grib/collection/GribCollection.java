@@ -69,7 +69,7 @@ import java.util.*;
  * @author John
  * @since 12/1/13
  */
-class GribCollection implements AutoCloseable {
+public class GribCollection implements AutoCloseable {
   static private final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(GribCollection.class);
   static public  final long MISSING_RECORD = -1;
 
@@ -105,7 +105,6 @@ class GribCollection implements AutoCloseable {
   protected GribTables cust;
 
   // not stored in index
-  private Map<String, MFile> filenameMap;
   protected RandomAccessFile indexRaf; // this is the raf of the index (ncx) file, synchronize any access to it
   protected String indexFilename;
 
@@ -136,6 +135,15 @@ class GribCollection implements AutoCloseable {
 
   public String getName() {
     return name;
+  }
+
+  public File getDirectory() {
+    return directory;
+  }
+
+  public String getLocation() {
+    if (indexRaf != null) return indexRaf.getLocation();
+    return getIndexFilepathInCache();
   }
 
   public Collection<MFile> getFiles() {
@@ -337,6 +345,14 @@ class GribCollection implements AutoCloseable {
           return g;
       }
       return null;
+    }
+
+    public GribCollectionImmutable.Type getType() {
+      return type;
+    }
+
+    public List<GroupGC> getGroups() {
+      return groups;
     }
   }
 

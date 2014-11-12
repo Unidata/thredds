@@ -47,7 +47,7 @@ import ucar.nc2.grib.GribUtils;
 import ucar.nc2.grib.collection.Grib1CollectionBuilder;
 import ucar.nc2.grib.collection.Grib1Iosp;
 import ucar.nc2.grib.collection.GribIosp;
-import ucar.nc2.grib.collection.PartitionCollection;
+import ucar.nc2.grib.collection.PartitionCollectionImmutable;
 import ucar.nc2.grib.grib1.*;
 import ucar.nc2.grib.grib1.tables.Grib1Customizer;
 import ucar.nc2.iosp.IOServiceProvider;
@@ -159,7 +159,7 @@ public class TestGrib1CoordsMatch {
     } catch (IOException ioe) {
       System.out.printf("%s%n", ioe);
       Formatter out = new Formatter(System.out);
-      PartitionCollection.getPartitionCache().showCache(out);
+      PartitionCollectionImmutable.getPartitionCache().showCache(out);
     }
 
     return allCount;
@@ -371,7 +371,7 @@ public class TestGrib1CoordsMatch {
 
       param = cust.getParameter(pds.getCenter(), pds.getSubCenter(), pds.getTableVersion(), pds.getParameterNumber());
       gdsHash = r.getGDSsection().getGDS().hashCode();
-      cdmHash =  Grib1CollectionBuilder.cdmVariableHash(cust, r, gdsHash, true, true, true);
+      cdmHash =  Grib1Iosp.cdmVariableHash(cust, r, gdsHash, true, true, true);
     }
 
     @Override

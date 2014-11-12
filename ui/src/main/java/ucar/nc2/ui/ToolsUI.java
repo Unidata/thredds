@@ -54,8 +54,8 @@ import ucar.nc2.ft.grid.CoverageDataset;
 import ucar.nc2.ft.point.PointDatasetImpl;
 import ucar.nc2.geotiff.GeoTiff;
 import ucar.nc2.grib.GribData;
-import ucar.nc2.grib.collection.GribCollection;
-import ucar.nc2.grib.collection.PartitionCollection;
+import ucar.nc2.grib.collection.GribCdmIndex;
+import ucar.nc2.grib.collection.PartitionCollectionImmutable;
 import ucar.nc2.grib.grib1.tables.Grib1ParamTables;
 import ucar.nc2.grib.grib2.table.WmoCodeTable;
 import ucar.nc2.grib.grib2.table.WmoTemplateTable;
@@ -1048,7 +1048,7 @@ public class ToolsUI extends JPanel {
   DiskCache2Form diskCache2Form = null;
   private void setGribDiskCache() {
     if (diskCache2Form == null) {
-      diskCache2Form = new DiskCache2Form(parentFrame, GribCollection.getDiskCache2());
+      diskCache2Form = new DiskCache2Form(parentFrame, GribCdmIndex.getDiskCache2());
     }
     diskCache2Form.setVisible(true);
   }
@@ -6447,7 +6447,7 @@ public class ToolsUI extends JPanel {
     ucar.nc2.dods.DODSNetcdfFile.setAllowCompression(true);
     ucar.nc2.dods.DODSNetcdfFile.setAllowSessions(true);
 
-    PartitionCollection.initPartitionCache(100, 200, -1);
+    PartitionCollectionImmutable.initPartitionCache(100, 200, -1);
 
     /* No longer needed
     HttpClient client = HttpClientManager.init(provider, "ToolsUI");

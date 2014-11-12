@@ -22,7 +22,7 @@ import ucar.nc2.grib.GribData;
 import ucar.nc2.grib.GribStatType;
 import ucar.nc2.grib.GribVariableRenamer;
 import ucar.nc2.grib.collection.GribCdmIndex;
-import ucar.nc2.grib.collection.GribCollection;
+import ucar.nc2.grib.collection.GribCollectionImmutable;
 import ucar.nc2.grib.collection.GribIosp;
 import ucar.nc2.grib.grib2.*;
 import ucar.nc2.grib.grib2.table.Grib2Customizer;
@@ -510,7 +510,7 @@ public class Grib2ReportPanel extends ReportPanel {
     if (index == null) return;
 
     Formatter errlog = new Formatter();
-    GribCollection gc = GribCdmIndex.openGribCollectionFromDataFile(false, ff, CollectionUpdateType.nocheck,
+    GribCollectionImmutable gc = GribCdmIndex.openGribCollectionFromDataFile(false, ff, CollectionUpdateType.nocheck,
             new FeatureCollectionConfig(), errlog, logger);
     gc.close();
 

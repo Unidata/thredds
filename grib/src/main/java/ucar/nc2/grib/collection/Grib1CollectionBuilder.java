@@ -350,54 +350,7 @@ public class Grib1CollectionBuilder extends GribCollectionBuilder {
   }
 
   private int cdmVariableHash(Grib1Record gr, int gdsHash) {
-    return cdmVariableHash(cust, gr, gdsHash, useTableVersion, intvMerge, useCenter);
-  }
-
-  // use defaults
-  public static int cdmVariableHash(Grib1Customizer cust, Grib1Record gr) {
-    return cdmVariableHash(cust, gr, 0, true, true, true);
-  }
-
-
-  /**
-   * A hash code to group records into a CDM variable
-   * Herein lies the semantics of a variable object identity.
-   * Read it and weep.
-   *
-   * @param gdsHash can override the gdsHash
-   * @return this records hash code, to group like records into a variable
-   */
-  public static int cdmVariableHash(Grib1Customizer cust, Grib1Record gr, int gdsHash, boolean useTableVersion, boolean intvMerge, boolean useCenter) {
-    int result = 17;
-
-    Grib1SectionGridDefinition gdss = gr.getGDSsection();
-    if (gdsHash == 0)
-      result += result * 37 + gdss.getGDS().hashCode(); // the horizontal grid
-    else
-      result += result * 37 + gdsHash;
-
-    Grib1SectionProductDefinition pdss = gr.getPDSsection();
-    result += result * 37 + pdss.getLevelType();
-    if (cust.isLayer(pdss.getLevelType())) result += result * 37 + 1;
-
-    result += result * 37 + pdss.getParameterNumber();
-    if (useTableVersion)  // LOOK must make a different variable name
-      result += result * 37 + pdss.getTableVersion();
-
-    Grib1ParamTime ptime = pdss.getParamTime(cust);
-    if (ptime.isInterval()) {
-      if (!intvMerge) result += result * 37 + ptime.getIntervalSize();  // create new variable for each interval size
-      if (ptime.getStatType() != null) result += result * 37 + ptime.getStatType().ordinal(); // create new variable for each stat type
-    }
-
-    // LOOK maybe we should always add ??
-    // if this uses any local tables, then we have to add the center id, and subcenter if present
-    if (useCenter && pdss.getParameterNumber() > 127) {
-      result += result * 37 + pdss.getCenter();
-      if (pdss.getSubCenter() > 0)
-        result += result * 37 + pdss.getSubCenter();
-    }
-    return result;
+    return Grib1Iosp.cdmVariableHash(cust, gr, gdsHash, useTableVersion, intvMerge, useCenter);
   }
 
 }

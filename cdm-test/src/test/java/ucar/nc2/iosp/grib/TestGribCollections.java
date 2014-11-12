@@ -39,9 +39,9 @@ import ucar.ma2.*;
 import ucar.nc2.Dimension;
 import ucar.nc2.dt.GridDatatype;
 import ucar.nc2.dt.grid.GridDataset;
-import ucar.nc2.grib.collection.GribCollection;
+import ucar.nc2.grib.collection.GribCollectionImmutable;
 import ucar.nc2.grib.collection.GribIosp;
-import ucar.nc2.grib.collection.PartitionCollection;
+import ucar.nc2.grib.collection.PartitionCollectionImmutable;
 import ucar.nc2.util.DebugFlagsImpl;
 import ucar.nc2.util.cache.FileCache;
 import ucar.nc2.util.cache.FileCacheIF;
@@ -67,18 +67,18 @@ public class TestGribCollections {
   @BeforeClass
    static public void before() {
      GribIosp.debugIndexOnlyCount = 0;
-     GribCollection.countGC = 0;
-     PartitionCollection.countPC = 0;
+    GribCollectionImmutable.countGC = 0;
+    PartitionCollectionImmutable.countPC = 0;
      RandomAccessFile.setDebugLeaks(true);
      GribIosp.setDebugFlags(new DebugFlagsImpl("Grib/indexOnly"));
-     PartitionCollection.initPartitionCache(50, 700, -1, -1);
-     PartitionCollection.getPartitionCache().resetTracking();
+    PartitionCollectionImmutable.initPartitionCache(50, 700, -1, -1);
+    PartitionCollectionImmutable.getPartitionCache().resetTracking();
    }
 
    @AfterClass
    static public void after() {
      GribIosp.setDebugFlags(new DebugFlagsImpl());
-     FileCacheIF cache = PartitionCollection.getPartitionCache();
+     FileCacheIF cache = PartitionCollectionImmutable.getPartitionCache();
      if (cache == null) return;
 
      Formatter out = new Formatter(System.out);
@@ -89,10 +89,10 @@ public class TestGribCollections {
      RandomAccessFile.getGlobalFileCache().showCache(out);
      TestDir.checkLeaks();
 
-     System.out.printf("            countGC=%7d%n", GribCollection.countGC);
-     System.out.printf("            countPC=%7d%n", PartitionCollection.countPC);
+     System.out.printf("            countGC=%7d%n", GribCollectionImmutable.countGC);
+     System.out.printf("            countPC=%7d%n", PartitionCollectionImmutable.countPC);
      System.out.printf("debugIndexOnlyCount=%7d%n", GribIosp.debugIndexOnlyCount);
-     System.out.printf(" total files needed=%7d%n", GribCollection.countGC+PartitionCollection.countPC+GribIosp.debugIndexOnlyCount);
+     System.out.printf(" total files needed=%7d%n", GribCollectionImmutable.countGC+PartitionCollectionImmutable.countPC+GribIosp.debugIndexOnlyCount);
 
      FileCache.shutdown();
      RandomAccessFile.setDebugLeaks(false);
@@ -226,7 +226,7 @@ public class TestGribCollections {
     } catch (IOException ioe) {
       System.out.printf("%s%n", ioe);
       Formatter out = new Formatter(System.out);
-      PartitionCollection.getPartitionCache().showCache(out);
+      PartitionCollectionImmutable.getPartitionCache().showCache(out);
     }
 
     return allCount;

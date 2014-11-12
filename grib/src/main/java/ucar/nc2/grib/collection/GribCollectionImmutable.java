@@ -126,8 +126,26 @@ public abstract class GribCollectionImmutable implements Closeable, FileCacheabl
     return null;
   }
 
+  public Dataset getDataset2D() {
+    for (Dataset ds : datasets)
+      if (ds.isTwoD()) return ds;
+    return null;
+  }
+
+  public Dataset getDatasetCanonical() {
+    for (Dataset ds : datasets) {
+      if (ds.type == GribCollectionImmutable.Type.GC) return ds;
+      if (ds.type == GribCollectionImmutable.Type.TwoD) return ds;
+    }
+    throw new IllegalStateException("GC.getDatasetCanonical failed on="+name);
+  }
+
   public String getName() {
     return name;
+  }
+
+  public File getDirectory() {
+    return directory;
   }
 
   public CoordinateRuntime getMasterRuntime() {
@@ -248,7 +266,7 @@ public abstract class GribCollectionImmutable implements Closeable, FileCacheabl
     final List<GribCollectionImmutable.VariableIndex> variList;
     final List<Coordinate> coords;      // shared coordinates
     final int[] filenose;               // key for GC.fileMap
-    final private Map<Integer, VariableIndex> varMap;         // LOOK probably not needed
+    final private Map<Integer, VariableIndex> varMap;
     final boolean isTwod = true;        // true for GC and twoD; so should be called "reference" dataset or something
 
     public GroupGC(GribCollection.GroupGC gc) {
@@ -271,6 +289,10 @@ public abstract class GribCollectionImmutable implements Closeable, FileCacheabl
       return horizCoordSys.getId();
     }
 
+    public int getGdsHash() {
+      return horizCoordSys.getGdsHash();
+    }
+
     public GribCollectionImmutable getGribCollection() {
       return GribCollectionImmutable.this;
     }
@@ -282,6 +304,27 @@ public abstract class GribCollectionImmutable implements Closeable, FileCacheabl
 
     public GdsHorizCoordSys getGdsHorizCoordSys() {
       return horizCoordSys.getHcs();
+    }
+
+    public VariableIndex findVariableByHash(int cdmHash) {
+      return varMap.get(cdmHash);
+    }
+
+    public List<VariableIndex> getVariables() {
+      return variList;
+    }
+
+    public List<Coordinate> getCoordinates() {
+      return coords;
+    }
+
+    public List<MFile> getFiles() {
+      List<MFile> result = new ArrayList<>();
+      if (filenose == null) return result;
+      for (int fileno : filenose)
+        result.add(fileMap.get(fileno));
+      Collections.sort(result);
+      return result;
     }
 
     public CalendarDateRange makeCalendarDateRange() {
@@ -300,6 +343,21 @@ public abstract class GribCollectionImmutable implements Closeable, FileCacheabl
 
       return result;
     }
+
+    @Override
+    public String toString() {
+      final StringBuilder sb = new StringBuilder("GroupGC{");
+      sb.append(GribCollectionImmutable.this.getName());
+      sb.append(" isTwoD=").append(isTwod);
+      sb.append('}');
+      return sb.toString();
+    }
+
+    public void show(Formatter f) {
+      f.format("Group %s (%d) isTwoD=%s%n", horizCoordSys.getId(), horizCoordSys.getGdsHash(), isTwod);
+      f.format(" nfiles %d%n", filenose == null ? 0 : filenose.length);
+      f.format(" hcs = %s%n", horizCoordSys.getHcs());
+    }
   }
 
   @Immutable
@@ -314,7 +372,7 @@ public abstract class GribCollectionImmutable implements Closeable, FileCacheabl
     // read in on demand
     private SparseArray<Record> sa;   // for GC only; lazily read; same array shape as variable, minus x and y
 
-    private VariableIndex(GroupGC g, GribCollection.VariableIndex gcVar) {
+    protected VariableIndex(GroupGC g, GribCollection.VariableIndex gcVar) {
       this.group = g;
       this.info = new Info(gcVar);
       this.coordIndex = gcVar.coordIndex;
@@ -371,6 +429,10 @@ public abstract class GribCollectionImmutable implements Closeable, FileCacheabl
       return sa.getContent(sourceIndex);
     }
 
+    public synchronized Record getRecordAt(int[] sourceIndex) {
+      return sa.getContent(sourceIndex);
+    }
+
     public List<Coordinate> getCoordinates() {
       List<Coordinate> result = new ArrayList<>(coordIndex.size());
       for (int idx : coordIndex)
@@ -383,6 +445,23 @@ public abstract class GribCollectionImmutable implements Closeable, FileCacheabl
         if (group.coords.get(idx).getType() == want)
           return group.coords.get(idx);
       return null;
+    }
+
+    public Coordinate getCoordinate(int index) {
+      int grpIndex = coordIndex.get(index);
+      return group.coords.get(grpIndex);
+    }
+
+    public Iterable<Integer> getCoordinateIndex() {
+      return coordIndex;
+    }
+
+    public SparseArray<Record> getSparseArray() {
+      return sa;
+    }
+
+    public int getNRecords() {
+      return sa == null ? -1 : sa.countNotMissing();
     }
 
     public int getTableVersion() {
@@ -443,6 +522,15 @@ public abstract class GribCollectionImmutable implements Closeable, FileCacheabl
 
     public int getGenProcessType() {
       return info.genProcessType;
+    }
+
+    public String toStringFrom() {
+      Formatter sb = new Formatter();
+      sb.format("Variable {%d-%d-%d", info.discipline, info.category, info.parameter);
+      sb.format(", levelType=%d", info.levelType);
+      sb.format(", intvType=%d", info.intvType);
+      sb.format(", group=%s}", group);
+      return sb.toString();
     }
 
     @Immutable
@@ -650,6 +738,10 @@ public abstract class GribCollectionImmutable implements Closeable, FileCacheabl
 
   public String getFirstFilename() {
     return null; // fileMap.get(fileno).getPath(); LOOK
+  }
+
+  public Collection<MFile> getFiles() {
+    return fileMap.values();
   }
 
   public MFile findMFileByName(String filename) {

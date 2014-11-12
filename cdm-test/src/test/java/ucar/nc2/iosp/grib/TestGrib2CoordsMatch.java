@@ -38,7 +38,6 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import ucar.ma2.Array;
 import ucar.ma2.ArrayDouble;
-import ucar.ma2.MAMath;
 import ucar.nc2.Attribute;
 import ucar.nc2.Dimension;
 import ucar.nc2.NetcdfFile;
@@ -48,8 +47,7 @@ import ucar.nc2.dt.GridDatatype;
 import ucar.nc2.dt.grid.GridDataset;
 import ucar.nc2.grib.*;
 import ucar.nc2.grib.collection.GribIosp;
-import ucar.nc2.grib.collection.PartitionCollection;
-import ucar.nc2.grib.grib1.Grib1Record;
+import ucar.nc2.grib.collection.PartitionCollectionImmutable;
 import ucar.nc2.grib.grib2.Grib2Pds;
 import ucar.nc2.grib.grib2.Grib2Record;
 import ucar.nc2.grib.grib2.Grib2Utils;
@@ -194,7 +192,7 @@ public class TestGrib2CoordsMatch {
     } catch (IOException ioe) {
       System.out.printf("%s%n", ioe);
       Formatter out = new Formatter(System.out);
-      PartitionCollection.getPartitionCache().showCache(out);
+      PartitionCollectionImmutable.getPartitionCache().showCache(out);
     }
 
     return allCount;

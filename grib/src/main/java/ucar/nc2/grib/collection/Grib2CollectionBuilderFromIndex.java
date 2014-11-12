@@ -69,6 +69,23 @@ class Grib2CollectionBuilderFromIndex extends GribCollectionBuilderFromIndex {
     return new Grib2Collection(builder.gc);
   }
 
+
+  // read in the index, index raf already open; return null on failure
+  static public GribCollection openMutableGCFromIndex(String name, RandomAccessFile raf, FeatureCollectionConfig config, boolean dataOnly, org.slf4j.Logger logger) throws IOException {
+
+    Grib2CollectionBuilderFromIndex builder = new Grib2CollectionBuilderFromIndex(name, config, dataOnly, logger);
+    if (!builder.readIndex(raf))
+      return null;
+
+    if (builder.gc.getFiles().size() == 0) {
+      logger.warn("Grib2CollectionBuilderFromIndex {}: has no files, force recreate ", builder.gc.getName());
+      return null;
+    }
+
+    return builder.gc;
+  }
+
+
   ////////////////////////////////////////////////////////////////
 
   protected Grib2Customizer cust; // gets created in readIndex, after center etc is read in
