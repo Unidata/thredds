@@ -163,7 +163,7 @@ public class GribCdmIndex implements IndexReader {
     return openCdmIndex(indexFilename, config, dataOnly, true, logger);
   }
 
-    // open GribCollection from an existing index file. return null on failure
+    // open GribCollectionImmutable from an existing index file. return null on failure
   static public GribCollectionImmutable openCdmIndex(String indexFilename, FeatureCollectionConfig config, boolean dataOnly, boolean useCache, Logger logger) {
     File indexFileInCache = useCache ? getFileInCache(indexFilename) : new File(indexFilename);
     String indexFilenameInCache = indexFileInCache.getPath();
@@ -201,6 +201,46 @@ public class GribCdmIndex implements IndexReader {
 
     return result;
   }
+
+      // open GribCollectionImmutable from an existing index file. return null on failure
+  static public GribCollection openMutableGCFromIndex(String indexFilename, FeatureCollectionConfig config, boolean dataOnly, boolean useCache, Logger logger) {
+    File indexFileInCache = useCache ? getFileInCache(indexFilename) : new File(indexFilename);
+    String indexFilenameInCache = indexFileInCache.getPath();
+    String name = makeNameFromIndexFilename(indexFilename);
+    GribCollection result = null;
+
+    try (RandomAccessFile raf = RandomAccessFile.acquire(indexFilenameInCache)) {
+      GribCollectionType type = getType(raf);
+
+      switch (type) {
+        case GRIB2:
+          result = Grib2CollectionBuilderFromIndex.openMutableGCFromIndex(name, raf, config, dataOnly, logger);
+          break;
+        case Partition2:
+          result = Grib2PartitionBuilderFromIndex.openMutablePCFromIndex(name, raf, config, dataOnly, logger);
+          break;
+        case GRIB1:
+          result = Grib1CollectionBuilderFromIndex.openMutableGCFromIndex(name, raf, config, dataOnly, logger);
+          break;
+        case Partition1:
+          result = Grib1PartitionBuilderFromIndex.openMutablePCFromIndex(name, raf, config, dataOnly, logger);
+          break;
+        default:
+          logger.warn("GribCdmIndex.openCdmIndex failed on {} type={}", indexFilenameInCache, type);
+      }
+
+    } catch (Throwable t) {
+      logger.warn("GribCdmIndex.openCdmIndex failed on "+indexFilenameInCache, t);
+      try {
+        RandomAccessFile.eject(indexFilenameInCache);   // remove from cache in case it needs to be recreated
+      } catch (IOException e) {
+        e.printStackTrace();
+      }
+    }
+
+    return result;
+  }
+
 
   //////////////////////////////////////////////////////////////////////////////////////////////////
   // used by PartitionCollection

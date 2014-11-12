@@ -65,7 +65,7 @@ import java.util.*;
  * @author John
  * @since 12/7/13
  */
-class PartitionCollection extends GribCollection {
+public class PartitionCollection extends GribCollection {
 
   //////////////////////////////////////////////////////////////////////
 
@@ -230,7 +230,7 @@ class PartitionCollection extends GribCollection {
      * @param indexWanted the source index request, excluding x and y
      * @return DataRecord pointing to where the data is
      * @throws IOException
-     */
+     *
     DataRecord getDataRecord(int[] indexWanted) throws IOException {
 
       if (GribIosp.debugRead) System.out.printf("%nPartitionCollection.getDataRecord index wanted = (%s) on %s isTwod=%s%n", Misc.showInts(indexWanted), indexFilename, group.isTwod);
@@ -255,12 +255,12 @@ class PartitionCollection extends GribCollection {
       }
 
       // find the 2D vi in that partition
-      GribCollection.VariableIndex compVindex2D = getVindex2D(partno); // the 2D component variable in the partno partition
+      GribCollectionImmutable.VariableIndex compVindex2D = getVindex2D(partno); // the 2D component variable in the partno partition
       if (compVindex2D == null) return null; // missing
       if (GribIosp.debugRead) System.out.printf("  compVindex2D = %s%n", compVindex2D.toStringFrom());
 
       if (isPartitionOfPartitions) {
-        VariableIndexPartitioned compVindex2Dp = (VariableIndexPartitioned) compVindex2D;
+        PartitionCollectionImmutable.VariableIndexPartitioned compVindex2Dp = (PartitionCollectionImmutable.VariableIndexPartitioned) compVindex2D;
         return getDataRecordPofP(indexWanted, compVindex2Dp);
       }
 
@@ -283,7 +283,7 @@ class PartitionCollection extends GribCollection {
      * @param compVindex2Dp 2D variable from the desired partition; may be PofP or PofGC
      * @return desired record to be read, from the GC
      * @throws IOException
-     */
+     *
     private DataRecord getDataRecordPofP(int[] indexWanted, VariableIndexPartitioned compVindex2Dp) throws IOException {
       if (group.isTwod) {
         // corresponding index into compVindex2Dp
@@ -296,7 +296,7 @@ class PartitionCollection extends GribCollection {
         if (indexWantedP == null) return null;
         return compVindex2Dp.getDataRecord(indexWantedP);
       }
-    }
+    }  */
 
 
     /* private int getPartition2D(int runtimeIdx) {
@@ -315,8 +315,8 @@ class PartitionCollection extends GribCollection {
      * @param partno partition number
      * @return VariableIndex or null if not exists
      * @throws IOException
-     */
-    private GribCollection.VariableIndex getVindex2D(int partno) throws IOException {
+     *
+    private GribCollectionImmutable.VariableIndex getVindex2D(int partno) throws IOException {
       // at this point, we need to instantiate the Partition and the vindex.records
       // the 2D vip for this variable
       VariableIndexPartitioned vip =  isPartitionOfPartitions ?
@@ -334,18 +334,14 @@ class PartitionCollection extends GribCollection {
 
       Partition p = getPartition(partno);
       try (GribCollectionImmutable gc = p.getGribCollection()) { // ensure that its read in try-with
-        Dataset ds = gc.getDatasetCanonical(); // always references the twoD or GC dataset
+        GribCollectionImmutable.Dataset ds = gc.getDatasetCanonical(); // always references the twoD or GC dataset
         // the group and variable index may vary across partitions
-        GroupGC g = ds.groups.get(partVar.groupno);
-        GribCollection.VariableIndex vindex = g.variList.get(partVar.varno);
+        GribCollectionImmutable.GroupGC g = ds.groups.get(partVar.groupno);
+        GribCollectionImmutable.VariableIndex vindex = g.variList.get(partVar.varno);
         vindex.readRecords();
         return vindex;
       }  // LOOK opening the file here, and then again to read the data. partition cache helps i guess but we could do better i think.
-    }
-
-    /*
-
-     */
+    } */
 
 
     /**
@@ -558,7 +554,7 @@ class PartitionCollection extends GribCollection {
     }
 
     // acquire or construct GribCollection - caller must call gc.close() when done
-    public GribCollection getGribCollection() throws IOException {
+    public GribCollectionImmutable getGribCollection() throws IOException {
       GribCollection result;
       String path = getIndexFilenameInCache();
       if (path == null) {
@@ -575,12 +571,11 @@ class PartitionCollection extends GribCollection {
         }
       }
 
-      if (partitionCache != null) {                     // FileFactory factory, Object hashKey, String location, int buffer_size, CancelTask cancelTask, Object spiObject
-        result = (GribCollection) partitionCache.acquire(collectionFactory, path, path, -1, null, this);
-      } else {
-        result = (GribCollection) collectionFactory.open(path, -1, null, this);
-      }
-      return result;
+      return (GribCollectionImmutable) PartitionCollectionImmutable.collectionFactory.open(path, -1, null, this);
+    }
+
+    public GribCollection makeGribCollection(CollectionUpdateType force) throws IOException {
+      return GribCdmIndex.openMutableGCFromIndex(dcm.getIndexFilename(), config, false, true, logger); // caller must close
     }
 
     @Override
@@ -748,8 +743,6 @@ class PartitionCollection extends GribCollection {
 
   public void removePartition(Partition p) {
     partitions.remove(p);
-  }
-
   }
 
   public void showIndex(Formatter f) {

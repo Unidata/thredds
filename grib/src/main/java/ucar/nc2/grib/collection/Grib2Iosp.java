@@ -37,12 +37,10 @@ package ucar.nc2.grib.collection;
 
 import thredds.catalog.DataFormatType;
 import ucar.coord.CoordinateTimeAbstract;
-import ucar.nc2.grib.grib2.Grib2Index;
+import ucar.nc2.grib.grib2.*;
 import ucar.ma2.*;
 import ucar.nc2.*;
 import ucar.nc2.grib.*;
-import ucar.nc2.grib.grib2.Grib2Record;
-import ucar.nc2.grib.grib2.Grib2RecordScanner;
 import ucar.nc2.grib.grib2.table.Grib2Customizer;
 import ucar.unidata.io.RandomAccessFile;
 import ucar.unidata.util.StringUtil2;
@@ -61,6 +59,93 @@ public class Grib2Iosp extends GribIosp {
   static private final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(Grib2Iosp.class);
   static private final boolean debugTime = false, debugRead = false, debugName = false;
  // static private boolean useGenType = false; // LOOK dummy for now
+
+  /**
+   * A hash code to group records into a CDM variable
+   * Herein lies the semantics of a variable object identity.
+   * Read it and weep.
+   *
+   * @param gr the Grib record
+   * @param gdsHash can override the gdsHash
+   * @return this record's hash code, identical hash means belongs to the same variable
+   */
+  public static int cdmVariableHash(Grib2Customizer cust, Grib2Record gr, int gdsHash, boolean intvMerge, boolean useGenType, org.slf4j.Logger logger) {
+    Grib2SectionGridDefinition gdss = gr.getGDSsection();
+    Grib2Pds pds2 = gr.getPDS();
+
+    int result = 17;
+
+    if (gdsHash == 0)
+      result += result * 37 + gdss.getGDS().hashCode(); // the horizontal grid
+    else
+      result += result * 37 + gdsHash;
+
+    result += result * 37 + gr.getDiscipline();
+    result += result * 37 + pds2.getLevelType1();
+    if (Grib2Utils.isLayer(pds2)) result += result * 37 + 1;
+
+    result += result * 37 + pds2.getParameterCategory();
+    result += result * 37 + pds2.getTemplateNumber();
+
+    if (pds2.isTimeInterval()) {
+      if (!intvMerge) {
+        double size = 0;
+        try {
+          size = cust.getForecastTimeIntervalSizeInHours(pds2); // LOOK using an Hour here, but will need to make this configurable
+        } catch (Throwable t) {
+          if (logger != null) logger.error("Failed on file = "+gr.getFile(), t);
+        }
+        result += result * (int) (37 + (1000 * size)); // create new variable for each interval size - default not
+      }
+      result += result * 37 + pds2.getStatisticalProcessType(); // create new variable for each stat type
+    }
+
+    if (pds2.isSpatialInterval()) {
+       result += result * 37 + pds2.getStatisticalProcessType(); // template 15
+     }
+
+     result += result * 37 + pds2.getParameterNumber();
+
+    int ensDerivedType = -1;
+    if (pds2.isEnsembleDerived()) {  // a derived ensemble must have a derivedForecastType
+      Grib2Pds.PdsEnsembleDerived pdsDerived = (Grib2Pds.PdsEnsembleDerived) pds2;
+      ensDerivedType = pdsDerived.getDerivedForecastType(); // derived type (table 4.7)
+      result += result * 37 + ensDerivedType;
+
+    } else if (pds2.isEnsemble()) {
+      result += result * 37 + 1;
+    }
+
+    // each probability interval generates a separate variable; could be a dimension instead
+    int probType = -1;
+    if (pds2.isProbability()) {
+      Grib2Pds.PdsProbability pdsProb = (Grib2Pds.PdsProbability) pds2;
+      probType = pdsProb.getProbabilityType();
+      result += result * 37 + pdsProb.getProbabilityHashcode();
+    }
+
+    // if this uses any local tables, then we have to add the center id, and subcenter if present
+    if ((pds2.getParameterCategory() > 191) || (pds2.getParameterNumber() > 191) || (pds2.getLevelType1() > 191)
+            || (pds2.isTimeInterval() && pds2.getStatisticalProcessType() > 191)
+            || (ensDerivedType > 191) || (probType > 191)) {
+      Grib2SectionIdentification id = gr.getId();
+      result += result * 37 + id.getCenter_id();
+      if (id.getSubcenter_id() > 0)
+        result += result * 37 + id.getSubcenter_id();
+    }
+
+    // always use the GenProcessType when "error" (6 or 7) 2/8/2012
+    int genType = pds2.getGenProcessType();
+    if (genType == 6 || genType == 7 || (useGenType && genType > 0)) {
+      result += result * 37 + genType;
+    }
+
+    /* int addHash = cust.addVariableHash(gr);
+    if (addHash != 0)
+      result += result * 37 + addHash; */
+
+    return result;
+  }
 
   static public String makeVariableNameFromTable(Grib2Customizer tables, GribCollectionImmutable gribCollection, 
                                                  GribCollectionImmutable.VariableIndex vindex, boolean useGenType) {

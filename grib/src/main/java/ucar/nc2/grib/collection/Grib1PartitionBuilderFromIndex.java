@@ -60,6 +60,17 @@ class Grib1PartitionBuilderFromIndex extends Grib1CollectionBuilderFromIndex {
     return null;
   }
 
+  // read in the index, index raf already open; return null on failure
+  static public PartitionCollection openMutablePCFromIndex(String name, RandomAccessFile raf,
+           FeatureCollectionConfig config, boolean dataOnly, org.slf4j.Logger logger) throws IOException {
+
+    Grib1PartitionBuilderFromIndex builder = new Grib1PartitionBuilderFromIndex(name, config, dataOnly, logger);
+    if (builder.readIndex(raf))
+      return builder.pc;
+
+    return null;
+  }
+
   //////////////////////////////////////////////////////////////////////////////////
 
   //private final PartitionManager tpc; // defines the partition

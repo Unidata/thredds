@@ -1051,9 +1051,6 @@ public abstract class GribIosp extends AbstractIOServiceProvider {
     DataReceiverIF dataReceiver = channel == null ? new DataReceiver(section, yRange, xRange) : new ChannelReceiver(channel, yRange, xRange);
     dataReader.read(dataReceiver);
 
-    // close partitions as needed
-    vindexP.cleanup();
-
     return dataReceiver.getArray();
   }
 

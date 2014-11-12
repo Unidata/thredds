@@ -37,9 +37,9 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import ucar.nc2.dt.GridDatatype;
 import ucar.nc2.dt.grid.GridDataset;
-import ucar.nc2.grib.collection.GribCollection;
+import ucar.nc2.grib.collection.GribCollectionImmutable;
 import ucar.nc2.grib.collection.GribIosp;
-import ucar.nc2.grib.collection.PartitionCollection;
+import ucar.nc2.grib.collection.PartitionCollectionImmutable;
 import ucar.nc2.util.DebugFlagsImpl;
 import ucar.nc2.util.cache.FileCache;
 import ucar.nc2.util.cache.FileCacheIF;
@@ -64,13 +64,13 @@ public class TestGribCollectionsDense {
    static public void before() {
      RandomAccessFile.setDebugLeaks(true);
      GribIosp.setDebugFlags(new DebugFlagsImpl("Grib/indexOnly"));
-     PartitionCollection.initPartitionCache(50, 700, -1, -1);
+     PartitionCollectionImmutable.initPartitionCache(50, 700, -1, -1);
    }
 
    @AfterClass
    static public void after() {
      GribIosp.setDebugFlags(new DebugFlagsImpl());
-     FileCacheIF cache = PartitionCollection.getPartitionCache();
+     FileCacheIF cache = PartitionCollectionImmutable.getPartitionCache();
      if (cache == null) return;
 
      Formatter out = new Formatter(System.out);
@@ -80,8 +80,8 @@ public class TestGribCollectionsDense {
      RandomAccessFile.getGlobalFileCache().showCache(out);
      TestDir.checkLeaks();
 
-     System.out.printf("countGC=%d%n", GribCollection.countGC);
-     System.out.printf("countPC=%d%n", PartitionCollection.countPC);
+     System.out.printf("countGC=%d%n", GribCollectionImmutable.countGC);
+     System.out.printf("countPC=%d%n", PartitionCollectionImmutable.countPC);
 
      FileCache.shutdown();
      RandomAccessFile.setDebugLeaks(false);

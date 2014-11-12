@@ -41,8 +41,7 @@ import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dt.GridDatatype;
 import ucar.nc2.dt.grid.GridDataset;
 import ucar.nc2.grib.collection.GribCdmIndex;
-import ucar.nc2.grib.collection.GribCollection;
-import ucar.nc2.grib.collection.PartitionCollection;
+import ucar.nc2.grib.collection.GribCollectionImmutable;
 import ucar.nc2.ui.widget.BAMutil;
 import ucar.nc2.ui.widget.IndependentWindow;
 import ucar.nc2.ui.widget.PopupMenu;
@@ -424,16 +423,16 @@ public class GribRewritePanel extends JPanel {
 
       FeatureCollectionConfig config = new FeatureCollectionConfig();
 
-      try (GribCollection gc = GribCdmIndex.openCdmIndex(indexFilename, config, false, false, logger)) {
+      try (GribCollectionImmutable gc = GribCdmIndex.openCdmIndex(indexFilename, config, false, false, logger)) {
         if (gc == null)
           throw new IOException("Not a grib collection index file");
 
-        for (PartitionCollection.Dataset ds : gc.getDatasets())
-          for (GribCollection.GroupGC group : ds.getGroups())
-            for (GribCollection.VariableIndex vi : group.getVariables()) {
-              vi.calcTotalSize();
-              nrecords += vi.nrecords;
-              ndups += vi.ndups;
+        for (GribCollectionImmutable.Dataset ds : gc.getDatasets())
+          for (GribCollectionImmutable.GroupGC group : ds.getGroups())
+            for (GribCollectionImmutable.VariableIndex vi : group.getVariables()) {
+              //vi.calcTotalSize();
+              //nrecords += vi.nrecords;
+              //ndups += vi.ndups;
               nvars++;
             }
       }

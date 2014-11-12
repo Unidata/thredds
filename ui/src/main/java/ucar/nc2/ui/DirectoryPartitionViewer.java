@@ -329,7 +329,7 @@ public class DirectoryPartitionViewer extends JPanel {
            final DirectoryPartition dpart = new DirectoryPartition(config, node.dir, indexReader, logger);
            dpart.putAuxInfo(FeatureCollectionConfig.AUX_CONFIG, config);
            Formatter errlog = new Formatter();
-           final PartitionCollection tp = (PartitionCollection) GribCdmIndex.openGribCollectionFromMCollection(false, dpart, CollectionUpdateType.never, errlog, logger);
+           PartitionCollection tp = (PartitionCollection)  GribCdmIndex.openMutableGCFromIndex(dpart.getIndexFilename(), config, false, true, logger);
            for (MCollection dcmp : dpart.makePartitions(null)) {
              dcmp.putAuxInfo(FeatureCollectionConfig.AUX_CONFIG, config);
              tp.addPartition(dcmp);
