@@ -361,6 +361,7 @@ public class FileCache implements FileCacheIF {
       }
     }
 
+    if (debugPrint) System.out.printf("  FileCache %s found in cache %s (countLocks %d)%n", name, hashKey, countLocked());
     return want.ncfile;
   }
 
@@ -401,6 +402,7 @@ public class FileCache implements FileCacheIF {
             log.error("close failed on "+want.ncfile.getLocation(), e);
           }
           want.ncfile = null;
+         if (debugPrint) System.out.println("  FileCache " + name + " eject " + hashKey);
        }
        wantCacheElem.list.clear();
      }
@@ -438,11 +440,18 @@ public class FileCache implements FileCacheIF {
       file.ncfile.release();
 
       if (cacheLog.isDebugEnabled()) cacheLog.debug("FileCache " + name + " release " + ncfile.getLocation()+"; hash= "+ncfile.hashCode());
-      if (debugPrint) System.out.println("  FileCache " + name + " release " + ncfile.getLocation());
+      if (debugPrint) System.out.printf("  FileCache %s release %s lock=%s count=%d%n", name, ncfile.getLocation(), file.isLocked.get(), countLocked());
       return true;
     }
     return false;
     // throw new IOException("FileCache " + name + " release does not have file in cache = " + ncfile.getLocation());
+  }
+
+  private int countLocked() {
+    int count = 0;
+    for (CacheElement.CacheFile file : files.values())
+      if (file.isLocked.get()) count++;
+    return count;
   }
 
   // debug
@@ -693,7 +702,9 @@ public class FileCache implements FileCacheIF {
       long start = System.currentTimeMillis();
       for (CacheElement.CacheFile file : deleteList) {
         //counter.decrementAndGet();
-        files.remove(file.ncfile);
+        if (null == files.remove(file.ncfile)) {
+          if (cacheLog.isDebugEnabled()) cacheLog.debug(" FileCache {} cleanup failed to remove {}%n", name, file.ncfile.getLocation());
+        }
         try {
           file.ncfile.setFileCache(null);
           file.ncfile.close();
@@ -764,7 +775,7 @@ public class FileCache implements FileCacheIF {
         ncfile.setFileCache(FileCache.this);
 
         if (cacheLog.isDebugEnabled()) cacheLog.debug("FileCache " + name + " add to cache " + hashKey);
-        if (debugPrint) System.out.println("  FileCache " + name + " add to cache " + hashKey);
+        if (debugPrint) System.out.printf("  FileCache %s add to cache %s (hash %d)%n", name, hashKey, this.hashCode());
       }
 
       String getCacheName() {
@@ -777,7 +788,7 @@ public class FileCache implements FileCacheIF {
             cacheLog.warn("FileCache " + name + " could not remove " + ncfile.getLocation());
         }
         if (cacheLog.isDebugEnabled()) cacheLog.debug("FileCache " + name + " remove " + ncfile.getLocation());
-        if (debugPrint) System.out.println("  FileCache " + name + " remove " + ncfile.getLocation());
+        if (debugPrint) System.out.printf("  FileCache %s remove %s%n", name, ncfile.getLocation());
       }
 
       public String toString() {
