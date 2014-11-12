@@ -60,7 +60,7 @@ import java.util.*;
 abstract class GribCollectionBuilderFromIndex {
 
   protected final boolean dataOnly; // dont need the extra metadata like twot
-  protected GribCollection gc;
+  protected GribCollectionMutable gc;
   protected final org.slf4j.Logger logger;
   protected boolean debug = false;
   protected GribTables tables;
@@ -69,7 +69,7 @@ abstract class GribCollectionBuilderFromIndex {
   protected abstract GribTables makeCustomizer() throws IOException;
   protected abstract String getLevelNameShort(int levelCode);
 
-  protected GribCollectionBuilderFromIndex(GribCollection gc, boolean dataOnly, org.slf4j.Logger logger) {
+  protected GribCollectionBuilderFromIndex(GribCollectionMutable gc, boolean dataOnly, org.slf4j.Logger logger) {
     this.logger = logger;
     this.dataOnly = dataOnly;
     this.gc = gc;
@@ -79,7 +79,7 @@ abstract class GribCollectionBuilderFromIndex {
 
   protected boolean readIndex(RandomAccessFile raf) throws IOException {
 
-    gc.setIndexRaf(raf); // LOOK leaving the raf open in the GribCollection
+    gc.setIndexRaf(raf);
     try {
       raf.order(RandomAccessFile.BIG_ENDIAN);
       raf.seek(0);
@@ -163,15 +163,14 @@ abstract class GribCollectionBuilderFromIndex {
       }
 
       // directory always taken from proto, since ncx2 file may be moved, or in cache, etc  LOOK
-      File protoDir = new File(proto.getTopDir());
-      gc.setDirectory(protoDir);
+      gc.directory = gc.setOrgDirectory(proto.getTopDir());
 
       int fsize = 0;
       int n = proto.getMfilesCount();
       Map<Integer, MFile> fileMap = new HashMap<>(2 * n);
       for (int i = 0; i < n; i++) {
         ucar.nc2.grib.collection.GribCollectionProto.MFile mf = proto.getMfiles(i);
-        fileMap.put(mf.getIndex(), new GcMFile(protoDir, mf.getFilename(), mf.getLastModified(), mf.getLength(), mf.getIndex()));
+        fileMap.put(mf.getIndex(), new GcMFile(gc.directory, mf.getFilename(), mf.getLastModified(), mf.getLength(), mf.getIndex()));
         fsize += mf.getFilename().length();
       }
       gc.setFileMap(fileMap);
@@ -201,7 +200,7 @@ abstract class GribCollectionBuilderFromIndex {
     return true;
   }
 
-  protected GribCollection.VariableIndex readVariableExtensions(GribCollection.GroupGC group, GribCollectionProto.Variable pv, GribCollection.VariableIndex vi) {
+  protected GribCollectionMutable.VariableIndex readVariableExtensions(GribCollectionMutable.GroupGC group, GribCollectionProto.Variable pv, GribCollectionMutable.VariableIndex vi) {
     group.addVariable(vi);
     return vi;
   }
@@ -218,11 +217,11 @@ message Dataset {
   repeated Group groups = 2;      // separate group for each GDS
 }
  */
-  private PartitionCollection.Dataset readDataset(GribCollectionProto.Dataset p) {
+  private PartitionCollectionMutable.Dataset readDataset(GribCollectionProto.Dataset p) {
     GribCollectionImmutable.Type type = GribCollectionImmutable.Type.valueOf(p.getType().toString());
-    GribCollection.Dataset ds = gc.makeDataset(type);
+    GribCollectionMutable.Dataset ds = gc.makeDataset(type);
 
-    List<GribCollection.GroupGC> groups = new ArrayList<>(p.getGroupsCount());
+    List<GribCollectionMutable.GroupGC> groups = new ArrayList<>(p.getGroupsCount());
     for (int i = 0; i < p.getGroupsCount(); i++)
       groups.add(readGroup(p.getGroups(i)));
     ds.groups = Collections.unmodifiableList(groups);
@@ -241,8 +240,8 @@ message Group {
   extensions 100 to 199;
 }
  */
-  protected GribCollection.GroupGC readGroup(GribCollectionProto.Group p) {
-    GribCollection.GroupGC group = gc.makeGroup();
+  protected GribCollectionMutable.GroupGC readGroup(GribCollectionProto.Group p) {
+    GribCollectionMutable.GroupGC group = gc.makeGroup();
 
     int gdsIndex = p.getGdsIndex();
     group.horizCoordSys = gc.getHorizCS(gdsIndex);
@@ -443,7 +442,7 @@ message Coord {
     throw new IllegalStateException("Unknown Coordinate type = " + type);
   }
 
-  protected GribCollection.VariableIndex readVariable(GribCollection.GroupGC group, GribCollectionProto.Variable pv) {
+  protected GribCollectionMutable.VariableIndex readVariable(GribCollectionMutable.GroupGC group, GribCollectionProto.Variable pv) {
     int discipline = pv.getDiscipline();
 
     byte[] rawPds = pv.getPds().toByteArray();
@@ -453,7 +452,7 @@ message Coord {
     int recordsLen = pv.getRecordsLen();
     List<Integer> index = pv.getCoordIdxList();
 
-    GribCollection.VariableIndex result = gc.makeVariableIndex(group, cdmHash, discipline, tables, rawPds, index, recordsPos, recordsLen);
+    GribCollectionMutable.VariableIndex result = gc.makeVariableIndex(group, cdmHash, discipline, tables, rawPds, index, recordsPos, recordsLen);
     result.density = pv.getDensity();
     result.ndups = pv.getNdups();
     result.nrecords = pv.getNrecords();

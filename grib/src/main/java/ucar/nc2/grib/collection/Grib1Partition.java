@@ -36,17 +36,14 @@
 package ucar.nc2.grib.collection;
 
 import thredds.featurecollection.FeatureCollectionConfig;
-import ucar.coord.CoordinateRuntime;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.NetcdfFileSubclass;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.grib.grib1.Grib1SectionProductDefinition;
 import ucar.nc2.grib.grib1.tables.Grib1Customizer;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.Formatter;
-import java.util.List;
 
 /**
  * PartitionCollection for Grib1.
@@ -56,7 +53,7 @@ import java.util.List;
  */
 public class Grib1Partition extends PartitionCollectionImmutable {
 
-  Grib1Partition( PartitionCollection pc) {
+  Grib1Partition( PartitionCollectionMutable pc) {
     super(pc);
   }
 

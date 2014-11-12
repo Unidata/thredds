@@ -61,7 +61,7 @@ class Grib1PartitionBuilderFromIndex extends Grib1CollectionBuilderFromIndex {
   }
 
   // read in the index, index raf already open; return null on failure
-  static public PartitionCollection openMutablePCFromIndex(String name, RandomAccessFile raf,
+  static public PartitionCollectionMutable openMutablePCFromIndex(String name, RandomAccessFile raf,
            FeatureCollectionConfig config, boolean dataOnly, org.slf4j.Logger logger) throws IOException {
 
     Grib1PartitionBuilderFromIndex builder = new Grib1PartitionBuilderFromIndex(name, config, dataOnly, logger);
@@ -74,11 +74,11 @@ class Grib1PartitionBuilderFromIndex extends Grib1CollectionBuilderFromIndex {
   //////////////////////////////////////////////////////////////////////////////////
 
   //private final PartitionManager tpc; // defines the partition
-  private PartitionCollection pc;  // build this object
+  private PartitionCollectionMutable pc;  // build this object
 
   private Grib1PartitionBuilderFromIndex(String name, FeatureCollectionConfig config, boolean dataOnly, org.slf4j.Logger logger) {
     super(name, config, dataOnly, logger);
-    this.pc = new PartitionCollection(name, null, config, true, logger);
+    this.pc = new PartitionCollectionMutable(name, null, config, true, logger);
     this.gc = pc;
   }
 
@@ -121,9 +121,9 @@ class Grib1PartitionBuilderFromIndex extends Grib1CollectionBuilderFromIndex {
   }
    */
   @Override
-  protected GribCollection.VariableIndex readVariableExtensions(GribCollection.GroupGC group, GribCollectionProto.Variable proto, GribCollection.VariableIndex vi) {
+  protected GribCollectionMutable.VariableIndex readVariableExtensions(GribCollectionMutable.GroupGC group, GribCollectionProto.Variable proto, GribCollectionMutable.VariableIndex vi) {
     List<PartitionCollectionProto.PartitionVariable> pvList = proto.getExtension(PartitionCollectionProto.partition);
-    PartitionCollection.VariableIndexPartitioned vip = pc.makeVariableIndexPartitioned(group, vi, pvList.size());
+    PartitionCollectionMutable.VariableIndexPartitioned vip = pc.makeVariableIndexPartitioned(group, vi, pvList.size());
     vip.setPartitions(pvList);
     return vip;
   }
@@ -136,7 +136,7 @@ message Partition {
   optional uint64 lastModified = 4;
 }
    */
-  private PartitionCollection.Partition makePartition(PartitionCollectionProto.Partition proto) {
+  private PartitionCollectionMutable.Partition makePartition(PartitionCollectionProto.Partition proto) {
     return pc.addPartition(proto.getName(), proto.getFilename(), proto.getLastModified(), proto.getLength(), proto.getDirectory());
   }
 }

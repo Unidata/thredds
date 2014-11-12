@@ -44,7 +44,6 @@ import ucar.nc2.dt.grid.GridDataset;
 import ucar.nc2.dt.GridCoordSystem;
 import ucar.nc2.grib.GribStatType;
 import ucar.nc2.grib.GribUtils;
-import ucar.nc2.grib.collection.Grib1CollectionBuilder;
 import ucar.nc2.grib.collection.Grib1Iosp;
 import ucar.nc2.grib.collection.GribIosp;
 import ucar.nc2.grib.collection.PartitionCollectionImmutable;

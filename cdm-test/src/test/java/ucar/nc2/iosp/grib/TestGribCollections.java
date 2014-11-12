@@ -143,7 +143,7 @@ public class TestGribCollections {
     assert count.nerrs == 0;
   }
 
-  // @Test
+  @Test
   // RandomAccessFile gets opened 1441 times (!) for PofGC
   public void problem() throws IOException {
 
@@ -175,13 +175,14 @@ public class TestGribCollections {
   public void openFileProblem() throws IOException {
 
     long start = System.currentTimeMillis();
-    String filename = "B:/rdavm/ds083.2/grib1/ds083.2_Aggregation-grib1.ncx2";
+    // String filename = "B:/rdavm/ds083.2/grib1/ds083.2_Aggregation-grib1.ncx2";
+    String filename = TestDir.cdmUnitTestDir + "ncss/GFS/Global_onedeg/GFS_Global_onedeg-Global_onedeg.ncx2";
     try (GridDataset gds = GridDataset.open(filename)) {
-      GridDatatype gdt = gds.findGridByName("Best/Land_cover_land1_sea0_surface");
+      GridDatatype gdt = gds.findGridByName("Best/Latent_heat_net_flux_surface_Mixed_intervals_Average");
       assert gdt != null;
 
-      int n = 1000;
-      int first = 5500;
+      int n = 5;
+      int first = 17;
       double sum = 0;
       for (int time=first; time < first+n; time++) {
         Array data = gdt.readDataSlice(0, -0, time, 0, -1, -1);
@@ -224,7 +225,7 @@ public class TestGribCollections {
       System.out.printf("%n   that took %d secs total, %f msecs per record%n", took/1000, r);
 
     } catch (IOException ioe) {
-      System.out.printf("%s%n", ioe);
+      ioe.printStackTrace();
       Formatter out = new Formatter(System.out);
       PartitionCollectionImmutable.getPartitionCache().showCache(out);
     }

@@ -927,7 +927,7 @@ public abstract class GribIosp extends AbstractIOServiceProvider {
             currFile = dr.fileno;
           }
 
-          if (dr.dataPos == GribCollection.MISSING_RECORD) continue;
+          if (dr.dataPos == GribCollectionMutable.MISSING_RECORD) continue;
 
           if (debugRead && rafData != null) { // for validation
             show(rafData, dr.dataPos);
@@ -1084,7 +1084,7 @@ public abstract class GribIosp extends AbstractIOServiceProvider {
           }
           lastRecord = dr;
 
-          if (dr.dataPos == GribCollection.MISSING_RECORD) continue;
+          if (dr.dataPos == GribCollectionMutable.MISSING_RECORD) continue;
 
           if (debugRead) { // for validation
             show(rafData, dr.dataPos);

@@ -193,7 +193,7 @@ public class RandomAccessFile implements DataInput, DataOutput, FileCacheable, A
     }
   };
 
-  static private FileCacheIF cache = new FileCache(50, 250, 60 * 60); // default; override for higher performance, or set to null for no caching
+  static private FileCacheIF cache = new FileCache("RandomAccessFile", 50, 250, 300, 60 * 60); // default; override for higher performance, or set to null for no caching
 
   static public void setGlobalFileCache(FileCacheIF _cache) {
     cache = _cache;
@@ -446,7 +446,8 @@ public class RandomAccessFile implements DataInput, DataOutput, FileCacheable, A
 
   @Override
   public synchronized void setFileCache(FileCacheIF fileCache) {
-    cacheIsOn = false;
+    if (fileCache == null)
+      cacheIsOn = false;
   }
 
   @Override

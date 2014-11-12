@@ -55,7 +55,7 @@ class Grib2PartitionBuilder extends GribPartitionBuilder {
     FeatureCollectionConfig config = null;
     if (tpc != null)
       config = (FeatureCollectionConfig) tpc.getAuxInfo(FeatureCollectionConfig.AUX_CONFIG);
-    this.result = new PartitionCollection(name, directory, config, false, logger);
+    this.result = new PartitionCollectionMutable(name, directory, config, false, logger);
   }
 
   //////////////////////////////////////////////////////////

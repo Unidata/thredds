@@ -69,8 +69,8 @@ import java.util.*;
  * @author John
  * @since 12/1/13
  */
-public class GribCollection implements AutoCloseable {
-  static private final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(GribCollection.class);
+public class GribCollectionMutable implements AutoCloseable {
+  static private final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(GribCollectionMutable.class);
   static public  final long MISSING_RECORD = -1;
 
   //////////////////////////////////////////////////////////
@@ -88,10 +88,11 @@ public class GribCollection implements AutoCloseable {
   }
 
   ////////////////////////////////////////////////////////////////
-  protected final String name; // collection name; index filename must be directory/name.ncx2
-  protected /* final */ File directory;
-  protected final FeatureCollectionConfig config;
-  protected final boolean isGrib1;
+  protected String name; // collection name; index filename must be directory/name.ncx2
+  protected FeatureCollectionConfig config;
+  protected boolean isGrib1;
+  protected File directory;
+  protected String orgDirectory;
 
   // set by the builder
   public int version; // the ncx version
@@ -110,7 +111,7 @@ public class GribCollection implements AutoCloseable {
 
   public static int countGC;
 
-  protected GribCollection(String name, File directory, FeatureCollectionConfig config, boolean isGrib1) {
+  protected GribCollectionMutable(String name, File directory, FeatureCollectionConfig config, boolean isGrib1) {
     countGC++;
     this.name = name;
     this.directory = directory;
@@ -123,7 +124,7 @@ public class GribCollection implements AutoCloseable {
   }
 
   // for making partition collection
-  protected void copyInfo(GribCollection from) {
+  protected void copyInfo(GribCollectionMutable from) {
     this.center = from.center;
     this.subcenter = from.subcenter;
     this.master = from.master;
@@ -189,8 +190,8 @@ public class GribCollection implements AutoCloseable {
     return result;
   }
 
-  public GribCollection.Dataset getDatasetCanonical() {
-    for (GribCollection.Dataset ds : datasets) {
+  public GribCollectionMutable.Dataset getDatasetCanonical() {
+    for (GribCollectionMutable.Dataset ds : datasets) {
       if (ds.type == GribCollectionImmutable.Type.GC) return ds;
       if (ds.type == GribCollectionImmutable.Type.TwoD) return ds;
     }
@@ -254,8 +255,16 @@ public class GribCollection implements AutoCloseable {
   }
 
   // set from GribCollectionBuilderFromIndex.readFromIndex()
-  public void setDirectory(File directory) {
-    this.directory = directory;
+  public File setOrgDirectory(String orgDirectory) {
+    this.orgDirectory = orgDirectory;
+    directory = new File(orgDirectory);
+    if (!directory.exists())  {
+      File indexFile = new File(indexFilename);
+      File parent = indexFile.getParentFile();
+      if (parent.exists())
+        directory = parent;
+    }
+    return directory;
   }
 
   //////////////////////////////////////////////////////////////////////////////////////////////////
@@ -439,7 +448,7 @@ public class GribCollection implements AutoCloseable {
     List<VariableIndex> variList;
     List<Coordinate> coords;      // shared coordinates
     int[] filenose;               // key for GC.fileMap
-    Map<Integer, GribCollection.VariableIndex> varMap;
+    Map<Integer, GribCollectionMutable.VariableIndex> varMap;
     boolean isTwod = true;        // true for GC and twoD; so should be called "reference" dataset or something
 
     GroupGC() {
@@ -470,8 +479,8 @@ public class GribCollection implements AutoCloseable {
       return vi;
     }
 
-    public GribCollection getGribCollection() {
-      return GribCollection.this;
+    public GribCollectionMutable getGribCollection() {
+      return GribCollectionMutable.this;
     }
 
     public Iterable<VariableIndex> getVariables() {
@@ -523,7 +532,7 @@ public class GribCollection implements AutoCloseable {
       return result;
     }
 
-    public GribCollection.VariableIndex findVariableByHash(int cdmHash) {
+    public GribCollectionMutable.VariableIndex findVariableByHash(int cdmHash) {
       if (varMap == null) {
         varMap = new HashMap<>(variList.size() * 2);
         for (VariableIndex vi : variList)
@@ -575,19 +584,19 @@ public class GribCollection implements AutoCloseable {
     @Override
     public String toString() {
       final StringBuilder sb = new StringBuilder("GroupGC{");
-      sb.append(GribCollection.this.getName());
+      sb.append(GribCollectionMutable.this.getName());
       sb.append(" isTwoD=").append(isTwod);
       sb.append('}');
       return sb.toString();
     }
   }
 
-  public GribCollection.VariableIndex makeVariableIndex(GroupGC g, int cdmHash, int discipline, GribTables customizer,
+  public GribCollectionMutable.VariableIndex makeVariableIndex(GroupGC g, int cdmHash, int discipline, GribTables customizer,
                                                         byte[] rawPds, List<Integer> index, long recordsPos, int recordsLen) {
     return new VariableIndex(g, discipline, customizer, rawPds, cdmHash, index, recordsPos, recordsLen);
   }
 
-  public GribCollection.VariableIndex makeVariableIndex(GroupGC g, VariableIndex other) {
+  public GribCollectionMutable.VariableIndex makeVariableIndex(GroupGC g, VariableIndex other) {
     return new VariableIndex(g, other);
   }
 
