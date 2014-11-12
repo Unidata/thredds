@@ -70,23 +70,6 @@ public abstract class PartitionCollectionImmutable extends GribCollectionImmutab
     // object cache for index files - these are opened only as GribCollection
   private static FileCacheIF partitionCache;
 
-  static public void initPartitionCache(int minElementsInMemory, int maxElementsInMemory, int period) {
-    partitionCache = new ucar.nc2.util.cache.FileCache("TimePartitionCache", minElementsInMemory, maxElementsInMemory, -1, period);
-  }
-
-  static public void initPartitionCache(int minElementsInMemory, int softLimit, int hardLimit, int period) {
-    partitionCache = new ucar.nc2.util.cache.FileCache("TimePartitionCache", minElementsInMemory, softLimit, hardLimit, period);
-  }
-
-  static public FileCacheIF getPartitionCache() {
-    return partitionCache;
-  }
-
-  static public void disablePartitionCache() {
-    if (null != partitionCache) partitionCache.disable();
-    partitionCache = null;
-  }
-
   static final ucar.nc2.util.cache.FileFactory collectionFactory = new FileFactory() {
     public FileCacheable open(String location, int buffer_size, CancelTask cancelTask, Object iospMessage) throws IOException {
       RandomAccessFile raf = null;
@@ -103,6 +86,19 @@ public abstract class PartitionCollectionImmutable extends GribCollectionImmutab
     }
   };
 
+  static public void initPartitionCache(int minElementsInMemory, int maxElementsInMemory, int period) {
+    partitionCache = new ucar.nc2.util.cache.FileCache("PartitionCollectionImmutable", minElementsInMemory, maxElementsInMemory, -1, period);
+    // partitionCache = new ucar.nc2.util.cache.FileCacheGuava("PartitionCollectionImmutable", collectionFactory, maxElementsInMemory);
+  }
+
+  static public FileCacheIF getPartitionCache() {
+    return partitionCache;
+  }
+
+  static public void disablePartitionCache() {
+    if (null != partitionCache) partitionCache.disable();
+    partitionCache = null;
+  }
 
   ///////////////////////////////////////////////
   private final List<Partition> partitions;
