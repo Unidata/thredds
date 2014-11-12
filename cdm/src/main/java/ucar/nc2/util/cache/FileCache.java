@@ -87,7 +87,6 @@ public class FileCache implements FileCacheIF {
   static protected final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(FileCache.class);
   static protected final org.slf4j.Logger cacheLog = org.slf4j.LoggerFactory.getLogger("cacheLogger");
   static private ScheduledExecutorService exec;
-  static boolean trackAll = false;
   static boolean debug = false;
   static boolean debugPrint = false;
   static boolean debugCleanup = false;
@@ -118,6 +117,7 @@ public class FileCache implements FileCacheIF {
   protected final AtomicInteger hits = new AtomicInteger();
   protected final AtomicInteger miss = new AtomicInteger();
   protected ConcurrentHashMap<Object, Tracker> track;
+  protected boolean trackAll = false;
 
   /**
    * Constructor.
