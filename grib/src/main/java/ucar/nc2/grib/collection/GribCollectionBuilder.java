@@ -165,8 +165,8 @@ abstract class GribCollectionBuilder {
     for (List<Group> runGroupList : runGroups.values()) {
       Group g = runGroupList.get(0);
       // if multiple groups, we will write a partition. otherwise, we need to use the standard name (without runtime) so we know the filename from the collection
-      String gcname = multipleRuntimes ? GribCollection.makeName(this.name, g.getRuntime()) : this.name;
-      MFile indexFileForRuntime = GribCollection.makeIndexMFile(gcname, directory); // not in cache
+      String gcname = multipleRuntimes ? GribCollectionMutable.makeName(this.name, g.getRuntime()) : this.name;
+      MFile indexFileForRuntime = GribCollectionMutable.makeIndexMFile(gcname, directory); // not in cache
       partitions.add(indexFileForRuntime);
 
       boolean ok = writeIndex(gcname, indexFileForRuntime.getPath(), g.getCoordinateRuntime(), runGroupList, allFiles);

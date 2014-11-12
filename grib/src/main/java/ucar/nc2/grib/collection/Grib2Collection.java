@@ -38,16 +38,13 @@ package ucar.nc2.grib.collection;
 import thredds.featurecollection.FeatureCollectionConfig;
 import thredds.inventory.CollectionUpdateType;
 import thredds.inventory.MFile;
-import ucar.coord.CoordinateRuntime;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.NetcdfFileSubclass;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.grib.grib2.table.Grib2Customizer;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.Formatter;
-import java.util.List;
 
 /**
  * Grib2 specific part of GribCollection
@@ -57,7 +54,7 @@ import java.util.List;
  */
 public class Grib2Collection extends GribCollectionImmutable {
 
-  Grib2Collection(GribCollection gc) {
+  Grib2Collection(GribCollectionMutable gc) {
     super(gc);
   }
 

@@ -38,20 +38,14 @@ package ucar.nc2.grib.collection;
 import thredds.featurecollection.FeatureCollectionConfig;
 import thredds.inventory.CollectionUpdateType;
 import thredds.inventory.MCollection;
-import ucar.coord.CoordinateRuntime;
 import ucar.coord.CoordinateTime2D;
 import ucar.coord.CoordinateTimeAbstract;
 import ucar.nc2.grib.GdsHorizCoordSys;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time.CalendarPeriod;
-import ucar.nc2.util.CancelTask;
 import ucar.nc2.util.Misc;
-import ucar.nc2.util.cache.FileCacheIF;
-import ucar.nc2.util.cache.FileCacheable;
-import ucar.nc2.util.cache.FileFactory;
 import ucar.coord.Coordinate;
 import ucar.nc2.util.cache.SmartArrayInt;
-import ucar.unidata.io.RandomAccessFile;
 import ucar.unidata.util.StringUtil2;
 
 import java.io.File;
@@ -65,7 +59,7 @@ import java.util.*;
  * @author John
  * @since 12/7/13
  */
-public class PartitionCollection extends GribCollection {
+public class PartitionCollectionMutable extends GribCollectionMutable {
 
   //////////////////////////////////////////////////////////////////////
 
@@ -82,14 +76,13 @@ public class PartitionCollection extends GribCollection {
     }
   }
 
-  public class VariableIndexPartitioned extends GribCollection.VariableIndex {
+  public class VariableIndexPartitioned extends GribCollectionMutable.VariableIndex {
     int nparts;
     SmartArrayInt partnoSA;
     SmartArrayInt groupnoSA;
     SmartArrayInt varnoSA;
 
-    // transient
-    private List<PartitionForVariable2D> partList; // used only when creating, then discarded in finish LOOK can we put into Builder ??
+    List<PartitionForVariable2D> partList; // used only when creating, then discarded in finish
 
     VariableIndexPartitioned(GroupGC g, VariableIndex other, int nparts) {
       super(g, other);
@@ -352,7 +345,7 @@ public class PartitionCollection extends GribCollection {
      * @param compVindex2D     component 2D VariableIndex
      * @return corresponding index in compVindex2D, or null if missing
      */
-    private int[] translateIndex1D(int[] wholeIndex, GribCollection.VariableIndex compVindex2D) {
+    private int[] translateIndex1D(int[] wholeIndex, GribCollectionMutable.VariableIndex compVindex2D) {
       int[] result = new int[wholeIndex.length + 1];
 
       // figure out the runtime
@@ -400,7 +393,7 @@ public class PartitionCollection extends GribCollection {
      * @param compVindex2D  want index in here
      * @return  index into  compVindex2D
      */
-    private int[] translateIndex2D(int[] wholeIndex, GribCollection.VariableIndex compVindex2D) {
+    private int[] translateIndex2D(int[] wholeIndex, GribCollectionMutable.VariableIndex compVindex2D) {
       int[] result = new int[wholeIndex.length];
       int countDim = 0;
 
@@ -443,10 +436,10 @@ public class PartitionCollection extends GribCollection {
   }
 
   class DataRecord extends GribIosp.DataRecord {
-    PartitionCollection usePartition;
+    PartitionCollectionMutable usePartition;
     int partno; // partition index in usePartition
 
-    DataRecord(PartitionCollection usePartition, int partno, GdsHorizCoordSys hcs, int fileno, long drsPos, long bmsPos, int scanMode) {
+    DataRecord(PartitionCollectionMutable usePartition, int partno, GdsHorizCoordSys hcs, int fileno, long drsPos, long bmsPos, int scanMode) {
       super(-1, fileno, drsPos, bmsPos, scanMode, hcs);
       this.usePartition = usePartition;
       this.partno = partno;
@@ -555,13 +548,13 @@ public class PartitionCollection extends GribCollection {
 
     // acquire or construct GribCollection - caller must call gc.close() when done
     public GribCollectionImmutable getGribCollection() throws IOException {
-      GribCollection result;
+      GribCollectionMutable result;
       String path = getIndexFilenameInCache();
       if (path == null) {
         if (GribIosp.debugIndexOnly) {  // we are running in debug mode where we only have the indices, not the data files
           // tricky: substitute the current root
           File orgParentDir = new File(directory);
-          File currentFile = new File(PartitionCollection.this.indexFilename);
+          File currentFile = new File(PartitionCollectionMutable.this.indexFilename);
           File currentParent = currentFile.getParentFile();
           File currentParentWithDir = new File(currentParent, orgParentDir.getName());
           File nestedIndex = isPartitionOfPartitions ? new File(currentParentWithDir, filename) : new File(currentParent, filename); // JMJ
@@ -574,7 +567,8 @@ public class PartitionCollection extends GribCollection {
       return (GribCollectionImmutable) PartitionCollectionImmutable.collectionFactory.open(path, -1, null, this);
     }
 
-    public GribCollection makeGribCollection(CollectionUpdateType force) throws IOException {
+    // LOOK force not used, equivilent to  force = never
+    public GribCollectionMutable makeGribCollection(CollectionUpdateType force) throws IOException {
       return GribCdmIndex.openMutableGCFromIndex(dcm.getIndexFilename(), config, false, true, logger); // caller must close
     }
 
@@ -636,7 +630,7 @@ public class PartitionCollection extends GribCollection {
 
   public static int countPC;
 
-  protected PartitionCollection(String name, File directory, FeatureCollectionConfig config, boolean isGrib1, org.slf4j.Logger logger) {
+  protected PartitionCollectionMutable(String name, File directory, FeatureCollectionConfig config, boolean isGrib1, org.slf4j.Logger logger) {
     super(name, directory, config, isGrib1);
     this.logger = logger;
     this.partitions = new ArrayList<>();
@@ -645,7 +639,7 @@ public class PartitionCollection extends GribCollection {
   }
 
   public VariableIndex getVariable2DByHash(GribHorizCoordSystem hcs, int cdmHash) {
-    GribCollection.Dataset ds2d = getDataset2D();
+    GribCollectionMutable.Dataset ds2d = getDataset2D();
     if (ds2d == null) return null;
     for (GroupGC groupHcs : ds2d.groups)
       if (groupHcs.horizCoordSys == hcs)
@@ -653,8 +647,8 @@ public class PartitionCollection extends GribCollection {
     return null;
   }
 
-  private GribCollection.Dataset getDataset2D() {
-    for (GribCollection.Dataset ds : datasets)
+  private GribCollectionMutable.Dataset getDataset2D() {
+    for (GribCollectionMutable.Dataset ds : datasets)
       if (ds.isTwoD()) return ds;
     return null;
   }
@@ -701,7 +695,7 @@ public class PartitionCollection extends GribCollection {
    * @param nparts size of partition list
    * @return a new VariableIndexPartitioned
    */
-  public VariableIndexPartitioned makeVariableIndexPartitioned(GroupGC group, GribCollection.VariableIndex from, int nparts) {
+  public VariableIndexPartitioned makeVariableIndexPartitioned(GroupGC group, GribCollectionMutable.VariableIndex from, int nparts) {
     VariableIndexPartitioned vip = new VariableIndexPartitioned(group, from, nparts);
     group.addVariable(vip);
 

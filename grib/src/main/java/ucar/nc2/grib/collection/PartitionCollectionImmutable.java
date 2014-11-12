@@ -93,7 +93,7 @@ public abstract class PartitionCollectionImmutable extends GribCollectionImmutab
       try {
         raf = RandomAccessFile.acquire(location);
         Partition p = (Partition) iospMessage;
-        return GribCdmIndex.openGribCollectionFromIndexFile(raf, p.getConfig(), true, p.getLogger()); // dataOnly
+        return GribCdmIndex.openGribCollectionFromIndexFile(raf, p.getConfig(), true, p.getLogger()); // dataOnly = true
       } catch (Throwable t) {
         if (raf != null)
           raf.close();
@@ -106,17 +106,15 @@ public abstract class PartitionCollectionImmutable extends GribCollectionImmutab
 
   ///////////////////////////////////////////////
   private final List<Partition> partitions;
-
   private final boolean isPartitionOfPartitions;
-
   private final int[] run2part;   // masterRuntime.length; which partition to use for masterRuntime i
 
-  PartitionCollectionImmutable( PartitionCollection pc) {
+  PartitionCollectionImmutable( PartitionCollectionMutable pc) {
     super(pc);
 
-    List<PartitionCollection.Partition> pcParts = pc.partitions;
+    List<PartitionCollectionMutable.Partition> pcParts = pc.partitions;
     List<Partition> work = new ArrayList<>(pcParts.size());
-    for (PartitionCollection.Partition pcPart : pcParts) {
+    for (PartitionCollectionMutable.Partition pcPart : pcParts) {
       work.add( new Partition(pcPart));
     }
 
@@ -142,6 +140,10 @@ public abstract class PartitionCollectionImmutable extends GribCollectionImmutab
       return gc;
     }
 
+  }
+
+  protected VariableIndex makeVariableIndex(GroupGC group, GribCollectionMutable.VariableIndex mutableVar) {
+    return new VariableIndexPartitioned(group, mutableVar);
   }
 
   public Iterable<Partition> getPartitions() {
@@ -212,7 +214,7 @@ public abstract class PartitionCollectionImmutable extends GribCollectionImmutab
       private final long lastModified;
 
       // constructor from ncx
-      public Partition(PartitionCollection.Partition pcPart) {
+      public Partition(PartitionCollectionMutable.Partition pcPart) {
         this.name = pcPart.name;
         this.filename = pcPart.filename; // grib collection ncx
         this.lastModified = pcPart.lastModified;
@@ -308,36 +310,27 @@ public abstract class PartitionCollectionImmutable extends GribCollectionImmutab
       }
     }
 
+  @Immutable
   public class VariableIndexPartitioned extends GribCollectionImmutable.VariableIndex {
-    int nparts;
-    SmartArrayInt partnoSA;
-    SmartArrayInt groupnoSA;
-    SmartArrayInt varnoSA;
+    final int nparts;
+    final SmartArrayInt partnoSA;
+    final SmartArrayInt groupnoSA;
+    final SmartArrayInt varnoSA;
 
         // partition only
-    TwoDTimeInventory twot;  // twoD only  LOOK is this needed except when building ?? LOOK can we move to Partition ??
-    SmartArrayInt time2runtime; // oneD only: for each timeIndex, which runtime coordinate does it use? 1-based so 0 = missing;
+    final SmartArrayInt time2runtime; // oneD only: for each timeIndex, which runtime coordinate does it use? 1-based so 0 = missing;
                              // index into the corresponding 2D variable's runtime coordinate
 
-    VariableIndexPartitioned(GribCollectionImmutable.GroupGC g, GribCollection.VariableIndex other, int nparts) {
+    VariableIndexPartitioned(GribCollectionImmutable.GroupGC g, GribCollectionMutable.VariableIndex other) {
       super(g, other);
-      this.nparts = nparts;
-    }
 
-    public void setPartitions(List<PartitionCollectionProto.PartitionVariable> pvList) {
-      int[] partno = new int[nparts];
-      int[] groupno = new int[nparts];
-      int[] varno = new int[nparts];
-      int count = 0;
-      for (PartitionCollectionProto.PartitionVariable part : pvList) {
-        partno[count] = part.getPartno();
-        groupno[count] = part.getGroupno();
-        varno[count] = part.getVarno();
-        count++;
-      }
-      this.partnoSA =  new SmartArrayInt(partno);
-      this.groupnoSA =  new SmartArrayInt(groupno);
-      this.varnoSA =  new SmartArrayInt(varno);
+      PartitionCollectionMutable.VariableIndexPartitioned pother  = (PartitionCollectionMutable.VariableIndexPartitioned) other;
+      this.nparts = pother.nparts;
+      this.time2runtime =  pother.time2runtime;
+
+      this.partnoSA =  pother.partnoSA;
+      this.groupnoSA =  pother.groupnoSA;
+      this.varnoSA =  pother.varnoSA;
     }
 
     public int getNparts() {
@@ -379,8 +372,6 @@ public abstract class PartitionCollectionImmutable extends GribCollectionImmutab
 
 
     public void show(Formatter f) {
-      if (twot != null)
-        twot.showMissing(f);
 
       if (time2runtime != null) {
         Coordinate run = getCoordinate(Coordinate.Type.runtime);
@@ -427,9 +418,8 @@ public abstract class PartitionCollectionImmutable extends GribCollectionImmutab
 
       // find the runtime index
       int firstIndex = indexWanted[0];
-      int runTimeIdx = time2runtime.get(firstIndex);
-      int runIdx = group.isTwod ? firstIndex : runTimeIdx - 1; // time2runtime is for oneD
-      if (GribIosp.debugRead && !group.isTwod) System.out.printf("  firstIndex = %d time2runtime[firstIndex]=%d %n", firstIndex, runIdx);
+      int runIdx = group.isTwod ? firstIndex : time2runtime.get(firstIndex) - 1; // time2runtime is for oneD
+      if (GribIosp.debugRead && !group.isTwod) System.out.printf("  firstIndex = %d runIdx=%d %n", firstIndex, runIdx);
       if (runIdx < 0) {
         return null; // LOOK why is this possible?
       }
@@ -599,6 +589,8 @@ public abstract class PartitionCollectionImmutable extends GribCollectionImmutab
       CoordinateTime2D compTime2D = (CoordinateTime2D) compVindex2D.getCoordinate(Coordinate.Type.time2D);
       if (compTime2D != null) {
         CoordinateTime2D time2D = (CoordinateTime2D) getCoordinate(Coordinate.Type.time2D);
+        if (wholeIndex.length < 2)
+          System.out.println("HEY");
         CoordinateTime2D.Time2D want = time2D.getOrgValue(wholeIndex[0], wholeIndex[1], GribIosp.debugRead);
         if (GribIosp.debugRead) System.out.printf("  translateIndex2D[runIdx=%d, timeIdx=%d] in componentVar coords = (%s,%s) %n",
                 wholeIndex[0], wholeIndex[1], (want == null) ? "null" : want.getRun(), want);
@@ -633,9 +625,10 @@ public abstract class PartitionCollectionImmutable extends GribCollectionImmutab
 
   }
 
+  @Immutable
   class DataRecord extends GribIosp.DataRecord {
-    PartitionCollectionImmutable usePartition;
-    int partno; // partition index in usePartition
+    final PartitionCollectionImmutable usePartition;
+    final int partno; // partition index in usePartition
 
     DataRecord(PartitionCollectionImmutable usePartition, int partno, GdsHorizCoordSys hcs, int fileno, long drsPos, long bmsPos, int scanMode) {
       super(-1, fileno, drsPos, bmsPos, scanMode, hcs);

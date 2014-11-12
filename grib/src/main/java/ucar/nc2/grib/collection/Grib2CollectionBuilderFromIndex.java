@@ -41,7 +41,6 @@ import ucar.nc2.grib.grib2.*;
 import ucar.nc2.grib.grib2.table.Grib2Customizer;
 import ucar.unidata.io.RandomAccessFile;
 
-import java.io.File;
 import java.io.IOException;
 
 /**
@@ -71,7 +70,7 @@ class Grib2CollectionBuilderFromIndex extends GribCollectionBuilderFromIndex {
 
 
   // read in the index, index raf already open; return null on failure
-  static public GribCollection openMutableGCFromIndex(String name, RandomAccessFile raf, FeatureCollectionConfig config, boolean dataOnly, org.slf4j.Logger logger) throws IOException {
+  static public GribCollectionMutable openMutableGCFromIndex(String name, RandomAccessFile raf, FeatureCollectionConfig config, boolean dataOnly, org.slf4j.Logger logger) throws IOException {
 
     Grib2CollectionBuilderFromIndex builder = new Grib2CollectionBuilderFromIndex(name, config, dataOnly, logger);
     if (!builder.readIndex(raf))
@@ -91,7 +90,7 @@ class Grib2CollectionBuilderFromIndex extends GribCollectionBuilderFromIndex {
   protected Grib2Customizer cust; // gets created in readIndex, after center etc is read in
 
   protected Grib2CollectionBuilderFromIndex(String name, FeatureCollectionConfig config, boolean dataOnly, org.slf4j.Logger logger) {
-    super( new GribCollection(name, null, config, false), dataOnly, logger);  // directory will be set in readFromIndex
+    super( new GribCollectionMutable(name, null, config, false), dataOnly, logger);  // directory will be set in readFromIndex
   }
 
   ////////////////////////////////////////////////////////////////////////////////////////////////////

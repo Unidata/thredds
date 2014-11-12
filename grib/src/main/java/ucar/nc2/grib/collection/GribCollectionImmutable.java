@@ -92,7 +92,7 @@ public abstract class GribCollectionImmutable implements Closeable, FileCacheabl
 
   protected FileCacheIF objCache = null;  // optional object cache - used in the TDS
 
-  GribCollectionImmutable(GribCollection gc) {
+  GribCollectionImmutable(GribCollectionMutable gc) {
     countGC++;
 
     this.config = gc.config;
@@ -102,7 +102,7 @@ public abstract class GribCollectionImmutable implements Closeable, FileCacheabl
     this.info = new Info(gc);
 
     List<Dataset> work = new ArrayList<>(gc.datasets.size());
-    for (GribCollection.Dataset gcDataset : gc.datasets) {
+    for (GribCollectionMutable.Dataset gcDataset : gc.datasets) {
       work.add( new Dataset(gcDataset.type, gcDataset.groups));
     }
     this.datasets = Collections.unmodifiableList( work);
@@ -114,6 +114,11 @@ public abstract class GribCollectionImmutable implements Closeable, FileCacheabl
 
     File indexFile = GribCdmIndex.makeIndexFile(name, directory);
     indexFilename = indexFile.getPath();
+  }
+
+  // overridden in PartitionCollection
+  protected VariableIndex makeVariableIndex(GroupGC group, GribCollectionMutable.VariableIndex mutableVar) {
+    return new VariableIndex(group, mutableVar);
   }
 
   public List<Dataset> getDatasets() {
@@ -202,7 +207,7 @@ public abstract class GribCollectionImmutable implements Closeable, FileCacheabl
       this.backProcessId = backProcessId;
     }
 
-    public Info(GribCollection gc) {
+    public Info(GribCollectionMutable gc) {
       this.version = gc.version;
       this.center = gc.center;
       this.subcenter = gc.subcenter;
@@ -221,10 +226,10 @@ public abstract class GribCollectionImmutable implements Closeable, FileCacheabl
     final Type type;
     final List<GroupGC> groups;  // must be kept in order, because PartitionForVariable2D has index into it
 
-    public Dataset(Type type, List<GribCollection.GroupGC> groups) {
+    public Dataset(Type type, List<GribCollectionMutable.GroupGC> groups) {
       this.type = type;
       List<GroupGC> work = new ArrayList<>(groups.size());
-      for (GribCollection.GroupGC gcGroup : groups) {
+      for (GribCollectionMutable.GroupGC gcGroup : groups) {
         work.add( new GroupGC(gcGroup));
       }
       this.groups = Collections.unmodifiableList( work);
@@ -263,22 +268,23 @@ public abstract class GribCollectionImmutable implements Closeable, FileCacheabl
   @Immutable
   public class GroupGC {
     final GribHorizCoordSystem horizCoordSys;
-    final List<GribCollectionImmutable.VariableIndex> variList;
+    final List<VariableIndex> variList;
     final List<Coordinate> coords;      // shared coordinates
     final int[] filenose;               // key for GC.fileMap
     final private Map<Integer, VariableIndex> varMap;
-    final boolean isTwod = true;        // true for GC and twoD; so should be called "reference" dataset or something
+    final boolean isTwod;        // true for GC and twoD; so should be called "reference" dataset or something
 
-    public GroupGC(GribCollection.GroupGC gc) {
+    public GroupGC(GribCollectionMutable.GroupGC gc) {
       this.horizCoordSys = gc.horizCoordSys;
       this.coords = gc.coords;
       this.filenose = gc.filenose;
       this.varMap = new HashMap<>(gc.variList.size() * 2);
+      this.isTwod = gc.isTwod;
 
-      List<GribCollection.VariableIndex> gcVars = gc.variList;
+      List<GribCollectionMutable.VariableIndex> gcVars = gc.variList;
       List<VariableIndex> work = new ArrayList<>(gcVars.size());
-      for (GribCollection.VariableIndex gcVar : gcVars) {
-        VariableIndex vi = new VariableIndex(this, gcVar);
+      for (GribCollectionMutable.VariableIndex gcVar : gcVars) {
+        VariableIndex vi = makeVariableIndex(this, gcVar);
         work.add( vi);
         varMap.put(vi.getCdmHash(), vi);
       }
@@ -372,7 +378,7 @@ public abstract class GribCollectionImmutable implements Closeable, FileCacheabl
     // read in on demand
     private SparseArray<Record> sa;   // for GC only; lazily read; same array shape as variable, minus x and y
 
-    protected VariableIndex(GroupGC g, GribCollection.VariableIndex gcVar) {
+    protected VariableIndex(GroupGC g, GribCollectionMutable.VariableIndex gcVar) {
       this.group = g;
       this.info = new Info(gcVar);
       this.coordIndex = gcVar.coordIndex;
@@ -547,7 +553,7 @@ public abstract class GribCollectionImmutable implements Closeable, FileCacheabl
       final boolean isLayer, isEnsemble;
       final int genProcessType;
 
-      public Info(GribCollection.VariableIndex gcVar) {
+      public Info(GribCollectionMutable.VariableIndex gcVar) {
         this.tableVersion = gcVar.tableVersion;
         this.discipline = gcVar.discipline;
         this.rawPds = gcVar.rawPds;

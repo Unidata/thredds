@@ -36,16 +36,13 @@
 package ucar.nc2.grib.collection;
 
 import thredds.featurecollection.FeatureCollectionConfig;
-import ucar.coord.CoordinateRuntime;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.NetcdfFileSubclass;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.grib.grib2.table.Grib2Customizer;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.Formatter;
-import java.util.List;
 
 /**
  * PartitionCollection for Grib2.
@@ -55,7 +52,7 @@ import java.util.List;
  */
 public class Grib2Partition extends PartitionCollectionImmutable implements AutoCloseable {
 
-  Grib2Partition( PartitionCollection pc) {
+  Grib2Partition( PartitionCollectionMutable pc) {
     super(pc);
   }
 

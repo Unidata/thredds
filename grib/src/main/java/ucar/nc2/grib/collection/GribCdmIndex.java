@@ -203,11 +203,11 @@ public class GribCdmIndex implements IndexReader {
   }
 
       // open GribCollectionImmutable from an existing index file. return null on failure
-  static public GribCollection openMutableGCFromIndex(String indexFilename, FeatureCollectionConfig config, boolean dataOnly, boolean useCache, Logger logger) {
+  static public GribCollectionMutable openMutableGCFromIndex(String indexFilename, FeatureCollectionConfig config, boolean dataOnly, boolean useCache, Logger logger) {
     File indexFileInCache = useCache ? getFileInCache(indexFilename) : new File(indexFilename);
     String indexFilenameInCache = indexFileInCache.getPath();
     String name = makeNameFromIndexFilename(indexFilename);
-    GribCollection result = null;
+    GribCollectionMutable result = null;
 
     try (RandomAccessFile raf = RandomAccessFile.acquire(indexFilenameInCache)) {
       GribCollectionType type = getType(raf);
@@ -254,22 +254,22 @@ public class GribCdmIndex implements IndexReader {
     * @param updateType   should index file be used or remade?
     * @return GribCollection
     * @throws IOException on io error
-    */
+    *
   static public GribCollectionImmutable openGribCollectionFromMCollection(boolean isGrib1, MCollection dcm, CollectionUpdateType updateType,
                                                                  Formatter errlog, org.slf4j.Logger logger) throws IOException {
 
     FeatureCollectionConfig config = (FeatureCollectionConfig) dcm.getAuxInfo(FeatureCollectionConfig.AUX_CONFIG);
 
     if (updateType == CollectionUpdateType.never || dcm instanceof CollectionSingleIndexFile) { // would isIndexFile() be better ?
-      return openCdmIndex(dcm.getIndexFilename(), config, false, logger);  // then just open the existing index file
+      return openCdmIndex(dcm.getIndexFilename(), config, true, logger);  // then just open the existing index file
     }
 
     // update if needed
     boolean changed = updateGribCollectionFromMCollection(isGrib1, dcm, updateType, errlog, logger);
 
     // now open the index
-    return openCdmIndex(dcm.getIndexFilename(), config, false, logger);
-  }
+    return openCdmIndex(dcm.getIndexFilename(), config, true, logger);
+  } */
 
 
   static public boolean updateGribCollectionFromMCollection(boolean isGrib1, MCollection dcm, CollectionUpdateType updateType,
