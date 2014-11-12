@@ -64,7 +64,7 @@ public class TestGribCollectionsDense {
    static public void before() {
      RandomAccessFile.setDebugLeaks(true);
      GribIosp.setDebugFlags(new DebugFlagsImpl("Grib/indexOnly"));
-     PartitionCollectionImmutable.initPartitionCache(50, 700, -1, -1);
+     PartitionCollectionImmutable.initPartitionCache(50, 700, -1);
    }
 
    @AfterClass
