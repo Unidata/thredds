@@ -361,6 +361,8 @@ public class CdmIndex2Panel extends JPanel {
             try {
               v.readRecords();
               SparseArray<GribCollectionImmutable.Record> sa = v.getSparseArray();
+              if (sa == null)
+                System.out.println("HEY");
               int ntracks  = sa.getTotalSize();
               int nrecords = sa.getContent().size();
               int memEstForSA = 276 + nrecords * 40 + ntracks * 4;
