@@ -65,6 +65,7 @@ import java.nio.channels.WritableByteChannel;
  * this derives, see his <a href="http://www.aber.ac.uk/~agm/Java.html">
  * Freeware Java Classes</a>.
  * <p/>
+ * Must be thread confined - that is, can only be used by a single thread at a time..
  *
  * @author Alex McManus
  * @author Russ Rew
@@ -75,7 +76,7 @@ import java.nio.channels.WritableByteChannel;
  */
 
 @NotThreadSafe
-public class RandomAccessFile implements DataInput, DataOutput, FileCacheable, AutoCloseable {
+public class RandomAccessFile implements DataInput, DataOutput, FileCacheable, Closeable {
 
   static public final int BIG_ENDIAN = 0;
   static public final int LITTLE_ENDIAN = 1;
@@ -188,7 +189,7 @@ public class RandomAccessFile implements DataInput, DataOutput, FileCacheable, A
   static private final ucar.nc2.util.cache.FileFactory factory = new FileFactory() {
     public FileCacheable open(String location, int buffer_size, CancelTask cancelTask, Object iospMessage) throws IOException {
       RandomAccessFile result = new RandomAccessFile(location, "r", buffer_size);
-      result.cacheIsOn = true;
+      result.cacheState = 1;  // in use
       return result;
     }
   };
@@ -227,7 +228,7 @@ public class RandomAccessFile implements DataInput, DataOutput, FileCacheable, A
    * File location
    */
   protected String location;
-  private boolean cacheIsOn = false;
+  private int cacheState = 0;  // 0 - not in cache, 1 = in cache && in use, 2 = in cache but not in use
 
   /**
    * The underlying java.io.RandomAccessFile.
@@ -408,9 +409,15 @@ public class RandomAccessFile implements DataInput, DataOutput, FileCacheable, A
    * @throws IOException if an I/O error occurrs.
    */
   public synchronized void close() throws IOException {
-    if (cacheIsOn && cache != null) {
-      if (cache.release(this))  // return true if in the cache, otherwise was opened regular, so must be closed regular
-        return;
+    if (cacheState > 0) {
+      if (cacheState == 1) {
+        cacheState = 2;
+        if (cache.release(this))  // return true if in the cache, otherwise was opened regular, so must be closed regular
+          return;
+        cacheState = 0; // release failed, bail out
+      } else {
+        return; // close has been called more than once - ok
+      }
     }
 
     if (debugLeaks) {
@@ -439,15 +446,19 @@ public class RandomAccessFile implements DataInput, DataOutput, FileCacheable, A
   }
 
   @Override
-  public void release() {}  // one to one with java.io.RandomAccessFile
+  public void release() {  // one to one with java.io.RandomAccessFile
+    cacheState = 2;
+  }
 
   @Override
-  public void reacquire() {}
+  public void reacquire() {
+    cacheState = 1;
+  }
 
   @Override
   public synchronized void setFileCache(FileCacheIF fileCache) {
     if (fileCache == null)
-      cacheIsOn = false;
+      cacheState = 0;
   }
 
   @Override
