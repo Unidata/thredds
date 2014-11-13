@@ -155,6 +155,8 @@ public final class FysatHeader {
     if ((this.firstHeader == null) && (this.secondHeader == null)) {
       readPIB(raf);
     }
+    assert this.firstHeader != null;
+    assert this.secondHeader != null;
 
     Attribute att;
 //    Attribute att = new Attribute( "Conventions", "AWX");

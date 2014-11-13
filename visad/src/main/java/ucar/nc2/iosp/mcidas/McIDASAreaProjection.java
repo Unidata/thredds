@@ -441,35 +441,6 @@ public class McIDASAreaProjection extends ucar.unidata.geoloc.ProjectionImpl {
     return " nav " + anav.toString();
   }
 
-
-  /**
-   * Test routine
-   *
-   * @param args Area file name
-   * @throws Exception problem reading data
-   */
-  public static void main(String[] args) throws Exception {
-    String file = (args.length > 0)
-            ? args[0]
-            : "c:/data/satellite/AREA8760";
-    AreaFile af = new AreaFile(file);
-    McIDASAreaProjection proj = new McIDASAreaProjection(af);
-    LatLonPoint llp = new LatLonPointImpl(45, -105);
-    System.out.println("lat/lon = " + llp);
-    ProjectionPoint pp = proj.latLonToProj(llp);
-    System.out.println("proj point = " + pp);
-    llp = proj.projToLatLon(pp);
-    System.out.println("reverse llp = " + llp);
-
-    double[][] latlons = new double[][]{{45}, {-105}};
-    double[][] linele = proj.latLonToProj(latlons);
-    double[][] outll = proj.projToLatLon(linele);
-    if (linele != null && outll != null) {
-      System.out.println("proj point = " + linele[0][0] + "," + linele[1][0]);
-      System.out.println("proj point = " + outll[0][0] + "," + outll[1][0]);
-    }
-  }
-
   /**
    * make a double array out of an int array
    *

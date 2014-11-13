@@ -40,7 +40,6 @@ import java.util.ArrayList;
 
 /**
  * Adapt a StructureMembers.Member into a VariableSimpleIF.
- *
  * @author caron
  * @since Apr 20, 2008
  */
@@ -50,67 +49,36 @@ public class VariableSimpleAdapter implements VariableSimpleIF {
   public static List<VariableSimpleIF> convert(StructureMembers sm) {
     List<StructureMembers.Member> mlist = sm.getMembers();
     List<VariableSimpleIF> result = new ArrayList<>(mlist.size());
-    for (StructureMembers.Member m : mlist) {
+    for (StructureMembers.Member m : mlist)
       result.add(new VariableSimpleAdapter(m));
-    }
     return result;
   }
 
   /**
    * Constructor
-   *
    * @param m adapt this Member
    */
-  public VariableSimpleAdapter(StructureMembers.Member m) {
+  public VariableSimpleAdapter( StructureMembers.Member m) {
     this.m = m;
   }
 
-  @Override
-  public String getFullName() { return m.getFullName(); }
-
-  @Override
+  public String getFullName() {  return m.getFullName(); }
   public String getName() { return m.getName(); }
-
-  @Override
   public String getShortName() { return m.getName(); }
-
-  @Override
   public DataType getDataType() { return m.getDataType(); }
-
-  @Override
   public String getDescription() { return m.getDescription(); }
-
-  @Override
   public String getUnitsString() { return m.getUnitsString(); }
 
-  @Override
-  public int getRank() { return m.getShape().length; }
-
-  @Override
+  public int getRank() {  return m.getShape().length; }
   public int[] getShape() { return m.getShape(); }
-
-  /**
-   * Returns this variable's dimensions. Dimensions are named by prepending the string {@code "len"} to their length,
-   * e.g. a dimension with length 17 would be named {@code "len17"}. The names needn't be unique because the dimensions
-   * aren't shared.
-   *
-   * @return  this variable's dimensions.
-   */
-  @Override
   public List<Dimension> getDimensions() {
     List<Dimension> result = new ArrayList<>(getRank());
-    for (int dimLen : getShape()) {
-      String dimName = "len" + dimLen;
-      result.add(new Dimension(dimName, dimLen, false));
-    }
+    for (int aShape : getShape())
+      result.add(new Dimension(null, aShape, false));
     return result;
   }
-
-  @Override
   public List<Attribute> getAttributes() { return new ArrayList<>(1); }
-
-  @Override
-  public ucar.nc2.Attribute findAttributeIgnoreCase(String attName) {
+  public ucar.nc2.Attribute findAttributeIgnoreCase(String attName){
     return null;
   }
 
@@ -121,7 +89,6 @@ public class VariableSimpleAdapter implements VariableSimpleIF {
   /**
    * Sort by name
    */
-  @Override
   public int compareTo(VariableSimpleIF o) {
     assert o != null;
     return getShortName().compareTo(o.getShortName());

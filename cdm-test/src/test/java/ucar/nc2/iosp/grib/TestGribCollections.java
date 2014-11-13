@@ -130,8 +130,8 @@ public class TestGribCollections {
   public void testPofG_Grib1() throws IOException {
     Count count = read(TestDir.cdmUnitTestDir + "ncss/GFS/CONUS_80km/GFS_CONUS_80km-CONUS_80km.ncx2");
 
-    assert count.nread == 81340;
-    assert count.nmiss == 1801;
+    assert count.nread == 74015;
+    assert count.nmiss == 1646;
   }
 
   @Test
@@ -143,6 +143,33 @@ public class TestGribCollections {
     assert count.nmiss == 1126;
     assert count.nerrs == 0;
   }
+
+  @Test
+  // RandomAccessFile gets opened 1441 times (!) for PofGC
+  public void problem() throws IOException {
+
+    long start = System.currentTimeMillis();
+    // String filename = "B:/rdavm/ds083.2/grib1/ds083.2_Aggregation-grib1.ncx2";
+    String filename = TestDir.cdmUnitTestDir + "ncss/GFS/Global_onedeg/GFS_Global_onedeg-Global_onedeg.ncx2";
+    try (GridDataset gds = GridDataset.open(filename)) {
+      GridDatatype gdt = gds.findGridByName("Best/Latent_heat_net_flux_surface_Mixed_intervals_Average");
+      assert gdt != null;
+
+      int n = 22;
+      int first = 23;
+      double sum = 0;
+      for (int time=first; time < first+n; time++) {
+        Array data = gdt.readDataSlice(0, -0, time, 0, -1, -1);
+        sum += MAMath.sumDouble(data);
+      }
+      System.out.printf("sum = %s%n", sum);
+
+      long took = System.currentTimeMillis() - start;
+      float r = ((float) took) / n;
+      System.out.printf("%n   that took %d secs total, %d records %f msecs per record%n", took / 1000, n, r);
+    }
+  }
+
 
   @Test
   // RandomAccessFile gets opened 1441 times (!) for PofGC

@@ -661,7 +661,7 @@ public abstract class CFPointWriter implements AutoCloseable {
         if (!reservedVariableAtts.contains(attName) && !attName.startsWith("_Coordinate"))
           newVar.addAttribute(att);
       }
-      newVar.addAttribute( new Attribute(CF.COORDINATES, coordVars));
+      newVar.addAttribute(new Attribute(CF.COORDINATES, coordVars));
     }
 
   }
@@ -678,7 +678,8 @@ public abstract class CFPointWriter implements AutoCloseable {
 
     // add them
     for (Dimension d : oldDims) {
-      String dimName = d.getShortName();
+      // The dimension we're creating below will be shared, so we need an appropriate name for it.
+      String dimName = getSharedDimName(d);
 
       if (!writer.hasDimension(null, dimName)) {
         Dimension newDim = writer.addDimension(null, dimName, d.getLength(), true, false, d.isVariableLength());
@@ -692,12 +693,28 @@ public abstract class CFPointWriter implements AutoCloseable {
 
     // find all dimensions needed by the coord variables
     for (Dimension dim : oldDims) {
-      Dimension newDim = dimMap.get(dim.getShortName());
-      assert newDim != null : "Oops, we screwed up: dimMap doesn't contain " + dim.getShortName();
-      result.add( newDim);
+      Dimension newDim = dimMap.get(getSharedDimName(dim));
+      assert newDim != null : "Oops, we screwed up: dimMap doesn't contain " + getSharedDimName(dim);
+      result.add(newDim);
     }
 
     return result;
+  }
+
+  /**
+   * Returns a name for {@code dim} that is suitable for a shared dimension. If the dimension is anonymous, meaning
+   * that its name is {@code null}, we return a default name: {@code "len" + dim.getLength()}. Otherwise, we return the
+   * dimension's existing name.
+   *
+   * @param dim  a dimension.
+   * @return  a name that is suitable for a shared dimension, i.e. not {@code null}.
+   */
+  public static String getSharedDimName(Dimension dim) {
+    if (dim.getShortName() == null) {  // Dim is anonymous.
+      return "len" + dim.getLength();
+    } else {
+      return dim.getShortName();
+    }
   }
 
   protected int writeStructureData(int recno, Structure s, StructureData sdata, Map<String, Variable> varMap) throws IOException {
