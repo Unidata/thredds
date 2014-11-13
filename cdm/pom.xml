@@ -110,6 +110,11 @@
       <artifactId>bzip2</artifactId>
     </dependency>
 
+    <!-- Command line argument parsing in CFPointWriter -->
+    <dependency>
+      <groupId>com.beust</groupId>
+      <artifactId>jcommander</artifactId>
+    </dependency>
   </dependencies>
 
 

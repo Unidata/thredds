@@ -32,6 +32,9 @@
 
 package ucar.nc2.ft.point.writer;
 
+import com.beust.jcommander.JCommander;
+import com.beust.jcommander.Parameter;
+import com.beust.jcommander.ParameterException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ucar.ma2.*;
@@ -47,6 +50,7 @@ import ucar.nc2.units.DateUnit;
 import ucar.unidata.geoloc.LatLonPoint;
 import ucar.unidata.geoloc.LatLonRect;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.*;
 
@@ -807,5 +811,53 @@ public abstract class CFPointWriter implements AutoCloseable {
   @Override
   public void close() throws IOException {
     writer.close();
+  }
+
+  ///////////////////////////////////////////////////////////////////////////////////////////////////////
+
+  private static class CommandLine {
+    @Parameter(names = {"-h", "--help", "-?"}, description = "Display this help and exit", help = true)
+    public boolean help;
+
+    @Parameter(names = {"-i", "--input-file"}, description = "input file", required = true)
+    public File inputFile;
+
+    @Parameter(names = {"-o", "--output-file"}, description = "output file", required = true)
+    public File outputFile;
+
+    @Parameter(names = {"-f", "--format"},
+            description = "output file format; allowed values = " +
+                    "[netcdf3, netcdf4, netcdf4_classic, netcdf3c, netcdf3c64, ncstream]")
+    public NetcdfFileWriter.Version format = NetcdfFileWriter.Version.netcdf3;
+
+    private final JCommander jc;
+
+    public CommandLine(String progName, String[] args) throws ParameterException {
+      this.jc = new JCommander(this, args);  // Parses args and uses them to initialize *this*.
+      jc.setProgramName(progName);           // Displayed in the usage information.
+    }
+
+    public void printUsage() {
+      jc.usage();
+    }
+  }
+
+  public static void main(String[] args) throws Exception {
+    String progName = CFPointWriter.class.getName();
+
+    try {
+      CommandLine cmdLine = new CommandLine(progName, args);
+
+      if (cmdLine.help) {
+        cmdLine.printUsage();
+      } else {
+        System.out.println("Input file: " + cmdLine.inputFile);
+        System.out.println("Output file: " + cmdLine.outputFile);
+        System.out.println("Format: " + cmdLine.format);
+      }
+    } catch (ParameterException e) {
+      System.err.println(e.getMessage());
+      System.err.printf("Try \"%s --help\" for more information.%n", progName);
+    }
   }
 }
