@@ -105,7 +105,7 @@ public class GribCdmIndex implements IndexReader {
 
   static public void initGribCollectionCache(int minElementsInMemory, int maxElementsInMemory, int period) {
     gribCollectionCache = new ucar.nc2.util.cache.FileCache("PartitionCollectionImmutable", minElementsInMemory, maxElementsInMemory, -1, period);
-    // partitionCache = new ucar.nc2.util.cache.FileCacheGuava("PartitionCollectionImmutable", collectionFactory, maxElementsInMemory);
+    // gribCollectionCache = new ucar.nc2.util.cache.FileCacheGuava("PartitionCollectionImmutable", maxElementsInMemory);
   }
 
   static public void disableGribCollectionCache() {
@@ -182,6 +182,15 @@ public class GribCdmIndex implements IndexReader {
     // open GribCollection from an existing index file. return null on failure
   static public GribCollectionImmutable openCdmIndex(String indexFilename, FeatureCollectionConfig config, boolean dataOnly, Logger logger) {
     return openCdmIndex(indexFilename, config, dataOnly, true, logger);
+  }
+
+      // open GribCollectionImmutable from an existing index file. return null on failure
+  static public GribCollectionImmutable acquireGribCollection(String indexFilename, FeatureCollectionConfig config, boolean dataOnly, boolean useCache, Logger logger) {
+    if (gribCollectionCache != null) {
+      return null;  // TBD
+    }  else {
+      return openCdmIndex(indexFilename, config, dataOnly, useCache, logger);
+    }
   }
 
     // open GribCollectionImmutable from an existing index file. return null on failure

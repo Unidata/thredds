@@ -218,14 +218,9 @@ public class GribCollectionMutable implements AutoCloseable {
     return horizCS.indexOf(hcs);
   }
 
-  public void addHorizCoordSystem(GdsHorizCoordSys hcs, byte[] rawGds, int gdsHash, String nameOverride, int predefinedGridDefinition) {
-          // check for user defined group names
-      String desc = null;
-      if (config.gribConfig.gdsNamer != null)
-        desc = config.gribConfig.gdsNamer.get(gdsHash);
-      if (desc == null) desc = hcs.makeDescription(); // default desc
-
-    horizCS.add(new GribHorizCoordSystem(hcs, rawGds, gdsHash, nameOverride, desc, predefinedGridDefinition));
+  public void addHorizCoordSystem(GdsHorizCoordSys hcs, byte[] rawGds, int gdsHash, int predefinedGridDefinition) {
+                // GdsHorizCoordSys hcs, byte[] rawGds, int gdsHash, String id, String description, int predefinedGridDefinition
+    horizCS.add(new GribHorizCoordSystem(hcs, rawGds, gdsHash, hcs.makeId(), hcs.makeDescription(), predefinedGridDefinition));
   }
 
   public void setFileMap(Map<Integer, MFile> fileMap) {
@@ -471,6 +466,7 @@ public class GribCollectionMutable implements AutoCloseable {
         desc = config.gribConfig.gdsNamer.get(gdsHash);
       if (desc == null) desc = hcs.makeDescription(); // default desc
 
+                     // GdsHorizCoordSys hcs, byte[] rawGds, int gdsHash, String id, String description, int predefinedGridDefinition
       horizCoordSys = new GribHorizCoordSystem(hcs, rawGds, gdsHash, nameOverride, desc, predefinedGridDefinition);
     }
 
