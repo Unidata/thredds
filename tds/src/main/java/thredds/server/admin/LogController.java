@@ -78,11 +78,14 @@ public class LogController{
   }
 
   private void init() {
-    for (File f : accessLogDirectory.listFiles(new FilenameFilter() {
+    File[] files = accessLogDirectory.listFiles(new FilenameFilter() {
       public boolean accept(File dir, String name) {
         return name.startsWith("access.");
       }
-    })) {
+    });
+    if (files == null) return;
+
+    for (File f : files) {
       accessLogFiles.add(f);
     }
   }
