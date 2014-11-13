@@ -55,7 +55,6 @@ import ucar.nc2.ft.point.PointDatasetImpl;
 import ucar.nc2.geotiff.GeoTiff;
 import ucar.nc2.grib.GribData;
 import ucar.nc2.grib.collection.GribCdmIndex;
-import ucar.nc2.grib.collection.PartitionCollectionImmutable;
 import ucar.nc2.grib.grib1.tables.Grib1ParamTables;
 import ucar.nc2.grib.grib2.table.WmoCodeTable;
 import ucar.nc2.grib.grib2.table.WmoTemplateTable;
@@ -6188,7 +6187,7 @@ public class ToolsUI extends JPanel {
 
     String version;
     try (InputStream is = ucar.nc2.ui.util.Resource.getFileResource("/README")) {
-      if (is == null) return "4.5.0";
+      if (is == null) return "4.6";
       BufferedReader dataIS = new BufferedReader(new InputStreamReader(is, CDM.utf8Charset));
       StringBuilder sbuff = new StringBuilder();
       for (int i = 0; i < 3; i++) {
@@ -6439,7 +6438,7 @@ public class ToolsUI extends JPanel {
 
     UrlAuthenticatorDialog provider = new UrlAuthenticatorDialog(frame);
     HTTPSession.setGlobalCredentialsProvider(provider);
-    HTTPSession.setGlobalUserAgent("ToolsUI v4.5");
+    HTTPSession.setGlobalUserAgent("ToolsUI v4.6");
 
     // set Authentication for accessing passsword protected services like TDS PUT
     java.net.Authenticator.setDefault(provider);
@@ -6490,7 +6489,7 @@ public class ToolsUI extends JPanel {
     // java.util.logging.Logger.getLogger("ucar.nc2").setLevel( java.util.logging.Level.SEVERE);
 
     // put UI in a JFrame
-    frame = new JFrame("NetCDF (4.5) Tools");
+    frame = new JFrame("NetCDF (4.6) Tools");
     ui = new ToolsUI(prefs, frame);
 
     frame.setIconImage(BAMutil.getImage("netcdfUI"));

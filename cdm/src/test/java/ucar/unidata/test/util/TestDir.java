@@ -335,9 +335,7 @@ public class TestDir {
     @Override
     public int doAct(String filename) throws IOException {
       System.out.println("\n------Reading filename "+filename);
-      NetcdfFile ncfile = null;
-      try {
-        ncfile = NetcdfFile.open(filename);
+      try (NetcdfFile ncfile = NetcdfFile.open(filename)) {
 
         for (Variable v : ncfile.getVariables()) {
           if (v.getSize() > max_size) {
@@ -353,10 +351,6 @@ public class TestDir {
         e.printStackTrace();
         //assert false;
 
-      } finally {
-        if (ncfile != null)
-          try { ncfile.close(); }
-          catch (IOException e) { }
       }
 
       return 1;

@@ -385,7 +385,7 @@ public class Grib1Iosp extends GribIosp {
   protected void addVariableAttributes(Variable v, GribCollectionImmutable.VariableIndex vindex) {
 
     // Grib attributes
-    v.addAttribute(new Attribute(VARIABLE_ID_ATTNAME, makeVariableName(vindex)));
+    v.addAttribute(new Attribute(VARIABLE_ID_ATTNAME, makeVariableNameFromRecord(vindex)));
     v.addAttribute(new Attribute("Grib1_Center", gribCollection.getCenter()));
     v.addAttribute(new Attribute("Grib1_Subcenter", gribCollection.getSubcenter()));
     v.addAttribute(new Attribute("Grib1_TableVersion", vindex.getTableVersion()));

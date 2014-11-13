@@ -130,7 +130,7 @@ public class TestGribCollections {
   public void testPofG_Grib1() throws IOException {
     Count count = read(TestDir.cdmUnitTestDir + "ncss/GFS/CONUS_80km/GFS_CONUS_80km-CONUS_80km.ncx2");
 
-    assert count.nread == 74015;
+    assert count.nread == 74015;    // 1801/81340
     assert count.nmiss == 1646;
   }
 

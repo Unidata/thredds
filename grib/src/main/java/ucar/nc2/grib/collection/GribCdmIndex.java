@@ -61,6 +61,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Formatter;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * Utilities for creating GRIB ncx2 files, both collections and partitions
@@ -543,10 +544,10 @@ public class GribCdmIndex implements IndexReader {
     if (specp.getFilter() != null)
       partition.setStreamFilter(new StreamFilter(specp.getFilter()));
 
-    // final AtomicBoolean anyChange = new AtomicBoolean(false); // just need a mutable boolean
+    final AtomicBoolean anyChange = new AtomicBoolean(false); // just need a mutable boolean we can declare final
 
     // redo the child collection here; could also do inside Grib2PartitionBuilder, not sure if advantage
-    if (updateType != CollectionUpdateType.never) {
+    if (updateType != CollectionUpdateType.never && updateType != CollectionUpdateType.testIndexOnly) {
       partition.iterateOverMFileCollection(new DirectoryCollection.Visitor() {
         public void consume(MFile mfile) {
           MCollection dcm = new CollectionSingleFile(mfile, logger);
@@ -556,12 +557,14 @@ public class GribCdmIndex implements IndexReader {
             Grib1CollectionBuilder builder = new Grib1CollectionBuilder(dcm.getCollectionName(), dcm, logger);
             try {
               boolean changed = (builder.updateNeeded(updateType) && builder.createIndex(errlog));
+              if (changed) anyChange.set(true);
             } catch (IOException e) { e.printStackTrace(); }
 
           } else {
             Grib2CollectionBuilder builder = new Grib2CollectionBuilder(dcm.getCollectionName(), dcm, logger);
             try {
               boolean changed = (builder.updateNeeded(updateType) && builder.createIndex(errlog));
+              if (changed) anyChange.set(true);
             } catch (IOException e) { e.printStackTrace(); }
 
           }
@@ -570,13 +573,16 @@ public class GribCdmIndex implements IndexReader {
     }
 
     // redo partition index if needed, will detect if children have changed
-    boolean recreated;
+    boolean recreated = false;
     if (isGrib1) {
       Grib1PartitionBuilder builder = new Grib1PartitionBuilder(partition.getCollectionName(), new File(partition.getRoot()), partition, logger);
-      recreated = builder.updateNeeded(updateType) && builder.createPartitionedIndex(updateType, CollectionUpdateType.never, errlog);
+      if (anyChange.get() || builder.updateNeeded(updateType))
+        recreated = builder.createPartitionedIndex(updateType, CollectionUpdateType.never, errlog);
+
     } else {
       Grib2PartitionBuilder builder = new Grib2PartitionBuilder(partition.getCollectionName(), new File(partition.getRoot()), partition, logger);
-      recreated = builder.updateNeeded(updateType) && builder.createPartitionedIndex(updateType, CollectionUpdateType.never, errlog);
+      if (anyChange.get() || builder.updateNeeded(updateType))
+        recreated = builder.createPartitionedIndex(updateType, CollectionUpdateType.never, errlog);
     }
 
     long took = System.currentTimeMillis() - start;
