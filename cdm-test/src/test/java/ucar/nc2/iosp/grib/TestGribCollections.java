@@ -56,7 +56,7 @@ import java.util.List;
 
 /**
  * Look for missing data in Grib Collections.
- *
+ * <p/>
  * Indicates that coordinates are not matching, because DGEX_CONUS is dense (hass data for each coordinate).
  * Note that not all grib collections will be dense.
  *
@@ -66,38 +66,38 @@ import java.util.List;
 public class TestGribCollections {
 
   @BeforeClass
-   static public void before() {
-     GribIosp.debugIndexOnlyCount = 0;
+  static public void before() {
+    GribIosp.debugIndexOnlyCount = 0;
     GribCollectionImmutable.countGC = 0;
     PartitionCollectionImmutable.countPC = 0;
-     RandomAccessFile.setDebugLeaks(true);
-     GribIosp.setDebugFlags(new DebugFlagsImpl("Grib/indexOnly"));
+    RandomAccessFile.setDebugLeaks(true);
+    GribIosp.setDebugFlags(new DebugFlagsImpl("Grib/indexOnly"));
     GribCdmIndex.initGribCollectionCache(50, 700, -1);
     GribCdmIndex.gribCollectionCache.resetTracking();
-   }
+  }
 
-   @AfterClass
-   static public void after() {
-     GribIosp.setDebugFlags(new DebugFlagsImpl());
-     FileCacheIF cache = GribCdmIndex.gribCollectionCache;
-     if (cache == null) return;
+  @AfterClass
+  static public void after() {
+    GribIosp.setDebugFlags(new DebugFlagsImpl());
+    FileCacheIF cache = GribCdmIndex.gribCollectionCache;
+    if (cache == null) return;
 
-     Formatter out = new Formatter(System.out);
-     cache.showTracking(out);
-     cache.showCache(out);
+    Formatter out = new Formatter(System.out);
+    cache.showTracking(out);
+    cache.showCache(out);
 
-     cache.clearCache(false);
-     RandomAccessFile.getGlobalFileCache().showCache(out);
-     TestDir.checkLeaks();
+    cache.clearCache(false);
+    RandomAccessFile.getGlobalFileCache().showCache(out);
+    TestDir.checkLeaks();
 
-     System.out.printf("            countGC=%7d%n", GribCollectionImmutable.countGC);
-     System.out.printf("            countPC=%7d%n", PartitionCollectionImmutable.countPC);
-     System.out.printf("debugIndexOnlyCount=%7d%n", GribIosp.debugIndexOnlyCount);
-     System.out.printf(" total files needed=%7d%n", GribCollectionImmutable.countGC+PartitionCollectionImmutable.countPC+GribIosp.debugIndexOnlyCount);
+    System.out.printf("            countGC=%7d%n", GribCollectionImmutable.countGC);
+    System.out.printf("            countPC=%7d%n", PartitionCollectionImmutable.countPC);
+    System.out.printf("debugIndexOnlyCount=%7d%n", GribIosp.debugIndexOnlyCount);
+    System.out.printf(" total files needed=%7d%n", GribCollectionImmutable.countGC + PartitionCollectionImmutable.countPC + GribIosp.debugIndexOnlyCount);
 
-     FileCache.shutdown();
-     RandomAccessFile.setDebugLeaks(false);
-   }
+    FileCache.shutdown();
+    RandomAccessFile.setDebugLeaks(false);
+  }
 
   @Test
   public void testGC_Grib2() throws IOException {
@@ -112,7 +112,7 @@ public class TestGribCollections {
   public void testPofG_Grib2() throws IOException {
     Count count = read(TestDir.cdmUnitTestDir + "ncss/GFS/Global_onedeg/GFS_Global_onedeg-Global_onedeg.ncx2");
 
-     // total == 6391/94352
+    // total == 6391/94352
     assert count.nread == 94352;
     assert count.nmiss == 0;
   }
@@ -185,7 +185,7 @@ public class TestGribCollections {
       int n = 5;
       int first = 17;
       double sum = 0;
-      for (int time=first; time < first+n; time++) {
+      for (int time = first; time < first + n; time++) {
         Array data = gdt.readDataSlice(0, -0, time, 0, -1, -1);
         sum += MAMath.sumDouble(data);
       }
@@ -197,7 +197,7 @@ public class TestGribCollections {
     }
   }
 
-    // @Test
+  // @Test
   public void testPofPofP() throws IOException {
     RandomAccessFile.setDebugLeaks(true);
     TestGribCollections.Count count = TestGribCollections.read("B:/rdavm/ds083.2/grib1/ds083.2_Aggregation-grib1.ncx2");
@@ -215,7 +215,7 @@ public class TestGribCollections {
     System.out.println("\n\nReading File " + filename);
     Count allCount = new Count();
     try (GridDataset gds = GridDataset.open(filename)) {
-      for (GridDatatype gdt: gds.getGrids()) {
+      for (GridDatatype gdt : gds.getGrids()) {
         Count count = read(gdt);
         System.out.printf("%80s == %d/%d%n", gdt.getFullName(), count.nmiss, count.nread);
         allCount.add(count);
@@ -223,7 +223,7 @@ public class TestGribCollections {
       long took = System.currentTimeMillis() - start;
       float r = ((float) took) / allCount.nread;
       System.out.printf("%n%80s == %d/%d%n", "total", allCount.nmiss, allCount.nread);
-      System.out.printf("%n   that took %d secs total, %f msecs per record%n", took/1000, r);
+      System.out.printf("%n   that took %d secs total, %f msecs per record%n", took / 1000, r);
 
     } catch (IOException ioe) {
       ioe.printStackTrace();
@@ -241,7 +241,7 @@ public class TestGribCollections {
 
     Count count = new Count();
     if (rtDim != null) {
-      for (int rt=0; rt<rtDim.getLength(); rt++)
+      for (int rt = 0; rt < rtDim.getLength(); rt++)
         read(gdt, count, rt, tDim, zDim);
     } else {
       read(gdt, count, -1, tDim, zDim);
@@ -251,7 +251,7 @@ public class TestGribCollections {
 
   private static void read(GridDatatype gdt, Count count, int rtIndex, Dimension timeDim, Dimension zDim) throws IOException {
     if (timeDim != null) {
-      for (int t=0; t<timeDim.getLength(); t++)
+      for (int t = 0; t < timeDim.getLength(); t++)
         read(gdt, count, rtIndex, t, zDim);
     } else {
       read(gdt, count, rtIndex, -1, zDim);
@@ -261,7 +261,7 @@ public class TestGribCollections {
 
   private static void read(GridDatatype gdt, Count count, int rtIndex, int tIndex, Dimension zDim) throws IOException {
     if (zDim != null) {
-      for (int z=0; z<zDim.getLength(); z++)
+      for (int z = 0; z < zDim.getLength(); z++)
         read(gdt, count, rtIndex, tIndex, z);
     } else {
       read(gdt, count, rtIndex, tIndex, -1);
@@ -284,8 +284,8 @@ public class TestGribCollections {
       int rank = ranges.size();
       assert rank >= 2;
       List<Range> subset = new ArrayList<>(rank);
-      for (int i=0; i<rank; i++) {
-        if (i<rank-2)
+      for (int i = 0; i < rank; i++) {
+        if (i < rank - 2)
           subset.add(ranges.get(i));
         else {
           Range r = ranges.get(i);
@@ -305,8 +305,8 @@ public class TestGribCollections {
     boolean isMissing = true;
     while (dataSubset.hasNext()) {
       float val = dataSubset.nextFloat();
-       if (!Float.isNaN(val))
-         isMissing = false;
+      if (!Float.isNaN(val))
+        isMissing = false;
     }
     if (isMissing)
       count.nmiss++;

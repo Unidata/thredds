@@ -2,6 +2,7 @@ package ucar.nc2.util.cache;
 
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
+import com.google.common.cache.CacheStats;
 import com.google.common.cache.LoadingCache;
 import ucar.nc2.util.CancelTask;
 
@@ -21,21 +22,19 @@ public class FileCacheGuava implements FileCacheIF {
 
   private final String name;
   private final LoadingCache<String, FileCacheable> cache;
-  private final FileFactory factory;
 
-  public FileCacheGuava(String name, FileFactory _factory, int maxSize) {
+  public FileCacheGuava(String name, int maxSize) {
     this.name = name;
-    this.factory = _factory;
     this.cache = CacheBuilder.newBuilder()
            .maximumSize(maxSize)
+                   .recordStats()
            // .removalListener(MY_LISTENER)
            .build(
                    new CacheLoader<String, FileCacheable>() {
                      public FileCacheable load(String key) throws IOException {
-                       return factory.open(key, -1, null, null);
+                       throw new IllegalStateException();
                      }
                    });
-
    }
 
 
@@ -96,13 +95,15 @@ public class FileCacheGuava implements FileCacheIF {
   }
 
   @Override
-  public void showCache(Formatter format) {
-
+  public void showCache(Formatter f) {
+    CacheStats stats = cache.stats();
+    f.format("%n%s%n", stats);
   }
 
   @Override
-  public void showStats(Formatter format) {
-
+  public void showStats(Formatter f) {
+    CacheStats stats = cache.stats();
+    f.format("%s", stats);
   }
 
   @Override
