@@ -564,7 +564,7 @@ public class PartitionCollectionMutable extends GribCollectionMutable {
         }
       }
 
-      return (GribCollectionImmutable) PartitionCollectionImmutable.collectionFactory.open(path, -1, null, this);
+      return (GribCollectionImmutable) PartitionCollectionImmutable.partitionCollectionFactory.open(path, -1, null, this);
     }
 
     // LOOK force not used, equivilent to  force = never

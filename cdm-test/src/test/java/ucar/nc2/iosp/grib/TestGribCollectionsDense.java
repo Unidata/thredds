@@ -37,6 +37,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import ucar.nc2.dt.GridDatatype;
 import ucar.nc2.dt.grid.GridDataset;
+import ucar.nc2.grib.collection.GribCdmIndex;
 import ucar.nc2.grib.collection.GribCollectionImmutable;
 import ucar.nc2.grib.collection.GribIosp;
 import ucar.nc2.grib.collection.PartitionCollectionImmutable;
@@ -64,13 +65,13 @@ public class TestGribCollectionsDense {
    static public void before() {
      RandomAccessFile.setDebugLeaks(true);
      GribIosp.setDebugFlags(new DebugFlagsImpl("Grib/indexOnly"));
-     PartitionCollectionImmutable.initPartitionCache(50, 700, -1);
+    GribCdmIndex.initGribCollectionCache(50, 700, -1);
    }
 
    @AfterClass
    static public void after() {
      GribIosp.setDebugFlags(new DebugFlagsImpl());
-     FileCacheIF cache = PartitionCollectionImmutable.getPartitionCache();
+     FileCacheIF cache = GribCdmIndex.gribCollectionCache;
      if (cache == null) return;
 
      Formatter out = new Formatter(System.out);
