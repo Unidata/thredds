@@ -22,23 +22,24 @@ public class TestCoordinateND {
     Formatter f = new Formatter();
     prev.showInfo(f, counter);
     System.out.printf("%s%n", f);
-    System.out.printf("%s%n====================%n", counter.show());
+    System.out.printf("prev %s%n====================%n", counter.show());
 
     CoordinateND<Short> curr = makeCoordinateND(2, 11);
     counter = new Counter();
     f = new Formatter();
     curr.showInfo(f, counter);
     System.out.printf("%s%n", f);
-    System.out.printf("%s%n====================%n", counter.show());
+    System.out.printf("curr %s%n====================%n", counter.show());
 
     CoordinateND<Short> reindexed = new CoordinateND.Builder<Short>().reindex(curr.getCoordinates(), prev);
     counter = new Counter();
     f = new Formatter();
     reindexed.showInfo(f, counter);
     System.out.printf("%s%n", f);
-    System.out.printf("%s%n====================%n", counter.show());
+    System.out.printf("reindexed %s%n====================%n", counter.show());
 
-    assert Misc.closeEnough(curr.getSparseArray().getDensity(), .826446);
+    assert Misc.closeEnough(curr.getSparseArray().getDensity(), 1.0);
+    assert Misc.closeEnough(reindexed.getSparseArray().getDensity(), .826446);
   }
 
   static public CoordinateND<Short> makeCoordinateND(int rank, int size) {

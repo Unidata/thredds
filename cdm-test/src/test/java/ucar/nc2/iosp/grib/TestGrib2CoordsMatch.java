@@ -111,7 +111,7 @@ public class TestGrib2CoordsMatch {
 
     System.out.printf("%n%50s == %d/%d/%d%n", "total", count.nerrs, count.nmiss, count.nread);
     assert count.nread == 23229;
-    assert count.nmiss == 0;
+    assert count.nmiss == 2535;
     assert count.nerrs == 0;
   }
 
