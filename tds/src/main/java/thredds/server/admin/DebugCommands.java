@@ -42,7 +42,7 @@ import java.io.PrintStream;
 
 import javax.servlet.http.HttpServletRequest;
 
-import ucar.nc2.grib.collection.PartitionCollectionImmutable;
+import ucar.nc2.grib.collection.GribCdmIndex;
 import ucar.nc2.util.cache.FileCacheIF;
 import ucar.unidata.io.RandomAccessFile;
 
@@ -93,7 +93,7 @@ public class DebugCommands {
           fc.showCache(f);
         }
 
-        fc = PartitionCollectionImmutable.getPartitionCache();
+        fc = GribCdmIndex.gribCollectionCache;
         if (fc == null) f.format("%nTimePartitionCache : turned off%n");
         else {
           f.format("%n%n");
@@ -109,7 +109,8 @@ public class DebugCommands {
        public void doAction(DebugController.Event e) {
          NetcdfDataset.getNetcdfFileCache().clearCache(false);
          RandomAccessFile.getGlobalFileCache().clearCache(false);
-         PartitionCollectionImmutable.getPartitionCache().clearCache(false);
+         FileCacheIF fc = GribCdmIndex.gribCollectionCache;
+         if (fc != null) fc.clearCache(false);
          e.pw.println("  ClearCache ok");
        }
      };
@@ -150,28 +151,20 @@ public class DebugCommands {
 
     act = new DebugController.Action("disableTimePartitionCache", "Disable TimePartition Cache") {
        public void doAction(DebugController.Event e) {
-         PartitionCollectionImmutable.disablePartitionCache();
-         e.pw.println("  Disable TimePartition Cache ok");
+         GribCdmIndex.disableGribCollectionCache();
+         e.pw.println("  Disable gribCollectionCache ok");
        }
      };
      debugHandler.addAction(act);
 
     act = new DebugController.Action("forceGCCache", "Force clear TimePartition Cache") {
       public void doAction(DebugController.Event e) {
-        PartitionCollectionImmutable.getPartitionCache().clearCache(true);
-        e.pw.println("  TimePartition force clearCache done");
+        FileCacheIF fc = GribCdmIndex.gribCollectionCache;
+        if (fc != null) fc.clearCache(true);
+        e.pw.println("  gribCollectionCache force clearCache done");
       }
     };
     debugHandler.addAction(act);
-
-    /* act = new DebugHandler.Action("showMFileCache", "Show MFile Directory Cache") {
-      public void doAction(DebugHandler.Event e) {
-        Formatter f = new Formatter(e.pw);
-        f.format("MFile Directory Cache %n %s %n", CacheManager.show("directories"));
-        e.pw.flush();
-      }
-    };
-    debugHandler.addAction(act); */
 
   }
 

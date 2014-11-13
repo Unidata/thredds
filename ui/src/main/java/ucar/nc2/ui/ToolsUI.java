@@ -6447,7 +6447,7 @@ public class ToolsUI extends JPanel {
     ucar.nc2.dods.DODSNetcdfFile.setAllowCompression(true);
     ucar.nc2.dods.DODSNetcdfFile.setAllowSessions(true);
 
-    PartitionCollectionImmutable.initPartitionCache(100, 200, -1);
+    GribCdmIndex.initGribCollectionCache(100, 200, -1);
 
     /* No longer needed
     HttpClient client = HttpClientManager.init(provider, "ToolsUI");

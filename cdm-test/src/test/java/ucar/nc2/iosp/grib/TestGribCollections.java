@@ -39,6 +39,7 @@ import ucar.ma2.*;
 import ucar.nc2.Dimension;
 import ucar.nc2.dt.GridDatatype;
 import ucar.nc2.dt.grid.GridDataset;
+import ucar.nc2.grib.collection.GribCdmIndex;
 import ucar.nc2.grib.collection.GribCollectionImmutable;
 import ucar.nc2.grib.collection.GribIosp;
 import ucar.nc2.grib.collection.PartitionCollectionImmutable;
@@ -71,14 +72,14 @@ public class TestGribCollections {
     PartitionCollectionImmutable.countPC = 0;
      RandomAccessFile.setDebugLeaks(true);
      GribIosp.setDebugFlags(new DebugFlagsImpl("Grib/indexOnly"));
-    PartitionCollectionImmutable.initPartitionCache(50, 700, -1);
-    PartitionCollectionImmutable.getPartitionCache().resetTracking();
+    GribCdmIndex.initGribCollectionCache(50, 700, -1);
+    GribCdmIndex.gribCollectionCache.resetTracking();
    }
 
    @AfterClass
    static public void after() {
      GribIosp.setDebugFlags(new DebugFlagsImpl());
-     FileCacheIF cache = PartitionCollectionImmutable.getPartitionCache();
+     FileCacheIF cache = GribCdmIndex.gribCollectionCache;
      if (cache == null) return;
 
      Formatter out = new Formatter(System.out);
@@ -227,7 +228,7 @@ public class TestGribCollections {
     } catch (IOException ioe) {
       ioe.printStackTrace();
       Formatter out = new Formatter(System.out);
-      PartitionCollectionImmutable.getPartitionCache().showCache(out);
+      GribCdmIndex.gribCollectionCache.showCache(out);
     }
 
     return allCount;

@@ -45,6 +45,7 @@ import ucar.nc2.dt.GridCoordSystem;
 import ucar.nc2.grib.GribStatType;
 import ucar.nc2.grib.GribUtils;
 import ucar.nc2.grib.collection.Grib1Iosp;
+import ucar.nc2.grib.collection.GribCdmIndex;
 import ucar.nc2.grib.collection.GribIosp;
 import ucar.nc2.grib.collection.PartitionCollectionImmutable;
 import ucar.nc2.grib.grib1.*;
@@ -158,7 +159,7 @@ public class TestGrib1CoordsMatch {
     } catch (IOException ioe) {
       System.out.printf("%s%n", ioe);
       Formatter out = new Formatter(System.out);
-      PartitionCollectionImmutable.getPartitionCache().showCache(out);
+      GribCdmIndex.gribCollectionCache.showCache(out);
     }
 
     return allCount;

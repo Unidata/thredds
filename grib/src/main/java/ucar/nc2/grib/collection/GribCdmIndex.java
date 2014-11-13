@@ -46,7 +46,11 @@ import ucar.nc2.constants.CDM;
 import ucar.nc2.grib.grib1.Grib1RecordScanner;
 import ucar.nc2.grib.grib2.Grib2RecordScanner;
 import ucar.nc2.stream.NcStream;
+import ucar.nc2.util.CancelTask;
 import ucar.nc2.util.DiskCache2;
+import ucar.nc2.util.cache.FileCacheIF;
+import ucar.nc2.util.cache.FileCacheable;
+import ucar.nc2.util.cache.FileFactory;
 import ucar.unidata.io.RandomAccessFile;
 import ucar.unidata.util.StringUtil2;
 
@@ -93,6 +97,23 @@ public class GribCdmIndex implements IndexReader {
   static public File getExistingFileOrCache(String path) {
     return getDiskCache2().getExistingFileOrCache(path);
   }
+
+  /////////////////////////////////////////////////////////////////////////////
+
+      // object cache for index files - these are opened only as GribCollection
+  static public FileCacheIF gribCollectionCache;
+
+  static public void initGribCollectionCache(int minElementsInMemory, int maxElementsInMemory, int period) {
+    gribCollectionCache = new ucar.nc2.util.cache.FileCache("PartitionCollectionImmutable", minElementsInMemory, maxElementsInMemory, -1, period);
+    // partitionCache = new ucar.nc2.util.cache.FileCacheGuava("PartitionCollectionImmutable", collectionFactory, maxElementsInMemory);
+  }
+
+  static public void disableGribCollectionCache() {
+    if (null != gribCollectionCache) gribCollectionCache.disable();
+    gribCollectionCache = null;
+  }
+
+  /////////////////////////////////////////////////////////////////////////////////////////////////
 
   /**
    * This is only used for the top level GribCollection.

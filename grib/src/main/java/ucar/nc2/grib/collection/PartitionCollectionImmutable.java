@@ -43,7 +43,6 @@ import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time.CalendarPeriod;
 import ucar.nc2.util.CancelTask;
 import ucar.nc2.util.Misc;
-import ucar.nc2.util.cache.FileCacheIF;
 import ucar.nc2.util.cache.FileCacheable;
 import ucar.nc2.util.cache.FileFactory;
 import ucar.nc2.util.cache.SmartArrayInt;
@@ -67,38 +66,19 @@ public abstract class PartitionCollectionImmutable extends GribCollectionImmutab
   static private final Logger logger = LoggerFactory.getLogger(PartitionCollectionImmutable.class);
   static public int countPC;   // debug
 
-    // object cache for index files - these are opened only as GribCollection
-  private static FileCacheIF partitionCache;
-
-  static final ucar.nc2.util.cache.FileFactory collectionFactory = new FileFactory() {
+  static final ucar.nc2.util.cache.FileFactory partitionCollectionFactory = new FileFactory() {
     public FileCacheable open(String location, int buffer_size, CancelTask cancelTask, Object iospMessage) throws IOException {
-      RandomAccessFile raf = null;
-      try {
-        raf = RandomAccessFile.acquire(location);
+
+      try (RandomAccessFile raf = RandomAccessFile.acquire(location)) {
         Partition p = (Partition) iospMessage;
         return GribCdmIndex.openGribCollectionFromIndexFile(raf, p.getConfig(), true, p.getLogger()); // dataOnly = true
+
       } catch (Throwable t) {
-        if (raf != null)
-          raf.close();
         RandomAccessFile.eject(location);
         throw t;
       }
     }
   };
-
-  static public void initPartitionCache(int minElementsInMemory, int maxElementsInMemory, int period) {
-    partitionCache = new ucar.nc2.util.cache.FileCache("PartitionCollectionImmutable", minElementsInMemory, maxElementsInMemory, -1, period);
-    // partitionCache = new ucar.nc2.util.cache.FileCacheGuava("PartitionCollectionImmutable", collectionFactory, maxElementsInMemory);
-  }
-
-  static public FileCacheIF getPartitionCache() {
-    return partitionCache;
-  }
-
-  static public void disablePartitionCache() {
-    if (null != partitionCache) partitionCache.disable();
-    partitionCache = null;
-  }
 
   ///////////////////////////////////////////////
   private final List<Partition> partitions;
@@ -282,10 +262,12 @@ public abstract class PartitionCollectionImmutable extends GribCollectionImmutab
         GribCollectionImmutable result;
         String path = getIndexFilenameInCache();
 
-        if (partitionCache != null) {          // FileFactory factory, Object hashKey, String location, int buffer_size, CancelTask cancelTask, Object spiObject
-          result = (GribCollectionImmutable) partitionCache.acquire(collectionFactory, path, path, -1, null, this);
-        } else {                              // String location, int buffer_size, CancelTask cancelTask, Object iospMessage
-          result = (GribCollectionImmutable) collectionFactory.open(path, -1, null, this);
+        if (GribCdmIndex.gribCollectionCache != null) {
+                    // FileFactory factory, Object hashKey, String location, int buffer_size, CancelTask cancelTask, Object spiObject
+          result = (GribCollectionImmutable) GribCdmIndex.gribCollectionCache.acquire(partitionCollectionFactory, path, path, -1, null, this);
+        } else {
+                    // String location, int buffer_size, CancelTask cancelTask, Object iospMessage
+          result = (GribCollectionImmutable) partitionCollectionFactory.open(path, -1, null, this);
         }
         return result;
       }

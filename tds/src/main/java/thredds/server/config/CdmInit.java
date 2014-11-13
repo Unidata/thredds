@@ -273,7 +273,7 @@ public class CdmInit implements InitializingBean,  DisposableBean{
     max = ThreddsConfig.getInt("TimePartition.maxFiles", 750);
     secs = ThreddsConfig.getSeconds("TimePartition.scour", 13 * 60);
     if (max > 0) {
-      PartitionCollectionImmutable.initPartitionCache(min, max, secs);
+      GribCdmIndex.initGribCollectionCache(min, max, secs);
       startupLog.info("CdmInit: TimePartition.initPartitionCache= ["+min+","+max+"] scour = "+secs);
     }
 
