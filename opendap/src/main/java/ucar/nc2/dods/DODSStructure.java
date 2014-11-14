@@ -46,6 +46,7 @@ import java.io.IOException;
  * @author caron
  */
 
+//Coverity[FB.EQ_DOESNT_OVERRIDE_EQUALS]
 public class DODSStructure extends ucar.nc2.Structure implements DODSNode
 {
   private DConstructor ds;

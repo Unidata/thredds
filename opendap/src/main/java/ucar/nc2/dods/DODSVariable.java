@@ -156,6 +156,14 @@ public class DODSVariable extends ucar.nc2.Variable implements DODSNode {
     return super.equals(oo);
   }
 
+    public int hashCode()
+    {
+        int supercode = super.hashCode();
+        if(CE != null)
+            supercode += (37 * CE.hashCode());
+        return supercode;
+    }
+
   //////////////////////////////////////////////////
   // DODSNode Interface
   String dodsName = null;
