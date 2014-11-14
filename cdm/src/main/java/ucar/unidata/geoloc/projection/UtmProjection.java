@@ -36,6 +36,8 @@ import ucar.nc2.constants.CF;
 import ucar.nc2.util.Misc;
 import ucar.unidata.geoloc.*;
 
+import java.io.Serializable;
+
 /**
  * Universal Transverse Mercator.
  * Ellipsoidal earth.
@@ -59,7 +61,7 @@ public class UtmProjection extends ProjectionImpl {
   private final Utm_To_Gdc_Converter convert2latlon;
   private final Gdc_To_Utm_Converter convert2xy;
 
-  private static class SaveParams {
+  private static class SaveParams implements Serializable {
     final double a;
     final double f;
     final int zone;
@@ -97,11 +99,11 @@ public class UtmProjection extends ProjectionImpl {
     }
   }
 
-  private final SaveParams save; // needed for constructCopy
+  private final SaveParams saveParams; // needed for constructCopy
 
   @Override
   public ProjectionImpl constructCopy() {
-    ProjectionImpl result = (save == null) ? new UtmProjection(getZone(), isNorth()) : new UtmProjection(save.a, save.f, getZone(), isNorth());
+    ProjectionImpl result = (saveParams == null) ? new UtmProjection(getZone(), isNorth()) : new UtmProjection(saveParams.a, saveParams.f, getZone(), isNorth());
     result.setDefaultMapArea(defaultMapArea);
     result.setName(name);
     return result;
@@ -124,7 +126,7 @@ public class UtmProjection extends ProjectionImpl {
     super("UtmProjection", false);
     convert2latlon = new Utm_To_Gdc_Converter(zone, isNorth);
     convert2xy = new Gdc_To_Utm_Converter(zone, isNorth);
-    save = new SaveParams(convert2latlon.getA(), 1/convert2latlon.getF(), zone, isNorth);
+    saveParams = new SaveParams(convert2latlon.getA(), 1/convert2latlon.getF(), zone, isNorth);
 
     addParameter(CF.GRID_MAPPING_NAME, GRID_MAPPING_NAME);
     addParameter(CF.SEMI_MAJOR_AXIS, convert2latlon.getA());
@@ -142,7 +144,7 @@ public class UtmProjection extends ProjectionImpl {
    */
   public UtmProjection(double a, double f, int zone, boolean isNorth) {
     super("UtmProjection", false);
-    save = new SaveParams(a, f, zone, isNorth);
+    saveParams = new SaveParams(a, f, zone, isNorth);
 
     convert2latlon = new Utm_To_Gdc_Converter(a, f, zone, isNorth);
     convert2xy = new Gdc_To_Utm_Converter(a, f, zone, isNorth);
@@ -213,12 +215,12 @@ public class UtmProjection extends ProjectionImpl {
     if (this == o) return true;
     if (o == null || getClass() != o.getClass()) return false;
     UtmProjection that = (UtmProjection) o;
-    return save.equals(that.save);
+    return saveParams.equals(that.saveParams);
   }
 
   @Override
   public int hashCode() {
-    return save.hashCode();
+    return saveParams.hashCode();
   }
 
   /*

@@ -104,9 +104,7 @@ class Utm_To_Gdc_Converter {
 
   private double A; // major axis
   private double F; // flattening
-  private double C, Eps2, Eps21, Eps25, Con, Con2, EF, Epsp2, Con6,
-      Con24, Con120, Con720, polx2b, polx3b, polx4b, polx5b,
-      conap;
+  private double C, Eps2, Eps21, Eps25, Con, Con2, EF, Epsp2, Con6, Con24, Con120, Con720, polx2b, polx3b, polx4b, polx5b, conap;
 
   private int zone;
 
