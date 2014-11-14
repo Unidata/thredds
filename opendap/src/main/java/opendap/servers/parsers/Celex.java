@@ -289,11 +289,11 @@ class Celex implements Lexer, ExprParserConstants
     {
         switch (token) {
         case SCAN_STRINGCONST:
-            System.out.printf("TOKEN = |\"%s\"|\n", lval);
+            System.out.printf("TOKEN = |\"%s\"|%n", lval);
             break;
         case SCAN_WORD:
         case SCAN_NUMBERCONST:
-            System.out.printf("TOKEN = |%s|\n", lval);
+            System.out.printf("TOKEN = |%s|%n", lval);
             break;
         default:
             System.out.printf("TOKEN = |%c|%n", (char) token);

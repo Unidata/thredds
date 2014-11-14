@@ -59,7 +59,7 @@ import java.util.Formatter;
  */
 public final class DArrayDimension extends DAPNode
 {
-    static final String serialVersionUID = String.format("%d",DArrayDimension.class.hashCode());
+    static final long serialVersionUID = DArrayDimension.class.hashCode();
 
     static public class Slice {
         public int size;
