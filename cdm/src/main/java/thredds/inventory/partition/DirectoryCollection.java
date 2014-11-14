@@ -157,7 +157,10 @@ public class DirectoryCollection extends CollectionAbstract {
       while (true) {
         if (debug && count % 100 == 0) System.out.printf("%d ", count);
         count++;
-        if (!dirStreamIterator.hasNext()) return false;
+        if (!dirStreamIterator.hasNext()) {
+          nextMFile = null;
+          return false;
+        }
 
         long now = System.currentTimeMillis();
         try {
@@ -176,6 +179,7 @@ public class DirectoryCollection extends CollectionAbstract {
     }
 
     public MFile next() {
+      if (nextMFile == null) throw new NoSuchElementException();
       return nextMFile;
     }
 

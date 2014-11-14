@@ -117,7 +117,10 @@ public class CollectionGlob extends CollectionAbstract {
                // if (debug && count % 100 == 0) System.out.printf("%d ", count);
           while (!dirStreamIterator.hasNext()) {
             dirStream.close();
-            if (subdirs.isEmpty()) return false;
+            if (subdirs.isEmpty()) {
+              nextMFile = null;
+              return false;
+            }
             currDepth++;                             // LOOK wrong
             Path nextSubdir = subdirs.pop();
             dirStream = Files.newDirectoryStream(nextSubdir);
@@ -149,6 +152,7 @@ public class CollectionGlob extends CollectionAbstract {
     }
 
     public MFile next() {
+      if (nextMFile == null) throw new NoSuchElementException();
       count++;
       return nextMFile;
     }

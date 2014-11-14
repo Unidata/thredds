@@ -299,7 +299,7 @@ public final class TdsContext implements ServletContextAware, InitializingBean, 
 
     } catch (IOException e) {
       String msg = "tomcatLogDir could not be created";
-      logServerStartup.error( "TdsContext.init(): " + msg );
+      logServerStartup.error("TdsContext.init(): " + msg);
     }
 
     // Set the content directory and source.
@@ -311,7 +311,7 @@ public final class TdsContext implements ServletContextAware, InitializingBean, 
         this.contentDirectory = new File(contentRootDir, this.contentPath);
       else {
         String msg = "Content root directory [" + this.contentRootPath + "] not a directory.";
-        logServerStartup.error( "TdsContext.init(): " + msg );
+        logServerStartup.error("TdsContext.init(): " + msg);
         throw new IllegalStateException(msg);
       }
     }
@@ -322,7 +322,7 @@ public final class TdsContext implements ServletContextAware, InitializingBean, 
       this.contentDirectory = this.contentDirSource.getRootDirectory();
     } else {
       String tmpMsg = "Content directory not a directory";
-      logServerStartup.error( "TdsContext.init(): " + tmpMsg + " [" + this.contentDirectory.getAbsolutePath() + "]" );
+      logServerStartup.error("TdsContext.init(): " + tmpMsg + " [" + this.contentDirectory.getAbsolutePath() + "]");
       throw new IllegalStateException(tmpMsg);
     }
     ServletUtil.setContentPath(this.contentDirSource.getRootDirectoryPath());
@@ -391,7 +391,7 @@ public final class TdsContext implements ServletContextAware, InitializingBean, 
     logServerStartup.info("TdsContext version= " + getVersionInfo());
 
     // log the latest stable and development version information
-    Map<String,String> latestVersionInfo = getLatestVersionInfo();
+    Map<String, String> latestVersionInfo = getLatestVersionInfo();
     for (Map.Entry entry : latestVersionInfo.entrySet()) {
       logServerStartup.info("TdsContext latest " + entry.getKey() + " version = " + entry.getValue());
     }
@@ -524,36 +524,40 @@ public final class TdsContext implements ServletContextAware, InitializingBean, 
    * serverStartup.log file.
    *
    * @return A hashmap containing versionTypes as key (i.e.
-   *         "stable", "development") and their corresponding
-   *         version numbers (i.e. 4.5.2)
+   * "stable", "development") and their corresponding
+   * version numbers (i.e. 4.5.2)
    */
-  private Map<String,String> getLatestVersionInfo() {
-  Map<String,String> latestVersionInfo = new HashMap<>();
+  private Map<String, String> getLatestVersionInfo() {
+    Map<String, String> latestVersionInfo = new HashMap<>();
 
-  String versionUrl = "http://www.unidata.ucar.edu/software/thredds/latest.xml";
+    String versionUrl = "http://www.unidata.ucar.edu/software/thredds/latest.xml";
 
-  HttpClient httpclient = new DefaultHttpClient();
-  HttpGet request = new HttpGet(versionUrl);
-  request.setHeader("User-Agent", "TDS_" + getVersionInfo().replace(" ", ""));
-  HttpResponse response = null;
-  try {
-    response = httpclient.execute(request);
-    HttpEntity entity = response.getEntity();
-    InputStream content = entity.getContent();
-    DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
-    DocumentBuilder db = dbf.newDocumentBuilder();
-    Document dom = db.parse(content);
-    Element docEle = dom.getDocumentElement();
-    NodeList versionElements = docEle.getElementsByTagName("version");
-    if(versionElements != null && versionElements.getLength() > 0) {
-      for(int i = 0 ; i < versionElements.getLength();i++) {
-        //get the version element
-        Element versionElement = (Element)versionElements.item(i);
-        String verType = versionElement.getAttribute("name");
-        String verStr = versionElement.getAttribute("value");
-        latestVersionInfo.put(verType, verStr);
+    HttpClient httpclient = new DefaultHttpClient();
+    HttpGet request = new HttpGet(versionUrl);
+    request.setHeader("User-Agent", "TDS_" + getVersionInfo().replace(" ", ""));
+
+    HttpResponse response;
+    try {
+      response = httpclient.execute(request);
+      HttpEntity entity = response.getEntity();
+
+      try (InputStream content = entity.getContent()) {
+        DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+        DocumentBuilder db = dbf.newDocumentBuilder();
+        Document dom = db.parse(content);
+        Element docEle = dom.getDocumentElement();
+        NodeList versionElements = docEle.getElementsByTagName("version");
+        if (versionElements != null && versionElements.getLength() > 0) {
+          for (int i = 0; i < versionElements.getLength(); i++) {
+            //get the version element
+            Element versionElement = (Element) versionElements.item(i);
+            String verType = versionElement.getAttribute("name");
+            String verStr = versionElement.getAttribute("value");
+            latestVersionInfo.put(verType, verStr);
+          }
+        }
       }
-    }
+
     } catch (IOException e) {
       logServerStartup.warn("TdsContext - Could not get latest version information from Unidata.");
     } catch (ParserConfigurationException e) {

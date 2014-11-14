@@ -165,23 +165,28 @@ public class HttpUriResolver {
     return is;
   }
 
-  private HTTPMethod getHttpResponse( URI uri )
-          throws IOException, HTTPException
-  {
-    HTTPMethod method = HTTPFactory.Get(uri.toString());
-    method.getSession().setConnectionTimeout( this.connectionTimeout );
-    method.getSession().setSoTimeout( this.socketTimeout );
-    method.setFollowRedirects( this.followRedirects );
-    method.setRequestHeader( "Accept-Encoding", this.contentEncoding );
+  private HTTPMethod getHttpResponse(URI uri) throws IOException {
 
-   method.execute();
-    int statusCode = method.getStatusCode();
-    if ( statusCode == 200 || statusCode == 201 )
-    {
+    HTTPMethod method = null;
+    try {
+      method = HTTPFactory.Get(uri.toString());
+      method.getSession().setConnectionTimeout(this.connectionTimeout);
+      method.getSession().setSoTimeout(this.socketTimeout);
+      method.setFollowRedirects(this.followRedirects);
+      method.setRequestHeader("Accept-Encoding", this.contentEncoding);
+
+      method.execute();
+      int statusCode = method.getStatusCode();
+      if (statusCode == 200 || statusCode == 201) {
+        return method;
+      }
+
+      method.execute();
       return method;
-    }
 
-    method.execute();
-    return method;
+    } catch (Throwable t) {
+      if (method != null) method.close();
+      throw t;
+    }
   }
 }

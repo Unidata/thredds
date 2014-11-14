@@ -44,10 +44,7 @@ import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.attribute.BasicFileAttributes;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
 
 /**
  * Describe
@@ -92,7 +89,10 @@ public class CollectionGeneral extends CollectionAbstract {
 
     public boolean hasNext() {
       while (true) {
-        if (!dirStreamIterator.hasNext()) return false;
+        if (!dirStreamIterator.hasNext()) {
+          nextMFile = null;
+          return false;
+        }
 
         try {
           Path nextPath = dirStreamIterator.next();
@@ -110,6 +110,7 @@ public class CollectionGeneral extends CollectionAbstract {
 
 
     public MFile next() {
+      if (nextMFile == null) throw new NoSuchElementException();
       return nextMFile;
     }
 

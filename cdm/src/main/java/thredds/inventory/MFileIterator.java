@@ -4,6 +4,7 @@ import ucar.nc2.util.CloseableIterator;
 
 import java.io.IOException;
 import java.util.Iterator;
+import java.util.NoSuchElementException;
 
 /**
  * An iterator over MFiles, closeable so its a target for try-with-resource
@@ -31,13 +32,17 @@ public class MFileIterator implements CloseableIterator<MFile> {
 
   public boolean hasNext() {
     while (true) {
-      if (!iter.hasNext()) return false;
+      if (!iter.hasNext()) {
+        nextMfile = null;
+        return false;
+      }
       nextMfile = iter.next();
       if (filter == null || filter.accept(nextMfile)) return true;
     }
   }
 
   public MFile next() {
+    if (nextMfile == null) throw new NoSuchElementException();
     return nextMfile;
   }
 

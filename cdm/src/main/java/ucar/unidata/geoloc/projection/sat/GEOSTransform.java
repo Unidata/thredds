@@ -38,32 +38,33 @@ import java.lang.*;
  * @since 08/28/2014
  */
 public class GEOSTransform {
-
-  double DEG_TO_RAD = Math.PI / 180.0;
-  double RAD_TO_DEG = 180.0 / Math.PI;
-
-  //-  GRS80 parameters (GOES-R) default, can be changed via the ctrs ---------
-  double r_pol = 6356.7523;      // semi-minor axis (polar radius km)
-  double r_eq = 6378.1370;      // semi-major axis (equatorial radius km)
-  double f = 1.0 / 298.257222101;  // flattening
-  double invf = 1.0 / f;
-  double fp = 1.0 / ((1.0 - f) * (1.0 - f));
-
-  final double h_msg = 42164.0;
-  final double h_goesr = 42164.16;
-  double h = h_goesr; // Geostationary Orbit Radius (spacecraft to barycenter distance) (km)
-  double d;
-
-  double sub_lon;
-  double sub_lon_degrees;
-
   public static final String GOES = "GOES";
   public static final String GEOS = "GEOS";
   public static final String WGS84 = "WGS84";
   public static final String GRS80 = "GRS80";
-
   public final Geoid wgs84 = new GeoidWGS84();
   public final Geoid grs80 = new GeoidGRS80();
+
+  private static final double DEG_TO_RAD = Math.PI / 180.0;
+  private static final double RAD_TO_DEG = 180.0 / Math.PI;
+
+  private static final  double h_msg = 42164.0;
+  private static final  double h_goesr = 42164.16;
+
+  //////////////////////////////////////
+
+    //-  GRS80 parameters (GOES-R) default, can be changed via the ctrs ---------
+  double r_pol = 6356.7523;      // semi-minor axis (polar radius km)
+  double r_eq = 6378.1370;      // semi-major axis (equatorial radius km)
+
+  private  double f = 1.0 / 298.257222101;  // flattening
+  private  double fp = 1.0 / ((1.0 - f) * (1.0 - f));
+  private  double h = h_goesr; // Geostationary Orbit Radius (spacecraft to barycenter distance) (km)
+
+  double d;
+
+  double sub_lon;
+  double sub_lon_degrees;
 
   public String scan_geom = GEOS;
 
@@ -134,7 +135,6 @@ public class GEOSTransform {
     r_pol = geoid.r_pol;
     r_eq = geoid.r_eq;
     f = geoid.f;
-    invf = geoid.invf;
     fp = 1.0 / ((1.0 - f) * (1.0 - f));
 
     if (scan_geom.equals(GEOS)) {
@@ -154,7 +154,6 @@ public class GEOSTransform {
     r_pol = geoid.r_pol;
     r_eq = geoid.r_eq;
     f = geoid.f;
-    invf = geoid.invf;
     fp = 1.0 / ((1.0 - f) * (1.0 - f));
 
     h = perspective_point_height + r_eq;
@@ -353,17 +352,29 @@ public class GEOSTransform {
     return new double[]{fgf_x, fgf_y};
   }
 
-  public boolean equals(Object obj) {
-    if (!(obj instanceof GEOSTransform)) {
-      return false;
-    } else {
-      GEOSTransform gt = (GEOSTransform) obj;
-      if (this.sub_lon_degrees != gt.sub_lon_degrees) return false;
-      if (!this.scan_geom.equals(gt.scan_geom)) return false;
-    }
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) return true;
+    if (o == null || getClass() != o.getClass()) return false;
+
+    GEOSTransform that = (GEOSTransform) o;
+
+    if (Double.compare(that.sub_lon, sub_lon) != 0) return false;
+    if (!scan_geom.equals(that.scan_geom)) return false;
+
     return true;
   }
 
+  @Override
+  public int hashCode() {
+    int result;
+    long temp;
+    temp = Double.doubleToLongBits(sub_lon);
+    result = (int) (temp ^ (temp >>> 32));
+    result = 31 * result + scan_geom.hashCode();
+    return result;
+  }
 
   /**
    * Earth Geoid definitions

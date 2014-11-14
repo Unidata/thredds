@@ -900,7 +900,6 @@ public class ToolsUI extends JPanel {
     Nc4Iosp.setDebugFlags(debugFlags);
     ucar.nc2.thredds.ThreddsDataFactory.setDebugFlags(debugFlags);
 
-    ucar.nc2.FileWriter.setDebugFlags(debugFlags);
     ucar.nc2.FileWriter2.setDebugFlags(debugFlags);
     ucar.nc2.ft.point.standard.PointDatasetStandardFactory.setDebugFlags(debugFlags);
     ucar.nc2.grib.collection.GribIosp.setDebugFlags(debugFlags);

@@ -108,7 +108,7 @@ public class TestSubset {
     GeoGrid grid_section = grid.subset(null, null, null, 3, 3, 3);
 
     Array data = grid_section.readDataSlice(-1, -1, -1, -1);
-    assert data.getShape()[0] == 1 : data.getShape()[0];
+    assert data.getShape()[0] == 3 : data.getShape()[0];
     assert data.getShape()[1] == 3 : data.getShape()[1];
     assert data.getShape()[2] == 13 : data.getShape()[2];
     assert data.getShape()[3] == 15 : data.getShape()[3];
