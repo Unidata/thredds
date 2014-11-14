@@ -34,6 +34,7 @@ package ucar.nc2.ft.point.writer;
 
 import com.beust.jcommander.JCommander;
 import com.beust.jcommander.Parameter;
+import com.beust.jcommander.ParameterDescription;
 import com.beust.jcommander.ParameterException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -47,6 +48,8 @@ import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time.CalendarDateFormatter;
 import ucar.nc2.time.CalendarDateRange;
 import ucar.nc2.units.DateUnit;
+import ucar.nc2.write.Nc4Chunking;
+import ucar.nc2.write.Nc4ChunkingStrategy;
 import ucar.unidata.geoloc.LatLonPoint;
 import ucar.unidata.geoloc.LatLonRect;
 
@@ -816,29 +819,69 @@ public abstract class CFPointWriter implements AutoCloseable {
   ///////////////////////////////////////////////////////////////////////////////////////////////////////
 
   private static class CommandLine {
-    @Parameter(names = {"-h", "--help", "-?"}, description = "Display this help and exit", help = true)
-    public boolean help;
-
-    @Parameter(names = {"-i", "--input-file"}, description = "input file", required = true)
+    @Parameter(names = {"-i", "--input"}, description = "Input file", required = true)
     public File inputFile;
 
-    @Parameter(names = {"-o", "--output-file"}, description = "output file", required = true)
+    @Parameter(names = {"-o", "--output"}, description = "Output file", required = true)
     public File outputFile;
 
-    @Parameter(names = {"-f", "--format"},
-            description = "output file format; allowed values = " +
+    @Parameter(names = {"-f", "--format"}, description = "Output file format. Allowed values = " +
                     "[netcdf3, netcdf4, netcdf4_classic, netcdf3c, netcdf3c64, ncstream]")
     public NetcdfFileWriter.Version format = NetcdfFileWriter.Version.netcdf3;
+
+    @Parameter(names = {"-st", "--strategy"}, description = "Chunking strategy. Only used in NetCDF 4. " +
+            "Allowed values = [standard, grib, none]")
+    public Nc4Chunking.Strategy strategy = Nc4Chunking.Strategy.standard;
+
+    @Parameter(names = {"-d", "--deflateLevel"}, description = "Compression level. Only used in NetCDF 4. " +
+            "Allowed values = 0 (no compression, fast) to 9 (max compression, slow)")
+    public int deflateLevel = 5;
+
+    @Parameter(names = {"-sh", "--shuffle"}, description = "Enable the shuffle filter, which may improve compression. " +
+            "Only used in NetCDF 4. This option is ignored unless a non-zero deflate level is specified.")
+    public boolean shuffle = true;
+
+    @Parameter(names = {"-h", "--help"}, description = "Display this help and exit", help = true)
+    public boolean help = false;
+
+
+    private static class ParameterDescriptionComparator implements Comparator<ParameterDescription> {
+      // Display parameters in this order in the usage information.
+      private final List<String> orderedParamNames = Arrays.asList(
+              "--input", "--output", "--format", "--strategy", "--deflateLevel", "--shuffle", "--help");
+
+      @Override
+      public int compare(ParameterDescription p0, ParameterDescription p1) {
+        int index0 = orderedParamNames.indexOf(p0.getLongestName());
+        int index1 = orderedParamNames.indexOf(p1.getLongestName());
+        assert index0 >= 0 : "Unexpected parameter name: " + p0.getLongestName();
+        assert index1 >= 0 : "Unexpected parameter name: " + p1.getLongestName();
+
+        return Integer.compare(index0, index1);
+      }
+    }
+
 
     private final JCommander jc;
 
     public CommandLine(String progName, String[] args) throws ParameterException {
       this.jc = new JCommander(this, args);  // Parses args and uses them to initialize *this*.
       jc.setProgramName(progName);           // Displayed in the usage information.
+
+      // Set the ordering of of parameters in the usage information.
+      jc.setParameterDescriptionComparator(new ParameterDescriptionComparator());
     }
 
     public void printUsage() {
       jc.usage();
+    }
+
+    public Nc4Chunking getNc4Chunking() {
+      return Nc4ChunkingStrategy.factory(strategy, deflateLevel, shuffle);
+    }
+
+    public CFPointWriterConfig getCFPointWriterConfig() {
+      return new CFPointWriterConfig(format, getNc4Chunking());
     }
   }
 
@@ -854,6 +897,9 @@ public abstract class CFPointWriter implements AutoCloseable {
         System.out.println("Input file: " + cmdLine.inputFile);
         System.out.println("Output file: " + cmdLine.outputFile);
         System.out.println("Format: " + cmdLine.format);
+        System.out.println("Strategy: " + cmdLine.strategy);
+        System.out.println("Deflate level: " + cmdLine.deflateLevel);
+        System.out.println("Shuffle: " + cmdLine.shuffle);
       }
     } catch (ParameterException e) {
       System.err.println(e.getMessage());
