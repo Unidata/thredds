@@ -68,12 +68,12 @@ public class CoordRefSysToGML
     if ( ! coordSys.isGeoReferencing())
       throw new IllegalArgumentException( "CoordinateSystem must be a georeferencing CS.");
 
-    Element xyCrsElem;
+    /*Element xyCrsElem;
     if ( coordSys.isGeoXY())
     {
       xyCrsElem = genProjectedCRS( coordSys.getProjection());
-    }
-    else
+    } */
+    if ( !coordSys.isGeoXY())
     {
       coordSys.getLatAxis();
       coordSys.getLonAxis();
