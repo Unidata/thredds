@@ -33,9 +33,9 @@
 
 package ucar.nc2.iosp.bufr.writer;
 
-import com.lexicalscope.jewel.cli.CliFactory;
-import com.lexicalscope.jewel.cli.HelpRequestedException;
-import com.lexicalscope.jewel.cli.Option;
+import com.beust.jcommander.JCommander;
+import com.beust.jcommander.Parameter;
+import com.beust.jcommander.ParameterException;
 import ucar.nc2.constants.CDM;
 import ucar.nc2.iosp.bufr.*;
 import ucar.unidata.io.InMemoryRandomAccessFile;
@@ -335,34 +335,52 @@ public class BufrSplitter {
     return b;
   }
 
-
   ///////////////////////////////////////////////////////////////////////////
 
-  public interface Options {
-     @Option String getFileSpec();
-     @Option String getDirOut();
+  private static class CommandLine {
+    @Parameter(names = {"--fileSpec"}, description = "File specification", required = true)
+    public File fileSpec;
 
-     @Option(helpRequest = true)
-     boolean getHelp();
-   }
+    @Parameter(names = {"--dirOut"}, description = "Output directory", required = true)
+    public File dirOut;
 
-  public static void main(String[] args) {
+    @Parameter(names = {"-h", "--help"}, description = "Display this help and exit", help = true)
+    public boolean help = false;
+
+    private final JCommander jc;
+
+    public CommandLine(String progName, String[] args) throws ParameterException {
+      this.jc = new JCommander(this, args);  // Parses args and uses them to initialize *this*.
+      jc.setProgramName(progName);           // Displayed in the usage information.
+    }
+
+    public void printUsage() {
+      jc.usage();
+    }
+  }
+
+  public static void main(String[] args) throws Exception {
+    String progName = "BufrSpitter";
+
     try {
-      Options options;
-      if (args == null) {
-         options = CliFactory.parseArguments(Options.class, "--fileSpec", "E:/data/work/manross/gdas.adpsfc.t00z.20120603.bufr.le", "--dirOut", "E:/data/work/manross/split_adpsfc" );
-      } else {
-        options = CliFactory.parseArguments(Options.class, args);
+      if (args == null || args.length == 0) {
+        args = new String[] { "--fileSpec", "E:/data/work/manross/gdas.adpsfc.t00z.20120603.bufr.le",
+                "--dirOut", "E:/data/work/manross/split_adpsfc" };
       }
-      BufrSplitter splitter = new BufrSplitter(options.getDirOut(), new Formatter(System.out));
-      splitter.execute(options.getFileSpec());
+
+      CommandLine cmdLine = new CommandLine(progName, args);
+
+      if (cmdLine.help) {
+        cmdLine.printUsage();
+        return;
+      }
+
+      BufrSplitter splitter = new BufrSplitter(cmdLine.dirOut.getAbsolutePath(), new Formatter(System.out));
+      splitter.execute(cmdLine.fileSpec.getAbsolutePath());
       splitter.exit();
-
-    } catch (HelpRequestedException e) {
-      System.out.printf("BufrSpitter: %s%n", e.getMessage());
-
-    } catch (Exception e) {
-      e.printStackTrace();
+    } catch (ParameterException e) {
+      System.err.println(e.getMessage());
+      System.err.printf("Try \"%s --help\" for more information.%n", progName);
     }
   }
 }

@@ -554,15 +554,9 @@
       </dependency>
 
       <dependency>
-        <groupId>com.lexicalscope.jewelcli</groupId>
-        <artifactId>jewelcli</artifactId>
-        <version>0.8.5</version>
-      </dependency>
-
-      <dependency>
         <groupId>com.beust</groupId>
         <artifactId>jcommander</artifactId>
-        <version>1.35</version>
+        <version>${jcommander.version}</version>
       </dependency>
 
       <dependency>
@@ -1038,6 +1032,7 @@
     <jna.version>4.0.0</jna.version>
     <edu.ucar.jj2000.version>5.2</edu.ucar.jj2000.version>
     <org.itadaki.bzip2.version>0.9.1</org.itadaki.bzip2.version>
+    <jcommander.version>1.35</jcommander.version>
 
     <!-- Plugins versions -->
     <maven-antrun-plugin.version>1.7</maven-antrun-plugin.version>

@@ -48,6 +48,7 @@ import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time.CalendarDateFormatter;
 import ucar.nc2.time.CalendarDateRange;
 import ucar.nc2.units.DateUnit;
+import ucar.nc2.util.CancelTask;
 import ucar.nc2.write.Nc4Chunking;
 import ucar.nc2.write.Nc4ChunkingStrategy;
 import ucar.unidata.geoloc.LatLonPoint;
@@ -571,6 +572,12 @@ public abstract class CFPointWriter implements AutoCloseable {
       } else {
         newVar = writer.addVariable(null, oldVar.getShortName(), oldVar.getDataType(), dims);
       }
+
+      if (newVar == null) {
+        logger.warn("Variable already exists =" + oldVar.getShortName());  // LOOK barf
+        continue;
+      }
+
       for (Attribute att : oldVar.getAttributes())
         newVar.addAttribute(att);
       varMap.put(newVar.getShortName(), newVar);
@@ -580,10 +587,15 @@ public abstract class CFPointWriter implements AutoCloseable {
 
   // added as members of the given structure
   protected void addCoordinatesExtended(Structure parent, List<VariableSimpleIF> coords) throws IOException {
-
     for (VariableSimpleIF vs : coords) {
       String dims = Dimension.makeDimensionsString(vs.getDimensions());
       Variable member = writer.addStructureMember(parent, vs.getShortName(), vs.getDataType(), dims);
+
+      if (member == null) {
+        logger.warn("Variable already exists =" + vs.getShortName());  // LOOK barf
+        continue;
+      }
+
       for (Attribute att : vs.getAttributes())
         member.addAttribute(att);
     }
@@ -623,7 +635,7 @@ public abstract class CFPointWriter implements AutoCloseable {
        } else {
          newVar = writer.addVariable(null, oldVar.getShortName(), oldVar.getDataType(), dims);
          if (newVar == null) {
-           logger.warn("Variable already exists ="+oldVar.getShortName());
+           logger.warn("Variable already exists =" + oldVar.getShortName());  // LOOK barf
            continue;
          }
        }
@@ -661,6 +673,10 @@ public abstract class CFPointWriter implements AutoCloseable {
       }
 
       Variable newVar = writer.addStructureMember(record, oldVar.getShortName(), oldVar.getDataType(), dimNames.toString());
+      if (newVar == null) {
+        logger.warn("Variable already exists =" + oldVar.getShortName());  // LOOK barf
+        continue;
+      }
 
       List<Attribute> atts = oldVar.getAttributes();
       for (Attribute att : atts) {
@@ -819,10 +835,10 @@ public abstract class CFPointWriter implements AutoCloseable {
   ///////////////////////////////////////////////////////////////////////////////////////////////////////
 
   private static class CommandLine {
-    @Parameter(names = {"-i", "--input"}, description = "Input file", required = true)
+    @Parameter(names = {"-i", "--input"}, description = "Input file.", required = true)
     public File inputFile;
 
-    @Parameter(names = {"-o", "--output"}, description = "Output file", required = true)
+    @Parameter(names = {"-o", "--output"}, description = "Output file.", required = true)
     public File outputFile;
 
     @Parameter(names = {"-f", "--format"}, description = "Output file format. Allowed values = " +
@@ -893,13 +909,23 @@ public abstract class CFPointWriter implements AutoCloseable {
 
       if (cmdLine.help) {
         cmdLine.printUsage();
-      } else {
-        System.out.println("Input file: " + cmdLine.inputFile);
-        System.out.println("Output file: " + cmdLine.outputFile);
-        System.out.println("Format: " + cmdLine.format);
-        System.out.println("Strategy: " + cmdLine.strategy);
-        System.out.println("Deflate level: " + cmdLine.deflateLevel);
-        System.out.println("Shuffle: " + cmdLine.shuffle);
+        return;
+      }
+
+      FeatureType wantFeatureType = FeatureType.ANY_POINT;
+      String location = cmdLine.inputFile.getAbsolutePath();
+      CancelTask cancel = null;
+      Formatter errlog = new Formatter();
+
+      try (FeatureDatasetPoint fdPoint =
+              (FeatureDatasetPoint) FeatureDatasetFactoryManager.open(wantFeatureType, location, cancel, errlog)) {
+        if (fdPoint == null) {
+          System.err.println(errlog.toString());
+        } else {
+          System.out.printf("CFPointWriter: reading from %s, writing to %s%n", cmdLine.inputFile, cmdLine.outputFile);
+          writeFeatureCollection(fdPoint, cmdLine.outputFile.getAbsolutePath(), cmdLine.getCFPointWriterConfig());
+          System.out.println("Done.");
+        }
       }
     } catch (ParameterException e) {
       System.err.println(e.getMessage());

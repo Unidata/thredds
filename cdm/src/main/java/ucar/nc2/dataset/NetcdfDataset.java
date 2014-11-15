@@ -33,34 +33,36 @@
 package ucar.nc2.dataset;
 
 import org.apache.http.Header;
-import ucar.ma2.Array;
-import ucar.nc2.stream.CdmRemote;
-import ucar.nc2.util.CancelTaskImpl;
-import ucar.nc2.util.EscapeStrings;
-import ucar.nc2.util.Misc;
+import thredds.catalog.ServiceType;
+import ucar.httpservices.HTTPFactory;
 import ucar.httpservices.HTTPMethod;
-import ucar.ma2.*;
+import ucar.ma2.Array;
+import ucar.ma2.DataType;
+import ucar.ma2.InvalidRangeException;
 import ucar.nc2.*;
 import ucar.nc2.constants.AxisType;
 import ucar.nc2.iosp.IOServiceProvider;
-import ucar.nc2.util.CancelTask;
-import ucar.nc2.util.cache.FileCache;
-import ucar.nc2.util.cache.FileFactory;
+import ucar.nc2.ncml.NcMLGWriter;
 import ucar.nc2.ncml.NcMLReader;
 import ucar.nc2.ncml.NcMLWriter;
-import ucar.nc2.ncml.NcMLGWriter;
+import ucar.nc2.stream.CdmRemote;
+import ucar.nc2.thredds.ThreddsDataFactory;
+import ucar.nc2.util.CancelTask;
+import ucar.nc2.util.CancelTaskImpl;
+import ucar.nc2.util.EscapeStrings;
+import ucar.nc2.util.Misc;
+import ucar.nc2.util.cache.FileCache;
+import ucar.nc2.util.cache.FileFactory;
+import ucar.unidata.util.Urlencoded;
+
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
+import java.util.*;
 
 // factories for remote access
 //import ucar.nc2.dods.DODSNetcdfFile;
-import ucar.nc2.thredds.ThreddsDataFactory;
-
-import java.io.*;
-import java.lang.reflect.*;
-import java.util.*;
-
-import thredds.catalog.ServiceType;
-import ucar.httpservices.HTTPFactory;
-import ucar.unidata.util.Urlencoded;
 
 /**
  * NetcdfDataset extends the netCDF API, adding standard attribute parsing such as
@@ -1893,6 +1895,7 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
    * @param arg -in <fileIn> -out <fileOut> [-isLargeFile] [-netcdf4]
    * @throws IOException on read or write error
    */
+  // LOOK: Can we use CFPointWriter.CommandLine for CLI parsing instead? Would that break existing scripts?
   public static void main(String arg[]) throws IOException {
     String usage = "usage: ucar.nc2.dataset.NetcdfDataset -in <fileIn> -out <fileOut> [-isLargeFile] [-netcdf4]";
     if (arg.length < 4) {
