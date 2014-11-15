@@ -88,7 +88,7 @@ public class RandomAccessFile implements DataInput, DataOutput, FileCacheable, C
   static protected boolean debugLeaks = false;
   static protected boolean debugAccess = false;
   static protected Set<String> allFiles = null;
-  static protected List<String> openFiles = Collections.synchronizedList(new ArrayList<String>());
+  static protected List<String> openFiles = Collections.synchronizedList(new ArrayList<String>());   // could keep map on file hashcode
   static private AtomicLong count_openFiles = new AtomicLong();
   static private AtomicInteger maxOpenFiles = new AtomicInteger();
   static private AtomicInteger debug_nseeks = new AtomicInteger();

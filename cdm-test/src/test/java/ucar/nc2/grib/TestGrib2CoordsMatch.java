@@ -107,9 +107,9 @@ public class TestGrib2CoordsMatch {
     System.out.printf(" total files needed=%7d%n", GribCollectionImmutable.countGC + PartitionCollectionImmutable.countPC + GribIosp.debugIndexOnlyCount);
 
     FileCache.shutdown();
-    RandomAccessFile.setDebugLeaks(false);
     RandomAccessFile.setGlobalFileCache(null);
     TestDir.checkLeaks();
+    RandomAccessFile.setDebugLeaks(false);
   }
 
 

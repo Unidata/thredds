@@ -94,15 +94,14 @@ public class TestGribCollectionsBig {
     System.out.printf(" total files needed=%7d%n", GribCollectionImmutable.countGC + PartitionCollectionImmutable.countPC + GribIosp.debugIndexOnlyCount);
 
     FileCache.shutdown();
-    RandomAccessFile.setDebugLeaks(false);
     RandomAccessFile.setGlobalFileCache(null);
     TestDir.checkLeaks();
+    RandomAccessFile.setDebugLeaks(false);
   }
 
   @Test
   public void testGC() throws IOException {
     TestGribCollections.Count count = TestGribCollections.read(topdir + "/ds083.2/grib1/2008/2008.10/fnl_20081003_18_00.grib1.ncx2");
-    TestDir.checkLeaks();
 
     assert count.nread == 286;
     assert count.nmiss == 0;
@@ -111,7 +110,6 @@ public class TestGribCollectionsBig {
   @Test
   public void testPofG() throws IOException {
     TestGribCollections.Count count = TestGribCollections.read(topdir + "/ds083.2/grib1/2008/2008.10/ds083.2_Aggregation-2008.10.ncx2");
-    TestDir.checkLeaks();
 
     // jenkins: that took 18 secs total, 0.261603 msecs per record
     assert count.nread == 70928;
@@ -122,7 +120,6 @@ public class TestGribCollectionsBig {
   public void testPofP() throws IOException {
     try {
       TestGribCollections.Count count = TestGribCollections.read(topdir + "/ds083.2/grib1/2008/ds083.2_Aggregation-2008.ncx2");
-      TestDir.checkLeaks();
 
       // jenkins:  that took 496 secs total, 0.592712 msecs per record
       // that took 581 secs total, 0.694249 msecs per record (total == 0/837408) (cache size 500)
@@ -131,7 +128,6 @@ public class TestGribCollectionsBig {
 
     } catch (Throwable t) {
       t.printStackTrace();
-      // TestDir.checkLeaks();
     }
 
   }
@@ -140,7 +136,6 @@ public class TestGribCollectionsBig {
   public void testPofPofP() throws IOException {
     RandomAccessFile.setDebugLeaks(true);
     TestGribCollections.Count count = TestGribCollections.read(topdir + "/ds083.2/grib1/ds083.2_Aggregation-grib1.ncx2");
-    TestDir.checkLeaks();
 
     // that took 1312 secs total, 0.784602 msecs per record (total == 0/1672528) (cache size 500)
     assert count.nread == 1672528;

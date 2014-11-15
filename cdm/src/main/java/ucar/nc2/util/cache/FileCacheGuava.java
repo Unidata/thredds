@@ -21,7 +21,7 @@ import java.util.concurrent.ExecutionException;
 public class FileCacheGuava implements FileCacheIF {
 
   private final String name;
-  private final LoadingCache<String, FileCacheable> cache;
+  private LoadingCache<String, FileCacheable> cache;
 
   public FileCacheGuava(String name, int maxSize) {
     this.name = name;
@@ -45,7 +45,8 @@ public class FileCacheGuava implements FileCacheIF {
 
   @Override
   public void disable() {
-
+    clearCache(true);
+    cache = null;
   }
 
   @Override
@@ -81,7 +82,7 @@ public class FileCacheGuava implements FileCacheIF {
 
   @Override
   public void clearCache(boolean force) {
-
+    cache.invalidateAll();
   }
 
   @Override
