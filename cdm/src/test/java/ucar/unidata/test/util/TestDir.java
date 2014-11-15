@@ -207,7 +207,7 @@ public class TestDir {
 
   static public void checkLeaks() {
     if (RandomAccessFile.getOpenFiles().size() > 0) {
-      System.out.printf("RandomAccessFile still open:%n");
+      System.out.printf("%nRandomAccessFile still open:%n");
       for (String filename : RandomAccessFile.getOpenFiles()) {
         System.out.printf(" open= %s%n", filename);
       }

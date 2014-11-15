@@ -80,25 +80,29 @@ public class TestGribCollections {
   @AfterClass
   static public void after() {
     GribIosp.setDebugFlags(new DebugFlagsImpl());
-    FileCacheIF cache = GribCdmIndex.gribCollectionCache;
-    if (cache == null) return;
-
     Formatter out = new Formatter(System.out);
-    cache.showTracking(out);
-    cache.showCache(out);
 
-    cache.clearCache(false);
-    RandomAccessFile.getGlobalFileCache().showCache(out);
-    TestDir.checkLeaks();
+    FileCacheIF cache = GribCdmIndex.gribCollectionCache;
+    if (cache != null) {
+      cache.showTracking(out);
+      cache.showCache(out);
+      cache.clearCache(false);
+    }
+
+    FileCacheIF rafCache = RandomAccessFile.getGlobalFileCache();
+    if (rafCache != null) {
+      rafCache.showCache(out);
+    }
 
     System.out.printf("            countGC=%7d%n", GribCollectionImmutable.countGC);
     System.out.printf("            countPC=%7d%n", PartitionCollectionImmutable.countPC);
-    System.out.printf("debugIndexOnlyCount=%7d%n", GribIosp.debugIndexOnlyCount);
+    System.out.printf("    countDataAccess=%7d%n", GribIosp.debugIndexOnlyCount);
     System.out.printf(" total files needed=%7d%n", GribCollectionImmutable.countGC + PartitionCollectionImmutable.countPC + GribIosp.debugIndexOnlyCount);
 
     FileCache.shutdown();
     RandomAccessFile.setDebugLeaks(false);
     RandomAccessFile.setGlobalFileCache(null);
+    TestDir.checkLeaks();
   }
 
   @Test

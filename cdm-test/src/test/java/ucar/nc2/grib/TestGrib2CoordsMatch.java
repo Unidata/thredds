@@ -74,33 +74,43 @@ import java.util.Formatter;
 public class TestGrib2CoordsMatch {
 
   @BeforeClass
-   static public void before() {
-     RandomAccessFile.enableDefaultGlobalFileCache();
-     RandomAccessFile.setDebugLeaks(true);
-     // GribIosp.setDebugFlags(new DebugFlagsImpl("Grib/indexOnly"));
-     GribCdmIndex.initDefaultCollectionCache(50, 700, -1);
-   }
+  static public void before() {
+    GribIosp.debugIndexOnlyCount = 0;
+    GribCollectionImmutable.countGC = 0;
+    PartitionCollectionImmutable.countPC = 0;
+    RandomAccessFile.enableDefaultGlobalFileCache();
+    RandomAccessFile.setDebugLeaks(true);
+    GribCdmIndex.setGribCollectionCache(new ucar.nc2.util.cache.FileCacheGuava("GribCollectionCacheGuava", 100));
+    GribCdmIndex.gribCollectionCache.resetTracking();
+  }
 
-   @AfterClass
-   static public void after() {
-     GribIosp.setDebugFlags(new DebugFlagsImpl());
-     FileCacheIF cache = GribCdmIndex.gribCollectionCache;
-     if (cache == null) return;
+  @AfterClass
+  static public void after() {
+    GribIosp.setDebugFlags(new DebugFlagsImpl());
+    Formatter out = new Formatter(System.out);
 
-     Formatter out = new Formatter(System.out);
-     cache.showCache(out);
-     cache.showTracking(out);
-     cache.clearCache(false);
-     RandomAccessFile.getGlobalFileCache().showCache(out);
-     TestDir.checkLeaks();
+    FileCacheIF cache = GribCdmIndex.gribCollectionCache;
+    if (cache != null) {
+      cache.showTracking(out);
+      cache.showCache(out);
+      cache.clearCache(false);
+    }
 
-     System.out.printf("countGC=%d%n", GribCollectionImmutable.countGC);
-     System.out.printf("countPC=%d%n", PartitionCollectionImmutable.countPC);
+    FileCacheIF rafCache = RandomAccessFile.getGlobalFileCache();
+    if (rafCache != null) {
+      rafCache.showCache(out);
+    }
 
-     FileCache.shutdown();
-     RandomAccessFile.setDebugLeaks(false);
-     RandomAccessFile.setGlobalFileCache(null);
-   }
+    System.out.printf("            countGC=%7d%n", GribCollectionImmutable.countGC);
+    System.out.printf("            countPC=%7d%n", PartitionCollectionImmutable.countPC);
+    System.out.printf("    countDataAccess=%7d%n", GribIosp.debugIndexOnlyCount);
+    System.out.printf(" total files needed=%7d%n", GribCollectionImmutable.countGC + PartitionCollectionImmutable.countPC + GribIosp.debugIndexOnlyCount);
+
+    FileCache.shutdown();
+    RandomAccessFile.setDebugLeaks(false);
+    RandomAccessFile.setGlobalFileCache(null);
+    TestDir.checkLeaks();
+  }
 
 
   @BeforeClass

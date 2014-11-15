@@ -76,7 +76,7 @@ public abstract class GribIosp extends AbstractIOServiceProvider {
 
   // do not use
   static public boolean debugRead = false;
-  static public int debugIndexOnlyCount = 0;
+  static public int debugIndexOnlyCount = 0;  // count number of data accesses
   static boolean debugIndexOnly = false;  // we are running with only index files, no data
   static boolean debugIndexOnlyShow = false;  // debugIndexOnly must be true; show record fetch
 
