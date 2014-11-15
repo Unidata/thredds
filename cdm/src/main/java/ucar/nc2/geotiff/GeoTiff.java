@@ -388,7 +388,7 @@ public class GeoTiff implements AutoCloseable {
   private int writeSValue(ByteBuffer buffer, IFDEntry ifd) {
     buffer.put(ifd.valueS.getBytes(CDM.utf8Charset));
     int size = ifd.valueS.length();
-    if ((size % 2) == 1) size++;
+    if ((size & 1) != 0) size++;  // check if odd
     return size;
   }
 

@@ -390,10 +390,10 @@ public class CommonCodeTable implements Comparable<CommonCodeTable> {
     @Override
     public int compareTo(TableEntry o) {
       if (type == 1)
-        return code - o.code;
+        return Integer.compare(code, o.code);
       else {
-        int diff = code - o.code;
-        return (diff == 0) ?  code2 - o.code2 : diff;
+        int diff = Integer.compare(code, o.code);
+        return (diff == 0) ?  Integer.compare(code2, o.code2) : diff;
       }
     }
 

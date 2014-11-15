@@ -391,7 +391,6 @@ public final class ScaledUnit extends UnitImpl implements DerivableUnit {
      *         identical to <code>object
      *				</code>.
      */
-    @Override
     public boolean equals(final Object object) {
         if (this == object) {
             return true;
@@ -402,11 +401,13 @@ public final class ScaledUnit extends UnitImpl implements DerivableUnit {
         if (!(object instanceof ScaledUnit)) {
             return false;
         }
-        final ScaledUnit that = (ScaledUnit) object;
-        return _scale == that._scale && _unit.equals(that._unit);
+        ScaledUnit that = (ScaledUnit) object;
+        if (Double.compare(that._scale, _scale) != 0) return false;
+        if (!_unit.equals(that._unit)) return false;
+        return true;
     }
 
-    /**
+  /**
      * Returns the hash code of this instance.
      * 
      * @return The hash code of this instance.

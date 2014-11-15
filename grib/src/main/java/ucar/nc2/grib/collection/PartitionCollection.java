@@ -398,11 +398,6 @@ public abstract class PartitionCollection extends GribCollection {
       }  // LOOK opening the file here, and then again to read the data. partition cache helps i guess but we could do better i think.
     }
 
-    /*
-
-     */
-
-
     /**
      * translate index in VariableIndexPartitioned to corresponding index in one of its component VariableIndex
      * by matching coordinate values. The 1D (Best) case.

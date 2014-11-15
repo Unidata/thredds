@@ -132,118 +132,125 @@ public class FileWriter {
   public static NetcdfFile writeToFile(NetcdfFile fileIn, String fileOutName, boolean fill, boolean isLargeFile,
                                        List<FileWriterProgressListener> progressListeners) throws IOException {
 
-    NetcdfFileWriteable ncfile = NetcdfFileWriteable.createNew(fileOutName, fill);
-    if (debug) {
-      System.out.println("FileWriter write " + fileIn.getLocation() + " to " + fileOutName);
-      System.out.println("File In = " + fileIn);
-    }
-    ncfile.setLargeFile(isLargeFile);
+    NetcdfFileWriteable ncfile = null;
+    try {
+      ncfile = NetcdfFileWriteable.createNew(fileOutName, fill);
+      if (debug) {
+        System.out.println("FileWriter write " + fileIn.getLocation() + " to " + fileOutName);
+        System.out.println("File In = " + fileIn);
+      }
+      ncfile.setLargeFile(isLargeFile);
 
-    // global attributes
-    List<Attribute> glist = fileIn.getGlobalAttributes();
-    for (Attribute att : glist) {
-      String useName = N3iosp.makeValidNetcdfObjectName(att.getShortName());
-      Attribute useAtt;
-      if (att.isArray())
-        useAtt = ncfile.addGlobalAttribute(useName, att.getValues());
-      else if (att.isString())
-        useAtt = ncfile.addGlobalAttribute(useName, att.getStringValue());
-      else
-        useAtt = ncfile.addGlobalAttribute(useName, att.getNumericValue());
-      if (debug) System.out.println("add gatt= " + useAtt);
-    }
+      // global attributes
+      List<Attribute> glist = fileIn.getGlobalAttributes();
+      for (Attribute att : glist) {
+        String useName = N3iosp.makeValidNetcdfObjectName(att.getShortName());
+        Attribute useAtt;
+        if (att.isArray())
+          useAtt = ncfile.addGlobalAttribute(useName, att.getValues());
+        else if (att.isString())
+          useAtt = ncfile.addGlobalAttribute(useName, att.getStringValue());
+        else
+          useAtt = ncfile.addGlobalAttribute(useName, att.getNumericValue());
+        if (debug) System.out.println("add gatt= " + useAtt);
+      }
 
-    Map<String, Dimension> dimHash = new HashMap<String, Dimension>();
-    for (Dimension oldD : fileIn.getDimensions()) {
-      String useName = N3iosp.makeValidNetcdfObjectName(oldD.getShortName());
-      Dimension newD = ncfile.addDimension(useName, oldD.isUnlimited() ? 0 : oldD.getLength(),
-              oldD.isShared(), oldD.isUnlimited(), oldD.isVariableLength());
-      dimHash.put(newD.getShortName(), newD);
-      if (debug) System.out.println("add dim= " + newD);
-    }
+      Map<String, Dimension> dimHash = new HashMap<>();
+      for (Dimension oldD : fileIn.getDimensions()) {
+        String useName = N3iosp.makeValidNetcdfObjectName(oldD.getShortName());
+        Dimension newD = ncfile.addDimension(useName, oldD.isUnlimited() ? 0 : oldD.getLength(),
+                oldD.isShared(), oldD.isUnlimited(), oldD.isVariableLength());
+        dimHash.put(newD.getShortName(), newD);
+        if (debug) System.out.println("add dim= " + newD);
+      }
 
-    // Variables
-    int anonCount = 0;
-    List<Variable> varlist = fileIn.getVariables();
-    for (Variable oldVar : varlist) {
-      List<Dimension> dims = new ArrayList<Dimension>();
-      List<Dimension> dimvList = oldVar.getDimensions();
-      for (Dimension oldD : dimvList) {
-        if (!oldD.isShared()) {
-          String anonName = "anon" + anonCount;
-          anonCount++;
-          Dimension newD = ncfile.addDimension(anonName, oldD.getLength()); // make it shared
+      // Variables
+      int anonCount = 0;
+      List<Variable> varlist = fileIn.getVariables();
+      for (Variable oldVar : varlist) {
+        List<Dimension> dims = new ArrayList<Dimension>();
+        List<Dimension> dimvList = oldVar.getDimensions();
+        for (Dimension oldD : dimvList) {
+          if (!oldD.isShared()) {
+            String anonName = "anon" + anonCount;
+            anonCount++;
+            Dimension newD = ncfile.addDimension(anonName, oldD.getLength()); // make it shared
+            dims.add(newD);
+
+          } else {
+            String useName = N3iosp.makeValidNetcdfObjectName(oldD.getShortName());
+            Dimension dim = dimHash.get(useName);
+            if (dim != null)
+              dims.add(dim);
+            else
+              throw new IllegalStateException("Unknown dimension= " + oldD.getShortName());
+          }
+        }
+
+        DataType newType = oldVar.getDataType();
+
+        // convert STRING to CHAR
+        if (oldVar.getDataType() == DataType.STRING) {
+          Array data = oldVar.read();
+          IndexIterator ii = data.getIndexIterator();
+          int max_len = 0;
+          while (ii.hasNext()) {
+            String s = (String) ii.getObjectNext();
+            max_len = Math.max(max_len, s.length());
+          }
+
+          // add last dimension
+          String useName = N3iosp.makeValidNetcdfObjectName(oldVar.getShortName() + "_strlen");
+          Dimension newD = ncfile.addDimension(useName, max_len);
           dims.add(newD);
 
-        } else {
-          String useName = N3iosp.makeValidNetcdfObjectName(oldD.getShortName());
-          Dimension dim = dimHash.get(useName);
-          if (dim != null)
-            dims.add(dim);
+          newType = DataType.CHAR;
+        }
+
+        String varName = N3iosp.makeValidNetcdfObjectName(oldVar.getShortName());
+        Variable v = ncfile.addVariable(varName, newType, dims);
+        if (debug) System.out.println("add var= " + v);
+
+        // attributes
+        List<Attribute> attList = oldVar.getAttributes();
+        for (Attribute att : attList) {
+          String useName = N3iosp.makeValidNetcdfObjectName(att.getShortName());
+          if (att.isArray())
+            ncfile.addVariableAttribute(varName, useName, att.getValues());
+          else if (att.isString())
+            ncfile.addVariableAttribute(varName, useName, att.getStringValue());
           else
-            throw new IllegalStateException("Unknown dimension= " + oldD.getShortName());
+            ncfile.addVariableAttribute(varName, useName, att.getNumericValue());
         }
       }
 
-      DataType newType = oldVar.getDataType();
+      if (anonCount > 0)
+        ncfile.finish();
 
-      // convert STRING to CHAR
-      if (oldVar.getDataType() == DataType.STRING) {
-        Array data = oldVar.read();
-        IndexIterator ii = data.getIndexIterator();
-        int max_len = 0;
-        while (ii.hasNext()) {
-          String s = (String) ii.getObjectNext();
-          max_len = Math.max(max_len, s.length());
-        }
+      // create the file
+      ncfile.create();
+      if (debug)
+        System.out.println("File Out= " + ncfile.toString());
 
-        // add last dimension
-        String useName = N3iosp.makeValidNetcdfObjectName(oldVar.getShortName() + "_strlen");
-        Dimension newD = ncfile.addDimension(useName, max_len);
-        dims.add(newD);
-
-        newType = DataType.CHAR;
+      // see if it has a record dimension we can use
+      if (fileIn.hasUnlimitedDimension()) {
+        fileIn.sendIospMessage(NetcdfFile.IOSP_MESSAGE_ADD_RECORD_STRUCTURE);
+        ncfile.sendIospMessage(NetcdfFile.IOSP_MESSAGE_ADD_RECORD_STRUCTURE);
       }
+      boolean useRecordDimension = hasRecordStructure(fileIn) && hasRecordStructure(ncfile);
+      Structure recordVar = useRecordDimension ? (Structure) fileIn.findVariable("record") : null;
 
-      String varName = N3iosp.makeValidNetcdfObjectName(oldVar.getShortName());
-      Variable v = ncfile.addVariable(varName, newType, dims);
-      if (debug) System.out.println("add var= " + v);
+      double total = copyVarData(ncfile, varlist, recordVar, progressListeners);
+      ncfile.flush();
+      if (debug) System.out.println("FileWriter done total bytes = " + total);
 
-      // attributes
-      List<Attribute> attList = oldVar.getAttributes();
-      for (Attribute att : attList) {
-        String useName = N3iosp.makeValidNetcdfObjectName(att.getShortName());
-        if (att.isArray())
-          ncfile.addVariableAttribute(varName, useName, att.getValues());
-        else if (att.isString())
-          ncfile.addVariableAttribute(varName, useName, att.getStringValue());
-        else
-          ncfile.addVariableAttribute(varName, useName, att.getNumericValue());
-      }
+      fileIn.sendIospMessage(NetcdfFile.IOSP_MESSAGE_REMOVE_RECORD_STRUCTURE);
+      return ncfile;
+
+    } catch (Throwable t) {
+      if (ncfile != null) ncfile.close();
+      throw t;
     }
-
-    if (anonCount > 0)
-      ncfile.finish();
-
-    // create the file
-    ncfile.create();
-    if (debug)
-      System.out.println("File Out= " + ncfile.toString());
-
-    // see if it has a record dimension we can use
-    if (fileIn.hasUnlimitedDimension()) {
-      fileIn.sendIospMessage(NetcdfFile.IOSP_MESSAGE_ADD_RECORD_STRUCTURE);
-      ncfile.sendIospMessage(NetcdfFile.IOSP_MESSAGE_ADD_RECORD_STRUCTURE);
-    }
-    boolean useRecordDimension = hasRecordStructure(fileIn) && hasRecordStructure(ncfile);
-    Structure recordVar = useRecordDimension ? (Structure) fileIn.findVariable("record") : null;
-
-    double total = copyVarData(ncfile, varlist, recordVar, progressListeners);
-    ncfile.flush();
-    if (debug) System.out.println("FileWriter done total bytes = " + total);
-
-    fileIn.sendIospMessage(NetcdfFile.IOSP_MESSAGE_REMOVE_RECORD_STRUCTURE);
-    return ncfile;
   }
 
   private static boolean hasRecordStructure(NetcdfFile file) {

@@ -33,10 +33,15 @@
 
 package ucar.nc2.iosp.mcidas;
 
+import edu.wisc.ssec.mcidas.AreaFile;
+import edu.wisc.ssec.mcidas.AreaFileException;
 import org.junit.Test;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.dataset.NetcdfDataset;
+import ucar.unidata.geoloc.LatLonPoint;
+import ucar.unidata.geoloc.LatLonPointImpl;
+import ucar.unidata.geoloc.ProjectionPoint;
 import ucar.unidata.test.util.TestDir;
 
 import java.io.File;
@@ -82,5 +87,31 @@ public class TestReadingMcIdas {
       }
     }
   }
+
+
+  // @Test
+  public void testAreaProjection() throws IOException, AreaFileException {
+    String file = TestDir.cdmUnitTestDir + "formats/mcidas/AREA1222";
+    System.out.printf("testAreaProjection %s%n", file);
+    AreaFile af = new AreaFile(file);
+    McIDASAreaProjection proj = new McIDASAreaProjection(af);
+    LatLonPoint llp = new LatLonPointImpl(45, -105);
+    System.out.println("lat/lon = " + llp);
+    ProjectionPoint pp = proj.latLonToProj(llp);
+    System.out.println("proj point = " + pp);
+    llp = proj.projToLatLon(pp);
+    System.out.println("reverse llp = " + llp);
+
+    double[][] latlons = new double[][]{{45}, {-105}};
+    double[][] linele = proj.latLonToProj(latlons);
+    assert linele != null;
+    double[][] outll = proj.projToLatLon(linele);
+    assert outll != null;
+
+    System.out.println("proj point = " + linele[0][0] + "," + linele[1][0]);
+    System.out.println("proj point = " + outll[0][0] + "," + outll[1][0]);
+  }
+
+
 
 }

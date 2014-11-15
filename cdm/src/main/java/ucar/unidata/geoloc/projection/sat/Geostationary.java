@@ -159,14 +159,20 @@ public class Geostationary extends ProjectionImpl {
   }
 
   @Override
-  public boolean equals(Object proj) {
-    if (!(proj instanceof Geostationary)) {
-      return false;
-    }
-    Geostationary gp = (Geostationary)proj;
-    if (!(this.navigation.equals(gp.navigation))) return false;
-    if (!(this.getDefaultMapArea().equals(gp.getDefaultMapArea()))) return false;
+  public boolean equals(Object o) {
+    if (this == o) return true;
+    if (o == null || getClass() != o.getClass()) return false;
+
+    Geostationary that = (Geostationary) o;
+
+    if (!navigation.equals(that.navigation)) return false;
+
     return true;
+  }
+
+  @Override
+  public int hashCode() {
+    return navigation.hashCode();
   }
 
   /**

@@ -1,0 +1,28 @@
+# template
+tds.version=${project.version}
+tds.version.builddate=${build.timestamp}
+
+tds.url=http://www.unidata.ucar.edu/projects/THREDDS/tech/TDS.html
+tds.documentation.url=http://www.unidata.ucar.edu/projects/THREDDS/tech/TDS.html
+tds.logo.url=threddsIcon.gif
+tds.logo.alt=TDS
+
+tds.content.path=thredds
+tds.content.startup.path=WEB-INF/altContent/startup
+tds.content.idd.path=WEB-INF/altContent/idd/thredds
+tds.content.motherlode.path=WEB-INF/altContent/motherlode/thredds
+
+tds.config.file=threddsConfig.xml
+tds.install.url=catalog.html
+
+# production release - override on command line
+#tds.content.root.path=../../content
+#tds.dir.cdmUnitTest=.
+
+# on spock for jenkins testing
+tds.content.root.path=/share/testdata/cdmUnitTest/it/content
+tds.dir.cdmUnitTest=/share/testdata/cdmUnitTest
+
+# local override
+#tds.content.root.path=f:/git/thredds/tds/src/test/content
+#tds.dir.cdmUnitTest=Q:/cdmUnitTest

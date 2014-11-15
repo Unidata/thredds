@@ -717,7 +717,7 @@ public class DConnect2
         return command.dds;
     }
 
-    private class DDXCommand implements Command
+    static private class DDXCommand implements Command
     {
         DDS dds = new DDS();
 

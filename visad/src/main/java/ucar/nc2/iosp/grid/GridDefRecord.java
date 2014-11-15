@@ -451,7 +451,7 @@ public abstract class GridDefRecord {
         } else {
             Integer intResult = paramInt.get(key);
             if (intResult != null) {
-                value = result.toString();
+                value = intResult.toString();
             }
         }
         // save it back off to the string table for next time

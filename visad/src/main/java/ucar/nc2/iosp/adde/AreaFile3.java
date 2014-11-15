@@ -198,16 +198,16 @@ public class AreaFile3 {
     lineLength = linePrefixLength + lineDataLength;
 
     int navbytes = 0, calbytes = 0, auxbytes = 0;
-    if (datLoc > 0 && datLoc != McIDASUtil.MCMISSING) {
+    if (datLoc > 0) { //  && datLoc != McIDASUtil.MCMISSING) {
       navbytes = datLoc - navLoc;
       calbytes = datLoc - calLoc;
       auxbytes = datLoc - auxLoc;
     }
-    if (auxLoc > 0 && auxLoc != McIDASUtil.MCMISSING) {
+    if (auxLoc > 0) { // && auxLoc != McIDASUtil.MCMISSING) {
       navbytes = auxLoc - navLoc;
       calbytes = auxLoc - calLoc;
     }
-    if (calLoc > 0 && calLoc != McIDASUtil.MCMISSING ) {
+    if (calLoc > 0) { // && calLoc != McIDASUtil.MCMISSING ) {
       navbytes = calLoc - navLoc;
     }
 

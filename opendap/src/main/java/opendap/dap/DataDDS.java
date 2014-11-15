@@ -238,7 +238,7 @@ public class DataDDS extends DDS {
         }
 
         // Redefine PrintWriter here, so the DDS is also compressed if necessary
-        PrintWriter pw = new PrintWriter(new OutputStreamWriter(bufferedOS));
+        PrintWriter pw = new PrintWriter(new OutputStreamWriter(bufferedOS,Util.UTF8));
         print(pw);
         // pw.println("Data:");  // JCARON CHANGED
         pw.flush();

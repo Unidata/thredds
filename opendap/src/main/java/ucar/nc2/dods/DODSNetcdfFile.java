@@ -2315,7 +2315,7 @@ if(OLDGROUPCODE) {
         f.format("%nDAS = %n");
         buffOS = new ByteArrayOutputStream(8000);
         das.print(buffOS);
-        f.format("%s%n", buffOS.toString());
+        f.format("%s%n", new String(buffOS.toByteArray(),Util.UTF8));
     }
 
     public String getFileTypeId()

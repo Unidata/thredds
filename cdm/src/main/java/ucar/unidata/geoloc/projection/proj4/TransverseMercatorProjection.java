@@ -307,21 +307,22 @@ public class TransverseMercatorProjection extends ProjectionImpl {
   }
 
   @Override
-  public boolean equals(Object proj) {
-    if (!(proj instanceof TransverseMercatorProjection)) {
-      return false;
-    }
+  public boolean equals(Object o) {
+    if (this == o) return true;
+    if (o == null || getClass() != o.getClass()) return false;
 
-    TransverseMercatorProjection oo = (TransverseMercatorProjection) proj;
-    if ((this.getDefaultMapArea() == null) != (oo.defaultMapArea == null)) return false; // common case is that these are null
-    if (this.getDefaultMapArea() != null && !this.defaultMapArea.equals(oo.defaultMapArea)) return false;
+    TransverseMercatorProjection that = (TransverseMercatorProjection) o;
+    //if ((this.getDefaultMapArea() == null) != (that.defaultMapArea == null)) return false; // common case is that these are null
+    //if (this.getDefaultMapArea() != null && !this.defaultMapArea.equals(that.defaultMapArea)) return false;
 
-    return ((this.projectionLatitude == oo.projectionLatitude)
-          && (this.projectionLongitude == oo.projectionLongitude)
-          && (this.scaleFactor == oo.scaleFactor)
-          && (this.falseEasting == oo.falseEasting)
-          && (this.falseNorthing == oo.falseNorthing)
-          && this.ellipsoid.equals(oo.ellipsoid));
+    if (Double.compare(that.falseEasting, falseEasting) != 0) return false;
+    if (Double.compare(that.falseNorthing, falseNorthing) != 0) return false;
+    if (Double.compare(that.projectionLatitude, projectionLatitude) != 0) return false;
+    if (Double.compare(that.projectionLongitude, projectionLongitude) != 0) return false;
+    if (Double.compare(that.scaleFactor, scaleFactor) != 0) return false;
+    if (!ellipsoid.equals(that.ellipsoid)) return false;
+
+    return true;
   }
 
   @Override

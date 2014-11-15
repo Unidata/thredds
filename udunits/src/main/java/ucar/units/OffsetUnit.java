@@ -427,8 +427,10 @@ public final class OffsetUnit extends UnitImpl implements DerivableUnit {
         if (!(object instanceof OffsetUnit)) {
             return false;
         }
-        final OffsetUnit that = (OffsetUnit) object;
-        return _offset == that._offset && _unit.equals(that._unit);
+
+        OffsetUnit that = (OffsetUnit) object;
+        if (Double.compare(that._offset, _offset) != 0) return false;
+        return _unit.equals(that._unit);
     }
 
     /**
